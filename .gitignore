@@ -1,0 +1,11 @@
+# build outputs
+*.exe
+*.obj
+king.res
+*.pdb
+*.map
+*.log
+
+
+# editor settings
+.vscode/

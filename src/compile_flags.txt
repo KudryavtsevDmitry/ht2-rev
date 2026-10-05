@@ -1,0 +1,3 @@
+-xc++
+--target=i686-pc-windows-msvc
+-std=c++14
