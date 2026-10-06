@@ -1,10 +1,7 @@
 # NMAKE Makefile: build king.exe from king.masm and the C++ code in src\
 #   nmake                 - build
-#   nmake ASM=mainloop    - keep functions in assembly instead of their C++
-#                           code: groups, labels without the $ (L_5e2040) or
-#                           addresses (5e2040) of src\replace.txt, separated
-#                           by commas (nmake clean when switching)
-#   nmake ASM=all         - king.masm alone, without any C++ code
+#   nmake ASM_MAINLOOP=1  - build with the original assembly main loop instead
+#                           of src\mainloop.cpp (nmake clean when switching)
 #   nmake clean           - remove build outputs except king.res
 # The first build takes the resources from the game's original king.exe:
 #   nmake "GAME_EXE=C:\path\to\king.exe"   (or set GAME_EXE in the environment)
@@ -19,18 +16,15 @@ SDKINC = C:\Program Files (x86)\Windows Kits\10\Include\10.0.26100.0
 PYTHON = py
 
 SRC = king.masm
-GEN = king.gen.masm
 OBJ = king.obj
 RES = king.res
 OUT = king.exe
 
-!IF "$(ASM)" == "all"
+!IFDEF ASM_MAINLOOP
+MLFLAGS = /DASM_MAINLOOP
 CPPOBJS =
 !ELSE
 CPPOBJS = mainloop.obj
-!ENDIF
-!IFDEF ASM
-GENFLAGS = --asm $(ASM)
 !ENDIF
 
 # The C++ code has no CRT of its own (king.masm contains the original one):
@@ -42,13 +36,8 @@ LIBPATH_FLAGS = /LIBPATH:"C:\Users\Dmitry\Documents\dx7sdk\dx7sdk-700.1\lib" /LI
 
 build: $(OUT)
 
-# king.masm without the functions of src\replace.txt, their labels pointed at
-# the C++ code; also checks that each of them can be taken out
-$(GEN): $(SRC) src\replace.txt tools\kingasm.py
-	$(PYTHON) tools\kingasm.py gen $(GEN) $(GENFLAGS)
-
-$(OBJ): $(GEN)
-	$(ML) /nologo /c /Fo$(OBJ) $(GEN)
+$(OBJ): $(SRC)
+	$(ML) /nologo $(MLFLAGS) /c /Fo$(OBJ) $(SRC)
 
 mainloop.obj: src\mainloop.cpp src\king.h
 	$(CC) $(CFLAGS) /Fomainloop.obj src\mainloop.cpp
@@ -67,4 +56,4 @@ $(OUT): $(OBJ) $(CPPOBJS) $(RES)
 
 # king.res stays: rebuilding it needs the game's king.exe
 clean:
-	-del /q $(GEN) $(OBJ) mainloop.obj $(OUT) 2>nul
+	-del /q $(OBJ) mainloop.obj $(OUT) 2>nul

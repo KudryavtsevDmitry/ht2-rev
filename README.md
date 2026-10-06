@@ -15,9 +15,7 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 | `units.csv` | the source files (object files) the program was linked from: code ranges, names, `.data` starts |
 | `src/king.h` | glue between the C++ code and `king.masm`, partial layouts of the engine's classes |
 | `src/mainloop.cpp` | the main loop in C++ |
-| `src/replace.txt` | the functions of `king.masm` that the build replaces by C++ code |
 | `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
-| `tools/kingasm.py` | finds the functions of `king.masm`, shows what one is made of, builds the assembly with the replaced functions taken out |
 | `tools/objdiff.py` | compares two `king.obj`: whether a change to `king.masm` changed code or data |
 | `Makefile` | NMAKE build |
 
@@ -30,27 +28,23 @@ Requirements (their paths are set in the `Makefile`; change them for another mac
 - Visual Studio 2022 Build Tools with the MSVC 14.29.30133 (v142) toolset: x86 `ml.exe`, `cl.exe`, `link.exe`, and `nmake`
 - Windows 10 SDK 10.0.26100.0: headers and the `um\x86` import libraries
 - DirectX 7 SDK, `lib` directory (DirectInput, DirectDraw and DirectSound import libraries)
-- Python 3, started as `py` (`nmake PYTHON=python` for another command), with `pefile` for the first build
+- Python with `pefile`, started as `py` (`nmake PYTHON=python` for another command)
 - the game's original `king.exe`, for the first build
 
 The `Makefile` passes all tool, include and library paths itself, so only `nmake` has to be on `PATH`; no Developer Command Prompt is needed.
 
 ```
 nmake "GAME_EXE=C:\path\to\king.exe"   # first build: resources from the game's king.exe
-nmake                                  # king.exe with the C++ code
-nmake ASM=mainloop                     # the main loop in assembly again, the rest as before
-nmake ASM=5e2040,L_569650              # single functions in assembly again
-nmake ASM=all                          # king.masm alone, without any C++ code
-nmake clean                            # delete king.gen.masm, king.obj, mainloop.obj, king.exe
+nmake                                  # king.exe with the C++ main loop
+nmake ASM_MAINLOOP=1                   # king.exe with the original assembly main loop
+nmake clean                            # delete king.obj, mainloop.obj, king.exe
 ```
 
 `GAME_EXE` is needed only while `king.res` doesn't exist; `nmake clean` keeps it. `GAME_EXE` can also be set as an environment variable.
 
-The build doesn't assemble `king.masm` itself. `tools\kingasm.py gen` writes `king.gen.masm`: `king.masm` without the functions listed in `src\replace.txt`, their labels pointed at the C++ functions. `ASM=` takes groups of `src\replace.txt`, labels (without the `$`, which nmake can't pass) or addresses; those functions stay in assembly. It is the way to find which rewritten function misbehaves.
+Run `nmake clean` before switching between the two variants; nmake doesn't notice the changed flag. Assembling `king.masm` takes about 25 seconds.
 
-Run `nmake clean` before changing `ASM=`; nmake doesn't notice the changed flag. Generating `king.gen.masm` takes about 10 seconds, assembling it about 25.
-
-Use the `ASM=all` build as the reference when something behaves differently.
+The `ASM_MAINLOOP=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
 
 The executable is linked like the original: fixed base `0x400000` without relocations (`/FIXED`), the original's DLL characteristics (`/NXCOMPAT:NO /TSAWARE:NO`), and the CRT startup in `king.masm` as entry point (`__EntryPoint`).
 
@@ -134,7 +128,7 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
 ```
 
 - `CallC`, `CallStd` and `CallThis` call cdecl, stdcall (MFC's `AFXAPI`) and thiscall procedures. `CallVirt` calls through the object's vtable, so the game's overrides still run.
-- A variable's label must also be in the `PUBLIC` lines at the top of `king.masm`. Procedure labels are public already. The build reports a bound label that is neither.
+- A variable's label must also be in the `PUBLIC` lines at the top of `king.masm`. Procedure labels are public already.
 - The names are bound with the linker's `/alternatename` (x86 C names get a leading underscore, the masm labels don't). A wrong name shows up as an unresolved external symbol.
 - The library functions in `symbols.csv` carry their real, decorated names in `king.masm`, so a declaration with the library's own signature binds to them without `/alternatename`: `king.h` declares `void AFXAPI AfxPostQuitMessage(int)`, which references `?AfxPostQuitMessage@@YGXH@Z`, and `extern "C" int __cdecl sprintf(char*, const char*, ...)` would reach the game's `_sprintf`.
 
@@ -149,11 +143,18 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
    }
    ```
    `__fastcall` passes the first two arguments in ECX and EDX and the rest on the stack, which the callee removes. With an unused EDX argument that is exactly `__thiscall`. The symbol is named `@name@N`, where N is the size of all parameters in bytes (here `@CGameApp_OnIdle@12`).
-3. Add the function to `src/replace.txt`: its label, the exported symbol as the linker names it, and a group:
+3. In `king.masm`, keep the original procedure for the assembly build and otherwise point its label at the export, so every call and vtable entry that uses the label reaches the C++ code:
+   ```asm
+   IFDEF ASM_MAINLOOP
+   $L_5dd440 PROC
+       ...
+   $L_5dd440 ENDP
+   ELSE
+   EXTERN @CGameApp_OnIdle@12:PROC
+   $L_5dd440 TEXTEQU <@CGameApp_OnIdle@12>
+   ENDIF
    ```
-   $L_5dd440    @CGameApp_OnIdle@12      mainloop    # CGameApp::OnIdle
-   ```
-   The build (`tools\kingasm.py gen`) takes the function out of `king.masm` and points its label at the symbol, so every call, jump and vtable entry that uses the label reaches the C++ code; `king.masm` itself stays as it is. Beforehand, `py tools\kingasm.py info 5dd440` shows what the function is made of, where it is called from, the bytes of arguments it removes (`ret N`, which fixes the `@N` of the symbol), its exception handling, and whether it can be taken out on its own. Functions are found from the code, not from the `PROC` blocks, which the disassembler sometimes split (`$L_569650` continues in `$L_569692`). The build refuses a function whose inner labels other code uses (jump tables, shared code) or whose `ret N` doesn't match the symbol, and warns about catch blocks, because the C++ code is built without exceptions. `nmake ASM=` puts single functions or groups back into assembly.
+   `ASM_MAINLOOP` is the main loop's switch; other groups of functions can get their own in the `Makefile`. First make sure that no label *inside* the procedure is used from outside it: jump tables, shared code, or a procedure that the disassembler split into several `PROC` blocks (`$L_569650` continues in `$L_569692`).
 4. Add new `.cpp` files to the `Makefile` the way `mainloop.obj` is added.
 
 ### Rules for the C++ code
