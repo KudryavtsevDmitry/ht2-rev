@@ -1,0 +1,125 @@
+address,label,name,module,prototype
+61cb9a,FUN_61cb9a,_fclose,crt,int fclose(FILE *stream)
+61cc17,FUN_61cc17,_fputs,crt,"int fputs(const char *string, FILE *stream)"
+61cc96,FUN_61cc96,_fopen,crt,"FILE *fopen(const char *filename, const char *mode)"
+61cca9,FUN_61cca9,_sprintf,crt,"int sprintf(char *buffer, const char *format, ...)"
+61cd79,FUN_61cd79,_atexit,crt,int atexit(void (*func)(void))
+61d18e,FUN_61d18e,__CxxThrowException@8,crt,"void __stdcall _CxxThrowException(void *object, _ThrowInfo *info)"
+61d1c8,FUN_61d1c8,_free,crt,void free(void *block)
+61d2c0,FUN_61d2c0,_memmove,crt,"void *memmove(void *dest, const void *src, size_t count)"
+61d5f5,FUN_61d5f5,??_M@YGXPAXIHP6EX0@Z@Z,crt,"void __stdcall `eh vector destructor iterator'(void *ptr, unsigned size, int count, void (__thiscall *dtor)(void *))"
+61d6f0,FUN_61d6f0,_strncmp,crt,"int strncmp(const char *string1, const char *string2, size_t count)"
+61d730,FUN_61d730,_strncpy,crt,"char *strncpy(char *dest, const char *src, size_t count)"
+61d830,FUN_61d830,__ftol,crt,"__int64 _ftol(void): ST(0) truncated to EDX:EAX"
+61d857,FUN_61d857,_malloc,crt,void *malloc(size_t size)
+61d9a0,FUN_61d9a0,_strncat,crt,"char *strncat(char *dest, const char *src, size_t count)"
+61dac3,FUN_61dac3,??_L@YGXPAXIHP6EX0@Z1@Z,crt,"void __stdcall `eh vector constructor iterator'(void *ptr, unsigned size, int count, void (__thiscall *ctor)(void *), void (__thiscall *dtor)(void *))"
+61db50,FUN_61db50,__CIpow,crt,"double _CIpow(void): pow(ST(1), ST(0))"
+61dd70,FUN_61dd70,__CIacos,crt,double _CIacos(void): acos(ST(0))
+61de40,FUN_61de40,__chkstk,crt,"void _chkstk(void): allocates EAX bytes of stack, probing each page (also _alloca_probe)"
+61de70,FUN_61de70,__stricmp,crt,"int _stricmp(const char *string1, const char *string2)"
+61e0a0,FUN_61e0a0,??0exception@@QAE@XZ,crt,exception::exception()
+61e0cd,FUN_61e0cd,??0exception@@QAE@ABQBD@Z,crt,exception::exception(const char *const &what)
+61e10a,FUN_61e10a,??0exception@@QAE@ABV0@@Z,crt,exception::exception(const exception &)
+61e154,FUN_61e154,??1exception@@UAE@XZ,crt,virtual exception::~exception()
+61e1bc,FUN_61e1bc,_fprintf,crt,"int fprintf(FILE *stream, const char *format, ...)"
+61e1f8,$L_61e1f8,_abort,crt,void abort(void)
+61e20f,FUN_61e20f,_fread,crt,"size_t fread(void *buffer, size_t size, size_t count, FILE *stream)"
+61e326,FUN_61e326,_fwrite,crt,"size_t fwrite(const void *buffer, size_t size, size_t count, FILE *stream)"
+61e45f,FUN_61e45f,_ftell,crt,long ftell(FILE *stream)
+61e5e4,FUN_61e5e4,_isdigit,crt,int isdigit(int c)
+61e60c,FUN_61e60c,_isspace,crt,int isspace(int c)
+61e634,FUN_61e634,_isalnum,crt,int isalnum(int c)
+61e662,FUN_61e662,_printf,crt,"int printf(const char *format, ...)"
+61e6a3,FUN_61e6a3,_fseek,crt,"int fseek(FILE *stream, long offset, int origin)"
+61e75c,FUN_61e75c,_tolower,crt,int tolower(int c)
+61e8c3,FUN_61e8c3,_exit,crt,void exit(int status)
+61e8d4,FUN_61e8d4,__exit,crt,void _exit(int status)
+61e9b6,FUN_61e9b6,_strtol,crt,"long strtol(const char *string, char **end, int base)"
+61ebd2,FUN_61ebd2,_strtoul,crt,"unsigned long strtoul(const char *string, char **end, int base)"
+61ebe9,FUN_61ebe9,_toupper,crt,int toupper(int c)
+61ed24,FUN_61ed24,_fputc,crt,"int fputc(int c, FILE *stream)"
+61ed5f,FUN_61ed5f,_putc,crt,"int putc(int c, FILE *stream)"
+61ed6f,FUN_61ed6f,_fgets,crt,"char *fgets(char *string, int n, FILE *stream)"
+61edd1,FUN_61edd1,_srand,crt,void srand(unsigned seed)
+61edde,FUN_61edde,_rand,crt,int rand(void)
+61ee00,FUN_61ee00,__CIasin,crt,double _CIasin(void): asin(ST(0))
+61eecb,FUN_61eecb,_qsort,crt,"void qsort(void *base, size_t num, size_t width, int (*compare)(const void *, const void *))"
+61f099,FUN_61f099,_floor,crt,double floor(double x)
+61f184,FUN_61f184,_sin,crt,double sin(double x)
+61f220,FUN_61f220,_strlen,crt,size_t strlen(const char *string)
+61f2a0,FUN_61f2a0,_strcpy,crt,"char *strcpy(char *dest, const char *src)"
+61f390,FUN_61f390,_fabs,crt,double fabs(double x)
+61f445,FUN_61f445,_abs,crt,int abs(int n)
+61f450,FUN_61f450,_fflush,crt,int fflush(FILE *stream)
+61f5c0,FUN_61f5c0,_memset,crt,"void *memset(void *dest, int c, size_t count)"
+61f620,FUN_61f620,_atan2,crt,"double atan2(double y, double x)"
+61f640,FUN_61f640,_strcmp,crt,"int strcmp(const char *string1, const char *string2)"
+61f6e4,FUN_61f6e4,_sqrt,crt,double sqrt(double x)
+61f7a4,FUN_61f7a4,_cos,crt,double cos(double x)
+61f854,FUN_61f854,_log,crt,double log(double x)
+61f90c,FUN_61f90c,_strtod,crt,"double strtod(const char *string, char **end)"
+61f9b6,FUN_61f9b6,_difftime,crt,"double difftime(time_t time1, time_t time0)"
+61f9d0,FUN_61f9d0,__alldiv,crt,"__int64 _alldiv(__int64 dividend, __int64 divisor), callee pops"
+61fa80,FUN_61fa80,__strnicmp,crt,"int _strnicmp(const char *string1, const char *string2, size_t count)"
+61fb81,FUN_61fb81,_strerror,crt,char *strerror(int errnum)
+61fbea,FUN_61fbea,__CIfmod,crt,"double _CIfmod(void): fmod(ST(1), ST(0))"
+61fc12,FUN_61fc12,_atol,crt,long atol(const char *string)
+61fc9d,FUN_61fc9d,_atoi,crt,int atoi(const char *string)
+61fca8,FUN_61fca8,_atof,crt,double atof(const char *string)
+61fcff,FUN_61fcff,?_set_new_mode@@YAHH@Z,crt,int _set_new_mode(int mode)
+61fd1c,FUN_61fd1c,?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z,crt,_PNH _set_new_handler(_PNH handler)
+61fd5b,FUN_61fd5b,_fgetc,crt,int fgetc(FILE *stream)
+61fd8c,FUN_61fd8c,_getc,crt,int getc(FILE *stream)
+61fd97,FUN_61fd97,_ceil,crt,double ceil(double x)
+61fe66,FUN_61fe66,_rewind,crt,void rewind(FILE *stream)
+620250,FUN_620250,_memcpy,crt,"void *memcpy(void *dest, const void *src, size_t count)"
+6212a4,FUN_6212a4,__close,crt,int _close(int fd)
+625232,FUN_625232,__read,crt,"int _read(int fd, void *buffer, unsigned count)"
+628e69,FUN_628e69,__open,crt,"int _open(const char *filename, int oflag, ...)"
+630490,FUN_630490,__mtlock,iostream,void _mtlock(_CRT_CRITICAL_SECTION *lock)
+63049b,FUN_63049b,__mtunlock,iostream,void _mtunlock(_CRT_CRITICAL_SECTION *lock)
+630520,FUN_630520,??1ios@@UAE@XZ,iostream,virtual ios::~ios()
+6307e4,FUN_6307e4,??5istream@@QAEAAV0@PAD@Z,iostream,istream &istream::operator>>(char *)
+630d4c,FUN_630d4c,??0istrstream@@QAE@PAD@Z,iostream,istrstream::istrstream(char *)
+630e02,FUN_630e02,??1istrstream@@UAE@XZ,iostream,virtual istrstream::~istrstream()
+630e15,FUN_630e15,??0ifstream@@QAE@XZ,iostream,ifstream::ifstream()
+630ec6,FUN_630ec6,??1ifstream@@UAE@XZ,iostream,virtual ifstream::~ifstream()
+630ed9,FUN_630ed9,?open@ifstream@@QAEXPBDHH@Z,iostream,"void ifstream::open(const char *name, int mode, int prot)"
+630f1b,FUN_630f1b,?close@ifstream@@QAEXXZ,iostream,void ifstream::close()
+630f4e,FUN_630f4e,?get@istream@@IAEAAV1@PADHH@Z,iostream,"protected: istream &istream::get(char *buffer, int count, int delim)"
+6319c6,FUN_6319c6,__stat,crt,"int _stat(const char *path, struct _stat *buffer)"
+631cf1,FUN_631cf1,__mkdir,crt,int _mkdir(const char *dirname)
+632643,FUN_632643,??2@YAPAXI@Z,mfc,void *operator new(unsigned int size)
+63266c,FUN_63266c,??3@YAXPAX@Z,mfc,void operator delete(void *p)
+63267d,$L_63267d,?Run@CWinApp@@UAEHXZ,mfc,virtual int CWinApp::Run()
+63274d,FUN_63274d,?OnIdle@CWinApp@@UAEHJ@Z,mfc,virtual BOOL CWinApp::OnIdle(LONG lCount)
+632992,FUN_632992,?AfxGetThread@@YGPAVCWinThread@@XZ,mfc,CWinThread *AFXAPI AfxGetThread()
+6329a7,FUN_6329a7,?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z,mfc,"CWinThread *AFXAPI AfxBeginThread(AFX_THREADPROC pfnThreadProc, LPVOID pParam, int nPriority, UINT nStackSize, DWORD dwCreateFlags, LPSECURITY_ATTRIBUTES lpSecurityAttrs)"
+632a28,FUN_632a28,?AfxEndThread@@YGXIH@Z,mfc,"void AFXAPI AfxEndThread(UINT nExitCode, BOOL bDelete)"
+632c50,FUN_632c50,?Run@CWinThread@@UAEHXZ,mfc,virtual int CWinThread::Run()
+633737,FUN_633737,?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z,mfc,"BOOL CWnd::SetWindowPos(const CWnd *pWndInsertAfter, int x, int y, int cx, int cy, UINT nFlags)"
+633cc9,FUN_633cc9,?Default@CWnd@@IAEJXZ,mfc,protected: LRESULT CWnd::Default()
+6363a1,FUN_6363a1,??1CString@@QAE@XZ,mfc,CString::~CString()
+6363cb,FUN_6363cb,??0CString@@QAE@PBD@Z,mfc,CString::CString(LPCTSTR lpsz)
+63653d,FUN_63653d,?LoadStringA@CString@@QAEHI@Z,mfc,BOOL CString::LoadString(UINT nID)
+636b51,FUN_636b51,?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z,mfc,"int AFXAPI AfxWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)"
+636bda,FUN_636bda,??0CDC@@QAE@XZ,mfc,CDC::CDC()
+636c91,FUN_636c91,?Attach@CDC@@QAEHPAUHDC__@@@Z,mfc,BOOL CDC::Attach(HDC hDC)
+636cf9,FUN_636cf9,??1CDC@@UAE@XZ,mfc,virtual CDC::~CDC()
+636dbc,FUN_636dbc,?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z,mfc,"protected: static CGdiObject *PASCAL CDC::SelectGdiObject(HDC hDC, HGDIOBJ h)"
+636eb3,FUN_636eb3,?SetMapMode@CDC@@UAEHH@Z,mfc,virtual int CDC::SetMapMode(int nMapMode)
+637158,FUN_637158,?Attach@CGdiObject@@QAEHPAX@Z,mfc,BOOL CGdiObject::Attach(HGDIOBJ hObject)
+6371af,FUN_6371af,?DeleteObject@CGdiObject@@QAEHXZ,mfc,BOOL CGdiObject::DeleteObject()
+637894,FUN_637894,??0CFrameWnd@@QAE@XZ,mfc,CFrameWnd::CFrameWnd()
+637972,FUN_637972,??1CFrameWnd@@UAE@XZ,mfc,virtual CFrameWnd::~CFrameWnd()
+637baf,FUN_637baf,?OnSetCursor@CFrameWnd@@IAEHPAVCWnd@@II@Z,mfc,"protected: BOOL CFrameWnd::OnSetCursor(CWnd *pWnd, UINT nHitTest, UINT message)"
+6380a5,FUN_6380a5,?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z,mfc,"virtual BOOL CFrameWnd::Create(LPCTSTR lpszClassName, LPCTSTR lpszWindowName, DWORD dwStyle, const RECT &rect, CWnd *pParentWnd, LPCTSTR lpszMenuName, DWORD dwExStyle, CCreateContext *pContext)"
+638795,FUN_638795,?OnSysCommand@CFrameWnd@@IAEXIJ@Z,mfc,"protected: void CFrameWnd::OnSysCommand(UINT nID, LONG lParam)"
+639967,FUN_639967,?AfxOleGetUserCtrl@@YGHXZ,mfc,BOOL AFXAPI AfxOleGetUserCtrl()
+639994,FUN_639994,??0CWinApp@@QAE@PBD@Z,mfc,CWinApp::CWinApp(LPCTSTR lpszAppName)
+639ade,FUN_639ade,??1CWinApp@@UAE@XZ,mfc,virtual CWinApp::~CWinApp()
+63a342,FUN_63a342,?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ,mfc,AFX_MODULE_STATE *AFXAPI AfxGetModuleState()
+63a662,FUN_63a662,?Enable3dControls@CWinApp@@IAEHXZ,mfc,protected: BOOL CWinApp::Enable3dControls()
+63a7bb,FUN_63a7bb,?SetDialogBkColor@CWinApp@@IAEXKK@Z,mfc,"protected: void CWinApp::SetDialogBkColor(COLORREF clrCtlBk, COLORREF clrCtlText)"
+63b4d3,FUN_63b4d3,?AfxPostQuitMessage@@YGXH@Z,mfc,void AFXAPI AfxPostQuitMessage(int nExitCode)

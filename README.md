@@ -10,6 +10,10 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 |---|---|
 | `king.masm` | the program as MASM source, made from a disassembly of the game's `king.exe` (~1.1 million lines) |
 | `extractResources.py` | copies the resources of the game's `king.exe` (icons, cursor, bitmaps, strings) into `king.res` |
+| `symbols.csv` | names, original addresses and prototypes of the library functions the game calls (C runtime, iostreams, MFC) |
+| `applySymbols.py` | renames the labels of `king.masm` after `symbols.csv` |
+| `units.csv` | the source files (object files) the program was linked from: code ranges, names, `.data` starts |
+| `findUnits.py` | finds those files in `king.masm` and writes `units.csv` |
 | `src/king.h` | glue between the C++ code and `king.masm`, partial layouts of the engine's classes |
 | `src/mainloop.cpp` | the main loop in C++ |
 | `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
@@ -60,14 +64,29 @@ Start-Process C:\test\king.exe -WorkingDirectory 'C:\Program Files (x86)\King'
 
 ## How the program is organised
 
-`king.exe` is an MFC application. MFC and the C runtime are linked statically, so they are part of `king.masm` as well.
+`king.exe` is an MFC application. MFC and the C runtime are linked statically, so they are part of `king.masm` as well. The game's own code fills `0x401000`–`0x61c4c0` of the original; MFC, the C runtime, gzip and the old iostream library follow, and the exception-handling funclets of all of it close the code section (`0x63b610`–`0x64a78a`).
 
-- **Startup:** `__EntryPoint` (CRT) → `_WinMain@16` → `FUN_636b51` (`AfxWinMain`), which calls `InitInstance` and then `Run` of the application object.
+- **Startup:** `__EntryPoint` (CRT) → `_WinMain@16` → MFC's `AfxWinMain`, which calls `InitInstance` and then `Run` of the application object.
 - **Application:** the object is `$L_696750`, a pointer to it is in `$L_721750`. Its class chain is `CWinApp` → engine application (vtable `$L_652664`) → an intermediate class (`$L_65195c`) → the game's `CKingApp` (`$L_64d830`).
 - **Windows:** the engine's "windows" are rectangles of the game screen (3D view, HUD panels, menus), not Win32 windows. The application keeps them in lists; each one draws into a surface.
 - **Input:** the message handlers of the Win32 window put mouse and keyboard messages into a 100-entry queue (`$L_702660`, `FUN_5acb60`), and the frame takes them out (`FUN_5aca90`).
 - **Time:** `FUN_6037e0` returns milliseconds (QueryPerformanceCounter, scaled against `timeGetTime` at startup).
 - **Crash trace:** `taskdump=1` in the `[ENV]` section of `TRUCK.INI` makes every frame write its stages (`BEGIN FRAME`, `BEGIN EXECUTE`, `END EXECUTE`, `END FRAME`) into a memory-mapped `state.dump`, so after a hang it shows how far the last frame got.
+
+### Source files
+
+`units.csv` divides the code into the object files it was linked from, in link order. Their names come from the developers' `$Id` strings (`static char rcsid[] = "$Id: ai_mult.cpp 2000/12/21 20:12:14"`) and from the `__FILE__` paths in error messages:
+
+- `C:\Nek\Vrappl\Gi\Htai\`: the AI, `Ai_main.cpp` (a third of a megabyte of code) to `ai_trce.cpp`, at the start of the code
+- `sch_embd.cpp`, `Sch_eval.cpp`, `sch_istr.cpp`, `sch_item.cpp`: an embedded Scheme interpreter
+- `car2e.cpp`, `caran.cpp`, `carat.cpp`, `carvstr.cpp`, `carvvk.cpp`, `copter.cpp`, `movingb.cpp`: vehicles
+- `C:\Nek\VRAPPLVS\TRUCK\`: `aeffects.cpp`, `mmt.cpp`, `wasm.cpp`
+- `C:\Nek\Vrappl\Gi\Srmidp\D1gate.cpp`, `rdtsc.cpp`
+- `C:\Nek\VRAPPLVS\marine\` and `terrain\`: at the end of the game code
+
+Within a group the files are in alphabetical order, so an unnamed unit's name sorts between its neighbours' (`aeffects.cpp` … `car2e.cpp` … `wasm.cpp` look like one folder). 31 of the 55 units have a name; the others come from the layout of the data alone, and such a unit can also be two files whose boundary the data doesn't show. Where the functions around a boundary use no `.data`, `start_range` gives the range the boundary can lie in and `start` is the best guess within it.
+
+`findUnits.py` reads only `king.masm`. Every object file put its code, its `.data` and its `.bss` into one contiguous piece each, in the same order, so code and the data it uses rise together, file after file. A boundary is a place where the code before it uses only data below some address and the code after it only data above, and where the `.data` there is more than one string literal after another (the next file's `$Id`, or other data). All functions that use a file's own `$Id` or `__FILE__` string stay in one unit.
 
 ### Main loop
 
@@ -111,6 +130,7 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
 - `CallC`, `CallStd` and `CallThis` call cdecl, stdcall (MFC's `AFXAPI`) and thiscall procedures. `CallVirt` calls through the object's vtable, so the game's overrides still run.
 - A variable's label must also be in the `PUBLIC` lines at the top of `king.masm`. Procedure labels are public already.
 - The names are bound with the linker's `/alternatename` (x86 C names get a leading underscore, the masm labels don't). A wrong name shows up as an unresolved external symbol.
+- The library functions in `symbols.csv` carry their real, decorated names in `king.masm`, so a declaration with the library's own signature binds to them without `/alternatename`: `king.h` declares `void AFXAPI AfxPostQuitMessage(int)`, which references `?AfxPostQuitMessage@@YGXH@Z`, and `extern "C" int __cdecl sprintf(char*, const char*, ...)` would reach the game's `_sprintf`.
 
 ### Replacing an assembly procedure
 
@@ -139,12 +159,14 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
 
 ### Rules for the C++ code
 
-- It has no C runtime of its own: it is built with `/Zl /GS- /GR- /EHs-c-` and links only against Windows import libraries. Don't call `memset`, `memcpy`, `printf` and the like; use intrinsics (`__stosb`, `__movsb`) or the game's own functions. The compiler can also turn loops or large copies into `memset`/`memcpy` calls, which shows up as an unresolved `_memset`. `_fltused` is defined in `mainloop.cpp`.
+- It has no C runtime of its own: it is built with `/Zl /GS- /GR- /EHs-c-` and links only against Windows import libraries and `king.obj`. The functions of the game's VC6 C runtime that are named in `symbols.csv` link to the game's copy: `memset` and `memcpy` (also where the compiler turns loops or large copies into them), `malloc`, `strlen` and the like. Functions that the Windows SDK headers define inline, such as `sprintf` and the other stdio functions, have to be declared by hand as above. A runtime function without a name in `symbols.csv` is an unresolved external until it gets one. `new` reaches MFC's `operator new`; `delete` needs `/Zc:sizedDealloc-`, otherwise the compiler calls a sized `operator delete(void*, unsigned)` that VC6 doesn't have. `_fltused` is defined in `mainloop.cpp`.
 - Floating point is compiled to SSE2, while the assembly uses the x87 FPU, so results can differ in the last bits.
 - Pointers are 4 bytes. Check layouts with `CHECK_OFFSET`; `src/compile_flags.txt` makes clangd use the 32-bit target too.
 
 ## Working with king.masm
 
 - Labels are named after their address in the original `king.exe`: `FUN_xxxxxx` for functions, `$L_xxxxxx` for everything else. Renamed labels keep the old name in a comment (`_WinMain@16 PROC ;FUN_6317d0`).
+- The library functions that the game calls have their real names, decorated as the linker saw them: `_sprintf`, `??2@YAPAXI@Z` (`operator new`), `?Default@CWnd@@IAEJXZ`. `symbols.csv` lists them with their original addresses and prototypes; after adding rows, `py applySymbols.py` renames the labels and every use of them. Renaming changes no byte of the built `king.exe`.
+- `py findUnits.py` writes `units.csv` again, from `king.masm` alone.
 - The rebuilt `king.exe` doesn't keep the original addresses; they start to drift at `0x4014f0`. Link once with `/MAP:king.map` to see where a label ended up. The map lists procedures and `PUBLIC` variables.
 - `cdb` from the Windows SDK debugging tools (x86) can look into the running game and detach again, leaving it running: `cdb -pv -p <pid> -c "~*kv; qd"` prints the stacks of all threads. Resolve the addresses with the map file.
