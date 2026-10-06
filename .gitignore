@@ -1,6 +1,7 @@
 # build outputs
 *.exe
 *.obj
+king.gen.masm
 king.res
 *.pdb
 *.map
