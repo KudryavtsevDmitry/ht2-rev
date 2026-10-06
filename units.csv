@@ -1,0 +1,66 @@
+start,end,name,dir,basis,start_range,data
+401000,4011e0,,,data,,66c4b8
+4011e0,458bc0,Ai_main.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,4011e0-401310,66c558
+458bc0,46b140,,,data,4581f0-45a0f0,66f4d8
+46b140,46e460,ai_mult.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,462f30-46d570,66f578
+46e460,471780,ai_ordr.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,46e120-471200,66f7c8
+471780,478910,ai_play.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,,66f920
+478910,480550,ai_road.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,4788c0-47fcf0,66fb68
+480550,4838c0,ai_svld.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,480550-480680,66fcb4
+4838c0,483ff0,AI_TASK.CPP,,$Id,4836f0-483990,66ff6c
+483ff0,4883f0,ai_trce.cpp,C:\Nek\Vrappl\Gi\Htai,$Id,483ff0-484550,6700c8
+4883f0,4918c0,,,data,488310-488620,6702a8
+4918c0,4a2ed0,sch_embd.cpp,,$Id,4918c0-491ce0,670618
+4a2ed0,4b08a0,Sch_eval.cpp,,$Id,4a2ed0-4a52e0,670a7c
+4b08a0,4b0ac0,sch_istr.cpp,,$Id,4b07c0-4b08a0,671174
+4b0ac0,4b81c0,sch_item.cpp,,$Id,4b0990-4b0c70,671198
+4b81c0,4dd9f0,aeffects.cpp,C:\Nek\VRAPPLVS\TRUCK,__FILE__,4b8070-4b87a0,6716f4
+4dd9f0,4e24c0,,,data,4dd9f0-4dde70,672d10
+4e24c0,4eb0c7,,,data,4e24c0-4e2556,6735cc
+4eb0c7,4ff150,,,data,4eaf98-4eb4a0,674408
+4ff150,507710,car2e.cpp,,$Id,4ff150-4ff210,674800
+507710,507ab0,caran.cpp,,$Id,506a60-507ad0,674a48
+507ab0,52abf0,carat.cpp,,$Id,507710-507ad0,674a94
+52abf0,52fa20,,,data,52abf0-52ad30,67844c
+52fa20,557420,,,data,52f4b0-52fdb0,678740
+557420,5586f0,carvstr.cpp,,$Id,557420-557530,67a3f0
+5586f0,55fa70,,,data,5586f0-558f20,67a4ac
+55fa70,560ef0,carvvk.cpp,,$Id,55de40-55fa70,67a604
+560ef0,576d30,copter.cpp,,$Id,560ef0-560fd0,67b1c0
+576d30,57c970,mmt.cpp,C:\Nek\VRAPPLVS\TRUCK,__FILE__,576d30-576d70,67c4b8
+57c970,57d580,,,data,57c320-57ca00,67d108
+57d580,5893b0,,,data,57cab0-57d580,67d110
+5893b0,594650,movingb.cpp,,$Id,5893b0-58a020,67da50
+594650,5a3e00,wasm.cpp,C:\Nek\VRAPPLVS\TRUCK,__FILE__,593610-595260,67e178
+5a3e00,5ab230,,,data,5a3710-5a3e00,67e448
+5ab230,5bc2f0,,,data,5ab0a0-5acd40,67ef84
+5bc2f0,5bfe60,,,data,5bc2f0-5be630,67f3d8
+5bfe60,5cf180,,,data,5be700-5bfe60,67f3dc
+5cf180,5d3ab0,,,data,5cf070-5cf180,67fa64
+5d3ab0,5d3fd0,,,data,5d3a60-5d3b40,67fcf0
+5d3fd0,5d8540,,,data,5d3fd0-5d3fe0,67fcfc
+5d8540,5ea5d0,,,data,5d8190-5d8540,682a0c
+5ea5d0,5ef3f0,,,data,5ea5d0-5ea690,6835e0
+5ef3f0,5fdc70,,,data,5ef2b0-5f1720,683b54
+5fdc70,600560,,,data,,683c0c
+600560,603cb0,D1gate.cpp,C:\Nek\Vrappl\Gi\Srmidp,$Id,5ffdf0-600660,683c78
+603cb0,603fd0,rdtsc.cpp,,$Id,603cb0-603ec0,6843b0
+603fd0,6050f0,,,data,603fd0-604730,6843e4
+6050f0,60cfa0,grd.cpp,C:\Nek\VRAPPLVS\terrain,__FILE__,,68440c
+60cfa0,60d320,,,data,60cf80-60d180,685abc
+60d320,60d750,Greed.cpp,C:\Nek\VRAPPLVS\marine,__FILE__,60d250-60d320,685ac4
+60d750,60fa10,MarineTask.cpp,C:\Nek\VRAPPLVS\marine,__FILE__,60d750-60e0f0,685bfc
+60fa10,613a60,mygreed.cpp,C:\Nek\VRAPPLVS\marine,__FILE__,60e480-60fee0,685c30
+613a60,614180,tdata.cpp,C:\Nek\VRAPPLVS\terrain,__FILE__,612b60-613b50,685ce4
+614180,61a740,terrain.cpp,C:\Nek\VRAPPLVS\terrain,__FILE__,614180-617180,685dd0
+61a740,61c4c1,tgreed.cpp,C:\Nek\VRAPPLVS\terrain,__FILE__,619bd0-61a8a0,685e0c
+61c4c1,61cb9a,MFC 4.2 (CDC and CWnd helpers),,library,,
+61cb9a,62a910,C runtime (VC6 LIBCMT),,library,,
+62a910,6300b0,"gzip (inflate, deflate, unlzw, unpack, unlzh)",,library,,
+6300b0,6300e0,import thunks (wsock32),,library,,
+6300e0,6303a0,DirectInput data formats (dinput.lib),,library,,
+6303a0,6303d0,"import thunks (dinput, ddraw, msvfw32, dsound)",,library,,
+6303d0,6317ac,iostreams (VC6 classic iostream library),,library,,
+6317ac,6317d0,"import thunks (kernel32, user32, winspool)",,library,,
+6317d0,63b610,MFC 4.2 (with the C runtime parts it pulls in),,library,,
+63b610,64a78a,exception-handling funclets of all of the above (.text$x),,library,,

@@ -79,9 +79,6 @@ ASM_PROC(FUN_5d3460)    // object container: delete all
 ASM_PROC(FUN_5dba30)    // CGameApp::DestroyWindowNow
 ASM_PROC(FUN_5e1b30)    // CGameApp::SetVideoMode
 ASM_PROC(FUN_5e1c90)    // CGameApp::WindowFromPoint
-ASM_PROC(FUN_63274d)    // CWinApp::OnIdle (MFC)
-ASM_PROC(FUN_639967)    // AfxOleGetUserCtrl (MFC)
-ASM_PROC(FUN_63b4d3)    // AfxPostQuitMessage (MFC)
 ASM_PROC(FUN_5279e0)    // King_PlayMovie
 ASM_PROC(FUN_511820)    // King_LeaveGame
 ASM_PROC(FUN_512720)
@@ -189,8 +186,12 @@ CHECK_OFFSET(CMainView, m_bExit, 3036);
 // ---------------------------------------------------------------------------
 // Application
 
-inline BOOL AfxOleGetUserCtrl() { return CallStd<BOOL>(FUN_639967); }
-inline void AfxPostQuitMessage(int exitCode) { CallStd(FUN_63b4d3, exitCode); }
+// The library functions are labelled in king.masm with their decorated names
+// (symbols.csv), so a declaration with the library's own signature binds to
+// the label by itself.
+#define AFXAPI __stdcall
+BOOL AFXAPI AfxOleGetUserCtrl();                // ?AfxOleGetUserCtrl@@YGHXZ
+void AFXAPI AfxPostQuitMessage(int nExitCode);  // ?AfxPostQuitMessage@@YGXH@Z
 
 struct CWinApp {                // MFC 4.2, statically linked
     void**  vtbl;
@@ -205,12 +206,17 @@ struct CWinApp {                // MFC 4.2, statically linked
     BOOL v_IsIdleMessage(MSG* msg) { return CallVirt<BOOL>(this, 100, msg); }
     int  v_ExitInstance() { return CallVirt<int>(this, 104); }
 
-    BOOL OnIdle(LONG count) { return CallThis<BOOL>(FUN_63274d, this, count); }
+    BOOL OnIdle(LONG count);    // MFC's, see KING_ALIAS below
     int  Run();                 // mainloop.cpp
 };
 CHECK_OFFSET(CWinApp, m_pMainWnd, 28);
 CHECK_OFFSET(CWinApp, m_msgCur, 48);
 static_assert(sizeof(CWinApp) == 192, "CWinApp size");
+
+// MFC declares OnIdle virtual (?OnIdle@CWinApp@@UAEHJ@Z). This struct has
+// no vtable of its own, so it calls OnIdle as a plain member, under a name
+// the linker maps to MFC's.
+KING_ALIAS("?OnIdle@CWinApp@@QAEHJ@Z", "?OnIdle@CWinApp@@UAEHJ@Z")
 
 enum {
     APP_SMOOTH_MOUSE  = 0x04,   // average each mouse position with the previous one
