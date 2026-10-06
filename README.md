@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), the build with the version string `v 8.0 30.01.03` (PE timestamp 2004-01-14, linked with Visual C++ 6).
 
-`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/mainloop.cpp`), the application classes of the engine and the game (`src/gameapp.cpp`, `src/kingapp.cpp`) and the input queue (`src/input.cpp`).
+`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/mainloop.cpp`), the application classes of the engine and the game (`src/gameapp.cpp`, `src/kingapp.cpp`), the input queue (`src/input.cpp`), the engine and gearbox math of the vehicles (`src/caran.cpp`) and the AI's interface to the game (`src/aitask.cpp`).
 
 ## Contents
 
@@ -18,6 +18,9 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 | `src/gameapp.cpp` | `CGameApp`, the engine's application class: the settings from `truck.ini`, the window list, video mode changes, the statistics overlay |
 | `src/kingapp.cpp` | `CKingApp`, the game's application class: the joystick, the F6 screenshot, the cheat code typed during the pause |
 | `src/input.cpp` | the input queue and the message handlers of the game window that fill it |
+| `src/x87.h` | floating point as the game's compiler generated it: rules for rewriting x87 code, and the math it inlined (`fsin`, `exp`, `__CIpow`, ...) |
+| `src/car.h`, `src/caran.cpp` | vehicles: the table of vehicle types; torque curve, wheel force, driving resistance, top speed per gear, best and cruising gear (`caran.cpp`) |
+| `src/ai.h`, `src/aitask.cpp` | the AI: its crash trace guard; how it reaches the game: cycle task, switches, screen messages, banners (`AI_TASK.CPP`) |
 | `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
 | `tools/objdiff.py` | compares two `king.obj`: whether a change to `king.masm` changed code or data |
 | `Makefile` | NMAKE build |
@@ -46,7 +49,7 @@ nmake clean                            # delete king.obj, the C++ objects, king.
 
 `GAME_EXE` is needed only while `king.res` doesn't exist; `nmake clean` keeps it. `GAME_EXE` can also be set as an environment variable.
 
-Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
+Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`, `ASM_CARAN`, `ASM_AITASK`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
 
 The `ASM=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
 
@@ -66,9 +69,9 @@ Start-Process C:\test\king.exe -WorkingDirectory 'C:\Program Files (x86)\King'
 
 **Known issue.** When a script started the game and then just waited, loading the world ("Загрузка игрового мира…") stalled every time: the window stayed "Not Responding" and closing it ended in an access violation. When the script polled the window once a second (`Process.Responding`), the world loaded in about 7 seconds every time. Both builds, C++ and assembly main loop, behaved the same.
 
-**Known bug of the game.** Closing the game while the demo drives sometimes ends in an access violation. The application's destructor deletes the windows that are still open, and a window of the game empties an object container whose objects were freed before ([FUN_5d3460] unlinks freed memory). Under a debugger, where freed memory is overwritten, it faults every time, in the original assembly as well; without one it depends on what is left in the freed memory.
+**Known bug of the game.** Closing the game in the game world sometimes ends in an access violation. The application's destructor deletes the windows that are still open, and a window of the game empties an object container whose objects were freed before ([FUN_5d3460] unlinks freed memory). Under a debugger, where freed memory is overwritten, it faults every time, in the original assembly as well; without one it depends on what is left in the freed memory.
 
-An unattended run starts the demo by itself after a while in the main menu. When it was closed during the demo, `warn.log` got a line with the truck's position (`Pos=…`); that position varies from run to run.
+To get into the game world, click **ИГРА** in the main menu, then **НОВАЯ ИГРА** (client coordinates of the 800x600 window: about 657,141 and 398,140). The world loads in about 7 seconds, with the window "Not Responding" meanwhile; without input the truck then stands at the base. The menu takes clicks only from the real mouse, not from posted window messages; a script can click with `mouse_event` if the cursor stays on the game window between the two clicks. When the game is closed in the world, `warn.log` gets a line with the truck's position (`Pos=…`). With the truck standing it is the same in every run except the sixth decimal of the height, which varies in both builds.
 
 ## How the program is organised
 
@@ -192,7 +195,7 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
 ### Rules for the C++ code
 
 - It has no C runtime of its own: it is built with `/Zl /GS- /GR- /EHs-c-` and links only against Windows import libraries and `king.obj`. The functions of the game's VC6 C runtime that are named in `symbols.csv` link to the game's copy: `memset` and `memcpy` (also where the compiler turns loops or large copies into them), `malloc`, `strlen` and the like. Functions that the Windows SDK headers define inline, such as `sprintf` and the other stdio functions, have to be declared by hand as above. A runtime function without a name in `symbols.csv` is an unresolved external until it gets one. `new` reaches MFC's `operator new`; `delete` needs `/Zc:sizedDealloc-`, otherwise the compiler calls a sized `operator delete(void*, unsigned)` that VC6 doesn't have. `_fltused` is defined in `mainloop.cpp`.
-- Floating point is compiled to SSE2, while the assembly uses the x87 FPU, so results can differ in the last bits.
+- Floating point is compiled for the x87 FPU (`/arch:IA32`), like the assembly, so it runs under the same precision control. `src/x87.h` has the rules for rewriting x87 code (FPU stack values are doubles, `fstp DWORD` stores are floats, comparisons that jump on C0 or C3 include NaN) and helpers that do what VC6 inlined: `fsin`, `fcos`, `fsqrt`, `fpatan`, `exp`, and calls of the register-based `__CIpow`, `__CIacos`, `__CIasin`, `__CIfmod`. The compiler's float-to-int helpers `__ftol2` and `__ftol2_sse` are mapped to VC6's `__ftol` (`king.h`).
 - Pointers are 4 bytes. Check layouts with `CHECK_OFFSET`; `src/compile_flags.txt` makes clangd use the 32-bit target too.
 
 ## Working with king.masm

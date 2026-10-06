@@ -29,11 +29,15 @@ OUT = king.exe
 #   ASM_GAMEAPP   src\gameapp.cpp   CGameApp, the engine's application class
 #   ASM_KINGAPP   src\kingapp.cpp   CKingApp, the game's application class
 #   ASM_INPUT     src\input.cpp     the input event queue
+#   ASM_CARAN     src\caran.cpp     engine, gearbox, driving resistance
+#   ASM_AITASK    src\aitask.cpp    the AI's game interface (AI_TASK.CPP)
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
 ASM_KINGAPP = 1
 ASM_INPUT = 1
+ASM_CARAN = 1
+ASM_AITASK = 1
 !ENDIF
 
 MLFLAGS =
@@ -49,8 +53,14 @@ MLFLAGS = $(MLFLAGS) /DASM_KINGAPP
 !IFDEF ASM_INPUT
 MLFLAGS = $(MLFLAGS) /DASM_INPUT
 !ENDIF
+!IFDEF ASM_CARAN
+MLFLAGS = $(MLFLAGS) /DASM_CARAN
+!ENDIF
 
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj
+!IFDEF ASM_AITASK
+MLFLAGS = $(MLFLAGS) /DASM_AITASK
+!ENDIF
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
@@ -58,8 +68,9 @@ CPPOBJS = $(ALLCPPOBJS)
 !ENDIF
 
 # The C++ code has no CRT of its own (king.masm contains the original one):
-# /Zl no default libraries, /GS- no security cookies, /GR- /EHs-c- no RTTI, no EH
-CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
+# /Zl no default libraries, /GS- no security cookies, /GR- /EHs-c- no RTTI, no EH.
+# /arch:IA32: floating point on the x87 FPU like the assembly (see src\x87.h)
+CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
 
 LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib
 LIBPATH_FLAGS = /LIBPATH:"C:\Users\Dmitry\Documents\dx7sdk\dx7sdk-700.1\lib" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86"
@@ -72,7 +83,7 @@ $(OBJ): $(SRC)
 {src}.cpp.obj:
 	$(CC) $(CFLAGS) /Fo$@ $<
 
-$(ALLCPPOBJS): src\king.h
+$(ALLCPPOBJS): src\king.h src\x87.h src\car.h src\ai.h
 
 # Resources (icon, cursor, title bitmaps, strings) taken from the game's king.exe
 $(RES): extractResources.py
