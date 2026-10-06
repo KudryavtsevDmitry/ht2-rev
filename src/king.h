@@ -70,6 +70,12 @@ __forceinline R CallVirt(const void* self, unsigned vtblOffset, A... args)
 // The game's C runtime (VC6 LIBCMT, named in symbols.csv). Declared by hand:
 // the SDK headers define some of these inline or aren't included.
 
+// The C++ code is compiled for the x87 FPU (/arch:IA32); it converts floating
+// point to integers through __ftol2 / __ftol2_sse, VC6 code through __ftol,
+// which has the same contract (ST(0) truncated into EDX:EAX, popped).
+KING_ALIAS("__ftol2", "__ftol")
+KING_ALIAS("__ftol2_sse", "__ftol")
+
 extern "C" {
 typedef struct _iobuf FILE;
 int __cdecl sprintf(char* buffer, const char* format, ...);
@@ -103,7 +109,8 @@ ASM_PROC(FUN_5b6330)    // Rect::Contains
 ASM_PROC(FUN_5d21b0)    // list node: unlink
 ASM_PROC(FUN_5d8630)    // CWindow::Clear
 ASM_PROC(FUN_5d88c0)    // CWindow::Present
-ASM_PROC(FUN_5d3460)    // object container: delete all
+ASM_PROC(FUN_5d3460)    // ObjectContainer::DeleteAll
+ASM_PROC(FUN_5d3570)    // ObjectContainer::Add
 ASM_PROC(FUN_5d81c0)    // Video_SetMode
 ASM_PROC(FUN_5e8c60)    // Font_Load
 ASM_PROC(FUN_5bc2f0)    // Font::~Font
@@ -266,19 +273,28 @@ CHECK_OFFSET(CWindow, m_totalTime, 24);
 CHECK_OFFSET(CWindow, m_prepareTime, 40);
 CHECK_OFFSET(CWindow, m_pCursor, 52);
 
+// An object container of the engine (unit at 0x5cf180).
+struct ObjectContainer {
+    int  m_0;                   // CKingApp::PostExecute compares it with 2
+    BYTE m_4[28];
+
+    void Add(void* obj) { CallThis(FUN_5d3570, this, obj); }
+    void DeleteAll() { CallThis(FUN_5d3460, this); }
+};
+
 // The game screen: CGameApp::m_pMainView, [$L_696ca0] in King.
 struct CMainView : CWindow {
     BYTE   m_56[2968 - 56];
-    double m_2968;
+    double m_2968;              // clock of the game (the AI's time)
     BYTE   m_2976[16];
-    BYTE   m_objects[32];       // +2992 object container
+    ObjectContainer m_objects;  // +2992
     int    m_3024;
     int    m_3028;
     int    m_3032;
     BOOL   m_bExit;             // +3036 request to leave the game screen
 
     void v_140() { CallVirt(this, 140); }                // King [$L_4e06f0]
-    void DeleteObjects() { CallThis(FUN_5d3460, m_objects); }
+    void DeleteObjects() { m_objects.DeleteAll(); }
 };
 CHECK_OFFSET(CMainView, m_2968, 2968);
 CHECK_OFFSET(CMainView, m_objects, 2992);
@@ -498,11 +514,6 @@ ASM_VAR(int, g_recordFrame, $L_721758)
 // ---------------------------------------------------------------------------
 // King
 
-struct KingObj1356 {
-    BYTE m_0[2992];
-    int  m_2992;
-};
-
 struct CWnd6cec6c : CWindow {
     BYTE m_56[1300 - 56];
     BOOL m_1300;
@@ -511,7 +522,7 @@ struct CWnd6cec6c : CWindow {
     int  m_1312;
     BOOL m_1316;
     BYTE m_1320[1356 - 1320];
-    KingObj1356* m_1356;
+    CMainView* m_1356;          // the game screen
 };
 CHECK_OFFSET(CWnd6cec6c, m_1316, 1316);
 CHECK_OFFSET(CWnd6cec6c, m_1356, 1356);
