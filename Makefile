@@ -1,8 +1,10 @@
 # NMAKE Makefile: build king.exe from king.masm and the C++ code in src\
 #   nmake                 - build
-#   nmake ASM_MAINLOOP=1  - build with the original assembly main loop instead
-#                           of src\mainloop.cpp (nmake clean when switching)
+#   nmake ASM=1           - build the original program, without any C++
+#   nmake ASM_GAMEAPP=1   - build with the original assembly for one group of
+#                           rewritten functions (switches below)
 #   nmake clean           - remove build outputs except king.res
+# Run nmake clean when changing the switches; nmake doesn't notice them.
 # The first build takes the resources from the game's original king.exe:
 #   nmake "GAME_EXE=C:\path\to\king.exe"   (or set GAME_EXE in the environment)
 
@@ -20,11 +22,39 @@ OBJ = king.obj
 RES = king.res
 OUT = king.exe
 
+# Groups of functions rewritten in C++. Each switch makes king.masm assemble
+# the group's original procedures, so the assembly calls those again; the C++
+# code still calls the C++ functions.
+#   ASM_MAINLOOP  src\mainloop.cpp  the main loop
+#   ASM_GAMEAPP   src\gameapp.cpp   CGameApp, the engine's application class
+#   ASM_KINGAPP   src\kingapp.cpp   CKingApp, the game's application class
+#   ASM_INPUT     src\input.cpp     the input event queue
+!IFDEF ASM
+ASM_MAINLOOP = 1
+ASM_GAMEAPP = 1
+ASM_KINGAPP = 1
+ASM_INPUT = 1
+!ENDIF
+
+MLFLAGS =
 !IFDEF ASM_MAINLOOP
-MLFLAGS = /DASM_MAINLOOP
+MLFLAGS = $(MLFLAGS) /DASM_MAINLOOP
+!ENDIF
+!IFDEF ASM_GAMEAPP
+MLFLAGS = $(MLFLAGS) /DASM_GAMEAPP
+!ENDIF
+!IFDEF ASM_KINGAPP
+MLFLAGS = $(MLFLAGS) /DASM_KINGAPP
+!ENDIF
+!IFDEF ASM_INPUT
+MLFLAGS = $(MLFLAGS) /DASM_INPUT
+!ENDIF
+
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj
+!IFDEF ASM
 CPPOBJS =
 !ELSE
-CPPOBJS = mainloop.obj
+CPPOBJS = $(ALLCPPOBJS)
 !ENDIF
 
 # The C++ code has no CRT of its own (king.masm contains the original one):
@@ -39,8 +69,10 @@ build: $(OUT)
 $(OBJ): $(SRC)
 	$(ML) /nologo $(MLFLAGS) /c /Fo$(OBJ) $(SRC)
 
-mainloop.obj: src\mainloop.cpp src\king.h
-	$(CC) $(CFLAGS) /Fomainloop.obj src\mainloop.cpp
+{src}.cpp.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+$(ALLCPPOBJS): src\king.h
 
 # Resources (icon, cursor, title bitmaps, strings) taken from the game's king.exe
 $(RES): extractResources.py
@@ -56,4 +88,4 @@ $(OUT): $(OBJ) $(CPPOBJS) $(RES)
 
 # king.res stays: rebuilding it needs the game's king.exe
 clean:
-	-del /q $(OBJ) mainloop.obj $(OUT) 2>nul
+	-del /q $(OBJ) $(ALLCPPOBJS) $(OUT) 2>nul
