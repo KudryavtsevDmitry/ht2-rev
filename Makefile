@@ -32,6 +32,9 @@ OUT = king.exe
 #   ASM_CARAN     src\caran.cpp     engine, gearbox, driving resistance
 #   ASM_AITASK    src\aitask.cpp    the AI's game interface (AI_TASK.CPP)
 #   ASM_VECMATH   src\vecmath.cpp   vector, matrix and plane math
+#   ASM_AITRCE    src\aitrce.cpp    AI geometry, CRC and filters (src\aitrce.cpp)
+#   ASM_AIROAD    src\airoad.cpp    AI road ids (src\airoad.cpp)
+#   ASM_AIPLAY    src\aiplay.cpp    AI players (src\aiplay.cpp)
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
@@ -40,6 +43,9 @@ ASM_INPUT = 1
 ASM_CARAN = 1
 ASM_AITASK = 1
 ASM_VECMATH = 1
+ASM_AITRCE = 1
+ASM_AIROAD = 1
+ASM_AIPLAY = 1
 !ENDIF
 
 MLFLAGS =
@@ -65,7 +71,16 @@ MLFLAGS = $(MLFLAGS) /DASM_AITASK
 !IFDEF ASM_VECMATH
 MLFLAGS = $(MLFLAGS) /DASM_VECMATH
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj
+!IFDEF ASM_AITRCE
+MLFLAGS = $(MLFLAGS) /DASM_AITRCE
+!ENDIF
+!IFDEF ASM_AIROAD
+MLFLAGS = $(MLFLAGS) /DASM_AIROAD
+!ENDIF
+!IFDEF ASM_AIPLAY
+MLFLAGS = $(MLFLAGS) /DASM_AIPLAY
+!ENDIF
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
@@ -88,7 +103,7 @@ $(OBJ): $(SRC)
 {src}.cpp.obj:
 	$(CC) $(CFLAGS) /Fo$@ $<
 
-$(ALLCPPOBJS): src\king.h src\x87.h src\car.h src\ai.h src\vecmath.h
+$(ALLCPPOBJS): src\king.h src\x87.h src\car.h src\ai.h src\vecmath.h src\road.h
 
 # Resources (icon, cursor, title bitmaps, strings) taken from the game's king.exe
 $(RES): extractResources.py

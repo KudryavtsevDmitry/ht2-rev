@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), the build with the version string `v 8.0 30.01.03` (PE timestamp 2004-01-14, linked with Visual C++ 6).
 
-`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/mainloop.cpp`), the application classes of the engine and the game (`src/gameapp.cpp`, `src/kingapp.cpp`), the input queue (`src/input.cpp`), the engine and gearbox math of the vehicles (`src/caran.cpp`) and the AI's interface to the game (`src/aitask.cpp`).
+`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/mainloop.cpp`), the application classes of the engine and the game (`src/gameapp.cpp`, `src/kingapp.cpp`), the input queue (`src/input.cpp`), the engine and gearbox math of the vehicles (`src/caran.cpp`), the vector and matrix math (`src/vecmath.cpp`), and parts of the AI: its interface to the game (`src/aitask.cpp`), routes on the road graph (`src/aitrce.cpp`), road ids and positions (`src/airoad.cpp`) and its players (`src/aiplay.cpp`).
 
 ## Contents
 
@@ -20,7 +20,12 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 | `src/input.cpp` | the input queue and the message handlers of the game window that fill it |
 | `src/x87.h` | floating point as the game's compiler generated it: rules for rewriting x87 code, and the math it inlined (`fsin`, `exp`, `__CIpow`, ...) |
 | `src/car.h`, `src/caran.cpp` | vehicles: the table of vehicle types; torque curve, wheel force, driving resistance, top speed per gear, best and cruising gear (`caran.cpp`) |
+| `src/vecmath.h`, `src/vecmath.cpp` | vectors, 3x4 matrices and planes of the engine, and the vector operators the compiler put out of line in other units |
 | `src/ai.h`, `src/aitask.cpp` | the AI: its crash trace guard; how it reaches the game: cycle task, switches, screen messages, banners (`AI_TASK.CPP`) |
+| `src/road.h` | the AI's road graph: nodes, edges, positions on edges, routes as hops; the parts of the game's C runtime and STL the AI code uses |
+| `src/aitrce.cpp` | the AI (`ai_trce.cpp`): route tables and route costs, checks and dumps of hop sequences, double precision geometry, CRC32, control filters |
+| `src/airoad.cpp` | the AI (`ai_road.cpp`): NodeId, RoadId and PositionId with their checks, roads between nodes, a random position, STL instances |
+| `src/aiplay.cpp` | the AI (`ai_play.cpp`): its players: cargo value, flags, licences, deadlines, waypoints, positions |
 | `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
 | `tools/objdiff.py` | compares two `king.obj`: whether a change to `king.masm` changed code or data |
 | `Makefile` | NMAKE build |
@@ -49,7 +54,7 @@ nmake clean                            # delete king.obj, the C++ objects, king.
 
 `GAME_EXE` is needed only while `king.res` doesn't exist; `nmake clean` keeps it. `GAME_EXE` can also be set as an environment variable.
 
-Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`, `ASM_CARAN`, `ASM_AITASK`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
+Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`, `ASM_CARAN`, `ASM_AITASK`, `ASM_VECMATH`, `ASM_AITRCE`, `ASM_AIROAD`, `ASM_AIPLAY`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
 
 The `ASM=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
 
