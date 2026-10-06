@@ -163,7 +163,7 @@ void CGameApp::RunFrame()
 
     // a resize of the Win32 window requests a new mode
     if (m_width != m_reqWidth || m_height != m_reqHeight)
-        SetVideoMode(m_reqWidth, m_reqHeight, m_264, m_modeFlags);
+        SetVideoMode(m_reqWidth, m_reqHeight, m_cres, m_modeFlags);
 }
 
 // Hands the input events queued by the window procedure to the windows:
@@ -173,8 +173,8 @@ void CGameApp::ProcessInput()
     InputEvent ev;
     BOOL bEmpty = TRUE;
     for (;;) {
-        // with m_bHoldInput the last event is handed out again
-        if (!m_bHoldInput)
+        // with [ENV] mouse = joystick the queue isn't read at all
+        if (!m_bJoyMouse)
             bEmpty = Input_GetEvent(&ev);
         if (bEmpty)
             break;

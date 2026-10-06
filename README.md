@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), the build with the version string `v 8.0 30.01.03` (PE timestamp 2004-01-14, linked with Visual C++ 6).
 
-`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. The first piece done this way is the main loop (`src/mainloop.cpp`).
+`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/mainloop.cpp`), the application classes of the engine and the game (`src/gameapp.cpp`, `src/kingapp.cpp`) and the input queue (`src/input.cpp`).
 
 ## Contents
 
@@ -14,7 +14,10 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 | `applySymbols.py` | renames the labels of `king.masm` after `symbols.csv` |
 | `units.csv` | the source files (object files) the program was linked from: code ranges, names, `.data` starts |
 | `src/king.h` | glue between the C++ code and `king.masm`, partial layouts of the engine's classes |
-| `src/mainloop.cpp` | the main loop in C++ |
+| `src/mainloop.cpp` | the main loop |
+| `src/gameapp.cpp` | `CGameApp`, the engine's application class: the settings from `truck.ini`, the window list, video mode changes, the statistics overlay |
+| `src/kingapp.cpp` | `CKingApp`, the game's application class: the joystick, the F6 screenshot, the cheat code typed during the pause |
+| `src/input.cpp` | the input queue and the message handlers of the game window that fill it |
 | `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
 | `tools/objdiff.py` | compares two `king.obj`: whether a change to `king.masm` changed code or data |
 | `Makefile` | NMAKE build |
@@ -35,16 +38,17 @@ The `Makefile` passes all tool, include and library paths itself, so only `nmake
 
 ```
 nmake "GAME_EXE=C:\path\to\king.exe"   # first build: resources from the game's king.exe
-nmake                                  # king.exe with the C++ main loop
-nmake ASM_MAINLOOP=1                   # king.exe with the original assembly main loop
-nmake clean                            # delete king.obj, mainloop.obj, king.exe
+nmake                                  # king.exe with the C++ code
+nmake ASM=1                            # the original program, without any C++
+nmake ASM_GAMEAPP=1                    # the original assembly for one group of functions
+nmake clean                            # delete king.obj, the C++ objects, king.exe
 ```
 
 `GAME_EXE` is needed only while `king.res` doesn't exist; `nmake clean` keeps it. `GAME_EXE` can also be set as an environment variable.
 
-Run `nmake clean` before switching between the two variants; nmake doesn't notice the changed flag. Assembling `king.masm` takes about 25 seconds.
+Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
 
-The `ASM_MAINLOOP=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
+The `ASM=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
 
 The executable is linked like the original: fixed base `0x400000` without relocations (`/FIXED`), the original's DLL characteristics (`/NXCOMPAT:NO /TSAWARE:NO`), and the CRT startup in `king.masm` as entry point (`__EntryPoint`).
 
@@ -62,6 +66,10 @@ Start-Process C:\test\king.exe -WorkingDirectory 'C:\Program Files (x86)\King'
 
 **Known issue.** When a script started the game and then just waited, loading the world ("Загрузка игрового мира…") stalled every time: the window stayed "Not Responding" and closing it ended in an access violation. When the script polled the window once a second (`Process.Responding`), the world loaded in about 7 seconds every time. Both builds, C++ and assembly main loop, behaved the same.
 
+**Known bug of the game.** Closing the game while the demo drives sometimes ends in an access violation. The application's destructor deletes the windows that are still open, and a window of the game empties an object container whose objects were freed before ([FUN_5d3460] unlinks freed memory). Under a debugger, where freed memory is overwritten, it faults every time, in the original assembly as well; without one it depends on what is left in the freed memory.
+
+An unattended run starts the demo by itself after a while in the main menu. When it was closed during the demo, `warn.log` got a line with the truck's position (`Pos=…`); that position varies from run to run.
+
 ## How the program is organised
 
 `king.exe` is an MFC application. MFC and the C runtime are linked statically, so they are part of `king.masm` as well. The game's own code fills `0x401000`–`0x61c4c0` of the original; MFC, the C runtime, gzip and the old iostream library follow, and the exception-handling funclets of all of it close the code section (`0x63b610`–`0x64a78a`).
@@ -69,7 +77,7 @@ Start-Process C:\test\king.exe -WorkingDirectory 'C:\Program Files (x86)\King'
 - **Startup:** `__EntryPoint` (CRT) → `_WinMain@16` → MFC's `AfxWinMain`, which calls `InitInstance` and then `Run` of the application object.
 - **Application:** the object is `$L_696750`, a pointer to it is in `$L_721750`. Its class chain is `CWinApp` → engine application (vtable `$L_652664`) → an intermediate class (`$L_65195c`) → the game's `CKingApp` (`$L_64d830`).
 - **Windows:** the engine's "windows" are rectangles of the game screen (3D view, HUD panels, menus), not Win32 windows. The application keeps them in lists; each one draws into a surface.
-- **Input:** the message handlers of the Win32 window put mouse and keyboard messages into a 100-entry queue (`$L_702660`, `FUN_5acb60`), and the frame takes them out (`FUN_5aca90`).
+- **Input:** the message handlers of the game's Win32 window (message map `$L_651ee8`) put mouse and keyboard messages into a 100-entry queue (`$L_702660`), and the frame takes them out (`src/input.cpp`).
 - **Time:** `FUN_6037e0` returns milliseconds (QueryPerformanceCounter, scaled against `timeGetTime` at startup).
 - **Crash trace:** `taskdump=1` in the `[ENV]` section of `TRUCK.INI` makes every frame write its stages (`BEGIN FRAME`, `BEGIN EXECUTE`, `END EXECUTE`, `END FRAME`) into a memory-mapped `state.dump`, so after a hang it shows how far the last frame got.
 
@@ -107,6 +115,29 @@ A frame, `CGameApp::RunFrame`:
 4. The frame is presented, windows closed during the frame are deleted (10-slot queue), and a requested video mode change is applied.
 
 `CKingApp::Frame` then plays `trirr.bne` when the game asked for it, and reacts to a few flags of the main game view (such as leaving the game screen).
+
+### Application
+
+`CGameApp`'s constructor (`src/gameapp.cpp`) reads the settings of `truck.ini`, the copy in VirtualStore when there is one:
+
+| Section | Key | Default | Effect |
+|---|---|---|---|
+| `[ENV]` | `xres`, `yres` | 640, 480 | video mode; the crosshair is `xres / 100` pixels (3 at 320, 7 at 640) |
+| | `cres`, `zres` | 2, 16 | colour and z-buffer resolution |
+| | `numdev` | 1 | number of the display device |
+| | `fullscreen`, `d3d` | on, on | video mode flags |
+| | `bordin` | off | an application flag (2) |
+| | `alttab` | off | |
+| | `protectinput` | off | key presses go to `vtbl+56` of the input window instead of `vtbl+52` |
+| | `mouse` | on | `joystick`: the input queue isn't read |
+| | `sound`, `midi` | off, off | |
+| | `langv` | (none) | `eng`, `ger`, `fra`, `spa`; anything else (`rus`) is a language of its own |
+| `[RENDER]` | `statistic` | off | `on`: frame time, fps and video mode over the screen; `full`: also the windows' own lines |
+| | `targettexture` | none | |
+| | `clear` | 0 | colour the screen is cleared with every frame; < 0: not cleared |
+| | `zbuf` | on | video mode flag |
+
+The windows form one list, executed from the first window to the last and hit-tested from the last back. The game's `CKingApp` (`src/kingapp.cpp`) adds to the engine's frame: before the windows execute it advances a clock (`$L_6974bc`), after them it reads the joystick into the controls table (`$L_6d1948`: 32 buttons and the POV hat as four buttons after the keyboard keys, eight axes scaled to −1..1). F6 saves a screenshot (`screenshots\ddphotoNNNN.bmp`), and keys typed during the pause go to the cheat code check.
 
 ## C++ and assembly in one executable
 
@@ -154,8 +185,9 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
    $L_5dd440 TEXTEQU <@CGameApp_OnIdle@12>
    ENDIF
    ```
-   `ASM_MAINLOOP` is the main loop's switch; other groups of functions can get their own in the `Makefile`. First make sure that no label *inside* the procedure is used from outside it: jump tables, shared code, or a procedure that the disassembler split into several `PROC` blocks (`$L_569650` continues in `$L_569692`).
-4. Add new `.cpp` files to the `Makefile` the way `mainloop.obj` is added.
+   `ASM_MAINLOOP` is the main loop's switch; each source file has one, set in the `Makefile`. First make sure that no label *inside* the procedure is used from outside it: jump tables, shared code, or a procedure that the disassembler split into several `PROC` blocks (`$L_569650` continues in `$L_569692`; `FUN_5e29b0`, `CGameApp::InitInstance`, ends in a call and runs on into `$L_5e2cb0`). Data of the procedure that follows its `ENDP`, such as the jump tables after `CKingApp::PostExecute` (`$L_4e1098`), goes into the `IFDEF` part as well. Code that uses the label before the `TEXTEQU` line is fine: MASM resolves forward references to text macros.
+4. In C++, declare the function in `king.h` and call it directly, not through its label, which doesn't exist when the function is C++. Remove the label's `ASM_PROC` and inline wrapper.
+5. A new `.cpp` file goes into `ALLCPPOBJS` in the `Makefile`, with a switch of its own like `ASM_GAMEAPP`.
 
 ### Rules for the C++ code
 
