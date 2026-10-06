@@ -31,6 +31,7 @@ OUT = king.exe
 #   ASM_INPUT     src\input.cpp     the input event queue
 #   ASM_CARAN     src\caran.cpp     engine, gearbox, driving resistance
 #   ASM_AITASK    src\aitask.cpp    the AI's game interface (AI_TASK.CPP)
+#   ASM_VECMATH   src\vecmath.cpp   vector, matrix and plane math
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
@@ -38,6 +39,7 @@ ASM_KINGAPP = 1
 ASM_INPUT = 1
 ASM_CARAN = 1
 ASM_AITASK = 1
+ASM_VECMATH = 1
 !ENDIF
 
 MLFLAGS =
@@ -60,7 +62,10 @@ MLFLAGS = $(MLFLAGS) /DASM_CARAN
 !IFDEF ASM_AITASK
 MLFLAGS = $(MLFLAGS) /DASM_AITASK
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj
+!IFDEF ASM_VECMATH
+MLFLAGS = $(MLFLAGS) /DASM_VECMATH
+!ENDIF
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
@@ -83,7 +88,7 @@ $(OBJ): $(SRC)
 {src}.cpp.obj:
 	$(CC) $(CFLAGS) /Fo$@ $<
 
-$(ALLCPPOBJS): src\king.h src\x87.h src\car.h src\ai.h
+$(ALLCPPOBJS): src\king.h src\x87.h src\car.h src\ai.h src\vecmath.h
 
 # Resources (icon, cursor, title bitmaps, strings) taken from the game's king.exe
 $(RES): extractResources.py

@@ -11,16 +11,21 @@
 // are unordered (NaN): write it as !(a >= b) or !(a > b).
 #pragma once
 
+// The helpers leave their result in ST(0), the return register for double,
+// so they must stay real calls: inlined, the compiler wouldn't know that
+// ST(0) holds the result and the FPU stack would go out of balance.
+#define X87 __declspec(noinline) inline
+
 #pragma warning(push)
 #pragma warning(disable: 4035)  // no return value: the result is in ST(0)
 
-inline double x87_sqrt(double x) { __asm { fld x } __asm { fsqrt } }
-inline double x87_sin(double x) { __asm { fld x } __asm { fsin } }
-inline double x87_cos(double x) { __asm { fld x } __asm { fcos } }
-inline double x87_atan2(double y, double x) { __asm { fld y } __asm { fld x } __asm { fpatan } }
+X87 double x87_sqrt(double x) { __asm { fld x } __asm { fsqrt } }
+X87 double x87_sin(double x) { __asm { fld x } __asm { fsin } }
+X87 double x87_cos(double x) { __asm { fld x } __asm { fcos } }
+X87 double x87_atan2(double y, double x) { __asm { fld y } __asm { fld x } __asm { fpatan } }
 
 // e^x as VC6 inlines exp()
-inline double x87_exp(double x)
+X87 double x87_exp(double x)
 {
     __asm {
         fld x
@@ -44,12 +49,12 @@ extern "C" void _CIacos();
 extern "C" void _CIasin();
 extern "C" void _CIfmod();
 
-inline double x87_pow(double x, double y) { __asm { fld x } __asm { fld y } __asm { call _CIpow } }
-inline double x87_acos(double x) { __asm { fld x } __asm { call _CIacos } }
-inline double x87_asin(double x) { __asm { fld x } __asm { call _CIasin } }
-inline double x87_fmod(double x, double y) { __asm { fld x } __asm { fld y } __asm { call _CIfmod } }
+X87 double x87_pow(double x, double y) { __asm { fld x } __asm { fld y } __asm { call _CIpow } }
+X87 double x87_acos(double x) { __asm { fld x } __asm { call _CIacos } }
+X87 double x87_asin(double x) { __asm { fld x } __asm { call _CIasin } }
+X87 double x87_fmod(double x, double y) { __asm { fld x } __asm { fld y } __asm { call _CIfmod } }
 
-inline double x87_fabs(double x) { __asm { fld x } __asm { fabs } }
+X87 double x87_fabs(double x) { __asm { fld x } __asm { fabs } }
 
 #pragma warning(pop)
 
