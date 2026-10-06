@@ -12,9 +12,8 @@
 //            `- RunFrame vtbl+164 [$L_5e2040]  CGameApp::RunFrame: executes the
 //                                          windows, input, cursor, present
 //
-// The functions keep the behaviour of the assembly they replace (group
-// mainloop of src\replace.txt). Building with  nmake ASM=mainloop  links the
-// original assembly instead.
+// The functions keep the behaviour of the assembly they replace. Building
+// with  nmake ASM_MAINLOOP=1  links the original assembly instead.
 
 #include "king.h"
 #include <intrin.h>

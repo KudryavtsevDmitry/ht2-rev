@@ -15,9 +15,8 @@
 //  * asm -> C++. A rewritten thiscall method is exported as an extern "C"
 //    __fastcall function with an unused second parameter: fastcall passes it
 //    in EDX, so for the callee fastcall(this, edx, args) is exactly
-//    thiscall(this, args). The export is listed in src\replace.txt; the build
-//    (tools\kingasm.py gen) takes the original function out of king.masm and
-//    points its label at the export, e.g.
+//    thiscall(this, args). king.masm assembles the original PROC only with
+//    ASM_MAINLOOP defined; otherwise its label is pointed at the export, e.g.
 //    $L_5dd440 TEXTEQU <@CGameApp_OnIdle@12>
 //
 // Comments: +N is a byte offset into an object, vtbl+N a byte offset into
