@@ -22,7 +22,7 @@ ASM_PROC(FUN_4b20d0)
 ASM_PROC(FUN_4b58c0)
 ASM_PROC(FUN_4b5490)
 ASM_PROC(FUN_4b5b70)
-ASM_PROC(FUN_401aa0)    // lock: acquire
+extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);   // aimain.cpp
 
 ASM_VAR(AsmLabel, g_vtbl64c044, $L_64c044)
 ASM_VAR(AsmLabel, g_vtbl64bed0, $L_64bed0)
@@ -374,7 +374,7 @@ static void FreeBuffer(BYTE* self, void* vtbl)
     if (size) {
         if (size <= 128) {
             void** list = &g_smallFreeLists[(size + 7) >> 3];
-            CallThis(FUN_401aa0, &g_smallAllocLock);
+            Stl_Lock((volatile LONG*)&g_smallAllocLock, 0);
             *p = *list;
             *list = p;
             g_smallAllocLock = 0;

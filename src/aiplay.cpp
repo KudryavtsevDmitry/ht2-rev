@@ -383,7 +383,7 @@ extern "C" int __fastcall RoadId_Valid(const int* id, void*);          // aimain
 extern "C" int __fastcall NodeId_Valid(const int* id, void*);
 extern "C" int __fastcall Position_Valid(const PositionId* p, void*);
 extern "C" DVec3* __cdecl Road_Point(DVec3* out, PositionId pos);
-KING_ALIAS("_Road_Point", "FUN_435bf0")
+KING_ALIAS("_Road_Point", "_Road_PointOf")
 extern "C" int __cdecl Player_NotValid(BYTE* player);         // aimain.cpp
 extern "C" int __cdecl Vehicle_Exists(int vrId);
 KING_ALIAS("_Vehicle_Exists", "FUN_4d8a40")

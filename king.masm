@@ -761,6 +761,11 @@ PUBLIC $L_6cec74, $L_6cec88, $L_6cec90, $L_6ceca0, $L_6cecac, $L_6cecb0
 PUBLIC $L_6cecb4, $L_6cecbc, $L_6d19ea, $L_6d19f6, $L_6d19fa, $L_6d19fc
 PUBLIC $L_6d1ec0, $L_6d1f7c, $L_6d2038, $L_6d203c, $L_6d2040, $L_6d2068
 PUBLIC $L_6f68b0
+PUBLIC $L_64b708, $L_64b710, $L_66c558, $L_66c7b0, $L_66c7ec, $L_66c830
+PUBLIC $L_66c83c, $L_66c840, $L_66d3fc, $L_66d41c, $L_66d498, $L_66d72c
+PUBLIC $L_66d768, $L_68d0cc, $L_68d0dc, $L_68d14c, $L_68d208
+PUBLIC $L_66c6f0, $L_68d180
+PUBLIC $L_64b5c0, $L_64b62c
 
 ;===================================
 _TEXT SEGMENT
@@ -2165,6 +2170,8 @@ $L_401990 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_401aa0 PROC
 
             push ECX
@@ -2280,6 +2287,10 @@ $L_401b7f::
             inc EDI
             jmp $L_401b44
 FUN_401aa0 ENDP
+ELSE
+EXTERN @Stl_Lock@8:PROC
+FUN_401aa0 TEXTEQU <@Stl_Lock@8>
+ENDIF
           BYTE 090H
 $L_401b90 PROC
 
@@ -4250,6 +4261,8 @@ $L_402730::
             nop
             nop
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_402740 PROC
 
             sub ESP,32
@@ -4419,6 +4432,10 @@ $L_402887::
             add ESP,32
             ret 32
 FUN_402740 ENDP
+ELSE
+EXTERN @Pos_Before@40:PROC
+FUN_402740 TEXTEQU <@Pos_Before@40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5455,6 +5472,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_403110 PROC
 
             mov EDX,DWORD PTR [$L_68cf04]
@@ -5535,6 +5554,10 @@ $L_4031d4::
 
             ret 
 FUN_403110 ENDP
+ELSE
+EXTERN _AI_Renumber:PROC
+FUN_403110 TEXTEQU <_AI_Renumber>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -6172,6 +6195,8 @@ FUN_403680 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_403810 PROC
 
             push ECX
@@ -6307,6 +6332,10 @@ $L_403930::
             pop ECX
             ret 
 FUN_403810 ENDP
+ELSE
+EXTERN @Rec403810_Destroy@8:PROC
+FUN_403810 TEXTEQU <@Rec403810_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -7634,6 +7663,8 @@ FUN_404570 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_4046b0 PROC
 
             push EBX
@@ -7724,6 +7755,10 @@ $L_404782::
             pop EBX
             ret 
 FUN_4046b0 ENDP
+ELSE
+EXTERN @Rec4046b0_Destroy@8:PROC
+FUN_4046b0 TEXTEQU <@Rec4046b0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -7922,6 +7957,8 @@ FUN_404790 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_404920 PROC
 
             sub ESP,8
@@ -8097,6 +8134,10 @@ $L_404aa4::
             add ESP,8
             ret 
 FUN_404920 ENDP
+ELSE
+EXTERN @Rec404920_Destroy@8:PROC
+FUN_404920 TEXTEQU <@Rec404920_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -9038,6 +9079,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_4051b0 PROC
 
             push EBP
@@ -9131,6 +9174,10 @@ $L_405286::
             pop EBP
             ret 
 FUN_4051b0 ENDP
+ELSE
+EXTERN _Town_NearestOther:PROC
+FUN_4051b0 TEXTEQU <_Town_NearestOther>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -16994,6 +17041,8 @@ FUN_409660 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_409980 PROC
 
             push EBP
@@ -17120,6 +17169,10 @@ $L_409a83::
             pop EBP
             ret 
 FUN_409980 ENDP
+ELSE
+EXTERN _Road_EdgeCost:PROC
+FUN_409980 TEXTEQU <_Road_EdgeCost>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -34500,6 +34553,8 @@ FUN_4143c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_414670 PROC
 
             push EBP
@@ -34607,6 +34662,10 @@ $L_414749::
             pop EBP
             ret 
 FUN_414670 ENDP
+ELSE
+EXTERN _Towns_Costs:PROC
+FUN_414670 TEXTEQU <_Towns_Costs>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -36370,6 +36429,8 @@ FUN_415740 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_415790 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -36542,6 +36603,10 @@ $L_4158f4::
             inc EDI
             jmp $L_41589b
 FUN_415790 ENDP
+ELSE
+EXTERN _PtrVec_FindFree:PROC
+FUN_415790 TEXTEQU <_PtrVec_FindFree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -39354,6 +39419,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_417680 PROC
 
             mov EAX,DWORD PTR [$L_68cf60]
@@ -39471,6 +39538,10 @@ $L_417754::
 
             nop
 FUN_417680 ENDP
+ELSE
+EXTERN _Player_StopWaiting:PROC
+FUN_417680 TEXTEQU <_Player_StopWaiting>
+ENDIF
 ALIGN 16
 FUN_417770 PROC
 
@@ -43017,6 +43088,8 @@ FUN_419760 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_419b00 PROC
 
             push ESI
@@ -43174,6 +43247,10 @@ $L_419ca1::
             pop ESI
             ret 
 FUN_419b00 ENDP
+ELSE
+EXTERN _Dealer_CancelSelling:PROC
+FUN_419b00 TEXTEQU <_Dealer_CancelSelling>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -46301,6 +46378,8 @@ $L_41baa3::
             nop
 FUN_41ba50 ENDP
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_41bad0 PROC
 
             push EBX
@@ -46418,6 +46497,10 @@ $L_41bbdb::
             pop EBX
             ret 
 FUN_41bad0 ENDP
+ELSE
+EXTERN _Player_CargoSums:PROC
+FUN_41bad0 TEXTEQU <_Player_CargoSums>
+ENDIF
 ALIGN 16
 FUN_41bbe0 PROC
 
@@ -48102,6 +48185,8 @@ $L_41cd2a::
 FUN_41be60 ENDP
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_41cd40 PROC
 
             sub ESP,12
@@ -48177,6 +48262,10 @@ $L_41cd51::
             add ESP,12
             ret 48
 FUN_41cd40 ENDP
+ELSE
+EXTERN @Rec48_Construct@56:PROC
+FUN_41cd40 TEXTEQU <@Rec48_Construct@56>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -50786,6 +50875,8 @@ EXTERN @Iter_Players@8:PROC
 FUN_41eb70 TEXTEQU <@Iter_Players@8>
 ENDIF
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_41eb80 PROC
 
             sub ESP,12
@@ -50940,6 +51031,10 @@ $L_41ecac::
             add ESP,12
             ret 4
 FUN_41eb80 ENDP
+ELSE
+EXTERN @Order_ValueAt@12:PROC
+FUN_41eb80 TEXTEQU <@Order_ValueAt@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -51287,6 +51382,8 @@ FUN_41ef10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_41ef90 PROC
 
             push EBX
@@ -51439,6 +51536,10 @@ $L_41f0c0::
             pop EBX
             ret 
 FUN_41ef90 ENDP
+ELSE
+EXTERN _Player_CheckTownAA:PROC
+FUN_41ef90 TEXTEQU <_Player_CheckTownAA>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -56438,6 +56539,8 @@ FUN_422210 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_422280 PROC
 
             mov EAX,DWORD PTR [$L_68b990]
@@ -56541,6 +56644,10 @@ $L_42235f::
             add ESP,48
             ret 
 FUN_422280 ENDP
+ELSE
+EXTERN _Players_DropFar:PROC
+FUN_422280 TEXTEQU <_Players_DropFar>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -61508,6 +61615,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_425610 PROC
 
             mov EAX,DWORD PTR [$L_68baa4]
@@ -61564,6 +61673,10 @@ FUN_425610 PROC
             mov DWORD PTR [$L_68d160],EDX
             ret 
 FUN_425610 ENDP
+ELSE
+EXTERN _AI_RandomTraffic:PROC
+FUN_425610 TEXTEQU <_AI_RandomTraffic>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -68674,6 +68787,8 @@ $L_429930 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_429cd0 PROC
 
             push EBP
@@ -68813,6 +68928,10 @@ $L_429e2b::
             pop EBP
             ret 
 FUN_429cd0 ENDP
+ELSE
+EXTERN _Orders_RemoveExpired:PROC
+FUN_429cd0 TEXTEQU <_Orders_RemoveExpired>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -68826,6 +68945,8 @@ FUN_429cd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_429e40 PROC
 
             push EBP
@@ -68965,6 +69086,10 @@ $L_429f9e::
             pop EBP
             ret 
 FUN_429e40 ENDP
+ELSE
+EXTERN _Orders_RemoveEmpty:PROC
+FUN_429e40 TEXTEQU <_Orders_RemoveEmpty>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -70647,6 +70772,8 @@ $L_42b050           DWORD $L_42ad18
           DWORD $L_42ad89
           DWORD $L_42ade8
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_42b060 PROC
 
             push EBX
@@ -70808,6 +70935,10 @@ $L_42b169::
             pop EBX
             ret 
 FUN_42b060 ENDP
+ELSE
+EXTERN _Rec_SetActive:PROC
+FUN_42b060 TEXTEQU <_Rec_SetActive>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_42b170 PROC
@@ -72516,6 +72647,8 @@ FUN_42bb90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_42bfe0 PROC
 
             push ECX
@@ -72632,6 +72765,10 @@ $L_42c0a7::
             pop ECX
             ret 4
 FUN_42bfe0 ENDP
+ELSE
+EXTERN @Rec42bfe0_Assign@12:PROC
+FUN_42bfe0 TEXTEQU <@Rec42bfe0_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -79599,6 +79736,8 @@ FUN_430230 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_430480 PROC
 
             push EBP
@@ -79759,7 +79898,13 @@ $L_4305de::
             nop
             nop
 FUN_430480 ENDP
+ELSE
+EXTERN _Vehicles_AverageRatio:PROC
+FUN_430480 TEXTEQU <_Vehicles_AverageRatio>
+ENDIF
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_4305f0 PROC
 
             mov EDX,DWORD PTR [$L_68cec0]
@@ -79939,6 +80084,10 @@ $L_430750::
             add ESP,12
             ret 
 FUN_4305f0 ENDP
+ELSE
+EXTERN _Ambushes_Link:PROC
+FUN_4305f0 TEXTEQU <_Ambushes_Link>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -79950,6 +80099,8 @@ FUN_4305f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_430760 PROC
 
             push EBP
@@ -80065,6 +80216,10 @@ $L_430866::
             pop EBP
             ret 
 FUN_430760 ENDP
+ELSE
+EXTERN _Player_OrdersValue:PROC
+FUN_430760 TEXTEQU <_Player_OrdersValue>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -80198,6 +80353,8 @@ FUN_4308e0 TEXTEQU <_AI_CountSet>
 ENDIF
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_430940 PROC
 
             push EBX
@@ -80380,6 +80537,10 @@ $L_430a78::
             pop EBX
             ret 
 FUN_430940 ENDP
+ELSE
+EXTERN _Fine_ViolationText:PROC
+FUN_430940 TEXTEQU <_Fine_ViolationText>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -81246,6 +81407,8 @@ $L_43132d::
 FUN_431170 ENDP
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_431340 PROC
 
             push EBX
@@ -81354,6 +81517,10 @@ $L_431412::
             pop EBX
             ret 
 FUN_431340 ENDP
+ELSE
+EXTERN _Player_HasCargoOrder:PROC
+FUN_431340 TEXTEQU <_Player_HasCargoOrder>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -85620,6 +85787,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_433f90 PROC
 
             push ECX
@@ -85725,6 +85894,10 @@ $L_434061::
             nop
             nop
 FUN_433f90 ENDP
+ELSE
+EXTERN _Towns_MarkNodes:PROC
+FUN_433f90 TEXTEQU <_Towns_MarkNodes>
+ENDIF
 ALIGN 16
 ; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
 IFDEF ASM_AIMAIN
@@ -85806,6 +85979,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_4340f0 PROC
 
             mov EAX,DWORD PTR [$L_68cf00]
@@ -85940,6 +86115,10 @@ $L_434263::
             add ESP,8
             ret 
 FUN_4340f0 ENDP
+ELSE
+EXTERN _Parkings_MarkNodes:PROC
+FUN_4340f0 TEXTEQU <_Parkings_MarkNodes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -88392,6 +88571,8 @@ FUN_435a90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_435bf0 PROC
 
             sub ESP,32
@@ -88547,6 +88728,10 @@ $L_435d33::
             add ESP,32
             ret 
 FUN_435bf0 ENDP
+ELSE
+EXTERN _Road_PointOf:PROC
+FUN_435bf0 TEXTEQU <_Road_PointOf>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_435d60 PROC
@@ -107467,6 +107652,8 @@ FUN_441d70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_441f40 PROC
 
             mov EAX,DWORD PTR [$L_71e814]
@@ -107600,6 +107787,10 @@ $L_4420a4::
             add ESP,12
             ret 
 FUN_441f40 ENDP
+ELSE
+EXTERN _Service_Info:PROC
+FUN_441f40 TEXTEQU <_Service_Info>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -117768,6 +117959,8 @@ $L_448130 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_448300 PROC
 
             sub ESP,12
@@ -117960,6 +118153,10 @@ $L_448472::
             nop
             nop
 FUN_448300 ENDP
+ELSE
+EXTERN @Vec24_Destroy@8:PROC
+FUN_448300 TEXTEQU <@Vec24_Destroy@8>
+ENDIF
 ALIGN 16
 ; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
 IFDEF ASM_AIMAIN
@@ -121996,6 +122193,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_44a590 PROC
 
             push EBP
@@ -122120,6 +122319,10 @@ $L_44a68e::
             pop EBP
             ret 8
 FUN_44a590 ENDP
+ELSE
+EXTERN @Vec104_Erase@16:PROC
+FUN_44a590 TEXTEQU <@Vec104_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -122534,6 +122737,8 @@ $L_44a968           DWORD $L_44a891
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_44a980 PROC
 
             push ECX
@@ -122648,12 +122853,18 @@ $L_44aa46::
             pop ECX
             ret 8
 FUN_44a980 ENDP
+ELSE
+EXTERN @NameHash_Insert@16:PROC
+FUN_44a980 TEXTEQU <@NameHash_Insert@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_44aa60 PROC
 
             push ECX
@@ -122794,6 +123005,10 @@ $L_44ab55::
             pop ECX
             ret 8
 FUN_44aa60 ENDP
+ELSE
+EXTERN @Vec24_Erase@16:PROC
+FUN_44aa60 TEXTEQU <@Vec24_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -123077,6 +123292,8 @@ FUN_44ac60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_44ad80 PROC
 
             push EBP
@@ -123244,6 +123461,10 @@ $L_44af49::
             pop EBP
             ret 8
 FUN_44ad80 ENDP
+ELSE
+EXTERN @Vec192_Erase@16:PROC
+FUN_44ad80 TEXTEQU <@Vec192_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -124556,6 +124777,8 @@ FUN_44b740 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_44b970 PROC
 
             sub ESP,8
@@ -124684,6 +124907,10 @@ $L_44ba74::
             add ESP,8
             ret 
 FUN_44b970 ENDP
+ELSE
+EXTERN @StlLock_Guard@8:PROC
+FUN_44b970 TEXTEQU <@StlLock_Guard@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -134709,6 +134936,8 @@ FUN_450ce0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_450de0 PROC
 
             sub ESP,12
@@ -134876,6 +135105,10 @@ $L_450f3a::
             inc EDI
             jmp $L_450ee5
 FUN_450de0 ENDP
+ELSE
+EXTERN @Vec16_Destroy@8:PROC
+FUN_450de0 TEXTEQU <@Vec16_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -139286,6 +139519,8 @@ FUN_453350 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_453620 PROC
 
             push EBP
@@ -139543,6 +139778,10 @@ $L_4537a0::
             pop EBP
             ret 4
 FUN_453620 ENDP
+ELSE
+EXTERN @Rec192_Assign@12:PROC
+FUN_453620 TEXTEQU <@Rec192_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -147566,6 +147805,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_457b80 PROC
 
             push EBP
@@ -147846,7 +148087,13 @@ $L_457ddc::
             nop
             nop
 FUN_457b80 ENDP
+ELSE
+EXTERN _Order144_Copy:PROC
+FUN_457b80 TEXTEQU <_Order144_Copy>
+ENDIF
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_457df0 PROC
 
             push ECX
@@ -148009,7 +148256,13 @@ $L_457f3a::
             pop ECX
             ret 
 FUN_457df0 ENDP
+ELSE
+EXTERN _Rec56_Copy:PROC
+FUN_457df0 TEXTEQU <_Rec56_Copy>
+ENDIF
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_457f40 PROC
 
             sub ESP,8
@@ -148292,6 +148545,10 @@ $L_45818f::
             add ESP,8
             ret 
 FUN_457f40 ENDP
+ELSE
+EXTERN _Rec24_Copy:PROC
+FUN_457f40 TEXTEQU <_Rec24_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -148452,6 +148709,8 @@ $L_4582a0::
 FUN_4581f0 ENDP
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_4582e0 PROC
 
             sub ESP,8
@@ -148681,6 +148940,10 @@ $L_4584da::
             add ESP,8
             ret 4
 FUN_4582e0 ENDP
+ELSE
+EXTERN @Order144_AssignThis@12:PROC
+FUN_4582e0 TEXTEQU <@Order144_AssignThis@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -149181,6 +149444,8 @@ $L_458920 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_458940 PROC
 
             push ECX
@@ -149286,6 +149551,10 @@ $L_458a12::
             pop ECX
             ret 
 FUN_458940 ENDP
+ELSE
+EXTERN @Rec458940_Destroy@8:PROC
+FUN_458940 TEXTEQU <@Rec458940_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
