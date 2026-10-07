@@ -744,6 +744,15 @@ PUBLIC $L_67b670, $L_67b67c, $L_67b688, $L_67b68c, $L_67b698, $L_67b69c
 PUBLIC $L_67b73c, $L_696c5c, $L_6cec98, $L_6f2c44, $L_6f2c48, $L_6f2df8
 PUBLIC $L_6f3388, $L_6f34d8
 PUBLIC $L_64b6e0, $L_64c958, $L_64d990, $L_674414
+PUBLIC $L_64b5b8, $L_64b658, $L_64c258, $L_64c25c, $L_64c328, $L_64c330
+PUBLIC $L_64c338, $L_64c408, $L_64fd20, $L_650a6c, $L_650a98, $L_650aa0
+PUBLIC $L_650aa8, $L_650b68, $L_650c2c, $L_650c78, $L_650d34, $L_650d80
+PUBLIC $L_650d88, $L_650dd4, $L_650ddc, $L_650e28, $L_650e38, $L_650e84
+PUBLIC $L_650e8c, $L_650ed8, $L_650ee0, $L_651128, $L_651174, $L_672998
+PUBLIC $L_67e180, $L_67e190, $L_67e19c, $L_67e1ac, $L_696868, $L_6f6914
+PUBLIC $L_674ae0, $L_675468, $L_69689c, $L_697860, $L_6c6b68, $L_6ce34c
+PUBLIC $L_6ce370, $L_6cecc0, $L_6ced38, $L_6ced3c, $L_6ced40, $L_6ced44
+PUBLIC $L_6ced50, $L_6ced5c, $L_6ced60, $L_6ced64
 
 ;===================================
 _TEXT SEGMENT
@@ -396810,6 +396819,8 @@ $L_4e466a PROC
             pop EBP
             ret 
 $L_4e466a ENDP
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e4671 PROC
 
             push EBP
@@ -396897,6 +396908,10 @@ $L_4e474e::
             pop EBP
             ret 
 FUN_4e4671 ENDP
+ELSE
+EXTERN _World_MathErr:PROC
+FUN_4e4671 TEXTEQU <_World_MathErr>
+ENDIF
 ALIGN 16
 FUN_4e4750 PROC
 
@@ -399728,6 +399743,8 @@ $L_4e5f45::
             pop EBP
             ret 
 $L_4e5f42 ENDP
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e5f87 PROC
 
             push EBP
@@ -399810,6 +399827,12 @@ $L_4e6053::
             pop EBP
             ret 
 FUN_4e5f87 ENDP
+ELSE
+EXTERN _World_ObjectAt:PROC
+FUN_4e5f87 TEXTEQU <_World_ObjectAt>
+ENDIF
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e6059 PROC
 
             push EBP
@@ -400005,7 +400028,13 @@ $L_4e6238::
             pop EBP
             ret 
 FUN_4e6059 ENDP
+ELSE
+EXTERN _Query_Parts2:PROC
+FUN_4e6059 TEXTEQU <_Query_Parts2>
+ENDIF
 ALIGN 2
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e623e PROC
 
             push EBP
@@ -400121,6 +400150,10 @@ $L_4e6349::
             pop EBP
             ret 
 FUN_4e623e ENDP
+ELSE
+EXTERN _Query_Parts1:PROC
+FUN_4e623e TEXTEQU <_Query_Parts1>
+ENDIF
 ; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
 FUN_4e634f PROC
@@ -400188,6 +400221,8 @@ FUN_4e6362 PROC
             ret 
 FUN_4e6362 ENDP
 ALIGN 2
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e63be PROC
 
             push EBP
@@ -400287,6 +400322,10 @@ $L_4e648c::
             pop EBP
             ret 
 FUN_4e63be ENDP
+ELSE
+EXTERN _Line_Project:PROC
+FUN_4e63be TEXTEQU <_Line_Project>
+ENDIF
 ALIGN 16
 FUN_4e6490 PROC
 
@@ -400881,6 +400920,8 @@ $L_4e69e9::
             pop EBP
             ret 
 $L_4e6922 ENDP
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e69ef PROC
 
             push EBP
@@ -400954,6 +400995,10 @@ $L_4e6abe::
             pop EBP
             ret 
 FUN_4e69ef ENDP
+ELSE
+EXTERN _World_Hit:PROC
+FUN_4e69ef TEXTEQU <_World_Hit>
+ENDIF
 ALIGN 4
 ; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
@@ -401626,6 +401671,8 @@ $L_4e7162::
             ret 
 $L_4e6e6a ENDP
 ALIGN 8
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e7168 PROC
 
             push EBP
@@ -401745,6 +401792,10 @@ $L_4e725b::
             pop EBP
             ret 
 FUN_4e7168 ENDP
+ELSE
+EXTERN _Query_4e7168:PROC
+FUN_4e7168 TEXTEQU <_Query_4e7168>
+ENDIF
 ; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
 FUN_4e7261 PROC
@@ -401801,6 +401852,8 @@ ELSE
 EXTERN _Query_4e7261:PROC
 FUN_4e7261 TEXTEQU <_Query_4e7261>
 ENDIF
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e72ef PROC
 
             push EBP
@@ -401920,6 +401973,10 @@ $L_4e73e2::
             pop EBP
             ret 
 FUN_4e72ef ENDP
+ELSE
+EXTERN _Query_4e72ef:PROC
+FUN_4e72ef TEXTEQU <_Query_4e72ef>
+ENDIF
 $L_4e73e8 PROC
 
             push EBP
@@ -401971,6 +402028,8 @@ $L_4e746c::
             ret 
 $L_4e73e8 ENDP
 ALIGN 2
+; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e7476 PROC
 
             push EBP
@@ -402075,6 +402134,10 @@ $L_4e7560::
             pop EBP
             ret 
 FUN_4e7476 ENDP
+ELSE
+EXTERN _Query_4e7476:PROC
+FUN_4e7476 TEXTEQU <_Query_4e7476>
+ENDIF
 ALIGN 2
 ; world: src\world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
@@ -450520,6 +450583,8 @@ $L_50a580           DWORD $L_508619
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_50a5a0 PROC
 
             sub ESP,8
@@ -450682,6 +450747,10 @@ $L_50a731::
             add ESP,8
             ret 
 FUN_50a5a0 ENDP
+ELSE
+EXTERN _VehTech_Load:PROC
+FUN_50a5a0 TEXTEQU <_VehTech_Load>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -452511,6 +452580,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_50b9b0 PROC
 
             push EBP
@@ -452613,6 +452684,10 @@ $L_50ba48::
             pop EBP
             ret 
 FUN_50b9b0 ENDP
+ELSE
+EXTERN _DMat_Inverse:PROC
+FUN_50b9b0 TEXTEQU <_DMat_Inverse>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -453662,6 +453737,8 @@ FUN_50c150 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_50c1d0 PROC
 
             mov ECX,DWORD PTR [$L_69689c]
@@ -453792,6 +453869,10 @@ $L_50c2ef::
             pop EDI
             ret 
 FUN_50c1d0 ENDP
+ELSE
+EXTERN _Loading_Update:PROC
+FUN_50c1d0 TEXTEQU <_Loading_Update>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -454363,6 +454444,8 @@ EXTERN _Carat_SetFlag:PROC
 FUN_50c7f0 TEXTEQU <_Carat_SetFlag>
 ENDIF
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_50c800 PROC
 
             sub ESP,128
@@ -454473,6 +454556,10 @@ $L_50c8dc::
             add ESP,128
             ret 
 FUN_50c800 ENDP
+ELSE
+EXTERN _CD_Check:PROC
+FUN_50c800 TEXTEQU <_CD_Check>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -459809,6 +459896,8 @@ $L_51068b::
             nop
 FUN_5105b0 ENDP
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_510690 PROC
 
             mov EAX,DWORD PTR [$L_6ced64]
@@ -459939,6 +460028,10 @@ $L_5107b9::
             add ESP,16
             ret 
 FUN_510690 ENDP
+ELSE
+EXTERN _Loading_Step:PROC
+FUN_510690 TEXTEQU <_Loading_Step>
+ENDIF
 ALIGN 16
 FUN_5107c0 PROC
 
@@ -656274,6 +656367,8 @@ $L_595b4c::
             nop
 $L_595290 ENDP
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_595b60 PROC
 
             push EBX
@@ -656382,6 +656477,10 @@ $L_595c2d::
             pop EBX
             ret 
 FUN_595b60 ENDP
+ELSE
+EXTERN @TvCamera_Construct@8:PROC
+FUN_595b60 TEXTEQU <@TvCamera_Construct@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_595c60 PROC
@@ -657562,6 +657661,8 @@ FUN_596850 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_5968c0 PROC
 
             sub ESP,120
@@ -657655,6 +657756,10 @@ $L_59696a::
             add ESP,120
             ret 4
 FUN_5968c0 ENDP
+ELSE
+EXTERN @TvCamera_Follow@12:PROC
+FUN_5968c0 TEXTEQU <@TvCamera_Follow@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -657668,6 +657773,8 @@ FUN_5968c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_5969e0 PROC
 
             sub ESP,348
@@ -657776,6 +657883,10 @@ FUN_5969e0 PROC
             add ESP,348
             ret 4
 FUN_5969e0 ENDP
+ELSE
+EXTERN @TvCamera_Circle@12:PROC
+FUN_5969e0 TEXTEQU <@TvCamera_Circle@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -658522,6 +658633,8 @@ $L_596f80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_5972d0 PROC
 
             mov EAX,DWORD PTR [$L_6d2078]
@@ -658597,6 +658710,10 @@ $L_597355::
 
             nop
 FUN_5972d0 ENDP
+ELSE
+EXTERN _Pyramid_SetSize:PROC
+FUN_5972d0 TEXTEQU <_Pyramid_SetSize>
+ENDIF
 $L_5973a0 PROC
 
             mov EAX,ECX
@@ -661683,6 +661800,8 @@ FUN_598f00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_599120 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -661835,6 +661954,10 @@ $L_599203::
             pop EBX
             ret 
 FUN_599120 ENDP
+ELSE
+EXTERN _Car_AskNear:PROC
+FUN_599120 TEXTEQU <_Car_AskNear>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -664327,6 +664450,8 @@ FUN_59ac90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59ad70 PROC
 
             sub ESP,8
@@ -664410,10 +664535,16 @@ FUN_59ad70 PROC
             add ESP,8
             ret 24
 FUN_59ad70 ENDP
+ELSE
+EXTERN @Spark59ad70_Construct@32:PROC
+FUN_59ad70 TEXTEQU <@Spark59ad70_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59aea0 PROC
 
             sub ESP,8
@@ -664500,6 +664631,10 @@ FUN_59aea0 PROC
             add ESP,8
             ret 36
 FUN_59aea0 ENDP
+ELSE
+EXTERN @Spark59aea0_Construct@44:PROC
+FUN_59aea0 TEXTEQU <@Spark59aea0_Construct@44>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -665670,6 +665805,8 @@ $L_59beaf::
             ret 
 $L_59bc50 ENDP
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59bed0 PROC
 
             sub ESP,8
@@ -665753,6 +665890,10 @@ FUN_59bed0 PROC
             add ESP,8
             ret 24
 FUN_59bed0 ENDP
+ELSE
+EXTERN @Spark59bed0_Construct@32:PROC
+FUN_59bed0 TEXTEQU <@Spark59bed0_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -666061,6 +666202,8 @@ $L_59c000 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59c420 PROC
 
             sub ESP,8
@@ -666128,6 +666271,10 @@ FUN_59c420 PROC
             add ESP,8
             ret 24
 FUN_59c420 ENDP
+ELSE
+EXTERN @Effect59c420_Construct@32:PROC
+FUN_59c420 TEXTEQU <@Effect59c420_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -666270,6 +666417,8 @@ $L_59c510 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59c6c0 PROC
 
             sub ESP,12
@@ -666368,6 +666517,10 @@ FUN_59c6c0 PROC
             add ESP,12
             ret 28
 FUN_59c6c0 ENDP
+ELSE
+EXTERN @Effect59c6c0_Construct@36:PROC
+FUN_59c6c0 TEXTEQU <@Effect59c6c0_Construct@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -666893,6 +667046,8 @@ $L_59cba0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59cea0 PROC
 
             sub ESP,8
@@ -666992,6 +667147,10 @@ FUN_59cea0 PROC
             add ESP,8
             ret 28
 FUN_59cea0 ENDP
+ELSE
+EXTERN @Effect59cea0_Construct@36:PROC
+FUN_59cea0 TEXTEQU <@Effect59cea0_Construct@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -667373,6 +667532,8 @@ $L_59d1a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59d4a0 PROC
 
             sub ESP,8
@@ -667437,6 +667598,10 @@ FUN_59d4a0 PROC
             add ESP,8
             ret 20
 FUN_59d4a0 ENDP
+ELSE
+EXTERN @Effect59d4a0_Construct@28:PROC
+FUN_59d4a0 TEXTEQU <@Effect59d4a0_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -669706,6 +669871,8 @@ $L_59f000 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_59f070 PROC
 
             mov EAX,DWORD PTR [ESP+24]
@@ -669779,6 +669946,10 @@ FUN_59f070 PROC
             fstp ST(0)
             ret 24
 FUN_59f070 ENDP
+ELSE
+EXTERN @Effect59f070_Construct@32:PROC
+FUN_59f070 TEXTEQU <@Effect59f070_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_59f180 PROC
@@ -671304,6 +671475,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
+IFDEF ASM_WASM
 FUN_5a0230 PROC
 
             push EBX
@@ -671394,6 +671567,10 @@ $L_5a030d::
             pop EBX
             ret 20
 FUN_5a0230 ENDP
+ELSE
+EXTERN @Table124_Add@28:PROC
+FUN_5a0230 TEXTEQU <@Table124_Add@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

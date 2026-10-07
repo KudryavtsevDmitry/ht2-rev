@@ -36,7 +36,7 @@ void CKingApp::PreExecute()
 void CKingApp::PostExecute()
 {
     CGameApp::PostExecute();
-    CallC(FUN_50c1d0);
+    Loading_Update();
     if (g_p6d2078 && g_pWnd6cec6c->m_1356->m_objects.m_0 < 2) {
         Rect r = { 0, 0, m_width, m_height };
         DrawStyle style = {};

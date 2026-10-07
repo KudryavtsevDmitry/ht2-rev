@@ -559,7 +559,7 @@ ASM_PROC(FUN_5bd710)    // Gfx_DrawBox
 ASM_PROC(FUN_530050)    // Controls::Update
 ASM_PROC(FUN_578fe0)    // Joy_Read
 ASM_PROC(FUN_5c3990)    // destructor of CKingApp's base class
-ASM_PROC(FUN_50c1d0)
+extern "C" void __cdecl Loading_Update();       // carat.cpp
 ASM_PROC(FUN_56ce40)
 ASM_PROC(FUN_53b4c0)
 
