@@ -380,13 +380,12 @@ bool WaypointVec::RemoveNode(int node)
 // ---------------------------------------------------------------------------
 // A player's position
 
-ASM_PROC(FUN_423a30)    // RoadId::IsValid
-ASM_PROC(FUN_423a60)    // NodeId::IsValid
-ASM_PROC(FUN_40a500)    // PositionId::IsValid
+extern "C" int __fastcall RoadId_Valid(const int* id, void*);          // aimain.cpp
+extern "C" int __fastcall NodeId_Valid(const int* id, void*);
+extern "C" int __fastcall Position_Valid(const PositionId* p, void*);
 extern "C" DVec3* __cdecl Road_Point(DVec3* out, PositionId pos);
 KING_ALIAS("_Road_Point", "FUN_435bf0")
-extern "C" int __cdecl Player_IsInvalid(void* player);
-KING_ALIAS("_Player_IsInvalid", "FUN_4566c0")
+extern "C" int __cdecl Player_NotValid(BYTE* player);         // aimain.cpp
 extern "C" int __cdecl Vehicle_Exists(int vrId);
 KING_ALIAS("_Vehicle_Exists", "FUN_4d8a40")
 extern "C" void __cdecl Vehicle_Release(int vrId);
@@ -429,7 +428,7 @@ struct PlayerBase {                 // the player record behind its id
 void PlayerBase::SetPosition(const PositionId* p)
 {
     PositionId copy = *p;
-    if (!((CallThis<int>(FUN_423a30, &copy) || CallThis<int>(FUN_423a60, &copy.node))
+    if (!((RoadId_Valid(&copy.road, 0) || NodeId_Valid(&copy.node, 0))
           && !!(copy.t >= -0.0002) && !(copy.t > 1.0002) && copy.segment >= 0 && copy.object >= 0))
         InvalidPosition(633, p);
     CheckSegment(633, p);
@@ -459,12 +458,12 @@ void PlayerBase::SetPosition(const PositionId* p)
 // waypoints
 extern "C" void __cdecl Player_Place(BYTE* p, PositionId pos)
 {
-    if (Player_IsInvalid(p)) {
+    if (Player_NotValid(p)) {
         sprintf(g_playerText, "()");
         AiError(33, 100, s_playFile, s_playId, 2022, "Invalid id", "PlayerId", g_playerText);
     }
     PositionId copy = pos;
-    if (!CallThis<int>(FUN_40a500, &copy))
+    if (!Position_Valid(&copy, 0))
         InvalidPosition(2023, &pos);
     CheckSegment(2023, &pos);
     int vrId = FIELD(int, p, 84);
@@ -488,7 +487,7 @@ KING_ALIAS("_Player_UpdateOrders", "FUN_478100")
 extern "C" void __cdecl Player_GoTo(BYTE* p, PositionId target, int id)
 {
     PositionId copy = target;
-    if (!CallThis<int>(FUN_40a500, &copy))
+    if (!Position_Valid(&copy, 0))
         InvalidPosition(1971, &target);
     CheckSegment(1971, &target);
     PositionId* cur = (PositionId*)(p + 40);
@@ -497,7 +496,7 @@ extern "C" void __cdecl Player_GoTo(BYTE* p, PositionId target, int id)
         && copy.object == 0 && copy.m_24 == 0)
         AiError(0, 100, s_playFile, s_playId, 1973, "Internal error 92667", &g_aiEmpty, &g_aiEmpty);
     copy = *cur;
-    if (!CallThis<int>(FUN_40a500, &copy))
+    if (!Position_Valid(&copy, 0))
         InvalidPosition(1974, cur);
     CheckSegment(1974, cur);
     Waypoint w;
