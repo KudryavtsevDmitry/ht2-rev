@@ -9,6 +9,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>
 #include "road.h"
+#include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -33,7 +34,6 @@ KING_ALIAS("_Towns_Find454230", "FUN_454230")
 extern "C" DVec3* __cdecl Town_Position(DVec3* out, void* town);
 KING_ALIAS("_Town_Position", "FUN_404ef0")
 extern "C" DVec3* __cdecl Road_PointOf(DVec3* out, PositionId pos);
-KING_ALIAS("_Road_PointOf", "FUN_435bf0")
 extern "C" bool __cdecl SchValue_IsSymbol(const BYTE* v, const char* name);   // schitem.cpp
 extern "C" void __cdecl Player_UpdateFlags(BYTE* p);        // aiplay.cpp
 extern "C" void __fastcall CharVec_Assign(char** self, void*, const char* s);    // aiordr.cpp
@@ -947,11 +947,11 @@ int __fastcall NodeId_Valid(const int* s, void*) { return ValidNode(*s); }      
 extern "C" int* __cdecl Player_FromId(int* io);   // replaces a player id by the player
 KING_ALIAS("_Player_FromId", "FUN_477b60")
 extern "C" double __cdecl Player_Value430760(BYTE* p);
-KING_ALIAS("_Player_Value430760", "FUN_430760")
+KING_ALIAS("_Player_Value430760", "_Player_OrdersValue")
 extern "C" double __cdecl Player_CargoValueOf(BYTE* p);     // aiplay.cpp
 extern "C" void __cdecl Player_EndDeal(BYTE* p);             // aiplay.cpp
 extern "C" void __cdecl AI_Task42b060(void* task, int a);
-KING_ALIAS("_AI_Task42b060", "FUN_42b060")
+KING_ALIAS("_AI_Task42b060", "_Rec_SetActive")
 extern "C" void __cdecl Screen_569310(int id, unsigned on);        // copter.cpp
 extern "C" void __cdecl Screen_569410(int id, int on);             // copter.cpp
 
@@ -1893,4 +1893,1132 @@ void __fastcall Str_AssignPair(StrRef* s, void*, const StrRef* src)             
     F(int, p, 4)++;
     s->len = 0;
 }
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions of the unit
+
+ASM_VAR(unsigned, g_spinCount, $L_66c83c)       // spins before sleeping: 30, or 1000 after a quick success
+ASM_VAR(unsigned, g_spinLast, $L_68d208)
+ASM_VAR(char, g_strAiMainFile, $L_66c7b0)       // "C:\Nek\Vrappl\Gi\Htai\Ai_main.cpp"
+ASM_VAR(char, g_strAiMainId, $L_66c558)         // "$Id: Ai_main.cpp ..."
+ASM_VAR(char, g_strErr05491, $L_66c840)         // "Internal error 05491"
+ASM_VAR(BYTE**, g_vec68d0d8, $L_68d0d8)
+ASM_VAR(BYTE**, g_vec68d0dc, $L_68d0dc)
+ASM_VAR(BYTE**, g_vec68d0c8, $L_68d0c8)
+ASM_VAR(BYTE**, g_vec68d0cc, $L_68d0cc)
+
+// the spin lock of the allocators: spins, then sleeps longer and longer
+extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*)
+{
+    if (!InterlockedExchange(l, 1))
+        return;
+    unsigned n = g_spinCount;
+    unsigned half = g_spinLast >> 1;
+    volatile int spin = 17;
+    for (unsigned i = 0; i < n; i++) {
+        if (i >= half && *l == 0) {
+            if (!InterlockedExchange(l, 1)) {
+                g_spinLast = i;
+                g_spinCount = 1000;
+                return;
+            }
+            continue;
+        }
+        for (int k = 0; k < 4; k++)
+            spin = spin * spin;
+    }
+    g_spinCount = 30;
+    for (int k = 6;; k++) {
+        int j = k > 27 ? 27 : k;
+        if (!InterlockedExchange(l, 1))
+            return;
+        if (j <= 20)
+            Sleep(0);
+        else
+            Sleep(1 << (j - 20));
+    }
+}
+
+// whether this position is before p on the same road
+extern "C" bool __fastcall Pos_Before(PositionId* self, void*, PositionId p)
+{
+    if (self->road == p.road && self->node == p.node && x87_eq(self->t, p.t) && self->segment == p.segment
+        && self->object == p.object && self->m_24 == p.m_24)
+        return false;
+    PositionId l = *self;
+    int r = l.road;
+    if (r == -1)
+        r = p.road;
+    if (p.road == -1)
+        p.road = r;
+    if (r == -1 || r != p.road) {
+        AiError(0, 100, &g_strAiMainFile, &g_strAiMainId, 403, &g_strErr05491, &g_aiEmpty, &g_aiEmpty);
+        return false;
+    }
+    BYTE* e = (BYTE*)g_roadEdges[r];
+    RoadNode* a = g_roadNodes[p.node];
+    RoadNode* e74 = F(RoadNode*, e, 116);
+    if (a == e74)
+        return true;
+    RoadNode* e70 = F(RoadNode*, e, 112);
+    if (a == e70)
+        return false;
+    RoadNode* b = g_roadNodes[l.node];
+    if (b == e70)
+        return true;
+    if (b == e74)
+        return false;
+    if (l.object < p.object)
+        return true;
+    if (l.object > p.object)
+        return false;
+    if (l.segment < p.segment)
+        return true;
+    if (l.segment > p.segment)
+        return false;
+    return !(l.t >= p.t);
+}
+
+// the indices kept in the nodes, edges and the two name lists
+extern "C" void __cdecl AI_Renumber()
+{
+    for (unsigned i = 0; i < (unsigned)(g_roadNodesEnd - g_roadNodes); i++)
+        F(unsigned, g_roadNodes[i], 16) = i;
+    for (unsigned i = 0; i < (unsigned)(g_roadEdgesEnd - g_roadEdges); i++)
+        F(unsigned, g_roadEdges[i], 12) = i;
+    for (unsigned i = 0; i < (unsigned)(g_vec68d0dc - g_vec68d0d8); i++)
+        F(unsigned, g_vec68d0d8[i], 12) = i;
+    for (unsigned i = 0; i < (unsigned)(g_vec68d0cc - g_vec68d0c8); i++)
+        F(unsigned, g_vec68d0c8[i], 12) = i;
+}
+
+static void FreeVec4(BYTE* begin, BYTE* cap)
+{
+    unsigned n = (unsigned)((int)(cap - begin) >> 2);
+    if (n)
+        StlDeallocate(begin, n * 4);
+}
+
+static void FreeBytes(BYTE* begin, BYTE* cap)
+{
+    unsigned n = (unsigned)(cap - begin);
+    if (n)
+        StlDeallocate(begin, n);
+}
+
+extern "C" void __fastcall Rec403810_Destroy(BYTE** self, void*)
+{
+    FreeVec4(self[10], self[12]);
+    FreeVec4(self[7], self[9]);
+    FreeBytes(self[4], self[6]);
+    FreeBytes(self[0], self[2]);
+}
+
+extern "C" void __fastcall Rec4046b0_Destroy(BYTE* self, void*)
+{
+    FreeVec4(F(BYTE*, self, 360), F(BYTE*, self, 368));
+    FreeBytes(F(BYTE*, self, 316), F(BYTE*, self, 324));
+    BYTE* o;
+    if (!(F(DWORD, self, 312) & 0x10000) && (o = F(BYTE*, self, 304)) != 0) {
+        F(int, o, 4)--;
+        o = F(BYTE*, self, 304);
+        if (F(int, o, 4) == 0 && o)
+            CallVirt(o, 12, 1);
+    }
+}
+
+ASM_PROC(FUN_404ef0)    // a town's position (out, town)
+ASM_PROC(FUN_44c470)    // vector<double>: insert (pos, value)
+ASM_PROC(FUN_47c650)
+ASM_PROC(FUN_50d190)
+extern "C" void __fastcall Waypoints_Clear(BYTE* self, void*);   // aiplay.cpp
+extern "C" void __cdecl Road_NodeCostBest(int side, int from, int to, double* cost);   // aitrce.cpp
+
+extern "C" void __fastcall Rec404920_Destroy(BYTE** self, void*)
+{
+    BYTE** a = self ? self + 3 : 0;
+    FreeBytes(a[1], a[3]);
+    FreeBytes(self[0], self[2]);
+}
+
+// the nearest other town to town i
+extern "C" void __cdecl Town_NearestOther(int* out, int i)
+{
+    DVec3 a, b;
+    CallC(FUN_404ef0, &a, g_towns[i]);
+    int best = -1;
+    double bestDist = 1.7976931348623157e308;
+    for (void** p = g_towns; p != g_townsEnd; p++) {
+        if (i == p - g_towns)
+            continue;
+        CallC(FUN_404ef0, &b, *p);
+        double dx = a.x - b.x;
+        double dy = a.y - b.y;
+        double dz = a.z - b.z;
+        double d = x87_sqrt(dy * dy + dz * dz + dx * dx);
+        if (bestDist > d) {
+            best = (int)(p - g_towns);
+            bestDist = d;
+        }
+    }
+    *out = best;
+}
+
+// the cost of an edge for a side and direction: its objects' costs, weighted (cached)
+extern "C" double __cdecl Road_EdgeCost(int side, RoadEdge* edge, int dir)
+{
+    BYTE* e = (BYTE*)edge;
+    int k = dir + side * 2;
+    if (F(char, e, k * 16 + 56))
+        return F(double, e, (k + 3) * 16);
+    double sum = 0.0;
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, e, 124) - F(BYTE*, e, 120)) >> 2); i++) {
+        BYTE* o = F(BYTE**, e, 120)[i];
+        BYTE* d = o ? o + 8 : 0;
+        double w = 1.0;
+        if (F(int, d, 20) == 2)
+            w = 1.5;
+        if (F(int, d, 20) == 3)
+            w = 2.0;
+        if (side != 1) {
+            DWORD f = F(DWORD, d, 0);
+            if ((f & 64) || (dir == 1 ? (f & 4) : (f & 8)))
+                w = w * 10000.0;
+        }
+        sum = CallVirt<double>(o, 36) * w + sum;
+    }
+    F(char, e, k * 16 + 56) = 1;
+    F(double, e, (k + 3) * 16) = sum;
+    return sum;
+}
+
+// the costs between all towns, appended to each town's list
+extern "C" void __cdecl Towns_Costs()
+{
+    for (void** p = g_towns; p != g_townsEnd; p++)
+        for (void** q = g_towns; q != g_townsEnd; q++) {
+            int a, b;
+            Town_IdOrFirst(&a, (BYTE*)*p);
+            Town_IdOrFirst(&b, (BYTE*)*q);
+            double c = 0.0;
+            if (a != b && a != -1 && b != -1) {
+                Road_NodeCostBest(0, a, b, &c);
+                AI_Step3();
+            }
+            BYTE* v = (BYTE*)*p + 100;
+            double* end = F(double*, v, 4);
+            if (end != F(double*, v, 8)) {
+                if (end)
+                    *end = c;
+                F(double*, v, 4) = end + 1;
+            } else
+                CallThis(FUN_44c470, v, end, &c);
+        }
+}
+
+// whether v is in [first, last); frees the vector's buffer
+extern "C" bool __cdecl PtrVec_FindFree(int* first, int* last, int* cap, int v)
+{
+    int* p = first;
+    while (p != last && *p != v)
+        p++;
+    bool found = last != p;
+    FreeVec4((BYTE*)first, (BYTE*)cap);
+    return found;
+}
+
+// a player stops waiting: off the waiting list, its route dropped
+extern "C" void __cdecl Player_StopWaiting(BYTE* pl)
+{
+    for (void** p = g_68cf60; p != g_68cf64; p++)
+        if (pl + 8 == (BYTE*)*p + 8) {
+            if (p + 1 != g_68cf64)
+                Copy32((const DWORD*)(p + 1), (const DWORD*)g_68cf64, (DWORD*)p);
+            g_68cf64--;
+            break;
+        }
+    F(DWORD, pl, 96) &= ~0x4000u;
+    if (F(int, pl, 100) == 5) {
+        F(int, pl, 100) = 0;
+        BYTE* first = F(BYTE*, pl, 24);
+        BYTE* last = F(BYTE*, pl, 28);
+        BYTE* it = CallC<BYTE*>(FUN_47c650, last, last, first, first, 0);
+        BYTE* end = F(BYTE*, pl, 28);
+        for (; it != end; it += 12)
+            CallC(FUN_50d190, it);
+        F(BYTE*, pl, 28) += -((int)(last - first) / 12) * 12;
+        F(BYTE, pl, 872) = 1;
+        Waypoints_Clear(pl + 72, 0);
+    }
+    Player_UpdateFlags(pl);
+    F(BYTE, pl, 872) = 1;
+}
+
+ASM_PROC(FUN_477b60)    // an order's player (in place)
+extern "C" void __fastcall Buf_Append(void* s, void*, const void* src, int n);
+extern "C" void __fastcall Buf_AppendString(void* s, void*, const char* str);
+ASM_VAR(char, g_strStart, $L_66c830)            // "START:"
+ASM_VAR(char, g_strCompl, $L_66c7ec)            // "COMPL:"
+ASM_VAR(char, g_strCancelSelling, $L_66d498)    // "cancelSellingDealer(PlayerId player)"
+ASM_VAR(char, g_strAiPlayH, $L_66d3fc)          // "C:\Nek\Vrappl\Gi\Htai\ai_play.h"
+ASM_VAR(char, g_strErr9012, $L_66d41c)          // "Internal error 9012"
+ASM_VAR(char, g_strTrailerStorm, $L_66d72c)     // "STrailerStorm"
+ASM_VAR(char, g_strTownAA, $L_66d768)           // "TOWN_AA"
+ASM_VAR(int, g_68d14c, $L_68d14c)
+ASM_VAR(int, g_68d154, $L_68d154)
+ASM_VAR(double, g_64b710, $L_64b710)            // 12
+ASM_VAR(double, g_64b708, $L_64b708)            // 32
+
+// a player's current order list (+28 of the order at +520, else +516); on an
+// error the caller's previous pointer
+static BYTE* Player_Orders(BYTE* pl, BYTE* fallback)
+{
+    BYTE* o = F(BYTE*, pl, 520);
+    if (o && F(int, o, 4) != -1)
+        return o + 28;
+    o = F(BYTE*, pl, 516);
+    if (o && F(int, o, 4) != -1)
+        return o + 28;
+    AiError(0, 1, &g_strAiPlayH, &g_strAiMainId, 740, &g_strErr9012, &g_aiEmpty, &g_aiEmpty);
+    return fallback;
+}
+
+extern "C" int __cdecl Dealer_CancelSelling(BYTE* pl)
+{
+    Buf_Append(&g_stateDump, 0, &g_strStart, 8);
+    Buf_AppendString(&g_stateDump, 0, &g_strCancelSelling);
+    if (F(int, pl, 92) != 9) {
+        Buf_Append(&g_stateDump, 0, &g_strCompl, 8);
+        Buf_AppendString(&g_stateDump, 0, &g_strCancelSelling);
+        return 0;
+    }
+    if (F(int, pl, 100) == 256) {
+        BYTE* o = F(BYTE*, pl, 972);
+        F(int, o, 4)--;
+        if ((char)Player_Flag4(pl))
+            F(int, F(BYTE*, pl, 972), 12)--;
+    }
+    if (F(int, pl, 100) == 257) {
+        g_68d14c--;
+        if ((char)Player_Flag4(pl))
+            g_68d154--;
+    }
+    F(int, pl, 100) = 0;
+    F(DWORD, pl, 96) &= 0xfffffbbf;
+    int r = F(int, pl, 120);
+    if (r != -1) {
+        F(int, pl, 120) = -1;
+        BYTE* d = F(BYTE*, g_68cc98[r], 28) + F(int, pl, 124) * 36;
+        F(void*, d, 8) = g_players;
+        d = F(BYTE*, g_68cc98[r], 28) + F(int, pl, 124) * 36;
+        F(DWORD, d, 4) &= ~3u;
+        F(int, g_68cc98[r], 40)--;
+    }
+    F(int, pl, 972) = 0;
+    BYTE* sd = (BYTE*)&g_stateDump;
+    char*& buf = F(char*, sd, 12);
+    int& len = F(int, sd, 16);
+    int cap = F(int, sd, 8);
+    if (buf && len + 8 < cap) {
+        memcpy(buf + len, &g_strCompl, 8);
+        len += 8;
+    }
+    if (buf)
+        for (const char* s = &g_strCancelSelling; *s && len < F(int, sd, 8);)
+            buf[len++] = *s++;
+    return 0;
+}
+
+// the sums of the player's orders: weight and volume of the cargo
+extern "C" void __cdecl Player_CargoSums(BYTE* pl, double* a, double* b)
+{
+    *a = 0;
+    *b = 0;
+    BYTE* v = Player_Orders(pl, (BYTE*)a);
+    BYTE* it = *(BYTE**)v;
+    BYTE* last = (BYTE*)a;
+    for (;;) {
+        last = Player_Orders(pl, last);
+        if (it == F(BYTE*, last, 4))
+            break;
+        BYTE* rec = g_68ccb8 + F(int, it, 0) * 104;
+        double n = F(double, it, 56);
+        it += 144;
+        *a = F(double, rec, 16) * n + *a;
+        *b = F(double, rec, 24) * n + *b;
+    }
+}
+
+extern "C" DWORD* __fastcall Rec48_Construct(DWORD* self, void*, DWORD a0, DWORD a1, DWORD a2, DWORD a3,
+                                             DWORD a4, DWORD a5, DWORD a6, DWORD a7, DWORD a8, DWORD a9,
+                                             DWORD a10, DWORD a11)
+{
+    for (int i = 0; i < 12; i++)
+        self[i] = 0;
+    self[0] = a0; self[1] = a1; self[2] = a2;
+    self[3] = a3; self[4] = a4; self[5] = a5;
+    self[6] = a6; self[7] = a7; self[8] = a8;
+    self[9] = a9; self[10] = a10; self[11] = a11;
+    return self;
+}
+
+// the value of an order (kind 4) at node *self for its side of the river
+extern "C" double __fastcall Order_ValueAt(int* self, void*, int* o)
+{
+    if (o[8] != 4)
+        return 0.0;
+    double w = (strcmp((const char*)o[5], &g_strTrailerStorm) == 0 ? g_64b710 : 1.0) * F(double, o, 112);
+    int v = (int)o;
+    CallC(FUN_477b60, &v);
+    double r = w;
+    if (v != (int)g_players) {
+        BYTE* q = (BYTE*)g_vehicles[F(int, F(BYTE*, v, 516), 4)];
+        int* e = F(int*, q, 100);
+        int* p = F(int*, q, 96);
+        if (p != e) {
+            while (p != e && *p != o[0])
+                p++;
+            if (p != e) {
+                w = w + w;
+                r = w;
+            }
+        }
+    }
+    if (*self == -1)
+        return r;
+    int t;
+    Town_NearestOpen(&t, (const DVec3*)((BYTE*)g_roadNodes[*self] + 48));
+    bool c = F(BYTE, g_towns[t], 96) & 1;
+    bool a = F(BYTE, o, 4) & 1;
+    if (c ? a : !a)
+        return w * g_64b708;
+    return 0.0;
+}
+
+// whether one of the player's orders goes to the town TOWN_AA (flag 0x8000)
+extern "C" void __cdecl Player_CheckTownAA(BYTE* pl)
+{
+    F(DWORD, pl, 96) &= ~0x8000u;
+    BYTE* v = Player_Orders(pl, pl);
+    BYTE* it = *(BYTE**)v;
+    BYTE* last = pl;
+    for (;;) {
+        last = Player_Orders(pl, last);
+        if (it == F(BYTE*, last, 4))
+            return;
+        BYTE* town = (BYTE*)g_towns[F(int, it, 12)];
+        char* s = F(char*, town, 0);
+        if (s == F(char*, town, 4))
+            s = 0;
+        if (strcmp(s, &g_strTownAA) == 0)
+            F(DWORD, pl, 96) |= 0x8000;
+        it += 144;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions, batch 2
+
+extern "C" BYTE* __cdecl Player_OfIt(void* it);         // the player of a list iterator (by value)
+KING_ALIAS("_Player_OfIt", "_AI_ListData")
+extern "C" int __cdecl Vehicle_Exists76(int vrId);
+KING_ALIAS("_Vehicle_Exists76", "_Vehicle_Exists")
+extern "C" void __cdecl Player_Drop422210(BYTE* pl);
+KING_ALIAS("_Player_Drop422210", "FUN_422210")
+extern "C" void __cdecl Vehicle_Distances(int i, double* a, double* b);
+KING_ALIAS("_Vehicle_Distances", "_Vehicle_Costs")
+extern "C" const char* __cdecl AI_Text76(const char* key);
+KING_ALIAS("_AI_Text76", "FUN_40e270")
+extern "C" const char* __cdecl AI_Text40e4c0(const char* key);
+KING_ALIAS("_AI_Text40e4c0", "FUN_40e4c0")
+extern "C" const char* __cdecl Node_Name(int node);
+KING_ALIAS("_Node_Name", "FUN_436490")
+extern "C" void __cdecl Str_56ae60(const char* s);
+KING_ALIAS("_Str_56ae60", "_Messages_Add")
+extern "C" void __cdecl Item_41cff0(void* p);
+KING_ALIAS("_Item_41cff0", "FUN_41cff0")
+extern "C" void __cdecl Item_41f970(void* p);
+KING_ALIAS("_Item_41f970", "FUN_41f970")
+extern "C" void __cdecl Obj_483c10(void* p);
+KING_ALIAS("_Obj_483c10", "_AI_UpdateSwitch")
+extern "C" void __cdecl Edge_SetFlag446ce0(int edge, int flag);
+KING_ALIAS("_Edge_SetFlag446ce0", "_Road_SetObjectFlags")
+ASM_PROC(FUN_452900)    // vector<void*>::insert(pos, &value)
+ASM_PROC(FUN_458cf0)    // vector<char>: allocate and copy (n, first, last)
+ASM_PROC(FUN_404420)
+ASM_PROC(FUN_602ca0)
+ASM_VAR(double, g_66c6f0, $L_66c6f0)
+ASM_VAR(double, g_68d180, $L_68d180)
+ASM_VAR(AiText, g_positionText76, $L_77e6e0)
+
+// the AI generator's next value (the table at $L_68b9c8, indices after it)
+static unsigned AiRandom()
+{
+    unsigned* t = (unsigned*)g_rng68b9c8;
+    unsigned i = (t[55] + 1) % 55;
+    unsigned j = (t[56] + 1) % 55;
+    t[55] = i;
+    t[56] = j;
+    t[i] -= t[j];
+    return t[t[55]];
+}
+
+// players whose vehicle is far from the camera drop it
+extern "C" void __cdecl Players_DropFar()
+{
+    void** head = (void**)g_players;
+    for (void** n = (void**)*head; n != g_players; n = (void**)*n) {
+        if (!Player_OfIt(n))
+            continue;
+        BYTE* p = Player_OfIt(n);
+        if (F(int, p, 84) != 9)
+            continue;
+        DVec3 v = *(DVec3*)(p + ((F(BYTE, p, 88) & 1) ? 616 : 304));
+        double dx = g_68bab0.x - v.x;
+        double dy = g_68bab0.y - v.y;
+        double dz = g_68bab0.z - v.z;
+        if (!(x87_sqrt(dy * dy + dz * dz + dx * dx) > 700.0) && F(int, p, 76) != -1
+            && Vehicle_Exists76(F(int, p, 76)) != 0)
+            continue;
+        Player_Drop422210(p);
+    }
+}
+
+extern "C" void __cdecl AI_RandomTraffic()
+{
+    int n = (int)(g_66c6f0 * 3.1 + 4.0);
+    unsigned r = AiRandom();
+    g_68d15c = r % (unsigned)(n - 2) + 3;
+    g_68d160 = AiRandom() & 3;
+}
+
+// switches a record on or off: its name and items, then its edge's objects
+extern "C" int __cdecl Rec_SetActive(BYTE* s, char on)
+{
+    if (on) {
+        if (!F(char, s, 28)) {
+            char* b = F(char*, s, 88);
+            if (b != F(char*, s, 92) && strlen(b))
+                Str_56ae60(b);
+            for (void** p = F(void**, s, 112); p != F(void**, s, 116); p++)
+                Item_41cff0(*p);
+        }
+    } else if (F(char, s, 28)) {
+        char* b = F(char*, s, 100);
+        if (b != F(char*, s, 104) && strlen(b))
+            Str_56ae60(b);
+        for (void** p = F(void**, s, 112); p != F(void**, s, 116); p++)
+            Item_41f970(*p);
+    }
+    F(char, s, 28) = on;
+    Obj_483c10(s ? s + 12 : 0);
+    int e = F(int, s, 56);
+    if (e != -1) {
+        if (on) {
+            Edge_SetFlag446ce0(e, 64);
+            return 0;
+        }
+        for (BYTE** p = F(BYTE**, g_roadEdges[e], 120); p != F(BYTE**, g_roadEdges[e], 124); p++)
+            if (!(F(DWORD, *p, 8) & 128))
+                F(DWORD, *p, 8) &= ~64u;
+    }
+    return 0;
+}
+
+// operator= of a record: an int and a vector<char>
+extern "C" int* __fastcall Rec42bfe0_Assign(int* self, void*, const int* src)
+{
+    self[0] = src[0];
+    char** v = (char**)(self + 1);
+    char* const* s = (char* const*)(src + 1);
+    if ((void*)s == (void*)v)
+        return self;
+    char* first = s[0];
+    char* last = s[1];
+    unsigned n = last - first;
+    if (n > (unsigned)(v[2] - v[0])) {
+        char* p = CallThis<char*>(FUN_458cf0, v, n, first, last);
+        if (v[2] - v[0])
+            List_FreeNode(v[0], v[2] - v[0]);
+        v[0] = p;
+        v[2] = p + n;
+        v[1] = v[0] + n;
+    } else if ((unsigned)(v[1] - v[0]) >= n) {
+        memmove(v[0], first, last - first);
+        v[1] = v[0] + n;
+    } else {
+        memmove(v[0], first, v[1] - v[0]);
+        char* mid = s[0] + (v[1] - v[0]);
+        memmove(v[1], mid, s[1] - mid);
+        v[1] = v[0] + n;
+    }
+    return self;
+}
+
+// the vehicles' average ratio of their two distances (under 2000)
+extern "C" void __cdecl Vehicles_AverageRatio()
+{
+    int count = 0;
+    g_68d180 = 0;
+    for (unsigned i = 0; i < (unsigned)(g_vehiclesEnd - g_vehicles); i++) {
+        double a, b;
+        Vehicle_Distances(i, &a, &b);
+        if (x87_eq(a, 0.0) || x87_eq(b, 0.0))
+            continue;
+        int type = F(int, g_vehicles[i], 32);
+        if (type == 3 || type == 1)
+            continue;
+        double q = a / b;
+        if (!(q >= 2000.0)) {
+            g_68d180 = g_68d180 + q;
+            count++;
+        }
+    }
+    for (unsigned i = 0; i < (unsigned)(g_vehiclesEnd - g_vehicles); i++) {
+        if (F(int, g_vehicles[i], 32) != 3)
+            continue;
+        double x, y, w, a;
+        Vehicle_Distances(i, &x, &y);
+        Vehicle_Distances(*F(int*, g_vehicles[i], 96), &w, &a);
+        double q = x / a;
+        if (!(q >= 2000.0)) {
+            g_68d180 = g_68d180 + q;
+            count++;
+        }
+    }
+    if (count)
+        g_68d180 = g_68d180 / (double)count;
+}
+
+// the towns' marked items, and each ambush's links to the named ambushes
+extern "C" void __cdecl Ambushes_Link()
+{
+    for (void** t = g_towns; t != g_townsEnd; t++)
+        for (BYTE* it = F(BYTE*, *t, 28); it != F(BYTE*, *t, 32); it += 16)
+            if (F(BYTE, it, 4) & 1)
+                F(int, *t, 64) = F(int, it, 0);
+    for (void** a = g_68a970; a != g_68a974; a++) {
+        BYTE* obj = (BYTE*)*a;
+        for (BYTE* it = F(BYTE*, obj, 208); it != F(BYTE*, obj, 212); it += 12, obj = (BYTE*)*a) {
+            const char* name = F(const char*, it, 0);
+            void** q = g_68a970;
+            for (; q != g_68a974; q++) {
+                CharVec* n = (CharVec*)*q;
+                if (n->begin != n->end && n->begin && !strcmp(n->begin, name))
+                    break;
+            }
+            if (q == g_68a974) {
+                AiError(0, 100, s_mainFile, s_mainId, 12598, "No such ambush ", name, &g_aiEmpty);
+                continue;
+            }
+            void** end = F(void**, obj, 224);
+            if (end != F(void**, obj, 228)) {
+                if (end)
+                    *end = *q;
+                F(void**, obj, 224) = end + 1;
+            } else
+                CallThis(FUN_452900, obj + 220, end, q);
+        }
+    }
+}
+
+// the value of a player's orders
+extern "C" double __cdecl Player_OrdersValue(BYTE* pl)
+{
+    double sum = 0;
+    BYTE* v = Player_Orders(pl, 0);
+    BYTE* it = *(BYTE**)v;
+    for (;;) {
+        v = Player_Orders(pl, v);
+        if (it == F(BYTE*, v, 4))
+            break;
+        int k = F(int, it, 4);
+        if (k != -1)
+            sum = F(double, g_68ccb8, k * 104 + 80) * 15000.0 + sum;
+        it += 144;
+    }
+    return sum;
+}
+
+// the texts of a fine's violations
+extern "C" void __cdecl Fine_ViolationText(BYTE* f, char* out)
+{
+    if (F(BYTE, f, 16) & 1)
+        strcpy(out, AI_Text40e4c0("VIOLATION_WRONG_SIDE"));
+    if (F(BYTE, f, 16) & 2)
+        strcpy(out, AI_Text40e4c0("VIOLATION_REVERSE_GEAR"));
+    if (F(BYTE, f, 16) & 4)
+        strcpy(out, AI_Text40e4c0("VIOLATION_ILLEGAL_PARKING"));
+    if (F(BYTE, f, 16) & 8)
+        strcpy(out, AI_Text40e4c0("VIOLATION_CROSSING_FULL_LINE"));
+    if (F(BYTE, f, 16) & 16)
+        strcpy(out, AI_Text40e4c0("VIOLATION_CHANGING_LANE"));
+    if (F(BYTE, f, 16) & 32)
+        strcpy(out, AI_Text76("VIOLATION_NEGLIGENCE"));
+}
+
+// whether a player has an order with a cargo
+extern "C" bool __cdecl Player_HasCargoOrder(BYTE* pl)
+{
+    BYTE* v = Player_Orders(pl, pl);
+    BYTE* it = *(BYTE**)v;
+    v = pl;
+    for (;;) {
+        v = Player_Orders(pl, v);
+        if (it == F(BYTE*, v, 4))
+            return false;
+        if (F(int, it, 4) != -1)
+            return true;
+        it += 144;
+    }
+}
+
+// the town, index and kind of the nodes of each town's list
+extern "C" void __cdecl Towns_MarkNodes()
+{
+    for (void** t = g_towns; t != g_townsEnd; t++) {
+        BYTE* town = (BYTE*)*t;
+        int v = F(int, town, 24);
+        int i = 0;
+        for (BYTE* it = F(BYTE*, town, 28); it != F(BYTE*, town, 32); it += 16, i++) {
+            int n = F(int, it, 0);
+            if (n == -1)
+                continue;
+            F(int, g_roadNodes[n], 168) = t - g_towns;
+            DWORD f = F(DWORD, it, 4);
+            if (f & 1)
+                F(DWORD, g_roadNodes[n], 12) |= 2;
+            else if (!(f & 8))
+                F(DWORD, g_roadNodes[n], 12) |= 1;
+            F(int, g_roadNodes[n], 180) = i;
+            F(int, g_roadNodes[n], 176) = v;
+        }
+    }
+}
+
+// the parking places' nodes
+extern "C" void __cdecl Parkings_MarkNodes()
+{
+    for (RoadNode** n = g_roadNodes; n != g_roadNodesEnd; n++)
+        F(int, *n, 172) = -1;
+    for (void** p = g_68cc98; p != g_68cc9c; p++) {
+        int idx = p - g_68cc98;
+        BYTE* pk = (BYTE*)g_68cc98[idx];
+        for (unsigned k = 0; k < (unsigned)((F(BYTE*, pk, 32) - F(BYTE*, pk, 28)) / 36); k++) {
+            int n = F(int, F(BYTE*, pk, 28) + k * 36, 0);
+            if (F(int, g_roadNodes[n], 172) != -1)
+                AiError(0, 100, s_mainFile, s_mainId, 13766, "Node used for parking, twice:", Node_Name(n), &g_aiEmpty);
+            F(int, g_roadNodes[n], 172) = idx;
+            F(DWORD, g_roadNodes[n], 12) |= 4;
+            F(int, g_roadNodes[n], 180) = k;
+            F(int, g_roadNodes[n], 176) = F(int, g_68cc98[idx], 24);
+        }
+    }
+}
+
+// the point of a position: its node's, or its road object's at t
+extern "C" DVec3* __cdecl Road_PointOf(DVec3* out, PositionId p)
+{
+    PositionId c = p;
+    if ((!RoadId_Valid(&c.road, 0) && !NodeId_Valid(&c.node, 0)) || !(c.t >= -0.0002) || c.t > 1.0002
+        || c.segment < 0 || c.object < 0) {
+        sprintf(g_positionText76, "(%d %g %d %d %x)", p.road, p.t, p.segment, p.object, p.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 14389, "Invalid id", "PositionId", g_positionText76);
+    }
+    if (p.road >= 0 && (unsigned)p.road < (unsigned)(g_roadEdgesEnd - g_roadEdges)) {
+        RoadEdge* e = g_roadEdges[p.road];
+        if (!(p.object < e->objectsEnd - e->objects && p.segment < e->objects[p.object]->SegmentCount()))
+            AiError(33, 100, s_mainFile, s_mainId, 14389, "Invalid Position Id", &g_aiEmpty, &g_aiEmpty);
+    }
+    if (p.node != -1) {
+        *out = *(DVec3*)((BYTE*)g_roadNodes[p.node] + 48);
+        return out;
+    }
+    CallVirt(g_roadEdges[p.road]->objects[p.object], 0, out, p.t, p.segment);
+    return out;
+}
+
+// a service's info: two ids, the position as floats and its 304-byte table
+extern "C" int __cdecl Service_Info(int i, DWORD* out)
+{
+    static const char sig[] = "getServiceInfo(ServiceId service, ServiceInfo & si)";
+    StateDump& d = g_stateDump;
+    if (d.data && d.pos + 8 < d.size) {
+        memcpy(d.data + d.pos, &g_strStart, 8);
+        d.pos += 8;
+    }
+    Buf_AppendString(&g_stateDump, 0, sig);
+    BYTE* r = (BYTE*)g_68cbe8[i];
+    float x = (float)F(double, r, 336);
+    float y = (float)F(double, r, 344);
+    float z = (float)F(double, r, 352);
+    ((float*)out)[2] = x;
+    ((float*)out)[3] = y;
+    ((float*)out)[4] = z;
+    out[0] = F(DWORD, g_68cbe8[i], 328);
+    out[1] = F(DWORD, g_68cbe8[i], 332);
+    memcpy(out + 6, g_68cbe8[i], 304);
+    if (d.data && d.pos + 8 < d.size) {
+        memcpy(d.data + d.pos, &g_strCompl, 8);
+        d.pos += 8;
+    }
+    if (d.data)
+        for (const char* s = sig; *s && d.pos < d.size;)
+            d.data[d.pos++] = *s++;
+    return 0;
+}
+
+// destructors of vectors of 24- and 16-byte records
+extern "C" void __fastcall Vec24_Destroy(BYTE** self, void*)
+{
+    for (BYTE* p = self[0]; p != self[1]; p += 24)
+        CallThis(FUN_404420, p + 8);
+    int n = (self[2] - self[0]) / 24;
+    if (n)
+        StlDeallocate(self[0], n * 24);
+}
+
+extern "C" void __fastcall Vec16_Destroy(BYTE** self, void*)
+{
+    for (BYTE* p = self[0]; p != self[1]; p += 16)
+        CallThis(FUN_602ca0, p);
+    int n = (self[2] - self[0]) >> 4;
+    if (n)
+        StlDeallocate(self[0], n * 16);
+}
+
+// takes the allocator lock (a guard's constructor)
+extern "C" void* __fastcall StlLock_Guard(void* self, void*)
+{
+    Stl_Lock(&g_stlLock, 0);
+    return self;
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions, batch 3: copies of records with vectors
+
+ASM_PROC(FUN_44c160)    // vector<double>::operator=
+ASM_PROC(FUN_461dc0)    // vector of 16-byte records: allocate and copy (n, first, last)
+ASM_PROC(FUN_469430)    // copy 16-byte records (first, last, dest, -, 0)
+ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
+ASM_PROC(FUN_460d10)    // destroy a 16-byte record
+extern "C" BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags);   // aistl.cpp
+ASM_VAR(BYTE, g_vt64b5c0, $L_64b5c0)
+ASM_VAR(BYTE, g_vt64b62c, $L_64b62c)
+
+// vector<char>::operator=, inlined; the split copy through memmove or Copy1
+static void CharVec_Copy(char** v, char* const* s, bool copy1)
+{
+    char* first = s[0];
+    char* last = s[1];
+    unsigned n = last - first;
+    if (n > (unsigned)(v[2] - v[0])) {
+        char* p = CallThis<char*>(FUN_458cf0, v, n, first, last);
+        if (v[2] - v[0])
+            List_FreeNode(v[0], v[2] - v[0]);
+        v[0] = p;
+        v[2] = p + n;
+    } else if ((unsigned)(v[1] - v[0]) >= n)
+        memmove(v[0], first, last - first);
+    else if (copy1) {
+        Copy1((BYTE*)first, (BYTE*)first + (v[1] - v[0]), (BYTE*)v[0]);
+        Copy1((BYTE*)s[0] + (v[1] - v[0]), (BYTE*)s[1], (BYTE*)v[1]);
+    } else {
+        memmove(v[0], first, v[1] - v[0]);
+        char* mid = s[0] + (v[1] - v[0]);
+        memmove(v[1], mid, s[1] - mid);
+    }
+    v[1] = v[0] + n;
+}
+
+static void Copy4(BYTE* d, const BYTE* s, int from, int to)
+{
+    for (int i = from; i <= to; i += 4)
+        F(DWORD, d, i) = F(DWORD, s, i);
+}
+
+// operator= of a 192-byte record (three char/double vectors)
+extern "C" BYTE* __fastcall Rec192_Assign(BYTE* self, void*, const BYTE* src)
+{
+    F(DWORD, self, 0) = F(DWORD, src, 0);
+    Copy4(self, src, 8, 12);
+    memcpy(self + 16, src + 16, 32);
+    F(DWORD, self, 48) = F(DWORD, src, 48);
+    if (src + 52 != self + 52)
+        CharVec_Copy((char**)(self + 52), (char* const*)(src + 52), false);
+    if (src + 64 != self + 64)
+        CharVec_Copy((char**)(self + 64), (char* const*)(src + 64), true);
+    CallThis(FUN_44c160, self + 76, src + 76);
+    CallThis(FUN_44c160, self + 88, src + 88);
+    Copy4(self, src, 100, 112);
+    Copy4(self, src, 120, 180);
+    F(BYTE, self, 184) = F(BYTE, src, 184);
+    return self;
+}
+
+// copies [first, last) of 56-byte records over dest
+extern "C" BYTE* __cdecl Rec56_Copy(const BYTE* first, const BYTE* last, BYTE* dest)
+{
+    for (int n = (last - first) / 56; n > 0; n--, first += 56, dest += 56) {
+        F(DWORD, dest, 0) = F(DWORD, first, 0);
+        if (first + 4 != dest + 4)
+            CharVec_Copy((char**)(dest + 4), (char* const*)(first + 4), false);
+        Copy4(dest, first, 16, 32);
+        Copy4(dest, first, 40, 52);
+    }
+    return dest;
+}
+
+// the vector of 16-byte records at +120 of a 144-byte order
+static void Orders_CopyVec(BYTE** d, BYTE* const* s, bool destroy461ae0, int junk)
+{
+    unsigned n = (s[1] - s[0]) >> 4;
+    if (n > (unsigned)((d[2] - d[0]) >> 4)) {
+        BYTE* p = CallThis<BYTE*>(FUN_461dc0, d, n, s[0], s[1]);
+        for (BYTE* e = d[0]; e != d[1]; e += 16)
+            if (destroy461ae0)
+                Rec16_DeletingDestructor(e, 0, 0);
+            else
+                CallC(FUN_460d10, e);
+        if ((d[2] - d[0]) >> 4)
+            List_FreeNode(d[0], ((d[2] - d[0]) >> 4) << 4);
+        d[0] = p;
+        d[2] = p + n * 16;
+    } else if ((unsigned)((d[1] - d[0]) >> 4) >= n) {
+        BYTE* e = CallC<BYTE*>(FUN_469430, s[0], s[1], d[0], destroy461ae0 ? (int)n : junk, 0);
+        for (; e != d[1]; e += 16)
+            if (destroy461ae0)
+                Rec16_DeletingDestructor(e, 0, 0);
+            else
+                CallC(FUN_460d10, e);
+    } else {
+        int size = (d[1] - d[0]) >> 4;
+        BYTE* from = s[0];
+        if (destroy461ae0) {
+            BYTE* to = d[0];
+            for (int k = size; k > 0; k--, from += 16, to += 16)
+                Rec42bfe0_Assign((int*)to, 0, (const int*)from);
+        } else
+            CallC(FUN_469430, s[0], s[0] + size * 16, d[0], junk, 0);
+        CallC(FUN_466300, s[0] + ((d[1] - d[0]) >> 4) * 16, s[1], d[1], destroy461ae0 ? (int)from : junk);
+    }
+    d[1] = d[0] + n * 16;
+}
+
+static void Order144_Assign(BYTE* d, const BYTE* s, bool destroy461ae0)
+{
+    Copy4(d, s, 0, 16);
+    memcpy(d + 24, s + 24, 32);
+    Copy4(d, s, 56, 104);
+    Copy4(d, s, 112, 116);
+    if (s + 120 != d + 120)
+        Orders_CopyVec((BYTE**)(d + 120), (BYTE* const*)(s + 120), destroy461ae0, 0);
+    Copy4(d, s, 132, 136);
+}
+
+// operator= of a 144-byte order
+extern "C" BYTE* __fastcall Order144_AssignThis(BYTE* self, void*, const BYTE* src)
+{
+    Order144_Assign(self, src, true);
+    return self;
+}
+
+// copies [first, last) of 144-byte orders over dest
+extern "C" BYTE* __cdecl Order144_Copy(const BYTE* first, const BYTE* last, BYTE* dest)
+{
+    for (int n = (last - first) / 144; n > 0; n--, first += 144, dest += 144)
+        Order144_Assign(dest, first, false);
+    return dest;
+}
+
+// destructor of a record with two vectors (24- and 8-byte elements)
+extern "C" void __fastcall Rec458940_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vt64b5c0;
+    BYTE* a = self ? self + 56 : 0;
+    BYTE* b = F(BYTE*, a, 32);
+    int n = (F(BYTE*, a, 40) - b) / 24;
+    if (n)
+        StlDeallocate(b, n * 24);
+    F(void*, self, 0) = &g_vt64b62c;
+    a = self ? self + 8 : 0;
+    b = F(BYTE*, a, 32);
+    n = (F(BYTE*, a, 40) - b) >> 3;
+    if (n)
+        StlDeallocate(b, n * 8);
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions, batch 4: vector erase, order lists, the name hash
+
+ASM_PROC(FUN_40c1a0)    // destroy a 104-byte record
+ASM_PROC(FUN_40cb60)    // destroy a 24-byte record
+ASM_PROC(FUN_45aa00)    // operator= of the vector at +12 of a 24-byte record
+ASM_PROC(FUN_440dd0)    // destroy a 192-byte record
+ASM_PROC(FUN_4618c0)    // vector of 16-byte records: operator=
+ASM_PROC(FUN_41ce50)    // destroy a 144-byte order
+ASM_PROC(FUN_44fac0)    // hash table: grow for n entries
+ASM_PROC(FUN_44f2c0)    // a string's character (s, i)
+ASM_PROC(FUN_45a7d0)    // compare two strings
+ASM_PROC(FUN_4592b0)    // hash table: a new node for a key
+ASM_PROC(FUN_461b60)    // vector of 24-byte records: allocate and copy (n, first, last)
+ASM_PROC(FUN_46c490)    // destroy a 24-byte record
+ASM_PROC(FUN_466c50)    // copy 24-byte records (first, last, dest, -, 0)
+ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
+extern "C" double __cdecl Order_Value(const int* o);        // aiordr.cpp
+extern "C" double __cdecl Order_FullValue(const int* o);
+
+// vector<104-byte record>::erase(first, last)
+extern "C" BYTE* __fastcall Vec104_Erase(BYTE** self, void*, BYTE* first, BYTE* last)
+{
+    BYTE* d = first;
+    BYTE* last0 = last;
+    for (int n = (self[1] - last) / 104; n > 0; n--, d += 104, last += 104) {
+        Str_Assign((StrRef*)d, 0, (const StrRef*)last);
+        Copy4(d, last, 16, 48);
+        Copy4(d, last, 56, 72);
+        Copy4(d, last, 80, 84);
+        CallThis(FUN_44c160, d + 88, last + 88);
+    }
+    for (BYTE* e = self[1]; d != e; d += 104)
+        CallThis(FUN_40c1a0, d);
+    self[1] -= ((last0 - first) / 104) * 104;
+    return first;
+}
+
+
+// vector<24-byte record>::erase(first, last)
+extern "C" BYTE* __fastcall Vec24_Erase(BYTE** self, void*, BYTE* first, BYTE* last)
+{
+    BYTE* d = first;
+    BYTE* s = last;
+    for (int n = (self[1] - last) / 24; n > 0; n--, d += 24, s += 24) {
+        ((StrRef*)d)->Assign((const StrRef*)s);
+        CallThis(FUN_45aa00, d + 12, s + 12);
+    }
+    for (BYTE* e = self[1]; d != e; d += 24)
+        CallThis(FUN_40cb60, d);
+    self[1] -= ((last - first) / 24) * 24;
+    return first;
+}
+
+// vector<192-byte record>::erase(first, last)
+extern "C" BYTE* __fastcall Vec192_Erase(BYTE** self, void*, BYTE* first, BYTE* last)
+{
+    BYTE* d = first;
+    BYTE* s = last;
+    for (int n = (self[1] - last) / 192; n > 0; n--, d += 192, s += 192) {
+        F(DWORD, d, 0) = F(DWORD, s, 0);
+        Copy4(d, s, 8, 12);
+        memcpy(d + 16, s + 16, 32);
+        F(DWORD, d, 48) = F(DWORD, s, 48);
+        CallThis(FUN_44c160, d + 52, s + 52);
+        CallThis(FUN_44c160, d + 64, s + 64);
+        CallThis(FUN_44c160, d + 76, s + 76);
+        CallThis(FUN_44c160, d + 88, s + 88);
+        Copy4(d, s, 100, 112);
+        Copy4(d, s, 120, 180);
+        F(BYTE, d, 184) = F(BYTE, s, 184);
+        Rec_FirstNonEmpty(d, 0);
+    }
+    for (BYTE* e = self[1]; d != e; d += 192)
+        CallThis(FUN_440dd0, d);
+    self[1] -= ((last - first) / 192) * 192;
+    return first;
+}
+
+// removes the orders that match from a list, adding up their values
+static bool Orders_RemoveIf(BYTE** v, double* sum, bool expired)
+{
+    bool removed = false;
+    for (;;) {
+        BYTE* it = v[0];
+        for (; it != v[1]; it += 144)
+            if (expired ? AI_Now() > F(double, it, 72) : !(F(double, it, 96) >= 0.01))
+                break;
+        if (it == v[1])
+            return removed;
+        double x = expired ? Order_FullValue((const int*)it) : Order_Value((const int*)it);
+        *sum = x + *sum;
+        BYTE* d = it;
+        for (int n = (v[1] - (it + 144)) / 144; n > 0; n--, d += 144) {
+            BYTE* s = d + 144;
+            Copy4(d, s, 0, 16);
+            memcpy(d + 24, s + 24, 32);
+            Copy4(d, s, 56, 104);
+            Copy4(d, s, 112, 116);
+            CallThis(FUN_4618c0, d + 120, s + 120);
+            Copy4(d, s, 132, 136);
+        }
+        v[1] -= 144;
+        CallThis(FUN_41ce50, v[1]);
+        removed = true;
+    }
+}
+
+extern "C" bool __cdecl Orders_RemoveExpired(BYTE** v, double* sum) { return Orders_RemoveIf(v, sum, true); }
+extern "C" bool __cdecl Orders_RemoveEmpty(BYTE** v, double* sum) { return Orders_RemoveIf(v, sum, false); }
+
+// hash_set<string>::insert_unique: out = {node, table, inserted}
+extern "C" void** __fastcall NameHash_Insert(BYTE* self, void*, void** out, int** key)
+{
+    CallThis(FUN_44fac0, self, F(int, self, 16) + 1);
+    unsigned h = 0;
+    int* s = *key;
+    int len;
+    if (s && (len = *s) != 0) {
+        int a = CallC<char>(FUN_44f2c0, s, 0);
+        int b = CallC<char>(FUN_44f2c0, *key, len - 1);
+        h = a * 13 + b * 5 + len;
+    }
+    void** buckets = F(void**, self, 4);
+    unsigned i = h % (unsigned)((F(BYTE*, self, 8) - F(BYTE*, self, 4)) >> 2);
+    void** head = (void**)buckets[i];
+    for (void** n = head; n; n = (void**)*n)
+        if (CallC<int>(FUN_45a7d0, n[1], *key) == 0) {
+            out[0] = n;
+            out[1] = self;
+            F(BYTE, out, 8) = 0;
+            return out;
+        }
+    void** n = CallThis<void**>(FUN_4592b0, self, key);
+    *n = head;
+    F(void**, self, 4)[i] = n;
+    F(int, self, 16)++;
+    out[0] = n;
+    out[1] = self;
+    F(BYTE, out, 8) = 1;
+    return out;
+}
+
+// copies [first, last) of 24-byte records (a string and a vector) over dest
+extern "C" BYTE* __cdecl Rec24_Copy(const BYTE* first, const BYTE* last, BYTE* dest)
+{
+    for (int k = (last - first) / 24; k > 0; k--, first += 24, dest += 24) {
+        ((StrRef*)dest)->Assign((const StrRef*)first);
+        BYTE** d = (BYTE**)(dest + 12);
+        BYTE* const* s = (BYTE* const*)(first + 12);
+        if ((const void*)s == (void*)d)
+            continue;
+        unsigned n = (s[1] - s[0]) / 24;
+        if (n > (unsigned)((d[2] - d[0]) / 24)) {
+            BYTE* p = CallThis<BYTE*>(FUN_461b60, d, n, s[0], s[1]);
+            for (BYTE* e = d[0]; e != d[1]; e += 24)
+                CallC(FUN_46c490, e);
+            if ((d[2] - d[0]) / 24)
+                List_FreeNode(d[0], ((d[2] - d[0]) / 24) * 24);
+            d[0] = p;
+            d[2] = p + n * 24;
+        } else if ((unsigned)((d[1] - d[0]) / 24) >= n) {
+            BYTE* e = CallC<BYTE*>(FUN_466c50, s[0], s[1], d[0], 0, 0);
+            for (; e != d[1]; e += 24)
+                CallC(FUN_46c490, e);
+        } else {
+            CallC(FUN_466c50, s[0], s[0] + ((d[1] - d[0]) / 24) * 24, d[0], 0, 0);
+            CallC(FUN_466200, s[0] + ((d[1] - d[0]) / 24) * 24, s[1], d[1], 0);
+        }
+        d[1] = d[0] + n * 24;
+    }
+    return dest;
 }

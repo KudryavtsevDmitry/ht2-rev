@@ -97,7 +97,7 @@ ASM_VAR(char, g_aiEmpty, $L_68d1c0)
 typedef void* FreeLists[17];
 ASM_VAR(FreeLists, g_stlFreeLists, $L_68d1c0)  // the STL node allocator, by 8 bytes
 ASM_VAR(volatile LONG, g_stlLock, $L_68d204)
-ASM_PROC(FUN_401aa0)                            // the allocator lock: acquire
+extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);   // aimain.cpp: the allocator lock
 
 extern "C" PositionId* __cdecl Road_EdgeStart(PositionId* out, RoadEdge* e);
 KING_ALIAS("_Road_EdgeStart", "FUN_47fcf0")
@@ -126,7 +126,6 @@ struct HopVecFull {
 };
 
 extern "C" double __cdecl Road_EdgeCost(int side, RoadEdge* e, int dir);
-KING_ALIAS("_Road_EdgeCost", "FUN_409980")
 extern "C" HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, double* cost);
 KING_ALIAS("_Road_FindRoute", "FUN_484c80")
 extern "C" void __cdecl Road_PositionCost(int side, PositionId from, PositionId to, double* cost);
@@ -142,7 +141,7 @@ inline void StlDeallocate(void* p, unsigned bytes)
         return;
     }
     void** list = &g_stlFreeLists[(bytes + 7) >> 3];
-    CallThis(FUN_401aa0, (const void*)&g_stlLock);
+    Stl_Lock(&g_stlLock, 0);
     *(void**)p = *list;
     *list = p;
     g_stlLock = 0;
