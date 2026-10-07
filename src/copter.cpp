@@ -6,6 +6,7 @@
 // Building with  nmake ASM_COPTER=1  makes king.masm assemble the original
 // procedures again.
 
+#define _CRT_SECURE_NO_WARNINGS
 #include <string.h>
 #include "vecmath.h"
 
@@ -18,7 +19,7 @@ ASM_PROC(FUN_5662f0)    // copter: a new state
 ASM_PROC(FUN_5e5370)    // objects of a screen: by id
 ASM_PROC(FUN_569000)
 ASM_PROC(FUN_569250)
-ASM_PROC(FUN_5699b0)    // screen messages: add (text)
+extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text);
 ASM_PROC(FUN_5d3290)    // destructor of the notice's base class
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5b9660)
@@ -424,7 +425,8 @@ extern "C" BYTE* __cdecl Messages_Clear1276()
 
 extern "C" int __cdecl Messages_Add569720(const char* text)
 {
-    return CallThis<int>(FUN_5699b0, g_messages, text);
+    Messages_AddText(g_messages, 0, text);
+    return 0;
 }
 
 extern "C" int __cdecl Messages_Get1288()
@@ -435,7 +437,7 @@ extern "C" int __cdecl Messages_Get1288()
 extern "C" void __cdecl Messages_Add(const char* text)
 {
     if (g_messages)
-        CallThis(FUN_5699b0, g_messages, text);
+        Messages_AddText(g_messages, 0, text);
 }
 
 // ---------------------------------------------------------------------------
@@ -590,4 +592,239 @@ extern "C" BYTE* __fastcall Obj576c00_DeletingDestructor(BYTE* self, void*, int 
     if (flags & 1)
         operator delete(self);
     return self;
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions of the unit
+
+ASM_PROC(FUN_561800)
+ASM_PROC(FUN_4e4750)    // a child of the object by name (object, name, flags)
+ASM_PROC(FUN_4e480c)    // show or hide an object (object, show)
+ASM_VAR(BYTE*, g_truck, $L_6f33ac)              // +88: the hour (double)
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
+ASM_VAR(double, g_64b840, $L_64b840)            // 0.2
+ASM_VAR(double, g_64b668, $L_64b668)            // 1.5
+
+static void Matrix_Construct(Matrix* m)
+{
+    for (int k = 0; k < 4; k++)
+        Vec3_ZeroThis((Vec3*)((BYTE*)m + k * 12), 0);
+    *m = g_identity;
+}
+
+extern "C" BYTE* __fastcall Copter_Construct(BYTE* self, void*, int a, int b, int c)
+{
+    Matrix_Construct(&F(Matrix, self, 0));
+    Matrix_Construct(&F(Matrix, self, 48));
+    for (int i = 100; i <= 120; i += 4)
+        F(int, self, i) = 0;
+    Stack_Reset(self + 144, 0);
+    for (int i = 3172; i <= 3204; i += 4)
+        F(int, self, i) = 0;
+    F(int, self, 3256) = 0;
+    F(int, self, 3260) = 0;
+    F(int, self, 3264) = 0;
+    F(int, self, 3272) = -1;
+    F(int, self, 3316) = 0;
+    F(int, self, 3320) = 0;
+    F(int, self, 3324) = 0;
+    F(int, self, 3360) = 0;
+    F(int, self, 3364) = 0;
+    F(int, self, 3368) = 0;
+    Copter561310_Construct(self + 3372, 0);
+    for (int i = 3504; i <= 3536; i += 4)
+        F(int, self, i) = 0;
+    CallThis(FUN_561800, self, a, b);
+    F(int, self, 3268) = c;
+    return self;
+}
+
+extern "C" int __fastcall Copter_FindLights(BYTE* self, void*, void* model)
+{
+    F(void*, self, 3160) = CallC<void*>(FUN_4e4750, model, "SearchLightKey", 0);
+    F(void*, self, 3164) = CallC<void*>(FUN_4e4750, model, "BlinkLightKey", 0);
+    F(void*, self, 3168) = CallC<void*>(FUN_4e4750, model, "StaticLightKey", 0);
+    F(void*, self, 3300) = CallC<void*>(FUN_4e4750, model, "GunLeftKey", 0);
+    F(void*, self, 3304) = CallC<void*>(FUN_4e4750, model, "GunRightKey", 0);
+    F(int, self, 3544) = -1;
+    F(Vec3, self, 3504) = g_zeroVec;
+    F(Vec3, self, 3516) = g_axisZ;
+    F(Vec3, self, 3528) = g_axisY;
+    return 0;
+}
+
+// the lights at night (from 22 to 5) and the blinking light
+extern "C" void __fastcall Copter_UpdateLights(BYTE* self, void*)
+{
+    int hour = (int)F(double, g_truck, 88);
+    int night = !(hour <= 21 && hour >= 6);
+    CallC(FUN_4e480c, F(void*, self, 3168), night);
+    CallC(FUN_4e480c, F(void*, self, 3164), F(int, self, 3156) ? 1 : 0);
+    double d = Game_Time() - F(float, self, 3152);
+    if (d > g_64b840)
+        F(int, self, 3156) = 0;
+    if (d > g_64b668) {
+        if (!F(int, self, 3156))
+            F(float, self, 3152) = (float)Game_Time();
+        F(int, self, 3156) = 1;
+    }
+    CallC(FUN_4e480c, F(void*, self, 3160), night);
+}
+
+ASM_PROC(FUN_568830)    // adds a helicopter's way point
+ASM_PROC(FUN_4ba0c0)
+ASM_PROC(FUN_5ea1b0)    // draws a text in a box
+extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);   // engine.cpp
+extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out);          // engine.cpp
+ASM_VAR(int, g_wayCount, $L_67b2b8)
+ASM_VAR(int, g_696c5c, $L_696c5c)
+ASM_VAR(BYTE*, g_6ef1fc, $L_6ef1fc)
+ASM_VAR(Sound*, g_shootSound, $L_6f2c44)
+ASM_VAR(Sound*, g_hitgrndSound, $L_6f2c48)
+ASM_VAR(AsmLabel, g_str68d1c0, $L_68d1c0)       // ""
+ASM_VAR(AsmLabel, g_str67b69c, $L_67b69c)
+ASM_VAR(AsmLabel, g_str67b698, $L_67b698)
+ASM_VAR(AsmLabel, g_str67b68c, $L_67b68c)       // "room_al_082"
+ASM_VAR(AsmLabel, g_str67b688, $L_67b688)
+ASM_VAR(AsmLabel, g_str67b67c, $L_67b67c)       // "room_aq_008"
+ASM_VAR(AsmLabel, g_str66c4f4, $L_66c4f4)
+ASM_VAR(AsmLabel, g_str67b670, $L_67b670)       // "room_at_004"
+ASM_VAR(AsmLabel, g_str67b66c, $L_67b66c)
+ASM_VAR(AsmLabel, g_str67b668, $L_67b668)
+ASM_VAR(AsmLabel, g_cb569090, $L_569090)
+ASM_VAR(double, g_64ff10, $L_64ff10)            // 6200
+ASM_VAR(double, g_64b5f0, $L_64b5f0)            // 10000
+ASM_VAR(Ints, g_colors67b73c, $L_67b73c)        // 8 colors
+ASM_VAR(int, g_scoreCount, $L_6f34d8)
+ASM_VAR(Ints, g_scoreNames, $L_6f3388)          // char*
+ASM_VAR(Doubles, g_scoreValues, $L_6f2df8)
+ASM_VAR(BYTE*, g_6cec98, $L_6cec98)
+
+static inline void Way_Add(void* scene, const char* room, const char* name, float x, float y, float z,
+                           float r, int index)
+{
+    CallC(FUN_568830, scene, room, name, x, y, z, r, index, 0, 0);
+}
+
+extern "C" void __cdecl Helicopters_Init(void* scene)
+{
+    g_wayCount = 0;
+    if (!g_696c5c)
+        return;
+    g_wayCount = 1;
+    Way_Add(scene, g_str68d1c0, g_str67b69c, 2650.0f, -2400.0f, 550.0f, 600.0f, 0);
+    Way_Add(scene, g_str67b68c, g_str67b698, -2205.0f, -1983.0f, 65.0f, 600.0f, g_wayCount++);
+    Way_Add(scene, g_str67b67c, g_str67b688, -3400.0f, -3800.0f, 20.0f, 600.0f, g_wayCount++);
+    Way_Add(scene, g_str67b670, g_str66c4f4, -4107.0f, -393.0f, 40.0f, 600.0f, g_wayCount++);
+    Way_Add(scene, g_str68d1c0, g_str67b66c, -600.0f, -2850.0f, 100.0f, 600.0f, g_wayCount++);
+    Way_Add(scene, g_str68d1c0, g_str67b668, -3800.0f, 4000.0f, 20.0f, 600.0f, g_wayCount++);
+    g_shootSound = Sound_Find("shootSound");
+    g_hitgrndSound = Sound_Find("hitgrndSound");
+    if (!g_shootSound || !g_hitgrndSound) {
+        char buf[200];
+        sprintf(buf, "initHelicopters() did not find sounds: \"shootSound\"=%x, \"hitgrndSound\"=%x",
+                (unsigned)g_shootSound, (unsigned)g_hitgrndSound);
+    }
+}
+
+// the position of way point i and its object's id
+extern "C" int __cdecl Way_Point(int i, DWORD* pos, int* id)
+{
+    if (i >= g_wayCount || i < 0)
+        return -1;
+    *id = i + 300000;
+    int* o = CallThis<int*>(FUN_5e5370, g_6ef1fc + 704, i + 300000);
+    if (!o)
+        return -2;
+    if (o[0] == 1 && o[7]) {
+        Matrix m;
+        BYTE* r = (BYTE*)SceneObj_Matrix1((BYTE*)o[7] + 16, 0, &m);
+        pos[0] = F(DWORD, r, 36);
+        pos[1] = F(DWORD, r, 40);
+        pos[2] = F(DWORD, r, 44);
+        return 0;
+    }
+    BYTE* d = (BYTE*)o[6];
+    pos[0] = F(DWORD, d, 80);
+    pos[1] = F(DWORD, d, 84);
+    pos[2] = F(DWORD, d, 88);
+    return 0;
+}
+
+// adds a screen message, not the last one again within 10 s
+extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text)
+{
+    if (strlen(text) >= 128)
+        return;
+    int cur = F(int, self, 1200);
+    if (F(char, self, 44 + cur * 128))
+        return;
+    int prev = cur - 1;
+    if (prev < 0)
+        prev += 4;
+    if (strcmp(text, (const char*)self + 44 + prev * 128) == 0
+        && !(Timer_Now() - F(int, self, 1272) >= g_64b5f0))
+        return;
+    F(int, self, 1272) = (int)Timer_Now();
+    int n = F(int, self, 1200);
+    F(int, self, 1200) = n + 1;
+    strcpy((char*)self + 44 + n * 128, text);
+    F(int, self, 1200) = F(int, self, 1200) % 4;
+}
+
+// a gate of the race passed: the time bonus, and the gate lit
+extern "C" void __cdecl Gate_Passed(int id, int side, BYTE* car)
+{
+    BYTE* o = CallThis<BYTE*>(FUN_5e5370, (BYTE*)g_pWnd6cec6c->m_1356 + 704, id);
+    BYTE* b = F(BYTE*, o, 28);
+    if (!b)
+        return;
+    if (!F(int, b, 416) && car && F(int, car, 392) == 2 && F(int, car, 3568) == 2
+        && car - 16 == F(BYTE*, g_p6d2078, 616)) {
+        BYTE* e = F(BYTE*, car, 20620);
+        F(double, e, 208) = F(double, e, 208) + g_64ff10;
+        F(DWORD, e, 216) |= 32;
+    }
+    if (F(int, b, 416) & (3 << (side * 2)))
+        return;
+    Matrix m;
+    for (int k = 0; k < 4; k++)
+        Vec3_ZeroThis((Vec3*)((BYTE*)&m + k * 12), 0);
+    m = g_identity;
+    Node_Matrix(b, 0, &m);
+    CallC(FUN_4ba0c0, &m, side, (void*)g_cb569090, b);
+}
+
+extern "C" void __cdecl Colors_Init(BYTE* surface)
+{
+    g_colors67b73c[0] = Obj573fe0(surface, 255, 0, 255);
+    g_colors67b73c[1] = Obj573fe0(surface, 0, 255, 0);
+    g_colors67b73c[2] = Obj573fe0(surface, 0, 0, 255);
+    g_colors67b73c[3] = Obj573fe0(surface, 255, 255, 0);
+    g_colors67b73c[4] = Obj573fe0(surface, 0, 255, 255);
+    g_colors67b73c[5] = Obj573fe0(surface, 255, 255, 255);
+    g_colors67b73c[6] = Obj573fe0(surface, 255, 128, 0);
+    g_colors67b73c[7] = Obj573fe0(surface, 0, 128, 255);
+}
+
+// the table of the results: place, name and time or money
+extern "C" void __cdecl Scores_Draw(BYTE* surface, int x, int y)
+{
+    char buf[64];
+    int xx = x + 38;
+    for (int i = 0; i < g_scoreCount; i++) {
+        sprintf(buf, "%d", i + 1);
+        int yy = y + 15 + (i % 4) * 20;
+        CallC(FUN_5ea170, surface, xx - 33, yy, g_fontMenu, buf, 6, 0);
+        CallC(FUN_5ea1b0, surface, xx, yy, 70, g_fontMenu, g_scoreNames[i], 6, 0);
+        double v = g_scoreValues[i];
+        if (F(int, g_6cec98, 384) < 2) {
+            int t = (int)v;
+            sprintf(buf, "%d:%02d", t / 60, t % 60);
+        } else
+            sprintf(buf, "$%d", (int)v);
+        CallC(FUN_5ea170, surface, xx + 74, yy, g_fontMenu, buf, 6, 0);
+        if (i == 3)
+            xx += 181;
+    }
 }
