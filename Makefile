@@ -35,6 +35,11 @@ OUT = king.exe
 #   ASM_AITRCE    src\aitrce.cpp    AI geometry, CRC and filters (src\aitrce.cpp)
 #   ASM_AIROAD    src\airoad.cpp    AI road ids (src\airoad.cpp)
 #   ASM_AIPLAY    src\aiplay.cpp    AI players (src\aiplay.cpp)
+#   ASM_AEFFECTS  src\aeffects.cpp  effects (src\aeffects.cpp)
+#   ASM_CAR2E     src\car2e.cpp     vehicle methods (src\car2e.cpp)
+#   ASM_CARAT     src\carat.cpp     game, menus and screens (src\carat.cpp)
+#   ASM_AIMAIN    src\aimain.cpp    AI main (src\aimain.cpp)
+#   ASM_AISTL     src\aistl.cpp     AI STL instances (src\aistl.cpp)
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
@@ -46,6 +51,11 @@ ASM_VECMATH = 1
 ASM_AITRCE = 1
 ASM_AIROAD = 1
 ASM_AIPLAY = 1
+ASM_AEFFECTS = 1
+ASM_CAR2E = 1
+ASM_CARAT = 1
+ASM_AIMAIN = 1
+ASM_AISTL = 1
 !ENDIF
 
 MLFLAGS =
@@ -80,7 +90,22 @@ MLFLAGS = $(MLFLAGS) /DASM_AIROAD
 !IFDEF ASM_AIPLAY
 MLFLAGS = $(MLFLAGS) /DASM_AIPLAY
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj
+!IFDEF ASM_AEFFECTS
+MLFLAGS = $(MLFLAGS) /DASM_AEFFECTS
+!ENDIF
+!IFDEF ASM_CAR2E
+MLFLAGS = $(MLFLAGS) /DASM_CAR2E
+!ENDIF
+!IFDEF ASM_CARAT
+MLFLAGS = $(MLFLAGS) /DASM_CARAT
+!ENDIF
+!IFDEF ASM_AIMAIN
+MLFLAGS = $(MLFLAGS) /DASM_AIMAIN
+!ENDIF
+!IFDEF ASM_AISTL
+MLFLAGS = $(MLFLAGS) /DASM_AISTL
+!ENDIF
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
