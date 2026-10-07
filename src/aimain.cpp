@@ -19,8 +19,7 @@ static const char s_mainFile[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\Ai_main.cpp";
 
 extern "C" void __cdecl AI_Error4a52e0(int code, int a);
 KING_ALIAS("_AI_Error4a52e0", "FUN_4a52e0")
-extern "C" void __cdecl AI_510690();
-KING_ALIAS("_AI_510690", "FUN_510690")
+extern "C" int __cdecl Loading_Step();    // carat.cpp
 extern "C" void** __cdecl Towns_Find453bd0(void** first, void** last, int key, void* rng);
 KING_ALIAS("_Towns_Find453bd0", "FUN_453bd0")
 extern "C" void** __cdecl Towns_Find453d70(void** first, void** last, int a, int b, int c);
@@ -395,7 +394,7 @@ extern "C" int* __cdecl Vehicle_IndexByName(int* out, const char* name, int owne
 extern "C" void __cdecl AI_Step3()
 {
     for (int i = 0; i < 3; i++)
-        AI_510690();
+        Loading_Step();
 }
 
 extern "C" LONG __cdecl AI_Exchange(LONG* target, LONG value) { return InterlockedExchange(target, value); }

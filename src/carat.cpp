@@ -9,6 +9,7 @@
 #define _CRT_SECURE_NO_WARNINGS     // strcpy as in the game
 #include <string.h>
 #include "vecmath.h"
+#include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -579,4 +580,181 @@ void __fastcall Screen_Destruct(void* s, void*) { S(s)->Destruct(); }           
 void __fastcall Screen_OpenMovie(void* s, void*, int a, int b) { S(s)->OpenMovie(a, b); }            // [FUN_528f50]
 void __fastcall Screen_Set2304(void* s, void*, int) { F(int, s, 2304) = 7; }                         // [FUN_528fb0]
 void __fastcall Screen_Mark(void* s, void*, int key) { S(s)->Mark(key); }                            // [FUN_529850]
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions of the unit
+
+extern "C" {
+size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
+int __cdecl fseek(FILE* f, long off, int origin);
+}
+ASM_PROC(FUN_50b620)    // DMat4: determinant
+ASM_PROC(FUN_530020)
+ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
+ASM_PROC(FUN_5b6bf0)
+ASM_PROC(FUN_5b6ed0)
+ASM_PROC(FUN_5b6b10)
+ASM_PROC(FUN_4e1320)
+ASM_PROC(FUN_519750)
+ASM_VAR(int, g_6ce370, $L_6ce370)               // the vehicle tech table is loaded
+ASM_VAR(const char*, g_vehTechName, $L_674ae0)
+ASM_VAR(int, g_697860, $L_697860)
+ASM_VAR(int, g_6ce32c, $L_6ce32c)
+typedef int Ints8[8];
+ASM_VAR(Ints8, g_6ce34c, $L_6ce34c)
+typedef BYTE VehTech[35 * 876];
+ASM_VAR(VehTech, g_6c6b68, $L_6c6b68)
+ASM_VAR(int, g_69689c, $L_69689c)
+ASM_VAR(AsmLabel, g_6d1948, $L_6d1948)
+ASM_VAR(int, g_6ced40, $L_6ced40)
+ASM_VAR(int, g_6ced44, $L_6ced44)
+ASM_VAR(BYTE*, g_6ced38, $L_6ced38)
+ASM_VAR(int, g_6ced3c, $L_6ced3c)
+ASM_VAR(void*, g_696868, $L_696868)             // the ini file
+ASM_VAR(BYTE*, g_6cecc0, $L_6cecc0)
+ASM_VAR(int, g_6ced64, $L_6ced64)
+ASM_VAR(int, g_6ced50, $L_6ced50)
+ASM_VAR(int, g_loadSteps, $L_675468)            // 800
+ASM_VAR(BYTE*, g_6ced5c, $L_6ced5c)
+ASM_VAR(BYTE*, g_6ced60, $L_6ced60)
+
+extern "C" int __cdecl VehTech_Load()
+{
+    g_6ce370 = 0;
+    FILE* f = fopen(g_vehTechName, "rb");
+    int hdr = 0;
+    fread(&hdr, 4, 1, f);
+    if (!g_697860) {
+        if (f)
+            fclose(f);
+        return g_6ce370;
+    }
+    if (!f)
+        return g_6ce370;
+    if (fseek(f, hdr + g_6ce32c * 4 + 193324, 0) == 0) {
+        int n = 0;
+        fread(&n, 4, 1, f);
+        bool ok = n == 876;
+        for (int i = 0; ok && i < 8; i++)
+            ok = fread(&g_6ce34c[i], 1, 4, f) == 4;
+        if (ok && fread(g_6c6b68, 876, 35, f) == 35 && !(F(BYTE, f, 12) & 16))
+            g_6ce370 = 1;
+    }
+    fclose(f);
+    return g_6ce370;
+}
+
+extern "C" DMat4* __cdecl DMat_Inverse(DMat4* out, const DMat4* m)
+{
+    DMat4 t, r;
+    DMat_Zero(&r, 0);
+    DMat_Zero(&t, 0);
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            t.r[j].v[i] = m->r[i].v[j];
+    double det = CallThis<double>(FUN_50b620, m);
+    if (x87_eq(det, 0.0)) {
+        DMat_CopyNew(out, 0, &r);
+        return out;
+    }
+    double inv = 1.0 / det;
+    for (int i = 0; i < 4; i++)
+        for (int j = 0; j < 4; j++)
+            r.r[i].v[j] = DMat_Cofactor((DMat4Methods*)&t, 0, i, j) * inv;
+    DMat_CopyNew(out, 0, &r);
+    return out;
+}
+
+// the loading picture while the game loads
+extern "C" void __cdecl Loading_Update()
+{
+    if (g_69689c) {
+        if (!g_6ce4f4) {
+            CallThis(FUN_530020, g_6d1948);
+            CallThis(FUN_50c010, &g_6ce4f4);
+            g_6ced40 = 0;
+        } else if (!g_6ced44)
+            g_6ced40 = 1;
+        BYTE* w = g_69684c;
+        int s = F(int, w, 12);
+        if (g_6ce4f4)
+            Carat_Draw5b86c0(s, 0, 0, (int)g_6ce4f4);
+        if (g_6ced38) {
+            int x = (int)(CallVirt<int>(w, 20) - (unsigned)F(WORD, g_6ced38, 4)) / 2;
+            int y = (int)(CallVirt<int>(w, 24) - (unsigned)F(WORD, g_6ced38, 6)) / 2;
+            Gfx_DrawImage((CSurface*)s, x, y, g_6ced38, 0);
+        }
+        g_6ced3c = 1;
+        g_6ced44 = g_69689c;
+        return;
+    }
+    if (g_6ce4f4 && g_6ced3c) {
+        g_6ced3c = 0;
+        if (!g_6ced40) {
+            if (g_6ce4f4)
+                CallVirt(g_6ce4f4, 0, 1);
+            g_6ce4f4 = 0;
+            F(DWORD, g_world, 16) |= 3;
+            Messages_Clear1276();
+        }
+        g_6ced40 = 0;
+        g_6ced44 = g_69689c;
+        return;
+    }
+    g_6ced44 = g_69689c;
+}
+
+// whether the game CD is in the drive
+extern "C" int __cdecl CD_Check(void* screen)
+{
+    char buf[128];
+    CallC(FUN_4e1320);
+    GetPrivateProfileStringA("INSTALL", "SOURCE", ".", buf, 100, (const char*)g_696868);
+    strcat(buf, "\\disk1");
+    FILE* f = fopen(buf, "r");
+    if (!f) {
+        F(void*, g_6cecc0, 392) = screen;
+        CallThis(FUN_519750, g_6cecc0, 0);
+        return 0;
+    }
+    if (!Carat_True()) {
+        if (screen) {
+            CallVirt(screen, 32);
+            CallThis(FUN_519750, g_6cecc0, 9);
+        }
+        fclose(f);
+        return 0;
+    }
+    fclose(f);
+    return 1;
+}
+
+// a step of the loading bar
+extern "C" int __cdecl Loading_Step()
+{
+    BYTE* w = g_69684c;
+    if (!g_6ced64)
+        return 0;
+    CallThis(FUN_5b6bf0, F(void*, w, 12));
+    CallThis(FUN_5b6ed0, F(void*, w, 12));
+    int v = g_6ced50++;
+    if (v < 0)
+        v = 0;
+    if (v > g_loadSteps)
+        v = g_loadSteps;
+    if (v % 10)
+        return v / 10;
+    int rect[4] = { 0, 0, 0, 0 };
+    rect[2] = CallVirt<int>(w, 20);
+    rect[3] = CallVirt<int>(w, 24);
+    int x = (int)(CallVirt<int>(w, 20) - (unsigned)F(WORD, g_6ced5c, 20)) / 2;
+    int y = (int)(CallVirt<int>(w, 24) - (unsigned)F(WORD, g_6ced5c, 22)) / 2;
+    Carat_Draw5b86c0(F(int, w, 12), x, y, (int)g_6ced5c);
+    rect[0] = -x;
+    rect[1] = 0;
+    rect[2] = CallVirt<int>(w, 20) * v / g_loadSteps + rect[0];
+    rect[3] = F(WORD, g_6ced60, 22);
+    CallC(FUN_5b81c0, F(int, w, 12), g_6ced60, rect, 0, y + 552);
+    return CallThis<int>(FUN_5b6b10, F(void*, w, 12));
 }

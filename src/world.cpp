@@ -7,6 +7,7 @@
 // procedures again.
 
 #include "vecmath.h"
+#include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -21,10 +22,6 @@ ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5fdaf0)    // sound: play (volume, pitch)
 ASM_PROC(FUN_5ef5c0)    // query: constructor
 ASM_PROC(FUN_4e5698)    // query: finish a hit
-ASM_PROC(FUN_4e6059)
-ASM_PROC(FUN_4e623e)
-ASM_PROC(FUN_4e7168)
-ASM_PROC(FUN_4e7476)
 
 ASM_VAR(BYTE*, g_6974c4, $L_6974c4)             // +2960 the frame time, +2968 the time (doubles)
 ASM_VAR(float, g_radToDeg, $L_6735d0)
@@ -50,6 +47,10 @@ ASM_VAR(AsmLabel, g_strVehLog, $L_674120)       // "vehprn%02d.log"
 ASM_VAR(AsmLabel, g_strVehLogMode, $L_674130)
 
 struct Vec3Bits { DWORD x, y, z; };
+extern "C" unsigned __cdecl Query_Parts2(int a, int mode, BYTE* q);
+extern "C" unsigned __cdecl Query_Parts1(int a, int mode, BYTE* q);
+extern "C" unsigned __cdecl Query_4e7168(int a, int skip, float dist, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
+extern "C" unsigned __cdecl Query_4e7476(void* obj, int skip, float dist, const Vec3Bits* p, const Vec3Bits* d, BYTE* q);
 struct Mat48 { DWORD m[12]; };                  // a matrix passed by value
 
 // ---------------------------------------------------------------------------
@@ -307,7 +308,7 @@ extern "C" int __cdecl Query_4e6621(int skip, int a, const Vec3Bits* p, const Ve
     F(int, q, 116) = 0;
     F(int, q, 104) = 0;
     F(int, q, 120) = skip;
-    return (CallC<int>(FUN_4e6059, a, 4, q) & 1) ? 1 : 0;
+    return (Query_Parts2(a, 4, q) & 1) ? 1 : 0;
 }
 
 // the hit point and normal of the query (+52, +64)
@@ -339,7 +340,7 @@ extern "C" int __cdecl Query_4e67f9(int skip, int a, int dist, const Vec3Bits* p
     F(int, q, 116) = 0;
     F(int, q, 104) = 0;
     F(int, q, 120) = skip;
-    int r = CallC<int>(FUN_4e6059, a, 6, q);
+    int r = Query_Parts2(a, 6, q);
     return (r & 1) ? r : 0;
 }
 
@@ -348,7 +349,7 @@ extern "C" int __cdecl Query_4e6ac4(int a, const Vec3Bits* p, const Vec3Bits* d,
     QueryInit(q, p, d);
     F(int, q, 0) = 0;
     F(int, q, 120) = 0;
-    int r = CallC<int>(FUN_4e623e, a, 4, q);
+    int r = Query_Parts1(a, 4, q);
     return (r & 1) ? r : 0;
 }
 
@@ -357,7 +358,7 @@ extern "C" int __cdecl Query_4e6b4d(int skip, int a, const Vec3Bits* p, const Ve
     QueryInit(q, p, d);
     F(int, q, 0) = 0;
     F(int, q, 120) = skip;
-    int r = CallC<int>(FUN_4e623e, a, 4, q);
+    int r = Query_Parts1(a, 4, q);
     return (r & 1) ? r : 0;
 }
 
@@ -368,7 +369,7 @@ extern "C" int __cdecl Query_4e6d41(int skip, int a, int dist, const Vec3Bits* p
     F(int, q, 120) = skip;
     F(int, q, 116) = 0;
     F(int, q, 104) = 0;
-    int r = CallC<int>(FUN_4e623e, a, 6, q);
+    int r = Query_Parts1(a, 6, q);
     return (r & 1) ? r : 0;
 }
 
@@ -376,14 +377,14 @@ extern "C" int __cdecl Query_4e7261(int a, int b, int c, int d, int e, Vec3Bits*
 {
     BYTE q[208];
     CallThis(FUN_5ef5c0, q);
-    return HitResult(CallC<int>(FUN_4e7168, a, b, c, d, e, q), q, point, normal);
+    return HitResult(Query_4e7168(a, b, *(float*)&c, (const Vec3Bits*)d, (const Vec3Bits*)e, q), q, point, normal);
 }
 
 extern "C" int __cdecl Query_4e7566(int a, int b, int c, int d, int e, Vec3Bits* point, Vec3Bits* normal)
 {
     BYTE q[208];
     CallThis(FUN_5ef5c0, q);
-    return HitResult(CallC<int>(FUN_4e7476, a, b, c, d, e, q), q, point, normal);
+    return HitResult(Query_4e7476((void*)a, b, *(float*)&c, (const Vec3Bits*)d, (const Vec3Bits*)e, q), q, point, normal);
 }
 
 extern "C" int __cdecl Query_4e774a(void* obj, int dist, const Vec3Bits* p, const Vec3Bits* d, BYTE* q)
@@ -466,4 +467,210 @@ extern "C" void __fastcall Arrays_FillLongAgo(BYTE* self, void*)
 {
     float t = (float)(F(double, g_6974c4, 2968) - 1e10);
     Arrays_Fill(self, 0, F(DWORD, &t, 0), 0);
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions of the unit
+
+ASM_PROC(FUN_4e5dce)    // an object's first part to query
+ASM_PROC(FUN_4e5c77)    // an object's other part to query
+ASM_PROC(FUN_4e5d60)
+ASM_PROC(FUN_4e6362)
+extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);   // vecmath.cpp
+ASM_VAR(double, g_64b658, $L_64b658)            // 0.001
+
+// the object at a point: a query of mode 0 (r == 0) or 2
+extern "C" int __cdecl World_ObjectAt(void* obj, float r, const Vec3Bits* p, const Vec3Bits* d)
+{
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    QueryInit(q, p, d);
+    F(int, q, 116) = 0;
+    F(int, q, 104) = 0;
+    F(float, q, 0) = r;
+    F(int, q, 100) = 0;
+    int res = Run(obj, x87_eq(r, 0.0) ? 0 : 2, q);
+    return (res & 2) == 2 ? F(int, q, 104) : 0;
+}
+
+static inline void* Part2(void* o) { return CallC<void*>(FUN_4e5c77, o); }
+static inline void* Part1(void* o) { return CallC<void*>(FUN_4e5dce, o); }
+
+// a query of the object's second part (and its sub-part), else of the object found there
+extern "C" unsigned __cdecl Query_Parts2(int a, int mode, BYTE* q)
+{
+    BYTE saved[208];
+    unsigned r = 0;
+    memcpy(saved, q, 208);
+    void* p = Part2((void*)a);
+    if (p) {
+        void* s = CallC<void*>(FUN_4e5d60, p);
+        if (s) {
+            r = Run(s, mode, q);
+            if (r & 1) {
+                CallC(FUN_4e5698, q);
+                return r;
+            }
+            memcpy(q, saved, 208);
+        }
+        r = Run(p, mode, q);
+        if (r & 1) {
+            CallC(FUN_4e5698, q);
+            return r;
+        }
+    }
+    int o = World_ObjectAt((void*)a, F(float, q, 0), (const Vec3Bits*)(q + 76), (const Vec3Bits*)(q + 88));
+    if (o && (p = Part2((void*)o)) != 0) {
+        void* s = CallC<void*>(FUN_4e5d60, p);
+        if (s) {
+            r = Run(s, mode, q) | 2;
+            F(int, q, 104) = o;
+            if (r & 1) {
+                CallC(FUN_4e5698, q);
+                return r;
+            }
+            memcpy(q, saved, 208);
+        }
+        r = Run(p, mode, q) | 2;
+        if (r & 1)
+            CallC(FUN_4e5698, q);
+        F(int, q, 104) = o;
+    }
+    return r;
+}
+
+// a query of the object's first part, else of the object found there
+extern "C" unsigned __cdecl Query_Parts1(int a, int mode, BYTE* q)
+{
+    BYTE saved[208];
+    unsigned r = 0;
+    memcpy(saved, q, 208);
+    void* p = Part1((void*)a);
+    if (p) {
+        r = Run(p, mode, q);
+        if (r & 1) {
+            CallC(FUN_4e5698, q);
+            return r;
+        }
+    }
+    int o = World_ObjectAt((void*)a, F(float, q, 0), (const Vec3Bits*)(q + 76), (const Vec3Bits*)(q + 88));
+    if (o && (p = Part1((void*)o)) != 0) {
+        memcpy(q, saved, 208);
+        r = Run(p, mode, q) | 2;
+        F(int, q, 104) = o;
+        if (r & 1)
+            CallC(FUN_4e5698, q);
+    }
+    return r;
+}
+
+// the point on the line p4..p5 nearest along n to p2 (or FUN_4e6362's when short)
+extern "C" Vec3* __cdecl Line_Project(Vec3* out, const Vec3* p2, const Vec3* n, const Vec3* p4, const Vec3* p5)
+{
+    Vec3 d, t, t2, t3;
+    Vec3_Sub(&d, p5, p4);
+    float len = (float)Vec3_Length(&d);
+    if (!(len >= g_64b658)) {
+        CallC(FUN_4e6362, out, p2, n, p4);
+        return out;
+    }
+    Vec3_DivAssign(&d, 0, &t, len);
+    double x = Vec3_Dot(n, Vec3_Sub(&t2, p2, p4));
+    double r = x / Vec3_Dot(n, &d);
+    Vec3_Add(out, p4, Vec3_Scaled(&t3, &d, (float)r));
+    return out;
+}
+
+extern "C" int __cdecl World_Hit(int a, const Vec3Bits* p, const Vec3Bits* d, Vec3Bits* point, Vec3Bits* normal)
+{
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    QueryInit(q, p, d);
+    F(int, q, 0) = 0;
+    F(int, q, 120) = 0;
+    if (!(Query_Parts1(a, 4, q) & 1))
+        return 0;
+    *point = F(Vec3Bits, q, 52);
+    *normal = F(Vec3Bits, q, 64);
+    return 1;
+}
+
+extern "C" unsigned __cdecl Query_4e7168(int a, int skip, float dist, const Vec3Bits* p, const Vec3Bits* d, BYTE* q)
+{
+    BYTE saved[208];
+    memcpy(saved, q, 208);
+    unsigned r;
+    if (dist > 0.0) {
+        r = Query_4e67f9(skip, a, *(int*)&dist, p, d, q);
+        if (r & 1)
+            return r;
+        memcpy(q, saved, 208);
+        return Query_4e6d41(skip, a, *(int*)&dist, p, d, q);
+    }
+    r = Query_4e6621(skip, a, p, d, q);
+    if (r & 1)
+        return r;
+    memcpy(q, saved, 208);
+    return Query_4e6b4d(skip, a, p, d, q);
+}
+
+extern "C" unsigned __cdecl Query_4e72ef(int a, int skip, float dist, const Vec3Bits* p, const Vec3Bits* d, BYTE* q)
+{
+    BYTE saved[208];
+    memcpy(saved, q, 208);
+    unsigned r;
+    if (dist > 0.0) {
+        r = Query_4e6d41(skip, a, *(int*)&dist, p, d, q);
+        if (r & 1)
+            return r;
+        memcpy(q, saved, 208);
+        return Query_4e67f9(skip, a, *(int*)&dist, p, d, q);
+    }
+    r = Query_4e6b4d(skip, a, p, d, q);
+    if (r & 1)
+        return r;
+    memcpy(q, saved, 208);
+    return Query_4e6621(skip, a, p, d, q);
+}
+
+extern "C" unsigned __cdecl Query_4e7476(void* obj, int skip, float dist, const Vec3Bits* p, const Vec3Bits* d,
+                                         BYTE* q)
+{
+    if (!obj)
+        return 0;
+    QueryInit(q, p, d);
+    F(int, q, 120) = skip;
+    F(int, q, 116) = 0;
+    F(int, q, 104) = 0;
+    F(float, q, 0) = dist;
+    F(int, q, 100) = 0;
+    F(int, q, 104) = 0;
+    unsigned r = Run(obj, dist > 0.0 ? 6 : 4, q);
+    if (r & 1)
+        CallC(FUN_4e5698, q);
+    return r;
+}
+
+// the game's _matherr: acos just outside -1..1 and sqrt of a negative are fixed
+extern "C" int __cdecl World_MathErr(int* e)
+{
+    double arg = F(double, e, 8);
+    if (e[0] == 1 && strcmp((const char*)e[1], "acos") == 0) {
+        if (!(arg >= -1.0) && arg > -1.01) {
+            e[6] = 0x4d12d84a;      // 3.14159265
+            e[7] = 0x400921fb;
+            return 1;
+        }
+        if (arg > 1.0 && arg < 1.01) {
+            e[6] = 0;
+            e[7] = 0;
+            return 1;
+        }
+    }
+    if (e[0] == 1 && strcmp((const char*)e[1], "sqrt") == 0) {
+        e[6] = 0;
+        e[7] = 0;
+        return 1;
+    }
+    return 0;
 }

@@ -9,6 +9,7 @@
 
 #include "car.h"
 #include "vecmath.h"
+#include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -359,3 +360,321 @@ extern "C" BYTE* __fastcall WasmObj5a2f00_Construct(BYTE* self, void*) { return 
 extern "C" BYTE* __fastcall WasmObj5a3140_Construct(BYTE* self, void*) { return With500(self, g_vtbl65128c); }
 extern "C" BYTE* __fastcall WasmObj5a3380_Construct(BYTE* self, void*) { return With500(self, g_vtbl651290); }
 extern "C" BYTE* __fastcall WasmObj5a35b0_Construct(BYTE* self, void*) { return With500(self, g_vtbl651294); }
+
+// ---------------------------------------------------------------------------
+// medium-sized functions of the unit
+
+ASM_PROC(FUN_5d31e0)    // named object: constructor (id, name)
+ASM_PROC(FUN_4e41d9)    // an angle checked for NaN (angle, where)
+ASM_PROC(FUN_603cb0)    // a double of an ini file (section, key, default, out, file)
+ASM_PROC(FUN_4e5dce)
+ASM_PROC(FUN_4e5c77)
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
+ASM_VAR(AsmLabel, g_strTvcamera, $L_67e190)     // "tvcamera"
+ASM_VAR(AsmLabel, g_vtbl650a6c, $L_650a6c)
+ASM_VAR(AsmLabel, g_vtbl650c78, $L_650c78)
+ASM_VAR(AsmLabel, g_vtbl650c2c, $L_650c2c)
+ASM_VAR(AsmLabel, g_vtbl650d80, $L_650d80)
+ASM_VAR(AsmLabel, g_vtbl650d34, $L_650d34)
+ASM_VAR(AsmLabel, g_strGetCirclePos, $L_67e19c) // "getCirclePos"
+ASM_VAR(AsmLabel, g_strXpyramid, $L_67e1ac)     // "xpyramid"
+ASM_VAR(AsmLabel, g_strEffects, $L_672998)      // "EFFECTS"
+ASM_VAR(double, g_64fd20, $L_64fd20)            // 0.92
+ASM_VAR(double, g_650a98, $L_650a98)            // 0.97
+ASM_VAR(double, g_64b5b8, $L_64b5b8)            // 0.1
+ASM_VAR(int, g_6f6914, $L_6f6914)
+ASM_VAR(float, g_64c328, $L_64c328)             // 0.05
+ASM_VAR(double, g_650aa8, $L_650aa8)            // 0.31415926
+ASM_VAR(double, g_650aa0, $L_650aa0)            // 1/3
+ASM_VAR(float, g_pi650b68, $L_650b68)
+ASM_VAR(BYTE*, g_game, $L_6d2078)
+ASM_VAR(double, g_xpyramid, $L_67e180)          // -1 until read
+ASM_VAR(void*, g_696868, $L_696868)             // the ini file
+
+static void Matrix_Construct(Matrix* m)
+{
+    for (int k = 0; k < 4; k++)
+        Vec3_ZeroThis((Vec3*)((BYTE*)m + k * 12), 0);
+    *m = g_identity;
+}
+
+extern "C" BYTE* __fastcall TvCamera_Construct(BYTE* self, void*)
+{
+    CallThis(FUN_5d31e0, self, 99, (const char*)g_strTvcamera);
+    Matrix_Construct(&F(Matrix, self, 32));
+    Matrix_Construct(&F(Matrix, self, 80));
+    Matrix_Construct(&F(Matrix, self, 128));
+    Matrix_Construct(&F(Matrix, self, 176));
+    F(int, self, 256) = 0;
+    F(int, self, 260) = 0;
+    F(int, self, 264) = 0;
+    Matrix_Construct(&F(Matrix, self, 268));
+    F(int, self, 316) = 0;
+    F(int, self, 228) = 0;
+    F(void*, self, 0) = g_vtbl650a6c;
+    return self;
+}
+
+// the camera follows its target a part of the way
+extern "C" Matrix* __fastcall TvCamera_Follow(BYTE* self, void*, Matrix* out)
+{
+    float dx = F(float, self, 212) - F(float, self, 164);
+    float dy = F(float, self, 216) - F(float, self, 168);
+    float dz = F(float, self, 220) - F(float, self, 172);
+    Vec3 s;
+    s.x = (float)(dx * g_64fd20);
+    s.y = (float)(dy * g_650a98);
+    s.z = (float)(dz * g_650a98);
+    if (!(Vec3_Length(&s) >= g_64b5b8) && g_6f6914 == 1)
+        F(int, self, 324) = 1;
+    Matrix t1, t2;
+    F(Matrix, self, 176) = *Matrix_Multiply(&t2, Matrix_Translation(&t1, s), (const Matrix*)(self + 128));
+    Matrix_Multiply(out, (const Matrix*)(self + 176), (const Matrix*)(self + 80));
+    return out;
+}
+
+// the camera circling its target
+extern "C" Matrix* __fastcall TvCamera_Circle(BYTE* self, void*, Matrix* out)
+{
+    double sv = x87_sin((Game_Time() - F(float, self, 224)) * g_64c328);
+    double ft = Game_FrameTime();
+    double a = (sv < 0 ? -sv : sv) * sv * g_650aa8;
+    float arg = (float)(a * ft + F(float, self, 232));
+    F(float, self, 232) = (float)CallC<double>(FUN_4e41d9, arg, (const char*)g_strGetCirclePos);
+    Matrix m1, m2, m3, m4, m5, m6;
+    Matrix_Translation(&m1, F(Vec3, self, 116));
+    Matrix_RotationZ(&m2, F(float, self, 232));
+    Vec3 up;
+    F(DWORD, &up, 0) = 0;
+    F(DWORD, &up, 4) = 0xc1200000;      // -10
+    F(DWORD, &up, 8) = 0x40555555;      // 3.3333333
+    Matrix_Translation(&m3, up);
+    Matrix_RotationX(&m4, (float)-x87_atan2(g_650aa0, 1.0));
+    Matrix_Multiply(&m5, &m4, &m3);
+    Matrix_Multiply(&m6, &m5, &m2);
+    Matrix_Multiply(out, &m6, &m1);
+    return out;
+}
+
+// the pyramid's size from the ini file, and its width by the picture's aspect
+extern "C" void __cdecl Pyramid_SetSize(BYTE* o)
+{
+    BYTE* b = F(BYTE*, o, 488);
+    if (F(int, g_game, 1400))
+        F(float, b, 88) = 2.0f;
+    else {
+        if (!(g_xpyramid >= 0.0))
+            CallC(FUN_603cb0, (const char*)g_strEffects, (const char*)g_strXpyramid, 1.6, &g_xpyramid, g_696868);
+        F(float, F(BYTE*, o, 488), 88) = (float)g_xpyramid;
+    }
+    WORD* w = F(WORD*, o, 12);
+    b = F(BYTE*, o, 488);
+    F(float, b, 84) = (float)((double)w[1] * F(float, b, 88) / (double)w[0]);
+}
+
+// asks the objects around a vehicle about a collision
+extern "C" unsigned __cdecl Car_AskNear(int* obj, BYTE* q, BYTE* car, BYTE* skip)
+{
+    unsigned r = 0;
+    for (int i = 0; i < 6; i++) {
+        BYTE* e = F(BYTE*, car, 3508 + i * 4);
+        if (!e)
+            break;
+        if (e != skip && (r = CallVirt<unsigned>(e + 256, 52, 6, q)) != 0)
+            return r;
+    }
+    void* p = CallC<void*>(FUN_4e5dce, obj);
+    if (p)
+        r = CallVirt<unsigned>(p, 52, 6, q);
+    if (r)
+        return r;
+    p = CallC<void*>(FUN_4e5c77, obj);
+    unsigned t;
+    if (p && (t = CallVirt<unsigned>(p, 52, 6, q)) != 0)
+        return t;
+    r = CallVirt<unsigned>(obj, 52, 0, q);
+    if (!(r & 2))
+        return r;
+    p = CallC<void*>(FUN_4e5dce, F(void*, q, 104));
+    if (p && (t = CallVirt<unsigned>(p, 52, 6, q)) != 0)
+        return t | r;
+    p = CallC<void*>(FUN_4e5c77, F(void*, q, 104));
+    if (p && (t = CallVirt<unsigned>(p, 52, 6, q)) != 0)
+        return t | r;
+    return r;
+}
+
+static BYTE* Spark_Init(BYTE* self, void* vtbl, void* vtbl2, const Vec3Bits* p, const Vec3Bits* q, DWORD k)
+{
+    for (int i = 148; i <= 168; i += 4)
+        F(int, self, i) = 0;
+    F(void*, self, 0) = vtbl;
+    F(void*, self, 20) = vtbl2;
+    F(DWORD, self, 128) |= 1;
+    F(Vec3Bits, self, 148) = *p;
+    F(Vec3Bits, self, 160) = *q;
+    F(DWORD, self, 172) = k;
+    F(int, self, 176) = 0;
+    float r1 = (float)(rand() * (double)g_rand1);
+    double r2 = rand() * (double)g_rand1;
+    double v = (r1 - r2) * g_pi650b68;
+    F(DWORD, self, 188) = 0x3f3504f3;   // 0.70710677
+    F(DWORD, self, 184) = 0x3f3504f3;
+    F(float, self, 180) = (float)(v + v);
+    return self;
+}
+
+static inline DWORD FloatBits(float f) { return *(DWORD*)&f; }
+
+extern "C" BYTE* __fastcall Spark59ad70_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const Vec3Bits* q,
+                                                  int c, unsigned n, float life)
+{
+    Effect_Construct(self, 0, a, p, 0x3f800000, 0x40a00000, c, n, FloatBits((float)(life / (double)n)),
+                     FloatBits(life), 100);
+    return Spark_Init(self, g_vtbl650c78, g_vtbl650c2c, p, q, 0x40400000);
+}
+
+extern "C" BYTE* __fastcall Spark59aea0_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const Vec3Bits* q,
+                                                  int b, int c, int d, unsigned n, float life, DWORD k)
+{
+    Effect_Construct(self, 0, a, p, b, c, d, n, FloatBits((float)(life / (double)n)), FloatBits(life), 100);
+    return Spark_Init(self, g_vtbl650c78, g_vtbl650c2c, p, q, k);
+}
+
+extern "C" BYTE* __fastcall Spark59bed0_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const Vec3Bits* q,
+                                                  int c, unsigned n, float life)
+{
+    Effect_Construct(self, 0, a, p, 0x3f800000, 0x40a00000, c, n, FloatBits((float)(life / (double)n)),
+                     FloatBits(life), 100);
+    return Spark_Init(self, g_vtbl650d80, g_vtbl650d34, p, q, 0x40400000);
+}
+
+ASM_PROC(FUN_59f870)
+ASM_VAR(float, g_64c330, $L_64c330)             // 0.75
+ASM_VAR(float, g_64c408, $L_64c408)             // 4
+ASM_VAR(float, g_64c258, $L_64c258)             // 0.5
+ASM_VAR(float, g_64c25c, $L_64c25c)             // 0.8
+ASM_VAR(float, g_64c338, $L_64c338)             // 0.3
+ASM_VAR(float, g_650ee0, $L_650ee0)             // 1.28
+ASM_VAR(AsmLabel, g_vtbl650dd4, $L_650dd4)
+ASM_VAR(AsmLabel, g_vtbl650d88, $L_650d88)
+ASM_VAR(AsmLabel, g_vtbl650e28, $L_650e28)
+ASM_VAR(AsmLabel, g_vtbl650ddc, $L_650ddc)
+ASM_VAR(AsmLabel, g_vtbl650e84, $L_650e84)
+ASM_VAR(AsmLabel, g_vtbl650e38, $L_650e38)
+ASM_VAR(AsmLabel, g_vtbl650ed8, $L_650ed8)
+ASM_VAR(AsmLabel, g_vtbl650e8c, $L_650e8c)
+ASM_VAR(AsmLabel, g_vtbl651174, $L_651174)
+ASM_VAR(AsmLabel, g_vtbl651128, $L_651128)
+
+static inline DWORD Per(float c, unsigned n) { return FloatBits((float)(c / (double)n)); }
+
+static float RandAngle2()
+{
+    float r1 = (float)(rand() * (double)g_rand1);
+    double r2 = rand() * (double)g_rand1;
+    double v = (r1 - r2) * g_pi650b68;
+    return (float)(v + v);
+}
+
+static void Effect_SetVtbls(BYTE* self, void* v0, void* v20, bool flag)
+{
+    for (int i = 148; i <= 168; i += 4)
+        F(int, self, i) = 0;
+    F(void*, self, 0) = v0;
+    if (flag)
+        F(DWORD, self, 128) |= 1;
+    F(void*, self, 20) = v20;
+}
+
+extern "C" BYTE* __fastcall Effect59c420_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const Vec3Bits* q,
+                                                   float s, int c, unsigned n)
+{
+    Effect_Construct(self, 0, a, p, FloatBits((float)(s * g_64c258)), FloatBits((float)(s * g_64c408)), c, n,
+                     Per(g_64c330, n), 0x3f400000, 100);
+    Effect_SetVtbls(self, g_vtbl650dd4, g_vtbl650d88, true);
+    F(Vec3Bits, self, 148) = *p;
+    F(Vec3Bits, self, 160) = *q;
+    F(DWORD, self, 172) = 0x40400000;   // 3
+    return self;
+}
+
+extern "C" BYTE* __fastcall Effect59c6c0_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const float* u,
+                                                   const float* v, float s, int c, unsigned n)
+{
+    Effect_Construct(self, 0, a, p, FloatBits((float)(s * g_64c258)), FloatBits(s + s), c, n,
+                     Per(g_64c25c, n), 0x3f4ccccd, 100);
+    Effect_SetVtbls(self, g_vtbl650e28, g_vtbl650ddc, true);
+    F(Vec3Bits, self, 148) = *p;
+    F(float, self, 160) = u[0] - v[0];
+    F(float, self, 164) = u[1] - v[1];
+    F(DWORD, self, 172) = 0x41700000;   // 15
+    F(int, self, 176) = 0;
+    F(float, self, 168) = u[2] - v[2];
+    F(float, self, 180) = RandAngle2();
+    F(DWORD, self, 188) = 0x3f3504f3;
+    F(DWORD, self, 184) = 0x3f3504f3;
+    return self;
+}
+
+extern "C" BYTE* __fastcall Effect59cea0_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const Vec3Bits* q,
+                                                   int unused, DWORD s, int c, unsigned n)
+{
+    Effect_Construct(self, 0, a, p, s, s, c, n, Per(g_64c338, n), 0x3e99999a, 100);
+    Effect_SetVtbls(self, g_vtbl650e84, g_vtbl650e38, true);
+    F(Vec3Bits, self, 148) = *p;
+    F(Vec3Bits, self, 160) = *q;
+    F(int, self, 172) = 0;
+    F(float, self, 176) = RandAngle2();
+    F(float, self, 180) = RandAngle2();
+    F(DWORD, self, 188) = 0x3f3504f3;
+    F(DWORD, self, 184) = 0x3f3504f3;
+    return self;
+}
+
+extern "C" BYTE* __fastcall Effect59d4a0_Construct(BYTE* self, void*, int a, const Vec3Bits* p, float s, int c,
+                                                   unsigned n)
+{
+    Effect_Construct(self, 0, a, p, 0, FloatBits((float)(s * g_64c408)), c, n, Per(g_650ee0, n), 0x3fa3d70a, 100);
+    Effect_SetVtbls(self, g_vtbl650ed8, g_vtbl650e8c, true);
+    F(Vec3Bits, self, 148) = *p;
+    F(Vec3, self, 160) = g_zeroVec;
+    F(int, self, 172) = 0;
+    F(int, self, 176) = 0;
+    return self;
+}
+
+extern "C" BYTE* __fastcall Effect59f070_Construct(BYTE* self, void*, int a, const Vec3Bits* p, const Vec3Bits* q,
+                                                   DWORD k, int c, int n)
+{
+    Effect_Construct(self, 0, a, p, k, k, c, n, 0x42c80000, 0x42c80000, 100);   // 100.0f
+    Effect_SetVtbls(self, g_vtbl651174, g_vtbl651128, false);
+    F(Vec3Bits, self, 160) = *p;
+    F(Vec3Bits, self, 148) = *q;
+    F(DWORD, self, 188) = k;
+    F(int, self, 176) = 0;
+    F(float, self, 172) = RandAngle2();
+    F(DWORD, self, 184) = 0x3f3504f3;
+    F(DWORD, self, 180) = 0x3f3504f3;
+    F(int, self, 192) = 1;
+    return self;
+}
+
+// adds an effect to the table of 50 (or restarts the one of the same key)
+extern "C" void __fastcall Table124_Add(BYTE* self, void*, int a, int b, const Vec3Bits* v, int d, int e)
+{
+    if (F(int, self, 6432) == 50)
+        return;
+    BYTE* o = Table124_Find(self, 0, a, d);
+    if (!o) {
+        int n = F(int, self, 6432);
+        CallThis(FUN_59f870, self + 32 + n * 124, a, b, *v, d, e);
+        F(int, self, 136 + F(int, self, 6432) * 124) = 0;
+        F(int, self, 140 + F(int, self, 6432) * 124) = 1;
+        F(int, self, 6432)++;
+        return;
+    }
+    CallThis(FUN_59f870, o, a, b, *v, d, e);
+    F(int, o, 104) = 0;
+    F(int, o, 108) = 1;
+}
