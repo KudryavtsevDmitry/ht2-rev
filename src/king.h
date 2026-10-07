@@ -91,7 +91,6 @@ int __cdecl strcmp(const char* a, const char* b);
 // Procedures of king.masm
 
 ASM_PROC(FUN_6037e0)    // Timer_Now
-ASM_PROC(FUN_4e12b0)    // Joy_ForceFeedback
 ASM_PROC(FUN_5b6180)    // Gfx_BeginScene
 ASM_PROC(FUN_5b6190)    // Gfx_EndScene
 ASM_PROC(FUN_5b7ce0)    // Gfx_HLine
@@ -124,7 +123,7 @@ ASM_PROC(FUN_512720)
 inline double Timer_Now() { return CallC<double>(FUN_6037e0); }
 
 // DirectInput force feedback: DISFFC_CONTINUE when on, DISFFC_PAUSE when off.
-inline void Joy_ForceFeedback(BOOL on) { CallC(FUN_4e12b0, on); }
+extern "C" int __cdecl Joy_ForceFeedback(int on);     // engine.cpp
 
 // GetPrivateProfileString of section/key from file; *value is the number in
 // it (strtol, any base), or def if the key is missing or starts with 'N'.
@@ -494,12 +493,11 @@ typedef char PathBuffer[128];
 ASM_VAR(PathBuffer, g_pathBuf, $L_720c88)      // CGameApp::MakePath's result
 ASM_VAR(void* const, g_vtblCGameApp, $L_652664)
 
-ASM_PROC(FUN_5ab1b0)    // NextToken
 ASM_PROC(FUN_5e4300)    // PathDir
 
 // Splits the next word (separated by blanks and tabs) off *p, terminating it
 // in place, and advances *p; NULL when there is none.
-inline char* NextToken(char** p) { return CallC<char*>(FUN_5ab1b0, p); }
+extern "C" char* __cdecl NextToken(char** p);         // engine.cpp
 // The directory part of path, in a static buffer; "." if it has none.
 inline char* PathDir(const char* path) { return CallC<char*>(FUN_5e4300, path); }
 
@@ -560,16 +558,17 @@ ASM_PROC(FUN_5fdaf0)    // Sound::Play
 ASM_PROC(FUN_5bd710)    // Gfx_DrawBox
 ASM_PROC(FUN_530050)    // Controls::Update
 ASM_PROC(FUN_578fe0)    // Joy_Read
-ASM_PROC(FUN_579290)    // Joy_Shutdown
 ASM_PROC(FUN_5c3990)    // destructor of CKingApp's base class
 ASM_PROC(FUN_50c1d0)
 ASM_PROC(FUN_56ce40)
-ASM_PROC(FUN_53f750)
 ASM_PROC(FUN_53b4c0)
 
 // Appends a key typed during the pause to the cheat code being typed and
 // checks it against the list of codes [$L_67b760].
 inline void King_CheatKey(int key) { CallC(FUN_5764f0, key); }
+
+// car if it is in the list of vehicles, else NULL (vehicle.cpp)
+extern "C" BYTE* __cdecl Car_InList(void* car);
 
 struct Sound {
     void Play(float volume, float pitch) { CallThis(FUN_5fdaf0, this, volume, pitch); }
@@ -636,7 +635,9 @@ ASM_VAR(JoyTimes, g_joyTime, $L_696910)        // when they were last down (Time
 
 // Polls the joystick; nonzero if it can't be read.
 inline int Joy_Read(JoyState* state, int a2) { return CallC<int>(FUN_578fe0, state, a2); }
-inline void Joy_Shutdown() { CallC(FUN_579290); }
+extern "C" int __cdecl Joy_Shutdown();            // mmt.cpp
+extern "C" double __cdecl Game_Time();            // world.cpp: the game time
+extern "C" double __cdecl Game_FrameTime();       // world.cpp: the last frame's time, at most 0.25 s
 
 ASM_VAR(float, g_6974bc, $L_6974bc)
 ASM_VAR(short, g_6974c2, $L_6974c2)

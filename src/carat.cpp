@@ -26,8 +26,7 @@ extern "C" int __cdecl Carat_LoadFont(const char* name);
 KING_ALIAS("_Carat_LoadFont", "FUN_5e8c60")
 extern "C" void __cdecl Carat_Draw5b86c0(int a, int b, int c, int d);
 KING_ALIAS("_Carat_Draw5b86c0", "FUN_5b86c0")
-extern "C" int __cdecl Carat_569710();
-KING_ALIAS("_Carat_569710", "FUN_569710")
+extern "C" BYTE* __cdecl Messages_Clear1276();                     // copter.cpp
 extern "C" int __cdecl Carat_Resource(int id);
 KING_ALIAS("_Carat_Resource", "FUN_5d2e50")
 extern "C" void __cdecl Carat_51d8f0(int a, int b);
@@ -315,7 +314,7 @@ extern "C" int __cdecl Carat_CloseMovie()
     BYTE* w = g_world;
     g_6ce4f4 = 0;
     F(DWORD, w, 16) |= 3;
-    return Carat_569710();
+    return (int)Messages_Clear1276();
 }
 
 extern "C" void __cdecl Carat_DrawMovie()

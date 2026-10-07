@@ -40,6 +40,19 @@ OUT = king.exe
 #   ASM_CARAT     src\carat.cpp     game, menus and screens (src\carat.cpp)
 #   ASM_AIMAIN    src\aimain.cpp    AI main (src\aimain.cpp)
 #   ASM_AISTL     src\aistl.cpp     AI STL instances (src\aistl.cpp)
+#   ASM_AIMISC    src\aimisc.cpp    AI helpers (src\aimisc.cpp)
+#   ASM_VEHICLE   src\vehicle.cpp   vehicle: controls, vehicle list, flashing light
+#   ASM_SCHEVAL   src\scheval.cpp   scheval
+#   ASM_WASM      src\wasm.cpp      wasm
+#   ASM_COPTER    src\copter.cpp    copter
+#   ASM_MOVINGB   src\movingb.cpp   movingb
+#   ASM_WORLD     src\world.cpp     world
+#   ASM_AIMULT    src\aimult.cpp    aimult
+#   ASM_SCHITEM   src\schitem.cpp   schitem
+#   ASM_MMT       src\mmt.cpp       mmt
+#   ASM_CARPHYS   src\carphys.cpp   carphys
+#   ASM_AIORDR    src\aiordr.cpp    aiordr
+#   ASM_ENGINE    src\engine.cpp    engine
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
@@ -56,6 +69,19 @@ ASM_CAR2E = 1
 ASM_CARAT = 1
 ASM_AIMAIN = 1
 ASM_AISTL = 1
+ASM_AIMISC = 1
+ASM_VEHICLE = 1
+ASM_SCHEVAL = 1
+ASM_WASM = 1
+ASM_COPTER = 1
+ASM_MOVINGB = 1
+ASM_WORLD = 1
+ASM_AIMULT = 1
+ASM_SCHITEM = 1
+ASM_MMT = 1
+ASM_CARPHYS = 1
+ASM_AIORDR = 1
+ASM_ENGINE = 1
 !ENDIF
 
 MLFLAGS =
@@ -105,7 +131,46 @@ MLFLAGS = $(MLFLAGS) /DASM_AIMAIN
 !IFDEF ASM_AISTL
 MLFLAGS = $(MLFLAGS) /DASM_AISTL
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj
+!IFDEF ASM_AIMISC
+MLFLAGS = $(MLFLAGS) /DASM_AIMISC
+!ENDIF
+!IFDEF ASM_VEHICLE
+MLFLAGS = $(MLFLAGS) /DASM_VEHICLE
+!ENDIF
+!IFDEF ASM_SCHEVAL
+MLFLAGS = $(MLFLAGS) /DASM_SCHEVAL
+!ENDIF
+!IFDEF ASM_WASM
+MLFLAGS = $(MLFLAGS) /DASM_WASM
+!ENDIF
+!IFDEF ASM_COPTER
+MLFLAGS = $(MLFLAGS) /DASM_COPTER
+!ENDIF
+!IFDEF ASM_MOVINGB
+MLFLAGS = $(MLFLAGS) /DASM_MOVINGB
+!ENDIF
+!IFDEF ASM_WORLD
+MLFLAGS = $(MLFLAGS) /DASM_WORLD
+!ENDIF
+!IFDEF ASM_AIMULT
+MLFLAGS = $(MLFLAGS) /DASM_AIMULT
+!ENDIF
+!IFDEF ASM_SCHITEM
+MLFLAGS = $(MLFLAGS) /DASM_SCHITEM
+!ENDIF
+!IFDEF ASM_MMT
+MLFLAGS = $(MLFLAGS) /DASM_MMT
+!ENDIF
+!IFDEF ASM_CARPHYS
+MLFLAGS = $(MLFLAGS) /DASM_CARPHYS
+!ENDIF
+!IFDEF ASM_AIORDR
+MLFLAGS = $(MLFLAGS) /DASM_AIORDR
+!ENDIF
+!IFDEF ASM_ENGINE
+MLFLAGS = $(MLFLAGS) /DASM_ENGINE
+!ENDIF
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj aimisc.obj vehicle.obj scheval.obj wasm.obj copter.obj movingb.obj world.obj aimult.obj schitem.obj mmt.obj carphys.obj aiordr.obj engine.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE

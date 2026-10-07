@@ -12,10 +12,10 @@ ASM_PROC(FUN_42d6e0)    // the AI's cycle
 ASM_PROC(FUN_5d9290)    // CMainView: module by name
 ASM_PROC(FUN_5ef390)    // module: switch by name
 ASM_PROC(FUN_5e1a10)    // set a switch
-ASM_PROC(FUN_46ecd0)    // STL copy(first, last, result) for char*
+extern "C" char* __cdecl CopyBytes(const char* first, const char* last, char* to);   // aiordr.cpp
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
-ASM_PROC(FUN_56ae90)    // King: screen message
-ASM_PROC(FUN_56aed0)    // King: event banner
+extern "C" void __cdecl Notice_Show(int level, const char* text, int a, int b);              // copter.cpp
+extern "C" void __cdecl Notice_Banner(int eventId, double value, const char* text);       // copter.cpp
 
 typedef CharVec* ModuleNames[];
 ASM_VAR(ModuleNames*, g_aiModuleNames, $L_68d0c8)
@@ -87,11 +87,11 @@ void displayScreenMessage(const char* message)
     // an empty iterator tag, passed with whatever ECX held
     char* begin = g_screenMessage.begin;
     char* end = g_screenMessage.end;
-    CallC(FUN_46ecd0, end, end, begin, message, 0);
+    CopyBytes(end, end, begin);
     g_screenMessage.end += begin - end;
     // g_screenMessage.insert(end(), message, message + strlen(message) + 1)
     CallThis(FUN_44c220, &g_screenMessage, g_screenMessage.end, message, message + strlen(message) + 1);
-    CallC(FUN_56ae90, 9, g_screenMessage.begin, 0, 0);
+    Notice_Show(9, g_screenMessage.begin, 0, 0);
 }
 
 void AI_AddToBanner(double value)
@@ -102,7 +102,7 @@ void AI_AddToBanner(double value)
 void eventBanner(int xEventId, char* message)
 {
     StateTrace trace("eventBanner(int xEventId, char * message)");
-    CallC(FUN_56aed0, xEventId, g_bannerValue, message);
+    Notice_Banner(xEventId, g_bannerValue, message);
     g_bannerValue = 0;
 }
 

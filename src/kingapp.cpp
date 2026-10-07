@@ -25,7 +25,7 @@ void CKingApp::PreExecute()
     else
         g_6974bc = (float)g_pMainView->m_2968;
 
-    if (g_p6d2078 && g_p6d2078->m_616 && CallC<BOOL>(FUN_53f750, g_p6d2078->m_616)
+    if (g_p6d2078 && g_p6d2078->m_616 && Car_InList(g_p6d2078->m_616)
         && g_p6d2078->m_616->m_21600 && g_p6d2078->m_616->m_21600->m_10048 == 1
         && (g_pMainView->m_flags & WND_VISIBLE))
         CallThis(FUN_53b4c0, g_p6d2078);

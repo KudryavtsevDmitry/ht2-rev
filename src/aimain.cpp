@@ -35,10 +35,9 @@ extern "C" DVec3* __cdecl Town_Position(DVec3* out, void* town);
 KING_ALIAS("_Town_Position", "FUN_404ef0")
 extern "C" DVec3* __cdecl Road_PointOf(DVec3* out, PositionId pos);
 KING_ALIAS("_Road_PointOf", "FUN_435bf0")
-extern "C" bool __cdecl Vehicle_Matches(void* v, int key);
-KING_ALIAS("_Vehicle_Matches", "FUN_4b65e0")
+extern "C" bool __cdecl SchValue_IsSymbol(const BYTE* v, const char* name);   // schitem.cpp
 extern "C" void __cdecl Player_UpdateFlags(BYTE* p);        // aiplay.cpp
-ASM_PROC(FUN_470950)    // road: set name
+extern "C" void __fastcall CharVec_Assign(char** self, void*, const char* s);    // aiordr.cpp
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 
 typedef void** PtrVec;
@@ -370,7 +369,7 @@ extern "C" int* __cdecl Vehicle_IndexByKey(int* out, int key)
 {
     void** v = g_vehicles;
     for (; v != g_vehiclesEnd; v++)
-        if (Vehicle_Matches((BYTE*)*v + 8, key))
+        if (SchValue_IsSymbol((BYTE*)*v + 8, (const char*)key))
             break;
     if (v == g_vehiclesEnd)
         AiError(5, 1, s_mainFile, s_mainId, 3675, "Vehicle not found", (const char*)key, &g_aiEmpty);
@@ -448,7 +447,7 @@ extern "C" void __cdecl Road_NameEdge(RoadEdge* e)
 {
     char name[128];
     sprintf(name, "$$$_road_%d", e->id);
-    CallThis(FUN_470950, e, name);
+    CharVec_Assign((char**)e, 0, name);
 }
 
 extern "C" void __cdecl Road_NameEdges()
@@ -668,8 +667,7 @@ unsigned __fastcall Rng_Random(void* s, void*, unsigned n) { return R(s)->Random
 // ---------------------------------------------------------------------------
 // Batch 2: players, vehicles, towns
 
-extern "C" void __cdecl AI_Remove46b300(void** first, void** last, void** dest, int a, int b);
-KING_ALIAS("_AI_Remove46b300", "FUN_46b300")
+extern "C" DWORD* __cdecl Copy32(const DWORD* first, const DWORD* last, DWORD* to);   // aimult.cpp
 extern "C" void __cdecl AI_Grow421d90(int* entry, int a, int b);
 KING_ALIAS("_AI_Grow421d90", "FUN_421d90")
 extern "C" double __cdecl AI_Now();
@@ -677,8 +675,9 @@ KING_ALIAS("_AI_Now", "FUN_401000")
 ASM_VAR(PtrVec, g_68a980, $L_68a980)
 ASM_VAR(PtrVec, g_68a984, $L_68a984)
 ASM_VAR(BYTE*, g_68cca8, $L_68cca8)
-typedef BYTE CarTypes[1];
-ASM_VAR(CarTypes, g_carTypes, $L_697914)          // 2416 bytes per type
+typedef BYTE CarTypeBytes[1];
+// g_carTypes (car.h) + 76, 2416 bytes per type: +100 here is the type's +176
+ASM_VAR(CarTypeBytes, g_carTypes76, $L_697914)
 ASM_VAR(AiText, g_strPresentPick, $L_66d7f8)
 ASM_VAR(AiText, g_vtbl64b71c, $L_64b71c)
 ASM_VAR(AiText, g_vtbl64b718, $L_64b718)
@@ -694,7 +693,7 @@ extern "C" void __cdecl Player_Leave(BYTE* p, int a)
             break;
     if (e != g_68a984) {
         if (e + 1 != g_68a984)
-            AI_Remove46b300(e + 1, g_68a984, e, a, 0);
+            Copy32((const DWORD*)(e + 1), (const DWORD*)g_68a984, (DWORD*)e);
         g_68a984--;
     }
     F(BYTE, p, 496) = 0;
@@ -758,7 +757,7 @@ extern "C" void __cdecl Vehicle_AddCosts(int v, double* price, double* load)
         return;
     BYTE* veh = (BYTE*)g_vehicles[v];
     int type = F(int, veh, 64);
-    BYTE* t = g_carTypes + type * 2416;
+    BYTE* t = g_carTypes76 + type * 2416;
     if (F(int, veh, 32) != 4)
         *price = F(float, t, 100) + *price;
     if (F(int, g_vehicles[v], 32) != 3)
@@ -954,10 +953,8 @@ extern "C" double __cdecl Player_CargoValueOf(BYTE* p);     // aiplay.cpp
 extern "C" void __cdecl Player_EndDeal(BYTE* p);             // aiplay.cpp
 extern "C" void __cdecl AI_Task42b060(void* task, int a);
 KING_ALIAS("_AI_Task42b060", "FUN_42b060")
-extern "C" void __cdecl AI_Light569310(unsigned id, int on);
-KING_ALIAS("_AI_Light569310", "FUN_569310")
-extern "C" void __cdecl AI_Light569410(unsigned id, int on);
-KING_ALIAS("_AI_Light569410", "FUN_569410")
+extern "C" void __cdecl Screen_569310(int id, unsigned on);        // copter.cpp
+extern "C" void __cdecl Screen_569410(int id, int on);             // copter.cpp
 
 ASM_VAR(int, g_68d188, $L_68d188)
 ASM_VAR(BYTE, g_68d168, $L_68d168)
@@ -1162,9 +1159,9 @@ static void SwitchLights(BYTE* e, int on)
         return;
     for (unsigned* id = F(unsigned*, e, 112); id != F(unsigned*, e, 116); id++)
         if (kind == 2)
-            AI_Light569310(*id % 1000, on);
+            Screen_569310(*id % 1000, on);
         else
-            AI_Light569410(*id % 1000, on);
+            Screen_569410(*id % 1000, on);
 }
 
 extern "C" void __cdecl AI_LightsOn(BYTE* e) { if (F(BYTE, e, 28)) SwitchLights(e, 1); }

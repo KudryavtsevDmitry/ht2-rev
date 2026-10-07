@@ -55,7 +55,7 @@ ASM_VAR(BYTE*, g_world, $L_696ca0)
 ASM_VAR(unsigned, g_67b738, $L_67b738)
 
 ASM_PROC(FUN_5b6700)    // the palette of a surface
-ASM_PROC(FUN_5a9d40)    // truck: grip
+extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
 ASM_PROC(FUN_57c450)    // sounds: play
 ASM_PROC(FUN_5d3290)    // Task::~Task
 ASM_PROC(FUN_5ef660)    // module destructor
@@ -63,7 +63,7 @@ ASM_PROC(FUN_4bf510)    // particles: reset
 ASM_PROC(FUN_5f19b0)    // named object: constructor
 ASM_PROC(FUN_4c09d0)    // CRenderer::~CRenderer
 ASM_PROC(FUN_4ccf30)
-ASM_PROC(FUN_57de90)    // object: its world matrix
+extern "C" BYTE* __fastcall SceneObj_Matrix1(void* self, void*, void* out);   // engine.cpp: its world matrix
 ASM_PROC(FUN_5e5370)    // vehicles: by id
 ASM_PROC(FUN_5e49d0)    // vehicle: release
 ASM_PROC(FUN_5fd370)    // sound: constructor
@@ -305,7 +305,7 @@ extern "C" void __cdecl Fx_FreeBuffers()
 // the truck stands: grip at most 0.7 and no speed
 extern "C" int __cdecl Fx_TruckStill()
 {
-    if (CallThis<double>(FUN_5a9d40, g_truck, 0.0) > 0.7)
+    if (Wave_Value(g_truck, 0, 0.0) > 0.7)
         return 0;
     if (F(float, g_truck, 536) > 0.001f)
         return 0;
@@ -359,8 +359,8 @@ extern "C" int __cdecl Fx_Find(int a, int b, int c)
 extern "C" int __cdecl Fx_NearTruck(BYTE* obj)
 {
     BYTE m1[52], m2[52];
-    BYTE* a = CallThis<BYTE*>(FUN_57de90, F(BYTE*, g_game, 616) + 16, m1);
-    BYTE* b = CallThis<BYTE*>(FUN_57de90, obj + 16, m2);
+    BYTE* a = SceneObj_Matrix1(F(BYTE*, g_game, 616) + 16, 0, m1);
+    BYTE* b = SceneObj_Matrix1(obj + 16, 0, m2);
     Vec3 d;
     d.x = (float)((double)F(float, a, 36) - F(float, b, 36));
     d.y = (float)((double)F(float, a, 40) - F(float, b, 40));

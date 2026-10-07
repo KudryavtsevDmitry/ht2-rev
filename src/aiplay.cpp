@@ -164,8 +164,7 @@ extern "C" void __cdecl AI_SortTimes(double* first, double* last, int, int, int)
 KING_ALIAS("_AI_SortTimes", "FUN_47be40")
 extern "C" const char* __cdecl AI_Text(const char* key);
 KING_ALIAS("_AI_Text", "FUN_40e270")
-extern "C" void __cdecl AI_ScreenMessage(const char* text);
-KING_ALIAS("_AI_ScreenMessage", "FUN_56ae60")
+extern "C" void __cdecl Messages_Add(const char* text);          // copter.cpp
 ASM_VAR(int, g_dealersBusy, $L_68d154)
 
 static const char s_playHeader[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\ai_play.h";
@@ -232,7 +231,7 @@ extern "C" void __cdecl Player_ExpireLicences(BYTE* p)
     } while (begin != end);
     if (n > 0 && FIELD(int, p, 92) == 1) {
         sprintf(text, AI_Text("LICENCES_EXPIRED"), n);
-        AI_ScreenMessage(text);
+        Messages_Add(text);
     }
 }
 
