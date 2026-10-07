@@ -10,9 +10,9 @@
 
 #include "vecmath.h"
 
-ASM_PROC(FUN_5ab190)    // ReadFloat
+extern "C" float __cdecl File_ReadFloat(FILE* f);     // engine.cpp
 
-static float ReadFloat(FILE* file) { return CallC<float>(FUN_5ab190, file); }
+static float ReadFloat(FILE* file) { return File_ReadFloat(file); }
 
 static double SumSquares(double x0, double y0, double z0)
 {

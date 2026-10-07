@@ -457,11 +457,11 @@ extern "C" void __cdecl Road_PositionCostBest(int side, PositionId from, Positio
 
 ASM_VAR(void*, g_aiTruck, $L_6f33ac)
 ASM_VAR(int, g_6ced70, $L_6ced70)
-ASM_PROC(FUN_5a9d40)
+extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
 
 extern "C" int __cdecl AI_TruckGripLow()
 {
-    double grip = CallThis<double>(FUN_5a9d40, g_aiTruck, 0.0);
+    double grip = Wave_Value(g_aiTruck, 0, 0.0);
     return !(grip >= 0.2);
 }
 
