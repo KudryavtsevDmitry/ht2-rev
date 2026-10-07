@@ -290,7 +290,7 @@ void CKingApp::Frame()
     if (g_pWnd6cec6c->m_1300 && g_pMainView->m_3024) {
         g_pMainView->DeleteObjects();
         g_p6d2078 = NULL;
-        CallC(FUN_512720);
+        Replay_Open();
     }
     if (g_pWnd6cec6c->m_1316 && g_pMainView->m_3024) {
         g_pMainView->v_140();

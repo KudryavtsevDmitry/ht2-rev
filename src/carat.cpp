@@ -758,3 +758,191 @@ extern "C" int __cdecl Loading_Step()
     CallC(FUN_5b81c0, F(int, w, 12), g_6ced60, rect, 0, y + 552);
     return CallThis<int>(FUN_5b6b10, F(void*, w, 12));
 }
+
+ASM_PROC(FUN_5dc230)
+ASM_PROC(FUN_5dae90)
+ASM_PROC(FUN_5c43c0)
+ASM_PROC(FUN_5c0cf0)
+ASM_PROC(FUN_51d0e0)
+ASM_PROC(FUN_5d8610)
+ASM_PROC(FUN_531000)
+ASM_PROC(FUN_5fd160)
+ASM_PROC(FUN_5fd3e0)
+ASM_PROC(FUN_5ffb20)
+extern "C" void __fastcall Wasm_598d80(BYTE* self, void*);      // wasm.cpp
+ASM_VAR(BYTE*, g_6cec90, $L_6cec90)
+ASM_VAR(AsmLabel, g_6d19fa, $L_6d19fa)
+ASM_VAR(AsmLabel, g_6d19ea, $L_6d19ea)
+ASM_VAR(AsmLabel, g_6d19f6, $L_6d19f6)
+ASM_VAR(AsmLabel, g_6d19fc, $L_6d19fc)
+typedef BYTE* KeyPtrs[47];
+ASM_VAR(KeyPtrs, g_keys6d1ec0, $L_6d1ec0)
+ASM_VAR(KeyPtrs, g_keys6d1f7c, $L_6d1f7c)
+ASM_VAR(BYTE*, g_6d2040, $L_6d2040)
+ASM_VAR(BYTE*, g_6d203c, $L_6d203c)
+ASM_VAR(BYTE*, g_6d2038, $L_6d2038)
+ASM_VAR(int, g_6d2068, $L_6d2068)
+ASM_VAR(AsmLabel, g_6d1bb0, $L_6d1bb0)          // 12-byte joystick records
+ASM_VAR(void*, g_6cec88, $L_6cec88)
+ASM_VAR(void*, g_6cec78, $L_6cec78)
+ASM_VAR(void*, g_6cec74, $L_6cec74)
+ASM_VAR(void*, g_6ceca0, $L_6ceca0)
+ASM_VAR(void*, g_6cecbc, $L_6cecbc)
+ASM_VAR(void*, g_6cecb0, $L_6cecb0)
+ASM_VAR(void*, g_6cecac, $L_6cecac)
+ASM_VAR(void*, g_6cecb4, $L_6cecb4)
+ASM_VAR(void*, g_696cb0, $L_696cb0)
+ASM_VAR(AsmLabel, g_6f68b0, $L_6f68b0)
+
+// loads a model (name) of a directory, with the resource file of the detail level
+extern "C" void __cdecl Model_Load(const char* name, const char* dir)
+{
+    char a[128], b[128], c[128];
+    strcpy(a, name);
+    strcpy(b, dir);
+    strcat(b, ".b3d");
+    strcpy(c, dir);
+    const char* suf = 0;
+    switch (g_6ced70) {
+    case 4: suf = ".res"; break;
+    case 3:
+    case 2: suf = strcmp(c, "trucks") ? ".res" : "1.res"; break;
+    case 1: suf = strcmp(c, "trucks") ? "1.res" : "2.res"; break;
+    case 0: suf = strcmp(c, "trucks") ? "2.res" : "3.res"; break;
+    }
+    if (suf)
+        strcat(c, suf);
+    void* m = CallThis<void*>(FUN_5dc230, g_world, a);
+    CallThis(FUN_5dae90, g_world, m, b, c);
+}
+
+// opens the replay file: recording (1) or playing (2, 3: the demo)
+extern "C" void __cdecl Replay_Open()
+{
+    F(int, g_world, 7936) = 0;
+    F(int, g_world, 7932) = 0;
+    int mode = F(int, g_6cec6c, 1300);
+    if (!mode)
+        return;
+    if (F(FILE*, g_world, 7928)) {
+        fclose(F(FILE*, g_world, 7928));
+        F(FILE*, g_world, 7928) = 0;
+    }
+    mode = F(int, g_6cec6c, 1300);
+    char buf[64];
+    if (mode == 1) {
+        F(int, g_world, 7936) = 1;
+        strcpy(buf, (const char*)g_6cec90 + 384);
+        strcat(buf, ".tr");
+        const char* n = Str_Trim(buf);
+        if (!n || !*n)
+            n = "tr.tr";
+        F(FILE*, g_world, 7928) = fopen(n, "wb");
+        CallThis(FUN_5c43c0, g_world);
+        return;
+    }
+    if (mode <= 1)
+        return;
+    F(int, g_6cec6c, 1292) = 0;
+    F(int, g_6cec6c, 1288) = 0;
+    F(int, g_6cec6c, 1284) = 0;
+    F(int, g_6cec6c, 1296) = 0;
+    BYTE* o = F(BYTE*, F(BYTE*, g_6cec90, 380), 300);
+    const char* s = o ? F(const char*, o, 12) : 0;
+    const char* n;
+    if (F(int, g_6cec6c, 1300) == 3 || !s || !*s)
+        n = "demo.tr0";
+    else {
+        sprintf(buf, "%s.tr", s);
+        n = buf;
+    }
+    F(FILE*, g_world, 7928) = fopen(n, "rb");
+    F(int, g_world, 7932) = 1;
+    F(double, g_world, 7960) = 1.0;
+    F(int, g_world, 7940) = 0;
+}
+
+extern "C" void __fastcall Screen_SetPlayer(BYTE* self, void*, int a)
+{
+    F(int, self, 512) = a;
+    CallThis(FUN_5c0cf0, F(void*, self, 500));
+    CallC(FUN_51d0e0, g_6cecd8 + 632, F(void*, self, 500));
+    if (!F(char, self, 372)) {
+        BYTE* o = F(BYTE*, F(BYTE*, self, 500), 300);
+        const char* s = o ? F(const char*, o, 12) : 0;
+        if (!s)
+            s = (const char*)Carat_Resource(103);
+        strcpy((char*)self + 372, s);
+    }
+    CallThis(FUN_5d8610, self);
+}
+
+static int KeyIndex(const BYTE* p) { return p ? (int)(p - (const BYTE*)g_6d1948) >> 1 : -1; }
+static int JoyIndex(const BYTE* p) { return (int)(p - (const BYTE*)g_6d1bb0) / 12; }
+
+// the controls' key numbers of the keyboard layout for the options screen
+extern "C" void __fastcall Keys_Assign(BYTE* self, void*)
+{
+    CallC(FUN_531000, F(int, self, 1280));
+    if (g_696890 == 2)
+        g_keys6d1ec0[6] = (BYTE*)g_6d19fa;
+    else if (g_696890 == 3) {
+        g_keys6d1ec0[5] = (BYTE*)g_6d19ea;
+        g_keys6d1ec0[6] = (BYTE*)g_6d19f6;
+        g_keys6d1ec0[38] = (BYTE*)g_6d19fc;
+    }
+    for (int i = 0; i < 47; i++) {
+        F(int, self, 528 + i * 4) = KeyIndex(g_keys6d1ec0[i]);
+        BYTE* q;
+        if (i == 0) {
+            q = g_6d2040;
+            F(int, self, 716) = q ? F(int, q, 8) + (g_6d2068 + 150 + JoyIndex(q) * 2) * 2 : -1;
+        } else if (i == 3) {
+            q = g_6d203c;
+            F(int, self, 728) = q ? (((g_6d2068 == 0) + (g_6d2068 + 150 + JoyIndex(q) * 2) * 2) ^ F(int, q, 8)) : -1;
+        } else if (i == 1) {
+            q = g_6d2038;
+            F(int, self, 720) = q ? F(int, q, 8) + JoyIndex(q) * 4 + 300 : -1;
+        } else if (i == 2) {
+            q = g_6d2038;
+            F(int, self, 724) = q ? (F(int, q, 8) ^ 1) + JoyIndex(q) * 4 + 300 : -1;
+        } else
+            F(int, self, 716 + i * 4) = KeyIndex(g_keys6d1f7c[i]);
+    }
+}
+
+// plays a movie (from the CD's movie directory unless mode is 0, 1 or 6)
+extern "C" int __cdecl Movie_Play(const char* name, int mode)
+{
+    if (!g_6cec88)
+        return 0;
+    char buf[128];
+    GetPrivateProfileStringA("INSTALL", "movie", ".", buf, 100, (const char*)g_696868);
+    if (mode > 1 && mode != 6)
+        strcpy(buf, ".");
+    strcat(buf, name);
+    FILE* f = fopen(buf, "rb");
+    if (!f)
+        return 0;
+    fclose(f);
+    if (mode > 1 && mode != 6) {
+        CallVirt(F(void*, g_world, 2856), 32);
+        CallVirt(g_6cec78, 32);
+        CallVirt(g_6cec74, 32);
+        CallVirt(g_6ceca0, 32);
+        CallVirt(g_world, 32);
+        CallVirt(g_6cecbc, 32);
+        CallVirt(g_6cecb0, 32);
+        CallVirt(g_6cecac, 32);
+        CallVirt(g_6cecb4, 32);
+        Wasm_598d80((BYTE*)g_6f68b0, 0);
+        CallVirt(g_696cb0, 32);
+        CallC(FUN_5fd160);
+        CallC(FUN_5fd160);
+        CallC(FUN_5fd3e0);
+        if (F(int, g_6cec6c, 1344))
+            CallC(FUN_5ffb20);
+    }
+    Screen_OpenMovie(g_6cec88, 0, (int)buf, mode);
+    return 1;
+}

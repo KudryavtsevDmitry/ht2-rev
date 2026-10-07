@@ -35,8 +35,8 @@ ASM_PROC(FUN_556110)
 ASM_PROC(FUN_5561b0)
 ASM_PROC(FUN_5f19b0)    // named object: constructor
 ASM_PROC(FUN_5ef6d0)
-ASM_PROC(FUN_4ba130)
-ASM_PROC(FUN_4ba210)
+extern "C" int __cdecl Fx_Skid1(const void* p, const void* v, int net);   // aeffects.cpp
+extern "C" int __cdecl Fx_Skid2(const void* p, const void* v, int net);
 
 struct Position { DWORD m[8]; };    // road.h's PositionId, passed by value
 struct RoomInfo {
@@ -513,12 +513,12 @@ extern "C" void __fastcall Car_54ef20(BYTE* self, void*, int a)
 
 extern "C" int __cdecl Veh_54ef90(int unused, int a, int b)
 {
-    return CallC<int>(FUN_4ba130, a, b, 1);
+    return Fx_Skid1((const void*)a, (const void*)b, 1);
 }
 
 extern "C" int __cdecl Veh_54efb0(int a, int b)
 {
-    return CallC<int>(FUN_4ba210, a, b, 1);
+    return Fx_Skid2((const void*)a, (const void*)b, 1);
 }
 
 extern "C" int __fastcall Car_54efd0(BYTE* self, void*, int* a, int* b)

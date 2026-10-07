@@ -114,9 +114,9 @@ ASM_PROC(FUN_5d81c0)    // Video_SetMode
 ASM_PROC(FUN_5e8c60)    // Font_Load
 ASM_PROC(FUN_5bc2f0)    // Font::~Font
 ASM_PROC(FUN_603b70)    // Ini_GetInt
-ASM_PROC(FUN_5279e0)    // King_PlayMovie
+extern "C" int __cdecl Movie_Play(const char* name, int mode);   // carat.cpp
 ASM_PROC(FUN_511820)    // King_LeaveGame
-ASM_PROC(FUN_512720)
+extern "C" void __cdecl Replay_Open();    // carat.cpp
 
 // Milliseconds: QueryPerformanceCounter, scaled against timeGetTime once at
 // startup [FUN_603f30].
@@ -547,7 +547,7 @@ ASM_VAR(BOOL, g_bPlayTrirrMovie, $L_6f3428)
 ASM_VAR(void* const, g_vtblCKingApp, $L_64d830)
 
 // Plays name from the [INSTALL] movie directory of truck.ini if the file exists.
-inline BOOL King_PlayMovie(const char* name, int mode) { return CallC<BOOL>(FUN_5279e0, name, mode); }
+inline BOOL King_PlayMovie(const char* name, int mode) { return Movie_Play(name, mode); }
 // King's reaction to CMainView::m_bExit: blanks the screen and shuts the game
 // screen's subsystems down.
 inline void King_LeaveGame() { CallC(FUN_511820); }
