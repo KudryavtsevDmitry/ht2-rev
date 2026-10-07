@@ -1031,3 +1031,411 @@ void* __fastcall Fx_CopyMatrix(BYTE* s, void*, void* out) { return M(s)->CopyMat
 BYTE* __fastcall Fx_HandleInit(BYTE* s, void*, int a) { return M(s)->HandleInit(a); }                      // [FUN_4dd900]
 BYTE* __fastcall CopySound_Construct(BYTE* s, void*, BYTE* src) { return M(s)->CopySoundInit(src); }       // [FUN_4dd9c0]
 }
+
+// ---------------------------------------------------------------------------
+// medium-sized functions of the unit
+
+struct Vec3Bits { DWORD x, y, z; };
+ASM_PROC(FUN_60aad0)    // error (code, format, file, line, date)
+ASM_PROC(FUN_5d9290)    // a model by name
+ASM_PROC(FUN_603110)    // network: send (type, data, size)
+ASM_PROC(FUN_593720)
+ASM_PROC(FUN_57c490)
+extern "C" void __fastcall Hits_Remember(BYTE* self, void*, const BYTE* hits, unsigned n);
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
+ASM_VAR(AsmLabel, g_vtbl64c24c, $L_64c24c)
+ASM_VAR(void*, g_lib696204, $L_696204)
+ASM_VAR(void*, g_lib696200, $L_696200)
+typedef BYTE* Materials[1];
+ASM_VAR(Materials, g_lightMats, $L_695cbc)      // 6 materials of the lights
+ASM_VAR(Materials, g_vaporMats, $L_695c58)
+ASM_VAR(int, g_vaporCount, $L_69620c)
+ASM_VAR(AsmLabel, g_strErrFormat, $L_6724b0)    // " File = %s, Line = #%ld, Date = %s "
+ASM_VAR(AsmLabel, g_strErrFile, $L_6724d4)      // the source file
+ASM_VAR(AsmLabel, g_strErrDate, $L_6724f8)
+ASM_VAR(AsmLabel, g_strTrucks, $L_66cd44)       // "trucks"
+ASM_VAR(float, g_skid1Level, $L_696030)
+ASM_VAR(float, g_skid2Level, $L_69604c)
+ASM_VAR(float, g_shadowLevel, $L_69606c)
+ASM_VAR(void*, g_6f66a8, $L_6f66a8)
+ASM_VAR(void*, g_696234, $L_696234)
+
+static void Fx_Error(int line)
+{
+    CallC(FUN_60aad0, 0x88762715, (const char*)g_strErrFormat, (const char*)g_strErrFile, line,
+          (const char*)g_strErrDate);
+}
+
+static inline BYTE* Fx_Material(const char* name, void* lib) { return Fx_FindByName(name, (BYTE*)lib); }
+
+// adds a decal (a mark at p along n) to the effect list
+extern "C" void __cdecl Fx_AddDecal(const Vec3Bits* p, const Vec3Bits* n, int a, int b, int c)
+{
+    if (!g_effectList)
+        return;
+    DWORD* o = (DWORD*)operator new(48);
+    if (o) {
+        for (int i = 1; i <= 7; i++)
+            o[i] = 0;
+        o[0] = (DWORD)(void*)g_vtbl64c24c;
+        F(Vec3Bits, o, 8) = *p;
+        F(Vec3Bits, o, 20) = *n;
+        o[8] = a;
+        o[9] = b ? b : 0;
+        o[10] = b ? 1 : 0;
+        o[11] = c;
+        o[1] = 3;
+    }
+    BYTE* l = g_effectList;
+    if (F(unsigned, l, 36) < 255) {
+        F(DWORD**, l, 32)[F(unsigned, l, 36)] = o;
+        F(int, l, 36)++;
+    }
+}
+
+extern "C" void __cdecl Fx_LoadLightMaterials()
+{
+    static const char* const names[6] = { "mat_l_noiseHEAD", "mat_lg_head", "mat_lg_rvrs", "mat_lg_stop",
+                                          "mat_l_noiseSTOP", "mat_l_noiseRVRS" };
+    static const int lines[6] = { 630, 639, 647, 655, 663, 671 };
+    for (int i = 0; i < 6; i++) {
+        g_lightMats[i] = Fx_Material(names[i], g_lib696204);
+        if (!g_lightMats[i])
+            Fx_Error(lines[i]);
+        F(DWORD, g_lightMats[i], 88) = 0x3f800000;
+        F(DWORD, g_lightMats[i], 32) |= 0x40220;
+    }
+}
+
+extern "C" void __cdecl Fx_LoadVapor()
+{
+    char buf[256];
+    g_vaporCount = 0;
+    for (int i = 0;; i++) {
+        sprintf(buf, i > 9 ? "%s%d" : "%s0%d", "mvapor", i);
+        BYTE* m = Fx_Material(buf, g_lib696200);
+        g_vaporMats[i] = m;
+        if (!m)
+            break;
+        F(DWORD, m, 88) = 0x3f800000;
+        F(DWORD, g_vaporMats[i], 32) |= 0x40220;
+        g_vaporCount++;
+    }
+    if (!g_vaporCount)
+        Fx_Error(726);
+}
+
+extern "C" void __cdecl Fx_LoadShadows()
+{
+    BYTE* o = CallThis<BYTE*>(FUN_5d9290, g_view, (const char*)g_strTrucks);
+    g_sound694838 = 0;
+    g_sound694834 = 0;
+    bool found = false;
+    BYTE* arr = F(BYTE*, o, 76);
+    for (unsigned i = 0; i < F(unsigned, o, 72); i++)
+        if (strcmp((const char*)arr + i * 124, "effect_Shadow") == 0) {
+            g_sound694834 = (int)(arr + i * 124);
+            found = g_sound694834 != 0;
+            break;
+        }
+    if (!found)
+        Fx_Error(744);
+    g_sound694838 = (int)Fx_Material("shadtree0", g_lib696200);
+    if (!g_sound694838)
+        Fx_Error(750);
+    F(DWORD, g_sound694834, 32) |= 0x40200;
+    F(DWORD, g_sound694838, 32) |= 0x40200;
+}
+
+static int Fx_Skid(float level, BYTE type, const Vec3Bits* p, const Vec3Bits* v, int net)
+{
+    if (!(level > 0.5f))
+        return 0;
+    if (net && (F(int, g_6cec6c, 1300) == 1 || F(int, g_6cec6c, 1316))) {
+        BYTE pkt[28] = { 0 };
+        pkt[0] = type;
+        F(Vec3Bits, pkt, 4) = *p;
+        F(Vec3Bits, pkt, 16) = *v;
+        CallThis(FUN_603110, g_view + 8336, 957, pkt, 28);
+    }
+    double len = Vec3_Length((const Vec3*)v) * 6.0f;
+    if (len > 100.0f)
+        len = 100.0f;
+    return CallThis<int>(FUN_593720, g_6f66a8, p, v, (int)len);
+}
+
+extern "C" int __cdecl Fx_Skid1(const Vec3Bits* p, const Vec3Bits* v, int net)
+{
+    return Fx_Skid(g_skid1Level, 1, p, v, net);
+}
+
+extern "C" int __cdecl Fx_Skid2(const Vec3Bits* p, const Vec3Bits* v, int net)
+{
+    return Fx_Skid(g_skid2Level, 2, p, v, net);
+}
+
+// a vehicle's shadow at the detail level of the options
+extern "C" void __cdecl Fx_Shadow(int a, int b, int c, int d, int tree)
+{
+    void* m = (void*)(tree ? g_sound694838 : g_sound694834);
+    float k = g_shadowLevel;
+    int lvl = !(k > 0.25f) ? 3 : !(k > 0.5f) ? 2 : !(k > 0.75f) ? 1 : 0;
+    CallThis(FUN_57c490, g_sounds, a, b, c, lvl, d, m);
+    if (g_696234)
+        Hits_Remember((BYTE*)g_696234, 0, (const BYTE*)a, b);
+}
+
+ASM_PROC(FUN_4ccd50)
+ASM_PROC(FUN_5d2ba0)    // shows an error text (text, a)
+extern "C" Matrix* __fastcall Matrix_IdentityThis(Matrix* self, void*);   // vecmath.cpp
+ASM_VAR(BYTE*, g_glows, $L_696248)              // 100 records of 116 bytes
+ASM_VAR(int, g_glowCount, $L_69624c)
+typedef char ErrText[1];
+ASM_VAR(ErrText, g_errText69608c, $L_69608c)
+ASM_VAR(AsmLabel, g_strBadGlow, $L_6727a0)      // "Invalid number of static glow in module %s, ..."
+
+// a hit record of a query: the point, normal, object kind and matrix
+static void Hit_Fill(BYTE* r, const BYTE* hit)
+{
+    F(Vec3Bits, r, 0) = F(Vec3Bits, hit, 52);
+    F(Vec3Bits, r, 12) = F(Vec3Bits, hit, 64);
+    int* c = F(int*, hit, 108);
+    int k;
+    if (c && ((k = c[0]) == 5 || k == 8 || k == 6)) {
+        F(int, r, 24) = k;
+        F(int, r, 32) = c[2];
+        F(int, r, 28) = F(int, hit, 112);
+        memcpy(r + 36, hit + 4, 48);
+    } else
+        F(int, r, 24) = 0;
+    BYTE* o = F(BYTE*, hit, 104);
+    F(BYTE*, r, 84) = o;
+    if (o)
+        F(int, r, 88) = F(int, o, 36);
+}
+
+extern "C" BYTE* __fastcall HitRec_Construct(BYTE* self, void*, const BYTE* hit)
+{
+    for (int i = 0; i < 24; i += 4)
+        F(int, self, i) = 0;
+    for (int k = 0; k < 4; k++)
+        Vec3_ZeroThis((Vec3*)(self + 36 + k * 12), 0);
+    F(Matrix, self, 36) = g_identity;
+    if (hit)
+        Hit_Fill(self, hit);
+    return self;
+}
+
+// remembers the hits on new objects of some kinds (a ring of 50)
+extern "C" void __fastcall Hits_Remember(BYTE* self, void*, const BYTE* hits, unsigned n)
+{
+    BYTE* base = F(BYTE*, self, 40) + 64;
+    const BYTE* h = hits + 100;
+    for (; n; n--, h += 208) {
+        int* o = F(int*, h, 0);
+        if (!o || o[0] != 1)
+            continue;
+        int k = o[1];
+        if (k != 1 && k != 5 && k != 8 && k != 9 && k != 10)
+            continue;
+        unsigned lim = F(unsigned, base, 4);
+        if (lim > 50)
+            lim = 50;
+        unsigned i = 0;
+        for (; i < lim; i++) {
+            BYTE* rec = base + 36 + i * 92;
+            if (F(int, rec, 4) == F(int, h, 8) && F(int, rec, 0) == F(int, h, 12))
+                break;
+        }
+        if (i != lim)
+            continue;
+        unsigned slot = F(unsigned, base, 4) % 50;
+        BYTE r[92];
+        for (int j = 0; j < 24; j += 4)
+            F(int, r, j) = 0;
+        Matrix_IdentityThis((Matrix*)(r + 36), 0);
+        Hit_Fill(r, hits);
+        BYTE* d = base + slot * 92;
+        memcpy(d + 8, r, 92);
+        BYTE** next = (BYTE**)(base + (slot + 1) * 92);
+        if (!*next) {
+            BYTE* w = F(BYTE*, g_view, 488);
+            BYTE* v = w ? F(BYTE*, w, 76) : 0;
+            *next = v;
+            F(int, d, 96) = F(int, v, 36);
+        }
+        F(int, base, 4)++;
+    }
+}
+
+extern "C" int __cdecl Glow_Add(int a, const Vec3Bits* p, float b, float r1, float r2, int c, int d, int e, float f)
+{
+    if (g_glowCount == 100) {
+        BYTE* v = g_view;
+        BYTE* m;
+        int name;
+        if (v && (m = F(BYTE*, v, 468)) != 0 && (name = F(int, m, 60)) != 0) {
+            sprintf(g_errText69608c, (const char*)g_strBadGlow, name, F(double, v, 2904), F(double, v, 2912),
+                    F(double, v, 2920));
+            CallC(FUN_5d2ba0, (char*)g_errText69608c, 0);
+        }
+        return 0;
+    }
+    BYTE* g = g_glows + g_glowCount * 116;
+    F(int, g, 100) = 0;
+    F(int, g, 96) = 0;
+    F(int, g, 68) = a;
+    F(Vec3Bits, g, 20) = *p;
+    F(Vec3Bits, g, 56) = *p;
+    F(Vec3Bits, g, 104) = *p;
+    F(float, g, 72) = b;
+    F(float, g, 80) = (float)((double)r2 * r2);
+    F(int, g, 88) = d;
+    F(int, g, 92) = c;
+    F(float, g, 84) = (float)((double)r1 * r1);
+    F(int, F(BYTE*, g, 52), 36) = e;
+    F(float, g, 76) = f;
+    F(BYTE, g, 40) &= 0xfe;
+    g_glowCount++;
+    return 1;
+}
+
+typedef int(__stdcall* LightCall2)(void* dev, int id, void* a);
+typedef int(__stdcall* LightCall176)(void* dev, int id, int on);
+
+static int LightSet(int id, BYTE* self) { return (*(LightCall2*)(*(BYTE**)g_lightDevice + 72))(g_lightDevice, id, self); }
+static int LightEnable(int id, int on) { return (*(LightCall176*)(*(BYTE**)g_lightDevice + 176))(g_lightDevice, id, on); }
+
+// turns a hardware light on or off as its fade wants
+extern "C" int __fastcall Light_Switch(BYTE* self, void*, int on, int keep)
+{
+    BYTE* s = F(BYTE*, self, 104);
+    int id = F(int, self, 116);
+    if (F(int, s, 72) > 130) {
+        if (on == F(int, self, 112))
+            return 0;
+        if (!on) {
+            int r = LightEnable(id, 0);
+            F(int, self, 112) = 0;
+            return r;
+        }
+        int r = LightSet(id, self);
+        if (r < 0)
+            return r;
+        r = LightEnable(F(int, self, 116), 1);
+        if (r < 0)
+            return r;
+        F(int, self, 112) = 1;
+        return r;
+    }
+    if (!on && keep) {
+        if (F(int, self, 112) != 1)
+            return 0;
+    } else {
+        int k = CallC<int>(FUN_4ccd50, s, on);
+        if (k) {
+            Fade_Apply(F(BYTE*, self, 104), (float*)self);
+            LightSet(F(int, self, 116), self);
+        } else
+            Fade_Touch(F(BYTE*, self, 104));
+        if (k == F(int, self, 112))
+            return 0;
+        if (k) {
+            F(int, self, 112) = 1;
+            g_lightsOn++;
+            return LightEnable(F(int, self, 116), 1);
+        }
+        F(int, self, 112) = 0;
+    }
+    g_lightsOn--;
+    return LightEnable(F(int, self, 116), 0);
+}
+
+ASM_PROC(FUN_4ccf30)
+ASM_VAR(ErrText, g_errText695d30, $L_695d30)
+
+extern "C" int __cdecl Glow_Add2(int a, const Vec3Bits* p, float b, float r1, float r2, int c, int d, int e,
+                                 int g9, int g10, float f)
+{
+    if (g_glowCount == 100) {
+        BYTE* v = g_view;
+        BYTE* m;
+        int name;
+        if (v && (m = F(BYTE*, v, 468)) != 0 && (name = F(int, m, 60)) != 0) {
+            sprintf(g_errText695d30, (const char*)g_strBadGlow, name, F(double, v, 2904), F(double, v, 2912),
+                    F(double, v, 2920));
+            CallC(FUN_5d2ba0, (char*)g_errText695d30, 0);
+        }
+        return 0;
+    }
+    BYTE* g = g_glows + g_glowCount * 116;
+    F(int, g, 100) = g10;
+    F(int, g, 96) = g9;
+    F(int, g, 68) = a;
+    F(Vec3Bits, g, 20) = *p;
+    F(Vec3Bits, g, 56) = *p;
+    F(Vec3Bits, g, 104) = *p;
+    F(float, g, 72) = b;
+    F(float, g, 80) = (float)((double)r2 * r2);
+    F(int, g, 88) = d;
+    F(int, g, 92) = c;
+    F(float, g, 84) = (float)((double)r1 * r1);
+    F(int, F(BYTE*, g, 52), 36) = e;
+    F(float, g, 76) = f;
+    F(BYTE, g, 40) &= 0xfe;
+    g_glowCount++;
+    return 1;
+}
+
+// adds a hardware light (rec: 104 bytes) and turns it on while there are free ones
+extern "C" int __fastcall Lights_Add(unsigned* self, void*, const void* rec, int a, int fade)
+{
+    unsigned n = self[1];
+    if (!((double)n < 255.0f) || !fade || !g_view)
+        return 0x80004005;
+    BYTE* e = (BYTE*)self[3] + n * 120;
+    F(unsigned, e, 116) = n;
+    F(int, e, 112) = 0;
+    memcpy(e, rec, 104);
+    F(int, e, 104) = fade;
+    if (!(self[2] < self[0])) {
+        self[1]++;
+        return CallThis<int>(FUN_4ccf30, self, a);
+    }
+    e = (BYTE*)self[3] + self[1] * 120;
+    BYTE* s = F(BYTE*, e, 104);
+    int r;
+    if (F(int, s, 72) > 130) {
+        if (F(int, e, 112) == 1)
+            r = 0;
+        else {
+            r = LightSet(F(int, e, 116), e);
+            if (r >= 0) {
+                r = LightEnable(F(int, e, 116), 1);
+                if (r >= 0)
+                    F(int, e, 112) = 1;
+            }
+        }
+    } else {
+        int k = CallC<int>(FUN_4ccd50, s, 1);
+        if (k) {
+            Fade_Apply(F(BYTE*, e, 104), (float*)e);
+            LightSet(F(int, e, 116), e);
+        } else
+            Fade_Touch(F(BYTE*, e, 104));
+        if (k == F(int, e, 112))
+            r = 0;
+        else if (k) {
+            F(int, e, 112) = 1;
+            g_lightsOn++;
+            r = LightEnable(F(int, e, 116), 1);
+        } else {
+            F(int, e, 112) = 0;
+            g_lightsOn--;
+            r = LightEnable(F(int, e, 116), 0);
+        }
+    }
+    self[2]++;
+    self[1]++;
+    return r;
+}

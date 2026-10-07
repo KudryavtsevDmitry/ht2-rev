@@ -753,6 +753,14 @@ PUBLIC $L_67e180, $L_67e190, $L_67e19c, $L_67e1ac, $L_696868, $L_6f6914
 PUBLIC $L_674ae0, $L_675468, $L_69689c, $L_697860, $L_6c6b68, $L_6ce34c
 PUBLIC $L_6ce370, $L_6cecc0, $L_6ced38, $L_6ced3c, $L_6ced40, $L_6ced44
 PUBLIC $L_6ced50, $L_6ced5c, $L_6ced60, $L_6ced64
+PUBLIC $L_64c24c, $L_64d308, $L_64d310, $L_66cd44, $L_6724d4, $L_6727a0
+PUBLIC $L_695c58, $L_695cbc, $L_695d30, $L_696030, $L_69604c, $L_69606c
+PUBLIC $L_69608c, $L_696200, $L_696204, $L_69620c, $L_696234, $L_696248
+PUBLIC $L_69624c, $L_6f66a8
+PUBLIC $L_6cec74, $L_6cec88, $L_6cec90, $L_6ceca0, $L_6cecac, $L_6cecb0
+PUBLIC $L_6cecb4, $L_6cecbc, $L_6d19ea, $L_6d19f6, $L_6d19fa, $L_6d19fc
+PUBLIC $L_6d1ec0, $L_6d1f7c, $L_6d2038, $L_6d203c, $L_6d2040, $L_6d2068
+PUBLIC $L_6f68b0
 
 ;===================================
 _TEXT SEGMENT
@@ -328836,6 +328844,8 @@ $L_4b83d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4b83f0 PROC
 
             mov EAX,DWORD PTR [$L_6961f4]
@@ -328913,6 +328923,10 @@ $L_4b84b6::
             pop ESI
             ret 
 FUN_4b83f0 ENDP
+ELSE
+EXTERN _Fx_AddDecal:PROC
+FUN_4b83f0 TEXTEQU <_Fx_AddDecal>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -329913,6 +329927,8 @@ FUN_4b8c40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4b8d00 PROC
 
             mov EAX,DWORD PTR [$L_696204]
@@ -330079,6 +330095,10 @@ $L_4b8eec::
             mov DWORD PTR [EAX+32],ECX
             ret 
 FUN_4b8d00 ENDP
+ELSE
+EXTERN _Fx_LoadLightMaterials:PROC
+FUN_4b8d00 TEXTEQU <_Fx_LoadLightMaterials>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4b8f00 PROC
@@ -330158,6 +330178,8 @@ FUN_4b8f00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4b8fb0 PROC
 
             sub ESP,256
@@ -330239,6 +330261,10 @@ $L_4b906a::
             add ESP,256
             ret 
 FUN_4b8fb0 ENDP
+ELSE
+EXTERN _Fx_LoadVapor:PROC
+FUN_4b8fb0 TEXTEQU <_Fx_LoadVapor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -330255,6 +330281,8 @@ FUN_4b8fb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4b9080 PROC
 
             push ECX
@@ -330389,6 +330417,10 @@ $L_4b916f::
             nop
             nop
 FUN_4b9080 ENDP
+ELSE
+EXTERN _Fx_LoadShadows:PROC
+FUN_4b9080 TEXTEQU <_Fx_LoadShadows>
+ENDIF
 ALIGN 16
 FUN_4b91a0 PROC
 
@@ -331954,6 +331986,8 @@ FUN_4ba0c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4ba130 PROC
 
             fld DWORD PTR [$L_696030]
@@ -332034,6 +332068,10 @@ $L_4ba1fd::
             add ESP,28
             ret 
 FUN_4ba130 ENDP
+ELSE
+EXTERN _Fx_Skid1:PROC
+FUN_4ba130 TEXTEQU <_Fx_Skid1>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -332050,6 +332088,8 @@ FUN_4ba130 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4ba210 PROC
 
             fld DWORD PTR [$L_69604c]
@@ -332129,6 +332169,10 @@ $L_4ba2da::
             add ESP,28
             ret 
 FUN_4ba210 ENDP
+ELSE
+EXTERN _Fx_Skid2:PROC
+FUN_4ba210 TEXTEQU <_Fx_Skid2>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -333477,6 +333521,8 @@ FUN_4bb050 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4bb270 PROC
 
             fld DWORD PTR [$L_69606c]
@@ -333589,6 +333635,10 @@ $L_4bb34a::
 
             nop
 FUN_4bb270 ENDP
+ELSE
+EXTERN _Fx_Shadow:PROC
+FUN_4bb270 TEXTEQU <_Fx_Shadow>
+ENDIF
 ALIGN 16
 ; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
 IFDEF ASM_AEFFECTS
@@ -336817,6 +336867,8 @@ EXTERN @Fx_InitFrame@8:PROC
 FUN_4bd590 TEXTEQU <@Fx_InitFrame@8>
 ENDIF
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4bd620 PROC
 
             sub ESP,92
@@ -336958,6 +337010,10 @@ $L_4bd752::
             add ESP,92
             ret 4
 FUN_4bd620 ENDP
+ELSE
+EXTERN @HitRec_Construct@12:PROC
+FUN_4bd620 TEXTEQU <@HitRec_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_4bd760 PROC
@@ -348121,6 +348177,8 @@ $L_4c41c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4c43b0 PROC
 
             sub ESP,196
@@ -348340,6 +348398,10 @@ $L_4c45bc::
             add ESP,196
             ret 8
 FUN_4c43b0 ENDP
+ELSE
+EXTERN @Hits_Remember@16:PROC
+FUN_4c43b0 TEXTEQU <@Hits_Remember@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -350242,6 +350304,8 @@ $L_4c5720 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4c5770 PROC
 
             mov EAX,DWORD PTR [$L_69624c]
@@ -350389,9 +350453,15 @@ $L_4c57e0::
             mov EAX,1
             ret 
 FUN_4c5770 ENDP
+ELSE
+EXTERN _Glow_Add:PROC
+FUN_4c5770 TEXTEQU <_Glow_Add>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4c5950 PROC
 
             mov EAX,DWORD PTR [$L_69624c]
@@ -350541,6 +350611,10 @@ $L_4c59c0::
             mov EAX,1
             ret 
 FUN_4c5950 ENDP
+ELSE
+EXTERN _Glow_Add2:PROC
+FUN_4c5950 TEXTEQU <_Glow_Add2>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_4c5b30 PROC
@@ -361299,6 +361373,8 @@ FUN_4ccf30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4cd270 PROC
 
             push ESI
@@ -361476,6 +361552,10 @@ $L_4cd3ac::
             nop
             nop
 FUN_4cd270 ENDP
+ELSE
+EXTERN @Light_Switch@16:PROC
+FUN_4cd270 TEXTEQU <@Light_Switch@16>
+ENDIF
 ALIGN 16
 ; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
 IFDEF ASM_AEFFECTS
@@ -361564,6 +361644,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; effects: src\aeffects.cpp, nmake ASM_AEFFECTS=1 assembles the original
+IFDEF ASM_AEFFECTS
 FUN_4cd470 PROC
 
             sub ESP,112
@@ -361791,6 +361873,10 @@ $L_4cd65d::
             add ESP,112
             ret 12
 FUN_4cd470 ENDP
+ELSE
+EXTERN @Lights_Add@20:PROC
+FUN_4cd470 TEXTEQU <@Lights_Add@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -460033,6 +460119,8 @@ EXTERN _Loading_Step:PROC
 FUN_510690 TEXTEQU <_Loading_Step>
 ENDIF
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_5107c0 PROC
 
             sub ESP,384
@@ -460352,6 +460440,10 @@ $L_5109ce::
             add ESP,384
             ret 
 FUN_5107c0 ENDP
+ELSE
+EXTERN _Model_Load:PROC
+FUN_5107c0 TEXTEQU <_Model_Load>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -463475,6 +463567,8 @@ $L_5125b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_512720 PROC
 
             mov EAX,DWORD PTR [$L_696ca0]
@@ -463662,6 +463756,10 @@ $L_51290b::
             add ESP,64
             ret 
 FUN_512720 ENDP
+ELSE
+EXTERN _Replay_Open:PROC
+FUN_512720 TEXTEQU <_Replay_Open>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -465302,6 +465400,8 @@ FUN_513820 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_513850 PROC
 
             push EBX
@@ -465479,6 +465579,10 @@ $L_513a12::
             pop EBX
             ret 
 FUN_513850 ENDP
+ELSE
+EXTERN @Keys_Assign@8:PROC
+FUN_513850 TEXTEQU <@Keys_Assign@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -481789,6 +481893,8 @@ FUN_51e000 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_51e070 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -481889,6 +481995,10 @@ $L_51e124::
             pop EBX
             ret 4
 FUN_51e070 ENDP
+ELSE
+EXTERN @Screen_SetPlayer@12:PROC
+FUN_51e070 TEXTEQU <@Screen_SetPlayer@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -496591,6 +496701,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; game, menus and screens: src\carat.cpp, nmake ASM_CARAT=1 assembles the original
+IFDEF ASM_CARAT
 FUN_5279e0 PROC
 
             mov EAX,DWORD PTR [$L_6cec88]
@@ -496765,6 +496877,10 @@ $L_527b78::
             add ESP,128
             ret 
 FUN_5279e0 ENDP
+ELSE
+EXTERN _Movie_Play:PROC
+FUN_5279e0 TEXTEQU <_Movie_Play>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
