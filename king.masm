@@ -871706,6 +871706,7 @@ FUN_60f390 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f4f0 PROC
 
             push ESI
@@ -871736,6 +871737,10 @@ FUN_60f4f0 PROC
             nop
             nop
 FUN_60f4f0 ENDP
+ELSE
+EXTERN @MarineQueue_SetNodePriority@16:PROC
+FUN_60f4f0 TEXTEQU <@MarineQueue_SetNodePriority@16>
+ENDIF
 ALIGN 16
 FUN_60f520 PROC
 
@@ -872148,6 +872153,7 @@ FUN_60f690 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f7b0 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -872195,6 +872201,10 @@ $L_60f7e9::
 
             ret 
 FUN_60f7b0 ENDP
+ELSE
+EXTERN @MarineQueue_TopNode@8:PROC
+FUN_60f7b0 TEXTEQU <@MarineQueue_TopNode@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -872341,6 +872351,7 @@ FUN_60f7f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f8d0 PROC
 
             push ESI
@@ -872371,6 +872382,10 @@ FUN_60f8d0 PROC
             nop
             nop
 FUN_60f8d0 ENDP
+ELSE
+EXTERN @MarineQueue_SetEdgePriority@16:PROC
+FUN_60f8d0 TEXTEQU <@MarineQueue_SetEdgePriority@16>
+ENDIF
 ALIGN 16
 FUN_60f900 PROC
 
@@ -872481,6 +872496,7 @@ FUN_60f900 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f9d0 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -872528,6 +872544,10 @@ $L_60fa09::
 
             ret 
 FUN_60f9d0 ENDP
+ELSE
+EXTERN @MarineQueue_TopEdge@8:PROC
+FUN_60f9d0 TEXTEQU <@MarineQueue_TopEdge@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

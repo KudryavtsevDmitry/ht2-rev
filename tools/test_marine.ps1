@@ -10,13 +10,14 @@ $linker = Join-Path $vc 'bin\HostX86\x86\link.exe'
 $sdkLib = Join-Path (Split-Path (Split-Path $sdk -Parent) -Parent) ('Lib\' + (Split-Path $sdk -Leaf) + '\um\x86')
 $flags = @('/nologo', '/c', '/O2', '/GS-', '/Zl', "/I$vc\include", "/I$sdk\um", "/I$sdk\shared", "/I$sdk\ucrt", '/arch:IA32')
 $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
-$body = $source.Substring($source.IndexOf('// Two sentinel')).Replace('operator delete(', 'TestFree(')
+$body = $source.Substring($source.IndexOf('// Two sentinel'), $source.IndexOf('// Priority queues specific') - $source.IndexOf('// Two sentinel')).Replace('operator delete(', 'TestFree(')
 $update = [regex]::Match($body, '(?s)extern "C" void __fastcall MarineGreed_Update\(.*?\n\}').Value
 $body = $body.Replace($update, '')
 $header = "#define timeGetTime TestTime`nextern `"C`" unsigned __stdcall TestTime();`n#include `"../src/king.h`"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nextern `"C`" void TestFree(void*);`n"
 foreach ($label in @('60f690','6136f0','606750','6069d0','60aad0','60aa60','60f4f0','60f7b0','60f9d0','60f8d0','6137d0','606760','605900')) { $header += "ASM_PROC(FUN_$label)`n" }
 foreach ($name in @('Date','ErrorFormat','File','AssertFormat','Header','Neighbor44','Neighbor52','Neighbor48')) { $header += "extern `"C`" char g_marine$name[1];`n" }
 $header += "extern `"C`" DWORD g_marineRefinementEnabled, g_marineRefinementLimit;`n"
+$header += 'extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*,void*,BYTE*,DWORD);' + "`n" + 'extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*,void*,BYTE*,DWORD);' + "`n" + 'extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*,void*);' + "`n" + 'extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*,void*);' + "`n"
 $cpp = Join-Path $outputDir 'marine-actual.cpp'
 Set-Content $cpp ($header + $body)
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw
