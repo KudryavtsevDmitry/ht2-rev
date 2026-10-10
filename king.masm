@@ -992,6 +992,7 @@ PUBLIC $L_6f6380, $L_6f63e4, $L_6f6518, $L_6f6570, $L_6f65a0, $L_6f65b8
 PUBLIC $L_6f65bc, $L_6f65c0, $L_6f65c4, $L_6f65c8, $L_6f65e8, $L_6f65ec
 PUBLIC $L_6f65f8, $L_6f6610, $L_6f6614, $L_6f6618, $L_6f6620, $L_72412c
 PUBLIC $L_725d28
+PUBLIC $L_5c0700, $L_67f418, $L_67f770, $L_67f79c, $L_702f74
 
 ;===================================
 _TEXT SEGMENT
@@ -722114,6 +722115,8 @@ $L_5bd700 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5bd710 PROC
 
             push EBX
@@ -722398,6 +722401,10 @@ $L_5bd934::
             pop EBX
             ret 
 FUN_5bd710 ENDP
+ELSE
+EXTERN _Ctl_DrawFrame:PROC
+FUN_5bd710 TEXTEQU <_Ctl_DrawFrame>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -723041,6 +723048,8 @@ FUN_5bdc80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5bdd70 PROC
 
             push ESI
@@ -723222,6 +723231,10 @@ $L_5bdecf::
             nop
             nop
 FUN_5bdd70 ENDP
+ELSE
+EXTERN @Ctl_AutoSize@8:PROC
+FUN_5bdd70 TEXTEQU <@Ctl_AutoSize@8>
+ENDIF
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
 IFDEF ASM_CONTROLS
@@ -724981,6 +724994,8 @@ $L_5bec8f::
 FUN_5be8c0 ENDP
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5becd0 PROC
 
             push ESI
@@ -725072,6 +725087,10 @@ $L_5bed76::
             pop ESI
             ret 4
 FUN_5becd0 ENDP
+ELSE
+EXTERN @Split_Resize@12:PROC
+FUN_5becd0 TEXTEQU <@Split_Resize@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -728342,6 +728361,8 @@ FUN_5c06d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c07c0 PROC
 
             push EBX
@@ -728454,6 +728475,10 @@ $L_5c08be::
             pop EBX
             ret 4
 FUN_5c07c0 ENDP
+ELSE
+EXTERN @List_Layout@12:PROC
+FUN_5c07c0 TEXTEQU <@List_Layout@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -728898,6 +728923,8 @@ FUN_5c0c00 TEXTEQU <@List_IndexOf300@8>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c0c20 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -729000,6 +729027,10 @@ $L_5c0ce4::
             pop ESI
             ret 4
 FUN_5c0c20 ENDP
+ELSE
+EXTERN @List_Select@12:PROC
+FUN_5c0c20 TEXTEQU <@List_Select@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -729073,6 +729104,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c0d60 PROC
 
             push EBP
@@ -729231,6 +729264,10 @@ $L_5c0e7d::
             nop
             nop
 FUN_5c0d60 ENDP
+ELSE
+EXTERN @List_RemoveName@12:PROC
+FUN_5c0d60 TEXTEQU <@List_RemoveName@12>
+ENDIF
 ALIGN 16
 ; src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 IFDEF ASM_AI_CONTAINERS
@@ -730592,6 +730629,8 @@ $L_5c19e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c19f0 PROC
 
             push ECX
@@ -730707,6 +730746,10 @@ $L_5c1b04::
             pop ECX
             ret 4
 FUN_5c19f0 ENDP
+ELSE
+EXTERN @Avi_ReadFrame@12:PROC
+FUN_5c19f0 TEXTEQU <@Avi_ReadFrame@12>
+ENDIF
 ALIGN 16
 FUN_5c1b10 PROC
 
@@ -730724,6 +730767,8 @@ FUN_5c1b10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c1b20 PROC
 
             sub ESP,8
@@ -730951,6 +730996,10 @@ $L_5c1d1f::
             add ESP,8
             ret 8
 FUN_5c1b20 ENDP
+ELSE
+EXTERN @Avi_ReadAudio@16:PROC
+FUN_5c1b20 TEXTEQU <@Avi_ReadAudio@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731519,6 +731568,8 @@ FUN_5c1d40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c2340 PROC
 
             push EBX
@@ -731628,6 +731679,10 @@ $L_5c2425::
             pop EBX
             ret 20
 FUN_5c2340 ENDP
+ELSE
+EXTERN @Avi_Update@28:PROC
+FUN_5c2340 TEXTEQU <@Avi_Update@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732550,6 +732605,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c2ba0 PROC
 
             sub ESP,8
@@ -732641,6 +732698,10 @@ $L_5c2c1e::
             add ESP,8
             ret 
 FUN_5c2ba0 ENDP
+ELSE
+EXTERN _Msavi_HandleNotification:PROC
+FUN_5c2ba0 TEXTEQU <_Msavi_HandleNotification>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -733789,6 +733850,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c33d0 PROC
 
             push EBX
@@ -733888,6 +733951,10 @@ $L_5c349d::
             pop EBX
             ret 
 FUN_5c33d0 ENDP
+ELSE
+EXTERN @Net_FlushFrame@8:PROC
+FUN_5c33d0 TEXTEQU <@Net_FlushFrame@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5c34a0 PROC
@@ -734178,6 +734245,8 @@ FUN_5c3630 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c36e0 PROC
 
             push EBX
@@ -734329,6 +734398,10 @@ $L_5c37d0::
             pop EBX
             ret 8
 FUN_5c36e0 ENDP
+ELSE
+EXTERN @Entry_Apply@16:PROC
+FUN_5c36e0 TEXTEQU <@Entry_Apply@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -736648,6 +736721,8 @@ $L_5c4c2c::
 FUN_5c49b0 ENDP
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c4c50 PROC
 
             sub ESP,8
@@ -736761,6 +736836,10 @@ $L_5c4d15::
             add ESP,8
             ret 8
 FUN_5c4c50 ENDP
+ELSE
+EXTERN @Rec_SeekTime@16:PROC
+FUN_5c4c50 TEXTEQU <@Rec_SeekTime@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -736878,6 +736957,8 @@ $L_5c4df1::
 $L_5c4d76 ENDP
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c4e20 PROC
 
             push ECX
@@ -737003,6 +737084,10 @@ $L_5c4ef4::
             pop ECX
             ret 8
 FUN_5c4e20 ENDP
+ELSE
+EXTERN @Rec_ReadHeader@16:PROC
+FUN_5c4e20 TEXTEQU <@Rec_ReadHeader@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

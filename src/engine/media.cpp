@@ -19,7 +19,7 @@ extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // 
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
-ASM_PROC(FUN_5c36e0)
+extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 ASM_PROC(FUN_6021f0)
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
 extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
@@ -106,6 +106,32 @@ ASM_VAR(AsmLabel, g_vtbl651eb4, $L_651eb4)
 ASM_VAR(BYTE*, g_723d44, $L_723d44)
 ASM_VAR(CRITICAL_SECTION, g_cs723b40, $L_723b40)
 ASM_VAR(AsmLabel, g_683c58, $L_683c58)
+
+extern "C" long __cdecl ftell(FILE* f);
+extern "C" int __cdecl fseek(FILE* f, long off, int origin);
+extern "C" size_t __cdecl fwrite(const void* p, size_t size, size_t n, FILE* f);
+extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);   // scene.cpp
+extern "C" void __cdecl Video_SetPalette(const BYTE* rgb, DWORD first, DWORD count);    // video_mode.cpp
+ASM_PROC(FUN_5be8c0)    // lays out list rows (thiscall on the drop part)
+ASM_FUNC(List_RowCallback, $L_5c0700)
+ASM_PROC(FUN_5c06d0)    // visible rows of a list
+ASM_PROC(FUN_6303c4)    // ICDecompress
+ASM_PROC(FUN_6303b8)    // ICSendMessage
+ASM_PROC(FUN_5c29d0)
+ASM_PROC(FUN_5c1d40)    // draws the video frame
+ASM_PROC(FUN_5c34a0)
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+ASM_PROC(FUN_602df0)
+ASM_PROC(FUN_5c49b0)    // next record time (forward)
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
+ASM_PROC(FUN_5c4d30)
+ASM_VAR(DWORD, g_msaviBlock, $L_702f74)
+ASM_VAR(AsmLabel, s_aviReadError, $L_67f418)
+ASM_VAR(AsmLabel, s_msaviProgressFailed, $L_67f79c)
+ASM_VAR(AsmLabel, s_msaviNotifyLockFailed, $L_67f770)
+typedef void(__cdecl* EntrySetter)(BYTE*, const DWORD*, int);
+extern "C" void __fastcall Node_Unlink(BYTE* self, void*);   // core.cpp
+extern "C" DWORD __fastcall Style_Assign(DWORD* self, void*, const DWORD* s);   // controls.cpp
 
 extern "C" {
 
@@ -869,4 +895,365 @@ BYTE* __fastcall Light_Construct(BYTE* self, void*, int a, int b)
 
 }
 
+extern "C" {
 
+// [FUN_5c07c0] lays out the list's drop part under a header of height h
+void __fastcall List_Layout(BYTE* self, void*, int h)
+{
+    BYTE* c = F(BYTE*, self, 340);
+    Style_Assign((DWORD*)(c + 68), 0, (DWORD*)(self + 68));
+    Style_Assign((DWORD*)(c + 104), 0, (DWORD*)(self + 104));
+    Style_Assign((DWORD*)(c + 140), 0, (DWORD*)(self + 140));
+    Style_Assign((DWORD*)(c + 176), 0, (DWORD*)(self + 176));
+    CallThis(FUN_5be8c0, F(BYTE*, self, 340), 0, self + 332, (void*)List_RowCallback, self,
+            F(int, self, 344) + F(int, self, 308) + h * 2, h, 0, 0);
+    int d = F(int, self, 52) - F(int, self, 44) - h;
+    int dy = 2;
+    BYTE* font = F(BYTE*, self, 16);
+    if (font && F(char*, self, 12) && *F(char*, self, 12))
+        dy = F(int, font, 20) + 2;
+    int* r = (int*)(F(BYTE*, self, 340) + 44);
+    r[0] += d;
+    r[2] += d;
+    r[1] += dy;
+    r[3] += dy;
+    int s = F(int, self, 348);
+    F(int, self, 312) += s;
+    F(int, self, 320) += s - h;
+}
+
+// [FUN_5c0c20] selects item i and scrolls it into view
+void __fastcall List_Select(BYTE* self, void*, int i)
+{
+    if (i < 0 || i >= F(int, self, 328))
+        return;
+    BYTE* head = F(BYTE*, self, 296);
+    BYTE* c = head;
+    for (int k = i; c && F(BYTE*, c, 8) && k > 0; k--)
+        c = F(BYTE*, c, 8);
+    F(BYTE*, self, 300) = c;
+    int top = 0;
+    for (BYTE* t = head; t && F(BYTE*, t, 8) && t != F(BYTE*, self, 336); t = F(BYTE*, t, 8))
+        top++;
+    if (i < top) {
+        top = i;
+        F(BYTE*, self, 336) = F(BYTE*, self, 300);
+    }
+    while (i >= CallThis<int>(FUN_5c06d0, self) + top) {
+        top++;
+        F(BYTE*, self, 336) = F(BYTE*, F(BYTE*, self, 336), 8);
+    }
+    if (F(int, self, 328) - CallThis<int>(FUN_5c06d0, self) <= 0)
+        F(WORD, self, 332) = 0;
+    else
+        F(WORD, self, 332) = (WORD)top;
+}
+
+// [FUN_5c0d60] removes the item of this name
+void __fastcall List_RemoveName(BYTE* self, void*, const char* name)
+{
+    BYTE* n = F(BYTE*, self, 296);
+    for (; n; n = F(BYTE*, n, 8))
+        if (!strcmp(F(const char*, n, 12), name))
+            break;
+    if (n) {
+        if (n == F(BYTE*, self, 300))
+            F(BYTE*, self, 300) = F(BYTE*, n, 8) ? F(BYTE*, n, 8) : F(BYTE*, n, 4);
+        if (n == F(BYTE*, self, 336))
+            F(BYTE*, self, 336) = F(BYTE*, n, 8) ? F(BYTE*, n, 8) : F(BYTE*, n, 4);
+        if (n == F(BYTE*, self, 296)) {
+            BYTE* next = F(BYTE*, n, 8);
+            F(BYTE*, self, 296) = next;
+            if (next)
+                F(BYTE*, next, 4) = 0;
+        } else {
+            Node_Unlink(n, 0);
+        }
+        CallVirt(n, 0, 1);
+        F(int, self, 328) = F(int, self, 328) - 1;
+        BYTE* c = F(BYTE*, self, 340);
+        F(short, c, 296) = F(short, c, 296) - 1;
+        if (F(short, F(BYTE*, self, 340), 296) < 0)
+            F(short, F(BYTE*, self, 340), 296) = 0;
+    }
+    short v = F(short, F(BYTE*, self, 340), 296);
+    if (v < F(short, self, 332))
+        F(short, self, 332) = v;
+}
+
+// [FUN_5c19f0] reads and decompresses video frame i
+int __fastcall Avi_ReadFrame(BYTE* self, void*, int i)
+{
+    DWORD* e = (DWORD*)(F(BYTE*, self, 0) + i * 16);
+    DWORD off = e[0], size = e[1];
+    LONG hi = 0;
+    DWORD got;
+    if (SetFilePointer(F(HANDLE, self, 36), off, &hi, 0) != off)
+        return 1;
+    if (!ReadFile(F(HANDLE, self, 36), F(void*, self, 2200), size, &got, 0) || got != size)
+        return 1;
+    F(DWORD, self, 64) = size;
+    F(int, self, 1128) = F(int, self, 1116) * F(int, self, 1112) * 3;
+    if (CallC<int>(FUN_6303c4, F(int, self, 2176), 0, self + 44, F(void*, self, 2200), self + 1108,
+                   F(void*, self, 2204)))
+        return 1;
+    if (F(WORD, self, 1122) == 8) {
+        if (CallStd<int>(FUN_6303b8, F(int, self, 2176), 16414, self + 44, self + 1108))
+            return 1;
+        if (F(WORD, self, 1122) == 8 && F(DWORD, self, 1140)) {
+            CallStd<int>(FUN_6303b8, F(int, self, 2176), 16413, self + 1108, 0);
+            Video_SetPalette(F(BYTE*, self, 2172), 0, F(DWORD, self, 1140));
+        }
+    }
+    return 0;
+}
+
+// [FUN_5c1b20] reads *len bytes of the audio stream into buf
+int __fastcall Avi_ReadAudio(BYTE* self, void*, BYTE* buf, DWORD* len)
+{
+    int st = F(int, self, 2208);
+    if (st == 0 || st == 1) {
+        *len = 0;
+        return E_FAIL_;
+    }
+    if (F(int, self, 2184) >= F(int, self, 12)) {
+        *len = 0;
+        return 0;
+    }
+    DWORD total = 0;
+    LONG hi = 0;
+    DWORD got = 0;
+    while (*len) {
+        DWORD* e = (DWORD*)(F(BYTE*, self, 4) + F(int, self, 2184) * 16);
+        DWORD pos = F(DWORD, self, 2188);
+        DWORD left = e[1] - pos;
+        DWORD start = e[0];
+        if (left > *len) {
+            if (SetFilePointer(F(HANDLE, self, 40), start + pos, &hi, 0) != F(DWORD, self, 2188) + start ||
+                !ReadFile(F(HANDLE, self, 40), buf, *len, &got, 0) || got != *len) {
+                *len = got + total;
+                Log(s_aviReadError, 0);
+                return E_FAIL_;
+            }
+            total += got;
+            F(DWORD, self, 2188) += got;
+            *len = 0;
+        } else {
+            if (SetFilePointer(F(HANDLE, self, 40), start + pos, &hi, 0) != F(DWORD, self, 2188) + start ||
+                !ReadFile(F(HANDLE, self, 40), buf, left, &got, 0) || got != left) {
+                *len = got + total;
+                Log(s_aviReadError, 1);
+                return E_FAIL_;
+            }
+            *len -= got;
+            total += got;
+            buf += got;
+            int n = F(int, self, 2184) + 1;
+            F(DWORD, self, 2188) = 0;
+            F(int, self, 2184) = n;
+            if (n >= F(int, self, 12)) {
+                if (F(BYTE, self, 2240) & 2)
+                    F(int, self, 2184) = 0;
+                *len = total;
+                return 0;
+            }
+        }
+    }
+    *len = total;
+    return 0;
+}
+
+// [FUN_5c2340] advances the video to the current time, then draws
+int __fastcall Avi_Update(BYTE* self, void*, int a, int b, int c, int d, int e)
+{
+    int st = F(int, self, 2208);
+    if (st == 0)
+        return 2;
+    if (st == 1) {
+        F(int, self, 2208) = 2;
+        CallC(FUN_5c29d0);
+        F(double, self, 2216) = CallC<double>(FUN_6037e0);
+    }
+    int t = (int)((CallC<double>(FUN_6037e0) - F(double, self, 2216)) * F(double, self, 2224) * 0.001);
+    int n = F(int, self, 2180);
+    if (t > n + 10) {
+        F(int, self, 2180) = n + 10;
+        if (n + 10 < F(int, self, 8)) {
+            F(int, self, 2180) = n + 11;
+            Avi_ReadFrame(self, 0, n + 10);
+        }
+    } else if (n < t) {
+        do {
+            F(int, self, 2180) = n + 1;
+            Avi_ReadFrame(self, 0, n);
+            n = F(int, self, 2180);
+        } while (n < F(int, self, 8) && n < t);
+    }
+    if (F(int, self, 2180) >= F(int, self, 8)) {
+        F(int, self, 2208) = 1;
+        F(int, self, 2180) = 0;
+        F(int, self, 2188) = 0;
+        F(int, self, 2184) = 0;
+        F(int, self, 2192) = 0;
+        return 1;
+    }
+    CallThis(FUN_5c1d40, self, a, b, c, d, e);
+    return 0;
+}
+
+// [FUN_5c2ba0] refills the played part of the stream buffer
+int __cdecl Msavi_HandleNotification()
+{
+    BYTE* p = 0;
+    DWORD n;
+    int hr = Msavi_UpdatePlayed();
+    if (hr < 0) {
+        Log(s_msaviProgressFailed, hr);
+        return hr;
+    }
+    if (!g_msaviBuffer)
+        return E_FAIL_;
+    hr = Com(g_msaviBuffer, 44, g_msaviWritePos, g_msaviBlock, &p, &n, 0, 0, 0);
+    if (hr < 0) {
+        Log(s_msaviNotifyLockFailed, hr);
+        return hr;
+    }
+    Msavi_Read(p, n);
+    Com(g_msaviBuffer, 76, p, n, 0, 0);
+    g_msaviWritePos = (g_msaviWritePos + n) % g_msaviBufSize;
+    return 0;
+}
+
+// [FUN_5c33d0] sends and records the frame's network messages
+void __fastcall Net_FlushFrame(BYTE* self, void*)
+{
+    BYTE* rec = F(BYTE*, self, 32);
+    if (!F(int, rec, 7948))
+        return;
+    BYTE* buf = rec + 8336;
+    for (BYTE* n = F(BYTE*, self, 8); n; n = F(BYTE*, n, 8))
+        CallThis(FUN_5c34a0, n, buf);
+    if (F(int, g_707f6c, 416))
+        CallC(FUN_6021b0, F(BYTE*, buf, 4), F(BYTE*, buf, 8) - F(BYTE*, buf, 4));
+    rec = F(BYTE*, self, 32);
+    if (F(int, rec, 7936) && F(FILE*, rec, 7928)) {
+        CallC(FUN_5ab160, -1, F(FILE*, rec, 7928));
+        CallC(FUN_5ab160, F(BYTE*, buf, 8) - F(BYTE*, buf, 4), F(FILE*, F(BYTE*, self, 32), 7928));
+        fwrite(F(BYTE*, buf, 4), F(BYTE*, buf, 8) - F(BYTE*, buf, 4), 1, F(FILE*, F(BYTE*, self, 32), 7928));
+        CallC(FUN_5ab160, F(BYTE*, buf, 8) - F(BYTE*, buf, 4), F(FILE*, F(BYTE*, self, 32), 7928));
+    }
+    CallThis(FUN_602df0, buf);
+}
+
+// [FUN_5c36e0] stores a value into the entry's target by its type
+int __fastcall Entry_Apply(BYTE* self, void*, const DWORD* src, DWORD size)
+{
+    BYTE* t = F(BYTE*, self, 20);
+    if (!t || !src)
+        return 0;
+    switch (F(int, self, 16)) {
+    case 1:
+        Node_ApplyMatrix(t, 0, src, 0);
+        return 1;
+    case 0: {
+        int v = (int)src[0];
+        if (v < CallVirt<int>(t, 60) && v >= 0)
+            F(int, t, 56) = v;
+        return 1;
+    }
+    case 3:
+        *(DWORD*)t = src[0];
+        return 1;
+    case 4:
+        *(double*)t = *(const double*)src;
+        return 1;
+    case 2:
+        CallVirt(t, 28, 0);
+        F(int, self, 20) = 0;
+        return 1;
+    case 5:
+        F(EntrySetter, self, 28)(t, src, F(int, self, 24));
+        return 1;
+    case 6: {
+        DWORD n = F(DWORD, self, 24);
+        if (n > size)
+            n = size;
+        memcpy(t, src, n);
+        return 1;
+    }
+    }
+    return 1;
+}
+
+// [FUN_5c4c50] the record position nearest before time t; the time after
+// it in *next
+int __fastcall Rec_SeekTime(BYTE* self, void*, int t, int* next)
+{
+    FILE* f = F(FILE*, self, 7928);
+    long pos = ftell(f);
+    int r = CallThis<int>(FUN_5c49b0, self, 1);
+    if (r == -1)
+        r = CallThis<int>(FUN_5c49b0, self, 0);
+    int dir = r >= t ? -1 : 1;
+    int cur = r;
+    for (;;) {
+        long p = ftell(f);
+        if (dir == 1) {
+            int r2 = CallThis<int>(FUN_5c49b0, self, 1);
+            if (r2 == -1) {
+                *next = cur;
+                return cur;
+            }
+            if (r2 > t) {
+                *next = r2;
+                fseek(f, pos, 0);
+                return cur;
+            }
+            pos = p;
+            cur = r2;
+        } else {
+            int r2 = CallThis<int>(FUN_5c49b0, self, 0);
+            if (r2 == -1) {
+                *next = cur;
+                return cur;
+            }
+            if (r2 < t) {
+                *next = cur;
+                return r2;
+            }
+            pos = p;
+            cur = r2;
+        }
+    }
+}
+
+// [FUN_5c4e20] reads the record header (skipping other blocks)
+void __fastcall Rec_ReadHeader(BYTE* self, void*, int unused, int b)
+{
+    FILE* f = F(FILE*, self, 7928);
+    long start = ftell(f);
+    int v = CallC<int>(FUN_5ab140, f);
+    while (v != -16) {
+        if (v == -256) {
+            fseek(f, start, 0);
+            return;
+        }
+        if (v == -1) {
+            CallThis(FUN_5c4d30, self, start, b);
+        } else {
+            int n = CallC<int>(FUN_5ab140, f) + 4;
+            fseek(f, ftell(f) + n, 0);
+        }
+        v = CallC<int>(FUN_5ab140, f);
+    }
+    if (CallC<int>(FUN_5ab140, f) == 4) {
+        F(int, self, 7940) = CallC<int>(FUN_5ab140, f) != 0;
+        CallC<int>(FUN_5ab140, f);
+        return;
+    }
+    F(int, self, 7940) = CallC<int>(FUN_5ab140, f);
+    CallC<int>(FUN_5ab140, f);
+    CallC<int>(FUN_5ab140, f);
+}
+
+}

@@ -555,7 +555,7 @@ inline void King_LeaveGame() { CallC(FUN_511820); }
 ASM_PROC(FUN_5764f0)    // King_CheatKey
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // Sound_Find
 ASM_PROC(FUN_5fdaf0)    // Sound::Play
-ASM_PROC(FUN_5bd710)    // Gfx_DrawBox
+extern "C" void FUN_5bd710(); KING_ALIAS("_FUN_5bd710", "_Ctl_DrawFrame")    // Gfx_DrawBox
 ASM_PROC(FUN_530050)    // Controls::Update
 ASM_PROC(FUN_578fe0)    // Joy_Read
 ASM_PROC(FUN_5c3990)    // destructor of CKingApp's base class

@@ -36,6 +36,15 @@ static __forceinline BYTE* Next(BYTE* c)
     return CallThis<BYTE*>(FUN_5d3080, c);
 }
 
+ASM_PROC(FUN_5b6f90)    // fills a rectangle
+ASM_PROC(FUN_5b8980)    // draws a pattern
+ASM_PROC(FUN_5b9020)    // tiles a bitmap
+ASM_PROC(FUN_5b7f20)    // vertical line
+ASM_PROC(FUN_5b7ce0)    // horizontal line
+extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);   // framework.cpp
+extern "C" int __fastcall Window_Set80(BYTE* self, void*, int v);               // renderer.cpp
+extern "C" void __cdecl Bitmap_Draw(BYTE* dst, int x, int y, BYTE* bmp);       // renderer.cpp
+
 extern "C" {
 
 // [FUN_5bc2f0]
@@ -319,6 +328,126 @@ BYTE* __fastcall Panel_ConstructRect(BYTE* self, void*, int a, int b, int w, int
     F(int, self, 56) = y1;
     F(int, self, 48) = y0;
     return self;
+}
+
+}
+
+extern "C" {
+
+// [FUN_5bd710] draws a control's face (by flags) and its border
+// (the style is passed by value: color, -, light, dark, dx, dy, fill, bitmap, pattern)
+void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int a5, int light, int dark,
+                           int dx, int dy, int fill, BYTE* bmp, int pattern)
+{
+    int old;
+    if (flags & 2) {
+        CallC(FUN_5b6f90, dst, r, color, 0);
+    } else if (flags & 4) {
+        Bitmap_Draw(dst, r[0] + dx, r[1] + dy, bmp);
+    } else if (flags & 8) {
+        CallC(FUN_5b8980, dst, r[0] + dx, r[1] + dy, pattern, 0);
+    } else if (flags & 32) {
+        old = Window_Set80(dst, 0, 2);
+        F(int, dst, 88) = fill;
+        CallC(FUN_5b9020, dst, r, bmp);
+        Window_Set80(dst, 0, old);
+    } else if (flags & 64) {
+        old = Window_Set80(dst, 0, 2);
+        F(int, dst, 88) = fill;
+        CallC(FUN_5b8980, dst, r[0], r[1], pattern, 0);
+        Window_Set80(dst, 0, old);
+    } else if (flags & 1) {
+        old = Window_Set80(dst, 0, 2);
+        F(int, dst, 88) = fill;
+        CallC(FUN_5b6f90, dst, r, color, 0);
+        Window_Set80(dst, 0, old);
+    } else if (flags & 16) {
+        old = Window_Set80(dst, 0, 3);
+        F(BYTE, dst, 92) = (BYTE)color;
+        Bitmap_Draw(dst, r[0], r[1], bmp);
+        Window_Set80(dst, 0, old);
+    }
+    if (flags & 0x100) {
+        CallC(FUN_5b7f20, dst, r[0], r[1], r[3], light, 0);
+        CallC(FUN_5b7ce0, dst, r[3], r[0], r[2], dark, 0);
+        CallC(FUN_5b7f20, dst, r[2], r[3], r[1], dark, 0);
+        CallC(FUN_5b7ce0, dst, r[1], r[2], r[0], light, 0);
+    } else if (flags & 0x200) {
+        old = Window_Set80(dst, 0, 2);
+        F(int, dst, 88) = fill;
+        CallC(FUN_5b7f20, dst, r[0], r[1], r[3], light, 0);
+        CallC(FUN_5b7ce0, dst, r[3], r[0], r[2], dark, 0);
+        CallC(FUN_5b7f20, dst, r[2], r[3], r[1], dark, 0);
+        CallC(FUN_5b7ce0, dst, r[1], r[2], r[0], light, 0);
+        Window_Set80(dst, 0, old);
+    }
+}
+
+// [FUN_5bdd70] sizes the control to its picture or text, makes the
+// children's rectangles relative
+void __fastcall Ctl_AutoSize(BYTE* self, void*)
+{
+    DWORD f = F(DWORD, self, 32);
+    BYTE* img = 0;
+    int useImg = 0;
+    if (f & 16) {
+        img = F(BYTE*, self, 96) ? F(BYTE*, self, 96) : F(BYTE*, self, 132);
+        useImg = img != 0;
+    } else if (f & 36) {
+        img = F(BYTE*, self, 96) ? F(BYTE*, self, 96) : F(BYTE*, self, 132);
+        useImg = img != 0;
+    } else if (!(f & 72)) {
+        BYTE* font = F(BYTE*, self, 16);
+        F(int, self, 52) = Font_TextWidth(font, 0, F(const char*, self, 12)) + F(int, self, 44) + 4;
+        F(int, self, 56) = F(int, F(BYTE*, self, 16), 20) + F(int, self, 48) + 4;
+    } else {
+        BYTE* p = F(BYTE*, self, 100) ? F(BYTE*, self, 100) : F(BYTE*, self, 136);
+        if (p) {
+            F(int, self, 52) = F(WORD, p, 4) + F(int, self, 44) - 1;
+            F(int, self, 56) = F(WORD, p, 6) + F(int, self, 48) - 1;
+        }
+    }
+    if (useImg) {
+        F(int, self, 52) = F(WORD, img, 20) + F(int, self, 44) - 1;
+        F(int, self, 56) = F(WORD, img, 22) + F(int, self, 48) - 1;
+    }
+    if (F(int, self, 52) < F(int, self, 44))
+        F(int, self, 52) = F(int, self, 44);
+    if (F(int, self, 56) < F(int, self, 48))
+        F(int, self, 56) = F(int, self, 48);
+    for (BYTE* c = F(BYTE*, self, 288); c; c = Next(c)) {
+        int x = F(int, self, 44), y = F(int, self, 48);
+        F(int, c, 44) -= x;
+        F(int, c, 52) -= x;
+        F(int, c, 48) -= y;
+        F(int, c, 56) -= y;
+    }
+    if (F(DWORD, self, 32) & 0x300)
+        F(int, self, 60) = 1;
+}
+
+// [FUN_5becd0] resizes a two-part control (+328: 1 horizontal) to d
+void __fastcall Split_Resize(BYTE* self, void*, int d)
+{
+    if (F(int, self, 328) == 1) {
+        F(int, self, 308) += F(int, self, 44) - F(int, self, 52) + d;
+        F(int, self, 52) = F(int, self, 44) + d;
+    } else {
+        F(int, self, 308) += F(int, self, 48) - F(int, self, 56) + d;
+        F(int, self, 56) = F(int, self, 48) + d;
+    }
+    BYTE* c = Next(Next(F(BYTE*, self, 288)));
+    if (F(int, self, 328) == 1) {
+        int n = F(int, c, 44) - F(int, c, 52) + d;
+        int s = n - F(int, c, 44);
+        F(int, c, 44) = n;
+        F(int, c, 52) += s;
+    } else {
+        int n = F(int, c, 48) - F(int, c, 56) + d;
+        int s = n - F(int, c, 48);
+        F(int, c, 48) = n;
+        F(int, c, 56) += s;
+    }
 }
 
 }
