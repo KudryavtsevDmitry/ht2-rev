@@ -1,4 +1,5 @@
 .686p
+PUBLIC $L_652f48, $L_684a20
 .XMM
 .MODEL FLAT
 ASSUME FS:NOTHING
@@ -867025,6 +867026,7 @@ FUN_60cb10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60cd90 PROC
 
             mov AL,BYTE PTR [ESP+4]
@@ -867043,6 +867045,10 @@ $L_60cda4::
             pop ESI
             ret 4
 FUN_60cd90 ENDP
+ELSE
+EXTERN @MarineVertex_Delete@12:PROC
+FUN_60cd90 TEXTEQU <@MarineVertex_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867072,6 +867078,7 @@ $L_60cdc0::
 $L_60cdb0 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60cdd0 PROC
 
             push EBP
@@ -867237,6 +867244,10 @@ $L_60cee5::
             pop EBP
             ret 
 FUN_60cdd0 ENDP
+ELSE
+EXTERN @MarineGreed_Destruct@8:PROC
+FUN_60cdd0 TEXTEQU <@MarineGreed_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867244,6 +867255,7 @@ FUN_60cdd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60cf00 PROC
 
             push ESI
@@ -867305,6 +867317,10 @@ $L_60cf6d::
             pop ESI
             ret 4
 FUN_60cf00 ENDP
+ELSE
+EXTERN @MarineTree_Delete@12:PROC
+FUN_60cf00 TEXTEQU <@MarineTree_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867318,6 +867334,7 @@ FUN_60cf00 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60cf80 PROC
 
             push ESI
@@ -867337,6 +867354,10 @@ $L_60cf98::
             pop ESI
             ret 4
 $L_60cf80 ENDP
+ELSE
+EXTERN @MarineGreed_Delete@12:PROC
+$L_60cf80 TEXTEQU <@MarineGreed_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16

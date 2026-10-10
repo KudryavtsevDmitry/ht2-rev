@@ -27,6 +27,8 @@ machine-local and is excluded from these commits.
 | Marine startup geometry, coefficients and work limits | 18 | 5,168 | Initializes marine basis vectors, default offsets and the identity matrix; derives numerical scales and thresholds, and sets processing limits and angle/cosine parameters used by marine tasks. | Clean C++ rebuild; MASM marine fallback; 3,456 comparisons across 18 routines, 64 inputs and three x87 precision modes, including quiet/signaling NaNs; New Game and clean close after 10 seconds. |
 | Marine object lifetimes and geometry transitions | 9 | 5,159 | Constructs and destroys marine meshes and tasks with callback ownership cleanup; captures geometry snapshots and advances registered geometry through timed transitions. | C++ build; MASM marine fallback; 576 comparisons covering allocation, destructor flags, callback order, timestamp boundaries and callback mutation of geometry/registration; cleanup regressions; New Game and clean close after 10 seconds. |
 
+| Marine graph ownership and teardown | 4 | 5,155 | Releases marine queues, vertex tables and edge trees; recursively destroys child edges while clearing their parent links, and handles object deletion flags. | C++ build; MASM marine fallback; 4,096 state, return-value and cleanup-order comparisons covering three-level trees, malformed backlinks, missing tables/entries and callback mutation; 576 lifecycle regressions; New Game and clean close after 10 seconds. |
+
 The effect batch exposed an intermittent shutdown fault. A debugger trace
 showed the task pool freeing a queued node before the application destructor
 used it. The game now destroys its views in its ExitInstance hook, before
