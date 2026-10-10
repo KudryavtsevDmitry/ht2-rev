@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), the build with the version string `v 8.0 30.01.03` (PE timestamp 2004-01-14, linked with Visual C++ 6).
 
-`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/mainloop.cpp`), the application classes of the engine and the game (`src/gameapp.cpp`, `src/kingapp.cpp`), the input queue (`src/input.cpp`), the engine and gearbox math of the vehicles (`src/caran.cpp`), the vector and matrix math (`src/vecmath.cpp`), and parts of the AI: its interface to the game (`src/aitask.cpp`), routes on the road graph (`src/aitrce.cpp`), road ids and positions (`src/airoad.cpp`), its players (`src/aiplay.cpp`), the small functions of its main unit (`src/aimain.cpp`) and its STL instances (`src/aistl.cpp`); and the small functions of the effects (`src/aeffects.cpp`), the vehicle (`src/car2e.cpp`, `src/vehicle.cpp`, `src/carphys.cpp`), the game's main unit (`src/carat.cpp`), the AI's helpers, script evaluator and orders (`src/aimisc.cpp`, `src/scheval.cpp`, `src/schitem.cpp`, `src/aimult.cpp`, `src/aiordr.cpp`), and the engine units (`src/wasm.cpp`, `src/copter.cpp`, `src/movingb.cpp`, `src/world.cpp`, `src/mmt.cpp`, `src/engine.cpp`).
+`king.masm` is the whole program as MASM source. It assembles back into a `king.exe` that runs the game, so the program can be rewritten in C++ piece by piece: a rewritten function is linked into the same executable in place of its assembly, and the game keeps working at every step. Rewritten so far: the main loop (`src/engine/main_loop.cpp`), the application classes of the engine and the game (`src/engine/game_app.cpp`, `src/truck/king_app.cpp`), the input queue (`src/engine/input.cpp`), the engine and gearbox math of the vehicles (`src/truck/drivetrain.cpp`), the vector and matrix math (`src/engine/vecmath.cpp`), and parts of the AI: its interface to the game (`src/ai/ai_task.cpp`), routes on the road graph (`src/ai/route_search.cpp`), road ids and positions (`src/ai/road_graph.cpp`), its players (`src/ai/ai_drivers.cpp`), the small functions of its main unit (`src/ai/ai_world.cpp`) and its STL instances (`src/ai/ai_containers.cpp`); and the small functions of the effects (`src/truck/effects.cpp`), the vehicle (`src/car2e.cpp`, `src/truck/vehicle.cpp`, `src/truck/vehicle_physics.cpp`), the game's main unit (`src/truck/game_shell.cpp`), the AI's helpers, script evaluator and orders (`src/script/runtime.cpp`, `src/script/evaluator.cpp`, `src/script/values.cpp`, `src/ai/ai_traffic.cpp`, `src/ai/cargo_orders.cpp`), and the engine units (`src/truck/world_objects.cpp`, `src/truck/helicopter.cpp`, `src/truck/moving_bodies.cpp`, `src/truck/world.cpp`, `src/truck/force_feedback.cpp`, `src/truck/startup.cpp`).
 
 ## Contents
 
@@ -13,48 +13,74 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 | `symbols.csv` | names, original addresses and prototypes of the library functions the game calls (C runtime, iostreams, MFC) |
 | `applySymbols.py` | renames the labels of `king.masm` after `symbols.csv` |
 | `units.csv` | the source files (object files) the program was linked from: code ranges, names, `.data` starts |
-| `src/king.h` | glue between the C++ code and `king.masm`, partial layouts of the engine's classes |
-| `src/mainloop.cpp` | the main loop |
-| `src/gameapp.cpp` | `CGameApp`, the engine's application class: the settings from `truck.ini`, the window list, video mode changes, the statistics overlay |
-| `src/kingapp.cpp` | `CKingApp`, the game's application class: the joystick, the F6 screenshot, the cheat code typed during the pause |
-| `src/input.cpp` | the input queue and the message handlers of the game window that fill it |
-| `src/x87.h` | floating point as the game's compiler generated it: rules for rewriting x87 code, and the math it inlined (`fsin`, `exp`, `__CIpow`, ...) |
-| `src/car.h`, `src/caran.cpp` | vehicles: the table of vehicle types; torque curve, wheel force, driving resistance, top speed per gear, best and cruising gear (`caran.cpp`) |
-| `src/vecmath.h`, `src/vecmath.cpp` | vectors, 3x4 matrices and planes of the engine, and the vector operators the compiler put out of line in other units |
-| `src/ai.h`, `src/aitask.cpp` | the AI: its crash trace guard; how it reaches the game: cycle task, switches, screen messages, banners (`AI_TASK.CPP`) |
-| `src/road.h` | the AI's road graph: nodes, edges, positions on edges, routes as hops; the parts of the game's C runtime and STL the AI code uses |
-| `src/aitrce.cpp` | the AI (`ai_trce.cpp`): route tables and route costs, checks and dumps of hop sequences, double precision geometry, CRC32, control filters |
-| `src/airoad.cpp` | the AI (`ai_road.cpp`): NodeId, RoadId and PositionId with their checks, roads between nodes, a random position, STL instances |
-| `src/aiplay.cpp` | the AI (`ai_play.cpp`): its players: cargo value, flags, licences, deadlines, waypoints, positions |
-| `src/aimain.cpp` | the AI (`Ai_main.cpp`): its small functions: the reference-counted string handle, position checks, nearest node or town, lookups, task constructors, player predicates, id iterators, STL members |
-| `src/aistl.cpp` | the AI's STL instances (after `Ai_main.cpp`): insertion sorts, medians, partitions and merges, list finds, copies |
-| `src/aeffects.cpp` | effects (`aeffects.cpp`): vector helpers, effect and renderer objects, vertex buffers, the light pool, fades, the reflection stack, vehicle lookups |
-| `src/car2e.cpp` | vehicles (`car2e.cpp`): wheel speed, drive force, gearbox forwarding, the 27 adjustable settings |
-| `src/carat.cpp` | the game (`carat.cpp`): 4x4 double matrices, rectangles, strings, screen size, movies, name tables, menu and screen state |
-| `src/aimisc.cpp` | the AI's helpers: polynomials, save-file blocks, big-integer magnitudes, ring lists |
-| `src/vehicle.cpp` | the vehicle unit before `copter.cpp`: control bindings, sound volume, the vehicle list, flashing lights |
-| `src/scheval.cpp` | the AI script evaluator (`Sch_eval.cpp`): reference-counted values, scopes, map and list helpers, deque copies |
-| `src/wasm.cpp` | `wasm.cpp`: fading objects, effect constructors, planes, table lookups |
-| `src/copter.cpp` | `copter.cpp`: a 16-bit stack, the copter's state, the on-screen notice, screen messages |
-| `src/movingb.cpp` | `movingb.cpp`: progress counters, point and record lists, ListItem lists, a free list |
-| `src/world.cpp` | the unit at 0x4e24c0: game time, world queries, warn.log and vehicle logs |
-| `src/aimult.cpp` | `ai_mult.cpp`: heaps, binary searches, copies, erase |
-| `src/schitem.cpp` | `sch_item.cpp`: script numbers, the reader's deque, character classes |
-| `src/mmt.cpp` | `mmt.cpp`: force feedback, object pools, a shadow stack, plane heights |
-| `src/carphys.cpp` | the unit at 0x4eb0c7: control ramps, contacts, steering geometry |
-| `src/aiordr.cpp` | `ai_ordr.cpp` and `ai_svld.cpp`: order lists, order values, save-file helpers |
-| `src/engine.cpp` | small functions of sch_embd and the units at 0x4dd9f0, 0x52abf0, 0x5586f0, 0x57d580 and 0x5a3e00 |
-| `src/marine.cpp` | `Greed.cpp`, the unit at 0x60cfa0, and parts of `MarineTask.cpp`, `grd.cpp` and `tgreed.cpp`: marine mesh buffers, node/edge/work-item priority queues, deferred node insertion, scratch buffers and shared link removal, refinement, output, node removal, object lifetimes, task construction/setup, scene resources and update dispatch, fading quad rendering and camera angles, geometry interpolation, transitions, motion-response construction and degree-table angles, motion response, particle initialization/motion/rendering, pool allocation/emission and randomized geometry, matrix construction/composition, mesh coordinate mapping and triangle classification, and frame processing (`ASM_MARINE`) |
-| `src/marinegrid.cpp` | Grid buffer allocation and destruction, vertex records, indexed drawing, camera tracking and work budgets, recursive boundary trimming, topology cleanup and random direction/radius tables (`ASM_MARINE`) |
-| `src/marinemath.cpp` | Mesh refinement weights, reflected texture coordinates, animated ripple heights, material-frame selection and diameter defaults (`ASM_MARINE`) |
-| `src/gridtopology.cpp` | Triangle/point allocation, paired refinement edges, queue removal, triangle defaults and recursive branch destruction (`ASM_MARINE`) |
-| `src/gridbase.cpp` | Shared grid camera/origin setup, child destruction, terrain cell branches and grid startup defaults (`ASM_MARINE`) |
-| `src/marineconstruct.cpp` | Initial grid defaults, mesh allocation, coordinate nodes, alternating triangle topology, neighbor links and cell branches (`ASM_MARINE`) |
-| `src/marinevertices.cpp` | Wave-surface positions and normals, three texture-coordinate pairs, 17-particle foam bursts, pending vertex materialization and indexed triangle output (`ASM_MARINE`) |
-| `src/marineinit.cpp` | marine mesh and particle startup vectors, identity matrices, motion and refinement coefficients and default processing limits (`ASM_MARINE`) |
-| `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
 | `tools/objdiff.py` | compares two `king.obj`: whether a change to `king.masm` changed code or data |
 | `Makefile` | NMAKE build |
+
+The C++ code in `src/` follows the game's own source tree, as recovered from the build paths in the program (`units.csv`). Each folder is one of the original libraries. Each file holds the rewritten functions of one original source file, or of one unit of the program whose file name wasn't kept, and is named after what that code does. The table gives the original name where it is known.
+
+| Path | Original | Contents |
+|---|---|---|
+| `src/common/king.h` | | glue between the C++ code and `king.masm`, partial layouts of the engine's classes |
+| `src/common/x87.h` | | floating point as the game's compiler generated it: rules for rewriting x87 code, and the math it inlined (`fsin`, `exp`, `__CIpow`, ...) |
+| `src/common/vecmath.h` | | vectors, 3x4 matrices and planes |
+| **`src/engine/`** | `Vrappl` library | |
+| `main_loop.cpp` | unit 0x5d8540 | the main loop |
+| `game_app.cpp` | unit 0x5d8540 | `CGameApp`, the engine's application class: the settings from `truck.ini`, the window list, video mode changes, the statistics overlay |
+| `input.cpp` | unit 0x5ab230 | the input queue and the message handlers of the game window that fill it |
+| `vecmath.cpp` | unit 0x5ab230 | vectors, matrices and planes, and the vector operators the compiler put out of line in other units |
+| `controls.cpp` | unit 0x5bc2f0 | window controls: child lists, selection, row and column layout, constructors |
+| `media.cpp` | unit 0x5bfe60 | the AVI sound stream (msavi, DirectSound), keyed object tables, music, record files, tree branches and circle shadows |
+| `core.cpp` | unit 0x5cf180 | intrusive list links, name hash tables, block pools, timed event queues, a memory-mapped file, millisecond timers, blit wrappers |
+| `sound_files.cpp` | unit 0x5fdc70 | sound buffer slots and their lifetime |
+| **`src/ai/`** | `Htai` library | |
+| `ai.h`, `road.h` | | the AI's crash trace guard; the road graph (nodes, edges, positions, routes as hops) and the C runtime and STL parts the AI uses |
+| `ai_world.cpp` | `Ai_main.cpp` | the reference-counted string handle, position checks, nearest node or town, lookups of towns and vehicles, the AI's random generator, record constructors |
+| `ai_containers.cpp` | unit 0x458bc0 | the STL instances of the AI's records: sorts, heaps, merges, list finds, copies |
+| `ai_traffic.cpp` | `ai_mult.cpp` | the many AI vehicles: distance heaps, binary searches, copies |
+| `cargo_orders.cpp` | `ai_ordr.cpp` | cargo orders: lists, prices, margins, quantities |
+| `ai_drivers.cpp` | `ai_play.cpp` | the vehicles the AI drives: ids, cargo values, flags, licences, deadlines, waypoints |
+| `road_graph.cpp` | `ai_road.cpp` | NodeId, RoadId and PositionId with their checks, roads between nodes, a random position |
+| `ai_saveload.cpp` | `ai_svld.cpp` | saving and loading the AI's state |
+| `ai_task.cpp` | `AI_TASK.CPP` | how the AI reaches the game: cycle task, switches, screen messages, banners |
+| `route_search.cpp` | `ai_trce.cpp` | route tables and costs, checks and dumps of hop sequences, double precision geometry, CRC32, control filters |
+| **`src/script/`** | | the Scheme interpreter the AI scripts run on |
+| `evaluator.cpp` | `Sch_eval.cpp` | reference-counted values, scopes, expression nodes, map and list helpers, block pools |
+| `natives.cpp` | `sch_embd.cpp` | built-in functions, script messages and errors, value copies |
+| `native_values.cpp` | `sch_embd.cpp` | script value constructors used by the game |
+| `values.cpp` | `sch_item.cpp` | numbers and their arithmetic, value lists, the reader's deque, character classes |
+| `runtime.cpp` | unit 0x4883f0 | polynomials, big-integer magnitudes, the script's type names, save-file blocks |
+| **`src/truck/`** | `TRUCK` | the game |
+| `car.h` | | the table of vehicle types |
+| `game_shell.cpp` | `carat.cpp` | the game's main unit: menus and screens, loading screen, replays, CD check, 4x4 double matrices, strings |
+| `king_app.cpp` | unit 0x4dd9f0 | `CKingApp`, the game's application class: the joystick, the F6 screenshot, the pause cheat code |
+| `startup.cpp` | unit 0x4dd9f0 | startup paths (`truck.ini`, disks, music), cab names, sounds at option volumes |
+| `world.cpp` | unit 0x4e24c0 | game time, world queries, `warn.log` and vehicle logs |
+| `vehicle_physics.cpp` | unit 0x4eb0c7 | control ramps, wheel contacts, steering geometry |
+| `vehicle_setup.cpp` | `car2e.cpp` | wheel speeds, drive force, the 27 adjustable settings |
+| `drivetrain.cpp` | `caran.cpp` | torque curve, wheel force, driving resistance, top speed per gear, best and cruising gear |
+| `scenery.cpp` | unit 0x52abf0 | trees, trash boxes, collision keys |
+| `vehicle.cpp` | unit 0x52fa20 | control bindings, the vehicle list, vehicle type classes, saved state, flashing lights |
+| `vehicle_engine.cpp` | unit 0x5586f0 | the vehicle's engine state |
+| `helicopter.cpp` | `copter.cpp` | the helicopter, a 16-bit stack, the on-screen notice, screen objects by id |
+| `force_feedback.cpp` | `mmt.cpp` | joystick force feedback, object pools, a frame stack, plane heights |
+| `moving_items.cpp` | unit 0x57d580 | `_MovingItem` / `_MovingBox`: scene objects that move and take hits |
+| `moving_bodies.cpp` | `movingb.cpp` | progress counters, planes, point and record lists of a body |
+| `world_objects.cpp` | `wasm.cpp` | fading objects, effect classes, the TV camera, planes, table lookups |
+| `weather.cpp` | unit 0x5a3e00 | weather and ambient light, scene nodes with frames or positions |
+| `effects.cpp` | `aeffects.cpp` | effect and renderer objects, vertex buffers, the light pool, fades, decals, skids, shadows |
+| **`src/terrain/`** | `terrain` | |
+| `grid_base.cpp` | `grd.cpp` | shared grid camera and origin, child lifetimes, terrain cell branches, grid defaults |
+| `grid_topology.cpp` | `grd.cpp` | triangle and point allocation, paired refinement edges, branch destruction |
+| **`src/marine/`** | `marine` | the water surface |
+| `marine_core.cpp` | `MarineTask.cpp`, `mygreed.cpp`, `Greed.cpp` | mesh buffers, node/edge/work-item priority queues, tasks, particles, matrices |
+| `marine_startup.cpp` | `mygreed.cpp`, `MarineTask.cpp` | startup vectors, identity matrices, coefficients and work limits |
+| `marine_grid.cpp` | `mygreed.cpp` | grid buffers, indexed drawing, camera tracking, boundary trimming |
+| `refinement_math.cpp` | `mygreed.cpp` | refinement weights, reflected texture coordinates, ripple heights |
+| `wave_vertices.cpp` | `mygreed.cpp` | wave positions and normals, foam bursts, triangle output |
+| `mesh_construct.cpp` | `mygreed.cpp`, `grd.cpp` | initial grid, coordinate nodes, triangle topology, neighbour links |
+| `src/compile_flags.txt` | | makes clangd check `src/` as 32-bit MSVC code |
+
+A few functions sit outside their unit's file: the marine and terrain files were split by topic before this layout, and a handful of small helpers stayed with the code that calls them.
 
 The game itself is not included. Building needs your own copy of its original `king.exe` for the resources, and running needs an installed game.
 
@@ -74,13 +100,13 @@ The `Makefile` passes all tool, include and library paths itself, so only `nmake
 nmake "GAME_EXE=C:\path\to\king.exe"   # first build: resources from the game's king.exe
 nmake                                  # king.exe with the C++ code
 nmake ASM=1                            # the original program, without any C++
-nmake ASM_GAMEAPP=1                    # the original assembly for one group of functions
+nmake ASM_GAME_APP=1                    # the original assembly for one group of functions
 nmake clean                            # delete king.obj, the C++ objects, king.exe
 ```
 
 `GAME_EXE` is needed only while `king.res` doesn't exist; `nmake clean` keeps it. `GAME_EXE` can also be set as an environment variable.
 
-Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`, `ASM_CARAN`, `ASM_AITASK`, `ASM_VECMATH`, `ASM_AITRCE`, `ASM_AIROAD`, `ASM_AIPLAY`, `ASM_AIMAIN`, `ASM_AISTL`, `ASM_AEFFECTS`, `ASM_CAR2E`, `ASM_CARAT`, `ASM_AIMISC`, `ASM_VEHICLE`, `ASM_SCHEVAL`, `ASM_WASM`, `ASM_COPTER`, `ASM_MOVINGB`, `ASM_WORLD`, `ASM_AIMULT`, `ASM_SCHITEM`, `ASM_MMT`, `ASM_CARPHYS`, `ASM_AIORDR`, `ASM_ENGINE`, `ASM_MARINE`, `ASM_GUI`, `ASM_VRAPPL`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
+Each source file in `src/` has its own switch, named after the file: `ASM_MAIN_LOOP` for `main_loop.cpp`, `ASM_ROUTE_SEARCH` for `route_search.cpp`, and so on (the list is in the `Makefile`). A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
 
 The `ASM=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
 
@@ -122,7 +148,7 @@ transition completes and report the process's exit code.
 - **Startup:** `__EntryPoint` (CRT) → `_WinMain@16` → MFC's `AfxWinMain`, which calls `InitInstance` and then `Run` of the application object.
 - **Application:** the object is `$L_696750`, a pointer to it is in `$L_721750`. Its class chain is `CWinApp` → engine application (vtable `$L_652664`) → an intermediate class (`$L_65195c`) → the game's `CKingApp` (`$L_64d830`).
 - **Windows:** the engine's "windows" are rectangles of the game screen (3D view, HUD panels, menus), not Win32 windows. The application keeps them in lists; each one draws into a surface.
-- **Input:** the message handlers of the game's Win32 window (message map `$L_651ee8`) put mouse and keyboard messages into a 100-entry queue (`$L_702660`), and the frame takes them out (`src/input.cpp`).
+- **Input:** the message handlers of the game's Win32 window (message map `$L_651ee8`) put mouse and keyboard messages into a 100-entry queue (`$L_702660`), and the frame takes them out (`src/engine/input.cpp`).
 - **Time:** `FUN_6037e0` returns milliseconds (QueryPerformanceCounter, scaled against `timeGetTime` at startup).
 - **Crash trace:** `taskdump=1` in the `[ENV]` section of `TRUCK.INI` makes every frame write its stages (`BEGIN FRAME`, `BEGIN EXECUTE`, `END EXECUTE`, `END FRAME`) into a memory-mapped `state.dump`, so after a hang it shows how far the last frame got.
 
@@ -143,7 +169,7 @@ Within a group the files are in alphabetical order, so an unnamed unit's name so
 
 ### Main loop
 
-Everything in this chain is C++ now (`src/mainloop.cpp`):
+Everything in this chain is C++ now (`src/engine/main_loop.cpp`):
 
 ```
 CWinApp::Run               [$L_63267d]  MFC message loop; calls OnIdle whenever no message is waiting
@@ -163,7 +189,7 @@ A frame, `CGameApp::RunFrame`:
 
 ### Application
 
-`CGameApp`'s constructor (`src/gameapp.cpp`) reads the settings of `truck.ini`, the copy in VirtualStore when there is one:
+`CGameApp`'s constructor (`src/engine/game_app.cpp`) reads the settings of `truck.ini`, the copy in VirtualStore when there is one:
 
 | Section | Key | Default | Effect |
 |---|---|---|---|
@@ -182,11 +208,11 @@ A frame, `CGameApp::RunFrame`:
 | | `clear` | 0 | colour the screen is cleared with every frame; < 0: not cleared |
 | | `zbuf` | on | video mode flag |
 
-The windows form one list, executed from the first window to the last and hit-tested from the last back. The game's `CKingApp` (`src/kingapp.cpp`) adds to the engine's frame: before the windows execute it advances a clock (`$L_6974bc`), after them it reads the joystick into the controls table (`$L_6d1948`: 32 buttons and the POV hat as four buttons after the keyboard keys, eight axes scaled to −1..1). F6 saves a screenshot (`screenshots\ddphotoNNNN.bmp`), and keys typed during the pause go to the cheat code check.
+The windows form one list, executed from the first window to the last and hit-tested from the last back. The game's `CKingApp` (`src/truck/king_app.cpp`) adds to the engine's frame: before the windows execute it advances a clock (`$L_6974bc`), after them it reads the joystick into the controls table (`$L_6d1948`: 32 buttons and the POV hat as four buttons after the keyboard keys, eight axes scaled to −1..1). F6 saves a screenshot (`screenshots\ddphotoNNNN.bmp`), and keys typed during the pause go to the cheat code check.
 
 ## C++ and assembly in one executable
 
-The C++ code is compiled for the same 32-bit target and linked together with `king.obj`. The tools for this are in `src/king.h`.
+The C++ code is compiled for the same 32-bit target and linked together with `king.obj`. The tools for this are in `src/common/king.h`.
 
 ### Calling assembly from C++
 
@@ -221,7 +247,7 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
    `__fastcall` passes the first two arguments in ECX and EDX and the rest on the stack, which the callee removes. With an unused EDX argument that is exactly `__thiscall`. The symbol is named `@name@N`, where N is the size of all parameters in bytes (here `@CGameApp_OnIdle@12`).
 3. In `king.masm`, keep the original procedure for the assembly build and otherwise point its label at the export, so every call and vtable entry that uses the label reaches the C++ code:
    ```asm
-   IFDEF ASM_MAINLOOP
+   IFDEF ASM_MAIN_LOOP
    $L_5dd440 PROC
        ...
    $L_5dd440 ENDP
@@ -230,14 +256,14 @@ inline double Timer_Now() { return CallC<double>(FUN_6037e0); }   // cdecl funct
    $L_5dd440 TEXTEQU <@CGameApp_OnIdle@12>
    ENDIF
    ```
-   `ASM_MAINLOOP` is the main loop's switch; each source file has one, set in the `Makefile`. First make sure that no label *inside* the procedure is used from outside it: jump tables, shared code, or a procedure that the disassembler split into several `PROC` blocks (`$L_569650` continues in `$L_569692`; `FUN_5e29b0`, `CGameApp::InitInstance`, ends in a call and runs on into `$L_5e2cb0`). Data of the procedure that follows its `ENDP`, such as the jump tables after `CKingApp::PostExecute` (`$L_4e1098`), goes into the `IFDEF` part as well. Code that uses the label before the `TEXTEQU` line is fine: MASM resolves forward references to text macros.
+   `ASM_MAIN_LOOP` is the main loop's switch; each source file has one, set in the `Makefile`. First make sure that no label *inside* the procedure is used from outside it: jump tables, shared code, or a procedure that the disassembler split into several `PROC` blocks (`$L_569650` continues in `$L_569692`; `FUN_5e29b0`, `CGameApp::InitInstance`, ends in a call and runs on into `$L_5e2cb0`). Data of the procedure that follows its `ENDP`, such as the jump tables after `CKingApp::PostExecute` (`$L_4e1098`), goes into the `IFDEF` part as well. Code that uses the label before the `TEXTEQU` line is fine: MASM resolves forward references to text macros.
 4. In C++, declare the function in `king.h` and call it directly, not through its label, which doesn't exist when the function is C++. Remove the label's `ASM_PROC` and inline wrapper.
-5. A new `.cpp` file goes into `ALLCPPOBJS` in the `Makefile`, with a switch of its own like `ASM_GAMEAPP`.
+5. A new `.cpp` file goes into the folder of its original library, into `ALLCPPOBJS` in the `Makefile`, and gets a switch of its own named after it (`ASM_<FILE NAME>`).
 
 ### Rules for the C++ code
 
 - It has no C runtime of its own: it is built with `/Zl /GS- /GR- /EHs-c-` and links only against Windows import libraries and `king.obj`. The functions of the game's VC6 C runtime that are named in `symbols.csv` link to the game's copy: `memset` and `memcpy` (also where the compiler turns loops or large copies into them), `malloc`, `strlen` and the like. Functions that the Windows SDK headers define inline, such as `sprintf` and the other stdio functions, have to be declared by hand as above. A runtime function without a name in `symbols.csv` is an unresolved external until it gets one. `new` reaches MFC's `operator new`; `delete` needs `/Zc:sizedDealloc-`, otherwise the compiler calls a sized `operator delete(void*, unsigned)` that VC6 doesn't have. `_fltused` is defined in `mainloop.cpp`.
-- Floating point is compiled for the x87 FPU (`/arch:IA32`), like the assembly, so it runs under the same precision control. `src/x87.h` has the rules for rewriting x87 code (FPU stack values are doubles, `fstp DWORD` stores are floats, comparisons that jump on C0 or C3 include NaN) and helpers that do what VC6 inlined: `fsin`, `fcos`, `fsqrt`, `fpatan`, `exp`, and calls of the register-based `__CIpow`, `__CIacos`, `__CIasin`, `__CIfmod`. The compiler's float-to-int helpers `__ftol2` and `__ftol2_sse` are mapped to VC6's `__ftol` (`king.h`).
+- Floating point is compiled for the x87 FPU (`/arch:IA32`), like the assembly, so it runs under the same precision control. `src/common/x87.h` has the rules for rewriting x87 code (FPU stack values are doubles, `fstp DWORD` stores are floats, comparisons that jump on C0 or C3 include NaN) and helpers that do what VC6 inlined: `fsin`, `fcos`, `fsqrt`, `fpatan`, `exp`, and calls of the register-based `__CIpow`, `__CIacos`, `__CIasin`, `__CIfmod`. The compiler's float-to-int helpers `__ftol2` and `__ftol2_sse` are mapped to VC6's `__ftol` (`king.h`).
 - Pointers are 4 bytes. Check layouts with `CHECK_OFFSET`; `src/compile_flags.txt` makes clangd use the 32-bit target too.
 
 ## Working with king.masm
