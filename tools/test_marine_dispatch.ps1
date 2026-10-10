@@ -21,6 +21,7 @@ extern "C" void __fastcall MarineTask_Frame(BYTE*,void*,DWORD,DWORD);
 KING_ALIAS("@MarineTask_SetBounds@16","@TestBounds@16")
 KING_ALIAS("@MarineTask_UpdateMotion@12","@TestMotion@12")
 KING_ALIAS("@MarineTask_Frame@16","@TestFrame@16")
+KING_ALIAS("@MarineTask_DrawPending@20","@TestAdjust@20")
 '@
 $labels=@{ '5dbcc0'='@TestMatrix@12'; '5d32f0'='@TestEnable@12'; '5b4fc0'='@TestQuery@12'; '60ea90'='@TestAdjust@20' }
 foreach($label in $labels.Keys) { $body=$body.Replace('ASM_PROC(FUN_'+$label+')','extern "C" void FUN_'+$label+'(); KING_ALIAS("_FUN_'+$label+'","'+$labels[$label]+'")') }

@@ -1,6 +1,7 @@
 // Marine mesh processing and task helpers. ASM_MARINE selects the original code.
 #include "king.h"
 #include "x87.h"
+#include "vecmath.h"
 #include <mmsystem.h>
 #include <stdlib.h>
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
@@ -975,7 +976,7 @@ extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWOR
 ASM_PROC(FUN_5dbcc0)
 ASM_PROC(FUN_5d32f0)
 ASM_PROC(FUN_5b4fc0)
-ASM_PROC(FUN_60ea90)
+extern "C" void __fastcall MarineTask_DrawPending(BYTE*,void*,const float*,const float*,BYTE*);
 ASM_VAR(float, g_mt_axisX, $L_702620)
 ASM_VAR(float, g_mt_axisY, $L_702624)
 ASM_VAR(float, g_mt_axisZ, $L_702628)
@@ -1017,7 +1018,7 @@ extern "C" DWORD __fastcall MarineTask_DispatchUpdate(BYTE* self, void*, DWORD u
     double length=x87_sqrt(((double)planar[0]*planar[0]+(double)planar[1]*planar[1])+(double)planar[2]*planar[2]);
     for(unsigned i=0;i<3;++i) direction[i]=(float)((double)planar[i]/length);
     if(event==F(BYTE*,F(void*,self,112),464) && F(DWORD,self,128))
-        CallThis(FUN_60ea90,self,position,direction,event);
+        MarineTask_DrawPending(self,0,position,direction,event);
     if(!active || !F(DWORD,self,120)) return 0;
     MarineTask_SetBounds(F(BYTE*,self,108),0,(DWORD*)position,(DWORD*)direction);
     double speed=F(float,g_mt_motionState,532);
@@ -1093,4 +1094,82 @@ extern "C" BYTE* __fastcall MarineTask_Construct(BYTE* self, void*, BYTE* world)
     F(DWORD,self,124)=F(DWORD,self,128)=0;
     F(float,self,148)=(float)x87_sqrt(g_marineTaskRadiusSquared);
     return self;
+}
+
+// Marine pending-state quad rendering and camera field of view.
+ASM_PROC(FUN_5b1020)
+ASM_VAR(float, g_mq_zero, $L_64c264)
+ASM_VAR(float, g_mq_one, $L_64c250)
+ASM_VAR(float, g_mq_half, $L_64c258)
+ASM_VAR(float, g_mq_delay, $L_653008)
+ASM_VAR(float, g_mq_offsetScale, $L_65308c)
+ASM_VAR(float, g_mq_height, $L_65300c)
+ASM_VAR(float, g_mq_lowerHeight, $L_653010)
+extern "C" Vec3* __cdecl Vec3_Sum(Vec3*,const Vec3*,const Vec3*);
+extern "C" Vec3* __cdecl Vec3_Diff(Vec3*,const Vec3*,const Vec3*);
+extern "C" Vec3* __cdecl Vec3_Times(Vec3*,const Vec3*,float);
+extern "C" BYTE* __fastcall Fx_Set2Vec(BYTE*,void*,const Vec3*,const Vec3*,int,int);
+X87 double MarineCamera_Tan(double angle)
+{
+    __asm { fld angle }
+    __asm { fptan }
+    __asm { fstp st(0) }
+}
+extern "C" double __fastcall MarineCamera_HorizontalAngle(BYTE* self,void*)
+{
+    double angle=x87_atan2((double)F(float,self,88)*g_mq_half,1.0);
+    return angle+angle;
+}
+extern "C" double __fastcall MarineCamera_VerticalAngle(BYTE* self,void*)
+{
+    double angle=x87_atan2((double)F(float,self,84)*g_mq_half,1.0);
+    return angle+angle;
+}
+extern "C" void __fastcall MarineTask_DrawPending(BYTE* self,void*,const float* position,const float* direction,BYTE* event)
+{
+    double elapsed=F(double,F(void*,self,112),2960);
+    F(float,self,156)=(float)(F(DWORD,self,116)?elapsed+F(float,self,156):(double)F(float,self,156)-elapsed);
+    if(!(F(float,self,156)>g_mq_zero)) return;
+    double ratio=(double)F(float,self,156)/g_mq_delay;
+    float fade=(float)ratio;
+    if(ratio>g_mq_one) fade=1.0f;
+    else if(!(fade>=g_mq_zero)) fade=0.0f;
+    double distance=F(double,event,8472);
+    Vec3 projected={(float)(distance*direction[0]),(float)(distance*direction[1]),(float)(distance*direction[2])};
+    Vec3 offset={(float)((double)projected.x*g_mq_offsetScale),(float)((double)projected.y*g_mq_offsetScale),(float)((double)projected.z*g_mq_offsetScale)};
+    Vec3 center={(float)((double)offset.x+position[0]),(float)((double)offset.y+position[1]),offset.z};
+    float perpendicularX=(float)((double)direction[1]-g_mq_zero);
+    Vec3 perpendicular={-perpendicularX,(float)(-((double)g_mq_zero-direction[0])),(float)(-(double)g_mq_zero)};
+    Vec3 normal={0,0,1};
+    float horizontal=(float)(MarineCamera_HorizontalAngle(F(BYTE*,F(void*,self,112),488),0)*g_mq_half);
+    double vertical=MarineCamera_VerticalAngle(F(BYTE*,F(void*,self,112),488),0)*g_mq_half;
+    float horizontalSpan=(float)(MarineCamera_Tan(horizontal)*F(double,event,8472));
+    double verticalSpan=MarineCamera_Tan(vertical)*F(double,event,8472);
+    float radius=(float)x87_sqrt(verticalSpan*verticalSpan+(double)horizontalSpan*horizontalSpan);
+    Vec3 scaledNormal={(float)((double)normal.x*g_mq_height),(float)((double)normal.y*g_mq_height),(float)((double)normal.z*g_mq_height)};
+    Vec3 lift={(float)((double)scaledNormal.x*fade),(float)((double)scaledNormal.y*fade),(float)((double)scaledNormal.z*fade)};
+    Vec3 side={(float)((double)perpendicular.x*radius),(float)((double)perpendicular.y*radius),(float)((double)perpendicular.z*radius)};
+    Vec3 left={(float)((double)center.x-side.x),(float)((double)center.y-side.y),(float)((double)center.z-side.z)};
+    Vec3 point={(float)((double)lift.x+left.x),(float)((double)lift.y+left.y),(float)((double)lift.z+left.z)};
+    DWORD vertices[4][8];
+    Fx_Set2Vec((BYTE*)vertices[0],0,&point,&normal,0,0);
+    Vec3 right={(float)((double)side.x+center.x),(float)((double)side.y+center.y),(float)((double)side.z+center.z)};
+    Vec3_Sum(&point,&right,&lift);
+    Fx_Set2Vec((BYTE*)vertices[1],0,&point,&normal,0x3f800000,0);
+    Vec3 lower,temporary;
+    Vec3_Times(&lower,&normal,g_mq_lowerHeight);
+    Vec3_Times(&temporary,&perpendicular,radius);
+    Vec3_Sum(&point,&center,&temporary);
+    Vec3_Diff(&point,&point,&lower);
+    Fx_Set2Vec((BYTE*)vertices[2],0,&point,&normal,0x3f800000,0x3f800000);
+    Vec3_Times(&lower,&normal,g_mq_lowerHeight);
+    Vec3_Times(&temporary,&perpendicular,radius);
+    Vec3_Diff(&point,&center,&temporary);
+    Vec3_Diff(&point,&point,&lower);
+    Fx_Set2Vec((BYTE*)vertices[3],0,&point,&normal,0,0x3f800000);
+    CallThis(FUN_5b1020,event,F(DWORD,self,152),1,0,0);
+    BYTE* device=(BYTE*)g_mt_frameValue;
+    CallStd((void(*)())F(void*,F(void*,device,0),80),device,136,1);
+    device=(BYTE*)g_mt_frameValue;
+    CallStd((void(*)())F(void*,F(void*,device,0),100),device,6,274,vertices,4,0);
 }
