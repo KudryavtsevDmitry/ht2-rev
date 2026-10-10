@@ -15,6 +15,8 @@ extern "C" DWORD __fastcall RebuildNodes(BYTE* self,void*) { rebuild=500; F(DWOR
 extern "C" DWORD __fastcall RebuildEdges(BYTE* self,void*) { rebuild=200; F(DWORD,self,8)=0; return 0x87654321; }
 KING_ALIAS("FUN_60f390","@RebuildNodes@8")
 KING_ALIAS("FUN_60f7f0","@RebuildEdges@8")
+KING_ALIAS("@MarineQueue_RebuildNodes@8","@RebuildNodes@8")
+KING_ALIAS("@MarineQueue_RebuildEdges@8","@RebuildEdges@8")
 static void Setup(unsigned length,unsigned edge,DWORD score,DWORD count,unsigned roots)
 {
     rebuild=0;
