@@ -867809,6 +867809,7 @@ FUN_60d250 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d320 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -867858,6 +867859,10 @@ $L_60d366::
             pop ESI
             ret 8
 FUN_60d320 ENDP
+ELSE
+EXTERN @MarineGreed_Allocate@16:PROC
+FUN_60d320 TEXTEQU <@MarineGreed_Allocate@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867870,6 +867875,7 @@ FUN_60d320 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d3a0 PROC
 
             push -1
@@ -867936,6 +867942,10 @@ $L_60d41d::
             add ESP,16
             ret 
 FUN_60d3a0 ENDP
+ELSE
+EXTERN @MarineGreed_Init@8:PROC
+FUN_60d3a0 TEXTEQU <@MarineGreed_Init@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867944,6 +867954,7 @@ FUN_60d3a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d440 PROC
 
             sub ESP,8
@@ -868089,6 +868100,10 @@ $L_60d531::
             add ESP,8
             ret 
 FUN_60d440 ENDP
+ELSE
+EXTERN @MarineGreed_Update@8:PROC
+FUN_60d440 TEXTEQU <@MarineGreed_Update@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868100,6 +868115,7 @@ FUN_60d440 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d540 PROC
 
             push EBX
@@ -868386,6 +868402,10 @@ $L_60d740::
             pop EBX
             ret 4
 FUN_60d540 ENDP
+ELSE
+EXTERN @MarineGreed_RemoveNode@12:PROC
+FUN_60d540 TEXTEQU <@MarineGreed_RemoveNode@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -1073288,6 +1073308,7 @@ $L_672498                     DB 'blowgazstation0Sound'
           BYTE 000H
 
           DB 3 DUP(0)
+PUBLIC $L_6724b0
 $L_6724b0                     DB ' File = %s, Line = #%ld, Date = %s '
           BYTE 000H
 
@@ -1073295,6 +1073316,7 @@ $L_6724d4                     DB 'C:\Nek\VRAPPLVS\TRUCK\aeffects.cpp'
           BYTE 000H
 
           DB 1 DUP(0)
+PUBLIC $L_6724f8
 $L_6724f8                     DB 'Jan 16 2003'
           BYTE 000H
 
@@ -1073428,6 +1073450,7 @@ $L_672698                     DB 'DelayEff'
           BYTE 000H
 
           DB 3 DUP(0)
+PUBLIC $L_6726a4
 $L_6726a4                     DB 'Assertion violated: %s, File = %s, Line = #%ld Date = %s '
           BYTE 000H
 
@@ -1093162,22 +1093185,27 @@ $L_685abc           BYTE 001H
           BYTE 000H
           BYTE 020H
           BYTE 041H
+PUBLIC $L_685ac8
 $L_685ac8                     DB 'C:\Nek\VRAPPLVS\marine\Greed.cpp'
           BYTE 000H
 
           DB 3 DUP(0)
+PUBLIC $L_685aec
 $L_685aec                     DB 'this->LeftNeighbor->BaseNeighbor == this'
           BYTE 000H
 
           DB 3 DUP(0)
+PUBLIC $L_685b18
 $L_685b18                     DB 'this->RightNeighbor->BaseNeighbor == this'
           BYTE 000H
 
           DB 2 DUP(0)
+PUBLIC $L_685b44
 $L_685b44                     DB 'this->BaseNeighbor->RightNeighbor == this'
           BYTE 000H
 
           DB 2 DUP(0)
+PUBLIC $L_685b70
 $L_685b70                     DB 'C:\Nek\VRAPPLVS\marine\triangle.inl'
           BYTE 000H
 
