@@ -949,6 +949,17 @@ PUBLIC $L_68cc88
 PUBLIC $L_702654, $L_702658
 PUBLIC $L_66f880, $L_66f888, $L_66f890
 PUBLIC $L_64c450, $L_64d998, $L_678540
+PUBLIC $L_64b670, $L_64b678, $L_64b6b8, $L_64c250, $L_64c260, $L_64c33c
+PUBLIC $L_650624, $L_651838, $L_65186c, $L_66cb28, $L_67d10a, $L_67d4b4
+PUBLIC $L_67d4c0, $L_67d4cc, $L_685ac8, $L_685aec, $L_685b18, $L_685b44
+PUBLIC $L_685b70, $L_68d6d8, $L_68d7b4, $L_68d7b8, $L_6f653c, $L_6f6910
+PUBLIC $L_702f24, $L_702f28, $L_702f40, $L_702f44, $L_702f48, $L_720904
+PUBLIC $L_651948, $L_651b00, $L_651d14, $L_651d64, $L_651db0, $L_67f578
+PUBLIC $L_67f5a0, $L_67f5c4, $L_67f748, $L_67f7bc, $L_67f7e0, $L_67f7fc
+PUBLIC $L_67f9ac, $L_67fa60, $L_702f64, $L_702f68, $L_702f6c, $L_702f70
+PUBLIC $L_702f78, $L_702f94, $L_702f98, $L_702f9c, $L_702fa0
+PUBLIC $L_702fa4, $L_702fa8, $L_702fac, $L_702fb0, $L_707f6c, $L_70ebe8
+PUBLIC $L_70ebec, $L_70ebf0, $L_70ebf4, $L_70ebf8
 
 ;===================================
 _TEXT SEGMENT
@@ -719547,6 +719558,8 @@ $L_5bc291 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bc2f0 PROC
 
             push ESI
@@ -719576,7 +719589,13 @@ $L_5bc31e::
             pop ESI
             ret 
 FUN_5bc2f0 ENDP
+ELSE
+EXTERN @Poly_Destroy@8:PROC
+FUN_5bc2f0 TEXTEQU <@Poly_Destroy@8>
+ENDIF
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bc320 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -719603,6 +719622,10 @@ $L_5bc346::
             pop ESI
             ret 8
 FUN_5bc320 ENDP
+ELSE
+EXTERN @Poly_GetRecord@16:PROC
+FUN_5bc320 TEXTEQU <@Poly_GetRecord@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -719610,6 +719633,8 @@ FUN_5bc320 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bc350 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -719627,11 +719652,17 @@ $L_5bc369::
 
             ret 12
 FUN_5bc350 ENDP
+ELSE
+EXTERN @Poly_SetWeight@20:PROC
+FUN_5bc350 TEXTEQU <@Poly_SetWeight@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bc370 PROC
 
             push EBP
@@ -719722,6 +719753,10 @@ $L_5bc41b::
             pop EBP
             ret 12
 FUN_5bc370 ENDP
+ELSE
+EXTERN @Poly_Nearest@20:PROC
+FUN_5bc370 TEXTEQU <@Poly_Nearest@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -720789,6 +720824,8 @@ FUN_5bcf60 PROC
             ret 
 FUN_5bcf60 ENDP
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bcfe0 PROC
 
             mov EAX,DWORD PTR [ECX+24]
@@ -720801,6 +720838,10 @@ $L_5bcfe8::
             add EAX,-16
             ret 
 FUN_5bcfe0 ENDP
+ELSE
+EXTERN @Ctl_Owner@8:PROC
+FUN_5bcfe0 TEXTEQU <@Ctl_Owner@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -721441,17 +721482,25 @@ FUN_5bd560 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bd590 PROC
 
             mov DWORD PTR [$L_702f24],0
             ret 
 FUN_5bd590 ENDP
+ELSE
+EXTERN _Gui_Reset702f24:PROC
+FUN_5bd590 TEXTEQU <_Gui_Reset702f24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bd5a0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -721475,6 +721524,10 @@ FUN_5bd5a0 PROC
             mov DWORD PTR [ECX+20],EAX
             ret 4
 FUN_5bd5a0 ENDP
+ELSE
+EXTERN @Style_Assign@12:PROC
+FUN_5bd5a0 TEXTEQU <@Style_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -722188,6 +722241,8 @@ $L_5bdb30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bdb50 PROC
 
             push ESI
@@ -722241,6 +722296,10 @@ $L_5bdb92::
             pop ESI
             ret 4
 FUN_5bdb50 ENDP
+ELSE
+EXTERN @Ctl_FindId@12:PROC
+FUN_5bdb50 TEXTEQU <@Ctl_FindId@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -722249,6 +722308,8 @@ FUN_5bdb50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bdba0 PROC
 
             mov EAX,DWORD PTR [$L_702f48]
@@ -722289,9 +722350,15 @@ $L_5bdbe9::
             pop ESI
             ret 4
 FUN_5bdba0 ENDP
+ELSE
+EXTERN @Ctl_Select@12:PROC
+FUN_5bdba0 TEXTEQU <@Ctl_Select@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bdbf0 PROC
 
             push ESI
@@ -722359,6 +722426,10 @@ $L_5bdc6c::
             pop ESI
             ret 8
 FUN_5bdbf0 ENDP
+ELSE
+EXTERN @Ctl_AddChild@16:PROC
+FUN_5bdbf0 TEXTEQU <@Ctl_AddChild@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -722706,6 +722777,8 @@ $L_5bdecf::
             nop
 FUN_5bdd70 ENDP
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bdee0 PROC
 
             push EBX
@@ -722788,6 +722861,10 @@ $L_5bdf6e::
             pop EBX
             ret 4
 FUN_5bdee0 ENDP
+ELSE
+EXTERN @Ctl_LayoutColumn@12:PROC
+FUN_5bdee0 TEXTEQU <@Ctl_LayoutColumn@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -723021,6 +723098,8 @@ FUN_5bdf80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5be130 PROC
 
             push EBX
@@ -723103,6 +723182,10 @@ $L_5be1be::
             pop EBX
             ret 4
 FUN_5be130 ENDP
+ELSE
+EXTERN @Ctl_LayoutRow@12:PROC
+FUN_5be130 TEXTEQU <@Ctl_LayoutRow@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -723672,6 +723755,8 @@ $L_5be4b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5be5a0 PROC
 
             mov EAX,DWORD PTR [ECX+40]
@@ -723721,6 +723806,10 @@ $L_5be5e2::
             pop EBX
             ret 8
 FUN_5be5a0 ENDP
+ELSE
+EXTERN @Ctl_Dispatch@16:PROC
+FUN_5be5a0 TEXTEQU <@Ctl_Dispatch@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -724701,6 +724790,8 @@ $L_5bedb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bef30 PROC
 
             push ESI
@@ -724747,8 +724838,14 @@ $L_5bef8a::
             pop ESI
             ret 20
 FUN_5bef30 ENDP
+ELSE
+EXTERN @Ctl_SetStyles@28:PROC
+FUN_5bef30 TEXTEQU <@Ctl_SetStyles@28>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bef90 PROC
 
             mov EAX,DWORD PTR [ECX+288]
@@ -724777,6 +724874,10 @@ $L_5befbe::
 
             ret 8
 FUN_5bef90 ENDP
+ELSE
+EXTERN @Ctl_SetStyle5@16:PROC
+FUN_5bef90 TEXTEQU <@Ctl_SetStyle5@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -725603,6 +725704,8 @@ $L_5bf740 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bf750 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -725642,6 +725745,10 @@ $L_5bf793::
             pop EBX
             ret 8
 FUN_5bf750 ENDP
+ELSE
+EXTERN @Button_Construct@16:PROC
+FUN_5bf750 TEXTEQU <@Button_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -725708,6 +725815,8 @@ FUN_5bf7d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bf820 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -725755,6 +725864,10 @@ $L_5bf871::
             pop EBX
             ret 12
 FUN_5bf820 ENDP
+ELSE
+EXTERN @Button_ConstructId@20:PROC
+FUN_5bf820 TEXTEQU <@Button_ConstructId@20>
+ENDIF
           BYTE 090H
 $L_5bf880 PROC
 
@@ -726401,6 +726514,8 @@ $L_5bfd00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bfd60 PROC
 
             xor EAX,EAX
@@ -726409,6 +726524,10 @@ FUN_5bfd60 PROC
             mov DWORD PTR [$L_702f28],EAX
             ret 
 FUN_5bfd60 ENDP
+ELSE
+EXTERN @Panel_Clear@8:PROC
+FUN_5bfd60 TEXTEQU <@Panel_Clear@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -726425,6 +726544,8 @@ FUN_5bfd60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bfd80 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -726458,6 +726579,10 @@ $L_5bfdbf::
             pop ESI
             ret 20
 FUN_5bfd80 ENDP
+ELSE
+EXTERN @Panel_Construct@28:PROC
+FUN_5bfd80 TEXTEQU <@Panel_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -726468,6 +726593,8 @@ FUN_5bfd80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/gui.cpp, nmake ASM_GUI=1 assembles the original
+IFDEF ASM_GUI
 FUN_5bfde0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -726509,6 +726636,10 @@ $L_5bfe1f::
             pop ESI
             ret 36
 FUN_5bfde0 ENDP
+ELSE
+EXTERN @Panel_ConstructRect@44:PROC
+FUN_5bfde0 TEXTEQU <@Panel_ConstructRect@44>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -726729,6 +726860,8 @@ $L_5c0000           DWORD $L_5bff70
             nop
 $L_5bfe60 ENDP
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c0020 PROC
 
             mov EDX,DWORD PTR [ECX+48]
@@ -726743,6 +726876,10 @@ FUN_5c0020 PROC
 
             ret 4
 FUN_5c0020 ENDP
+ELSE
+EXTERN @List_DrawAt@12:PROC
+FUN_5c0020 TEXTEQU <@List_DrawAt@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -727880,6 +728017,8 @@ FUN_5c07c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c08f0 PROC
 
             mov EDX,DWORD PTR [ECX+296]
@@ -727903,6 +728042,10 @@ $L_5c0910::
 
             ret 
 FUN_5c08f0 ENDP
+ELSE
+EXTERN @List_IndexOf336@8:PROC
+FUN_5c08f0 TEXTEQU <@List_IndexOf336@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -728280,6 +728423,8 @@ $L_5c0b00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c0c00 PROC
 
             mov EDX,DWORD PTR [ECX+296]
@@ -728301,6 +728446,10 @@ $L_5c0c1e::
 
             ret 
 FUN_5c0c00 ENDP
+ELSE
+EXTERN @List_IndexOf300@8:PROC
+FUN_5c0c00 TEXTEQU <@List_IndexOf300@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5c0c20 PROC
@@ -728413,6 +728562,8 @@ FUN_5c0c20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c0cf0 PROC
 
             push EBX
@@ -728465,6 +728616,10 @@ $L_5c0d56::
             pop EBX
             ret 
 FUN_5c0cf0 ENDP
+ELSE
+EXTERN @List_Clear@8:PROC
+FUN_5c0cf0 TEXTEQU <@List_Clear@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -728631,6 +728786,8 @@ $L_5c0e7d::
             nop
 FUN_5c0d60 ENDP
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c0e90 PROC
 
             push EBX
@@ -728711,6 +728868,10 @@ $L_5c0ef6::
             pop EBX
             ret 4
 FUN_5c0e90 ENDP
+ELSE
+EXTERN @List_FindName@12:PROC
+FUN_5c0e90 TEXTEQU <@List_FindName@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5c0f00 PROC
@@ -729133,6 +729294,8 @@ FUN_5c1140 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c1260 PROC
 
             mov EAX,ECX
@@ -729158,6 +729321,10 @@ FUN_5c1260 PROC
 
             nop
 FUN_5c1260 ENDP
+ELSE
+EXTERN @Avi_Init@8:PROC
+FUN_5c1260 TEXTEQU <@Avi_Init@8>
+ENDIF
 ALIGN 16
 FUN_5c12a0 PROC
 
@@ -729901,6 +730068,8 @@ FUN_5c13a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c1990 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -729944,6 +730113,10 @@ $L_5c19cb::
             pop EBX
             ret 
 FUN_5c1990 ENDP
+ELSE
+EXTERN _AnsiToBstr:PROC
+FUN_5c1990 TEXTEQU <_AnsiToBstr>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731014,6 +731187,8 @@ FUN_5c2340 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2450 PROC
 
             mov EAX,DWORD PTR [ECX+2208]
@@ -731038,6 +731213,10 @@ $L_5c2489::
             xor EAX,EAX
             ret 
 FUN_5c2450 ENDP
+ELSE
+EXTERN @Avi_Start@8:PROC
+FUN_5c2450 TEXTEQU <@Avi_Start@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731308,6 +731487,8 @@ FUN_5c24a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c26f0 PROC
 
             mov EAX,DWORD PTR [$L_702fa4]
@@ -731350,6 +731531,10 @@ $L_5c2744::
             xor EAX,EAX
             ret 
 FUN_5c26f0 ENDP
+ELSE
+EXTERN _Msavi_Free:PROC
+FUN_5c26f0 TEXTEQU <_Msavi_Free>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731360,6 +731545,8 @@ FUN_5c26f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2750 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -731440,6 +731627,10 @@ $L_5c27fa::
             pop ESI
             ret 
 FUN_5c2750 ENDP
+ELSE
+EXTERN _Msavi_Open:PROC
+FUN_5c2750 TEXTEQU <_Msavi_Open>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -731725,6 +731916,8 @@ FUN_5c29d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2a50 PROC
 
             sub ESP,8
@@ -731810,6 +732003,10 @@ $L_5c2ac4::
             add ESP,8
             ret 
 FUN_5c2a50 ENDP
+ELSE
+EXTERN _Msavi_FillBuffer:PROC
+FUN_5c2a50 TEXTEQU <_Msavi_FillBuffer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731820,6 +732017,8 @@ FUN_5c2a50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2b10 PROC
 
             push ECX
@@ -731887,6 +732086,10 @@ $L_5c2b8b::
             pop ECX
             ret 
 FUN_5c2b10 ENDP
+ELSE
+EXTERN _Msavi_Read:PROC
+FUN_5c2b10 TEXTEQU <_Msavi_Read>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732000,6 +732203,8 @@ FUN_5c2ba0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2c70 PROC
 
             push ECX
@@ -732060,8 +732265,14 @@ $L_5c2cc6::
             pop ECX
             ret 
 FUN_5c2c70 ENDP
+ELSE
+EXTERN _Msavi_UpdatePlayed:PROC
+FUN_5c2c70 TEXTEQU <_Msavi_UpdatePlayed>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2ce0 PROC
 
             push ECX
@@ -732145,6 +732356,10 @@ $L_5c2d67::
             pop ECX
             ret 
 FUN_5c2ce0 ENDP
+ELSE
+EXTERN _Msavi_Restore:PROC
+FUN_5c2ce0 TEXTEQU <_Msavi_Restore>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732336,11 +732551,17 @@ FUN_5c2e60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2f00 PROC
 
             mov DWORD PTR [$L_702f94],1
             ret 
 FUN_5c2f00 ENDP
+ELSE
+EXTERN _Set702f94:PROC
+FUN_5c2f00 TEXTEQU <_Set702f94>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732454,6 +732675,8 @@ FUN_5c2f80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c2fe0 PROC
 
             push EBX
@@ -732497,6 +732720,10 @@ $L_5c300e::
             pop EBX
             ret 
 FUN_5c2fe0 ENDP
+ELSE
+EXTERN @Table_Clear@8:PROC
+FUN_5c2fe0 TEXTEQU <@Table_Clear@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732505,6 +732732,8 @@ FUN_5c2fe0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3020 PROC
 
             push ESI
@@ -732543,10 +732772,16 @@ $L_5c3066::
             pop ESI
             ret 12
 FUN_5c3020 ENDP
+ELSE
+EXTERN @Table_Add@20:PROC
+FUN_5c3020 TEXTEQU <@Table_Add@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3070 PROC
 
             push ESI
@@ -732586,6 +732821,10 @@ $L_5c30bd::
             pop ESI
             ret 12
 FUN_5c3070 ENDP
+ELSE
+EXTERN @Table_Add6@20:PROC
+FUN_5c3070 TEXTEQU <@Table_Add6@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732599,6 +732838,8 @@ FUN_5c3070 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c30d0 PROC
 
             push ESI
@@ -732640,12 +732881,18 @@ $L_5c3124::
             pop ESI
             ret 16
 FUN_5c30d0 ENDP
+ELSE
+EXTERN @Table_Add5@24:PROC
+FUN_5c30d0 TEXTEQU <@Table_Add5@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3130 PROC
 
             push ESI
@@ -732678,7 +732925,13 @@ FUN_5c3130 PROC
             nop
             nop
 FUN_5c3130 ENDP
+ELSE
+EXTERN @Table_Link@12:PROC
+FUN_5c3130 TEXTEQU <@Table_Link@12>
+ENDIF
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3160 PROC
 
             push ESI
@@ -732712,6 +732965,10 @@ $L_5c318c::
             pop ESI
             ret 4
 FUN_5c3160 ENDP
+ELSE
+EXTERN @Table_Find@12:PROC
+FUN_5c3160 TEXTEQU <@Table_Find@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732728,6 +732985,8 @@ FUN_5c3160 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c31a0 PROC
 
             push ESI
@@ -732798,6 +733057,10 @@ $L_5c31fd::
             pop ESI
             ret 16
 FUN_5c31a0 ENDP
+ELSE
+EXTERN @Table_Set@24:PROC
+FUN_5c31a0 TEXTEQU <@Table_Set@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732809,6 +733072,8 @@ FUN_5c31a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3220 PROC
 
             push ESI
@@ -732846,6 +733111,10 @@ $L_5c3251::
             pop ESI
             ret 4
 FUN_5c3220 ENDP
+ELSE
+EXTERN @Table_Value@12:PROC
+FUN_5c3220 TEXTEQU <@Table_Value@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732876,6 +733145,8 @@ FUN_5c3260 PROC
             ret 
 FUN_5c3260 ENDP
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c32a0 PROC
 
             push ESI
@@ -732910,6 +733181,10 @@ $L_5c32d7::
             pop ESI
             ret 12
 FUN_5c32a0 ENDP
+ELSE
+EXTERN @List_Add@20:PROC
+FUN_5c32a0 TEXTEQU <@List_Add@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732921,6 +733196,8 @@ FUN_5c32a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c32f0 PROC
 
             push ESI
@@ -732956,10 +733233,16 @@ $L_5c332e::
             pop ESI
             ret 12
 FUN_5c32f0 ENDP
+ELSE
+EXTERN @List_Add6@20:PROC
+FUN_5c32f0 TEXTEQU <@List_Add6@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3340 PROC
 
             push ESI
@@ -732997,6 +733280,10 @@ $L_5c3385::
             pop ESI
             ret 16
 FUN_5c3340 ENDP
+ELSE
+EXTERN @List_Add5@24:PROC
+FUN_5c3340 TEXTEQU <@List_Add5@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -733010,6 +733297,8 @@ FUN_5c3340 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c33a0 PROC
 
             push ESI
@@ -733039,6 +733328,10 @@ $L_5c33c3::
             pop ESI
             ret 
 FUN_5c33a0 ENDP
+ELSE
+EXTERN @List_DeleteAll@8:PROC
+FUN_5c33a0 TEXTEQU <@List_DeleteAll@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -733812,6 +734105,8 @@ FUN_5c3990 PROC
 FUN_5c3990 ENDP
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c39e0 PROC
 
             sub ESP,12
@@ -733886,7 +734181,13 @@ $L_5c3a79::
             add ESP,12
             ret 12
 FUN_5c39e0 ENDP
+ELSE
+EXTERN @Music_Play@20:PROC
+FUN_5c39e0 TEXTEQU <@Music_Play@20>
+ENDIF
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c3a80 PROC
 
             push ESI
@@ -733908,6 +734209,10 @@ $L_5c3abb::
             pop ESI
             ret 
 FUN_5c3a80 ENDP
+ELSE
+EXTERN @Music_Stop@8:PROC
+FUN_5c3a80 TEXTEQU <@Music_Stop@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -734436,6 +734741,8 @@ $L_5c4090 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c40b0 PROC
 
             push ESI
@@ -734467,6 +734774,10 @@ $L_5c40ee::
             pop ESI
             ret 4
 FUN_5c40b0 ENDP
+ELSE
+EXTERN @Pool_Keep@12:PROC
+FUN_5c40b0 TEXTEQU <@Pool_Keep@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -734790,6 +735101,8 @@ $L_5c4310 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c4340 PROC
 
             push ESI
@@ -734837,6 +735150,10 @@ $L_5c43b7::
             pop ESI
             ret 
 FUN_5c4340 ENDP
+ELSE
+EXTERN @Rec_Close@8:PROC
+FUN_5c4340 TEXTEQU <@Rec_Close@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -734845,6 +735162,8 @@ FUN_5c4340 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c43c0 PROC
 
             push ESI
@@ -734877,6 +735196,10 @@ $L_5c4401::
             pop ESI
             ret 
 FUN_5c43c0 ENDP
+ELSE
+EXTERN @Rec_Mark@8:PROC
+FUN_5c43c0 TEXTEQU <@Rec_Mark@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -736627,6 +736950,8 @@ $L_5c4f10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c5310 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -736649,6 +736974,10 @@ FUN_5c5310 PROC
             pop ESI
             ret 4
 FUN_5c5310 ENDP
+ELSE
+EXTERN @Timeline_Construct@12:PROC
+FUN_5c5310 TEXTEQU <@Timeline_Construct@12>
+ENDIF
 $L_5c5350 PROC
 
             push ESI
@@ -736722,6 +737051,8 @@ FUN_5c5380 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c53b0 PROC
 
             mov EAX,DWORD PTR [$L_707f6c]
@@ -736735,6 +737066,10 @@ FUN_5c53b0 PROC
             mov DWORD PTR [ECX+8368],EDX
             ret 
 FUN_5c53b0 ENDP
+ELSE
+EXTERN @Timeline_Reset@8:PROC
+FUN_5c53b0 TEXTEQU <@Timeline_Reset@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -737610,6 +737945,8 @@ $L_5c5be8 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c5c00 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -737629,6 +737966,10 @@ $L_5c5c2c::
 
             ret 4
 FUN_5c5c00 ENDP
+ELSE
+EXTERN @Timeline_Clear@12:PROC
+FUN_5c5c00 TEXTEQU <@Timeline_Clear@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5c5c30 PROC
@@ -740944,6 +741285,8 @@ $L_5c82c0           DWORD $L_5c815b
           DWORD $L_5c820d
           DWORD $L_5c8266
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5c82d0 PROC
 
             fld DWORD PTR [ESP+4]
@@ -740960,6 +741303,10 @@ $L_5c82eb::
             xor EAX,EAX
             ret 
 FUN_5c82d0 ENDP
+ELSE
+EXTERN _Ratio_Over15000:PROC
+FUN_5c82d0 TEXTEQU <_Ratio_Over15000>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -745282,12 +745629,18 @@ FUN_5ca8e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cb990 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov DWORD PTR [$L_70ebf4],EAX
             ret 
 FUN_5cb990 ENDP
+ELSE
+EXTERN _Set70ebf4:PROC
+FUN_5cb990 TEXTEQU <_Set70ebf4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745295,6 +745648,8 @@ FUN_5cb990 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cb9a0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -745303,6 +745658,10 @@ FUN_5cb9a0 PROC
             mov DWORD PTR [$L_70ebec],ECX
             ret 
 FUN_5cb9a0 ENDP
+ELSE
+EXTERN _Set70ebe8:PROC
+FUN_5cb9a0 TEXTEQU <_Set70ebe8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745316,12 +745675,18 @@ FUN_5cb9a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cb9c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov DWORD PTR [$L_70ebf0],EAX
             ret 
 FUN_5cb9c0 ENDP
+ELSE
+EXTERN _Set70ebf0:PROC
+FUN_5cb9c0 TEXTEQU <_Set70ebf0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745329,6 +745694,8 @@ FUN_5cb9c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cb9d0 PROC
 
             mov EAX,ECX
@@ -745347,9 +745714,15 @@ FUN_5cb9d0 PROC
             mov DWORD PTR [EAX+20],EDX
             ret 16
 FUN_5cb9d0 ENDP
+ELSE
+EXTERN @Rec24_Set@24:PROC
+FUN_5cb9d0 TEXTEQU <@Rec24_Set@24>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cba00 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -745407,12 +745780,18 @@ $L_5cba8f::
             pop ESI
             ret 8
 FUN_5cba00 ENDP
+ELSE
+EXTERN @Branch_Construct@16:PROC
+FUN_5cba00 TEXTEQU <@Branch_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cbac0 PROC
 
             push EBX
@@ -745469,6 +745848,10 @@ $L_5cbb1b::
             pop EBX
             ret 
 FUN_5cbac0 ENDP
+ELSE
+EXTERN @Branch_Destroy@8:PROC
+FUN_5cbac0 TEXTEQU <@Branch_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745631,6 +746014,8 @@ $L_5cbc2b::
 $L_5cbbd0 ENDP
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cbc30 PROC
 
             fld DWORD PTR [ESP+4]
@@ -745639,6 +746024,10 @@ FUN_5cbc30 PROC
             fadd DWORD PTR [ECX+28]
             ret 4
 FUN_5cbc30 ENDP
+ELSE
+EXTERN @Branch_Sway@12:PROC
+FUN_5cbc30 TEXTEQU <@Branch_Sway@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745654,11 +746043,17 @@ FUN_5cbc30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cbc50 PROC
 
             fld DWORD PTR [ECX+32]
             ret 
 FUN_5cbc50 ENDP
+ELSE
+EXTERN @Branch_Value@8:PROC
+FUN_5cbc50 TEXTEQU <@Branch_Value@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745672,6 +746067,8 @@ FUN_5cbc50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cbc60 PROC
 
             mov EAX,ECX
@@ -745709,6 +746106,10 @@ $L_5cbc6e::
             pop ESI
             ret 12
 FUN_5cbc60 ENDP
+ELSE
+EXTERN @Leaf_Init@20:PROC
+FUN_5cbc60 TEXTEQU <@Leaf_Init@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -746506,6 +746907,8 @@ FUN_5cbcb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cc620 PROC
 
             sub ESP,56
@@ -746549,6 +746952,10 @@ $L_5cc66d::
             add ESP,56
             ret 8
 FUN_5cc620 ENDP
+ELSE
+EXTERN @Leaves_Add@16:PROC
+FUN_5cc620 TEXTEQU <@Leaves_Add@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -746938,6 +747345,8 @@ FUN_5cc930 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cca30 PROC
 
             push ESI
@@ -746970,6 +747379,10 @@ $L_5cca5a::
             pop ESI
             ret 
 FUN_5cca30 ENDP
+ELSE
+EXTERN @Tree_Free@8:PROC
+FUN_5cca30 TEXTEQU <@Tree_Free@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748332,6 +748745,8 @@ FUN_5cda30 PROC
             nop
 FUN_5cda30 ENDP
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cda40 PROC
 
             mov EAX,ECX
@@ -748342,7 +748757,13 @@ FUN_5cda40 PROC
             mov DWORD PTR [EAX+12],ECX
             ret 
 FUN_5cda40 ENDP
+ELSE
+EXTERN @Vec4_Zero@8:PROC
+FUN_5cda40 TEXTEQU <@Vec4_Zero@8>
+ENDIF
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cda50 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -748362,6 +748783,10 @@ FUN_5cda50 PROC
             pop ESI
             ret 4
 FUN_5cda50 ENDP
+ELSE
+EXTERN @Shade_Assign@12:PROC
+FUN_5cda50 TEXTEQU <@Shade_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748374,6 +748799,8 @@ FUN_5cda50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cda80 PROC
 
             fld DWORD PTR [ECX+12]
@@ -748421,6 +748848,10 @@ $L_5cdae2::
 
             ret 4
 FUN_5cda80 ENDP
+ELSE
+EXTERN @Shadow_Circle@12:PROC
+FUN_5cda80 TEXTEQU <@Shadow_Circle@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748433,6 +748864,8 @@ FUN_5cda80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cdaf0 PROC
 
             push EBX
@@ -748457,6 +748890,10 @@ $L_5cdafc::
             pop EBX
             ret 
 FUN_5cdaf0 ENDP
+ELSE
+EXTERN @Shadows_Construct@8:PROC
+FUN_5cdaf0 TEXTEQU <@Shadows_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748465,6 +748902,8 @@ FUN_5cdaf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cdb20 PROC
 
             push ECX
@@ -748519,6 +748958,10 @@ $L_5cdb88::
             pop ECX
             ret 4
 FUN_5cdb20 ENDP
+ELSE
+EXTERN @Shadows_At@12:PROC
+FUN_5cdb20 TEXTEQU <@Shadows_At@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748534,6 +748977,8 @@ FUN_5cdb20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cdba0 PROC
 
             push ESI
@@ -748554,6 +748999,10 @@ $L_5cdbc3::
             pop ESI
             ret 4
 FUN_5cdba0 ENDP
+ELSE
+EXTERN @Shadows_Add@12:PROC
+FUN_5cdba0 TEXTEQU <@Shadows_Add@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748564,6 +749013,8 @@ FUN_5cdba0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cdbd0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -748577,6 +749028,10 @@ $L_5cdbee::
 
             ret 4
 FUN_5cdbd0 ENDP
+ELSE
+EXTERN @Shadows_SetOwner@12:PROC
+FUN_5cdbd0 TEXTEQU <@Shadows_SetOwner@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748593,11 +749048,17 @@ FUN_5cdbd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cdc00 PROC
 
             mov EAX,DWORD PTR [$L_70ebf8]
             ret 
 FUN_5cdc00 ENDP
+ELSE
+EXTERN _Get70ebf8:PROC
+FUN_5cdc00 TEXTEQU <_Get70ebf8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748609,6 +749070,8 @@ FUN_5cdc00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5cdc10 PROC
 
             push ESI
@@ -748641,6 +749104,10 @@ FUN_5cdc10 PROC
             pop ESI
             ret 
 FUN_5cdc10 ENDP
+ELSE
+EXTERN @TreeShadow_Construct@8:PROC
+FUN_5cdc10 TEXTEQU <@TreeShadow_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -749419,6 +749886,8 @@ $L_5cdf90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5ce540 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -749427,6 +749896,10 @@ FUN_5ce540 PROC
             mov DWORD PTR [$L_67fa64],ECX
             ret 
 FUN_5ce540 ENDP
+ELSE
+EXTERN _Set67fa60:PROC
+FUN_5ce540 TEXTEQU <_Set67fa60>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -749440,6 +749913,8 @@ FUN_5ce540 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vrappl.cpp, nmake ASM_VRAPPL=1 assembles the original
+IFDEF ASM_VRAPPL
 FUN_5ce560 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -749467,6 +749942,10 @@ FUN_5ce560 PROC
             nop
             nop
 FUN_5ce560 ENDP
+ELSE
+EXTERN @Light_Construct@16:PROC
+FUN_5ce560 TEXTEQU <@Light_Construct@16>
+ENDIF
 $L_5ce590 PROC
 
             push ESI

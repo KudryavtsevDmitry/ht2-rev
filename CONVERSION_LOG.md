@@ -53,3 +53,4 @@ showed the task pool freeing a queued node before the application destructor
 used it. The game now destroys its views in its ExitInstance hook, before
 static pool teardown. The MFC ExitInstance and the C runtime remain intact.
 The smoke test now fails on a nonzero process exit code.
+| Window controls, msavi sound stream, keyed tables, music, tree shadows | 78 | 4,960 | New `gui.cpp` (ASM_GUI: control child lists, selection, row/column layout, constructors) and `vrappl.cpp` (ASM_VRAPPL: list counters, AVI DirectSound stream fill/restore, keyed 10-bucket tables, music start/stop, record file markers, tree branches and circle shadows). | C++ build; convention check of every block; drive test (New Game, 12 s driving, exit 0). |

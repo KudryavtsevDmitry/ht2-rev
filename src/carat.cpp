@@ -40,7 +40,7 @@ extern "C" int __fastcall Lights_Release(BYTE* self, void*, int a);   // aeffect
 ASM_PROC(FUN_50c010)
 extern "C" void __fastcall CGameApp_SetMousePos(void* app, void*, int x, int y);   // gameapp.cpp
 ASM_PROC(FUN_5d85f0)    // window: its rectangle
-ASM_PROC(FUN_5bd5a0)
+extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
 ASM_PROC(FUN_5bd5e0)
 ASM_PROC(FUN_5c13a0)    // avi: open
 ASM_PROC(FUN_5d89e0)
@@ -763,8 +763,8 @@ extern "C" int __cdecl Loading_Step()
 
 ASM_PROC(FUN_5dc230)
 ASM_PROC(FUN_5dae90)
-ASM_PROC(FUN_5c43c0)
-ASM_PROC(FUN_5c0cf0)
+extern "C" void FUN_5c43c0(); KING_ALIAS("_FUN_5c43c0", "@Rec_Mark@8")
+extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
 ASM_PROC(FUN_51d0e0)
 ASM_PROC(FUN_5d8610)
 ASM_PROC(FUN_531000)

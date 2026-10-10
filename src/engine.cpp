@@ -25,7 +25,7 @@ extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, 
 ASM_PROC(FUN_44c710)    // vector<12 bytes>::insert_aux
 ASM_PROC(FUN_4a1f10)
 ASM_PROC(FUN_5c53e0)
-ASM_PROC(FUN_5c5310)
+extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
 ASM_PROC(FUN_5dbbb0)
 ASM_PROC(FUN_5c3800)
 ASM_PROC(FUN_52e740)
