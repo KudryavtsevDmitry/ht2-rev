@@ -498,3 +498,61 @@ finish:
     F(BYTE*, self, 4) = 0;
     return (DWORD)(firstExhausted ? target : previous);
 }
+
+// Marine task state and registration helpers.
+ASM_VAR(DWORD, g_marineStartDelay, $L_653008)
+extern "C" BYTE* __fastcall MarineTask_SetMode(BYTE* self, void*, DWORD mode)
+{
+    BYTE* mesh = F(BYTE*, self, 0);
+    F(DWORD, F(void*, mesh, 4), 116) = mode;
+    return mesh;
+}
+extern "C" DWORD __fastcall MarineTask_GetMode(BYTE* self, void*)
+{
+    return F(DWORD, self, 116);
+}
+extern "C" DWORD __fastcall MarineTask_Activate(BYTE* self, void*, DWORD immediate)
+{
+    if (F(int, F(void*, self, 112), 2992) > 5) {
+        F(DWORD, self, 120) = 0;
+        F(DWORD, self, 156) = (!immediate && !F(DWORD, self, 116)) ? 0 : g_marineStartDelay;
+        F(DWORD, self, 116) = 1;
+        F(DWORD, self, 132) = 0;
+        return 0;
+    }
+    F(DWORD, self, 120) = 1;
+    if (F(DWORD, self, 116) != 1) F(DWORD, self, 156) = g_marineStartDelay;
+    F(DWORD, self, 116) = 1;
+    F(DWORD, self, 132) = 0;
+    return 1;
+}
+extern "C" DWORD __fastcall MarineTask_Deactivate(BYTE* self, void*, DWORD immediate)
+{
+    F(DWORD, self, 156) = (F(DWORD, self, 116) == 1 && !immediate) ? g_marineStartDelay : 0;
+    F(DWORD, self, 116) = 0;
+    return 0;
+}
+extern "C" DWORD __fastcall MarineTask_SetPendingValue(BYTE* self, void*, DWORD value)
+{
+    F(DWORD, self, 128) = 1;
+    F(DWORD, self, 152) = value;
+    return value;
+}
+extern "C" BYTE* __fastcall MarineTask_ClearRegistration(BYTE* self, void*)
+{
+    BYTE* registration = F(BYTE*, self, 16);
+    F(DWORD, registration, 4) = 0;
+    return registration;
+}
+extern "C" DWORD __fastcall MarineTask_SetFirstBounds(BYTE* self, void*, DWORD first, DWORD second)
+{
+    F(DWORD, self, 44) = first;
+    F(DWORD, self, 48) = second;
+    return first;
+}
+extern "C" DWORD __fastcall MarineTask_SetSecondBounds(BYTE* self, void*, DWORD first, DWORD second)
+{
+    F(DWORD, self, 52) = first;
+    F(DWORD, self, 56) = second;
+    return first;
+}
