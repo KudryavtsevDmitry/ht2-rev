@@ -11,7 +11,7 @@ $sdkLib = Join-Path (Split-Path (Split-Path $sdk -Parent) -Parent) ('Lib\' + (Sp
 $flags = @('/nologo', '/c', '/O2', '/GS-', '/Zl', "/I$vc\include", "/I$sdk\um", "/I$sdk\shared", "/I$sdk\ucrt", '/arch:IA32')
 $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
 $body = $source.Substring($source.IndexOf('// Priority queues specific'), $source.IndexOf('// Intrusive queue link manipulation') - $source.IndexOf('// Priority queues specific'))
-$header = "#include `"../src/king.h`"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nASM_PROC(FUN_60f690)`nASM_PROC(FUN_6136f0)`n"
+$header = "#include `"../src/king.h`"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nASM_PROC(FUN_60f690)`nextern `"C`" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);`n"
 $header += 'extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);' + "`n" + 'extern "C" DWORD __fastcall MarineQueue_InsertNode(BYTE*,void*,BYTE*);' + "`n" + 'extern "C" DWORD __fastcall MarineQueue_InsertEdge(BYTE*,void*,BYTE*);' + "`n"
 $cpp = Join-Path $outputDir 'marine-queue-actual.cpp'
 Set-Content $cpp ($header + $body)

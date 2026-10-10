@@ -12,14 +12,14 @@ extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*, void*, BYTE*, DWO
 extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*, void*);
 ASM_PROC(FUN_605900)
 extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
-ASM_PROC(FUN_6136f0)
+extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);
 ASM_PROC(FUN_606750)
 ASM_PROC(FUN_6069d0)
 ASM_PROC(FUN_60aad0)
 ASM_PROC(FUN_60aa60)
 extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*, void*, BYTE*, DWORD);
-ASM_PROC(FUN_6137d0)
+extern "C" DWORD __fastcall MarineQueue_Empty(BYTE*,void*);
 ASM_PROC(FUN_606760)
 ASM_VAR(DWORD, g_marineRefinementEnabled, $L_685abc)
 ASM_VAR(DWORD, g_marineRefinementLimit, $L_725e28)
@@ -148,7 +148,7 @@ extern "C" void __fastcall MarineGreed_RemoveNode(BYTE* self, void*, BYTE* node)
             F(DWORD, F(BYTE*, F(BYTE*, pair, 0), 12), 56) = 0;
             F(DWORD, F(BYTE*, F(BYTE*, pair, 4), 12), 56) = 0;
         }
-        CallThis(FUN_6136f0, F(void*, self, 28), edge);
+        MarineQueue_RemoveLink(F(BYTE*, self, 28),0,edge);
         edge = F(BYTE*, node, 56);
         if (edge) {
             CallThis(FUN_606750, edge);
@@ -218,7 +218,7 @@ extern "C" int __fastcall MarineGreed_RefreshPriorities(BYTE* self, void*)
 
 extern "C" int __fastcall MarineGreed_Refine(BYTE* self, void*)
 {
-    if (!g_marineRefinementEnabled || CallThis<int>(FUN_6137d0, F(void*, self, 28)))
+    if (!g_marineRefinementEnabled || MarineQueue_Empty(F(BYTE*,self,28),0))
         return 0;
     BYTE* edge = MarineQueue_TopEdge(F(BYTE*, self, 28), 0);
     float edgeScore = F(float, edge, 72);
@@ -227,7 +227,7 @@ extern "C" int __fastcall MarineGreed_Refine(BYTE* self, void*)
         return 0;
     unsigned desired = CallVirt<unsigned>(F(void*, self, 4), 8);
     for (unsigned i = 0; i < g_marineRefinementLimit; ++i) {
-        if (CallThis<int>(FUN_6137d0, F(void*, self, 28)))
+        if (MarineQueue_Empty(F(BYTE*,self,28),0))
             break;
         edge = MarineQueue_TopEdge(F(BYTE*, self, 28), 0);
         CallC(FUN_606760, edge, self);
@@ -271,7 +271,7 @@ extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE* self, void*, BYTE*
 }
 extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE* self, void*, BYTE* edge, DWORD priorityBits)
 {
-    CallThis(FUN_6136f0, self, edge);
+    MarineQueue_RemoveLink(self,0,edge);
     F(DWORD, edge, 72) = priorityBits;
     MarineQueue_InsertEdge(self, 0, edge);
     return ++F(DWORD, self, 8);
@@ -1404,4 +1404,114 @@ extern "C" void __fastcall MarineParticlePool_Render(BYTE* self,void*,BYTE* devi
         MarineParticle_Update(F(BYTE*,self,12)+offset,0,now);
     }
     CallStd((void(*)())F(void*,F(void*,device,0),44),device,1,g_mpool_restoreMatrix.v);
+}
+
+// Marine mesh work-item priority queues and shared link removal.
+extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE* self,void*,BYTE* node)
+{
+    BYTE* first=F(BYTE*,self,0),*last=F(BYTE*,self,4);
+    if(first && F(BYTE*,first,0)==node && F(BYTE*,first,4)==node) {
+        if(first==node) F(BYTE*,self,0)=0;
+        else {F(BYTE*,first,4)=first;F(BYTE*,F(BYTE*,self,0),0)=first;}
+    } else if(last && F(BYTE*,last,0)==node && F(BYTE*,last,4)==node) {
+        if(last==node) F(BYTE*,self,4)=0;
+        else {F(BYTE*,last,4)=last;F(BYTE*,F(BYTE*,self,4),0)=last;}
+    } else {
+        if(first==node) F(BYTE*,self,0)=F(BYTE*,node,0);
+        if(last==node) F(BYTE*,self,4)=F(BYTE*,node,0);
+        F(BYTE*,F(BYTE*,node,0),4)=F(BYTE*,node,4);
+        F(BYTE*,F(BYTE*,node,4),0)=F(BYTE*,node,0);
+    }
+    F(BYTE*,node,4)=node;F(BYTE*,node,0)=node;
+    return node;
+}
+extern "C" DWORD __fastcall MarineQueue_Empty(BYTE* self,void*)
+{
+    return !F(DWORD,self,0) && !F(DWORD,self,4);
+}
+extern "C" DWORD __fastcall MarineQueue_RebuildWorkItems(BYTE* self, void*)
+{
+    BYTE* second = F(BYTE*, self, 4);
+    F(DWORD, self, 8) = 0;
+    if (!second) return 0;
+    BYTE* first = F(BYTE*, self, 0);
+    if (!first) {
+        F(BYTE*, self, 0) = second;
+        F(BYTE*, self, 4) = 0;
+        return (DWORD)second;
+    }
+    BYTE* firstTail = F(BYTE*, first, 4);
+    BYTE* secondTail = F(BYTE*, second, 4);
+    BYTE* target;
+    bool firstExhausted = false;
+    while (true) {
+        while (!(F(float, first, 104) >= F(float, second, 104))) {
+            if (first == firstTail) {
+                target = F(BYTE*, self, 0);
+                firstExhausted = true;
+                goto finish;
+            }
+            first = F(BYTE*, first, 0);
+        }
+        BYTE* runEnd = second;
+        while (F(float, first, 104) >= F(float, runEnd, 104)) {
+            if (runEnd == secondTail) {
+                if (first == F(BYTE*, self, 0)) F(BYTE*, self, 0) = second;
+                target = first;
+                goto finish;
+            }
+            runEnd = F(BYTE*, runEnd, 0);
+        }
+        if (first == F(BYTE*, self, 0)) F(BYTE*, self, 0) = second;
+        MarineQueue_SpliceRun(second, runEnd, first);
+        second = runEnd;
+    }
+finish:
+    BYTE* previous = F(BYTE*, target, 4);
+    F(BYTE*, second, 4) = previous;
+    F(BYTE*, secondTail, 0) = target;
+    F(BYTE*, previous, 0) = second;
+    F(BYTE*, target, 4) = secondTail;
+    F(BYTE*, self, 4) = 0;
+    return (DWORD)(firstExhausted ? target : previous);
+}
+extern "C" DWORD __fastcall MarineQueue_InsertWorkItem(BYTE* self, void*, BYTE* edge)
+{
+    BYTE* last = F(BYTE*, self, 4);
+    if (!last) {
+        F(BYTE*, self, 4) = edge;
+    } else {
+        float score = F(float, edge, 104);
+        if (F(float, last, 104) >= score) {
+            MarineQueue_LinkBefore(last, edge);
+            F(BYTE*, self, 4) = edge;
+        } else {
+            BYTE* position = last;
+            if (F(float, F(BYTE*, last, 4), 104) > score) {
+                position = F(BYTE*, last, 0);
+                while (!(F(float, position, 104) >= score))
+                    position = F(BYTE*, position, 0);
+            }
+            MarineQueue_LinkBefore(position, edge);
+        }
+    }
+    DWORD count = ++F(DWORD, self, 8);
+    if(count<200) return count;
+    bool hasFirst=F(DWORD,self,0)!=0;
+    DWORD result=MarineQueue_RebuildWorkItems(self,0);
+    return hasFirst?result:count;
+}
+extern "C" DWORD __fastcall MarineQueue_SetWorkPriority(BYTE* self,void*,BYTE* node,DWORD priority)
+{
+    MarineQueue_RemoveLink(self,0,node);
+    F(DWORD,node,104)=priority;
+    MarineQueue_InsertWorkItem(self,0,node);
+    return ++F(DWORD,self,8);
+}
+extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE* self,void*)
+{
+    BYTE* first=F(BYTE*,self,0),*last=F(BYTE*,self,4);
+    if(!first) return last;
+    if(!last) return first;
+    return !(F(float,last,104)>=F(float,first,104))?last:first;
 }

@@ -879282,6 +879282,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613510 PROC
 
             push ECX
@@ -879412,6 +879413,10 @@ $L_6135e2::
             pop ECX
             ret 
 FUN_613510 ENDP
+ELSE
+EXTERN @MarineQueue_RebuildWorkItems@8:PROC
+FUN_613510 TEXTEQU <@MarineQueue_RebuildWorkItems@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -879421,6 +879426,7 @@ FUN_613510 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6135f0 PROC
 
             push ESI
@@ -879451,7 +879457,12 @@ FUN_6135f0 PROC
             nop
             nop
 FUN_6135f0 ENDP
+ELSE
+EXTERN @MarineQueue_SetWorkPriority@16:PROC
+FUN_6135f0 TEXTEQU <@MarineQueue_SetWorkPriority@16>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613620 PROC
 
             push ESI
@@ -879546,6 +879557,10 @@ $L_6136de::
             pop ESI
             ret 4
 FUN_613620 ENDP
+ELSE
+EXTERN @MarineQueue_InsertWorkItem@12:PROC
+FUN_613620 TEXTEQU <@MarineQueue_InsertWorkItem@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -879561,6 +879576,7 @@ FUN_613620 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6136f0 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -879650,12 +879666,17 @@ $L_613773::
             mov DWORD PTR [EAX],EAX
             ret 4
 FUN_6136f0 ENDP
+ELSE
+EXTERN @MarineQueue_RemoveLink@12:PROC
+FUN_6136f0 TEXTEQU <@MarineQueue_RemoveLink@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613790 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -879703,6 +879724,10 @@ $L_6137c9::
 
             ret 
 FUN_613790 ENDP
+ELSE
+EXTERN @MarineQueue_TopWorkItem@8:PROC
+FUN_613790 TEXTEQU <@MarineQueue_TopWorkItem@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -879710,6 +879735,7 @@ FUN_613790 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6137d0 PROC
 
             cmp DWORD PTR [ECX],0
@@ -879726,6 +879752,10 @@ $L_6137e2::
             xor EAX,EAX
             ret 
 FUN_6137d0 ENDP
+ELSE
+EXTERN @MarineQueue_Empty@8:PROC
+FUN_6137d0 TEXTEQU <@MarineQueue_Empty@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

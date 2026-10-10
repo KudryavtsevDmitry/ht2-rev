@@ -27,6 +27,7 @@ extern "C" void __fastcall Insert(BYTE* self,void*,BYTE* item)
 }
 KING_ALIAS("FUN_60f690","@Remove@12")
 KING_ALIAS("FUN_6136f0","@Remove@12")
+KING_ALIAS("@MarineQueue_RemoveLink@12","@Remove@12")
 KING_ALIAS("FUN_60f520","@Insert@12")
 KING_ALIAS("FUN_60f900","@Insert@12")
 KING_ALIAS("@MarineQueue_RemoveNode@12","@Remove@12")
