@@ -105,7 +105,7 @@ ASM_PROC(FUN_5b6710)    // CSurface::GetRect
 ASM_PROC(FUN_5b64c0)    // CSurface::GetState84
 ASM_PROC(FUN_5b64e0)    // CSurface::SetState84
 ASM_PROC(FUN_5b6330)    // Rect::Contains
-ASM_PROC(FUN_5d21b0)    // list node: unlink
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // list node: unlink
 ASM_PROC(FUN_5d8630)    // CWindow::Clear
 ASM_PROC(FUN_5d88c0)    // CWindow::Present
 ASM_PROC(FUN_5d3460)    // ObjectContainer::DeleteAll

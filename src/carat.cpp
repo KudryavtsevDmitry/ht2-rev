@@ -29,7 +29,7 @@ extern "C" void __cdecl Carat_Draw5b86c0(int a, int b, int c, int d);
 KING_ALIAS("_Carat_Draw5b86c0", "FUN_5b86c0")
 extern "C" BYTE* __cdecl Messages_Clear1276();                     // copter.cpp
 extern "C" int __cdecl Carat_Resource(int id);
-KING_ALIAS("_Carat_Resource", "FUN_5d2e50")
+KING_ALIAS("_Carat_Resource", "_Table71e858_Get")
 extern "C" void __cdecl Carat_51d8f0(int a, int b);
 KING_ALIAS("_Carat_51d8f0", "FUN_51d8f0")
 extern "C" int __cdecl Carat_5d3ab0();
@@ -770,7 +770,7 @@ ASM_PROC(FUN_5d8610)
 ASM_PROC(FUN_531000)
 ASM_PROC(FUN_5fd160)
 ASM_PROC(FUN_5fd3e0)
-ASM_PROC(FUN_5ffb20)
+extern "C" void FUN_5ffb20(); KING_ALIAS("_FUN_5ffb20", "_Obj723d44_Delete")
 extern "C" void __fastcall Wasm_598d80(BYTE* self, void*);      // wasm.cpp
 ASM_VAR(BYTE*, g_6cec90, $L_6cec90)
 ASM_VAR(AsmLabel, g_6d19fa, $L_6d19fa)

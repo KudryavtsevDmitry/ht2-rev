@@ -16,9 +16,9 @@
 typedef char AsmLabel[1];
 extern "C" int __cdecl rand();
 
-ASM_PROC(FUN_5d3440)
+extern "C" void FUN_5d3440(); KING_ALIAS("_FUN_5d3440", "@Handle_Count@8")
 ASM_PROC(FUN_5d33d0)
-ASM_PROC(FUN_5d3430)
+extern "C" void FUN_5d3430(); KING_ALIAS("_FUN_5d3430", "@Handle_Call3790@8")
 ASM_PROC(FUN_4e48e2)
 ASM_PROC(FUN_598bd0)
 ASM_PROC(FUN_59a780)    // constructor of the effects' base class

@@ -16,8 +16,8 @@ typedef char AsmLabel[1];
 typedef DWORD Dwords[1];
 extern "C" int __cdecl rand();
 
-ASM_PROC(FUN_5d21b0)    // unlink from its list
-ASM_PROC(FUN_5d2190)    // link into list (thiscall node, list)
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
+extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
 ASM_PROC(FUN_5c36e0)
@@ -84,6 +84,29 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 {
     return (*(R(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
 }
+
+ASM_PROC(FUN_5cfb30)
+ASM_PROC(FUN_5d2ac0)
+ASM_PROC(FUN_6037e0)    // time in seconds, returns double
+ASM_PROC(FUN_5d35b0)
+ASM_PROC(FUN_5d3790)
+ASM_PROC(FUN_5d3080)    // next sibling
+ASM_PROC(FUN_5d38c0)
+ASM_PROC(FUN_404420)
+ASM_VAR(int, g_67faa0, $L_67faa0)
+ASM_VAR(int, g_71e800, $L_71e800)
+ASM_VAR(int, g_71e7d4, $L_71e7d4)
+ASM_VAR(int, g_71e7e4, $L_71e7e4)
+ASM_VAR(int, g_71e844, $L_71e844)
+ASM_VAR(AsmLabel, g_pool71e830, $L_71e830)
+ASM_VAR(AsmLabel, g_pool7200c0, $L_7200c0)
+typedef int Ints[1];
+ASM_VAR(Ints, g_71e858, $L_71e858)
+ASM_VAR(AsmLabel, g_720080, $L_720080)
+ASM_VAR(AsmLabel, g_vtbl651eb4, $L_651eb4)
+ASM_VAR(BYTE*, g_723d44, $L_723d44)
+ASM_VAR(CRITICAL_SECTION, g_cs723b40, $L_723b40)
+ASM_VAR(AsmLabel, g_683c58, $L_683c58)
 
 extern "C" {
 
@@ -842,6 +865,350 @@ BYTE* __fastcall Light_Construct(BYTE* self, void*, int a, int b)
     F(int, self, 8) = 0;
     F(void*, self, 0) = g_vtbl651db0;
     F(int, self, 24) = 0;
+    return self;
+}
+
+}
+
+extern "C" {
+
+// [FUN_5cf3f0]
+void __fastcall Obj_Notify104(BYTE* self, void*)
+{
+    BYTE* o = F(BYTE*, self, 96);
+    if (o)
+        CallVirt(o, 24, self + 104);
+}
+
+// [FUN_5cfab0]
+int __cdecl Blit_WithKey(int a, int b, int c, int d, int e, int f, int key)
+{
+    g_67faa0 = key;
+    return CallC<int>(FUN_5cfb30, a, b, c, d, e, f);
+}
+
+// [FUN_5cfae0]
+int __cdecl Blit_WithAlpha(int a, int b, int c, int d, int e, int f, int alpha)
+{
+    g_71e800 = alpha;
+    int r = CallC<int>(FUN_5cfb30, a, b, c, d, e, f);
+    g_71e800 = 0;
+    return r;
+}
+
+// [FUN_5cfb20]
+void __cdecl Set71e7d4(int v)
+{
+    g_71e7d4 = v;
+}
+
+// [FUN_5d2030]
+int __cdecl Get71e7e4()
+{
+    return g_71e7e4;
+}
+
+// [FUN_5d2100] a zeroed shared memory file
+void __fastcall MapFile_Open(BYTE* self, void*, const char* name, DWORD size)
+{
+    if (F(BYTE, self, 20))
+        return;
+    F(DWORD, self, 8) = size;
+    HANDLE h = CreateFileA(name, 0xC0000000, 1, 0, 2, 0x90000000, 0);
+    F(HANDLE, self, 0) = h;
+    if (h == INVALID_HANDLE_VALUE)
+        return;
+    HANDLE m = CreateFileMappingA(h, 0, 4, 0, F(DWORD, self, 8), 0);
+    F(HANDLE, self, 4) = m;
+    BYTE* v = (BYTE*)MapViewOfFile(m, 0xF001F, 0, 0, 0);
+    F(int, self, 16) = 0;
+    F(BYTE*, self, 12) = v;
+    if (v)
+        memset(v, 0, F(DWORD, self, 8));
+    F(BYTE, self, 20) = 1;
+}
+
+// [FUN_5d2190] links self after list
+void __fastcall Node_Link(BYTE* self, void*, BYTE* list)
+{
+    F(BYTE*, self, 4) = list;
+    BYTE* n = F(BYTE*, list, 8);
+    F(BYTE*, self, 8) = n;
+    if (n)
+        F(BYTE*, n, 4) = self;
+    F(BYTE*, list, 8) = self;
+}
+
+// [FUN_5d21b0]
+void __fastcall Node_Unlink(BYTE* self, void*)
+{
+    BYTE* p = F(BYTE*, self, 4);
+    if (p)
+        F(BYTE*, p, 8) = F(BYTE*, self, 8);
+    BYTE* n = F(BYTE*, self, 8);
+    if (n)
+        F(BYTE*, n, 4) = F(BYTE*, self, 4);
+    F(BYTE*, self, 4) = 0;
+    F(BYTE*, self, 8) = 0;
+}
+
+// [FUN_5d2370]
+void __fastcall NameHash_Clear(BYTE* self, void*)
+{
+    if (!g_71e844)
+        return;
+    for (int i = 0; i < F(int, self, 4); i++) {
+        if (!F(BYTE**, self, 8)[i])
+            continue;
+        BYTE* n;
+        while ((n = F(BYTE*, F(BYTE**, self, 8)[i], 8)) != 0) {
+            Node_Unlink(n, 0);
+            CallVirt(n, 0, 1);
+        }
+        BYTE* b = F(BYTE**, self, 8)[i];
+        if (b)
+            CallVirt(b, 0, 1);
+        F(BYTE**, self, 8)[i] = 0;
+    }
+    if (F(BYTE*, self, 0)) {
+        BYTE* n;
+        while ((n = F(BYTE*, F(BYTE*, self, 0), 8)) != 0) {
+            Node_Unlink(n, 0);
+            CallVirt(n, 0, 1);
+        }
+        if (F(BYTE*, self, 0))
+            CallVirt(F(BYTE*, self, 0), 0, 1);
+        F(BYTE*, self, 0) = 0;
+    }
+}
+
+// [FUN_5d2500]
+unsigned __fastcall Hash_Name(BYTE* self, void*, const BYTE* s)
+{
+    unsigned h = 0;
+    if (!s)
+        return 0;
+    while (*s)
+        h += *s++;
+    return h % 500;
+}
+
+// [FUN_5d2720]
+int __fastcall Hash_Lookup(BYTE* self, void*, const char* name, int* out)
+{
+    if (!name) {
+        *out = 0;
+        return 0;
+    }
+    for (BYTE* e = F(BYTE**, self, 8)[Hash_Name(self, 0, (const BYTE*)name)]; e; e = F(BYTE*, e, 8)) {
+        const char* a = name;
+        const char* b = F(const char*, e, 12);
+        while (*a == *b && *a) {
+            a++;
+            b++;
+        }
+        if (*a == *b) {
+            *out = F(int, e, 16);
+            return 1;
+        }
+    }
+    *out = 0;
+    return 0;
+}
+
+// [FUN_5d2a20] count blocks of size bytes and a used flag for each
+BYTE* __fastcall Pool_Init(BYTE* self, void*, DWORD size, DWORD count)
+{
+    F(DWORD, self, 0) = size;
+    F(DWORD, self, 4) = count;
+    F(void*, self, 8) = operator new(size * count);
+    F(BYTE*, self, 12) = (BYTE*)operator new(count);
+    for (DWORD i = 0; i < count; i++)
+        F(BYTE*, self, 12)[i] = 0;
+    F(int, self, 16) = 0;
+    return self;
+}
+
+// [FUN_5d29b0]
+void __cdecl Pool71e830_Init()
+{
+    Pool_Init((BYTE*)g_pool71e830, 0, 24, 60000);
+}
+
+// [FUN_5d2b20]
+DWORD __fastcall Pool_Used(BYTE* self, void*, BYTE* p)
+{
+    return F(BYTE*, self, 12)[(DWORD)(p - F(BYTE*, self, 8)) / F(DWORD, self, 0)];
+}
+
+// [FUN_5d2e50]
+int __cdecl Table71e858_Get(int i)
+{
+    if (i >= 1000 || i < 0)
+        return 0;
+    return g_71e858[i];
+}
+
+// [FUN_5d2ec0]
+void __cdecl Set720080(const char* s)
+{
+    char* d = g_720080;
+    while ((*d++ = *s++) != 0) {
+    }
+}
+
+// [FUN_5d2fa0]
+void __cdecl Time_NowMs(double* out)
+{
+    *out = CallC<double>(FUN_6037e0) * 1000.0;
+}
+
+// [FUN_5d2fc0] *last becomes the time since *last (not negative), added to *acc
+void __cdecl Time_Delta(double* last, double* acc)
+{
+    double t = CallC<double>(FUN_6037e0) * 1000.0 - *last;
+    if (!(t >= 0.0f))
+        t = 0.0f;
+    *acc = t + *acc;
+    *last = t;
+}
+
+// [FUN_5d3010]
+void __cdecl Pool7200c0_Init()
+{
+    Pool_Init((BYTE*)g_pool7200c0, 0, 24, 500);
+}
+
+// [FUN_5d3070]
+int __cdecl Pool7200c0_Free(void* p)
+{
+    return CallThis<int>(FUN_5d2ac0, g_pool7200c0, p);
+}
+
+// [FUN_5d3090]
+BYTE* __fastcall Event_Construct(BYTE* self, void*, int a, int b)
+{
+    F(int, self, 12) = a;
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = g_vtbl651eb4;
+    F(int, self, 16) = b;
+    F(int, self, 20) = 0;
+    return self;
+}
+
+// [FUN_5d30e0]
+BYTE* __fastcall Event_Construct3(BYTE* self, void*, int a, int b, int c)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = g_vtbl651eb4;
+    F(int, self, 12) = a;
+    F(int, self, 16) = b;
+    F(int, self, 20) = c;
+    return self;
+}
+
+// [FUN_5d33b0]
+void __fastcall Handle_Release(BYTE* self, void*)
+{
+    if (F(BYTE*, self, 12))
+        CallThis(FUN_5d35b0, F(BYTE*, self, 12), self);
+    F(int, self, 12) = 0;
+}
+
+// [FUN_5d3430]
+void __fastcall Handle_Call3790(BYTE* self, void*)
+{
+    if (F(BYTE*, self, 12))
+        CallThis(FUN_5d3790, F(BYTE*, self, 12), self);
+}
+
+// [FUN_5d3820] how many queued events have +12 == key
+int __fastcall Queue_Count(BYTE* self, void*, int key)
+{
+    int n = 0;
+    for (BYTE* e = F(BYTE*, self, 12); e; e = CallThis<BYTE*>(FUN_5d3080, e))
+        if (F(int, e, 12) == key)
+            n++;
+    return n;
+}
+
+// [FUN_5d3440]
+int __fastcall Handle_Count(BYTE* self, void*)
+{
+    BYTE* q = F(BYTE*, self, 12);
+    return q ? Queue_Count(q, 0, (int)self) : 0;
+}
+
+// [FUN_5d3630]
+void __fastcall Queue_Log(BYTE* self, void*)
+{
+    for (BYTE* e = F(BYTE*, self, 12); e; e = CallThis<BYTE*>(FUN_5d3080, e))
+        Log(F(const char*, F(BYTE*, e, 12), 28), F(int, e, 20));
+}
+
+// [FUN_5d38a0] the clock in ms
+int __fastcall Queue_NowMs(BYTE* self, void*)
+{
+    double* t = F(double*, self, 24);
+    if (!t)
+        return 0;
+    return (int)(*t * 1000.0);
+}
+
+// [FUN_5d3850] runs the due events of both queues
+void __fastcall Queue_Tick(BYTE* self, void*)
+{
+    BYTE* e;
+    while ((e = F(BYTE*, self, 12)) != 0 && F(int, e, 16) <= F(int, self, 0))
+        CallThis(FUN_5d38c0, self, e);
+    while ((e = F(BYTE*, self, 8)) != 0 && F(int, e, 16) <= Queue_NowMs(self, 0))
+        CallThis(FUN_5d38c0, self, e);
+    F(int, self, 0) = F(int, self, 0) + 1;
+}
+
+// [FUN_5d3a60]
+void __fastcall Queue_Remove(BYTE* self, void*, BYTE* e)
+{
+    if (e == F(BYTE*, self, 12)) {
+        F(BYTE*, self, 12) = CallThis<BYTE*>(FUN_5d3080, e);
+    } else if (e == F(BYTE*, self, 8)) {
+        F(BYTE*, self, 8) = CallThis<BYTE*>(FUN_5d3080, e);
+    } else {
+        Node_Unlink(e, 0);
+        return;
+    }
+    BYTE* n = F(BYTE*, e, 8);
+    if (n)
+        F(int, n, 4) = 0;
+}
+
+// [FUN_5ffb20]
+int __cdecl Obj723d44_Delete()
+{
+    if (g_723d44)
+        CallVirt(g_723d44, 0, 1);
+    g_723d44 = 0;
+    return 0;
+}
+
+// [FUN_5ffc30]
+int __cdecl Set683c58(DWORD lo, DWORD hi)
+{
+    EnterCriticalSection(&g_cs723b40);
+    ((DWORD*)g_683c58)[0] = lo;
+    ((DWORD*)g_683c58)[1] = hi;
+    LeaveCriticalSection(&g_cs723b40);
+    return 0;
+}
+
+// [FUN_600540]
+BYTE* __fastcall Obj600540_Delete(BYTE* self, void*, int flags)
+{
+    CallThis(FUN_404420, self);
+    if (flags & 1)
+        operator delete(self);
     return self;
 }
 

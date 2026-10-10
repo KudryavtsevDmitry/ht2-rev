@@ -24,7 +24,7 @@ ASM_PROC(FUN_5d3290)    // destructor of the notice's base class
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5b9660)
 ASM_PROC(FUN_5b6210)
-ASM_PROC(FUN_5d2e50)    // a text of the resources
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
 ASM_PROC(FUN_5ea170)    // draws a text
 ASM_PROC(FUN_440dd0)
 ASM_FUNC(Copter_EnumCallback, $L_56f450)
