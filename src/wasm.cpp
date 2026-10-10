@@ -23,7 +23,7 @@ ASM_PROC(FUN_4e48e2)
 ASM_PROC(FUN_598bd0)
 ASM_PROC(FUN_59a780)    // constructor of the effects' base class
 ASM_PROC(FUN_59e2f0)    // constructor of the base class of FUN_59e9a0
-ASM_PROC(FUN_5cda50)    // sets a plane (a, b, c, d)
+extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Vec4_Assign@12")    // sets a plane (a, b, c, d)
 extern "C" BYTE* __fastcall Pool_Construct(BYTE* self, void*, int size);    // mmt.cpp
 
 ASM_VAR(BYTE*, g_faders, $L_6f66b0)             // the first fading object

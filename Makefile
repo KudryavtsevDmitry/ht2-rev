@@ -54,6 +54,8 @@ OUT = king.exe
 #   ASM_AIORDR    src\aiordr.cpp    aiordr
 #   ASM_ENGINE    src\engine.cpp    engine
 #   ASM_MARINE    src\marine.cpp, src\marineinit.cpp, src\marinegrid.cpp, src\marinemath.cpp, src\marinevertices.cpp, src\marineconstruct.cpp, src\gridbase.cpp, src\gridtopology.cpp    marine mesh processing
+#   ASM_GUI       src\gui.cpp       window controls
+#   ASM_VRAPPL    srcrappl.cpp    engine library: sound stream, tables, music, trees
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
@@ -84,6 +86,8 @@ ASM_CARPHYS = 1
 ASM_AIORDR = 1
 ASM_ENGINE = 1
 ASM_MARINE = 1
+ASM_GUI = 1
+ASM_VRAPPL = 1
 !ENDIF
 
 MLFLAGS =
@@ -175,7 +179,13 @@ MLFLAGS = $(MLFLAGS) /DASM_ENGINE
 !IFDEF ASM_MARINE
 MLFLAGS = $(MLFLAGS) /DASM_MARINE
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj aimisc.obj vehicle.obj scheval.obj wasm.obj copter.obj movingb.obj world.obj aimult.obj schitem.obj mmt.obj carphys.obj aiordr.obj engine.obj marine.obj marineinit.obj marinegrid.obj marinemath.obj marinevertices.obj marineconstruct.obj gridbase.obj gridtopology.obj
+!IFDEF ASM_GUI
+MLFLAGS = $(MLFLAGS) /DASM_GUI
+!ENDIF
+!IFDEF ASM_VRAPPL
+MLFLAGS = $(MLFLAGS) /DASM_VRAPPL
+!ENDIF
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj aimisc.obj vehicle.obj scheval.obj wasm.obj copter.obj movingb.obj world.obj aimult.obj schitem.obj mmt.obj carphys.obj aiordr.obj engine.obj marine.obj marineinit.obj marinegrid.obj marinemath.obj marinevertices.obj marineconstruct.obj gridbase.obj gridtopology.obj gui.obj vrappl.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
