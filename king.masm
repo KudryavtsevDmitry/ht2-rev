@@ -1,3 +1,11 @@
+PUBLIC $L_7242a0
+PUBLIC $L_724378
+PUBLIC $L_724374
+PUBLIC $L_652ee8
+PUBLIC $L_724370
+PUBLIC $L_652ee4
+PUBLIC $L_724298
+PUBLIC $L_652ee0
 PUBLIC $L_653118
 PUBLIC $L_652e5c
 PUBLIC $L_652e48
@@ -856005,6 +856013,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_607130 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -856027,6 +856036,10 @@ $L_607130 PROC
             mov DWORD PTR [ECX+8],EAX
             ret 8
 $L_607130 ENDP
+ELSE
+EXTERN @GridBase_SetCamera@16:PROC
+$L_607130 TEXTEQU <@GridBase_SetCamera@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856040,6 +856053,7 @@ $L_607130 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_607170 PROC
 
             push ESI
@@ -856059,9 +856073,14 @@ $L_607188::
             pop ESI
             ret 4
 $L_607170 ENDP
+ELSE
+EXTERN @GridBase_Delete@12:PROC
+$L_607170 TEXTEQU <@GridBase_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_607190 PROC
 
             push ESI
@@ -856087,6 +856106,10 @@ $L_6071b3::
             pop ESI
             ret 
 FUN_607190 ENDP
+ELSE
+EXTERN @GridBase_Destruct@8:PROC
+FUN_607190 TEXTEQU <@GridBase_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856098,6 +856121,7 @@ FUN_607190 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_6071c0 PROC
 
             push ESI
@@ -856136,9 +856160,14 @@ $L_6071f6::
             pop ESI
             ret 4
 $L_6071c0 ENDP
+ELSE
+EXTERN @GridBase_DeleteAlternate@12:PROC
+$L_6071c0 TEXTEQU <@GridBase_DeleteAlternate@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_607200 PROC
 
             jmp $L_607210
@@ -856160,8 +856189,13 @@ $L_607210::
             fstp DWORD PTR [$L_724298]
             ret 
 $L_607200 ENDP
+ELSE
+EXTERN _GridBase_InitScale:PROC
+$L_607200 TEXTEQU <_GridBase_InitScale>
+ENDIF
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_607220 PROC
 
             sub ESP,12
@@ -856219,6 +856253,10 @@ FUN_607220 PROC
             add ESP,12
             ret 12
 FUN_607220 ENDP
+ELSE
+EXTERN @GridBase_SetCameraAndOrigin@20:PROC
+FUN_607220 TEXTEQU <@GridBase_SetCameraAndOrigin@20>
+ENDIF
 ALIGN 16
 FUN_6072b0 PROC
 
@@ -856243,6 +856281,7 @@ FUN_6072c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_6072d0 PROC
 
             jmp $L_6072e0
@@ -856264,7 +856303,12 @@ $L_6072e0::
             fstp DWORD PTR [$L_724370]
             ret 
 $L_6072d0 ENDP
+ELSE
+EXTERN _GridBase_InitSecondaryScale:PROC
+$L_6072d0 TEXTEQU <_GridBase_InitSecondaryScale>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_6072f0 PROC
 
             jmp $L_607300
@@ -856287,6 +856331,10 @@ $L_607300::
             fstp DWORD PTR [$L_724374]
             ret 
 $L_6072f0 ENDP
+ELSE
+EXTERN _GridBase_InitBlend:PROC
+$L_6072f0 TEXTEQU <_GridBase_InitBlend>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856294,6 +856342,7 @@ $L_6072f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_607320 PROC
 
             jmp $L_607330
@@ -856316,8 +856365,13 @@ $L_607330::
             mov DWORD PTR [$L_724380],0
             ret 
 $L_607320 ENDP
+ELSE
+EXTERN _GridBase_InitOrigin:PROC
+$L_607320 TEXTEQU <_GridBase_InitOrigin>
+ENDIF
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_607350 PROC
 
             push EBX
@@ -856399,6 +856453,10 @@ $L_6073d1::
             pop EBX
             ret 8
 FUN_607350 ENDP
+ELSE
+EXTERN @TerrainCell_SetTriangles@16:PROC
+FUN_607350 TEXTEQU <@TerrainCell_SetTriangles@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856413,6 +856471,7 @@ FUN_607350 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_6073f0 PROC
 
             jmp $L_607400
@@ -856432,6 +856491,10 @@ $L_607400::
             mov DWORD PTR [$L_7242a0],0
             ret 
 $L_6073f0 ENDP
+ELSE
+EXTERN _GridBase_InitPending:PROC
+$L_6073f0 TEXTEQU <_GridBase_InitPending>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
