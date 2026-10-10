@@ -25,86 +25,244 @@ OUT = king.exe
 # Groups of functions rewritten in C++. Each switch makes king.masm assemble
 # the group's original procedures, so the assembly calls those again; the C++
 # code still calls the C++ functions.
-#   ASM_MAINLOOP  src\mainloop.cpp  the main loop
-#   ASM_GAMEAPP   src\gameapp.cpp   CGameApp, the engine's application class
-#   ASM_KINGAPP   src\kingapp.cpp   CKingApp, the game's application class
-#   ASM_INPUT     src\input.cpp     the input event queue
-#   ASM_CARAN     src\caran.cpp     engine, gearbox, driving resistance
-#   ASM_AITASK    src\aitask.cpp    the AI's game interface (AI_TASK.CPP)
-#   ASM_VECMATH   src\vecmath.cpp   vector, matrix and plane math
-#   ASM_AITRCE    src\aitrce.cpp    AI geometry, CRC and filters (src\aitrce.cpp)
-#   ASM_AIROAD    src\airoad.cpp    AI road ids (src\airoad.cpp)
-#   ASM_AIPLAY    src\aiplay.cpp    AI players (src\aiplay.cpp)
-#   ASM_AEFFECTS  src\aeffects.cpp  effects (src\aeffects.cpp)
-#   ASM_CAR2E     src\car2e.cpp     vehicle methods (src\car2e.cpp)
-#   ASM_CARAT     src\carat.cpp     game, menus and screens (src\carat.cpp)
-#   ASM_AIMAIN    src\aimain.cpp    AI main (src\aimain.cpp)
-#   ASM_AISTL     src\aistl.cpp     AI STL instances (src\aistl.cpp)
-#   ASM_AIMISC    src\aimisc.cpp    AI helpers (src\aimisc.cpp)
-#   ASM_VEHICLE   src\vehicle.cpp   vehicle: controls, vehicle list, flashing light
-#   ASM_SCHEVAL   src\scheval.cpp   scheval
-#   ASM_WASM      src\wasm.cpp      wasm
-#   ASM_COPTER    src\copter.cpp    copter
-#   ASM_MOVINGB   src\movingb.cpp   movingb
-#   ASM_WORLD     src\world.cpp     world
-#   ASM_AIMULT    src\aimult.cpp    aimult
-#   ASM_SCHITEM   src\schitem.cpp   schitem
-#   ASM_MMT       src\mmt.cpp       mmt
-#   ASM_CARPHYS   src\carphys.cpp   carphys
-#   ASM_AIORDR    src\aiordr.cpp    aiordr
-#   ASM_ENGINE    src\engine.cpp    engine
-#   ASM_MARINE    src\marine.cpp, src\marineinit.cpp, src\marinegrid.cpp, src\marinemath.cpp, src\marinevertices.cpp, src\marineconstruct.cpp, src\gridbase.cpp, src\gridtopology.cpp    marine mesh processing
-#   ASM_GUI       src\gui.cpp       window controls
-#   ASM_VRAPPL    srcrappl.cpp    engine library: sound stream, tables, music, trees
+#   ASM_AI_CONTAINERS          src\ai\ai_containers.cpp
+#   ASM_AI_DRIVERS             src\ai\ai_drivers.cpp
+#   ASM_AI_SAVELOAD            src\ai\ai_saveload.cpp
+#   ASM_AI_TASK                src\ai\ai_task.cpp
+#   ASM_AI_TRAFFIC             src\ai\ai_traffic.cpp
+#   ASM_AI_WORLD               src\ai\ai_world.cpp
+#   ASM_CARGO_ORDERS           src\ai\cargo_orders.cpp
+#   ASM_ROAD_GRAPH             src\ai\road_graph.cpp
+#   ASM_ROUTE_SEARCH           src\ai\route_search.cpp
+#   ASM_CONTROLS               src\engine\controls.cpp
+#   ASM_CORE                   src\engine\core.cpp
+#   ASM_GAME_APP               src\engine\game_app.cpp
+#   ASM_INPUT                  src\engine\input.cpp
+#   ASM_MAIN_LOOP              src\engine\main_loop.cpp
+#   ASM_MEDIA                  src\engine\media.cpp
+#   ASM_SOUND_FILES            src\engine\sound_files.cpp
+#   ASM_VECMATH                src\engine\vecmath.cpp
+#   ASM_MARINE_CORE            src\marine\marine_core.cpp
+#   ASM_MARINE_GRID            src\marine\marine_grid.cpp
+#   ASM_MARINE_STARTUP         src\marine\marine_startup.cpp
+#   ASM_MESH_CONSTRUCT         src\marine\mesh_construct.cpp
+#   ASM_REFINEMENT_MATH        src\marine\refinement_math.cpp
+#   ASM_WAVE_VERTICES          src\marine\wave_vertices.cpp
+#   ASM_EVALUATOR              src\script\evaluator.cpp
+#   ASM_NATIVE_VALUES          src\script\native_values.cpp
+#   ASM_NATIVES                src\script\natives.cpp
+#   ASM_RUNTIME                src\script\runtime.cpp
+#   ASM_VALUES                 src\script\values.cpp
+#   ASM_GRID_BASE              src\terrain\grid_base.cpp
+#   ASM_GRID_TOPOLOGY          src\terrain\grid_topology.cpp
+#   ASM_DRIVETRAIN             src\truck\drivetrain.cpp
+#   ASM_EFFECTS                src\truck\effects.cpp
+#   ASM_FORCE_FEEDBACK         src\truck\force_feedback.cpp
+#   ASM_GAME_SHELL             src\truck\game_shell.cpp
+#   ASM_HELICOPTER             src\truck\helicopter.cpp
+#   ASM_KING_APP               src\truck\king_app.cpp
+#   ASM_MOVING_BODIES          src\truck\moving_bodies.cpp
+#   ASM_MOVING_ITEMS           src\truck\moving_items.cpp
+#   ASM_SCENERY                src\truck\scenery.cpp
+#   ASM_STARTUP                src\truck\startup.cpp
+#   ASM_VEHICLE                src\truck\vehicle.cpp
+#   ASM_VEHICLE_ENGINE         src\truck\vehicle_engine.cpp
+#   ASM_VEHICLE_PHYSICS        src\truck\vehicle_physics.cpp
+#   ASM_VEHICLE_SETUP          src\truck\vehicle_setup.cpp
+#   ASM_WEATHER                src\truck\weather.cpp
+#   ASM_WORLD                  src\truck\world.cpp
+#   ASM_WORLD_OBJECTS          src\truck\world_objects.cpp
 !IFDEF ASM
-ASM_MAINLOOP = 1
-ASM_GAMEAPP = 1
-ASM_KINGAPP = 1
+ASM_AI_CONTAINERS = 1
+ASM_AI_DRIVERS = 1
+ASM_AI_SAVELOAD = 1
+ASM_AI_TASK = 1
+ASM_AI_TRAFFIC = 1
+ASM_AI_WORLD = 1
+ASM_CARGO_ORDERS = 1
+ASM_ROAD_GRAPH = 1
+ASM_ROUTE_SEARCH = 1
+ASM_CONTROLS = 1
+ASM_CORE = 1
+ASM_GAME_APP = 1
 ASM_INPUT = 1
-ASM_CARAN = 1
-ASM_AITASK = 1
+ASM_MAIN_LOOP = 1
+ASM_MEDIA = 1
+ASM_SOUND_FILES = 1
 ASM_VECMATH = 1
-ASM_AITRCE = 1
-ASM_AIROAD = 1
-ASM_AIPLAY = 1
-ASM_AEFFECTS = 1
-ASM_CAR2E = 1
-ASM_CARAT = 1
-ASM_AIMAIN = 1
-ASM_AISTL = 1
-ASM_AIMISC = 1
+ASM_MARINE_CORE = 1
+ASM_MARINE_GRID = 1
+ASM_MARINE_STARTUP = 1
+ASM_MESH_CONSTRUCT = 1
+ASM_REFINEMENT_MATH = 1
+ASM_WAVE_VERTICES = 1
+ASM_EVALUATOR = 1
+ASM_NATIVE_VALUES = 1
+ASM_NATIVES = 1
+ASM_RUNTIME = 1
+ASM_VALUES = 1
+ASM_GRID_BASE = 1
+ASM_GRID_TOPOLOGY = 1
+ASM_DRIVETRAIN = 1
+ASM_EFFECTS = 1
+ASM_FORCE_FEEDBACK = 1
+ASM_GAME_SHELL = 1
+ASM_HELICOPTER = 1
+ASM_KING_APP = 1
+ASM_MOVING_BODIES = 1
+ASM_MOVING_ITEMS = 1
+ASM_SCENERY = 1
+ASM_STARTUP = 1
 ASM_VEHICLE = 1
-ASM_SCHEVAL = 1
-ASM_WASM = 1
-ASM_COPTER = 1
-ASM_MOVINGB = 1
+ASM_VEHICLE_ENGINE = 1
+ASM_VEHICLE_PHYSICS = 1
+ASM_VEHICLE_SETUP = 1
+ASM_WEATHER = 1
 ASM_WORLD = 1
-ASM_AIMULT = 1
-ASM_SCHITEM = 1
-ASM_MMT = 1
-ASM_CARPHYS = 1
-ASM_AIORDR = 1
-ASM_ENGINE = 1
-ASM_MARINE = 1
-ASM_GUI = 1
-ASM_VRAPPL = 1
+ASM_WORLD_OBJECTS = 1
 !ENDIF
 
 MLFLAGS =
-!IFDEF ASM_MAINLOOP
-MLFLAGS = $(MLFLAGS) /DASM_MAINLOOP
+!IFDEF ASM_AI_CONTAINERS
+MLFLAGS = $(MLFLAGS) /DASM_AI_CONTAINERS
 !ENDIF
-!IFDEF ASM_GAMEAPP
-MLFLAGS = $(MLFLAGS) /DASM_GAMEAPP
+!IFDEF ASM_AI_DRIVERS
+MLFLAGS = $(MLFLAGS) /DASM_AI_DRIVERS
 !ENDIF
-!IFDEF ASM_KINGAPP
-MLFLAGS = $(MLFLAGS) /DASM_KINGAPP
+!IFDEF ASM_AI_SAVELOAD
+MLFLAGS = $(MLFLAGS) /DASM_AI_SAVELOAD
+!ENDIF
+!IFDEF ASM_AI_TASK
+MLFLAGS = $(MLFLAGS) /DASM_AI_TASK
+!ENDIF
+!IFDEF ASM_AI_TRAFFIC
+MLFLAGS = $(MLFLAGS) /DASM_AI_TRAFFIC
+!ENDIF
+!IFDEF ASM_AI_WORLD
+MLFLAGS = $(MLFLAGS) /DASM_AI_WORLD
+!ENDIF
+!IFDEF ASM_CARGO_ORDERS
+MLFLAGS = $(MLFLAGS) /DASM_CARGO_ORDERS
+!ENDIF
+!IFDEF ASM_ROAD_GRAPH
+MLFLAGS = $(MLFLAGS) /DASM_ROAD_GRAPH
+!ENDIF
+!IFDEF ASM_ROUTE_SEARCH
+MLFLAGS = $(MLFLAGS) /DASM_ROUTE_SEARCH
+!ENDIF
+!IFDEF ASM_CONTROLS
+MLFLAGS = $(MLFLAGS) /DASM_CONTROLS
+!ENDIF
+!IFDEF ASM_CORE
+MLFLAGS = $(MLFLAGS) /DASM_CORE
+!ENDIF
+!IFDEF ASM_GAME_APP
+MLFLAGS = $(MLFLAGS) /DASM_GAME_APP
 !ENDIF
 !IFDEF ASM_INPUT
 MLFLAGS = $(MLFLAGS) /DASM_INPUT
 !ENDIF
-!IFDEF ASM_CARAN
-MLFLAGS = $(MLFLAGS) /DASM_CARAN
+!IFDEF ASM_MAIN_LOOP
+MLFLAGS = $(MLFLAGS) /DASM_MAIN_LOOP
+!ENDIF
+!IFDEF ASM_MEDIA
+MLFLAGS = $(MLFLAGS) /DASM_MEDIA
+!ENDIF
+!IFDEF ASM_SOUND_FILES
+MLFLAGS = $(MLFLAGS) /DASM_SOUND_FILES
+!ENDIF
+!IFDEF ASM_VECMATH
+MLFLAGS = $(MLFLAGS) /DASM_VECMATH
+!ENDIF
+!IFDEF ASM_MARINE_CORE
+MLFLAGS = $(MLFLAGS) /DASM_MARINE_CORE
+!ENDIF
+!IFDEF ASM_MARINE_GRID
+MLFLAGS = $(MLFLAGS) /DASM_MARINE_GRID
+!ENDIF
+!IFDEF ASM_MARINE_STARTUP
+MLFLAGS = $(MLFLAGS) /DASM_MARINE_STARTUP
+!ENDIF
+!IFDEF ASM_MESH_CONSTRUCT
+MLFLAGS = $(MLFLAGS) /DASM_MESH_CONSTRUCT
+!ENDIF
+!IFDEF ASM_REFINEMENT_MATH
+MLFLAGS = $(MLFLAGS) /DASM_REFINEMENT_MATH
+!ENDIF
+!IFDEF ASM_WAVE_VERTICES
+MLFLAGS = $(MLFLAGS) /DASM_WAVE_VERTICES
+!ENDIF
+!IFDEF ASM_EVALUATOR
+MLFLAGS = $(MLFLAGS) /DASM_EVALUATOR
+!ENDIF
+!IFDEF ASM_NATIVE_VALUES
+MLFLAGS = $(MLFLAGS) /DASM_NATIVE_VALUES
+!ENDIF
+!IFDEF ASM_NATIVES
+MLFLAGS = $(MLFLAGS) /DASM_NATIVES
+!ENDIF
+!IFDEF ASM_RUNTIME
+MLFLAGS = $(MLFLAGS) /DASM_RUNTIME
+!ENDIF
+!IFDEF ASM_VALUES
+MLFLAGS = $(MLFLAGS) /DASM_VALUES
+!ENDIF
+!IFDEF ASM_GRID_BASE
+MLFLAGS = $(MLFLAGS) /DASM_GRID_BASE
+!ENDIF
+!IFDEF ASM_GRID_TOPOLOGY
+MLFLAGS = $(MLFLAGS) /DASM_GRID_TOPOLOGY
+!ENDIF
+!IFDEF ASM_DRIVETRAIN
+MLFLAGS = $(MLFLAGS) /DASM_DRIVETRAIN
+!ENDIF
+!IFDEF ASM_EFFECTS
+MLFLAGS = $(MLFLAGS) /DASM_EFFECTS
+!ENDIF
+!IFDEF ASM_FORCE_FEEDBACK
+MLFLAGS = $(MLFLAGS) /DASM_FORCE_FEEDBACK
+!ENDIF
+!IFDEF ASM_GAME_SHELL
+MLFLAGS = $(MLFLAGS) /DASM_GAME_SHELL
+!ENDIF
+!IFDEF ASM_HELICOPTER
+MLFLAGS = $(MLFLAGS) /DASM_HELICOPTER
+!ENDIF
+!IFDEF ASM_KING_APP
+MLFLAGS = $(MLFLAGS) /DASM_KING_APP
+!ENDIF
+!IFDEF ASM_MOVING_BODIES
+MLFLAGS = $(MLFLAGS) /DASM_MOVING_BODIES
+!ENDIF
+!IFDEF ASM_MOVING_ITEMS
+MLFLAGS = $(MLFLAGS) /DASM_MOVING_ITEMS
+!ENDIF
+!IFDEF ASM_SCENERY
+MLFLAGS = $(MLFLAGS) /DASM_SCENERY
+!ENDIF
+!IFDEF ASM_STARTUP
+MLFLAGS = $(MLFLAGS) /DASM_STARTUP
+!ENDIF
+!IFDEF ASM_VEHICLE
+MLFLAGS = $(MLFLAGS) /DASM_VEHICLE
+!ENDIF
+!IFDEF ASM_VEHICLE_ENGINE
+MLFLAGS = $(MLFLAGS) /DASM_VEHICLE_ENGINE
+!ENDIF
+!IFDEF ASM_VEHICLE_PHYSICS
+MLFLAGS = $(MLFLAGS) /DASM_VEHICLE_PHYSICS
+!ENDIF
+!IFDEF ASM_VEHICLE_SETUP
+MLFLAGS = $(MLFLAGS) /DASM_VEHICLE_SETUP
+!ENDIF
+!IFDEF ASM_WEATHER
+MLFLAGS = $(MLFLAGS) /DASM_WEATHER
+!ENDIF
+!IFDEF ASM_WORLD
+MLFLAGS = $(MLFLAGS) /DASM_WORLD
+!ENDIF
+!IFDEF ASM_WORLD_OBJECTS
+MLFLAGS = $(MLFLAGS) /DASM_WORLD_OBJECTS
 !ENDIF
 
 !IFDEF ASM_AITASK
@@ -185,7 +343,7 @@ MLFLAGS = $(MLFLAGS) /DASM_GUI
 !IFDEF ASM_VRAPPL
 MLFLAGS = $(MLFLAGS) /DASM_VRAPPL
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj aimisc.obj vehicle.obj scheval.obj wasm.obj copter.obj movingb.obj world.obj aimult.obj schitem.obj mmt.obj carphys.obj aiordr.obj engine.obj marine.obj marineinit.obj marinegrid.obj marinemath.obj marinevertices.obj marineconstruct.obj gridbase.obj gridtopology.obj gui.obj vrappl.obj
+ALLCPPOBJS = ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj controls.obj core.obj game_app.obj input.obj main_loop.obj media.obj sound_files.obj vecmath.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj grid_base.obj grid_topology.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
@@ -195,7 +353,7 @@ CPPOBJS = $(ALLCPPOBJS)
 # The C++ code has no CRT of its own (king.masm contains the original one):
 # /Zl no default libraries, /GS- no security cookies, /GR- /EHs-c- no RTTI, no EH.
 # /arch:IA32: floating point on the x87 FPU like the assembly (see src\x87.h)
-CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
+CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"src\common" /I"src\ai" /I"src\truck" /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
 
 LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib
 LIBPATH_FLAGS = /LIBPATH:"C:\Users\Dmitry\Documents\dx7sdk\dx7sdk-700.1\lib" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86"
@@ -205,10 +363,25 @@ build: $(OUT)
 $(OBJ): $(SRC)
 	$(ML) /nologo $(MLFLAGS) /c /Fo$(OBJ) $(SRC)
 
-{src}.cpp.obj:
+{src\ai}.cpp.obj:
 	$(CC) $(CFLAGS) /Fo$@ $<
 
-$(ALLCPPOBJS): src\king.h src\x87.h src\car.h src\ai.h src\vecmath.h src\road.h
+{src\engine}.cpp.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+{src\marine}.cpp.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+{src\script}.cpp.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+{src\terrain}.cpp.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+{src\truck}.cpp.obj:
+	$(CC) $(CFLAGS) /Fo$@ $<
+
+$(ALLCPPOBJS): src\ai\ai.h src\ai\road.h src\common\king.h src\common\vecmath.h src\common\x87.h src\truck\car.h
 
 # Resources (icon, cursor, title bitmaps, strings) taken from the game's king.exe
 $(RES): extractResources.py
