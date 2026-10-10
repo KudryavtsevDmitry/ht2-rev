@@ -766,6 +766,13 @@ PUBLIC $L_66c83c, $L_66c840, $L_66d3fc, $L_66d41c, $L_66d498, $L_66d72c
 PUBLIC $L_66d768, $L_68d0cc, $L_68d0dc, $L_68d14c, $L_68d208
 PUBLIC $L_66c6f0, $L_68d180
 PUBLIC $L_64b5c0, $L_64b62c
+PUBLIC $L_670b04, $L_691dbc, $L_692244, $L_692248
+PUBLIC $L_671458
+PUBLIC $L_6715b8
+PUBLIC $L_68cc88
+PUBLIC $L_702654, $L_702658
+PUBLIC $L_66f880, $L_66f888, $L_66f890
+PUBLIC $L_64c450, $L_64d998, $L_678540
 
 ;===================================
 _TEXT SEGMENT
@@ -18033,6 +18040,8 @@ FUN_40a180 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_40a1d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -18118,6 +18127,10 @@ $L_40a295::
             add ESP,32
             ret 
 FUN_40a1d0 ENDP
+ELSE
+EXTERN _Player_CheckRouteStart:PROC
+FUN_40a1d0 TEXTEQU <_Player_CheckRouteStart>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -46726,6 +46739,8 @@ FUN_41bd30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_41bd80 PROC
 
             push EBP
@@ -46800,6 +46815,10 @@ $L_41be36::
             pop EBP
             ret 
 FUN_41bd80 ENDP
+ELSE
+EXTERN _Order_SetQuantity:PROC
+FUN_41bd80 TEXTEQU <_Order_SetQuantity>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -68047,6 +68066,8 @@ FUN_429530 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_429690 PROC
 
             push EBP
@@ -68131,6 +68152,10 @@ $L_429746::
             pop EBP
             ret 
 FUN_429690 ENDP
+ELSE
+EXTERN _Players_MinKey:PROC
+FUN_429690 TEXTEQU <_Players_MinKey>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -73667,6 +73692,8 @@ FUN_42c780 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI main: src\aimain.cpp, nmake ASM_AIMAIN=1 assembles the original
+IFDEF ASM_AIMAIN
 FUN_42c9b0 PROC
 
             sub ESP,32
@@ -73817,6 +73844,10 @@ $L_42cb0a::
             add ESP,32
             ret 
 FUN_42c9b0 ENDP
+ELSE
+EXTERN _Position_Keys:PROC
+FUN_42c9b0 TEXTEQU <_Position_Keys>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -149764,6 +149795,8 @@ FUN_458a80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_458bc0 PROC
 
             push ECX
@@ -149924,6 +149957,10 @@ $L_458ce1::
             pop ECX
             ret 4
 FUN_458bc0 ENDP
+ELSE
+EXTERN @Vec16_Assign@12:PROC
+FUN_458bc0 TEXTEQU <@Vec16_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -153610,6 +153647,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45aa00 PROC
 
             sub ESP,12
@@ -153828,6 +153867,10 @@ $L_45abcd::
             add ESP,12
             ret 4
 FUN_45aa00 ENDP
+ELSE
+EXTERN @Vec24_Assign@12:PROC
+FUN_45aa00 TEXTEQU <@Vec24_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -153838,6 +153881,8 @@ FUN_45aa00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45abe0 PROC
 
             push ECX
@@ -153956,6 +154001,10 @@ $L_45acad::
             pop ECX
             ret 4
 FUN_45abe0 ENDP
+ELSE
+EXTERN @Rec24b_Assign@12:PROC
+FUN_45abe0 TEXTEQU <@Rec24b_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -153970,6 +154019,8 @@ FUN_45abe0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45acc0 PROC
 
             push EBP
@@ -154106,6 +154157,10 @@ $L_45adb1::
             pop EBP
             ret 4
 FUN_45acc0 ENDP
+ELSE
+EXTERN @Vec4_Assign@12:PROC
+FUN_45acc0 TEXTEQU <@Vec4_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -154157,6 +154212,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45adf0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -154267,6 +154324,10 @@ $L_45aebd::
             pop EBP
             ret 
 FUN_45adf0 ENDP
+ELSE
+EXTERN _StrRefs_Copy:PROC
+FUN_45adf0 TEXTEQU <_StrRefs_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -154747,6 +154808,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45b290 PROC
 
             push EBX
@@ -154901,6 +154964,10 @@ $L_45b38a::
             pop EBX
             ret 
 FUN_45b290 ENDP
+ELSE
+EXTERN _Sort_IntroLoopU:PROC
+FUN_45b290 TEXTEQU <_Sort_IntroLoopU>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
@@ -156555,6 +156622,8 @@ $L_45c13c::
 FUN_45c0c0 ENDP
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45c150 PROC
 
             push EBX
@@ -156718,6 +156787,10 @@ $L_45c265::
             pop EBX
             ret 
 FUN_45c150 ENDP
+ELSE
+EXTERN _Sort_IntroLoop24a:PROC
+FUN_45c150 TEXTEQU <_Sort_IntroLoop24a>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -156725,6 +156798,8 @@ FUN_45c150 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45c270 PROC
 
             push EBX
@@ -156888,6 +156963,10 @@ $L_45c385::
             pop EBX
             ret 
 FUN_45c270 ENDP
+ELSE
+EXTERN _Sort_IntroLoop24b:PROC
+FUN_45c270 TEXTEQU <_Sort_IntroLoop24b>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -156895,6 +156974,8 @@ FUN_45c270 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45c390 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -157085,7 +157166,13 @@ $L_45c4c6::
 
             nop
 FUN_45c390 ENDP
+ELSE
+EXTERN _Sort_FinalInsertion24:PROC
+FUN_45c390 TEXTEQU <_Sort_FinalInsertion24>
+ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_45c4d0 PROC
 
             push EBX
@@ -157249,6 +157336,10 @@ $L_45c5fd::
             pop EBX
             ret 
 FUN_45c4d0 ENDP
+ELSE
+EXTERN _Sort_IntroLoop328:PROC
+FUN_45c4d0 TEXTEQU <_Sort_IntroLoop328>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -165819,6 +165910,8 @@ $L_460e4d::
 FUN_460d20 ENDP
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_460e60 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -166068,6 +166161,10 @@ $L_46109b::
             add ESP,12
             ret 
 FUN_460e60 ENDP
+ELSE
+EXTERN _Order144_CopyA:PROC
+FUN_460e60 TEXTEQU <_Order144_CopyA>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -166795,6 +166892,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_4616c0 PROC
 
             push EBP
@@ -167040,6 +167139,10 @@ $L_4618af::
             pop EBP
             ret 
 FUN_4616c0 ENDP
+ELSE
+EXTERN _Rec104_Copy:PROC
+FUN_4616c0 TEXTEQU <_Rec104_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -167048,6 +167151,8 @@ FUN_4616c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_4618c0 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -167246,6 +167351,10 @@ $L_461a3f::
             add ESP,12
             ret 4
 FUN_4618c0 ENDP
+ELSE
+EXTERN @Vec16_AssignB@12:PROC
+FUN_4618c0 TEXTEQU <@Vec16_AssignB@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -168438,6 +168547,8 @@ FUN_462410 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_462430 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -168546,11 +168657,17 @@ $L_4624f5::
             pop EBX
             ret 
 FUN_462430 ENDP
+ELSE
+EXTERN _StrRefs_CopyBack:PROC
+FUN_462430 TEXTEQU <_StrRefs_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_462500 PROC
 
             push EBP
@@ -168793,6 +168910,10 @@ $L_4626e9::
             pop EBP
             ret 
 FUN_462500 ENDP
+ELSE
+EXTERN _Rec104_CopyBack:PROC
+FUN_462500 TEXTEQU <_Rec104_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -170366,6 +170487,8 @@ $L_46334c::
             ret 
 FUN_463310 ENDP
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463390 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -170498,7 +170621,13 @@ $L_46348a::
             pop EBP
             ret 
 FUN_463390 ENDP
+ELSE
+EXTERN _Rec24b_CopyBack:PROC
+FUN_463390 TEXTEQU <_Rec24b_CopyBack>
+ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463490 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -170786,6 +170915,10 @@ $L_4636ec::
             add ESP,12
             ret 
 FUN_463490 ENDP
+ELSE
+EXTERN _Rec24c_CopyBack:PROC
+FUN_463490 TEXTEQU <_Rec24c_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -170798,6 +170931,8 @@ FUN_463490 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463700 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -171048,8 +171183,14 @@ $L_463936::
             add ESP,12
             ret 
 FUN_463700 ENDP
+ELSE
+EXTERN _Order144_CopyBack:PROC
+FUN_463700 TEXTEQU <_Order144_CopyBack>
+ENDIF
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463940 PROC
 
             sub ESP,8
@@ -171299,6 +171440,10 @@ $L_463b42::
             add ESP,8
             ret 
 FUN_463940 ENDP
+ELSE
+EXTERN _Rec36_CopyBack:PROC
+FUN_463940 TEXTEQU <_Rec36_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -171341,6 +171486,8 @@ FUN_463b50 TEXTEQU <_CopyBackwardDwords>
 ENDIF
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463b80 PROC
 
             push EBX
@@ -171462,12 +171609,18 @@ $L_463c54::
             pop EBX
             ret 
 FUN_463b80 ENDP
+ELSE
+EXTERN _CharVecs_CopyBack:PROC
+FUN_463b80 TEXTEQU <_CharVecs_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463c60 PROC
 
             push EBP
@@ -171619,10 +171772,16 @@ $L_463d96::
             pop EBP
             ret 
 FUN_463c60 ENDP
+ELSE
+EXTERN _Rec56_CopyBack:PROC
+FUN_463c60 TEXTEQU <_Rec56_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_463da0 PROC
 
             push EBP
@@ -171875,6 +172034,10 @@ $L_463fd4::
             pop EBP
             ret 
 FUN_463da0 ENDP
+ELSE
+EXTERN _Rec192_CopyBack:PROC
+FUN_463da0 TEXTEQU <_Rec192_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -173245,6 +173408,8 @@ EXTERN _Sort_InsertionBy24:PROC
 FUN_464aa0 TEXTEQU <_Sort_InsertionBy24>
 ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_464b20 PROC
 
             sub ESP,8
@@ -173458,6 +173623,10 @@ $L_464ca1::
             nop
             nop
 FUN_464b20 ENDP
+ELSE
+EXTERN _Sort_Partial24:PROC
+FUN_464b20 TEXTEQU <_Sort_Partial24>
+ENDIF
 ALIGN 16
 ; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
 IFDEF ASM_AISTL
@@ -173722,6 +173891,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_464e20 PROC
 
             sub ESP,12
@@ -173951,6 +174122,10 @@ $L_464fd3::
             add ESP,12
             ret 
 FUN_464e20 ENDP
+ELSE
+EXTERN _Sort_Stable28:PROC
+FUN_464e20 TEXTEQU <_Sort_Stable28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -174335,6 +174510,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_465300 PROC
 
             sub ESP,12
@@ -174564,6 +174741,10 @@ $L_4654b3::
             add ESP,12
             ret 
 FUN_465300 ENDP
+ELSE
+EXTERN _Sort_Stable32:PROC
+FUN_465300 TEXTEQU <_Sort_Stable32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -174914,6 +175095,8 @@ FUN_4654c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_4657c0 PROC
 
             sub ESP,20
@@ -175199,6 +175382,10 @@ $L_465a14::
             add ESP,20
             ret 
 FUN_4657c0 ENDP
+ELSE
+EXTERN _Near_StableSort:PROC
+FUN_4657c0 TEXTEQU <_Near_StableSort>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -177701,6 +177888,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_466c50 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -177831,6 +178020,10 @@ $L_466d47::
             mov EAX,DWORD PTR [ESP+12]
             ret 
 FUN_466c50 ENDP
+ELSE
+EXTERN _Rec24b_Copy:PROC
+FUN_466c50 TEXTEQU <_Rec24b_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -179487,6 +179680,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_467a60 PROC
 
             push ECX
@@ -179708,6 +179903,10 @@ $L_467c1c::
             pop ECX
             ret 
 FUN_467a60 ENDP
+ELSE
+EXTERN _Sort_Partial328:PROC
+FUN_467a60 TEXTEQU <_Sort_Partial328>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -179937,6 +180136,8 @@ EXTERN _Sort_InsertionBy28:PROC
 FUN_467cf0 TEXTEQU <_Sort_InsertionBy28>
 ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_467d70 PROC
 
             mov ECX,DWORD PTR [ESP+16]
@@ -180231,6 +180432,10 @@ $L_467fb6::
             add ESP,20
             ret 
 FUN_467d70 ENDP
+ELSE
+EXTERN _Merge28:PROC
+FUN_467d70 TEXTEQU <_Merge28>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -180263,6 +180468,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_467fe0 PROC
 
             push ECX
@@ -180564,6 +180771,10 @@ $L_4681e9::
             pop ECX
             ret 
 FUN_467fe0 ENDP
+ELSE
+EXTERN _Merge28_Adaptive:PROC
+FUN_467fe0 TEXTEQU <_Merge28_Adaptive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -180672,6 +180883,8 @@ EXTERN _Sort_InsertionBy32:PROC
 FUN_468210 TEXTEQU <_Sort_InsertionBy32>
 ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_468290 PROC
 
             mov ECX,DWORD PTR [ESP+16]
@@ -180966,9 +181179,15 @@ $L_4684d6::
             add ESP,20
             ret 
 FUN_468290 ENDP
+ELSE
+EXTERN _Merge32:PROC
+FUN_468290 TEXTEQU <_Merge32>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_4684e0 PROC
 
             push ECX
@@ -181270,6 +181489,10 @@ $L_4686e9::
             pop ECX
             ret 
 FUN_4684e0 ENDP
+ELSE
+EXTERN _Merge32_Adaptive:PROC
+FUN_4684e0 TEXTEQU <_Merge32_Adaptive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -181286,6 +181509,8 @@ FUN_4684e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_468710 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -181398,7 +181623,13 @@ $L_4687ea::
             add ESP,20
             ret 
 FUN_468710 ENDP
+ELSE
+EXTERN _Near_Insertion:PROC
+FUN_468710 TEXTEQU <_Near_Insertion>
+ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_4687f0 PROC
 
             mov ECX,DWORD PTR [ESP+16]
@@ -181701,6 +181932,10 @@ $L_468a4e::
             add ESP,32
             ret 
 FUN_4687f0 ENDP
+ELSE
+EXTERN _Near_Merge:PROC
+FUN_4687f0 TEXTEQU <_Near_Merge>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -181763,6 +181998,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_468ab0 PROC
 
             sub ESP,8
@@ -182081,6 +182318,10 @@ $L_468cf0::
             add ESP,8
             ret 
 FUN_468ab0 ENDP
+ELSE
+EXTERN _Near_MergeAdaptive:PROC
+FUN_468ab0 TEXTEQU <_Near_MergeAdaptive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -182909,6 +183150,8 @@ EXTERN _FillBytes:PROC
 FUN_469410 TEXTEQU <_FillBytes>
 ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_469430 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -183032,6 +183275,10 @@ $L_469513::
             mov EAX,DWORD PTR [ESP+12]
             ret 
 FUN_469430 ENDP
+ELSE
+EXTERN _Rec16_Copy:PROC
+FUN_469430 TEXTEQU <_Rec16_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -184148,6 +184395,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_469de0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -184294,7 +184543,13 @@ $L_469ea8::
             nop
             nop
 FUN_469de0 ENDP
+ELSE
+EXTERN _Ptrs_Rotate:PROC
+FUN_469de0 TEXTEQU <_Ptrs_Rotate>
+ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_469eb0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -184476,9 +184731,15 @@ $L_46a006::
             add ESP,12
             ret 
 FUN_469eb0 ENDP
+ELSE
+EXTERN _Sort_ChunkInsertion28:PROC
+FUN_469eb0 TEXTEQU <_Sort_ChunkInsertion28>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46a010 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -184685,6 +184946,10 @@ $L_46a192::
             add ESP,16
             ret 
 FUN_46a010 ENDP
+ELSE
+EXTERN _Sort_MergeLoop28:PROC
+FUN_46a010 TEXTEQU <_Sort_MergeLoop28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -184785,6 +185050,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46a220 PROC
 
             mov ECX,DWORD PTR [ESP+16]
@@ -185032,12 +185299,18 @@ $L_46a3b6::
             pop EBX
             ret 
 FUN_46a220 ENDP
+ELSE
+EXTERN _Ptrs_RotateAdaptive:PROC
+FUN_46a220 TEXTEQU <_Ptrs_RotateAdaptive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46a3c0 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -185244,6 +185517,10 @@ $L_46a542::
             add ESP,16
             ret 
 FUN_46a3c0 ENDP
+ELSE
+EXTERN _Sort_MergeLoop32:PROC
+FUN_46a3c0 TEXTEQU <_Sort_MergeLoop32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -185443,6 +185720,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46a680 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -185695,6 +185974,10 @@ $L_46a8b2::
             add ESP,40
             ret 
 FUN_46a680 ENDP
+ELSE
+EXTERN _Near_ChunkInsertion:PROC
+FUN_46a680 TEXTEQU <_Near_ChunkInsertion>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -185702,6 +185985,8 @@ FUN_46a680 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46a8c0 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -185933,6 +186218,10 @@ $L_46aa77::
             add ESP,24
             ret 
 FUN_46a8c0 ENDP
+ELSE
+EXTERN _Near_MergeLoop:PROC
+FUN_46a8c0 TEXTEQU <_Near_MergeLoop>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
@@ -187657,6 +187946,8 @@ FUN_46b6d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46b740 PROC
 
             push EBP
@@ -187823,7 +188114,13 @@ $L_46b86f::
             nop
             nop
 FUN_46b740 ENDP
+ELSE
+EXTERN _Far_AdjustHeap:PROC
+FUN_46b740 TEXTEQU <_Far_AdjustHeap>
+ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46b8b0 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -187934,6 +188231,10 @@ $L_46b97d::
             add ESP,8
             ret 
 FUN_46b8b0 ENDP
+ELSE
+EXTERN _Heap24_Make:PROC
+FUN_46b8b0 TEXTEQU <_Heap24_Make>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -188137,6 +188438,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46bab0 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -188247,6 +188550,10 @@ $L_46bb89::
             add ESP,8
             ret 
 FUN_46bab0 ENDP
+ELSE
+EXTERN _Heap328_Make:PROC
+FUN_46bab0 TEXTEQU <_Heap328_Make>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -189009,6 +189316,8 @@ FUN_46bfc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46c010 PROC
 
             push EBP
@@ -189128,6 +189437,10 @@ $L_46c116::
             pop EBP
             ret 
 FUN_46c010 ENDP
+ELSE
+EXTERN _Near_LinearInsert:PROC
+FUN_46c010 TEXTEQU <_Near_LinearInsert>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -189305,6 +189618,8 @@ FUN_46c210 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46c240 PROC
 
             push EBP
@@ -189536,6 +189851,10 @@ $L_46c47f::
             pop EBP
             ret 
 FUN_46c240 ENDP
+ELSE
+EXTERN _Far_MakeHeap56:PROC
+FUN_46c240 TEXTEQU <_Far_MakeHeap56>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -190781,6 +191100,8 @@ FUN_46cc00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46cd70 PROC
 
             push EBP
@@ -190914,6 +191235,10 @@ $L_46ce8c::
             pop EBP
             ret 
 FUN_46cd70 ENDP
+ELSE
+EXTERN _Far_PushHeap:PROC
+FUN_46cd70 TEXTEQU <_Far_PushHeap>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -191286,6 +191611,8 @@ FUN_46d040 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46d0b0 PROC
 
             push EBP
@@ -191454,6 +191781,10 @@ $L_46d200::
             pop EBP
             ret 
 FUN_46d0b0 ENDP
+ELSE
+EXTERN _Far_AdjustHeap2:PROC
+FUN_46d0b0 TEXTEQU <_Far_AdjustHeap2>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -191575,6 +191906,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46d2f0 PROC
 
             push EBP
@@ -191722,6 +192055,10 @@ $L_46d433::
             pop EBP
             ret 
 FUN_46d2f0 ENDP
+ELSE
+EXTERN _Far_PushHeap2:PROC
+FUN_46d2f0 TEXTEQU <_Far_PushHeap2>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -195370,6 +195707,8 @@ FUN_46f0a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46f470 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -195496,6 +195835,10 @@ $L_46f579::
             add ESP,28
             ret 
 FUN_46f470 ENDP
+ELSE
+EXTERN _Rec12_Insertion:PROC
+FUN_46f470 TEXTEQU <_Rec12_Insertion>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -196300,6 +196643,8 @@ EXTERN _E12_CopyBackward:PROC
 FUN_46fb20 TEXTEQU <_E12_CopyBackward>
 ENDIF
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46fb80 PROC
 
             sub ESP,12
@@ -196398,6 +196743,10 @@ $L_46fc35::
             add ESP,12
             ret 
 FUN_46fb80 ENDP
+ELSE
+EXTERN _Rec12_LinearInsert:PROC
+FUN_46fb80 TEXTEQU <_Rec12_LinearInsert>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -196441,6 +196790,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_46fc70 PROC
 
             sub ESP,16
@@ -196655,6 +197006,10 @@ $L_46fdeb::
             mov EAX,DWORD PTR [ESP+36]
             jmp $L_46fdeb
 FUN_46fc70 ENDP
+ELSE
+EXTERN _Rotate12:PROC
+FUN_46fc70 TEXTEQU <_Rotate12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -197289,6 +197644,8 @@ FUN_470110 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_4703a0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -197406,6 +197763,10 @@ $L_47047d::
             pop EBX
             ret 
 FUN_4703a0 ENDP
+ELSE
+EXTERN _Rec12_Merge:PROC
+FUN_4703a0 TEXTEQU <_Rec12_Merge>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -198903,6 +199264,8 @@ FUN_470e10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_4710a0 PROC
 
             push ESI
@@ -199062,7 +199425,13 @@ FUN_4710a0 PROC
             nop
             nop
 FUN_4710a0 ENDP
+ELSE
+EXTERN @Rec4710a0_Load@12:PROC
+FUN_4710a0 TEXTEQU <@Rec4710a0_Load@12>
+ENDIF
 ALIGN 16
+; AI orders: src\aiordr.cpp, nmake ASM_AIORDR=1 assembles the original
+IFDEF ASM_AIORDR
 FUN_471200 PROC
 
             push EBP
@@ -199258,6 +199627,10 @@ $L_4713e5::
             pop EBP
             ret 
 FUN_471200 ENDP
+ELSE
+EXTERN _Order_SetPrice:PROC
+FUN_471200 TEXTEQU <_Order_SetPrice>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI orders: src\aiordr.cpp, nmake ASM_AIORDR=1 assembles the original
@@ -199320,6 +199693,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI orders: src\aiordr.cpp, nmake ASM_AIORDR=1 assembles the original
+IFDEF ASM_AIORDR
 FUN_471450 PROC
 
             sub ESP,8
@@ -199436,6 +199811,10 @@ $L_47154d::
             nop
             nop
 FUN_471450 ENDP
+ELSE
+EXTERN _Order_Margin:PROC
+FUN_471450 TEXTEQU <_Order_Margin>
+ENDIF
 ALIGN 16
 ; AI orders: src\aiordr.cpp, nmake ASM_AIORDR=1 assembles the original
 IFDEF ASM_AIORDR
@@ -199523,6 +199902,8 @@ FUN_4715a0 PROC
             nop
 FUN_4715a0 ENDP
 ALIGN 16
+; AI orders: src\aiordr.cpp, nmake ASM_AIORDR=1 assembles the original
+IFDEF ASM_AIORDR
 FUN_4715f0 PROC
 
             push EBP
@@ -199662,6 +200043,10 @@ $L_4716f2::
             pop EBP
             ret 
 FUN_4715f0 ENDP
+ELSE
+EXTERN _Order_Init4715f0:PROC
+FUN_4715f0 TEXTEQU <_Order_Init4715f0>
+ENDIF
 ALIGN 16
 FUN_471780 PROC
 
@@ -200221,6 +200606,8 @@ FUN_471bd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_471bf0 PROC
 
             sub ESP,8
@@ -200323,6 +200710,10 @@ FUN_471bf0 PROC
             add ESP,8
             ret 4
 FUN_471bf0 ENDP
+ELSE
+EXTERN @Rec471bf0_Save@12:PROC
+FUN_471bf0 TEXTEQU <@Rec471bf0_Save@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -200395,6 +200786,8 @@ FUN_471cf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_471d70 PROC
 
             sub ESP,8
@@ -200522,6 +200915,10 @@ $L_471e65::
             add ESP,8
             ret 4
 FUN_471d70 ENDP
+ELSE
+EXTERN @PlayerRefs_Save@12:PROC
+FUN_471d70 TEXTEQU <@PlayerRefs_Save@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -201017,6 +201414,8 @@ $L_4722bf::
             ret 
 FUN_4722a0 ENDP
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_4722c0 PROC
 
             push ECX
@@ -201168,6 +201567,10 @@ $L_4723ec::
             pop ECX
             ret 4
 FUN_4722c0 ENDP
+ELSE
+EXTERN @Rec4722c0_Save@12:PROC
+FUN_4722c0 TEXTEQU <@Rec4722c0_Save@12>
+ENDIF
 ALIGN 16
 FUN_472410 PROC
 
@@ -204316,7 +204719,7 @@ $L_474285::
             nop
 FUN_474260 ENDP
 ALIGN 16
-; AI players: srciplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
 IFDEF ASM_AIPLAY
 FUN_474290 PROC
 
@@ -204532,6 +204935,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_474490 PROC
 
             push EBP
@@ -204613,6 +205018,10 @@ FUN_474490 PROC
             pop EBP
             ret 
 FUN_474490 ENDP
+ELSE
+EXTERN _Doubles5_Save:PROC
+FUN_474490 TEXTEQU <_Doubles5_Save>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -208199,6 +208608,8 @@ $L_476a2b::
             nop
 FUN_4769e0 ENDP
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_476a30 PROC
 
             mov ECX,DWORD PTR [$L_68d18c]
@@ -208301,6 +208712,10 @@ $L_476b40::
             pop EBX
             ret 
 FUN_476a30 ENDP
+ELSE
+EXTERN _Player_AllocLogo:PROC
+FUN_476a30 TEXTEQU <_Player_AllocLogo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -209531,6 +209946,8 @@ $L_47768c::
             nop
 FUN_477600 ENDP
 ALIGN 16
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+IFDEF ASM_AIPLAY
 FUN_4776b0 PROC
 
             push EBX
@@ -209629,6 +210046,10 @@ $L_47777c::
             pop EBX
             ret 
 FUN_4776b0 ENDP
+ELSE
+EXTERN _Player_Reset477600:PROC
+FUN_4776b0 TEXTEQU <_Player_Reset477600>
+ENDIF
 ALIGN 16
 FUN_477780 PROC
 
@@ -211133,7 +211554,7 @@ FUN_478100 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
-; AI players: srciplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
 IFDEF ASM_AIPLAY
 FUN_478260 PROC
 
@@ -211568,7 +211989,7 @@ FUN_478630 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
-; AI players: srciplay.cpp, nmake ASM_AIPLAY=1 assembles the original
+; AI players: src\aiplay.cpp, nmake ASM_AIPLAY=1 assembles the original
 IFDEF ASM_AIPLAY
 FUN_4786a0 PROC
 
@@ -212597,6 +213018,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_478e80 PROC
 
             sub ESP,16
@@ -212747,6 +213170,10 @@ $L_478f8b::
             add ESP,16
             ret 8
 FUN_478e80 ENDP
+ELSE
+EXTERN @Vec16c_Erase@16:PROC
+FUN_478e80 TEXTEQU <@Vec16c_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -214716,6 +215143,8 @@ FUN_47a010 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47a050 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -214839,6 +215268,10 @@ $L_47a138::
 
             ret 
 FUN_47a050 ENDP
+ELSE
+EXTERN _Rec16m_Copy:PROC
+FUN_47a050 TEXTEQU <_Rec16m_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -218967,6 +219400,8 @@ FUN_47c650 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47c6a0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -219092,11 +219527,17 @@ $L_47c786::
             pop EDI
             ret 
 FUN_47c6a0 ENDP
+ELSE
+EXTERN _Rec16m_CopyBack:PROC
+FUN_47c6a0 TEXTEQU <_Rec16m_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47c790 PROC
 
             push EBP
@@ -219353,6 +219794,10 @@ $L_47c98c::
             pop EBP
             ret 
 FUN_47c790 ENDP
+ELSE
+EXTERN _Doubles_StableSort:PROC
+FUN_47c790 TEXTEQU <_Doubles_StableSort>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -220724,6 +221169,8 @@ FUN_47d460 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47d520 PROC
 
             push EBP
@@ -221040,6 +221487,10 @@ $L_47d78d::
             pop EBP
             ret 
 FUN_47d520 ENDP
+ELSE
+EXTERN _Doubles_MergeNoBuf:PROC
+FUN_47d520 TEXTEQU <_Doubles_MergeNoBuf>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -221076,6 +221527,8 @@ FUN_47d7a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47d7c0 PROC
 
             push ECX
@@ -221389,6 +221842,10 @@ $L_47d9ed::
             pop ECX
             ret 
 FUN_47d7c0 ENDP
+ELSE
+EXTERN _Doubles_MergeAdaptive:PROC
+FUN_47d7c0 TEXTEQU <_Doubles_MergeAdaptive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -221518,6 +221975,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47dab0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -221639,6 +222098,10 @@ $L_47db98::
             add ESP,84
             ret 
 FUN_47dab0 ENDP
+ELSE
+EXTERN _Road40_Insertion:PROC
+FUN_47dab0 TEXTEQU <_Road40_Insertion>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -222961,6 +223424,8 @@ FUN_47e4e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47e500 PROC
 
             sub ESP,8
@@ -223123,6 +223588,10 @@ $L_47e5f8::
             mov DWORD PTR [ECX+4],EBX
             jmp $L_47e5f8
 FUN_47e500 ENDP
+ELSE
+EXTERN _Rotate8:PROC
+FUN_47e500 TEXTEQU <_Rotate8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -223134,6 +223603,8 @@ FUN_47e500 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47e630 PROC
 
             push EBP
@@ -223354,6 +223825,10 @@ $L_47e800::
             pop EBP
             ret 
 FUN_47e630 ENDP
+ELSE
+EXTERN _Doubles_ChunkInsertion:PROC
+FUN_47e630 TEXTEQU <_Doubles_ChunkInsertion>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -223364,6 +223839,8 @@ FUN_47e630 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47e810 PROC
 
             push EBP
@@ -223591,6 +224068,10 @@ $L_47e9bc::
             pop EBP
             ret 
 FUN_47e810 ENDP
+ELSE
+EXTERN _Doubles_MergeLoop:PROC
+FUN_47e810 TEXTEQU <_Doubles_MergeLoop>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -223706,6 +224187,8 @@ FUN_47e9d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47ea70 PROC
 
             mov ECX,DWORD PTR [ESP+16]
@@ -223968,6 +224451,10 @@ $L_47ec3e::
             pop EBX
             ret 
 FUN_47ea70 ENDP
+ELSE
+EXTERN _Rotate8_Adaptive:PROC
+FUN_47ea70 TEXTEQU <_Rotate8_Adaptive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -224120,6 +224607,8 @@ FUN_47ed10 PROC
             nop
 FUN_47ed10 ENDP
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47ed30 PROC
 
             sub ESP,44
@@ -224351,6 +224840,10 @@ $L_47eebe::
             add ESP,44
             ret 
 FUN_47ed30 ENDP
+ELSE
+EXTERN _Rotate40:PROC
+FUN_47ed30 TEXTEQU <_Rotate40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -224657,6 +225150,8 @@ $L_47f163::
             nop
 FUN_47eed0 ENDP
 ALIGN 16
+; AI STL instances: src\aistl.cpp, nmake ASM_AISTL=1 assembles the original
+IFDEF ASM_AISTL
 FUN_47f170 PROC
 
             sub ESP,24
@@ -224967,6 +225462,10 @@ $L_47f3dd::
             nop
             nop
 FUN_47f170 ENDP
+ELSE
+EXTERN _Road40_MergeLoop:PROC
+FUN_47f170 TEXTEQU <_Road40_MergeLoop>
+ENDIF
 ALIGN 16
 FUN_47f3f0 PROC
 
@@ -226795,7 +227294,7 @@ EXTERN _Road_EndOf:PROC
 FUN_4800a0 TEXTEQU <_Road_EndOf>
 ENDIF
 ALIGN 16
-; AI road ids: srciroad.cpp, nmake ASM_AIROAD=1 assembles the original
+; AI road ids: src\airoad.cpp, nmake ASM_AIROAD=1 assembles the original
 IFDEF ASM_AIROAD
 FUN_4801f0 PROC
 
@@ -244980,6 +245479,8 @@ EXTERN @IntRef_ToDouble@8:PROC
 FUN_48a9f0 TEXTEQU <@IntRef_ToDouble@8>
 ENDIF
 ALIGN 16
+; AI helpers: src\aimisc.cpp, nmake ASM_AIMISC=1 assembles the original
+IFDEF ASM_AIMISC
 FUN_48aa00 PROC
 
             push EBX
@@ -245095,6 +245596,10 @@ $L_48aaca::
             pop EBX
             ret 
 FUN_48aa00 ENDP
+ELSE
+EXTERN _WStr_Make:PROC
+FUN_48aa00 TEXTEQU <_WStr_Make>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -245194,6 +245699,8 @@ $L_48ab7b::
             ret 
 FUN_48aae0 ENDP
 ALIGN 16
+; AI helpers: src\aimisc.cpp, nmake ASM_AIMISC=1 assembles the original
+IFDEF ASM_AIMISC
 FUN_48ab80 PROC
 
             push EBX
@@ -245345,6 +245852,10 @@ $L_48acbc::
             pop EBX
             ret 
 FUN_48ab80 ENDP
+ELSE
+EXTERN _WStr_Resize:PROC
+FUN_48ab80 TEXTEQU <_WStr_Resize>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -245359,6 +245870,8 @@ FUN_48ab80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI helpers: src\aimisc.cpp, nmake ASM_AIMISC=1 assembles the original
+IFDEF ASM_AIMISC
 FUN_48acd0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -245500,6 +246013,10 @@ $L_48add7::
             pop EBX
             ret 
 FUN_48acd0 ENDP
+ELSE
+EXTERN _WStr_Assign:PROC
+FUN_48acd0 TEXTEQU <_WStr_Assign>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -246695,6 +247212,8 @@ FUN_48b350 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI helpers: src\aimisc.cpp, nmake ASM_AIMISC=1 assembles the original
+IFDEF ASM_AIMISC
 FUN_48b6b0 PROC
 
             sub ESP,20
@@ -246929,6 +247448,10 @@ $L_48b897::
             add ESP,20
             ret 
 FUN_48b6b0 ENDP
+ELSE
+EXTERN _Int_MulInt:PROC
+FUN_48b6b0 TEXTEQU <_Int_MulInt>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -247182,6 +247705,8 @@ FUN_48b8a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI helpers: src\aimisc.cpp, nmake ASM_AIMISC=1 assembles the original
+IFDEF ASM_AIMISC
 FUN_48ba90 PROC
 
             sub ESP,40
@@ -247403,6 +247928,10 @@ $L_48bcb3::
             add ESP,40
             ret 
 FUN_48ba90 ENDP
+ELSE
+EXTERN _Int_DivDigits:PROC
+FUN_48ba90 TEXTEQU <_Int_DivDigits>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -247868,6 +248397,8 @@ FUN_48bd80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI helpers: src\aimisc.cpp, nmake ASM_AIMISC=1 assembles the original
+IFDEF ASM_AIMISC
 FUN_48c040 PROC
 
             sub ESP,12
@@ -248137,6 +248668,10 @@ $L_48c241::
             add ESP,12
             ret 
 FUN_48c040 ENDP
+ELSE
+EXTERN _Int_Shift:PROC
+FUN_48c040 TEXTEQU <_Int_Shift>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -257815,6 +258350,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4918c0 PROC
 
             push EBX
@@ -258068,6 +258605,10 @@ $L_491a86::
             pop EBX
             ret 
 FUN_4918c0 ENDP
+ELSE
+EXTERN _Sch_Args3:PROC
+FUN_4918c0 TEXTEQU <_Sch_Args3>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -258083,6 +258624,8 @@ FUN_4918c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_491aa0 PROC
 
             push EBX
@@ -258268,6 +258811,10 @@ $L_491be7::
             pop EBX
             ret 
 FUN_491aa0 ENDP
+ELSE
+EXTERN _Sch_Args2:PROC
+FUN_491aa0 TEXTEQU <_Sch_Args2>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -258282,6 +258829,8 @@ FUN_491aa0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_491c00 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -258390,6 +258939,10 @@ $L_491cc5::
             pop EDI
             ret 
 FUN_491c00 ENDP
+ELSE
+EXTERN _Sch_SecondArg:PROC
+FUN_491c00 TEXTEQU <_Sch_SecondArg>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -285584,6 +286137,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a1940 PROC
 
@@ -285635,10 +286190,16 @@ $L_4a19a7::
             add ESP,16
             ret 4
 FUN_4a1940 ENDP
+ELSE
+EXTERN @SchValue_AsBool@12:PROC
+FUN_4a1940 TEXTEQU <@SchValue_AsBool@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a19c0 PROC
 
@@ -285690,6 +286251,10 @@ $L_4a1a27::
             add ESP,16
             ret 4
 FUN_4a19c0 ENDP
+ELSE
+EXTERN @SchValue_AsChar@12:PROC
+FUN_4a19c0 TEXTEQU <@SchValue_AsChar@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -286174,6 +286739,8 @@ $L_4a1e12::
             nop
             nop
 FUN_4a1da0 ENDP
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a1e30 PROC
 
@@ -286277,6 +286844,10 @@ $L_4a1ef4::
             add ESP,16
             ret 
 FUN_4a1e30 ENDP
+ELSE
+EXTERN _SchValue_MakeString:PROC
+FUN_4a1e30 TEXTEQU <_SchValue_MakeString>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -286521,6 +287092,8 @@ FUN_4a20a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a2140 PROC
 
@@ -286628,6 +287201,10 @@ $L_4a220e::
             add ESP,16
             ret 
 FUN_4a2140 ENDP
+ELSE
+EXTERN _SchValue_MakePair:PROC
+FUN_4a2140 TEXTEQU <_SchValue_MakePair>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -286637,6 +287214,8 @@ FUN_4a2140 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a2230 PROC
 
@@ -286740,9 +287319,15 @@ $L_4a22f4::
             add ESP,16
             ret 
 FUN_4a2230 ENDP
+ELSE
+EXTERN _SchValue_MakeIdent:PROC
+FUN_4a2230 TEXTEQU <_SchValue_MakeIdent>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a2310 PROC
 
@@ -286850,6 +287435,10 @@ $L_4a23dd::
             add ESP,16
             ret 
 FUN_4a2310 ENDP
+ELSE
+EXTERN _SchValue_MakeNumber:PROC
+FUN_4a2310 TEXTEQU <_SchValue_MakeNumber>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -286860,6 +287449,8 @@ FUN_4a2310 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a2400 PROC
 
@@ -286961,6 +287552,10 @@ $L_4a24bf::
             add ESP,16
             ret 
 FUN_4a2400 ENDP
+ELSE
+EXTERN _SchValue_MakeStringB:PROC
+FUN_4a2400 TEXTEQU <_SchValue_MakeStringB>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -286969,6 +287564,8 @@ FUN_4a2400 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a24e0 PROC
 
@@ -287076,6 +287673,10 @@ $L_4a25ad::
             add ESP,16
             ret 
 FUN_4a24e0 ENDP
+ELSE
+EXTERN _SchValue_MakeNumberU:PROC
+FUN_4a24e0 TEXTEQU <_SchValue_MakeNumberU>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -287231,6 +287832,8 @@ FUN_4a25d0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a2700 PROC
 
@@ -287334,9 +287937,15 @@ $L_4a27c4::
             add ESP,16
             ret 
 FUN_4a2700 ENDP
+ELSE
+EXTERN _SchValue_MakeVector:PROC
+FUN_4a2700 TEXTEQU <_SchValue_MakeVector>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a27e0 PROC
 
@@ -287440,6 +288049,12 @@ $L_4a28a7::
             add ESP,16
             ret 
 FUN_4a27e0 ENDP
+ELSE
+EXTERN _SchValue_MakeEnv:PROC
+FUN_4a27e0 TEXTEQU <_SchValue_MakeEnv>
+ENDIF
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a28c0 PROC
 
@@ -287543,6 +288158,10 @@ $L_4a2984::
             add ESP,16
             ret 
 FUN_4a28c0 ENDP
+ELSE
+EXTERN _SchValue_MakePairB:PROC
+FUN_4a28c0 TEXTEQU <_SchValue_MakePairB>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -287578,6 +288197,8 @@ FUN_4a29a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 ALIGN 16
 FUN_4a29e0 PROC
 
@@ -287620,6 +288241,10 @@ $L_4a2a33::
             mov DWORD PTR [EBP-20],ESI
             jmp $L_4a2a11
 FUN_4a29e0 ENDP
+ELSE
+EXTERN _Deque_AllocPages@8:PROC
+FUN_4a29e0 TEXTEQU <_Deque_AllocPages@8>
+ENDIF
 $L_4a2a3d PROC
 
             mov ESI,DWORD PTR [EBP+8]
@@ -287665,6 +288290,8 @@ $L_4a2a62 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a2a80 PROC
 
             push ECX
@@ -287831,8 +288458,14 @@ $L_4a2bb3::
             pop ECX
             ret 8
 FUN_4a2a80 ENDP
+ELSE
+EXTERN @Deque_ReallocMap@16:PROC
+FUN_4a2a80 TEXTEQU <@Deque_ReallocMap@16>
+ENDIF
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a2be0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -287940,6 +288573,10 @@ $L_4a2c9a::
             pop EBX
             ret 
 FUN_4a2be0 ENDP
+ELSE
+EXTERN _Values_Copy:PROC
+FUN_4a2be0 TEXTEQU <_Values_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -291800,6 +292437,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a4d80 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -292033,6 +292672,10 @@ $L_4a4f26::
             mov BYTE PTR [EDX],1
             ret 
 FUN_4a4d80 ENDP
+ELSE
+EXTERN _NameMap_Rebalance:PROC
+FUN_4a4d80 TEXTEQU <_NameMap_Rebalance>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -292114,6 +292757,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a4fb0 PROC
 
             push ECX
@@ -292263,6 +292908,10 @@ $L_4a50a8::
             pop ECX
             ret 8
 FUN_4a4fb0 ENDP
+ELSE
+EXTERN @NameMap_LowerBound@16:PROC
+FUN_4a4fb0 TEXTEQU <@NameMap_LowerBound@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -292822,6 +293471,8 @@ FUN_4a5420 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a54e0 PROC
 
             push EBP
@@ -292928,6 +293579,10 @@ $L_4a55af::
             pop EBP
             ret 
 FUN_4a54e0 ENDP
+ELSE
+EXTERN _Sch_Error:PROC
+FUN_4a54e0 TEXTEQU <_Sch_Error>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -293314,6 +293969,8 @@ FUN_4a5800 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a5910 PROC
 
             sub ESP,2052
@@ -293413,6 +294070,10 @@ $L_4a59ce::
             add ESP,2052
             ret 
 FUN_4a5910 ENDP
+ELSE
+EXTERN _Sch_Message0:PROC
+FUN_4a5910 TEXTEQU <_Sch_Message0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -293471,6 +294132,8 @@ FUN_4a59f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a5a60 PROC
 
             sub ESP,2052
@@ -293571,6 +294234,10 @@ $L_4a5b25::
             add ESP,2052
             ret 
 FUN_4a5a60 ENDP
+ELSE
+EXTERN _Sch_Message1:PROC
+FUN_4a5a60 TEXTEQU <_Sch_Message1>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -293586,6 +294253,8 @@ FUN_4a5a60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4a5b50 PROC
 
             sub ESP,2052
@@ -293689,6 +294358,10 @@ $L_4a5c20::
             add ESP,2052
             ret 
 FUN_4a5b50 ENDP
+ELSE
+EXTERN _Sch_Message2:PROC
+FUN_4a5b50 TEXTEQU <_Sch_Message2>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -301859,6 +302532,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4aa1d0 PROC
 
             push ECX
@@ -302016,6 +302691,10 @@ $L_4aa2eb::
             pop ECX
             ret 8
 FUN_4aa1d0 ENDP
+ELSE
+EXTERN @Vec44_Erase@16:PROC
+FUN_4aa1d0 TEXTEQU <@Vec44_Erase@16>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4aa320 PROC
@@ -303704,6 +304383,8 @@ $L_4aafec ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4ab130 PROC
 
             push ECX
@@ -303910,10 +304591,16 @@ $L_4ab2c5::
             pop ECX
             ret 4
 FUN_4ab130 ENDP
+ELSE
+EXTERN @Values_Assign@12:PROC
+FUN_4ab130 TEXTEQU <@Values_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4ab2d0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -304202,6 +304889,10 @@ $L_4ab52a::
             add ESP,8
             ret 
 FUN_4ab2d0 ENDP
+ELSE
+EXTERN _Elems44_Copy:PROC
+FUN_4ab2d0 TEXTEQU <_Elems44_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -304411,6 +305102,8 @@ FUN_4ab570 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4ab6c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -304703,6 +305396,10 @@ $L_4ab91d::
             add ESP,8
             ret 
 FUN_4ab6c0 ENDP
+ELSE
+EXTERN _Elems44_CopyBack:PROC
+FUN_4ab6c0 TEXTEQU <_Elems44_CopyBack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -304713,6 +305410,8 @@ FUN_4ab6c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4ab930 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -305015,6 +305714,10 @@ $L_4abb8b::
             nop
             nop
 FUN_4ab930 ENDP
+ELSE
+EXTERN _Elems44_CopyB:PROC
+FUN_4ab930 TEXTEQU <_Elems44_CopyB>
+ENDIF
 ALIGN 16
 FUN_4abba0 PROC
 
@@ -311950,6 +312653,8 @@ FUN_4af810 TEXTEQU <@SchListIt_PostInc@16>
 ENDIF
           BYTE 090H
 ALIGN 16
+; AI script evaluator: src\scheval.cpp, nmake ASM_SCHEVAL=1 assembles the original
+IFDEF ASM_SCHEVAL
 FUN_4af820 PROC
 
             push ECX
@@ -312112,6 +312817,10 @@ $L_4af934::
             pop ECX
             ret 8
 FUN_4af820 ENDP
+ELSE
+EXTERN @Values_Erase@16:PROC
+FUN_4af820 TEXTEQU <@Values_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315366,6 +316075,8 @@ $L_4b1100 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script items: src\schitem.cpp, nmake ASM_SCHITEM=1 assembles the original
+IFDEF ASM_SCHITEM
 FUN_4b1120 PROC
 
             mov EAX,ECX
@@ -315451,6 +316162,10 @@ $L_4b11d8::
             pop ESI
             ret 12
 FUN_4b1120 ENDP
+ELSE
+EXTERN @Node4b1120_Construct@20:PROC
+FUN_4b1120 TEXTEQU <@Node4b1120_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -318478,6 +319193,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script items: src\schitem.cpp, nmake ASM_SCHITEM=1 assembles the original
+IFDEF ASM_SCHITEM
 FUN_4b2a00 PROC
 
             sub ESP,132
@@ -318662,6 +319379,10 @@ $L_4b2b3e::
             add ESP,132
             ret 4
 FUN_4b2a00 ENDP
+ELSE
+EXTERN @Reader_ErrorLine@12:PROC
+FUN_4b2a00 TEXTEQU <@Reader_ErrorLine@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -318672,6 +319393,8 @@ FUN_4b2a00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script items: src\schitem.cpp, nmake ASM_SCHITEM=1 assembles the original
+IFDEF ASM_SCHITEM
 FUN_4b2b60 PROC
 
             sub ESP,12
@@ -318831,6 +319554,10 @@ $L_4b2c95::
             add ESP,12
             ret 4
 FUN_4b2b60 ENDP
+ELSE
+EXTERN @Reader_Fill@12:PROC
+FUN_4b2b60 TEXTEQU <@Reader_Fill@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4b2ca0 PROC
@@ -326116,6 +326843,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; AI script items: src\schitem.cpp, nmake ASM_SCHITEM=1 assembles the original
+IFDEF ASM_SCHITEM
 FUN_4b6a80 PROC
 
             push ECX
@@ -326254,6 +326983,10 @@ $L_4b6b80::
             pop ECX
             ret 
 FUN_4b6a80 ENDP
+ELSE
+EXTERN _Sch_CaretLine:PROC
+FUN_4b6a80 TEXTEQU <_Sch_CaretLine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -502403,6 +503136,8 @@ FUN_52ad10 TEXTEQU <@Pairs5_Clear@8>
 ENDIF
           BYTE 090H
 ALIGN 16
+; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
+IFDEF ASM_ENGINE
 FUN_52ad30 PROC
 
             sub ESP,104
@@ -502518,6 +503253,10 @@ $L_52ae25::
             add ESP,104
             ret 
 FUN_52ad30 ENDP
+ELSE
+EXTERN _Cars_LoadCollision:PROC
+FUN_52ad30 TEXTEQU <_Cars_LoadCollision>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -502600,6 +503339,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
+IFDEF ASM_ENGINE
 FUN_52aec0 PROC
 
             push EBX
@@ -502687,6 +503428,10 @@ $L_52af8e::
             pop EBX
             ret 4
 FUN_52aec0 ENDP
+ELSE
+EXTERN @CarPart_Select@12:PROC
+FUN_52aec0 TEXTEQU <@CarPart_Select@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -507413,6 +508158,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
+IFDEF ASM_ENGINE
 FUN_52e550 PROC
 
             sub ESP,108
@@ -507484,6 +508231,10 @@ $L_52e606::
             add ESP,108
             ret 4
 FUN_52e550 ENDP
+ELSE
+EXTERN @Crowd_Init@12:PROC
+FUN_52e550 TEXTEQU <@Crowd_Init@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_52e630 PROC
@@ -566714,6 +567465,8 @@ FUN_5587d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; vehicle: src\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_558850 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -566773,6 +567526,10 @@ $L_558875::
             add ESP,24
             ret 4
 FUN_558850 ENDP
+ELSE
+EXTERN @Vehicle_AttachCar@12:PROC
+FUN_558850 TEXTEQU <@Vehicle_AttachCar@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -574641,6 +575398,8 @@ FUN_55ebf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
+IFDEF ASM_ENGINE
 FUN_55ec70 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -574706,6 +575465,10 @@ $L_55ed43::
             pop ESI
             ret 4
 FUN_55ec70 ENDP
+ELSE
+EXTERN @Vehicle_Attach55ec70@12:PROC
+FUN_55ec70 TEXTEQU <@Vehicle_Attach55ec70@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -575489,6 +576252,8 @@ FUN_55f000 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
+IFDEF ASM_ENGINE
 FUN_55f4e0 PROC
 
             sub ESP,48
@@ -575646,6 +576411,10 @@ $L_55f5d6::
             add ESP,48
             ret 
 FUN_55f4e0 ENDP
+ELSE
+EXTERN _Vehicle_FindTaker:PROC
+FUN_55f4e0 TEXTEQU <_Vehicle_FindTaker>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_55f5f0 PROC
@@ -623127,6 +623896,8 @@ $L_57d87f ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; mmt: src\mmt.cpp, nmake ASM_MMT=1 assembles the original
+IFDEF ASM_MMT
 FUN_57dd70 PROC
 
             sub ESP,12
@@ -623201,6 +623972,10 @@ FUN_57dd70 PROC
             add ESP,12
             ret 16
 FUN_57dd70 ENDP
+ELSE
+EXTERN @SceneObj_InitState@24:PROC
+FUN_57dd70 TEXTEQU <@SceneObj_InitState@24>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
@@ -623498,6 +624273,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; engine: src\engine.cpp, nmake ASM_ENGINE=1 assembles the original
+IFDEF ASM_ENGINE
 FUN_57e070 PROC
 
             push EBX
@@ -623564,6 +624341,10 @@ FUN_57e070 PROC
             pop EBX
             ret 
 FUN_57e070 ENDP
+ELSE
+EXTERN @Vehicle_MakeOut@8:PROC
+FUN_57e070 TEXTEQU <@Vehicle_MakeOut@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -471,3 +471,36 @@ extern "C" double __cdecl Records_Height(float x, float y, BYTE* recs, unsigned 
                        + (double)F(float, r, 64) * F(float, r, 52));
     return Plane_Height(x, y, F(float, r, 64), F(float, r, 68), F(float, r, 72), d);
 }
+
+// ---------------------------------------------------------------------------
+// a scene object's initial state: gravity along the vector at 702630, three
+// zero vectors, the two identity matrices; returns what SceneObj_57e030 does
+
+extern "C" int __fastcall SceneObj_57e030(BYTE* self, void*, int* out);   // engine.cpp
+ASM_VAR(float, g_mmt702630, $L_702630)
+ASM_VAR(float, g_mmt702634, $L_702634)
+ASM_VAR(float, g_mmt702638, $L_702638)
+ASM_VAR(DWORD, g_mmt702650, $L_702650)
+ASM_VAR(DWORD, g_mmt702654, $L_702654)
+ASM_VAR(DWORD, g_mmt702658, $L_702658)
+ASM_VAR(float, g_gravity64d998, $L_64d998)      // -9.8
+ASM_VAR(AsmLabel, g_mmtIdentity, $L_7025f0)
+
+extern "C" int __fastcall SceneObj_InitState(BYTE* self, void*, DWORD a, DWORD b, DWORD c, DWORD d)
+{
+    F(float, self, 788) = g_mmt702630 * g_gravity64d998;
+    F(float, self, 792) = g_mmt702634 * g_gravity64d998;
+    F(float, self, 796) = g_mmt702638 * g_gravity64d998;
+    for (int off = 416; off <= 440; off += 12) {
+        F(DWORD, self, off) = g_mmt702650;
+        F(DWORD, self, off + 4) = g_mmt702654;
+        F(DWORD, self, off + 8) = g_mmt702658;
+    }
+    F(DWORD, self, 396) = a;
+    F(DWORD, self, 404) = b;
+    F(DWORD, self, 408) = c;
+    F(DWORD, self, 412) = d;
+    memcpy(self + 692, g_mmtIdentity, 48);
+    memcpy(self + 740, g_mmtIdentity, 48);
+    return SceneObj_57e030(self, 0, (int*)(self + 3268));
+}

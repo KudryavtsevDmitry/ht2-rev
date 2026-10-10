@@ -326,10 +326,12 @@ extern "C" void __cdecl Carat_DrawMovie()
 
 extern "C" void __cdecl Carat_SetFlag(int i) { g_6cea74[i] = 1; }
 
-extern "C" void __cdecl Carat_LoadFonts()
+// returns the menu font: the original leaves it in EAX and a caller uses it
+extern "C" void* __cdecl Carat_LoadFonts()
 {
     g_fontLarge = Carat_LoadFont(g_strLargeFon);
     g_fontMenu = Carat_LoadFont(g_strMenuFon);
+    return (void*)g_fontMenu;
 }
 
 extern "C" int __cdecl Carat_Level3() { return g_6ced70 >= 3; }
@@ -794,8 +796,9 @@ ASM_VAR(void*, g_6cecb4, $L_6cecb4)
 ASM_VAR(void*, g_696cb0, $L_696cb0)
 ASM_VAR(AsmLabel, g_6f68b0, $L_6f68b0)
 
-// loads a model (name) of a directory, with the resource file of the detail level
-extern "C" void __cdecl Model_Load(const char* name, const char* dir)
+// loads a model (name) of a directory, with the resource file of the detail
+// level; returns what FUN_5dae90 returns (a caller writes through it)
+extern "C" void* __cdecl Model_Load(const char* name, const char* dir)
 {
     char a[128], b[128], c[128];
     strcpy(a, name);
@@ -813,7 +816,7 @@ extern "C" void __cdecl Model_Load(const char* name, const char* dir)
     if (suf)
         strcat(c, suf);
     void* m = CallThis<void*>(FUN_5dc230, g_world, a);
-    CallThis(FUN_5dae90, g_world, m, b, c);
+    return CallThis<void*>(FUN_5dae90, g_world, m, b, c);
 }
 
 // opens the replay file: recording (1) or playing (2, 3: the demo)

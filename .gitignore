@@ -5,6 +5,8 @@ king.res
 *.pdb
 *.map
 *.log
+/build-test/
+__pycache__/
 
 
 # editor settings

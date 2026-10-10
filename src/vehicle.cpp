@@ -1356,3 +1356,25 @@ extern "C" int __fastcall Car_SetLights(BYTE* self, void*, float* level)
     CallThis(FUN_501b90, F(BYTE*, self, 21600), 2, level, F(int, self, 10476));
     return *level > 0.0f;
 }
+
+// ---------------------------------------------------------------------------
+// attaches the vehicle to a car: the car's engine faces against the vector at
+// 702630
+
+ASM_PROC(FUN_4eec80)    // engine: the angle of a direction (&vec)
+extern "C" void __fastcall Engine_4eead0(BYTE* self, void*, int a);   // carphys.cpp
+
+extern "C" void __fastcall Vehicle_AttachCar(BYTE* self, void*, BYTE* car)
+{
+    F(int, self, 20936) = 0;
+    F(BYTE*, self, 21880) = car;
+    F(BYTE*, self, 9528) = car ? car + 16 : 0;
+    F(int, F(BYTE*, self, 21600), 10096) = 1;
+    float d[3] = {-g_702630, -g_702634, -g_702638};
+    float a = CallThis<float>(FUN_4eec80, F(BYTE*, car, 21600), d);
+    Engine_4eead0(F(BYTE*, self, 21600), 0, F(int, &a, 0));
+    F(int, self, 21888) = 0;
+    F(int, self, 21892) = -1;
+    F(DWORD, F(BYTE*, self, 21600), 10124) = F(DWORD, F(BYTE*, self, 21880), 3284);
+    F(int, self, 21884) = 0;
+}

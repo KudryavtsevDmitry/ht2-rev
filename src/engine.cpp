@@ -36,7 +36,7 @@ ASM_PROC(FUN_4e51b1)
 ASM_PROC(FUN_4e4d82)
 ASM_PROC(FUN_4e480c)
 ASM_PROC(FUN_5f25a0)
-ASM_PROC(FUN_57e070)
+extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
 ASM_PROC(FUN_581ea0)
 ASM_PROC(FUN_5f25c0)
 ASM_PROC(FUN_5f2190)
@@ -517,7 +517,7 @@ extern "C" int __fastcall SceneObj_57e030(BYTE* self, void*, int* out)
     out[3] = F(int, self, 400);
     out[2] = F(int, self, 400);
     out[4] = F(int, self, 400);
-    return CallThis<int>(FUN_57e070, self);
+    return Vehicle_MakeOut(self, 0);
 }
 
 // the velocity at +464 in the frame of the matrix at +644, divided by +404
@@ -801,4 +801,184 @@ extern "C" char* __cdecl NextToken(char** pp)
     }
     *pp = (char*)p;
     return (char*)start;
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions
+
+ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
+ASM_PROC(FUN_4ee900)
+ASM_PROC(FUN_4e480c)
+ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
+ASM_PROC(FUN_4f1180)
+ASM_PROC(FUN_556a40)
+ASM_PROC(FUN_55f5f0)
+ASM_PROC(FUN_5ef3d0)    // a model by name
+ASM_PROC(FUN_5ef2b0)    // a key of a model (parent, name)
+ASM_PROC(FUN_52b030)
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+ASM_VAR(DWORD, g_702650, $L_702650)
+ASM_VAR(DWORD, g_702654, $L_702654)
+ASM_VAR(DWORD, g_702658, $L_702658)
+ASM_VAR(AsmLabel, g_6d219c, $L_6d219c)          // 1488-byte records
+ASM_VAR(BYTE*, g_6ef1f8, $L_6ef1f8)
+ASM_VAR(int, g_carModelCount, $L_6ce34c)
+ASM_VAR(AsmLabel, g_carModelNames, $L_6c6b68)   // 876 bytes per car
+typedef int CarParts[1];
+ASM_VAR(CarParts, g_carPartModels, $L_6ced98)   // 11 ints per car: 5 models, 5 counts, a key
+ASM_VAR(CarParts, g_carPartUses, $L_6cedac)
+
+// the vehicle's output state from its current transform; EAX is left
+// holding the dword at +444, which SceneObj_57e030 passes on
+extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*)
+{
+    memcpy(self + 3336, self + 500, 48);
+    memcpy(self + 3384, self + 596, 48);
+    float scale = 150.0f;
+    CallC(FUN_4e2821, self + 416, "make_out#1", scale);
+    memcpy(self + 3300, self + 416, 12);
+    F(DWORD, self, 3460) = F(DWORD, self, 888);
+    memcpy(self + 3312, self + 428, 12);
+    memcpy(self + 3324, self + 440, 12);
+    F(DWORD, self, 3432) = F(DWORD, self, 800);
+    memcpy(self + 3172, self + 500, 48);
+    return F(int, self, 444);
+}
+
+extern "C" void __fastcall Vehicle_Attach55ec70(BYTE* self, void*, BYTE* p)
+{
+    F(BYTE*, self, 21880) = p;
+    F(BYTE*, self, 9528) = p ? p + 16 : 0;
+    BYTE* e = F(BYTE*, self, 21600);
+    F(int, self, 20936) = 0;
+    F(DWORD, e, 10244) = g_702650;
+    F(DWORD, e, 10248) = g_702654;
+    F(DWORD, e, 10252) = g_702658;
+    F(int, F(BYTE*, self, 21600), 10096) = 1;
+    F(int, F(BYTE*, self, 21600), 10100) = 0;
+    CallThis(FUN_4ee900, F(BYTE*, self, 21600));
+    F(int, F(BYTE*, self, 21600), 10000) = 0;
+    F(short, F(BYTE*, self, 21600), 10006) = 0;
+    F(short, F(BYTE*, self, 21600), 10008) = 0;
+    F(short, F(BYTE*, self, 21600), 10010) = 0;
+    F(int, self, 21884) = 0;
+    int x = F(int, (BYTE*)g_6d219c + F(int, self, 10420) * 1488, 92);
+    if (x)
+        CallC(FUN_4e480c, x, 0);
+}
+
+// finds a vehicle that can take this one; 0 when attached, else the reason
+extern "C" int __cdecl Vehicle_FindTaker(BYTE* v, int arg)
+{
+    if (!v)
+        return 1;
+    if (CallVirt<int>(v, 4) != 1)
+        return 2;
+    if (!F(BYTE*, v, 21600))
+        return 3;
+    if (F(int, v, 21880))
+        return 4;
+    if (!g_6ef1f8)
+        return 8;
+    BYTE m[48];
+    CallThis(FUN_57de90, v + 16, m);
+    BYTE* found = 0;
+    int r = 1;
+    for (BYTE* o = g_6ef1f8 - 4; o;) {
+        if (CallVirt<int>(o, 4) == 2) {
+            found = o;
+            r = CallC<int>(FUN_55f000, v, o);
+            if (r == 0)
+                break;
+        }
+        if (!F(BYTE*, o, 8))
+            break;
+        o = F(BYTE*, o, 8) - 4;
+    }
+    if (r != 0)
+        return r;
+    if (F(int, F(BYTE*, found, 21600), 13124)) {
+        CallThis(FUN_4f1180, F(BYTE*, found, 21600));
+        CallVirt(F(BYTE*, found, 21600), 0);
+        CallThis(FUN_556a40, found);
+    }
+    CallC(FUN_55f5f0, v, found, arg);
+    return 0;
+}
+
+// the cars' collision models and their hit keys
+extern "C" void __cdecl Cars_LoadCollision()
+{
+    char name[100];
+    char* car = g_carModelNames;
+    int* rec = &g_carPartUses[0];
+    for (int i = 0; i < g_carModelCount; i++, car += 876, rec += 11) {
+        sprintf(name, "%s_car_cl", car);
+        rec[-5] = CallC<int>(FUN_5ef3d0, name);
+        rec[0] = 0;
+        if (rec[-5] == 0) {
+            for (int k = 0; k < 5; k++) {
+                sprintf(name, "%s%d_car_cl", car, k + 1);
+                rec[k - 5] = CallC<int>(FUN_5ef3d0, name);
+                rec[k] = 0;
+            }
+        } else
+            for (int k = 1; k < 5; k++) {
+                rec[k - 5] = 0;
+                rec[k] = 0;
+            }
+        sprintf(name, "hit_%s", car);
+        int hit = CallC<int>(FUN_5ef2b0, 0, name);
+        rec[5] = 0;
+        if (hit)
+            rec[5] = CallC<int>(FUN_5ef2b0, hit, "CollisionKey");
+    }
+}
+
+// switches a car's part to model k, releasing and taking the models
+extern "C" void __fastcall CarPart_Select(int* self, void*, int k)
+{
+    if (k == self[0] || k < 0 || k >= 5 || !g_carPartModels[self[1] * 11 + k])
+        return;
+    g_carPartUses[self[1] * 11 + self[0]]--;
+    int i = self[1] * 11 + self[0];
+    if (g_carPartUses[i] == 0)
+        CallVirt((void*)g_carPartModels[i], 36);
+    self[0] = k;
+    if (!self[2])
+        CallThis(FUN_52b030, self, 1);
+    i = self[1] * 11 + self[0];
+    if (g_carPartUses[i] == 0)
+        CallVirt((void*)g_carPartModels[i], 40);
+    g_carPartUses[self[1] * 11 + self[0]]++;
+}
+
+// ---------------------------------------------------------------------------
+// the crowd (the ovation sound) of a scene object: its matrix is the object's
+// moved by ten times the vector at 702630; fn is called when it plays
+
+ASM_PROC(FUN_5e48f0)    // an empty function: the default callback
+ASM_VAR(float, g_eng702630, $L_702630)
+ASM_VAR(float, g_eng702634, $L_702634)
+ASM_VAR(float, g_eng702638, $L_702638)
+ASM_VAR(float, g_ten64c450, $L_64c450)          // 10.0
+ASM_VAR(AsmLabel, g_strOvation, $L_678540)      // "ovation1Sound"
+
+extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
+{
+    F(DWORD, self, 3580) = F(DWORD, self, 800);
+    Vec3 v;
+    v.x = g_eng702630 * g_ten64c450;
+    v.y = g_eng702634 * g_ten64c450;
+    v.z = g_eng702638 * g_ten64c450;
+    Matrix t, r;
+    Matrix_Translation(&t, v);
+    F(Matrix, self, 3584) = *Matrix_Multiply(&r, (const Matrix*)(self + 500), &t);
+    F(int, self, 3632) = 0;
+    F(int, self, 3576) = 0;
+    F(void*, self, 3648) = fn ? fn : (void*)FUN_5e48f0;
+    int h = CallC<int>(FUN_5ef3d0, (const char*)g_strOvation);
+    F(int, self, 3640) = 0;
+    F(int, self, 3644) = 0;
+    F(int, self, 3636) = h;
 }
