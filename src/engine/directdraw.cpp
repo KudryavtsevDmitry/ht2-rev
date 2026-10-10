@@ -15,7 +15,7 @@ extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
 ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
 ASM_PROC(FUN_5d79d0)
-ASM_PROC(FUN_5d8260)
+extern "C" void FUN_5d8260(); KING_ALIAS("_FUN_5d8260", "_Dd_Release")
 ASM_PROC(FUN_5d75a0)
 
 ASM_VAR(int, g_bitDepth, $L_720890)
@@ -36,6 +36,16 @@ static __forceinline int Com(BYTE* com, unsigned off, A... args)
 {
     return (*(int(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
 }
+
+ASM_VAR(BYTE*, g_d3d, $L_72090c)
+ASM_VAR(BYTE*, g_dd, $L_720910)
+ASM_VAR(BYTE*, g_device, $L_720908)
+ASM_VAR(BYTE*, g_ddPalette, $L_7208f4)
+ASM_VAR(BYTE*, g_720900, $L_720900)
+ASM_VAR(BYTE*, g_720904, $L_720904)
+ASM_VAR(int, g_7208b4, $L_7208b4)
+ASM_VAR(int, g_waitVsync, $L_7208a8)
+ASM_VAR(HWND, g_hWnd, $L_720920)
 
 extern "C" {
 
@@ -175,6 +185,51 @@ void __cdecl Dd_RequestMode(int w, int h, int bits, int flags)
 int __cdecl Dd_BitDepth()
 {
     return g_bitDepth2;
+}
+
+}
+
+extern "C" {
+
+// [FUN_5d8260] releases the DirectDraw/Direct3D objects and restores the
+// display
+void __cdecl Dd_Release()
+{
+    if (!g_d3d)
+        return;
+    if (g_device) {
+        Com(g_device, 8);
+        g_device = 0;
+    }
+    if (g_ddPalette) {
+        Com(g_ddPalette, 8);
+        g_ddPalette = 0;
+    }
+    if (g_720900) {
+        Com(g_720900, 8);
+        g_720900 = 0;
+    }
+    if (g_directDraw && !g_7208b4) {
+        Com(g_directDraw, 8);
+        g_directDraw = 0;
+        g_waitVsync = 0;
+    }
+    if (g_ddFront) {
+        Com(g_ddFront, 8);
+        g_ddFront = 0;
+    }
+    if (g_720904) {
+        Com(g_720904, 8);
+        g_720904 = 0;
+    }
+    Com(g_dd, 76);
+    Com(g_d3d, 8);
+    g_d3d = 0;
+    Com(g_dd, 80, g_hWnd, 8);
+    Com(g_dd, 8);
+    g_dd = 0;
+    g_ddMode = 0;
+    g_ddWindowed = 0;
 }
 
 }
