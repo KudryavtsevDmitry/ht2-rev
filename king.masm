@@ -987,6 +987,11 @@ PUBLIC $L_7217bc, $L_72183c
 PUBLIC $L_65176c, $L_67f0e8, $L_67f0ec, $L_702644, $L_702648, $L_702e6c
 PUBLIC $L_702e74, $L_702e78, $L_702e7c, $L_702e88, $L_702e94, $L_72006c
 PUBLIC $L_720070, $L_720074, $L_720078, $L_72007c, $L_7208d4
+PUBLIC $L_6504f0, $L_652ef4, $L_652f00, $L_67844c, $L_67d10c, $L_684a64
+PUBLIC $L_6f6380, $L_6f63e4, $L_6f6518, $L_6f6570, $L_6f65a0, $L_6f65b8
+PUBLIC $L_6f65bc, $L_6f65c0, $L_6f65c4, $L_6f65c8, $L_6f65e8, $L_6f65ec
+PUBLIC $L_6f65f8, $L_6f6610, $L_6f6614, $L_6f6618, $L_6f6620, $L_72412c
+PUBLIC $L_725d28
 
 ;===================================
 _TEXT SEGMENT
@@ -622466,11 +622471,17 @@ $L_57c980::
 $L_57c970 ENDP
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57c9a0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             ret 
 FUN_57c9a0 ENDP
+ELSE
+EXTERN _Id_Same:PROC
+FUN_57c9a0 TEXTEQU <_Id_Same>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -622483,6 +622494,8 @@ FUN_57c9a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57c9b0 PROC
 
             mov EAX,DWORD PTR [$L_6f653c]
@@ -622514,8 +622527,14 @@ $L_57c9de::
 
             ret 
 FUN_57c9b0 ENDP
+ELSE
+EXTERN _Moving_Find:PROC
+FUN_57c9b0 TEXTEQU <_Moving_Find>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57c9e0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -622542,7 +622561,13 @@ $L_57c9e9::
             nop
             nop
 FUN_57c9e0 ENDP
+ELSE
+EXTERN _Moving_Of:PROC
+FUN_57c9e0 TEXTEQU <_Moving_Of>
+ENDIF
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57ca00 PROC
 
             mov ECX,DWORD PTR [$L_67844c]
@@ -622555,6 +622580,10 @@ FUN_57ca00 PROC
             pop ECX
             ret 
 FUN_57ca00 ENDP
+ELSE
+EXTERN _Race_SetMode:PROC
+FUN_57ca00 TEXTEQU <_Race_SetMode>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -622569,6 +622598,8 @@ FUN_57ca00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57ca30 PROC
 
             mov EAX,DWORD PTR [$L_67d10c]
@@ -622594,6 +622625,10 @@ $L_57ca56::
             mov DWORD PTR [$L_67d10c],EAX
             ret 
 FUN_57ca30 ENDP
+ELSE
+EXTERN _Id_New:PROC
+FUN_57ca30 TEXTEQU <_Id_New>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -622605,17 +622640,25 @@ FUN_57ca30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57ca70 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov BYTE PTR [EAX+$L_6f6380],0
             ret 
 FUN_57ca70 ENDP
+ELSE
+EXTERN _Id_Free6f6380:PROC
+FUN_57ca70 TEXTEQU <_Id_Free6f6380>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57ca80 PROC
 
             push EDI
@@ -622630,6 +622673,10 @@ FUN_57ca80 PROC
             pop EDI
             ret 
 FUN_57ca80 ENDP
+ELSE
+EXTERN _Ids_Reset:PROC
+FUN_57ca80 TEXTEQU <_Ids_Reset>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -622642,6 +622689,8 @@ FUN_57ca80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57cab0 PROC
 
             mov EAX,DWORD PTR [$L_6f65b8]
@@ -622702,7 +622751,13 @@ FUN_57cab0 PROC
             nop
             nop
 FUN_57cab0 ENDP
+ELSE
+EXTERN _Race_ResetState:PROC
+FUN_57cab0 TEXTEQU <_Race_ResetState>
+ENDIF
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57cb50 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -622716,6 +622771,10 @@ FUN_57cb50 PROC
             pop ESI
             ret 4
 FUN_57cb50 ENDP
+ELSE
+EXTERN @Object57cb50_Construct@12:PROC
+FUN_57cb50 TEXTEQU <@Object57cb50_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -623053,6 +623112,8 @@ $L_57cfa0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57cfc0 PROC
 
             mov EAX,ECX
@@ -623115,6 +623176,10 @@ $L_57d01a::
             pop ESI
             ret 
 FUN_57cfc0 ENDP
+ELSE
+EXTERN @Placement_Init@8:PROC
+FUN_57cfc0 TEXTEQU <@Placement_Init@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -716673,8 +716738,8 @@ $L_5ba7fa::
             ret 8
 FUN_5ba7b0 ENDP
 ELSE
-EXTERN @Texture_Pixel@20:PROC
-FUN_5ba7b0 TEXTEQU <@Texture_Pixel@20>
+EXTERN @Texture_Pixel@16:PROC
+FUN_5ba7b0 TEXTEQU <@Texture_Pixel@16>
 ENDIF
           BYTE 090H
           BYTE 090H
@@ -853843,6 +853908,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6050f0 PROC
 
             sub ESP,8
@@ -853874,6 +853941,10 @@ $L_605125::
             add ESP,8
             ret 
 FUN_6050f0 ENDP
+ELSE
+EXTERN _Mixer_GetVolume:PROC
+FUN_6050f0 TEXTEQU <_Mixer_GetVolume>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853894,6 +853965,8 @@ FUN_605130 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605140 PROC
 
             sub ESP,36
@@ -853938,6 +854011,10 @@ $L_605197::
             add ESP,36
             ret 
 FUN_605140 ENDP
+ELSE
+EXTERN _Mixer_CreateBuffer:PROC
+FUN_605140 TEXTEQU <_Mixer_CreateBuffer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853950,6 +854027,8 @@ FUN_605140 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6051b0 PROC
 
             push ECX
@@ -854007,6 +854086,10 @@ $L_6051f8::
             pop ECX
             ret 
 FUN_6051b0 ENDP
+ELSE
+EXTERN _Streams_Collect:PROC
+FUN_6051b0 TEXTEQU <_Streams_Collect>
+ENDIF
 ALIGN 16
 FUN_605200 PROC
 
@@ -854100,6 +854183,8 @@ FUN_6052b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6052c0 PROC
 
             push ESI
@@ -854150,6 +854235,10 @@ $L_60530d::
             pop ESI
             ret 
 FUN_6052c0 ENDP
+ELSE
+EXTERN @Play_UpdateVolume@8:PROC
+FUN_6052c0 TEXTEQU <@Play_UpdateVolume@8>
+ENDIF
 ALIGN 16
 FUN_605310 PROC
 
@@ -854345,6 +854434,8 @@ $L_605460 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605490 PROC
 
             mov ECX,DWORD PTR [$L_724124]
@@ -854375,9 +854466,15 @@ $L_6054bc::
             pop ESI
             ret 
 FUN_605490 ENDP
+ELSE
+EXTERN _Play_BestWaiting:PROC
+FUN_605490 TEXTEQU <_Play_BestWaiting>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6054c0 PROC
 
             mov ECX,DWORD PTR [$L_724124]
@@ -854408,9 +854505,15 @@ $L_6054ec::
             pop ESI
             ret 
 FUN_6054c0 ENDP
+ELSE
+EXTERN _Play_WorstPlaying:PROC
+FUN_6054c0 TEXTEQU <_Play_WorstPlaying>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6054f0 PROC
 
             push ESI
@@ -854452,6 +854555,10 @@ $L_60552e::
             pop ESI
             ret 
 FUN_6054f0 ENDP
+ELSE
+EXTERN @Play_Arbitrate@8:PROC
+FUN_6054f0 TEXTEQU <@Play_Arbitrate@8>
+ENDIF
 $L_605530 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -854942,12 +855049,18 @@ EXTERN @MarineMaterial_UpdateFrame@12:PROC
 FUN_6057b0 TEXTEQU <@MarineMaterial_UpdateFrame@12>
 ENDIF
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_605810 PROC
 
             mov EAX,DWORD PTR [ECX+12]
             mov EAX,DWORD PTR [ECX+EAX*4+16]
             ret 
 FUN_605810 ENDP
+ELSE
+EXTERN @Stack_Top@8:PROC
+FUN_605810 TEXTEQU <@Stack_Top@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856869,6 +856982,8 @@ $L_606703::
             nop
 FUN_6064c0 ENDP
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_606730 PROC
 
             push ESI
@@ -856888,6 +857003,10 @@ $L_606748::
             pop ESI
             ret 4
 FUN_606730 ENDP
+ELSE
+EXTERN @Grid606750_Delete@12:PROC
+FUN_606730 TEXTEQU <@Grid606750_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -857316,6 +857435,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_606a50 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -857347,6 +857468,10 @@ $L_606a7a::
             mov EAX,DWORD PTR [EDX]
             ret 4
 FUN_606a50 ENDP
+ELSE
+EXTERN @Pair_Next@12:PROC
+FUN_606a50 TEXTEQU <@Pair_Next@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_606a80 PROC
@@ -859927,6 +860052,8 @@ FUN_607410 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_607f60 PROC
 
             mov EAX,ECX
@@ -859937,7 +860064,13 @@ FUN_607f60 PROC
             mov DWORD PTR [EAX+12],ECX
             ret 
 FUN_607f60 ENDP
+ELSE
+EXTERN @Quad_Zero@8:PROC
+FUN_607f60 TEXTEQU <@Quad_Zero@8>
+ENDIF
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_607f70 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -859950,11 +860083,17 @@ $L_607f77::
             mov EAX,DWORD PTR [ECX+EAX*4+4]
             ret 
 FUN_607f70 ENDP
+ELSE
+EXTERN @Stack_Last@8:PROC
+FUN_607f70 TEXTEQU <@Stack_Last@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_607f80 PROC
 
             mov EAX,ECX
@@ -859997,6 +860136,10 @@ FUN_607f80 PROC
             mov DWORD PTR [EAX+132],ECX
             ret 
 FUN_607f80 ENDP
+ELSE
+EXTERN @Grid_ConstructLists@8:PROC
+FUN_607f80 TEXTEQU <@Grid_ConstructLists@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -861079,6 +861222,8 @@ FUN_608530 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_608a50 PROC
 
             mov EAX,ECX
@@ -861096,6 +861241,10 @@ FUN_608a50 PROC
             mov DWORD PTR [EAX+24],ECX
             ret 
 FUN_608a50 ENDP
+ELSE
+EXTERN @GridObj_Construct@8:PROC
+FUN_608a50 TEXTEQU <@GridObj_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -861125,15 +861274,23 @@ $L_608a80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_608aa0 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_652f00
             mov DWORD PTR [ECX+12],OFFSET $L_652ef4
             ret 
 FUN_608aa0 ENDP
+ELSE
+EXTERN @GridObj_SetVtables@8:PROC
+FUN_608aa0 TEXTEQU <@GridObj_SetVtables@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_608ab0 PROC
 
             push EBX
@@ -861213,6 +861370,10 @@ $L_608b35::
             pop EBX
             ret 8
 FUN_608ab0 ENDP
+ELSE
+EXTERN @Tiles_Table@16:PROC
+FUN_608ab0 TEXTEQU <@Tiles_Table@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -861567,6 +861728,8 @@ $L_608dd2::
             nop
 FUN_608c70 ENDP
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_608e70 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -861589,7 +861752,13 @@ FUN_608e70 PROC
             pop ESI
             ret 8
 FUN_608e70 ENDP
+ELSE
+EXTERN @Tile_Height@16:PROC
+FUN_608e70 TEXTEQU <@Tile_Height@16>
+ENDIF
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_608ea0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -861619,6 +861788,10 @@ FUN_608ea0 PROC
             mov DWORD PTR [ECX+8],EAX
             ret 12
 FUN_608ea0 ENDP
+ELSE
+EXTERN @Tile_Normal@20:PROC
+FUN_608ea0 TEXTEQU <@Tile_Normal@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -862664,6 +862837,8 @@ $L_609947::
             nop
 FUN_6097d0 ENDP
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_609960 PROC
 
             push ESI
@@ -862683,9 +862858,15 @@ $L_609978::
             pop ESI
             ret 4
 FUN_609960 ENDP
+ELSE
+EXTERN @Grid_Delete@12:PROC
+FUN_609960 TEXTEQU <@Grid_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_609980 PROC
 
             mov EAX,OFFSET $L_652ef4
@@ -862694,6 +862875,10 @@ FUN_609980 PROC
             mov DWORD PTR [ECX+16],EAX
             ret 
 FUN_609980 ENDP
+ELSE
+EXTERN @Grid_ResetVtables@8:PROC
+FUN_609980 TEXTEQU <@Grid_ResetVtables@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_609990 PROC
@@ -863049,6 +863234,8 @@ $L_609cbc::
             nop
 FUN_609990 ENDP
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_609ce0 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -863061,6 +863248,10 @@ FUN_609ce0 PROC
             mov DWORD PTR [EAX+4],ECX
             ret 
 FUN_609ce0 ENDP
+ELSE
+EXTERN _Ring_InsertBefore:PROC
+FUN_609ce0 TEXTEQU <_Ring_InsertBefore>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -863507,6 +863698,8 @@ $L_60a02d::
             ret 
 FUN_609de0 ENDP
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60a030 PROC
 
             push ESI
@@ -863570,6 +863763,10 @@ $L_60a0a1::
             pop ESI
             ret 
 FUN_60a030 ENDP
+ELSE
+EXTERN @Btr_Destroy@8:PROC
+FUN_60a030 TEXTEQU <@Btr_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864115,6 +864312,8 @@ FUN_60a1c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60a440 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -864126,6 +864325,10 @@ FUN_60a440 PROC
             mov DWORD PTR [ECX],EDX
             ret 
 FUN_60a440 ENDP
+ELSE
+EXTERN _Ring_Unlink:PROC
+FUN_60a440 TEXTEQU <_Ring_Unlink>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864733,6 +864936,8 @@ $L_60a840::
 $L_60a830 ENDP
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60a850 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -864741,6 +864946,10 @@ FUN_60a850 PROC
             inc EAX
             ret 
 FUN_60a850 ENDP
+ELSE
+EXTERN _Grid_IsFine:PROC
+FUN_60a850 TEXTEQU <_Grid_IsFine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867018,6 +867227,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60ba20 PROC
 
             push ECX
@@ -867040,6 +867251,10 @@ $L_60ba2e::
             pop ECX
             ret 
 FUN_60ba20 ENDP
+ELSE
+EXTERN _Tables_InitSin:PROC
+FUN_60ba20 TEXTEQU <_Tables_InitSin>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867091,6 +867306,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60bab0 PROC
 
             push ECX
@@ -867113,6 +867330,10 @@ $L_60babe::
             pop ECX
             ret 
 FUN_60bab0 ENDP
+ELSE
+EXTERN _Tables_InitCos:PROC
+FUN_60bab0 TEXTEQU <_Tables_InitCos>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867525,6 +867746,8 @@ FUN_60bbb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60bda0 PROC
 
             push ESI
@@ -867586,6 +867809,10 @@ $L_60be0d::
             pop ESI
             ret 4
 FUN_60bda0 ENDP
+ELSE
+EXTERN @Btr_Delete@12:PROC
+FUN_60bda0 TEXTEQU <@Btr_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868178,11 +868405,17 @@ $L_60c270 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60c280 PROC
 
             mov DWORD PTR [$L_725d28],0
             ret 
 FUN_60c280 ENDP
+ELSE
+EXTERN _Grid_Reset725d28:PROC
+FUN_60c280 TEXTEQU <_Grid_Reset725d28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868570,6 +868803,8 @@ FUN_60c520 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60c5b0 PROC
 
             push ESI
@@ -868604,6 +868839,10 @@ $L_60c5e9::
             pop ESI
             ret 
 FUN_60c5b0 ENDP
+ELSE
+EXTERN @GridTask_Free@8:PROC
+FUN_60c5b0 TEXTEQU <@GridTask_Free@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869263,6 +869502,8 @@ FUN_60c900 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60cae0 PROC
 
             push ESI
@@ -869289,6 +869530,10 @@ $L_60cb05::
             pop ESI
             ret 
 FUN_60cae0 ENDP
+ELSE
+EXTERN @Grid_DrainQueue@8:PROC
+FUN_60cae0 TEXTEQU <@Grid_DrainQueue@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -894185,6 +894430,8 @@ FUN_61a8a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61b8a0 PROC
 
             push ESI
@@ -894214,6 +894461,10 @@ $L_61b8bd::
             pop ESI
             ret 8
 FUN_61b8a0 ENDP
+ELSE
+EXTERN @TNode_Init@16:PROC
+FUN_61b8a0 TEXTEQU <@TNode_Init@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -894642,6 +894893,8 @@ $L_61bc5a::
             nop
 $L_61bbd0 ENDP
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61bc90 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -894730,6 +894983,10 @@ $L_61bd13::
             pop EBX
             ret 4
 FUN_61bc90 ENDP
+ELSE
+EXTERN @TGrid_Height@12:PROC
+FUN_61bc90 TEXTEQU <@TGrid_Height@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_61bd40 PROC
@@ -895221,11 +895478,17 @@ $L_61c0f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61c140 PROC
 
             fld DWORD PTR [ECX+16]
             ret 
 FUN_61c140 ENDP
+ELSE
+EXTERN @TGrid_Get16@8:PROC
+FUN_61c140 TEXTEQU <@TGrid_Get16@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -895239,11 +895502,17 @@ FUN_61c140 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61c150 PROC
 
             fld DWORD PTR [ECX+20]
             ret 
 FUN_61c150 ENDP
+ELSE
+EXTERN @TGrid_Get20@8:PROC
+FUN_61c150 TEXTEQU <@TGrid_Get20@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -895275,11 +895544,17 @@ $L_61c160 PROC
             nop
 $L_61c160 ENDP
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61c170 PROC
 
             mov EAX,DWORD PTR [ECX+36]
             ret 
 FUN_61c170 ENDP
+ELSE
+EXTERN @TGrid_Get36@8:PROC
+FUN_61c170 TEXTEQU <@TGrid_Get36@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -895385,6 +895660,8 @@ $L_61c1f0::
 $L_61c1e0 ENDP
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61c200 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -895405,6 +895682,10 @@ $L_61c226::
             mov EAX,1
             ret 16
 FUN_61c200 ENDP
+ELSE
+EXTERN @TGrid_Set@24:PROC
+FUN_61c200 TEXTEQU <@TGrid_Set@24>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_61c230 PROC

@@ -50,7 +50,7 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | `ai_task.cpp` | `AI_TASK.CPP` | how the AI reaches the game: cycle task, switches, screen messages, banners |
 | `route_search.cpp` | `ai_trce.cpp` | route tables and costs, checks and dumps of hop sequences, double precision geometry, CRC32, control filters |
 | **`src/sound/`** | `Gi\Srmidp` library | |
-| `directsound.cpp` | unit 0x603fd0 | the DirectSound mixer: priority list of playing sounds, RIFF chunks, volume in decibels |
+| `directsound.cpp` | unit 0x603fd0 (and the start of the `grd.cpp` range) | the DirectSound mixer: priority list of playing sounds, buffer arbitration, RIFF chunks, volume in decibels |
 | `sound_gate.cpp` | `D1gate.cpp` | the DirectPlay network gate, network message fields, the DirectShow music player, `.ini` integer helpers |
 | `timer.cpp` | `rdtsc.cpp` | `.ini` floating point helpers, the worker thread object |
 | **`src/script/`** | | the Scheme interpreter the AI scripts run on |
@@ -71,6 +71,7 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | `scenery.cpp` | unit 0x52abf0 | trees, trash boxes, collision keys |
 | `vehicle.cpp` | unit 0x52fa20 | control bindings, the vehicle list, vehicle type classes, saved state, flashing lights |
 | `vehicle_engine.cpp` | unit 0x5586f0 | the vehicle's engine state |
+| `object_ids.cpp` | unit 0x57c970 | object ids, the moving object list, per-race state reset |
 | `helicopter.cpp` | `copter.cpp` | the helicopter, a 16-bit stack, the on-screen notice, screen objects by id |
 | `force_feedback.cpp` | `mmt.cpp` | joystick force feedback, object pools, a frame stack, plane heights |
 | `moving_items.cpp` | unit 0x57d580 | `_MovingItem` / `_MovingBox`: scene objects that move and take hits |
@@ -81,7 +82,9 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | **`src/terrain/`** | `terrain` | |
 | `grid_base.cpp` | `grd.cpp` | shared grid camera and origin, child lifetimes, terrain cell branches, grid defaults |
 | `grid_topology.cpp` | `grd.cpp` | triangle and point allocation, paired refinement edges, branch destruction |
+| `grid_support.cpp` | `grd.cpp` | ring lists, btr.h tree nodes, tile height tables, sine/cosine degree tables |
 | `terrain.cpp` | `terrain.cpp` | detail levels, tile height samples, the visible-area test, noise lattice, decal vertices, room objects |
+| `terrain_grid.cpp` | `tgreed.cpp` | coordinate nodes, tile heights, accessors |
 | **`src/marine/`** | `marine` | the water surface |
 | `marine_core.cpp` | `MarineTask.cpp`, `mygreed.cpp`, `Greed.cpp` | mesh buffers, node/edge/work-item priority queues, tasks, particles, matrices |
 | `marine_startup.cpp` | `mygreed.cpp`, `MarineTask.cpp` | startup vectors, identity matrices, coefficients and work limits |

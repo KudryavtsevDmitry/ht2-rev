@@ -30,7 +30,7 @@ extern "C" int __cdecl Mixer_Load(int idx, int a, int b);                       
 ASM_PROC(FUN_5f2a40)
 ASM_PROC(FUN_5ef6d0)    // base node constructor (name, kind)
 ASM_PROC(FUN_5f19b0)    // named object constructor (name, kind, flag)
-ASM_PROC(FUN_6050f0)    // mixer volume, returns double
+extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    // mixer volume, returns double
 ASM_PROC(FUN_604730)
 ASM_PROC(FUN_604d70)
 ASM_PROC(FUN_605130)

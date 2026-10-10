@@ -63,8 +63,10 @@ OUT = king.exe
 #   ASM_SOUND_GATE             src\sound\sound_gate.cpp
 #   ASM_TIMER                  src\sound\timer.cpp
 #   ASM_GRID_BASE              src\terrain\grid_base.cpp
+#   ASM_GRID_SUPPORT           src\terrain\grid_support.cpp
 #   ASM_GRID_TOPOLOGY          src\terrain\grid_topology.cpp
 #   ASM_TERRAIN                src\terrain\terrain.cpp
+#   ASM_TERRAIN_GRID           src\terrain\terrain_grid.cpp
 #   ASM_DRIVETRAIN             src\truck\drivetrain.cpp
 #   ASM_EFFECTS                src\truck\effects.cpp
 #   ASM_FORCE_FEEDBACK         src\truck\force_feedback.cpp
@@ -73,6 +75,7 @@ OUT = king.exe
 #   ASM_KING_APP               src\truck\king_app.cpp
 #   ASM_MOVING_BODIES          src\truck\moving_bodies.cpp
 #   ASM_MOVING_ITEMS           src\truck\moving_items.cpp
+#   ASM_OBJECT_IDS             src\truck\object_ids.cpp
 #   ASM_SCENERY                src\truck\scenery.cpp
 #   ASM_STARTUP                src\truck\startup.cpp
 #   ASM_VEHICLE                src\truck\vehicle.cpp
@@ -121,8 +124,10 @@ ASM_DIRECTSOUND = 1
 ASM_SOUND_GATE = 1
 ASM_TIMER = 1
 ASM_GRID_BASE = 1
+ASM_GRID_SUPPORT = 1
 ASM_GRID_TOPOLOGY = 1
 ASM_TERRAIN = 1
+ASM_TERRAIN_GRID = 1
 ASM_DRIVETRAIN = 1
 ASM_EFFECTS = 1
 ASM_FORCE_FEEDBACK = 1
@@ -131,6 +136,7 @@ ASM_HELICOPTER = 1
 ASM_KING_APP = 1
 ASM_MOVING_BODIES = 1
 ASM_MOVING_ITEMS = 1
+ASM_OBJECT_IDS = 1
 ASM_SCENERY = 1
 ASM_STARTUP = 1
 ASM_VEHICLE = 1
@@ -257,11 +263,17 @@ MLFLAGS = $(MLFLAGS) /DASM_TIMER
 !IFDEF ASM_GRID_BASE
 MLFLAGS = $(MLFLAGS) /DASM_GRID_BASE
 !ENDIF
+!IFDEF ASM_GRID_SUPPORT
+MLFLAGS = $(MLFLAGS) /DASM_GRID_SUPPORT
+!ENDIF
 !IFDEF ASM_GRID_TOPOLOGY
 MLFLAGS = $(MLFLAGS) /DASM_GRID_TOPOLOGY
 !ENDIF
 !IFDEF ASM_TERRAIN
 MLFLAGS = $(MLFLAGS) /DASM_TERRAIN
+!ENDIF
+!IFDEF ASM_TERRAIN_GRID
+MLFLAGS = $(MLFLAGS) /DASM_TERRAIN_GRID
 !ENDIF
 !IFDEF ASM_DRIVETRAIN
 MLFLAGS = $(MLFLAGS) /DASM_DRIVETRAIN
@@ -286,6 +298,9 @@ MLFLAGS = $(MLFLAGS) /DASM_MOVING_BODIES
 !ENDIF
 !IFDEF ASM_MOVING_ITEMS
 MLFLAGS = $(MLFLAGS) /DASM_MOVING_ITEMS
+!ENDIF
+!IFDEF ASM_OBJECT_IDS
+MLFLAGS = $(MLFLAGS) /DASM_OBJECT_IDS
 !ENDIF
 !IFDEF ASM_SCENERY
 MLFLAGS = $(MLFLAGS) /DASM_SCENERY
@@ -393,7 +408,7 @@ MLFLAGS = $(MLFLAGS) /DASM_GUI
 !IFDEF ASM_VRAPPL
 MLFLAGS = $(MLFLAGS) /DASM_VRAPPL
 !ENDIF
-ALLCPPOBJS = ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj clusters.obj controls.obj core.obj directdraw.obj framework.obj game_app.obj input.obj main_loop.obj media.obj renderer.obj scene.obj sound_files.obj vecmath.obj video_mode.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj directsound.obj sound_gate.obj timer.obj grid_base.obj grid_topology.obj terrain.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
+ALLCPPOBJS = ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj clusters.obj controls.obj core.obj directdraw.obj framework.obj game_app.obj input.obj main_loop.obj media.obj renderer.obj scene.obj sound_files.obj vecmath.obj video_mode.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj directsound.obj sound_gate.obj timer.obj grid_base.obj grid_support.obj grid_topology.obj terrain.obj terrain_grid.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj object_ids.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE
@@ -403,7 +418,7 @@ CPPOBJS = $(ALLCPPOBJS)
 # The C++ code has no CRT of its own (king.masm contains the original one):
 # /Zl no default libraries, /GS- no security cookies, /GR- /EHs-c- no RTTI, no EH.
 # /arch:IA32: floating point on the x87 FPU like the assembly (see src\x87.h)
-CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
+CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"src\common" /I"src\ai" /I"src\truck" /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
 
 LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib
 LIBPATH_FLAGS = /LIBPATH:"C:\Users\Dmitry\Documents\dx7sdk\dx7sdk-700.1\lib" /LIBPATH:"C:\Program Files (x86)\Windows Kits\10\Lib\10.0.26100.0\um\x86"
