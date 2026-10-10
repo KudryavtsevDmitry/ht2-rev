@@ -6,8 +6,8 @@
 typedef char AsmLabel[1];
 extern "C" void __fastcall Lights_Destruct(BYTE*, void*); // aeffects.cpp
 ASM_PROC(FUN_613500)
-ASM_PROC(FUN_60f4f0)
-ASM_PROC(FUN_60f7b0)
+extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*, void*, BYTE*, DWORD);
+extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*, void*);
 ASM_PROC(FUN_605900)
 ASM_PROC(FUN_60f690)
 ASM_PROC(FUN_6136f0)
@@ -15,8 +15,8 @@ ASM_PROC(FUN_606750)
 ASM_PROC(FUN_6069d0)
 ASM_PROC(FUN_60aad0)
 ASM_PROC(FUN_60aa60)
-ASM_PROC(FUN_60f9d0)
-ASM_PROC(FUN_60f8d0)
+extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*, void*);
+extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*, void*, BYTE*, DWORD);
 ASM_PROC(FUN_6137d0)
 ASM_PROC(FUN_606760)
 ASM_VAR(DWORD, g_marineRefinementEnabled, $L_685abc)
@@ -92,13 +92,13 @@ extern "C" void __fastcall MarineGreed_Update(BYTE* self, void*)
         list = F(BYTE*, self, 32);
         node = F(BYTE*, self, 40);
         BYTE* next = MarineGreed_NextNode(list, node);
-        CallThis(FUN_60f4f0, list, node, score);
+        MarineQueue_SetNodePriority(list, 0, node, F(DWORD, &score, 0));
         F(BYTE*, self, 40) = next;
         if ((DWORD)(timeGetTime() - start) >= 1000)
             break;
     } while (F(BYTE*, self, 40));
     while ((unsigned)F(WORD, self, 38) < CallVirt<unsigned>(F(void*, self, 4), 8)) {
-        BYTE* node = CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+        BYTE* node = MarineQueue_TopNode(F(BYTE*, self, 32), 0);
         CallC(FUN_605900, F(void*, node, 32), self);
     }
 }
@@ -181,13 +181,13 @@ extern "C" int __fastcall MarineGreed_RefreshPriorities(BYTE* self, void*)
             list = F(BYTE*, self, 32);
             node = F(BYTE*, self, 40);
             BYTE* next = MarineGreed_NextNode(list, node);
-            CallThis(FUN_60f4f0, list, node, score);
-            F(BYTE*, self, 40) = next ? next : CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+            MarineQueue_SetNodePriority(list, 0, node, F(DWORD, &score, 0));
+            F(BYTE*, self, 40) = next ? next : MarineQueue_TopNode(F(BYTE*, self, 32), 0);
             lastNodeTime = timeGetTime();
         } while ((DWORD)(lastNodeTime - start) < 2);
     }
     if (!F(BYTE*, self, 44))
-        F(BYTE*, self, 44) = CallThis<BYTE*>(FUN_60f9d0, F(void*, self, 28));
+        F(BYTE*, self, 44) = MarineQueue_TopEdge(F(BYTE*, self, 28), 0);
     if (F(BYTE*, self, 44)) {
         do {
             BYTE* edge = F(BYTE*, self, 44);
@@ -206,7 +206,7 @@ extern "C" int __fastcall MarineGreed_RefreshPriorities(BYTE* self, void*)
             list = F(BYTE*, self, 28);
             edge = F(BYTE*, self, 44);
             BYTE* next = MarineGreed_NextEdge(list, edge);
-            CallThis(FUN_60f8d0, list, edge, score);
+            MarineQueue_SetEdgePriority(list, 0, edge, F(DWORD, &score, 0));
             list = F(BYTE*, self, 28);
             F(BYTE*, self, 44) = next ? next : F(BYTE*, list, 0) ? F(BYTE*, list, 0) : F(BYTE*, list, 4);
         } while ((DWORD)(timeGetTime() - lastNodeTime) < 1);
@@ -218,20 +218,20 @@ extern "C" int __fastcall MarineGreed_Refine(BYTE* self, void*)
 {
     if (!g_marineRefinementEnabled || CallThis<int>(FUN_6137d0, F(void*, self, 28)))
         return 0;
-    BYTE* edge = CallThis<BYTE*>(FUN_60f9d0, F(void*, self, 28));
+    BYTE* edge = MarineQueue_TopEdge(F(BYTE*, self, 28), 0);
     float edgeScore = F(float, edge, 72);
-    BYTE* node = CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+    BYTE* node = MarineQueue_TopNode(F(BYTE*, self, 32), 0);
     if (!(F(float, node, 28) >= edgeScore))
         return 0;
     unsigned desired = CallVirt<unsigned>(F(void*, self, 4), 8);
     for (unsigned i = 0; i < g_marineRefinementLimit; ++i) {
         if (CallThis<int>(FUN_6137d0, F(void*, self, 28)))
             break;
-        edge = CallThis<BYTE*>(FUN_60f9d0, F(void*, self, 28));
+        edge = MarineQueue_TopEdge(F(BYTE*, self, 28), 0);
         CallC(FUN_606760, edge, self);
     }
     for (unsigned i = 0; i < g_marineRefinementLimit && (unsigned)F(WORD, self, 38) < desired; ++i) {
-        node = CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+        node = MarineQueue_TopNode(F(BYTE*, self, 32), 0);
         CallC(FUN_605900, F(void*, node, 32), self);
     }
     return 1;
@@ -255,4 +255,39 @@ extern "C" int __fastcall MarineGreed_Emit(BYTE* self, void*)
         node = MarineGreed_NextNode(F(BYTE*, self, 32), node);
     }
     return 1;
+}
+
+// Priority queues specific to marine mesh nodes and edges.
+ASM_PROC(FUN_60f520)
+ASM_PROC(FUN_60f900)
+extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE* self, void*, BYTE* node, DWORD priorityBits)
+{
+    CallThis(FUN_60f690, self, node);
+    F(DWORD, node, 28) = priorityBits;
+    CallThis(FUN_60f520, self, node);
+    return ++F(DWORD, self, 8);
+}
+extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE* self, void*, BYTE* edge, DWORD priorityBits)
+{
+    CallThis(FUN_6136f0, self, edge);
+    F(DWORD, edge, 72) = priorityBits;
+    CallThis(FUN_60f900, self, edge);
+    return ++F(DWORD, self, 8);
+}
+extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE* self, void*)
+{
+    BYTE* first = F(BYTE*, self, 0);
+    BYTE* last = F(BYTE*, self, 4);
+    if (!first) return last;
+    if (!last) return first;
+    // Unordered scores follow the same branch as a strictly smaller last.
+    return !(F(float, last, 28) >= F(float, first, 28)) ? first : last;
+}
+extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE* self, void*)
+{
+    BYTE* first = F(BYTE*, self, 0);
+    BYTE* last = F(BYTE*, self, 4);
+    if (!first) return last;
+    if (!last) return first;
+    return F(float, last, 72) > F(float, first, 72) ? first : last;
 }
