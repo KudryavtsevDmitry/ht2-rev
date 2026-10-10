@@ -16,7 +16,7 @@ $body += [regex]::Match($init,'(?s)extern "C" DWORD\* __cdecl MarineInit_Identit
 foreach($name in @('MarineParticle_Update','MarineParticlePool_Remove')) {
     $body += [regex]::Match($source,'(?s)extern "C" [^\n]+ '+$name+'[(].*?\n}').Value+"`n"
 }
-$body += $source.Substring($source.IndexOf('// Marine particle rendering'))
+$body += $source.Substring($source.IndexOf('// Marine particle rendering'),$source.IndexOf('// Marine mesh work-item')-$source.IndexOf('// Marine particle rendering'))
 $header = @'
 #include "../src/king.h"
 #include "../src/x87.h"
