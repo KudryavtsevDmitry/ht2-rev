@@ -15,7 +15,7 @@ extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "FUN_401000")
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_470900)
-ASM_PROC(FUN_44ac60)    // vector<pointer>: a new buffer (n, first, last)
+extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 
 ASM_VAR(BYTE*, g_68ccb8, $L_68ccb8)             // 104-byte records
