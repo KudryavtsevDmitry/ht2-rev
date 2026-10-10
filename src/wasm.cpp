@@ -678,3 +678,101 @@ extern "C" void __fastcall Table124_Add(BYTE* self, void*, int a, int b, const V
     F(int, o, 104) = 0;
     F(int, o, 108) = 1;
 }
+
+// Effect drawing: validate its secondary render base, submit it, and apply
+// the position stored by the effect before completing the draw.
+ASM_PROC(FUN_5b4fc0)
+ASM_PROC(FUN_5ef800)
+ASM_PROC(FUN_5b3010)
+extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*); // engine.cpp
+ASM_VAR(float, g_effectOne, $L_64c250)
+ASM_VAR(float, g_effectFadeScale, $L_64c33c)
+ASM_VAR(float, g_effectFadeBase, $L_64c260)
+ASM_VAR(double, g_effectZero, $L_64b678)
+ASM_VAR(double, g_effectDoubleOne, $L_64b670)
+ASM_VAR(double, g_effectNegativeHalf, $L_64b6b8)
+ASM_VAR(double, g_effectHalf, $L_64b6e0)
+
+extern "C" int __fastcall Effect_Draw(BYTE* self, void*, DWORD context, BYTE* renderer)
+{
+    CallVirt(self, 72);
+    if (!CallThis<int>(FUN_5b4fc0, renderer, self + 20))
+        return 0;
+    if (!CallThis<int>(FUN_5ef800, self, context, renderer))
+        return 0;
+    CallThis(FUN_5b3010, renderer, F(DWORD, self, 52), F(Vec3Bits, self, 56));
+    return 1;
+}
+
+static BYTE* Effect_CurrentFrame(BYTE* self)
+{
+    return F(BYTE**, self, 100)[F(int, self, 88)];
+}
+
+extern "C" int __fastcall Effect_DrawFade(BYTE* self, void*, DWORD context, BYTE* renderer)
+{
+    double opacity = (g_effectOne - ((double)F(float, self, 80) - F(float, self, 84))
+                                    / F(float, self, 80)) * g_64c25c;
+    if (opacity > g_64c25c)
+        opacity = g_64c25c;
+    F(float, Effect_CurrentFrame(self), 88) = (float)opacity;
+    return Effect_Draw(self, 0, context, renderer);
+}
+
+extern "C" int __fastcall Effect_DrawSoftFade(BYTE* self, void*, DWORD context, BYTE* renderer)
+{
+    F(DWORD, Effect_CurrentFrame(self), 32) &= ~0x1000u;
+    double opacity = (g_effectOne - ((double)F(float, self, 80) - F(float, self, 84))
+                                    / F(float, self, 80)) * g_effectFadeScale + g_effectFadeBase;
+    if (opacity > g_64c25c)
+        opacity = g_64c25c;
+    F(float, Effect_CurrentFrame(self), 88) = (float)opacity;
+    return Effect_Draw(self, 0, context, renderer);
+}
+
+extern "C" int __fastcall Effect_DrawTinted(BYTE* self, void*, DWORD context, BYTE* renderer)
+{
+    F(DWORD, Effect_CurrentFrame(self), 88) = 1063004406;
+    F(DWORD, Effect_CurrentFrame(self), 40) = F(DWORD, self, 184);
+    F(DWORD, Effect_CurrentFrame(self), 32) |= 0x1000;
+    int result = Effect_Draw(self, 0, context, renderer);
+    F(DWORD, Effect_CurrentFrame(self), 32) &= ~0x1000u;
+    return result;
+}
+
+// Interpolate the two size axes and update the quad's signed extents.
+extern "C" void __fastcall Effect_AnimateQuad(BYTE* self, void*)
+{
+    double t = ((double)F(float, self, 100) - F(float, self, 104)) / F(float, self, 100);
+    if (!(t >= g_effectZero))
+        t = g_effectZero;
+    else if (t > g_effectDoubleOne)
+        t = g_effectDoubleOne;
+    double remaining = g_effectDoubleOne - t;
+    double width = F(float, self, 136) * remaining + F(float, self, 132) * t;
+    double height = F(float, self, 144) * remaining + F(float, self, 140) * t;
+    float* x = F(float*, F(BYTE*, self, 72), 16);
+    x[0] = (float)(width * g_effectNegativeHalf);
+    x[1] = (float)(width * g_effectHalf);
+    x[2] = x[1];
+    x[3] = x[0];
+    float* y = F(float*, F(BYTE*, self, 72), 20);
+    y[0] = (float)(height * g_effectNegativeHalf);
+    y[1] = y[0];
+    y[2] = (float)(height * g_effectHalf);
+    y[3] = y[2];
+    SceneTexture_Advance(self, 0);
+}
+
+extern "C" void __fastcall Effect_MoveQuad(BYTE* self, void*)
+{
+    double step = F(double, F(BYTE*, self, 160), 2960);
+    // The original rounds the x/y deltas to float before adding them.
+    float dx = (float)(step * F(float, self, 148));
+    float dy = (float)(step * F(float, self, 152));
+    double dz = step * F(float, self, 156);
+    F(float, self, 76) = (float)((double)dx + F(float, self, 76));
+    F(float, self, 80) = (float)((double)dy + F(float, self, 80));
+    F(float, self, 84) = (float)(dz + F(float, self, 84));
+    Effect_AnimateQuad(self, 0);
+}
