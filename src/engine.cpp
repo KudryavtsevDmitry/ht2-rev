@@ -1037,3 +1037,94 @@ extern "C" const Matrix* __fastcall SceneEffect_Start(BYTE* self, void*, DWORD k
     F(Matrix, self, 32) = *transform;
     return transform;
 }
+
+// A position below the sentinel threshold resets both scripted positions.
+ASM_VAR(float, g_positionResetThreshold, $L_650624)
+ASM_VAR(AsmLabel, g_setPosition1, $L_67d4cc)
+ASM_VAR(AsmLabel, g_setPosition2, $L_67d4c0)
+ASM_VAR(AsmLabel, g_setPlace, $L_67d4b4)
+ASM_PROC(FUN_58e7f0)
+
+extern "C" int __fastcall SceneObj_SetPosition(BYTE* self, void*, DWORD arg, BYTE* state)
+{
+    if (!(F(float, state, 44) >= g_positionResetThreshold)) {
+        F(float, state, 44) = -1000.0f;
+        CallVirt(self, 144, &g_702650, g_setPosition1);
+        CallVirt(self, 148, &g_702650, g_setPosition2);
+    }
+    CallVirt(self, 136, arg, state);
+    return CallVirt<int>(self, 60);
+}
+
+extern "C" int __fastcall SceneObj_SetPlace(BYTE* self, void*, DWORD arg, DWORD place)
+{
+    CallThis(FUN_58e7f0, self, arg, g_setPlace, 0);
+    if (F(BYTE, self, 1132)) {
+        CallVirt(F(BYTE*, self, 32), 36);
+        return CallVirt<int>(self, 40, 0, self + 1132);
+    }
+    CallThis(FUN_5f2190, F(BYTE*, F(BYTE*, self, 32), 68), arg, 0);
+    CallVirt(F(BYTE*, self, 32), 36);
+    F(DWORD, self, 56) = place;
+    return CallVirt<int>(self, 40, place, 0);
+}
+
+ASM_VAR(short, g_sceneCommandCode, $L_67d10a)
+ASM_VAR(BYTE*, g_sceneCommandList, $L_6f653c)
+
+// List links point four bytes into an object's secondary base. Command
+// dispatch uses the primary base, 376 bytes before that secondary base.
+static BYTE* SceneObj_FindCommandTarget(int key)
+{
+    BYTE* link = g_sceneCommandList;
+    while (link) {
+        BYTE* object = link - 4;
+        if (!object)
+            break;
+        if (F(int, object, 812) == key)
+            return object - 376;
+        link = F(BYTE*, object, 8);
+    }
+    return 0;
+}
+
+extern "C" int __cdecl SceneObj_DispatchCommand(int command, BYTE* packet)
+{
+    if (command != g_sceneCommandCode)
+        return 0;
+    BYTE* target = SceneObj_FindCommandTarget(F(int, packet, 0));
+    if (!target)
+        return 0;
+    CallVirt(target, 196, packet);
+    return 1;
+}
+
+extern "C" int __fastcall SceneObj_DispatchTarget(BYTE* self, void*, const BYTE* packet)
+{
+    BYTE* target = SceneObj_FindCommandTarget(F(int, packet, 8));
+    if (!target)
+        return 0;
+    return CallVirt<int>(self, 192, target, F(DWORD, packet, 12));
+}
+
+extern "C" void __fastcall Pooled_Set4(BYTE* self, void*); // mmt.cpp
+
+// Advance the texture frame, clamping one-shot sequences and wrapping loops.
+extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*)
+{
+    int frame = (int)((double)F(float, self, 104) / F(float, self, 96)
+                      + F(int, self, 116));
+    if (F(BYTE, self, 128) & 1) {
+        if (frame >= F(int, self, 112))
+            frame = F(int, self, 112) - 1;
+    } else
+        frame %= F(int, self, 112);
+    F(int, self, 108) = frame;
+    ++F(DWORD, self, 124);
+    F(DWORD, F(BYTE*, self, 72), 36) = F(DWORD*, self, 120)[frame];
+    if (F(float, self, 104) > F(float, self, 100))
+        Pooled_Set4(self, 0);
+    else
+        F(float, self, 104) = (float)(F(double, F(BYTE*, self, 88), 2960)
+                                     + F(float, self, 104));
+}

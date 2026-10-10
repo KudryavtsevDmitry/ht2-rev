@@ -627761,6 +627761,7 @@ FUN_580dd0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_ENGINE
 $L_580f80 PROC
 
             push EBX
@@ -627817,6 +627818,10 @@ $L_580fbe::
             pop EBX
             ret 8
 $L_580f80 ENDP
+ELSE
+EXTERN @SceneObj_SetPlace@16:PROC
+$L_580f80 TEXTEQU <@SceneObj_SetPlace@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -628034,6 +628039,7 @@ $L_581060 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_ENGINE
 FUN_581230 PROC
 
             push ESI
@@ -628074,6 +628080,10 @@ $L_581275::
             pop ESI
             ret 8
 FUN_581230 ENDP
+ELSE
+EXTERN @SceneObj_SetPosition@16:PROC
+FUN_581230 TEXTEQU <@SceneObj_SetPosition@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -635482,6 +635492,7 @@ $L_586720 PROC
 $L_586720 ENDP
           BYTE 090H
           BYTE 090H
+IFDEF ASM_ENGINE
 $L_5867d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -635529,6 +635540,10 @@ $L_58681b::
             pop EBX
             ret 4
 $L_5867d0 ENDP
+ELSE
+EXTERN @SceneObj_DispatchTarget@12:PROC
+$L_5867d0 TEXTEQU <@SceneObj_DispatchTarget@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -636104,6 +636119,7 @@ $L_586d7c           BYTE ($L_586d68-$L_586d68)/4
             nop
 FUN_586cd0 ENDP
 ALIGN 16
+IFDEF ASM_ENGINE
 FUN_586d90 PROC
 
             movsx EAX,WORD PTR [$L_67d10a]
@@ -636153,6 +636169,10 @@ $L_586dda::
             pop ESI
             ret 
 FUN_586d90 ENDP
+ELSE
+EXTERN _SceneObj_DispatchCommand:PROC
+FUN_586d90 TEXTEQU <_SceneObj_DispatchCommand>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -665265,6 +665285,7 @@ FUN_59a9a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_ENGINE
 FUN_59aa10 PROC
 
             push ESI
@@ -665322,6 +665343,10 @@ $L_59aa72::
             pop ESI
             ret 
 FUN_59aa10 ENDP
+ELSE
+EXTERN @SceneTexture_Advance@8:PROC
+FUN_59aa10 TEXTEQU <@SceneTexture_Advance@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -1011985,6 +1012010,7 @@ $L_650544           DWORD $L_57cfa0
           DWORD $L_586180
           DWORD $L_586180
           DWORD FUN_582960
+PUBLIC $L_650624
 $L_650624           BYTE 000H
           BYTE 000H
           BYTE 0faH
@@ -1084846,6 +1084872,7 @@ $L_67d04c                     DB 'Shadow'
           BYTE 032H
           BYTE 000H
           BYTE 000H
+PUBLIC $L_67d10a
 $L_67d10a           BYTE 0d4H
           BYTE 003H
 $L_67d10c           BYTE 064H
@@ -1085013,13 +1085040,16 @@ $L_67d494                     DB '_MovingItem::make_new_Pos'
 
           DB 2 DUP(0)
 $L_67d4b0           DB 'run',0
+PUBLIC $L_67d4b4
 $L_67d4b4                     DB 'set_place#1'
           BYTE 000H
 
+PUBLIC $L_67d4c0
 $L_67d4c0                     DB 'set_Pos#2'
           BYTE 000H
 
           DB 2 DUP(0)
+PUBLIC $L_67d4cc
 $L_67d4cc                     DB 'set_Pos#1'
           BYTE 000H
 
@@ -1110633,6 +1110663,7 @@ $L_6f63dc           DB 4 DUP(?)
 $L_6f63e0           DB 4 DUP(?)
 $L_6f63e4           DB 308 DUP(?)
 $L_6f6518           DB 36 DUP(?)
+PUBLIC $L_6f653c
 $L_6f653c           DB 4 DUP(?)
 $L_6f6540           DB 8 DUP(?)
 $L_6f6548           DB 4 DUP(?)
