@@ -1,3 +1,4 @@
+PUBLIC $L_684a20
 PUBLIC $L_7242a0
 PUBLIC $L_724378
 PUBLIC $L_724374
@@ -853737,6 +853738,7 @@ FUN_605900 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_606100 PROC
 
             mov EAX,ECX
@@ -853764,6 +853766,10 @@ FUN_606100 PROC
             mov DWORD PTR [EAX+96],ECX
             ret 
 FUN_606100 ENDP
+ELSE
+EXTERN @GridEdge_Construct@8:PROC
+FUN_606100 TEXTEQU <@GridEdge_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853795,6 +853801,7 @@ $L_60616a::
             ret 4
 $L_606150 ENDP
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_606170 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -853945,6 +853952,10 @@ $L_6062aa::
             pop EBX
             ret 8
 FUN_606170 ENDP
+ELSE
+EXTERN @GridEdge_SetPairs@16:PROC
+FUN_606170 TEXTEQU <@GridEdge_SetPairs@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853960,6 +853971,7 @@ FUN_606170 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6062c0 PROC
 
             mov EAX,DWORD PTR [ECX+40]
@@ -854035,6 +854047,10 @@ $L_606318::
             pop EDI
             ret 4
 FUN_6062c0 ENDP
+ELSE
+EXTERN @GridMesh_RemoveTriangle@12:PROC
+FUN_6062c0 TEXTEQU <@GridMesh_RemoveTriangle@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -854043,6 +854059,7 @@ FUN_6062c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_606330 PROC
 
             push EBX
@@ -854107,6 +854124,10 @@ $L_60637b::
             pop EBX
             ret 16
 FUN_606330 ENDP
+ELSE
+EXTERN @GridMesh_CreateTriangle@24:PROC
+FUN_606330 TEXTEQU <@GridMesh_CreateTriangle@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -854142,15 +854163,21 @@ $L_6063d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6063f0 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_652e4c
             mov DWORD PTR [ECX+12],OFFSET $L_652e48
             ret 
 FUN_6063f0 ENDP
+ELSE
+EXTERN @GridTriangle_Destruct@8:PROC
+FUN_6063f0 TEXTEQU <@GridTriangle_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_606400 PROC
 
             push ESI
@@ -854175,10 +854202,15 @@ FUN_606400 PROC
             pop ESI
             ret 4
 FUN_606400 ENDP
+ELSE
+EXTERN @GridMesh_CreatePoint@12:PROC
+FUN_606400 TEXTEQU <@GridMesh_CreatePoint@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_606440 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -854251,6 +854283,10 @@ $L_6064b2::
             pop EDI
             ret 4
 FUN_606440 ENDP
+ELSE
+EXTERN @GridMesh_RemoveEdge@12:PROC
+FUN_606440 TEXTEQU <@GridMesh_RemoveEdge@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_6064c0 PROC
@@ -854567,6 +854603,7 @@ FUN_606730 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_606750 PROC
 
             mov EAX,OFFSET $L_652e48
@@ -854575,6 +854612,10 @@ FUN_606750 PROC
             mov DWORD PTR [ECX+16],EAX
             ret 
 FUN_606750 ENDP
+ELSE
+EXTERN @GridEdge_Destruct@8:PROC
+FUN_606750 TEXTEQU <@GridEdge_Destruct@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_606760 PROC
@@ -854905,6 +854946,7 @@ FUN_606760 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6069d0 PROC
 
             push ESI
@@ -854968,6 +855010,10 @@ $L_606a41::
             pop ESI
             ret 
 FUN_6069d0 ENDP
+ELSE
+EXTERN @GridBranch_Destruct@8:PROC
+FUN_6069d0 TEXTEQU <@GridBranch_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -892920,6 +892966,7 @@ $L_61c1a0::
 $L_61c190 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_61c1b0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -892933,6 +892980,10 @@ FUN_61c1b0 PROC
             mov EAX,1
             ret 16
 FUN_61c1b0 ENDP
+ELSE
+EXTERN @GridTriangle_SetPoints@24:PROC
+FUN_61c1b0 TEXTEQU <@GridTriangle_SetPoints@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

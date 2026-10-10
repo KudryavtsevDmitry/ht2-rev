@@ -13,8 +13,8 @@ extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*, void*);
 ASM_PROC(FUN_605900)
 extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);
-ASM_PROC(FUN_606750)
-ASM_PROC(FUN_6069d0)
+extern "C" void __fastcall GridEdge_Destruct(BYTE*,void*);
+extern "C" void __fastcall GridBranch_Destruct(BYTE*,void*);
 ASM_PROC(FUN_60aad0)
 ASM_PROC(FUN_60aa60)
 extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*, void*);
@@ -151,7 +151,7 @@ extern "C" void __fastcall MarineGreed_RemoveNode(BYTE* self, void*, BYTE* node)
         MarineQueue_RemoveLink(F(BYTE*, self, 28),0,edge);
         edge = F(BYTE*, node, 56);
         if (edge) {
-            CallThis(FUN_606750, edge);
+            GridEdge_Destruct(edge,0);
             operator delete(edge);
         }
     }
@@ -162,7 +162,7 @@ extern "C" void __fastcall MarineGreed_RemoveNode(BYTE* self, void*, BYTE* node)
         return;
     }
     if (group) {
-        CallThis(FUN_6069d0, group);
+        GridBranch_Destruct(group,0);
         operator delete(group);
     }
 }

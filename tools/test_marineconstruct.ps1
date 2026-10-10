@@ -4,6 +4,7 @@ $make=Get-Content "$repo\Makefile" -Raw
 $vc=[regex]::Match($make,'(?m)^VCDIR = (.+)\r?$').Groups[1].Value.Trim()
 $sdk=[regex]::Match($make,'(?m)^SDKINC = (.+)\r?$').Groups[1].Value.Trim()
 $out="$repo\build-test"
+New-Item -ItemType Directory -Path $out -Force | Out-Null
 $flags=@('/nologo','/c','/O2','/GS-','/Zl',"/I$vc\include","/I$sdk\um","/I$sdk\shared","/I$sdk\ucrt",'/arch:IA32')
 $source=Get-Content "$repo\src\marineconstruct.cpp" -Raw
 $globals='#include "../src/king.h"'+"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nextern `"C`" {`nint _fltused=0;`n"
@@ -38,4 +39,4 @@ $sdkLib=Join-Path (Split-Path (Split-Path $sdk -Parent) -Parent) ('Lib\'+(Split-
 & "$bin\link.exe" /nologo "$out\marineconstruct-actual.obj" "$out\marineconstruct-reference.obj" "$out\marineconstruct-test.obj" /NODEFAULTLIB /ENTRY:TestEntry /SUBSYSTEM:CONSOLE "/OUT:$out\marineconstruct-test.exe" "/LIBPATH:$sdkLib" kernel32.lib
 if($LASTEXITCODE){throw 'Test link failed'}
 & "$out\marineconstruct-test.exe"
-if($LASTEXITCODE){throw "Constructor differential failed: $LASTEXITCODE"}
+if($LASTEXITCODE){throw "Grid differential failed: $LASTEXITCODE"}

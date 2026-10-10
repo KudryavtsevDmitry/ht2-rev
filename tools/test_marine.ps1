@@ -20,6 +20,7 @@ $header += "extern `"C`" DWORD g_marineRefinementEnabled, g_marineRefinementLimi
 $header += 'extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*,void*,BYTE*,DWORD);' + "`n" + 'extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*,void*,BYTE*,DWORD);' + "`n" + 'extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*,void*);' + "`n" + 'extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*,void*);' + "`n"
 $header += 'extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);' + "`n"
 $header += 'extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);' + "`n" + 'extern "C" DWORD __fastcall MarineQueue_Empty(BYTE*,void*);' + "`n"
+$header += 'extern "C" void __fastcall GridEdge_Destruct(BYTE*,void*);' + "`n" + 'extern "C" void __fastcall GridBranch_Destruct(BYTE*,void*);' + "`n"
 $cpp = Join-Path $outputDir 'marine-actual.cpp'
 Set-Content $cpp ($header + $body)
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw
