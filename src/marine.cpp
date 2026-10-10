@@ -1515,3 +1515,83 @@ extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE* self,void*)
     if(!last) return first;
     return !(F(float,last,104)>=F(float,first,104))?last:first;
 }
+
+// Marine deferred node insertion, reprioritization and selection.
+extern "C" DWORD __fastcall MarineQueue_InsertDeferredNode(BYTE* self, void*, BYTE* node)
+{
+    BYTE* last = F(BYTE*, self, 4);
+    if (!last) {
+        F(BYTE*, self, 4) = node;
+    } else {
+        float score = F(float, node, 28);
+        if (!(score < g_mq_zero) && !(score > g_mq_zero)) {
+            MarineQueue_LinkBefore(last + 4, node ? node + 4 : 0);
+            return ++F(DWORD,self,8);
+        }
+        BYTE* position = last;
+        if (!(F(float, last, 28) > score)) {
+            MarineQueue_LinkBefore(last + 4, node ? node + 4 : 0);
+            F(BYTE*, self, 4) = node;
+        } else {
+            BYTE* previousLink = F(BYTE*, last, 8);
+            BYTE* previous = previousLink ? previousLink - 4 : 0;
+            if (!(F(float, previous, 28) >= score)) {
+                BYTE* nextLink = F(BYTE*, last, 4);
+                position = nextLink ? nextLink - 4 : 0;
+                while (F(float, position, 28) > score) {
+                    nextLink = F(BYTE*, position, 4);
+                    position = nextLink ? nextLink - 4 : 0;
+                }
+            }
+            MarineQueue_LinkBefore(position ? position + 4 : 0, node ? node + 4 : 0);
+        }
+    }
+    DWORD count = ++F(DWORD, self, 8);
+    return count>=500?MarineQueue_RebuildNodes(self,0):count;
+}
+extern "C" DWORD __fastcall MarineQueue_SetDeferredPriority(BYTE* self,void*,BYTE* node,DWORD priority)
+{
+    MarineQueue_RemoveNode(self,0,node);
+    F(DWORD,node,28)=priority;
+    MarineQueue_InsertDeferredNode(self,0,node);
+    return ++F(DWORD,self,8);
+}
+extern "C" BYTE* __fastcall MarineQueue_TopDeferredNode(BYTE* self,void*)
+{
+    BYTE* first=F(BYTE*,self,0),*last=F(BYTE*,self,4);
+    if(!first) return last;
+    if(!last) return first;
+    return F(float,last,28)>F(float,first,28)?last:first;
+}
+
+// Marine mesh scratch counters, coordinate records and buffer cleanup.
+ASM_VAR(float, g_ms_recordType, $L_6530c0)
+extern "C" DWORD __fastcall MarineScratch_ResetCounts(BYTE* self,void*)
+{
+    F(DWORD,self,136)=0;F(DWORD,self,128)=0;F(DWORD,self,120)=0;
+    return 0;
+}
+extern "C" DWORD __fastcall MarineScratch_AppendPoint(BYTE* self,void*,const DWORD* point)
+{
+    BYTE* entries=F(BYTE*,self,124);DWORD offset=F(DWORD,self,120)*48u;
+    volatile double type=g_ms_recordType;
+    F(float,entries+offset,0)=(float)type;
+    entries=F(BYTE*,self,124);volatile __int64 x=point[0];offset=F(DWORD,self,120)*48u;
+    F(float,entries+offset,4)=(float)x;
+    volatile __int64 y=point[1];offset=F(DWORD,self,120)*48u;entries=F(BYTE*,self,124);
+    F(float,entries+offset,8)=(float)y;
+    ++F(DWORD,self,120);
+    return offset;
+}
+extern "C" void __fastcall MarineScratch_ReleaseAuxiliary(BYTE* self,void*)
+{
+    void* buffer=F(void*,self,132);
+    if(buffer) {operator delete(buffer);F(DWORD,self,132)=0;}
+    buffer=F(void*,self,140);
+    if(buffer) {operator delete(buffer);F(DWORD,self,140)=0;}
+}
+extern "C" void __fastcall MarineScratch_ReleasePoints(BYTE* self,void*)
+{
+    void* buffer=F(void*,self,124);
+    if(buffer) {operator delete(buffer);F(DWORD,self,124)=0;}
+}

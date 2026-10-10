@@ -1,3 +1,4 @@
+PUBLIC $L_6530c0
 PUBLIC $L_64c48c
 PUBLIC $L_725e30
 PUBLIC $L_725e54
@@ -875201,6 +875202,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_610f20 PROC
 
             xor EAX,EAX
@@ -875224,6 +875226,10 @@ $L_610f20 PROC
             nop
             nop
 $L_610f20 ENDP
+ELSE
+EXTERN @MarineScratch_ResetCounts@8:PROC
+$L_610f20 TEXTEQU <@MarineScratch_ResetCounts@8>
+ENDIF
 $L_610f40 PROC
 
             sub ESP,96
@@ -876359,6 +876365,7 @@ FUN_611530 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_611d90 PROC
 
             sub ESP,8
@@ -876393,10 +876400,15 @@ $L_611d90 PROC
             add ESP,8
             ret 4
 $L_611d90 ENDP
+ELSE
+EXTERN @MarineScratch_AppendPoint@12:PROC
+$L_611d90 TEXTEQU <@MarineScratch_AppendPoint@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_611e00 PROC
 
             push ESI
@@ -876426,7 +876438,12 @@ $L_611e3d::
             pop ESI
             ret 
 $L_611e00 ENDP
+ELSE
+EXTERN @MarineScratch_ReleaseAuxiliary@8:PROC
+$L_611e00 TEXTEQU <@MarineScratch_ReleaseAuxiliary@8>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_611e40 PROC
 
             push ESI
@@ -876445,6 +876462,10 @@ $L_611e5a::
             pop ESI
             ret 
 $L_611e40 ENDP
+ELSE
+EXTERN @MarineScratch_ReleasePoints@8:PROC
+$L_611e40 TEXTEQU <@MarineScratch_ReleasePoints@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878955,6 +878976,7 @@ $L_6132f0 TEXTEQU <_MarineInit_DoubleTransitionScale>
 ENDIF
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613310 PROC
 
             push ESI
@@ -878985,7 +879007,12 @@ FUN_613310 PROC
             nop
             nop
 FUN_613310 ENDP
+ELSE
+EXTERN @MarineQueue_SetDeferredPriority@16:PROC
+FUN_613310 TEXTEQU <@MarineQueue_SetDeferredPriority@16>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613340 PROC
 
             mov EDX,DWORD PTR [ECX+4]
@@ -879194,6 +879221,10 @@ $L_6134ad::
             pop ESI
             ret 4
 FUN_613340 ENDP
+ELSE
+EXTERN @MarineQueue_InsertDeferredNode@12:PROC
+FUN_613340 TEXTEQU <@MarineQueue_InsertDeferredNode@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -879210,6 +879241,7 @@ FUN_613340 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6134c0 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -879257,6 +879289,10 @@ $L_6134f9::
 
             ret 
 FUN_6134c0 ENDP
+ELSE
+EXTERN @MarineQueue_TopDeferredNode@8:PROC
+FUN_6134c0 TEXTEQU <@MarineQueue_TopDeferredNode@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
