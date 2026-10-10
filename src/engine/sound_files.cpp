@@ -17,7 +17,7 @@ extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // 
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
-ASM_PROC(FUN_5c36e0)
+extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 ASM_PROC(FUN_6021f0)
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
 extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
