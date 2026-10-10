@@ -1,3 +1,6 @@
+PUBLIC $L_64c948
+PUBLIC $L_64c304
+PUBLIC $L_64c254
 PUBLIC $L_725f30
 PUBLIC $L_725f2c
 PUBLIC $L_725f28
@@ -878119,6 +878122,7 @@ $L_612cc0 TEXTEQU <_MarineInit_ParticleAxis>
 ENDIF
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612cf0 PROC
 
             push EBX
@@ -878178,6 +878182,10 @@ FUN_612cf0 PROC
             fstp ST(0)
             ret 8
 FUN_612cf0 ENDP
+ELSE
+EXTERN @MarineParticle_Start@16:PROC
+FUN_612cf0 TEXTEQU <@MarineParticle_Start@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878192,12 +878200,17 @@ FUN_612cf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612da0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov DWORD PTR [ECX+44],EAX
             ret 4
 FUN_612da0 ENDP
+ELSE
+EXTERN @MarineParticle_SetLifetime@12:PROC
+FUN_612da0 TEXTEQU <@MarineParticle_SetLifetime@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878205,6 +878218,7 @@ FUN_612da0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612db0 PROC
 
             sub ESP,24
@@ -878243,6 +878257,10 @@ FUN_612db0 PROC
             add ESP,24
             ret 4
 FUN_612db0 ENDP
+ELSE
+EXTERN @MarineParticle_Update@12:PROC
+FUN_612db0 TEXTEQU <@MarineParticle_Update@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

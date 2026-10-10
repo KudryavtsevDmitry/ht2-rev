@@ -1173,3 +1173,44 @@ extern "C" void __fastcall MarineTask_DrawPending(BYTE* self,void*,const float* 
     device=(BYTE*)g_mt_frameValue;
     CallStd((void(*)())F(void*,F(void*,device,0),100),device,6,274,vertices,4,0);
 }
+
+// Marine particle initialization, lifetime and motion.
+extern "C" int __cdecl rand();
+ASM_VAR(float, g_mp_scale, $L_725f78)
+ASM_VAR(float, g_mp_randomUnit, $L_64c254)
+ASM_VAR(float, g_mp_angularFactor, $L_64c304)
+ASM_VAR(float, g_mp_seconds, $L_64c948)
+extern "C" void __fastcall MarineParticle_Start(BYTE* self,void*,const DWORD* position,const DWORD* velocity)
+{
+    DWORD now=timeGetTime();
+    for(unsigned i=0;i<3;++i) F(DWORD,self,i*4)=position[i];
+    for(unsigned i=0;i<3;++i) F(DWORD,self,24+i*4)=position[i];
+    F(DWORD,self,12)=velocity[0];F(DWORD,self,16)=velocity[1];
+    DWORD velocityZ=velocity[2];
+    F(DWORD,self,48)=now;F(DWORD,self,20)=velocityZ;
+    int first=rand();
+    F(float,self,52)=(float)(((double)first*g_mp_scale)*g_mp_randomUnit);
+    int second=rand();
+    F(DWORD,self,40)=F(DWORD,self,44)+now;
+    double randomValue=(double)second*g_mp_randomUnit;
+    F(float,self,56)=(float)(((double)g_mp_scale*randomValue)*g_mp_angularFactor);
+}
+extern "C" void __fastcall MarineParticle_SetLifetime(BYTE* self,void*,DWORD lifetime)
+{
+    F(DWORD,self,44)=lifetime;
+}
+extern "C" void __fastcall MarineParticle_Update(BYTE* self,void*,DWORD now)
+{
+    // Keep FILD of an unsigned tick difference via a zero-extended qword.
+    // A direct unsigned-to-double cast rounds differently at 24-bit x87 precision.
+    volatile __int64 ticks=(DWORD)(now-F(DWORD,self,48));
+    double elapsed=(double)ticks*g_mp_seconds;
+    float x=(float)(elapsed*F(float,self,12));
+    float y=(float)(elapsed*F(float,self,16));
+    double z=elapsed*F(float,self,20);
+    float px=(float)((double)x+F(float,self,24));
+    float py=(float)((double)y+F(float,self,28));
+    float pz=(float)(z+F(float,self,32));
+    F(float,self,0)=px;F(float,self,4)=py;F(float,self,8)=pz;
+    F(float,self,52)=(float)((double)F(float,self,56)+F(float,self,52));
+}
