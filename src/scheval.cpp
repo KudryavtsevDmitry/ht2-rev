@@ -1170,3 +1170,41 @@ extern "C" void __stdcall Deque_AllocPages(int** first, int** last)
     }
 }
 KING_ALIAS("_Deque_AllocPages@8", "FUN_4a29e0")
+
+// sch_istr.cpp's Environment and Port value factories. Both return exactly
+// the three words of a Scheme value; the second argument is a compiler slot.
+ASM_PROC(FUN_4a2ef0)
+extern "C" BYTE* __fastcall SchItem4b5f30_Construct(BYTE*, void*, int, int);
+ASM_VAR(AsmLabel, g_inputEnvironmentName, $L_67060c)
+ASM_VAR(AsmLabel, g_inputPortName, $L_66cb28)
+
+static SchValue* SchInput_WrapNew(SchValue* out, BYTE* object, int type, const char* expected)
+{
+    out->obj = 0;
+    out->m_4 = 0;
+    out->flags = 0;
+    if (!object)
+        return out;
+    if (CallVirt<int>(object, 0) != type) {
+        Sch_Error(2, 1, CallVirt<const char*>(object, 4), expected);
+        return out;
+    }
+    out->obj = object;
+    out->flags = CallVirt<unsigned>(object, 0) & 255;
+    F(int, out->obj, 4)++;
+    return out;
+}
+
+extern "C" SchValue* __cdecl SchInput_MakeEnvironment(SchValue* out, int, DWORD a, DWORD b)
+{
+    BYTE* storage = (BYTE*)operator new(160);
+    BYTE* object = storage ? CallThis<BYTE*>(FUN_4a2ef0, storage, a, b) : 0;
+    return SchInput_WrapNew(out, object, 12, g_inputEnvironmentName);
+}
+
+extern "C" SchValue* __cdecl SchInput_MakePort(SchValue* out, int, const int* a, const int* b)
+{
+    BYTE* storage = (BYTE*)operator new(296);
+    BYTE* object = storage ? SchItem4b5f30_Construct(storage, 0, *a, *b) : 0;
+    return SchInput_WrapNew(out, object, 11, g_inputPortName);
+}
