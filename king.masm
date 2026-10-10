@@ -1,3 +1,7 @@
+PUBLIC $L_725e54
+PUBLIC $L_725e50
+PUBLIC $L_653138
+PUBLIC $L_65313c
 PUBLIC $L_64c948
 PUBLIC $L_64c304
 PUBLIC $L_64c254
@@ -876591,6 +876595,7 @@ $L_611ff0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612010 PROC
 
             sub ESP,8
@@ -876604,12 +876609,17 @@ FUN_612010 PROC
             add ESP,8
             ret 4
 FUN_612010 ENDP
+ELSE
+EXTERN @MarineGrid_MapX@12:PROC
+FUN_612010 TEXTEQU <@MarineGrid_MapX@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612040 PROC
 
             sub ESP,8
@@ -876623,11 +876633,16 @@ FUN_612040 PROC
             add ESP,8
             ret 4
 FUN_612040 ENDP
+ELSE
+EXTERN @MarineGrid_MapY@12:PROC
+FUN_612040 TEXTEQU <@MarineGrid_MapY@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612070 PROC
 
             sub ESP,8
@@ -876654,6 +876669,10 @@ FUN_612070 PROC
             add ESP,8
             ret 12
 FUN_612070 ENDP
+ELSE
+EXTERN @MarineGrid_Unmap@20:PROC
+FUN_612070 TEXTEQU <@MarineGrid_Unmap@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -877086,11 +877105,16 @@ $L_612420 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_612540 PROC
 
             mov EAX,DWORD PTR [$L_725e50]
             ret 
 $L_612540 ENDP
+ELSE
+EXTERN _MarineGrid_Width:PROC
+$L_612540 TEXTEQU <_MarineGrid_Width>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -877102,11 +877126,16 @@ $L_612540 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612550 PROC
 
             mov EAX,DWORD PTR [$L_725e54]
             ret 
 FUN_612550 ENDP
+ELSE
+EXTERN _MarineGrid_Height:PROC
+FUN_612550 TEXTEQU <_MarineGrid_Height>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -877317,6 +877346,7 @@ $L_6125d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612760 PROC
 
             sub ESP,8
@@ -877353,6 +877383,10 @@ $L_6127c9::
             add ESP,8
             ret 4
 FUN_612760 ENDP
+ELSE
+EXTERN @MarineGrid_Outside@12:PROC
+FUN_612760 TEXTEQU <@MarineGrid_Outside@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -877366,6 +877400,7 @@ FUN_612760 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6127e0 PROC
 
             sub ESP,24
@@ -877440,6 +877475,10 @@ $L_612870::
             add ESP,24
             ret 4
 FUN_6127e0 ENDP
+ELSE
+EXTERN @MarineGrid_ClassifyTriangle@12:PROC
+FUN_6127e0 TEXTEQU <@MarineGrid_ClassifyTriangle@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

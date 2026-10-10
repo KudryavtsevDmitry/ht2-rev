@@ -1214,3 +1214,49 @@ extern "C" void __fastcall MarineParticle_Update(BYTE* self,void*,DWORD now)
     F(float,self,0)=px;F(float,self,4)=py;F(float,self,8)=pz;
     F(float,self,52)=(float)((double)F(float,self,56)+F(float,self,52));
 }
+
+// Marine mesh coordinate mapping and triangle classification.
+ASM_VAR(float, g_mg_xLimit, $L_65313c)
+ASM_VAR(float, g_mg_yLimit, $L_653138)
+ASM_VAR(DWORD, g_mg_width, $L_725e50)
+ASM_VAR(DWORD, g_mg_height, $L_725e54)
+X87 double MarineGrid_Index(DWORD value)
+{
+    volatile __int64 index=value;
+    return (double)index;
+}
+extern "C" double __fastcall MarineGrid_MapX(BYTE* self,void*,const DWORD* point)
+{
+    return MarineGrid_Index(point[0])*F(float,self,192)+F(float,self,176);
+}
+extern "C" double __fastcall MarineGrid_MapY(BYTE* self,void*,const DWORD* point)
+{
+    return MarineGrid_Index(point[1])*F(float,self,196)+F(float,self,188);
+}
+extern "C" void __fastcall MarineGrid_Unmap(BYTE* self,void*,const DWORD* point,float* x,float* y)
+{
+    *x=(float)((MarineGrid_Index(point[0])-F(float,self,152))/F(float,self,100));
+    *y=(float)((MarineGrid_Index(point[1])-F(float,self,156))/F(float,self,104));
+}
+extern "C" DWORD __fastcall MarineGrid_Outside(BYTE* self,void*,const DWORD* point)
+{
+    BYTE* grid=F(BYTE*,self,4);
+    if(MarineGrid_MapX(grid,0,point)>g_mg_xLimit) return 1;
+    return MarineGrid_MapY(grid,0,point)>g_mg_yLimit;
+}
+extern "C" DWORD __fastcall MarineGrid_ClassifyTriangle(BYTE* self,void*,BYTE* triangle)
+{
+    DWORD points[3][2];
+    for(unsigned i=0;i<3;++i) {
+        const DWORD* vertex=F(DWORD*,triangle,16+i*4);
+        points[i][0]=vertex[0];points[i][1]=vertex[1];
+    }
+    DWORD first=MarineGrid_Outside(self,0,points[0]);
+    DWORD second=MarineGrid_Outside(self,0,points[1]);
+    DWORD third=MarineGrid_Outside(self,0,points[2]);
+    if(first && second && third) return 4;
+    if(!first && !second && !third) return 1;
+    return 2;
+}
+extern "C" DWORD __cdecl MarineGrid_Width() { return g_mg_width; }
+extern "C" DWORD __cdecl MarineGrid_Height() { return g_mg_height; }

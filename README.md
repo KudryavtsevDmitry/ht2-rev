@@ -44,7 +44,7 @@ Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Да
 | `src/carphys.cpp` | the unit at 0x4eb0c7: control ramps, contacts, steering geometry |
 | `src/aiordr.cpp` | `ai_ordr.cpp` and `ai_svld.cpp`: order lists, order values, save-file helpers |
 | `src/engine.cpp` | small functions of sch_embd and the units at 0x4dd9f0, 0x52abf0, 0x5586f0, 0x57d580 and 0x5a3e00 |
-| `src/marine.cpp` | `Greed.cpp`, the unit at 0x60cfa0, and parts of `MarineTask.cpp`, `grd.cpp` and `tgreed.cpp`: marine mesh buffers, priority queues, refinement, output, node removal, object lifetimes, task construction/setup, scene resources and update dispatch, fading quad rendering and camera angles, geometry interpolation, transitions, motion response, particle initialization/motion and frame processing (`ASM_MARINE`) |
+| `src/marine.cpp` | `Greed.cpp`, the unit at 0x60cfa0, and parts of `MarineTask.cpp`, `grd.cpp` and `tgreed.cpp`: marine mesh buffers, priority queues, refinement, output, node removal, object lifetimes, task construction/setup, scene resources and update dispatch, fading quad rendering and camera angles, geometry interpolation, transitions, motion response, particle initialization/motion, mesh coordinate mapping and triangle classification, and frame processing (`ASM_MARINE`) |
 | `src/marineinit.cpp` | marine mesh and particle startup vectors, identity matrices, motion and refinement coefficients and default processing limits (`ASM_MARINE`) |
 | `src/compile_flags.txt` | makes clangd check `src/` as 32-bit MSVC code |
 | `tools/objdiff.py` | compares two `king.obj`: whether a change to `king.masm` changed code or data |
