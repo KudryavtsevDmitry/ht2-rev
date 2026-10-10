@@ -1,3 +1,5 @@
+PUBLIC $L_64c48c
+PUBLIC $L_725e30
 PUBLIC $L_725e54
 PUBLIC $L_725e50
 PUBLIC $L_653138
@@ -878308,6 +878310,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612e30 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -878367,7 +878370,12 @@ FUN_612e30 PROC
             pop EBX
             ret 16
 FUN_612e30 ENDP
+ELSE
+EXTERN @MarineParticlePool_Construct@24:PROC
+FUN_612e30 TEXTEQU <@MarineParticlePool_Construct@24>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612eb0 PROC
 
             push ESI
@@ -878416,6 +878424,10 @@ $L_612f11::
             pop ESI
             ret 8
 FUN_612eb0 ENDP
+ELSE
+EXTERN @MarineParticlePool_Add@16:PROC
+FUN_612eb0 TEXTEQU <@MarineParticlePool_Add@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878426,6 +878438,7 @@ FUN_612eb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612f20 PROC
 
             mov EAX,DWORD PTR [ECX+16]
@@ -878462,7 +878475,12 @@ $L_612f58::
             mov EAX,1
             ret 4
 FUN_612f20 ENDP
+ELSE
+EXTERN @MarineParticlePool_Remove@12:PROC
+FUN_612f20 TEXTEQU <@MarineParticlePool_Remove@12>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_612f60 PROC
 
             sub ESP,44
@@ -878609,6 +878627,10 @@ $L_613113::
             add ESP,44
             ret 8
 FUN_612f60 ENDP
+ELSE
+EXTERN @MarineParticlePool_BuildGeometry@16:PROC
+FUN_612f60 TEXTEQU <@MarineParticlePool_BuildGeometry@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878779,6 +878801,7 @@ $L_61326d::
             nop
 FUN_613120 ENDP
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613280 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -878805,6 +878828,10 @@ $L_6132ae::
             xor EAX,EAX
             ret 
 FUN_613280 ENDP
+ELSE
+EXTERN @MarineParticlePool_CanAdd@8:PROC
+FUN_613280 TEXTEQU <@MarineParticlePool_CanAdd@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878821,12 +878848,17 @@ FUN_613280 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6132c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov DWORD PTR [ECX+28],EAX
             ret 4
 FUN_6132c0 ENDP
+ELSE
+EXTERN @MarineParticlePool_SetFloor@12:PROC
+FUN_6132c0 TEXTEQU <@MarineParticlePool_SetFloor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878834,6 +878866,7 @@ FUN_6132c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6132d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -878847,6 +878880,10 @@ FUN_6132d0 PROC
 
             nop
 FUN_6132d0 ENDP
+ELSE
+EXTERN @MarineParticlePool_SetLifetime@12:PROC
+FUN_6132d0 TEXTEQU <@MarineParticlePool_SetLifetime@12>
+ENDIF
 ALIGN 16
 IFDEF ASM_MARINE
 FUN_6132e0 PROC
