@@ -1,3 +1,15 @@
+PUBLIC $L_650804
+PUBLIC $L_64c320
+PUBLIC $L_650330
+PUBLIC $L_6530b4
+PUBLIC $L_6530b0
+PUBLIC $L_64d7b8
+PUBLIC $L_64c350
+PUBLIC $L_653000
+PUBLIC $L_653004
+PUBLIC $L_724964
+PUBLIC $L_7243bc
+PUBLIC $L_724960
 PUBLIC $L_6530c0
 PUBLIC $L_64c48c
 PUBLIC $L_725e30
@@ -864503,6 +864515,7 @@ $L_60b9b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60b9e0 PROC
 
             fld DWORD PTR [ESP+4]
@@ -864525,6 +864538,10 @@ $L_60b9f3::
             fld DWORD PTR [EDX*4+$L_724964]
             ret 
 FUN_60b9e0 ENDP
+ELSE
+EXTERN _MarineAngle_Cosine:PROC
+FUN_60b9e0 TEXTEQU <_MarineAngle_Cosine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864571,6 +864588,7 @@ FUN_60ba20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60ba60 PROC
 
             fld DWORD PTR [ESP+4]
@@ -864600,6 +864618,10 @@ $L_60ba94::
             fld DWORD PTR [EDX*4+$L_7243bc]
             ret 
 FUN_60ba60 ENDP
+ELSE
+EXTERN _MarineAngle_Sine:PROC
+FUN_60ba60 TEXTEQU <_MarineAngle_Sine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -873341,6 +873363,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60fc10 PROC
 
             push -1
@@ -873595,6 +873618,10 @@ $L_60febd::
             add ESP,28
             ret 12
 FUN_60fc10 ENDP
+ELSE
+EXTERN @MarineMesh_CreateMotionResponse@20:PROC
+FUN_60fc10 TEXTEQU <@MarineMesh_CreateMotionResponse@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
