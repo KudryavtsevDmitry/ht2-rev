@@ -1,3 +1,11 @@
+PUBLIC $L_64c490
+PUBLIC $L_64d350
+PUBLIC $L_64c2fc
+PUBLIC $L_64c408
+PUBLIC $L_64d2f8
+PUBLIC $L_64c40c
+PUBLIC $L_6530bc
+PUBLIC $L_6530b8
 PUBLIC $L_7287f8
 PUBLIC $L_725fc8
 PUBLIC $L_6531d8
@@ -875318,6 +875326,7 @@ ELSE
 EXTERN @MarineScratch_ResetCounts@8:PROC
 $L_610f20 TEXTEQU <@MarineScratch_ResetCounts@8>
 ENDIF
+IFDEF ASM_MARINE
 $L_610f40 PROC
 
             sub ESP,96
@@ -875778,6 +875787,10 @@ $L_61146f::
             add ESP,96
             ret 16
 $L_610f40 ENDP
+ELSE
+EXTERN @MarineGrid_EmitTriangle@24:PROC
+$L_610f40 TEXTEQU <@MarineGrid_EmitTriangle@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -875831,6 +875844,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_611530 PROC
 
             sub ESP,304
@@ -876452,6 +876466,10 @@ $L_611d16::
             add ESP,304
             ret 12
 FUN_611530 ENDP
+ELSE
+EXTERN @MarineGrid_UpdateVertex@20:PROC
+FUN_611530 TEXTEQU <@MarineGrid_UpdateVertex@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
