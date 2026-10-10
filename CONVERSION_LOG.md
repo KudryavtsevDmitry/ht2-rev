@@ -22,6 +22,7 @@ machine-local and is excluded from these commits.
 | Marine intrusive node removal and node/edge insertion | 3 | 5,208 | C++ build; MASM marine fallback; 756 insertion and 84 removal comparisons covering circular lists, both roots, unordered priorities and rebuild thresholds; 2,096 earlier marine regressions; New Game and clean close after 10 seconds. |
 | Marine node/edge queue rebuild and sorted-run merging | 2 | 5,206 | C++ build; MASM marine fallback; 1,296 full-state comparisons covering empty lists, sorted runs, ties, infinities and unordered scores; 2,936 earlier marine regressions; New Game and clean close after 10 seconds. |
 | Marine task mode, activation, pending values, registration and bounds | 8 | 5,198 | C++ build; MASM marine fallback; 1,024 full-state and return-value comparisons covering load thresholds, immediate/delayed activation and deactivation, mode values and bounds; 1,296 rebuild regressions; New Game and clean close after 10 seconds. |
+| Marine point buffers, bounds setup, callback forwarding and mesh release | 10 | 5,188 | C++ build; MASM marine fallback; 320 comparisons covering allocation failure, callback-driven mesh replacement, bounds flags, point copies including signaling NaNs, and null/non-null release; 1,024 state regressions; New Game and clean close after 10 seconds. |
 
 The effect batch exposed an intermittent shutdown fault. A debugger trace
 showed the task pool freeing a queued node before the application destructor

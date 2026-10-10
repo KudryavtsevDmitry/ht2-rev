@@ -1,4 +1,4 @@
-// Marine mesh processing (Greed.cpp). ASM_MARINE selects the original code.
+// Marine mesh processing and task helpers. ASM_MARINE selects the original code.
 #include "king.h"
 #include <mmsystem.h>
 #include <stdlib.h>
@@ -555,4 +555,77 @@ extern "C" DWORD __fastcall MarineTask_SetSecondBounds(BYTE* self, void*, DWORD 
     F(DWORD, self, 52) = first;
     F(DWORD, self, 56) = second;
     return first;
+}
+
+// Marine task setup and callbacks.
+ASM_PROC(FUN_60d780)
+extern "C" BYTE* __fastcall MarineTask_InitPoints(BYTE* self, void*, unsigned count, const DWORD* points)
+{
+    for (unsigned i = 0; i < count; ++i) F(DWORD, self, 16 + i * 4) = points[i];
+    F(DWORD, self, 0) = count;
+    return self;
+}
+extern "C" BYTE* __fastcall MarineTask_AllocatePoints(BYTE* self, void*, unsigned count, const DWORD* points)
+{
+    BYTE* value = (BYTE*)operator new(56);
+    if (value) value = MarineTask_InitPoints(value, 0, count, points);
+    F(BYTE*, self, 200) = value;
+    return value;
+}
+extern "C" BYTE* __fastcall MarineTask_SetPoints(BYTE* self, void*, unsigned count, const DWORD* points)
+{
+    return MarineTask_AllocatePoints(F(BYTE*, F(void*, self, 0), 4), 0, count, points);
+}
+extern "C" BYTE* __fastcall MarineTask_RequestPoints(BYTE* self, void*, unsigned count, const DWORD* points)
+{
+    F(DWORD, self, 124) = 1;
+    return MarineTask_SetPoints(F(BYTE*, self, 108), 0, count, points);
+}
+static BYTE* MarineTask_CopyBounds(BYTE* self, const DWORD* first, const DWORD* second)
+{
+    BYTE* mesh = F(BYTE*, self, 0);
+    for (unsigned i = 0; i < 3; ++i) F(DWORD, mesh, 56 + i * 4) = first[i];
+    for (unsigned i = 0; i < 3; ++i) F(DWORD, mesh, 68 + i * 4) = second[i];
+    CallVirt(F(void*, mesh, 4), 4, mesh + 56, mesh + 68);
+    F(DWORD, mesh, 24) = F(DWORD, mesh, 20) = 1;
+    return mesh;
+}
+extern "C" int __fastcall MarineTask_SetBounds(BYTE* self, void*, const DWORD* first, const DWORD* second)
+{
+    MarineTask_CopyBounds(self, first, second);
+    F(DWORD, F(void*, self, 0), 20) = 1;
+    F(DWORD, F(void*, self, 0), 24) = 1;
+    return 1;
+}
+extern "C" DWORD __fastcall MarineTask_RebuildBounds(BYTE* self, void*, const DWORD* first, const DWORD* second)
+{
+    MarineTask_CopyBounds(self, first, second);
+    MarineGreed_Update(F(BYTE*, self, 0), 0);
+    return CallThis<DWORD>(FUN_60d780, F(void*, self, 0));
+}
+extern "C" DWORD __fastcall MarineTask_ApplyPoint(BYTE* self, void*, const void* point)
+{
+    return CallVirt<DWORD>(F(void*, F(void*, self, 0), 4), 40, point);
+}
+extern "C" DWORD __fastcall MarineTask_ForwardPoint(BYTE* self, void*, const void* point)
+{
+    return MarineTask_ApplyPoint(F(BYTE*, self, 108), 0, point);
+}
+__declspec(noinline) static float MarineTask_LoadCoordinate(const float* value)
+{
+    return *value;
+}
+extern "C" DWORD __fastcall MarineTask_ForwardPointCopy(BYTE* self, void*, const float* point)
+{
+    float copy[3];
+    for (unsigned i = 0; i < 3; ++i) copy[i] = MarineTask_LoadCoordinate(point + i);
+    return MarineTask_ApplyPoint(F(BYTE*, self, 108), 0, copy);
+}
+extern "C" void __fastcall MarineTask_ReleaseMesh(BYTE* self, void*)
+{
+    BYTE* mesh = F(BYTE*, self, 0);
+    if (mesh) {
+        CallVirt(mesh, 0, 1);
+        F(BYTE*, self, 0) = 0;
+    }
 }

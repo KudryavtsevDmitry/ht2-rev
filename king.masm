@@ -852358,6 +852358,7 @@ $L_605760::
 $L_605750 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_605770 PROC
 
             push EDI
@@ -852391,6 +852392,10 @@ $L_60579b::
             pop EDI
             ret 8
 FUN_605770 ENDP
+ELSE
+EXTERN @MarineTask_InitPoints@16:PROC
+FUN_605770 TEXTEQU <@MarineTask_InitPoints@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869182,6 +869187,7 @@ FUN_60dce0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60dd60 PROC
 
             push ESI
@@ -869200,6 +869206,10 @@ $L_60dd75::
             pop ESI
             ret 
 FUN_60dd60 ENDP
+ELSE
+EXTERN @MarineTask_ReleaseMesh@8:PROC
+FUN_60dd60 TEXTEQU <@MarineTask_ReleaseMesh@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869210,6 +869220,7 @@ FUN_60dd60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60dd80 PROC
 
             push EBX
@@ -869255,7 +869266,12 @@ FUN_60dd80 PROC
             pop EBX
             ret 8
 FUN_60dd80 ENDP
+ELSE
+EXTERN @MarineTask_SetBounds@16:PROC
+FUN_60dd80 TEXTEQU <@MarineTask_SetBounds@16>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60dde0 PROC
 
             push EBX
@@ -869303,6 +869319,10 @@ FUN_60dde0 PROC
             pop EBX
             ret 8
 FUN_60dde0 ENDP
+ELSE
+EXTERN @MarineTask_RebuildBounds@16:PROC
+FUN_60dde0 TEXTEQU <@MarineTask_RebuildBounds@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869424,6 +869444,7 @@ FUN_60de50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60df70 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -869450,6 +869471,10 @@ FUN_60df70 PROC
             nop
             nop
 FUN_60df70 ENDP
+ELSE
+EXTERN @MarineTask_ApplyPoint@12:PROC
+FUN_60df70 TEXTEQU <@MarineTask_ApplyPoint@12>
+ENDIF
 ALIGN 16
 FUN_60df90 PROC
 
@@ -869548,6 +869573,7 @@ FUN_60df90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e050 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -869560,6 +869586,10 @@ FUN_60e050 PROC
 
             ret 8
 FUN_60e050 ENDP
+ELSE
+EXTERN @MarineTask_SetPoints@16:PROC
+FUN_60e050 TEXTEQU <@MarineTask_SetPoints@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869570,6 +869600,7 @@ FUN_60e050 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e070 PROC
 
             push -1
@@ -869609,6 +869640,10 @@ $L_60e0b8::
             add ESP,16
             ret 8
 FUN_60e070 ENDP
+ELSE
+EXTERN @MarineTask_AllocatePoints@16:PROC
+FUN_60e070 TEXTEQU <@MarineTask_AllocatePoints@16>
+ENDIF
 ALIGN 16
 IFDEF ASM_MARINE
 FUN_60e0d0 PROC
@@ -870527,6 +870562,7 @@ $L_60e740 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60ea50 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -870539,6 +870575,10 @@ FUN_60ea50 PROC
 
             ret 8
 FUN_60ea50 ENDP
+ELSE
+EXTERN @MarineTask_RequestPoints@16:PROC
+FUN_60ea50 TEXTEQU <@MarineTask_RequestPoints@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871033,6 +871073,7 @@ FUN_60ea90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f000 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -871042,7 +871083,12 @@ FUN_60f000 PROC
 
             ret 4
 FUN_60f000 ENDP
+ELSE
+EXTERN @MarineTask_ForwardPoint@12:PROC
+FUN_60f000 TEXTEQU <@MarineTask_ForwardPoint@12>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f010 PROC
 
             sub ESP,12
@@ -871061,6 +871107,10 @@ FUN_60f010 PROC
             add ESP,12
             ret 4
 FUN_60f010 ENDP
+ELSE
+EXTERN @MarineTask_ForwardPointCopy@12:PROC
+FUN_60f010 TEXTEQU <@MarineTask_ForwardPointCopy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_60f040 PROC
