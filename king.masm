@@ -653,6 +653,36 @@ EXTERN _wvsprintfA@12:PROC
 
 EXTERN ___ImageBase:BYTE
 
+PUBLIC $L_725d70
+PUBLIC $L_725e18
+PUBLIC $L_725db8
+PUBLIC $L_725d60
+PUBLIC $L_725dc8
+PUBLIC $L_725df8
+PUBLIC $L_725de8
+PUBLIC $L_725dd8
+PUBLIC $L_725e6c
+PUBLIC $L_725e64
+PUBLIC $L_725e14
+PUBLIC $L_725db0
+PUBLIC $L_725dc4
+PUBLIC $L_725d6c
+PUBLIC $L_725db4
+PUBLIC $L_725d58
+PUBLIC $L_64c334
+PUBLIC $L_6530a4
+PUBLIC $L_6530a0
+PUBLIC $L_64c258
+PUBLIC $L_64d4e8
+PUBLIC $L_653094
+PUBLIC $L_652ff4
+PUBLIC $L_652f58
+PUBLIC $L_652f7c
+PUBLIC $L_652f74
+PUBLIC $L_652f78
+PUBLIC $L_652f70
+PUBLIC $L_652f54
+PUBLIC $L_652f50
 PUBLIC $L_725d54
 PUBLIC $L_725d50
 PUBLIC $L_653008
@@ -862211,6 +862241,7 @@ FUN_60a880 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60a8b0 PROC
 
             sub ESP,64
@@ -862245,6 +862276,10 @@ $L_60a8c2::
             add ESP,64
             ret 
 FUN_60a8b0 ENDP
+ELSE
+EXTERN _MarineInit_Identity:PROC
+FUN_60a8b0 TEXTEQU <_MarineInit_Identity>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868706,6 +868741,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60d950 PROC
 
             jmp $L_60d960
@@ -868727,7 +868763,12 @@ $L_60d960::
             fstp DWORD PTR [$L_725d58]
             ret 
 $L_60d950 ENDP
+ELSE
+EXTERN _MarineInit_DoubleMeshScale:PROC
+$L_60d950 TEXTEQU <_MarineInit_DoubleMeshScale>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60d970 PROC
 
             jmp $L_60d980
@@ -868749,7 +868790,12 @@ $L_60d980::
             fstp DWORD PTR [$L_725db4]
             ret 
 $L_60d970 ENDP
+ELSE
+EXTERN _MarineInit_DoubleSecondaryScale:PROC
+$L_60d970 TEXTEQU <_MarineInit_DoubleSecondaryScale>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60d990 PROC
 
             jmp $L_60d9a0
@@ -868771,7 +868817,12 @@ $L_60d9a0::
             mov DWORD PTR [$L_725de0],0
             ret 
 $L_60d990 ENDP
+ELSE
+EXTERN _MarineInit_BasisX:PROC
+$L_60d990 TEXTEQU <_MarineInit_BasisX>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60d9c0 PROC
 
             jmp $L_60d9d0
@@ -868793,7 +868844,12 @@ $L_60d9d0::
             mov DWORD PTR [$L_725df0],0
             ret 
 $L_60d9c0 ENDP
+ELSE
+EXTERN _MarineInit_BasisY:PROC
+$L_60d9c0 TEXTEQU <_MarineInit_BasisY>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60d9f0 PROC
 
             jmp $L_60da00
@@ -868815,7 +868871,12 @@ $L_60da00::
             mov DWORD PTR [$L_725e00],1065353216
             ret 
 $L_60d9f0 ENDP
+ELSE
+EXTERN _MarineInit_BasisZ:PROC
+$L_60d9f0 TEXTEQU <_MarineInit_BasisZ>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60da20 PROC
 
             jmp $L_60da30
@@ -868838,10 +868899,15 @@ $L_60da30::
             pop ECX
             ret 
 $L_60da20 ENDP
+ELSE
+EXTERN _MarineInit_DefaultMatrix:PROC
+$L_60da20 TEXTEQU <_MarineInit_DefaultMatrix>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60da40 PROC
 
             jmp $L_60da50
@@ -868863,6 +868929,10 @@ $L_60da50::
             fstp DWORD PTR [$L_725d6c]
             ret 
 $L_60da40 ENDP
+ELSE
+EXTERN _MarineInit_Complement:PROC
+$L_60da40 TEXTEQU <_MarineInit_Complement>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868876,6 +868946,7 @@ $L_60da40 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60da70 PROC
 
             jmp $L_60da80
@@ -868897,6 +868968,10 @@ $L_60da80::
             fstp DWORD PTR [$L_725dc4]
             ret 
 $L_60da70 ENDP
+ELSE
+EXTERN _MarineInit_Interval:PROC
+$L_60da70 TEXTEQU <_MarineInit_Interval>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868910,6 +868985,7 @@ $L_60da70 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60daa0 PROC
 
             jmp $L_60dab0
@@ -868931,7 +869007,12 @@ $L_60dab0::
             mov DWORD PTR [$L_725dd0],1065353216
             ret 
 $L_60daa0 ENDP
+ELSE
+EXTERN _MarineInit_DefaultNormal:PROC
+$L_60daa0 TEXTEQU <_MarineInit_DefaultNormal>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60dad0 PROC
 
             jmp $L_60dae0
@@ -868953,7 +869034,12 @@ $L_60dae0::
             mov DWORD PTR [$L_725d68],1065353216
             ret 
 $L_60dad0 ENDP
+ELSE
+EXTERN _MarineInit_DefaultAxis:PROC
+$L_60dad0 TEXTEQU <_MarineInit_DefaultAxis>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60db00 PROC
 
             jmp $L_60db10
@@ -868975,7 +869061,12 @@ $L_60db10::
             mov DWORD PTR [$L_725dc0],0
             ret 
 $L_60db00 ENDP
+ELSE
+EXTERN _MarineInit_DefaultOffset:PROC
+$L_60db00 TEXTEQU <_MarineInit_DefaultOffset>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60db30 PROC
 
             jmp $L_60db40
@@ -869001,6 +869092,10 @@ $L_60db40::
             fstp DWORD PTR [$L_725db0]
             ret 
 $L_60db30 ENDP
+ELSE
+EXTERN _MarineInit_SquaredRatio:PROC
+$L_60db30 TEXTEQU <_MarineInit_SquaredRatio>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871165,6 +871260,7 @@ $L_60f060::
             ret 
 $L_60f04f ENDP
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60f070 PROC
 
             jmp $L_60f080
@@ -871187,6 +871283,10 @@ $L_60f080::
             fstp DWORD PTR [$L_725e14]
             ret 
 $L_60f070 ENDP
+ELSE
+EXTERN _MarineInit_AdjustedThreshold:PROC
+$L_60f070 TEXTEQU <_MarineInit_AdjustedThreshold>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871194,6 +871294,7 @@ $L_60f070 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60f0a0 PROC
 
             jmp $L_60f0b0
@@ -871215,6 +871316,10 @@ $L_60f0b0::
             mov DWORD PTR [$L_725e20],0
             ret 
 $L_60f0a0 ENDP
+ELSE
+EXTERN _MarineInit_ZeroVector:PROC
+$L_60f0a0 TEXTEQU <_MarineInit_ZeroVector>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_60f0d0 PROC
@@ -871472,6 +871577,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60f2c0 PROC
 
             jmp $L_60f2d0
@@ -871493,7 +871599,12 @@ $L_60f2d0::
             fstp DWORD PTR [$L_725e64]
             ret 
 $L_60f2c0 ENDP
+ELSE
+EXTERN _MarineInit_DoubleAngleScale:PROC
+$L_60f2c0 TEXTEQU <_MarineInit_DoubleAngleScale>
+ENDIF
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60f2e0 PROC
 
             jmp $L_60f2f0
@@ -871544,6 +871655,10 @@ $L_60f300::
             fstp DWORD PTR [EAX+56]
             ret 
 $L_60f2e0 ENDP
+ELSE
+EXTERN _MarineInit_DefaultLimits:PROC
+$L_60f2e0 TEXTEQU <_MarineInit_DefaultLimits>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871552,6 +871667,7 @@ $L_60f2e0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60f370 PROC
 
             jmp $L_60f380
@@ -871573,6 +871689,10 @@ $L_60f380::
             fstp DWORD PTR [$L_725e6c]
             ret 
 $L_60f370 ENDP
+ELSE
+EXTERN _MarineInit_DoubleFinalScale:PROC
+$L_60f370 TEXTEQU <_MarineInit_DoubleFinalScale>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_MARINE
