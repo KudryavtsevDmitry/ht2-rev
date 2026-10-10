@@ -1,4 +1,5 @@
 .686p
+PUBLIC $L_702620, $L_702624, $L_702628, $L_7025b8, $L_720908
 PUBLIC $L_6cec6c, $L_725e08, $L_652f5c, $L_652f60, $L_652f80, $L_653004, $L_653000, $L_64c338, $L_64c350, $L_64d7b8, $L_6531d4, $L_725fc0
 PUBLIC $L_652f44, $L_725d48, $L_6533f4, $L_72c150
 PUBLIC $L_652f48, $L_684a20
@@ -870363,6 +870364,7 @@ ELSE
 EXTERN @MarineTask_Deactivate@12:PROC
 FUN_60e5e0 TEXTEQU <@MarineTask_Deactivate@12>
 ENDIF
+IFDEF ASM_MARINE
 $L_60e610 PROC
 
             sub ESP,132
@@ -870463,6 +870465,10 @@ $L_60e71e::
             add ESP,132
             ret 
 $L_60e610 ENDP
+ELSE
+EXTERN @MarineTask_DeferredBounds@8:PROC
+$L_60e610 TEXTEQU <@MarineTask_DeferredBounds@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -870473,6 +870479,7 @@ $L_60e610 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60e740 PROC
 
             sub ESP,168
@@ -870725,6 +870732,10 @@ $L_60ea32::
             add ESP,168
             ret 8
 $L_60e740 ENDP
+ELSE
+EXTERN @MarineTask_DispatchUpdate@16:PROC
+$L_60e740 TEXTEQU <@MarineTask_DispatchUpdate@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

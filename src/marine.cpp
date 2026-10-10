@@ -970,3 +970,59 @@ extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWOR
     MarineGreed_Emit(F(BYTE*,self,0),0);
     CallVirt(F(void*,F(void*,self,0),4),60,first,second);
 }
+
+// Marine task deferred bounds and update dispatch.
+ASM_PROC(FUN_5dbcc0)
+ASM_PROC(FUN_5d32f0)
+ASM_PROC(FUN_5b4fc0)
+ASM_PROC(FUN_60ea90)
+ASM_VAR(float, g_mt_axisX, $L_702620)
+ASM_VAR(float, g_mt_axisY, $L_702624)
+ASM_VAR(float, g_mt_axisZ, $L_702628)
+ASM_VAR(BYTE*, g_mt_motionState, $L_7025b8)
+ASM_VAR(DWORD, g_mt_frameValue, $L_720908)
+__declspec(noinline) static float MarineTask_QuietCoordinate(const float* source)
+{
+    volatile double value=*source;
+    return (float)value;
+}
+static void MarineTask_TransformAxis(const float* matrix,float* direction)
+{
+    for(unsigned i=0;i<3;++i)
+        direction[i]=(float)(((double)matrix[6+i]*g_mt_axisZ+(double)matrix[3+i]*g_mt_axisY)
+                             +(double)matrix[i]*g_mt_axisX);
+}
+extern "C" void __fastcall MarineTask_DeferredBounds(BYTE* self, void*)
+{
+    if(F(DWORD,self,56)<20) {
+        float scratch[12],matrix[12]={0},direction[3],position[3];
+        const DWORD* result=CallThis<const DWORD*>(FUN_5dbcc0,F(void*,self,36),scratch);
+        for(unsigned i=0;i<12;++i) F(DWORD,matrix,i*4)=result[i];
+        MarineTask_TransformAxis(matrix,direction);
+        for(unsigned i=0;i<3;++i) position[i]=MarineTask_QuietCoordinate(matrix+9+i);
+        MarineTask_SetBounds(F(BYTE*,self,32),0,(DWORD*)position,(DWORD*)direction);
+        ++F(DWORD,self,56);
+    } else F(DWORD,self,44)=1;
+    CallThis(FUN_5d32f0,self,1);
+}
+extern "C" DWORD __fastcall MarineTask_DispatchUpdate(BYTE* self, void*, DWORD unused, BYTE* event)
+{
+    bool active=F(DWORD,self,116)!=0;
+    if(!CallThis<DWORD>(FUN_5b4fc0,event,self+136)) return 0;
+    float matrix[12],direction[3],position[3];
+    CallThis(FUN_5dbcc0,F(void*,self,112),matrix);
+    MarineTask_TransformAxis(matrix,direction);
+    for(unsigned i=0;i<3;++i) position[i]=MarineTask_QuietCoordinate(matrix+9+i);
+    float planar[3]={direction[0],direction[1],0};
+    double length=x87_sqrt(((double)planar[0]*planar[0]+(double)planar[1]*planar[1])+(double)planar[2]*planar[2]);
+    for(unsigned i=0;i<3;++i) direction[i]=(float)((double)planar[i]/length);
+    if(event==F(BYTE*,F(void*,self,112),464) && F(DWORD,self,128))
+        CallThis(FUN_60ea90,self,position,direction,event);
+    if(!active || !F(DWORD,self,120)) return 0;
+    MarineTask_SetBounds(F(BYTE*,self,108),0,(DWORD*)position,(DWORD*)direction);
+    double speed=F(float,g_mt_motionState,532);
+    float motion[3]={(float)(speed*g_mt_axisX),(float)(speed*g_mt_axisY),(float)(speed*g_mt_axisZ)};
+    MarineTask_UpdateMotion(F(BYTE*,self,108),0,motion);
+    if(F(DWORD,self,124)) MarineTask_Frame(F(BYTE*,self,108),0,g_mt_frameValue,(DWORD)event);
+    return 1;
+}
