@@ -1,4 +1,5 @@
 .686p
+PUBLIC $L_650430, $L_685c24, $L_672688, $L_67ba78, $L_67c178, $L_685bfc, $L_653018
 PUBLIC $L_702620, $L_702624, $L_702628, $L_7025b8, $L_720908
 PUBLIC $L_6cec6c, $L_725e08, $L_652f5c, $L_652f60, $L_652f80, $L_653004, $L_653000, $L_64c338, $L_64c350, $L_64d7b8, $L_6531d4, $L_725fc0
 PUBLIC $L_652f44, $L_725d48, $L_6533f4, $L_72c150
@@ -869824,8 +869825,8 @@ FUN_60e0d0 PROC
             ret 4
 FUN_60e0d0 ENDP
 ELSE
-EXTERN @MarineTask_SetMode@12:PROC
-FUN_60e0d0 TEXTEQU <@MarineTask_SetMode@12>
+EXTERN @MarineTask_SetMaterial@12:PROC
+FUN_60e0d0 TEXTEQU <@MarineTask_SetMaterial@12>
 ENDIF
           BYTE 090H
 ALIGN 16
@@ -869836,8 +869837,8 @@ FUN_60e0e0 PROC
             ret 
 FUN_60e0e0 ENDP
 ELSE
-EXTERN @MarineTask_GetMode@8:PROC
-FUN_60e0e0 TEXTEQU <@MarineTask_GetMode@8>
+EXTERN @MarineTask_GetMaterial@8:PROC
+FUN_60e0e0 TEXTEQU <@MarineTask_GetMaterial@8>
 ENDIF
           BYTE 090H
           BYTE 090H
@@ -869852,6 +869853,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e0f0 PROC
 
             push -1
@@ -870154,6 +870156,10 @@ $L_60e3fd::
             add ESP,164
             ret 4
 FUN_60e0f0 ENDP
+ELSE
+EXTERN @MarineTask_Construct@12:PROC
+FUN_60e0f0 TEXTEQU <@MarineTask_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -502,13 +502,13 @@ finish:
 
 // Marine task state and registration helpers.
 ASM_VAR(DWORD, g_marineStartDelay, $L_653008)
-extern "C" BYTE* __fastcall MarineTask_SetMode(BYTE* self, void*, DWORD mode)
+extern "C" BYTE* __fastcall MarineTask_SetMaterial(BYTE* self, void*, DWORD material)
 {
     BYTE* mesh = F(BYTE*, self, 0);
-    F(DWORD, F(void*, mesh, 4), 116) = mode;
+    F(DWORD, F(void*, mesh, 4), 116) = material;
     return mesh;
 }
-extern "C" DWORD __fastcall MarineTask_GetMode(BYTE* self, void*)
+extern "C" DWORD __fastcall MarineTask_GetMaterial(BYTE* self, void*)
 {
     return F(DWORD, self, 116);
 }
@@ -1025,4 +1025,72 @@ extern "C" DWORD __fastcall MarineTask_DispatchUpdate(BYTE* self, void*, DWORD u
     MarineTask_UpdateMotion(F(BYTE*,self,108),0,motion);
     if(F(DWORD,self,124)) MarineTask_Frame(F(BYTE*,self,108),0,g_mt_frameValue,(DWORD)event);
     return 1;
+}
+
+// Marine task construction and scene resources.
+ASM_PROC(FUN_5ef6d0)
+ASM_PROC(FUN_5d3110)
+ASM_PROC(FUN_5d3570)
+ASM_PROC(FUN_5d33d0)
+ASM_PROC(FUN_5d9290)
+ASM_PROC(FUN_5ef390)
+ASM_PROC(FUN_5d2190)
+ASM_VAR(AsmLabel, g_marineNodeBaseVtable, $L_650430)
+ASM_VAR(AsmLabel, g_marineNodeName, $L_685c24)
+ASM_VAR(AsmLabel, g_marineCommonLibrary, $L_672688)
+ASM_VAR(AsmLabel, g_marineRainNodeName, $L_67ba78)
+ASM_VAR(AsmLabel, g_marineZeroName, $L_67c178)
+ASM_VAR(AsmLabel, g_marineTaskFile, $L_685bfc)
+ASM_VAR(double, g_marineTaskRadiusSquared, $L_653018)
+static bool MarineTask_NameEqual(const char* a,const char* b)
+{
+    while(*a==*b) { if(!*a) return true; ++a; ++b; }
+    return false;
+}
+extern "C" BYTE* __fastcall MarineTask_Construct(BYTE* self, void*, BYTE* world)
+{
+    CallThis(FUN_5ef6d0,self,g_marineNodeName,24);
+    F(DWORD,self,72)=F(DWORD,self,56)=F(DWORD,self,48)=F(DWORD,self,52)=0;
+    F(void*,self,0)=g_marineNodeBaseVtable;
+    BYTE* secondary=self+76;
+    CallThis(FUN_5d3110,secondary,g_marineNodeName);
+    for(unsigned i=136;i<=148;i+=4) F(DWORD,self,i)=0;
+    F(void*,self,0)=g_marineTaskVtable;F(void*,secondary,0)=g_marineTaskSecondaryVtable;
+    g_marineRecordedState=world;F(BYTE*,self,112)=world;
+    CallThis(FUN_5d3570,world+2992,secondary);
+    CallThis(FUN_5d33d0,secondary,1);
+    F(DWORD,self,120)=F(DWORD,self,116)=F(DWORD,self,132)=0;
+    BYTE* meshOwner=(BYTE*)operator new(4);
+    if(meshOwner) meshOwner=MarineMesh_Create(meshOwner,0,3284664320u,1163575296u,0,
+                                            1166843904u,1157234688u,g_mt_frameValue,0);
+    F(BYTE*,self,108)=meshOwner;
+    float scratch[12],matrix[12]={0},direction[3],position[3];
+    const DWORD* result=CallThis<const DWORD*>(FUN_5dbcc0,world,scratch);
+    for(unsigned i=0;i<12;++i) F(DWORD,matrix,i*4)=result[i];
+    MarineTask_TransformAxis(matrix,direction);
+    for(unsigned i=0;i<3;++i) position[i]=MarineTask_QuietCoordinate(matrix+9+i);
+    MarineTask_RebuildBounds(F(BYTE*,self,108),0,(DWORD*)position,(DWORD*)direction);
+    if(F(DWORD,F(void*,self,112),524)) {
+        BYTE* library=CallThis<BYTE*>(FUN_5d9290,F(void*,self,112),g_marineCommonLibrary);
+        BYTE* node=CallThis<BYTE*>(FUN_5ef390,library,g_marineRainNodeName);
+        if(!node) CallC(FUN_60aad0,0x88762715u,g_marineErrorFormat,g_marineTaskFile,46,g_marineDate);
+        F(DWORD,self,44)=F(DWORD,node,44);
+        CallThis(FUN_5d2190,self,node);
+        F(DWORD,self,36)=F(DWORD,node,36);
+    }
+    BYTE* library=CallThis<BYTE*>(FUN_5d9290,F(void*,self,112),g_marineCommonLibrary);
+    unsigned count=F(unsigned,library,72);
+    BYTE* material=0;
+    if(count) {
+        BYTE* table=F(BYTE*,library,76);
+        for(unsigned i=0;i<count;++i) if(MarineTask_NameEqual((char*)(table+i*124),g_marineZeroName)) {
+            material=table+i*124;break;
+        }
+    }
+    if(!material) CallC(FUN_60aad0,0x88762715u,g_marineErrorFormat,g_marineTaskFile,61,g_marineDate);
+    MarineTask_SetMaterial(F(BYTE*,self,108),0,(DWORD)material);
+    F(DWORD,self,136)=3276275712u;F(DWORD,self,140)=1163575296u;F(DWORD,self,144)=0;
+    F(DWORD,self,124)=F(DWORD,self,128)=0;
+    F(float,self,148)=(float)x87_sqrt(g_marineTaskRadiusSquared);
+    return self;
 }

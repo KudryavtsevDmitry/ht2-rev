@@ -4,7 +4,7 @@ extern "C" DWORD g_marineStartDelay=0;
 #define ONE(n) extern "C" DWORD __fastcall MarineTask_##n(BYTE*,void*,DWORD); extern "C" DWORD __fastcall Reference_##n(BYTE*,void*,DWORD);
 #define ZERO(n) extern "C" DWORD __fastcall MarineTask_##n(BYTE*,void*); extern "C" DWORD __fastcall Reference_##n(BYTE*,void*);
 #define TWO(n) extern "C" DWORD __fastcall MarineTask_##n(BYTE*,void*,DWORD,DWORD); extern "C" DWORD __fastcall Reference_##n(BYTE*,void*,DWORD,DWORD);
-ONE(SetMode) ZERO(GetMode) ONE(Activate) ONE(Deactivate) ONE(SetPendingValue) ZERO(ClearRegistration) TWO(SetFirstBounds) TWO(SetSecondBounds)
+ONE(SetMaterial) ZERO(GetMaterial) ONE(Activate) ONE(Deactivate) ONE(SetPendingValue) ZERO(ClearRegistration) TWO(SetFirstBounds) TWO(SetSecondBounds)
 static BYTE state[6][3200];
 static volatile BYTE expected[6][3200];
 static void Setup(unsigned test)
@@ -21,8 +21,8 @@ static DWORD Run(unsigned method,unsigned test,bool reference)
 {
     DWORD a=(test%3)?0:0xffffffff, b=0xfedcba98+test;
     switch(method) {
-    case 0: return reference?Reference_SetMode(state[0],0,a):MarineTask_SetMode(state[0],0,a);
-    case 1: return reference?Reference_GetMode(state[0],0):MarineTask_GetMode(state[0],0);
+    case 0: return reference?Reference_SetMaterial(state[0],0,a):MarineTask_SetMaterial(state[0],0,a);
+    case 1: return reference?Reference_GetMaterial(state[0],0):MarineTask_GetMaterial(state[0],0);
     case 2: return reference?Reference_Activate(state[0],0,a):MarineTask_Activate(state[0],0,a);
     case 3: return reference?Reference_Deactivate(state[0],0,a):MarineTask_Deactivate(state[0],0,a);
     case 4: return reference?Reference_SetPendingValue(state[0],0,b):MarineTask_SetPendingValue(state[0],0,b);
