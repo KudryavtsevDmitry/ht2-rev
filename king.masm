@@ -871472,6 +871472,7 @@ $L_60f380::
 $L_60f370 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f390 PROC
 
             sub ESP,12
@@ -871699,6 +871700,10 @@ $L_60f4e2::
             add ESP,12
             ret 
 FUN_60f390 ENDP
+ELSE
+EXTERN @MarineQueue_RebuildNodes@8:PROC
+FUN_60f390 TEXTEQU <@MarineQueue_RebuildNodes@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -872222,6 +872227,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f7f0 PROC
 
             push ECX
@@ -872352,6 +872358,10 @@ $L_60f8c2::
             pop ECX
             ret 
 FUN_60f7f0 ENDP
+ELSE
+EXTERN @MarineQueue_RebuildEdges@8:PROC
+FUN_60f7f0 TEXTEQU <@MarineQueue_RebuildEdges@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

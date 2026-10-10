@@ -293,8 +293,8 @@ extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE* self, void*)
 }
 
 // Intrusive queue link manipulation. Node links start at +4; edge links at +0.
-ASM_PROC(FUN_60f390)
-ASM_PROC(FUN_60f7f0)
+extern "C" DWORD __fastcall MarineQueue_RebuildNodes(BYTE*,void*);
+extern "C" DWORD __fastcall MarineQueue_RebuildEdges(BYTE*,void*);
 static void MarineQueue_LinkBefore(BYTE* position, BYTE* link)
 {
     F(BYTE*, link, 0) = position;
@@ -359,7 +359,7 @@ extern "C" DWORD __fastcall MarineQueue_InsertNode(BYTE* self, void*, BYTE* node
         }
     }
     DWORD count = ++F(DWORD, self, 8);
-    return count >= 500 ? CallThis<DWORD>(FUN_60f390, self) : count;
+    return count >= 500 ? MarineQueue_RebuildNodes(self, 0) : count;
 }
 extern "C" DWORD __fastcall MarineQueue_InsertEdge(BYTE* self, void*, BYTE* edge)
 {
@@ -382,5 +382,119 @@ extern "C" DWORD __fastcall MarineQueue_InsertEdge(BYTE* self, void*, BYTE* edge
         }
     }
     DWORD count = ++F(DWORD, self, 8);
-    return count >= 200 ? CallThis<DWORD>(FUN_60f7f0, self) : count;
+    return count >= 200 ? MarineQueue_RebuildEdges(self, 0) : count;
+}
+
+// Merge the two sorted circular queues, moving whole runs into the first.
+static BYTE* MarineQueue_NodeNext(BYTE* node)
+{
+    BYTE* next = F(BYTE*, node, 4);
+    return next ? next - 4 : 0;
+}
+static BYTE* MarineQueue_NodePrevious(BYTE* node)
+{
+    BYTE* previous = F(BYTE*, node, 8);
+    return previous ? previous - 4 : 0;
+}
+static void MarineQueue_SpliceRun(BYTE* firstLink, BYTE* endLink, BYTE* targetLink)
+{
+    BYTE* runTail = F(BYTE*, endLink, 4);
+    BYTE* targetTail = F(BYTE*, targetLink, 4);
+    F(BYTE*, firstLink, 4) = targetTail;
+    F(BYTE*, runTail, 0) = targetLink;
+    F(BYTE*, targetTail, 0) = firstLink;
+    F(BYTE*, targetLink, 4) = runTail;
+}
+extern "C" DWORD __fastcall MarineQueue_RebuildNodes(BYTE* self, void*)
+{
+    BYTE* second = F(BYTE*, self, 4);
+    F(DWORD, self, 8) = 0;
+    if (!second) return 0;
+    BYTE* first = F(BYTE*, self, 0);
+    if (!first) {
+        F(BYTE*, self, 0) = second;
+        F(BYTE*, self, 4) = 0;
+        return (DWORD)second;
+    }
+    BYTE* firstTail = MarineQueue_NodePrevious(first);
+    BYTE* secondTail = MarineQueue_NodePrevious(second);
+    BYTE* target;
+    while (true) {
+        while (F(float, first, 28) > F(float, second, 28)) {
+            if (first == firstTail) {
+                target = F(BYTE*, self, 0);
+                goto finish;
+            }
+            first = MarineQueue_NodeNext(first);
+        }
+        BYTE* runEnd = second;
+        while (!(F(float, first, 28) > F(float, runEnd, 28))) {
+            if (runEnd == secondTail) {
+                if (first == F(BYTE*, self, 0)) F(BYTE*, self, 0) = second;
+                target = first;
+                goto finish;
+            }
+            runEnd = MarineQueue_NodeNext(runEnd);
+        }
+        if (first == F(BYTE*, self, 0)) F(BYTE*, self, 0) = second;
+        MarineQueue_SpliceRun(second + 4, runEnd + 4, first + 4);
+        second = runEnd;
+    }
+finish:
+    BYTE* targetLink = target ? target + 4 : 0;
+    BYTE* tailLink = secondTail ? secondTail + 4 : 0;
+    BYTE* secondLink = second ? second + 4 : 0;
+    BYTE* previous = F(BYTE*, targetLink, 4);
+    F(BYTE*, secondLink, 4) = previous;
+    F(BYTE*, tailLink, 0) = targetLink;
+    F(BYTE*, previous, 0) = secondLink;
+    F(BYTE*, targetLink, 4) = tailLink;
+    F(BYTE*, self, 4) = 0;
+    return (DWORD)targetLink;
+}
+extern "C" DWORD __fastcall MarineQueue_RebuildEdges(BYTE* self, void*)
+{
+    BYTE* second = F(BYTE*, self, 4);
+    F(DWORD, self, 8) = 0;
+    if (!second) return 0;
+    BYTE* first = F(BYTE*, self, 0);
+    if (!first) {
+        F(BYTE*, self, 0) = second;
+        F(BYTE*, self, 4) = 0;
+        return (DWORD)second;
+    }
+    BYTE* firstTail = F(BYTE*, first, 4);
+    BYTE* secondTail = F(BYTE*, second, 4);
+    BYTE* target;
+    bool firstExhausted = false;
+    while (true) {
+        while (!(F(float, first, 72) >= F(float, second, 72))) {
+            if (first == firstTail) {
+                target = F(BYTE*, self, 0);
+                firstExhausted = true;
+                goto finish;
+            }
+            first = F(BYTE*, first, 0);
+        }
+        BYTE* runEnd = second;
+        while (F(float, first, 72) >= F(float, runEnd, 72)) {
+            if (runEnd == secondTail) {
+                if (first == F(BYTE*, self, 0)) F(BYTE*, self, 0) = second;
+                target = first;
+                goto finish;
+            }
+            runEnd = F(BYTE*, runEnd, 0);
+        }
+        if (first == F(BYTE*, self, 0)) F(BYTE*, self, 0) = second;
+        MarineQueue_SpliceRun(second, runEnd, first);
+        second = runEnd;
+    }
+finish:
+    BYTE* previous = F(BYTE*, target, 4);
+    F(BYTE*, second, 4) = previous;
+    F(BYTE*, secondTail, 0) = target;
+    F(BYTE*, previous, 0) = second;
+    F(BYTE*, target, 4) = secondTail;
+    F(BYTE*, self, 4) = 0;
+    return (DWORD)(firstExhausted ? target : previous);
 }
