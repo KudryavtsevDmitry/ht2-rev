@@ -665217,6 +665217,7 @@ $L_59a980 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_WASM
 FUN_59a9a0 PROC
 
             push ESI
@@ -665272,6 +665273,10 @@ $L_59a9d7::
             pop ESI
             ret 8
 FUN_59a9a0 ENDP
+ELSE
+EXTERN @Effect_Draw@16:PROC
+FUN_59a9a0 TEXTEQU <@Effect_Draw@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -665544,6 +665549,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_WASM
 FUN_59ac40 PROC
 
             fld DWORD PTR [ECX+80]
@@ -665572,6 +665578,10 @@ $L_59ac6a::
 
             ret 8
 FUN_59ac40 ENDP
+ELSE
+EXTERN @Effect_DrawFade@16:PROC
+FUN_59ac40 TEXTEQU <@Effect_DrawFade@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -665581,6 +665591,7 @@ FUN_59ac40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_WASM
 FUN_59ac90 PROC
 
             fld DWORD PTR [ECX+100]
@@ -665657,6 +665668,10 @@ $L_59acc8::
             add ESP,8
             ret 
 FUN_59ac90 ENDP
+ELSE
+EXTERN @Effect_AnimateQuad@8:PROC
+FUN_59ac90 TEXTEQU <@Effect_AnimateQuad@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -666713,6 +666728,7 @@ $L_59b670 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_WASM
 $L_59bb30 PROC
 
             mov EAX,DWORD PTR [ECX+88]
@@ -666748,6 +666764,10 @@ $L_59bb72::
 
             ret 8
 $L_59bb30 ENDP
+ELSE
+EXTERN @Effect_DrawSoftFade@16:PROC
+$L_59bb30 TEXTEQU <@Effect_DrawSoftFade@16>
+ENDIF
 ALIGN 16
 ; wasm: src\wasm.cpp, nmake ASM_WASM=1 assembles the original
 IFDEF ASM_WASM
@@ -670583,6 +670603,7 @@ FUN_59e9a0 TEXTEQU <@Effect59e9a0_Construct@36>
 ENDIF
           BYTE 090H
           BYTE 090H
+IFDEF ASM_WASM
 $L_59ea40 PROC
 
             push ESI
@@ -670618,6 +670639,10 @@ $L_59ea40 PROC
             mov DWORD PTR [ECX+32],EDX
             ret 8
 $L_59ea40 ENDP
+ELSE
+EXTERN @Effect_DrawTinted@16:PROC
+$L_59ea40 TEXTEQU <@Effect_DrawTinted@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_59eaa0 PROC
@@ -671042,6 +671067,7 @@ $L_59eac0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_WASM
 $L_59f000 PROC
 
             sub ESP,24
@@ -671073,6 +671099,10 @@ $L_59f000 PROC
             add ESP,24
             ret 
 $L_59f000 ENDP
+ELSE
+EXTERN @Effect_MoveQuad@8:PROC
+$L_59f000 TEXTEQU <@Effect_MoveQuad@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -1002321,6 +1002351,7 @@ $L_64b668           BYTE 000H
           BYTE 000H
           BYTE 0f8H
           BYTE 03fH
+PUBLIC $L_64b670
 $L_64b670           BYTE 000H
           BYTE 000H
           BYTE 000H
@@ -1002329,6 +1002360,7 @@ $L_64b670           BYTE 000H
           BYTE 000H
           BYTE 0f0H
           BYTE 03fH
+PUBLIC $L_64b678
 $L_64b678           DB 8 DUP(0)
 $L_64b680           BYTE 0e2H
           BYTE 058H
@@ -1002386,6 +1002418,7 @@ $L_64b6b0           BYTE 000H
           BYTE 084H
           BYTE 02eH
           BYTE 041H
+PUBLIC $L_64b6b8
 $L_64b6b8           BYTE 000H
           BYTE 000H
           BYTE 000H
@@ -1002426,6 +1002459,7 @@ $L_64b6d8           BYTE 08dH
           BYTE 0c6H
           BYTE 0b0H
           BYTE 03eH
+PUBLIC $L_64b6e0
 $L_64b6e0           BYTE 000H
           BYTE 000H
           BYTE 000H
@@ -1004750,6 +1004784,7 @@ $L_64c240           DWORD $L_4b82e0
 $L_64c244           DWORD $L_61d2b1
 $L_64c248           DWORD $L_4b83d0
 $L_64c24c           DWORD $L_4b84c0
+PUBLIC $L_64c250
 $L_64c250           BYTE 000H
           BYTE 000H
           BYTE 080H
@@ -1004766,6 +1004801,7 @@ $L_64c25c           BYTE 0cdH
           BYTE 0ccH
           BYTE 04cH
           BYTE 03fH
+PUBLIC $L_64c260
 $L_64c260           BYTE 0cdH
           BYTE 0ccH
           BYTE 04cH
@@ -1004878,6 +1004914,7 @@ $L_64c338           BYTE 09aH
           BYTE 099H
           BYTE 099H
           BYTE 03eH
+PUBLIC $L_64c33c
 $L_64c33c           BYTE 09aH
           BYTE 099H
           BYTE 019H
@@ -1007050,6 +1007087,9 @@ $L_64d81c           DWORD $L_4e1db0
           DWORD $L_5d21e0
           DWORD $L_5d2230
           DWORD $L_5d2300
+IFNDEF ASM_GAMEAPP
+EXTERN @CGameApp_ExitInstance@8:PROC
+ENDIF
 $L_64d830           DWORD $L_639c7a
           DWORD $L_4e1e40
           DWORD $L_5ede70
@@ -1007076,7 +1007116,11 @@ $L_64d830           DWORD $L_639c7a
           DWORD $L_63313c
           DWORD $L_5dd440
           DWORD $L_632ccf
+IFDEF ASM_GAMEAPP
           DWORD $L_639c44
+ELSE
+          DWORD @CGameApp_ExitInstance@8
+ENDIF
           DWORD $L_6326d6
           DWORD $L_632fd7
           DWORD $L_633121
@@ -1014146,7 +1014190,11 @@ $L_65195c           DWORD $L_639c7a
           DWORD $L_63313c
           DWORD $L_5dd440
           DWORD $L_632ccf
+IFDEF ASM_GAMEAPP
           DWORD $L_639c44
+ELSE
+          DWORD @CGameApp_ExitInstance@8
+ENDIF
           DWORD $L_6326d6
           DWORD $L_632fd7
           DWORD $L_633121
@@ -1015477,7 +1015525,11 @@ $L_652664           DWORD $L_639c7a
           DWORD $L_63313c
           DWORD $L_5dd440
           DWORD $L_632ccf
+IFDEF ASM_GAMEAPP
           DWORD $L_639c44
+ELSE
+          DWORD @CGameApp_ExitInstance@8
+ENDIF
           DWORD $L_6326d6
           DWORD $L_632fd7
           DWORD $L_633121

@@ -10,6 +10,8 @@ import time
 
 parser = argparse.ArgumentParser(description=__doc__)
 parser.add_argument('--close-after', type=float, help='Close the window this many seconds after loading.')
+parser.add_argument('--load-timeout', type=int, default=30, help='Seconds to wait for loading (increase under a debugger).')
+parser.add_argument('--wait-only', action='store_true', help='Wait for an already-started load; do not click the menus.')
 args = parser.parse_args()
 
 user32 = ctypes.WinDLL('user32', use_last_error=True)
@@ -57,12 +59,13 @@ def click(x, y):
 try:
     user32.SetForegroundWindow(window)
     time.sleep(1)
-    click(657, 141)  # ИГРА
-    time.sleep(1.5)
-    click(398, 140)  # НОВАЯ ИГРА
-    stalled = False
+    if not args.wait_only:
+        click(657, 141)  # ИГРА
+        time.sleep(1.5)
+        click(398, 140)  # НОВАЯ ИГРА
+    stalled = args.wait_only
     recovered = 0
-    for second in range(30):
+    for second in range(args.load_timeout):
         if kernel32.WaitForSingleObject(process, 0) == 0:
             raise SystemExit('FAIL: game exited during world loading.')
         result = ctypes.c_size_t()
@@ -84,6 +87,8 @@ try:
                 code = wintypes.DWORD()
                 kernel32.GetExitCodeProcess(process, ctypes.byref(code))
                 print(f'Game exited with code 0x{code.value:08x}.', flush=True)
+                if code.value != 0:
+                    raise SystemExit('FAIL: game crashed while closing the window.')
             break
         time.sleep(1)
     else:
