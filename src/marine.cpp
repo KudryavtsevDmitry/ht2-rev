@@ -15,6 +15,12 @@ ASM_PROC(FUN_606750)
 ASM_PROC(FUN_6069d0)
 ASM_PROC(FUN_60aad0)
 ASM_PROC(FUN_60aa60)
+ASM_PROC(FUN_60f9d0)
+ASM_PROC(FUN_60f8d0)
+ASM_PROC(FUN_6137d0)
+ASM_PROC(FUN_606760)
+ASM_VAR(DWORD, g_marineRefinementEnabled, $L_685abc)
+ASM_VAR(DWORD, g_marineRefinementLimit, $L_725e28)
 ASM_VAR(AsmLabel, g_marineDate, $L_6724f8)
 ASM_VAR(AsmLabel, g_marineErrorFormat, $L_6724b0)
 ASM_VAR(AsmLabel, g_marineFile, $L_685ac8)
@@ -157,4 +163,96 @@ extern "C" void __fastcall MarineGreed_RemoveNode(BYTE* self, void*, BYTE* node)
         CallThis(FUN_6069d0, group);
         operator delete(group);
     }
+}
+
+// Refresh a small slice of node and edge priorities each frame. The edge
+// budget starts at the last node timestamp, as in the original scheduler.
+extern "C" int __fastcall MarineGreed_RefreshPriorities(BYTE* self, void*)
+{
+    DWORD start = timeGetTime(), lastNodeTime = start;
+    BYTE* list = F(BYTE*, self, 32);
+    if (!F(BYTE*, self, 40))
+        F(BYTE*, self, 40) = F(BYTE*, list, 0) ? F(BYTE*, list, 0) : F(BYTE*, list, 4);
+    if (F(BYTE*, self, 40)) {
+        do {
+            BYTE* node = F(BYTE*, self, 40);
+            float score = (float)CallVirt<double>(F(void*, self, 4), 36,
+                F(DWORD, node, 16), F(DWORD, node, 20), F(DWORD, node, 24), node + 12);
+            list = F(BYTE*, self, 32);
+            node = F(BYTE*, self, 40);
+            BYTE* next = MarineGreed_NextNode(list, node);
+            CallThis(FUN_60f4f0, list, node, score);
+            F(BYTE*, self, 40) = next ? next : CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+            lastNodeTime = timeGetTime();
+        } while ((DWORD)(lastNodeTime - start) < 2);
+    }
+    if (!F(BYTE*, self, 44))
+        F(BYTE*, self, 44) = CallThis<BYTE*>(FUN_60f9d0, F(void*, self, 28));
+    if (F(BYTE*, self, 44)) {
+        do {
+            BYTE* edge = F(BYTE*, self, 44);
+            BYTE* primary = edge + 16;
+            float score;
+            if (F(void*, edge, 12)) {
+                BYTE* secondary = edge + 44;
+                score = (float)CallVirt<double>(F(void*, self, 4), 32,
+                    F(DWORD, primary, 4), F(DWORD, primary, 8), F(DWORD, primary, 12), primary,
+                    F(DWORD, secondary, 4), F(DWORD, secondary, 8), F(DWORD, secondary, 12), secondary);
+            } else {
+                score = (float)CallVirt<double>(F(void*, self, 4), 32,
+                    F(DWORD, primary, 4), F(DWORD, primary, 8), F(DWORD, primary, 12), primary,
+                    0u, 0u, 0u, (void*)0);
+            }
+            list = F(BYTE*, self, 28);
+            edge = F(BYTE*, self, 44);
+            BYTE* next = MarineGreed_NextEdge(list, edge);
+            CallThis(FUN_60f8d0, list, edge, score);
+            list = F(BYTE*, self, 28);
+            F(BYTE*, self, 44) = next ? next : F(BYTE*, list, 0) ? F(BYTE*, list, 0) : F(BYTE*, list, 4);
+        } while ((DWORD)(timeGetTime() - lastNodeTime) < 1);
+    }
+    return 1;
+}
+
+extern "C" int __fastcall MarineGreed_Refine(BYTE* self, void*)
+{
+    if (!g_marineRefinementEnabled || CallThis<int>(FUN_6137d0, F(void*, self, 28)))
+        return 0;
+    BYTE* edge = CallThis<BYTE*>(FUN_60f9d0, F(void*, self, 28));
+    float edgeScore = F(float, edge, 72);
+    BYTE* node = CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+    if (!(F(float, node, 28) >= edgeScore))
+        return 0;
+    unsigned desired = CallVirt<unsigned>(F(void*, self, 4), 8);
+    for (unsigned i = 0; i < g_marineRefinementLimit; ++i) {
+        if (CallThis<int>(FUN_6137d0, F(void*, self, 28)))
+            break;
+        edge = CallThis<BYTE*>(FUN_60f9d0, F(void*, self, 28));
+        CallC(FUN_606760, edge, self);
+    }
+    for (unsigned i = 0; i < g_marineRefinementLimit && (unsigned)F(WORD, self, 38) < desired; ++i) {
+        node = CallThis<BYTE*>(FUN_60f7b0, F(void*, self, 32));
+        CallC(FUN_605900, F(void*, node, 32), self);
+    }
+    return 1;
+}
+
+extern "C" int __fastcall MarineGreed_Emit(BYTE* self, void*)
+{
+    if (F(DWORD, self, 24))
+        F(DWORD, self, 24) = MarineGreed_RefreshPriorities(self, 0);
+    if (F(DWORD, self, 20))
+        F(DWORD, self, 20) = MarineGreed_Refine(self, 0);
+    BYTE* sink = F(BYTE*, self, 4);
+    CallVirt(sink, 28);
+    for (unsigned i = 0; i < (unsigned)F(WORD, self, 36); ++i)
+        CallVirt(sink, 52, F(DWORD, F(void*, self, 12), i * 4));
+    BYTE* list = F(BYTE*, self, 32);
+    BYTE* node = F(BYTE*, list, 0) ? F(BYTE*, list, 0) : F(BYTE*, list, 4);
+    while (node) {
+        CallVirt(sink, 56, (unsigned)F(WORD, F(void*, node, 16), 8),
+            (unsigned)F(WORD, F(void*, node, 20), 8), (unsigned)F(WORD, F(void*, node, 24), 8), node);
+        node = MarineGreed_NextNode(F(BYTE*, self, 32), node);
+    }
+    return 1;
 }
