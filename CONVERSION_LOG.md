@@ -19,6 +19,7 @@ machine-local and is excluded from these commits.
 | Marine mesh allocation, initialization, budgeted update and node removal | 4 | 5,218 | Clean C++ rebuild; MASM marine fallback; 384 node-removal comparisons; New Game and clean close after 10 seconds. All procedures assigned to `Greed.cpp` are converted. |
 | Marine priority refresh, refinement scheduling and mesh output | 3 | 5,215 | C++ build; MASM marine fallback; 1,536 comparisons covering node removal, priority callbacks, timer wraparound, NaN scores, refinement limits and mesh output; New Game and clean close after 10 seconds. All procedures in the unit at `0x60cfa0` are converted. |
 | Marine queue priority replacement and node/edge selection | 4 | 5,211 | C++ build; MASM marine fallback; 512 selection and 48 priority-update comparisons covering equal and unordered scores, signed zero, infinities, callback order and count wraparound; 1,536 marine regressions; New Game and clean close after 10 seconds. |
+| Marine intrusive node removal and node/edge insertion | 3 | 5,208 | C++ build; MASM marine fallback; 756 insertion and 84 removal comparisons covering circular lists, both roots, unordered priorities and rebuild thresholds; 2,096 earlier marine regressions; New Game and clean close after 10 seconds. |
 
 The effect batch exposed an intermittent shutdown fault. A debugger trace
 showed the task pool freeing a queued node before the application destructor

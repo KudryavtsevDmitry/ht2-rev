@@ -29,6 +29,9 @@ KING_ALIAS("FUN_60f690","@Remove@12")
 KING_ALIAS("FUN_6136f0","@Remove@12")
 KING_ALIAS("FUN_60f520","@Insert@12")
 KING_ALIAS("FUN_60f900","@Insert@12")
+KING_ALIAS("@MarineQueue_RemoveNode@12","@Remove@12")
+KING_ALIAS("@MarineQueue_InsertNode@12","@Insert@12")
+KING_ALIAS("@MarineQueue_InsertEdge@12","@Insert@12")
 static const DWORD scores[]={0,0x80000000,0x3f800000,0xbf800000,0x7f800000,0xff800000,0x7fc01234,0x7f801234};
 static void Setup(DWORD seed)
 {
