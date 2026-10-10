@@ -116,3 +116,15 @@ extern "C" DWORD* __cdecl MarineInit_DefaultLimits()
     *(float*)(config+14)=(float)x87_cos(angle);
     return config;
 }
+ASM_VAR(float, g_mi_652f44, $L_652f44)
+ASM_VAR(float, g_mi_725d48, $L_725d48)
+ASM_VAR(float, g_mi_6533f4, $L_6533f4)
+ASM_VAR(float, g_mi_72c150, $L_72c150)
+extern "C" void __cdecl MarineInit_DoubleTreeScale()
+{
+    g_mi_725d48=(float)((double)g_mi_652f44+g_mi_652f44);
+}
+extern "C" void __cdecl MarineInit_DoubleTerrainScale()
+{
+    g_mi_72c150=(float)((double)g_mi_6533f4+g_mi_6533f4);
+}

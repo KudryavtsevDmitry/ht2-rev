@@ -1,4 +1,5 @@
 .686p
+PUBLIC $L_652f44, $L_725d48, $L_6533f4, $L_72c150
 PUBLIC $L_652f48, $L_684a20
 .XMM
 .MODEL FLAT
@@ -867055,6 +867056,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60cdb0 PROC
 
             jmp $L_60cdc0
@@ -867076,6 +867078,10 @@ $L_60cdc0::
             fstp DWORD PTR [$L_725d48]
             ret 
 $L_60cdb0 ENDP
+ELSE
+EXTERN _MarineInit_DoubleTreeScale:PROC
+$L_60cdb0 TEXTEQU <_MarineInit_DoubleTreeScale>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_MARINE
@@ -878933,6 +878939,7 @@ FUN_6134c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613500 PROC
 
             mov EAX,ECX
@@ -878942,6 +878949,10 @@ FUN_613500 PROC
             mov DWORD PTR [EAX+8],ECX
             ret 
 FUN_613500 ENDP
+ELSE
+EXTERN @MarineQueue_Init@8:PROC
+FUN_613500 TEXTEQU <@MarineQueue_Init@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -892435,6 +892446,7 @@ FUN_61c250 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_61c350 PROC
 
             sub ESP,92
@@ -892540,6 +892552,10 @@ FUN_61c350 PROC
             add ESP,92
             ret 
 FUN_61c350 ENDP
+ELSE
+EXTERN _MarineGeometry_Interpolate:PROC
+FUN_61c350 TEXTEQU <_MarineGeometry_Interpolate>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -892550,6 +892566,7 @@ FUN_61c350 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_61c4a0 PROC
 
             jmp $L_61c4b0
@@ -892572,6 +892589,10 @@ $L_61c4b0::
             fstp DWORD PTR [$L_72c150]
             ret 
 $L_61c4a0 ENDP
+ELSE
+EXTERN _MarineInit_DoubleTerrainScale:PROC
+$L_61c4a0 TEXTEQU <_MarineInit_DoubleTerrainScale>
+ENDIF
           BYTE 090H
 $L_61c4c0 PROC
 

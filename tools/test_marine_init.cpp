@@ -4,14 +4,13 @@ static void Setup(unsigned test)
 {
     for(unsigned region=0;region<sizeof(regions)/sizeof(regions[0]);region++) {
         for(unsigned byte=0;byte<sizes[region];byte++) regions[region][byte]=(BYTE)(test+byte+region);
-        if(region<23) {
+        if(sizes[region]==4) {
             float value=(float)((int)(test*7+region*3)%31-15)/8.0f;
             *(float*)regions[region]=value;
         }
     }
-    // All source coefficients occupy the first fifteen scalar regions.
-    if(test==62) for(unsigned region=0;region<15;region++) *(DWORD*)regions[region]=0x7fc01234;
-    if(test==63) for(unsigned region=0;region<15;region++) *(DWORD*)regions[region]=0x7f801234;
+    if(test==62 || test==63) for(unsigned region=0;region<sizeof(regions)/sizeof(regions[0]);region++)
+        if(sizes[region]==4) *(DWORD*)regions[region]=(test==62)?0x7fc01234:0x7f801234;
 }
 extern "C" void TestEntry()
 {
@@ -22,7 +21,7 @@ extern "C" void TestEntry()
     for(unsigned mode=0;mode<3;mode++) {
         control=(originalControl & ~0x300) | precision[mode] | 0x3f;
         __asm fldcw control
-        for(unsigned method=0;method<18;method++) for(unsigned test=0;test<64;test++) {
+        for(unsigned method=0;method<methodCount;method++) for(unsigned test=0;test<64;test++) {
             Setup(test); Run(method,true);
             for(unsigned region=0;region<sizeof(regions)/sizeof(regions[0]);region++)
                 for(unsigned byte=0;byte<sizes[region];byte++) expected[region][byte]=regions[region][byte];

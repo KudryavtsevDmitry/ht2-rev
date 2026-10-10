@@ -1,11 +1,12 @@
 // Marine mesh processing and task helpers. ASM_MARINE selects the original code.
 #include "king.h"
+#include "x87.h"
 #include <mmsystem.h>
 #include <stdlib.h>
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 typedef char AsmLabel[1];
 extern "C" void __fastcall Lights_Destruct(BYTE*, void*); // aeffects.cpp
-ASM_PROC(FUN_613500)
+extern "C" BYTE* __fastcall MarineQueue_Init(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*, void*, BYTE*, DWORD);
 extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*, void*);
 ASM_PROC(FUN_605900)
@@ -48,9 +49,9 @@ extern "C" void __fastcall MarineGreed_Init(BYTE* self, void*)
     F(DWORD, F(void*, self, 8), 0) = 0;
     F(DWORD, self, 20) = F(DWORD, self, 24) = 0;
     BYTE* list = (BYTE*)operator new(12);
-    F(BYTE*, self, 32) = list ? CallThis<BYTE*>(FUN_613500, list) : 0;
+    F(BYTE*, self, 32) = list ? MarineQueue_Init(list,0) : 0;
     list = (BYTE*)operator new(12);
-    F(BYTE*, self, 28) = list ? CallThis<BYTE*>(FUN_613500, list) : 0;
+    F(BYTE*, self, 28) = list ? MarineQueue_Init(list,0) : 0;
     F(WORD, self, 36) = F(WORD, self, 38) = 0;
 }
 
@@ -694,7 +695,7 @@ extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
 ASM_PROC(FUN_5ef780)
 ASM_PROC(FUN_5d3290)
 ASM_PROC(FUN_5ef660)
-ASM_PROC(FUN_61c350)
+extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD*, const DWORD*, const DWORD*, float);
 ASM_VAR(AsmLabel, g_marineMeshVtable, $L_652ff8)
 ASM_VAR(AsmLabel, g_marineTaskVtable, $L_653040)
 ASM_VAR(AsmLabel, g_marineTaskSecondaryVtable, $L_653020)
@@ -793,7 +794,7 @@ extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD time
     float factor=(float)(elapsed/duration);
     DWORD result[10];
     BYTE* indexNode=F(BYTE*,registration,0);
-    DWORD* value=CallC<DWORD*>(FUN_61c350,result,(DWORD*)(self+60),(DWORD*)(self+20),factor);
+    DWORD* value=MarineGeometry_Interpolate(result,(DWORD*)(self+60),(DWORD*)(self+20),factor);
     destination=(DWORD*)(F(BYTE*,F(void*,self,100),16)+(unsigned)F(WORD,indexNode,0)*40);
     for(unsigned i=0;i<10;++i) destination[i]=value[i];
     return 0;
@@ -865,4 +866,38 @@ extern "C" BYTE* __fastcall MarineVertex_Delete(BYTE* self, void*, DWORD flags)
 {
     if(flags&1) operator delete(self);
     return self;
+}
+
+// Marine geometry interpolation and queue initialization.
+extern "C" BYTE* __fastcall MarineQueue_Init(BYTE* self, void*)
+{
+    F(DWORD,self,0)=F(DWORD,self,4)=F(DWORD,self,8)=0;
+    return self;
+}
+extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD* out, const DWORD* source, const DWORD* target, float fraction)
+{
+    const float* a=(const float*)source;
+    const float* b=(const float*)target;
+    // VC6 retains the first component on the x87 stack, but rounds the
+    // other differences and products through float scratch slots.
+    double dx=(double)b[3]-a[3];
+    float dy=(float)((double)b[4]-a[4]),dz=(float)((double)b[5]-a[5]);
+    double x=dx*fraction+a[3];
+    float sy=(float)((double)dy*fraction),sz=(float)((double)dz*fraction);
+    double y=(double)sy+a[4],z=(double)sz+a[5];
+    float length=(float)x87_sqrt((z*z+y*y)+x*x);
+    float values[10];
+    values[3]=(float)(x/length);values[4]=(float)(y/length);values[5]=(float)(z/length);
+    dx=(double)b[0]-a[0];
+    dy=(float)((double)b[1]-a[1]);dz=(float)((double)b[2]-a[2]);
+    sy=(float)((double)dy*fraction);sz=(float)((double)dz*fraction);
+    values[0]=(float)(dx*fraction+a[0]);
+    values[1]=(float)((double)sy+a[1]);values[2]=(float)((double)sz+a[2]);
+    for(unsigned i=6;i<10;++i) {
+        // The original uses FLD/FSTP, which also quiets signaling NaNs.
+        volatile double value=b[i];
+        values[i]=(float)value;
+    }
+    for(unsigned i=0;i<10;++i) out[i]=F(DWORD,values,i*4);
+    return out;
 }

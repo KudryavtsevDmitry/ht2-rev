@@ -26,7 +26,7 @@ foreach ($variable in $variables) {
 $globals += "}`n"
 $globals += 'static BYTE* regions[]={' + (($variables | ForEach-Object { '(BYTE*)&'+$_.Groups[2].Value }) -join ',') + "};`n"
 $globals += 'static unsigned sizes[]={' + (($variables | ForEach-Object { 'sizeof('+$_.Groups[2].Value+')' }) -join ',') + "};`n"
-$methods = @{ '60d950'='DoubleMeshScale'; '60d970'='DoubleSecondaryScale'; '60d990'='BasisX'; '60d9c0'='BasisY'; '60d9f0'='BasisZ'; '60da20'='DefaultMatrix'; '60da40'='Complement'; '60da70'='Interval'; '60daa0'='DefaultNormal'; '60dad0'='DefaultAxis'; '60db00'='DefaultOffset'; '60db30'='SquaredRatio'; '60f070'='AdjustedThreshold'; '60f0a0'='ZeroVector'; '60f2c0'='DoubleAngleScale'; '60f370'='DoubleFinalScale'; '60f2e0'='DefaultLimits'; '60a8b0'='Identity' }
+$methods = @{ '60d950'='DoubleMeshScale'; '60d970'='DoubleSecondaryScale'; '60d990'='BasisX'; '60d9c0'='BasisY'; '60d9f0'='BasisZ'; '60da20'='DefaultMatrix'; '60da40'='Complement'; '60da70'='Interval'; '60daa0'='DefaultNormal'; '60dad0'='DefaultAxis'; '60db00'='DefaultOffset'; '60db30'='SquaredRatio'; '60f070'='AdjustedThreshold'; '60f0a0'='ZeroVector'; '60f2c0'='DoubleAngleScale'; '60f370'='DoubleFinalScale'; '60f2e0'='DefaultLimits'; '60a8b0'='Identity'; '60cdb0'='DoubleTreeScale'; '61c4a0'='DoubleTerrainScale' }
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw
 $reference = ''
 foreach($label in $methods.Keys) {
@@ -53,7 +53,7 @@ foreach($label in ($methods.Keys | Sort-Object)) {
     $index++
 }
 $dispatch += "} }`n"
-$globals += $dispatch
+$globals += $dispatch + "static const unsigned methodCount=$index;`n"
 Set-Content (Join-Path $outputDir 'marine-init-test-globals.h') $globals
 $cpp=Join-Path $outputDir 'marine-init-actual.cpp'
 Set-Content $cpp ($source.Replace('"king.h"','"../src/king.h"').Replace('"x87.h"','"../src/x87.h"'))
@@ -73,4 +73,4 @@ if($LASTEXITCODE) {throw 'Test compilation failed'}
 if($LASTEXITCODE) {throw 'Test link failed'}
 & $exe
 if($LASTEXITCODE) {throw "Marine initializer comparison failed: exit code $LASTEXITCODE"}
-Write-Output '18 marine initialization routines match MASM across 3456 method/input/precision combinations.'
+Write-Output "$index marine initialization routines match MASM across $($index*64*3) method/input/precision combinations."
