@@ -91,7 +91,7 @@ int __cdecl strcmp(const char* a, const char* b);
 // Procedures of king.masm
 
 ASM_PROC(FUN_6037e0)    // Timer_Now
-ASM_PROC(FUN_5b6180)    // Gfx_BeginScene
+extern "C" void FUN_5b6180(); KING_ALIAS("_FUN_5b6180", "_Device_BeginScene")    // Gfx_BeginScene
 ASM_PROC(FUN_5b6190)    // Gfx_EndScene
 ASM_PROC(FUN_5b7ce0)    // Gfx_HLine
 ASM_PROC(FUN_5b7f20)    // Gfx_VLine
@@ -100,11 +100,11 @@ extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // Gfx_
 ASM_PROC(FUN_5e9a10)    // Gfx_SaveTga
 ASM_PROC(FUN_5e9f00)    // Gfx_SaveScreenBmp
 ASM_PROC(FUN_5b6bf0)    // CSurface::Prepare
-ASM_PROC(FUN_5b6500)    // CSurface::ScreenToClient
-ASM_PROC(FUN_5b6710)    // CSurface::GetRect
-ASM_PROC(FUN_5b64c0)    // CSurface::GetState84
-ASM_PROC(FUN_5b64e0)    // CSurface::SetState84
-ASM_PROC(FUN_5b6330)    // Rect::Contains
+extern "C" void FUN_5b6500(); KING_ALIAS("_FUN_5b6500", "@Window_ToRoot@16")    // CSurface::ScreenToClient
+extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")    // CSurface::GetRect
+extern "C" void FUN_5b64c0(); KING_ALIAS("_FUN_5b64c0", "@Window_RootSurface@8")    // CSurface::GetState84
+extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // CSurface::SetState84
+extern "C" void FUN_5b6330(); KING_ALIAS("_FUN_5b6330", "@Rect_Contains@16")    // Rect::Contains
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // list node: unlink
 extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")    // CWindow::Clear
 extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")    // CWindow::Present

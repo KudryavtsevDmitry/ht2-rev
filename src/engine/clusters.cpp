@@ -19,11 +19,11 @@ extern "C" int __fastcall Hash_Lookup(BYTE* self, void*, const char* name, int* 
 
 ASM_PROC(FUN_5eb310)
 ASM_PROC(FUN_5acd40)    // base constructor
-ASM_PROC(FUN_5bad60)    // size of an object
-ASM_PROC(FUN_5bbef0)    // size of an object
+extern "C" void FUN_5bad60(); KING_ALIAS("_FUN_5bad60", "@Texture_Size@8")    // size of an object
+extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    // size of an object
 ASM_PROC(FUN_5edeb0)    // base constructor (a, b)
 ASM_PROC(FUN_5eddf0)    // base destructor
-ASM_PROC(FUN_5b64e0)    // selects a palette
+extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // selects a palette
 ASM_FUNC(Scene_FindCallback, $L_5ef310)
 
 ASM_VAR(AsmLabel, g_vtbl65274c, $L_65274c)
