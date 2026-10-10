@@ -117,3 +117,56 @@ extern "C" void __fastcall XCycleTask_Run(XCycleTask* self, void*)  // [$L_48397
 {
     self->Run();
 }
+
+// Game-owned static state of AI_TASK.CPP. Unsigned subtraction preserves
+// the original generator's modulo-2^32 recurrence without signed overflow.
+typedef DWORD AiShuffleState[55];
+ASM_VAR(AiShuffleState, g_aiShuffleState, $L_68d6d8)
+ASM_VAR(DWORD, g_aiShuffleIndex, $L_68d7b4)
+ASM_VAR(DWORD, g_aiShuffleOtherIndex, $L_68d7b8)
+ASM_PROC(FUN_404420) // shared vector<char> destructor
+extern "C" int __cdecl atexit(void (__cdecl* callback)());
+
+extern "C" void __cdecl AI_ShuffleState_Init()
+{
+    for (unsigned i = 0; i < 55; ++i)
+        g_aiShuffleState[i] = 0;
+    DWORD seed = 161803398, current = 1;
+    g_aiShuffleState[54] = seed;
+    for (unsigned offset = 0; offset < 1134; offset += 21) {
+        unsigned slot = offset % 55;
+        seed -= current;
+        g_aiShuffleState[slot] = current;
+        current = seed;
+        seed = g_aiShuffleState[slot];
+    }
+    for (unsigned pass = 0; pass < 4; ++pass)
+        for (unsigned i = 0; i < 55; ++i)
+            g_aiShuffleState[i] -= g_aiShuffleState[(i + 31) % 55];
+    g_aiShuffleIndex = 0;
+    g_aiShuffleOtherIndex = 31;
+}
+
+extern "C" CharVec* __cdecl AI_MessageBuffer_Construct()
+{
+    g_screenMessage.begin = 0;
+    g_screenMessage.end = 0;
+    g_screenMessage.capacityEnd = 0;
+    return &g_screenMessage;
+}
+
+extern "C" void __cdecl AI_MessageBuffer_Destroy()
+{
+    CallThis(FUN_404420, &g_screenMessage);
+}
+
+extern "C" int __cdecl AI_MessageBuffer_RegisterDestructor()
+{
+    return atexit(AI_MessageBuffer_Destroy);
+}
+
+extern "C" int __cdecl AI_MessageBuffer_Init()
+{
+    AI_MessageBuffer_Construct();
+    return AI_MessageBuffer_RegisterDestructor();
+}

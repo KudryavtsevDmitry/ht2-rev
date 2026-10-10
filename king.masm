@@ -233048,6 +233048,7 @@ ELSE
 EXTERN _Strings_Find:PROC
 FUN_483860 TEXTEQU <_Strings_Find>
 ENDIF
+IFDEF ASM_AITASK
 $L_4838c0 PROC
 
             jmp $L_4838d0
@@ -233121,6 +233122,10 @@ $L_483927::
             pop EBX
             ret 
 $L_4838c0 ENDP
+ELSE
+EXTERN _AI_ShuffleState_Init:PROC
+$L_4838c0 TEXTEQU <_AI_ShuffleState_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -233543,12 +233548,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_AITASK
 $L_483c60 PROC
 
             call FUN_483c70
 
             jmp $L_483c90
 $L_483c60 ENDP
+ELSE
+EXTERN _AI_MessageBuffer_Init:PROC
+$L_483c60 TEXTEQU <_AI_MessageBuffer_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -233556,6 +233566,7 @@ $L_483c60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_AITASK
 FUN_483c70 PROC
 
             push ECX
@@ -233567,6 +233578,10 @@ FUN_483c70 PROC
             pop ECX
             ret 
 FUN_483c70 ENDP
+ELSE
+EXTERN _AI_MessageBuffer_Construct:PROC
+FUN_483c70 TEXTEQU <_AI_MessageBuffer_Construct>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -233581,6 +233596,7 @@ FUN_483c70 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_AITASK
 $L_483c90 PROC
 
             push OFFSET $L_483ca0
@@ -233589,10 +233605,15 @@ $L_483c90 PROC
             pop ECX
             ret 
 $L_483c90 ENDP
+ELSE
+EXTERN _AI_MessageBuffer_RegisterDestructor:PROC
+$L_483c90 TEXTEQU <_AI_MessageBuffer_RegisterDestructor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_AITASK
 $L_483ca0 PROC
 
             mov ECX,OFFSET $L_68d7c0
@@ -233605,6 +233626,10 @@ $L_483ca0 PROC
 
             nop
 $L_483ca0 ENDP
+ELSE
+EXTERN _AI_MessageBuffer_Destroy:PROC
+$L_483ca0 TEXTEQU <_AI_MessageBuffer_Destroy>
+ENDIF
 ALIGN 16
 ; AI game interface: src\aitask.cpp, nmake ASM_AITASK=1 assembles the original
 IFDEF ASM_AITASK
@@ -1109492,9 +1109517,12 @@ $L_68d6c0           DB 8 DUP(?)
 $L_68d6c8           DB 4 DUP(?)
 $L_68d6cc           DB 4 DUP(?)
 $L_68d6d0           DB 8 DUP(?)
+PUBLIC $L_68d6d8
 $L_68d6d8           DB 216 DUP(?)
 $L_68d7b0           DB 4 DUP(?)
+PUBLIC $L_68d7b4
 $L_68d7b4           DB 4 DUP(?)
+PUBLIC $L_68d7b8
 $L_68d7b8           DB 8 DUP(?)
 $L_68d7c0           DB 4 DUP(?)
 $L_68d7c4           DB 12 DUP(?)
