@@ -624186,6 +624186,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_ENGINE
 $L_57dfb0 PROC
 
             mov EAX,ECX
@@ -624225,6 +624226,10 @@ $L_57dfb0 PROC
             mov DWORD PTR [EAX+804],ECX
             ret 
 $L_57dfb0 ENDP
+ELSE
+EXTERN @SceneObj_SaveState@8:PROC
+$L_57dfb0 TEXTEQU <@SceneObj_SaveState@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -651702,6 +651707,7 @@ FUN_591c30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_ENGINE
 FUN_5922d0 PROC
 
             sub ESP,192
@@ -651749,6 +651755,10 @@ FUN_5922d0 PROC
             add ESP,192
             ret 
 FUN_5922d0 ENDP
+ELSE
+EXTERN _SceneObj_Collide:PROC
+FUN_5922d0 TEXTEQU <_SceneObj_Collide>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -652356,6 +652366,7 @@ FUN_5928d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_ENGINE
 FUN_5929c0 PROC
 
             sub ESP,96
@@ -652406,6 +652417,10 @@ $L_592a16::
             add ESP,96
             ret 
 FUN_5929c0 ENDP
+ELSE
+EXTERN _SceneObj_CollideShape:PROC
+FUN_5929c0 TEXTEQU <_SceneObj_CollideShape>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -658778,6 +658793,7 @@ $L_596838           DWORD $L_5964eb
           DWORD $L_5966f9
           DWORD $L_596610
 ALIGN 16
+IFDEF ASM_ENGINE
 FUN_596850 PROC
 
             mov EAX,DWORD PTR [$L_6f6910]
@@ -658821,6 +658837,10 @@ $L_59686f::
             pop EBX
             ret 8
 FUN_596850 ENDP
+ELSE
+EXTERN @SceneEffect_Start@16:PROC
+FUN_596850 TEXTEQU <@SceneEffect_Start@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -1110685,6 +1110705,7 @@ $L_6f6900           DB 4 DUP(?)
 $L_6f6904           DB 4 DUP(?)
 $L_6f6908           DB 4 DUP(?)
 $L_6f690c           DB 4 DUP(?)
+PUBLIC $L_6f6910
 $L_6f6910           DB 4 DUP(?)
 $L_6f6914           DB 4 DUP(?)
 $L_6f6918           DB 20 DUP(?)
