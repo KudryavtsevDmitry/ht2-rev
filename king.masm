@@ -653,6 +653,7 @@ EXTERN _wvsprintfA@12:PROC
 
 EXTERN ___ImageBase:BYTE
 
+PUBLIC $L_653008
 PUBLIC $L_685abc
 PUBLIC $L_725e28
 PUBLIC __EntryPoint
@@ -869609,6 +869610,7 @@ $L_60e0b8::
             ret 8
 FUN_60e070 ENDP
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e0d0 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -869617,13 +869619,22 @@ FUN_60e0d0 PROC
             mov DWORD PTR [ECX+116],EDX
             ret 4
 FUN_60e0d0 ENDP
+ELSE
+EXTERN @MarineTask_SetMode@12:PROC
+FUN_60e0d0 TEXTEQU <@MarineTask_SetMode@12>
+ENDIF
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e0e0 PROC
 
             mov EAX,DWORD PTR [ECX+116]
             ret 
 FUN_60e0e0 ENDP
+ELSE
+EXTERN @MarineTask_GetMode@8:PROC
+FUN_60e0e0 TEXTEQU <@MarineTask_GetMode@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -870058,6 +870069,7 @@ FUN_60e4a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e560 PROC
 
             mov EAX,DWORD PTR [ECX+112]
@@ -870100,12 +870112,17 @@ $L_60e5cb::
             mov DWORD PTR [ECX+132],0
             ret 4
 FUN_60e560 ENDP
+ELSE
+EXTERN @MarineTask_Activate@12:PROC
+FUN_60e560 TEXTEQU <@MarineTask_Activate@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e5e0 PROC
 
             cmp DWORD PTR [ECX+116],1
@@ -870129,6 +870146,10 @@ $L_60e604::
             mov DWORD PTR [ECX+116],EAX
             ret 4
 FUN_60e5e0 ENDP
+ELSE
+EXTERN @MarineTask_Deactivate@12:PROC
+FUN_60e5e0 TEXTEQU <@MarineTask_Deactivate@12>
+ENDIF
 $L_60e610 PROC
 
             sub ESP,132
@@ -870523,6 +870544,7 @@ FUN_60ea50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60ea70 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -870530,6 +870552,10 @@ FUN_60ea70 PROC
             mov DWORD PTR [ECX+152],EAX
             ret 4
 FUN_60ea70 ENDP
+ELSE
+EXTERN @MarineTask_SetPendingValue@12:PROC
+FUN_60ea70 TEXTEQU <@MarineTask_SetPendingValue@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871224,12 +871250,17 @@ FUN_60f0d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f1b0 PROC
 
             mov EAX,DWORD PTR [ECX+16]
             mov DWORD PTR [EAX+4],0
             ret 
 FUN_60f1b0 ENDP
+ELSE
+EXTERN @MarineTask_ClearRegistration@8:PROC
+FUN_60f1b0 TEXTEQU <@MarineTask_ClearRegistration@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871322,6 +871353,7 @@ FUN_60f1c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f280 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -871330,6 +871362,10 @@ FUN_60f280 PROC
             mov DWORD PTR [ECX+48],EDX
             ret 8
 FUN_60f280 ENDP
+ELSE
+EXTERN @MarineTask_SetFirstBounds@16:PROC
+FUN_60f280 TEXTEQU <@MarineTask_SetFirstBounds@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871346,6 +871382,7 @@ FUN_60f280 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f2a0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -871354,6 +871391,10 @@ FUN_60f2a0 PROC
             mov DWORD PTR [ECX+56],EDX
             ret 8
 FUN_60f2a0 ENDP
+ELSE
+EXTERN @MarineTask_SetSecondBounds@16:PROC
+FUN_60f2a0 TEXTEQU <@MarineTask_SetSecondBounds@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
