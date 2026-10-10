@@ -1,3 +1,18 @@
+PUBLIC $L_7287f8
+PUBLIC $L_725fc8
+PUBLIC $L_6531d8
+PUBLIC $L_64c748
+PUBLIC $L_653120
+PUBLIC $L_653124
+PUBLIC $L_653128
+PUBLIC $L_65312c
+PUBLIC $L_65311c
+PUBLIC $L_64c938
+PUBLIC $L_6503e0
+PUBLIC $L_64b748
+PUBLIC $L_64c2f8
+PUBLIC $L_725e60
+PUBLIC $L_64c904
 PUBLIC $L_7283f0
 PUBLIC $L_727ff0
 PUBLIC $L_727be8
@@ -852558,6 +852573,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6057b0 PROC
 
             sub ESP,8
@@ -852611,6 +852627,10 @@ $L_6057f7::
             nop
             nop
 FUN_6057b0 ENDP
+ELSE
+EXTERN @MarineMaterial_UpdateFrame@12:PROC
+FUN_6057b0 TEXTEQU <@MarineMaterial_UpdateFrame@12>
+ENDIF
 ALIGN 16
 FUN_605810 PROC
 
@@ -874757,6 +874777,7 @@ ELSE
 EXTERN @MarineGrid_Destruct@8:PROC
 FUN_610860 TEXTEQU <@MarineGrid_Destruct@8>
 ENDIF
+IFDEF ASM_MARINE
 $L_610960 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -874934,9 +874955,14 @@ $L_610b41::
             add ESP,36
             ret 16
 $L_610960 ENDP
+ELSE
+EXTERN @MarineGrid_TriangleWeight@24:PROC
+$L_610960 TEXTEQU <@MarineGrid_TriangleWeight@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_610b70 PROC
 
             sub ESP,76
@@ -875231,6 +875257,10 @@ $L_610ef5::
             add ESP,76
             ret 32
 $L_610b70 ENDP
+ELSE
+EXTERN @MarineGrid_SurfaceWeight@40:PROC
+$L_610b70 TEXTEQU <@MarineGrid_SurfaceWeight@40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -876533,6 +876563,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_611e60 PROC
 
             sub ESP,16
@@ -876669,6 +876700,10 @@ $L_611f63::
             add ESP,16
             ret 4
 $L_611e60 ENDP
+ELSE
+EXTERN @MarineGrid_RippleHeight@12:PROC
+$L_611e60 TEXTEQU <@MarineGrid_RippleHeight@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -876680,6 +876715,7 @@ $L_611e60 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_611ff0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -876694,6 +876730,10 @@ $L_612007::
 
             ret 4
 $L_611ff0 ENDP
+ELSE
+EXTERN @MarineGrid_SetTime@12:PROC
+$L_611ff0 TEXTEQU <@MarineGrid_SetTime@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -876784,6 +876824,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6120c0 PROC
 
             sub ESP,48
@@ -876963,6 +877004,10 @@ $L_61228a::
             nop
             nop
 FUN_6120c0 ENDP
+ELSE
+EXTERN @MarineGrid_ReflectionUV@32:PROC
+FUN_6120c0 TEXTEQU <@MarineGrid_ReflectionUV@32>
+ENDIF
 ALIGN 16
 IFDEF ASM_MARINE
 FUN_6122d0 PROC
@@ -879896,6 +879941,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_6137f0 PROC
 
             jmp $L_613800
@@ -879917,6 +879963,10 @@ $L_613800::
             fstp DWORD PTR [$L_725fc8]
             ret 
 $L_6137f0 ENDP
+ELSE
+EXTERN _MarineGrid_InitDiameter:PROC
+$L_6137f0 TEXTEQU <_MarineGrid_InitDiameter>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_MARINE
@@ -879938,6 +879988,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_613820 PROC
 
             jmp $L_613830
@@ -879959,6 +880010,10 @@ $L_613830::
             fstp DWORD PTR [$L_7287f8]
             ret 
 $L_613820 ENDP
+ELSE
+EXTERN _MarineGrid_InitRandomDiameter:PROC
+$L_613820 TEXTEQU <_MarineGrid_InitRandomDiameter>
+ENDIF
           BYTE 090H
 $L_613840 PROC
 
