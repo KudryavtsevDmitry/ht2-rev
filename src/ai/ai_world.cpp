@@ -614,6 +614,30 @@ static BYTE* Fill(BYTE* s, const int* v, int n)
 
 #define R(p) ((AiRecord*)(p))
 
+typedef char AsmLabel[1];
+ASM_PROC(FUN_44b740)    // the STL node allocator: allocate (bytes)
+extern "C" void FUN_480550(); KING_ALIAS("_FUN_480550", "@SvRec480550_Construct@12")    // 52-byte record constructor (name)
+ASM_PROC(FUN_44d4e0)    // vector<pointer>::insert_aux
+extern "C" void FUN_480580(); KING_ALIAS("_FUN_480580", "@SvRec480580_Construct@12")    // 24-byte record constructor (name)
+ASM_PROC(FUN_44d7a0)
+extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // script error (kind, fatal, got, expected)
+ASM_PROC(FUN_4b59f0)    // port constructor
+extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")    // pool allocation
+extern "C" void FUN_4b0b60(); KING_ALIAS("_FUN_4b0b60", "@SchNumber_FromInt@16")    // number constructor
+extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")
+extern "C" void FUN_4b65e0(); KING_ALIAS("_FUN_4b65e0", "_SchValue_IsSymbol")
+ASM_VAR(BYTE**, g_registry52, $L_68d0d8)
+ASM_VAR(BYTE**, g_registry52End, $L_68d0dc)
+ASM_VAR(BYTE**, g_registry52Cap, $L_68d0e0)
+ASM_VAR(BYTE**, g_registry24, $L_68d0c8)
+ASM_VAR(BYTE**, g_registry24End, $L_68d0cc)
+ASM_VAR(BYTE**, g_registry24Cap, $L_68d0d0)
+ASM_VAR(AsmLabel, s_pair, $L_66cb08)
+ASM_VAR(AsmLabel, s_number, $L_66ca60)
+ASM_VAR(AsmLabel, s_string, $L_66ca58)
+ASM_VAR(AsmLabel, s_port, $L_66cb28)
+
 extern "C" {
 void __fastcall Buf_Append(void* s, void*, const void* src, int n) { R(s)->Append(src, n); }               // [FUN_401870]
 void __fastcall Buf_AppendString(void* s, void*, const char* str) { R(s)->AppendString(str); }           // [FUN_4018b0]
@@ -1692,8 +1716,8 @@ ASM_PROC(FUN_451d40)
 ASM_PROC(FUN_452000)
 ASM_PROC(FUN_452610)    // vector<12 bytes>::insert_aux
 ASM_PROC(FUN_452bc0)    // vector<56 bytes>::insert_aux
-ASM_PROC(FUN_44b0f0)    // list: a new node holding x
-ASM_PROC(FUN_44b250)
+extern "C" void FUN_44b0f0(); KING_ALIAS("_FUN_44b0f0", "_ListNode16_Make@4")    // list: a new node holding x
+extern "C" void FUN_44b250(); KING_ALIAS("_FUN_44b250", "_ListNode16_MakeB@4")
 ASM_PROC(FUN_44b310)
 ASM_PROC(FUN_402ec0)    // a hashtable value's destructor
 ASM_VAR(AiText, g_strPair, $L_66cb08)
@@ -3106,4 +3130,302 @@ extern "C" void __cdecl Players_MinKey(void** out)
         }
     }
     *out = best;
+}
+
+// --- Functions with exception frames (the frames only rethrow; see README)
+
+static void* AiAlloc(unsigned bytes)
+{
+    return bytes ? CallC<void*>(FUN_44b740, bytes) : 0;
+}
+
+extern "C" {
+
+static BYTE* Registry_FindOrAdd(BYTE** begin, BYTE*** endp, BYTE*** capp, const char* name, unsigned size,
+                                void (*ctor)(), void (*insert)(), void* vec)
+{
+    BYTE** p = begin;
+    for (; p != *endp; p++) {
+        const char* b = F(const char*, *p, 0);
+        const char* e = F(const char*, *p, 4);
+        if (b == e || !b)
+            continue;
+        if (!strcmp(b, name))
+            break;
+    }
+    if (p != *endp)
+        return *p;
+    BYTE* o = (BYTE*)operator new(size);
+    BYTE* made = o ? CallThis<BYTE*>(ctor, o, name) : 0;
+    if (*endp != *capp) {
+        if (*endp)
+            **endp = made;
+        (*endp)++;
+    } else {
+        CallThis(insert, vec, *endp, &made);
+    }
+    return (*endp)[-1];
+}
+
+// [FUN_4054a0] the 52-byte record of this name (made on first use)
+BYTE* __cdecl Registry52_Get(const char* name)
+{
+    return Registry_FindOrAdd(g_registry52, &g_registry52End, &g_registry52Cap, name, 52, FUN_480550,
+                              FUN_44d4e0, &g_registry52);
+}
+
+// [FUN_4055c0] the 24-byte record of this name (made on first use)
+BYTE* __cdecl Registry24_Get(const char* name)
+{
+    return Registry_FindOrAdd(g_registry24, &g_registry24End, &g_registry24Cap, name, 24, FUN_480580,
+                              FUN_44d7a0, &g_registry24);
+}
+
+static void Bytes_CopyInto(BYTE* self, const BYTE* b, const BYTE* e)
+{
+    unsigned n = e - b;
+    BYTE* p = (BYTE*)AiAlloc(n);
+    F(BYTE*, self, 0) = p;
+    F(BYTE*, self, 4) = p;
+    F(BYTE*, self, 8) = p + n;
+    memmove(p, b, e - b);
+    F(BYTE*, self, 4) = p + (e - b);
+}
+
+// [FUN_40ca70]
+BYTE* __fastcall Rec40ca70_Construct(BYTE* self, void*, const BYTE** src, int a, int b)
+{
+    F(int, self, 0) = a;
+    F(int, self, 4) = b;
+    F(int, self, 8) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    Bytes_CopyInto(self + 8, src[0], src[1]);
+    return self;
+}
+
+// [FUN_4581f0]
+BYTE* __fastcall Rec4581f0_Copy(BYTE* self, void*, const BYTE* s)
+{
+    F(int, self, 0) = F(int, s, 0);
+    F(int, self, 4) = F(int, s, 4);
+    F(int, self, 8) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    Bytes_CopyInto(self + 8, F(const BYTE*, s, 8), F(const BYTE*, s, 12));
+    return self;
+}
+
+// [FUN_448e10] vector<4 bytes> copy constructor
+BYTE* __fastcall Vec4b_Copy(BYTE* self, void*, const BYTE** s)
+{
+    F(int, self, 0) = 0;
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    unsigned n = (s[1] - s[0]) >> 2;
+    BYTE* p = (BYTE*)AiAlloc(n * 4);
+    F(BYTE*, self, 0) = p;
+    F(BYTE*, self, 4) = p;
+    F(BYTE*, self, 8) = p + n * 4;
+    unsigned bytes = ((s[1] - s[0]) >> 2) << 2;
+    memmove(p, s[0], bytes);
+    F(BYTE*, self, 4) = p + bytes;
+    return self;
+}
+
+// [FUN_44ac60] n 4-byte elements, the first ones copied from [first, last)
+void* __stdcall Vec4b_AllocCopy(unsigned n, const BYTE* first, const BYTE* last)
+{
+    void* p = AiAlloc(n * 4);
+    memmove(p, first, ((last - first) >> 2) << 2);
+    return p;
+}
+
+// [FUN_44ba90] n 4-byte elements filled by [FUN_46b0e0]
+void* __stdcall Vec4b_AllocFill(unsigned n, int a, int b)
+{
+    void* p = AiAlloc(n * 4);
+    CallC(FUN_46b0e0, a, b, p, n);
+    return p;
+}
+
+// [FUN_44b0f0] a 16-byte list node holding v
+DWORD* __stdcall ListNode16_Make(const DWORD* v)
+{
+    DWORD* n = (DWORD*)AiAlloc(16);
+    if (n + 2)
+        n[2] = *v;
+    return n;
+}
+
+// [FUN_44b250]
+DWORD* __stdcall ListNode16_MakeB(const DWORD* v)
+{
+    DWORD* n = (DWORD*)AiAlloc(16);
+    if (n + 2)
+        n[2] = *v;
+    return n;
+}
+
+// [FUN_447b00] an empty list (16-byte nodes)
+BYTE** __fastcall List16_Construct(BYTE** self, void*, int unused)
+{
+    BYTE* n = (BYTE*)AiAlloc(16);
+    self[0] = n;
+    F(BYTE*, n, 0) = n;
+    F(BYTE*, self[0], 4) = self[0];
+    return self;
+}
+
+// [FUN_449680] an empty list (64-byte nodes)
+BYTE** __fastcall List64_Construct(BYTE** self, void*, int unused)
+{
+    BYTE* n = (BYTE*)AiAlloc(64);
+    self[0] = n;
+    F(BYTE*, n, 0) = n;
+    F(BYTE*, self[0], 4) = self[0];
+    return self;
+}
+
+// Script value handles: +0 the object (reference count at +4), +8 flags.
+
+static void SchValue_Release(DWORD* v)
+{
+    if (!(v[2] & 0x10000) && v[0]) {
+        BYTE* o = (BYTE*)v[0];
+        F(int, o, 4) = F(int, o, 4) - 1;
+        if (!F(int, (BYTE*)v[0], 4) && v[0])
+            CallVirt((BYTE*)v[0], 12, 1);
+    }
+}
+
+static DWORD* Handle_FromValue(DWORD* self, const DWORD* v, int type, const char* name)
+{
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* o = (BYTE*)v[0];
+    if (!o) {
+        self[0] = 0;
+        self[2] = 0;
+        return self;
+    }
+    if (CallVirt<int>(o, 0) != type) {
+        const char* has = CallVirt<const char*>((BYTE*)v[0], 4);
+        CallC(FUN_4a54e0, 2, 1, has, name);
+        return self;
+    }
+    self[0] = v[0];
+    self[2] = v[2];
+    F(int, (BYTE*)self[0], 4) = F(int, (BYTE*)self[0], 4) + 1;
+    return self;
+}
+
+// [FUN_44cab0]
+DWORD* __fastcall PairHandle_From(DWORD* self, void*, const DWORD* v)
+{
+    return Handle_FromValue(self, v, 2, s_pair);
+}
+
+// [FUN_4556d0]
+DWORD* __fastcall NumberHandle_From(DWORD* self, void*, const DWORD* v)
+{
+    return Handle_FromValue(self, v, 6, s_number);
+}
+
+// [FUN_455760]
+DWORD* __fastcall StringHandle_From(DWORD* self, void*, const DWORD* v)
+{
+    return Handle_FromValue(self, v, 3, s_string);
+}
+
+static DWORD* Handle_Take(DWORD* out, BYTE* o, int type, const char* name)
+{
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    if (!o) {
+        out[0] = 0;
+        out[2] = 0;
+        return out;
+    }
+    if (CallVirt<int>(o, 0) != type) {
+        const char* has = CallVirt<const char*>(o, 4);
+        CallC(FUN_4a54e0, 2, 1, has, name);
+        return out;
+    }
+    out[0] = (DWORD)o;
+    out[2] = CallVirt<int>(o, 0) & 255;
+    F(int, o, 4) = F(int, o, 4) + 1;
+    return out;
+}
+
+static BYTE* Port_New(int a, int b)
+{
+    BYTE* o = (BYTE*)operator new(296);
+    return o ? CallThis<BYTE*>(FUN_4b59f0, o, a, b) : 0;
+}
+
+// [FUN_4557f0] a port from (*a, *b)
+DWORD* __cdecl Port_MakeA(DWORD* out, int unused, const int* a, const int* b)
+{
+    return Handle_Take(out, Port_New(*a, *b), 11, s_port);
+}
+
+// [FUN_455f00]
+DWORD* __cdecl Port_MakeB(DWORD* out, int unused, const int* a, const int* b)
+{
+    return Handle_Take(out, Port_New(*a, *b), 11, s_port);
+}
+
+// [FUN_455960] a port from (a, *b)
+DWORD* __cdecl Port_MakeC(DWORD* out, int unused, int a, const int* b)
+{
+    return Handle_Take(out, Port_New(a, *b), 11, s_port);
+}
+
+// [FUN_455a50]
+DWORD* __cdecl Port_MakeD(DWORD* out, int unused, int a, const int* b)
+{
+    return Handle_Take(out, Port_New(a, *b), 11, s_port);
+}
+
+// [FUN_455b40]
+DWORD* __cdecl Port_MakeE(DWORD* out, int unused, int a, const int* b)
+{
+    return Handle_Take(out, Port_New(a, *b), 11, s_port);
+}
+
+// [FUN_455c30]
+DWORD* __cdecl Port_MakeF(DWORD* out, int unused, int a, const int* b)
+{
+    return Handle_Take(out, Port_New(a, *b), 11, s_port);
+}
+
+// [FUN_4573f0]
+DWORD* __cdecl Port_MakeG(DWORD* out, int unused, int a, const int* b)
+{
+    return Handle_Take(out, Port_New(a, *b), 11, s_port);
+}
+
+// [FUN_4574e0] a number from (*a, *b)
+DWORD* __cdecl Number_Make(DWORD* out, int unused, const int* a, const int* b)
+{
+    BYTE* o = CallC<BYTE*>(FUN_4ad2f0, 32);
+    BYTE* n = o ? CallThis<BYTE*>(FUN_4b0b60, o, *a, *b) : 0;
+    return Handle_Take(out, n, 6, s_number);
+}
+
+// [FUN_40e410] whether the script value of x (a kind 2 item) matches *self
+bool __fastcall Item_Matches(BYTE** self, void*, BYTE* x)
+{
+    if (F(BYTE, x, 8) != 2)
+        return false;
+    DWORD v[3];
+    CallC(FUN_407f00, v, x);
+    bool r = CallC<bool>(FUN_4b65e0, v, self[0]);
+    SchValue_Release(v);
+    return r;
+}
+
 }
