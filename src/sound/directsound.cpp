@@ -50,6 +50,18 @@ static X87 double x87_log10(double x)
     __asm { fyl2x }
 }
 
+ASM_PROC(FUN_6055e0)
+ASM_VAR(BYTE*, g_streams, $L_72412c)
+
+template <class... A>
+static __forceinline int Com(BYTE* com, unsigned off, A... args)
+{
+    return (*(int(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
+}
+
+extern "C" int __cdecl Volume_ToDb(float v);
+extern "C" double __cdecl Volume_FromDb(int db);
+
 extern "C" {
 
 // [FUN_604a60]
@@ -389,6 +401,118 @@ void __cdecl Mixer_SetVolume(float v)
         (*(int(__stdcall**)(BYTE*, int))(vt + 60))(g_dsPrimary, db);
     }
     g_mixerVolume = v;
+}
+
+}
+
+extern "C" {
+
+// The functions below sit after the start of grd.cpp in the program, but
+// belong to the mixer.
+
+// [FUN_6050f0] the mixer volume (0..1)
+double __cdecl Mixer_GetVolume()
+{
+    float v = g_mixerVolume;
+    int db;
+    if (g_dsPrimary && Com(g_dsPrimary, 24, &db) == 0)
+        return Volume_FromDb(db);
+    return v;
+}
+
+// [FUN_605140] a DirectSound buffer of size bytes for the format
+int __cdecl Mixer_CreateBuffer(BYTE* ds, void* format, BYTE** out, DWORD size)
+{
+    DWORD desc[9];
+    for (int k = 0; k < 9; k++)
+        desc[k] = 0;
+    desc[2] = size;
+    desc[4] = (DWORD)format;
+    desc[0] = 36;
+    desc[1] = 224;
+    if (Com(ds, 12, desc, out, 0) == 0)
+        return 1;
+    *out = 0;
+    return 0;
+}
+
+// [FUN_6051b0] deletes the streams whose buffers stopped playing
+void __cdecl Streams_Collect()
+{
+    BYTE* s = g_streams;
+    while (s) {
+        BYTE* buf = F(BYTE*, s, 24);
+        DWORD st;
+        if (buf) {
+            Com(buf, 36, &st);
+            if (!(st & 1)) {
+                CallVirt(s, 12);
+                BYTE* next = F(BYTE*, s, 8);
+                if (s)
+                    CallVirt(s, 0, 1);
+                s = next;
+                continue;
+            }
+        }
+        s = F(BYTE*, s, 8);
+    }
+    CallC(FUN_6055e0);
+}
+
+// [FUN_6052c0] volume and pan in hundredths of decibels from the two
+// channel volumes (+28, +32)
+void __fastcall Play_UpdateVolume(BYTE* self, void*)
+{
+    int a = Volume_ToDb(F(float, self, 28));
+    int b = Volume_ToDb(F(float, self, 32));
+    int v = a > b ? a : b;
+    int pan = b - a;
+    F(int, self, 68) = v;
+    F(int, self, 64) = pan;
+    if (v < -10000)
+        F(int, self, 68) = -10000;
+    if (pan < -10000)
+        F(int, self, 64) = -10000;
+    if (F(int, self, 64) > 10000)
+        F(int, self, 64) = 10000;
+}
+
+// [FUN_605490] the highest priority sound without a buffer above p
+BYTE* __cdecl Play_BestWaiting(WORD p)
+{
+    BYTE* best = 0;
+    for (BYTE* n = g_playHead; n; n = F(BYTE*, n, 16))
+        if (!F(int, n, 56) && F(WORD, n, 36) > p) {
+            best = n;
+            p = F(WORD, n, 36);
+        }
+    return best;
+}
+
+// [FUN_6054c0] the lowest priority sound with a buffer below p
+BYTE* __cdecl Play_WorstPlaying(WORD p)
+{
+    BYTE* worst = 0;
+    for (BYTE* n = g_playHead; n; n = F(BYTE*, n, 16))
+        if (F(int, n, 56) && F(WORD, n, 36) < p) {
+            worst = n;
+            p = F(WORD, n, 36);
+        }
+    return worst;
+}
+
+// [FUN_6054f0] gives the buffer to a better sound, or takes one
+void __fastcall Play_Arbitrate(BYTE* self, void*)
+{
+    BYTE* buf = F(BYTE*, self, 56);
+    if (buf) {
+        if (Play_BestWaiting(F(WORD, self, 36)))
+            Com(buf, 72);
+        return;
+    }
+    BYTE* w = Play_WorstPlaying(F(WORD, self, 36));
+    if (w)
+        CallVirt(w, 20);
 }
 
 }

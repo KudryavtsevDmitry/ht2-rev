@@ -675,8 +675,8 @@ BYTE* __fastcall Texture_Construct(BYTE* self, void*, const char* name)
     return self;
 }
 
-// [FUN_5ba7b0] the pixel at (x, y), wrapped
-int __fastcall Texture_Pixel(BYTE* self, void*, int x, int y, int def)
+// [FUN_5ba7b0] the pixel at (x, y), wrapped (y for other formats)
+int __fastcall Texture_Pixel(BYTE* self, void*, int x, int y)
 {
     int w = F(WORD, self, 20), h = F(WORD, self, 22);
     int i = (y % h) * w + x % w;
@@ -686,7 +686,7 @@ int __fastcall Texture_Pixel(BYTE* self, void*, int x, int y, int def)
     case 2:
         return F(WORD*, self, 8)[i];
     }
-    return def;
+    return y;
 }
 
 // [FUN_5bac90] releases the texture's surface
