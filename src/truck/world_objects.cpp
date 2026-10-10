@@ -366,7 +366,7 @@ extern "C" BYTE* __fastcall WasmObj5a35b0_Construct(BYTE* self, void*) { return 
 
 ASM_PROC(FUN_5d31e0)    // named object: constructor (id, name)
 ASM_PROC(FUN_4e41d9)    // an angle checked for NaN (angle, where)
-ASM_PROC(FUN_603cb0)    // a double of an ini file (section, key, default, out, file)
+extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")    // a double of an ini file (section, key, default, out, file)
 ASM_PROC(FUN_4e5dce)
 ASM_PROC(FUN_4e5c77)
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);

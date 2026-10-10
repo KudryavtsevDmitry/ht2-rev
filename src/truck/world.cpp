@@ -20,7 +20,7 @@ extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*);    // carphys.cpp
 ASM_PROC(FUN_5e1a10)    // set a switch
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5fdaf0)    // sound: play (volume, pitch)
-ASM_PROC(FUN_5ef5c0)    // query: constructor
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")    // query: constructor
 ASM_PROC(FUN_4e5698)    // query: finish a hit
 
 ASM_VAR(BYTE*, g_6974c4, $L_6974c4)             // +2960 the frame time, +2968 the time (doubles)

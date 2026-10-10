@@ -963,6 +963,18 @@ PUBLIC $L_70ebec, $L_70ebf0, $L_70ebf4, $L_70ebf8
 PUBLIC $L_651eb4, $L_67faa0, $L_683c58, $L_71e7d4, $L_71e7e4, $L_71e800
 PUBLIC $L_71e830, $L_71e844, $L_71e858, $L_720080, $L_7200c0, $L_723b40
 PUBLIC $L_723d44
+PUBLIC $L_652d10, $L_652d68, $L_652df8, $L_6843ec, $L_6843fc, $L_684400
+PUBLIC $L_684404, $L_723aa0, $L_723aa8, $L_723b28, $L_723b2c, $L_723b30
+PUBLIC $L_723b34, $L_723b38, $L_72411c, $L_724120, $L_724124, $L_724128
+PUBLIC $L_724148, $L_724164, $L_724168, $L_724188, $L_724194, $L_72419c
+PUBLIC $L_7241a0, $L_7241a4
+PUBLIC $L_652dc8, $L_652de8, $L_655310, $L_655320, $L_655330, $L_655340
+PUBLIC $L_655350, $L_655360, $L_6554b0, $L_6554e0, $L_6554f0, $L_671350
+PUBLIC $L_6761e8, $L_683c78, $L_68422c, $L_684260, $L_684268, $L_684274
+PUBLIC $L_68427c, $L_684280, $L_6843ac, $L_685dd0, $L_685df4, $L_685e00
+PUBLIC $L_723d60, $L_723d64, $L_723d88, $L_723d90, $L_723ddc, $L_723de0
+PUBLIC $L_723dec, $L_723df0, $L_723df8, $L_723f88, $L_72883c, $L_729044
+PUBLIC $L_729850, $L_72b068, $L_72b870
 
 ;===================================
 _TEXT SEGMENT
@@ -812962,6 +812974,8 @@ $L_5ef530 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ef540 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -813042,6 +813056,10 @@ $L_5ef5a2::
             pop EBP
             ret 
 FUN_5ef540 ENDP
+ELSE
+EXTERN _Table124_Find:PROC
+FUN_5ef540 TEXTEQU <_Table124_Find>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -813053,6 +813071,8 @@ FUN_5ef540 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ef5c0 PROC
 
             mov EAX,ECX
@@ -813108,7 +813128,13 @@ $L_5ef5d1::
             nop
             nop
 FUN_5ef5c0 ENDP
+ELSE
+EXTERN @Node_Init@8:PROC
+FUN_5ef5c0 TEXTEQU <@Node_Init@8>
+ENDIF
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ef640 PROC
 
             mov EAX,ECX
@@ -813125,6 +813151,10 @@ $L_5ef652::
 
             ret 
 FUN_5ef640 ENDP
+ELSE
+EXTERN @Node_Root@8:PROC
+FUN_5ef640 TEXTEQU <@Node_Root@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -817621,6 +817651,8 @@ $L_5f1f1d ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f2080 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -817702,6 +817734,10 @@ $L_5f20ef::
             pop EBX
             ret 12
 FUN_5f2080 ENDP
+ELSE
+EXTERN @Slots_Call48@20:PROC
+FUN_5f2080 TEXTEQU <@Slots_Call48@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -817714,6 +817750,8 @@ FUN_5f2080 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f2100 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -817811,7 +817849,13 @@ $L_5f2185::
             nop
             nop
 FUN_5f2100 ENDP
+ELSE
+EXTERN @Slots_Call56@28:PROC
+FUN_5f2100 TEXTEQU <@Slots_Call56@28>
+ENDIF
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f2190 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -817854,6 +817898,10 @@ $L_5f21d1::
 
             ret 8
 FUN_5f2190 ENDP
+ELSE
+EXTERN @Node_ApplyMatrix@16:PROC
+FUN_5f2190 TEXTEQU <@Node_ApplyMatrix@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -818235,6 +818283,8 @@ $L_5f2590::
             nop
 FUN_5f21e0 ENDP
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f25a0 PROC
 
             push ESI
@@ -818249,6 +818299,10 @@ FUN_5f25a0 PROC
             pop ESI
             ret 4
 FUN_5f25a0 ENDP
+ELSE
+EXTERN @Node_GetLocal@12:PROC
+FUN_5f25a0 TEXTEQU <@Node_GetLocal@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -818261,6 +818315,8 @@ FUN_5f25a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f25c0 PROC
 
             push ESI
@@ -818328,6 +818384,10 @@ $L_5f262a::
             pop ESI
             ret 4
 FUN_5f25c0 ENDP
+ELSE
+EXTERN @Node_GetWorld@12:PROC
+FUN_5f25c0 TEXTEQU <@Node_GetWorld@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -819179,6 +819239,8 @@ $L_5f2dc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f2dd0 PROC
 
             mov EAX,DWORD PTR [ECX+64]
@@ -819198,6 +819260,10 @@ FUN_5f2dd0 PROC
             add ESP,24
             ret 4
 FUN_5f2dd0 ENDP
+ELSE
+EXTERN @Node_Call5f2a40a@12:PROC
+FUN_5f2dd0 TEXTEQU <@Node_Call5f2a40a@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -819897,6 +819963,8 @@ $L_5f33ae::
 $L_5f3190 ENDP
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f33e0 PROC
 
             mov EAX,DWORD PTR [ECX+68]
@@ -819916,6 +819984,10 @@ FUN_5f33e0 PROC
             add ESP,24
             ret 4
 FUN_5f33e0 ENDP
+ELSE
+EXTERN @Node_Call5f2a40b@12:PROC
+FUN_5f33e0 TEXTEQU <@Node_Call5f2a40b@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -831455,6 +831527,8 @@ $L_5fa4b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fa4f0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -831463,6 +831537,10 @@ FUN_5fa4f0 PROC
             mov DWORD PTR [ECX+52],EDX
             ret 8
 FUN_5fa4f0 ENDP
+ELSE
+EXTERN @Node_Set48@16:PROC
+FUN_5fa4f0 TEXTEQU <@Node_Set48@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -831658,6 +831736,8 @@ FUN_5fa5f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fa6a0 PROC
 
             push ESI
@@ -831679,6 +831759,10 @@ FUN_5fa6a0 PROC
             pop ESI
             ret 
 FUN_5fa6a0 ENDP
+ELSE
+EXTERN @Mesh_Construct@8:PROC
+FUN_5fa6a0 TEXTEQU <@Mesh_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -831709,6 +831793,8 @@ $L_5fa6d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fa6f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -831729,6 +831815,10 @@ FUN_5fa6f0 PROC
             pop ESI
             ret 4
 FUN_5fa6f0 ENDP
+ELSE
+EXTERN @Mesh_ConstructNamed@12:PROC
+FUN_5fa6f0 TEXTEQU <@Mesh_ConstructNamed@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -832001,6 +832091,8 @@ $L_5fa860 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fa910 PROC
 
             push ECX
@@ -832088,6 +832180,10 @@ $L_5fa9bd::
             pop ECX
             ret 4
 FUN_5fa910 ENDP
+ELSE
+EXTERN @Mesh_BuildVertices@12:PROC
+FUN_5fa910 TEXTEQU <@Mesh_BuildVertices@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -833473,6 +833569,8 @@ $L_5fb550 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fb740 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -833522,6 +833620,10 @@ $L_5fb7a8::
             add ESP,48
             ret 
 FUN_5fb740 ENDP
+ELSE
+EXTERN _Node_TransformByFrame:PROC
+FUN_5fb740 TEXTEQU <_Node_TransformByFrame>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -833546,6 +833648,8 @@ $L_5fb7bb::
 $L_5fb7b0 ENDP
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fb7d0 PROC
 
             fld DWORD PTR [ESP+12]
@@ -833579,6 +833683,10 @@ $L_5fb810::
             xor EAX,EAX
             ret 
 FUN_5fb7d0 ENDP
+ELSE
+EXTERN _Near3:PROC
+FUN_5fb7d0 TEXTEQU <_Near3>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -835068,6 +835176,8 @@ $L_5fc6c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fc6e0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -835116,7 +835226,13 @@ FUN_5fc6e0 PROC
 
             nop
 FUN_5fc6e0 ENDP
+ELSE
+EXTERN @Group_Construct@12:PROC
+FUN_5fc6e0 TEXTEQU <@Group_Construct@12>
+ENDIF
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fc740 PROC
 
             push ESI
@@ -835148,6 +835264,10 @@ $L_5fc777::
             pop ESI
             ret 
 FUN_5fc740 ENDP
+ELSE
+EXTERN @Group_EachOwner@8:PROC
+FUN_5fc740 TEXTEQU <@Group_EachOwner@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -835762,6 +835882,8 @@ $L_5fccd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fcd40 PROC
 
             push ECX
@@ -835808,6 +835930,10 @@ $L_5fcd8f::
             pop ECX
             ret 
 FUN_5fcd40 ENDP
+ELSE
+EXTERN _Sound_SetVolume:PROC
+FUN_5fcd40 TEXTEQU <_Sound_SetVolume>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -835912,6 +836038,8 @@ FUN_5fcdf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fce60 PROC
 
             mov EAX,DWORD PTR [$L_723b2c]
@@ -835941,6 +836069,10 @@ $L_5fce8b::
             add ESP,4
             ret 
 FUN_5fce60 ENDP
+ELSE
+EXTERN _Sound_Open:PROC
+FUN_5fce60 TEXTEQU <_Sound_Open>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -835953,6 +836085,8 @@ FUN_5fce60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fcea0 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -835989,10 +836123,16 @@ $L_5fceec::
 
             ret 
 FUN_5fcea0 ENDP
+ELSE
+EXTERN _Sound_AllocBuffers:PROC
+FUN_5fcea0 TEXTEQU <_Sound_AllocBuffers>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fcef0 PROC
 
             mov EAX,DWORD PTR [$L_723b2c]
@@ -836005,6 +836145,10 @@ $L_5fcf08::
 
             ret 
 FUN_5fcef0 ENDP
+ELSE
+EXTERN _Sound_Close:PROC
+FUN_5fcef0 TEXTEQU <_Sound_Close>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836292,11 +836436,17 @@ FUN_5fd060 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd150 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
             ret 
 FUN_5fd150 ENDP
+ELSE
+EXTERN _Sound_IsOn:PROC
+FUN_5fd150 TEXTEQU <_Sound_IsOn>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836308,6 +836458,8 @@ FUN_5fd150 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd160 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -836360,10 +836512,16 @@ $L_5fd1cc::
 
             ret 
 FUN_5fd160 ENDP
+ELSE
+EXTERN _Sound_Frame:PROC
+FUN_5fd160 TEXTEQU <_Sound_Frame>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd1d0 PROC
 
             push EBX
@@ -836415,6 +836573,10 @@ FUN_5fd1d0 PROC
             pop EBX
             ret 4
 FUN_5fd1d0 ENDP
+ELSE
+EXTERN @SoundFile_Construct@12:PROC
+FUN_5fd1d0 TEXTEQU <@SoundFile_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836426,6 +836588,8 @@ FUN_5fd1d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd230 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -836440,7 +836604,13 @@ FUN_5fd230 PROC
             mov DWORD PTR [EAX+16],ECX
             ret 8
 FUN_5fd230 ENDP
+ELSE
+EXTERN @SoundFile_ConstructData@16:PROC
+FUN_5fd230 TEXTEQU <@SoundFile_ConstructData@16>
+ENDIF
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd250 PROC
 
             push ESI
@@ -836463,6 +836633,10 @@ $L_5fd265::
             pop ESI
             ret 
 FUN_5fd250 ENDP
+ELSE
+EXTERN @SoundFile_Destroy@8:PROC
+FUN_5fd250 TEXTEQU <@SoundFile_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836478,6 +836652,8 @@ FUN_5fd250 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd280 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -836525,6 +836701,10 @@ $L_5fd2a7::
             pop ESI
             ret 4
 FUN_5fd280 ENDP
+ELSE
+EXTERN @SoundFile_SetBuffer@12:PROC
+FUN_5fd280 TEXTEQU <@SoundFile_SetBuffer@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836533,6 +836713,8 @@ FUN_5fd280 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd2e0 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -836598,11 +836780,17 @@ $L_5fd348::
             pop ESI
             ret 
 FUN_5fd2e0 ENDP
+ELSE
+EXTERN @SoundFile_Load@8:PROC
+FUN_5fd2e0 TEXTEQU <@SoundFile_Load@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd350 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -836619,6 +836807,10 @@ $L_5fd365::
 
             ret 
 FUN_5fd350 ENDP
+ELSE
+EXTERN @SoundFile_Unload@8:PROC
+FUN_5fd350 TEXTEQU <@SoundFile_Unload@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836630,6 +836822,8 @@ FUN_5fd350 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd370 PROC
 
             push EBX
@@ -836685,11 +836879,17 @@ FUN_5fd370 PROC
             pop EBX
             ret 12
 FUN_5fd370 ENDP
+ELSE
+EXTERN @Sound_Construct@20:PROC
+FUN_5fd370 TEXTEQU <@Sound_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd3e0 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -836728,6 +836928,10 @@ $L_5fd428::
 
             ret 
 FUN_5fd3e0 ENDP
+ELSE
+EXTERN _Sound_StopAll:PROC
+FUN_5fd3e0 TEXTEQU <_Sound_StopAll>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -836866,6 +837070,8 @@ FUN_5fd430 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd580 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -836903,9 +837109,15 @@ $L_5fd5b2::
             mov DWORD PTR [EAX*4+$L_723aa8],ECX
             ret 
 FUN_5fd580 ENDP
+ELSE
+EXTERN _Sound_TakeChannel:PROC
+FUN_5fd580 TEXTEQU <_Sound_TakeChannel>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd5c0 PROC
 
             push ESI
@@ -836927,6 +837139,10 @@ $L_5fd5e2::
             pop ESI
             ret 4
 FUN_5fd5c0 ENDP
+ELSE
+EXTERN @Sound_SetPitch@12:PROC
+FUN_5fd5c0 TEXTEQU <@Sound_SetPitch@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -843132,6 +843348,8 @@ FUN_600b60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_600b70 PROC
 
             mov EAX,ECX
@@ -843149,6 +843367,10 @@ FUN_600b70 PROC
 
             nop
 FUN_600b70 ENDP
+ELSE
+EXTERN @DpHandler_Construct@12:PROC
+FUN_600b70 TEXTEQU <@DpHandler_Construct@12>
+ENDIF
 $L_600b90 PROC
 
             mov EDX,ECX
@@ -844020,6 +844242,8 @@ $L_601250 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_601270 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -844103,6 +844327,10 @@ $L_6012ba::
             pop EBX
             ret 20
 FUN_601270 ENDP
+ELSE
+EXTERN @DpRecord_Construct@28:PROC
+FUN_601270 TEXTEQU <@DpRecord_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -844111,6 +844339,8 @@ FUN_601270 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_601310 PROC
 
             push EBX
@@ -844195,6 +844425,10 @@ $L_60135b::
             pop EBX
             ret 4
 FUN_601310 ENDP
+ELSE
+EXTERN @DpRecord_Copy@12:PROC
+FUN_601310 TEXTEQU <@DpRecord_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -844202,6 +844436,8 @@ FUN_601310 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6013b0 PROC
 
             push EBX
@@ -844307,6 +844543,10 @@ $L_60141d::
             pop EBX
             ret 4
 FUN_6013b0 ENDP
+ELSE
+EXTERN @DpRecord_Assign@12:PROC
+FUN_6013b0 TEXTEQU <@DpRecord_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -844352,6 +844592,8 @@ $L_601493::
             nop
 FUN_601470 ENDP
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6014a0 PROC
 
             push ESI
@@ -844437,6 +844679,10 @@ $L_60150c::
             nop
             nop
 FUN_6014a0 ENDP
+ELSE
+EXTERN @DpRecord_ProviderName@8:PROC
+FUN_6014a0 TEXTEQU <@DpRecord_ProviderName@8>
+ENDIF
 $L_601520 PROC
 
             call FUN_601530
@@ -844499,6 +844745,8 @@ $L_601560 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_601570 PROC
 
             mov EDX,DWORD PTR [$L_723d64]
@@ -844525,12 +844773,18 @@ $L_60158e::
             xor EAX,EAX
             ret 
 FUN_601570 ENDP
+ELSE
+EXTERN _Dp_NextProvider:PROC
+FUN_601570 TEXTEQU <_Dp_NextProvider>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6015b0 PROC
 
             call FUN_6016f0
@@ -844543,10 +844797,16 @@ FUN_6015b0 PROC
             add ESP,4
             ret 
 FUN_6015b0 ENDP
+ELSE
+EXTERN _Dp_FirstProvider:PROC
+FUN_6015b0 TEXTEQU <_Dp_FirstProvider>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6015d0 PROC
 
             mov EAX,DWORD PTR [$L_723ddc]
@@ -844582,6 +844842,10 @@ $L_601625::
 
             ret 
 FUN_6015d0 ENDP
+ELSE
+EXTERN _Dp_Create:PROC
+FUN_6015d0 TEXTEQU <_Dp_Create>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -845570,6 +845834,8 @@ $L_601f8b::
 FUN_601c70 ENDP
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_601fa0 PROC
 
             mov EAX,DWORD PTR [$L_723ddc]
@@ -845614,6 +845880,10 @@ $L_601fe4::
             nop
             nop
 FUN_601fa0 ENDP
+ELSE
+EXTERN _Dp_Release:PROC
+FUN_601fa0 TEXTEQU <_Dp_Release>
+ENDIF
 ALIGN 16
 FUN_601ff0 PROC
 
@@ -845807,6 +846077,8 @@ $L_6021a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6021b0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -845831,7 +846103,13 @@ FUN_6021b0 PROC
             nop
             nop
 FUN_6021b0 ENDP
+ELSE
+EXTERN _Dp_Send:PROC
+FUN_6021b0 TEXTEQU <_Dp_Send>
+ENDIF
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6021d0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -845845,6 +846123,10 @@ FUN_6021d0 PROC
             add ESP,12
             ret 
 FUN_6021d0 ENDP
+ELSE
+EXTERN _Dp_SendTo:PROC
+FUN_6021d0 TEXTEQU <_Dp_SendTo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -845947,6 +846229,8 @@ FUN_6021f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6022a0 PROC
 
             call FUN_601fa0
@@ -845963,6 +846247,10 @@ $L_6022bb::
             xor EAX,EAX
             ret 
 FUN_6022a0 ENDP
+ELSE
+EXTERN _Dp_Shutdown:PROC
+FUN_6022a0 TEXTEQU <_Dp_Shutdown>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_6022c0 PROC
@@ -845995,6 +846283,8 @@ $L_6022c0 PROC
             nop
 $L_6022c0 ENDP
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6022f0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -846018,6 +846308,10 @@ $L_60230b::
             xor EAX,EAX
             ret 
 FUN_6022f0 ENDP
+ELSE
+EXTERN _MsgList_Take:PROC
+FUN_6022f0 TEXTEQU <_MsgList_Take>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_602320 PROC
@@ -846234,6 +846528,8 @@ $L_602410 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6024d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -846244,6 +846540,10 @@ FUN_6024d0 PROC
             add ESP,8
             ret 
 FUN_6024d0 ENDP
+ELSE
+EXTERN _Dp_Receive:PROC
+FUN_6024d0 TEXTEQU <_Dp_Receive>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -846258,6 +846558,8 @@ FUN_6024d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6024f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -846268,6 +846570,10 @@ FUN_6024f0 PROC
             add ESP,8
             ret 
 FUN_6024f0 ENDP
+ELSE
+EXTERN _Dp_TakeMessage:PROC
+FUN_6024f0 TEXTEQU <_Dp_TakeMessage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -846282,6 +846588,8 @@ FUN_6024f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602510 PROC
 
             push ESI
@@ -846301,11 +846609,17 @@ FUN_602510 PROC
             pop ESI
             ret 
 FUN_602510 ENDP
+ELSE
+EXTERN _Dp_SetPlayerName:PROC
+FUN_602510 TEXTEQU <_Dp_SetPlayerName>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602540 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -846314,6 +846628,10 @@ FUN_602540 PROC
             xor EAX,EAX
             ret 
 FUN_602540 ENDP
+ELSE
+EXTERN _Dp_Get723d88:PROC
+FUN_602540 TEXTEQU <_Dp_Get723d88>
+ENDIF
           BYTE 090H
 $L_602550 PROC
 
@@ -847034,6 +847352,8 @@ $L_602b4b ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602b60 PROC
 
             push EBX
@@ -847086,6 +847406,10 @@ $L_602baf::
             pop EBX
             ret 8
 FUN_602b60 ENDP
+ELSE
+EXTERN @Blob_Set@16:PROC
+FUN_602b60 TEXTEQU <@Blob_Set@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -847098,6 +847422,8 @@ FUN_602b60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602bc0 PROC
 
             mov EAX,ECX
@@ -847107,6 +847433,10 @@ FUN_602bc0 PROC
             mov DWORD PTR [EAX],ECX
             ret 
 FUN_602bc0 ENDP
+ELSE
+EXTERN @Stream_Construct@8:PROC
+FUN_602bc0 TEXTEQU <@Stream_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -848341,6 +848671,8 @@ FUN_6033f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603460 PROC
 
             mov EAX,DWORD PTR [ECX+4]
@@ -848369,8 +848701,14 @@ $L_603482::
             fstp DWORD PTR [EDX]
             ret 8
 FUN_603460 ENDP
+ELSE
+EXTERN @Stream_ReadFloat@16:PROC
+FUN_603460 TEXTEQU <@Stream_ReadFloat@16>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6034a0 PROC
 
             mov EAX,DWORD PTR [ECX+4]
@@ -848397,6 +848735,10 @@ $L_6034c2::
             mov DWORD PTR [EDX],ECX
             ret 8
 FUN_6034a0 ENDP
+ELSE
+EXTERN @Stream_ReadInt@16:PROC
+FUN_6034a0 TEXTEQU <@Stream_ReadInt@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -848407,6 +848749,8 @@ FUN_6034a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6034e0 PROC
 
             mov EAX,ECX
@@ -848451,6 +848795,10 @@ $L_603504::
             pop ESI
             ret 12
 FUN_6034e0 ENDP
+ELSE
+EXTERN @Stream_ReadBlob@20:PROC
+FUN_6034e0 TEXTEQU <@Stream_ReadBlob@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -848460,6 +848808,8 @@ FUN_6034e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603540 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -848485,6 +848835,10 @@ $L_603561::
 
             ret 
 FUN_603540 ENDP
+ELSE
+EXTERN _Bytes_Copy:PROC
+FUN_603540 TEXTEQU <_Bytes_Copy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -848829,6 +849183,8 @@ FUN_6037e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6037f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -848838,6 +849194,10 @@ FUN_6037f0 PROC
             add ESP,4
             ret 
 FUN_6037f0 ENDP
+ELSE
+EXTERN _Timer_Calibrate:PROC
+FUN_6037f0 TEXTEQU <_Timer_Calibrate>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_603800 PROC
@@ -848856,6 +849216,8 @@ $L_603800 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603810 PROC
 
             sub ESP,20
@@ -848957,6 +849319,10 @@ $L_6038c4::
             add ESP,20
             ret 
 FUN_603810 ENDP
+ELSE
+EXTERN @Music_Poll@8:PROC
+FUN_603810 TEXTEQU <@Music_Poll@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849083,6 +849449,8 @@ FUN_6038d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6039c0 PROC
 
             push ESI
@@ -849119,6 +849487,10 @@ $L_6039f3::
             pop ESI
             ret 4
 FUN_6039c0 ENDP
+ELSE
+EXTERN @Music_Run@12:PROC
+FUN_6039c0 TEXTEQU <@Music_Run@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849126,6 +849498,8 @@ FUN_6039c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603a00 PROC
 
             push ESI
@@ -849159,8 +849533,14 @@ $L_603a2a::
             pop ESI
             ret 
 FUN_603a00 ENDP
+ELSE
+EXTERN @Music_StopGraph@8:PROC
+FUN_603a00 TEXTEQU <@Music_StopGraph@8>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603a30 PROC
 
             push ECX
@@ -849211,6 +849591,10 @@ $L_603a80::
             pop ECX
             ret 8
 FUN_603a30 ENDP
+ELSE
+EXTERN @Music_SetVolume@16:PROC
+FUN_603a30 TEXTEQU <@Music_SetVolume@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849221,6 +849605,8 @@ FUN_603a30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603a90 PROC
 
             fld QWORD PTR [ESP+4]
@@ -849249,9 +849635,15 @@ $L_603abb::
             fmul QWORD PTR [$L_64b758]
             jmp __ftol
 FUN_603a90 ENDP
+ELSE
+EXTERN _Music_VolumeToDb:PROC
+FUN_603a90 TEXTEQU <_Music_VolumeToDb>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603ad0 PROC
 
             mov EAX,DWORD PTR [ECX+8]
@@ -849270,6 +849662,10 @@ $L_603ad8::
 
             ret 
 FUN_603ad0 ENDP
+ELSE
+EXTERN @Music_QueryControl@8:PROC
+FUN_603ad0 TEXTEQU <@Music_QueryControl@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849280,6 +849676,8 @@ FUN_603ad0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603af0 PROC
 
             push ESI
@@ -849298,12 +849696,18 @@ $L_603b02::
             pop ESI
             ret 
 FUN_603af0 ENDP
+ELSE
+EXTERN @Music_ReleaseControl@8:PROC
+FUN_603af0 TEXTEQU <@Music_ReleaseControl@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603b10 PROC
 
             push ESI
@@ -849320,12 +849724,18 @@ FUN_603b10 PROC
             pop ESI
             ret 
 FUN_603b10 ENDP
+ELSE
+EXTERN @Music_Construct@8:PROC
+FUN_603b10 TEXTEQU <@Music_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603b30 PROC
 
             push ESI
@@ -849347,6 +849757,10 @@ $L_603b45::
             pop ESI
             ret 
 FUN_603b30 ENDP
+ELSE
+EXTERN @Music_Close@8:PROC
+FUN_603b30 TEXTEQU <@Music_Close@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849366,6 +849780,8 @@ FUN_603b60 PROC
             nop
 FUN_603b60 ENDP
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603b70 PROC
 
             mov EAX,DWORD PTR [ESP+20]
@@ -849424,12 +849840,18 @@ $L_603bdb::
             add ESP,96
             ret 
 FUN_603b70 ENDP
+ELSE
+EXTERN _Ini_ReadInt:PROC
+FUN_603b70 TEXTEQU <_Ini_ReadInt>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603bf0 PROC
 
             mov EAX,DWORD PTR [ESP+20]
@@ -849486,6 +849908,10 @@ $L_603c58::
             add ESP,96
             ret 
 FUN_603bf0 ENDP
+ELSE
+EXTERN _Ini_ReadShort:PROC
+FUN_603bf0 TEXTEQU <_Ini_ReadShort>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849493,6 +849919,8 @@ FUN_603bf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603c70 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -849517,6 +849945,10 @@ FUN_603c70 PROC
             add ESP,96
             ret 
 FUN_603c70 ENDP
+ELSE
+EXTERN _Ini_WriteInt:PROC
+FUN_603c70 TEXTEQU <_Ini_WriteInt>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849526,6 +849958,8 @@ FUN_603c70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603cb0 PROC
 
             mov EAX,DWORD PTR [ESP+24]
@@ -849582,6 +850016,10 @@ $L_603d17::
             add ESP,96
             ret 
 FUN_603cb0 ENDP
+ELSE
+EXTERN _Ini_GetDouble:PROC
+FUN_603cb0 TEXTEQU <_Ini_GetDouble>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849592,6 +850030,8 @@ FUN_603cb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603d30 PROC
 
             mov EAX,DWORD PTR [ESP+24]
@@ -849648,6 +850088,10 @@ $L_603d97::
             add ESP,96
             ret 
 FUN_603d30 ENDP
+ELSE
+EXTERN _Ini_GetFloat:PROC
+FUN_603d30 TEXTEQU <_Ini_GetFloat>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849658,6 +850102,8 @@ FUN_603d30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603db0 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -849684,6 +850130,10 @@ FUN_603db0 PROC
             add ESP,96
             ret 
 FUN_603db0 ENDP
+ELSE
+EXTERN _Ini_PutDouble:PROC
+FUN_603db0 TEXTEQU <_Ini_PutDouble>
+ENDIF
 $L_603df0 PROC
 
             push ESI
@@ -849719,6 +850169,8 @@ $L_603e05::
             nop
 $L_603df0 ENDP
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603e20 PROC
 
             mov EAX,ECX
@@ -849728,6 +850180,10 @@ FUN_603e20 PROC
             mov DWORD PTR [EAX+8],ECX
             ret 
 FUN_603e20 ENDP
+ELSE
+EXTERN @Thread_Construct@8:PROC
+FUN_603e20 TEXTEQU <@Thread_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849765,6 +850221,8 @@ $L_603e40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603e60 PROC
 
             push ESI
@@ -849782,9 +850240,15 @@ FUN_603e60 PROC
             pop ESI
             ret 
 FUN_603e60 ENDP
+ELSE
+EXTERN @Thread_Start@8:PROC
+FUN_603e60 TEXTEQU <@Thread_Start@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603e80 PROC
 
             mov EAX,DWORD PTR [ECX+12]
@@ -849794,10 +850258,16 @@ FUN_603e80 PROC
 
             ret 
 FUN_603e80 ENDP
+ELSE
+EXTERN @Thread_Wait@8:PROC
+FUN_603e80 TEXTEQU <@Thread_Wait@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603e90 PROC
 
             push ESI
@@ -849815,6 +850285,10 @@ FUN_603e90 PROC
             pop ESI
             ret 
 FUN_603e90 ENDP
+ELSE
+EXTERN @Thread_Destroy@8:PROC
+FUN_603e90 TEXTEQU <@Thread_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849949,6 +850423,8 @@ FUN_603f30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_603fd0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -849958,6 +850434,10 @@ FUN_603fd0 PROC
             xor EAX,EAX
             ret 
 FUN_603fd0 ENDP
+ELSE
+EXTERN _Mixer_Set724120:PROC
+FUN_603fd0 TEXTEQU <_Mixer_Set724120>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849969,6 +850449,8 @@ FUN_603fd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_603ff0 PROC
 
             xor EAX,EAX
@@ -849976,10 +850458,16 @@ FUN_603ff0 PROC
             mov DWORD PTR [$L_724120],EAX
             ret 
 FUN_603ff0 ENDP
+ELSE
+EXTERN _Mixer_Clear724120:PROC
+FUN_603ff0 TEXTEQU <_Mixer_Clear724120>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604000 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -850017,6 +850505,10 @@ FUN_604000 PROC
             pop ESI
             ret 24
 FUN_604000 ENDP
+ELSE
+EXTERN @Play_Construct@32:PROC
+FUN_604000 TEXTEQU <@Play_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850134,6 +850626,8 @@ FUN_604120 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604130 PROC
 
             push EBX
@@ -850214,6 +850708,10 @@ $L_60419d::
             nop
             nop
 FUN_604130 ENDP
+ELSE
+EXTERN @Play_Insert@8:PROC
+FUN_604130 TEXTEQU <@Play_Insert@8>
+ENDIF
 ALIGN 16
 FUN_6041b0 PROC
 
@@ -850283,6 +850781,8 @@ FUN_6041b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604230 PROC
 
             push ESI
@@ -850329,6 +850829,10 @@ $L_604281::
             pop ESI
             ret 
 FUN_604230 ENDP
+ELSE
+EXTERN @Play_Delete@8:PROC
+FUN_604230 TEXTEQU <@Play_Delete@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850343,6 +850847,8 @@ FUN_604230 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604290 PROC
 
             call FUN_604a60
@@ -850384,11 +850890,17 @@ $L_6042cc::
             mov DWORD PTR [$L_724128],0
             ret 
 FUN_604290 ENDP
+ELSE
+EXTERN _Play_StopAll:PROC
+FUN_604290 TEXTEQU <_Play_StopAll>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6042e0 PROC
 
             mov EAX,DWORD PTR [$L_724124]
@@ -850408,6 +850920,10 @@ $L_6042f9::
 
             ret 
 FUN_6042e0 ENDP
+ELSE
+EXTERN _Play_Find:PROC
+FUN_6042e0 TEXTEQU <_Play_Find>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850415,6 +850931,8 @@ FUN_6042e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604300 PROC
 
             push ESI
@@ -850500,6 +851018,10 @@ $L_60437c::
             nop
             nop
 FUN_604300 ENDP
+ELSE
+EXTERN _Play_StopEntry:PROC
+FUN_604300 TEXTEQU <_Play_StopEntry>
+ENDIF
 ALIGN 16
 FUN_604390 PROC
 
@@ -850738,6 +851260,8 @@ FUN_604410 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604590 PROC
 
             push ESI
@@ -850781,7 +851305,13 @@ $L_6045b6::
             nop
             nop
 FUN_604590 ENDP
+ELSE
+EXTERN @Wave_Free@8:PROC
+FUN_604590 TEXTEQU <@Wave_Free@8>
+ENDIF
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6045d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -850807,11 +851337,17 @@ $L_6045f7::
             xor AL,AL
             ret 4
 FUN_6045d0 ENDP
+ELSE
+EXTERN @Wave_SkipChunk@12:PROC
+FUN_6045d0 TEXTEQU <@Wave_SkipChunk@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604600 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -850923,6 +851459,10 @@ $L_6046a2::
             pop EBX
             ret 8
 FUN_604600 ENDP
+ELSE
+EXTERN @Wave_FindChunk@16:PROC
+FUN_604600 TEXTEQU <@Wave_FindChunk@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850934,6 +851474,8 @@ FUN_604600 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6046c0 PROC
 
             fld DWORD PTR [ESP+4]
@@ -850952,6 +851494,10 @@ $L_6046d7::
             fmul QWORD PTR [$L_64b758]
             jmp __ftol
 FUN_6046c0 ENDP
+ELSE
+EXTERN _Volume_ToDb:PROC
+FUN_6046c0 TEXTEQU <_Volume_ToDb>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850959,6 +851505,8 @@ FUN_6046c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6046f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -850981,6 +851529,10 @@ $L_60470d::
             fmul QWORD PTR [$L_652e18]
             jmp __CIpow
 FUN_6046f0 ENDP
+ELSE
+EXTERN _Volume_FromDb:PROC
+FUN_6046f0 TEXTEQU <_Volume_FromDb>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851048,6 +851600,8 @@ $L_604774           DWORD $L_604741
           DWORD $L_604759
           DWORD $L_604765
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604790 PROC
 
             mov EAX,DWORD PTR [$L_684404]
@@ -851074,6 +851628,10 @@ $L_6047c8::
 
             ret 
 FUN_604790 ENDP
+ELSE
+EXTERN _Mixer_Open:PROC
+FUN_604790 TEXTEQU <_Mixer_Open>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851281,6 +851839,8 @@ $L_6049dc PROC
             ret 
 $L_6049dc ENDP
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6049f0 PROC
 
             mov EAX,DWORD PTR [$L_724194]
@@ -851318,6 +851878,10 @@ $L_604a2d::
             pop ESI
             ret 
 FUN_6049f0 ENDP
+ELSE
+EXTERN _Mixer_Unload:PROC
+FUN_6049f0 TEXTEQU <_Mixer_Unload>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851341,6 +851905,8 @@ $L_604a40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604a60 PROC
 
             push OFFSET $L_724148
@@ -851348,11 +851914,17 @@ FUN_604a60 PROC
 
             ret 
 FUN_604a60 ENDP
+ELSE
+EXTERN _Mixer_Lock:PROC
+FUN_604a60 TEXTEQU <_Mixer_Lock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604a70 PROC
 
             push OFFSET $L_724148
@@ -851360,6 +851932,10 @@ FUN_604a70 PROC
 
             ret 
 FUN_604a70 ENDP
+ELSE
+EXTERN _Mixer_Unlock:PROC
+FUN_604a70 TEXTEQU <_Mixer_Unlock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851427,6 +852003,8 @@ FUN_604a80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604af0 PROC
 
             mov EAX,DWORD PTR [$L_684404]
@@ -851459,6 +852037,10 @@ $L_604b3f::
 
             ret 
 FUN_604af0 ENDP
+ELSE
+EXTERN _Mixer_Start:PROC
+FUN_604af0 TEXTEQU <_Mixer_Start>
+ENDIF
 ALIGN 16
 FUN_604b40 PROC
 
@@ -851676,6 +852258,8 @@ FUN_604c80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604d30 PROC
 
             push ESI
@@ -851704,6 +852288,10 @@ $L_604d5b::
             pop ESI
             ret 
 FUN_604d30 ENDP
+ELSE
+EXTERN _Mixer_ReleaseBuffers:PROC
+FUN_604d30 TEXTEQU <_Mixer_ReleaseBuffers>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851870,17 +852458,25 @@ FUN_604e70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604e80 PROC
 
             mov DWORD PTR [$L_6843ec],1
             ret 
 FUN_604e80 ENDP
+ELSE
+EXTERN _Mixer_SetState1:PROC
+FUN_604e80 TEXTEQU <_Mixer_SetState1>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604e90 PROC
 
             mov ECX,DWORD PTR [$L_724168]
@@ -851905,6 +852501,10 @@ $L_604ea7::
             and EAX,255
             ret 
 FUN_604e90 ENDP
+ELSE
+EXTERN _Mixer_Load:PROC
+FUN_604e90 TEXTEQU <_Mixer_Load>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -852069,6 +852669,8 @@ FUN_604f20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604fe0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -852084,6 +852686,10 @@ $L_604fee::
             pop ECX
             ret 
 FUN_604fe0 ENDP
+ELSE
+EXTERN _Channel_Stop:PROC
+FUN_604fe0 TEXTEQU <_Channel_Stop>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -852095,6 +852701,8 @@ FUN_604fe0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605000 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -852118,6 +852726,10 @@ $L_605027::
 
             ret 
 FUN_605000 ENDP
+ELSE
+EXTERN _Channel_Call8:PROC
+FUN_605000 TEXTEQU <_Channel_Call8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -852127,6 +852739,8 @@ FUN_605000 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605030 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -852146,6 +852760,10 @@ $L_60504d::
 
             ret 
 FUN_605030 ENDP
+ELSE
+EXTERN _Channel_SetFrequency:PROC
+FUN_605030 TEXTEQU <_Channel_SetFrequency>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -852183,6 +852801,8 @@ FUN_605050 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605090 PROC
 
             mov EAX,DWORD PTR [$L_724188]
@@ -852199,7 +852819,13 @@ $L_6050af::
 
             ret 
 FUN_605090 ENDP
+ELSE
+EXTERN _Mixer_Stop:PROC
+FUN_605090 TEXTEQU <_Mixer_Stop>
+ENDIF
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6050b0 PROC
 
             mov EAX,DWORD PTR [$L_724194]
@@ -852228,6 +852854,10 @@ $L_6050e0::
             mov DWORD PTR [$L_6843fc],EAX
             ret 
 FUN_6050b0 ENDP
+ELSE
+EXTERN _Mixer_SetVolume:PROC
+FUN_6050b0 TEXTEQU <_Mixer_SetVolume>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -882115,6 +882745,8 @@ FUN_614490 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_6144f0 PROC
 
             fld DWORD PTR [ESP+4]
@@ -882164,6 +882796,10 @@ $L_614550::
             pop ESI
             ret 8
 FUN_6144f0 ENDP
+ELSE
+EXTERN @Terrain_SetDetail@16:PROC
+FUN_6144f0 TEXTEQU <@Terrain_SetDetail@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -883529,6 +884165,8 @@ FUN_615230 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_6152a0 PROC
 
             push EBX
@@ -883615,6 +884253,10 @@ $L_61531c::
             pop EBX
             ret 8
 FUN_6152a0 ENDP
+ELSE
+EXTERN @Terrain_Sample@16:PROC
+FUN_6152a0 TEXTEQU <@Terrain_Sample@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -885943,6 +886585,8 @@ FUN_616850 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_616c10 PROC
 
             fld DWORD PTR [ECX+40]
@@ -885990,6 +886634,10 @@ $L_616c72::
             xor EAX,EAX
             ret 4
 FUN_616c10 ENDP
+ELSE
+EXTERN @Terrain_InView@12:PROC
+FUN_616c10 TEXTEQU <@Terrain_InView@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -886272,6 +886920,8 @@ FUN_616ca0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_616f60 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -886338,10 +886988,16 @@ $L_616f7e::
             mov EAX,DWORD PTR [ECX*4+$L_72b870]
             ret 
 FUN_616f60 ENDP
+ELSE
+EXTERN _Noise_Lattice:PROC
+FUN_616f60 TEXTEQU <_Noise_Lattice>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_617020 PROC
 
             mov EAX,DWORD PTR [ESP+20]
@@ -886368,8 +887024,14 @@ FUN_617020 PROC
             add ESP,36
             ret 
 FUN_617020 ENDP
+ELSE
+EXTERN _Noise_Lattice2:PROC
+FUN_617020 TEXTEQU <_Noise_Lattice2>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_617060 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -886415,6 +887077,10 @@ $L_6170a0::
             pop ESI
             ret 16
 FUN_617060 ENDP
+ELSE
+EXTERN @Decals_Construct@24:PROC
+FUN_617060 TEXTEQU <@Decals_Construct@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -886428,6 +887094,8 @@ FUN_617060 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_6170d0 PROC
 
             push ESI
@@ -886466,12 +887134,22 @@ $L_6170e9::
             nop
             nop
 FUN_6170d0 ENDP
+ELSE
+EXTERN @Decals_Free@8:PROC
+FUN_6170d0 TEXTEQU <@Decals_Free@8>
+ENDIF
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_617100 PROC
 
             mov DWORD PTR [ECX+16],0
             ret 
 FUN_617100 ENDP
+ELSE
+EXTERN @Decals_Reset16@8:PROC
+FUN_617100 TEXTEQU <@Decals_Reset16@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -886481,6 +887159,8 @@ FUN_617100 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_617110 PROC
 
             mov EAX,DWORD PTR [ECX+8]
@@ -886521,6 +887201,10 @@ $L_617171::
 
             ret 16
 FUN_617110 ENDP
+ELSE
+EXTERN @Decals_Add@24:PROC
+FUN_617110 TEXTEQU <@Decals_Add@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -889609,11 +890293,17 @@ FUN_6197e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_619840 PROC
 
             mov DWORD PTR [ECX+8],0
             ret 
 FUN_619840 ENDP
+ELSE
+EXTERN @Terrain_Reset8@8:PROC
+FUN_619840 TEXTEQU <@Terrain_Reset8@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -889755,6 +890445,8 @@ FUN_619850 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_619970 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -889773,6 +890465,10 @@ FUN_619970 PROC
             pop EDI
             ret 8
 FUN_619970 ENDP
+ELSE
+EXTERN @RoomObjects_Construct@16:PROC
+FUN_619970 TEXTEQU <@RoomObjects_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -889973,6 +890669,8 @@ FUN_619ae0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_619b50 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -890033,6 +890731,10 @@ $L_619bb9::
             pop EBX
             ret 
 FUN_619b50 ENDP
+ELSE
+EXTERN @RoomObjects_Attach@8:PROC
+FUN_619b50 TEXTEQU <@RoomObjects_Attach@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -890047,6 +890749,8 @@ FUN_619b50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_619bd0 PROC
 
             push EBX
@@ -890088,6 +890792,10 @@ $L_619c07::
             pop EBX
             ret 
 FUN_619bd0 ENDP
+ELSE
+EXTERN @RoomObjects_Clear@8:PROC
+FUN_619bd0 TEXTEQU <@RoomObjects_Clear@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

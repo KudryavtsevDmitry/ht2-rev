@@ -66,7 +66,7 @@ ASM_PROC(FUN_4ccf30)
 extern "C" BYTE* __fastcall SceneObj_Matrix1(void* self, void*, void* out);   // engine.cpp: its world matrix
 ASM_PROC(FUN_5e5370)    // vehicles: by id
 ASM_PROC(FUN_5e49d0)    // vehicle: release
-ASM_PROC(FUN_5fd370)    // sound: constructor
+extern "C" void FUN_5fd370(); KING_ALIAS("_FUN_5fd370", "@Sound_Construct@20")    // sound: constructor
 extern "C" void __cdecl Fx_Update4910(void* x);
 KING_ALIAS("_Fx_Update4910", "FUN_4c4910")
 extern "C" void __cdecl Fx_Update4df0(void* x);

@@ -113,7 +113,7 @@ ASM_PROC(FUN_5d3570)    // ObjectContainer::Add
 ASM_PROC(FUN_5d81c0)    // Video_SetMode
 ASM_PROC(FUN_5e8c60)    // Font_Load
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")    // Font::~Font
-ASM_PROC(FUN_603b70)    // Ini_GetInt
+extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")    // Ini_GetInt
 extern "C" int __cdecl Movie_Play(const char* name, int mode);   // carat.cpp
 ASM_PROC(FUN_511820)    // King_LeaveGame
 extern "C" void __cdecl Replay_Open();    // carat.cpp

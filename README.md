@@ -32,6 +32,7 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | `media.cpp` | unit 0x5bfe60 | the AVI sound stream (msavi, DirectSound), keyed object tables, music, record files, tree branches and circle shadows |
 | `core.cpp` | unit 0x5cf180 | intrusive list links, name hash tables, block pools, timed event queues, a memory-mapped file, millisecond timers, blit wrappers |
 | `sound_files.cpp` | unit 0x5fdc70 | sound buffer slots and their lifetime |
+| `scene.cpp` | unit 0x5ef3f0 | scene nodes and their transforms, node lists by slot, named object tables, the sound channels |
 | **`src/ai/`** | `Htai` library | |
 | `ai.h`, `road.h` | | the AI's crash trace guard; the road graph (nodes, edges, positions, routes as hops) and the C runtime and STL parts the AI uses |
 | `ai_world.cpp` | `Ai_main.cpp` | the reference-counted string handle, position checks, nearest node or town, lookups of towns and vehicles, the AI's random generator, record constructors |
@@ -43,6 +44,10 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | `ai_saveload.cpp` | `ai_svld.cpp` | saving and loading the AI's state |
 | `ai_task.cpp` | `AI_TASK.CPP` | how the AI reaches the game: cycle task, switches, screen messages, banners |
 | `route_search.cpp` | `ai_trce.cpp` | route tables and costs, checks and dumps of hop sequences, double precision geometry, CRC32, control filters |
+| **`src/sound/`** | `Gi\Srmidp` library | |
+| `directsound.cpp` | unit 0x603fd0 | the DirectSound mixer: priority list of playing sounds, RIFF chunks, volume in decibels |
+| `sound_gate.cpp` | `D1gate.cpp` | the DirectPlay network gate, network message fields, the DirectShow music player, `.ini` integer helpers |
+| `timer.cpp` | `rdtsc.cpp` | `.ini` floating point helpers, the worker thread object |
 | **`src/script/`** | | the Scheme interpreter the AI scripts run on |
 | `evaluator.cpp` | `Sch_eval.cpp` | reference-counted values, scopes, expression nodes, map and list helpers, block pools |
 | `natives.cpp` | `sch_embd.cpp` | built-in functions, script messages and errors, value copies |
@@ -71,6 +76,7 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | **`src/terrain/`** | `terrain` | |
 | `grid_base.cpp` | `grd.cpp` | shared grid camera and origin, child lifetimes, terrain cell branches, grid defaults |
 | `grid_topology.cpp` | `grd.cpp` | triangle and point allocation, paired refinement edges, branch destruction |
+| `terrain.cpp` | `terrain.cpp` | detail levels, tile height samples, the visible-area test, noise lattice, decal vertices, room objects |
 | **`src/marine/`** | `marine` | the water surface |
 | `marine_core.cpp` | `MarineTask.cpp`, `mygreed.cpp`, `Greed.cpp` | mesh buffers, node/edge/work-item priority queues, tasks, particles, matrices |
 | `marine_startup.cpp` | `mygreed.cpp`, `MarineTask.cpp` | startup vectors, identity matrices, coefficients and work limits |
