@@ -1,5 +1,5 @@
 #include "../build-test/marine-init-test-globals.h"
-static volatile BYTE expected[40][64];
+static volatile BYTE expected[sizeof(regions)/sizeof(regions[0])][64];
 static void Setup(unsigned test)
 {
     for(unsigned region=0;region<sizeof(regions)/sizeof(regions[0]);region++) {
