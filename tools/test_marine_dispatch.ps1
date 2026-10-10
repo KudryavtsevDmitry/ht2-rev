@@ -10,7 +10,7 @@ $linker = Join-Path $vc 'bin\HostX86\x86\link.exe'
 $sdkLib = Join-Path (Split-Path (Split-Path $sdk -Parent) -Parent) ('Lib\' + (Split-Path $sdk -Leaf) + '\um\x86')
 $flags = @('/nologo', '/c', '/O2', '/GS-', '/Zl', "/I$vc\include", "/I$sdk\um", "/I$sdk\shared", "/I$sdk\ucrt", '/arch:IA32')
 $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
-$body = $source.Substring($source.IndexOf('// Marine task deferred bounds'))
+$body = $source.Substring($source.IndexOf('// Marine task deferred bounds'),$source.IndexOf('// Marine task construction')-$source.IndexOf('// Marine task deferred bounds'))
 $header = @'
 #include "../src/king.h"
 #include "../src/x87.h"

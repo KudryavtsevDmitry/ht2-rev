@@ -16,9 +16,9 @@ $cpp = Join-Path $outputDir 'marine-state-actual.cpp'
 Set-Content $cpp ($header + $body)
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw
 $reference = ''
-$methods = @{ '60e0d0'='SetMode'; '60e0e0'='GetMode'; '60e560'='Activate'; '60e5e0'='Deactivate'; '60ea70'='SetPendingValue'; '60f1b0'='ClearRegistration'; '60f280'='SetFirstBounds'; '60f2a0'='SetSecondBounds' }
+$methods = @{ '60e0d0'='SetMaterial'; '60e0e0'='GetMaterial'; '60e560'='Activate'; '60e5e0'='Deactivate'; '60ea70'='SetPendingValue'; '60f1b0'='ClearRegistration'; '60f280'='SetFirstBounds'; '60f2a0'='SetSecondBounds' }
 foreach ($label in $methods.Keys) {
-    $bytes = if($methods[$label] -match 'Bounds') {16} elseif($methods[$label] -in @('GetMode','ClearRegistration')) {8} else {12}
+    $bytes = if($methods[$label] -match 'Bounds') {16} elseif($methods[$label] -in @('GetMaterial','ClearRegistration')) {8} else {12}
     $reference += [regex]::Match($masm, ('(?s)FUN_'+$label+' PROC.*?FUN_'+$label+' ENDP')).Value.Replace('FUN_'+$label, '@Reference_'+$methods[$label]+'@'+$bytes) + "`n"
 }
 $bindings = 'EXTERN _g_marineStartDelay:DWORD' + "`n" + '$L_653008 TEXTEQU <_g_marineStartDelay>' + "`n"
