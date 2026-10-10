@@ -558,7 +558,7 @@ extern "C" DWORD __fastcall MarineTask_SetSecondBounds(BYTE* self, void*, DWORD 
 }
 
 // Marine task setup and callbacks.
-ASM_PROC(FUN_60d780)
+extern "C" DWORD __fastcall MarineMesh_PruneVertices(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineTask_InitPoints(BYTE* self, void*, unsigned count, const DWORD* points)
 {
     for (unsigned i = 0; i < count; ++i) F(DWORD, self, 16 + i * 4) = points[i];
@@ -601,7 +601,7 @@ extern "C" DWORD __fastcall MarineTask_RebuildBounds(BYTE* self, void*, const DW
 {
     MarineTask_CopyBounds(self, first, second);
     MarineGreed_Update(F(BYTE*, self, 0), 0);
-    return CallThis<DWORD>(FUN_60d780, F(void*, self, 0));
+    return MarineMesh_PruneVertices(F(BYTE*, self, 0), 0);
 }
 extern "C" DWORD __fastcall MarineTask_ApplyPoint(BYTE* self, void*, const void* point)
 {
@@ -628,4 +628,61 @@ extern "C" void __fastcall MarineTask_ReleaseMesh(BYTE* self, void*)
         CallVirt(mesh, 0, 1);
         F(BYTE*, self, 0) = 0;
     }
+}
+
+// Marine mesh cleanup.
+ASM_VAR(BYTE*, g_marineUnusedVertices, $L_725d50)
+ASM_VAR(DWORD, g_marineUnusedVertexCount, $L_725d54)
+extern "C" DWORD __fastcall MarineMesh_PruneVertices(BYTE* self, void*)
+{
+    DWORD* used = (DWORD*)malloc((unsigned)F(WORD, self, 36) * 4);
+    for (unsigned i = 0; i < (unsigned)F(WORD, self, 36); ++i) used[i] = 0;
+    BYTE* list = F(BYTE*, self, 32);
+    BYTE* node = F(BYTE*, list, 0) ? F(BYTE*, list, 0) : F(BYTE*, list, 4);
+    while (node) {
+        used[F(WORD, F(void*, node, 16), 8)] = 1;
+        used[F(WORD, F(void*, node, 20), 8)] = 1;
+        used[F(WORD, F(void*, node, 24), 8)] = 1;
+        node = MarineGreed_NextNode(F(BYTE*, self, 32), node);
+    }
+    for (unsigned i = 0; i < (unsigned)F(WORD, self, 36); ++i) {
+        if (used[i]) continue;
+        BYTE* pending = (BYTE*)operator new(12);
+        if (!pending) continue;
+        F(BYTE*, pending, 0) = F(BYTE*, pending, 4) = pending;
+        F(void*, pending, 8) = F(void*, F(void*, self, 12), i * 4);
+        ++g_marineUnusedVertexCount;
+        if (!g_marineUnusedVertices) g_marineUnusedVertices = pending;
+        else MarineQueue_LinkBefore(g_marineUnusedVertices, pending);
+    }
+    while (g_marineUnusedVertices) {
+        BYTE* vertex = F(BYTE*, g_marineUnusedVertices, 8);
+        WORD index = F(WORD, vertex, 8);
+        WORD last = --F(WORD, self, 36);
+        if (index != last) {
+            BYTE* moved = F(BYTE*, F(void*, self, 12), (unsigned)last * 4);
+            F(BYTE*, F(void*, self, 12), (unsigned)index * 4) = moved;
+            F(WORD, moved, 8) = index;
+        }
+        F(DWORD, F(void*, self, 12), (unsigned)last * 4) = 0;
+        if (vertex) operator delete(vertex);
+        BYTE* pending = g_marineUnusedVertices;
+        if (pending) {
+            --g_marineUnusedVertexCount;
+            g_marineUnusedVertices = F(BYTE*, pending, 0);
+            if (pending == g_marineUnusedVertices) g_marineUnusedVertices = 0;
+            F(BYTE*, F(BYTE*, pending, 0), 4) = F(BYTE*, pending, 4);
+            F(BYTE*, F(BYTE*, pending, 4), 0) = F(BYTE*, pending, 0);
+            operator delete(pending);
+        }
+    }
+    // The original retains its scratch allocation; keep allocator behavior.
+    return 0;
+}
+extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
+{
+    BYTE* edge;
+    while ((edge = MarineQueue_TopEdge(F(BYTE*, self, 28), 0)) != 0)
+        CallC(FUN_606760, edge, self);
+    return 0;
 }

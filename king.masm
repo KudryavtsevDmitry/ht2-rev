@@ -653,6 +653,8 @@ EXTERN _wvsprintfA@12:PROC
 
 EXTERN ___ImageBase:BYTE
 
+PUBLIC $L_725d54
+PUBLIC $L_725d50
 PUBLIC $L_653008
 PUBLIC $L_685abc
 PUBLIC $L_725e28
@@ -868439,6 +868441,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d750 PROC
 
             push ESI
@@ -868475,7 +868478,12 @@ $L_60d775::
             nop
             nop
 FUN_60d750 ENDP
+ELSE
+EXTERN @MarineMesh_DrainEdges@8:PROC
+FUN_60d750 TEXTEQU <@MarineMesh_DrainEdges@8>
+ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d780 PROC
 
             push EBX
@@ -868684,6 +868692,10 @@ $L_60d942::
             pop EBX
             ret 
 FUN_60d780 ENDP
+ELSE
+EXTERN @MarineMesh_PruneVertices@8:PROC
+FUN_60d780 TEXTEQU <@MarineMesh_PruneVertices@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
