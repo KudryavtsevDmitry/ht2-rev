@@ -13,6 +13,7 @@ $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
 $body = $source.Substring($source.IndexOf('// Marine object lifetime'), $source.IndexOf('// Marine graph ownership')-$source.IndexOf('// Marine object lifetime'))
 $body=$body.Replace('extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);','extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*); KING_ALIAS("@MarineGreed_Destruct@8","@TestMeshBase@8")')
 $body=$body.Replace('extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD*, const DWORD*, const DWORD*, float);','extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD*, const DWORD*, const DWORD*, float); KING_ALIAS("_MarineGeometry_Interpolate","_TestInterpolate")')
+$body=$body.Replace('extern "C" DWORD __fastcall MarineMesh_ConstructGrid(BYTE*,void*,const DWORD*,float,float,DWORD);','extern "C" DWORD __fastcall MarineMesh_ConstructGrid(BYTE*,void*,const DWORD*,float,float,DWORD); KING_ALIAS("@MarineMesh_ConstructGrid@24","@TestSetup@24")')
 $body=$body.Replace('extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD);','extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD); KING_ALIAS("@MarineMesh_CreateMotionResponse@20","@TestMotion@20")')
 $release=[regex]::Match($source,'(?s)extern "C" void __fastcall MarineTask_ReleaseMesh[(].*?\n[}]').Value
 $body=$release+"`n"+$body

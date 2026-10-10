@@ -53,7 +53,7 @@ OUT = king.exe
 #   ASM_CARPHYS   src\carphys.cpp   carphys
 #   ASM_AIORDR    src\aiordr.cpp    aiordr
 #   ASM_ENGINE    src\engine.cpp    engine
-#   ASM_MARINE    src\marine.cpp, src\marineinit.cpp, src\marinegrid.cpp, src\marinemath.cpp, src\marinevertices.cpp    marine mesh processing
+#   ASM_MARINE    src\marine.cpp, src\marineinit.cpp, src\marinegrid.cpp, src\marinemath.cpp, src\marinevertices.cpp, src\marineconstruct.cpp    marine mesh processing
 !IFDEF ASM
 ASM_MAINLOOP = 1
 ASM_GAMEAPP = 1
@@ -175,7 +175,7 @@ MLFLAGS = $(MLFLAGS) /DASM_ENGINE
 !IFDEF ASM_MARINE
 MLFLAGS = $(MLFLAGS) /DASM_MARINE
 !ENDIF
-ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj aimisc.obj vehicle.obj scheval.obj wasm.obj copter.obj movingb.obj world.obj aimult.obj schitem.obj mmt.obj carphys.obj aiordr.obj engine.obj marine.obj marineinit.obj marinegrid.obj marinemath.obj marinevertices.obj
+ALLCPPOBJS = mainloop.obj gameapp.obj kingapp.obj input.obj caran.obj aitask.obj vecmath.obj aitrce.obj airoad.obj aiplay.obj aeffects.obj car2e.obj carat.obj aimain.obj aistl.obj aimisc.obj vehicle.obj scheval.obj wasm.obj copter.obj movingb.obj world.obj aimult.obj schitem.obj mmt.obj carphys.obj aiordr.obj engine.obj marine.obj marineinit.obj marinegrid.obj marinemath.obj marinevertices.obj marineconstruct.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSE

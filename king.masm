@@ -1,3 +1,8 @@
+PUBLIC $L_653118
+PUBLIC $L_652e5c
+PUBLIC $L_652e48
+PUBLIC $L_652e4c
+PUBLIC $L_652e60
 PUBLIC $L_64c490
 PUBLIC $L_64d350
 PUBLIC $L_64c2fc
@@ -852678,6 +852683,7 @@ $L_605830::
 $L_605820 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_605840 PROC
 
             push EBX
@@ -852759,6 +852765,10 @@ $L_6058c1::
             pop EBX
             ret 8
 FUN_605840 ENDP
+ELSE
+EXTERN @MarineMesh_SetCellTriangles@16:PROC
+FUN_605840 TEXTEQU <@MarineMesh_SetCellTriangles@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -855930,6 +855940,7 @@ $L_607080::
 $L_607070 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_607090 PROC
 
             sub ESP,12
@@ -855978,6 +855989,10 @@ FUN_607090 PROC
             add ESP,12
             ret 
 FUN_607090 ENDP
+ELSE
+EXTERN @MarineGrid_ConstructBase@8:PROC
+FUN_607090 TEXTEQU <@MarineGrid_ConstructBase@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -873687,6 +873702,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60fee0 PROC
 
             push -1
@@ -874619,6 +874635,10 @@ $L_610825::
             add ESP,56
             ret 16
 FUN_60fee0 ENDP
+ELSE
+EXTERN @MarineMesh_ConstructGrid@24:PROC
+FUN_60fee0 TEXTEQU <@MarineMesh_ConstructGrid@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

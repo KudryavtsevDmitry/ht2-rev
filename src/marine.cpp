@@ -690,7 +690,7 @@ extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
 }
 
 // Marine object lifetime and geometry transitions.
-ASM_PROC(FUN_60fee0)
+extern "C" DWORD __fastcall MarineMesh_ConstructGrid(BYTE*,void*,const DWORD*,float,float,DWORD);
 extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
 ASM_PROC(FUN_5ef780)
@@ -717,7 +717,7 @@ extern "C" BYTE* __fastcall MarineMesh_Create(BYTE* self, void*, DWORD x, DWORD 
     F(DWORD,mesh,68)=F(DWORD,mesh,72)=0x3f800000;
     F(DWORD,mesh,76)=0;
     DWORD position[3]={x,y,z};
-    CallThis(FUN_60fee0, mesh, position, first, second, fourth);
+    MarineMesh_ConstructGrid(mesh,0,position,F(float,&first,0),F(float,&second,0),fourth);
     MarineMesh_CreateMotionResponse(F(BYTE*,self,0),0,0x41000000u,0u,0u);
     return self;
 }
