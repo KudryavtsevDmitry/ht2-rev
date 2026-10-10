@@ -1,4 +1,5 @@
 .686p
+PUBLIC $L_6cec6c, $L_725e08, $L_652f5c, $L_652f60, $L_652f80, $L_653004, $L_653000, $L_64c338, $L_64c350, $L_64d7b8, $L_6531d4, $L_725fc0
 PUBLIC $L_652f44, $L_725d48, $L_6533f4, $L_72c150
 PUBLIC $L_652f48, $L_684a20
 .XMM
@@ -869493,6 +869494,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60de50 PROC
 
             sub ESP,12
@@ -869594,6 +869596,10 @@ $L_60df64::
             add ESP,12
             ret 4
 FUN_60de50 ENDP
+ELSE
+EXTERN @MarineTask_UpdateMotion@12:PROC
+FUN_60de50 TEXTEQU <@MarineTask_UpdateMotion@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869633,6 +869639,7 @@ EXTERN @MarineTask_ApplyPoint@12:PROC
 FUN_60df70 TEXTEQU <@MarineTask_ApplyPoint@12>
 ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60df90 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -869717,6 +869724,10 @@ $L_60e019::
             pop ESI
             ret 8
 FUN_60df90 ENDP
+ELSE
+EXTERN @MarineTask_Frame@16:PROC
+FUN_60df90 TEXTEQU <@MarineTask_Frame@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -878595,18 +878606,24 @@ FUN_6132d0 PROC
             nop
 FUN_6132d0 ENDP
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_6132e0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov DWORD PTR [ECX+4],EAX
             ret 4
 FUN_6132e0 ENDP
+ELSE
+EXTERN @MarineTransition_SetActive@12:PROC
+FUN_6132e0 TEXTEQU <@MarineTransition_SetActive@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_6132f0 PROC
 
             jmp $L_613300
@@ -878628,6 +878645,10 @@ $L_613300::
             fstp DWORD PTR [$L_725fc0]
             ret 
 $L_6132f0 ENDP
+ELSE
+EXTERN _MarineInit_DoubleTransitionScale:PROC
+$L_6132f0 TEXTEQU <_MarineInit_DoubleTransitionScale>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_613310 PROC

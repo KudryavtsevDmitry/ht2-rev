@@ -128,3 +128,9 @@ extern "C" void __cdecl MarineInit_DoubleTerrainScale()
 {
     g_mi_72c150=(float)((double)g_mi_6533f4+g_mi_6533f4);
 }
+ASM_VAR(float, g_mi_6531d4, $L_6531d4)
+ASM_VAR(float, g_mi_725fc0, $L_725fc0)
+extern "C" void __cdecl MarineInit_DoubleTransitionScale()
+{
+    g_mi_725fc0=(float)((double)g_mi_6531d4+g_mi_6531d4);
+}

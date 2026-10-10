@@ -901,3 +901,72 @@ extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD* out, const DWORD* so
     for(unsigned i=0;i<10;++i) out[i]=F(DWORD,values,i*4);
     return out;
 }
+
+// Marine motion response and frame processing.
+ASM_VAR(BYTE*, g_marineApplicationState, $L_6cec6c)
+ASM_VAR(BYTE*, g_marineRecordedState, $L_725e08)
+ASM_VAR(float, g_mf_652f58, $L_652f58)
+ASM_VAR(float, g_mf_652f5c, $L_652f5c)
+ASM_VAR(float, g_mf_652f60, $L_652f60)
+ASM_VAR(float, g_mf_652f7c, $L_652f7c)
+ASM_VAR(float, g_mf_652f80, $L_652f80)
+ASM_VAR(float, g_mf_653004, $L_653004)
+ASM_VAR(float, g_mf_653000, $L_653000)
+ASM_VAR(float, g_mf_725db4, $L_725db4)
+ASM_VAR(float, g_mf_64c338, $L_64c338)
+ASM_VAR(float, g_mf_64c350, $L_64c350)
+ASM_VAR(float, g_mf_64d7b8, $L_64d7b8)
+ASM_VAR(float, g_mf_64c250, $L_64c250)
+extern "C" DWORD __fastcall MarineTransition_SetActive(BYTE* self, void*, DWORD active)
+{
+    F(DWORD,self,4)=active;
+    return active;
+}
+static void MarineMotion_SetRange(BYTE* owner,double value)
+{
+    bool active=value>=g_mf_652f5c && !(value>g_mf_652f60);
+    BYTE* transition=F(BYTE*,owner,112);
+    if(transition) MarineTransition_SetActive(transition,0,active?1:0);
+}
+extern "C" void __fastcall MarineTask_UpdateMotion(BYTE* self, void*, const float* position)
+{
+    BYTE* response=F(BYTE*,F(void*,self,0),84);
+    double previous=F(float,response,28);
+    float x=position[0],y=position[1],z=position[2];
+    F(float,response,12)=(float)x87_atan2(x,y);
+    double length=x87_sqrt(((double)z*z+(double)x*x)+(double)y*y);
+    F(float,response,16)=(float)length;
+    if(length>g_mf_652f7c) F(float,response,16)=g_mf_652f7c;
+    double radius=(double)F(float,response,16)/((double)g_mf_652f58*g_mf_653004);
+    F(float,response,4)=(float)radius;
+    double energy=(radius*radius)*g_mf_652f58/g_mf_725db4;
+    F(float,response,8)=(float)energy;
+    double target=energy*g_mf_653000+g_mf_64c338;
+    F(float,response,28)=(float)target;
+    if(target>g_mf_64c350) F(DWORD,response,28)=0x3fc00000;
+    F(DWORD,response,20)=1161527296u;
+    F(DWORD,response,12)=0;
+    F(DWORD,response,32)=F(DWORD,response,28);
+    F(float,response,4)=(float)((double)F(float,response,4)*g_mf_64d7b8);
+    F(float,response,28)=(float)previous;
+    BYTE* owner=F(BYTE*,response,0);
+    F(float,owner,72)=(float)previous;
+    MarineMotion_SetRange(owner,previous);
+}
+extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWORD second)
+{
+    DWORD time;
+    if(F(DWORD,g_marineApplicationState,1300)==2)
+        time=(DWORD)(__int64)F(double,g_marineRecordedState,7968);
+    else time=timeGetTime();
+    BYTE* response=F(BYTE*,F(void*,self,0),84);
+    double value=((double)g_mf_64c250-g_mf_652f80)*F(float,response,32)
+                  +(double)g_mf_652f80*F(float,response,28);
+    BYTE* owner=F(BYTE*,response,0);
+    F(float,response,28)=(float)value;
+    F(float,owner,72)=(float)value;
+    MarineMotion_SetRange(owner,value);
+    CallVirt(F(void*,F(void*,self,0),4),24,time);
+    MarineGreed_Emit(F(BYTE*,self,0),0);
+    CallVirt(F(void*,F(void*,self,0),4),60,first,second);
+}

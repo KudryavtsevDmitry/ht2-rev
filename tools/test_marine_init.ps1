@@ -26,7 +26,7 @@ foreach ($variable in $variables) {
 $globals += "}`n"
 $globals += 'static BYTE* regions[]={' + (($variables | ForEach-Object { '(BYTE*)&'+$_.Groups[2].Value }) -join ',') + "};`n"
 $globals += 'static unsigned sizes[]={' + (($variables | ForEach-Object { 'sizeof('+$_.Groups[2].Value+')' }) -join ',') + "};`n"
-$methods = @{ '60d950'='DoubleMeshScale'; '60d970'='DoubleSecondaryScale'; '60d990'='BasisX'; '60d9c0'='BasisY'; '60d9f0'='BasisZ'; '60da20'='DefaultMatrix'; '60da40'='Complement'; '60da70'='Interval'; '60daa0'='DefaultNormal'; '60dad0'='DefaultAxis'; '60db00'='DefaultOffset'; '60db30'='SquaredRatio'; '60f070'='AdjustedThreshold'; '60f0a0'='ZeroVector'; '60f2c0'='DoubleAngleScale'; '60f370'='DoubleFinalScale'; '60f2e0'='DefaultLimits'; '60a8b0'='Identity'; '60cdb0'='DoubleTreeScale'; '61c4a0'='DoubleTerrainScale' }
+$methods = @{ '60d950'='DoubleMeshScale'; '60d970'='DoubleSecondaryScale'; '60d990'='BasisX'; '60d9c0'='BasisY'; '60d9f0'='BasisZ'; '60da20'='DefaultMatrix'; '60da40'='Complement'; '60da70'='Interval'; '60daa0'='DefaultNormal'; '60dad0'='DefaultAxis'; '60db00'='DefaultOffset'; '60db30'='SquaredRatio'; '60f070'='AdjustedThreshold'; '60f0a0'='ZeroVector'; '60f2c0'='DoubleAngleScale'; '60f370'='DoubleFinalScale'; '60f2e0'='DefaultLimits'; '60a8b0'='Identity'; '60cdb0'='DoubleTreeScale'; '61c4a0'='DoubleTerrainScale'; '6132f0'='DoubleTransitionScale' }
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw
 $reference = ''
 foreach($label in $methods.Keys) {
