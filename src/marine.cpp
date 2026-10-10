@@ -1260,3 +1260,76 @@ extern "C" DWORD __fastcall MarineGrid_ClassifyTriangle(BYTE* self,void*,BYTE* t
 }
 extern "C" DWORD __cdecl MarineGrid_Width() { return g_mg_width; }
 extern "C" DWORD __cdecl MarineGrid_Height() { return g_mg_height; }
+
+// Marine particle pool allocation, emission and randomized geometry.
+extern "C" void* __cdecl malloc(size_t);
+extern "C" void __cdecl srand(unsigned);
+ASM_VAR(DWORD, g_mpool_enabled, $L_725e30)
+ASM_VAR(float, g_mpool_angle, $L_64c334)
+ASM_VAR(float, g_mpool_colorScale, $L_64c48c)
+ASM_VAR(float, g_mpool_half, $L_64c258)
+extern "C" void __fastcall MarineParticlePool_BuildGeometry(BYTE* self,void*,DWORD count,DWORD color)
+{
+    F(void*,self,8)=malloc(count*16u);
+    if(!count) return;
+    float alpha=(float)(color>>24),red=(float)((color>>16)&255),green=(float)((color>>8)&255),blue=(float)(color&255);
+    DWORD offset=0;
+    do {
+        int random=rand();float first=(float)((double)random*g_mp_randomUnit);
+        random=rand();float second=(float)((double)random*g_mp_randomUnit);
+        random=rand();float third=(float)((double)random*g_mp_randomUnit);
+        random=rand();float fourth=(float)((double)random*g_mp_randomUnit);
+        random=rand();double fifth=(double)random*g_mp_randomUnit;
+        double dx=(double)fourth-fifth;float x=(float)(dx+dx);
+        double dy=(double)second-third;float y=(float)(dy+dy);
+        random=rand();BYTE* vertex=F(BYTE*,self,8)+offset;
+        F(float,vertex,0)=x;F(float,vertex,4)=y;
+        F(float,vertex,8)=(float)(((double)random*g_mp_randomUnit-first)*g_mpool_angle);
+        random=rand();double brightness=(double)random*g_mpool_colorScale+g_mpool_half;
+        DWORD packed=(DWORD)(__int64)((double)alpha*brightness);
+        packed=(packed<<8)|(DWORD)(__int64)((double)red*brightness);
+        packed=(packed<<8)|(DWORD)(__int64)((double)green*brightness);
+        packed=(packed<<8)|(DWORD)(__int64)((double)blue*brightness);
+        F(DWORD,F(BYTE*,self,8)+offset,12)=packed;
+        offset+=16;
+    } while(--count);
+}
+extern "C" BYTE* __fastcall MarineParticlePool_Construct(BYTE* self,void*,DWORD capacity,DWORD vertices,DWORD color,DWORD owner)
+{
+    F(DWORD,self,0)=owner;F(DWORD,self,20)=capacity;F(DWORD,self,24)=vertices;
+    DWORD now=timeGetTime();
+    DWORD bytes=capacity*60u;
+    BYTE* particles=(BYTE*)malloc(bytes);F(BYTE*,self,12)=particles;
+    for(DWORD i=0;i<bytes/4;++i) ((volatile DWORD*)particles)[i]=0;
+    srand(now);
+    MarineParticlePool_BuildGeometry(self,0,F(DWORD,self,24),color);
+    F(DWORD,self,32)=6000;F(DWORD,self,16)=F(DWORD,self,28)=0;F(DWORD,self,4)=1;
+    return self;
+}
+extern "C" DWORD __fastcall MarineParticlePool_Add(BYTE* self,void*,const DWORD* position,const DWORD* velocity)
+{
+    if(!F(DWORD,self,4) || F(DWORD,self,16)>=F(DWORD,self,20) || !g_mpool_enabled) return 0;
+    MarineParticle_Start(F(BYTE*,self,12)+F(DWORD,self,16)*60u,0,position,velocity);
+    MarineParticle_SetLifetime(F(BYTE*,self,12)+F(DWORD,self,16)*60u,0,F(DWORD,self,32));
+    ++F(DWORD,self,16);
+    return 1;
+}
+extern "C" DWORD __fastcall MarineParticlePool_Remove(BYTE* self,void*,DWORD index)
+{
+    DWORD count=F(DWORD,self,16);
+    if(index>=count) return 0;
+    DWORD last=count-1;F(DWORD,self,16)=last;
+    if(index!=last) {
+        BYTE* particles=F(BYTE*,self,12);
+        volatile DWORD* from=(volatile DWORD*)(particles+last*60u);
+        volatile DWORD* to=(volatile DWORD*)(particles+index*60u);
+        for(unsigned i=0;i<15;++i) to[i]=from[i];
+    }
+    return 1;
+}
+extern "C" DWORD __fastcall MarineParticlePool_CanAdd(BYTE* self,void*)
+{
+    return F(DWORD,g_marineApplicationState,1300)!=2 && F(DWORD,self,4) && g_mpool_enabled && F(DWORD,self,16)<F(DWORD,self,20);
+}
+extern "C" void __fastcall MarineParticlePool_SetFloor(BYTE* self,void*,DWORD height) { F(DWORD,self,28)=height; }
+extern "C" void __fastcall MarineParticlePool_SetLifetime(BYTE* self,void*,DWORD lifetime) { F(DWORD,self,32)=lifetime; }
