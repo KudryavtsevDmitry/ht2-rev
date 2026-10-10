@@ -529,3 +529,17 @@ extern "C" void __cdecl Sch_CaretLine(const BYTE* v, const BYTE* pos)
     for (int i = 0; i < F(int, pos, 4) - 1; i++)
         ((PutS)FUN_4b1450)(g_strSpace, ValueCopy(v));
 }
+
+// Erase a range of the Scheme input's value list, retaining the stop node.
+extern "C" BYTE** __fastcall SchInputList_EraseRange(void*, void*, BYTE** out,
+                                                     BYTE* first, BYTE* last)
+{
+    while (first != last) {
+        BYTE* node = first;
+        first = F(BYTE*, node, 0);
+        BYTE* ignored;
+        ValueList_Erase(&ignored, node);
+    }
+    *out = last;
+    return out;
+}

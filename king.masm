@@ -314757,6 +314757,7 @@ $L_4b0886::
 FUN_4b07c0 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_SCHEVAL
 FUN_4b08a0 PROC
 
             push -1
@@ -314861,6 +314862,10 @@ $L_4b096c::
             add ESP,16
             ret 
 FUN_4b08a0 ENDP
+ELSE
+EXTERN _SchInput_MakeEnvironment:PROC
+FUN_4b08a0 TEXTEQU <_SchInput_MakeEnvironment>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314873,6 +314878,7 @@ FUN_4b08a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_SCHEVAL
 FUN_4b0990 PROC
 
             push -1
@@ -314979,6 +314985,10 @@ $L_4b0a60::
             add ESP,16
             ret 
 FUN_4b0990 ENDP
+ELSE
+EXTERN _SchInput_MakePort:PROC
+FUN_4b0990 TEXTEQU <_SchInput_MakePort>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314987,6 +314997,7 @@ FUN_4b0990 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_SCHITEM
 FUN_4b0a80 PROC
 
             push EBX
@@ -315020,6 +315031,10 @@ $L_4b0aaa::
             pop EBX
             ret 12
 FUN_4b0a80 ENDP
+ELSE
+EXTERN @SchInputList_EraseRange@20:PROC
+FUN_4b0a80 TEXTEQU <@SchInputList_EraseRange@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -1066473,6 +1066488,7 @@ $L_66cb10                     DB 'playertypes'
 $L_66cb1c                     DB 'Cannot open'
           BYTE 000H
 
+PUBLIC $L_66cb28
 $L_66cb28                     DB 'Port'
           BYTE 000H
 
@@ -1070589,6 +1070605,7 @@ $L_6705fc                     DB 'Continuation'
           BYTE 000H
 
           DB 3 DUP(0)
+PUBLIC $L_67060c
 $L_67060c                     DB 'Environment'
           BYTE 000H
 
