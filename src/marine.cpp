@@ -1375,3 +1375,33 @@ extern "C" DWORD* __cdecl MarineMatrix_Multiply(DWORD* out,const float* right,co
     for(unsigned i=0;i<16;++i) out[i]=matrix[i];
     return out;
 }
+
+// Marine particle rendering, retirement and per-frame updates.
+struct MarineParticleMatrix { DWORD v[16]; };
+ASM_VAR(MarineParticleMatrix, g_mpool_restoreMatrix, $L_725f38)
+extern "C" void __fastcall MarineParticlePool_Render(BYTE* self,void*,BYTE* device,BYTE* event,DWORD material)
+{
+    if(!g_mpool_enabled) return;
+    DWORD now=timeGetTime();
+    DWORD translation[16],rotation[16],matrix[16];
+    for(DWORD index=0,offset=0;index<F(DWORD,self,16);++index,offset+=60) {
+        BYTE* particle=F(BYTE*,self,12)+offset;
+        DWORD x=F(DWORD,particle,0),y=F(DWORD,particle,4);
+        float height=(float)CallVirt<double>(F(void*,self,0),40,particle);
+        MarineMatrix_Translate(translation,x,y,F(DWORD,&height,0));
+        MarineMatrix_RotateZ(rotation,F(float,F(BYTE*,self,12)+offset,52));
+        MarineMatrix_Multiply(matrix,(float*)translation,(float*)rotation);
+        CallStd((void(*)())F(void*,F(void*,device,0),44),device,1,matrix);
+        CallThis(FUN_5b1020,event,material,0,0,0);
+        CallStd((void(*)())F(void*,F(void*,device,0),80),device,136,1);
+        CallStd((void(*)())F(void*,F(void*,device,0),100),device,1,66,F(void*,self,8),F(DWORD,self,24),0);
+    }
+    for(DWORD index=0,offset=0;index<F(DWORD,self,16);++index,offset+=60) {
+        BYTE* particle=F(BYTE*,self,12)+offset;
+        if(now>F(DWORD,particle,40) || !(F(float,particle,8)>=F(float,self,28)))
+            MarineParticlePool_Remove(self,0,index);
+        // The original updates this slot even when removal moved the last particle into it.
+        MarineParticle_Update(F(BYTE*,self,12)+offset,0,now);
+    }
+    CallStd((void(*)())F(void*,F(void*,device,0),44),device,1,g_mpool_restoreMatrix.v);
+}
