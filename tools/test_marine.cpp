@@ -58,6 +58,7 @@ KING_ALIAS("@MarineQueue_SetNodePriority@16","@SetPriority@16")
 KING_ALIAS("@MarineQueue_SetEdgePriority@16","@SetPriority@16")
 KING_ALIAS("@MarineQueue_TopNode@8","@TopNode@8")
 KING_ALIAS("@MarineQueue_TopEdge@8","@TopEdge@8")
+KING_ALIAS("@MarineQueue_RemoveNode@12","@QueueRemove@12")
 static void* sinkTable[15];
 static void* sink=sinkTable;
 extern "C" int _fltused=0;

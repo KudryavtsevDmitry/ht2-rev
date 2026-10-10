@@ -18,6 +18,7 @@ foreach ($label in @('60f690','6136f0','606750','6069d0','60aad0','60aa60','60f4
 foreach ($name in @('Date','ErrorFormat','File','AssertFormat','Header','Neighbor44','Neighbor52','Neighbor48')) { $header += "extern `"C`" char g_marine$name[1];`n" }
 $header += "extern `"C`" DWORD g_marineRefinementEnabled, g_marineRefinementLimit;`n"
 $header += 'extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*,void*,BYTE*,DWORD);' + "`n" + 'extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*,void*,BYTE*,DWORD);' + "`n" + 'extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*,void*);' + "`n" + 'extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*,void*);' + "`n"
+$header += 'extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);' + "`n"
 $cpp = Join-Path $outputDir 'marine-actual.cpp'
 Set-Content $cpp ($header + $body)
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw

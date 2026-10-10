@@ -871742,6 +871742,7 @@ EXTERN @MarineQueue_SetNodePriority@16:PROC
 FUN_60f4f0 TEXTEQU <@MarineQueue_SetNodePriority@16>
 ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f520 PROC
 
             mov EDX,DWORD PTR [ECX+4]
@@ -871947,6 +871948,10 @@ $L_60f686::
             pop ESI
             ret 4
 FUN_60f520 ENDP
+ELSE
+EXTERN @MarineQueue_InsertNode@12:PROC
+FUN_60f520 TEXTEQU <@MarineQueue_InsertNode@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871954,6 +871959,7 @@ FUN_60f520 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f690 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -872147,6 +872153,10 @@ $L_60f79c::
             pop EBX
             ret 4
 FUN_60f690 ENDP
+ELSE
+EXTERN @MarineQueue_RemoveNode@12:PROC
+FUN_60f690 TEXTEQU <@MarineQueue_RemoveNode@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -872387,6 +872397,7 @@ EXTERN @MarineQueue_SetEdgePriority@16:PROC
 FUN_60f8d0 TEXTEQU <@MarineQueue_SetEdgePriority@16>
 ENDIF
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f900 PROC
 
             push ESI
@@ -872481,6 +872492,10 @@ $L_60f9be::
             pop ESI
             ret 4
 FUN_60f900 ENDP
+ELSE
+EXTERN @MarineQueue_InsertEdge@12:PROC
+FUN_60f900 TEXTEQU <@MarineQueue_InsertEdge@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
