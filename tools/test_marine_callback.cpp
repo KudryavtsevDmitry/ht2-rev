@@ -16,7 +16,7 @@ extern "C" int _fltused=0;
 void* operator new(size_t size) { Record(1); Record(size); return (variant&8)?0:pool; }
 extern "C" void __fastcall TestUpdate(BYTE* mesh,void*) { Record(2); Record((DWORD)mesh); if(variant&2) F(void*,state[1],0)=state[5]; }
 extern "C" DWORD __fastcall TestPrune(BYTE* mesh,void*) { Record(3); Record((DWORD)mesh); return 0xabcdef01; }
-KING_ALIAS("FUN_60d780","@TestPrune@8")
+KING_ALIAS("@MarineMesh_PruneVertices@8","@TestPrune@8")
 KING_ALIAS("@MarineGreed_Update@8","@TestUpdate@8")
 extern "C" void __fastcall Bounds(BYTE* sink,void*,const DWORD* a,const DWORD* b)
 {

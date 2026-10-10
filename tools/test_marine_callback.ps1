@@ -10,7 +10,7 @@ $linker = Join-Path $vc 'bin\HostX86\x86\link.exe'
 $sdkLib = Join-Path (Split-Path (Split-Path $sdk -Parent) -Parent) ('Lib\' + (Split-Path $sdk -Leaf) + '\um\x86')
 $flags = @('/nologo', '/c', '/O2', '/GS-', '/Zl', "/I$vc\include", "/I$sdk\um", "/I$sdk\shared", "/I$sdk\ucrt", '/arch:IA32')
 $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
-$body = $source.Substring($source.IndexOf('// Marine task setup and callbacks')).Replace('ASM_PROC(FUN_60d780)', 'extern "C" void FUN_60d780(); KING_ALIAS("_FUN_60d780", "@TestPrune@8")')
+$body = $source.Substring($source.IndexOf('// Marine task setup and callbacks'), $source.IndexOf('// Marine mesh cleanup') - $source.IndexOf('// Marine task setup and callbacks'))
 $header = "#include `"../src/king.h`"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nextern `"C`" void __fastcall MarineGreed_Update(BYTE*,void*);`n"
 $cpp = Join-Path $outputDir 'marine-callback-actual.cpp'
 Set-Content $cpp ($header + $body)
