@@ -653,6 +653,8 @@ EXTERN _wvsprintfA@12:PROC
 
 EXTERN ___ImageBase:BYTE
 
+PUBLIC $L_685abc
+PUBLIC $L_725e28
 PUBLIC __EntryPoint
 
 ; variables used by the C++ code in src\ (see src\king.h)
@@ -867287,6 +867289,7 @@ $L_60cf80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60cfa0 PROC
 
             sub ESP,20
@@ -867545,6 +867548,10 @@ $L_60d167::
             add ESP,20
             ret 
 FUN_60cfa0 ENDP
+ELSE
+EXTERN @MarineGreed_RefreshPriorities@8:PROC
+FUN_60cfa0 TEXTEQU <@MarineGreed_RefreshPriorities@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867558,6 +867565,7 @@ FUN_60cfa0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d180 PROC
 
             push ECX
@@ -867671,6 +867679,10 @@ $L_60d240::
             pop ECX
             ret 
 FUN_60d180 ENDP
+ELSE
+EXTERN @MarineGreed_Refine@8:PROC
+FUN_60d180 TEXTEQU <@MarineGreed_Refine@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867678,6 +867690,7 @@ FUN_60d180 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60d250 PROC
 
             push EBX
@@ -867794,6 +867807,10 @@ $L_60d308::
             pop EBX
             ret 
 FUN_60d250 ENDP
+ELSE
+EXTERN @MarineGreed_Emit@8:PROC
+FUN_60d250 TEXTEQU <@MarineGreed_Emit@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

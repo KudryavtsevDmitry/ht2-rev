@@ -13,15 +13,20 @@ $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
 $body = $source.Substring($source.IndexOf('// Two sentinel')).Replace('operator delete(', 'TestFree(')
 $update = [regex]::Match($body, '(?s)extern "C" void __fastcall MarineGreed_Update\(.*?\n\}').Value
 $body = $body.Replace($update, '')
-$header = "#include `"../src/king.h`"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nextern `"C`" void TestFree(void*);`n"
-foreach ($label in @('60f690','6136f0','606750','6069d0','60aad0','60aa60')) { $header += "ASM_PROC(FUN_$label)`n" }
+$header = "#define timeGetTime TestTime`nextern `"C`" unsigned __stdcall TestTime();`n#include `"../src/king.h`"`n#define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))`nextern `"C`" void TestFree(void*);`n"
+foreach ($label in @('60f690','6136f0','606750','6069d0','60aad0','60aa60','60f4f0','60f7b0','60f9d0','60f8d0','6137d0','606760','605900')) { $header += "ASM_PROC(FUN_$label)`n" }
 foreach ($name in @('Date','ErrorFormat','File','AssertFormat','Header','Neighbor44','Neighbor52','Neighbor48')) { $header += "extern `"C`" char g_marine$name[1];`n" }
+$header += "extern `"C`" DWORD g_marineRefinementEnabled, g_marineRefinementLimit;`n"
 $cpp = Join-Path $outputDir 'marine-actual.cpp'
 Set-Content $cpp ($header + $body)
 $masm = Get-Content (Join-Path $repo 'king.masm') -Raw
-$reference = [regex]::Match($masm, '(?s)FUN_60d540 PROC.*?FUN_60d540 ENDP').Value.Replace('FUN_60d540','@Reference_RemoveNode@12').Replace('??3@YAXPAX@Z','_TestFree')
-$bindings = "EXTERN _TestFree:PROC`n"
-foreach ($label in @('60f690','6136f0','606750','6069d0','60aad0','60aa60')) { $bindings += "EXTERN FUN_${label}:PROC`n" }
+$reference = ''
+$methods = @{ '60d540'='RemoveNode'; '60cfa0'='RefreshPriorities'; '60d180'='Refine'; '60d250'='Emit' }
+foreach ($label in $methods.Keys) { $reference += [regex]::Match($masm, ('(?s)FUN_'+$label+' PROC.*?FUN_'+$label+' ENDP')).Value + "`n" }
+foreach ($label in $methods.Keys) { $bytes = if($label -eq '60d540') {12} else {8}; $reference = $reference.Replace('FUN_'+$label, '@Reference_'+$methods[$label]+'@'+$bytes) }
+$reference = $reference.Replace('??3@YAXPAX@Z','_TestFree').Replace('__imp__timeGetTime@0','_TestTimePointer')
+$bindings = "EXTERN _TestFree:PROC`nEXTERN _TestTimePointer:DWORD`nEXTERN _g_marineRefinementEnabled:DWORD`nEXTERN _g_marineRefinementLimit:DWORD`n" + '$L_685abc TEXTEQU <_g_marineRefinementEnabled>' + "`n" + '$L_725e28 TEXTEQU <_g_marineRefinementLimit>' + "`n"
+foreach ($label in @('60f690','6136f0','606750','6069d0','60aad0','60aa60','60f4f0','60f7b0','60f9d0','60f8d0','6137d0','606760','605900')) { $bindings += "EXTERN FUN_${label}:PROC`n" }
 $names = @{ '6724f8'='Date'; '6724b0'='ErrorFormat'; '685ac8'='File'; '6726a4'='AssertFormat'; '685b70'='Header'; '685b44'='Neighbor44'; '685b18'='Neighbor52'; '685aec'='Neighbor48' }
 foreach ($label in $names.Keys) { $name = '_g_marine'+$names[$label]; $bindings += "EXTERN ${name}:BYTE`n" + '$L_' + $label + " TEXTEQU <$name>`n" }
 $asm = Join-Path $outputDir 'marine-reference.asm'
@@ -40,4 +45,4 @@ if ($LASTEXITCODE) { throw 'Test compilation failed' }
 if ($LASTEXITCODE) { throw 'Test link failed' }
 & $exe
 if ($LASTEXITCODE) { throw "Marine differential test failed: exit code $LASTEXITCODE" }
-Write-Output 'Marine node removal matches MASM in 384 graph, sentinel, neighbor and error-path cases.'
+Write-Output 'Marine node removal matches MASM in 1536 node-removal, priority, refinement and mesh-output comparisons.'
