@@ -862295,6 +862295,7 @@ $L_60a870::
 $L_60a860 ENDP
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60a880 PROC
 
             sub ESP,64
@@ -862318,6 +862319,10 @@ FUN_60a880 PROC
             add ESP,64
             ret 
 FUN_60a880 ENDP
+ELSE
+EXTERN _MarineMatrix_Zero:PROC
+FUN_60a880 TEXTEQU <_MarineMatrix_Zero>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -862374,6 +862379,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60a900 PROC
 
             sub ESP,68
@@ -862411,10 +862417,15 @@ FUN_60a900 PROC
             add ESP,68
             ret 
 FUN_60a900 ENDP
+ELSE
+EXTERN _MarineMatrix_RotateZ:PROC
+FUN_60a900 TEXTEQU <_MarineMatrix_RotateZ>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60a960 PROC
 
             sub ESP,64
@@ -862443,6 +862454,10 @@ FUN_60a960 PROC
             add ESP,64
             ret 
 FUN_60a960 ENDP
+ELSE
+EXTERN _MarineMatrix_Translate:PROC
+FUN_60a960 TEXTEQU <_MarineMatrix_Translate>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -862459,6 +862474,7 @@ FUN_60a960 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60a9b0 PROC
 
             sub ESP,68
@@ -862537,6 +862553,10 @@ $L_60a9f6::
             nop
             nop
 FUN_60a9b0 ENDP
+ELSE
+EXTERN _MarineMatrix_Multiply:PROC
+FUN_60a9b0 TEXTEQU <_MarineMatrix_Multiply>
+ENDIF
 $L_60aa40 PROC
 
             jmp $L_60aa50
