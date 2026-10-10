@@ -10,7 +10,7 @@ $linker = Join-Path $vc 'bin\HostX86\x86\link.exe'
 $sdkLib = Join-Path (Split-Path (Split-Path $sdk -Parent) -Parent) ('Lib\' + (Split-Path $sdk -Leaf) + '\um\x86')
 $flags = @('/nologo', '/c', '/O2', '/GS-', '/Zl', "/I$vc\include", "/I$sdk\um", "/I$sdk\shared", "/I$sdk\ucrt", '/arch:IA32')
 $source = Get-Content (Join-Path $repo 'src\marine.cpp') -Raw
-$body = $source.Substring($source.IndexOf('// Marine graph ownership')).Replace('free(', 'TestFree(')
+$body = $source.Substring($source.IndexOf('// Marine graph ownership'),$source.IndexOf('// Marine geometry interpolation')-$source.IndexOf('// Marine graph ownership')).Replace('free(', 'TestFree(')
 $body=$body.Replace('ASM_PROC(FUN_5e48f0)','extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0","@TestQueueDestruct@8")')
 $header = @'
 #include "../src/king.h"
