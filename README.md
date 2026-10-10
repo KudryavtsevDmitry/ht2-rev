@@ -37,6 +37,7 @@ The C++ code in `src/` follows the game's own source tree, as recovered from the
 | `directdraw.cpp` | unit 0x5d3fd0 | vertical blank and flip waits, the 565 format check, video memory, adapter name, mode requests |
 | `framework.cpp` | unit 0x5d8540 | views, scene time, node helpers by type, the window list, the data path, resource tables, mmio files, font metrics |
 | `clusters.cpp` | unit 0x5ea5d0 | rooms and their node lists, cluster object arrays, palette switching, scene objects by name |
+| `renderer.cpp` | unit 0x5ab230 | light stack and render states, visibility, window rectangles, pixel formats, palettes and fog tables, textures and mip levels, bitmaps |
 | **`src/ai/`** | `Htai` library | |
 | `ai.h`, `road.h` | | the AI's crash trace guard; the road graph (nodes, edges, positions, routes as hops) and the C runtime and STL parts the AI uses |
 | `ai_world.cpp` | `Ai_main.cpp` | the reference-counted string handle, position checks, nearest node or town, lookups of towns and vehicles, the AI's random generator, record constructors |

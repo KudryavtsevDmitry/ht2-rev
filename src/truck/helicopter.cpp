@@ -23,7 +23,7 @@ extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text)
 ASM_PROC(FUN_5d3290)    // destructor of the notice's base class
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5b9660)
-ASM_PROC(FUN_5b6210)
+extern "C" void FUN_5b6210(); KING_ALIAS("_FUN_5b6210", "_Pixel_Pack")
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // draws a text
 ASM_PROC(FUN_440dd0)
