@@ -80,17 +80,9 @@ nmake clean                            # delete king.obj, the C++ objects, king.
 
 `GAME_EXE` is needed only while `king.res` doesn't exist; `nmake clean` keeps it. `GAME_EXE` can also be set as an environment variable.
 
-Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`, `ASM_CARAN`, `ASM_AITASK`, `ASM_VECMATH`, `ASM_AITRCE`, `ASM_AIROAD`, `ASM_AIPLAY`, `ASM_AIMAIN`, `ASM_AISTL`, `ASM_AEFFECTS`, `ASM_CAR2E`, `ASM_CARAT`, `ASM_AIMISC`, `ASM_VEHICLE`, `ASM_SCHEVAL`, `ASM_WASM`, `ASM_COPTER`, `ASM_MOVINGB`, `ASM_WORLD`, `ASM_AIMULT`, `ASM_SCHITEM`, `ASM_MMT`, `ASM_CARPHYS`, `ASM_AIORDR`, `ASM_ENGINE`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
+Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_GAMEAPP`, `ASM_KINGAPP`, `ASM_INPUT`, `ASM_CARAN`, `ASM_AITASK`, `ASM_VECMATH`, `ASM_AITRCE`, `ASM_AIROAD`, `ASM_AIPLAY`, `ASM_AIMAIN`, `ASM_AISTL`, `ASM_AEFFECTS`, `ASM_CAR2E`, `ASM_CARAT`, `ASM_AIMISC`, `ASM_VEHICLE`, `ASM_SCHEVAL`, `ASM_WASM`, `ASM_COPTER`, `ASM_MOVINGB`, `ASM_WORLD`, `ASM_AIMULT`, `ASM_SCHITEM`, `ASM_MMT`, `ASM_CARPHYS`, `ASM_AIORDR`, `ASM_ENGINE`, `ASM_MARINE`, `ASM_GUI`, `ASM_VRAPPL`. A switch makes `king.masm` assemble the group's original procedures, so the assembly calls those again; the C++ code keeps calling the C++ functions. `ASM=1` sets all switches and links no C++. Run `nmake clean` before changing switches; nmake doesn't notice them. Assembling `king.masm` takes about 25 seconds.
 
 The `ASM=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
-
-Run `powershell -File tools\test_deque_abi.ps1` to check the script reader's
-deque page allocator. The test extracts the current C++ implementation and
-calls it with the assembly caller's two stack arguments, checking stack
-balance and zero through three allocated 512-byte pages. It uses the compiler
-and SDK paths from the Makefile and writes its outputs to `build-test/`.
-The original allocator returns through the shared epilogue at `$L_4a2a62`,
-which ends in `ret 8`; its replacement must use `__stdcall`.
 
 The executable is linked like the original: fixed base `0x400000` without relocations (`/FIXED`), the original's DLL characteristics (`/NXCOMPAT:NO /TSAWARE:NO`), and the CRT startup in `king.masm` as entry point (`__EntryPoint`).
 
