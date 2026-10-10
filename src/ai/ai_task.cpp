@@ -9,9 +9,9 @@
 #include "ai.h"
 
 ASM_PROC(FUN_42d6e0)    // the AI's cycle
-ASM_PROC(FUN_5d9290)    // CMainView: module by name
-ASM_PROC(FUN_5ef390)    // module: switch by name
-ASM_PROC(FUN_5e1a10)    // set a switch
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // CMainView: module by name
+extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")    // module: switch by name
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 extern "C" char* __cdecl CopyBytes(const char* first, const char* last, char* to);   // aiordr.cpp
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 extern "C" void __cdecl Notice_Show(int level, const char* text, int a, int b);              // copter.cpp

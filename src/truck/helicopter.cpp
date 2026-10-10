@@ -16,7 +16,7 @@ typedef char AsmLabel[1];
 
 ASM_PROC(FUN_566020)    // copter: the vehicle to follow (mode, a)
 ASM_PROC(FUN_5662f0)    // copter: a new state
-ASM_PROC(FUN_5e5370)    // objects of a screen: by id
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // objects of a screen: by id
 ASM_PROC(FUN_569000)
 ASM_PROC(FUN_569250)
 extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text);
@@ -25,7 +25,7 @@ ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5b9660)
 ASM_PROC(FUN_5b6210)
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
-ASM_PROC(FUN_5ea170)    // draws a text
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // draws a text
 ASM_PROC(FUN_440dd0)
 ASM_FUNC(Copter_EnumCallback, $L_56f450)
 

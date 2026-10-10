@@ -973,7 +973,7 @@ extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWOR
 }
 
 // Marine task deferred bounds and update dispatch.
-ASM_PROC(FUN_5dbcc0)
+extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
 ASM_PROC(FUN_5d32f0)
 ASM_PROC(FUN_5b4fc0)
 extern "C" void __fastcall MarineTask_DrawPending(BYTE*,void*,const float*,const float*,BYTE*);
@@ -1033,8 +1033,8 @@ ASM_PROC(FUN_5ef6d0)
 ASM_PROC(FUN_5d3110)
 ASM_PROC(FUN_5d3570)
 ASM_PROC(FUN_5d33d0)
-ASM_PROC(FUN_5d9290)
-ASM_PROC(FUN_5ef390)
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
 ASM_VAR(AsmLabel, g_marineNodeBaseVtable, $L_650430)
 ASM_VAR(AsmLabel, g_marineNodeName, $L_685c24)

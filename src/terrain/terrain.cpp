@@ -15,7 +15,7 @@ typedef int Ints[1];
 typedef DWORD Dwords[1];
 
 ASM_PROC(FUN_616ca0)    // seeds the noise tables
-ASM_PROC(FUN_5ef2b0)    // the scene object with this name (0, name)
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // the scene object with this name (0, name)
 ASM_PROC(FUN_60aad0)    // error report
 
 ASM_VAR(Ints, g_perm, $L_72b068)                 // noise permutation

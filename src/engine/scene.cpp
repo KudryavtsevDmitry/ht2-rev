@@ -36,7 +36,7 @@ ASM_PROC(FUN_604d70)
 ASM_PROC(FUN_605130)
 ASM_PROC(FUN_604ed0)
 ASM_PROC(FUN_5e98c0)
-ASM_PROC(FUN_5e99c0)
+extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
 ASM_FUNC(Mixer_Close, $L_604a40)
 ASM_FUNC(Scene_EachCallback, $L_5fc780)
 

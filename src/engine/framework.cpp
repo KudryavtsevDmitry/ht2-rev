@@ -1,0 +1,735 @@
+// framework.cpp - small functions of the unit at 0x5d8540 of king.masm (the
+// unit of CGameApp, see game_app.cpp and main_loop.cpp): windows and their
+// views, the scene time, node helpers by type, the window list, the data
+// path, worker threads, the resource tables (1000 slots, hashed by name),
+// file streams, the font metrics and text drawing.
+//
+// Building with  nmake ASM_FRAMEWORK=1  makes king.masm assemble the
+// original procedures again.
+
+#include "king.h"
+#include <mmsystem.h>
+
+#define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
+
+typedef char AsmLabel[1];
+extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
+extern "C" char* __cdecl strcat(char* d, const char* s);
+extern "C" int __cdecl fseek(FILE* f, long off, int origin);
+extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
+
+extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);                      // core.cpp
+extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);   // scene.cpp
+extern "C" int __fastcall Node_GetWorld(BYTE* self, void*, void* out);                     // scene.cpp
+extern "C" void __fastcall Node_GetLocal(BYTE* self, void*, void* out);                    // scene.cpp
+extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);                                  // scene.cpp
+extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);                  // clusters.cpp
+
+ASM_PROC(FUN_5b6e00)
+ASM_PROC(FUN_5b6bf0)
+ASM_PROC(FUN_5b6b10)
+ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
+ASM_PROC(FUN_5da950)
+ASM_PROC(FUN_5dbf00)
+ASM_PROC(FUN_6037e0)    // time in ms, returns double
+ASM_PROC(FUN_5e48f0)
+ASM_PROC(FUN_5e4900)
+ASM_PROC(FUN_5ea1b0)    // draws text
+extern "C" void* __stdcall AfxGetThread_();
+KING_ALIAS("_AfxGetThread_@0", "?AfxGetThread@@YGPAVCWinThread@@XZ")
+
+ASM_VAR(AsmLabel, g_vtbl652238, $L_652238)
+ASM_VAR(AsmLabel, g_vtbl654420, $L_654420)
+ASM_VAR(AsmLabel, s_foreground, $L_682c48)       // "Foreground_object"
+ASM_VAR(AsmLabel, s_background, $L_682c34)       // "Background_object"
+ASM_VAR(AsmLabel, s_skyDomeSpace, $L_682c24)
+ASM_VAR(AsmLabel, s_skyDomeKey, $L_682c18)
+ASM_VAR(int, g_7212a0, $L_7212a0)
+ASM_VAR(int, g_721298, $L_721298)
+ASM_VAR(int, g_72129c, $L_72129c)
+ASM_VAR(int, g_7216bc, $L_7216bc)
+ASM_VAR(int, g_7212b0, $L_7212b0)
+ASM_VAR(void*, g_mainThread, $L_72177c)
+ASM_VAR(BYTE*, g_app, $L_721750)
+ASM_VAR(int, g_721774, $L_721774)
+ASM_VAR(AsmLabel, g_dataPath, $L_7209d4)         // 251 bytes
+ASM_VAR(char*, g_dataDir, $L_720bb0)
+ASM_VAR(AsmLabel, s_dot, $L_682a2c)
+ASM_VAR(int, g_702e9c, $L_702e9c)
+ASM_VAR(int, g_720930, $L_720930)
+ASM_VAR(int, g_resPending, $L_7217a4)
+ASM_VAR(AsmLabel, g_fileDir, $L_7217bc)
+ASM_VAR(AsmLabel, g_filePath, $L_72183c)
+ASM_VAR(AsmLabel, s_errUnknown, $L_6835ac)
+ASM_VAR(AsmLabel, s_errFormat, $L_683570)
+ASM_VAR(AsmLabel, s_errMemory, $L_68355c)
+ASM_VAR(AsmLabel, s_errNotFound, $L_68354c)
+
+extern "C" void __fastcall Resources_Unload(BYTE* self, void*, const char* name);
+
+template <class... A>
+static __forceinline int Com(BYTE* com, unsigned off, A... args)
+{
+    return (*(int(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
+}
+
+extern "C" {
+
+// [FUN_5d8630]
+void __fastcall Window_Show(BYTE* self, void*, int i)
+{
+    if (i >= 0 && (F(BYTE, self, 16) & 1))
+        CallThis(FUN_5b6e00, F(BYTE*, self, 12), i, 0);
+}
+
+// [FUN_5d88c0]
+void __fastcall Window_Refresh(BYTE* self, void*)
+{
+    if (F(BYTE, self, 16) & 1) {
+        CallThis(FUN_5b6bf0, F(BYTE*, self, 12));
+        CallThis(FUN_5b6b10, F(BYTE*, self, 12));
+    }
+}
+
+// [FUN_5d8a70] a view on obj with obj's rectangle moved to the origin
+BYTE* __fastcall View_Construct(BYTE* self, void*, int a, BYTE* obj)
+{
+    int* r = (int*)(obj + 44);
+    CallThis(FUN_5d8710, self, a, r, 0);
+    F(void*, self, 0) = g_vtbl652238;
+    int x = r[0], y = F(int, obj, 48);
+    r[0] = r[0] - x;
+    r[2] = r[2] - x;
+    r[1] = r[1] - y;
+    r[3] = r[3] - y;
+    F(BYTE*, self, 56) = obj;
+    F(DWORD, self, 16) |= 4;
+    F(int, self, 60) = 0;
+    return self;
+}
+
+// [FUN_5d9290] the scene of this name
+BYTE* __fastcall Scenes_Find(BYTE* self, void*, const char* name)
+{
+    for (BYTE* s = F(BYTE*, self, 468); s; s = F(BYTE*, s, 8))
+        if (!strcmp(F(const char*, s, 60), name))
+            return s;
+    return 0;
+}
+
+// [FUN_5d9ef0]
+void __fastcall Scenes_SetFirst(BYTE* self, void*, BYTE* s)
+{
+    F(DWORD, self, 16) |= 8;
+    F(BYTE*, self, 468) = s;
+}
+
+// [FUN_5d9f10]
+void __fastcall Scene_FindSpecial(BYTE* self, void*)
+{
+    F(BYTE*, self, 524) = Scene_FindObject(0, s_foreground);
+    F(BYTE*, self, 528) = Scene_FindObject(0, s_background);
+    F(BYTE*, self, 476) = Scene_FindObject(0, s_skyDomeSpace);
+    F(BYTE*, self, 480) = Scene_FindObject(0, s_skyDomeKey);
+}
+
+// [FUN_5db6e0]
+void __fastcall Scenes_Add(BYTE* self, void*, BYTE* s)
+{
+    if (F(BYTE*, self, 468))
+        Node_Link(s, 0, F(BYTE*, self, 468));
+    else
+        F(BYTE*, self, 468) = s;
+}
+
+// [FUN_5db9f0] queues an event in the ring of 10
+void __fastcall Events_Put(BYTE* self, void*, int e)
+{
+    int i = F(int, self, 192);
+    int next = (i + 1) % 10;
+    if (next != F(int, self, 196)) {
+        F(int, self, 200 + i * 4) = e;
+        F(int, self, 192) = next;
+    }
+}
+
+// [FUN_5dbcc0]
+void* __fastcall Camera_Get(BYTE* self, void*, void* out)
+{
+    DWORD* d = (DWORD*)self;
+    CallC(FUN_5da950, out, d[2904 / 4], d[2908 / 4], d[2912 / 4], d[2916 / 4], d[2920 / 4], d[2924 / 4],
+          F(double, self, 2952) + F(double, self, 2928), d[2936 / 4], d[2940 / 4], d[2944 / 4], d[2948 / 4]);
+    return out;
+}
+
+// [FUN_5dbe60] takes the next message of the ring of 100
+int __fastcall Messages_Take(BYTE* self, void*)
+{
+    int i = F(int, self, 456);
+    if (i == F(int, self, 460))
+        return 0;
+    int m = F(int, self, 56 + i * 4);
+    i++;
+    F(int, self, 456) = i;
+    if (i >= 100)
+        F(int, self, 456) = 0;
+    return m;
+}
+
+// [FUN_5dbec0]
+int __stdcall Light_Set(int a, int b, int c, int d, int e, int f)
+{
+    g_7212a0 = d;
+    g_721298 = b;
+    g_72129c = c;
+    g_7216bc = e;
+    g_7212b0 = f;
+    return CallC<int>(FUN_5dbf00, a);
+}
+
+// [FUN_5dd4d0] stops a thread other than the main one
+void __cdecl App_CheckThread()
+{
+    void* t = AfxGetThread_();
+    if (t == g_mainThread || t == F(void*, g_app, 396))
+        return;
+    F(int, g_app, 328) = 0;
+    if (!g_721774)
+        for (;;) {
+        }
+}
+
+// [FUN_5de5b0]
+void __fastcall Clock_Start(BYTE* self, void*)
+{
+    F(double, self, 608) = CallC<double>(FUN_6037e0) * 0.001;
+}
+
+// [FUN_5de5d0]
+void __fastcall Clock_Stop(BYTE* self, void*)
+{
+    F(double, self, 600) = CallC<double>(FUN_6037e0) * 0.001 - F(double, self, 608) + F(double, self, 600);
+}
+
+// Node helpers by type (+16: 6 a frame, 18 a switch, 12 a light).
+
+// [FUN_5e19b0]
+void __cdecl Frame_Apply(BYTE* node, int mode, const void* m)
+{
+    if (node && F(int, node, 16) == 6)
+        Node_ApplyMatrix(node, 0, m, mode);
+}
+
+// [FUN_5e19d0]
+int __cdecl Frame_GetWorld(BYTE* node, void* out)
+{
+    if (F(int, node, 16) == 6)
+        return Node_GetWorld(node, 0, out);
+    return 0;
+}
+
+// [FUN_5e19f0]
+void __cdecl Frame_GetLocal(BYTE* node, void* out)
+{
+    if (F(int, node, 16) == 6)
+        Node_GetLocal(node, 0, out);
+}
+
+// [FUN_5e1a10]
+void __cdecl Switch_Select(BYTE* node, int i)
+{
+    if (node && F(int, node, 16) == 18 && i >= 0 && i < CallVirt<int>(node, 60))
+        F(int, node, 56) = i;
+}
+
+// [FUN_5e1a40]
+int __cdecl Switch_Selected(BYTE* node)
+{
+    if (!node || F(int, node, 16) != 18)
+        return -1;
+    return F(int, node, 56);
+}
+
+// [FUN_5e1a60]
+void __cdecl Light_SetColor(BYTE* node, const DWORD* c)
+{
+    DWORD* d = (DWORD*)(node + (F(int, node, 16) == 12 ? 84 : 56));
+    d[0] = c[0];
+    d[1] = c[1];
+    d[2] = c[2];
+}
+
+// [FUN_5e1aa0]
+void __cdecl Light_GetColor(BYTE* node, DWORD* c)
+{
+    const DWORD* s = (DWORD*)(node + (F(int, node, 16) == 12 ? 84 : 56));
+    c[0] = s[0];
+    c[1] = s[1];
+    c[2] = s[2];
+}
+
+// [FUN_5e1ad0]
+BYTE* __cdecl Node_ParentRoot(BYTE* node)
+{
+    BYTE* p = F(BYTE*, node, 44);
+    if (!p)
+        return 0;
+    return Node_Root(p, 0);
+}
+
+// [FUN_5e2940] touches 6.4 MB twice (commits the memory)
+void __cdecl Memory_Touch()
+{
+    BYTE* blocks[100];
+    for (int i = 0; i < 100; i++)
+        blocks[i] = (BYTE*)operator new(65536);
+    for (int pass = 0; pass < 2; pass++)
+        for (int i = 0; i < 100; i++)
+            for (int k = 0; k < 65536; k++)
+                ((volatile BYTE*)blocks[i])[k] = (BYTE)k;
+    for (int i = 0; i < 100; i++)
+        operator delete(blocks[i]);
+}
+
+// [FUN_5e2e50]
+BYTE* __fastcall Obj654420_Construct(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl654420;
+    F(int, self, 4) = 0;
+    return self;
+}
+
+// The window list: +240 first, +244 last, +248 active, +324.
+
+// [FUN_5e4210]
+BYTE* __fastcall Windows_Add(BYTE* self, void*, BYTE* w)
+{
+    if (!F(BYTE*, self, 244)) {
+        F(BYTE*, self, 240) = w;
+        F(BYTE*, self, 244) = w;
+        return w;
+    }
+    Node_Link(w, 0, F(BYTE*, self, 244));
+    F(BYTE*, self, 244) = w;
+    return w;
+}
+
+// [FUN_5e4140]
+BYTE* __fastcall Windows_AddActive(BYTE* self, void*, BYTE* w)
+{
+    Windows_Add(self, 0, w);
+    F(BYTE*, self, 248) = w;
+    F(BYTE*, self, 324) = w;
+    return w;
+}
+
+// [FUN_5e41f0]
+BYTE* __fastcall Windows_Add2(BYTE* self, void*, BYTE* w)
+{
+    Windows_Add(self, 0, w);
+    return w;
+}
+
+// [FUN_5e4250]
+BYTE* __fastcall Windows_SetActive(BYTE* self, void*, BYTE* w)
+{
+    BYTE* old = F(BYTE*, self, 248);
+    F(BYTE*, self, 248) = w;
+    return old;
+}
+
+// [FUN_5e4300] the directory of path (with its slash), "." if none
+const char* __cdecl DataPath_Set(const char* path)
+{
+    char* buf = g_dataPath;
+    strncpy(buf, path, 250);
+    buf[250] = 0;
+    int i = (int)strlen(buf) - 1;
+    for (; i >= 0; i--)
+        if (buf[i] == ':' || buf[i] == '/' || buf[i] == '\\')
+            break;
+    if (i < 0) {
+        g_dataDir = s_dot;
+        return g_dataDir;
+    }
+    if (buf[i] != ':' && i != 0)
+        buf[i] = 0;
+    else
+        buf[i + 1] = 0;
+    g_dataDir = buf;
+    return g_dataDir;
+}
+
+// [FUN_5e4450] stops the worker and waits for it
+void __fastcall Worker_Stop(BYTE* self, void*)
+{
+    if (F(int, self, 20))
+        while (!F(volatile int, self, 16))
+            Sleep(10);
+    F(int, self, 12) = 1;
+    SetEvent(F(HANDLE, self, 36));
+    while (F(volatile int, self, 32))
+        Sleep(10);
+}
+
+// [FUN_5e44a0]
+void __fastcall ResRef_Release(BYTE* self, void*)
+{
+    BYTE* owner = F(BYTE*, self, 28);
+    CallVirt(owner, 84, F(int, self, 20), 2, F(int, self, 24));
+    BYTE* table = CallVirt<BYTE*>(F(BYTE*, self, 28), 112);
+    if (table)
+        Resources_Unload(table, 0, F(const char*, self, 20));
+    F(int, self, 20) = 0;
+    F(int, self, 16) = 0;
+}
+
+// [FUN_5e4660]
+BYTE* __fastcall Resource_Construct(BYTE* self, void*, int a, int unused)
+{
+    F(int, self, 4) = a;
+    F(int, self, 0) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 24) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 16) = 0;
+    F(BYTE, self, 8) = 0;
+    return self;
+}
+
+// [FUN_5e4690] reads size and data from an IStream
+int __fastcall Resource_Read(BYTE* self, void*, BYTE* stream)
+{
+    DWORD got;
+    DWORD size;
+    Com(stream, 12, &size, 4, &got);
+    F(DWORD, self, 20) = size;
+    if (size) {
+        F(void*, self, 24) = operator new(size);
+        Com(stream, 12, F(void*, self, 24), size, &got);
+    } else {
+        F(void*, self, 24) = 0;
+    }
+    F(int, self, 0) = 2;
+    return 0;
+}
+
+// [FUN_5e4700]
+int __fastcall Resource_Write(BYTE* self, void*, BYTE* stream)
+{
+    DWORD put;
+    DWORD size = F(DWORD, self, 20);
+    Com(stream, 16, &size, 4, &put);
+    Com(stream, 16, F(void*, self, 24), size, &put);
+    return 0;
+}
+
+// [FUN_5e4740]
+void __fastcall Resource_Free(BYTE* self, void*)
+{
+    operator delete(F(void*, self, 24));
+}
+
+// The resource table: 1000 slots at +12, state at +4012, name at +4016.
+
+// [FUN_5e48a0]
+int __fastcall ResTable_Remove(BYTE* self, void*, BYTE* r)
+{
+    for (int i = 0; i < 1000; i++)
+        if (F(BYTE*, self, 12 + i * 4) == r) {
+            F(BYTE*, self, 12 + i * 4) = 0;
+            F(int, r, 12) = 0;
+            return 1;
+        }
+    return 0;
+}
+
+// [FUN_5e48e0]
+void __fastcall ResTable_Clear(BYTE* self, void*)
+{
+    for (int i = 0; i < 1000; i++)
+        F(int, self, 12 + i * 4) = 0;
+}
+
+// [FUN_5e49d0] loads a resource through the loader of ctx
+void __fastcall Resource_Load(BYTE* self, void*, BYTE* ctx)
+{
+    typedef void(__cdecl * Loader)(BYTE * r, int);
+    if (F(int, self, 0) != 1 || !F(Loader, ctx, 2008))
+        return;
+    F(int, self, 0) = 2;
+    F(DWORD, ctx, 2000) += F(DWORD, self, 16);
+    g_720930 = g_702e9c;
+    F(Loader, ctx, 2008)(self, 0);
+    if (F(DWORD, self, 16)) {
+        g_resPending--;
+        CallC(FUN_5e48f0, F(DWORD, ctx, 2000), self, 1);
+    }
+}
+
+// [FUN_5e4a50]
+void __fastcall ResTable_Unload(BYTE* self, void*, BYTE* ctx)
+{
+    if (F(int, self, 4012) != 2)
+        return;
+    F(int, self, 4012) = 1;
+    if (!F(int, ctx, 2004))
+        return;
+    for (int i = 0; i < 1000; i++) {
+        BYTE* r = F(BYTE*, self, 12 + i * 4);
+        if (r && !(F(BYTE, r, 8) & 1))
+            CallThis(FUN_5e4900, r, ctx);
+    }
+}
+
+// [FUN_5e4aa0]
+void __fastcall ResTable_Load(BYTE* self, void*, BYTE* ctx)
+{
+    if (F(int, self, 4012) != 1)
+        return;
+    if (F(int, ctx, 2008))
+        for (int i = 0; i < 1000; i++) {
+            BYTE* r = F(BYTE*, self, 12 + i * 4);
+            if (r)
+                Resource_Load(r, 0, ctx);
+        }
+    F(int, self, 4012) = 2;
+}
+
+// [FUN_5e4af0]
+BYTE* __fastcall Resources_Construct(BYTE* self, void*)
+{
+    for (int i = 0; i < 400; i++)
+        F(int, self, i * 4) = 0;
+    F(int, self, 2000) = 0;
+    F(int, self, 2004) = 0;
+    F(int, self, 2008) = 0;
+    for (int i = 0; i < 100; i++)
+        F(int, self, 1600 + i * 4) = 0;
+    return self;
+}
+
+// [FUN_5e4ec0] the table of this name
+BYTE* __fastcall Resources_Find(BYTE* self, void*, const char* name)
+{
+    if (!name)
+        return 0;
+    int h = 0;
+    for (const BYTE* p = (const BYTE*)name; *p; p++)
+        h += *p;
+    for (BYTE* t = F(BYTE*, self, 1600 + (h % 100) * 4); t; t = F(BYTE*, t, 8))
+        if (!strcmp(name, F(const char*, t, 4016)))
+            return t;
+    return 0;
+}
+
+// [FUN_5e5370] resource id: table id / 1000, slot id % 1000
+int __fastcall Resources_Get(BYTE** self, void*, int id)
+{
+    if (id < 0)
+        return 0;
+    int t = id / 1000, i = id % 1000;
+    if (t > 400)
+        return 0;
+    int* p = (int*)self[t];
+    if (!p || i >= 500)
+        return 0;
+    return p[i];
+}
+
+// [FUN_5e53e0]
+void __fastcall Resources_Load(BYTE* self, void*, const char* name)
+{
+    BYTE* t = Resources_Find(self, 0, name);
+    if (t)
+        ResTable_Load(t, 0, self);
+}
+
+// [FUN_5e5400]
+void __fastcall Resources_Unload(BYTE* self, void*, const char* name)
+{
+    BYTE* t = Resources_Find(self, 0, name);
+    if (t)
+        ResTable_Unload(t, 0, self);
+}
+
+// [FUN_5e5cb0]
+void __fastcall Obj5e5cb0_Init(BYTE* self, void*)
+{
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 16) = 0;
+    F(BYTE, self, 12) = 0;
+    F(int, self, 32) = 0;
+    F(int, self, 4) = 0;
+}
+
+// A buffered mmio file: +0 handle, +4 the buffer (257 sectors),
+// +131588 the read pointer, +131592 the bytes wanted.
+
+// [FUN_5e6b90]
+void __fastcall Mmio_Close(BYTE* self, void*)
+{
+    mmioClose(F(HMMIO, self, 0), 0);
+}
+
+// [FUN_5e6ba0]
+void __fastcall Mmio_Reset(BYTE* self, void*)
+{
+    F(int, self, 131588) = 0;
+}
+
+// [FUN_5e6bb0]
+void __fastcall Mmio_Reset2(BYTE* self, void*)
+{
+    F(int, self, 131588) = 0;
+}
+
+// [FUN_5e6bc0] reads the sectors holding [pos, pos + len)
+void __fastcall Mmio_ReadAt(BYTE* self, void*, int pos, int len)
+{
+    int rem = pos % 512;
+    int t = rem + len;
+    int n = t / 512 + (t % 512 != 0);
+    if (n > 257)
+        return;
+    mmioSeek(F(HMMIO, self, 0), pos - rem, 0);
+    F(int, self, 131592) = len;
+    mmioRead(F(HMMIO, self, 0), (HPSTR)(self + 4), n * 512);
+    F(BYTE*, self, 131588) = self + 4 + rem;
+}
+
+// [FUN_5e6c50]
+int __fastcall Mmio_Open(BYTE* self, void*, char* name)
+{
+    F(HMMIO, self, 0) = mmioOpenA(name, 0, 0);
+    return 1;
+}
+
+// [FUN_5e6db0]
+void __cdecl Files_SetDir(const char* dir)
+{
+    strcpy(g_fileDir, dir);
+}
+
+// [FUN_5e6de0]
+FILE* __cdecl Files_Open(const char* name, const char* mode)
+{
+    strcpy(g_filePath, g_fileDir);
+    strcat(g_filePath, name);
+    return fopen(g_filePath, mode);
+}
+
+// [FUN_5e99a0]
+int __cdecl Image_SetData(BYTE* img, int unused, int data)
+{
+    F(int, img, 4) = data;
+    F(DWORD, img, 24) |= 4;
+    return 1;
+}
+
+// [FUN_5e99c0] reads the image data (after a 44-byte header unless raw)
+int __cdecl Image_Read(BYTE* img, FILE* f, long off)
+{
+    fseek(f, off + ((F(BYTE, img, 24) & 4) ? 0 : 44), 0);
+    fread(F(void*, img, 8), F(DWORD, img, 4), 1, f);
+    F(DWORD, img, 24) |= 1;
+    return 1;
+}
+
+// [FUN_5e9cb0] a 24-bit BITMAPINFOHEADER for the bitmap
+BITMAPINFOHEADER* __cdecl Bitmap_Header24(HBITMAP h)
+{
+    BITMAP bm;
+    if (!GetObjectA(h, 24, &bm))
+        return 0;
+    BITMAPINFOHEADER* bi = (BITMAPINFOHEADER*)LocalAlloc(64, 40);
+    bi->biSize = 40;
+    bi->biWidth = bm.bmWidth;
+    bi->biHeight = bm.bmHeight;
+    bi->biPlanes = bm.bmPlanes;
+    bi->biBitCount = 24;
+    bi->biCompression = 0;
+    bi->biClrImportant = 0;
+    bi->biSizeImage = (((bi->biWidth * 24 + 31) / 32) * bi->biHeight * 32) / 8;
+    return bi;
+}
+
+// [FUN_5e9ff0]
+const char* __cdecl Image_ErrorText(int code)
+{
+    switch (code) {
+    case 1:
+        return s_errNotFound;
+    case 2:
+        return s_errMemory;
+    case 3:
+        return s_errFormat;
+    }
+    return s_errUnknown;
+}
+
+// A font: +0 flags (bit 0 proportional), +4 first, +8 last character,
+// +12 widths, +24 the fixed width.
+
+// [FUN_5ea020]
+int __fastcall Font_CharWidth(BYTE* self, void*, int c)
+{
+    if ((BYTE)c == ' ' || !(F(BYTE, self, 0) & 1))
+        return F(int, self, 24);
+    return F(BYTE*, self, 12)[(c & 255) - F(int, self, 4)];
+}
+
+// [FUN_5ea050] width of up to n characters of the first line
+int __fastcall Font_TextWidthN(BYTE* self, void*, const char* s, int n)
+{
+    if (!s)
+        return 0;
+    if (!(F(BYTE, self, 0) & 1)) {
+        int len = (int)strlen(s);
+        if (n < len)
+            len = n;
+        return F(int, self, 24) * len;
+    }
+    int w = 0;
+    for (int i = 0; s[i] && i < n && s[i] != '\n'; i++) {
+        int c = (BYTE)s[i];
+        if (c >= F(int, self, 4) && c <= F(int, self, 8))
+            w += F(BYTE*, self, 12)[c - F(int, self, 4)];
+        else
+            w += F(int, self, 24);
+    }
+    return w;
+}
+
+// [FUN_5ea0e0] the width of the widest line
+int __fastcall Font_TextWidth(BYTE* self, void*, const char* s)
+{
+    if (!(F(BYTE, self, 0) & 1))
+        return (int)strlen(s) * F(int, self, 24);
+    int widest = 0, w = 0;
+    for (; *s; s++) {
+        int c = (BYTE)*s;
+        if (c == '\n') {
+            if (w > widest)
+                widest = w;
+            w = 0;
+        } else if (c >= F(int, self, 4) && c <= F(int, self, 8)) {
+            w += F(BYTE*, self, 12)[c - F(int, self, 4)];
+        } else {
+            w += F(int, self, 24);
+        }
+    }
+    return w > widest ? w : widest;
+}
+
+// [FUN_5ea170]
+void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, int e)
+{
+    if (font && s)
+        CallC(FUN_5ea1b0, a, b, c, Font_TextWidth(font, 0, s) + 1, font, s, d, e);
+}
+
+}
