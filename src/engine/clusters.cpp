@@ -17,7 +17,7 @@ extern "C" void __fastcall Node_Link(BYTE* self, void*, BYTE* list);            
 extern "C" void __fastcall Group_EachOwner(BYTE* self, void*);                      // scene.cpp
 extern "C" int __fastcall Hash_Lookup(BYTE* self, void*, const char* name, int* out); // core.cpp
 
-ASM_PROC(FUN_5eb310)
+extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
 ASM_PROC(FUN_5acd40)    // base constructor
 extern "C" void FUN_5bad60(); KING_ALIAS("_FUN_5bad60", "@Texture_Size@8")    // size of an object
 extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    // size of an object
@@ -31,6 +31,32 @@ ASM_VAR(AsmLabel, g_vtbl652538, $L_652538)
 ASM_VAR(AsmLabel, g_vtbl652760, $L_652760)
 ASM_VAR(AsmLabel, g_vtbl6527e4, $L_6527e4)
 ASM_VAR(AsmLabel, g_objectNames, $L_71e820)   // name hash of the scene objects
+
+extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
+extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
+ASM_PROC(FUN_5adc80)
+ASM_PROC(FUN_5addf0)
+ASM_PROC(FUN_5eb4b0)
+ASM_PROC(FUN_5b0120)
+ASM_PROC(FUN_5d2650)    // name hash: add (name, value pointer)
+extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
+ASM_VAR(int, g_720904, $L_720904)
+ASM_VAR(BYTE*, g_device, $L_720908)
+ASM_VAR(AsmLabel, g_listLine, $L_7228ec)
+ASM_VAR(char*, g_listCursor, $L_7218d0)
+ASM_VAR(char*, g_listToken, $L_7231a0)
+ASM_VAR(AsmLabel, s_end, $L_683b50)
+ASM_VAR(AsmLabel, s_txr, $L_683b4c)
+ASM_VAR(AsmLabel, s_tga, $L_683b48)
+ASM_VAR(AsmLabel, s_msk, $L_678acc)
+ASM_VAR(AsmLabel, s_wav, $L_683b44)
+ASM_VAR(AsmLabel, s_plm, $L_683b40)
+
+template <class... A>
+static __forceinline int Com(BYTE* com, unsigned off, A... args)
+{
+    return (*(int(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
+}
 
 extern "C" {
 
@@ -281,6 +307,109 @@ BYTE* __cdecl Objects_Find(const char* name)
     int out = (int)name;
     Hash_Lookup((BYTE*)g_objectNames, 0, name, &out);
     return (BYTE*)out;
+}
+
+}
+
+extern "C" {
+
+// [FUN_5eb310] applies the camera's parameters p to the renderer r and draws
+// the scene
+void __fastcall Camera_Draw(BYTE* self, void*, BYTE* cam, BYTE* scene, BYTE* p, int a, BYTE* r)
+{
+    if (!cam || !r || !scene)
+        return;
+    int v = 100 - F(int, p, 112);
+    F(int, r, 8456) = v;
+    if (v > 100)
+        F(int, r, 8456) = 100;
+    if (F(int, r, 8456) < 0)
+        F(int, r, 8456) = 0;
+    F(int, r, 8520) = F(int, p, 120);
+    F(int, r, 8524) = F(int, p, 124);
+    F(int, r, 8472) = F(int, p, 32);
+    F(int, r, 8476) = F(int, p, 36);
+    F(int, r, 8464) = F(int, p, 40);
+    F(int, r, 8468) = F(int, p, 44);
+    CallThis(FUN_5adc80, r, F(int, p, 24), F(int, p, 28), F(int, p, 16), F(int, p, 20), F(int, p, 72));
+    CallThis(FUN_5addf0, r, F(int, p, 48), F(int, p, 52), F(int, p, 56), F(int, p, 60), F(int, p, 64),
+             F(int, p, 68));
+    F(int, r, 8660) = F(int, p, 116);
+    F(int, r, 8648) = F(int, p, 128);
+    F(int, r, 8652) = F(int, p, 132);
+    CallThis(FUN_5eb4b0, cam, r);
+    if (g_720904) {
+        CallC(FUN_5b0120, F(int, r, 8664) ? 1 : F(int, r, 8668) ? 2 : 0);
+        Com(g_device, 80, 22, F(int, cam, 100) ? 3 : 2);
+    }
+    CallVirt(r, 8, F(int, scene, 36));
+    CallVirt(scene, 48, a, r);
+    if (g_720904)
+        Com(g_device, 80, 7, 0);
+}
+
+// [FUN_5eb6a0] reads a cluster's names
+int __fastcall Cluster_ReadNames(BYTE* self, void*, FILE* f)
+{
+    char buf[64];
+    fread(buf, 32, 1, f);
+    CallThis(FUN_5d2650, (BYTE*)g_objectNames, buf, self + 80);
+    fread(buf, 32, 1, f);
+    int i = 0;
+    while (buf[i] && buf[i] != ':')
+        i++;
+    if (!buf[i]) {
+        CallThis(FUN_5d2650, (BYTE*)g_objectNames, buf, self + 76);
+    } else {
+        buf[i] = 0;
+        strcpy((char*)self + 12, buf);
+        strcpy((char*)self + 44, buf + i + 1);
+    }
+    F(DWORD, self, 88) = 0x3F4CCCCD;     // 0.8f
+    F(DWORD, self, 84) = 0x3F19999A;     // 0.6f
+    F(int, self, 92) = 0;
+    F(int, self, 96) = 0;
+    return 1;
+}
+
+// [FUN_5ef070] reads a line of a file list: 0 END, 1 texture, 2 mask,
+// 3 sound, 7 palette, 8 other; 4 end of file, 5 empty, 6 no extension
+int __cdecl FileList_ReadLine(FILE* f, char** name)
+{
+    fgets(g_listLine, 70, f);
+    if (F(BYTE, f, 12) & 16)
+        return 4;
+    g_listCursor = g_listLine;
+    char* tok = CallC<char*>(FUN_5ab1b0, &g_listCursor);
+    g_listToken = tok;
+    *name = tok;
+    if (!tok)
+        return 5;
+    if (!strcmp(tok, s_end))
+        return 0;
+    char* p = tok;
+    g_listCursor = p;
+    while (*p) {
+        p++;
+        g_listCursor = p;
+    }
+    while (*p != '.') {
+        if (p <= tok)
+            return 6;
+        p--;
+        g_listCursor = p;
+    }
+    if (p <= tok)
+        return 6;
+    p++;
+    g_listCursor = p;
+    if (!strcmp(p, s_txr) || !strcmp(p, s_tga))
+        return 1;
+    if (!strcmp(p, s_msk))
+        return 2;
+    if (!strcmp(p, s_wav))
+        return 3;
+    return 7 + (strcmp(p, s_plm) != 0);
 }
 
 }

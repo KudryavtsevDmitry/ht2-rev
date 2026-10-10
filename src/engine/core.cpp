@@ -107,6 +107,9 @@ ASM_VAR(BYTE*, g_723d44, $L_723d44)
 ASM_VAR(CRITICAL_SECTION, g_cs723b40, $L_723b40)
 ASM_VAR(AsmLabel, g_683c58, $L_683c58)
 
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+ASM_VAR(AsmLabel, s_dollars, $L_67fb20)          // "$$"
+
 extern "C" {
 
 static BYTE* NewEntry()
@@ -446,3 +449,114 @@ void __fastcall Queue_Remove(BYTE* self, void*, BYTE* e)
 
 }
 
+extern "C" {
+
+// [FUN_5d2430] deletes the entries of this owner (+20)
+void __fastcall NameHash_RemoveOwner(BYTE* self, void*, int owner)
+{
+    if (!g_71e844)
+        return;
+    for (int i = 0; i < F(int, self, 4); i++) {
+        for (BYTE* e = F(BYTE**, self, 8)[i]; e;) {
+            BYTE* next = F(BYTE*, e, 8);
+            if (F(int, e, 20) == owner) {
+                if (e == F(BYTE**, self, 8)[i])
+                    F(BYTE**, self, 8)[i] = next;
+                Node_Unlink(e, 0);
+                CallVirt(e, 0, 1);
+            }
+            e = next;
+        }
+    }
+    BYTE* head = F(BYTE*, self, 0);
+    if (!head)
+        return;
+    for (BYTE* e = F(BYTE*, head, 8); e;) {
+        BYTE* next = F(BYTE*, e, 8);
+        if (F(int, e, 20) == owner) {
+            Node_Unlink(e, 0);
+            CallVirt(e, 0, 1);
+        }
+        e = next;
+    }
+    head = F(BYTE*, self, 0);
+    if (F(int, head, 20) == owner) {
+        BYTE* next = F(BYTE*, head, 8);
+        Node_Unlink(head, 0);
+        if (F(BYTE*, self, 0))
+            CallVirt(F(BYTE*, self, 0), 0, 1);
+        F(BYTE*, self, 0) = next;
+    }
+}
+
+// [FUN_5d27c0] resolves the pending references; returns the first name that
+// stays unresolved ("$$" names may stay)
+const char* __fastcall NameHash_ResolvePending(BYTE* self, void*)
+{
+    BYTE* head = F(BYTE*, self, 0);
+    if (!head)
+        return 0;
+    for (BYTE* e = F(BYTE*, head, 8); e;) {
+        BYTE* next = F(BYTE*, e, 8);
+        if (Hash_Lookup(self, 0, F(const char*, e, 12), F(int*, e, 16))) {
+            Node_Unlink(e, 0);
+            CallVirt(e, 0, 1);
+        } else if (strncmp(F(const char*, e, 12), s_dollars, 2)) {
+            return F(const char*, e, 12);
+        }
+        e = next;
+    }
+    head = F(BYTE*, self, 0);
+    if (Hash_Lookup(self, 0, F(const char*, head, 12), F(int*, head, 16))) {
+        BYTE* h = F(BYTE*, self, 0);
+        if (!F(BYTE*, h, 8)) {
+            if (h)
+                CallVirt(h, 0, 1);
+            F(BYTE*, self, 0) = 0;
+            return 0;
+        }
+        F(BYTE*, self, 0) = F(BYTE*, h, 8);
+        Node_Unlink(h, 0);
+        CallVirt(h, 0, 1);
+        return 0;
+    }
+    if (!strncmp(F(const char*, F(BYTE*, self, 0), 12), s_dollars, 2))
+        return 0;
+    return F(const char*, F(BYTE*, self, 0), 12);
+}
+
+// [FUN_5d3660] inserts an event by due time (+16, made absolute) and
+// priority (+12 -> +20); drops an exact duplicate
+void __fastcall Queue_Insert(BYTE* self, void*, BYTE* ev)
+{
+    if (!ev || !F(BYTE*, ev, 12))
+        return;
+    F(int, ev, 16) += F(int, self, 0);
+    BYTE* n = F(BYTE*, self, 12);
+    if (!n) {
+        F(BYTE*, self, 12) = ev;
+        return;
+    }
+    for (; n; n = CallThis<BYTE*>(FUN_5d3080, n))
+        if (F(int, n, 12) == F(int, ev, 12) && F(int, n, 16) == F(int, ev, 16) && F(int, n, 20) == F(int, ev, 20)) {
+            CallVirt(ev, 0, 1);
+            return;
+        }
+    BYTE* p = F(BYTE*, self, 12);
+    if (F(int, p, 16) > F(int, ev, 16) ||
+        (F(int, p, 16) == F(int, ev, 16) && F(int, F(BYTE*, p, 12), 20) < F(int, F(BYTE*, ev, 12), 20))) {
+        F(BYTE*, ev, 8) = p;
+        F(BYTE*, p, 4) = ev;
+        F(BYTE*, self, 12) = ev;
+        return;
+    }
+    BYTE* q;
+    while ((q = CallThis<BYTE*>(FUN_5d3080, p)) != 0 && F(int, q, 16) < F(int, ev, 16))
+        p = q;
+    while ((q = CallThis<BYTE*>(FUN_5d3080, p)) != 0 && F(int, q, 16) == F(int, ev, 16) &&
+           F(int, F(BYTE*, q, 12), 20) > F(int, F(BYTE*, ev, 12), 20))
+        p = q;
+    Node_Link(ev, 0, p);
+}
+
+}

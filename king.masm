@@ -993,6 +993,9 @@ PUBLIC $L_6f65bc, $L_6f65c0, $L_6f65c4, $L_6f65c8, $L_6f65e8, $L_6f65ec
 PUBLIC $L_6f65f8, $L_6f6610, $L_6f6614, $L_6f6618, $L_6f6620, $L_72412c
 PUBLIC $L_725d28
 PUBLIC $L_5c0700, $L_67f418, $L_67f770, $L_67f79c, $L_702f74
+PUBLIC $L_678acc, $L_67fb20, $L_683b40, $L_683b44, $L_683b48, $L_683b4c
+PUBLIC $L_683b50, $L_7208b4, $L_720900, $L_720910, $L_7218d0, $L_7228ec
+PUBLIC $L_7231a0
 
 ;===================================
 _TEXT SEGMENT
@@ -757456,6 +757459,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d2430 PROC
 
             mov EAX,DWORD PTR [$L_71e844]
@@ -757575,6 +757580,10 @@ $L_5d24ee::
             pop EBP
             ret 4
 FUN_5d2430 ENDP
+ELSE
+EXTERN @NameHash_RemoveOwner@12:PROC
+FUN_5d2430 TEXTEQU <@NameHash_RemoveOwner@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -758002,6 +758011,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d27c0 PROC
 
             push EBX
@@ -758140,6 +758151,10 @@ $L_5d2897::
             pop EBX
             ret 
 FUN_5d27c0 ENDP
+ELSE
+EXTERN @NameHash_ResolvePending@8:PROC
+FUN_5d27c0 TEXTEQU <@NameHash_ResolvePending@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -760317,6 +760332,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d3660 PROC
 
             push EBX
@@ -760483,6 +760500,10 @@ $L_5d3781::
             nop
             nop
 FUN_5d3660 ENDP
+ELSE
+EXTERN @Queue_Insert@12:PROC
+FUN_5d3660 TEXTEQU <@Queue_Insert@12>
+ENDIF
 ALIGN 16
 FUN_5d3790 PROC
 
@@ -770259,6 +770280,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 FUN_5d8260 PROC
 
             mov EAX,DWORD PTR [$L_72090c]
@@ -770369,6 +770392,10 @@ $L_5d8349::
             pop ESI
             ret 
 FUN_5d8260 ENDP
+ELSE
+EXTERN _Dd_Release:PROC
+FUN_5d8260 TEXTEQU <_Dd_Release>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -805208,6 +805235,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5eb310 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -805370,6 +805399,10 @@ $L_5eb48b::
             pop EBX
             ret 20
 FUN_5eb310 ENDP
+ELSE
+EXTERN @Camera_Draw@28:PROC
+FUN_5eb310 TEXTEQU <@Camera_Draw@28>
+ENDIF
 ALIGN 16
 IFDEF ASM_MARINE_CORE
 FUN_5eb490 PROC
@@ -805588,6 +805621,8 @@ FUN_5eb4b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5eb6a0 PROC
 
             sub ESP,64
@@ -805705,6 +805740,10 @@ $L_5eb76b::
             add ESP,64
             ret 4
 FUN_5eb6a0 ENDP
+ELSE
+EXTERN @Cluster_ReadNames@12:PROC
+FUN_5eb6a0 TEXTEQU <@Cluster_ReadNames@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -813328,6 +813367,8 @@ $L_5ef04c           DWORD $L_5eef2d
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5ef070 PROC
 
             push EBX
@@ -813683,6 +813724,10 @@ $L_5ef299::
             pop EBX
             ret 
 FUN_5ef070 ENDP
+ELSE
+EXTERN _FileList_ReadLine:PROC
+FUN_5ef070 TEXTEQU <_FileList_ReadLine>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
