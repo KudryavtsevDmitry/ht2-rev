@@ -1683,7 +1683,7 @@ KING_ALIAS("_Copy12", "FUN_4611e0")
 extern "C" void __cdecl Copy56(void* dst, const void* src);
 KING_ALIAS("_Copy56", "FUN_4612d0")
 extern "C" void __cdecl AI_Error4a54e0(int code, int a, const char* name);
-KING_ALIAS("_AI_Error4a54e0", "FUN_4a54e0")
+KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 ASM_PROC(FUN_451230)    // vector<36 bytes>::insert_aux
 ASM_PROC(FUN_4514b0)    // vector<4 bytes>::insert_aux
 ASM_PROC(FUN_451740)    // vector<16 bytes>::insert_aux
@@ -2043,7 +2043,7 @@ extern "C" void __fastcall Rec404920_Destroy(BYTE** self, void*)
 }
 
 // the nearest other town to town i
-extern "C" void __cdecl Town_NearestOther(int* out, int i)
+extern "C" int* __cdecl Town_NearestOther(int* out, int i)
 {
     DVec3 a, b;
     CallC(FUN_404ef0, &a, g_towns[i]);
@@ -2063,6 +2063,7 @@ extern "C" void __cdecl Town_NearestOther(int* out, int i)
         }
     }
     *out = best;
+    return out;
 }
 
 // the cost of an edge for a side and direction: its objects' costs, weighted (cached)
@@ -2700,7 +2701,7 @@ extern "C" void* __fastcall StlLock_Guard(void* self, void*)
 
 ASM_PROC(FUN_44c160)    // vector<double>::operator=
 ASM_PROC(FUN_461dc0)    // vector of 16-byte records: allocate and copy (n, first, last)
-ASM_PROC(FUN_469430)    // copy 16-byte records (first, last, dest, -, 0)
+extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
 ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
 ASM_PROC(FUN_460d10)    // destroy a 16-byte record
 extern "C" BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags);   // aistl.cpp
@@ -2817,6 +2818,8 @@ static void Order144_Assign(BYTE* d, const BYTE* s, bool destroy461ae0)
     Copy4(d, s, 132, 136);
 }
 
+extern "C" void __cdecl Order144_AssignPlain(BYTE* d, const BYTE* s) { Order144_Assign(d, s, false); }
+
 // operator= of a 144-byte order
 extern "C" BYTE* __fastcall Order144_AssignThis(BYTE* self, void*, const BYTE* src)
 {
@@ -2854,9 +2857,9 @@ extern "C" void __fastcall Rec458940_Destroy(BYTE* self, void*)
 
 ASM_PROC(FUN_40c1a0)    // destroy a 104-byte record
 ASM_PROC(FUN_40cb60)    // destroy a 24-byte record
-ASM_PROC(FUN_45aa00)    // operator= of the vector at +12 of a 24-byte record
+extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 ASM_PROC(FUN_440dd0)    // destroy a 192-byte record
-ASM_PROC(FUN_4618c0)    // vector of 16-byte records: operator=
+extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 ASM_PROC(FUN_41ce50)    // destroy a 144-byte order
 ASM_PROC(FUN_44fac0)    // hash table: grow for n entries
 ASM_PROC(FUN_44f2c0)    // a string's character (s, i)
@@ -2864,7 +2867,7 @@ ASM_PROC(FUN_45a7d0)    // compare two strings
 ASM_PROC(FUN_4592b0)    // hash table: a new node for a key
 ASM_PROC(FUN_461b60)    // vector of 24-byte records: allocate and copy (n, first, last)
 ASM_PROC(FUN_46c490)    // destroy a 24-byte record
-ASM_PROC(FUN_466c50)    // copy 24-byte records (first, last, dest, -, 0)
+extern "C" void FUN_466c50(); KING_ALIAS("_FUN_466c50", "_Rec24b_Copy")    // copy 24-byte records (first, last, dest, -, 0)
 ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" double __cdecl Order_Value(const int* o);        // aiordr.cpp
 extern "C" double __cdecl Order_FullValue(const int* o);
@@ -2895,7 +2898,7 @@ extern "C" BYTE* __fastcall Vec24_Erase(BYTE** self, void*, BYTE* first, BYTE* l
     BYTE* s = last;
     for (int n = (self[1] - last) / 24; n > 0; n--, d += 24, s += 24) {
         ((StrRef*)d)->Assign((const StrRef*)s);
-        CallThis(FUN_45aa00, d + 12, s + 12);
+        Vec24_Assign((BYTE**)(d + 12), 0, (BYTE* const*)(s + 12));
     }
     for (BYTE* e = self[1]; d != e; d += 24)
         CallThis(FUN_40cb60, d);
@@ -2948,7 +2951,7 @@ static bool Orders_RemoveIf(BYTE** v, double* sum, bool expired)
             memcpy(d + 24, s + 24, 32);
             Copy4(d, s, 56, 104);
             Copy4(d, s, 112, 116);
-            CallThis(FUN_4618c0, d + 120, s + 120);
+            Vec16_AssignB((BYTE**)(d + 120), 0, (BYTE* const*)(s + 120));
             Copy4(d, s, 132, 136);
         }
         v[1] -= 144;
@@ -3021,4 +3024,86 @@ extern "C" BYTE* __cdecl Rec24_Copy(const BYTE* first, const BYTE* last, BYTE* d
         d[1] = d[0] + n * 24;
     }
     return dest;
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions, batch 5
+
+ASM_PROC(FUN_487230)    // (player, node)
+ASM_PROC(FUN_41bca0)    // an order's three sums (iterator, &a, &b, &c, cargo record, arg)
+extern "C" void FUN_471200(); KING_ALIAS("_FUN_471200", "_Order_SetPrice")    // (player list node, order, direct, urgent)
+
+// a player's route must start at the node of its last waypoint
+extern "C" void __cdecl Player_CheckRouteStart(BYTE* p)
+{
+    if (F(BYTE*, p, 24) == F(BYTE*, p, 28))
+        return;
+    int node = F(int, F(BYTE*, p, 28), -12);
+    if (F(BYTE*, p, 72) == F(BYTE*, p, 76))
+        return;
+    int e = F(int, F(BYTE*, p, 76), -36);
+    if (e != -1 && e != node)
+        AiError(0, 100, s_mainFile, s_mainId, 2199, "Internal error 0753", &g_aiEmpty, &g_aiEmpty);
+    PositionId pos = F(PositionId, p, 40);
+    if (pos.node != node)
+        CallC(FUN_487230, p, node);
+    if (F(BYTE*, p, 24) == F(BYTE*, p, 28))
+        AiError(0, 100, s_mainFile, s_mainId, 2205, "Internal error 45712", &g_aiEmpty, &g_aiEmpty);
+}
+
+// an order's quantity (+56) from its cargo record; negative ones are reported
+extern "C" void __cdecl Order_SetQuantity(int it, int* order, int arg)
+{
+    double a = 0, b = 0, q = 0;
+    CallC(FUN_41bca0, it, &a, &b, &q, g_68ccb8 + *order * 104, arg);
+    F(double, order, 56) = q;
+    if (!(q >= 0.0))
+        AiError(0, 512, s_mainFile, s_mainId, 6208, "Q<0", &g_aiEmpty, &g_aiEmpty);
+    CallC(FUN_471200, it, order, 1, 1);
+}
+
+// a position's two keys (+36, +40 of out): its node's, or its road object's
+extern "C" int __cdecl Position_Keys(PositionId p, BYTE* out)
+{
+    if (p.road == -1) {
+        if (p.node == -1)
+            return 0;
+        F(int, out, 36) = F(int, F(BYTE*, g_roadNodes[p.node], 184), 12);
+        F(int, out, 40) = F(int, F(BYTE*, g_roadNodes[p.node], 188), 12);
+        return 0;
+    }
+    PositionId c = p;
+    if (((p.road < 0 || (unsigned)p.road >= (unsigned)(g_roadEdgesEnd - g_roadEdges)) && !NodeId_Valid(&c.node, 0))
+        || !(c.t >= -0.0002) || c.t > 1.0002 || c.segment < 0 || c.object < 0) {
+        sprintf(g_positionText76, "(%d %g %d %d %x)", p.road, p.t, p.segment, p.object, p.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 11534, "Invalid id", "PositionId", g_positionText76);
+    }
+    BYTE* e = (BYTE*)g_roadEdges[p.road];
+    BYTE* o = F(BYTE**, e, 120)[p.object];
+    BYTE* k = o ? o + 8 : 0;
+    F(int, out, 36) = F(int, F(BYTE*, k, 8), 12);
+    o = F(BYTE**, e, 120)[p.object];
+    F(int, out, 40) = F(int, F(BYTE*, o ? o + 20 : (BYTE*)12, 0), 12);
+    return 0;
+}
+
+ASM_PROC(FUN_429530)    // a player's key (list node by value)
+
+// the list node of the player with the smallest key (players of kind 1 and
+// those without waypoints are left out); the list's head if none
+extern "C" void __cdecl Players_MinKey(void** out)
+{
+    void** best = (void**)g_players;
+    double bestKey = 1.7976931348623157e308;
+    for (void** n = (void**)*(void**)g_players; n != g_players; n = (void**)*n) {
+        BYTE* p = (BYTE*)n + 8;
+        if (F(int, p, 84) == 1 || F(BYTE*, p, 152) == F(BYTE*, p, 156))
+            continue;
+        double k = CallC<double>(FUN_429530, n);
+        if (bestKey > k) {
+            bestKey = k;
+            best = n;
+        }
+    }
+    *out = best;
 }

@@ -527,3 +527,147 @@ bool __fastcall Waypoints_RemoveNode(WaypointVec* self, void*, int node) { retur
 void __fastcall Player_SetPosition(PlayerBase* self, void*, const PositionId* p) { self->SetPosition(p); } // [FUN_474290]
 void __fastcall Waypoints_Clear(WaypointVec* self, void*) { self->Clear(); }                // [FUN_478080]
 }
+
+// ---------------------------------------------------------------------------
+// medium-sized functions: the save writers, the logo of a player
+
+ASM_PROC(FUN_46e460)    // vector<char>::insert(pos, first, last): the save stream
+ASM_PROC(FUN_471b10)    // writes a 16-byte record (stream)
+ASM_PROC(FUN_470e10)    // writes an order (stream)
+ASM_PROC(FUN_477600)
+typedef DWORD Dwords[1];
+ASM_VAR(Dwords, g_playRng, $L_68b9c8)          // the AI's subtractive generator
+ASM_VAR(unsigned, g_playRngI, $L_68baa4)
+ASM_VAR(unsigned, g_playRngJ, $L_68baa8)
+ASM_VAR(DWORD*, g_logoUsed, $L_68cc88)          // per logo: bit 0 taken
+ASM_VAR(int, g_logoRequests, $L_68d18c)
+
+static void Put(BYTE* stream, const void* p, int n)
+{
+    CallThis(FUN_46e460, stream, FIELD(char*, stream, 4), p, (const char*)p + n);
+}
+
+static void Put4(BYTE* stream, DWORD v) { Put(stream, &v, 4); }
+
+extern "C" void __fastcall Rec471bf0_Save(DWORD* self, void*, BYTE* stream)
+{
+    Put4(stream, self[6]);
+    Put4(stream, self[1]);
+    Put4(stream, self[0]);
+    Put(stream, self + 2, 8);
+    Put4(stream, self[4]);
+    Put4(stream, self[5]);
+    Put4(stream, self[7]);
+    Put4(stream, self[8]);
+}
+
+// a list of players by name: the count, each name's length and bytes (0 for none)
+extern "C" void __fastcall PlayerRefs_Save(BYTE** self, void*, BYTE* stream)
+{
+    Put4(stream, (self[1] - self[0]) >> 4);
+    for (unsigned i = 0; i < (unsigned)((self[1] - self[0]) >> 4); i++) {
+        BYTE* e = FIELD(BYTE*, self[0], i * 16);
+        if (e == (BYTE*)g_players) {
+            Put4(stream, 0);
+            continue;
+        }
+        Put4(stream, FIELD(BYTE*, e, 12) - FIELD(BYTE*, e, 8));
+        for (unsigned j = 0; j < (unsigned)(FIELD(BYTE*, e, 12) - FIELD(BYTE*, e, 8)); j++) {
+            char c = FIELD(char*, e, 8)[j];
+            Put(stream, &c, 1);
+        }
+    }
+    Put4(stream, (DWORD)self[3]);
+}
+
+extern "C" void __fastcall Rec4722c0_Save(DWORD* self, void*, BYTE* stream)
+{
+    Put4(stream, self[1]);
+    Put4(stream, self[1]);
+    Put4(stream, self[0]);
+    Put4(stream, (int)(self[5] - self[4]) >> 4);
+    for (unsigned i = 0; i < (unsigned)((int)(self[5] - self[4]) >> 4); i++)
+        CallThis(FUN_471b10, (BYTE*)self[4] + i * 16, stream);
+    Put4(stream, (int)(self[8] - self[7]) / 144);
+    for (unsigned i = 0; i < (unsigned)((int)(self[8] - self[7]) / 144); i++)
+        CallThis(FUN_470e10, (BYTE*)self[7] + i * 144, stream);
+    Put4(stream, self[10]);
+}
+
+extern "C" void __cdecl Doubles5_Save(BYTE* stream, const double* d)
+{
+    for (int i = 0; i < 5; i++)
+        Put(stream, d + i, 8);
+}
+
+// a player's logo: a random free one of 8, else the first if free
+extern "C" void __cdecl Player_AllocLogo(BYTE* p)
+{
+    g_logoRequests++;
+    if (FIELD(int, p, 156) != -1)
+        return;
+    DWORD* used = g_logoUsed;
+    int i = 0;
+    for (; i < 100; i++) {
+        unsigned a = (g_playRngI + 1) % 55;
+        unsigned b = (g_playRngJ + 1) % 55;
+        g_playRngI = a;
+        g_playRngJ = b;
+        g_playRng[a] -= g_playRng[b];
+        unsigned r = g_playRng[g_playRngI] & 7;
+        if (!(used[r] & 1)) {
+            used[r] |= 1;
+            FIELD(int, p, 156) = r;
+            used = g_logoUsed;
+            break;
+        }
+    }
+    if (FIELD(int, p, 156) == -1)
+        for (; i < 8; i++)
+            if (!(used[0] & 1)) {
+                used[0] |= 1;
+                FIELD(int, p, 156) = 0;
+                break;
+            }
+    if (FIELD(int, p, 156) == -1)
+        AiError(0, 256, s_playFile, s_playId, 1318, "Can not allocate a logo", &g_aiEmpty, &g_aiEmpty);
+}
+
+// FUN_477600 on a player's waypoint records and on its orders' records
+extern "C" void __cdecl Player_Reset477600(BYTE* p)
+{
+    for (BYTE* e = FIELD(BYTE*, p, 152); e != FIELD(BYTE*, p, 156); e += 16)
+        CallC(FUN_477600, e);
+    FIELD(BYTE*, p, 164) = FIELD(BYTE*, p, 152);
+    CallC(FUN_477600, p + 168);
+    for (int k = 508; k <= 512; k += 4) {
+        BYTE* o = FIELD(BYTE*, p, k);
+        if (!o)
+            continue;
+        for (BYTE* it = FIELD(BYTE*, o, 28); it != FIELD(BYTE*, FIELD(BYTE*, p, k), 32); it += 144)
+            for (BYTE* e = FIELD(BYTE*, it, 120); e != FIELD(BYTE*, it, 124); e += 16)
+                CallC(FUN_477600, e);
+    }
+}
+
+// loads a road record from the save stream
+ASM_PROC(FUN_471e90)    // loads the vector at +120 (cursor)
+
+static void Get(BYTE** cur, BYTE* self, int off, int n)
+{
+    memcpy(self + off, *cur, n);
+    *cur += n;
+}
+
+extern "C" void __fastcall Rec4710a0_Load(BYTE* self, void*, BYTE** cur)
+{
+    static const signed char order[][2] = {
+        {0, 4}, {12, 4}, {16, 4}, {48, 4}, {28, 4}, {24, 4}, {32, 8}, {40, 4}, {44, 4},
+        {52, 4}, {56, 8}, {64, 8}, {96, 8}, {72, 8}, {80, 8}, {88, 8}, {104, 4}, {112, 8},
+    };
+    for (int i = 0; i < (int)(sizeof order / sizeof order[0]); i++)
+        Get(cur, self, (unsigned char)order[i][0], order[i][1]);
+    CallThis(FUN_471e90, self + 120, cur);
+    Get(cur, self, 4, 4);
+    Get(cur, self, 8, 4);
+}

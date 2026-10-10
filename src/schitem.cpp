@@ -17,7 +17,7 @@ extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void __cdecl free(void* p);
 
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
-ASM_PROC(FUN_4b2b60)
+extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
 ASM_PROC(FUN_4b20d0)
 ASM_PROC(FUN_4b58c0)
 ASM_PROC(FUN_4b5490)
@@ -417,4 +417,115 @@ extern "C" BYTE* __cdecl SchValues_Fill(BYTE* to, unsigned n, const BYTE* v)
 extern "C" BYTE* __fastcall Sch_At(BYTE** self, void*, int i)
 {
     return *self + i;
+}
+
+// ---------------------------------------------------------------------------
+// medium-sized functions: a node's constructor, the reader's line buffer and
+// its error line
+
+ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+ASM_PROC(FUN_44bef0)    // vector<char>::insert(pos, &c)
+ASM_PROC(FUN_4a20a0)    // deque<int>::push_back when the block is full
+ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
+ASM_VAR(AsmLabel, g_fmtLineCol, $L_671458)      // the "line col" prefix of an error line
+
+// a node linked between p's +16 and +4, holding two values
+extern "C" BYTE* __fastcall Node4b1120_Construct(BYTE* self, void*, BYTE* p, const BYTE* a, const BYTE* b)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = g_vtbl64bed0;
+    BYTE* next = F(BYTE*, p, 16);
+    F(BYTE*, self, 12) = next;
+    F(BYTE*, self, 16) = p + 4;
+    F(BYTE*, next, 16) = self;
+    F(BYTE*, F(BYTE*, self, 16), 12) = self;
+    CopyRef(self + 20, a);
+    CopyRef(self + 32, b);
+    F(void*, self, 0) = g_vtbl64c054;
+    return self;
+}
+
+static void PushChar(BYTE* v, char c)
+{
+    char* end = F(char*, v, 4);
+    if (end == F(char*, v, 8))
+        CallThis(FUN_44bef0, v, end, &c);
+    else {
+        if (end)
+            *end = c;
+        F(char*, v, 4) = end + 1;
+    }
+}
+
+// the reader's error line: "line col" prefix, the line, a caret under the column
+extern "C" void __fastcall Reader_ErrorLine(BYTE* self, void*, BYTE* out)
+{
+    char buf[128];
+    sprintf(buf, g_fmtLineCol, F(int, self, 64), F(int, self, 68));
+    CallThis(FUN_44c220, out, F(char*, out, 4), buf, buf + strlen(buf));
+    CallThis(FUN_44c220, out, F(char*, out, 4), F(char*, self, 52), F(char*, self, 56));
+    PushChar(out, '\n');
+    for (int i = 0; i < F(int, self, 68) - 1; i++)
+        PushChar(out, ' ');
+    PushChar(out, '^');
+    PushChar(out, '\n');
+    PushChar(out, 0);
+}
+
+// reads lines into the reader's deque until it holds n characters; the
+// current line is kept at +52 for error messages; returns the count
+extern "C" unsigned __fastcall Reader_Fill(BYTE* self, void*, unsigned n)
+{
+    for (;;) {
+        unsigned count = ((F(BYTE*, self, 24) - F(BYTE*, self, 28)) >> 2)
+                       + ((((F(BYTE*, self, 36) - F(BYTE*, self, 20)) >> 2) + 0x1ffffff) << 7)
+                       + ((F(BYTE*, self, 16) - F(BYTE*, self, 8)) >> 2);
+        if (count >= n)
+            return count;
+        F(char*, self, 56) = F(char*, self, 52);
+        F(int, self, 68) = 0;
+        F(int, self, 64)++;
+        int c;
+        do {
+            if (!F(BYTE*, self, 40))
+                CallC(FUN_4a52e0, 0, 1);
+            if (F(DWORD, self, 48) & 0x10000)
+                CallC(FUN_4a52e0, 4, 1);
+            c = CallVirt<int>(F(BYTE*, self, 40), 20);
+            int* end = F(int*, self, 24);
+            if (end == (int*)(F(BYTE*, self, 32) - 4))
+                CallThis(FUN_4a20a0, self, &c);
+            else {
+                if (end)
+                    *end = c;
+                F(int*, self, 24) = end + 1;
+            }
+            PushChar(self + 52, (char)c);
+        } while (c != 10 && c != -1);
+    }
+}
+
+// a caret line for an error: CR, LF, then spaces up to the column; each
+// call takes the value by copy
+ASM_PROC(FUN_4b13c0)    // writes a character (c, value by copy)
+ASM_PROC(FUN_4b1450)    // writes a string (text, value by copy)
+ASM_VAR(AsmLabel, g_strSpace, $L_6715b8)
+struct ValueArg { BYTE* obj; int m_4; DWORD flags; };
+
+static ValueArg ValueCopy(const BYTE* v)
+{
+    ValueArg a;
+    CopyRef((BYTE*)&a, v);
+    return a;
+}
+
+extern "C" void __cdecl Sch_CaretLine(const BYTE* v, const BYTE* pos)
+{
+    typedef void (__cdecl* PutC)(int, ValueArg);
+    typedef void (__cdecl* PutS)(const char*, ValueArg);
+    ((PutC)FUN_4b13c0)(13, ValueCopy(v));
+    ((PutC)FUN_4b13c0)(10, ValueCopy(v));
+    for (int i = 0; i < F(int, pos, 4) - 1; i++)
+        ((PutS)FUN_4b1450)(g_strSpace, ValueCopy(v));
 }

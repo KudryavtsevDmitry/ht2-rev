@@ -76,6 +76,14 @@ Each source file in `src/` is a group with its own switch: `ASM_MAINLOOP`, `ASM_
 
 The `ASM=1` build is byte-identical to the build before C++ was added, except for timestamps and the checksum. Use it as the reference when something behaves differently.
 
+Run `powershell -File tools\test_deque_abi.ps1` to check the script reader's
+deque page allocator. The test extracts the current C++ implementation and
+calls it with the assembly caller's two stack arguments, checking stack
+balance and zero through three allocated 512-byte pages. It uses the compiler
+and SDK paths from the Makefile and writes its outputs to `build-test/`.
+The original allocator returns through the shared epilogue at `$L_4a2a62`,
+which ends in `ret 8`; its replacement must use `__stdcall`.
+
 The executable is linked like the original: fixed base `0x400000` without relocations (`/FIXED`), the original's DLL characteristics (`/NXCOMPAT:NO /TSAWARE:NO`), and the CRT startup in `king.masm` as entry point (`__EntryPoint`).
 
 ## Running
@@ -97,6 +105,17 @@ Start-Process C:\test\king.exe -WorkingDirectory 'C:\Program Files (x86)\King'
 To get into the game world, click **ИГРА** in the main menu, then **НОВАЯ ИГРА** (client coordinates of the 800x600 window: about 657,141 and 398,140). The world loads in about 7 seconds, with the window "Not Responding" meanwhile; without input the truck then stands at the base. The menu takes clicks only from the real mouse, not from posted window messages; a script can click with `mouse_event` if the cursor stays on the game window between the two clicks. When the game is closed in the world, `warn.log` gets a line with the truck's position (`Pos=…`). With the truck standing it is the same in every run except the sixth decimal of the height, which varies in both builds.
 
 ## How the program is organised
+
+For a blind world-loading smoke test, open the game at its main menu and run
+`py tools\smoke_world.py`. It finds the game window, converts the two menu
+positions from client to screen coordinates, clicks ИГРА then НОВАЯ ИГРА,
+and polls for the loading stall to end while checking that the process stays
+alive. It scales the positions with the client size and leaves the cursor on
+the buttons long enough for the game to process the mouse input. A responsive
+window alone is inconclusive: the test requires a stall followed by recovery.
+It leaves the game running and does not save or close it.
+Add `--close-after 10` to close the game window ten seconds after the loading
+transition completes and report the process's exit code.
 
 `king.exe` is an MFC application. MFC and the C runtime are linked statically, so they are part of `king.masm` as well. The game's own code fills `0x401000`–`0x61c4c0` of the original; MFC, the C runtime, gzip and the old iostream library follow, and the exception-handling funclets of all of it close the code section (`0x63b610`–`0x64a78a`).
 

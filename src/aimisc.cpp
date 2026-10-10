@@ -25,7 +25,7 @@ KING_ALIAS("_Int_FromInt", "FUN_48ade0")
 extern "C" void __cdecl Poly_48d8f0(void* out, void* a, int b, int n, int c);
 KING_ALIAS("_Poly_48d8f0", "FUN_48d8f0")
 extern "C" void __cdecl AI_Error4a54e0(int code, int a, const char* name);
-KING_ALIAS("_AI_Error4a54e0", "FUN_4a54e0")
+KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_46e460)    // vector<char>::insert(pos, first, last) (another instance)
 ASM_PROC(FUN_470900)
@@ -560,4 +560,300 @@ void __fastcall Str_AssignEnvironment(StrRef* s, void*, const StrRef* src)      
     F(int, p, 4)++;
     s->len = 0;
 }
+}
+
+// ---------------------------------------------------------------------------
+// wide strings of the AI's text: +0 the length, +2 the capacity (0: not
+// owned), +4 a flag, the characters from +6
+
+typedef void (__cdecl* RangeError)(const char* type, const char* text);
+ASM_VAR(RangeError, g_rangeError, $L_670324)
+
+static WORD* WStr_New(unsigned len)
+{
+    unsigned need = len * 2 + 12;
+    unsigned size = 16;
+    while (size < need)
+        size <<= 1;
+    size -= 4;
+    if (size >= 131070)
+        g_rangeError("Integer", "Requested length out of range");
+    WORD* p = (WORD*)operator new(size);
+    p[1] = (WORD)((size - 6) >> 1);
+    return p;
+}
+
+static void WStr_Zero(WORD* from, WORD* to)
+{
+    for (; from < to; from++)
+        *from = 0;
+}
+
+// a string of len characters, the first n from src (in old if it fits)
+extern "C" WORD* __cdecl WStr_Make(WORD* old, const WORD* src, int n, WORD flag, int len)
+{
+    WORD* p = old && !(len > (int)old[1]) ? old : WStr_New(len);
+    p[2] = flag;
+    p[0] = (WORD)len;
+    for (int i = 0; i < n; i++)
+        p[3 + i] = src[i];
+    WStr_Zero(p + 3 + n, p + 3 + p[0]);
+    if (old != p && old && old[1])
+        operator delete(old);
+    return p;
+}
+
+// resizes a string to len characters, zero-filled
+extern "C" WORD* __cdecl WStr_Resize(WORD* old, unsigned len)
+{
+    WORD* p;
+    unsigned cur;
+    if (!old) {
+        p = WStr_New(len);
+        cur = 0;
+        p[2] = 1;
+    } else {
+        cur = old[0];
+        if ((int)len > (int)old[1]) {
+            p = WStr_New(len);
+            for (unsigned i = 0; i < cur; i++)
+                p[3 + i] = old[3 + i];
+            p[2] = old[2];
+            if (old[1])
+                operator delete(old);
+        } else
+            p = old;
+    }
+    p[0] = (WORD)len;
+    WStr_Zero(p + 3 + cur, p + 3 + (len & 0xffff));
+    return p;
+}
+
+// dst = src
+extern "C" WORD* __cdecl WStr_Assign(WORD* dst, const WORD* src)
+{
+    if (dst == src)
+        return dst;
+    if (!src) {
+        if (!dst) {
+            WORD* p = (WORD*)operator new(12);
+            p[1] = 3;
+            p[0] = 0;
+            p[2] = 1;
+            return p;
+        }
+        WStr_Zero(dst + 3, dst + 3 + dst[0]);
+        dst[0] = 0;
+        dst[2] = 1;
+        return dst;
+    }
+    unsigned n = src[0];
+    WORD* p = dst;
+    if (!dst || (int)n > (int)dst[1]) {
+        if (dst && dst[1])
+            operator delete(dst);
+        p = WStr_New(n);
+    }
+    p[0] = (WORD)n;
+    p[2] = src[2];
+    for (unsigned i = 0; i < n; i++)
+        p[3 + i] = src[3 + i];
+    return p;
+}
+
+// ---------------------------------------------------------------------------
+// the AI's big integers: wide strings holding 16-bit digits, lowest first;
+// +4 the sign (1: not negative)
+
+ASM_PROC(FUN_48aae0)    // the integer out made ready for len digits (out, len)
+
+// trims leading zero digits; zero is not negative
+static WORD* Int_Normalize(WORD* r)
+{
+    int c = r[0];
+    for (WORD* p = r + 3 + c; c > 0;) {
+        p--;
+        if (*p)
+            break;
+        c--;
+    }
+    r[0] = (WORD)c;
+    if (!(WORD)c)
+        r[2] = 1;
+    return r;
+}
+
+// out = a * k
+extern "C" WORD* __cdecl Int_MulInt(WORD* a, int k, WORD* out)
+{
+    if (!a)
+        g_rangeError("Integer", "operation on uninitialized Integer");
+    int n = a[0];
+    WORD* r;
+    if (n == 0 || k == 0)
+        r = (WORD*)Int_SetZero((BigInt*)out);
+    else if (k == 1)
+        r = WStr_Assign(out, a);
+    else {
+        int pos = k >= 0;
+        WORD sign = (short)a[2] == pos;
+        unsigned u = pos ? k : -k;
+        WORD kd[2];
+        int kn = 0;
+        for (; u; u >>= 16)
+            kd[kn++] = (WORD)u;
+        bool same = a == out;
+        int len = kn + n;
+        r = same ? WStr_Resize(out, len) : CallC<WORD*>(FUN_48aae0, out, len);
+        WORD* d = r + 3;
+        WORD* end = d + len;
+        WORD *dst, *outer, *low, *inner, *innerEnd;
+        if (same) {
+            dst = d + n - 1;
+            low = d;
+            outer = dst;
+            inner = kd;
+            innerEnd = kd + kn;
+        } else if (n <= kn) {
+            low = a + 3;
+            dst = d + n - 1;
+            outer = a + 3 + n - 1;
+            inner = kd;
+            innerEnd = kd + kn;
+        } else {
+            dst = d + kn - 1;
+            inner = a + 3;
+            low = kd;
+            outer = kd + kn - 1;
+            innerEnd = a + 3 + n;
+        }
+        while (outer >= low) {
+            unsigned m = *outer--;
+            WORD* p = dst--;
+            *p = 0;
+            if (!m)
+                continue;
+            unsigned carry = 0;
+            for (WORD* q = inner; q < innerEnd; q++, p++) {
+                unsigned t = *q * m + *p + carry;
+                *p = (WORD)t;
+                carry = t >> 16;
+            }
+            for (; carry && p < end; p++) {
+                carry += *p;
+                *p = (WORD)carry;
+                carry >>= 16;
+            }
+        }
+        r[2] = sign;
+    }
+    return Int_Normalize(r);
+}
+
+// out = a shifted by sh bits: left when sh > 0, right when sh < 0
+extern "C" WORD* __cdecl Int_Shift(WORD* a, int sh, WORD* out)
+{
+    if (!a)
+        g_rangeError("Integer", "operation on uninitialized Integer");
+    int n = a[0];
+    if (n == 0 || sh == 0)
+        return WStr_Assign(out, a);
+    bool same = a == out;
+    int sign = (short)a[2];
+    unsigned u = sh >= 0 ? sh : -sh;
+    int words = u >> 4;
+    int bits = u & 15;
+    WORD* r;
+    if (sh > 0) {
+        int len = n + words + 1;
+        r = same ? WStr_Resize(out, len) : CallC<WORD*>(FUN_48aae0, out, len);
+        WORD* d = r + 3;
+        WORD* p = d + len - 1;
+        WORD* src = same ? d : a + 3;
+        unsigned acc = 0;
+        for (WORD* s = src + n - 1; s >= src; s--) {
+            acc = (acc << 16) | ((unsigned)*s << bits);
+            *p-- = (WORD)(acc >> 16);
+        }
+        *p-- = (WORD)acc;
+        for (; p >= d; p--)
+            *p = 0;
+    } else {
+        int len = n - words;
+        if (len < 0)
+            r = (WORD*)Int_SetZero((BigInt*)out);
+        else {
+            r = same ? WStr_Resize(out, len) : CallC<WORD*>(FUN_48aae0, out, len);
+            WORD* d = r + 3;
+            WORD* end = d + len;
+            WORD* src = same ? d : a + 3;
+            WORD* s = src + words + 1;
+            WORD* srcEnd = src + n;
+            unsigned acc = (unsigned)s[-1] >> bits;
+            WORD* q = d;
+            for (; s < srcEnd; s++, q++) {
+                acc |= (unsigned)*s << (16 - bits);
+                *q = (WORD)acc;
+                acc >>= 16;
+            }
+            *q++ = (WORD)acc;
+            if (same)
+                end = srcEnd;
+            for (; q < end; q++)
+                *q = 0;
+        }
+    }
+    r[2] = (WORD)sign;
+    return Int_Normalize(r);
+}
+
+// one pass of long division (Knuth's algorithm D): divides the digits of R
+// by the vn digits of V, qn quotient digits from the top; R keeps the
+// remainder, Q (if any) gets the quotient. The estimate's high bits are
+// kept as the original keeps them; only its low 16 bits are used.
+extern "C" void __cdecl Int_DivDigits(WORD* R, const WORD* V, int vn, WORD* Q, int qn)
+{
+    unsigned v1 = V[vn - 1];
+    unsigned v2 = V[vn - 2];
+    const WORD* vend = V + vn;
+    for (int j = qn - 1; j >= 0; j--) {
+        WORD* top = R + j + vn;
+        unsigned qhat = v1 == top[0] ? 0xffff : (((unsigned)top[0] << 16) | top[-1]) / v1;
+        for (;;) {
+            unsigned q = qhat & 0xffff;
+            unsigned lo = v2 * q;
+            unsigned mid = q * v1 + (lo >> 16);
+            WORD t[3] = {(WORD)lo, (WORD)mid, (WORD)(mid >> 16)};
+            int diff = 0;
+            for (int k = 2; k >= 0; k--)
+                if ((diff = (int)t[k] - (int)top[k - 2]) != 0)
+                    break;
+            if (diff <= 0)
+                break;
+            qhat += 0xffff;
+        }
+        unsigned q = qhat & 0xffff;
+        unsigned mul = 0, borrow = 1;
+        WORD* r = R + j;
+        for (const WORD* v = V; v < vend; v++, r++) {
+            mul = (mul >> 16) + *v * q;
+            borrow = borrow + *r - (mul & 0xffff) + 0xffff;
+            *r = (WORD)borrow;
+            borrow >>= 16;
+        }
+        borrow = borrow + *r - (mul >> 16) + 0xffff;
+        *r = (WORD)borrow;
+        if (!(borrow & 0xffff0000)) {
+            qhat += 0xffff;
+            unsigned c = 0;
+            WORD* rr = R + j;
+            for (const WORD* v = V; v < vend; v++, rr++) {
+                c = (c >> 16) + *rr + *v;
+                *rr = (WORD)c;
+            }
+            *rr = 0;
+        }
+        if (Q)
+            Q[j] = (WORD)qhat;
+    }
 }
