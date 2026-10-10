@@ -686,3 +686,115 @@ extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
         CallC(FUN_606760, edge, self);
     return 0;
 }
+
+// Marine object lifetime and geometry transitions.
+ASM_PROC(FUN_60fee0)
+ASM_PROC(FUN_60fc10)
+ASM_PROC(FUN_60cdd0)
+ASM_PROC(FUN_5ef780)
+ASM_PROC(FUN_5d3290)
+ASM_PROC(FUN_5ef660)
+ASM_PROC(FUN_61c350)
+ASM_VAR(AsmLabel, g_marineMeshVtable, $L_652ff8)
+ASM_VAR(AsmLabel, g_marineTaskVtable, $L_653040)
+ASM_VAR(AsmLabel, g_marineTaskSecondaryVtable, $L_653020)
+extern "C" BYTE* __fastcall MarineMesh_Create(BYTE* self, void*, DWORD x, DWORD y, DWORD z,
+                                            DWORD first, DWORD second, DWORD unused, DWORD fourth)
+{
+    BYTE* mesh = (BYTE*)operator new(88);
+    if (mesh) {
+        F(WORD, mesh, 52) = F(WORD, mesh, 38) = F(WORD, mesh, 36) = 0;
+        const unsigned fields[] = {28,32,40,44,8,48,4,84};
+        for(unsigned i=0;i<8;++i) F(DWORD,mesh,fields[i])=0;
+        F(void*,mesh,0)=g_marineMeshVtable;
+        for(unsigned i=56;i<80;i+=4) F(DWORD,mesh,i)=0;
+        F(DWORD,mesh,80)=timeGetTime();
+    }
+    F(BYTE*,self,0)=mesh;
+    F(DWORD,mesh,56)=x; F(DWORD,mesh,60)=y; F(DWORD,mesh,64)=z;
+    F(DWORD,mesh,68)=F(DWORD,mesh,72)=0x3f800000;
+    F(DWORD,mesh,76)=0;
+    DWORD position[3]={x,y,z};
+    CallThis(FUN_60fee0, mesh, position, first, second, fourth);
+    CallThis(FUN_60fc10, F(void*,self,0), 0x41000000u, 0u, 0u);
+    return self;
+}
+extern "C" void __fastcall MarineMesh_Destruct(BYTE* self, void*)
+{
+    F(void*,self,0)=g_marineMeshVtable;
+    BYTE* sink=F(BYTE*,self,4);
+    if(sink) { CallVirt(sink,0,1); F(BYTE*,self,4)=0; }
+    void* data=F(void*,self,84);
+    if(data) { operator delete(data); F(void*,self,84)=0; }
+    CallThis(FUN_60cdd0,self);
+}
+extern "C" BYTE* __fastcall MarineMesh_Delete(BYTE* self, void*, DWORD flags)
+{
+    MarineMesh_Destruct(self,0);
+    if(flags&1) operator delete(self);
+    return self;
+}
+extern "C" void __fastcall MarineTask_Destruct(BYTE* self, void*)
+{
+    F(void*,self,0)=g_marineTaskVtable;
+    F(void*,self,76)=g_marineTaskSecondaryVtable;
+    BYTE* owner=F(BYTE*,self,108);
+    if(owner) { MarineTask_ReleaseMesh(owner,0); operator delete(owner); F(void*,self,108)=0; }
+    CallThis(FUN_5ef780,self);
+    F(DWORD,self,124)=F(DWORD,self,128)=0;
+    CallThis(FUN_5d3290,self?self+76:0);
+    void* data=F(void*,self,72);
+    if(data) operator delete(data);
+    CallThis(FUN_5ef660,self);
+}
+extern "C" BYTE* __fastcall MarineTask_Delete(BYTE* self, void*, DWORD flags)
+{
+    MarineTask_Destruct(self,0);
+    if(flags&1) operator delete(self);
+    return self;
+}
+extern "C" BYTE* __fastcall MarineTask_DeleteSecondary(BYTE* self, void*, DWORD flags)
+{
+    return MarineTask_Delete(self-76,0,flags);
+}
+extern "C" DWORD* __fastcall MarineGeometry_Snapshot(BYTE* self, void*, DWORD* out, BYTE* registration)
+{
+    DWORD* source=(DWORD*)(F(BYTE*,self,16)+(unsigned)F(WORD,registration,0)*40);
+    for(unsigned i=0;i<10;++i) out[i]=source[i];
+    return out;
+}
+extern "C" BYTE* __fastcall MarineTransition_Create(BYTE* self, void*, DWORD time, BYTE* registration,
+                              const DWORD* source, const DWORD* target, unsigned type, BYTE* geometry)
+{
+    F(BYTE*,self,0)=F(BYTE*,self,4)=self;
+    for(unsigned i=0;i<10;++i) F(DWORD,self,20+i*4)=target[i];
+    for(unsigned i=0;i<10;++i) F(DWORD,self,60+i*4)=source[i];
+    F(BYTE*,self,100)=geometry; F(DWORD,self,8)=time; F(BYTE*,self,16)=registration;
+    F(BYTE*,registration,4)=self;
+    if(type<9) F(DWORD,self,12)=5;
+    else {
+        F(DWORD,self,12)=type<11?100:250;
+        DWORD snapshot[10];
+        MarineGeometry_Snapshot(geometry,0,snapshot,F(BYTE*,registration,0));
+        for(unsigned i=6;i<10;++i) F(DWORD,self,20+i*4)=snapshot[i];
+    }
+    return self;
+}
+extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD time)
+{
+    double elapsed=(double)time-(int)F(DWORD,self,8);
+    double duration=(double)F(DWORD,self,12);
+    BYTE* registration=F(BYTE*,self,16);
+    DWORD* destination=(DWORD*)(F(BYTE*,F(void*,self,100),16)+(unsigned)F(WORD,F(void*,registration,0),0)*40);
+    if(elapsed>duration) {
+        for(unsigned i=0;i<10;++i) destination[i]=F(DWORD,self,20+i*4);
+        return 1;
+    }
+    float factor=(float)(elapsed/duration);
+    DWORD result[10];
+    BYTE* indexNode=F(BYTE*,registration,0);
+    DWORD* value=CallC<DWORD*>(FUN_61c350,result,(DWORD*)(self+60),(DWORD*)(self+20),factor);
+    destination=(DWORD*)(F(BYTE*,F(void*,self,100),16)+(unsigned)F(WORD,indexNode,0)*40);
+    for(unsigned i=0;i<10;++i) destination[i]=value[i];
+    return 0;
+}
