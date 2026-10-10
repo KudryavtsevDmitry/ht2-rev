@@ -653,6 +653,9 @@ EXTERN _wvsprintfA@12:PROC
 
 EXTERN ___ImageBase:BYTE
 
+PUBLIC $L_653020
+PUBLIC $L_653040
+PUBLIC $L_652ff8
 PUBLIC $L_725d70
 PUBLIC $L_725e18
 PUBLIC $L_725db8
@@ -859077,6 +859080,7 @@ FUN_608ea0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_608ef0 PROC
 
             push ECX
@@ -859100,6 +859104,10 @@ FUN_608ef0 PROC
             pop ECX
             ret 8
 FUN_608ef0 ENDP
+ELSE
+EXTERN @MarineGeometry_Snapshot@16:PROC
+FUN_608ef0 TEXTEQU <@MarineGeometry_Snapshot@16>
+ENDIF
 ALIGN 16
 FUN_608f20 PROC
 
@@ -869106,6 +869114,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60db70 PROC
 
             sub ESP,12
@@ -869208,6 +869217,10 @@ $L_60dc14::
             add ESP,12
             ret 28
 FUN_60db70 ENDP
+ELSE
+EXTERN @MarineMesh_Create@36:PROC
+FUN_60db70 TEXTEQU <@MarineMesh_Create@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -869215,6 +869228,7 @@ FUN_60db70 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60dcc0 PROC
 
             push ESI
@@ -869234,9 +869248,14 @@ $L_60dcd8::
             pop ESI
             ret 4
 $L_60dcc0 ENDP
+ELSE
+EXTERN @MarineMesh_Delete@12:PROC
+$L_60dcc0 TEXTEQU <@MarineMesh_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60dce0 PROC
 
             push -1
@@ -869282,6 +869301,10 @@ $L_60dd36::
             add ESP,16
             ret 
 FUN_60dce0 ENDP
+ELSE
+EXTERN @MarineMesh_Destruct@8:PROC
+FUN_60dce0 TEXTEQU <@MarineMesh_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -870104,6 +870127,7 @@ FUN_60e0f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60e480 PROC
 
             push ESI
@@ -870123,9 +870147,14 @@ $L_60e498::
             pop ESI
             ret 4
 $L_60e480 ENDP
+ELSE
+EXTERN @MarineTask_Delete@12:PROC
+$L_60e480 TEXTEQU <@MarineTask_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60e4a0 PROC
 
             push -1
@@ -870195,6 +870224,10 @@ $L_60e52f::
             add ESP,20
             ret 
 FUN_60e4a0 ENDP
+ELSE
+EXTERN @MarineTask_Destruct@8:PROC
+FUN_60e4a0 TEXTEQU <@MarineTask_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871220,11 +871253,16 @@ FUN_60f010 TEXTEQU <@MarineTask_ForwardPointCopy@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+IFDEF ASM_MARINE
 $L_60f040 PROC
 
             sub ECX,76
             jmp $L_60e480
 $L_60f040 ENDP
+ELSE
+EXTERN @MarineTask_DeleteSecondary@12:PROC
+$L_60f040 TEXTEQU <@MarineTask_DeleteSecondary@12>
+ENDIF
 $L_60f048 PROC
 
             int 3
@@ -871322,6 +871360,7 @@ $L_60f0a0 TEXTEQU <_MarineInit_ZeroVector>
 ENDIF
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f0d0 PROC
 
             push -1
@@ -871403,6 +871442,10 @@ $L_60f18d::
             add ESP,56
             ret 24
 FUN_60f0d0 ENDP
+ELSE
+EXTERN @MarineTransition_Create@32:PROC
+FUN_60f0d0 TEXTEQU <@MarineTransition_Create@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871434,6 +871477,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_60f1c0 PROC
 
             sub ESP,48
@@ -871516,6 +871560,10 @@ $L_60f233::
             add ESP,48
             ret 4
 FUN_60f1c0 ENDP
+ELSE
+EXTERN @MarineTransition_Advance@12:PROC
+FUN_60f1c0 TEXTEQU <@MarineTransition_Advance@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
