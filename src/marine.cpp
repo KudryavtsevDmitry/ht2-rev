@@ -690,7 +690,7 @@ extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
 // Marine object lifetime and geometry transitions.
 ASM_PROC(FUN_60fee0)
 ASM_PROC(FUN_60fc10)
-ASM_PROC(FUN_60cdd0)
+extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
 ASM_PROC(FUN_5ef780)
 ASM_PROC(FUN_5d3290)
 ASM_PROC(FUN_5ef660)
@@ -726,7 +726,7 @@ extern "C" void __fastcall MarineMesh_Destruct(BYTE* self, void*)
     if(sink) { CallVirt(sink,0,1); F(BYTE*,self,4)=0; }
     void* data=F(void*,self,84);
     if(data) { operator delete(data); F(void*,self,84)=0; }
-    CallThis(FUN_60cdd0,self);
+    MarineGreed_Destruct(self,0);
 }
 extern "C" BYTE* __fastcall MarineMesh_Delete(BYTE* self, void*, DWORD flags)
 {
@@ -797,4 +797,72 @@ extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD time
     destination=(DWORD*)(F(BYTE*,F(void*,self,100),16)+(unsigned)F(WORD,indexNode,0)*40);
     for(unsigned i=0;i<10;++i) destination[i]=value[i];
     return 0;
+}
+
+// Marine graph ownership and teardown.
+ASM_PROC(FUN_5e48f0)
+ASM_VAR(AsmLabel, g_marineBaseVtable, $L_652f48)
+ASM_VAR(AsmLabel, g_marineTreeFile, $L_684a20)
+static void MarineTree_Detach(BYTE* node)
+{
+    BYTE* owner=F(BYTE*,node,8);
+    if(!owner) return;
+    if(F(BYTE*,owner,0)==node) F(BYTE*,owner,0)=0;
+    else if(F(BYTE*,owner,4)==node) F(BYTE*,owner,4)=0;
+    else CallC(FUN_60aad0,0x88762712u,g_marineErrorFormat,g_marineTreeFile,35,g_marineDate);
+}
+extern "C" BYTE* __fastcall MarineTree_Delete(BYTE* self, void*, DWORD flags)
+{
+    MarineTree_Detach(self);
+    BYTE* child=F(BYTE*,self,0);
+    if(child) MarineTree_Delete(child,0,1);
+    child=F(BYTE*,self,4);
+    if(child) MarineTree_Delete(child,0,1);
+    if(flags&1) operator delete(self);
+    return self;
+}
+extern "C" void __fastcall MarineGreed_Destruct(BYTE* self, void*)
+{
+    F(void*,self,0)=g_marineBaseVtable;
+    BYTE* queue=F(BYTE*,self,28);
+    if(queue) { CallThis(FUN_5e48f0,queue); operator delete(queue); F(void*,self,28)=0; }
+    queue=F(BYTE*,self,32);
+    if(queue) { CallThis(FUN_5e48f0,queue); operator delete(queue); F(void*,self,32)=0; }
+    if(F(void*,self,12)) {
+        for(unsigned i=0;i<(unsigned)F(WORD,self,36);++i) {
+            void* vertex=F(void*,F(void*,self,12),i*4);
+            if(vertex) operator delete(vertex);
+        }
+        free(F(void*,self,12));
+        F(void*,self,12)=0;
+    }
+    if(F(void*,self,8)) {
+        for(unsigned i=0;i<F(unsigned,self,48);++i) {
+            BYTE* edge=F(BYTE*,F(void*,self,8),i*4);
+            if(!edge) continue;
+            MarineTree_Detach(edge);
+            BYTE* child=F(BYTE*,edge,0);
+            if(child) MarineTree_Delete(child,0,1);
+            child=F(BYTE*,edge,4);
+            if(child) MarineTree_Delete(child,0,1);
+            operator delete(edge);
+            F(void*,F(void*,self,8),i*4)=0;
+        }
+        void* edges=F(void*,self,8);
+        if(edges) { operator delete(edges); F(void*,self,8)=0; }
+    }
+    F(DWORD,self,40)=F(DWORD,self,44)=0;
+    F(WORD,self,38)=F(WORD,self,36)=0;
+    F(DWORD,self,48)=0;
+}
+extern "C" BYTE* __fastcall MarineGreed_Delete(BYTE* self, void*, DWORD flags)
+{
+    MarineGreed_Destruct(self,0);
+    if(flags&1) operator delete(self);
+    return self;
+}
+extern "C" BYTE* __fastcall MarineVertex_Delete(BYTE* self, void*, DWORD flags)
+{
+    if(flags&1) operator delete(self);
+    return self;
 }
