@@ -982,3 +982,58 @@ extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
     F(int, self, 3644) = 0;
     F(int, self, 3636) = h;
 }
+
+// Save the previous transform and motion state before advancing the scene.
+extern "C" BYTE* __fastcall SceneObj_SaveState(BYTE* self, void*)
+{
+    F(Matrix, self, 548) = F(Matrix, self, 500);
+    F(Matrix, self, 644) = F(Matrix, self, 596);
+    F(Vec3, self, 452) = F(Vec3, self, 416);
+    F(Vec3, self, 464) = F(Vec3, self, 440);
+    F(DWORD, self, 804) = F(DWORD, self, 800);
+    return self;
+}
+
+ASM_PROC(FUN_591c30)
+ASM_PROC(FUN_5928d0)
+
+// Collision routines consume both the world transform and its inverse.
+extern "C" int __cdecl SceneObj_Collide(BYTE* a, BYTE* b, DWORD arg)
+{
+    Matrix worldA, worldB, inverseA, inverseB;
+    SceneObj_Matrix1(a, 0, &worldA);
+    SceneObj_Matrix1(b, 0, &worldB);
+    SceneObj_Matrix2(a, 0, &inverseA);
+    SceneObj_Matrix2(b, 0, &inverseB);
+    return CallC<int>(FUN_591c30, a, &worldA, &inverseA, b, &worldB, &inverseB, arg);
+}
+
+extern "C" int __cdecl SceneObj_CollideShape(void* shape, DWORD arg2, DWORD arg3,
+                                             BYTE* object, DWORD arg5)
+{
+    if (!shape || !object)
+        return 0;
+    Matrix world, inverse;
+    SceneObj_Matrix1(object, 0, &world);
+    SceneObj_Matrix2(object, 0, &inverse);
+    return CallC<int>(FUN_5928d0, shape, arg2, arg3, object, &world, &inverse, arg5);
+}
+
+ASM_VAR(BYTE*, g_effectManager, $L_6f6910)
+
+// Restart a positioned effect, releasing its previous sound first.
+extern "C" const Matrix* __fastcall SceneEffect_Start(BYTE* self, void*, DWORD key,
+                                                       const Matrix* transform)
+{
+    if (g_effectManager)
+        CallThis(FUN_5f25c0, F(BYTE*, g_effectManager, 340), self + 80);
+    F(DWORD, self, 232) = 0;
+    F(DWORD, self, 316) = key;
+    double now = Game_Time();
+    F(DWORD, self, 228) = 0;
+    F(float, self, 224) = (float)now;
+    F(DWORD, self, 324) = 0;
+    F(Matrix, self, 268) = *transform;
+    F(Matrix, self, 32) = *transform;
+    return transform;
+}
