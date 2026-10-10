@@ -691,7 +691,7 @@ extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
 
 // Marine object lifetime and geometry transitions.
 ASM_PROC(FUN_60fee0)
-ASM_PROC(FUN_60fc10)
+extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
 ASM_PROC(FUN_5ef780)
 ASM_PROC(FUN_5d3290)
@@ -718,7 +718,7 @@ extern "C" BYTE* __fastcall MarineMesh_Create(BYTE* self, void*, DWORD x, DWORD 
     F(DWORD,mesh,76)=0;
     DWORD position[3]={x,y,z};
     CallThis(FUN_60fee0, mesh, position, first, second, fourth);
-    CallThis(FUN_60fc10, F(void*,self,0), 0x41000000u, 0u, 0u);
+    MarineMesh_CreateMotionResponse(F(BYTE*,self,0),0,0x41000000u,0u,0u);
     return self;
 }
 extern "C" void __fastcall MarineMesh_Destruct(BYTE* self, void*)
@@ -1594,4 +1594,99 @@ extern "C" void __fastcall MarineScratch_ReleasePoints(BYTE* self,void*)
 {
     void* buffer=F(void*,self,124);
     if(buffer) {operator delete(buffer);F(DWORD,self,124)=0;}
+}
+
+// Marine mesh motion-response construction and degree-table trigonometry.
+struct MarineAngleTable { float v[360]; };
+ASM_VAR(float, g_mc_724960, $L_724960)
+ASM_VAR(float, g_mc_64c264, $L_64c264)
+ASM_VAR(float, g_mc_6530d0, $L_6530d0)
+ASM_VAR(float, g_mc_6530ac, $L_6530ac)
+ASM_VAR(float, g_mc_653004, $L_653004)
+ASM_VAR(float, g_mc_653000, $L_653000)
+ASM_VAR(float, g_mc_725ecc, $L_725ecc)
+ASM_VAR(float, g_mc_64c338, $L_64c338)
+ASM_VAR(float, g_mc_64c350, $L_64c350)
+ASM_VAR(float, g_mc_64d7b8, $L_64d7b8)
+ASM_VAR(float, g_mc_6530b0, $L_6530b0)
+ASM_VAR(float, g_mc_6530b4, $L_6530b4)
+ASM_VAR(float, g_mc_650330, $L_650330)
+ASM_VAR(float, g_mc_64c320, $L_64c320)
+ASM_VAR(float, g_mc_650804, $L_650804)
+ASM_VAR(float, g_mc_725ed0, $L_725ed0)
+ASM_VAR(float, g_mc_725ed4, $L_725ed4)
+ASM_VAR(float, g_mc_725ed8, $L_725ed8)
+ASM_VAR(MarineAngleTable, g_mc_sine, $L_7243bc)
+ASM_VAR(MarineAngleTable, g_mc_cosine, $L_724964)
+extern "C" double __cdecl MarineAngle_Sine(float angle)
+{
+    bool negative=!(angle>=g_mc_64c264);
+    int index=(int)(DWORD)(__int64)((double)g_mc_724960*angle);
+    if(negative) index=(int)(0u-(DWORD)index);
+    double value=g_mc_sine.v[index%360];
+    return negative?-value:value;
+}
+extern "C" double __cdecl MarineAngle_Cosine(float angle)
+{
+    double value=angle;
+    if(!(value>=g_mc_64c264)) value=-value;
+    int index=(int)(DWORD)(__int64)((double)g_mc_724960*value);
+    return g_mc_cosine.v[index%360];
+}
+static void MarineMesh_ResponseValues(BYTE* response,double length)
+{
+    F(float,response,16)=(float)length;
+    if(length>g_mc_6530d0) F(float,response,16)=g_mc_6530d0;
+    double radius=(double)F(float,response,16)/((double)g_mc_6530ac*g_mc_653004);
+    F(float,response,4)=(float)radius;
+    double energy=((radius*radius)*g_mc_6530ac)/g_mc_725ecc;
+    F(float,response,8)=(float)energy;
+    double target=energy*g_mc_653000+g_mc_64c338;
+    F(float,response,28)=(float)target;
+    if(target>g_mc_64c350) F(DWORD,response,28)=0x3fc00000;
+    F(DWORD,response,20)=1161527296u;F(DWORD,response,12)=0;
+    F(float,response,4)=(float)((double)F(float,response,4)*g_mc_64d7b8);
+}
+static void MarineMesh_ResponseRange(BYTE* owner,double value)
+{
+    bool active=value>=g_mc_6530b0 && !(value>g_mc_6530b4);
+    BYTE* transition=F(BYTE*,owner,112);
+    if(transition) MarineTransition_SetActive(transition,0,active?1:0);
+}
+extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE* self,void*,DWORD xBits,DWORD yBits,DWORD zBits)
+{
+    BYTE* response=(BYTE*)operator new(36);
+    if(response) {
+        F(BYTE*,response,0)=F(BYTE*,self,4);
+        float x=g_mc_725ed0,y=g_mc_725ed4,z=g_mc_725ed8;
+        F(float,response,12)=(float)x87_atan2(x,y);
+        double length=x87_sqrt(((double)x*x+(double)y*y)+(double)z*z);
+        MarineMesh_ResponseValues(response,length);
+        BYTE* owner=F(BYTE*,response,0);
+        F(DWORD,owner,76)=0;
+        F(float,owner,84)=(float)MarineAngle_Sine(0.0f);
+        F(float,owner,80)=(float)MarineAngle_Cosine(F(float,owner,76));
+        double value=F(float,response,28);
+        F(float,F(void*,response,0),72)=(float)value;
+        MarineMesh_ResponseRange(F(BYTE*,response,0),value);
+        F(float,F(void*,response,0),64)=(float)((double)g_mc_650330/g_mc_725ecc);
+        F(float,F(void*,response,0),68)=(float)((double)F(float,response,4)/g_mc_725ecc);
+        F(float,F(void*,response,0),56)=(float)(((double)F(float,response,8)*g_mc_64c320)/g_mc_725ecc);
+        F(float,F(void*,response,0),60)=(float)((double)F(float,response,8)/g_mc_725ecc);
+        owner=F(BYTE*,response,0);
+        F(float,owner,92)=(float)(((double)F(float,owner,56)*g_mc_650804)/F(float,owner,64));
+        F(float,owner,96)=(float)(((double)F(float,owner,60)*g_mc_650804)/F(float,owner,68));
+        F(float,F(void*,response,0),108)=F(float,response,20);
+    }
+    F(BYTE*,self,84)=response;
+    double previous=F(float,response,28);
+    float x=F(float,&xBits,0),y=F(float,&yBits,0),z=F(float,&zBits,0);
+    F(float,response,12)=(float)x87_atan2(x,y);
+    double length=x87_sqrt(((double)z*z+(double)y*y)+(double)x*x);
+    MarineMesh_ResponseValues(response,length);
+    F(DWORD,response,32)=F(DWORD,response,28);
+    F(float,response,28)=(float)previous;
+    BYTE* owner=F(BYTE*,response,0);
+    F(float,owner,72)=(float)previous;
+    MarineMesh_ResponseRange(owner,previous);
 }
