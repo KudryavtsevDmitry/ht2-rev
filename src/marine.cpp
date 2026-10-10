@@ -1333,3 +1333,45 @@ extern "C" DWORD __fastcall MarineParticlePool_CanAdd(BYTE* self,void*)
 }
 extern "C" void __fastcall MarineParticlePool_SetFloor(BYTE* self,void*,DWORD height) { F(DWORD,self,28)=height; }
 extern "C" void __fastcall MarineParticlePool_SetLifetime(BYTE* self,void*,DWORD lifetime) { F(DWORD,self,32)=lifetime; }
+
+// Marine 4x4 matrix construction and composition.
+extern "C" DWORD* __cdecl MarineInit_Identity(DWORD*);
+extern "C" DWORD* __cdecl MarineMatrix_Zero(DWORD* out)
+{
+    for(unsigned i=0;i<16;++i) out[i]=0;
+    return out;
+}
+extern "C" DWORD* __cdecl MarineMatrix_RotateZ(DWORD* out,float angle)
+{
+    float cosine=(float)x87_cos(angle),sine=(float)x87_sin(angle);
+    DWORD matrix[16];MarineInit_Identity(matrix);
+    F(float,matrix,0)=cosine;F(float,matrix,4)=-sine;
+    F(float,matrix,16)=sine;F(float,matrix,20)=cosine;
+    for(unsigned i=0;i<16;++i) out[i]=matrix[i];
+    return out;
+}
+extern "C" DWORD* __cdecl MarineMatrix_Translate(DWORD* out,DWORD x,DWORD y,DWORD z)
+{
+    DWORD matrix[16];MarineInit_Identity(matrix);
+    matrix[12]=x;matrix[13]=y;matrix[14]=z;
+    for(unsigned i=0;i<16;++i) out[i]=matrix[i];
+    return out;
+}
+static __forceinline double MarineMatrix_Product(const float* right,const float* left)
+{
+    // FLD of the right operand precedes FMUL of the left, including signaling NaNs.
+    volatile double product=*right;
+    product=product*(*left);
+    return product;
+}
+extern "C" DWORD* __cdecl MarineMatrix_Multiply(DWORD* out,const float* right,const float* left)
+{
+    DWORD matrix[16];MarineMatrix_Zero(matrix);
+    for(unsigned row=0;row<4;++row) for(unsigned column=0;column<4;++column) {
+        double sum=(double)F(float,matrix,(row*4+column)*4);
+        for(unsigned k=0;k<4;++k) sum=MarineMatrix_Product(right+k*4+column,left+row*4+k)+sum;
+        F(float,matrix,(row*4+column)*4)=(float)sum;
+    }
+    for(unsigned i=0;i<16;++i) out[i]=matrix[i];
+    return out;
+}
