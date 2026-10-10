@@ -878655,6 +878655,7 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_MARINE
 FUN_613120 PROC
 
             mov EAX,DWORD PTR [$L_725e30]
@@ -878820,6 +878821,10 @@ $L_61326d::
             nop
             nop
 FUN_613120 ENDP
+ELSE
+EXTERN @MarineParticlePool_Render@20:PROC
+FUN_613120 TEXTEQU <@MarineParticlePool_Render@20>
+ENDIF
 ALIGN 16
 IFDEF ASM_MARINE
 FUN_613280 PROC
