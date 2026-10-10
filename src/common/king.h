@@ -96,7 +96,7 @@ ASM_PROC(FUN_5b6190)    // Gfx_EndScene
 ASM_PROC(FUN_5b7ce0)    // Gfx_HLine
 ASM_PROC(FUN_5b7f20)    // Gfx_VLine
 ASM_PROC(FUN_5b8980)    // Gfx_DrawImage
-ASM_PROC(FUN_5ea170)    // Gfx_DrawText
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // Gfx_DrawText
 ASM_PROC(FUN_5e9a10)    // Gfx_SaveTga
 ASM_PROC(FUN_5e9f00)    // Gfx_SaveScreenBmp
 ASM_PROC(FUN_5b6bf0)    // CSurface::Prepare
@@ -106,11 +106,11 @@ ASM_PROC(FUN_5b64c0)    // CSurface::GetState84
 ASM_PROC(FUN_5b64e0)    // CSurface::SetState84
 ASM_PROC(FUN_5b6330)    // Rect::Contains
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // list node: unlink
-ASM_PROC(FUN_5d8630)    // CWindow::Clear
-ASM_PROC(FUN_5d88c0)    // CWindow::Present
+extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")    // CWindow::Clear
+extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")    // CWindow::Present
 ASM_PROC(FUN_5d3460)    // ObjectContainer::DeleteAll
 ASM_PROC(FUN_5d3570)    // ObjectContainer::Add
-ASM_PROC(FUN_5d81c0)    // Video_SetMode
+extern "C" void FUN_5d81c0(); KING_ALIAS("_FUN_5d81c0", "_Dd_RequestMode")    // Video_SetMode
 ASM_PROC(FUN_5e8c60)    // Font_Load
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")    // Font::~Font
 extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")    // Ini_GetInt
@@ -493,7 +493,7 @@ typedef char PathBuffer[128];
 ASM_VAR(PathBuffer, g_pathBuf, $L_720c88)      // CGameApp::MakePath's result
 ASM_VAR(void* const, g_vtblCGameApp, $L_652664)
 
-ASM_PROC(FUN_5e4300)    // PathDir
+extern "C" void FUN_5e4300(); KING_ALIAS("_FUN_5e4300", "_DataPath_Set")    // PathDir
 
 // Splits the next word (separated by blanks and tabs) off *p, terminating it
 // in place, and advances *p; NULL when there is none.
@@ -553,7 +553,7 @@ inline BOOL King_PlayMovie(const char* name, int mode) { return Movie_Play(name,
 inline void King_LeaveGame() { CallC(FUN_511820); }
 
 ASM_PROC(FUN_5764f0)    // King_CheatKey
-ASM_PROC(FUN_5ef3d0)    // Sound_Find
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // Sound_Find
 ASM_PROC(FUN_5fdaf0)    // Sound::Play
 ASM_PROC(FUN_5bd710)    // Gfx_DrawBox
 ASM_PROC(FUN_530050)    // Controls::Update

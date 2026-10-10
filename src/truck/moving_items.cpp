@@ -194,8 +194,8 @@ ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
 ASM_PROC(FUN_4f1180)
 ASM_PROC(FUN_556a40)
 ASM_PROC(FUN_55f5f0)
-ASM_PROC(FUN_5ef3d0)    // a model by name
-ASM_PROC(FUN_5ef2b0)    // a key of a model (parent, name)
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
 ASM_PROC(FUN_52b030)
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 ASM_VAR(DWORD, g_702650, $L_702650)

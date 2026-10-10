@@ -17,7 +17,7 @@ extern "C" int __cdecl fflush(FILE* f);
 ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
 ASM_PROC(FUN_5da950)
 extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*);    // carphys.cpp
-ASM_PROC(FUN_5e1a10)    // set a switch
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5fdaf0)    // sound: play (volume, pitch)
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")    // query: constructor

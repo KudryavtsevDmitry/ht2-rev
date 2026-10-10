@@ -27,7 +27,7 @@ extern "C" void __fastcall Mass_Shares(float* self, void*, int wheels);
 extern "C" void __fastcall Car_SetView(BYTE* self, void*, int n);
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);
-ASM_PROC(FUN_5e1a10)    // set a switch
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 extern "C" float __fastcall Ramp_Position(BYTE* self, void*);   // carphys.cpp
 ASM_PROC(FUN_5014b0)
 ASM_PROC(FUN_501550)
@@ -712,7 +712,7 @@ extern "C" float __fastcall Car_557000(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
-ASM_PROC(FUN_5ef2b0)    // named object: find (parent, name)
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // named object: find (parent, name)
 ASM_PROC(FUN_4dde70)
 ASM_VAR(BYTE*, g_list6d20dc, $L_6d20dc)
 ASM_VAR(AsmLabel, g_6d2410, $L_6d2410)          // 1488-byte records by vehicle type

@@ -64,8 +64,8 @@ ASM_PROC(FUN_5f19b0)    // named object: constructor
 ASM_PROC(FUN_4c09d0)    // CRenderer::~CRenderer
 ASM_PROC(FUN_4ccf30)
 extern "C" BYTE* __fastcall SceneObj_Matrix1(void* self, void*, void* out);   // engine.cpp: its world matrix
-ASM_PROC(FUN_5e5370)    // vehicles: by id
-ASM_PROC(FUN_5e49d0)    // vehicle: release
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // vehicles: by id
+extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")    // vehicle: release
 extern "C" void FUN_5fd370(); KING_ALIAS("_FUN_5fd370", "@Sound_Construct@20")    // sound: constructor
 extern "C" void __cdecl Fx_Update4910(void* x);
 KING_ALIAS("_Fx_Update4910", "FUN_4c4910")
@@ -78,7 +78,7 @@ KING_ALIAS("_Fx_Find4e5bf5", "FUN_4e5bf5")
 extern "C" void __cdecl Fx_DefaultData(void* data);
 KING_ALIAS("_Fx_DefaultData", "FUN_5469e0")
 extern "C" int __cdecl Fx_Handle(int a);
-KING_ALIAS("_Fx_Handle", "FUN_5ef3d0")
+KING_ALIAS("_Fx_Handle", "_Objects_Find")
 
 // a COM method: this on the stack
 static int Com(void* obj, int offset, int a, int b)
@@ -1037,7 +1037,7 @@ BYTE* __fastcall CopySound_Construct(BYTE* s, void*, BYTE* src) { return M(s)->C
 
 struct Vec3Bits { DWORD x, y, z; };
 ASM_PROC(FUN_60aad0)    // error (code, format, file, line, date)
-ASM_PROC(FUN_5d9290)    // a model by name
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // a model by name
 ASM_PROC(FUN_603110)    // network: send (type, data, size)
 ASM_PROC(FUN_593720)
 ASM_PROC(FUN_57c490)
