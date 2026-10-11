@@ -37,11 +37,56 @@ KING_ALIAS("_Carat_5d3ab0", "FUN_5d3ab0")
 extern "C" void __cdecl Carat_Message(const char* text, int);
 KING_ALIAS("_Carat_Message", "FUN_5d2ba0")
 extern "C" int __fastcall Lights_Release(BYTE* self, void*, int a);   // aeffects.cpp
-ASM_PROC(FUN_50c010)
+extern "C" void FUN_50c010(); KING_ALIAS("_FUN_50c010", "@Screen_Grab@8")
 extern "C" void __fastcall CGameApp_SetMousePos(void* app, void*, int x, int y);   // gameapp.cpp
 ASM_PROC(FUN_5d85f0)    // window: its rectangle
 extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
 ASM_PROC(FUN_5bd5e0)
+ASM_PROC(FUN_5ffb40)
+ASM_PROC(FUN_5ba4a0)
+ASM_PROC(FUN_5bae30)
+ASM_PROC(FUN_5d4200)
+extern "C" void FUN_5d41e0(); KING_ALIAS("_FUN_5d41e0", "_Dd_WaitVsync")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5bf820(); KING_ALIAS("_FUN_5bf820", "@Button_ConstructId@20")
+extern "C" void FUN_5bf750(); KING_ALIAS("_FUN_5bf750", "@Button_Construct@16")
+extern "C" void FUN_603c70(); KING_ALIAS("_FUN_603c70", "_Ini_WriteInt")
+ASM_PROC(FUN_5d8710)
+extern "C" void FUN_5c1260(); KING_ALIAS("_FUN_5c1260", "@Avi_Init@8")
+ASM_PROC(FUN_5c1b10)
+ASM_PROC(FUN_5d8850)
+ASM_VAR(BYTE*, g_696ca0, $L_696ca0)
+ASM_VAR(int, g_screenW, $L_696850)
+ASM_VAR(int, g_screenH, $L_696854)
+ASM_VAR(AsmLabel, s_676248, $L_676248)
+ASM_VAR(AsmLabel, s_676238, $L_676238)
+ASM_VAR(AsmLabel, g_vtbl64dc1c, $L_64dc1c)
+ASM_VAR(AsmLabel, g_6ce408, $L_6ce408)
+ASM_VAR(AsmLabel, g_6ce3b8, $L_6ce3b8)
+ASM_VAR(AsmLabel, g_6ceb38, $L_6ceb38)
+ASM_VAR(AsmLabel, g_6ce988, $L_6ce988)
+ASM_VAR(AsmLabel, g_6ce430, $L_6ce430)
+ASM_VAR(AsmLabel, g_vtbl64dbe8, $L_64dbe8)
+ASM_VAR(AsmLabel, g_vtbl64de50, $L_64de50)
+ASM_VAR(AsmLabel, g_vtbl64de10, $L_64de10)
+ASM_VAR(AsmLabel, g_vtbl64e008, $L_64e008)
+ASM_VAR(AsmLabel, g_vtbl64dfc8, $L_64dfc8)
+ASM_VAR(const char*, g_iniPath, $L_696868)
+ASM_VAR(AsmLabel, s_676e94, $L_676e94)
+ASM_VAR(AsmLabel, s_676e9c, $L_676e9c)
+ASM_VAR(AsmLabel, s_676eb4, $L_676eb4)
+ASM_VAR(AsmLabel, s_672998, $L_672998)
+ASM_VAR(AsmLabel, s_672994, $L_672994)
+ASM_VAR(AsmLabel, s_6729a8, $L_6729a8)
+ASM_VAR(AsmLabel, g_vtbl64e510, $L_64e510)
+ASM_VAR(AsmLabel, g_vtbl64e4d0, $L_64e4d0)
+ASM_VAR(AsmLabel, g_vtbl64e598, $L_64e598)
+ASM_VAR(AsmLabel, g_vtbl64e558, $L_64e558)
+ASM_VAR(AsmLabel, g_vtbl64e620, $L_64e620)
+ASM_VAR(AsmLabel, g_vtbl64e5e0, $L_64e5e0)
+ASM_VAR(AsmLabel, g_720938, $L_720938)
+ASM_VAR(AsmLabel, g_vtbl64eb58, $L_64eb58)
 ASM_PROC(FUN_5c13a0)    // avi: open
 ASM_PROC(FUN_5d89e0)
 
@@ -948,4 +993,156 @@ extern "C" int __cdecl Movie_Play(const char* name, int mode)
     }
     Screen_OpenMovie(g_6cec88, 0, (int)buf, mode);
     return 1;
+}
+
+// --- functions with exception frames (the frames only rethrow)
+
+static void Screen_DestroyWithChild(BYTE* self, void* vtbl, void* vtbl64)
+{
+    F(void*, self, 0) = vtbl;
+    F(void*, self, 64) = vtbl64;
+    BYTE* c = F(BYTE*, self, 368);
+    if (c)
+        CallVirt(c, 0, 1);
+    CallThis(FUN_5d89e0, self);
+}
+
+typedef void (*StreamFn)();
+static StreamFn StreamRead(BYTE* s) { return F(StreamFn, F(BYTE*, s, 0), 12); }
+
+static BYTE* Image_New(int w, int h, int bpp)
+{
+    BYTE* o = (BYTE*)operator new(84);
+    return o ? CallThis<BYTE*>(FUN_5ba4a0, o, w, h, bpp) : 0;
+}
+
+extern "C" {
+
+// [FUN_50c010] grabs the screen into a new 16-bit image at *self
+void __fastcall Screen_Grab(BYTE** self, void*)
+{
+    CallVirt(g_696ca0, 32);
+    if (*self)
+        CallVirt(*self, 0, 1);
+    int w = g_screenW;
+    int h = g_screenH;
+    *self = Image_New(w, h, 2);
+    int pitch;
+    BYTE* src = CallC<BYTE*>(FUN_5d4200, &pitch);
+    BYTE* dst = F(BYTE*, *self, 8);
+    for (int y = h; y > 0; y--) {
+        memcpy(dst, src, w * 2);
+        dst += w * 2;
+        src += pitch;
+    }
+    CallC(FUN_5d41e0, src);
+    CallThis(FUN_5bae30, *self, 0);
+}
+
+// [FUN_50c300] reads an 8-bit image (w, h, then pixels) from the stream s
+BYTE* __cdecl Image_ReadStream(BYTE* s, BYTE* hdr)
+{
+    memset(hdr, 0, 100);
+    DWORD got;
+    CallStd(StreamRead(s), s, hdr, 100, &got);
+    BYTE* img = Image_New(hdr[0], hdr[1], 1);
+    CallStd(StreamRead(s), s, F(BYTE*, img, 8), hdr[0] * hdr[1], &got);
+    return img;
+}
+
+// [FUN_50c930] a new 12-byte record on the object of this name (depends on the mode)
+DWORD* __cdecl Shell_NewObjRef()
+{
+    int mode = CallC<int>(FUN_568fd0);
+    DWORD* r = (DWORD*)operator new(12);
+    if (!r)
+        return 0;
+    r[0] = CallC<DWORD>(FUN_5ef3d0, mode == 2 ? (const char*)s_676248 : (const char*)s_676238);
+    r[1] = 0;
+    r[2] = 0;
+    return r;
+}
+
+// [FUN_513680] a new 288-byte screen with four tables
+BYTE* __stdcall Shell_NewScreenA(int a, int b)
+{
+    BYTE* o = (BYTE*)operator new(288);
+    if (o) {
+        CallThis(FUN_5bf820, o, a, 4096, b);
+        F(void*, o, 0) = g_vtbl64dc1c;
+    }
+    CallThis(FUN_5bd5a0, o + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, o + 104, (void*)g_6ce3b8);
+    CallThis(FUN_5bd5a0, o + 140, (void*)g_6ceb38);
+    CallThis(FUN_5bd5a0, o + 176, (void*)g_6ce988);
+    CallVirt(o, 20);
+    F(int, o, 52) = F(int, o, 44) + 180;
+    return o;
+}
+
+// [FUN_517e00]
+BYTE* __cdecl Shell_NewScreenB(int a)
+{
+    BYTE* o = (BYTE*)operator new(288);
+    if (o) {
+        CallThis(FUN_5bf750, o, a, 65536);
+        F(void*, o, 0) = g_vtbl64dbe8;
+    }
+    for (int k = 68; k <= 176; k += 36)
+        CallThis(FUN_5bd5a0, o + k, (void*)g_6ce430);
+    return o;
+}
+
+// [FUN_5154c0] destructor
+void __fastcall Shell5154c0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64de50;
+    F(void*, self, 64) = g_vtbl64de10;
+    if (F(int, self, 1344)) {
+        CallThis(FUN_5ffb20, self);
+        CallThis(FUN_5ffb40, self);
+        F(int, self, 1344) = 0;
+    }
+    g_6cec6c = 0;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_517d40] destructor: saves the settings to the ini file
+void __fastcall Shell517d40_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64e008;
+    F(void*, self, 64) = g_vtbl64dfc8;
+    const char* ini = g_iniPath;
+    CallC(FUN_603c70, (const char*)s_672998, (const char*)s_676e94, (int)F(short, self, 390), ini);
+    CallC(FUN_603c70, (const char*)s_672998, (const char*)s_676e9c, (int)F(short, self, 388), ini);
+    WritePrivateProfileStringA(s_672998, s_676eb4, F(short, self, 394) ? s_672994 : s_6729a8, ini);
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_51e000]
+void __fastcall Shell51e000_Destroy(BYTE* self, void*) { Screen_DestroyWithChild(self, g_vtbl64e510, g_vtbl64e4d0); }
+
+// [FUN_51e730]
+void __fastcall Shell51e730_Destroy(BYTE* self, void*) { Screen_DestroyWithChild(self, g_vtbl64e598, g_vtbl64e558); }
+
+// [FUN_51eca0]
+void __fastcall Shell51eca0_Destroy(BYTE* self, void*) { Screen_DestroyWithChild(self, g_vtbl64e620, g_vtbl64e5e0); }
+
+// [FUN_528c20]
+BYTE* __fastcall Shell528c20_Construct(BYTE* self, void*, int a)
+{
+    CallThis(FUN_5d8710, self, a, (void*)g_720938, 0);
+    CallThis(FUN_5c1260, self + 56);
+    F(void*, self, 0) = g_vtbl64eb58;
+    return self;
+}
+
+// [FUN_528fc0]
+void __fastcall Shell528fc0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64eb58;
+    CallThis(FUN_5c1b10, self ? self + 56 : 0);
+    CallThis(FUN_5d8850, self);
+}
+
 }
