@@ -1065,6 +1065,7 @@ PUBLIC $L_64c59c, $L_64c5f0, $L_64c604, $L_64d2f4
 PUBLIC $L_683cb8, $L_723d8c, $L_723d98
 PUBLIC $L_725d40, $L_725d44
 PUBLIC $L_64bf4c
+PUBLIC $L_66f62b
 
 ;===================================
 _TEXT SEGMENT
@@ -110643,6 +110644,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_443860 PROC
 
             push EBP
@@ -110801,6 +110804,10 @@ $L_4439ac::
             pop EBP
             ret 4
 FUN_443860 ENDP
+ELSE
+EXTERN @Order144_CopyConstruct@12:PROC
+FUN_443860 TEXTEQU <@Order144_CopyConstruct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -188570,6 +188577,8 @@ EXTERN _MakeHeap12:PROC
 FUN_46b3f0 TEXTEQU <_MakeHeap12>
 ENDIF
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46b460 PROC
 
             push -1
@@ -188856,6 +188865,10 @@ $L_46b696::
             add ESP,20
             ret 
 FUN_46b460 ENDP
+ELSE
+EXTERN _Names_AdjustHeap:PROC
+FUN_46b460 TEXTEQU <_Names_AdjustHeap>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -191694,6 +191707,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46ca00 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -191924,6 +191939,10 @@ $L_46cbb0::
             add ESP,12
             ret 
 FUN_46ca00 ENDP
+ELSE
+EXTERN _Names_PushHeap:PROC
+FUN_46ca00 TEXTEQU <_Names_PushHeap>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -194243,6 +194262,8 @@ FUN_46dc50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46dee0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -194465,6 +194486,10 @@ $L_46e0fe::
             inc EDI
             jmp $L_46e084
 FUN_46dee0 ENDP
+ELSE
+EXTERN _Net_AddPlayerStates:PROC
+FUN_46dee0 TEXTEQU <_Net_AddPlayerStates>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -204658,6 +204683,8 @@ FUN_4736d0 TEXTEQU <_Player_ProfitOf>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4736e0 PROC
 
             push -1
@@ -204861,6 +204888,10 @@ $L_4738aa::
             add ESP,24
             ret 
 FUN_4736e0 ENDP
+ELSE
+EXTERN _Recs40_Swap:PROC
+FUN_4736e0 TEXTEQU <_Recs40_Swap>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -213983,6 +214014,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478ac0 PROC
 
             push -1
@@ -214171,6 +214204,10 @@ $L_478c6f::
             inc EDI
             jmp $L_478c0f
 FUN_478ac0 ENDP
+ELSE
+EXTERN @Orders144_Destroy@8:PROC
+FUN_478ac0 TEXTEQU <@Orders144_Destroy@8>
+ENDIF
           BYTE 090H
 $L_478c80 PROC
 

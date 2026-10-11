@@ -1326,3 +1326,41 @@ void __cdecl Player_ClearOrderLists(BYTE* p)
 }
 
 }
+
+ASM_PROC(FUN_479370)    // vector of 40-byte records: assignment
+extern "C" void FUN_47acd0(); KING_ALIAS("_FUN_47acd0", "_Alloc40_Copy@12")    // allocate n 40-byte records and copy (stdcall)
+extern "C" void FUN_47e1a0(); KING_ALIAS("_FUN_47e1a0", "_Copy40B")    // copy 40-byte records
+extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")    // uninitialized copy of 40-byte records
+
+extern "C" {
+
+// [FUN_4736e0] swaps two vectors of 40-byte records by copying
+void __cdecl Recs40_Swap(BYTE** a, BYTE** b)
+{
+    BYTE* t[3] = {0, 0, 0};
+    CallThis(FUN_479370, t, a);
+    CallThis(FUN_479370, a, b);
+    if ((BYTE**)t != b) {
+        unsigned n = (t[1] - t[0]) / 40;
+        if (n > (unsigned)((b[2] - b[0]) / 40)) {
+            BYTE* p = CallThis<BYTE*>(FUN_47acd0, b, n, t[0], t[1]);
+            int cap = (b[2] - b[0]) / 40;
+            if (cap)
+                CallC(FUN_44b4a0, b[0], cap * 40);
+            b[0] = p;
+            b[2] = p + n * 40;
+        } else if ((unsigned)((b[1] - b[0]) / 40) >= n) {
+            CallC(FUN_47e1a0, t[0], t[1], b[0], b, 0);
+        } else {
+            int have = (b[1] - b[0]) / 40;
+            CallC(FUN_47e1a0, t[0], t[0] + have * 40, b[0], b, 0);
+            CallC(FUN_47d330, t[0] + ((b[1] - b[0]) / 40) * 40, t[1], b[1], b);
+        }
+        b[1] = b[0] + n * 40;
+    }
+    int cap = (t[2] - t[0]) / 40;
+    if (cap)
+        CallC(FUN_44b4a0, t[0], cap * 40);
+}
+
+}
