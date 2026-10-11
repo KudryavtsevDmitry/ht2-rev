@@ -1039,6 +1039,7 @@ PUBLIC $L_64bf24, $L_64bf38, $L_670408, $L_670410, $L_670430
 PUBLIC $L_67055c
 PUBLIC $L_683538, $L_721754
 PUBLIC $L_650340, $L_6503e4, $L_67cfc0, $L_67d04c
+PUBLIC $L_64c0b0
 
 ;===================================
 _TEXT SEGMENT
@@ -292931,6 +292932,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a4540 PROC
 
             push EBP
@@ -293051,6 +293054,10 @@ $L_4a4625::
             pop EBP
             ret 12
 FUN_4a4540 ENDP
+ELSE
+EXTERN _Vec12_AllocCopyS@12:PROC
+FUN_4a4540 TEXTEQU <_Vec12_AllocCopyS@12>
+ENDIF
 $L_4a4659 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -305742,6 +305749,8 @@ FUN_4aadc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aaed0 PROC
 
             push EBP
@@ -305863,6 +305872,10 @@ $L_4aafb8::
             pop EBP
             ret 12
 FUN_4aaed0 ENDP
+ELSE
+EXTERN _Vec44_AllocCopy@12:PROC
+FUN_4aaed0 TEXTEQU <_Vec44_AllocCopy@12>
+ENDIF
 $L_4aafec PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -315123,6 +315136,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4afe80 PROC
 
             push -1
@@ -315239,6 +315254,10 @@ $L_4aff79::
             add ESP,20
             ret 4
 FUN_4afe80 ENDP
+ELSE
+EXTERN _ValueList_MakeNode@4:PROC
+FUN_4afe80 TEXTEQU <_ValueList_MakeNode@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -320673,6 +320692,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b2880 PROC
 
             push -1
@@ -320780,6 +320801,10 @@ $L_4b2950::
             add ESP,16
             ret 
 FUN_4b2880 ENDP
+ELSE
+EXTERN _Sch_MakeNumber3:PROC
+FUN_4b2880 TEXTEQU <_Sch_MakeNumber3>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -326363,6 +326388,8 @@ $L_4b58a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b58c0 PROC
 
             push -1
@@ -326465,6 +326492,10 @@ $L_4b5975::
             add ESP,16
             ret 
 FUN_4b58c0 ENDP
+ELSE
+EXTERN @SchState_Construct@8:PROC
+FUN_4b58c0 TEXTEQU <@SchState_Construct@8>
+ENDIF
           BYTE 090H
 $L_4b59d0 PROC
 

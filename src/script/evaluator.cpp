@@ -22,7 +22,9 @@ ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
 ASM_PROC(FUN_4ab570)    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
-ASM_PROC(FUN_4afe80)    // list: a new node holding x
+extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
+extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
+ASM_PROC(FUN_4abd20)
 ASM_PROC(FUN_4a4950)
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 ASM_VAR(AsmLabel, s_errNotSymbolList, $L_67115c)
@@ -629,7 +631,7 @@ ASM_PROC(FUN_4a59f0)    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 ASM_PROC(FUN_4a5800)
 ASM_PROC(FUN_4a36c0)    // a value's destructor
-ASM_PROC(FUN_4a4540)    // vector<value>: allocate and copy (n, first, last)
+extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // vector<value>: allocate and copy (n, first, last)
 extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const SchValue* from);
 KING_ALIAS("@SchValue_Assign@12", "@Str_Assign@12")
 extern "C" BYTE* __cdecl UninitCopyStrRefs(const BYTE* first, const BYTE* last, BYTE* dest);  // aistl.cpp
@@ -1307,6 +1309,56 @@ DWORD* __fastcall SchValue_CopyImmediate(DWORD* self, void*, const DWORD* v)
 DWORD* __fastcall SchIdentifier_From(DWORD* self, void*, BYTE* o)
 {
     return SchHandle_Take(self, o, 9, s_tIdentifier);
+}
+
+}
+
+static void* SchAlloc(unsigned bytes)
+{
+    return bytes ? CallC<void*>(FUN_44b740, bytes) : 0;
+}
+
+extern "C" {
+
+// [FUN_4a4540] n 12-byte records copied from [first, last)
+BYTE* __stdcall Vec12_AllocCopyS(unsigned n, const BYTE* first, const BYTE* last)
+{
+    BYTE* p = (BYTE*)SchAlloc(n * 12);
+    CallC(FUN_467780, first, last, p, n);
+    return p;
+}
+
+// [FUN_4aaed0] n 44-byte records copied from [first, last)
+BYTE* __stdcall Vec44_AllocCopy(unsigned n, const BYTE* first, const BYTE* last)
+{
+    BYTE* p = (BYTE*)SchAlloc(n * 44);
+    CallC(FUN_4abd20, first, last, p, n);
+    return p;
+}
+
+// [FUN_4afe80] a 24-byte list node holding a copy of the value v
+BYTE* __stdcall ValueList_MakeNode(const DWORD* v)
+{
+    BYTE* n = CallC<BYTE*>(FUN_44b740, 24);
+    DWORD* d = (DWORD*)(n + 8);
+    if (!d)
+        return n;
+    if (v[2] & 0x10000) {
+        d[2] = v[2];
+        d[0] = v[0];
+        d[1] = v[1];
+    } else {
+        d[1] = 0;
+        if (v[0]) {
+            d[0] = v[0];
+            d[2] = v[2];
+            F(int, (BYTE*)v[0], 4) = F(int, (BYTE*)v[0], 4) + 1;
+        } else {
+            d[0] = 0;
+            d[2] = 0;
+        }
+    }
+    return n;
 }
 
 }
