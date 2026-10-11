@@ -20,6 +20,19 @@ extern "C" void __cdecl Com_Release(BYTE* com);                                /
 extern "C" void FUN_50bd10(); KING_ALIAS("_FUN_50bd10", "_Carat_ReleaseLight")    // pops a light (renderer)
 ASM_PROC(FUN_5b6e00)
 ASM_PROC(FUN_5b22f0)
+ASM_PROC(FUN_5b3a40)
+ASM_PROC(FUN_5b42c0)
+ASM_PROC(FUN_6037e0)
+ASM_PROC(FUN_5ad780)
+ASM_PROC(FUN_5ad970)
+ASM_VAR(AsmLabel, g_dtor5baa30, $L_5baa30)
+ASM_VAR(double, g_500ms, $L_64b860)
+ASM_VAR(float, g_255f, $L_64c458)
+ASM_VAR(float, g_2pow24, $L_651768)
+ASM_VAR(float, g_fogA, $L_67f0e0)
+ASM_VAR(float, g_fogB, $L_67f0e4)
+ASM_VAR(double, g_eps001, $L_64b658)
+ASM_VAR(double, g_one64b670, $L_64b670)
 ASM_PROC(FUN_5b2950)
 ASM_PROC(FUN_5b1020)
 ASM_PROC(FUN_5b0810)
@@ -841,6 +854,107 @@ int __fastcall Bitmap_SetPixels(BYTE* self, void*, BYTE* data, int owned)
 int __fastcall Bitmap_Bytes(BYTE* self, void*)
 {
     return F(int, self, 12);
+}
+
+}
+
+// --- lights, fog and frame timing
+
+typedef void (*RFn)();
+
+static double Lights_Sum(BYTE* self, void (*fn)(), int a, int b, bool two)
+{
+    double sum = 0.0;
+    BYTE* l = self + 6224 + (F(int, self, 8240) - 1) * 80;
+    for (int n = F(int, self, 8240); n > 0; n--, l -= 80)
+        sum = (two ? CallThis<double>(fn, l, a, b, 0, 0) : CallThis<double>(fn, l, a, 0, 0)) + sum;
+    return sum;
+}
+
+extern "C" {
+
+// [FUN_5b3a00] draws with the 5-argument path when flag 32 is set
+int __stdcall Draw_Dispatch(int a, DWORD flags, int b, int c, int d)
+{
+    if (flags & 32)
+        return CallStd<int>(FUN_5b3a40, a, flags, b, c, d);
+    return CallStd<int>(FUN_5b42c0, a, flags, b);
+}
+
+// [FUN_5bac70] destroys the six 188-byte records
+void __fastcall Records188x6_Destroy(BYTE* self, void*)
+{
+    for (int i = 5; i >= 0; i--)
+        CallThis((RFn)(void*)g_dtor5baa30, self + i * 188);
+}
+
+// [FUN_5b6190] waits up to 500 ms while the device is busy
+void __cdecl Device_WaitIdle()
+{
+    BYTE* d = g_device;
+    if (!d)
+        return;
+    double t = CallC<double>(FUN_6037e0);
+    d = g_device;
+    if (!CallStd<int>(F(RFn, F(BYTE*, d, 0), 24), d))
+        return;
+    double deadline = t + g_500ms;
+    while (!(CallC<double>(FUN_6037e0) >= deadline)) {
+        d = g_device;
+        if (!CallStd<int>(F(RFn, F(BYTE*, d, 0), 24), d))
+            break;
+    }
+}
+
+// [FUN_5b1870] the alpha bytes of n vertices: dot(v, m column 0) + m[10], times 255
+void __cdecl Vertices_Alpha(DWORD* dst, const BYTE* src, unsigned stride, int n, const float* m)
+{
+    stride &= ~3u;
+    for (; n > 0; n--, src += stride, dst++) {
+        const float* v = (const float*)src;
+        double a = (double)v[0] * m[1] + (double)v[2] * m[7] + (double)m[4] * v[1] + m[10];
+        *dst = (DWORD)(int)(a * g_255f) << 24;
+    }
+}
+
+// [FUN_5ba120] the fog range: near a, far b, mode c
+void __cdecl Fog_SetRange(float a, float b, int c)
+{
+    g_fogNear = c;
+    g_fogA = a;
+    g_fogB = b;
+    int na = (int)((double)g_2pow24 / a);
+    g_fogFar = na >> 8;
+    int nb = (int)((double)g_2pow24 / b);
+    g_702e88 = nb >> 8;
+}
+
+// [FUN_5b4f70] whether the point p is in front of the current clip plane
+int __fastcall Clip_InFront(BYTE* self, void*, const float* p)
+{
+    const float* pl = (const float*)(self + 3236 + F(int, self, 8224) * 48);
+    double d = (double)pl[2] * p[2] + (double)pl[1] * p[1] + (double)pl[0] * p[0] + p[3];
+    return d > g_eps001 ? 1 : 0;
+}
+
+// [FUN_5adaf0] the light at (a, b): t + (1 - t) * the sum of the lights, at most 1
+double __fastcall Lights_At(BYTE* self, void*, int a, int b, double t)
+{
+    double sum = Lights_Sum(self, FUN_5ad780, a, b, true);
+    double r = (g_one64b670 - t) * sum + t;
+    if (r > g_one64b670)
+        r = g_one64b670;
+    return r;
+}
+
+// [FUN_5adb80] the same for one point
+double __fastcall Lights_AtPoint(BYTE* self, void*, int a, double t)
+{
+    double sum = Lights_Sum(self, FUN_5ad970, a, 0, false);
+    double r = (g_one64b670 - t) * sum + t;
+    if (r > g_one64b670)
+        r = g_one64b670;
+    return r;
 }
 
 }
