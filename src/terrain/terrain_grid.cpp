@@ -160,3 +160,52 @@ extern "C" double __fastcall TGridCamera_NodePriority(BYTE* s, void*, BYTE* node
         return (double)F(float, node, 20) / d;
     return (double)F(float, node, 20) * 0.5f / d;
 }
+
+struct Vec3G { float x, y, z; };
+extern "C" void FUN_608ea0(); KING_ALIAS("_FUN_608ea0", "@Tile_Normal@20")
+extern "C" void FUN_608e70(); KING_ALIAS("_FUN_608e70", "@Tile_Height@16")
+ASM_VAR(Vec3G, g_tileNormal724378, $L_724378)
+
+// the height table of the tile a grid point lies in (as in TGrid_Height)
+static BYTE* TGrid_TableAt(BYTE* self, DWORD x, DWORD y)
+{
+    BYTE** t = F(BYTE**, self, 40192);
+    DWORD tx = x / 257, ty = y / 257;
+    if (tx == 3 || ty == 3)
+        return t[1];
+    if (2 - tx != ty)
+        return t[2];
+    if (tx == 0)
+        return ty == 2 && 771 - y <= 257 - x ? t[1] : t[0];
+    if (tx == 2 && ty == 0)
+        return 771 - x <= 257 - y ? t[1] : t[0];
+    return t[0];
+}
+
+// [FUN_608c70] turns a grid point {x, y} in place into its node: world x/y, height, normal, the scaled offsets
+extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, void*)
+{
+    DWORD X = ((DWORD*)p)[0], Y = ((DWORD*)p)[1];
+    double fx = (double)(__int64)X;
+    float xf = (float)fx;
+    double x1 = fx - F(float, self, 40184);
+    float a = (float)(x1 * 0.125f);
+    double fy = (double)(__int64)Y;
+    float yf = (float)fy;
+    double y1 = fy - F(float, self, 40188);
+    float y1f = (float)y1;
+    float b = (float)(y1 * 0.125f);
+    float c = (float)(x1 * 0.3333333432674408f);
+    float d = (float)((double)y1f * 0.3333333432674408f);
+    CallThis(FUN_608ea0, TGrid_TableAt(self, X, Y), X, Y, &g_tileNormal724378);
+    double h = CallThis<double>(FUN_608e70, TGrid_TableAt(self, X, Y), X, Y);
+    p[0] = (float)((double)xf * F(float, self, 40152) + F(float, self, 40136));
+    p[1] = (float)((double)yf * F(float, self, 40156) + F(float, self, 40148));
+    p[2] = (float)h;
+    *(Vec3G*)(p + 3) = g_tileNormal724378;
+    p[6] = a;
+    p[7] = b;
+    p[8] = c;
+    p[9] = d;
+    return p;
+}

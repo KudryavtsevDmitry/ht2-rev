@@ -268,3 +268,89 @@ extern "C" double __fastcall GridCamera_NodePriority(BYTE* s,void*,BYTE* node)
         return base;
     return base*0.5f;
 }
+
+#include <mmsystem.h>
+ASM_PROC(FUN_60be40)
+extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD now);
+extern "C" void __fastcall MarineTask_ClearRegistration(BYTE* self, void*);
+extern "C" void __fastcall MarineTask_SetFirstBounds(BYTE* self, void*, float a, float b);
+extern "C" void __fastcall MarineTask_SetSecondBounds(BYTE* self, void*, float a, float b);
+ASM_VAR(int, g_doneCount725d28, $L_725d28)
+typedef BYTE* DoneList[500];
+ASM_VAR(DoneList, g_done725558, $L_725558)
+
+// [FUN_60c2b0] the grid's frame: transitions, refinement, finished transitions freed, the points' bounds, the triangles drawn
+extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*)
+{
+    F(DWORD,s,48)=timeGetTime();
+    if(F(int,s,28)) CallThis(FUN_60be40,s);
+    if(F(int,s,24)) F(int,s,24)=GridMesh_Refine50(s,0);
+    BYTE* out=F(BYTE*,s,4);
+    CallVirt(out,12);
+    if(BYTE* e=F(BYTE*,s,44)) {
+        do {
+            if(MarineTransition_Advance(e,0,F(DWORD,s,48))&&(unsigned)g_doneCount725d28<500)
+                g_done725558[g_doneCount725d28++]=e;
+            e=F(BYTE*,e,0);
+        } while(e!=F(BYTE*,s,44));
+        while(g_doneCount725d28) {
+            e=g_done725558[--g_doneCount725d28];
+            if(!e) break;
+            BYTE* head=F(BYTE*,s,44);
+            if(F(BYTE*,head,0)==e&&F(BYTE*,head,4)==e) {
+                if(head==e) F(BYTE*,s,44)=0;
+                else {
+                    F(BYTE*,head,0)=head;
+                    head=F(BYTE*,s,44);
+                    F(BYTE*,head,4)=F(BYTE*,head,0);
+                }
+            } else {
+                if(head==e) F(BYTE*,s,44)=F(BYTE*,e,0);
+                F(BYTE*,F(BYTE*,e,0),4)=F(BYTE*,e,4);
+                F(BYTE*,F(BYTE*,e,4),0)=F(BYTE*,e,0);
+            }
+            MarineTask_ClearRegistration(e,0);
+            operator delete(e);
+        }
+    }
+    CallVirt(out,16,F(int,s,16));
+    F(int,out,96)=F(WORD,s,40);
+    if(F(int,out,40116)) {
+        F(int,out,40116)=0;
+        for(unsigned i=0;i<F(WORD,s,40);i++) {
+            BYTE* rec=F(BYTE*,s,12)+i*16;
+            double x=(double)(__int64)F(DWORD,rec,8)-F(float,out,40184);
+            float a=(float)(x*0.125f);
+            double y=(double)(__int64)F(DWORD,rec,12)-F(float,out,40188);
+            float yf=(float)y;
+            float b=(float)(y*0.125f);
+            double c=x*0.3333333432674408f;
+            float cf=(float)c;
+            float d=(float)((double)yf*0.3333333432674408f);
+            BYTE* pt=F(BYTE*,s,16)+i*40;
+            F(float,pt,24)=a;
+            F(float,pt,28)=b;
+            F(float,pt,32)=(float)c;
+            F(float,pt,36)=d;
+            if(BYTE* t=F(BYTE*,F(BYTE*,s,12)+i*16,4)) {
+                MarineTask_SetFirstBounds(t,0,a,b);
+                MarineTask_SetSecondBounds(F(BYTE*,F(BYTE*,s,12)+i*16,4),0,cf,d);
+            }
+        }
+    }
+    BYTE** lists=F(BYTE**,s,36);
+    BYTE* n=lists[0]?lists[0]:lists[1];
+    while(n) {
+        CallVirt(out,20,(int)*F(WORD*,n,16),(int)*F(WORD*,n,20),(int)*F(WORD*,n,24),n);
+        lists=F(BYTE**,s,36);
+        if(lists[0]&&n+4==F(BYTE*,lists[0],8))
+            n=lists[1];
+        else {
+            if(lists[1]&&n+4==F(BYTE*,lists[1],8)) break;
+            n=F(BYTE*,n,4);
+            if(!n) break;
+            n-=4;
+        }
+    }
+    return 1;
+}
