@@ -413,3 +413,29 @@ void __fastcall Body593040_Destroy(BYTE* self, void*)
 }
 
 }
+
+ASM_PROC(FUN_591c30)
+ASM_PROC(FUN_592350)
+ASM_PROC(FUN_5924d0)
+
+extern "C" {
+
+// [FUN_5928d0] dispatches on the kinds (+392: 1 or 2) of the two bodies a
+// and b; a kind-1 first body with a kind-2 second is handled swapped
+int __cdecl Bodies_Pair(BYTE* a, int a1, int a2, BYTE* b, int b1, int b2, int x)
+{
+    if (!a || !b)
+        return 0;
+    int ka = F(int, a, 392), kb = F(int, b, 392);
+    if (ka == 2 && kb == 2)
+        return CallC<int>(FUN_591c30, a, a1, a2, b, b1, b2, x);
+    if (ka == 1 && kb == 1)
+        return CallC<int>(FUN_592350, a, a1, a2, b, b1, b2, x);
+    if (ka == 2 && kb == 1)
+        return CallC<int>(FUN_5924d0, a, a1, a2, b, b1, b2, x);
+    if (kb == 2 && ka == 1)
+        return CallC<int>(FUN_5924d0, b, b1, b2, a, a1, a2, x);
+    return 0;
+}
+
+}

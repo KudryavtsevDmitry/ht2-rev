@@ -256,3 +256,53 @@ void __fastcall Terrain619ae0_Destroy(BYTE* self, void*)
 }
 
 }
+
+ASM_PROC(FUN_60c2b0)
+ASM_PROC(FUN_619c20)
+ASM_PROC(FUN_619850)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // reports an error code with file, line and date
+extern "C" void FUN_617100(); KING_ALIAS("_FUN_617100", "@Decals_Reset16@8")
+ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
+extern "C" __declspec(dllimport) DWORD __stdcall timeGetTime(void);
+
+extern "C" {
+
+// [FUN_615670] per-frame update of a terrain object and its five parts
+void __fastcall Terrain615670_Update(BYTE** self, void*, int frame)
+{
+    if (frame == F(int, F(BYTE*, g_6cec6c, 1356), 464)) {
+        F(DWORD, self[0], 104) = timeGetTime();
+        CallThis(FUN_60c2b0, self[0]);
+    }
+    CallVirt(F(BYTE*, self[0], 4), 24, self[27], frame);
+    BYTE** p = self + 20;
+    if (p[0] && p[1] && p[2] && p[3] && p[4]) {
+        BYTE* parts[6] = {p[1], p[2], p[3], p[4], p[5], 0};
+        CallThis(FUN_619c20, p[0], parts);
+        for (int i = 1; i <= 5; i++)
+            CallThis(FUN_619850, p[i], frame);
+    }
+}
+
+// [FUN_616770] sets the three corner records of the mesh (n must be 3)
+void __fastcall Terrain616770_SetCorners(BYTE** self, void*, BYTE** c, int n)
+{
+    BYTE* m = F(BYTE*, self[0], 4);
+    if (n == 3 && c[0] && c[2]) {
+        F(BYTE*, m, 40104) = c[0];
+        F(BYTE*, m, 40108) = c[1];
+        F(BYTE*, m, 40112) = c[2];
+        F(int, F(BYTE*, m, 40104), 48) = 1;
+        F(int, F(BYTE*, m, 40112), 48) = 0;
+    } else {
+        CallC(FUN_60aad0, 2289444626u, " File = %s, Line = #%ld, Date = %s ",
+              "C:\\Nek\\VRAPPLVS\\terrain\\TMesh.inl", 308, "Jan 16 2003");
+        F(BYTE*, m, 40104) = 0;
+        F(BYTE*, m, 40112) = 0;
+    }
+    if (self[21] && self[22] && self[23] && self[24] && self[25])
+        for (int i = 21; i <= 25; i++)
+            CallThis(FUN_617100, self[i]);
+}
+
+}

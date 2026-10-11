@@ -838,3 +838,31 @@ BYTE* __fastcall VehGlowManager_Construct(BYTE* self, void*, BYTE* owner)
 }
 
 }
+
+extern "C" void FUN_595b60(); KING_ALIAS("_FUN_595b60", "@TvCamera_Construct@8")
+extern "C" void FUN_596850(); KING_ALIAS("_FUN_596850", "@SceneEffect_Start@16")
+extern "C" void FUN_595c70(); KING_ALIAS("_FUN_595c70", "@Wasm_595c70@8")
+ASM_VAR(char, g_vtbl650ab0, $L_650ab0)
+
+extern "C" {
+
+// [FUN_597a20] creates the TV camera monitor and its task
+void __fastcall TvCamera_CreateMonitor(BYTE* self, void*)
+{
+    BYTE* o = (BYTE*)operator new(336);
+    BYTE* m = o ? CallThis<BYTE*>(FUN_595b60, o) : 0;
+    BYTE* owner = F(BYTE*, self, 92);
+    F(BYTE*, self, 124) = m;
+    CallThis(FUN_5d3570, owner + 2992, m);
+    CallThis(FUN_596850, F(BYTE*, self, 124), F(int, self, 72), self + 24);
+    CallThis(FUN_595c70, F(BYTE*, self, 124));
+    BYTE* t = (BYTE*)operator new(32);
+    if (t) {
+        CallThis(FUN_5d31e0, t, 98, "tvcameramonitor");
+        F(void*, t, 0) = &g_vtbl650ab0;
+    }
+    CallThis(FUN_5d3570, F(BYTE*, self, 92) + 2992, t);
+    CallVirt(t, 24, 1);
+}
+
+}
