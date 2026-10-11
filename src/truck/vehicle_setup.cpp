@@ -362,3 +362,49 @@ extern "C" void __fastcall Car_UpdateTach(BYTE* s, void*, const float* rpm)
     CallThis(FUN_4eacce, s + 6992, out, &g_strFilterEngineTach);
     F(float, s, 7300) = (float)CallThis<double>(FUN_4eaf98, s + 6992);
 }
+
+// [FUN_501e30] moves wheel i's level (+15532) towards its notch by *amount at rate; 1 when the notch was reached
+extern "C" int __fastcall Wheel_StepLevel(BYTE* s, void*, int i, float* amount, float rate)
+{
+    if (!(*amount < 0 || *amount > 0))
+        return 0;
+    BYTE* w = s + i * 20;
+    if (!(rate < 0 || rate > 0)) {
+        F(float, w, 15532) = 0;
+        F(int, w, 15520) = 0;
+        return 1;
+    }
+    if (!(F(float, w, 15532) >= 0.0f))
+        return 0;
+    int cnt = F(int, w, 15520);
+    int max = F(int, w, 15524);
+    if (cnt == max)
+        cnt--;
+    double x = F(float, w, 15532) - (double)cnt / max;
+    double y = (x < 0 ? -x : x) * rate;
+    if (y > *amount) {
+        double t = (double)*amount / rate;
+        double v;
+        if (x > 0.0f) {
+            v = F(float, w, 15532) - t;
+            F(float, w, 15532) = (float)v;
+            if (!(v >= 0.0f))
+                F(float, w, 15532) = 0;
+        } else {
+            v = t + F(float, w, 15532);
+            F(float, w, 15532) = (float)v;
+            if (v > 0.0f)
+                F(float, w, 15532) = 0;
+        }
+        F(int, w, 15520) = (int)((double)F(int, w, 15524) * F(float, w, 15532));
+        *amount = 0;
+        return 0;
+    }
+    *amount = (float)((double)*amount - y);
+    double v = F(float, w, 15532) - x;
+    F(float, w, 15532) = (float)v;
+    if (!(v >= 0.0f))
+        F(float, w, 15532) = 0;
+    F(int, w, 15520) = (int)((double)F(int, w, 15524) * F(float, w, 15532));
+    return 1;
+}

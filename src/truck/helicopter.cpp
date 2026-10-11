@@ -1168,3 +1168,80 @@ extern "C" void __fastcall Copter_UpdateAxes(DWORD* s, void*)
         s[0] = on;
     }
 }
+
+#include "x87.h"
+
+// [FUN_561dc0] the helicopter's tilt for a control input: *bank from the clamped turn, the result clamped to a limit that shrinks with speed
+extern "C" double __fastcall Copter_Tilt(BYTE* s, void*, float input, float turn, const float* dir, float* bank)
+{
+    const float k = 0.39269909262657166f;
+    double a = turn;
+    if (a > k) a = k;
+    float lo = -k;
+    if (!(a >= lo)) a = lo;
+    *bank = (float)(x87_sin(a) * 30.0f);
+    double base = (double)input * F(float, s, 128) + turn;
+    float vd = (float)(((double)F(float, s, 108) * dir[2] + (double)F(float, s, 104) * dir[1]) + (double)F(float, s, 100) * dir[0]);
+    int back = !(vd >= 0.0f);
+    int fwd = F(float, s, 128) > 0.0f;
+    double f;
+    if (back == fwd)
+        f = 1.0f;
+    else {
+        double av = vd < 0 ? -(double)vd : (double)vd;
+        if (!(av >= 5.0))
+            f = 1.0f;
+        else if (!(av >= 30.0))
+            f = 1.0 - (av - 5.0) * 0.04;
+        else
+            f = 0.0f;
+    }
+    float lim = (float)(((double)0.39269909262657166f - 0.19634954631328583f) * f + 0.19634954631328583f);
+    double rr = (f * F(float, s, 128) * input * 3.0f + base) * F(float, s, 3228);
+    float r = (float)rr;
+    if (rr > lim)
+        return lim;
+    if (!(r >= -lim))
+        return -lim;
+    return r;
+}
+
+extern "C" int __cdecl Query_4e7476(int a, int b, int c, BYTE* d, BYTE* e, BYTE* f);
+extern "C" BYTE* __cdecl Car_InListFrom16(BYTE* p);
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+
+// [FUN_5663c0] the helicopter's state towards its target: 1 after 60 s, 2 when it took too long for the distance, 0 (restarted) when blocked or not yet due
+extern "C" int __fastcall Copter_TargetState(BYTE* s, void*)
+{
+    if (!F(BYTE*, s, 3248)) {
+        F(int, s, 3276) = -1;
+        return -1;
+    }
+    double td = Game_Time() - F(float, s, 3280);
+    float t = (float)td;
+    if (!(td > 1.0))
+        return F(int, s, 3276);
+    BYTE node[256];
+    BYTE m[48];
+    CallThis(FUN_5ef5c0, node);
+    BYTE* mat = CallThis<BYTE*>(FUN_57de90, F(BYTE*, s, 3248) + 16, m);
+    int r = Query_4e7476(F(int, s, 96), F(int, s, 3480), 0, s + 36, mat + 36, node);
+    BYTE* hit = F(BYTE*, node, 116);
+    if (!(r & 1) || !hit || (Car_InListFrom16(hit) != F(BYTE*, s, 3248) && Car_InListFrom16(hit) != F(BYTE*, s, 3252))) {
+        Vec3 v = *(Vec3*)(F(BYTE*, s, 3248) + 432);
+        float a = (float)Vec3_Length(&v);
+        double b = Vec3_Length((Vec3*)(s + 100));
+        if (t > 60.0f) {
+            F(int, s, 3276) = 1;
+            return 1;
+        }
+        if (!((b + a) * 0.2 + 25.0 >= t)) {
+            F(int, s, 3276) = 2;
+            return 2;
+        }
+    }
+    F(float, s, 3280) = (float)Game_Time();
+    F(int, s, 3276) = 0;
+    return 0;
+}

@@ -129,3 +129,34 @@ extern "C" DWORD* __cdecl GridNode_Midpoint(DWORD* out, const float* a, const fl
     memcpy(out, r, 40);
     return out;
 }
+
+#include "x87.h"
+ASM_PROC(FUN_6072b0)    // the deepest level allowed
+
+// [FUN_61ba10] the terrain grid's refinement priority of a node: 0 when hidden or too deep, else by distance and the view wedges
+extern "C" double __fastcall TGridCamera_NodePriority(BYTE* s, void*, BYTE* node)
+{
+    if (F(unsigned, node, 24) >= CallThis<unsigned>(FUN_6072b0, s))
+        return 0.0f;
+    float px = F(float, node, 32), py = F(float, node, 36), pz = F(float, node, 40);
+    double dy = (double)py - F(float, s, 8);
+    double dx = (double)px - F(float, s, 4);
+    double dd = x87_hypot(dx, dy) - pz;
+    float d = (float)dd;
+    if (!(dd > 0.0f)) return 1000.0f;
+    if (d > 1500.0f) return 0.0f;
+    if (!(d >= 50.0f)) return 1000.0f;
+    double ex = (double)px - F(float, s, 4);
+    float exf = (float)ex;
+    double ey = (double)py - F(float, s, 8);
+    float eyf = (float)ey;
+    float mz = -pz;
+    if (!(ey * F(float, s, 60) - ex * F(float, s, 64) >= mz)) return 0.0f;
+    if (!(ey * F(float, s, 68) - ex * F(float, s, 72) >= mz)) return 0.0f;
+    if (F(unsigned, node, 24) < 8) return 10.0f / ((double)d + 1.0f);
+    if (!(d >= 500.0f)) return (double)F(float, node, 20) / d;
+    if ((double)eyf * F(float, s, 76) - (double)exf * F(float, s, 80) >= mz
+        && (double)eyf * F(float, s, 84) - (double)exf * F(float, s, 88) >= mz)
+        return (double)F(float, node, 20) / d;
+    return (double)F(float, node, 20) * 0.5f / d;
+}
