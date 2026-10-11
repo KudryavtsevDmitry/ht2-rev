@@ -1007,6 +1007,11 @@ PUBLIC $L_64c034, $L_66ce4c, $L_6705f4, $L_6705fc, $L_67111c, $L_671124
 PUBLIC $L_67112c, $L_671130, $L_671138, $L_67113c, $L_671144, $L_67114c
 PUBLIC $L_671154, $L_671168
 PUBLIC $L_67115c
+PUBLIC $L_64dbe8, $L_64dc1c, $L_64de10, $L_64de50, $L_64dfc8, $L_64e008
+PUBLIC $L_64e4d0, $L_64e510, $L_64e558, $L_64e598, $L_64e5e0, $L_64e620
+PUBLIC $L_64eb58, $L_672994, $L_6729a8, $L_676238, $L_676248, $L_676e94
+PUBLIC $L_676e9c, $L_676eb4, $L_696850, $L_696854, $L_6ce3b8, $L_6ce408
+PUBLIC $L_6ce430, $L_6ce988, $L_6ceb38, $L_720938
 
 ;===================================
 _TEXT SEGMENT
@@ -455605,6 +455610,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50c010 PROC
 
             push -1
@@ -455712,6 +455719,10 @@ $L_50c0d0::
             add ESP,24
             ret 
 FUN_50c010 ENDP
+ELSE
+EXTERN @Screen_Grab@8:PROC
+FUN_50c010 TEXTEQU <@Screen_Grab@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -455983,6 +455994,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50c300 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -456056,6 +456069,10 @@ $L_50c367::
             add ESP,12
             ret 
 FUN_50c300 ENDP
+ELSE
+EXTERN _Image_ReadStream:PROC
+FUN_50c300 TEXTEQU <_Image_ReadStream>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_50c3a0 PROC
@@ -456707,6 +456724,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50c930 PROC
 
             push -1
@@ -456773,6 +456792,10 @@ $L_50c9b7::
             add ESP,16
             ret 
 FUN_50c930 ENDP
+ELSE
+EXTERN _Shell_NewObjRef:PROC
+FUN_50c930 TEXTEQU <_Shell_NewObjRef>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -467204,6 +467227,8 @@ FUN_513600 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_513680 PROC
 
             push -1
@@ -467269,6 +467294,10 @@ $L_5136d6::
             add ESP,16
             ret 8
 FUN_513680 ENDP
+ELSE
+EXTERN _Shell_NewScreenA@8:PROC
+FUN_513680 TEXTEQU <_Shell_NewScreenA@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -470086,6 +470115,8 @@ $L_5153e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5154c0 PROC
 
             push -1
@@ -470130,6 +470161,10 @@ $L_515510::
 
             nop
 FUN_5154c0 ENDP
+ELSE
+EXTERN @Shell5154c0_Destroy@8:PROC
+FUN_5154c0 TEXTEQU <@Shell5154c0_Destroy@8>
+ENDIF
 ALIGN 16
 FUN_515540 PROC
 
@@ -473956,6 +473991,8 @@ $L_517c84           BYTE ($L_517c70-$L_517c70)/4
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_517d40 PROC
 
             push -1
@@ -474011,6 +474048,10 @@ $L_517dc0::
             add ESP,16
             ret 
 FUN_517d40 ENDP
+ELSE
+EXTERN @Shell517d40_Destroy@8:PROC
+FUN_517d40 TEXTEQU <@Shell517d40_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -474026,6 +474067,8 @@ FUN_517d40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_517e00 PROC
 
             push -1
@@ -474082,6 +474125,10 @@ $L_517e51::
             add ESP,16
             ret 
 FUN_517e00 ENDP
+ELSE
+EXTERN _Shell_NewScreenB:PROC
+FUN_517e00 TEXTEQU <_Shell_NewScreenB>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -483858,6 +483905,8 @@ $L_51dfe0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51e000 PROC
 
             push -1
@@ -483891,6 +483940,10 @@ $L_51e042::
             add ESP,16
             ret 
 FUN_51e000 ENDP
+ELSE
+EXTERN @Shell51e000_Destroy@8:PROC
+FUN_51e000 TEXTEQU <@Shell51e000_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -484614,6 +484667,8 @@ $L_51e710 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51e730 PROC
 
             push -1
@@ -484647,6 +484702,10 @@ $L_51e772::
             add ESP,16
             ret 
 FUN_51e730 ENDP
+ELSE
+EXTERN @Shell51e730_Destroy@8:PROC
+FUN_51e730 TEXTEQU <@Shell51e730_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -485190,6 +485249,8 @@ $L_51ec98::
             nop
 $L_51ec80 ENDP
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51eca0 PROC
 
             push -1
@@ -485223,6 +485284,10 @@ $L_51ece2::
             add ESP,16
             ret 
 FUN_51eca0 ENDP
+ELSE
+EXTERN @Shell51eca0_Destroy@8:PROC
+FUN_51eca0 TEXTEQU <@Shell51eca0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -500539,6 +500604,8 @@ $L_528c10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_528c20 PROC
 
             push -1
@@ -500568,6 +500635,10 @@ FUN_528c20 PROC
             add ESP,16
             ret 4
 FUN_528c20 ENDP
+ELSE
+EXTERN @Shell528c20_Construct@12:PROC
+FUN_528c20 TEXTEQU <@Shell528c20_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -500963,6 +501034,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_528fc0 PROC
 
             push -1
@@ -500995,6 +501068,10 @@ $L_528ff0::
             add ESP,16
             ret 
 FUN_528fc0 ENDP
+ELSE
+EXTERN @Shell528fc0_Destroy@8:PROC
+FUN_528fc0 TEXTEQU <@Shell528fc0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
