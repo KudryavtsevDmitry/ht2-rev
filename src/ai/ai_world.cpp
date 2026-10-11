@@ -22,9 +22,7 @@ extern "C" void __cdecl AI_Error4a52e0(int code, int a);
 KING_ALIAS("_AI_Error4a52e0", "FUN_4a52e0")
 extern "C" int __cdecl Loading_Step();    // carat.cpp
 extern "C" void** __cdecl Towns_Find453bd0(void** first, void** last, int key, void* rng);
-KING_ALIAS("_Towns_Find453bd0", "FUN_453bd0")
 extern "C" void** __cdecl Towns_Find453d70(void** first, void** last, int a, int b, int c);
-KING_ALIAS("_Towns_Find453d70", "FUN_453d70")
 extern "C" void** __cdecl Towns_Find453f10(void** first, void** last, int a, int b);
 KING_ALIAS("_Towns_Find453f10", "_Pick_RandomOther")
 extern "C" void** __cdecl Towns_Find4540a0(void** first, void** last, int* a, int b);
@@ -5055,6 +5053,80 @@ void __cdecl Ai_AdvancePlayer(BYTE* player, double* d)
                               pos[4], pos[5], pos[6], pos[7], d, 1);
     Player_SetPosition(Iter_Data(&player, 0), 0, (const PositionId*)next);
     Trace_Leave(s_advancePlayer);
+}
+
+}
+
+extern "C" void FUN_45aed0(); KING_ALIAS("_FUN_45aed0", "@Vec4b_InsertA@16")
+extern "C" void FUN_45d370(); KING_ALIAS("_FUN_45d370", "@Vec4b_InsertD@16")
+
+// a random element of the candidates collected in v (using the subtractive
+// generator rng: table, +220 and +224 indexes); frees v
+static void* PickRandom(void** v, void* none, DWORD* rng)
+{
+    if (v[0] == v[1]) {
+        int n = ((BYTE*)v[2] - (BYTE*)v[0]) >> 2;
+        if (n)
+            CallC(FUN_44b4a0, v[0], n * 4);
+        return none;
+    }
+    unsigned n = ((BYTE*)v[1] - (BYTE*)v[0]) >> 2;
+    unsigned i = (rng[55] + 1) % 55;
+    unsigned j = (rng[56] + 1) % 55;
+    rng[55] = i;
+    rng[56] = j;
+    rng[i] -= rng[j];
+    void* r = ((void**)v[0])[rng[rng[55]] % n];
+    int bytes = (((BYTE*)v[2] - (BYTE*)v[0]) >> 2) << 2;
+    if (bytes)
+        CallC(FUN_44b4a0, v[0], bytes);
+    return r;
+}
+
+// appends x to the vector of pointers v (growing through grow)
+static void Ptrs_Push(void** v, void* x, void (*grow)())
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            *(void**)v[1] = x;
+        v[1] = (BYTE*)v[1] + 4;
+    } else
+        CallThis(grow, v, v[1], &x);
+}
+
+extern "C" {
+
+// [FUN_453bd0] a random town of [first, last) that trades in key
+void** __cdecl Towns_Find453bd0(void** first, void** last, int key, void* rng)
+{
+    void* v[3] = {0, 0, 0};
+    for (void** it = first; it != last; it++)
+        if ((BYTE)Town_Trades((BYTE*)*it, key))
+            Ptrs_Push(v, it, FUN_45aed0);
+    return (void**)PickRandom(v, last, (DWORD*)rng);
+}
+
+// [FUN_453d70] the same, skipping the town except
+void** __cdecl Towns_Find453d70(void** first, void** last, int key, int except, int rng)
+{
+    void* v[3] = {0, 0, 0};
+    for (void** it = first; it != last; it++)
+        if (*it != (void*)except && (BYTE)Town_Trades((BYTE*)*it, key))
+            Ptrs_Push(v, it, FUN_45aed0);
+    return (void**)PickRandom(v, last, (DWORD*)rng);
+}
+
+// [FUN_4566e0] a random 104-byte record whose flags (+48) lack bit 0 and
+// match value under mask
+BYTE* __cdecl Recs104_PickRandom(BYTE* first, BYTE* last, DWORD value, DWORD mask, void* rng)
+{
+    void* v[3] = {0, 0, 0};
+    for (BYTE* it = first; it != last; it += 104) {
+        DWORD f = F(DWORD, it, 48);
+        if (!(f & 1) && (f & mask) == value)
+            Ptrs_Push(v, it, FUN_45d370);
+    }
+    return (BYTE*)PickRandom(v, last, (DWORD*)rng);
 }
 
 }

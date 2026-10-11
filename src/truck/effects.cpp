@@ -2077,3 +2077,124 @@ void __fastcall Effect4bc950_Attach(BYTE* self, void*, BYTE* a)
 }
 
 }
+
+ASM_PROC(FUN_4c1790)
+ASM_PROC(FUN_43fc40)    // vehicle info by id (id, info)
+ASM_PROC(FUN_4ebd00)
+extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
+ASM_VAR(char, gv64c604, $L_64c604)
+ASM_VAR(char, gv64c5f0, $L_64c5f0)
+ASM_VAR(char, gv64c59c, $L_64c59c)
+ASM_VAR(char, gv64d2f4, $L_64d2f4)
+
+// deletes a renderer helper object (buffer at +56) after setting vtbls
+static void Helper_Delete(BYTE* o)
+{
+    F(void*, o, 0) = g_vtbl64c72c;
+    if (F(void*, o, 56)) {
+        operator delete(F(void*, o, 56));
+        F(void*, o, 56) = 0;
+    }
+    operator delete(o);
+}
+
+static void Helper2_Delete(BYTE* o)
+{
+    F(void*, o, 64) = g_vtbl64c63c;
+    F(int, o, 68) = 0;
+    Helper_Delete(o);
+}
+
+extern "C" {
+
+// [FUN_4c45d0] destructor
+void __fastcall Effect4c45d0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &gv64c604;
+    BYTE* a = F(BYTE*, self, 40);
+    if (a) {
+        F(void*, a, 4672) = g_vtbl64c668;
+        CallThis(FUN_4c1790, a + 4672);
+        F(void*, a, 64) = &gv64c5f0;
+        CallThis(FUN_4c1790, a + 64);
+        Helper_Delete(a);
+        F(BYTE*, self, 40) = 0;
+    }
+    if (F(BYTE*, self, 48)) {
+        Helper2_Delete(F(BYTE*, self, 48));
+        F(BYTE*, self, 48) = 0;
+    }
+    BYTE* c = F(BYTE*, self, 44);
+    if (c) {
+        F(void*, c, 0) = &gv64c59c;
+        if (F(BYTE*, c, 64)) {
+            CallVirt(F(BYTE*, c, 64), 8, 1);
+            F(BYTE*, c, 64) = 0;
+        }
+        Helper_Delete(c);
+        F(BYTE*, self, 44) = 0;
+    }
+    if (F(BYTE*, self, 32)) {
+        CallVirt(F(BYTE*, self, 32), 0, 1);
+        F(BYTE*, self, 32) = 0;
+    }
+    if (F(BYTE*, self, 36)) {
+        CallVirt(F(BYTE*, self, 36), 0, 1);
+        F(BYTE*, self, 36) = 0;
+    }
+    if (F(BYTE*, self, 52)) {
+        Helper2_Delete(F(BYTE*, self, 52));
+        F(BYTE*, self, 52) = 0;
+    }
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4d1140] constructor of the police car (light and siren keys)
+BYTE* __fastcall CopCar_Construct(BYTE* self, void*, int a1, int a2, int a3)
+{
+    CallThis(FUN_543e00, self, a1, a2, a3, 0);
+    for (int i = 0; i < 6; i++)
+        F(int, self, 21900 + i * 4) = 0;
+    SetVtbls4(self, g_vtbl64cff4, g_vtbl64cf08, g_vtbl64cebc, g_vtbl64ceb8);
+    CallThis(FUN_556110, self);
+    for (int i = 0; i < 7; i++)
+        F(int, self, 21924 + i * 4) = 0;
+    F(BYTE*, self, 21884) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, self, 336), "CopLightKey");
+    F(BYTE*, self, 21888) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, self, 336), "CopSirenKey");
+    F(BYTE*, self, 21892) = CallC<BYTE*>(FUN_5ef2b0, 0, "clRedSpace");
+    BYTE info[192];
+    CallC(FUN_43fc40, a3, info);
+    F(int, self, 21880) = F(int, info, 8);
+    CallC(FUN_4cf260, self, a2, a3);
+    return self;
+}
+
+// [FUN_4d2790] constructor
+BYTE* __fastcall Effect4d2790_Construct(BYTE* self, void*, int a, int b, DWORD d0, DWORD d1, DWORD d2,
+                                        DWORD d3, DWORD d4, DWORD d5, DWORD d6, DWORD d7, DWORD d8,
+                                        DWORD d9, DWORD d10, DWORD d11)
+{
+    CallThis(FUN_4ebd00, self, b, d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, a % 1000);
+    static const int zero1[] = {16464, 16468, 16472, 16568, 16440, 16448, 16432, 16424, 16572, 16444,
+                                16452, 16428, 16492, 16488, 16496, 16500};
+    for (int i = 0; i < 16; i++)
+        F(int, self, zero1[i]) = 0;
+    F(void*, self, 0) = &gv64d2f4;
+    F(int, self, 10088) = F(int, g_6cec6c, 1304) == 0;
+    CallThis(FUN_4ebaa0, self + 9984, 1, 1);
+    for (int off = 16520; off <= 16548; off += 4)
+        F(int, self, off) = 0;
+    int r = rand() % 4;
+    F(int, self, 16508) = r;
+    F(int, self, 16552) = 0;
+    F(int, self, 16504) = 0;
+    F(int, self, 16516) = -1;
+    F(int, self, 16512) = -1;
+    F(int, self, 16484) = 0;
+    F(int, self, 16476) = r * 2;
+    F(DWORD, self, 16556) = 0x400c0000;
+    F(int, self, 16480) = 10;
+    return self;
+}
+
+}
