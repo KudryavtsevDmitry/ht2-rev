@@ -1066,6 +1066,7 @@ PUBLIC $L_683cb8, $L_723d8c, $L_723d98
 PUBLIC $L_725d40, $L_725d44
 PUBLIC $L_64bf4c
 PUBLIC $L_66f62b
+PUBLIC $L_68ccbc
 
 ;===================================
 _TEXT SEGMENT
@@ -74530,6 +74531,8 @@ FUN_42cb20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42cd70 PROC
 
             push EBP
@@ -74685,6 +74688,10 @@ $L_42cf2f::
             pop EBP
             ret 
 FUN_42cd70 ENDP
+ELSE
+EXTERN _Ai_ResetPlayerRooms:PROC
+FUN_42cd70 TEXTEQU <_Ai_ResetPlayerRooms>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -105154,6 +105161,8 @@ $L_4401be::
             ret 
 FUN_43fc40 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4401d0 PROC
 
             push -1
@@ -105304,6 +105313,10 @@ $L_440373::
             add ESP,20
             ret 
 FUN_4401d0 ENDP
+ELSE
+EXTERN _Ai_GetMerchandiseProperties:PROC
+FUN_4401d0 TEXTEQU <_Ai_GetMerchandiseProperties>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -105316,6 +105329,8 @@ FUN_4401d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_440390 PROC
 
             push -1
@@ -105502,6 +105517,10 @@ $L_440579::
             add ESP,24
             ret 
 FUN_440390 ENDP
+ELSE
+EXTERN _Ai_GetCoordinates:PROC
+FUN_440390 TEXTEQU <_Ai_GetCoordinates>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -105509,6 +105528,8 @@ FUN_440390 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_440590 PROC
 
             push -1
@@ -105700,7 +105721,13 @@ $L_44077f::
             add ESP,20
             ret 
 FUN_440590 ENDP
+ELSE
+EXTERN _Ai_GetTownNameCoordinates:PROC
+FUN_440590 TEXTEQU <_Ai_GetTownNameCoordinates>
+ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_440790 PROC
 
             push -1
@@ -105845,6 +105872,10 @@ $L_440913::
             add ESP,36
             ret 
 FUN_440790 ENDP
+ELSE
+EXTERN _Ai_GetNameCoordinates:PROC
+FUN_440790 TEXTEQU <_Ai_GetNameCoordinates>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -107743,6 +107774,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_441ae0 PROC
 
             push -1
@@ -107984,7 +108017,13 @@ $L_441d4d::
             nop
             nop
 FUN_441ae0 ENDP
+ELSE
+EXTERN _Ai_GetParkingPointInfo:PROC
+FUN_441ae0 TEXTEQU <_Ai_GetParkingPointInfo>
+ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_441d70 PROC
 
             push -1
@@ -108148,6 +108187,10 @@ $L_441f20::
             add ESP,20
             ret 
 FUN_441d70 ENDP
+ELSE
+EXTERN _Ai_GetParkingInfo:PROC
+FUN_441d70 TEXTEQU <_Ai_GetParkingInfo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -114919,6 +114962,8 @@ FUN_445f60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4464c0 PROC
 
             push -1
@@ -115113,6 +115158,10 @@ $L_446686::
             add ESP,20
             ret 
 FUN_4464c0 ENDP
+ELSE
+EXTERN _Ai_ClearPlayerId:PROC
+FUN_4464c0 TEXTEQU <_Ai_ClearPlayerId>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -1496,7 +1496,7 @@ KING_ALIAS("_Nodes_FindByName", "FUN_449f00")
 extern "C" void __cdecl Modules_FindByName(int* out, const char* name);
 KING_ALIAS("_Modules_FindByName", "FUN_44a1c0")
 extern "C" void __cdecl Town_440390(void* out, void* town);
-KING_ALIAS("_Town_440390", "FUN_440390")
+KING_ALIAS("_Town_440390", "_Ai_GetCoordinates")
 extern "C" void __cdecl List_FreeNode(void* node, int size);
 KING_ALIAS("_List_FreeNode", "FUN_44b4a0")
 extern "C" void __cdecl Copy104(void* dst, const void* src);
@@ -5155,6 +5155,232 @@ BYTE* __fastcall Order144_CopyConstruct(BYTE* self, void*, const BYTE* s)
     F(int, self, 132) = F(int, s, 132);
     F(int, self, 136) = F(int, s, 136);
     return self;
+}
+
+}
+
+extern "C" void FUN_440590(); KING_ALIAS("_FUN_440590", "_Ai_GetTownNameCoordinates")    // default name coordinates of a town (out, town)
+extern "C" void FUN_441ae0(); KING_ALIAS("_FUN_441ae0", "_Ai_GetParkingPointInfo")    // parking info (market, slot, info)
+ASM_VAR(BYTE*, g_68ccbc, $L_68ccbc)
+ASM_VAR(AsmLabel, g_text77e460, $L_77e460)
+
+static const char s_getMerchandiseProperties[] = "getMerchandiseProperties(MerchandiseId id, MerchandiseProperties & mp)";
+static const char s_getCoordinates[] = "getCoordinates(AI_Town * town)";
+static const char s_getNameCoordinates[] = "getNameCoordinates(TownId town, int mapResolution, int screenResolution)";
+static const char s_getParkingInfo[] = "getParkingInfo(PlayerId player, ParkingInfo & pi)";
+
+extern "C" {
+
+// [FUN_4401d0] getMerchandiseProperties(MerchandiseId id, MerchandiseProperties & mp)
+int __cdecl Ai_GetMerchandiseProperties(int id, BYTE* mp)
+{
+    Trace_EnterAppend(s_getMerchandiseProperties);
+    if (id < 0 || (unsigned)id >= (unsigned)((g_68ccbc - g_68ccb8) / 104)) {
+        sprintf(g_text77e460, "(%d)", id);
+        AiError(33, 100, s_mainFile, s_mainId, 16837, s_invalidId, "MerchandiseId", g_text77e460);
+    }
+    BYTE* r = g_68ccb8 + id * 104;
+    F(int, mp, 8) = F(int, r, 48);
+    F(int, mp, 16) = F(int, r, 16);
+    F(int, mp, 20) = F(int, r, 20);
+    F(int, mp, 24) = F(int, r, 24);
+    F(int, mp, 28) = F(int, r, 28);
+    F(int, mp, 32) = F(int, r, 64);
+    F(int, mp, 36) = F(int, r, 68);
+    F(int, mp, 4) = F(int, r, 72);
+    F(int, mp, 0) = F(int, r, 88);
+    Trace_Leave(s_getMerchandiseProperties);
+    return 0;
+}
+
+// [FUN_440390] getCoordinates(AI_Town * town)
+Vec3f* __cdecl Ai_GetCoordinates(Vec3f* out, BYTE* town)
+{
+    Trace_EnterAppend(s_getCoordinates);
+    int id;
+    Town_IdOrFirst(&id, town);
+    if (id == -1) {
+        const char* name = F(BYTE*, town, 0) != F(BYTE*, town, 4) ? F(const char*, town, 0) : 0;
+        AiError(0, 1, s_mainFile, s_mainId, 16869, "No coordinates defined for town", name, &g_aiEmpty);
+        Trace_Leave(s_getCoordinates);
+        return out;
+    }
+    Node_Position(out, id);
+    Trace_Leave(s_getCoordinates);
+    return out;
+}
+
+// [FUN_440790] getNameCoordinates(TownId town, int mapResolution, int screenResolution)
+DWORD* __cdecl Ai_GetNameCoordinates(DWORD* out, int town, int mapRes, int screenRes)
+{
+    Trace_EnterAppend(s_getNameCoordinates);
+    DWORD c[3];
+    CallC(FUN_440590, c, g_towns[town]);
+    BYTE** v = (BYTE**)((BYTE*)g_towns[town] + (mapRes * 3 + 18) * 4);
+    if ((unsigned)((v[1] - v[0]) >> 2) > (unsigned)screenRes) {
+        DWORD t[3];
+        const DWORD* p = (const DWORD*)Node_Position((Vec3f*)t, ((int*)v[0])[screenRes]);
+        c[0] = p[0];
+        c[1] = p[1];
+        c[2] = p[2];
+    }
+    out[0] = c[0];
+    out[1] = c[1];
+    out[2] = c[2];
+    Trace_Leave(s_getNameCoordinates);
+    return out;
+}
+
+// [FUN_441d70] getParkingInfo(PlayerId player, ParkingInfo & pi)
+int __cdecl Ai_GetParkingInfo(BYTE* p, BYTE* pi)
+{
+    Trace_EnterBuffered(s_getParkingInfo);
+    int m = F(int, p, 120);
+    if (m != -1) {
+        BYTE* market = (BYTE*)g_68cc98[m];
+        if (F(BYTE, F(BYTE*, market, 28) + F(int, p, 124) * 36, 4) & 3) {
+            F(int, pi, 48) = F(int, market, 24);
+            F(int, pi, 52) = F(int, p, 124);
+            int r = CallC<int>(FUN_441ae0, F(int, p, 120), F(int, p, 124), pi);
+            Trace_Leave(s_getParkingInfo);
+            return r;
+        }
+    }
+    Trace_Leave(s_getParkingInfo);
+    return -1;
+}
+
+}
+
+extern "C" void FUN_423f20(); KING_ALIAS("_FUN_423f20", "@Rec_Copy32@12")
+extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
+extern "C" void FUN_473680(); KING_ALIAS("_FUN_473680", "_Player_Profit")
+extern "C" void FUN_41b8d0(); KING_ALIAS("_FUN_41b8d0", "_Player_VehicleCosts")
+extern "C" void FUN_4773d0(); KING_ALIAS("_FUN_4773d0", "_Player_Call477350")
+extern "C" void FUN_42bfe0(); KING_ALIAS("_FUN_42bfe0", "@Rec42bfe0_Assign@12")
+
+static const char s_getNameCoordinatesT[] = "getNameCoordinates(AI_Town * town)";
+static const char s_clearPlayerId[] = "clearPlayerId(VehicleInstance * vehicle, PlayerId player)";
+static const char s_resetPlayerRooms[] = "resetPlayerRooms()";
+static const char s_getParkingInfo3[] = "getParkingInfo(ParkingId parking, int pointid, ParkingInfo & pi)";
+
+extern "C" {
+
+// [FUN_440590] getNameCoordinates(AI_Town * town)
+Vec3f* __cdecl Ai_GetTownNameCoordinates(Vec3f* out, BYTE* town)
+{
+    Trace_EnterAppend(s_getNameCoordinatesT);
+    int id = F(int, town, 68);
+    if (id == -1) {
+        int t;
+        id = *Town_IdOrFirst(&t, town);
+        if (id == -1) {
+            const char* name = F(BYTE*, town, 0) != F(BYTE*, town, 4) ? F(const char*, town, 0) : 0;
+            AiError(0, 1, s_mainFile, s_mainId, 16880, "No coordinates defined for town", name, &g_aiEmpty);
+            Trace_Leave(s_getNameCoordinatesT);
+            return out;
+        }
+    }
+    Node_Position(out, id);
+    Trace_Leave(s_getNameCoordinatesT);
+    return out;
+}
+
+// [FUN_4464c0] clearPlayerId(VehicleInstance * vehicle, PlayerId player)
+void __cdecl Ai_ClearPlayerId(BYTE* vehicle, int player)
+{
+    Trace_EnterAppend(s_clearPlayerId);
+    if (!vehicle) {
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Buf_AppendString(&g_trace, 0, s_clearPlayerId);
+        return;
+    }
+    for (BYTE* o = F(BYTE*, vehicle, 28); o != F(BYTE*, vehicle, 32); o += 144) {
+        BYTE* e = F(BYTE*, o, 120);
+        BYTE* end = F(BYTE*, o, 124);
+        while (e != end && F(int, e, 0) != player)
+            e += 16;
+        if (e == end)
+            continue;
+        for (int n = (end - (e + 16)) >> 4; n > 0; n--, e += 16)
+            CallThis(FUN_42bfe0, e, e + 16);
+        F(BYTE*, o, 124) -= 16;
+        CallThis(FUN_44b090, F(BYTE*, o, 124) + 4);
+    }
+    Trace_Leave(s_clearPlayerId);
+}
+
+// [FUN_42cd70] resetPlayerRooms()
+void __cdecl Ai_ResetPlayerRooms()
+{
+    Trace_EnterBuffered(s_resetPlayerRooms);
+    BYTE* head = (BYTE*)g_players;
+    for (BYTE* n = *(BYTE**)head; n != (BYTE*)g_players; n = *(BYTE**)n) {
+        RoomInfo info;
+        info.flags = 0;
+        info.m_8 = 0;
+        info.m_12 = 0;
+        info.module = "UNDEFINED_MODULE";
+        info.room = "UNDEFINED_ROOM";
+        info.m_24 = 0;
+        info.m_28 = 0;
+        info.m_36 = -1;
+        info.m_40 = -1;
+        BYTE* p = CallC<BYTE*>(FUN_40a9f0, n);
+        PositionId tmp;
+        PositionId* pos = CallThis<PositionId*>(FUN_423f20, p + 16, &tmp);
+        Position_Keys(*pos, (BYTE*)&info);
+        F(int, CallC<BYTE*>(FUN_40a9f0, n), 848) = info.m_40;
+        F(int, CallC<BYTE*>(FUN_40a9f0, n), 844) = info.m_36;
+    }
+    Trace_Leave(s_resetPlayerRooms);
+}
+
+// [FUN_441ae0] getParkingInfo(ParkingId parking, int pointid, ParkingInfo & pi)
+int __cdecl Ai_GetParkingPointInfo(int parking, int point, BYTE* pi)
+{
+    Trace_EnterBuffered(s_getParkingInfo3);
+    CallThis(FUN_4471f0, pi, F(BYTE*, pi, 0), F(BYTE*, pi, 4));
+    F(int, pi, 12) = 0;
+    F(int, pi, 64) = 0;
+    BYTE** v = (BYTE**)((BYTE*)g_68cc98[parking] + 28);
+    if ((unsigned)((v[1] - v[0]) / 36) <= (unsigned)point) {
+        char buf[64];
+        sprintf(buf, " %d", point);
+        AiError(544, 100, s_mainFile, s_mainId, 17176, "There's no such parking place: ", buf, &g_aiEmpty);
+    }
+    BYTE* pt = v[0] + point * 36;
+    F(int, pi, 44) = F(int, pt, 0);
+    BYTE* pl = F(BYTE*, pt, 8);
+    if (pl != (BYTE*)g_players) {
+        BYTE* q = pl + 8;
+        F(BYTE*, pi, 40) = pl;
+        if (F(BYTE*, q, 508)) {
+            F(double, pi, 24) = CallC<double>(FUN_473680, q);
+            F(int, pi, 12) = F(int, (BYTE*)g_vehicles[F(int, F(BYTE*, q, 508), 4)], 72);
+            DWORD loc[3];
+            loc[1] = loc[2] = 0;
+            CallC(FUN_41b8d0, F(int, pt, 8), pi + 16, loc);
+            BYTE* veh = (BYTE*)g_vehicles[F(int, F(BYTE*, q, 508), 4)];
+            F(int, pi, 32) = F(int, veh, 56);
+            F(int, pi, 36) = F(int, veh, 60);
+            DWORD f = F(DWORD, pt, 4);
+            if (f & 1) {
+                F(int, pi, 56) = 0;
+                F(int, pi, 60) = 0;
+                F(DWORD, pi, 64) |= 1;
+            } else if (f & 2) {
+                F(double, pi, 56) = CallC<double>(FUN_4773d0, F(BYTE*, pi, 40));
+                F(DWORD, pi, 64) |= 2;
+            }
+            if (F(BYTE, F(BYTE*, q, 508), 40) & 2)
+                F(DWORD, pi, 64) |= 4;
+            if (F(BYTE, F(BYTE*, q, 508), 40) & 1)
+                F(DWORD, pi, 64) |= 8;
+        }
+    }
+    Trace_Leave(s_getParkingInfo3);
+    return 0;
 }
 
 }
