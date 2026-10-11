@@ -1256,3 +1256,48 @@ void __cdecl Player_UpdateOrders(BYTE* p)
 }
 
 }
+
+extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")    // allocate n 12-byte records and copy [first, last) (stdcall)
+ASM_PROC(FUN_47c650)    // copy 12-byte records (first, last, to)
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
+extern "C" void FUN_484690(); KING_ALIAS("_FUN_484690", "_Road_OrientHops")    // orients the hops of a route
+ASM_PROC(FUN_44b4a0)
+
+extern "C" {
+
+// [FUN_471990] assigns the hops (12-byte records) of src to the route at
+// +16, orients them and marks the route changed (+864)
+void __fastcall Player_SetHops(BYTE* self, void*, BYTE* const* src)
+{
+    BYTE** v = (BYTE**)(self + 16);
+    if ((BYTE* const*)v != src) {
+        BYTE* first = src[0];
+        BYTE* last = src[1];
+        unsigned n = (last - first) / 12;
+        if (n > (unsigned)((v[2] - v[0]) / 12)) {
+            BYTE* p = CallThis<BYTE*>(FUN_4593b0, v, n, first, last);
+            int cap = (v[2] - v[0]) / 12;
+            if (cap)
+                CallC(FUN_44b4a0, v[0], cap * 12);
+            v[0] = p;
+            v[2] = p + n * 12;
+        } else if ((unsigned)((v[1] - v[0]) / 12) >= n) {
+            CallC(FUN_47c650, first, last, v[0], src, 0);
+        } else {
+            int have = (v[1] - v[0]) / 12;
+            BYTE* d = v[0];
+            BYTE* s = first;
+            for (int i = 0; i < have; i++, s += 12, d += 12) {
+                F(DWORD, d, 0) = F(DWORD, s, 0);
+                F(DWORD, d, 4) = F(DWORD, s, 4);
+                F(DWORD, d, 8) = F(DWORD, s, 8);
+            }
+            CallC(FUN_47e3e0, src[0] + have * 12, src[1], v[1], src);
+        }
+        v[1] = v[0] + n * 12;
+    }
+    CallC(FUN_484690, v);
+    F(BYTE, self, 864) = 1;
+}
+
+}

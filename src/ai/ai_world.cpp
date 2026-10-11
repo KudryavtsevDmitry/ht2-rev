@@ -622,7 +622,7 @@ extern "C" void FUN_480580(); KING_ALIAS("_FUN_480580", "@SvRec480580_Construct@
 ASM_PROC(FUN_44d7a0)
 extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // script error (kind, fatal, got, expected)
-ASM_PROC(FUN_4b59f0)    // port constructor
+extern "C" void FUN_4b59f0(); KING_ALIAS("_FUN_4b59f0", "@FilePort_Construct@16")    // port constructor
 extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")    // pool allocation
 extern "C" void FUN_4b0b60(); KING_ALIAS("_FUN_4b0b60", "@SchNumber_FromInt@16")    // number constructor
 extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")

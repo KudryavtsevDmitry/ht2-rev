@@ -1522,3 +1522,69 @@ void __cdecl Sch4ab570_Construct(BYTE* d, const BYTE* s)
 }
 
 }
+
+extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // allocate n values and copy [first, last) (stdcall)
+extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")    // construct a value copy at p
+ASM_PROC(FUN_44c710)    // vector of values: insert at the end (reallocating)
+extern "C" void FUN_4a5910(); KING_ALIAS("_FUN_4a5910", "_Sch_Message0")    // script message (ctx, code)
+
+extern "C" {
+
+// [FUN_4a70b0] sets the value at +4 to h and clears the values at +16
+void __fastcall Sch4a70b0_Reset(BYTE* self, void*, BYTE* h0, int h1, DWORD h2)
+{
+    SchValue* v = (SchValue*)(self + 4);
+    if (v->obj && !(v->flags & SCH_IMMEDIATE)) {
+        if (--F(int, v->obj, 4) == 0 && !(v->obj == h0 && v->flags == h2 && v->m_4 == h1) && v->obj)
+            CallVirt(v->obj, 12, 1);
+    }
+    SchValue h = {h0, h1, h2};
+    CopyRef(v, &h);
+    BYTE* b = F(BYTE*, self, 16);
+    BYTE* e = F(BYTE*, self, 20);
+    for (BYTE* p = b; p != F(BYTE*, self, 20); p += 12)
+        CallThis(FUN_4a36c0, p);
+    F(BYTE*, self, 20) = F(BYTE*, self, 20) - ((e - b) / 12) * 12;
+    F(int, self, 28) = 0;
+    ReleaseRef(&h);
+}
+
+// [FUN_4a5c40] appends the value h to the values at o+16 (reserving 8 when
+// empty); an empty h appended to an empty list sends message 31
+void __cdecl Sch4a5c40_Append(BYTE* ctx, BYTE* o, const DWORD* h)
+{
+    BYTE** v = (BYTE**)(o + 16);
+    if (v[0] != v[1]) {
+        if (v[1] != v[2]) {
+            if (v[1])
+                CallThis(FUN_454580, v[1], h);
+            v[1] += 12;
+        } else
+            CallThis(FUN_44c710, v, v[1], h);
+        return;
+    }
+    if ((unsigned)((v[2] - v[0]) / 12) < 8) {
+        BYTE* old = v[0];
+        int n = (v[1] - old) / 12;
+        BYTE* p = CallThis<BYTE*>(FUN_4a4540, v, 8, old, v[1]);
+        for (BYTE* e = v[0]; e != v[1]; e += 12)
+            CallThis(FUN_4a36c0, e);
+        int cap = (v[2] - v[0]) / 12;
+        if (cap)
+            AiFree(v[0], cap * 12);
+        v[0] = p;
+        v[2] = p + 96;
+        v[1] = p + n * 12;
+    }
+    if (v[1] != v[2]) {
+        CallC(FUN_460910, v[1], h);
+        v[1] += 12;
+    } else
+        CallThis(FUN_44c710, v, v[1], h);
+    if (h[0] || h[2] || h[1])
+        return;
+    if ((unsigned)((F(BYTE*, ctx, 112) - F(BYTE*, ctx, 108)) / 44) > 1 && !F(int, ctx, 120))
+        CallC(FUN_4a5910, ctx, 31);
+}
+
+}

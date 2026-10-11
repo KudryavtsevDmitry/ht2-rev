@@ -843,3 +843,53 @@ DWORD* __cdecl Sch4b8070(DWORD* out, int a, Value3v h1, Value3v h2)
 }
 
 }
+
+extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
+extern "C" void FUN_4abf10(); KING_ALIAS("_FUN_4abf10", "@CharDeque_Construct@12")    // deque<char> constructor (n)
+ASM_PROC(FUN_4b54b0)    // file port: reads the file
+extern "C" struct _iobuf* __cdecl fopen(const char* name, const char* mode);
+
+extern "C" {
+
+// [FUN_4b59f0] file port constructor: mode 1 reads, 2 writes; seeds its
+// subtractive random generator (Knuth's, seed 161803398)
+BYTE* __fastcall FilePort_Construct(BYTE* self, void*, const char* name, unsigned mode)
+{
+    CallThis(FUN_4b1390, self);
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 1;
+    F(int, self, 20) = 0;
+    for (int i = 0; i < 10; i++)
+        F(int, self, 24 + i * 4) = 0;
+    CallThis(FUN_4abf10, self + 24, 0);
+    DWORD* t = (DWORD*)(self + 68);
+    F(BYTE, self, 64) = 0;
+    for (int i = 0; i < 55; i++)
+        t[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    t[54] = mj;
+    for (unsigned k = 0; k < 1134; k += 21) {
+        unsigned ii = k % 55;
+        DWORD next = mj - mk;
+        t[ii] = mk;
+        mj = t[ii];
+        mk = next;
+    }
+    for (int r = 0; r < 4; r++)
+        for (unsigned i = 0; i < 55; i++)
+            t[i] -= t[(i + 31) % 55];
+    t[55] = 0;
+    t[56] = 31;
+    F(void*, self, 0) = &g_vtbl64c0b0;
+    if (mode & 2)
+        F(void*, self, 12) = fopen(name, "wb");
+    if (mode & 1)
+        F(void*, self, 12) = fopen(name, "rb");
+    if (!F(void*, self, 12))
+        F(DWORD, self, 20) |= 1;
+    else if (mode & 1)
+        CallThis(FUN_4b54b0, self);
+    return self;
+}
+
+}
