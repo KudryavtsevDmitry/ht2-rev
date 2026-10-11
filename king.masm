@@ -1079,6 +1079,8 @@ PUBLIC $L_6f34e8, $L_6f3528, $L_6f4b58
 PUBLIC $L_725558
 PUBLIC $L_696088
 PUBLIC $L_64fea0, $L_64feec
+PUBLIC $L_64d444, $L_650974, $L_650978, $L_650f7c, $L_650fc8, $L_66e538
+PUBLIC $L_66e554, $L_672c60
 
 ;===================================
 _TEXT SEGMENT
@@ -91626,6 +91628,8 @@ $L_43720e::
             ret 
 FUN_436ef0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_437220 PROC
 
             push -1
@@ -91758,6 +91762,10 @@ $L_437374::
             add ESP,44
             ret 
 FUN_437220 ENDP
+ELSE
+EXTERN _Ai_GetPositionIdV:PROC
+FUN_437220 TEXTEQU <_Ai_GetPositionIdV>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -91768,6 +91776,8 @@ FUN_437220 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_437390 PROC
 
             push -1
@@ -91906,6 +91916,10 @@ $L_437509::
             add ESP,44
             ret 
 FUN_437390 ENDP
+ELSE
+EXTERN _Ai_GetPositionIdRV:PROC
+FUN_437390 TEXTEQU <_Ai_GetPositionIdRV>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -384127,6 +384141,8 @@ $L_4d9cb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d9cd0 PROC
 
             push -1
@@ -384235,6 +384251,10 @@ $L_4d9e39::
             add ESP,16
             ret 
 FUN_4d9cd0 ENDP
+ELSE
+EXTERN @Fx_ThrowLamp@8:PROC
+FUN_4d9cd0 TEXTEQU <@Fx_ThrowLamp@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -659237,6 +659257,8 @@ $L_594650 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_5949f0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -659359,6 +659381,10 @@ $L_594b36::
             add ESP,12
             ret 20
 FUN_5949f0 ENDP
+ELSE
+EXTERN @Fader_Construct@28:PROC
+FUN_5949f0 TEXTEQU <@Fader_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -673132,6 +673158,8 @@ $L_59dec0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_59df00 PROC
 
             push -1
@@ -673235,6 +673263,10 @@ $L_59dfe3::
             add ESP,24
             ret 24
 FUN_59df00 ENDP
+ELSE
+EXTERN @Debris_Construct@32:PROC
+FUN_59df00 TEXTEQU <@Debris_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_59e050 PROC

@@ -1139,7 +1139,7 @@ extern "C" BYTE* __cdecl Object_TraceRay(int a0, int a1, BYTE* obj, int a3, int 
     return hit;
 }
 
-ASM_PROC(FUN_5949f0)    // a fader's constructor
+extern "C" void FUN_5949f0(); KING_ALIAS("_FUN_5949f0", "@Fader_Construct@28")    // a fader's constructor
 extern "C" void FUN_594b60(); KING_ALIAS("_FUN_594b60", "@Fader_Link@12")
 ASM_VAR(int, g_faders6f66b0, $L_6f66b0)
 
@@ -1156,4 +1156,81 @@ extern "C" void __cdecl Fader_Start(int a0, int a1, float strength, int a3, int 
             o = CallThis<BYTE*>(FUN_5949f0, o, a0, a1, strength, a3, a4);
     }
     CallThis(FUN_594b60, o, g_faders6f66b0);
+}
+
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int a, int b);
+extern "C" void __fastcall Light_Init(BYTE* self, void*);
+ASM_VAR(char, g_strThrowLamp5949f0, $L_672c60)        // "ThrowLamp"
+ASM_VAR(char, g_vtbl64d444w, $L_64d444)
+ASM_VAR(const float, k_green650978, $L_650978)
+ASM_VAR(const float, k_blue650974, $L_650974)
+
+// [FUN_5949f0] a fader: its own "ThrowLamp" light of strength k at p, added to the car's lights
+extern "C" BYTE* __fastcall Fader_Construct(BYTE* s, void*, BYTE* car, const Vec3* p, float k, int a3, int a4)
+{
+    F(int, s, 12) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 20) = 0;
+    F(int, s, 4) = 0;
+    F(int, s, 0) = 0;
+    F(Vec3, s, 12) = *p;
+    BYTE* o = (BYTE*)operator new(144);
+    if (o) {
+        NodeN_Construct(o, 0, &g_strThrowLamp5949f0, 21, 1);
+        Light_Init(o + 56, 0);
+        F(void*, o, 0) = &g_vtbl64d444w;
+        F(int, o, 136) = 1;
+        F(int, o, 140) = 0;
+    }
+    F(BYTE*, s, 24) = o;
+    F(int, o, 136) = 1;
+    BYTE* l = F(BYTE*, s, 24);
+    F(int, l, 140) = 1;
+    F(int, l, 56) = 2;
+    F(Vec3, l, 60) = F(Vec3, s, 12);
+    F(DWORD, l, 96) = 0x3F800000;
+    F(float, l, 108) = k;
+    F(float, l, 112) = (float)((double)k * k_green650978);
+    F(float, l, 116) = (float)((double)k * k_blue650974);
+    F(DWORD, l, 84) = 0x3F800000;
+    F(int, l, 88) = 0;
+    F(int, l, 92) = a4;
+    F(int, l, 128) = 70;
+    BYTE* lights = F(BYTE*, car, 528);
+    if (lights)
+        CallVirt(lights, 20, 0, F(BYTE*, s, 24));
+    F(int, s, 8) = a3;
+    F(float, s, 28) = (float)F(double, car, 2968);
+    return s;
+}
+
+extern "C" void FUN_59abb0(); KING_ALIAS("_FUN_59abb0", "@Effect_Construct2@52")
+ASM_FUNC(Crt_floor, _floor)
+ASM_VAR(char, g_vtbl650fc8, $L_650fc8)
+ASM_VAR(char, g_vtbl650f7c, $L_650f7c)
+
+// [FUN_59df00] constructs a debris effect: a random one of n frames, a random spin, falling (-9.81)
+extern "C" BYTE* __fastcall Debris_Construct(BYTE* s, void*, int a0, int a1, const Vec3* at, int a3, int a4, int n)
+{
+    CallThis(FUN_59abb0, s, a0, a1, a3, a3, a3, a3, a4, n, 1000.0f, 3.0f, 100);
+    F(int, s, 148) = 0;
+    F(int, s, 152) = 0;
+    F(int, s, 156) = 0;
+    F(DWORD, s, 128) |= 1;
+    F(void*, s, 0) = &g_vtbl650fc8;
+    F(void*, s, 20) = &g_vtbl650f7c;
+    F(Vec3, s, 148) = *at;
+    int r = rand();
+    int f = (int)CallC<double>(Crt_floor, (double)r * n * 3.0518509447574615e-05f);
+    F(int, s, 116) = f;
+    if (f > n - 1)
+        F(int, s, 116) = n - 1;
+    Vec3_Length(at);
+    r = rand();
+    F(DWORD, s, 176) = 0xC11CF5C3;      // -9.81f
+    F(DWORD, s, 172) = 0x3F3504F3;
+    F(DWORD, s, 168) = 0x3F3504F3;
+    F(int, s, 164) = 0;
+    F(float, s, 160) = (float)(((double)r * 3.0518509447574615e-05f + 1.0f) * 3.141592502593994f);
+    return s;
 }

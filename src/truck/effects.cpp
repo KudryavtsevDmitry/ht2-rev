@@ -2690,3 +2690,48 @@ extern "C" double __fastcall Fx_SwingStep(BYTE* s, void*, int a0, double a1, dou
     }
     return result;
 }
+
+extern "C" BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int a, int b);
+extern "C" void __fastcall Light_Init(BYTE* self, void*);
+ASM_VAR(BYTE*, g_thrownLamp696734, $L_696734)
+ASM_VAR(float, g_detail696078, $L_696078)
+ASM_VAR(char, g_strThrowLamp, $L_672c60)        // "ThrowLamp"
+ASM_VAR(char, g_vtbl64d444, $L_64d444)
+
+// a new "ThrowLamp" light object
+static BYTE* ThrowLamp_New()
+{
+    BYTE* o = (BYTE*)operator new(144);
+    if (!o)
+        return 0;
+    NodeN_Construct(o, 0, &g_strThrowLamp, 21, 1);
+    Light_Init(o + 56, 0);
+    F(void*, o, 0) = &g_vtbl64d444;
+    F(int, o, 136) = 1;
+    F(int, o, 140) = 0;
+    return o;
+}
+
+// [FUN_4d9cd0] the shared thrown-lamp light at the effect's position (once, at detail over 0.5)
+extern "C" void __fastcall Fx_ThrowLamp(BYTE* s, void*)
+{
+    if (g_thrownLamp696734 || !(g_detail696078 > 0.5f))
+        return;
+    BYTE* o = ThrowLamp_New();
+    g_thrownLamp696734 = o;
+    F(int, o, 136) = 1;
+    F(int, g_thrownLamp696734, 140) = 1;
+    F(int, g_thrownLamp696734, 56) = 2;
+    F(Vec3, g_thrownLamp696734, 60) = F(Vec3, s, 36);
+    F(DWORD, g_thrownLamp696734, 96) = 0x3F800000;
+    F(float, g_thrownLamp696734, 108) = g_fireRamp1[1];
+    F(float, g_thrownLamp696734, 112) = g_fireRamp2[1];
+    F(float, g_thrownLamp696734, 116) = g_fireRamp3[1];
+    F(DWORD, g_thrownLamp696734, 84) = 0x3F800000;
+    F(int, g_thrownLamp696734, 88) = 0;
+    F(DWORD, g_thrownLamp696734, 92) = 0x3C23D70A;     // 0.01f
+    F(int, g_thrownLamp696734, 128) = 70;
+    BYTE* lights = F(BYTE*, F(BYTE*, s, 32), 528);
+    if (lights)
+        CallVirt(lights, 20, 0, g_thrownLamp696734);
+}
