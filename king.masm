@@ -1024,6 +1024,8 @@ PUBLIC $L_64c240, $L_64c244, $L_64c628, $L_64c650, $L_64c668
 PUBLIC $L_66f9d0, $L_66fa14
 PUBLIC $L_68d4f4
 PUBLIC $L_652dc0, $L_723d28, $L_723d2c
+PUBLIC $L_66fddc, $L_66fde4, $L_66fe28, $L_66fe48, $L_66fe50, $L_66fe6c
+PUBLIC $L_66fe90, $L_66fe98, $L_66feb8
 
 ;===================================
 _TEXT SEGMENT
@@ -229917,6 +229919,8 @@ $L_480e5a::
             ret 
 FUN_480b00 ENDP
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_480e60 PROC
 
             push -1
@@ -229954,6 +229958,10 @@ FUN_480e60 PROC
             add ESP,20
             ret 
 FUN_480e60 ENDP
+ELSE
+EXTERN _Save_Player:PROC
+FUN_480e60 TEXTEQU <_Save_Player>
+ENDIF
 ALIGN 16
 FUN_480ed0 PROC
 
@@ -230106,6 +230114,8 @@ FUN_480ed0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_481040 PROC
 
             push -1
@@ -230164,6 +230174,10 @@ $L_4810ab::
             add ESP,20
             ret 
 FUN_481040 ENDP
+ELSE
+EXTERN _Save_Players:PROC
+FUN_481040 TEXTEQU <_Save_Players>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -230723,6 +230737,8 @@ FUN_481330 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_481640 PROC
 
             push -1
@@ -230776,6 +230792,10 @@ $L_4816a4::
             add ESP,20
             ret 
 FUN_481640 ENDP
+ELSE
+EXTERN _Save_Towns:PROC
+FUN_481640 TEXTEQU <_Save_Towns>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4816d0 PROC
@@ -231678,6 +231698,8 @@ FUN_481b20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_481f50 PROC
 
             push -1
@@ -231731,12 +231753,18 @@ $L_481fb0::
             add ESP,20
             ret 
 FUN_481f50 ENDP
+ELSE
+EXTERN _Save_Routes:PROC
+FUN_481f50 TEXTEQU <_Save_Routes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_481fe0 PROC
 
             push -1
@@ -231825,6 +231853,10 @@ $L_482071::
             add ESP,20
             ret 
 FUN_481fe0 ENDP
+ELSE
+EXTERN _Save_Road:PROC
+FUN_481fe0 TEXTEQU <_Save_Road>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -232035,6 +232067,8 @@ FUN_4820c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_482290 PROC
 
             push -1
@@ -232088,6 +232122,10 @@ $L_4822f4::
             add ESP,20
             ret 
 FUN_482290 ENDP
+ELSE
+EXTERN _Save_Roads:PROC
+FUN_482290 TEXTEQU <_Save_Roads>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_482320 PROC
@@ -232461,6 +232499,8 @@ FUN_4824a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_482680 PROC
 
             push -1
@@ -232514,8 +232554,14 @@ $L_4826e4::
             add ESP,20
             ret 
 FUN_482680 ENDP
+ELSE
+EXTERN _Save_Ambushes:PROC
+FUN_482680 TEXTEQU <_Save_Ambushes>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_482710 PROC
 
             push -1
@@ -232604,6 +232650,10 @@ $L_4827a1::
             add ESP,20
             ret 
 FUN_482710 ENDP
+ELSE
+EXTERN _Save_Obstacle:PROC
+FUN_482710 TEXTEQU <_Save_Obstacle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -232838,6 +232888,8 @@ FUN_4827f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4829e0 PROC
 
             push -1
@@ -232891,6 +232943,10 @@ $L_482a44::
             add ESP,20
             ret 
 FUN_4829e0 ENDP
+ELSE
+EXTERN _Save_Obstacles:PROC
+FUN_4829e0 TEXTEQU <_Save_Obstacles>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_482a70 PROC
