@@ -1435,3 +1435,57 @@ extern "C" void __fastcall Copter_Command(void* self, int, int cmd, int b)
     if (r || cmd == 11)
         CallThis(FUN_5662f0, self, cmd);
 }
+
+extern "C" void FUN_5a71d0(); KING_ALIAS("_FUN_5a71d0", "@Objects_Release@8")
+extern "C" void FUN_6148a0(); KING_ALIAS("_FUN_6148a0", "@Terrain_FreeObjects@8")
+ASM_VAR(BYTE*, g_objs6ce378, $L_6ce378)
+ASM_VAR(int, g_6f340c, $L_6f340c)
+ASM_VAR(int, g_replayOpen6f349c, $L_6f349c)
+ASM_VAR(BYTE*, g_shell6cec6cH, $L_6cec6c)
+ASM_VAR(BYTE*, g_terrain6f33b4, $L_6f33b4)
+ASM_VAR(int, g_6ce37c, $L_6ce37c)
+ASM_VAR(int, g_6ce384, $L_6ce384)
+ASM_VAR(int, g_6ce380, $L_6ce380)
+ASM_VAR(int, g_6f3430, $L_6f3430)
+ASM_VAR(int, g_6f3434, $L_6f3434)
+ASM_VAR(int, g_6f3438, $L_6f3438)
+ASM_VAR(int, g_w6f3498, $L_6f3498)
+ASM_VAR(int, g_6f33ac, $L_6f33ac)
+ASM_VAR(int, g_6f33b0, $L_6f33b0)
+
+// [FUN_56eea0] frees the world's objects, closes the replay file and frees the terrain
+extern "C" void __cdecl World_FreeAll()
+{
+    BYTE* o = g_objs6ce378;
+    g_6f340c = 0;
+    if (o) {
+        CallThis(FUN_5a71d0, o);
+        operator delete(o);
+        g_objs6ce378 = 0;
+    }
+    if (g_replayOpen6f349c) {
+        BYTE* r = F(BYTE*, g_shell6cec6cH, 1356);
+        FILE* f = F(FILE*, r, 7928);
+        if (f) {
+            fclose(f);
+            F(FILE*, r, 7928) = 0;
+            F(int, r, 7936) = 0;
+        }
+        g_replayOpen6f349c = 0;
+    }
+    BYTE* t = g_terrain6f33b4;
+    g_6ce37c = 0;
+    g_6ce384 = 0;
+    g_6ce380 = 0;
+    g_6f3430 = 0;
+    g_6f3434 = 0;
+    g_6f3438 = 0;
+    g_w6f3498 = 0;
+    g_6f33ac = 0;
+    g_6f33b0 = 0;
+    if (t) {
+        CallThis(FUN_6148a0, t);
+        operator delete(t);
+    }
+    g_terrain6f33b4 = 0;
+}

@@ -3240,7 +3240,7 @@ ASM_VAR(int, g_fx696230, $L_696230)
 ASM_VAR(int, g_fx696234, $L_696234)
 extern "C" void FUN_5c64f0(); KING_ALIAS("_FUN_5c64f0", "_Effects_FreeTrees")
 ASM_PROC(FUN_5e48f0)
-ASM_PROC(FUN_4bcbe0)
+extern "C" void FUN_4bcbe0(); KING_ALIAS("_FUN_4bcbe0", "@LightPool_Free@8")
 ASM_PROC(FUN_4c4780)
 extern "C" void FUN_4b89e0(); KING_ALIAS("_FUN_4b89e0", "_Fx_FreeBuffers")
 extern "C" void FUN_4cca50(); KING_ALIAS("_FUN_4cca50", "_Fx_Delete6961fc")
@@ -3271,4 +3271,121 @@ extern "C" void __cdecl Effects_Shutdown()
     CallC(FUN_4c4780);
     CallC(FUN_4b89e0);
     CallC(FUN_4cca50);
+}
+
+ASM_VAR(char, s_fmt672504, $L_672504)
+ASM_VAR(char, s_fmt67254c, $L_67254c)
+ASM_VAR(char, s_fmt67255c, $L_67255c)
+ASM_VAR(char, s_name67250c, $L_67250c)
+ASM_VAR(char, s_name672514, $L_672514)
+ASM_VAR(char, s_name672564, $L_672564)
+ASM_VAR(char, s_name6725c0, $L_6725c0)
+ASM_VAR(int, g_fxCount69621c, $L_69621c)
+ASM_VAR(int, g_fxCount696210, $L_696210)
+ASM_VAR(int, g_fxCount696218, $L_696218)
+ASM_VAR(int, g_fxCount696208, $L_696208)
+typedef BYTE* MatArray[1];
+ASM_VAR(MatArray, g_mats69618c, $L_69618c)
+ASM_VAR(MatArray, g_mats694998, $L_694998)
+ASM_VAR(MatArray, g_mats694a00, $L_694a00)
+ASM_VAR(MatArray, g_mats695bf0, $L_695bf0)
+
+// [FUN_4b8a10] loads the numbered materials of set 67250c from 1 until one is missing
+extern "C" void __cdecl Fx_LoadSet69618c()
+{
+    char buf[256];
+    g_fxCount69621c = 0;
+    for (int i = 1;; i++) {
+        sprintf(buf, &s_fmt672504, &s_name67250c, i);
+        BYTE* m = Fx_Material(buf, g_lib696200);
+        g_mats69618c[g_fxCount69621c] = m;
+        if (!m)
+            break;
+        F(DWORD, m, 88) = 0x3f800000;
+        F(DWORD, g_mats69618c[g_fxCount69621c], 32) |= 0x40220;
+        g_fxCount69621c++;
+    }
+}
+
+// [FUN_4b8ad0] loads the numbered materials of set 672514 from 1 until one is missing
+extern "C" void __cdecl Fx_LoadSet694998()
+{
+    char buf[256];
+    g_fxCount696210 = 0;
+    BYTE** p = g_mats694998;
+    for (int i = 1;; i++, p++) {
+        sprintf(buf, &s_fmt672504, &s_name672514, i);
+        BYTE* m = Fx_Material(buf, g_lib696200);
+        *p = m;
+        if (!m)
+            break;
+        g_fxCount696210++;
+        F(DWORD, m, 88) = 0x3f800000;
+        F(DWORD, *p, 32) |= 0x40220;
+    }
+}
+
+// [FUN_4b8f00] loads the numbered materials of set 6725c0 from 0 until one is missing
+extern "C" void __cdecl Fx_LoadSet694a00()
+{
+    char buf[256];
+    g_fxCount696218 = 0;
+    BYTE** p = g_mats694a00;
+    for (int i = 0;; i++, p++) {
+        sprintf(buf, &s_fmt672504, &s_name6725c0, i);
+        BYTE* m = Fx_Material(buf, g_lib696200);
+        *p = m;
+        if (!m)
+            break;
+        g_fxCount696218++;
+        F(DWORD, m, 88) = 0x3f800000;
+        F(DWORD, *p, 32) |= 0x40220;
+    }
+    if (!g_fxCount696218)
+        Fx_Error(698);
+}
+
+// [FUN_4b8c40] loads the numbered materials of set 672564 from 0 (two-digit names for the first ten)
+extern "C" void __cdecl Fx_LoadSet695bf0()
+{
+    char buf[256];
+    g_fxCount696208 = 0;
+    BYTE** p = g_mats695bf0;
+    for (int i = 0;; i++, p++) {
+        sprintf(buf, p > g_mats695bf0 + 9 ? &s_fmt67254c : &s_fmt67255c, &s_name672564, i);
+        BYTE* m = Fx_Material(buf, g_lib696200);
+        *p = m;
+        if (!m)
+            break;
+        g_fxCount696208++;
+        F(DWORD, m, 88) = 0x3f800000;
+        F(DWORD, *p, 32) |= 0x40220;
+    }
+    if (!g_fxCount696208)
+        Fx_Error(622);
+}
+
+// [FUN_4bcbe0] frees a light pool's buffers and its device object
+extern "C" void __fastcall LightPool_Free(BYTE* self, int)
+{
+    operator delete(F(void*, self, 0));
+    operator delete(F(void*, self, 4));
+    // the element destructor of the two arrays (FUN_50d190) does nothing
+    BYTE* a = F(BYTE*, self, 8);
+    if (a)
+        operator delete(a - 4);
+    a = F(BYTE*, self, 12);
+    if (a)
+        operator delete(a - 4);
+    void* d = F(void*, self, 36);
+    if (d) {
+        CallVirt(d, 36);
+        d = F(void*, self, 36);
+        if (d)
+            CallVirt(d, 0, 1);
+        F(void*, self, 36) = 0;
+    }
+    for (int i = 0; i < 10; i++)
+        F(int, self, 40 + i * 4) = 0;
+    F(int, self, 84) = 0;
 }
