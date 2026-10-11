@@ -1012,6 +1012,9 @@ PUBLIC $L_64e4d0, $L_64e510, $L_64e558, $L_64e598, $L_64e5e0, $L_64e620
 PUBLIC $L_64eb58, $L_672994, $L_6729a8, $L_676238, $L_676248, $L_676e94
 PUBLIC $L_676e9c, $L_676eb4, $L_696850, $L_696854, $L_6ce3b8, $L_6ce408
 PUBLIC $L_6ce430, $L_6ce988, $L_6ceb38, $L_720938
+PUBLIC $L_5a3df0, $L_64d81c, $L_65282c, $L_652840, $L_6528d8, $L_652924
+PUBLIC $L_652b84, $L_652c68, $L_652cb4
+PUBLIC $L_652168, $L_652738
 
 ;===================================
 _TEXT SEGMENT
@@ -771608,6 +771611,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5d8650 PROC
 
             push -1
@@ -771679,6 +771684,10 @@ $L_5d86b8::
             nop
             nop
 FUN_5d8650 ENDP
+ELSE
+EXTERN @Fw5d8650_Construct@24:PROC
+FUN_5d8650 TEXTEQU <@Fw5d8650_Construct@24>
+ENDIF
 $L_5d86f0 PROC
 
             push ESI
@@ -775494,6 +775503,8 @@ FUN_5da790 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5da840 PROC
 
             push -1
@@ -775536,6 +775547,10 @@ $L_5da88f::
             add ESP,16
             ret 
 FUN_5da840 ENDP
+ELSE
+EXTERN @Fw_EnsureHelper484@8:PROC
+FUN_5da840 TEXTEQU <@Fw_EnsureHelper484@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5da8a0 PROC
@@ -789030,6 +789045,8 @@ EXTERN @CGameApp_RunFrame@8:PROC
 $L_5e2040 TEXTEQU <@CGameApp_RunFrame@8>
 ENDIF
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e2730 PROC
 
             push -1
@@ -789066,6 +789083,10 @@ $L_5e2785::
             add ESP,16
             ret 
 FUN_5e2730 ENDP
+ELSE
+EXTERN _Fw_NewApp384:PROC
+FUN_5e2730 TEXTEQU <_Fw_NewApp384>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -791964,6 +791985,8 @@ EXTERN @Windows_AddActive@12:PROC
 FUN_5e4140 TEXTEQU <@Windows_AddActive@12>
 ENDIF
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e4170 PROC
 
             push -1
@@ -792011,6 +792034,10 @@ $L_5e41b7::
             add ESP,16
             ret 4
 FUN_5e4170 ENDP
+ELSE
+EXTERN @Fw_NewChild64@12:PROC
+FUN_5e4170 TEXTEQU <@Fw_NewChild64@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -792854,6 +792881,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e4750 PROC
 
             push -1
@@ -792921,6 +792950,10 @@ FUN_5e4750 PROC
             add ESP,16
             ret 4
 FUN_5e4750 ENDP
+ELSE
+EXTERN @NamedTable_Construct@12:PROC
+FUN_5e4750 TEXTEQU <@NamedTable_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -792949,6 +792982,8 @@ $L_5e47f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e4810 PROC
 
             push -1
@@ -792974,6 +793009,10 @@ FUN_5e4810 PROC
             add ESP,16
             ret 
 FUN_5e4810 ENDP
+ELSE
+EXTERN @NamedTable_Destroy@8:PROC
+FUN_5e4810 TEXTEQU <@NamedTable_Destroy@8>
+ENDIF
 ALIGN 16
 FUN_5e4860 PROC
 
@@ -814827,6 +814866,8 @@ $L_5ef430 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ef450 PROC
 
             push -1
@@ -814852,6 +814893,10 @@ FUN_5ef450 PROC
             add ESP,16
             ret 
 FUN_5ef450 ENDP
+ELSE
+EXTERN @Node_Destroy@8:PROC
+FUN_5ef450 TEXTEQU <@Node_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -815218,6 +815263,8 @@ $L_5ef6b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ef6d0 PROC
 
             push -1
@@ -815302,6 +815349,10 @@ $L_5ef759::
             add ESP,16
             ret 8
 FUN_5ef6d0 ENDP
+ELSE
+EXTERN @Node_Construct@16:PROC
+FUN_5ef6d0 TEXTEQU <@Node_Construct@16>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5ef780 PROC
@@ -816740,6 +816791,8 @@ $L_5f06c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f06e0 PROC
 
             push -1
@@ -816792,6 +816845,10 @@ $L_5f0731::
             add ESP,16
             ret 
 FUN_5f06e0 ENDP
+ELSE
+EXTERN @Node5f06e0_Destroy@8:PROC
+FUN_5f06e0 TEXTEQU <@Node5f06e0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -816837,6 +816894,8 @@ $L_5f0780 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f07a0 PROC
 
             push -1
@@ -816862,6 +816921,10 @@ FUN_5f07a0 PROC
             add ESP,16
             ret 
 FUN_5f07a0 ENDP
+ELSE
+EXTERN @Node5f07a0_Destroy@8:PROC
+FUN_5f07a0 TEXTEQU <@Node5f07a0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -816888,6 +816951,8 @@ $L_5f07f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f0810 PROC
 
             push -1
@@ -816916,6 +816981,10 @@ FUN_5f0810 PROC
             add ESP,16
             ret 
 FUN_5f0810 ENDP
+ELSE
+EXTERN @Node5f0810_Destroy@8:PROC
+FUN_5f0810 TEXTEQU <@Node5f0810_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -818248,6 +818317,8 @@ $L_5f1510 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f1530 PROC
 
             push -1
@@ -818284,6 +818355,10 @@ FUN_5f1530 PROC
             add ESP,16
             ret 4
 FUN_5f1530 ENDP
+ELSE
+EXTERN @Node5f1530_Construct@12:PROC
+FUN_5f1530 TEXTEQU <@Node5f1530_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -818296,6 +818371,8 @@ FUN_5f1530 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f15a0 PROC
 
             push -1
@@ -818343,6 +818420,10 @@ $L_5f15f1::
             add ESP,16
             ret 
 FUN_5f15a0 ENDP
+ELSE
+EXTERN @Node5f1530_Destroy@8:PROC
+FUN_5f15a0 TEXTEQU <@Node5f1530_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -818777,6 +818858,8 @@ $L_5f18aa ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f19b0 PROC
 
             push -1
@@ -818835,6 +818918,10 @@ $L_5f1a2f::
             add ESP,16
             ret 12
 FUN_5f19b0 ENDP
+ELSE
+EXTERN @NodeN_Construct@20:PROC
+FUN_5f19b0 TEXTEQU <@NodeN_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -834280,6 +834367,8 @@ $L_5fa9d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5faa60 PROC
 
             push -1
@@ -834322,6 +834411,10 @@ $L_5faab0::
             add ESP,16
             ret 
 FUN_5faa60 ENDP
+ELSE
+EXTERN @Node5faa60_Destroy@8:PROC
+FUN_5faa60 TEXTEQU <@Node5faa60_Destroy@8>
+ENDIF
           BYTE 090H
 $L_5faad0 PROC
 
@@ -837788,6 +837881,8 @@ $L_5fcba0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fcc70 PROC
 
             push -1
@@ -837816,6 +837911,10 @@ FUN_5fcc70 PROC
             add ESP,16
             ret 
 FUN_5fcc70 ENDP
+ELSE
+EXTERN @Node5fcc70_Destroy@8:PROC
+FUN_5fcc70 TEXTEQU <@Node5fcc70_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

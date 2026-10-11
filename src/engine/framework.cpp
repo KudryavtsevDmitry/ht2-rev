@@ -26,6 +26,12 @@ extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);                       
 extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);                  // clusters.cpp
 
 ASM_PROC(FUN_5b6e00)
+extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
+ASM_PROC(FUN_5e43e0)
+ASM_PROC(FUN_5dd0d0)
+ASM_VAR(AsmLabel, g_vtbl652168, $L_652168)
+ASM_VAR(AsmLabel, g_vtbl652738, $L_652738)
+ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
 ASM_PROC(FUN_5b6bf0)
 ASM_PROC(FUN_5b6b10)
 ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
@@ -730,6 +736,79 @@ void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, in
 {
     if (font && s)
         CallC(FUN_5ea1b0, a, b, c, Font_TextWidth(font, 0, s) + 1, font, s, d, e);
+}
+
+}
+
+// --- constructors/destructors with exception frames (the frames only rethrow)
+
+extern "C" {
+
+// [FUN_5d8650]
+BYTE* __fastcall Fw5d8650_Construct(BYTE* self, void*, int a, int b, int c, int d)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = g_vtbl652168;
+    BYTE* o = (BYTE*)operator new(124);
+    BYTE* r = o ? CallThis<BYTE*>(FUN_5b6a50, o, a, b, c, d) : 0;
+    F(int, self, 24) = 0;
+    F(BYTE*, self, 12) = r;
+    F(int, self, 52) = 0;
+    F(int, self, 48) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 16) = 3;
+    return self;
+}
+
+// [FUN_5da840] makes the 40-byte helper at +484 on first use
+void __fastcall Fw_EnsureHelper484(BYTE* self, void*)
+{
+    if (F(BYTE*, self, 484))
+        return;
+    BYTE* o = (BYTE*)operator new(40);
+    F(BYTE*, self, 484) = o ? CallThis<BYTE*>(FUN_5e43e0, o, self) : 0;
+}
+
+// [FUN_5e2730] the application's 196-byte object at +384
+BYTE* __cdecl Fw_NewApp384()
+{
+    BYTE* o = (BYTE*)operator new(196);
+    BYTE* r = o ? CallThis<BYTE*>(FUN_5dd0d0, o) : 0;
+    F(BYTE*, g_app, 384) = r;
+    return r;
+}
+
+// [FUN_5e4170] a new 64-byte child with flag 4, registered with self
+BYTE* __fastcall Fw_NewChild64(BYTE* self, void*, int a)
+{
+    BYTE* o = (BYTE*)operator new(64);
+    BYTE* r = o ? View_Construct(o, 0, F(int, self, 252), (BYTE*)a) : 0;
+    F(DWORD, r, 16) |= 4;
+    Windows_Add(self, 0, r);
+    return r;
+}
+
+// [FUN_5e4750] a named table of 1000 entries
+BYTE* __fastcall NamedTable_Construct(BYTE* self, void*, const char* name)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = g_vtbl652738;
+    char* p = (char*)operator new(strlen(name) + 1);
+    F(char*, self, 4016) = p;
+    strcpy(p, name);
+    memset(self + 12, 0, 4000);
+    F(int, self, 4012) = 2;
+    return self;
+}
+
+// [FUN_5e4810]
+void __fastcall NamedTable_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl652738;
+    operator delete(F(void*, self, 4016));
+    F(void*, self, 0) = g_vtbl64d81c;
 }
 
 }

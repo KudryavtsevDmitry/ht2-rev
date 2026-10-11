@@ -28,8 +28,23 @@ extern "C" void __cdecl Channel_SetFrequency(int id, int f);                    
 extern "C" int __cdecl Mixer_Load(int idx, int a, int b);                           // directsound.cpp
 
 ASM_PROC(FUN_5f2a40)
-ASM_PROC(FUN_5ef6d0)    // base node constructor (name, kind)
-ASM_PROC(FUN_5f19b0)    // named object constructor (name, kind, flag)
+extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // base node constructor (name, kind)
+ASM_PROC(FUN_5e5840)
+ASM_PROC(FUN_5f1a70)
+ASM_PROC(FUN_5f4a90)
+extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
+ASM_PROC(FUN_5ef660)
+ASM_VAR(AsmLabel, g_dtor5a3df0, $L_5a3df0)
+ASM_VAR(AsmLabel, g_dtor5e57a0, $L_5e57a0)
+ASM_VAR(AsmLabel, g_vtbl65282c, $L_65282c)
+ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
+ASM_VAR(AsmLabel, g_vtbl652840, $L_652840)
+ASM_VAR(AsmLabel, g_vtbl652b84, $L_652b84)
+ASM_VAR(AsmLabel, g_vtbl6528d8, $L_6528d8)
+ASM_VAR(AsmLabel, g_vtbl652c68, $L_652c68)
+ASM_VAR(AsmLabel, g_vtbl652cb4, $L_652cb4)
+ASM_VAR(AsmLabel, g_vtbl652924, $L_652924)
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object constructor (name, kind, flag)
 extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    // mixer volume, returns double
 ASM_PROC(FUN_604730)
 ASM_PROC(FUN_604d70)
@@ -496,6 +511,134 @@ void __fastcall Sound_SetPitch(BYTE* self, void*, float f)
     int id = F(int, self, 24);
     if (id != -1)
         Channel_SetFrequency(id, (int)((double)f * 1000.0f));
+}
+
+}
+
+// --- constructors/destructors with exception frames (the frames only rethrow)
+
+// delete[] of an array with a count prefix, destroying the elements last to first
+static void ArrayDelete(BYTE* p, unsigned size, void (*dtor)())
+{
+    if (!p)
+        return;
+    int n = F(int, p, -4);
+    for (int i = n - 1; i >= 0; i--)
+        CallThis(dtor, p + i * size);
+    operator delete(p - 4);
+}
+
+extern "C" {
+
+// [FUN_5ef6d0] base node constructor (name, kind)
+BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 32) = 0;
+    F(void*, self, 0) = g_vtbl652840;
+    if (name && *name) {
+        char* p = (char*)operator new(strlen(name) + 1);
+        F(char*, self, 12) = p;
+        strcpy(p, name);
+    } else {
+        F(char*, self, 12) = 0;
+    }
+    F(BYTE, self, 40) = 0;
+    F(int, self, 16) = kind;
+    F(int, self, 44) = 0;
+    F(int, self, 36) = 0;
+    return self;
+}
+
+// [FUN_5ef450] base node destructor
+void __fastcall Node_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl65282c;
+    operator delete(F(void*, self, 12));
+    F(void*, self, 0) = g_vtbl64d81c;
+}
+
+// [FUN_5f19b0] a node with n child slots
+BYTE* __fastcall NodeN_Construct(BYTE* self, void*, const char* name, int kind, int n)
+{
+    Node_Construct(self, 0, name, kind);
+    F(void*, self, 0) = g_vtbl652cb4;
+    F(int, self, 52) = n;
+    F(void**, self, 48) = n ? (void**)operator new(n * 4) : 0;
+    for (int i = 0; i < F(int, self, 52); i++)
+        F(void**, self, 48)[i] = 0;
+    return self;
+}
+
+// [FUN_5f1530]
+BYTE* __fastcall Node5f1530_Construct(BYTE* self, void*, const char* name)
+{
+    Node_Construct(self, 0, name, 1);
+    CallThis(FUN_5e5cb0, self + 60);
+    F(short, self, 96) = 0;
+    F(short, self, 98) = 0;
+    F(short, self, 52) = 0;
+    F(int, self, 56) = 0;
+    F(int, self, 48) = 0;
+    F(void*, self, 0) = g_vtbl652c68;
+    return self;
+}
+
+// [FUN_5f15a0]
+void __fastcall Node5f1530_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl652c68;
+    ArrayDelete(F(BYTE*, self, 56), 88, (void (*)())(void*)g_dtor5e57a0);
+    CallThis(FUN_5e5840, self + 60);
+    CallThis(FUN_5ef660, self);
+}
+
+// [FUN_5f06e0]
+void __fastcall Node5f06e0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl652b84;
+    ArrayDelete(F(BYTE*, self, 64), 28, (void (*)())(void*)g_dtor5a3df0);
+    operator delete(F(void*, self, 68));
+    CallThis(FUN_5e5840, self + 72);
+    CallThis(FUN_5f1a70, self);
+}
+
+// [FUN_5f07a0]
+void __fastcall Node5f07a0_Destroy(BYTE* self, void*)
+{
+    CallThis(FUN_5f4a90, self + 56);
+    CallThis(FUN_5f1a70, self);
+}
+
+// [FUN_5f0810]
+void __fastcall Node5f0810_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl6528d8;
+    operator delete(F(void*, self, 80));
+    CallThis(FUN_5f1a70, self);
+}
+
+// [FUN_5faa60]
+void __fastcall Node5faa60_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl652924;
+    operator delete(F(void*, self, 56));
+    operator delete(F(void*, self, 60));
+    if (F(void*, self, 52))
+        operator delete(F(void*, self, 52));
+    CallThis(FUN_5ef660, self);
+}
+
+// [FUN_5fcc70]
+void __fastcall Node5fcc70_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl652d68;
+    operator delete(F(void*, self, 64));
+    CallThis(FUN_5f1a70, self);
 }
 
 }
