@@ -821,3 +821,25 @@ BYTE* __fastcall BytesNode4b61c0_Construct(BYTE* self, void*, BYTE* const* src) 
 BYTE* __fastcall BytesNode4b6400_Construct(BYTE* self, void*, BYTE* const* src) { return BytesNode_Construct(self, src, &g_vtbl64c118); }
 
 }
+
+ASM_PROC(FUN_4b6f70)
+
+struct Value3v { BYTE* obj; int len; DWORD flags; };
+
+extern "C" {
+
+// [FUN_4b8070] out = the value FUN_4b6f70 makes of a, h1 and h2 (by value)
+DWORD* __cdecl Sch4b8070(DWORD* out, int a, Value3v h1, Value3v h2)
+{
+    int t = a;
+    DWORD r[4];
+    r[0] = 0;
+    CallC(FUN_4b6f70, r, &h1, &h2, &t);
+    CopyRef((BYTE*)out, (const BYTE*)(r + 1));
+    SchRef_Release(r + 1);
+    SchRef_Release((DWORD*)&h1);
+    SchRef_Release((DWORD*)&h2);
+    return out;
+}
+
+}

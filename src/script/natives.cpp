@@ -18,7 +18,7 @@ ASM_PROC(FUN_4a36f0)    // destructor of the value holders (map and list entries
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
-ASM_PROC(FUN_4ab570)    // constructs a 44-byte element at p from x
+extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
@@ -540,6 +540,55 @@ void __fastcall IntDeque_Construct(int* self, void*, unsigned n)
     self[8] = (int)finish[-1] + 512;
     self[2] = self[3];
     self[6] = self[7] + (n & 127) * 4;
+}
+
+}
+
+ASM_PROC(FUN_4b66f0)
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // script type error (code, level, got, expected)
+
+extern "C" {
+
+// [FUN_4a25d0] out = a new vector object (kind 10) made from a, *b and the
+// value *h; a type error when the object isn't a vector
+DWORD* __cdecl Sch_MakeVector4a25d0(DWORD* out, int unused, int a, const int* b, const DWORD* h)
+{
+    BYTE* o = (BYTE*)operator new(32);
+    BYTE* v = 0;
+    if (o) {
+        DWORD c[3];
+        if (h[2] & 0x10000) {
+            c[2] = h[2];
+            c[0] = h[0];
+            c[1] = h[1];
+        } else {
+            c[1] = 0;
+            if (h[0]) {
+                c[0] = h[0];
+                c[2] = h[2];
+                F(int, (BYTE*)c[0], 4)++;
+            } else {
+                c[0] = 0;
+                c[2] = 0;
+            }
+        }
+        v = CallThis<BYTE*>(FUN_4b66f0, o, a, *b, c[0], c[1], c[2]);
+    }
+    out[0] = out[1] = out[2] = 0;
+    if (!v) {
+        out[0] = 0;
+        out[2] = 0;
+        return out;
+    }
+    if (CallVirt<int>(v, 0) != 10) {
+        const char* name = CallVirt<const char*>(v, 4);
+        CallC(FUN_4a54e0, 2, 1, name, "Vector");
+        return out;
+    }
+    out[0] = (DWORD)v;
+    out[2] = CallVirt<int>(v, 0) & 255;
+    F(int, (BYTE*)out[0], 4)++;
+    return out;
 }
 
 }

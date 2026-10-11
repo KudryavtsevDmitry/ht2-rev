@@ -4860,7 +4860,6 @@ extern "C" BYTE* __fastcall Fx_InitState(BYTE* s, void*);
 extern "C" DWORD* __cdecl UninitCopyDwords(const DWORD* first, const DWORD* last, DWORD* dest);
 extern "C" bool __fastcall Waypoints_RemoveNode(void* self, void*, int node);
 extern "C" void __cdecl Player_UpdateOrders(BYTE* p);
-KING_ALIAS("_Player_UpdateOrders", "FUN_478100")
 
 static const char s_actOnSemiArrival[] = "actOnSemiArrival(PlayerId player)";
 static const char s_destroyPresentSilently[] = "destroyPresentSilently(PresentId present)";
