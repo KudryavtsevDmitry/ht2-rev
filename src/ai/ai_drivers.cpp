@@ -163,7 +163,7 @@ KING_ALIAS("_AI_Now", "FUN_401000")
 extern "C" void __cdecl AI_SortTimes(double* first, double* last, int, int, int);
 KING_ALIAS("_AI_SortTimes", "FUN_47be40")
 extern "C" const char* __cdecl AI_Text(const char* key);
-KING_ALIAS("_AI_Text", "FUN_40e270")
+KING_ALIAS("_AI_Text", "_Message_Text")
 extern "C" void __cdecl Messages_Add(const char* text);          // copter.cpp
 ASM_VAR(int, g_dealersBusy, $L_68d154)
 

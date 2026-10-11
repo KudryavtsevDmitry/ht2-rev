@@ -997,6 +997,8 @@ PUBLIC $L_678acc, $L_67fb20, $L_683b40, $L_683b44, $L_683b48, $L_683b4c
 PUBLIC $L_683b50, $L_7208b4, $L_720900, $L_720910, $L_7218d0, $L_7228ec
 PUBLIC $L_7231a0
 PUBLIC $L_66ca58, $L_66ca60, $L_68d0d0, $L_68d0e0
+PUBLIC $L_66cc78, $L_66cc8c, $L_66cdd8, $L_68a850, $L_68a854, $L_71e810
+PUBLIC $L_71e814, $L_71e818
 
 ;===================================
 _TEXT SEGMENT
@@ -6254,6 +6256,8 @@ FUN_4031e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_403680 PROC
 
             push -1
@@ -6423,6 +6427,10 @@ $L_4037fc::
             add ESP,16
             ret 
 FUN_403680 ENDP
+ELSE
+EXTERN @Rec403680_Destroy@8:PROC
+FUN_403680 TEXTEQU <@Rec403680_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -7419,6 +7427,8 @@ EXTERN _Copy4:PROC
 FUN_404260 TEXTEQU <_Copy4>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_404290 PROC
 
             push -1
@@ -7580,6 +7590,10 @@ $L_404400::
             add ESP,16
             ret 
 FUN_404290 ENDP
+ELSE
+EXTERN @Rec404290_Destroy@8:PROC
+FUN_404290 TEXTEQU <@Rec404290_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -7750,6 +7764,8 @@ FUN_404420 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_404570 PROC
 
             push -1
@@ -7878,6 +7894,10 @@ $L_40468e::
             add ESP,20
             ret 
 FUN_404570 ENDP
+ELSE
+EXTERN @Rec404570_Destroy@8:PROC
+FUN_404570 TEXTEQU <@Rec404570_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -8001,6 +8021,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_404790 PROC
 
             push -1
@@ -8176,6 +8198,10 @@ $L_404902::
             add ESP,20
             ret 
 FUN_404790 ENDP
+ELSE
+EXTERN @Rec404790_Destroy@8:PROC
+FUN_404790 TEXTEQU <@Rec404790_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -19587,6 +19613,8 @@ FUN_40aa00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40ad00 PROC
 
             push -1
@@ -19725,6 +19753,10 @@ $L_40ae67::
             add ESP,20
             ret 
 FUN_40ad00 ENDP
+ELSE
+EXTERN _Ai_FinishRacingPlayer:PROC
+FUN_40ad00 TEXTEQU <_Ai_FinishRacingPlayer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -21656,6 +21688,8 @@ FUN_40c1a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40c220 PROC
 
             push EBP
@@ -21818,6 +21852,10 @@ $L_40c361::
             pop EBP
             ret 4
 FUN_40c220 ENDP
+ELSE
+EXTERN @Rec40c220_Copy@12:PROC
+FUN_40c220 TEXTEQU <@Rec40c220_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -22851,6 +22889,8 @@ FUN_40cc50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40cda0 PROC
 
             push -1
@@ -22990,6 +23030,10 @@ $L_40ce9e::
             add ESP,24
             ret 4
 FUN_40cda0 ENDP
+ELSE
+EXTERN @Rec40cda0_Copy@12:PROC
+FUN_40cda0 TEXTEQU <@Rec40cda0_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -24820,6 +24864,8 @@ EXTERN @Rec_Init40e240@8:PROC
 FUN_40e240 TEXTEQU <@Rec_Init40e240@8>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40e270 PROC
 
             push -1
@@ -25001,6 +25047,10 @@ $L_40e3f1::
             add ESP,36
             ret 
 FUN_40e270 ENDP
+ELSE
+EXTERN _Message_Text:PROC
+FUN_40e270 TEXTEQU <_Message_Text>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
