@@ -1211,7 +1211,7 @@ extern "C" double __fastcall Ramp_High(BYTE* self, void*);       // vehicle_phys
 extern "C" double __fastcall Ramp_Position(BYTE* self, void*);
 extern "C" int* __cdecl Player_CarId(int* out);                  // helicopter.cpp
 extern "C" double __cdecl Driver_CargoFactor(int car);           // ai_drivers.cpp
-ASM_PROC(FUN_43f620)    // a vehicle's flags by id
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a vehicle's flags by id
 
 // [FUN_511910] the player truck's load factor: weight, cargo and the pedal over 0.7
 extern "C" double __cdecl Player_LoadFactor(double base)

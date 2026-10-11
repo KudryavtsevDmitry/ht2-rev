@@ -95,7 +95,7 @@ ASM_PROC(FUN_5d3110)
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 ASM_PROC(FUN_4cf400)
 ASM_PROC(FUN_544df0)
-ASM_PROC(FUN_446c80)
+extern "C" void FUN_446c80(); KING_ALIAS("_FUN_446c80", "_Player_SetFlag20000")
 ASM_VAR(int, g_6f6a84, $L_6f6a84)
 ASM_VAR(int, g_6f6a8c, $L_6f6a8c)
 ASM_VAR(int, g_6f6a98, $L_6f6a98)
@@ -1251,7 +1251,7 @@ extern "C" void __cdecl Fx_Shadow(int a, int b, int c, int d, int tree)
         Hits_Remember((BYTE*)g_696234, 0, (const BYTE*)a, b);
 }
 
-ASM_PROC(FUN_4ccd50)
+extern "C" void FUN_4ccd50(); KING_ALIAS("_FUN_4ccd50", "_Fade_RunStage")
 ASM_PROC(FUN_5d2ba0)    // shows an error text (text, a)
 extern "C" Matrix* __fastcall Matrix_IdentityThis(Matrix* self, void*);   // vecmath.cpp
 ASM_VAR(BYTE*, g_glows, $L_696248)              // 100 records of 116 bytes
@@ -2456,7 +2456,7 @@ extern "C" void __cdecl Color_ToHsl(float r, float g, float b, float* h, float* 
 }
 
 extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")
-ASM_PROC(FUN_43f620)    // a vehicle's flags by id
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a vehicle's flags by id
 ASM_PROC(FUN_438d70)
 ASM_PROC(FUN_43a780)    // the matrix of a position
 ASM_VAR(Vec3, g_up702640, $L_702640)
@@ -2990,7 +2990,7 @@ extern "C" void __cdecl Fx_CrashBurst(Vec3 p, Vec3 v, Vec3 w, int flags, float s
 }
 
 ASM_PROC(FUN_43fc40)    // a vehicle's info by id (id, out)
-ASM_PROC(FUN_43f690)    // sets a vehicle's flags (id, flags)
+extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    // sets a vehicle's flags (id, flags)
 ASM_PROC(FUN_4cf080)
 extern "C" void __fastcall Car_SetInMode(BYTE* car, void*, int mode);
 extern "C" void __fastcall Flags1196_Clear(BYTE* self, void*, int bits);
@@ -3201,4 +3201,32 @@ extern "C" void __fastcall EffectBuf_Destroy(BYTE* self, int)
 extern "C" int __cdecl Effects_Register()
 {
     return CallC<int>(FUN_60aa60, 2, &g_6726a4, &g_6726e0, &g_6726e8, 32, &g_6724f8);
+}
+
+extern "C" void FUN_4ccb70(); KING_ALIAS("_FUN_4ccb70", "_Fade_Age")
+extern "C" void FUN_4ccbc0(); KING_ALIAS("_FUN_4ccbc0", "_Fade_Switch")
+extern "C" void FUN_4ccc70(); KING_ALIAS("_FUN_4ccc70", "_Fade_SwitchStep")
+extern "C" void FUN_4ccd20(); KING_ALIAS("_FUN_4ccd20", "_Fade_Set")
+ASM_PROC(FUN_5f36d0)
+
+// [FUN_4ccd50] runs the step of a fade for its stage
+extern "C" int __cdecl Fade_RunStage(void* f, int t)
+{
+    switch (CallC<int>(FUN_4ccb70, f)) {
+    case 0: return CallC<int>(FUN_4ccbc0, f, t);
+    case 1: return CallC<int>(FUN_4ccc70, f, t);
+    case 2: return CallC<int>(FUN_4ccd20, f, t);
+    }
+    return 0;
+}
+
+// [FUN_4c0d80] initializes the base, then the material at +72: alpha 1, flags 0x40000 and 2
+extern "C" void __fastcall EffectMat_Init(BYTE* self, int, int a, int b)
+{
+    CallThis(FUN_5f36d0, self, a, b);
+    BYTE* m = F(BYTE*, self, 72);
+    F(DWORD, m, 88) = 0x3f800000;
+    F(DWORD, F(BYTE*, self, 72), 32) |= 0x40000;
+    F(DWORD, F(BYTE*, self, 72), 32) |= 2;
+    F(int, self, 68) = 0;
 }

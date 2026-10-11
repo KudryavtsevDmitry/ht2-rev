@@ -1336,7 +1336,7 @@ extern "C" void __cdecl Gauge_Create(DWORD x0, DWORD y0, DWORD z0, DWORD x1, DWO
 
 ASM_PROC(FUN_43fc40)    // a vehicle's info by id (id, out)
 ASM_PROC(FUN_5ea1b0)    // text in a box
-ASM_PROC(FUN_43f620)    // a vehicle's flags by id
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a vehicle's flags by id
 ASM_VAR(void*, g_font6ced24, $L_6ced24)
 ASM_VAR(char, g_fmtPercent, $L_67c3e0)       // "%d%c"
 ASM_VAR(char, g_fmtInt66c8cc, $L_66c8cc)     // "%d"

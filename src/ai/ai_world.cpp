@@ -1486,7 +1486,7 @@ double __fastcall Height_Closeness(const double* s, void*, BYTE*** node)        
 // Batch 4: id iterators, name lookups, STL instances
 
 extern "C" void __cdecl AI_42db90();
-KING_ALIAS("_AI_42db90", "FUN_42db90")
+KING_ALIAS("_AI_42db90", "_AI_FreeList68b99c")
 extern "C" void __cdecl AI_4031e0();
 KING_ALIAS("_AI_4031e0", "FUN_4031e0")
 extern "C" void __cdecl AI_449c40(void* out, void* x);
@@ -2433,7 +2433,7 @@ KING_ALIAS("_Vehicle_Distances", "_Vehicle_Costs")
 extern "C" const char* __cdecl AI_Text76(const char* key);
 KING_ALIAS("_AI_Text76", "_Message_Text")
 extern "C" const char* __cdecl AI_Text40e4c0(const char* key);
-KING_ALIAS("_AI_Text40e4c0", "FUN_40e4c0")
+KING_ALIAS("_AI_Text40e4c0", "_Message_TextWithSuffix")
 extern "C" const char* __cdecl Node_Name(int node);
 KING_ALIAS("_Node_Name", "FUN_436490")
 extern "C" void __cdecl Str_56ae60(const char* s);
@@ -5817,7 +5817,7 @@ extern "C" void __cdecl Costs_Balance(BYTE* p, double* a, double* b, double* out
     *out = *a / F(double, rec, 16);
 }
 
-ASM_PROC(FUN_446c80)
+extern "C" void FUN_446c80(); KING_ALIAS("_FUN_446c80", "_Player_SetFlag20000")
 extern "C" void __cdecl Ai_KillDelayedPlayers();
 ASM_VAR(double, g_camX68bab0, $L_68bab0)
 ASM_VAR(double, g_camY68bab8, $L_68bab8)
@@ -5881,7 +5881,7 @@ extern "C" PositionId* __cdecl Road_RandomFarPosition(PositionId* out)
 
 // ---- static initializers of the AI globals ----
 
-ASM_PROC(FUN_438c90)
+extern "C" void FUN_438c90(); KING_ALIAS("_FUN_438c90", "_Player_Set884")
 extern "C" void FUN_447b00(); KING_ALIAS("_FUN_447b00", "@List16_Construct@12")
 ASM_PROC(FUN_4484d0)
 extern "C" void FUN_448cd0(); KING_ALIAS("_FUN_448cd0", "@Vec4b_Construct@20")
@@ -6250,4 +6250,148 @@ extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)
 extern "C" int __cdecl AI_RoomFlags4096(int id)
 {
     return CallC<int>(FUN_438c90, id, 4096);
+}
+
+ASM_VAR(AsmLabel, s_recIdType66d64c, $L_66d64c)
+ASM_VAR(AsmLabel, s_suffix66c4e4, $L_66c4e4)
+ASM_VAR(AsmLabel, s_fmt66d9c8, $L_66d9c8)
+ASM_VAR(AsmLabel, s_fmt66d9c4, $L_66d9c4)
+ASM_VAR(AsmLabel, s_fmt66daa8, $L_66daa8)
+ASM_VAR(AsmLabel, s_prefix66c7ec, $L_66c7ec)
+ASM_VAR(char, g_text68cdac, $L_68cdac)
+ASM_VAR(double, g_time68d1b8, $L_68d1b8)
+ASM_VAR(void**, g_list68b99c, $L_68b99c)
+extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")    // updates a player's flags
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")    // adds a message to the message list
+ASM_PROC(FUN_403940)
+
+// [FUN_43f700] the value at +8 of a record id's record
+extern "C" int __cdecl Rec_Field8(BYTE* id)
+{
+    if (Rec_NotValid(id)) {
+        sprintf(g_text77e5e0, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16594, s_invalidId, s_recIdType66d64c, g_text77e5e0);
+    }
+    return F(int, F(BYTE*, id, 8), 8);
+}
+
+// [FUN_43f760] the double at +136 of a player
+extern "C" double __cdecl Player_Value136(BYTE* id)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16607, s_invalidId, s_playerIdType, g_numberText);
+    }
+    return F(double, id, 136);
+}
+
+// [FUN_446c80] sets player flag 0x20000
+extern "C" void __cdecl Player_SetFlag20000(BYTE* id)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 18335, s_invalidId, s_playerIdType, g_numberText);
+    }
+    F(DWORD, id, 96) |= 0x20000;
+}
+
+// [FUN_438c90] sets the player's value at +884
+extern "C" void __cdecl Player_Set884(BYTE* id, int v)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 15275, s_invalidId, s_playerIdType, g_numberText);
+    }
+    F(int, id, 884) = v;
+}
+
+// [FUN_43f620] a player's flags (0 for an invalid player), updated first
+extern "C" int __cdecl Player_Flags(BYTE* id)
+{
+    if (F(DWORD, id, 88) != 0x12345678)
+        return 0;
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16571, s_invalidId, s_playerIdType, g_numberText);
+    }
+    CallC(FUN_477210, id);
+    return F(int, id, 96);
+}
+
+// [FUN_43f690] sets a player's flags and updates them
+extern "C" void __cdecl Player_SetFlags(BYTE* id, int flags)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16578, s_invalidId, s_playerIdType, g_numberText);
+    }
+    F(int, id, 96) = flags;
+    CallC(FUN_477210, id);
+}
+
+// [FUN_40e4c0] the text of a message followed by the suffix, in a static buffer
+extern "C" char* __cdecl Message_TextWithSuffix(const char* id)
+{
+    strncpy(&g_text68cdac, Message_Text(id), 256);
+    strncat(&g_text68cdac, s_suffix66c4e4, 256);
+    return &g_text68cdac;
+}
+
+// [FUN_426ab0] adds the message of a numbered id to the message list
+extern "C" void __cdecl Messages_AddNumbered(int n)
+{
+    char buf[128];
+    sprintf(buf, s_fmt66d9c8, n);
+    sprintf(buf, s_fmt66d9c4, Message_Text(buf));
+    CallC(FUN_56ae60, buf);
+}
+
+// [FUN_427ee0] notes the time and shows the message of a numbered id on screen
+extern "C" void __cdecl Messages_ShowNumbered(int n)
+{
+    char buf[128];
+    g_time68d1b8 = CallC<double>(FUN_401000);
+    sprintf(buf, s_fmt66daa8, n);
+    sprintf(buf, s_fmt66d9c4, Message_Text(buf));
+    CallC(FUN_483cb0, buf);
+}
+
+// [FUN_42db90] frees the list at 68b99c: each node's buffer, then the nodes (12 bytes)
+extern "C" void __cdecl AI_FreeList68b99c()
+{
+    CallC(FUN_403940);
+    void** head = g_list68b99c;
+    for (void** n = (void**)*head; n != g_list68b99c; n = (void**)*n)
+        operator delete(n[2]);
+    head = g_list68b99c;
+    void** n = (void**)*head;
+    while (n != g_list68b99c) {
+        void** next = (void**)*n;
+        CallC(FUN_44b4a0, n, 12);
+        n = next;
+    }
+    head = g_list68b99c;
+    head[0] = head;
+    g_list68b99c[1] = g_list68b99c;
+}
+
+// [FUN_4018f0] appends the 8-byte prefix and then the string to a text buffer {+8 capacity, +12 data, +16 length}
+extern "C" void __fastcall Buf_AppendPrefixed(void** self, int)
+{
+    BYTE* b = (BYTE*)self[1];
+    if (F(char*, b, 12) && F(int, b, 16) + 8 < F(int, b, 8)) {
+        char* d = F(char*, b, 12) + F(int, b, 16);
+        ((DWORD*)d)[0] = ((DWORD*)s_prefix66c7ec)[0];
+        ((DWORD*)d)[1] = ((DWORD*)s_prefix66c7ec)[1];
+        F(int, b, 16) += 8;
+    }
+    b = (BYTE*)self[1];
+    const char* s = (const char*)self[0];
+    if (!F(char*, b, 12))
+        return;
+    for (char c = *s; c && F(int, b, 16) < F(int, b, 8); c = *s) {
+        ++s;
+        F(char*, b, 12)[F(int, b, 16)] = c;
+        F(int, b, 16)++;
+    }
 }
