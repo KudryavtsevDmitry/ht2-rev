@@ -808,3 +808,17 @@ extern "C" void __cdecl Gate_ShutdownCom()
     CallC(FUN_603b30);
     CoUninitialize();
 }
+
+// [FUN_6033f0] reads a type-7 message: id, a byte and six floats; 3 for another type
+extern "C" int __fastcall Msg_ReadType7(BYTE* self, int, int* id, float* f, int* b)
+{
+    BYTE* m = F(BYTE*, self, 4) + F(int, self, 24);
+    char type = m[0];
+    *id = *(int*)(m + 1);
+    if (type != 7)
+        return 3;
+    *b = (signed char)(F(BYTE*, self, 4)[F(int, self, 24) + 5]);
+    for (int i = 0; i < 6; i++)
+        f[i] = *(float*)(F(BYTE*, self, 4) + i * 4 + F(int, self, 24) + 6);
+    return 0;
+}

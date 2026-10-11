@@ -1099,6 +1099,7 @@ PUBLIC $L_64e668, $L_64e6a8, $L_64e6f0, $L_64e730, $L_64e780, $L_64e7c0
 PUBLIC $L_64e920, $L_64e960, $L_64e9a8, $L_64e9e8, $L_64ea30, $L_64ea70
 PUBLIC $L_6726e8, $L_691cc0, $L_6f4bb4, $L_6f4bb8, $L_6f4bbc
 PUBLIC $L_66c4e4, $L_66d64c, $L_66d9c8, $L_66daa8, $L_68cdac, $L_68d1b8
+PUBLIC $L_724178
 
 ;===================================
 _TEXT SEGMENT
@@ -104987,6 +104988,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43fb60 PROC
 
             push ESI
@@ -105034,11 +105037,17 @@ $L_43fbc9::
             pop ESI
             ret 
 FUN_43fb60 ENDP
+ELSE
+EXTERN _Player_SetVehicleId:PROC
+FUN_43fb60 TEXTEQU <_Player_SetVehicleId>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43fbd0 PROC
 
             push ESI
@@ -105083,6 +105092,10 @@ $L_43fc34::
             pop ESI
             ret 
 FUN_43fbd0 ENDP
+ELSE
+EXTERN _Rec_SetField0:PROC
+FUN_43fbd0 TEXTEQU <_Rec_SetField0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -116719,6 +116732,8 @@ FUN_446d20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_447180 PROC
 
             push ESI
@@ -116758,6 +116773,10 @@ $L_4471cf::
             pop ESI
             ret 
 FUN_447180 ENDP
+ELSE
+EXTERN _Player_Set976:PROC
+FUN_447180 TEXTEQU <_Player_Set976>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -216454,6 +216473,8 @@ $L_479a27::
             call __CxxThrowException@8
 $L_4799de ENDP
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_479a30 PROC
 
             push EBX
@@ -216505,6 +216526,10 @@ $L_479a8e::
             pop EBX
             ret 
 FUN_479a30 ENDP
+ELSE
+EXTERN _Bytes_AppendCounted:PROC
+FUN_479a30 TEXTEQU <_Bytes_AppendCounted>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -854221,6 +854246,8 @@ $L_60337c           BYTE ($L_60336c-$L_60336c)/4
             nop
 FUN_603300 ENDP
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6033f0 PROC
 
             mov EAX,DWORD PTR [ECX+4]
@@ -854265,6 +854292,10 @@ $L_60342a::
             pop ESI
             ret 12
 FUN_6033f0 ENDP
+ELSE
+EXTERN @Msg_ReadType7@20:PROC
+FUN_6033f0 TEXTEQU <@Msg_ReadType7@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -859290,6 +859321,8 @@ $L_6055b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6055e0 PROC
 
             push ESI
@@ -859361,6 +859394,10 @@ $L_605648::
 
             ret 
 FUN_6055e0 ENDP
+ELSE
+EXTERN _Play_UpdateAll:PROC
+FUN_6055e0 TEXTEQU <_Play_UpdateAll>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
