@@ -752,3 +752,49 @@ extern "C" int __fastcall BodyLevel_Step(BYTE* s, void*, float* amount, float ra
     F(float, s, 12) = q > 0.0f ? 1.0f : -1.0f;
     return 0;
 }
+
+extern "C" int __cdecl Body_DeepestContact(BYTE* obj, BYTE* out, float* depth);
+extern "C" void* __cdecl Query_HitObject(void* obj, const void* p, const void* d);
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
+
+// [FUN_58cf60] switches a body's contact mode; mode 0 pushes the body out of its deepest contacts (up to 3 steps)
+extern "C" void __fastcall Body_SetContactMode(BYTE* s, void*, int mode)
+{
+    if (F(int, s, 3984))
+        mode = 0;
+    if (mode == F(int, s, 3588))
+        return;
+    if (mode == 1) {
+        F(int, s, 3588) = 1;
+        return;
+    }
+    BYTE node[208];
+    CallThis(FUN_5ef5c0, node);
+    Matrix m0 = F(Matrix, s, 500);
+    int room = F(int, s, 800);
+    int i;
+    for (i = 0; i < 3; i++) {
+        float depth;
+        if (!Body_DeepestContact(s, node, &depth))
+            break;
+        double k = depth + 0.01;
+        Vec3 v;
+        v.x = (float)(F(float, node, 64) * k);
+        v.y = (float)(F(float, node, 68) * k);
+        v.z = (float)(F(float, node, 72) * k);
+        Matrix m1 = F(Matrix, s, 500);
+        Vec3 ret;
+        Vec3_AddAssign((Vec3*)((BYTE*)&m1 + 36), 0, &ret, &v);
+        void* r = Query_HitObject(F(void**, s, 800), s + 536, (BYTE*)&m1 + 36);
+        if (!r) {
+            r = F(void*, s, 800);
+            CallVirt(s, 28, 1);
+        }
+        CallVirt(s, 140, r, &m1);
+    }
+    if (i == 3) {
+        CallVirt(s, 140, room, &m0);
+        return;
+    }
+    F(int, s, 3588) = mode;
+}
