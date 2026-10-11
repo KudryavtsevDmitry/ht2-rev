@@ -15,6 +15,12 @@ ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_470900)
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
+extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
+ASM_PROC(FUN_473420)
+ASM_PROC(FUN_474720)
+extern "C" void FUN_480650(); KING_ALIAS("_FUN_480650", "_Save_RebaseTime")
+extern "C" void FUN_422390(); KING_ALIAS("_FUN_422390", "_Player_Register")
 ASM_PROC(FUN_420000)
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
@@ -330,6 +336,53 @@ void __cdecl Load_FixPlayers()
                     &g_ordrEmpty, &g_ordrEmpty);
         }
     }
+}
+
+}
+
+struct LoadChunkS {
+    BYTE** cur;
+    int a, b;
+    DWORD tag;
+};
+
+static bool LoadChunk_Open(LoadChunkS* c, BYTE** cur, const void* tag)
+{
+    c->cur = cur;
+    CallC(FUN_490c40, cur, &c->tag, &c->a, &c->b);
+    return c->tag == *(const DWORD*)tag;
+}
+
+static void LoadChunk_Close(LoadChunkS* c)
+{
+    CallC(FUN_490c70, c->cur, c->a, c->b);
+}
+
+extern "C" {
+
+// [FUN_480ed0] loads a player (PLYR) and fixes its saved pointers
+void __cdecl Load_Player(BYTE** cur)
+{
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagPLYR)) {
+        BYTE* p = CallC<BYTE*>(FUN_473420, &g_ordrEmpty);
+        CallThis(FUN_474720, p, cur);
+        CallC(FUN_480650, p + 784);
+        CallC(FUN_480650, p + 104);
+        for (BYTE* e = F(BYTE*, p, 136); e != F(BYTE*, p, 140); e += 8)
+            CallC(FUN_480650, e);
+        for (int k = 508; k <= 512; k += 4) {
+            BYTE* r = F(BYTE*, p, k);
+            if (!r)
+                continue;
+            for (BYTE* e = F(BYTE*, r, 28); e != F(BYTE*, F(BYTE*, p, k), 32); e += 144) {
+                CallC(FUN_480650, e + 72);
+                CallC(FUN_480650, e + 80);
+            }
+        }
+        CallC(FUN_422390, &cur, p);
+    }
+    LoadChunk_Close(&c);
 }
 
 }

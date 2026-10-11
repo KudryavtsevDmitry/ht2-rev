@@ -230044,6 +230044,8 @@ EXTERN _Save_Player:PROC
 FUN_480e60 TEXTEQU <_Save_Player>
 ENDIF
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_480ed0 PROC
 
             push -1
@@ -230187,6 +230189,10 @@ $L_48100a::
             add ESP,28
             ret 
 FUN_480ed0 ENDP
+ELSE
+EXTERN _Load_Player:PROC
+FUN_480ed0 TEXTEQU <_Load_Player>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
