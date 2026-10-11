@@ -1266,3 +1266,88 @@ extern "C" BYTE* __fastcall Debris2_Construct(BYTE* s, void*, int a0, const Vec3
     F(float, s, 172) = (float)(((double)r * 3.0518509447574615e-05f + 1.0f) * 3.141592502593994f);
     return s;
 }
+
+extern "C" void FUN_59ab10(); KING_ALIAS("_FUN_59ab10", "@Effect_Construct@44")
+extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float k);
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float k);
+ASM_VAR(Vec3, g_axis702630w, $L_702630)
+ASM_VAR(Vec3, g_up702640w, $L_702640)
+ASM_VAR(char, g_vtbl650cd8, $L_650cd8)
+ASM_VAR(char, g_vtbl650c8c, $L_650c8c)
+ASM_VAR(char, g_vtbl650f34, $L_650f34)
+ASM_VAR(char, g_vtbl650ee8, $L_650ee8)
+ASM_VAR(const float, k_spin650c88, $L_650c88)
+ASM_VAR(const float, k_spin650c84, $L_650c84)
+ASM_VAR(const float, k_spin64d400, $L_64d400)
+ASM_VAR(unsigned, g_sparkCount6f6a6c, $L_6f6a6c)
+
+// the unit axis across dir and the up axis at +offset (up itself when they are parallel), scaled by k
+static void Spark_SideAxis(BYTE* s, int offset, const float* d, float k)
+{
+    const Vec3& g = g_axis702630w;
+    Vec3* a = (Vec3*)(s + offset);
+    a->x = (float)((double)g.z * d[1] - (double)g.y * d[2]);
+    a->y = (float)((double)g.x * d[2] - (double)g.z * d[0]);
+    a->z = (float)((double)g.y * d[0] - (double)g.x * d[1]);
+    double len = Vec3_Length(a);
+    float lf = (float)len;
+    Vec3 t;
+    if (!(len >= 0.01))
+        *a = g_up702640w;
+    else
+        Vec3_DivAssign(a, 0, &t, lf);
+    Vec3_MulAssign(a, 0, &t, k);
+}
+
+// [FUN_59b3f0] constructs a flash effect at p moving along d, with a random spin and a side axis
+extern "C" BYTE* __fastcall Flash_Construct(BYTE* s, void*, BYTE* view, const Vec3* p, const float* d, int a3, unsigned n, float size, float total)
+{
+    CallThis(FUN_59ab10, s, view, p, size, (float)((double)size * 5.0f), a3, n,
+             (float)((double)total / (double)(__int64)n), total, 100);
+    for (int o = 148; o <= 168; o += 4) F(int, s, o) = 0;
+    F(int, s, 192) = 0;
+    F(int, s, 196) = 0;
+    F(int, s, 200) = 0;
+    F(void*, s, 0) = &g_vtbl650cd8;
+    F(DWORD, s, 128) |= 1;
+    F(void*, s, 20) = &g_vtbl650c8c;
+    F(Vec3, s, 148) = *p;
+    F(Vec3, s, 160) = *(const Vec3*)d;
+    F(DWORD, s, 172) = 0x40400000;      // 3.0f
+    F(int, s, 176) = 0;
+    float r1 = (float)((double)rand() * 3.0518509447574615e-05f);
+    double r2 = (double)rand() * 3.0518509447574615e-05f;
+    double sp = ((double)r1 - r2) * 3.141592502593994f;
+    F(float, s, 180) = (float)(sp + sp);
+    F(DWORD, s, 188) = 0x3F3504F3;
+    F(DWORD, s, 184) = 0x3F3504F3;
+    Spark_SideAxis(s, 192, d, 0.01f);
+    float r3 = (float)((double)rand() * 3.0518509447574615e-05f);
+    F(float, s, 204) = (float)(((double)rand() * 3.0518509447574615e-05f - r3) * k_spin650c88);
+    F(float, s, 208) = (float)((double)rand() * k_spin650c84);
+    return s;
+}
+
+// [FUN_59d790] constructs a spark at p moving with v (+160), its side axis, a random spin and colour slot
+extern "C" BYTE* __fastcall Spark_Construct2(BYTE* s, void*, BYTE* view, const Vec3* p, const Vec3* v, float a3, float a4,
+                                             int a5, unsigned n, int kind, float total)
+{
+    CallThis(FUN_59abb0, s, view, p, (float)((double)a3 + a3), (float)((double)a4 + a4), a3, a4, a5, n,
+             (float)((double)total / (double)(__int64)n), total, 100);
+    for (int o = 148; o <= 180; o += 4) F(int, s, o) = 0;
+    F(void*, s, 0) = &g_vtbl650f34;
+    F(DWORD, s, 128) |= 1;
+    F(void*, s, 20) = &g_vtbl650ee8;
+    F(Vec3, s, 160) = *v;
+    Spark_SideAxis(s, 172, (const float*)(s + 160), 0.5f);
+    F(int, s, 192) = 0;
+    float r1 = (float)((double)rand() * 3.0518509447574615e-05f);
+    F(float, s, 184) = (float)(((double)rand() * 3.0518509447574615e-05f - r1) * 3.141592502593994f);
+    F(float, s, 188) = (float)((double)rand() * k_spin64d400);
+    F(Vec3, s, 148) = *p;
+    g_sparkCount6f6a6c++;
+    if (kind == 0) F(int, s, 196) = 252;
+    else if (kind == 1) F(int, s, 196) = 253;
+    else if (kind == 2) F(int, s, 196) = 254;
+    return s;
+}

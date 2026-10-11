@@ -58,7 +58,7 @@ ASM_PROC(FUN_5b6700)    // the palette of a surface
 extern "C" void FUN_59aea0(); KING_ALIAS("_FUN_59aea0", "@Spark59aea0_Construct@44")
 extern "C" void FUN_59bed0(); KING_ALIAS("_FUN_59bed0", "@Spark59bed0_Construct@32")
 extern "C" void FUN_59ad70(); KING_ALIAS("_FUN_59ad70", "@Spark59ad70_Construct@32")
-ASM_PROC(FUN_59b3f0)
+extern "C" void FUN_59b3f0(); KING_ALIAS("_FUN_59b3f0", "@Flash_Construct@36")
 ASM_VAR(float, g_randScale, $L_64c254)
 ASM_VAR(float, g_randBase, $L_64c304)
 ASM_VAR(float, g_one_f, $L_64c250)
@@ -2739,7 +2739,7 @@ extern "C" void __fastcall Fx_ThrowLamp(BYTE* s, void*)
 extern "C" void FUN_59f070(); KING_ALIAS("_FUN_59f070", "@Effect59f070_Construct@32")
 extern "C" void FUN_59bed0(); KING_ALIAS("_FUN_59bed0", "@Spark59bed0_Construct@32")
 extern "C" void FUN_59ad70(); KING_ALIAS("_FUN_59ad70", "@Spark59ad70_Construct@32")
-ASM_PROC(FUN_59b3f0)
+extern "C" void FUN_59b3f0(); KING_ALIAS("_FUN_59b3f0", "@Flash_Construct@36")
 typedef char FxLabel[1];
 ASM_VAR(float, g_fx69605c, $L_69605c)
 ASM_VAR(float, g_fx696048, $L_696048)
@@ -2891,4 +2891,100 @@ extern "C" BYTE* __fastcall Fire_Construct(BYTE* s, void*, BYTE* scene, const Ve
     Fx_ThrowLamp(s, 0);
     CallThis(FUN_5d3570, F(BYTE*, s, 32) + 2992, s);
     return s;
+}
+
+extern "C" int __cdecl Fx_TruckStill();
+extern "C" void FUN_59d790(); KING_ALIAS("_FUN_59d790", "@Spark_Construct2@44")
+extern "C" void FUN_59d9f0(); KING_ALIAS("_FUN_59d9f0", "_Wasm_Set6f6a70")
+ASM_VAR(float, g_fx69603c, $L_69603c)
+ASM_VAR(unsigned, g_sparkLimit671700, $L_671700)
+ASM_VAR(unsigned, g_sparkCount6f6a6cE, $L_6f6a6c)
+ASM_VAR(BYTE*, g_pool6f6a9c, $L_6f6a9c)
+ASM_VAR(int, g_fx694830, $L_694830)
+ASM_VAR(int, g_fx696218, $L_696218)
+ASM_VAR(FxLabel, g_fx694a00, $L_694a00)
+
+// [FUN_4bb050] dust sparks from a wheel: speed-scaled sizes, a limit by frame time, a random velocity of v
+extern "C" void __cdecl Fx_WheelDust(const Vec3* at, const Vec3* v, float strength)
+{
+    if (!Fx_TruckStill())
+        return;
+    if (!(g_fx69603c >= 0.5f))
+        return;
+    if ((double)rand() * kRand > 0.800000011920929f)
+        return;
+    if (strength > 1.0f)
+        strength = 1.0f;
+    double inv = 1.0f / F(double, g_view, 2960);
+    if (inv > 20.0f)
+        inv = 20.0f;
+    if (g_sparkCount6f6a6cE > (unsigned)(int)((double)(__int64)g_sparkLimit671700 * inv * 0.05000000074505806f))
+        return;
+    float s2 = (float)((double)strength * 0.5f + 1.0f);
+    double t1 = ((double)rand() * 0.5f * kRand + 1.0f) * s2;
+    float v1 = (float)(t1 + t1);
+    float v2 = (float)(((double)rand() * 0.5f * kRand + 1.0f) * s2 * 3.5f);
+    BYTE* o = Fx_PoolNew(200, g_pool6f6a9c);
+    if (o) {
+        double f = (double)rand() * kRand * 0.10000000149011612f + 0.800000011920929f;
+        float ff = (float)f;
+        Vec3 w;
+        w.z = (float)(f * v->z);
+        w.y = (float)((double)ff * v->y);
+        w.x = (float)((double)ff * v->x);
+        CallThis(FUN_59d790, o, g_view, at, &w, v1, v2, g_fx694a00, g_fx696218, 0, g_fx694830);
+    }
+    CallC(FUN_59d9f0, g_fx694830);
+}
+
+extern "C" void FUN_59c6c0(); KING_ALIAS("_FUN_59c6c0", "@Effect59c6c0_Construct@36")
+extern "C" void FUN_59cea0(); KING_ALIAS("_FUN_59cea0", "@Effect59cea0_Construct@36")
+ASM_VAR(float, g_fx696084, $L_696084)
+ASM_VAR(BYTE*, g_fx7025b8, $L_7025b8)
+ASM_VAR(int, g_fx6f33c0, $L_6f33c0)
+ASM_VAR(BYTE*, g_pool6f6a94, $L_6f6a94)
+ASM_VAR(BYTE*, g_pool6f6a90, $L_6f6a90)
+ASM_VAR(FxDwords, g_fx695c54, $L_695c54)
+ASM_VAR(Vec3, g_axis702630e, $L_702630)
+
+// [FUN_4bad10] a crash burst at p: a flash and debris pushed along the up axis by the size (fast impacts only)
+extern "C" void __cdecl Fx_CrashBurst(Vec3 p, Vec3 v, Vec3 w, int flags, float size)
+{
+    if (!(g_fx696084 > 0.5f))
+        return;
+    if (!(F(float, g_fx7025b8, 536) > 0.2))
+        return;
+    if (g_fx6f33c0 || !(flags & 2))
+        return;
+    if (!(Vec3_Length(&v) >= 5.0f))
+        return;
+    float h = (float)((double)size * 0.8620690107345581f);
+    float s1 = (float)((double)size * 2.5862069129943848f);
+    float s2 = (float)((double)size * 4.31034517288208f);
+    const Vec3& g = g_axis702630e;
+    BYTE* o = Fx_PoolNew(192, g_pool6f6a94);
+    if (o) {
+        double gz = (double)g.z * h;
+        float gy = (float)((double)g.y * h);
+        float gx = (float)((double)g.x * h);
+        Vec3 q;
+        q.z = (float)(gz + p.z);
+        q.y = (float)((double)p.y + gy);
+        q.x = (float)((double)p.x + gx);
+        CallThis(FUN_59c6c0, o, g_view, &q, &v, &w, s1, g_fx695c54 + g_fx69620c, 1);
+    }
+    o = Fx_PoolNew(192, g_pool6f6a90);
+    if (o) {
+        double wx = (double)w.x * 0.15000000596046448f;
+        float wy = (float)((double)w.y * 0.15000000596046448f);
+        float wz = (float)((double)w.z * 0.15000000596046448f);
+        double gx = (double)g.x * h;
+        float gy = (float)((double)g.y * h);
+        float gz = (float)((double)g.z * h);
+        Vec3 r;
+        r.x = (float)((gx + p.x) + wx);
+        r.y = (float)((double)(float)((double)gy + p.y) + wy);
+        r.z = (float)((double)(float)((double)gz + p.z) + wz);
+        CallThis(FUN_59cea0, o, g_view, &r, &v, &w, s2, g_fx695c54 + g_fx69620c, 1);
+    }
 }
