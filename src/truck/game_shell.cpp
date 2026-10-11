@@ -1187,3 +1187,17 @@ void __cdecl Button_SetImages(BYTE* ctrl, const char* a, const char* b)
 }
 
 }
+
+ASM_PROC(FUN_601470)
+
+extern "C" {
+
+// [FUN_51aaf0] destructor: 8 items of 32 bytes at +552, last first
+void __fastcall Shell51aaf0_Destroy(BYTE* self, void*)
+{
+    for (int i = 7; i >= 0; i--)
+        CallThis(FUN_601470, self + 552 + i * 32);
+    CallThis(FUN_5d89e0, self);
+}
+
+}

@@ -235,3 +235,30 @@ static BYTE* SceneObj_FindCommandTarget(int key)
 }
 
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
+
+ASM_PROC(FUN_4a52e0)
+ASM_PROC(FUN_4a5420)    // script type error (code, level, type name)
+
+// a typed handle copied from a script value; errors unless the value is
+// borrowed (0x10000) and of the kind
+static DWORD* TypedHandle_From(DWORD* self, const DWORD* v, BYTE kind, const char* name)
+{
+    self[0] = v[0];
+    self[1] = v[1];
+    self[2] = v[2];
+    if (!(v[2] & 0x10000))
+        CallC(FUN_4a52e0, 6, 1);
+    if ((BYTE)v[2] != kind)
+        CallC(FUN_4a5420, 2, 1, name);
+    return self;
+}
+
+extern "C" {
+
+// [FUN_492150]
+DWORD* __fastcall BoolHandle_From(DWORD* self, void*, const DWORD* v) { return TypedHandle_From(self, v, 7, "Boolean"); }
+
+// [FUN_4921d0]
+DWORD* __fastcall CharHandle_From(DWORD* self, void*, const DWORD* v) { return TypedHandle_From(self, v, 8, "Char"); }
+
+}

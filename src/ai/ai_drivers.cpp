@@ -1185,3 +1185,32 @@ void __cdecl Driver_SetDeadline(BYTE* x, double t)
 }
 
 }
+
+ASM_PROC(FUN_4729e0)    // player constructor (kind)
+ASM_PROC(FUN_4731e0)    // player destructor
+extern "C" void FUN_478e50(); KING_ALIAS("_FUN_478e50", "@AiList_Insert@20")
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+
+extern "C" {
+
+// [FUN_473420] appends a new player of a kind to the player list; its
+// +104 is set to its own iterator; returns the player
+BYTE* __cdecl Players_Append(int kind)
+{
+    BYTE p[1000];
+    CallThis(FUN_4729e0, p, kind);
+    void* end;
+    CallThis(FUN_4afc20, &g_players, &end);
+    void* out;
+    CallThis(FUN_478e50, &g_players, &out, end, p);
+    CallThis(FUN_4731e0, p);
+    void** last = (void**)((void**)g_players)[1];
+    int it;
+    int* r = CallThis<int*>(FUN_426280, &it, last);
+    BYTE* node = (BYTE*)((void**)g_players)[1];
+    F(int, node, 104) = *r;
+    return (BYTE*)((void**)g_players)[1] + 8;
+}
+
+}

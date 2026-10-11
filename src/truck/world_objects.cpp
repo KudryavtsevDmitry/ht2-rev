@@ -776,3 +776,65 @@ extern "C" void __fastcall Effect_MoveQuad(BYTE* self, void*)
     F(float, self, 84) = (float)(dz + F(float, self, 84));
     Effect_AnimateQuad(self, 0);
 }
+
+ASM_PROC(FUN_5e48f0)
+ASM_PROC(FUN_5fa720)
+ASM_PROC(FUN_5d3570)
+ASM_PROC(FUN_5ef780)
+extern "C" void* __cdecl memset(void* d, int c, size_t n);
+extern "C" void FUN_59f790(); KING_ALIAS("_FUN_59f790", "@Wasm59f790_Construct@8")
+ASM_VAR(char, g_vtbl650bd0, $L_650bd0)
+ASM_VAR(char, g_vtbl650b84, $L_650b84)
+ASM_VAR(char, g_vtbl650334, $L_650334)
+ASM_VAR(char, g_vtbl650f5c, $L_650f5c)
+ASM_VAR(char, g_vtbl651188, $L_651188)
+ASM_VAR(BYTE*, g_dustColor, $L_6f6a74)
+ASM_VAR(BYTE*, g_696224, $L_696224)
+
+extern "C" {
+
+// [FUN_59aa90] destructor
+void __fastcall Wasm59aa90_Destroy(BYTE* self, void*)
+{
+    BYTE* sub = self + 20;
+    F(void*, self, 0) = &g_vtbl650bd0;
+    F(void*, sub, 0) = &g_vtbl650b84;
+    CallThis(FUN_5e48f0, F(BYTE*, self, 92));
+    CallThis(FUN_5ef780, sub);
+    CallThis(FUN_5fa720, self ? sub : 0);
+    F(void*, self, 0) = &g_vtbl650334;
+    F(int, self, 4) = 0;
+}
+
+// [FUN_59daf0] creates the DustColor task once
+void __cdecl DustColor_Create(int a)
+{
+    if (g_dustColor)
+        return;
+    BYTE* o = (BYTE*)operator new(36);
+    if (o) {
+        CallThis(FUN_5d31e0, o, 98, "DustColor");
+        F(void*, o, 0) = &g_vtbl650f5c;
+        F(int, o, 32) = a;
+    }
+    BYTE* owner = g_696224;
+    g_dustColor = o;
+    CallThis(FUN_5d3570, owner + 2992, o);
+    CallVirt(g_dustColor, 24, 1);
+}
+
+// [FUN_5a0000] constructor of the VehGlowManager task: 50 glows
+BYTE* __fastcall VehGlowManager_Construct(BYTE* self, void*, BYTE* owner)
+{
+    CallThis(FUN_5d31e0, self, 390, "VehGlowManager");
+    for (int i = 0; i < 50; i++)
+        CallThis(FUN_59f790, self + 32 + i * 124);
+    F(void*, self, 0) = &g_vtbl651188;
+    F(int, self, 6432) = 0;
+    memset(self + 6232, 0, 200);
+    CallThis(FUN_5d3570, owner + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    return self;
+}
+
+}

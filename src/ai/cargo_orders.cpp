@@ -6,6 +6,7 @@
 // Building with  nmake ASM_CARGO_ORDERS=1  makes king.masm assemble the original
 // procedures again.
 
+#include <stdlib.h>
 #include "king.h"
 #include "x87.h"
 
@@ -14,7 +15,7 @@
 extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "FUN_401000")
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
-ASM_PROC(FUN_470900)
+extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 
@@ -276,4 +277,43 @@ extern "C" const int* __cdecl Order_Init4715f0(int* o, const int* src, int arg, 
     o[22] = src[6];
     o[23] = src[7];
     return src;
+}
+
+extern "C" {
+
+// [FUN_470900] constructor of a char vector from a string
+char** __fastcall CharVec_Construct(char** self, void*, const char* s)
+{
+    self[0] = self[1] = self[2] = 0;
+    CharVec_Assign(self, 0, s);
+    return self;
+}
+
+}
+
+extern "C" void FUN_470760(); KING_ALIAS("_FUN_470760", "_E12_FillN")
+
+extern "C" {
+
+// [FUN_46ed00] temporary buffer of 12-byte records for [first, last):
+// {requested, length, buffer}, halving the length while malloc fails
+int* __fastcall TempBuf12_Construct(int* self, void*, BYTE* first, BYTE* last)
+{
+    int n = (last - first) / 12;
+    self[1] = n;
+    self[0] = n;
+    self[2] = 0;
+    if (n > 0x0aaaaaaa)
+        self[1] = 0x0aaaaaaa;
+    while (self[1] > 0) {
+        self[2] = (int)malloc(self[1] * 12);
+        if (self[2])
+            break;
+        self[1] /= 2;
+    }
+    if (self[1] > 0)
+        CallC(FUN_470760, self[2], self[1], first, last);
+    return self;
+}
+
 }
