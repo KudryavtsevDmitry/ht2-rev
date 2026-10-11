@@ -55,13 +55,56 @@ ASM_VAR(BYTE*, g_world, $L_696ca0)
 ASM_VAR(unsigned, g_67b738, $L_67b738)
 
 ASM_PROC(FUN_5b6700)    // the palette of a surface
+ASM_PROC(FUN_4daf40)
+ASM_PROC(FUN_4dd2a0)
+extern "C" void FUN_579380(); KING_ALIAS("_FUN_579380", "_Pool_Prepare")
+extern "C" void FUN_59bb90(); KING_ALIAS("_FUN_59bb90", "@Effect59bb90_Construct@36")
+extern "C" void FUN_59c420(); KING_ALIAS("_FUN_59c420", "@Effect59c420_Construct@32")
+extern "C" void FUN_59d4a0(); KING_ALIAS("_FUN_59d4a0", "@Effect59d4a0_Construct@28")
+ASM_PROC(FUN_4d9460)
+ASM_PROC(FUN_5ef780)
+ASM_PROC(FUN_5f1a70)
+ASM_PROC(FUN_5d31e0)
+ASM_PROC(FUN_5d3570)
+ASM_PROC(FUN_5d33d0)
+ASM_PROC(FUN_5a0000)
+ASM_PROC(FUN_5d3110)
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+ASM_PROC(FUN_4cf400)
+ASM_PROC(FUN_544df0)
+ASM_PROC(FUN_446c80)
+ASM_VAR(int, g_6f6a84, $L_6f6a84)
+ASM_VAR(int, g_6f6a8c, $L_6f6a8c)
+ASM_VAR(int, g_6f6a98, $L_6f6a98)
+ASM_VAR(int, g_696208, $L_696208)
+ASM_VAR(AsmLabel, g_695bf0, $L_695bf0)
+ASM_VAR(float, g_696054, $L_696054)
+ASM_VAR(float, g_64c258, $L_64c258)
+ASM_VAR(AsmLabel, g_vtbl64c428, $L_64c428)
+ASM_VAR(AsmLabel, g_vtbl64c464, $L_64c464)
+ASM_VAR(AsmLabel, g_vtbl64c770, $L_64c770)
+ASM_VAR(AsmLabel, g_vtbl64c8b4, $L_64c8b4)
+ASM_VAR(AsmLabel, g_vtbl64c90c, $L_64c90c)
+ASM_VAR(AsmLabel, s_6728dc, $L_6728dc)
+ASM_VAR(AsmLabel, s_67290c, $L_67290c)
+ASM_VAR(AsmLabel, g_vtbl64c97c, $L_64c97c)
+ASM_VAR(AsmLabel, s_672988, $L_672988)
+ASM_VAR(AsmLabel, g_vtbl64ca58, $L_64ca58)
+ASM_VAR(AsmLabel, g_vtbl64cdf8, $L_64cdf8)
+ASM_VAR(AsmLabel, g_vtbl64cd0c, $L_64cd0c)
+ASM_VAR(AsmLabel, g_vtbl64ccc0, $L_64ccc0)
+ASM_VAR(AsmLabel, g_vtbl64ccbc, $L_64ccbc)
+ASM_VAR(AsmLabel, g_vtbl64cff4, $L_64cff4)
+ASM_VAR(AsmLabel, g_vtbl64cf08, $L_64cf08)
+ASM_VAR(AsmLabel, g_vtbl64cebc, $L_64cebc)
+ASM_VAR(AsmLabel, g_vtbl64ceb8, $L_64ceb8)
 extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
 ASM_PROC(FUN_57c450)    // sounds: play
 ASM_PROC(FUN_5d3290)    // Task::~Task
 ASM_PROC(FUN_5ef660)    // module destructor
 ASM_PROC(FUN_4bf510)    // particles: reset
-ASM_PROC(FUN_5f19b0)    // named object: constructor
-ASM_PROC(FUN_4c09d0)    // CRenderer::~CRenderer
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
+extern "C" void FUN_4c09d0(); KING_ALIAS("_FUN_4c09d0", "@Effect4c09d0_Destroy@8")    // CRenderer::~CRenderer
 ASM_PROC(FUN_4ccf30)
 extern "C" BYTE* __fastcall SceneObj_Matrix1(void* self, void*, void* out);   // engine.cpp: its world matrix
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // vehicles: by id
@@ -1438,4 +1481,203 @@ extern "C" int __fastcall Lights_Add(unsigned* self, void*, const void* rec, int
     self[2]++;
     self[1]++;
     return r;
+}
+
+// --- effect constructors/destructors with exception frames (the frames only rethrow)
+
+static void EffectTask_Destroy(BYTE* self, void* vtbl)
+{
+    F(void*, self, 0) = vtbl;
+    BYTE* o = F(BYTE*, self, 32);
+    if (o) {
+        CallVirt(o, 0, 1);
+        F(BYTE*, self, 32) = 0;
+    }
+    BYTE* p = F(BYTE*, self, 36);
+    if (p) {
+        Particles_Free(p, 0);
+        operator delete(p);
+        F(BYTE*, self, 36) = 0;
+    }
+    CallThis(FUN_5d3290, self);
+}
+
+static void Vehicle4_SetVtbls(BYTE* self, void* a, void* b, void* c, void* d)
+{
+    F(void*, self, 0) = a;
+    F(void*, self, 16) = b;
+    F(void*, self, 272) = c;
+    F(void*, self, 392) = d;
+}
+
+extern "C" {
+
+// [FUN_4ba060] a new 688-byte effect
+BYTE* __cdecl Effect_New4daf40(int a, int b)
+{
+    BYTE* o = (BYTE*)operator new(688);
+    return o ? CallThis<BYTE*>(FUN_4daf40, o, g_view, a, b) : 0;
+}
+
+// [FUN_4ba0c0] a new 188-byte effect
+BYTE* __cdecl Effect_New4dd2a0(int a, int b, int c, int d)
+{
+    BYTE* o = (BYTE*)operator new(188);
+    return o ? CallThis<BYTE*>(FUN_4dd2a0, o, g_view, a, b, c, d) : 0;
+}
+
+// [FUN_4ba820] a pooled 176-byte effect
+BYTE* __cdecl Effect_New59bb90(int a, int b, int c, int d)
+{
+    BYTE* o = CallC<BYTE*>(FUN_579380, 176, g_6f6a84);
+    return o ? CallThis<BYTE*>(FUN_59bb90, o, g_view, a, b, c, d, (void*)g_695bf0, g_696208) : 0;
+}
+
+// [FUN_4bac90]
+BYTE* __cdecl Effect_New59c420(int a, int b)
+{
+    BYTE* o = CallC<BYTE*>(FUN_579380, 176, g_6f6a8c);
+    return o ? CallThis<BYTE*>(FUN_59c420, o, g_view, a, b, 0x3f800000, (void*)g_695bf0, g_696208) : 0;
+}
+
+// [FUN_4baf90] a pooled vapor effect, when vapor is enabled
+BYTE* __cdecl Effect_NewVapor(int a, int b)
+{
+    if (!(g_696054 > g_64c258))
+        return 0;
+    BYTE* o = CallC<BYTE*>(FUN_579380, 180, g_6f6a98);
+    return o ? CallThis<BYTE*>(FUN_59d4a0, o, g_view, a, b, (void*)g_vaporMats, g_vaporCount) : 0;
+}
+
+// [FUN_4bc4d0] a new 60-byte effect, started at once
+void __cdecl Effect_Start4d9460(int a)
+{
+    BYTE* o = (BYTE*)operator new(60);
+    BYTE* e = o ? CallThis<BYTE*>(FUN_4d9460, o, g_view, a) : 0;
+    CallVirt(e, 24, 1);
+}
+
+// [FUN_4bedb0]
+void __fastcall Effect4bedb0_Destroy(BYTE* self, void*) { EffectTask_Destroy(self, g_vtbl64c428); }
+
+// [FUN_4bf3f0]
+void __fastcall Effect4bf3f0_Destroy(BYTE* self, void*) { EffectTask_Destroy(self, g_vtbl64c464); }
+
+// [FUN_4c09d0]
+void __fastcall Effect4c09d0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64c498;
+    F(int, self, 68) = 0;
+    F(int, self, 64) = 0;
+    CallThis(FUN_5ef780, self);
+    CallThis(FUN_5f1a70, self);
+}
+
+// [FUN_4c4c40]
+void __fastcall Effect4c4c40_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64c770;
+    BYTE* o = F(BYTE*, self, 32);
+    if (o) {
+        CallVirt(o, 0, 3);
+        F(BYTE*, self, 32) = 0;
+    }
+    F(int, self, 40) = 0;
+    F(int, self, 36) = 0;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4c8890]
+void __fastcall Effect4c8890_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64c8b4;
+    CallThis(FUN_5ef780, self);
+    if (F(void*, self, 72))
+        operator delete(F(void*, self, 72));
+    CallThis(FUN_5ef660, self);
+}
+
+// [FUN_4c9970] a task on the vehicle v
+BYTE* __fastcall Effect4c9970_Construct(BYTE* self, void*, BYTE* v, int b)
+{
+    CallThis(FUN_5d31e0, self, 98, (const char*)s_6728dc);
+    F(int, self, 36) = b;
+    F(void*, self, 0) = g_vtbl64c90c;
+    F(BYTE*, self, 32) = v;
+    CallThis(FUN_5d3570, v + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    return self;
+}
+
+// [FUN_4cb4d0] the shared 6436-byte effect, made on first use
+int __cdecl Effect_Shared6436()
+{
+    if (!g_6f6a78) {
+        BYTE* o = (BYTE*)operator new(6436);
+        g_6f6a78 = o ? (int)CallThis<BYTE*>(FUN_5a0000, o, g_view) : 0;
+    }
+    return g_6f6a78;
+}
+
+// [FUN_4cc850] creates the 13300-byte node and hands it to obj
+void __cdecl Effect_AttachNode(BYTE* obj)
+{
+    if (!obj)
+        g_6961fc = 0;
+    BYTE* o = (BYTE*)operator new(13300);
+    if (o) {
+        CallThis(FUN_5f19b0, o, (const char*)s_67290c, 5, 1);
+        F(int, o, 56) = 0;
+        F(int, o, 60) = 0;
+        F(void*, o, 0) = g_vtbl64c97c;
+        F(int, o, 13296) = 0;
+    }
+    g_6961fc = o;
+    CallVirt(obj, 20, 0, o);
+}
+
+// [FUN_4cc9f0]
+void __fastcall Effect4cc9f0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64c97c;
+    CallThis(FUN_5ef780, self);
+    F(int, self, 13296) = 0;
+    CallThis(FUN_5f1a70, self);
+}
+
+// [FUN_4ce0d0] a task on the vehicle v with two named objects
+BYTE* __fastcall Effect4ce0d0_Construct(BYTE* self, void*, BYTE* v, int b, int c)
+{
+    CallThis(FUN_5d3110, self, (const char*)s_672988);
+    F(void*, self, 0) = g_vtbl64ca58;
+    F(BYTE*, self, 32) = v;
+    F(int, self, 40) = CallC<int>(FUN_5ef2b0, 0, b);
+    F(int, self, 44) = CallC<int>(FUN_5ef2b0, 0, c);
+    CallThis(FUN_5d3570, F(BYTE*, self, 32) + 2992, self);
+    F(int, self, 36) = 0;
+    return self;
+}
+
+// [FUN_4d0fd0]
+void __fastcall Vehicle4d0fd0_Destroy(BYTE* self, void*)
+{
+    Vehicle4_SetVtbls(self, g_vtbl64cdf8, g_vtbl64cd0c, g_vtbl64ccc0, g_vtbl64ccbc);
+    CallC(FUN_4cf400, self);
+    CallThis(FUN_544df0, self);
+}
+
+// [FUN_4d12f0]
+void __fastcall Vehicle4d12f0_Destroy(BYTE* self, void*)
+{
+    Vehicle4_SetVtbls(self, g_vtbl64cff4, g_vtbl64cf08, g_vtbl64cebc, g_vtbl64ceb8);
+    CallC(FUN_4cf400, self);
+    CallThis(FUN_544df0, self);
+}
+
+// [FUN_4ce2e0]
+int __cdecl Effect_Call446c80(const BYTE* x)
+{
+    return CallC<int>(FUN_446c80, F(int, x, 20636));
+}
+
 }
