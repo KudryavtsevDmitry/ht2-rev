@@ -333,7 +333,7 @@ extern "C" void FUN_4b61c0(); KING_ALIAS("_FUN_4b61c0", "@BytesNode4b61c0_Constr
 extern "C" void FUN_4b6400(); KING_ALIAS("_FUN_4b6400", "@BytesNode4b6400_Construct@12")    // SchIdentifier: construct from char*
 extern "C" void FUN_4b6160(); KING_ALIAS("_FUN_4b6160", "@SchBuf4b6160_Construct@8")
 extern "C" void FUN_4b6670(); KING_ALIAS("_FUN_4b6670", "@SchItem4b6670_Construct@12")
-ASM_PROC(FUN_4a2d10)    // SchEnvironment: construct from SchValue*
+extern "C" void FUN_4a2d10(); KING_ALIAS("_FUN_4a2d10", "@SchScope_Construct@12")    // SchEnvironment: construct from SchValue*
 ASM_PROC(FUN_4581a0)    // allocation failure handler
 extern "C" void FUN_4b1120(); KING_ALIAS("_FUN_4b1120", "@Node4b1120_Construct@20")
 extern "C" void FUN_4b1090(); KING_ALIAS("_FUN_4b1090", "@SchItem4b1090_Construct@12")
@@ -589,6 +589,51 @@ DWORD* __cdecl Sch_MakeVector4a25d0(DWORD* out, int unused, int a, const int* b,
     out[2] = CallVirt<int>(v, 0) & 255;
     F(int, (BYTE*)out[0], 4)++;
     return out;
+}
+
+}
+
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")    // value: constructor (empty)
+ASM_VAR(char, gv64bf4c_n, $L_64bf4c)
+ASM_VAR(char, gv64bed0_n, $L_64bed0)
+
+extern "C" {
+
+// [FUN_4a2d10] scope constructor: linked after the scope at +4 of outer,
+// 8 empty values at +36, a value vector at +132 with room for 8
+BYTE* __fastcall SchScope_Construct(BYTE* self, void*, BYTE* outer)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = &gv64bed0_n;
+    BYTE* link = outer + 4;
+    BYTE* next = F(BYTE*, link, 12);
+    F(BYTE*, self, 12) = next;
+    F(BYTE*, self, 16) = link;
+    F(BYTE*, next, 16) = self;
+    F(BYTE*, F(BYTE*, self, 16), 12) = self;
+    for (int off = 20; off <= 32; off += 4)
+        F(int, self, off) = 0;
+    for (int i = 0; i < 8; i++)
+        CallThis(FUN_4bd4d0, self + 36 + i * 12);
+    BYTE** v = (BYTE**)(self + 132);
+    v[0] = v[1] = v[2] = 0;
+    for (int off = 144; off <= 156; off += 4)
+        F(int, self, off) = 0;
+    F(void*, self, 0) = &gv64bf4c_n;
+    if ((unsigned)((v[2] - v[0]) / 12) < 8) {
+        int n = (v[1] - v[0]) / 12;
+        BYTE* p = CallThis<BYTE*>(FUN_4a4540, v, 8, v[0], v[1]);
+        for (BYTE* e = v[0]; e != v[1]; e += 12)
+            CallThis(FUN_4a36c0, e);
+        int cap = (v[2] - v[0]) / 12;
+        if (cap)
+            CallC(FUN_44b4a0, v[0], cap * 12);
+        v[0] = p;
+        v[1] = p + n * 12;
+        v[2] = p + 96;
+    }
+    return self;
 }
 
 }

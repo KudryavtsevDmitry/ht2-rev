@@ -317,3 +317,52 @@ int* __fastcall TempBuf12_Construct(int* self, void*, BYTE* first, BYTE* last)
 }
 
 }
+
+extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")    // uninitialized copy of bytes (first, last, to), returns the end
+ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
+ASM_PROC(FUN_44b4a0)
+extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
+
+extern "C" {
+
+// [FUN_46e460] vector<char>::insert(pos, first, last)
+void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last)
+{
+    if (first == last)
+        return;
+    unsigned n = last - first;
+    if ((unsigned)(self[2] - self[1]) >= n) {
+        BYTE* oldEnd = self[1];
+        unsigned after = oldEnd - pos;
+        if (after > n) {
+            CallC(FUN_46ecd0, oldEnd - n, oldEnd, oldEnd, first, 0);
+            self[1] += n;
+            BYTE* src = oldEnd - n;
+            BYTE* dst = oldEnd;
+            for (int k = src - pos; k > 0; k--)
+                *--dst = *--src;
+            memmove(pos, first, n);
+        } else {
+            memmove(oldEnd, first + after, last - (first + after));
+            self[1] = oldEnd + (n - after);
+            CallC(FUN_46ecd0, pos, oldEnd, self[1], first, 0);
+            self[1] += after;
+            memmove(pos, first, after);
+        }
+        return;
+    }
+    unsigned size = self[1] - self[0];
+    unsigned len = (size < n ? n : size) + size;
+    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len) : 0;
+    BYTE* q = CallC<BYTE*>(FUN_46ecd0, self[0], pos, p, first, 0);
+    memmove(q, first, n);
+    q += last - first;
+    BYTE* r = CallC<BYTE*>(FUN_46ecd0, pos, self[1], q, first, 0);
+    if (self[2] - self[0])
+        CallC(FUN_44b4a0, self[0], self[2] - self[0]);
+    self[0] = p;
+    self[1] = r;
+    self[2] = p + len;
+}
+
+}
