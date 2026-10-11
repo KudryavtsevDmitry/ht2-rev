@@ -20,7 +20,7 @@ extern "C" void FUN_46b740(); KING_ALIAS("_FUN_46b740", "_Far_AdjustHeap")
 extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")
 ASM_PROC(FUN_46bf20)
 extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
-ASM_PROC(FUN_46c190)
+extern "C" void FUN_46c190(); KING_ALIAS("_FUN_46c190", "_Heap504_Adjust")
 ASM_PROC(FUN_46ad50)
 extern "C" void FUN_46cc00(); KING_ALIAS("_FUN_46cc00", "_Mult46cc00")
 ASM_PROC(FUN_4870e0)
@@ -708,4 +708,25 @@ int __cdecl Net_AddPlayerStates()
     return 0;
 }
 
+}
+
+
+// [FUN_46c190] sifts a hole down a heap of players keyed by +504 (ties go right) and pushes val back up
+extern "C" void __cdecl Heap504_Adjust(BYTE** a, int hole, int len, int val, int extra)
+{
+    int top = hole;
+    int child = 2 * hole + 2;
+    while (child < len) {
+        double dd = F(double, a[child], 504) - F(double, a[child - 1], 504);
+        if (!(dd == 0.0 || dd != dd))
+            child--;
+        a[hole] = a[child];
+        hole = child;
+        child = 2 * child + 2;
+    }
+    if (child == len) {
+        a[hole] = a[child - 1];
+        hole = child - 1;
+    }
+    Heap504_Push(a, hole, top, (BYTE*)val);
 }

@@ -1333,3 +1333,93 @@ extern "C" void __cdecl Gauge_Create(DWORD x0, DWORD y0, DWORD z0, DWORD x1, DWO
     }
     CallVirt(o, 24, 1);
 }
+
+ASM_PROC(FUN_43fc40)    // a vehicle's info by id (id, out)
+ASM_PROC(FUN_5ea1b0)    // text in a box
+ASM_PROC(FUN_43f620)    // a vehicle's flags by id
+ASM_VAR(void*, g_font6ced24, $L_6ced24)
+ASM_VAR(char, g_fmtPercent, $L_67c3e0)       // "%d%c"
+ASM_VAR(char, g_fmtInt66c8cc, $L_66c8cc)     // "%d"
+ASM_VAR(char, g_fmtTenths, $L_67c3d8)        // "%4.1f"
+typedef void* ImageTable[1];
+ASM_VAR(ImageTable, g_images6f2e38, $L_6f2e38)
+
+// [FUN_574190] one line of the vehicle list: name, damage %, count, distance and the type icon; whether it is the player's
+extern "C" int __cdecl CarList_DrawLine(void* surface, int x, int y, int id)
+{
+    DWORD flags = CallC<DWORD>(FUN_43f620, id);
+    BYTE info[256];
+    CallC(FUN_43fc40, id, info);
+    char text[100];
+    CallC(FUN_5ea1b0, surface, x + 45, y + 23, 70, g_font6ced24, F(DWORD, info, 48), 6, 0);
+    sprintf(text, &g_fmtPercent, (int)(F(double, info, 104) * 100.0), 37);
+    CallC(FUN_5ea170, surface, x + 135, y + 23, g_font6ced24, text, 6, 0);
+    sprintf(text, &g_fmtInt66c8cc, F(int, info, 80));
+    CallC(FUN_5ea170, surface, x + 220, y + 23, g_font6ced24, text, 6, 0);
+    sprintf(text, &g_fmtTenths, F(double, info, 112));
+    CallC(FUN_5ea170, surface, x + 270, y + 23, g_font6ced24, text, 6, 0);
+    if (flags & 0x1000)
+        CallC(FUN_5b8980, surface, x, y, g_images6f2e38[F(int, info, 56)], 0);
+    return F(int, info, 8) == 1;
+}
+
+extern "C" int* __cdecl Players_First(int* out);
+extern "C" int* __cdecl Players_Next(int* out, int id);
+ASM_VAR(int, g_noVehicle68b990h, $L_68b990)
+
+// [FUN_574310] the vehicle list: up to 60 moving vehicles sorted by damage, then the player's own line
+extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines)
+{
+    int ids[60];
+    double vals[60];
+    for (int i = 0; i < 60; i++) ids[i] = g_noVehicle68b990h;
+    int n = 0;
+    int cur;
+    Players_First(&cur);
+    BYTE info[256];
+    while (cur != g_noVehicle68b990h && n < 60) {
+        CallC(FUN_43fc40, cur, info);
+        int type = F(int, info, 8);
+        if ((type == 1 || type == 2) && !(CallC<DWORD>(FUN_43f620, cur) & 0x800)) {
+            ids[n] = cur;
+            vals[n] = F(double, info, 104);
+            n++;
+        }
+        int nx;
+        cur = *Players_Next(&nx, cur);
+    }
+    bool swapped;
+    do {
+        swapped = false;
+        for (int k = 0; k < n - 1; k++) {
+            CallC(FUN_43fc40, ids[k + 1], info);
+            if (!(vals[k] >= vals[k + 1]) || (!(vals[k] < vals[k + 1] || vals[k] > vals[k + 1]) && F(int, info, 8) == 1)) {
+                double v = vals[k];
+                vals[k] = vals[k + 1];
+                vals[k + 1] = v;
+                int t = ids[k];
+                ids[k] = ids[k + 1];
+                ids[k + 1] = t;
+                swapped = true;
+            }
+        }
+    } while (swapped && n - 1 > 0);
+    int acc = 0;
+    int i = 0;
+    int line = y;
+    for (; i < n; i++, line += 33) {
+        if (i >= lines)
+            break;
+        acc |= CarList_DrawLine(surface, x, line, ids[i]);
+        if (i == lines - 2 && !acc) {
+            i++;
+            acc = 0;
+            break;
+        }
+    }
+    if (acc)
+        return;
+    int me;
+    Player_CarId(&me);
+    CarList_DrawLine(surface, x, y + i * 33, me);
+}
