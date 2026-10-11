@@ -16,6 +16,20 @@ extern "C" void __cdecl Carat_Message(const char* text, int);
 KING_ALIAS("_Carat_Message", "FUN_5d2ba0")
 
 ASM_PROC(FUN_578100)
+ASM_PROC(FUN_5d31e0)
+ASM_PROC(FUN_5d3570)
+extern "C" void FUN_579420(); KING_ALIAS("_FUN_579420", "@Pool_Destruct@8")
+ASM_PROC(FUN_5d3290)
+extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
+extern "C" void FUN_5799c0(); KING_ALIAS("_FUN_5799c0", "@Triangles_Init@8")
+ASM_PROC(FUN_5ef780)
+ASM_PROC(FUN_579850)
+ASM_PROC(FUN_5ef660)
+ASM_VAR(AsmLabel, s_67cfc0, $L_67cfc0)
+ASM_VAR(AsmLabel, s_67d04c, $L_67d04c)
+ASM_VAR(AsmLabel, g_vtbl650340, $L_650340)
+ASM_VAR(AsmLabel, g_vtbl650430, $L_650430)
+ASM_VAR(AsmLabel, g_vtbl6503e4, $L_6503e4)
 ASM_PROC(FUN_60aa60)    // assertion failed (level, format, expression, file, line, date)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
 ASM_PROC(FUN_5b1020)
@@ -503,4 +517,81 @@ extern "C" int __fastcall SceneObj_InitState(BYTE* self, void*, DWORD a, DWORD b
     memcpy(self + 692, g_mmtIdentity, 48);
     memcpy(self + 740, g_mmtIdentity, 48);
     return SceneObj_57e030(self, 0, (int*)(self + 3268));
+}
+
+extern "C" BYTE* __fastcall Node_Construct(BYTE* self, void*, const char* name, int kind);   // scene.cpp
+
+extern "C" {
+
+// [FUN_579570] the frame-stack task on the vehicle v
+BYTE* __fastcall FrameTask_Construct(BYTE* self, void*, BYTE* v, int kind)
+{
+    CallThis(FUN_5d31e0, self, kind, (const char*)s_67cfc0);
+    F(void*, self, 0) = g_vtbl650340;
+    CallThis(FUN_5d3570, v + 2992, self);
+    F(int, self, 432) = 0;
+    return self;
+}
+
+// [FUN_579650] destructor: the frames at +32 (count at +432)
+void __fastcall FrameTask_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl650340;
+    for (unsigned i = 0; i < F(unsigned, self, 432); i++) {
+        BYTE* p = F(BYTE*, self, 32 + i * 4);
+        if (p) {
+            CallThis(FUN_579420, p);
+            operator delete(p);
+        }
+    }
+    F(int, self, 432) = 0;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_5797d0] a pool of 50 6928-byte objects (count before the array)
+DWORD* __fastcall Pool50_Construct(DWORD* self, void*)
+{
+    BYTE* a = (BYTE*)operator new(346404);
+    BYTE* p = 0;
+    if (a) {
+        F(int, a, 0) = 50;
+        p = a + 4;
+        for (int i = 0; i < 50; i++)
+            CallThis(FUN_4bd510, p + i * 6928);
+    }
+    self[0] = (DWORD)p;
+    self[1] = 0;
+    return self;
+}
+
+// [FUN_57c290] the pooled-objects node attached to the vehicle v
+BYTE* __fastcall PoolNode_Construct(BYTE* self, void*, BYTE* v, int b)
+{
+    Node_Construct(self, 0, (const char*)s_67d04c, 24);
+    F(int, self, 72) = 0;
+    F(void*, self, 0) = g_vtbl650430;
+    F(int, self, 56) = 0;
+    F(int, self, 48) = 0;
+    F(int, self, 52) = 0;
+    Pool50_Construct((DWORD*)(self + 76), 0);
+    F(void*, self, 0) = g_vtbl6503e4;
+    F(int, self, 84) = b;
+    BYTE* c = F(BYTE*, v, 524);
+    if (c)
+        CallVirt(c, 20, 0, self);
+    CallC(FUN_5799c0);
+    return self;
+}
+
+// [FUN_57c360]
+void __fastcall PoolNode_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl6503e4;
+    CallThis(FUN_5ef780, self);
+    CallThis(FUN_579850, self + 76);
+    if (F(void*, self, 72))
+        operator delete(F(void*, self, 72));
+    CallThis(FUN_5ef660, self);
+}
+
 }
