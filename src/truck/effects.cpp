@@ -2418,3 +2418,39 @@ extern "C" void __fastcall Car_SetSteerShown(BYTE* s, void*, double x)
         v = -v;
     F(float, s, 10012) = (float)v;
 }
+
+ASM_VAR(const double, k_hslEpsilon, $L_64c410)      // 1e-7
+
+// [FUN_4be5e0] RGB to HSL: hue in degrees (FLT_MAX for grey), lightness, saturation
+extern "C" void __cdecl Color_ToHsl(float r, float g, float b, float* h, float* l, float* s)
+{
+    float mx = Max3f(r, g, b);
+    float mn = Min3f(r, g, b);
+    float d = (float)((double)mx - mn);
+    float sum = (float)((double)mn + mx);
+    double light = (double)sum * 0.5f;
+    *l = (float)light;
+    double ad = d < 0 ? -(double)d : (double)d;
+    if (!(ad > k_hslEpsilon)) {
+        *(DWORD*)h = 0x7F7FFFFF;
+        *s = 0;
+        return;
+    }
+    if (!(light >= 0.5f))
+        *s = (float)((double)d / sum);
+    else
+        *s = (float)((double)d / ((2.0f - (double)mx) - mn));
+    double rc = ((double)mx - r) / d;
+    float gc = (float)(((double)mx - g) / d);
+    float bc = (float)(((double)mx - b) / d);
+    if (!(r < mx || r > mx))
+        *h = (float)((double)bc - gc);
+    else if (!(g < mx || g > mx))
+        *h = (float)((rc + 2.0f) - bc);
+    else
+        *h = (float)(((double)gc + 4.0f) - rc);
+    double hd = (double)*h * 60.0f;
+    *h = (float)hd;
+    if (!(hd >= 0.0f))
+        *h = (float)(hd + 360.0f);
+}

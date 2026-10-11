@@ -1130,3 +1130,41 @@ extern "C" void __fastcall Copter_UpdateWarning(BYTE* s, void*)
         Switch_Select(F(int, s, 3300), F(int, s, 3296));
     }
 }
+
+extern "C" double __cdecl Game_FrameTime();
+
+// [FUN_5613d0] the helicopter's three control axes: -1/0/1 from the key pairs, ramped in over 0.6 s
+extern "C" void __fastcall Copter_UpdateAxes(DWORD* s, void*)
+{
+    float* f = (float*)s;
+    float dt = (float)Game_FrameTime();
+    double now = Game_Time();
+    if (s[5]) {
+        if (s[10] == s[11]) s[11] = s[10] = 0;
+        int on = s[11] ? 1 : (s[10] ? -1 : 0);
+        s[17] = on;
+        if (on != (int)s[2]) f[14] = (float)now;
+        double v = ((now - f[14]) + (double)dt * 3.0) * 1.6666666269302368f;
+        s[2] = on;
+        if (v > 1.0) v = 1.0;
+        f[20] = (float)(v * on);
+    }
+    if (s[4]) {
+        if (s[6] == s[7]) s[7] = s[6] = 0;
+        int on = s[6] ? 1 : (s[7] ? -1 : 0);
+        s[16] = on;
+        if (on != (int)s[1]) f[13] = (float)now;
+        double v = ((now - f[13]) + (double)dt * 3.0) * 1.6666666269302368f;
+        s[1] = on;
+        if (v > 1.0) v = 1.0;
+        f[19] = (float)(v * on);
+    }
+    if (s[3]) {
+        if (s[8] == s[9]) s[9] = s[8] = 0;
+        int on = s[8] ? 1 : (s[9] ? -1 : 0);
+        s[15] = on;
+        if (on != (int)s[0]) f[12] = (float)now;
+        f[18] = (float)on;
+        s[0] = on;
+    }
+}
