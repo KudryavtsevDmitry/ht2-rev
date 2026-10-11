@@ -415,7 +415,7 @@ void __fastcall Body593040_Destroy(BYTE* self, void*)
 }
 
 ASM_PROC(FUN_591c30)
-ASM_PROC(FUN_592350)
+extern "C" void FUN_592350(); KING_ALIAS("_FUN_592350", "_Bodies_Touch")
 ASM_PROC(FUN_5924d0)
 
 extern "C" {
@@ -567,4 +567,50 @@ extern "C" int __fastcall Body_ContainsPoint(BYTE* s, void*, const float* p)
             return 0;
     }
     return 1;
+}
+
+extern "C" void FUN_57dec0(); KING_ALIAS("_FUN_57dec0", "@SceneObj_Matrix2@12")
+
+// [FUN_589eb0] whether the segment a-b (body space) can touch the body's box in x/y (0.01 margin)
+extern "C" int __fastcall Body_SegmentNearBox(BYTE* s, void*, const float* a, const float* b)
+{
+    float m[12];
+    CallThis(FUN_57dec0, s, m);
+    float ax = (float)(((double)m[0] * a[0] + (double)m[6] * a[2]) + (double)m[3] * a[1] + m[9]);
+    double ay = ((double)m[1] * a[0] + (double)m[7] * a[2]) + (double)m[4] * a[1] + m[10];
+    float bx = (float)(((double)m[6] * b[2] + (double)m[3] * b[1]) + (double)m[0] * b[0] + m[9]);
+    float by = (float)(((double)m[7] * b[2] + (double)m[4] * b[1]) + (double)m[1] * b[0] + m[10]);
+    double c1 = (double)F(float, s, 5116) + 0.01;
+    float c2 = (float)((double)F(float, s, 5120) - 0.01);
+    float c3 = (float)((double)F(float, s, 5108) - 0.01);
+    float c4 = (float)((double)F(float, s, 5112) + 0.01);
+    if (ay > c1 && by > c1) return 0;
+    if (!(ay >= c2) && !(by >= c2)) return 0;
+    if (!(ax >= c3) && !(bx >= c3)) return 0;
+    if (ax > c4 && bx > c4) return 0;
+    return 1;
+}
+
+// [FUN_592350] whether two attached bodies touch: centres within the sum of the outer radii and closer than the sum of the inner
+extern "C" int __cdecl Bodies_Touch(BYTE* d, const float* n, int, BYTE* c, const float* m)
+{
+    float cx = F(float, c, 3436), cy = F(float, c, 3440), cz = F(float, c, 3444);
+    double px = ((double)m[6] * cz + (double)m[3] * cy) + (double)cx * m[0] + m[9];
+    float py = (float)(((double)m[1] * cx + (double)m[7] * cz) + (double)m[4] * cy + m[10]);
+    float pz = (float)(((double)m[2] * cx + (double)m[8] * cz) + (double)m[5] * cy + m[11]);
+    float ex = F(float, d, 3436), ey = F(float, d, 3440), ez = F(float, d, 3444);
+    double qx = ((double)n[3] * ey + (double)n[6] * ez) + (double)n[0] * ex + n[9];
+    float qy = (float)(((double)n[4] * ey + (double)n[7] * ez) + (double)n[1] * ex + n[10]);
+    float qz = (float)(((double)n[5] * ey + (double)n[8] * ez) + (double)n[2] * ex + n[11]);
+    float dx = (float)(qx - px);
+    float dy = (float)((double)qy - py);
+    double dz = (double)qz - pz;
+    double sum = ((double)dx * dx + (double)dy * dy) + dz * dz;
+    double r1 = (double)F(float, d, 3272) + F(float, c, 3272);
+    if (sum > r1 * r1)
+        return 0;
+    double r2 = (double)F(float, d, 3280) + F(float, c, 3280);
+    if (!(sum >= r2 * r2))
+        return 1;
+    return 0;
 }

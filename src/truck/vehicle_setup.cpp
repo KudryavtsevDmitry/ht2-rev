@@ -314,3 +314,51 @@ extern "C" double __fastcall Car_MinWearFactor(BYTE* car, void*)
         return r;
     return m;
 }
+
+ASM_PROC(FUN_4eacce)    // filter: feed (value, name)
+ASM_PROC(FUN_4eaf98)    // filter: output
+ASM_VAR(char, g_strFilterEngineTach, $L_674850)
+
+// [FUN_4ff210] the tachometer target from the driven wheels' slip, filtered into +7300
+extern "C" void __fastcall Car_UpdateTach(BYTE* s, void*, const float* rpm)
+{
+    double acc = 0.0f;
+    int slipping = 0, gripping = 0, driven = 0;
+    int n = F(int, s, 3540);
+    for (int k = 0; k < n; k++)
+        if (F(int, s, 6612 + 480 + k * 4)) {
+            driven++;
+            if (F(WORD, s, 6564 + k * 2))
+                slipping++;
+            if (F(int, s, 6612 + k * 4)) {
+                acc += F(float, s, 6612 + 3228 + k * 4);
+                gripping++;
+            }
+        }
+    float out = *rpm;
+    F(float, s, 7352) = 1.0f;
+    if (F(int, s, 7196) == 1 || slipping == driven)
+        out = (float)((double)F(float, s, 10712) * F(float, s, 7304) * 3.0f);
+    else if (gripping == driven && gripping != 0) {
+        double a = acc / gripping;
+        if (a > 1.0f) a = 1.0f;
+        else if (!(a >= 0.0f)) a = 0.0f;
+        out = (float)(((1.0f - a) + a) * 3.0f * F(float, s, 10712) * F(float, s, 7304));
+    } else if (!(*rpm >= 0.0f)) {
+        double t = (double)F(float, s, 10712) * F(float, s, 7304);
+        F(float, s, 7352) = 0.3f;
+        out = (float)(t * 3.0f);
+    } else if ((double)F(float, s, 7304) * 0.5 > *rpm) {
+        double r = (double)*rpm / F(float, s, 7304);
+        r = r + r;
+        double q = 1.0f - r;
+        double w = (double)F(float, s, 10712) * F(float, s, 7304) * q;
+        out = (float)((w + w) + r * *rpm);
+        F(float, s, 7352) = (float)(q * 0.3 + r);
+    }
+    double lim = (double)F(float, s, 7304) * 0.05;
+    if (!(out >= lim))
+        out = (float)lim;
+    CallThis(FUN_4eacce, s + 6992, out, &g_strFilterEngineTach);
+    F(float, s, 7300) = (float)CallThis<double>(FUN_4eaf98, s + 6992);
+}

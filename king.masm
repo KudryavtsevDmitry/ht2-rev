@@ -1070,6 +1070,7 @@ PUBLIC $L_68ccbc
 PUBLIC $L_64de08, $L_652df0, $L_67695c, $L_67c9a0, $L_6843d8, $L_6843e0
 PUBLIC $L_685a98, $L_72c108
 PUBLIC $L_695324, $L_695e2c, $L_695fac
+PUBLIC $L_64c410, $L_674850
 
 ;===================================
 _TEXT SEGMENT
@@ -342113,6 +342114,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4be5e0 PROC
 
             sub ESP,16
@@ -342248,6 +342251,10 @@ $L_4be73d::
             add ESP,16
             ret 
 FUN_4be5e0 ENDP
+ELSE
+EXTERN _Color_ToHsl:PROC
+FUN_4be5e0 TEXTEQU <_Color_ToHsl>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -438204,6 +438211,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_4ff210 PROC
 
             push ECX
@@ -438381,6 +438390,10 @@ $L_4ff3b2::
             pop ECX
             ret 4
 FUN_4ff210 ENDP
+ELSE
+EXTERN @Car_UpdateTach@12:PROC
+FUN_4ff210 TEXTEQU <@Car_UpdateTach@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -583240,6 +583253,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_5613d0 PROC
 
             sub ESP,8
@@ -583411,6 +583426,10 @@ $L_56151c::
             add ESP,8
             ret 
 FUN_5613d0 ENDP
+ELSE
+EXTERN @Copter_UpdateAxes@8:PROC
+FUN_5613d0 TEXTEQU <@Copter_UpdateAxes@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -643425,6 +643444,8 @@ EXTERN _Movingb_589e90:PROC
 FUN_589e90 TEXTEQU <_Movingb_589e90>
 ENDIF
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_589eb0 PROC
 
             sub ESP,76
@@ -643563,6 +643584,10 @@ $L_58a015::
             add ESP,76
             ret 8
 FUN_589eb0 ENDP
+ELSE
+EXTERN @Body_SegmentNearBox@16:PROC
+FUN_589eb0 TEXTEQU <@Body_SegmentNearBox@16>
+ENDIF
 ALIGN 16
 FUN_58a020 PROC
 
@@ -654942,6 +654967,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_592350 PROC
 
             sub ESP,36
@@ -655063,6 +655090,10 @@ $L_59249c::
             add ESP,36
             ret 
 FUN_592350 ENDP
+ELSE
+EXTERN _Bodies_Touch:PROC
+FUN_592350 TEXTEQU <_Bodies_Touch>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -866146,6 +866177,8 @@ FUN_608fa0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_6097d0 PROC
 
             sub ESP,24
@@ -866304,6 +866337,10 @@ $L_609947::
             nop
             nop
 FUN_6097d0 ENDP
+ELSE
+EXTERN @GridCamera_NodePriority@12:PROC
+FUN_6097d0 TEXTEQU <@GridCamera_NodePriority@12>
+ENDIF
 ALIGN 16
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
 IFDEF ASM_GRID_SUPPORT

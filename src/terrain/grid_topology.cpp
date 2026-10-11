@@ -241,3 +241,30 @@ extern "C" int __fastcall Point_InWedge(const float* s,void*,float x,float y,flo
     if(!(dy*c-dx*d>=nz)) return 0;
     return 1;
 }
+
+// [FUN_6097d0] a node's refinement priority from its distance to the camera circle and the view wedges
+extern "C" double __fastcall GridCamera_NodePriority(BYTE* s,void*,BYTE* node)
+{
+    float px=F(float,node,32), py=F(float,node,36), pz=F(float,node,40);
+    double dy=(double)py-F(float,s,8);
+    double dx=(double)px-F(float,s,4);
+    double dd=x87_sqrt(dx*dx+dy*dy)-pz;
+    float d=(float)dd;
+    if(!(dd>0.0f)) return 1000.0f;
+    if(d>1500.0f) return 9.999999747378752e-06f/(double)d;
+    if(!(d>=50.0f)) return 1000.0f;
+    double ex=(double)px-F(float,s,4);
+    float exf=(float)ex;
+    double ey=(double)py-F(float,s,8);
+    float eyf=(float)ey;
+    float mz=-pz;
+    if(!(ey*F(float,s,60)-ex*F(float,s,64)>=mz)) return 9.999999747378752e-06f/(double)d;
+    if(!(ey*F(float,s,68)-ex*F(float,s,72)>=mz)) return 9.999999747378752e-06f/(double)d;
+    if(F(unsigned,node,24)<8) return 10.0f/((double)d+1.0f);
+    double base=(double)F(float,node,20)/d+0.05000000074505806f;
+    if(!(d>=500.0f)) return base;
+    if((double)eyf*F(float,s,76)-(double)exf*F(float,s,80)>=mz
+       && (double)eyf*F(float,s,84)-(double)exf*F(float,s,88)>=mz)
+        return base;
+    return base*0.5f;
+}
