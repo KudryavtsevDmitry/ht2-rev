@@ -1071,6 +1071,7 @@ PUBLIC $L_64de08, $L_652df0, $L_67695c, $L_67c9a0, $L_6843d8, $L_6843e0
 PUBLIC $L_685a98, $L_72c108
 PUBLIC $L_695324, $L_695e2c, $L_695fac
 PUBLIC $L_64c410, $L_674850
+PUBLIC $L_64da00, $L_652f3c, $L_6532e8
 
 ;===================================
 _TEXT SEGMENT
@@ -343604,6 +343605,8 @@ EXTERN @Particles_Construct@12:PROC
 FUN_4bf470 TEXTEQU <@Particles_Construct@12>
 ENDIF
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bf510 PROC
 
             sub ESP,64
@@ -343737,6 +343740,10 @@ FUN_4bf510 PROC
             add ESP,64
             ret 
 FUN_4bf510 ENDP
+ELSE
+EXTERN @Fx_CameraPair@8:PROC
+FUN_4bf510 TEXTEQU <@Fx_CameraPair@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -375485,6 +375492,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d43e0 PROC
 
             sub ESP,144
@@ -375603,6 +375612,10 @@ $L_4d447c::
             add ESP,144
             ret 
 FUN_4d43e0 ENDP
+ELSE
+EXTERN _Fx_VehicleMatrixAt:PROC
+FUN_4d43e0 TEXTEQU <_Fx_VehicleMatrixAt>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -375613,6 +375626,8 @@ FUN_4d43e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d4520 PROC
 
             sub ESP,144
@@ -375701,6 +375716,10 @@ $L_4d457d::
             add ESP,144
             ret 
 FUN_4d4520 ENDP
+ELSE
+EXTERN _Fx_VehicleMatrix:PROC
+FUN_4d4520 TEXTEQU <_Fx_VehicleMatrix>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -375715,6 +375734,8 @@ FUN_4d4520 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d4620 PROC
 
             push ESI
@@ -375810,6 +375831,10 @@ $L_4d46f6::
             pop ESI
             ret 8
 FUN_4d4620 ENDP
+ELSE
+EXTERN @Fx_LevelForHeight@16:PROC
+FUN_4d4620 TEXTEQU <@Fx_LevelForHeight@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -652871,6 +652896,8 @@ $L_590810 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_590ba0 PROC
 
             sub ESP,268
@@ -652960,6 +652987,10 @@ $L_590cd6::
             add ESP,268
             ret 4
 FUN_590ba0 ENDP
+ELSE
+EXTERN @Body_ProbeGround@12:PROC
+FUN_590ba0 TEXTEQU <@Body_ProbeGround@12>
+ENDIF
 $L_590ce0 PROC
 
             push ESI
@@ -662601,6 +662632,8 @@ $L_596e31::
             nop
 FUN_596b30 ENDP
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_596e50 PROC
 
             sub ESP,220
@@ -662707,6 +662740,10 @@ FUN_596e50 PROC
             add ESP,220
             ret 8
 FUN_596e50 ENDP
+ELSE
+EXTERN @Object_AimMatrix@16:PROC
+FUN_596e50 TEXTEQU <@Object_AimMatrix@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -887367,6 +887404,8 @@ $L_6142c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_6142f0 PROC
 
             sub ESP,12
@@ -887493,6 +887532,10 @@ $L_6143e9::
             add ESP,12
             ret 32
 FUN_6142f0 ENDP
+ELSE
+EXTERN @TerrainView_Construct@40:PROC
+FUN_6142f0 TEXTEQU <@TerrainView_Construct@40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

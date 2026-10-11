@@ -662,3 +662,31 @@ extern "C" int __fastcall Body_Reset(BYTE* s, void*, int a, int b)
     F(float, s, 3284) = h;
     return CallThis<int>(FUN_58ba90, s);
 }
+
+extern "C" int __cdecl Query_4e7168(int a, BYTE* skip, float dist, const float* p, const float* d, BYTE* q);
+ASM_VAR(Vec3, g_down702630, $L_702630)
+
+// [FUN_590ba0] probes the ground 5 above to 95 below the body's position; on a hit, the body's virtual +224 (point, normal, a)
+extern "C" void __fastcall Body_ProbeGround(BYTE* s, void*, int a)
+{
+    if (!F(int, s, 5132))
+        return;
+    BYTE node[208];
+    CallThis(FUN_5ef5c0, node);
+    const Vec3& g = g_down702630;
+    double x5 = (double)g.x * 5.0f;
+    float y5 = (float)((double)g.y * 5.0f);
+    float z5 = (float)((double)g.z * 5.0f);
+    float A[3], B[3];
+    A[0] = (float)(x5 + F(float, s, 536));
+    A[1] = (float)((double)y5 + F(float, s, 540));
+    A[2] = (float)((double)z5 + F(float, s, 544));
+    double wx = (double)g.x * 100.0f;
+    float wy = (float)((double)g.y * 100.0f);
+    float wz = (float)((double)g.z * 100.0f);
+    B[0] = (float)((double)A[0] - wx);
+    B[1] = (float)((double)A[1] - wy);
+    B[2] = (float)((double)A[2] - wz);
+    if (Query_4e7168(F(int, s, 800), s, 0.0f, A, B, node))
+        CallVirt(s, 224, node + 52, node + 64, a);
+}

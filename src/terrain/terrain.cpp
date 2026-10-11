@@ -444,3 +444,51 @@ extern "C" int __stdcall Terrain_Call617180(const Vec3T* a,const Vec3T* b,int c,
     Vec3T cb=*b,ca=*a;
     return CallStd<int>(FUN_617180,&ca,&cb,c,d,e);
 }
+
+#include <mmsystem.h>
+typedef char TerrainLabel[1];
+ASM_VAR(TerrainLabel, g_vtbl652f3c, $L_652f3c)
+ASM_VAR(const float, k_zero6142f0, $L_64c264)
+ASM_VAR(const float, k_0_025, $L_6532e8)
+ASM_PROC(FUN_61a8a0)
+
+// [FUN_6142f0] constructs a terrain view: its position, the new 116-byte detail object, the grid (FUN_61a8a0) and the view constants
+extern "C" BYTE* __fastcall TerrainView_Construct(BYTE* s, void*, int x, int y, int z, int a3, int a4, int a5, int a6, int a7)
+{
+    F(int, s, 108) = a7;
+    F(int, s, 40) = a3;
+    F(int, s, 44) = a4;
+    F(int, s, 28) = x;
+    F(int, s, 32) = y;
+    F(int, s, 36) = z;
+    BYTE* o = (BYTE*)operator new(116);
+    if (o) {
+        F(void*, o, 0) = g_vtbl652f3c;
+        F(WORD, o, 64) = 0;
+        F(int, o, 32) = 0;
+        F(int, o, 36) = 0;
+        F(int, o, 44) = 0;
+        F(WORD, o, 42) = 0;
+        F(WORD, o, 40) = 0;
+        F(int, o, 8) = 0;
+        F(int, o, 60) = 0;
+        F(DWORD, o, 48) = timeGetTime();
+        for (int i = 68; i <= 100; i += 4) F(int, o, i) = 0;
+        F(void*, o, 0) = &g_vtbl6532ec;
+        F(int, o, 4) = 0;
+        F(int, o, 108) = a5;
+        F(int, o, 112) = a6;
+    }
+    F(BYTE*, s, 0) = o;
+    CallThis(FUN_61a8a0, o, s + 28, F(int, s, 40), F(int, s, 44));   // the new object's grid
+    for (int i = 80; i <= 100; i += 4) F(int, s, i) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 52) = 0;
+    F(float, s, 56) = (float)(250.0f / (double)k_zero6142f0);
+    F(int, s, 64) = 40;
+    F(int, s, 68) = 40;
+    F(float, s, 60) = (float)(250.0f / (double)k_zero6142f0);
+    F(float, s, 72) = (float)(750.0f * (double)k_0_025);
+    F(float, s, 76) = (float)(750.0f * (double)k_0_025);
+    return s;
+}
