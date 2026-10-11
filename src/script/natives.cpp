@@ -21,7 +21,7 @@ ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
 ASM_PROC(FUN_4ab570)    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
-ASM_PROC(FUN_4afe80)    // list: a new node holding x
+extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 
 ASM_VAR(int, g_69224c, $L_69224c)
 ASM_VAR(AsmLabel, g_strImmediate, $L_671104)    // "<IMMEDIATE>"
@@ -120,7 +120,7 @@ ASM_PROC(FUN_4a59f0)    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 ASM_PROC(FUN_4a5800)
 ASM_PROC(FUN_4a36c0)    // a value's destructor
-ASM_PROC(FUN_4a4540)    // vector<value>: allocate and copy (n, first, last)
+extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // vector<value>: allocate and copy (n, first, last)
 extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const SchValue* from);
 KING_ALIAS("@SchValue_Assign@12", "@Str_Assign@12")
 extern "C" BYTE* __cdecl UninitCopyStrRefs(const BYTE* first, const BYTE* last, BYTE* dest);  // aistl.cpp

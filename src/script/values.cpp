@@ -19,9 +19,15 @@ extern "C" void __cdecl free(void* p);
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
 ASM_PROC(FUN_4b20d0)
-ASM_PROC(FUN_4b58c0)
+extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")
 ASM_PROC(FUN_4b5490)
 ASM_PROC(FUN_4b5b70)
+extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")
+ASM_PROC(FUN_4b0be0)
+extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
+ASM_PROC(FUN_4abf10)
+ASM_VAR(AsmLabel, s_tNumber, $L_66ca60)
+ASM_VAR(AsmLabel, g_vtbl64c0b0, $L_64c0b0)
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
 extern "C" void FUN_4b63a0(); KING_ALIAS("_FUN_4b63a0", "@SchBuf4b63a0_Construct@8")
 extern "C" void FUN_4b6500(); KING_ALIAS("_FUN_4b6500", "@SchSymbol_Construct@12")
@@ -675,6 +681,54 @@ void __fastcall Sch4b11f0_Destroy(BYTE* self, void*)
     if (F(BYTE*, self, 16))
         F(BYTE*, F(BYTE*, self, 16), 12) = F(BYTE*, self, 12);
     F(void*, self, 0) = g_vtbl64bee4;
+}
+
+}
+
+// the SGI subtractive random number generator: 55 words, then the indexes
+static void SubtractiveRng_Init(DWORD* t, DWORD seed)
+{
+    memset(t, 0, 55 * 4);
+    DWORD mj = seed;
+    DWORD mk = 1;
+    t[54] = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned ii = i % 55;
+        DWORD next = mj - mk;
+        t[ii] = mk;
+        mj = t[ii];
+        mk = next;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned i = 0; i < 55; i++)
+            t[i] -= t[(i + 31) % 55];
+    t[55] = 0;
+    t[56] = 31;
+}
+
+extern "C" {
+
+// [FUN_4b2880] a new number from (*a, b, c)
+DWORD* __cdecl Sch_MakeNumber3(DWORD* out, int unused, const DWORD* a, DWORD b, DWORD c)
+{
+    BYTE* o = CallC<BYTE*>(FUN_4ad2f0, 32);
+    BYTE* n = o ? CallThis<BYTE*>(FUN_4b0be0, o, *a, b, c) : 0;
+    return SchHandle_Take(out, n, 6, (const char*)s_tNumber);
+}
+
+// [FUN_4b58c0] the interpreter state: base, value tables, its random generator
+BYTE* __fastcall SchState_Construct(BYTE* self, void*)
+{
+    CallThis(FUN_4b1390, self);
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 20) = 0;
+    memset(self + 24, 0, 40);
+    CallThis(FUN_4abf10, self + 24, 0);
+    F(BYTE, self, 64) = 0;
+    SubtractiveRng_Init((DWORD*)(self + 68), 161803398);
+    F(void*, self, 0) = g_vtbl64c0b0;
+    return self;
 }
 
 }
