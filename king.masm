@@ -317127,6 +317127,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b11f0 PROC
 
             push -1
@@ -317213,6 +317215,10 @@ $L_4b129a::
             add ESP,16
             ret 
 FUN_4b11f0 ENDP
+ELSE
+EXTERN @Sch4b11f0_Destroy@8:PROC
+FUN_4b11f0 TEXTEQU <@Sch4b11f0_Destroy@8>
+ENDIF
 $L_4b12b0 PROC
 
             push -1
@@ -317370,6 +317376,8 @@ FUN_4b13b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b13c0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -317433,6 +317441,10 @@ $L_4b1438::
             add ESP,12
             ret 
 FUN_4b13c0 ENDP
+ELSE
+EXTERN _Port_WriteChar:PROC
+FUN_4b13c0 TEXTEQU <_Port_WriteChar>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -317441,6 +317453,8 @@ FUN_4b13c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b1450 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -317522,6 +317536,10 @@ $L_4b14e1::
             add ESP,12
             ret 
 FUN_4b1450 ENDP
+ELSE
+EXTERN _Port_WriteString:PROC
+FUN_4b1450 TEXTEQU <_Port_WriteString>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -318881,6 +318899,8 @@ FUN_4b1d40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b2050 PROC
 
             push -1
@@ -318929,6 +318949,10 @@ $L_4b20bc::
             add ESP,16
             ret 
 FUN_4b2050 ENDP
+ELSE
+EXTERN _Sch_Convert4b2050:PROC
+FUN_4b2050 TEXTEQU <_Sch_Convert4b2050>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4b20d0 PROC
@@ -324514,6 +324538,8 @@ $L_4b4ee0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b5060 PROC
 
             push -1
@@ -324614,6 +324640,10 @@ $L_4b511f::
             add ESP,16
             ret 
 FUN_4b5060 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierNew:PROC
+FUN_4b5060 TEXTEQU <_Sch_MakeIdentifierNew>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -324623,6 +324653,8 @@ FUN_4b5060 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b5140 PROC
 
             push -1
@@ -324726,8 +324758,14 @@ $L_4b5206::
             add ESP,16
             ret 
 FUN_4b5140 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierQ:PROC
+FUN_4b5140 TEXTEQU <_Sch_MakeIdentifierQ>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b5220 PROC
 
             push -1
@@ -324830,10 +324868,16 @@ $L_4b52e4::
             add ESP,16
             ret 
 FUN_4b5220 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierC:PROC
+FUN_4b5220 TEXTEQU <_Sch_MakeIdentifierC>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b5300 PROC
 
             push -1
@@ -324936,6 +324980,10 @@ $L_4b53c4::
             add ESP,16
             ret 
 FUN_4b5300 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierD:PROC
+FUN_4b5300 TEXTEQU <_Sch_MakeIdentifierD>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -326760,6 +326808,8 @@ FUN_4b61c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b62c0 PROC
 
             push -1
@@ -326808,6 +326858,10 @@ FUN_4b62c0 PROC
             add ESP,16
             ret 4
 FUN_4b62c0 ENDP
+ELSE
+EXTERN @SchString_Construct@12:PROC
+FUN_4b62c0 TEXTEQU <@SchString_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -327060,6 +327114,8 @@ FUN_4b6400 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b6500 PROC
 
             push -1
@@ -327108,6 +327164,10 @@ FUN_4b6500 PROC
             add ESP,16
             ret 4
 FUN_4b6500 ENDP
+ELSE
+EXTERN @SchSymbol_Construct@12:PROC
+FUN_4b6500 TEXTEQU <@SchSymbol_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

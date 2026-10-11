@@ -22,6 +22,19 @@ ASM_PROC(FUN_4b20d0)
 ASM_PROC(FUN_4b58c0)
 ASM_PROC(FUN_4b5490)
 ASM_PROC(FUN_4b5b70)
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
+extern "C" void FUN_4b63a0(); KING_ALIAS("_FUN_4b63a0", "@SchBuf4b63a0_Construct@8")
+extern "C" void FUN_4b6500(); KING_ALIAS("_FUN_4b6500", "@SchSymbol_Construct@12")
+ASM_PROC(FUN_48c540)
+extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
+ASM_VAR(AsmLabel, s_tIdentifier, $L_66ce4c)
+ASM_VAR(AsmLabel, g_vtblString, $L_64c108)
+ASM_VAR(AsmLabel, g_vtblSymbol, $L_64c118)
+ASM_VAR(AsmLabel, s_6703f0, $L_6703f0)
+ASM_VAR(AsmLabel, g_vtbl64c054, $L_64c054)
+ASM_VAR(AsmLabel, g_vtbl64bed0, $L_64bed0)
+ASM_VAR(AsmLabel, g_vtbl64bee4, $L_64bee4)
+extern "C" DWORD* __cdecl SchHandle_Take(DWORD* out, BYTE* o, int type, const char* name);  // evaluator.cpp
 extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);   // aimain.cpp
 
 ASM_VAR(AsmLabel, g_vtbl64c044, $L_64c044)
@@ -508,8 +521,8 @@ extern "C" unsigned __fastcall Reader_Fill(BYTE* self, void*, unsigned n)
 
 // a caret line for an error: CR, LF, then spaces up to the column; each
 // call takes the value by copy
-ASM_PROC(FUN_4b13c0)    // writes a character (c, value by copy)
-ASM_PROC(FUN_4b1450)    // writes a string (text, value by copy)
+extern "C" void FUN_4b13c0(); KING_ALIAS("_FUN_4b13c0", "_Port_WriteChar")    // writes a character (c, value by copy)
+extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // writes a string (text, value by copy)
 ASM_VAR(AsmLabel, g_strSpace, $L_6715b8)
 struct ValueArg { BYTE* obj; int m_4; DWORD flags; };
 
@@ -542,4 +555,126 @@ extern "C" BYTE** __fastcall SchInputList_EraseRange(void*, void*, BYTE** out,
     }
     *out = last;
     return out;
+}
+
+// --- functions with exception frames (the frames only rethrow)
+
+static void SchRef_Release(DWORD* v)
+{
+    if (!(v[2] & 0x10000) && v[0]) {
+        BYTE* o = (BYTE*)v[0];
+        F(int, o, 4) = F(int, o, 4) - 1;
+        if (!F(int, (BYTE*)v[0], 4) && v[0])
+            CallVirt((BYTE*)v[0], 12, 1);
+    }
+}
+
+static BYTE* NewIdentifier(DWORD name)
+{
+    BYTE* o = (BYTE*)operator new(24);
+    return o ? CallThis<BYTE*>(FUN_4b6500, o, name) : 0;
+}
+
+static void Port_CheckWrite(BYTE* o, DWORD flags, int c)
+{
+    if (!o)
+        CallC(FUN_4a52e0, 0, 1);
+    if (flags & 0x10000)
+        CallC(FUN_4a52e0, 4, 1);
+    CallVirt(o, 28, c);
+}
+
+static BYTE* SchText_Construct(BYTE* self, const char* s, void* vtbl)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 20) = 0;
+    F(void*, self, 0) = vtbl;
+    CallThis(FUN_44c220, self + 12, F(BYTE*, self, 16), s, s + strlen(s) + 1);
+    return self;
+}
+
+extern "C" {
+
+// [FUN_4b5060] a new unnamed identifier
+DWORD* __cdecl Sch_MakeIdentifierNew(DWORD* out)
+{
+    BYTE* o = (BYTE*)operator new(24);
+    BYTE* id = o ? CallThis<BYTE*>(FUN_4b63a0, o) : 0;
+    return SchHandle_Take(out, id, 9, s_tIdentifier);
+}
+
+// [FUN_4b5140] a new identifier from *name
+DWORD* __cdecl Sch_MakeIdentifierQ(DWORD* out, int unused, const DWORD* name)
+{
+    return SchHandle_Take(out, NewIdentifier(*name), 9, s_tIdentifier);
+}
+
+// [FUN_4b5220]
+DWORD* __cdecl Sch_MakeIdentifierC(DWORD* out, int unused, DWORD name)
+{
+    return SchHandle_Take(out, NewIdentifier(name), 9, s_tIdentifier);
+}
+
+// [FUN_4b5300]
+DWORD* __cdecl Sch_MakeIdentifierD(DWORD* out, int unused, DWORD name)
+{
+    return SchHandle_Take(out, NewIdentifier(name), 9, s_tIdentifier);
+}
+
+// [FUN_4b62c0] string object constructor (copies s with its terminator)
+BYTE* __fastcall SchString_Construct(BYTE* self, void*, const char* s)
+{
+    return SchText_Construct(self, s, g_vtblString);
+}
+
+// [FUN_4b6500] symbol object constructor
+BYTE* __fastcall SchSymbol_Construct(BYTE* self, void*, const char* s)
+{
+    return SchText_Construct(self, s, g_vtblSymbol);
+}
+
+// [FUN_4b13c0] writes the character c to the port h (passed by value)
+void __cdecl Port_WriteChar(int c, DWORD h0, DWORD h1, DWORD h2)
+{
+    DWORD h[3] = {h0, h1, h2};
+    Port_CheckWrite((BYTE*)h0, h2, c);
+    SchRef_Release(h);
+}
+
+// [FUN_4b1450] writes the string s to the port h (passed by value)
+void __cdecl Port_WriteString(const char* s, DWORD h0, DWORD h1, DWORD h2)
+{
+    DWORD h[3] = {h0, h1, h2};
+    for (; *s; s++)
+        Port_CheckWrite((BYTE*)h0, h2, (char)*s);
+    SchRef_Release(h);
+}
+
+// [FUN_4b2050]
+DWORD* __cdecl Sch_Convert4b2050(DWORD* out, const DWORD* x)
+{
+    BYTE* t = CallC<BYTE*>(FUN_48c540, x[0], (const char*)s_6703f0);
+    *out = CallC<DWORD>(FUN_48acd0, 0, t);
+    if (t && F(WORD, t, 2))
+        operator delete(t);
+    return out;
+}
+
+// [FUN_4b11f0] destructor: two values, then unlinks from its list
+void __fastcall Sch4b11f0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64c054;
+    SchRef_Release((DWORD*)(self + 32));
+    SchRef_Release((DWORD*)(self + 20));
+    F(void*, self, 0) = g_vtbl64bed0;
+    if (F(BYTE*, self, 12))
+        F(BYTE*, F(BYTE*, self, 12), 16) = F(BYTE*, self, 16);
+    if (F(BYTE*, self, 16))
+        F(BYTE*, F(BYTE*, self, 16), 12) = F(BYTE*, self, 12);
+    F(void*, self, 0) = g_vtbl64bee4;
+}
+
 }
