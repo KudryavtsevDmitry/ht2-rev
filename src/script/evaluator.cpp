@@ -19,7 +19,7 @@ ASM_PROC(FUN_4a36f0)    // destructor of the value holders (map and list entries
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
-ASM_PROC(FUN_4ab570)    // constructs a 44-byte element at p from x
+extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
@@ -1508,6 +1508,17 @@ void __cdecl Sch4ad330(int a, Value3 h, int b, int c)
     Eval4a3e40(o, 0, a, b, (BYTE*)v[0], v[1], v[2]);
     ReleaseRef((SchValue*)l);
     ReleaseRef((SchValue*)&h);
+}
+
+}
+
+extern "C" {
+
+// [FUN_4ab570] placement copy (the copy constructor FUN_4aac80)
+void __cdecl Sch4ab570_Construct(BYTE* d, const BYTE* s)
+{
+    if (d)
+        Sch4aac80_Copy(d, 0, s);
 }
 
 }

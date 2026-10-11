@@ -514,7 +514,6 @@ extern "C" void __cdecl Player_Place(BYTE* p, PositionId pos)
 }
 
 extern "C" void __cdecl Player_UpdateOrders(BYTE* p);
-KING_ALIAS("_Player_UpdateOrders", "FUN_478100")
 
 // sends a player toward a position, as the waypoint with the id
 extern "C" void __cdecl Player_GoTo(BYTE* p, PositionId target, int id)
@@ -1211,6 +1210,49 @@ BYTE* __cdecl Players_Append(int kind)
     BYTE* node = (BYTE*)((void**)g_players)[1];
     F(int, node, 104) = *r;
     return (BYTE*)((void**)g_players)[1] + 8;
+}
+
+}
+
+ASM_PROC(FUN_4872f0)    // re-plans a player's route to a position (player, position by value)
+ASM_PROC(FUN_5d2ba0)    // console: print (text, 0)
+extern "C" const char* __cdecl Rec_Name8(BYTE* p);
+
+static void PrintPosition(const PositionId* p)
+{
+    sprintf(g_positionText, "(%d %g %d %d %x)", p->road, p->t, p->segment, p->object, p->m_24);
+    CallC(FUN_5d2ba0, g_positionText, 0);
+}
+
+static void Replan(BYTE* p, const DWORD* to)
+{
+    CallC(FUN_4872f0, p, to[0], to[1], to[2], to[3], to[4], to[5], to[6], to[7]);
+}
+
+extern "C" {
+
+// [FUN_478100] re-plans the route to the last waypoint unless it is already
+// the last node of the route; when that leaves no route, prints the player's
+// name, the waypoint and its position
+void __cdecl Player_UpdateOrders(BYTE* p)
+{
+    BYTE* wEnd = F(BYTE*, p, 76);
+    if (F(BYTE*, p, 72) == wEnd)
+        return;
+    if (F(BYTE*, p, 24) != F(BYTE*, p, 28)) {
+        int n = F(int, wEnd, -36);
+        if (n != -1 && n == F(int, F(BYTE*, p, 28), -12))
+            return;
+    }
+    Replan(p, (const DWORD*)(F(BYTE*, p, 76) - 40));
+    if (F(BYTE*, p, 24) == F(BYTE*, p, 28))
+        Replan(p, (const DWORD*)(F(BYTE*, p, 76) - 40));
+    if (F(BYTE*, p, 24) != F(BYTE*, p, 28))
+        return;
+    CallC(FUN_5d2ba0, Rec_Name8(p), 0);
+    PrintPosition((const PositionId*)(F(BYTE*, p, 76) - 40));
+    PositionId here = *(const PositionId*)(p + 40);
+    PrintPosition(&here);
 }
 
 }

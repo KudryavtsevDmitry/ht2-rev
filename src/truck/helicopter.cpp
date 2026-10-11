@@ -1016,3 +1016,84 @@ BYTE* __fastcall Wipers_Construct(BYTE* self, void*, int a)
 }
 
 }
+
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")    // message: constructor
+ASM_PROC(FUN_603110)    // message: set (id, data, size)
+ASM_PROC(FUN_5c3630)    // sends a message
+ASM_PROC(FUN_602e80)    // message: destructor
+
+static void CopyText(char* to, const char* s)
+{
+    if (!s) {
+        *to = 0;
+        return;
+    }
+    while ((*to++ = *s++) != 0)
+        ;
+}
+
+extern "C" {
+
+// [FUN_56fae0] sends message 958 (120 bytes: a, two names, 12 dwords, b)
+// when the game runs networked (+1300 == 1)
+void __cdecl Net_SendObjectMessage(int a, int b, const char* name1, const char* name2,
+                                   DWORD d0, DWORD d1, DWORD d2, DWORD d3, DWORD d4, DWORD d5,
+                                   DWORD d6, DWORD d7, DWORD d8, DWORD d9, DWORD d10, DWORD d11)
+{
+    if (F(int, g_6cec6c, 1300) != 1)
+        return;
+    BYTE m[148];
+    CallThis(FUN_602be0, m);
+    F(int, m, 28) = a;
+    CopyText((char*)m + 32, name1);
+    CopyText((char*)m + 64, name2);
+    DWORD d[12] = {d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11};
+    for (int i = 0; i < 12; i++)
+        F(DWORD, m, 96 + i * 4) = d[i];
+    F(int, m, 144) = b;
+    CallThis(FUN_603110, m, 958, m + 28, 120);
+    CallThis(FUN_5c3630, g_696ca0, m);
+    CallThis(FUN_602e80, m);
+}
+
+}
+
+extern "C" void FUN_4297b0(); KING_ALIAS("_FUN_4297b0", "_AI_True")
+extern "C" void FUN_569380(); KING_ALIAS("_FUN_569380", "_Copter_Send956")
+extern "C" void FUN_5a40b0(); KING_ALIAS("_FUN_5a40b0", "@Node_Position@12")
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+ASM_PROC(FUN_5a4f00)    // explosion effect: constructor
+ASM_VAR(int, g_6f33f0, $L_6f33f0)
+
+extern "C" {
+
+// [FUN_56f240] blows up the mine with this id (sound, explosion effect)
+void __cdecl Mine_Explode(int id)
+{
+    if (g_6f33f0 || !CallC<bool>(FUN_4297b0))
+        return;
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, F(BYTE*, g_6cec6c, 1356) + 704, id);
+    if (!r)
+        return;
+    BYTE* s = F(BYTE*, r, 28);
+    if (!s)
+        return;
+    if (F(int, s, 360) && F(int, s, 408) == 1) {
+        CallC(FUN_569380, F(int, s, 344), 1);
+        F(int, s, 408) = 2;
+        CallC(FUN_569380, F(int, s, 344), 2);
+        CallVirt(s, 24, 1);
+    }
+    DWORD v[3] = {0, 0, 0};
+    CallThis(FUN_5a40b0, s, v);
+    BYTE* q = (BYTE*)operator new(192);
+    BYTE* e = 0;
+    if (q) {
+        BYTE* root = CallThis<BYTE*>(FUN_5ef640, s + 256);
+        e = CallThis<BYTE*>(FUN_5a4f00, q, F(BYTE*, g_6cec6c, 1356), root, v[0], v[1], v[2], 0,
+                            0x40000000, "mineExplose", "mineSound", 3, 0x9999999Au, 0x3fb99999);
+    }
+    CallVirt(e, 24, 1);
+}
+
+}
