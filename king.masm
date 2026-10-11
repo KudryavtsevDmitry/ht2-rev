@@ -41730,6 +41730,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_418930 PROC
 
             push -1
@@ -41960,6 +41962,10 @@ $L_418b94::
             add ESP,32
             ret 
 FUN_418930 ENDP
+ELSE
+EXTERN _Parking_RandomFree:PROC
+FUN_418930 TEXTEQU <_Parking_RandomFree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -52280,6 +52286,8 @@ FUN_41f0d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41f3d0 PROC
 
             push -1
@@ -52498,6 +52506,10 @@ $L_41f5cf::
             inc EDI
             jmp $L_41f56f
 FUN_41f3d0 ENDP
+ELSE
+EXTERN @Rec41f3d0_Destroy@8:PROC
+FUN_41f3d0 TEXTEQU <@Rec41f3d0_Destroy@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_41f5e0 PROC
@@ -104348,6 +104360,8 @@ $L_43f93f::
             nop
 FUN_43f8d0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f950 PROC
 
             push -1
@@ -104548,6 +104562,10 @@ $L_43fb48::
             add ESP,24
             ret 
 FUN_43f950 ENDP
+ELSE
+EXTERN _Ai_SetPlayerImage:PROC
+FUN_43f950 TEXTEQU <_Ai_SetPlayerImage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
