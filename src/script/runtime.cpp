@@ -21,12 +21,22 @@ extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.c
 extern "C" double __cdecl Int_ToDouble(const void* n);
 KING_ALIAS("_Int_ToDouble", "FUN_48a750")
 extern "C" void* __cdecl Int_FromInt(int v, int a);
-KING_ALIAS("_Int_FromInt", "FUN_48ade0")
+KING_ALIAS("_Int_FromInt", "_BigInt_FromInt")
 extern "C" void __cdecl Poly_48d8f0(void* out, void* a, int b, int n, int c);
 KING_ALIAS("_Poly_48d8f0", "FUN_48d8f0")
 extern "C" void __cdecl AI_Error4a54e0(int code, int a, const char* name);
 KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+extern "C" void FUN_470950(); KING_ALIAS("_FUN_470950", "@CharVec_Assign@12")
+ASM_PROC(FUN_48ae10)
+extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
+ASM_PROC(FUN_491420)
+ASM_PROC(FUN_48c260)
+ASM_VAR(AsmLabel, s_bigint, $L_670408)
+ASM_VAR(AsmLabel, s_bigintTooLarge, $L_670410)
+ASM_VAR(AsmLabel, s_bigintNull, $L_670430)
+ASM_VAR(AsmLabel, g_vtbl64bf38, $L_64bf38)
+ASM_VAR(AsmLabel, g_vtbl64bf24, $L_64bf24)
 ASM_PROC(FUN_46e460)    // vector<char>::insert(pos, first, last) (another instance)
 ASM_PROC(FUN_470900)
 ASM_PROC(FUN_4897b0)    // list: a new node
@@ -665,7 +675,7 @@ extern "C" WORD* __cdecl WStr_Assign(WORD* dst, const WORD* src)
 // the AI's big integers: wide strings holding 16-bit digits, lowest first;
 // +4 the sign (1: not negative)
 
-ASM_PROC(FUN_48aae0)    // the integer out made ready for len digits (out, len)
+extern "C" void FUN_48aae0(); KING_ALIAS("_FUN_48aae0", "_BigInt_Alloc")    // the integer out made ready for len digits (out, len)
 
 // trims leading zero digits; zero is not negative
 static WORD* Int_Normalize(WORD* r)
@@ -856,4 +866,95 @@ extern "C" void __cdecl Int_DivDigits(WORD* R, const WORD* V, int vn, WORD* Q, i
         if (Q)
             Q[j] = (WORD)qhat;
     }
+}
+
+// --- big integers: +0 word length, +2 word capacity, +4 word sign (1 = not
+// negative), +6 the 16-bit digits
+
+static void BigInt_Fail(const char* what)
+{
+    g_onError((const char*)s_bigint, (int)what);
+}
+
+extern "C" {
+
+// [FUN_48aae0] a big integer with room for n digits, all zero (reuses p when it fits)
+WORD* __cdecl BigInt_Alloc(WORD* p, unsigned n)
+{
+    if (!p || n > p[1]) {
+        if (p && p[1])
+            operator delete(p);
+        unsigned need = n * 2 + 12;
+        unsigned size = 16;
+        while (size < need)
+            size <<= 1;
+        size -= 4;
+        if (size >= 131070)
+            BigInt_Fail((const char*)s_bigintTooLarge);
+        p = (WORD*)operator new(size);
+        p[1] = (WORD)((size - 6) >> 1);
+    }
+    p[0] = (WORD)n;
+    p[2] = 1;
+    memset(p + 3, 0, (n & 0xffff) * 2);
+    return p;
+}
+
+// [FUN_48ade0] a big integer from v
+WORD* __cdecl BigInt_FromInt(WORD* p, int v)
+{
+    WORD sign = v >= 0;
+    WORD* r = CallC<WORD*>(FUN_48ae10, p, sign ? v : -v);
+    r[2] = sign;
+    return r;
+}
+
+// [FUN_48c540] r = -a (r reused when it is not a)
+WORD* __cdecl BigInt_Negate(WORD* a, WORD* r)
+{
+    if (!a)
+        BigInt_Fail((const char*)s_bigintNull);
+    if (r != a)
+        r = CallC<WORD*>(FUN_48acd0, r, a);
+    if (r[0])
+        r[2] = r[2] == 0;
+    return r;
+}
+
+// [FUN_48c590] *out = a op b through a temporary
+WORD** __cdecl BigInt_Op48c260(WORD** out, WORD* const* a, WORD* const* b)
+{
+    WORD* t = CallC<WORD*>(FUN_48c260, *a, *b);
+    *out = CallC<WORD*>(FUN_48acd0, 0, t);
+    if (t && t[1])
+        operator delete(t);
+    return out;
+}
+
+// [FUN_4883f0] an empty 36-byte record initialised from s
+DWORD* __fastcall Rec4883f0_Construct(DWORD* self, void*, int s)
+{
+    for (int i = 0; i < 9; i++)
+        self[i] = 0;
+    CallThis(FUN_470950, self, s);
+    return self;
+}
+
+// [FUN_491380] a pooled script object for the interpreter x
+BYTE* __fastcall Pooled_Construct(BYTE* self, void*, BYTE* x)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(BYTE*, self, 12) = x;
+    F(void*, self, 0) = g_vtbl64bf38;
+    BYTE* slot;
+    DWORD* r = CallC<DWORD*>(FUN_491420, &slot, x, self);
+    F(DWORD, self, 16) = *r;
+    F(int, self, 20) = 0;
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    F(void*, self, 0) = g_vtbl64bf24;
+    return self;
+}
+
 }
