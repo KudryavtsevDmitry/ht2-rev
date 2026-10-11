@@ -7,7 +7,7 @@ ASM_VAR(TopologyLabel,g_topDataVtable,$L_652e48)
 ASM_VAR(TopologyLabel,g_topDate,$L_6724f8)
 ASM_VAR(TopologyLabel,g_topFile,$L_684a20)
 ASM_VAR(TopologyLabel,g_topError,$L_6724b0)
-ASM_PROC(FUN_60aad0)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" DWORD __fastcall MarineQueue_InsertNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);

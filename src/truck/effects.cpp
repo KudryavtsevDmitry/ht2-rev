@@ -1088,7 +1088,7 @@ BYTE* __fastcall CopySound_Construct(BYTE* s, void*, BYTE* src) { return M(s)->C
 // medium-sized functions of the unit
 
 struct Vec3Bits { DWORD x, y, z; };
-ASM_PROC(FUN_60aad0)    // error (code, format, file, line, date)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // a model by name
 ASM_PROC(FUN_603110)    // network: send (type, data, size)
 ASM_PROC(FUN_593720)

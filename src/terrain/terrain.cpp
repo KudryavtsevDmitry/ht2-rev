@@ -16,7 +16,7 @@ typedef DWORD Dwords[1];
 
 ASM_PROC(FUN_616ca0)    // seeds the noise tables
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // the scene object with this name (0, name)
-ASM_PROC(FUN_60aad0)    // error report
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report
 
 ASM_VAR(Ints, g_perm, $L_72b068)                 // noise permutation
 ASM_VAR(Dwords, g_noiseGrad, $L_729850)          // 12-byte gradients

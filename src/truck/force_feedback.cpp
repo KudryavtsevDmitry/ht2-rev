@@ -17,7 +17,7 @@ KING_ALIAS("_Carat_Message", "FUN_5d2ba0")
 
 ASM_PROC(FUN_578100)
 ASM_PROC(FUN_60aa60)    // assertion failed (level, format, expression, file, line, date)
-ASM_PROC(FUN_60aad0)    // error (code, format, file, line, date)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
 ASM_PROC(FUN_5b1020)
 ASM_PROC(FUN_57c5f0)
 
