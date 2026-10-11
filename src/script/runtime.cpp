@@ -27,8 +27,14 @@ KING_ALIAS("_Poly_48d8f0", "FUN_48d8f0")
 extern "C" void __cdecl AI_Error4a54e0(int code, int a, const char* name);
 KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+extern "C" void FUN_490d30(); KING_ALIAS("_FUN_490d30", "_Rational_Error@4")
+extern "C" void FUN_48af50(); KING_ALIAS("_FUN_48af50", "_Int_CompareMagnitude")
+ASM_PROC(FUN_48b8a0)
+ASM_PROC(FUN_491010)
+ASM_PROC(FUN_44b740)
+ASM_VAR(AsmLabel, s_divByZero, $L_67055c)
 extern "C" void FUN_470950(); KING_ALIAS("_FUN_470950", "@CharVec_Assign@12")
-ASM_PROC(FUN_48ae10)
+extern "C" void FUN_48ae10(); KING_ALIAS("_FUN_48ae10", "_BigInt_FromUnsigned")
 extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
 ASM_PROC(FUN_491420)
 ASM_PROC(FUN_48c260)
@@ -955,6 +961,94 @@ BYTE* __fastcall Pooled_Construct(BYTE* self, void*, BYTE* x)
     F(int, self, 28) = 0;
     F(void*, self, 0) = g_vtbl64bf24;
     return self;
+}
+
+}
+
+static void Value_Release(DWORD* v)
+{
+    if (!(v[2] & 0x10000) && v[0]) {
+        BYTE* o = (BYTE*)v[0];
+        F(int, o, 4) = F(int, o, 4) - 1;
+        if (!F(int, (BYTE*)v[0], 4) && v[0])
+            CallVirt((BYTE*)v[0], 12, 1);
+    }
+}
+
+extern "C" {
+
+// [FUN_48ae10] the big integer v (reuses p when it fits)
+WORD* __cdecl BigInt_FromUnsigned(WORD* p, unsigned v)
+{
+    WORD w[2];
+    WORD n = 0;
+    for (unsigned x = v; x; x >>= 16)
+        w[n++] = (WORD)x;
+    if (!p || n > p[1]) {
+        if (p && p[1])
+            operator delete(p);
+        unsigned need = n * 2 + 12;
+        unsigned size = 16;
+        while (size < need)
+            size <<= 1;
+        size -= 4;
+        if (size >= 131070)
+            BigInt_Fail((const char*)s_bigintTooLarge);
+        p = (WORD*)operator new(size);
+        p[1] = (WORD)((size - 6) >> 1);
+    }
+    p[0] = n;
+    p[2] = 1;
+    for (int i = 0; i < n; i++)
+        p[3 + i] = w[i];
+    return p;
+}
+
+// [FUN_490db0] reduces the rational (+0 numerator, +4 denominator)
+void __fastcall Rational_Reduce(WORD** self, void*)
+{
+    WORD** q = self + 1;
+    if (!(*q)[0]) {
+        CallThis(FUN_490d30, self, (const char*)s_divByZero);
+    } else if ((*q)[2] != 1) {
+        *q = BigInt_Negate(*q, *q);
+        self[0] = BigInt_Negate(self[0], self[0]);
+    }
+    WORD* g;
+    BigInt_Op48c260(&g, self, q);
+    if (CallC<int>(FUN_48af50, g, g_691cd0)) {
+        self[0] = CallC<WORD*>(FUN_48b8a0, self[0], g, self[0]);
+        *q = CallC<WORD*>(FUN_48b8a0, *q, g, *q);
+    }
+    if (g && g[1])
+        operator delete(g);
+}
+
+// [FUN_490930] vector<8 bytes> copy constructor
+DWORD* __fastcall Vec8_Copy(DWORD* self, void*, const DWORD* s)
+{
+    unsigned n = (s[1] - s[0]) >> 3;
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 8) : 0;
+    self[0] = (DWORD)p;
+    self[1] = (DWORD)p;
+    self[2] = (DWORD)(p + n * 8);
+    unsigned bytes = ((s[1] - s[0]) >> 3) << 3;
+    memmove(p, (const void*)s[0], bytes);
+    self[1] = (DWORD)(p + bytes);
+    return self;
+}
+
+// [FUN_491100] destructor: three script values
+void __fastcall Rec491100_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64bf0c;
+    Value_Release((DWORD*)(self + 44));
+    Value_Release((DWORD*)(self + 32));
+    Value_Release((DWORD*)(self + 20));
+    CallThis(FUN_491010, self);
 }
 
 }
