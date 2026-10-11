@@ -1067,6 +1067,8 @@ PUBLIC $L_725d40, $L_725d44
 PUBLIC $L_64bf4c
 PUBLIC $L_66f62b
 PUBLIC $L_68ccbc
+PUBLIC $L_64de08, $L_652df0, $L_67695c, $L_67c9a0, $L_6843d8, $L_6843e0
+PUBLIC $L_685a98, $L_72c108
 
 ;===================================
 _TEXT SEGMENT
@@ -365516,6 +365518,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4cd730 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -365543,6 +365547,10 @@ $L_4cd75d::
             fld DWORD PTR [EAX+244]
             ret 
 FUN_4cd730 ENDP
+ELSE
+EXTERN _Vehicle_Value4cd730:PROC
+FUN_4cd730 TEXTEQU <_Vehicle_Value4cd730>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -365750,6 +365758,8 @@ FUN_4cd770 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4cda20 PROC
 
             sub ESP,12
@@ -365843,6 +365853,10 @@ $L_4cdaa4::
             nop
             nop
 FUN_4cda20 ENDP
+ELSE
+EXTERN _Effect_Direction4cda20:PROC
+FUN_4cda20 TEXTEQU <_Effect_Direction4cda20>
+ENDIF
 ALIGN 16
 FUN_4cdaf0 PROC
 
@@ -367708,6 +367722,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4cee70 PROC
 
             sub ESP,120
@@ -367790,6 +367806,10 @@ $L_4cef40::
             add ESP,120
             ret 
 FUN_4cee70 ENDP
+ELSE
+EXTERN _Effect_TooFar4cee70:PROC
+FUN_4cee70 TEXTEQU <_Effect_TooFar4cee70>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -438327,6 +438347,8 @@ FUN_4ff210 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_4ff3e0 PROC
 
             push ESI
@@ -438373,6 +438395,10 @@ $L_4ff44f::
             pop ESI
             ret 4
 FUN_4ff3e0 ENDP
+ELSE
+EXTERN @Car_EngineBrakeTorque@12:PROC
+FUN_4ff3e0 TEXTEQU <@Car_EngineBrakeTorque@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -465697,6 +465723,8 @@ FUN_511820 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_511910 PROC
 
             sub ESP,24
@@ -465767,6 +465795,10 @@ $L_5119d8::
             add ESP,24
             ret 
 FUN_511910 ENDP
+ELSE
+EXTERN _Player_LoadFactor:PROC
+FUN_511910 TEXTEQU <_Player_LoadFactor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -468940,6 +468972,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_513740 PROC
 
             sub ESP,8
@@ -469044,6 +469078,10 @@ $L_5137fd::
             add ESP,8
             ret 
 FUN_513740 ENDP
+ELSE
+EXTERN _Cpu_SpeedFactor:PROC
+FUN_513740 TEXTEQU <_Cpu_SpeedFactor>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -616696,6 +616734,8 @@ FUN_5773c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_577530 PROC
 
             sub ESP,80
@@ -616788,6 +616828,10 @@ $L_577620::
             add ESP,80
             ret 12
 FUN_577530 ENDP
+ELSE
+EXTERN @FfEffect_SetPeriodic@20:PROC
+FUN_577530 TEXTEQU <@FfEffect_SetPeriodic@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -616933,6 +616977,8 @@ FUN_577630 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_5777a0 PROC
 
             sub ESP,80
@@ -617036,6 +617082,10 @@ $L_577896::
             add ESP,80
             ret 8
 FUN_5777a0 ENDP
+ELSE
+EXTERN @FfEffect_SetCondition@16:PROC
+FUN_5777a0 TEXTEQU <@FfEffect_SetCondition@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -617623,6 +617673,8 @@ FUN_577ce0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_577e50 PROC
 
             sub ESP,292
@@ -617720,6 +617772,10 @@ $L_577f67::
             add ESP,292
             ret 8
 FUN_577e50 ENDP
+ELSE
+EXTERN @FfEffect_Restart@16:PROC
+FUN_577e50 TEXTEQU <@FfEffect_Restart@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -854619,6 +854675,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603ec0 PROC
 
             mov EAX,DWORD PTR [$L_6843e0]
@@ -854651,6 +854709,10 @@ $L_603ee0::
             add ESP,20
             ret 
 FUN_603ec0 ENDP
+ELSE
+EXTERN _Tsc_Now:PROC
+FUN_603ec0 TEXTEQU <_Tsc_Now>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -854664,6 +854726,8 @@ FUN_603ec0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/timer.cpp, nmake ASM_TIMER=1 assembles the original
+IFDEF ASM_TIMER
 FUN_603f30 PROC
 
             sub ESP,20
@@ -854728,6 +854792,10 @@ FUN_603f30 PROC
             add ESP,20
             ret 
 FUN_603f30 ENDP
+ELSE
+EXTERN _Tsc_Calibrate:PROC
+FUN_603f30 TEXTEQU <_Tsc_Calibrate>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -859969,6 +860037,8 @@ FUN_606440 TEXTEQU <@GridMesh_RemoveEdge@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_6064c0 PROC
 
             sub ESP,12
@@ -860260,6 +860330,10 @@ $L_606703::
             nop
             nop
 FUN_6064c0 ENDP
+ELSE
+EXTERN @GridMesh_CreateEdge@16:PROC
+FUN_6064c0 TEXTEQU <@GridMesh_CreateEdge@16>
+ENDIF
 ALIGN 16
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
 IFDEF ASM_GRID_SUPPORT
@@ -863463,6 +863537,8 @@ $L_60802a::
             ret 4
 $L_608010 ENDP
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_608030 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -863613,6 +863689,10 @@ $L_60816a::
             pop EBX
             ret 8
 FUN_608030 ENDP
+ELSE
+EXTERN @TGridEdge_SetPairs@16:PROC
+FUN_608030 TEXTEQU <@TGridEdge_SetPairs@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871565,6 +871645,8 @@ FUN_60be40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_60c120 PROC
 
             fld DWORD PTR [ECX+4]
@@ -871591,6 +871673,10 @@ $L_60c155::
 
             ret 8
 FUN_60c120 ENDP
+ELSE
+EXTERN @Circle_Outside@16:PROC
+FUN_60c120 TEXTEQU <@Circle_Outside@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -871600,6 +871686,8 @@ FUN_60c120 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_60c160 PROC
 
             push ECX
@@ -871721,6 +871809,10 @@ $L_60c267::
             pop ECX
             ret 
 FUN_60c160 ENDP
+ELSE
+EXTERN @GridMesh_Refine50@8:PROC
+FUN_60c160 TEXTEQU <@GridMesh_Refine50@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -886285,6 +886377,8 @@ $L_613a70::
 $L_613a60 ENDP
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_613a80 PROC
 
             mov EAX,132104
@@ -886381,6 +886475,10 @@ $L_613af6::
             nop
             nop
 FUN_613a80 ENDP
+ELSE
+EXTERN @Tile_ReadHeights@12:PROC
+FUN_613a80 TEXTEQU <@Tile_ReadHeights@12>
+ENDIF
 ALIGN 16
 FUN_613b50 PROC
 
@@ -888384,6 +888482,8 @@ FUN_614ce0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_614f00 PROC
 
             sub ESP,36
@@ -888419,6 +888519,10 @@ FUN_614f00 PROC
             add ESP,36
             ret 12
 FUN_614f00 ENDP
+ELSE
+EXTERN _Terrain_Call614960@12:PROC
+FUN_614f00 TEXTEQU <_Terrain_Call614960@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -888698,6 +888802,8 @@ FUN_614f70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_615230 PROC
 
             sub ESP,36
@@ -888733,6 +888839,10 @@ FUN_615230 PROC
             add ESP,36
             ret 12
 FUN_615230 ENDP
+ELSE
+EXTERN _Terrain_Call614f70@12:PROC
+FUN_615230 TEXTEQU <_Terrain_Call614f70@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -894843,6 +894953,8 @@ $L_6197b8           DWORD $L_617255
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_6197e0 PROC
 
             sub ESP,24
@@ -894875,6 +894987,10 @@ FUN_6197e0 PROC
             add ESP,24
             ret 20
 FUN_6197e0 ENDP
+ELSE
+EXTERN _Terrain_Call617180@20:PROC
+FUN_6197e0 TEXTEQU <_Terrain_Call617180@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

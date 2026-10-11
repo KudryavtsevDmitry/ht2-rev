@@ -400,3 +400,47 @@ void __fastcall Terrain6199a0_CreateTrees(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// x87 functions of the unit: height tables and vector copies
+
+extern "C" void __cdecl rewind(FILE* f);
+ASM_PROC(FUN_5ab0f0)    // a 16-bit word from a file
+
+// [FUN_613a80] (tdata.cpp) reads 257x257 16-bit heights into the floats at a 16-byte stride
+extern "C" int __fastcall Tile_ReadHeights(BYTE* self,void*,FILE* f)
+{
+    if(!f) return 0;
+    rewind(f);
+    static WORD raw[257*257];
+    for(int i=0;i<257*257;i++) raw[i]=CallC<WORD>(FUN_5ab0f0,f);
+    for(int i=0;i<257*257;i++)
+        F(float,self,i*16)=(float)((((double)raw[i]*1.5259021893143654e-05f-0.5f)*100.0f)+474.8999938964844f);
+    return 1;
+}
+
+struct Vec3T { float x,y,z; };
+ASM_PROC(FUN_614960)
+ASM_PROC(FUN_614f70)
+ASM_PROC(FUN_617180)
+
+// [FUN_614f00] FUN_614960 on copies of three vectors
+extern "C" int __stdcall Terrain_Call614960(const Vec3T* a,const Vec3T* b,const Vec3T* c)
+{
+    Vec3T ca=*a,cb=*b,cc=*c;
+    return CallStd<int>(FUN_614960,&ca,&cb,&cc);
+}
+
+// [FUN_615230] FUN_614f70 on copies of three vectors
+extern "C" int __stdcall Terrain_Call614f70(const Vec3T* a,const Vec3T* b,const Vec3T* c)
+{
+    Vec3T ca=*a,cb=*b,cc=*c;
+    return CallStd<int>(FUN_614f70,&ca,&cb,&cc);
+}
+
+// [FUN_6197e0] FUN_617180 on copies of two vectors
+extern "C" int __stdcall Terrain_Call617180(const Vec3T* a,const Vec3T* b,int c,int d,int e)
+{
+    Vec3T cb=*b,ca=*a;
+    return CallStd<int>(FUN_617180,&ca,&cb,c,d,e);
+}
