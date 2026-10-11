@@ -1045,6 +1045,7 @@ PUBLIC $L_694998, $L_696074, $L_696078, $L_696210, $L_6f6a7c, $L_6f6a80
 PUBLIC $L_6f6a88
 PUBLIC $L_64b860, $L_64c458, $L_651768, $L_67f0e0, $L_67f0e4
 PUBLIC $L_67ef88
+PUBLIC $L_676308, $L_676310, $L_676318, $L_676320, $L_67632c, $L_676338
 
 ;===================================
 _TEXT SEGMENT
@@ -459421,6 +459422,8 @@ FUN_50d860 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50dc00 PROC
 
             sub ESP,104
@@ -459686,6 +459689,10 @@ $L_50dc6d::
             add ESP,104
             ret 
 FUN_50dc00 ENDP
+ELSE
+EXTERN _Button_SetImages:PROC
+FUN_50dc00 TEXTEQU <_Button_SetImages>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
