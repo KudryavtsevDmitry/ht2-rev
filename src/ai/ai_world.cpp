@@ -679,7 +679,7 @@ ASM_VAR(AsmLabel, s_invalidId, $L_66cbf4)
 ASM_VAR(AsmLabel, s_playerIdType, $L_66d4d8)
 ASM_VAR(BYTE**, g_townsBegin, $L_68cec0)
 
-ASM_PROC(FUN_4778a0)
+extern "C" void FUN_4778a0(); KING_ALIAS("_FUN_4778a0", "_Player_ClearOrderLists")
 ASM_PROC(FUN_442c60)
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")    // the PlayerId of a list iterator (thiscall out, iterator)
 ASM_PROC(FUN_4466a0)    // kills a player

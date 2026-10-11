@@ -1301,3 +1301,28 @@ void __fastcall Player_SetHops(BYTE* self, void*, BYTE* const* src)
 }
 
 }
+
+extern "C" void FUN_461b00(); KING_ALIAS("_FUN_461b00", "@Rec41ce50_DeletingDestructor@12")    // 144-byte order record: destructor (flag)
+
+// destroys the 144-byte records of the vector at +28 of r
+static void Orders144_Clear(BYTE* r)
+{
+    BYTE* b = F(BYTE*, r, 28);
+    BYTE* e = F(BYTE*, r, 32);
+    for (BYTE* p = b; p != F(BYTE*, r, 32); p += 144)
+        CallThis(FUN_461b00, p, 0);
+    F(BYTE*, r, 32) = F(BYTE*, r, 32) - ((e - b) / 144) * 144;
+}
+
+extern "C" {
+
+// [FUN_4778a0] clears the order lists of the player's two order sets
+void __cdecl Player_ClearOrderLists(BYTE* p)
+{
+    if (F(BYTE*, p, 508))
+        Orders144_Clear(F(BYTE*, p, 508));
+    if (F(BYTE*, p, 512))
+        Orders144_Clear(F(BYTE*, p, 512));
+}
+
+}
