@@ -2262,3 +2262,74 @@ extern "C" int __cdecl Effect_TooFar4cee70(BYTE* car)
         return 0;
     return 1;
 }
+
+extern "C" double __cdecl HueComponent(float p, float q, float h);
+
+// [FUN_4be7f0] HSL to RGB: hue h (degrees), lightness l, saturation s
+extern "C" void __cdecl Color_FromHsl(float h, float l, float s, float* r, float* g, float* b)
+{
+    float q;
+    if (l > 0.5f)
+        q = (float)(((double)l + s) - (double)l * s);
+    else
+        q = (float)(((double)s + 1.0f) * l);
+    float p = (float)(((double)l + l) - q);
+    if (!(s < 0 || s > 0)) {     // equal or unordered
+        *r = l; *g = l; *b = l;
+        return;
+    }
+    *r = (float)HueComponent(p, q, (float)((double)h + 120.0f));
+    *g = (float)HueComponent(p, q, h);
+    *b = (float)HueComponent(p, q, (float)((double)h - 120.0f));
+}
+
+// [FUN_4dc910] a segment raised to 4 m when the point 3/4 along it is in range; else the segment unchanged
+extern "C" void __stdcall Fx_RaiseSegment(const Vec3* a, const Vec3* b, Vec3* outA, Vec3* outB)
+{
+    double t = (double)b->z * 0.75f;
+    if (t + a->z >= 4.0f) {
+        double x = (double)b->x * 0.75f;
+        float y = (float)((double)b->y * 0.75f);
+        float z = (float)t;
+        Vec3 v;
+        v.x = (float)(x + a->x);
+        v.y = (float)((double)y + a->y);
+        v.z = (float)((double)z + a->z);
+        if (Fx_InRange((const float*)&v)) {
+            outA->x = a->x; outA->y = a->y; outA->z = 4.0f;
+            outB->x = b->x; outB->y = b->y; outB->z = 0;
+            return;
+        }
+    }
+    *outA = *a;
+    *outB = *b;
+}
+
+extern "C" BYTE* __fastcall Fx_SetVtbl89c(BYTE* s, void*);
+extern "C" void __fastcall RefStack_Push(BYTE* s, void*, void* p);
+extern "C" void* __fastcall RefStack_Pop(BYTE* s, void*);
+
+// [FUN_4c89d0] a new 2220-byte effect at a point, its detail by the distance to the camera; dropped again if it fails
+extern "C" void __fastcall Fx_SpawnAt(BYTE* self, void*, int a, int b, const Vec3* at)
+{
+    BYTE* o = (BYTE*)operator new(2220);
+    if (o)
+        o = Fx_SetVtbl89c(o, 0);
+    RefStack_Push(F(BYTE*, self, 76), 0, o);
+    const Vec3* cam = (const Vec3*)(g_game + 1460);
+    Vec3 d;
+    d.x = (float)((double)at->x - cam->x);
+    d.y = (float)((double)at->y - cam->y);
+    d.z = (float)((double)at->z - cam->z);
+    double len = Vec3_Length(&d);
+    int level;
+    if (!(len >= 20.0f)) level = 2;
+    else if (!(len >= 50.0f)) level = 1;
+    else if (!(len >= 90.0f)) level = 0;
+    else level = 2;
+    if (!CallVirt<int>(o, 4, a, b, at, level)) {
+        void* x = RefStack_Pop(F(BYTE*, self, 76), 0);
+        if (x)
+            CallVirt(x, 0, 1);
+    }
+}

@@ -342331,6 +342331,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4be7f0 PROC
 
             fld DWORD PTR [ESP+8]
@@ -342415,6 +342417,10 @@ $L_4be86b::
             add ESP,8
             ret 
 FUN_4be7f0 ENDP
+ELSE
+EXTERN _Color_FromHsl:PROC
+FUN_4be7f0 TEXTEQU <_Color_FromHsl>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -358475,6 +358481,8 @@ $L_4c88f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c89d0 PROC
 
             sub ESP,36
@@ -358595,6 +358603,10 @@ $L_4c8add::
             add ESP,36
             ret 12
 FUN_4c89d0 ENDP
+ELSE
+EXTERN @Fx_SpawnAt@20:PROC
+FUN_4c89d0 TEXTEQU <@Fx_SpawnAt@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -387760,6 +387772,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4dc910 PROC
 
             sub ESP,24
@@ -387857,6 +387871,10 @@ $L_4dca00::
             add ESP,24
             ret 16
 FUN_4dc910 ENDP
+ELSE
+EXTERN _Fx_RaiseSegment@16:PROC
+FUN_4dc910 TEXTEQU <_Fx_RaiseSegment@16>
+ENDIF
 $L_4dca30 PROC
 
             sub ESP,280
@@ -440966,6 +440984,8 @@ $L_500939 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_500ef0 PROC
 
             push EBX
@@ -441065,6 +441085,10 @@ $L_500fea::
             pop EBX
             ret 
 FUN_500ef0 ENDP
+ELSE
+EXTERN _Wheel_AdvanceRamps:PROC
+FUN_500ef0 TEXTEQU <_Wheel_AdvanceRamps>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -441600,6 +441624,8 @@ $L_501543 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_501550 PROC
 
             push ECX
@@ -441700,6 +441726,10 @@ $L_50162d::
             pop ECX
             ret 
 FUN_501550 ENDP
+ELSE
+EXTERN @Car_MinWearFactor@8:PROC
+FUN_501550 TEXTEQU <@Car_MinWearFactor@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_501630 PROC
@@ -592709,6 +592739,8 @@ $L_568664           DWORD $L_5681fe
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_568680 PROC
 
             push ECX
@@ -592826,6 +592858,10 @@ $L_568784::
             pop ECX
             ret 
 FUN_568680 ENDP
+ELSE
+EXTERN @Copter_UpdateWarning@8:PROC
+FUN_568680 TEXTEQU <@Copter_UpdateWarning@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -655540,6 +655576,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_592a20 PROC
 
             mov EAX,6452
@@ -655647,6 +655685,10 @@ $L_592b1c::
             add ESP,6452
             ret 
 FUN_592a20 ENDP
+ELSE
+EXTERN _Body_DeepestContact:PROC
+FUN_592a20 TEXTEQU <_Body_DeepestContact>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864000,6 +864042,8 @@ FUN_608180 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_608460 PROC
 
             fld DWORD PTR [ECX]
@@ -864042,6 +864086,10 @@ $L_6084b2::
             xor EAX,EAX
             ret 24
 FUN_608460 ENDP
+ELSE
+EXTERN @Point_InWedge@32:PROC
+FUN_608460 TEXTEQU <@Point_InWedge@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
