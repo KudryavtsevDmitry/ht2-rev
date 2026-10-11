@@ -1308,3 +1308,28 @@ extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b)
     }
     return 0;
 }
+
+ASM_PROC(FUN_5cf180)    // a screen object's constructor (owner, name, -)
+ASM_PROC(FUN_5cec90)    // a gauge's constructor
+ASM_VAR(char, g_strZero, $L_67c178)      // "zero"
+ASM_VAR(char, g_vtbl64feec, $L_64feec)
+ASM_VAR(char, g_vtbl64fea0, $L_64fea0)
+
+// [FUN_56efc0] a new 160-byte gauge object with its needle (range d / 7; colours by the flag), shown at once
+extern "C" void __cdecl Gauge_Create(DWORD x0, DWORD y0, DWORD z0, DWORD x1, DWORD y1, DWORD z1, double range, int alt)
+{
+    BYTE* o = (BYTE*)operator new(160);
+    if (o) {
+        CallThis(FUN_5cf180, o, F(int, g_6cec6c, 1356), &g_strZero, 0);
+        DWORD colors[4] = { 0xFF1E1E1E, 0xFF646464, 0xFF1E1E1E, 0xFF323C1E };
+        F(void*, o, 0) = &g_vtbl64feec;
+        F(void*, o, 32) = &g_vtbl64fea0;
+        BYTE* p = (BYTE*)operator new(32);
+        if (p) {
+            struct V3 { DWORD x, y, z; } a = { x0, y0, z0 }, b = { x1, y1, z1 };
+            F(BYTE*, o, 96) = CallThis<BYTE*>(FUN_5cec90, p, 10, a, b, range * 0.14285714285714285, alt ? colors + 2 : colors, 2, 0);
+        } else
+            F(BYTE*, o, 96) = 0;
+    }
+    CallVirt(o, 24, 1);
+}

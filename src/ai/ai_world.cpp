@@ -5512,3 +5512,33 @@ extern "C" void __cdecl Race_UpdateProgress(BYTE* p)
     double lf = x87_sqrt((fx * fx + fy * fy) + fz * fz);
     F(double, p, 504) = -(le + lf);
 }
+
+
+// [FUN_456d20] the list nodes in [first, last) whose vehicle exists, isn't flagged 4 and is slower than 5, as a new vector
+extern "C" BYTE** __cdecl Players_SlowList(BYTE** out, BYTE* first, BYTE* last)
+{
+    BYTE* v[4] = { 0, 0, 0, 0 };    // allocator, begin, end, capacity
+    BYTE* it = first;
+    while (it != last) {
+        int id = F(int, it, 84);
+        if (id != -1 && CallC<int>(FUN_4d8a40, id) && !((F(DWORD, it, 96) >> 2) & 1) && !(F(double, it, 344) >= 5.0)) {
+            if (v[2] != v[3]) {
+                if (v[2]) *(BYTE**)v[2] = it;
+                v[2] += 4;
+            } else
+                CallThis(FUN_45dde0, &v[1], v[2], &it);
+        }
+        it = *(BYTE**)it;
+    }
+    out[0] = out[1] = out[2] = 0;
+    unsigned n = (unsigned)(v[2] - v[1]) >> 2;
+    BYTE* mem = n ? (BYTE*)Stl_Allocate(n * 4) : 0;
+    out[0] = mem;
+    out[1] = mem;
+    out[2] = mem + n * 4;
+    out[1] = CallC<BYTE*>(FUN_46b0e0, v[1], v[2], mem, it);
+    unsigned cap = (unsigned)(v[3] - v[1]) >> 2;
+    if (cap)
+        List_FreeNode(v[1], cap * 4);
+    return out;
+}

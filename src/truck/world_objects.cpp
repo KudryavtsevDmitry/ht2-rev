@@ -1138,3 +1138,22 @@ extern "C" BYTE* __cdecl Object_TraceRay(int a0, int a1, BYTE* obj, int a3, int 
     ((DWORD*)out)[2] = z;
     return hit;
 }
+
+ASM_PROC(FUN_5949f0)    // a fader's constructor
+extern "C" void FUN_594b60(); KING_ALIAS("_FUN_594b60", "@Fader_Link@12")
+ASM_VAR(int, g_faders6f66b0, $L_6f66b0)
+
+// [FUN_594c90] a new fader (strength clamped to 1; none under 0.05), linked into the fader list
+extern "C" void __cdecl Fader_Start(int a0, int a1, float strength, int a3, int a4)
+{
+    if (!(strength >= 0.05000000074505806f))
+        return;
+    BYTE* o = (BYTE*)operator new(32);
+    if (o) {
+        if (strength > 1.0f)
+            o = CallThis<BYTE*>(FUN_5949f0, o, a0, a1, 1.0f, a3, a4);
+        else
+            o = CallThis<BYTE*>(FUN_5949f0, o, a0, a1, strength, a3, a4);
+    }
+    CallThis(FUN_594b60, o, g_faders6f66b0);
+}

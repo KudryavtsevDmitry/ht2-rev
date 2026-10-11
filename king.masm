@@ -1078,6 +1078,7 @@ PUBLIC $L_576f90, $L_677268, $L_67cec4, $L_67cee0, $L_67cefc, $L_67cf0c
 PUBLIC $L_6f34e8, $L_6f3528, $L_6f4b58
 PUBLIC $L_725558
 PUBLIC $L_696088
+PUBLIC $L_64fea0, $L_64feec
 
 ;===================================
 _TEXT SEGMENT
@@ -146880,6 +146881,8 @@ EXTERN _Range_CallC:PROC
 FUN_456ce0 TEXTEQU <_Range_CallC>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_456d20 PROC
 
             push -1
@@ -147043,6 +147046,10 @@ $L_456e84::
             add ESP,28
             ret 
 FUN_456d20 ENDP
+ELSE
+EXTERN _Players_SlowList:PROC
+FUN_456d20 TEXTEQU <_Players_SlowList>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -317522,6 +317529,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b0be0 PROC
 
             push -1
@@ -317568,6 +317577,10 @@ $L_4b0c4e::
             add ESP,16
             ret 12
 FUN_4b0be0 ENDP
+ELSE
+EXTERN @Number_ConstructComplex@20:PROC
+FUN_4b0be0 TEXTEQU <@Number_ConstructComplex@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -603827,6 +603840,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56efc0 PROC
 
             push -1
@@ -603931,6 +603946,10 @@ $L_56f0ce::
             add ESP,36
             ret 
 FUN_56efc0 ENDP
+ELSE
+EXTERN _Gauge_Create:PROC
+FUN_56efc0 TEXTEQU <_Gauge_Create>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -659573,6 +659592,8 @@ FUN_594c40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_594c90 PROC
 
             push -1
@@ -659655,6 +659676,10 @@ $L_594d52::
             add ESP,16
             ret 
 FUN_594c90 ENDP
+ELSE
+EXTERN _Fader_Start:PROC
+FUN_594c90 TEXTEQU <_Fader_Start>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
