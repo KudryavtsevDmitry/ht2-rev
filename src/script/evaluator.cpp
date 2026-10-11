@@ -23,6 +23,39 @@ ASM_PROC(FUN_4ab570)    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 ASM_PROC(FUN_4afe80)    // list: a new node holding x
+ASM_PROC(FUN_4a4950)
+extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
+ASM_VAR(AsmLabel, s_errNotSymbolList, $L_67115c)
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
+ASM_PROC(FUN_4b6500)
+extern "C" void FUN_4a8580(); KING_ALIAS("_FUN_4a8580", "@SchNode4a8580_Construct@8")
+extern "C" void FUN_4910a0(); KING_ALIAS("_FUN_4910a0", "@RingB_Construct@12")
+ASM_PROC(FUN_491380)
+extern "C" void FUN_491040(); KING_ALIAS("_FUN_491040", "@RingA_Construct@20")
+extern "C" void FUN_4a81d0(); KING_ALIAS("_FUN_4a81d0", "@SchNode4a81d0_Construct@8")
+extern "C" void FUN_4a9040(); KING_ALIAS("_FUN_4a9040", "@SchNode4a9040_Construct@8")
+extern "C" void FUN_4a86f0(); KING_ALIAS("_FUN_4a86f0", "@SchNode4a86f0_Construct@8")
+extern "C" void FUN_4a8a90(); KING_ALIAS("_FUN_4a8a90", "@SchNode4a8a90_Construct@8")
+extern "C" void FUN_4a8bd0(); KING_ALIAS("_FUN_4a8bd0", "@SchNode4a8bd0_Construct@8")
+extern "C" void FUN_4a9770(); KING_ALIAS("_FUN_4a9770", "@SchNode4a9770_Construct@8")
+extern "C" void FUN_4a9a70(); KING_ALIAS("_FUN_4a9a70", "@SchNode4a9a70_Construct@8")
+extern "C" void FUN_4a9e80(); KING_ALIAS("_FUN_4a9e80", "@SchNode4a9e80_Construct@8")
+ASM_PROC(FUN_4b62c0)
+ASM_VAR(AsmLabel, s_tIdentifier, $L_66ce4c)
+ASM_VAR(AsmLabel, s_tUnspecified, $L_671168)
+ASM_VAR(AsmLabel, s_tBegin, $L_671124)
+ASM_VAR(AsmLabel, s_tClosure, $L_6705f4)
+ASM_VAR(AsmLabel, s_tContinuation, $L_6705fc)
+ASM_VAR(AsmLabel, s_tLambda, $L_67111c)
+ASM_VAR(AsmLabel, s_tDefine, $L_67113c)
+ASM_VAR(AsmLabel, s_tIf, $L_67112c)
+ASM_VAR(AsmLabel, s_tQuote, $L_671130)
+ASM_VAR(AsmLabel, s_tSet, $L_671138)
+ASM_VAR(AsmLabel, s_tEval, $L_671144)
+ASM_VAR(AsmLabel, s_tCallCC, $L_67114c)
+ASM_VAR(AsmLabel, s_tApply, $L_671154)
+ASM_VAR(AsmLabel, s_tString, $L_66ca58)
+ASM_VAR(AsmLabel, g_vtblUnspecified, $L_64c034)
 
 ASM_VAR(int, g_69224c, $L_69224c)
 ASM_VAR(AsmLabel, g_strImmediate, $L_671104)    // "<IMMEDIATE>"
@@ -1006,4 +1039,274 @@ extern "C" SchValue* __cdecl SchInput_MakePort(SchValue* out, int, const int* a,
     BYTE* storage = (BYTE*)operator new(296);
     BYTE* object = storage ? SchItem4b5f30_Construct(storage, 0, *a, *b) : 0;
     return SchInput_WrapNew(out, object, 11, g_inputPortName);
+}
+
+// --- "make a new object and return a typed handle to it" (exception frames dropped)
+
+static DWORD* SchHandle_Take(DWORD* out, BYTE* o, int type, const char* name)
+{
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    if (!o) {
+        out[0] = 0;
+        out[2] = 0;
+        return out;
+    }
+    if (CallVirt<int>(o, 0) != type) {
+        const char* has = CallVirt<const char*>(o, 4);
+        CallC(FUN_4a54e0, 2, 1, has, name);
+        return out;
+    }
+    out[0] = (DWORD)o;
+    out[2] = CallVirt<int>(o, 0) & 255;
+    F(int, o, 4) = F(int, o, 4) + 1;
+    return out;
+}
+
+static BYTE* SchNew0(unsigned size, void (*ctor)())
+{
+    BYTE* o = (BYTE*)operator new(size);
+    return o ? CallThis<BYTE*>(ctor, o) : 0;
+}
+
+static BYTE* SchNew1(unsigned size, void (*ctor)(), DWORD a)
+{
+    BYTE* o = (BYTE*)operator new(size);
+    return o ? CallThis<BYTE*>(ctor, o, a) : 0;
+}
+
+extern "C" {
+
+// [FUN_4a50d0] a new identifier from *name
+DWORD* __cdecl Sch_MakeIdentifierP(DWORD* out, int unused, const DWORD* name)
+{
+    return SchHandle_Take(out, SchNew1(24, FUN_4b6500, *name), 9, s_tIdentifier);
+}
+
+// [FUN_4aa830] a new identifier
+DWORD* __cdecl Sch_MakeIdentifierA(DWORD* out, int unused, DWORD name)
+{
+    return SchHandle_Take(out, SchNew1(24, FUN_4b6500, name), 9, s_tIdentifier);
+}
+
+// [FUN_4aa910]
+DWORD* __cdecl Sch_MakeIdentifierB(DWORD* out, int unused, DWORD name)
+{
+    return SchHandle_Take(out, SchNew1(24, FUN_4b6500, name), 9, s_tIdentifier);
+}
+
+// [FUN_4b07c0] a new string from *s
+DWORD* __cdecl Sch_MakeStringP(DWORD* out, int unused, const DWORD* s)
+{
+    return SchHandle_Take(out, SchNew1(24, FUN_4b62c0, *s), 3, s_tString);
+}
+
+// [FUN_4aa730] the unspecified value
+DWORD* __cdecl Sch_MakeUnspecified(DWORD* out)
+{
+    BYTE* o = (BYTE*)operator new(12);
+    if (o) {
+        F(int, o, 4) = 0;
+        F(int, o, 8) = 0;
+        F(void*, o, 0) = g_vtblUnspecified;
+    }
+    return SchHandle_Take(out, o, 255, s_tUnspecified);
+}
+
+// [FUN_4aaac0] a new closure
+DWORD* __cdecl Sch_MakeClosure(DWORD* out, int unused, DWORD a)
+{
+    return SchHandle_Take(out, SchNew1(56, FUN_4910a0, a), 4, s_tClosure);
+}
+
+// [FUN_4affd0] a new closure from (a, *b, *d)
+DWORD* __cdecl Sch_MakeClosureB(DWORD* out, int unused, DWORD a, const DWORD* b, const DWORD* d)
+{
+    BYTE* o = (BYTE*)operator new(28);
+    BYTE* c = o ? CallThis<BYTE*>(FUN_491040, o, a, *b, *d) : 0;
+    return SchHandle_Take(out, c, 4, s_tClosure);
+}
+
+// [FUN_4aaba0] a new continuation
+DWORD* __cdecl Sch_MakeContinuation(DWORD* out, int unused, DWORD a)
+{
+    return SchHandle_Take(out, SchNew1(32, FUN_491380, a), 5, s_tContinuation);
+}
+
+// special-form nodes (type 34)
+// [FUN_4aa9f0]
+DWORD* __cdecl Sch_MakeBegin(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a8580), 34, s_tBegin);
+}
+
+// [FUN_4b00c0]
+DWORD* __cdecl Sch_MakeLambda(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a81d0), 34, s_tLambda);
+}
+
+// [FUN_4b01a0]
+DWORD* __cdecl Sch_MakeDefine(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a9040), 34, s_tDefine);
+}
+
+// [FUN_4b0280]
+DWORD* __cdecl Sch_MakeIf(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a86f0), 34, s_tIf);
+}
+
+// [FUN_4b0360]
+DWORD* __cdecl Sch_MakeQuote(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a8a90), 34, s_tQuote);
+}
+
+// [FUN_4b0440]
+DWORD* __cdecl Sch_MakeSet(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a8bd0), 34, s_tSet);
+}
+
+// [FUN_4b0520]
+DWORD* __cdecl Sch_MakeEval(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a9770), 34, s_tEval);
+}
+
+// [FUN_4b0600]
+DWORD* __cdecl Sch_MakeCallCC(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a9a70), 34, s_tCallCC);
+}
+
+// [FUN_4b06e0]
+DWORD* __cdecl Sch_MakeApply(DWORD* out)
+{
+    return SchHandle_Take(out, SchNew0(12, FUN_4a9e80), 34, s_tApply);
+}
+
+
+}
+
+extern "C" {
+
+// [FUN_4a47a0] an empty map with comparator *cmp
+DWORD* __fastcall SchMap_Construct(DWORD* self, void*, const BYTE* cmp, int unused)
+{
+    self[0] = 0;
+    BYTE* head = CallC<BYTE*>(FUN_44b740, 48);
+    self[0] = (DWORD)head;
+    self[1] = 0;
+    F(BYTE, self, 8) = *cmp;
+    F(BYTE, head, 0) = 0;
+    F(BYTE*, head, 4) = 0;
+    F(BYTE*, head, 8) = head;
+    F(BYTE*, head, 12) = head;
+    return self;
+}
+
+// [FUN_4a4870] map copy constructor (44-byte nodes)
+DWORD* __fastcall SchMap_Copy(DWORD* self, void*, const DWORD* s)
+{
+    self[0] = 0;
+    BYTE* head = CallC<BYTE*>(FUN_44b740, 44);
+    self[0] = (DWORD)head;
+    self[1] = 0;
+    F(BYTE, self, 8) = F(BYTE, s, 8);
+    BYTE* sroot = F(BYTE*, (BYTE*)s[0], 4);
+    F(BYTE, head, 0) = 0;
+    if (!sroot) {
+        F(BYTE*, head, 4) = 0;
+        F(BYTE*, head, 8) = head;
+        F(BYTE*, head, 12) = head;
+    } else {
+        BYTE* h = (BYTE*)self[0];
+        F(BYTE*, h, 4) = CallThis<BYTE*>(FUN_4a4950, self, sroot, h);
+        h = (BYTE*)self[0];
+        BYTE* n = F(BYTE*, h, 4);
+        while (F(BYTE*, n, 8))
+            n = F(BYTE*, n, 8);
+        F(BYTE*, h, 8) = n;
+        h = (BYTE*)self[0];
+        n = F(BYTE*, h, 4);
+        while (F(BYTE*, n, 12))
+            n = F(BYTE*, n, 12);
+        F(BYTE*, h, 12) = n;
+    }
+    self[1] = s[1];
+    return self;
+}
+
+// [FUN_4a51d0] a 48-byte map node holding a copy of the pair x
+BYTE* __stdcall SchMap_MakeNode(const BYTE* x)
+{
+    BYTE* node = CallC<BYTE*>(FUN_44b740, 48);
+    BYTE* v = node + 16;
+    if (v) {
+        CallThis(FUN_454580, v, x);
+        CallThis(FUN_454580, v + 12, x + 12);
+        F(DWORD, v, 24) = F(DWORD, x, 24);
+    }
+    return node;
+}
+
+// [FUN_4afb30] an empty list (24-byte nodes)
+BYTE** __fastcall SchList_Construct(BYTE** self, void*, int unused)
+{
+    BYTE* n = CallC<BYTE*>(FUN_44b740, 24);
+    self[0] = n;
+    F(BYTE*, n, 0) = n;
+    F(BYTE*, self[0], 4) = self[0];
+    return self;
+}
+
+// [FUN_4a84d0] out = the value h (passed by value)
+DWORD* __cdecl SchValue_Return(DWORD* out, int unused1, int unused2, DWORD h0, DWORD h1, DWORD h2)
+{
+    BYTE* o = (BYTE*)h0;
+    if (h2 & 0x10000) {
+        out[2] = h2;
+        out[0] = h0;
+        out[1] = h1;
+    } else {
+        out[1] = 0;
+        if (o) {
+            out[0] = h0;
+            out[2] = h2;
+            F(int, o, 4) = F(int, o, 4) + 1;
+        } else {
+            out[0] = 0;
+            out[2] = 0;
+        }
+    }
+    if (!(h2 & 0x10000) && o) {
+        if (--F(int, o, 4) == 0)
+            CallVirt(o, 12, 1);
+    }
+    return out;
+}
+
+// [FUN_4aa320] a copy of v, which must be an immediate symbol-list value
+DWORD* __fastcall SchValue_CopyImmediate(DWORD* self, void*, const DWORD* v)
+{
+    self[0] = v[0];
+    self[1] = v[1];
+    self[2] = v[2];
+    if (!(v[2] & 0x10000))
+        CallC(FUN_4a52e0, 6, 1);
+    if (F(BYTE, v, 8) != 33)
+        Sch_TypeError(2, 1, s_errNotSymbolList);
+    return self;
+}
+
+// [FUN_4aa3a0] an identifier handle on o
+DWORD* __fastcall SchIdentifier_From(DWORD* self, void*, BYTE* o)
+{
+    return SchHandle_Take(self, o, 9, s_tIdentifier);
+}
+
 }
