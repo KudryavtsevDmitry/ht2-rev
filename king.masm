@@ -1076,6 +1076,7 @@ PUBLIC $L_67498c
 PUBLIC $L_6511ac, $L_6511f8
 PUBLIC $L_576f90, $L_677268, $L_67cec4, $L_67cee0, $L_67cefc, $L_67cf0c
 PUBLIC $L_6f34e8, $L_6f3528, $L_6f4b58
+PUBLIC $L_725558
 
 ;===================================
 _TEXT SEGMENT
@@ -865138,6 +865139,8 @@ FUN_608b40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_608c70 PROC
 
             sub ESP,40
@@ -865352,6 +865355,10 @@ $L_608dd2::
             nop
             nop
 FUN_608c70 ENDP
+ELSE
+EXTERN @TGrid_MakeNode@16:PROC
+FUN_608c70 TEXTEQU <@TGrid_MakeNode@16>
+ENDIF
 ALIGN 16
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
 IFDEF ASM_GRID_SUPPORT
@@ -872132,6 +872139,8 @@ $L_60c2a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_60c2b0 PROC
 
             sub ESP,36
@@ -872411,6 +872420,10 @@ $L_60c50e::
             add ESP,36
             ret 
 FUN_60c2b0 ENDP
+ELSE
+EXTERN @GridMesh_Frame@8:PROC
+FUN_60c2b0 TEXTEQU <@GridMesh_Frame@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

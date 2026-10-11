@@ -257,7 +257,7 @@ void __fastcall Terrain619ae0_Destroy(BYTE* self, void*)
 
 }
 
-ASM_PROC(FUN_60c2b0)
+extern "C" void FUN_60c2b0(); KING_ALIAS("_FUN_60c2b0", "@GridMesh_Frame@8")
 ASM_PROC(FUN_619c20)
 extern "C" void FUN_619850(); KING_ALIAS("_FUN_619850", "@TerrainPart_Draw@12")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // reports an error code with file, line and date
