@@ -993,3 +993,42 @@ extern "C" Matrix* __fastcall Object_AimMatrix(BYTE* s, void*, Matrix* out, cons
     *out = r;
     return out;
 }
+
+ASM_VAR(Vec3, g_fwd702620, $L_702620)
+ASM_VAR(Vec3, g_up702640b, $L_702640)
+extern "C" Vec3Bits* __cdecl CarType_Point(Vec3Bits* out, const BYTE* car, int i);
+
+// [FUN_598f00] the matrix of a wheel-like object: turned to m's heading plus +112, offset by the player's car point 1 and by +104 sideways
+extern "C" Matrix* __fastcall Object_WheelMatrix(BYTE* s, void*, Matrix* out, const Matrix* m)
+{
+    const float* M = (const float*)m;
+    const Vec3& g = g_fwd702620;
+    Vec3 v, nb;
+    v.x = (float)(((double)g.z * M[6] + (double)g.y * M[3]) + (double)g.x * M[0]);
+    v.y = (float)(((double)g.z * M[7] + (double)g.y * M[4]) + (double)g.x * M[1]);
+    v.z = 0;
+    Vec3 n = *Vec3_Normalized(&nb, &v);
+    double d = ((double)g.x * n.x + (double)g.y * n.y) + (double)g.z * n.z;
+    if (d > 1.0) d = 1.0;
+    else if (!(d >= -1.0)) d = -1.0;
+    double ang = x87_acos(d);
+    const Vec3& u = g_up702640b;
+    if (((double)u.x * n.x + (double)u.y * n.y) + (double)u.z * n.z > 0.0)
+        ang = -ang;
+    Vec3Bits pb;
+    const Vec3* r = (const Vec3*)CarType_Point(&pb, F(BYTE*, g_game, 616), 1);
+    Vec3 p;
+    p.x = (float)((double)r->x + M[9]);
+    p.y = (float)((double)r->y + M[10]);
+    p.z = (float)((double)r->z + M[11]);
+    Vec3 side;
+    side.x = 0;
+    side.y = (float)-F(double, s, 104);
+    side.z = (float)(F(double, s, 104) * F(double, s, 104) * 0.001);
+    Matrix t1, rz, t2, a;
+    Matrix* T1 = Matrix_Translation(&t1, p);
+    Matrix* Rz = Matrix_RotationZ(&rz, (float)(ang + F(double, s, 112)));
+    Matrix* T2 = Matrix_Translation(&t2, side);
+    Matrix_Multiply(out, Matrix_Multiply(&a, T2, Rz), T1);
+    return out;
+}

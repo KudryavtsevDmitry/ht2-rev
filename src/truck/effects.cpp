@@ -2552,3 +2552,34 @@ extern "C" void __fastcall Fx_CameraPair(BYTE* s, void*)
     CallThis(FUN_5ab620, s + 80, &t, k);
     F(float, s, 92) = (float)((double)F(float, s, 64) / F(float, s, 60));
 }
+
+// [FUN_4d5f50] the shown steering from the effect's swing: distance * a, less the turn from b and c
+extern "C" void __fastcall Fx_SteerFromSwing(BYTE* s, void*, double a, double b, double c)
+{
+    Vec3 d;
+    d.x = (float)((double)F(float, s, 13252) - F(float, s, 13276));
+    d.y = (float)((double)F(float, s, 13256) - F(float, s, 13280));
+    d.z = (float)((double)F(float, s, 13260) - F(float, s, 13284));
+    double p = Vec3_Length(&d) * a;
+    double r = (b > 0.0 ? b * 1.3 : b * 0.9) / F(double, s, 16552);
+    if (!(r >= -0.5))
+        r = -0.5;
+    else if (r > 0.5)
+        r = 0.5;
+    else if (!((r < 0 ? -r : r) >= 0.05))
+        r = 0.0;
+    if (!(F(BYTE, s, 16496) & 2)) {
+        double t = 1.0 - c * c;
+        if (!(t >= 0.0))
+            t = 0.0;
+        r = r * t * 0.5;
+    }
+    double v = (double)F(float, s, 13100) * 0.1f;
+    if (!(v >= 0.5))
+        v = 0.5;
+    double w = r / (v + v);
+    double cc = c;
+    if (!((c < 0 ? -c : c) >= 0.1))
+        cc = 0.0;
+    Car_SetSteerShown(s, 0, (p - w) - cc);
+}

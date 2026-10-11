@@ -408,3 +408,56 @@ extern "C" int __fastcall Wheel_StepLevel(BYTE* s, void*, int i, float* amount, 
     F(int, w, 15520) = (int)((double)F(int, w, 15524) * F(float, w, 15532));
     return 1;
 }
+
+ASM_PROC(FUN_4e41d9)    // a random value (angle, name)
+extern "C" double __cdecl Table360_At(float angle);   // world.cpp
+ASM_VAR(char, g_strCheckDamage, $L_67498c)    // "_Car_V::check_damage"
+
+// [FUN_501930] the damaged wheels' wobble (+7028), the drive shares (+7320) and the gear range of the drive mode
+extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*)
+{
+    int n = F(int, s, 3540);
+    for (int k = 0; k < n; k++) {
+        int a = F(int, s, 15580 + k * 20), b = F(int, s, 15584 + k * 20);
+        float A = F(float, s, 7520 + k * 4), B = F(float, s, 7552 + k * 4);
+        if (a == b)
+            F(DWORD, s, 7028 + k * 4) = F(DWORD, s, 7552 + k * 4);
+        else if (a == 2 || a == 1) {
+            float t = (float)(F(float, s, 3740 + k * 4) + 1.570796326795);
+            float u = (float)(CallC<double>(FUN_4e41d9, t, &g_strCheckDamage) + 3.14159265359);
+            double c = Table360_At(u);
+            if (a == 2)
+                F(float, s, 7028 + k * 4) = (float)((c * ((double)A - B) + ((double)A + B)) * 0.5);
+            else
+                F(float, s, 7028 + k * 4) = (float)((c * ((double)A - B) + B) * 0.25 + (double)A * 0.75);
+        } else
+            F(DWORD, s, 7028 + k * 4) = F(DWORD, s, 7520 + k * 4);
+        n = F(int, s, 3540);
+    }
+    n = F(int, s, 3540);
+    for (int k = 0; k < n; k++) {
+        double r = Ramp_Value(s + 16216, 0) * F(float, s, 7812 + k * 4);
+        if (F(int, s, 15900 + k * 20))
+            r *= 0.2;
+        F(float, s, 7320 + k * 4) = (float)r;
+        n = F(int, s, 3540);
+    }
+    int m = F(int, s, 15540);
+    if (m == 2) {
+        int g = F(int, s, 7684) - 3;
+        F(int, s, 7192) = g < 1 ? 1 : g;
+        F(float, s, 7216) = (float)((double)F(float, s, 7708) * 5.0f);
+        F(float, s, 7220) = (float)((double)F(float, s, 7712) * 5.0f);
+        F(float, s, 7224) = (float)((double)F(float, s, 7716) * 5.0f);
+    } else if (m == 1) {
+        F(int, s, 7192) = F(int, s, 7684) - 1;
+        F(float, s, 7216) = (float)((double)F(float, s, 7708) + F(float, s, 7708));
+        F(float, s, 7220) = (float)((double)F(float, s, 7712) + F(float, s, 7712));
+        F(float, s, 7224) = (float)((double)F(float, s, 7716) + F(float, s, 7716));
+    } else {
+        F(int, s, 7192) = F(int, s, 7684);
+        F(DWORD, s, 7216) = F(DWORD, s, 7708);
+        F(DWORD, s, 7220) = F(DWORD, s, 7712);
+        F(DWORD, s, 7224) = F(DWORD, s, 7716);
+    }
+}
