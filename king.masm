@@ -1081,6 +1081,7 @@ PUBLIC $L_696088
 PUBLIC $L_64fea0, $L_64feec
 PUBLIC $L_64d444, $L_650974, $L_650978, $L_650f7c, $L_650fc8, $L_66e538
 PUBLIC $L_66e554, $L_672c60
+PUBLIC $L_64b880, $L_66dcf0, $L_66e640, $L_66e65c, $L_66e678, $L_66ea1c
 
 ;===================================
 _TEXT SEGMENT
@@ -73961,6 +73962,8 @@ FUN_42c570 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42c780 PROC
 
             push -1
@@ -74158,6 +74161,10 @@ $L_42c991::
             add ESP,24
             ret 
 FUN_42c780 ENDP
+ELSE
+EXTERN _Ai_QuerySpeedLimit:PROC
+FUN_42c780 TEXTEQU <_Ai_QuerySpeedLimit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -94303,6 +94310,8 @@ FUN_438d70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4390a0 PROC
 
             push EBP
@@ -94528,6 +94537,10 @@ $L_439305::
             pop EBP
             ret 
 FUN_4390a0 ENDP
+ELSE
+EXTERN _Ai__GetTangent:PROC
+FUN_4390a0 TEXTEQU <_Ai__GetTangent>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -94538,6 +94551,8 @@ FUN_4390a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_439320 PROC
 
             push -1
@@ -94762,6 +94777,10 @@ $L_439560::
             add ESP,52
             ret 
 FUN_439320 ENDP
+ELSE
+EXTERN _Ai_GetTangent:PROC
+FUN_439320 TEXTEQU <_Ai_GetTangent>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -94775,6 +94794,8 @@ FUN_439320 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_439580 PROC
 
             push -1
@@ -94999,6 +95020,10 @@ $L_4397c0::
             add ESP,52
             ret 
 FUN_439580 ENDP
+ELSE
+EXTERN _Ai_GetCoordinatesPos:PROC
+FUN_439580 TEXTEQU <_Ai_GetCoordinatesPos>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -101161,6 +101186,8 @@ FUN_43d1f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43d7c0 PROC
 
             push -1
@@ -101279,6 +101306,10 @@ $L_43d8f9::
             add ESP,44
             ret 
 FUN_43d7c0 ENDP
+ELSE
+EXTERN _Ai_FindPositionOnTrajectory:PROC
+FUN_43d7c0 TEXTEQU <_Ai_FindPositionOnTrajectory>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

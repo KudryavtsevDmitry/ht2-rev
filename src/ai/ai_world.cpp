@@ -5573,3 +5573,113 @@ extern "C" int* __cdecl Ai_GetPositionIdRV(int* out, int room, float x, float y,
     Trace_Leave(&s_getPositionIdRV);
     return out;
 }
+
+ASM_VAR(char, s_querySpeedLimit, $L_66dcf0)      // "querySpeedLimit(PlayerId player)"
+ASM_VAR(char, s__getTangent, $L_66e640)          // "_getTangent(PositionId pos)"
+ASM_VAR(char, s_getTangent, $L_66e65c)           // "getTangent(PositionId pos)"
+ASM_VAR(char, s_getCoordinatesPos, $L_66e678)       // "getCoordinates(PositionId pos)"
+ASM_VAR(char, s_findOnTrajectory, $L_66ea1c)     // "findPositionOnATrajectory(PlayerId player, vrVector const & v)"
+ASM_VAR(BYTE**, g_limits68a970, $L_68a970)
+ASM_VAR(BYTE**, g_limits68a974, $L_68a974)
+ASM_VAR(const double, k_noSpeedLimit, $L_64b880)
+ASM_PROC(FUN_43d1f0)
+
+// [FUN_42c780] querySpeedLimit(PlayerId player): the limit of the zone the player is in (type 5 only)
+extern "C" double __cdecl Ai_QuerySpeedLimit(BYTE* player)
+{
+    Trace_EnterAppend(&s_querySpeedLimit);
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 11493, s_invalidId, s_playerIdType, g_numberText);
+    }
+    if (F(int, player, 92) == 5)
+        for (BYTE** it = g_limits68a970; it != g_limits68a974; it++)
+            if (F(BYTE*, *it, 124) == player) {
+                double r = F(double, *it, 232);
+                Trace_Leave(&s_querySpeedLimit);
+                return r;
+            }
+    Trace_Leave(&s_querySpeedLimit);
+    return k_noSpeedLimit;
+}
+
+// the PositionId argument checks of the traced position functions
+static void CheckPositionArg(const PositionId& p, bool valid, int line)
+{
+    if (!valid) {
+        sprintf(g_positionText76, "(%d %g %d %d %x)", p.road, p.t, p.segment, p.object, p.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, line, "Invalid id", "PositionId", g_positionText76);
+    }
+    if (p.road >= 0 && (unsigned)p.road < (unsigned)(g_roadEdgesEnd - g_roadEdges)) {
+        RoadEdge* e = g_roadEdges[p.road];
+        if (!(p.object < e->objectsEnd - e->objects && p.segment < e->objects[p.object]->SegmentCount()))
+            AiError(33, 100, s_mainFile, s_mainId, line, "Invalid Position Id", &g_aiEmpty, &g_aiEmpty);
+    }
+}
+
+static bool PositionArgOk(const PositionId& p)
+{
+    PositionId c = p;
+    return (RoadId_Valid(&c.road, 0) || NodeId_Valid(&c.node, 0)) && c.t >= -0.0002 && !(c.t > 1.0002)
+        && c.segment >= 0 && c.object >= 0;
+}
+
+// [FUN_4390a0] _getTangent(PositionId pos): the road's direction at the position (reversed for backward positions)
+extern "C" DVec3* __cdecl Ai__GetTangent(DVec3* out, PositionId pos)
+{
+    Trace_EnterBuffered(&s__getTangent);
+    PositionId c = pos;
+    CheckPositionArg(pos, Position_Valid(&c, 0) != 0, 15353);
+    DVec3 r;
+    if (pos.road != -1) {
+        DVec3 t;
+        CallVirt(g_roadEdges[pos.road]->objects[pos.object], 4, &t, pos.t, pos.segment);
+        r = t;
+    } else {
+        r.x = 0; r.y = 1.0; r.z = 0;
+    }
+    if (pos.m_24 & 1) {
+        r.x = -r.x; r.y = -r.y; r.z = -r.z;
+    }
+    *out = r;
+    Trace_Leave(&s__getTangent);
+    return out;
+}
+
+// [FUN_439320] getTangent(PositionId pos) as floats
+extern "C" float* __cdecl Ai_GetTangent(float* out, PositionId pos)
+{
+    Trace_EnterAppend(&s_getTangent);
+    CheckPositionArg(pos, PositionArgOk(pos), 15371);
+    DVec3 t;
+    const DVec3* r = Ai__GetTangent(&t, pos);
+    out[0] = (float)r->x;
+    out[1] = (float)r->y;
+    out[2] = (float)r->z;
+    Trace_Leave(&s_getTangent);
+    return out;
+}
+
+// [FUN_439580] getCoordinates(PositionId pos) as floats
+extern "C" float* __cdecl Ai_GetCoordinatesPos(float* out, PositionId pos)
+{
+    Trace_EnterAppend(&s_getCoordinatesPos);
+    CheckPositionArg(pos, PositionArgOk(pos), 15378);
+    DVec3 t;
+    const DVec3* r = Road_PointOf(&t, pos);
+    out[0] = (float)r->x;
+    out[1] = (float)r->y;
+    out[2] = (float)r->z;
+    Trace_Leave(&s_getCoordinatesPos);
+    return out;
+}
+
+// [FUN_43d7c0] findPositionOnATrajectory(PlayerId player, vrVector const & v)
+extern "C" void* __cdecl Ai_FindPositionOnTrajectory(void* out, BYTE* player, const float* v)
+{
+    Trace_EnterAppend(&s_findOnTrajectory);
+    double d[3] = { v[0], v[1], v[2] };
+    CallC(FUN_43d1f0, out, player + 24, *(PositionId*)(player + 40), d);
+    Trace_Leave(&s_findOnTrajectory);
+    return out;
+}

@@ -104,7 +104,7 @@ KING_ALIAS("_Road_EdgeStart", "FUN_47fcf0")
 extern "C" PositionId* __cdecl Road_EdgeEnd(PositionId* out, RoadEdge* e);
 KING_ALIAS("_Road_EdgeEnd", "FUN_47fe20")
 extern "C" DVec3* __cdecl Road_Tangent(DVec3* out, PositionId pos);
-KING_ALIAS("_Road_Tangent", "FUN_4390a0")
+KING_ALIAS("_Road_Tangent", "_Ai__GetTangent")
 extern "C" void __cdecl AiError(int kind, int code, const char* file, const char* id, int line,
                                 const char* msg, const char* a, const char* b);
 KING_ALIAS("_AiError", "FUN_401010")
