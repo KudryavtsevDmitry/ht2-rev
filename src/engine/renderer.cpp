@@ -18,8 +18,10 @@ extern "C" int __cdecl Video_BitDepth();                                       /
 extern "C" void __cdecl Com_Release(BYTE* com);                                // directdraw.cpp
 
 extern "C" void FUN_50bd10(); KING_ALIAS("_FUN_50bd10", "_Carat_ReleaseLight")    // pops a light (renderer)
-ASM_PROC(FUN_5b6e00)
+extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
 ASM_PROC(FUN_5b22f0)
+ASM_PROC(FUN_5b6f90)
+extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 ASM_PROC(FUN_5d3b40)
 ASM_PROC(FUN_5d4490)
 ASM_PROC(FUN_5b6bf0)
@@ -1094,6 +1096,93 @@ void __fastcall Clip_Pop(BYTE* self, void*)
     w[15] = 1.0f;
     BYTE* dev = g_device;
     CallStd(F(RFn, F(BYTE*, dev, 0), 44), dev, 1, w);
+}
+
+}
+
+extern "C" {
+
+// [FUN_5ba300] blends palette entries first..last toward (r, g, b) by alpha/255
+void __fastcall Palette_Blend(BYTE* self, void*, int first, int last, int r, int g, int b, int alpha)
+{
+    if (first < 0)
+        first = 0;
+    else if (first > 255)
+        return;
+    if (last < 0)
+        return;
+    if (last > 255)
+        last = 255;
+    if (alpha <= 0 || alpha > 255 || first > last)
+        return;
+    int R = (r & 255) * alpha;
+    int G = (g & 255) * alpha;
+    int B = (b & 255) * alpha;
+    int inv = 255 - alpha;
+    BYTE* p = self + 24 + first * 3;
+    for (int n = last - first + 1; n; n--, p += 3) {
+        p[0] = (BYTE)((p[0] * inv + R) >> 8);
+        p[1] = (BYTE)((p[1] * inv + G) >> 8);
+        p[2] = (BYTE)((p[2] * inv + B) >> 8);
+    }
+}
+
+// [FUN_5b6e00] clears the surface to a colour (a palette index when !argb)
+void __fastcall Surface_Clear(BYTE* self, void*, int color, int argb)
+{
+    if (!argb && color < 0)
+        return;
+    BYTE* dev = g_device;
+    int rect[4] = {0, 0, F(WORD, self, 0), F(WORD, self, 2)};
+    if (!dev) {
+        CallC(FUN_5b6f90, self, rect, color, argb);
+        return;
+    }
+    if (!argb) {
+        BYTE* pal = F(BYTE*, self, 84);
+        if (!pal)
+            return;
+        const BYTE* c = pal + 24 + color * 3;
+        color = (int)(0xFF000000u | (c[0] << 16) | (c[1] << 8) | c[2]);
+    }
+    CallStd(F(RFn, F(BYTE*, dev, 0), 40), dev, 1, rect, 1, color, 0x3f800000, 0);
+}
+
+// [FUN_5bbf00] converts the 8-bit run-length image to 16 bits through the palette
+void __fastcall Image_RleTo16(BYTE* self, void*, int unused)
+{
+    if (!F(BYTE*, self, 16) || (F(BYTE, self, 28) & 0xA0) || F(WORD, self, 8) != 1)
+        return;
+    if (CallC<int>(FUN_5d8350) == F(WORD, self, 8))
+        return;
+    BYTE* buf = (BYTE*)operator new(F(int, self, 12));
+    if (!buf)
+        return;
+    const BYTE* src = F(const BYTE*, self, 16);
+    BYTE* dst = buf;
+    for (int row = 0; row < F(WORD, self, 6); row++) {
+        for (int col = 0; col < F(WORD, self, 4);) {
+            BYTE h = *src++;
+            *dst++ = h;
+            int n = h & 127;
+            if (!(h & 128)) {
+                for (int k = n; k > 0; k--) {
+                    const BYTE* pe = self + 24 + *src++ * 3;
+                    *(WORD*)dst = (WORD)Pixel_Pack(pe[0], pe[1], pe[2]);
+                    dst += 2;
+                }
+            }
+            col += n;
+        }
+    }
+    if (F(BYTE, self, 28) & 4) {
+        memcpy(F(BYTE*, self, 16), buf, F(int, self, 12));
+    } else {
+        operator delete(F(void*, self, 16));
+        F(BYTE*, self, 16) = buf;
+    }
+    F(DWORD, self, 28) |= 32;
+    F(WORD, self, 8) = 2;
 }
 
 }

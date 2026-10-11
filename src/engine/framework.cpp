@@ -25,7 +25,7 @@ extern "C" void __fastcall Node_GetLocal(BYTE* self, void*, void* out);         
 extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);                                  // scene.cpp
 extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);                  // clusters.cpp
 
-ASM_PROC(FUN_5b6e00)
+extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
 ASM_PROC(FUN_5e5130)
 ASM_PROC(FUN_4cef50)
