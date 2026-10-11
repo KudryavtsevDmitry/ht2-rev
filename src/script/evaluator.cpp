@@ -1362,3 +1362,57 @@ BYTE* __stdcall ValueList_MakeNode(const DWORD* v)
 }
 
 }
+
+extern "C" void FUN_4a50d0(); KING_ALIAS("_FUN_4a50d0", "_Sch_MakeIdentifierP")
+ASM_PROC(FUN_4a3180)
+extern "C" void FUN_4abea0(); KING_ALIAS("_FUN_4abea0", "@Sch_Copy16@12")    // deque iterator copy
+extern "C" void FUN_4acb40(); KING_ALIAS("_FUN_4acb40", "_Deque_Copy4acb40")
+extern "C" void FUN_4acae0(); KING_ALIAS("_FUN_4acae0", "_Deque_CopyChars")
+
+static void ReleaseRef(SchValue* v)
+{
+    if (!(v->flags & SCH_IMMEDIATE) && v->obj) {
+        if (--F(int, v->obj, 4) == 0)
+            CallVirt(v->obj, 12, 1);
+    }
+}
+
+extern "C" {
+
+// [FUN_4a3e40] h (by value) and a value made from b passed on to FUN_4a3180
+int __fastcall Eval4a3e40(BYTE* self, void*, int a, int b, BYTE* h0, int h1, DWORD h2)
+{
+    SchValue h = {h0, h1, h2};
+    DWORD c1[3];
+    CopyRef((SchValue*)c1, &h);
+    DWORD c2[3];
+    CallC(FUN_4a50d0, c2, 0, &b);
+    int r = CallThis<int>(FUN_4a3180, self, a, c2[0], c2[1], c2[2], c1[0], c1[1], c1[2]);
+    ReleaseRef(&h);
+    return r;
+}
+
+// [FUN_4acc20] deque algorithm step: t = FUN_4acb40(a, b, e), then
+// out = FUN_4acae0(c, d, t)
+DequeIt* __cdecl Deque4acc20(DequeIt* out, DequeIt a, DequeIt b, int c, int d, DequeIt e)
+{
+    DequeIt b2, a2, t;
+    CallThis(FUN_4abea0, &b2, &b);
+    CallThis(FUN_4abea0, &a2, &a);
+    CallC(FUN_4acb40, &t, a2, b2, e);
+    CallC(FUN_4acae0, out, c, d, t);
+    return out;
+}
+
+// [FUN_4acd70] t = FUN_4acae0(c, d, e), then out = FUN_4acb40(a, b, t)
+DequeIt* __cdecl Deque4acd70(DequeIt* out, int c, int d, DequeIt a, DequeIt b, DequeIt e)
+{
+    DequeIt t, b2, a2;
+    CallC(FUN_4acae0, &t, c, d, e);
+    CallThis(FUN_4abea0, &b2, &b);
+    CallThis(FUN_4abea0, &a2, &a);
+    CallC(FUN_4acb40, out, a2, b2, t);
+    return out;
+}
+
+}

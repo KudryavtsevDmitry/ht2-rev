@@ -732,3 +732,58 @@ BYTE* __fastcall SchState_Construct(BYTE* self, void*)
 }
 
 }
+
+ASM_PROC(FUN_4a1f10)
+ASM_PROC(FUN_4a36c0)
+
+extern "C" {
+
+// [FUN_4b4e10] constructor: the value h (by value) at +40, a at +72
+BYTE* __fastcall Item4b4e10_Construct(BYTE* self, void*, int a, DWORD h0, DWORD h1, DWORD h2)
+{
+    DWORD h[3] = {h0, h1, h2};
+    for (int i = 0; i < 10; i++)
+        F(int, self, i * 4) = 0;
+    CallThis(FUN_4a1f10, self, 0);
+    DWORD* d = (DWORD*)(self + 40);
+    if (h2 & 0x10000) {
+        d[2] = h2;
+        d[0] = h0;
+        d[1] = h1;
+    } else {
+        d[1] = 0;
+        if (h0) {
+            d[0] = h0;
+            d[2] = h2;
+            F(int, (BYTE*)h0, 4)++;
+        } else {
+            d[0] = 0;
+            d[2] = 0;
+        }
+    }
+    for (int i = 13; i < 18; i++)
+        F(int, self, i * 4) = 0;
+    F(int, self, 72) = a;
+    SchRef_Release(h);
+    return self;
+}
+
+// [FUN_4b6840] destructor: the values at +20, then unlinks itself
+void __fastcall Item4b6840_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl64c128;
+    BYTE** v = (BYTE**)(self + 20);
+    for (BYTE* e = v[0]; e != v[1]; e += 12)
+        CallThis(FUN_4a36c0, e);
+    int n = (v[2] - v[0]) / 12;
+    if (n)
+        AiFree(v[0], n * 12);
+    F(void*, self, 0) = &g_vtbl64bed0;
+    if (F(BYTE*, self, 12))
+        F(BYTE*, F(BYTE*, self, 12), 16) = F(BYTE*, self, 16);
+    if (F(BYTE*, self, 16))
+        F(BYTE*, F(BYTE*, self, 16), 12) = F(BYTE*, self, 12);
+    F(void*, self, 0) = &g_vtbl64bee4;
+}
+
+}

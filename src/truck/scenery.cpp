@@ -383,7 +383,7 @@ extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
 }
 
 ASM_PROC(FUN_591c30)
-ASM_PROC(FUN_5928d0)
+extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 ASM_VAR(BYTE*, g_effectManager, $L_6f6910)
 

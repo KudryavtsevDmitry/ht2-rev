@@ -75,3 +75,35 @@ int __fastcall TGrid_Set(BYTE* self, void*, int a, int b, int c, BYTE* d)
 }
 
 }
+
+ASM_PROC(FUN_50d190)    // a 16-byte record's destructor
+ASM_VAR(char, g_vtbl65338c, $L_65338c)
+ASM_VAR(char, g_vtbl6533a8, $L_6533a8)
+
+extern "C" {
+
+// [FUN_61b920] destructor: frees the three 66049-record tables at +40192
+void __fastcall TGrid61b920_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl65338c;
+    F(int, self, 104) = 0;
+    F(int, self, 100) = 0;
+    BYTE** d = F(BYTE**, self, 40192);
+    if (!d)
+        goto done;
+    for (int k = 0; k < 3; k++) {
+        BYTE* p = d[k];
+        if (p) {
+            for (int i = 66049 - 1; i >= 0; i--)
+                CallThis(FUN_50d190, p + i * 16);
+            operator delete(p);
+            d[k] = 0;
+        }
+    }
+    operator delete(d);
+    F(BYTE**, self, 40192) = 0;
+done:
+    F(void*, self, 0) = &g_vtbl6533a8;
+}
+
+}
