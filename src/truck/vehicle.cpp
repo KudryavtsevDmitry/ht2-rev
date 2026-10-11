@@ -33,8 +33,8 @@ ASM_PROC(FUN_5014b0)
 ASM_PROC(FUN_501550)
 ASM_PROC(FUN_556110)
 ASM_PROC(FUN_5561b0)
-ASM_PROC(FUN_5f19b0)    // named object: constructor
-ASM_PROC(FUN_5ef6d0)
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
+extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
 extern "C" int __cdecl Fx_Skid1(const void* p, const void* v, int net);   // aeffects.cpp
 extern "C" int __cdecl Fx_Skid2(const void* p, const void* v, int net);
 

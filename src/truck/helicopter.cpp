@@ -672,7 +672,7 @@ extern "C" void __fastcall Copter_UpdateLights(BYTE* self, void*)
 }
 
 ASM_PROC(FUN_568830)    // adds a helicopter's way point
-ASM_PROC(FUN_4ba0c0)
+extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
 ASM_PROC(FUN_5ea1b0)    // draws a text in a box
 extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);   // engine.cpp
 extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out);          // engine.cpp

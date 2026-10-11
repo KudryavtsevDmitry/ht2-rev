@@ -711,6 +711,12 @@ ASM_PROC(FUN_462d10)
 extern "C" void FUN_40a580(); KING_ALIAS("_FUN_40a580", "@Pair_Set@16")
 extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")
 
+ASM_PROC(FUN_45b190)
+extern "C" void FUN_45adc0(); KING_ALIAS("_FUN_45adc0", "_List_FindKey8")
+extern "C" void FUN_45b220(); KING_ALIAS("_FUN_45b220", "_List_FindNear")
+extern "C" void FUN_45ddb0(); KING_ALIAS("_FUN_45ddb0", "_List_FindKey24")
+extern "C" void FUN_4607d0(); KING_ALIAS("_FUN_4607d0", "_List_FindName")
+
 extern "C" {
 void __fastcall Buf_Append(void* s, void*, const void* src, int n) { R(s)->Append(src, n); }               // [FUN_401870]
 void __fastcall Buf_AppendString(void* s, void*, const char* str) { R(s)->AppendString(str); }           // [FUN_4018b0]
@@ -4582,5 +4588,118 @@ void __cdecl Names_InsertLinear(BYTE* last, char* val, char* valEnd, char* valCa
     if (valCap != val)
         CallC(FUN_44b4a0, val, valCap - val);
 }
+
+}
+
+// Searches that take the script value h by value: the callee gets a copy
+// (and the selector, an empty functor), the caller's h is released after.
+static int FindWithValueCopy(void (*find)(), BYTE* first, BYTE* last, DWORD* h)
+{
+    struct Value3 { DWORD a, b, c; } t;
+    Str_CopyConstruct((StrRef*)&t, 0, (const StrRef*)h);
+    int r = CallC<int>(find, first, last, t, last);
+    SchValue_Release(h);
+    return r;
+}
+
+// Range calls that take two iterators by value (copied with Int_Copy).
+static BYTE* RangeCall(void (*fn)(), BYTE* out, DWORD first, DWORD last, int v)
+{
+    DWORD a, b;
+    Int_Copy((int*)&b, 0, (const int*)&last);
+    Int_Copy((int*)&a, 0, (const int*)&first);
+    CallC(fn, out, a, b, v, v);
+    return out;
+}
+
+extern "C" {
+
+// vector<4-byte>::insert(pos, x), six more identical instances
+// [FUN_44cbf0]
+void __fastcall Vec4b_InsertI(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44de70]
+void __fastcall Vec4b_InsertJ(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44fe90]
+void __fastcall Vec4b_InsertK(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_450f70]
+void __fastcall Vec4b_InsertL(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_4538a0]
+void __fastcall Vec4b_InsertM(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_4561a0]
+void __fastcall Vec4b_InsertN(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+
+// [FUN_4544e0]
+int __cdecl Find_ValueA(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
+{
+    return FindWithValueCopy(FUN_45b190, f, l, &h0);
+}
+
+// [FUN_455d20]
+int __cdecl Find_ValueB(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
+{
+    return FindWithValueCopy((void (*)())Find_ByHandleA, f, l, &h0);
+}
+
+// [FUN_455dc0]
+int __cdecl Find_ValueC(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
+{
+    return FindWithValueCopy((void (*)())Find_ItemBySymbol, f, l, &h0);
+}
+
+// [FUN_455e60]
+int __cdecl Find_ValueD(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
+{
+    return FindWithValueCopy((void (*)())Find_ByHandleB, f, l, &h0);
+}
+
+
+// [FUN_453b90]
+BYTE* __cdecl Range_CallA(BYTE* out, DWORD f, DWORD l, int v)
+{
+    return RangeCall(FUN_45adc0, out, f, l, v);
+}
+
+// [FUN_454960]
+BYTE* __cdecl Range_CallB(BYTE* out, DWORD f, DWORD l, int v)
+{
+    return RangeCall(FUN_45b220, out, f, l, v);
+}
+
+// [FUN_456ce0]
+BYTE* __cdecl Range_CallC(BYTE* out, DWORD f, DWORD l, int v)
+{
+    return RangeCall(FUN_45ddb0, out, f, l, v);
+}
+
+// [FUN_4579e0]
+BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v)
+{
+    return RangeCall(FUN_4607d0, out, f, l, v);
+}
+
 
 }
