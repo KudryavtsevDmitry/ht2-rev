@@ -1106,6 +1106,7 @@ PUBLIC $L_672564, $L_6725c0, $L_68a988, $L_68cf68, $L_69618c, $L_69621c
 PUBLIC $L_6ce378, $L_6f33b0, $L_6f33b4, $L_6f340c, $L_6f3434, $L_6f349c
 PUBLIC $L_66ff3c, $L_66ff40, $L_66ff58, $L_676644, $L_676658, $L_676668
 PUBLIC $L_67667c, $L_6968f0, $L_6f2d18
+PUBLIC $L_68d11c
 
 ;===================================
 _TEXT SEGMENT
@@ -18602,6 +18603,8 @@ FUN_409fc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40a180 PROC
 
             push ECX
@@ -18639,6 +18642,10 @@ $L_40a1c4::
             pop ECX
             ret 
 FUN_40a180 ENDP
+ELSE
+EXTERN _Players_Each409fc0:PROC
+FUN_40a180 TEXTEQU <_Players_Each409fc0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -52089,6 +52096,8 @@ EXTERN _Ai_DestroyPresentSilently:PROC
 FUN_41ed60 TEXTEQU <_Ai_DestroyPresentSilently>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41ef10 PROC
 
             push ECX
@@ -52136,6 +52145,10 @@ $L_41ef5e::
             pop ECX
             ret 
 FUN_41ef10 ENDP
+ELSE
+EXTERN _Present_Destroy:PROC
+FUN_41ef10 TEXTEQU <_Present_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -53890,6 +53903,8 @@ $L_41fcf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_420000 PROC
 
             push 0
@@ -53916,6 +53931,10 @@ FUN_420000 PROC
             add ESP,12
             ret 
 FUN_420000 ENDP
+ELSE
+EXTERN _Rec_4015a0Both:PROC
+FUN_420000 TEXTEQU <_Rec_4015a0Both>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -62488,6 +62507,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4256f0 PROC
 
             sub ESP,8
@@ -62550,6 +62571,10 @@ $L_425782::
             add ESP,8
             ret 
 FUN_4256f0 ENDP
+ELSE
+EXTERN _Players_ResetMarks:PROC
+FUN_4256f0 TEXTEQU <_Players_ResetMarks>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -71791,6 +71816,8 @@ FUN_42b060 TEXTEQU <_Rec_SetActive>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42b170 PROC
 
             mov EAX,DWORD PTR [$L_68cc1c]
@@ -71930,6 +71957,10 @@ $L_42b28e::
             pop EBX
             ret 
 FUN_42b170 ENDP
+ELSE
+EXTERN _Rec_ActivateOnly:PROC
+FUN_42b170 TEXTEQU <_Rec_ActivateOnly>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -602316,6 +602347,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56d6e0 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -602411,6 +602444,10 @@ $L_56d7c1::
             add ESP,8
             ret 
 FUN_56d6e0 ENDP
+ELSE
+EXTERN _Copter_ResetPlayers:PROC
+FUN_56d6e0 TEXTEQU <_Copter_ResetPlayers>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
