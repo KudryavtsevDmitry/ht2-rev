@@ -1098,6 +1098,7 @@ PUBLIC $L_64d49c, $L_64d4c8, $L_64d554, $L_64dc84, $L_64dd80, $L_64ddc0
 PUBLIC $L_64e668, $L_64e6a8, $L_64e6f0, $L_64e730, $L_64e780, $L_64e7c0
 PUBLIC $L_64e920, $L_64e960, $L_64e9a8, $L_64e9e8, $L_64ea30, $L_64ea70
 PUBLIC $L_6726e8, $L_691cc0, $L_6f4bb4, $L_6f4bb8, $L_6f4bbc
+PUBLIC $L_66c4e4, $L_66d64c, $L_66d9c8, $L_66daa8, $L_68cdac, $L_68d1b8
 
 ;===================================
 _TEXT SEGMENT
@@ -2313,6 +2314,8 @@ EXTERN @Buf_AppendString@12:PROC
 FUN_4018b0 TEXTEQU <@Buf_AppendString@12>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4018f0 PROC
 
             mov EAX,DWORD PTR [ECX+4]
@@ -2378,6 +2381,10 @@ $L_401957::
             nop
             nop
 FUN_4018f0 ENDP
+ELSE
+EXTERN @Buf_AppendPrefixed@8:PROC
+FUN_4018f0 TEXTEQU <@Buf_AppendPrefixed@8>
+ENDIF
 $L_401960 PROC
 
             call FUN_401970
@@ -25477,6 +25484,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40e4c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -25498,6 +25507,10 @@ FUN_40e4c0 PROC
             mov EAX,OFFSET $L_68cdac
             ret 
 FUN_40e4c0 ENDP
+ELSE
+EXTERN _Message_TextWithSuffix:PROC
+FUN_40e4c0 TEXTEQU <_Message_TextWithSuffix>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -64618,6 +64631,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_426ab0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -64646,6 +64661,10 @@ FUN_426ab0 PROC
             add ESP,144
             ret 
 FUN_426ab0 ENDP
+ELSE
+EXTERN _Messages_AddNumbered:PROC
+FUN_426ab0 TEXTEQU <_Messages_AddNumbered>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -66582,6 +66601,8 @@ $L_4279d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_427ee0 PROC
 
             sub ESP,128
@@ -66613,6 +66634,10 @@ FUN_427ee0 PROC
             add ESP,144
             ret 
 FUN_427ee0 ENDP
+ELSE
+EXTERN _Messages_ShowNumbered:PROC
+FUN_427ee0 TEXTEQU <_Messages_ShowNumbered>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -76300,6 +76325,8 @@ FUN_42d960 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42db90 PROC
 
             push ESI
@@ -76345,6 +76372,10 @@ $L_42dbd6::
             mov DWORD PTR [EAX+4],EAX
             ret 
 FUN_42db90 ENDP
+ELSE
+EXTERN _AI_FreeList68b99c:PROC
+FUN_42db90 TEXTEQU <_AI_FreeList68b99c>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -94116,6 +94147,8 @@ FUN_438230 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_438c90 PROC
 
             push ESI
@@ -94155,6 +94188,10 @@ $L_438ceb::
             pop ESI
             ret 
 FUN_438c90 ENDP
+ELSE
+EXTERN _Player_Set884:PROC
+FUN_438c90 TEXTEQU <_Player_Set884>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -104342,6 +104379,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f620 PROC
 
             push ESI
@@ -104390,9 +104429,15 @@ $L_43f67c::
             pop ESI
             ret 
 FUN_43f620 ENDP
+ELSE
+EXTERN _Player_Flags:PROC
+FUN_43f620 TEXTEQU <_Player_Flags>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f690 PROC
 
             push ESI
@@ -104434,6 +104479,10 @@ $L_43f6df::
             pop ESI
             ret 
 FUN_43f690 ENDP
+ELSE
+EXTERN _Player_SetFlags:PROC
+FUN_43f690 TEXTEQU <_Player_SetFlags>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -104446,6 +104495,8 @@ FUN_43f690 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f700 PROC
 
             push ESI
@@ -104485,8 +104536,14 @@ $L_43f757::
             mov EAX,DWORD PTR [ECX+8]
             ret 
 FUN_43f700 ENDP
+ELSE
+EXTERN _Rec_Field8:PROC
+FUN_43f700 TEXTEQU <_Rec_Field8>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f760 PROC
 
             push ESI
@@ -104521,6 +104578,10 @@ $L_43f7af::
             pop ESI
             ret 
 FUN_43f760 ENDP
+ELSE
+EXTERN _Player_Value136:PROC
+FUN_43f760 TEXTEQU <_Player_Value136>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -116134,6 +116195,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_446c80 PROC
 
             push ESI
@@ -116170,6 +116233,10 @@ $L_446ccf::
             pop ESI
             ret 
 FUN_446c80 ENDP
+ELSE
+EXTERN _Player_SetFlag20000:PROC
+FUN_446c80 TEXTEQU <_Player_SetFlag20000>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -346817,6 +346884,8 @@ $L_4c0c90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c0d80 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -346842,6 +346911,10 @@ FUN_4c0d80 PROC
             pop ESI
             ret 8
 FUN_4c0d80 ENDP
+ELSE
+EXTERN @EffectMat_Init@16:PROC
+FUN_4c0d80 TEXTEQU <@EffectMat_Init@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -364942,6 +365015,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ccd50 PROC
 
             push ESI
@@ -364993,6 +365068,10 @@ $L_4ccd8d::
             pop ESI
             ret 
 FUN_4ccd50 ENDP
+ELSE
+EXTERN _Fade_RunStage:PROC
+FUN_4ccd50 TEXTEQU <_Fade_RunStage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -646438,6 +646517,8 @@ FUN_58b720 TEXTEQU <@Body58b720_Construct@52>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_58b870 PROC
 
             push ESI
@@ -646465,6 +646546,10 @@ $L_58b8aa::
             pop ESI
             ret 
 FUN_58b870 ENDP
+ELSE
+EXTERN @Body58b870_Destroy@8:PROC
+FUN_58b870 TEXTEQU <@Body58b870_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -660301,6 +660386,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_594c40 PROC
 
             push ESI
@@ -660353,6 +660440,10 @@ $L_594c86::
             pop ESI
             ret 
 FUN_594c40 ENDP
+ELSE
+EXTERN _Faders_Step:PROC
+FUN_594c40 TEXTEQU <_Faders_Step>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -666557,6 +666648,8 @@ $L_598ba9::
             nop
 $L_597b00 ENDP
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_598bd0 PROC
 
             push ESI
@@ -666599,6 +666692,10 @@ $L_598c1d::
             pop ESI
             ret 4
 FUN_598bd0 ENDP
+ELSE
+EXTERN @WorldObj_SetTarget@12:PROC
+FUN_598bd0 TEXTEQU <@WorldObj_SetTarget@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

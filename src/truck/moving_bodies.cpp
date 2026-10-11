@@ -838,3 +838,20 @@ extern "C" int __fastcall Body_Clear9516(BYTE* self, int)
     *(int*)(self + 9516) = 0;
     return 0;
 }
+
+ASM_VAR(char, vt_650718, $L_650718)
+ASM_VAR(char, vt_6506cc, $L_6506cc)
+ASM_VAR(char, vt_6506c8, $L_6506c8)
+ASM_PROC(FUN_57d490)
+
+// [FUN_58b870] destructor: frees the owned buffer at +9520
+extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int)
+{
+    void* p = *(void**)(self + 9520);
+    *(void**)self = &vt_650718;
+    *(void**)(self + 256) = &vt_6506cc;
+    *(void**)(self + 376) = &vt_6506c8;
+    if (p && *(int*)(self + 9516))
+        operator delete(p);
+    CallThis(FUN_57d490, self);
+}

@@ -20,7 +20,7 @@ extern "C" void FUN_5d3440(); KING_ALIAS("_FUN_5d3440", "@Handle_Count@8")
 ASM_PROC(FUN_5d33d0)
 extern "C" void FUN_5d3430(); KING_ALIAS("_FUN_5d3430", "@Handle_Call3790@8")
 ASM_PROC(FUN_4e48e2)
-ASM_PROC(FUN_598bd0)
+extern "C" void FUN_598bd0(); KING_ALIAS("_FUN_598bd0", "@WorldObj_SetTarget@12")
 ASM_PROC(FUN_59a780)    // constructor of the effects' base class
 extern "C" void FUN_59e2f0(); KING_ALIAS("_FUN_59e2f0", "@Debris2_Construct@32")    // constructor of the base class of FUN_59e9a0
 extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")    // sets a plane (a, b, c, d)
@@ -1430,7 +1430,51 @@ extern "C" void __fastcall WorldObj_Attach(BYTE* self, int, BYTE* src)
     *(BYTE**)(self + 96) = src;
     if (!src)
         return;
-    int n = CallThis<int>(FUN_57de90, src + 16, buf);
-    int s = CallThis<int>(FUN_5480f0, *(void**)(self + 96), n);
-    CallThis(FUN_598d30, self, s);
+    int m = CallThis<int>(FUN_57de90, src + 16, buf);
+    int s = CallThis<int>(FUN_5480f0, *(void**)(self + 96));
+    CallThis(FUN_598d30, self, s, m);
+}
+
+ASM_VAR(BYTE*, g_faderList6f66b0, $L_6f66b0)
+extern "C" void FUN_594c00(); KING_ALIAS("_FUN_594c00", "@Fader_Step@12")
+extern "C" void FUN_594ba0(); KING_ALIAS("_FUN_594ba0", "@Fader_Unlink@8")
+extern "C" void FUN_594bd0(); KING_ALIAS("_FUN_594bd0", "@Fader_Release@8")
+extern "C" void FUN_595c70(); KING_ALIAS("_FUN_595c70", "@Wasm_595c70@8")
+ASM_PROC(FUN_598c30)
+
+// [FUN_594c40] steps all faders, deleting the finished ones
+extern "C" void __cdecl Faders_Step(int dt)
+{
+    BYTE* f = g_faderList6f66b0;
+    while (f) {
+        if (CallThis<int>(FUN_594c00, f, dt)) {
+            f = *(BYTE**)f;
+            continue;
+        }
+        BYTE* next = *(BYTE**)f;
+        CallThis(FUN_594ba0, f);
+        if (f) {
+            CallThis(FUN_594bd0, f);
+            operator delete(f);
+        }
+        f = next;
+    }
+}
+
+// [FUN_598bd0] attaches a target once (+104): marks the object at +112, resets the view at +124
+extern "C" void __fastcall WorldObj_SetTarget(BYTE* self, int, void* t)
+{
+    if (*(void**)(self + 104) || !t)
+        return;
+    *(void**)(self + 104) = t;
+    BYTE* o = *(BYTE**)(self + 112);
+    if (o)
+        *(DWORD*)(o + 16) |= 3;
+    BYTE* v = *(BYTE**)(self + 124);
+    if (!v)
+        return;
+    CallThis(FUN_595c70, v);
+    CallThis(FUN_598c30, self, 0);
+    v = *(BYTE**)(self + 124);
+    CallThis(FUN_598d30, self, *(int*)(v + 316), v + 268);
 }
