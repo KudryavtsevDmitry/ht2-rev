@@ -15,10 +15,37 @@
 typedef char AsmLabel[1];
 
 ASM_PROC(FUN_566020)    // copter: the vehicle to follow (mode, a)
+ASM_PROC(FUN_602e80)
+ASM_PROC(FUN_603110)
+ASM_PROC(FUN_5c3630)
+extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
+ASM_PROC(FUN_5d31e0)
+ASM_PROC(FUN_5d3570)
+ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+ASM_PROC(FUN_5e52b0)
+ASM_PROC(FUN_5a47f0)
+ASM_VAR(AsmLabel, g_vtbl64fdd4, $L_64fdd4)
+ASM_VAR(AsmLabel, g_vtbl64ff70, $L_64ff70)
+ASM_VAR(AsmLabel, g_vtbl64ff24, $L_64ff24)
+ASM_VAR(AsmLabel, g_vtbl64ffec, $L_64ffec)
+ASM_VAR(AsmLabel, g_vtbl64ffa0, $L_64ffa0)
+ASM_VAR(AsmLabel, g_vtbl650068, $L_650068)
+ASM_VAR(AsmLabel, g_vtbl65001c, $L_65001c)
+ASM_VAR(AsmLabel, g_vtbl6500e4, $L_6500e4)
+ASM_VAR(AsmLabel, g_vtbl650098, $L_650098)
+ASM_VAR(AsmLabel, s_67b970, $L_67b970)
+ASM_VAR(AsmLabel, s_67b95c, $L_67b95c)
+ASM_VAR(AsmLabel, s_67b948, $L_67b948)
+ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_696ca0, $L_696ca0)
+ASM_VAR(AsmLabel, g_copterState, $L_6f2d98)
 ASM_PROC(FUN_5662f0)    // copter: a new state
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // objects of a screen: by id
-ASM_PROC(FUN_569000)
-ASM_PROC(FUN_569250)
+extern "C" void FUN_569000(); KING_ALIAS("_FUN_569000", "_Copter_Send963")
+extern "C" void FUN_569250(); KING_ALIAS("_FUN_569250", "_Copter_Send961")
 extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text);
 ASM_PROC(FUN_5d3290)    // destructor of the notice's base class
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
@@ -827,4 +854,137 @@ extern "C" void __cdecl Scores_Draw(BYTE* surface, int x, int y)
         if (i == 3)
             xx += 181;
     }
+}
+
+// --- network messages of the copter and the report records of the
+// copter's objects (sent to [FUN_5e52b0] when they are destroyed)
+
+extern "C" BYTE* __fastcall DpMessage_Construct(BYTE* self, void*);   // sound_gate.cpp
+
+static void Copter_SendPair(int code, int a, int b)
+{
+    if (F(int, g_6cec6c, 1300) != 1)
+        return;
+    BYTE msg[28];
+    int rec[2] = {a, b};
+    DpMessage_Construct(msg, 0);
+    CallThis(FUN_603110, msg, code, rec, 8);
+    CallThis(FUN_5c3630, g_696ca0, msg);
+    CallThis(FUN_602e80, msg);
+}
+
+// rec: the keys, the multiplayer flag, the object's name and the second name
+static void Copter_Report(BYTE* self, int key, const int* extra, int nextra, const char* name2, int size)
+{
+    BYTE rec[80];
+    memset(rec, 0, sizeof rec);
+    BYTE* r = CallThis<BYTE*>(FUN_5ef640, self + 256);
+    int o = 0;
+    F(int, rec, o) = key;
+    o += 4;
+    for (int i = 0; i < nextra; i++, o += 4)
+        F(int, rec, o) = extra[i];
+    F(int, rec, o) = F(int, g_6cec6c, 1300) <= 1;
+    o += 4;
+    strncpy((char*)rec + o, F(const char*, r, 12), 31);
+    strncpy((char*)rec + o + 32, name2, 31);
+    CallThis(FUN_5e52b0, F(BYTE*, self, 36) + 704, key, F(int, F(BYTE*, self, 292), 60), size, rec);
+}
+
+extern "C" {
+
+// [FUN_569000] message 963 (a, b) when in a network game
+void __cdecl Copter_Send963(int a, int b) { Copter_SendPair(963, a, b); }
+
+// [FUN_5691c0]
+void __cdecl Copter_Send962(int a, int b) { Copter_SendPair(962, a, b); }
+
+// [FUN_569250]
+void __cdecl Copter_Send961(int a, int b) { Copter_SendPair(961, a, b); }
+
+// [FUN_569380]
+void __cdecl Copter_Send956(int a, int b) { Copter_SendPair(956, a, b); }
+
+// [FUN_569930] destructor: the two path objects at +1288 and +1292
+void __fastcall Copter569930_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64fdd4;
+    for (int k = 1288; k <= 1292; k += 4) {
+        BYTE* p = F(BYTE*, self, k);
+        if (p) {
+            CallThis(FUN_5bc2f0, p);
+            operator delete(p);
+        }
+    }
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_56aef0] the copter task on the vehicle v
+BYTE* __fastcall CopterTask_Construct(BYTE* self, void*, BYTE* v)
+{
+    CallThis(FUN_5d31e0, self, 11, (const char*)s_67b970);
+    F(void*, self, 0) = g_vtbl64fe34;
+    F(int, self, 60) = 0;
+    F(BYTE*, self, 40) = v;
+    CallThis(FUN_5d3570, v + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    F(int, self, 56) = 0;
+    F(int, self, 52) = 0;
+    F(int, self, 48) = 0;
+    F(int, self, 44) = CallC<int>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_67b95c : (const char*)s_67b948);
+    return self;
+}
+
+// [FUN_56bac0] resets the copter's global state
+void __cdecl CopterState_Init()
+{
+    BYTE* s = (BYTE*)g_copterState;
+    for (int k = 0; k <= 36; k += 4)
+        F(int, s, k) = 0;
+    F(int, s, 40) = g_noCar;
+    F(int, s, 44) = -1;
+    F(int, s, 48) = -1;
+    F(int, s, 52) = -1;
+    F(int, s, 64) = 0;
+}
+
+// [FUN_573700] destructor; reports the object
+void __fastcall CopterObj573700_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64ff70;
+    F(void*, self, 256) = g_vtbl64ff24;
+    int extra[1] = {F(int, self, 416)};
+    Copter_Report(self, F(int, self, 368), extra, 1, (const char*)self + 384, 76);
+    CallThis(FUN_5a47f0, self);
+}
+
+// [FUN_573890]
+void __fastcall CopterObj573890_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl64ffec;
+    F(void*, self, 256) = g_vtbl64ffa0;
+    Copter_Report(self, F(int, self, 356), 0, 0, (const char*)self + 376, 72);
+    CallThis(FUN_5a47f0, self);
+}
+
+// [FUN_573a50]
+void __fastcall CopterObj573a50_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl650068;
+    F(void*, self, 256) = g_vtbl65001c;
+    int extra[1] = {F(int, self, 408)};
+    Copter_Report(self, F(int, self, 356), extra, 1, (const char*)self + 376, 76);
+    CallThis(FUN_5a47f0, self);
+}
+
+// [FUN_573c10]
+void __fastcall CopterObj573c10_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl6500e4;
+    F(void*, self, 256) = g_vtbl650098;
+    int extra[1] = {F(int, self, 408)};
+    Copter_Report(self, F(int, self, 356), extra, 1, (const char*)self + 376, 76);
+    CallThis(FUN_5a47f0, self);
+}
+
 }

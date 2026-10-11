@@ -1030,6 +1030,9 @@ PUBLIC $L_652de0, $L_6554c0, $L_6554d0, $L_683ca0, $L_723de8
 PUBLIC $L_64ec38, $L_64ec3c, $L_64ec88, $L_64eda0, $L_64eda4, $L_64edf0
 PUBLIC $L_64eedc, $L_64eee0, $L_64ef2c, $L_64f018, $L_64f01c, $L_64f068
 PUBLIC $L_64f148, $L_64f14c, $L_64f198
+PUBLIC $L_64fdd4, $L_64ff24, $L_64ff70, $L_64ffa0, $L_64ffec, $L_65001c
+PUBLIC $L_650068, $L_650098, $L_6500e4, $L_67b948, $L_67b95c, $L_67b970
+PUBLIC $L_6f2d98
 
 ;===================================
 _TEXT SEGMENT
@@ -592813,6 +592816,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_569000 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -592855,6 +592860,10 @@ $L_56907d::
             add ESP,48
             ret 
 FUN_569000 ENDP
+ELSE
+EXTERN _Copter_Send963:PROC
+FUN_569000 TEXTEQU <_Copter_Send963>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -593008,6 +593017,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_5691c0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -593050,11 +593061,17 @@ $L_56923d::
             add ESP,48
             ret 
 FUN_5691c0 ENDP
+ELSE
+EXTERN _Copter_Send962:PROC
+FUN_5691c0 TEXTEQU <_Copter_Send962>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_569250 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -593097,6 +593114,10 @@ $L_5692cd::
             add ESP,48
             ret 
 FUN_569250 ENDP
+ELSE
+EXTERN _Copter_Send961:PROC
+FUN_569250 TEXTEQU <_Copter_Send961>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -593209,6 +593230,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_569380 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -593251,6 +593274,10 @@ $L_5693fd::
             add ESP,48
             ret 
 FUN_569380 ENDP
+ELSE
+EXTERN _Copter_Send956:PROC
+FUN_569380 TEXTEQU <_Copter_Send956>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -593817,6 +593844,8 @@ $L_569910 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_569930 PROC
 
             push -1
@@ -593868,6 +593897,10 @@ $L_569990::
             add ESP,16
             ret 
 FUN_569930 ENDP
+ELSE
+EXTERN @Copter569930_Destroy@8:PROC
+FUN_569930 TEXTEQU <@Copter569930_Destroy@8>
+ENDIF
 ALIGN 16
 ; helicopters: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 IFDEF ASM_HELICOPTER
@@ -596077,6 +596110,8 @@ FUN_56aed0 TEXTEQU <_Notice_Banner>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56aef0 PROC
 
             push -1
@@ -596134,6 +596169,10 @@ $L_56af64::
             add ESP,16
             ret 4
 FUN_56aef0 ENDP
+ELSE
+EXTERN @CopterTask_Construct@12:PROC
+FUN_56aef0 TEXTEQU <@CopterTask_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -597380,6 +597419,8 @@ $L_56bab0 PROC
             nop
 $L_56bab0 ENDP
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56bac0 PROC
 
             mov ECX,OFFSET $L_6f2d98
@@ -597413,6 +597454,10 @@ $L_56bad0::
             mov DWORD PTR [EAX+64],ECX
             ret 
 FUN_56bac0 ENDP
+ELSE
+EXTERN _CopterState_Init:PROC
+FUN_56bac0 TEXTEQU <_CopterState_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -609424,6 +609469,8 @@ $L_5736e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_573700 PROC
 
             push -1
@@ -609488,6 +609535,10 @@ FUN_573700 PROC
             add ESP,92
             ret 
 FUN_573700 ENDP
+ELSE
+EXTERN @CopterObj573700_Destroy@8:PROC
+FUN_573700 TEXTEQU <@CopterObj573700_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -609587,6 +609638,8 @@ $L_573870 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_573890 PROC
 
             push -1
@@ -609649,6 +609702,10 @@ FUN_573890 PROC
             add ESP,88
             ret 
 FUN_573890 ENDP
+ELSE
+EXTERN @CopterObj573890_Destroy@8:PROC
+FUN_573890 TEXTEQU <@CopterObj573890_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -609794,6 +609851,8 @@ $L_573a30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_573a50 PROC
 
             push -1
@@ -609860,6 +609919,10 @@ FUN_573a50 PROC
             add ESP,92
             ret 
 FUN_573a50 ENDP
+ELSE
+EXTERN @CopterObj573a50_Destroy@8:PROC
+FUN_573a50 TEXTEQU <@CopterObj573a50_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -609978,6 +610041,8 @@ $L_573bf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_573c10 PROC
 
             push -1
@@ -610044,6 +610109,10 @@ FUN_573c10 PROC
             add ESP,92
             ret 
 FUN_573c10 ENDP
+ELSE
+EXTERN @CopterObj573c10_Destroy@8:PROC
+FUN_573c10 TEXTEQU <@CopterObj573c10_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
