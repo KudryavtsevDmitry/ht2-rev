@@ -34,11 +34,13 @@ extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 ASM_PROC(FUN_46e460)
 ASM_PROC(FUN_475b20)
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
-ASM_PROC(FUN_4810e0)
+extern "C" void FUN_4810e0(); KING_ALIAS("_FUN_4810e0", "_Save_Town")
 ASM_PROC(FUN_481790)
 extern "C" void FUN_482320(); KING_ALIAS("_FUN_482320", "_Save_Ambush")
 typedef char AsmLabel[1];
 ASM_VAR(AsmLabel, g_tagAMBU, $L_66fe74)
+ASM_VAR(AsmLabel, g_tagTOWN, $L_66fdf4)
+ASM_VAR(AsmLabel, g_tagTNDE, $L_66fdec)
 ASM_VAR(AsmLabel, s_svldId, $L_66fcb4)
 ASM_VAR(AsmLabel, s_svldFile, $L_66fd70)
 ASM_VAR(AsmLabel, g_tagPLYR, $L_66fddc)
@@ -489,6 +491,40 @@ void __cdecl Load_Obstacle(BYTE** cur)
         NameVec_Free(v);
     }
     LoadChunk_Close(&c);
+}
+
+}
+
+extern "C" {
+
+// [FUN_4810e0] saves a town (TOWN): its name and a TNDE chunk per node of
+// each of its 16-byte entries (two node slots at +8 and +12)
+void __cdecl Save_Town(BYTE* s, BYTE* town)
+{
+    SaveChunk outer;
+    Chunk_Open(&outer, s, (const DWORD*)g_tagTOWN);
+    Save_Name(s, town);
+    int idx = 0;
+    for (BYTE* e = F(BYTE*, town, 28); e != F(BYTE*, town, 32); e += 16, idx++) {
+        for (int k = 0; k < 2; k++) {
+            BYTE* node = F(BYTE*, e, 8 + k * 4);
+            if (!node)
+                continue;
+            SaveChunk c;
+            Chunk_Open(&c, s, (const DWORD*)g_tagTNDE);
+            Save_Bytes(s, &idx, 4);
+            Save_Bytes(s, node + 0, 4);
+            Save_Bytes(s, node + 4, 4);
+            Save_Bytes(s, node + 12, 4);
+            Save_Bytes(s, node + 16, 8);
+            Save_Bytes(s, node + 24, 8);
+            DWORD stale[2] = {(DWORD)outer.s, (DWORD)outer.pos};   // as the original: its own chunk record
+            Save_Bytes(s, stale, 8);
+            Save_Bytes(s, node + 8, 4);
+            Chunk_Close(&c);
+        }
+    }
+    Chunk_Close(&outer);
 }
 
 }

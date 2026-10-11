@@ -1047,6 +1047,7 @@ PUBLIC $L_64b860, $L_64c458, $L_651768, $L_67f0e0, $L_67f0e4
 PUBLIC $L_67ef88
 PUBLIC $L_676308, $L_676310, $L_676318, $L_676320, $L_67632c, $L_676338
 PUBLIC $L_66fcb4, $L_66fd70, $L_66fe74
+PUBLIC $L_66fdec, $L_66fdf4
 
 ;===================================
 _TEXT SEGMENT
@@ -230276,6 +230277,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4810e0 PROC
 
             push EBP
@@ -230504,6 +230507,10 @@ $L_4812fe::
             pop EBP
             ret 
 FUN_4810e0 ENDP
+ELSE
+EXTERN _Save_Town:PROC
+FUN_4810e0 TEXTEQU <_Save_Town>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
