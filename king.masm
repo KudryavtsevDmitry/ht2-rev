@@ -1003,6 +1003,10 @@ PUBLIC $L_66cbf4, $L_66d4d8, $L_66d4e4, $L_66da10, $L_66da38, $L_66e57c
 PUBLIC $L_66eb28, $L_66eec8, $L_66ef68
 PUBLIC $L_66f2e0, $L_66f3f0
 PUBLIC $L_64b600
+PUBLIC $L_64c034, $L_66ce4c, $L_6705f4, $L_6705fc, $L_67111c, $L_671124
+PUBLIC $L_67112c, $L_671130, $L_671138, $L_67113c, $L_671144, $L_67114c
+PUBLIC $L_671154, $L_671168
+PUBLIC $L_67115c
 
 ;===================================
 _TEXT SEGMENT
@@ -292443,6 +292447,8 @@ $L_4a4659 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a47a0 PROC
 
             push -1
@@ -292528,6 +292534,10 @@ $L_4a482d::
             add ESP,16
             ret 8
 FUN_4a47a0 ENDP
+ELSE
+EXTERN @SchMap_Construct@16:PROC
+FUN_4a47a0 TEXTEQU <@SchMap_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -292537,6 +292547,8 @@ FUN_4a47a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a4870 PROC
 
             push -1
@@ -292627,6 +292639,10 @@ $L_4a4924::
             add ESP,16
             ret 4
 FUN_4a4870 ENDP
+ELSE
+EXTERN @SchMap_Copy@12:PROC
+FUN_4a4870 TEXTEQU <@SchMap_Copy@12>
+ENDIF
           BYTE 090H
 $L_4a4940 PROC
 
@@ -293716,6 +293732,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a50d0 PROC
 
             push -1
@@ -293819,6 +293837,10 @@ $L_4a5196::
             add ESP,16
             ret 
 FUN_4a50d0 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierP:PROC
+FUN_4a50d0 TEXTEQU <_Sch_MakeIdentifierP>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
@@ -293849,6 +293871,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a51d0 PROC
 
             push -1
@@ -293942,6 +293966,10 @@ $L_4a528d::
             add ESP,20
             ret 4
 FUN_4a51d0 ENDP
+ELSE
+EXTERN _SchMap_MakeNode@4:PROC
+FUN_4a51d0 TEXTEQU <_SchMap_MakeNode@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -299752,6 +299780,8 @@ $L_4a8220 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a84d0 PROC
 
             push -1
@@ -299815,6 +299845,10 @@ $L_4a8559::
             add ESP,16
             ret 
 FUN_4a84d0 ENDP
+ELSE
+EXTERN _SchValue_Return:PROC
+FUN_4a84d0 TEXTEQU <_SchValue_Return>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -303486,6 +303520,8 @@ FUN_4aa1d0 TEXTEQU <@Vec44_Erase@16>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aa320 PROC
 
             push -1
@@ -303536,11 +303572,17 @@ $L_4aa387::
             add ESP,16
             ret 4
 FUN_4aa320 ENDP
+ELSE
+EXTERN @SchValue_CopyImmediate@12:PROC
+FUN_4aa320 TEXTEQU <@SchValue_CopyImmediate@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aa3a0 PROC
 
             push -1
@@ -303607,6 +303649,10 @@ $L_4aa416::
             add ESP,16
             ret 4
 FUN_4aa3a0 ENDP
+ELSE
+EXTERN @SchIdentifier_From@12:PROC
+FUN_4aa3a0 TEXTEQU <@SchIdentifier_From@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -303974,6 +304020,8 @@ FUN_4aa720 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aa730 PROC
 
             push -1
@@ -304072,6 +304120,10 @@ $L_4aa7ea::
             add ESP,16
             ret 
 FUN_4aa730 ENDP
+ELSE
+EXTERN _Sch_MakeUnspecified:PROC
+FUN_4aa730 TEXTEQU <_Sch_MakeUnspecified>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -304116,6 +304168,8 @@ $L_4aa820 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aa830 PROC
 
             push -1
@@ -304218,10 +304272,16 @@ $L_4aa8f4::
             add ESP,16
             ret 
 FUN_4aa830 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierA:PROC
+FUN_4aa830 TEXTEQU <_Sch_MakeIdentifierA>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aa910 PROC
 
             push -1
@@ -304324,10 +304384,16 @@ $L_4aa9d4::
             add ESP,16
             ret 
 FUN_4aa910 ENDP
+ELSE
+EXTERN _Sch_MakeIdentifierB:PROC
+FUN_4aa910 TEXTEQU <_Sch_MakeIdentifierB>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aa9f0 PROC
 
             push -1
@@ -304426,11 +304492,17 @@ $L_4aaaa3::
             add ESP,16
             ret 
 FUN_4aa9f0 ENDP
+ELSE
+EXTERN _Sch_MakeBegin:PROC
+FUN_4aa9f0 TEXTEQU <_Sch_MakeBegin>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aaac0 PROC
 
             push -1
@@ -304533,10 +304605,16 @@ $L_4aab84::
             add ESP,16
             ret 
 FUN_4aaac0 ENDP
+ELSE
+EXTERN _Sch_MakeClosure:PROC
+FUN_4aaac0 TEXTEQU <_Sch_MakeClosure>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aaba0 PROC
 
             push -1
@@ -304639,6 +304717,10 @@ $L_4aac64::
             add ESP,16
             ret 
 FUN_4aaba0 ENDP
+ELSE
+EXTERN _Sch_MakeContinuation:PROC
+FUN_4aaba0 TEXTEQU <_Sch_MakeContinuation>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -313816,6 +313898,8 @@ FUN_4af970 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4afb30 PROC
 
             push -1
@@ -313898,6 +313982,10 @@ $L_4afbc0::
             nop
             nop
 FUN_4afb30 ENDP
+ELSE
+EXTERN @SchList_Construct@12:PROC
+FUN_4afb30 TEXTEQU <@SchList_Construct@12>
+ENDIF
 ALIGN 16
 ; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
 IFDEF ASM_EVALUATOR
@@ -314453,6 +314541,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4affd0 PROC
 
             push -1
@@ -314563,12 +314653,18 @@ $L_4b00a2::
             add ESP,16
             ret 
 FUN_4affd0 ENDP
+ELSE
+EXTERN _Sch_MakeClosureB:PROC
+FUN_4affd0 TEXTEQU <_Sch_MakeClosureB>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b00c0 PROC
 
             push -1
@@ -314669,6 +314765,10 @@ $L_4b017f::
             add ESP,16
             ret 
 FUN_4b00c0 ENDP
+ELSE
+EXTERN _Sch_MakeLambda:PROC
+FUN_4b00c0 TEXTEQU <_Sch_MakeLambda>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314678,6 +314778,8 @@ FUN_4b00c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b01a0 PROC
 
             push -1
@@ -314778,6 +314880,10 @@ $L_4b025f::
             add ESP,16
             ret 
 FUN_4b01a0 ENDP
+ELSE
+EXTERN _Sch_MakeDefine:PROC
+FUN_4b01a0 TEXTEQU <_Sch_MakeDefine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314787,6 +314893,8 @@ FUN_4b01a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b0280 PROC
 
             push -1
@@ -314887,6 +314995,10 @@ $L_4b033f::
             add ESP,16
             ret 
 FUN_4b0280 ENDP
+ELSE
+EXTERN _Sch_MakeIf:PROC
+FUN_4b0280 TEXTEQU <_Sch_MakeIf>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314896,6 +315008,8 @@ FUN_4b0280 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b0360 PROC
 
             push -1
@@ -314996,6 +315110,10 @@ $L_4b041f::
             add ESP,16
             ret 
 FUN_4b0360 ENDP
+ELSE
+EXTERN _Sch_MakeQuote:PROC
+FUN_4b0360 TEXTEQU <_Sch_MakeQuote>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315005,6 +315123,8 @@ FUN_4b0360 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b0440 PROC
 
             push -1
@@ -315105,6 +315225,10 @@ $L_4b04ff::
             add ESP,16
             ret 
 FUN_4b0440 ENDP
+ELSE
+EXTERN _Sch_MakeSet:PROC
+FUN_4b0440 TEXTEQU <_Sch_MakeSet>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315114,6 +315238,8 @@ FUN_4b0440 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b0520 PROC
 
             push -1
@@ -315214,6 +315340,10 @@ $L_4b05df::
             add ESP,16
             ret 
 FUN_4b0520 ENDP
+ELSE
+EXTERN _Sch_MakeEval:PROC
+FUN_4b0520 TEXTEQU <_Sch_MakeEval>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315223,6 +315353,8 @@ FUN_4b0520 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b0600 PROC
 
             push -1
@@ -315323,6 +315455,10 @@ $L_4b06bf::
             add ESP,16
             ret 
 FUN_4b0600 ENDP
+ELSE
+EXTERN _Sch_MakeCallCC:PROC
+FUN_4b0600 TEXTEQU <_Sch_MakeCallCC>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315332,6 +315468,8 @@ FUN_4b0600 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b06e0 PROC
 
             push -1
@@ -315432,6 +315570,10 @@ $L_4b079f::
             add ESP,16
             ret 
 FUN_4b06e0 ENDP
+ELSE
+EXTERN _Sch_MakeApply:PROC
+FUN_4b06e0 TEXTEQU <_Sch_MakeApply>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315441,6 +315583,8 @@ FUN_4b06e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4b07c0 PROC
 
             push -1
@@ -315544,6 +315688,10 @@ $L_4b0886::
             add ESP,16
             ret 
 FUN_4b07c0 ENDP
+ELSE
+EXTERN _Sch_MakeStringP:PROC
+FUN_4b07c0 TEXTEQU <_Sch_MakeStringP>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_EVALUATOR
