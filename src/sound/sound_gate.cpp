@@ -21,12 +21,25 @@ extern "C" long __cdecl strtol(const char* s, char** end, int base);
 extern "C" long __cdecl atol(const char* s);
 extern "C" double __cdecl atof(const char* s);
 
-ASM_PROC(FUN_6016f0)    // rewinds the service provider list
+extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")    // rewinds the service provider list
 ASM_PROC(FUN_600b50)    // DirectPlay error text (hr)
 ASM_PROC(FUN_401010)    // fatal error report
 ASM_PROC(FUN_601ff0)
 ASM_PROC(FUN_602320)
 ASM_PROC(FUN_603f30)
+typedef void (*VFn)();
+ASM_PROC(FUN_601470)
+ASM_PROC(FUN_601c70)
+ASM_PROC(FUN_44b740)
+ASM_PROC(FUN_44b4a0)
+ASM_PROC(FUN_46e460)
+extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
+ASM_VAR(DWORD*, g_providerIds, $L_723de8)
+ASM_VAR(AsmLabel, g_683ca0, $L_683ca0)
+ASM_VAR(AsmLabel, g_enumProvider, $L_601630)
+ASM_VAR(AsmLabel, g_vtbl652de0, $L_652de0)
+ASM_VAR(AsmLabel, g_clsidFilterGraph, $L_6554c0)
+ASM_VAR(AsmLabel, g_iidGraphBuilder, $L_6554d0)
 
 ASM_VAR(AsmLabel, g_guidIpx, $L_655340)
 ASM_VAR(AsmLabel, g_guidTcp, $L_655330)
@@ -492,6 +505,200 @@ BOOL __cdecl Ini_WriteInt(const char* section, const char* key, long v, const ch
     char buf[96];
     sprintf(buf, s_ld, v);
     return WritePrivateProfileStringA(section, key, buf, file);
+}
+
+}
+
+// --- message buffers (a vector<char> at +4), the provider list, music files
+
+static void Buf_Write(BYTE* v, const void* p, int n)
+{
+    CallThis(FUN_46e460, v, F(BYTE*, v, 4), (const BYTE*)p, (const BYTE*)p + n);
+}
+
+extern "C" {
+
+// [FUN_6016f0] rebuilds the service provider list and its id table
+void __cdecl Providers_Rebuild()
+{
+    if (g_providerIds)
+        operator delete(g_providerIds);
+    g_providerIds = 0;
+    for (BYTE* e = g_providersBegin; e != g_providersEnd; e += 32)
+        CallThis(FUN_601470, e);
+    g_providersEnd = g_providersBegin;
+    Dp_Create();
+    BYTE* dp = g_directPlay;
+    CallStd(F(VFn, F(BYTE*, dp, 0), 140), dp, (void*)g_683ca0, (void*)g_enumProvider, 0, 0);
+    int n = (g_providersEnd - g_providersBegin) >> 5;
+    DWORD* ids = (DWORD*)operator new(n * 4 + 4);
+    g_providerIds = ids;
+    int i = 0;
+    for (BYTE* e = g_providersBegin; e != g_providersEnd; e += 32)
+        ids[i++] = F(DWORD, e, 24);
+    ids[i] = 0;
+}
+
+// [FUN_601c10] calls [FUN_601c70] with provider i (-1 when out of range)
+int __cdecl Providers_Call601c70(unsigned i, int a, int b, int c)
+{
+    if ((unsigned)((g_providersEnd - g_providersBegin) >> 5) <= i)
+        return -1;
+    struct Guid16 { DWORD d[4]; } g;
+    memcpy(&g, g_providersBegin + i * 32, 16);
+    return CallC<int>(FUN_601c70, g, a, b, c);
+}
+
+// [FUN_6026f0] a 16-byte list node holding *x
+BYTE* __stdcall DpList_MakeNode(const DWORD* x)
+{
+    BYTE* n = CallC<BYTE*>(FUN_44b740, 16);
+    if (n + 8)
+        F(DWORD, n, 8) = *x;
+    return n;
+}
+
+// [FUN_6026c0] inserts a node holding *x before pos; *out = the node
+BYTE** __stdcall DpList_Insert(BYTE** out, BYTE* pos, const DWORD* x)
+{
+    BYTE* n = DpList_MakeNode(x);
+    F(BYTE*, n, 0) = pos;
+    F(BYTE*, n, 4) = F(BYTE*, pos, 4);
+    F(BYTE*, F(BYTE*, pos, 4), 0) = n;
+    F(BYTE*, pos, 4) = n;
+    *out = n;
+    return out;
+}
+
+// [FUN_602be0] a message: an empty buffer with the 8-byte header written
+BYTE* __fastcall DpMessage_Construct(BYTE* self, void*)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 24) = 0;
+    F(void*, self, 0) = g_vtbl652de0;
+    DWORD v = 8;
+    Buf_Write(self + 4, &v, 4);
+    v = 0;
+    Buf_Write(self + 4, &v, 4);
+    F(int, self, 24) = 8;
+    return self;
+}
+
+// [FUN_602df0] empties the message and writes the header again
+void __fastcall DpMessage_Reset(BYTE* self, void*)
+{
+    F(BYTE*, self, 8) = F(BYTE*, self, 4);
+    F(int, self, 20) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 24) = 0;
+    DWORD v = 8;
+    Buf_Write(self + 4, &v, 4);
+    v = 0;
+    Buf_Write(self + 4, &v, 4);
+    F(int, self, 24) = 8;
+}
+
+// [FUN_603170] replaces the message with n received bytes
+void __fastcall DpMessage_Set(BYTE* self, void*, const BYTE* p, int n)
+{
+    BYTE* b = F(BYTE*, self, 4);
+    BYTE* e = F(BYTE*, self, 8);
+    Bytes_Copy(e, e, b);
+    F(BYTE*, self, 8) = e + (b - e);
+    F(int, self, 20) = 0;
+    F(int, self, 24) = 0;
+    Buf_Write(self + 4, p, n);
+    F(int, self, 16) = CallVirt<int>(self, 0);
+    F(int, self, 24) = 8;
+    F(int, self, 16) = F(int, F(BYTE*, self, 4), 4);
+}
+
+// [FUN_603570] appends the 4 bytes of v to the buffer
+int __cdecl Buf_WriteDword(int unused, BYTE* v, DWORD x)
+{
+    return CallThis<int>(FUN_46e460, v, F(BYTE*, v, 4), (const BYTE*)&x, (const BYTE*)&x + 4);
+}
+
+// vector<char>::insert(pos, x)
+static void Bytes_InsertAt(BYTE** self, BYTE* pos, const BYTE* x)
+{
+    BYTE* last = self[1];
+    if (last != self[2]) {
+        if (last)
+            *last = last[-1];
+        self[1] = last + 1;
+        BYTE v = *x;
+        for (BYTE* p = last - 1; p > pos; p--)
+            *p = p[-1];
+        *pos = v;
+        return;
+    }
+    unsigned n = last - self[0];
+    unsigned cap = n ? n * 2 : 1;
+    BYTE* p = CallC<BYTE*>(FUN_44b740, cap);
+    BYTE* q = CallC<BYTE*>(FUN_46ecd0, self[0], pos, p, 0);
+    if (q)
+        *q = *x;
+    BYTE* e = CallC<BYTE*>(FUN_46ecd0, pos, self[1], q + 1, 0);
+    if (self[2] != self[0])
+        CallC(FUN_44b4a0, self[0], self[2] - self[0]);
+    self[0] = p;
+    self[1] = e;
+    self[2] = p + cap;
+}
+
+// [FUN_6035c0]
+void __fastcall Bytes_Insert(BYTE** self, void*, BYTE* pos, const BYTE* x)
+{
+    Bytes_InsertAt(self, pos, x);
+}
+
+// [FUN_603590] appends the byte c to the buffer
+void __cdecl Buf_WriteByte(int unused, BYTE** v, BYTE c)
+{
+    BYTE* e = v[1];
+    if (e != v[2]) {
+        if (e)
+            *e = c;
+        v[1]++;
+        return;
+    }
+    Bytes_InsertAt(v, e, &c);
+}
+
+// [FUN_6038d0] opens a music file with DirectShow (-1 on failure)
+int __fastcall Music_Open(BYTE* self, void*, const char* path)
+{
+    Music_Close(self, 0);
+    IUnknown** graph = (IUnknown**)(self + 8);
+    if (CoCreateInstance(*(const CLSID*)g_clsidFilterGraph, 0, 1, *(const IID*)g_iidGraphBuilder, (void**)graph) < 0)
+        return -1;
+    IUnknown* ev;
+    HRESULT r = (*graph)->QueryInterface(*(const IID*)g_iidMediaEvent, (void**)&ev);
+    if (r >= 0) {
+        r = CallStd<HRESULT>(F(VFn, F(BYTE*, ev, 0), 28), ev, self + 16);
+        ev->Release();
+    }
+    if (r < 0) {
+        (*graph)->Release();
+        *graph = 0;
+        return -1;
+    }
+    Music_QueryControl(self, 0);
+    WCHAR wpath[260];
+    MultiByteToWideChar(0, 0, path, -1, wpath, 260);
+    IUnknown* g = *graph;
+    if (CallStd<HRESULT>(F(VFn, F(BYTE*, g, 0), 52), g, wpath, 0) < 0) {
+        F(int, self, 4) = 2;
+        Music_Close(self, 0);
+        return -1;
+    }
+    F(int, self, 0) = 1;
+    return 0;
 }
 
 }

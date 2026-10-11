@@ -136,7 +136,7 @@ ASM_PROC(FUN_5c29d0)
 ASM_PROC(FUN_5c1d40)    // draws the video frame
 ASM_PROC(FUN_5c34a0)
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
-ASM_PROC(FUN_602df0)
+extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
 ASM_PROC(FUN_5c49b0)    // next record time (forward)
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
 ASM_PROC(FUN_5c4d30)
