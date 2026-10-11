@@ -58248,6 +58248,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_422e00 PROC
 
             sub ESP,160
@@ -58342,6 +58344,10 @@ $L_422eea::
             add ESP,160
             ret 
 FUN_422e00 ENDP
+ELSE
+EXTERN _Road_RandomFarPosition:PROC
+FUN_422e00 TEXTEQU <_Road_RandomFarPosition>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -625006,6 +625012,8 @@ $L_57c48c::
             ret 20
 FUN_57c450 ENDP
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_57c490 PROC
 
             sub ESP,24
@@ -625152,6 +625160,11 @@ $L_57c5d8     DWORD $L_57C58B
               DWORD $L_57C599
               DWORD $L_57C599
 ALIGN 16
+ELSE
+EXTERN @Shadow_Add@32:PROC
+FUN_57c490 TEXTEQU <@Shadow_Add@32>
+ENDIF
+
 
 FUN_57c5f0 PROC
 
@@ -654528,6 +654541,8 @@ $L_591b3e ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_591b50 PROC
 
             sub ESP,12
@@ -654639,6 +654654,10 @@ $L_591c25::
             add ESP,12
             ret 
 FUN_591b50 ENDP
+ELSE
+EXTERN _Body_SegmentContact:PROC
+FUN_591b50 TEXTEQU <_Body_SegmentContact>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_591c30 PROC

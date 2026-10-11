@@ -5846,3 +5846,35 @@ extern "C" void __cdecl Players_DropIdleFar()
     }
     Ai_KillDelayedPlayers();
 }
+
+extern "C" PositionId* __cdecl Road_RandomPosition(PositionId* out);
+ASM_PROC(FUN_438d70)    // the room info of a position
+ASM_VAR(char, s_undefinedModule, $L_66d638)
+ASM_VAR(char, s_undefinedRoom, $L_66d628)
+
+// [FUN_422e00] a random road position at least 400 from the camera, not in a room flagged 0x60
+extern "C" PositionId* __cdecl Road_RandomFarPosition(PositionId* out)
+{
+    DWORD q[18] = {};
+    q[0] = 0;
+    q[2] = 0;
+    q[3] = 0;
+    q[4] = (DWORD)&s_undefinedModule;
+    q[5] = (DWORD)&s_undefinedRoom;
+    q[6] = 0;
+    q[7] = 0;
+    q[9] = (DWORD)-1;
+    q[10] = (DWORD)-1;
+    PositionId pos;
+    do {
+        PositionId t;
+        pos = *Road_RandomPosition(&t);
+        DVec3 pt;
+        Road_PointOf(&pt, pos);
+        double dx = pt.x - g_camX68bab0, dy = pt.y - g_camY68bab8, dz = pt.z - g_camZ68bac0;
+        if (!(400.0 > x87_sqrt((dy * dy + dz * dz) + dx * dx)))
+            CallC(FUN_438d70, pos, q);
+    } while (q[0] & 0x60);
+    *out = pos;
+    return out;
+}

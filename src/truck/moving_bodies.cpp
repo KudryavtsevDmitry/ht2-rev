@@ -798,3 +798,27 @@ extern "C" void __fastcall Body_SetContactMode(BYTE* s, void*, int mode)
     }
     F(int, s, 3588) = mode;
 }
+
+ASM_PROC(FUN_5917f0)    // a contact of a point with the body (point, -, contact, -)
+extern "C" Vec3* __cdecl Line_Project(Vec3* out, const Vec3* p, const Vec3* n, const Vec3* a, const Vec3* b);
+
+// [FUN_591b50] a contact of the segment a-b: at a when b goes into the plane, or at b projected onto the plane
+extern "C" int __cdecl Body_SegmentContact(const Vec3* a, const Vec3* b, int c, BYTE* contact, int e)
+{
+    int r = CallC<int>(FUN_5917f0, a, c, contact, e);
+    if (r) {
+        F(Vec3, contact, 52) = *a;
+        double dx = (double)b->x - a->x, dy = (double)b->y - a->y, dz = (double)b->z - a->z;
+        double dot = ((double)F(float, contact, 72) * dz + (double)F(float, contact, 68) * dy) + (double)F(float, contact, 64) * dx;
+        if (!(dot >= 0.0f))
+            return r;
+        return 0;
+    }
+    r = CallC<int>(FUN_5917f0, b, c, contact, e);
+    if (!r)
+        return 0;
+    Vec3 t;
+    Line_Project(&t, (Vec3*)(contact + 52), (Vec3*)(contact + 64), a, b);
+    F(Vec3, contact, 52) = t;
+    return r;
+}
