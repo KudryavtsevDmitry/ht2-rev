@@ -42,6 +42,14 @@ extern "C" void __fastcall CGameApp_SetMousePos(void* app, void*, int x, int y);
 ASM_PROC(FUN_5d85f0)    // window: its rectangle
 extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
 ASM_PROC(FUN_5bd5e0)
+extern "C" void FUN_5bef30(); KING_ALIAS("_FUN_5bef30", "@Ctl_SetStyles@28")
+extern "C" void FUN_5bef90(); KING_ALIAS("_FUN_5bef90", "@Ctl_SetStyle5@16")
+ASM_VAR(AsmLabel, s_676310, $L_676310)
+ASM_VAR(AsmLabel, s_676308, $L_676308)
+ASM_VAR(AsmLabel, s_676318, $L_676318)
+ASM_VAR(AsmLabel, s_676338, $L_676338)
+ASM_VAR(AsmLabel, s_67632c, $L_67632c)
+ASM_VAR(AsmLabel, s_676320, $L_676320)
 extern "C" void FUN_5ffb40(); KING_ALIAS("_FUN_5ffb40", "_Music_Clear")
 ASM_PROC(FUN_5ba4a0)
 ASM_PROC(FUN_5bae30)
@@ -1143,6 +1151,39 @@ void __fastcall Shell528fc0_Destroy(BYTE* self, void*)
     F(void*, self, 0) = g_vtbl64eb58;
     CallThis(FUN_5c1b10, self ? self + 56 : 0);
     CallThis(FUN_5d8850, self);
+}
+
+}
+
+// --- a three-state button's images: for each state (a, the common one, b)
+// the normal (676338), pressed (67632c) and disabled (676320) images
+
+static void Button_LoadImage(DWORD* style, const void* tmpl, char* buf, const char* fmt, const char* prefix,
+                             const char* name)
+{
+    sprintf(buf, fmt, prefix, name);
+    CallThis(FUN_5bd5a0, style, tmpl);
+    style[7] = CallC<DWORD>(FUN_5ef3d0, buf);
+}
+
+extern "C" {
+
+// [FUN_50dc00] sets the images of a button: states 0 (a), 1 (common), 2 (b)
+void __cdecl Button_SetImages(BYTE* ctrl, const char* a, const char* b)
+{
+    DWORD on[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD off[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    char buf[32];
+    const char* prefix = CallC<int>(FUN_568fd0) == 2 ? (const char*)s_676310 : (const char*)s_676308;
+    const char* names[3] = {a, (const char*)s_676318, b};
+    for (int state = 0; state < 3; state++) {
+        Button_LoadImage(on, g_6ce3b8, buf, s_676338, prefix, names[state]);
+        Button_LoadImage(off, g_6ce408, buf, s_67632c, prefix, names[state]);
+        CallThis(FUN_5bef30, ctrl, on, off, on, off, state);
+        Button_LoadImage(off, g_6ce408, buf, s_676320, prefix, names[state]);
+        CallThis(FUN_5bef90, ctrl, off, state);
+    }
+    CallVirt(ctrl, 20);
 }
 
 }
