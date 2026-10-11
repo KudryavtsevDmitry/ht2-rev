@@ -15,6 +15,31 @@ ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_470900)
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
+extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+ASM_PROC(FUN_46e460)
+ASM_PROC(FUN_475b20)
+extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
+ASM_PROC(FUN_4810e0)
+ASM_PROC(FUN_481790)
+ASM_PROC(FUN_482320)
+typedef char AsmLabel[1];
+ASM_VAR(AsmLabel, g_tagPLYR, $L_66fddc)
+ASM_VAR(AsmLabel, g_tagPLRS, $L_66fde4)
+ASM_VAR(AsmLabel, g_tagTWNS, $L_66fe28)
+ASM_VAR(AsmLabel, g_tagPRSS, $L_66fe48)
+ASM_VAR(AsmLabel, g_tagROAD, $L_66fe50)
+ASM_VAR(AsmLabel, g_tagRDDD, $L_66fe6c)
+ASM_VAR(AsmLabel, g_tagAMBS, $L_66fe90)
+ASM_VAR(AsmLabel, g_tagOBST, $L_66fe98)
+ASM_VAR(AsmLabel, g_tagOBSS, $L_66feb8)
+ASM_VAR(BYTE*, g_68cf6c, $L_68cf6c)
+ASM_VAR(BYTE**, g_68cf38, $L_68cf38)
+ASM_VAR(BYTE**, g_68cf3c, $L_68cf3c)
+ASM_VAR(BYTE**, g_68a970, $L_68a970)
+ASM_VAR(BYTE**, g_68a974, $L_68a974)
+ASM_VAR(BYTE**, g_68cc18, $L_68cc18)
+ASM_VAR(BYTE**, g_68cc1c, $L_68cc1c)
 
 ASM_VAR(BYTE*, g_68ccb8, $L_68ccb8)             // 104-byte records
 ASM_VAR(double, g_bonusFactor, $L_66f878)       // 1.5
@@ -131,4 +156,127 @@ static double UnloadCost(int* o, int node)
     double cost = 0;
     Road_PositionCostBest(0, F(OrdrPos, o, 24), to, &cost);
     return cost;
+}
+
+// --- saving: chunks are opened with [FUN_490c90] (stream, tag, &pos) and
+// closed with [FUN_490ce0] (stream, &pos); bytes are appended with [FUN_46e460].
+
+struct SaveChunk {
+    BYTE* s;
+    int pos;
+};
+
+static void Chunk_Open(SaveChunk* c, BYTE* s, const DWORD* tag)
+{
+    c->s = s;
+    CallC(FUN_490c90, s, tag, &c->pos);
+}
+
+static void Chunk_Close(SaveChunk* c)
+{
+    CallC(FUN_490ce0, c->s, &c->pos);
+}
+
+static void Save_Bytes(BYTE* s, const void* p, int n)
+{
+    CallThis(FUN_46e460, s, F(BYTE*, s, 4), (const BYTE*)p, (const BYTE*)p + n);
+}
+
+// the name (a vector<char> at +0): its length, then its bytes one by one
+static void Save_Name(BYTE* s, const BYTE* rec)
+{
+    int n = F(const BYTE*, rec, 4) - F(const BYTE*, rec, 0);
+    Save_Bytes(s, &n, 4);
+    for (unsigned i = 0; i < (unsigned)(F(const BYTE*, rec, 4) - F(const BYTE*, rec, 0)); i++) {
+        BYTE c = F(const BYTE*, rec, 0)[i];
+        Save_Bytes(s, &c, 1);
+    }
+}
+
+static void Save_EachPtr(BYTE* s, const DWORD* tag, BYTE** b, BYTE** const* e, void (*fn)())
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, tag);
+    for (BYTE** it = b; it != *e; it++)
+        CallC(fn, s, *it);
+    Chunk_Close(&c);
+}
+
+extern "C" {
+
+// [FUN_480e60] saves a player (PLYR)
+void __cdecl Save_Player(BYTE* s, BYTE* p)
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, (const DWORD*)g_tagPLYR);
+    CallThis(FUN_475b20, p, s);
+    Chunk_Close(&c);
+}
+
+// [FUN_481040] saves the players (PLRS)
+void __cdecl Save_Players(BYTE* s)
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, (const DWORD*)g_tagPLRS);
+    BYTE* head = (BYTE*)g_ordrPlayers;
+    for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_ordrPlayers; it = *(BYTE**)it)
+        Save_Player(s, CallC<BYTE*>(FUN_40a9f0, it));
+    Chunk_Close(&c);
+}
+
+// [FUN_481640] saves the towns (TWNS)
+void __cdecl Save_Towns(BYTE* s)
+{
+    BYTE*** v = (BYTE***)&g_ordrTowns;
+    Save_EachPtr(s, (const DWORD*)g_tagTWNS, v[0], (BYTE** const*)&v[1], FUN_4810e0);
+}
+
+// [FUN_481f50] saves the routes (PRSS)
+void __cdecl Save_Routes(BYTE* s)
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, (const DWORD*)g_tagPRSS);
+    for (BYTE* n = *(BYTE**)g_68cf6c; n != g_68cf6c; n = *(BYTE**)n)
+        CallC(FUN_481790, s, F(BYTE*, n, 8));
+    Chunk_Close(&c);
+}
+
+// [FUN_481fe0] saves a road (ROAD): name and +16
+void __cdecl Save_Road(BYTE* s, BYTE* road)
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, (const DWORD*)g_tagROAD);
+    Save_Name(s, road);
+    Save_Bytes(s, road + 16, 4);
+    Chunk_Close(&c);
+}
+
+// [FUN_482290] saves the roads (RDDD)
+void __cdecl Save_Roads(BYTE* s)
+{
+    Save_EachPtr(s, (const DWORD*)g_tagRDDD, g_68cf38, &g_68cf3c, (void (*)())Save_Road);
+}
+
+// [FUN_482680] saves the ambushes (AMBS)
+void __cdecl Save_Ambushes(BYTE* s)
+{
+    Save_EachPtr(s, (const DWORD*)g_tagAMBS, g_68a970, &g_68a974, FUN_482320);
+}
+
+// [FUN_482710] saves an obstacle (OBST): name and the byte at +28
+void __cdecl Save_Obstacle(BYTE* s, BYTE* o)
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, (const DWORD*)g_tagOBST);
+    Save_Name(s, o);
+    Save_Bytes(s, o + 28, 1);
+    Chunk_Close(&c);
+}
+
+// [FUN_4829e0] saves the obstacles (OBSS)
+void __cdecl Save_Obstacles(BYTE* s)
+{
+    Save_EachPtr(s, (const DWORD*)g_tagOBSS, g_68cc18, &g_68cc1c, (void (*)())Save_Obstacle);
+}
+
 }
