@@ -630,7 +630,7 @@ ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
 ASM_PROC(FUN_4a59f0)    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 extern "C" void FUN_4a5800(); KING_ALIAS("_FUN_4a5800", "_Sch4a5800_Dump")
-ASM_PROC(FUN_4a36c0)    // a value's destructor
+extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
 extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // vector<value>: allocate and copy (n, first, last)
 extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const SchValue* from);
 KING_ALIAS("@SchValue_Assign@12", "@Str_Assign@12")
@@ -1776,4 +1776,125 @@ SchValue* __cdecl SchList_Nth(SchValue* out, int n, BYTE* h0, int h1, DWORD h2)
     return out;
 }
 
+}
+
+extern "C" void FUN_4b13b0(); KING_ALIAS("_FUN_4b13b0", "@SchNode_Destroy@8")    // the script node base destructor
+ASM_VAR(char, vt_64bf80, $L_64bf80)
+ASM_VAR(char, vt_64bf94, $L_64bf94)
+ASM_VAR(char, vt_64bfa8, $L_64bfa8)
+ASM_VAR(char, vt_64bfbc, $L_64bfbc)
+ASM_VAR(char, vt_64bfd0, $L_64bfd0)
+ASM_VAR(char, vt_64bfe4, $L_64bfe4)
+ASM_VAR(char, vt_64bff8, $L_64bff8)
+ASM_VAR(char, vt_64c00c, $L_64c00c)
+ASM_VAR(char, vt_64c020, $L_64c020)
+
+// [FUN_4a8570] destructor of a script node class (vtable 64bf80)
+extern "C" void __fastcall SchNode4a8570_Destroy(void** self, int)
+{
+    self[0] = &vt_64bf80;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a86e0] destructor of a script node class (vtable 64bf94)
+extern "C" void __fastcall SchNode4a86e0_Destroy(void** self, int)
+{
+    self[0] = &vt_64bf94;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a8a80] destructor of a script node class (vtable 64bfa8)
+extern "C" void __fastcall SchNode4a8a80_Destroy(void** self, int)
+{
+    self[0] = &vt_64bfa8;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a8bc0] destructor of a script node class (vtable 64bfbc)
+extern "C" void __fastcall SchNode4a8bc0_Destroy(void** self, int)
+{
+    self[0] = &vt_64bfbc;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a9030] destructor of a script node class (vtable 64bfd0)
+extern "C" void __fastcall SchNode4a9030_Destroy(void** self, int)
+{
+    self[0] = &vt_64bfd0;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a9760] destructor of a script node class (vtable 64bfe4)
+extern "C" void __fastcall SchNode4a9760_Destroy(void** self, int)
+{
+    self[0] = &vt_64bfe4;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a9a60] destructor of a script node class (vtable 64bff8)
+extern "C" void __fastcall SchNode4a9a60_Destroy(void** self, int)
+{
+    self[0] = &vt_64bff8;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4a9e70] destructor of a script node class (vtable 64c00c)
+extern "C" void __fastcall SchNode4a9e70_Destroy(void** self, int)
+{
+    self[0] = &vt_64c00c;
+    CallThis(FUN_4b13b0, self);
+}
+
+// [FUN_4aa150] destructor of a script node class (vtable 64c020)
+extern "C" void __fastcall SchNode4aa150_Destroy(void** self, int)
+{
+    self[0] = &vt_64c020;
+    CallThis(FUN_4b13b0, self);
+}
+
+ASM_VAR(void*, g_pool692650, $L_692650)
+ASM_VAR(int, g_poolCount693650, $L_693650)
+ASM_VAR(void*, g_pool693658, $L_693658)
+ASM_VAR(int, g_poolCount694658, $L_694658)
+
+// [FUN_4aa720] the first dword the second argument points to
+extern "C" int __cdecl Sch_Deref2nd(void*, int* p)
+{
+    return *p;
+}
+
+// [FUN_4a36c0] releases a value handle {obj, -, flags}: unless flag 0x10000, drops a reference, deleting at 0
+extern "C" void __fastcall SchHandle_Release(void** h, int)
+{
+    if (((DWORD*)h)[2] & 0x10000)
+        return;
+    BYTE* obj = (BYTE*)h[0];
+    if (!obj)
+        return;
+    --*(int*)(obj + 4);
+    obj = (BYTE*)h[0];
+    if (*(int*)(obj + 4) == 0 && obj)
+        CallThis((*(void (***)())obj)[3], obj, 1);
+}
+
+// [FUN_4ad230] returns a block to the pool at 692650 (up to 1024), else deletes it
+extern "C" void __cdecl SchPool1_Free(void* p)
+{
+    if (g_poolCount693650 >= 1024) {
+        operator delete(p);
+        return;
+    }
+    (&g_pool692650)[g_poolCount693650] = p;
+    g_poolCount693650++;
+}
+
+// [FUN_4ad2b0] returns a block to the pool at 693658 (up to 1024), else deletes it
+extern "C" void __cdecl SchPool2_Free(void* p)
+{
+    if (g_poolCount694658 >= 1024) {
+        operator delete(p);
+        return;
+    }
+    (&g_pool693658)[g_poolCount694658] = p;
+    g_poolCount694658++;
 }

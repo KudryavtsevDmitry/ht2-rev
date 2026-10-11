@@ -50,7 +50,7 @@ ASM_PROC(FUN_5e48f0)
 ASM_PROC(FUN_5b81c0)    // blits a bitmap (dst, bitmap, rect, x, y)
 ASM_PROC(FUN_5d3d30)    // sets palette entries
 ASM_PROC(FUN_5baa70)
-ASM_PROC(FUN_4cef50)    // checksum (data, size)
+extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")    // checksum (data, size)
 
 ASM_VAR(BYTE*, g_device, $L_720908)            // IDirect3DDevice
 ASM_VAR(int, g_702640, $L_702640)

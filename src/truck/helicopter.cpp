@@ -1423,3 +1423,15 @@ extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines)
     Player_CarId(&me);
     CarList_DrawLine(surface, x, y + i * 33, me);
 }
+
+extern "C" void FUN_565fe0(); KING_ALIAS("_FUN_565fe0", "@Copter_565fe0@8")
+extern "C" void FUN_565ff0(); KING_ALIAS("_FUN_565ff0", "@Copter_565ff0@12")
+ASM_PROC(FUN_5662f0)
+
+// [FUN_566380] handles a command: checks it (b == 0: default check), then runs it when allowed or when it is 11
+extern "C" void __fastcall Copter_Command(void* self, int, int cmd, int b)
+{
+    int r = b == 0 ? CallThis<int>(FUN_565fe0, self) : CallThis<int>(FUN_565ff0, self, b);
+    if (r || cmd == 11)
+        CallThis(FUN_5662f0, self, cmd);
+}

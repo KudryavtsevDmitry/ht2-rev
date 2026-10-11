@@ -28,7 +28,7 @@ extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);       
 extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
 ASM_PROC(FUN_5e5130)
-ASM_PROC(FUN_4cef50)
+extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
 extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
 extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
 ASM_PROC(FUN_5d2ba0)

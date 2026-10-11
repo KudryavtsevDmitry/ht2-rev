@@ -30,8 +30,8 @@ extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE**
 ASM_PROC(FUN_40c1a0)
 ASM_PROC(FUN_40cc50)
 ASM_PROC(FUN_40cb60)
-ASM_PROC(FUN_4a36c0)
-ASM_PROC(FUN_50d190)
+extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 
 ASM_VAR(BYTE, g_multOn, $L_68d31c)
 ASM_VAR(int, g_68d320, $L_68d320)
@@ -729,4 +729,14 @@ extern "C" void __cdecl Heap504_Adjust(BYTE** a, int hole, int len, int val, int
         hole = child - 1;
     }
     Heap504_Push(a, hole, top, (BYTE*)val);
+}
+
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+ASM_VAR(char, g_ctor68d308, $L_68d308)
+
+// [FUN_46d510] constructs the global container at 68d308
+extern "C" void __cdecl Traffic_Init68d308()
+{
+    char alloc;
+    CallThis(FUN_487730, &g_ctor68d308, &alloc);
 }

@@ -22,13 +22,13 @@ extern "C" long __cdecl atol(const char* s);
 extern "C" double __cdecl atof(const char* s);
 
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")    // rewinds the service provider list
-ASM_PROC(FUN_600b50)    // DirectPlay error text (hr)
+extern "C" void FUN_600b50(); KING_ALIAS("_FUN_600b50", "_Gate_600b50")    // DirectPlay error text (hr)
 ASM_PROC(FUN_401010)    // fatal error report
 extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
 ASM_PROC(FUN_602320)
 extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")
 typedef void (*VFn)();
-ASM_PROC(FUN_601470)
+extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
 ASM_PROC(FUN_601c70)
 ASM_PROC(FUN_44b740)
 ASM_PROC(FUN_44b4a0)
@@ -749,4 +749,62 @@ int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size)
     return 0;
 }
 
+}
+
+ASM_PROC(FUN_600660)
+extern "C" void FUN_602b60(); KING_ALIAS("_FUN_602b60", "@Blob_Set@16")
+extern "C" void FUN_603b30(); KING_ALIAS("_FUN_603b30", "@Music_Close@8")
+ASM_PROC($L_602410)
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+ASM_VAR(char, g_723d90, $L_723d90)
+ASM_VAR(char, g_723d60, $L_723d60)
+
+// [FUN_600b50] forwards to FUN_600660
+extern "C" int __cdecl Gate_600b50(int a)
+{
+    return CallC<int>(FUN_600660, a);
+}
+
+// [FUN_602bd0] FUN_602b60(0, 0)
+extern "C" int __cdecl Gate_602bd0()
+{
+    return CallStd<int>(FUN_602b60, 0, 0);
+}
+
+// [FUN_6032f0] sets +24 to 8, returns 0
+extern "C" int __fastcall Gate_Set24(BYTE* self, int)
+{
+    *(int*)(self + 24) = 8;
+    return 0;
+}
+
+// [FUN_6023e0] destroys the global at 723d90
+extern "C" void __cdecl Gate_Destroy723d90()
+{
+    CallThis($L_602410, &g_723d90);
+}
+
+// [FUN_601530] constructs the global container at 723d60
+extern "C" void __cdecl Gate_Init723d60()
+{
+    char alloc;
+    CallThis(FUN_487730, &g_723d60, &alloc);
+}
+
+// [FUN_601470] frees the buffers at +16 and +24
+extern "C" void __fastcall Gate_FreeBuffers(BYTE* self, int)
+{
+    void* p = *(void**)(self + 16);
+    if (p)
+        operator delete(p);
+    p = *(void**)(self + 24);
+    if (p)
+        operator delete(p);
+}
+
+// [FUN_603b60] shuts the music player down and uninitializes COM
+extern "C" void __cdecl Gate_ShutdownCom()
+{
+    CallC(FUN_603b30);
+    CoUninitialize();
 }

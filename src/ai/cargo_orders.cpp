@@ -366,3 +366,9 @@ void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, 
 }
 
 }
+
+// [FUN_46ea00] the first dword of the object the first field points to
+extern "C" int __fastcall Ordr_First(int** self, int)
+{
+    return *self[0];
+}

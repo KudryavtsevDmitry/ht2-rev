@@ -887,3 +887,12 @@ void __fastcall Orders144_Destroy(BYTE** self, void*)
 }
 
 }
+
+// [FUN_47be20] finds the first 16-byte element in [b, e) whose first dword is *key
+extern "C" int* __cdecl Find16_ByKey(int* b, int* e, const int* key)
+{
+    for (; b != e; b += 4)
+        if (*b == *key)
+            break;
+    return b;
+}

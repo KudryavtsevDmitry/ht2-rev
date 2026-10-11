@@ -20,7 +20,7 @@ ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
 ASM_PROC(FUN_4b20d0)
 extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")
-ASM_PROC(FUN_4b5490)
+extern "C" void FUN_4b5490(); KING_ALIAS("_FUN_4b5490", "@SchReader_Close@8")
 ASM_PROC(FUN_4b5b70)
 extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")
 extern "C" void FUN_4b0be0(); KING_ALIAS("_FUN_4b0be0", "@Number_ConstructComplex@20")
@@ -734,7 +734,7 @@ BYTE* __fastcall SchState_Construct(BYTE* self, void*)
 }
 
 extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
-ASM_PROC(FUN_4a36c0)
+extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 
 extern "C" {
 
@@ -958,4 +958,33 @@ extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, B
     if (exact)
         F(DWORD, s, 8) |= 1;
     return s;
+}
+
+ASM_VAR(char, vt_64bee4, $L_64bee4)
+ASM_VAR(char, g_6703f8, $L_6703f8)
+extern "C" void FUN_48ade0(); KING_ALIAS("_FUN_48ade0", "_BigInt_FromInt")
+
+// [FUN_4b13b0] the script node base destructor
+extern "C" void __fastcall SchNode_Destroy(void** self, int)
+{
+    self[0] = &vt_64bee4;
+}
+
+
+// [FUN_4b5490] closes the reader's file
+extern "C" void __fastcall SchReader_Close(BYTE* self, int)
+{
+    FILE* f = *(FILE**)(self + 12);
+    if (f) {
+        fclose(f);
+        *(FILE**)(self + 12) = 0;
+    }
+}
+
+// [FUN_4b26b0] a symbol value: (interned name, symbol type)
+extern "C" void** __fastcall SchSymbol_Init(void** self, int, const char* name)
+{
+    self[0] = (void*)CallC<int>(FUN_48ade0, 0, name);
+    self[1] = &g_6703f8;
+    return self;
 }

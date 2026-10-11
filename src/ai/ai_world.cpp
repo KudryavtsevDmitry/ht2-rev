@@ -2132,7 +2132,7 @@ extern "C" void __fastcall Rec4046b0_Destroy(BYTE* self, void*)
 ASM_PROC(FUN_404ef0)    // a town's position (out, town)
 ASM_PROC(FUN_44c470)    // vector<double>: insert (pos, value)
 ASM_PROC(FUN_47c650)
-ASM_PROC(FUN_50d190)
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void __fastcall Waypoints_Clear(BYTE* self, void*);   // aiplay.cpp
 extern "C" void __cdecl Road_NodeCostBest(int side, int from, int to, double* cost);   // aitrce.cpp
 
@@ -4710,7 +4710,7 @@ BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v)
 // Functions with exception frames (the frames are dropped; the normal path
 // calls the destructors explicitly).
 
-ASM_PROC(FUN_4a36c0)    // a value's destructor
+extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
 ASM_PROC(FUN_408080)    // reads the player types of a "Pair" value
 ASM_PROC(FUN_4581a0)    // out of memory: retries the allocation
 ASM_VAR(int, g_68a860, $L_68a860)

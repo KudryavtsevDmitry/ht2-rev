@@ -1351,3 +1351,86 @@ extern "C" BYTE* __fastcall Spark_Construct2(BYTE* s, void*, BYTE* view, const V
     else if (kind == 2) F(int, s, 196) = 254;
     return s;
 }
+
+ASM_PROC(FUN_5d3290)    // the scene object base destructor
+ASM_VAR(char, vt_650f5c, $L_650f5c)
+
+// [FUN_59dbb0] destructor of a world object class (vtable 650f5c)
+extern "C" void __fastcall WorldObj59dbb0_Destroy(void** self, int)
+{
+    self[0] = &vt_650f5c;
+    CallThis(FUN_5d3290, self);
+}
+
+ASM_VAR(char, vt_651188, $L_651188)
+ASM_VAR(char, vt_650c24, $L_650c24)
+ASM_VAR(char, vt_650bd8, $L_650bd8)
+ASM_VAR(char, vt_650f34, $L_650f34)
+ASM_VAR(char, vt_650ee8, $L_650ee8)
+ASM_VAR(char, vt_64d81c, $L_64d81c)
+ASM_VAR(int, g_count6f6a6c, $L_6f6a6c)
+ASM_VAR(char, g_6f68b0, $L_6f68b0)
+ASM_PROC(FUN_5da790)
+extern "C" void FUN_59aa90(); KING_ALIAS("_FUN_59aa90", "@Wasm59aa90_Destroy@8")
+ASM_PROC($L_5973a0)
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_5480f0(); KING_ALIAS("_FUN_5480f0", "@Obj5480f0_Get72@8")
+extern "C" void FUN_598d30(); KING_ALIAS("_FUN_598d30", "@Wasm_598d30@16")
+
+// [FUN_595c60] destroys the scene object base
+extern "C" void __fastcall WorldObj_DestroyBase(void* self, int)
+{
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_5a00c0] destructor (vtable 651188), clears +6432
+extern "C" void __fastcall WorldObj5a00c0_Destroy(void** self, int)
+{
+    self[0] = &vt_651188;
+    self[1608] = 0;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_595230] destructor of the member at +544
+extern "C" void __fastcall WorldObj595230_Destroy(BYTE* self, int)
+{
+    *(void**)(self + 544) = &vt_64d81c;
+    CallThis(FUN_5da790, self);
+}
+
+// [FUN_5a2a30] destructor (vtables 650c24, 650bd8 at +20)
+extern "C" void __fastcall WorldObj5a2a30_Destroy(void** self, int)
+{
+    self[0] = &vt_650c24;
+    self[5] = &vt_650bd8;
+    CallThis(FUN_59aa90, self);
+}
+
+// [FUN_5a2ca0] destructor of the counted subclass (vtables 650f34, 650ee8)
+extern "C" void __fastcall WorldObj5a2ca0_Destroy(void** self, int)
+{
+    self[0] = &vt_650f34;
+    self[5] = &vt_650ee8;
+    g_count6f6a6c--;
+    self[0] = &vt_650c24;
+    self[5] = &vt_650bd8;
+    CallThis(FUN_59aa90, self);
+}
+
+// [FUN_594dd0] destroys the global at 6f68b0
+extern "C" void __cdecl WorldObj_Destroy6f68b0()
+{
+    CallThis($L_5973a0, &g_6f68b0);
+}
+
+// [FUN_597570] attaches a source object (+96) and takes its name
+extern "C" void __fastcall WorldObj_Attach(BYTE* self, int, BYTE* src)
+{
+    BYTE buf[48];
+    *(BYTE**)(self + 96) = src;
+    if (!src)
+        return;
+    int n = CallThis<int>(FUN_57de90, src + 16, buf);
+    int s = CallThis<int>(FUN_5480f0, *(void**)(self + 96), n);
+    CallThis(FUN_598d30, self, s);
+}
