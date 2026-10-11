@@ -529,3 +529,30 @@ extern "C" int __fastcall Terrain_SegmentHits(BYTE* s, void*, const float* a, co
     }
     return CallThis<int>(FUN_6157a0, s, &pb, b, c, d, e) != 0;
 }
+
+extern "C" void FUN_619bd0(); KING_ALIAS("_FUN_619bd0", "@RoomObjects_Clear@8")
+extern "C" void FUN_6170d0(); KING_ALIAS("_FUN_6170d0", "@Decals_Free@8")
+
+// [FUN_6148a0] frees the terrain's objects: the device object, room objects and five decal sets
+extern "C" void __fastcall Terrain_FreeObjects(BYTE* self, int)
+{
+    void* d = *(void**)self;
+    if (d) {
+        CallVirt(d, 0, 1);
+        *(void**)self = 0;
+    }
+    BYTE* r = *(BYTE**)(self + 80);
+    if (r) {
+        CallThis(FUN_619bd0, r);
+        operator delete(r);
+        *(BYTE**)(self + 80) = 0;
+    }
+    for (int off = 84; off <= 100; off += 4) {
+        BYTE* p = *(BYTE**)(self + off);
+        if (p) {
+            CallThis(FUN_6170d0, p);
+            operator delete(p);
+            *(BYTE**)(self + off) = 0;
+        }
+    }
+}

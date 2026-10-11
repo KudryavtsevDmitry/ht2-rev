@@ -909,3 +909,40 @@ extern "C" void __cdecl Bytes_AppendCounted(BYTE** dst, BYTE** src)
         CallThis(FUN_46e460, dst, dst[1], &c, &c + 1);
     }
 }
+
+// a 40-byte record sorted by the int at +32
+struct Rec40 { int a[8]; int key; int b; };
+
+// [FUN_47ec50] linear insertion of *last into the sorted range [first, last)
+extern "C" void __cdecl Rec40_LinearInsert(Rec40* first, Rec40* last)
+{
+    Rec40 v = *last;
+    if (v.key < first->key) {
+        for (Rec40* p = last; p != first; p--)
+            *p = p[-1];
+        *first = v;
+        return;
+    }
+    Rec40* next = last;
+    for (Rec40* prev = last - 1; v.key < prev->key; prev--) {
+        *next = *prev;
+        next = prev;
+    }
+    *next = v;
+}
+
+// [FUN_47f3f0] merges two sorted ranges into out (stable), returns the end of out
+extern "C" Rec40* __cdecl Rec40_Merge(Rec40* f1, Rec40* l1, Rec40* f2, Rec40* l2, Rec40* out)
+{
+    for (; f1 != l1 && f2 != l2; out++) {
+        if (f2->key < f1->key)
+            *out = *f2++;
+        else
+            *out = *f1++;
+    }
+    for (; f1 != l1; out++)
+        *out = *f1++;
+    for (; f2 != l2; out++)
+        *out = *f2++;
+    return out;
+}

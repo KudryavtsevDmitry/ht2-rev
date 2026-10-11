@@ -6497,3 +6497,87 @@ extern "C" int __cdecl Player_Value156(BYTE* id)
         return F(int, leader, 156);
     return F(int, id, 156);
 }
+
+extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")    // whether a player is human
+extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")    // constructs a dword at p
+extern "C" void FUN_4538a0(); KING_ALIAS("_FUN_4538a0", "@Vec4b_InsertM@16")    // vector of dwords: insert (pos, &x)
+extern "C" void FUN_4566e0(); KING_ALIAS("_FUN_4566e0", "_Recs104_PickRandom")    // picks a random record of 104 bytes
+extern "C" void FUN_456880(); KING_ALIAS("_FUN_456880", "_Pick_RandomMasked")    // picks a random record of 104 bytes by mask
+ASM_VAR(BYTE**, g_vec68cf60, $L_68cf60)
+ASM_VAR(BYTE**, g_vec68cf64, $L_68cf64)
+ASM_VAR(BYTE**, g_vec68cf68, $L_68cf68)
+ASM_VAR(BYTE**, g_vec68a980, $L_68a980)
+ASM_VAR(BYTE**, g_vec68a984, $L_68a984)
+ASM_VAR(BYTE**, g_vec68a988, $L_68a988)
+ASM_VAR(BYTE*, g_recs68ccb8, $L_68ccb8)
+ASM_VAR(BYTE*, g_recs68ccbc, $L_68ccbc)
+ASM_VAR(char, g_rand68b9c8, $L_68b9c8)
+ASM_VAR(AsmLabel, s_fmt66d58c, $L_66d58c)
+ASM_VAR(char, g_empty68d1c0, $L_68d1c0)
+
+// adds a player to the vector at vec (begin, end, capacity) unless it is in it
+static void PlayerVec_AddUnique(BYTE*** vec, BYTE* id)
+{
+    BYTE** e = vec[1];
+    BYTE** p = vec[0];
+    for (; p != e && *p != id; p++)
+        ;
+    if (p != e)
+        return;
+    if (e != vec[2]) {
+        CallC(FUN_4611c0, e, &id);
+        vec[1] = vec[1] + 1;
+    } else {
+        CallThis(FUN_4538a0, vec, e, &id);
+    }
+}
+
+// [FUN_417770] takes a computer player out of the game (state 5, flag 0x4000) and lists it
+extern "C" void __cdecl Player_Retire(BYTE* id)
+{
+    if (!CallC<char>(FUN_417660, id))
+        PlayerVec_AddUnique((BYTE***)&g_vec68cf60, id);
+    F(int, id, 100) = 5;
+    F(DWORD, id, 96) |= 0x4000;
+    CallC(FUN_477210, id);
+    F(BYTE, id, 872) = 1;
+}
+
+// [FUN_4175c0] marks a computer player (+496) and lists it
+extern "C" void __cdecl Player_MarkListed(BYTE* id)
+{
+    if (!CallC<char>(FUN_417660, id)) {
+        PlayerVec_AddUnique((BYTE***)&g_vec68a980, id);
+        F(BYTE, id, 496) = 1;
+    }
+    CallC(FUN_477210, id);
+    F(BYTE, id, 872) = 1;
+}
+
+// the index of a 104-byte record, or an error and -1
+static int* Recs104_IndexOr(int* out, BYTE* r, int a, int b, int line)
+{
+    if (r != g_recs68ccbc) {
+        *out = (int)(r - g_recs68ccb8) / 104;
+        return out;
+    }
+    char buf[128];
+    sprintf(buf, s_fmt66d58c, a, b);
+    AiError(0, 200, s_mainFile, s_mainId, line, buf, &g_empty68d1c0, &g_empty68d1c0);
+    *out = -1;
+    return out;
+}
+
+// [FUN_41b120] the index of a random record of 104 bytes matching (a, b)
+extern "C" int* __cdecl Recs104_Random(int* out, int a, int b)
+{
+    BYTE* r = CallC<BYTE*>(FUN_4566e0, g_recs68ccb8, g_recs68ccbc, a, b, &g_rand68b9c8);
+    return Recs104_IndexOr(out, r, a, b, 5689);
+}
+
+// [FUN_41b1e0] the index of a random record of 104 bytes matching (a, b) by mask
+extern "C" int* __cdecl Recs104_RandomMasked(int* out, int a, int b)
+{
+    BYTE* r = CallC<BYTE*>(FUN_456880, g_recs68ccb8, g_recs68ccbc, a, b, &g_rand68b9c8);
+    return Recs104_IndexOr(out, r, a, b, 5726);
+}
