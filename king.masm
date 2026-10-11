@@ -231958,6 +231958,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4820c0 PROC
 
             push -1
@@ -232155,6 +232157,10 @@ $L_48225b::
             add ESP,48
             ret 
 FUN_4820c0 ENDP
+ELSE
+EXTERN _Load_Road:PROC
+FUN_4820c0 TEXTEQU <_Load_Road>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -232395,6 +232401,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4824a0 PROC
 
             push -1
@@ -232595,6 +232603,10 @@ $L_48264d::
             add ESP,40
             ret 
 FUN_4824a0 ENDP
+ELSE
+EXTERN _Load_Ambush:PROC
+FUN_4824a0 TEXTEQU <_Load_Ambush>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -232761,6 +232773,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4827f0 PROC
 
             push -1
@@ -232975,6 +232989,10 @@ $L_4829a4::
             add ESP,48
             ret 
 FUN_4827f0 ENDP
+ELSE
+EXTERN _Load_Obstacle:PROC
+FUN_4827f0 TEXTEQU <_Load_Obstacle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
