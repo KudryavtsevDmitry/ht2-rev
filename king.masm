@@ -1043,6 +1043,7 @@ PUBLIC $L_64c0b0
 PUBLIC $L_64b7c0, $L_64bc20, $L_64bc28, $L_64bc30, $L_66c720, $L_66fa60
 PUBLIC $L_694998, $L_696074, $L_696078, $L_696210, $L_6f6a7c, $L_6f6a80
 PUBLIC $L_6f6a88
+PUBLIC $L_64b860, $L_64c458, $L_651768, $L_67f0e0, $L_67f0e4
 
 ;===================================
 _TEXT SEGMENT
@@ -697491,6 +697492,8 @@ FUN_5ad9e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5adaf0 PROC
 
             push EBP
@@ -697548,6 +697551,10 @@ $L_5adb6b::
             pop EBP
             ret 16
 FUN_5adaf0 ENDP
+ELSE
+EXTERN @Lights_At@24:PROC
+FUN_5adaf0 TEXTEQU <@Lights_At@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -697561,6 +697568,8 @@ FUN_5adaf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5adb80 PROC
 
             push EBP
@@ -697616,6 +697625,10 @@ $L_5adbf7::
             pop EBP
             ret 12
 FUN_5adb80 ENDP
+ELSE
+EXTERN @Lights_AtPoint@20:PROC
+FUN_5adb80 TEXTEQU <@Lights_AtPoint@20>
+ENDIF
 ALIGN 16
 ; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
 IFDEF ASM_RENDERER
@@ -703666,6 +703679,8 @@ FUN_5b17f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b1870 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -703725,6 +703740,10 @@ $L_5b18d6::
             nop
             nop
 FUN_5b1870 ENDP
+ELSE
+EXTERN _Vertices_Alpha:PROC
+FUN_5b1870 TEXTEQU <_Vertices_Alpha>
+ENDIF
 ALIGN 16
 FUN_5b18e0 PROC
 
@@ -706837,6 +706856,8 @@ FUN_5b39a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b3a00 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -706866,6 +706887,10 @@ $L_5b3a25::
 
             ret 20
 FUN_5b3a00 ENDP
+ELSE
+EXTERN _Draw_Dispatch@20:PROC
+FUN_5b3a00 TEXTEQU <_Draw_Dispatch@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -708831,6 +708856,8 @@ $L_5b4f50           DWORD $L_5b4e8f
           DWORD $L_5b4ec7
           DWORD $L_5b4ed4
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b4f70 PROC
 
             mov EAX,DWORD PTR [ECX+8224]
@@ -708859,6 +708886,10 @@ $L_5b4fb5::
             mov EAX,1
             ret 4
 FUN_5b4f70 ENDP
+ELSE
+EXTERN @Clip_InFront@12:PROC
+FUN_5b4f70 TEXTEQU <@Clip_InFront@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -710409,6 +710440,8 @@ EXTERN _Device_BeginScene:PROC
 FUN_5b6180 TEXTEQU <_Device_BeginScene>
 ENDIF
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b6190 PROC
 
             mov EAX,DWORD PTR [$L_720908]
@@ -710451,6 +710484,10 @@ $L_5b61e1::
             add ESP,8
             ret 
 FUN_5b6190 ENDP
+ELSE
+EXTERN _Device_WaitIdle:PROC
+FUN_5b6190 TEXTEQU <_Device_WaitIdle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -717782,6 +717819,8 @@ $L_5ba0f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5ba120 PROC
 
             fld DWORD PTR [$L_651768]
@@ -717804,6 +717843,10 @@ FUN_5ba120 PROC
             mov DWORD PTR [$L_702e88],EAX
             ret 
 FUN_5ba120 ENDP
+ELSE
+EXTERN _Fog_SetRange:PROC
+FUN_5ba120 TEXTEQU <_Fog_SetRange>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -719330,6 +719373,8 @@ FUN_5baa70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5bac70 PROC
 
             push OFFSET $L_5baa30
@@ -719340,6 +719385,10 @@ FUN_5bac70 PROC
 
             ret 
 FUN_5bac70 ENDP
+ELSE
+EXTERN @Records188x6_Destroy@8:PROC
+FUN_5bac70 TEXTEQU <@Records188x6_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
