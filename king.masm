@@ -1015,6 +1015,7 @@ PUBLIC $L_6ce430, $L_6ce988, $L_6ceb38, $L_720938
 PUBLIC $L_5a3df0, $L_64d81c, $L_65282c, $L_652840, $L_6528d8, $L_652924
 PUBLIC $L_652b84, $L_652c68, $L_652cb4
 PUBLIC $L_652168, $L_652738
+PUBLIC $L_6518e4, $L_651dec, $L_707f94, $L_707f98, $L_707f9c, $L_70ebe4
 
 ;===================================
 _TEXT SEGMENT
@@ -730442,6 +730443,8 @@ $L_5c10d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c10f0 PROC
 
             push -1
@@ -730467,10 +730470,16 @@ FUN_5c10f0 PROC
             add ESP,16
             ret 
 FUN_5c10f0 ENDP
+ELSE
+EXTERN @NamedItem_Destroy@8:PROC
+FUN_5c10f0 TEXTEQU <@NamedItem_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c1140 PROC
 
             push -1
@@ -730595,6 +730604,10 @@ $L_5c1237::
             add ESP,16
             ret 4
 FUN_5c1140 ENDP
+ELSE
+EXTERN @List_AddNamed@12:PROC
+FUN_5c1140 TEXTEQU <@List_AddNamed@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -738443,6 +738456,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c53e0 PROC
 
             push -1
@@ -738469,6 +738484,10 @@ FUN_5c53e0 PROC
             add ESP,16
             ret 
 FUN_5c53e0 ENDP
+ELSE
+EXTERN @Media5c53e0_Destroy@8:PROC
+FUN_5c53e0 TEXTEQU <@Media5c53e0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -740178,6 +740197,8 @@ $L_5c63e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c6400 PROC
 
             push -1
@@ -740263,9 +740284,15 @@ $L_5c64df::
             add ESP,16
             ret 
 FUN_5c6400 ENDP
+ELSE
+EXTERN _Effects_InitTrees:PROC
+FUN_5c6400 TEXTEQU <_Effects_InitTrees>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c64f0 PROC
 
             push -1
@@ -740331,6 +740358,10 @@ $L_5c6558::
             nop
             nop
 FUN_5c64f0 ENDP
+ELSE
+EXTERN _Effects_FreeTrees:PROC
+FUN_5c64f0 TEXTEQU <_Effects_FreeTrees>
+ENDIF
 ALIGN 16
 FUN_5c6580 PROC
 
@@ -743154,6 +743185,8 @@ $L_5c8760 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c8780 PROC
 
             push -1
@@ -743190,6 +743223,10 @@ $L_5c87c2::
             add ESP,16
             ret 
 FUN_5c8780 ENDP
+ELSE
+EXTERN @Media5c8780_Destroy@8:PROC
+FUN_5c8780 TEXTEQU <@Media5c8780_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748600,6 +748637,8 @@ FUN_5cc6b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cc930 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -748695,6 +748734,10 @@ $L_5cca0c::
             add ESP,20
             ret 
 FUN_5cc930 ENDP
+ELSE
+EXTERN @Trees_Construct@8:PROC
+FUN_5cc930 TEXTEQU <@Trees_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -751937,6 +751980,8 @@ $L_5ceac0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5ceae0 PROC
 
             push -1
@@ -751965,6 +752010,10 @@ FUN_5ceae0 PROC
             add ESP,16
             ret 
 FUN_5ceae0 ENDP
+ELSE
+EXTERN @Media5ceae0_Destroy@8:PROC
+FUN_5ceae0 TEXTEQU <@Media5ceae0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
