@@ -443,7 +443,7 @@ int __cdecl Bodies_Pair(BYTE* a, int a1, int a2, BYTE* b, int b1, int b2, int x)
 ASM_PROC(FUN_57cb70)
 ASM_PROC(FUN_57d060)
 extern "C" void FUN_58b4f0(); KING_ALIAS("_FUN_58b4f0", "@TwoVec_Construct@8")
-ASM_PROC(FUN_58b8c0)
+extern "C" void FUN_58b8c0(); KING_ALIAS("_FUN_58b8c0", "@Body_Reset@16")
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
 ASM_VAR(char, g_vtbl650718, $L_650718)
 ASM_VAR(char, g_vtbl6506cc, $L_6506cc)
@@ -613,4 +613,52 @@ extern "C" int __cdecl Bodies_Touch(BYTE* d, const float* n, int, BYTE* c, const
     if (!(sum >= r2 * r2))
         return 1;
     return 0;
+}
+
+
+ASM_VAR(Vec3, g_gravity702650, $L_702650)
+ASM_VAR(Vec3, g_axis702630, $L_702630)
+ASM_PROC(FUN_58ba90)
+
+// [FUN_58b8c0] resets a body's state: flags, contacts, the 20 contact records, the half size
+extern "C" int __fastcall Body_Reset(BYTE* s, void*, int a, int b)
+{
+    F(DWORD, s, 1196) |= 9;
+    F(DWORD, s, 1204) = 0;
+    F(DWORD, s, 3568) = 0;
+    F(DWORD, s, 392) = 2;
+    for (int o = 3572; o <= 3588; o += 4) F(DWORD, s, o) = 0;
+    F(DWORD, s, 3976) = 3;
+    F(DWORD, s, 3980) = 0;
+    F(DWORD, s, 3984) = 0;
+    F(DWORD, s, 892) = 0;
+    F(DWORD, s, 896) = 0;
+    F(DWORD, s, 5132) = 0;
+    F(DWORD, s, 5136) = 0;
+    F(DWORD, s, 5140) = 0;
+    F(Vec3, s, 1120) = g_gravity702650;
+    F(Vec3, s, 964) = g_gravity702650;
+    F(Vec3, s, 976) = g_gravity702650;
+    F(DWORD, s, 1028) = 0;
+    F(DWORD, s, 1032) = 0;
+    F(int, s, 1424) = a;
+    F(int, s, 1428) = b;
+    for (int k = 0; k < 20; k++) {
+        F(DWORD, s, 5192 + k * 4) = 0;
+        F(DWORD, s, 5272 + k * 4) = 0;
+        BYTE* r = s + 5416 + k * 208;
+        Vec3 v;
+        v.x = (float)((double)g_axis702630.x * -1000.0f);
+        v.y = (float)((double)g_axis702630.y * -1000.0f);
+        v.z = (float)((double)g_axis702630.z * -1000.0f);
+        F(Vec3, r, -12) = v;
+        F(Vec3, r, 0) = g_axis702630;
+        F(DWORD, r, 44) = 0;
+        F(DWORD, r, 36) = 0;
+    }
+    float h = (float)((double)F(float, s, 400) * 0.5f);
+    F(float, s, 3276) = h;
+    F(float, s, 3280) = h;
+    F(float, s, 3284) = h;
+    return CallThis<int>(FUN_58ba90, s);
 }

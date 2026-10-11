@@ -56,6 +56,13 @@ X87 double x87_fmod(double x, double y) { __asm { fld x } __asm { fld y } __asm 
 
 X87 double x87_fabs(double x) { __asm { fld x } __asm { fabs } }
 
+// sqrt(x*x + y*y) computed on the FPU in one helper
+X87 double x87_hypot(double x, double y)
+{
+    __asm { fld x } __asm { fmul st, st } __asm { fld y } __asm { fmul st, st }
+    __asm { faddp st(1), st } __asm { fsqrt }
+}
+
 #pragma warning(pop)
 
 // fcomp with test AH,64 (C3): equal, or unordered

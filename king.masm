@@ -442604,6 +442604,8 @@ FUN_501b90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_501e30 PROC
 
             push ESI
@@ -442742,6 +442744,10 @@ $L_501f8b::
             pop ESI
             ret 12
 FUN_501e30 ENDP
+ELSE
+EXTERN @Wheel_StepLevel@20:PROC
+FUN_501e30 TEXTEQU <@Wheel_StepLevel@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -584281,6 +584287,8 @@ $L_561d90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_561dc0 PROC
 
             fld DWORD PTR [ESP+8]
@@ -584416,6 +584424,10 @@ $L_561f20::
             add ESP,8
             ret 16
 FUN_561dc0 ENDP
+ELSE
+EXTERN @Copter_Tilt@24:PROC
+FUN_561dc0 TEXTEQU <@Copter_Tilt@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -589787,6 +589799,8 @@ FUN_566380 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_5663c0 PROC
 
             sub ESP,276
@@ -589924,6 +589938,10 @@ $L_56653a::
             add ESP,276
             ret 
 FUN_5663c0 ENDP
+ELSE
+EXTERN @Copter_TargetState@8:PROC
+FUN_5663c0 TEXTEQU <@Copter_TargetState@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -645599,6 +645617,9 @@ FUN_58b870 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_58b8c0 PROC
 
             mov EAX,DWORD PTR [ECX+1196]
@@ -645704,6 +645725,10 @@ $L_58b9d8::
             add ESP,12
             ret 8
 FUN_58b8c0 ENDP
+ELSE
+EXTERN @Body_Reset@16:PROC
+FUN_58b8c0 TEXTEQU <@Body_Reset@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -898263,6 +898288,8 @@ $L_61ba00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61ba10 PROC
 
             sub ESP,24
@@ -898436,6 +898463,10 @@ $L_61bbae::
             add ESP,24
             ret 4
 FUN_61ba10 ENDP
+ELSE
+EXTERN @TGridCamera_NodePriority@12:PROC
+FUN_61ba10 TEXTEQU <@TGridCamera_NodePriority@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
