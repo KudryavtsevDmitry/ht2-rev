@@ -55,6 +55,15 @@ ASM_VAR(BYTE*, g_world, $L_696ca0)
 ASM_VAR(unsigned, g_67b738, $L_67b738)
 
 ASM_PROC(FUN_5b6700)    // the palette of a surface
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+ASM_PROC(FUN_4011e0)
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, g_vtbl64c244, $L_64c244)
+ASM_VAR(AsmLabel, g_vtbl64c240, $L_64c240)
+ASM_VAR(AsmLabel, g_vtbl64c628, $L_64c628)
+ASM_VAR(AsmLabel, g_vtbl64c650, $L_64c650)
+ASM_VAR(AsmLabel, g_vtbl64c668, $L_64c668)
+ASM_VAR(AsmLabel, g_7025f0, $L_7025f0)
 ASM_PROC(FUN_4daf40)
 ASM_PROC(FUN_4dd2a0)
 extern "C" void FUN_579380(); KING_ALIAS("_FUN_579380", "_Pool_Prepare")
@@ -1678,6 +1687,104 @@ void __fastcall Vehicle4d12f0_Destroy(BYTE* self, void*)
 int __cdecl Effect_Call446c80(const BYTE* x)
 {
     return CallC<int>(FUN_446c80, F(int, x, 20636));
+}
+
+}
+
+extern "C" {
+
+// [FUN_4b81c0] adds a new 264-byte light to the effect list (up to 255)
+void __cdecl EffectList_AddLight(const DWORD* a, int b, int c, const DWORD* d, int e, int g, const void* params)
+{
+    BYTE* lights = g_effectList;
+    if (!lights)
+        return;
+    BYTE* o = (BYTE*)operator new(264);
+    if (o) {
+        F(void*, o, 0) = g_vtbl64c244;
+        F(int, o, 4) = 0;
+        F(int, o, 8) = 0;
+        F(int, o, 12) = 0;
+        F(int, o, 16) = 0;
+        F(int, o, 28) = 0;
+        F(int, o, 32) = 0;
+        F(int, o, 36) = 0;
+        CallThis(FUN_5ef5c0, o + 48);
+        F(void*, o, 0) = g_vtbl64c240;
+        F(DWORD, o, 8) = a[0];
+        F(DWORD, o, 12) = a[1];
+        F(DWORD, o, 16) = a[2];
+        F(int, o, 20) = b;
+        F(int, o, 24) = c;
+        F(DWORD, o, 28) = d[0];
+        F(DWORD, o, 32) = d[1];
+        F(DWORD, o, 36) = d[2];
+        F(int, o, 40) = e;
+        F(int, o, 44) = g;
+        if (params) {
+            memcpy(o + 48, params, 208);
+            F(int, o, 256) = 1;
+        } else {
+            F(int, o, 256) = 0;
+        }
+        F(int, o, 4) = 1;
+    }
+    lights = g_effectList;
+    unsigned n = F(unsigned, lights, 36);
+    if (n < 255) {
+        F(BYTE**, lights, 32)[n] = o;
+        F(unsigned, lights, 36) = n + 1;
+    }
+}
+
+static BYTE* Decals50_Construct(BYTE* self, void* vtbl)
+{
+    F(void*, self, 0) = g_vtbl64c63c;
+    F(int, self, 4) = 0;
+    BYTE* e = self + 8;
+    for (int i = 0; i < 50; i++, e += 92) {
+        memset(e, 0, 36);
+        CallStd(FUN_4011e0, e + 36, 12, 4, FUN_4bd4d0);
+        memcpy(e + 36, g_7025f0, 48);
+    }
+    F(void*, self, 0) = vtbl;
+    return self;
+}
+
+// [FUN_4c16b0] 50 decal slots
+BYTE* __fastcall Decals4c16b0_Construct(BYTE* self, void*) { return Decals50_Construct(self, g_vtbl64c628); }
+
+// [FUN_4c17d0]
+BYTE* __fastcall Decals4c17d0_Construct(BYTE* self, void*) { return Decals50_Construct(self, g_vtbl64c650); }
+
+// [FUN_4c1d40]
+BYTE* __fastcall Decals4c1d40_Construct(BYTE* self, void*) { return Decals50_Construct(self, g_vtbl64c668); }
+
+// [FUN_4cfc30] replaces slot i (0 or 1) with a copy of the table src
+void __fastcall Tables2_Set(BYTE** self, void*, const BYTE* src, unsigned i)
+{
+    if (i >= 2)
+        return;
+    BYTE* old = self[i];
+    if (old) {
+        if (F(void*, old, 12))
+            operator delete(F(void*, old, 12));
+        operator delete(old);
+    }
+    if (!src) {
+        self[i] = 0;
+        return;
+    }
+    BYTE* n = (BYTE*)operator new(16);
+    if (n) {
+        F(DWORD, n, 0) = F(DWORD, src, 0);
+        F(DWORD, n, 4) = F(DWORD, src, 4);
+        F(DWORD, n, 8) = F(DWORD, src, 8);
+        void* p = operator new(F(int, n, 8) * 4);
+        F(void*, n, 12) = p;
+        memcpy(p, F(void*, src, 12), F(int, n, 8) * 4);
+    }
+    self[i] = n;
 }
 
 }

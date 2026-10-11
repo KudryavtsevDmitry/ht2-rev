@@ -19,9 +19,9 @@ KING_ALIAS("_Sort_LinearInsert12", "FUN_467820")
 extern "C" void __cdecl Sort_UnguardedInsertion12(BYTE* first, BYTE* last, int, void* cmp);
 KING_ALIAS("_Sort_UnguardedInsertion12", "FUN_4679d0")
 ASM_PROC(FUN_45b570)    // vector<1592 bytes>::insert_aux
-ASM_PROC(FUN_45cb00)    // vector<4 bytes>::insert_aux
+extern "C" void FUN_45cb00(); KING_ALIAS("_FUN_45cb00", "@Vec4b_InsertC@16")    // vector<4 bytes>::insert_aux
 ASM_PROC(FUN_45d8f0)
-ASM_PROC(FUN_4604b0)
+extern "C" void FUN_4604b0(); KING_ALIAS("_FUN_4604b0", "@Vec4b_InsertG@16")
 ASM_PROC(FUN_405870)    // a list value's destructor
 ASM_PROC(FUN_602ca0)    // a 16-byte record's destructor
 ASM_PROC(FUN_41ce50)
@@ -787,15 +787,15 @@ int __fastcall Nearest_Farther(const BYTE** s, void*, void* const* a, void* cons
 // ---------------------------------------------------------------------------
 // medium-sized instances: vector assignments, sorts
 
-ASM_PROC(FUN_461dc0)    // vector<16-byte record>: allocate and copy (n, first, last)
+extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector<16-byte record>: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
 ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
-ASM_PROC(FUN_461b60)    // vector<24-byte record>: allocate and copy (n, first, last)
+extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector<24-byte record>: allocate and copy (n, first, last)
 ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
 ASM_PROC(FUN_40cc50)    // a 24-byte record's destructor
 ASM_PROC(FUN_44c160)    // vector<double>::operator=
-ASM_PROC(FUN_458cf0)    // vector<char>: allocate and copy (n, first, last)
-ASM_PROC(FUN_462010)    // vector<4 bytes>: allocate and copy (n, first, last)
+extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
+extern "C" void FUN_462010(); KING_ALIAS("_FUN_462010", "_Vec4b_AllocCopyB@12")    // vector<4 bytes>: allocate and copy (n, first, last)
 extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")    // uninitialized copy of 4-byte values (first, last, dest, -)
 extern "C" void FUN_46b330(); KING_ALIAS("_FUN_46b330", "_HeapU_Make")    // make_heap of unsigned values (first, last, 0, 0)
 extern "C" void FUN_46c980(); KING_ALIAS("_FUN_46c980", "_HeapU_Pop")    // pop_heap of unsigned values (first, last, 0)
