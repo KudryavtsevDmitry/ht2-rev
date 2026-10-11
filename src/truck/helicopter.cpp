@@ -1489,3 +1489,35 @@ extern "C" void __cdecl World_FreeAll()
     }
     g_terrain6f33b4 = 0;
 }
+
+extern "C" void FUN_4363c0(); KING_ALIAS("_FUN_4363c0", "_Players_First")    // the first player
+extern "C" void FUN_4363f0(); KING_ALIAS("_FUN_4363f0", "_Players_Next")    // the next player
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a player's flags
+extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    // sets a player's flags
+extern "C" void FUN_4278b0(); KING_ALIAS("_FUN_4278b0", "_AI_EndWaiting")
+ASM_PROC(FUN_427520)
+ASM_VAR(int, g_players68b990h, $L_68b990)
+ASM_VAR(int, g_waiting696328, $L_696328)
+
+// [FUN_56d6e0] clears player flag 4 of the players flagged 0x4000, ends the waiting; in a network game resets the helicopter's state
+extern "C" void __cdecl Copter_ResetPlayers()
+{
+    if (!F(int, g_shell6cec6cH, 1316) || F(int, g_6cec98, 384) != 2) {
+        int it;
+        CallC(FUN_4363c0, &it);
+        while (it != g_players68b990h) {
+            if (CallC<int>(FUN_43f620, it) & 0x4000)
+                CallC(FUN_43f690, it, CallC<int>(FUN_43f620, it) & ~4);
+            int next;
+            it = *CallC<int*>(FUN_4363f0, &next, it);
+        }
+        if (g_waiting696328)
+            CallC(FUN_4278b0);
+        else
+            CallC(FUN_427520);
+    }
+    if (F(int, g_shell6cec6cH, 1316)) {
+        F(int, (BYTE*)g_6f3430, 60) = 0;
+        F(DWORD, (BYTE*)g_6f33ac, 572) &= 0xfffeffff;
+    }
+}

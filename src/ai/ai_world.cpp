@@ -6627,3 +6627,85 @@ extern "C" DWORD** __fastcall VecDword_Assign(DWORD** self, int, DWORD** src)
     self[1] = self[0] + n;
     return self;
 }
+
+ASM_PROC(FUN_4015a0)
+extern "C" void FUN_457b50(); KING_ALIAS("_FUN_457b50", "_CopyDwords")    // copies dwords (first, last, dest)
+ASM_PROC(FUN_409fc0)
+extern "C" void FUN_42b060(); KING_ALIAS("_FUN_42b060", "_Rec_SetActive")    // marks a record (in)active
+extern "C" void FUN_484280(); KING_ALIAS("_FUN_484280", "_Road_ResetSides")    // resets the road sides
+extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
+extern "C" void FUN_455950(); KING_ALIAS("_FUN_455950", "@Rec_Get1@8")
+extern "C" void FUN_455940(); KING_ALIAS("_FUN_455940", "@Rec_Get0@8")
+extern "C" void FUN_40a1d0(); KING_ALIAS("_FUN_40a1d0", "_Player_CheckRouteStart")    // checks a player's route start
+extern "C" void FUN_425610(); KING_ALIAS("_FUN_425610", "_AI_RandomTraffic")    // random traffic
+ASM_VAR(int, g_count68d164, $L_68d164)
+typedef void (__cdecl* PresentCb)(int, int);
+ASM_VAR(PresentCb, g_presentCb68d11c, $L_68d11c)
+ASM_VAR(int*, g_edges68cf38, $L_68cf38)
+ASM_VAR(BYTE**, g_recs68cc18b, $L_68cc18)
+ASM_VAR(BYTE**, g_recs68cc1cb, $L_68cc1c)
+
+// [FUN_420000] FUN_4015a0 of a record with 1 and with 9
+extern "C" void __cdecl Rec_4015a0Both(int id)
+{
+    CallC(FUN_4015a0, id, 1, 0);
+    CallC(FUN_4015a0, id, 9, 0);
+}
+
+// [FUN_40a180] FUN_409fc0 for every player
+extern "C" void __cdecl Players_Each409fc0()
+{
+    for (BYTE** it = *(BYTE***)g_players68b990b; it != (BYTE**)g_players68b990b; it = (BYTE**)*it)
+        CallC(FUN_409fc0, (int)it);
+}
+
+// [FUN_41ef10] destroys a present: the callback (kind 4), then silently
+extern "C" void __cdecl Present_Destroy(BYTE* id)
+{
+    if (Rec_NotValid(id)) {
+        sprintf(g_text77e5e0, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 6830, s_invalidId, s_recIdType66d64c, g_text77e5e0);
+    }
+    g_presentCb68d11c((int)id, 4);
+    Ai_DestroyPresentSilently((void**)id);
+}
+
+// [FUN_4256f0] empties the listed players, clears every player's mark at +488 and updates it, then random traffic
+extern "C" void __cdecl Players_ResetMarks()
+{
+    g_count68d164 = 0;
+    BYTE** b = (BYTE**)g_vec68a980;
+    BYTE** e = (BYTE**)g_vec68a984;
+    CallC(FUN_457b50, e, e, b);
+    g_vec68a984 = (BYTE**)((BYTE**)g_vec68a984 - (e - b));
+    for (BYTE** it = *(BYTE***)g_players68b990b; it != (BYTE**)g_players68b990b; it = (BYTE**)*it) {
+        BYTE* r = AI_ListData((BYTE*)it);
+        F(BYTE, r, 488) = 0;
+        CallC(FUN_477210, (int)it);
+    }
+    CallC(FUN_425610);
+}
+
+// [FUN_42b170] activates one record of the list at 68cc18 (the others off); then checks the route starts on its edge
+extern "C" int __cdecl Rec_ActivateOnly(BYTE* r)
+{
+    for (BYTE** p = g_recs68cc18b; p != g_recs68cc1cb; p++)
+        if (*p != r)
+            CallC(FUN_42b060, *p, 0);
+    CallC(FUN_42b060, r, 1);
+    if (F(int, r, 56) == -1)
+        return 0;
+    CallC(FUN_484280);
+    for (BYTE** it = *(BYTE***)g_players68b990b; it != (BYTE**)g_players68b990b; it = (BYTE**)*it) {
+        int edge = g_edges68cf38[F(int, r, 56)];
+        BYTE* x = CallThis<BYTE*>(FUN_4bd510, AI_ListData((BYTE*)it) + 16);
+        BYTE* last = CallThis<BYTE*>(FUN_455950, x);
+        x = CallThis<BYTE*>(FUN_4bd510, AI_ListData((BYTE*)it) + 16);
+        BYTE* s = CallThis<BYTE*>(FUN_455940, x);
+        for (; s != last && F(int, s, 4) != edge; s += 12)
+            ;
+        if (s != F(BYTE*, AI_ListData((BYTE*)it), 20))
+            CallC(FUN_40a1d0, (int)it);
+    }
+    return 0;
+}
