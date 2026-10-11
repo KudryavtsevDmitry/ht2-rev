@@ -8,6 +8,7 @@
 
 #include "king.h"
 #include "x87.h"
+#include <stdarg.h>
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -15,7 +16,17 @@ typedef char AsmLabel[1];
 typedef float Floats[1];
 
 extern "C" void FUN_606750(); KING_ALIAS("_FUN_606750", "@GridEdge_Destruct@8")
-ASM_PROC(FUN_60aad0)    // error report (code, format, file, line, date)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report (code, format, file, line, date)
+ASM_PROC(FUN_60ab70)
+ASM_PROC(FUN_60aa60)
+extern "C" void FUN_60f690(); KING_ALIAS("_FUN_60f690", "@MarineQueue_RemoveNode@12")
+extern "C" void FUN_6136f0(); KING_ALIAS("_FUN_6136f0", "@MarineQueue_RemoveLink@12")
+ASM_PROC(FUN_608c70)
+extern "C" void FUN_613500(); KING_ALIAS("_FUN_613500", "@MarineQueue_Init@8")
+ASM_PROC(FUN_6064c0)
+ASM_VAR(AsmLabel, s_684a84, $L_684a84)
+ASM_VAR(AsmLabel, s_66d9c4, $L_66d9c4)
+ASM_VAR(AsmLabel, s_6849fc, $L_6849fc)
 ASM_PROC(FUN_50d190)
 extern "C" void FUN_613790(); KING_ALIAS("_FUN_613790", "@MarineQueue_TopWorkItem@8")
 ASM_PROC(FUN_609de0)
@@ -260,6 +271,190 @@ void __fastcall Grid_DrainQueue(BYTE* self, void*)
     BYTE* n;
     while ((n = CallThis<BYTE*>(FUN_613790, F(BYTE*, self, 32))) != 0)
         CallC(FUN_609de0, n, self);
+}
+
+}
+
+// --- grid support: error reports, rings of nodes, the grid's tables
+
+// the node after node in the ring r (+0 head, +4 tail; a node's link is at +4)
+static BYTE* Ring_After(BYTE** r, BYTE* node)
+{
+    BYTE* link = node ? node + 4 : 0;
+    BYTE* h = r[0];
+    if (h && link == F(BYTE*, h, 8))
+        return r[1];
+    BYTE* t = r[1];
+    if (t && link == F(BYTE*, t, 8))
+        return 0;
+    BYTE* n = F(BYTE*, node, 4);
+    return n ? n - 4 : 0;
+}
+
+extern "C" {
+
+// [FUN_60aad0] reports a DirectX error: the text of hr, then the message
+void __cdecl Grd_ReportError(int hr, const char* fmt, ...)
+{
+    char buf[256];
+    char err[256];
+    buf[0] = 0;
+    err[0] = 0;
+    if (!hr)
+        return;
+    err[0] = 0;
+    CallC(FUN_60ab70, hr, err, 255);
+    wsprintfA(buf, (const char*)s_684a84, err);
+    va_list ap;
+    va_start(ap, fmt);
+    wvsprintfA(buf + lstrlenA(buf), fmt, ap);
+    va_end(ap);
+    CallC(FUN_60aa60, 2, (const char*)s_66d9c4, buf);
+}
+
+// [FUN_609d00]
+BYTE* __fastcall Ring_Next(BYTE** self, void*, BYTE* node)
+{
+    return Ring_After(self, node);
+}
+
+// [FUN_6084c0] removes node from the grid's ring at +36, keeping the cursor (+52) valid
+void __fastcall Grid_RemoveNodeA(BYTE* self, void*, BYTE* node)
+{
+    if (node == F(BYTE*, self, 52))
+        F(BYTE*, self, 52) = Ring_After(F(BYTE**, self, 36), node);
+    F(short, self, 42)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 36), node);
+}
+
+// [FUN_608f20] removes the edge e from the ring at +32, keeping the cursor (+56)
+// valid, and clears the marks (+72) of its end points
+void __fastcall Grid_RemoveEdge(BYTE* self, void*, BYTE* e)
+{
+    if (e == F(BYTE*, self, 56)) {
+        BYTE** r = F(BYTE**, self, 32);
+        BYTE* d;
+        if (r[0] && e == F(BYTE*, r[0], 4))
+            d = r[1];
+        else if (r[1] && e == F(BYTE*, r[1], 4))
+            d = 0;
+        else
+            d = F(BYTE*, e, 0);
+        F(BYTE*, self, 56) = d;
+    }
+    F(short, self, 64)--;
+    BYTE* a = F(BYTE*, e, 8);
+    F(int, F(BYTE*, F(BYTE*, a, 0), 12), 72) = 0;
+    F(int, F(BYTE*, F(BYTE*, a, 4), 12), 72) = 0;
+    BYTE* b = F(BYTE*, e, 12);
+    if (b) {
+        F(int, F(BYTE*, F(BYTE*, b, 0), 12), 72) = 0;
+        F(int, F(BYTE*, F(BYTE*, b, 4), 12), 72) = 0;
+    }
+    CallThis(FUN_6136f0, F(BYTE*, self, 32), e);
+}
+
+// [FUN_609d60] adds a vertex for the point p (two words): its 40-byte record
+// and its 16-byte slot with a new 2-byte index (returned)
+WORD* __fastcall Grid_AddVertex(BYTE* self, void*, const DWORD* p)
+{
+    BYTE local[40];
+    const BYTE* rec = CallThis<const BYTE*>(FUN_608c70, F(BYTE*, self, 4), local, p);
+    WORD n = F(WORD, self, 40);
+    memcpy(F(BYTE*, self, 16) + n * 40, rec, 40);
+    BYTE* slot = F(BYTE*, self, 12) + n * 16;
+    WORD* idx = (WORD*)operator new(2);
+    if (idx)
+        *idx = n;
+    F(WORD*, slot, 0) = idx;
+    F(DWORD, slot, 8) = p[0];
+    F(DWORD, slot, 12) = p[1];
+    F(int, slot, 4) = 0;
+    F(WORD, self, 40)++;
+    return idx;
+}
+
+// [FUN_60c5f0] clears the tables for n vertices and m cells and makes the two rings
+void __fastcall Grid_Reset(BYTE* self, void*, int n, int m)
+{
+    memset(F(BYTE*, self, 12), 0, n * 16);
+    memset(F(BYTE*, self, 8), 0, m * 4);
+    F(int, self, 52) = 0;
+    F(int, self, 56) = 0;
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    BYTE* o = (BYTE*)operator new(12);
+    F(BYTE*, self, 36) = o ? CallThis<BYTE*>(FUN_613500, o) : 0;
+    o = (BYTE*)operator new(12);
+    BYTE* r = o ? CallThis<BYTE*>(FUN_613500, o) : 0;
+    F(WORD, self, 40) = 0;
+    F(WORD, self, 42) = 0;
+    F(BYTE*, self, 32) = r;
+}
+
+// [FUN_606a80] joins the triangle t with its neighbour when they share a ring
+void __stdcall Grid_TryJoin(BYTE* t)
+{
+    if (F(int, t, 56))
+        return;
+    BYTE* edi = F(BYTE*, t, 48);
+    if (!edi && !F(int, t, 52))
+        return;
+    BYTE* ebx = F(BYTE*, F(BYTE*, t, 32), 8);
+    BYTE* first = F(BYTE*, ebx, 0);
+    if (!first)
+        return;
+    BYTE* second = F(BYTE*, ebx, 4);
+    if (!second)
+        return;
+    BYTE* ebp = F(BYTE*, second, 12);
+    BYTE* esi = F(BYTE*, first, 12);
+    BYTE* eax;
+    if (ebp != t && esi != t) {
+        Grd_ReportError((int)0x88760012, (const char*)s_fileLine, (const char*)s_6849fc, 276, (const char*)s_buildDate);
+        return;
+    }
+    if (esi == t) {
+        eax = F(BYTE*, t, 52);
+        if (!eax) {
+            if (!F(BYTE*, edi, 48))
+                goto join_check;   // eax == 0
+            return;
+        }
+        BYTE* n = F(BYTE*, eax, 52);
+        if (!n)
+            return;
+        eax = F(BYTE*, F(BYTE*, eax, 32), 8);
+        if (eax != F(BYTE*, F(BYTE*, n, 32), 8))
+            return;
+    } else {
+        if (!edi) {
+            eax = F(BYTE*, t, 52);
+            if (!F(BYTE*, eax, 52)) {
+                eax = 0;
+                goto join_check;
+            }
+            return;
+        }
+        BYTE* n = F(BYTE*, edi, 48);
+        if (!n)
+            return;
+        eax = F(BYTE*, F(BYTE*, edi, 32), 8);
+        if (eax != F(BYTE*, F(BYTE*, n, 32), 8))
+            return;
+    }
+    if (eax)
+        goto join;
+join_check:
+    {
+        BYTE* r = F(BYTE*, ebx, 8);
+        if (!r)
+            return;
+        if (F(int, r, 0) && F(int, r, 4))
+            return;
+    }
+join:
+    CallStd(FUN_6064c0, ebx, eax);
 }
 
 }

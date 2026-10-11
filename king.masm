@@ -1033,6 +1033,8 @@ PUBLIC $L_64f148, $L_64f14c, $L_64f198
 PUBLIC $L_64fdd4, $L_64ff24, $L_64ff70, $L_64ffa0, $L_64ffec, $L_65001c
 PUBLIC $L_650068, $L_650098, $L_6500e4, $L_67b948, $L_67b95c, $L_67b970
 PUBLIC $L_6f2d98
+PUBLIC $L_66d9c4, $L_684a84
+PUBLIC $L_652e20
 
 ;===================================
 _TEXT SEGMENT
@@ -856286,6 +856288,8 @@ EXTERN _Streams_Collect:PROC
 FUN_6051b0 TEXTEQU <_Streams_Collect>
 ENDIF
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605200 PROC
 
             push -1
@@ -856335,6 +856339,10 @@ FUN_605200 PROC
             add ESP,16
             ret 24
 FUN_605200 ENDP
+ELSE
+EXTERN @StreamPlay_Construct@32:PROC
+FUN_605200 TEXTEQU <@StreamPlay_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -859669,6 +859677,8 @@ FUN_606a50 TEXTEQU <@Pair_Next@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_606a80 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -859809,6 +859819,10 @@ $L_606b74::
             pop EBX
             ret 4
 FUN_606a80 ENDP
+ELSE
+EXTERN _Grid_TryJoin@4:PROC
+FUN_606a80 TEXTEQU <_Grid_TryJoin@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -862876,6 +862890,8 @@ FUN_608460 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_6084c0 PROC
 
             mov EAX,DWORD PTR [ECX+52]
@@ -862951,6 +862967,10 @@ $L_608518::
             pop EDI
             ret 4
 FUN_6084c0 ENDP
+ELSE
+EXTERN @Grid_RemoveNodeA@12:PROC
+FUN_6084c0 TEXTEQU <@Grid_RemoveNodeA@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864028,6 +864048,8 @@ EXTERN @MarineGeometry_Snapshot@16:PROC
 FUN_608ef0 TEXTEQU <@MarineGeometry_Snapshot@16>
 ENDIF
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_608f20 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -864100,6 +864122,10 @@ $L_608f92::
             pop EDI
             ret 4
 FUN_608f20 ENDP
+ELSE
+EXTERN @Grid_RemoveEdge@12:PROC
+FUN_608f20 TEXTEQU <@Grid_RemoveEdge@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_608fa0 PROC
@@ -865455,6 +865481,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_609d00 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -865515,6 +865543,10 @@ $L_609d4b::
             pop ESI
             ret 4
 FUN_609d00 ENDP
+ELSE
+EXTERN @Ring_Next@12:PROC
+FUN_609d00 TEXTEQU <@Ring_Next@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -865531,6 +865563,8 @@ FUN_609d00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_609d60 PROC
 
             sub ESP,40
@@ -865590,6 +865624,10 @@ $L_609dbc::
             add ESP,40
             ret 4
 FUN_609d60 ENDP
+ELSE
+EXTERN @Grid_AddVertex@12:PROC
+FUN_609d60 TEXTEQU <@Grid_AddVertex@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_609de0 PROC
@@ -867510,6 +867548,8 @@ $L_60aab3 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60aad0 PROC
 
             sub ESP,512
@@ -867570,6 +867610,10 @@ $L_60ab60::
             nop
             nop
 FUN_60aad0 ENDP
+ELSE
+EXTERN _Grd_ReportError:PROC
+FUN_60aad0 TEXTEQU <_Grd_ReportError>
+ENDIF
 ALIGN 16
 FUN_60ab70 PROC
 
@@ -871043,6 +871087,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60c5f0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -871126,6 +871172,10 @@ $L_60c68d::
             add ESP,12
             ret 8
 FUN_60c5f0 ENDP
+ELSE
+EXTERN @Grid_Reset@16:PROC
+FUN_60c5f0 TEXTEQU <@Grid_Reset@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

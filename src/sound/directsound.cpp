@@ -15,6 +15,7 @@
 typedef char AsmLabel[1];
 
 ASM_PROC(FUN_6047d0)
+ASM_VAR(AsmLabel, g_vtbl652e20, $L_652e20)
 ASM_PROC(FUN_604b40)
 ASM_PROC(FUN_604410)    // play a table entry (a, b)
 ASM_PROC(FUN_6041b0)    // stop sound id
@@ -513,6 +514,24 @@ void __fastcall Play_Arbitrate(BYTE* self, void*)
     BYTE* w = Play_WorstPlaying(F(WORD, self, 36));
     if (w)
         CallVirt(w, 20);
+}
+
+}
+
+extern "C" {
+
+// [FUN_605200] a streamed play: the play base, then the stream positions
+BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, int c, int priority, int d)
+{
+    Play_Construct(self, 0, idx, a, b, c, (WORD)priority, d);
+    F(void*, self, 0) = g_vtbl652e20;
+    int len = F(int, F(BYTE*, g_soundTable + idx * 24, 20), 4);
+    F(int, self, 56) = 0;
+    F(int, self, 60) = 0;
+    F(int, self, 44) = len;
+    F(int, self, 48) = len;
+    Play_UpdateVolume(self, 0);
+    return self;
 }
 
 }

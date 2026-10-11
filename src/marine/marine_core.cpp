@@ -15,7 +15,7 @@ extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);
 extern "C" void __fastcall GridEdge_Destruct(BYTE*,void*);
 extern "C" void __fastcall GridBranch_Destruct(BYTE*,void*);
-ASM_PROC(FUN_60aad0)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 ASM_PROC(FUN_60aa60)
 extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*, void*, BYTE*, DWORD);

@@ -16,7 +16,7 @@ ASM_VAR(ConstructLabel,g_constructError,$L_6724b0)
 ASM_VAR(DWORD,g_constructNormalZ,$L_652e5c)
 ASM_VAR(float,g_constructResolution,$L_653118)
 ASM_VAR(float,g_constructHalf,$L_64c258)
-ASM_PROC(FUN_60aad0)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" int __fastcall MarineGreed_Allocate(BYTE*,void*,unsigned,unsigned);
 extern "C" void __fastcall MarineGreed_Init(BYTE*,void*);
 extern "C" void __fastcall MarineGreed_Update(BYTE*,void*);
