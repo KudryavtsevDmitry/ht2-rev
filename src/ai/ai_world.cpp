@@ -5384,3 +5384,104 @@ int __cdecl Ai_GetParkingPointInfo(int parking, int point, BYTE* pi)
 }
 
 }
+
+ASM_PROC(FUN_41ce50)    // 144-byte record destructor
+extern "C" void FUN_474160(); KING_ALIAS("_FUN_474160", "@Player_SetPlace@12")    // player: set image (index)
+ASM_VAR(BYTE*, g_images68a958, $L_68a958)
+ASM_VAR(BYTE*, g_images68a95c, $L_68a95c)
+
+static const char s_setPlayerImage[] = "setPlayerImage(PlayerId player, int imageIndex)";
+
+extern "C" {
+
+// [FUN_41f3d0] destructor
+void __fastcall Rec41f3d0_Destroy(BYTE* self, void*)
+{
+    BYTE** v = (BYTE**)(self + 28);
+    for (BYTE* e = v[0]; e != v[1]; e += 144)
+        CallThis(FUN_41ce50, e);
+    int n = (v[2] - v[0]) / 144;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 144);
+    int m = (F(BYTE*, self, 24) - F(BYTE*, self, 16)) >> 4;
+    if (m)
+        CallC(FUN_44b4a0, F(BYTE*, self, 16), m << 4);
+}
+
+// [FUN_43f950] setPlayerImage(PlayerId player, int imageIndex)
+int __cdecl Ai_SetPlayerImage(BYTE* player, int image)
+{
+    Trace_EnterBuffered(s_setPlayerImage);
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16645, s_invalidId, "PlayerId", g_numberText);
+    }
+    int kind = F(int, player, 92) == 5 ? 3 : (F(int, player, 92) == 6 ? 2 : 1);
+    BYTE* r = g_images68a958;
+    for (; r != g_images68a95c; r += 56)
+        if (F(int, r, 24) == kind && (image == -1 || image == F(int, r, 20)))
+            break;
+    if (r == g_images68a95c)
+        AiError(0, 256, s_mainFile, s_mainId, 16658, "Can not find the requested identity", &g_aiEmpty, &g_aiEmpty);
+    int k = (r - g_images68a958) / 56;
+    if (F(int, player, 992) != k) {
+        if (F(int, r, 28) > 0)
+            AiError(0, 256, s_mainFile, s_mainId, 16665, "Identity is occupied", &g_aiEmpty, &g_aiEmpty);
+        CallThis(FUN_474160, player + 8, k);
+    }
+    Trace_Leave(s_setPlayerImage);
+    return 0;
+}
+
+}
+
+extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
+extern "C" void FUN_4561a0(); KING_ALIAS("_FUN_4561a0", "@Vec4b_InsertN@16")
+ASM_PROC(FUN_45cf80)    // random shuffle of pointers
+
+extern "C" {
+
+// [FUN_418930] a free parking place of a random market (up to 1000 tries):
+// *market and *point, both -1 (and an error) when none is found
+int* __cdecl Parking_RandomFree(int* market, int* point)
+{
+    DWORD* rng = (DWORD*)g_rng68b9c8;
+    for (int tries = 0; tries < 1000; tries++) {
+        unsigned count = g_68cc9c - g_68cc98;
+        unsigned i = (rng[55] + 1) % 55;
+        rng[55] = i;
+        unsigned j = (rng[56] + 1) % 55;
+        rng[56] = j;
+        rng[i] -= rng[j];
+        int m = rng[rng[55]] % count;
+        BYTE** pts = (BYTE**)((BYTE*)g_68cc98[m] + 28);
+        BYTE* v[3] = {0, 0, 0};
+        for (BYTE* it = pts[0]; it != pts[1]; it += 36) {
+            if (F(BYTE*, it, 8) != (BYTE*)g_players)
+                continue;
+            if (v[1] != v[2]) {
+                CallC(FUN_4611c0, v[1], &it);
+                v[1] += 4;
+            } else
+                CallThis(FUN_4561a0, v, v[1], &it);
+        }
+        if (v[0] != v[1]) {
+            CallC(FUN_45cf80, v[0], v[1], 0, 0, pts);
+            *point = (F(BYTE*, v[1], -4) - pts[0]) / 36;
+            *market = m;
+            int n = (v[2] - v[0]) >> 2;
+            if (n)
+                CallC(FUN_44b4a0, v[0], n * 4);
+            return market;
+        }
+        int n = (v[2] - v[0]) >> 2;
+        if (n)
+            CallC(FUN_44b4a0, v[0], n * 4);
+    }
+    AiError(0, 100, s_mainFile, s_mainId, 4618, "AI_Parking place limit exhausted", &g_aiEmpty, &g_aiEmpty);
+    *point = -1;
+    *market = -1;
+    return market;
+}
+
+}
