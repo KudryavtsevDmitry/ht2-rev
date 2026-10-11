@@ -55,6 +55,20 @@ ASM_VAR(BYTE*, g_world, $L_696ca0)
 ASM_VAR(unsigned, g_67b738, $L_67b738)
 
 ASM_PROC(FUN_5b6700)    // the palette of a surface
+extern "C" void FUN_59aea0(); KING_ALIAS("_FUN_59aea0", "@Spark59aea0_Construct@44")
+extern "C" void FUN_59bed0(); KING_ALIAS("_FUN_59bed0", "@Spark59bed0_Construct@32")
+extern "C" void FUN_59ad70(); KING_ALIAS("_FUN_59ad70", "@Spark59ad70_Construct@32")
+ASM_PROC(FUN_59b3f0)
+ASM_VAR(float, g_randScale, $L_64c254)
+ASM_VAR(float, g_randBase, $L_64c304)
+ASM_VAR(float, g_one_f, $L_64c250)
+ASM_VAR(float, g_696074, $L_696074)
+ASM_VAR(float, g_696078, $L_696078)
+ASM_VAR(int, g_6f6a80, $L_6f6a80)
+ASM_VAR(int, g_6f6a7c, $L_6f6a7c)
+ASM_VAR(int, g_6f6a88, $L_6f6a88)
+ASM_VAR(int, g_696210, $L_696210)
+ASM_VAR(AsmLabel, g_694998, $L_694998)
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
 ASM_PROC(FUN_4011e0)
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
@@ -1785,6 +1799,73 @@ void __fastcall Tables2_Set(BYTE** self, void*, const BYTE* src, unsigned i)
         memcpy(p, F(void*, src, 12), F(int, n, 8) * 4);
     }
     self[i] = n;
+}
+
+}
+
+// --- effect spawners: a random number in [0.1, 1.1) against a frequency
+
+extern "C" int __cdecl rand();
+
+static double Fx_Random()
+{
+    return (double)rand() * g_randScale + g_randBase;
+}
+
+extern "C" {
+
+// [FUN_4ba520] spawns one of the three 192-byte effects (kind 0..2)
+void __cdecl Fx_SpawnByKind(int a1, int a2, int a3, int a4, int a5, int a6, int kind)
+{
+    double r = Fx_Random();
+    if ((double)g_one_f - g_696074 >= r)
+        return;
+    void* const tables[3] = {(void*)g_695bf0, (void*)&g_vaporMats, (void*)g_694998};
+    int counts[3] = {g_696208, g_vaporCount, g_696210};
+    if (kind < 0 || kind > 2)
+        return;
+    BYTE* o = CallC<BYTE*>(FUN_579380, 192, g_6f6a80);
+    if (o)
+        CallThis(FUN_59aea0, o, g_view, a1, a2, a3, a4, tables[kind], counts[kind], a6, a5);
+}
+
+// [FUN_4baae0] spawns a vapor or a smoke puff
+void __cdecl Fx_SpawnPuff(int a1, int a2, float threshold)
+{
+    double r = Fx_Random();
+    if ((double)g_one_f - g_696078 >= r)
+        return;
+    double r2 = (double)rand() * g_randScale;
+    if (r2 > threshold) {
+        BYTE* o = CallC<BYTE*>(FUN_579380, 192, g_6f6a7c);
+        if (o)
+            CallThis(FUN_59bed0, o, g_view, a1, a2, (void*)&g_vaporMats, g_vaporCount, 0x3fc00000);
+    } else {
+        BYTE* o = CallC<BYTE*>(FUN_579380, 192, g_6f6a80);
+        if (o)
+            CallThis(FUN_59ad70, o, g_view, a1, a2, (void*)g_695bf0, g_696208, 0x3fc00000);
+    }
+}
+
+// [FUN_4bc160] spawns a puff and, sometimes, a spark
+void __cdecl Fx_SpawnPuffSpark(int a1, int a2)
+{
+    float f = (float)Fx_Random();
+    double r2 = (double)rand() * g_randScale;
+    if (r2 > f) {
+        BYTE* o = CallC<BYTE*>(FUN_579380, 192, g_6f6a7c);
+        if (o)
+            CallThis(FUN_59bed0, o, g_view, a1, a2, (void*)&g_vaporMats, g_vaporCount, 0x3f400000);
+    } else {
+        BYTE* o = CallC<BYTE*>(FUN_579380, 192, g_6f6a80);
+        if (o)
+            CallThis(FUN_59ad70, o, g_view, a1, a2, (void*)g_695bf0, g_696208, 0x3f400000);
+    }
+    if (f > g_64c258) {
+        BYTE* o = CallC<BYTE*>(FUN_579380, 212, g_6f6a88);
+        if (o)
+            CallThis(FUN_59b3f0, o, g_view, a1, a2, (void*)g_694998, g_696210, 0x3f800000, 0x3f000000);
+    }
 }
 
 }

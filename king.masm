@@ -1041,6 +1041,8 @@ PUBLIC $L_683538, $L_721754
 PUBLIC $L_650340, $L_6503e4, $L_67cfc0, $L_67d04c
 PUBLIC $L_64c0b0
 PUBLIC $L_64b7c0, $L_64bc20, $L_64bc28, $L_64bc30, $L_66c720, $L_66fa60
+PUBLIC $L_694998, $L_696074, $L_696078, $L_696210, $L_6f6a7c, $L_6f6a80
+PUBLIC $L_6f6a88
 
 ;===================================
 _TEXT SEGMENT
@@ -335256,6 +335258,8 @@ FUN_4ba310 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ba520 PROC
 
             push -1
@@ -335368,6 +335372,10 @@ $L_4ba64f::
             add ESP,16
             ret 
 FUN_4ba520 ENDP
+ELSE
+EXTERN _Fx_SpawnByKind:PROC
+FUN_4ba520 TEXTEQU <_Fx_SpawnByKind>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -335764,6 +335772,8 @@ FUN_4ba8a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4baae0 PROC
 
             push -1
@@ -335855,6 +335865,10 @@ $L_4babf1::
             add ESP,16
             ret 
 FUN_4baae0 ENDP
+ELSE
+EXTERN _Fx_SpawnPuff:PROC
+FUN_4baae0 TEXTEQU <_Fx_SpawnPuff>
+ENDIF
 ALIGN 16
 FUN_4bac00 PROC
 
@@ -337606,6 +337620,8 @@ FUN_4bba00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bc160 PROC
 
             push -1
@@ -337723,6 +337739,10 @@ $L_4bc2b1::
             add ESP,20
             ret 
 FUN_4bc160 ENDP
+ELSE
+EXTERN _Fx_SpawnPuffSpark:PROC
+FUN_4bc160 TEXTEQU <_Fx_SpawnPuffSpark>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
