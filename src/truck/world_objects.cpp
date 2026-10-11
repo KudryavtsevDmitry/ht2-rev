@@ -946,3 +946,27 @@ void __fastcall Wasm597410_Create(BYTE* self, void*)
 }
 
 }
+
+// [FUN_59ff20] clips the segment a-b against the six planes: 0 (and *t = 0) if a is outside one, else 1 and the entry fraction (2 if none)
+extern "C" int __fastcall Box_ClipSegment(BYTE* self, void*, const float* a, const float* b, float* t)
+{
+    float tk[6];
+    for (int k = 0; k < 6; k++) {
+        const float* p = (const float*)(self + 8 + k * 16);
+        double da = -((((double)p[2] * a[2] + (double)p[0] * a[0]) + (double)p[1] * a[1]) + p[3]);
+        double db = -((((double)p[1] * b[1] + (double)p[0] * b[0]) + (double)p[2] * b[2]) + p[3]);
+        if (!(da > 0.0f)) {
+            *t = 0;
+            return 0;
+        }
+        if (!(db >= 0.0f))
+            tk[k] = (float)(da / (da - db));
+        else
+            tk[k] = 1.0f;
+    }
+    *t = 2.0f;
+    for (int i = 0; i < 6; i++)
+        if (!(tk[i] >= *t))
+            *t = tk[i];
+    return 1;
+}

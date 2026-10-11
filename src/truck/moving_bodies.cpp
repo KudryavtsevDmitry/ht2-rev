@@ -520,3 +520,51 @@ extern "C" int __cdecl Body_DeepestContact(BYTE* obj, BYTE* out, float* depth)
     *depth = best;
     return 1;
 }
+
+extern "C" double __cdecl Game_FrameTime();
+
+// [FUN_58f320] the first of the six attached bodies within reach of this one, or 0
+extern "C" BYTE* __fastcall Body_AttachedInReach(BYTE* self, void*)
+{
+    float px = F(float, self, 536), py = F(float, self, 540), pz = F(float, self, 544);
+    Game_FrameTime();
+    for (int k = 0; k < 6; k++) {
+        BYTE* o = F(BYTE*, self, 3508 + k * 4);
+        if (!o)
+            return 0;
+        BYTE mb[48];
+        const float* m = (const float*)CallThis<BYTE*>(FUN_57de90, o, mb);
+        float ox = F(float, o, 3436), oy = F(float, o, 3440), oz = F(float, o, 3444);
+        double wx = ((double)m[6] * oz + (double)m[3] * oy) + (double)ox * m[0] + m[9];
+        float wy = (float)(((double)m[1] * ox + (double)m[7] * oz) + (double)m[4] * oy + m[10]);
+        float wz = (float)(((double)m[2] * ox + (double)m[8] * oz) + (double)m[5] * oy + m[11]);
+        o = F(BYTE*, self, 3508 + k * 4);
+        float dx = (float)(wx - px);
+        float dy = (float)((double)wy - py);
+        double dz = (double)wz - pz;
+        double sum = ((double)dx * dx + (double)dy * dy) + dz * dz;
+        double r1 = (double)F(float, o, 3272) + F(float, self, 3280);
+        float r2 = (float)((double)F(float, o, 3280) + F(float, self, 3272));
+        if (!(sum > r1 * r1))
+            return F(BYTE*, self, 3508 + k * 4);
+        if (!(sum >= (double)r2 * r2))
+            return F(BYTE*, self, 3508 + k * 4);
+    }
+    return 0;
+}
+
+// [FUN_58f480] whether a point (body space) is inside all of the body's planes
+extern "C" int __fastcall Body_ContainsPoint(BYTE* s, void*, const float* p)
+{
+    float qx = (float)(((double)F(float, s, 608) * p[1] + (double)F(float, s, 620) * p[2]) + (double)F(float, s, 596) * p[0] + F(float, s, 632));
+    float qy = (float)(((double)F(float, s, 612) * p[1] + (double)F(float, s, 600) * p[0]) + (double)F(float, s, 624) * p[2] + F(float, s, 636));
+    float qz = (float)(((double)F(float, s, 616) * p[1] + (double)F(float, s, 604) * p[0]) + (double)F(float, s, 628) * p[2] + F(float, s, 640));
+    int n = F(int, s, 5132);
+    for (int i = 0; i < n; i++) {
+        const float* c = (const float*)(s + 3988 + i * 28);
+        double dot = ((double)c[0] * qx + (double)c[2] * qz) + (double)c[1] * qy;
+        if (!(-(double)c[3] >= dot))
+            return 0;
+    }
+    return 1;
+}
