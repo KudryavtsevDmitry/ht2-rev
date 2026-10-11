@@ -23,7 +23,7 @@ extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")
 ASM_PROC(FUN_4b5490)
 ASM_PROC(FUN_4b5b70)
 extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")
-ASM_PROC(FUN_4b0be0)
+extern "C" void FUN_4b0be0(); KING_ALIAS("_FUN_4b0be0", "@Number_ConstructComplex@20")
 extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
 extern "C" void FUN_4abf10(); KING_ALIAS("_FUN_4abf10", "@CharDeque_Construct@12")
 ASM_VAR(AsmLabel, s_tNumber, $L_66ca60)
@@ -943,4 +943,19 @@ extern "C" void __fastcall Number_Write(BYTE* s, void*, BYTE** v)
         Chars_MarkExponent(v);
     }
     Chars_PushBack(v, 0);
+}
+
+ASM_PROC(FUN_48a7c0)    // a big integer's value as a double (digits, end)
+
+// [FUN_4b0be0] constructs a complex number from two big integers (exact when asked)
+extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, BYTE* re, BYTE* im)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = &g_vtbl64c044;
+    F(double, s, 16) = CallC<double>(FUN_48a7c0, re, re + 4);
+    F(double, s, 24) = CallC<double>(FUN_48a7c0, im, im + 4);
+    if (exact)
+        F(DWORD, s, 8) |= 1;
+    return s;
 }
