@@ -538,3 +538,19 @@ DWORD* __fastcall Waypoint_Make(DWORD* self, void*, DWORD a, DWORD b)
 }
 
 }
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+KING_ALIAS("_Stl_Allocate", "FUN_44b740")
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")
+
+extern "C" {
+
+// [FUN_46e200] n 12-byte records from the allocator, filled from [first, last)
+BYTE* __stdcall Alloc12_Copy(unsigned n, BYTE* first, BYTE* last)
+{
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
+    CallC(FUN_47e3e0, first, last, p, n);
+    return p;
+}
+
+}

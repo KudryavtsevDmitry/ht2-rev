@@ -629,7 +629,7 @@ extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
 ASM_PROC(FUN_4a59f0)    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
-ASM_PROC(FUN_4a5800)
+extern "C" void FUN_4a5800(); KING_ALIAS("_FUN_4a5800", "_Sch4a5800_Dump")
 ASM_PROC(FUN_4a36c0)    // a value's destructor
 extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // vector<value>: allocate and copy (n, first, last)
 extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const SchValue* from);
@@ -1413,6 +1413,101 @@ DequeIt* __cdecl Deque4acd70(DequeIt* out, int c, int d, DequeIt a, DequeIt b, D
     CallThis(FUN_4abea0, &a2, &a);
     CallC(FUN_4acb40, out, a2, b2, t);
     return out;
+}
+
+}
+
+extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")    // uninitialized copy of 12-byte values (first, last, to)
+ASM_PROC(FUN_4ac330)    // deque<char>: allocate the pages of [first, last)
+extern "C" void FUN_4aa160(); KING_ALIAS("_FUN_4aa160", "@Vec44_At@12")
+ASM_PROC(FUN_4a55c0)
+extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // writes a string to a port (by value)
+extern "C" void FUN_4affd0(); KING_ALIAS("_FUN_4affd0", "_Sch_MakeClosureB")
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+ASM_VAR(char, g_6710dc, $L_6710dc)
+
+struct Value3 { BYTE* obj; int len; DWORD flags; };
+
+// a vector of 12-byte values copied from [first, last) into self
+static void Values_CopyConstruct(BYTE** self, BYTE* first, BYTE* last, int junk)
+{
+    int n = (last - first) / 12;
+    self[0] = self[1] = self[2] = 0;
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+    self[0] = p;
+    self[1] = p;
+    self[2] = p + n * 12;
+    self[1] = CallC<BYTE*>(FUN_467780, first, last, p, junk);
+}
+
+extern "C" {
+
+// [FUN_4aadc0] copy constructor of a vector of values
+BYTE** __fastcall Values4aadc0_Copy(BYTE** self, void*, BYTE* const* src)
+{
+    Values_CopyConstruct(self, src[0], src[1], (src[1] - src[0]) / 12);
+    return self;
+}
+
+// [FUN_4aac80] copy constructor: value at +4, values at +16, +28, value at +32
+BYTE* __fastcall Sch4aac80_Copy(BYTE* self, void*, const BYTE* src)
+{
+    CopyRef((SchValue*)(self + 4), (const SchValue*)(src + 4));
+    Values_CopyConstruct((BYTE**)(self + 16), F(BYTE*, src, 16), F(BYTE*, src, 20), (int)(self + 16));
+    F(int, self, 28) = F(int, src, 28);
+    CopyRef((SchValue*)(self + 32), (const SchValue*)(src + 32));
+    F(void*, self, 0) = &g_vtbl64bf68;
+    return self;
+}
+
+// [FUN_4abf10] deque<char> constructor for n elements (512 per page)
+void __fastcall CharDeque_Construct(int* self, void*, unsigned n)
+{
+    unsigned nodes = (n >> 9) + 1;
+    unsigned size = nodes + 2 > 8 ? nodes + 2 : 8;
+    self[1] = size;
+    char** map = size ? CallC<char**>(FUN_44b740, size * 4) : 0;
+    self[0] = (int)map;
+    char** start = map + ((self[1] - nodes) >> 1);
+    char** finish = start + nodes;
+    CallThis(FUN_4ac330, self, start, finish);
+    self[5] = (int)start;
+    self[3] = (int)*start;
+    self[4] = (int)*start + 512;
+    self[9] = (int)(finish - 1);
+    self[7] = (int)finish[-1];
+    self[8] = (int)finish[-1] + 512;
+    self[2] = self[3];
+    self[6] = self[7] + (n & 511);
+}
+
+// [FUN_4a5800] writes the marker to the port at +96, then hands each of the
+// 44-byte entries at +108 (last first) with the port to FUN_4a55c0
+void __cdecl Sch4a5800_Dump(BYTE* s)
+{
+    DWORD h[3];
+    CopyRef((SchValue*)h, (const SchValue*)(s + 96));
+    CallC(FUN_4b1450, &g_6710dc, h[0], h[1], h[2]);
+    int n = (F(BYTE*, s, 112) - F(BYTE*, s, 108)) / 44;
+    for (int i = n - 1; i != -1; i--) {
+        CopyRef((SchValue*)h, (const SchValue*)(s + 96));
+        BYTE* e = CallThis<BYTE*>(FUN_4aa160, s + 108, i);
+        CallC(FUN_4a55c0, s, e, h[0], h[1], h[2]);
+    }
+}
+
+// [FUN_4ad330] makes a closure of a, &c and &b, and passes it with a and
+// b to the object of h
+void __cdecl Sch4ad330(int a, Value3 h, int b, int c)
+{
+    DWORD l[3];
+    const SchValue* r = CallC<const SchValue*>(FUN_4affd0, l, 0, a, &c, &b);
+    DWORD v[3];
+    CopyRef((SchValue*)v, r);
+    BYTE* o = CallThis<BYTE*>(FUN_4aa430, &h);
+    Eval4a3e40(o, 0, a, b, (BYTE*)v[0], v[1], v[2]);
+    ReleaseRef((SchValue*)l);
+    ReleaseRef((SchValue*)&h);
 }
 
 }
