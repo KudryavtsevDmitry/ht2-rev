@@ -24,7 +24,7 @@ extern "C" double __cdecl atof(const char* s);
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")    // rewinds the service provider list
 ASM_PROC(FUN_600b50)    // DirectPlay error text (hr)
 ASM_PROC(FUN_401010)    // fatal error report
-ASM_PROC(FUN_601ff0)
+extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
 ASM_PROC(FUN_602320)
 ASM_PROC(FUN_603f30)
 typedef void (*VFn)();
@@ -698,6 +698,54 @@ int __fastcall Music_Open(BYTE* self, void*, const char* path)
         return -1;
     }
     F(int, self, 0) = 1;
+    return 0;
+}
+
+}
+
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")    // vector<char> constructor
+ASM_PROC(FUN_600e60)    // appends bytes to a vector<char> (vector, data, size)
+extern "C" void Gate_SendBufferDtor(); KING_ALIAS("_Gate_SendBufferDtor", "$L_6021a0")
+extern "C" int __cdecl atexit(void (__cdecl* fn)());
+ASM_VAR(BYTE, g_sendBufInit, $L_723d8c)
+typedef BYTE* SendBuf[3];
+ASM_VAR(SendBuf, g_sendBuf, $L_723d98)
+ASM_VAR(int, g_sendRetries, $L_683cb8)
+
+static int Dp_SendEx(DWORD to, BYTE* data, int size)
+{
+    typedef int (__stdcall* Fn)(BYTE*, DWORD, DWORD, DWORD, BYTE*, int, int, int, int, int);
+    return (*(Fn*)(*(BYTE**)g_directPlay + 196))(g_directPlay, g_dpPlayer, to, 1537, data, size, 0, 0, 0, 0);
+}
+
+extern "C" {
+
+// [FUN_601ff0] sends size bytes of buf to player to (guaranteed, async),
+// retrying while DirectPlay is busy
+int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size)
+{
+    if (!buf)
+        CallC(FUN_401010, 2341, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1075,
+              "Invalid buffer", (void*)g_68d1c0, (void*)g_68d1c0);
+    if (!size)
+        CallC(FUN_401010, 2351, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1079,
+              "Invalid buffer size", (void*)g_68d1c0, (void*)g_68d1c0);
+    if (!(g_sendBufInit & 1)) {
+        g_sendBufInit |= 1;
+        char dummy;
+        CallThis(FUN_487730, g_sendBuf, &dummy);
+        atexit((void (__cdecl*)())Gate_SendBufferDtor);
+    }
+    g_sendBuf[1] = g_sendBuf[0];
+    CallC(FUN_600e60, g_sendBuf, buf, size);
+    int hr = Dp_SendEx(to, g_sendBuf[0], g_sendBuf[1] - g_sendBuf[0]);
+    for (int i = 0; hr == (int)0x8877000e && i < g_sendRetries; i++)
+        hr = Dp_SendEx(to, g_sendBuf[0], g_sendBuf[1] - g_sendBuf[0]);
+    if (hr != (int)0x8000000a && hr < 0) {
+        int text = CallC<int>(FUN_600b50, hr);
+        CallC(FUN_401010, 5, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1102,
+              "Cannot send message", text, (void*)g_68d1c0);
+    }
     return 0;
 }
 

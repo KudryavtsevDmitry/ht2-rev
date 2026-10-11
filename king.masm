@@ -1062,6 +1062,7 @@ PUBLIC $L_6509f8, $L_6968a8
 PUBLIC $L_6710dc
 PUBLIC $L_6f33f0
 PUBLIC $L_64c59c, $L_64c5f0, $L_64c604, $L_64d2f4
+PUBLIC $L_683cb8, $L_723d8c, $L_723d98
 
 ;===================================
 _TEXT SEGMENT
@@ -211550,6 +211551,8 @@ EXTERN _Player_Driver:PROC
 FUN_477880 TEXTEQU <_Player_Driver>
 ENDIF
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4778a0 PROC
 
             push EBP
@@ -211775,6 +211778,10 @@ $L_477aca::
             pop EBP
             ret 
 FUN_4778a0 ENDP
+ELSE
+EXTERN _Player_ClearOrderLists:PROC
+FUN_4778a0 TEXTEQU <_Player_ClearOrderLists>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849986,6 +849993,8 @@ EXTERN _Dp_Release:PROC
 FUN_601fa0 TEXTEQU <_Dp_Release>
 ENDIF
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_601ff0 PROC
 
             push EBX
@@ -850155,6 +850164,10 @@ $L_602192::
             xor EAX,EAX
             ret 
 FUN_601ff0 ENDP
+ELSE
+EXTERN _Gate_Send:PROC
+FUN_601ff0 TEXTEQU <_Gate_Send>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -860745,6 +860758,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_606b80 PROC
 
             push EBX
@@ -861027,6 +861042,10 @@ $L_606d49::
             pop EBX
             ret 12
 FUN_606b80 ENDP
+ELSE
+EXTERN @Grid_MergeTriangles@20:PROC
+FUN_606b80 TEXTEQU <@Grid_MergeTriangles@20>
+ENDIF
 ALIGN 16
 FUN_606d50 PROC
 
@@ -872378,6 +872397,8 @@ $L_60c8fb::
             ret 
 FUN_60c6b0 ENDP
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60c900 PROC
 
             push EBX
@@ -872657,6 +872678,10 @@ $L_60cacf::
             pop EBX
             ret 4
 FUN_60c900 ENDP
+ELSE
+EXTERN @Grid_RemoveCell@12:PROC
+FUN_60c900 TEXTEQU <@Grid_RemoveCell@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

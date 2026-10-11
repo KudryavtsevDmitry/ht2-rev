@@ -516,3 +516,173 @@ void __stdcall Grd_JoinBranches(BYTE* a)
 }
 
 }
+
+extern "C" void FUN_60f690(); KING_ALIAS("_FUN_60f690", "@MarineQueue_RemoveNode@12")    // ring list: remove (item)
+extern "C" void FUN_606330(); KING_ALIAS("_FUN_606330", "@GridMesh_CreateTriangle@24")    // grid: new triangle
+extern "C" void FUN_6136f0(); KING_ALIAS("_FUN_6136f0", "@MarineQueue_RemoveLink@12")
+extern "C" void FUN_609980(); KING_ALIAS("_FUN_609980", "@Grid_ResetVtables@8")
+extern "C" void FUN_60bda0(); KING_ALIAS("_FUN_60bda0", "@Btr_Delete@12")    // tree node: deleting destructor (flag)
+
+// the item after x in the ring list l (0 at the end)
+static BYTE* Ring_Next(BYTE** l, BYTE* x)
+{
+    BYTE* xl = x ? x + 4 : 0;
+    if (l[0] && xl == F(BYTE*, l[0], 8))
+        return l[1];
+    if (l[1] && xl == F(BYTE*, l[1], 8))
+        return 0;
+    BYTE* n = F(BYTE*, x, 4);
+    return n ? n - 4 : 0;
+}
+
+// repoints the neighbour link of x that names from to to (+44, +52, else +48)
+static void Relink3(BYTE* x, BYTE* from, BYTE* to)
+{
+    if (!x)
+        return;
+    if (F(BYTE*, x, 44) == from)
+        F(BYTE*, x, 44) = to;
+    else if (F(BYTE*, x, 52) == from)
+        F(BYTE*, x, 52) = to;
+    else
+        F(BYTE*, x, 48) = to;
+}
+
+extern "C" {
+
+// [FUN_606b80] replaces the two triangles a and b by one new triangle
+void __fastcall Grid_MergeTriangles(BYTE* self, void*, BYTE* a, BYTE* b, BYTE** out)
+{
+    if (a == F(BYTE*, self, 40))
+        F(BYTE*, self, 40) = Ring_Next(F(BYTE**, self, 32), a);
+    F(WORD, self, 38)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 32), a);
+    if (b == F(BYTE*, self, 40))
+        F(BYTE*, self, 40) = Ring_Next(F(BYTE**, self, 32), b);
+    F(WORD, self, 38)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 32), b);
+    BYTE* n = CallThis<BYTE*>(FUN_606330, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    F(BYTE*, n, 44) = F(BYTE*, a, 52);
+    F(BYTE*, n, 48) = F(BYTE*, a, 44);
+    F(BYTE*, n, 52) = F(BYTE*, b, 44);
+    Relink3(F(BYTE*, a, 44), a, n);
+    Relink3(F(BYTE*, b, 44), b, n);
+    BYTE* x = F(BYTE*, a, 52);
+    if (x) {
+        if (F(BYTE*, x, 44) == a)
+            F(BYTE*, x, 44) = n;
+        else
+            F(BYTE*, x, 48) = n;
+    }
+    x = F(BYTE*, b, 48);
+    if (x) {
+        if (F(BYTE*, x, 44) == b)
+            F(BYTE*, x, 44) = n;
+        else
+            F(BYTE*, x, 52) = n;
+    }
+    *out = n;
+    BYTE* t = F(BYTE*, a, 20);
+    WORD k = F(WORD, t, 8);
+    F(WORD, self, 36)--;
+    WORD c = F(WORD, self, 36);
+    BYTE** arr = F(BYTE**, self, 12);
+    if (k != c) {
+        arr[k] = arr[c];
+        F(WORD, F(BYTE**, self, 12)[k], 8) = k;
+    }
+    F(BYTE**, self, 12)[F(WORD, self, 36)] = 0;
+    if (t)
+        operator delete(t);
+    if (a)
+        CallVirt(a, 0, 1);
+    if (b)
+        CallVirt(b, 0, 1);
+}
+
+// [FUN_60c900] removes the cell s: unlinks its neighbours and its edge
+// record, deletes it and detaches it from its parent node
+void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s)
+{
+    BYTE* parent = F(BYTE*, s, 40);
+    if (s == F(BYTE*, self, 52))
+        F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), s);
+    F(WORD, self, 42)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 36), s);
+    BYTE* x = F(BYTE*, s, 60);
+    if (x) {
+        if (F(BYTE*, x, 60) == s)
+            F(BYTE*, x, 60) = 0;
+        else if (F(BYTE*, x, 64) == s)
+            F(BYTE*, x, 64) = 0;
+        else
+            F(BYTE*, x, 68) = 0;
+    }
+    x = F(BYTE*, s, 68);
+    if (x) {
+        if (F(BYTE*, x, 64) == s)
+            F(BYTE*, x, 64) = 0;
+        else
+            F(BYTE*, x, 60) = 0;
+    }
+    x = F(BYTE*, s, 64);
+    if (x) {
+        if (F(BYTE*, x, 68) == s)
+            F(BYTE*, x, 68) = 0;
+        else
+            F(BYTE*, x, 60) = 0;
+    }
+    BYTE* e = F(BYTE*, s, 72);
+    if (e) {
+        if (e == F(BYTE*, self, 56)) {
+            BYTE** l = F(BYTE**, self, 32);
+            BYTE* nx;
+            if (l[0] && e == F(BYTE*, l[0], 4))
+                nx = l[1];
+            else if (l[1] && e == F(BYTE*, l[1], 4))
+                nx = 0;
+            else
+                nx = F(BYTE*, e, 0);
+            F(BYTE*, self, 56) = nx;
+        }
+        F(WORD, self, 64)--;
+        BYTE** p = F(BYTE**, e, 8);
+        F(int, F(BYTE*, p[0], 12), 72) = 0;
+        F(int, F(BYTE*, F(BYTE**, e, 8)[1], 12), 72) = 0;
+        BYTE** q = F(BYTE**, e, 12);
+        if (q) {
+            F(int, F(BYTE*, q[0], 12), 72) = 0;
+            F(int, F(BYTE*, F(BYTE**, e, 12)[1], 12), 72) = 0;
+        }
+        CallThis(FUN_6136f0, F(BYTE*, self, 32), e);
+        BYTE* e2 = F(BYTE*, s, 72);
+        if (e2) {
+            CallThis(FUN_609980, e2);
+            operator delete(e2);
+        }
+    }
+    if (s)
+        CallVirt(s, 0, 1);
+    BYTE** pp = F(BYTE**, parent, 8);
+    if (!pp) {
+        Grd_ReportError((int)2289444625u, " File = %s, Line = #%ld, Date = %s ",
+                        "C:\\Nek\\VRAPPLVS\\terrain\\grd.cpp", 295, "Jan 16 2003");
+        return;
+    }
+    if (!parent)
+        return;
+    if (pp[0] == parent)
+        pp[0] = 0;
+    else if (pp[1] == parent)
+        pp[1] = 0;
+    else
+        Grd_ReportError((int)2289444626u, " File = %s, Line = #%ld, Date = %s ",
+                        "C:\\Nek\\VRAPPLVS\\terrain\\btr.h", 35, "Jan 16 2003");
+    if (F(BYTE*, parent, 0))
+        CallThis(FUN_60bda0, F(BYTE*, parent, 0), 1);
+    if (F(BYTE*, parent, 4))
+        CallThis(FUN_60bda0, F(BYTE*, parent, 4), 1);
+    operator delete(parent);
+}
+
+}
