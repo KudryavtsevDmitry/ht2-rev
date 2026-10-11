@@ -44,7 +44,7 @@ ASM_VAR(AsmLabel, s_bigintNull, $L_670430)
 ASM_VAR(AsmLabel, g_vtbl64bf38, $L_64bf38)
 ASM_VAR(AsmLabel, g_vtbl64bf24, $L_64bf24)
 ASM_PROC(FUN_46e460)    // vector<char>::insert(pos, first, last) (another instance)
-ASM_PROC(FUN_470900)
+extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 ASM_PROC(FUN_4897b0)    // list: a new node
 ASM_PROC(FUN_491750)
 ASM_PROC(FUN_488450)

@@ -387,3 +387,29 @@ extern "C" BYTE** __fastcall FreeList_Take(BYTE* self, void*)
     F(BYTE**, self, 108) = p;
     return p;
 }
+
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
+ASM_PROC(FUN_5f1a70)
+ASM_VAR(char, g_vtbl6508a8, $L_6508a8)
+
+extern "C" {
+
+// [FUN_593040] constructor: a node with an 8000-byte buffer
+BYTE* __fastcall Body593040_Construct(BYTE* self, void*, int name)
+{
+    CallThis(FUN_5f19b0, self, name, 11, 1);
+    F(void*, self, 0) = &g_vtbl6508a8;
+    F(void*, self, 56) = operator new(8000);
+    return self;
+}
+
+// [FUN_5930a0] destructor
+void __fastcall Body593040_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl6508a8;
+    if (F(void*, self, 56))
+        operator delete(F(void*, self, 56));
+    CallThis(FUN_5f1a70, self);
+}
+
+}

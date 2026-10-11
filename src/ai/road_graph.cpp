@@ -771,3 +771,29 @@ const double* __cdecl Doubles_UpperBoundDesc(const double* first, const double* 
 }
 
 }
+
+extern "C" void FUN_47f740(); KING_ALIAS("_FUN_47f740", "_Fill8")
+
+extern "C" {
+
+// [FUN_47c4a0] temporary buffer of 8-byte records for [first, last)
+int* __fastcall TempBuf8_Construct(int* self, void*, BYTE* first, BYTE* last)
+{
+    int n = (last - first) >> 3;
+    self[1] = n;
+    self[0] = n;
+    self[2] = 0;
+    if (n > 0x0fffffff)
+        self[1] = 0x0fffffff;
+    while (self[1] > 0) {
+        self[2] = (int)malloc(self[1] * 8);
+        if (self[2])
+            break;
+        self[1] /= 2;
+    }
+    if (self[1] > 0)
+        CallC(FUN_47f740, self[2], self[1], first, last);
+    return self;
+}
+
+}

@@ -90,7 +90,7 @@ ASM_PROC(FUN_5f1a70)
 ASM_PROC(FUN_5d31e0)
 ASM_PROC(FUN_5d3570)
 ASM_PROC(FUN_5d33d0)
-ASM_PROC(FUN_5a0000)
+extern "C" void FUN_5a0000(); KING_ALIAS("_FUN_5a0000", "@VehGlowManager_Construct@12")
 ASM_PROC(FUN_5d3110)
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 ASM_PROC(FUN_4cf400)
@@ -1866,6 +1866,171 @@ void __cdecl Fx_SpawnPuffSpark(int a1, int a2)
         if (o)
             CallThis(FUN_59b3f0, o, g_view, a1, a2, (void*)g_694998, g_696210, 0x3f800000, 0x3f000000);
     }
+}
+
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors with exception frames (frames dropped).
+
+ASM_PROC(FUN_5587d0)
+ASM_PROC(FUN_5e48f0)
+ASM_VAR(char, g_vtbl64d234, $L_64d234)
+ASM_VAR(char, g_vtbl64d148, $L_64d148)
+ASM_VAR(char, g_vtbl64d0fc, $L_64d0fc)
+ASM_VAR(char, g_vtbl64d0f8, $L_64d0f8)
+ASM_VAR(char, g_vtbl64d424, $L_64d424)
+ASM_VAR(char, g_vtbl64d4ec, $L_64d4ec)
+ASM_VAR(char, g_vtbl64d530, $L_64d530)
+ASM_VAR(BYTE*, g_696734, $L_696734)
+ASM_VAR(char, g_702650, $L_702650)
+
+typedef void (__cdecl* NotifyFn)(void* a, int b, void* c);
+
+extern "C" {
+
+// [FUN_4d25f0] destructor
+void __fastcall Effect4d25f0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl64d234;
+    F(void*, self, 16) = &g_vtbl64d148;
+    F(void*, self, 272) = &g_vtbl64d0fc;
+    F(void*, self, 392) = &g_vtbl64d0f8;
+    CallC(FUN_4cf400, self);
+    CallThis(FUN_5587d0, self);
+}
+
+// [FUN_4d9e70] destructor
+void __fastcall Effect4d9e70_Destroy(BYTE* self, void*)
+{
+    CallThis(FUN_5e48f0, self + 56);
+    CallThis(FUN_5f1a70, self);
+}
+
+// [FUN_4d9ec0] destructor: also deletes the shared object at $L_696734
+void __fastcall Task4d9ec0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl64d424;
+    if (g_696734) {
+        CallVirt(g_696734, 36);
+        if (g_696734)
+            CallVirt(g_696734, 0, 1);
+        g_696734 = 0;
+    }
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4dbe60] constructor of the TankNotify task
+BYTE* __fastcall TankNotify_Construct(BYTE* self, void*, BYTE* owner, int fn, int arg, int d)
+{
+    CallThis(FUN_5d3110, self, "TankNotify");
+    F(int, self, 44) = 0;
+    F(int, self, 48) = d;
+    F(int, self, 32) = fn;
+    F(void*, self, 0) = &g_vtbl64d4ec;
+    F(BYTE*, self, 40) = owner;
+    F(int, self, 36) = arg;
+    CallThis(FUN_5d3570, owner + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    return self;
+}
+
+// [FUN_4dbf30] destructor of the TankNotify task: calls its function
+void __fastcall TankNotify_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl64d4ec;
+    NotifyFn f = F(NotifyFn, self, 32);
+    if (f)
+        f(&g_702650, 1, F(void*, self, 36));
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4dc860] destructor: calls its function
+void __fastcall Notify4dc860_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl64d530;
+    NotifyFn f = F(NotifyFn, self, 32);
+    if (f)
+        f(F(void*, self, 40), 1, F(void*, self, 36));
+    CallThis(FUN_5d3290, self);
+}
+
+}
+
+ASM_PROC(FUN_55eaa0)
+ASM_PROC(FUN_543e00)
+ASM_PROC(FUN_4cf260)
+ASM_PROC(FUN_556110)
+ASM_PROC(FUN_5586f0)
+ASM_PROC(FUN_5fd870)    // sound: play (position by value, ...)
+extern "C" void FUN_4dd9c0(); KING_ALIAS("_FUN_4dd9c0", "@CopySound_Construct@12")
+ASM_VAR(char, g_vtbl64cbfc, $L_64cbfc)
+ASM_VAR(char, g_vtbl64cb10, $L_64cb10)
+ASM_VAR(char, g_vtbl64cac4, $L_64cac4)
+ASM_VAR(char, g_vtbl64cac0, $L_64cac0)
+
+static void SetVtbls4(BYTE* self, void* a, void* b, void* c, void* d)
+{
+    F(void*, self, 0) = a;
+    F(void*, self, 16) = b;
+    F(void*, self, 272) = c;
+    F(void*, self, 392) = d;
+}
+
+extern "C" {
+
+// [FUN_4d0b10] constructor
+BYTE* __fastcall Effect4d0b10_Construct(BYTE* self, void*, int a1, int a2, int a3)
+{
+    CallThis(FUN_55eaa0, self, a1, a2, a3, 0);
+    SetVtbls4(self, &g_vtbl64cbfc, &g_vtbl64cb10, &g_vtbl64cac4, &g_vtbl64cac0);
+    CallThis(FUN_5d33d0, self + 16, 1);
+    return self;
+}
+
+// [FUN_4d0e30] constructor
+BYTE* __fastcall Effect4d0e30_Construct(BYTE* self, void*, int a1, int a2, int a3)
+{
+    CallThis(FUN_543e00, self, a1, a2, a3, 0);
+    SetVtbls4(self, &g_vtbl64cdf8, &g_vtbl64cd0c, &g_vtbl64ccc0, &g_vtbl64ccbc);
+    CallC(FUN_4cf260, self, a2, a3);
+    CallThis(FUN_556110, self);
+    return self;
+}
+
+// [FUN_4d2530] constructor (its destructor is FUN_4d25f0)
+BYTE* __fastcall Effect4d25f0_Construct(BYTE* self, void*, int a1, int a2, int a3)
+{
+    CallThis(FUN_5586f0, self, a1, a2, a3, 0);
+    SetVtbls4(self, &g_vtbl64d234, &g_vtbl64d148, &g_vtbl64d0fc, &g_vtbl64d0f8);
+    CallC(FUN_4cf260, self, a2, a3);
+    return self;
+}
+
+// [FUN_4dc780] constructor of the BenzoNotify task
+BYTE* __fastcall BenzoNotify_Construct(BYTE* self, void*, BYTE* owner, int a2, int fn, int a4, int a5)
+{
+    CallThis(FUN_5d3110, self, "BenzoNotify");
+    F(int, self, 48) = 0;
+    F(int, self, 52) = a5;
+    F(int, self, 40) = a2;
+    F(int, self, 32) = fn;
+    F(void*, self, 0) = &g_vtbl64d530;
+    F(int, self, 36) = a4;
+    F(BYTE*, self, 44) = owner;
+    CallThis(FUN_5d3570, owner + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    return self;
+}
+
+// [FUN_4dd920] plays a copy of the sound at +0 (if any)
+BYTE* __fastcall Sound4dd920_Play(BYTE** self, void*, int p0, int p1, int p2, int a4, int a5, int a6, int a7)
+{
+    if (!self[0])
+        return 0;
+    BYTE* o = (BYTE*)operator new(32);
+    BYTE* s = o ? CallThis<BYTE*>(FUN_4dd9c0, o, self[0]) : 0;
+    return CallThis<BYTE*>(FUN_5fd870, s, p0, p1, p2, a4, a5, a6, a7);
 }
 
 }

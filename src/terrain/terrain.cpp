@@ -222,3 +222,37 @@ void __fastcall RoomObjects_Clear(BYTE* self, void*)
 }
 
 }
+
+ASM_PROC(FUN_60bbb0)
+ASM_PROC(FUN_5f4a90)
+ASM_PROC(FUN_5ef660)
+ASM_VAR(char, g_vtbl6532ec, $L_6532ec)
+ASM_VAR(char, g_vtbl653308, $L_653308)
+
+extern "C" {
+
+// [FUN_614490] destructor: deletes the object at +4
+void __fastcall Terrain614490_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtbl6532ec;
+    BYTE* o = F(BYTE*, self, 4);
+    if (o) {
+        CallVirt(o, 0, 1);
+        F(BYTE*, self, 4) = 0;
+    }
+    CallThis(FUN_60bbb0, self);
+}
+
+// [FUN_619ae0] destructor
+void __fastcall Terrain619ae0_Destroy(BYTE* self, void*)
+{
+    int* back = F(int*, self, 76);
+    F(void*, self, 0) = &g_vtbl653308;
+    *back = 0;
+    CallThis(FUN_5f4a90, self + 64);
+    if (F(void*, self, 60))
+        operator delete(F(void*, self, 60));
+    CallThis(FUN_5ef660, self);
+}
+
+}
