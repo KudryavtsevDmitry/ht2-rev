@@ -970,3 +970,26 @@ extern "C" int __fastcall Box_ClipSegment(BYTE* self, void*, const float* a, con
             *t = tk[i];
     return 1;
 }
+
+ASM_VAR(const double, k_halfPi596e50, $L_64da00)      // 1.5707963
+
+// [FUN_596e50] the matrix that turns towards the object's aim point (+116) seen from m
+extern "C" Matrix* __fastcall Object_AimMatrix(BYTE* s, void*, Matrix* out, const Matrix* m)
+{
+    Matrix inv;
+    const float* M = (const float*)Matrix_Inverse(&inv, m);
+    Vec3 p;
+    p.x = (float)(((double)M[6] * F(float, s, 124) + (double)M[3] * F(float, s, 120)) + (double)F(float, s, 116) * M[0] + M[9]);
+    p.y = (float)(((double)M[1] * F(float, s, 116) + (double)M[7] * F(float, s, 124)) + (double)M[4] * F(float, s, 120) + M[10]);
+    p.z = (float)(((double)M[2] * F(float, s, 116) + (double)M[8] * F(float, s, 124)) + (double)M[5] * F(float, s, 120) + M[11]);
+    float az, pol;
+    Vec3_ToAngles(p, &az, &pol);
+    float tp = (float)(pol - k_halfPi596e50);
+    float ta = (float)(az - k_halfPi596e50);
+    Matrix* rz = Matrix_RotationZ(&inv, ta);
+    Matrix rx, a, r;
+    Matrix* x = Matrix_RotationX(&rx, -tp);
+    Matrix_Multiply(&r, Matrix_Multiply(&a, x, rz), m);
+    *out = r;
+    return out;
+}

@@ -125,7 +125,7 @@ extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // e
 ASM_PROC(FUN_57c450)    // sounds: play
 ASM_PROC(FUN_5d3290)    // Task::~Task
 ASM_PROC(FUN_5ef660)    // module destructor
-ASM_PROC(FUN_4bf510)    // particles: reset
+extern "C" void FUN_4bf510(); KING_ALIAS("_FUN_4bf510", "@Fx_CameraPair@8")    // particles: reset
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
 extern "C" void FUN_4c09d0(); KING_ALIAS("_FUN_4c09d0", "@Effect4c09d0_Destroy@8")    // CRenderer::~CRenderer
 ASM_PROC(FUN_4ccf30)
@@ -2453,4 +2453,102 @@ extern "C" void __cdecl Color_ToHsl(float r, float g, float b, float* h, float* 
     *h = (float)hd;
     if (!(hd >= 0.0f))
         *h = (float)(hd + 360.0f);
+}
+
+extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")
+ASM_PROC(FUN_43f620)    // a vehicle's flags by id
+ASM_PROC(FUN_438d70)
+ASM_PROC(FUN_43a780)    // the matrix of a position
+ASM_VAR(Vec3, g_up702640, $L_702640)
+struct Bytes32b { DWORD d[8]; };
+
+// the shared tail of FUN_4d43e0 and FUN_4d4520: the vehicle's position matrix lifted by (level + 0.5) * 3.5 along the up axis
+static Matrix* Fx_LiftedMatrix(Matrix* out, const Bytes32b* pos, int level)
+{
+    double h = ((double)level + 0.5) * 3.5;
+    Vec3 v;
+    v.x = (float)(g_up702640.x * h);
+    v.y = (float)(g_up702640.y * h);
+    v.z = (float)(g_up702640.z * h);
+    Matrix m;
+    Matrix* r = CallC<Matrix*>(FUN_43a780, &m, *pos);
+    Matrix t;
+    Matrix* tr = Matrix_Translation(&t, v);
+    return Matrix_Multiply(out, tr, r);
+}
+
+// [FUN_4d4520] a vehicle's matrix lifted by its effect level
+extern "C" Matrix* __cdecl Fx_VehicleMatrix(Matrix* out, BYTE* car)
+{
+    Bytes32b pos;
+    CallC(FUN_437520, &pos, car);
+    int level = 0;
+    if ((CallC<int>(FUN_43f620, car) & 0x4000) || F(int, g_6cec6c, 1316))
+        level = Fx_EvenStep(F(int, car, 728));
+    return Fx_LiftedMatrix(out, &pos, level);
+}
+
+// [FUN_4d43e0] the same, the level from a height (+8 of h) when the vehicle has no fixed one
+extern "C" Matrix* __cdecl Fx_VehicleMatrixAt(Matrix* out, BYTE* car, BYTE* h)
+{
+    Bytes32b pos;
+    CallC(FUN_437520, &pos, car);
+    CallC(FUN_438d70, pos, h);
+    int level = 0;
+    if (!(CallC<int>(FUN_43f620, car) & 0x4000) && !F(int, g_6cec6c, 1316)) {
+        int n = (int)((F(double, h, 8) * 0.5 + 1.75) * 0.2857142857142857);
+        if (n)
+            level = n - 1;
+    } else
+        level = Fx_EvenStep(F(int, car, 728));
+    return Fx_LiftedMatrix(out, &pos, level);
+}
+
+// [FUN_4d4620] the effect's level for a height x (its step into +16552), at most +16508
+extern "C" int __fastcall Fx_LevelForHeight(BYTE* s, void*, double x)
+{
+    int id = F(int, F(BYTE*, s, 16576), 20636);
+    if (CallC<int>(FUN_43f620, id) & 0x4000)
+        return Fx_EvenStep(F(int, F(BYTE*, F(BYTE*, s, 16576), 20636), 728));
+    int n = (int)((x + 1.75) * 0.2857142857142857);
+    int level = n;
+    if (n) {
+        F(double, s, 16552) = x / n;
+        level = n - 1;
+    } else
+        F(double, s, 16552) = x;
+    if (CallC<int>(FUN_43f620, F(int, F(BYTE*, s, 16576), 20636)) & 0x80000)
+        return level + 1;
+    if (CallC<int>(FUN_43f620, F(int, F(BYTE*, s, 16576), 20636)) & 0x8000000)
+        return level + 1;
+    return F(int, s, 16508) <= level ? F(int, s, 16508) : level;
+}
+
+extern "C" double __fastcall MarineCamera_HorizontalAngle(BYTE* self, void*);
+extern "C" void FUN_5ab620(); KING_ALIAS("_FUN_5ab620", "@Vec3_MulAssign@16")
+ASM_VAR(Vec3, g_ahead702620, $L_702620)
+
+static void Fx_Transform(float* out, const Matrix* m)
+{
+    const float* M = (const float*)m;
+    const Vec3& g = g_ahead702620;
+    out[0] = (float)(((double)g.z * M[6] + (double)g.y * M[3]) + (double)g.x * M[0] + M[9]);
+    out[1] = (float)(((double)g.z * M[7] + (double)g.y * M[4]) + (double)g.x * M[1] + M[10]);
+    out[2] = (float)(((double)g.z * M[8] + (double)g.y * M[5]) + (double)g.x * M[2] + M[11]);
+}
+
+// [FUN_4bf510] the two side points of a camera-relative effect, turned by 0.7 of the camera's angle and scaled to the width
+extern "C" void __fastcall Fx_CameraPair(BYTE* s, void*)
+{
+    double a = MarineCamera_HorizontalAngle(F(BYTE*, F(BYTE*, s, 136), 488), 0) * 0.699999988079071f;
+    float af = (float)a;
+    F(float, s, 48) = (float)a;
+    Matrix m;
+    Fx_Transform((float*)(s + 68), Matrix_RotationZ(&m, af));
+    Fx_Transform((float*)(s + 80), Matrix_RotationZ(&m, -F(float, s, 48)));
+    float k = (float)(F(float, s, 60) / x87_cos(F(float, s, 48)));
+    Vec3 t;
+    CallThis(FUN_5ab620, s + 68, &t, k);
+    CallThis(FUN_5ab620, s + 80, &t, k);
+    F(float, s, 92) = (float)((double)F(float, s, 64) / F(float, s, 60));
 }
