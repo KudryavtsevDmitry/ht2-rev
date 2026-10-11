@@ -20,6 +20,11 @@ extern "C" void __cdecl Com_Release(BYTE* com);                                /
 extern "C" void FUN_50bd10(); KING_ALIAS("_FUN_50bd10", "_Carat_ReleaseLight")    // pops a light (renderer)
 ASM_PROC(FUN_5b6e00)
 ASM_PROC(FUN_5b22f0)
+ASM_PROC(FUN_5d3b40)
+ASM_PROC(FUN_5d4490)
+ASM_PROC(FUN_5b6bf0)
+ASM_VAR(int, g_transformSerial, $L_67ef88)
+ASM_VAR(int, g_720904, $L_720904)
 ASM_PROC(FUN_5b3a40)
 ASM_PROC(FUN_5b42c0)
 ASM_PROC(FUN_6037e0)
@@ -36,7 +41,7 @@ ASM_VAR(double, g_one64b670, $L_64b670)
 ASM_PROC(FUN_5b2950)
 ASM_PROC(FUN_5b1020)
 ASM_PROC(FUN_5b0810)
-ASM_PROC(FUN_5ae8a0)
+extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 ASM_PROC(FUN_5feace)    // fills words
 ASM_PROC(FUN_5b6770)
 ASM_PROC(FUN_5e48f0)
@@ -955,6 +960,140 @@ double __fastcall Lights_AtPoint(BYTE* self, void*, int a, double t)
     if (r > g_one64b670)
         r = g_one64b670;
     return r;
+}
+
+}
+
+static int AbsInt(int x)
+{
+    return x < 0 ? -x : x;
+}
+
+extern "C" {
+
+// [FUN_5b9660] the palette index nearest to (r, g, b) (sum of the differences)
+BYTE __fastcall Palette_Nearest(BYTE* self, void*, int r, int g, int b)
+{
+    r &= 255;
+    g &= 255;
+    b &= 255;
+    const BYTE* e = self + 24;
+    int best = AbsInt(b - e[2]) + AbsInt(g - e[1]) + AbsInt(r - e[0]);
+    int idx = 0;
+    for (int i = 1; i < 256; i++) {
+        e += 3;
+        int d = AbsInt(b - e[2]) + AbsInt(r - e[0]) + AbsInt(g - e[1]);
+        if (d < best) {
+            best = d;
+            idx = i;
+        }
+    }
+    return (BYTE)idx;
+}
+
+// [FUN_5b9740] frees the three texture tables (+0/+4, +8/+12, +16/+20)
+void __fastcall Textures_FreeAll(BYTE* self, void*)
+{
+    for (int t = 0; t < 3; t++) {
+        void**& ptrs = F(void**, self, t * 8);
+        WORD*& ids = F(WORD*, self, t * 8 + 4);
+        for (int i = 0; i < F(int, self, 796 + t * 4); i++) {
+            operator delete(ptrs[i]);
+            CallC(FUN_5e48f0, (int)ids[i]);
+        }
+        operator delete(ptrs);
+        operator delete(ids);
+        ptrs = 0;
+        ids = 0;
+    }
+    F(int, self, 792) = 0;
+    F(int, self, 796) = 0;
+    F(int, self, 800) = 0;
+    F(int, self, 804) = 0;
+}
+
+// [FUN_5b6b10] presents the surface: flips the triple/double buffer or blits
+void __fastcall Surface_Present(BYTE* self, void*)
+{
+    DWORD f = F(DWORD, self, 12);
+    if (f & 32)
+        return;
+    if (!(f & 0x200)) {
+        CallC(FUN_5d3b40, F(int, self, 24));
+        return;
+    }
+    if (!(f & 1)) {
+        CallC(FUN_5d4490, 0);
+        CallThis(FUN_5b6bf0, self);
+        return;
+    }
+    unsigned size = (unsigned)F(WORD, self, 4) * F(WORD, self, 2) * F(WORD, self, 0);
+    if (!(f & 0x100)) {
+        CallC(FUN_5d4490, size * F(int, self, 16));
+        F(unsigned, self, 16) = (F(unsigned, self, 16) + 1) % 3;
+        return;
+    }
+    if (F(int, self, 120)) {
+        CallC(FUN_5d4490, size * F(int, self, 16));
+        F(unsigned, self, 16) = (F(unsigned, self, 16) + 4) % 3;
+    } else {
+        F(unsigned, self, 16) = (F(unsigned, self, 16) + 3) % 6;
+    }
+    F(int, self, 120) ^= 1;
+}
+
+// [FUN_5b63e0] a software surface copied from the description d
+BYTE* __fastcall Surface_Construct(BYTE* self, void*, BYTE* d)
+{
+    for (int k = 96; k <= 112; k += 4)
+        F(int, self, k) = 0;
+    F(WORD, self, 4) = F(WORD, d, 24);
+    F(WORD, self, 0) = F(WORD, d, 20);
+    F(WORD, self, 2) = F(WORD, d, 22);
+    unsigned size = (unsigned)F(WORD, self, 4) * F(WORD, self, 2) * F(WORD, self, 0);
+    BYTE* buf = (BYTE*)operator new(size);
+    F(BYTE*, self, 24) = buf;
+    if (F(BYTE*, d, 8))
+        memcpy(buf, F(BYTE*, d, 8), (unsigned)F(WORD, self, 4) * F(WORD, self, 0) * F(WORD, self, 2));
+    F(DWORD, d, 52) = (F(DWORD, d, 52) & ~0x600u) | 4;
+    Palette_Set8(d, 0, (int)buf);
+    F(int, self, 80) = 0;
+    F(int, self, 84) = 0;
+    F(int, self, 56) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 120) = 0;
+    F(WORD, self, 8) = 0;
+    F(int, self, 48) = 0;
+    F(int, self, 116) = 0;
+    F(float, self, 88) = 0.5f;
+    F(BYTE, self, 92) = 0;
+    F(int, self, 20) = 1;
+    F(WORD, self, 6) = (WORD)(F(WORD, self, 4) * F(WORD, self, 0));
+    return self;
+}
+
+// [FUN_5ae8a0] pops the clip plane and the transform; sets the world matrix
+void __fastcall Clip_Pop(BYTE* self, void*)
+{
+    if (F(int, self, 8224) <= 1 || F(int, self, 8236) <= 1)
+        return;
+    F(int, self, 8224)--;
+    F(int, self, 8236)--;
+    F(int, self, 8444) = ++g_transformSerial;
+    if (!g_720904)
+        return;
+    const float* m = (const float*)(self + 5216 + F(int, self, 8236) * 48);
+    float w[16];
+    for (int r = 0; r < 4; r++) {
+        w[r * 4 + 0] = m[r * 3 + 0];
+        w[r * 4 + 1] = m[r * 3 + 1];
+        w[r * 4 + 2] = m[r * 3 + 2];
+        w[r * 4 + 3] = 0.0f;
+    }
+    w[15] = 1.0f;
+    BYTE* dev = g_device;
+    CallStd(F(RFn, F(BYTE*, dev, 0), 44), dev, 1, w);
 }
 
 }

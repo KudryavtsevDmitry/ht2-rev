@@ -641,7 +641,7 @@ ASM_PROC(FUN_530020)
 ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
 ASM_PROC(FUN_5b6bf0)
 ASM_PROC(FUN_5b6ed0)
-ASM_PROC(FUN_5b6b10)
+extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 ASM_PROC(FUN_4e1320)
 ASM_PROC(FUN_519750)
 ASM_VAR(int, g_6ce370, $L_6ce370)               // the vehicle tech table is loaded
