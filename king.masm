@@ -1023,6 +1023,7 @@ PUBLIC $L_695bf0, $L_696054, $L_696208, $L_6f6a84, $L_6f6a8c, $L_6f6a98
 PUBLIC $L_64c240, $L_64c244, $L_64c628, $L_64c650, $L_64c668
 PUBLIC $L_66f9d0, $L_66fa14
 PUBLIC $L_68d4f4
+PUBLIC $L_652dc0, $L_723d28, $L_723d2c
 
 ;===================================
 _TEXT SEGMENT
@@ -188356,6 +188357,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46b3f0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -188425,6 +188428,10 @@ $L_46b44f::
             nop
             nop
 FUN_46b3f0 ENDP
+ELSE
+EXTERN _MakeHeap12:PROC
+FUN_46b3f0 TEXTEQU <_MakeHeap12>
+ENDIF
 ALIGN 16
 FUN_46b460 PROC
 
@@ -188747,6 +188754,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46b6d0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -188805,6 +188814,10 @@ $L_46b733::
             pop EBX
             ret 
 FUN_46b6d0 ENDP
+ELSE
+EXTERN _MakeHeap4A:PROC
+FUN_46b6d0 TEXTEQU <_MakeHeap4A>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -189981,6 +189994,8 @@ EXTERN _BoundD_Upper:PROC
 FUN_46be50 TEXTEQU <_BoundD_Upper>
 ENDIF
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46bec0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -190034,6 +190049,10 @@ $L_46bf13::
             pop EBX
             ret 
 FUN_46bec0 ENDP
+ELSE
+EXTERN _MakeHeap32:PROC
+FUN_46bec0 TEXTEQU <_MakeHeap32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -190136,6 +190155,8 @@ FUN_46bf20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46bfc0 PROC
 
             mov ECX,DWORD PTR [ESP+12]
@@ -190172,6 +190193,10 @@ FUN_46bfc0 PROC
             pop EBX
             ret 
 FUN_46bfc0 ENDP
+ELSE
+EXTERN _PopHeap4:PROC
+FUN_46bfc0 TEXTEQU <_PopHeap4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -190321,6 +190346,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46c130 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -190372,6 +190399,10 @@ $L_46c17e::
             pop EBX
             ret 
 FUN_46c130 ENDP
+ELSE
+EXTERN _MakeHeap4:PROC
+FUN_46c130 TEXTEQU <_MakeHeap4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -190455,6 +190486,8 @@ FUN_46c190 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46c210 PROC
 
             mov ECX,DWORD PTR [ESP+12]
@@ -190478,6 +190511,10 @@ FUN_46c210 PROC
             pop ESI
             ret 
 FUN_46c210 ENDP
+ELSE
+EXTERN _PopHeapLast4:PROC
+FUN_46c210 TEXTEQU <_PopHeapLast4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -191764,6 +191801,8 @@ FUN_46ca00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46cbd0 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -191788,6 +191827,10 @@ FUN_46cbd0 PROC
             pop ESI
             ret 
 FUN_46cbd0 ENDP
+ELSE
+EXTERN _PopHeapLast12:PROC
+FUN_46cbd0 TEXTEQU <_PopHeapLast12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_46cc00 PROC
@@ -192333,6 +192376,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46cfc0 PROC
 
             mov ECX,DWORD PTR [ESP+16]
@@ -192356,12 +192401,18 @@ FUN_46cfc0 PROC
             pop ESI
             ret 
 FUN_46cfc0 ENDP
+ELSE
+EXTERN _PopHeapLast32:PROC
+FUN_46cfc0 TEXTEQU <_PopHeapLast32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46cff0 PROC
 
             mov EAX,DWORD PTR [ESP+48]
@@ -192396,6 +192447,10 @@ FUN_46cff0 PROC
             pop EBX
             ret 
 FUN_46cff0 ENDP
+ELSE
+EXTERN _PopHeap32:PROC
+FUN_46cff0 TEXTEQU <_PopHeap32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -192412,6 +192467,8 @@ FUN_46cff0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46d040 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -192470,6 +192527,10 @@ $L_46d0a3::
             pop EBX
             ret 
 FUN_46d040 ENDP
+ELSE
+EXTERN _MakeHeap4B:PROC
+FUN_46d040 TEXTEQU <_MakeHeap4B>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -192663,6 +192724,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46d240 PROC
 
             push EBX
@@ -192695,6 +192758,10 @@ FUN_46d240 PROC
             pop EBX
             ret 
 FUN_46d240 ENDP
+ELSE
+EXTERN _PopHeapLast4P:PROC
+FUN_46d240 TEXTEQU <_PopHeapLast4P>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -235262,6 +235329,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_483ff0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -235277,6 +235346,10 @@ FUN_483ff0 PROC
             add ESP,8
             ret 
 FUN_483ff0 ENDP
+ELSE
+EXTERN _Route_Call529880:PROC
+FUN_483ff0 TEXTEQU <_Route_Call529880>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -239138,6 +239211,8 @@ FUN_4858b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_4867e0 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -239149,6 +239224,10 @@ FUN_4867e0 PROC
             mov BYTE PTR [EAX+10],255
             ret 8
 FUN_4867e0 ENDP
+ELSE
+EXTERN @Waypoint_Make@16:PROC
+FUN_4867e0 TEXTEQU <@Waypoint_Make@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -240036,6 +240115,8 @@ FUN_4870e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_487230 PROC
 
             sub ESP,8
@@ -240056,6 +240137,10 @@ FUN_487230 PROC
             add ESP,20
             ret 
 FUN_487230 ENDP
+ELSE
+EXTERN _Route_Call4870e0:PROC
+FUN_487230 TEXTEQU <_Route_Call4870e0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -240070,6 +240155,8 @@ FUN_487230 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_487270 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -240085,6 +240172,10 @@ FUN_487270 PROC
             add ESP,8
             ret 
 FUN_487270 ENDP
+ELSE
+EXTERN _Route_Call487230:PROC
+FUN_487270 TEXTEQU <_Route_Call487230>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -241280,6 +241371,8 @@ FUN_487cc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_487ce0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -241293,6 +241386,10 @@ $L_487cf0::
 
             ret 
 FUN_487ce0 ENDP
+ELSE
+EXTERN _Byte_Construct:PROC
+FUN_487ce0 TEXTEQU <_Byte_Construct>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -241309,6 +241406,8 @@ FUN_487ce0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_487d00 PROC
 
             push ESI
@@ -241328,9 +241427,15 @@ $L_487d18::
             pop ESI
             ret 4
 FUN_487d00 ENDP
+ELSE
+EXTERN @Rec487d00_Delete@12:PROC
+FUN_487d00 TEXTEQU <@Rec487d00_Delete@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_487d20 PROC
 
             push ESI
@@ -241366,6 +241471,10 @@ $L_487d5c::
             pop ESI
             ret 4
 FUN_487d20 ENDP
+ELSE
+EXTERN @Slots8_Construct@12:PROC
+FUN_487d20 TEXTEQU <@Slots8_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -843883,6 +843992,8 @@ FUN_5ff890 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
+IFDEF ASM_SOUND_FILES
 FUN_5ffa30 PROC
 
             push -1
@@ -843964,6 +844075,10 @@ $L_5ffabc::
             nop
             nop
 FUN_5ffa30 ENDP
+ELSE
+EXTERN _Music_Start:PROC
+FUN_5ffa30 TEXTEQU <_Music_Start>
+ENDIF
 $L_5ffaf0 PROC
 
             push ESI
@@ -844027,6 +844142,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
+IFDEF ASM_SOUND_FILES
 FUN_5ffb40 PROC
 
             push EBP
@@ -844131,6 +844248,10 @@ $L_5ffbff::
             pop EBP
             ret 
 FUN_5ffb40 ENDP
+ELSE
+EXTERN _Music_Clear:PROC
+FUN_5ffb40 TEXTEQU <_Music_Clear>
+ENDIF
 ALIGN 16
 ; src\engine\sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
 IFDEF ASM_SOUND_FILES
@@ -844774,6 +844895,8 @@ FUN_6000c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
+IFDEF ASM_SOUND_FILES
 FUN_6001d0 PROC
 
             push -1
@@ -844895,6 +845018,10 @@ $L_6002d6::
             add ESP,16
             ret 
 FUN_6001d0 ENDP
+ELSE
+EXTERN _Music_Construct:PROC
+FUN_6001d0 TEXTEQU <_Music_Construct>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -844905,6 +845032,8 @@ FUN_6001d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
+IFDEF ASM_SOUND_FILES
 FUN_6002f0 PROC
 
             push EBP
@@ -845057,6 +845186,10 @@ $L_60040c::
             pop EBP
             ret 
 FUN_6002f0 ENDP
+ELSE
+EXTERN _Music_CopyBackward:PROC
+FUN_6002f0 TEXTEQU <_Music_CopyBackward>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

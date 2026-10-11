@@ -42,7 +42,7 @@ extern "C" void __fastcall CGameApp_SetMousePos(void* app, void*, int x, int y);
 ASM_PROC(FUN_5d85f0)    // window: its rectangle
 extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
 ASM_PROC(FUN_5bd5e0)
-ASM_PROC(FUN_5ffb40)
+extern "C" void FUN_5ffb40(); KING_ALIAS("_FUN_5ffb40", "_Music_Clear")
 ASM_PROC(FUN_5ba4a0)
 ASM_PROC(FUN_5bae30)
 ASM_PROC(FUN_5d4200)

@@ -3132,7 +3132,7 @@ extern "C" BYTE* __cdecl Rec24_Copy(const BYTE* first, const BYTE* last, BYTE* d
 // ---------------------------------------------------------------------------
 // medium-sized functions, batch 5
 
-ASM_PROC(FUN_487230)    // (player, node)
+extern "C" void FUN_487230(); KING_ALIAS("_FUN_487230", "_Route_Call4870e0")    // (player, node)
 ASM_PROC(FUN_41bca0)    // an order's three sums (iterator, &a, &b, &c, cargo record, arg)
 extern "C" void FUN_471200(); KING_ALIAS("_FUN_471200", "_Order_SetPrice")    // (player list node, order, direct, urgent)
 
