@@ -1106,7 +1106,7 @@ extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    /
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // a model by name
 ASM_PROC(FUN_603110)    // network: send (type, data, size)
 ASM_PROC(FUN_593720)
-ASM_PROC(FUN_57c490)
+extern "C" void FUN_57c490(); KING_ALIAS("_FUN_57c490", "@Shadow_Add@32")
 extern "C" void __fastcall Hits_Remember(BYTE* self, void*, const BYTE* hits, unsigned n);
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 ASM_VAR(AsmLabel, g_vtbl64c24c, $L_64c24c)

@@ -787,3 +787,37 @@ extern "C" int __cdecl Joy_Init(HWND wnd, int range)
     }
     return g_joyDevice ? 0 : 0x80004005;
 }
+
+ASM_PROC(FUN_579aa0)    // a shadow's set-up
+ASM_VAR(BYTE*, g_game57c490, $L_6d2078)
+
+// [FUN_57c490] a new shadow at a point, its detail (32, 16 or 4 steps) by the distance to the camera (at least minLevel)
+extern "C" void __fastcall Shadow_Add(BYTE* s, void*, int a0, int a1, const float* at, unsigned minLevel, int a4, int a5)
+{
+    BYTE* stack = s + 76;
+    BYTE* o = ShadowStack_Push(stack, 0);
+    if (!o)
+        return;
+    const float* cam = (const float*)(g_game57c490 + 1460);
+    Vec3 d;
+    d.x = (float)((double)at[0] - cam[0]);
+    d.y = (float)((double)at[1] - cam[1]);
+    d.z = (float)((double)at[2] - cam[2]);
+    float len = (float)Vec3_Length(&d);
+    unsigned level = 2;
+    if (!(len >= 20.0f)) level = 0;
+    else if (!(len >= 50.0f)) level = 1;
+    else if (!(len >= 90.0f)) level = 2;
+    else if (!(len >= 150.0f)) level = 3;
+    if (level < minLevel)
+        level = minLevel;
+    int steps;
+    switch (level) {
+    case 0: steps = 32; break;
+    case 1: steps = 16; break;
+    case 2: case 3: steps = 4; break;
+    default: steps = 3; break;
+    }
+    if (!CallThis<int>(FUN_579aa0, o, a0, a1, at, steps, a4, a5))
+        ShadowStack_Pop(stack, 0);
+}
