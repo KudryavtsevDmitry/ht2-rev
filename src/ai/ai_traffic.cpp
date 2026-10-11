@@ -13,7 +13,19 @@
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
-ASM_PROC(FUN_46cbd0)
+extern "C" void FUN_46cbd0(); KING_ALIAS("_FUN_46cbd0", "_PopHeapLast12")
+ASM_PROC(FUN_44dd90)
+ASM_PROC(FUN_46b460)
+extern "C" void FUN_46b740(); KING_ALIAS("_FUN_46b740", "_Far_AdjustHeap")
+extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")
+ASM_PROC(FUN_46bf20)
+extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
+ASM_PROC(FUN_46c190)
+ASM_PROC(FUN_46ad50)
+ASM_PROC(FUN_46cc00)
+ASM_PROC(FUN_4870e0)
+extern "C" void FUN_529880(); KING_ALIAS("_FUN_529880", "_Carat_MarkKey")
+ASM_PROC(FUN_447ef0)
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
 ASM_PROC(FUN_40c1a0)
 ASM_PROC(FUN_40cc50)
@@ -336,4 +348,193 @@ extern "C" BYTE* __fastcall Vec12_Erase(BYTE* self, void*, BYTE* first, BYTE* la
     }
     F(BYTE*, self, 4) -= (int)(last - first) / 12 * 12;
     return first;
+}
+
+// --- heap algorithm wrappers. The element value and the comparator are
+// passed by value, as the STL of the time did; the callees destroy them.
+
+template <int N> struct Blob { DWORD d[N]; };
+typedef Blob<3> Val12;
+typedef Blob<8> Val32;
+typedef Blob<6> Pred24;
+
+static Val12 Copy12(const BYTE* p)
+{
+    Val12 v;
+    CallThis(FUN_44dd90, &v, p);
+    return v;
+}
+
+static Val32 Copy32(const BYTE* p)
+{
+    Val32 v;
+    CallThis(FUN_458a40, &v, p);
+    return v;
+}
+
+extern "C" {
+
+// [FUN_46b3f0] make_heap of 12-byte records
+void __cdecl MakeHeap12(BYTE* first, BYTE* last, DWORD pred)
+{
+    int n = (last - first) / 12;
+    if (n < 2)
+        return;
+    for (int parent = (n - 2) / 2;; parent--) {
+        CallC(FUN_46b460, first, parent, n, Copy12(first + parent * 12), pred);
+        if (!parent)
+            break;
+    }
+}
+
+// [FUN_46bec0] make_heap of 32-byte records
+void __cdecl MakeHeap32(BYTE* first, BYTE* last, DWORD pred)
+{
+    if (((last - first) & ~31) < 64)
+        return;
+    int n = (last - first) >> 5;
+    for (int parent = (n - 2) / 2;; parent--) {
+        CallC(FUN_46bf20, first, parent, n, Copy32(first + parent * 32), pred);
+        if (!parent)
+            break;
+    }
+}
+
+// [FUN_46c130] make_heap of 4-byte elements
+void __cdecl MakeHeap4(DWORD* first, DWORD* last, DWORD pred)
+{
+    if ((((BYTE*)last - (BYTE*)first) & ~3) < 8)
+        return;
+    int n = last - first;
+    for (int parent = (n - 2) / 2;; parent--) {
+        CallC(FUN_46c190, first, parent, n, first[parent], pred);
+        if (!parent)
+            break;
+    }
+}
+
+static void MakeHeap4P(void (*adjust)(), DWORD* first, DWORD* last, Pred24 pred)
+{
+    if ((((BYTE*)last - (BYTE*)first) & ~3) < 8)
+        return;
+    int n = last - first;
+    for (int parent = (n - 2) / 2;; parent--) {
+        CallC(adjust, first, parent, n, first[parent], pred);
+        if (!parent)
+            break;
+    }
+}
+
+// [FUN_46b6d0] make_heap of 4-byte elements with a 24-byte comparator
+void __cdecl MakeHeap4A(DWORD* first, DWORD* last, Pred24 pred)
+{
+    MakeHeap4P(FUN_46b740, first, last, pred);
+}
+
+// [FUN_46d040]
+void __cdecl MakeHeap4B(DWORD* first, DWORD* last, Pred24 pred)
+{
+    MakeHeap4P(FUN_46d0b0, first, last, pred);
+}
+
+// [FUN_46bfc0] pop_heap step: *result = *first, then the value is sifted in
+void __cdecl PopHeap4(DWORD* first, DWORD* last, DWORD* result, DWORD value, Pred24 pred)
+{
+    *result = *first;
+    CallC(FUN_46d0b0, first, 0, (int)(last - first), value, pred);
+}
+
+// [FUN_46cff0]
+void __cdecl PopHeap32(BYTE* first, BYTE* last, BYTE* result, Val32 value, DWORD pred)
+{
+    memcpy(result, first, 32);
+    CallC(FUN_46bf20, first, 0, (int)((last - first) >> 5), Copy32((const BYTE*)&value), pred);
+}
+
+// [FUN_46c210] pop_heap of 4-byte elements
+void __cdecl PopHeapLast4(DWORD* first, DWORD* last, DWORD pred)
+{
+    DWORD* r = last - 1;
+    CallC(FUN_46ad50, first, r, r, *r, pred, 0);
+}
+
+// [FUN_46d240]
+void __cdecl PopHeapLast4P(DWORD* first, DWORD* last, Pred24 pred)
+{
+    DWORD* r = last - 1;
+    PopHeap4(first, r, r, *r, pred);
+}
+
+// [FUN_46cfc0] pop_heap of 32-byte records
+void __cdecl PopHeapLast32(BYTE* first, BYTE* last, int unused, DWORD pred)
+{
+    BYTE* r = last - 32;
+    PopHeap32(first, r, r, Copy32(r), pred);
+}
+
+// [FUN_46cbd0] pop_heap of 12-byte records
+void __cdecl PopHeapLast12(BYTE* first, BYTE* last, int unused, DWORD pred)
+{
+    BYTE* r = last - 12;
+    CallC(FUN_46cc00, first, r, r, Copy12(r), pred, 0);
+}
+
+// [FUN_487230]
+int __cdecl Route_Call4870e0(int a, int b)
+{
+    DWORD local[2] = {0, 0};
+    return CallC<int>(FUN_4870e0, a, b, local);
+}
+
+// [FUN_487270]
+int __cdecl Route_Call487230(int a, int b)
+{
+    return Route_Call4870e0(a, b);
+}
+
+// [FUN_483ff0]
+int __cdecl Route_Call529880(int a, int b)
+{
+    return CallC<int>(FUN_529880, a, b);
+}
+
+// [FUN_487ce0] constructs a byte
+void __cdecl Byte_Construct(BYTE* p, const BYTE* v)
+{
+    if (p)
+        *p = *v;
+}
+
+// [FUN_487d00] scalar deleting destructor
+BYTE* __fastcall Rec487d00_Delete(BYTE* self, void*, int flags)
+{
+    CallThis(FUN_447ef0, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// [FUN_487d20] n zeroed 8-byte slots
+DWORD* __fastcall Slots8_Construct(DWORD* self, void*, int n)
+{
+    self[0] = (DWORD)operator new(n * 8);
+    self[1] = n;
+    self[2] = 0;
+    for (int i = 0; i < (int)self[1]; i++) {
+        ((DWORD*)self[0])[i * 2] = 0;
+        ((DWORD*)self[0])[i * 2 + 1] = 0;
+    }
+    return self;
+}
+
+// [FUN_4867e0] a waypoint (a, b) with no kind
+DWORD* __fastcall Waypoint_Make(DWORD* self, void*, DWORD a, DWORD b)
+{
+    self[0] = a;
+    self[1] = b;
+    F(WORD, self, 8) = 0;
+    F(BYTE, self, 10) = 255;
+    return self;
+}
+
 }
