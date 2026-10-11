@@ -15,6 +15,8 @@ ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_470900)
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+ASM_PROC(FUN_420000)
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 ASM_PROC(FUN_46e460)
@@ -22,8 +24,11 @@ ASM_PROC(FUN_475b20)
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
 ASM_PROC(FUN_4810e0)
 ASM_PROC(FUN_481790)
-ASM_PROC(FUN_482320)
+extern "C" void FUN_482320(); KING_ALIAS("_FUN_482320", "_Save_Ambush")
 typedef char AsmLabel[1];
+ASM_VAR(AsmLabel, g_tagAMBU, $L_66fe74)
+ASM_VAR(AsmLabel, s_svldId, $L_66fcb4)
+ASM_VAR(AsmLabel, s_svldFile, $L_66fd70)
 ASM_VAR(AsmLabel, g_tagPLYR, $L_66fddc)
 ASM_VAR(AsmLabel, g_tagPLRS, $L_66fde4)
 ASM_VAR(AsmLabel, g_tagTWNS, $L_66fe28)
@@ -277,6 +282,54 @@ void __cdecl Save_Obstacle(BYTE* s, BYTE* o)
 void __cdecl Save_Obstacles(BYTE* s)
 {
     Save_EachPtr(s, (const DWORD*)g_tagOBSS, g_68cc18, &g_68cc1c, (void (*)())Save_Obstacle);
+}
+
+}
+
+extern "C" {
+
+// [FUN_4816d0] saves three doubles
+void __cdecl Save_Doubles3(BYTE* s, const double* v)
+{
+    for (int i = 0; i < 3; i++) {
+        double d = v[i];
+        Save_Bytes(s, &d, 8);
+    }
+}
+
+// [FUN_482320] saves an ambush (AMBU): its name, two flags and its player's name
+void __cdecl Save_Ambush(BYTE* s, BYTE* a)
+{
+    SaveChunk c;
+    Chunk_Open(&c, s, (const DWORD*)g_tagAMBU);
+    Save_Name(s, a);
+    Save_Bytes(s, a + 240, 1);
+    Save_Bytes(s, a + 28, 1);
+    BYTE* p = F(BYTE*, a, 124);
+    if (p == (BYTE*)g_ordrPlayers) {
+        int z = 0;
+        Save_Bytes(s, &z, 4);
+    } else {
+        Save_Name(s, p + 8);
+    }
+    Chunk_Close(&c);
+}
+
+// [FUN_483320] after loading: re-registers every player that is not marked (+792)
+void __cdecl Load_FixPlayers()
+{
+    BYTE* head = (BYTE*)g_ordrPlayers;
+    for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_ordrPlayers; it = *(BYTE**)it) {
+        BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+        if (!F(BYTE, p, 792)) {
+            int id;
+            CallThis(FUN_426280, &id, it);
+            CallC(FUN_420000, id);
+        } else {
+            AiError(0, 100, (const char*)s_svldFile, (const char*)s_svldId, 741, "Internal error 08457",
+                    &g_ordrEmpty, &g_ordrEmpty);
+        }
+    }
 }
 
 }
