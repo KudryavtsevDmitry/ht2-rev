@@ -896,3 +896,16 @@ extern "C" int* __cdecl Find16_ByKey(int* b, int* e, const int* key)
             break;
     return b;
 }
+
+extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // inserts a byte range into a byte vector
+
+// [FUN_479a30] appends a length-prefixed copy of a byte vector to another byte vector
+extern "C" void __cdecl Bytes_AppendCounted(BYTE** dst, BYTE** src)
+{
+    DWORD len = (DWORD)(src[1] - src[0]);
+    CallThis(FUN_46e460, dst, dst[1], (BYTE*)&len, (BYTE*)&len + 4);
+    for (DWORD i = 0; i < (DWORD)(src[1] - src[0]); i++) {
+        BYTE c = src[0][i];
+        CallThis(FUN_46e460, dst, dst[1], &c, &c + 1);
+    }
+}

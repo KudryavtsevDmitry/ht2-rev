@@ -6395,3 +6395,43 @@ extern "C" void __fastcall Buf_AppendPrefixed(void** self, int)
         F(int, b, 16)++;
     }
 }
+
+extern "C" void FUN_473540(); KING_ALIAS("_FUN_473540", "@Player_SetVrId@12")    // sets a player's vehicle record id
+
+// [FUN_43fb60] sets a player's vehicle id, also in the vehicle at +516
+extern "C" void __cdecl Player_SetVehicleId(BYTE* id, int v)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16675, s_invalidId, s_playerIdType, g_numberText);
+    }
+    CallThis(FUN_473540, id + 8, v);
+    int* p = F(int*, id, 516);
+    if (p)
+        *p = v;
+}
+
+// [FUN_43fbd0] sets the first field of a record, also in its mirror at +20
+extern "C" void __cdecl Rec_SetField0(BYTE* id, int v)
+{
+    if (Rec_NotValid(id)) {
+        sprintf(g_text77e5e0, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16685, s_invalidId, s_recIdType66d64c, g_text77e5e0);
+    }
+    F(int, F(BYTE*, id, 8), 0) = v;
+    int* m = F(int*, F(BYTE*, id, 8), 20);
+    if (m)
+        *m = v;
+}
+
+// [FUN_447180] sets a player's byte at +976 and the pair at +984
+extern "C" void __cdecl Player_Set976(BYTE* id, char c, int a, int b)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 18441, s_invalidId, s_playerIdType, g_numberText);
+    }
+    F(char, id, 976) = c;
+    F(int, id, 984) = a;
+    F(int, id, 988) = b;
+}

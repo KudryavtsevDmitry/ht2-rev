@@ -51,7 +51,7 @@ static X87 double x87_log10(double x)
     __asm { fyl2x }
 }
 
-ASM_PROC(FUN_6055e0)
+extern "C" void FUN_6055e0(); KING_ALIAS("_FUN_6055e0", "_Play_UpdateAll")
 ASM_VAR(BYTE*, g_streams, $L_72412c)
 
 template <class... A>
@@ -534,4 +534,30 @@ BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, 
     return self;
 }
 
+}
+
+typedef void (__cdecl* PlayDoneFn)(int);
+ASM_VAR(PlayDoneFn, g_playDoneCb724178, $L_724178)
+ASM_PROC(FUN_605310)
+
+// [FUN_6055e0] updates all sounds, deleting finished ones, then gives free buffers to waiting sounds
+extern "C" void __cdecl Play_UpdateAll()
+{
+    BYTE* n = g_playHead;
+    while (n) {
+        if (!CallVirt<int>(n, 28)) {
+            if (g_playDoneCb724178)
+                g_playDoneCb724178(F(int, n, 24));
+            CallVirt(n, 24);
+            if (!F(int, n, 40)) {
+                BYTE* next = F(BYTE*, n, 16);
+                Play_Delete(n, 0);
+                n = next;
+                continue;
+            }
+        }
+        n = F(BYTE*, n, 16);
+    }
+    while (BYTE* p = Play_BestWaiting(0xffff))
+        CallThis(FUN_605310, p);
 }
