@@ -2635,3 +2635,58 @@ extern "C" double __cdecl Fx_SegmentDistance(void* a, void* b, BYTE* c, BYTE* d)
         return Fx_SegDist(a, b, d);
     return none;
 }
+
+ASM_VAR(float, g_detail696088, $L_696088)
+
+// [FUN_4bc2d0] a burst of five sparks at a with velocities 0.5..1.5 of v (sent to the other players when asked)
+extern "C" void __cdecl Fx_SparkBurst(const Vec3* at, const Vec3* v, int send)
+{
+    if (send && (F(int, g_6cec6c, 1300) == 1 || F(int, g_6cec6c, 1316))) {
+        BYTE pkt[28] = {};
+        pkt[0] = 9;
+        memcpy(pkt + 4, at, 12);
+        memcpy(pkt + 16, v, 12);
+        CallThis(FUN_603110, g_view + 8336, 957, pkt, 28);
+    }
+    if (!(g_detail696088 > 0.5f))
+        return;
+    static const float k[5] = { 0.5f, 0.800000011920929f, 1.0f, 1.2000000476837158f, 1.5f };
+    for (int i = 0; i < 5; i++) {
+        Vec3 w;
+        if (i == 2)
+            w = *v;
+        else {
+            w.x = (float)((double)v->x * k[i]);
+            w.y = (float)((double)v->y * k[i]);
+            w.z = (float)((double)v->z * k[i]);
+        }
+        Fx_SpawnPuffSpark((int)at, (int)&w);
+    }
+}
+
+ASM_PROC(FUN_4d57c0)    // the effect's swing step
+extern "C" BYTE* __fastcall Car_543bb0(BYTE* self, void*);
+ASM_PROC(FUN_5fd5f0)    // a sound at a point (point, distance, volume, flags)
+
+// [FUN_4d6340] one swing step of a vehicle effect; on a hard bump its sound at the truck seen from the camera; the step's result
+extern "C" double __fastcall Fx_SwingStep(BYTE* s, void*, int a0, double a1, double a2, int a3, int a4)
+{
+    F(int, s, 16480) = (int)((a1 + a2) / (F(double, s, 16552) * 0.5));
+    double result = -1.0;
+    CallC<double>(FUN_4d57c0, F(int, s, 16576), a0, a1, a2, F(double, s, 16552), a3, F(double, s, 16560),
+                  (double)F(float, s, 13100), F(int, s, 16500), F(int, s, 16504), &result,
+                  s + 16496, s + 16484, s + 16476, a4);
+    if ((F(BYTE, s, 16496) & 8) && !(F(double, s, 16560) >= 0.0)) {
+        Matrix m = F(Matrix, s, 16);
+        const float* M = (const float*)&m;
+        BYTE buf[48];
+        Matrix inv;
+        const float* I = (const float*)Matrix_Inverse(&inv, (const Matrix*)SceneObj_Matrix1(F(BYTE*, g_game, 616) + 16, 0, buf));
+        Vec3 p;
+        p.x = (float)(((double)M[10] * I[3] + (double)M[11] * I[6]) + (double)M[9] * I[0] + I[9]);
+        p.y = (float)(((double)M[9] * I[1] + (double)M[10] * I[4]) + (double)M[11] * I[7] + I[10]);
+        p.z = (float)(((double)M[9] * I[2] + (double)M[10] * I[5]) + (double)M[11] * I[8] + I[11]);
+        CallThis(FUN_5fd5f0, Car_543bb0(F(BYTE*, s, 16576), 0), p, 20.0, 1.0, 2);
+    }
+    return result;
+}
