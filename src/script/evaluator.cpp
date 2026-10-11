@@ -960,7 +960,7 @@ extern "C" void FUN_4b61c0(); KING_ALIAS("_FUN_4b61c0", "@BytesNode4b61c0_Constr
 extern "C" void FUN_4b6400(); KING_ALIAS("_FUN_4b6400", "@BytesNode4b6400_Construct@12")    // SchIdentifier: construct from char*
 extern "C" void FUN_4b6160(); KING_ALIAS("_FUN_4b6160", "@SchBuf4b6160_Construct@8")
 extern "C" void FUN_4b6670(); KING_ALIAS("_FUN_4b6670", "@SchItem4b6670_Construct@12")
-ASM_PROC(FUN_4a2d10)    // SchEnvironment: construct from SchValue*
+extern "C" void FUN_4a2d10(); KING_ALIAS("_FUN_4a2d10", "@SchScope_Construct@12")    // SchEnvironment: construct from SchValue*
 ASM_PROC(FUN_4581a0)    // allocation failure handler
 extern "C" void FUN_4b1120(); KING_ALIAS("_FUN_4b1120", "@Node4b1120_Construct@20")
 extern "C" void FUN_4b1090(); KING_ALIAS("_FUN_4b1090", "@SchItem4b1090_Construct@12")
@@ -1659,6 +1659,120 @@ BYTE* __fastcall SchMap_InsertUnique(BYTE** self, void*, BYTE* out, const SchVal
     }
     bool no = false;
     CallThis(FUN_4a51b0, out, &j, &no);
+    return out;
+}
+
+}
+
+extern "C" void FUN_4a4ac0(); KING_ALIAS("_FUN_4a4ac0", "@SchMap_Erase@12")    // map: erase a subtree
+extern "C" void FUN_4a52b0(); KING_ALIAS("_FUN_4a52b0", "@SchHolder_DeletingDestructor@12")    // map value: destructor (flag)
+ASM_VAR(char, gv64bf4c, $L_64bf4c)
+ASM_VAR(char, gv64bed0, $L_64bed0)
+ASM_VAR(char, gv64bee4, $L_64bee4)
+
+// empties a map (header +0, count +4) without freeing its header
+static void Map_Clear(BYTE** m)
+{
+    if (!((int*)m)[1])
+        return;
+    CallThis(FUN_4a4ac0, m, F(BYTE*, m[0], 4));
+    BYTE* h = m[0];
+    F(BYTE*, h, 8) = h;
+    F(BYTE*, h, 4) = 0;
+    F(BYTE*, h, 12) = h;
+    ((int*)m)[1] = 0;
+}
+
+extern "C" {
+
+// [FUN_4a4300] destructor of the scope's name map: erases the nodes one by
+// one (right subtrees recursively) and frees the header
+void __fastcall SchMap_Destroy(BYTE** self, void*)
+{
+    if (((int*)self)[1]) {
+        BYTE* x = F(BYTE*, self[0], 4);
+        while (x) {
+            CallThis(FUN_4a4ac0, self, F(BYTE*, x, 12));
+            BYTE* left = F(BYTE*, x, 8);
+            CallThis(FUN_4a52b0, x + 16, 0);
+            CallC(FUN_44b4a0, x, 44);
+            x = left;
+        }
+        BYTE* h = self[0];
+        F(BYTE*, h, 8) = h;
+        F(BYTE*, h, 4) = 0;
+        F(BYTE*, h, 12) = h;
+        ((int*)self)[1] = 0;
+    }
+    CallC(FUN_44b4a0, self[0], 44);
+}
+
+// [FUN_4a3fd0] destructor of a scope
+void __fastcall SchScope_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &gv64bf4c;
+    BYTE** m = F(BYTE**, self, 144);
+    if (m) {
+        Map_Clear(m);
+        CallC(FUN_44b4a0, m[0], 44);
+        operator delete(m);
+    }
+    F(BYTE**, self, 144) = 0;
+    ReleaseRef((SchValue*)(self + 148));
+    BYTE** v = (BYTE**)(self + 132);
+    for (BYTE* e = v[0]; e != v[1]; e += 12)
+        CallThis(FUN_4a36c0, e);
+    int n = (v[2] - v[0]) / 12;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 12);
+    for (int i = 7; i >= 0; i--)
+        CallThis(FUN_4a36c0, self + 36 + i * 12);
+    ReleaseRef((SchValue*)(self + 24));
+    F(void*, self, 0) = &gv64bed0;
+    if (F(BYTE*, self, 12))
+        F(BYTE*, F(BYTE*, self, 12), 16) = F(BYTE*, self, 16);
+    if (F(BYTE*, self, 16))
+        F(BYTE*, F(BYTE*, self, 16), 12) = F(BYTE*, self, 12);
+    F(void*, self, 0) = &gv64bee4;
+}
+
+}
+
+extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")    // value: its +32 member (cdr)
+extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")    // value: its +20 member (car)
+
+extern "C" {
+
+// [FUN_4af480] out = the n-th element of the list h (by value); empty when
+// the list is shorter
+SchValue* __cdecl SchList_Nth(SchValue* out, int n, BYTE* h0, int h1, DWORD h2)
+{
+    SchValue h = {h0, h1, h2};
+    for (int i = 0; i < n; i++) {
+        if ((BYTE)h.flags != 2) {
+            out->obj = 0;
+            out->m_4 = 0;
+            out->flags = 0;
+            ReleaseRef(&h);
+            return out;
+        }
+        SchValue t;
+        SchValue* nx = CallC<SchValue*>(FUN_4090a0, &t, &h);
+        if (h.obj && !(h.flags & SCH_IMMEDIATE)) {
+            if (--F(int, h.obj, 4) == 0 && !(h.obj == nx->obj && h.flags == nx->flags && h.m_4 == nx->m_4) && h.obj)
+                CallVirt(h.obj, 12, 1);
+        }
+        CopyRef(&h, nx);
+        ReleaseRef(&t);
+    }
+    if ((BYTE)h.flags == 2)
+        CallC(FUN_407f00, out, &h);
+    else {
+        out->obj = 0;
+        out->m_4 = 0;
+        out->flags = 0;
+    }
+    ReleaseRef(&h);
     return out;
 }
 

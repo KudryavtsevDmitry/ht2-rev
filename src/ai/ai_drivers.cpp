@@ -564,7 +564,7 @@ void __fastcall Waypoints_Clear(WaypointVec* self, void*) { self->Clear(); }    
 // ---------------------------------------------------------------------------
 // medium-sized functions: the save writers, the logo of a player
 
-ASM_PROC(FUN_46e460)    // vector<char>::insert(pos, first, last): the save stream
+extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last): the save stream
 extern "C" void FUN_471b10(); KING_ALIAS("_FUN_471b10", "@Rec471b10_Save@12")    // writes a 16-byte record (stream)
 ASM_PROC(FUN_470e10)    // writes an order (stream)
 ASM_PROC(FUN_477600)

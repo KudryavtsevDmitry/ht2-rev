@@ -850,3 +850,24 @@ BYTE* __stdcall Alloc144_Copy(unsigned n, BYTE* first, BYTE* last) { return Allo
 BYTE* __stdcall Alloc8_Copy(unsigned n, BYTE* first, BYTE* last) { return AllocAndCopy(n, 8, FUN_47e1f0, first, last); }
 
 }
+
+ASM_PROC(FUN_44b4a0)
+
+extern "C" {
+
+// [FUN_47fa80] destructor: deletes the objects of the vector at +120
+void __fastcall Road47fa80_Destroy(BYTE* self, void*)
+{
+    BYTE** v = (BYTE**)(self + 120);
+    for (BYTE** p = (BYTE**)v[0]; p != (BYTE**)v[1]; p++)
+        if (*p)
+            CallVirt(*p, 40, 1);
+    int n = (v[2] - v[0]) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 4);
+    int m = F(BYTE*, self, 8) - F(BYTE*, self, 0);
+    if (m)
+        CallC(FUN_44b4a0, F(BYTE*, self, 0), m);
+}
+
+}

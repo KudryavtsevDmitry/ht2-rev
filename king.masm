@@ -1064,6 +1064,7 @@ PUBLIC $L_6f33f0
 PUBLIC $L_64c59c, $L_64c5f0, $L_64c604, $L_64d2f4
 PUBLIC $L_683cb8, $L_723d8c, $L_723d98
 PUBLIC $L_725d40, $L_725d44
+PUBLIC $L_64bf4c
 
 ;===================================
 _TEXT SEGMENT
@@ -194893,6 +194894,8 @@ $L_46e319 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+IFDEF ASM_CARGO_ORDERS
 FUN_46e460 PROC
 
             push EBP
@@ -195130,6 +195133,10 @@ $L_46e62e::
             pop EBP
             ret 12
 FUN_46e460 ENDP
+ELSE
+EXTERN @CharVec_InsertRange@20:PROC
+FUN_46e460 TEXTEQU <@CharVec_InsertRange@20>
+ENDIF
 $L_46e654 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -228121,6 +228128,8 @@ $L_47f9d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47fa80 PROC
 
             push -1
@@ -228323,6 +228332,10 @@ $L_47fc6a::
             add ESP,20
             ret 
 FUN_47fa80 ENDP
+ELSE
+EXTERN @Road47fa80_Destroy@8:PROC
+FUN_47fa80 TEXTEQU <@Road47fa80_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -290541,6 +290554,8 @@ FUN_4a2ce0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 FUN_4a2d10 PROC
 
             push -1
@@ -290694,6 +290709,10 @@ $L_4a2e98::
             add ESP,24
             ret 4
 FUN_4a2d10 ENDP
+ELSE
+EXTERN @SchScope_Construct@12:PROC
+FUN_4a2d10 TEXTEQU <@SchScope_Construct@12>
+ENDIF
           BYTE 090H
 $L_4a2eb0 PROC
 
@@ -292654,6 +292673,8 @@ EXTERN @SchScope_Get@24:PROC
 FUN_4a3f10 TEXTEQU <@SchScope_Get@24>
 ENDIF
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a3fd0 PROC
 
             push -1
@@ -292846,6 +292867,10 @@ $L_4a4183::
             add ESP,20
             ret 
 FUN_4a3fd0 ENDP
+ELSE
+EXTERN @SchScope_Destroy@8:PROC
+FUN_4a3fd0 TEXTEQU <@SchScope_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -293016,6 +293041,8 @@ $L_4a41a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a4300 PROC
 
             push -1
@@ -293189,6 +293216,10 @@ $L_4a4486::
             inc EDI
             jmp $L_4a4423
 FUN_4a4300 ENDP
+ELSE
+EXTERN @SchMap_Destroy@8:PROC
+FUN_4a4300 TEXTEQU <@SchMap_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314291,6 +314322,8 @@ $L_4af3e5::
 $L_4aee50 ENDP
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4af480 PROC
 
             push -1
@@ -314523,6 +314556,10 @@ $L_4af68f::
             add ESP,28
             ret 
 FUN_4af480 ENDP
+ELSE
+EXTERN _SchList_Nth:PROC
+FUN_4af480 TEXTEQU <_SchList_Nth>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
