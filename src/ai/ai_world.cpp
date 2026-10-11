@@ -26,9 +26,9 @@ KING_ALIAS("_Towns_Find453bd0", "FUN_453bd0")
 extern "C" void** __cdecl Towns_Find453d70(void** first, void** last, int a, int b, int c);
 KING_ALIAS("_Towns_Find453d70", "FUN_453d70")
 extern "C" void** __cdecl Towns_Find453f10(void** first, void** last, int a, int b);
-KING_ALIAS("_Towns_Find453f10", "FUN_453f10")
+KING_ALIAS("_Towns_Find453f10", "_Pick_RandomOther")
 extern "C" void** __cdecl Towns_Find4540a0(void** first, void** last, int* a, int b);
-KING_ALIAS("_Towns_Find4540a0", "FUN_4540a0")
+KING_ALIAS("_Towns_Find4540a0", "_Pick_RandomIdle")
 extern "C" void** __cdecl Towns_Find454230(void** first, void** last, int a, int b, void* rng);
 KING_ALIAS("_Towns_Find454230", "FUN_454230")
 extern "C" DVec3* __cdecl Town_Position(DVec3* out, void* town);
@@ -689,6 +689,10 @@ extern "C" void FUN_466400(); KING_ALIAS("_FUN_466400", "_UninitFill16")    // u
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
 ASM_VAR(AsmLabel, s_dropOrders, $L_66f2e0)
 ASM_VAR(AsmLabel, s_killDelayedPlayers, $L_66f3f0)
+
+ASM_PROC(FUN_45aed0)    // vector<void*>::insert(pos, &v)
+ASM_PROC(FUN_45c610)
+ASM_PROC(FUN_45d370)
 
 extern "C" {
 void __fastcall Buf_Append(void* s, void*, const void* src, int n) { R(s)->Append(src, n); }               // [FUN_401870]
@@ -3904,6 +3908,119 @@ BYTE* __stdcall ListNode64_Make(const BYTE* s)
         F(DWORD, v, 52) = F(DWORD, s, 52);
     }
     return node;
+}
+
+}
+
+// A random pick among the matching elements of a sequence: the matches are
+// gathered into a temporary vector and one is chosen with the subtractive
+// generator at rng (55 words, indexes at +220 and +224).
+
+static void PtrVec_Push(DWORD* v, void (*insert)(), BYTE* x)
+{
+    DWORD* last = (DWORD*)v[1];
+    if (last != (DWORD*)v[2]) {
+        if (last)
+            *last = (DWORD)x;
+        v[1] = (DWORD)(last + 1);
+    } else {
+        CallThis(insert, v, last, &x);
+    }
+}
+
+static BYTE* PickRandom(DWORD* v, BYTE* end, DWORD* rng)
+{
+    BYTE** b = (BYTE**)v[0];
+    unsigned n = (BYTE**)v[1] - b;
+    if (!n) {
+        if (v[2] != v[0])
+            CallC(FUN_44b4a0, b, ((v[2] - v[0]) >> 2) << 2);
+        return end;
+    }
+    unsigned i = (rng[55] + 1) % 55;
+    unsigned j = (rng[56] + 1) % 55;
+    rng[55] = i;
+    rng[56] = j;
+    rng[i] -= rng[j];
+    BYTE* r = b[rng[rng[55]] % n];
+    if (v[2] != v[0])
+        StlDeallocate(b, ((v[2] - v[0]) >> 2) << 2);
+    return r;
+}
+
+extern "C" {
+
+// [FUN_453f10] a random element of [first, last) other than x
+BYTE** __cdecl Pick_RandomOther(BYTE** first, BYTE** last, BYTE* x, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE** it = first; it != last; it++)
+        if (*it != x)
+            PtrVec_Push(v, FUN_45aed0, (BYTE*)it);
+    return (BYTE**)PickRandom(v, (BYTE*)last, rng);
+}
+
+// [FUN_4540a0] a random player of [first, last) with neither flag 1 nor 2
+BYTE** __cdecl Pick_RandomIdle(BYTE** first, BYTE** last, int unused, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE** it = first; it != last; it++)
+        if (!(F(BYTE, *it, 96) & 3))
+            PtrVec_Push(v, FUN_45aed0, (BYTE*)it);
+    return (BYTE**)PickRandom(v, (BYTE*)last, rng);
+}
+
+// [FUN_456880] a random 104-byte record with (flags & mask) == value
+BYTE* __cdecl Pick_RandomMasked(BYTE* first, BYTE* last, DWORD value, DWORD mask, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* it = first; it != last; it += 104)
+        if ((F(DWORD, it, 48) & mask) == value)
+            PtrVec_Push(v, FUN_45d370, it);
+    return PickRandom(v, last, rng);
+}
+
+// [FUN_455ff0] the 56-byte records with +24 == a and (b == -1 or +20 == b)
+DWORD* __cdecl Select_Records56(DWORD* out, BYTE* first, BYTE* last, int a, int b)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* it = first; it != last; it += 56)
+        if (F(int, it, 24) == a && (b == -1 || F(int, it, 20) == b))
+            PtrVec_Push(v, FUN_45c610, it);
+    unsigned n = (v[1] - v[0]) >> 2;
+    out[0] = 0;
+    out[1] = 0;
+    out[2] = 0;
+    DWORD* p = (DWORD*)AiAlloc(n * 4);
+    out[0] = (DWORD)p;
+    out[1] = (DWORD)p;
+    out[2] = (DWORD)(p + n);
+    out[1] = CallC<DWORD>(FUN_46b0e0, v[0], v[1], p, 0);
+    if (v[2] != v[0])
+        StlDeallocate((void*)v[0], ((v[2] - v[0]) >> 2) << 2);
+    return out;
+}
+
+// [FUN_458500] copy constructor: three words, a byte vector, a 4-byte vector
+BYTE* __fastcall Rec458500_Copy(BYTE* self, void*, const BYTE* s)
+{
+    F(DWORD, self, 0) = F(DWORD, s, 0);
+    F(DWORD, self, 4) = F(DWORD, s, 4);
+    F(DWORD, self, 8) = F(DWORD, s, 8);
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 20) = 0;
+    Bytes_CopyInto(self + 12, F(const BYTE*, s, 12), F(const BYTE*, s, 16));
+    unsigned n = (F(const BYTE*, s, 28) - F(const BYTE*, s, 24)) >> 2;
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 32) = 0;
+    DWORD* p = (DWORD*)AiAlloc(n * 4);
+    F(DWORD*, self, 24) = p;
+    F(DWORD*, self, 28) = p;
+    F(DWORD*, self, 32) = p + n;
+    F(DWORD, self, 28) = CallC<DWORD>(FUN_46b0e0, F(const BYTE*, s, 24), F(const BYTE*, s, 28), p, 0);
+    return self;
 }
 
 }

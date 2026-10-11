@@ -140995,6 +140995,8 @@ $L_453efb::
 FUN_453d70 ENDP
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_453f10 PROC
 
             push -1
@@ -141158,6 +141160,10 @@ $L_454081::
             add ESP,24
             ret 
 FUN_453f10 ENDP
+ELSE
+EXTERN _Pick_RandomOther:PROC
+FUN_453f10 TEXTEQU <_Pick_RandomOther>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -141170,6 +141176,8 @@ FUN_453f10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4540a0 PROC
 
             push -1
@@ -141332,6 +141340,10 @@ $L_454215::
             add ESP,24
             ret 
 FUN_4540a0 ENDP
+ELSE
+EXTERN _Pick_RandomIdle:PROC
+FUN_4540a0 TEXTEQU <_Pick_RandomIdle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -145035,6 +145047,8 @@ EXTERN _Port_MakeB:PROC
 FUN_455f00 TEXTEQU <_Port_MakeB>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_455ff0 PROC
 
             push -1
@@ -145182,6 +145196,10 @@ $L_456129::
             add ESP,28
             ret 
 FUN_455ff0 ENDP
+ELSE
+EXTERN _Select_Records56:PROC
+FUN_455ff0 TEXTEQU <_Select_Records56>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -146014,6 +146032,8 @@ FUN_4566e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_456880 PROC
 
             push -1
@@ -146182,6 +146202,10 @@ $L_4569fc::
             add ESP,24
             ret 
 FUN_456880 ENDP
+ELSE
+EXTERN _Pick_RandomMasked:PROC
+FUN_456880 TEXTEQU <_Pick_RandomMasked>
+ENDIF
 ALIGN 16
 FUN_456a10 PROC
 
@@ -149462,6 +149486,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_458500 PROC
 
             push -1
@@ -149604,6 +149630,10 @@ $L_45861a::
             add ESP,24
             ret 4
 FUN_458500 ENDP
+ELSE
+EXTERN @Rec458500_Copy@12:PROC
+FUN_458500 TEXTEQU <@Rec458500_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
