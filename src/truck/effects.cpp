@@ -2034,3 +2034,46 @@ BYTE* __fastcall Sound4dd920_Play(BYTE** self, void*, int p0, int p1, int p2, in
 }
 
 }
+
+ASM_VAR(char, g_vtbl64c358, $L_64c358)
+
+extern "C" {
+
+// [FUN_4bc950] attaches the "_TDTN" node to the object a (creating it when
+// the object has none)
+void __fastcall Effect4bc950_Attach(BYTE* self, void*, BYTE* a)
+{
+    if (F(BYTE*, self, 32) == a)
+        return;
+    F(BYTE*, self, 32) = a;
+    BYTE* o = CallC<BYTE*>(FUN_5ef2b0, a, "_TDTN");
+    F(BYTE*, self, 36) = o;
+    if (o) {
+        CallVirt(F(BYTE*, self, 32), 20, 0, o);
+        return;
+    }
+    BYTE* n = (BYTE*)operator new(256);
+    if (!n) {
+        F(BYTE*, self, 36) = 0;
+        return;
+    }
+    BYTE* parent = F(BYTE*, self, 32);
+    CallThis(FUN_5f19b0, n, "_TDTN", 5, 1);
+    F(int, n, 56) = 0;
+    F(int, n, 60) = 0;
+    F(void*, n, 0) = &g_vtbl64c358;
+    if (parent)
+        CallVirt(parent, 20, 0, n);
+    F(BYTE, n, 40) &= 0xfe;
+    F(int, n, 20) = 0;
+    F(int, n, 32) = 0;
+    F(int, n, 24) = 0;
+    F(int, n, 28) = 0;
+    for (int i = 0; i < 2; i++) {
+        F(int, n, 64 + i * 4) = F(int, self, 24 + i * 4);
+        F(int, n, 248 + i * 4) = 0;
+    }
+    F(BYTE*, self, 36) = n;
+}
+
+}

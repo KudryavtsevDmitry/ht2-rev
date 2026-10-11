@@ -439,3 +439,53 @@ int __cdecl Bodies_Pair(BYTE* a, int a1, int a2, BYTE* b, int b1, int b2, int x)
 }
 
 }
+
+ASM_PROC(FUN_57cb70)
+ASM_PROC(FUN_57d060)
+extern "C" void FUN_58b4f0(); KING_ALIAS("_FUN_58b4f0", "@TwoVec_Construct@8")
+ASM_PROC(FUN_58b8c0)
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+ASM_VAR(char, g_vtbl650718, $L_650718)
+ASM_VAR(char, g_vtbl6506cc, $L_6506cc)
+ASM_VAR(char, g_vtbl6506c8, $L_6506c8)
+
+static BYTE* Body_Init(BYTE* self, int a8, int a9)
+{
+    for (int i = 0; i < 20 * 3; i++)
+        F(int, self, 3592 + i * 4) = 0;
+    for (int i = 0; i < 4 * 3; i++)
+        F(int, self, 3832 + i * 4) = 0;
+    for (int i = 0; i < 20; i++)
+        CallThis(FUN_58b4f0, self + 3988 + i * 28);
+    for (int i = 0; i < 20; i++)
+        CallThis(FUN_58b4f0, self + 4548 + i * 28);
+    for (int i = 0; i < 9; i++)
+        F(int, self, 5152 + i * 4) = 0;
+    for (int i = 0; i < 20; i++)
+        CallThis(FUN_5ef5c0, self + 5352 + i * 208);
+    F(void*, self, 0) = &g_vtbl650718;
+    F(void*, self, 256) = &g_vtbl6506cc;
+    F(void*, self, 376) = &g_vtbl6506c8;
+    CallThis(FUN_58b8c0, self, a8, a9);
+    return self;
+}
+
+extern "C" {
+
+// [FUN_58b5b0] constructor over the FUN_57cb70 base
+BYTE* __fastcall Body58b5b0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6,
+                                      int a7, int a8, int a9, int a10, int a11)
+{
+    CallThis(FUN_57cb70, self, a1, a2, a3, a4, a5, a6, a7, a10, a11);
+    return Body_Init(self, a8, a9);
+}
+
+// [FUN_58b720] constructor over the FUN_57d060 base
+BYTE* __fastcall Body58b720_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6,
+                                      int a7, int a8, int a9, int a10, int a11)
+{
+    CallThis(FUN_57d060, self, a1, a2, a3, a4, a5, a6, a7, a10, a11);
+    return Body_Init(self, a8, a9);
+}
+
+}

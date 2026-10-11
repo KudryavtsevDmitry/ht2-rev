@@ -866,3 +866,83 @@ void __fastcall TvCamera_CreateMonitor(BYTE* self, void*)
 }
 
 }
+
+ASM_PROC(FUN_5d9f60)
+extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
+extern "C" void FUN_5eb1e0(); KING_ALIAS("_FUN_5eb1e0", "@Camera_Init@8")
+extern "C" void FUN_5e4210(); KING_ALIAS("_FUN_5e4210", "@Windows_Add@12")
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
+ASM_VAR(BYTE*, g_world696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_69684c, $L_69684c)
+ASM_VAR(char, g_696750, $L_696750)
+ASM_VAR(char, g_empty68d1c0, $L_68d1c0)
+typedef DWORD Dwords12w[12];
+ASM_VAR(Dwords12w, g_rayDefaultsW, $L_7025f0)
+ASM_VAR(char, g_vtbl6509f8, $L_6509f8)
+ASM_VAR(char, g_vtbl64d7d0, $L_64d7d0)
+ASM_VAR(char, g_vtbl64d7bc, $L_64d7bc)
+
+extern "C" {
+
+// [FUN_5950b0] constructor: its +544 part copies the fields of the part the
+// base set up at +472 and replaces it
+BYTE* __fastcall Wasm5950b0_Construct(BYTE* self, void*, int a, int b, int c)
+{
+    CallThis(FUN_5d9f60, self, a, b, c, F(int, g_world696ca0, 472));
+    BYTE* sub = self + 544;
+    CallThis(FUN_5eb1e0, sub);
+    BYTE* old = F(BYTE*, self, 472);
+    F(void*, self, 0) = &g_vtbl6509f8;
+    for (int off = 4; off <= 132; off += 4)
+        if (off != 12 && off != 92)
+            F(int, sub, off) = F(int, old, off);
+    F(int, self, 620) = 1;
+    F(BYTE*, self, 472) = sub;
+    return self;
+}
+
+// [FUN_597410] creates the objects of a screen element (430, 43)-(530, 118)
+void __fastcall Wasm597410_Create(BYTE* self, void*)
+{
+    BYTE* o = (BYTE*)operator new(112);
+    if (o) {
+        CallThis(FUN_5f19b0, o, &g_empty68d1c0, 6, 1);
+        for (int i = 0; i < 12; i++)
+            F(int, o, 64 + i * 4) = 0;
+        memcpy(o + 64, g_rayDefaultsW, 48);
+        F(void*, o, 0) = &g_vtbl64d7d0;
+        F(int, o, 56) = 0;
+        F(int, o, 60) = 0;
+    }
+    F(BYTE*, self, 16) = o;
+    F(BYTE*, self, 20) = o;
+    BYTE* p = (BYTE*)operator new(104);
+    if (p) {
+        F(int, p, 4) = 0;
+        F(BYTE*, p, 80) = F(BYTE*, self, 16);
+        F(int, p, 8) = 0;
+        F(void*, p, 0) = &g_vtbl64d7bc;
+        F(int, p, 76) = 0;
+        F(DWORD, p, 88) = 0x3f800000;
+        F(DWORD, p, 84) = 0x3f800000;
+        F(int, p, 96) = 0;
+        F(int, p, 92) = 0;
+        F(BYTE, p, 44) = 0;
+        F(BYTE, p, 12) = 0;
+        F(int, p, 100) = 0;
+    }
+    F(BYTE*, self, 116) = p;
+    F(BYTE*, self, 120) = p;
+    F(int, self, 0) = 430;
+    F(int, self, 8) = 530;
+    F(int, self, 4) = 43;
+    F(int, self, 12) = 118;
+    BYTE* q = (BYTE*)operator new(680);
+    if (q)
+        q = Wasm5950b0_Construct(q, 0, (int)g_69684c, (int)self, F(int, self, 116));
+    F(BYTE*, self, 108) = q;
+    F(BYTE*, self, 112) = q;
+    CallThis(FUN_5e4210, &g_696750, q);
+}
+
+}

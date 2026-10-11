@@ -988,3 +988,31 @@ void __fastcall CopterObj573c10_Destroy(BYTE* self, void*)
 }
 
 }
+
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+ASM_PROC(FUN_5a6160)
+ASM_VAR(char, g_vtbl64fe60, $L_64fe60)
+ASM_VAR(int, g_6968a8, $L_6968a8)
+
+extern "C" {
+
+// [FUN_56d560] constructor of the wipers (nodes Wiper*, GlassKey, rain_node)
+BYTE* __fastcall Wipers_Construct(BYTE* self, void*, int a)
+{
+    BYTE* w2s = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper2Space");
+    BYTE* w2 = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper2");
+    BYTE* w1s = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper1Space");
+    BYTE* w1 = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper1");
+    BYTE* ws = CallC<BYTE*>(FUN_5ef2b0, 0, "WiperSpace");
+    BYTE* w = CallC<BYTE*>(FUN_5ef2b0, 0, "Wiper");
+    BYTE* glass = CallC<BYTE*>(FUN_5ef2b0, 0, "GlassKey");
+    BYTE* rain = CallC<BYTE*>(FUN_5ef2b0, 0, "rain_node");
+    CallThis(FUN_5a6160, self, a, rain, glass, "glass", w, ws, w1, w1s, w2, w2s);
+    F(void*, self, 0) = &g_vtbl64fe60;
+    F(int, self, 212) = 1;
+    F(DWORD, self, 164) |= 14;
+    F(BYTE*, self, 208) = g_6968a8 ? CallC<BYTE*>(FUN_5ef3d0, "wipersSound") : 0;
+    return self;
+}
+
+}

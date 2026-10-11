@@ -733,7 +733,7 @@ BYTE* __fastcall SchState_Construct(BYTE* self, void*)
 
 }
 
-ASM_PROC(FUN_4a1f10)
+extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
 ASM_PROC(FUN_4a36c0)
 
 extern "C" {

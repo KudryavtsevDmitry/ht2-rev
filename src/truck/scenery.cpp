@@ -20,7 +20,7 @@ extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, 
                                            float* f);                    // world.cpp
 
 ASM_PROC(FUN_44c710)    // vector<12 bytes>::insert_aux
-ASM_PROC(FUN_4a1f10)
+extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
 ASM_PROC(FUN_57d060)
 extern "C" void FUN_52e550(); KING_ALIAS("_FUN_52e550", "@Crowd_Init@12")
 ASM_PROC(FUN_603110)
@@ -30,8 +30,8 @@ ASM_VAR(AsmLabel, g_vtbl64f198, $L_64f198)
 ASM_VAR(AsmLabel, g_vtbl64f14c, $L_64f14c)
 ASM_VAR(AsmLabel, g_vtbl64f148, $L_64f148)
 ASM_VAR(BYTE*, g_6ef1fc, $L_6ef1fc)
-ASM_PROC(FUN_58b5b0)
-ASM_PROC(FUN_58b720)
+extern "C" void FUN_58b5b0(); KING_ALIAS("_FUN_58b5b0", "@Body58b5b0_Construct@52")
+extern "C" void FUN_58b720(); KING_ALIAS("_FUN_58b720", "@Body58b720_Construct@52")
 extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
 ASM_PROC(FUN_52b0e0)
 ASM_PROC(FUN_5465c0)
