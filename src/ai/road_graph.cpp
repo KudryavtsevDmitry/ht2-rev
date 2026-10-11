@@ -871,3 +871,19 @@ void __fastcall Road47fa80_Destroy(BYTE* self, void*)
 }
 
 }
+
+extern "C" void FUN_450de0(); KING_ALIAS("_FUN_450de0", "@Vec16_Destroy@8")
+
+extern "C" {
+
+// [FUN_478ac0] destructor of a vector of 144-byte orders
+void __fastcall Orders144_Destroy(BYTE** self, void*)
+{
+    for (BYTE* e = self[0]; e != self[1]; e += 144)
+        CallThis(FUN_450de0, e + 120);
+    int n = (self[2] - self[0]) / 144;
+    if (n)
+        CallC(FUN_44b4a0, self[0], n * 144);
+}
+
+}

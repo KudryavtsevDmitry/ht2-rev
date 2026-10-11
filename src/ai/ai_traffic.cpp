@@ -15,7 +15,7 @@
 
 extern "C" void FUN_46cbd0(); KING_ALIAS("_FUN_46cbd0", "_PopHeapLast12")
 ASM_PROC(FUN_44dd90)
-ASM_PROC(FUN_46b460)
+extern "C" void FUN_46b460(); KING_ALIAS("_FUN_46b460", "_Names_AdjustHeap")
 extern "C" void FUN_46b740(); KING_ALIAS("_FUN_46b740", "_Far_AdjustHeap")
 extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")
 ASM_PROC(FUN_46bf20)
@@ -557,7 +557,7 @@ BYTE* __stdcall Alloc12_Copy(unsigned n, BYTE* first, BYTE* last)
 
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // allocate n bytes and copy [first, last) (stdcall)
 ASM_PROC(FUN_44dd90)    // vector copy constructor
-ASM_PROC(FUN_46b460)
+extern "C" void FUN_46b460(); KING_ALIAS("_FUN_46b460", "_Names_AdjustHeap")
 ASM_PROC(FUN_44b4a0)
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
@@ -594,6 +594,118 @@ void __cdecl Mult46cc00(ByteVec* a, BYTE* last, ByteVec* b, ByteVec v, int x)
     unsigned m = v.cap - v.begin;
     if (m)
         CallC(FUN_44b4a0, v.begin, m);
+}
+
+}
+
+extern "C" void FUN_4072f0(); KING_ALIAS("_FUN_4072f0", "_Copy1")    // copy of bytes (first, last, to)
+extern "C" int __cdecl _stricmp(const char* a, const char* b);
+
+// vector<char> assignment *d = [f, l); copy moves the bytes of the part
+// that fits the old size
+static void ByteVec_Assign(ByteVec* d, BYTE* f, BYTE* l, bool useCopy)
+{
+    unsigned n = l - f;
+    if (n > (unsigned)(d->cap - d->begin)) {
+        BYTE* p = CallThis<BYTE*>(FUN_458cf0, d, n, f, l);
+        if (d->cap - d->begin)
+            CallC(FUN_44b4a0, d->begin, d->cap - d->begin);
+        d->begin = p;
+        d->cap = p + n;
+    } else if ((unsigned)(d->end - d->begin) >= n) {
+        memmove(d->begin, f, n);
+    } else {
+        unsigned have = d->end - d->begin;
+        if (useCopy) {
+            CallC(FUN_4072f0, f, f + have, d->begin);
+            CallC(FUN_4072f0, f + (d->end - d->begin), l, d->end);
+        } else {
+            memmove(d->begin, f, have);
+            memmove(d->end, f + (d->end - d->begin), l - (f + (d->end - d->begin)));
+        }
+    }
+    d->end = d->begin + n;
+}
+
+extern "C" {
+
+// [FUN_46ca00] push_heap step for names (vector<char>, compared ignoring
+// case): moves v up from hole towards top
+void __cdecl Names_PushHeap(ByteVec* first, int hole, int top, ByteVec v)
+{
+    int parent = (hole - 1) / 2;
+    while (hole > top && _stricmp((const char*)first[parent].begin, (const char*)v.begin) < 0) {
+        ByteVec* d = &first[hole];
+        ByteVec* s = &first[parent];
+        if (s != d)
+            ByteVec_Assign(d, s->begin, s->end, false);
+        hole = parent;
+        parent = (hole - 1) / 2;
+    }
+    ByteVec* d = &first[hole];
+    if (d != &v)
+        ByteVec_Assign(d, v.begin, v.end, true);
+    if (v.cap - v.begin)
+        CallC(FUN_44b4a0, v.begin, v.cap - v.begin);
+}
+
+}
+
+extern "C" void FUN_46ca00(); KING_ALIAS("_FUN_46ca00", "_Names_PushHeap")    // names: push heap (first, hole, top, value by value)
+extern "C" void FUN_483a50(); KING_ALIAS("_FUN_483a50", "_AI_483a50")    // the network message being built
+extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")    // player of a list node
+extern "C" void FUN_4758d0(); KING_ALIAS("_FUN_4758d0", "@Player_SaveX@12")    // player: serialize into a byte vector
+ASM_PROC(FUN_603110)    // message: add field (id, data, size)
+ASM_VAR(BYTE, g_68d31c, $L_68d31c)
+ASM_VAR(BYTE, g_66f62b, $L_66f62b)
+ASM_VAR(BYTE*, g_playersHead68b990, $L_68b990)
+
+extern "C" {
+
+// [FUN_46b460] adjust_heap for names: sinks the hole to a leaf, then pushes
+// v back up
+void __cdecl Names_AdjustHeap(ByteVec* first, int hole, int len, ByteVec v, int cmp)
+{
+    int top = hole;
+    int child = 2 * hole + 2;
+    while (child < len) {
+        if (_stricmp((const char*)first[child].begin, (const char*)first[child - 1].begin) < 0)
+            child--;
+        if (&first[child] != &first[hole])
+            ByteVec_Assign(&first[hole], first[child].begin, first[child].end, false);
+        hole = child;
+        child = 2 * child + 2;
+    }
+    if (child == len) {
+        if (&first[child - 1] != &first[hole])
+            ByteVec_Assign(&first[hole], first[child - 1].begin, first[child - 1].end, true);
+        hole = child - 1;
+    }
+    ByteVec c;
+    CallThis(FUN_44dd90, &c, &v);
+    CallC(FUN_46ca00, first, hole, top, c, cmp);
+    if (v.cap - v.begin)
+        CallC(FUN_44b4a0, v.begin, v.cap - v.begin);
+}
+
+// [FUN_46dee0] in a network game, adds every player's state (message field
+// 992) to the message being built
+int __cdecl Net_AddPlayerStates()
+{
+    if (!g_68d31c || !g_66f62b)
+        return 0;
+    BYTE* msg = CallC<BYTE*>(FUN_483a50);
+    for (BYTE* n = *(BYTE**)g_playersHead68b990; n != g_playersHead68b990; n = *(BYTE**)n) {
+        BYTE* p = CallC<BYTE*>(FUN_40a9f0, n);
+        if (F(DWORD, p, 88) & 0x100)
+            continue;
+        ByteVec buf = {0, 0, 0};
+        CallThis(FUN_4758d0, CallC<BYTE*>(FUN_40a9f0, n), &buf);
+        CallThis(FUN_603110, msg, 992, buf.begin, buf.end - buf.begin);
+        if (buf.cap - buf.begin)
+            CallC(FUN_44b4a0, buf.begin, buf.cap - buf.begin);
+    }
+    return 0;
 }
 
 }

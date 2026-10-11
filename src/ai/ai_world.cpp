@@ -5130,3 +5130,31 @@ BYTE* __cdecl Recs104_PickRandom(BYTE* first, BYTE* last, DWORD value, DWORD mas
 }
 
 }
+
+ASM_PROC(FUN_466300)    // uninitialized copy of 16-byte records
+
+extern "C" {
+
+// [FUN_443860] copy constructor of a 144-byte order
+BYTE* __fastcall Order144_CopyConstruct(BYTE* self, void*, const BYTE* s)
+{
+    for (int off = 0; off <= 16; off += 4)
+        F(int, self, off) = F(int, s, off);
+    for (int off = 24; off <= 104; off += 4)
+        F(int, self, off) = F(int, s, off);
+    F(int, self, 112) = F(int, s, 112);
+    F(int, self, 116) = F(int, s, 116);
+    BYTE** v = (BYTE**)(self + 120);
+    int n = (F(BYTE*, s, 124) - F(BYTE*, s, 120)) >> 4;
+    v[0] = v[1] = v[2] = 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 16) : 0;
+    v[0] = p;
+    v[1] = p;
+    v[2] = p + n * 16;
+    v[1] = CallC<BYTE*>(FUN_466300, F(BYTE*, s, 120), F(BYTE*, s, 124), p, v);
+    F(int, self, 132) = F(int, s, 132);
+    F(int, self, 136) = F(int, s, 136);
+    return self;
+}
+
+}
