@@ -18,6 +18,21 @@ extern "C" int __cdecl rand();
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
+ASM_PROC(FUN_5d3460)
+ASM_PROC(FUN_5c4410)
+extern "C" void FUN_5cc930(); KING_ALIAS("_FUN_5cc930", "@Trees_Construct@8")
+ASM_PROC(FUN_5f4a90)
+ASM_PROC(FUN_5ef660)
+ASM_PROC(FUN_4011e0)
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_PROC(FUN_5ce930)
+ASM_VAR(AsmLabel, g_vtbl6518e4, $L_6518e4)
+ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
+ASM_VAR(AsmLabel, g_vtbl651dec, $L_651dec)
+ASM_VAR(BYTE*, g_70ebe4, $L_70ebe4)
+ASM_VAR(int, g_707f94, $L_707f94)
+ASM_VAR(int, g_707f98, $L_707f98)
+ASM_VAR(WORD, g_quadIndex, $L_707f9c)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 ASM_PROC(FUN_6021f0)
@@ -1254,6 +1269,142 @@ void __fastcall Rec_ReadHeader(BYTE* self, void*, int unused, int b)
     F(int, self, 7940) = CallC<int>(FUN_5ab140, f);
     CallC<int>(FUN_5ab140, f);
     CallC<int>(FUN_5ab140, f);
+}
+
+}
+
+// --- constructors/destructors with exception frames (the frames only rethrow)
+
+extern "C" {
+
+// [FUN_5c10f0] a named list item's destructor
+void __fastcall NamedItem_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl6518e4;
+    operator delete(F(void*, self, 12));
+    F(void*, self, 0) = g_vtbl64d81c;
+}
+
+// [FUN_5c1140] appends an item named name to the list and selects nothing new
+void __fastcall List_AddNamed(BYTE* self, void*, const char* name)
+{
+    BYTE* it = (BYTE*)operator new(16);
+    if (it) {
+        F(int, it, 4) = 0;
+        F(int, it, 8) = 0;
+        F(void*, it, 0) = g_vtbl6518e4;
+        char* p = (char*)operator new(strlen(name) + 1);
+        F(char*, it, 12) = p;
+        strcpy(p, name);
+    }
+    BYTE* c = F(BYTE*, self, 296);
+    if (!c) {
+        F(BYTE*, self, 336) = it;
+        F(BYTE*, self, 300) = it;
+        F(BYTE*, self, 296) = it;
+    } else {
+        while (F(BYTE*, c, 8))
+            c = F(BYTE*, c, 8);
+        CallThis(FUN_5d2190, it, c);
+        F(BYTE*, self, 300) = it;
+    }
+    F(int, self, 328)++;
+    if (F(int, self, 328) > CallThis<int>(FUN_5c06d0, self))
+        F(short, F(BYTE*, self, 340), 296)++;
+    List_Select(self, 0, 0);
+}
+
+// [FUN_5c53e0]
+void __fastcall Media5c53e0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl651b00;
+    CallThis(FUN_5d3460, self + 2992);
+    CallThis(FUN_5c4410, self);
+}
+
+// [FUN_5cc930] the trees: parameters, a root branch and 100 56-byte leaves
+BYTE* __fastcall Trees_Construct(BYTE* self, void*)
+{
+    F(float, self, 16) = 10.0f;
+    F(float, self, 20) = 45.0f;
+    F(float, self, 12) = 4.0f;
+    F(float, self, 24) = 0.5f;
+    F(DWORD, self, 28) = 0x3f733333;
+    F(int, self, 32) = 4;
+    F(int, self, 4) = 0;
+    F(int, self, 40) = 0;
+    BYTE* o = (BYTE*)operator new(40);
+    F(BYTE*, self, 36) = o ? Branch_Construct(o, 0, 0, 0x3f800000) : 0;
+    BYTE* a = (BYTE*)operator new(5600);
+    if (a) {
+        BYTE* p = a;
+        for (int i = 0; i < 100; i++, p += 56) {
+            CallStd(FUN_4011e0, p, 12, 4, FUN_4bd4d0);
+            memcpy(p, g_7025f0, 48);
+        }
+    }
+    F(BYTE*, self, 0) = a;
+    return self;
+}
+
+// [FUN_5c6400] creates the trees and shadows; fills the quad index table
+int __cdecl Effects_InitTrees(int a, int b)
+{
+    BYTE* o = (BYTE*)operator new(44);
+    g_70ebe4 = o ? Trees_Construct(o, 0) : 0;
+    g_707f94 = a;
+    g_707f98 = b;
+    WORD* q = &g_quadIndex;
+    for (int i = 0; i < 100; i++, q += 6) {
+        WORD v = (WORD)(i * 4);
+        q[0] = v;
+        q[1] = v + 1;
+        q[2] = v + 2;
+        q[3] = v;
+        q[4] = v + 2;
+        q[5] = v + 3;
+    }
+    if (!g_70ebf8) {
+        BYTE* s = (BYTE*)operator new(168);
+        g_70ebf8 = s ? (int)Shadows_Construct(s, 0) : 0;
+    }
+    return g_70ebf8;
+}
+
+// [FUN_5c64f0]
+void __cdecl Effects_FreeTrees()
+{
+    BYTE* t = g_70ebe4;
+    if (t) {
+        Tree_Free(t, 0);
+        operator delete(t);
+        g_70ebe4 = 0;
+    }
+    if (g_70ebf8) {
+        BYTE* s = (BYTE*)operator new(168);
+        if (s)
+            Shadows_Construct(s, 0);
+        g_70ebf8 = 0;
+    }
+    g_707f94 = 0;
+    g_707f98 = 0;
+}
+
+// [FUN_5c8780]
+void __fastcall Media5c8780_Destroy(BYTE* self, void*)
+{
+    CallThis(FUN_5f4a90, self + 64);
+    if (F(void*, self, 60))
+        operator delete(F(void*, self, 60));
+    CallThis(FUN_5ef660, self);
+}
+
+// [FUN_5ceae0]
+void __fastcall Media5ceae0_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vtbl651dec;
+    operator delete(F(void*, self, 172));
+    CallThis(FUN_5ce930, self);
 }
 
 }
