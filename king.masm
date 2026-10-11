@@ -191948,6 +191948,8 @@ FUN_46cbd0 TEXTEQU <_PopHeapLast12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46cc00 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -192115,6 +192117,10 @@ $L_46cd53::
             add ESP,12
             ret 
 FUN_46cc00 ENDP
+ELSE
+EXTERN _Mult46cc00:PROC
+FUN_46cc00 TEXTEQU <_Mult46cc00>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -201375,6 +201381,8 @@ EXTERN @Waypoint_Load@12:PROC
 FUN_471940 TEXTEQU <@Waypoint_Load@12>
 ENDIF
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_471990 PROC
 
             sub ESP,8
@@ -201561,6 +201569,10 @@ $L_471ae9::
             nop
             nop
 FUN_471990 ENDP
+ELSE
+EXTERN @Player_SetHops@12:PROC
+FUN_471990 TEXTEQU <@Player_SetHops@12>
+ENDIF
 ALIGN 16
 ; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 IFDEF ASM_AI_DRIVERS
@@ -296257,6 +296269,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a5c40 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -296435,6 +296449,10 @@ $L_4a5d9e::
             pop ESI
             ret 
 FUN_4a5c40 ENDP
+ELSE
+EXTERN _Sch4a5c40_Append:PROC
+FUN_4a5c40 TEXTEQU <_Sch4a5c40_Append>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -298484,6 +298502,8 @@ $L_4a7090 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a70b0 PROC
 
             push -1
@@ -298664,6 +298684,10 @@ $L_4a7210::
             add ESP,24
             ret 12
 FUN_4a70b0 ENDP
+ELSE
+EXTERN @Sch4a70b0_Reset@20:PROC
+FUN_4a70b0 TEXTEQU <@Sch4a70b0_Reset@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -326882,6 +326906,8 @@ $L_4b59d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b59f0 PROC
 
             push -1
@@ -327031,6 +327057,10 @@ $L_4b5b50::
             add ESP,24
             ret 8
 FUN_4b59f0 ENDP
+ELSE
+EXTERN @FilePort_Construct@16:PROC
+FUN_4b59f0 TEXTEQU <@FilePort_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -22,7 +22,7 @@ ASM_PROC(FUN_46bf20)
 extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
 ASM_PROC(FUN_46c190)
 ASM_PROC(FUN_46ad50)
-ASM_PROC(FUN_46cc00)
+extern "C" void FUN_46cc00(); KING_ALIAS("_FUN_46cc00", "_Mult46cc00")
 ASM_PROC(FUN_4870e0)
 extern "C" void FUN_529880(); KING_ALIAS("_FUN_529880", "_Carat_MarkKey")
 ASM_PROC(FUN_447ef0)
@@ -551,6 +551,49 @@ BYTE* __stdcall Alloc12_Copy(unsigned n, BYTE* first, BYTE* last)
     BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
     CallC(FUN_47e3e0, first, last, p, n);
     return p;
+}
+
+}
+
+extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // allocate n bytes and copy [first, last) (stdcall)
+ASM_PROC(FUN_44dd90)    // vector copy constructor
+ASM_PROC(FUN_46b460)
+ASM_PROC(FUN_44b4a0)
+extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
+
+struct ByteVec { BYTE* begin; BYTE* end; BYTE* cap; };
+
+extern "C" {
+
+// [FUN_46cc00] assigns the bytes of *a to *b, then runs FUN_46b460 over the
+// (last - a) / 12 records at a with a copy of v (by value) and x
+void __cdecl Mult46cc00(ByteVec* a, BYTE* last, ByteVec* b, ByteVec v, int x)
+{
+    if (a != b) {
+        BYTE* f = a->begin;
+        BYTE* l = a->end;
+        unsigned n = l - f;
+        if (n > (unsigned)(b->cap - b->begin)) {
+            BYTE* p = CallThis<BYTE*>(FUN_458cf0, b, n, f, l);
+            if (b->cap - b->begin)
+                CallC(FUN_44b4a0, b->begin, b->cap - b->begin);
+            b->begin = p;
+            b->cap = p + n;
+        } else if ((unsigned)(b->end - b->begin) >= n) {
+            memmove(b->begin, f, l - f);
+        } else {
+            unsigned have = b->end - b->begin;
+            memmove(b->begin, f, have);
+            memmove(b->end, a->begin + (b->end - b->begin), a->end - (a->begin + (b->end - b->begin)));
+        }
+        b->end = b->begin + n;
+    }
+    ByteVec c;
+    CallThis(FUN_44dd90, &c, &v);
+    CallC(FUN_46b460, a, 0, (last - (BYTE*)a) / 12, c, x);
+    unsigned m = v.cap - v.begin;
+    if (m)
+        CallC(FUN_44b4a0, v.begin, m);
 }
 
 }
