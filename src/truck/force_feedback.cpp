@@ -701,3 +701,89 @@ extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
     }
     ComCall577((void*)fx[1], 28, 1, 0);
 }
+
+extern "C" char* __cdecl strerror(int e);
+ASM_PROC(FUN_576d70)    // the DirectInput version text
+ASM_PROC(FUN_5787a0)    // opens joystick n
+ASM_PROC(FUN_6303a0)    // DirectInputCreateA
+ASM_FUNC(Joy_EnumCallback, $L_576f90)
+typedef char JoyLabel[1];
+ASM_VAR(JoyLabel, g_joyEnabled6f34e8, $L_6f34e8)        // 10 ints
+ASM_VAR(JoyLabel, g_joyRecords, $L_6f3528)              // 10 records of 568 bytes
+ASM_VAR(JoyLabel, g_joy6f4b58, $L_6f4b58)               // 10 ints
+ASM_VAR(int, g_joy6f4b80, $L_6f4b80)
+ASM_VAR(int, g_joy6f4b8c, $L_6f4b8c)
+ASM_VAR(int, g_joyCount, $L_6f4b90)
+ASM_VAR(char, g_fmtJoyVersion, $L_67cec4)
+ASM_VAR(char, g_strJoy67cf0c, $L_67cf0c)
+ASM_VAR(char, g_fmtJoyError, $L_67cefc)                 // "error=%s, %0X"
+ASM_VAR(char, g_strJoy677268, $L_677268)
+ASM_VAR(char, g_strJoy67cee0, $L_67cee0)
+
+// [FUN_578d80] DirectInput start-up: clears the joystick table, enumerates the attached joysticks and opens the preferred one
+extern "C" int __cdecl Joy_Init(HWND wnd, int range)
+{
+    memset(g_joyEnabled6f34e8, 0, 40);
+    memset(g_joy6f4b58, 0, 40);
+    for (int k = 0; k < 10; k++) {
+        BYTE* r = (BYTE*)g_joyRecords + k * 568;
+        F(int, r, 0) = 0;
+        F(BYTE, r, 5) = 0;
+        F(BYTE, r, 4) = 0;
+        F(BYTE, r, 6) = 0;
+        for (int o = 8; o <= 28; o += 4) F(int, r, o) = 0;
+        F(int, r, 36) = 0;
+        F(int, r, 32) = 0;
+        F(WORD, r, 44) = 0;
+        F(WORD, r, 46) = 0;
+        F(WORD, r, 42) = 0;
+        F(WORD, r, 40) = 0;
+    }
+    g_joy6f4b80 = 0;
+    g_joy6f4b8c = 0;
+    g_joyDevice = 0;
+    char ver[100], text[300];
+    CallC(FUN_576d70, ver);
+    sprintf(text, &g_fmtJoyVersion, ver);
+    Joy_Log(text);
+    sprintf(text, &g_strJoy67cf0c);
+    Joy_Log(text);
+    int hr = CallStd<int>(FUN_6303a0, GetWindowLongA(wnd, -6), 0x700, &g_joyInput, 0);
+    if (hr < 0) {
+        sprintf(text, &g_fmtJoyError, strerror(hr), hr);
+        Joy_Log(text);
+        return 0x80004005;
+    }
+    Joy_Log(&g_strJoy677268);
+    Joy_Log(&g_strJoy67cee0);
+    ComCall577(g_joyInput, 16, 4, Joy_EnumCallback, 0, 1);
+    int n = g_joyCount;
+    if (n) {
+        int pick = -1;
+        for (int i = 0; i < n; i++)
+            if (F(int, (BYTE*)g_joyRecords + i * 568, 0) & 0x600) {
+                pick = i;
+                break;
+            }
+        if (pick < 0)
+            for (int i = 0; i < n; i++)
+                if (((int*)g_joyEnabled6f34e8)[i] == 1) {
+                    pick = i;
+                    break;
+                }
+        if (pick < 0) {
+            int best = 0;
+            for (int i = 0; i < n; i++) {
+                int w = F(WORD, (BYTE*)g_joyRecords + i * 568, 40);
+                if (w > best) {
+                    pick = i;
+                    best = w;
+                }
+            }
+            if (pick < 0)
+                pick = 0;
+        }
+        CallC(FUN_5787a0, pick, wnd, (float)range, 0);
+    }
+    return g_joyDevice ? 0 : 0x80004005;
+}

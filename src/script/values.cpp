@@ -893,3 +893,54 @@ BYTE* __fastcall FilePort_Construct(BYTE* self, void*, const char* name, unsigne
 }
 
 }
+
+ASM_VAR(char, g_fmtG4b0c70, $L_671350)      // "%g"
+#include <string.h>
+extern "C" void __cdecl Byte_Construct(BYTE* p, const BYTE* v);
+extern "C" int __cdecl toupper(int c);
+ASM_PROC(FUN_44bef0)    // vector<char>::insert(pos, &c)
+ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+
+static void Chars_PushBack(BYTE** v, char c)
+{
+    if (v[1] != v[2]) {
+        Byte_Construct(v[1], (BYTE*)&c);
+        v[1]++;
+    } else
+        CallThis(FUN_44bef0, v, v[1], &c);
+}
+
+// marks the exponent: '#' before the first 'e' or 'E' of the text
+static void Chars_MarkExponent(BYTE** v)
+{
+    for (BYTE* p = v[0]; p != v[1]; p++)
+        if (toupper((char)*p) == 'E') {
+            char c = '#';
+            if (v[1] != v[2] && p == v[1]) {
+                *p = '#';
+                v[1]++;
+            } else
+                CallThis(FUN_44bef0, v, p, &c);
+            return;
+        }
+}
+
+// [FUN_4b0c70] writes a number as script text: "#i" when exact, the real part, "@" and the imaginary part, a closing 0
+extern "C" void __fastcall Number_Write(BYTE* s, void*, BYTE** v)
+{
+    char buf[128];
+    if (F(BYTE, s, 8) & 1) {
+        Chars_PushBack(v, '#');
+        Chars_PushBack(v, 'i');
+    }
+    sprintf(buf, &g_fmtG4b0c70, F(double, s, 16));
+    CallThis(FUN_44c220, v, v[1], buf, buf + strlen(buf));
+    Chars_MarkExponent(v);
+    if (F(double, s, 24) < 0.0 || F(double, s, 24) > 0.0) {
+        Chars_PushBack(v, '@');
+        sprintf(buf, &g_fmtG4b0c70, F(double, s, 24));
+        CallThis(FUN_44c220, v, v[1], buf, buf + strlen(buf));
+        Chars_MarkExponent(v);
+    }
+    Chars_PushBack(v, 0);
+}
