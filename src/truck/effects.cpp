@@ -2205,7 +2205,7 @@ BYTE* __fastcall Effect4d2790_Construct(BYTE* self, void*, int a, int b, DWORD d
 #include "x87.h"
 
 ASM_VAR(BYTE*, g_resources696ca0, $L_696ca0)
-ASM_PROC(FUN_439320)
+extern "C" void FUN_439320(); KING_ALIAS("_FUN_439320", "_Ai_GetTangent")
 struct Bytes32 { DWORD d[8]; };
 
 // [FUN_4cd730] a vehicle's value by id: its object's virtual +84, or the float at +244 of its record
