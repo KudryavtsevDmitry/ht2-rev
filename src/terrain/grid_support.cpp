@@ -686,3 +686,167 @@ void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s)
 }
 
 }
+
+ASM_PROC(FUN_608530)    // grid: new cell (4 arguments)
+extern "C" void FUN_60a440(); KING_ALIAS("_FUN_60a440", "_Ring_Unlink")    // ring list: unlink
+extern "C" void FUN_60f1b0(); KING_ALIAS("_FUN_60f1b0", "@MarineTask_ClearRegistration@8")
+extern "C" void FUN_60cd90(); KING_ALIAS("_FUN_60cd90", "@MarineVertex_Delete@12")    // grid point: deleting destructor (flag)
+extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
+extern "C" void* __cdecl malloc(size_t n);
+typedef BYTE* FreeRing;
+ASM_VAR(FreeRing, g_unusedPoints, $L_725d40)
+ASM_VAR(int, g_unusedCount, $L_725d44)
+
+// removes point k (the table at +12 has 16-byte records, +16 40-byte point
+// data; +40 the count, already decremented): unlinks its edge ring, then
+// moves the last point into its slot
+static void Grid_RemovePoint(BYTE* self, WORD k)
+{
+    BYTE* e = F(BYTE*, F(BYTE*, self, 12) + k * 16, 4);
+    if (e) {
+        BYTE** l = F(BYTE**, self, 44);
+        if (l[0] == e && l[1] == e) {
+            if ((BYTE*)l == e)
+                F(BYTE*, self, 44) = 0;
+            else {
+                l[0] = (BYTE*)l;
+                BYTE** m = F(BYTE**, self, 44);
+                m[1] = m[0];
+            }
+        } else {
+            if ((BYTE*)l == e)
+                F(BYTE*, self, 44) = F(BYTE*, e, 0);
+            CallC(FUN_60a440, e);
+        }
+        BYTE* e2 = F(BYTE*, F(BYTE*, self, 12) + k * 16, 4);
+        if (e2) {
+            CallThis(FUN_60f1b0, e2);
+            operator delete(e2);
+        }
+    }
+    WORD c = F(WORD, self, 40);
+    if (k != c) {
+        BYTE* r = F(BYTE*, self, 12);
+        memcpy(r + k * 16, r + c * 16, 16);
+        BYTE* pts = F(BYTE*, self, 16);
+        memcpy(pts + k * 40, pts + F(WORD, self, 40) * 40, 40);
+        BYTE* rk = F(BYTE*, self, 12) + k * 16;
+        F(WORD, F(BYTE*, rk, 0), 0) = k;
+        if (F(BYTE*, rk, 4))
+            F(BYTE*, F(BYTE*, rk, 4), 16) = rk;
+    }
+}
+
+extern "C" {
+
+// [FUN_60a1c0] replaces the two cells a and b by one new cell and removes
+// the point of a's corner record (+20)
+void __fastcall Grid_MergeCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE** out)
+{
+    if (a == F(BYTE*, self, 52))
+        F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), a);
+    F(WORD, self, 42)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 36), a);
+    if (b == F(BYTE*, self, 52))
+        F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), b);
+    F(WORD, self, 42)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 36), b);
+    BYTE* n = CallThis<BYTE*>(FUN_608530, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    F(BYTE*, n, 60) = F(BYTE*, a, 68);
+    F(BYTE*, n, 64) = F(BYTE*, a, 60);
+    F(BYTE*, n, 68) = F(BYTE*, b, 60);
+    BYTE* x;
+    for (int i = 0; i < 2; i++) {
+        BYTE* from = i ? b : a;
+        x = F(BYTE*, from, 60);
+        if (x) {
+            if (F(BYTE*, x, 60) == from)
+                F(BYTE*, x, 60) = n;
+            else if (F(BYTE*, x, 68) == from)
+                F(BYTE*, x, 68) = n;
+            else
+                F(BYTE*, x, 64) = n;
+        }
+    }
+    x = F(BYTE*, a, 68);
+    if (x) {
+        if (F(BYTE*, x, 60) == a)
+            F(BYTE*, x, 60) = n;
+        else
+            F(BYTE*, x, 64) = n;
+    }
+    x = F(BYTE*, b, 64);
+    if (x) {
+        if (F(BYTE*, x, 60) == b)
+            F(BYTE*, x, 60) = n;
+        else
+            F(BYTE*, x, 68) = n;
+    }
+    *out = n;
+    BYTE* t = F(BYTE*, a, 20);
+    WORD k = F(WORD, t, 0);
+    F(WORD, self, 40)--;
+    Grid_RemovePoint(self, k);
+    if (t)
+        operator delete(t);
+    if (a)
+        CallVirt(a, 0, 1);
+    if (b)
+        CallVirt(b, 0, 1);
+}
+
+// [FUN_60cb10] removes the points no cell of the ring at +36 uses
+void __fastcall Grid_RemoveUnusedPoints(BYTE* self, void*)
+{
+    int* used = (int*)malloc(F(WORD, self, 40) * 4);
+    for (int i = 0; i < F(WORD, self, 40); i++)
+        used[i] = 0;
+    BYTE** l = F(BYTE**, self, 36);
+    BYTE* e = l[0] ? l[0] : l[1];
+    while (e) {
+        used[F(WORD, F(BYTE*, e, 16), 0)] = 1;
+        used[F(WORD, F(BYTE*, e, 20), 0)] = 1;
+        used[F(WORD, F(BYTE*, e, 24), 0)] = 1;
+        e = Ring_Next(F(BYTE**, self, 36), e);
+    }
+    for (unsigned i = 0; i < F(WORD, self, 40); i++) {
+        if (used[i])
+            continue;
+        BYTE** node = (BYTE**)operator new(12);
+        if (!node)
+            continue;
+        node[1] = (BYTE*)node;
+        node[0] = (BYTE*)node;
+        node[2] = F(BYTE*, F(BYTE*, self, 12), i * 16);
+        g_unusedCount++;
+        BYTE** head = (BYTE**)g_unusedPoints;
+        if (!head)
+            g_unusedPoints = (BYTE*)node;
+        else {
+            node[0] = (BYTE*)head;
+            node[1] = head[1];
+            ((BYTE**)head[1])[0] = (BYTE*)node;
+            head[1] = (BYTE*)node;
+        }
+    }
+    while (g_unusedPoints) {
+        BYTE* pt = ((BYTE**)g_unusedPoints)[2];
+        WORD k = F(WORD, pt, 0);
+        F(WORD, self, 40)--;
+        Grid_RemovePoint(self, k);
+        if (pt)
+            CallThis(FUN_60cd90, pt, 1);
+        BYTE** head = (BYTE**)g_unusedPoints;
+        if (head) {
+            g_unusedCount--;
+            g_unusedPoints = head[0];
+            if ((BYTE*)head == head[0])
+                g_unusedPoints = 0;
+            ((BYTE**)head[0])[1] = head[1];
+            ((BYTE**)head[1])[0] = head[0];
+            operator delete(head);
+        }
+    }
+}
+
+}
