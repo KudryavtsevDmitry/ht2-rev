@@ -3188,7 +3188,7 @@ extern "C" int __cdecl Position_Keys(PositionId p, BYTE* out)
     return 0;
 }
 
-ASM_PROC(FUN_429530)    // a player's key (list node by value)
+extern "C" void FUN_429530(); KING_ALIAS("_FUN_429530", "_Ai_GetPlayerCapital")    // a player's key (list node by value)
 
 // the list node of the player with the smallest key (players of kind 1 and
 // those without waypoints are left out); the list's head if none
@@ -5682,4 +5682,110 @@ extern "C" void* __cdecl Ai_FindPositionOnTrajectory(void* out, BYTE* player, co
     CallC(FUN_43d1f0, out, player + 24, *(PositionId*)(player + 40), d);
     Trace_Leave(&s_findOnTrajectory);
     return out;
+}
+
+extern "C" double __cdecl Player_CargoValueOf(BYTE* p);
+extern "C" double __cdecl Player_ProfitOf(BYTE* p);
+ASM_VAR(char, s_getPlayerVirtualCapital, $L_66db68)  // "getPlayerVirtualCapital(PlayerId player)"
+ASM_VAR(char, s_getPlayerCapital, $L_66db94)         // "getPlayerCapital(PlayerId player)"
+
+// a player's money plus a value of its own vehicle (if it drives) and of its other vehicles
+static double Player_CapitalWith(BYTE* p, double (__cdecl* value)(BYTE*))
+{
+    double sum = F(double, p, 136);
+    if (F(BYTE*, p, 176) == g_playersHead) {
+        sum = value(p) + sum;
+        for (BYTE** it = F(BYTE**, p, 160); it != F(BYTE**, p, 164); it += 4)
+            sum = value(*it) + sum;
+    }
+    return sum;
+}
+
+// [FUN_4293d0] getPlayerVirtualCapital(PlayerId player): money and cargo values
+extern "C" double __cdecl Ai_GetPlayerVirtualCapital(BYTE* p)
+{
+    Trace_EnterBuffered(&s_getPlayerVirtualCapital);
+    double r = Player_CapitalWith(p, Player_CargoValueOf);
+    Trace_Leave(&s_getPlayerVirtualCapital);
+    return r;
+}
+
+// [FUN_429530] getPlayerCapital(PlayerId player): money and profits
+extern "C" double __cdecl Ai_GetPlayerCapital(BYTE* p)
+{
+    Trace_EnterBuffered(&s_getPlayerCapital);
+    double r = Player_CapitalWith(p, Player_ProfitOf);
+    Trace_Leave(&s_getPlayerCapital);
+    return r;
+}
+
+ASM_VAR(BYTE*, g_anchors68cf58, $L_68cf58)
+ASM_VAR(BYTE**, g_roadNodesCap68cf08, $L_68cf08)
+ASM_VAR(char, s_anode, $L_66c920)                    // "anode"
+ASM_PROC(FUN_4709b0)    // a road node's constructor (name)
+ASM_PROC(FUN_405c00)
+extern "C" void __cdecl Construct4(DWORD* d, const DWORD* s);
+extern "C" void FUN_44cbf0(); KING_ALIAS("_FUN_44cbf0", "@Vec4b_InsertI@16")
+
+// [FUN_405f90] gives every anchor a road node (a new "anode" unless it lies on one or has two links), then resolves them
+extern "C" void __cdecl Anchors_AttachNodes()
+{
+    for (BYTE* n = *(BYTE**)g_anchors68cf58; n != g_anchors68cf58; n = *(BYTE**)n) {
+        DVec3 p = *(DVec3*)(n + 16);
+        BYTE* node = (BYTE*)Road_NodeAt(p);
+        if (!node && (F(int, n, 48) - F(int, n, 44)) / 12 != 2) {
+            BYTE* o = (BYTE*)operator new(208);
+            if (o)
+                o = CallThis<BYTE*>(FUN_4709b0, o, AI_UniqueName(&s_anode));
+            BYTE* nd = o;
+            if (g_roadNodesEnd != (RoadNode**)g_roadNodesCap68cf08) {
+                Construct4((DWORD*)g_roadNodesEnd, (DWORD*)&nd);
+                g_roadNodesEnd++;
+            } else
+                CallThis(FUN_44cbf0, &g_roadNodes, g_roadNodesEnd, &nd);
+            F(int, nd, 184) = F(int, n, 56);
+            F(int, nd, 188) = F(int, n, 60);
+            *(DVec3*)(nd + 48) = *(DVec3*)(n + 16);
+            node = nd;
+        }
+        F(BYTE*, n, 40) = node;
+    }
+    BYTE* e = *(BYTE**)g_anchors68cf58;
+    while (e != g_anchors68cf58) {
+        if (!F(int, e, 8) && F(int, e, 40)) {
+            CallC(FUN_405c00, e + 8);
+            e = *(BYTE**)g_anchors68cf58;
+        } else
+            e = *(BYTE**)e;
+    }
+}
+
+extern "C" void* __cdecl Player_FirstGoods(BYTE* p);
+ASM_PROC(FUN_486800)    // the route length between two positions
+ASM_VAR(char, s_updateAdvancementRegular, $L_66d508) // "updateAdvancementRegular(AI_Player * p, PositionId position)"
+
+// [FUN_41a7d0] updateAdvancementRegular(AI_Player * p, PositionId position): minus the distance to the goods' town (by road beyond 100)
+extern "C" void __cdecl Ai_UpdateAdvancementRegular(BYTE* p, PositionId position)
+{
+    Trace_EnterAppend(&s_updateAdvancementRegular);
+    double r;
+    if (!Player_FirstGoods(p))
+        r = 0.0;
+    else {
+        int town;
+        Town_Id(&town, g_townsBegin[F(int, Player_FirstGoods(p), 12)]);
+        DVec3 pos = *(DVec3*)(p + ((F(BYTE, p, 88) & 1) ? 616 : 304));
+        const DVec3* t = (const DVec3*)((BYTE*)g_roadNodes[town] + 48);
+        double dx = t->x - pos.x, dy = t->y - pos.y, dz = t->z - pos.z;
+        r = x87_sqrt((dy * dy + dx * dx) + dz * dz);
+        if (r > 100.0) {
+            double len = 0.0;
+            PositionId to;
+            Position_InitNode(&to, 0, town);
+            CallC(FUN_486800, 0, position, to, &len);
+            r = len;
+        }
+    }
+    F(double, p, 496) = -r;
+    Trace_Leave(&s_updateAdvancementRegular);
 }
