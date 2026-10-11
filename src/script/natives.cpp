@@ -514,3 +514,32 @@ static SchValue* SchInput_WrapNew(SchValue* out, BYTE* object, int type, const c
     F(int, out->obj, 4)++;
     return out;
 }
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+KING_ALIAS("_Stl_Allocate", "FUN_44b740")
+
+extern "C" {
+
+// [FUN_4a1f10] deque<int> constructor for n elements (128 per page): a map
+// of at least 8 slots with the pages in its middle
+void __fastcall IntDeque_Construct(int* self, void*, unsigned n)
+{
+    unsigned nodes = (n >> 7) + 1;
+    unsigned size = nodes + 2 > 8 ? nodes + 2 : 8;
+    self[1] = size;
+    int** map = size ? (int**)Stl_Allocate(size * 4) : 0;
+    self[0] = (int)map;
+    int** start = map + ((self[1] - nodes) >> 1);
+    int** finish = start + nodes;
+    Deque_AllocPages(start, finish);
+    self[5] = (int)start;
+    self[3] = (int)*start;
+    self[4] = (int)*start + 512;
+    self[9] = (int)(finish - 1);
+    self[7] = (int)finish[-1];
+    self[8] = (int)finish[-1] + 512;
+    self[2] = self[3];
+    self[6] = self[7] + (n & 127) * 4;
+}
+
+}
