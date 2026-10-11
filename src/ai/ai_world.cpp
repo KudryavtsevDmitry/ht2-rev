@@ -5789,3 +5789,60 @@ extern "C" void __cdecl Ai_UpdateAdvancementRegular(BYTE* p, PositionId position
     F(double, p, 496) = -r;
     Trace_Leave(&s_updateAdvancementRegular);
 }
+
+
+// [FUN_41fca0] a driving player's first cost total (0 otherwise)
+extern "C" double __cdecl Player_CostA(BYTE* p)
+{
+    if (F(int, p, 92) == 1 || F(int, p, 92) == 2) {
+        double a, b;
+        Player_AllCosts(p, &a, &b);
+        return a;
+    }
+    return 0.0;
+}
+
+// [FUN_41ba50] limits two cost estimates by each other through a record's ratio, then lowers both by 15%
+extern "C" void __cdecl Costs_Balance(BYTE* p, double* a, double* b, double* out, BYTE* rec)
+{
+    Player_AllCosts(p, a, b);
+    double t = *b * F(double, rec, 16) / F(double, rec, 24);
+    if (!(t >= *a))
+        *a = t;
+    t = F(double, rec, 24) * *a / F(double, rec, 16);
+    if (!(t >= *b))
+        *b = t;
+    *a = *a * 0.85;
+    *b = *b * 0.85;
+    *out = *a / F(double, rec, 16);
+}
+
+ASM_PROC(FUN_446c80)
+extern "C" void __cdecl Ai_KillDelayedPlayers();
+ASM_VAR(double, g_camX68bab0, $L_68bab0)
+ASM_VAR(double, g_camY68bab8, $L_68bab8)
+ASM_VAR(double, g_camZ68bac0, $L_68bac0)
+
+// [FUN_421c00] waiting players (state 9) far from the camera (over 2000) and idle for 900..1020 s are removed
+extern "C" void __cdecl Players_DropIdleFar()
+{
+    for (BYTE* it = *(BYTE**)g_playersHead; it != g_playersHead; it = *(BYTE**)it) {
+        if (!AI_ListData(it))
+            continue;
+        BYTE* p = (BYTE*)AI_ListData(it);
+        if (F(int, p, 84) != 9)
+            continue;
+        unsigned r = AiRandom() % 120;
+        double idle = CallC<double>(FUN_401000) - F(double, p, 944);
+        if (!((double)(__int64)(r + 900) < idle))
+            continue;
+        const DVec3* pos = (const DVec3*)(p + ((F(BYTE, p, 88) & 1) ? 616 : 304));
+        double dx = g_camX68bab0 - pos->x, dy = g_camY68bab8 - pos->y, dz = g_camZ68bac0 - pos->z;
+        if (!(x87_sqrt((dx * dx + dy * dy) + dz * dz) > 2000.0))
+            continue;
+        int id;
+        Int_Set(&id, 0, (int)it);
+        CallC(FUN_446c80, id);
+    }
+    Ai_KillDelayedPlayers();
+}

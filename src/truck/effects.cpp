@@ -1959,7 +1959,7 @@ void __fastcall Notify4dc860_Destroy(BYTE* self, void*)
 
 ASM_PROC(FUN_55eaa0)
 ASM_PROC(FUN_543e00)
-ASM_PROC(FUN_4cf260)
+extern "C" void FUN_4cf260(); KING_ALIAS("_FUN_4cf260", "_Fx_AttachVehicle")
 ASM_PROC(FUN_556110)
 ASM_PROC(FUN_5586f0)
 ASM_PROC(FUN_5fd870)    // sound: play (position by value, ...)
@@ -2987,4 +2987,139 @@ extern "C" void __cdecl Fx_CrashBurst(Vec3 p, Vec3 v, Vec3 w, int flags, float s
         r.z = (float)((double)(float)((double)gz + p.z) + wz);
         CallThis(FUN_59cea0, o, g_view, &r, &v, &w, s2, g_fx695c54 + g_fx69620c, 1);
     }
+}
+
+ASM_PROC(FUN_43fc40)    // a vehicle's info by id (id, out)
+ASM_PROC(FUN_43f690)    // sets a vehicle's flags (id, flags)
+ASM_PROC(FUN_4cf080)
+extern "C" void __fastcall Car_SetInMode(BYTE* car, void*, int mode);
+extern "C" void __fastcall Flags1196_Clear(BYTE* self, void*, int bits);
+ASM_PROC(FUN_58f290)
+ASM_VAR(int, g_noVehicle68b990, $L_68b990)
+ASM_VAR(BYTE*, g_fx696340, $L_696340)
+ASM_VAR(int, g_fx696328, $L_696328)
+ASM_VAR(int, g_fx6962cc, $L_6962cc)
+
+// [FUN_4cef60] parks a vehicle object: mode 2, its matrix saved, its anchor point placed, the flag 1 cleared
+extern "C" void __cdecl Fx_ParkVehicle(BYTE* car, int id, DWORD* flags)
+{
+    Car_SetInMode(car, 0, 2);
+    BYTE* o = car + 16;
+    Flags1196_Clear(o, 0, 1);
+    CallThis(FUN_58f290, o, 0);
+    BYTE buf[48];
+    memcpy(car + 20640, SceneObj_Matrix1(o, 0, buf), 48);
+    const float* m = (const float*)SceneObj_Matrix1(o, 0, buf);
+    double a = F(float, car, 21040), b = F(float, car, 21044), c = F(float, car, 21048);
+    F(float, car, 20676) = (float)(((double)m[3] * b + (double)m[6] * c) + a * m[0] + m[9]);
+    F(float, car, 20680) = (float)(((double)m[4] * b + (double)m[1] * a) + (double)m[7] * c + m[10]);
+    F(float, car, 20684) = (float)(((double)m[5] * b + (double)m[2] * a) + (double)m[8] * c + m[11]);
+    DWORD f = *flags & ~1u;
+    *flags = f;
+    if (id != g_noVehicle68b990)
+        CallC(FUN_43f690, id, f);
+}
+
+// [FUN_4cf260] attaches the effect to a vehicle: the shown mode from its type and flags, its parking
+extern "C" void __cdecl Fx_AttachVehicle(BYTE* car, BYTE* fx, int id)
+{
+    F(BYTE*, fx, 16576) = car;
+    int active = 1;
+    DWORD f = 0;
+    if (id != g_noVehicle68b990) {
+        BYTE info[256];
+        CallC(FUN_43fc40, id, info);
+        f = CallC<DWORD>(FUN_43f620, id);
+        int type = F(int, info, 8);
+        if (type == 1)
+            CallC(FUN_43f690, id, f | 1);
+        else {
+            active = 0;
+            F(int, fx, 16504) = type == 7 || type == 8 ? 1 : 0;
+        }
+    }
+    F(int, fx, 10108) = 1;
+    if (active) {
+        F(int, car, 20944) = 0;
+        F(WORD, fx, 10048) = 1;
+        F(int, fx, 10080) = F(int, g_6cec6c, 1316) == 0;
+        g_fx696340 = car;
+        CallC(FUN_4cf080, car, id, &f, 0);
+    } else {
+        F(WORD, fx, 10048) = 0;
+        F(int, fx, 10080) = 0;
+        if (g_fx696328) {
+            CallC(FUN_4cf080, car, id, &f, 0);
+            if (id == g_fx6962cc)
+                g_fx696340 = car;
+        } else
+            Fx_ParkVehicle(car, id, &f);
+    }
+    F(double, fx, 16544) = Timer_Now();
+}
+
+extern "C" BYTE* __fastcall Obj541970_First(BYTE* self, void*);
+extern "C" BYTE* __fastcall Obj541960_Self(BYTE* self, void*);
+
+// [FUN_4cfd10] whether a moving or type-5 vehicle is within 200 of a point
+extern "C" int __cdecl Fx_VehicleNear(float x, float y, float z)
+{
+    for (BYTE* it = Obj541970_First(F(BYTE*, g_game, 616), 0); it; ) {
+        BYTE* o = Obj541960_Self(it, 0);
+        BYTE buf[48];
+        BYTE* m = (BYTE*)SceneObj_Matrix1(o + 16, 0, buf);
+        Vec3 d;
+        d.x = (float)((double)x - F(float, m, 36));
+        d.y = (float)((double)y - F(float, m, 40));
+        d.z = (float)((double)z - F(float, m, 44));
+        if (!(Vec3_Length(&d) > 200.0f)) {
+            if (F(int, o, 21604))
+                return 1;
+            int id = F(int, o, 20636);
+            if (id != g_noVehicle68b990) {
+                BYTE info[256];
+                CallC(FUN_43fc40, id, info);
+                if (F(int, info, 8) == 5)
+                    return 1;
+            }
+        }
+        it = F(BYTE*, it, 8);
+        if (!it)
+            break;
+        it -= 4;
+    }
+    return 0;
+}
+
+ASM_PROC(FUN_43bf10)    // the position a distance along a route (out, id, pos, &d, -)
+
+// [FUN_4cdaf0] the turn rate along a route: the angle between the directions at pos and d further, over the distance made
+extern "C" double __cdecl Fx_TurnRate(Bytes32 pos, double d, int id, int back)
+{
+    double orig = d;
+    if (back)
+        d = -d;
+    Bytes32 res;
+    CallC(FUN_43bf10, &res, id, pos, &d, 0);
+    double d2 = d;
+    if (back)
+        d2 = -d2;
+    double diff = orig - d2;
+    Vec3 a, b;
+    Effect_Direction4cda20(&a, pos, back, 0);
+    Effect_Direction4cda20(&b, res, back, 0);
+    double dot = ((double)b.z * a.z + (double)b.y * a.y) + (double)b.x * a.x;
+    if (dot > 1.0) dot = 1.0;
+    else if (!(dot >= -1.0)) dot = -1.0;
+    double ang = x87_acos(dot);
+    double cx = (double)b.z * a.y - (double)a.z * b.y;
+    double cy = (double)a.z * b.x - (double)b.z * a.x;
+    double cz = (double)b.y * a.x - (double)a.y * b.x;
+    const Vec3& g = g_axis702630e;
+    double t = (cz * g.z + cy * g.y) + cx * g.x;
+    if (!(t >= 0.0))
+        ang = -ang;
+    if (!(diff >= 0.1))
+        diff = 0.1;
+    return ang / diff;
 }
