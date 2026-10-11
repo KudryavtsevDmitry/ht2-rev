@@ -221,7 +221,7 @@ ASM_PROC(FUN_479760)
 ASM_PROC(FUN_47a230)
 ASM_PROC(FUN_4581a0)
 extern "C" void FUN_47c070(); KING_ALIAS("_FUN_47c070", "_AiList_FindActive")
-ASM_PROC(FUN_47b530)
+extern "C" void FUN_47b530(); KING_ALIAS("_FUN_47b530", "_Alloc8_Copy@12")
 ASM_VAR(BYTE*, g_68cf6c, $L_68cf6c)
 ASM_VAR(BYTE**, g_68a970, $L_68a970)
 ASM_VAR(BYTE**, g_68a974, $L_68a974)
@@ -818,5 +818,35 @@ void __cdecl Rec47c360_Construct(BYTE** d, BYTE* const* s)
     memmove(p, s[1], s[2] - s[1]);
     d[2] = p + (s[2] - s[1]);
 }
+
+}
+
+extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")
+extern "C" void FUN_47e220(); KING_ALIAS("_FUN_47e220", "_Stl_UninitCopy16")
+ASM_PROC(FUN_47e260)
+extern "C" void FUN_47e1f0(); KING_ALIAS("_FUN_47e1f0", "_Stl_UninitCopy8")
+
+// n records of size bytes from the allocator, filled by copy (first, last,
+// to, n) from [first, last)
+static BYTE* AllocAndCopy(unsigned n, unsigned size, void (*copy)(), BYTE* first, BYTE* last)
+{
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * size) : 0;
+    CallC(copy, first, last, p, n);
+    return p;
+}
+
+extern "C" {
+
+// [FUN_47acd0]
+BYTE* __stdcall Alloc40_Copy(unsigned n, BYTE* first, BYTE* last) { return AllocAndCopy(n, 40, FUN_47d330, first, last); }
+
+// [FUN_47b030]
+BYTE* __stdcall Alloc16_Copy(unsigned n, BYTE* first, BYTE* last) { return AllocAndCopy(n, 16, FUN_47e220, first, last); }
+
+// [FUN_47b280]
+BYTE* __stdcall Alloc144_Copy(unsigned n, BYTE* first, BYTE* last) { return AllocAndCopy(n, 144, FUN_47e260, first, last); }
+
+// [FUN_47b530]
+BYTE* __stdcall Alloc8_Copy(unsigned n, BYTE* first, BYTE* last) { return AllocAndCopy(n, 8, FUN_47e1f0, first, last); }
 
 }

@@ -118,7 +118,7 @@ extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
 ASM_PROC(FUN_4a59f0)    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
-ASM_PROC(FUN_4a5800)
+extern "C" void FUN_4a5800(); KING_ALIAS("_FUN_4a5800", "_Sch4a5800_Dump")
 ASM_PROC(FUN_4a36c0)    // a value's destructor
 extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // vector<value>: allocate and copy (n, first, last)
 extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const SchValue* from);

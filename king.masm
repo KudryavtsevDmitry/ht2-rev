@@ -1059,6 +1059,7 @@ PUBLIC $L_650f5c, $L_651188, $L_6f6a74
 PUBLIC $L_650ab0, $L_65338c, $L_6533a8
 PUBLIC $L_64c358, $L_64d7bc, $L_64fe60, $L_6506c8, $L_6506cc, $L_650718
 PUBLIC $L_6509f8, $L_6968a8
+PUBLIC $L_6710dc
 
 ;===================================
 _TEXT SEGMENT
@@ -194590,6 +194591,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46e200 PROC
 
             push EBP
@@ -194710,6 +194713,10 @@ $L_46e2e5::
             pop EBP
             ret 12
 FUN_46e200 ENDP
+ELSE
+EXTERN _Alloc12_Copy@12:PROC
+FUN_46e200 TEXTEQU <_Alloc12_Copy@12>
+ENDIF
 $L_46e319 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -217727,6 +217734,8 @@ FUN_47ac30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47acd0 PROC
 
             push EBP
@@ -217847,6 +217856,10 @@ $L_47adb5::
             pop EBP
             ret 12
 FUN_47acd0 ENDP
+ELSE
+EXTERN _Alloc40_Copy@12:PROC
+FUN_47acd0 TEXTEQU <_Alloc40_Copy@12>
+ENDIF
 $L_47ade9 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -218153,6 +218166,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47b030 PROC
 
             push EBP
@@ -218272,6 +218287,10 @@ $L_47b112::
             pop EBP
             ret 12
 FUN_47b030 ENDP
+ELSE
+EXTERN _Alloc16_Copy@12:PROC
+FUN_47b030 TEXTEQU <_Alloc16_Copy@12>
+ENDIF
 $L_47b146 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -218409,6 +218428,8 @@ $L_47b26f::
 $L_47b146 ENDP
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47b280 PROC
 
             push EBP
@@ -218529,6 +218550,10 @@ $L_47b365::
             pop EBP
             ret 12
 FUN_47b280 ENDP
+ELSE
+EXTERN _Alloc144_Copy@12:PROC
+FUN_47b280 TEXTEQU <_Alloc144_Copy@12>
+ENDIF
 $L_47b399 PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -218734,6 +218759,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47b530 PROC
 
             push EBP
@@ -218857,6 +218884,10 @@ $L_47b619::
             pop EBP
             ret 12
 FUN_47b530 ENDP
+ELSE
+EXTERN _Alloc8_Copy@12:PROC
+FUN_47b530 TEXTEQU <_Alloc8_Copy@12>
+ENDIF
 $L_47b64d PROC
 
             mov EAX,DWORD PTR [EBP+8]
@@ -295682,6 +295713,8 @@ $L_4a57ed::
             ret 
 FUN_4a55c0 ENDP
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a5800 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -295801,6 +295834,10 @@ $L_4a58f6::
             add ESP,12
             ret 
 FUN_4a5800 ENDP
+ELSE
+EXTERN _Sch4a5800_Dump:PROC
+FUN_4a5800 TEXTEQU <_Sch4a5800_Dump>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -305749,6 +305786,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aac80 PROC
 
             push -1
@@ -305888,6 +305927,10 @@ $L_4aad9e::
             add ESP,16
             ret 4
 FUN_4aac80 ENDP
+ELSE
+EXTERN @Sch4aac80_Copy@12:PROC
+FUN_4aac80 TEXTEQU <@Sch4aac80_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -305896,6 +305939,8 @@ FUN_4aac80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4aadc0 PROC
 
             push -1
@@ -306005,6 +306050,10 @@ $L_4aae83::
             add ESP,16
             ret 4
 FUN_4aadc0 ENDP
+ELSE
+EXTERN @Values4aadc0_Copy@12:PROC
+FUN_4aadc0 TEXTEQU <@Values4aadc0_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -308096,6 +308145,8 @@ FUN_4abec0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4abf10 PROC
 
             push EBP
@@ -308223,6 +308274,10 @@ $L_4abfd6::
             pop EBP
             ret 4
 FUN_4abf10 ENDP
+ELSE
+EXTERN @CharDeque_Construct@12:PROC
+FUN_4abf10 TEXTEQU <@CharDeque_Construct@12>
+ENDIF
 $L_4ac049 PROC
 
             mov EBX,DWORD PTR [EBP-28]
@@ -310610,6 +310665,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4ad330 PROC
 
             push -1
@@ -310730,6 +310787,10 @@ $L_4ad42d::
             add ESP,24
             ret 
 FUN_4ad330 ENDP
+ELSE
+EXTERN _Sch4ad330:PROC
+FUN_4ad330 TEXTEQU <_Sch4ad330>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
