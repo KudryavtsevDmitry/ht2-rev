@@ -1040,6 +1040,7 @@ PUBLIC $L_67055c
 PUBLIC $L_683538, $L_721754
 PUBLIC $L_650340, $L_6503e4, $L_67cfc0, $L_67d04c
 PUBLIC $L_64c0b0
+PUBLIC $L_64b7c0, $L_64bc20, $L_64bc28, $L_64bc30, $L_66c720, $L_66fa60
 
 ;===================================
 _TEXT SEGMENT
@@ -207992,6 +207993,8 @@ FUN_4754d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4758d0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -208207,6 +208210,10 @@ $L_475afb::
             add ESP,20
             ret 4
 FUN_4758d0 ENDP
+ELSE
+EXTERN @Player_SaveX@12:PROC
+FUN_4758d0 TEXTEQU <@Player_SaveX@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -209643,6 +209650,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4769c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -209654,6 +209663,10 @@ FUN_4769c0 PROC
             fld QWORD PTR [ECX+EDX*8]
             ret 
 FUN_4769c0 ENDP
+ELSE
+EXTERN _Table68cc08_Get:PROC
+FUN_4769c0 TEXTEQU <_Table68cc08_Get>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -210651,6 +210664,8 @@ FUN_477300 TEXTEQU <_Player_ClearFlags>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477310 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -210674,10 +210689,16 @@ $L_477346::
             fld QWORD PTR [$L_64b678]
             ret 
 FUN_477310 ENDP
+ELSE
+EXTERN _Driver_CargoFactor:PROC
+FUN_477310 TEXTEQU <_Driver_CargoFactor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477350 PROC
 
             sub ESP,12
@@ -210721,6 +210742,10 @@ $L_4773c4::
             add ESP,12
             ret 
 FUN_477350 ENDP
+ELSE
+EXTERN _Driver_Load:PROC
+FUN_477350 TEXTEQU <_Driver_Load>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -211848,6 +211873,8 @@ FUN_477c50 TEXTEQU <_Player_Call477c30>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477c60 PROC
 
             fld QWORD PTR [ESP+8]
@@ -211873,6 +211900,10 @@ $L_477c89::
             fstp QWORD PTR [EAX+104]
             ret 
 FUN_477c60 ENDP
+ELSE
+EXTERN _Driver_SetDeadline:PROC
+FUN_477c60 TEXTEQU <_Driver_SetDeadline>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -222343,6 +222374,8 @@ $L_47d443 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47d460 PROC
 
             push EBP
@@ -222440,6 +222473,10 @@ $L_47d516::
             pop EBP
             ret 
 FUN_47d460 ENDP
+ELSE
+EXTERN _Doubles_InsertionSortDesc:PROC
+FUN_47d460 TEXTEQU <_Doubles_InsertionSortDesc>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -224593,6 +224630,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47e420 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -224671,6 +224710,10 @@ $L_47e49f::
             add ESP,8
             ret 
 FUN_47e420 ENDP
+ELSE
+EXTERN _Doubles_InsertDesc:PROC
+FUN_47e420 TEXTEQU <_Doubles_InsertDesc>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -225409,6 +225452,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47e9d0 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -225494,6 +225539,10 @@ $L_47ea5d::
             pop EBX
             ret 
 FUN_47e9d0 ENDP
+ELSE
+EXTERN _Doubles_MergeDesc:PROC
+FUN_47e9d0 TEXTEQU <_Doubles_MergeDesc>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -227363,6 +227412,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f7a0 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -227422,7 +227473,13 @@ $L_47f7df::
 
             nop
 FUN_47f7a0 ENDP
+ELSE
+EXTERN _Doubles_LowerBoundDesc:PROC
+FUN_47f7a0 TEXTEQU <_Doubles_LowerBoundDesc>
+ENDIF
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f7f0 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -227468,6 +227525,10 @@ $L_47f82f::
             pop ESI
             ret 
 FUN_47f7f0 ENDP
+ELSE
+EXTERN _Doubles_UpperBoundDesc:PROC
+FUN_47f7f0 TEXTEQU <_Doubles_UpperBoundDesc>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

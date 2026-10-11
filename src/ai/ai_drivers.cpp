@@ -68,11 +68,21 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
 }
 
 ASM_PROC(FUN_4cd730)    // the value of a vrId's vehicle
+ASM_PROC(FUN_4754d0)
+ASM_PROC(FUN_477b60)
+ASM_VAR(DWORD, g_tagPLYX, $L_66fa60)
+ASM_VAR(double, g_zero64b678, $L_64b678)
+ASM_VAR(double, g_one64b670, $L_64b670)
+ASM_VAR(double, g_66c720, $L_66c720)
+ASM_VAR(double, g_64bc20, $L_64bc20)
+ASM_VAR(double, g_four64b7c0, $L_64b7c0)
+ASM_VAR(double, g_64bc28, $L_64bc28)
+ASM_VAR(double, g_m1_64bc30, $L_64bc30)
 extern "C" void FUN_4777b0(); KING_ALIAS("_FUN_4777b0", "_Player_FirstGoods")
-ASM_PROC(FUN_477350)
+extern "C" void FUN_477350(); KING_ALIAS("_FUN_477350", "_Driver_Load")
 extern "C" void FUN_477bd0(); KING_ALIAS("_FUN_477bd0", "_Player_SetDeadline")
 extern "C" void FUN_477c30(); KING_ALIAS("_FUN_477c30", "_Player_ClearDeadline")
-ASM_PROC(FUN_477c60)
+extern "C" void FUN_477c60(); KING_ALIAS("_FUN_477c60", "_Driver_SetDeadline")
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
 extern "C" void FUN_4776b0(); KING_ALIAS("_FUN_4776b0", "_Player_Reset477600")
 extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
@@ -1096,6 +1106,82 @@ void __cdecl Route_Each477600(BYTE* x)
     for (BYTE* e = F(BYTE*, v, 28); e != F(BYTE*, F(BYTE*, x, 20), 32); e += 144)
         for (BYTE* q = F(BYTE*, e, 120); q != F(BYTE*, e, 124); q += 16)
             CallC(FUN_477600, q);
+}
+
+}
+
+extern "C" {
+
+// [FUN_4758d0] saves the player: a PLYX chunk when only the basics changed
+void __fastcall Player_SaveX(BYTE* self, void*, BYTE* s)
+{
+    if (F(BYTE, self, 864) || F(int, self, 868) != F(int, self, 88) || F(int, self, 872) != F(int, self, 92)) {
+        CallThis(FUN_4754d0, self, s);
+        return;
+    }
+    CallThis(FUN_46e460, s, F(BYTE*, s, 4), F(const BYTE*, self, 0), F(const BYTE*, self, 4));
+    int pos;
+    CallC(FUN_490c90, s, (const DWORD*)&g_tagPLYX, &pos);
+    Save_Write(s, self + 88, 4);
+    static const int words[] = {56, 36, 32};
+    for (int i = 0; i < 3; i++)
+        Save_Write(s, self + words[i], 2);
+    float f = (float)F(double, self, 40);
+    Save_Write(s, &f, 4);
+    static const int words2[] = {48, 52, 60};
+    for (int i = 0; i < 3; i++)
+        Save_Write(s, self + words2[i], 2);
+    f = (float)F(double, self, 328);
+    Save_Write(s, &f, 4);
+    f = (float)F(double, self, 496);
+    Save_Write(s, &f, 4);
+    Save_Write(s, self + 504, 1);
+    Save_Write(s, self + 720, 1);
+    Save_Write(s, self + 716, 1);
+    CallC(FUN_490ce0, s, &pos);
+}
+
+// [FUN_4769c0] the table value (i, j)
+double __cdecl Table68cc08_Get(int i, int j)
+{
+    const double* row = F(const double*, (BYTE*)g_cargoPrices + i * 24, 12);
+    return row[j * 3];
+}
+
+// [FUN_477310] the driver's cargo weight factor
+double __cdecl Driver_CargoFactor(BYTE* x)
+{
+    BYTE* o = F(BYTE*, x, 516);
+    if (!o || !(F(BYTE, o, 40) & 1))
+        return g_zero64b678;
+    BYTE* t = ((BYTE**)g_cargoTypes)[F(int, o, 4)];
+    return (g_one64b670 - g_66c720) * F(double, t, 48) * g_64bc20;
+}
+
+// [FUN_477350] the load the driver carries (scaled by the current race's factor)
+double __cdecl Driver_Load(BYTE* x)
+{
+    BYTE* r;
+    double f = 1.0;
+    CallC(FUN_477b60, &r);
+    if (r != (BYTE*)g_players)
+        f = F(double, r, 768) * g_four64b7c0 + g_one64b670;
+    BYTE* o = F(BYTE*, x, 508);
+    if (!o || F(int, o, 4) == -1)
+        return g_zero64b678;
+    BYTE* t = ((BYTE**)g_cargoTypes)[F(int, o, 4)];
+    return f * F(double, t, 48) * g_64bc28;
+}
+
+// [FUN_477c60] sets the deadline: t, or now + t (-1 keeps it as it is)
+void __cdecl Driver_SetDeadline(BYTE* x, double t)
+{
+    if (!(t < g_m1_64bc30) && !(t > g_m1_64bc30)) {
+        F(double, x, 104) = t;
+    } else {
+        F(double, x, 104) = AI_Now() + t;
+    }
+    F(DWORD, x, 88) |= 0x8000000;
 }
 
 }

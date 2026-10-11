@@ -678,3 +678,96 @@ BYTE* __cdecl UpperBound40(BYTE* first, BYTE* last, const BYTE* x)
 }
 
 }
+
+// --- sorting doubles in descending order (greater<double>); a comparison
+// that the original makes with fcomp + "C0 or C3" is false for NaN
+
+extern "C" {
+
+// [FUN_47e420] insertion step: moves *i back into [first, i]
+void __cdecl Doubles_InsertDesc(double* first, double* i)
+{
+    double v = *i;
+    if (v > *first) {
+        for (double* p = i; p > first; p--)
+            *p = p[-1];
+        *first = v;
+        return;
+    }
+    double* p = i;
+    while (v > p[-1]) {
+        *p = p[-1];
+        p--;
+    }
+    *p = v;
+}
+
+// [FUN_47d460] insertion sort, descending
+void __cdecl Doubles_InsertionSortDesc(double* first, double* last)
+{
+    if (first == last)
+        return;
+    for (double* i = first + 1; i != last; i++) {
+        double v = *i;
+        if (v > *first) {
+            for (double* p = i; p > first; p--)
+                *p = p[-1];
+            *first = v;
+        } else {
+            double* p = i;
+            while (v > p[-1]) {
+                *p = p[-1];
+                p--;
+            }
+            *p = v;
+        }
+    }
+}
+
+// [FUN_47e9d0] merge of two descending ranges into out
+double* __cdecl Doubles_MergeDesc(const double* f1, const double* l1, const double* f2, const double* l2, double* out)
+{
+    while (f1 != l1 && f2 != l2) {
+        if (*f2 > *f1)
+            *out++ = *f2++;
+        else
+            *out++ = *f1++;
+    }
+    while (f1 != l1)
+        *out++ = *f1++;
+    while (f2 != l2)
+        *out++ = *f2++;
+    return out;
+}
+
+// [FUN_47f7a0] lower_bound in a descending range
+const double* __cdecl Doubles_LowerBoundDesc(const double* first, const double* last, const double* x)
+{
+    for (int len = last - first; len > 0;) {
+        int half = len >> 1;
+        if (first[half] > *x) {
+            first += half + 1;
+            len -= half + 1;
+        } else {
+            len = half;
+        }
+    }
+    return first;
+}
+
+// [FUN_47f7f0] upper_bound in a descending range
+const double* __cdecl Doubles_UpperBoundDesc(const double* first, const double* last, const double* x)
+{
+    for (int len = last - first; len > 0;) {
+        int half = len >> 1;
+        if (*x > first[half]) {
+            len = half;
+        } else {
+            first += half + 1;
+            len -= half + 1;
+        }
+    }
+    return first;
+}
+
+}

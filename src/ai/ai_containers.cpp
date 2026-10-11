@@ -1776,8 +1776,8 @@ extern "C" void __cdecl Heap328_Make(BYTE** first, BYTE** last, int, int, int)
 // stable sort of doubles, largest first (the road's costs): elements are
 // copied as two dwords; only the comparisons load them
 
-ASM_PROC(FUN_47f7a0)    // the first position in a run whose value is not above x (first, last, &x, -, 0)
-ASM_PROC(FUN_47f7f0)    // the first position in a run whose value is below x
+extern "C" void FUN_47f7a0(); KING_ALIAS("_FUN_47f7a0", "_Doubles_LowerBoundDesc")    // the first position in a run whose value is not above x (first, last, &x, -, 0)
+extern "C" void FUN_47f7f0(); KING_ALIAS("_FUN_47f7f0", "_Doubles_UpperBoundDesc")    // the first position in a run whose value is below x
 
 typedef unsigned __int64 Bits8;
 
