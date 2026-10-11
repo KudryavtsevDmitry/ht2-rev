@@ -946,3 +946,25 @@ extern "C" Rec40* __cdecl Rec40_Merge(Rec40* f1, Rec40* l1, Rec40* f2, Rec40* l2
         *out = *f2++;
     return out;
 }
+
+extern "C" void FUN_47f770(); KING_ALIAS("_FUN_47f770", "_Stl_UninitFill40")    // fills uninitialized 40-byte records
+
+// [FUN_47c570] temporary buffer for [first, last) of 40-byte records: as large as malloc allows, filled from first
+extern "C" int* __fastcall TempBuf40_Init(int* self, int, Rec40* first, Rec40* last)
+{
+    int n = last - first;
+    self[1] = n;
+    self[0] = n;
+    self[2] = 0;
+    if (n > 53687091)
+        self[1] = 53687091;
+    while (self[1] > 0) {
+        self[2] = (int)malloc(self[1] * 40);
+        if (self[2])
+            break;
+        self[1] /= 2;
+    }
+    if (self[1] > 0)
+        CallC(FUN_47f770, self[2], self[1], first, last);
+    return self;
+}

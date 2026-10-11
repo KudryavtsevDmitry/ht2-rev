@@ -15,7 +15,7 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.cpp
 
-ASM_PROC(FUN_4a36f0)    // destructor of the value holders (map and list entries)
+extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
@@ -1897,4 +1897,29 @@ extern "C" void __cdecl SchPool2_Free(void* p)
     }
     (&g_pool693658)[g_poolCount694658] = p;
     g_poolCount694658++;
+}
+
+ASM_VAR(char, vt_64bf68, $L_64bf68)
+
+// [FUN_4a36f0] destructor of a handle pair: the handle at +12, then the one at +0
+extern "C" void __fastcall HandlePair_Destroy(BYTE* self, int)
+{
+    SchHandle_Release((void**)(self + 12), 0);
+    SchHandle_Release((void**)self, 0);
+}
+
+// [FUN_4a7230] destructor of a script node with a handle list (vtable 64bf68)
+extern "C" void __fastcall SchListNode_Destroy(BYTE* self, int)
+{
+    *(void**)self = &vt_64bf68;
+    SchHandle_Release((void**)(self + 32), 0);
+    BYTE* b = F(BYTE*, self, 16);
+    BYTE* e = F(BYTE*, self, 20);
+    for (BYTE* p = b; p != e; p += 12)
+        SchHandle_Release((void**)p, 0);
+    b = F(BYTE*, self, 16);
+    int n = (int)(F(BYTE*, self, 24) - b) / 12;
+    if (n)
+        CallC(FUN_44b4a0, b, n * 12);
+    SchHandle_Release((void**)(self + 4), 0);
 }

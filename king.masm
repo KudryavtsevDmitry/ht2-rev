@@ -1107,6 +1107,7 @@ PUBLIC $L_6ce378, $L_6f33b0, $L_6f33b4, $L_6f340c, $L_6f3434, $L_6f349c
 PUBLIC $L_66ff3c, $L_66ff40, $L_66ff58, $L_676644, $L_676658, $L_676668
 PUBLIC $L_67667c, $L_6968f0, $L_6f2d18
 PUBLIC $L_68d11c
+PUBLIC $L_650900, $L_65094c, $L_6708e4
 
 ;===================================
 _TEXT SEGMENT
@@ -22990,6 +22991,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40cb60 PROC
 
             push -1
@@ -23091,6 +23094,10 @@ $L_40cc3b::
             add ESP,20
             ret 
 FUN_40cb60 ENDP
+ELSE
+EXTERN @Rec40cb60_Destroy@8:PROC
+FUN_40cb60 TEXTEQU <@Rec40cb60_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -128018,6 +128025,8 @@ $L_44c9ec::
             nop
 $L_44c9bb ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44ca00 PROC
 
             push -1
@@ -128092,6 +128101,10 @@ $L_44ca93::
             add ESP,16
             ret 4
 FUN_44ca00 ENDP
+ELSE
+EXTERN @Handle9_Init@12:PROC
+FUN_44ca00 TEXTEQU <@Handle9_Init@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -130352,6 +130365,8 @@ $L_44dd79::
             nop
 $L_44dd45 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44dd90 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -130450,6 +130465,10 @@ $L_44de30::
             add ESP,12
             ret 4
 FUN_44dd90 ENDP
+ELSE
+EXTERN @VecChar_Copy@12:PROC
+FUN_44dd90 TEXTEQU <@VecChar_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -135625,6 +135644,8 @@ $L_450840::
             nop
 $L_4507e0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_450850 PROC
 
             push -1
@@ -135734,6 +135755,10 @@ $L_450914::
             add ESP,16
             ret 4
 FUN_450850 ENDP
+ELSE
+EXTERN @Vec24Rec_Copy@12:PROC
+FUN_450850 TEXTEQU <@Vec24Rec_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -136084,6 +136109,8 @@ $L_450cd5::
             nop
 $L_450ca0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_450ce0 PROC
 
             push -1
@@ -136189,6 +136216,10 @@ $L_450d91::
             add ESP,16
             ret 4
 FUN_450ce0 ENDP
+ELSE
+EXTERN @Vec16Rec_Copy@12:PROC
+FUN_450ce0 TEXTEQU <@Vec16Rec_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -221494,6 +221525,8 @@ $L_47c54e PROC
             nop
 $L_47c54e ENDP
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47c570 PROC
 
             push EBP
@@ -221580,6 +221613,10 @@ $L_47c614::
             pop EBP
             ret 8
 FUN_47c570 ENDP
+ELSE
+EXTERN @TempBuf40_Init@16:PROC
+FUN_47c570 TEXTEQU <@TempBuf40_Init@16>
+ENDIF
 $L_47c629 PROC
 
             mov ESI,DWORD PTR [EBP-20]
@@ -289328,6 +289365,8 @@ $L_4a1d90::
             nop
 $L_4a1d0d ENDP
 ALIGN 16
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 FUN_4a1da0 PROC
 
             push -1
@@ -289402,6 +289441,10 @@ $L_4a1e12::
             nop
             nop
 FUN_4a1da0 ENDP
+ELSE
+EXTERN @Handle10_Init@12:PROC
+FUN_4a1da0 TEXTEQU <@Handle10_Init@12>
+ENDIF
 ; AI script evaluator: src\script\natives.cpp, nmake ASM_NATIVES=1 assembles the original
 IFDEF ASM_NATIVES
 ALIGN 16
@@ -289690,6 +289733,8 @@ $L_4a2080::
             nop
 $L_4a2038 ENDP
 ALIGN 16
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 FUN_4a20a0 PROC
 
             push -1
@@ -289756,6 +289801,10 @@ $L_4a210c::
             add ESP,16
             ret 4
 FUN_4a20a0 ENDP
+ELSE
+EXTERN @DequeDw_PushBackAux@12:PROC
+FUN_4a20a0 TEXTEQU <@DequeDw_PushBackAux@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -292388,6 +292437,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a36f0 PROC
 
             push -1
@@ -292455,6 +292506,10 @@ $L_4a3775::
             add ESP,16
             ret 
 FUN_4a36f0 ENDP
+ELSE
+EXTERN @HandlePair_Destroy@8:PROC
+FUN_4a36f0 TEXTEQU <@HandlePair_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -299548,6 +299603,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a7230 PROC
 
             push -1
@@ -299675,6 +299732,10 @@ $L_4a7346::
             add ESP,20
             ret 
 FUN_4a7230 ENDP
+ELSE
+EXTERN @SchListNode_Destroy@8:PROC
+FUN_4a7230 TEXTEQU <@SchListNode_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -658663,6 +658724,8 @@ $L_593650 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_593670 PROC
 
             push -1
@@ -658730,6 +658793,10 @@ $L_5936d7::
             add ESP,16
             ret 
 FUN_593670 ENDP
+ELSE
+EXTERN @FadeBody_Destroy@8:PROC
+FUN_593670 TEXTEQU <@FadeBody_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

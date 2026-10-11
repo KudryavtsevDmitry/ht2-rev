@@ -703,7 +703,7 @@ extern "C" void FUN_4b6610(); KING_ALIAS("_FUN_4b6610", "_SchValue_Same")
 extern "C" void FUN_418f70(); KING_ALIAS("_FUN_418f70", "_Player_WaitsInTown")
 extern "C" void FUN_45dde0(); KING_ALIAS("_FUN_45dde0", "@Vec4b_InsertE@16")
 extern "C" void FUN_4072f0(); KING_ALIAS("_FUN_4072f0", "_Copy1")
-ASM_PROC(FUN_44dd90)
+extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
 extern "C" void FUN_46b110(); KING_ALIAS("_FUN_46b110", "_UninitFill4s")
 ASM_PROC(FUN_462d10)
 extern "C" void FUN_40a580(); KING_ALIAS("_FUN_40a580", "@Pair_Set@16")
@@ -2957,7 +2957,7 @@ extern "C" void __fastcall Rec458940_Destroy(BYTE* self, void*)
 // medium-sized functions, batch 4: vector erase, order lists, the name hash
 
 extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")    // destroy a 104-byte record
-ASM_PROC(FUN_40cb60)    // destroy a 24-byte record
+extern "C" void FUN_40cb60(); KING_ALIAS("_FUN_40cb60", "@Rec40cb60_Destroy@8")    // destroy a 24-byte record
 extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@8")    // destroy a 192-byte record
 extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
@@ -6708,4 +6708,103 @@ extern "C" int __cdecl Rec_ActivateOnly(BYTE* r)
             CallC(FUN_40a1d0, (int)it);
     }
     return 0;
+}
+
+ASM_VAR(char, s_type66ce4c, $L_66ce4c)
+ASM_PROC(FUN_466300)    // copy-constructs 16-byte records (first, last, dest, -)
+ASM_PROC(FUN_466200)    // copy-constructs 24-byte records (first, last, dest, -)
+ASM_PROC(FUN_40cc50)    // destroys a 24-byte element
+
+// [FUN_44ca00] a handle copied from a value of type 9, an error for another type
+extern "C" void** __fastcall Handle9_Init(void** self, int, void** v)
+{
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* obj = (BYTE*)v[0];
+    if (!obj) {
+        self[0] = 0;
+        self[2] = 0;
+        return self;
+    }
+    if (CallVirt<int>(obj, 0) != 9) {
+        int name = CallVirt<int>(v[0], 4);
+        CallC(FUN_4a54e0, 2, 1, name, &s_type66ce4c);
+        return self;
+    }
+    self[0] = v[0];
+    self[2] = v[2];
+    ++*(int*)((BYTE*)v[0] + 4);
+    return self;
+}
+
+// [FUN_44dd90] vector<char> copy constructor
+extern "C" BYTE** __fastcall VecChar_Copy(BYTE** self, int, BYTE* const* src)
+{
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    int n = src[1] - src[0];
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n) : 0;
+    self[0] = p;
+    self[1] = p;
+    self[2] = p + n;
+    BYTE* b = src[0];
+    BYTE* e = src[1];
+    memmove(p, b, e - b);
+    self[1] = p + (e - b);
+    return self;
+}
+
+// [FUN_450ce0] copy constructor of a vector of 16-byte records with a trailing field
+extern "C" BYTE** __fastcall Vec16Rec_Copy(BYTE** self, int, BYTE* const* src)
+{
+    unsigned n = (src[1] - src[0]) >> 4;
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 16) : 0;
+    self[0] = p;
+    self[1] = p;
+    self[2] = p + n * 16;
+    self[1] = CallC<BYTE*>(FUN_466300, src[0], src[1], p, 0);
+    self[3] = src[3];
+    return self;
+}
+
+// [FUN_450850] copy constructor of a vector of 24-byte records
+extern "C" BYTE** __fastcall Vec24Rec_Copy(BYTE** self, int, BYTE* const* src)
+{
+    int n = (int)(src[1] - src[0]) / 24;
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 24) : 0;
+    self[0] = p;
+    self[1] = p;
+    self[2] = p + n * 24;
+    self[1] = CallC<BYTE*>(FUN_466200, src[0], src[1], p, n);
+    return self;
+}
+
+// [FUN_40cb60] destructor: the vector of 24-byte elements at +12, then the handle
+extern "C" void __fastcall Rec40cb60_Destroy(BYTE* self, int)
+{
+    BYTE* b = F(BYTE*, self, 12);
+    BYTE* e = F(BYTE*, self, 16);
+    for (BYTE* p = b; p != e; p += 24)
+        CallThis(FUN_40cc50, p);
+    b = F(BYTE*, self, 12);
+    int n = (int)(F(BYTE*, self, 20) - b) / 24;
+    if (n)
+        CallC(FUN_44b4a0, b, n * 24);
+    if (F(DWORD, self, 8) & 0x10000)
+        return;
+    BYTE* obj = F(BYTE*, self, 0);
+    if (!obj)
+        return;
+    --F(int, obj, 4);
+    obj = F(BYTE*, self, 0);
+    if (F(int, obj, 4) == 0 && obj)
+        CallThis((*(void (***)())obj)[3], obj, 1);
 }

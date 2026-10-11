@@ -14,7 +14,7 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.cpp
 
-ASM_PROC(FUN_4a36f0)    // destructor of the value holders (map and list entries)
+extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
@@ -636,4 +636,52 @@ BYTE* __fastcall SchScope_Construct(BYTE* self, void*, BYTE* outer)
     return self;
 }
 
+}
+
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // reports a script error
+extern "C" void FUN_4a2a80(); KING_ALIAS("_FUN_4a2a80", "@Deque_ReallocMap@16")    // deque: reallocates the map (n, at front)
+ASM_PROC(FUN_4581a0)    // malloc retrying through the new handler
+ASM_VAR(char, s_type6708e4, $L_6708e4)
+
+// [FUN_4a1da0] a handle copied from a value of type 10, an error for another type
+extern "C" void** __fastcall Handle10_Init(void** self, int, void** v)
+{
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* obj = (BYTE*)v[0];
+    if (!obj) {
+        self[0] = 0;
+        self[2] = 0;
+        return self;
+    }
+    if (CallVirt<int>(obj, 0) != 10) {
+        int name = CallVirt<int>(v[0], 4);
+        CallC(FUN_4a54e0, 2, 1, name, &s_type6708e4);
+        return self;
+    }
+    self[0] = v[0];
+    self[2] = v[2];
+    ++*(int*)((BYTE*)v[0] + 4);
+    return self;
+}
+
+// [FUN_4a20a0] deque<dword>: push_back when the last block is full (a new 512-byte block)
+extern "C" void __fastcall DequeDw_PushBackAux(BYTE* self, int, const DWORD* x)
+{
+    DWORD v = *x;
+    if ((unsigned)(F(int, self, 4) - ((F(BYTE*, self, 36) - F(BYTE*, self, 0)) >> 2)) < 2)
+        CallThis(FUN_4a2a80, self, 1, 0);
+    void* p = malloc(512);
+    if (!p)
+        p = CallC<void*>(FUN_4581a0, 512);
+    F(void**, self, 36)[1] = p;
+    DWORD* cur = F(DWORD*, self, 24);
+    if (cur)
+        *cur = v;
+    F(BYTE*, self, 36) += 4;
+    BYTE* first = *F(BYTE**, self, 36);
+    F(BYTE*, self, 28) = first;
+    F(BYTE*, self, 32) = first + 512;
+    F(BYTE*, self, 24) = F(BYTE*, self, 28);
 }

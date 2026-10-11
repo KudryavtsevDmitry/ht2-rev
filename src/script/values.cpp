@@ -444,7 +444,7 @@ extern "C" BYTE* __fastcall Sch_At(BYTE** self, void*, int i)
 
 ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_44bef0)    // vector<char>::insert(pos, &c)
-ASM_PROC(FUN_4a20a0)    // deque<int>::push_back when the block is full
+extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")    // deque<int>::push_back when the block is full
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
 ASM_VAR(AsmLabel, g_fmtLineCol, $L_671458)      // the "line col" prefix of an error line
 

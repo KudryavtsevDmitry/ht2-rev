@@ -14,7 +14,7 @@
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
 extern "C" void FUN_46cbd0(); KING_ALIAS("_FUN_46cbd0", "_PopHeapLast12")
-ASM_PROC(FUN_44dd90)
+extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
 extern "C" void FUN_46b460(); KING_ALIAS("_FUN_46b460", "_Names_AdjustHeap")
 extern "C" void FUN_46b740(); KING_ALIAS("_FUN_46b740", "_Far_AdjustHeap")
 extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")
@@ -29,7 +29,7 @@ ASM_PROC(FUN_447ef0)
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
 extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")
 ASM_PROC(FUN_40cc50)
-ASM_PROC(FUN_40cb60)
+extern "C" void FUN_40cb60(); KING_ALIAS("_FUN_40cb60", "@Rec40cb60_Destroy@8")
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 
@@ -556,7 +556,7 @@ BYTE* __stdcall Alloc12_Copy(unsigned n, BYTE* first, BYTE* last)
 }
 
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // allocate n bytes and copy [first, last) (stdcall)
-ASM_PROC(FUN_44dd90)    // vector copy constructor
+extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")    // vector copy constructor
 extern "C" void FUN_46b460(); KING_ALIAS("_FUN_46b460", "_Names_AdjustHeap")
 ASM_PROC(FUN_44b4a0)
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);

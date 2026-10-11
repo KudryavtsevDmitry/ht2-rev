@@ -855,3 +855,29 @@ extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int)
         operator delete(p);
     CallThis(FUN_57d490, self);
 }
+
+ASM_VAR(char, vt_65094c, $L_65094c)
+ASM_VAR(char, vt_650900, $L_650900)
+ASM_PROC(FUN_5ef780)
+extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
+extern "C" void FUN_594d70(); KING_ALIAS("_FUN_594d70", "_Faders_DeleteAll")    // deletes all faders
+ASM_PROC(FUN_5f1a70)
+ASM_PROC(FUN_5d3290)
+
+// [FUN_593670] destructor of a fading body (vtables 65094c, 650900 at +32)
+extern "C" void __fastcall FadeBody_Destroy(BYTE* self, int)
+{
+    BYTE* sub = self + 32;
+    *(void**)self = &vt_65094c;
+    *(void**)sub = &vt_650900;
+    operator delete(F(void*, self, 112));
+    BYTE* a = F(BYTE*, self, 100);
+    // the element destructor (FUN_50d190) does nothing
+    if (a)
+        operator delete(a - 4);
+    CallThis(FUN_5ef780, sub);
+    CallThis(FUN_5d33b0, self);
+    CallC(FUN_594d70);
+    CallThis(FUN_5f1a70, self ? sub : 0);
+    CallThis(FUN_5d3290, self);
+}
