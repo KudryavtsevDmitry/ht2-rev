@@ -492,3 +492,40 @@ extern "C" BYTE* __fastcall TerrainView_Construct(BYTE* s, void*, int x, int y, 
     F(float, s, 76) = (float)(750.0f * (double)k_0_025);
     return s;
 }
+
+#include "vecmath.h"
+ASM_PROC(FUN_6157a0)    // a segment test against the terrain
+
+// [FUN_616520] tests the segment a-b against the terrain in 5 m pieces; 1 at the first hit
+extern "C" int __fastcall Terrain_SegmentHits(BYTE* s, void*, const float* a, const float* b, int c, int d, int e)
+{
+    Vec3T v;
+    v.x = (float)((double)b[0] - a[0]);
+    v.y = (float)((double)b[1] - a[1]);
+    v.z = (float)((double)b[2] - a[2]);
+    unsigned n = (unsigned)(int)(Vec3_Length((const Vec3*)&v) / 5.0f);
+    Vec3T w, nb;
+    w.x = (float)((double)b[0] - a[0]);
+    w.y = (float)((double)b[1] - a[1]);
+    w.z = (float)((double)b[2] - a[2]);
+    const Vec3T* dn = (const Vec3T*)Vec3_Normalized((Vec3*)&nb, (const Vec3*)&w);
+    float sx = (float)((double)dn->x * 5.0f), sy = (float)((double)dn->y * 5.0f), sz = (float)((double)dn->z * 5.0f);
+    Vec3T pa = *(const Vec3T*)a, pb = *(const Vec3T*)a;
+    for (unsigned i = 0; i < n; i++) {
+        double t = (double)(__int64)i;
+        float x = (float)(sx * t), y = (float)(sy * t);
+        double z = sz * t;
+        pa.x = (float)((double)x + a[0]);
+        pa.y = (float)((double)y + a[1]);
+        pa.z = (float)(z + a[2]);
+        double t1 = (double)(__int64)(i + 1);
+        float x1 = (float)(sx * t1), y1 = (float)(sy * t1);
+        double z1 = sz * t1;
+        pb.x = (float)((double)x1 + a[0]);
+        pb.y = (float)((double)y1 + a[1]);
+        pb.z = (float)(z1 + a[2]);
+        if (CallThis<int>(FUN_6157a0, s, &pa, &pb, c, d, e))
+            return 1;
+    }
+    return CallThis<int>(FUN_6157a0, s, &pb, b, c, d, e) != 0;
+}

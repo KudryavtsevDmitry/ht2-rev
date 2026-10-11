@@ -39290,6 +39290,8 @@ $L_417182::
             ret 
 FUN_416b80 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4171a0 PROC
 
             push EBP
@@ -39415,6 +39417,10 @@ $L_417227::
             pop EBP
             ret 
 FUN_4171a0 ENDP
+ELSE
+EXTERN _Race_UpdateProgress:PROC
+FUN_4171a0 TEXTEQU <_Race_UpdateProgress>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -872635,6 +872641,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 FUN_60c6b0 PROC
 
             sub ESP,36
@@ -872909,6 +872917,10 @@ $L_60c8fb::
             add ESP,36
             ret 
 FUN_60c6b0 ENDP
+ELSE
+EXTERN @GridMesh_Reprioritise@8:PROC
+FUN_60c6b0 TEXTEQU <@GridMesh_Reprioritise@8>
+ENDIF
 ALIGN 16
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
 IFDEF ASM_GRID_SUPPORT
@@ -888560,6 +888572,8 @@ FUN_614960 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_614ce0 PROC
 
             sub ESP,8
@@ -888749,6 +888763,10 @@ $L_614df1::
             add ESP,8
             ret 12
 FUN_614ce0 ENDP
+ELSE
+EXTERN @TGrid_FollowCamera@20:PROC
+FUN_614ce0 TEXTEQU <@TGrid_FollowCamera@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -890909,6 +890927,8 @@ FUN_615da0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_616520 PROC
 
             sub ESP,116
@@ -891114,6 +891134,10 @@ $L_616755::
             nop
             nop
 FUN_616520 ENDP
+ELSE
+EXTERN @Terrain_SegmentHits@28:PROC
+FUN_616520 TEXTEQU <@Terrain_SegmentHits@28>
+ENDIF
 ALIGN 16
 ; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
 IFDEF ASM_TERRAIN

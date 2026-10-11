@@ -209,3 +209,60 @@ extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, void*)
     p[9] = d;
     return p;
 }
+
+extern "C" void __fastcall GridBase_SetCameraAndOrigin(BYTE* self, void*, const DWORD* position, const float* direction, const DWORD* origin);
+ASM_VAR(char, g_tgrid72c108b, $L_72c108)
+
+// the four view edge normals at +offset for a view half-angle
+static void TGrid_ViewEdges(BYTE* s, int offset, float angle, float nx, float ny)
+{
+    float c = (float)x87_cos(angle);
+    double sn = x87_sin(angle);
+    float sny = (float)(sn * ny);
+    double cnx = (double)c * nx;
+    float cnxf = (float)cnx;
+    F(float, s, offset) = (float)(cnx + sny);
+    float cny = (float)((double)c * ny);
+    double snx = sn * nx;
+    F(float, s, offset + 4) = (float)((double)cny - snx);
+    F(float, s, offset + 8) = (float)-((double)cnxf - sny);
+    F(float, s, offset + 12) = (float)-(snx + cny);
+}
+
+// [FUN_614ce0] moves the terrain grid's centre with the camera in whole steps (+52/+56) and updates the view edges
+extern "C" void __fastcall TGrid_FollowCamera(BYTE* s, void*, const float* pos, const float* dir, const DWORD* origin)
+{
+    GridBase_SetCameraAndOrigin(s, 0, (const DWORD*)pos, dir, origin);
+    double gx = ((double)pos[0] - F(float, s, 40136)) / F(float, s, 40152);
+    float gy = (float)(((double)pos[1] - F(float, s, 40148)) / F(float, s, 40156));
+    double ax = gx - F(float, s, 40184);
+    if (ax < 0) ax = -ax;
+    if (ax >= F(float, s, 52)) {
+        double two = (double)F(float, s, 52) + F(float, s, 52);
+        if (!(ax < two))
+            F(float, s, 40184) = (float)gx;
+        else if (gx > F(float, s, 40184))
+            F(float, s, 40184) = (float)((double)F(float, s, 40184) + F(float, s, 52));
+        else
+            F(float, s, 40184) = (float)((double)F(float, s, 40184) - F(float, s, 52));
+        F(int, s, 40116) = 1;
+    }
+    double ay = (double)gy - F(float, s, 40188);
+    if (ay < 0) ay = -ay;
+    if (ay >= F(float, s, 56)) {
+        double two = (double)F(float, s, 56) + F(float, s, 56);
+        if (!(ay < two))
+            F(float, s, 40188) = gy;
+        else if (gy > F(float, s, 40188))
+            F(float, s, 40188) = (float)((double)F(float, s, 40188) + F(float, s, 56));
+        else
+            F(float, s, 40188) = (float)((double)F(float, s, 40188) - F(float, s, 56));
+        F(int, s, 40116) = 1;
+    }
+    float fx = F(float, s, 16), fy = F(float, s, 20);
+    float len = (float)x87_sqrt((double)fy * fy + (double)fx * fx);
+    float nx = (float)((double)fx / len);
+    float ny = (float)((double)fy / len);
+    TGrid_ViewEdges(s, 60, TGrid_Get16((BYTE*)&g_tgrid72c108b, 0), nx, ny);
+    TGrid_ViewEdges(s, 76, TGrid_Get20((BYTE*)&g_tgrid72c108b, 0), nx, ny);
+}
