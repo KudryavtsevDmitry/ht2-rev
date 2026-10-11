@@ -145,7 +145,7 @@ ASM_PROC(FUN_556a40)
 ASM_PROC(FUN_55f5f0)
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
-ASM_PROC(FUN_52b030)
+extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 ASM_VAR(DWORD, g_702650, $L_702650)
 ASM_VAR(DWORD, g_702654, $L_702654)

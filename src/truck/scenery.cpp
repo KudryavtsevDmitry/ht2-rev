@@ -21,6 +21,15 @@ extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, 
 
 ASM_PROC(FUN_44c710)    // vector<12 bytes>::insert_aux
 ASM_PROC(FUN_4a1f10)
+ASM_PROC(FUN_57d060)
+extern "C" void FUN_52e550(); KING_ALIAS("_FUN_52e550", "@Crowd_Init@12")
+ASM_PROC(FUN_603110)
+ASM_PROC(FUN_5c3630)
+ASM_PROC(FUN_602e80)
+ASM_VAR(AsmLabel, g_vtbl64f198, $L_64f198)
+ASM_VAR(AsmLabel, g_vtbl64f14c, $L_64f14c)
+ASM_VAR(AsmLabel, g_vtbl64f148, $L_64f148)
+ASM_VAR(BYTE*, g_6ef1fc, $L_6ef1fc)
 ASM_PROC(FUN_58b5b0)
 ASM_PROC(FUN_58b720)
 extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
@@ -283,7 +292,7 @@ ASM_PROC(FUN_556a40)
 ASM_PROC(FUN_55f5f0)
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
-ASM_PROC(FUN_52b030)
+extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 ASM_VAR(DWORD, g_702650, $L_702650)
 ASM_VAR(DWORD, g_702654, $L_702654)
@@ -537,6 +546,126 @@ BYTE* __fastcall Vehicle52d930_Construct(BYTE* self, void*, int a1, int a2, int 
     Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
     CallThis(FUN_52dc50, self, model, a6);
     return self;
+}
+
+}
+
+extern "C" BYTE* __fastcall DpMessage_Construct(BYTE* self, void*);   // sound_gate.cpp
+
+extern "C" {
+
+// [FUN_52da30] a vehicle on the [FUN_57d060] base, placed by a matrix
+BYTE* __fastcall Vehicle52da30_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int model, int a6, int a7,
+                                         int a8)
+{
+    BYTE* t = CarModel(model);
+    BYTE m[48];
+    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
+    CallThis(FUN_57d060, self, a1, a2, a3, r, a4, F(int, t, 196), 500, a7, a8);
+    Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
+    CallThis(FUN_52dc50, self, model, a6);
+    return self;
+}
+
+// [FUN_52daf0] a vehicle on the [FUN_57cb70] base (identity placement)
+BYTE* __fastcall Vehicle52daf0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5)
+{
+    BYTE* t = CarModel(model);
+    CallThis(FUN_57cb70, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 500, t, a5);
+    Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
+    CallThis(FUN_52dc50, self, model, a4);
+    return self;
+}
+
+// [FUN_52dba0] a vehicle on the [FUN_57d060] base (identity placement)
+BYTE* __fastcall Vehicle52dba0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5, int a6)
+{
+    BYTE* t = CarModel(model);
+    CallThis(FUN_57d060, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 500, a5, a6);
+    Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
+    CallThis(FUN_52dc50, self, model, a4);
+    return self;
+}
+
+static void Bus_Finish(BYTE* self, int v)
+{
+    BYTE* m = self + 3584;
+    memset(m, 0, 48);
+    memcpy(m, g_7025f0, 48);
+    Car_SetVtbls(self, g_vtbl64f198, g_vtbl64f14c, g_vtbl64f148);
+    CallThis(FUN_52e550, self, v);
+}
+
+// [FUN_52e220]
+BYTE* __fastcall Bus52e220_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
+{
+    Vehicle52d930_Construct(self, 0, a1, a2, a3, a4, a5, a6, a7);
+    Bus_Finish(self, a8);
+    return self;
+}
+
+// [FUN_52e300]
+BYTE* __fastcall Bus52e300_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8,
+                                     int a9)
+{
+    Vehicle52da30_Construct(self, 0, a1, a2, a3, a4, a5, a6, a7, a8);
+    Bus_Finish(self, a9);
+    return self;
+}
+
+// [FUN_52e3c0]
+BYTE* __fastcall Bus52e3c0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6)
+{
+    Vehicle52daf0_Construct(self, 0, a1, a2, a3, a4, a5);
+    Bus_Finish(self, a6);
+    return self;
+}
+
+// [FUN_52e470]
+BYTE* __fastcall Bus52e470_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7)
+{
+    Vehicle52dba0_Construct(self, 0, a1, a2, a3, a4, a5, a6);
+    Bus_Finish(self, a7);
+    return self;
+}
+
+// [FUN_52b030] sends the car's state message (13) to the other players
+void __fastcall Car_SendState(BYTE* self, void*, int a)
+{
+    BYTE buf[228];
+    BYTE* msg = buf;
+    BYTE* rec = buf + 28;
+    F(int, rec, 0) = F(int, self, 12);
+    F(int, rec, 8) = a;
+    F(int, rec, 4) = 13;
+    int size = 12;
+    if (a == 1) {
+        F(int, rec, 12) = F(int, self, 0);
+        size = 16;
+    }
+    DpMessage_Construct(msg, 0);
+    CallThis(FUN_603110, msg, (int)g_sceneCommandCode, rec, size);
+    CallThis(FUN_5c3630, g_6ef1fc, msg);
+    CallThis(FUN_602e80, msg);
+}
+
+// [FUN_52e7c0] sends message 10 about the car c with the text name
+void __fastcall Car_SendNamed(BYTE* self, void*, const BYTE* c, int b, const char* name)
+{
+    BYTE buf[428];
+    BYTE* msg = buf;
+    BYTE* rec = buf + 28;
+    DpMessage_Construct(msg, 0);
+    F(int, rec, 0) = F(int, self, 1188);
+    F(int, rec, 12) = b;
+    F(int, rec, 8) = F(int, c, 9544);
+    int n = (int)strlen(name) + 1;
+    F(int, rec, 16) = n;
+    F(int, rec, 4) = 10;
+    memcpy(rec + 20, name, n);
+    CallThis(FUN_603110, msg, (int)g_sceneCommandCode, rec, n + 20);
+    CallThis(FUN_5c3630, g_6ef1fc, msg);
+    CallThis(FUN_602e80, msg);
 }
 
 }
