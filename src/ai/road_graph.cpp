@@ -211,7 +211,24 @@ extern "C" AiListNode** __cdecl AiList_FindActive(AiListNode** out, AiListNode* 
 
 ASM_PROC(FUN_44bef0)    // vector<char>::insert_aux(pos, x)
 ASM_PROC(FUN_47b790)    // vector<12 bytes>::insert_aux(pos, x)
-ASM_PROC(FUN_478fb0)    // list: a new node holding x
+extern "C" void FUN_478fb0(); KING_ALIAS("_FUN_478fb0", "_List1000_MakeNode@4")    // list: a new node holding x
+ASM_PROC(FUN_477600)
+ASM_PROC(FUN_4731e0)
+ASM_PROC(FUN_479050)
+ASM_PROC(FUN_47c360)
+ASM_PROC(FUN_479520)
+ASM_PROC(FUN_479760)
+ASM_PROC(FUN_47a230)
+ASM_PROC(FUN_4581a0)
+extern "C" void FUN_47c070(); KING_ALIAS("_FUN_47c070", "_AiList_FindActive")
+ASM_PROC(FUN_47b530)
+ASM_VAR(BYTE*, g_68cf6c, $L_68cf6c)
+ASM_VAR(BYTE**, g_68a970, $L_68a970)
+ASM_VAR(BYTE**, g_68a974, $L_68a974)
+ASM_PROC(FUN_44b4a0)
+ASM_PROC(FUN_44b740)
+extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")
+#define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
 struct VecOf {
     BYTE* begin;
@@ -336,4 +353,328 @@ extern "C" PositionId* __cdecl Road_RandomPosition(PositionId* out)
     }
     *out = pos;
     return out;
+}
+
+// --- STL helpers of the road graph and the route lists
+
+extern "C" void __cdecl Route_Each477600(BYTE* x);   // ai_drivers.cpp
+
+extern "C" {
+
+// [FUN_478910] calls Route_Each477600 on every route of the list
+void __cdecl Routes_Each477600()
+{
+    for (BYTE* n = *(BYTE**)g_68cf6c; n != g_68cf6c; n = *(BYTE**)n)
+        Route_Each477600(F(BYTE*, n, 8));
+}
+
+// [FUN_478940]
+int __cdecl Ambush_Call477600(BYTE* a)
+{
+    return CallC<int>(FUN_477600, a + 124);
+}
+
+// [FUN_478950] calls Ambush_Call477600 on every ambush
+void __cdecl Ambushes_Each477600()
+{
+    for (BYTE** it = g_68a970; it != g_68a974; it++)
+        Ambush_Call477600(*it);
+}
+
+// [FUN_478980] list erase (1000-byte nodes): *out = the next node
+BYTE** __fastcall List1000_Erase(void* self, void*, BYTE** out, BYTE* node)
+{
+    BYTE* prev = F(BYTE*, node, 4);
+    BYTE* next = F(BYTE*, node, 0);
+    F(BYTE*, prev, 0) = next;
+    F(BYTE*, next, 4) = prev;
+    CallThis(FUN_4731e0, node + 8);
+    CallC(FUN_44b4a0, node, 1000);
+    *out = next;
+    return out;
+}
+
+// [FUN_478fb0] a new 1000-byte list node holding x
+BYTE* __stdcall List1000_MakeNode(int x)
+{
+    BYTE* p = (BYTE*)malloc(1000);
+    if (!p)
+        p = CallC<BYTE*>(FUN_4581a0, 1000);
+    if (p + 8)
+        CallThis(FUN_47a230, p + 8, x);
+    return p;
+}
+
+// [FUN_4789c0] vector<40 bytes>::push_back
+void __fastcall Vec40_PushBack(BYTE** self, void*, const BYTE* x)
+{
+    BYTE* e = self[1];
+    if (e == self[2]) {
+        CallThis(FUN_479050, self, e, x);
+        return;
+    }
+    if (e)
+        memcpy(e, x, 40);
+    self[1] += 40;
+}
+
+// [FUN_478a00] vector<40 bytes>::clear
+void __fastcall Vec40_Clear(BYTE** self, void*)
+{
+    int n = (self[1] - self[0]) / 40;
+    self[1] -= n * 40;
+}
+
+// [FUN_478a80] vector<16 bytes>::push_back
+void __fastcall Vec16_PushBackB(BYTE** self, void*, const BYTE* x)
+{
+    BYTE* e = self[1];
+    if (e == self[2]) {
+        CallThis(FUN_479520, self, e, x);
+        return;
+    }
+    CallC(FUN_47c360, e, x);
+    self[1] += 16;
+}
+
+// [FUN_478de0] vector<8 bytes>::push_back
+void __fastcall Vec8_PushBackB(BYTE** self, void*, const DWORD* x)
+{
+    BYTE* e = self[1];
+    if (e == self[2]) {
+        CallThis(FUN_479760, self, e, x);
+        return;
+    }
+    if (e) {
+        F(DWORD, e, 0) = x[0];
+        F(DWORD, e, 4) = x[1];
+    }
+    self[1] += 8;
+}
+
+// [FUN_47b4e0] vector<8 bytes>::erase(first, last)
+BYTE* __fastcall Vec8_Erase(BYTE** self, void*, BYTE* first, BYTE* last)
+{
+    BYTE* d = first;
+    BYTE* s = last;
+    for (int n = (self[1] - last) >> 3; n > 0; n--, d += 8, s += 8) {
+        F(DWORD, d, 0) = F(DWORD, s, 0);
+        F(DWORD, d, 4) = F(DWORD, s, 4);
+    }
+    self[1] -= ((last - first) >> 3) << 3;
+    return first;
+}
+
+// [FUN_47aad0] vector<char>::reserve(n)
+void __fastcall Bytes_Reserve(BYTE** self, void*, unsigned n)
+{
+    BYTE* b = self[0];
+    if ((unsigned)(self[2] - b) >= n)
+        return;
+    int size = self[1] - b;
+    BYTE* p = CallStd<BYTE*>(FUN_458cf0, n, b, self[1]);
+    if (self[2] != self[0])
+        CallC(FUN_44b4a0, self[0], self[2] - self[0]);
+    self[0] = p;
+    self[2] = p + n;
+    self[1] = p + size;
+}
+
+// [FUN_47afc0] vector<8 bytes>::reserve(n)
+void __fastcall Vec8_Reserve(BYTE** self, void*, unsigned n)
+{
+    if ((unsigned)((self[2] - self[0]) >> 3) >= n)
+        return;
+    int size = (self[1] - self[0]) >> 3;
+    BYTE* p = CallStd<BYTE*>(FUN_47b530, n, self[0], self[1]);
+    if ((self[2] - self[0]) >> 3)
+        CallC(FUN_44b4a0, self[0], ((self[2] - self[0]) >> 3) * 8);
+    self[0] = p;
+    self[1] = p + size * 8;
+    self[2] = p + n * 8;
+}
+
+// [FUN_47a140] copy constructor: a word and a vector<char>
+BYTE* __fastcall Rec47a140_Copy(BYTE* self, void*, const BYTE* s)
+{
+    F(DWORD, self, 0) = F(DWORD, s, 0);
+    const BYTE* b = F(const BYTE*, s, 4);
+    const BYTE* e = F(const BYTE*, s, 8);
+    unsigned n = e - b;
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(int, self, 12) = 0;
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n) : 0;
+    F(BYTE*, self, 4) = p;
+    F(BYTE*, self, 8) = p;
+    F(BYTE*, self, 12) = p + n;
+    memmove(p, b, e - b);
+    F(BYTE*, self, 8) = p + (e - b);
+    return self;
+}
+
+// [FUN_47a010]
+BYTE* __cdecl Range_CallE(BYTE* out, DWORD f, DWORD l, int v)
+{
+    CallC(FUN_47c070, out, f, l, v, v);
+    return out;
+}
+
+// [FUN_47c460] copy of 16-byte records
+BYTE* __cdecl Copy16(const BYTE* first, const BYTE* last, BYTE* d)
+{
+    for (int n = (last - first) >> 4; n > 0; n--, first += 16, d += 16)
+        memcpy(d, first, 16);
+    return d;
+}
+
+// [FUN_47da40] copy of 8-byte records
+BYTE* __cdecl Copy8B(const BYTE* first, const BYTE* last, BYTE* d)
+{
+    for (int n = (last - first) >> 3; n > 0; n--, first += 8, d += 8)
+        memcpy(d, first, 8);
+    return d;
+}
+
+// [FUN_47da10] copy_backward of 8-byte records
+BYTE* __cdecl CopyBackward8(const BYTE* first, const BYTE* last, BYTE* d)
+{
+    for (int n = (last - first) >> 3; n > 0; n--) {
+        last -= 8;
+        d -= 8;
+        memcpy(d, last, 8);
+    }
+    return d;
+}
+
+// [FUN_47e100] copy of 40-byte records
+BYTE* __cdecl Copy40A(const BYTE* first, const BYTE* last, BYTE* d)
+{
+    for (int n = (last - first) / 40; n > 0; n--, first += 40, d += 40)
+        memcpy(d, first, 40);
+    return d;
+}
+
+// [FUN_47e1a0]
+BYTE* __cdecl Copy40B(const BYTE* first, const BYTE* last, BYTE* d)
+{
+    for (int n = (last - first) / 40; n > 0; n--, first += 40, d += 40)
+        memcpy(d, first, 40);
+    return d;
+}
+
+// [FUN_47d7a0] distance of 8-byte records, added to *n
+int* __cdecl Distance8(const BYTE* first, const BYTE* last, int* n)
+{
+    *n += (last - first) >> 3;
+    return n;
+}
+
+// [FUN_47de30] distance of 40-byte records
+int* __cdecl Distance40(const BYTE* first, const BYTE* last, int* n)
+{
+    *n += (last - first) / 40;
+    return n;
+}
+
+// [FUN_47e4e0] advance by n 8-byte records
+BYTE** __cdecl Advance8(BYTE** p, int n)
+{
+    *p += n * 8;
+    return p;
+}
+
+// [FUN_47ed10] advance by n 40-byte records
+BYTE** __cdecl Advance40(BYTE** p, int n)
+{
+    *p += n * 40;
+    return p;
+}
+
+// [FUN_47e4b0] swaps two 8-byte records
+DWORD* __cdecl Swap8(DWORD* a, DWORD* b)
+{
+    DWORD a0 = a[0], a1 = a[1];
+    a[0] = b[0];
+    a[1] = b[1];
+    b[0] = a0;
+    b[1] = a1;
+    return a;
+}
+
+// [FUN_47f990] swaps two 40-byte records
+BYTE* __cdecl Swap40(BYTE* a, BYTE* b)
+{
+    BYTE t[40];
+    memcpy(t, a, 40);
+    memcpy(a, b, 40);
+    memcpy(b, t, 40);
+    return a;
+}
+
+// [FUN_47f900] reverses 8-byte records
+BYTE* __cdecl Reverse8(BYTE* first, BYTE* last)
+{
+    while (first != last && first != (last -= 8)) {
+        Swap8((DWORD*)first, (DWORD*)last);
+        first += 8;
+    }
+    return last;
+}
+
+// [FUN_47f940] reverses 40-byte records
+BYTE* __cdecl Reverse40(BYTE* first, BYTE* last)
+{
+    while (first != last && first != (last -= 40)) {
+        Swap40(first, last);
+        first += 40;
+    }
+    return last;
+}
+
+// [FUN_47f740] fills n uninitialised 8-byte records with x
+BYTE* __cdecl Fill8(BYTE* d, int n, const DWORD* x)
+{
+    for (; n > 0; n--, d += 8)
+        if (d) {
+            F(DWORD, d, 0) = x[0];
+            F(DWORD, d, 4) = x[1];
+        }
+    return d;
+}
+
+// [FUN_47f840] lower_bound of 40-byte records by the key at +32
+BYTE* __cdecl LowerBound40(BYTE* first, BYTE* last, const BYTE* x)
+{
+    int key = F(int, x, 32);
+    for (int len = (last - first) / 40; len > 0;) {
+        int half = len >> 1;
+        BYTE* mid = first + half * 40;
+        if (F(int, mid, 32) < key) {
+            first = mid + 40;
+            len -= half + 1;
+        } else {
+            len = half;
+        }
+    }
+    return first;
+}
+
+// [FUN_47f8a0] upper_bound of 40-byte records by the key at +32
+BYTE* __cdecl UpperBound40(BYTE* first, BYTE* last, const BYTE* x)
+{
+    int key = F(int, x, 32);
+    for (int len = (last - first) / 40; len > 0;) {
+        int half = len >> 1;
+        BYTE* mid = first + half * 40;
+        if (key < F(int, mid, 32)) {
+            len = half;
+        } else {
+            first = mid + 40;
+            len -= half + 1;
+        }
+    }
+    return first;
+}
+
 }

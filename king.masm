@@ -213383,6 +213383,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478910 PROC
 
             mov EAX,DWORD PTR [$L_68cf6c]
@@ -213406,6 +213408,10 @@ $L_478933::
             pop ESI
             ret 
 FUN_478910 ENDP
+ELSE
+EXTERN _Routes_Each477600:PROC
+FUN_478910 TEXTEQU <_Routes_Each477600>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -213418,6 +213424,8 @@ FUN_478910 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478940 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -213428,8 +213436,14 @@ FUN_478940 PROC
             pop ECX
             ret 
 FUN_478940 ENDP
+ELSE
+EXTERN _Ambush_Call477600:PROC
+FUN_478940 TEXTEQU <_Ambush_Call477600>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478950 PROC
 
             mov EAX,DWORD PTR [$L_68a974]
@@ -213453,6 +213467,10 @@ $L_478977::
             pop ESI
             ret 
 FUN_478950 ENDP
+ELSE
+EXTERN _Ambushes_Each477600:PROC
+FUN_478950 TEXTEQU <_Ambushes_Each477600>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -213461,6 +213479,8 @@ FUN_478950 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478980 PROC
 
             push ESI
@@ -213484,6 +213504,10 @@ FUN_478980 PROC
             pop ESI
             ret 8
 FUN_478980 ENDP
+ELSE
+EXTERN @List1000_Erase@16:PROC
+FUN_478980 TEXTEQU <@List1000_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -213500,6 +213524,8 @@ FUN_478980 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_4789c0 PROC
 
             mov EAX,ECX
@@ -213537,11 +213563,17 @@ $L_4789eb::
             pop EDI
             ret 4
 FUN_4789c0 ENDP
+ELSE
+EXTERN @Vec40_PushBack@12:PROC
+FUN_4789c0 TEXTEQU <@Vec40_PushBack@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478a00 PROC
 
             sub ESP,8
@@ -213613,7 +213645,13 @@ $L_478a4e::
             nop
             nop
 FUN_478a00 ENDP
+ELSE
+EXTERN @Vec40_Clear@8:PROC
+FUN_478a00 TEXTEQU <@Vec40_Clear@8>
+ENDIF
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478a80 PROC
 
             push ESI
@@ -213645,6 +213683,10 @@ $L_478aa8::
             pop ESI
             ret 4
 FUN_478a80 ENDP
+ELSE
+EXTERN @Vec16_PushBackB@12:PROC
+FUN_478a80 TEXTEQU <@Vec16_PushBackB@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -214007,6 +214049,8 @@ $L_478c80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478de0 PROC
 
             mov EAX,DWORD PTR [ECX+4]
@@ -214051,6 +214095,10 @@ $L_478e05::
             nop
             nop
 FUN_478de0 ENDP
+ELSE
+EXTERN @Vec8_PushBackB@12:PROC
+FUN_478de0 TEXTEQU <@Vec8_PushBackB@12>
+ENDIF
 $L_478e20 PROC
 
             lea EAX,DWORD PTR [ECX+4]
@@ -214280,6 +214328,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_478fb0 PROC
 
             push EBP
@@ -214334,6 +214384,10 @@ $L_47901a::
             pop EBP
             ret 4
 FUN_478fb0 ENDP
+ELSE
+EXTERN _List1000_MakeNode@4:PROC
+FUN_478fb0 TEXTEQU <_List1000_MakeNode@4>
+ENDIF
 $L_47902f PROC
 
             mov ECX,DWORD PTR [EBP-20]
@@ -216206,6 +216260,8 @@ FUN_479f50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47a010 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -216234,6 +216290,10 @@ FUN_47a010 PROC
             pop ESI
             ret 
 FUN_47a010 ENDP
+ELSE
+EXTERN _Range_CallE:PROC
+FUN_47a010 TEXTEQU <_Range_CallE>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -216382,6 +216442,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47a140 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -216483,6 +216545,10 @@ $L_47a1ea::
             add ESP,12
             ret 4
 FUN_47a140 ENDP
+ELSE
+EXTERN @Rec47a140_Copy@12:PROC
+FUN_47a140 TEXTEQU <@Rec47a140_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -217130,6 +217196,8 @@ $L_47aaa0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47aad0 PROC
 
             push EBP
@@ -217179,6 +217247,10 @@ $L_47ab1a::
             pop EBP
             ret 4
 FUN_47aad0 ENDP
+ELSE
+EXTERN @Bytes_Reserve@12:PROC
+FUN_47aad0 TEXTEQU <@Bytes_Reserve@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI road ids: src\ai\road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
@@ -217780,6 +217852,8 @@ FUN_47af30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47afc0 PROC
 
             push EBP
@@ -217834,6 +217908,10 @@ $L_47b01f::
             pop EBP
             ret 4
 FUN_47afc0 ENDP
+ELSE
+EXTERN @Vec8_Reserve@12:PROC
+FUN_47afc0 TEXTEQU <@Vec8_Reserve@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -218371,6 +218449,8 @@ $L_47b399 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47b4e0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -218412,6 +218492,10 @@ $L_47b512::
             pop EBX
             ret 8
 FUN_47b4e0 ENDP
+ELSE
+EXTERN @Vec8_Erase@16:PROC
+FUN_47b4e0 TEXTEQU <@Vec8_Erase@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -220201,6 +220285,8 @@ FUN_47c360 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47c460 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -220238,6 +220324,10 @@ $L_47c49e::
 
             ret 
 FUN_47c460 ENDP
+ELSE
+EXTERN _Copy16:PROC
+FUN_47c460 TEXTEQU <_Copy16>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_47c4a0 PROC
@@ -222606,6 +222696,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47d7a0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -222616,6 +222708,10 @@ FUN_47d7a0 PROC
             add DWORD PTR [EAX],ECX
             ret 
 FUN_47d7a0 ENDP
+ELSE
+EXTERN _Distance8:PROC
+FUN_47d7a0 TEXTEQU <_Distance8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -222964,6 +223060,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47da10 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -222993,7 +223091,13 @@ $L_47da3d::
 
             nop
 FUN_47da10 ENDP
+ELSE
+EXTERN _CopyBackward8:PROC
+FUN_47da10 TEXTEQU <_CopyBackward8>
+ENDIF
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47da40 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -223021,6 +223125,10 @@ $L_47da6b::
 
             ret 
 FUN_47da40 ENDP
+ELSE
+EXTERN _Copy8B:PROC
+FUN_47da40 TEXTEQU <_Copy8B>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -223523,6 +223631,8 @@ $L_47de27::
 FUN_47dba0 ENDP
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47de30 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -223538,6 +223648,10 @@ FUN_47de30 PROC
             add DWORD PTR [EAX],EDX
             ret 
 FUN_47de30 ENDP
+ELSE
+EXTERN _Distance40:PROC
+FUN_47de30 TEXTEQU <_Distance40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -223916,6 +224030,8 @@ FUN_47de60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47e100 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -223960,6 +224076,10 @@ $L_47e142::
             pop EBX
             ret 
 FUN_47e100 ENDP
+ELSE
+EXTERN _Copy40A:PROC
+FUN_47e100 TEXTEQU <_Copy40A>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -224029,6 +224149,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47e1a0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -224070,6 +224192,10 @@ $L_47e1de::
             pop EBX
             ret 
 FUN_47e1a0 ENDP
+ELSE
+EXTERN _Copy40B:PROC
+FUN_47e1a0 TEXTEQU <_Copy40B>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -224468,6 +224594,8 @@ FUN_47e420 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47e4b0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -224502,7 +224630,13 @@ FUN_47e4b0 PROC
             nop
             nop
 FUN_47e4b0 ENDP
+ELSE
+EXTERN _Swap8:PROC
+FUN_47e4b0 TEXTEQU <_Swap8>
+ENDIF
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47e4e0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -224511,6 +224645,10 @@ FUN_47e4e0 PROC
             add DWORD PTR [EAX],ECX
             ret 
 FUN_47e4e0 ENDP
+ELSE
+EXTERN _Advance8:PROC
+FUN_47e4e0 TEXTEQU <_Advance8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -225683,6 +225821,8 @@ FUN_47ec50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47ed10 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -225708,6 +225848,10 @@ FUN_47ed10 PROC
             nop
             nop
 FUN_47ed10 ENDP
+ELSE
+EXTERN _Advance40:PROC
+FUN_47ed10 TEXTEQU <_Advance40>
+ENDIF
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 IFDEF ASM_AI_CONTAINERS
@@ -227047,6 +227191,8 @@ FUN_47f4b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f740 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -227076,6 +227222,10 @@ $L_47f766::
 
             ret 
 FUN_47f740 ENDP
+ELSE
+EXTERN _Fill8:PROC
+FUN_47f740 TEXTEQU <_Fill8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -227249,6 +227399,8 @@ FUN_47f7f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f840 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -227303,6 +227455,10 @@ $L_47f895::
             pop ESI
             ret 
 FUN_47f840 ENDP
+ELSE
+EXTERN _LowerBound40:PROC
+FUN_47f840 TEXTEQU <_LowerBound40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -227311,6 +227467,8 @@ FUN_47f840 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f8a0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -227365,6 +227523,10 @@ $L_47f8f5::
             pop ESI
             ret 
 FUN_47f8a0 ENDP
+ELSE
+EXTERN _UpperBound40:PROC
+FUN_47f8a0 TEXTEQU <_UpperBound40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -227373,6 +227535,8 @@ FUN_47f8a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f900 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -227407,6 +227571,10 @@ $L_47f931::
             pop EBX
             ret 
 FUN_47f900 ENDP
+ELSE
+EXTERN _Reverse8:PROC
+FUN_47f900 TEXTEQU <_Reverse8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -227419,6 +227587,8 @@ FUN_47f900 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f940 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -227465,11 +227635,17 @@ $L_47f985::
             add ESP,40
             ret 
 FUN_47f940 ENDP
+ELSE
+EXTERN _Reverse40:PROC
+FUN_47f940 TEXTEQU <_Reverse40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47f990 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -227509,6 +227685,10 @@ FUN_47f990 PROC
             nop
             nop
 FUN_47f990 ENDP
+ELSE
+EXTERN _Swap40:PROC
+FUN_47f990 TEXTEQU <_Swap40>
+ENDIF
 $L_47f9d0 PROC
 
             jmp $L_47f9e0
