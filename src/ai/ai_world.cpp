@@ -661,6 +661,35 @@ ASM_VAR(AsmLabel, s_finishRacingPlayer, $L_66cc8c)
 ASM_VAR(AsmLabel, s_competitorArrived, $L_66cc78)
 extern "C" bool __fastcall Item_Matches(BYTE** self, void*, BYTE* x);
 
+extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")    // the object of a list iterator
+extern "C" void FUN_427220(); KING_ALIAS("_FUN_427220", "_Players_Forget")
+extern "C" void FUN_4566c0(); KING_ALIAS("_FUN_4566c0", "_Player_NotValid")    // whether a player id is invalid
+ASM_PROC(FUN_436ef0)
+extern "C" void FUN_404c70(); KING_ALIAS("_FUN_404c70", "_Town_ById")    // the index of a VrIndex (out, id)
+ASM_PROC(FUN_440970)
+ASM_PROC(FUN_441120)
+ASM_VAR(BYTE*, g_playersHead, $L_68b990)
+ASM_VAR(AsmLabel, s_clearPlayerFromMafia, $L_66da10)
+ASM_VAR(AsmLabel, s_clearPlayerFromTail, $L_66da38)
+ASM_VAR(AsmLabel, s_getPositionId, $L_66e57c)
+ASM_VAR(AsmLabel, s_setPlayerPositionV, $L_66eb28)
+ASM_VAR(AsmLabel, s_getTownInfo, $L_66eec8)
+ASM_VAR(AsmLabel, s_getOrderInfo, $L_66ef68)
+ASM_VAR(AsmLabel, g_numberText, $L_77e660)
+ASM_VAR(AsmLabel, s_idFormat, $L_66d4e4)
+ASM_VAR(AsmLabel, s_invalidId, $L_66cbf4)
+ASM_VAR(AsmLabel, s_playerIdType, $L_66d4d8)
+ASM_VAR(BYTE**, g_townsBegin, $L_68cec0)
+
+ASM_PROC(FUN_4778a0)
+ASM_PROC(FUN_442c60)
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")    // the PlayerId of a list iterator (thiscall out, iterator)
+ASM_PROC(FUN_4466a0)    // kills a player
+extern "C" void FUN_466400(); KING_ALIAS("_FUN_466400", "_UninitFill16")    // uninitialized fill of 16-byte records
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
+ASM_VAR(AsmLabel, s_dropOrders, $L_66f2e0)
+ASM_VAR(AsmLabel, s_killDelayedPlayers, $L_66f3f0)
+
 extern "C" {
 void __fastcall Buf_Append(void* s, void*, const void* src, int n) { R(s)->Append(src, n); }               // [FUN_401870]
 void __fastcall Buf_AppendString(void* s, void*, const char* str) { R(s)->AppendString(str); }           // [FUN_4018b0]
@@ -1741,7 +1770,7 @@ ASM_PROC(FUN_452610)    // vector<12 bytes>::insert_aux
 ASM_PROC(FUN_452bc0)    // vector<56 bytes>::insert_aux
 extern "C" void FUN_44b0f0(); KING_ALIAS("_FUN_44b0f0", "_ListNode16_Make@4")    // list: a new node holding x
 extern "C" void FUN_44b250(); KING_ALIAS("_FUN_44b250", "_ListNode16_MakeB@4")
-ASM_PROC(FUN_44b310)
+extern "C" void FUN_44b310(); KING_ALIAS("_FUN_44b310", "_ListNode64_Make@4")
 ASM_PROC(FUN_402ec0)    // a hashtable value's destructor
 ASM_VAR(AiText, g_strPair, $L_66cb08)
 
@@ -3650,6 +3679,231 @@ void __cdecl Ai_FinishRacingPlayer(BYTE* player)
                 break;
             buf = g_traceData;
         }
+}
+
+}
+
+// The state.dump trace around the AI's entry points: "ART:" and the
+// signature on entry, "MPL:" and the signature on exit. The original writes
+// them in three ways (inline, or through Buf_Append / Buf_AppendString).
+
+static void Trace_CopyName(const char* name)
+{
+    BYTE* buf = g_traceData;
+    if (!buf || !*name)
+        return;
+    for (const char* c = name; g_tracePos < g_traceSize;) {
+        buf[g_tracePos] = *c++;
+        g_tracePos++;
+        if (!*c)
+            break;
+        buf = g_traceData;
+    }
+}
+
+static void Trace_EnterInline(const char* name)          // tag and name inline
+{
+    Trace_Tag((const DWORD*)g_tagArt);
+    Trace_CopyName(name);
+}
+
+static void Trace_EnterAppend(const char* name)          // tag inline, name appended
+{
+    Trace_Tag((const DWORD*)g_tagArt);
+    Buf_AppendString(&g_trace, 0, name);
+}
+
+static void Trace_EnterBuffered(const char* name)        // both appended
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, name);
+}
+
+static void Trace_Leave(const char* name)
+{
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(name);
+}
+
+extern "C" {
+
+// [FUN_427090] clearPlayerFromMafia(PlayerId player)
+void __cdecl Ai_ClearPlayerFromMafia(int player)
+{
+    Trace_EnterBuffered(s_clearPlayerFromMafia);
+    BYTE* head = g_playersHead;
+    for (BYTE* it = *(BYTE**)head; it != g_playersHead; it = *(BYTE**)it) {
+        if (!CallC<BYTE*>(FUN_40a9f0, it))
+            continue;
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 84) != 6)
+            continue;
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 960) != player)
+            continue;
+        BYTE* none = g_playersHead;
+        F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 960) = none;
+    }
+    Trace_Leave(s_clearPlayerFromMafia);
+}
+
+// [FUN_4272d0] clearPlayerFromTail(PlayerId player)
+void __cdecl Ai_ClearPlayerFromTail(int player)
+{
+    Trace_EnterInline(s_clearPlayerFromTail);
+    Ai_ClearPlayerFromMafia(player);
+    CallC(FUN_427220, player);
+    Trace_Leave(s_clearPlayerFromTail);
+}
+
+static void InvalidPlayerId()
+{
+    sprintf(g_numberText, s_idFormat);
+    AiError(33, 100, s_mainFile, s_mainId, 14886, s_invalidId, s_playerIdType, g_numberText);
+}
+
+// [FUN_437520] getPositionId(PlayerId player)
+DWORD* __cdecl Ai_GetPositionId(DWORD* out, BYTE* player)
+{
+    Trace_EnterAppend(s_getPositionId);
+    if (CallC<int>(FUN_4566c0, player))
+        InvalidPlayerId();
+    for (int k = 0; k < 8; k++)
+        out[k] = F(DWORD, player, 40 + k * 4);
+    Trace_Leave(s_getPositionId);
+    return out;
+}
+
+// [FUN_43e4d0] setPlayerPositionV(RoomId room, PlayerId player, dvector3 const & v)
+void __cdecl Ai_SetPlayerPositionV(int room, BYTE* player, const void* v)
+{
+    Trace_EnterBuffered(s_setPlayerPositionV);
+    const DWORD* src;
+    DWORD tmp[8];
+    BYTE* r;
+    if (F(int, player, 24) == F(int, player, 28) && room != -1 &&
+        (r = g_registry52[room], F(int, r, 28) != F(int, r, 32)))
+        src = CallC<const DWORD*>(FUN_436ef0, tmp, room, v);
+    else
+        src = (const DWORD*)(player + 40);
+    for (int k = 0; k < 8; k++)
+        F(DWORD, player, 816 + k * 4) = src[k];
+    Trace_Leave(s_setPlayerPositionV);
+}
+
+// [FUN_440f70] getTownInfo(PlayerId player, VrIndex _id, TownInfo & ti)
+int __cdecl Ai_GetTownInfo(int player, int id, BYTE* ti)
+{
+    Trace_EnterInline(s_getTownInfo);
+    int slot = id;
+    int* idx = CallC<int*>(FUN_404c70, &slot, id);
+    BYTE* town = g_townsBegin[*idx];
+    int r = CallC<int>(FUN_440970, player, town, ti);
+    Trace_Leave(s_getTownInfo);
+    return r;
+}
+
+// [FUN_441950] getOrderInfo(PlayerId player, VrIndex _townVrIndex, int _orderid, OrderInfo & oi)
+int __cdecl Ai_GetOrderInfo(int player, int town, int order, BYTE* oi)
+{
+    Trace_EnterInline(s_getOrderInfo);
+    F(BYTE, oi, 184) = 0;
+    int idx;
+    CallC(FUN_404c70, &idx, town);
+    int r = CallC<int>(FUN_441120, player, idx, order, oi);
+    Trace_Leave(s_getOrderInfo);
+    return r;
+}
+
+}
+
+extern "C" {
+
+// [FUN_4455b0] __dropOrders(PlayerId player)
+int __cdecl Ai_DropOrders(BYTE* player)
+{
+    Trace_EnterAppend(s_dropOrders);
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 18042, s_invalidId, s_playerIdType, g_numberText);
+    }
+    CallC(FUN_4778a0, player + 8);
+    F(BYTE, player, 200) = 0;
+    F(BYTE, player, 201) = 0;
+    CallC(FUN_442c60, player);
+    Trace_Leave(s_dropOrders);
+    return 0;
+}
+
+// [FUN_446af0] killDelayedPlayers()
+void __cdecl Ai_KillDelayedPlayers()
+{
+    Trace_EnterAppend(s_killDelayedPlayers);
+    for (;;) {
+        BYTE* it = *(BYTE**)g_playersHead;
+        for (; it != g_playersHead; it = *(BYTE**)it)
+            if (CallC<BYTE*>(FUN_40a9f0, it) && (F(DWORD, CallC<BYTE*>(FUN_40a9f0, it), 88) & 0x20000))
+                break;
+        if (it == g_playersHead)
+            break;
+        int pid;
+        CallThis(FUN_426280, &pid, it);
+        CallC(FUN_4466a0, pid);
+    }
+    Trace_Leave(s_killDelayedPlayers);
+}
+
+// [FUN_4487a0] vector<16 bytes>(n, value)
+DWORD* __fastcall Vec16b_Construct(DWORD* self, void*, unsigned n, const void* v, int unused)
+{
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    BYTE* p = (BYTE*)AiAlloc(n * 16);
+    self[0] = (DWORD)p;
+    self[1] = (DWORD)p;
+    self[2] = (DWORD)(p + n * 16);
+    self[1] = CallC<DWORD>(FUN_466400, p, n, v, n);
+    return self;
+}
+
+// [FUN_448cd0] vector<4 bytes>(n, *v)
+DWORD* __fastcall Vec4b_Construct(DWORD* self, void*, unsigned n, const DWORD* v, int unused)
+{
+    self[0] = 0;
+    self[1] = 0;
+    self[2] = 0;
+    DWORD* p = (DWORD*)AiAlloc(n * 4);
+    self[0] = (DWORD)p;
+    self[1] = (DWORD)p;
+    self[2] = (DWORD)(p + n);
+    for (unsigned i = 0; i < n; i++)
+        *p++ = *v;
+    self[1] = (DWORD)p;
+    return self;
+}
+
+// [FUN_44b310] a 64-byte list node holding a copy of the record s
+BYTE* __stdcall ListNode64_Make(const BYTE* s)
+{
+    BYTE* node = (BYTE*)AiAlloc(64);
+    BYTE* v = node + 8;
+    if (v) {
+        F(DWORD, v, 0) = F(DWORD, s, 0);
+        for (int k = 8; k < 32; k += 4)
+            F(DWORD, v, k) = F(DWORD, s, k);
+        F(DWORD, v, 32) = F(DWORD, s, 32);
+        int n = (F(const BYTE*, s, 40) - F(const BYTE*, s, 36)) / 12;
+        F(int, v, 36) = 0;
+        F(int, v, 40) = 0;
+        F(int, v, 44) = 0;
+        BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+        F(BYTE*, v, 36) = p;
+        F(BYTE*, v, 40) = p;
+        F(BYTE*, v, 44) = p + n * 12;
+        F(BYTE*, v, 40) = CallC<BYTE*>(FUN_47e3e0, F(const BYTE*, s, 36), F(const BYTE*, s, 40), p, v + 36);
+        F(DWORD, v, 48) = F(DWORD, s, 48);
+        F(DWORD, v, 52) = F(DWORD, s, 52);
+    }
+    return node;
 }
 
 }
