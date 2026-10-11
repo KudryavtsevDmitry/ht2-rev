@@ -68,6 +68,21 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
 }
 
 ASM_PROC(FUN_4cd730)    // the value of a vrId's vehicle
+extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
+extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
+extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
+ASM_PROC(FUN_479aa0)
+ASM_PROC(FUN_477880)
+ASM_PROC(FUN_471ec0)
+ASM_PROC(FUN_472110)
+ASM_PROC(FUN_478980)
+ASM_VAR(BYTE**, g_68cf38, $L_68cf38)
+ASM_VAR(DWORD, g_tagCGLT, $L_66f9d0)
+ASM_VAR(DWORD, g_tagGILT, $L_66fa14)
+typedef char AsmLabel[1];
+#define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
+ASM_VAR(AsmLabel, g_68d1c0, $L_68d1c0)
 
 extern "C" double __cdecl Player_Profit(BYTE* player)
 {
@@ -532,7 +547,7 @@ void __fastcall Waypoints_Clear(WaypointVec* self, void*) { self->Clear(); }    
 // medium-sized functions: the save writers, the logo of a player
 
 ASM_PROC(FUN_46e460)    // vector<char>::insert(pos, first, last): the save stream
-ASM_PROC(FUN_471b10)    // writes a 16-byte record (stream)
+extern "C" void FUN_471b10(); KING_ALIAS("_FUN_471b10", "@Rec471b10_Save@12")    // writes a 16-byte record (stream)
 ASM_PROC(FUN_470e10)    // writes an order (stream)
 ASM_PROC(FUN_477600)
 typedef DWORD Dwords[1];
@@ -651,7 +666,7 @@ extern "C" void __cdecl Player_Reset477600(BYTE* p)
 }
 
 // loads a road record from the save stream
-ASM_PROC(FUN_471e90)    // loads the vector at +120 (cursor)
+extern "C" void FUN_471e90(); KING_ALIAS("_FUN_471e90", "@Rec471e90_Load@12")    // loads the vector at +120 (cursor)
 
 static void Get(BYTE** cur, BYTE* self, int off, int n)
 {
@@ -670,4 +685,248 @@ extern "C" void __fastcall Rec4710a0_Load(BYTE* self, void*, BYTE** cur)
     CallThis(FUN_471e90, self + 120, cur);
     Get(cur, self, 4, 4);
     Get(cur, self, 8, 4);
+}
+
+// --- save/load of the drivers' records: the save stream is a vector<char>
+// appended with [FUN_46e460]; the load cursor is a BYTE* advanced by reads.
+
+static void Save_Write(BYTE* s, const void* p, int n)
+{
+    CallThis(FUN_46e460, s, F(BYTE*, s, 4), (const BYTE*)p, (const BYTE*)p + n);
+}
+
+static void Load_Read(BYTE** cur, void* p, int n)
+{
+    memcpy(p, *cur, n);
+    *cur += n;
+}
+
+struct LoadChunk {
+    BYTE** cur;
+    int a, b;
+    DWORD tag;
+};
+
+static bool Load_Begin(LoadChunk* c, BYTE** cur, DWORD tag, int line, const char* err)
+{
+    c->cur = cur;
+    CallC(FUN_490c40, cur, &c->tag, &c->a, &c->b);
+    if (c->tag == tag)
+        return true;
+    AiError(0, 100, s_playFile, s_playId, line, err, (const char*)g_68d1c0, (const char*)g_68d1c0);
+    return false;
+}
+
+static void Load_End(LoadChunk* c)
+{
+    CallC(FUN_490c70, c->cur, c->a, c->b);
+}
+
+extern "C" {
+
+// [FUN_4718b0] saves a waypoint: kind (2 bytes), value, and its node's id (or -1)
+void __fastcall Waypoint_Save(BYTE* self, void*, BYTE* s)
+{
+    WORD k = F(WORD, self, 8);
+    Save_Write(s, &k, 2);
+    DWORD v = F(DWORD, self, 0);
+    Save_Write(s, &v, 4);
+    BYTE* n = F(BYTE*, self, 4);
+    int id = n ? F(int, n, 12) : -1;
+    Save_Write(s, &id, 4);
+}
+
+// [FUN_471940] loads a waypoint
+void __fastcall Waypoint_Load(BYTE* self, void*, BYTE** cur)
+{
+    Load_Read(cur, self + 8, 2);
+    Load_Read(cur, self, 4);
+    int id;
+    Load_Read(cur, &id, 4);
+    F(BYTE*, self, 4) = id == -1 ? 0 : g_68cf38[id];
+    F(BYTE, self, 10) = 255;
+}
+
+// [FUN_471b10] saves a word and a double
+void __fastcall Rec471b10_Save(BYTE* self, void*, BYTE* s)
+{
+    Save_Write(s, self, 4);
+    Save_Write(s, self + 8, 8);
+}
+
+// [FUN_471b70]
+void __fastcall Rec471b10_Load(BYTE* self, void*, BYTE** cur)
+{
+    Load_Read(cur, self, 4);
+    Load_Read(cur, self + 8, 8);
+}
+
+// [FUN_471ba0] saves 8 bytes
+void __fastcall Pair_Save(BYTE* self, void*, BYTE* s)
+{
+    Save_Write(s, self, 8);
+}
+
+// [FUN_471bd0]
+void __fastcall Pair_Load(BYTE* self, void*, BYTE** cur)
+{
+    Load_Read(cur, self, 8);
+}
+
+// [FUN_471cf0]
+void __fastcall Rec471cf0_Load(BYTE* self, void*, BYTE** cur)
+{
+    Load_Read(cur, self + 24, 4);
+    Load_Read(cur, self + 4, 4);
+    Load_Read(cur, self, 4);
+    Load_Read(cur, self + 8, 8);
+    Load_Read(cur, self + 16, 4);
+    Load_Read(cur, self + 20, 4);
+    Load_Read(cur, self + 28, 4);
+    Load_Read(cur, self + 32, 4);
+}
+
+// [FUN_471e90]
+void __fastcall Rec471e90_Load(BYTE* self, void*, BYTE** cur)
+{
+    CallC(FUN_479aa0, cur, self);
+    Load_Read(cur, self + 12, 4);
+}
+
+// [FUN_472270]
+void __cdecl Player_Call471ec0(int player)
+{
+    BYTE* p = CallC<BYTE*>(FUN_477880, player);
+    if (p)
+        CallC(FUN_471ec0, p + 120, player);
+}
+
+// [FUN_4722a0]
+void __cdecl Player_Call472110(int player)
+{
+    BYTE* p = CallC<BYTE*>(FUN_477880, player);
+    if (p)
+        CallC(FUN_472110, p + 120);
+}
+
+// [FUN_4725b0]
+void __fastcall Rec4725b0_Init(BYTE* self, void*)
+{
+    F(BYTE, self, 0) = 0;
+    F(int, self, 8) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 40) = 0;
+    F(int, self, 48) = 0;
+    F(int, self, 56) = 0;
+    F(int, self, 44) = 0;
+    F(int, self, 52) = 0;
+    F(int, self, 60) = 0;
+    F(BYTE, self, 64) = 0;
+}
+
+// [FUN_4725e0]
+void __fastcall Rec4725e0_Init(BYTE* self, void*)
+{
+    F(BYTE, self, 1) = 0;
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 32) = 0;
+}
+
+// [FUN_4725f0] saves a CGLT chunk: +8, then +0..+7
+void __fastcall Cglt_Save(BYTE* self, void*, BYTE* s)
+{
+    int pos;
+    CallC(FUN_490c90, s, (const DWORD*)&g_tagCGLT, &pos);
+    Save_Write(s, self + 8, 4);
+    Save_Write(s, self, 8);
+    CallC(FUN_490ce0, s, &pos);
+}
+
+// [FUN_4726a0]
+void __fastcall Cglt_Load(BYTE* self, void*, BYTE** cur)
+{
+    LoadChunk c;
+    if (Load_Begin(&c, cur, g_tagCGLT, 225, "Game load error 0678")) {
+        Load_Read(cur, self + 8, 4);
+        Load_Read(cur, self, 8);
+    }
+    Load_End(&c);
+}
+
+// [FUN_472780] saves a GILT chunk: two CGLT chunks and the fields
+void __fastcall Gilt_Save(BYTE* self, void*, BYTE* s)
+{
+    int pos;
+    CallC(FUN_490c90, s, (const DWORD*)&g_tagGILT, &pos);
+    Cglt_Save(self + 8, 0, s);
+    Cglt_Save(self + 24, 0, s);
+    Save_Write(s, self, 1);
+    Save_Write(s, self + 40, 8);
+    Save_Write(s, self + 48, 8);
+    Save_Write(s, self + 56, 8);
+    Save_Write(s, self + 64, 1);
+    Save_Write(s, self + 1, 1);
+    CallC(FUN_490ce0, s, &pos);
+}
+
+// [FUN_4728c0]
+void __fastcall Gilt_Load(BYTE* self, void*, BYTE** cur)
+{
+    LoadChunk c;
+    if (Load_Begin(&c, cur, g_tagGILT, 257, "Game load error 0679")) {
+        Cglt_Load(self + 8, 0, cur);
+        Cglt_Load(self + 24, 0, cur);
+        Load_Read(cur, self, 1);
+        Load_Read(cur, self + 40, 8);
+        Load_Read(cur, self + 48, 8);
+        Load_Read(cur, self + 56, 8);
+        Load_Read(cur, self + 64, 1);
+        Load_Read(cur, self + 1, 1);
+    }
+    Load_End(&c);
+}
+
+// [FUN_4734d0]
+int __cdecl Players_Call478980(int x)
+{
+    return CallThis<int>(FUN_478980, &g_players, &x, x);
+}
+
+// [FUN_474260] whether the player has a place with flag 1
+int __cdecl Player_HasPlaceFlag1(Player* p)
+{
+    if (!Player_GetPlace(p, 0))
+        return 0;
+    return (F(BYTE, Player_GetPlace(p, 0), 16) & 1) ? 1 : 0;
+}
+
+// [FUN_474560] loads five doubles
+void __cdecl Doubles5_Load(BYTE** cur, BYTE* out)
+{
+    Load_Read(cur, out, 40);
+}
+
+// [FUN_4745d0] saves three doubles
+void __cdecl Doubles3_Save(BYTE* s, const BYTE* v)
+{
+    Save_Write(s, v, 8);
+    Save_Write(s, v + 8, 8);
+    Save_Write(s, v + 16, 8);
+}
+
+// [FUN_474650] saves a 4x3 double matrix
+void __cdecl Matrix43_Save(BYTE* s, const BYTE* m)
+{
+    for (int i = 0; i < 12; i++)
+        Save_Write(s, m + i * 8, 8);
+}
+
+// [FUN_4746e0]
+void __cdecl Matrix43_Load(BYTE** cur, BYTE* m)
+{
+    Load_Read(cur, m, 96);
+}
+
 }
