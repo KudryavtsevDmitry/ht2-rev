@@ -458,3 +458,61 @@ join:
 }
 
 }
+
+ASM_PROC(FUN_608fa0)    // links two branches (stdcall)
+
+extern "C" {
+
+// [FUN_60a0b0] joins a cell with its neighbour branch when both sides
+// belong to the same parent
+void __stdcall Grd_JoinBranches(BYTE* a)
+{
+    if (F(BYTE*, a, 72))
+        return;
+    BYTE* p64 = F(BYTE*, a, 64);
+    if (!p64 && !F(BYTE*, a, 68))
+        return;
+    BYTE** b = F(BYTE**, F(BYTE*, a, 40), 8);
+    if (!b[0] || !b[1])
+        return;
+    BYTE* x1 = F(BYTE*, b[1], 12);
+    BYTE* x0 = F(BYTE*, b[0], 12);
+    bool first;
+    if (x1 != a) {
+        if (x0 != a) {
+            Grd_ReportError((int)2289444626u, " File = %s, Line = #%ld, Date = %s ",
+                            "C:\\Nek\\VRAPPLVS\\terrain\\grd.inl", 372, "Jan 16 2003");
+            return;
+        }
+        first = true;
+    } else
+        first = x0 == a;
+    if (first) {
+        BYTE* e = F(BYTE*, a, 68);
+        if (!e) {
+            if (!F(BYTE*, p64, 64))
+                CallStd(FUN_608fa0, b, 0);
+            return;
+        }
+        BYTE* f = F(BYTE*, e, 68);
+        if (!f)
+            return;
+        BYTE* k = F(BYTE*, F(BYTE*, e, 40), 8);
+        if (k == F(BYTE*, F(BYTE*, f, 40), 8))
+            CallStd(FUN_608fa0, b, k);
+        return;
+    }
+    if (!p64) {
+        if (!F(BYTE*, F(BYTE*, a, 68), 68))
+            CallStd(FUN_608fa0, b, 0);
+        return;
+    }
+    BYTE* f = F(BYTE*, p64, 64);
+    if (!f)
+        return;
+    BYTE* k = F(BYTE*, F(BYTE*, p64, 40), 8);
+    if (k == F(BYTE*, F(BYTE*, f, 40), 8))
+        CallStd(FUN_608fa0, b, k);
+}
+
+}

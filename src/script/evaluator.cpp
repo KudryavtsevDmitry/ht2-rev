@@ -956,8 +956,8 @@ extern "C" BYTE* __fastcall Values_Erase(BYTE** self, void*, BYTE* first, BYTE* 
 // ---------------------------------------------------------------------------
 // SchValue constructors: allocate a typed object, type-check, refcount
 
-ASM_PROC(FUN_4b61c0)    // SchString: construct from char*
-ASM_PROC(FUN_4b6400)    // SchIdentifier: construct from char*
+extern "C" void FUN_4b61c0(); KING_ALIAS("_FUN_4b61c0", "@BytesNode4b61c0_Construct@12")    // SchString: construct from char*
+extern "C" void FUN_4b6400(); KING_ALIAS("_FUN_4b6400", "@BytesNode4b6400_Construct@12")    // SchIdentifier: construct from char*
 extern "C" void FUN_4b6160(); KING_ALIAS("_FUN_4b6160", "@SchBuf4b6160_Construct@8")
 extern "C" void FUN_4b6670(); KING_ALIAS("_FUN_4b6670", "@SchItem4b6670_Construct@12")
 ASM_PROC(FUN_4a2d10)    // SchEnvironment: construct from SchValue*

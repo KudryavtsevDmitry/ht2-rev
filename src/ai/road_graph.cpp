@@ -215,7 +215,7 @@ extern "C" void FUN_478fb0(); KING_ALIAS("_FUN_478fb0", "_List1000_MakeNode@4") 
 ASM_PROC(FUN_477600)
 ASM_PROC(FUN_4731e0)
 ASM_PROC(FUN_479050)
-ASM_PROC(FUN_47c360)
+extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
 ASM_PROC(FUN_479520)
 ASM_PROC(FUN_479760)
 ASM_PROC(FUN_47a230)
@@ -794,6 +794,29 @@ int* __fastcall TempBuf8_Construct(int* self, void*, BYTE* first, BYTE* last)
     if (self[1] > 0)
         CallC(FUN_47f740, self[2], self[1], first, last);
     return self;
+}
+
+}
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+KING_ALIAS("_Stl_Allocate", "FUN_44b740")
+
+extern "C" {
+
+// [FUN_47c360] placement copy of a record {id, vector<char>}
+void __cdecl Rec47c360_Construct(BYTE** d, BYTE* const* s)
+{
+    if (!d)
+        return;
+    d[0] = s[0];
+    d[1] = d[2] = d[3] = 0;
+    int n = s[2] - s[1];
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
+    d[1] = p;
+    d[2] = p;
+    d[3] = p + n;
+    memmove(p, s[1], s[2] - s[1]);
+    d[2] = p + (s[2] - s[1]);
 }
 
 }

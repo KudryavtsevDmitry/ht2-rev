@@ -259,7 +259,7 @@ void __fastcall Terrain619ae0_Destroy(BYTE* self, void*)
 
 ASM_PROC(FUN_60c2b0)
 ASM_PROC(FUN_619c20)
-ASM_PROC(FUN_619850)
+extern "C" void FUN_619850(); KING_ALIAS("_FUN_619850", "@TerrainPart_Draw@12")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // reports an error code with file, line and date
 extern "C" void FUN_617100(); KING_ALIAS("_FUN_617100", "@Decals_Reset16@8")
 ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
@@ -303,6 +303,100 @@ void __fastcall Terrain616770_SetCorners(BYTE** self, void*, BYTE** c, int n)
     if (self[21] && self[22] && self[23] && self[24] && self[25])
         for (int i = 21; i <= 25; i++)
             CallThis(FUN_617100, self[i]);
+}
+
+}
+
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
+ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // named object: constructor (name, kind)
+ASM_VAR(BYTE*, g_696224, $L_696224)
+ASM_VAR(BYTE*, g_d3dDevice720908, $L_720908)
+
+// IDirect3DDevice methods: SetRenderState (+80), DrawPrimitive (+100)
+static void Dev_SetRenderState(BYTE* dev, int state, int value)
+{
+    typedef int (__stdcall* Fn)(BYTE*, int, int);
+    (*(Fn*)(*(BYTE**)dev + 80))(dev, state, value);
+}
+
+static void Dev_DrawTriangles(BYTE* dev, BYTE* verts, int count)
+{
+    typedef int (__stdcall* Fn)(BYTE*, int, int, BYTE*, int, int);
+    (*(Fn*)(*(BYTE**)dev + 100))(dev, 4, 322, verts, count, 0);
+}
+
+extern "C" {
+
+// [FUN_619850] draws a part's triangles (24-byte vertices, at most 1023
+// per call) with its texture
+void __fastcall TerrainPart_Draw(BYTE* self, void*, BYTE* view)
+{
+    if (!F(int, self, 8))
+        return;
+    if (!F(BYTE*, self, 16)) {
+        int t = CallThis<int>(FUN_5d9290, g_696224, F(int, self, 24));
+        F(int, self, 16) = CallC<int>(FUN_4b8720, F(int, self, 20), t);
+        if (!F(int, self, 16))
+            CallC(FUN_60aad0, 2289444629u, " File = %s, Line = #%ld, Date = %s ",
+                            "C:\\Nek\\VRAPPLVS\\terrain\\terrain.cpp", 745, "Jan 16 2003");
+    }
+    CallThis(FUN_5b1020, view, F(int, self, 16), 0, 0, 0);
+    Dev_SetRenderState(g_d3dDevice720908, 136, 1);
+    unsigned n = F(unsigned, self, 8);
+    if (n <= 1023) {
+        Dev_DrawTriangles(g_d3dDevice720908, F(BYTE*, self, 4), n);
+        return;
+    }
+    unsigned i = 0;
+    int off = 0;
+    if (n - 1023) {
+        do {
+            Dev_DrawTriangles(g_d3dDevice720908, F(BYTE*, self, 4) + off, 1023);
+            i += 1023;
+            off += 24552;
+        } while (i < F(unsigned, self, 8) - 1023);
+    }
+    n = F(unsigned, self, 8);
+    if (n > i)
+        Dev_DrawTriangles(g_d3dDevice720908, F(BYTE*, self, 4) + i * 24, n - i);
+}
+
+// [FUN_6199a0] creates the missing sharpTerrainTree objects of the 10 slots
+// at +8
+void __fastcall Terrain6199a0_CreateTrees(BYTE* self, void*)
+{
+    BYTE** slot = (BYTE**)(self + 8);
+    for (int k = 0; k < 10; k++, slot++) {
+        if (*slot)
+            continue;
+        BYTE* o = (BYTE*)operator new(80);
+        if (o) {
+            CallThis(FUN_5ef6d0, o, "sharpTerrainTree", 9);
+            F(int, o, 60) = 0;
+            F(int, o, 64) = 7;
+            F(void*, o, 0) = &g_vtbl653308;
+            F(BYTE**, o, 76) = slot;
+        }
+        *slot = o;
+        F(BYTE, o, 40) |= 1;
+        F(int, *slot, 48) = 1;
+        F(int, *slot, 52) = 50;
+        F(int, *slot, 56) = 2;
+        BYTE* q = (BYTE*)operator new(8);
+        F(BYTE*, *slot, 60) = q;
+        F(int, F(BYTE*, *slot, 60), 0) = 0;
+        F(WORD, F(BYTE*, *slot, 60), 4) = 2;
+        F(WORD, F(BYTE*, *slot, 60), 6) = 0;
+        F(int, *slot, 68) = 2;
+        DWORD* r = (DWORD*)operator new(24);
+        if (r)
+            for (int i = 0; i < 6; i++)
+                r[i] = 0;
+        F(DWORD*, *slot, 72) = r;
+    }
+    F(int, self, 48) = 0;
 }
 
 }

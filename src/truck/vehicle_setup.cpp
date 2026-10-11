@@ -204,3 +204,50 @@ void __fastcall Car_SetSettingRaw(Car* s, void*, int i, int x) { s->SetSettingRa
 void __fastcall Car_StepSetting(Car* s, void*, int i) { s->StepSetting(i); }                         // [FUN_501870]
 int __fastcall Car_FindParts(Car* s, void*) { return s->FindParts(); }                               // [FUN_506a60]
 }
+
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+typedef DWORD Dwords12[12];
+ASM_VAR(Dwords12, g_rayDefaults, $L_7025f0)
+
+extern "C" {
+
+// [FUN_5039a0] casts a ray from the vehicle's point at +2292 to p through the
+// scene object at +6672; *hit gets the object hit, p the hit point
+int __fastcall Vehicle_RayTest(BYTE* self, void*, DWORD* p, BYTE** hit)
+{
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    memcpy(q + 4, g_rayDefaults, 48);
+    DWORD* from = (DWORD*)(self + 2292);
+    F(DWORD, q, 76) = from[0];
+    F(DWORD, q, 80) = from[1];
+    BYTE* scene = F(BYTE*, self, 6672);
+    F(DWORD, q, 84) = from[2];
+    F(DWORD, q, 88) = p[0];
+    F(DWORD, q, 92) = p[1];
+    F(DWORD, q, 96) = p[2];
+    F(int, q, 116) = 0;
+    F(int, q, 0) = 0;
+    if (!scene) {
+        *hit = 0;
+        return 1;
+    }
+    unsigned r = CallVirt<unsigned>(scene, 52, 0, q);
+    BYTE* other = F(BYTE*, q, 104);
+    unsigned two = r & 2;
+    if (two && !other) {
+        F(int, self, 15444) = 1;
+        other = scene;
+    }
+    if ((r & 1) == 1) {
+        *hit = two == 2 ? other : scene;
+        p[0] = F(DWORD, q, 52);
+        p[1] = F(DWORD, q, 56);
+        p[2] = F(DWORD, q, 60);
+        return 0;
+    }
+    *hit = two == 2 ? other : scene;
+    return 1;
+}
+
+}

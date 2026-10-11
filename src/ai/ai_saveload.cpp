@@ -528,3 +528,19 @@ void __cdecl Save_Town(BYTE* s, BYTE* town)
 }
 
 }
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+KING_ALIAS("_Stl_Allocate", "FUN_44b740")
+extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
+
+extern "C" {
+
+// [FUN_4836f0] n bytes from the allocator holding a copy of [first, last)
+BYTE* __stdcall Bytes_Clone(unsigned n, const BYTE* first, const BYTE* last)
+{
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
+    memmove(p, first, last - first);
+    return p;
+}
+
+}
