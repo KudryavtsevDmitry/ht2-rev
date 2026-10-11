@@ -14,7 +14,7 @@
 
 typedef char AsmLabel[1];
 
-ASM_PROC(FUN_566020)    // copter: the vehicle to follow (mode, a)
+extern "C" void FUN_566020(); KING_ALIAS("_FUN_566020", "@Copter_NearestVisible@16")    // copter: the vehicle to follow (mode, a)
 ASM_PROC(FUN_602e80)
 ASM_PROC(FUN_603110)
 ASM_PROC(FUN_5c3630)
@@ -1243,5 +1243,68 @@ extern "C" int __fastcall Copter_TargetState(BYTE* s, void*)
     }
     F(float, s, 3280) = (float)Game_Time();
     F(int, s, 3276) = 0;
+    return 0;
+}
+
+extern "C" BYTE* __fastcall Obj541960_Self(BYTE* self, void*);
+ASM_VAR(BYTE*, g_objects6ef1f8, $L_6ef1f8)
+
+// [FUN_566020] the nearest vehicle the helicopter can see (over 1 m away; within 500 m when a or b is set)
+extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b)
+{
+    BYTE* it = g_objects6ef1f8 ? g_objects6ef1f8 - 4 : 0;
+    BYTE* best = 0;
+    float bestD = 100000.0f;
+    float px = F(float, s, 36), py = F(float, s, 40), pz = F(float, s, 44);
+    while (it) {
+        BYTE* o = Obj541960_Self(it, 0);
+        BYTE m[48];
+        BYTE* mat = CallThis<BYTE*>(FUN_57de90, o + 16, m);
+        float dx = (float)((double)F(float, mat, 36) - px);
+        float dy = (float)((double)F(float, mat, 40) - py);
+        double dz = (double)F(float, mat, 44) - pz;
+        float d = (float)(((double)dx * dx + (double)dy * dy) + dz * dz);
+        bool first;
+        if (a)
+            first = F(int, o, 1220) != 0;
+        else
+            first = F(int, o, 9544) == b || !b;
+        bool take = false;
+        if (first && !(d >= bestD) && d > 1.0f)
+            take = true;
+        else if (F(int, o, 20944)) {
+            if (!best || !F(int, best, 20944))
+                take = true;
+            else if (!(d >= bestD) && d > 1.0f)
+                take = true;
+        }
+        if (take) {
+            bestD = d;
+            best = o;
+        }
+        it = F(BYTE*, it, 8);
+        if (!it)
+            break;
+        it -= 4;
+    }
+    if (!best)
+        return 0;
+    if ((a || b) && bestD >= 250000.0f)
+        return best;
+    BYTE node[256];
+    BYTE m[48];
+    CallThis(FUN_5ef5c0, node);
+    BYTE* mat = CallThis<BYTE*>(FUN_57de90, best + 16, m);
+    int r = Query_4e7476(F(int, s, 96), F(int, s, 3480), 0, s + 36, mat + 36, node);
+    BYTE* other = 0;
+    if (CallVirt<int>(best, 4) == 1)
+        other = F(BYTE*, best, 21880);
+    BYTE* hit = F(BYTE*, node, 116);
+    if ((r & 1) && hit) {
+        if (Car_InListFrom16(hit) == best)
+            return best;
+        if (Car_InListFrom16(hit) == other)
+            return best;
+    }
     return 0;
 }
