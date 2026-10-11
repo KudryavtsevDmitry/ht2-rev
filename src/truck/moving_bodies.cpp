@@ -489,3 +489,34 @@ BYTE* __fastcall Body58b720_Construct(BYTE* self, void*, int a1, int a2, int a3,
 }
 
 }
+
+#include <string.h>
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+ASM_PROC(FUN_587c80)
+
+// [FUN_592a20] the deepest flagged contact of a body: its points, normal and plane into out, its depth to *depth
+extern "C" int __cdecl Body_DeepestContact(BYTE* obj, BYTE* out, float* depth)
+{
+    BYTE m[48];
+    CallThis(FUN_57de90, obj, m);
+    static BYTE c[6404];
+    CallThis(FUN_587c80, c);
+    if (!Movingb_589e90((int)obj, (int)c, 512))
+        return 0;
+    float best = 0.0f;
+    int idx = 0;
+    int n = F(int, c, 2816);
+    for (int k = 0; k < n; k++)
+        if (F(int, c, 2820 + k * 4) && !(best >= F(float, c, 2560 + k * 4))) {
+            best = F(float, c, 2560 + k * 4);
+            idx = k;
+        }
+    memcpy(out + 52, c + idx * 12, 12);
+    memcpy(out + 64, c + 768 + idx * 12, 12);
+    F(DWORD, out, 116) = F(DWORD, c, 1536 + idx * 4);
+    F(DWORD, out, 100) = F(DWORD, c, 1792 + idx * 4);
+    if (F(int, c, 2820 + idx * 4) == -1)
+        memcpy(out + 4, c + 3332 + idx * 48, 48);
+    *depth = best;
+    return 1;
+}

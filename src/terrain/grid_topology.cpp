@@ -232,3 +232,12 @@ extern "C" int __fastcall GridMesh_Refine50(BYTE* self,void*)
     float lim=F(float,MarineQueue_TopWorkItem(F(BYTE*,self,32),0),104);
     return F(float,MarineQueue_TopDeferredNode(F(BYTE*,self,36),0),28)>lim;
 }
+
+// [FUN_608460] whether (x, y) lies on the inner side of two edges through a point {x, y, -h}
+extern "C" int __fastcall Point_InWedge(const float* s,void*,float x,float y,float a,float b,float c,float d)
+{
+    double dx=(double)s[0]-x, dy=(double)s[1]-y, nz=-(double)s[2];
+    if(!(dy*a-dx*b>=nz)) return 0;
+    if(!(dy*c-dx*d>=nz)) return 0;
+    return 1;
+}

@@ -266,3 +266,51 @@ extern "C" double __fastcall Car_EngineBrakeTorque(BYTE* car, void*, float speed
         r *= 1.0f - (double)((gear - 2) / 1000);
     return r;
 }
+
+// [FUN_500ef0] advances wheel i's three ramps by dt and sets their integer outputs
+extern "C" void __cdecl Wheel_AdvanceRamps(BYTE* base, int i, float dt)
+{
+    BYTE* w = base + i * 20;
+    double v = (double)dt * F(float, w, 76) + F(float, w, 72);
+    F(float, w, 72) = (float)v;
+    if (v > 1.0f)
+        F(float, w, 72) = 1.0f;
+    F(int, w, 60) = (int)((double)F(int, w, 64) * F(float, w, 72));
+    double sign = F(int, w, 220) ? (double)(F(int, w, 220) > 0 ? 1 : -1) : -1.0f;
+    v = sign * F(float, w, 236) * dt + F(float, w, 232);
+    F(float, w, 232) = (float)v;
+    if (v > 1.0f)
+        F(float, w, 232) = 1.0f;
+    else if (!(v >= -1.0f))
+        F(float, w, 232) = -1.0f;
+    F(int, w, 220) = (int)((double)F(int, w, 224) * F(float, w, 232));
+    v = (double)dt * F(float, w, 396) + F(float, w, 392);
+    F(float, w, 392) = (float)v;
+    if (v > 1.0f)
+        F(float, w, 392) = 1.0f;
+    F(int, w, 380) = (int)((double)F(int, w, 384) * F(float, w, 392));
+}
+
+// [FUN_501550] the smallest wear factor of the wheels and the two axles
+extern "C" double __fastcall Car_MinWearFactor(BYTE* car, void*)
+{
+    float m = 1.0f;
+    int n = F(int, car, 3540);
+    for (int k = 0; k < n; k++) {
+        double r;
+        int a = F(int, car, 15580 + k * 20), b = F(int, car, 15584 + k * 20);
+        if (F(int, car, 7124 + k * 4) == 0 && n >= 4)
+            r = 1.0 - (double)a * (n == 4 ? 0.6 : 0.3) / b;
+        else
+            r = 1.0 - (double)a * 0.9 / b;
+        if (m > r)
+            m = (float)r;
+    }
+    double r = 1.0 - (double)F(int, car, 15540) * 0.3 / F(int, car, 15544);
+    if (m > r)
+        m = (float)r;
+    r = 1.0 - (double)F(int, car, 15520) * 0.7 / F(int, car, 15524);
+    if (m > r)
+        return r;
+    return m;
+}

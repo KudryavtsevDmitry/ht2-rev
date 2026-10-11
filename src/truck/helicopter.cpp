@@ -1097,3 +1097,36 @@ void __cdecl Mine_Explode(int id)
 }
 
 }
+
+extern "C" double __cdecl Game_Time();
+extern "C" void __cdecl Switch_Select(int sw, int state);
+ASM_PROC(FUN_567bb0)
+
+// [FUN_568680] the helicopter's blinking warning lights: the state by the time since the last change
+extern "C" void __fastcall Copter_UpdateWarning(BYTE* s, void*)
+{
+    if (F(int, s, 3284))
+        CallThis(FUN_567bb0, s);
+    float d = (float)(Game_Time() - F(float, s, 3288));
+    if (!(F(float, s, 3288) >= F(float, s, 3292)))
+        d = (float)(Game_Time() - F(float, s, 3292));
+    int st = F(int, s, 3296);
+    if (d >= 1.0f)
+        st = 0;
+    else if (!(d >= 0.1) || st == 0)
+        st = 1;
+    else if (!(d >= 0.2) || st == 1)
+        st = 2;
+    else if (!(d >= 0.3) || st == 2)
+        st = 3;
+    else
+        st = 0;
+    F(int, s, 3296) = st;
+    if (!(F(float, s, 3288) >= F(float, s, 3292))) {
+        Switch_Select(F(int, s, 3304), F(int, s, 3296));
+        Switch_Select(F(int, s, 3300), 0);
+    } else {
+        Switch_Select(F(int, s, 3304), 0);
+        Switch_Select(F(int, s, 3300), F(int, s, 3296));
+    }
+}

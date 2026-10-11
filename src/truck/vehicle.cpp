@@ -30,7 +30,7 @@ extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 extern "C" float __fastcall Ramp_Position(BYTE* self, void*);   // carphys.cpp
 ASM_PROC(FUN_5014b0)
-ASM_PROC(FUN_501550)
+extern "C" void FUN_501550(); KING_ALIAS("_FUN_501550", "@Car_MinWearFactor@8")
 ASM_PROC(FUN_556110)
 ASM_PROC(FUN_5561b0)
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
