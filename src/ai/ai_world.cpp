@@ -638,6 +638,29 @@ ASM_VAR(AsmLabel, s_number, $L_66ca60)
 ASM_VAR(AsmLabel, s_string, $L_66ca58)
 ASM_VAR(AsmLabel, s_port, $L_66cb28)
 
+ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+ASM_PROC(FUN_447970)
+ASM_PROC(FUN_410e40)
+ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
+extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
+ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
+ASM_PROC(FUN_401000)    // the AI clock, returns double
+extern "C" void FUN_4172e0(); KING_ALIAS("_FUN_4172e0", "_Player_UpdateFlagsGet")
+extern "C" void FUN_417530(); KING_ALIAS("_FUN_417530", "_Player_Leave")
+extern "C" void FUN_483cb0(); KING_ALIAS("_FUN_483cb0", "_displayScreenMessage")    // shows a screen message
+ASM_VAR(BYTE*, g_aiMessages, $L_68a850)
+ASM_VAR(BYTE*, g_aiMessagesEnd, $L_68a854)
+ASM_VAR(AsmLabel, s_noMessage, $L_66cdd8)
+ASM_VAR(AsmLabel, g_trace, $L_71e808)
+ASM_VAR(BYTE*, g_traceData, $L_71e814)
+ASM_VAR(int, g_traceSize, $L_71e810)
+ASM_VAR(int, g_tracePos, $L_71e818)
+ASM_VAR(AsmLabel, g_tagArt, $L_66c830)
+ASM_VAR(AsmLabel, g_tagMpl, $L_66c7ec)
+ASM_VAR(AsmLabel, s_finishRacingPlayer, $L_66cc8c)
+ASM_VAR(AsmLabel, s_competitorArrived, $L_66cc78)
+extern "C" bool __fastcall Item_Matches(BYTE** self, void*, BYTE* x);
+
 extern "C" {
 void __fastcall Buf_Append(void* s, void*, const void* src, int n) { R(s)->Append(src, n); }               // [FUN_401870]
 void __fastcall Buf_AppendString(void* s, void*, const char* str) { R(s)->AppendString(str); }           // [FUN_4018b0]
@@ -2354,7 +2377,7 @@ KING_ALIAS("_Player_Drop422210", "FUN_422210")
 extern "C" void __cdecl Vehicle_Distances(int i, double* a, double* b);
 KING_ALIAS("_Vehicle_Distances", "_Vehicle_Costs")
 extern "C" const char* __cdecl AI_Text76(const char* key);
-KING_ALIAS("_AI_Text76", "FUN_40e270")
+KING_ALIAS("_AI_Text76", "_Message_Text")
 extern "C" const char* __cdecl AI_Text40e4c0(const char* key);
 KING_ALIAS("_AI_Text40e4c0", "FUN_40e4c0")
 extern "C" const char* __cdecl Node_Name(int node);
@@ -3426,6 +3449,207 @@ bool __fastcall Item_Matches(BYTE** self, void*, BYTE* x)
     bool r = CallC<bool>(FUN_4b65e0, v, self[0]);
     SchValue_Release(v);
     return r;
+}
+
+}
+
+static void Bytes_Free(BYTE* b, BYTE* e)
+{
+    if (e != b)
+        StlDeallocate(b, e - b);
+}
+
+static void Dwords_Free(BYTE* b, BYTE* e, int size)
+{
+    int n = (e - b) / size;
+    if (n)
+        StlDeallocate(b, n * size);
+}
+
+static void SchValue_Copy(DWORD* d, const DWORD* s)
+{
+    if (s[2] & 0x10000) {
+        d[2] = s[2];
+        d[0] = s[0];
+        d[1] = s[1];
+        return;
+    }
+    d[1] = 0;
+    if (s[0]) {
+        d[0] = s[0];
+        d[2] = s[2];
+        F(int, (BYTE*)s[0], 4) = F(int, (BYTE*)s[0], 4) + 1;
+    } else {
+        d[0] = 0;
+        d[2] = 0;
+    }
+}
+
+// the trace buffer of the AI (state.dump): +0 data, +8 size, +16 position
+static void Trace_Tag(const DWORD* tag)
+{
+    BYTE* buf = g_traceData;
+    if (buf && g_tracePos + 8 < g_traceSize) {
+        F(DWORD, buf, g_tracePos) = tag[0];
+        F(DWORD, buf, g_tracePos + 4) = tag[1];
+        g_tracePos += 8;
+    }
+}
+
+extern "C" {
+
+// [FUN_403680]
+void __fastcall Rec403680_Destroy(BYTE* self, void*)
+{
+    Dwords_Free(F(BYTE*, self, 96), F(BYTE*, self, 104), 4);
+    SchValue_Release((DWORD*)(self + 84));
+    Bytes_Free(F(BYTE*, self, 72), F(BYTE*, self, 80));
+    int n = (F(BYTE*, self, 44) - F(BYTE*, self, 36)) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, self, 36), n * 4);
+    Bytes_Free(F(BYTE*, self, 20), F(BYTE*, self, 28));
+    SchValue_Release((DWORD*)(self + 8));
+}
+
+// [FUN_404290]
+void __fastcall Rec404290_Destroy(BYTE* self, void*)
+{
+    Dwords_Free(F(BYTE*, self, 100), F(BYTE*, self, 108), 8);
+    for (int i = 1; i >= 0; i--)
+        CallThis(FUN_447970, self + 72 + i * 12);
+    Dwords_Free(F(BYTE*, self, 40), F(BYTE*, self, 48), 4);
+    Dwords_Free(F(BYTE*, self, 28), F(BYTE*, self, 36), 16);
+    Bytes_Free(F(BYTE*, self, 12), F(BYTE*, self, 20));
+    int n = F(BYTE*, self, 8) - F(BYTE*, self, 0);
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, self, 0), n);
+}
+
+// [FUN_404570]
+void __fastcall Rec404570_Destroy(BYTE* self, void*)
+{
+    BYTE* b = F(BYTE*, self, 28);
+    for (BYTE* e = b; e != F(BYTE*, self, 32); e += 36)
+        CallThis(FUN_410e40, e);
+    Dwords_Free(F(BYTE*, self, 28), F(BYTE*, self, 36), 36);
+    Bytes_Free(F(BYTE*, self, 12), F(BYTE*, self, 20));
+    SchValue_Release((DWORD*)self);
+}
+
+// [FUN_404790]
+void __fastcall Rec404790_Destroy(BYTE* self, void*)
+{
+    Dwords_Free(F(BYTE*, self, 112), F(BYTE*, self, 120), 4);
+    Bytes_Free(F(BYTE*, self, 100), F(BYTE*, self, 108));
+    int n = F(BYTE*, self, 96) - F(BYTE*, self, 88);
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, self, 88), n);
+    SchValue_Release((DWORD*)(self + 36));
+    BYTE* v = self ? self + 12 : 0;
+    n = F(BYTE*, v, 12) - F(BYTE*, v, 4);
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, v, 4), n);
+    Bytes_Free(F(BYTE*, self, 0), F(BYTE*, self, 8));
+}
+
+// [FUN_40c220] copy constructor
+BYTE* __fastcall Rec40c220_Copy(BYTE* self, void*, const BYTE* s)
+{
+    SchValue_Copy((DWORD*)self, (const DWORD*)s);
+    static const int k[] = {16, 20, 24, 28, 32, 36, 40, 44, 48, 56, 60, 64, 68, 72, 80, 84};
+    for (int i = 0; i < 16; i++)
+        F(int, self, k[i]) = F(int, s, k[i]);
+    F(int, self, 88) = 0;
+    F(int, self, 92) = 0;
+    F(int, self, 96) = 0;
+    Bytes_CopyInto(self + 88, F(const BYTE*, s, 88), F(const BYTE*, s, 92));
+    return self;
+}
+
+// [FUN_40cda0] copy constructor
+BYTE* __fastcall Rec40cda0_Copy(BYTE* self, void*, const BYTE* s)
+{
+    SchValue_Copy((DWORD*)self, (const DWORD*)s);
+    int n = (F(const BYTE*, s, 16) - F(const BYTE*, s, 12)) / 24;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 20) = 0;
+    BYTE* p = (BYTE*)AiAlloc(n * 24);
+    F(BYTE*, self, 12) = p;
+    F(BYTE*, self, 16) = p;
+    F(BYTE*, self, 20) = p + n * 24;
+    F(BYTE*, self, 16) = CallC<BYTE*>(FUN_466200, F(const BYTE*, s, 12), F(const BYTE*, s, 16), p, 0);
+    return self;
+}
+
+// [FUN_40e270] the text of the message with this id
+const char* __cdecl Message_Text(const char* id)
+{
+    const char* key = id;
+    BYTE* e = g_aiMessages;
+    for (; e != g_aiMessagesEnd; e += 12)
+        if (Item_Matches((BYTE**)&key, 0, e))
+            break;
+    if (e == g_aiMessagesEnd) {
+        AiError(35, 1, s_mainFile, s_mainId, 2859, s_noMessage, id, &g_aiEmpty);
+        return &g_aiEmpty;
+    }
+    DWORD tmp[3];
+    DWORD* v = CallC<DWORD*>(FUN_4090a0, tmp, e);
+    DWORD h[3] = {0, 0, 0};
+    BYTE* o = (BYTE*)v[0];
+    if (o) {
+        if (CallVirt<int>(o, 0) != 3) {
+            const char* has = CallVirt<const char*>((BYTE*)v[0], 4);
+            CallC(FUN_4a54e0, 2, 1, has, (const char*)s_string);
+        } else {
+            h[0] = v[0];
+            h[2] = v[2];
+            F(int, (BYTE*)h[0], 4) = F(int, (BYTE*)h[0], 4) + 1;
+        }
+    }
+    SchValue_Release(tmp);
+    if (!h[0])
+        CallC(FUN_4a52e0, 0, 1);
+    if (h[2] & 0x10000)
+        CallC(FUN_4a52e0, 4, 1);
+    const char* text = F(const char*, (BYTE*)h[0], 12);
+    if (!(h[2] & 0x10000) && h[0]) {
+        BYTE* p = (BYTE*)h[0];
+        if (--F(int, p, 4) == 0)
+            CallVirt(p, 12, 1);
+    }
+    return text;
+}
+
+// [FUN_40ad00] finishRacingPlayer(PlayerId player)
+void __cdecl Ai_FinishRacingPlayer(BYTE* player)
+{
+    Trace_Tag((const DWORD*)g_tagArt);
+    Buf_AppendString(&g_trace, 0, s_finishRacingPlayer);
+    DWORD f = F(DWORD, player, 96);
+    if (f & 0x4000) {
+        f &= ~0x4000u;
+        F(DWORD, player, 96) = f;
+        if (!(f & 0x100))
+            F(double, player, 808) = CallC<double>(FUN_401000) - F(double, player, 792);
+        if (CallC<bool>(FUN_4172e0, player)) {
+            g_68d164++;
+            CallC(FUN_417530, player);
+            CallC(FUN_483cb0, Message_Text(s_competitorArrived));
+        }
+        F(BYTE, player, 872) = 1;
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    BYTE* buf = g_traceData;
+    if (buf && *s_finishRacingPlayer)
+        for (const char* c = s_finishRacingPlayer; g_tracePos < g_traceSize;) {
+            buf[g_tracePos] = *c++;
+            g_tracePos++;
+            if (!*c)
+                break;
+            buf = g_traceData;
+        }
 }
 
 }
