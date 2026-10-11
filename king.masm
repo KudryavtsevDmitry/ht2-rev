@@ -1048,6 +1048,10 @@ PUBLIC $L_67ef88
 PUBLIC $L_676308, $L_676310, $L_676318, $L_676320, $L_67632c, $L_676338
 PUBLIC $L_66fcb4, $L_66fd70, $L_66fe74
 PUBLIC $L_66fdec, $L_66fdf4
+PUBLIC $L_68a860
+PUBLIC $L_68a870, $L_68a94c, $L_68a950, $L_68a968, $L_68cf34, $L_68cfe4
+PUBLIC $L_68d01c, $L_68d0e4, $L_77e5e0
+PUBLIC $L_68b99c
 
 ;===================================
 _TEXT SEGMENT
@@ -8450,6 +8454,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_404ab0 PROC
 
             push -1
@@ -8651,6 +8657,10 @@ $L_404c5c::
             add ESP,20
             ret 
 FUN_404ab0 ENDP
+ELSE
+EXTERN @Rec404ab0_Destroy@8:PROC
+FUN_404ab0 TEXTEQU <@Rec404ab0_Destroy@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -16413,6 +16423,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_409100 PROC
 
             push -1
@@ -16635,6 +16647,10 @@ $L_4092dc::
             add ESP,60
             ret 
 FUN_409100 ENDP
+ELSE
+EXTERN _Pairs_ReadPlayerTypes:PROC
+FUN_409100 TEXTEQU <_Pairs_ReadPlayerTypes>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -25221,6 +25237,8 @@ FUN_40e4c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40e500 PROC
 
             push -1
@@ -25359,6 +25377,10 @@ $L_40e648::
             add ESP,28
             ret 
 FUN_40e500 ENDP
+ELSE
+EXTERN _Vehicle_IndexOf:PROC
+FUN_40e500 TEXTEQU <_Vehicle_IndexOf>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -36073,6 +36095,8 @@ $L_41506d::
             nop
 FUN_414b30 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_415100 PROC
 
             push -1
@@ -36140,6 +36164,10 @@ $L_415173::
             add ESP,28
             ret 4
 FUN_415100 ENDP
+ELSE
+EXTERN @Rec415100_Construct@12:PROC
+FUN_415100 TEXTEQU <@Rec415100_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -36745,6 +36773,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_415740 PROC
 
             push ESI
@@ -36780,6 +36810,10 @@ $L_415782::
             pop ESI
             ret 4
 FUN_415740 ENDP
+ELSE
+EXTERN _Rec415740_Check@4:PROC
+FUN_415740 TEXTEQU <_Rec415740_Check@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -39388,6 +39422,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_417300 PROC
 
             push -1
@@ -39598,6 +39634,10 @@ $L_417519::
             add ESP,52
             ret 
 FUN_417300 ENDP
+ELSE
+EXTERN _Ai_ActOnSemiArrival:PROC
+FUN_417300 TEXTEQU <_Ai_ActOnSemiArrival>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -41138,6 +41178,8 @@ FUN_4180f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_418400 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -41294,6 +41336,10 @@ $L_4185a0::
             mov EAX,ESI
             jmp $L_418549
 FUN_418400 ENDP
+ELSE
+EXTERN _Ai_RandomOrder:PROC
+FUN_418400 TEXTEQU <_Ai_RandomOrder>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -51519,6 +51565,8 @@ $L_41ed50 PROC
             ret 
 $L_41ed50 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41ed60 PROC
 
             push -1
@@ -51688,6 +51736,10 @@ $L_41eef7::
 
             nop
 FUN_41ed60 ENDP
+ELSE
+EXTERN _Ai_DestroyPresentSilently:PROC
+FUN_41ed60 TEXTEQU <_Ai_DestroyPresentSilently>
+ENDIF
 ALIGN 16
 FUN_41ef10 PROC
 
@@ -55737,6 +55789,8 @@ $L_420ed0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_421690 PROC
 
             push -1
@@ -55929,8 +55983,14 @@ $L_42186b::
             add ESP,40
             ret 
 FUN_421690 ENDP
+ELSE
+EXTERN _Rec_FirstId:PROC
+FUN_421690 TEXTEQU <_Rec_FirstId>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_421880 PROC
 
             push -1
@@ -56075,6 +56135,10 @@ $L_421a0a::
             add ESP,68
             ret 
 FUN_421880 ENDP
+ELSE
+EXTERN _Ai_TrimDealerPosition:PROC
+FUN_421880 TEXTEQU <_Ai_TrimDealerPosition>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -64618,6 +64682,8 @@ FUN_426b00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_426f20 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -64677,6 +64743,10 @@ $L_426faa::
             add ESP,20
             ret 
 FUN_426f20 ENDP
+ELSE
+EXTERN _Player_CheckBankrupt:PROC
+FUN_426f20 TEXTEQU <_Player_CheckBankrupt>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -72178,6 +72248,8 @@ FUN_42b550 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42b870 PROC
 
             push -1
@@ -72329,6 +72401,10 @@ $L_42ba08::
             add ESP,36
             ret 
 FUN_42b870 ENDP
+ELSE
+EXTERN _Ai_ReleaseAttachedPlayer:PROC
+FUN_42b870 TEXTEQU <_Ai_ReleaseAttachedPlayer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -88823,6 +88899,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_435a90 PROC
 
             push -1
@@ -88946,6 +89024,10 @@ $L_435bd1::
             add ESP,52
             ret 
 FUN_435a90 ENDP
+ELSE
+EXTERN _Ai_AdvancePlayer:PROC
+FUN_435a90 TEXTEQU <_Ai_AdvancePlayer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
