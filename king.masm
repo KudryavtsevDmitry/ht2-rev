@@ -1073,6 +1073,7 @@ PUBLIC $L_695324, $L_695e2c, $L_695fac
 PUBLIC $L_64c410, $L_674850
 PUBLIC $L_64da00, $L_652f3c, $L_6532e8
 PUBLIC $L_67498c
+PUBLIC $L_6511ac, $L_6511f8
 
 ;===================================
 _TEXT SEGMENT
@@ -341307,6 +341308,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bdf10 PROC
 
             push EBX
@@ -341556,6 +341559,10 @@ $L_4be0ae::
             pop EBX
             ret 
 FUN_4bdf10 ENDP
+ELSE
+EXTERN _Fx_SegmentDistance:PROC
+FUN_4bdf10 TEXTEQU <_Fx_SegmentDistance>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -589343,6 +589350,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_566020 PROC
 
             mov EAX,DWORD PTR [$L_6ef1f8]
@@ -589576,6 +589585,10 @@ $L_56622e::
             add ESP,300
             ret 8
 FUN_566020 ENDP
+ELSE
+EXTERN @Copter_NearestVisible@16:PROC
+FUN_566020 TEXTEQU <@Copter_NearestVisible@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -659787,6 +659800,8 @@ EXTERN _CarType_Point:PROC
 FUN_594e00 TEXTEQU <_CarType_Point>
 ENDIF
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_594e70 PROC
 
             sub ESP,304
@@ -659950,6 +659965,10 @@ $L_595096::
             add ESP,304
             ret 
 FUN_594e70 ENDP
+ELSE
+EXTERN _Object_TraceRay:PROC
+FUN_594e70 TEXTEQU <_Object_TraceRay>
+ENDIF
 ALIGN 16
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -676226,6 +676245,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_5a0370 PROC
 
             sub ESP,32
@@ -676335,6 +676356,10 @@ FUN_5a0370 PROC
             add ESP,32
             ret 32
 FUN_5a0370 ENDP
+ELSE
+EXTERN @Spark_Construct@40:PROC
+FUN_5a0370 TEXTEQU <@Spark_Construct@40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

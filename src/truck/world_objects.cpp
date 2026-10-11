@@ -1032,3 +1032,109 @@ extern "C" Matrix* __fastcall Object_WheelMatrix(BYTE* s, void*, Matrix* out, co
     Matrix_Multiply(out, Matrix_Multiply(&a, T2, Rz), T1);
     return out;
 }
+
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" int __cdecl rand(void);
+extern "C" void FUN_59ab10(); KING_ALIAS("_FUN_59ab10", "@Effect_Construct@44")
+ASM_VAR(BYTE*, g_view5a0370, $L_696224)
+ASM_VAR(char, g_vtbl6511f8, $L_6511f8)
+ASM_VAR(char, g_vtbl6511ac, $L_6511ac)
+
+// [FUN_5a0370] constructs a spark effect: a random size and spin, placed at a random spot within a4 of *at
+extern "C" BYTE* __fastcall Spark_Construct(BYTE* s, void*, int a0, int a1, int a2, const float* at, float spread, int a5, int a6, int a7)
+{
+    const float k = 3.0518509447574615e-05f;    // 1/32767
+    float r1 = (float)((double)rand() * k);
+    float v = (float)(((double)rand() * k - r1) * 1.5f + 2.0f);
+    CallThis(FUN_59ab10, s, g_view5a0370, a2, a5, a5, a6, a7, 6.599999904632568f, v, 100);
+    F(int, s, 156) = 0;
+    F(int, s, 160) = 0;
+    F(int, s, 164) = 0;
+    F(void*, s, 0) = &g_vtbl6511f8;
+    F(void*, s, 20) = &g_vtbl6511ac;
+    F(int, s, 152) = a1;
+    F(int, s, 148) = a0;
+    int r = rand();
+    F(DWORD, s, 180) = 0x3F3504F3;
+    F(DWORD, s, 176) = 0x3F3504F3;
+    F(float, s, 168) = (float)((double)r * 0.00019175389024894685f);
+    float x1 = (float)((double)rand() * k);
+    float x2 = (float)((double)rand() * k);
+    double x3 = (double)rand() * k;
+    float p2 = (float)((double)x2 * 0.10000000149011612f);
+    float p1 = (float)((double)x1 * 0.10000000149011612f);
+    double q3 = x3 * 0.10000000149011612f;
+    float dx = (float)((double)p2 * spread);
+    float dy = (float)((double)p1 * spread);
+    double dz = q3 * spread;
+    F(float, s, 156) = (float)((double)dx + at[0]);
+    F(float, s, 160) = (float)((double)dy + at[1]);
+    F(float, s, 164) = (float)(dz + at[2]);
+    F(int, s, 184) = a5;
+    return s;
+}
+
+ASM_VAR(Matrix, g_identity7025f0, $L_7025f0)
+
+// [FUN_594e70] follows a ray through an object (virtual +52 steps) up to 10 times; the end point to *out, the object reached returned
+extern "C" BYTE* __cdecl Object_TraceRay(int a0, int a1, BYTE* obj, int a3, int a4, int a5, float* out)
+{
+    BYTE node[256];
+    CallThis(FUN_5ef5c0, node);
+    if (!obj)
+        return 0;
+    F(Matrix, node, 4) = g_identity7025f0;
+    F(int, node, 76) = a3;
+    F(int, node, 80) = a4;
+    F(int, node, 84) = a5;
+    F(DWORD, node, 88) = ((DWORD*)out)[0];
+    F(DWORD, node, 92) = ((DWORD*)out)[1];
+    F(int, node, 116) = 0;
+    F(DWORD, node, 0) = 0x3E99999A;     // 0.3f
+    F(DWORD, node, 96) = ((DWORD*)out)[2];
+    F(BYTE*, node, 104) = obj;
+    F(int, node, 120) = a1;
+    int flags = a0 | 2;
+    DWORD x, y, z;
+    BYTE* hit;
+    for (int i = 0; ; i++) {
+        if (!(CallVirt<int>(obj, 52, flags, node) & 1)) {
+            z = F(DWORD, node, 96); y = F(DWORD, node, 92); x = F(DWORD, node, 88);
+            hit = F(BYTE*, node, 104);
+            break;
+        }
+        if (i == 9) {
+            x = F(DWORD, node, 76); y = F(DWORD, node, 80); z = F(DWORD, node, 84);
+            hit = obj;
+            break;
+        }
+        float sc = F(float, node, 0);
+        float tx = (float)((double)F(float, node, 64) * sc);
+        float ty = (float)((double)F(float, node, 68) * sc);
+        float tz = (float)((double)F(float, node, 72) * sc);
+        Matrix inv;
+        const float* M = (const float*)Matrix_Inverse(&inv, (Matrix*)(node + 4));
+        double wx = ((double)tz * M[6] + (double)ty * M[3]) + (double)tx * M[0] + M[9];
+        float wy = (float)(((double)tz * M[7] + (double)ty * M[4]) + (double)tx * M[1] + M[10]);
+        float wz = (float)(((double)tz * M[8] + (double)ty * M[5]) + (double)tx * M[2] + M[11]);
+        F(BYTE*, node, 104) = obj;
+        double wx1 = wx * 1.0099999904632568f;
+        float wy1 = (float)((double)wy * 1.0099999904632568f);
+        float wz1 = (float)((double)wz * 1.0099999904632568f);
+        float nx = (float)((double)F(float, node, 52) + wx1);
+        F(float, node, 88) = nx;
+        float ny = (float)((double)wy1 + F(float, node, 56));
+        F(float, node, 92) = ny;
+        float nz = (float)((double)wz1 + F(float, node, 60));
+        F(float, node, 96) = nz;
+        if (i + 1 >= 10) {
+            x = *(DWORD*)&nx; y = *(DWORD*)&ny; z = *(DWORD*)&nz;
+            hit = obj;
+            break;
+        }
+    }
+    ((DWORD*)out)[0] = x;
+    ((DWORD*)out)[1] = y;
+    ((DWORD*)out)[2] = z;
+    return hit;
+}

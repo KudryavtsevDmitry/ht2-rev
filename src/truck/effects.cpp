@@ -2583,3 +2583,55 @@ extern "C" void __fastcall Fx_SteerFromSwing(BYTE* s, void*, double a, double b,
         cc = 0.0;
     Car_SetSteerShown(s, 0, (p - w) - cc);
 }
+
+ASM_PROC(FUN_4be2c0)    // the distance of a segment to a box-like object
+ASM_PROC(FUN_616850)    // the distance of a segment to the terrain of a type-8 object
+
+static double Fx_SegDist(void* a, void* b, BYTE* o)
+{
+    if (F(int, o, 24) == 8)
+        return CallThis<double>(FUN_616850, F(BYTE*, o, 32), a, b);
+    return CallC<double>(FUN_4be2c0, a, b, o);
+}
+
+// [FUN_4bdf10] the distance of the segment a-b to the nearer of two objects (9999.9 when neither is set)
+extern "C" double __cdecl Fx_SegmentDistance(void* a, void* b, BYTE* c, BYTE* d)
+{
+    const float none = 9999.900390625f;
+    int ta = F(int, c, 24), tb = F(int, d, 24);
+    if (ta && tb) {
+        if (ta == 8 && tb == 8)
+            return CallThis<double>(FUN_616850, F(BYTE*, c, 32), a, b);
+        if (ta == 8) {
+            if (tb == 6) {
+                double r = CallC<double>(FUN_4be2c0, a, b, d);
+                if (r < none || r > none)
+                    return r;
+            }
+            return CallThis<double>(FUN_616850, F(BYTE*, c, 32), a, b);
+        }
+        if (tb == 8) {
+            if (ta == 6) {
+                double r = CallC<double>(FUN_4be2c0, a, b, c);
+                if (r < none || r > none)
+                    return r;
+            }
+            return CallThis<double>(FUN_616850, F(BYTE*, d, 32), a, b);
+        }
+        if (ta == 6) {
+            double r = CallC<double>(FUN_4be2c0, a, b, c);
+            if (r < none || r > none)
+                return r;
+            return CallC<double>(FUN_4be2c0, a, b, d);
+        }
+        double r = CallC<double>(FUN_4be2c0, a, b, d);
+        if (r < none || r > none)
+            return r;
+        return CallC<double>(FUN_4be2c0, a, b, c);
+    }
+    if (ta)
+        return Fx_SegDist(a, b, c);
+    if (tb)
+        return Fx_SegDist(a, b, d);
+    return none;
+}
