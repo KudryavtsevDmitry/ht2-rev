@@ -27,7 +27,7 @@ ASM_PROC(FUN_4a4950)
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 ASM_VAR(AsmLabel, s_errNotSymbolList, $L_67115c)
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
-ASM_PROC(FUN_4b6500)
+extern "C" void FUN_4b6500(); KING_ALIAS("_FUN_4b6500", "@SchSymbol_Construct@12")
 extern "C" void FUN_4a8580(); KING_ALIAS("_FUN_4a8580", "@SchNode4a8580_Construct@8")
 extern "C" void FUN_4910a0(); KING_ALIAS("_FUN_4910a0", "@RingB_Construct@12")
 ASM_PROC(FUN_491380)
@@ -40,7 +40,7 @@ extern "C" void FUN_4a8bd0(); KING_ALIAS("_FUN_4a8bd0", "@SchNode4a8bd0_Construc
 extern "C" void FUN_4a9770(); KING_ALIAS("_FUN_4a9770", "@SchNode4a9770_Construct@8")
 extern "C" void FUN_4a9a70(); KING_ALIAS("_FUN_4a9a70", "@SchNode4a9a70_Construct@8")
 extern "C" void FUN_4a9e80(); KING_ALIAS("_FUN_4a9e80", "@SchNode4a9e80_Construct@8")
-ASM_PROC(FUN_4b62c0)
+extern "C" void FUN_4b62c0(); KING_ALIAS("_FUN_4b62c0", "@SchString_Construct@12")
 ASM_VAR(AsmLabel, s_tIdentifier, $L_66ce4c)
 ASM_VAR(AsmLabel, s_tUnspecified, $L_671168)
 ASM_VAR(AsmLabel, s_tBegin, $L_671124)
@@ -626,7 +626,7 @@ extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 
 ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
 ASM_PROC(FUN_4a59f0)    // the format of a message (code)
-ASM_PROC(FUN_4b1450)    // shows a message (text, value by copy)
+extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 ASM_PROC(FUN_4a5800)
 ASM_PROC(FUN_4a36c0)    // a value's destructor
 ASM_PROC(FUN_4a4540)    // vector<value>: allocate and copy (n, first, last)
@@ -1043,7 +1043,7 @@ extern "C" SchValue* __cdecl SchInput_MakePort(SchValue* out, int, const int* a,
 
 // --- "make a new object and return a typed handle to it" (exception frames dropped)
 
-static DWORD* SchHandle_Take(DWORD* out, BYTE* o, int type, const char* name)
+extern "C" DWORD* __cdecl SchHandle_Take(DWORD* out, BYTE* o, int type, const char* name)
 {
     out[0] = 0;
     out[1] = 0;

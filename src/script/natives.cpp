@@ -117,7 +117,7 @@ extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 
 ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
 ASM_PROC(FUN_4a59f0)    // the format of a message (code)
-ASM_PROC(FUN_4b1450)    // shows a message (text, value by copy)
+extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 ASM_PROC(FUN_4a5800)
 ASM_PROC(FUN_4a36c0)    // a value's destructor
 ASM_PROC(FUN_4a4540)    // vector<value>: allocate and copy (n, first, last)
