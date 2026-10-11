@@ -1038,6 +1038,7 @@ PUBLIC $L_652e20
 PUBLIC $L_64bf24, $L_64bf38, $L_670408, $L_670410, $L_670430
 PUBLIC $L_67055c
 PUBLIC $L_683538, $L_721754
+PUBLIC $L_650340, $L_6503e4, $L_67cfc0, $L_67d04c
 
 ;===================================
 _TEXT SEGMENT
@@ -619604,6 +619605,8 @@ EXTERN @Pool_Return@12:PROC
 FUN_5794f0 TEXTEQU <@Pool_Return@12>
 ENDIF
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_579570 PROC
 
             push -1
@@ -619644,6 +619647,10 @@ FUN_579570 PROC
             nop
             nop
 FUN_579570 ENDP
+ELSE
+EXTERN @FrameTask_Construct@16:PROC
+FUN_579570 TEXTEQU <@FrameTask_Construct@16>
+ENDIF
 $L_5795e0 PROC
 
             push ESI
@@ -619706,6 +619713,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_579650 PROC
 
             push -1
@@ -619765,6 +619774,10 @@ $L_5796af::
             add ESP,16
             ret 
 FUN_579650 ENDP
+ELSE
+EXTERN @FrameTask_Destroy@8:PROC
+FUN_579650 TEXTEQU <@FrameTask_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -619901,6 +619914,8 @@ $L_5797be::
 $L_5796e0 ENDP
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_5797d0 PROC
 
             push -1
@@ -619946,6 +619961,10 @@ $L_57982b::
             add ESP,16
             ret 
 FUN_5797d0 ENDP
+ELSE
+EXTERN @Pool50_Construct@8:PROC
+FUN_5797d0 TEXTEQU <@Pool50_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -623521,6 +623540,8 @@ EXTERN @Vec3_DivideBy@12:PROC
 FUN_57c260 TEXTEQU <@Vec3_DivideBy@12>
 ENDIF
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_57c290 PROC
 
             push -1
@@ -623572,6 +623593,10 @@ $L_57c301::
             add ESP,16
             ret 8
 FUN_57c290 ENDP
+ELSE
+EXTERN @PoolNode_Construct@16:PROC
+FUN_57c290 TEXTEQU <@PoolNode_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -623620,6 +623645,8 @@ $L_57c340 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_57c360 PROC
 
             push -1
@@ -623659,6 +623686,10 @@ $L_57c3b5::
             add ESP,16
             ret 
 FUN_57c360 ENDP
+ELSE
+EXTERN @PoolNode_Destroy@8:PROC
+FUN_57c360 TEXTEQU <@PoolNode_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
