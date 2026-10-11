@@ -1044,6 +1044,7 @@ PUBLIC $L_64b7c0, $L_64bc20, $L_64bc28, $L_64bc30, $L_66c720, $L_66fa60
 PUBLIC $L_694998, $L_696074, $L_696078, $L_696210, $L_6f6a7c, $L_6f6a80
 PUBLIC $L_6f6a88
 PUBLIC $L_64b860, $L_64c458, $L_651768, $L_67f0e0, $L_67f0e4
+PUBLIC $L_67ef88
 
 ;===================================
 _TEXT SEGMENT
@@ -698830,6 +698831,8 @@ $L_5ae890 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5ae8a0 PROC
 
             mov EDX,DWORD PTR [ECX+8224]
@@ -698907,6 +698910,10 @@ $L_5ae9a1::
             add ESP,112
             ret 
 FUN_5ae8a0 ENDP
+ELSE
+EXTERN @Clip_Pop@8:PROC
+FUN_5ae8a0 TEXTEQU <@Clip_Pop@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -710836,6 +710843,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b63e0 PROC
 
             push EBX
@@ -710925,6 +710934,10 @@ $L_5b6467::
             pop EBX
             ret 4
 FUN_5b63e0 ENDP
+ELSE
+EXTERN @Surface_Construct@12:PROC
+FUN_5b63e0 TEXTEQU <@Surface_Construct@12>
+ENDIF
 ALIGN 16
 ; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
 IFDEF ASM_RENDERER
@@ -711748,6 +711761,8 @@ EXTERN @Window_Set80@12:PROC
 FUN_5b6b00 TEXTEQU <@Window_Set80@12>
 ENDIF
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b6b10 PROC
 
             push ESI
@@ -711856,6 +711871,10 @@ $L_5b6be9::
             nop
             nop
 FUN_5b6b10 ENDP
+ELSE
+EXTERN @Surface_Present@8:PROC
+FUN_5b6b10 TEXTEQU <@Surface_Present@8>
+ENDIF
 ALIGN 16
 FUN_5b6bf0 PROC
 
@@ -716710,6 +716729,8 @@ FUN_5b9520 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b9660 PROC
 
             push ECX
@@ -716805,6 +716826,10 @@ $L_5b9713::
             pop ECX
             ret 12
 FUN_5b9660 ENDP
+ELSE
+EXTERN @Palette_Nearest@20:PROC
+FUN_5b9660 TEXTEQU <@Palette_Nearest@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -716820,6 +716845,8 @@ FUN_5b9660 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b9740 PROC
 
             push EBX
@@ -716940,6 +716967,10 @@ $L_5b9817::
             pop EBX
             ret 
 FUN_5b9740 ENDP
+ELSE
+EXTERN @Textures_FreeAll@8:PROC
+FUN_5b9740 TEXTEQU <@Textures_FreeAll@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
