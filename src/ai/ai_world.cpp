@@ -5542,3 +5542,34 @@ extern "C" BYTE** __cdecl Players_SlowList(BYTE** out, BYTE* first, BYTE* last)
         List_FreeNode(v[1], cap * 4);
     return out;
 }
+
+ASM_PROC(FUN_436900)    // getPositionId(vrVector)
+ASM_PROC(FUN_436bd0)    // getPositionId(RoomId, vrVector)
+ASM_VAR(char, s_getPositionIdV, $L_66e538)       // "getPositionId(vrVector _v)"
+ASM_VAR(char, s_getPositionIdRV, $L_66e554)      // "getPositionId(RoomId room, vrVector _v)"
+ASM_VAR(BYTE*, g_roomsBegin68d0d8, $L_68d0d8)
+ASM_VAR(BYTE*, g_roomsEnd68d0dc, $L_68d0dc)
+
+// [FUN_437220] getPositionId(vrVector _v): traced, the float vector widened
+extern "C" int* __cdecl Ai_GetPositionIdV(int* out, float x, float y, float z)
+{
+    Trace_EnterInline(&s_getPositionIdV);
+    double v[3] = { x, y, z };
+    CallC(FUN_436900, out, v);
+    Trace_Leave(&s_getPositionIdV);
+    return out;
+}
+
+// [FUN_437390] getPositionId(RoomId room, vrVector _v): traced, the room checked
+extern "C" int* __cdecl Ai_GetPositionIdRV(int* out, int room, float x, float y, float z)
+{
+    Trace_EnterAppend(&s_getPositionIdRV);
+    if (room < 0 || (unsigned)room >= (unsigned)((g_roomsEnd68d0dc - g_roomsBegin68d0d8) >> 2)) {
+        sprintf(g_text77e460, "(%d)", room);
+        AiError(33, 100, s_mainFile, s_mainId, 14878, s_invalidId, "RoomId", g_text77e460);
+    }
+    double v[3] = { x, y, z };
+    CallC(FUN_436bd0, out, room, v);
+    Trace_Leave(&s_getPositionIdRV);
+    return out;
+}
