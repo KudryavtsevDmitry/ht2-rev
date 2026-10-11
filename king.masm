@@ -1063,6 +1063,7 @@ PUBLIC $L_6710dc
 PUBLIC $L_6f33f0
 PUBLIC $L_64c59c, $L_64c5f0, $L_64c604, $L_64d2f4
 PUBLIC $L_683cb8, $L_723d8c, $L_723d98
+PUBLIC $L_725d40, $L_725d44
 
 ;===================================
 _TEXT SEGMENT
@@ -293997,6 +293998,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a4b00 PROC
 
             sub ESP,8
@@ -294287,6 +294290,10 @@ $L_4a4cfd::
             nop
             nop
 FUN_4a4b00 ENDP
+ELSE
+EXTERN @SchMap_InsertUnique@16:PROC
+FUN_4a4b00 TEXTEQU <@SchMap_InsertUnique@16>
+ENDIF
 ALIGN 16
 ; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
 IFDEF ASM_EVALUATOR
@@ -867113,6 +867120,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60a1c0 PROC
 
             sub ESP,8
@@ -867482,6 +867491,10 @@ $L_60a438::
             add ESP,8
             ret 12
 FUN_60a1c0 ENDP
+ELSE
+EXTERN @Grid_MergeCells@20:PROC
+FUN_60a1c0 TEXTEQU <@Grid_MergeCells@20>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -872735,6 +872748,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60cb10 PROC
 
             sub ESP,8
@@ -873033,6 +873048,10 @@ $L_60cd80::
             add ESP,8
             ret 
 FUN_60cb10 ENDP
+ELSE
+EXTERN @Grid_RemoveUnusedPoints@8:PROC
+FUN_60cb10 TEXTEQU <@Grid_RemoveUnusedPoints@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

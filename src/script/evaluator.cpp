@@ -1588,3 +1588,78 @@ void __cdecl Sch4a5c40_Append(BYTE* ctx, BYTE* o, const DWORD* h)
 }
 
 }
+
+extern "C" void FUN_4a51d0(); KING_ALIAS("_FUN_4a51d0", "_SchMap_MakeNode@4")    // map: new node holding a copy of the key (stdcall)
+extern "C" void FUN_4a4d80(); KING_ALIAS("_FUN_4a4d80", "_NameMap_Rebalance")    // map: rebalance after insert (node, &root)
+extern "C" void FUN_4a4d30(); KING_ALIAS("_FUN_4a4d30", "@SchMapIt_Dec@8")    // map iterator: decrement
+extern "C" void FUN_4a4f30(); KING_ALIAS("_FUN_4a4f30", "_SchValue_LessByName@8")    // map: key less (stdcall a, b)
+extern "C" void FUN_4a51b0(); KING_ALIAS("_FUN_4a51b0", "@Sch4a51b0_Construct@16")    // pair<iterator, bool> constructor
+
+static const char* KeyName(const SchValue* v) { return F(const char*, SchValue_Object(v, 0), 12); }
+
+// links the new node z for key as y's left (or right) child and rebalances
+static BYTE* Map_Link(BYTE** self, BYTE* y, bool left, const SchValue* key)
+{
+    BYTE* header = self[0];
+    BYTE* z = CallThis<BYTE*>(FUN_4a51d0, self, key);
+    if (left) {
+        F(BYTE*, y, 8) = z;
+        if (y == header) {
+            F(BYTE*, header, 4) = z;
+            F(BYTE*, self[0], 12) = z;
+        } else if (y == F(BYTE*, header, 8))
+            F(BYTE*, header, 8) = z;
+    } else {
+        F(BYTE*, y, 12) = z;
+        if (y == F(BYTE*, header, 12))
+            F(BYTE*, header, 12) = z;
+    }
+    F(BYTE*, z, 4) = y;
+    F(BYTE*, z, 8) = 0;
+    F(BYTE*, z, 12) = 0;
+    CallC(FUN_4a4d80, z, self[0] + 4);
+    ((int*)self)[1]++;
+    return z;
+}
+
+extern "C" {
+
+// [FUN_4a4b00] map<name, ...>::insert_unique (names compared ignoring case)
+BYTE* __fastcall SchMap_InsertUnique(BYTE** self, void*, BYTE* out, const SchValue* key)
+{
+    BYTE* y = self[0];
+    BYTE* x = F(BYTE*, y, 4);
+    bool comp = true;
+    while (x) {
+        y = x;
+        const char* kx = KeyName((const SchValue*)(x + 16));
+        comp = _stricmp(KeyName(key), kx) < 0;
+        x = comp ? F(BYTE*, x, 8) : F(BYTE*, x, 12);
+    }
+    BYTE* j = y;
+    if (comp) {
+        if (y == F(BYTE*, self[0], 8)) {
+            bool left = y == self[0] || x || _stricmp(KeyName(key), KeyName((const SchValue*)(y + 16))) < 0;
+            F(BYTE*, out, 0) = Map_Link(self, y, left, key);
+            F(BYTE, out, 4) = 1;
+            return out;
+        }
+        CallThis(FUN_4a4d30, &j);
+    }
+    if (!key->obj)
+        CallC(FUN_4a52e0, 0, 1);
+    if (key->flags & SCH_IMMEDIATE)
+        CallC(FUN_4a52e0, 4, 1);
+    const char* kk = F(const char*, key->obj, 12);
+    if (_stricmp(KeyName((const SchValue*)(j + 16)), kk) < 0) {
+        bool left = y == self[0] || x || CallThis<BYTE>(FUN_4a4f30, self + 2, key, y + 16);
+        F(BYTE*, out, 0) = Map_Link(self, y, left, key);
+        F(BYTE, out, 4) = 1;
+        return out;
+    }
+    bool no = false;
+    CallThis(FUN_4a51b0, out, &j, &no);
+    return out;
+}
+
+}
