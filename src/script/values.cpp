@@ -787,3 +787,37 @@ void __fastcall Item4b6840_Destroy(BYTE* self, void*)
 }
 
 }
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+KING_ALIAS("_Stl_Allocate", "FUN_44b740")
+extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
+
+// a list node (vtbl, two links) owning a copy of the bytes of src
+static BYTE* BytesNode_Construct(BYTE* self, BYTE* const* src, void* vtbl)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = &g_vtbl64bee4;
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 20) = 0;
+    int n = src[1] - src[0];
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
+    F(BYTE*, self, 12) = p;
+    F(BYTE*, self, 16) = p;
+    F(BYTE*, self, 20) = p + n;
+    memmove(p, src[0], src[1] - src[0]);
+    F(BYTE*, self, 16) = p + (src[1] - src[0]);
+    F(void*, self, 0) = vtbl;
+    return self;
+}
+
+extern "C" {
+
+// [FUN_4b61c0]
+BYTE* __fastcall BytesNode4b61c0_Construct(BYTE* self, void*, BYTE* const* src) { return BytesNode_Construct(self, src, &g_vtbl64c108); }
+
+// [FUN_4b6400]
+BYTE* __fastcall BytesNode4b6400_Construct(BYTE* self, void*, BYTE* const* src) { return BytesNode_Construct(self, src, &g_vtbl64c118); }
+
+}

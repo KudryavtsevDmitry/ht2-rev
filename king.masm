@@ -220388,6 +220388,8 @@ FUN_47c0a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_47c360 PROC
 
             push -1
@@ -220496,6 +220498,10 @@ $L_47c441::
             add ESP,16
             ret 
 FUN_47c360 ENDP
+ELSE
+EXTERN _Rec47c360_Construct:PROC
+FUN_47c360 TEXTEQU <_Rec47c360_Construct>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -234438,6 +234444,8 @@ FUN_4835d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4836f0 PROC
 
             push -1
@@ -234548,6 +234556,10 @@ $L_4837cd::
             add ESP,16
             ret 12
 FUN_4836f0 ENDP
+ELSE
+EXTERN _Bytes_Clone@12:PROC
+FUN_4836f0 TEXTEQU <_Bytes_Clone@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -327740,6 +327752,8 @@ $L_4b61a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b61c0 PROC
 
             push -1
@@ -327851,6 +327865,10 @@ $L_4b627a::
             add ESP,20
             ret 4
 FUN_4b61c0 ENDP
+ELSE
+EXTERN @BytesNode4b61c0_Construct@12:PROC
+FUN_4b61c0 TEXTEQU <@BytesNode4b61c0_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -328046,6 +328064,8 @@ $L_4b63e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b6400 PROC
 
             push -1
@@ -328157,6 +328177,10 @@ $L_4b64ba::
             add ESP,20
             ret 4
 FUN_4b6400 ENDP
+ELSE
+EXTERN @BytesNode4b6400_Construct@12:PROC
+FUN_4b6400 TEXTEQU <@BytesNode4b6400_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -444466,6 +444490,8 @@ $L_50396c           DWORD $L_50358d
           DWORD $L_503837
           DWORD $L_5037d8
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_5039a0 PROC
 
             sub ESP,208
@@ -444574,6 +444600,10 @@ $L_503aa6::
             add ESP,208
             ret 8
 FUN_5039a0 ENDP
+ELSE
+EXTERN @Vehicle_RayTest@16:PROC
+FUN_5039a0 TEXTEQU <@Vehicle_RayTest@16>
+ENDIF
 ALIGN 16
 FUN_503ac0 PROC
 
@@ -866684,6 +866714,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60a0b0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -866828,6 +866860,10 @@ $L_60a1ac::
             pop EBX
             ret 4
 FUN_60a0b0 ENDP
+ELSE
+EXTERN _Grd_JoinBranches@4:PROC
+FUN_60a0b0 TEXTEQU <_Grd_JoinBranches@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -894469,6 +894505,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_619850 PROC
 
             push ESI
@@ -894596,6 +894634,10 @@ $L_619967::
             pop ESI
             ret 4
 FUN_619850 ENDP
+ELSE
+EXTERN @TerrainPart_Draw@12:PROC
+FUN_619850 TEXTEQU <@TerrainPart_Draw@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -894640,6 +894682,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_6199a0 PROC
 
             push -1
@@ -894759,6 +894803,10 @@ $L_619a94::
             add ESP,24
             ret 
 FUN_6199a0 ENDP
+ELSE
+EXTERN @Terrain6199a0_CreateTrees@8:PROC
+FUN_6199a0 TEXTEQU <@Terrain6199a0_CreateTrees@8>
+ENDIF
 $L_619ac0 PROC
 
             push ESI
