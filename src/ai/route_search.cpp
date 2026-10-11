@@ -500,3 +500,24 @@ double __fastcall Filter2_Update(Filter2* self, void*, double x) { return self->
 void __fastcall Filter2_Set(Filter2* self, void*, double v) { self->Set(v); }                                // [FUN_4881e0]
 void __fastcall Filter2_SetResponse(Filter2* self, void*, double t) { self->SetResponse(t); }                // [FUN_4881f0]
 }
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+KING_ALIAS("_Stl_Allocate", "FUN_44b740")
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
+
+extern "C" {
+
+// [FUN_4875f0] copy constructor of a vector of 12-byte hops
+BYTE** __fastcall Hops_Copy(BYTE** self, void*, BYTE* const* src)
+{
+    int n = (src[1] - src[0]) / 12;
+    self[0] = self[1] = self[2] = 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
+    self[0] = p;
+    self[1] = p;
+    self[2] = p + n * 12;
+    self[1] = CallC<BYTE*>(FUN_47e3e0, src[0], src[1], p, n);
+    return self;
+}
+
+}

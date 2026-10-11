@@ -1061,6 +1061,7 @@ PUBLIC $L_64c358, $L_64d7bc, $L_64fe60, $L_6506c8, $L_6506cc, $L_650718
 PUBLIC $L_6509f8, $L_6968a8
 PUBLIC $L_6710dc
 PUBLIC $L_6f33f0
+PUBLIC $L_64c59c, $L_64c5f0, $L_64c604, $L_64d2f4
 
 ;===================================
 _TEXT SEGMENT
@@ -140809,6 +140810,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_453bd0 PROC
 
             push -1
@@ -140978,6 +140981,10 @@ $L_453d50::
             add ESP,24
             ret 
 FUN_453bd0 ENDP
+ELSE
+EXTERN _Towns_Find453bd0:PROC
+FUN_453bd0 TEXTEQU <_Towns_Find453bd0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -140991,6 +140998,8 @@ FUN_453bd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_453d70 PROC
 
             push -1
@@ -141166,6 +141175,10 @@ $L_453efb::
             add ESP,24
             ret 
 FUN_453d70 ENDP
+ELSE
+EXTERN _Towns_Find453d70:PROC
+FUN_453d70 TEXTEQU <_Towns_Find453d70>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -146062,6 +146075,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4566e0 PROC
 
             push -1
@@ -146233,6 +146248,10 @@ $L_456865::
             add ESP,24
             ret 
 FUN_4566e0 ENDP
+ELSE
+EXTERN _Recs104_PickRandom:PROC
+FUN_4566e0 TEXTEQU <_Recs104_PickRandom>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -240918,6 +240937,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+IFDEF ASM_ROUTE_SEARCH
 FUN_4875f0 PROC
 
             push -1
@@ -241027,6 +241048,10 @@ $L_4876b3::
             add ESP,16
             ret 4
 FUN_4875f0 ENDP
+ELSE
+EXTERN @Hops_Copy@12:PROC
+FUN_4875f0 TEXTEQU <@Hops_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -351730,6 +351755,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c45d0 PROC
 
             push -1
@@ -351899,6 +351926,10 @@ $L_4c4724::
             add ESP,20
             ret 
 FUN_4c45d0 ENDP
+ELSE
+EXTERN @Effect4c45d0_Destroy@8:PROC
+FUN_4c45d0 TEXTEQU <@Effect4c45d0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -370969,6 +371000,8 @@ $L_4d113b::
             ret 
 $L_4d1040 ENDP
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d1140 PROC
 
             push -1
@@ -371080,6 +371113,10 @@ $L_4d125a::
             add ESP,260
             ret 12
 FUN_4d1140 ENDP
+ELSE
+EXTERN @CopCar_Construct@20:PROC
+FUN_4d1140 TEXTEQU <@CopCar_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -372966,6 +373003,8 @@ $L_4d2760 PROC
             nop
 $L_4d2760 ENDP
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d2790 PROC
 
             push EBP
@@ -373075,6 +373114,10 @@ $L_4d28b0::
             nop
             nop
 FUN_4d2790 ENDP
+ELSE
+EXTERN @Effect4d2790_Construct@64:PROC
+FUN_4d2790 TEXTEQU <@Effect4d2790_Construct@64>
+ENDIF
 $L_4d2910 PROC
 
             push -1
