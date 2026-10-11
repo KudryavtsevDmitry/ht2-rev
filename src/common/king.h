@@ -115,7 +115,7 @@ ASM_PROC(FUN_5e8c60)    // Font_Load
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")    // Font::~Font
 extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")    // Ini_GetInt
 extern "C" int __cdecl Movie_Play(const char* name, int mode);   // carat.cpp
-ASM_PROC(FUN_511820)    // King_LeaveGame
+extern "C" void FUN_511820(); KING_ALIAS("_FUN_511820", "_Shell_LeaveRace")    // King_LeaveGame
 extern "C" void __cdecl Replay_Open();    // carat.cpp
 
 // Milliseconds: QueryPerformanceCounter, scaled against timeGetTime once at

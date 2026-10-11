@@ -2959,7 +2959,7 @@ extern "C" void __fastcall Rec458940_Destroy(BYTE* self, void*)
 extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")    // destroy a 104-byte record
 ASM_PROC(FUN_40cb60)    // destroy a 24-byte record
 extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
-ASM_PROC(FUN_440dd0)    // destroy a 192-byte record
+extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@8")    // destroy a 192-byte record
 extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 ASM_PROC(FUN_41ce50)    // destroy a 144-byte order
 ASM_PROC(FUN_44fac0)    // hash table: grow for n entries
@@ -6580,4 +6580,50 @@ extern "C" int* __cdecl Recs104_RandomMasked(int* out, int a, int b)
 {
     BYTE* r = CallC<BYTE*>(FUN_456880, g_recs68ccb8, g_recs68ccbc, a, b, &g_rand68b9c8);
     return Recs104_IndexOr(out, r, a, b, 5726);
+}
+
+extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector of dwords: allocate n and copy [first, last)
+
+// [FUN_440dd0] frees the four vectors at +52, +64, +76 and +88
+extern "C" void __fastcall Rec440dd0_FreeVectors(BYTE* self, int)
+{
+    for (int off = 88; off >= 52; off -= 12) {
+        BYTE* b = F(BYTE*, self, off);
+        int n = F(BYTE*, self, off + 8) - b;
+        if (n)
+            CallC(FUN_44b4a0, b, n);
+    }
+}
+
+// [FUN_452290] vector<dword>::operator=
+extern "C" DWORD** __fastcall VecDword_Assign(DWORD** self, int, DWORD** src)
+{
+    if (src == self)
+        return self;
+    DWORD* sb = src[0];
+    DWORD* se = src[1];
+    unsigned n = se - sb;
+    DWORD* b = self[0];
+    if (n > (unsigned)(self[2] - b)) {
+        DWORD* p = CallStd<DWORD*>(FUN_44ac60, n, sb, se);
+        unsigned cap = self[2] - self[0];
+        if (cap)
+            CallC(FUN_44b4a0, self[0], cap * 4);
+        self[2] = p + n;
+        self[0] = p;
+        self[1] = p + n;
+        return self;
+    }
+    unsigned size = self[1] - b;
+    if (size >= n) {
+        memmove(b, sb, n * 4);
+        self[1] = self[0] + n;
+        return self;
+    }
+    memmove(b, sb, size * 4);
+    DWORD* e = self[1];
+    DWORD* mid = src[0] + (e - self[0]);
+    memmove(e, mid, (src[1] - mid) * 4);
+    self[1] = self[0] + n;
+    return self;
 }

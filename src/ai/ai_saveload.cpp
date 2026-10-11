@@ -5,6 +5,7 @@
 // procedures again.
 
 #include "king.h"
+#include <objbase.h>
 #include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
@@ -543,4 +544,39 @@ BYTE* __stdcall Bytes_Clone(unsigned n, const BYTE* first, const BYTE* last)
     return p;
 }
 
+}
+
+ASM_VAR(AsmLabel, s_aiStream66ff3c, $L_66ff3c)
+ASM_VAR(AsmLabel, s_errOpen66ff58, $L_66ff58)
+ASM_VAR(AsmLabel, s_errRead66ff40, $L_66ff40)
+ASM_VAR(char, g_empty68d1c0s, $L_68d1c0)
+ASM_PROC(FUN_482a70)    // reads the AI state from a buffer
+extern "C" void FUN_477780(); KING_ALIAS("_FUN_477780", "_Players_Each4776b0")
+extern "C" void FUN_478910(); KING_ALIAS("_FUN_478910", "_Routes_Each477600")
+extern "C" void FUN_478950(); KING_ALIAS("_FUN_478950", "_Ambushes_Each477600")
+ASM_PROC(FUN_482d20)
+extern "C" void FUN_483320(); KING_ALIAS("_FUN_483320", "_Load_FixPlayers")
+
+// [FUN_4835d0] loads the AI state from its stream in a saved game, then fixes the links
+extern "C" void __cdecl AI_LoadFromStorage(IStorage* stg)
+{
+    WCHAR name[260];
+    MultiByteToWideChar(0, 0, s_aiStream66ff3c, -1, name, 260);
+    IStream* s;
+    if (stg->OpenStream(name, 0, 16, 0, &s) < 0)
+        AiError(0, 1, (const char*)s_svldFile, (const char*)s_svldId, 794, s_errOpen66ff58, &g_empty68d1c0s, &g_empty68d1c0s);
+    STATSTG st;
+    s->Stat(&st, 1);
+    BYTE* p = (BYTE*)operator new(st.cbSize.LowPart);
+    ULONG read = 0;
+    if (s->Read(p, st.cbSize.LowPart, &read) < 0)
+        AiError(0, 1, (const char*)s_svldFile, (const char*)s_svldId, 802, s_errRead66ff40, &g_empty68d1c0s, &g_empty68d1c0s);
+    s->Release();
+    CallC(FUN_482a70, p);
+    operator delete(p);
+    CallC(FUN_477780);
+    CallC(FUN_478910);
+    CallC(FUN_478950);
+    CallC(FUN_482d20);
+    CallC(FUN_483320);
 }

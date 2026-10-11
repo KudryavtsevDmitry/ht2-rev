@@ -1377,3 +1377,89 @@ extern "C" int __cdecl Shell_StopMovieRequest()
     CallC(FUN_4e12b0, 1);
     return 1;
 }
+
+ASM_VAR(int, g_6ced50, $L_6ced50)
+ASM_VAR(int, g_frameMs675468, $L_675468)
+ASM_VAR(BYTE, g_6f2d18, $L_6f2d18)
+ASM_VAR(BYTE*, g_6cec98s, $L_6cec98)
+ASM_VAR(BYTE*, g_obj6ced5c, $L_6ced5c)
+ASM_VAR(BYTE*, g_obj6ced60, $L_6ced60)
+ASM_VAR(char, s_obj67667c, $L_67667c)
+ASM_VAR(char, s_obj676668, $L_676668)
+ASM_VAR(char, s_obj676658, $L_676658)
+ASM_VAR(char, s_obj676644, $L_676644)
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // finds a scene object by name
+ASM_PROC(FUN_5bae30)
+
+// [FUN_5105b0] sets the frame time limit and finds the two objects of the game mode, showing them
+extern "C" void __cdecl Shell_SetupModeObjects()
+{
+    BYTE* s = g_shell6cec6c;
+    g_6ced50 = 0;
+    if (F(int, s, 1300) > 1)
+        g_frameMs675468 = 900;
+    else if (!F(int, s, 1316))
+        g_frameMs675468 = g_6f2d18 ? 3550 : 4000;
+    else
+        g_frameMs675468 = F(int, g_6cec98s, 384) >= 2 ? 900 : 970;
+    if (CallC<int>(FUN_568fd0) == 2) {
+        g_obj6ced5c = CallC<BYTE*>(FUN_5ef3d0, &s_obj67667c);
+        g_obj6ced60 = CallC<BYTE*>(FUN_5ef3d0, &s_obj676668);
+    } else if (CallC<int>(FUN_568fd0) == 3) {
+        g_obj6ced5c = CallC<BYTE*>(FUN_5ef3d0, &s_obj676658);
+        g_obj6ced60 = CallC<BYTE*>(FUN_5ef3d0, &s_obj676644);
+    }
+    if (!(F(BYTE, g_obj6ced5c, 52) & 2))
+        CallThis(FUN_5bae30, g_obj6ced5c, 0);
+    if (!(F(BYTE, g_obj6ced60, 52) & 2))
+        CallThis(FUN_5bae30, g_obj6ced60, 0);
+}
+
+ASM_VAR(BYTE*, g_window69684c, $L_69684c)
+ASM_VAR(BYTE*, g_game696ca0, $L_696ca0)
+ASM_VAR(void*, g_vt6cecbc, $L_6cecbc)
+ASM_VAR(void*, g_vt6cec80, $L_6cec80)
+ASM_VAR(int, g_music6968f0, $L_6968f0)
+ASM_VAR(char, g_music696750, $L_696750)
+ASM_VAR(char, g_6f68b0s, $L_6f68b0)
+extern "C" void FUN_5fcd40(); KING_ALIAS("_FUN_5fcd40", "_Sound_SetVolume")
+extern "C" void FUN_5ffb20(); KING_ALIAS("_FUN_5ffb20", "_Obj723d44_Delete")
+ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")
+extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
+extern "C" void FUN_598d80(); KING_ALIAS("_FUN_598d80", "@Wasm_598d80@8")
+extern "C" void FUN_5c4340(); KING_ALIAS("_FUN_5c4340", "@Rec_Close@8")
+extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
+ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_42db90(); KING_ALIAS("_FUN_42db90", "_AI_FreeList68b99c")
+extern "C" void FUN_435a80(); KING_ALIAS("_FUN_435a80", "_AI_Reset")
+extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
+ASM_PROC(FUN_512c70)
+
+// [FUN_511820] leaves a race: silences the sound, clears the window, resets the world, the AI and the network messages
+extern "C" int __cdecl Shell_LeaveRace()
+{
+    CallC<double>(FUN_5fcd40, 0);
+    BYTE* o = F(BYTE*, g_shell6cec6c, 1344);
+    if (o)
+        CallThis(FUN_5ffb20, o);
+    CallThis(FUN_5b6bf0, F(BYTE*, g_window69684c, 12));
+    CallThis(FUN_5d8630, g_window69684c, 0);
+    CallThis(FUN_5d88c0, g_window69684c);
+    CallThis(FUN_598d80, &g_6f68b0s);
+    CallVirt(F(void*, g_game696ca0, 2856), 32);
+    CallVirt(g_vt6cecbc, 32);
+    CallThis(FUN_5c4340, g_game696ca0);
+    CallVirt(g_game696ca0, 144);
+    CallVirt(g_game696ca0, 32);
+    CallVirt(g_vt6cec80, 36);
+    if (F(int, g_shell6cec6c, 1316) == 1)
+        CallC(FUN_5e48f0);
+    if (g_music6968f0)
+        CallThis(FUN_5c3a80, &g_music696750);
+    CallC(FUN_42db90);
+    CallC(FUN_435a80);
+    CallThis(FUN_602df0, g_game696ca0 + 8336);
+    return CallC<int>(FUN_512c70);
+}
