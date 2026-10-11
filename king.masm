@@ -1077,6 +1077,7 @@ PUBLIC $L_6511ac, $L_6511f8
 PUBLIC $L_576f90, $L_677268, $L_67cec4, $L_67cee0, $L_67cefc, $L_67cf0c
 PUBLIC $L_6f34e8, $L_6f3528, $L_6f4b58
 PUBLIC $L_725558
+PUBLIC $L_696088
 
 ;===================================
 _TEXT SEGMENT
@@ -338326,6 +338327,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bc2d0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -338481,6 +338484,10 @@ $L_4bc4bf::
             add ESP,52
             ret 
 FUN_4bc2d0 ENDP
+ELSE
+EXTERN _Fx_SparkBurst:PROC
+FUN_4bc2d0 TEXTEQU <_Fx_SparkBurst>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -378475,6 +378482,8 @@ FUN_4d60c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d6340 PROC
 
             push EBP
@@ -378635,6 +378644,10 @@ $L_4d64fe::
 
             nop
 FUN_4d6340 ENDP
+ELSE
+EXTERN @Fx_SwingStep@36:PROC
+FUN_4d6340 TEXTEQU <@Fx_SwingStep@36>
+ENDIF
 $L_4d6510 PROC
 
             push EBP
