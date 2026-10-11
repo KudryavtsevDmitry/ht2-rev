@@ -5485,3 +5485,30 @@ int* __cdecl Parking_RandomFree(int* market, int* point)
 }
 
 }
+
+extern "C" int* __cdecl Node_ByName(int* out, const char* name);
+extern "C" void* __cdecl Player_CopyState(void* out, BYTE* p);
+
+// [FUN_4171a0] a racer's progress key (+504): minus the distance to "finish1_1", or via "check1_1" before the checkpoint
+extern "C" void __cdecl Race_UpdateProgress(BYTE* p)
+{
+    int finish, check;
+    Node_ByName(&finish, "finish1_1");
+    double buf[3];
+    if (F(int, p, 724) == 1) {
+        const double* r = (const double*)Player_CopyState(buf, p);
+        const double* f = (const double*)(g_68cf00[finish] + 48);
+        double dx = f[0] - r[0], dy = f[1] - r[1], dz = f[2] - r[2];
+        F(double, p, 504) = -x87_sqrt((dy * dy + dz * dz) + dx * dx);
+        return;
+    }
+    Node_ByName(&check, "check1_1");
+    const double* r = (const double*)Player_CopyState(buf, p);
+    const double* c = (const double*)(g_68cf00[check] + 48);
+    const double* f = (const double*)(g_68cf00[finish] + 48);
+    double ex = c[0] - r[0], ey = c[1] - r[1], ez = c[2] - r[2];
+    double fx = c[0] - f[0], fy = c[1] - f[1], fz = c[2] - f[2];
+    double le = x87_sqrt((ey * ey + ez * ez) + ex * ex);
+    double lf = x87_sqrt((fx * fx + fy * fy) + fz * fz);
+    F(double, p, 504) = -(le + lf);
+}

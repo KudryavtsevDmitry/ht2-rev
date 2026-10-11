@@ -354,3 +354,55 @@ extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*)
     }
     return 1;
 }
+
+ASM_PROC(FUN_6072b0)    // the deepest level allowed
+extern "C" DWORD __fastcall MarineQueue_SetDeferredPriority(BYTE* self,void*,BYTE* node,DWORD priority);
+
+// [FUN_60c6b0] re-prioritises the grid's nodes for up to a second, then refines while the output wants more points
+extern "C" void __fastcall GridMesh_Reprioritise(BYTE* s,void*)
+{
+    BYTE** lists=F(BYTE**,s,36);
+    F(BYTE*,s,52)=lists[0]?lists[0]:lists[1];
+    DWORD t0=timeGetTime();
+    do {
+        BYTE* rec=F(BYTE*,s,52)+12;
+        BYTE* cam=F(BYTE*,s,4);
+        float prio=0.0f;
+        if(F(unsigned,rec,24)<CallThis<unsigned>(FUN_6072b0,cam)) {
+            float px=F(float,rec,32), py=F(float,rec,36), pz=F(float,rec,40);
+            float c4=F(float,cam,4), c8=F(float,cam,8);
+            double dy=(double)py-c8;
+            double dx=(double)px-c4;
+            double dd=x87_sqrt(dy*dy+dx*dx)-pz;
+            float d=(float)dd;
+            if(!(dd>0.0f)) prio=1000.0f;
+            else if(d>1500.0f) prio=0.0f;
+            else if(!(d>=50.0f)) prio=1000.0f;
+            else {
+                double ex=(double)px-c4, ey=(double)py-c8, mz=-(double)pz;
+                if(!(ey*F(float,cam,60)-ex*F(float,cam,64)>=mz)) prio=0.0f;
+                else if(!(ey*F(float,cam,68)-ex*F(float,cam,72)>=mz)) prio=0.0f;
+                else if(F(unsigned,rec,24)<8) prio=(float)(10.0f/((double)d+1.0f));
+                else if(!(d>=500.0f)) prio=(float)((double)F(float,rec,20)/d);
+                else if(!Point_InWedge((float*)(rec+32),0,c4,c8,F(float,cam,76),F(float,cam,80),F(float,cam,84),F(float,cam,88)))
+                    prio=(float)((double)F(float,rec,20)*0.5f/d);
+                else prio=(float)((double)F(float,rec,20)/d);
+            }
+        }
+        lists=F(BYTE**,s,36);
+        BYTE* cur=F(BYTE*,s,52);
+        BYTE* next;
+        if(lists[0]&&(cur?cur+4:0)==F(BYTE*,lists[0],8))
+            next=lists[1];
+        else if(lists[1]&&(cur?cur+4:0)==F(BYTE*,lists[1],8))
+            next=0;
+        else {
+            next=F(BYTE*,cur,4);
+            if(next) next-=4;
+        }
+        MarineQueue_SetDeferredPriority((BYTE*)lists,0,cur,*(DWORD*)&prio);
+        F(BYTE*,s,52)=next;
+    } while(timeGetTime()-t0<1000&&F(BYTE*,s,52));
+    while((unsigned)F(WORD,s,42)<CallVirt<unsigned>(F(BYTE*,s,4),4))
+        CallC(FUN_607410,F(DWORD,MarineQueue_TopDeferredNode(F(BYTE*,s,36),0),40),s);
+}
