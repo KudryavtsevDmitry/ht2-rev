@@ -68,12 +68,21 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
 }
 
 ASM_PROC(FUN_4cd730)    // the value of a vrId's vehicle
+extern "C" void FUN_4777b0(); KING_ALIAS("_FUN_4777b0", "_Player_FirstGoods")
+ASM_PROC(FUN_477350)
+extern "C" void FUN_477bd0(); KING_ALIAS("_FUN_477bd0", "_Player_SetDeadline")
+extern "C" void FUN_477c30(); KING_ALIAS("_FUN_477c30", "_Player_ClearDeadline")
+ASM_PROC(FUN_477c60)
+extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
+extern "C" void FUN_4776b0(); KING_ALIAS("_FUN_4776b0", "_Player_Reset477600")
+extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
+ASM_VAR(BYTE*, g_68d4f4, $L_68d4f4)
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
 ASM_PROC(FUN_479aa0)
-ASM_PROC(FUN_477880)
+extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")
 ASM_PROC(FUN_471ec0)
 ASM_PROC(FUN_472110)
 ASM_PROC(FUN_478980)
@@ -927,6 +936,166 @@ void __cdecl Matrix43_Save(BYTE* s, const BYTE* m)
 void __cdecl Matrix43_Load(BYTE** cur, BYTE* m)
 {
     Load_Read(cur, m, 96);
+}
+
+}
+
+extern "C" {
+
+// [FUN_4754b0] an empty waypoint
+BYTE* __fastcall Waypoint_Init(BYTE* self, void*)
+{
+    F(int, self, 0) = -1;
+    F(int, self, 4) = 0;
+    F(WORD, self, 8) = 0;
+    F(BYTE, self, 10) = 255;
+    return self;
+}
+
+// [FUN_476890] saves a name: its length, then its bytes one by one (0 for none)
+void __fastcall Name_Save(BYTE** self, void*, BYTE* s)
+{
+    BYTE* str = self[0];
+    if (str == (BYTE*)g_players) {
+        int z = 0;
+        Save_Write(s, &z, 4);
+        return;
+    }
+    int n = F(BYTE*, str, 12) - F(BYTE*, str, 8);
+    Save_Write(s, &n, 4);
+    for (unsigned i = 0; i < (unsigned)(F(BYTE*, str, 12) - F(BYTE*, str, 8)); i++) {
+        BYTE c = F(BYTE*, str, 8)[i];
+        Save_Write(s, &c, 1);
+    }
+}
+
+// [FUN_4769e0] copies 19 16-byte entries into the object's table at +516
+int __cdecl Vehicle_SetTable516(BYTE* o, const BYTE* src)
+{
+    if (!F(BYTE*, o, 516))
+        return -1;
+    for (int off = 0; off < 304; off += 16)
+        memcpy(F(BYTE*, F(BYTE*, o, 516), 16) + off, src + off, 16);
+    return 0;
+}
+
+// [FUN_476b50] releases the player's logo
+void __cdecl Player_ReleaseLogo(BYTE* p)
+{
+    g_logoRequests--;
+    if (F(int, p, 92) == 1)
+        return;
+    int logo = F(int, p, 156);
+    if (logo != -1) {
+        g_logoUsed[logo] &= ~1u;
+        F(int, p, 156) = -1;
+        return;
+    }
+    AiError(0, 256, s_playFile, s_playId, 1333, "Internal error 569", (const char*)g_68d1c0, (const char*)g_68d1c0);
+}
+
+// [FUN_4771a0] the next entry of the player's list at +164 (or the list head)
+DWORD* __cdecl Player_NextEntry(DWORD* out, BYTE* p)
+{
+    BYTE* e = F(BYTE*, p, 172);
+    if (e == F(BYTE*, p, 164)) {
+        *out = (DWORD)g_players;
+        return out;
+    }
+    F(BYTE*, p, 172) = e + 16;
+    *out = F(DWORD, e, 0);
+    return out;
+}
+
+// [FUN_4771e0] restarts the walk and returns the first entry
+DWORD* __cdecl Player_FirstEntry(DWORD* out, BYTE* p)
+{
+    F(BYTE*, p, 172) = F(BYTE*, p, 160);
+    return Player_NextEntry(out, p);
+}
+
+// [FUN_4772e0]
+void __cdecl Driver_ClearFlags(BYTE* x)
+{
+    BYTE* o = F(BYTE*, x, 508);
+    if (o)
+        F(DWORD, o, 40) &= ~1u;
+    F(DWORD, x, 88) &= 0xFDFFFFFF;
+}
+
+// [FUN_477300]
+void __cdecl Player_ClearFlags(BYTE* p)
+{
+    Driver_ClearFlags(p + 8);
+}
+
+// [FUN_4773d0]
+int __cdecl Player_Call477350(BYTE* p)
+{
+    return CallC<int>(FUN_477350, p + 8);
+}
+
+// [FUN_477880] the player's driver record
+int __cdecl Player_Driver(BYTE* p)
+{
+    return CallC<int>(FUN_4777b0, p + 8);
+}
+
+// [FUN_477c10]
+int __cdecl Player_Call477bd0(BYTE* p, int a, int b)
+{
+    return CallC<int>(FUN_477bd0, p + 8, a, b);
+}
+
+// [FUN_477c50]
+int __cdecl Player_Call477c30(BYTE* p)
+{
+    return CallC<int>(FUN_477c30, p + 8);
+}
+
+// [FUN_477cb0]
+int __cdecl Player_Call477c60(BYTE* p, int a, int b)
+{
+    return CallC<int>(FUN_477c60, p + 8, a, b);
+}
+
+// [FUN_4773e0] drops the last time entry (sorting the list first)
+void __cdecl Player_PopTime(BYTE* p)
+{
+    BYTE* b = F(BYTE*, p, 144);
+    if (b == F(BYTE*, p, 148))
+        return;
+    AI_SortTimes((double*)b, F(double*, p, 148), 0, 0, (int)p);
+    F(BYTE*, p, 148) -= 8;
+}
+
+// [FUN_477780] calls [FUN_4776b0] on every player
+void __cdecl Players_Each4776b0()
+{
+    BYTE* head = (BYTE*)g_players;
+    for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_players; it = *(BYTE**)it)
+        CallC(FUN_4776b0, CallC<BYTE*>(FUN_40a9f0, it));
+}
+
+// [FUN_477b00] selects the current player
+void __cdecl Players_SetCurrent(BYTE* p)
+{
+    if (p != (BYTE*)g_players && !CallC<bool>(FUN_417660, p)) {
+        AiError(0, 1, s_playFile, s_playId, 1717, "Internal error 943", (const char*)g_68d1c0, (const char*)g_68d1c0);
+        return;
+    }
+    g_68d4f4 = p;
+}
+
+// [FUN_4788c0] calls [FUN_477600] on every 16-byte entry of every 144-byte record
+void __cdecl Route_Each477600(BYTE* x)
+{
+    BYTE* v = F(BYTE*, x, 20);
+    if (!v)
+        return;
+    for (BYTE* e = F(BYTE*, v, 28); e != F(BYTE*, F(BYTE*, x, 20), 32); e += 144)
+        for (BYTE* q = F(BYTE*, e, 120); q != F(BYTE*, e, 124); q += 16)
+            CallC(FUN_477600, q);
 }
 
 }

@@ -1022,6 +1022,7 @@ PUBLIC $L_64cebc, $L_64cf08, $L_64cff4, $L_6728dc, $L_67290c, $L_672988
 PUBLIC $L_695bf0, $L_696054, $L_696208, $L_6f6a84, $L_6f6a8c, $L_6f6a98
 PUBLIC $L_64c240, $L_64c244, $L_64c628, $L_64c650, $L_64c668
 PUBLIC $L_66f9d0, $L_66fa14
+PUBLIC $L_68d4f4
 
 ;===================================
 _TEXT SEGMENT
@@ -207482,6 +207483,8 @@ FUN_474720 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4754b0 PROC
 
             mov EAX,ECX
@@ -207503,6 +207506,10 @@ FUN_4754b0 PROC
             nop
             nop
 FUN_4754b0 ENDP
+ELSE
+EXTERN @Waypoint_Init@8:PROC
+FUN_4754b0 TEXTEQU <@Waypoint_Init@8>
+ENDIF
 ALIGN 16
 FUN_4754d0 PROC
 
@@ -209371,6 +209378,8 @@ FUN_475b20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_476890 PROC
 
             push ECX
@@ -209445,6 +209454,10 @@ $L_47691f::
             pop ECX
             ret 4
 FUN_476890 ENDP
+ELSE
+EXTERN @Name_Save@12:PROC
+FUN_476890 TEXTEQU <@Name_Save@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -209564,6 +209577,8 @@ FUN_4769c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4769e0 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -209606,6 +209621,10 @@ $L_476a2b::
 
             nop
 FUN_4769e0 ENDP
+ELSE
+EXTERN _Vehicle_SetTable516:PROC
+FUN_4769e0 TEXTEQU <_Vehicle_SetTable516>
+ENDIF
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 IFDEF ASM_AI_DRIVERS
@@ -209730,6 +209749,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_476b50 PROC
 
             mov ECX,DWORD PTR [$L_68d18c]
@@ -209768,6 +209789,10 @@ $L_476bbb::
 
             ret 
 FUN_476b50 ENDP
+ELSE
+EXTERN _Player_ReleaseLogo:PROC
+FUN_476b50 TEXTEQU <_Player_ReleaseLogo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -210309,6 +210334,8 @@ $L_47718b::
 FUN_476f70 ENDP
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4771a0 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -210330,6 +210357,10 @@ $L_4771c1::
             mov DWORD PTR [EAX],ECX
             ret 
 FUN_4771a0 ENDP
+ELSE
+EXTERN _Player_NextEntry:PROC
+FUN_4771a0 TEXTEQU <_Player_NextEntry>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -210344,6 +210375,8 @@ FUN_4771a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4771e0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -210372,6 +210405,10 @@ FUN_4771e0 PROC
             nop
             nop
 FUN_4771e0 ENDP
+ELSE
+EXTERN _Player_FirstEntry:PROC
+FUN_4771e0 TEXTEQU <_Player_FirstEntry>
+ENDIF
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 IFDEF ASM_AI_DRIVERS
@@ -210487,6 +210524,8 @@ EXTERN _Player_UpdateFlags:PROC
 FUN_477210 TEXTEQU <_Player_UpdateFlags>
 ENDIF
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4772e0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -210500,6 +210539,10 @@ $L_4772f2::
             and DWORD PTR [EAX+88],4261412863
             ret 
 FUN_4772e0 ENDP
+ELSE
+EXTERN _Driver_ClearFlags:PROC
+FUN_4772e0 TEXTEQU <_Driver_ClearFlags>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -210507,6 +210550,8 @@ FUN_4772e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477300 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -210517,6 +210562,10 @@ FUN_477300 PROC
             pop ECX
             ret 
 FUN_477300 ENDP
+ELSE
+EXTERN _Player_ClearFlags:PROC
+FUN_477300 TEXTEQU <_Player_ClearFlags>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_477310 PROC
@@ -210592,6 +210641,8 @@ FUN_477350 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4773d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -210602,8 +210653,14 @@ FUN_4773d0 PROC
             pop ECX
             ret 
 FUN_4773d0 ENDP
+ELSE
+EXTERN _Player_Call477350:PROC
+FUN_4773d0 TEXTEQU <_Player_Call477350>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4773e0 PROC
 
             push ESI
@@ -210631,6 +210688,10 @@ $L_47741d::
             pop ESI
             ret 
 FUN_4773e0 ENDP
+ELSE
+EXTERN _Player_PopTime:PROC
+FUN_4773e0 TEXTEQU <_Player_PopTime>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI players: src\ai\ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
@@ -211050,6 +211111,8 @@ EXTERN _Player_Reset477600:PROC
 FUN_4776b0 TEXTEQU <_Player_Reset477600>
 ENDIF
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477780 PROC
 
             mov EAX,DWORD PTR [$L_68b990]
@@ -211077,6 +211140,10 @@ $L_4777aa::
             pop ESI
             ret 
 FUN_477780 ENDP
+ELSE
+EXTERN _Players_Each4776b0:PROC
+FUN_477780 TEXTEQU <_Players_Each4776b0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -211189,6 +211256,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477880 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -211215,6 +211284,10 @@ FUN_477880 PROC
             nop
             nop
 FUN_477880 ENDP
+ELSE
+EXTERN _Player_Driver:PROC
+FUN_477880 TEXTEQU <_Player_Driver>
+ENDIF
 ALIGN 16
 FUN_4778a0 PROC
 
@@ -211483,6 +211556,8 @@ $L_477af0::
             nop
 $L_477ae0 ENDP
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477b00 PROC
 
             mov EAX,DWORD PTR [$L_68b990]
@@ -211519,6 +211594,10 @@ $L_477b4b::
             pop ESI
             ret 
 FUN_477b00 ENDP
+ELSE
+EXTERN _Players_SetCurrent:PROC
+FUN_477b00 TEXTEQU <_Players_SetCurrent>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -211621,6 +211700,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477c10 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -211635,6 +211716,10 @@ FUN_477c10 PROC
             add ESP,12
             ret 
 FUN_477c10 ENDP
+ELSE
+EXTERN _Player_Call477bd0:PROC
+FUN_477c10 TEXTEQU <_Player_Call477bd0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -211662,6 +211747,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477c50 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -211672,6 +211759,10 @@ FUN_477c50 PROC
             pop ECX
             ret 
 FUN_477c50 ENDP
+ELSE
+EXTERN _Player_Call477c30:PROC
+FUN_477c50 TEXTEQU <_Player_Call477c30>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_477c60 PROC
@@ -211715,6 +211806,8 @@ FUN_477c60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_477cb0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -211729,6 +211822,10 @@ FUN_477cb0 PROC
             add ESP,12
             ret 
 FUN_477cb0 ENDP
+ELSE
+EXTERN _Player_Call477c60:PROC
+FUN_477cb0 TEXTEQU <_Player_Call477c60>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -213225,6 +213322,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_4788c0 PROC
 
             push EBX
@@ -213270,6 +213369,10 @@ $L_478904::
             pop EBX
             ret 
 FUN_4788c0 ENDP
+ELSE
+EXTERN _Route_Each477600:PROC
+FUN_4788c0 TEXTEQU <_Route_Each477600>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
