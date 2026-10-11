@@ -1069,6 +1069,7 @@ PUBLIC $L_66f62b
 PUBLIC $L_68ccbc
 PUBLIC $L_64de08, $L_652df0, $L_67695c, $L_67c9a0, $L_6843d8, $L_6843e0
 PUBLIC $L_685a98, $L_72c108
+PUBLIC $L_695324, $L_695e2c, $L_695fac
 
 ;===================================
 _TEXT SEGMENT
@@ -332374,6 +332375,8 @@ $L_4b84ce::
             nop
 $L_4b84c0 ENDP
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4b84f0 PROC
 
             sub ESP,56
@@ -332457,6 +332460,10 @@ $L_4b8544::
             add ESP,56
             ret 
 FUN_4b84f0 ENDP
+ELSE
+EXTERN _Triangle_RandomPoint:PROC
+FUN_4b84f0 TEXTEQU <_Triangle_RandomPoint>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -337128,6 +337135,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bb390 PROC
 
             sub ESP,28
@@ -337231,6 +337240,10 @@ $L_4bb45b::
             add ESP,28
             ret 
 FUN_4bb390 ENDP
+ELSE
+EXTERN _Fire_RandomRamps:PROC
+FUN_4bb390 TEXTEQU <_Fire_RandomRamps>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -379934,6 +379947,8 @@ EXTERN @Fx_CopyMatrix@12:PROC
 FUN_4d74c0 TEXTEQU <@Fx_CopyMatrix@12>
 ENDIF
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d74e0 PROC
 
             fld QWORD PTR [ESP+4]
@@ -380052,6 +380067,10 @@ $L_4d7615::
             add ESP,8
             ret 8
 FUN_4d74e0 ENDP
+ELSE
+EXTERN @Car_SetSteerShown@16:PROC
+FUN_4d74e0 TEXTEQU <@Car_SetSteerShown@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -650584,6 +650603,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_58f320 PROC
 
             sub ESP,88
@@ -650713,6 +650734,10 @@ $L_58f46a::
             add ESP,88
             ret 
 FUN_58f320 ENDP
+ELSE
+EXTERN @Body_AttachedInReach@8:PROC
+FUN_58f320 TEXTEQU <@Body_AttachedInReach@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -650721,6 +650746,8 @@ FUN_58f320 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_58f480 PROC
 
             sub ESP,12
@@ -650796,6 +650823,10 @@ $L_58f54c::
             add ESP,12
             ret 4
 FUN_58f480 ENDP
+ELSE
+EXTERN @Body_ContainsPoint@12:PROC
+FUN_58f480 TEXTEQU <@Body_ContainsPoint@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -675511,6 +675542,8 @@ FUN_59f870 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_59ff20 PROC
 
             sub ESP,72
@@ -675613,6 +675646,10 @@ $L_59ffe8::
             add ESP,72
             ret 12
 FUN_59ff20 ENDP
+ELSE
+EXTERN @Box_ClipSegment@20:PROC
+FUN_59ff20 TEXTEQU <@Box_ClipSegment@20>
+ENDIF
 ALIGN 16
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -899268,6 +899305,8 @@ $L_61c240::
 $L_61c230 ENDP
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_61c250 PROC
 
             sub ESP,80
@@ -899340,6 +899379,10 @@ FUN_61c250 PROC
             add ESP,80
             ret 
 FUN_61c250 ENDP
+ELSE
+EXTERN _GridNode_Midpoint:PROC
+FUN_61c250 TEXTEQU <_GridNode_Midpoint>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

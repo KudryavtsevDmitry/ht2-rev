@@ -107,3 +107,25 @@ done:
 }
 
 }
+
+#include <string.h>
+// [FUN_61c250] the midpoint of two grid nodes' positions and normals, with b's remaining four values
+extern "C" DWORD* __cdecl GridNode_Midpoint(DWORD* out, const float* a, const float* b)
+{
+    double s3 = (double)a[3] + b[3];
+    float f4 = (float)((double)a[4] + b[4]);
+    float f5 = (float)((double)a[5] + b[5]);
+    float r[10];
+    r[3] = (float)(s3 * 0.5f);
+    r[4] = (float)((double)f4 * 0.5f);
+    r[5] = (float)((double)f5 * 0.5f);
+    double s0 = (double)a[0] + b[0];
+    float f1 = (float)((double)a[1] + b[1]);
+    float f2 = (float)((double)a[2] + b[2]);
+    r[0] = (float)(s0 * 0.5f);
+    r[1] = (float)((double)f1 * 0.5f);
+    r[2] = (float)((double)f2 * 0.5f);
+    r[6] = b[6]; r[7] = b[7]; r[8] = b[8]; r[9] = b[9];
+    memcpy(out, r, 40);
+    return out;
+}

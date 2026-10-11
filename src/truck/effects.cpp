@@ -2333,3 +2333,88 @@ extern "C" void __fastcall Fx_SpawnAt(BYTE* self, void*, int a, int b, const Vec
             CallVirt(x, 0, 1);
     }
 }
+
+extern "C" int __cdecl rand(void);
+
+// [FUN_4b84f0] a random point in the triangle a, b, c
+extern "C" Vec3* __cdecl Triangle_RandomPoint(Vec3* out, const Vec3* a, const Vec3* b, const Vec3* c)
+{
+    const float k = 3.0518509447574615e-05f;    // 1/32767
+    float u = (float)((double)rand() * k);
+    double v = (double)rand() * k;
+    if (v + u > 1.0f) {
+        u = (float)(1.0f - (double)u);
+        v = 1.0f - v;
+    }
+    double w = (1.0f - (double)u) - v;
+    float wcx = (float)(w * c->x), wcy = (float)(w * c->y), wcz = (float)(w * c->z);
+    float vbx = (float)(v * b->x), vby = (float)(v * b->y);
+    double vbz = v * b->z;
+    float uay = (float)((double)u * a->y), uaz = (float)((double)u * a->z);
+    float sx = (float)((double)u * a->x + vbx);
+    float sy = (float)((double)vby + uay);
+    out->x = (float)((double)sx + wcx);
+    out->y = (float)((double)wcy + sy);
+    out->z = (float)((double)wcz + (vbz + uaz));
+    return out;
+}
+
+typedef float FireRamp[33];
+ASM_VAR(FireRamp, g_fireRamp1, $L_695fac)
+ASM_VAR(FireRamp, g_fireRamp2, $L_695324)
+ASM_VAR(FireRamp, g_fireRamp3, $L_695e2c)
+
+// [FUN_4bb390] three random brightness ramps of 32 steps (runs of 1..5 steps between random levels)
+extern "C" void __cdecl Fire_RandomRamps()
+{
+    const float k1 = 0.00012207403779029846f, k2 = 2.288888208568096e-05f;
+    int len = (int)((double)rand() * k1 + 1.0f);
+    unsigned left = len;
+    float from = (float)((double)rand() * k2 + 0.25f);
+    float first = from;
+    float to = (float)((double)rand() * k2 + 0.25f);
+    for (unsigned i = 0; i < 32; ) {
+        if (left == 0) {
+            len = (int)((double)rand() * k1 + 1.0f);
+            left = len;
+            if ((unsigned)len >= 32 - i) {
+                len = 32 - i;
+                left = len;
+                from = first;
+            } else
+                from = to;
+            to = (float)((double)rand() * k2 + 0.25f);
+        }
+        double t = (double)(__int64)left / len;
+        left--;
+        i++;
+        double v = (1.0f - t) * to + t * from;
+        g_fireRamp1[i] = (float)v;
+        g_fireRamp2[i] = (float)(v * 0.6f);
+        g_fireRamp3[i] = (float)(v * 0.3f);
+    }
+}
+
+extern "C" double __fastcall Car_BestGearNow(BYTE* car, void*);
+
+// [FUN_4d74e0] the steering deflection shown for an input x, damped at speed (over 10)
+extern "C" void __fastcall Car_SetSteerShown(BYTE* s, void*, double x)
+{
+    double a = x * 1.2732395664542882;
+    if (a > 1.0) a = 1.0;
+    else if (!(a >= -1.0)) a = -1.0;
+    double v = a;
+    if (!F(int, s, 10060) && F(float, s, 13100) >= 10.0f) {
+        double sp = F(float, s, 13100);
+        if (Car_BestGearNow(s, 0) * 0.7 > sp) {
+            double y = ((double)F(float, s, 13100) - 10.0f) * 0.5;
+            v = (1.0 - y / (Car_BestGearNow(s, 0) * 0.7 - 10.0)) * a;
+        } else
+            v = a * 0.5;
+        if (!(v >= -0.4)) v = -0.4;
+        else if (v > 0.4) v = 0.4;
+    }
+    if (!(F(float, s, 13104) >= 0.0f))
+        v = -v;
+    F(float, s, 10012) = (float)v;
+}
