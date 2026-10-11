@@ -1082,6 +1082,7 @@ PUBLIC $L_64fea0, $L_64feec
 PUBLIC $L_64d444, $L_650974, $L_650978, $L_650f7c, $L_650fc8, $L_66e538
 PUBLIC $L_66e554, $L_672c60
 PUBLIC $L_64b880, $L_66dcf0, $L_66e640, $L_66e65c, $L_66e678, $L_66ea1c
+PUBLIC $L_66c920, $L_66d508, $L_66db68, $L_66db94, $L_68cf08, $L_68cf58
 
 ;===================================
 _TEXT SEGMENT
@@ -11125,6 +11126,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_405f90 PROC
 
             push EBP
@@ -11289,6 +11292,10 @@ $L_406105::
             pop EBP
             ret 
 FUN_405f90 ENDP
+ELSE
+EXTERN _Anchors_AttachNodes:PROC
+FUN_405f90 TEXTEQU <_Anchors_AttachNodes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -44773,6 +44780,8 @@ FUN_419cb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41a7d0 PROC
 
             push -1
@@ -44960,6 +44969,10 @@ $L_41a9be::
             add ESP,76
             ret 
 FUN_41a7d0 ENDP
+ELSE
+EXTERN _Ai_UpdateAdvancementRegular:PROC
+FUN_41a7d0 TEXTEQU <_Ai_UpdateAdvancementRegular>
+ENDIF
 ALIGN 16
 FUN_41a9d0 PROC
 
@@ -68277,6 +68290,8 @@ EXTERN @Players_CountBusyTraders@8:PROC
 FUN_429380 TEXTEQU <@Players_CountBusyTraders@8>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4293d0 PROC
 
             push EBP
@@ -68400,6 +68415,10 @@ $L_429516::
             pop EBP
             ret 
 FUN_4293d0 ENDP
+ELSE
+EXTERN _Ai_GetPlayerVirtualCapital:PROC
+FUN_4293d0 TEXTEQU <_Ai_GetPlayerVirtualCapital>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -68410,6 +68429,8 @@ FUN_4293d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_429530 PROC
 
             push EBP
@@ -68533,6 +68554,10 @@ $L_429676::
             pop EBP
             ret 
 FUN_429530 ENDP
+ELSE
+EXTERN _Ai_GetPlayerCapital:PROC
+FUN_429530 TEXTEQU <_Ai_GetPlayerCapital>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
