@@ -1046,6 +1046,7 @@ PUBLIC $L_6f6a88
 PUBLIC $L_64b860, $L_64c458, $L_651768, $L_67f0e0, $L_67f0e4
 PUBLIC $L_67ef88
 PUBLIC $L_676308, $L_676310, $L_676318, $L_676320, $L_67632c, $L_676338
+PUBLIC $L_66fcb4, $L_66fd70, $L_66fe74
 
 ;===================================
 _TEXT SEGMENT
@@ -230878,6 +230879,8 @@ FUN_481640 TEXTEQU <_Save_Towns>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4816d0 PROC
 
             sub ESP,8
@@ -230923,6 +230926,10 @@ FUN_4816d0 PROC
             add ESP,8
             ret 
 FUN_4816d0 ENDP
+ELSE
+EXTERN _Save_Doubles3:PROC
+FUN_4816d0 TEXTEQU <_Save_Doubles3>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -232208,6 +232215,8 @@ FUN_482290 TEXTEQU <_Save_Roads>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_482320 PROC
 
             push -1
@@ -232366,6 +232375,10 @@ $L_48246a::
             add ESP,20
             ret 
 FUN_482320 ENDP
+ELSE
+EXTERN _Save_Ambush:PROC
+FUN_482320 TEXTEQU <_Save_Ambush>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -233882,6 +233895,8 @@ FUN_482d20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_483320 PROC
 
             push ECX
@@ -233941,6 +233956,10 @@ $L_48339a::
             pop ECX
             ret 
 FUN_483320 ENDP
+ELSE
+EXTERN _Load_FixPlayers:PROC
+FUN_483320 TEXTEQU <_Load_FixPlayers>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
