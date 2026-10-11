@@ -692,7 +692,7 @@ extern "C" void FUN_45aed0(); KING_ALIAS("_FUN_45aed0", "@Vec4b_InsertA@16")    
 extern "C" void FUN_45c610(); KING_ALIAS("_FUN_45c610", "@Vec4b_InsertB@16")
 extern "C" void FUN_45d370(); KING_ALIAS("_FUN_45d370", "@Vec4b_InsertD@16")
 
-ASM_PROC(FUN_458910)    // destructor of a 1592-byte record
+extern "C" void FUN_458910(); KING_ALIAS("_FUN_458910", "@AI_Nop458910@8")    // destructor of a 1592-byte record
 ASM_PROC(FUN_466300)    // uninitialized copy of 16-byte records
 ASM_VAR(AsmLabel, g_vtbl64b600, $L_64b600)
 ASM_VAR(AsmLabel, g_vtbl64b62c, $L_64b62c)
@@ -4840,7 +4840,7 @@ int __stdcall Rec415740_Check(BYTE* p)
 
 }
 
-ASM_PROC(FUN_44b090)    // an order info's destructor part
+extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")    // an order info's destructor part
 ASM_PROC(FUN_409fc0)    // retraceCompetitorRegular(PlayerId player)
 ASM_VAR(AsmLabel, g_text77e5e0, $L_77e5e0)
 
@@ -5877,4 +5877,377 @@ extern "C" PositionId* __cdecl Road_RandomFarPosition(PositionId* out)
     } while (q[0] & 0x60);
     *out = pos;
     return out;
+}
+
+// ---- static initializers of the AI globals ----
+
+ASM_PROC(FUN_438c90)
+extern "C" void FUN_447b00(); KING_ALIAS("_FUN_447b00", "@List16_Construct@12")
+ASM_PROC(FUN_4484d0)
+extern "C" void FUN_448cd0(); KING_ALIAS("_FUN_448cd0", "@Vec4b_Construct@20")
+extern "C" void FUN_449680(); KING_ALIAS("_FUN_449680", "@List64_Construct@12")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+ASM_PROC(FUN_4ad440)
+ASM_PROC($L_401b90)
+ASM_PROC($L_447d50)
+ASM_VAR(char, g_init68a830, $L_68a830)
+ASM_VAR(char, g_init68a840, $L_68a840)
+ASM_VAR(char, g_init68a850, $L_68a850)
+ASM_VAR(char, g_init68a860, $L_68a860)
+ASM_VAR(char, g_init68a958, $L_68a958)
+ASM_VAR(char, g_init68a970, $L_68a970)
+ASM_VAR(char, g_init68a980, $L_68a980)
+ASM_VAR(char, g_init68b990, $L_68b990)
+ASM_VAR(char, g_init68b998, $L_68b998)
+ASM_VAR(char, g_init68b9b8, $L_68b9b8)
+ASM_VAR(char, g_init68bac8, $L_68bac8)
+ASM_VAR(char, g_init68bb58, $L_68bb58)
+ASM_VAR(char, g_init68cbe8, $L_68cbe8)
+ASM_VAR(char, g_init68cc08, $L_68cc08)
+ASM_VAR(char, g_init68cc18, $L_68cc18)
+ASM_VAR(char, g_init68cc88, $L_68cc88)
+ASM_VAR(char, g_init68cc98, $L_68cc98)
+ASM_VAR(char, g_init68cca8, $L_68cca8)
+ASM_VAR(char, g_init68ccb8, $L_68ccb8)
+ASM_VAR(char, g_init68ceb0, $L_68ceb0)
+ASM_VAR(char, g_init68cec0, $L_68cec0)
+ASM_VAR(char, g_init68cf00, $L_68cf00)
+ASM_VAR(char, g_init68cf10, $L_68cf10)
+ASM_VAR(char, g_init68cf28, $L_68cf28)
+ASM_VAR(char, g_init68cf38, $L_68cf38)
+ASM_VAR(char, g_init68cf48, $L_68cf48)
+ASM_VAR(char, g_init68cf58, $L_68cf58)
+ASM_VAR(char, g_init68cf60, $L_68cf60)
+ASM_VAR(char, g_init68cf6c, $L_68cf6c)
+ASM_VAR(char, g_init68cfd8, $L_68cfd8)
+ASM_VAR(char, g_init68cff0, $L_68cff0)
+ASM_VAR(char, g_init68d008, $L_68d008)
+ASM_VAR(char, g_init68d0a8, $L_68d0a8)
+ASM_VAR(char, g_init68d0b8, $L_68d0b8)
+ASM_VAR(char, g_init68d0c8, $L_68d0c8)
+ASM_VAR(char, g_init68d0d8, $L_68d0d8)
+
+// a container constructed with a (stateless) allocator argument
+static void Init_WithAllocator(void (*ctor)(), void* obj)
+{
+    char alloc;
+    CallThis(ctor, obj, &alloc);
+}
+
+// [FUN_4012e0] constructs the global at 68bb58
+extern "C" void __cdecl AI_Init68bb58()
+{
+    CallThis(FUN_4ad440, &g_init68bb58, 0, 0);
+}
+
+// [FUN_401360] constructs the global container at 68cf28
+extern "C" void __cdecl AI_Init68cf28()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cf28);
+}
+
+// [FUN_4013b0] constructs the global container at 68a840
+extern "C" void __cdecl AI_Init68a840()
+{
+    Init_WithAllocator(FUN_487730, &g_init68a840);
+}
+
+// [FUN_401400] constructs the global container at 68cf48
+extern "C" void __cdecl AI_Init68cf48()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cf48);
+}
+
+// [FUN_401db0] constructs the global container at 68bac8
+extern "C" void __cdecl AI_Init68bac8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68bac8);
+}
+
+// [FUN_401e00] constructs the global container at 68ccb8
+extern "C" void __cdecl AI_Init68ccb8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68ccb8);
+}
+
+// [FUN_401e50] constructs the global container at 68cc08
+extern "C" void __cdecl AI_Init68cc08()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cc08);
+}
+
+// [FUN_401ea0] constructs the global container at 68cf00
+extern "C" void __cdecl AI_Init68cf00()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cf00);
+}
+
+// [FUN_401ef0] constructs the global container at 68cf38
+extern "C" void __cdecl AI_Init68cf38()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cf38);
+}
+
+// [FUN_401f40] constructs the global container at 68b990
+extern "C" void __cdecl AI_Init68b990()
+{
+    Init_WithAllocator(FUN_4484d0, &g_init68b990);
+}
+
+// [FUN_401f90] constructs the global container at 68d0d8
+extern "C" void __cdecl AI_Init68d0d8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68d0d8);
+}
+
+// [FUN_401fe0] constructs the global container at 68d0c8
+extern "C" void __cdecl AI_Init68d0c8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68d0c8);
+}
+
+// [FUN_402030] constructs the global container at 68cf6c
+extern "C" void __cdecl AI_Init68cf6c()
+{
+    Init_WithAllocator(FUN_447b00, &g_init68cf6c);
+}
+
+// [FUN_402080] constructs the global container at 68cec0
+extern "C" void __cdecl AI_Init68cec0()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cec0);
+}
+
+// [FUN_4020d0] constructs the global container at 68cc98
+extern "C" void __cdecl AI_Init68cc98()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cc98);
+}
+
+// [FUN_402120] constructs the global container at 68cbe8
+extern "C" void __cdecl AI_Init68cbe8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cbe8);
+}
+
+// [FUN_402170] constructs the global container at 68cfd8
+extern "C" void __cdecl AI_Init68cfd8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cfd8);
+}
+
+// [FUN_4021c0] constructs the global container at 68d0b8
+extern "C" void __cdecl AI_Init68d0b8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68d0b8);
+}
+
+// [FUN_402210] constructs the global container at 68cc18
+extern "C" void __cdecl AI_Init68cc18()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cc18);
+}
+
+// [FUN_402260] constructs the global container at 68ceb0
+extern "C" void __cdecl AI_Init68ceb0()
+{
+    Init_WithAllocator(FUN_487730, &g_init68ceb0);
+}
+
+// [FUN_4022b0] constructs the global container at 68a970
+extern "C" void __cdecl AI_Init68a970()
+{
+    Init_WithAllocator(FUN_487730, &g_init68a970);
+}
+
+// [FUN_402300] constructs the global container at 68a850
+extern "C" void __cdecl AI_Init68a850()
+{
+    Init_WithAllocator(FUN_487730, &g_init68a850);
+}
+
+// [FUN_402350] constructs the global container at 68b9b8
+extern "C" void __cdecl AI_Init68b9b8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68b9b8);
+}
+
+// [FUN_4023a0] constructs the global container at 68a958
+extern "C" void __cdecl AI_Init68a958()
+{
+    Init_WithAllocator(FUN_487730, &g_init68a958);
+}
+
+// [FUN_4025d0] constructs the global container at 68d0a8
+extern "C" void __cdecl AI_Init68d0a8()
+{
+    Init_WithAllocator(FUN_487730, &g_init68d0a8);
+}
+
+// [FUN_402660] constructs the global container at 68a980
+extern "C" void __cdecl AI_Init68a980()
+{
+    Init_WithAllocator(FUN_487730, &g_init68a980);
+}
+
+// [FUN_4026b0] constructs the global container at 68cf60
+extern "C" void __cdecl AI_Init68cf60()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cf60);
+}
+
+// [FUN_402700] constructs the global container at 68cc88
+extern "C" void __cdecl AI_Init68cc88()
+{
+    Init_WithAllocator(FUN_487730, &g_init68cc88);
+}
+
+// [FUN_4056f0] constructs the global container at 68cf58
+extern "C" void __cdecl AI_Init68cf58()
+{
+    Init_WithAllocator(FUN_449680, &g_init68cf58);
+}
+
+// [FUN_415260] constructs the global container at 68a860
+extern "C" void __cdecl AI_Init68a860()
+{
+    Init_WithAllocator(FUN_487730, &g_init68a860);
+}
+
+// [FUN_401970] destroys the global at 68b998
+extern "C" void __cdecl AI_Destroy68b998()
+{
+    CallThis($L_401b90, &g_init68b998);
+}
+
+// [FUN_4028b0] destroys the global at 68cff0
+extern "C" void __cdecl AI_Destroy68cff0()
+{
+    CallThis($L_447d50, &g_init68cff0);
+}
+
+// [FUN_402b50] destroys the global at 68d008
+extern "C" void __cdecl AI_Destroy68d008()
+{
+    CallThis($L_447d50, &g_init68d008);
+}
+
+// [FUN_402ba0] destroys the global at 68cf10
+extern "C" void __cdecl AI_Destroy68cf10()
+{
+    CallThis($L_447d50, &g_init68cf10);
+}
+
+// [FUN_4023f0] constructs the global at 68cca8 with 12 zero elements
+extern "C" void __cdecl AI_Init68cca8()
+{
+    DWORD zero = 0;
+    char alloc;
+    CallThis(FUN_448cd0, &g_init68cca8, 12, &zero, &alloc);
+}
+
+// [FUN_402450] constructs the global at 68a830 with 12 zero elements
+extern "C" void __cdecl AI_Init68a830()
+{
+    DWORD zero = 0;
+    char alloc;
+    CallThis(FUN_448cd0, &g_init68a830, 12, &zero, &alloc);
+}
+ASM_VAR(int, g_stlLock68d204, $L_68d204)
+
+// [FUN_44ba80] releases the STL lock
+extern "C" void __cdecl Stl_Unlock()
+{
+    g_stlLock68d204 = 0;
+}
+
+// [FUN_458910] does nothing (an inlined accessor whose result is unused)
+extern "C" void __fastcall AI_Nop458910(void* self, int)
+{
+}
+
+// [FUN_44a530] frees the storage of a vector of 8-byte elements
+extern "C" void __fastcall Vec8_Free(BYTE** v, int)
+{
+    int n = (v[2] - v[0]) >> 3;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n << 3);
+}
+
+// [FUN_44ab90] frees the storage of a vector of 16-byte elements
+extern "C" void __fastcall Vec16_Free(BYTE** v, int)
+{
+    int n = (v[2] - v[0]) >> 4;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n << 4);
+}
+
+// [FUN_44b090] frees the storage of a vector of bytes
+extern "C" void __fastcall Vec1_Free(BYTE** v, int)
+{
+    int n = v[2] - v[0];
+    if (n)
+        CallC(FUN_44b4a0, v[0], n);
+}
+
+// [FUN_44b0d0] frees the storage of a vector of 4-byte elements
+extern "C" void __fastcall Vec4_Free(BYTE** v, int)
+{
+    int n = (v[2] - v[0]) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n << 2);
+}
+
+// [FUN_44a500] frees the storage of a vector of 24-byte elements
+extern "C" void __fastcall Vec24_Free(BYTE** v, int)
+{
+    int n = (int)(v[2] - v[0]) / 24;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 24);
+}
+
+// [FUN_44aff0] frees the storage of a vector of 12-byte elements
+extern "C" void __fastcall Vec12_Free(BYTE** v, int)
+{
+    int n = (int)(v[2] - v[0]) / 12;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 12);
+}
+
+// [FUN_453b60] frees all nodes (12 bytes) of a list, leaving the head empty
+extern "C" void __fastcall List12_Clear(void*** list, int)
+{
+    void** node = (void**)**list;
+    while (node != *list) {
+        void** next = (void**)*node;
+        CallC(FUN_44b4a0, node, 12);
+        node = next;
+    }
+    void** head = *list;
+    head[0] = head;
+    head[1] = head;
+}
+
+// [FUN_44f650] the length of a string
+extern "C" int __cdecl AI_StrLen(const char* s)
+{
+    const char* p = s;
+    while (*p)
+        ++p;
+    return (int)(p - s);
+}
+
+// [FUN_4011e0] calls a thiscall function on each of count elements of size bytes
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)())
+{
+    for (; count > 0; --count) {
+        CallThis(fn, p);
+        p += size;
+    }
+}
+
+// [FUN_438d00] the room flags of an id, passed by value, with mask 4096
+extern "C" int __cdecl AI_RoomFlags4096(int id)
+{
+    return CallC<int>(FUN_438c90, id, 4096);
 }
