@@ -1072,6 +1072,7 @@ PUBLIC $L_685a98, $L_72c108
 PUBLIC $L_695324, $L_695e2c, $L_695fac
 PUBLIC $L_64c410, $L_674850
 PUBLIC $L_64da00, $L_652f3c, $L_6532e8
+PUBLIC $L_67498c
 
 ;===================================
 _TEXT SEGMENT
@@ -378069,6 +378070,8 @@ FUN_4d5c50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d5f50 PROC
 
             sub ESP,24
@@ -378204,6 +378207,10 @@ $L_4d609b::
             add ESP,24
             ret 24
 FUN_4d5f50 ENDP
+ELSE
+EXTERN @Fx_SteerFromSwing@32:PROC
+FUN_4d5f50 TEXTEQU <@Fx_SteerFromSwing@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -442166,6 +442173,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_501930 PROC
 
             push ECX
@@ -442385,6 +442394,10 @@ $L_501b53::
             nop
             nop
 FUN_501930 ENDP
+ELSE
+EXTERN @Car_CheckDamage@8:PROC
+FUN_501930 TEXTEQU <@Car_CheckDamage@8>
+ENDIF
 ALIGN 16
 FUN_501b90 PROC
 
@@ -642641,6 +642654,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_589490 PROC
 
             push EBX
@@ -642826,6 +642841,10 @@ $L_58962d::
             pop EBX
             ret 8
 FUN_589490 ENDP
+ELSE
+EXTERN @BodyLevel_Step@16:PROC
+FUN_589490 TEXTEQU <@BodyLevel_Step@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -666115,6 +666134,8 @@ FUN_598e70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_598f00 PROC
 
             push EBP
@@ -666289,6 +666310,10 @@ $L_599030::
             pop EBP
             ret 8
 FUN_598f00 ENDP
+ELSE
+EXTERN @Object_WheelMatrix@16:PROC
+FUN_598f00 TEXTEQU <@Object_WheelMatrix@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

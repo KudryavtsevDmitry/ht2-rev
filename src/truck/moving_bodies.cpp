@@ -690,3 +690,65 @@ extern "C" void __fastcall Body_ProbeGround(BYTE* s, void*, int a)
     if (Query_4e7168(F(int, s, 800), s, 0.0f, A, B, node))
         CallVirt(s, 224, node + 52, node + 64, a);
 }
+
+// [FUN_589490] moves a body's level (+12, -1..1) by *amount at rate towards a notch of +8; 1 when the amount was used up
+extern "C" int __fastcall BodyLevel_Step(BYTE* s, void*, float* amount, float rate)
+{
+    if (!(*amount < 0 || *amount > 0))
+        return 0;
+    if (!(rate < 0 || rate > 0)) {
+        F(int, s, 12) = 0;
+        F(int, s, 4) = 0;
+        return 1;
+    }
+    double q = (double)rate * F(float, s, 12);
+    float qf = (float)q;
+    if (*amount > 0.0f) {
+        double aq = q < 0 ? -q : q;
+        if (aq > *amount) {
+            double t = (double)*amount / rate;
+            if (qf > 0.0f) {
+                double v = F(float, s, 12) - t;
+                F(float, s, 12) = (float)v;
+                if (!(v >= 0.0f))
+                    F(int, s, 12) = 0;
+            } else {
+                double v = t + F(float, s, 12);
+                F(float, s, 12) = (float)v;
+                if (v > 0.0f)
+                    F(int, s, 12) = 0;
+            }
+            F(int, s, 4) = (int)((double)F(int, s, 8) * F(float, s, 12));
+            *(int*)amount = 0;
+            return 1;
+        }
+        *amount = (float)((double)*amount - aq);
+        F(int, s, 12) = 0;
+        F(int, s, 4) = 0;
+        return 0;
+    }
+    double l = F(float, s, 12);
+    double u = (1.0 - (l < 0 ? -l : l)) * rate;
+    double am = *amount < 0 ? -(double)*amount : (double)*amount;
+    if (!(am >= u)) {
+        double t = (double)*amount / rate;
+        if (q > 0.0f) {
+            double v = F(float, s, 12) - t;
+            F(float, s, 12) = (float)v;
+            if (v > 1.0f)
+                F(float, s, 12) = 1.0f;
+        } else {
+            double v = t + F(float, s, 12);
+            F(float, s, 12) = (float)v;
+            if (!(v >= -1.0f))
+                F(float, s, 12) = -1.0f;
+        }
+        F(int, s, 4) = (int)((double)F(int, s, 8) * F(float, s, 12));
+        *(int*)amount = 0;
+        return 1;
+    }
+    *amount = (float)((u < 0 ? -u : u) + *amount);
+    F(int, s, 4) = F(int, s, 8);
+    F(float, s, 12) = q > 0.0f ? 1.0f : -1.0f;
+    return 0;
+}
