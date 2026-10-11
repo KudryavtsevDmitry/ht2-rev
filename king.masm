@@ -1026,6 +1026,7 @@ PUBLIC $L_68d4f4
 PUBLIC $L_652dc0, $L_723d28, $L_723d2c
 PUBLIC $L_66fddc, $L_66fde4, $L_66fe28, $L_66fe48, $L_66fe50, $L_66fe6c
 PUBLIC $L_66fe90, $L_66fe98, $L_66feb8
+PUBLIC $L_652de0, $L_6554c0, $L_6554d0, $L_683ca0, $L_723de8
 
 ;===================================
 _TEXT SEGMENT
@@ -847918,6 +847919,8 @@ $L_601630 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6016f0 PROC
 
             push ECX
@@ -848028,6 +848031,10 @@ $L_6017e8::
             pop ECX
             ret 
 FUN_6016f0 ENDP
+ELSE
+EXTERN _Providers_Rebuild:PROC
+FUN_6016f0 TEXTEQU <_Providers_Rebuild>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -848442,6 +848449,8 @@ FUN_601890 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_601c10 PROC
 
             mov EDX,DWORD PTR [$L_723d64]
@@ -848479,6 +848488,10 @@ $L_601c2d::
             add ESP,28
             ret 
 FUN_601c10 ENDP
+ELSE
+EXTERN _Providers_Call601c70:PROC
+FUN_601c10 TEXTEQU <_Providers_Call601c70>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849792,6 +849805,8 @@ $L_602550 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6026c0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -849810,6 +849825,10 @@ FUN_6026c0 PROC
             mov EAX,ECX
             ret 12
 FUN_6026c0 ENDP
+ELSE
+EXTERN _DpList_Insert@12:PROC
+FUN_6026c0 TEXTEQU <_DpList_Insert@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -849818,6 +849837,8 @@ FUN_6026c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6026f0 PROC
 
             push -1
@@ -849899,6 +849920,10 @@ $L_602799::
             nop
             nop
 FUN_6026f0 ENDP
+ELSE
+EXTERN _DpList_MakeNode@4:PROC
+FUN_6026f0 TEXTEQU <_DpList_MakeNode@4>
+ENDIF
 ALIGN 16
 FUN_6027b0 PROC
 
@@ -850441,6 +850466,8 @@ FUN_602bd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602be0 PROC
 
             push -1
@@ -850494,6 +850521,10 @@ FUN_602be0 PROC
             add ESP,20
             ret 
 FUN_602be0 ENDP
+ELSE
+EXTERN @DpMessage_Construct@8:PROC
+FUN_602be0 TEXTEQU <@DpMessage_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850695,6 +850726,8 @@ FUN_602ca0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602df0 PROC
 
             push ECX
@@ -850765,6 +850798,10 @@ $L_602e27::
             pop ECX
             ret 
 FUN_602df0 ENDP
+ELSE
+EXTERN @DpMessage_Reset@8:PROC
+FUN_602df0 TEXTEQU <@DpMessage_Reset@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851135,6 +851172,8 @@ FUN_603110 PROC
             ret 12
 FUN_603110 ENDP
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603170 PROC
 
             push EBX
@@ -851183,6 +851222,10 @@ FUN_603170 PROC
             pop EBX
             ret 8
 FUN_603170 ENDP
+ELSE
+EXTERN @DpMessage_Set@16:PROC
+FUN_603170 TEXTEQU <@DpMessage_Set@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851839,6 +851882,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603570 PROC
 
             lea EAX,DWORD PTR [ESP+16]
@@ -851852,6 +851897,10 @@ FUN_603570 PROC
 
             ret 
 FUN_603570 ENDP
+ELSE
+EXTERN _Buf_WriteDword:PROC
+FUN_603570 TEXTEQU <_Buf_WriteDword>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851861,6 +851910,8 @@ FUN_603570 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603590 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -851887,6 +851938,10 @@ $L_6035ac::
 
             ret 
 FUN_603590 ENDP
+ELSE
+EXTERN _Buf_WriteByte:PROC
+FUN_603590 TEXTEQU <_Buf_WriteByte>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851896,6 +851951,8 @@ FUN_603590 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6035c0 PROC
 
             sub ESP,16
@@ -852151,6 +852208,10 @@ $L_6037b6::
             nop
             nop
 FUN_6035c0 ENDP
+ELSE
+EXTERN @Bytes_Insert@16:PROC
+FUN_6035c0 TEXTEQU <@Bytes_Insert@16>
+ENDIF
 ALIGN 16
 FUN_6037e0 PROC
 
@@ -852314,6 +852375,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6038d0 PROC
 
             sub ESP,524
@@ -852420,6 +852483,10 @@ $L_6039a0::
             add ESP,524
             ret 4
 FUN_6038d0 ENDP
+ELSE
+EXTERN @Music_Open@12:PROC
+FUN_6038d0 TEXTEQU <@Music_Open@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
