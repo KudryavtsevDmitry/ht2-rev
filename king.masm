@@ -1104,6 +1104,8 @@ PUBLIC $L_6961f8, $L_69622c, $L_696230, $L_696238, $L_696254
 PUBLIC $L_66d58c, $L_672504, $L_67250c, $L_672514, $L_67254c, $L_67255c
 PUBLIC $L_672564, $L_6725c0, $L_68a988, $L_68cf68, $L_69618c, $L_69621c
 PUBLIC $L_6ce378, $L_6f33b0, $L_6f33b4, $L_6f340c, $L_6f3434, $L_6f349c
+PUBLIC $L_66ff3c, $L_66ff40, $L_66ff58, $L_676644, $L_676658, $L_676668
+PUBLIC $L_67667c, $L_6968f0, $L_6f2d18
 
 ;===================================
 _TEXT SEGMENT
@@ -106861,6 +106863,8 @@ FUN_440970 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_440dd0 PROC
 
             push EBX
@@ -106987,6 +106991,10 @@ $L_440edb::
             pop EBX
             ret 
 FUN_440dd0 ENDP
+ELSE
+EXTERN @Rec440dd0_FreeVectors@8:PROC
+FUN_440dd0 TEXTEQU <@Rec440dd0_FreeVectors@8>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -138605,6 +138613,8 @@ $L_452284::
             nop
 $L_45223b ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_452290 PROC
 
             push EBP
@@ -138730,6 +138740,10 @@ $L_452375::
             pop EBP
             ret 4
 FUN_452290 ENDP
+ELSE
+EXTERN @VecDword_Assign@12:PROC
+FUN_452290 TEXTEQU <@VecDword_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -235118,6 +235132,8 @@ $L_4835b8::
             ret 
 FUN_4833a0 ENDP
 ALIGN 16
+; src/ai_saveload.cpp, nmake ASM_AI_SAVELOAD=1 assembles the original
+IFDEF ASM_AI_SAVELOAD
 FUN_4835d0 PROC
 
             sub ESP,600
@@ -235226,6 +235242,10 @@ $L_4836a8::
             add ESP,600
             ret 
 FUN_4835d0 ENDP
+ELSE
+EXTERN _AI_LoadFromStorage:PROC
+FUN_4835d0 TEXTEQU <_AI_LoadFromStorage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -464620,6 +464640,8 @@ $L_5104ec           BYTE ($L_5104c4-$L_5104c4)/4
             nop
 $L_5101c0 ENDP
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5105b0 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -464708,6 +464730,10 @@ $L_51068b::
             nop
             nop
 FUN_5105b0 ENDP
+ELSE
+EXTERN _Shell_SetupModeObjects:PROC
+FUN_5105b0 TEXTEQU <_Shell_SetupModeObjects>
+ENDIF
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 IFDEF ASM_GAME_SHELL
@@ -466661,6 +466687,8 @@ EXTERN @Screen511800_Destroy@8:PROC
 FUN_511800 TEXTEQU <@Screen511800_Destroy@8>
 ENDIF
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_511820 PROC
 
             push 0
@@ -466739,6 +466767,10 @@ $L_5118e2::
 
             jmp FUN_512c70
 FUN_511820 ENDP
+ELSE
+EXTERN _Shell_LeaveRace:PROC
+FUN_511820 TEXTEQU <_Shell_LeaveRace>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
