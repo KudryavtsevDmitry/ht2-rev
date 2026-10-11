@@ -618,7 +618,7 @@ extern "C" int __cdecl Bodies_Touch(BYTE* d, const float* n, int, BYTE* c, const
 
 ASM_VAR(Vec3, g_gravity702650, $L_702650)
 ASM_VAR(Vec3, g_axis702630, $L_702630)
-ASM_PROC(FUN_58ba90)
+extern "C" void FUN_58ba90(); KING_ALIAS("_FUN_58ba90", "@Body_Clear9516@8")
 
 // [FUN_58b8c0] resets a body's state: flags, contacts, the 20 contact records, the half size
 extern "C" int __fastcall Body_Reset(BYTE* s, void*, int a, int b)
@@ -821,4 +821,20 @@ extern "C" int __cdecl Body_SegmentContact(const Vec3* a, const Vec3* b, int c, 
     Line_Project(&t, (Vec3*)(contact + 52), (Vec3*)(contact + 64), a, b);
     F(Vec3, contact, 52) = t;
     return r;
+}
+
+extern "C" void FUN_57c9e0(); KING_ALIAS("_FUN_57c9e0", "_Moving_Of")
+
+// [FUN_5893d0] forwards to FUN_57c9e0
+extern "C" int __cdecl Body_5893d0(int a)
+{
+    return CallC<int>(FUN_57c9e0, a);
+}
+
+// [FUN_58ba90] clears +9516 and +9520, returns 0
+extern "C" int __fastcall Body_Clear9516(BYTE* self, int)
+{
+    *(int*)(self + 9520) = 0;
+    *(int*)(self + 9516) = 0;
+    return 0;
 }

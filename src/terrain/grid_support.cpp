@@ -27,7 +27,7 @@ extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16
 ASM_VAR(AsmLabel, s_684a84, $L_684a84)
 ASM_VAR(AsmLabel, s_66d9c4, $L_66d9c4)
 ASM_VAR(AsmLabel, s_6849fc, $L_6849fc)
-ASM_PROC(FUN_50d190)
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void FUN_613790(); KING_ALIAS("_FUN_613790", "@MarineQueue_TopWorkItem@8")
 ASM_PROC(FUN_609de0)
 

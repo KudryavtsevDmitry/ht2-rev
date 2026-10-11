@@ -521,3 +521,23 @@ BYTE** __fastcall Hops_Copy(BYTE** self, void*, BYTE* const* src)
 }
 
 }
+
+extern "C" void FUN_487d20(); KING_ALIAS("_FUN_487d20", "@Slots8_Construct@12")
+ASM_VAR(char, g_691cc0, $L_691cc0)
+
+// [FUN_488320] FUN_487d20(20) on the global at 691cc0
+extern "C" int __cdecl Trce_488320()
+{
+    return CallThis<int>(FUN_487d20, &g_691cc0, 20);
+}
+
+// [FUN_487cc0] copy-constructs a 12-byte record in place (placement new)
+extern "C" DWORD* __cdecl Rec12_Construct(DWORD* p, const DWORD* src)
+{
+    if (p) {
+        p[0] = src[0];
+        p[1] = src[1];
+        p[2] = src[2];
+    }
+    return p;
+}

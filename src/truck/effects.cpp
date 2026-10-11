@@ -122,7 +122,7 @@ ASM_VAR(AsmLabel, g_vtbl64cf08, $L_64cf08)
 ASM_VAR(AsmLabel, g_vtbl64cebc, $L_64cebc)
 ASM_VAR(AsmLabel, g_vtbl64ceb8, $L_64ceb8)
 extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
-ASM_PROC(FUN_57c450)    // sounds: play
+extern "C" void FUN_57c450(); KING_ALIAS("_FUN_57c450", "@FF_PoolStart@28")    // sounds: play
 ASM_PROC(FUN_5d3290)    // Task::~Task
 ASM_PROC(FUN_5ef660)    // module destructor
 extern "C" void FUN_4bf510(); KING_ALIAS("_FUN_4bf510", "@Fx_CameraPair@8")    // particles: reset
@@ -2078,7 +2078,7 @@ void __fastcall Effect4bc950_Attach(BYTE* self, void*, BYTE* a)
 
 }
 
-ASM_PROC(FUN_4c1790)
+extern "C" void FUN_4c1790(); KING_ALIAS("_FUN_4c1790", "@EffectLink_Init@8")
 ASM_PROC(FUN_43fc40)    // vehicle info by id (id, info)
 ASM_PROC(FUN_4ebd00)
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
@@ -3122,4 +3122,83 @@ extern "C" double __cdecl Fx_TurnRate(Bytes32 pos, double d, int id, int back)
     if (!(diff >= 0.1))
         diff = 0.1;
     return ang / diff;
+}
+
+ASM_PROC(FUN_5d3290)    // the scene object base destructor
+ASM_PROC(FUN_5f1a70)
+ASM_VAR(char, vt_64c90c, $L_64c90c)
+ASM_VAR(char, vt_64d49c, $L_64d49c)
+ASM_VAR(char, vt_64d4c8, $L_64d4c8)
+ASM_VAR(char, vt_64d554, $L_64d554)
+ASM_VAR(char, vt_64c358, $L_64c358)
+
+// [FUN_4c9a00] destructor of an effect class (vtable 64c90c)
+extern "C" void __fastcall Effect4c9a00_Destroy(void** self, int)
+{
+    self[0] = &vt_64c90c;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4da7d0] destructor of an effect class (vtable 64d49c)
+extern "C" void __fastcall Effect4da7d0_Destroy(void** self, int)
+{
+    self[0] = &vt_64d49c;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4db890] destructor of an effect class (vtable 64d4c8)
+extern "C" void __fastcall Effect4db890_Destroy(void** self, int)
+{
+    self[0] = &vt_64d4c8;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4dd600] destructor of an effect class (vtable 64d554)
+extern "C" void __fastcall Effect4dd600_Destroy(void** self, int)
+{
+    self[0] = &vt_64d554;
+    CallThis(FUN_5d3290, self);
+}
+
+// [FUN_4bcbd0] destructor of an effect class (vtable 64c358)
+extern "C" void __fastcall Effect4bcbd0_Destroy(void** self, int)
+{
+    self[0] = &vt_64c358;
+    CallThis(FUN_5f1a70, self);
+}
+
+ASM_VAR(char, vt_64c63c, $L_64c63c)
+ASM_PROC(FUN_5ef660)
+ASM_PROC(FUN_60aa60)
+ASM_VAR(char, g_6724f8, $L_6724f8)
+ASM_VAR(char, g_6726e8, $L_6726e8)
+ASM_VAR(char, g_6726e0, $L_6726e0)
+ASM_VAR(char, g_6726a4, $L_6726a4)
+
+// [FUN_4c1790] constructor of an empty effect link (vtable 64c63c)
+extern "C" void __fastcall EffectLink_Init(void** self, int)
+{
+    self[0] = &vt_64c63c;
+    self[1] = 0;
+}
+
+// [FUN_4cef50] always 0
+extern "C" int __cdecl Effect_Zero()
+{
+    return 0;
+}
+
+// [FUN_4bd570] frees the buffer at +72, then destroys the base
+extern "C" void __fastcall EffectBuf_Destroy(BYTE* self, int)
+{
+    void* p = *(void**)(self + 72);
+    if (p)
+        operator delete(p);
+    CallThis(FUN_5ef660, self);
+}
+
+// [FUN_4ba2e0] registers the effects' settings table
+extern "C" int __cdecl Effects_Register()
+{
+    return CallC<int>(FUN_60aa60, 2, &g_6726a4, &g_6726e0, &g_6726e8, 32, &g_6724f8);
 }

@@ -821,3 +821,30 @@ extern "C" void __fastcall Shadow_Add(BYTE* s, void*, int a0, int a1, const floa
     if (!CallThis<int>(FUN_579aa0, o, a0, a1, at, steps, a4, a5))
         ShadowStack_Pop(stack, 0);
 }
+
+ASM_PROC(FUN_5787a0)
+extern "C" void FUN_579890(); KING_ALIAS("_FUN_579890", "@ShadowStack_Push@8")
+ASM_PROC(FUN_57b2d0)
+extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
+ASM_VAR(int, g_6f4bb4, $L_6f4bb4)
+ASM_VAR(int, g_6f4bb8, $L_6f4bb8)
+ASM_VAR(int, g_6f4bbc, $L_6f4bbc)
+
+// [FUN_578d50] FUN_5787a0 with the three globals at 6f4bb4
+extern "C" int __cdecl FF_578d50(int a)
+{
+    return CallC<int>(FUN_5787a0, a, g_6f4bb4, g_6f4bb8, g_6f4bbc);
+}
+
+// [FUN_57c450] takes an object from the pool at +76 and starts it; puts it back when that fails
+extern "C" int __fastcall FF_PoolStart(BYTE* self, int, int a, int b, int c, int d, int e)
+{
+    BYTE* pool = self + 76;
+    void* obj = CallThis<void*>(FUN_579890, pool);
+    if (!obj)
+        return 0;
+    int r = CallThis<int>(FUN_57b2d0, obj, a, b, c, 16, d, e);
+    if (!r)
+        r = CallThis<int>(FUN_5798d0, pool);
+    return r;
+}

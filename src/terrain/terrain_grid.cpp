@@ -76,7 +76,7 @@ int __fastcall TGrid_Set(BYTE* self, void*, int a, int b, int c, BYTE* d)
 
 }
 
-ASM_PROC(FUN_50d190)    // a 16-byte record's destructor
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")    // a 16-byte record's destructor
 ASM_VAR(char, g_vtbl65338c, $L_65338c)
 ASM_VAR(char, g_vtbl6533a8, $L_6533a8)
 

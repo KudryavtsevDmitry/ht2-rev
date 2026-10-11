@@ -7,6 +7,7 @@
 // procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS     // strcpy as in the game
+#include <intrin.h>
 #include <string.h>
 #include "vecmath.h"
 #include "x87.h"
@@ -1188,7 +1189,7 @@ void __cdecl Button_SetImages(BYTE* ctrl, const char* a, const char* b)
 
 }
 
-ASM_PROC(FUN_601470)
+extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
 
 extern "C" {
 
@@ -1234,7 +1235,7 @@ extern "C" double __cdecl Player_LoadFactor(double base)
     return r;
 }
 
-ASM_PROC(FUN_513820)    // the time stamp counter
+extern "C" void FUN_513820(); KING_ALIAS("_FUN_513820", "_Shell_ReadTsc")    // the time stamp counter
 ASM_VAR(const double, k_0_0025, $L_64de08)
 ASM_VAR(char, g_strMhz, $L_67695c)       // "MHZ="
 extern "C" int __cdecl Get71e7e4();      // core.cpp
@@ -1256,4 +1257,102 @@ extern "C" double __cdecl Cpu_SpeedFactor()
     if (mhz > 700)
         return 1.0;
     return (double)(mhz - 300) * k_0_0025;
+}
+
+ASM_PROC(FUN_5d89e0)    // the screen base destructor
+ASM_VAR(char, vt_64ddc0, $L_64ddc0)
+ASM_VAR(char, vt_64dd80, $L_64dd80)
+ASM_VAR(char, vt_64e6a8, $L_64e6a8)
+ASM_VAR(char, vt_64e668, $L_64e668)
+ASM_VAR(char, vt_64e730, $L_64e730)
+ASM_VAR(char, vt_64e6f0, $L_64e6f0)
+ASM_VAR(char, vt_64e7c0, $L_64e7c0)
+ASM_VAR(char, vt_64e780, $L_64e780)
+ASM_VAR(char, vt_64e960, $L_64e960)
+ASM_VAR(char, vt_64e920, $L_64e920)
+ASM_VAR(char, vt_64e9e8, $L_64e9e8)
+ASM_VAR(char, vt_64e9a8, $L_64e9a8)
+ASM_VAR(char, vt_64ea70, $L_64ea70)
+ASM_VAR(char, vt_64ea30, $L_64ea30)
+
+// [FUN_511800] destructor of a screen class (vtables 64ddc0, 64dd80 at +64)
+extern "C" void __fastcall Screen511800_Destroy(void** self, int)
+{
+    self[0] = &vt_64ddc0;
+    self[16] = &vt_64dd80;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_51f360] destructor of a screen class (vtables 64e6a8, 64e668 at +64)
+extern "C" void __fastcall Screen51f360_Destroy(void** self, int)
+{
+    self[0] = &vt_64e6a8;
+    self[16] = &vt_64e668;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_520580] destructor of a screen class (vtables 64e730, 64e6f0 at +64)
+extern "C" void __fastcall Screen520580_Destroy(void** self, int)
+{
+    self[0] = &vt_64e730;
+    self[16] = &vt_64e6f0;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_521410] destructor of a screen class (vtables 64e7c0, 64e780 at +64)
+extern "C" void __fastcall Screen521410_Destroy(void** self, int)
+{
+    self[0] = &vt_64e7c0;
+    self[16] = &vt_64e780;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_524510] destructor of a screen class (vtables 64e960, 64e920 at +64)
+extern "C" void __fastcall Screen524510_Destroy(void** self, int)
+{
+    self[0] = &vt_64e960;
+    self[16] = &vt_64e920;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_525e20] destructor of a screen class (vtables 64e9e8, 64e9a8 at +64)
+extern "C" void __fastcall Screen525e20_Destroy(void** self, int)
+{
+    self[0] = &vt_64e9e8;
+    self[16] = &vt_64e9a8;
+    CallThis(FUN_5d89e0, self);
+}
+
+// [FUN_526ba0] destructor of a screen class (vtables 64ea70, 64ea30 at +64)
+extern "C" void __fastcall Screen526ba0_Destroy(void** self, int)
+{
+    self[0] = &vt_64ea70;
+    self[16] = &vt_64ea30;
+    CallThis(FUN_5d89e0, self);
+}
+
+ASM_VAR(char, vt_64dc84, $L_64dc84)
+ASM_VAR(char, vt_64d81c, $L_64d81c)
+
+// [FUN_50d190] does nothing (an empty destructor)
+extern "C" void __fastcall Shell_Nop(void*, int)
+{
+}
+
+// [FUN_50d510] destructor: frees the buffer at +12
+extern "C" void __fastcall ShellBuf_Destroy(void** self, int)
+{
+    self[0] = &vt_64dc84;
+    operator delete(self[3]);
+    self[0] = &vt_64d81c;
+}
+
+// [FUN_513820] the time stamp counter, serialized by cpuid before and after
+extern "C" unsigned __int64 __cdecl Shell_ReadTsc()
+{
+    int r[4];
+    __cpuid(r, 0);
+    unsigned __int64 t = __rdtsc();
+    __cpuid(r, 0);
+    return t;
 }

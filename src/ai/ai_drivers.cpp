@@ -424,7 +424,7 @@ KING_ALIAS("_Vehicle_Exists", "FUN_4d8a40")
 extern "C" void __cdecl Vehicle_Release(int vrId);
 KING_ALIAS("_Vehicle_Release", "FUN_4d8ae0")
 extern "C" void __cdecl Order_Destroy(void* order);
-KING_ALIAS("_Order_Destroy", "FUN_50d190")
+KING_ALIAS("_Order_Destroy", "@Shell_Nop@8")
 typedef char AiText[1];
 ASM_VAR(AiText, g_positionText, $L_77e6e0)
 ASM_VAR(AiText, g_playerText, $L_77e660)
