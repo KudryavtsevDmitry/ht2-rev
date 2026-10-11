@@ -2735,3 +2735,160 @@ extern "C" void __fastcall Fx_ThrowLamp(BYTE* s, void*)
     if (lights)
         CallVirt(lights, 20, 0, g_thrownLamp696734);
 }
+
+extern "C" void FUN_59f070(); KING_ALIAS("_FUN_59f070", "@Effect59f070_Construct@32")
+extern "C" void FUN_59bed0(); KING_ALIAS("_FUN_59bed0", "@Spark59bed0_Construct@32")
+extern "C" void FUN_59ad70(); KING_ALIAS("_FUN_59ad70", "@Spark59ad70_Construct@32")
+ASM_PROC(FUN_59b3f0)
+typedef char FxLabel[1];
+ASM_VAR(float, g_fx69605c, $L_69605c)
+ASM_VAR(float, g_fx696048, $L_696048)
+ASM_VAR(BYTE*, g_pool6f6ab4, $L_6f6ab4)
+ASM_VAR(BYTE*, g_pool6f6a7c, $L_6f6a7c)
+ASM_VAR(BYTE*, g_pool6f6a80, $L_6f6a80)
+ASM_VAR(BYTE*, g_pool6f6a88, $L_6f6a88)
+ASM_VAR(FxLabel, g_fx694998, $L_694998)
+ASM_VAR(FxLabel, g_fx695bf0, $L_695bf0)
+ASM_VAR(FxLabel, g_fx695c58, $L_695c58)
+typedef DWORD FxDwords[1];
+ASM_VAR(FxDwords, g_fx695908, $L_695908)
+ASM_VAR(unsigned, g_fx696214, $L_696214)
+ASM_VAR(int, g_fx69620c, $L_69620c)
+ASM_VAR(int, g_fx696208, $L_696208)
+ASM_VAR(int, g_fx696210, $L_696210)
+
+static const float kRand = 3.0518509447574615e-05f;     // 1/32767
+
+static BYTE* Fx_PoolNew(int size, BYTE* pool) { return CallC<BYTE*>(FUN_579380, size, pool); }
+
+// [FUN_4ba310] smoke puffs at a point: two, one, or one of a random colour (chance by the detail at 0x69605c)
+extern "C" void __cdecl Fx_SmokePuffs(int a, int b)
+{
+    if (!((double)1.0f - g_fx69605c < (double)rand() * kRand + 0.10000000149011612f))
+        return;
+    double r = (double)rand() * kRand;
+    if (!(r >= 0.4000000059604645f)) {
+        BYTE* o = Fx_PoolNew(196, g_pool6f6ab4);
+        if (o)
+            CallThis(FUN_59f070, o, g_view, a, b, 0.25f, g_fx694998, 1);
+        o = Fx_PoolNew(196, g_pool6f6ab4);
+        if (o) {
+            BYTE* e = CallThis<BYTE*>(FUN_59f070, o, g_view, a, b, 0.25f, g_fx695bf0, 1);
+            if (e)
+                F(int, e, 192) = 0;
+        }
+    } else if (!(r >= 0.800000011920929f)) {
+        BYTE* o = Fx_PoolNew(196, g_pool6f6ab4);
+        if (o)
+            CallThis(FUN_59f070, o, g_view, a, b, 0.25f, g_fx695bf0, 1);
+    } else {
+        BYTE* o = Fx_PoolNew(196, g_pool6f6ab4);
+        if (o) {
+            double k = (double)rand() * kRand;
+            int i = (int)((double)(__int64)g_fx696214 * k);
+            BYTE* e = CallThis<BYTE*>(FUN_59f070, o, g_view, a, b, 0.25f, g_fx695908 + i, 1);
+            if (e)
+                F(int, e, 192) = 0;
+        }
+    }
+}
+
+// [FUN_4ba660] sparks at a point by strength (over 0.4), and a flash over 0.7
+extern "C" void __cdecl Fx_SparksByStrength(int a, const Vec3* at, float strength)
+{
+    if (!((double)1.0f - g_fx696048 < (double)rand() * kRand + 0.20000000298023224f))
+        return;
+    if (!(strength >= 0.4000000059604645f))
+        return;
+    float q = (float)(((double)strength - 0.4000000059604645f) * 1.6666666269302368f);
+    if ((double)rand() * kRand > q) {
+        BYTE* o = Fx_PoolNew(192, g_pool6f6a7c);
+        if (o)
+            CallThis(FUN_59bed0, o, g_view, a, at, g_fx695c58, g_fx69620c, 1.5f);
+    } else {
+        BYTE* o = Fx_PoolNew(192, g_pool6f6a80);
+        if (o)
+            CallThis(FUN_59ad70, o, g_view, a, at, g_fx695bf0, g_fx696208, 1.5f);
+    }
+    if (strength > 0.699999988079071f) {
+        Vec3 v;
+        v.x = at->x;
+        v.y = at->y;
+        v.z = (float)((double)at->z * 0.800000011920929f);
+        BYTE* o = Fx_PoolNew(212, g_pool6f6a88);
+        if (o)
+            CallThis(FUN_59b3f0, o, g_view, a, &v, g_fx694998, g_fx696210, 0.5f, 0.75f);
+    }
+}
+
+// [FUN_4ba8a0] sparks or a flash at a point by strength (over 0.4; the flash over 0.7)
+extern "C" void __cdecl Fx_SparkOrFlash(int a, const Vec3* at, float strength)
+{
+    double r = (double)rand() * kRand;
+    float rf = (float)r;
+    if (!((double)1.0f - g_detail696078 < r + 0.10000000149011612f))
+        return;
+    if (!(strength >= 0.4000000059604645f))
+        return;
+    double q = ((double)strength - 0.4000000059604645f) * 1.6666666269302368f;
+    if (!(strength >= 0.699999988079071f)) {
+        if (!(q >= rf)) {
+            BYTE* o = Fx_PoolNew(192, g_pool6f6a7c);
+            if (o)
+                CallThis(FUN_59bed0, o, g_view, a, at, g_fx695c58, g_fx69620c, 1.5f);
+            return;
+        }
+        BYTE* o = Fx_PoolNew(192, g_pool6f6a80);
+        if (o)
+            CallThis(FUN_59ad70, o, g_view, a, at, g_fx695bf0, g_fx696208, 1.5f);
+        return;
+    }
+    Vec3 v;
+    v.x = at->x;
+    v.y = at->y;
+    v.z = (float)((double)at->z * 0.800000011920929f);
+    if (0.5f < rf) {
+        BYTE* o = Fx_PoolNew(212, g_pool6f6a88);
+        if (o)
+            CallThis(FUN_59b3f0, o, g_view, a, &v, g_fx694998, g_fx696210, 0.5f, 0.75f);
+        return;
+    }
+    BYTE* o = Fx_PoolNew(192, g_pool6f6a80);
+    if (o)
+        CallThis(FUN_59ad70, o, g_view, a, at, g_fx695bf0, g_fx696208, 1.5f);
+}
+
+ASM_VAR(char, g_strMnFire, $L_672c58)        // "mnFire"
+ASM_VAR(char, g_vtbl64d424, $L_64d424)
+
+static float Fx_RandSpread()
+{
+    float a = (float)((double)rand() * kRand);
+    double b = (double)rand() * kRand - a;
+    return (float)(b + b);
+}
+
+// [FUN_4d9af0] constructs a fire effect between two points with random flicker, its lamp, added to the scene
+extern "C" BYTE* __fastcall Fire_Construct(BYTE* s, void*, BYTE* scene, const Vec3* a, const Vec3* b, int c)
+{
+    CallThis(FUN_5d3110, s, &g_strMnFire);
+    for (int o = 36; o <= 56; o += 4) F(int, s, o) = 0;
+    F(void*, s, 0) = &g_vtbl64d424;
+    F(BYTE*, s, 32) = scene;
+    F(Vec3, s, 36) = *a;
+    F(Vec3, s, 48) = *b;
+    F(int, s, 60) = c;
+    F(DWORD, s, 104) = 0x3F000000;
+    F(int, s, 64) = 0;
+    F(int, s, 72) = 0;
+    F(DWORD, s, 68) = 0x3E800000;
+    F(float, s, 76) = Fx_RandSpread();
+    F(float, s, 80) = Fx_RandSpread();
+    F(float, s, 84) = (float)((double)rand() * 1.5259254723787308e-05f + 1.0f);
+    F(float, s, 88) = Fx_RandSpread();
+    F(float, s, 92) = Fx_RandSpread();
+    F(float, s, 96) = (float)((double)rand() * 1.5259254723787308e-05f + 1.0f);
+    Fx_ThrowLamp(s, 0);
+    CallThis(FUN_5d3570, F(BYTE*, s, 32) + 2992, s);
+    return s;
+}

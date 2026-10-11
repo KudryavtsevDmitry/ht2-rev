@@ -1083,6 +1083,8 @@ PUBLIC $L_64d444, $L_650974, $L_650978, $L_650f7c, $L_650fc8, $L_66e538
 PUBLIC $L_66e554, $L_672c60
 PUBLIC $L_64b880, $L_66dcf0, $L_66e640, $L_66e65c, $L_66e678, $L_66ea1c
 PUBLIC $L_66c920, $L_66d508, $L_66db68, $L_66db94, $L_68cf08, $L_68cf58
+PUBLIC $L_650fd4, $L_651020, $L_672c58, $L_695908, $L_696048, $L_69605c
+PUBLIC $L_696214, $L_6f6ab4
 
 ;===================================
 _TEXT SEGMENT
@@ -335729,6 +335731,8 @@ FUN_4ba2e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ba310 PROC
 
             push -1
@@ -335900,6 +335904,10 @@ $L_4ba50c::
             add ESP,24
             ret 
 FUN_4ba310 ENDP
+ELSE
+EXTERN _Fx_SmokePuffs:PROC
+FUN_4ba310 TEXTEQU <_Fx_SmokePuffs>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -336025,6 +336033,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ba660 PROC
 
             push -1
@@ -336166,6 +336176,10 @@ $L_4ba80e::
             add ESP,32
             ret 
 FUN_4ba660 ENDP
+ELSE
+EXTERN _Fx_SparksByStrength:PROC
+FUN_4ba660 TEXTEQU <_Fx_SparksByStrength>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
@@ -336226,6 +336240,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ba8a0 PROC
 
             push -1
@@ -336403,6 +336419,10 @@ $L_4baac2::
             add ESP,28
             ret 
 FUN_4ba8a0 ENDP
+ELSE
+EXTERN _Fx_SparkOrFlash:PROC
+FUN_4ba8a0 TEXTEQU <_Fx_SparkOrFlash>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -384044,6 +384064,8 @@ $L_4d98c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4d9af0 PROC
 
             push -1
@@ -384174,6 +384196,10 @@ FUN_4d9af0 PROC
             add ESP,16
             ret 16
 FUN_4d9af0 ENDP
+ELSE
+EXTERN @Fire_Construct@24:PROC
+FUN_4d9af0 TEXTEQU <@Fire_Construct@24>
+ENDIF
           BYTE 090H
 $L_4d9cb0 PROC
 
@@ -673528,6 +673554,8 @@ $L_59e2d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_59e2f0 PROC
 
             push -1
@@ -673648,6 +673676,10 @@ $L_59e410::
             add ESP,24
             ret 24
 FUN_59e2f0 ENDP
+ELSE
+EXTERN @Debris2_Construct@32:PROC
+FUN_59e2f0 TEXTEQU <@Debris2_Construct@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

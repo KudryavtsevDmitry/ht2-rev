@@ -22,7 +22,7 @@ extern "C" void FUN_5d3430(); KING_ALIAS("_FUN_5d3430", "@Handle_Call3790@8")
 ASM_PROC(FUN_4e48e2)
 ASM_PROC(FUN_598bd0)
 ASM_PROC(FUN_59a780)    // constructor of the effects' base class
-ASM_PROC(FUN_59e2f0)    // constructor of the base class of FUN_59e9a0
+extern "C" void FUN_59e2f0(); KING_ALIAS("_FUN_59e2f0", "@Debris2_Construct@32")    // constructor of the base class of FUN_59e9a0
 extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")    // sets a plane (a, b, c, d)
 extern "C" BYTE* __fastcall Pool_Construct(BYTE* self, void*, int size);    // mmt.cpp
 
@@ -1232,5 +1232,37 @@ extern "C" BYTE* __fastcall Debris_Construct(BYTE* s, void*, int a0, int a1, con
     F(DWORD, s, 168) = 0x3F3504F3;
     F(int, s, 164) = 0;
     F(float, s, 160) = (float)(((double)r * 3.0518509447574615e-05f + 1.0f) * 3.141592502593994f);
+    return s;
+}
+
+ASM_VAR(char, g_vtbl651020, $L_651020)
+ASM_VAR(char, g_vtbl650fd4, $L_650fd4)
+
+// [FUN_59e2f0] constructs a moving debris effect from a to b: a random one of n frames, a random spin
+extern "C" BYTE* __fastcall Debris2_Construct(BYTE* s, void*, int a0, const Vec3* from, const Vec3* to, int a3, int a4, int n)
+{
+    float nf = (float)(double)(__int64)(unsigned)n;
+    CallThis(FUN_59abb0, s, a0, from, a3, a3, a3, a3, a4, n, (float)((double)nf * 0.25f), 4.0f, 100);
+    for (int o = 148; o <= 168; o += 4) F(int, s, o) = 0;
+    F(void*, s, 0) = &g_vtbl651020;
+    F(void*, s, 20) = &g_vtbl650fd4;
+    F(Vec3, s, 148) = *from;
+    F(DWORD, s, 128) |= 1;
+    F(Vec3, s, 160) = *to;
+    int r = rand();
+    int f = (int)CallC<double>(Crt_floor, (double)r * nf * 3.0518509447574615e-05f);
+    F(int, s, 116) = f;
+    if (f > n - 1)
+        F(int, s, 116) = n - 1;
+    Vec3_Length(to);
+    r = rand();
+    F(DWORD, s, 188) = 0x40400000;      // 3.0f
+    F(DWORD, s, 184) = 0x3F3504F3;
+    F(DWORD, s, 180) = 0x3F3504F3;
+    F(int, s, 176) = 0;
+    F(int, s, 192) = 0;
+    F(int, s, 196) = 0;
+    F(int, s, 200) = 0;
+    F(float, s, 172) = (float)(((double)r * 3.0518509447574615e-05f + 1.0f) * 3.141592502593994f);
     return s;
 }
