@@ -1036,6 +1036,8 @@ PUBLIC $L_6f2d98
 PUBLIC $L_66d9c4, $L_684a84
 PUBLIC $L_652e20
 PUBLIC $L_64bf24, $L_64bf38, $L_670408, $L_670410, $L_670430
+PUBLIC $L_67055c
+PUBLIC $L_683538, $L_721754
 
 ;===================================
 _TEXT SEGMENT
@@ -247559,6 +247561,8 @@ EXTERN _BigInt_FromInt:PROC
 FUN_48ade0 TEXTEQU <_BigInt_FromInt>
 ENDIF
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48ae10 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -247664,6 +247668,10 @@ $L_48aec2::
             nop
             nop
 FUN_48ae10 ENDP
+ELSE
+EXTERN _BigInt_FromUnsigned:PROC
+FUN_48ae10 TEXTEQU <_BigInt_FromUnsigned>
+ENDIF
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 IFDEF ASM_RUNTIME
@@ -257734,6 +257742,8 @@ FUN_490820 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_490930 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -257835,6 +257845,10 @@ $L_4909dd::
             add ESP,12
             ret 4
 FUN_490930 ENDP
+ELSE
+EXTERN @Vec8_Copy@12:PROC
+FUN_490930 TEXTEQU <@Vec8_Copy@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_490a20 PROC
@@ -258372,6 +258386,8 @@ $L_490d90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_490db0 PROC
 
             push -1
@@ -258479,6 +258495,10 @@ $L_490e82::
             add ESP,16
             ret 
 FUN_490db0 ENDP
+ELSE
+EXTERN @Rational_Reduce@8:PROC
+FUN_490db0 TEXTEQU <@Rational_Reduce@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -258882,6 +258902,8 @@ $L_4910e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_491100 PROC
 
             push -1
@@ -258978,6 +259000,10 @@ $L_4911bc::
             add ESP,16
             ret 
 FUN_491100 ENDP
+ELSE
+EXTERN @Rec491100_Destroy@8:PROC
+FUN_491100 TEXTEQU <@Rec491100_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -773256,6 +773282,8 @@ $L_5d8ad0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5d8af0 PROC
 
             push ESI
@@ -773278,6 +773306,10 @@ FUN_5d8af0 PROC
             pop ESI
             ret 20
 FUN_5d8af0 ENDP
+ELSE
+EXTERN @FrameWindow_Construct@28:PROC
+FUN_5d8af0 TEXTEQU <@FrameWindow_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -773402,6 +773434,8 @@ FUN_5d8bb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5d8bf0 PROC
 
             sub ESP,432
@@ -773433,6 +773467,10 @@ FUN_5d8bf0 PROC
             add ESP,432
             ret 
 FUN_5d8bf0 ENDP
+ELSE
+EXTERN _Fw_Enumerate5d8c60:PROC
+FUN_5d8bf0 TEXTEQU <_Fw_Enumerate5d8c60>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -774367,6 +774405,8 @@ $L_5d9370 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5d9470 PROC
 
             sub ESP,432
@@ -774397,6 +774437,10 @@ FUN_5d9470 PROC
             add ESP,432
             ret 
 FUN_5d9470 ENDP
+ELSE
+EXTERN _Fw_Enumerate5d94d0:PROC
+FUN_5d9470 TEXTEQU <_Fw_Enumerate5d94d0>
+ENDIF
           BYTE 090H
 $L_5d94d0 PROC
 
@@ -792522,6 +792566,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e3ba0 PROC
 
             mov EAX,DWORD PTR [$L_721754]
@@ -792539,6 +792585,10 @@ $L_5e3bbe::
 
             ret 
 FUN_5e3ba0 ENDP
+ELSE
+EXTERN _Fw_Startup:PROC
+FUN_5e3ba0 TEXTEQU <_Fw_Startup>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5e3bc0 PROC
@@ -794535,6 +794585,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e4b30 PROC
 
             sub ESP,40
@@ -794641,6 +794693,10 @@ $L_5e4be6::
             add ESP,40
             ret 4
 FUN_5e4b30 ENDP
+ELSE
+EXTERN @Resources_Read@12:PROC
+FUN_5e4b30 TEXTEQU <@Resources_Read@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -794791,6 +794847,8 @@ FUN_5e4c00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e4d30 PROC
 
             push ECX
@@ -794895,6 +794953,10 @@ $L_5e4dd4::
             pop ECX
             ret 
 FUN_5e4d30 ENDP
+ELSE
+EXTERN @Resources_FreeAll@8:PROC
+FUN_5e4d30 TEXTEQU <@Resources_FreeAll@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -804703,6 +804765,8 @@ FUN_5e9d40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e9f00 PROC
 
             push ECX
@@ -804824,6 +804888,10 @@ $L_5e9fa6::
             pop ECX
             ret 
 FUN_5e9f00 ENDP
+ELSE
+EXTERN _Screen_GrabToFile:PROC
+FUN_5e9f00 TEXTEQU <_Screen_GrabToFile>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -26,6 +26,20 @@ extern "C" BYTE* __fastcall Node_Root(BYTE* self, void*);                       
 extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);                  // clusters.cpp
 
 ASM_PROC(FUN_5b6e00)
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+ASM_PROC(FUN_5e5130)
+ASM_PROC(FUN_4cef50)
+extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
+extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
+ASM_PROC(FUN_5d2ba0)
+ASM_PROC(FUN_5e9d40)
+ASM_VAR(int, g_721754, $L_721754)
+ASM_VAR(void*, g_67fb7c, $L_67fb7c)
+ASM_VAR(AsmLabel, g_start603800, $L_603800)
+ASM_VAR(BYTE*, g_7208fc, $L_7208fc)
+ASM_VAR(AsmLabel, s_683538, $L_683538)
+ASM_VAR(AsmLabel, g_enum5d8c60, $L_5d8c60)
+ASM_VAR(AsmLabel, g_enum5d94d0, $L_5d94d0)
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
 ASM_PROC(FUN_5e43e0)
 ASM_PROC(FUN_5dd0d0)
@@ -809,6 +823,154 @@ void __fastcall NamedTable_Destroy(BYTE* self, void*)
     F(void*, self, 0) = g_vtbl652738;
     operator delete(F(void*, self, 4016));
     F(void*, self, 0) = g_vtbl64d81c;
+}
+
+}
+
+// --- windows, resources and the screen grab
+
+typedef void (*FwFn)();
+
+static HRESULT Stream_Read(BYTE* s, void* p, int n, ULONG* got)
+{
+    return CallStd<HRESULT>(F(FwFn, F(BYTE*, s, 0), 12), s, p, n, got);
+}
+
+extern "C" {
+
+// [FUN_5d8af0] a framed window: the base with the rectangle in the arguments
+BYTE* __fastcall FrameWindow_Construct(BYTE* self, void*, int a, int x0, int y0, int x1, int y1)
+{
+    CallThis(FUN_5d8710, self, a, &x0, 0);
+    F(void*, self, 0) = g_vtbl652238;
+    F(DWORD, self, 16) |= 4;
+    F(int, self, 56) = 0;
+    F(int, self, 60) = 0;
+    return self;
+}
+
+// [FUN_5d8bf0] enumerates with the callback at $L_5d8c60 over a zeroed context
+int __cdecl Fw_Enumerate5d8c60(int a, int b, BYTE* obj)
+{
+    BYTE ctx[432];
+    memset(ctx, 0, sizeof ctx);
+    F(int, ctx, 0) = a;
+    F(int, ctx, 16) = b;
+    return CallThis<int>(F(FwFn, F(BYTE*, obj, 0), 32), obj, (void*)g_enum5d8c60, ctx);
+}
+
+// [FUN_5d9470]
+int __cdecl Fw_Enumerate5d94d0(int a, BYTE* obj)
+{
+    BYTE ctx[432];
+    memset(ctx, 0, sizeof ctx);
+    F(int, ctx, 0) = a;
+    return CallThis<int>(F(FwFn, F(BYTE*, obj, 0), 32), obj, (void*)g_enum5d94d0, ctx);
+}
+
+// [FUN_5e3ba0] the start-up steps when not yet running
+int __cdecl Fw_Startup()
+{
+    if (g_721754)
+        return g_721754;
+    ((FwFn)g_67fb7c)();
+    CallC(FUN_4cef50);
+    CallC(FUN_4cef50);
+    return CallC<int>((FwFn)(void*)g_start603800);
+}
+
+// [FUN_5e4b30] reads up to 400 groups of resources from the stream
+int __fastcall Resources_Read(BYTE** self, void*, BYTE* stream)
+{
+    ULONG got;
+    int t;
+    for (int k = 400; k; k--) {
+        Stream_Read(stream, &t, 4, &got);
+        int first = t;
+        Stream_Read(stream, &t, 4, &got);
+        if (!first)
+            continue;
+        while (t != -2) {
+            if (t >= 0) {
+                int len;
+                BYTE buf[32];
+                Stream_Read(stream, &len, 4, &got);
+                Stream_Read(stream, buf, len, &got);
+                CallThis(FUN_5e5130, self, t, buf);
+                Resource_Read((BYTE*)Resources_Get(self, 0, t), 0, stream);
+            }
+            Stream_Read(stream, &t, 4, &got);
+        }
+    }
+    return 0;
+}
+
+// [FUN_5e4d30] frees all resource tables and the 100 lists
+void __fastcall Resources_FreeAll(BYTE** self, void*)
+{
+    g_resPending = 0;
+    for (int i = 0; i < 400; i++) {
+        BYTE** t = (BYTE**)self[i];
+        if (!t)
+            continue;
+        for (int j = 0; j < 500; j++) {
+            BYTE* e = t[j];
+            if (e) {
+                Resource_Free(e, 0);
+                operator delete(e);
+                ((BYTE**)self[i])[j] = 0;
+            }
+        }
+        operator delete(self[i]);
+        self[i] = 0;
+    }
+    BYTE** lists = self + 400;
+    for (int i = 0; i < 100; i++) {
+        BYTE* n = lists[i];
+        if (!n)
+            continue;
+        do {
+            BYTE* next = F(BYTE*, n, 8);
+            ResTable_Clear(n, 0);
+            CallThis(FUN_5d21b0, n);
+            if (n)
+                CallVirt(n, 0, 1);
+            n = next;
+        } while (n);
+        lists[i] = 0;
+    }
+    F(int, self, 2004) = 0;
+    F(int, self, 2008) = 0;
+}
+
+// [FUN_5e9f00] grabs the primary surface into a bitmap and saves it
+int __cdecl Screen_GrabToFile(const char* file)
+{
+    BYTE* surf = g_7208fc;
+    HDC dc;
+    CallStd(F(FwFn, F(BYTE*, surf, 0), 68), surf, &dc);
+    HDC mem = CreateCompatibleDC(dc);
+    int h = CallC<int>(FUN_5d3b30);
+    int w = CallC<int>(FUN_5d3b20);
+    HBITMAP bmp = CreateCompatibleBitmap(dc, w, h);
+    if (!SelectObject(mem, bmp))
+        CallC(FUN_5d2ba0, (const char*)s_683538, 0);
+    h = CallC<int>(FUN_5d3b30);
+    w = CallC<int>(FUN_5d3b20);
+    BOOL ok = BitBlt(mem, 0, 0, w, h, dc, 0, 0, SRCCOPY);
+    if (!ok)
+        CallC(FUN_5d2ba0, (const char*)s_683538, 0);
+    SelectObject(mem, 0);
+    BITMAPINFOHEADER* dib = Bitmap_Header24(bmp);
+    if (!dib)
+        return 0;
+    CallC(FUN_5e9d40, file, dib, bmp, mem);
+    surf = g_7208fc;
+    CallStd(F(FwFn, F(BYTE*, surf, 0), 104), surf, dc);
+    GlobalFree(dib);
+    DeleteObject(bmp);
+    DeleteObject(mem);
+    return 1;
 }
 
 }
