@@ -91,3 +91,41 @@ void __fastcall Thread_Destroy(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// The time stamp counter in milliseconds
+
+#include <mmsystem.h>
+
+ASM_VAR(int, g_tscUncalibrated, $L_6843e0)       // 1 until FUN_603f30 ran
+ASM_VAR(double, g_tscScale, $L_6843d8)           // milliseconds per tick
+ASM_VAR(const double, k_2pow32, $L_652df0)
+ASM_PROC(FUN_60573b)    // rdtsc into a 64-bit value
+extern "C" int __cdecl Tsc_Calibrate(int);
+
+// [FUN_603ec0] the time stamp counter in milliseconds (calibrated on first use)
+extern "C" double __cdecl Tsc_Now()
+{
+    if (g_tscUncalibrated) {
+        g_tscUncalibrated = 0;
+        Tsc_Calibrate(0);
+    }
+    DWORD t[2];
+    CallC(FUN_60573b, t);
+    return ((double)(__int64)t[1] * k_2pow32 + (double)(__int64)t[0]) * g_tscScale;
+}
+
+// [FUN_603f30] measures the ticks per millisecond over two seconds at high priority
+extern "C" int __cdecl Tsc_Calibrate(int)
+{
+    int prio = GetThreadPriority(GetCurrentThread());
+    SetThreadPriority(GetCurrentThread(), 2);
+    double t0 = Tsc_Now();
+    DWORD ms0 = timeGetTime();
+    Sleep(2000);
+    double t1 = Tsc_Now();
+    DWORD ms1 = timeGetTime();
+    g_tscScale = g_tscScale / ((t1 - t0) / ((double)(__int64)ms1 - (double)(__int64)ms0));
+    SetThreadPriority(GetCurrentThread(), prio);
+    return 0;
+}

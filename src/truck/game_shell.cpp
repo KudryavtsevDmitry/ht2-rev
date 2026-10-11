@@ -1201,3 +1201,59 @@ void __fastcall Shell51aaf0_Destroy(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// x87 functions of the unit
+
+ASM_VAR(BYTE*, g_game511910, $L_6d2078)
+extern "C" double __fastcall Ramp_High(BYTE* self, void*);       // vehicle_physics.cpp (the value stays in ST(0))
+extern "C" double __fastcall Ramp_Position(BYTE* self, void*);
+extern "C" int* __cdecl Player_CarId(int* out);                  // helicopter.cpp
+extern "C" double __cdecl Driver_CargoFactor(int car);           // ai_drivers.cpp
+ASM_PROC(FUN_43f620)    // a vehicle's flags by id
+
+// [FUN_511910] the player truck's load factor: weight, cargo and the pedal over 0.7
+extern "C" double __cdecl Player_LoadFactor(double base)
+{
+    BYTE* car = F(BYTE*, g_game511910, 616);
+    double v = CallVirt<double>(car, 84);
+    double hi = Ramp_High(F(BYTE*, car, 21600) + 16112, 0);
+    car = F(BYTE*, g_game511910, 616);
+    double t = 1.0f - Ramp_Position(F(BYTE*, car, 21600) + 16112, 0);
+    base = v * 5000.0 + base;
+    int id;
+    Player_CarId(&id);
+    double r;
+    if (CallC<int>(FUN_43f620, id) & 0x2000000) {
+        Player_CarId(&id);
+        r = Driver_CargoFactor(id) + base;
+    } else
+        r = base;
+    if (t > 0.7)
+        r += (t - 0.7) * hi + (t - 0.7) * hi;
+    return r;
+}
+
+ASM_PROC(FUN_513820)    // the time stamp counter
+ASM_VAR(const double, k_0_0025, $L_64de08)
+ASM_VAR(char, g_strMhz, $L_67695c)       // "MHZ="
+extern "C" int __cdecl Get71e7e4();      // core.cpp
+
+// [FUN_513740] the processor speed as 0..1 (300..700 MHz), measured over 100 ms
+extern "C" double __cdecl Cpu_SpeedFactor()
+{
+    if ((Get71e7e4() & 255) < 5)
+        return 0.0;
+    double end = Timer_Now();
+    __int64 c0 = CallC<__int64>(FUN_513820);
+    end += 100.0;
+    while (!(Timer_Now() >= end))
+        ;
+    __int64 mhz = (CallC<__int64>(FUN_513820) - c0) / 100000;
+    Carat_Message(&g_strMhz, (int)mhz);
+    if (mhz < 300)
+        return 0.0;
+    if (mhz > 700)
+        return 1.0;
+    return (double)(mhz - 300) * k_0_0025;
+}

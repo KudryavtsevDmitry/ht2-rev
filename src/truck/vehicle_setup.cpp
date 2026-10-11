@@ -251,3 +251,18 @@ int __fastcall Vehicle_RayTest(BYTE* self, void*, DWORD* p, BYTE** hit)
 }
 
 }
+
+extern "C" double __fastcall Ramp_Value(BYTE* self, void*);       // vehicle_physics.cpp
+extern "C" double __cdecl Car_EngineBrake(float rpm, float k, float c, float d);   // drivetrain.cpp
+
+// [FUN_4ff3e0] the engine brake torque at a speed: none in neutral, less in higher gears
+extern "C" double __fastcall Car_EngineBrakeTorque(BYTE* car, void*, float speed)
+{
+    if (F(int, car, 7208) == 1)
+        return 0.0f;
+    double r = Car_EngineBrake(speed, F(float, car, 7308), (float)Ramp_Value(car + 16372, 0), F(float, car, 10716));
+    int gear = F(int, car, 7208);
+    if (gear > 1)
+        r *= 1.0f - (double)((gear - 2) / 1000);
+    return r;
+}

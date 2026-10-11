@@ -67,7 +67,7 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
     return Cargo_ItemsValue(c) + v;
 }
 
-ASM_PROC(FUN_4cd730)    // the value of a vrId's vehicle
+extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730")    // the value of a vrId's vehicle
 ASM_PROC(FUN_4754d0)
 ASM_PROC(FUN_477b60)
 ASM_VAR(DWORD, g_tagPLYX, $L_66fa60)

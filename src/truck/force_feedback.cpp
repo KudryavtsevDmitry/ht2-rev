@@ -595,3 +595,109 @@ void __fastcall PoolNode_Destroy(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// x87 functions of the unit: effect parameter updates
+
+template <class... A>
+static int ComCall577(void* obj, unsigned off, A... args)
+{
+    void* fn = *(void**)(*(char**)obj + off);
+    return ((int(__stdcall*)(void*, A...))fn)(obj, args...);
+}
+
+// IDirectInputEffect: +24 SetParameters, +28 Start, +32 Stop
+
+// [FUN_577530] a periodic effect: magnitude a, offset b, frequency c (updated when the period changes by over 10%)
+extern "C" void __fastcall FfEffect_SetPeriodic(DWORD* fx, void*, float a, float b, float c)
+{
+    void* dev = (void*)fx[1];
+    if (!dev)
+        return;
+    DWORD eff[14] = {};
+    DWORD periodic[4] = {};
+    periodic[0] = (int)((double)a * 5000.0f);
+    periodic[1] = (int)((double)b * 5000.0f);
+    unsigned period = (int)(1000000.0f / (double)c);
+    periodic[2] = 0;
+    periodic[3] = period;
+    eff[0] = 56;
+    unsigned old = fx[3];
+    unsigned big = old > period ? old : period;
+    int diff = (int)(old - period);
+    if (diff < 0) diff = -diff;
+    if ((double)diff > (double)(__int64)big * 0.1) {
+        fx[3] = period;
+        eff[11] = 16;
+        eff[12] = (DWORD)periodic;
+        ComCall577(dev, 24, eff, 256);
+    }
+    if (fx[0] == 0) {
+        fx[0] = 1;
+        ComCall577((void*)fx[1], 28, -1, 0);
+    }
+}
+
+// [FUN_5777a0] a condition effect: gain a, first coefficient b (updated when either changes by over 5%)
+extern "C" void __fastcall FfEffect_SetCondition(DWORD* fx, void*, float a, float b)
+{
+    void* dev = (void*)fx[1];
+    if (!dev)
+        return;
+    DWORD eff[14] = {};
+    DWORD cond[6];
+    memcpy(cond, fx + 4, 24);
+    int coef = (int)((double)b * 10000.0f);
+    eff[0] = 56;
+    cond[0] = coef;
+    int gain = (int)((double)a * 10000.0f);
+    eff[12] = (DWORD)cond;
+    eff[4] = gain;
+    eff[11] = 24;
+    int d1 = gain - (int)fx[2];
+    if (d1 < 0) d1 = -d1;
+    bool update = !((double)(int)fx[2] * 0.05 >= (double)d1);
+    if (!update) {
+        int d2 = coef - (int)fx[3];
+        if (d2 < 0) d2 = -d2;
+        update = !((double)(int)fx[3] * 0.05 >= (double)d2);
+    }
+    if (update) {
+        fx[2] = gain;
+        fx[3] = coef;
+        ComCall577(dev, 24, eff, 4);
+    }
+    if (fx[0] == 0) {
+        fx[0] = 1;
+        ComCall577((void*)fx[1], 28, -1, 0);
+    }
+}
+
+ASM_VAR(char, g_fmtFfError, $L_67c9a0)
+
+// [FUN_577e50] restarts a periodic effect with magnitude a and period b (seconds), logging the known errors
+extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
+{
+    void* dev = (void*)fx[1];
+    if (!dev)
+        return;
+    ComCall577(dev, 32);
+    DWORD eff[14] = {};
+    DWORD env[5] = { 20, 10000, 0, 1000, 500000 };
+    DWORD periodic[4];
+    eff[0] = 56;
+    eff[11] = 16;
+    eff[12] = (DWORD)periodic;
+    eff[10] = (DWORD)env;
+    periodic[3] = (int)((double)b * 1000000.0f);
+    periodic[2] = 0;
+    periodic[1] = 0;
+    periodic[0] = (int)((double)a * 10000.0f);
+    unsigned hr = ComCall577((void*)fx[1], 24, eff, 256);
+    if (hr == 0x80070015 || hr == 0x80040206 || hr == 0x8007001E || hr == 0x80070057 || hr == 0x80040208) {
+        char text[256];
+        sprintf(text, &g_fmtFfError, hr, periodic[0], periodic[3]);
+        Joy_Log(text);
+    }
+    ComCall577((void*)fx[1], 28, 1, 0);
+}

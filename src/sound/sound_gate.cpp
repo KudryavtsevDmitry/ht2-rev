@@ -26,7 +26,7 @@ ASM_PROC(FUN_600b50)    // DirectPlay error text (hr)
 ASM_PROC(FUN_401010)    // fatal error report
 extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
 ASM_PROC(FUN_602320)
-ASM_PROC(FUN_603f30)
+extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")
 typedef void (*VFn)();
 ASM_PROC(FUN_601470)
 ASM_PROC(FUN_601c70)

@@ -2198,3 +2198,67 @@ BYTE* __fastcall Effect4d2790_Construct(BYTE* self, void*, int a, int b, DWORD d
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// x87 functions of the unit
+
+#include "x87.h"
+
+ASM_VAR(BYTE*, g_resources696ca0, $L_696ca0)
+ASM_PROC(FUN_439320)
+struct Bytes32 { DWORD d[8]; };
+
+// [FUN_4cd730] a vehicle's value by id: its object's virtual +84, or the float at +244 of its record
+extern "C" double __cdecl Vehicle_Value4cd730(int id)
+{
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, g_resources696ca0 + 704, id);
+    if (!r)
+        return 0.0;
+    BYTE* o = F(BYTE*, r, 28);
+    if (o)
+        return CallVirt<double>(o, 84);
+    return F(float, F(BYTE*, r, 24), 244);
+}
+
+// [FUN_4cda20] a direction from a 32-byte position (negated if asked), flattened and normalized; its slope angle to *angle
+extern "C" Vec3* __cdecl Effect_Direction4cda20(Vec3* out, Bytes32 pos, int negate, double* angle)
+{
+    CallC(FUN_439320, &pos, pos);
+    Vec3* v = (Vec3*)&pos;
+    if (negate) {
+        float x = -v->x, y = -v->y, z = -v->z;
+        v->x = x; v->y = y; v->z = z;
+    }
+    Vec3 t;
+    if (angle)
+        *angle = x87_asin(Vec3_Normalized(&t, v)->z);
+    v->z = 0;
+    *v = *Vec3_Normalized(&t, v);
+    *out = *v;
+    return out;
+}
+
+// [FUN_4cee70] whether a vehicle is too far from the player for an effect (over 300), or over 100 and standing still
+extern "C" int __cdecl Effect_TooFar4cee70(BYTE* car)
+{
+    Matrix m1, m2;
+    BYTE* a = (BYTE*)SceneObj_Matrix1(F(BYTE*, g_game, 616) + 16, 0, &m1);
+    BYTE* b = (BYTE*)SceneObj_Matrix1(car + 16, 0, &m2);
+    Vec3 d;
+    d.x = (float)((double)F(float, a, 36) - F(float, b, 36));
+    d.y = (float)((double)F(float, a, 40) - F(float, b, 40));
+    d.z = (float)((double)F(float, a, 44) - F(float, b, 44));
+    double len = Vec3_Length(&d);
+    if (len > 300.0)
+        return 1;
+    if (!(len >= 100.0))
+        return 0;
+    BYTE* e = F(BYTE*, car, 21600);
+    double sp = F(double, e, 16568);
+    if (sp < 0) sp = -sp;
+    if (sp > 0.5)
+        return 0;
+    if (F(BYTE, e, 16496) & 2)
+        return 0;
+    return 1;
+}

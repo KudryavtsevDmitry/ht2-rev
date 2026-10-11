@@ -36,7 +36,7 @@ ASM_PROC(FUN_60aa60)
 extern "C" void FUN_605810(); KING_ALIAS("_FUN_605810", "@Stack_Top@8")
 ASM_PROC(FUN_5b1020)
 ASM_PROC(FUN_605900)
-ASM_PROC(FUN_6064c0)
+extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16")
 extern "C" BYTE* __fastcall MarineParticlePool_Construct(BYTE*,void*,DWORD,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineParticlePool_SetFloor(BYTE*,void*,DWORD);
 extern "C" void __fastcall MarineParticlePool_SetLifetime(BYTE*,void*,DWORD);
