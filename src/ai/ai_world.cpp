@@ -4655,25 +4655,29 @@ void __fastcall Vec4b_InsertN(DWORD* s, void*, DWORD* pos, const DWORD* x)
 // [FUN_4544e0]
 int __cdecl Find_ValueA(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
 {
-    return FindWithValueCopy(FUN_45b190, f, l, &h0);
+    DWORD h[3] = {h0, h1, h2};
+    return FindWithValueCopy(FUN_45b190, f, l, h);
 }
 
 // [FUN_455d20]
 int __cdecl Find_ValueB(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
 {
-    return FindWithValueCopy((void (*)())Find_ByHandleA, f, l, &h0);
+    DWORD h[3] = {h0, h1, h2};
+    return FindWithValueCopy((void (*)())Find_ByHandleA, f, l, h);
 }
 
 // [FUN_455dc0]
 int __cdecl Find_ValueC(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
 {
-    return FindWithValueCopy((void (*)())Find_ItemBySymbol, f, l, &h0);
+    DWORD h[3] = {h0, h1, h2};
+    return FindWithValueCopy((void (*)())Find_ItemBySymbol, f, l, h);
 }
 
 // [FUN_455e60]
 int __cdecl Find_ValueD(BYTE* f, BYTE* l, DWORD h0, DWORD h1, DWORD h2)
 {
-    return FindWithValueCopy((void (*)())Find_ByHandleB, f, l, &h0);
+    DWORD h[3] = {h0, h1, h2};
+    return FindWithValueCopy((void (*)())Find_ByHandleB, f, l, h);
 }
 
 
@@ -4701,5 +4705,357 @@ BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v)
     return RangeCall(FUN_4607d0, out, f, l, v);
 }
 
+
+}
+
+// ---------------------------------------------------------------------------
+// Functions with exception frames (the frames are dropped; the normal path
+// calls the destructors explicitly).
+
+ASM_PROC(FUN_4a36c0)    // a value's destructor
+ASM_PROC(FUN_408080)    // reads the player types of a "Pair" value
+ASM_PROC(FUN_4581a0)    // out of memory: retries the allocation
+ASM_VAR(int, g_68a860, $L_68a860)
+extern "C" BYTE* __fastcall Vec4b_Copy(BYTE* self, void*, const BYTE** s);
+extern "C" BYTE* __cdecl UninitFill16(BYTE* d, unsigned n, const void* v);
+
+static void Str_Release(StrRef* s)
+{
+    if (s->Owns() && s->ptr) {
+        if (--F(int, s->ptr, 4) == 0 && s->ptr)
+            CallVirt(s->ptr, 12, 1);
+    }
+}
+
+extern "C" {
+
+// [FUN_404ab0] destructor
+void __fastcall Rec404ab0_Destroy(BYTE* self, void*)
+{
+    int n = (F(BYTE*, self, 228) - F(BYTE*, self, 220)) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, self, 220), n * 4);
+    BYTE* b = F(BYTE*, self, 208);
+    for (BYTE* e = b; e != F(BYTE*, self, 212); e += 12)
+        CallThis(FUN_404420, e);
+    b = F(BYTE*, self, 208);
+    n = (F(BYTE*, self, 216) - b) / 12;
+    if (n)
+        CallC(FUN_44b4a0, b, n * 12);
+    n = F(BYTE*, self, 136) - F(BYTE*, self, 128);
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, self, 128), n);
+    n = (F(BYTE*, self, 120) - F(BYTE*, self, 112)) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, F(BYTE*, self, 112), n * 4);
+    SchValue_Release((DWORD*)(self + 40));
+    Bytes_Free(F(BYTE*, self, 16), F(BYTE*, self, 24));
+    Bytes_Free(F(BYTE*, self, 0), F(BYTE*, self, 8));
+}
+
+// [FUN_409100] walks a list of pairs (each value's +20 member, while it is
+// a pair) and reads the player types of each
+void __cdecl Pairs_ReadPlayerTypes(int arg, StrRef h)
+{
+    StrRef l;
+    l.CopyFrom(&h);
+    while ((BYTE)l.flags == 2) {
+        StrRef m;
+        Str_Member20(&m, &l);
+        bool pair = (BYTE)m.flags == 2;
+        Str_Release(&m);
+        if (pair) {
+            StrRef m2;
+            Str_Member20(&m2, &l);
+            DWORD pv[3];
+            PairHandle_From(pv, 0, (const DWORD*)&m2);
+            CallC(FUN_408080, arg, pv[0], pv[1], pv[2]);
+            CallThis(FUN_4a36c0, &m2);
+        }
+        StrRef next;
+        StrRef* nx = Str_Member32(&next, &l);
+        if (l.ptr && l.Owns()) {
+            if (--F(int, l.ptr, 4) == 0 && !Str_Same(&l, nx) && l.ptr)
+                CallVirt(l.ptr, 12, 1);
+        }
+        l.CopyFrom(nx);
+        Str_Release(&next);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &h);
+}
+
+// [FUN_40e500] index of the vehicle with an id
+int __cdecl Vehicle_IndexOf(StrRef h)
+{
+    StrRef c1, key, c2;
+    Str_CopyConstruct(&c1, 0, &h);
+    StrRef* k = Str_Construct(&key, 0, c1.ptr, c1.len, c1.flags);
+    Str_CopyConstruct(&c2, 0, k);
+    BYTE* end = (BYTE*)Rec_Get1((const int*)&g_vehicles, 0);
+    BYTE* begin = (BYTE*)Rec_Get0((const int*)&g_vehicles, 0);
+    void** it = (void**)Find_ValueB(begin, end, (DWORD)c2.ptr, c2.len, c2.flags);
+    Str_Release(&key);
+    if (it == g_vehiclesEnd) {
+        CheckHandle(&h);
+        AiError(35, 1, s_mainFile, s_mainId, 2906, "Cannot find vehicle with id", F(const char*, h.ptr, 12), &g_aiEmpty);
+    }
+    int idx = it - g_vehicles;
+    Str_Release(&h);
+    return idx;
+}
+
+// [FUN_415100] constructor: 19 weights of 1.0
+BYTE* __fastcall Rec415100_Construct(BYTE* self, void*, int a)
+{
+    F(int, self, 0) = -1;
+    F(int, self, 4) = a;
+    F(double, self, 8) = 1.0;
+    struct { int a, b; double w; } t = {0, 0, 1.0};
+    BYTE** v = (BYTE**)(self + 16);
+    v[0] = v[1] = v[2] = 0;
+    BYTE* p = (BYTE*)malloc(304);
+    if (!p)
+        p = CallC<BYTE*>(FUN_4581a0, 304);
+    v[0] = p;
+    v[1] = p;
+    v[2] = p + 304;
+    v[1] = UninitFill16(p, 19, &t);
+    F(int, self, 28) = 0;
+    F(int, self, 32) = 0;
+    F(int, self, 36) = 0;
+    F(int, self, 40) = 0;
+    return self;
+}
+
+// [FUN_415740]
+int __stdcall Rec415740_Check(BYTE* p)
+{
+    if (F(int, p, 32) != 3)
+        return 0;
+    BYTE* v[3];
+    Vec4b_Copy((BYTE*)v, 0, (const BYTE**)(p + 36));
+    if (!PtrVec_FindFree((int*)v[0], (int*)v[1], (int*)v[2], 2))
+        return 0;
+    return F(BYTE*, p, 0)[g_68a860] != 0;
+}
+
+}
+
+ASM_PROC(FUN_44b090)    // an order info's destructor part
+ASM_PROC(FUN_409fc0)    // retraceCompetitorRegular(PlayerId player)
+ASM_VAR(AsmLabel, g_text77e5e0, $L_77e5e0)
+
+ASM_VAR(BYTE**, g_68cf00, $L_68cf00)
+ASM_VAR(int, g_68a968, $L_68a968)
+ASM_VAR(int, g_68d01c, $L_68d01c)
+ASM_VAR(int, g_68cfe4, $L_68cfe4)
+ASM_VAR(int, g_68d0e4, $L_68d0e4)
+ASM_VAR(int, g_68cf34, $L_68cf34)
+ASM_VAR(unsigned, g_rngI, $L_68a94c)
+ASM_VAR(unsigned, g_rngJ, $L_68a950)
+typedef DWORD RngTable[55];
+ASM_VAR(RngTable, g_rng68a870, $L_68a870)
+extern "C" BYTE* __fastcall Fx_InitState(BYTE* s, void*);
+extern "C" DWORD* __cdecl UninitCopyDwords(const DWORD* first, const DWORD* last, DWORD* dest);
+extern "C" bool __fastcall Waypoints_RemoveNode(void* self, void*, int node);
+extern "C" void __cdecl Player_UpdateOrders(BYTE* p);
+KING_ALIAS("_Player_UpdateOrders", "FUN_478100")
+
+static const char s_actOnSemiArrival[] = "actOnSemiArrival(PlayerId player)";
+static const char s_destroyPresentSilently[] = "destroyPresentSilently(PresentId present)";
+
+extern "C" {
+
+// [FUN_417300] actOnSemiArrival(PlayerId player)
+int __cdecl Ai_ActOnSemiArrival(BYTE* p)
+{
+    Trace_EnterBuffered(s_actOnSemiArrival);
+    BYTE** wp = (BYTE**)(p + 72);
+    if (F(BYTE*, p, 24) == F(BYTE*, p, 28) && wp[0] != wp[1])
+        AiError(0, 1, s_mainFile, s_mainId, 4260, "Internal error 325696", &g_aiEmpty, &g_aiEmpty);
+    if ((unsigned)((wp[1] - wp[0]) / 40) > 2)
+        AiError(0, 1, s_mainFile, s_mainId, 4271, "Internal error 2562", &g_aiEmpty, &g_aiEmpty);
+    if (F(BYTE*, p, 24) != F(BYTE*, p, 28) && wp[0] != wp[1]) {
+        int node = F(int, p, 44);
+        if (node == F(int, F(BYTE*, p, 28), -12)) {
+            if (!Waypoints_RemoveNode(wp, 0, node)) {
+                if (wp[0] == wp[1])
+                    AiError(0, 1, s_mainFile, s_mainId, 4279, "Internal error 23464", &g_aiEmpty, &g_aiEmpty);
+                wp[1] -= 40;
+            }
+            Player_UpdateOrders(p);
+            if (!g_68d188)
+                CallC(FUN_409fc0, p);
+        }
+    }
+    Trace_Leave(s_actOnSemiArrival);
+    return 0;
+}
+
+// [FUN_418400] a random order (0..8) the player can take in a town, -1
+// after 100 tries
+int __cdecl Ai_RandomOrder(int player, int town)
+{
+    for (int k = 0; k < 100; k++) {
+        unsigned i = (g_rngI + 1) % 55;
+        g_rngI = i;
+        unsigned j = (g_rngJ + 1) % 55;
+        g_rngJ = j;
+        g_rng68a870[i] -= g_rng68a870[j];
+        int r = g_rng68a870[g_rngI] % 9;
+        BYTE oi[192];
+        Fx_InitState(oi, 0);
+        Ai_GetOrderInfo(player, town, r, oi);
+        bool ok = oi[184] != 0;
+        int n = F(BYTE*, oi, 96) - F(BYTE*, oi, 88);
+        if (n)
+            CallC(FUN_44b4a0, F(BYTE*, oi, 88), n);
+        n = F(BYTE*, oi, 84) - F(BYTE*, oi, 76);
+        if (n)
+            CallC(FUN_44b4a0, F(BYTE*, oi, 76), n);
+        if (ok) {
+            CallThis(FUN_44b090, oi + 64);
+            CallThis(FUN_44b090, oi + 52);
+            return r;
+        }
+        n = F(BYTE*, oi, 72) - F(BYTE*, oi, 64);
+        if (n)
+            CallC(FUN_44b4a0, F(BYTE*, oi, 64), n);
+        CallThis(FUN_44b090, oi + 52);
+    }
+    return -1;
+}
+
+// [FUN_41ed60] destroyPresentSilently(PresentId present)
+void __cdecl Ai_DestroyPresentSilently(void** present)
+{
+    Trace_EnterBuffered(s_destroyPresentSilently);
+    if (Rec_NotValid((BYTE*)present)) {
+        sprintf(g_text77e5e0, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 6794, s_invalidId, "PresentId", g_text77e5e0);
+    }
+    BYTE* rec = (BYTE*)present[2];
+    int t = F(int, rec, 24);
+    if (t != -1)
+        F(DWORD, g_68cf00[t], 12) &= ~0x10u;
+    switch (F(DWORD, (BYTE*)present[2], 8) & 0xf0) {
+    case 16:  g_68a968--; break;
+    case 32:  g_68d01c--; break;
+    case 64:  g_68cfe4--; break;
+    case 96:  g_68d0e4--; break;
+    case 128: g_68cf34--; break;
+    }
+    void** out;
+    List_Erase((void**)&out, present);
+    Trace_Leave(s_destroyPresentSilently);
+}
+
+// [FUN_421690] the id at +12 of the first entry of a record's first list
+// (else of its second list), -1 when both are empty
+int* __cdecl Rec_FirstId(int* out, int idx)
+{
+    BYTE* r = g_68cf00[idx];
+    VecMethods a, b;
+    char alloc;
+    Vec4_Reserve(&a, 0, (F(BYTE*, r, 24) - F(BYTE*, r, 20)) >> 2, (int)&alloc);
+    a.end = (BYTE*)UninitCopyDwords(F(const DWORD*, r, 20), F(const DWORD*, r, 24), (DWORD*)a.begin);
+    r = g_68cf00[idx];
+    Vec4_Reserve(&b, 0, (F(BYTE*, r, 36) - F(BYTE*, r, 32)) >> 2, (int)&alloc);
+    b.end = (BYTE*)UninitCopyDwords(F(const DWORD*, r, 32), F(const DWORD*, r, 36), (DWORD*)b.begin);
+    if (a.begin != a.end)
+        *out = F(int, *(BYTE**)a.begin, 12);
+    else if (b.begin != b.end)
+        *out = F(int, *(BYTE**)b.begin, 12);
+    else
+        *out = -1;
+    int n = (b.capacityEnd - b.begin) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, b.begin, n * 4);
+    n = (a.capacityEnd - a.begin) >> 2;
+    if (n)
+        CallC(FUN_44b4a0, a.begin, n * 4);
+    return out;
+}
+
+}
+
+ASM_PROC(FUN_43bf10)    // a player's next position along its route
+ASM_PROC(FUN_44c160)    // vector<int>::operator=
+ASM_VAR(AsmLabel, g_68b99c, $L_68b99c)
+extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
+extern "C" void __cdecl Player_EndDealOf(BYTE* p);
+extern "C" void __fastcall Player_SetPosition(void* self, void*, const PositionId* p);
+
+static const char s_trimDealerPosition[] = "trimDealerPosition(PositionId & src)";
+static const char s_releaseAttachedPlayer[] = "releaseAttachedPlayer(AI_Ambush * ambush)";
+static const char s_advancePlayer[] = "_advancePlayer(PlayerId player, double & d)";
+
+extern "C" {
+
+// [FUN_421880] trimDealerPosition(PositionId & src)
+void __cdecl Ai_TrimDealerPosition(PositionId* src)
+{
+    Trace_EnterAppend(s_trimDealerPosition);
+    if (src->road == -1 && src->node != -1) {
+        int id;
+        src->road = *Rec_FirstId(&id, src->node);
+    }
+    RoomInfo info;
+    info.m_36 = -1;
+    info.m_40 = -1;
+    info.flags = 0;
+    info.m_8 = 0;
+    info.m_12 = 0;
+    info.module = "UNDEFINED_MODULE";
+    info.room = "UNDEFINED_ROOM";
+    info.m_24 = 0;
+    info.m_28 = 0;
+    Road_RoomInfo(*src, &info);
+    if (info.flags & 8)
+        src->m_24 |= 1;
+    Trace_Leave(s_trimDealerPosition);
+}
+
+// [FUN_426f20] starts the bankruptcy check task of a player whose money
+// went below 0
+void __cdecl Player_CheckBankrupt(BYTE* p)
+{
+    if (F(double, p, 136) >= 0.0)
+        return;
+    BYTE* o = (BYTE*)operator new(56);
+    BYTE* task = o ? Bankrupt_Construct(o, 0, (int)p) : 0;
+    BYTE* end;
+    SchList_End((BYTE**)&g_68b99c, 0, &end);
+    BYTE* it;
+    ListB_Insert(&g_68b99c, 0, &it, (BYTE**)end, &task);
+}
+
+// [FUN_42b870] releaseAttachedPlayer(AI_Ambush * ambush)
+void __cdecl Ai_ReleaseAttachedPlayer(BYTE* amb)
+{
+    Trace_EnterInline(s_releaseAttachedPlayer);
+    if (F(void*, amb, 124) != g_players) {
+        Player_EndDealOf(F(BYTE*, amb, 124));
+        BYTE* v[3] = {0, 0, 0};
+        F(DWORD, F(BYTE*, amb, 124), 96) &= 0xfff7ffff;
+        F(void*, amb, 124) = g_players;
+        CallThis(FUN_44c160, amb + 128, v);
+        Bytes_Free(v[0], v[2]);
+    }
+    Trace_Leave(s_releaseAttachedPlayer);
+}
+
+// [FUN_435a90] _advancePlayer(PlayerId player, double & d)
+void __cdecl Ai_AdvancePlayer(BYTE* player, double* d)
+{
+    Trace_EnterAppend(s_advancePlayer);
+    const DWORD* pos = (const DWORD*)(player + 40);
+    BYTE local[32];
+    BYTE* next = CallC<BYTE*>(FUN_43bf10, local, player, pos[0], pos[1], pos[2], pos[3],
+                              pos[4], pos[5], pos[6], pos[7], d, 1);
+    Player_SetPosition(Iter_Data(&player, 0), 0, (const PositionId*)next);
+    Trace_Leave(s_advancePlayer);
+}
 
 }
