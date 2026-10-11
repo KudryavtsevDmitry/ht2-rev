@@ -1356,3 +1356,24 @@ extern "C" unsigned __int64 __cdecl Shell_ReadTsc()
     __cpuid(r, 0);
     return t;
 }
+
+ASM_VAR(BYTE*, g_shell6cec6c, $L_6cec6c)
+extern "C" void FUN_50bfe0(); KING_ALIAS("_FUN_50bfe0", "_Carat_HasMovie")
+extern "C" void FUN_50c100(); KING_ALIAS("_FUN_50c100", "_Carat_CloseMovie")
+extern "C" void FUN_4e12b0(); KING_ALIAS("_FUN_4e12b0", "_Joy_ForceFeedback")
+
+// [FUN_50c150] stops a pending movie request: clears the three flags, closes the movie, resets force feedback
+extern "C" int __cdecl Shell_StopMovieRequest()
+{
+    BYTE* s = g_shell6cec6c;
+    if (!F(int, s, 1296) && !F(int, s, 1284) && !F(int, s, 1288))
+        return 0;
+    if (!CallC<int>(FUN_50bfe0))
+        return 0;
+    F(int, g_shell6cec6c, 1288) = 0;
+    F(int, g_shell6cec6c, 1284) = 0;
+    F(int, g_shell6cec6c, 1296) = 0;
+    CallC(FUN_50c100);
+    CallC(FUN_4e12b0, 1);
+    return 1;
+}

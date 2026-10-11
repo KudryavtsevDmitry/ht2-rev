@@ -1478,3 +1478,29 @@ extern "C" void __fastcall WorldObj_SetTarget(BYTE* self, int, void* t)
     v = *(BYTE**)(self + 124);
     CallThis(FUN_598d30, self, *(int*)(v + 316), v + 268);
 }
+
+ASM_VAR(BYTE*, g_world6d2078, $L_6d2078)
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+extern "C" void FUN_5a3fd0(); KING_ALIAS("_FUN_5a3fd0", "@Node_Matrix@12")
+ASM_PROC(FUN_59a030)
+
+// [FUN_598e70] resets a world object: scene node, position copy, defaults, initial state
+extern "C" void __fastcall WorldObj_Reset(BYTE* self, int)
+{
+    *(void**)(self + 96) = CallThis<void*>(FUN_5ef640, F(BYTE*, g_world6d2078, 616) + 272);
+    CallThis(FUN_5a3fd0, F(BYTE*, g_world6d2078, 616) + 16, self);
+    F(DWORD, self, 148) = F(DWORD, self, 36);
+    F(DWORD, self, 152) = F(DWORD, self, 40);
+    F(int, self, 104) = 0;
+    F(int, self, 112) = 0;
+    F(DWORD, self, 156) = F(DWORD, self, 44);
+    F(DWORD, self, 108) = 0x40270000;
+    F(int, self, 116) = 0;
+    void* r = CallThis<void*>(FUN_59a030, self, self, 0, 0);
+    F(int, self, 120) = 0;
+    F(int, self, 128) = 0;
+    F(int, self, 124) = 0;
+    F(int, self, 132) = 0;
+    *(void**)(self + 96) = r;
+    F(int, self, 160) = 1;
+}

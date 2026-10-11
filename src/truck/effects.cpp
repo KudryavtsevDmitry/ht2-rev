@@ -1104,7 +1104,7 @@ BYTE* __fastcall CopySound_Construct(BYTE* s, void*, BYTE* src) { return M(s)->C
 struct Vec3Bits { DWORD x, y, z; };
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // a model by name
-ASM_PROC(FUN_603110)    // network: send (type, data, size)
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")    // network: send (type, data, size)
 ASM_PROC(FUN_593720)
 extern "C" void FUN_57c490(); KING_ALIAS("_FUN_57c490", "@Shadow_Add@32")
 extern "C" void __fastcall Hits_Remember(BYTE* self, void*, const BYTE* hits, unsigned n);
@@ -3229,4 +3229,46 @@ extern "C" void __fastcall EffectMat_Init(BYTE* self, int, int a, int b)
     F(DWORD, F(BYTE*, self, 72), 32) |= 0x40000;
     F(DWORD, F(BYTE*, self, 72), 32) |= 2;
     F(int, self, 68) = 0;
+}
+
+ASM_VAR(void*, g_fx6f63d0, $L_6f63d0)
+ASM_VAR(void*, g_fx696254, $L_696254)
+ASM_VAR(void*, g_fx6961f8, $L_6961f8)
+ASM_VAR(int, g_fx696238, $L_696238)
+ASM_VAR(int, g_fx69622c, $L_69622c)
+ASM_VAR(int, g_fx696230, $L_696230)
+ASM_VAR(int, g_fx696234, $L_696234)
+extern "C" void FUN_5c64f0(); KING_ALIAS("_FUN_5c64f0", "_Effects_FreeTrees")
+ASM_PROC(FUN_5e48f0)
+ASM_PROC(FUN_4bcbe0)
+ASM_PROC(FUN_4c4780)
+extern "C" void FUN_4b89e0(); KING_ALIAS("_FUN_4b89e0", "_Fx_FreeBuffers")
+extern "C" void FUN_4cca50(); KING_ALIAS("_FUN_4cca50", "_Fx_Delete6961fc")
+
+// [FUN_4bac00] frees the effects' global objects and buffers
+extern "C" void __cdecl Effects_Shutdown()
+{
+    CallC(FUN_5c64f0);
+    CallC(FUN_5e48f0);
+    if (g_fx6f63d0) {
+        CallVirt(g_fx6f63d0, 0, 1);
+        g_fx6f63d0 = 0;
+    }
+    if (g_fx696254) {
+        CallVirt(g_fx696254, 0, 1);
+        g_fx696254 = 0;
+    }
+    void* p = g_fx6961f8;
+    if (p) {
+        CallThis(FUN_4bcbe0, p);
+        operator delete(p);
+        g_fx6961f8 = 0;
+    }
+    g_fx696238 = 0;
+    g_fx69622c = 0;
+    g_fx696230 = 0;
+    g_fx696234 = 0;
+    CallC(FUN_4c4780);
+    CallC(FUN_4b89e0);
+    CallC(FUN_4cca50);
 }
