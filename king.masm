@@ -1027,6 +1027,8 @@ PUBLIC $L_652dc0, $L_723d28, $L_723d2c
 PUBLIC $L_66fddc, $L_66fde4, $L_66fe28, $L_66fe48, $L_66fe50, $L_66fe6c
 PUBLIC $L_66fe90, $L_66fe98, $L_66feb8
 PUBLIC $L_652de0, $L_6554c0, $L_6554d0, $L_683ca0, $L_723de8
+PUBLIC $L_64ec38, $L_64ec3c, $L_64ec88, $L_64eda0, $L_64eda4, $L_64edf0
+PUBLIC $L_64eedc, $L_64eee0, $L_64ef2c, $L_64f018, $L_64f01c, $L_64f068
 
 ;===================================
 _TEXT SEGMENT
@@ -505880,6 +505882,8 @@ $L_52b5b8 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52b5f0 PROC
 
             push -1
@@ -505954,6 +505958,10 @@ FUN_52b5f0 PROC
             nop
             nop
 FUN_52b5f0 ENDP
+ELSE
+EXTERN @Car52b5f0_Construct@28:PROC
+FUN_52b5f0 TEXTEQU <@Car52b5f0_Construct@28>
+ENDIF
 $L_52b6c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -505985,6 +505993,8 @@ $L_52b6d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52b6f0 PROC
 
             push -1
@@ -506061,7 +506071,13 @@ FUN_52b6f0 PROC
             nop
             nop
 FUN_52b6f0 ENDP
+ELSE
+EXTERN @Car52b6f0_Construct@32:PROC
+FUN_52b6f0 TEXTEQU <@Car52b6f0_Construct@32>
+ENDIF
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52b7c0 PROC
 
             push -1
@@ -506133,6 +506149,10 @@ FUN_52b7c0 PROC
             add ESP,64
             ret 28
 FUN_52b7c0 ENDP
+ELSE
+EXTERN @Car52b7c0_Construct@36:PROC
+FUN_52b7c0 TEXTEQU <@Car52b7c0_Construct@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -506141,6 +506161,8 @@ FUN_52b7c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52b8a0 PROC
 
             push -1
@@ -506212,6 +506234,10 @@ FUN_52b8a0 PROC
             add ESP,64
             ret 32
 FUN_52b8a0 ENDP
+ELSE
+EXTERN @Car52b8a0_Construct@40:PROC
+FUN_52b8a0 TEXTEQU <@Car52b8a0_Construct@40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -508271,6 +508297,8 @@ $L_52d305::
             nop
 FUN_52c120 ENDP
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d350 PROC
 
             push -1
@@ -508313,6 +508341,10 @@ FUN_52d350 PROC
             add ESP,16
             ret 20
 FUN_52d350 ENDP
+ELSE
+EXTERN @Truck52d350_Construct@28:PROC
+FUN_52d350 TEXTEQU <@Truck52d350_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -508342,6 +508374,8 @@ $L_52d3e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d400 PROC
 
             push -1
@@ -508389,7 +508423,13 @@ FUN_52d400 PROC
             nop
             nop
 FUN_52d400 ENDP
+ELSE
+EXTERN @Truck52d400_Construct@32:PROC
+FUN_52d400 TEXTEQU <@Truck52d400_Construct@32>
+ENDIF
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d490 PROC
 
             push -1
@@ -508436,6 +508476,10 @@ FUN_52d490 PROC
             add ESP,16
             ret 28
 FUN_52d490 ENDP
+ELSE
+EXTERN @Truck52d490_Construct@36:PROC
+FUN_52d490 TEXTEQU <@Truck52d490_Construct@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -508450,6 +508494,8 @@ FUN_52d490 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d530 PROC
 
             push -1
@@ -508498,6 +508544,10 @@ FUN_52d530 PROC
             add ESP,16
             ret 32
 FUN_52d530 ENDP
+ELSE
+EXTERN @Truck52d530_Construct@40:PROC
+FUN_52d530 TEXTEQU <@Truck52d530_Construct@40>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -508589,6 +508639,8 @@ $L_52d630 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d650 PROC
 
             mov EAX,DWORD PTR [ESP+40]
@@ -508649,6 +508701,10 @@ $L_52d690::
             pop EBX
             ret 40
 FUN_52d650 ENDP
+ELSE
+EXTERN @Car52d650_Construct@48:PROC
+FUN_52d650 TEXTEQU <@Car52d650_Construct@48>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -508923,6 +508979,8 @@ $L_52d900 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d930 PROC
 
             push -1
@@ -508985,6 +509043,10 @@ FUN_52d930 PROC
             add ESP,64
             ret 28
 FUN_52d930 ENDP
+ELSE
+EXTERN @Vehicle52d930_Construct@36:PROC
+FUN_52d930 TEXTEQU <@Vehicle52d930_Construct@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

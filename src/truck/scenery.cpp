@@ -21,6 +21,27 @@ extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, 
 
 ASM_PROC(FUN_44c710)    // vector<12 bytes>::insert_aux
 ASM_PROC(FUN_4a1f10)
+ASM_PROC(FUN_58b5b0)
+ASM_PROC(FUN_58b720)
+extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
+ASM_PROC(FUN_52b0e0)
+ASM_PROC(FUN_5465c0)
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+ASM_PROC(FUN_57cb70)
+ASM_PROC(FUN_52dc50)
+ASM_VAR(AsmLabel, g_vtbl64ec88, $L_64ec88)
+ASM_VAR(AsmLabel, g_vtbl64ec3c, $L_64ec3c)
+ASM_VAR(AsmLabel, g_vtbl64ec38, $L_64ec38)
+ASM_VAR(AsmLabel, g_vtbl64edf0, $L_64edf0)
+ASM_VAR(AsmLabel, g_vtbl64eda4, $L_64eda4)
+ASM_VAR(AsmLabel, g_vtbl64eda0, $L_64eda0)
+ASM_VAR(AsmLabel, g_vtbl64ef2c, $L_64ef2c)
+ASM_VAR(AsmLabel, g_vtbl64eee0, $L_64eee0)
+ASM_VAR(AsmLabel, g_vtbl64eedc, $L_64eedc)
+ASM_VAR(AsmLabel, g_vtbl64f068, $L_64f068)
+ASM_VAR(AsmLabel, g_vtbl64f01c, $L_64f01c)
+ASM_VAR(AsmLabel, g_vtbl64f018, $L_64f018)
+ASM_VAR(AsmLabel, g_7025f0, $L_7025f0)
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
 ASM_PROC(FUN_5dbbb0)
@@ -107,7 +128,7 @@ extern "C" void __fastcall Obj52e540_Set3576(BYTE* self, void*, int v)
     F(int, self, 3576) = v;
 }
 
-// [FUN_52e740] for the vehicle with id p[0] (NULL if there is none); the
+// [FUN_52e8c0] calls FUN_52e740 for the vehicle with id p[0] (NULL if there is none); the
 // object in ECX is passed on
 extern "C" int __fastcall Vehicles_52e8c0(void* self, void*, const int* p)
 {
@@ -384,3 +405,138 @@ static BYTE* SceneObj_FindCommandTarget(int key)
 }
 
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
+
+// --- vehicle constructors: the base (FUN_58b5b0 / FUN_58b720 / FUN_57cb70)
+// is built from the car model table entry (876 bytes) of the model.
+
+static BYTE* CarModel(int model)
+{
+    return (BYTE*)g_carModelNames + model * 876;
+}
+
+static void Car_SetVtbls(BYTE* self, void* a, void* b, void* c)
+{
+    F(void*, self, 0) = a;
+    F(void*, self, 256) = b;
+    F(void*, self, 376) = c;
+}
+
+extern "C" {
+
+// [FUN_52b5f0] a car of the model (identity placement)
+BYTE* __fastcall Car52b5f0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5)
+{
+    BYTE* t = CarModel(model);
+    CallThis(FUN_58b5b0, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 100, F(int, t, 200),
+             0x3f000000, t, a5);
+    CallThis(FUN_52ae30, self + 9528, model, 0);
+    Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
+    CallThis(FUN_52b0e0, self, model, a4);
+    return self;
+}
+
+// [FUN_52b6f0] the trailer variant
+BYTE* __fastcall Car52b6f0_Construct(BYTE* self, void*, int a1, int a2, int model, int a4, int a5, int a6)
+{
+    BYTE* t = CarModel(model);
+    CallThis(FUN_58b720, self, a1, 0, a2, t + 120, (void*)g_7025f0, F(int, t, 196), 100, F(int, t, 200),
+             0x3f000000, a5, a6);
+    CallThis(FUN_52ae30, self + 9528, model, 1);
+    Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
+    CallThis(FUN_52b0e0, self, model, a4);
+    return self;
+}
+
+// [FUN_52b7c0] a car placed by the matrix built with [FUN_5aba40]
+BYTE* __fastcall Car52b7c0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int model, int a6, int a7)
+{
+    BYTE* t = CarModel(model);
+    BYTE m[48];
+    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
+    CallThis(FUN_58b5b0, self, a1, a2, a3, r, a4, F(int, t, 196), 100, F(int, t, 200), 0x3f000000, t + 35, a7);
+    CallThis(FUN_52ae30, self + 9528, model, 0);
+    Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
+    CallThis(FUN_52b0e0, self, model, a6);
+    return self;
+}
+
+// [FUN_52b8a0]
+BYTE* __fastcall Car52b8a0_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int model, int a6, int a7,
+                                     int a8)
+{
+    BYTE* t = CarModel(model);
+    BYTE m[48];
+    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
+    CallThis(FUN_58b720, self, a1, a2, a3, r, a4, F(int, t, 196), 100, F(int, t, 200), 0x3f000000, a7, a8);
+    CallThis(FUN_52ae30, self + 9528, model, 1);
+    Car_SetVtbls(self, g_vtbl64ec88, g_vtbl64ec3c, g_vtbl64ec38);
+    CallThis(FUN_52b0e0, self, model, a6);
+    return self;
+}
+
+static void Truck_Finish(BYTE* self)
+{
+    Car_SetVtbls(self, g_vtbl64edf0, g_vtbl64eda4, g_vtbl64eda0);
+    CallC(FUN_5465c0, self + 9520, self + 9516);
+}
+
+// [FUN_52d350]
+BYTE* __fastcall Truck52d350_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5)
+{
+    Car52b5f0_Construct(self, 0, a1, a2, a3, a4, a5);
+    Truck_Finish(self);
+    return self;
+}
+
+// [FUN_52d400]
+BYTE* __fastcall Truck52d400_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6)
+{
+    Car52b6f0_Construct(self, 0, a1, a2, a3, a4, a5, a6);
+    Truck_Finish(self);
+    return self;
+}
+
+// [FUN_52d490]
+BYTE* __fastcall Truck52d490_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7)
+{
+    Car52b7c0_Construct(self, 0, a1, a2, a3, a4, a5, a6, a7);
+    Truck_Finish(self);
+    return self;
+}
+
+// [FUN_52d530]
+BYTE* __fastcall Truck52d530_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7,
+                                       int a8)
+{
+    Car52b8a0_Construct(self, 0, a1, a2, a3, a4, a5, a6, a7, a8);
+    Truck_Finish(self);
+    return self;
+}
+
+// [FUN_52d650] a car with its own placement matrix (a4) kept at +9552
+BYTE* __fastcall Car52d650_Construct(BYTE* self, void*, int a1, int a2, int a3, const BYTE* a4, int a5, int a6,
+                                     int a7, int a8, int a9, int a10)
+{
+    Car52b7c0_Construct(self, 0, a1, a2, a3, (int)a4, a5, a6, a10);
+    BYTE* m = self + 9552;
+    memset(m, 0, 48);
+    memcpy(m, g_7025f0, 48);
+    Car_SetVtbls(self, g_vtbl64ef2c, g_vtbl64eee0, g_vtbl64eedc);
+    memcpy(m, a4, 48);
+    F(int, self, 3568) = 3;
+    return self;
+}
+
+// [FUN_52d930] a vehicle on the [FUN_57cb70] base
+BYTE* __fastcall Vehicle52d930_Construct(BYTE* self, void*, int a1, int a2, int a3, int a4, int model, int a6, int a7)
+{
+    BYTE* t = CarModel(model);
+    BYTE m[48];
+    void* r = CallC<void*>(FUN_5aba40, m, t + 120, a4);
+    CallThis(FUN_57cb70, self, a1, a2, a3, r, a4, F(int, t, 196), 500, t, a7);
+    Car_SetVtbls(self, g_vtbl64f068, g_vtbl64f01c, g_vtbl64f018);
+    CallThis(FUN_52dc50, self, model, a6);
+    return self;
+}
+
+}
