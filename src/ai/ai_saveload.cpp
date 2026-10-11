@@ -15,6 +15,12 @@ ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_470900)
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
+extern "C" void FUN_47aad0(); KING_ALIAS("_FUN_47aad0", "@Bytes_Reserve@12")
+extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
+extern "C" void FUN_410df0(); KING_ALIAS("_FUN_410df0", "@CharVec_Str@8")
+extern "C" void FUN_407320(); KING_ALIAS("_FUN_407320", "@CharVec_Equals@12")
+extern "C" void FUN_483c10(); KING_ALIAS("_FUN_483c10", "_AI_UpdateSwitch")
 extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
 extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
 ASM_PROC(FUN_473420)
@@ -381,6 +387,106 @@ void __cdecl Load_Player(BYTE** cur)
             }
         }
         CallC(FUN_422390, &cur, p);
+    }
+    LoadChunk_Close(&c);
+}
+
+}
+
+// reads a name (length, then its bytes) into the vector<char> v (+0 begin)
+static void Load_NameInto(BYTE** cur, BYTE** v)
+{
+    int n = F(int, *cur, 0);
+    *cur += 4;
+    CallThis(FUN_4471f0, v, v[0], v[1]);
+    CallThis(FUN_47aad0, v, n);
+    for (int i = n; i > 0; i--) {
+        BYTE c = **cur;
+        (*cur)++;
+        CallThis(FUN_47ab20, v, &c);
+    }
+}
+
+static void NameVec_Free(BYTE** v)
+{
+    if (v[2] != v[0])
+        CallC(FUN_44b4a0, v[0], v[2] - v[0]);
+}
+
+// the first record of [first, last) whose name ([FUN_410df0]) is name
+static BYTE** FindByName(BYTE** first, BYTE** last, const char* name)
+{
+    for (; first != last; first++) {
+        const char* s = CallThis<const char*>(FUN_410df0, *first);
+        if (s && !strcmp(s, name))
+            break;
+    }
+    return first;
+}
+
+extern "C" {
+
+// [FUN_4820c0] loads a road (ROAD): finds it by name and sets +16
+void __cdecl Load_Road(BYTE** cur)
+{
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagROAD)) {
+        BYTE* v[3] = {0, 0, 0};
+        Load_NameInto(cur, v);
+        BYTE** it = FindByName(g_68cf38, g_68cf3c, (const char*)v[0]);
+        if (it == g_68cf3c)
+            AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, 418, "Can not find road", (const char*)v[0],
+                    &g_ordrEmpty);
+        int x = F(int, *cur, 0);
+        *cur += 4;
+        F(int, *it, 16) = x;
+        NameVec_Free(v);
+    }
+    LoadChunk_Close(&c);
+}
+
+// [FUN_4824a0] loads an ambush (AMBU): its two flags and its player's name
+void __cdecl Load_Ambush(BYTE** cur)
+{
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagAMBU)) {
+        BYTE* v[3] = {0, 0, 0};
+        Load_NameInto(cur, v);
+        BYTE* name = v[0];
+        BYTE** it = g_68a970;
+        for (; it != g_68a974; it++)
+            if (CallThis<bool>(FUN_407320, &name, *it))
+                break;
+        if (it == g_68a974)
+            AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, 464, "Can not find ambush", (const char*)v[1],
+                    &g_ordrEmpty);
+        BYTE* a = *it;
+        F(BYTE, a, 240) = **cur;
+        (*cur)++;
+        F(BYTE, a, 28) = **cur;
+        (*cur)++;
+        Load_NameInto(cur, (BYTE**)(a + 128));
+        NameVec_Free(v);
+    }
+    LoadChunk_Close(&c);
+}
+
+// [FUN_4827f0] loads an obstacle (OBST): its flag, then [FUN_483c10]
+void __cdecl Load_Obstacle(BYTE** cur)
+{
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagOBST)) {
+        BYTE* v[3] = {0, 0, 0};
+        Load_NameInto(cur, v);
+        BYTE** it = FindByName(g_68cc18, g_68cc1c, (const char*)v[0]);
+        if (it == g_68cc1c)
+            AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, 503, "Can not find obstacle", (const char*)v[0],
+                    &g_ordrEmpty);
+        BYTE* o = *it;
+        F(BYTE, o, 28) = **cur;
+        (*cur)++;
+        CallC(FUN_483c10, o ? o + 12 : 0);
+        NameVec_Free(v);
     }
     LoadChunk_Close(&c);
 }
