@@ -27,7 +27,7 @@ ASM_PROC(FUN_4870e0)
 extern "C" void FUN_529880(); KING_ALIAS("_FUN_529880", "_Carat_MarkKey")
 ASM_PROC(FUN_447ef0)
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
-ASM_PROC(FUN_40c1a0)
+extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")
 ASM_PROC(FUN_40cc50)
 ASM_PROC(FUN_40cb60)
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
@@ -655,7 +655,7 @@ extern "C" void FUN_46ca00(); KING_ALIAS("_FUN_46ca00", "_Names_PushHeap")    //
 extern "C" void FUN_483a50(); KING_ALIAS("_FUN_483a50", "_AI_483a50")    // the network message being built
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")    // player of a list node
 extern "C" void FUN_4758d0(); KING_ALIAS("_FUN_4758d0", "@Player_SaveX@12")    // player: serialize into a byte vector
-ASM_PROC(FUN_603110)    // message: add field (id, data, size)
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")    // message: add field (id, data, size)
 ASM_VAR(BYTE, g_68d31c, $L_68d31c)
 ASM_VAR(BYTE, g_66f62b, $L_66f62b)
 ASM_VAR(BYTE*, g_playersHead68b990, $L_68b990)

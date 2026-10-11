@@ -822,3 +822,58 @@ extern "C" int __fastcall Msg_ReadType7(BYTE* self, int, int* id, float* f, int*
         f[i] = *(float*)(F(BYTE*, self, 4) + i * 4 + F(int, self, 24) + 6);
     return 0;
 }
+
+// the message header: size of the buffer at +0, message number at +4
+static void Msg_Finish(BYTE* self)
+{
+    BYTE** v = (BYTE**)(self + 4);
+    *(int*)v[0] = (int)(v[1] - v[0]);
+    int n = ++F(int, self, 16);
+    *(int*)(v[0] + 4) = n;
+}
+
+// [FUN_602fd0] writes message 7: id, a byte and six floats
+extern "C" void __fastcall Msg_Write7(BYTE* self, int, int id, const float* f, BYTE b)
+{
+    BYTE** v = (BYTE**)(self + 4);
+    Buf_WriteByte(0, v, 7);
+    Buf_WriteDword(0, (BYTE*)v, id);
+    Buf_WriteByte(0, v, b);
+    for (int i = 0; i < 6; i++) {
+        float x = f[i];
+        CallThis(FUN_46e460, v, v[1], (BYTE*)&x, (BYTE*)&x + 4);
+    }
+    Msg_Finish(self);
+}
+
+// [FUN_603050] writes message 42: id and a value as float
+extern "C" void __fastcall Msg_Write42(BYTE* self, int, int id, double d)
+{
+    BYTE** v = (BYTE**)(self + 4);
+    Buf_WriteByte(0, v, 42);
+    Buf_WriteDword(0, (BYTE*)v, id);
+    float x = (float)d;
+    CallThis(FUN_46e460, v, v[1], (BYTE*)&x, (BYTE*)&x + 4);
+    Msg_Finish(self);
+}
+
+// [FUN_6030b0] writes message 45: id and a dword
+extern "C" void __fastcall Msg_Write45(BYTE* self, int, int id, DWORD x)
+{
+    BYTE** v = (BYTE**)(self + 4);
+    Buf_WriteByte(0, v, 45);
+    Buf_WriteDword(0, (BYTE*)v, id);
+    CallThis(FUN_46e460, v, v[1], (BYTE*)&x, (BYTE*)&x + 4);
+    Msg_Finish(self);
+}
+
+// [FUN_603110] writes message 120: id, a length and that many bytes
+extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, int n)
+{
+    BYTE** v = (BYTE**)(self + 4);
+    Buf_WriteByte(0, v, 120);
+    Buf_WriteDword(0, (BYTE*)v, id);
+    Buf_WriteDword(0, (BYTE*)v, n);
+    CallThis(FUN_46e460, v, v[1], p, p + n);
+    Msg_Finish(self);
+}

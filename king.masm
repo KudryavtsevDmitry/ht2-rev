@@ -1100,6 +1100,7 @@ PUBLIC $L_64e920, $L_64e960, $L_64e9a8, $L_64e9e8, $L_64ea30, $L_64ea70
 PUBLIC $L_6726e8, $L_691cc0, $L_6f4bb4, $L_6f4bb8, $L_6f4bbc
 PUBLIC $L_66c4e4, $L_66d64c, $L_66d9c8, $L_66daa8, $L_68cdac, $L_68d1b8
 PUBLIC $L_724178
+PUBLIC $L_6961f8, $L_69622c, $L_696230, $L_696238, $L_696254
 
 ;===================================
 _TEXT SEGMENT
@@ -21957,6 +21958,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40c1a0 PROC
 
             push ESI
@@ -22018,6 +22021,10 @@ $L_40c213::
             pop ESI
             ret 
 FUN_40c1a0 ENDP
+ELSE
+EXTERN @ValueBuf_Destroy@8:PROC
+FUN_40c1a0 TEXTEQU <@ValueBuf_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -104593,6 +104600,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f7c0 PROC
 
             push ESI
@@ -104636,6 +104645,10 @@ $L_43f80f::
             pop ESI
             ret 
 FUN_43f7c0 ENDP
+ELSE
+EXTERN _Player_Set136:PROC
+FUN_43f7c0 TEXTEQU <_Player_Set136>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -104651,6 +104664,8 @@ FUN_43f7c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f840 PROC
 
             push ESI
@@ -104709,6 +104724,10 @@ $L_43f8c6::
             pop ESI
             ret 
 FUN_43f840 ENDP
+ELSE
+EXTERN _Player_Value156:PROC
+FUN_43f840 TEXTEQU <_Player_Value156>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -104717,6 +104736,8 @@ FUN_43f840 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43f8d0 PROC
 
             push ESI
@@ -104776,6 +104797,10 @@ $L_43f93f::
             nop
             nop
 FUN_43f8d0 ENDP
+ELSE
+EXTERN _Player_PlaceField20:PROC
+FUN_43f8d0 TEXTEQU <_Player_PlaceField20>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -337091,6 +337116,8 @@ EXTERN _Fx_SpawnPuff:PROC
 FUN_4baae0 TEXTEQU <_Fx_SpawnPuff>
 ENDIF
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bac00 PROC
 
             push ESI
@@ -337150,6 +337177,10 @@ $L_4bac5a::
             pop ESI
             ret 
 FUN_4bac00 ENDP
+ELSE
+EXTERN _Effects_Shutdown:PROC
+FUN_4bac00 TEXTEQU <_Effects_Shutdown>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -458360,6 +458391,8 @@ EXTERN _Carat_DrawMovie:PROC
 FUN_50c130 TEXTEQU <_Carat_DrawMovie>
 ENDIF
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50c150 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -458400,6 +458433,10 @@ $L_50c1c0::
             xor EAX,EAX
             ret 
 FUN_50c150 ENDP
+ELSE
+EXTERN _Shell_StopMovieRequest:PROC
+FUN_50c150 TEXTEQU <_Shell_StopMovieRequest>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -667080,6 +667117,8 @@ $L_598de5::
             nop
 $L_598db0 ENDP
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_598e70 PROC
 
             mov EAX,DWORD PTR [$L_6d2078]
@@ -667126,6 +667165,10 @@ FUN_598e70 PROC
             pop ESI
             ret 
 FUN_598e70 ENDP
+ELSE
+EXTERN @WorldObj_Reset@8:PROC
+FUN_598e70 TEXTEQU <@WorldObj_Reset@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853555,6 +853598,8 @@ FUN_602e80 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602fd0 PROC
 
             push EBX
@@ -853617,6 +853662,10 @@ $L_603009::
             pop EBX
             ret 12
 FUN_602fd0 ENDP
+ELSE
+EXTERN @Msg_Write7@20:PROC
+FUN_602fd0 TEXTEQU <@Msg_Write7@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853624,6 +853673,8 @@ FUN_602fd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603050 PROC
 
             push ESI
@@ -853667,6 +853718,10 @@ FUN_603050 PROC
             pop ESI
             ret 12
 FUN_603050 ENDP
+ELSE
+EXTERN @Msg_Write42@20:PROC
+FUN_603050 TEXTEQU <@Msg_Write42@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853674,6 +853729,8 @@ FUN_603050 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_6030b0 PROC
 
             push ESI
@@ -853718,11 +853775,17 @@ FUN_6030b0 PROC
             pop ESI
             ret 8
 FUN_6030b0 ENDP
+ELSE
+EXTERN @Msg_Write45@16:PROC
+FUN_6030b0 TEXTEQU <@Msg_Write45@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_603110 PROC
 
             push EBX
@@ -853772,6 +853835,10 @@ FUN_603110 PROC
             pop EBX
             ret 12
 FUN_603110 ENDP
+ELSE
+EXTERN @Msg_Write120@20:PROC
+FUN_603110 TEXTEQU <@Msg_Write120@20>
+ENDIF
 ALIGN 16
 ; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 IFDEF ASM_SOUND_GATE

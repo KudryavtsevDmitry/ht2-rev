@@ -2956,7 +2956,7 @@ extern "C" void __fastcall Rec458940_Destroy(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // medium-sized functions, batch 4: vector erase, order lists, the name hash
 
-ASM_PROC(FUN_40c1a0)    // destroy a 104-byte record
+extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")    // destroy a 104-byte record
 ASM_PROC(FUN_40cb60)    // destroy a 24-byte record
 extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 ASM_PROC(FUN_440dd0)    // destroy a 192-byte record
@@ -6434,4 +6434,66 @@ extern "C" void __cdecl Player_Set976(BYTE* id, char c, int a, int b)
     F(char, id, 976) = c;
     F(int, id, 984) = a;
     F(int, id, 988) = b;
+}
+
+extern "C" void FUN_426f20(); KING_ALIAS("_FUN_426f20", "_Player_CheckBankrupt")    // checks whether a player went bankrupt
+ASM_VAR(BYTE*, g_places68a958b, $L_68a958)
+ASM_VAR(BYTE*, g_players68b990b, $L_68b990)
+
+// [FUN_40c1a0] destructor of a value with a buffer {+88 begin, +96 capacity}: frees the buffer, releases the handle
+extern "C" void __fastcall ValueBuf_Destroy(void** self, int)
+{
+    BYTE* b = F(BYTE*, self, 88);
+    int n = F(BYTE*, self, 96) - b;
+    if (n)
+        CallC(FUN_44b4a0, b, n);
+    if (F(DWORD, self, 8) & 0x10000)
+        return;
+    BYTE* obj = (BYTE*)self[0];
+    if (!obj)
+        return;
+    --F(int, obj, 4);
+    obj = (BYTE*)self[0];
+    if (F(int, obj, 4) == 0 && obj)
+        CallThis((*(void (***)())obj)[3], obj, 1);
+}
+
+// [FUN_43f7c0] sets a player's double at +136 and checks for bankruptcy
+extern "C" void __cdecl Player_Set136(BYTE* id, DWORD lo, DWORD hi)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16613, s_invalidId, s_playerIdType, g_numberText);
+    }
+    F(DWORD, id, 136) = lo;
+    F(DWORD, id, 140) = hi;
+    CallC(FUN_426f20, id);
+}
+
+// [FUN_43f8d0] the value at +20 of the player's place (-1 without a place)
+extern "C" int __cdecl Player_PlaceField20(BYTE* id)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16634, s_invalidId, s_playerIdType, g_numberText);
+    }
+    int i = F(int, id, 992);
+    if (i == -1)
+        return -1;
+    return F(int, g_places68a958b + i * 56, 20);
+}
+
+// [FUN_43f840] the player's value at +156, or its leader's; -1 for a player without leader and with an empty list
+extern "C" int __cdecl Player_Value156(BYTE* id)
+{
+    if (Player_NotValid(id)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 16620, s_invalidId, s_playerIdType, g_numberText);
+    }
+    BYTE* leader = F(BYTE*, id, 176);
+    if (leader == g_players68b990b && F(int, id, 160) == F(int, id, 164))
+        return -1;
+    if (leader != g_players68b990b)
+        return F(int, leader, 156);
+    return F(int, id, 156);
 }
