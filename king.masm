@@ -1124,6 +1124,7 @@ PUBLIC $L_68d128, $L_68d130, $L_68d138, $L_68d13c, $L_68d1b4
 PUBLIC $L_68b9a0, $L_68b9a8, $L_68b9b0
 PUBLIC $L_66c730, $L_68bacc, $L_68d1a4
 PUBLIC $L_68cfe8, $L_68d144, $L_68d148, $L_68d178, $L_68d1a0, $L_66c60c
+PUBLIC $L_68cc0c
 
 ;===================================
 _TEXT SEGMENT
@@ -27542,6 +27543,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40f840 PROC
 
             push -1
@@ -28538,6 +28541,10 @@ $L_4102e0::
             add ESP,120
             ret 
 FUN_40f840 ENDP
+ELSE
+EXTERN _Ai_ReadService:PROC
+FUN_40f840 TEXTEQU <_Ai_ReadService>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -28559,6 +28566,8 @@ $L_410320 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_410340 PROC
 
             push -1
@@ -29561,6 +29570,10 @@ $L_410da6::
             add ESP,208
             ret 
 FUN_410340 ENDP
+ELSE
+EXTERN _Ai_ReadParking:PROC
+FUN_410340 TEXTEQU <_Ai_ReadParking>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -29826,6 +29839,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_410fe0 PROC
 
             push -1
@@ -31016,6 +31031,10 @@ $L_411b45::
             add ESP,104
             ret 
 FUN_410fe0 ENDP
+ELSE
+EXTERN _Ai_ReadObstacle:PROC
+FUN_410fe0 TEXTEQU <_Ai_ReadObstacle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -31126,6 +31145,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_411c00 PROC
 
             push -1
@@ -31746,6 +31767,10 @@ $L_4122c9::
             add ESP,172
             ret 
 FUN_411c00 ENDP
+ELSE
+EXTERN _Ai_ReadPeople:PROC
+FUN_411c00 TEXTEQU <_Ai_ReadPeople>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
