@@ -82793,6 +82793,8 @@ FUN_431420 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4315f0 PROC
 
             push -1
@@ -84298,6 +84300,10 @@ $L_43253c   DWORD $L_431CB0
             DWORD $L_43203C
             DWORD $L_43203C
             DWORD $L_43203C
+ELSE
+EXTERN _Ai_QueryBribeSum:PROC
+FUN_4315f0 TEXTEQU <_Ai_QueryBribeSum>
+ENDIF
 ALIGN 16
 
 FUN_432560 PROC
