@@ -29583,6 +29583,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_410e40 PROC
 
             sub ESP,12
@@ -29764,6 +29766,10 @@ $L_410fcc::
             inc EDI
             jmp $L_410f77
 FUN_410e40 ENDP
+ELSE
+EXTERN @Rec410e40_FreeVectors@8:PROC
+FUN_410e40 TEXTEQU <@Rec410e40_FreeVectors@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -216020,6 +216026,8 @@ $L_479366::
             nop
 $L_47931a ENDP
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_479370 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -216214,6 +216222,10 @@ $L_479516::
             add ESP,8
             ret 4
 FUN_479370 ENDP
+ELSE
+EXTERN @Vec40_Assign@12:PROC
+FUN_479370 TEXTEQU <@Vec40_Assign@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_479520 PROC
@@ -490290,6 +490302,8 @@ $L_51fd70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_520000 PROC
 
             sub ESP,308
@@ -490489,6 +490503,10 @@ ALIGN 4
 ALIGN 16
 
 FUN_520000 ENDP
+ELSE
+EXTERN _Car_ApplyPlayerSettings:PROC
+FUN_520000 TEXTEQU <_Car_ApplyPlayerSettings>
+ENDIF
 ALIGN 16
 FUN_520240 PROC
 

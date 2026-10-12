@@ -999,3 +999,35 @@ extern "C" void __fastcall Vec40_Insert479050(BYTE** v, void*, BYTE* pos, const 
 {
     VecPod_InsertAux(v, pos, x, 40, FUN_47d330);
 }
+
+extern "C" void FUN_47acd0(); KING_ALIAS("_FUN_47acd0", "_Alloc40_Copy@12")    // allocates n 40-byte records and copies [first, last) (stdcall)
+ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+
+// [FUN_479370] vector<40-byte record>::operator=
+extern "C" BYTE** __fastcall Vec40_Assign(BYTE** self, int, BYTE* const* src)
+{
+    if (src == self)
+        return self;
+    BYTE* sb = src[0];
+    BYTE* se = src[1];
+    int n = (int)(se - sb) / 40;
+    if (n > (int)(self[2] - self[0]) / 40) {
+        BYTE* p = CallThis<BYTE*>(FUN_47acd0, self, n, sb, se);
+        int cap = (int)(self[2] - self[0]) / 40;
+        if (cap)
+            CallC(FUN_44b4a0, self[0], cap * 40);
+        self[0] = p;
+        self[2] = p + n * 40;
+    } else if ((int)(self[1] - self[0]) / 40 >= n) {
+        BYTE* d = self[0];
+        for (int i = 0; i < n; i++)
+            memcpy(d + i * 40, sb + i * 40, 40);
+    } else {
+        int size = (int)(self[1] - self[0]) / 40;
+        for (int i = 0; i < size; i++)
+            memcpy(self[0] + i * 40, sb + i * 40, 40);
+        CallC(FUN_47d330, src[0] + size * 40, src[1], self[1], self[0]);
+    }
+    self[1] = self[0] + n * 40;
+    return self;
+}
