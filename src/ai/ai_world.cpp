@@ -4710,7 +4710,7 @@ BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v)
 // calls the destructors explicitly).
 
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
-ASM_PROC(FUN_408080)    // reads the player types of a "Pair" value
+extern "C" void FUN_408080(); KING_ALIAS("_FUN_408080", "_Ai_ReadSetting")    // reads the player types of a "Pair" value
 ASM_PROC(FUN_4581a0)    // out of memory: retries the allocation
 ASM_VAR(int, g_68a860, $L_68a860)
 extern "C" BYTE* __fastcall Vec4b_Copy(BYTE* self, void*, const BYTE** s);
@@ -8927,4 +8927,113 @@ done:
         Ai_PoolFree(v[0], v[2] - v[0]);
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_xLoadEntities);
+}
+
+// ---------------------------------------------------------------------------
+// the world settings
+
+ASM_PROC(FUN_407570)    // reads a player type (arg, pair handle by value)
+ASM_VAR(double, g_startX68b9a0, $L_68b9a0)
+ASM_VAR(double, g_startY68b9a8, $L_68b9a8)
+ASM_VAR(double, g_startZ68b9b0, $L_68b9b0)
+ASM_VAR(DVec3, g_start68bab0, $L_68bab0)
+typedef int IntTable4[4];
+ASM_VAR(IntTable4, g_forSale68ced0, $L_68ced0)
+ASM_VAR(int, g_forSaleUsed68cee8, $L_68cee8)
+ASM_VAR(int, g_forSaleStolen68cef8, $L_68cef8)
+ASM_VAR(int, g_forHire68d150, $L_68d150)
+
+// the number value of the head of the list after n steps of pair (n >= 1, the first one checked)
+static double Setting_Number(StrRef* pair, int n)
+{
+    StrRef t[4];
+    Str_Member32Checked(&t[0], pair);
+    for (int i = 1; i < n; i++)
+        Str_Member32(&t[i], &t[i - 1]);
+    StrRef m, num;
+    Str_Member20(&m, &t[n - 1]);
+    NumberHandle_From((DWORD*)&num, 0, (const DWORD*)&m);
+    Str_Release(&m);
+    for (int i = n - 1; i >= 0; i--)
+        Str_Release(&t[i]);
+    CheckHandle(&num);
+    double v = CallThis<double>(FUN_4b0e90, num.ptr);
+    CallThis(FUN_4a36c0, &num);
+    return v;
+}
+
+// the int value of the head after the key
+static int Setting_Int(StrRef* pair)
+{
+    StrRef t, m, num;
+    Str_Member32Checked(&t, pair);
+    Str_Member20(&m, &t);
+    NumberHandle_From((DWORD*)&num, 0, (const DWORD*)&m);
+    CallThis(FUN_4a36c0, &m);
+    CallThis(FUN_4a36c0, &t);
+    int v = CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &num));
+    CallThis(FUN_4a36c0, &num);
+    return v;
+}
+
+// [FUN_408080] reads a world setting pair (key value...): the player types, the start position, the
+// numbers of vehicles and presents, the scenario
+extern "C" void __cdecl Ai_ReadSetting(int arg, StrRef pair)
+{
+    StrRef l = {0, 0, 0};
+    if (Pair_HeadIs(&pair, "playertypes")) {
+        StrRef t;
+        Ref_Assign(&l, Str_Member32Checked(&t, &pair));
+        Str_Release(&t);
+        while ((BYTE)l.flags == 2) {
+            if (Head_Type(&l) == 2) {
+                StrRef e, h;
+                Str_Member20(&e, &l);
+                PairHandle_From((DWORD*)&h, 0, (const DWORD*)&e);
+                CallC(FUN_407570, arg, h.ptr, h.len, h.flags);
+                Str_Release(&e);
+            }
+            List_Advance(&l);
+        }
+    } else if (Pair_HeadIs(&pair, "startposition")) {
+        g_startX68b9a0 = Setting_Number(&pair, 1);
+        g_startY68b9a8 = Setting_Number(&pair, 2);
+        g_startZ68b9b0 = Setting_Number(&pair, 3);
+        g_start68bab0.x = g_startX68b9a0;
+        g_start68bab0.y = g_startY68b9a8;
+        g_start68bab0.z = g_startZ68b9b0;
+    } else if (Pair_HeadIs(&pair, "forsale"))
+        g_forSale68ced0[2] = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "forsale_used"))
+        g_forSaleUsed68cee8 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "forsale_stolen"))
+        g_forSaleStolen68cef8 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "forhire"))
+        g_forHire68d150 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "fuel"))
+        g_hiddenMax68a98c = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "containers"))
+        g_cargoMax68a964 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "semitrailers"))
+        g_baseMax68cf54 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "missions"))
+        g_roadMax68d0a0 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "parkings"))
+        g_parkingMax68bb54 = Setting_Int(&pair);
+    else if (Pair_HeadIs(&pair, "scenario")) {
+        StrRef t, m, h;
+        Str_Member32Checked(&t, &pair);
+        Str_Member20(&m, &t);
+        Handle9_Init((void**)&h, 0, (void**)&m);
+        CallThis(FUN_4a36c0, &m);
+        CallThis(FUN_4a36c0, &t);
+        g_68d188 = 0;
+        if (SchValue_IsSymbol((BYTE*)&h, "races"))
+            g_68d188 = 1;
+        if (SchValue_IsSymbol((BYTE*)&h, "trial"))
+            g_68d188 = 2;
+        CallThis(FUN_4a36c0, &h);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &pair);
 }
