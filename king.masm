@@ -1122,6 +1122,7 @@ PUBLIC $L_68a964, $L_68a98c, $L_68bb54, $L_68cf54, $L_68d0a0, $L_68d0bc
 PUBLIC $L_68d100
 PUBLIC $L_68d128, $L_68d130, $L_68d138, $L_68d13c, $L_68d1b4
 PUBLIC $L_68b9a0, $L_68b9a8, $L_68b9b0
+PUBLIC $L_66c730, $L_68bacc, $L_68d1a4
 
 ;===================================
 _TEXT SEGMENT
@@ -12208,6 +12209,8 @@ FUN_406370 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_406600 PROC
 
             push EBP
@@ -13493,6 +13496,10 @@ $L_40729f::
             pop EBP
             ret 
 FUN_406600 ENDP
+ELSE
+EXTERN _Ai_LoadRoads:PROC
+FUN_406600 TEXTEQU <_Ai_LoadRoads>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
