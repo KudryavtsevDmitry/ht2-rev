@@ -33369,6 +33369,8 @@ FUN_4133a0 TEXTEQU <@Position_InitNone@8>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4133c0 PROC
 
             push -1
@@ -34614,6 +34616,10 @@ $L_41407a::
             add ESP,404
             ret 
 FUN_4133c0 ENDP
+ELSE
+EXTERN _Ai_LoadWorld:PROC
+FUN_4133c0 TEXTEQU <_Ai_LoadWorld>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
