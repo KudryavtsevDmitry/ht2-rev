@@ -9977,3 +9977,178 @@ extern "C" void __cdecl Ai_LoadRoads()
     if (n)
         Ai_PoolFree(files[0], n * 12);
 }
+
+// ---------------------------------------------------------------------------
+// createNewPlayer
+
+ASM_PROC(FUN_4148a0)    // a new player's place (player)
+extern "C" BYTE* __cdecl Players_Append(int kind);                                  // ai_drivers.cpp
+ASM_VAR(PtrVec, g_typeNames68cf48, $L_68cf48)
+typedef unsigned* UintVec;
+ASM_VAR(UintVec, g_typeCounters68a830, $L_68a830)
+ASM_VAR(double, g_newPlayer68cfe8, $L_68cfe8)
+ASM_VAR(int, g_humanVehicleKey68d144, $L_68d144)
+ASM_VAR(int, g_humanOwner68d148, $L_68d148)
+ASM_VAR(BYTE, g_jeep68d178, $L_68d178)
+ASM_VAR(BYTE, g_allowKind7_68d1a0, $L_68d1a0)
+ASM_VAR(char*, g_humanName68d0a8, $L_68d0a8)
+typedef char TruckName[128];
+ASM_VAR(TruckName, g_truckName66c60c, $L_66c60c)
+
+static const char s_createNewPlayer[] = "createNewPlayer(int type, int order, VehicleId veh)";
+
+// initializes a new 48-byte vehicle record (see PresentVehicle_New)
+static BYTE* PresentVehicle_New_At(BYTE* o, int vehicle)
+{
+    F(int, o, 0) = -1;
+    F(int, o, 4) = vehicle;
+    F(DWORD, o, 8) = 0;
+    F(DWORD, o, 12) = 0x3ff00000;
+    DWORD v[4] = {0, 0, 0, 0x3ff00000};
+    char alloc;
+    Vec16b_Construct((DWORD*)(o + 16), 0, 19, v, 0);
+    CallThis(FUN_487730, o + 28, &alloc);
+    F(int, o, 40) = 0;
+    return o;
+}
+
+// whether vehicle vi has a free slot of the kind
+static bool Vehicle_HasFree(int vi, int kind)
+{
+    BYTE* v[3];
+    Vec4b_Copy((BYTE*)v, 0, (const BYTE**)((BYTE*)g_vehicles[vi] + 36));
+    return PtrVec_FindFree((int*)v[0], (int*)v[1], (int*)v[2], kind);
+}
+
+static int Vehicle_Pick(int type) { return (int)AI_PickFrom(type, g_typeCounters68a830[type]); }
+
+static BYTE* Players_AppendNamed(int type)
+{
+    return Players_Append((int)AI_UniqueName((const char*)g_typeNames68cf48[type]));
+}
+
+// [FUN_415940] createNewPlayer: a new player of a type (1 human, 2.., 5/6, 7, 8, 9) with a vehicle picked for
+// the type (veh, or the next suitable one), a trailer for type 2, and its name and place
+extern "C" BYTE* __cdecl Ai_CreateNewPlayer(int type, int order, int veh)
+{
+    Trace_EnterBuffered(s_createNewPlayer);
+    BYTE* p = (BYTE*)order;
+    switch (type) {
+    case 1: {
+        p = Players_Append((int)AI_UniqueName2((const char*)g_typeNames68cf48[type], order));
+        F(double, p, 128) = g_newPlayer68cfe8;
+        int r;
+        if (g_humanVehicleKey68d144) {
+            BYTE* o = (BYTE*)operator new(48);
+            F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, *Vehicle_IndexByKey(&r, g_humanVehicleKey68d144)) : 0;
+        } else if (g_jeep68d178) {
+            BYTE* o = (BYTE*)operator new(48);
+            F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, *Vehicle_IndexByKey(&r, (int)"JEEP_TOYOTA_GREEN")) : 0;
+        } else {
+            BYTE* o = (BYTE*)operator new(48);
+            F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, *Vehicle_IndexByName(&r, g_truckName66c60c, g_humanOwner68d148)) : 0;
+        }
+        break;
+    }
+    case 2: {
+        p = Players_AppendNamed(type);
+        F(double, p, 128) = g_newPlayer68cfe8;
+        int vi;
+        for (;;) {
+            vi = Vehicle_Pick(type);
+            if (!(g_68d188 && F(int, g_vehicles[vi], 32) != 3) && Vehicle_HasFree(vi, 2))
+                break;
+            g_typeCounters68a830[type]++;
+        }
+        int v;
+        AI_StoreInt(&v, vi);
+        BYTE* o = (BYTE*)operator new(48);
+        F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, v) : 0;
+        BYTE* rec = (BYTE*)g_vehicles[v];
+        if (F(BYTE*, rec, 96) != F(BYTE*, rec, 100)) {
+            int* list = F(int*, rec, 96);
+            unsigned n = (unsigned)(F(int*, rec, 100) - list);
+            unsigned k = Rng_Random(&g_rng68b9c8, 0, n);
+            BYTE* t = (BYTE*)operator new(48);
+            int tv;
+            F(BYTE*, p, 512) = t ? PresentVehicle_New_At(t, *AI_StoreInt(&tv, list[k])) : 0;
+        }
+        g_typeCounters68a830[type]++;
+        break;
+    }
+    case 7: {
+        p = Players_AppendNamed(type);
+        if (veh == -1) {
+            int vi;
+            for (;;) {
+                vi = Vehicle_Pick(type);
+                if (Vehicle_HasFree(vi, 7) || Vehicle_HasFree(vi, 2))
+                    break;
+                g_typeCounters68a830[type]++;
+            }
+            veh = *AI_StoreInt(&veh, vi);
+            g_typeCounters68a830[type]++;
+        }
+        BYTE* o = (BYTE*)operator new(48);
+        F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, veh) : 0;
+        break;
+    }
+    case 8: {
+        p = Players_AppendNamed(type);
+        int vi;
+        for (;;) {
+            vi = Vehicle_Pick(type);
+            if (Vehicle_HasFree(vi, 7) || Vehicle_HasFree(vi, 8) || Vehicle_HasFree(vi, 2))
+                break;
+            g_typeCounters68a830[type]++;
+        }
+        BYTE* o = (BYTE*)operator new(48);
+        int v;
+        F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, *AI_StoreInt(&v, vi)) : 0;
+        g_typeCounters68a830[type]++;
+        break;
+    }
+    case 9: {
+        p = Players_AppendNamed(type);
+        if (veh == -1) {
+            int vi;
+            for (;;) {
+                vi = Vehicle_Pick(type);
+                if (Vehicle_HasFree(vi, 9) || Vehicle_HasFree(vi, 2) || (Vehicle_HasFree(vi, 7) && g_allowKind7_68d1a0))
+                    break;
+                g_typeCounters68a830[type]++;
+            }
+            veh = *AI_StoreInt(&veh, vi);
+            g_typeCounters68a830[type]++;
+        }
+        BYTE* o = (BYTE*)operator new(48);
+        F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, veh) : 0;
+        break;
+    }
+    case 5:
+    case 6: {
+        p = Players_AppendNamed(type);
+        unsigned i = g_typeCounters68a830[type];
+        unsigned count = (unsigned)(g_vehiclesEnd - g_vehicles);
+        while (!Vehicle_HasFree(i, type))
+            i = (i + 1) % count;
+        BYTE* o = (BYTE*)operator new(48);
+        int v;
+        F(BYTE*, p, 508) = o ? PresentVehicle_New_At(o, *AI_StoreInt(&v, i)) : 0;
+        g_typeCounters68a830[type] = (i + 1) % (unsigned)(g_vehiclesEnd - g_vehicles);
+        break;
+    }
+    }
+    F(int, p, 84) = type;
+    if (type == 1) {
+        F(BYTE*, p, 268) = F(BYTE*, p, 264);
+        const char* name = g_humanName68d0a8;
+        CallThis(FUN_44c220, p + 264, F(BYTE*, p, 268), name, name + strlen(name) + 1);
+    } else {
+        CallThis(FUN_474160, p, CallC<int>(FUN_4148a0, p));
+        PodVec_Assign((BYTE**)(p + 264), 0, (BYTE* const*)(g_images68a958 + F(int, p, 984) * 56 + 4));
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_createNewPlayer);
+    return p;
+}
