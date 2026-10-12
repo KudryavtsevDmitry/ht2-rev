@@ -10900,3 +10900,143 @@ steps:
     Trace_CopyName(s_actOnArrival);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// reUncontradict
+
+static const char s_reUncontradict[] = "reUncontradict()";
+
+// the position relaxation of getNoncontradictoryPositionLong: up to 256 rounds of pairwise repulsion of
+// points closer than 20, each moving its position along its road
+static void Positions_Relax(unsigned n, BYTE** nodes, DVec3* points, PositionId* posids)
+{
+    for (int round = 0; round < 256; round++) {
+        BYTE* f[3];
+        char alloc;
+        CallThis(FUN_44a4c0, f, n, &alloc);
+        DVec3 zero = {0.0, 0.0, 0.0};
+        f[1] = CallC<BYTE*>(FUN_4661d0, f[0], n, &zero, 0);
+        DVec3* force = (DVec3*)f[0];
+        bool moved = false;
+        for (unsigned i = 0; i < n; i++)
+            for (unsigned j = 0; j < i; j++) {
+                DVec3 d;
+                Vec_Diff(&d, &points[i], &points[j]);
+                double len = x87_sqrt((d.x * d.x + d.y * d.y) + d.z * d.z);
+                if (!(len < 20.0))
+                    continue;
+                if (len > 1e-6) {
+                    double inv = 1.0 / len;
+                    d.x = inv * d.x;
+                    d.y = d.y * inv;
+                    d.z = d.z * inv;
+                }
+                Rng_Random(&g_rng68b9c8, 0, 1);
+                Rng_Random(&g_rng68b9c8, 0, 1);
+                double r = (double)Rng_Random(&g_rng68b9c8, 0, 100);
+                DVec3 jit = {r * 0.0001, r * 0.0001, r * 0.0001};
+                d.x = jit.x + d.x;
+                d.y = jit.y + d.y;
+                d.z = jit.z + d.z;
+                moved = true;
+                force[i].x = d.x + force[i].x;
+                force[i].y = d.y + force[i].y;
+                force[i].z = d.z + force[i].z;
+                force[j].x = force[j].x - d.x;
+                force[j].y = force[j].y - d.y;
+                force[j].z = force[j].z - d.z;
+            }
+        if (moved) {
+            for (unsigned k = 0; k < n; k++) {
+                DWORD fl = F(DWORD, nodes[k], 88);
+                if ((fl & 1) || ((fl >> 2) & 1))
+                    continue;
+                DVec3 tan;
+                Ai__GetTangent(&tan, posids[k]);
+                double dot = (tan.z * force[k].z + tan.y * force[k].y) + tan.x * force[k].x;
+                double step;
+                if (!(dot >= 0.0))
+                    step = -2.0;
+                else if (dot > 0.0)
+                    step = 2.0;
+                else
+                    continue;
+                DWORD* pd = (DWORD*)&posids[k];
+                void* head;
+                Iter_Players(&head, 0);
+                PositionId np;
+                PositionId* r = CallC<PositionId*>(FUN_43b570, &np, head, nodes[k], pd[0], pd[1], pd[2], pd[3], pd[4],
+                                                   pd[5], pd[6], pd[7], &step, 0);
+                posids[k] = *r;
+                Road_PointOf(&points[k], posids[k]);
+            }
+        }
+        CallThis(FUN_44a500, f);
+        if (!moved)
+            break;
+    }
+}
+
+// checks a PositionId: valid, and its object and segment exist on its road
+static void Position_Check(PositionId* res, int line)
+{
+    PositionId chk = *res;
+    if (!CallThis<int>(FUN_40a500, &chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", res->road, res->t, res->segment, res->object, res->m_24);
+        AiError(33, 100, s_mainFile, s_mainId, line, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    int road = res->road;
+    if (road >= 0 && (unsigned)road < (unsigned)(g_roadEdgesEnd - g_roadEdges)) {
+        BYTE* e = (BYTE*)g_roadEdges[road];
+        BYTE** objs = F(BYTE**, e, 120);
+        if (!(res->object < (int)(F(BYTE**, e, 124) - objs) && res->segment < CallVirt<int>(objs[res->object], 24)))
+            AiError(33, 100, s_mainFile, s_mainId, line, "Invalid Position Id", &g_aiEmpty, &g_aiEmpty);
+    }
+}
+
+// [FUN_438230] reUncontradict: spreads the players within 160 of the current one apart along their roads and
+// moves them there
+extern "C" void __cdecl Ai_ReUncontradict()
+{
+    Trace_EnterBuffered(s_reUncontradict);
+    int cur;
+    Player_FromId(&cur);
+    PositionId pos;
+    CallC(FUN_437520, &pos, cur);
+    DVec3 c;
+    Road_PointOf(&c, pos);
+    static BYTE* nodes[512];
+    static DVec3 points[512];
+    static PositionId posids[512];
+    unsigned n = 0;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        if (!AI_ListData(it))
+            continue;
+        BYTE* d = AI_ListData(it);
+        PositionId p;
+        memcpy(&p, d + 32, 32);
+        DVec3 q, v;
+        Road_PointOf(&q, p);
+        Vec_Diff(&v, &q, &c);
+        if (x87_sqrt((v.x * v.x + v.y * v.y) + v.z * v.z) < 160.0) {
+            nodes[n] = d;
+            points[n] = q;
+            posids[n] = p;
+            n++;
+        }
+    }
+    if (n < 2) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_reUncontradict);
+        return;
+    }
+    Positions_Relax(n, nodes, points, posids);
+    for (unsigned k = 0; k < n; k++) {
+        Position_Check(&posids[k], 15237);
+        DWORD fl = F(DWORD, nodes[k], 88);
+        if (!(fl & 1) && !((fl >> 2) & 1))
+            Player_SetPosition(nodes[k], 0, &posids[k]);
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_reUncontradict);
+}
