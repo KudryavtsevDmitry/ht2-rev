@@ -2440,7 +2440,7 @@ KING_ALIAS("_Str_56ae60", "_Messages_Add")
 extern "C" void __cdecl Item_41cff0(void* p);
 KING_ALIAS("_Item_41cff0", "FUN_41cff0")
 extern "C" void __cdecl Item_41f970(void* p);
-KING_ALIAS("_Item_41f970", "FUN_41f970")
+KING_ALIAS("_Item_41f970", "_Present_DestroyFound")
 extern "C" void __cdecl Obj_483c10(void* p);
 KING_ALIAS("_Obj_483c10", "_AI_UpdateSwitch")
 extern "C" void __cdecl Edge_SetFlag446ce0(int edge, int flag);
@@ -5882,7 +5882,7 @@ extern "C" PositionId* __cdecl Road_RandomFarPosition(PositionId* out)
 
 extern "C" void FUN_438c90(); KING_ALIAS("_FUN_438c90", "_Player_Set884")
 extern "C" void FUN_447b00(); KING_ALIAS("_FUN_447b00", "@List16_Construct@12")
-ASM_PROC(FUN_4484d0)
+extern "C" void FUN_4484d0(); KING_ALIAS("_FUN_4484d0", "@PlayerList_Construct@12")
 extern "C" void FUN_448cd0(); KING_ALIAS("_FUN_448cd0", "@Vec4b_Construct@20")
 extern "C" void FUN_449680(); KING_ALIAS("_FUN_449680", "@List64_Construct@12")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
@@ -7269,4 +7269,178 @@ extern "C" void* __cdecl Stl_Allocate(unsigned bytes)
         r = Stl_Refill((bytes + 7) & ~7u);
     g_stlLock = 0;
     return r;
+}
+
+ASM_PROC(FUN_459e90)    // a substring rope node's destructor
+extern "C" unsigned __cdecl Str_Rounded(unsigned n);              // a rope leaf's allocated size
+extern "C" void __cdecl Str_FreeRounded(void* p, unsigned size);   // frees a rope leaf's characters
+
+// the rope node frees below: tag at +8 (0 leaf, 1 concatenation, 2 substring, 3 function), refcount at +4,
+// size at +0, the C string at +16; the leaf's characters, or the children / function, at +20 and +24
+
+// frees a node's C string (allocated with size + 1)
+static void Rope_FreeCString(BYTE* n)
+{
+    void* c = F(void*, n, 16);
+    if (c && F(int, n, 0) + 1 != 0)
+        Ai_PoolFree(c, F(int, n, 0) + 1);
+}
+
+extern "C" void __fastcall Rope_Unref(BYTE* n, void*);
+
+// [FUN_44f1b0] frees a rope node and drops its children
+extern "C" void __fastcall Rope_FreeTree(BYTE* n, void*)
+{
+    switch ((signed char)F(int, n, 8)) {
+    case 0: {
+        if (F(void*, n, 20) != F(void*, n, 16))
+            Rope_FreeCString(n);
+        BYTE* data = F(BYTE*, n, 20);
+        unsigned size = Str_Rounded(F(int, n, 0));
+        if (size)
+            Ai_PoolFree(data, size);
+        Ai_PoolFree(n, 24);
+        break;
+    }
+    case 1: {
+        Rope_FreeCString(n);
+        BYTE* left = F(BYTE*, n, 20);
+        if (!InterlockedDecrement((LONG*)(left + 4)))
+            Rope_FreeTree(left, 0);
+        Rope_Unref(F(BYTE*, n, 24), 0);
+        Ai_PoolFree(n, 28);
+        break;
+    }
+    case 3:
+        Rope_FreeCString(n);
+        if (F(char, n, 24) && F(void*, n, 20))
+            CallVirt(F(void*, n, 20), 0, 1);
+        Ai_PoolFree(n, 28);
+        break;
+    case 2: {
+        BYTE* p = n ? n - 4 : 0;
+        CallThis(FUN_459e90, p);
+        Ai_PoolFree(p, 40);
+        break;
+    }
+    }
+}
+
+// [FUN_44b5e0] drops a reference to a rope node; frees it at 0 (its leaf characters with Str_FreeRounded)
+extern "C" void __fastcall Rope_Unref(BYTE* n, void*)
+{
+    if (InterlockedDecrement((LONG*)(n + 4)))
+        return;
+    switch ((signed char)F(int, n, 8)) {
+    case 0:
+        if (F(void*, n, 20) != F(void*, n, 16))
+            Rope_FreeCString(n);
+        Str_FreeRounded(F(void*, n, 20), F(int, n, 0));
+        Ai_PoolFree(n, 24);
+        break;
+    case 1:
+        Rope_FreeCString(n);
+        Rope_Unref(F(BYTE*, n, 20), 0);
+        Rope_Unref(F(BYTE*, n, 24), 0);
+        Ai_PoolFree(n, 28);
+        break;
+    case 3:
+        Rope_FreeCString(n);
+        if (F(char, n, 24) && F(void*, n, 20))
+            CallVirt(F(void*, n, 20), 0, 1);
+        Ai_PoolFree(n, 28);
+        break;
+    case 2: {
+        BYTE* p = n ? n - 4 : 0;
+        CallThis(FUN_459e90, p);
+        Ai_PoolFree(p, 40);
+        break;
+    }
+    }
+}
+
+// [FUN_4484d0] constructs the player list: an empty circular list with a 1000-byte head node
+extern "C" BYTE** __fastcall PlayerList_Construct(BYTE** self, void*, int)
+{
+    BYTE* head = (BYTE*)Stl_OomMalloc(1000);
+    *self = head;
+    F(BYTE*, head, 0) = head;
+    F(BYTE*, *self, 4) = *self;
+    return self;
+}
+
+extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
+extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+ASM_PROC(FUN_45e520)    // find in the players (out, first, last, a, b)
+ASM_PROC(FUN_45e710)
+ASM_PROC(FUN_45e8f0)    // the same with a pair and a third value
+ASM_PROC(FUN_45eba0)
+ASM_PROC(FUN_45ed90)
+ASM_PROC(FUN_45b8b0)    // find in the road nodes (first, last, a, b, c)
+ASM_PROC(FUN_45cdc0)
+
+// the player list iterator found by a search over the whole list; the end when nothing matches
+template <class... A>
+static int* Players_Search(void (*find)(), int* out, A... a)
+{
+    void* end;
+    void* begin;
+    CallThis(FUN_4afc20, &g_players, &end);
+    CallThis(FUN_4afbf0, &g_players, &begin);
+    int r;
+    CallC(find, &r, begin, end, a...);
+    *out = r;
+    return out;
+}
+
+// [FUN_4571a0]
+extern "C" int* __cdecl Players_Find4571a0(int* out, int a, int b) { return Players_Search(FUN_45e520, out, a, b); }
+// [FUN_457210]
+extern "C" int* __cdecl Players_Find457210(int* out, int a, int b) { return Players_Search(FUN_45e710, out, a, b); }
+// [FUN_4572f0]
+extern "C" int* __cdecl Players_Find4572f0(int* out, int a, int b) { return Players_Search(FUN_45eba0, out, a, b); }
+// [FUN_457360]
+extern "C" int* __cdecl Players_Find457360(int* out, int a, int b) { return Players_Search(FUN_45ed90, out, a, b); }
+// [FUN_457280]
+extern "C" int* __cdecl Players_Find457280(int* out, int a, int b, int c) { return Players_Search(FUN_45e8f0, out, a, b, c); }
+
+// the index of the road node found by a search, -1 if none
+static int* Nodes_Search(void (*find)(), int* out, int a, int b, int c)
+{
+    RoadNode** r = CallC<RoadNode**>(find, g_roadNodes, g_roadNodesEnd, a, b, c);
+    *out = r == g_roadNodesEnd ? -1 : (int)(r - g_roadNodes);
+    return out;
+}
+
+// [FUN_4558e0]
+extern "C" int* __cdecl Nodes_Find4558e0(int* out, int a, int b, int c) { return Nodes_Search(FUN_45b8b0, out, a, b, c); }
+// [FUN_456140]
+extern "C" int* __cdecl Nodes_Find456140(int* out, int a, int b, int c) { return Nodes_Search(FUN_45cdc0, out, a, b, c); }
+
+// [FUN_41f970] destroys the present found by the value; error 07391 if there is none
+extern "C" void __cdecl Present_DestroyFound(int v)
+{
+    void* end;
+    void* begin;
+    CallThis(FUN_4afc20, &g_68cf6c, &end);
+    CallThis(FUN_4afbf0, &g_68cf6c, &begin);
+    BYTE* r;
+    Range_CallC((BYTE*)&r, (DWORD)begin, (DWORD)end, v);
+    if (r == (BYTE*)g_68cf6c) {
+        AiError(0, 512, s_mainFile, s_mainId, 6980, "Internal error 07391", &g_aiEmpty, &g_aiEmpty);
+        return;
+    }
+    Present_Destroy(r);
+}
+
+ASM_PROC(FUN_44f340)    // a rope's tree with (a, b) applied (tree, a, b)
+
+// [FUN_44a840] replaces a rope's tree with the result of FUN_44f340 (a, b), dropping the old tree
+extern "C" BYTE** __fastcall Rope_Apply44a840(BYTE** self, void*, int a, int b)
+{
+    BYTE* r = CallC<BYTE*>(FUN_44f340, *self, a, b);
+    if (*self)
+        Rope_Unref(*self, 0);
+    *self = r;
+    return self;
 }
