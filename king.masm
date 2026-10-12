@@ -1123,6 +1123,7 @@ PUBLIC $L_68d100
 PUBLIC $L_68d128, $L_68d130, $L_68d138, $L_68d13c, $L_68d1b4
 PUBLIC $L_68b9a0, $L_68b9a8, $L_68b9b0
 PUBLIC $L_66c730, $L_68bacc, $L_68d1a4
+PUBLIC $L_68cfe8, $L_68d144, $L_68d148, $L_68d178, $L_68d1a0, $L_66c60c
 
 ;===================================
 _TEXT SEGMENT
@@ -37451,6 +37452,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_415940 PROC
 
             push -1
@@ -38608,6 +38611,10 @@ $L_416574           DWORD $L_4159a9
           DWORD $L_415e0b
           DWORD $L_415f36
           DWORD $L_4160b7
+ELSE
+EXTERN _Ai_CreateNewPlayer:PROC
+FUN_415940 TEXTEQU <_Ai_CreateNewPlayer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
