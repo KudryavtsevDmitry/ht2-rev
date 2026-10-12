@@ -7585,3 +7585,47 @@ extern "C" int* __cdecl Items_Find41b2a0(int* out, BYTE* p, int a, int b)
     *out = r == F(int*, p, 44) ? -1 : *r;
     return out;
 }
+
+ASM_PROC(FUN_466440)    // uninitialized_fill_n of 12-byte vectors (first, n, value, -)
+
+// [FUN_4024b0] the static vector at 68cbf8: 12 empty vectors
+extern "C" void __cdecl AI_Init68cbf8()
+{
+    BYTE** g = (BYTE**)&g_68cbf8;
+    g[0] = g[1] = g[2] = 0;
+    BYTE* p = (BYTE*)Stl_OomMalloc(144);
+    g[0] = g[1] = p;
+    g[2] = p + 144;
+    DWORD empty[3] = {0, 0, 0};
+    g[1] = CallC<BYTE*>(FUN_466440, p, 12, empty, 0);
+}
+
+
+// [FUN_457820] the positions in [first, last) of the players whose +36 list has a free kind-2 slot
+// or whose name is one of the BMW_M5_1..4
+extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** last)
+{
+    DWORD tmp[3] = {0, 0, 0};
+    for (BYTE** it = first; it != last; it++) {
+        BYTE* p = *it;
+        BYTE* v[3];
+        Vec4b_Copy((BYTE*)v, 0, (const BYTE**)(p + 36));
+        if (PtrVec_FindFree((int*)v[0], (int*)v[1], (int*)v[2], 2) || SchValue_IsSymbol(p + 8, "BMW_M5_1")
+            || SchValue_IsSymbol(p + 8, "BMW_M5_2") || SchValue_IsSymbol(p + 8, "BMW_M5_3")
+            || SchValue_IsSymbol(p + 8, "BMW_M5_4")) {
+            if (tmp[1] != tmp[2]) {
+                *(BYTE***)tmp[1] = it;
+                tmp[1] += 4;
+            } else
+                Vec4b_InsertC(tmp, 0, (DWORD*)tmp[1], (const DWORD*)&it);
+        }
+    }
+    unsigned n = (tmp[1] - tmp[0]) >> 2;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 4) : 0;
+    out[0] = out[1] = p;
+    out[2] = p + n * 4;
+    out[1] = (BYTE*)UninitCopyDwords((const DWORD*)tmp[0], (const DWORD*)tmp[1], (DWORD*)p);
+    if (tmp[2] != tmp[0])
+        Ai_PoolFree((void*)tmp[0], tmp[2] - tmp[0]);
+    return out;
+}
