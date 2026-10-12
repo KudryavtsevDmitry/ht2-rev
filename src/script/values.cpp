@@ -442,7 +442,7 @@ extern "C" BYTE* __fastcall Sch_At(BYTE** self, void*, int i)
 // medium-sized functions: a node's constructor, the reader's line buffer and
 // its error line
 
-ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 ASM_PROC(FUN_44bef0)    // vector<char>::insert(pos, &c)
 extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")    // deque<int>::push_back when the block is full
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
@@ -899,7 +899,7 @@ ASM_VAR(char, g_fmtG4b0c70, $L_671350)      // "%g"
 extern "C" void __cdecl Byte_Construct(BYTE* p, const BYTE* v);
 extern "C" int __cdecl toupper(int c);
 ASM_PROC(FUN_44bef0)    // vector<char>::insert(pos, &c)
-ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 
 static void Chars_PushBack(BYTE** v, char c)
 {

@@ -35,7 +35,7 @@ extern "C" DVec3* __cdecl Road_PointOf(DVec3* out, PositionId pos);
 extern "C" bool __cdecl SchValue_IsSymbol(const BYTE* v, const char* name);   // schitem.cpp
 extern "C" void __cdecl Player_UpdateFlags(BYTE* p);        // aiplay.cpp
 extern "C" void __fastcall CharVec_Assign(char** self, void*, const char* s);    // aiordr.cpp
-ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 
 typedef void** PtrVec;
 ASM_VAR(PtrVec, g_towns, $L_68cec0)
@@ -615,9 +615,9 @@ static BYTE* Fill(BYTE* s, const int* v, int n)
 typedef char AsmLabel[1];
 ASM_PROC(FUN_44b740)    // the STL node allocator: allocate (bytes)
 extern "C" void FUN_480550(); KING_ALIAS("_FUN_480550", "@SvRec480550_Construct@12")    // 52-byte record constructor (name)
-ASM_PROC(FUN_44d4e0)    // vector<pointer>::insert_aux
+extern "C" void FUN_44d4e0(); KING_ALIAS("_FUN_44d4e0", "@Vec4b_Insert44d4e0@16")    // vector<pointer>::insert_aux
 extern "C" void FUN_480580(); KING_ALIAS("_FUN_480580", "@SvRec480580_Construct@12")    // 24-byte record constructor (name)
-ASM_PROC(FUN_44d7a0)
+extern "C" void FUN_44d7a0(); KING_ALIAS("_FUN_44d7a0", "@Vec4b_Insert44d7a0@16")
 extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // script error (kind, fatal, got, expected)
 extern "C" void FUN_4b59f0(); KING_ALIAS("_FUN_4b59f0", "@FilePort_Construct@16")    // port constructor
@@ -1507,9 +1507,9 @@ extern "C" void __cdecl Copy24b(void* dst, const void* src);
 KING_ALIAS("_Copy24b", "_Rec40cda0_Construct")
 ASM_PROC(FUN_44c470)    // vector<8 bytes>::insert_aux
 ASM_PROC(FUN_44da60)    // vector<104 bytes>::insert_aux
-ASM_PROC(FUN_44e3f0)    // vector<4 bytes>::insert_aux
-ASM_PROC(FUN_44e970)
-ASM_PROC(FUN_44eef0)
+extern "C" void FUN_44e3f0(); KING_ALIAS("_FUN_44e3f0", "@Vec4b_Insert44e3f0@16")    // vector<4 bytes>::insert_aux
+extern "C" void FUN_44e970(); KING_ALIAS("_FUN_44e970", "@Vec4b_Insert44e970@16")
+extern "C" void FUN_44eef0(); KING_ALIAS("_FUN_44eef0", "@Vec4b_Insert44eef0@16")
 ASM_PROC(FUN_450330)    // vector<24 bytes>::insert_aux
 ASM_PROC(FUN_4505a0)
 
@@ -1788,8 +1788,8 @@ KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 ASM_PROC(FUN_451230)    // vector<36 bytes>::insert_aux
 ASM_PROC(FUN_4514b0)    // vector<4 bytes>::insert_aux
 ASM_PROC(FUN_451740)    // vector<16 bytes>::insert_aux
-ASM_PROC(FUN_451a80)
-ASM_PROC(FUN_451d40)
+extern "C" void FUN_451a80(); KING_ALIAS("_FUN_451a80", "@Vec4b_Insert451a80@16")
+extern "C" void FUN_451d40(); KING_ALIAS("_FUN_451d40", "@Vec4b_Insert451d40@16")
 ASM_PROC(FUN_452000)
 ASM_PROC(FUN_452610)    // vector<12 bytes>::insert_aux
 ASM_PROC(FUN_452bc0)    // vector<56 bytes>::insert_aux
@@ -2446,7 +2446,7 @@ extern "C" void __cdecl Obj_483c10(void* p);
 KING_ALIAS("_Obj_483c10", "_AI_UpdateSwitch")
 extern "C" void __cdecl Edge_SetFlag446ce0(int edge, int flag);
 KING_ALIAS("_Edge_SetFlag446ce0", "_Road_SetObjectFlags")
-ASM_PROC(FUN_452900)    // vector<void*>::insert(pos, &value)
+extern "C" void FUN_452900(); KING_ALIAS("_FUN_452900", "@Vec4b_Insert452900@16")    // vector<void*>::insert(pos, &value)
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")
@@ -6888,4 +6888,84 @@ extern "C" void __fastcall VecByteVec16_Destroy(BYTE** v, int)
     for (BYTE* p = v[0]; p != e; p += 16)
         VecB_FreeStorage((BYTE**)(p + 4), 0);
     VecStorage_Free(v[0], v[2], 16);
+}
+
+extern "C" void __fastcall CharVec_InsertRange(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last);
+
+// [FUN_44ceb0] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44ceb0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44d4e0] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44d4e0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44d7a0] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44d7a0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44e130] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44e130(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44e3f0] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44e3f0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44e6b0] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44e6b0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44e970] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44e970(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44ec30] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44ec30(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44eef0] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert44eef0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_451a80] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert451a80(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_451d40] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert451d40(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_452900] vector<4 bytes>::insert_aux (the same template as FUN_45cb00)
+extern "C" void __fastcall Vec4b_Insert452900(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_44c220] vector<char>::insert(pos, first, last) (the same template as FUN_46e460)
+extern "C" void __fastcall CharVec_InsertRange44c220(BYTE** self, void*, BYTE* pos, BYTE* first, BYTE* last)
+{
+    CharVec_InsertRange(self, 0, pos, first, last);
 }
