@@ -7629,3 +7629,334 @@ extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** las
         Ai_PoolFree((void*)tmp[0], tmp[2] - tmp[0]);
     return out;
 }
+
+// ---------------------------------------------------------------------------
+// placing the presents
+
+ASM_PROC(FUN_45dbb0)    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
+ASM_PROC(FUN_471780)    // an order's route for a position (order, PositionId32)
+ASM_PROC(FUN_450960)    // vector<order>::insert_aux (thiscall pos, order)
+ASM_PROC(FUN_41b320)    // a cargo present's place (cargo, PositionId32)
+extern "C" void FUN_44ab90(); KING_ALIAS("_FUN_44ab90", "@Vec16_Free@8")
+extern "C" BYTE* __fastcall Order_Construct(BYTE* self, void*);                 // cargo_orders.cpp
+extern "C" void __cdecl Order_SetPrice(BYTE* pl, int* o, char direct, char urgent);
+ASM_VAR(PtrVec, g_spots68d0b8, $L_68d0b8)
+ASM_VAR(PtrVec, g_spots68d0bc, $L_68d0bc)
+ASM_VAR(int, g_hiddenMax68a98c, $L_68a98c)
+ASM_VAR(int, g_baseMax68cf54, $L_68cf54)
+ASM_VAR(int, g_roadMax68d0a0, $L_68d0a0)
+ASM_VAR(int, g_cargoMax68a964, $L_68a964)
+ASM_VAR(int, g_parkingMax68bb54, $L_68bb54)
+typedef void (__cdecl* PresentHook)(int id, int added);
+ASM_VAR(PresentHook, g_presentHook68d11c, $L_68d11c)
+
+// a spot's weight for a kind: 0.75 ^ its use count when the spot is of the kind
+static double Spot_Weight(BYTE* spot, int* kind)
+{
+    return F(int, spot, 28) == *kind ? x87_pow(0.75, (double)F(int, spot, 40)) : 0.0;
+}
+
+static double Vehicle_Weight(BYTE* v, int* node)
+{
+    return Order_ValueAt(node, 0, (int*)v);
+}
+
+// picks an element of [first, last) at random by its positive weight; last if none has one
+static void** PickWeighted(void** first, void** last, double (*weight)(BYTE*, int*), int* ctx)
+{
+    int n = (int)(last - first);
+    void*** its = (void***)operator new(n * sizeof(void**) + 4);
+    double* ws = (double*)operator new(n * sizeof(double) + 8);
+    int k = 0;
+    double sum = 0.0;
+    for (void** it = first; it != last; it++) {
+        double w = weight((BYTE*)*it, ctx);
+        if (w > 0.0) {
+            sum = w + sum;
+            its[k] = it;
+            ws[k++] = w;
+        }
+    }
+    void** r = last;
+    if (k == 1)
+        r = its[0];
+    else if (k > 1) {
+        double target = (double)Rng_Random(&g_rng68b9c8, 0, 1000000) * sum * 1e-6;
+        double acc = 0.0;
+        for (int i = 0; i < k; i++) {
+            if (!(target < acc) && !(acc + ws[i] < target)) {
+                r = its[i];
+                break;
+            }
+            acc += ws[i];
+        }
+    }
+    operator delete(its);
+    operator delete(ws);
+    return r;
+}
+
+// the road node for a kind of spot, -1 if none
+static int Present_FindNode(const char* kind, const DWORD* state, double t)
+{
+    DWORD pred[10];
+    pred[0] = (DWORD)kind;
+    pred[1] = 0;
+    memcpy(pred + 2, state, 24);
+    memcpy(pred + 8, &t, 8);
+    RoadNode** r = CallC<RoadNode**>(FUN_45dbb0, g_roadNodes, g_roadNodesEnd, pred[0], pred[1], pred[2], pred[3],
+                                     pred[4], pred[5], pred[6], pred[7], pred[8], pred[9], &g_rng68b9c8);
+    if (r == g_roadNodesEnd)
+        return -1;
+    return (int)(r - g_roadNodes);
+}
+
+// a new 112-byte present at a road node with flags
+static BYTE* Present_New(int node, DWORD flags)
+{
+    BYTE* p = (BYTE*)operator new(112);
+    if (p) {
+        F(int, p, 0) = -1;
+        F(int, p, 4) = 0x12345678;
+        F(int, p, 8) = 0;
+        F(int, p, 12) = -1;
+        F(int, p, 16) = -1;
+        F(int, p, 20) = 0;
+        F(int, p, 24) = -1;
+        Position_InitNone((PositionId*)(p + 56), 0);
+        F(int, p, 96) = -1;
+        F(int, p, 88) = 0;
+        F(int, p, 100) = 0x7fefffff;
+        F(BYTE, p, 104) = 0;
+        F(int, p, 108) = -1;
+    }
+    F(int, p, 24) = node;
+    F(DWORD, p, 8) |= flags;
+    return p;
+}
+
+// a present's position: its node's point and that point's PositionId
+static void Present_SetPosition(BYTE* p, int node)
+{
+    memcpy(p + 32, g_68cf00[node] + 48, 24);
+    BYTE tmp[32];
+    memcpy(p + 56, CallC<BYTE*>(FUN_436900, tmp, p + 32), 32);
+}
+
+// a vehicle's 48-byte record of a present: the vehicle, 1.0, 19 entries of {0, 1.0}, an empty vector
+static BYTE* PresentVehicle_New(int vehicle)
+{
+    BYTE* o = (BYTE*)operator new(48);
+    if (!o)
+        return 0;
+    F(int, o, 0) = -1;
+    F(int, o, 4) = vehicle;
+    F(DWORD, o, 8) = 0;
+    F(DWORD, o, 12) = 0x3ff00000;
+    DWORD v[4] = {0, 0, 0, 0x3ff00000};
+    char alloc;
+    Vec16b_Construct((DWORD*)(o + 16), 0, 19, v, 0);
+    CallThis(FUN_487730, o + 28, &alloc);
+    F(int, o, 40) = 0;
+    return o;
+}
+
+// gives a present a spot (weighted for the kind) and counts the spot's use; error when there is none
+static void Present_TakeSpot(BYTE* p, int kind, int line)
+{
+    void** s = PickWeighted(g_spots68d0b8, g_spots68d0bc, Spot_Weight, &kind);
+    if (s == g_spots68d0bc) {
+        AiError(0, 100, s_mainFile, s_mainId, line, "Internal error 9874", &g_aiEmpty, &g_aiEmpty);
+        return;
+    }
+    F(int, p, 108) = (int)(s - g_spots68d0b8);
+    F(int, *s, 40)++;
+}
+
+// appends a present to the list and tells the hook; at t = 0 also steps the AI
+static void Present_Add(BYTE* p, double t)
+{
+    int id;
+    Presents_Append(&id, (int)p);
+    g_presentHook68d11c(id, 1);
+    if (x87_eq(t, 0.0))
+        AI_Step3();
+}
+
+static void Order_Destroy(BYTE* o)
+{
+    for (BYTE* e = F(BYTE*, o, 120); e != F(BYTE*, o, 124); e += 16)
+        CallC(FUN_460d10, e);
+    CallThis(FUN_44ab90, o + 120);
+}
+
+// [FUN_41d340] places the missing presents of each kind (at most 1000 per kind and call): hidden ones, vehicles at a
+// base, vehicles on a road with an order, hidden cargo and parked ones
+extern "C" void __cdecl Ai_PlacePresents(double t)
+{
+    if (g_roadNodes == g_roadNodesEnd)
+        return;
+    DWORD state[6] = {0, 0, 0, 0, 0, 0};
+    int cur;
+    if (*Player_FromId(&cur) != (int)g_players) {
+        int pl;
+        Player_FromId(&pl);
+        BYTE buf[24];
+        memcpy(state, Player_CopyState(buf, (BYTE*)pl), 24);
+    }
+
+    for (int i = 0; g_68a968 < g_hiddenMax68a98c; ) {
+        int node = Present_FindNode("pos_hidden", state, t);
+        if (node == -1)
+            break;
+        BYTE* p = Present_New(node, 16);
+        Present_SetPosition(p, node);
+        F(DWORD, g_68cf00[node], 12) |= 16;
+        g_68a968++;
+        Present_TakeSpot(p, 2, 6573);
+        Present_Add(p, t);
+        if (++i >= 1000)
+            break;
+    }
+
+    for (int i = 0; g_68d01c < g_baseMax68cf54; ) {
+        int node = Present_FindNode("pos_base", state, t);
+        if (node == -1)
+            break;
+        void** v = PickWeighted(g_vehicles, g_vehiclesEnd, Vehicle_Weight, &node);
+        if (v == g_vehiclesEnd) {
+            AiError(0, 1, s_mainFile, s_mainId, 6596, "Internal error 1945", &g_aiEmpty, &g_aiEmpty);
+            break;
+        }
+        F(double, *v, 112) *= 0.75;
+        BYTE* p = Present_New(node, 0);
+        F(BYTE*, p, 20) = PresentVehicle_New((int)(v - g_vehicles));
+        F(DWORD, p, 8) |= 32;
+        Present_SetPosition(p, node);
+        F(DWORD, g_68cf00[node], 12) |= 16;
+        g_68d01c++;
+        Present_Add(p, t);
+        if (++i >= 1000)
+            break;
+    }
+
+    for (int i = 0; g_68d0e4 < g_roadMax68d0a0; ) {
+        int node = Present_FindNode("pos_road", state, t);
+        if (node == -1)
+            break;
+        int none = -1;
+        void** v = PickWeighted(g_vehicles, g_vehiclesEnd, Vehicle_Weight, &none);
+        if (v == g_vehiclesEnd) {
+            AiError(0, 1, s_mainFile, s_mainId, 6627, "Internal error 1945", &g_aiEmpty, &g_aiEmpty);
+            break;
+        }
+        F(double, *v, 112) *= 0.75;
+        BYTE* p = Present_New(node, 0);
+        BYTE* o = PresentVehicle_New((int)(v - g_vehicles));
+        F(BYTE*, p, 20) = o;
+        F(DWORD, p, 8) |= 96;
+        Present_SetPosition(p, node);
+        F(DWORD, g_68cf00[node], 12) |= 16;
+        g_68d0e4++;
+
+        BYTE order[144];
+        Order_Construct(order, 0);
+        int town, kind, r;
+        Town_Nearest(&town, (const DVec3*)(p + 32));
+        if (F(BYTE, *v, 4) & 1)
+            kind = *Recs104_Random(&r, 4, 4);
+        else {
+            kind = *Items_Find41b2a0(&r, (BYTE*)g_towns[town], 0, 4);
+            if (kind == -1) {
+                town = *Town_NearestOther(&r, town);
+                kind = *Items_Find41b2a0(&r, (BYTE*)g_towns[town], 0, 4);
+                if (kind == -1)
+                    kind = *Recs104_Random(&r, 0, 4);
+            }
+        }
+        F(int, order, 0) = kind;
+        F(int, order, 12) = *Town_Find2(&r, (int)g_towns[town], kind, (int)&g_rng68b9c8);
+        if (F(int, order, 12) == -1) {
+            Order_Destroy(order);
+            break;
+        }
+        DWORD pos[8];
+        memcpy(order + 24, p + 56, 32);
+        memcpy(pos, p + 56, 32);
+        CallC(FUN_471780, order, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7]);
+        F(double, order, 88) *= 1.3;
+        F(int, order, 104) = 2;
+        double price = 0.0, load = 0.0, out = 0.0;
+        Vehicle_DealCosts(F(int, o, 4), &price, &load, &out, g_68ccb8 + F(int, order, 0) * 104);
+        F(double, order, 56) = out;
+        if (out < 0.0)
+            AiError(0, 512, s_mainFile, s_mainId, 6688, "Q<0", &g_aiEmpty, &g_aiEmpty);
+        Order_SetPrice((BYTE*)g_players, (int*)order, 1, 1);
+        BYTE** orders = (BYTE**)(o + 28);
+        if (orders[1] != orders[2]) {
+            Rec458a80_Construct(orders[1], order);
+            orders[1] += 144;
+        } else
+            CallThis(FUN_450960, orders, orders[1], order);
+        Present_Add(p, t);
+        Order_Destroy(order);
+        if (++i >= 1000)
+            break;
+    }
+
+    for (int i = 0; g_68cfe4 < g_cargoMax68a964; ) {
+        int node = Present_FindNode("pos_hidden", state, t);
+        if (node == -1)
+            break;
+        BYTE* p = Present_New(node, 64);
+        F(DWORD, g_68cf00[node], 12) |= 16;
+        Present_SetPosition(p, node);
+        g_68cfe4++;
+        int kind, r;
+        Recs104_Random(&kind, 0, 4);
+        BYTE* c = (BYTE*)operator new(32);
+        if (c) {
+            int town = *Town_Find1(&r, kind);
+            F(int, c, 0) = kind;
+            F(int, c, 4) = -1;
+            F(int, c, 8) = -1;
+            F(int, c, 12) = town;
+            F(int, c, 16) = 0;
+            F(int, c, 24) = 0;
+            F(int, c, 20) = 0;
+            F(int, c, 28) = 0;
+        }
+        F(BYTE*, p, 88) = c;
+        PositionId pos;
+        DWORD* d = (DWORD*)&pos;
+        d[0] = (DWORD)-1;
+        d[1] = node;
+        d[2] = d[3] = d[4] = d[5] = d[6] = 0;
+        d[7] = (DWORD)-1;
+        DVec3 pt;
+        Road_PointOf(&pt, pos);
+        BYTE tmp[32];
+        DWORD id[8];
+        memcpy(id, CallC<BYTE*>(FUN_436900, tmp, &pt), 32);
+        CallC(FUN_41b320, c, id[0], id[1], id[2], id[3], id[4], id[5], id[6], id[7]);
+        Present_TakeSpot(p, 3, 6734);
+        Present_Add(p, t);
+        if (++i >= 1000)
+            break;
+    }
+
+    for (int i = 0; g_68cf34 < g_parkingMax68bb54; ) {
+        int node = Present_FindNode("pos_parking", state, t);
+        if (node == -1)
+            break;
+        BYTE* p = Present_New(node, 128);
+        Present_SetPosition(p, node);
+        F(DWORD, g_68cf00[node], 12) |= 16;
+        g_68cf34++;
+        Present_TakeSpot(p, 1, 6766);
+        F(double, p, 96) = CallC<double>(FUN_401000);
+        Present_Add(p, t);
+        if (++i >= 1000)
+            break;
+    }
+}

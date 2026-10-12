@@ -1118,6 +1118,7 @@ PUBLIC $L_670a7c, $L_670db8, $L_685a9c, $L_691e44
 PUBLIC $L_6767d0, $L_6772a0, $L_6772a8, $L_696878
 PUBLIC $L_67683c
 PUBLIC $L_68d210, $L_68d214, $L_68d218
+PUBLIC $L_68a964, $L_68a98c, $L_68bb54, $L_68cf54, $L_68d0a0, $L_68d0bc
 
 ;===================================
 _TEXT SEGMENT
@@ -49676,6 +49677,8 @@ $L_41d32b ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41d340 PROC
 
             push EBP
@@ -51704,6 +51707,10 @@ $L_41eb50::
             nop
             nop
 FUN_41d340 ENDP
+ELSE
+EXTERN _Ai_PlacePresents:PROC
+FUN_41d340 TEXTEQU <_Ai_PlacePresents>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
