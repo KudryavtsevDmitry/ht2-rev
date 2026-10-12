@@ -541,3 +541,24 @@ extern "C" DWORD* __cdecl Rec12_Construct(DWORD* p, const DWORD* src)
     }
     return p;
 }
+
+ASM_PROC(FUN_44b740)    // the STL node allocator: allocate (bytes)
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records (first, last, dest, -)
+
+// [FUN_487740] constructs count vectors of 12-byte records in this array, each a copy of src; the count at +24576
+extern "C" void __fastcall Vec12Array_Fill(BYTE* self, int, unsigned count, BYTE** src)
+{
+    for (unsigned i = 0; i < count; i++) {
+        BYTE** e = (BYTE**)(self + i * 12);
+        if (!e)
+            continue;
+        int n = (int)(src[1] - src[0]) / 12;
+        e[0] = e[1] = e[2] = 0;
+        BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+        e[0] = p;
+        e[1] = p;
+        e[2] = p + n * 12;
+        e[1] = CallC<BYTE*>(FUN_47e3e0, src[0], src[1], p, src);
+    }
+    *(unsigned*)(self + 24576) = count;
+}
