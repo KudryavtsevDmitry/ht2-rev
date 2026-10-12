@@ -9559,10 +9559,10 @@ extern "C" void __cdecl Ai_GetPresentData(BYTE* player, BYTE* present, BYTE* pd)
 // ---------------------------------------------------------------------------
 // loading a world file
 
-ASM_PROC(FUN_410340)    // reads a parking (reader, entry by value)
-ASM_PROC(FUN_40f840)    // reads a service
-ASM_PROC(FUN_410fe0)    // reads an obstacle
-ASM_PROC(FUN_411c00)    // reads people
+extern "C" void FUN_410340(); KING_ALIAS("_FUN_410340", "_Ai_ReadParking")    // reads a parking (reader, entry by value)
+extern "C" void FUN_40f840(); KING_ALIAS("_FUN_40f840", "_Ai_ReadService")    // reads a service
+extern "C" void FUN_410fe0(); KING_ALIAS("_FUN_410fe0", "_Ai_ReadObstacle")    // reads an obstacle
+extern "C" void FUN_411c00(); KING_ALIAS("_FUN_411c00", "_Ai_ReadPeople")    // reads people
 extern "C" void FUN_44de70(); KING_ALIAS("_FUN_44de70", "@Vec4b_InsertJ@16")
 extern "C" void FUN_44e130(); KING_ALIAS("_FUN_44e130", "@Vec4b_Insert44e130@16")
 extern "C" void FUN_44e6b0(); KING_ALIAS("_FUN_44e6b0", "@Vec4b_Insert44e6b0@16")
@@ -10151,4 +10151,375 @@ extern "C" BYTE* __cdecl Ai_CreateNewPlayer(int type, int order, int veh)
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_createNewPlayer);
     return p;
+}
+
+// ---------------------------------------------------------------------------
+// reading an obstacle
+
+extern "C" int* __cdecl Road_Between(int* out, int nodeA, int nodeB);              // road_graph.cpp
+extern "C" void FUN_447230(); KING_ALIAS("_FUN_447230", "@CharVec_Clear@8")
+
+// a node index by a name, -1 for an empty name
+static int Node_ByNameOrNone(const char* s)
+{
+    if (!strlen(s))
+        return -1;
+    int r;
+    return *Node_ByName(&r, s);
+}
+
+// [FUN_410fe0] reads an obstacle: (id name - - module text nodeA nodeB [text [text [(node...)]]]); its
+// position is between its two nodes (or at one of them), then at the last listed node
+extern "C" BYTE* __cdecl Ai_ReadObstacle(void* reader, StrRef h)
+{
+    BYTE* o = (BYTE*)operator new(128);
+    if (o) {
+        char alloc;
+        memset(o, 0, 12);
+        Rec_Init411be0((int*)(o + 12), 0);
+        F(int, o, 32) = 0;
+        memset(o + 36, 0, 12);
+        F(int, o, 48) = -1;
+        F(int, o, 52) = -1;
+        F(int, o, 56) = -1;
+        memset(o + 64, 0, 24);
+        CallThis(FUN_487730, o + 88, &alloc);
+        CallThis(FUN_487730, o + 100, &alloc);
+        CallThis(FUN_487730, o + 112, &alloc);
+    }
+    List_Advance(&h);
+    StrRef m;
+    Str_Member20(&m, &h);
+    Ref_Assign((StrRef*)(o + 36), &m);
+    Str_Release(&m);
+    Str_Member20(&m, &h);
+    PodVec_Assign((BYTE**)o, 0, (BYTE* const*)(m.ptr + 12));
+    Str_Release(&m);
+    List_Advance(&h);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    int r;
+    F(int, o, 12) = *Module_ByName(&r, F(const char*, m.ptr, 12));
+    Str_Release(&m);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    PodVec_Assign((BYTE**)(o + 16), 0, (BYTE* const*)(m.ptr + 12));
+    CallThis(FUN_4a36c0, &m);
+    List_Next(&h);
+    F(int, o, 48) = Node_ByNameOrNone(Head_Text(&h));
+    List_Next(&h);
+    F(int, o, 52) = Node_ByNameOrNone(Head_Text(&h));
+    if ((BYTE)h.flags == 2) {
+        List_Next(&h);
+        for (int k = 0; k < 2; k++) {
+            BYTE* text = o + 88 + k * 12;
+            if ((BYTE)h.flags == 2 && Head_Type(&h) == 3) {
+                Str_Member20(&m, &h);
+                PodVec_Assign((BYTE**)text, 0, (BYTE* const*)(m.ptr + 12));
+                CallThis(FUN_4a36c0, &m);
+            } else
+                CallThis(FUN_447230, text);
+            if ((BYTE)h.flags != 2)
+                break;
+            List_Next(&h);
+        }
+        if ((BYTE)h.flags == 2 && Head_Type(&h) == 2) {
+            StrRef p, t;
+            Str_Member20(&t, &h);
+            PairHandle_From((DWORD*)&p, 0, (const DWORD*)&t);
+            CallThis(FUN_4a36c0, &t);
+            while ((BYTE)p.flags == 2) {
+                StrRef s;
+                Str_Member20Checked(&t, &p);
+                StringHandle_From((DWORD*)&s, 0, (const DWORD*)&t);
+                CallThis(FUN_4a36c0, &t);
+                const char* name = Ref_Text(&s);
+                if (strlen(name)) {
+                    int n;
+                    Vec4_PushBackF(o + 112, 0, Node_ByName(&n, name));
+                }
+                CallThis(FUN_4a36c0, &s);
+                Pair_Advance(&p);
+            }
+            CallThis(FUN_4a36c0, &p);
+        }
+    }
+    int a = F(int, o, 48), b = F(int, o, 52);
+    if (a != -1 && b != -1) {
+        F(int, o, 56) = *Road_Between(&r, a, b);
+        DVec3 sum, mid;
+        DVec3_Add(&sum, (const DVec3*)(g_68cf00[F(int, o, 48)] + 48), (const DVec3*)(g_68cf00[F(int, o, 52)] + 48));
+        DVec3_Assign((DVec3*)(o + 64), 0, DVec3_Scale(&mid, 0.5, &sum));
+    } else if (a != -1)
+        DVec3_Assign((DVec3*)(o + 64), 0, (const DVec3*)(g_68cf00[a] + 48));
+    else if (b != -1)
+        DVec3_Assign((DVec3*)(o + 64), 0, (const DVec3*)(g_68cf00[b] + 48));
+    for (int* n = F(int*, o, 112); n != F(int*, o, 116); n++)
+        DVec3_Assign((DVec3*)(o + 64), 0, (const DVec3*)(g_68cf00[*n] + 48));
+    CallThis(FUN_4a36c0, &h);
+    return o;
+}
+
+// ---------------------------------------------------------------------------
+// people, parkings and services
+
+extern "C" void FUN_412300(); KING_ALIAS("_FUN_412300", "@Rec_Init412300@8")
+extern "C" void FUN_447c20(); KING_ALIAS("_FUN_447c20", "@Vec4_PushBackC@12")
+extern "C" void FUN_410e10(); KING_ALIAS("_FUN_410e10", "@Rec_Init410e10@8")
+extern "C" void FUN_448a70(); KING_ALIAS("_FUN_448a70", "@Vec36_PushBack@12")
+extern "C" void FUN_410df0(); KING_ALIAS("_FUN_410df0", "@CharVec_Str@8")
+extern "C" void FUN_448c00(); KING_ALIAS("_FUN_448c00", "@Vec4_PushBackD@12")
+ASM_VAR(AsmLabel, g_people68ceb0, $L_68ceb0)
+ASM_VAR(BYTE*, g_resources68cc08, $L_68cc08)
+ASM_VAR(BYTE*, g_resourcesEnd68cc0c, $L_68cc0c)
+
+// [FUN_411c00] reads people: (id module (kind name name' value)...) appended to the people list
+extern "C" void __cdecl Ai_ReadPeople(void* reader, StrRef h)
+{
+    List_Advance(&h);
+    int module;
+    {
+        StrRef m;
+        Str_Member20(&m, &h);
+        Module_ByName(&module, F(const char*, m.ptr, 12));
+        Str_Release(&m);
+    }
+    List_Advance(&h);
+    while ((BYTE)h.flags == 2 && Head_Type(&h) == 2) {
+        StrRef e;
+        Str_Member20(&e, &h);
+        BYTE* rec = (BYTE*)operator new(48);
+        if (rec)
+            rec = CallThis<BYTE*>(FUN_412300, rec);
+        if (Head_Is(&e, "UNCONDITIONAL"))
+            F(int, rec, 32) = 1;
+        else if (Head_Is(&e, "DAYONLY"))
+            F(int, rec, 32) = 2;
+        else if (Head_Is(&e, "GOODWEATHER"))
+            F(int, rec, 32) = 3;
+        else if (Head_Is(&e, "DAYGW"))
+            F(int, rec, 32) = 4;
+        else
+            AiError(0, 1, s_mainFile, s_mainId, 3283, "Undefined", &g_aiEmpty, &g_aiEmpty);
+        List_Next(&e);
+        StrRef m;
+        Str_Member20(&m, &e);
+        PodVec_Assign((BYTE**)rec, 0, (BYTE* const*)(m.ptr + 12));
+        CallThis(FUN_4a36c0, &m);
+        Str_Member20(&m, &e);
+        PodVec_Assign((BYTE**)(rec + 16), 0, (BYTE* const*)(m.ptr + 12));
+        CallThis(FUN_4a36c0, &m);
+        List_Next(&e);
+        Str_Member20(&m, &e);
+        F(double, rec, 40) = CallThis<double>(FUN_4b0e90, m.ptr);
+        CallThis(FUN_4a36c0, &m);
+        F(int, rec, 12) = module;
+        CallThis(FUN_447c20, g_people68ceb0, &rec);
+        CallThis(FUN_4a36c0, &e);
+        List_Advance(&h);
+    }
+    CallThis(FUN_4a36c0, &h);
+}
+
+// [FUN_410340] reads a parking: (id name - - text value - - ((name [flags [location]])...) [value])
+extern "C" BYTE* __cdecl Ai_ReadParking(void* reader, StrRef h)
+{
+    BYTE* o = (BYTE*)operator new(80);
+    if (o) {
+        char alloc;
+        memset(o, 0, 12);
+        CallThis(FUN_487730, o + 12, &alloc);
+        F(int, o, 24) = -1;
+        CallThis(FUN_487730, o + 28, &alloc);
+        F(int, o, 48) = 0;
+        F(int, o, 40) = 0;
+        F(int, o, 52) = 0;
+        memset(o + 56, 0, 24);
+    }
+    List_Advance(&h);
+    StrRef m;
+    Str_Member20(&m, &h);
+    Ref_Assign((StrRef*)o, &m);
+    Str_Release(&m);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    PodVec_Assign((BYTE**)(o + 12), 0, (BYTE* const*)(m.ptr + 12));
+    Str_Release(&m);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    F(int, o, 24) = CallThis<int>(FUN_4b0ea0, m.ptr);
+    Str_Release(&m);
+    List_Next(&h);
+    List_Next(&h);
+    StrRef l = {0, 0, 0};
+    Str_Member20(&m, &h);
+    Str_Assign(&l, 0, &m);
+    CallThis(FUN_4a36c0, &m);
+    while ((BYTE)l.flags == 2) {
+        BYTE rec[36];
+        CallThis(FUN_410e10, rec);
+        StrRef t, s;
+        Str_Member20(&t, &l);
+        List_Next(&t);
+        Str_Member20(&m, &t);
+        StringHandle_From((DWORD*)&s, 0, (const DWORD*)&m);
+        CallThis(FUN_4a36c0, &m);
+        CharVec** it = NameVec_Find((CharVec**)g_roadNodes, (CharVec**)g_roadNodesEnd, Ref_Text(&s));
+        if (it == (CharVec**)g_roadNodesEnd)
+            AiError(90, 1, s_mainFile, s_mainId, 3114, "Can not find node named", Ref_Text(&s), &g_aiEmpty);
+        else {
+            F(int, rec, 0) = (int)(it - (CharVec**)g_roadNodes);
+            List_Next(&t);
+            if ((BYTE)t.flags == 2) {
+                StrRef n;
+                Str_Member20(&m, &t);
+                NumberHandle_From((DWORD*)&n, 0, (const DWORD*)&m);
+                CallThis(FUN_4a36c0, &m);
+                if (n.flags || n.ptr)
+                    F(int, rec, 4) = CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n));
+                List_Next(&t);
+                if ((BYTE)t.flags == 2) {
+                    StrRef q;
+                    Str_Member20(&m, &t);
+                    StringHandle_From((DWORD*)&q, 0, (const DWORD*)&m);
+                    CallThis(FUN_4a36c0, &m);
+                    if (q.flags || q.ptr)
+                        PodVec_Assign((BYTE**)(rec + 12), 0, (BYTE* const*)(CallThis<BYTE*>(FUN_4aa430, &q) + 12));
+                    CallThis(FUN_4a36c0, &q);
+                }
+                if (F(BYTE*, rec, 12) == F(BYTE*, rec, 16) && (F(BYTE, rec, 4) & 4))
+                    AiError(0, 1, s_mainFile, s_mainId, 3137, "Location name not provided",
+                            CallThis<const char*>(FUN_410df0, g_roadNodes[F(int, rec, 0)]), &g_aiEmpty);
+                CallThis(FUN_4a36c0, &n);
+            }
+            CallThis(FUN_448a70, o + 28, rec);
+        }
+        CallThis(FUN_4a36c0, &s);
+        CallThis(FUN_4a36c0, &t);
+        CallThis(FUN_410e40, rec);
+        List_Next(&l);
+    }
+    List_Next(&h);
+    F(double, o, 48) = 4.0;
+    if ((BYTE)h.flags == 2) {
+        StrRef n;
+        Str_Member20(&m, &h);
+        NumberHandle_From((DWORD*)&n, 0, (const DWORD*)&m);
+        CallThis(FUN_4a36c0, &m);
+        if (n.flags || n.ptr)
+            F(double, o, 48) = CallThis<double>(FUN_4b0e90, CallThis<BYTE*>(FUN_4aa430, &n));
+        CallThis(FUN_4a36c0, &n);
+    }
+    if (F(BYTE*, o, 28) != F(BYTE*, o, 32))
+        DVec3_Assign((DVec3*)(o + 56), 0, (const DVec3*)(g_68cf00[F(int, F(BYTE*, o, 28), 0)] + 48));
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &h);
+    return o;
+}
+
+// [FUN_40f840] reads a service: (id name - text value node ((resource number)...) [(number...)]); the
+// resources set flags in the 19 resource entries
+extern "C" BYTE* __cdecl Ai_ReadService(void* reader, StrRef h)
+{
+    BYTE* o = (BYTE*)operator new(376);
+    if (o) {
+        char alloc;
+        for (int i = 0; i < 19; i++) {
+            F(DWORD, o, i * 16 + 8) = 0;
+            F(DWORD, o, i * 16) = 0;
+            F(DWORD, o, i * 16 + 12) = 0x3ff00000;
+        }
+        memset(o + 304, 0, 12);
+        CallThis(FUN_487730, o + 316, &alloc);
+        F(int, o, 332) = -1;
+        CallThis(FUN_487730, o + 360, &alloc);
+    }
+    List_Advance(&h);
+    StrRef m;
+    Str_Member20(&m, &h);
+    Ref_Assign((StrRef*)(o + 304), &m);
+    Str_Release(&m);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    PodVec_Assign((BYTE**)(o + 316), 0, (BYTE* const*)(m.ptr + 12));
+    Str_Release(&m);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    F(int, o, 328) = CallThis<int>(FUN_4b0ea0, m.ptr);
+    Str_Release(&m);
+    List_Next(&h);
+    {
+        Str_Member20(&m, &h);
+        int r;
+        F(int, o, 332) = *Node_ByName(&r, F(const char*, m.ptr, 12));
+        CallThis(FUN_4a36c0, &m);
+        if (F(int, o, 332) == -1) {
+            Str_Member20(&m, &h);
+            AiError(0, 100, s_mainFile, s_mainId, 3043, "Node not found", F(const char*, m.ptr, 12), &g_aiEmpty);
+            CallThis(FUN_4a36c0, &m);
+        } else
+            DVec3_Assign((DVec3*)(o + 336), 0, (const DVec3*)(g_68cf00[F(int, o, 332)] + 48));
+    }
+    List_Next(&h);
+    StrRef l = {0, 0, 0};
+    Str_Member20(&m, &h);
+    Str_Assign(&l, 0, &m);
+    CallThis(FUN_4a36c0, &m);
+    while ((BYTE)l.flags == 2) {
+        StrRef e;
+        Str_Member20(&e, &l);
+        if ((BYTE)e.flags == 2) {
+            StrRef id, n, nth, c;
+            Str_Member20(&m, &e);
+            Handle9_Init((void**)&id, 0, (void**)&m);
+            CallThis(FUN_4a36c0, &m);
+            Str_CopyConstruct(&c, 0, &e);
+            CallC(FUN_4af480, &nth, 1, c.ptr, c.len, c.flags);
+            NumberHandle_From((DWORD*)&n, 0, (const DWORD*)&nth);
+            CallThis(FUN_4a36c0, &nth);
+            StrRef c1, key, c2;
+            Str_CopyConstruct(&c1, 0, &id);
+            StrRef* k = Str_Construct(&key, 0, c1.ptr, c1.len, c1.flags);
+            Str_CopyConstruct(&c2, 0, k);
+            BYTE* end = (BYTE*)Rec_Get1((const int*)&g_resources68cc08, 0);
+            BYTE* begin = (BYTE*)Rec_Get0((const int*)&g_resources68cc08, 0);
+            BYTE* it = (BYTE*)Find_ValueD(begin, end, (DWORD)c2.ptr, c2.len, c2.flags);
+            CallThis(FUN_4a36c0, &key);
+            if (it == g_resourcesEnd68cc0c)
+                AiError(356, 1, s_mainFile, s_mainId, 3061, "Resource not found", Ref_Text(&id), &g_aiEmpty);
+            int idx = (int)(it - g_resources68cc08) / 12;
+            F(DWORD, o, idx * 16) |= CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n));
+            CallThis(FUN_4a36c0, &n);
+            CallThis(FUN_4a36c0, &id);
+        }
+        CallThis(FUN_4a36c0, &e);
+        List_Next(&l);
+    }
+    List_Next(&h);
+    if (h.flags || h.ptr) {
+        StrRef q;
+        Str_Member20(&q, &h);
+        if ((BYTE)q.flags == 2) {
+            StrRef p = {0, 0, 0};
+            Str_Assign(&p, 0, &q);
+            while ((BYTE)p.flags == 2) {
+                StrRef e;
+                Str_Member20(&e, &p);
+                if ((BYTE)e.flags == 6) {
+                    StrRef n;
+                    NumberHandle_From((DWORD*)&n, 0, (const DWORD*)&e);
+                    int v = CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n));
+                    CallThis(FUN_448c00, o + 360, &v);
+                    CallThis(FUN_4a36c0, &n);
+                }
+                CallThis(FUN_4a36c0, &e);
+                List_Next(&p);
+            }
+            CallThis(FUN_4a36c0, &p);
+        }
+        CallThis(FUN_4a36c0, &q);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &h);
+    return o;
 }
