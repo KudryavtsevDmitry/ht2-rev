@@ -93595,6 +93595,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_438230 PROC
 
             push EBP
@@ -94411,6 +94413,10 @@ $L_438c6d::
             pop EBP
             ret 
 FUN_438230 ENDP
+ELSE
+EXTERN _Ai_ReUncontradict:PROC
+FUN_438230 TEXTEQU <_Ai_ReUncontradict>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
