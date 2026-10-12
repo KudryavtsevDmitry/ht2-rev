@@ -10677,3 +10677,226 @@ extern "C" PositionId* __cdecl Ai_GetNoncontradictoryPosition(PositionId* out, B
     Trace_CopyName(s_getNoncontradictoryPositionLong);
     return out;
 }
+
+// ---------------------------------------------------------------------------
+// actOnArrival
+
+ASM_PROC(FUN_417820)    // a player's arrival at a position (player, PositionId32)
+ASM_PROC(FUN_4194a0)
+ASM_PROC(FUN_416b80)
+ASM_PROC(FUN_419760)
+ASM_PROC(FUN_4194e0)
+ASM_PROC(FUN_4185d0)
+ASM_PROC(FUN_417ed0)
+ASM_PROC(FUN_40a2a0)    // sends a player to a node (player, node)
+ASM_PROC(FUN_4180f0)    // sends a player to a town's order (player, town, order)
+extern "C" void __cdecl Player_SetDeadline(BYTE* p, double t);
+extern "C" int __cdecl Player_Call477bd0(BYTE* p, int a, int b);
+extern "C" int __cdecl Player_Call477c30(BYTE* p);
+extern "C" int __cdecl Ai_RandomOrder(int player, int town);
+ASM_VAR(int, g_maxRaceArrivals68d150b, $L_68d150)
+ASM_VAR(int, g_raceArrivals68d154, $L_68d154)
+
+static const char s_actOnArrival[] = "actOnArrival(PlayerId player)";
+
+// a competitor arrives: counts it, drops it and tells the player
+static void Competitor_Arrived(BYTE* p)
+{
+    g_68d164++;
+    Player_Leave(p, 0);
+    CallC(FUN_483cb0, Message_Text("COMPETITOR_ARRIVED"));
+}
+
+static void ArrivalSendTo(BYTE* p)
+{
+    int n;
+    Player_NodeOf(&n, p);
+    CallC(FUN_40a2a0, p, n);
+}
+
+// [FUN_419cb0] actOnArrival: a computer player reached its target: race bookkeeping, then the next step of
+// its job (cargo loading/unloading, a new order or a new node)
+extern "C" int __cdecl Ai_ActOnArrival(BYTE* p)
+{
+    Trace_EnterBuffered(s_actOnArrival);
+    if (Player_NotValid(p)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 5135, s_invalidId, s_playerIdType, g_numberText);
+    }
+    if (F(int, p, 92) == 1) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_actOnArrival);
+        return 0;
+    }
+    if (F(int, p, 92) == 8) {
+        DWORD* pos = (DWORD*)(p + 40);
+        CallC(FUN_417820, p, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7]);
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_actOnArrival);
+        return 0;
+    }
+    int mode = g_68d188;
+    if (mode == 1 || (mode == 0 && F(int, p, 100) == 5)) {
+        int count = F(int, p, 724);
+        if (count == 10) {
+            struct {
+                DWORD flags;
+                int count;
+                int level;
+                DWORD pad;
+                double delay;
+                double time;
+                double sum;
+                double value96;
+                double price;
+                double value;
+            } info = {0, 0, 0, 0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0};
+            info.delay = (double)(Rng_Random(&g_rng68b9c8, 0, 360) + 360);
+            if (F(DWORD, p, 96) & 0x4000)
+                F(double, p, 808) = CallC<double>(FUN_401000) - F(double, p, 792);
+            info.time = F(double, p, 808);
+            if (g_68d164 == 0 && g_68a980 != g_68a984) {
+                int n = ++F(int, p, 536);
+                info.count = n;
+                info.flags |= n <= 1 ? 1 : 3;
+                int level = Ftol(x87_sqrt((double)(n + 1)));
+                if (level > 3)
+                    level = 3;
+                info.level = level;
+                CallC(FUN_4774e0, p, info.delay, level);
+            } else
+                F(int, p, 536) = 0;
+            if (F(int, p, 92) != 1)
+                CallC(FUN_4015a0, p, 11, &info);
+            F(int, p, 724)++;
+            if (Player_UpdateFlagsGet(p))
+                Competitor_Arrived(p);
+            if (!Player_IsHuman(p))
+                Player_StopWaiting(p);
+            bool racing = false;
+            if (g_68d188) {
+                if (!Player_IsHuman(p))
+                    Player_Call477c30(p);
+                racing = g_68d188 != 0;
+            }
+            if (racing)
+                mode = g_68d188;
+            else if (!Player_IsHuman(p)) {
+                Player_StopWaiting(p);
+                F(int, p, 100) = 0;
+                Player_Call477bd0(p, 0, 0x40340000);
+                DWORD* pos = (DWORD*)(p + 40);
+                CallC(FUN_417820, p, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7]);
+                F(int, p, 724) = 0;
+                Player_UpdateFlags(p);
+                CallC(FUN_4194a0);
+                Buf_Append(&g_trace, 0, g_tagMpl, 8);
+                Buf_AppendString(&g_trace, 0, s_actOnArrival);
+                return 0;
+            } else
+                mode = g_68d188;
+        } else if (count > 10) {
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, s_actOnArrival);
+            return 0;
+        }
+    } else if (mode == 0)
+        goto steps;
+    if (mode == 2 && F(int, p, 724) < 11) {
+        if (F(int, p, 92) != 1)
+            CallC(FUN_4015a0, p, 11, 0);
+        F(int, p, 724) = 11;
+        if (!Player_IsHuman(p)) {
+            if (Player_UpdateFlagsGet(p))
+                Competitor_Arrived(p);
+            Player_StopWaiting(p);
+            Player_Call477c30(p);
+        }
+    }
+steps:
+    CallC(FUN_4015a0, p, 8, 0);
+    if (!CallC<int>(FUN_4015a0, p, 10, 0)) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_actOnArrival);
+        return 0;
+    }
+    mode = g_68d188;
+    if (mode == 1 || (mode == 0 && F(int, p, 100) == 5)) {
+        CallC(FUN_416b80, p);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Buf_AppendString(&g_trace, 0, s_actOnArrival);
+        return 0;
+    }
+    if (mode == 2) {
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Buf_AppendString(&g_trace, 0, s_actOnArrival);
+        return 0;
+    }
+    {
+        int s = F(int, p, 100);
+        if (s == 256)
+            AiError(0, 1, s_mainFile, s_mainId, 5270, "Internal error 073415", &g_aiEmpty, &g_aiEmpty);
+        else if (s == 257) {
+            F(DWORD, p, 96) |= 0x400;
+            double t = (double)(Rng_Random(&g_rng68b9c8, 0, 1500) + 1200);
+            Player_SetDeadline(p + 8, t);
+            BYTE* d = F(BYTE*, g_68cc98[F(int, p, 120)], 28) + F(int, p, 124) * 36;
+            F(DWORD, d, 4) |= 2;
+            if (++g_raceArrivals68d154 > g_maxRaceArrivals68d150b - 2) {
+                void* end;
+                void* begin;
+                CallThis(FUN_4afc20, &g_players, &end);
+                CallThis(FUN_4afbf0, &g_players, &begin);
+                BYTE* r;
+                Pick_RandomDueNode(&r, (BYTE*)begin, (BYTE*)end, 0, (DWORD*)g_rng68b9c8);
+                if (r != (BYTE*)g_players)
+                    CallC(FUN_419760, r);
+            }
+        } else if (F(int, p, 92) == 2) {
+            if (s == 4) {
+                if (!Player_FirstGoods(p + 8)) {
+                    F(int, p, 100) = 0;
+                    CallC(FUN_4194e0, p);
+                } else {
+                    int pid = -1;
+                    double q = -1000000.0;
+                    BYTE* drv = (BYTE*)Player_Driver(p);
+                    BYTE* town = (BYTE*)g_towns[F(int, drv, 12)];
+                    Ai_LoadOrder(p, F(int, town, 24), 0, &q, &pid);
+                    F(int, p, 100) = 0;
+                    Player_Call477bd0(p, 0, 0x3ff00000);
+                    CallC(FUN_4194e0, p);
+                    Player_UpdateFlags(p);
+                }
+            } else if (s == 3) {
+                int pid = -1;
+                double q = 1000000.0;
+                Ai_LoadOrder(p, F(int, p, 128), F(int, p, 132), &q, &pid);
+                if (!Player_FirstGoods(p + 8))
+                    CallC(FUN_4185d0, p);
+                else {
+                    CallC(FUN_417ed0, p);
+                    F(int, p, 100) = 4;
+                }
+                Player_Call477bd0(p, 0, 0x3ff00000);
+            } else {
+                int town;
+                Town_Find4(&town, (int)g_rng68b9c8);
+                F(int, p, 128) = F(int, g_towns[town], 24);
+                int o = Ai_RandomOrder((int)p, F(int, p, 128));
+                F(int, Iter_Data(&p, 0), 124) = o;
+                if (F(int, p, 132) == -1)
+                    ArrivalSendTo(p);
+                else {
+                    CallC(FUN_4180f0, p, F(int, p, 128), F(int, p, 132));
+                    F(int, p, 100) = 3;
+                }
+                Player_Call477bd0(p, 0, 0x3ff00000);
+            }
+        } else
+            ArrivalSendTo(p);
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_actOnArrival);
+    return 0;
+}
