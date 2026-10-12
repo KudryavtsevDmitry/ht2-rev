@@ -1109,6 +1109,8 @@ PUBLIC $L_67667c, $L_6968f0, $L_6f2d18
 PUBLIC $L_68d11c
 PUBLIC $L_650900, $L_65094c, $L_6708e4
 PUBLIC $L_676958, $L_6d1db8
+PUBLIC $L_67b814, $L_67b824, $L_67b830, $L_67b840, $L_67b850, $L_67b860
+PUBLIC $L_67b870, $L_67b880, $L_67b890, $L_67b89c, $L_67b8a8, $L_6ce3e0
 
 ;===================================
 _TEXT SEGMENT
@@ -49109,6 +49111,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41ce50 PROC
 
             push -1
@@ -49288,6 +49292,10 @@ $L_41cfd2::
             nop
             nop
 FUN_41ce50 ENDP
+ELSE
+EXTERN @Rec41ce50_DestroyVector@8:PROC
+FUN_41ce50 TEXTEQU <@Rec41ce50_DestroyVector@8>
+ENDIF
 ALIGN 16
 FUN_41cff0 PROC
 
@@ -596030,6 +596038,8 @@ FUN_569750 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_569760 PROC
 
             push -1
@@ -596160,6 +596170,10 @@ $L_5698ad::
             add ESP,16
             ret 4
 FUN_569760 ENDP
+ELSE
+EXTERN @CopterScreen_Construct@12:PROC
+FUN_569760 TEXTEQU <@CopterScreen_Construct@12>
+ENDIF
 $L_569910 PROC
 
             push ESI

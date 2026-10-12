@@ -1521,3 +1521,70 @@ extern "C" void __cdecl Copter_ResetPlayers()
         F(DWORD, (BYTE*)g_6f33ac, 572) &= 0xfffeffff;
     }
 }
+
+ASM_PROC(FUN_5d31e0)    // scene object base constructor (kind, name)
+ASM_PROC(FUN_5d3570)
+ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
+ASM_PROC(FUN_5e8c60)    // loads a font
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // finds a scene object by name
+ASM_VAR(char, vt_64fdd4, $L_64fdd4)
+ASM_VAR(char, s_67b8a8, $L_67b8a8)
+ASM_VAR(char, g_6ce3e0, $L_6ce3e0)
+ASM_VAR(char, s_67b89c, $L_67b89c)
+ASM_VAR(char, s_67b890, $L_67b890)
+ASM_VAR(char, s_67b880, $L_67b880)
+ASM_VAR(char, s_67b870, $L_67b870)
+ASM_VAR(char, s_67b860, $L_67b860)
+ASM_VAR(char, s_67b850, $L_67b850)
+ASM_VAR(char, s_67b840, $L_67b840)
+ASM_VAR(char, s_67b830, $L_67b830)
+ASM_VAR(char, s_67b824, $L_67b824)
+ASM_VAR(char, s_67b814, $L_67b814)
+
+// [FUN_569760] constructor of the helicopter screen object: fonts, the mode's three scene objects, two more, the start time
+extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game)
+{
+    CallThis(FUN_5d31e0, self, 11, &s_67b8a8);
+    BYTE* t = self + 1220;
+    for (int off = 0; off <= 32; off += 4)
+        F(DWORD, t, off) = 0;
+    F(DWORD, t, 24) = 0x3f000000;
+    *(void**)self = &vt_64fdd4;
+    for (int k = 0; k < 4; k++) {
+        self[44 + k * 128] = 0;
+        self[684 + k * 128] = 0;
+    }
+    self[556] = 0;
+    F(int, self, 1216) = 0;
+    F(int, self, 1212) = 0;
+    F(int, self, 1204) = 0;
+    F(int, self, 1208) = 0;
+    F(int, self, 1200) = 0;
+    F(BYTE*, self, 40) = game;
+    CallThis(FUN_5d3570, game + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    F(int, self, 32) = 0;
+    F(int, self, 36) = 0;
+    F(int, self, 1196) = 0;
+    CallThis(FUN_5bd5a0, t, &g_6ce3e0);
+    F(int, t, 0) = 5;
+    F(void*, self, 1288) = CallC<void*>(FUN_5e8c60, &s_67b89c);
+    F(void*, self, 1292) = CallC<void*>(FUN_5e8c60, &s_67b890);
+    if (CallC<int>(FUN_568fd0) == 2) {
+        F(void*, self, 1260) = CallC<void*>(FUN_5ef3d0, &s_67b880);
+        F(void*, self, 1264) = CallC<void*>(FUN_5ef3d0, &s_67b870);
+        F(void*, self, 1256) = CallC<void*>(FUN_5ef3d0, &s_67b860);
+    } else {
+        F(void*, self, 1260) = CallC<void*>(FUN_5ef3d0, &s_67b850);
+        F(void*, self, 1264) = CallC<void*>(FUN_5ef3d0, &s_67b840);
+        F(void*, self, 1256) = CallC<void*>(FUN_5ef3d0, &s_67b830);
+    }
+    F(void*, self, 1280) = CallC<void*>(FUN_5ef3d0, &s_67b824);
+    F(void*, self, 1284) = CallC<void*>(FUN_5ef3d0, &s_67b814);
+    F(int, self, 1268) = 0;
+    F(int, self, 1276) = 0;
+    F(int, self, 1272) = (int)Timer_Now();
+    return self;
+}

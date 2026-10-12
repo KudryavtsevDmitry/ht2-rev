@@ -24,7 +24,7 @@ ASM_PROC(FUN_45d8f0)
 extern "C" void FUN_4604b0(); KING_ALIAS("_FUN_4604b0", "@Vec4b_InsertG@16")
 extern "C" void FUN_405870(); KING_ALIAS("_FUN_405870", "@Rec405870_Destroy@8")    // a list value's destructor
 extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")    // a 16-byte record's destructor
-ASM_PROC(FUN_41ce50)
+extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")
 
 struct Vec {
     BYTE* begin;

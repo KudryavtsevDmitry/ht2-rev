@@ -2961,7 +2961,7 @@ extern "C" void FUN_40cb60(); KING_ALIAS("_FUN_40cb60", "@Rec40cb60_Destroy@8") 
 extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@8")    // destroy a 192-byte record
 extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
-ASM_PROC(FUN_41ce50)    // destroy a 144-byte order
+extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")    // destroy a 144-byte order
 ASM_PROC(FUN_44fac0)    // hash table: grow for n entries
 ASM_PROC(FUN_44f2c0)    // a string's character (s, i)
 ASM_PROC(FUN_45a7d0)    // compare two strings
@@ -5385,7 +5385,7 @@ int __cdecl Ai_GetParkingPointInfo(int parking, int point, BYTE* pi)
 
 }
 
-ASM_PROC(FUN_41ce50)    // 144-byte record destructor
+extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")    // 144-byte record destructor
 extern "C" void FUN_474160(); KING_ALIAS("_FUN_474160", "@Player_SetPlace@12")    // player: set image (index)
 ASM_VAR(BYTE*, g_images68a958, $L_68a958)
 ASM_VAR(BYTE*, g_images68a95c, $L_68a95c)
@@ -7083,4 +7083,16 @@ extern "C" void __fastcall Rec410e40_FreeVectors(BYTE* self, int)
 {
     VecStorage_Free(F(BYTE*, self, 24), F(BYTE*, self, 32), 4);
     VecStorage_Free(F(BYTE*, self, 12), F(BYTE*, self, 20), 1);
+}
+
+extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")    // destroys a 16-byte element (flag)
+
+// [FUN_41ce50] destroys the vector of 16-byte elements at +120
+extern "C" void __fastcall Rec41ce50_DestroyVector(BYTE* self, int)
+{
+    BYTE** v = (BYTE**)(self + 120);
+    BYTE* e = v[1];
+    for (BYTE* p = v[0]; p != e; p += 16)
+        CallThis(FUN_461ae0, p, 0);
+    VecStorage_Free(v[0], v[2], 16);
 }
