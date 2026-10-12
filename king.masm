@@ -1108,6 +1108,7 @@ PUBLIC $L_66ff3c, $L_66ff40, $L_66ff58, $L_676644, $L_676658, $L_676668
 PUBLIC $L_67667c, $L_6968f0, $L_6f2d18
 PUBLIC $L_68d11c
 PUBLIC $L_650900, $L_65094c, $L_6708e4
+PUBLIC $L_676958, $L_6d1db8
 
 ;===================================
 _TEXT SEGMENT
@@ -10851,6 +10852,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_405b00 PROC
 
             sub ESP,64
@@ -10972,6 +10975,10 @@ $L_405be9::
             add ESP,64
             ret 
 FUN_405b00 ENDP
+ELSE
+EXTERN _Road_LinkObject:PROC
+FUN_405b00 TEXTEQU <_Road_LinkObject>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -242137,6 +242144,8 @@ FUN_487730 TEXTEQU <@Vec_Construct@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+IFDEF ASM_ROUTE_SEARCH
 FUN_487740 PROC
 
             push -1
@@ -242278,6 +242287,10 @@ $L_48788d::
             add ESP,24
             ret 8
 FUN_487740 ENDP
+ELSE
+EXTERN @Vec12Array_Fill@16:PROC
+FUN_487740 TEXTEQU <@Vec12Array_Fill@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -470030,6 +470043,8 @@ $L_513423 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5134b0 PROC
 
             sub ESP,12
@@ -470185,6 +470200,10 @@ $L_5135df::
             add ESP,12
             ret 
 FUN_5134b0 ENDP
+ELSE
+EXTERN @Settings_Load@8:PROC
+FUN_5134b0 TEXTEQU <@Settings_Load@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

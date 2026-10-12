@@ -1463,3 +1463,54 @@ extern "C" int __cdecl Shell_LeaveRace()
     CallThis(FUN_602df0, g_game696ca0 + 8336);
     return CallC<int>(FUN_512c70);
 }
+
+ASM_PROC(FUN_51bfa0)    // opens the save storage (path, mode), stdcall
+extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")    // a temporary wide string of a name
+ASM_PROC(FUN_513270)    // opens a stream of a storage (storage, name, mode)
+extern "C" void FUN_513850(); KING_ALIAS("_FUN_513850", "@Keys_Assign@8")
+ASM_PROC(FUN_513600)
+ASM_PROC(FUN_5147b0)
+ASM_VAR(char, s_stream676958, $L_676958)
+ASM_VAR(char, s_stream6d1db8, $L_6d1db8)
+
+// a COM method at vtbl+off
+template <class R = long, class... A>
+static R ComCall(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// [FUN_5134b0] loads the 376-byte settings at +528 from the save storage when its version stream says 4; otherwise resets them and writes version 4
+extern "C" void __fastcall Settings_Load(BYTE* self, int)
+{
+    void* stg = CallStd<void*>(FUN_51bfa0, g_6cecd8 + 632, 1);
+    void* s = 0;
+    int version = 0;
+    ULONG done;
+    ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, &s_stream676958), 0, 16, 0, &s);
+    if (s) {
+        ComCall(s, 12, &version, 4, &done);
+        ComCall(s, 8);
+    }
+    if (version > 0 && version == 4) {
+        s = CallC<void*>(FUN_513270, stg, &s_stream6d1db8, 1);
+        if (!s) {
+            ComCall(stg, 8);
+            CallThis(FUN_513850, self);
+            CallThis(FUN_513600, self);
+            return;
+        }
+        ComCall(s, 12, self + 528, 376, &done);
+    } else {
+        ComCall(stg, 8);
+        CallThis(FUN_513850, self);
+        CallThis(FUN_513600, self);
+        stg = CallStd<void*>(FUN_51bfa0, g_6cecd8 + 632, 2);
+        ComCall(stg, 12, CallC<const WCHAR*>(FUN_50bc90, &s_stream676958), 4113, 0, 0, &s);
+        version = 4;
+        ComCall(s, 16, &version, 4, &done);
+    }
+    ComCall(s, 8);
+    ComCall(stg, 8);
+    CallThis(FUN_5147b0, self);
+}

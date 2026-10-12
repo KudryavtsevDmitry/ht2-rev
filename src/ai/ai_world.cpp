@@ -7046,3 +7046,34 @@ extern "C" void __fastcall VecChar_Insert44bef0(BYTE** v, void*, BYTE* pos, cons
 {
     VecPod_InsertAux(v, pos, x, 1, FUN_46ecd0);
 }
+
+ASM_PROC(FUN_405730)    // the road node at a point (out, point, a, b)
+extern "C" void FUN_4545d0(); KING_ALIAS("_FUN_4545d0", "@Vec12_Insert4545d0@16")    // vector<12 bytes>::insert_aux
+
+// appends a 12-byte record to a vector at v
+static void Vec12_PushBack(BYTE** v, const DWORD* r)
+{
+    BYTE* e = v[1];
+    if (e != v[2]) {
+        if (e)
+            memcpy(e, r, 12);
+        v[1] += 12;
+    } else
+        CallThis(FUN_4545d0, v, e, r);
+}
+
+// [FUN_405b00] links a road object to the nodes at its two ends: {object, node A + 8, node B + 8} in both nodes' lists at +44
+extern "C" void __cdecl Road_LinkObject(BYTE* obj, int a, int b)
+{
+    BYTE p0[24], p1[24];
+    CallVirt(obj, 0, p0, 0.0, 0);
+    int n = CallVirt<int>(obj, 24);
+    CallVirt(obj, 0, p1, 1.0, n - 1);
+    BYTE* na[2];
+    CallC(FUN_405730, na, p0, a, b);
+    BYTE* nb[2];
+    CallC(FUN_405730, nb, p1, a, b);
+    DWORD r[3] = { (DWORD)obj, (DWORD)(na[0] + 8), (DWORD)(nb[0] + 8) };
+    Vec12_PushBack((BYTE**)(na[0] + 44), r);
+    Vec12_PushBack((BYTE**)(nb[0] + 44), r);
+}
