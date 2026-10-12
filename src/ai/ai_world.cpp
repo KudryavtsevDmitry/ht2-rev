@@ -9710,3 +9710,270 @@ extern "C" void __cdecl Ai_LoadWorld(const char* file)
     CallThis(FUN_4a36c0, &value);
     CallThis(FUN_4a36c0, &port);
 }
+
+// ---------------------------------------------------------------------------
+// loading the road network (*.way)
+
+extern "C" void FUN_44a490(); KING_ALIAS("_FUN_44a490", "@Vec1_Reserve@16")
+extern "C" void FUN_4611e0(); KING_ALIAS("_FUN_4611e0", "_Bytes_Construct")
+ASM_PROC(FUN_45b3d0)    // introsort loop of 12-byte records (first, last, 0, depth, cmp)
+extern "C" void FUN_45b4e0(); KING_ALIAS("_FUN_45b4e0", "_Sort_FinalInsertion12")
+ASM_PROC(FUN_488620)    // a way file parser's constructor
+ASM_PROC(FUN_4895b0)    // parses a way file (name)
+ASM_PROC(FUN_4886e0)    // the parser's destructor
+extern "C" void FUN_488350(); KING_ALIAS("_FUN_488350", "_Crc_File")
+extern "C" void FUN_4054a0(); KING_ALIAS("_FUN_4054a0", "_Registry52_Get")
+extern "C" void FUN_4055c0(); KING_ALIAS("_FUN_4055c0", "_Registry24_Get")
+ASM_PROC(FUN_4904e0)    // a B-line from points (out, points)
+extern "C" void FUN_48e8e0(); KING_ALIAS("_FUN_48e8e0", "@Rec_Make48d8f0@12")
+ASM_PROC(FUN_48dbb0)    // a B-line piece from a 580-byte item (thiscall item)
+extern "C" void FUN_459110(); KING_ALIAS("_FUN_459110", "@Vec1592_PushBack@12")
+extern "C" void FUN_46c960(); KING_ALIAS("_FUN_46c960", "@Mult46c960_DeletingDestructor@12")
+extern "C" void FUN_44a530(); KING_ALIAS("_FUN_44a530", "@Vec8_Free@8")
+extern "C" void FUN_447270(); KING_ALIAS("_FUN_447270", "@Vec24_FreeStorage@8")
+extern "C" void FUN_48a6e0(); KING_ALIAS("_FUN_48a6e0", "_Copy24s")
+ASM_PROC(FUN_48c620)    // a polyline from points (thiscall points)
+extern "C" void FUN_458e00(); KING_ALIAS("_FUN_458e00", "_Vec8b_AllocCopy@12")
+extern "C" void FUN_405b00(); KING_ALIAS("_FUN_405b00", "_Road_LinkObject")
+extern "C" void FUN_405f90(); KING_ALIAS("_FUN_405f90", "_Anchors_AttachNodes")
+ASM_PROC(FUN_406160)    // finishes the road network
+extern "C" void FUN_407380(); KING_ALIAS("_FUN_407380", "@Rec_Init407380@8")
+ASM_VAR(BYTE*, g_wayDir68bac8, $L_68bac8)
+ASM_VAR(BYTE*, g_wayDirEnd68bacc, $L_68bacc)
+ASM_VAR(DWORD, g_wayCrc66c730, $L_66c730)
+ASM_VAR(int, g_wayCount68d1a4, $L_68d1a4)
+ASM_VAR(AsmLabel, vt_roadObject64b62c, $L_64b62c)
+ASM_VAR(AsmLabel, vt_bline64b600, $L_64b600)
+ASM_VAR(AsmLabel, vt_polyline64b5c0, $L_64b5c0)
+
+// vector<8-byte>::operator=
+static void Vec8_Assign(BYTE** v, BYTE* const* src)
+{
+    if (v == (BYTE**)src)
+        return;
+    BYTE* sb = src[0];
+    BYTE* se = src[1];
+    unsigned n = (unsigned)(se - sb) >> 3;
+    if (n > (unsigned)(v[2] - v[0]) >> 3) {
+        BYTE* p = CallThis<BYTE*>(FUN_458e00, v, n, sb, se);
+        unsigned cap = (unsigned)(v[2] - v[0]) >> 3;
+        if (cap)
+            Ai_PoolFree(v[0], cap * 8);
+        v[0] = p;
+        v[2] = p + n * 8;
+    } else
+        memmove(v[0], sb, n * 8);
+    v[1] = v[0] + n * 8;
+}
+
+static const char* CharVec_Text(BYTE* v) { return F(BYTE*, v, 0) != F(BYTE*, v, 4) ? F(const char*, v, 0) : 0; }
+
+// [FUN_406600] loads the road network: every *.way file of the world directory (sorted), its modules'
+// segments (B-lines and polylines, short steps dropped) and nodes
+extern "C" void __cdecl Ai_LoadRoads()
+{
+    g_wayCrc66c730 = 0xffffffff;
+    g_wayCount68d1a4 = 0;
+    BYTE* files[3] = {0, 0, 0};
+    char alloc;
+    BYTE* path[3];
+    CallThis(FUN_44a490, path, (unsigned)(g_wayDirEnd68bacc - g_wayDir68bac8), &alloc);
+    memmove(path[0], g_wayDir68bac8, g_wayDirEnd68bacc - g_wayDir68bac8);
+    path[1] = path[0] + (g_wayDirEnd68bacc - g_wayDir68bac8);
+    char pattern[6] = {'*', '.', 'w', 'a', 'y', 0};
+    CallThis(FUN_44c220, path, path[1], pattern, pattern + 6);
+    WIN32_FIND_DATAA fd;
+    HANDLE fh = FindFirstFileA((const char*)path[0], &fd);
+    if (fh != INVALID_HANDLE_VALUE) {
+        do {
+            BYTE* name[3] = {0, 0, 0};
+            size_t n = strlen(fd.cFileName);
+            CallThis(FUN_44c220, name, (BYTE*)0, fd.cFileName, fd.cFileName + n + 1);
+            if (files[1] != files[2]) {
+                CallC(FUN_4611e0, files[1], &g_wayDir68bac8);
+                files[1] += 12;
+            } else
+                CallThis(FUN_452610, files, files[1], &g_wayDir68bac8);
+            BYTE* last = files[1] - 12;
+            CallThis(FUN_44c220, last, F(BYTE*, last, 4), name[0], name[1]);
+            if (name[2] != name[0])
+                Ai_PoolFree(name[0], name[2] - name[0]);
+        } while (FindNextFileA(fh, &fd));
+        FindClose(fh);
+    }
+    if (files[0] != files[1]) {
+        int k = 0;
+        for (int n = (int)(files[1] - files[0]) / 12; n != 1; n >>= 1)
+            k++;
+        CallC(FUN_45b3d0, files[0], files[1], 0, k * 2, 0);
+        CallC(FUN_45b4e0, files[0], files[1], 0);
+    }
+
+    for (BYTE* f = files[0]; f != files[1]; f += 12) {
+        AI_Step3();
+        BYTE parser[640];
+        CallThis(FUN_488620, parser);
+        CallC(FUN_488350, &g_wayCrc66c730, &g_wayCount68d1a4, F(BYTE*, f, 0));
+        CallThis(FUN_4895b0, parser, F(BYTE*, f, 0));
+        BYTE* head = F(BYTE*, parser, 24);
+        for (BYTE* it = F(BYTE*, head, 0); it != head; it = F(BYTE*, it, 0)) {
+            const char* modName = CharVec_Text(it + 8);
+            BYTE* reg52 = CallC<BYTE*>(FUN_4054a0, modName);
+            BYTE* reg24 = CallC<BYTE*>(FUN_4055c0, F(BYTE*, parser, 0));
+            if ((BYTE*)parser != reg52 + 16)
+                PodVec_Assign((BYTE**)(reg52 + 16), 0, (BYTE* const*)parser);
+
+            for (BYTE** sp = F(BYTE**, it, 20); sp != F(BYTE**, it, 24); sp++) {
+                BYTE* seg = *sp;
+                if ((F(BYTE*, seg, 20) - F(BYTE*, seg, 16)) / 24 <= 1)
+                    AiError(563, 1, s_mainFile, s_mainId, 1729, "Empty or single-point road segment found",
+                            CharVec_Text(it + 8), &g_aiEmpty);
+                BYTE* obj;
+                if (F(BYTE, seg, 12) & 1) {
+                    obj = (BYTE*)operator new(72);
+                    BYTE bline[40];
+                    BYTE items[16];
+                    bool made = false;
+                    if (obj) {
+                        BYTE* t = CallC<BYTE*>(FUN_4904e0, bline, F(BYTE*, seg, 16));
+                        BYTE** v = CallThis<BYTE**>(FUN_48e8e0, t, items);
+                        made = true;
+                        CallThis(FUN_407380, obj + 8);
+                        F(void*, obj, 0) = vt_roadObject64b62c;
+                        CallThis(FUN_487730, obj + 56, &alloc);
+                        F(void*, obj, 0) = vt_bline64b600;
+                        for (BYTE* e = v[0]; e != v[1]; e += 580) {
+                            BYTE piece[1600];
+                            BYTE* pc = CallThis<BYTE*>(FUN_48dbb0, piece, e);
+                            CallThis(FUN_459110, obj + 56, pc);
+                            CallThis(FUN_458910, piece);
+                        }
+                    }
+                    if (made) {
+                        BYTE** iv = (BYTE**)items;
+                        for (BYTE* e = iv[0]; e != iv[1]; e += 580)
+                            CallThis(FUN_46c960, e, 0);
+                        unsigned cnt = (unsigned)(iv[2] - iv[0]) / 580;
+                        if (cnt)
+                            Ai_PoolFree(iv[0], cnt * 580);
+                        CallThis(FUN_44a530, bline + 16);
+                        CallThis(FUN_447270, bline + 4);
+                    }
+                } else {
+                    BYTE** pts = (BYTE**)(seg + 16);
+                restart:
+                    {
+                        BYTE* a = pts[0];
+                        int idx = 0;
+                        for (BYTE* b = a + 24; a != pts[1] && b != pts[1]; a += 24, b += 24, idx++) {
+                            DVec3 d;
+                            Vec_Diff(&d, (const DVec3*)b, (const DVec3*)a);
+                            double len = x87_sqrt((d.y * d.y + d.z * d.z) + d.x * d.x);
+                            if (len < 1e-10) {
+                                if (b + 24 != pts[1])
+                                    CallC(FUN_48a6e0, b + 24, pts[1], b, 0, 0);
+                                pts[1] -= 24;
+                                goto restart;
+                            }
+                            if (len > 10000.0) {
+                                char text[256];
+                                const double* p = (const double*)a;
+                                const double* q = (const double*)b;
+                                sprintf(text, "%d [%g %g %g] [%g %g %g]", idx, p[0], p[1], p[2], q[0], q[1], q[2]);
+                                AiError(563, 100, s_mainFile, s_mainId, 1771, "Erroneous Bline segment data found ",
+                                        CharVec_Text(it + 8), text);
+                            }
+                        }
+                    }
+                    obj = (BYTE*)operator new(104);
+                    if (obj) {
+                        CallThis(FUN_407380, obj + 8);
+                        F(void*, obj, 0) = vt_roadObject64b62c;
+                        CallThis(FUN_48c620, obj + 56, seg + 16);
+                        F(void*, obj, 0) = vt_polyline64b5c0;
+                    }
+                    if (CallVirt<int>(obj, 24) < 1)
+                        AiError(563, 1, s_mainFile, s_mainId, 1789, "Empty or single-point road segment found (1)",
+                                CharVec_Text(it + 8), &g_aiEmpty);
+                }
+                F(DWORD, obj, 28) = F(DWORD, seg, 8);
+                F(DWORD, obj, 32) = F(DWORD, seg, 0);
+                F(DWORD, obj, 36) = F(DWORD, seg, 4);
+                Vec8_Assign((BYTE**)(obj + 40), (BYTE* const*)(seg + 28));
+                F(BYTE*, obj, 16) = reg52;
+                F(BYTE*, obj, 20) = reg24;
+                DWORD sf = F(DWORD, seg, 12);
+                if (sf & 4)
+                    F(DWORD, obj, 8) |= 4;
+                if (sf & 8)
+                    F(DWORD, obj, 8) = (F(DWORD, obj, 8) & ~4u) | 8;
+                if (sf & 16)
+                    F(DWORD, obj, 8) |= 16;
+                if (sf & 32)
+                    F(DWORD, obj, 8) |= 32;
+                if (sf & 64)
+                    F(DWORD, obj, 8) |= 192;
+                F(double, reg24, 16) = CallVirt<double>(obj, 36) + F(double, reg24, 16);
+                if (!(F(BYTE, seg, 12) & 1) && CallVirt<int>(obj, 24) < 1)
+                    AiError(563, 1, s_mainFile, s_mainId, 1824, "Empty or single-point road segment found (2)",
+                            CharVec_Text(it + 8), &g_aiEmpty);
+                CallC(FUN_405b00, obj, reg52, reg24);
+            }
+
+            for (BYTE** np = F(BYTE**, it, 32); np != F(BYTE**, it, 36); np++) {
+                BYTE* nd = *np;
+                const char* name = CharVec_Text(nd);
+                RoadNode** e = g_roadNodes;
+                for (; e != g_roadNodesEnd; e++)
+                    if (CharVec_Equals(&name, 0, (const CharVec*)*e))
+                        break;
+                RoadNode** slot;
+                if (e == g_roadNodesEnd) {
+                    BYTE* n = (BYTE*)operator new(208);
+                    if (n)
+                        n = CallThis<BYTE*>(FUN_4709b0, n, CharVec_Text(nd));
+                    if (g_roadNodesEnd != (RoadNode**)g_roadNodesCap68cf08) {
+                        if (g_roadNodesEnd)
+                            *(BYTE**)g_roadNodesEnd = n;
+                        g_roadNodesEnd++;
+                    } else
+                        CallThis(FUN_44cbf0, &g_roadNodes, g_roadNodesEnd, &n);
+                    if (F(BYTE, nd, 136) & 1)
+                        F(DWORD, g_roadNodesEnd[-1], 12) |= 8;
+                    if (F(BYTE, nd, 136) & 2)
+                        F(DWORD, g_roadNodesEnd[-1], 12) |= 64;
+                    slot = g_roadNodesEnd - 1;
+                } else {
+                    AiError(0, 200, s_mainFile, s_mainId, 1848, "Duplicate node found", CharVec_Text(nd), &g_aiEmpty);
+                    slot = e;
+                }
+                BYTE* node = (BYTE*)*slot;
+                memcpy(node + 48, nd + 16, 24);
+                F(BYTE*, node, 184) = reg52;
+                F(BYTE*, node, 188) = reg24;
+                if (F(BYTE, nd, 140)) {
+                    F(DWORD, node, 12) |= 128;
+                    memcpy(node + 72, nd + 40, 96);
+                }
+            }
+        }
+        CallThis(FUN_4886e0, parser);
+    }
+
+    CallC(FUN_405f90);
+    {
+        BYTE* last = g_anchors68cf58;
+        BYTE* first;
+        CallThis(FUN_4afbf0, &g_anchors68cf58, &first);
+        void* out;
+        List64_EraseRange(&g_anchors68cf58, 0, &out, (BYTE**)first, (BYTE**)last);
+    }
+    CallC(FUN_406160);
+    if (path[2] != path[0])
+        Ai_PoolFree(path[0], path[2] - path[0]);
+    for (BYTE* f = files[0]; f != files[1]; f += 12)
+        CallThis(FUN_404420, f);
+    unsigned n = (unsigned)(files[2] - files[0]) / 12;
+    if (n)
+        Ai_PoolFree(files[0], n * 12);
+}
