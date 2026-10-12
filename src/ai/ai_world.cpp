@@ -7960,3 +7960,276 @@ extern "C" void __cdecl Ai_PlacePresents(double t)
             break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// loadOrder
+
+ASM_PROC(FUN_4774e0)    // a competitor's arrival (player, double delay, count)
+ASM_PROC(FUN_429850)    // a computer player's order update (player)
+ASM_PROC(FUN_4262a0)    // adds a competitor
+ASM_PROC(FUN_457a40)    // finds an order equal to one passed by value (first, last, order144)
+extern "C" void FUN_4715f0(); KING_ALIAS("_FUN_4715f0", "_Order_Init4715f0")    // (order, template, town, PositionId32, double q)
+extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
+extern "C" BYTE* __cdecl Order144_CopyA(const BYTE* f, const BYTE* l, BYTE* d);
+extern "C" void __cdecl Destroy16s(BYTE* first, BYTE* last);
+extern "C" BYTE* __fastcall Rec41ce50_DeletingDestructor(BYTE* s, void*, int flags);
+extern "C" BYTE* __fastcall Order144_CopyConstruct(BYTE* self, void*, const BYTE* s);
+extern "C" void* __fastcall Player_ActiveCargo(void* s, void*);
+ASM_VAR(double, g_lastHumanLoad68d100, $L_68d100)
+struct Blob144 { BYTE b[144]; };
+
+static const char s_loadOrder[] =
+    "loadOrder(PlayerId player, VrIndex townVrIndex, int orderid, double & quantity, int & playerorderid)";
+
+static __declspec(noinline) int Ftol(double x) { return (int)x; }
+
+static void LoadOrder_LeaveBuffered()
+{
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, s_loadOrder);
+}
+
+// a message with a number formatted by the text id
+static void LoadOrder_Message(const char* id, double v)
+{
+    char text[128];
+    sprintf(text, Message_Text(id), v);
+    CallC(FUN_56ae60, text);
+}
+
+// [FUN_443d50] loadOrder: loads (quantity > 0) or delivers (quantity < 0) an order of a town at a player;
+// 0, or -1 (bad call), -3/-4 (over the limits), -8 (no space), -10/-11 (wrong trailer for a human)
+extern "C" int __cdecl Ai_LoadOrder(BYTE* player, int townId, unsigned orderid, double* quantity, int* playerorderid)
+{
+    Trace_EnterBuffered(s_loadOrder);
+    if (Player_NotValid(player)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 17678, s_invalidId, s_playerIdType, g_numberText);
+    }
+    if (Player_IsHuman(player))
+        g_lastHumanLoad68d100 = CallC<double>(FUN_401000);
+    *playerorderid = -1;
+    int town;
+    Town_ById(&town, townId);
+    BYTE* t = (BYTE*)g_towns[town];
+    if ((unsigned)((F(BYTE*, t, 32) - F(BYTE*, t, 28)) >> 4) <= orderid) {
+        LoadOrder_LeaveBuffered();
+        return -1;
+    }
+    BYTE* entry = F(BYTE*, t, 28) + orderid * 16;
+    BYTE* tmpl = 0;
+    BYTE* data = player + 8;
+    if (data) {
+        BYTE* d = F(BYTE*, data, 508);
+        if (d) {
+            int kind = F(int, g_vehicles[F(int, d, 4)], 32);
+            if (kind == 2 || kind == 3)
+                tmpl = F(BYTE*, entry, 8);
+        }
+        if (!Player_HasTrader(data))
+            tmpl = F(BYTE*, entry, 12);
+    }
+
+    if (F(BYTE, entry, 4) & 1) {
+        // delivering
+        if (!(*quantity < 0.0)) {
+            LoadOrder_LeaveBuffered();
+            return -1;
+        }
+        bool delivered = false, bonus = false;
+        double sum = 0.0, price = 0.0, value = 0.0;
+        struct {
+            DWORD flags;
+            int count;
+            int level;
+            DWORD pad;
+            double delay;
+            double zero;
+            double sum;
+            double value96;
+            double price;
+            double value;
+        } info = {0, 0, 0, 0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0};
+        BYTE* orders = 0;
+        for (;;) {
+            orders = Player_Orders(player, orders);
+            BYTE* end = F(BYTE*, orders, 4);
+            BYTE* o = F(BYTE*, orders, 0);
+            while (o != end && F(int, o, 12) != town)
+                o += 144;
+            orders = Player_Orders(player, orders);
+            if (o == F(BYTE*, orders, 4))
+                break;
+            if (Player_IsHuman(player))
+                LoadOrder_Message("X_INTEGRITY", (double)Ftol(F(double, o, 96) * 100.0));
+            if (!bonus)
+                bonus = F(int, o, 104) == 1;
+            info.value96 = F(double, o, 96);
+            char b = 0;
+            if (Player_UpdateFlagsGet(player) || Player_IsHuman(player))
+                b = F(int, o, 104) == 1;
+            sum = Order_Margin((int*)o, (double)(int)g_68d164, b, &price, &value) + sum;
+            delivered = true;
+            orders = Player_Orders(player, orders);
+            if (o + 144 != F(BYTE*, orders, 4))
+                Order144_Copy(o + 144, F(BYTE*, orders, 4), o);
+            F(BYTE*, orders, 4) -= 144;
+            Rec41ce50_DeletingDestructor(F(BYTE*, orders, 4), 0, 0);
+        }
+        BYTE* other = F(BYTE*, player, 176);
+        if (other == (BYTE*)g_players)
+            F(double, player, 136) = sum + F(double, player, 136);
+        else {
+            F(double, player, 544) = sum + F(double, player, 544);
+            F(double, other, 136) = sum + F(double, other, 136);
+        }
+        F(double, player, 760) = sum + F(double, player, 760);
+        info.delay = (double)(Rng_Random(&g_rng68b9c8, 0, 360) + 360);
+        info.sum = sum;
+        info.value = value;
+        info.price = price;
+        if (Player_UpdateFlagsGet(player)) {
+            if (g_68d164 == 0 && delivered && g_68a980 != g_68a984)
+                CallC(FUN_4774e0, player, info.delay, 1);
+            g_68d164++;
+            CallC(FUN_483cb0, Message_Text("COMPETITOR_ARRIVED"));
+        } else if (F(int, player, 92) == 1) {
+            if (g_68d164 == 0 && delivered && bonus && g_68a980 != g_68a984) {
+                int n = ++F(int, player, 536);
+                info.count = n;
+                info.flags |= n <= 1 ? 1 : 3;
+                int level = Ftol(x87_sqrt((double)(n + 1)));
+                if (level > 3)
+                    level = 3;
+                info.level = level;
+                CallC(FUN_4774e0, player, info.delay, level);
+            } else
+                F(int, player, 536) = 0;
+        } else
+            CallC(FUN_429850, player);
+        if (Player_IsHuman(player) && !x87_eq(sum, 0.0))
+            LoadOrder_Message("YOU_MADE", (double)Ftol(sum * 100.0) * 0.01);
+        if (delivered)
+            CallC(FUN_4015a0, player, 11, &info);
+        *playerorderid = -1;
+    } else {
+        // loading
+        if (!(*quantity > 0.0)) {
+            LoadOrder_LeaveBuffered();
+            return -1;
+        }
+        if (!tmpl) {
+            *playerorderid = -1;
+            LoadOrder_LeaveBuffered();
+            return -1;
+        }
+        if (Player_IsHuman(player)) {
+            bool oil = (F(BYTE, g_68ccb8 + F(int, tmpl, 0) * 104, 48) & 4) != 0;
+            if (oil && !(Player_VehicleData(player) & 1)) {
+                CallC(FUN_483cb0, Message_Text("NEED_A_PETROL_SEMITRAILER"));
+                LoadOrder_LeaveBuffered();
+                return -10;
+            }
+            oil = (F(BYTE, g_68ccb8 + F(int, tmpl, 0) * 104, 48) & 4) != 0;
+            if (!oil && (Player_VehicleData(player) & 1)) {
+                CallC(FUN_483cb0, Message_Text("LOAD_AT_AN_OIL_TANK"));
+                LoadOrder_LeaveBuffered();
+                return -11;
+            }
+        }
+        double q = 0.0, weight = 0.0, volume = 0.0;
+        BYTE* orders = Player_Orders(player, 0);
+        for (BYTE* o = F(BYTE*, orders, 0);; o += 144) {
+            orders = Player_Orders(player, orders);
+            if (o == F(BYTE*, orders, 4))
+                break;
+            BYTE* rec = g_68ccb8 + F(int, o, 0) * 104;
+            weight = F(double, rec, 16) * F(double, o, 56) + weight;
+            volume = F(double, rec, 24) * F(double, o, 56) + volume;
+        }
+        double maxWeight, maxVolume;
+        Player_AllCosts(player, &maxWeight, &maxVolume);
+        double addWeight, addVolume;
+        Costs_Balance(player, &addWeight, &addVolume, &q, g_68ccb8 + F(int, tmpl, 0) * 104);
+        if (addWeight + weight > maxWeight || addVolume + volume > maxVolume) {
+            if (Player_IsHuman(player))
+                CallC(FUN_56ae60, Message_Text("NOT_ENOUGH_SPACE"));
+            LoadOrder_LeaveBuffered();
+            return -8;
+        }
+        double w = weight - maxWeight;
+        volume = volume - maxVolume;
+        if (!(w < 0.0)) {
+            LoadOrder_LeaveBuffered();
+            return -3;
+        }
+        if (!(volume < 0.0)) {
+            Trace_Tag((const DWORD*)g_tagMpl);
+            Buf_AppendString(&g_trace, 0, s_loadOrder);
+            return -4;
+        }
+        *quantity = q;
+        BYTE order[144];
+        Order_Construct(order, 0);
+        DWORD pos[8] = {(DWORD)-1, F(DWORD, entry, 0), 0, 0, 0, 0, 0, (DWORD)-1};
+        DWORD qd[2];
+        memcpy(qd, quantity, 8);
+        CallC(FUN_4715f0, order, tmpl, town, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], qd[0], qd[1]);
+        BYTE copy[144];
+        Order144_CopyConstruct(copy, 0, order);
+        BYTE* data2 = Iter_Data(&player, 0);
+        void* cargo = Player_ActiveCargo(data2, 0);
+        BYTE* cend = CallThis<BYTE*>(FUN_455950, cargo);
+        data2 = Iter_Data(&player, 0);
+        cargo = Player_ActiveCargo(data2, 0);
+        BYTE* cbegin = CallThis<BYTE*>(FUN_455940, cargo);
+        BYTE* o = CallC<BYTE*>(FUN_457a40, cbegin, cend, *(Blob144*)copy);
+        orders = Player_Orders(player, orders);
+        if (o == F(BYTE*, orders, 4)) {
+            orders = Player_Orders(player, orders);
+            BYTE** v = (BYTE**)orders;
+            if (v[1] != v[2]) {
+                Rec458a80_Construct(v[1], order);
+                v[1] += 144;
+            } else
+                CallThis(FUN_450960, v, v[1], order);
+            orders = Player_Orders(player, orders);
+            o = F(BYTE*, orders, 4) - 144;
+        } else
+            F(double, o, 56) = F(double, o, 56) + *quantity;
+        orders = Player_Orders(player, orders);
+        *playerorderid = (int)(o - F(BYTE*, orders, 0)) / 144;
+        if (x87_eq(F(double, o, 56), 0.0)) {
+            *playerorderid = -1;
+            orders = Player_Orders(player, orders);
+            if (o + 144 != F(BYTE*, orders, 4))
+                Order144_CopyA(o + 144, F(BYTE*, orders, 4), o);
+            F(BYTE*, orders, 4) -= 144;
+            BYTE* last = F(BYTE*, orders, 4);
+            Destroy16s(F(BYTE*, last, 120), F(BYTE*, last, 124));
+            CallThis(FUN_44ab90, last + 120);
+        } else {
+            BYTE* c = F(BYTE*, player, 520);
+            Order_SetPrice(player, (int*)o, 0, c != 0);
+            if (F(BYTE*, player, 520)) {
+                F(double, o, 88) = 1.3 * F(double, o, 88);
+                F(double, o, 72) = (1.3 - 1.0) * F(double, tmpl, 24) + F(double, o, 72);
+            }
+        }
+        Order_Destroy(order);
+    }
+
+    if (Player_IsHuman(player)) {
+        unsigned n = g_68a984 - g_68a980;
+        while (n + g_68d164 < g_68d160) {
+            unsigned before = n;
+            CallC(FUN_4262a0);
+            n = g_68a984 - g_68a980;
+            if (before == n)
+                break;
+        }
+    }
+    CallC(FUN_442c60, player);
+    Trace_Leave(s_loadOrder);
+    return 0;
+}
