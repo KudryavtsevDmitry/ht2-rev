@@ -17,7 +17,7 @@ extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // 
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 ASM_PROC(FUN_44b740)
 extern "C" void FUN_603e20(); KING_ALIAS("_FUN_603e20", "@Thread_Construct@8")
 extern "C" void FUN_603e60(); KING_ALIAS("_FUN_603e60", "@Thread_Start@8")

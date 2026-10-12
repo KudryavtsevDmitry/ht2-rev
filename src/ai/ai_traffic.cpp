@@ -558,7 +558,7 @@ BYTE* __stdcall Alloc12_Copy(unsigned n, BYTE* first, BYTE* last)
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // allocate n bytes and copy [first, last) (stdcall)
 extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")    // vector copy constructor
 extern "C" void FUN_46b460(); KING_ALIAS("_FUN_46b460", "_Names_AdjustHeap")
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
 struct ByteVec { BYTE* begin; BYTE* end; BYTE* cap; };

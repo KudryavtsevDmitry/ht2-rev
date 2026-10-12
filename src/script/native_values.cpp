@@ -237,7 +237,7 @@ static BYTE* SceneObj_FindCommandTarget(int key)
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
 
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")
-ASM_PROC(FUN_4a5420)    // script type error (code, level, type name)
+extern "C" void FUN_4a5420(); KING_ALIAS("_FUN_4a5420", "_Sch_TypeError")    // script type error (code, level, type name)
 
 // a typed handle copied from a script value; errors unless the value is
 // borrowed (0x10000) and of the kind

@@ -17,7 +17,7 @@ KING_ALIAS("_AI_Now", "FUN_401000")
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
-ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 
 ASM_VAR(BYTE*, g_68ccb8, $L_68ccb8)             // 104-byte records
 ASM_VAR(double, g_bonusFactor, $L_66f878)       // 1.5
@@ -320,7 +320,7 @@ int* __fastcall TempBuf12_Construct(int* self, void*, BYTE* first, BYTE* last)
 
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")    // uninitialized copy of bytes (first, last, to), returns the end
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
 extern "C" {

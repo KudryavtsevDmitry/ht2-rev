@@ -31,7 +31,7 @@ typedef void (*VFn)();
 extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
 ASM_PROC(FUN_601c70)
 ASM_PROC(FUN_44b740)
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
 ASM_VAR(DWORD*, g_providerIds, $L_723de8)
@@ -878,7 +878,7 @@ extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, 
     Msg_Finish(self);
 }
 
-ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 ASM_VAR(char, vt_652de0, $L_652de0)
 
 // [FUN_602ca0] frees the byte buffer at +4 (capacity at +12)

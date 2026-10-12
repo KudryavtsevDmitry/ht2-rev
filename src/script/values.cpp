@@ -16,7 +16,7 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void __cdecl free(void* p);
 
-ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
 ASM_PROC(FUN_4b20d0)
 extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")

@@ -1261,7 +1261,7 @@ extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")
 extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")    // copy 12-byte records (first, last, to)
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
 extern "C" void FUN_484690(); KING_ALIAS("_FUN_484690", "_Road_OrientHops")    // orients the hops of a route
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 
 extern "C" {
 

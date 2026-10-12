@@ -1615,3 +1615,84 @@ extern "C" void __fastcall Shell51e7a0_Apply(BYTE* self, void*)
     }
     CallThis(FUN_5d8610, self);
 }
+
+ASM_VAR(AsmLabel, s_fmt6772a8, $L_6772a8)
+ASM_VAR(AsmLabel, s_stream6772a0, $L_6772a0)
+extern "C" HRESULT __stdcall StgOpenStorage(const WCHAR* name, void* prio, DWORD mode, void* excl, DWORD reserved, void** stg);
+
+// [FUN_518760] reads the image of a storage file (name formatted into the path) from its stream
+extern "C" BYTE* __cdecl Storage_ReadImage(const char* name, BYTE* arg)
+{
+    char path[64];
+    void* stg = 0;
+    void* s = 0;
+    sprintf(path, s_fmt6772a8, name);
+    StgOpenStorage(CallC<const WCHAR*>(FUN_50bc90, path), 0, 16, 0, 0, &stg);
+    if (!stg)
+        return 0;
+    ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, s_stream6772a0), 0, 16, 0, &s);
+    if (!s) {
+        ComCall(stg, 8);
+        return 0;
+    }
+    BYTE* r = Image_ReadStream((BYTE*)s, arg);
+    ComCall(s, 8);
+    ComCall(stg, 8);
+    return r;
+}
+
+extern "C" void FUN_50bbf0(); KING_ALIAS("_FUN_50bbf0", "_Str_Trim")
+extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
+ASM_VAR(int, g_696878, $L_696878)
+ASM_VAR(AsmLabel, s_672998, $L_672998)
+ASM_VAR(AsmLabel, s_6767d0, $L_6767d0)
+
+// [FUN_527de0] checks that the save storage opens; if not, clears the save flag in the ini and the options; then reloads the settings and the palette
+extern "C" void __cdecl Shell_CheckSave()
+{
+    char name[36];
+    strcpy(name, (const char*)(g_6cecd8 + 632));
+    void* stg = CallStd<void*>(FUN_51bfa0, CallC<void*>(FUN_50bbf0, name), 1);
+    if (stg)
+        ComCall(stg, 8);
+    else {
+        F(int, g_6cec6c, 1280) = 0;
+        CallC(FUN_603c70, s_672998, s_6767d0, 0, g_696868);
+        CallVirt(g_6cecd8 + 64, 60, 1);
+    }
+    Settings_Load(g_6cec6c, 0);
+    g_696878 = 0;
+    CallThis(FUN_5ba3d0, F(void*, F(BYTE*, F(BYTE*, g_696ca0, 9396), 100), 0));
+}
+
+ASM_VAR(AsmLabel, s_storage67683c, $L_67683c)
+
+// [FUN_51c870] reads the image of the sub-storage name (inside 67683c of the save storage) from its stream
+extern "C" BYTE* __cdecl Storage_ReadSubImage(const char* name, BYTE* arg)
+{
+    void* stg = CallStd<void*>(FUN_51bfa0, g_6cecd8 + 632, 1);
+    if (!stg)
+        return 0;
+    void* a = 0;
+    void* b = 0;
+    void* s = 0;
+    ComCall(stg, 24, CallC<const WCHAR*>(FUN_50bc90, s_storage67683c), 0, 16, 0, 0, &a);
+    if (a) {
+        ComCall(a, 24, CallC<const WCHAR*>(FUN_50bc90, name), 0, 16, 0, 0, &b);
+        if (b) {
+            ComCall(b, 16, CallC<const WCHAR*>(FUN_50bc90, s_stream6772a0), 0, 16, 0, &s);
+            if (s) {
+                BYTE* r = Image_ReadStream((BYTE*)s, arg);
+                ComCall(s, 8);
+                ComCall(b, 8);
+                ComCall(stg, 8);
+                ComCall(a, 8);
+                return r;
+            }
+            ComCall(b, 8);
+        }
+        ComCall(a, 8);
+    }
+    ComCall(stg, 8);
+    return 0;
+}

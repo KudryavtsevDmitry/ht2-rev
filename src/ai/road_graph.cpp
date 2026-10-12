@@ -225,7 +225,7 @@ extern "C" void FUN_47b530(); KING_ALIAS("_FUN_47b530", "_Alloc8_Copy@12")
 ASM_VAR(BYTE*, g_68cf6c, $L_68cf6c)
 ASM_VAR(BYTE**, g_68a970, $L_68a970)
 ASM_VAR(BYTE**, g_68a974, $L_68a974)
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 ASM_PROC(FUN_44b740)
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
@@ -851,7 +851,7 @@ BYTE* __stdcall Alloc8_Copy(unsigned n, BYTE* first, BYTE* last) { return AllocA
 
 }
 
-ASM_PROC(FUN_44b4a0)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 
 extern "C" {
 
@@ -1001,7 +1001,7 @@ extern "C" void __fastcall Vec40_Insert479050(BYTE** v, void*, BYTE* pos, const 
 }
 
 extern "C" void FUN_47acd0(); KING_ALIAS("_FUN_47acd0", "_Alloc40_Copy@12")    // allocates n 40-byte records and copies [first, last) (stdcall)
-ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 
 // [FUN_479370] vector<40-byte record>::operator=
 extern "C" BYTE** __fastcall Vec40_Assign(BYTE** self, int, BYTE* const* src)
