@@ -1514,3 +1514,50 @@ extern "C" void __fastcall Settings_Load(BYTE* self, int)
     ComCall(stg, 8);
     CallThis(FUN_5147b0, self);
 }
+
+extern "C" void FUN_476930(); KING_ALIAS("_FUN_476930", "_Player_GetState")    // a player's state: 19 records {value, -, double} (id, records)
+ASM_PROC(FUN_4eb4a0)    // sets a vehicle setting (value)
+ASM_VAR(int, g_noVehicle68b990s, $L_68b990)
+
+// [FUN_520000] applies a player's 19 vehicle settings to the vehicle
+extern "C" void __cdecl Car_ApplyPlayerSettings(BYTE* car)
+{
+    struct Rec { int value, pad; double x; } r[19];
+    for (int i = 0; i < 19; i++) {
+        r[i].x = 1.0;
+        r[i].value = 0;
+    }
+    int id = F(int, car, 20636);
+    if (id == g_noVehicle68b990s)
+        return;
+    CallC(FUN_476930, id, r);
+    for (int i = 0; i < 20; i++) {
+        switch (i) {
+        case 0:  CallThis(FUN_4eb4a0, car + 21204, r[3].value); break;
+        case 1:  CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16216, r[4].value); break;
+        case 2:  CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16372, r[5].value); break;
+        case 3:  CallThis(FUN_4eb4a0, car + 21152, r[6].value); break;
+        case 4:  CallThis(FUN_4eb4a0, car + 21256, r[7].value); break;
+        case 5:  CallThis(FUN_4eb4a0, car + 21516, r[17].value); break;
+        case 6:  CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16060, r[0].value); break;
+        case 7:  CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16320, r[1].value); break;
+        case 9:
+            if (r[9].value == 1)
+                CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16164, 1);
+            else if (r[9].value != 2)
+                CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16164, 0);
+            break;
+        case 10:
+            if (r[9].value == 2)
+                CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16164, 2);
+            else if (r[9].value != 1)
+                CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16164, 0);
+            break;
+        case 11: CallThis(FUN_4eb4a0, F(BYTE*, car, 21600) + 16112, r[13].value); break;
+        case 12: CallThis(FUN_4eb4a0, car + 21412, r[2].value); break;
+        case 13: CallThis(FUN_4eb4a0, car + 21464, r[15].value); break;
+        case 16: CallThis(FUN_4eb4a0, car + 21360, r[12].value); break;
+        case 18: CallThis(FUN_4eb4a0, car + 21308, r[11].value); break;
+        }
+    }
+}

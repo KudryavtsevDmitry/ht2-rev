@@ -638,7 +638,7 @@ ASM_VAR(AsmLabel, s_port, $L_66cb28)
 
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
-ASM_PROC(FUN_410e40)
+extern "C" void FUN_410e40(); KING_ALIAS("_FUN_410e40", "@Rec410e40_FreeVectors@8")
 ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
 ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
@@ -7076,4 +7076,11 @@ extern "C" void __cdecl Road_LinkObject(BYTE* obj, int a, int b)
     DWORD r[3] = { (DWORD)obj, (DWORD)(na[0] + 8), (DWORD)(nb[0] + 8) };
     Vec12_PushBack((BYTE**)(na[0] + 44), r);
     Vec12_PushBack((BYTE**)(nb[0] + 44), r);
+}
+
+// [FUN_410e40] frees the vector of 4-byte elements at +24 and the byte vector at +12
+extern "C" void __fastcall Rec410e40_FreeVectors(BYTE* self, int)
+{
+    VecStorage_Free(F(BYTE*, self, 24), F(BYTE*, self, 32), 4);
+    VecStorage_Free(F(BYTE*, self, 12), F(BYTE*, self, 20), 1);
 }

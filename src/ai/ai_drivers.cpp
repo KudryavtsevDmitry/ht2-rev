@@ -1327,7 +1327,7 @@ void __cdecl Player_ClearOrderLists(BYTE* p)
 
 }
 
-ASM_PROC(FUN_479370)    // vector of 40-byte records: assignment
+extern "C" void FUN_479370(); KING_ALIAS("_FUN_479370", "@Vec40_Assign@12")    // vector of 40-byte records: assignment
 extern "C" void FUN_47acd0(); KING_ALIAS("_FUN_47acd0", "_Alloc40_Copy@12")    // allocate n 40-byte records and copy (stdcall)
 extern "C" void FUN_47e1a0(); KING_ALIAS("_FUN_47e1a0", "_Copy40B")    // copy 40-byte records
 extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")    // uninitialized copy of 40-byte records
