@@ -8436,3 +8436,216 @@ extern "C" void __cdecl Ai_LoadNames()
     CallThis(FUN_4a36c0, &value);
     CallThis(FUN_4a36c0, &port);
 }
+
+// ---------------------------------------------------------------------------
+// reading an ambush
+
+extern "C" void** __fastcall Handle9_Init(void** self, int, void** v);
+extern "C" DVec3* __cdecl Ai__GetTangent(DVec3* out, PositionId pos);
+extern "C" double __cdecl DVec3_Dot(const DVec3* a, const DVec3* b);
+extern "C" int* __cdecl Module_ByName(int* out, const char* name);
+extern "C" int* __cdecl Node_ByName(int* out, const char* name);
+
+// *d = *s, dropping d's old string (unless it is the same)
+static void Ref_Assign(StrRef* d, const StrRef* s)
+{
+    if (d->ptr && d->Owns()) {
+        if (--F(int, d->ptr, 4) == 0 && !Str_Same(d, s) && d->ptr)
+            CallVirt(d->ptr, 12, 1);
+    }
+    d->CopyFrom(s);
+}
+
+// the type of the list head
+static BYTE Head_Type(StrRef* l)
+{
+    StrRef m;
+    Str_Member20(&m, l);
+    BYTE t = (BYTE)m.flags;
+    CallThis(FUN_4a36c0, &m);
+    return t;
+}
+
+static bool Head_Is(StrRef* l, const char* name)
+{
+    StrRef m;
+    Str_Member20(&m, l);
+    bool r = SchValue_IsSymbol((BYTE*)&m, name);
+    Str_Release(&m);
+    return r;
+}
+
+// the C string of the head's object
+static const char* Head_Text(StrRef* l)
+{
+    StrRef m;
+    Str_Member20(&m, l);
+    const char* s = F(const char*, m.ptr, 12);
+    CallThis(FUN_4a36c0, &m);
+    return s;
+}
+
+static void List_Next(StrRef* l)
+{
+    StrRef n;
+    Str_Assign(l, 0, Str_Member32(&n, l));
+    CallThis(FUN_4a36c0, &n);
+}
+
+// [FUN_412320] reads an ambush: (name type module [bytes] node direction (numbers) (items) [value])
+extern "C" BYTE* __cdecl Ai_ReadAmbush(void* reader, StrRef h)
+{
+    BYTE* o = (BYTE*)operator new(248);
+    if (o) {
+        char alloc;
+        memset(o, 0, 12);
+        Rec_Init411be0((int*)(o + 12), 0);
+        F(int, o, 32) = 0;
+        F(int, o, 36) = 0;
+        memset(o + 40, 0, 12);
+        F(int, o, 52) = -1;
+        CallThis(FUN_487730, o + 112, &alloc);
+        Rec_InitPlayerIter((void**)(o + 124), 0);
+        Position_InitNone((PositionId*)(o + 144), 0);
+        Position_InitNone((PositionId*)(o + 176), 0);
+        CallThis(FUN_487730, o + 208, &alloc);
+        CallThis(FUN_487730, o + 220, &alloc);
+        F(DWORD, o, 232) = 790565505;
+        F(DWORD, o, 236) = 1170221031;
+        F(BYTE, o, 240) = 0;
+    }
+    List_Advance(&h);
+    StrRef m;
+    Str_Member20(&m, &h);
+    Ref_Assign((StrRef*)(o + 40), &m);
+    Str_Release(&m);
+    Str_Member20(&m, &h);
+    PodVec_Assign((BYTE**)o, 0, (BYTE* const*)(m.ptr + 12));
+    Str_Release(&m);
+    List_Advance(&h);
+    if (Head_Is(&h, "MAFIA"))
+        F(int, o, 36) = 1;
+    else if (Head_Is(&h, "POLICE"))
+        F(int, o, 36) = 2;
+    else {
+        Str_Member20(&m, &h);
+        AiError(0, 100, s_mainFile, s_mainId, 3316, "Unknown ambush type", F(const char*, m.ptr, 12), &g_aiEmpty);
+        Str_Release(&m);
+    }
+    List_Advance(&h);
+    if (Head_Type(&h) == 3) {
+        Str_Member20(&m, &h);
+        int r;
+        F(int, o, 12) = *Module_ByName(&r, F(const char*, m.ptr, 12));
+        Str_Release(&m);
+    }
+    List_Advance(&h);
+    if (Head_Type(&h) == 3) {
+        Str_Member20(&m, &h);
+        PodVec_Assign((BYTE**)(o + 16), 0, (BYTE* const*)(m.ptr + 12));
+        CallThis(FUN_4a36c0, &m);
+    }
+    List_Next(&h);
+    const char* node = 0;
+    if (Head_Type(&h) == 3) {
+        node = Head_Text(&h);
+        if (strlen(node)) {
+            int r;
+            F(int, o, 52) = *Node_ByName(&r, node);
+        } else
+            F(int, o, 52) = -1;
+    } else
+        AiError(0, 256, s_mainFile, s_mainId, 3338, "Node not specified for ambush ", F(const char*, o, 0), &g_aiEmpty);
+    if (F(int, o, 52) != -1) {
+        DVec3_Assign((DVec3*)(o + 56), 0, (const DVec3*)(g_68cf00[F(int, o, 52)] + 48));
+        BYTE tmp[32];
+        memcpy(o + 144, CallC<BYTE*>(FUN_436900, tmp, o + 56), 32);
+    } else
+        AiError(0, 1, s_mainFile, s_mainId, 3347, "Fatal error: ambush node not present ", node ? node : "", &g_aiEmpty);
+    List_Next(&h);
+    StrRef dir, t;
+    Str_Member20(&t, &h);
+    Handle9_Init((void**)&dir, 0, (void**)&t);
+    CallThis(FUN_4a36c0, &t);
+    DWORD v[6] = {0, 0, 0, 0, 0, 0};
+    if (SchValue_IsSymbol((BYTE*)&dir, "NORTH")) {
+        F(int, o, 80) = 1;
+        v[3] = 0x3ff00000;
+    } else if (SchValue_IsSymbol((BYTE*)&dir, "SOUTH")) {
+        F(int, o, 80) = 2;
+        v[3] = 0xbff00000;
+    } else if (SchValue_IsSymbol((BYTE*)&dir, "EAST")) {
+        F(int, o, 80) = 3;
+        v[1] = 0x3ff00000;
+    } else if (SchValue_IsSymbol((BYTE*)&dir, "WEST")) {
+        F(int, o, 80) = 4;
+        v[1] = 0xbff00000;
+    } else
+        AiError(0, 100, s_mainFile, s_mainId, 3376, "Unknown ambush direction",
+                F(const char*, CallThis<BYTE*>(FUN_4aa430, &dir), 12), &g_aiEmpty);
+    if (F(int, o, 80) >= 1 && F(int, o, 80) <= 4)
+        DVec3_Assign((DVec3*)(o + 88), 0, (const DVec3*)v);
+    memcpy(o + 176, o + 144, 32);
+    PositionId pos;
+    memcpy(&pos, o + 144, 32);
+    DVec3 tan;
+    Ai__GetTangent(&tan, pos);
+    if (DVec3_Dot(&tan, (const DVec3*)(o + 88)) < 0.0)
+        F(DWORD, o, 200) |= 1;
+    List_Next(&h);
+    StrRef nums;
+    Str_Member20(&nums, &h);
+    if ((BYTE)nums.flags == 2) {
+        StrRef l = {0, 0, 0};
+        Str_Assign(&l, 0, &nums);
+        while ((BYTE)l.flags == 2) {
+            StrRef e;
+            Str_Member20(&e, &l);
+            if ((BYTE)e.flags == 6) {
+                StrRef n;
+                NumberHandle_From((DWORD*)&n, 0, (const DWORD*)&e);
+                int x = CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n));
+                Vec4_PushBackD(o + 112, 0, &x);
+                CallThis(FUN_4a36c0, &n);
+            }
+            CallThis(FUN_4a36c0, &e);
+            List_Next(&l);
+        }
+        CallThis(FUN_4a36c0, &l);
+    }
+    List_Next(&h);
+    StrRef items;
+    Str_Member20(&items, &h);
+    if ((BYTE)items.flags == 2) {
+        StrRef l = {0, 0, 0};
+        Str_Assign(&l, 0, &items);
+        while ((BYTE)l.flags == 2) {
+            StrRef e;
+            Str_Member20(&e, &l);
+            if ((BYTE)e.flags == 9) {
+                StrRef n;
+                Handle9_Init((void**)&n, 0, (void**)&e);
+                Vec12_PushBackCopy(o + 208, 0, CallThis<BYTE*>(FUN_4aa430, &n) + 12);
+                CallThis(FUN_4a36c0, &n);
+            }
+            CallThis(FUN_4a36c0, &e);
+            List_Next(&l);
+        }
+        CallThis(FUN_4a36c0, &l);
+    }
+    CallThis(FUN_4a36c0, &items);
+    List_Next(&h);
+    if ((BYTE)h.flags == 2 && Head_Type(&h) == 6) {
+        StrRef n;
+        Str_Member20(&m, &h);
+        NumberHandle_From((DWORD*)&n, 0, (const DWORD*)&m);
+        CallThis(FUN_4a36c0, &m);
+        if (n.flags || n.ptr)
+            F(double, o, 232) = CallThis<double>(FUN_4b0e90, CallThis<BYTE*>(FUN_4aa430, &n));
+        CallThis(FUN_4a36c0, &n);
+    }
+    CallThis(FUN_4a36c0, &nums);
+    CallThis(FUN_4a36c0, &dir);
+    CallThis(FUN_4a36c0, &h);
+    return o;
+}
