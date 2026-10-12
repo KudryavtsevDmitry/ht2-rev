@@ -17,7 +17,7 @@ extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.c
 extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
-ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
+extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
@@ -115,8 +115,8 @@ typedef struct _iobuf FILE;
 extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 
-ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
-ASM_PROC(FUN_4a59f0)    // the format of a message (code)
+extern "C" void FUN_4a5380(); KING_ALIAS("_FUN_4a5380", "_Sch_ErrorText")    // the format of an error (code, level)
+extern "C" void FUN_4a59f0(); KING_ALIAS("_FUN_4a59f0", "_Sch_MessageText")    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 extern "C" void FUN_4a5800(); KING_ALIAS("_FUN_4a5800", "_Sch4a5800_Dump")
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor

@@ -1378,3 +1378,27 @@ extern "C" void __fastcall Vehicle_AttachCar(BYTE* self, void*, BYTE* car)
     F(DWORD, F(BYTE*, self, 21600), 10124) = F(DWORD, F(BYTE*, self, 21880), 3284);
     F(int, self, 21884) = 0;
 }
+
+// [FUN_557420] calls the object's member at +16: vtbl+148 (a, 0)
+extern "C" void __fastcall Car_Member148(BYTE* self, void*, int a)
+{
+    CallVirt(self + 16, 148, a, 0);
+}
+
+// [FUN_557460] calls the object's member at +16: vtbl+156 (a)
+extern "C" void __fastcall Car_Member156(BYTE* self, void*, int a)
+{
+    CallVirt(self + 16, 156, a);
+}
+
+ASM_VAR(int, g_6ef2b8, $L_6ef2b8)
+ASM_VAR(int, g_6ef2bc, $L_6ef2bc)
+ASM_VAR(int, g_6ef2c0, $L_6ef2c0)
+
+// [FUN_557510]
+extern "C" void __cdecl Car_ClearGlobals6ef2b8()
+{
+    g_6ef2b8 = 0;
+    g_6ef2bc = 0;
+    g_6ef2c0 = 0;
+}

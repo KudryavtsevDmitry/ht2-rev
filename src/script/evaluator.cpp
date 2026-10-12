@@ -18,7 +18,7 @@ extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.c
 extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
-ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
+extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
@@ -626,8 +626,8 @@ typedef struct _iobuf FILE;
 extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 
-ASM_PROC(FUN_4a5380)    // the format of an error (code, level)
-ASM_PROC(FUN_4a59f0)    // the format of a message (code)
+extern "C" void FUN_4a5380(); KING_ALIAS("_FUN_4a5380", "_Sch_ErrorText")    // the format of an error (code, level)
+extern "C" void FUN_4a59f0(); KING_ALIAS("_FUN_4a59f0", "_Sch_MessageText")    // the format of a message (code)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // shows a message (text, value by copy)
 extern "C" void FUN_4a5800(); KING_ALIAS("_FUN_4a5800", "_Sch4a5800_Dump")
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
@@ -1922,4 +1922,83 @@ extern "C" void __fastcall SchListNode_Destroy(BYTE* self, int)
     if (n)
         CallC(FUN_44b4a0, b, n * 12);
     SchHandle_Release((void**)(self + 4), 0);
+}
+
+// [FUN_4abec0] frees a deque's 512-byte blocks (from the map slot at +20 to the one at +36) and its map
+extern "C" void __fastcall Deque_FreeStorage(DWORD* self, void*)
+{
+    if (!self[0])
+        return;
+    for (void** p = (void**)self[5]; p < (void**)(self[9] + 4); p++)
+        CallC(FUN_44b4a0, *p, 512);
+    if (self[1])
+        CallC(FUN_44b4a0, self[0], self[1] * 4);
+}
+
+extern "C" long __cdecl strtol(const char* s, char** end, int base);
+extern "C" char* __cdecl strncat(char* d, const char* s, size_t n);
+extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
+typedef const char* SchStrTable[1];
+ASM_VAR(SchStrTable, g_msgs670e08, $L_670e08)
+ASM_VAR(AsmLabel, s_670dc8, $L_670dc8)
+ASM_VAR(AsmLabel, s_fmt6710ec, $L_6710ec)
+ASM_VAR(AsmLabel, g_text692250, $L_692250)
+ASM_VAR(AsmLabel, g_stderr686380e, $L_686380)
+
+// [FUN_4a59f0] message i of the table: its number (checked against i) and the text after it
+extern "C" char* __cdecl Sch_MessageText(int i)
+{
+    char* end;
+    if (strtol(g_msgs670e08[i], &end, 0) != i)
+        fprintf((FILE*)g_stderr686380e, s_670dc8);
+    sprintf(g_text692250, s_fmt6710ec, i);
+    strncat(g_text692250, end, 1024);
+    return g_text692250;
+}
+
+ASM_VAR(SchStrTable, g_msgs670a7c, $L_670a7c)
+ASM_VAR(AsmLabel, s_fmt670db8, $L_670db8)
+ASM_VAR(AsmLabel, g_text691e44, $L_691e44)
+
+// [FUN_4a5380] error message code with its severity letter (I W E F ?): the format and the text after the number
+extern "C" char* __cdecl Sch_ErrorText(int code, int severity)
+{
+    char* end;
+    if (strtol(g_msgs670a7c[code], &end, 0) != code)
+        fprintf((FILE*)g_stderr686380e, s_670dc8);
+    char c = severity >= 768 ? 'I' : severity >= 512 ? 'W' : severity >= 256 ? 'E' : severity >= 1 ? 'F' : '?';
+    sprintf(g_text691e44, s_fmt670db8, (int)c, code);
+    strncat(g_text691e44, end, 1024);
+    return g_text691e44;
+}
+
+extern "C" size_t __cdecl strlen(const char* s);
+typedef int SchIntTable[1];
+ASM_VAR(SchIntTable, g_muted691dbc, $L_691dbc)
+ASM_VAR(int, g_lastError692244, $L_692244)
+ASM_VAR(int, g_lastSeverity692248, $L_692248)
+typedef void (__cdecl* SchErrorHook)(int code, int severity, const char* text);
+ASM_VAR(SchErrorHook, g_errorHook69224c, $L_69224c)
+
+// [FUN_4a52e0] reports an error (code, severity) unless muted: to the error file and the hook; exits on severity 1
+extern "C" int __cdecl Sch_ErrorCode(int code, int severity)
+{
+    int r = g_muted691dbc[code];
+    if (r)
+        return r;
+    const char* text = Sch_ErrorText(code, severity);
+    g_lastError692244 = code;
+    g_lastSeverity692248 = severity;
+    if (g_errorFile)
+        fprintf(g_errorFile, text);
+    if (g_errorHook69224c) {
+        char* b = (char*)operator new(strlen(text) + 19);
+        sprintf(b, text);
+        g_errorHook69224c(code, severity, b);
+        operator delete(b);
+    }
+    r = g_lastSeverity692248;
+    if (r && r <= 1)
+        exit(-1);
+    return r;
 }

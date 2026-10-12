@@ -19,7 +19,7 @@ static const char s_mainId[] = "$Id: Ai_main.cpp 2001/10/16 14:29:56";
 static const char s_mainFile[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\Ai_main.cpp";
 
 extern "C" void __cdecl AI_Error4a52e0(int code, int a);
-KING_ALIAS("_AI_Error4a52e0", "FUN_4a52e0")
+KING_ALIAS("_AI_Error4a52e0", "_Sch_ErrorCode")
 extern "C" int __cdecl Loading_Step();    // carat.cpp
 extern "C" void** __cdecl Towns_Find453bd0(void** first, void** last, int key, void* rng);
 extern "C" void** __cdecl Towns_Find453d70(void** first, void** last, int a, int b, int c);
@@ -30,7 +30,7 @@ KING_ALIAS("_Towns_Find4540a0", "_Pick_RandomIdle")
 extern "C" void** __cdecl Towns_Find454230(void** first, void** last, int a, int b, void* rng);
 KING_ALIAS("_Towns_Find454230", "FUN_454230")
 extern "C" DVec3* __cdecl Town_Position(DVec3* out, void* town);
-KING_ALIAS("_Town_Position", "FUN_404ef0")
+KING_ALIAS("_Town_Position", "_Town_Point")
 extern "C" DVec3* __cdecl Road_PointOf(DVec3* out, PositionId pos);
 extern "C" bool __cdecl SchValue_IsSymbol(const BYTE* v, const char* name);   // schitem.cpp
 extern "C" void __cdecl Player_UpdateFlags(BYTE* p);        // aiplay.cpp
@@ -641,7 +641,7 @@ extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
 extern "C" void FUN_410e40(); KING_ALIAS("_FUN_410e40", "@Rec410e40_FreeVectors@8")
 ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
-ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
+extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 ASM_PROC(FUN_401000)    // the AI clock, returns double
 extern "C" void FUN_4172e0(); KING_ALIAS("_FUN_4172e0", "_Player_UpdateFlagsGet")
 extern "C" void FUN_417530(); KING_ALIAS("_FUN_417530", "_Player_Leave")
@@ -2129,9 +2129,9 @@ extern "C" void __fastcall Rec4046b0_Destroy(BYTE* self, void*)
     }
 }
 
-ASM_PROC(FUN_404ef0)    // a town's position (out, town)
+extern "C" void FUN_404ef0(); KING_ALIAS("_FUN_404ef0", "_Town_Point")    // a town's position (out, town)
 extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")    // vector<double>: insert (pos, value)
-ASM_PROC(FUN_47c650)
+extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void __fastcall Waypoints_Clear(BYTE* self, void*);   // aiplay.cpp
 extern "C" void __cdecl Road_NodeCostBest(int side, int from, int to, double* cost);   // aitrce.cpp
@@ -2427,7 +2427,7 @@ KING_ALIAS("_Player_OfIt", "_AI_ListData")
 extern "C" int __cdecl Vehicle_Exists76(int vrId);
 KING_ALIAS("_Vehicle_Exists76", "_Vehicle_Exists")
 extern "C" void __cdecl Player_Drop422210(BYTE* pl);
-KING_ALIAS("_Player_Drop422210", "FUN_422210")
+KING_ALIAS("_Player_Drop422210", "_Player_PlaceAtDealer")
 extern "C" void __cdecl Vehicle_Distances(int i, double* a, double* b);
 KING_ALIAS("_Vehicle_Distances", "_Vehicle_Costs")
 extern "C" const char* __cdecl AI_Text76(const char* key);
@@ -7095,4 +7095,39 @@ extern "C" void __fastcall Rec41ce50_DestroyVector(BYTE* self, int)
     for (BYTE* p = v[0]; p != e; p += 16)
         CallThis(FUN_461ae0, p, 0);
     VecStorage_Free(v[0], v[2], 16);
+}
+
+// [FUN_422210] puts a player at its market's dealer: the first id of its dealer record (+116) of the market (+112)
+extern "C" void __cdecl Player_PlaceAtDealer(BYTE* p)
+{
+    BYTE* recs = F(BYTE*, g_68cc98[F(int, p, 112)], 28);
+    PositionId pos;
+    DWORD* d = (DWORD*)&pos;
+    d[0] = (DWORD)-1;
+    d[1] = F(DWORD, recs, F(int, p, 116) * 36);
+    d[2] = d[3] = d[4] = d[5] = d[6] = 0;
+    d[7] = (DWORD)-1;
+    Ai_TrimDealerPosition(&pos);
+    Player_SetPosition(p, 0, &pos);
+}
+
+// [FUN_404ef0] the point of a town's node (its id, or its first item's)
+extern "C" DVec3* __cdecl Town_Point(DVec3* out, BYTE* town)
+{
+    int id;
+    Town_IdOrFirst(&id, town);
+    if (id == -1) {
+        const char* b = F(const char*, town, 0);
+        AiError(0, 1, s_mainFile, s_mainId, 932, "No coordinates defined for town",
+                b != F(const char*, town, 4) ? b : 0, &g_aiEmpty);
+        return out;
+    }
+    PositionId pos;
+    DWORD* d = (DWORD*)&pos;
+    d[0] = (DWORD)-1;
+    d[1] = id;
+    d[2] = d[3] = d[4] = d[5] = d[6] = 0;
+    d[7] = (DWORD)-1;
+    Road_PointOf(out, pos);
+    return out;
 }

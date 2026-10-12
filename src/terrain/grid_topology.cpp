@@ -406,3 +406,20 @@ extern "C" void __fastcall GridMesh_Reprioritise(BYTE* s,void*)
     while((unsigned)F(WORD,s,42)<CallVirt<unsigned>(F(BYTE*,s,4),4))
         CallC(FUN_607410,F(DWORD,MarineQueue_TopDeferredNode(F(BYTE*,s,36),0),40),s);
 }
+
+extern "C" void* __cdecl malloc(size_t n);
+extern "C" void __fastcall GridTask_Free(BYTE* self, void*);
+ASM_VAR(TopologyLabel,g_grdFile,$L_685a9c)
+
+// [FUN_60c520] allocates n 16-byte and 40-byte records and m pointers; on failure frees them and reports
+extern "C" int __fastcall GridTask_Alloc(BYTE* self,void*,int n,int m)
+{
+    F(void*,self,12)=malloc(n*16);
+    F(void*,self,16)=malloc(n*40+1);
+    F(void*,self,8)=malloc(m*4);
+    F(int,self,60)=m;
+    if(F(void*,self,12)&&F(void*,self,8)) return 1;
+    GridTask_Free(self,0);
+    CallC(FUN_60aad0,2289444628u,g_topError,g_grdFile,240,g_topDate);
+    return 0;
+}

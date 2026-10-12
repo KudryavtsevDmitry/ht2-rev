@@ -3398,3 +3398,17 @@ extern "C" void __fastcall LightPool_Free(BYTE* self, int)
         F(int, self, 40 + i * 4) = 0;
     F(int, self, 84) = 0;
 }
+
+extern "C" int __cdecl Get70ebf8();                                  // media.cpp
+extern "C" void __fastcall Shadows_SetOwner(BYTE* self, void*, int owner);
+extern "C" void __cdecl Set70ebf4(int v);
+ASM_VAR(int, g_6949fc, $L_6949fc)
+
+// [FUN_4b9530] gives the shadows to the view's current object again; clears 70ebf4 when 6949fc is set
+extern "C" void __cdecl Fx_ResetShadows()
+{
+    if (Get70ebf8())
+        Shadows_SetOwner((BYTE*)Get70ebf8(), 0, F(int, g_view, 2992));
+    if (g_6949fc)
+        Set70ebf4(0);
+}
