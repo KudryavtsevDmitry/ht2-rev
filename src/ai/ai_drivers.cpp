@@ -346,7 +346,7 @@ struct WaypointVec {
     void Clear() { end = begin; }
 };
 
-ASM_PROC(FUN_479050)    // vector<Waypoint>::insert_aux(pos, x)
+extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16")    // vector<Waypoint>::insert_aux(pos, x)
 extern "C" void __cdecl Waypoints_Sort(Waypoint* first, Waypoint* last, int, int, int);
 KING_ALIAS("_Waypoints_Sort", "FUN_47c0a0")
 

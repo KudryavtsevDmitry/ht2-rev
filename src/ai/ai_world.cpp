@@ -1505,7 +1505,7 @@ extern "C" void __cdecl Copy24a(void* dst, const void* src);
 KING_ALIAS("_Copy24a", "_Rec4581f0_Construct")
 extern "C" void __cdecl Copy24b(void* dst, const void* src);
 KING_ALIAS("_Copy24b", "_Rec40cda0_Construct")
-ASM_PROC(FUN_44c470)    // vector<8 bytes>::insert_aux
+extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")    // vector<8 bytes>::insert_aux
 ASM_PROC(FUN_44da60)    // vector<104 bytes>::insert_aux
 extern "C" void FUN_44e3f0(); KING_ALIAS("_FUN_44e3f0", "@Vec4b_Insert44e3f0@16")    // vector<4 bytes>::insert_aux
 extern "C" void FUN_44e970(); KING_ALIAS("_FUN_44e970", "@Vec4b_Insert44e970@16")
@@ -2130,7 +2130,7 @@ extern "C" void __fastcall Rec4046b0_Destroy(BYTE* self, void*)
 }
 
 ASM_PROC(FUN_404ef0)    // a town's position (out, town)
-ASM_PROC(FUN_44c470)    // vector<double>: insert (pos, value)
+extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")    // vector<double>: insert (pos, value)
 ASM_PROC(FUN_47c650)
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void __fastcall Waypoints_Clear(BYTE* self, void*);   // aiplay.cpp
@@ -6974,14 +6974,14 @@ extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    
 extern "C" void FUN_47e220(); KING_ALIAS("_FUN_47e220", "_Stl_UninitCopy16")    // uninitialized copy of 16-byte records (first, last, dest, -)
 
 // vector<n-byte POD>::insert_aux(pos, x), the STL template behind several procs;
-// copy is the instance's uninitialized copy (first, last, dest, -)
+// copy is the instance's (uninitialized) copy (first, last, dest, -, 0)
 extern "C" void __cdecl VecPod_InsertAux(BYTE** v, BYTE* pos, const BYTE* x, int n, void (*copy)())
 {
     if (v[1] != v[2]) {
         if (v[1])
             memcpy(v[1], v[1] - n, n);
         v[1] += n;
-        BYTE t[16];
+        BYTE t[64];
         memcpy(t, x, n);
         BYTE* src = v[1] - 2 * n;
         BYTE* dst = v[1] - n;
@@ -6996,10 +6996,10 @@ extern "C" void __cdecl VecPod_InsertAux(BYTE** v, BYTE* pos, const BYTE* x, int
     int size = (int)(v[1] - v[0]) / n;
     int len = size ? 2 * size : 1;
     BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len * n) : 0;
-    BYTE* q = CallC<BYTE*>(copy, v[0], pos, p, pos);
+    BYTE* q = CallC<BYTE*>(copy, v[0], pos, p, pos, 0);
     if (q)
         memcpy(q, x, n);
-    BYTE* e = CallC<BYTE*>(copy, pos, v[1], q + n, pos);
+    BYTE* e = CallC<BYTE*>(copy, pos, v[1], q + n, pos, 0);
     int cap = (int)(v[2] - v[0]) / n;
     if (cap)
         CallC(FUN_44b4a0, v[0], cap * n);
@@ -7030,4 +7030,19 @@ extern "C" void __fastcall Vec12_Insert4545d0(BYTE** v, void*, BYTE* pos, const 
 extern "C" void __fastcall Vec16_Insert451740(BYTE** v, void*, BYTE* pos, const BYTE* x)
 {
     VecPod_InsertAux(v, pos, x, 16, FUN_47e220);
+}
+
+extern "C" void FUN_47da70(); KING_ALIAS("_FUN_47da70", "_Stl_Copy8")    // copy of 8-byte values (first, last, dest, -)
+extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")    // copy of bytes (first, last, dest, -)
+
+// [FUN_44c470] vector<double>::insert_aux
+extern "C" void __fastcall Vec8_Insert44c470(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    VecPod_InsertAux(v, pos, x, 8, FUN_47da70);
+}
+
+// [FUN_44bef0] vector<char>::insert_aux
+extern "C" void __fastcall VecChar_Insert44bef0(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    VecPod_InsertAux(v, pos, x, 1, FUN_46ecd0);
 }
