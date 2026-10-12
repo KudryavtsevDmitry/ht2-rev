@@ -15,7 +15,7 @@ extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.cpp
 
 extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
-ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
@@ -445,7 +445,6 @@ KING_ALIAS("_SchValue_MakeEnv", "FUN_4a27e0")
 // value type-check copies: copy a SchValue and assert its immediate type
 
 extern "C" void __cdecl Sch_TypeError(int code, int level, const char* name);
-KING_ALIAS("_Sch_TypeError", "FUN_4a5420")
 
 // copy a value and assert it is an immediate Boolean (type 7)           [FUN_4a1940]
 extern "C" SchValue* __fastcall SchValue_AsBool(SchValue* self, void*, const SchValue* src)

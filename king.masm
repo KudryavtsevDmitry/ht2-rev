@@ -1115,6 +1115,8 @@ PUBLIC $L_670328, $L_670dc8, $L_670e08, $L_6710ec, $L_675ae0, $L_677574
 PUBLIC $L_686380, $L_692250, $L_6949fc, $L_6ce9ac, $L_6cec94, $L_6ef2b8
 PUBLIC $L_6ef2bc, $L_6ef2c0
 PUBLIC $L_670a7c, $L_670db8, $L_685a9c, $L_691e44
+PUBLIC $L_6767d0, $L_6772a0, $L_6772a8, $L_696878
+PUBLIC $L_67683c
 
 ;===================================
 _TEXT SEGMENT
@@ -125486,6 +125488,8 @@ $L_44b46a PROC
             nop
 $L_44b46a ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44b4a0 PROC
 
             push ECX
@@ -125625,6 +125629,10 @@ $L_44b5c9::
             inc EDI
             jmp $L_44b576
 FUN_44b4a0 ENDP
+ELSE
+EXTERN _Ai_PoolFree:PROC
+FUN_44b4a0 TEXTEQU <_Ai_PoolFree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -127058,6 +127066,8 @@ $L_44c157::
             call __CxxThrowException@8
 $L_44c111 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44c160 PROC
 
             push EBP
@@ -127169,6 +127179,10 @@ $L_44c217::
             pop EBP
             ret 4
 FUN_44c160 ENDP
+ELSE
+EXTERN @PodVec_Assign@12:PROC
+FUN_44c160 TEXTEQU <@PodVec_Assign@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -296472,6 +296486,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4a5420 PROC
 
             push EBP
@@ -296566,6 +296582,10 @@ $L_4a54d7::
             pop EBP
             ret 
 FUN_4a5420 ENDP
+ELSE
+EXTERN _Sch_TypeError:PROC
+FUN_4a5420 TEXTEQU <_Sch_TypeError>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -478169,6 +478189,8 @@ $L_518710 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_518760 PROC
 
             sub ESP,72
@@ -478262,6 +478284,10 @@ $L_5187ee::
             add ESP,72
             ret 
 FUN_518760 ENDP
+ELSE
+EXTERN _Storage_ReadImage:PROC
+FUN_518760 TEXTEQU <_Storage_ReadImage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -484803,6 +484829,8 @@ $L_51c7e4           BYTE ($L_51c7c0-$L_51c7c0)/4
             nop
 $L_51c0a0 ENDP
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51c870 PROC
 
             sub ESP,12
@@ -484939,6 +484967,10 @@ $L_51c93a::
             add ESP,12
             ret 
 FUN_51c870 ENDP
+ELSE
+EXTERN _Storage_ReadSubImage:PROC
+FUN_51c870 TEXTEQU <_Storage_ReadSubImage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -502473,6 +502505,8 @@ $L_527dc8::
 $L_527d20 ENDP
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_527de0 PROC
 
             mov EAX,DWORD PTR [$L_6cecd8]
@@ -502553,6 +502587,10 @@ $L_527e70::
             add ESP,36
             ret 
 FUN_527de0 ENDP
+ELSE
+EXTERN _Shell_CheckSave:PROC
+FUN_527de0 TEXTEQU <_Shell_CheckSave>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

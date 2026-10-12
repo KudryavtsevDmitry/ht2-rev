@@ -793,7 +793,7 @@ ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector<24-byte record>: allocate and copy (n, first, last)
 ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
-ASM_PROC(FUN_44c160)    // vector<double>::operator=
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<double>::operator=
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
 extern "C" void FUN_462010(); KING_ALIAS("_FUN_462010", "_Vec4b_AllocCopyB@12")    // vector<4 bytes>: allocate and copy (n, first, last)
 extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")    // uninitialized copy of 4-byte values (first, last, dest, -)

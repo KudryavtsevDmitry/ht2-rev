@@ -636,7 +636,7 @@ ASM_VAR(AsmLabel, s_number, $L_66ca60)
 ASM_VAR(AsmLabel, s_string, $L_66ca58)
 ASM_VAR(AsmLabel, s_port, $L_66cb28)
 
-ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
 extern "C" void FUN_410e40(); KING_ALIAS("_FUN_410e40", "@Rec410e40_FreeVectors@8")
 ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
@@ -1498,7 +1498,7 @@ KING_ALIAS("_Modules_FindByName", "FUN_44a1c0")
 extern "C" void __cdecl Town_440390(void* out, void* town);
 KING_ALIAS("_Town_440390", "_Ai_GetCoordinates")
 extern "C" void __cdecl List_FreeNode(void* node, int size);
-KING_ALIAS("_List_FreeNode", "FUN_44b4a0")
+KING_ALIAS("_List_FreeNode", "_Ai_PoolFree")
 extern "C" void __cdecl Copy104(void* dst, const void* src);
 KING_ALIAS("_Copy104", "_Rec40c220_Construct")
 extern "C" void __cdecl Copy24a(void* dst, const void* src);
@@ -2800,7 +2800,7 @@ extern "C" void* __fastcall StlLock_Guard(void* self, void*)
 // ---------------------------------------------------------------------------
 // medium-sized functions, batch 3: copies of records with vectors
 
-ASM_PROC(FUN_44c160)    // vector<double>::operator=
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<double>::operator=
 extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector of 16-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
 ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
@@ -4978,7 +4978,7 @@ int* __cdecl Rec_FirstId(int* out, int idx)
 }
 
 ASM_PROC(FUN_43bf10)    // a player's next position along its route
-ASM_PROC(FUN_44c160)    // vector<int>::operator=
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<int>::operator=
 ASM_VAR(AsmLabel, g_68b99c, $L_68b99c)
 extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
 extern "C" void __cdecl Player_EndDealOf(BYTE* p);
@@ -7130,4 +7130,47 @@ extern "C" DVec3* __cdecl Town_Point(DVec3* out, BYTE* town)
     d[7] = (DWORD)-1;
     Road_PointOf(out, pos);
     return out;
+}
+
+extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // allocates n bytes and copies [first, last) (stdcall)
+
+// [FUN_44c160] vector<POD>::operator= on byte counts
+extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src)
+{
+    if (src == self)
+        return self;
+    BYTE* sb = src[0];
+    BYTE* se = src[1];
+    unsigned n = (unsigned)(se - sb);
+    if (n > (unsigned)(self[2] - self[0])) {
+        BYTE* p = CallThis<BYTE*>(FUN_458cf0, self, n, sb, se);
+        if (self[2] != self[0])
+            CallC(FUN_44b4a0, self[0], (int)(self[2] - self[0]));
+        self[0] = p;
+        self[2] = p + n;
+    } else if ((unsigned)(self[1] - self[0]) >= n) {
+        memmove(self[0], sb, n);
+    } else {
+        unsigned size = (unsigned)(self[1] - self[0]);
+        memmove(self[0], sb, size);
+        memmove(self[1], sb + size, n - size);
+    }
+    self[1] = self[0] + n;
+    return self;
+}
+
+extern "C" void __cdecl free(void* p);
+
+// [FUN_44b4a0] the AI's allocator: free (p, size); blocks over 128 bytes go to free(), smaller ones onto their free list
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size)
+{
+    if (size > 128) {
+        free(p);
+        return;
+    }
+    void** list = &g_stlFreeLists[(size + 7) >> 3];
+    Stl_Lock(&g_stlLock, 0);
+    *(void**)p = *list;
+    *list = p;
+    g_stlLock = 0;
 }
