@@ -31753,6 +31753,8 @@ EXTERN @Rec_Init412300@8:PROC
 FUN_412300 TEXTEQU <@Rec_Init412300@8>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_412320 PROC
 
             push -1
@@ -33300,6 +33302,10 @@ $L_41332b::
             add ESP,164
             ret 
 FUN_412320 ENDP
+ELSE
+EXTERN _Ai_ReadAmbush:PROC
+FUN_412320 TEXTEQU <_Ai_ReadAmbush>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
