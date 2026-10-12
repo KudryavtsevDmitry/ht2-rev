@@ -9555,3 +9555,158 @@ extern "C" void __cdecl Ai_GetPresentData(BYTE* player, BYTE* present, BYTE* pd)
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_getPresentData);
 }
+
+// ---------------------------------------------------------------------------
+// loading a world file
+
+ASM_PROC(FUN_410340)    // reads a parking (reader, entry by value)
+ASM_PROC(FUN_40f840)    // reads a service
+ASM_PROC(FUN_410fe0)    // reads an obstacle
+ASM_PROC(FUN_411c00)    // reads people
+extern "C" void FUN_44de70(); KING_ALIAS("_FUN_44de70", "@Vec4b_InsertJ@16")
+extern "C" void FUN_44e130(); KING_ALIAS("_FUN_44e130", "@Vec4b_Insert44e130@16")
+extern "C" void FUN_44e6b0(); KING_ALIAS("_FUN_44e6b0", "@Vec4b_Insert44e6b0@16")
+extern "C" void FUN_44ec30(); KING_ALIAS("_FUN_44ec30", "@Vec4b_Insert44ec30@16")
+extern "C" void FUN_4140d0(); KING_ALIAS("_FUN_4140d0", "@Rec_Init4140d0@8")
+ASM_VAR(PtrVec, g_68cbe8v, $L_68cbe8)
+ASM_VAR(PtrVec, g_68cc18v, $L_68cc18)
+ASM_VAR(PtrVec, g_68a970v, $L_68a970)
+
+// appends a pointer to a vector (insert_aux when full)
+static void PtrVec_Push(void** v, void* x, void (*insert)())
+{
+    if (v[1] != v[2]) {
+        Construct4((DWORD*)v[1], (const DWORD*)&x);
+        v[1] = (BYTE*)v[1] + 4;
+    } else
+        CallThis(insert, v, v[1], &x);
+}
+
+// reads an entry with a reader proc (reader, entry by value)
+static BYTE* Entry_Read(void (*read)(), StrRef* m)
+{
+    StrRef c;
+    c.CopyFrom(m);
+    return CallC<BYTE*>(read, g_reader68bb58, c.ptr, c.len, c.flags);
+}
+
+// the n-th element of a list (a copy of it)
+static void List_Nth(StrRef* out, StrRef* l, int n)
+{
+    StrRef c;
+    Str_CopyConstruct(&c, 0, l);
+    CallC(FUN_4af480, out, n, c.ptr, c.len, c.flags);
+}
+
+// [FUN_4133c0] loads a world file: towns, parkings, services, obstacles, people, ambushes and node events
+extern "C" void __cdecl Ai_LoadWorld(const char* file)
+{
+    int one = 1;
+    DWORD tmp[3];
+    DWORD* h = Port_MakeB(tmp, 0, (const int*)&file, &one);
+    StrRef port = {0, 0, 0};
+    BYTE* o = (BYTE*)h[0];
+    if (o) {
+        if (CallVirt<int>(o, 0) == 11) {
+            port.ptr = o;
+            port.flags = h[2];
+            F(int, o, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(o, 4), "Port");
+    }
+    CallThis(FUN_4a36c0, tmp);
+    CheckHandle(&port);
+    if (CallVirt<int>(port.ptr, 40))
+        AiError(23, 100, s_mainFile, s_mainId, 3456, "Cannot open", file, &g_aiEmpty);
+    StrRef value;
+    {
+        StrRef copy;
+        Str_CopyConstruct(&copy, 0, &port);
+        CallC(FUN_4b4c20, &value, g_reader68bb58, copy.ptr, copy.len, copy.flags);
+    }
+    StrRef l;
+    l.CopyFrom(&value);
+    while ((BYTE)l.flags == 2) {
+        StrRef m;
+        Str_Member20(&m, &l);
+        if (Head_Is(&m, "town"))
+            PtrVec_Push((void**)&g_towns, Entry_Read((void (*)())Ai_ReadTown, &m), FUN_44de70);
+        else if (Head_Is(&m, "parking"))
+            PtrVec_Push((void**)&g_68cc98, Entry_Read(FUN_410340, &m), FUN_44e130);
+        else if (Head_Is(&m, "service"))
+            PtrVec_Push((void**)&g_68cbe8v, Entry_Read(FUN_40f840, &m), FUN_44e6b0);
+        else if (Head_Is(&m, "obstacle"))
+            PtrVec_Push((void**)&g_68cc18v, Entry_Read(FUN_410fe0, &m), FUN_44ec30);
+        else if (Head_Is(&m, "people"))
+            Entry_Read(FUN_411c00, &m);
+        else if (Head_Is(&m, "ambush"))
+            PtrVec_Push((void**)&g_68a970v, Entry_Read((void (*)())Ai_ReadAmbush, &m), FUN_452900);
+        else {
+            StrRef k;
+            Str_Member20(&k, &m);
+            bool ev = SchValue_IsSymbol((BYTE*)&k, "nodeevent");
+            CallThis(FUN_4a36c0, &k);
+            if (ev) {
+                StrRef e, t, type, node, dir, name;
+                Str_CopyConstruct(&e, 0, &m);
+                List_Nth(&t, &e, 2);
+                Handle9_Init((void**)&type, 0, (void**)&t);
+                CallThis(FUN_4a36c0, &t);
+                List_Nth(&t, &e, 3);
+                StringHandle_From((DWORD*)&node, 0, (const DWORD*)&t);
+                CallThis(FUN_4a36c0, &t);
+                List_Nth(&t, &e, 4);
+                Handle9_Init((void**)&dir, 0, (void**)&t);
+                CallThis(FUN_4a36c0, &t);
+                List_Nth(&t, &e, 5);
+                StringHandle_From((DWORD*)&name, 0, (const DWORD*)&t);
+                CallThis(FUN_4a36c0, &t);
+                BYTE* ne = (BYTE*)operator new(56);
+                if (ne)
+                    ne = CallThis<BYTE*>(FUN_4140d0, ne);
+                if (SchValue_IsSymbol((BYTE*)&type, "STATEBORDER"))
+                    F(int, ne, 0) = 16;
+                else if (!SchValue_IsSymbol((BYTE*)&type, "UNCONDITIONAL"))
+                    AiError(0, 100, s_mainFile, s_mainId, 3518, "Unknown node event type", Ref_Text(&type), &g_aiEmpty);
+                DWORD v[6] = {0, 0, 0, 0, 0, 0};
+                int d = -1;
+                if (SchValue_IsSymbol((BYTE*)&dir, "NORTH")) {
+                    d = 1;
+                    v[3] = 0x3ff00000;
+                } else if (SchValue_IsSymbol((BYTE*)&dir, "SOUTH")) {
+                    d = 2;
+                    v[3] = 0xbff00000;
+                } else if (SchValue_IsSymbol((BYTE*)&dir, "EAST")) {
+                    d = 3;
+                    v[1] = 0x3ff00000;
+                } else if (SchValue_IsSymbol((BYTE*)&dir, "WEST")) {
+                    d = 4;
+                    v[1] = 0xbff00000;
+                } else if (SchValue_IsSymbol((BYTE*)&dir, "ALL"))
+                    F(int, ne, 4) = 0;
+                else
+                    AiError(0, 100, s_mainFile, s_mainId, 3560, "Unknown node event direction", Ref_Text(&dir),
+                            &g_aiEmpty);
+                if (d != -1) {
+                    F(int, ne, 4) = d;
+                    DVec3_Assign((DVec3*)(ne + 8), 0, (const DVec3*)v);
+                }
+                PodVec_Assign((BYTE**)(ne + 40), 0, (BYTE* const*)(CallThis<BYTE*>(FUN_4aa430, &name) + 12));
+                int nd;
+                Node_ByName(&nd, Ref_Text(&node));
+                if (nd != -1)
+                    F(BYTE*, g_68cf00[nd], 192) = ne;
+                CallThis(FUN_4a36c0, &name);
+                CallThis(FUN_4a36c0, &dir);
+                CallThis(FUN_4a36c0, &node);
+                CallThis(FUN_4a36c0, &type);
+                CallThis(FUN_4a36c0, &e);
+            }
+        }
+        CallThis(FUN_4a36c0, &m);
+        List_Advance(&l);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &value);
+    CallThis(FUN_4a36c0, &port);
+}
