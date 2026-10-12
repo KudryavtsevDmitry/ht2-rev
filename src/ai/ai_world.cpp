@@ -9222,3 +9222,174 @@ extern "C" int __cdecl Ai_QueryBribeSum(BYTE* giver, BYTE* taker, unsigned flags
         return Bribe_LeaveInline(1);
     }
 }
+
+// ---------------------------------------------------------------------------
+// reading a town
+
+ASM_PROC(FUN_4052f0)    // a town's index by its identifier (out, identifier handle by value)
+extern "C" char** __fastcall CharVec_Construct(char** self, void*, const char* s);   // cargo_orders.cpp
+extern "C" void FUN_4af480(); KING_ALIAS("_FUN_4af480", "_SchList_Nth")    // the n-th element of a list (out, n, list by value)
+extern "C" void __fastcall Vec16_PushBack(void* s, void*, const void* x);
+extern "C" void __fastcall Vec4_PushBackE(void* s, void*, const void* x);
+extern "C" void __fastcall Vec4_PushBackF(void* s, void*, const void* x);
+
+// the C string of a handle's object
+static const char* Ref_Text(StrRef* r) { return F(const char*, CallThis<BYTE*>(FUN_4aa430, r), 12); }
+
+// [FUN_40e8e0] reads a town: (id name side [n] (node...) - - (town...) - (node | (node...))...)
+extern "C" BYTE* __cdecl Ai_ReadTown(void* reader, StrRef h)
+{
+    List_Advance(&h);
+    StrRef id = {0, 0, 0};
+    {
+        StrRef e;
+        Str_Member20(&e, &h);
+        Handle9_Init((void**)&id, 0, (void**)&e);
+        Str_Release(&e);
+    }
+    BYTE* o = (BYTE*)operator new(112);
+    if (o) {
+        char alloc;
+        CheckHandle(&id);
+        CharVec_Construct((char**)o, 0, F(const char*, id.ptr, 12));
+        CallThis(FUN_487730, o + 12, &alloc);
+        F(int, o, 24) = -1;
+        CallThis(FUN_487730, o + 28, &alloc);
+        CallThis(FUN_487730, o + 40, &alloc);
+        F(int, o, 64) = -1;
+        F(int, o, 68) = -1;
+        CallThis(FUN_487730, o + 72, &alloc);
+        CallThis(FUN_487730, o + 84, &alloc);
+        F(int, o, 96) = 0;
+        CallThis(FUN_487730, o + 100, &alloc);
+    }
+    List_Advance(&h);
+    StrRef m;
+    Str_Member20(&m, &h);
+    PodVec_Assign((BYTE**)(o + 12), 0, (BYTE* const*)(m.ptr + 12));
+    Str_Release(&m);
+    List_Advance(&h);
+    Str_Member20(&m, &h);
+    F(int, o, 24) = CallThis<int>(FUN_4b0ea0, m.ptr);
+    Str_Release(&m);
+    List_Advance(&h);
+    if (Head_Type(&h) == 6) {
+        Str_Member20(&m, &h);
+        F(int, o, 96) = CallThis<int>(FUN_4b0ea0, m.ptr);
+        Str_Release(&m);
+    }
+    List_Next(&h);
+
+    // the nodes: (node name flags...)
+    StrRef l;
+    Str_Member20(&l, &h);
+    while ((BYTE)l.flags == 2) {
+        StrRef e;
+        Str_Member20(&e, &l);
+        if (Head_Is(&e, "node")) {
+            List_Next(&e);
+            StrRef name, t;
+            Str_Member20(&t, &e);
+            StringHandle_From((DWORD*)&name, 0, (const DWORD*)&t);
+            CallThis(FUN_4a36c0, &t);
+            BYTE rec[16];
+            Vec16_PushBack(o + 28, 0, Rec_Init40f820((int*)rec, 0));
+            if ((name.flags || name.ptr) && strlen(Ref_Text(&name))) {
+                BYTE* last = F(BYTE*, o, 32);
+                int r;
+                F(int, last, -16) = *Node_ByName(&r, Ref_Text(&name));
+                if (F(BYTE, g_68cf00[F(int, F(BYTE*, o, 32), -16)], 12) & 8)
+                    AiError(0, 200, s_mainFile, s_mainId, 2949, "Isolated node used as a town node ", Ref_Text(&name),
+                            &g_aiEmpty);
+            }
+            List_Next(&e);
+            while ((BYTE)e.flags == 2) {
+                StrRef s;
+                Str_Member20(&s, &e);
+                if (s.flags || s.ptr) {
+                    DWORD bit = 0;
+                    if (SchValue_IsSymbol((BYTE*)&s, "unload"))
+                        bit = 1;
+                    else if (SchValue_IsSymbol((BYTE*)&s, "hidden"))
+                        bit = 2;
+                    else if (SchValue_IsSymbol((BYTE*)&s, "fuel"))
+                        bit = 4;
+                    else if (SchValue_IsSymbol((BYTE*)&s, "dummy"))
+                        bit = 8;
+                    if (bit)
+                        F(DWORD, F(BYTE*, o, 32), -12) |= bit;
+                }
+                List_Next(&e);
+                CallThis(FUN_4a36c0, &s);
+            }
+            CallThis(FUN_4a36c0, &name);
+        }
+        CallThis(FUN_4a36c0, &e);
+        List_Next(&l);
+    }
+    CallThis(FUN_4a36c0, &l);
+    List_Next(&h);
+    List_Next(&h);
+
+    // the linked towns
+    Str_Member20(&l, &h);
+    while ((BYTE)l.flags == 2) {
+        StrRef e, c;
+        Str_Member20(&e, &l);
+        Str_CopyConstruct(&c, 0, &e);
+        StrRef nth;
+        CallC(FUN_4af480, &nth, 0, c.ptr, c.len, c.flags);
+        StrRef idh;
+        Handle9_Init((void**)&idh, 0, (void**)&nth);
+        int town;
+        CallC(FUN_4052f0, &town, idh.ptr, idh.len, idh.flags);
+        CallThis(FUN_4a36c0, &nth);
+        Vec4_PushBackE(o + 40, 0, &town);
+        CallThis(FUN_4a36c0, &e);
+        List_Next(&l);
+    }
+    CallThis(FUN_4a36c0, &l);
+    List_Next(&h);
+
+    // the node and the node lists
+    StrRef k;
+    Str_Member20(&k, &h);
+    BYTE* lists = o + 72;
+    while ((BYTE)k.flags == 2) {
+        StrRef s;
+        Str_Member20(&s, &k);
+        BYTE t = (BYTE)s.flags;
+        if (t == 3) {
+            StrRef n;
+            StringHandle_From((DWORD*)&n, 0, (const DWORD*)&s);
+            int r;
+            F(int, o, 68) = *Node_ByName(&r, Ref_Text(&n));
+            CallThis(FUN_4a36c0, &n);
+        } else if (t == 2) {
+            StrRef q;
+            Str_CopyConstruct(&q, 0, &s);
+            while ((BYTE)q.flags == 2) {
+                StrRef e;
+                Str_Member20(&e, &q);
+                if ((BYTE)e.flags == 3) {
+                    StrRef n;
+                    StringHandle_From((DWORD*)&n, 0, (const DWORD*)&e);
+                    int node;
+                    Node_ByName(&node, Ref_Text(&n));
+                    Vec4_PushBackF(lists, 0, &node);
+                    CallThis(FUN_4a36c0, &n);
+                }
+                CallThis(FUN_4a36c0, &e);
+                List_Next(&q);
+            }
+            lists += 12;
+            CallThis(FUN_4a36c0, &q);
+        }
+        CallThis(FUN_4a36c0, &s);
+        List_Next(&k);
+    }
+    CallThis(FUN_4a36c0, &k);
+    CallThis(FUN_4a36c0, &id);
+    CallThis(FUN_4a36c0, &h);
+    return o;
+}
