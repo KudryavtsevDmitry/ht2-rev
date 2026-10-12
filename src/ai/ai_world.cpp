@@ -9037,3 +9037,188 @@ extern "C" void __cdecl Ai_ReadSetting(int arg, StrRef pair)
     CallThis(FUN_4a36c0, &l);
     CallThis(FUN_4a36c0, &pair);
 }
+
+// ---------------------------------------------------------------------------
+// queryBribeSum
+
+ASM_PROC(FUN_4715a0)    // an order's pay (order, double done, int)
+extern "C" int __cdecl Player_Driver(BYTE* p);
+extern "C" int __cdecl Player_HasPlaceFlag1(BYTE* p);
+extern "C" double __cdecl Order_Pay(const BYTE* o, double late, int bonus);
+extern "C" double __cdecl Vehicle_Value4cd730(int id);
+
+static const char s_queryBribeSum[] =
+    "queryBribeSum(PlayerId giver, PlayerId taker, unsigned long int flags, double & sum)";
+
+X87 double Log10_x87(double x) { __asm { fldlg2 } __asm { fld x } __asm { fyl2x } }
+
+// rounds a sum up to its one or two leading digits (one digit below 100, ...)
+static double Bribe_Round(double s)
+{
+    int d = Ftol(Log10_x87(s) - 0.302);
+    if (d > 2)
+        d = 2;
+    int m = 1;
+    for (; d > 0; d--)
+        m *= 10;
+    double md = (double)m;
+    return (double)(Ftol((md + s - 1.0) / md) * m);
+}
+
+// the value of the giver's cargo: its driver's pay for the done part, else +960; plus +224
+static double Bribe_Cargo(BYTE* giver)
+{
+    BYTE* drv = (BYTE*)Player_Driver(giver);
+    double a = drv ? CallC<double>(FUN_4715a0, drv, (double)F(int, giver, 528), 1) : F(double, giver, 960);
+    return a + F(double, giver, 224);
+}
+
+// the giver's order margin (pay now minus pay late), or def without a driver
+static double Bribe_Margin(BYTE* giver, double def)
+{
+    BYTE* drv = (BYTE*)Player_Driver(giver);
+    if (!drv)
+        return def;
+    double p = Order_Pay(drv, 0.0, 1);
+    return p - Order_Pay(drv, 1.0, 0);
+}
+
+static bool Orders_Empty(BYTE* pl)
+{
+    BYTE* o = Player_Orders(pl, 0);
+    return F(BYTE*, o, 0) == F(BYTE*, o, 4);
+}
+
+static int Bribe_Leave(int r)
+{
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, s_queryBribeSum);
+    return r;
+}
+
+static int Bribe_LeaveInline(int r)
+{
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_queryBribeSum);
+    return r;
+}
+
+static int Bribe_LeaveTag(int r)
+{
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, s_queryBribeSum);
+    return r;
+}
+
+// the half-rule: (a - (base + a) / 2) * 2
+static double Bribe_Half(double a, double base) { return (a - (base + a) * (1.0 - 0.5)) / 0.5; }
+
+// [FUN_4315f0] queryBribeSum: the bribe the giver must pay the taker for the flags' offences, rounded;
+// 0 accepted, 1 not possible, 2 refused
+extern "C" int __cdecl Ai_QueryBribeSum(BYTE* giver, BYTE* taker, unsigned flags, double* sum)
+{
+    Trace_EnterBuffered(s_queryBribeSum);
+    if (Player_NotValid(giver)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 12906, s_invalidId, s_playerIdType, g_numberText);
+    }
+    if (Player_NotValid(taker)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 12907, s_invalidId, s_playerIdType, g_numberText);
+    }
+    *sum = 0.0;
+    switch (F(int, taker, 92)) {
+    case 5:
+        if (flags & 1) {
+            BYTE* drv = (BYTE*)Player_Driver(giver);
+            double a = Player_TotalValue(giver);
+            if (Player_HasCargoOrder(giver))
+                a = CallC<double>(FUN_4715a0, drv, (double)F(int, giver, 528), 1) + a;
+            *sum = Bribe_Half(a, 200.0) + *sum;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        if (flags & 2) {
+            *sum = Bribe_Half(Bribe_Cargo(giver), 500.0) + *sum;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        if (flags & 4) {
+            if (Orders_Empty(giver) || g_68a980 == g_68a984)
+                return Bribe_LeaveInline(1);
+            *sum = Bribe_Half(Bribe_Margin(giver, 200.0), 500.0) + *sum;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        return Bribe_Leave(Player_HasPlaceFlag1(taker + 8) ? 0 : 2);
+    case 6:
+        if (flags & 8) {
+            *sum = Bribe_Cargo(giver) * 0.7 + *sum;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        if (flags & 4) {
+            if (Orders_Empty(giver) || g_68a980 == g_68a984)
+                return Bribe_LeaveInline(1);
+            *sum = Bribe_Margin(giver, 200.0) * 0.7 + *sum;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        return Bribe_Leave(0);
+    case 2:
+        if (flags & 16) {
+            if (!Player_UpdateFlagsGet(taker) || Orders_Empty(taker) || Orders_Empty(giver))
+                return Bribe_LeaveInline(1);
+            *sum = Bribe_Margin(giver, 200.0) * 0.5 + *sum;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        if (flags & 32) {
+            if (!Player_UpdateFlagsGet(taker) || Orders_Empty(giver))
+                return Bribe_LeaveInline(1);
+            double a = Bribe_Margin(giver, 1200.0);
+            if (x87_eq(a, 0.0))
+                a = 1200.0;
+            double r = Bribe_Round(*sum);
+            *sum = r;
+            *sum = a * 0.5 + r;
+            if (!(*sum > 0.0))
+                return Bribe_Leave(1);
+        }
+        if (!((double)Rng_Random(&g_rng68b9c8, 0, 1000000) < 0.5 * 1000000.0)) {
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, s_queryBribeSum);
+            return 2;
+        }
+        // fall through
+    case 7:
+    case 8:
+    case 9:
+        if (!(flags & 64))
+            return Bribe_LeaveInline(0);
+        {
+            int v = F(int, taker, 84);
+            double a = v == -1 ? 0.0 : Vehicle_Value4cd730(v);
+            *sum = a * 5000.0 + *sum + 500.0;
+            *sum = Bribe_Round(*sum);
+            if (!(*sum > 0.0))
+                return Bribe_LeaveTag(1);
+        }
+        if (F(int, g_images68a958 + F(int, taker, 992) * 56, 0) == 2 || Player_UpdateFlagsGet(taker))
+            return Bribe_LeaveTag(2);
+        {
+            double limit = F(int, g_images68a958 + F(int, giver, 992) * 56, 0) == 2 ? 200000.0 : 500000.0;
+            if ((double)Rng_Random(&g_rng68b9c8, 0, 1000000) < limit)
+                return Bribe_LeaveInline(2);
+        }
+        return Bribe_LeaveInline(0);
+    default:
+        return Bribe_LeaveInline(1);
+    }
+}
