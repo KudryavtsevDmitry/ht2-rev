@@ -47685,6 +47685,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41be60 PROC
 
             push EBP
@@ -49055,6 +49057,10 @@ $L_41cd2a::
             pop EBP
             ret 
 FUN_41be60 ENDP
+ELSE
+EXTERN _Ai_GetPresentData:PROC
+FUN_41be60 TEXTEQU <_Ai_GetPresentData>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original

@@ -9393,3 +9393,165 @@ extern "C" BYTE* __cdecl Ai_ReadTown(void* reader, StrRef h)
     CallThis(FUN_4a36c0, &h);
     return o;
 }
+
+// ---------------------------------------------------------------------------
+// getPresentData
+
+ASM_PROC(FUN_438d70)    // the module and room of a position (out36, PositionId32)
+ASM_PROC(FUN_4397e0)    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
+ASM_PROC(FUN_41bbe0)    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
+extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
+ASM_VAR(AsmLabel, g_text77e5e0b, $L_77e5e0)
+
+static const char s_getPresentData[] = "getPresentData(PlayerId player, PresentId present, GetPresentData & pd )";
+
+// the 4x3 matrix (rows of doubles) as floats at pd+4
+static void PresentData_Matrix(BYTE* pd, const double* m)
+{
+    for (int i = 0; i < 12; i++)
+        F(float, pd, 4 + i * 4) = (float)m[i];
+}
+
+// the four name pointers (+180..) of the name vectors (+132, +144, +156, +168), 0 when empty
+static void PresentData_Names(BYTE* pd)
+{
+    for (int i = 0; i < 4; i++)
+        F(BYTE*, pd, 180 + i * 4) = 0;
+    for (int i = 0; i < 4; i++)
+        if (F(BYTE*, pd, 132 + i * 12) != F(BYTE*, pd, 136 + i * 12))
+            F(BYTE*, pd, 180 + i * 4) = F(BYTE*, pd, 132 + i * 12);
+}
+
+// [FUN_41be60] getPresentData: a present's flags, matrix, position, module and room, and its cargo or
+// vehicle's order data as the player sees it
+extern "C" void __cdecl Ai_GetPresentData(BYTE* player, BYTE* present, BYTE* pd)
+{
+    Trace_EnterBuffered(s_getPresentData);
+    if (player != (BYTE*)g_players && Player_NotValid(player)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 6221, s_invalidId, s_playerIdType, g_numberText);
+    }
+    if (Rec_NotValid(present)) {
+        sprintf(g_text77e5e0b, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 6224, s_invalidId, "PresentId", g_text77e5e0b);
+    }
+    BYTE* rec = F(BYTE*, present, 8);
+    F(DWORD, pd, 0) = F(DWORD, rec, 8);
+    F(float, pd, 52) = (float)F(double, rec, 32);
+    F(float, pd, 56) = (float)F(double, rec, 40);
+    F(float, pd, 60) = (float)F(double, rec, 48);
+    int node = F(int, rec, 24);
+    bool done = false;
+    if (node != -1) {
+        BYTE* n = g_68cf00[node];
+        F(int, pd, 72) = F(int, F(BYTE*, n, 184), 12);
+        F(int, pd, 76) = F(int, F(BYTE*, n, 188), 12);
+        BYTE* v = F(BYTE*, n, 188);
+        F(BYTE*, pd, 64) = F(BYTE*, v, 0) != F(BYTE*, v, 4) ? F(BYTE*, v, 0) : 0;
+        v = F(BYTE*, n, 184);
+        F(BYTE*, pd, 68) = F(BYTE*, v, 0) != F(BYTE*, v, 4) ? F(BYTE*, v, 0) : 0;
+        if (F(BYTE, n, 12) & 128) {
+            PresentData_Matrix(pd, (const double*)(n + 72));
+            done = true;
+        }
+    } else {
+        DWORD r[11];
+        r[0] = 0;
+        r[2] = 0;
+        r[3] = 0;
+        r[4] = (DWORD) "UNDEFINED_MODULE";
+        r[5] = (DWORD) "UNDEFINED_ROOM";
+        r[6] = 0;
+        r[7] = 0;
+        r[9] = (DWORD)-1;
+        r[10] = (DWORD)-1;
+        DWORD* pos = (DWORD*)(rec + 56);
+        CallC(FUN_438d70, r, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7]);
+        F(DWORD, pd, 72) = r[9];
+        F(DWORD, pd, 76) = r[10];
+        F(DWORD, pd, 64) = r[4];
+        F(DWORD, pd, 68) = r[5];
+    }
+    if (!done) {
+        PositionId pid;
+        memcpy(&pid, rec + 56, 32);
+        DVec3 pt;
+        Road_PointOf(&pt, pid);
+        DVec3 d;
+        Vec_Diff(&d, &pt, (const DVec3*)(rec + 32));
+        BYTE m[192];
+        const double* mm = CallC<const double*>(FUN_4397e0, m, rec + 32, &d);
+        PresentData_Matrix(pd, mm);
+    }
+
+    rec = F(BYTE*, present, 8);
+    BYTE* c = F(BYTE*, rec, 88);
+    if (c && !F(BYTE*, rec, 20)) {
+        F(int, pd, 80) = F(int, c, 0);
+        PodVec_Assign((BYTE**)(pd + 168), 0, (BYTE* const*)((BYTE*)g_towns[F(int, c, 12)] + 12));
+        PodVec_Assign((BYTE**)(pd + 132), 0, (BYTE* const*)(g_68ccb8 + F(int, c, 0) * 104 + 88));
+        F(double, pd, 216) = F(double, c, 24);
+        if (player != (BYTE*)g_players) {
+            double a, b, q;
+            CallC(FUN_41bbe0, player, &a, &b, &q, g_68ccb8 + F(int, c, 0) * 104, -1);
+            F(double, pd, 224) = a;
+            F(double, pd, 232) = b;
+            int town;
+            Town_Id(&town, (BYTE*)g_towns[F(int, c, 12)]);
+            BYTE order[144];
+            Order_Construct(order, 0);
+            DWORD* pos = (DWORD*)(rec + 56);
+            DWORD* qd = (DWORD*)&q;
+            CallC(FUN_4715f0, order, c, -1, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], qd[0], qd[1]);
+            F(int, order, 104) = 3;
+            Order_SetPrice(player, (int*)order, 1, F(BYTE*, player, 520) != 0);
+            if (F(BYTE*, player, 520))
+                F(double, pd, 216) = 1.3 * F(double, pd, 216);
+            double pay = Order_Pay(order, 0.0, 0);
+            F(double, pd, 200) = pay;
+            F(double, pd, 208) = pay;
+            Order_Destroy(order);
+        }
+        PresentData_Names(pd);
+    }
+
+    F(int, pd, 272) = -1;
+    F(int, pd, 276) = -1;
+    rec = F(BYTE*, present, 8);
+    BYTE* v = F(BYTE*, rec, 20);
+    if (v) {
+        BYTE* veh = (BYTE*)g_vehicles[F(int, v, 4)];
+        F(int, pd, 272) = F(int, veh, 64);
+        F(int, pd, 276) = F(int, (BYTE*)g_vehicles[F(int, v, 4)], 68);
+        if (F(BYTE*, v, 28) != F(BYTE*, v, 32)) {
+            BYTE* ord = F(BYTE*, v, 28);
+            if (player != (BYTE*)g_players)
+                Order_SetQuantity((int)player, (int*)ord, F(int, v, 4));
+            F(int, pd, 80) = F(int, ord, 0);
+            PodVec_Assign((BYTE**)(pd + 168), 0, (BYTE* const*)((BYTE*)g_towns[F(int, ord, 12)] + 12));
+            PodVec_Assign((BYTE**)(pd + 132), 0, (BYTE* const*)(g_68ccb8 + F(int, ord, 0) * 104 + 88));
+            if (F(BYTE, F(BYTE*, present, 8), 104)) {
+                F(double, pd, 216) = F(double, ord, 72) - CallC<double>(FUN_401000);
+                F(double, pd, 248) = F(double, ord, 72) - CallC<double>(FUN_401000);
+            } else {
+                F(double, pd, 216) = F(double, ord, 88);
+                F(double, pd, 248) = F(double, ord, 88);
+            }
+            BYTE* r104 = g_68ccb8 + F(int, ord, 0) * 104;
+            F(double, pd, 224) = F(double, r104, 16) * F(double, ord, 56);
+            F(double, pd, 232) = F(double, g_68ccb8 + F(int, ord, 0) * 104, 24) * F(double, ord, 56);
+            F(double, pd, 200) = Order_Pay(ord, 0.0, F(int, ord, 104) == 1);
+            F(double, pd, 208) = Order_Margin((int*)ord, 0.0, F(int, ord, 104) == 1, 0, 0);
+            memcpy(pd + 96, ord + 24, 32);
+            F(double, pd, 88) = F(double, ord, 56);
+            F(double, pd, 240) = F(double, g_68ccb8 + F(int, ord, 0) * 104, 64);
+            F(BYTE, pd, 264) = 1;
+            PresentData_Names(pd);
+        }
+    } else if (F(int, rec, 108) != -1) {
+        F(int, pd, 272) = F(int, (BYTE*)g_spots68d0b8[F(int, rec, 108)], 32);
+        F(int, pd, 276) = F(int, (BYTE*)g_spots68d0b8[F(int, F(BYTE*, present, 8), 108)], 36);
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getPresentData);
+}
