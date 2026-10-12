@@ -11040,3 +11040,147 @@ extern "C" void __cdecl Ai_ReUncontradict()
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_reUncontradict);
 }
+
+// ---------------------------------------------------------------------------
+// reading a vehicle of the tech file
+
+ASM_PROC(FUN_42dbf0)    // a list of ints from a value (out vector, value by value)
+ASM_PROC(FUN_40e6d0)    // the name vector of an identifier (identifier by value)
+extern "C" void FUN_452290(); KING_ALIAS("_FUN_452290", "@VecDword_Assign@12")
+extern "C" void FUN_448ab0(); KING_ALIAS("_FUN_448ab0", "@Vec4_FreeStorageB@8")
+extern "C" void FUN_447ad0(); KING_ALIAS("_FUN_447ad0", "@Vec4_PushBackA@12")
+ASM_VAR(AsmLabel, s_needNumber66dde8, $L_66dde8)
+
+// *d = *s when s is of the type (an error otherwise), dropping d's old object
+static void Ref_AssignTyped(StrRef* d, const StrRef* s, int type, const char* typeName)
+{
+    if (d->ptr) {
+        if (--F(int, d->ptr, 4) == 0 && !Str_Same(d, s) && d->ptr)
+            CallVirt(d->ptr, 12, 1);
+    }
+    BYTE* p = s->ptr;
+    if (!p) {
+        d->ptr = 0;
+        d->flags = 0;
+        d->len = 0;
+        return;
+    }
+    if (CallVirt<int>(p, 0) != type) {
+        CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(p, 4), typeName);
+        return;
+    }
+    d->ptr = p;
+    d->flags = s->flags;
+    F(int, p, 4)++;
+    d->len = 0;
+}
+
+// the head of a pair (checked)
+static void Pair_Head(StrRef* out, StrRef* p) { Str_Member20Checked(out, p); }
+
+// [FUN_42dff0] reads a vehicle of the tech file: (- id name owner kind (ints) number number pair [int]);
+// appended to the vehicles
+extern "C" BYTE* __cdecl Ai_ReadVehicle(StrRef h)
+{
+    BYTE* o = (BYTE*)operator new(120);
+    if (o) {
+        char alloc;
+        F(int, o, 0) = -1;
+        F(int, o, 4) = 0;
+        memset(o + 8, 0, 12);
+        CallThis(FUN_487730, o + 20, &alloc);
+        F(int, o, 32) = -1;
+        CallThis(FUN_487730, o + 36, &alloc);
+        F(int, o, 48) = 0;
+        F(int, o, 56) = 0;
+        F(int, o, 52) = 0;
+        F(int, o, 60) = 0;
+        F(int, o, 64) = -1;
+        F(int, o, 68) = -1;
+        CallThis(FUN_487730, o + 72, &alloc);
+        memset(o + 84, 0, 12);
+        CallThis(FUN_487730, o + 96, &alloc);
+        F(int, o, 112) = 0;
+        F(int, o, 108) = 0;
+        F(int, o, 116) = 0x3ff00000;
+    }
+    StrRef m;
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    Ref_AssignTyped((StrRef*)(o + 8), &m, 9, "Identifier");
+    Str_Release(&m);
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    PodVec_Assign((BYTE**)(o + 20), 0, (BYTE* const*)(m.ptr + 12));
+    Str_Release(&m);
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    F(int, o, 68) = CallThis<int>(FUN_4b0ea0, m.ptr);
+    CallThis(FUN_4a36c0, &m);
+    Pair_Advance(&h);
+    if (Pair_HeadIs(&h, "car"))
+        F(int, o, 32) = 1;
+    else if (Pair_HeadIs(&h, "lorry"))
+        F(int, o, 32) = 2;
+    else if (Pair_HeadIs(&h, "tractor"))
+        F(int, o, 32) = 3;
+    else if (Pair_HeadIs(&h, "semitrailer"))
+        F(int, o, 32) = 4;
+    else {
+        Pair_Head(&m, &h);
+        AiError(4, 100, s_mainFile, s_mainId, 12164, "Unsupported type", F(const char*, m.ptr, 12), &g_aiEmpty);
+        CallThis(FUN_4a36c0, &m);
+    }
+    Pair_Advance(&h);
+    {
+        StrRef v;
+        Pair_Head(&v, &h);
+        BYTE ints[12];
+        CallC(FUN_42dbf0, ints, v.ptr, v.len, v.flags);
+        CallThis(FUN_452290, o + 36, ints);
+        CallThis(FUN_448ab0, ints);
+    }
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    F(double, o, 48) = CallThis<double>(FUN_4b0e90, m.ptr);
+    CallThis(FUN_4a36c0, &m);
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    bool notNumber = (BYTE)m.flags != 6;
+    CallThis(FUN_4a36c0, &m);
+    if (notNumber)
+        AiError(0, 100, s_mainFile, s_mainId, 12177, s_needNumber66dde8, &g_aiEmpty, &g_aiEmpty);
+    Pair_Head(&m, &h);
+    F(double, o, 56) = CallThis<double>(FUN_4b0e90, m.ptr);
+    CallThis(FUN_4a36c0, &m);
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    Str_AssignPair((StrRef*)(o + 84), 0, &m);
+    CallThis(FUN_4a36c0, &m);
+    Pair_Advance(&h);
+    if (h.flags || h.ptr) {
+        Pair_Head(&m, &h);
+        bool set = m.flags || m.ptr;
+        CallThis(FUN_4a36c0, &m);
+        if (set) {
+            Pair_Head(&m, &h);
+            bool num = (BYTE)m.flags == 6;
+            CallThis(FUN_4a36c0, &m);
+            if (num) {
+                Pair_Head(&m, &h);
+                F(int, o, 4) = CallThis<int>(FUN_4b0ea0, m.ptr);
+                CallThis(FUN_4a36c0, &m);
+            }
+        }
+    }
+    {
+        StrRef c;
+        Str_CopyConstruct(&c, 0, (StrRef*)(o + 8));
+        BYTE* name = CallC<BYTE*>(FUN_40e6d0, c.ptr, c.len, c.flags);
+        PodVec_Assign((BYTE**)(o + 72), 0, (BYTE* const*)name);
+    }
+    F(int, o, 0) = (int)(g_vehiclesEnd - g_vehicles);
+    CallThis(FUN_447ad0, &g_vehicles, &o);
+    CallThis(FUN_4a36c0, &h);
+    return o;
+}
