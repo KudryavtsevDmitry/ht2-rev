@@ -124,7 +124,7 @@ typedef DWORD AiShuffleState[55];
 ASM_VAR(AiShuffleState, g_aiShuffleState, $L_68d6d8)
 ASM_VAR(DWORD, g_aiShuffleIndex, $L_68d7b4)
 ASM_VAR(DWORD, g_aiShuffleOtherIndex, $L_68d7b8)
-ASM_PROC(FUN_404420) // shared vector<char> destructor
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8") // shared vector<char> destructor
 extern "C" int __cdecl atexit(void (__cdecl* callback)());
 
 extern "C" void __cdecl AI_ShuffleState_Init()

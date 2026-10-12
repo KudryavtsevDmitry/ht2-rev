@@ -637,7 +637,7 @@ ASM_VAR(AsmLabel, s_string, $L_66ca58)
 ASM_VAR(AsmLabel, s_port, $L_66cb28)
 
 ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
-ASM_PROC(FUN_447970)
+extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
 ASM_PROC(FUN_410e40)
 ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
@@ -2448,8 +2448,8 @@ extern "C" void __cdecl Edge_SetFlag446ce0(int edge, int flag);
 KING_ALIAS("_Edge_SetFlag446ce0", "_Road_SetObjectFlags")
 ASM_PROC(FUN_452900)    // vector<void*>::insert(pos, &value)
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
-ASM_PROC(FUN_404420)
-ASM_PROC(FUN_602ca0)
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")
 ASM_VAR(double, g_66c6f0, $L_66c6f0)
 ASM_VAR(double, g_68d180, $L_68d180)
 ASM_VAR(AiText, g_positionText76, $L_77e6e0)
@@ -6713,7 +6713,7 @@ extern "C" int __cdecl Rec_ActivateOnly(BYTE* r)
 ASM_VAR(char, s_type66ce4c, $L_66ce4c)
 ASM_PROC(FUN_466300)    // copy-constructs 16-byte records (first, last, dest, -)
 ASM_PROC(FUN_466200)    // copy-constructs 24-byte records (first, last, dest, -)
-ASM_PROC(FUN_40cc50)    // destroys a 24-byte element
+extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // destroys a 24-byte element
 
 // [FUN_44ca00] a handle copied from a value of type 9, an error for another type
 extern "C" void** __fastcall Handle9_Init(void** self, int, void** v)
@@ -6807,4 +6807,85 @@ extern "C" void __fastcall Rec40cb60_Destroy(BYTE* self, int)
     obj = F(BYTE*, self, 0);
     if (F(int, obj, 4) == 0 && obj)
         CallThis((*(void (***)())obj)[3], obj, 1);
+}
+
+ASM_VAR(char, vt_64b62c, $L_64b62c)
+
+// frees the storage [begin, capacity) of a vector of elem-byte elements
+static void VecStorage_Free(BYTE* begin, BYTE* cap, int elem)
+{
+    int n = (int)(cap - begin) / elem;
+    if (n)
+        CallC(FUN_44b4a0, begin, n * elem);
+}
+
+// [FUN_404420] frees the storage of a vector of bytes
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 1);
+}
+
+// [FUN_40cc50] frees the storage of the byte vector at +8
+extern "C" void __fastcall Rec40cc50_Destroy(BYTE* self, int)
+{
+    VecStorage_Free(F(BYTE*, self, 8), F(BYTE*, self, 16), 1);
+}
+
+// [FUN_447970] frees the storage of a vector of 4-byte elements
+extern "C" void __fastcall Vec4_FreeStorage(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 4);
+}
+
+// [FUN_448ab0] frees the storage of a vector of 4-byte elements
+extern "C" void __fastcall Vec4_FreeStorageB(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 4);
+}
+
+// [FUN_4473e0] frees the storage of a vector of 8-byte elements
+extern "C" void __fastcall Vec8_FreeStorage(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 8);
+}
+
+// [FUN_447ef0] frees the storage of a vector of 12-byte elements
+extern "C" void __fastcall Vec12_FreeStorage(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 12);
+}
+
+// [FUN_4488e0] frees the storage of a vector of 16-byte elements
+extern "C" void __fastcall Vec16_FreeStorage(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 16);
+}
+
+// [FUN_447270] frees the storage of a vector of 24-byte elements
+extern "C" void __fastcall Vec24_FreeStorage(BYTE** v, int)
+{
+    VecStorage_Free(v[0], v[2], 24);
+}
+
+// [FUN_405870] frees the storage of the vector of 12-byte elements at +36
+extern "C" void __fastcall Rec405870_Destroy(BYTE* self, int)
+{
+    VecStorage_Free(F(BYTE*, self, 36), F(BYTE*, self, 44), 12);
+}
+
+// [FUN_4549a0] destructor (vtable 64b62c): frees the vector of 8-byte elements at +40 of the base at +8
+extern "C" void __fastcall Rec4549a0_Destroy(BYTE* self, int)
+{
+    *(void**)self = &vt_64b62c;
+    BYTE* base = self ? self + 8 : 0;
+    VecStorage_Free(F(BYTE*, base, 32), F(BYTE*, base, 40), 8);
+}
+
+// [FUN_448610] destructor of a vector of 16-byte elements that each own a byte vector at +4
+extern "C" void __fastcall VecByteVec16_Destroy(BYTE** v, int)
+{
+    BYTE* e = v[1];
+    for (BYTE* p = v[0]; p != e; p += 16)
+        VecB_FreeStorage((BYTE**)(p + 4), 0);
+    VecStorage_Free(v[0], v[2], 16);
 }
