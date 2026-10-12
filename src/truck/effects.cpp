@@ -2668,10 +2668,19 @@ ASM_PROC(FUN_4d57c0)    // the effect's swing step
 extern "C" BYTE* __fastcall Car_543bb0(BYTE* self, void*);
 ASM_PROC(FUN_5fd5f0)    // a sound at a point (point, distance, volume, flags)
 
+// the number of swing steps over a1 + a2 (kept out of line, see Fx_SwingStep)
+static __declspec(noinline) int Fx_SwingSteps(double a1, double a2, double period)
+{
+    return (int)((a1 + a2) / (period * 0.5));
+}
+
 // [FUN_4d6340] one swing step of a vehicle effect; on a hard bump its sound at the truck seen from the camera; the step's result
 extern "C" double __fastcall Fx_SwingStep(BYTE* s, void*, int a0, double a1, double a2, int a3, int a4)
 {
-    F(int, s, 16480) = (int)((a1 + a2) / (F(double, s, 16552) * 0.5));
+    // in a real call: inline, MSVC 14.29 kept a1, a2 and the period on the x87
+    // stack across __ftol2_sse and popped one value too many (a NaN argument
+    // below, then an x87 stack fault that broke the AI cars' physics)
+    F(int, s, 16480) = Fx_SwingSteps(a1, a2, F(double, s, 16552));
     double result = -1.0;
     CallC<double>(FUN_4d57c0, F(int, s, 16576), a0, a1, a2, F(double, s, 16552), a3, F(double, s, 16560),
                   (double)F(float, s, 13100), F(int, s, 16500), F(int, s, 16504), &result,
