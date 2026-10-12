@@ -8654,7 +8654,7 @@ extern "C" BYTE* __cdecl Ai_ReadAmbush(void* reader, StrRef h)
 // xLoadEntities
 
 ASM_PROC(FUN_43bf10)    // a player's next position (out, player, PositionId32, double*, int)
-ASM_PROC(FUN_4376a0)    // a player's position (out, player)
+extern "C" void FUN_4376a0(); KING_ALIAS("_FUN_4376a0", "_Ai_GetNoncontradictoryPosition")    // a player's position (out, player)
 ASM_PROC(FUN_456ea0)    // vector<32-byte entry>::insert_aux (thiscall pos, x)
 ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
 ASM_PROC(FUN_45e370)    // final insertion sort of entries (first, last, cmp)
@@ -10522,4 +10522,158 @@ extern "C" BYTE* __cdecl Ai_ReadService(void* reader, StrRef h)
     CallThis(FUN_4a36c0, &l);
     CallThis(FUN_4a36c0, &h);
     return o;
+}
+
+// ---------------------------------------------------------------------------
+// getNoncontradictoryPositionLong
+
+extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")    // a player's PositionId (out, player)
+ASM_PROC(FUN_43b570)    // a position moved along the road (out, players, data, PositionId32, double* step, int)
+extern "C" void FUN_44a4c0(); KING_ALIAS("_FUN_44a4c0", "@Vec24_Reserve@16")
+extern "C" void FUN_4661d0(); KING_ALIAS("_FUN_4661d0", "_UninitFill24")
+extern "C" void FUN_44a500(); KING_ALIAS("_FUN_44a500", "@Vec24_Free@8")
+extern "C" void FUN_40a500(); KING_ALIAS("_FUN_40a500", "@Position_Valid@8")
+ASM_VAR(AsmLabel, g_positionText77e6e0, $L_77e6e0)
+
+static const char s_getNoncontradictoryPositionLong[] = "getNoncontradictoryPositionLong(PlayerId player)";
+
+// [FUN_4376a0] getNoncontradictoryPositionLong: a computer player's position, pushed along its road away
+// from the other players within 160 (pairs closer than 20 repel, with a little jitter; up to 256 rounds)
+extern "C" PositionId* __cdecl Ai_GetNoncontradictoryPosition(PositionId* out, BYTE* player)
+{
+    Trace_EnterBuffered(s_getNoncontradictoryPositionLong);
+    if (Player_NotValid(player)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 15056, s_invalidId, s_playerIdType, g_numberText);
+    }
+    PositionId pos;
+    CallC(FUN_437520, &pos, player);
+    if (F(int, player, 92) == 1 || (F(BYTE, player, 96) & 1)) {
+        *out = pos;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_getNoncontradictoryPositionLong);
+        return out;
+    }
+    DVec3 c;
+    Road_PointOf(&c, pos);
+    static BYTE* nodes[512];
+    static DVec3 points[512];
+    static PositionId posids[512];
+    unsigned n = 0;
+    int self = -1;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        if (!AI_ListData(it))
+            continue;
+        BYTE* d = AI_ListData(it);
+        if (player + 8 == d) {
+            nodes[n] = d;
+            points[n] = c;
+            posids[n] = pos;
+            self = n;
+            n++;
+        } else {
+            PositionId p;
+            memcpy(&p, d + 32, 32);
+            DVec3 q, v;
+            Road_PointOf(&q, p);
+            Vec_Diff(&v, &q, &c);
+            if (x87_sqrt((v.x * v.x + v.y * v.y) + v.z * v.z) < 160.0) {
+                nodes[n] = d;
+                points[n] = q;
+                posids[n] = p;
+                n++;
+            }
+        }
+    }
+    if (n >= 2) {
+        if (self == -1)
+            AiError(0, 1, s_mainFile, s_mainId, 15109, "Noncontradictory position error", &g_aiEmpty, &g_aiEmpty);
+        for (int round = 0; round < 256; round++) {
+            BYTE* f[3];
+            char alloc;
+            CallThis(FUN_44a4c0, f, n, &alloc);
+            DVec3 zero = {0.0, 0.0, 0.0};
+            f[1] = CallC<BYTE*>(FUN_4661d0, f[0], n, &zero, self);
+            DVec3* force = (DVec3*)f[0];
+            bool moved = false;
+            for (unsigned i = 0; i < n; i++)
+                for (unsigned j = 0; j < i; j++) {
+                    DVec3 d;
+                    Vec_Diff(&d, &points[i], &points[j]);
+                    double len = x87_sqrt((d.x * d.x + d.y * d.y) + d.z * d.z);
+                    if (!(len < 20.0))
+                        continue;
+                    if (len > 1e-6) {
+                        double inv = 1.0 / len;
+                        d.x = inv * d.x;
+                        d.y = d.y * inv;
+                        d.z = d.z * inv;
+                    }
+                    Rng_Random(&g_rng68b9c8, 0, 1);
+                    Rng_Random(&g_rng68b9c8, 0, 1);
+                    double r = (double)Rng_Random(&g_rng68b9c8, 0, 100);
+                    DVec3 jit = {r * 0.0001, r * 0.0001, r * 0.0001};
+                    d.x = jit.x + d.x;
+                    d.y = jit.y + d.y;
+                    d.z = jit.z + d.z;
+                    moved = true;
+                    force[i].x = d.x + force[i].x;
+                    force[i].y = d.y + force[i].y;
+                    force[i].z = d.z + force[i].z;
+                    force[j].x = force[j].x - d.x;
+                    force[j].y = force[j].y - d.y;
+                    force[j].z = force[j].z - d.z;
+                }
+            if (moved) {
+                for (unsigned k = 0; k < n; k++) {
+                    DWORD fl = F(DWORD, nodes[k], 88);
+                    if ((fl & 1) || ((fl >> 2) & 1))
+                        continue;
+                    DVec3 tan;
+                    Ai__GetTangent(&tan, posids[k]);
+                    double dot = (tan.z * force[k].z + tan.y * force[k].y) + tan.x * force[k].x;
+                    double step;
+                    if (!(dot >= 0.0))
+                        step = -2.0;
+                    else if (dot > 0.0)
+                        step = 2.0;
+                    else
+                        continue;
+                    DWORD* pd = (DWORD*)&posids[k];
+                    void* head;
+                    Iter_Players(&head, 0);
+                    PositionId np;
+                    PositionId* r = CallC<PositionId*>(FUN_43b570, &np, head, nodes[k], pd[0], pd[1], pd[2], pd[3], pd[4],
+                                                       pd[5], pd[6], pd[7], &step, 0);
+                    posids[k] = *r;
+                    Road_PointOf(&points[k], posids[k]);
+                }
+            }
+            CallThis(FUN_44a500, f);
+            if (!moved)
+                break;
+        }
+    } else {
+        *out = pos;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_getNoncontradictoryPositionLong);
+        return out;
+    }
+    PositionId* res = &posids[self];
+    PositionId chk = *res;
+    if (!CallThis<int>(FUN_40a500, &chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", res->road, res->t, res->segment, res->object, res->m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 15154, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    int road = res->road;
+    if (road >= 0 && (unsigned)road < (unsigned)(g_roadEdgesEnd - g_roadEdges)) {
+        BYTE* e = (BYTE*)g_roadEdges[road];
+        BYTE** objs = F(BYTE**, e, 120);
+        if (!(res->object < (int)(F(BYTE**, e, 124) - objs) && res->segment < CallVirt<int>(objs[res->object], 24)))
+            AiError(33, 100, s_mainFile, s_mainId, 15154, "Invalid Position Id", &g_aiEmpty, &g_aiEmpty);
+    }
+    *out = *res;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getNoncontradictoryPositionLong);
+    return out;
 }
