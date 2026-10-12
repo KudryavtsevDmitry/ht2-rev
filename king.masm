@@ -7933,6 +7933,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_404420 PROC
 
             sub ESP,12
@@ -8081,6 +8083,10 @@ $L_404559::
             inc EDI
             jmp $L_404504
 FUN_404420 ENDP
+ELSE
+EXTERN @VecB_FreeStorage@8:PROC
+FUN_404420 TEXTEQU <@VecB_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -10500,6 +10506,8 @@ FUN_405730 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_405870 PROC
 
             sub ESP,12
@@ -10657,6 +10665,10 @@ $L_4059c4::
             inc EDI
             jmp $L_40596f
 FUN_405870 ENDP
+ELSE
+EXTERN @Rec405870_Destroy@8:PROC
+FUN_405870 TEXTEQU <@Rec405870_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -23101,6 +23113,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40cc50 PROC
 
             sub ESP,12
@@ -23249,6 +23263,10 @@ $L_40cd8a::
             inc EDI
             jmp $L_40cd35
 FUN_40cc50 ENDP
+ELSE
+EXTERN @Rec40cc50_Destroy@8:PROC
+FUN_40cc50 TEXTEQU <@Rec40cc50_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -116987,6 +117005,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_447270 PROC
 
             sub ESP,12
@@ -117144,6 +117164,10 @@ $L_4473c4::
             inc EDI
             jmp $L_44736f
 FUN_447270 ENDP
+ELSE
+EXTERN @Vec24_FreeStorage@8:PROC
+FUN_447270 TEXTEQU <@Vec24_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -117157,6 +117181,8 @@ FUN_447270 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4473e0 PROC
 
             sub ESP,12
@@ -117307,6 +117333,10 @@ $L_44751f::
             inc EDI
             jmp $L_4474ca
 FUN_4473e0 ENDP
+ELSE
+EXTERN @Vec8_FreeStorage@8:PROC
+FUN_4473e0 TEXTEQU <@Vec8_FreeStorage@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -117845,6 +117875,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_447970 PROC
 
             sub ESP,12
@@ -117996,6 +118028,10 @@ $L_447ab3::
             inc EDI
             jmp $L_447a5e
 FUN_447970 ENDP
+ELSE
+EXTERN @Vec4_FreeStorage@8:PROC
+FUN_447970 TEXTEQU <@Vec4_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -118602,6 +118638,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_447ef0 PROC
 
             sub ESP,12
@@ -118759,6 +118797,10 @@ $L_448043::
             inc EDI
             jmp $L_447fee
 FUN_447ef0 ENDP
+ELSE
+EXTERN @Vec12_FreeStorage@8:PROC
+FUN_447ef0 TEXTEQU <@Vec12_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -119533,6 +119575,8 @@ $L_4485f9::
             ret 
 $L_4485d0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_448610 PROC
 
             sub ESP,12
@@ -119704,6 +119748,10 @@ $L_448773::
             inc EDI
             jmp $L_44871e
 FUN_448610 ENDP
+ELSE
+EXTERN @VecByteVec16_Destroy@8:PROC
+FUN_448610 TEXTEQU <@VecByteVec16_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -119886,6 +119934,8 @@ FUN_4487a0 TEXTEQU <@Vec16b_Construct@20>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4488e0 PROC
 
             sub ESP,12
@@ -120037,6 +120087,10 @@ $L_448a23::
             inc EDI
             jmp $L_4489ce
 FUN_4488e0 ENDP
+ELSE
+EXTERN @Vec16_FreeStorage@8:PROC
+FUN_4488e0 TEXTEQU <@Vec16_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -120140,6 +120194,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_448ab0 PROC
 
             sub ESP,12
@@ -120290,6 +120346,10 @@ $L_448bef::
             inc EDI
             jmp $L_448b9a
 FUN_448ab0 ENDP
+ELSE
+EXTERN @Vec4_FreeStorageB@8:PROC
+FUN_448ab0 TEXTEQU <@Vec4_FreeStorageB@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -143111,6 +143171,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4549a0 PROC
 
             sub ESP,8
@@ -143259,6 +143321,10 @@ $L_454af4::
             add ESP,8
             ret 
 FUN_4549a0 ENDP
+ELSE
+EXTERN @Rec4549a0_Destroy@8:PROC
+FUN_4549a0 TEXTEQU <@Rec4549a0_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853426,6 +853492,8 @@ $L_602c90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602ca0 PROC
 
             sub ESP,12
@@ -853574,6 +853642,10 @@ $L_602dda::
             inc EDI
             jmp $L_602d85
 FUN_602ca0 ENDP
+ELSE
+EXTERN @MsgBuf_FreeStorage@8:PROC
+FUN_602ca0 TEXTEQU <@MsgBuf_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -853664,6 +853736,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 FUN_602e80 PROC
 
             sub ESP,8
@@ -853800,6 +853874,10 @@ $L_602fc3::
             add ESP,8
             ret 
 FUN_602e80 ENDP
+ELSE
+EXTERN @MsgBuf_Destroy@8:PROC
+FUN_602e80 TEXTEQU <@MsgBuf_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

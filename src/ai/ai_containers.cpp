@@ -22,8 +22,8 @@ ASM_PROC(FUN_45b570)    // vector<1592 bytes>::insert_aux
 extern "C" void FUN_45cb00(); KING_ALIAS("_FUN_45cb00", "@Vec4b_InsertC@16")    // vector<4 bytes>::insert_aux
 ASM_PROC(FUN_45d8f0)
 extern "C" void FUN_4604b0(); KING_ALIAS("_FUN_4604b0", "@Vec4b_InsertG@16")
-ASM_PROC(FUN_405870)    // a list value's destructor
-ASM_PROC(FUN_602ca0)    // a 16-byte record's destructor
+extern "C" void FUN_405870(); KING_ALIAS("_FUN_405870", "@Rec405870_Destroy@8")    // a list value's destructor
+extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")    // a 16-byte record's destructor
 ASM_PROC(FUN_41ce50)
 
 struct Vec {
@@ -426,7 +426,7 @@ DWORD* __fastcall Rec60_Copy(DWORD* s, void*, const DWORD* src)                 
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
 extern "C" void __cdecl Tree_Erase469520(void* node, void* x);
 KING_ALIAS("_Tree_Erase469520", "FUN_469520")
-ASM_PROC(FUN_40cc50)    // a 24-byte record's destructor
+extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 
@@ -792,7 +792,7 @@ extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // cop
 ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector<24-byte record>: allocate and copy (n, first, last)
 ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
-ASM_PROC(FUN_40cc50)    // a 24-byte record's destructor
+extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 ASM_PROC(FUN_44c160)    // vector<double>::operator=
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
 extern "C" void FUN_462010(); KING_ALIAS("_FUN_462010", "_Vec4b_AllocCopyB@12")    // vector<4 bytes>: allocate and copy (n, first, last)

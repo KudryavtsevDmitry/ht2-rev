@@ -877,3 +877,22 @@ extern "C" void __fastcall Msg_Write120(BYTE* self, int, int id, const BYTE* p, 
     CallThis(FUN_46e460, v, v[1], p, p + n);
     Msg_Finish(self);
 }
+
+ASM_PROC(FUN_44b4a0)    // the AI's allocator: free (p, size)
+ASM_VAR(char, vt_652de0, $L_652de0)
+
+// [FUN_602ca0] frees the byte buffer at +4 (capacity at +12)
+extern "C" void __fastcall MsgBuf_FreeStorage(BYTE* self, int)
+{
+    BYTE* b = F(BYTE*, self, 4);
+    int n = F(BYTE*, self, 12) - b;
+    if (n)
+        CallC(FUN_44b4a0, b, n);
+}
+
+// [FUN_602e80] destructor (vtable 652de0): frees the byte buffer at +4
+extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int)
+{
+    *(void**)self = &vt_652de0;
+    MsgBuf_FreeStorage(self, 0);
+}
