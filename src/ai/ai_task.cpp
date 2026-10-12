@@ -13,7 +13,7 @@ extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    //
 extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")    // module: switch by name
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 extern "C" char* __cdecl CopyBytes(const char* first, const char* last, char* to);   // aiordr.cpp
-ASM_PROC(FUN_44c220)    // vector<char>::insert(pos, first, last)
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 extern "C" void __cdecl Notice_Show(int level, const char* text, int a, int b);              // copter.cpp
 extern "C" void __cdecl Notice_Banner(int eventId, double value, const char* text);       // copter.cpp
 
