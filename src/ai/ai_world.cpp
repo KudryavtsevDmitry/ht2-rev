@@ -8233,3 +8233,206 @@ extern "C" int __cdecl Ai_LoadOrder(BYTE* player, int townId, unsigned orderid, 
     Trace_Leave(s_loadOrder);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// loading the script lists ms.sch, vd.sch and names.sch
+
+ASM_PROC(FUN_4b4c20)    // reads a value from a port (out, reader, port by value)
+ASM_PROC(FUN_44c710)    // vector<StrRef>::insert_aux (thiscall pos, x)
+ASM_PROC(FUN_4b0ea0)    // a number's int value (thiscall)
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+extern "C" void FUN_4b0e90(); KING_ALIAS("_FUN_4b0e90", "@SchNumber_Value@8")
+extern "C" BYTE* __fastcall MultValue_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
+extern "C" void __cdecl ConstructStrRef(DWORD* d, const DWORD* s);                        // ai_containers.cpp
+ASM_VAR(AsmLabel, g_reader68bb58, $L_68bb58)
+ASM_VAR(BYTE*, g_lists68b9b8, $L_68b9b8)
+
+// the list after the head: *l = its +32 member
+static void List_Advance(StrRef* l)
+{
+    StrRef next;
+    StrRef* nx = Str_Member32(&next, l);
+    if (l->ptr && l->Owns()) {
+        if (--F(int, l->ptr, 4) == 0 && !Str_Same(l, nx) && l->ptr)
+            CallVirt(l->ptr, 12, 1);
+    }
+    l->CopyFrom(nx);
+    Str_Release(&next);
+}
+
+// advances a pair handle to its +32 member (checked)
+static void Pair_Advance(StrRef* p)
+{
+    StrRef n;
+    Str_AssignPair(p, 0, Str_Member32Checked(&n, p));
+    CallThis(FUN_4a36c0, &n);
+}
+
+// opens a script file as a port and reads its value
+static void Script_Read(StrRef* value, StrRef* port, const char* name, bool f, int line)
+{
+    DWORD tmp[3];
+    int one = 1;
+    DWORD* h = f ? Port_MakeF(tmp, 0, (int)name, &one) : Port_MakeE(tmp, 0, (int)name, &one);
+    port->ptr = 0;
+    port->len = 0;
+    port->flags = 0;
+    BYTE* o = (BYTE*)h[0];
+    if (o) {
+        if (CallVirt<int>(o, 0) == 11) {
+            port->ptr = o;
+            port->flags = h[2];
+            F(int, o, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(o, 4), "Port");
+    }
+    CallThis(FUN_4a36c0, tmp);
+    CheckHandle(port);
+    if (CallVirt<int>(port->ptr, 40))
+        AiError(23, 100, s_mainFile, s_mainId, line, "Cannot open", name, &g_aiEmpty);
+    StrRef copy;
+    Str_CopyConstruct(&copy, 0, port);
+    CallC(FUN_4b4c20, value, g_reader68bb58, copy.ptr, copy.len, copy.flags);
+}
+
+// reads a script file's list of strings into a vector of string handles
+static void Script_ReadStrings(BYTE** v, const char* name, int line)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 12)
+        MultValue_DeletingDestructor(e, 0, 0);
+    v[1] = v[0];
+    StrRef port, value;
+    Script_Read(&value, &port, name, false, line);
+    StrRef l;
+    l.CopyFrom(&value);
+    while ((BYTE)l.flags == 2) {
+        StrRef m;
+        Str_Member20(&m, &l);
+        if (v[1] != v[2]) {
+            ConstructStrRef((DWORD*)v[1], (const DWORD*)&m);
+            v[1] += 12;
+        } else
+            CallThis(FUN_44c710, v, v[1], &m);
+        Str_Release(&m);
+        List_Advance(&l);
+    }
+    Str_Release(&l);
+    Str_Release(&value);
+    CallThis(FUN_4a36c0, &port);
+}
+
+// the symbol of the pair's head is the name
+static bool Pair_HeadIs(StrRef* p, const char* name)
+{
+    StrRef s;
+    Str_Member20Checked(&s, p);
+    bool r = SchValue_IsSymbol((BYTE*)&s, name);
+    CallThis(FUN_4a36c0, &s);
+    return r;
+}
+
+// the number handle of the pair's head
+static void Pair_HeadNumber(StrRef* out, StrRef* p)
+{
+    StrRef s;
+    Str_Member20Checked(&s, p);
+    NumberHandle_From((DWORD*)out, 0, (const DWORD*)&s);
+    CallThis(FUN_4a36c0, &s);
+}
+
+static bool Ref_Set(const StrRef* r) { return r->flags || r->ptr; }
+
+// [FUN_40d1b0] loads ms.sch and vd.sch (lists of strings) and names.sch: per entry (name sex role [n [m
+// (a b)]]) a 56-byte record
+extern "C" void __cdecl Ai_LoadNames()
+{
+    Script_ReadStrings((BYTE**)&g_aiMessages, "ms.sch", 2750);
+    Script_ReadStrings((BYTE**)&g_lists68b9b8, "vd.sch", 2765);
+
+    BYTE** v = (BYTE**)&g_images68a958;
+    for (BYTE* e = v[0]; e != v[1]; e += 56)
+        Rec16_DeletingDestructor(e, 0, 0);
+    v[1] = v[0];
+    const char* name = "names.sch";
+    StrRef port, value;
+    Script_Read(&value, &port, name, true, 2780);
+    StrRef l = {0, 0, 0};
+    Str_Assign(&l, 0, &value);
+    while ((BYTE)l.flags == 2) {
+        StrRef m;
+        Str_Member20(&m, &l);
+        bool pair = (BYTE)m.flags == 2;
+        CallThis(FUN_4a36c0, &m);
+        if (pair) {
+            StrRef t, p;
+            Str_Member20(&t, &l);
+            PairHandle_From((DWORD*)&p, 0, (const DWORD*)&t);
+            CallThis(FUN_4a36c0, &t);
+            BYTE rec[56];
+            Rec_Init40e240(rec, 0);
+            StrRef s;
+            Str_Member20Checked(&s, &p);
+            PodVec_Assign((BYTE**)(rec + 4), 0, (BYTE* const*)(s.ptr + 12));
+            CallThis(FUN_4a36c0, &s);
+            Pair_Advance(&p);
+            if (Pair_HeadIs(&p, "male"))
+                F(int, rec, 0) = 1;
+            else if (Pair_HeadIs(&p, "female"))
+                F(int, rec, 0) = 2;
+            else
+                AiError(0, 1, s_mainFile, s_mainId, 2802, "Unknown sex", &g_aiEmpty, &g_aiEmpty);
+            Pair_Advance(&p);
+            if (Pair_HeadIs(&p, "trucker"))
+                F(int, rec, 24) = 1;
+            else if (Pair_HeadIs(&p, "police"))
+                F(int, rec, 24) = 3;
+            else if (Pair_HeadIs(&p, "mafia"))
+                F(int, rec, 24) = 2;
+            else
+                AiError(0, 1, s_mainFile, s_mainId, 2815, "Unknown role", &g_aiEmpty, &g_aiEmpty);
+            Pair_Advance(&p);
+            StrRef n1;
+            Pair_HeadNumber(&n1, &p);
+            if (Ref_Set(&n1))
+                F(int, rec, 20) = CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n1));
+            Pair_Advance(&p);
+            if (Ref_Set(&p)) {
+                StrRef n2;
+                Pair_HeadNumber(&n2, &p);
+                if (Ref_Set(&n2))
+                    F(int, rec, 16) = CallThis<int>(FUN_4b0ea0, CallThis<BYTE*>(FUN_4aa430, &n2));
+                CallThis(FUN_4a36c0, &n2);
+                if (Ref_Set(&p)) {
+                    Pair_Advance(&p);
+                    if (Ref_Set(&p)) {
+                        StrRef q, a, b, c, bn;
+                        Str_Member20Checked(&s, &p);
+                        PairHandle_From((DWORD*)&q, 0, (const DWORD*)&s);
+                        CallThis(FUN_4a36c0, &s);
+                        Pair_HeadNumber(&a, &q);
+                        F(double, rec, 40) = CallThis<double>(FUN_4b0e90, CallThis<BYTE*>(FUN_4aa430, &a));
+                        Str_Member32Checked(&b, &q);
+                        Str_Member20(&c, &b);
+                        NumberHandle_From((DWORD*)&bn, 0, (const DWORD*)&c);
+                        CallThis(FUN_4a36c0, &c);
+                        CallThis(FUN_4a36c0, &b);
+                        F(double, rec, 48) = CallThis<double>(FUN_4b0e90, CallThis<BYTE*>(FUN_4aa430, &bn));
+                        CallThis(FUN_4a36c0, &bn);
+                        CallThis(FUN_4a36c0, &a);
+                        CallThis(FUN_4a36c0, &q);
+                    }
+                }
+            }
+            Vec56_PushBack(v, 0, rec);
+            CallThis(FUN_4a36c0, &n1);
+            CallThis(FUN_404420, rec + 4);
+            CallThis(FUN_4a36c0, &p);
+        }
+        StrRef n;
+        Str_Assign(&l, 0, Str_Member32(&n, &l));
+        Str_Release(&n);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &value);
+    CallThis(FUN_4a36c0, &port);
+}

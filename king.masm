@@ -23726,6 +23726,8 @@ FUN_40cef0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40d1b0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -25245,6 +25247,10 @@ $L_40e1e8::
             add ESP,448
             ret 
 FUN_40d1b0 ENDP
+ELSE
+EXTERN _Ai_LoadNames:PROC
+FUN_40d1b0 TEXTEQU <_Ai_LoadNames>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
