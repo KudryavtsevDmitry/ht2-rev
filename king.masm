@@ -42337,6 +42337,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_418bb0 PROC
 
             sub ESP,20
@@ -42372,6 +42374,10 @@ FUN_418bb0 PROC
             add ESP,20
             ret 
 FUN_418bb0 ENDP
+ELSE
+EXTERN _Recs_Search418bb0:PROC
+FUN_418bb0 TEXTEQU <_Recs_Search418bb0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -46189,6 +46195,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41b2a0 PROC
 
             push EBX
@@ -46230,6 +46238,10 @@ $L_41b2e4::
             mov DWORD PTR [EAX],4294967295
             ret 
 FUN_41b2a0 ENDP
+ELSE
+EXTERN _Items_Find41b2a0:PROC
+FUN_41b2a0 TEXTEQU <_Items_Find41b2a0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -47502,6 +47514,8 @@ FUN_41bca0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41bd30 PROC
 
             sub ESP,8
@@ -47531,6 +47545,10 @@ FUN_41bd30 PROC
             add ESP,8
             ret 
 FUN_41bd30 ENDP
+ELSE
+EXTERN _Presents_Append:PROC
+FUN_41bd30 TEXTEQU <_Presents_Append>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -62650,6 +62668,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_425790 PROC
 
             mov EAX,DWORD PTR [$L_68d188]
@@ -62723,6 +62743,10 @@ $L_425812::
             pop EBX
             ret 
 FUN_425790 ENDP
+ELSE
+EXTERN _Player_CheckGoods:PROC
+FUN_425790 TEXTEQU <_Player_CheckGoods>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -125154,6 +125178,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44b1b0 PROC
 
             push ECX
@@ -125238,6 +125264,10 @@ $L_44b23a::
             pop ECX
             ret 8
 FUN_44b1b0 ENDP
+ELSE
+EXTERN @NameHash_Find@16:PROC
+FUN_44b1b0 TEXTEQU <@NameHash_Find@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -133187,6 +133217,8 @@ EXTERN @Rope_FreeTree@8:PROC
 FUN_44f1b0 TEXTEQU <@Rope_FreeTree@8>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44f2c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -133265,6 +133297,10 @@ $L_44f324           DWORD $L_44f302
             nop
             nop
 FUN_44f2c0 ENDP
+ELSE
+EXTERN _Rope_CharAt:PROC
+FUN_44f2c0 TEXTEQU <_Rope_CharAt>
+ENDIF
 ALIGN 16
 FUN_44f340 PROC
 
@@ -134084,6 +134120,8 @@ $L_44f9d4::
             nop
 $L_44f98b ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44f9e0 PROC
 
             push ECX
@@ -134193,6 +134231,10 @@ $L_44fa9c::
             pop ECX
             ret 8
 FUN_44f9e0 ENDP
+ELSE
+EXTERN @NameHash_InsertNoResize@16:PROC
+FUN_44f9e0 TEXTEQU <@NameHash_InsertNoResize@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -134441,6 +134483,8 @@ $L_44fcc6::
             nop
 $L_44fc62 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44fcd0 PROC
 
             push ECX
@@ -134589,6 +134633,10 @@ $L_44fdc8           DWORD $L_44fd7b
           DWORD $L_44fd67
           DWORD $L_44fd83
           DWORD $L_44fd83
+ELSE
+EXTERN @NameHash_Hash@12:PROC
+FUN_44fcd0 TEXTEQU <@NameHash_Hash@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -143296,6 +143344,8 @@ $L_45490b::
             nop
 $L_4548bf ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_454920 PROC
 
             push EBX
@@ -143329,6 +143379,10 @@ $L_45494a::
             pop EBX
             ret 12
 FUN_454920 ENDP
+ELSE
+EXTERN @List64_EraseRange@20:PROC
+FUN_454920 TEXTEQU <@List64_EraseRange@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -2962,7 +2962,7 @@ extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@
 extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")    // destroy a 144-byte order
 ASM_PROC(FUN_44fac0)    // hash table: grow for n entries
-ASM_PROC(FUN_44f2c0)    // a string's character (s, i)
+extern "C" void FUN_44f2c0(); KING_ALIAS("_FUN_44f2c0", "_Rope_CharAt")
 ASM_PROC(FUN_45a7d0)    // compare two strings
 ASM_PROC(FUN_4592b0)    // hash table: a new node for a key
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector of 24-byte records: allocate and copy (n, first, last)
@@ -7443,4 +7443,145 @@ extern "C" BYTE** __fastcall Rope_Apply44a840(BYTE** self, void*, int a, int b)
         Rope_Unref(*self, 0);
     *self = r;
     return self;
+}
+
+// [FUN_44f2c0] a rope's character i: from its C string if it has one, else down the tree
+extern "C" char __cdecl Rope_CharAt(BYTE* n, unsigned i)
+{
+    if (F(char*, n, 16))
+        return F(char*, n, 16)[i];
+    for (;;) {
+        switch ((signed char)F(int, n, 8)) {
+        case 0:
+            return F(char*, n, 20)[i];
+        case 1: {
+            BYTE* left = F(BYTE*, n, 20);
+            if (i < F(unsigned, left, 0))
+                n = left;
+            else {
+                i -= F(unsigned, left, 0);
+                n = F(BYTE*, n, 24);
+            }
+            break;
+        }
+        case 2:
+        case 3: {
+            char c;
+            CallVirt(F(void*, n, 20), 4, i, 1, &c);
+            return c;
+        }
+        }
+    }
+}
+
+// [FUN_425790] when the AI runs and the player isn't in state 5: a kind-1 player without goods (or whose
+// goods aren't kind 1) clears the marks and its own (+524..+532); others leave when their flags say so
+extern "C" void __cdecl Player_CheckGoods(BYTE* p)
+{
+    if (g_68d188 || F(int, p, 100) == 5)
+        return;
+    if (F(int, p, 92) == 1) {
+        BYTE* g = (BYTE*)Player_FirstGoods(p + 8);
+        if (!g || F(int, g, 104) != 1) {
+            Players_ResetMarks();
+            F(int, p, 524) = 0;
+            F(int, p, 528) = 0;
+            F(int, p, 532) = -1;
+        }
+    } else if (Player_UpdateFlagsGet(p) && !Player_FirstGoods(p + 8))
+        Player_Leave(p, 0);
+}
+
+// [FUN_44fcd0] the string hash: 13 * first + 5 * last character + length, 0 for an empty string
+extern "C" unsigned __fastcall NameHash_Hash(void* self, void*, int** key)
+{
+    int* s = *key;
+    int len;
+    if (!s || (len = *s) == 0)
+        return 0;
+    int a = Rope_CharAt((BYTE*)s, 0);
+    int b = Rope_CharAt((BYTE*)*key, len - 1);
+    return a * 13 + b * 5 + len;
+}
+
+static unsigned NameHash_Bucket(BYTE* self, int** key)
+{
+    return NameHash_Hash(0, 0, key) % (unsigned)((F(BYTE*, self, 8) - F(BYTE*, self, 4)) >> 2);
+}
+
+// [FUN_44b1b0] hash_set<string>::find: out = {node or 0, table}
+extern "C" void** __fastcall NameHash_Find(BYTE* self, void*, void** out, int** key)
+{
+    void** n = (void**)F(void**, self, 4)[NameHash_Bucket(self, key)];
+    while (n && CallC<int>(FUN_45a7d0, n[1], *key) != 0)
+        n = (void**)*n;
+    out[0] = n;
+    out[1] = self;
+    return out;
+}
+
+// [FUN_44f9e0] hash_set<string>::insert_unique_noresize: out = {node, table, inserted}
+extern "C" void** __fastcall NameHash_InsertNoResize(BYTE* self, void*, void** out, int** key)
+{
+    unsigned i = NameHash_Bucket(self, key);
+    void** head = (void**)F(void**, self, 4)[i];
+    for (void** n = head; n; n = (void**)*n)
+        if (CallC<int>(FUN_45a7d0, n[1], *key) == 0) {
+            out[0] = n;
+            out[1] = self;
+            F(BYTE, out, 8) = 0;
+            return out;
+        }
+    void** n = CallThis<void**>(FUN_4592b0, self, key);
+    *n = head;
+    F(void**, self, 4)[i] = n;
+    F(int, self, 16)++;
+    out[0] = n;
+    out[1] = self;
+    F(BYTE, out, 8) = 1;
+    return out;
+}
+
+extern "C" BYTE** __stdcall List64_Erase(BYTE** out, BYTE** node);   // ai_containers.cpp
+ASM_PROC(FUN_456460)    // a search over [first, last) with a 16-byte predicate (out, first, last, pred)
+ASM_PROC(FUN_456a10)    // a search over [first, last) with a 12-byte predicate and the RNG text (first, last, pred, text)
+
+// [FUN_41bd30] appends v to the presents list; out = the new last element
+extern "C" int* __cdecl Presents_Append(int* out, int v)
+{
+    BYTE** end;
+    CallThis(FUN_4afc20, &g_68cf6c, &end);
+    BYTE** tmp;
+    ListA_Insert(&g_68cf6c, 0, (BYTE**)&tmp, (BYTE**)end, &v);
+    *out = F(int, g_68cf6c, 4);
+    return out;
+}
+
+// [FUN_454920] erases the list nodes [first, last); out = last
+extern "C" void** __fastcall List64_EraseRange(void* self, void*, void** out, BYTE** first, BYTE** last)
+{
+    while (first != last) {
+        BYTE** it = first;
+        first = (BYTE**)*first;
+        BYTE** tmp;
+        List64_Erase((BYTE**)&tmp, it);
+    }
+    *out = last;
+    return out;
+}
+
+// [FUN_418bb0] a search over the records of v (+28..+32) for {*key, -, b, c}
+extern "C" void* __cdecl Recs_Search418bb0(void* out, BYTE* v, const int* key, int b, int c)
+{
+    int pred[4] = {*key, 0, b, c};
+    CallC(FUN_456460, out, F(void*, v, 28), F(void*, v, 32), pred[0], pred[1], pred[2], pred[3]);
+    return out;
+}
+
+// [FUN_41b2a0] the id at the item of p's list (+40..+44) matching {p, a, b}; -1 if none
+extern "C" int* __cdecl Items_Find41b2a0(int* out, BYTE* p, int a, int b)
+{
+    int* r = CallC<int*>(FUN_456a10, F(void*, p, 40), F(void*, p, 44), p, a, b, &g_rng68b9c8);
+    *out = r == F(int*, p, 44) ? -1 : *r;
+    return out;
 }
