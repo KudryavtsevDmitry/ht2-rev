@@ -8649,3 +8649,282 @@ extern "C" BYTE* __cdecl Ai_ReadAmbush(void* reader, StrRef h)
     CallThis(FUN_4a36c0, &h);
     return o;
 }
+
+// ---------------------------------------------------------------------------
+// xLoadEntities
+
+ASM_PROC(FUN_43bf10)    // a player's next position (out, player, PositionId32, double*, int)
+ASM_PROC(FUN_4376a0)    // a player's position (out, player)
+ASM_PROC(FUN_456ea0)    // vector<32-byte entry>::insert_aux (thiscall pos, x)
+ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
+ASM_PROC(FUN_45e370)    // final insertion sort of entries (first, last, cmp)
+ASM_PROC(FUN_4d8b20)    // loads a vehicle (id)
+extern "C" int __cdecl Vehicle_Exists(int id);
+extern "C" int __cdecl Vehicle_Flag4012(int id);
+extern "C" int __cdecl Vehicle_TimeOver(int id);
+extern "C" void __cdecl Vehicle_Release(int id);
+extern "C" int __cdecl Way_Point(int i, DWORD* pos, int* id);
+extern "C" int* __cdecl Player_CarId(int* out);
+extern "C" void __cdecl Construct32Skip1(DWORD* d, const DWORD* s);
+extern "C" void FUN_44b0b0(); KING_ALIAS("_FUN_44b0b0", "@Vec32_Free@8")
+ASM_VAR(int, g_loadTick68d13c, $L_68d13c)
+ASM_VAR(int, g_loadCount68d1b4, $L_68d1b4)
+ASM_VAR(double, g_loadRadius68d128, $L_68d128)
+ASM_VAR(BYTE, g_loadDone68d130, $L_68d130)
+ASM_VAR(BYTE, g_loadNear68d138, $L_68d138)
+ASM_VAR(int, g_wayPoints67b2b8, $L_67b2b8)
+
+static const char s_xLoadEntities[] = "xLoadEntities()";
+
+// an entry of the load list: a vehicle (or -1 and a pointer to it), its weight and distance, a player
+struct LoadEntry {
+    int vehicle;
+    int pad;
+    double weight;
+    double dist;
+    int* ref;
+    BYTE* player;
+};
+
+static int Entry_Vehicle(const LoadEntry* e) { return e->vehicle != -1 ? e->vehicle : *e->ref; }
+
+static void Entries_Push(BYTE** v, const LoadEntry* e)
+{
+    if (v[1] != v[2]) {
+        Construct32Skip1((DWORD*)v[1], (const DWORD*)e);
+        v[1] += 32;
+    } else
+        CallThis(FUN_456ea0, v, v[1], e);
+}
+
+// out = a - b
+static void Vec_Diff(DVec3* out, const DVec3* a, const DVec3* b)
+{
+    double z = a->z - b->z;
+    double y = a->y - b->y;
+    double x = a->x - b->x;
+    out->x = x;
+    out->y = y;
+    out->z = z;
+}
+
+static int s_noVehicle = -1;
+
+// [FUN_424550] xLoadEntities: every ninth call, ranks the computer players, the vehicle presents and the way
+// points by their nearness to the player's car, drops the far vehicles and loads the near ones
+extern "C" void __cdecl Ai_LoadEntities()
+{
+    Trace_EnterBuffered(s_xLoadEntities);
+    if (++g_loadTick68d13c > 8)
+        g_loadTick68d13c = 0;
+    else if (g_loadTick68d13c != 0) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_xLoadEntities);
+        return;
+    }
+    g_loadCount68d1b4++;
+    BYTE* v[3];
+    char alloc;
+    CallThis(FUN_487730, v, &alloc);
+    BYTE* pl;
+    Player_FromId((int*)&pl);
+    if (pl == (BYTE*)g_players) {
+        int r;
+        pl = (BYTE*)*Player_CarId(&r);
+        if (F(int, pl, 88) != 0x12345678) {
+            CallThis(FUN_44b0b0, v);
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, s_xLoadEntities);
+            return;
+        }
+    }
+    DVec3 c = {F(double, pl, 624), F(double, pl, 632), F(double, pl, 640)};
+    DVec3 size;
+    memcpy(&size, pl + 352, 24);
+
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = AI_ListData(it);
+        if (F(int, d, 76) != -1 && !Vehicle_Flag4012(F(int, d, 76)))
+            continue;
+        if (Player_IsHuman(it))
+            continue;
+        DVec3 rel[2];
+        DVec3 q;
+        if (!(F(DWORD, AI_ListData(it), 88) & 1) && !((F(DWORD, AI_ListData(it), 88) >> 2) & 1)) {
+            BYTE pos[32], pos2[32], next[32];
+            Rec_Copy32(AI_ListData(it) + 16, 0, pos);
+            DVec3 p;
+            PositionId pid;
+            memcpy(&pid, pos, 32);
+            Road_PointOf(&p, pid);
+            Vec_Diff(&rel[0], &p, &c);
+            double speed = F(double, AI_ListData(it), 336) * 0.25;
+            Rec_Copy32(AI_ListData(it) + 16, 0, pos2);
+            DWORD* pd = (DWORD*)pos2;
+            CallC(FUN_43bf10, next, it, pd[0], pd[1], pd[2], pd[3], pd[4], pd[5], pd[6], pd[7], &speed, 0);
+            q.x = size.x * 0.25;
+            q.y = size.y * 0.25;
+            q.z = size.z * 0.25;
+            memcpy(&pid, next, 32);
+            Road_PointOf(&p, pid);
+            Vec_Diff(&rel[1], &p, &q);
+        } else {
+            BYTE st[24];
+            const DVec3* s = (const DVec3*)Player_CopyState(st, it);
+            Vec_Diff(&rel[0], s, &c);
+            q.x = size.x * 0.25;
+            q.y = size.y * 0.25;
+            q.z = size.z * 0.25;
+            DVec3 t, sum;
+            DVec3_Times(&t, (const DVec3*)(AI_ListData(it) + 344), 0.25);
+            DVec3_Add(&sum, &rel[0], &t);
+            Vec_Diff(&rel[1], &sum, &q);
+        }
+        double w = AI_MaxInverse((const double*)rel);
+        BYTE st[24];
+        const DVec3* s = (const DVec3*)Player_CopyState(st, it);
+        DVec3 r;
+        Vec_Diff(&r, s, &c);
+        double dist = x87_sqrt((r.y * r.y + r.z * r.z) + r.x * r.x);
+        d = AI_ListData(it);
+        if (F(int, d, 76) != -1 && Vehicle_Exists(F(int, d, 76)))
+            w = w * 1.2;
+        if (Player_UpdateFlagsGet(it))
+            w = w * 1.25;
+        if (F(int, AI_ListData(it), 84) == 8)
+            w = w * 0.7;
+        if (F(DWORD, AI_ListData(it), 88) & 0x80000)
+            w = w * 1.05;
+        if (g_loadNear68d138) {
+            int veh = F(int, AI_ListData(it), 76);
+            if (!(veh != -1 && Vehicle_Exists(veh) && !(dist > 450.0)) && !Player_UpdateFlagsGet(it)) {
+                int cur;
+                int* pc = Player_FromId(&cur);
+                if (F(int, AI_ListData(it), 168) != *pc)
+                    w = 0.0;
+            }
+        }
+        LoadEntry e;
+        DWORD* wd = (DWORD*)&w;
+        DWORD* dd = (DWORD*)&dist;
+        Rec_Init425580((int*)&e, 0, it, wd[0], wd[1], dd[0], dd[1]);
+        Entries_Push(v, &e);
+    }
+
+    BYTE* head = (BYTE*)g_68cf6c;
+    for (BYTE* n = *(BYTE**)head; n != head; n = *(BYTE**)n) {
+        BYTE* p = F(BYTE*, n, 8);
+        if (!(F(BYTE, p, 8) & 32))
+            continue;
+        if (F(int, p, 0) != -1 && !Vehicle_Flag4012(F(int, p, 0)))
+            continue;
+        DVec3 rel[2], q;
+        Vec_Diff(&rel[0], (const DVec3*)(p + 32), &c);
+        q.x = size.x * 0.25;
+        q.y = size.y * 0.25;
+        q.z = size.z * 0.25;
+        Vec_Diff(&rel[1], &rel[0], &q);
+        double w = AI_MaxInverse((const double*)rel);
+        double dist = x87_sqrt((rel[0].x * rel[0].x + rel[0].y * rel[0].y) + rel[0].z * rel[0].z);
+        int veh = F(int, F(BYTE*, n, 8), 0);
+        if (veh != -1 && Vehicle_Exists(veh))
+            w = w * 1.2;
+        LoadEntry e;
+        DWORD* wd = (DWORD*)&w;
+        DWORD* dd = (DWORD*)&dist;
+        Rec_Init4255d0((int*)&e, 0, n, wd[0], wd[1], dd[0], dd[1]);
+        Entries_Push(v, &e);
+    }
+
+    for (int i = 0; i < g_wayPoints67b2b8; i++) {
+        int id = -1;
+        float fp[3] = {0, 0, 0};
+        if (Way_Point(i, (DWORD*)fp, &id))
+            continue;
+        if (id != -1 && !Vehicle_Flag4012(id))
+            continue;
+        DVec3 p = {fp[0], fp[1], fp[2]};
+        DVec3 rel[2], q;
+        Vec_Diff(&rel[0], &p, &c);
+        q.x = size.x * 0.25;
+        q.y = size.y * 0.25;
+        q.z = size.z * 0.25;
+        Vec_Diff(&rel[1], &rel[0], &q);
+        double w = AI_MaxInverse((const double*)rel);
+        double dist = x87_sqrt((rel[0].x * rel[0].x + rel[0].y * rel[0].y) + rel[0].z * rel[0].z);
+        w = w * 1.05;
+        if (id != -1 && Vehicle_Exists(id))
+            w = w * 1.2;
+        LoadEntry e;
+        e.vehicle = id;
+        e.pad = 0;
+        e.weight = w;
+        e.dist = dist;
+        e.ref = &s_noVehicle;
+        e.player = (BYTE*)g_players;
+        Entries_Push(v, &e);
+    }
+
+    if (v[0] != v[1]) {
+        int k = 0;
+        for (int n = (int)(v[1] - v[0]) >> 5; n != 1; n >>= 1)
+            k++;
+        CallC(FUN_45e2a0, v[0], v[1], 0, k * 2, 0);
+        CallC(FUN_45e370, v[0], v[1], 0);
+    }
+    // drop the vehicles of the entries without weight (from the end)
+    while (v[0] != v[1]) {
+        LoadEntry* e = (LoadEntry*)(v[1] - 32);
+        if (e->weight > 1e-8)
+            break;
+        int veh = Entry_Vehicle(e);
+        if (veh != -1 && Vehicle_Exists(veh)) {
+            veh = Entry_Vehicle(e);
+            if (veh != -1)
+                Vehicle_Release(veh);
+        }
+        v[1] -= 32;
+    }
+    // load the near ones, making room by dropping the far ones from the end
+    LoadEntry* last = (LoadEntry*)(v[1] - 32);
+    for (LoadEntry* e = (LoadEntry*)v[0]; e != (LoadEntry*)v[1]; e++) {
+        int veh = Entry_Vehicle(e);
+        if (veh != -1 && Vehicle_Exists(veh))
+            continue;
+        if (!(e->dist > g_loadRadius68d128))
+            continue;
+        for (;;) {
+            if (Vehicle_TimeOver(Entry_Vehicle(e)))
+                break;
+            for (;;) {
+                if (last <= e)
+                    goto done;
+                int lv = Entry_Vehicle(last);
+                if (lv != -1 && Vehicle_Exists(lv) && last->dist > g_loadRadius68d128)
+                    break;
+                last--;
+            }
+            int lv = Entry_Vehicle(last);
+            if (lv != -1)
+                Vehicle_Release(lv);
+            last--;
+        }
+        veh = Entry_Vehicle(e);
+        if (veh == -1)
+            continue;
+        if (e->player != (BYTE*)g_players) {
+            BYTE pos[32];
+            PositionId* pp = CallC<PositionId*>(FUN_4376a0, pos, e->player);
+            Player_SetPosition(e->player + 8, 0, pp);
+        }
+        CallC(FUN_4d8b20, Entry_Vehicle(e));
+    }
+done:
+    F(DWORD, &g_loadRadius68d128, 0) = 0;
+    F(DWORD, &g_loadRadius68d128, 4) = 1080213504;
+    g_loadDone68d130 = 1;
+    if (v[2] != v[0])
+        Ai_PoolFree(v[0], v[2] - v[0]);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_xLoadEntities);
+}
