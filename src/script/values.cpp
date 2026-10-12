@@ -789,7 +789,6 @@ void __fastcall Item4b6840_Destroy(BYTE* self, void*)
 }
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
 // a list node (vtbl, two links) owning a copy of the bytes of src

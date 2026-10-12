@@ -531,7 +531,6 @@ void __cdecl Save_Town(BYTE* s, BYTE* town)
 }
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 
 extern "C" {

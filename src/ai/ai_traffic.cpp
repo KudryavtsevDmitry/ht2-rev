@@ -540,7 +540,6 @@ DWORD* __fastcall Waypoint_Make(DWORD* self, void*, DWORD a, DWORD b)
 }
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")
 
 extern "C" {

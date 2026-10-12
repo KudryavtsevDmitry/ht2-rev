@@ -30,7 +30,7 @@ extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")
 typedef void (*VFn)();
 extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
 ASM_PROC(FUN_601c70)
-ASM_PROC(FUN_44b740)
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")

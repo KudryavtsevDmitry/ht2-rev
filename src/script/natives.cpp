@@ -16,7 +16,7 @@ extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.c
 
 extern "C" void FUN_4a36f0(); KING_ALIAS("_FUN_4a36f0", "@HandlePair_Destroy@8")    // destructor of the value holders (map and list entries)
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
-ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the AI's allocator: allocate (size)
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
 ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
@@ -515,7 +515,6 @@ static SchValue* SchInput_WrapNew(SchValue* out, BYTE* object, int type, const c
 }
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 
 extern "C" {
 

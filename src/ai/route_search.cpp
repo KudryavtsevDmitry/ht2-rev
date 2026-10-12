@@ -502,7 +502,6 @@ void __fastcall Filter2_SetResponse(Filter2* self, void*, double t) { self->SetR
 }
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
 
 extern "C" {
@@ -542,7 +541,7 @@ extern "C" DWORD* __cdecl Rec12_Construct(DWORD* p, const DWORD* src)
     return p;
 }
 
-ASM_PROC(FUN_44b740)    // the STL node allocator: allocate (bytes)
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the STL node allocator: allocate (bytes)
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records (first, last, dest, -)
 
 // [FUN_487740] constructs count vectors of 12-byte records in this array, each a copy of src; the count at +24576

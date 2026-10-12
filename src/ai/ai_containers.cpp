@@ -428,7 +428,6 @@ extern "C" void __cdecl Tree_Erase469520(void* node, void* x);
 KING_ALIAS("_Tree_Erase469520", "FUN_469520")
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 
 struct Elem32 { DWORD w[2]; double key; DWORD w4[4]; };
 
