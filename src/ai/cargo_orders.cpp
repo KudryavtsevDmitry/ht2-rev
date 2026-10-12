@@ -319,7 +319,7 @@ int* __fastcall TempBuf12_Construct(int* self, void*, BYTE* first, BYTE* last)
 }
 
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")    // uninitialized copy of bytes (first, last, to), returns the end
-ASM_PROC(FUN_44b740)    // the AI's allocator: allocate (size)
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the AI's allocator: allocate (size)
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
 

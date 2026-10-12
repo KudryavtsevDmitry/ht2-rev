@@ -226,7 +226,7 @@ ASM_VAR(BYTE*, g_68cf6c, $L_68cf6c)
 ASM_VAR(BYTE**, g_68a970, $L_68a970)
 ASM_VAR(BYTE**, g_68a974, $L_68a974)
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
-ASM_PROC(FUN_44b740)
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -799,7 +799,6 @@ int* __fastcall TempBuf8_Construct(int* self, void*, BYTE* first, BYTE* last)
 }
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 
 extern "C" {
 

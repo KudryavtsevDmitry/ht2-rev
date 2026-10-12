@@ -1117,6 +1117,7 @@ PUBLIC $L_6ef2bc, $L_6ef2c0
 PUBLIC $L_670a7c, $L_670db8, $L_685a9c, $L_691e44
 PUBLIC $L_6767d0, $L_6772a0, $L_6772a8, $L_696878
 PUBLIC $L_67683c
+PUBLIC $L_68d210, $L_68d214, $L_68d218
 
 ;===================================
 _TEXT SEGMENT
@@ -125877,6 +125878,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44b740 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -126096,6 +126099,10 @@ $L_44b957::
             add ESP,28
             ret 
 FUN_44b740 ENDP
+ELSE
+EXTERN _Stl_Allocate:PROC
+FUN_44b740 TEXTEQU <_Stl_Allocate>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -126535,6 +126542,8 @@ $L_44bbad ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44bcf0 PROC
 
             sub ESP,12
@@ -126580,6 +126589,10 @@ $L_44bd43::
             add ESP,12
             ret 
 FUN_44bcf0 ENDP
+ELSE
+EXTERN _Stl_OomMalloc:PROC
+FUN_44bcf0 TEXTEQU <_Stl_OomMalloc>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -126589,6 +126602,8 @@ FUN_44bcf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44bd50 PROC
 
             sub ESP,16
@@ -126770,6 +126785,10 @@ $L_44bee9::
             add ESP,16
             ret 
 FUN_44bd50 ENDP
+ELSE
+EXTERN _Stl_Refill:PROC
+FUN_44bd50 TEXTEQU <_Stl_Refill>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -154258,6 +154277,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_45a0f0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -154424,6 +154445,10 @@ $L_45a246::
             nop
             nop
 FUN_45a0f0 ENDP
+ELSE
+EXTERN _Stl_ChunkAlloc:PROC
+FUN_45a0f0 TEXTEQU <_Stl_ChunkAlloc>
+ENDIF
 ALIGN 16
 FUN_45a270 PROC
 

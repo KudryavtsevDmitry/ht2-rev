@@ -613,7 +613,7 @@ static BYTE* Fill(BYTE* s, const int* v, int n)
 #define R(p) ((AiRecord*)(p))
 
 typedef char AsmLabel[1];
-ASM_PROC(FUN_44b740)    // the STL node allocator: allocate (bytes)
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the STL node allocator: allocate (bytes)
 extern "C" void FUN_480550(); KING_ALIAS("_FUN_480550", "@SvRec480550_Construct@12")    // 52-byte record constructor (name)
 extern "C" void FUN_44d4e0(); KING_ALIAS("_FUN_44d4e0", "@Vec4b_Insert44d4e0@16")    // vector<pointer>::insert_aux
 extern "C" void FUN_480580(); KING_ALIAS("_FUN_480580", "@SvRec480580_Construct@12")    // 24-byte record constructor (name)
@@ -1776,7 +1776,6 @@ void __fastcall Vec24_PushBackB(void* s, void*, const void* x) { PushBackConstru
 // Batch 5: more STL instances and small helpers
 
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
-KING_ALIAS("_Stl_Allocate", "FUN_44b740")
 extern "C" void __cdecl Copy36(void* dst, const void* src);
 KING_ALIAS("_Copy36", "_Rec458500_Construct")
 extern "C" void __cdecl Copy12(void* dst, const void* src);
@@ -7173,4 +7172,101 @@ extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size)
     *(void**)p = *list;
     *list = p;
     g_stlLock = 0;
+}
+
+ASM_VAR(BYTE*, g_stlStart68d214, $L_68d214)
+ASM_VAR(BYTE*, g_stlEnd68d218, $L_68d218)
+ASM_VAR(unsigned, g_stlHeap68d210, $L_68d210)
+
+// [FUN_44bcf0] malloc; on failure the out-of-memory loop (handler, retry, throw)
+extern "C" void* __cdecl Stl_OomMalloc(unsigned bytes)
+{
+    void* p = malloc(bytes);
+    return p ? p : CallC<void*>(FUN_4581a0, bytes);
+}
+
+// [FUN_45a0f0] the allocator's chunk_alloc: count nodes of size bytes from the pool (fewer if it runs
+// short), refilling the pool from malloc or from the larger free lists
+extern "C" BYTE* __cdecl Stl_ChunkAlloc(unsigned size, int* count)
+{
+    for (;;) {
+        unsigned total = size * *count;
+        unsigned left = (unsigned)(g_stlEnd68d218 - g_stlStart68d214);
+        BYTE* r = g_stlStart68d214;
+        if (left >= total) {
+            g_stlStart68d214 += total;
+            return r;
+        }
+        if (left >= size) {
+            *count = left / size;
+            g_stlStart68d214 += *count * size;
+            return r;
+        }
+        unsigned get = 2 * total + (((g_stlHeap68d210 >> 4) + 7) & ~7u);
+        if (left) {
+            void** l = &g_stlFreeLists[(left + 7) >> 3];
+            *(void**)g_stlStart68d214 = *l;
+            *l = g_stlStart68d214;
+        }
+        g_stlStart68d214 = (BYTE*)malloc(get);
+        if (!g_stlStart68d214) {
+            bool found = false;
+            for (unsigned i = size; i <= 128; i += 8) {
+                void** l = &g_stlFreeLists[(i + 7) >> 3];
+                BYTE* p = (BYTE*)*l;
+                if (p) {
+                    *l = *(void**)p;
+                    g_stlStart68d214 = p;
+                    g_stlEnd68d218 = p + i;
+                    found = true;
+                    break;
+                }
+            }
+            if (found)
+                continue;
+            g_stlEnd68d218 = 0;
+            g_stlStart68d214 = (BYTE*)Stl_OomMalloc(get);
+        }
+        g_stlHeap68d210 += get;
+        g_stlEnd68d218 = g_stlStart68d214 + get;
+    }
+}
+
+// [FUN_44bd50] the allocator's refill: up to 20 nodes of n bytes (a multiple of 8); returns one and puts
+// the rest on the free list
+extern "C" void* __cdecl Stl_Refill(unsigned n)
+{
+    int count = 20;
+    BYTE* r = Stl_ChunkAlloc(n, &count);
+    if (count != 1) {
+        BYTE* next = r + n;
+        g_stlFreeLists[(n + 7) >> 3] = next;
+        for (int i = 1;; i++) {
+            BYTE* cur = next;
+            next += n;
+            if (count - 1 == i) {
+                *(void**)cur = 0;
+                break;
+            }
+            *(void**)cur = next;
+        }
+    }
+    return r;
+}
+
+// [FUN_44b740] the STL node allocator: allocate (bytes); over 128 bytes from malloc, else from the free
+// list of its 8-byte class, refilled when empty
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes)
+{
+    if (bytes > 128)
+        return Stl_OomMalloc(bytes);
+    void** list = &g_stlFreeLists[(bytes + 7) >> 3];
+    Stl_Lock(&g_stlLock, 0);
+    void* r = *list;
+    if (r)
+        *list = *(void**)r;
+    else
+        r = Stl_Refill((bytes + 7) & ~7u);
+    g_stlLock = 0;
+    return r;
 }
