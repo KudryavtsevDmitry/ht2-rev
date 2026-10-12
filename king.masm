@@ -126726,6 +126726,8 @@ $L_44bee9::
             ret 
 FUN_44bd50 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44bef0 PROC
 
             push EBP
@@ -126980,6 +126982,10 @@ $L_44c0ee::
             pop EBP
             ret 8
 FUN_44bef0 ENDP
+ELSE
+EXTERN @VecChar_Insert44bef0@16:PROC
+FUN_44bef0 TEXTEQU <@VecChar_Insert44bef0@16>
+ENDIF
 $L_44c111 PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -127421,6 +127427,8 @@ $L_44c45a::
             nop
 $L_44c414 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44c470 PROC
 
             push EBP
@@ -127684,6 +127692,10 @@ $L_44c699::
             pop EBP
             ret 8
 FUN_44c470 ENDP
+ELSE
+EXTERN @Vec8_Insert44c470@16:PROC
+FUN_44c470 TEXTEQU <@Vec8_Insert44c470@16>
+ENDIF
 $L_44c6bd PROC
 
             mov EAX,DWORD PTR [EBP-24]
@@ -215632,6 +215644,8 @@ $L_47902f PROC
             nop
 $L_47902f ENDP
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_479050 PROC
 
             push EBP
@@ -215956,6 +215970,10 @@ $L_479303::
             inc EDI
             jmp $L_479284
 FUN_479050 ENDP
+ELSE
+EXTERN @Vec40_Insert479050@16:PROC
+FUN_479050 TEXTEQU <@Vec40_Insert479050@16>
+ENDIF
 $L_47931a PROC
 
             mov EAX,DWORD PTR [EBP-20]
@@ -216450,6 +216468,8 @@ $L_479751::
             nop
 $L_4796f3 ENDP
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_479760 PROC
 
             push EBP
@@ -216739,6 +216759,10 @@ $L_4799c7::
             inc EBX
             jmp $L_47994b
 FUN_479760 ENDP
+ELSE
+EXTERN @Vec8_Insert479760@16:PROC
+FUN_479760 TEXTEQU <@Vec8_Insert479760@16>
+ENDIF
 $L_4799de PROC
 
             mov EAX,DWORD PTR [EBP-24]
