@@ -372,3 +372,12 @@ extern "C" int __fastcall Ordr_First(int** self, int)
 {
     return *self[0];
 }
+
+extern "C" void __cdecl VecPod_InsertAux(BYTE** v, BYTE* pos, const BYTE* x, int n, void (*copy)());
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
+
+// [FUN_46e6b0] vector<12 bytes>::insert_aux
+extern "C" void __fastcall Vec12_Insert46e6b0(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    VecPod_InsertAux(v, pos, x, 12, FUN_47e3e0);
+}

@@ -210,7 +210,7 @@ extern "C" AiListNode** __cdecl AiList_FindActive(AiListNode** out, AiListNode* 
 }
 
 ASM_PROC(FUN_44bef0)    // vector<char>::insert_aux(pos, x)
-ASM_PROC(FUN_47b790)    // vector<12 bytes>::insert_aux(pos, x)
+extern "C" void FUN_47b790(); KING_ALIAS("_FUN_47b790", "@Vec12_Insert47b790@16")    // vector<12 bytes>::insert_aux(pos, x)
 extern "C" void FUN_478fb0(); KING_ALIAS("_FUN_478fb0", "_List1000_MakeNode@4")    // list: a new node holding x
 ASM_PROC(FUN_477600)
 ASM_PROC(FUN_4731e0)
@@ -967,4 +967,20 @@ extern "C" int* __fastcall TempBuf40_Init(int* self, int, Rec40* first, Rec40* l
     if (self[1] > 0)
         CallC(FUN_47f770, self[2], self[1], first, last);
     return self;
+}
+
+extern "C" void __cdecl VecPod_InsertAux(BYTE** v, BYTE* pos, const BYTE* x, int n, void (*copy)());
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
+extern "C" void FUN_47e220(); KING_ALIAS("_FUN_47e220", "_Stl_UninitCopy16")    // uninitialized copy of 16-byte records
+
+// [FUN_47b790] vector<12 bytes>::insert_aux
+extern "C" void __fastcall Vec12_Insert47b790(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    VecPod_InsertAux(v, pos, x, 12, FUN_47e3e0);
+}
+
+// [FUN_47bae0] vector<16 bytes>::insert_aux
+extern "C" void __fastcall Vec16_Insert47bae0(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    VecPod_InsertAux(v, pos, x, 16, FUN_47e220);
 }
