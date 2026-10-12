@@ -1031,3 +1031,45 @@ extern "C" BYTE** __fastcall Vec40_Assign(BYTE** self, int, BYTE* const* src)
     self[1] = self[0] + n * 40;
     return self;
 }
+
+// [FUN_47c650] copies 12-byte records [first, last) to dest; returns the end of the copy
+extern "C" DWORD* __cdecl Rec12_Copy(const DWORD* first, const DWORD* last, DWORD* dest)
+{
+    for (int n = (int)(last - first) / 3; n > 0; n--, first += 3, dest += 3) {
+        dest[0] = first[0];
+        dest[1] = first[1];
+        dest[2] = first[2];
+    }
+    return dest;
+}
+
+extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")    // allocates n 12-byte records and copies [first, last) (stdcall)
+extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // the same for 16-byte records
+extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")    // a 16-byte record's destructor
+
+// reserve(n) of a vector of size-byte records; dtor destroys the old ones
+static void Vec_Reserve(BYTE** v, unsigned n, int size, void (*alloc)(), void (*dtor)())
+{
+    if ((unsigned)((v[2] - v[0]) / size) >= n)
+        return;
+    int count = (int)(v[1] - v[0]) / size;
+    BYTE* p = CallThis<BYTE*>(alloc, v, n, v[0], v[1]);
+    if (dtor)
+        for (BYTE* e = v[0]; e != v[1]; e += size)
+            CallThis(dtor, e);
+    int cap = (int)(v[2] - v[0]) / size;
+    if (cap)
+        CallC(FUN_44b4a0, v[0], cap * size);
+    v[0] = p;
+    v[1] = p + count * size;
+    v[2] = p + n * size;
+}
+
+// [FUN_47ab50] vector<12-byte record>::reserve
+extern "C" void __fastcall Vec12_Reserve(BYTE** v, void*, unsigned n) { Vec_Reserve(v, n, 12, FUN_4593b0, 0); }
+
+// [FUN_47ac30] vector<40-byte record>::reserve
+extern "C" void __fastcall Vec40_Reserve(BYTE** v, void*, unsigned n) { Vec_Reserve(v, n, 40, FUN_47acd0, 0); }
+
+// [FUN_47af30] vector<16-byte record>::reserve
+extern "C" void __fastcall Vec16_Reserve(BYTE** v, void*, unsigned n) { Vec_Reserve(v, n, 16, FUN_461dc0, FUN_602ca0); }

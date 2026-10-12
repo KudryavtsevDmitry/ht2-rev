@@ -445,7 +445,7 @@ extern "C" BYTE* __fastcall Sch_At(BYTE** self, void*, int i)
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")    // vector<char>::insert(pos, &c)
 extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")    // deque<int>::push_back when the block is full
-ASM_PROC(FUN_4a52e0)    // script error (code, fatal)
+extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 ASM_VAR(AsmLabel, g_fmtLineCol, $L_671458)      // the "line col" prefix of an error line
 
 // a node linked between p's +16 and +4, holding two values

@@ -1258,7 +1258,7 @@ void __cdecl Player_UpdateOrders(BYTE* p)
 }
 
 extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")    // allocate n 12-byte records and copy [first, last) (stdcall)
-ASM_PROC(FUN_47c650)    // copy 12-byte records (first, last, to)
+extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")    // copy 12-byte records (first, last, to)
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")    // uninitialized copy of 12-byte records
 extern "C" void FUN_484690(); KING_ALIAS("_FUN_484690", "_Road_OrientHops")    // orients the hops of a route
 ASM_PROC(FUN_44b4a0)
@@ -1363,4 +1363,15 @@ void __cdecl Recs40_Swap(BYTE** a, BYTE** b)
         CallC(FUN_44b4a0, t[0], cap * 40);
 }
 
+}
+
+// [FUN_478630] removes the player's waypoint with the id and updates its orders; true if it was there
+extern "C" bool __cdecl Player_RemoveWaypoint(BYTE* p, int id)
+{
+    bool r = ((WaypointVec*)(p + 72))->RemoveId(id);
+    if (r)
+        Player_UpdateOrders(p);
+    if (F(void*, p, 24) == F(void*, p, 28) && F(void*, p, 72) != F(void*, p, 76))
+        AiError(0, 1, s_playFile, s_playId, 2012, "Internal error 325697", &g_aiEmpty, &g_aiEmpty);
+    return r;
 }

@@ -23,7 +23,7 @@ ASM_PROC(FUN_5d3290)
 extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
 extern "C" void FUN_5799c0(); KING_ALIAS("_FUN_5799c0", "@Triangles_Init@8")
 ASM_PROC(FUN_5ef780)
-ASM_PROC(FUN_579850)
+extern "C" void FUN_579850(); KING_ALIAS("_FUN_579850", "@Pool6928_Free@8")
 ASM_PROC(FUN_5ef660)
 ASM_VAR(AsmLabel, s_67cfc0, $L_67cfc0)
 ASM_VAR(AsmLabel, s_67d04c, $L_67d04c)
@@ -847,4 +847,13 @@ extern "C" int __fastcall FF_PoolStart(BYTE* self, int, int a, int b, int c, int
     if (!r)
         r = CallThis<int>(FUN_5798d0, pool);
     return r;
+}
+
+// [FUN_579850] frees the new[]'d array of 6928-byte items (their destructor does nothing) and clears the count
+extern "C" void __fastcall Pool6928_Free(BYTE** self, void*)
+{
+    BYTE* a = self[0];
+    self[1] = 0;
+    if (a)
+        operator delete(a - 4);
 }

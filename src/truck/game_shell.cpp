@@ -1468,7 +1468,7 @@ ASM_PROC(FUN_51bfa0)    // opens the save storage (path, mode), stdcall
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")    // a temporary wide string of a name
 ASM_PROC(FUN_513270)    // opens a stream of a storage (storage, name, mode)
 extern "C" void FUN_513850(); KING_ALIAS("_FUN_513850", "@Keys_Assign@8")
-ASM_PROC(FUN_513600)
+extern "C" void FUN_513600(); KING_ALIAS("_FUN_513600", "@Settings_Save@8")
 ASM_PROC(FUN_5147b0)
 ASM_VAR(char, s_stream676958, $L_676958)
 ASM_VAR(char, s_stream6d1db8, $L_6d1db8)
@@ -1560,4 +1560,58 @@ extern "C" void __cdecl Car_ApplyPlayerSettings(BYTE* car)
         case 18: CallThis(FUN_4eb4a0, car + 21308, r[11].value); break;
         }
     }
+}
+
+ASM_VAR(BYTE*, g_6cec94, $L_6cec94)
+typedef const char* StrTable[1];
+ASM_VAR(StrTable, g_names675ae0, $L_675ae0)
+ASM_VAR(AsmLabel, s_fmt67254c, $L_67254c)
+ASM_VAR(AsmLabel, g_text6ce9ac, $L_6ce9ac)
+ASM_VAR(AsmLabel, s_stream677574, $L_677574)
+
+// [FUN_51a4a0] the current screen's title: the name of its kind and its number from 1
+extern "C" char* __cdecl Shell_ScreenTitle()
+{
+    sprintf(g_text6ce9ac, s_fmt67254c, g_names675ae0[F(int, g_6cec94, 808)], F(int, g_6cec94, 812) + 1);
+    return g_text6ce9ac;
+}
+
+// [FUN_51bd50] opens the save storage (mode) and its stream; the storage goes to *stg, 0 if it can't be opened
+extern "C" void* __cdecl Storage_OpenStream(void** stg, int mode)
+{
+    void* st = CallStd<void*>(FUN_51bfa0, g_6cecd8 + 632, mode);
+    if (!st)
+        return 0;
+    void* s = 0;
+    ComCall(st, 16, CallC<const WCHAR*>(FUN_50bc90, s_stream677574), 0, mode != 1 ? 17 : 16, 0, &s);
+    *stg = st;
+    return s;
+}
+
+// [FUN_513600] writes the 376-byte settings at +528 to the save storage
+extern "C" void __fastcall Settings_Save(BYTE* self, void*)
+{
+    void* stg = CallStd<void*>(FUN_51bfa0, g_6cecd8 + 632, 2);
+    void* s = CallC<void*>(FUN_513270, stg, &s_stream6d1db8, 2);
+    if (!s)
+        s = CallC<void*>(FUN_513270, stg, &s_stream6d1db8, 0);
+    ULONG done;
+    ComCall(s, 16, self + 528, 376, &done);
+    ComCall(s, 8);
+    ComCall(stg, 8);
+    CallThis(FUN_5147b0, self);
+}
+
+// [FUN_51e7a0] clears the list at +504, saves it, and enables the button at +500 when the list's item has data
+extern "C" void __fastcall Shell51e7a0_Apply(BYTE* self, void*)
+{
+    CallThis(FUN_5c0cf0, F(void*, self, 504));
+    CallC(FUN_51d0e0, g_6cecd8 + 632, F(void*, self, 504));
+    if (F(int, g_6cec6c, 1316))
+        F(int, F(BYTE*, self, 500), 40) = 1;
+    else {
+        BYTE* x = F(BYTE*, F(BYTE*, self, 504), 300);
+        F(int, F(BYTE*, self, 500), 40) = x && F(int, x, 12) ? 0 : 1;
+    }
+    CallThis(FUN_5d8610, self);
 }
