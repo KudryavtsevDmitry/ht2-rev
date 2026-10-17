@@ -1140,6 +1140,10 @@ PUBLIC $L_66c760, $L_66cbe0, $L_66dc00, $L_66e700, $L_68cf70
 PUBLIC $L_66c750, $L_66db44
 PUBLIC $L_66c770, $L_66c778, $L_66c780, $L_66c788, $L_66e074
 PUBLIC $L_66dc24, $L_68ceb4
+PUBLIC $L_66c698, $L_66ed70, $L_66f0c4
+PUBLIC $L_66c6a0, $L_66d95c, $L_66f364, $L_68d0f0, $L_6978f8
+PUBLIC $L_66c874, $L_66c87c, $L_66c884, $L_66c88c, $L_66c894, $L_66c89c
+PUBLIC $L_66c8a4, $L_66c8a8, $L_66e3c8
 
 ;===================================
 _TEXT SEGMENT
@@ -6166,6 +6170,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4031e0 PROC
 
             push -1
@@ -6610,6 +6616,10 @@ $L_40363c::
             add ESP,44
             ret 
 FUN_4031e0 ENDP
+ELSE
+EXTERN _Ai_ClearWorld:PROC
+FUN_4031e0 TEXTEQU <_Ai_ClearWorld>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -17880,6 +17890,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_409aa0 PROC
 
             push EBP
@@ -18397,6 +18409,10 @@ $L_409ecc::
             pop EBP
             ret 
 FUN_409aa0 ENDP
+ELSE
+EXTERN _Ai_EdgePricedLength:PROC
+FUN_409aa0 TEXTEQU <_Ai_EdgePricedLength>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -20844,6 +20860,8 @@ FUN_40b100 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40b4a0 PROC
 
             push -1
@@ -21271,6 +21289,10 @@ $L_40b8f2::
             add ESP,116
             ret 
 FUN_40b4a0 ENDP
+ELSE
+EXTERN _Ai_MerchandiseFlags:PROC
+FUN_40b4a0 TEXTEQU <_Ai_MerchandiseFlags>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -60586,6 +60608,8 @@ EXTERN @Rec_Copy32@12:PROC
 FUN_423f20 TEXTEQU <@Rec_Copy32@12>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_423f40 PROC
 
             push EBP
@@ -61064,6 +61088,10 @@ $L_4244a3::
             nop
             nop
 FUN_423f40 ENDP
+ELSE
+EXTERN _Ai_CalculatePlayerSpeedsAndFares:PROC
+FUN_423f40 TEXTEQU <_Ai_CalculatePlayerSpeedsAndFares>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -89960,6 +89988,8 @@ FUN_435bf0 TEXTEQU <_Road_PointOf>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_435d60 PROC
 
             push EBP
@@ -90419,6 +90449,10 @@ $L_4361c8::
             pop EBP
             ret 
 FUN_435d60 ENDP
+ELSE
+EXTERN _Ai_AdvancePositionRoad:PROC
+FUN_435d60 TEXTEQU <_Ai_AdvancePositionRoad>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -105555,6 +105589,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43fc40 PROC
 
             push EBP
@@ -106055,6 +106091,11 @@ $L_4401be::
             pop EBP
             ret 
 FUN_43fc40 ENDP
+ELSE
+$L_440000 LABEL NEAR    ; a data table holds this address
+EXTERN _Ai_GetPlayerData:PROC
+FUN_43fc40 TEXTEQU <_Ai_GetPlayerData>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -109498,6 +109539,8 @@ FUN_4420b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_442350 PROC
 
             push EBP
@@ -109988,6 +110031,10 @@ $L_4427ad::
             pop EBP
             ret 
 FUN_442350 ENDP
+ELSE
+EXTERN _Ai_GetPlayerOrderInfo:PROC
+FUN_442350 TEXTEQU <_Ai_GetPlayerOrderInfo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -115380,6 +115427,8 @@ FUN_445c90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_445f60 PROC
 
             push -1
@@ -115865,6 +115914,10 @@ $L_44649a::
             add ESP,92
             ret 
 FUN_445f60 ENDP
+ELSE
+EXTERN _Ai_GetRightDirection:PROC
+FUN_445f60 TEXTEQU <_Ai_GetRightDirection>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -1488,7 +1488,7 @@ double __fastcall Height_Closeness(const double* s, void*, BYTE*** node)        
 extern "C" void __cdecl AI_42db90();
 KING_ALIAS("_AI_42db90", "_AI_FreeList68b99c")
 extern "C" void __cdecl AI_4031e0();
-KING_ALIAS("_AI_4031e0", "FUN_4031e0")
+KING_ALIAS("_AI_4031e0", "_Ai_ClearWorld")
 extern "C" void __cdecl AI_449c40(void* out, void* x);
 KING_ALIAS("_AI_449c40", "FUN_449c40")
 extern "C" void __cdecl Nodes_FindByName(int* out, const char* name);
@@ -9397,7 +9397,7 @@ extern "C" BYTE* __cdecl Ai_ReadTown(void* reader, StrRef h)
 // ---------------------------------------------------------------------------
 // getPresentData
 
-ASM_PROC(FUN_438d70)    // the module and room of a position (out36, PositionId32)
+ASM_PROC(FUN_438d70)    // the module and room of a position (PositionId32, out44)
 ASM_PROC(FUN_4397e0)    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
 ASM_PROC(FUN_41bbe0)    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
@@ -9466,7 +9466,7 @@ extern "C" void __cdecl Ai_GetPresentData(BYTE* player, BYTE* present, BYTE* pd)
         r[9] = (DWORD)-1;
         r[10] = (DWORD)-1;
         DWORD* pos = (DWORD*)(rec + 56);
-        CallC(FUN_438d70, r, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7]);
+        CallC(FUN_438d70, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], r);
         F(DWORD, pd, 72) = r[9];
         F(DWORD, pd, 76) = r[10];
         F(DWORD, pd, 64) = r[4];
@@ -11791,7 +11791,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePositionHops(PositionId* out, HopVec* h
 // ---------------------------------------------------------------------------
 // reading a 100-byte record of the script
 
-ASM_PROC(FUN_40b4a0)    // a value of a list (list by value)
+extern "C" void FUN_40b4a0(); KING_ALIAS("_FUN_40b4a0", "_Ai_MerchandiseFlags")    // a value of a list (list by value)
 extern "C" BYTE* __fastcall Rec40c220_Copy(BYTE* self, void*, const BYTE* s);
 extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")
 
@@ -13444,4 +13444,648 @@ extern "C" int __cdecl Ai_OnModuleLoadX(const char* name)
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_onModuleLoadX);
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// the priced length of an edge between two positions
+
+extern "C" bool __fastcall Pos_Before(PositionId* self, void*, PositionId p);
+
+static BYTE* EdgeObj_Data(BYTE* o) { return o ? o + 8 : 0; }
+
+// [t0 at seg0 of object o0 .. t1 at seg1 of object o1], each object's length (or part) times its price factor
+static double Edge_PricedRun(DWORD* factor, BYTE* e, int o0, double t0, int seg0, int o1, double t1, int seg1)
+{
+    BYTE** objs = F(BYTE**, e, 120);
+    int n = F(BYTE**, e, 124) - objs;
+    if (o1 == n) {
+        o1 = n - 1;
+        seg1 = CallVirt<int>(objs[o1], 24) - 1;
+        t1 = 0;
+    }
+    if (o0 == o1) {
+        double r = CallVirt<double>(objs[o0], 32, t0, seg0, t1, seg1);
+        return Rec_PriceFactor((BYTE*)factor, 0, (const DWORD*)EdgeObj_Data(objs[o0])) * r;
+    }
+    int last = CallVirt<int>(objs[o0], 24) - 1;
+    double sum = CallVirt<double>(objs[o0], 32, t0, seg0, 1.0, last);
+    sum = Rec_PriceFactor((BYTE*)factor, 0, (const DWORD*)EdgeObj_Data(objs[o0])) * sum;
+    for (int i = o0 + 1; i < o1; i++) {
+        BYTE* o = F(BYTE**, e, 120)[i];
+        double f = Rec_PriceFactor((BYTE*)factor, 0, (const DWORD*)EdgeObj_Data(o));
+        sum = CallVirt<double>(o, 36) * f + sum;
+    }
+    BYTE* o = F(BYTE**, e, 120)[o1];
+    double r = CallVirt<double>(o, 32, 0.0, 0, t1, seg1);
+    return Rec_PriceFactor((BYTE*)factor, 0, (const DWORD*)EdgeObj_Data(o)) * r + sum;
+}
+
+// a node position as the edge's start or end
+static void Edge_NodeToPosition(PositionId* p, BYTE* e, int line, const char* msg)
+{
+    if (p->road != -1)
+        return;
+    BYTE* n = (BYTE*)g_roadNodes[p->node];
+    PositionId tmp;
+    if (n == F(BYTE*, e, 112))
+        *p = *Road_EdgeStart(&tmp, (RoadEdge*)e);
+    else if (n == F(BYTE*, e, 116))
+        *p = *Road_EdgeEnd(&tmp, (RoadEdge*)e);
+    else
+        AiError(0, 100, s_mainFile, s_mainId, line, msg, &g_aiEmpty, &g_aiEmpty);
+}
+
+// [FUN_409aa0] the priced length of the edge from a to b (either order)
+extern "C" double __cdecl Ai_EdgePricedLength(BYTE* ctx, BYTE* e, PositionId a, PositionId b)
+{
+    Edge_NodeToPosition(&a, e, 2127, "Internal error 7644");
+    Edge_NodeToPosition(&b, e, 2138, "Internal error 7645");
+    DWORD factor[2] = { (DWORD)ctx, 0 };
+    if (Pos_Before(&a, 0, b))
+        return Edge_PricedRun(factor, e, a.object, a.t, a.segment, b.object, b.t, b.segment);
+    factor[1] = 1;
+    return Edge_PricedRun(factor, e, b.object, b.t, b.segment, a.object, a.t, a.segment);
+}
+
+// ---------------------------------------------------------------------------
+// getPlayerData(PlayerId player, GetPlayerData & pd)
+
+extern "C" int __cdecl Player_LicenceTimeLeft(BYTE* p, double* left);   // ai_drivers.cpp
+extern "C" int* __fastcall Player_GetPlace(BYTE* self, void*);           // ai_drivers.cpp
+ASM_VAR(AsmLabel, s_getPlayerData, $L_66ed70)
+ASM_VAR(double, g_dayLength66c698, $L_66c698)
+
+// the order record's town data of a cargo (or none)
+static void PlayerData_Cargo(BYTE* o, BYTE* cargo, int at)
+{
+    if (cargo && F(int, cargo, 4) != -1) {
+        BYTE* v = (BYTE*)g_vehicles[F(int, cargo, 4)];
+        F(int, o, at) = F(int, v, 64);
+        F(int, o, at + 4) = F(int, v, 68);
+        F(int, o, at + 8) = F(int, v, 72);
+    } else
+        F(int, o, at + 8) = 0;
+}
+
+// [FUN_43fc40] getPlayerData: the player's state copied out for the interface
+extern "C" void __cdecl Ai_GetPlayerData(BYTE* p, BYTE* o)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_getPlayerData);
+    if (Player_NotValid(p)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 16719, s_invalidId, "PlayerId", g_numberText);
+    }
+    Player_UpdateFlags(p);
+    F(DWORD, o, 4) = F(DWORD, p, 96);
+    F(int, o, 8) = F(int, p, 92);
+    F(int, o, 12) = -1;
+    F(int, o, 16) = 0;
+    F(int, o, 24) = -1;
+    F(int, o, 36) = F(int, p, 84);
+    PlayerData_Cargo(o, F(BYTE*, p, 516), 12);
+    PlayerData_Cargo(o, F(BYTE*, p, 520), 24);
+    F(DWORD, o, 40) = F(DWORD, p, 136);
+    F(DWORD, o, 44) = F(DWORD, p, 140);
+    F(int, o, 48) = F(int, p, 272);
+    F(int, o, 52) = (F(int, p, 148) - F(int, p, 144)) >> 3;
+    Player_LicenceTimeLeft(p, (double*)(o + 64));
+    F(int, o, 56) = F(int, p, 156);
+    F(int, o, 72) = F(int, p, 524);
+    F(int, o, 76) = F(int, p, 528);
+    F(int, o, 80) = (F(int, p, 164) - F(int, p, 160)) >> 4;
+    F(int, o, 84) = F(int, p, 660);
+    F(double, o, 88) = 0;
+    if (F(double, p, 192) > 0.0 && F(double, p, 864) > 0.0) {
+        double x = F(double, p, 192) / (F(double, p, 864) * 10.0);
+        F(double, o, 88) = x;
+        if (x > 1.0)
+            F(double, o, 88) = 1.0;
+    }
+    F(int, o, 104) = F(int, p, 768);
+    F(int, o, 108) = F(int, p, 772);
+    F(int, o, 112) = F(int, p, 776);
+    F(int, o, 116) = F(int, p, 780);
+    F(double, o, 120) = 0;
+    if (Player_FirstGoods(p + 8)) {
+        BYTE* d = (BYTE*)Player_Driver(p);
+        double left = F(double, d, 72) - AI_Now();
+        F(double, o, 120) = left;
+        if (left < 0.0)
+            F(double, o, 120) = 0;
+        double now = AI_Now();
+        double since = now - F(double, (BYTE*)Player_Driver(p), 80);
+        F(double, Iter_Data(&p, 0), 800) = since;
+    } else if (F(int, p, 100) == 5 || g_68d188 == 1 || g_68d188 == 2) {
+        DWORD fl = F(DWORD, p, 96);
+        if ((fl & 0x4000) && !(fl & 0x100))
+            F(double, p, 808) = AI_Now() - F(double, p, 792);
+        F(double, o, 120) = g_dayLength66c698 - F(double, p, 808);
+    }
+    F(DWORD, o, 128) = F(DWORD, p, 808);
+    F(DWORD, o, 132) = F(DWORD, p, 812);
+    F(BYTE, o, 136) = g_68a980 != g_68a984;
+    if (F(int, p, 100) == 5)
+        F(BYTE, o, 136) = 1;
+    BYTE** orders = (BYTE**)Player_Orders(p, 0);
+    if (orders[0] != orders[1])
+        F(BYTE, o, 136) = 1;
+    if (Player_UpdateFlagsGet(p))
+        F(BYTE, o, 136) = 1;
+    F(double, o, 144) = Ai_GetPlayerCapital(p);
+    F(double, o, 152) = Ai_GetPlayerVirtualCapital(p);
+    F(DWORD, o, 160) = F(DWORD, p, 344);
+    F(DWORD, o, 164) = F(DWORD, p, 348);
+    if (Player_Flag4(p) & 0xff) {
+        F(DWORD, o, 160) = 0;
+        F(DWORD, o, 164) = 0;
+    }
+    F(DWORD, o, 96) = F(DWORD, p, 544);
+    F(DWORD, o, 100) = F(DWORD, p, 548);
+    Player_AllCosts(p, (double*)(o + 176), (double*)(o + 168));
+    int* place = Player_GetPlace(p + 8, 0);
+    F(int, o, 184) = place ? *place : 1;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getPlayerData);
+}
+
+// ---------------------------------------------------------------------------
+// getOrderInfo(PlayerId player, int orderid, OrderInfo & oi)
+
+ASM_VAR(AsmLabel, s_getOrderInfoPlayer, $L_66f0c4)
+
+static int OrderInfoPlayer_Leave(int r)
+{
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getOrderInfoPlayer);
+    return r;
+}
+
+// [FUN_442350] getOrderInfo: fills oi with one of the player's own orders; -1 when there is no such order
+extern "C" int __cdecl Ai_GetPlayerOrderInfo(BYTE* p, unsigned idx, BYTE* oi)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_getOrderInfoPlayer);
+    F(BYTE, oi, 184) = 0;
+    if (Player_NotValid(p)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 17333, s_invalidId, "PlayerId", g_numberText);
+    }
+    BYTE** orders = (BYTE**)Player_Orders(p, 0);
+    if ((unsigned)((int)(orders[1] - orders[0]) / 144) <= idx)
+        return OrderInfoPlayer_Leave(-1);
+    orders = (BYTE**)Player_Orders(p, 0);
+    BYTE* rec = orders[0] + idx * 144;
+    F(DWORD, oi, 8) = F(DWORD, rec, 56);
+    F(DWORD, oi, 12) = F(DWORD, rec, 60);
+    F(int, oi, 0) = F(int, rec, 0);
+    memcpy(oi + 16, rec + 24, 32);
+    char** name = (char**)(oi + 52);
+    char* const* src = (char* const*)(g_68ccb8 + F(int, rec, 0) * 104 + 88);
+    if (src != name)
+        CharVec_Copy(name, src, true);
+    if (F(int, rec, 8) != -1) {
+        src = (char* const*)(g_68ccb8 + F(int, rec, 8) * 104 + 88);
+        if (src != name)
+            CharVec_Copy(name, src, true);
+    }
+    CharVec_Erase(oi + 64, 0, F(BYTE*, oi, 64), F(BYTE*, oi, 68));
+    if (F(int, rec, 4) != -1)
+        PodVec_Assign((BYTE**)(oi + 64), 0, (BYTE* const*)(g_68ccb8 + F(int, rec, 4) * 104 + 88));
+    CharVec_Erase(oi + 76, 0, F(BYTE*, oi, 76), F(BYTE*, oi, 80));
+    PodVec_Assign((BYTE**)(oi + 88), 0, (BYTE* const*)((BYTE*)g_towns[F(int, rec, 12)] + 12));
+    F(int, oi, 48) = F(int, rec, 12);
+    Rec_FirstNonEmpty(oi, 0);
+    F(double, oi, 120) = Order_Pay(rec, 0.0, F(int, rec, 104) == 1);
+    char bonus = (Player_UpdateFlagsGet(p) || (Player_IsHuman(p) & 0xff)) && F(int, rec, 104) == 1;
+    F(double, oi, 128) = Order_Margin((int*)rec, (double)F(int, p, 528), bonus, 0, 0);
+    double left = F(double, rec, 72) - AI_Now();
+    F(double, oi, 168) = left;
+    if (left < 0.0)
+        F(double, oi, 168) = 0;
+    F(DWORD, oi, 176) = F(DWORD, rec, 96);
+    F(DWORD, oi, 180) = F(DWORD, rec, 100);
+    F(BYTE, oi, 184) = 1;
+    return OrderInfoPlayer_Leave(0);
+}
+
+// ---------------------------------------------------------------------------
+// getRightDirection(PlayerId player, PositionId pos)
+
+ASM_PROC(FUN_445c90)    // the position's direction by default (out, PositionId32)
+ASM_VAR(AsmLabel, s_getRightDirection, $L_66f364)
+
+static PositionId* RightDirection_Default(PositionId* out, PositionId pos)
+{
+    CallC(FUN_445c90, out, pos);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getRightDirection);
+    return out;
+}
+
+// [FUN_445f60] getRightDirection: pos with its direction bit set for the player's route to its goods' town (a
+// one-way room decides first)
+extern "C" PositionId* __cdecl Ai_GetRightDirection(PositionId* out, BYTE* player, PositionId pos)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_getRightDirection);
+    PositionId chk = pos;
+    if (!PositionValid(&chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, pos.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 18163, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    if (ValidRoad(pos.road)) {
+        RoadEdge* e = g_roadEdges[pos.road];
+        if (pos.object >= e->objectsEnd - e->objects || pos.segment >= CallVirt<int>(e->objects[pos.object], 24))
+            AiError(33, 100, s_mainFile, s_mainId, 18163, s_invalidPositionId, &g_aiEmpty, &g_aiEmpty);
+    }
+    if (player == (BYTE*)g_players)
+        return RightDirection_Default(out, pos);
+    if (Player_NotValid(player)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 18168, s_invalidId, "PlayerId", g_numberText);
+    }
+    if (!Player_FirstGoods(player + 8))
+        return RightDirection_Default(out, pos);
+    DWORD room[11];
+    room[0] = 0;
+    room[2] = 0;
+    room[3] = 0;
+    room[4] = (DWORD)g_undefinedModule;
+    room[5] = (DWORD)g_undefinedRoom;
+    room[6] = 0;
+    room[7] = 0;
+    room[9] = (DWORD)-1;
+    room[10] = (DWORD)-1;
+    const DWORD* d = (const DWORD*)&pos;
+    CallC(FUN_438d70, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], room);
+    if (room[0] & 8)
+        pos.m_24 |= 1;
+    else if (room[0] & 4)
+        pos.m_24 &= ~1;
+    int town;
+    Town_Id(&town, (BYTE*)g_townsBegin[F(int, Player_FirstGoods(player + 8), 12)]);
+    PositionId to;
+    PositionInit(&to, town);
+    BYTE* route[3];
+    double cost = 0;
+    CallC(FUN_4858b0, route, 0, pos, to, &cost);
+    Road_OrientHops((HopVec*)route);
+    if (route[0] == route[1]) {
+        RightDirection_Default(out, pos);
+        if ((route[2] - route[0]) / 12)
+            Ai_PoolFree(route[0], (route[2] - route[0]) / 12 * 12);
+        return out;
+    }
+    if (F(BYTE, route[0], 8) & 1)
+        pos.m_24 |= 1;
+    else
+        pos.m_24 &= ~1;
+    *out = pos;
+    if ((route[2] - route[0]) / 12)
+        Ai_PoolFree(route[0], (route[2] - route[0]) / 12 * 12);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getRightDirection);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// calculatePlayerSpeedsAndFares()
+
+ASM_PROC(FUN_476f70)    // a player out of money (owner, player node, 0)
+extern "C" double __cdecl Driver_Load(BYTE* p);                   // ai_drivers.cpp
+extern "C" void __cdecl Messages_Add(const char* text);           // helicopter.cpp
+ASM_VAR(AsmLabel, s_calculatePlayerSpeedsAndFares, $L_66d95c)
+ASM_VAR(double, g_lastSpeedTime68d0f0, $L_68d0f0)
+ASM_VAR(double, g_humanSpeed66c6a0, $L_66c6a0)
+typedef BYTE CarModels[1];
+ASM_VAR(CarModels, g_carModels6978f8, $L_6978f8)   // 2416 bytes each
+
+// the owner of a player ran out of money: its handling, and a message for the human
+static void Fares_OutOfMoney(BYTE* owner, void* node)
+{
+    CallC(FUN_476f70, owner, node, 0);
+    if (Player_IsHuman(owner) & 0xff)
+        Messages_Add(Message_Text("NO_MONEY_FOR_ADVANCE"));
+}
+
+// [FUN_423f40] calculatePlayerSpeedsAndFares: each player's movement since the last call gives its speed (filtered
+// once per 10 ms), velocity, the fare its passengers pay to it and the costs of driving for hire
+extern "C" void __cdecl Ai_CalculatePlayerSpeedsAndFares()
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_calculatePlayerSpeedsAndFares);
+    double dt = AI_Now() - g_lastSpeedTime68d0f0;
+    if (dt < 1e-06) {
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_calculatePlayerSpeedsAndFares);
+        return;
+    }
+    int steps = (int)(dt * 100.0);
+    PlayerListNode* head = (PlayerListNode*)g_players;
+    for (PlayerListNode* n = head->next; n != head; n = n->next) {
+        BYTE* p = Player_OfIt(n);
+        DVec3 pt;
+        Road_PointOf(&pt, F(PositionId, p, 32));
+        DVec3 d;
+        d.x = pt.x - F(double, p, 280);
+        d.y = pt.y - F(double, p, 288);
+        d.z = pt.z - F(double, p, 296);
+        F(double, p, 280) = pt.x;
+        F(double, p, 288) = pt.y;
+        F(double, p, 296) = pt.z;
+        if (!g_68d188 && (F(DWORD, p, 88) & 0x800)) {
+            double len = x87_sqrt((d.x * d.x + d.y * d.y) + d.z * d.z);
+            double fare = F(double, p, 184) - Driver_Load(p) * len * 0.001;
+            F(double, p, 184) = fare;
+            if (fare < 0.0) {
+                BYTE* owner = F(BYTE*, p, 168);
+                if (!(Driver_Load(p) * 10.0 <= F(double, owner, 136)))
+                    Fares_OutOfMoney(owner, n);
+                else {
+                    double v = Driver_Load(p);
+                    F(double, p, 856) = v;
+                    F(double, owner, 136) = F(double, owner, 136) - v * 10.0;
+                    double w = F(double, p, 856) * 10.0;
+                    F(double, p, 184) = w + F(double, p, 184);
+                    F(double, p, 128) = w + F(double, p, 128);
+                    F(double, p, 536) = F(double, p, 536) - w;
+                }
+            }
+        }
+        if (F(int, p, 84) == 2) {
+            BYTE* veh = (BYTE*)g_vehicles[F(int, F(BYTE*, p, 508), 4)];
+            double a = *(float*)(g_carModels6978f8 + F(int, veh, 64) * 2416 + 12);
+            BYTE* owner = F(BYTE*, p, 168);
+            double len = x87_sqrt((d.x * d.x + d.y * d.y) + d.z * d.z);
+            if (owner != (BYTE*)g_players) {
+                double c = a * len * 2e-05;
+                F(double, owner, 136) = F(double, owner, 136) - c;
+                F(double, p, 536) = F(double, p, 536) - c;
+                if (F(double, owner, 136) < 0.0)
+                    Fares_OutOfMoney(owner, n);
+            } else
+                F(double, p, 128) = F(double, p, 128) - len * a * 0.002;
+        }
+        double speed = x87_sqrt((d.x * d.x + d.y * d.y) + d.z * d.z) / dt;
+        if (speed < 100.0) {
+            for (int k = steps - 1; k > 0; k--) {
+                Filter2_Update(p + 368, 0, speed);
+                Filter2_Update(p + 408, 0, speed);
+            }
+            F(double, p, 328) = Filter2_Update(p + 368, 0, speed);
+            F(double, p, 336) = Filter2_Update(p + 408, 0, speed);
+            double inv = 1.0 / dt;
+            double vx = inv * d.x;
+            double vy = d.y * inv;
+            double vz = d.z * inv;
+            F(double, p, 344) = vx;
+            F(double, p, 352) = vy;
+            F(double, p, 360) = vz;
+        }
+        if (F(int, p, 84) == 1)
+            g_humanSpeed66c6a0 = F(double, p, 328);
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_calculatePlayerSpeedsAndFares);
+}
+
+// ---------------------------------------------------------------------------
+// advancePosition(PositionId pos, double & offset, int __flags)
+
+ASM_VAR(AsmLabel, s_advancePositionRoad, $L_66e3c8)
+
+static void AdvanceRoad_Check(const PositionId* pos, int line)
+{
+    PositionId chk = *pos;
+    if (!PositionValid(&chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", pos->road, pos->t, pos->segment, pos->object, pos->m_24);
+        AiError(33, 100, s_mainFile, s_mainId, line, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    if (ValidRoad(pos->road)) {
+        RoadEdge* e = g_roadEdges[pos->road];
+        if (pos->object >= e->objectsEnd - e->objects || pos->segment >= CallVirt<int>(e->objects[pos->object], 24))
+            AiError(33, 100, s_mainFile, s_mainId, line, s_invalidPositionId, &g_aiEmpty, &g_aiEmpty);
+    }
+}
+
+// [FUN_435d60] advancePosition: pos moved by offset along its edge (against it when the direction bit is set);
+// what is left of offset stays in it, the position takes the end node when it reached one
+extern "C" PositionId* __cdecl Ai_AdvancePositionRoad(PositionId* out, PositionId pos, double* off, int)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_advancePositionRoad);
+    AdvanceRoad_Check(&pos, 14404);
+    DVec3 pt;
+    Road_PointOf(&pt, pos);
+    if (pos.m_24 & 1)
+        *off = -*off;
+    double eps = 0.1;
+    RoadEdge* e = g_roadEdges[pos.road];
+    if (*off > 0.0) {
+        while ((unsigned)pos.object < (unsigned)(e->objectsEnd - e->objects)) {
+            if (!CallVirt<int>(e->objects[pos.object], 16, &pos.t, off, &eps, &pos.segment))
+                break;
+            if ((unsigned)pos.object >= (unsigned)(e->objectsEnd - e->objects - 1))
+                break;
+            pos.object++;
+            pos.segment = 0;
+            pos.t = 0;
+        }
+    } else if (*off < 0.0) {
+        while ((unsigned)pos.object < (unsigned)(e->objectsEnd - e->objects)) {
+            if (!CallVirt<int>(e->objects[pos.object], 16, &pos.t, off, &eps, &pos.segment))
+                break;
+            if (pos.object == 0)
+                break;
+            pos.object--;
+            pos.segment = CallVirt<int>(e->objects[pos.object], 24) - 1;
+            pos.t = 1.0;
+        }
+    }
+    if (*off > 0.0 || *off < 0.0) {
+        BYTE* n = F(BYTE*, g_roadEdges[pos.road], *off > 0.0 ? 116 : 112);
+        pos.node = F(int, n, 16);
+        if (pos.m_24 & 1)
+            *off = -*off;
+    } else
+        pos.node = -1;
+    AdvanceRoad_Check(&pos, 14432);
+    *out = pos;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_advancePositionRoad);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// the AI world cleared
+
+ASM_PROC(FUN_470ae0)    // a node record's destructor (thiscall)
+ASM_PROC(FUN_5e48f0)    // ()
+extern "C" DWORD* __cdecl FillDwords(DWORD* d, unsigned n, const DWORD* v);        // ai_containers.cpp
+extern "C" BYTE* __cdecl Rec104_Copy(const BYTE* f, const BYTE* l, BYTE* d);         // ai_containers.cpp
+extern "C" void __fastcall Road47fa80_Destroy(BYTE* self, void*);                    // road_graph.cpp
+extern "C" BYTE* __fastcall Mult46c8e0_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
+extern "C" BYTE* __fastcall Mult46c920_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
+ASM_VAR(BYTE, g_worldLoaded68d0ec, $L_68d0ec)
+typedef BYTE* PtrTriple[3];
+ASM_VAR(PtrTriple, w_kinds68cf48, $L_68cf48)      // vector<char const *>, the player kind names
+ASM_VAR(PtrTriple, w_driverName68d0a8, $L_68d0a8) // vector<char>
+ASM_VAR(PtrTriple, w_vehicles68cfd8, $L_68cfd8)
+ASM_VAR(PtrTriple, w_nodes68cf00, $L_68cf00)
+ASM_VAR(PtrTriple, w_rooms68d0d8, $L_68d0d8)
+ASM_VAR(PtrTriple, w_registry68d0c8, $L_68d0c8)
+ASM_VAR(PtrTriple, w_edges68cf38, $L_68cf38)
+ASM_VAR(PtrTriple, w_templates68ccb8, $L_68ccb8)   // 104-byte records
+ASM_VAR(PtrTriple, w_mults68cc08, $L_68cc08)       // 24-byte records
+ASM_VAR(BYTE, w_hash68d008, $L_68d008)
+ASM_VAR(BYTE, w_hash68cff0, $L_68cff0)
+ASM_VAR(BYTE, w_hash68cf10, $L_68cf10)
+ASM_VAR(AsmLabel, s_kindLive, $L_66c8a8)
+ASM_VAR(AsmLabel, s_kindAi, $L_66c8a4)
+ASM_VAR(AsmLabel, s_kindPolice, $L_66c89c)
+ASM_VAR(AsmLabel, s_kindMafia, $L_66c894)
+ASM_VAR(AsmLabel, s_kindDumb, $L_66c88c)
+ASM_VAR(AsmLabel, s_kindGhost, $L_66c884)
+ASM_VAR(AsmLabel, s_kindDealer, $L_66c87c)
+ASM_VAR(AsmLabel, s_driverName, $L_66c874)
+
+// each owned object of the vector destroyed and deleted
+static void World_DeleteEach(BYTE** v, void (*destroy)(BYTE*))
+{
+    for (BYTE** it = (BYTE**)v[0]; it != (BYTE**)v[1]; it++)
+        if (*it) {
+            destroy(*it);
+            operator delete(*it);
+        }
+}
+
+static void World_DestroyNode(BYTE* p) { CallThis(FUN_470ae0, p); }
+static void World_DestroyRoom(BYTE* p) { Rec403810_Destroy((BYTE**)p, 0); }
+static void World_DestroyName(BYTE* p) { CallThis(FUN_404420, p); }
+static void World_DestroyEdge(BYTE* p) { Road47fa80_Destroy(p, 0); }
+static void World_DestroyVehicle(BYTE* p) { Rec403680_Destroy(p, 0); }
+
+// [FUN_4031e0] the AI world cleared: the twelve player kinds named again, the driver name reset, the vehicles, nodes,
+// rooms, names and edges deleted, their lookups cleared, the order templates and mults destroyed
+extern "C" void __cdecl Ai_ClearWorld()
+{
+    g_worldLoaded68d0ec = 0;
+    VecMethods tmp;
+    char alloc;
+    Vec4_Reserve(&tmp, 0, 12, (int)&alloc);
+    DWORD zero = 0;
+    tmp.end = (BYTE*)FillDwords((DWORD*)tmp.begin, 12, &zero);
+    BYTE** k = w_kinds68cf48;
+    const BYTE* first = tmp.begin;
+    const BYTE* last = tmp.end;
+    unsigned n = (int)(last - first) >> 2;
+    unsigned cap = (int)(k[2] - k[0]) >> 2;
+    if (n > cap) {
+        BYTE* p = (BYTE*)Vec4b_AllocCopyC(n, (const DWORD*)first, (const DWORD*)last);
+        if (cap)
+            Ai_PoolFree(k[0], cap * 4);
+        k[0] = p;
+        k[2] = p + n * 4;
+    } else {
+        unsigned have = (int)(k[1] - k[0]) >> 2;
+        if (have >= n)
+            CopyDwords((const DWORD*)first, (const DWORD*)last, (DWORD*)k[0]);
+        else {
+            CopyDwords((const DWORD*)first, (const DWORD*)(first + have * 4), (DWORD*)k[0]);
+            CopyDwords((const DWORD*)(first + ((int)(k[1] - k[0]) >> 2) * 4), (const DWORD*)last, (DWORD*)k[1]);
+        }
+    }
+    k[1] = k[0] + n * 4;
+    Vec4_Free(&tmp.begin, 0);
+    const char** names = (const char**)w_kinds68cf48[0];
+    names[1] = s_kindLive;
+    names[2] = s_kindAi;
+    names[5] = s_kindPolice;
+    names[6] = s_kindMafia;
+    names[7] = s_kindDumb;
+    names[8] = s_kindGhost;
+    names[9] = s_kindDealer;
+    char driver[7];
+    memcpy(driver, s_driverName, 7);
+    BYTE** dn = w_driverName68d0a8;
+    CharVec_Erase(dn, 0, dn[0], dn[1]);
+    CharVec_InsertRange44c220(dn, 0, dn[1], (BYTE*)driver, (BYTE*)driver + strlen(driver) + 1);
+    World_DeleteEach(w_vehicles68cfd8, World_DestroyVehicle);
+    Vec4_Erase2(w_vehicles68cfd8, 0, w_vehicles68cfd8[0], w_vehicles68cfd8[1]);
+    World_DeleteEach(w_nodes68cf00, World_DestroyNode);
+    CopyDwords((const DWORD*)w_nodes68cf00[1], (const DWORD*)w_nodes68cf00[1], (DWORD*)w_nodes68cf00[0]);
+    w_nodes68cf00[1] = w_nodes68cf00[0];
+    Hash_Clear((HashTable*)&w_hash68d008, 0);
+    World_DeleteEach(w_rooms68d0d8, World_DestroyRoom);
+    CopyDwords((const DWORD*)w_rooms68d0d8[1], (const DWORD*)w_rooms68d0d8[1], (DWORD*)w_rooms68d0d8[0]);
+    w_rooms68d0d8[1] = w_rooms68d0d8[0];
+    Hash_Clear((HashTable*)&w_hash68cff0, 0);
+    World_DeleteEach(w_registry68d0c8, World_DestroyName);
+    Copy32((const DWORD*)w_registry68d0c8[1], (const DWORD*)w_registry68d0c8[1], (DWORD*)w_registry68d0c8[0]);
+    w_registry68d0c8[1] = w_registry68d0c8[0];
+    Hash_Clear((HashTable*)&w_hash68cf10, 0);
+    World_DeleteEach(w_edges68cf38, World_DestroyEdge);
+    Copy32((const DWORD*)w_edges68cf38[1], (const DWORD*)w_edges68cf38[1], (DWORD*)w_edges68cf38[0]);
+    w_edges68cf38[1] = w_edges68cf38[0];
+    BYTE** t = w_templates68ccb8;
+    BYTE* end = t[1];
+    for (BYTE* r = Rec104_Copy(end, end, t[0]); r != end; r += 104)
+        Mult46c8e0_DeletingDestructor(r, 0, 0);
+    t[1] = t[1] - (int)(end - t[0]) / 104 * 104;
+    BYTE** m = w_mults68cc08;
+    end = m[1];
+    for (BYTE* r = Rec24_Copy(end, end, m[0]); r != end; r += 24)
+        Mult46c920_DeletingDestructor(r, 0, 0);
+    m[1] = m[1] - (int)(end - m[0]) / 24 * 24;
+    CallC(FUN_5e48f0);
+}
+
+// ---------------------------------------------------------------------------
+// merchandise flags
+
+// [FUN_40b4a0] the flags of a merchandise: a number as it is, or a list of the words formafia (2), fuel (4),
+// illegal (1), cars (8) and trucks (16)
+extern "C" int __cdecl Ai_MerchandiseFlags(StrRef h)
+{
+    int flags = 0;
+    BYTE type = (BYTE)h.flags;
+    if (type == 6) {
+        int r = CallThis<int>(FUN_4b0ea0, h.ptr);
+        CallThis(FUN_4a36c0, &h);
+        return r;
+    }
+    if (type == 2) {
+        do {
+            if (Head_Is(&h, "formafia"))
+                flags |= 2;
+            else if (Head_Is(&h, "fuel"))
+                flags |= 4;
+            else if (Head_Is(&h, "illegal"))
+                flags |= 1;
+            else if (Head_Is(&h, "cars"))
+                flags |= 8;
+            else if (Head_Is(&h, "trucks"))
+                flags |= 16;
+            else {
+                StrRef m;
+                Str_Member20(&m, &h);
+                const char* text = &g_aiEmpty;
+                StrRef t;
+                bool have = (BYTE)m.flags == 9;
+                if (have) {
+                    Str_Member20(&t, &h);
+                    text = F(const char*, t.ptr, 12);
+                }
+                AiError(0, 1, s_mainFile, s_mainId, 2648, "Undefined merchandise flag (see merchandise.sch):", text,
+                        &g_aiEmpty);
+                if (have)
+                    CallThis(FUN_4a36c0, &t);
+                CallThis(FUN_4a36c0, &m);
+            }
+            List_Advance(&h);
+        } while ((BYTE)h.flags == 2);
+    }
+    CallThis(FUN_4a36c0, &h);
+    return flags;
 }
