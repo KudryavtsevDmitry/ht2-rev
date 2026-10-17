@@ -10683,7 +10683,7 @@ extern "C" PositionId* __cdecl Ai_GetNoncontradictoryPosition(PositionId* out, B
 
 ASM_PROC(FUN_417820)    // a player's arrival at a position (player, PositionId32)
 ASM_PROC(FUN_4194a0)
-ASM_PROC(FUN_416b80)
+extern "C" void FUN_416b80(); KING_ALIAS("_FUN_416b80", "_Ai_RaceNextCheckpoint")
 ASM_PROC(FUN_419760)
 ASM_PROC(FUN_4194e0)
 ASM_PROC(FUN_4185d0)
@@ -12796,4 +12796,652 @@ extern "C" void __cdecl Ai_AddCompetitor()
 leave:
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_addCompetitor);
+}
+
+// ---------------------------------------------------------------------------
+// provideNoncontradictoryPositions()
+
+ASM_VAR(AsmLabel, s_provideNoncontradictoryPositions, $L_66dc00)
+ASM_VAR(double, g_pushRange66c760, $L_66c760)
+
+// [FUN_42a4b0] provideNoncontradictoryPositions: players on the same road and side closer than the range push
+// each other apart (plus a little noise); each one not at its target moves one step forward or back along its
+// tangent by the push
+extern "C" void __cdecl Ai_ProvideNoncontradictoryPositions()
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_provideNoncontradictoryPositions);
+    BYTE* list[512];
+    DVec3 push[512];
+    DVec3 at[512];
+    unsigned n = 0;
+    PlayerListNode* head = (PlayerListNode*)g_players;
+    for (PlayerListNode* it = head->next; it != head; it = it->next) {
+        if (!Player_OfIt(it))
+            continue;
+        BYTE* p = Player_OfIt(it);
+        if (F(int, p, 876) == 4096 && F(int, p, 84) != 1)
+            continue;
+        if (Player_AtTarget(p) & 0xff)
+            continue;
+        list[n++] = p;
+    }
+    for (unsigned i = 0; i < n; i++) {
+        BYTE* p = list[i];
+        at[i] = *(DVec3*)(p + ((F(BYTE, p, 88) & 1) ? 616 : 304));
+        push[i].x = push[i].y = push[i].z = 0;
+    }
+    for (unsigned i = 0; i < n; i++)
+        for (unsigned j = 0; (int)i > 0 && j < i; j++) {
+            BYTE* a = list[j];
+            BYTE* b = list[i];
+            if (F(int, b, 876) != F(int, a, 876))
+                continue;
+            if ((F(int, a, 56) ^ F(int, b, 56)) & 1)
+                continue;
+            DVec3 d;
+            d.x = at[i].x - at[j].x;
+            d.y = at[i].y - at[j].y;
+            d.z = at[i].z - at[j].z;
+            double len = x87_sqrt((d.x * d.x + d.y * d.y) + d.z * d.z);
+            if (!(len < g_pushRange66c760))
+                continue;
+            if (len > 1e-06) {
+                double inv = 1.0 / len;
+                d.x = inv * d.x;
+                d.y = d.y * inv;
+                d.z = d.z * inv;
+            }
+            AiRandom();
+            AiRandom();
+            double r = (double)(AiRandom() % 100);
+            d.x = r * 1e-05 + d.x;
+            d.y = r * 1e-05 + d.y;
+            d.z = r * 1e-05 + d.z;
+            push[i].x = d.x + push[i].x;
+            push[i].y = d.y + push[i].y;
+            push[i].z = d.z + push[i].z;
+            push[j].x = push[j].x - d.x;
+            push[j].y = push[j].y - d.y;
+            push[j].z = push[j].z - d.z;
+        }
+    for (unsigned i = 0; i < n; i++) {
+        BYTE* p = list[i];
+        if (F(BYTE, p, 88) & 1)
+            continue;
+        if (Player_AtTarget(p) & 0xff)
+            continue;
+        DVec3 t;
+        Ai__GetTangent(&t, F(PositionId, p, 32));
+        double inv = 1.0 / x87_sqrt((t.x * t.x + t.y * t.y) + t.z * t.z);
+        t.x = inv * t.x;
+        t.y = t.y * inv;
+        t.z = t.z * inv;
+        double s = (push[i].z * t.z + push[i].x * t.x) + push[i].y * t.y;
+        if (s < 0.0)
+            s = -1.0;
+        else if (s > 0.0)
+            s = 1.0;
+        else if (s == 0.0)
+            continue;
+        Ai_AdvancePlayer(F(BYTE*, list[i], 96), &s);
+        DVec3 q;
+        at[i] = *Road_PointOf(&q, F(PositionId, list[i], 32));
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_provideNoncontradictoryPositions);
+}
+
+// ---------------------------------------------------------------------------
+// the race checkpoints
+
+extern "C" BYTE* __fastcall Vec12_Erase(BYTE* self, void*, BYTE* first, BYTE* last);   // ai_traffic.cpp
+typedef double RaceTimes[1];
+ASM_VAR(RaceTimes, g_raceTimes68cf70, $L_68cf70)
+
+// the route length from the player's position to its own node
+static double Race_CostToNode(BYTE* p)
+{
+    int node = *Player_NodeOf(&node, p);
+    double cost = 0;
+    PositionId to;
+    Position_InitNode(&to, 0, node);
+    CallC(FUN_486800, 0, F(PositionId, p, 40), to, &cost);
+    return cost;
+}
+
+// the distance from v to a node; the two orders of the sum
+static double Race_Dist1(const DVec3* v, int node)
+{
+    const DVec3* n = (const DVec3*)((BYTE*)g_roadNodes[node] + 48);
+    double x = v->x - n->x, y = v->y - n->y, z = v->z - n->z;
+    return x87_sqrt((y * y + z * z) + x * x);
+}
+
+static double Race_Dist2(const DVec3* v, int node)
+{
+    const DVec3* n = (const DVec3*)((BYTE*)g_roadNodes[node] + 48);
+    double x = v->x - n->x, y = v->y - n->y, z = v->z - n->z;
+    return x87_sqrt((x * x + y * y) + z * z);
+}
+
+// [FUN_416b80] a racer's next checkpoint: within 100 of one of the three it heads for the next (or, for the
+// other kind in this race mode, the previous) one; after 9 laps for its finish; sets the remaining time at +504
+extern "C" void __cdecl Ai_RaceNextCheckpoint(BYTE* p)
+{
+    double cost;
+    if (F(int, p, 724) > 9) {
+        cost = Race_CostToNode(p);
+    } else {
+        int c1, c2, c3;
+        Node_ByName(&c1, "check_point1");
+        Node_ByName(&c2, "check_point2");
+        Node_ByName(&c3, "check_point3");
+        DVec3 v;
+        Road_PointOf(&v, F(PositionId, p, 40));
+        bool forward = g_66c6e4 == 1 ? F(int, p, 92) != 7 : g_66c6e4 == 2 ? F(int, p, 92) == 7 : true;
+        int next = 0;
+        bool atCheckpoint = true;
+        if (forward) {
+            if (Race_Dist1(&v, c1) < 100.0)
+                next = c2;
+            else if (Race_Dist1(&v, c2) < 100.0)
+                next = c3;
+            else if (Race_Dist1(&v, c3) < 100.0)
+                next = c1;
+            else
+                atCheckpoint = false;
+        } else {
+            if (Race_Dist2(&v, c1) < 100.0)
+                next = c3;
+            else if (Race_Dist2(&v, c2) < 100.0)
+                next = c1;
+            else if (Race_Dist1(&v, c3) < 100.0)
+                next = c2;
+            else
+                atCheckpoint = false;
+        }
+        if (!atCheckpoint) {
+            cost = Race_CostToNode(p);
+        } else {
+            if (F(int, p, 724) == 9) {
+                char name[80];
+                sprintf(name, "finish%d_%d", g_66c6e4, F(int, p, 728) + 1);
+                int f;
+                next = *Node_ByName(&f, name);
+            }
+            Hop* b = F(Hop*, p, 24);
+            Hop* e = F(Hop*, p, 28);
+            if (b != e && e[-1].node == next)
+                cost = Race_CostToNode(p);
+            else {
+                Vec12_Erase(p + 24, 0, (BYTE*)b, (BYTE*)e);
+                F(BYTE, p, 872) = 1;
+                PositionId to;
+                Position_InitNode(&to, 0, next);
+                Player_GoTo(p, to, 1);
+                cost = Race_CostToNode(p);
+                F(int, p, 724)++;
+            }
+        }
+    }
+    F(double, p, 504) = -cost - g_raceTimes68cf70[F(int, p, 724)];
+}
+
+// ---------------------------------------------------------------------------
+// getOrientationSmoothed(PlayerId player, PositionId pos)
+
+ASM_PROC(FUN_439a70)    // getOrientation (out, PositionId32)
+ASM_VAR(AsmLabel, s_getOrientationSmoothed, $L_66e700)
+ASM_VAR(AsmLabel, s_invalidPositionId, $L_66cbe0)
+
+// [FUN_439ce0] getOrientationSmoothed: the orientation at pos with its heading averaged over up to 15 steps
+// back and ahead along the player's route
+extern "C" BYTE* __cdecl Ai_GetOrientationSmoothed(BYTE* out, BYTE* player, PositionId pos)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_getOrientationSmoothed);
+    PositionId cur = pos;
+    if (!PositionValid(&cur)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, pos.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 15422, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    if (ValidRoad(pos.road)) {
+        RoadEdge* e = g_roadEdges[pos.road];
+        if (pos.object >= e->objectsEnd - e->objects || pos.segment >= CallVirt<int>(e->objects[pos.object], 24))
+            AiError(33, 100, s_mainFile, s_mainId, 15422, s_invalidPositionId, &g_aiEmpty, &g_aiEmpty);
+    }
+    if (player != (BYTE*)g_players) {
+        if (Player_NotValid(player)) {
+            sprintf(g_numberText, "()");
+            AiError(33, 100, s_mainFile, s_mainId, 15425, s_invalidId, "PlayerId", g_numberText);
+        }
+    }
+    if (player == (BYTE*)g_players || (Player_AtTargetOf(player) & 0xff)) {
+        CallC(FUN_439a70, out, pos);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_getOrientationSmoothed);
+        return out;
+    }
+    int steps = 15;
+    double step = 15.1;
+    PositionId tmp;
+    Player_StepFrom(&tmp, player, &pos, &step);
+    if (!(step == 0.0)) {
+        double x = 15.0 - step;
+        if (15.0 > x)
+            steps = (int)x;
+    }
+    step = -15.1;
+    Player_StepFrom(&tmp, player, &pos, &step);
+    if (!(step == 0.0)) {
+        double x = step + 15.0;
+        if ((double)steps > x)
+            steps = (int)x;
+    }
+    if (steps <= 0) {
+        CallC(FUN_439a70, out, pos);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_getOrientationSmoothed);
+        return out;
+    }
+    DVec3 at, t;
+    Road_PointOf(&at, pos);
+    Ai__GetTangent(&t, pos);
+    DVec3 sum = t;
+    double ring[72];
+    int head = 36, tail = 37;
+    ring[36] = x87_atan2(t.y, t.x);
+    for (int back = 0; back < 2; back++) {
+        cur = pos;
+        if (steps <= 1)
+            continue;
+        double dir = back ? -1 : 1;
+        for (int i = 1; i < steps; i++) {
+            double s = dir;
+            PositionId next;
+            cur = *Player_StepFrom(&next, player, &cur, &s);
+            if (!(s == 0.0))
+                break;
+            DVec3 u;
+            Ai__GetTangent(&u, cur);
+            sum.x = sum.x + u.x;
+            sum.y = u.y + sum.y;
+            sum.z = u.z + sum.z;
+            double a = x87_atan2(u.y, u.x);
+            if (!back)
+                ring[tail++] = a;
+            else
+                ring[--head] = a;
+        }
+    }
+    double avg = ring[head];
+    double k = 1.0;
+    for (int j = head + 1; j != tail; j++) {
+        double a = ring[j];
+        k = k + 1.0;
+        double lim = avg + 0.01;
+        while (a + 3.141592653589793 < lim)
+            a = a + 6.283185307179586;
+        while (!(a - 3.141592653589793 <= lim))
+            a = a - 6.283185307179586;
+        avg = (avg * (k - 1.0) + a) / k;
+    }
+    if (head + 1 == tail || !(k == 0.0)) {
+        double inv = 1.0 / x87_sqrt((sum.x * sum.x + sum.y * sum.y) + sum.z * sum.z);
+        sum.z = sum.z * inv;
+    }
+    double c = x87_cos(avg), s = x87_sin(avg);
+    double inv = 1.0 / x87_sqrt((c * c + s * s) + sum.z * sum.z);
+    DVec3 d;
+    d.x = inv * c;
+    d.y = s * inv;
+    d.z = sum.z;
+    CallC(FUN_4397e0, out, &at, &d);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getOrientationSmoothed);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// updateNavigator(PlayerId player)
+
+ASM_PROC(FUN_4858b0)    // the route between two positions (out hops, side, PositionId32 from, PositionId32 to, double* cost)
+extern "C" BYTE* __cdecl Copy12s(const BYTE* first, const BYTE* last, BYTE* dest);           // ai_containers.cpp
+extern "C" void* __cdecl Stl_UninitCopy12(const void* f, const void* l, void* d);             // road_graph.cpp
+extern "C" void __cdecl Road_OrientHops(HopVec* hops);                                        // route_search.cpp
+extern "C" DVec3* __cdecl DVec3_Cross(DVec3* out, const DVec3* a, const DVec3* b);            // route_search.cpp
+extern "C" double __fastcall Filter2_Update(void* self, void*, double x);                     // route_search.cpp
+ASM_VAR(AsmLabel, s_updateNavigator, $L_66db44)
+ASM_VAR(double, g_navigatorBand66c750, $L_66c750)
+
+// v = src for vectors of 12-byte records
+static void Hops_Assign(BYTE** v, BYTE* const* src)
+{
+    BYTE* first = src[0];
+    BYTE* last = src[1];
+    int n = (int)(last - first) / 12;
+    unsigned cap = (int)(v[2] - v[0]) / 12;
+    if ((unsigned)n > cap) {
+        BYTE* p = Vec12b_AllocCopyA(n, first, last);
+        if (cap)
+            Ai_PoolFree(v[0], cap * 12);
+        v[0] = p;
+        v[2] = p + n * 12;
+    } else {
+        int have = (int)(v[1] - v[0]) / 12;
+        if ((unsigned)have >= (unsigned)n)
+            Copy12s(first, last, v[0]);
+        else {
+            Copy12s(first, first + have * 12, v[0]);
+            Stl_UninitCopy12(src[0] + (int)(v[1] - v[0]) / 12 * 12, src[1], v[1]);
+        }
+    }
+    v[1] = v[0] + n * 12;
+}
+
+static double Dist3(const DVec3* a, const BYTE* p)
+{
+    double x = a->x - F(double, p, 624), y = a->y - F(double, p, 632), z = a->z - F(double, p, 640);
+    return x87_sqrt((x * x + y * y) + z * z);
+}
+
+// [FUN_4289e0] updateNavigator: the turn the navigator shows (1 ahead, 2 back, 3 and 4 the two sides, 0 none):
+// the player's route (or the one to its goods' town) is followed from the navigator position until it turns
+// off the heading, and that angle is filtered
+extern "C" int __cdecl Ai_UpdateNavigator(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_updateNavigator);
+    BYTE** v = (BYTE**)(p + 648);
+    bool none = (!Player_FirstGoods(p + 8) && F(BYTE*, p, 24) == F(BYTE*, p, 28)) || !(F(DWORD, p, 96) & 0x2000)
+                || F(int, p, 100) == 5;
+    PositionId at = F(PositionId, p, 816);
+    if (!none) {
+        DVec3 r;
+        Road_PointOf(&r, at);
+        none = !(Dist3(&r, p) <= 100.0);
+    }
+    if (!none) {
+        if (F(BYTE*, p, 24) == F(BYTE*, p, 28)) {
+            int town;
+            Town_Id(&town, (BYTE*)g_townsBegin[F(int, Player_FirstGoods(p + 8), 12)]);
+            PositionId to;
+            PositionInit(&to, town);
+            BYTE* route[3];
+            double cost = 0;
+            BYTE** res = CallC<BYTE**>(FUN_4858b0, route, 0, at, to, &cost);
+            if (res != v)
+                Hops_Assign(v, res);
+            Vec12_Free(route, 0);
+            Road_OrientHops((HopVec*)v);
+        } else
+            Hops_Assign(v, (BYTE* const*)(p + 24));
+        none = v[0] == v[1];
+    }
+    if (none) {
+        F(int, p, 660) = 0;
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_updateNavigator);
+        return 0;
+    }
+    if (F(BYTE, v[0], 8) & 1)
+        at.m_24 |= 1;
+    else
+        at.m_24 &= ~1;
+    DVec3 dir = *(DVec3*)(p + 576);
+    dir.z = 0;
+    double inv = 1.0 / x87_sqrt(dir.y * dir.y + dir.x * dir.x);
+    dir.x = inv * dir.x;
+    dir.y = dir.y * inv;
+    double ang;
+    for (int k = 0;; k++) {
+        double step = k ? 10 : 20;
+        PositionId next;
+        at = *Ai_AdvancePositionHops(&next, (HopVec*)v, at, &step);
+        DVec3 r;
+        Road_PointOf(&r, at);
+        DVec3 d;
+        d.x = r.x - F(double, p, 624);
+        d.y = r.y - F(double, p, 632);
+        d.z = 0;
+        double dinv = 1.0 / x87_sqrt(d.x * d.x + d.y * d.y);
+        d.x = dinv * d.x;
+        d.y = d.y * dinv;
+        DVec3 c;
+        DVec3_Cross(&c, &d, &dir);
+        double cz = c.z;
+        ang = x87_acos((d.z * dir.z + d.y * dir.y) + d.x * dir.x);
+        if (cz < 0.0)
+            ang = -ang;
+        if (x87_fabs(ang) > 0.39269908169872414 || k + 1 >= 14)
+            break;
+    }
+    double last = F(double, p, 664);
+    while (ang - 3.141592653589793 > last)
+        ang = ang - 6.283185307179586;
+    while (ang + 3.141592653589793 < last)
+        ang = ang + 6.283185307179586;
+    F(double, p, 664) = ang;
+    double f = Filter2_Update(p + 672, 0, ang);
+    if (f - g_navigatorBand66c750 > F(double, p, 712))
+        F(double, p, 712) = f - g_navigatorBand66c750;
+    if (f + g_navigatorBand66c750 < F(double, p, 712))
+        F(double, p, 712) = f + g_navigatorBand66c750;
+    double h = F(double, p, 712);
+    while (h > 3.141592653589793)
+        h = h - 6.283185307179586;
+    while (h < -3.141592653589793)
+        h = h + 6.283185307179586;
+    if (x87_fabs(h) > 2.356194490192345)
+        F(int, p, 660) = 2;
+    else if (!(x87_fabs(h) > 0.39269908169872414))
+        F(int, p, 660) = 1;
+    else
+        F(int, p, 660) = h < 0.0 ? 3 : 4;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_updateNavigator);
+    return F(int, p, 660);
+}
+
+// ---------------------------------------------------------------------------
+// offerBribe(PlayerId giver, PlayerId taker, unsigned long int flags)
+
+ASM_PROC(FUN_431420)    // (out int*)
+ASM_PROC(FUN_40a690)    // (int by value)
+ASM_PROC(FUN_40aa00)    // (int by value)
+ASM_PROC(FUN_4452c0)    // (player)
+extern "C" void __fastcall Rec4725e0_Init(BYTE* self, void*);   // ai_drivers.cpp
+extern "C" BYTE* __fastcall Bribe_Construct(BYTE* s, void*, int a);
+ASM_VAR(AsmLabel, s_offerBribe, $L_66e074)
+ASM_VAR(double, g_bribeFine66c770, $L_66c770)
+ASM_VAR(double, g_bribeFine66c778, $L_66c778)
+ASM_VAR(double, g_bribeFine66c780, $L_66c780)
+ASM_VAR(double, g_bribeChance66c788, $L_66c788)
+ASM_VAR(BYTE*, g_places68a958c, $L_68a958)
+
+static int OfferBribe_Leave(int r)
+{
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_offerBribe);
+    return r;
+}
+
+// [FUN_432560] offerBribe: 1 when the taker refuses the sum (queryBribeSum), else by the taker's kind: police take
+// it (or fine the giver), 2 when the bribe is not possible, 4 when an inspector refused
+extern "C" int __cdecl Ai_OfferBribe(BYTE* giver, BYTE* taker, unsigned flags)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_offerBribe);
+    if (Player_NotValid(giver)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 13092, s_invalidId, "PlayerId", g_numberText);
+    }
+    if (Player_NotValid(taker)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 13093, s_invalidId, "PlayerId", g_numberText);
+    }
+    double sum = 0;
+    if (Ai_QueryBribeSum(giver, taker, flags, &sum) == 1)
+        return OfferBribe_Leave(1);
+    BYTE flagsGot = Player_UpdateFlagsGet(taker);
+    switch (F(int, taker, 92)) {
+    case 5:
+        if (Player_HasPlaceFlag1(taker + 8) & 0xff) {
+            F(double, giver, 136) -= sum;
+            Player_CheckBankrupt(giver);
+            if (flags & 1) {
+                Rec4725b0_Init(giver + 200, 0);
+                AI_LightsOff2();
+                Player_UpdateFlags(giver);
+                F(DWORD, giver, 96) |= 0x800000;
+            }
+            if (flags & 2) {
+                Rec4725e0_Init(giver + 200, 0);
+                Player_UpdateFlags(giver);
+                F(DWORD, giver, 96) |= 0x100000;
+            }
+            if (flags & 4) {
+                int t;
+                CallC(FUN_431420, &t);
+                CallC(FUN_40a690, t);
+            }
+            return OfferBribe_Leave(0);
+        } else {
+            double x = 0.0;
+            if (flags & 1)
+                x = g_bribeFine66c770;
+            if (flags & 2)
+                x = x + g_bribeFine66c778;
+            if (flags & 4)
+                x = x + g_bribeFine66c780;
+            F(double, giver, 256) = x + F(double, giver, 256);
+            BYTE* o = (BYTE*)operator new(56);
+            BYTE* task = o ? Bribe_Construct(o, 0, (int)giver) : 0;
+            BYTE* end;
+            SchList_End((BYTE**)&g_68b99c, 0, &end);
+            BYTE* it;
+            ListB_Insert(&g_68b99c, 0, &it, (BYTE**)end, &task);
+            return OfferBribe_Leave(2);
+        }
+    case 6: {
+        F(double, giver, 136) -= sum;
+        Player_CheckBankrupt(giver);
+        double chance = g_bribeChance66c788;
+        unsigned r = Rng_Random(g_rng68b9c8, 0, 1000000);
+        if (!(chance * 1000000.0 > (double)r))
+            return OfferBribe_Leave(4);
+        if (flags & 8)
+            F(DWORD, giver, 96) |= 0x100000;
+        if (flags & 4) {
+            int t;
+            CallC(FUN_431420, &t);
+            CallC(FUN_40aa00, t);
+        }
+        return OfferBribe_Leave(0);
+    }
+    case 2:
+        F(double, giver, 136) -= sum;
+        Player_CheckBankrupt(giver);
+        if (flags & 32)
+            F(DWORD, taker, 96) |= 0x1000000;
+        if (flags & 16) {
+            CallC(FUN_4452c0, taker);
+            if (flagsGot) {
+                g_68d15c--;
+                Player_Leave(taker, 0);
+            }
+        }
+        return OfferBribe_Leave(0);
+    case 7:
+    case 8:
+    case 9:
+        if (!(flags & 64))
+            return OfferBribe_Leave(0);
+        if (F(int, g_places68a958c + F(int, taker, 992) * 56, 0) == 2 || Player_UpdateFlagsGet(taker))
+            return OfferBribe_Leave(2);
+        return OfferBribe_Leave(0);
+    default:
+        return OfferBribe_Leave(2);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// onModuleLoadX(char const * moduleName)
+
+extern "C" int __cdecl AI_Level3();          // route_search.cpp
+extern "C" int __cdecl AI_TruckInRange();    // route_search.cpp
+extern "C" int __cdecl AI_TruckGripLow();    // route_search.cpp
+extern "C" void __cdecl updateSwitch(const char* moduleName, const char* switchName, int v);   // ai_task.cpp
+ASM_VAR(AsmLabel, s_onModuleLoadX, $L_66dc24)
+ASM_VAR(BYTE**, g_switches68ceb0, $L_68ceb0)
+ASM_VAR(BYTE**, g_switches68ceb4, $L_68ceb4)
+
+// whether a switch record belongs to the module (its id names the module)
+static bool Switch_InModule(BYTE* e, const char* name)
+{
+    int id = *(int*)(e ? e + 12 : 0);
+    if (id == -1)
+        return false;
+    BYTE** s = (BYTE**)g_registry24[id];
+    return strcmp(s[0] != s[1] ? (const char*)s[0] : 0, name) == 0;
+}
+
+// a chance at +40 against the AI generator
+static bool Switch_Chance(BYTE* e)
+{
+    double c = F(double, e, 40);
+    unsigned r = Rng_Random(g_rng68b9c8, 0, 1000000);
+    return c * 1000000.0 > (double)r;
+}
+
+// [FUN_42aba0] onModuleLoadX: the switches of a loaded module are updated; random ones (by kind, at the third
+// level) are set by chance first
+extern "C" int __cdecl Ai_OnModuleLoadX(const char* name)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_onModuleLoadX);
+    for (void** it = g_68cc18; it != g_68cc1c; it++) {
+        BYTE* e = (BYTE*)*it;
+        if (Switch_InModule(e, name))
+            Obj_483c10(e ? e + 12 : 0);
+    }
+    if (AI_Level3() & 0xff) {
+        for (BYTE** it = g_switches68ceb0; it != g_switches68ceb4; it++) {
+            BYTE* e = *it;
+            if (!Switch_InModule(e, name))
+                continue;
+            switch (F(int, e, 32)) {
+            case 1:
+            case 3:
+                F(BYTE, *it, 28) = (F(int, e, 32) == 1 || (AI_TruckGripLow() & 0xff)) && Switch_Chance(*it);
+                break;
+            case 2:
+                F(BYTE, *it, 28) = (AI_TruckInRange() & 0xff) && Switch_Chance(*it);
+                break;
+            case 4:
+                F(BYTE, *it, 28) = (AI_TruckInRange() & 0xff) && (AI_TruckGripLow() & 0xff) && Switch_Chance(*it);
+                break;
+            }
+            Obj_483c10(*it ? *it + 12 : 0);
+        }
+    } else {
+        for (BYTE** it = g_switches68ceb0; it != g_switches68ceb4; it++) {
+            BYTE* e = *it;
+            if (!Switch_InModule(e, name))
+                continue;
+            F(BYTE, e, 28) = 0;
+            Obj_483c10(*it ? *it + 12 : 0);
+        }
+    }
+    for (void** it = g_68a970; it != g_68a974; it++) {
+        BYTE* e = (BYTE*)*it;
+        if (Switch_InModule(e, name))
+            Obj_483c10(e ? e + 12 : 0);
+    }
+    if (_stricmp(name, "dr") == 0)
+        updateSwitch(name, "StartKey", g_66c6e4 != 1);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_onModuleLoadX);
+    return 0;
 }
