@@ -1136,6 +1136,10 @@ PUBLIC $L_66e9c4
 PUBLIC $L_66dfc8, $L_68a990, $L_77e4e0
 PUBLIC $L_66eaa8, $L_66e984
 PUBLIC $L_66c6b0, $L_66d9a8, $L_68d114
+PUBLIC $L_66c760, $L_66cbe0, $L_66dc00, $L_66e700, $L_68cf70
+PUBLIC $L_66c750, $L_66db44
+PUBLIC $L_66c770, $L_66c778, $L_66c780, $L_66c788, $L_66e074
+PUBLIC $L_66dc24, $L_68ceb4
 
 ;===================================
 _TEXT SEGMENT
@@ -39157,6 +39161,8 @@ $L_416b70::
             ret 
 FUN_4165f0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_416b80 PROC
 
             push EBP
@@ -39738,6 +39744,10 @@ $L_417182::
             pop EBP
             ret 
 FUN_416b80 ENDP
+ELSE
+EXTERN _Ai_RaceNextCheckpoint:PROC
+FUN_416b80 TEXTEQU <_Ai_RaceNextCheckpoint>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -67913,6 +67923,8 @@ FUN_4287b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4289e0 PROC
 
             push EBP
@@ -68779,6 +68791,10 @@ $L_42931d::
             pop EBP
             ret 
 FUN_4289e0 ENDP
+ELSE
+EXTERN _Ai_UpdateNavigator:PROC
+FUN_4289e0 TEXTEQU <_Ai_UpdateNavigator>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -70772,6 +70788,8 @@ $L_42a120 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42a4b0 PROC
 
             push EBP
@@ -71298,6 +71316,10 @@ $L_42ab63::
             pop EBP
             ret 
 FUN_42a4b0 ENDP
+ELSE
+EXTERN _Ai_ProvideNoncontradictoryPositions:PROC
+FUN_42a4b0 TEXTEQU <_Ai_ProvideNoncontradictoryPositions>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -71306,6 +71328,8 @@ FUN_42a4b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42aba0 PROC
 
             push -1
@@ -71885,6 +71909,10 @@ $L_42b050           DWORD $L_42ad18
           DWORD $L_42ad47
           DWORD $L_42ad89
           DWORD $L_42ade8
+ELSE
+EXTERN _Ai_OnModuleLoadX:PROC
+FUN_42aba0 TEXTEQU <_Ai_OnModuleLoadX>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -84440,6 +84468,8 @@ FUN_4315f0 TEXTEQU <_Ai_QueryBribeSum>
 ENDIF
 ALIGN 16
 
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_432560 PROC
             push    0FFFFFFFFh
             push    OFFSET $L_63deb3
@@ -85176,6 +85206,10 @@ $L_432d24           DWORD $L_4329cb
             nop
             nop
 FUN_432560 ENDP
+ELSE
+EXTERN _Ai_OfferBribe:PROC
+FUN_432560 TEXTEQU <_Ai_OfferBribe>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -96179,6 +96213,8 @@ $L_439ccc::
             ret 
 FUN_439a70 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_439ce0 PROC
 
             push EBP
@@ -96890,6 +96926,10 @@ $L_43a482::
             pop EBP
             ret 
 FUN_439ce0 ENDP
+ELSE
+EXTERN _Ai_GetOrientationSmoothed:PROC
+FUN_439ce0 TEXTEQU <_Ai_GetOrientationSmoothed>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
