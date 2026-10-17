@@ -12355,24 +12355,10 @@ extern "C" BYTE* __cdecl Ai_CreatePlayerDescr(int type, StrRef h)
 
 ASM_VAR(AsmLabel, s_findPlayerPosition, $L_66e9c4)
 
-// [FUN_43d1f0] the position on the hops closest to v: the approximate position's road is searched first, any
-// hop closer than 1.5 times (plus 10) that distance wins; at the last hop's node when within 0.1 of it
-extern "C" PositionId* __cdecl Ai_FindPlayerPosition(PositionId* out, HopVec* hops, PositionId approx, const DVec3* v)
+// the position on the hops closest to v: the approximate position's road is searched first, any hop closer
+// than 1.5 times (plus 10) that distance wins; at the last node (of the hops, or of the player p) when within 0.1
+static void PlayerPosition_Find(PositionId* res, HopVec* hops, PositionId approx, const DVec3* v, BYTE* p, int line)
 {
-    Buf_Append(&g_trace, 0, g_tagArt, 8);
-    Buf_AppendString(&g_trace, 0, s_findPlayerPosition);
-    if (hops->end - hops->begin == 1) {
-        out->road = -1;
-        out->node = hops->end[-1].node;
-        out->t = 0;
-        out->segment = 0;
-        out->object = 0;
-        out->m_24 = 0;
-        out->m_28 = -1;
-        Buf_Append(&g_trace, 0, g_tagMpl, 8);
-        Buf_AppendString(&g_trace, 0, s_findPlayerPosition);
-        return out;
-    }
     double md = 1.7976931348623157e308, d = 0;
     int seg = 0, best = 0;
     PositionId r;
@@ -12448,21 +12434,166 @@ extern "C" PositionId* __cdecl Ai_FindPlayerPosition(PositionId* out, HopVec* ho
         r = *CallC<PositionId*>(FUN_436900, tmp, v);
     }
     if (hops->begin != hops->end) {
-        int last = hops->end[-1].node;
+        int last = p ? *Player_NodeOf(&last, p) : hops->end[-1].node;
         const DVec3* n = (const DVec3*)((BYTE*)g_roadNodes[last] + 48);
-        DVec3 p;
-        const DVec3* q = Road_PointOf(&p, r);
+        DVec3 pt;
+        const DVec3* q = Road_PointOf(&pt, r);
         double dx = q->x - n->x, dy = q->y - n->y, dz = q->z - n->z;
         if (0.1 > x87_sqrt((dx * dx + dy * dy) + dz * dz))
-            r.node = hops->end[-1].node;
+            r.node = p ? *Player_NodeOf(&last, p) : hops->end[-1].node;
     }
     PositionId chk = r;
     if (!PositionValid(&chk)) {
         sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", r.road, r.t, r.segment, r.object, r.m_24);
-        AiError(33, 100, s_mainFile, s_mainId, 16145, s_invalidId, "PositionId", g_positionText77e6e0);
+        AiError(33, 100, s_mainFile, s_mainId, line, s_invalidId, "PositionId", g_positionText77e6e0);
     }
-    *out = r;
+    *res = r;
+}
+
+// [FUN_43d1f0]
+extern "C" PositionId* __cdecl Ai_FindPlayerPosition(PositionId* out, HopVec* hops, PositionId approx, const DVec3* v)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_findPlayerPosition);
+    if (hops->end - hops->begin == 1) {
+        PositionInit(out, hops->end[-1].node);
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_findPlayerPosition);
+        return out;
+    }
+    PlayerPosition_Find(out, hops, approx, v, 0, 16145);
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_findPlayerPosition);
     return out;
+}
+
+ASM_VAR(AsmLabel, s_setPlayerPosition, $L_66eaa8)
+extern "C" void __fastcall Player_SetPosition(void* self, void*, const PositionId* p);  // ai_drivers.cpp
+
+// [FUN_43dc60] setPlayerPosition: the player's position on its hops closest to v
+extern "C" void __cdecl Ai_SetPlayerPosition(BYTE* p, const DVec3* v)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_setPlayerPosition);
+    HopVec* hops = (HopVec*)(p + 24);
+    PositionId r;
+    if (hops->end - hops->begin == 1) {
+        PositionInit(&r, hops->end[-1].node);
+        Player_SetPosition(p + 8, 0, &r);
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_setPlayerPosition);
+        return;
+    }
+    PlayerPosition_Find(&r, hops, F(PositionId, p, 40), v, p, 16290);
+    Player_SetPosition(p + 8, 0, &r);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_setPlayerPosition);
+}
+
+// ---------------------------------------------------------------------------
+// cleanBeforeLaw(PlayerId player)
+
+ASM_PROC(FUN_444f80)    // (player)
+extern "C" void __cdecl Player_UpdateFlags(BYTE* p);            // ai_drivers.cpp
+extern "C" void __fastcall Rec4725b0_Init(BYTE* self, void*);   // ai_drivers.cpp
+ASM_VAR(AsmLabel, s_cleanBeforeLaw, $L_66dfc8)
+typedef char FineText[256];
+ASM_VAR(FineText, g_fineText68a990, $L_68a990)
+typedef char FineLine[256];
+ASM_VAR(FineLine, g_fineLine77e4e0, $L_77e4e0)
+
+// one line of the fines message: the text of the id with the amount
+static void Fine_AppendLine(const char* id, double amount)
+{
+    sprintf(g_fineLine77e4e0, Message_Text(id), amount);
+    strncat(g_fineLine77e4e0, "\n", 256);
+    strcat(g_fineText68a990, g_fineLine77e4e0);
+}
+
+// one fine: the banner (event) of the human player, or a line of the message
+static void Fine_Add(int count, double* total, double amount, int event, const char* id)
+{
+    *total += amount;
+    if (count == 1) {
+        AI_AddToBanner(*total);
+        eventBanner(event, 0);
+    } else
+        Fine_AppendLine(id, amount);
+}
+
+// [FUN_430a80] cleanBeforeLaw: the player pays its fines (goods, accident, speeding, red light, bribery, stolen
+// vehicle), shown as banners or as one message, then its state is cleaned up
+extern "C" int __cdecl Ai_CleanBeforeLaw(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_cleanBeforeLaw);
+    if (Player_NotValid(p)) {
+        sprintf(g_numberText, "()");
+        AiError(33, 100, s_mainFile, s_mainId, 12684, s_invalidId, "PlayerId", g_numberText);
+    }
+    BYTE* f = p + 200;
+    int count = AI_CountSet(f);
+    if (!count) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_cleanBeforeLaw);
+        return 0;
+    }
+    g_fineText68a990[0] = 0;
+    double total = 0;
+    if (*f) {
+        double x = Player_OrdersValue(p);
+        total = x;
+        if (count == 1) {
+            AI_AddToBanner(total);
+            eventBanner(9, 0);
+        } else
+            Fine_AppendLine("FINE_IM", x);
+    }
+    if (F(double, p, 208) > 0) {
+        double x = F(double, f, 8);
+        total += x;
+        if (count == 1) {
+            AI_AddToBanner(total);
+            Fine_ViolationText(f, g_fineText68a990);
+            eventBanner(14, g_fineText68a990);
+        } else
+            Fine_AppendLine("FINE_ACCIDENT", x);
+    }
+    if (F(double, p, 240) > 0)
+        Fine_Add(count, &total, F(double, p, 240), 10, "FINE_SPEEDING");
+    if (F(double, p, 248) > 0)
+        Fine_Add(count, &total, F(double, p, 248), 12, "FINE_RED_LIGHT");
+    if (F(double, p, 256) > 0)
+        Fine_Add(count, &total, F(double, p, 256), 11, "FINE_BRIBERY");
+    if (F(BYTE, p, 264)) {
+        double x = 0;
+        BYTE* o = F(BYTE*, p, 516);
+        if (o && F(int, o, 4) != -1) {
+            x = F(double, (BYTE*)g_vehicles[F(int, o, 4)], 48) * 0.8;
+            F(DWORD, o, 40) &= ~2u;
+            total += x;
+        }
+        if (count == 1) {
+            AI_AddToBanner(total);
+            eventBanner(13, 0);
+        } else
+            Fine_AppendLine("FINE_STOLEN", x);
+    }
+    if (count > 1) {
+        AI_AddToBanner(total);
+        eventBanner(15, g_fineText68a990);
+    }
+    if (total != 0)
+        F(double, p, 136) -= total;
+    CallC(FUN_444f80, p);
+    Rec4725b0_Init(p + 200, 0);
+    AI_LightsOff2();
+    Player_CheckGoods(p);
+    Players_Forget(p);
+    Player_CheckTownAA(p);
+    Player_UpdateFlags(p);
+    Player_CheckBankrupt(p);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_cleanBeforeLaw);
+    return 0;
 }
