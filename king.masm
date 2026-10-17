@@ -1129,6 +1129,7 @@ PUBLIC $L_66dde8
 PUBLIC $L_66f898
 PUBLIC $L_66c60a, $L_66c68c, $L_66c6d8, $L_66c6dc, $L_66c6f8, $L_66c700
 PUBLIC $L_66c710, $L_66f62a, $L_68d0ec, $L_68d134
+PUBLIC $L_64b680, $L_64b688, $L_66e7c8, $L_66e7e4, $L_66e800
 
 ;===================================
 _TEXT SEGMENT
@@ -13918,6 +13919,8 @@ $L_4073b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_407570 PROC
 
             push -1
@@ -14937,6 +14940,10 @@ $L_407ed4::
             add ESP,88
             ret 
 FUN_407570 ENDP
+ELSE
+EXTERN _Ai_ReadPlayerType:PROC
+FUN_407570 TEXTEQU <_Ai_ReadPlayerType>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -98450,6 +98457,8 @@ $L_43b548::
             nop
 FUN_43ade0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43b570 PROC
 
             push -1
@@ -99296,6 +99305,10 @@ $L_43beed::
             add ESP,272
             ret 
 FUN_43b570 ENDP
+ELSE
+EXTERN _Ai_AdvancePosition:PROC
+FUN_43b570 TEXTEQU <_Ai_AdvancePosition>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

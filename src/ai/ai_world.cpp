@@ -8932,7 +8932,7 @@ done:
 // ---------------------------------------------------------------------------
 // the world settings
 
-ASM_PROC(FUN_407570)    // reads a player type (arg, pair handle by value)
+extern "C" void FUN_407570(); KING_ALIAS("_FUN_407570", "_Ai_ReadPlayerType")    // reads a player type (arg, pair handle by value)
 ASM_VAR(double, g_startX68b9a0, $L_68b9a0)
 ASM_VAR(double, g_startY68b9a8, $L_68b9a8)
 ASM_VAR(double, g_startZ68b9b0, $L_68b9b0)
@@ -10528,7 +10528,7 @@ extern "C" BYTE* __cdecl Ai_ReadService(void* reader, StrRef h)
 // getNoncontradictoryPositionLong
 
 extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")    // a player's PositionId (out, player)
-ASM_PROC(FUN_43b570)    // a position moved along the road (out, players, data, PositionId32, double* step, int)
+extern "C" void FUN_43b570(); KING_ALIAS("_FUN_43b570", "_Ai_AdvancePosition")    // a position moved along the road (out, players, data, PositionId32, double* step, int)
 extern "C" void FUN_44a4c0(); KING_ALIAS("_FUN_44a4c0", "@Vec24_Reserve@16")
 extern "C" void FUN_4661d0(); KING_ALIAS("_FUN_4661d0", "_UninitFill24")
 extern "C" void FUN_44a500(); KING_ALIAS("_FUN_44a500", "@Vec24_Free@8")
@@ -11499,4 +11499,275 @@ extern "C" void __cdecl Ai_Reset()
         F(int, e, 28) = 0;
         F(int, e, 32) = 0;
     }
+}
+
+// ---------------------------------------------------------------------------
+// reading a player type of the world settings
+
+ASM_VAR(double, g_round64b658, $L_64b658)      // 0.001
+
+// the n-th element of the list, typed (left empty on a type error)
+static void Pt_NthTyped(StrRef* d, StrRef* h, int n, int type, const char* typeName)
+{
+    StrRef t;
+    List_Nth(&t, h, n);
+    d->ptr = 0;
+    d->len = 0;
+    d->flags = 0;
+    Ref_AssignTyped(d, &t, type, typeName);
+    Str_Release(&t);
+}
+
+// the number after the key (int, through the value object)
+static BYTE* Pt_KeyNumber(StrRef* num, StrRef* h)
+{
+    StrRef t, m;
+    Str_Member32Checked(&t, h);
+    Str_Member20(&m, &t);
+    NumberHandle_From((DWORD*)num, 0, (const DWORD*)&m);
+    CallThis(FUN_4a36c0, &m);
+    CallThis(FUN_4a36c0, &t);
+    return CallThis<BYTE*>(FUN_4aa430, num);
+}
+
+// the second element of the list into a string slot of the 68a840 table
+static void Pt_AssignSecond(int offset, StrRef* h)
+{
+    StrRef t;
+    List_Nth(&t, h, 2);
+    Str_AssignPair((StrRef*)(*(BYTE**)&g_init68a840 + offset), 0, &t);
+    CallThis(FUN_4a36c0, &t);
+}
+
+// [FUN_407570] reads a player type: (live number [truck name] [owner]), (aitruck number type),
+// (police/mafia number name), (ghost/dealer number)
+extern "C" void __cdecl Ai_ReadPlayerType(int, StrRef h)
+{
+    int* settings = (int*)g_68cf28;
+    if (Pair_HeadIs(&h, "live")) {
+        StrRef n, s, o;
+        Pt_NthTyped(&n, &h, 1, 6, "Number");
+        CheckHandle(&n);
+        settings[1] = CallThis<int>(FUN_4b0ea0, n.ptr);
+        Pt_NthTyped(&s, &h, 2, 3, "String");
+        if (s.flags || s.ptr) {
+            CheckHandle(&s);
+            strncpy(g_truckName66c60c, F(const char*, s.ptr, 12), 128);
+        }
+        Pt_NthTyped(&o, &h, 3, 6, "Number");
+        if (o.flags || o.ptr) {
+            CheckHandle(&o);
+            g_humanOwner68d148 = CallThis<int>(FUN_4b0ea0, o.ptr);
+        }
+        CallThis(FUN_4a36c0, &o);
+        CallThis(FUN_4a36c0, &s);
+        CallThis(FUN_4a36c0, &n);
+    }
+    if (Pair_HeadIs(&h, "aitruck")) {
+        StrRef t, m, n;
+        Str_Member32Checked(&t, &h);
+        Str_Member20(&m, &t);
+        n.ptr = 0;
+        n.len = 0;
+        n.flags = 0;
+        Ref_AssignTyped(&n, &m, 6, "Number");
+        Str_Release(&m);
+        Str_Release(&t);
+        CheckHandle(&n);
+        settings[2] = CallThis<int>(FUN_4b0ea0, n.ptr);
+        Pt_AssignSecond(24, &h);
+        CallThis(FUN_4a36c0, &n);
+    }
+    if (Pair_HeadIs(&h, "police")) {
+        StrRef num;
+        settings[5] = CallThis<int>(FUN_4b0ea0, Pt_KeyNumber(&num, &h));
+        Pt_AssignSecond(60, &h);
+        CallThis(FUN_4a36c0, &num);
+    }
+    if (Pair_HeadIs(&h, "mafia")) {
+        StrRef num;
+        settings[6] = CallThis<int>(FUN_4b0ea0, Pt_KeyNumber(&num, &h));
+        Pt_AssignSecond(72, &h);
+        CallThis(FUN_4a36c0, &num);
+    }
+    if (Pair_HeadIs(&h, "ghost")) {
+        StrRef num;
+        settings[8] = Ftol(CallThis<double>(FUN_4b0e90, Pt_KeyNumber(&num, &h)) + g_round64b658);
+        CallThis(FUN_4a36c0, &num);
+    }
+    if (Pair_HeadIs(&h, "dealer")) {
+        StrRef num;
+        settings[9] = Ftol(CallThis<double>(FUN_4b0e90, Pt_KeyNumber(&num, &h)) + g_round64b658);
+        CallThis(FUN_4a36c0, &num);
+    }
+    CallThis(FUN_4a36c0, &h);
+}
+
+// ---------------------------------------------------------------------------
+// advancePosition
+
+ASM_PROC(FUN_40b100)    // (playerid, node, 24-byte struct by value)
+ASM_PROC(FUN_43ab10)    // the hop index of a position (hops, PositionId32 by value)
+extern "C" PositionId* __cdecl Road_StartOf(PositionId* out, int road);
+extern "C" PositionId* __cdecl Road_EndOf(PositionId* out, int road);
+extern "C" void __cdecl Road_DumpHops(const HopVec* hops, const char* path);
+extern "C" BYTE* __cdecl Find12ByField0(BYTE* first, BYTE* last, int key);
+extern "C" PositionId* __cdecl Road_Advance(PositionId* out, PositionId pos, double* distance, int);
+ASM_VAR(double, g_tMin64b688, $L_64b688)        // -0.0002
+ASM_VAR(double, g_tMax64b680, $L_64b680)        // 1.0002
+ASM_VAR(AsmLabel, s_failHops66e800, $L_66e800)
+ASM_VAR(AsmLabel, s_hops1_66e7e4, $L_66e7e4)
+ASM_VAR(AsmLabel, s_hops4_66e7c8, $L_66e7c8)
+
+static const char s_advancePosition[] =
+    "advancePosition(PlayerId playerid, AI_Player * player, PositionId pos, double & offset, bool sendmessage)";
+
+static PositionId Adv_Step(PositionId pos, double* step)
+{
+    PositionId r;
+    return *Road_Advance(&r, pos, step, 0);
+}
+
+// the PositionId checks of advancePosition
+static void Adv_Check(const PositionId& p, int line)
+{
+    int n = (int)(g_roadEdgesEnd - g_roadEdges);
+    bool roadOk = p.road >= 0 && p.road < n;
+    PositionId c = p;
+    if ((!roadOk && !NodeId_Valid(&c.node, 0)) || p.t < g_tMin64b688 || p.t > g_tMax64b680 || p.segment < 0
+        || p.object < 0) {
+        sprintf(g_positionText76, "(%d %g %d %d %x)", p.road, p.t, p.segment, p.object, p.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, line, "Invalid id", "PositionId", g_positionText76);
+    }
+    if (roadOk) {
+        RoadEdge* e = g_roadEdges[p.road];
+        if (!(p.object < e->objectsEnd - e->objects && p.segment < e->objects[p.object]->SegmentCount()))
+            AiError(33, 100, s_mainFile, s_mainId, line, "Invalid Position Id", &g_aiEmpty, &g_aiEmpty);
+    }
+}
+
+static PositionId* Adv_Leave(PositionId* out, const PositionId& pos)
+{
+    *out = pos;
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, s_advancePosition);
+    return out;
+}
+
+// [FUN_43b570] advancePosition: moves a position by *offset along the player's hops, passing from road to road
+// at the hop nodes (and telling the player when sendmessage)
+extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid, BYTE* player, PositionId pos,
+                                                   double* offset, bool sendmessage)
+{
+    Trace_EnterBuffered(s_advancePosition);
+    {
+        PositionId c = pos;
+        if (!Position_Valid(&c, 0)) {
+            sprintf(g_positionText76, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, pos.m_24);
+            AiError(33, 100, s_mainFile, s_mainId, 15722, "Invalid id", "PositionId", g_positionText76);
+        }
+    }
+    if (x87_eq(*offset, 0.0))
+        return Adv_Leave(out, pos);
+    HopVec* hops = (HopVec*)(player + 16);
+    BYTE** hv = (BYTE**)hops;
+    if ((hv[1] - hv[0]) / 12 == 1) {
+        out->road = -1;
+        out->node = F(int, hv[1], -12);
+        out->t = 0.0;
+        out->segment = 0;
+        out->object = 0;
+        out->m_24 = 0;
+        out->m_28 = -1;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_advancePosition);
+        return out;
+    }
+    {
+        DVec3 pt;
+        Road_PointOf(&pt, pos);
+    }
+    double dir = *offset;
+    pos = Adv_Step(pos, offset);
+    int node = pos.node;
+    while (node != -1) {
+        BYTE* begin = hv[0];
+        BYTE* end = hv[1];
+        int size = (int)(end - begin) / 12;
+        int idx = pos.m_28;
+        BYTE* r;
+        // (sic: the hint is only tried past the end)
+        if (!(size >= idx) && idx >= 0 && (r = Find12ByField0(begin + idx * 12, end, node)) != end)
+            ;
+        else
+            r = Find12ByField0(begin, end, node);
+        begin = hv[0];
+        pos.m_28 = (int)(r - begin) / 12;
+        if (r == hv[1])
+            break;
+        if (r == begin) {
+            BYTE* q = r + 12;
+            while (q != hv[1] && F(int, q, 0) != node)
+                q += 12;
+            r = q == hv[1] ? begin : q;
+        }
+        pos.m_28 = (int)(r - begin) / 12;
+        RoadEdge* e;
+        if (dir > 0.0) {
+            e = F(RoadEdge*, r, 4);
+            if (!e)
+                break;
+            if (e == g_roadEdges[pos.road]) {
+                Road_DumpHops(hops, s_failHops66e800);
+                *offset = 0.0;
+                return Adv_Leave(out, pos);
+            }
+            if (node == F(int, e->from, 16))
+                Road_StartOf(&pos, e->id);
+            else if (node == F(int, e->to, 16)) {
+                Road_EndOf(&pos, e->id);
+                pos.m_24 |= 1;
+            } else {
+                Road_DumpHops(hops, s_failHops66e800);
+                AiError(0, 100, s_mainFile, s_mainId, 15786, s_hops1_66e7e4, &g_aiEmpty, &g_aiEmpty);
+            }
+        } else {
+            if (r == begin)
+                break;
+            r -= 12;
+            pos.m_28 = (int)(r - begin) / 12;
+            e = F(RoadEdge*, r, 4);
+            if (!e)
+                break;
+            if (e == g_roadEdges[pos.road]) {
+                Road_DumpHops(hops, s_failHops66e800);
+                *offset = 0.0;
+                return Adv_Leave(out, pos);
+            }
+            if (node == F(int, e->from, 16)) {
+                Road_StartOf(&pos, e->id);
+                pos.m_24 |= 1;
+            } else if (node == F(int, e->to, 16))
+                Road_EndOf(&pos, e->id);
+            else {
+                Road_DumpHops(hops, s_failHops66e800);
+                AiError(0, 100, s_mainFile, s_mainId, 15829, s_hops4_66e7c8, &g_aiEmpty, &g_aiEmpty);
+            }
+        }
+        if (sendmessage) {
+            CallC(FUN_40b100, playerid, pos.node, 0, 0, 0, 0, 0, 0);
+            Adv_Check(pos, 15840);
+            Player_SetPosition(player, 0, &pos);
+        }
+        pos = Adv_Step(pos, offset);
+        node = pos.node;
+    }
+    Adv_Check(pos, 15853);
+    if (pos.m_28 == -1 && player) {
+        DWORD* d = (DWORD*)&pos;
+        pos.m_28 = CallC<int>(FUN_43ab10, hops, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
+    }
+    *out = pos;
+    Trace_Leave(s_advancePosition);
+    return out;
 }
