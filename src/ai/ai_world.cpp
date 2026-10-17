@@ -1131,8 +1131,8 @@ extern "C" void __cdecl Markets_GrowOnce()
 }
 
 // still room for players: fewer than the minimum, or (below the maximum)
-// farther than 400 from the point
-extern "C" bool __cdecl AI_RoomForPlayer(const DVec3* p)
+// farther than 400 from the point (the player argument is unused)
+extern "C" bool __cdecl AI_RoomForPlayer(BYTE*, const DVec3* p)
 {
     unsigned n = (g_68a984 - g_68a980) + g_68d164;
     if (n < g_68d160)
@@ -7966,7 +7966,7 @@ extern "C" void __cdecl Ai_PlacePresents(double t)
 
 ASM_PROC(FUN_4774e0)    // a competitor's arrival (player, double delay, count)
 ASM_PROC(FUN_429850)    // a computer player's order update (player)
-ASM_PROC(FUN_4262a0)    // adds a competitor
+extern "C" void FUN_4262a0(); KING_ALIAS("_FUN_4262a0", "_Ai_AddCompetitor")    // adds a competitor
 ASM_PROC(FUN_457a40)    // finds an order equal to one passed by value (first, last, order144)
 extern "C" void FUN_4715f0(); KING_ALIAS("_FUN_4715f0", "_Order_Init4715f0")    // (order, template, town, PositionId32, double q)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
@@ -12596,4 +12596,204 @@ extern "C" int __cdecl Ai_CleanBeforeLaw(BYTE* p)
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_cleanBeforeLaw);
     return 0;
+}
+
+ASM_VAR(AsmLabel, s_setPlayerPositionLimited, $L_66e984)
+
+// a player's position step along its route from the position (FUN_43bf10, out, player, PositionId32, double*, int)
+static PositionId* Player_StepFrom(PositionId* out, BYTE* p, const PositionId* pos, double* step)
+{
+    const DWORD* d = (const DWORD*)pos;
+    return CallC<PositionId*>(FUN_43bf10, out, p, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7], step, 0);
+}
+
+// whether the position is on the hop its m_28 names (same edge or same node)
+static bool Position_OnHop(HopVec* hops, const PositionId* pos)
+{
+    Hop* h = hops->begin + pos->m_28;
+    return g_roadEdges[pos->road] == h->edge || pos->node == h->node;
+}
+
+// [FUN_43cb50] setPlayerPositionLimited: the position closest to v between 10 back and 10 ahead on the route,
+// taken only when it is within 3 (or within 50 and not mostly above or below); otherwise setPlayerPosition
+extern "C" void __cdecl Ai_SetPlayerPositionLimited(BYTE* p, const DVec3* v)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_setPlayerPositionLimited);
+    HopVec* hops = (HopVec*)(p + 24);
+    if (hops->begin == hops->end) {
+        Ai_SetPlayerPosition(p, v);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_setPlayerPositionLimited);
+        return;
+    }
+    PositionId r = F(PositionId, p, 40);
+    double step = 10.0;
+    PositionId ahead, back;
+    Player_StepFrom(&ahead, p, &r, &step);
+    step = -10.0;
+    Player_StepFrom(&back, p, &r, &step);
+    const PositionId* bad = 0;
+    if (!Position_OnHop(hops, &ahead))
+        bad = &ahead;
+    else if (!Position_OnHop(hops, &back))
+        bad = &back;
+    if (bad) {
+        const DWORD* d = (const DWORD*)bad;
+        CallC<int>(FUN_43ab10, hops, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
+        Ai_SetPlayerPosition(p, v);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_setPlayerPositionLimited);
+        return;
+    }
+    double md = 1.7976931348623157e308;
+    Ai_FindClosestHops(v, &md, hops, &r, back, ahead);
+    int node;
+    const DVec3* n = (const DVec3*)((BYTE*)g_roadNodes[*Player_NodeOf(&node, p)] + 48);
+    DVec3 pt;
+    const DVec3* q = Road_PointOf(&pt, r);
+    double dx = q->x - n->x, dy = q->y - n->y, dz = q->z - n->z;
+    if (0.1 > x87_sqrt((dx * dx + dy * dy) + dz * dz))
+        r.node = *Player_NodeOf(&node, p);
+    PositionId chk = r;
+    if (!PositionValid(&chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", r.road, r.t, r.segment, r.object, r.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 16029, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    DVec3 w;
+    Road_PointOf(&w, r);
+    dx = w.x - v->x;
+    dy = w.y - v->y;
+    dz = w.z - v->z;
+    double dist = x87_sqrt((dy * dy + dz * dz) + dx * dx);
+    if (!(dist <= 3.0) && (!(dist <= 50.0) || x87_sqrt(dy * dy + dx * dx) < dz))
+        Ai_SetPlayerPosition(p, v);
+    else
+        Player_SetPosition(p + 8, 0, &r);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_setPlayerPositionLimited);
+}
+
+// ---------------------------------------------------------------------------
+// addCompetitor()
+
+ASM_PROC(FUN_425dd0)    // ()
+ASM_PROC(FUN_425820)    // (player, goods)
+extern "C" void __cdecl Player_ClearOrderLists(BYTE* p);
+extern "C" void __cdecl Player_Place(BYTE* p, PositionId pos);           // aiplay.cpp
+extern "C" void __cdecl Player_GoTo(BYTE* p, PositionId target, int id); // aiplay.cpp
+extern "C" void __cdecl Road_PositionCostBest(int side, PositionId from, PositionId to, double* cost);   // aitrce.cpp
+extern "C" void* __fastcall TownId_Town(const int* s, void*);
+ASM_VAR(AsmLabel, s_addCompetitor, $L_66d9a8)
+ASM_VAR(double, g_competitorRange66c6b0, $L_66c6b0)
+ASM_VAR(BYTE, g_addingCompetitor68d114, $L_68d114)
+
+static unsigned Competitors_Count() { return (g_68a984 - g_68a980) + g_68d164; }
+
+// a competitor near the human player's goods: sent to the goods' town, advanced ahead of the camera
+static void Competitor_Take(int hn, BYTE* player)
+{
+    DVec3 at;
+    Road_PointOf(&at, F(PositionId, Player_FirstGoods(player), 24));
+    if (!AI_RoomForPlayer(player, &at) || !AI_RoomForPlayer(player, &at))
+        return;
+    int found;
+    Players_Find4571a0(&found, hn, (int)g_rng68b9c8);
+    if ((void*)found == g_players) {
+        Players_Find457210(&found, hn, (int)g_rng68b9c8);
+        if ((void*)found == g_players)
+            return;
+    }
+    BYTE* f = (BYTE*)found;
+    Player_ClearOrderLists(f + 8);
+    CallC(FUN_425820, f, Player_FirstGoods(player));
+    g_addingCompetitor68d114 = 1;
+    Player_Place(f, F(PositionId, Player_FirstGoods(player), 24));
+    int town;
+    Town_Id(&town, (BYTE*)TownId_Town((int*)((BYTE*)Player_FirstGoods(player) + 12), 0));
+    PositionId target;
+    PositionInit(&target, town);
+    Player_GoTo(f, target, 1);
+    DVec3 q;
+    Road_PointOf(&q, F(PositionId, f, 40));
+    double dx = g_68bab0.x - q.x, dy = g_68bab0.y - q.y, dz = g_68bab0.z - q.z;
+    if (x87_sqrt((dx * dx + dy * dy) + dz * dz) < g_competitorRange66c6b0) {
+        double x = (double)(int)(g_68d160 * 400 - 400);
+        double y = F(double, Player_FirstGoods(player), 112) * 0.33;
+        double r = x <= y ? x : F(double, Player_FirstGoods(player), 112) * 0.33;
+        if (r < 400.0)
+            r = 400.0;
+        else if (!(r <= 3000.0))
+            r = 3000.0;
+        double gap = (int)g_68d160 > 1 ? r / (double)(int)(g_68d160 - 1) : 400.0;
+        if (0.0 < g_competitorRange66c6b0)
+            for (int k = 0;;) {
+                DVec3 w;
+                Road_PointOf(&w, F(PositionId, f, 40));
+                double ex = g_68bab0.x - w.x, ey = g_68bab0.y - w.y, ez = g_68bab0.z - w.z;
+                if (!(x87_sqrt((ey * ey + ez * ez) + ex * ex) <= g_competitorRange66c6b0))
+                    break;
+                double step = 4.0;
+                Ai_AdvancePlayer(f, &step);
+                if (!((double)++k < g_competitorRange66c6b0))
+                    break;
+            }
+        unsigned c = (unsigned)(int)(gap * 0.3333333333333333);
+        unsigned rnd = AiRandom() % c;
+        double step = (double)rnd + (double)(int)(g_68a984 - g_68a980) * gap;
+        Ai_AdvancePlayer(f, &step);
+    }
+    Player_MarkListed(f);
+    F(int, f, 100) = 4;
+    Player_EndDealOf(f);
+    Player_UpdateFlags(f);
+    Ai_UpdateAdvancementRegular(f + 8, F(PositionId, f, 40));
+    g_addingCompetitor68d114 = 0;
+}
+
+// [FUN_4262a0] addCompetitor: a competitor of the human player is taken (or found) near the player's goods,
+// sent to the goods' town and advanced ahead of the camera
+extern "C" void __cdecl Ai_AddCompetitor()
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_addCompetitor);
+    int hn;
+    Player_FromId(&hn);
+    BYTE* human = (BYTE*)hn;
+    if (human != (BYTE*)g_players && F(int, human, 100) != 5) {
+        BYTE* player = human + 8;
+        BYTE* goods = (BYTE*)Player_FirstGoods(player);
+        if (!goods || F(int, goods, 104) != 1 || (g_68ccb8[F(int, goods, 0) * 104 + 48] & 4)) {
+            Player_CheckGoods(human);
+            Player_CheckTownAA(human);
+            goto leave;
+        }
+        if (!g_68d15c)
+            AI_RandomTraffic();
+        if (!Competitors_Count()) {
+            double cost = 0;
+            BYTE* g = (BYTE*)Player_FirstGoods(player);
+            Road_PositionCostBest(0, F(PositionId, g, 24), F(PositionId, player, 32), &cost);
+            if (cost > 1000.0) {
+                CallC(FUN_425dd0);
+                goto leave;
+            }
+        }
+        while (Competitors_Count() < g_68d15c) {
+            int found;
+            Players_Find457280(&found, hn, (int)goods, (int)g_rng68b9c8);
+            BYTE* f = (BYTE*)found;
+            if (f == (BYTE*)g_players)
+                break;
+            Player_MarkListed(f);
+            Ai_UpdateAdvancementRegular(f + 8, F(PositionId, f, 40));
+        }
+        Competitor_Take(hn, player);
+        int i = 0;
+        for (BYTE** e = (BYTE**)g_68a980; e != (BYTE**)g_68a984; e++, i++)
+            F(BYTE, *e, 848) = i % 3 == 0;
+    }
+leave:
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_addCompetitor);
 }
