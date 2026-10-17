@@ -1134,7 +1134,8 @@ PUBLIC $L_66e914
 PUBLIC $L_66d050
 PUBLIC $L_66e9c4
 PUBLIC $L_66dfc8, $L_68a990, $L_77e4e0
-PUBLIC $L_66eaa8
+PUBLIC $L_66eaa8, $L_66e984
+PUBLIC $L_66c6b0, $L_66d9a8, $L_68d114
 
 ;===================================
 _TEXT SEGMENT
@@ -64143,6 +64144,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4262a0 PROC
 
             push EBP
@@ -64887,6 +64890,10 @@ $L_426a73::
             pop EBP
             ret 
 FUN_4262a0 ENDP
+ELSE
+EXTERN _Ai_AddCompetitor:PROC
+FUN_4262a0 TEXTEQU <_Ai_AddCompetitor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -100681,6 +100688,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43cb50 PROC
 
             push EBP
@@ -101298,6 +101307,10 @@ $L_43d1cf::
             pop EBP
             ret 
 FUN_43cb50 ENDP
+ELSE
+EXTERN _Ai_SetPlayerPositionLimited:PROC
+FUN_43cb50 TEXTEQU <_Ai_SetPlayerPositionLimited>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
