@@ -21267,6 +21267,8 @@ FUN_40b4a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40b920 PROC
 
             push -1
@@ -21947,6 +21949,10 @@ $L_40bf31::
             add ESP,152
             ret 
 FUN_40b920 ENDP
+ELSE
+EXTERN _Ai_ReadRecord40b920:PROC
+FUN_40b920 TEXTEQU <_Ai_ReadRecord40b920>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -97761,6 +97767,8 @@ FUN_43ab10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43ade0 PROC
 
             push -1
@@ -98456,6 +98464,10 @@ $L_43b548::
             nop
             nop
 FUN_43ade0 ENDP
+ELSE
+EXTERN _Ai_AdvancePositionHops:PROC
+FUN_43ade0 TEXTEQU <_Ai_AdvancePositionHops>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -107550,6 +107562,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_441120 PROC
 
             push EBP
@@ -108337,6 +108351,10 @@ $L_4418ca::
             pop EBP
             ret 
 FUN_441120 ENDP
+ELSE
+EXTERN _Ai_GetOrderInfoIdx:PROC
+FUN_441120 TEXTEQU <_Ai_GetOrderInfoIdx>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
