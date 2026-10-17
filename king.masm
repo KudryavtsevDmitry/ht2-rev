@@ -1130,6 +1130,7 @@ PUBLIC $L_66f898
 PUBLIC $L_66c60a, $L_66c68c, $L_66c6d8, $L_66c6dc, $L_66c6f8, $L_66c700
 PUBLIC $L_66c710, $L_66f62a, $L_68d0ec, $L_68d134
 PUBLIC $L_64b680, $L_64b688, $L_66e7c8, $L_66e7e4, $L_66e800
+PUBLIC $L_66e914
 
 ;===================================
 _TEXT SEGMENT
@@ -78175,6 +78176,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42e9f0 PROC
 
             push -1
@@ -78730,6 +78733,10 @@ $L_42ef9a::
             add ESP,224
             ret 
 FUN_42e9f0 ENDP
+ELSE
+EXTERN _Ai_LoadVehicles:PROC
+FUN_42e9f0 TEXTEQU <_Ai_LoadVehicles>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -79252,6 +79259,8 @@ FUN_42eff0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42f4c0 PROC
 
             push -1
@@ -79791,6 +79800,10 @@ $L_42fa5d::
             add ESP,224
             ret 
 FUN_42f4c0 ENDP
+ELSE
+EXTERN _Ai_LoadTrashboxes:PROC
+FUN_42f4c0 TEXTEQU <_Ai_LoadTrashboxes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -99691,6 +99704,8 @@ FUN_43bf10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43c2d0 PROC
 
             push EBP
@@ -100624,6 +100639,10 @@ $L_43cb1b::
             pop EBP
             ret 
 FUN_43c2d0 ENDP
+ELSE
+EXTERN _Ai_FindClosestHops:PROC
+FUN_43c2d0 TEXTEQU <_Ai_FindClosestHops>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -11959,3 +11959,285 @@ extern "C" int __cdecl Ai_GetOrderInfoIdx(BYTE* player, int town, int order, BYT
     F(BYTE, oi, 184) = 1;
     return OrderInfo_Leave(0);
 }
+
+// ---------------------------------------------------------------------------
+// findClosest(dvector3 const& v, double& md, vector<Hop>& hops, ...): the
+// closest point to v along the hops between two positions.
+
+ASM_PROC(FUN_450150)    // objects::findClosest over a range of objects (thiscall, 13 dwords)
+ASM_VAR(AsmLabel, s_findClosestHops, $L_66e914)
+
+static void FC_Result(PositionId* out, RoadEdge* e, double d, int seg, int obj, int hop)
+{
+    PositionId p;
+    p.road = e->id;
+    p.node = -1;
+    p.t = d;
+    p.segment = seg;
+    p.object = obj;
+    p.m_24 = 0;
+    p.m_28 = -1;
+    *out = p;
+    out->m_28 = hop;
+}
+
+static int FC_Range(RoadObject*** objs, const DVec3* v, double* md, double* d, int* seg, int* obj,
+                    double t0, int seg0, int obj0, double t1, int seg1, int obj1)
+{
+    return CallThis<int>(FUN_450150, objs, v, md, d, seg, obj, t0, seg0, obj0, t1, seg1, obj1);
+}
+
+// objects from (t0, seg0, obj0) to (t1, seg1, obj1) with obj0 <= obj1; the
+// object of the last hit goes to *best
+static int FC_Walk(RoadObject** objs, const DVec3* v, double* md, double* d, int* seg, int* best,
+                   double t0, int seg0, int obj0, double t1, int seg1, int obj1)
+{
+    int hit = 0;
+    if (obj0 == obj1) {
+        if (CallVirt<int>(objs[obj0], 8, v, md, d, seg, t0, seg0, t1, seg1)) {
+            hit = 1;
+            *best = obj0;
+        }
+        return hit;
+    }
+    int n = objs[obj0]->SegmentCount() - 1;
+    if (CallVirt<int>(objs[obj0], 8, v, md, d, seg, t0, seg0, 1.0, n)) {
+        hit = 1;
+        *best = obj0;
+    }
+    for (int k = obj0 + 1; k < obj1; k++)
+        if (CallVirt<int>(objs[k], 12, v, md, d, seg)) {
+            hit = 1;
+            *best = k;
+        }
+    if (CallVirt<int>(objs[obj1], 8, v, md, d, seg, 0.0, 0, t1, seg1)) {
+        hit = 1;
+        *best = obj1;
+    }
+    return hit;
+}
+
+// whether (t1, seg1, obj1) comes before (t0, seg0, obj0)
+static bool FC_Before(double t1, int seg1, int obj1, double t0, int seg0, int obj0)
+{
+    if (obj1 != obj0)
+        return obj1 < obj0;
+    if (seg1 != seg0)
+        return seg1 < seg0;
+    return t1 < t0;
+}
+
+// [FUN_43c2d0]
+extern "C" int __cdecl Ai_FindClosestHops(const DVec3* v, double* md, HopVec* hops, PositionId* out,
+                                          PositionId from, PositionId to)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_findClosestHops);
+    if (from.road == to.road && from.node == to.node && from.t == to.t && from.segment == to.segment
+        && from.object == to.object && from.m_24 == to.m_24) {
+        *out = from;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_findClosestHops);
+        return 0;
+    }
+    if (from.m_28 > to.m_28) {
+        int r = Ai_FindClosestHops(v, md, hops, out, to, from);
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_findClosestHops);
+        return r;
+    }
+    double d = 0;
+    int seg = 0, best = 0;
+    if (from.m_28 == to.m_28) {
+        RoadEdge* e = hops->begin[from.m_28].edge;
+        if (!e) {
+            *out = from;
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, s_findClosestHops);
+            return 0;
+        }
+        RoadObject*** objs = &e->objects;
+        if (FC_Before(to.t, to.segment, to.object, from.t, from.segment, from.object))
+            FC_Range(objs, v, md, &d, &seg, &best, to.t, to.segment, to.object, from.t, from.segment, from.object);
+        else if (from.object == to.object) {
+            if (CallVirt<int>(e->objects[from.object], 8, v, md, &d, &seg, from.t, from.segment, to.t, to.segment))
+                best = from.object;
+        } else
+            FC_Walk(e->objects, v, md, &d, &seg, &best, from.t, from.segment, from.object, to.t, to.segment, to.object);
+        FC_Result(out, hops->begin[from.m_28].edge, d, seg, best, from.m_28);
+    } else {
+        RoadEdge* e = hops->begin[from.m_28].edge;
+        if (e) {
+            PositionId l;
+            if (hops->begin[from.m_28].dir & 1)
+                l = *Road_EdgeStart(&l, e);
+            else
+                l = *Road_EdgeEnd(&l, e);
+            int hit;
+            if (FC_Before(l.t, l.segment, l.object, from.t, from.segment, from.object))
+                hit = FC_Range(&e->objects, v, md, &d, &seg, &best, l.t, l.segment, l.object, from.t, from.segment, from.object);
+            else
+                hit = FC_Walk(e->objects, v, md, &d, &seg, &best, from.t, from.segment, from.object, l.t, l.segment, l.object);
+            if (hit)
+                FC_Result(out, hops->begin[from.m_28].edge, d, seg, best, from.m_28);
+        }
+        for (int h = from.m_28 + 1; h < to.m_28; h++) {
+            RoadEdge* he = hops->begin[h].edge;
+            int hit = 0;
+            for (unsigned k = 0; k < (unsigned)(he->objectsEnd - he->objects); k++)
+                if (CallVirt<int>(he->objects[k], 12, v, md, &d, &seg)) {
+                    hit = 1;
+                    best = k;
+                }
+            if (hit)
+                FC_Result(out, hops->begin[h].edge, d, seg, best, h);
+        }
+        e = hops->begin[to.m_28].edge;
+        if (e) {
+            PositionId l;
+            if (hops->begin[to.m_28].dir & 1)
+                l = *Road_EdgeEnd(&l, e);
+            else
+                l = *Road_EdgeStart(&l, e);
+            if (FC_Range(&e->objects, v, md, &d, &seg, &best, to.t, to.segment, to.object, l.t, l.segment, l.object))
+                FC_Result(out, hops->begin[to.m_28].edge, d, seg, best, to.m_28);
+        }
+    }
+    if (hops->begin[out->m_28].dir & 1)
+        out->m_24 |= 1;
+    else
+        out->m_24 &= ~1;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, s_findClosestHops);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// loading evehicles.sch and etrashboxes.sch: records of the tech file
+
+ASM_PROC(FUN_42eff0)    // reads a trashbox record (pair by value)
+ASM_VAR(int, g_carTypeCount6ce32c, $L_6ce32c)
+ASM_VAR(AsmLabel, g_carTypes6978c8, $L_6978c8)     // 2416 bytes per type, the name at +2246
+ASM_VAR(int, g_carModelCount6ce34c, $L_6ce34c)
+ASM_VAR(AsmLabel, g_carModels6c6b68, $L_6c6b68)    // 876 bytes per model, the name at +0
+
+struct TechList {
+    void**      vec;                // the records
+    DWORD*      (__cdecl* makePort)(DWORD* out, int unused, int a, const int* b);
+    BYTE*       (*read)(StrRef* pair);
+    int*        count;
+    const char* names;
+    int         stride;
+    int         field;              // the record's index field
+    int         lines[3];           // cannot open (0: skip silently), format, no such
+    const char* noSuch;
+};
+
+// reads a tech file's list of records; each one's (- - name) is looked up by
+// name and replaced by its index, which is also stored in the record
+static void Tech_Load(const TechList* t, const char* file)
+{
+    Vec4_Erase2(t->vec, 0, (BYTE*)t->vec[0], (BYTE*)t->vec[1]);
+    int one = 1;
+    DWORD tmp[3];
+    DWORD* h = t->makePort(tmp, 0, (int)file, &one);
+    StrRef port = {0, 0, 0};
+    BYTE* o = (BYTE*)h[0];
+    if (o) {
+        if (CallVirt<int>(o, 0) == 11) {
+            port.ptr = o;
+            port.flags = h[2];
+            F(int, o, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(o, 4), s_port);
+    }
+    CallThis(FUN_4a36c0, tmp);
+    CheckHandle(&port);
+    if (CallVirt<int>(port.ptr, 40)) {
+        if (!t->lines[0]) {
+            CallThis(FUN_4a36c0, &port);
+            return;
+        }
+        AiError(23, 100, s_mainFile, s_mainId, t->lines[0], "Cannot open", file, &g_aiEmpty);
+    }
+    StrRef value;
+    {
+        StrRef copy;
+        Str_CopyConstruct(&copy, 0, &port);
+        CallC(FUN_4b4c20, &value, g_reader68bb58, copy.ptr, copy.len, copy.flags);
+    }
+    StrRef l;
+    l.CopyFrom(&value);
+    while ((BYTE)l.flags == 2) {
+        StrRef m;
+        Str_Member20(&m, &l);
+        if ((BYTE)m.flags != 2)
+            AiError(45, 1, s_mainFile, s_mainId, t->lines[1], "Incorrect resource format", &g_aiEmpty, &g_aiEmpty);
+        StrRef a;
+        PairHandle_From((DWORD*)&a, 0, (const DWORD*)&m);
+        BYTE* rec = t->read(&a);
+        StrRef t1, t2, t3, name;
+        Str_Member32(&t1, &m);
+        Str_Member32(&t2, &t1);
+        Str_Member20(&t3, &t2);
+        StringHandle_From((DWORD*)&name, 0, (const DWORD*)&t3);
+        CallThis(FUN_4a36c0, &t3);
+        CallThis(FUN_4a36c0, &t2);
+        CallThis(FUN_4a36c0, &t1);
+        int i;
+        for (i = 0; i < *t->count; i++) {
+            const char* s = F(const char*, CallThis<BYTE*>(FUN_4aa430, &name), 12);
+            if (strcmp(s, t->names + i * t->stride) == 0) {
+                StrRef u1, u2, u3, p, n;
+                Str_Member32(&u1, &m);
+                Str_Member32(&u2, &u1);
+                Str_Member32(&u3, &u2);
+                PairHandle_From((DWORD*)&p, 0, (const DWORD*)&u3);
+                CallThis(FUN_4a36c0, &u3);
+                CallThis(FUN_4a36c0, &u2);
+                CallThis(FUN_4a36c0, &u1);
+                int zero = 0;
+                Number_Make((DWORD*)&n, 0, &zero, &i);
+                Str_Assign((StrRef*)(CallThis<BYTE*>(FUN_4aa430, &p) + 20), 0, &n);
+                CallThis(FUN_4a36c0, &n);
+                F(int, rec, t->field) = i;
+                CallThis(FUN_4a36c0, &p);
+                break;
+            }
+        }
+        if (i == *t->count)
+            AiError(43, 100, s_mainFile, s_mainId, t->lines[2], t->noSuch,
+                    F(const char*, CallThis<BYTE*>(FUN_4aa430, &name), 12), &g_aiEmpty);
+        CallThis(FUN_4a36c0, &name);
+        CallThis(FUN_4a36c0, &m);
+        List_Advance(&l);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &value);
+    CallThis(FUN_4a36c0, &port);
+}
+
+static BYTE* Tech_ReadVehicle(StrRef* a) { return Ai_ReadVehicle(*a); }
+static BYTE* Tech_ReadTrashbox(StrRef* a) { return CallC<BYTE*>(FUN_42eff0, a->ptr, a->len, a->flags); }
+
+// [FUN_42e9f0] reads the vehicles of evehicles.sch; each one's type is looked up among the car types
+extern "C" void __cdecl Ai_LoadVehicles()
+{
+    static const TechList t = {(void**)&g_vehicles, Port_MakeG, Tech_ReadVehicle, &g_carTypeCount6ce32c,
+                               (const char*)g_carTypes6978c8 + 2246, 2416, 64, {12217, 12229, 12247},
+                               "No such vehicle in tech file:"};
+    char file[14];
+    memcpy(file, "evehicles.sch", 14);
+    Tech_Load(&t, file);
+}
+
+// [FUN_42f4c0] reads the trashboxes of etrashboxes.sch (if present); each one's model is looked up among the car models
+extern "C" void __cdecl Ai_LoadTrashboxes()
+{
+    static const TechList t = {(void**)&g_spots68d0b8, Port_MakeC, Tech_ReadTrashbox, &g_carModelCount6ce34c,
+                               (const char*)g_carModels6c6b68, 876, 32, {0, 12307, 12325},
+                               "No such trashbox in tech file:"};
+    char file[16];
+    memcpy(file, "etrashboxes.sch", 16);
+    Tech_Load(&t, file);
+}
