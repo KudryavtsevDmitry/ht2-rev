@@ -5581,7 +5581,7 @@ ASM_VAR(char, s_findOnTrajectory, $L_66ea1c)     // "findPositionOnATrajectory(P
 ASM_VAR(BYTE**, g_limits68a970, $L_68a970)
 ASM_VAR(BYTE**, g_limits68a974, $L_68a974)
 ASM_VAR(const double, k_noSpeedLimit, $L_64b880)
-ASM_PROC(FUN_43d1f0)
+extern "C" void FUN_43d1f0(); KING_ALIAS("_FUN_43d1f0", "_Ai_FindPlayerPosition")
 
 // [FUN_42c780] querySpeedLimit(PlayerId player): the limit of the zone the player is in (type 5 only)
 extern "C" double __cdecl Ai_QuerySpeedLimit(BYTE* player)
@@ -12115,7 +12115,6 @@ extern "C" int __cdecl Ai_FindClosestHops(const DVec3* v, double* md, HopVec* ho
 // ---------------------------------------------------------------------------
 // loading evehicles.sch and etrashboxes.sch: records of the tech file
 
-ASM_PROC(FUN_42eff0)    // reads a trashbox record (pair by value)
 ASM_VAR(int, g_carTypeCount6ce32c, $L_6ce32c)
 ASM_VAR(AsmLabel, g_carTypes6978c8, $L_6978c8)     // 2416 bytes per type, the name at +2246
 ASM_VAR(int, g_carModelCount6ce34c, $L_6ce34c)
@@ -12218,7 +12217,53 @@ static void Tech_Load(const TechList* t, const char* file)
 }
 
 static BYTE* Tech_ReadVehicle(StrRef* a) { return Ai_ReadVehicle(*a); }
-static BYTE* Tech_ReadTrashbox(StrRef* a) { return CallC<BYTE*>(FUN_42eff0, a->ptr, a->len, a->flags); }
+// [FUN_42eff0] reads a spot of etrashboxes.sch: (- id (ints) int kind name); appended to the spots
+extern "C" BYTE* __cdecl Ai_ReadTrashbox(StrRef h)
+{
+    BYTE* o = (BYTE*)operator new(44);
+    if (o) {
+        char alloc;
+        F(int, o, 0) = -1;
+        memset(o + 4, 0, 12);
+        CallThis(FUN_487730, o + 16, &alloc);
+        F(int, o, 28) = -1;
+        F(int, o, 32) = -1;
+        F(int, o, 36) = -1;
+        F(int, o, 40) = 0;
+    }
+    StrRef m;
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    Ref_AssignTyped((StrRef*)(o + 4), &m, 9, "Identifier");
+    Str_Release(&m);
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    PodVec_Assign((BYTE**)(o + 16), 0, (BYTE* const*)(m.ptr + 12));
+    CallThis(FUN_4a36c0, &m);
+    Pair_Advance(&h);
+    Pair_Head(&m, &h);
+    F(int, o, 36) = CallThis<int>(FUN_4b0ea0, m.ptr);
+    CallThis(FUN_4a36c0, &m);
+    Pair_Advance(&h);
+    if (Pair_HeadIs(&h, "parked"))
+        F(int, o, 28) = 1;
+    else if (Pair_HeadIs(&h, "fuel"))
+        F(int, o, 28) = 2;
+    else if (Pair_HeadIs(&h, "container"))
+        F(int, o, 28) = 3;
+    else if (Pair_HeadIs(&h, "roadwork"))
+        F(int, o, 28) = 4;
+    else {
+        Pair_Head(&m, &h);
+        AiError(4, 100, s_mainFile, s_mainId, 12279, "Unsupported type", F(const char*, m.ptr, 12), &g_aiEmpty);
+        CallThis(FUN_4a36c0, &m);
+    }
+    Vec4_PushBackB(&g_spots68d0b8, 0, &o);
+    CallThis(FUN_4a36c0, &h);
+    return o;
+}
+
+static BYTE* Tech_ReadTrashbox(StrRef* a) { return Ai_ReadTrashbox(*a); }
 
 // [FUN_42e9f0] reads the vehicles of evehicles.sch; each one's type is looked up among the car types
 extern "C" void __cdecl Ai_LoadVehicles()
@@ -12240,4 +12285,184 @@ extern "C" void __cdecl Ai_LoadTrashboxes()
     char file[16];
     memcpy(file, "etrashboxes.sch", 16);
     Tech_Load(&t, file);
+}
+
+// ---------------------------------------------------------------------------
+// createNewPlayer(int type, SchemePairPtr descr)
+
+extern "C" void __fastcall Player_SetPosition(void* self, void*, const PositionId* p);  // ai_drivers.cpp
+ASM_VAR(AsmLabel, s_createNewPlayerDescr, $L_66d050)
+
+// the n-th element of a list, of the type (an error otherwise)
+static void Descr_Nth(StrRef* out, const StrRef* l, int n, int type, const char* name)
+{
+    StrRef c, t;
+    Str_CopyConstruct(&c, 0, l);
+    CallC(FUN_4af480, &t, n, c.ptr, c.len, c.flags);
+    Handle_FromValue((DWORD*)out, (const DWORD*)&t, type, name);
+    CallThis(FUN_4a36c0, &t);
+}
+
+static double Descr_Number(StrRef* h) { return CallThis<double>(FUN_4b0e90, CallThis<BYTE*>(FUN_4aa430, h)); }
+
+// [FUN_414b30] a new player of a type from (vehicleName owner x y z): its vehicle, position, name and place
+extern "C" BYTE* __cdecl Ai_CreatePlayerDescr(int type, StrRef h)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_createNewPlayerDescr);
+    BYTE* p = Players_AppendNamed(type);
+    F(double, p, 128) = g_newPlayer68cfe8;
+    StrRef name, owner, z, x, y;
+    Descr_Nth(&name, &h, 0, 3, s_string);
+    Descr_Nth(&owner, &h, 1, 6, s_number);
+    Descr_Nth(&z, &h, 2, 6, s_number);
+    Descr_Nth(&x, &h, 3, 6, s_number);
+    Descr_Nth(&y, &h, 4, 6, s_number);
+    BYTE* o = (BYTE*)operator new(48);
+    if (o) {
+        CheckHandle(&owner);
+        const char* s = F(const char*, CallThis<BYTE*>(FUN_4aa430, &name), 12);
+        int r;
+        o = Rec415100_Construct(o, 0, *Vehicle_IndexByName(&r, s, CallThis<int>(FUN_4b0ea0, owner.ptr)));
+    }
+    F(BYTE*, p, 508) = o;
+    DVec3 v;
+    v.z = Descr_Number(&y);
+    v.y = Descr_Number(&x);
+    v.x = Descr_Number(&z);
+    BYTE pos[32];
+    Player_SetPosition(p, 0, CallC<PositionId*>(FUN_436900, pos, &v));
+    F(int, p, 84) = type;
+    if (type == 1)
+        Rec_SetText(p, 0, g_humanName68d0a8);
+    else {
+        CallThis(FUN_474160, p, CallC<int>(FUN_4148a0, p));
+        PodVec_Assign((BYTE**)(p + 264), 0, (BYTE* const*)(g_images68a958 + F(int, p, 984) * 56 + 4));
+    }
+    CallThis(FUN_4a36c0, &y);
+    CallThis(FUN_4a36c0, &x);
+    CallThis(FUN_4a36c0, &z);
+    CallThis(FUN_4a36c0, &owner);
+    CallThis(FUN_4a36c0, &name);
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, s_createNewPlayerDescr);
+    CallThis(FUN_4a36c0, &h);
+    return p;
+}
+
+// ---------------------------------------------------------------------------
+// findPlayerPosition(vector<Hop>& hops, PositionId approxPosition, dvector3 const& v)
+
+ASM_VAR(AsmLabel, s_findPlayerPosition, $L_66e9c4)
+
+// [FUN_43d1f0] the position on the hops closest to v: the approximate position's road is searched first, any
+// hop closer than 1.5 times (plus 10) that distance wins; at the last hop's node when within 0.1 of it
+extern "C" PositionId* __cdecl Ai_FindPlayerPosition(PositionId* out, HopVec* hops, PositionId approx, const DVec3* v)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_findPlayerPosition);
+    if (hops->end - hops->begin == 1) {
+        out->road = -1;
+        out->node = hops->end[-1].node;
+        out->t = 0;
+        out->segment = 0;
+        out->object = 0;
+        out->m_24 = 0;
+        out->m_28 = -1;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_findPlayerPosition);
+        return out;
+    }
+    double md = 1.7976931348623157e308, d = 0;
+    int seg = 0, best = 0;
+    PositionId r;
+    r.road = -1;
+    r.node = -1;
+    r.t = 0;
+    r.segment = 0;
+    r.object = 0;
+    r.m_24 = 0;
+    r.m_28 = -1;
+    if (approx.road != -1) {
+        RoadEdge* e = g_roadEdges[approx.road];
+        int n = hops->end - hops->begin;
+        Hop* h;
+        if (approx.m_28 < n && approx.m_28 >= 0) {
+            h = (Hop*)Find12ByField4((BYTE*)(hops->begin + approx.m_28), (BYTE*)hops->end, (int)e);
+            if (h == hops->end)
+                h = (Hop*)Find12ByField4((BYTE*)hops->begin, (BYTE*)hops->end, (int)e);
+        } else
+            h = (Hop*)Find12ByField4((BYTE*)hops->begin, (BYTE*)hops->end, (int)e);
+        if (h != hops->end) {
+            RoadEdge* re = g_roadEdges[approx.road];
+            for (unsigned k = 0; k < (unsigned)(re->objectsEnd - re->objects); k++)
+                if (CallVirt<int>(re->objects[k], 12, v, &md, &d, &seg))
+                    best = k;
+            r.road = approx.road;
+            r.node = -1;
+            r.t = d;
+            r.segment = seg;
+            r.object = best;
+            r.m_24 = 0;
+            r.m_28 = -1;
+            md = md * 1.5 + 10.0;
+            r.m_28 = h - hops->begin;
+        }
+    }
+    for (;;) {
+        int found = 0;
+        for (Hop* it = hops->begin; it != hops->end; it++) {
+            RoadEdge* e = it->edge;
+            if (!e)
+                continue;
+            int hit = 0;
+            for (unsigned k = 0; k < (unsigned)(e->objectsEnd - e->objects); k++)
+                if (CallVirt<int>(e->objects[k], 12, v, &md, &d, &seg)) {
+                    hit = 1;
+                    best = k;
+                }
+            if (hit) {
+                r.road = e->id;
+                r.node = -1;
+                r.t = d;
+                r.segment = seg;
+                r.object = best;
+                r.m_24 = 0;
+                r.m_28 = it - hops->begin;
+                if (g_roadNodes[it->node] == e->to)
+                    r.m_24 |= 1;
+                else
+                    r.m_24 &= ~1;
+                found = 1;
+            }
+        }
+        if (found || hops->begin == hops->end)
+            break;
+        md = 1.7976931348623157e308;
+        d = 0;
+        seg = 0;
+        best = 0;
+    }
+    if (r.road == -1) {
+        BYTE tmp[32];
+        r = *CallC<PositionId*>(FUN_436900, tmp, v);
+    }
+    if (hops->begin != hops->end) {
+        int last = hops->end[-1].node;
+        const DVec3* n = (const DVec3*)((BYTE*)g_roadNodes[last] + 48);
+        DVec3 p;
+        const DVec3* q = Road_PointOf(&p, r);
+        double dx = q->x - n->x, dy = q->y - n->y, dz = q->z - n->z;
+        if (0.1 > x87_sqrt((dx * dx + dy * dy) + dz * dz))
+            r.node = hops->end[-1].node;
+    }
+    PositionId chk = r;
+    if (!PositionValid(&chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", r.road, r.t, r.segment, r.object, r.m_24);
+        AiError(33, 100, s_mainFile, s_mainId, 16145, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    *out = r;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_findPlayerPosition);
+    return out;
 }
