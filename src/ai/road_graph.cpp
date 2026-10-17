@@ -299,7 +299,7 @@ ASM_VAR(AiText, g_undefinedModule, $L_66d638)   // "UNDEFINED_MODULE"
 ASM_VAR(AiText, g_undefinedRoom, $L_66d628)     // "UNDEFINED_ROOM"
 
 extern "C" PositionId* __cdecl Road_Advance(PositionId* out, PositionId pos, double* distance, int);
-KING_ALIAS("_Road_Advance", "FUN_435d60")
+KING_ALIAS("_Road_Advance", "_Ai_AdvancePositionRoad")
 extern "C" void __cdecl Road_RoomInfo(PositionId pos, RoomInfo* info);
 KING_ALIAS("_Road_RoomInfo", "FUN_438d70")
 
