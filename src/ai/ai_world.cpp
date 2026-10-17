@@ -6262,7 +6262,7 @@ ASM_VAR(double, g_time68d1b8, $L_68d1b8)
 ASM_VAR(void**, g_list68b99c, $L_68b99c)
 extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")    // updates a player's flags
 extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")    // adds a message to the message list
-ASM_PROC(FUN_403940)
+extern "C" void FUN_403940(); KING_ALIAS("_FUN_403940", "_Ai_Reset")
 
 // [FUN_43f700] the value at +8 of a record id's record
 extern "C" int __cdecl Rec_Field8(BYTE* id)
@@ -11183,4 +11183,320 @@ extern "C" BYTE* __cdecl Ai_ReadVehicle(StrRef h)
     CallThis(FUN_447ad0, &g_vehicles, &o);
     CallThis(FUN_4a36c0, &h);
     return o;
+}
+
+// ---------------------------------------------------------------------------
+// loadOrder of a present
+
+ASM_VAR(double, g_bonus66f898, $L_66f898)       // 1.3
+
+static const char s_loadPresent[] = "loadOrder(PlayerId player, PresentId present, int & playerorderid)";
+
+// [FUN_442e10] loadOrder (present): loads a present's cargo onto a player as far as its weight and volume
+// allow; returns 0 or a negative reason (-3 weight, -4 volume, -10/-11 wrong trailer)
+extern "C" int __cdecl Ai_LoadPresent(BYTE* player, BYTE* present, int* playerorderid)
+{
+    Trace_EnterBuffered(s_loadPresent);
+    if (Player_NotValid(player)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 17519, s_invalidId, s_playerIdType, g_numberText);
+    }
+    if (Rec_NotValid(present)) {
+        sprintf((char*)g_text77e5e0, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 17520, s_invalidId, s_recIdType66d64c, (char*)g_text77e5e0);
+    }
+    Player_IsHuman(player);
+    BYTE* item = F(BYTE*, present, 8);
+    int kind = F(int, item, 8) & 0xF0;
+    if (kind == 0x80 || kind == 0x20 || kind == 0x10) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_loadPresent);
+        return 0;
+    }
+    BYTE* tmpl = F(BYTE*, item, 88);
+    if (tmpl) {
+        if (Player_IsHuman(player)) {
+            bool oil = (F(BYTE, g_68ccb8 + F(int, tmpl, 0) * 104, 48) & 4) != 0;
+            if (oil && !(Player_VehicleData(player) & 1)) {
+                CallC(FUN_483cb0, Message_Text("NEED_A_PETROL_SEMITRAILER"));
+                Buf_Append(&g_trace, 0, g_tagMpl, 8);
+                Buf_AppendString(&g_trace, 0, s_loadPresent);
+                return -10;
+            }
+            oil = (F(BYTE, g_68ccb8 + F(int, tmpl, 0) * 104, 48) & 4) != 0;
+            if (!oil && (Player_VehicleData(player) & 1)) {
+                CallC(FUN_483cb0, Message_Text("LOAD_AT_AN_OIL_TANK"));
+                Buf_Append(&g_trace, 0, g_tagMpl, 8);
+                Buf_AppendString(&g_trace, 0, s_loadPresent);
+                return -11;
+            }
+        }
+        double ba, bb, q;
+        Costs_Balance(player, &ba, &bb, &q, g_68ccb8 + F(int, tmpl, 0) * 104);
+        BYTE order[144];
+        Order_Construct(order, 0);
+        F(int, order, 0) = F(int, tmpl, 0);
+        F(int, order, 12) = F(int, tmpl, 12);
+        F(int, order, 4) = F(int, tmpl, 4);
+        memcpy(order + 24, item + 56, 32);
+        F(int, order, 104) = 3;
+        double factor = F(BYTE*, player, 520) ? g_bonus66f898 : 1.0;
+        F(double, order, 72) = CallC<double>(FUN_401000) + factor * F(double, tmpl, 24);
+        double a = 0.0, b = 0.0;
+        Player_CargoSums(player, &a, &b);
+        double price, load;
+        Player_AllCosts(player, &price, &load);
+        a = a - price;
+        b = b - load;
+        if (!(a < 0.0)) {
+            Order_Destroy(order);
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, s_loadPresent);
+            return -3;
+        }
+        if (!(b < 0.0)) {
+            Order_Destroy(order);
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, s_loadPresent);
+            return -4;
+        }
+        BYTE copy[144];
+        Order144_CopyConstruct(copy, 0, order);
+        BYTE* data2 = Iter_Data(&player, 0);
+        void* cargo = Player_ActiveCargo(data2, 0);
+        BYTE* cend = CallThis<BYTE*>(FUN_455950, cargo);
+        data2 = Iter_Data(&player, 0);
+        cargo = Player_ActiveCargo(data2, 0);
+        BYTE* cbegin = CallThis<BYTE*>(FUN_455940, cargo);
+        BYTE* o = CallC<BYTE*>(FUN_457a40, cbegin, cend, *(Blob144*)copy);
+        BYTE* orders = Player_Orders(player, 0);
+        if (o == F(BYTE*, orders, 4)) {
+            orders = Player_Orders(player, orders);
+            BYTE** v = (BYTE**)orders;
+            if (v[1] != v[2]) {
+                Rec458a80_Construct(v[1], order);
+                v[1] += 144;
+            } else
+                CallThis(FUN_450960, v, v[1], order);
+            orders = Player_Orders(player, orders);
+            o = F(BYTE*, orders, 4) - 144;
+        }
+        orders = Player_Orders(player, orders);
+        *playerorderid = (int)(o - F(BYTE*, orders, 0)) / 144;
+        double old = F(double, o, 56);
+        F(double, o, 56) = q + old;
+        if (F(double, o, 56) < 0.0)
+            F(double, o, 56) = 0.0;
+        BYTE* rec = g_68ccb8 + F(int, o, 0) * 104;
+        double r16 = F(double, rec, 16), r24 = F(double, rec, 24);
+        double d = (F(double, o, 56) - old) * r16 + a;
+        if (d > 0.0)
+            F(double, o, 56) = F(double, o, 56) - d / r16;
+        d = (F(double, o, 56) - old) * r24 + b;
+        if (d > 0.0)
+            F(double, o, 56) = F(double, o, 56) - d / r24;
+        if (x87_eq(F(double, o, 56), 0.0)) {
+            *playerorderid = -1;
+            orders = Player_Orders(player, orders);
+            BYTE* end = F(BYTE*, orders, 4);
+            for (int n = (int)(end - (o + 144)) / 144; n > 0; n--, o += 144)
+                Order144_AssignThis(o, 0, o + 144);
+            end = F(BYTE*, orders, 4) - 144;
+            F(BYTE*, orders, 4) = end;
+            VecByteVec16_Destroy((BYTE**)(end + 120), 0);
+        } else
+            Order_SetPrice(player, (int*)o, 1, F(BYTE*, player, 520) != 0);
+        Order_Destroy(order);
+    }
+    CallC(FUN_442c60, player);
+    Trace_Leave(s_loadPresent);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// resetting the AI state
+
+ASM_PROC(FUN_4734f0)
+extern "C" void FUN_404290(); KING_ALIAS("_FUN_404290", "@Rec404290_Destroy@8")
+extern "C" void FUN_404570(); KING_ALIAS("_FUN_404570", "@Rec404570_Destroy@8")
+extern "C" void FUN_4046b0(); KING_ALIAS("_FUN_4046b0", "@Rec4046b0_Destroy@8")
+extern "C" void FUN_404790(); KING_ALIAS("_FUN_404790", "@Rec404790_Destroy@8")
+extern "C" void FUN_404920(); KING_ALIAS("_FUN_404920", "@Rec404920_Destroy@8")
+extern "C" void FUN_404ab0(); KING_ALIAS("_FUN_404ab0", "@Rec404ab0_Destroy@8")
+extern "C" void FUN_44af80(); KING_ALIAS("_FUN_44af80", "@Vec4_Erase2@16")
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" BYTE** __fastcall Values_Assign(BYTE** d, void*, BYTE* const* s);       // evaluator.cpp
+typedef DWORD Dwords55[55];
+typedef void* Ptrs3[3];
+ASM_VAR(Dwords55, r_rng68b9c8, $L_68b9c8)
+ASM_VAR(DWORD, r_rngI68baa4, $L_68baa4)
+ASM_VAR(DWORD, r_rngJ68baa8, $L_68baa8)
+ASM_VAR(BYTE, r_68d0ec, $L_68d0ec)
+ASM_VAR(double, r_68cfe8, $L_68cfe8)
+ASM_VAR(double, r_66c6f0, $L_66c6f0)
+ASM_VAR(BYTE, r_68d178, $L_68d178)
+ASM_VAR(Ptrs3, r_68cf28, $L_68cf28)
+ASM_VAR(Ptrs3, r_68a840, $L_68a840)
+ASM_VAR(Ptrs3, r_68a980, $L_68a980)
+ASM_VAR(Ptrs3, r_68cf60, $L_68cf60)
+ASM_VAR(Ptrs3, r_68cec0, $L_68cec0)
+ASM_VAR(Ptrs3, r_68cc98, $L_68cc98)
+ASM_VAR(Ptrs3, r_68cbe8, $L_68cbe8)
+ASM_VAR(Ptrs3, r_68cc18, $L_68cc18)
+ASM_VAR(Ptrs3, r_68ceb0, $L_68ceb0)
+ASM_VAR(Ptrs3, r_68a970, $L_68a970)
+ASM_VAR(Ptrs3, r_68cca8, $L_68cca8)
+ASM_VAR(Ptrs3, r_68a830, $L_68a830)
+ASM_VAR(Ptrs3, r_68cc88, $L_68cc88)
+ASM_VAR(Ptrs3, r_68a958, $L_68a958)
+ASM_VAR(int, r_68d188, $L_68d188)
+ASM_VAR(int, r_68d158, $L_68d158)
+ASM_VAR(BYTE, r_66c68c, $L_66c68c)
+typedef DWORD Dwords12[12];
+ASM_VAR(Dwords12, r_68ced0, $L_68ced0)      // 68ced0..68ceff: three 16-byte records
+ASM_VAR(int, r_68d14c, $L_68d14c)
+ASM_VAR(int, r_68d160, $L_68d160)
+ASM_VAR(int, r_68d164, $L_68d164)
+ASM_VAR(DWORD, r_66c6d8, $L_66c6d8)
+ASM_VAR(DWORD, r_66c6dc, $L_66c6dc)
+ASM_VAR(int, r_68cf54, $L_68cf54)
+ASM_VAR(int, r_68a964, $L_68a964)
+ASM_VAR(int, r_68d0a0, $L_68d0a0)
+ASM_VAR(int, r_68bb54, $L_68bb54)
+ASM_VAR(int, r_68a968, $L_68a968)
+ASM_VAR(int, r_68a98c, $L_68a98c)
+ASM_VAR(int, r_68d01c, $L_68d01c)
+ASM_VAR(int, r_68cfe4, $L_68cfe4)
+ASM_VAR(int, r_68d0e4, $L_68d0e4)
+ASM_VAR(int, r_68cf34, $L_68cf34)
+ASM_VAR(BYTE, r_66f62a, $L_66f62a)
+ASM_VAR(BYTE, r_68d31c, $L_68d31c)
+ASM_VAR(int, r_68d18c, $L_68d18c)
+ASM_VAR(double, r_68d190, $L_68d190)
+ASM_VAR(int, r_66c700, $L_66c700)
+ASM_VAR(int, r_66c6e0, $L_66c6e0)
+ASM_VAR(double, r_66c6f8, $L_66c6f8)
+ASM_VAR(double, r_68d128, $L_68d128)
+ASM_VAR(BYTE, r_68d130, $L_68d130)
+ASM_VAR(BYTE, r_66c60a, $L_66c60a)
+ASM_VAR(int, r_68d134, $L_68d134)
+ASM_VAR(BYTE, r_68d138, $L_68d138)
+ASM_VAR(double, r_66c710, $L_66c710)
+
+// deletes every object of a pointer vector (destructor + operator delete)
+static void Ptrs_DeleteAll(Ptrs3& v, void (*dtor)())
+{
+    for (void** e = (void**)v[0]; e != (void**)v[1]; e++)
+        if (*e) {
+            CallThis(dtor, *e);
+            operator delete(*e);
+        }
+}
+
+// *v = n zero dwords
+static void Dwords_AssignZeros(Ptrs3& v, int n)
+{
+    DWORD z[12] = {0};
+    DWORD* t[2] = {z, z + n};
+    VecDword_Assign((DWORD**)v, 0, t);
+}
+
+// [FUN_403940] resets the AI: random generator, settings, tables and lists; deletes towns, roads and the rest
+extern "C" void __cdecl Ai_Reset()
+{
+    r_68d0ec = 0;
+    memset(r_rng68b9c8, 0, sizeof r_rng68b9c8);
+    DWORD seed = 161803398, current = 1;
+    r_rng68b9c8[54] = seed;
+    for (unsigned offset = 0; offset < 1134; offset += 21) {
+        unsigned slot = offset % 55;
+        seed -= current;
+        r_rng68b9c8[slot] = current;
+        current = seed;
+        seed = r_rng68b9c8[slot];
+    }
+    for (int pass = 0; pass < 4; pass++)
+        for (unsigned i = 0; i < 55; i++)
+            r_rng68b9c8[i] -= r_rng68b9c8[(i + 31) % 55];
+    r_rngI68baa4 = 0;
+    r_rngJ68baa8 = 31;
+    r_68cfe8 = 40000.0;
+    r_66c6f0 = 1.0;
+    r_68d178 = 0;
+
+    Dwords_AssignZeros(r_68cf28, 12);
+    DWORD* c = (DWORD*)r_68cf28[0];
+    c[1] = 1;
+    c[2] = 8;
+    c[5] = 3;
+    c[6] = 3;
+    c[7] = 0;
+    c[8] = 50;
+    c[9] = 150;
+    {
+        BYTE z[144] = {0};
+        BYTE* t[2] = {z, z + 144};
+        Values_Assign((BYTE**)r_68a840, 0, t);
+    }
+
+    r_68d188 = 0;
+    r_68d158 = 0;
+    r_66c68c = 1;
+    memset(r_68ced0, 0, sizeof r_68ced0);
+    r_68ced0[8] = 2;
+    r_68ced0[4] = 1;
+    r_68d14c = 0;
+    r_68d160 = 3;
+    CallThis(FUN_44af80, r_68a980, r_68a980[0], r_68a980[1]);
+    r_68d164 = 0;
+    CallThis(FUN_44af80, r_68cf60, r_68cf60[0], r_68cf60[1]);
+    r_66c6d8 = 0xFFFFFFFF;
+    r_66c6dc = 0x7FEFFFFF;
+    Ptrs_DeleteAll(r_68cec0, FUN_404290);
+    r_68cec0[1] = r_68cec0[0];
+    Ptrs_DeleteAll(r_68cc98, FUN_404570);
+    r_68cc98[1] = r_68cc98[0];
+    Ptrs_DeleteAll(r_68cbe8, FUN_4046b0);
+    r_68cbe8[1] = r_68cbe8[0];
+    Ptrs_DeleteAll(r_68cc18, FUN_404790);
+    CallThis(FUN_44af80, r_68cc18, r_68cc18[0], r_68cc18[1]);
+    Ptrs_DeleteAll(r_68ceb0, FUN_404920);
+    CallThis(FUN_44af80, r_68ceb0, r_68ceb0[0], r_68ceb0[1]);
+    Ptrs_DeleteAll(r_68a970, FUN_404ab0);
+    CallThis(FUN_44af80, r_68a970, r_68a970[0], r_68a970[1]);
+    CallC(FUN_4734f0);
+    while (*(void**)g_68cf6c != g_68cf6c) {
+        void* begin;
+        CallThis(FUN_4afbf0, &g_68cf6c, &begin);
+        Ai_DestroyPresentSilently((void**)begin);
+    }
+    List12_Clear((void***)&g_68cf6c, 0);
+
+    r_68cf54 = r_68a964 = r_68d0a0 = r_68bb54 = 5;
+    r_68a968 = 0;
+    r_68a98c = 2;
+    r_68d01c = 0;
+    r_68cfe4 = 0;
+    r_68d0e4 = 0;
+    r_68cf34 = 0;
+    Dwords_AssignZeros(r_68cca8, 12);
+    Dwords_AssignZeros(r_68a830, 12);
+    r_66f62a = 1;
+    r_68d31c = 0;
+    r_68d18c = 0;
+    Dwords_AssignZeros(r_68cc88, 8);
+    r_68d190 = 0.0;
+    r_66c700 = 7;
+    r_66c6e0 = 3;
+    r_66c6f8 = 300.0;
+    r_68d128 = 0.0;
+    r_68d130 = 0;
+    r_66c60a = 1;
+    r_68d134 = 0;
+    r_68d138 = 0;
+    r_66c710 = 0.51;
+    for (BYTE* e = (BYTE*)r_68a958[0]; e != (BYTE*)r_68a958[1]; e += 56) {
+        F(int, e, 28) = 0;
+        F(int, e, 32) = 0;
+    }
 }

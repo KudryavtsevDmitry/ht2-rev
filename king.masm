@@ -1126,6 +1126,9 @@ PUBLIC $L_66c730, $L_68bacc, $L_68d1a4
 PUBLIC $L_68cfe8, $L_68d144, $L_68d148, $L_68d178, $L_68d1a0, $L_66c60c
 PUBLIC $L_68cc0c
 PUBLIC $L_66dde8
+PUBLIC $L_66f898
+PUBLIC $L_66c60a, $L_66c68c, $L_66c6d8, $L_66c6dc, $L_66c6f8, $L_66c700
+PUBLIC $L_66c710, $L_66f62a, $L_68d0ec, $L_68d134
 
 ;===================================
 _TEXT SEGMENT
@@ -6935,6 +6938,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_403940 PROC
 
             push EBP
@@ -7730,6 +7735,10 @@ $L_404246::
             pop EBP
             ret 
 FUN_403940 ENDP
+ELSE
+EXTERN _Ai_Reset:PROC
+FUN_403940 TEXTEQU <_Ai_Reset>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -110454,6 +110463,8 @@ FUN_442c60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_442e10 PROC
 
             push EBP
@@ -111390,6 +111401,10 @@ $L_4437e8::
             pop EBP
             ret 
 FUN_442e10 ENDP
+ELSE
+EXTERN _Ai_LoadPresent:PROC
+FUN_442e10 TEXTEQU <_Ai_LoadPresent>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
