@@ -665,7 +665,7 @@ extern "C" void FUN_4566c0(); KING_ALIAS("_FUN_4566c0", "_Player_NotValid")    /
 ASM_PROC(FUN_436ef0)
 extern "C" void FUN_404c70(); KING_ALIAS("_FUN_404c70", "_Town_ById")    // the index of a VrIndex (out, id)
 ASM_PROC(FUN_440970)
-ASM_PROC(FUN_441120)
+extern "C" void FUN_441120(); KING_ALIAS("_FUN_441120", "_Ai_GetOrderInfoIdx")
 ASM_VAR(BYTE*, g_playersHead, $L_68b990)
 ASM_VAR(AsmLabel, s_clearPlayerFromMafia, $L_66da10)
 ASM_VAR(AsmLabel, s_clearPlayerFromTail, $L_66da38)
@@ -11646,30 +11646,29 @@ static void Adv_Check(const PositionId& p, int line)
     }
 }
 
-static PositionId* Adv_Leave(PositionId* out, const PositionId& pos)
+static PositionId* Adv_Leave(PositionId* out, const PositionId& pos, const char* name)
 {
     *out = pos;
     Buf_Append(&g_trace, 0, g_tagMpl, 8);
-    Buf_AppendString(&g_trace, 0, s_advancePosition);
+    Buf_AppendString(&g_trace, 0, name);
     return out;
 }
 
-// [FUN_43b570] advancePosition: moves a position by *offset along the player's hops, passing from road to road
-// at the hop nodes (and telling the player when sendmessage)
-extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid, BYTE* player, PositionId pos,
-                                                   double* offset, bool sendmessage)
+// advancePosition: moves a position by *offset along the hops, passing from road to road at the hop nodes
+// (telling the player when send); lines: the error lines (entry, hops 1, hops 4, sent, exit)
+static PositionId* Adv_Run(PositionId* out, HopVec* hops, int playerid, BYTE* player, PositionId pos, double* offset,
+                           bool sendmessage, const char* name, const int* lines)
 {
-    Trace_EnterBuffered(s_advancePosition);
+    Trace_EnterBuffered(name);
     {
         PositionId c = pos;
         if (!Position_Valid(&c, 0)) {
             sprintf(g_positionText76, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, pos.m_24);
-            AiError(33, 100, s_mainFile, s_mainId, 15722, "Invalid id", "PositionId", g_positionText76);
+            AiError(33, 100, s_mainFile, s_mainId, lines[0], "Invalid id", "PositionId", g_positionText76);
         }
     }
     if (x87_eq(*offset, 0.0))
-        return Adv_Leave(out, pos);
-    HopVec* hops = (HopVec*)(player + 16);
+        return Adv_Leave(out, pos, name);
     BYTE** hv = (BYTE**)hops;
     if ((hv[1] - hv[0]) / 12 == 1) {
         out->road = -1;
@@ -11680,7 +11679,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid,
         out->m_24 = 0;
         out->m_28 = -1;
         Buf_Append(&g_trace, 0, g_tagMpl, 8);
-        Buf_AppendString(&g_trace, 0, s_advancePosition);
+        Buf_AppendString(&g_trace, 0, name);
         return out;
     }
     {
@@ -11720,7 +11719,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid,
             if (e == g_roadEdges[pos.road]) {
                 Road_DumpHops(hops, s_failHops66e800);
                 *offset = 0.0;
-                return Adv_Leave(out, pos);
+                return Adv_Leave(out, pos, name);
             }
             if (node == F(int, e->from, 16))
                 Road_StartOf(&pos, e->id);
@@ -11729,7 +11728,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid,
                 pos.m_24 |= 1;
             } else {
                 Road_DumpHops(hops, s_failHops66e800);
-                AiError(0, 100, s_mainFile, s_mainId, 15786, s_hops1_66e7e4, &g_aiEmpty, &g_aiEmpty);
+                AiError(0, 100, s_mainFile, s_mainId, lines[1], s_hops1_66e7e4, &g_aiEmpty, &g_aiEmpty);
             }
         } else {
             if (r == begin)
@@ -11742,7 +11741,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid,
             if (e == g_roadEdges[pos.road]) {
                 Road_DumpHops(hops, s_failHops66e800);
                 *offset = 0.0;
-                return Adv_Leave(out, pos);
+                return Adv_Leave(out, pos, name);
             }
             if (node == F(int, e->from, 16)) {
                 Road_StartOf(&pos, e->id);
@@ -11751,23 +11750,212 @@ extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid,
                 Road_EndOf(&pos, e->id);
             else {
                 Road_DumpHops(hops, s_failHops66e800);
-                AiError(0, 100, s_mainFile, s_mainId, 15829, s_hops4_66e7c8, &g_aiEmpty, &g_aiEmpty);
+                AiError(0, 100, s_mainFile, s_mainId, lines[2], s_hops4_66e7c8, &g_aiEmpty, &g_aiEmpty);
             }
         }
         if (sendmessage) {
             CallC(FUN_40b100, playerid, pos.node, 0, 0, 0, 0, 0, 0);
-            Adv_Check(pos, 15840);
+            Adv_Check(pos, lines[3]);
             Player_SetPosition(player, 0, &pos);
         }
         pos = Adv_Step(pos, offset);
         node = pos.node;
     }
-    Adv_Check(pos, 15853);
-    if (pos.m_28 == -1 && player) {
+    Adv_Check(pos, lines[4]);
+    if (pos.m_28 == -1 && hops) {
         DWORD* d = (DWORD*)&pos;
         pos.m_28 = CallC<int>(FUN_43ab10, hops, d[0], d[1], d[2], d[3], d[4], d[5], d[6], d[7]);
     }
     *out = pos;
-    Trace_Leave(s_advancePosition);
+    Trace_Leave(name);
     return out;
+}
+
+// [FUN_43b570] advancePosition (player): along the player's hops, telling it when sendmessage
+extern "C" PositionId* __cdecl Ai_AdvancePosition(PositionId* out, int playerid, BYTE* player, PositionId pos,
+                                                   double* offset, bool sendmessage)
+{
+    static const int lines[] = {15722, 15786, 15829, 15840, 15853};
+    return Adv_Run(out, (HopVec*)(player + 16), playerid, player, pos, offset, sendmessage, s_advancePosition, lines);
+}
+
+static const char s_advancePositionHops[] = "advancePosition(vector<Hop> & hops, PositionId pos, double & offset)";
+
+// [FUN_43ade0] advancePosition (hops)
+extern "C" PositionId* __cdecl Ai_AdvancePositionHops(PositionId* out, HopVec* hops, PositionId pos, double* offset)
+{
+    static const int lines[] = {15594, 15658, 15701, 0, 15708};
+    return Adv_Run(out, hops, 0, 0, pos, offset, false, s_advancePositionHops, lines);
+}
+
+// ---------------------------------------------------------------------------
+// reading a 100-byte record of the script
+
+ASM_PROC(FUN_40b4a0)    // a value of a list (list by value)
+extern "C" BYTE* __fastcall Rec40c220_Copy(BYTE* self, void*, const BYTE* s);
+extern "C" void FUN_40c1a0(); KING_ALIAS("_FUN_40c1a0", "@ValueBuf_Destroy@8")
+
+// the number value of the list head
+static double Head_Number(StrRef* l)
+{
+    StrRef m;
+    Str_Member20(&m, l);
+    double v = CallThis<double>(FUN_4b0e90, m.ptr);
+    CallThis(FUN_4a36c0, &m);
+    return v;
+}
+
+// [FUN_40b920] reads a record: (name - number number (number number [value [number]]) number int bytes)
+extern "C" BYTE* __cdecl Ai_ReadRecord40b920(BYTE* out, void* reader, StrRef h)
+{
+    BYTE r[100];
+    memset(r, 0, sizeof r);
+    char alloc;
+    F(double, r, 80) = 1.0;
+    CallThis(FUN_487730, r + 88, &alloc);
+    {
+        StrRef m;
+        Str_Member20(&m, &h);
+        Ref_Assign((StrRef*)r, &m);
+        Str_Release(&m);
+    }
+    List_Next(&h);
+    List_Next(&h);
+    F(double, r, 16) = Head_Number(&h);
+    List_Next(&h);
+    F(double, r, 24) = Head_Number(&h);
+    List_Next(&h);
+    StrRef l;
+    Str_Member20(&l, &h);
+    List_Next(&l);
+    F(double, r, 40) = Head_Number(&l);
+    List_Next(&l);
+    F(double, r, 32) = Head_Number(&l);
+    List_Next(&l);
+    if ((BYTE)l.flags == 2) {
+        StrRef m;
+        Str_Member20(&m, &l);
+        F(int, r, 48) = CallC<int>(FUN_40b4a0, m.ptr, m.len, m.flags);
+        List_Next(&l);
+        if ((BYTE)l.flags == 2)
+            F(double, r, 80) = Head_Number(&l);
+    }
+    List_Next(&h);
+    F(double, r, 64) = Head_Number(&h);
+    List_Next(&h);
+    {
+        StrRef m;
+        Str_Member20(&m, &h);
+        F(int, r, 72) = CallThis<int>(FUN_4b0ea0, m.ptr);
+        CallThis(FUN_4a36c0, &m);
+    }
+    List_Next(&h);
+    {
+        StrRef m;
+        Str_Member20(&m, &h);
+        PodVec_Assign((BYTE**)(r + 88), 0, (BYTE* const*)(m.ptr + 12));
+        CallThis(FUN_4a36c0, &m);
+    }
+    Rec40c220_Copy(out, 0, r);
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_40c1a0, r);
+    CallThis(FUN_4a36c0, &h);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// getOrderInfo (town index)
+
+static const char s_getOrderInfoIdx[] = "getOrderInfo(PlayerId player, TownId town, int _orderid, OrderInfo & oi)";
+
+static int OrderInfo_Leave(int r)
+{
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, s_getOrderInfoIdx);
+    return r;
+}
+
+// [FUN_441120] getOrderInfo: fills oi with a town's order as the player would take it (cargo, towns, times,
+// money); -1 no such order, -2 none for the player, -27 an invalid order
+extern "C" int __cdecl Ai_GetOrderInfoIdx(BYTE* player, int town, int order, BYTE* oi)
+{
+    Trace_EnterBuffered(s_getOrderInfoIdx);
+    F(BYTE, oi, 184) = 0;
+    BYTE* t = (BYTE*)g_towns[town];
+    if ((unsigned)((F(BYTE*, t, 32) - F(BYTE*, t, 28)) >> 4) <= (unsigned)order)
+        return OrderInfo_Leave(-1);
+    BYTE* entry = F(BYTE*, t, 28) + order * 16;
+    BYTE* rec = 0;
+    BYTE* data = player + 8;
+    if (data) {
+        BYTE* v = F(BYTE*, data, 508);
+        if (v) {
+            int kind = F(int, ((BYTE**)g_vehicles)[F(int, v, 4)], 32);
+            if (kind == 2 || kind == 3)
+                rec = F(BYTE*, entry, 8);
+        }
+        if (!(BYTE)Player_HasTrader(data))
+            rec = F(BYTE*, entry, 12);
+    }
+    if (!rec)
+        return OrderInfo_Leave(-2);
+    if (F(int, rec, 0) == -1) {
+        AiError(0, 200, s_mainFile, s_mainId, 17078, "Internal error 05712", &g_aiEmpty, &g_aiEmpty);
+        return OrderInfo_Leave(-27);
+    }
+    F(int, oi, 0) = F(int, rec, 0);
+    int dest = F(int, rec, 12);
+    BYTE* tmpl = g_68ccb8 + F(int, rec, 0) * 104;
+    PodVec_Assign((BYTE**)(oi + 52), 0, (BYTE* const*)(tmpl + 88));
+    if (F(int, rec, 8) != -1)
+        PodVec_Assign((BYTE**)(oi + 52), 0, (BYTE* const*)(g_68ccb8 + F(int, rec, 8) * 104 + 88));
+    CharVec_Erase(oi + 64, 0, F(BYTE*, oi, 64), F(BYTE*, oi, 68));
+    PodVec_Assign((BYTE**)(oi + 76), 0, (BYTE* const*)((BYTE*)g_towns[town] + 12));
+    PodVec_Assign((BYTE**)(oi + 88), 0, (BYTE* const*)((BYTE*)g_towns[dest] + 12));
+    F(BYTE*, oi, 100) = F(BYTE*, oi, 52);
+    F(int, oi, 48) = dest;
+    F(BYTE*, oi, 112) = F(BYTE*, oi, 88);
+    F(int, oi, 120) = 0;
+    F(int, oi, 128) = 0;
+    F(int, oi, 104) = 0;
+    F(BYTE*, oi, 108) = F(BYTE*, oi, 76);
+    F(int, oi, 124) = 0;
+    F(int, oi, 132) = 0;
+    F(int, oi, 136) = F(int, rec, 24);
+    F(int, oi, 140) = F(int, rec, 28);
+    F(int, oi, 144) = 0;
+    F(int, oi, 152) = 0;
+    F(int, oi, 148) = 0;
+    F(int, oi, 156) = 0;
+    F(int, oi, 160) = F(int, tmpl, 64);
+    F(int, oi, 164) = F(int, tmpl, 68);
+    F(double, oi, 168) = F(double, rec, 16) - CallC<double>(FUN_401000);
+    if (F(double, oi, 168) < 0.0)
+        F(double, oi, 168) = 0.0;
+    if (player != g_playersHead) {
+        double a, b, q;
+        Costs_Balance(player, &a, &b, &q, tmpl);
+        F(double, oi, 144) = a;
+        F(double, oi, 152) = b;
+        BYTE o[144];
+        Order_Construct(o, 0);
+        DWORD pos[8] = {(DWORD)-1, F(DWORD, entry, 0), 0, 0, 0, 0, 0, (DWORD)-1};
+        DWORD qd[2];
+        memcpy(qd, &q, 8);
+        CallC(FUN_4715f0, o, rec, town, pos[0], pos[1], pos[2], pos[3], pos[4], pos[5], pos[6], pos[7], qd[0], qd[1]);
+        Order_SetPrice(player, (int*)o, 0, F(BYTE*, player, 520) != 0);
+        if (F(BYTE*, player, 520))
+            F(double, oi, 136) = g_bonus66f898 * F(double, oi, 136);
+        double pay = Order_Pay(o, 0.0, 1);
+        F(double, oi, 120) = pay;
+        F(double, oi, 128) = pay;
+        BYTE* c = F(BYTE*, player, 516);
+        if (c && F(int, F(BYTE*, c, 16), 160) && F(int, rec, 4) != -1) {
+            PodVec_Assign((BYTE**)(oi + 64), 0, (BYTE* const*)(g_68ccb8 + F(int, rec, 4) * 104 + 88));
+            F(BYTE*, oi, 104) = F(BYTE*, oi, 64);
+        }
+        Order_Destroy(o);
+    }
+    F(BYTE, oi, 184) = 1;
+    return OrderInfo_Leave(0);
 }
