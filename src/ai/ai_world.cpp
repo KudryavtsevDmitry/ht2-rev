@@ -662,7 +662,7 @@ extern "C" bool __fastcall Item_Matches(BYTE** self, void*, BYTE* x);
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")    // the object of a list iterator
 extern "C" void FUN_427220(); KING_ALIAS("_FUN_427220", "_Players_Forget")
 extern "C" void FUN_4566c0(); KING_ALIAS("_FUN_4566c0", "_Player_NotValid")    // whether a player id is invalid
-ASM_PROC(FUN_436ef0)
+extern "C" void FUN_436ef0(); KING_ALIAS("_FUN_436ef0", "_Ai_GetPositionIdVRoom")
 extern "C" void FUN_404c70(); KING_ALIAS("_FUN_404c70", "_Town_ById")    // the index of a VrIndex (out, id)
 ASM_PROC(FUN_440970)
 extern "C" void FUN_441120(); KING_ALIAS("_FUN_441120", "_Ai_GetOrderInfoIdx")
@@ -768,8 +768,8 @@ unsigned __fastcall Rng_Random(void* s, void*, unsigned n) { return R(s)->Random
 // Batch 2: players, vehicles, towns
 
 extern "C" DWORD* __cdecl Copy32(const DWORD* first, const DWORD* last, DWORD* to);   // aimult.cpp
-extern "C" void __cdecl AI_Grow421d90(int* entry, int a, int b);
-KING_ALIAS("_AI_Grow421d90", "FUN_421d90")
+extern "C" void __cdecl AI_Grow421d90(int* entry, int a, int b);   // = Ai_CreateDealerForSale (double as two ints)
+KING_ALIAS("_AI_Grow421d90", "_Ai_CreateDealerForSale")
 extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "FUN_401000")
 ASM_VAR(PtrVec, g_68a980, $L_68a980)
@@ -5543,7 +5543,7 @@ extern "C" BYTE** __cdecl Players_SlowList(BYTE** out, BYTE* first, BYTE* last)
 }
 
 ASM_PROC(FUN_436900)    // getPositionId(vrVector)
-ASM_PROC(FUN_436bd0)    // getPositionId(RoomId, vrVector)
+extern "C" void FUN_436bd0(); KING_ALIAS("_FUN_436bd0", "_Ai_GetPositionIdRoom")    // getPositionId(RoomId, vrVector)
 ASM_VAR(char, s_getPositionIdV, $L_66e538)       // "getPositionId(vrVector _v)"
 ASM_VAR(char, s_getPositionIdRV, $L_66e554)      // "getPositionId(RoomId room, vrVector _v)"
 ASM_VAR(BYTE*, g_roomsBegin68d0d8, $L_68d0d8)
@@ -11607,7 +11607,7 @@ extern "C" void __cdecl Ai_ReadPlayerType(int, StrRef h)
 // advancePosition
 
 ASM_PROC(FUN_40b100)    // (playerid, node, 24-byte struct by value)
-ASM_PROC(FUN_43ab10)    // the hop index of a position (hops, PositionId32 by value)
+extern "C" void FUN_43ab10(); KING_ALIAS("_FUN_43ab10", "_Ai_FindPositionHops")    // the hop index of a position (hops, PositionId32 by value)
 extern "C" PositionId* __cdecl Road_StartOf(PositionId* out, int road);
 extern "C" PositionId* __cdecl Road_EndOf(PositionId* out, int road);
 extern "C" void __cdecl Road_DumpHops(const HopVec* hops, const char* path);
@@ -14088,4 +14088,453 @@ extern "C" int __cdecl Ai_MerchandiseFlags(StrRef h)
     }
     CallThis(FUN_4a36c0, &h);
     return flags;
+}
+
+// ---------------------------------------------------------------------------
+// findPosition(vector<Hop> & hops, PositionId pos)
+
+ASM_VAR(AsmLabel, s_findPositionHops, $L_66e794)
+
+static int FindPositionHops_Leave(int r)
+{
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_findPositionHops);
+    return r;
+}
+
+// [FUN_43ab10] findPosition: the index of the hop with pos's edge (else its node), searched from the hint m_28 first
+// (as the original, only when the hint is past the end); -1 when none
+extern "C" int __cdecl Ai_FindPositionHops(HopVec* hops, PositionId pos)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_findPositionHops);
+    int hint = pos.m_28;
+    BYTE* begin = (BYTE*)hops->begin;
+    BYTE* end = (BYTE*)hops->end;
+    if (pos.road != -1) {
+        int e = (int)g_roadEdges[pos.road];
+        int n = (int)(end - begin) / 12;
+        BYTE* it;
+        if (!(n >= hint) && hint >= 0) {
+            it = Find12ByField4(begin + hint * 12, end, e);
+            if (it == end)
+                it = Find12ByField4(begin, end, e);
+        } else
+            it = Find12ByField4(begin, end, e);
+        if (it != (BYTE*)hops->end)
+            return FindPositionHops_Leave((int)(it - (BYTE*)hops->begin) / 12);
+    }
+    if (pos.node != -1) {
+        begin = (BYTE*)hops->begin;
+        end = (BYTE*)hops->end;
+        int n = (int)(end - begin) / 12;
+        BYTE* it;
+        if (!(n >= hint) && hint >= 0) {
+            it = Find12ByField0(begin + hint * 12, end, pos.node);
+            if (it == end)
+                it = Find12ByField0(begin, end, pos.node);
+        } else
+            it = Find12ByField0(begin, end, pos.node);
+        if (it != (BYTE*)hops->end)
+            return FindPositionHops_Leave((int)(it - (BYTE*)hops->begin) / 12);
+    }
+    return FindPositionHops_Leave(-1);
+}
+
+// ---------------------------------------------------------------------------
+// createDealerForSale(ParkingData & parkingData, double distance)
+
+ASM_PROC(FUN_418c10)    // a free parking place (out town, out place, parking data, double distance)
+ASM_PROC(FUN_421a20)    // a new player at a position (out, PositionId32, int, int)
+ASM_VAR(AsmLabel, s_createDealerForSale, $L_66d8a4)
+
+// [FUN_421d90] createDealerForSale: a dealer created on a free place of a parking (its town's place taken)
+extern "C" void __cdecl Ai_CreateDealerForSale(int* parking, double distance)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_createDealerForSale);
+    int townOut, place = -1;
+    int town = *CallC<int*>(FUN_418c10, &townOut, &place, parking, distance);
+    BYTE* places = F(BYTE*, (BYTE*)g_68cc98[town], 28);
+    PositionId at;
+    PositionInit(&at, F(int, places, place * 36));
+    BYTE* d;
+    CallC(FUN_421a20, &d, at, 0, -1);
+    F(int, d, 100) = 256;
+    parking[1]++;
+    AdvanceRoad_Check(&F(PositionId, d, 40), 7816);
+    F(int, d, 120) = town;
+    F(int, d, 124) = place;
+    BYTE* slot = F(BYTE*, (BYTE*)g_68cc98[town], 28) + place * 36;
+    if (F(void*, slot, 8) != g_players)
+        AiError(0, 100, s_mainFile, s_mainId, 7822, "Internal error 97725", &g_aiEmpty, &g_aiEmpty);
+    slot = F(BYTE*, (BYTE*)g_68cc98[town], 28) + place * 36;
+    F(BYTE*, slot, 8) = d;
+    F(DWORD, slot, 4) |= 1;
+    F(int, (BYTE*)g_68cc98[town], 40)++;
+    F(int*, d, 972) = parking;
+    BYTE* c = F(BYTE*, d, 516);
+    DWORD fl = F(DWORD, c, 40) & ~3u;
+    F(DWORD, c, 40) = fl;
+    switch (parking[0]) {
+    case 0:
+        break;
+    case 1:
+        F(DWORD, c, 40) = fl | 1;
+        break;
+    case 2:
+        F(DWORD, c, 40) = fl | 2;
+        break;
+    default:
+        AiError(0, 1, s_mainFile, s_mainId, 7844, "Internal error 3020", &g_aiEmpty, &g_aiEmpty);
+    }
+    F(DWORD, d, 96) |= 64;
+    F(DWORD, F(BYTE*, (BYTE*)g_68cc98[F(int, d, 120)], 28) + F(int, d, 124) * 36, 4) |= 1;
+    F(int, F(BYTE*, d, 972), 12)++;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_createDealerForSale);
+}
+
+// ---------------------------------------------------------------------------
+// accountForGuilt(PlayerId player)
+
+ASM_VAR(AsmLabel, s_accountForGuilt, $L_66f100)
+
+// [FUN_442850] accountForGuilt: whether the player's orders make it carry illegal goods (+200) and is noticed for
+// them (+201, by chance per order), and whether its vehicle counts as stolen (+264)
+extern "C" void __cdecl Ai_AccountForGuilt(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_accountForGuilt);
+    bool illegal = false, noticed = false;
+    int seen = -1;
+    BYTE** v = (BYTE**)Player_Orders(p, 0);
+    for (BYTE* it = v[0];; it += 144) {
+        v = (BYTE**)Player_Orders(p, (BYTE*)v);
+        if (it == v[1])
+            break;
+        BYTE* tmpl = g_68ccb8 + F(int, it, 0) * 104;
+        if (F(int, it, 4) != -1) {
+            illegal = true;
+            if ((g_68ccb8[F(int, it, 4) * 104 + 48] & 2) && (PlayerId_Over015(0, 0) & 0xff))
+                noticed = true;
+        }
+        if ((tmpl[48] & 2) && (PlayerId_Over015(0, 0) & 0xff))
+            noticed = true;
+        if (!illegal) {
+            if (!noticed)
+                continue;
+            double limit = F(double, it, 64) < 10000.0 ? 500000.0 : 200000.0;
+            if ((double)Rng_Random(g_rng68b9c8, 0, 1000000) < limit)
+                noticed = false;
+        } else {
+            if ((double)Rng_Random(g_rng68b9c8, 0, 1000000) < 200000.0) {
+                noticed = false;
+                illegal = false;
+                continue;
+            }
+            if (!noticed)
+                continue;
+            if (F(int, it, 136) == -1) {
+                AiRandom();
+                F(int, it, 136) = 0;
+            }
+            seen = F(int, it, 136);
+        }
+    }
+    if (illegal) {
+        if (noticed && seen != 1)
+            noticed = false;
+        F(BYTE, p, 200) = !(noticed && seen == 1) ? 1 : 0;
+    } else
+        F(BYTE, p, 200) = 0;
+    F(BYTE, p, 201) = noticed;
+    if (F(DWORD, F(BYTE*, p, 516), 40) & 2)
+        F(BYTE, p, 264) = (double)(AiRandom() % 1000000) < 500000.0;
+    else
+        F(BYTE, p, 264) = 0;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_accountForGuilt);
+}
+
+// ---------------------------------------------------------------------------
+// getPositionIdV(RoomId room, dvector3 const & v)
+
+ASM_VAR(AsmLabel, s_getPositionIdVRoom, $L_66e508)
+
+// the position of the room's road objects closest to v (with skip, not those flagged 0x20)
+static PositionId* RoomPosition_Find(PositionId* out, int room, const DVec3* v, const char* name, bool skip, int line1,
+                                     int line2)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, name);
+    if (room < 0 || (unsigned)room >= (unsigned)(g_registry52End - g_registry52)) {
+        sprintf(g_text77e460, "(%d)", room);
+        AiError(33, 100, s_mainFile, s_mainId, line1, s_invalidId, "RoomId", g_text77e460);
+    }
+    double md = 1.7976931348623157e308, d = 0;
+    int seg = 0, best = 0;
+    BYTE* r = g_registry52[room];
+    BYTE** objs = F(BYTE**, r, 28);
+    if (objs == F(BYTE**, r, 32)) {
+        out->road = -1;
+        out->node = -1;
+        out->m_28 = -1;
+        out->t = 0;
+        out->segment = 0;
+        out->object = 0;
+        out->m_24 = 0;
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(name);
+        return out;
+    }
+    for (unsigned i = 0; i < (unsigned)(F(BYTE**, r, 32) - F(BYTE**, r, 28)); i++) {
+        BYTE* o = F(BYTE**, r, 28)[i];
+        if (!(skip && ((F(DWORD, o ? o + 8 : 0, 0) >> 5) & 1)) && CallVirt<int>(o, 12, v, &md, &d, &seg))
+            best = i;
+    }
+    BYTE* o = F(BYTE**, g_registry52[room], 28)[best];
+    PositionId p;
+    p.road = F(int, o, 12);
+    p.node = -1;
+    p.t = d;
+    p.segment = seg;
+    p.object = F(int, o, 24);
+    p.m_24 = 0;
+    p.m_28 = -1;
+    PositionId chk = p;
+    if (!PositionValid(&chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", p.road, p.t, p.segment, p.object, 0);
+        AiError(33, 100, s_mainFile, s_mainId, line2, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    *out = p;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(name);
+    return out;
+}
+
+ASM_VAR(AsmLabel, s_getPositionIdRoom, $L_66e4d8)
+
+// [FUN_436ef0] getPositionIdV: the position of the room's road objects (not flagged 0x20) closest to v
+extern "C" PositionId* __cdecl Ai_GetPositionIdVRoom(PositionId* out, int room, const DVec3* v)
+{
+    return RoomPosition_Find(out, room, v, s_getPositionIdVRoom, true, 14831, 14844);
+}
+
+// [FUN_436bd0] getPositionId: the position of the room's road objects closest to v
+extern "C" PositionId* __cdecl Ai_GetPositionIdRoom(PositionId* out, int room, const DVec3* v)
+{
+    return RoomPosition_Find(out, room, v, s_getPositionIdRoom, false, 14790, 14803);
+}
+
+// ---------------------------------------------------------------------------
+// getPositionIdEx(RoomId room, dvector3 const & v)
+
+ASM_VAR(AsmLabel, s_getPositionIdEx, $L_66e470)
+
+// [FUN_4365d0] getPositionIdEx: the position on the room's edges closest to v (anywhere when room is -1)
+extern "C" PositionId* __cdecl Ai_GetPositionIdEx(PositionId* out, int room, const DVec3* v)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_getPositionIdEx);
+    if (room == -1) {
+        CallC(FUN_436900, out, v);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_getPositionIdEx);
+        return out;
+    }
+    double md = 1.7976931348623157e308, d = 0;
+    int seg = 0, best = 0;
+    if (g_roadEdges == g_roadEdgesEnd)
+        AiError(0, 100, s_mainFile, s_mainId, 14730, "No roads defined", &g_aiEmpty, &g_aiEmpty);
+    bool notFound = true;
+    RoadEdge** found = 0;
+    BYTE* r = g_registry52[room];
+    for (RoadEdge** it = F(RoadEdge**, r, 40); it != F(RoadEdge**, g_registry52[room], 44); it++) {
+        RoadEdge* e = *it;
+        bool hit = false;
+        for (unsigned i = 0; i < (unsigned)(e->objectsEnd - e->objects); i++)
+            if (CallVirt<int>(e->objects[i], 12, v, &md, &d, &seg)) {
+                hit = true;
+                best = i;
+            }
+        if (hit) {
+            found = it;
+            notFound = false;
+        }
+    }
+    if (notFound)
+        AiError(0, 100, s_mainFile, s_mainId, 14744, "Internal error 59812", &g_aiEmpty, &g_aiEmpty);
+    PositionId p;
+    p.road = F(int, *found, 12);
+    p.node = -1;
+    p.t = d;
+    p.segment = seg;
+    p.object = best;
+    p.m_24 = 0;
+    p.m_28 = -1;
+    PositionId chk = p;
+    if (!PositionValid(&chk)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", p.road, p.t, p.segment, p.object, 0);
+        AiError(33, 100, s_mainFile, s_mainId, 14747, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    *out = p;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_getPositionIdEx);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// findPositionOnATrajectory2
+
+ASM_VAR(AsmLabel, s_findPositionOnATrajectory2, $L_66ea8c)
+
+// the hop index of a position, refound when the hop it names is not its edge or node
+static void Trajectory_Index(HopVec* hops, PositionId* pos)
+{
+    Hop* h = hops->begin + pos->m_28;
+    if (g_roadEdges[pos->road] != h->edge && pos->node != h->node)
+        pos->m_28 = Ai_FindPositionHops(hops, *pos);
+}
+
+// [FUN_43d910] findPositionOnATrajectory2: the position closest to v on the player's hops between from and to
+extern "C" PositionId* __cdecl Ai_FindPositionOnATrajectory2(PositionId* out, BYTE* p, const float* v, PositionId from,
+                                                            PositionId to)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_findPositionOnATrajectory2);
+    HopVec* hops = (HopVec*)(p + 24);
+    if (to.m_28 == -1)
+        to.m_28 = Ai_FindPositionHops(hops, to);
+    if (from.m_28 == -1)
+        from.m_28 = Ai_FindPositionHops(hops, from);
+    if (to.m_28 == -1)
+        AiError(0, 1, s_mainFile, s_mainId, 16173, "Error 09623", &g_aiEmpty, &g_aiEmpty);
+    if (from.m_28 == -1)
+        AiError(0, 1, s_mainFile, s_mainId, 16175, "Error 09624", &g_aiEmpty, &g_aiEmpty);
+    Trajectory_Index(hops, &to);
+    Trajectory_Index(hops, &from);
+    if (to.m_28 == -1)
+        AiError(0, 1, s_mainFile, s_mainId, 16189, "Error 09625", &g_aiEmpty, &g_aiEmpty);
+    if (from.m_28 == -1)
+        AiError(0, 1, s_mainFile, s_mainId, 16191, "Error 09626", &g_aiEmpty, &g_aiEmpty);
+    PositionId r = F(PositionId, p, 40);
+    DVec3 w;
+    w.x = v[0];
+    w.y = v[1];
+    w.z = v[2];
+    double md = 1.7976931348623157e308;
+    Ai_FindClosestHops(&w, &md, hops, &r, from, to);
+    *out = r;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_findPositionOnATrajectory2);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// the rooms' edge lists
+
+ASM_PROC(FUN_44d170)    // vector<4 bytes>::insert(pos, first, last) (thiscall)
+extern "C" DWORD* __cdecl UniqueCopyDwords(const DWORD* first, const DWORD* last, DWORD* dest);   // ai_containers.cpp
+extern "C" void __cdecl Sort_InsertionDwords(unsigned* first, unsigned* last);                   // ai_containers.cpp
+extern "C" void __cdecl Sort_UnguardedInsertionDwords(unsigned* first, unsigned* last);          // ai_containers.cpp
+extern "C" void __cdecl Sort_IntroLoopU(unsigned* first, unsigned* last, int, int depth);        // ai_containers.cpp
+
+static void Dwords_PushBack(DWORD* v, const DWORD* x)
+{
+    if (v[1] != v[2]) {
+        Construct4((DWORD*)v[1], x);
+        v[1] += 4;
+    } else
+        Vec4b_Insert44ceb0(v, 0, (DWORD*)v[1], x);
+}
+
+// [FUN_406370] each room gets the edges of its road objects, then the edges at both nodes of those, sorted and
+// without duplicates
+extern "C" void __cdecl Ai_CollectRoomEdges()
+{
+    for (RoadEdge** it = g_roadEdges; it != g_roadEdgesEnd; it++)
+        for (BYTE** o = F(BYTE**, *it, 120); o != F(BYTE**, *it, 124); o++)
+            Dwords_PushBack((DWORD*)(F(BYTE*, *o, 16) + 40), (const DWORD*)it);
+    for (BYTE** rp = g_registry52; rp != g_registry52End; rp++) {
+        DWORD tmp[3] = { 0, 0, 0 };
+        for (BYTE** e = F(BYTE**, *rp, 40); e != F(BYTE**, *rp, 44); e++)
+            for (int k = 112; k < 120; k += 4) {
+                BYTE* n = F(BYTE*, *e, k);
+                for (int side = 0; side < 2; side++)
+                    for (DWORD* x = F(DWORD*, n, 20 + side * 12); x != F(DWORD*, n, 24 + side * 12); x++)
+                        Dwords_PushBack(tmp, x);
+            }
+        BYTE* r = *rp;
+        CallThis(FUN_44d170, r + 40, F(DWORD*, r, 44), (DWORD*)tmp[0], (DWORD*)tmp[1]);
+        unsigned* first = F(unsigned*, r, 40);
+        unsigned* last = F(unsigned*, r, 44);
+        if (first != last) {
+            int bytes = (BYTE*)last - (BYTE*)first;
+            int depth = 0;
+            for (int n = bytes >> 2; n != 1; n >>= 1)
+                depth++;
+            Sort_IntroLoopU(first, last, 0, depth * 2);
+            if ((bytes & ~3) > 64) {
+                Sort_InsertionDwords(first, first + 16);
+                Sort_UnguardedInsertionDwords(first + 16, last);
+            } else
+                Sort_InsertionDwords(first, last);
+        }
+        DWORD* b = F(DWORD*, r, 40);
+        DWORD* end = F(DWORD*, r, 44);
+        DWORD* dup = end;
+        if (b != end)
+            for (DWORD* q = b; q + 1 != end; q++)
+                if (q[0] == q[1]) {
+                    dup = q;
+                    break;
+                }
+        DWORD* ne = UniqueCopyDwords(dup, end, dup);
+        F(DWORD*, r, 44) = F(DWORD*, r, 44) - (end - ne);
+        unsigned cap = (tmp[2] - tmp[0]) & ~3u;
+        if (cap)
+            Ai_PoolFree((void*)tmp[0], cap);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// goHireIt(PlayerId player)
+
+ASM_VAR(AsmLabel, s_goHireIt, $L_66d430)
+
+// [FUN_419030] goHireIt: the player (without orders) heads for a free place of a market to hire itself out
+extern "C" void __cdecl Ai_GoHireIt(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_goHireIt);
+    BYTE** orders = (BYTE**)Player_Orders(p, 0);
+    if (orders[0] != orders[1])
+        AiError(0, 100, s_mainFile, s_mainId, 4914, "Internal error 742", &g_aiEmpty, &g_aiEmpty);
+    Vec12_Clear(p + 24, 0);
+    F(BYTE, p, 872) = 1;
+    Player_EndDealOf(p);
+    F(int, p, 100) = 257;
+    g_68d14c++;
+    int town = -1, place = -1;
+    while (F(BYTE*, p, 24) == F(BYTE*, p, 28)) {
+        int t;
+        town = *CallC<int*>(FUN_418c10, &t, &place, &g_68ced0, 0.0);
+        BYTE* slot = Vec36_At((BYTE*)g_68cc98[town] + 28, 0, place);
+        PositionId to;
+        PositionInit(&to, F(int, slot, 0));
+        Player_GoTo(p, to, 1);
+    }
+    AdvanceRoad_Check(&F(PositionId, p, 40), 4934);
+    F(int, p, 120) = town;
+    F(int, p, 124) = place;
+    BYTE* slot = F(BYTE*, (BYTE*)g_68cc98[town], 28) + place * 36;
+    if (F(void*, slot, 8) != g_players)
+        AiError(0, 100, s_mainFile, s_mainId, 4940, "Internal error 97726", &g_aiEmpty, &g_aiEmpty);
+    slot = F(BYTE*, (BYTE*)g_68cc98[town], 28) + place * 36;
+    F(BYTE*, slot, 8) = p;
+    F(DWORD, slot, 4) |= 2;
+    F(int, (BYTE*)g_68cc98[town], 40)++;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_goHireIt);
 }
