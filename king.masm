@@ -1131,6 +1131,8 @@ PUBLIC $L_66c60a, $L_66c68c, $L_66c6d8, $L_66c6dc, $L_66c6f8, $L_66c700
 PUBLIC $L_66c710, $L_66f62a, $L_68d0ec, $L_68d134
 PUBLIC $L_64b680, $L_64b688, $L_66e7c8, $L_66e7e4, $L_66e800
 PUBLIC $L_66e914
+PUBLIC $L_66d050
+PUBLIC $L_66e9c4
 
 ;===================================
 _TEXT SEGMENT
@@ -35977,6 +35979,8 @@ $L_414b1c           BYTE ($L_414b10-$L_414b10)/4
             nop
 FUN_4148a0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_414b30 PROC
 
             push -1
@@ -36545,6 +36549,10 @@ $L_41506d::
             nop
             nop
 FUN_414b30 ENDP
+ELSE
+EXTERN _Ai_CreatePlayerDescr:PROC
+FUN_414b30 TEXTEQU <_Ai_CreatePlayerDescr>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -78745,6 +78753,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42eff0 PROC
 
             push -1
@@ -79246,6 +79256,10 @@ $L_42f47c::
             add ESP,36
             ret 
 FUN_42eff0 ENDP
+ELSE
+EXTERN _Ai_ReadTrashbox:PROC
+FUN_42eff0 TEXTEQU <_Ai_ReadTrashbox>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -101289,6 +101303,8 @@ FUN_43cb50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43d1f0 PROC
 
             push EBP
@@ -101849,6 +101865,10 @@ $L_43d7a2::
             pop EBP
             ret 
 FUN_43d1f0 ENDP
+ELSE
+EXTERN _Ai_FindPlayerPosition:PROC
+FUN_43d1f0 TEXTEQU <_Ai_FindPlayerPosition>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
