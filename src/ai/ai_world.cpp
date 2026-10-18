@@ -11606,7 +11606,7 @@ extern "C" void __cdecl Ai_ReadPlayerType(int, StrRef h)
 // ---------------------------------------------------------------------------
 // advancePosition
 
-ASM_PROC(FUN_40b100)    // (playerid, node, 24-byte struct by value)
+extern "C" void FUN_40b100(); KING_ALIAS("_FUN_40b100", "_Ai_OnNodePass")    // (playerid, node, 24-byte struct by value)
 extern "C" void FUN_43ab10(); KING_ALIAS("_FUN_43ab10", "_Ai_FindPositionHops")    // the hop index of a position (hops, PositionId32 by value)
 extern "C" PositionId* __cdecl Road_StartOf(PositionId* out, int road);
 extern "C" PositionId* __cdecl Road_EndOf(PositionId* out, int road);
@@ -17612,7 +17612,7 @@ ASM_VAR(AsmLabel, s_idFormat66d4e4, $L_66d4e4)
 ASM_VAR(AsmLabel, s_playerId66d4d8, $L_66d4d8)
 ASM_VAR(AsmLabel, s_forfeit66f2bc, $L_66f2bc)
 extern "C" void FUN_47fc80(); KING_ALIAS("_FUN_47fc80", "_Road_CommonNode")    // (out, road, road, DVec3)
-ASM_PROC(FUN_40b100)    // (player, int, DVec3)
+extern "C" void FUN_40b100(); KING_ALIAS("_FUN_40b100", "_Ai_OnNodePass")    // (player, int, DVec3)
 extern "C" void FUN_43cb50(); KING_ALIAS("_FUN_43cb50", "_Ai_SetPlayerPositionLimited")    // setPlayerPositionLimited (player, v)
 extern "C" void FUN_4175c0(); KING_ALIAS("_FUN_4175c0", "_Player_MarkListed")    // (player)
 extern "C" void FUN_4272d0(); KING_ALIAS("_FUN_4272d0", "_Ai_ClearPlayerFromTail")    // clearPlayerFromTail (player)
@@ -18516,5 +18516,138 @@ extern "C" int __cdecl Ai_CancelIllegalOrders(int player)
     CallC(FUN_56f6d0);
     Trace_Tag((const DWORD*)g_tagMpl);
     Buf_AppendString(&g_trace, 0, (const char*)s_cancelIllegalOrders);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: passing a node
+
+ASM_VAR(AsmLabel, s_onNodePass, $L_66ccd0)
+ASM_VAR(AsmLabel, s_finishAll66ccc0, $L_66ccc0)
+ASM_VAR(AsmLabel, s_fline166ccb8, $L_66ccb8)
+ASM_VAR(AsmLabel, s_check166ccb0, $L_66ccb0)
+ASM_PROC(FUN_40ae80)    // (player)
+extern "C" void FUN_40a690(); KING_ALIAS("_FUN_40a690", "_Ai_CallHelpers")    // calling the closest helpers (player)
+extern "C" void FUN_40aa00(); KING_ALIAS("_FUN_40aa00", "_Ai_CallMafia")    // calling the closest mafia (player)
+extern "C" void FUN_40a180(); KING_ALIAS("_FUN_40a180", "_Players_Each409fc0")
+extern "C" void FUN_40ad00(); KING_ALIAS("_FUN_40ad00", "_Ai_FinishRacingPlayer")    // finishRacingPlayer (player)
+
+// [FUN_40b100] onNodePass(PlayerId player, NodeId node, dvector3 direction): a node's sign (+192) and, for
+// the human, help or mafia calls and the sign's message when facing it; a racer at its finish node
+// (finish%d_all, or fline1 in the network race) finishes, check1 restarts its legs
+extern "C" void __cdecl Ai_OnNodePass(int player, int node, DVec3 dir)
+{
+    Trace_EnterBuffered((const char*)s_onNodePass);
+    if (node == -1) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_onNodePass);
+        return;
+    }
+    BYTE* p = (BYTE*)player;
+    BYTE* s = F(BYTE*, g_roadNodes[node], 192);
+    if (s && (F(BYTE, s, 0) & 16))
+        CallC(FUN_40ae80, player);
+    if (F(int, p, 92) == 1) {
+        if (!g_68d188) {
+            if (F(double, p, 208) > g_zero64b678 || F(BYTE, p, 200) || F(double, p, 240) > g_zero64b678
+                || F(double, p, 248) > g_zero64b678 || F(double, p, 256) > g_zero64b678 || F(BYTE, p, 264))
+                CallC(FUN_40a690, player);
+            if (F(double, p, 224) > g_zero64b678 || F(BYTE, p, 201))
+                CallC(FUN_40aa00, player);
+        }
+        if (s && !(F(BYTE, s, 0) & 16)) {
+            double dot = F(double, s, 24) * dir.z + F(double, s, 16) * dir.y + F(double, s, 8) * dir.x;
+            if (dot > g_zero64b678) {
+                double dt = F(double, s, 32) - CallC<double>(FUN_401000);
+                if (dt < 0)
+                    dt = -dt;
+                if (dt > g_64b698) {
+                    CallC(FUN_56ae60, F(const char*, s, 40));
+                    F(double, s, 32) = CallC<double>(FUN_401000);
+                }
+            }
+        }
+        if (!g_68d188)
+            CallC(FUN_40a180);
+    }
+    const DWORD* name = (const DWORD*)g_roadNodes[node];
+    if ((g_68d188 == 0 || g_68d188 == 1) && F(int, p, 100) == 5 && F(int, p, 92) != 1 && F(int, p, 724) >= 9) {
+        char buf[32];
+        sprintf(buf, (const char*)s_finishAll66ccc0, g_66c6e4);
+        if (!strcmp(buf, (const char*)Str_OrNull((const DWORD*)g_roadNodes[node])))
+            CallC(FUN_40ad00, player);
+    }
+    if (g_68d188 == 2 && F(int, p, 100) == 5) {
+        if (!strncmp((const char*)s_fline166ccb8, (const char*)Str_OrNull(name), 6)) {
+            if (F(int, p, 92) != 1)
+                CallC(FUN_40ad00, player);
+        } else if (!strncmp((const char*)s_check166ccb0, (const char*)Str_OrNull((const DWORD*)g_roadNodes[node]), 6)
+                   && F(int, p, 92) != 1)
+            F(int, p, 724) = 1;
+    }
+    Trace_Leave((const char*)s_onNodePass);
+}
+
+ASM_VAR(AsmLabel, s_finishPlayer, $L_66d9e0)
+ASM_VAR(AsmLabel, s_youMade66d9d4, $L_66d9d4)
+ASM_VAR(double, g_64b6a0, $L_64b6a0)
+
+// [FUN_426b00] finishPlayer(PlayerId player): its race time; outside network games, a finish with
+// competitors left counts (+536) and brings more of them and a prize of 5000; then event 11 with the
+// record, the race state ends and the waiting timer restarts
+extern "C" int __cdecl Ai_FinishPlayer(int player)
+{
+    Trace_EnterBuffered((const char*)s_finishPlayer);
+    BYTE* p = (BYTE*)player;
+    if (CallC<char>(FUN_417660, player))
+        Messages_AddNumbered(g_68d164);
+    DWORD rec[16] = {0};
+    F(double, rec, 24) = 0;
+    F(double, rec, 32) = 0;
+    F(double, rec, 40) = 1.0;
+    F(double, rec, 48) = 0;
+    F(double, rec, 56) = 0;
+    unsigned r = AiRandom() % 360 + 360;
+    F(double, rec, 16) = (double)r;
+    F(double, p, 808) = CallC<double>(FUN_401000) - F(double, p, 792);
+    F(double, rec, 24) = F(double, p, 808);
+    if (!g_68d188) {
+        if (g_68d164 == 0 && g_68a980 != g_68a984) {
+            F(int, p, 536)++;
+            int k = F(int, p, 536);
+            rec[1] = k;
+            rec[0] |= k <= 1 ? 1 : 3;
+            int v = Ftol(x87_sqrt((double)(k + 1)));
+            if (v > 3)
+                v = 3;
+            rec[2] = v;
+            Ai_AddArrivals(p, F(double, rec, 16), v);
+            F(double, rec, 32) = 5000.0;
+            F(double, rec, 48) = 5000.0;
+        } else {
+            F(int, p, 536) = 0;
+            F(double, rec, 32) = 0;
+        }
+        F(double, p, 136) = F(double, rec, 32) + F(double, p, 136);
+        if (CallC<char>(FUN_417660, player) && (F(double, rec, 32) < 0 || F(double, rec, 32) > 0)) {
+            int cents = Ftol(F(double, rec, 32) * g_64b6a0);
+            char buf[128];
+            sprintf(buf, Message_Text((const char*)s_youMade66d9d4), (double)cents * g_64b5a0);
+            CallC(FUN_56ae60, buf);
+        }
+        Ai_PlayerEvent(p, 11, (int)rec);
+    }
+    if (g_68d188 == 1 || g_68d188 == 2)
+        Ai_PlayerEvent(p, 11, (int)rec);
+    if (F(int, p, 100) == 5)
+        CallC(FUN_417680, player);
+    if (CallC<char>(FUN_417660, player)) {
+        Players_ResetMarks();
+        F(int, p, 524) = 0;
+        F(int, p, 528) = 0;
+        F(int, p, 532) = -1;
+    }
+    Ai_RestartWaitTimer();
+    Trace_Leave((const char*)s_finishPlayer);
     return 0;
 }
