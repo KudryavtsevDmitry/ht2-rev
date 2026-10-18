@@ -9226,7 +9226,7 @@ extern "C" int __cdecl Ai_QueryBribeSum(BYTE* giver, BYTE* taker, unsigned flags
 // ---------------------------------------------------------------------------
 // reading a town
 
-ASM_PROC(FUN_4052f0)    // a town's index by its identifier (out, identifier handle by value)
+extern "C" void FUN_4052f0(); KING_ALIAS("_FUN_4052f0", "_Merch_IndexOf")    // a town's index by its identifier (out, identifier handle by value)
 extern "C" char** __fastcall CharVec_Construct(char** self, void*, const char* s);   // cargo_orders.cpp
 extern "C" void FUN_4af480(); KING_ALIAS("_FUN_4af480", "_SchList_Nth")    // the n-th element of a list (out, n, list by value)
 extern "C" void __fastcall Vec16_PushBack(void* s, void*, const void* x);
@@ -11045,7 +11045,7 @@ extern "C" void __cdecl Ai_ReUncontradict()
 // reading a vehicle of the tech file
 
 extern "C" void FUN_42dbf0(); KING_ALIAS("_FUN_42dbf0", "_Ai_ReadPlayerKinds")    // a list of ints from a value (out vector, value by value)
-ASM_PROC(FUN_40e6d0)    // the name vector of an identifier (identifier by value)
+extern "C" void FUN_40e6d0(); KING_ALIAS("_FUN_40e6d0", "_Lists_NameOf")    // the name vector of an identifier (identifier by value)
 extern "C" void FUN_452290(); KING_ALIAS("_FUN_452290", "@VecDword_Assign@12")
 extern "C" void FUN_448ab0(); KING_ALIAS("_FUN_448ab0", "@Vec4_FreeStorageB@8")
 extern "C" void FUN_447ad0(); KING_ALIAS("_FUN_447ad0", "@Vec4_PushBackA@12")
@@ -18312,7 +18312,7 @@ ASM_PROC(FUN_40c3b0)
 ASM_PROC(FUN_40cef0)
 extern "C" void FUN_42e9f0(); KING_ALIAS("_FUN_42e9f0", "_Ai_LoadVehicles")
 extern "C" void FUN_42f4c0(); KING_ALIAS("_FUN_42f4c0", "_Ai_LoadTrashboxes")
-ASM_PROC(FUN_430230)
+extern "C" void FUN_430230(); KING_ALIAS("_FUN_430230", "_Vehicles_ResolveModels")
 extern "C" void FUN_430480(); KING_ALIAS("_FUN_430480", "_Vehicles_AverageRatio")
 
 static void CharVec_Zeroed(VecMethods* v, unsigned n)
@@ -19735,4 +19735,127 @@ extern "C" double __cdecl Ai_PrescribeAdvance(int player)
     double res = (CallC<double>(FUN_401000) - g_lastSpeedTime68d0f0) * s;
     Trace_Leave((const char*)s_prescribeAdvance);
     return res;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: lookups by script identifier
+
+ASM_VAR(AsmLabel, s_noMerchClass66c8f0, $L_66c8f0)
+ASM_VAR(AsmLabel, s_noVehicleId66cdec, $L_66cdec)
+ASM_VAR(AsmLabel, s_identifier66ce4c, $L_66ce4c)
+ASM_VAR(AsmLabel, s_pair66cb08, $L_66cb08)
+ASM_VAR(BYTE*, g_lists68b9bc, $L_68b9bc)
+extern "C" void FUN_407f60(); KING_ALIAS("_FUN_407f60", "_Str_Member20Checked")    // a pair's head (out, pair)
+extern "C" void FUN_407ff0(); KING_ALIAS("_FUN_407ff0", "_Str_Member32Checked")    // a pair's tail (out, pair)
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")    // an empty handle (thiscall)
+
+// [FUN_4052f0] the index of the merchandise class with an identifier (-1, and an error, when none)
+extern "C" int* __cdecl Merch_IndexOf(int* out, StrRef h)
+{
+    StrRef c1, key, c2;
+    Str_CopyConstruct(&c1, 0, &h);
+    StrRef* k = Str_Construct(&key, 0, c1.ptr, c1.len, c1.flags);
+    Str_CopyConstruct(&c2, 0, k);
+    BYTE* end = (BYTE*)Rec_Get1((const int*)&g_68ccb8, 0);
+    BYTE* begin = (BYTE*)Rec_Get0((const int*)&g_68ccb8, 0);
+    BYTE* it = (BYTE*)Find_ValueA(begin, end, (DWORD)c2.ptr, c2.len, c2.flags);
+    Str_Release(&key);
+    if (it == g_68ccbc) {
+        CheckHandle(&h);
+        AiError(89, 100, s_mainFile, s_mainId, 1176, s_noMerchClass66c8f0, F(const char*, h.ptr, 12), &g_aiEmpty);
+        *out = -1;
+    } else
+        *out = (it - g_68ccb8) / 104;
+    Str_Release(&h);
+    return out;
+}
+
+// [FUN_40e6d0] the name record of an identifier in the list at 68b9b8 (its string value's +12)
+extern "C" BYTE* __cdecl Lists_NameOf(StrRef h)
+{
+    StrRef c1, key, c2;
+    Str_CopyConstruct(&c1, 0, &h);
+    StrRef* k = Str_Construct(&key, 0, c1.ptr, c1.len, c1.flags);
+    Str_CopyConstruct(&c2, 0, k);
+    BYTE* end = (BYTE*)Rec_Get1((const int*)&g_lists68b9b8, 0);
+    BYTE* begin = (BYTE*)Rec_Get0((const int*)&g_lists68b9b8, 0);
+    BYTE* e = (BYTE*)Find_ValueC(begin, end, (DWORD)c2.ptr, c2.len, c2.flags);
+    Str_Release(&key);
+    if (e == g_lists68b9bc) {
+        CheckHandle(&h);
+        AiError(35, 1, s_mainFile, s_mainId, 2914, s_noVehicleId66cdec, F(const char*, h.ptr, 12), &g_aiEmpty);
+    }
+    StrRef tmp;
+    StrRef* v = CallC<StrRef*>(FUN_4090a0, &tmp, e);
+    StrRef s = {0, 0, 0};
+    if (v->ptr) {
+        if (CallVirt<int>(v->ptr, 0) != 3)
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(v->ptr, 4), (const char*)s_string);
+        else {
+            s.ptr = v->ptr;
+            s.flags = v->flags;
+            F(int, s.ptr, 4)++;
+        }
+    }
+    Str_Release(&tmp);
+    CheckHandle(&s);
+    BYTE* res = s.ptr + 12;
+    if (s.Owns() && s.ptr && --F(int, s.ptr, 4) == 0)
+        CallVirt(s.ptr, 12, 1);
+    Str_Release(&h);
+    return res;
+}
+
+// [FUN_430230] each vehicle type's list of model identifiers (+84) resolved into vehicle indices (+96)
+extern "C" void __cdecl Vehicles_ResolveModels()
+{
+    for (void** vp = g_vehicles; vp != g_vehiclesEnd; vp++) {
+        StrRef it = {0, 0, 0};
+        CallThis(FUN_40c100, &it, (BYTE*)*vp + 84);
+        while ((BYTE)it.flags == 2) {
+            StrRef tmp;
+            StrRef* car = CallC<StrRef*>(FUN_407f60, &tmp, &it);
+            StrRef s;
+            CallThis(FUN_4bd4d0, &s);
+            if (car->ptr) {
+                if (CallVirt<int>(car->ptr, 0) != 9)
+                    CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(car->ptr, 4), (const char*)s_identifier66ce4c);
+                else {
+                    s.ptr = car->ptr;
+                    s.flags = car->flags;
+                    F(int, s.ptr, 4)++;
+                }
+            } else {
+                s.ptr = 0;
+                s.flags = 0;
+            }
+            Str_Release(&tmp);
+            StrRef arg;
+            Str_CopyConstruct(&arg, 0, &s);
+            int idx = Vehicle_IndexOf(arg);
+            Vec4_PushBackG((BYTE*)*vp + 96, 0, &idx);
+            CallThis(FUN_4a36c0, &s);
+            StrRef tmp2;
+            StrRef* next = CallC<StrRef*>(FUN_407ff0, &tmp2, &it);
+            if (it.ptr && --F(int, it.ptr, 4) == 0
+                && !(it.ptr == next->ptr && it.flags == next->flags && it.len == next->len))
+                CallVirt(it.ptr, 12, 1);
+            if (next->ptr) {
+                if (CallVirt<int>(next->ptr, 0) != 2)
+                    CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(next->ptr, 4), (const char*)s_pair66cb08);
+                else {
+                    it.ptr = next->ptr;
+                    it.flags = next->flags;
+                    F(int, it.ptr, 4)++;
+                    it.len = 0;
+                }
+            } else {
+                it.ptr = 0;
+                it.flags = 0;
+                it.len = 0;
+            }
+            Str_Release(&tmp2);
+        }
+        CallThis(FUN_4a36c0, &it);
+    }
 }
