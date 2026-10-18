@@ -1176,6 +1176,8 @@ PUBLIC $L_66d6a4, $L_66d6bc, $L_66e774
 PUBLIC $L_66e0dc, $L_66e0f0, $L_66e104
 PUBLIC $L_64b788, $L_64b938, $L_66ec0c
 PUBLIC $L_66ec40, $L_66ec88, $L_66ecc0
+PUBLIC $L_64b728, $L_64b780, $L_64b7d0, $L_66d98c
+PUBLIC $L_64b660, $L_64b958, $L_66f408, $L_66f414, $L_66f420
 
 ;===================================
 _TEXT SEGMENT
@@ -63998,6 +64000,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_425dd0 PROC
 
             push EBP
@@ -64419,6 +64423,10 @@ $L_42625b::
             pop EBP
             ret 
 FUN_425dd0 ENDP
+ELSE
+EXTERN _Ai_ProvideCompetitionSpecial:PROC
+FUN_425dd0 TEXTEQU <_Ai_ProvideCompetitionSpecial>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -117427,6 +117435,8 @@ EXTERN _Road_SetObjectFlags:PROC
 FUN_446ce0 TEXTEQU <_Road_SetObjectFlags>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_446d20 PROC
 
             push EBP
@@ -117849,6 +117859,10 @@ $L_447162::
             pop EBP
             ret 
 FUN_446d20 ENDP
+ELSE
+EXTERN _Ai_HitPlayer:PROC
+FUN_446d20 TEXTEQU <_Ai_HitPlayer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

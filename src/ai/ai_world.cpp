@@ -12677,7 +12677,7 @@ extern "C" void __cdecl Ai_SetPlayerPositionLimited(BYTE* p, const DVec3* v)
 // ---------------------------------------------------------------------------
 // addCompetitor()
 
-ASM_PROC(FUN_425dd0)    // ()
+extern "C" void FUN_425dd0(); KING_ALIAS("_FUN_425dd0", "_Ai_ProvideCompetitionSpecial")    // ()
 extern "C" void FUN_425820(); KING_ALIAS("_FUN_425820", "_Ai_TakeOrder")    // (player, goods)
 extern "C" void __cdecl Player_ClearOrderLists(BYTE* p);
 extern "C" void __cdecl Player_Place(BYTE* p, PositionId pos);           // aiplay.cpp
@@ -19203,4 +19203,132 @@ extern "C" void __cdecl Ai_SetPlayerMatrixInRoom(int room, int player, const flo
     }
     Buf_Append(&g_trace, 0, g_tagMpl, 8);
     Buf_AppendString(&g_trace, 0, (const char*)s_setPlayerPositionRoomMatrix);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: competitors for a special race
+
+ASM_VAR(AsmLabel, s_provideCompetitionSpecial, $L_66d98c)
+ASM_VAR(double, g_64b728, $L_64b728)
+ASM_VAR(double, g_64b780, $L_64b780)
+ASM_VAR(double, g_64b7d0, $L_64b7d0)
+
+// [FUN_425dd0] provideCompetitionSpecial(): free players become competitors with the human's goods until there
+// are enough: placed at the goods, sent to its town, put at the human's point and spread out by a random
+// advancement (-150 or 150 near zero)
+extern "C" void __cdecl Ai_ProvideCompetitionSpecial()
+{
+    Trace_EnterBuffered((const char*)s_provideCompetitionSpecial);
+    int hn;
+    Player_FromId(&hn);
+    if ((void*)hn == g_players) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_provideCompetitionSpecial);
+        return;
+    }
+    BYTE* player = (BYTE*)hn + 8;
+    while (Competitors_Count() < g_68d15c) {
+        int found;
+        Players_Find4571a0(&found, hn, (int)g_rng68b9c8);
+        if ((void*)found == g_players) {
+            Players_Find457210(&found, hn, (int)g_rng68b9c8);
+            if ((void*)found == g_players)
+                break;
+        }
+        BYTE* f = (BYTE*)found;
+        Player_ClearOrderLists(f + 8);
+        CallC(FUN_425820, f, Player_FirstGoods(player));
+        g_addingCompetitor68d114 = 1;
+        Player_Place(f, F(PositionId, Player_FirstGoods(player), 24));
+        int town;
+        Town_Id(&town, (BYTE*)TownId_Town((int*)((BYTE*)Player_FirstGoods(player) + 12), 0));
+        PositionId target;
+        PositionInit(&target, town);
+        Player_GoTo(f, target, 1);
+        DVec3 at;
+        Ai_SetPlayerPosition(f, Road_PointOf(&at, F(PositionId, (BYTE*)hn, 40)));
+        DVec3 q;
+        Road_PointOf(&q, F(PositionId, f, 40));
+        int k = (int)(g_68d160 - (unsigned)(g_68a984 - g_68a980) - g_68d164);
+        if (k <= 0)
+            k--;
+        unsigned r = AiRandom() % 20;
+        double v = (double)r + (double)k * g_64b728 - g_64b780;
+        if (v > g_64b7d0 && v < g_zero64b678)
+            v = -150.0;
+        else if (!(v >= g_64b728) && v > g_zero64b678)
+            v = 150.0;
+        CallC(FUN_435a90, f, &v);
+        Player_MarkListed(f);
+        F(int, f, 100) = 4;
+        Player_EndDealOf(f);
+        Player_UpdateFlags(f);
+        Ai_UpdateAdvancementRegular(f + 8, F(PositionId, f, 40));
+        g_addingCompetitor68d114 = 0;
+    }
+    Trace_Leave((const char*)s_provideCompetitionSpecial);
+}
+
+ASM_VAR(AsmLabel, s_hitPlayer, $L_66f420)
+ASM_VAR(AsmLabel, s_xDamaged66f414, $L_66f414)
+ASM_VAR(AsmLabel, s_orderLost66f408, $L_66f408)
+ASM_VAR(double, g_64b660, $L_64b660)
+ASM_VAR(double, g_64b958, $L_64b958)
+extern "C" void FUN_429e40(); KING_ALIAS("_FUN_429e40", "_Orders_RemoveEmpty")    // whether orders are lost, with their value (orders, double*) returns bool
+extern "C" void FUN_417530(); KING_ALIAS("_FUN_417530", "_Player_Leave")    // (player)
+
+// [FUN_446d20] hitPlayer(PlayerId player, double impact, int): above 64b660, each order's integrity (+96) drops
+// by the impact against its goods' strength (+64), shown to a human; lost orders are paid for (+136) and
+// announced; a racer left without an order quits the race
+extern "C" void __cdecl Ai_HitPlayer(int player, double impact, int)
+{
+    Trace_EnterBuffered((const char*)s_hitPlayer);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 18386, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    if (impact > g_64b660) {
+        BYTE* fa = 0;
+        BYTE* o = F(BYTE*, Player_Orders(p, fa), 0);
+        BYTE* fb = 0;
+        for (;; o += 144) {
+            fb = Player_Orders(p, fb);
+            if (o == F(BYTE*, fb, 4))
+                break;
+            double x = (g_64b670 - F(double, g_68ccb8 + F(int, o, 0) * 104, 64)) * impact * g_64b958;
+            if (x > g_64b670)
+                x = g_64b670;
+            else if (x < g_64b5a0)
+                x = g_zero64b678;
+            F(double, o, 96) = (g_64b670 - x) * F(double, o, 96);
+            if (CallC<char>(FUN_417660, player) && !(F(DWORD, o, 96) == 0 && F(DWORD, o, 100) == 0x3ff00000)) {
+                int pct = Ftol((g_64b670 - F(double, o, 96)) * g_64b6a0);
+                char buf[128];
+                sprintf(buf, Message_Text((const char*)s_xDamaged66f414), (double)pct);
+                CallC(FUN_483cb0, buf);
+            }
+        }
+        double lost = 0;
+        if (CallC<char>(FUN_429e40, Player_Orders(p, 0), &lost)) {
+            F(double, p, 136) = F(double, p, 136) - lost;
+            CallC(FUN_477210, player);
+            if (CallC<char>(FUN_417660, player)) {
+                CallC(FUN_56ae60, Message_Text((const char*)s_orderLost66f408));
+                Ai_AccountForChangeInLoadState(player);
+                char buf[128];
+                sprintf(buf, Message_Text((const char*)s_forfeit66f2bc), lost);
+                CallC(FUN_56ae60, buf);
+                CallC(FUN_56f6d0);
+                CallC(FUN_483e60, lost);
+                CallC(FUN_483e80, 7, 0);
+            }
+            CallC(FUN_426f20, player);
+            if (CallC<char>(FUN_4172e0, player) && !CallC<int>(FUN_477880, player)) {
+                g_68d15c--;
+                CallC(FUN_417530, player);
+            }
+        }
+    }
+    Trace_Leave((const char*)s_hitPlayer);
 }
