@@ -5542,7 +5542,7 @@ extern "C" BYTE** __cdecl Players_SlowList(BYTE** out, BYTE* first, BYTE* last)
     return out;
 }
 
-ASM_PROC(FUN_436900)    // getPositionId(vrVector)
+extern "C" void FUN_436900(); KING_ALIAS("_FUN_436900", "_Ai_GetPositionIdAll")    // getPositionId(vrVector)
 extern "C" void FUN_436bd0(); KING_ALIAS("_FUN_436bd0", "_Ai_GetPositionIdRoom")    // getPositionId(RoomId, vrVector)
 ASM_VAR(char, s_getPositionIdV, $L_66e538)       // "getPositionId(vrVector _v)"
 ASM_VAR(char, s_getPositionIdRV, $L_66e554)      // "getPositionId(RoomId room, vrVector _v)"
@@ -12678,7 +12678,7 @@ extern "C" void __cdecl Ai_SetPlayerPositionLimited(BYTE* p, const DVec3* v)
 // addCompetitor()
 
 ASM_PROC(FUN_425dd0)    // ()
-ASM_PROC(FUN_425820)    // (player, goods)
+extern "C" void FUN_425820(); KING_ALIAS("_FUN_425820", "_Ai_TakeOrder")    // (player, goods)
 extern "C" void __cdecl Player_ClearOrderLists(BYTE* p);
 extern "C" void __cdecl Player_Place(BYTE* p, PositionId pos);           // aiplay.cpp
 extern "C" void __cdecl Player_GoTo(BYTE* p, PositionId target, int id); // aiplay.cpp
@@ -17318,4 +17318,282 @@ extern "C" void __cdecl Ai_SendForSomething(int player)
         }
     }
     Trace_Leave((const char*)s_sendForSomething);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: the AI tick, players' moves and checks, loading a hire order, distances along a road
+
+ASM_VAR(AsmLabel, s_getPositionIdAll, $L_66e4a4)
+ASM_VAR(AsmLabel, s_processMove, $L_66d56c)
+ASM_VAR(AsmLabel, s_noRoads66e45c, $L_66e45c)
+ASM_VAR(AsmLabel, s_err59812, $L_66e444)
+ASM_VAR(AsmLabel, s_err7644, $L_66cb74)
+ASM_VAR(AsmLabel, s_err7645, $L_66cb60)
+ASM_VAR(AsmLabel, s_err9903, $L_66dda0)
+ASM_VAR(AsmLabel, s_err9967, $L_66dd8c)
+ASM_VAR(AsmLabel, s_err9969, $L_66dd78)
+ASM_VAR(AsmLabel, s_err9971, $L_66dd64)
+ASM_VAR(AsmLabel, s_err9972, $L_66dd50)
+ASM_VAR(double, t_68a820, $L_68a820)
+ASM_VAR(BYTE, t_68b998, $L_68b998)
+ASM_VAR(double, t_68d0f8, $L_68d0f8)
+ASM_VAR(double, t_68d198, $L_68d198)
+extern "C" void FUN_483a20(); KING_ALIAS("_FUN_483a20", "_AI_Time")    // returns double
+ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_424550(); KING_ALIAS("_FUN_424550", "_Ai_LoadEntities")
+ASM_PROC(FUN_42d960)    // (thiscall 68b998)
+extern "C" void FUN_446af0(); KING_ALIAS("_FUN_446af0", "_Ai_KillDelayedPlayers")
+ASM_PROC(FUN_423a90)
+extern "C" void FUN_477420(); KING_ALIAS("_FUN_477420", "_Player_ExpireLicences")    // (player)
+extern "C" void FUN_416b80(); KING_ALIAS("_FUN_416b80", "_Ai_RaceNextCheckpoint")    // (player)
+extern "C" void FUN_4171a0(); KING_ALIAS("_FUN_4171a0", "_Race_UpdateProgress")    // (player)
+extern "C" void FUN_417300(); KING_ALIAS("_FUN_417300", "_Ai_ActOnSemiArrival")    // (player)
+extern "C" void FUN_4165a0(); KING_ALIAS("_FUN_4165a0", "_Player_Idle")    // (player) returns bool
+extern "C" void FUN_419cb0(); KING_ALIAS("_FUN_419cb0", "_Ai_ActOnArrival")    // (player)
+extern "C" void FUN_42a4b0(); KING_ALIAS("_FUN_42a4b0", "_Ai_ProvideNoncontradictoryPositions")
+extern "C" void FUN_423f40(); KING_ALIAS("_FUN_423f40", "_Ai_CalculatePlayerSpeedsAndFares")
+extern "C" void FUN_42cb20(); KING_ALIAS("_FUN_42cb20", "_Ai_UpdatePlayerRooms")
+ASM_PROC(FUN_42cf50)
+extern "C" void FUN_46dee0(); KING_ALIAS("_FUN_46dee0", "_Net_AddPlayerStates")
+extern "C" void FUN_460d20(); KING_ALIAS("_FUN_460d20", "_Rec458a80_Construct")    // construct a 144-byte order in place (dest, src)
+extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall: pos, x)
+extern "C" void FUN_402740(); KING_ALIAS("_FUN_402740", "@Pos_Before@40")    // whether a position comes before another (thiscall: other)
+extern "C" void FUN_4165e0(); KING_ALIAS("_FUN_4165e0", "_Player_Flag4")    // (player) returns bool
+extern "C" void FUN_477d60(); KING_ALIAS("_FUN_477d60", "_Player_EndDealOf")    // (player)
+ASM_PROC(FUN_41a9d0)    // (player) returns double
+extern "C" void FUN_435a90(); KING_ALIAS("_FUN_435a90", "_Ai_AdvancePlayer")    // (player, double*)
+extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")    // goIdle (player)
+extern "C" void FUN_41ae60(); KING_ALIAS("_FUN_41ae60", "_Ai_ProcessMove")    // processMove (player)
+
+// [FUN_42d390] checks every player's orders (+56 within [0, 64b6b0]) and that the kind-9 ones and only they
+// are in state 256 with flags 4 and 0x40
+extern "C" void __cdecl Ai_CheckPlayers()
+{
+    BYTE* vA = 0;
+    BYTE* vB = 0;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        if (!d)
+            continue;
+        vA = Player_Orders(it, vA);
+        for (BYTE* o = F(BYTE*, vA, 0);; o += 144) {
+            vB = Player_Orders(it, vB);
+            if (o == F(BYTE*, vB, 4))
+                break;
+            double x = F(double, o, 56);
+            if (!(x >= g_zero64b678) || x > g_64b6b0)
+                AiError(0, 100, s_mainFile, s_mainId, 11684, s_err9903, &g_aiEmpty, &g_aiEmpty);
+        }
+        if (F(int, d, 84) == 9) {
+            if (!(F(DWORD, d, 88) >> 2 & 1))
+                AiError(0, 100, s_mainFile, s_mainId, 11691, s_err9967, &g_aiEmpty, &g_aiEmpty);
+            if (!(F(BYTE, d, 88) & 64))
+                AiError(0, 100, s_mainFile, s_mainId, 11693, s_err9969, &g_aiEmpty, &g_aiEmpty);
+            if (F(int, d, 92) != 256)
+                AiError(0, 100, s_mainFile, s_mainId, 11695, s_err9971, &g_aiEmpty, &g_aiEmpty);
+        }
+        if (F(int, d, 92) == 256 && F(int, d, 84) != 9)
+            AiError(0, 100, s_mainFile, s_mainId, 11700, s_err9972, &g_aiEmpty, &g_aiEmpty);
+    }
+}
+
+// [FUN_42d6e0] the AI's tick: clocks and the human's camera, then each player's move, then the world's
+// updates
+extern "C" void __cdecl Ai_Tick()
+{
+    Ai_TraceHumanState();
+    t_68a820 = CallC<double>(FUN_483a20);
+    t_68b998 = 1;
+    double now = CallC<double>(FUN_401000);
+    t_68d0f8 = now;
+    g_68d190 = now - t_68d198;
+    Ai_CheckPlayers();
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h != (BYTE*)g_players)
+        g_68bab0 = F(DVec3, h, 624);
+    CallC(FUN_5e48f0);
+    r_68d134++;
+    if (r_66c60a) {
+        g_loadTick68d13c = 200;
+        CallC(FUN_424550);
+        r_66c60a = 0;
+    }
+    CallThis(FUN_42d960, &t_68b998);
+    CallC(FUN_446af0);
+    if (!g_68d31c)
+        CallC(FUN_423a90);
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        if (g_68d31c && (F(DWORD, CallC<BYTE*>(FUN_40a9f0, it), 88) & 0x100))
+            continue;
+        int p = (int)it;
+        CallC(FUN_41ae60, p);
+        if (!g_68d188)
+            CallC(FUN_477420, p);
+        if (g_68d188 == 1 || !g_68d188 && F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 5)
+            CallC(FUN_416b80, p);
+        if (g_68d188 == 2)
+            CallC(FUN_4171a0, p);
+        CallC(FUN_417300, p);
+        if (CallC<char>(FUN_4165a0, p))
+            CallC(FUN_419cb0, p);
+    }
+    CallC(FUN_42a4b0);
+    if (!g_68d188)
+        Ai_HumanRaceTick();
+    CallC(FUN_423f40);
+    CallC(FUN_424550);
+    if (!g_68d188)
+        Ai_UpdateAdvancementsRegular();
+    Ai_ReportCompetitionState();
+    CallC(FUN_42cb20);
+    CallC(FUN_42cf50);
+    CallC(FUN_46dee0);
+    g_lastSpeedTime68d0f0 = t_68d0f8;
+}
+
+// [FUN_425820] a computer player takes on an order: its amounts (FUN_41b910) against the cargo's limits pick
+// the smaller ratio, which sets the copied order's amount (+56) and its share of the order's +64 (+64)
+extern "C" void __cdecl Ai_TakeOrder(int player, const BYTE* order)
+{
+    if (CallC<char>(FUN_417660, player))
+        AiError(0, 1, s_mainFile, s_mainId, 8929, &g_strErr9012, &g_aiEmpty, &g_aiEmpty);
+    const BYTE* rec = g_68ccb8 + F(int, order, 0) * 104;
+    double lim1 = F(double, rec, 16);
+    double lim2 = F(double, rec, 24);
+    double a = 0, b = 0;
+    CallC(FUN_41b910, player, &a, &b);
+    double x = a / lim1;
+    double y = b / lim2;
+    BYTE* p = (BYTE*)player;
+    BYTE* fb = (BYTE*)F(DWORD, &x, 0);
+    BYTE** v = (BYTE**)Player_Orders(p, fb);
+    if (v[1] != v[2]) {
+        CallC(FUN_460d20, v[1], order);
+        v[1] += 144;
+    } else
+        CallThis(FUN_450960, v, v[1], order);
+    const double* m = !(x >= y) ? &x : &y;
+    BYTE* w = Player_Orders(p, fb);
+    F(double, F(BYTE*, w, 4) - 88, 0) = *m;
+    m = !(x >= y) ? &x : &y;
+    w = Player_Orders(p, fb);
+    F(double, F(BYTE*, w, 4) - 80, 0) = F(double, order, 64) * *m / F(double, order, 56);
+    Ai_AccountForChangeInLoadState(player);
+}
+
+// the length along a road's objects from (t1, s1, o1) to (t2, s2, o2); o2 past the last object means its end
+static double Road_SpanLength(BYTE* e, double t1, int s1, int o1, double t2, int s2, int o2)
+{
+    BYTE** objs = F(BYTE**, e, 120);
+    if (o2 == F(BYTE**, e, 124) - objs) {
+        o2--;
+        s2 = CallVirt<int>(objs[o2], 24) - 1;
+        t2 = 0;
+    }
+    if (o1 == o2)
+        return CallVirt<double>(F(BYTE**, e, 120)[o1], 32, t1, s1, t2, s2);
+    BYTE* first = F(BYTE**, e, 120)[o1];
+    int last = CallVirt<int>(first, 24) - 1;
+    double sum = CallVirt<double>(first, 32, t1, s1, 1.0, last);
+    for (int i = o1 + 1; i < o2; i++)
+        sum = CallVirt<double>(F(BYTE**, e, 120)[i], 36) + sum;
+    return CallVirt<double>(F(BYTE**, e, 120)[o2], 32, 0.0, 0, t2, s2) + sum;
+}
+
+// a position at one of the road's end nodes becomes the road's start or end
+static void Road_PositionAtEnd(BYTE* e, PositionId* p, int line, const char* err)
+{
+    if (p->road != -1)
+        return;
+    RoadNode* n = g_roadNodes[p->node];
+    PositionId tmp;
+    if (n == F(RoadNode*, e, 112))
+        *p = *Road_EdgeStart(&tmp, (RoadEdge*)e);
+    else if (n == F(RoadNode*, e, 116))
+        *p = *Road_EdgeEnd(&tmp, (RoadEdge*)e);
+    else
+        AiError(0, 100, s_mainFile, s_mainId, line, err, &g_aiEmpty, &g_aiEmpty);
+}
+
+// [FUN_409660] the distance along a road between two positions on it
+extern "C" double __cdecl Road_DistanceBetween(BYTE* e, PositionId a, PositionId b)
+{
+    Road_PositionAtEnd(e, &a, 2075, s_err7644);
+    Road_PositionAtEnd(e, &b, 2086, s_err7645);
+    if (CallThis<char>(FUN_402740, &a, b))
+        return Road_SpanLength(e, a.t, a.segment, a.object, b.t, b.segment, b.object);
+    return Road_SpanLength(e, b.t, b.segment, b.object, a.t, a.segment, a.object);
+}
+
+// [FUN_436900] getPositionId(dvector3 const & v): the closest position to v on any road
+extern "C" PositionId* __cdecl Ai_GetPositionIdAll(PositionId* out, const DVec3* v)
+{
+    Trace_EnterBuffered((const char*)s_getPositionIdAll);
+    double best = 1.7976931348623157e308;
+    double t = 0;
+    int seg = 0, obj = 0;
+    if (g_roadEdges == g_roadEdgesEnd)
+        AiError(0, 100, s_mainFile, s_mainId, 14766, s_noRoads66e45c, &g_aiEmpty, &g_aiEmpty);
+    bool none = true;
+    RoadEdge** bestEdge = 0;
+    for (RoadEdge** ep = g_roadEdges; ep != g_roadEdgesEnd; ep++) {
+        BYTE*** vec = (BYTE***)((BYTE*)*ep + 120);
+        bool found = false;
+        for (unsigned k = 0; k < (unsigned)(vec[1] - vec[0]); k++)
+            if (CallVirt<int>(vec[0][k], 12, v, &best, &t, &seg)) {
+                found = true;
+                obj = k;
+            }
+        if (found) {
+            bestEdge = ep;
+            none = false;
+        }
+    }
+    if (none)
+        AiError(0, 100, s_mainFile, s_mainId, 14780, s_err59812, &g_aiEmpty, &g_aiEmpty);
+    PositionId pos;
+    pos.road = bestEdge - g_roadEdges;
+    pos.node = -1;
+    pos.t = t;
+    pos.segment = seg;
+    pos.object = obj;
+    pos.m_24 = 0;
+    pos.m_28 = -1;
+    if (!PositionValid(&pos)) {
+        sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, 0);
+        AiError(33, 100, s_mainFile, s_mainId, 14783, s_invalidId, "PositionId", g_positionText77e6e0);
+    }
+    *out = pos;
+    Trace_Leave((const char*)s_getPositionIdAll);
+    return out;
+}
+
+// [FUN_41ae60] processMove(PlayerId player): ends a finished hire or sale, takes the next order when due,
+// and for a free player that isn't moving starts a move
+extern "C" int __cdecl Ai_ProcessMove(int player)
+{
+    Trace_EnterBuffered((const char*)s_processMove);
+    BYTE* p = (BYTE*)player;
+    if (F(int, p, 100) == 256 && CallC<char>(FUN_4165e0, player) && CallC<double>(FUN_401000) >= F(double, p, 112)) {
+        BYTE* m = F(BYTE*, p, 972);
+        if (F(int, m, 12) >= F(int, m, 8))
+            CallC(FUN_419760, player);
+    }
+    if (F(int, p, 100) == 257 && CallC<char>(FUN_4165e0, player) && CallC<double>(FUN_401000) >= F(double, p, 112)
+        && g_68d154 >= g_68d150)
+        CallC(FUN_419760, player);
+    if (CallC<char>(FUN_4165e0, player) && F(int, p, 100) != 257 && F(int, p, 100) != 256) {
+        if (r_66c68c || CallC<char>(FUN_4165e0, player) && CallC<double>(FUN_401000) >= F(double, p, 112))
+            CallC(FUN_477d60, player);
+    }
+    if ((F(DWORD, p, 96) & 0x8000000) && CallC<double>(FUN_401000) >= F(double, p, 112))
+        CallC(FUN_477d60, player);
+    if (!(F(BYTE, p, 96) & 1) && !CallC<char>(FUN_4165e0, player)) {
+        double d = CallC<double>(FUN_41a9d0, player);
+        CallC(FUN_435a90, player, &d);
+        Ai_PlayerEvent(p, 4, 0);
+    }
+    Trace_Leave((const char*)s_processMove);
+    return 0;
 }
