@@ -20345,3 +20345,103 @@ extern "C" void __cdecl Ai_UpdateAmbushes()
     }
     Trace_Leave((const char*)s_updateAmbushes66dcb4);
 }
+
+// ---------------------------------------------------------------------------
+// Batch: the vehicle queues
+
+ASM_VAR(double, g_64b888, $L_64b888)
+extern "C" void FUN_415790(); KING_ALIAS("_FUN_415790", "_PtrVec_FindFree")    // whether a vehicle's kinds (vector by value) hold a kind (kinds, kind) returns bool
+extern "C" void FUN_448ab0(); KING_ALIAS("_FUN_448ab0", "@Vec4_FreeStorageB@8")    // vector<4 bytes> destructor (thiscall)
+
+static bool Vehicle_HasKind(int i, int kind)
+{
+    BYTE kinds[12];
+    Vec4b_Copy(kinds, 0, (const BYTE**)((BYTE*)g_vehicles[i] + 36));
+    return CallC<char>(FUN_415790, F(DWORD, kinds, 0), F(DWORD, kinds, 4), F(DWORD, kinds, 8), kind) != 0;
+}
+
+static void IntVec_Push(BYTE** v, int* x)
+{
+    if (v[1] != v[2]) {
+        CallC(FUN_4611c0, v[1], x);
+        v[1] += 4;
+    } else
+        CallThis(FUN_452000, v, v[1], x);
+}
+
+static void IntVec_Shuffle(BYTE** v)
+{
+    BYTE* b = v[0];
+    BYTE* e = v[1];
+    if (b == e)
+        return;
+    for (BYTE* p = b + 4; p != e; p += 4) {
+        unsigned r = Rng_Random(&g_rng68b9c8, 0, (unsigned)((p - b) >> 2) + 1);
+        CallC(FUN_46cf00, p, b + r * 4);
+    }
+}
+
+static unsigned Vehicles_Count() { return (unsigned)(g_vehiclesEnd - g_vehicles); }
+
+// [FUN_42fa90] the vehicle queues of the world record (68cbf8): +96 the kind-7/8/2 vehicles (kind-1 owners
+// three times, four rounds) shuffled, +24 the kind-2 ones (only owner kind 3 in network games), and +84/+108
+// the kind-7/2 ones interleaved, those of owner kind 1 at the 66c6f0 ratio, +108 shuffled
+extern "C" void __cdecl Ai_BuildVehicleQueues()
+{
+    BYTE* w = (BYTE*)g_68cbf8;
+    Vec4_Erase(w + 24, 0, F(BYTE*, w, 24), F(BYTE*, w, 28));
+    w = (BYTE*)g_68cbf8;
+    Vec4_Erase(w + 84, 0, F(BYTE*, w, 84), F(BYTE*, w, 88));
+    w = (BYTE*)g_68cbf8;
+    Vec4_Erase(w + 96, 0, F(BYTE*, w, 96), F(BYTE*, w, 100));
+    w = (BYTE*)g_68cbf8;
+    Vec4_Erase(w + 108, 0, F(BYTE*, w, 108), F(BYTE*, w, 112));
+    for (int round = 4; round; round--)
+        for (int i = 0; (unsigned)i < Vehicles_Count(); i++) {
+            if (!Vehicle_HasKind(i, 7) && !Vehicle_HasKind(i, 8) && !Vehicle_HasKind(i, 2))
+                continue;
+            IntVec_Push((BYTE**)((BYTE*)g_68cbf8 + 96), &i);
+            if (F(int, g_vehicles[i], 32) == 1) {
+                IntVec_Push((BYTE**)((BYTE*)g_68cbf8 + 96), &i);
+                IntVec_Push((BYTE**)((BYTE*)g_68cbf8 + 96), &i);
+            }
+        }
+    IntVec_Shuffle((BYTE**)((BYTE*)g_68cbf8 + 96));
+    for (int start = 0; start < 2; start++)
+        for (int i = start; (unsigned)i < Vehicles_Count(); i += 2)
+            if ((!g_68d188 || F(int, g_vehicles[i], 32) == 3) && Vehicle_HasKind(i, 2))
+                IntVec_Push((BYTE**)((BYTE*)g_68cbf8 + 24), &i);
+    BYTE* other[3];
+    BYTE* owned[3];
+    char alloc;
+    CallThis(FUN_487730, other, &alloc);
+    CallThis(FUN_487730, owned, &alloc);
+    for (int i = 0; (unsigned)i < Vehicles_Count(); i++)
+        if ((Vehicle_HasKind(i, 7) || Vehicle_HasKind(i, 2)) && F(int, g_vehicles[i], 32) == 1)
+            IntVec_Push(owned, &i);
+    for (int start = 1; start >= 0; start--)
+        for (int i = start; (unsigned)i < Vehicles_Count(); i += 2)
+            if ((Vehicle_HasKind(i, 7) || Vehicle_HasKind(i, 2)) && F(int, g_vehicles[i], 32) != 1)
+                IntVec_Push(other, &i);
+    double ratio = g_66c6f0 * g_64b888;
+    double a = 0, b = 0;
+    unsigned ia = 0, ib = 0;
+    for (unsigned k = 0; k < (unsigned)((other[1] - other[0]) >> 2) * (unsigned)((owned[1] - owned[0]) >> 2); k++) {
+        unsigned n1 = (unsigned)(other[1] - other[0]) >> 2;
+        unsigned n2 = (unsigned)(owned[1] - owned[0]) >> 2;
+        if (a * ratio > b) {
+            IntVec_Push((BYTE**)((BYTE*)g_68cbf8 + 84), (int*)(owned[0] + ib % n2 * 4));
+            b = b + g_64b670;
+            ib++;
+        } else {
+            IntVec_Push((BYTE**)((BYTE*)g_68cbf8 + 84), (int*)(other[0] + ia % n1 * 4));
+            a = a + g_64b670;
+            ia++;
+        }
+    }
+    w = (BYTE*)g_68cbf8;
+    VecDword_Assign((DWORD**)(w + 108), 0, (DWORD**)(w + 84));
+    IntVec_Shuffle((BYTE**)((BYTE*)g_68cbf8 + 108));
+    CallThis(FUN_448ab0, owned);
+    CallThis(FUN_448ab0, other);
+}

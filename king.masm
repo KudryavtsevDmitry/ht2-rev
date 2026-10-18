@@ -1190,6 +1190,7 @@ PUBLIC $L_66cb1c, $L_66cb30, $L_66cd78, $L_68d110
 PUBLIC $L_66cd68
 PUBLIC $L_64b700
 PUBLIC $L_64b960, $L_659d60, $L_66dcb4, $L_66f484, $L_68d20c
+PUBLIC $L_64b888
 
 ;===================================
 _TEXT SEGMENT
@@ -80424,6 +80425,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42fa90 PROC
 
             push EBP
@@ -81227,6 +81230,11 @@ $L_4301f2::
             nop
             nop
 FUN_42fa90 ENDP
+ELSE
+EXTERN _Ai_BuildVehicleQueues:PROC
+FUN_42fa90 TEXTEQU <_Ai_BuildVehicleQueues>
+$L_430000 LABEL NEAR
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
