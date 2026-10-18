@@ -5535,6 +5535,8 @@ $L_402bde::
 $L_402bc0 ENDP
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_402be0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -5839,6 +5841,10 @@ $L_402eac::
             add ESP,52
             ret 
 FUN_402be0 ENDP
+ELSE
+EXTERN _Ai_BuildNameMaps:PROC
+FUN_402be0 TEXTEQU <_Ai_BuildNameMaps>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16

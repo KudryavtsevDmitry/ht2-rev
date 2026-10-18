@@ -18303,7 +18303,7 @@ extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@1
 extern "C" void FUN_4031e0(); KING_ALIAS("_FUN_4031e0", "_Ai_ClearWorld")
 extern "C" void FUN_406600(); KING_ALIAS("_FUN_406600", "_Ai_LoadRoads")
 extern "C" void FUN_403110(); KING_ALIAS("_FUN_403110", "_AI_Renumber")
-ASM_PROC(FUN_402be0)
+extern "C" void FUN_402be0(); KING_ALIAS("_FUN_402be0", "_Ai_BuildNameMaps")
 extern "C" void FUN_406340(); KING_ALIAS("_FUN_406340", "_Road_NameEdges")
 extern "C" void FUN_4842a0(); KING_ALIAS("_FUN_4842a0", "_Road_ResetCosts")
 extern "C" void FUN_406370(); KING_ALIAS("_FUN_406370", "_Ai_CollectRoomEdges")
@@ -20079,4 +20079,70 @@ extern "C" BYTE* __cdecl Resource_FromEntry(BYTE* out, int reader, StrRef e)
     Rec40cb60_Destroy(rec, 0);
     CallThis(FUN_4a36c0, &e);
     return out;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: the name maps
+
+extern "C" void FUN_44a980(); KING_ALIAS("_FUN_44a980", "@NameHash_Insert@16")    // hash_map<string, int>::insert_unique (thiscall: out, &pair)
+
+static const char* NameOf(BYTE* rec)
+{
+    return F(BYTE*, rec, 0) != F(BYTE*, rec, 4) ? F(const char*, rec, 0) : 0;
+}
+
+static void Rope_Drop(BYTE* r)
+{
+    if (r && !InterlockedDecrement((LONG*)(r + 4)))
+        CallThis(FUN_44f1b0, r);
+}
+
+// [FUN_402be0] the name maps from scratch: the rooms' names (68cff0), the road nodes' (68d008) and the
+// registry's (68cf10), each to its index
+extern "C" void __cdecl Ai_BuildNameMaps()
+{
+    Hash_Clear((HashTable*)&w_hash68cff0, 0);
+    for (unsigned i = 0; i < (unsigned)(g_vec68d0dc - g_vec68d0d8); i++) {
+        BYTE* rope = 0;
+        const char* name = NameOf(g_vec68d0d8[i]);
+        Rope_Apply44a840(&rope, 0, (int)name, AI_StrLen(name));
+        BYTE* pr[2];
+        Ref_Copy(pr, 0, &rope, 0);
+        pr[1] = (BYTE*)i;
+        DWORD out[3];
+        CallThis(FUN_44a980, &w_hash68cff0, out, pr);
+        if (pr[0])
+            Rope_Unref(pr[0], 0);
+        if (rope)
+            Rope_Unref(rope, 0);
+    }
+    Hash_Clear((HashTable*)&g_init68d008, 0);
+    for (unsigned i = 0; i < (unsigned)(g_roadNodesEnd - g_roadNodes); i++) {
+        BYTE* rope = 0;
+        const char* name = NameOf((BYTE*)g_roadNodes[i]);
+        Rope_Apply44a840(&rope, 0, (int)name, strlen(name));
+        BYTE* pr[2];
+        Ref_Copy(pr, 0, &rope, 0);
+        pr[1] = (BYTE*)i;
+        DWORD out[3];
+        CallThis(FUN_44a980, &g_init68d008, out, pr);
+        Rope_Drop(pr[0]);
+        Rope_Drop(rope);
+    }
+    Hash_Clear((HashTable*)&w_hash68cf10, 0);
+    for (unsigned i = 0; i < (unsigned)(g_vec68d0cc - g_vec68d0c8); i++) {
+        BYTE* rope = 0;
+        const char* name = NameOf(g_vec68d0c8[i]);
+        Rope_Apply44a840(&rope, 0, (int)name, strlen(name));
+        BYTE* pr[2];
+        pr[0] = rope;
+        if (rope)
+            InterlockedIncrement((LONG*)(rope + 4));
+        pr[1] = (BYTE*)i;
+        NameHash_Resize(&w_hash68cf10, 0, F(int, &w_hash68cf10, 16) + 1);
+        void* out[3];
+        NameHash_InsertNoResize(&w_hash68cf10, 0, out, (int**)pr);
+        Rope_Drop(pr[0]);
+        Rope_Drop(rope);
+    }
 }
