@@ -1188,6 +1188,7 @@ PUBLIC $L_66c6c8, $L_66c708, $L_66c718, $L_66d548
 PUBLIC $L_66c8f0, $L_66cdec, $L_68b9bc
 PUBLIC $L_66cb1c, $L_66cb30, $L_66cd78, $L_68d110
 PUBLIC $L_66cd68
+PUBLIC $L_64b700
 
 ;===================================
 _TEXT SEGMENT
@@ -50104,6 +50105,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41d310 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -50114,6 +50117,10 @@ FUN_41d310 PROC
             fild DWORD PTR [EAX+40]
             call __CIpow
 FUN_41d310 ENDP
+ELSE
+EXTERN @Spot_Weight4@12:PROC
+FUN_41d310 TEXTEQU <@Spot_Weight4@12>
+ENDIF
 $L_41d328 PROC
 
             ret 4
@@ -52364,6 +52371,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41ecc0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -52374,6 +52383,10 @@ FUN_41ecc0 PROC
             fild DWORD PTR [EAX+40]
             call __CIpow
 FUN_41ecc0 ENDP
+ELSE
+EXTERN @Spot_Weight1@12:PROC
+FUN_41ecc0 TEXTEQU <@Spot_Weight1@12>
+ENDIF
 $L_41ecd8 PROC
 
             ret 4
@@ -52396,6 +52409,8 @@ $L_41ecdb ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41ecf0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -52406,6 +52421,10 @@ FUN_41ecf0 PROC
             fild DWORD PTR [EAX+40]
             call __CIpow
 FUN_41ecf0 ENDP
+ELSE
+EXTERN @Spot_Weight2@12:PROC
+FUN_41ecf0 TEXTEQU <@Spot_Weight2@12>
+ENDIF
 $L_41ed08 PROC
 
             ret 4
@@ -52428,6 +52447,8 @@ $L_41ed0b ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41ed20 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -52438,6 +52459,10 @@ FUN_41ed20 PROC
             fild DWORD PTR [EAX+40]
             call __CIpow
 FUN_41ed20 ENDP
+ELSE
+EXTERN @Spot_Weight3@12:PROC
+FUN_41ed20 TEXTEQU <@Spot_Weight3@12>
+ENDIF
 $L_41ed38 PROC
 
             ret 4

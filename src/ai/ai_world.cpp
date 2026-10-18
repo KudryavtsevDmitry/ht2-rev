@@ -18938,7 +18938,7 @@ extern "C" BYTE* __cdecl Ai_GetOrientationF(BYTE* out, PositionId pos)
 
 ASM_VAR(AsmLabel, s_err08321, $L_66d6bc)
 ASM_VAR(AsmLabel, s_err08322, $L_66d6a4)
-ASM_PROC(FUN_41d310)    // a spot's weight (spot) returns double
+extern "C" void FUN_41d310(); KING_ALIAS("_FUN_41d310", "@Spot_Weight4@12")    // a spot's weight (spot) returns double
 
 // [FUN_41cff0] a present at a node (once: the node's flag 0x10), placed at a spot picked by weight
 // (+108 its index, the spot's count +40), then announced
@@ -20202,3 +20202,24 @@ extern "C" BYTE* __cdecl Orders_FindEqual(BYTE* first, BYTE* last, Blob144 order
     }
     return r;
 }
+
+// ---------------------------------------------------------------------------
+// Batch: the spots' weights by kind
+
+ASM_VAR(double, g_64b700, $L_64b700)
+
+static double Spot_WeightOf(const BYTE* spot, int kind)
+{
+    if (F(int, spot, 28) != kind)
+        return g_zero64b678;
+    return x87_pow(g_64b700, (double)F(int, spot, 40));
+}
+
+// [FUN_41d310] (thiscall) a spot's weight for kind 4: 64b700 to the power of its use count (+40), else 0
+extern "C" double __fastcall Spot_Weight4(void*, void*, const BYTE* spot) { return Spot_WeightOf(spot, 4); }
+// [FUN_41ecc0] the same for kind 1
+extern "C" double __fastcall Spot_Weight1(void*, void*, const BYTE* spot) { return Spot_WeightOf(spot, 1); }
+// [FUN_41ecf0] the same for kind 2
+extern "C" double __fastcall Spot_Weight2(void*, void*, const BYTE* spot) { return Spot_WeightOf(spot, 2); }
+// [FUN_41ed20] the same for kind 3
+extern "C" double __fastcall Spot_Weight3(void*, void*, const BYTE* spot) { return Spot_WeightOf(spot, 3); }
