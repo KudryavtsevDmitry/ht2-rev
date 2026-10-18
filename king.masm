@@ -1183,6 +1183,8 @@ PUBLIC $L_64b7b8, $L_66dd3c
 PUBLIC $L_64b720
 PUBLIC $L_64b868, $L_64b870
 PUBLIC $L_66e698
+PUBLIC $L_64b6c0, $L_64b6c8, $L_64b6d0, $L_64b6e8, $L_66c6b8, $L_66c6c0
+PUBLIC $L_66c6c8, $L_66c708, $L_66c718, $L_66d548
 
 ;===================================
 _TEXT SEGMENT
@@ -45680,6 +45682,8 @@ EXTERN _Ai_UpdateAdvancementRegular:PROC
 FUN_41a7d0 TEXTEQU <_Ai_UpdateAdvancementRegular>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41a9d0 PROC
 
             push EBP
@@ -46105,6 +46109,10 @@ $L_41ae49::
             pop EBP
             ret 
 FUN_41a9d0 ENDP
+ELSE
+EXTERN _Ai_PrescribeAdvance:PROC
+FUN_41a9d0 TEXTEQU <_Ai_PrescribeAdvance>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
