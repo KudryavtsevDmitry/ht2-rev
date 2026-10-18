@@ -18185,3 +18185,192 @@ extern "C" int __cdecl Road_GetRoadParameters(PositionId pos, RoomInfo* out)
     Trace_Leave((const char*)s_getRoadParameters66e604);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Batch: loosing a semitrailer, obstacle info
+
+ASM_VAR(AsmLabel, s_looseSemitrailer, $L_66d81c)
+ASM_VAR(AsmLabel, s_getObstacleInfo, $L_66f08c)
+extern "C" void FUN_4722a0(); KING_ALIAS("_FUN_4722a0", "_Player_Call472110")    // (player)
+
+// [FUN_41fa00] looseSemitrailer(PlayerId player): the player's trailer order (+520) becomes a present at the
+// player's point, waiting (68d01c) when it has no orders, otherwise flagged 0x40 (68d0e4)
+extern "C" void __cdecl Ai_LooseSemitrailer(int player)
+{
+    Trace_EnterBuffered((const char*)s_looseSemitrailer);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 6989, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    BYTE* m = F(BYTE*, p, 520);
+    if (m && F(int, m, 4) != -1) {
+        if (CallC<char>(FUN_417660, player))
+            CallC(FUN_4722a0, player);
+        BYTE* o = (BYTE*)operator new(112);
+        if (o) {
+            F(int, o, 0) = -1;
+            F(DWORD, o, 4) = 0x12345678;
+            F(DWORD, o, 8) = 0;
+            F(int, o, 12) = -1;
+            F(int, o, 16) = -1;
+            F(DWORD, o, 20) = 0;
+            F(int, o, 24) = -1;
+            Position_InitNone((PositionId*)(o + 56), 0);
+            F(DWORD, o, 96) = 0xffffffff;
+            F(DWORD, o, 88) = 0;
+            F(DWORD, o, 100) = 0x7fefffff;
+            F(BYTE, o, 104) = 0;
+            F(int, o, 108) = -1;
+        }
+        F(int, o, 24) = -1;
+        F(BYTE*, o, 20) = F(BYTE*, p, 520);
+        F(BYTE*, p, 520) = 0;
+        F(DWORD, o, 8) |= 32;
+        F(DVec3, o, 32) = F(DVec3, p, 624);
+        PositionId tmp;
+        F(PositionId, o, 56) = *Ai_GetPositionIdAll(&tmp, (const DVec3*)(o + 32));
+        F(BYTE, o, 104) = 1;
+        BYTE* v = F(BYTE*, o, 20) + 28;
+        if (F(BYTE*, v, 0) == F(BYTE*, v, 4)) {
+            F(double, o, 96) = CallC<double>(FUN_401000);
+            g_68d01c++;
+        } else {
+            g_68d0e4++;
+            F(DWORD, o, 8) |= 64;
+        }
+        F(int, o, 0) = F(int, F(BYTE*, o, 20), 0);
+        int id = player;
+        Presents_Append(&id, (int)o);
+        g_presentHook68d11c(id, 1);
+        CallC(FUN_425790, player);
+        CallC(FUN_41ef90, player);
+    }
+    Trace_Leave((const char*)s_looseSemitrailer);
+}
+
+// [FUN_4420b0] getObstacleInfo(ObstacleId obstacle, ObstacleInfo & si): its point as floats, and for an
+// active one whether any road at its two nodes (ends at the first, starts at the second) lacks flag 0x20
+extern "C" int __cdecl Ai_GetObstacleInfo(int id, BYTE* out)
+{
+    Trace_EnterBuffered((const char*)s_getObstacleInfo);
+    BYTE* r = (BYTE*)g_68cc18[id];
+    F(float, out, 0) = (float)F(double, r, 64);
+    F(float, out, 4) = (float)F(double, r, 72);
+    F(float, out, 8) = (float)F(double, r, 80);
+    F(BYTE, out, 12) = F(BYTE, r, 28);
+    if (F(BYTE, r, 28)) {
+        F(BYTE, out, 12) = 0;
+        for (int k = 48; k < 56; k += 4) {
+            int node = F(int, (BYTE*)g_68cc18[id], k);
+            if (node == -1) {
+                F(BYTE, out, 12) = 1;
+                break;
+            }
+            bool blocked = false;
+            for (int j = 0; j < 2 && !blocked; j++) {
+                for (BYTE** e = F(BYTE**, g_roadNodes[node], 20 + j * 12);
+                     e != F(BYTE**, g_roadNodes[node], 24 + j * 12); e++) {
+                    PositionId tmp;
+                    PositionId pos = *(j ? Road_EdgeStart(&tmp, (RoadEdge*)*e) : Road_EdgeEnd(&tmp, (RoadEdge*)*e));
+                    RoomInfo info;
+                    RoomInfo_Init(&info);
+                    Road_GetRoadParameters(pos, &info);
+                    if (!(info.flags >> 5 & 1)) {
+                        blocked = true;
+                        break;
+                    }
+                }
+            }
+            if (blocked) {
+                F(BYTE, out, 12) = 1;
+                break;
+            }
+        }
+    }
+    Trace_Leave((const char*)s_getObstacleInfo);
+    return 0;
+}
+
+ASM_VAR(AsmLabel, s_noNodes66e384, $L_66e384)
+ASM_VAR(AsmLabel, s_noRoads66e36c, $L_66e36c)
+ASM_VAR(void*, g_670b04, $L_670b04)
+ASM_VAR(BYTE, g_686360, $L_686360)
+ASM_PROC($L_401310)
+extern "C" void FUN_4a52d0(); KING_ALIAS("_FUN_4a52d0", "_Sch_Exchange69224c")    // registers a function (fn)
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // a string assigned from a vector<char> (thiscall: &v)
+extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")    // vector<char>::insert_aux (thiscall: pos, &c)
+extern "C" void FUN_4031e0(); KING_ALIAS("_FUN_4031e0", "_Ai_ClearWorld")
+extern "C" void FUN_406600(); KING_ALIAS("_FUN_406600", "_Ai_LoadRoads")
+extern "C" void FUN_403110(); KING_ALIAS("_FUN_403110", "_AI_Renumber")
+ASM_PROC(FUN_402be0)
+extern "C" void FUN_406340(); KING_ALIAS("_FUN_406340", "_Road_NameEdges")
+extern "C" void FUN_4842a0(); KING_ALIAS("_FUN_4842a0", "_Road_ResetCosts")
+extern "C" void FUN_406370(); KING_ALIAS("_FUN_406370", "_Ai_CollectRoomEdges")
+extern "C" void FUN_40d1b0(); KING_ALIAS("_FUN_40d1b0", "_Ai_LoadNames")
+ASM_PROC(FUN_40c3b0)
+ASM_PROC(FUN_40cef0)
+extern "C" void FUN_42e9f0(); KING_ALIAS("_FUN_42e9f0", "_Ai_LoadVehicles")
+extern "C" void FUN_42f4c0(); KING_ALIAS("_FUN_42f4c0", "_Ai_LoadTrashboxes")
+ASM_PROC(FUN_430230)
+extern "C" void FUN_430480(); KING_ALIAS("_FUN_430480", "_Vehicles_AverageRatio")
+
+static void CharVec_Zeroed(VecMethods* v, unsigned n)
+{
+    VecReserve(v, n);
+    memset(v->begin, 0, n);
+    v->end = v->begin + n;
+}
+
+// [FUN_435730] the AI's start: the hooks, the full path of its directory (ending in '\') at 68bac8, the
+// clock, then loading the world, its roads and the rest
+extern "C" int __cdecl Ai_Initialize(const char* dir, AiEventHook eventHook, PresentHook presentHook)
+{
+    g_670b04 = &g_686360;
+    CallC(FUN_4a52d0, $L_401310);
+    g_presentHook68d11c = presentHook;
+    g_aiEventHook68d118 = eventHook;
+    VecMethods v;
+    CharVec_Zeroed(&v, 8192);
+    DWORD n = GetFullPathNameA(dir, v.end - v.begin, (char*)v.begin, 0);
+    if (n >= (DWORD)(v.end - v.begin)) {
+        VecMethods w;
+        CharVec_Zeroed(&w, n + 2);
+        if (v.capacityEnd != v.begin)
+            Ai_PoolFree(v.begin, v.capacityEnd - v.begin);
+        v = w;
+        GetFullPathNameA(dir, v.end - v.begin, (char*)v.begin, 0);
+    }
+    v.end = v.begin + strlen((char*)v.begin);
+    if (v.end != v.begin && v.end[-1] != '\\') {
+        char c = '\\';
+        if (v.end != v.capacityEnd) {
+            *v.end = c;
+            v.end++;
+        } else
+            CallThis(FUN_44bef0, &v, v.end, &c);
+    }
+    CallThis(FUN_44c160, &g_init68bac8, &v);
+    g_lastSpeedTime68d0f0 = CallC<double>(FUN_401000);
+    CallC(FUN_4031e0);
+    CallC(FUN_406600);
+    CallC(FUN_403110);
+    CallC(FUN_402be0);
+    CallC(FUN_406340);
+    if (g_roadNodes == g_roadNodesEnd)
+        AiError(0, 100, s_mainFile, s_mainId, 14311, s_noNodes66e384, &g_aiEmpty, &g_aiEmpty);
+    if (g_roadEdges == g_roadEdgesEnd)
+        AiError(0, 100, s_mainFile, s_mainId, 14315, s_noRoads66e36c, &g_aiEmpty, &g_aiEmpty);
+    CallC(FUN_4842a0);
+    CallC(FUN_406370);
+    CallC(FUN_40d1b0);
+    CallC(FUN_40c3b0);
+    CallC(FUN_40cef0);
+    CallC(FUN_42e9f0);
+    CallC(FUN_42f4c0);
+    CallC(FUN_430230);
+    CallC(FUN_430480);
+    if (v.capacityEnd != v.begin)
+        Ai_PoolFree(v.begin, v.capacityEnd - v.begin);
+    return 0;
+}
