@@ -1173,6 +1173,8 @@ PUBLIC $L_66d9e0
 PUBLIC $L_64b6d8, $L_64b738, $L_66f494
 PUBLIC $L_64b690, $L_66e73c
 PUBLIC $L_66d6a4, $L_66d6bc, $L_66e774
+PUBLIC $L_66e0dc, $L_66e0f0, $L_66e104
+PUBLIC $L_64b788, $L_64b938, $L_66ec0c
 
 ;===================================
 _TEXT SEGMENT
@@ -86252,6 +86254,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_433350 PROC
 
             push EBP
@@ -86538,6 +86542,10 @@ $L_433640::
             pop EBP
             ret 
 FUN_433350 ENDP
+ELSE
+EXTERN _Ai_GetAssortment:PROC
+FUN_433350 TEXTEQU <_Ai_GetAssortment>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -104374,6 +104382,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43eb90 PROC
 
             push EBP
@@ -104627,6 +104637,10 @@ $L_43ee31::
             pop EBP
             ret 
 FUN_43eb90 ENDP
+ELSE
+EXTERN _Ai_SeeIfMustBeRetraced:PROC
+FUN_43eb90 TEXTEQU <_Ai_SeeIfMustBeRetraced>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

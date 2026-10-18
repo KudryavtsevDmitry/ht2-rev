@@ -19000,3 +19000,109 @@ extern "C" void __cdecl Ai_PresentAtNode(int node)
     Presents_Append(&id, (int)o);
     g_presentHook68d11c(id, 1);
 }
+
+// ---------------------------------------------------------------------------
+// Batch: a dealer's assortment
+
+ASM_VAR(AsmLabel, s_getAssortment, $L_66e104)
+ASM_VAR(AsmLabel, s_err0873, $L_66e0f0)
+ASM_VAR(AsmLabel, s_err0875, $L_66e0dc)
+
+// [FUN_433350] getAssortment(PlayerId dealer, vector<VehicleId> * & asst, double & factor): the vehicles of the
+// dealer's market slot at its node, or else of the closest non-empty slot of any market; 1 when the node's
+// market lacks the slot
+extern "C" int __cdecl Ai_GetAssortment(int dealer, BYTE** asst, double* factor)
+{
+    Trace_EnterBuffered((const char*)s_getAssortment);
+    *asst = 0;
+    PositionId pos = F(PositionId, (BYTE*)dealer, 40);
+    int node = pos.node;
+    int m;
+    if (node != -1 && (m = F(int, g_roadNodes[node], 172)) != -1) {
+        BYTE* market = (BYTE*)g_68cc98[m];
+        *factor = F(double, market, 48) * g_64b690;
+        BYTE* e = F(BYTE*, (BYTE*)g_68cc98[m], 28);
+        BYTE* end = F(BYTE*, (BYTE*)g_68cc98[m], 32);
+        while (e != end && F(int, e, 0) != node)
+            e += 36;
+        if (e == end) {
+            AiError(0, 1, s_mainFile, s_mainId, 13363, s_err0873, &g_aiEmpty, &g_aiEmpty);
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, (const char*)s_getAssortment);
+            return 1;
+        }
+        if (F(BYTE*, e, 24) == F(BYTE*, e, 28))
+            AiError(0, 100, s_mainFile, s_mainId, 13368, s_err0875, &g_aiEmpty, &g_aiEmpty);
+        *asst = e + 24;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_getAssortment);
+        return 0;
+    }
+    DVec3 tmp;
+    DVec3 pt = *CallC<const DVec3*>(FUN_40b0d0, &tmp, dealer);
+    double best = 1.7976931348623157e308;
+    for (void** mp = g_68cc98; mp != g_68cc9c; mp++) {
+        for (BYTE* e = F(BYTE*, (BYTE*)*mp, 28); e != F(BYTE*, (BYTE*)*mp, 32); e += 36) {
+            if (F(BYTE*, e, 24) == F(BYTE*, e, 28))
+                continue;
+            const DVec3& n = F(DVec3, g_roadNodes[F(int, e, 0)], 48);
+            double dx = pt.x - n.x;
+            double dy = pt.y - n.y;
+            double dz = pt.z - n.z;
+            double d = x87_sqrt((dy * dy + dz * dz) + dx * dx);
+            if (best > d) {
+                best = d;
+                *asst = e + 24;
+                *factor = F(double, (BYTE*)*mp, 48) * g_64b690;
+            }
+        }
+    }
+    Trace_Leave((const char*)s_getAssortment);
+    return 0;
+}
+
+ASM_VAR(AsmLabel, s_seeIfMustBeRetraced, $L_66ec0c)
+ASM_VAR(double, g_64b938, $L_64b938)
+ASM_VAR(double, g_64b788, $L_64b788)
+ASM_VAR(double, g_64b7c0, $L_64b7c0)
+
+// [FUN_43eb90] seeIfMustBeRetraced(RoomId room, PlayerId player): a moving computer player whose point has
+// strayed from its position (too far, or far and steeply) is routed again to its last hop's node, unless its
+// point lies close (or close and not below) to the room's own position for it
+extern "C" void __cdecl Ai_SeeIfMustBeRetraced(int room, int player)
+{
+    Trace_EnterBuffered((const char*)s_seeIfMustBeRetraced);
+    BYTE* p = (BYTE*)player;
+    if (F(int, p, 92) != 1 && F(BYTE*, p, 24) != F(BYTE*, p, 28) && (F(BYTE, p, 96) & 1)) {
+        DVec3 v = F(DVec3, p, 624);
+        DVec3 q;
+        Road_PointOf(&q, F(PositionId, p, 40));
+        DVec3 d;
+        d.z = q.z - v.z;
+        d.y = q.y - v.y;
+        d.x = q.x - v.x;
+        double xx = d.x * d.x;
+        double len = x87_sqrt((d.y * d.y + d.z * d.z) + xx);
+        bool flag = len > g_64b938;
+        bool go = flag;
+        if (len > g_64b788 && !(x87_sqrt(d.y * d.y + xx) >= d.z))
+            go = flag = true;
+        if (go) {
+            PositionId r;
+            Ai_GetPositionIdRoom(&r, room, &v);
+            if (!(r.road == -1 && r.node == -1 && !(r.t < 0 || r.t > 0) && !r.segment && !r.object && !r.m_24)) {
+                DVec3 q2;
+                Road_PointOf(&q2, r);
+                DVec3 e;
+                e.z = q2.z - v.z;
+                e.y = q2.y - v.y;
+                e.x = q2.x - v.x;
+                double len2 = x87_sqrt((e.y * e.y + e.z * e.z) + e.x * e.x);
+                if (len2 >= g_64b788 && !(!(len2 >= g_64b938) && !(e.z >= g_64b7c0)) && flag)
+                    CallC(FUN_487230, player, F(int, F(BYTE*, p, 28) - 12, 0));
+            }
+        }
+    }
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, (const char*)s_seeIfMustBeRetraced);
+}
