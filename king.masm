@@ -1166,6 +1166,7 @@ PUBLIC $L_66e168, $L_66e8c0, $L_66f300
 PUBLIC $L_64b698
 PUBLIC $L_64b950, $L_66dfe8, $L_66f328, $L_68d120
 PUBLIC $L_66e604
+PUBLIC $L_66d81c, $L_66e36c, $L_66e384, $L_66f08c, $L_686360
 
 ;===================================
 _TEXT SEGMENT
@@ -53758,6 +53759,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41fa00 PROC
 
             push -1
@@ -54008,6 +54011,10 @@ $L_41fc84::
             add ESP,56
             ret 
 FUN_41fa00 ENDP
+ELSE
+EXTERN _Ai_LooseSemitrailer:PROC
+FUN_41fa00 TEXTEQU <_Ai_LooseSemitrailer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -89695,6 +89702,8 @@ $L_435690 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_435730 PROC
 
             push -1
@@ -90025,6 +90034,10 @@ $L_435a65::
             add ESP,40
             ret 
 FUN_435730 ENDP
+ELSE
+EXTERN _Ai_Initialize:PROC
+FUN_435730 TEXTEQU <_Ai_Initialize>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -109746,6 +109759,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4420b0 PROC
 
             push EBP
@@ -109978,6 +109993,10 @@ $L_442331::
             pop EBP
             ret 
 FUN_4420b0 ENDP
+ELSE
+EXTERN _Ai_GetObstacleInfo:PROC
+FUN_4420b0 TEXTEQU <_Ai_GetObstacleInfo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
