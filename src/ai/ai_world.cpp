@@ -18526,7 +18526,7 @@ ASM_VAR(AsmLabel, s_onNodePass, $L_66ccd0)
 ASM_VAR(AsmLabel, s_finishAll66ccc0, $L_66ccc0)
 ASM_VAR(AsmLabel, s_fline166ccb8, $L_66ccb8)
 ASM_VAR(AsmLabel, s_check166ccb0, $L_66ccb0)
-ASM_PROC(FUN_40ae80)    // (player)
+extern "C" void FUN_40ae80(); KING_ALIAS("_FUN_40ae80", "_Ai_EndHelpCalls")    // (player)
 extern "C" void FUN_40a690(); KING_ALIAS("_FUN_40a690", "_Ai_CallHelpers")    // calling the closest helpers (player)
 extern "C" void FUN_40aa00(); KING_ALIAS("_FUN_40aa00", "_Ai_CallMafia")    // calling the closest mafia (player)
 extern "C" void FUN_40a180(); KING_ALIAS("_FUN_40a180", "_Players_Each409fc0")
@@ -18833,4 +18833,75 @@ extern "C" BYTE* __cdecl Towns_PickWeighted(BYTE* first, BYTE* last, BYTE* town,
         }
     }
     return Weighted_Pick(c, w, sum, rng, last);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: ending a player's calls for help
+
+ASM_VAR(double, g_64b690, $L_64b690)
+extern "C" void FUN_477cb0(); KING_ALIAS("_FUN_477cb0", "_Player_Call477c60")    // (player, double)
+
+// [FUN_40ae80] outside network games, clears a player's help requests (+208..+260) and, when none is left,
+// frees the helpers (kind 5) bound to it (+960), sending the ones near the camera away (FUN_477cb0 with 120);
+// then event 18
+extern "C" void __cdecl Ai_EndHelpCalls(int player)
+{
+    if (g_68d188)
+        return;
+    BYTE* p = (BYTE*)player;
+    F(DWORD, p, 248) = 0;
+    F(DWORD, p, 252) = 0;
+    F(DWORD, p, 208) = 0;
+    F(DWORD, p, 212) = 0;
+    F(DWORD, p, 216) = 0;
+    F(DWORD, p, 256) = 0;
+    F(DWORD, p, 260) = 0;
+    F(DWORD, p, 240) = 0;
+    F(DWORD, p, 244) = 0;
+    CallC(FUN_477210, player);
+    p = (BYTE*)player;
+    if (!(F(double, p, 208) > g_zero64b678) && !F(BYTE, p, 200) && !(F(double, p, 240) > g_zero64b678)
+        && !(F(double, p, 248) > g_zero64b678) && !(F(double, p, 256) > g_zero64b678) && !F(BYTE, p, 264)) {
+        for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+            BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+            if (!d || F(int, CallC<BYTE*>(FUN_40a9f0, it), 84) != 5
+                || F(int, CallC<BYTE*>(FUN_40a9f0, it), 960) != player)
+                continue;
+            F(void*, CallC<BYTE*>(FUN_40a9f0, it), 960) = g_players;
+            DVec3 tmp;
+            const DVec3* pt = CallC<const DVec3*>(FUN_40b0d0, &tmp, it);
+            double x = pt->x - g_68bab0.x;
+            double y = pt->y - g_68bab0.y;
+            double z = pt->z - g_68bab0.z;
+            if (x87_sqrt((x * x + y * y) + z * z) < g_64b690)
+                CallC(FUN_477cb0, it, 120.0);
+        }
+    }
+    Ai_PlayerEvent((BYTE*)player, 18, 0);
+}
+
+ASM_VAR(AsmLabel, s_getOrientationSmoothedF, $L_66e73c)
+extern "C" void FUN_41cd40(); KING_ALIAS("_FUN_41cd40", "@Rec48_Construct@56")    // a float matrix from 12 floats (thiscall)
+
+// [FUN_43a4a0] getOrientationSmoothed(PlayerId player, PositionId pos) as a float matrix: the three rows and
+// the point of the smoothed orientation
+extern "C" BYTE* __cdecl Ai_GetOrientationSmoothedF(BYTE* out, int player, PositionId pos)
+{
+    Trace_EnterInline((const char*)s_getOrientationSmoothedF);
+    BYTE m[96];
+    BYTE* r = Ai_GetOrientationSmoothed(m, (BYTE*)player, pos);
+    DVec3 t1 = F(DVec3, r, 72), t2 = t1, t3 = t1;
+    DVec3 z1 = F(DVec3, r, 48), z2 = z1;
+    DVec3 b[7];
+    const DVec3* row2 = (const DVec3*)Rec_Get24(r, 0, &b[0], 2);
+    const double* r1z = &((const DVec3*)Rec_Get24(r, 0, &b[1], 1))->z;
+    const double* r1y = &((const DVec3*)Rec_Get24(r, 0, &b[2], 1))->y;
+    const DVec3* row1 = (const DVec3*)Rec_Get24(r, 0, &b[3], 1);
+    const double* r0z = &((const DVec3*)Rec_Get24(r, 0, &b[4], 0))->z;
+    const double* r0y = &((const DVec3*)Rec_Get24(r, 0, &b[5], 0))->y;
+    const DVec3* row0 = (const DVec3*)Rec_Get24(r, 0, &b[6], 0);
+    CallThis(FUN_41cd40, out, (float)row0->x, (float)*r0y, (float)*r0z, (float)row1->x, (float)*r1y, (float)*r1z,
+             (float)row2->x, (float)z2.y, (float)z1.z, (float)t3.x, (float)t2.y, (float)t1.z);
+    Trace_Leave((const char*)s_getOrientationSmoothedF);
+    return out;
 }

@@ -1171,6 +1171,7 @@ PUBLIC $L_66d770, $L_66d794, $L_66d7c8, $L_66f288, $L_66f294
 PUBLIC $L_64b6a0, $L_66ccb0, $L_66ccb8, $L_66ccc0, $L_66ccd0, $L_66d9d4
 PUBLIC $L_66d9e0
 PUBLIC $L_64b6d8, $L_64b738, $L_66f494
+PUBLIC $L_64b690, $L_66e73c
 
 ;===================================
 _TEXT SEGMENT
@@ -20323,6 +20324,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40ae80 PROC
 
             push EBP
@@ -20528,6 +20531,10 @@ $L_40b0bc::
             pop EBP
             ret 
 FUN_40ae80 ENDP
+ELSE
+EXTERN _Ai_EndHelpCalls:PROC
+FUN_40ae80 TEXTEQU <_Ai_EndHelpCalls>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -97419,6 +97426,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43a4a0 PROC
 
             push -1
@@ -97689,6 +97698,10 @@ $L_43a757::
             add ESP,412
             ret 
 FUN_43a4a0 ENDP
+ELSE
+EXTERN _Ai_GetOrientationSmoothedF:PROC
+FUN_43a4a0 TEXTEQU <_Ai_GetOrientationSmoothedF>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
