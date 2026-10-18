@@ -28,7 +28,7 @@ KING_ALIAS("_Towns_Find453f10", "_Pick_RandomOther")
 extern "C" void** __cdecl Towns_Find4540a0(void** first, void** last, int* a, int b);
 KING_ALIAS("_Towns_Find4540a0", "_Pick_RandomIdle")
 extern "C" void** __cdecl Towns_Find454230(void** first, void** last, int a, int b, void* rng);
-KING_ALIAS("_Towns_Find454230", "FUN_454230")
+KING_ALIAS("_Towns_Find454230", "_Towns_PickWeighted")
 extern "C" DVec3* __cdecl Town_Position(DVec3* out, void* town);
 KING_ALIAS("_Town_Position", "_Town_Point")
 extern "C" DVec3* __cdecl Road_PointOf(DVec3* out, PositionId pos);
@@ -7543,8 +7543,8 @@ extern "C" void** __fastcall NameHash_InsertNoResize(BYTE* self, void*, void** o
 }
 
 extern "C" BYTE** __stdcall List64_Erase(BYTE** out, BYTE** node);   // ai_containers.cpp
-ASM_PROC(FUN_456460)    // a search over [first, last) with a 16-byte predicate (out, first, last, pred)
-ASM_PROC(FUN_456a10)    // a search over [first, last) with a 12-byte predicate and the RNG text (first, last, pred, text)
+extern "C" void FUN_456460(); KING_ALIAS("_FUN_456460", "_Recs_FarFromCamera")    // a search over [first, last) with a 16-byte predicate (out, first, last, pred)
+extern "C" void FUN_456a10(); KING_ALIAS("_FUN_456a10", "_Goods_PickWeighted")    // a search over [first, last) with a 12-byte predicate and the RNG text (first, last, pred, text)
 
 // [FUN_41bd30] appends v to the presents list; out = the new last element
 extern "C" int* __cdecl Presents_Append(int* out, int v)
@@ -18650,4 +18650,187 @@ extern "C" int __cdecl Ai_FinishPlayer(int player)
     Ai_RestartWaitTimer();
     Trace_Leave((const char*)s_finishPlayer);
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: records far from the camera
+
+ASM_VAR(AsmLabel, s_err3019, $L_66f494)
+extern "C" void FUN_4561a0(); KING_ALIAS("_FUN_4561a0", "@Vec4b_InsertN@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
+
+// a vector<4 bytes> copied to an exact-size out, the source's storage freed (the tail of 4575d0/456460)
+static BYTE** PtrVec_CopyOut(BYTE** out, BYTE** tmp, void* tag)
+{
+    unsigned n = (unsigned)(tmp[1] - tmp[0]) >> 2;
+    out[0] = out[1] = out[2] = 0;
+    BYTE* buf = n ? (BYTE*)Stl_Allocate(n * 4) : 0;
+    out[0] = buf;
+    out[1] = buf;
+    out[2] = buf + n * 4;
+    out[1] = CallC<BYTE*>(FUN_46b0e0, tmp[0], tmp[1], buf, tag);
+    unsigned cap = (unsigned)(tmp[2] - tmp[0]) >> 2;
+    if (cap)
+        Ai_PoolFree(tmp[0], cap * 4);
+    return out;
+}
+
+// [FUN_456460] the free records (+8 no player) of [first, last) (36 bytes each, a node first) at least maxDist
+// from the camera, by mode: 0 without flags 0x2c, 1 with 0x20, 2 with 8
+extern "C" BYTE** __cdecl Recs_FarFromCamera(BYTE** out, BYTE* first, BYTE* last, int mode, int, double maxDist)
+{
+    BYTE* tmp[3] = {0, 0, 0};
+    BYTE* it;
+    for (it = first; it != last; it += 36) {
+        BYTE* n = (BYTE*)g_roadNodes[F(int, it, 0)];
+        DVec3 d;
+        d.z = F(double, n, 64) - g_68bab0.z;
+        d.y = F(double, n, 56) - g_68bab0.y;
+        d.x = F(double, n, 48) - g_68bab0.x;
+        double len = x87_sqrt((d.y * d.y + d.z * d.z) + d.x * d.x);
+        if (!(len >= maxDist))
+            continue;
+        bool take;
+        if (mode == 0)
+            take = !(F(BYTE, it, 4) & 44) && F(void*, it, 8) == g_players;
+        else if (mode == 1)
+            take = (F(BYTE, it, 4) & 32) && F(void*, it, 8) == g_players;
+        else if (mode == 2)
+            take = (F(BYTE, it, 4) & 8) && F(void*, it, 8) == g_players;
+        else {
+            AiError(0, 1, s_mainFile, s_mainId, 4661, s_err3019, &g_aiEmpty, &g_aiEmpty);
+            take = false;
+        }
+        if (!take)
+            continue;
+        if (tmp[1] != tmp[2]) {
+            if (tmp[1])
+                *(BYTE**)tmp[1] = it;
+            tmp[1] += 4;
+        } else
+            CallThis(FUN_4561a0, tmp, tmp[1], &it);
+    }
+    return PtrVec_CopyOut(out, tmp, it);
+}
+
+ASM_VAR(double, g_64b6d8, $L_64b6d8)
+ASM_VAR(double, g_64b738, $L_64b738)
+extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")    // construct 4 bytes in place (dest, src)
+extern "C" void FUN_4608f0(); KING_ALIAS("_FUN_4608f0", "_Construct8")    // construct 8 bytes in place (dest, src)
+ASM_PROC(FUN_45d630)    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
+extern "C" void FUN_45aed0(); KING_ALIAS("_FUN_45aed0", "@Vec4b_InsertA@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
+extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")    // vector<double>::insert_aux (thiscall: pos, &x)
+extern "C" void FUN_4473e0(); KING_ALIAS("_FUN_4473e0", "@Vec8_FreeStorage@8")    // vector<double> destructor (thiscall)
+extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")    // vector<4 bytes> destructor (thiscall)
+extern "C" void FUN_44a530(); KING_ALIAS("_FUN_44a530", "@Vec8_Free@8")    // vector<double> destructor (thiscall)
+extern "C" void FUN_44b0d0(); KING_ALIAS("_FUN_44b0d0", "@Vec4_Free@8")    // vector<4 bytes> destructor (thiscall)
+extern "C" void FUN_404cf0(); KING_ALIAS("_FUN_404cf0", "_Town_Trades")    // (town, int) returns bool
+
+// a candidate (an iterator) and its weight added to the two lists
+static void Weighted_Add(BYTE** c, BYTE** w, BYTE* it, double x, void (*insertC)())
+{
+    if (c[1] != c[2]) {
+        CallC(FUN_4611c0, c[1], &it);
+        c[1] += 4;
+    } else
+        CallThis(insertC, c, c[1], &it);
+    if (w[1] != w[2]) {
+        CallC(FUN_4608f0, w[1], &x);
+        w[1] += 8;
+    } else
+        CallThis(FUN_44c470, w, w[1], &x);
+}
+
+// one candidate picked by its weight with the RNG at rng (the only one without a roll); last when none
+static BYTE* Weighted_Pick(BYTE** c, BYTE** w, double sum, void* rng, BYTE* last)
+{
+    BYTE* res;
+    if (c[0] == c[1])
+        res = last;
+    else if (((c[1] - c[0]) & ~3) == 4)
+        res = *(BYTE**)c[0];
+    else {
+        unsigned r = Rng_Random(rng, 0, 1000000);
+        double target = (double)r * sum * g_64b6d8;
+        double acc = 0;
+        BYTE** p = (BYTE**)c[0];
+        const double* q = (const double*)w[0];
+        for (;; p++, q++) {
+            if (p == (BYTE**)c[1]) {
+                CallThis(FUN_4473e0, w);
+                CallThis(FUN_447970, c);
+                return last;
+            }
+            if (target >= acc && !(target > acc + *q)) {
+                res = *p;
+                break;
+            }
+            acc = acc + *q;
+        }
+    }
+    CallThis(FUN_44a530, w);
+    CallThis(FUN_44b0d0, c);
+    return res;
+}
+
+// [FUN_456a10] a random one of the goods ids in [first, last) by weight: not flag 1, (+48 & mask) == value,
+// less likely for each of obj's entries (+28..+32, 16 bytes) holding it
+extern "C" BYTE* __cdecl Goods_PickWeighted(BYTE* first, BYTE* last, BYTE* obj, DWORD value, DWORD mask, void* rng)
+{
+    BYTE* c[3] = {0, 0, 0};
+    BYTE* w[3] = {0, 0, 0};
+    double sum = 0;
+    for (BYTE* it = first; it != last; it += 4) {
+        int id = *(int*)it;
+        DWORD fl = F(DWORD, g_68ccb8 + id * 104, 48);
+        double x;
+        if (fl & 1)
+            x = g_zero64b678;
+        else if ((fl & mask) != value)
+            x = g_zero64b678;
+        else {
+            x = g_64b670;
+            for (BYTE* e = F(BYTE*, obj, 28); e != F(BYTE*, obj, 32); e += 16)
+                for (int j = 0; j < 2; j++) {
+                    int* q = F(int*, e, 8 + j * 4);
+                    if (q && *q == id)
+                        x = x * g_64b738;
+                }
+        }
+        if (x > g_zero64b678) {
+            sum = x + sum;
+            Weighted_Add(c, w, it, x, FUN_45d630);
+        }
+    }
+    return Weighted_Pick(c, w, sum, rng, last);
+}
+
+// [FUN_454230] a random one of the towns in [first, last) by weight: not the town itself, FUN_404cf0 with
+// arg, less likely for each of the town's entries (+28..+32) leading to it
+extern "C" BYTE* __cdecl Towns_PickWeighted(BYTE* first, BYTE* last, BYTE* town, int arg, void* rng)
+{
+    BYTE* c[3] = {0, 0, 0};
+    BYTE* w[3] = {0, 0, 0};
+    double sum = 0;
+    for (BYTE* it = first; it != last; it += 4) {
+        BYTE* t = *(BYTE**)it;
+        double x;
+        if (t == town)
+            x = g_zero64b678;
+        else if (!CallC<char>(FUN_404cf0, t, arg))
+            x = g_zero64b678;
+        else {
+            x = g_64b670;
+            for (BYTE* e = F(BYTE*, town, 28); e != F(BYTE*, town, 32); e += 16)
+                for (int j = 0; j < 2; j++) {
+                    BYTE* q = F(BYTE*, e, 8 + j * 4);
+                    if (q && (BYTE*)g_towns[F(int, q, 12)] == t)
+                        x = x * g_round64b658;
+                }
+        }
+        if (x > g_zero64b678) {
+            sum = x + sum;
+            Weighted_Add(c, w, it, x, FUN_45aed0);
+        }
+    }
+    return Weighted_Pick(c, w, sum, rng, last);
 }
