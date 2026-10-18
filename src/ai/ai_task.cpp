@@ -8,7 +8,7 @@
 
 #include "ai.h"
 
-ASM_PROC(FUN_42d6e0)    // the AI's cycle
+extern "C" void FUN_42d6e0(); KING_ALIAS("_FUN_42d6e0", "_Ai_Tick")    // the AI's cycle
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // CMainView: module by name
 extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")    // module: switch by name
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
