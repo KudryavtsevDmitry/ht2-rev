@@ -1189,6 +1189,7 @@ PUBLIC $L_66c8f0, $L_66cdec, $L_68b9bc
 PUBLIC $L_66cb1c, $L_66cb30, $L_66cd78, $L_68d110
 PUBLIC $L_66cd68
 PUBLIC $L_64b700
+PUBLIC $L_64b960, $L_659d60, $L_66dcb4, $L_66f484, $L_68d20c
 
 ;===================================
 _TEXT SEGMENT
@@ -60427,6 +60428,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_423a90 PROC
 
             mov EAX,DWORD PTR [$L_68d188]
@@ -60441,6 +60444,10 @@ $L_423aa4::
 
             jmp $L_422400
 FUN_423a90 ENDP
+ELSE
+EXTERN _Ai_CreatePlayers:PROC
+FUN_423a90 TEXTEQU <_Ai_CreatePlayers>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -74650,6 +74657,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42c330 PROC
 
             sub ESP,32
@@ -74886,6 +74895,12 @@ $L_42c552::
             add ESP,24
             ret 
 FUN_42c330 ENDP
+ELSE
+EXTERN _Ai_PlacePlayerRandomly:PROC
+FUN_42c330 TEXTEQU <_Ai_PlacePlayerRandomly>
+EXTERN _Ai_UpdateAmbushes:PROC
+$L_42c390 TEXTEQU <_Ai_UpdateAmbushes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -120604,6 +120619,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_448540 PROC
 
             lea EAX,DWORD PTR [ESP+4]
@@ -120617,6 +120634,10 @@ FUN_448540 PROC
             pop ESI
             ret 4
 FUN_448540 ENDP
+ELSE
+EXTERN @BadAlloc_Construct@12:PROC
+FUN_448540 TEXTEQU <@BadAlloc_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -120625,11 +120646,17 @@ FUN_448540 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_448560 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_64b960
             jmp ??1exception@@UAE@XZ
 FUN_448560 ENDP
+ELSE
+EXTERN @BadAlloc_Destroy@8:PROC
+FUN_448560 TEXTEQU <@BadAlloc_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -120674,6 +120701,8 @@ $L_448590 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4485b0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -120687,6 +120716,10 @@ FUN_4485b0 PROC
             pop ESI
             ret 4
 FUN_4485b0 ENDP
+ELSE
+EXTERN @BadAlloc_Copy@12:PROC
+FUN_4485b0 TEXTEQU <@BadAlloc_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -151671,6 +151704,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4581a0 PROC
 
             mov EAX,DWORD PTR [$L_68d20c]
@@ -151710,6 +151745,10 @@ $L_4581e6::
             add ESP,12
             ret 
 FUN_4581a0 ENDP
+ELSE
+EXTERN _Ai_OperatorNew:PROC
+FUN_4581a0 TEXTEQU <_Ai_OperatorNew>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

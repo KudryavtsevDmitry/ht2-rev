@@ -4711,7 +4711,7 @@ BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v)
 
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
 extern "C" void FUN_408080(); KING_ALIAS("_FUN_408080", "_Ai_ReadSetting")    // reads the player types of a "Pair" value
-ASM_PROC(FUN_4581a0)    // out of memory: retries the allocation
+extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")    // out of memory: retries the allocation
 ASM_VAR(int, g_68a860, $L_68a860)
 extern "C" BYTE* __fastcall Vec4b_Copy(BYTE* self, void*, const BYTE** s);
 extern "C" BYTE* __cdecl UninitFill16(BYTE* d, unsigned n, const void* v);
@@ -15541,7 +15541,7 @@ extern "C" void __cdecl Ai_GoToOrder(BYTE* p, int townId, unsigned order)
 // ---------------------------------------------------------------------------
 // starting the AI world
 
-ASM_PROC(FUN_423a90)
+extern "C" void FUN_423a90(); KING_ALIAS("_FUN_423a90", "_Ai_CreatePlayers")
 ASM_VAR(BYTE, g_66f62b, $L_66f62b)
 extern "C" void __cdecl Markets_GrowOnce();
 
@@ -17343,7 +17343,7 @@ ASM_PROC(FUN_5e48f0)
 extern "C" void FUN_424550(); KING_ALIAS("_FUN_424550", "_Ai_LoadEntities")
 extern "C" void FUN_42d960(); KING_ALIAS("_FUN_42d960", "@Tasks_RunDue@8")    // (thiscall 68b998)
 extern "C" void FUN_446af0(); KING_ALIAS("_FUN_446af0", "_Ai_KillDelayedPlayers")
-ASM_PROC(FUN_423a90)
+extern "C" void FUN_423a90(); KING_ALIAS("_FUN_423a90", "_Ai_CreatePlayers")
 extern "C" void FUN_477420(); KING_ALIAS("_FUN_477420", "_Player_ExpireLicences")    // (player)
 extern "C" void FUN_416b80(); KING_ALIAS("_FUN_416b80", "_Ai_RaceNextCheckpoint")    // (player)
 extern "C" void FUN_4171a0(); KING_ALIAS("_FUN_4171a0", "_Race_UpdateProgress")    // (player)
@@ -20223,3 +20223,125 @@ extern "C" double __fastcall Spot_Weight1(void*, void*, const BYTE* spot) { retu
 extern "C" double __fastcall Spot_Weight2(void*, void*, const BYTE* spot) { return Spot_WeightOf(spot, 2); }
 // [FUN_41ed20] the same for kind 3
 extern "C" double __fastcall Spot_Weight3(void*, void*, const BYTE* spot) { return Spot_WeightOf(spot, 3); }
+
+// ---------------------------------------------------------------------------
+// Batch: bad_alloc and the AI's operator new, creating players, ambush checks
+
+typedef void (__cdecl* AiNewHandlerFn)();
+ASM_VAR(AsmLabel, g_vtblBadAlloc64b960, $L_64b960)
+ASM_VAR(AiNewHandlerFn, g_newHandler68d20c, $L_68d20c)
+ASM_VAR(AsmLabel, g_throwBadAlloc659d60, $L_659d60)
+ASM_VAR(AsmLabel, s_badAlloc66f484, $L_66f484)
+ASM_VAR(AsmLabel, s_updateAmbushes66dcb4, $L_66dcb4)
+extern "C" void Exc_Construct();
+KING_ALIAS("_Exc_Construct", "??0exception@@QAE@ABQBD@Z")    // exception::exception(const char* const&)
+extern "C" void Exc_CopyConstruct();
+KING_ALIAS("_Exc_CopyConstruct", "??0exception@@QAE@ABV0@@Z") // exception::exception(const exception&)
+extern "C" void Exc_Destroy();
+KING_ALIAS("_Exc_Destroy", "??1exception@@UAE@XZ")            // exception::~exception()
+extern "C" void Cxx_Throw();
+KING_ALIAS("_Cxx_Throw", "__CxxThrowException@8")             // _CxxThrowException(object, info)
+ASM_PROC($L_422400)    // creating the players for a network game
+ASM_PROC($L_422f20)    // createPlayersRegular()
+extern "C" void FUN_42bb90(); KING_ALIAS("_FUN_42bb90", "_Ai_SetAmbushActive")   // setAmbushActive (ambush, on)
+
+// [FUN_448540] bad_alloc(const char* what) (thiscall)
+extern "C" BYTE* __fastcall BadAlloc_Construct(BYTE* self, void*, const char* what)
+{
+    CallThis(Exc_Construct, self, &what);
+    F(void*, self, 0) = &g_vtblBadAlloc64b960;
+    return self;
+}
+
+// [FUN_448560] bad_alloc's destructor (thiscall)
+extern "C" void __fastcall BadAlloc_Destroy(BYTE* self, void*)
+{
+    F(void*, self, 0) = &g_vtblBadAlloc64b960;
+    CallThis(Exc_Destroy, self);
+}
+
+// [FUN_4485b0] bad_alloc's copy constructor (thiscall)
+extern "C" BYTE* __fastcall BadAlloc_Copy(BYTE* self, void*, const BYTE* src)
+{
+    CallThis(Exc_CopyConstruct, self, src);
+    F(void*, self, 0) = &g_vtblBadAlloc64b960;
+    return self;
+}
+
+// [FUN_4581a0] the AI's operator new: the new-handler (68d20c) runs before each try of malloc; with none
+// set, bad_alloc is thrown
+extern "C" void* __cdecl Ai_OperatorNew(unsigned n)
+{
+    for (AiNewHandlerFn h = g_newHandler68d20c; h; h = g_newHandler68d20c) {
+        h();
+        void* p = malloc(n);
+        if (p)
+            return p;
+    }
+    BYTE exc[12];
+    BadAlloc_Construct(exc, 0, (const char*)s_badAlloc66f484);
+    CallStd(Cxx_Throw, exc, &g_throwBadAlloc659d60);
+    return 0;
+}
+
+// [FUN_423a90] creates the players, the network game's way (68d188 1 or 2) or createPlayersRegular
+extern "C" int __cdecl Ai_CreatePlayers()
+{
+    if (g_68d188 == 1 || g_68d188 == 2)
+        return CallC<int>($L_422400);
+    return CallC<int>($L_422f20);
+}
+
+// [FUN_42b4c0] whether an ambush (if any) is far from the human: over 64b870 away, or no human
+extern "C" bool __cdecl Ambush_FarFromHuman(BYTE* a)
+{
+    if (!a)
+        return true;
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players)
+        return true;
+    double dx = F(double, a, 56) - F(double, h, 624);
+    double dy = F(double, a, 64) - F(double, h, 632);
+    double dz = F(double, a, 72) - F(double, h, 640);
+    return x87_sqrt((dy * dy + dz * dz) + dx * dx) > g_64b870;
+}
+
+// [FUN_42c330] puts a player at a random far position, arriving there
+extern "C" void __cdecl Ai_PlacePlayerRandomly(int player)
+{
+    PositionId pos;
+    Road_RandomFarPosition(&pos);
+    Player_Place((BYTE*)player, pos);
+    CallC(FUN_417820, player, pos);
+}
+
+// updateAmbushes() (the second function in FUN_42c330's PROC at $L_42c390, a task's callback): an active
+// ambush far from the human ends, its player placed elsewhere; an armed one ahead of the human starts, and its
+// linked active ambushes that are not ahead end
+extern "C" void __cdecl Ai_UpdateAmbushes()
+{
+    Trace_EnterBuffered((const char*)s_updateAmbushes66dcb4);
+    for (void** e = g_68a970; e != g_68a974; e++) {
+        BYTE* a = (BYTE*)*e;
+        if (F(BYTE, a, 28)) {
+            if (Ambush_FarFromHuman(a)) {
+                int v = F(int, (BYTE*)*e, 124);
+                CallC(FUN_42bb90, *e, 0);
+                if ((void*)v != g_players)
+                    Ai_PlacePlayerRandomly(v);
+            }
+        } else if (F(BYTE, a, 240) && Ambush_AheadOfHuman(a)) {
+            CallC(FUN_42bb90, *e, 1);
+            for (BYTE** b = F(BYTE**, (BYTE*)*e, 220); b != F(BYTE**, (BYTE*)*e, 224); b++) {
+                if (!F(BYTE, *b, 28) || Ambush_AheadOfHuman(*b))
+                    continue;
+                int w = F(int, *b, 124);
+                CallC(FUN_42bb90, *b, 0);
+                if ((void*)w != g_players)
+                    Ai_PlacePlayerRandomly(w);
+            }
+        }
+    }
+    Trace_Leave((const char*)s_updateAmbushes66dcb4);
+}
