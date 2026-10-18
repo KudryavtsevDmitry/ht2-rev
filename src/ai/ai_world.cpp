@@ -20526,3 +20526,234 @@ extern "C" int __cdecl Ai_PrepareVehicleOrder(int player, int dealer, const char
         Ai_PoolFree(w[0], cap * 4);
     return res;
 }
+
+// ---------------------------------------------------------------------------
+// Batch: the AI start of a game
+
+ASM_PROC($L_41b720)
+ASM_PROC($L_41fcf0)
+ASM_PROC($L_41ed50)
+ASM_PROC($L_420ed0)
+ASM_PROC($L_422370)
+ASM_PROC($L_42b3a0)
+ASM_PROC($L_4279d0)
+ASM_PROC($L_429930)
+ASM_PROC($L_429fb0)
+ASM_PROC($L_42a120)
+ASM_VAR(AsmLabel, f_42a1c0, $L_42a1c0)
+ASM_VAR(AsmLabel, f_42a2c0, $L_42a2c0)
+ASM_PROC($L_432dd0)
+ASM_PROC($L_420040)
+ASM_VAR(AsmLabel, f_42a3f0, $L_42a3f0)
+ASM_PROC($L_4208b0)
+ASM_PROC($L_420b90)
+extern "C" void FUN_403940(); KING_ALIAS("_FUN_403940", "_Ai_Reset")
+extern "C" void FUN_4305f0(); KING_ALIAS("_FUN_4305f0", "_Ambushes_Link")
+extern "C" void FUN_414670(); KING_ALIAS("_FUN_414670", "_Towns_Costs")
+extern "C" void FUN_433f90(); KING_ALIAS("_FUN_433f90", "_Towns_MarkNodes")
+extern "C" void FUN_4340f0(); KING_ALIAS("_FUN_4340f0", "_Parkings_MarkNodes")
+extern "C" void FUN_434070(); KING_ALIAS("_FUN_434070", "_Towns_MarkSpecial")
+extern "C" void FUN_4095c0(); KING_ALIAS("_FUN_4095c0", "_Cars_CheckCount")
+extern "C" void FUN_4279a0(); KING_ALIAS("_FUN_4279a0", "_AI_SetStartKey")
+ASM_PROC(FUN_46d570)
+extern "C" void FUN_434720(); KING_ALIAS("_FUN_434720", "_Players_ClearFlags440")
+ASM_VAR(AsmLabel, s_task66e340, $L_66e340)
+ASM_VAR(AsmLabel, s_task66e330, $L_66e330)
+ASM_VAR(AsmLabel, s_task66e320, $L_66e320)
+ASM_VAR(AsmLabel, s_task66e310, $L_66e310)
+ASM_VAR(AsmLabel, s_task66e300, $L_66e300)
+ASM_VAR(AsmLabel, s_task66e2f0, $L_66e2f0)
+ASM_VAR(AsmLabel, s_task66e2e0, $L_66e2e0)
+ASM_VAR(AsmLabel, s_task66e2cc, $L_66e2cc)
+ASM_VAR(AsmLabel, s_task66e2b0, $L_66e2b0)
+ASM_VAR(AsmLabel, s_task66e2a0, $L_66e2a0)
+ASM_VAR(AsmLabel, s_task66e28c, $L_66e28c)
+ASM_VAR(AsmLabel, s_task66e278, $L_66e278)
+ASM_VAR(AsmLabel, s_task66e25c, $L_66e25c)
+ASM_VAR(AsmLabel, s_task66e248, $L_66e248)
+ASM_VAR(AsmLabel, s_task66e234, $L_66e234)
+ASM_VAR(AsmLabel, s_task66e224, $L_66e224)
+ASM_VAR(AsmLabel, s_task66e218, $L_66e218)
+ASM_VAR(AsmLabel, s_task66e208, $L_66e208)
+ASM_VAR(AsmLabel, s_task66e1fc, $L_66e1fc)
+ASM_VAR(AsmLabel, s_task66e1f0, $L_66e1f0)
+ASM_VAR(AsmLabel, s_task66e35c, $L_66e35c)
+ASM_VAR(AsmLabel, s_task66e34c, $L_66e34c)
+extern "C" void FUN_4143c0(); KING_ALIAS("_FUN_4143c0", "_Ai_SortTownsMarketsDealers")
+extern "C" void FUN_4835d0(); KING_ALIAS("_FUN_4835d0", "_AI_LoadFromStorage")
+extern "C" void FUN_42cd70(); KING_ALIAS("_FUN_42cd70", "_Ai_ResetPlayerRooms")
+extern "C" void FUN_41d340(); KING_ALIAS("_FUN_41d340", "_Ai_PlacePresents")
+extern "C" void FUN_453b60(); KING_ALIAS("_FUN_453b60", "@List12_Clear@8")
+ASM_VAR(double, g_66c6e8, $L_66c6e8)
+ASM_VAR(AiText, g_vtbl64b908, $L_64b908)
+ASM_VAR(double, t_68d108, $L_68d108)
+ASM_VAR(double, g_64b918, $L_64b918)
+ASM_VAR(double, g_64b7a8, $L_64b7a8)
+ASM_VAR(double, g_64b910, $L_64b910)
+ASM_VAR(double, g_64b928, $L_64b928)
+
+// a periodic AI task: started now, running fn every (lo, hi) seconds
+static BYTE* Task_New(DWORD lo, DWORD hi, const void* name, void (*fn)())
+{
+    BYTE* t = (BYTE*)operator new(48);
+    if (t) {
+        F(DWORD, t, 8) = 0;
+        F(double, t, 16) = CallC<double>(FUN_401000);
+        F(DWORD, t, 24) = lo;
+        F(DWORD, t, 28) = hi;
+        F(const void*, t, 32) = name;
+        F(void*, t, 40) = (void*)fn;
+        F(void*, t, 0) = &g_vtbl64b920;
+    }
+    return t;
+}
+
+static void Task_Add(BYTE* t)
+{
+    BYTE* it;
+    ListB_Insert(&g_68b99c, 0, &it, (BYTE**)*(BYTE**)&g_68b99c, &t);
+}
+
+// [FUN_434780] (with $L_434e2b and $L_434e64, the parts it runs on into past its ENDP) the AI's start of a
+// game: the random generator seeded from the clock, the flags (bit 0 network game, bit 1 load), the settings,
+// the world's files and tables, a loaded state or a new world, presents, rooms and marks, then the 20 tasks
+extern "C" void __cdecl Ai_StartGame(const char* saved, DWORD flags, const BYTE* settings)
+{
+    CallC(FUN_403940);
+    Rng_Seed(&g_rng68a870, 0, (unsigned)Ftol(CallC<double>(FUN_401000)) ^ 161803398);
+    g_68d31c = flags & 1;
+    if (g_68d31c)
+        r_66f62a = flags >> 1 & 1;
+    if (settings) {
+        g_66c6f0 = F(double, settings, 0);
+        g_jeep68d178 = F(BYTE, settings, 24);
+    }
+    Ai_ReadGameCnf();
+    Ai_LoadWorldFiles();
+    CallC(FUN_4305f0);
+    CallC(FUN_4143c0);
+    CallC(FUN_414670);
+    CallC(FUN_433f90);
+    CallC(FUN_4340f0);
+    Markets_FillAssortments();
+    CallC(FUN_434070);
+    CallC(FUN_5e48f0);
+    CallC(FUN_4095c0);
+    if (g_68d188 == 0 || g_68d188 == 1)
+        CallC(FUN_4279a0, !settings || !g_68d188 ? 1 : F(int, settings, 16));
+    Ai_BuildVehicleQueues();
+    double x = CallC<double>(FUN_483a20);
+    F(DWORD, &t_68d108, 0) = 0;
+    t_68a820 = x;
+    g_lastSpeedTime68d0f0 = x;
+    F(DWORD, &t_68d108, 4) = 0;
+    if (saved && r_66f62a)
+        CallC(FUN_4835d0, saved);
+    else
+        t_68d198 = CallC<double>(FUN_401000);
+    if (!(t_68d108 < 0 || t_68d108 > 0))
+        t_68d108 = CallC<double>(FUN_401000) + g_64b870;
+    CallC(FUN_5e48f0);
+    if (g_68d31c)
+        CallC(FUN_46d570);
+    x = CallC<double>(FUN_483a20);
+    t_68a820 = x;
+    g_lastSpeedTime68d0f0 = x;
+    g_humanVehicleKey68d144 = 0;
+    if (settings) {
+        g_humanVehicleKey68d144 = F(int, settings, 8);
+        BYTE** v = (BYTE**)&w_driverName68d0a8;
+        CharVec_Erase(v, 0, v[0], v[1]);
+        const char* name = F(const char*, settings, 12);
+        CallThis(FUN_44c220, v, v[1], name, name + strlen(name) + 1);
+    }
+    if (saved && r_66f62a) {
+        r_66c68c = 0;
+        CallC(FUN_42cd70);
+    } else {
+        Ai_StartWorld();
+        CallC(FUN_41d340, 0, 0);
+        if (g_68d188 == 1 || g_68d188 == 0) {
+            int n;
+            Ai_PresentAtNode(*CallC<int*>(FUN_436510, &n, (const char*)s_task66e35c));
+            Ai_PresentAtNode(*CallC<int*>(FUN_436510, &n, (const char*)s_task66e34c));
+        }
+    }
+    if (g_68d188 == 1 || g_68d188 == 2)
+        g_68d168 = 1;
+    g_lastHumanLoad68d100 = -2048.0;
+    g_66c6e8 = (double)(Rng_Random(&g_rng68a870, 0, 600) + 600);
+    if (saved)
+        g_68d170 = CallC<double>(FUN_401000) + g_66c6e8 - g_64b690;
+    CallC(FUN_42cb20);
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h != (BYTE*)g_players && F(double, h, 768) > g_64b928)
+        g_allowKind7_68d1a0 = 1;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it)
+        if (CallC<BYTE*>(FUN_40a9f0, it) && F(int, CallC<BYTE*>(FUN_40a9f0, it), 148) != -1)
+            ((DWORD*)r_68cc88[0])[F(int, CallC<BYTE*>(FUN_40a9f0, it), 148)] |= 1;
+    if (saved)
+        for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it)
+            if (CallC<BYTE*>(FUN_40a9f0, it) && F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 256
+                && (F(DWORD, CallC<BYTE*>(FUN_40a9f0, it), 88) >> 2 & 1))
+                F(int, F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 964), 12)++;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it)
+        if (CallC<BYTE*>(FUN_40a9f0, it) && F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 257
+            && (F(DWORD, CallC<BYTE*>(FUN_40a9f0, it), 88) >> 2 & 1))
+            g_68d154++;
+    CallC(FUN_434720);
+    for (BYTE* n = *(BYTE**)*(BYTE**)&g_68b99c; n != *(BYTE**)&g_68b99c; n = *(BYTE**)n)
+        operator delete(F(void*, n, 8));
+    CallThis(FUN_453b60, &g_68b99c);
+    if (g_68d188)
+        goto done;
+    Task_Add(Task_New(0, 0x40240000, s_task66e340, $L_41b720));
+    Task_Add(Task_New(0, 0x40200000, s_task66e330, $L_41fcf0));
+    Task_Add(Task_New(0, 0x401c0000, s_task66e320, $L_41ed50));
+    {
+        BYTE* t = (BYTE*)operator new(48);
+        if (t) {
+            double period = x87_pow(g_64b918, g_64b670 - g_66c6f0 * g_64b7a8) * g_64b910;
+            F(DWORD, t, 8) = 0;
+            F(double, t, 16) = CallC<double>(FUN_401000);
+            F(double, t, 24) = period;
+            F(const void*, t, 32) = s_task66e310;
+            F(void*, t, 40) = (void*)$L_420ed0;
+            F(void*, t, 0) = &g_vtbl64b920;
+        }
+        Task_Add(t);
+    }
+    Task_Add(Task_New(0, 0x403b0000, s_task66e300, $L_422370));
+    {
+        BYTE* t = (BYTE*)operator new(48);
+        if (t) {
+            double period = (double)(AiRandom() % 300 + 600);
+            Note_Construct(t, 0, (int)$L_42b3a0, F(int, &period, 0), F(int, &period, 4),
+                           (int)(const char*)s_task66e2f0);
+            F(void*, t, 0) = &g_vtbl64b908;
+            F(double, t, 16) = t_68d108;
+        }
+        Task_Add(t);
+    }
+    Task_Add(Task_New(0, 0x3ff00000, s_task66e2e0, (void (*)())Ai_UpdateAmbushes));
+    Task_Add(Task_New(0, 0x403d8000, s_task66e2cc, $L_4279d0));
+    {
+        BYTE* comp = Task_New(0, 0x403d8000, s_task66e2b0, (void (*)())Ai_AddCompetitor);
+        g_task68d120 = comp;
+        Task_Add(comp);
+    }
+    Task_Add(Task_New(0, 0x403d8000, s_task66e2a0, $L_429930));
+    Task_Add(Task_New(0, 0x3ff00000, s_task66e28c, $L_429fb0));
+    Task_Add(Task_New(0, 0x3ff00000, s_task66e278, $L_42a120));
+    Task_Add(Task_New(0, 0x40240000, s_task66e25c, (void (*)())&f_42a1c0));
+    Task_Add(Task_New(0, 0x40330000, s_task66e248, (void (*)())&f_42a2c0));
+    Task_Add(Task_New(0, 0x40080000, s_task66e234, $L_432dd0));
+    Task_Add(Task_New(0, 0x4072c000, s_task66e224, (void (*)())Ai_MarkAmbushes));
+    Task_Add(Task_New(0x66666666, 0x40226666, s_task66e218, $L_420040));
+    Task_Add(Task_New(0x9999999a, 0x403a9999, s_task66e208, (void (*)())&f_42a3f0));
+    Task_Add(Task_New(0x33333333, 0x401d3333, s_task66e1fc, $L_4208b0));
+    Task_Add(Task_New(0x66666666, 0x40146666, s_task66e1f0, $L_420b90));
+done:
+    r_68d0ec = 1;
+}
