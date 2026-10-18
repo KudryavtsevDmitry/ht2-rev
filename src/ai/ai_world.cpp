@@ -680,7 +680,7 @@ ASM_VAR(AsmLabel, s_playerIdType, $L_66d4d8)
 ASM_VAR(BYTE**, g_townsBegin, $L_68cec0)
 
 extern "C" void FUN_4778a0(); KING_ALIAS("_FUN_4778a0", "_Player_ClearOrderLists")
-ASM_PROC(FUN_442c60)
+extern "C" void FUN_442c60(); KING_ALIAS("_FUN_442c60", "_Ai_AccountForChangeInLoadState")
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")    // the PlayerId of a list iterator (thiscall out, iterator)
 extern "C" void FUN_4466a0(); KING_ALIAS("_FUN_4466a0", "_Ai_RemovePlayer")    // kills a player
 extern "C" void FUN_466400(); KING_ALIAS("_FUN_466400", "_UninitFill16")    // uninitialized fill of 16-byte records
@@ -1511,7 +1511,7 @@ extern "C" void FUN_44e3f0(); KING_ALIAS("_FUN_44e3f0", "@Vec4b_Insert44e3f0@16"
 extern "C" void FUN_44e970(); KING_ALIAS("_FUN_44e970", "@Vec4b_Insert44e970@16")
 extern "C" void FUN_44eef0(); KING_ALIAS("_FUN_44eef0", "@Vec4b_Insert44eef0@16")
 extern "C" void FUN_450330(); KING_ALIAS("_FUN_450330", "@Rec24Vec_InsertAux@16")    // vector<24 bytes>::insert_aux
-ASM_PROC(FUN_4505a0)
+extern "C" void FUN_4505a0(); KING_ALIAS("_FUN_4505a0", "@Rec24bVec_InsertAux@16")
 
 ASM_VAR(PtrVec, g_68cbe8, $L_68cbe8)
 ASM_VAR(PtrVec, g_68cbec, $L_68cbec)
@@ -2961,7 +2961,7 @@ extern "C" BYTE** __fastcall Vec24_Assign(BYTE** d, void*, BYTE* const* s);   //
 extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@8")    // destroy a 192-byte record
 extern "C" BYTE** __fastcall Vec16_AssignB(BYTE** d, void*, BYTE* const* s);   // aistl.cpp
 extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")    // destroy a 144-byte order
-ASM_PROC(FUN_44fac0)    // hash table: grow for n entries
+extern "C" void FUN_44fac0(); KING_ALIAS("_FUN_44fac0", "@NameHash_Resize@12")    // hash table: grow for n entries
 extern "C" void FUN_44f2c0(); KING_ALIAS("_FUN_44f2c0", "_Rope_CharAt")
 ASM_PROC(FUN_45a7d0)    // compare two strings
 ASM_PROC(FUN_4592b0)    // hash table: a new node for a key
@@ -7433,7 +7433,7 @@ extern "C" void __cdecl Present_DestroyFound(int v)
     Present_Destroy(r);
 }
 
-ASM_PROC(FUN_44f340)    // a rope's tree with (a, b) applied (tree, a, b)
+extern "C" void FUN_44f340(); KING_ALIAS("_FUN_44f340", "_Rope_DestrConcatChars")    // a rope's tree with (a, b) applied (tree, a, b)
 
 // [FUN_44a840] replaces a rope's tree with the result of FUN_44f340 (a, b), dropping the old tree
 extern "C" BYTE** __fastcall Rope_Apply44a840(BYTE** self, void*, int a, int b)
@@ -11964,7 +11964,7 @@ extern "C" int __cdecl Ai_GetOrderInfoIdx(BYTE* player, int town, int order, BYT
 // findClosest(dvector3 const& v, double& md, vector<Hop>& hops, ...): the
 // closest point to v along the hops between two positions.
 
-ASM_PROC(FUN_450150)    // objects::findClosest over a range of objects (thiscall, 13 dwords)
+extern "C" void FUN_450150(); KING_ALIAS("_FUN_450150", "@RoadObjs_FindBetween@60")    // objects::findClosest over a range of objects (thiscall, 13 dwords)
 ASM_VAR(AsmLabel, s_findClosestHops, $L_66e914)
 
 static void FC_Result(PositionId* out, RoadEdge* e, double d, int seg, int obj, int hop)
@@ -16104,8 +16104,8 @@ extern "C" BYTE** __cdecl Ai_NewGoods(BYTE** out, BYTE* from, BYTE* town, int ki
 // ---------------------------------------------------------------------------
 // vector inserts
 
-ASM_PROC(FUN_453110)    // order info (192 bytes) copy constructor (thiscall src)
-ASM_PROC(FUN_453350)    // order info copy constructor, second instance (thiscall src)
+extern "C" void FUN_453110(); KING_ALIAS("_FUN_453110", "@OrderInfo_CopyConstruct@12")    // order info (192 bytes) copy constructor (thiscall src)
+extern "C" void FUN_453350(); KING_ALIAS("_FUN_453350", "@OrderInfo_CopyRaw@12")    // order info copy constructor, second instance (thiscall src)
 extern "C" void FUN_442800(); KING_ALIAS("_FUN_442800", "@Rec_FirstNonEmpty@8")    // order info: fix its first-non-empty pointers (thiscall)
 extern "C" void FUN_463da0(); KING_ALIAS("_FUN_463da0", "_Rec192_CopyBack")    // copy_backward of order infos (first, last, result, -, 0)
 extern "C" void FUN_453620(); KING_ALIAS("_FUN_453620", "@Rec192_Assign@12")    // order info assignment (thiscall src)
@@ -16666,7 +16666,7 @@ ASM_VAR(BYTE, w_hash68cf10, $L_68cf10)
 extern "C" void FUN_478260(); KING_ALIAS("_FUN_478260", "_Player_GoTo")    // (player, 32-byte position, int)
 extern "C" void FUN_478630(); KING_ALIAS("_FUN_478630", "_Player_RemoveWaypoint")    // (player, int)
 ASM_PROC(FUN_428230)
-ASM_PROC(FUN_427f40)    // (int*, double*)
+extern "C" void FUN_427f40(); KING_ALIAS("_FUN_427f40", "_Ai_CalculateNewPlace")    // (int*, double*)
 extern "C" void FUN_404e80(); KING_ALIAS("_FUN_404e80", "_Town_Id")    // a town's node (out, town)
 extern "C" void FUN_487500(); KING_ALIAS("_FUN_487500", "_Road_PositionCostBest")    // a route's length (int, from, to, double* out)
 extern "C" void FUN_422390(); KING_ALIAS("_FUN_422390", "_Player_Register")    // registers a player (out id, player)
@@ -16817,4 +16817,301 @@ extern "C" void __cdecl Ai_NewPlayerAt(PositionId pos)
     Rec_4015a0Both(player);
     if (!(CallC<double>(FUN_4842f0, (BYTE*)player + 24) >= g_64b6a8))
         CallC(FUN_446c80, player);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: rope appends, hash table growth, order info copies, road object searches, the human's place
+
+extern "C" void FUN_459150(); KING_ALIAS("_FUN_459150", "_SchString_FromChars")    // a rope leaf with a copy of (s, len)
+ASM_PROC(FUN_45a2b0)    // rope::_S_concat_char_iter (r, s, len)
+extern "C" void FUN_462700(); KING_ALIAS("_FUN_462700", "_SchString_Concat")    // rope::_S_leaf_concat_char_iter (leaf, s, len)
+extern "C" void FUN_45a0e0(); KING_ALIAS("_FUN_45a0e0", "_Str_Rounded")    // rope::_S_rounded_up_size (n)
+extern "C" void FUN_466560(); KING_ALIAS("_FUN_466560", "_CopyN")    // uninitialized_copy_n (out pair, s, n, dest, -)
+ASM_PROC(FUN_45a5e0)    // rope::_S_tree_concat (left, right)
+extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")    // frees a rope node (thiscall)
+extern "C" void FUN_44fde0(); KING_ALIAS("_FUN_44fde0", "_LowerBound")    // lower_bound over the primes (first, last, &n)
+extern "C" void FUN_44a550(); KING_ALIAS("_FUN_44a550", "@Vec4_Reserve@16")    // vector<4 bytes> storage for n (thiscall: n, alloc)
+extern "C" void FUN_466c20(); KING_ALIAS("_FUN_466c20", "_UninitFill4")    // uninitialized_fill_n (first, n, &x, -)
+extern "C" void FUN_44fcd0(); KING_ALIAS("_FUN_44fcd0", "@NameHash_Hash@12")    // the string hash (thiscall: &key)
+extern "C" void FUN_46cf00(); KING_ALIAS("_FUN_46cf00", "_Swap32")    // iter_swap (a, b)
+extern "C" void FUN_40cda0(); KING_ALIAS("_FUN_40cda0", "@Rec40cda0_Copy@12")    // construct a 24-byte record (thiscall: src)
+extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")    // script handle copy (thiscall: src)
+extern "C" void FUN_450850(); KING_ALIAS("_FUN_450850", "@Vec24Rec_Copy@12")    // vector<24 bytes> copy (thiscall: src)
+extern "C" void FUN_463490(); KING_ALIAS("_FUN_463490", "_Rec24c_CopyBack")    // copy_backward of 24-byte records (first, last, result, -, 0)
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")    // script handle assign (thiscall: src)
+extern "C" void FUN_45aa00(); KING_ALIAS("_FUN_45aa00", "@Vec24_Assign@12")    // vector<24 bytes> assign (thiscall: src)
+extern "C" void FUN_46c900(); KING_ALIAS("_FUN_46c900", "@Mult46c900_DeletingDestructor@12")    // a 24-byte element's destructor (thiscall: flags)
+extern "C" void FUN_44a500(); KING_ALIAS("_FUN_44a500", "@Vec24_Free@8")    // vector storage free (thiscall)
+extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // script handle destructor (thiscall)
+ASM_PROC(FUN_466e50)    // uninitialized_copy of 24-byte records (first, last, dest, -)
+extern "C" void FUN_448300(); KING_ALIAS("_FUN_448300", "@Vec24_Destroy@8")    // vector<24 bytes> destructor (thiscall)
+extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
+extern "C" void FUN_41ef90(); KING_ALIAS("_FUN_41ef90", "_Player_CheckTownAA")
+ASM_PROC(FUN_56f6d0)
+extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")    // a player's current order (player)
+ASM_PROC(FUN_42c0b0)
+extern "C" void FUN_442850(); KING_ALIAS("_FUN_442850", "_Ai_AccountForGuilt")    // accountForGuilt (player)
+ASM_VAR(AsmLabel, s_calculateNewPlace, $L_66dab4)
+ASM_VAR(AsmLabel, s_accountForChangeInLoadState, $L_66f124)
+ASM_VAR(double, g_64b898, $L_64b898)
+typedef unsigned Primes[28];
+ASM_VAR(Primes, g_primes64b530, $L_64b530)
+
+// [FUN_44f340] rope::_S_destr_concat_char_iter: r with len characters of s appended, in place when r is
+// unshared and it (or its right child) is a leaf with room
+extern "C" BYTE* __cdecl Rope_DestrConcatChars(BYTE* r, const char* s, unsigned len)
+{
+    if (!r)
+        return CallC<BYTE*>(FUN_459150, s, len);
+    unsigned size = F(unsigned, r, 0);
+    if (F(unsigned, r, 4) > 1)
+        return CallC<BYTE*>(FUN_45a2b0, r, s, len);
+    if (!len) {
+        F(int, r, 4) = 2;
+        return r;
+    }
+    unsigned newSize = size + len;
+    if (newSize <= 23 && F(char, r, 8) == 0) {
+        if (F(int, r, 4) > 1)
+            return CallC<BYTE*>(FUN_462700, r, s, len);
+        if (CallC<unsigned>(FUN_45a0e0, size) - 1 < size + len)
+            return CallC<BYTE*>(FUN_462700, r, s, len);
+        DWORD out[2];
+        CallC(FUN_466560, out, s, len, F(char*, r, 20) + size, s);
+        F(char*, r, 20)[size + len] = 0;
+        F(unsigned, r, 0) = size + len;
+        F(int, r, 4) = 2;
+        return r;
+    }
+    BYTE* right;
+    if (F(char, r, 8) == 1 && F(char, right = F(BYTE*, r, 24), 8) == 0 && F(unsigned, right, 0) + len <= 23) {
+        unsigned rsize = F(unsigned, right, 0);
+        BYTE* nr;
+        if (F(int, right, 4) <= 1 && !(CallC<unsigned>(FUN_45a0e0, rsize) - 1 < rsize + len)) {
+            DWORD out[2];
+            CallC(FUN_466560, out, s, len, F(char*, right, 20) + rsize);
+            F(char*, right, 20)[rsize + len] = 0;
+            F(unsigned, right, 0) = rsize + len;
+            F(int, right, 4) = 2;
+            nr = right;
+            F(int, nr, 4) = 1;
+        } else {
+            nr = CallC<BYTE*>(FUN_462700, right, s, len);
+            if (right == nr)
+                F(int, nr, 4) = 1;
+            else if (!InterlockedDecrement((LONG*)(right + 4)))
+                CallThis(FUN_44f1b0, right);
+        }
+        F(int, r, 4) = 2;
+        F(BYTE*, r, 24) = nr;
+        F(unsigned, r, 0) = newSize;
+        void* c = F(void*, r, 16);
+        if (c) {
+            if (newSize + 1)
+                Ai_PoolFree(c, newSize + 1);
+            F(void*, r, 16) = 0;
+        }
+        return r;
+    }
+    right = CallC<BYTE*>(FUN_459150, s, len);
+    InterlockedIncrement((LONG*)(r + 4));
+    return CallC<BYTE*>(FUN_45a5e0, r, right);
+}
+
+// [FUN_44fac0] hashtable::resize(hint) (thiscall): past the bucket count, rehashes into the next prime's buckets
+extern "C" void __fastcall NameHash_Resize(BYTE* self, void*, unsigned hint)
+{
+    unsigned old = (unsigned)(F(BYTE*, self, 8) - F(BYTE*, self, 4)) >> 2;
+    if (hint <= old)
+        return;
+    unsigned key = hint;
+    const unsigned* p = CallC<const unsigned*>(FUN_44fde0, &g_primes64b530[0], &g_primes64b530[28], &key);
+    unsigned n = p == &g_primes64b530[28] ? g_primes64b530[27] : *p;
+    if (n <= old)
+        return;
+    BYTE** tmp[3];
+    char alloc;
+    void* zero = 0;
+    CallThis(FUN_44a550, tmp, n, &alloc);
+    tmp[1] = CallC<BYTE**>(FUN_466c20, tmp[0], n, &zero, hint);
+    for (unsigned b = 0; b < old; b++) {
+        BYTE** buckets = F(BYTE**, self, 4);
+        for (BYTE* node = buckets[b]; node; node = F(BYTE**, self, 4)[b]) {
+            unsigned nb = CallThis<unsigned>(FUN_44fcd0, self, node + 4) % n;
+            F(BYTE**, self, 4)[b] = *(BYTE**)node;
+            *(BYTE**)node = (BYTE*)tmp[0][nb];
+            tmp[0][nb] = node;
+        }
+    }
+    BYTE** oldBegin = F(BYTE**, self, 4);
+    F(BYTE**, self, 4) = tmp[0];
+    BYTE** oldEnd = F(BYTE**, self, 8);
+    F(BYTE**, self, 8) = tmp[1];
+    tmp[0] = (BYTE**)oldBegin;
+    tmp[1] = (BYTE**)oldEnd;
+    CallC(FUN_46cf00, self + 12, &tmp[2]);
+    unsigned cnt = (unsigned)((BYTE*)tmp[2] - (BYTE*)oldBegin) >> 2;
+    if (cnt)
+        Ai_PoolFree(oldBegin, cnt * 4);
+}
+
+// [FUN_453110] the 192-byte order info's copy constructor (thiscall)
+extern "C" BYTE* __fastcall OrderInfo_CopyConstruct(BYTE* p, void*, const BYTE* s)
+{
+    Rec461400_Construct(p, s);
+    return p;
+}
+
+// [FUN_453350] another copy constructor of the order info: all four vectors copied bytewise and the cached
+// first elements at +100..+112 kept as they were (thiscall)
+extern "C" BYTE* __fastcall OrderInfo_CopyRaw(BYTE* p, void*, const BYTE* s)
+{
+    F(DWORD, p, 0) = F(DWORD, s, 0);
+    F(DWORD, p, 8) = F(DWORD, s, 8);
+    F(DWORD, p, 12) = F(DWORD, s, 12);
+    for (int k = 16; k < 48; k += 4)
+        F(DWORD, p, k) = F(DWORD, s, k);
+    F(DWORD, p, 48) = F(DWORD, s, 48);
+    static const int vec[4] = {52, 64, 76, 88};
+    for (int i = 0; i < 4; i++) {
+        const BYTE* b = F(const BYTE*, s, vec[i]);
+        unsigned n = F(const BYTE*, s, vec[i] + 4) - b;
+        VecReserve((VecMethods*)(p + vec[i]), n);
+        memmove(F(BYTE*, p, vec[i]), b, n);
+        F(BYTE*, p, vec[i] + 4) = F(BYTE*, p, vec[i]) + n;
+    }
+    for (int k = 100; k <= 112; k += 4)
+        F(DWORD, p, k) = F(DWORD, s, k);
+    for (int k = 120; k <= 180; k += 4)
+        F(DWORD, p, k) = F(DWORD, s, k);
+    F(BYTE, p, 184) = F(BYTE, s, 184);
+    return p;
+}
+
+// [FUN_4505a0] vector<24-byte record (script handle, vector<24 bytes>)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall Rec24bVec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_40cda0, v[1], v[1] - 24);
+        v[1] += 24;
+        BYTE t0[12], t1[12];
+        CallThis(FUN_454580, t0, x);
+        CallThis(FUN_450850, t1, x + 12);
+        CallC(FUN_463490, pos, v[1] - 48, v[1] - 24, pos, 0);
+        CallThis(FUN_40c100, pos, t0);
+        CallThis(FUN_45aa00, pos + 12, t1);
+        for (BYTE* e = F(BYTE*, t1, 0); e != F(BYTE*, t1, 4); e += 24)
+            CallThis(FUN_46c900, e, 0);
+        CallThis(FUN_44a500, t1);
+        CallThis(FUN_4a36c0, t0);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 24);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 24);
+    BYTE* e = CallC<BYTE*>(FUN_466e50, v[0], pos, buf, pos);
+    if (e)
+        CallThis(FUN_40cda0, e, x);
+    e = CallC<BYTE*>(FUN_466e50, pos, v[1], e + 24, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 24) {
+        CallThis(FUN_448300, d + 12);
+        CallThis(FUN_4a36c0, d);
+    }
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 24;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 24);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 24;
+}
+
+// [FUN_450150] (thiscall on a road's objects) whether the objects between (t1, seg1, obj1) and (t2, seg2, obj2),
+// in either order, hold a match for (a0..a3): the first and last objects by their parts, the ones between
+// whole; the match's object goes to *out (the last one found)
+extern "C" int __fastcall RoadObjs_FindBetween(BYTE*** self, void*, DWORD a0, DWORD a1, DWORD a2, DWORD a3,
+                                               int* out, double t1, int seg1, int obj1, double t2, int seg2,
+                                               int obj2)
+{
+    for (;;) {
+        bool swap;
+        if (obj2 < obj1)
+            swap = true;
+        else if (obj2 != obj1)
+            swap = false;
+        else if (seg2 < seg1)
+            swap = true;
+        else if (seg2 != seg1)
+            swap = false;
+        else
+            swap = !(t2 >= t1);
+        if (!swap)
+            break;
+        double t = t1; t1 = t2; t2 = t;
+        int s = seg1; seg1 = seg2; seg2 = s;
+        int o = obj1; obj1 = obj2; obj2 = o;
+    }
+    BYTE** objs = *self;
+    if (obj1 == obj2) {
+        if (!CallVirt<int>(objs[obj1], 8, a0, a1, a2, a3, t1, seg1, t2, seg2))
+            return 0;
+        *out = obj1;
+        return 1;
+    }
+    int found = 0;
+    int last = CallVirt<int>((*self)[obj1], 24) - 1;
+    if (CallVirt<int>((*self)[obj1], 8, a0, a1, a2, a3, t1, seg1, 1.0, last)) {
+        found = 1;
+        *out = obj1;
+    }
+    for (int i = obj1 + 1; i < obj2; i++)
+        if (CallVirt<int>((*self)[i], 12, a0, a1, a2, a3)) {
+            found = 1;
+            *out = i;
+        }
+    if (CallVirt<int>((*self)[obj2], 8, a0, a1, a2, a3, 0.0, 0, t2, seg2)) {
+        *out = obj2;
+        return 1;
+    }
+    return found;
+}
+
+// [FUN_427f40] calculateNewPlace(int & newPlace, double & mindelta): how many players are ahead of the
+// human, and the smallest distance to one of them
+extern "C" void __cdecl Ai_CalculateNewPlace(int* place, double* minDelta)
+{
+    Trace_EnterAppend((const char*)s_calculateNewPlace);
+    *place = 0;
+    *minDelta = 1.7976931348623157e308;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        if (!CallC<char>(FUN_4172e0, (int)it))
+            continue;
+        double lead;
+        if (!Ai_HumanLead(it, &lead))
+            ++*place;
+        double d = lead < 0 ? -lead : lead;
+        if (!(d >= *minDelta))
+            *minDelta = d;
+    }
+    Trace_Leave((const char*)s_calculateNewPlace);
+}
+
+// [FUN_442c60] accountForChangeInLoadState(PlayerId player)
+extern "C" void __cdecl Ai_AccountForChangeInLoadState(int player)
+{
+    Trace_EnterAppend((const char*)s_accountForChangeInLoadState);
+    CallC(FUN_442850, player);
+    CallC(FUN_425790, player);
+    CallC(FUN_41ef90, player);
+    CallC(FUN_477210, player);
+    if (CallC<char>(FUN_417660, player))
+        CallC(FUN_56f6d0);
+    BYTE* p = (BYTE*)player;
+    int order = CallC<int>(FUN_477880, player);
+    if (order) {
+        double pay = CallC<double>(FUN_4715a0, order, 0.0, 1) * g_64b840;
+        F(double, p, 960) = pay + F(double, p, 960) * g_64b898;
+    } else
+        F(DWORD, p, 96) &= 0xfeefffff;
+    CallC(FUN_42c0b0);
+    Trace_Leave((const char*)s_accountForChangeInLoadState);
 }

@@ -1154,6 +1154,7 @@ PUBLIC $L_66cc5c, $L_66d264, $L_66d378, $L_66d470, $L_66d5d4, $L_66dcc8
 PUBLIC $L_66dd14, $L_66f1c8, $L_68cf40, $L_68d0e8
 PUBLIC $L_64b6f8, $L_66da60, $L_66ddb4, $L_68d170
 PUBLIC $L_64b6a8, $L_66cb88, $L_66db0c, $L_66f8a0
+PUBLIC $L_64b530, $L_64b898, $L_66dab4, $L_66f124
 
 ;===================================
 _TEXT SEGMENT
@@ -67202,6 +67203,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_427f40 PROC
 
             push EBP
@@ -67383,6 +67386,10 @@ $L_428103::
             pop EBP
             ret 
 FUN_427f40 ENDP
+ELSE
+EXTERN _Ai_CalculateNewPlace:PROC
+FUN_427f40 TEXTEQU <_Ai_CalculateNewPlace>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -110784,6 +110791,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_442c60 PROC
 
             push -1
@@ -110939,6 +110948,10 @@ $L_442df5::
             add ESP,24
             ret 
 FUN_442c60 ENDP
+ELSE
+EXTERN _Ai_AccountForChangeInLoadState:PROC
+FUN_442c60 TEXTEQU <_Ai_AccountForChangeInLoadState>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -133999,6 +134012,8 @@ EXTERN _Rope_CharAt:PROC
 FUN_44f2c0 TEXTEQU <_Rope_CharAt>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44f340 PROC
 
             push EBP
@@ -134299,6 +134314,10 @@ $L_44f57d::
             pop EBP
             ret 
 FUN_44f340 ENDP
+ELSE
+EXTERN _Rope_DestrConcatChars:PROC
+FUN_44f340 TEXTEQU <_Rope_DestrConcatChars>
+ENDIF
 $L_44f5bb PROC
 
             mov ESI,DWORD PTR [EBP+8]
@@ -134954,6 +134973,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44fac0 PROC
 
             push EBP
@@ -135134,6 +135155,10 @@ $L_44fc28::
             pop EBP
             ret 4
 FUN_44fac0 ENDP
+ELSE
+EXTERN @NameHash_Resize@12:PROC
+FUN_44fac0 TEXTEQU <@NameHash_Resize@12>
+ENDIF
 $L_44fc62 PROC
 
             mov ECX,DWORD PTR [EBP-40]
@@ -135811,6 +135836,8 @@ $L_450139::
             nop
 $L_4500f0 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_450150 PROC
 
             push EBP
@@ -136051,6 +136078,10 @@ $L_450322::
             pop EBP
             ret 52
 FUN_450150 ENDP
+ELSE
+EXTERN @RoadObjs_FindBetween@60:PROC
+FUN_450150 TEXTEQU <@RoadObjs_FindBetween@60>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -136331,6 +136362,8 @@ $L_450596::
             nop
 $L_450535 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4505a0 PROC
 
             push EBP
@@ -136575,6 +136608,10 @@ $L_4507b6::
             pop EBP
             ret 8
 FUN_4505a0 ENDP
+ELSE
+EXTERN @Rec24bVec_InsertAux@16:PROC
+FUN_4505a0 TEXTEQU <@Rec24bVec_InsertAux@16>
+ENDIF
 $L_4507e0 PROC
 
             mov EDI,DWORD PTR [EBP-20]
@@ -141427,6 +141464,8 @@ $L_4530fb::
             nop
 $L_453098 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_453110 PROC
 
             push EBP
@@ -141615,6 +141654,10 @@ $L_45332d::
             pop EBP
             ret 4
 FUN_453110 ENDP
+ELSE
+EXTERN @OrderInfo_CopyConstruct@12:PROC
+FUN_453110 TEXTEQU <@OrderInfo_CopyConstruct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -141629,6 +141672,8 @@ FUN_453110 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_453350 PROC
 
             push EBP
@@ -141866,6 +141911,10 @@ $L_4534ed::
             pop EBP
             ret 4
 FUN_453350 ENDP
+ELSE
+EXTERN @OrderInfo_CopyRaw@12:PROC
+FUN_453350 TEXTEQU <@OrderInfo_CopyRaw@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
