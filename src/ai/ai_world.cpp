@@ -988,7 +988,7 @@ struct RoomInfo {
 };
 extern "C" PositionId* __cdecl Road_RandomPosition(PositionId* out);       // airoad.cpp
 extern "C" void __cdecl Road_RoomInfo(PositionId pos, RoomInfo* info);
-KING_ALIAS("_Road_RoomInfo", "FUN_438d70")
+KING_ALIAS("_Road_RoomInfo", "_Road_GetRoadParameters")
 
 // a random position that is not in a room with flags 0x60
 extern "C" PositionId* __cdecl Road_RandomFreePosition(PositionId* out)
@@ -5847,7 +5847,7 @@ extern "C" void __cdecl Players_DropIdleFar()
 }
 
 extern "C" PositionId* __cdecl Road_RandomPosition(PositionId* out);
-ASM_PROC(FUN_438d70)    // the room info of a position
+extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")    // the room info of a position
 ASM_VAR(char, s_undefinedModule, $L_66d638)
 ASM_VAR(char, s_undefinedRoom, $L_66d628)
 
@@ -7046,7 +7046,7 @@ extern "C" void __fastcall VecChar_Insert44bef0(BYTE** v, void*, BYTE* pos, cons
     VecPod_InsertAux(v, pos, x, 1, FUN_46ecd0);
 }
 
-ASM_PROC(FUN_405730)    // the road node at a point (out, point, a, b)
+extern "C" void FUN_405730(); KING_ALIAS("_FUN_405730", "_Anchors_At")    // the road node at a point (out, point, a, b)
 extern "C" void FUN_4545d0(); KING_ALIAS("_FUN_4545d0", "@Vec12_Insert4545d0@16")    // vector<12 bytes>::insert_aux
 
 // appends a 12-byte record to a vector at v
@@ -9397,7 +9397,7 @@ extern "C" BYTE* __cdecl Ai_ReadTown(void* reader, StrRef h)
 // ---------------------------------------------------------------------------
 // getPresentData
 
-ASM_PROC(FUN_438d70)    // the module and room of a position (PositionId32, out44)
+extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")    // the module and room of a position (PositionId32, out44)
 ASM_PROC(FUN_4397e0)    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
 extern "C" void FUN_41bbe0(); KING_ALIAS("_FUN_41bbe0", "_Ai_CargoCosts")    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
@@ -18037,4 +18037,151 @@ extern "C" BYTE** __cdecl Nodes_FarFrom(BYTE** out, BYTE** first, BYTE** last, c
     if (cap)
         Ai_PoolFree(tmp[0], cap * 4);
     return out;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: cheat codes, speeding fines, rescheduling a task, road anchor nodes
+
+ASM_VAR(AsmLabel, s_aiCheatCode, $L_66f328)
+ASM_VAR(AsmLabel, s_fineForSpeeding, $L_66dfe8)
+ASM_VAR(double, g_64b950, $L_64b950)
+ASM_VAR(double, g_64b5a0, $L_64b5a0)
+ASM_VAR(BYTE*, g_task68d120, $L_68d120)
+extern "C" void FUN_42b360(); KING_ALIAS("_FUN_42b360", "_AI_RunActive")
+extern "C" void FUN_41ef90(); KING_ALIAS("_FUN_41ef90", "_Player_CheckTownAA")
+
+// [FUN_445b20] aiCheatCode(int code): 2 runs FUN_42b360, 3 gives the human money and a competitor in 720
+extern "C" void __cdecl Ai_CheatCode(int code)
+{
+    Trace_EnterAppend((const char*)s_aiCheatCode);
+    if (code == 2)
+        CallC(FUN_42b360);
+    else if (code == 3) {
+        int s;
+        BYTE* h = (BYTE*)*Player_FromId(&s);
+        if (h != (BYTE*)g_players) {
+            F(double, h, 136) = F(double, h, 136) + g_64b950;
+            Ai_AddArrivals((BYTE*)s, 720.0, 1);
+        }
+    }
+    Trace_Leave((const char*)s_aiCheatCode);
+}
+
+// [FUN_431170] fineForSpeeding(PlayerId player, double degree): a non-zero fine is announced and paid
+extern "C" int __cdecl Ai_FineForSpeeding(int player, double fine)
+{
+    Trace_EnterAppend((const char*)s_fineForSpeeding);
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 12836, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    if (fine < 0 || fine > 0) {
+        CallC(FUN_483e60, fine);
+        CallC(FUN_483e80, 16, 0);
+        F(double, (BYTE*)player, 136) = F(double, (BYTE*)player, 136) - fine;
+    }
+    CallC(FUN_425790, player);
+    CallC(FUN_41ef90, player);
+    CallC(FUN_477210, player);
+    CallC(FUN_426f20, player);
+    Trace_Leave((const char*)s_fineForSpeeding);
+    return 0;
+}
+
+// [FUN_401c50] moves the task at 68d120 to the front of the task list, due now unless already overdue,
+// and resets the loading state
+extern "C" void __cdecl Ai_RescheduleLoadTask()
+{
+    BYTE* x = g_task68d120;
+    BYTE* list = (BYTE*)&g_68b99c;
+    BYTE* head = *(BYTE**)list;
+    BYTE* found;
+    Range_CallA((BYTE*)&found, (DWORD)*(BYTE**)head, (DWORD)head, (int)&x);
+    if (found != head) {
+        BYTE* next;
+        CallThis(FUN_447bc0, list, &next, found);
+        BYTE* it;
+        ListB_Insert(list, 0, &it, (BYTE**)*(BYTE**)*(BYTE**)list, &x);
+        double now = CallC<double>(FUN_401000);
+        if (!(now > F(double, x, 16)))
+            F(double, x, 16) = now - F(double, x, 24) * g_64b5a0;
+    }
+    g_loadTick68d13c = 200;
+    g_loadRadius68d128 = 0;
+    g_loadDone68d130 = 0;
+    r_66c60a = 1;
+    g_loadNear68d138 = 0;
+    Ai_ReUncontradict();
+}
+
+// [FUN_405730] the anchor node at a point (24 bytes): found in the list at 68cf58, or appended with a and b
+// (+56, +60 of the node)
+extern "C" BYTE** __cdecl Anchors_At(BYTE** out, const BYTE* key, int a, int b)
+{
+    BYTE* head = g_anchors68cf58;
+    BYTE* found;
+    Range_CallB((BYTE*)&found, (DWORD)*(BYTE**)head, (DWORD)head, (int)key);
+    if (found != head) {
+        *out = found;
+        return out;
+    }
+    DWORD r[16] = {0};
+    memcpy(&r[2], key, 24);
+    BYTE* pos = g_anchors68cf58;
+    BYTE* it;
+    ListC_Insert(&g_anchors68cf58, 0, &it, (BYTE**)pos, r);
+    unsigned n = (r[11] - r[9]) / 12;
+    if (n)
+        Ai_PoolFree((void*)r[9], n * 12);
+    BYTE* last = F(BYTE*, g_anchors68cf58, 4);
+    F(int, last, 56) = a;
+    F(int, last, 60) = b;
+    *out = F(BYTE*, g_anchors68cf58, 4);
+    return out;
+}
+
+ASM_VAR(AsmLabel, s_getRoadParameters66e604, $L_66e604)
+
+static DWORD Str_OrNull(const DWORD* s) { return s[0] != s[1] ? s[0] : 0; }
+
+// [FUN_438d70] getRoadParameters(PositionId pos, LocalRoadParameters & rp): at a node, the node's two names (+188, +184); on a road, the
+// object's flags, the position's share of its range (+8), its names and values
+extern "C" int __cdecl Road_GetRoadParameters(PositionId pos, RoomInfo* out)
+{
+    Trace_EnterBuffered((const char*)s_getRoadParameters66e604);
+    if (pos.road == -1) {
+        if (pos.node != -1) {
+            BYTE* n = (BYTE*)g_roadNodes[pos.node];
+            out->module = (const char*)Str_OrNull(F(const DWORD*, n, 188));
+            out->room = (const char*)Str_OrNull(F(const DWORD*, n, 184));
+            out->m_36 = F(int, F(BYTE*, n, 184), 12);
+            out->m_40 = F(int, F(BYTE*, n, 188), 12);
+        }
+    } else {
+        PositionId chk = pos;
+        if (!PositionValid(&chk)) {
+            sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, pos.m_24);
+            AiError(33, 100, s_mainFile, s_mainId, 15320, s_invalidId, "PositionId", g_positionText77e6e0);
+        }
+        BYTE* e = (BYTE*)g_roadEdges[pos.road];
+        BYTE* obj = F(BYTE**, e, 120)[pos.object];
+        out->flags = F(DWORD, obj, 8);
+        const double* range = F(const double*, obj, 40);
+        double lo = range[0], hi = range[1];
+        double len = CallVirt<double>(obj, 32, 0.0, 0, pos.t, pos.segment);
+        double part = len * (hi - lo);
+        *(double*)&out->m_8 = part / CallVirt<double>(obj, 36) + lo;
+        BYTE* s = F(BYTE*, obj, 16);
+        out->module = (const char*)F(DWORD, s, 16);
+        out->room = (const char*)Str_OrNull((const DWORD*)s);
+        out->m_36 = F(int, s, 12);
+        out->m_40 = F(int, F(BYTE*, obj, 20), 12);
+        out->m_24 = F(DWORD, obj, 32);
+        out->m_28 = F(DWORD, obj, 36);
+        out->m_32 = F(DWORD, obj, 28);
+        if (F(DWORD, e, 16) & 0x200)
+            out->flags &= ~0x20u;
+    }
+    Trace_Leave((const char*)s_getRoadParameters66e604);
+    return 0;
 }

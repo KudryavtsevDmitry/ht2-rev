@@ -1164,6 +1164,8 @@ PUBLIC $L_66d168, $L_66da70, $L_66eb70, $L_66ebb8, $L_66f2bc, $L_66f2c4
 PUBLIC $L_66f340
 PUBLIC $L_66e168, $L_66e8c0, $L_66f300
 PUBLIC $L_64b698
+PUBLIC $L_64b950, $L_66dfe8, $L_66f328, $L_68d120
+PUBLIC $L_66e604
 
 ;===================================
 _TEXT SEGMENT
@@ -2818,6 +2820,8 @@ $L_401b90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_401c50 PROC
 
             sub ESP,8
@@ -2894,6 +2898,10 @@ $L_401cf0::
             add ESP,8
             ret 
 FUN_401c50 ENDP
+ELSE
+EXTERN _Ai_RescheduleLoadTask:PROC
+FUN_401c50 TEXTEQU <_Ai_RescheduleLoadTask>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -10475,6 +10483,8 @@ $L_405720 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_405730 PROC
 
             push -1
@@ -10589,6 +10599,10 @@ $L_405857::
             add ESP,76
             ret 
 FUN_405730 ENDP
+ELSE
+EXTERN _Anchors_At:PROC
+FUN_405730 TEXTEQU <_Anchors_At>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -82815,6 +82829,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_431170 PROC
 
             push -1
@@ -82979,6 +82995,10 @@ $L_43132d::
             add ESP,24
             ret 
 FUN_431170 ENDP
+ELSE
+EXTERN _Ai_FineForSpeeding:PROC
+FUN_431170 TEXTEQU <_Ai_FineForSpeeding>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -95075,6 +95095,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_438d70 PROC
 
             push EBP
@@ -95426,6 +95448,10 @@ $L_439083::
             pop EBP
             ret 
 FUN_438d70 ENDP
+ELSE
+EXTERN _Road_GetRoadParameters:PROC
+FUN_438d70 TEXTEQU <_Road_GetRoadParameters>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -115480,6 +115506,8 @@ $L_445b00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_445b20 PROC
 
             push -1
@@ -115610,6 +115638,10 @@ $L_445c79::
             add ESP,24
             ret 
 FUN_445b20 ENDP
+ELSE
+EXTERN _Ai_CheatCode:PROC
+FUN_445b20 TEXTEQU <_Ai_CheatCode>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

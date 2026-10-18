@@ -49,7 +49,7 @@ struct RoomInfo {
     DWORD       m_44;
 };
 extern "C" void __cdecl Road_RoomInfo(Position pos, RoomInfo* info);
-KING_ALIAS("_Road_RoomInfo", "FUN_438d70")
+KING_ALIAS("_Road_RoomInfo", "_Road_GetRoadParameters")
 
 ASM_VAR(BYTE*, g_6cec78, $L_6cec78)             // +386: the sound volume in percent
 ASM_VAR(int, g_696ca4, $L_696ca4)
