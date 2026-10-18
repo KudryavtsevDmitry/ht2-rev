@@ -5848,6 +5848,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_402ec0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -6069,6 +6071,10 @@ $L_403090           DWORD $L_402f10
           DWORD $L_402f5e
           DWORD $L_403004
           DWORD $L_402fb5
+ELSE
+EXTERN @RopeRef_Destroy@8:PROC
+FUN_402ec0 TEXTEQU <@RopeRef_Destroy@8>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -118508,6 +118514,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_447570 PROC
 
             push -1
@@ -118715,6 +118723,10 @@ $L_447736::
             inc EDI
             jmp $L_4476d6
 FUN_447570 ENDP
+ELSE
+EXTERN @StrRefVec_Destroy@8:PROC
+FUN_447570 TEXTEQU <@StrRefVec_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -123061,6 +123073,8 @@ $L_449740 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_449910 PROC
 
             push -1
@@ -123248,6 +123262,10 @@ $L_449abc::
             inc EDI
             jmp $L_449a5c
 FUN_449910 ENDP
+ELSE
+EXTERN @Vec580_Destroy@8:PROC
+FUN_449910 TEXTEQU <@Vec580_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -150709,6 +150727,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_457a40 PROC
 
             push -1
@@ -150804,6 +150824,10 @@ $L_457b2c::
             add ESP,16
             ret 
 FUN_457a40 ENDP
+ELSE
+EXTERN _Orders_FindEqual:PROC
+FUN_457a40 TEXTEQU <_Orders_FindEqual>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
