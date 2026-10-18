@@ -3100,7 +3100,7 @@ extern "C" int __cdecl Fx_VehicleNear(float x, float y, float z)
     return 0;
 }
 
-ASM_PROC(FUN_43bf10)    // the position a distance along a route (out, id, pos, &d, -)
+extern "C" void FUN_43bf10(); KING_ALIAS("_FUN_43bf10", "_Ai_AdvancePlayerPosition")    // the position a distance along a route (out, id, pos, &d, -)
 
 // [FUN_4cdaf0] the turn rate along a route: the angle between the directions at pos and d further, over the distance made
 extern "C" double __cdecl Fx_TurnRate(Bytes32 pos, double d, int id, int back)
