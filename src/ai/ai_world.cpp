@@ -13250,7 +13250,7 @@ extern "C" int __cdecl Ai_UpdateNavigator(BYTE* p)
 extern "C" void FUN_431420(); KING_ALIAS("_FUN_431420", "_Ai_LastOfSorted")    // (out int*)
 extern "C" void FUN_40a690(); KING_ALIAS("_FUN_40a690", "_Ai_CallHelpers")    // (int by value)
 extern "C" void FUN_40aa00(); KING_ALIAS("_FUN_40aa00", "_Ai_CallMafia")    // (int by value)
-ASM_PROC(FUN_4452c0)    // (player)
+extern "C" void FUN_4452c0(); KING_ALIAS("_FUN_4452c0", "_Ai_DropOrdersForfeit")    // (player)
 extern "C" void __fastcall Rec4725e0_Init(BYTE* self, void*);   // ai_drivers.cpp
 extern "C" BYTE* __fastcall Bribe_Construct(BYTE* s, void*, int a);
 ASM_VAR(AsmLabel, s_offerBribe, $L_66e074)
@@ -13672,7 +13672,7 @@ extern "C" int __cdecl Ai_GetPlayerOrderInfo(BYTE* p, unsigned idx, BYTE* oi)
 // ---------------------------------------------------------------------------
 // getRightDirection(PlayerId player, PositionId pos)
 
-ASM_PROC(FUN_445c90)    // the position's direction by default (out, PositionId32)
+extern "C" void FUN_445c90(); KING_ALIAS("_FUN_445c90", "_Ai_GetRightDirectionOf")    // the position's direction by default (out, PositionId32)
 ASM_VAR(AsmLabel, s_getRightDirection, $L_66f364)
 
 static PositionId* RightDirection_Default(PositionId* out, PositionId pos)
@@ -15188,7 +15188,7 @@ extern "C" void __cdecl Ai_CalculateWeightsPerSubstate()
 // sending players to towns, nodes and markets
 
 ASM_PROC(FUN_45e0a0)    // a random free player (out, first, last, -, rng)
-ASM_PROC(FUN_43e610)    // (player, RoadNode position +48, 0)
+extern "C" void FUN_43e610(); KING_ALIAS("_FUN_43e610", "_Ai_SetPlayerPositionTo")    // (player, RoadNode position +48, 0)
 ASM_PROC(FUN_46dc50)    // multiplayer: announce a new player (player)
 ASM_VAR(BYTE, g_68d31c, $L_68d31c)
 extern "C" void __cdecl Ai_GoHireIt(BYTE* p);
@@ -17595,5 +17595,207 @@ extern "C" int __cdecl Ai_ProcessMove(int player)
         Ai_PlayerEvent(p, 4, 0);
     }
     Trace_Leave((const char*)s_processMove);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: setting a player's position with the room change, a position's direction bit, starting races,
+// a forfeit
+
+ASM_VAR(AsmLabel, s_setPlayerPositionTo66eb70, $L_66eb70)
+ASM_VAR(AsmLabel, s_setPlayerPositionRoomLimited, $L_66ebb8)
+ASM_VAR(AsmLabel, s_getRightDirection66f340, $L_66f340)
+ASM_VAR(AsmLabel, s_startRaces, $L_66da70)
+ASM_VAR(AsmLabel, s_checkPoint1, $L_66d168)
+ASM_VAR(AsmLabel, s_dropOrdersForfeit, $L_66f2c4)
+ASM_VAR(AsmLabel, s_idFormat66d4e4, $L_66d4e4)
+ASM_VAR(AsmLabel, s_playerId66d4d8, $L_66d4d8)
+ASM_VAR(AsmLabel, s_forfeit66f2bc, $L_66f2bc)
+extern "C" void FUN_47fc80(); KING_ALIAS("_FUN_47fc80", "_Road_CommonNode")    // (out, road, road, DVec3)
+ASM_PROC(FUN_40b100)    // (player, int, DVec3)
+extern "C" void FUN_43cb50(); KING_ALIAS("_FUN_43cb50", "_Ai_SetPlayerPositionLimited")    // setPlayerPositionLimited (player, v)
+extern "C" void FUN_4175c0(); KING_ALIAS("_FUN_4175c0", "_Player_MarkListed")    // (player)
+extern "C" void FUN_4272d0(); KING_ALIAS("_FUN_4272d0", "_Ai_ClearPlayerFromTail")    // clearPlayerFromTail (player)
+extern "C" void FUN_4165f0(); KING_ALIAS("_FUN_4165f0", "_Ai_CalculateWeightsPerSubstate")    // calculateWeigthsPerSubstate
+extern "C" void FUN_436510(); KING_ALIAS("_FUN_436510", "_Node_ByName")    // a node by name (out, name)
+ASM_PROC(FUN_486800)    // the route length between two positions (int, from, to, double* out)
+extern "C" void FUN_471420(); KING_ALIAS("_FUN_471420", "_Order_FullValue")    // an order's value (order) returns double
+extern "C" void FUN_483e60(); KING_ALIAS("_FUN_483e60", "_AI_AddToBanner")    // AI_AddToBanner (double)
+extern "C" void FUN_483e80(); KING_ALIAS("_FUN_483e80", "_eventBanner")    // eventBanner (int, int)
+
+static void RoomInfo_Init(RoomInfo* r)
+{
+    r->flags = 0;
+    r->m_8 = 0;
+    r->m_12 = 0;
+    r->module = g_undefinedModule;
+    r->room = g_undefinedRoom;
+    r->m_24 = 0;
+    r->m_28 = 0;
+    r->m_36 = -1;
+    r->m_40 = -1;
+}
+
+// after a player's position was set: when it changed roads, FUN_40b100 with the step between the two points
+static void Player_RoadChanged(int player, const PositionId& p0)
+{
+    RoomInfo b;
+    RoomInfo_Init(&b);
+    PositionId p1 = F(PositionId, (BYTE*)player, 40);
+    Road_RoomInfo(p1, &b);
+    if (p0.road == p1.road)
+        return;
+    DVec3 a0, a1;
+    const DVec3* pt0 = Road_PointOf(&a0, p0);
+    const DVec3* pt1 = Road_PointOf(&a1, p1);
+    DVec3 d;
+    d.x = pt1->x - pt0->x;
+    d.y = pt1->y - pt0->y;
+    d.z = pt1->z - pt0->z;
+    int r;
+    int k = *CallC<int*>(FUN_47fc80, &r, p0.road, p1.road, d);
+    CallC(FUN_40b100, player, k, d);
+}
+
+// [FUN_43e610] setPlayerPosition(PlayerId player, dvector3 const & v, bool limited)
+extern "C" void __cdecl Ai_SetPlayerPositionTo(int player, const DVec3* v, char limited)
+{
+    Trace_EnterBuffered((const char*)s_setPlayerPositionTo66eb70);
+    RoomInfo a;
+    RoomInfo_Init(&a);
+    PositionId p0 = F(PositionId, (BYTE*)player, 40);
+    Road_RoomInfo(F(PositionId, (BYTE*)player, 40), &a);
+    if (limited)
+        CallC(FUN_43cb50, player, v);
+    else
+        CallC(FUN_43dc60, player, v);
+    Player_RoadChanged(player, p0);
+    Trace_Leave((const char*)s_setPlayerPositionTo66eb70);
+}
+
+// [FUN_43e8c0] setPlayerPosition(RoomId room, PlayerId player, dvector3 const & v, bool limited)
+extern "C" void __cdecl Ai_SetPlayerPositionInRoom(int room, int player, const DVec3* v, char limited)
+{
+    Trace_EnterBuffered((const char*)s_setPlayerPositionRoomLimited);
+    RoomInfo a;
+    RoomInfo_Init(&a);
+    PositionId p0 = F(PositionId, (BYTE*)player, 40);
+    Road_RoomInfo(F(PositionId, (BYTE*)player, 40), &a);
+    if (limited && F(BYTE*, (BYTE*)player, 24) != F(BYTE*, (BYTE*)player, 28))
+        CallC(FUN_43cb50, player, v);
+    else
+        Ai_SetPlayerPositionRoom(room, player, v);
+    Player_RoadChanged(player, p0);
+    Trace_Leave((const char*)s_setPlayerPositionRoomLimited);
+}
+
+// [FUN_445c90] getRightDirection(PositionId pos): pos with its direction bit (+24 bit 0) set by its room's
+// flags 8 (set) or 4 (cleared)
+extern "C" PositionId* __cdecl Ai_GetRightDirectionOf(PositionId* out, PositionId pos)
+{
+    Trace_EnterAppend((const char*)s_getRightDirection66f340);
+    AdvanceRoad_Check(&pos, 18145);
+    RoomInfo info;
+    RoomInfo_Init(&info);
+    info.m_8 = 0;
+    Road_RoomInfo(pos, &info);
+    if (info.flags & 8)
+        pos.m_24 |= 1;
+    else if (info.flags & 4)
+        pos.m_24 &= ~1;
+    *out = pos;
+    Trace_Leave((const char*)s_getRightDirection66f340);
+    return out;
+}
+
+// [FUN_427520] startRaces(): once requested (68d168), the human and the waiting racers start: race state 5,
+// the start time, and (outside network games) the human's advancement from check_point1
+extern "C" int __cdecl Ai_StartRaces()
+{
+    Trace_EnterBuffered((const char*)s_startRaces);
+    if (!g_68d168) {
+        Trace_Leave((const char*)s_startRaces);
+        return -1;
+    }
+    int s;
+    Player_FromId(&s);
+    g_68d168 = 0;
+    g_66c6e0 = 1;
+    CallC(FUN_4452c0, s);
+    CallC(FUN_425790, s);
+    for (void** e = g_68cf60; e != g_68cf64; e++) {
+        CallC(FUN_4175c0, *e);
+        F(double, (BYTE*)*e, 792) = CallC<double>(FUN_401000);
+        CallC(FUN_477210, *e);
+    }
+    BYTE* h = (BYTE*)s;
+    F(int, h, 100) = 5;
+    F(DWORD, h, 96) |= 0x4000;
+    F(int, h, 724) = 0;
+    F(double, h, 792) = CallC<double>(FUN_401000);
+    CallC(FUN_4272d0, s);
+    if (g_68d188 == 0 || g_68d188 == 1) {
+        CallC(FUN_4165f0);
+        int node;
+        CallC(FUN_436510, &node, (const char*)s_checkPoint1);
+        int n = node;
+        PositionId cp;
+        Position_InitNode(&cp, 0, n);
+        CallC(FUN_478260, s, cp, 1);
+        PositionId here = F(PositionId, (BYTE*)s, 40);
+        double len = 0;
+        PositionId to;
+        Position_InitNode(&to, 0, n);
+        CallC(FUN_486800, 0, here, to, &len);
+        h = (BYTE*)s;
+        F(double, h, 504) = -len - g_raceTimes68cf70[F(int, h, 724)];
+    }
+    CallC(FUN_477210, s);
+    r_68d164 = 0;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        if (d)
+            F(BYTE, CallC<BYTE*>(FUN_40a9f0, it), 864) = 1;
+    }
+    Trace_Leave((const char*)s_startRaces);
+    return 0;
+}
+
+// [FUN_4452c0] dropOrders(PlayerId player) with a forfeit: the orders' value is taken off the player's money
+// (+136), announced to a human, and the orders dropped
+extern "C" int __cdecl Ai_DropOrdersForfeit(int player)
+{
+    Trace_EnterBuffered((const char*)s_dropOrdersForfeit);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 17977, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    double sum = 0;
+    BYTE* o = 0;
+    BYTE* v = Player_Orders(p, (BYTE*)&o);
+    o = F(BYTE*, v, 0);
+    BYTE* w = 0;
+    for (;;) {
+        w = Player_Orders(p, w);
+        if (o == F(BYTE*, w, 4))
+            break;
+        sum = CallC<double>(FUN_471420, o) + sum;
+        o += 144;
+    }
+    if (CallC<char>(FUN_417660, player) && (sum < 0 || sum > 0)) {
+        char buf[128];
+        sprintf(buf, Message_Text((const char*)s_forfeit66f2bc), sum);
+        CallC(FUN_56ae60, buf);
+        CallC(FUN_483e60, sum);
+        CallC(FUN_483e80, 6, 0);
+    }
+    F(double, p, 136) = F(double, p, 136) - sum;
+    CallC(FUN_4778a0, p + 8);
+    F(BYTE, p, 200) = 0;
+    F(BYTE, p, 201) = 0;
+    Ai_AccountForChangeInLoadState(player);
+    CallC(FUN_426f20, player);
+    Trace_Leave((const char*)s_dropOrdersForfeit);
     return 0;
 }

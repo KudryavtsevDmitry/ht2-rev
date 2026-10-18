@@ -1495,7 +1495,7 @@ extern "C" void FUN_4363f0(); KING_ALIAS("_FUN_4363f0", "_Players_Next")    // t
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a player's flags
 extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    // sets a player's flags
 extern "C" void FUN_4278b0(); KING_ALIAS("_FUN_4278b0", "_AI_EndWaiting")
-ASM_PROC(FUN_427520)
+extern "C" void FUN_427520(); KING_ALIAS("_FUN_427520", "_Ai_StartRaces")
 ASM_VAR(int, g_players68b990h, $L_68b990)
 ASM_VAR(int, g_waiting696328, $L_696328)
 
