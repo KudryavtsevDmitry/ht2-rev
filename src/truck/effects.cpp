@@ -2458,7 +2458,7 @@ extern "C" void __cdecl Color_ToHsl(float r, float g, float b, float* h, float* 
 extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a vehicle's flags by id
 extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")
-ASM_PROC(FUN_43a780)    // the matrix of a position
+extern "C" void FUN_43a780(); KING_ALIAS("_FUN_43a780", "_Ai_GetOrientationF")    // the matrix of a position
 ASM_VAR(Vec3, g_up702640, $L_702640)
 struct Bytes32b { DWORD d[8]; };
 

@@ -1172,6 +1172,7 @@ PUBLIC $L_64b6a0, $L_66ccb0, $L_66ccb8, $L_66ccc0, $L_66ccd0, $L_66d9d4
 PUBLIC $L_66d9e0
 PUBLIC $L_64b6d8, $L_64b738, $L_66f494
 PUBLIC $L_64b690, $L_66e73c
+PUBLIC $L_66d6a4, $L_66d6bc, $L_66e774
 
 ;===================================
 _TEXT SEGMENT
@@ -49718,6 +49719,8 @@ EXTERN @Rec41ce50_DestroyVector@8:PROC
 FUN_41ce50 TEXTEQU <@Rec41ce50_DestroyVector@8>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41cff0 PROC
 
             push EBP
@@ -50006,6 +50009,10 @@ $L_41d2a4::
             pop EBP
             ret 
 FUN_41cff0 ENDP
+ELSE
+EXTERN _Ai_PresentAtNode:PROC
+FUN_41cff0 TEXTEQU <_Ai_PresentAtNode>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -97717,6 +97724,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43a780 PROC
 
             push -1
@@ -98041,6 +98050,10 @@ $L_43aae4::
             add ESP,424
             ret 
 FUN_43a780 ENDP
+ELSE
+EXTERN _Ai_GetOrientationF:PROC
+FUN_43a780 TEXTEQU <_Ai_GetOrientationF>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
