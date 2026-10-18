@@ -9398,7 +9398,7 @@ extern "C" BYTE* __cdecl Ai_ReadTown(void* reader, StrRef h)
 // getPresentData
 
 extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")    // the module and room of a position (PositionId32, out44)
-ASM_PROC(FUN_4397e0)    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
+extern "C" void FUN_4397e0(); KING_ALIAS("_FUN_4397e0", "_Ai_OrientationFrom")    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
 extern "C" void FUN_41bbe0(); KING_ALIAS("_FUN_41bbe0", "_Ai_CargoCosts")    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
 ASM_VAR(AsmLabel, g_text77e5e0b, $L_77e5e0)
@@ -17135,7 +17135,7 @@ extern "C" void FUN_487e50(); KING_ALIAS("_FUN_487e50", "_DMatrix_Multiply")    
 extern "C" void FUN_436bd0(); KING_ALIAS("_FUN_436bd0", "_Ai_GetPositionIdRoom")    // getPositionId in a room (out, room, v)
 extern "C" void FUN_43dc60(); KING_ALIAS("_FUN_43dc60", "_Ai_SetPlayerPosition")    // setPlayerPosition (player, v)
 extern "C" void FUN_4390a0(); KING_ALIAS("_FUN_4390a0", "_Ai__GetTangent")    // a position's direction (out, pos)
-ASM_PROC(FUN_4397e0)    // an orientation (out, point, direction)
+extern "C" void FUN_4397e0(); KING_ALIAS("_FUN_4397e0", "_Ai_OrientationFrom")    // an orientation (out, point, direction)
 extern "C" void FUN_418fe0(); KING_ALIAS("_FUN_418fe0", "_Player_WaitsInTownOf")    // (player) returns bool
 extern "C" void FUN_474210(); KING_ALIAS("_FUN_474210", "@Player_GetPlace@8")    // (thiscall player) its vehicle
 extern "C" void FUN_419030(); KING_ALIAS("_FUN_419030", "_Ai_GoHireIt")    // goHireIt (player)
@@ -19605,4 +19605,46 @@ extern "C" bool __cdecl Ambush_AheadOfHuman(BYTE* a)
     if (cap)
         Ai_PoolFree(r[0], cap * 12);
     return res;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: an orientation from a point and a direction
+
+ASM_VAR(AsmLabel, s_getOrientationPD, $L_66e698)
+
+// [FUN_4397e0] the orientation at a point facing a direction: the side (dir x up), the direction and the up
+// (side x dir), each normalized, then the point
+extern "C" BYTE* __cdecl Ai_OrientationFrom(BYTE* out, const DVec3* point, const DVec3* dir)
+{
+    Trace_EnterBuffered((const char*)s_getOrientationPD);
+    DVec3 f = *dir;
+    DVec3 up;
+    up.x = 0;
+    up.y = 0;
+    up.z = 1.0;
+    double inv = g_64b670 / x87_sqrt((f.y * f.y + f.z * f.z) + f.x * f.x);
+    f.x = inv * f.x;
+    f.y = f.y * inv;
+    f.z = f.z * inv;
+    DVec3 side, u2;
+    CallC(FUN_487dc0, &side, &f, &up);
+    const DVec3* c = CallC<const DVec3*>(FUN_487dc0, &u2, &side, &f);
+    up.x = c->x;
+    up.y = c->y;
+    double cz = c->z;
+    double inv2 = g_64b670 / x87_sqrt((up.y * up.y + cz * cz) + up.x * up.x);
+    up.x = inv2 * up.x;
+    up.y = up.y * inv2;
+    up.z = cz * inv2;
+    double inv3 = g_64b670 / x87_sqrt((side.x * side.x + side.y * side.y) + side.z * side.z);
+    side.x = inv3 * side.x;
+    side.y = side.y * inv3;
+    side.z = side.z * inv3;
+    DVec3 pt = *point;
+    F(DVec3, out, 0) = side;
+    F(DVec3, out, 24) = f;
+    F(DVec3, out, 48) = up;
+    F(DVec3, out, 72) = pt;
+    Trace_Leave((const char*)s_getOrientationPD);
+    return out;
 }
