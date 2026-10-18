@@ -1490,11 +1490,11 @@ KING_ALIAS("_AI_42db90", "_AI_FreeList68b99c")
 extern "C" void __cdecl AI_4031e0();
 KING_ALIAS("_AI_4031e0", "_Ai_ClearWorld")
 extern "C" void __cdecl AI_449c40(void* out, void* x);
-KING_ALIAS("_AI_449c40", "FUN_449c40")
+KING_ALIAS("_AI_449c40", "_NameMap68cff0_Find")
 extern "C" void __cdecl Nodes_FindByName(int* out, const char* name);
-KING_ALIAS("_Nodes_FindByName", "FUN_449f00")
+KING_ALIAS("_Nodes_FindByName", "_NameMap68d008_Find")
 extern "C" void __cdecl Modules_FindByName(int* out, const char* name);
-KING_ALIAS("_Modules_FindByName", "FUN_44a1c0")
+KING_ALIAS("_Modules_FindByName", "_NameMap68cf10_Find")
 extern "C" void __cdecl Town_440390(void* out, void* town);
 KING_ALIAS("_Town_440390", "_Ai_GetCoordinates")
 extern "C" void __cdecl List_FreeNode(void* node, int size);
@@ -4840,7 +4840,7 @@ int __stdcall Rec415740_Check(BYTE* p)
 }
 
 extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")    // an order info's destructor part
-ASM_PROC(FUN_409fc0)    // retraceCompetitorRegular(PlayerId player)
+extern "C" void FUN_409fc0(); KING_ALIAS("_FUN_409fc0", "_Ai_RetraceCompetitorRegular")    // retraceCompetitorRegular(PlayerId player)
 ASM_VAR(AsmLabel, g_text77e5e0, $L_77e5e0)
 
 ASM_VAR(BYTE**, g_68cf00, $L_68cf00)
@@ -6629,7 +6629,7 @@ extern "C" DWORD** __fastcall VecDword_Assign(DWORD** self, int, DWORD** src)
 
 extern "C" void FUN_4015a0(); KING_ALIAS("_FUN_4015a0", "_Ai_PlayerEvent")
 extern "C" void FUN_457b50(); KING_ALIAS("_FUN_457b50", "_CopyDwords")    // copies dwords (first, last, dest)
-ASM_PROC(FUN_409fc0)
+extern "C" void FUN_409fc0(); KING_ALIAS("_FUN_409fc0", "_Ai_RetraceCompetitorRegular")
 extern "C" void FUN_42b060(); KING_ALIAS("_FUN_42b060", "_Rec_SetActive")    // marks a record (in)active
 extern "C" void FUN_484280(); KING_ALIAS("_FUN_484280", "_Road_ResetSides")    // resets the road sides
 extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
@@ -7636,7 +7636,7 @@ extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** las
 ASM_PROC(FUN_45dbb0)    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
 ASM_PROC(FUN_471780)    // an order's route for a position (order, PositionId32)
 extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall pos, order)
-ASM_PROC(FUN_41b320)    // a cargo present's place (cargo, PositionId32)
+extern "C" void FUN_41b320(); KING_ALIAS("_FUN_41b320", "_Goods_SetDistance")    // a cargo present's place (cargo, PositionId32)
 extern "C" void FUN_44ab90(); KING_ALIAS("_FUN_44ab90", "@Vec16_Free@8")
 extern "C" BYTE* __fastcall Order_Construct(BYTE* self, void*);                 // cargo_orders.cpp
 extern "C" void __cdecl Order_SetPrice(BYTE* pl, int* o, char direct, char urgent);
@@ -9736,7 +9736,7 @@ ASM_PROC(FUN_48c620)    // a polyline from points (thiscall points)
 extern "C" void FUN_458e00(); KING_ALIAS("_FUN_458e00", "_Vec8b_AllocCopy@12")
 extern "C" void FUN_405b00(); KING_ALIAS("_FUN_405b00", "_Road_LinkObject")
 extern "C" void FUN_405f90(); KING_ALIAS("_FUN_405f90", "_Anchors_AttachNodes")
-ASM_PROC(FUN_406160)    // finishes the road network
+extern "C" void FUN_406160(); KING_ALIAS("_FUN_406160", "_Road_FinishNetwork")    // finishes the road network
 extern "C" void FUN_407380(); KING_ALIAS("_FUN_407380", "@Rec_Init407380@8")
 ASM_VAR(BYTE*, g_wayDir68bac8, $L_68bac8)
 ASM_VAR(BYTE*, g_wayDirEnd68bacc, $L_68bacc)
@@ -16652,4 +16652,169 @@ extern "C" void __cdecl Ai_TraceHumanState()
     CallC(FUN_40b0d0, w, s);
     sprintf(buf, (const char*)s_fmt66ddb4, w[0], w[1], w[2], w[3], w[4], w[5]);
     Trace_CopyName(buf);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: rope releases, names to ids, competitors' traces, the road network's totals, a new player on a road
+
+struct Blob32 { DWORD d[8]; };
+ASM_VAR(AsmLabel, s_retraceCompetitorRegular, $L_66cb88)
+ASM_VAR(AsmLabel, s_reportCompetitionState, $L_66db0c)
+ASM_VAR(double, g_64b6a8, $L_64b6a8)
+ASM_VAR(double, g_66f8a0, $L_66f8a0)
+ASM_VAR(BYTE, w_hash68cf10, $L_68cf10)
+extern "C" void FUN_478260(); KING_ALIAS("_FUN_478260", "_Player_GoTo")    // (player, 32-byte position, int)
+extern "C" void FUN_478630(); KING_ALIAS("_FUN_478630", "_Player_RemoveWaypoint")    // (player, int)
+ASM_PROC(FUN_428230)
+ASM_PROC(FUN_427f40)    // (int*, double*)
+extern "C" void FUN_404e80(); KING_ALIAS("_FUN_404e80", "_Town_Id")    // a town's node (out, town)
+extern "C" void FUN_487500(); KING_ALIAS("_FUN_487500", "_Road_PositionCostBest")    // a route's length (int, from, to, double* out)
+extern "C" void FUN_422390(); KING_ALIAS("_FUN_422390", "_Player_Register")    // registers a player (out id, player)
+extern "C" void FUN_4842f0(); KING_ALIAS("_FUN_4842f0", "_Road_MinTurnCos")    // returns double
+extern "C" void FUN_487f60(); KING_ALIAS("_FUN_487f60", "@DBox_Extend@12")    // grows a box over a point (this box, point)
+
+// [FUN_44a720] drops a reference to a rope node, if there is one
+extern "C" void __cdecl Rope_UnrefIf(BYTE* n)
+{
+    if (n)
+        Rope_Unref(n, 0);
+}
+
+// the id a name maps to in a hash_map<string, int>, or -1 (the body of FUN_449c40, 449f00 and 44a1c0)
+static int* NameMap_Find(BYTE* map, int* out, const char* name)
+{
+    if (!name) {
+        *out = -1;
+        return out;
+    }
+    BYTE* key = CallC<BYTE*>(FUN_44f340, 0, name, strlen(name));
+    void* it[2];
+    NameHash_Find(map, 0, it, (int**)&key);
+    *out = it[0] ? F(int, it[0], 8) : -1;
+    if (key)
+        Rope_Unref(key, 0);
+    return out;
+}
+
+// [FUN_449c40]
+extern "C" int* __cdecl NameMap68cff0_Find(int* out, const char* name) { return NameMap_Find(&w_hash68cff0, out, name); }
+// [FUN_449f00]
+extern "C" int* __cdecl NameMap68d008_Find(int* out, const char* name) { return NameMap_Find((BYTE*)&g_init68d008, out, name); }
+// [FUN_44a1c0]
+extern "C" int* __cdecl NameMap68cf10_Find(int* out, const char* name) { return NameMap_Find(&w_hash68cf10, out, name); }
+
+// [FUN_409fc0] retraceCompetitorRegular(PlayerId player)
+extern "C" void __cdecl Ai_RetraceCompetitorRegular(int player)
+{
+    Trace_EnterAppend((const char*)s_retraceCompetitorRegular);
+    if (CallC<char>(FUN_4172e0, player) && F(int, (BYTE*)player, 100) != 5) {
+        double lead;
+        if (Ai_HumanLead((BYTE*)player, &lead) && F(char, (BYTE*)player, 848)) {
+            int s;
+            BYTE* h = (BYTE*)*Player_FromId(&s);
+            CallC(FUN_478260, player, *(const Blob32*)(h + 40), 2);
+        } else
+            CallC(FUN_478630, player, 2);
+    }
+    Trace_Leave((const char*)s_retraceCompetitorRegular);
+}
+
+// [FUN_4285c0] reportCompetitionState(): with competitors, the human's new place (up to 9) is shown
+extern "C" void __cdecl Ai_ReportCompetitionState()
+{
+    Trace_EnterAppend((const char*)s_reportCompetitionState);
+    if (g_68a980 == g_68a984) {
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Buf_AppendString(&g_trace, 0, (const char*)s_reportCompetitionState);
+        return;
+    }
+    CallC(FUN_428230);
+    int n = 0;
+    double best = 1.7976931348623157e308;
+    CallC(FUN_427f40, &n, &best);
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h != (BYTE*)g_players && F(int, h, 528) != F(int, h, 532)) {
+        F(int, h, 532) = F(int, h, 528);
+        int place = F(int, (BYTE*)s, 528);
+        if (place >= 10)
+            place = 9;
+        if (place >= 0)
+            Messages_ShowNumbered(place);
+    }
+    Trace_Leave((const char*)s_reportCompetitionState);
+}
+
+// [FUN_41b320] a goods record's distance: the route length from a position to its town's node, scaled
+extern "C" void __cdecl Goods_SetDistance(BYTE* rec, PositionId from)
+{
+    int node;
+    CallC(FUN_404e80, &node, g_towns[F(int, rec, 12)]);
+    PositionId to;
+    Position_InitNode(&to, 0, node);
+    double len = 0;
+    CallC(FUN_487500, 0, from, to, &len);
+    F(double, rec, 24) = g_66f8a0 * len;
+}
+
+// [FUN_406160] finishes the road network: numbers each road's objects and lists them at their nodes, sums
+// their lengths into the road's length (+24) and the running total (+40), and grows the road's box (+136)
+// over points 0.05001 apart along each object
+extern "C" void __cdecl Road_FinishNetwork()
+{
+    double total = 0;
+    int i = 0;
+    for (RoadEdge** ep = g_roadEdges; ep != g_roadEdgesEnd; ep++, i++) {
+        BYTE* e = (BYTE*)*ep;
+        int k = 0;
+        for (BYTE** o = F(BYTE**, e, 120); o != F(BYTE**, e, 124); o++, k++) {
+            F(int, *o, 24) = k;
+            BYTE* obj = *o;
+            DWORD* v = (DWORD*)(F(BYTE*, obj, 16) + 28);
+            if (v[1] != v[2]) {
+                if (v[1])
+                    *(BYTE**)v[1] = obj;
+                v[1] += 4;
+            } else
+                Vec4b_InsertK(v, 0, (DWORD*)v[1], (const DWORD*)o);
+            F(int, *o, 12) = i;
+        }
+        double len = 0;
+        for (unsigned j = 0; j < (unsigned)(F(BYTE**, e, 124) - F(BYTE**, e, 120)); j++)
+            len = CallVirt<double>(F(BYTE**, e, 120)[j], 36) + len;
+        F(double, e, 24) = len;
+        total = total + F(double, e, 24);
+        F(double, e, 40) = total;
+        for (int j = 0; j < F(BYTE**, e, 124) - F(BYTE**, e, 120); j++) {
+            PositionId pos;
+            pos.road = i;
+            pos.node = -1;
+            pos.t = 0;
+            pos.segment = 0;
+            pos.object = j;
+            pos.m_24 = 0;
+            pos.m_28 = -1;
+            while (!CallVirt<int>(F(BYTE**, e, 120)[j], 20, &pos.t, 0.05001, &pos.segment)) {
+                DVec3 pt;
+                CallThis(FUN_487f60, e + 136, Road_PointOf(&pt, pos));
+            }
+        }
+    }
+}
+
+// [FUN_420cb0] a new computer player (type 8) placed at a position, heading for a town; checks the position,
+// announces the player, raises its events and sets flag 0x20000 below the 64b6a8 mark
+extern "C" void __cdecl Ai_NewPlayerAt(PositionId pos)
+{
+    BYTE* p = Ai_CreateNewPlayer(8, 0, -1);
+    int id;
+    int player = *CallC<int*>(FUN_422390, &id, p);
+    Player_SetPosition(p, 0, &pos);
+    Ai_GoToTownSmooth((BYTE*)player, pos);
+    AdvanceRoad_Check((const PositionId*)((BYTE*)player + 40), 7494);
+    if (g_68d31c)
+        CallC(FUN_46dc50, p);
+    Rec_4015a0Both(player);
+    if (!(CallC<double>(FUN_4842f0, (BYTE*)player + 24) >= g_64b6a8))
+        CallC(FUN_446c80, player);
 }

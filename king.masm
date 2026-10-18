@@ -1153,6 +1153,7 @@ PUBLIC $L_66c7f8, $L_66d224, $L_66d2bc, $L_66d304, $L_68d115, $L_68d118
 PUBLIC $L_66cc5c, $L_66d264, $L_66d378, $L_66d470, $L_66d5d4, $L_66dcc8
 PUBLIC $L_66dd14, $L_66f1c8, $L_68cf40, $L_68d0e8
 PUBLIC $L_64b6f8, $L_66da60, $L_66ddb4, $L_68d170
+PUBLIC $L_64b6a8, $L_66cb88, $L_66db0c, $L_66f8a0
 
 ;===================================
 _TEXT SEGMENT
@@ -11688,6 +11689,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_406160 PROC
 
             push EBP
@@ -11887,6 +11890,10 @@ $L_40632d::
             pop EBP
             ret 
 FUN_406160 ENDP
+ELSE
+EXTERN _Road_FinishNetwork:PROC
+FUN_406160 TEXTEQU <_Road_FinishNetwork>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -18566,6 +18573,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_409fc0 PROC
 
             push -1
@@ -18735,6 +18744,10 @@ $L_40a16c::
             add ESP,36
             ret 
 FUN_409fc0 ENDP
+ELSE
+EXTERN _Ai_RetraceCompetitorRegular:PROC
+FUN_409fc0 TEXTEQU <_Ai_RetraceCompetitorRegular>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -46567,6 +46580,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41b320 PROC
 
             sub ESP,8
@@ -46624,6 +46639,10 @@ FUN_41b320 PROC
             nop
             nop
 FUN_41b320 ENDP
+ELSE
+EXTERN _Goods_SetDistance:PROC
+FUN_41b320 TEXTEQU <_Goods_SetDistance>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -55651,6 +55670,8 @@ $L_420caa::
 $L_420b90 ENDP
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_420cb0 PROC
 
             sub ESP,104
@@ -55871,6 +55892,10 @@ $L_420ec8::
             add ESP,104
             ret 
 FUN_420cb0 ENDP
+ELSE
+EXTERN _Ai_NewPlayerAt:PROC
+FUN_420cb0 TEXTEQU <_Ai_NewPlayerAt>
+ENDIF
           BYTE 090H
 $L_420ed0 PROC
 
@@ -67759,6 +67784,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4285c0 PROC
 
             push -1
@@ -67932,6 +67959,10 @@ $L_4287a0::
             add ESP,36
             ret 
 FUN_4285c0 ENDP
+ELSE
+EXTERN _Ai_ReportCompetitionState:PROC
+FUN_4285c0 TEXTEQU <_Ai_ReportCompetitionState>
+ENDIF
 ALIGN 16
 FUN_4287b0 PROC
 
@@ -123011,6 +123042,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_449c40 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -123313,7 +123346,13 @@ $L_449ef0           DWORD $L_449e13
           DWORD $L_449e4f
           DWORD $L_449e89
           DWORD $L_449e6a
+ELSE
+EXTERN _NameMap68cff0_Find:PROC
+FUN_449c40 TEXTEQU <_NameMap68cff0_Find>
+ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_449f00 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -123616,7 +123655,13 @@ $L_44a1b0           DWORD $L_44a0d3
           DWORD $L_44a10f
           DWORD $L_44a149
           DWORD $L_44a12a
+ELSE
+EXTERN _NameMap68d008_Find:PROC
+FUN_449f00 TEXTEQU <_NameMap68d008_Find>
+ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44a1c0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -123919,6 +123964,10 @@ $L_44a470           DWORD $L_44a393
           DWORD $L_44a3cf
           DWORD $L_44a409
           DWORD $L_44a3ea
+ELSE
+EXTERN _NameMap68cf10_Find:PROC
+FUN_44a1c0 TEXTEQU <_NameMap68cf10_Find>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -124322,6 +124371,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_44a720 PROC
 
             push ESI
@@ -124465,6 +124516,10 @@ $L_44a810           DWORD $L_44a758
           DWORD $L_44a78e
           DWORD $L_44a7f8
           DWORD $L_44a7c1
+ELSE
+EXTERN _Rope_UnrefIf:PROC
+FUN_44a720 TEXTEQU <_Rope_UnrefIf>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
