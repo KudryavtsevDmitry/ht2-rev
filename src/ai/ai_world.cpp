@@ -1506,11 +1506,11 @@ KING_ALIAS("_Copy24a", "_Rec4581f0_Construct")
 extern "C" void __cdecl Copy24b(void* dst, const void* src);
 KING_ALIAS("_Copy24b", "_Rec40cda0_Construct")
 extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")    // vector<8 bytes>::insert_aux
-ASM_PROC(FUN_44da60)    // vector<104 bytes>::insert_aux
+extern "C" void FUN_44da60(); KING_ALIAS("_FUN_44da60", "@Rec104Vec_InsertAux@16")    // vector<104 bytes>::insert_aux
 extern "C" void FUN_44e3f0(); KING_ALIAS("_FUN_44e3f0", "@Vec4b_Insert44e3f0@16")    // vector<4 bytes>::insert_aux
 extern "C" void FUN_44e970(); KING_ALIAS("_FUN_44e970", "@Vec4b_Insert44e970@16")
 extern "C" void FUN_44eef0(); KING_ALIAS("_FUN_44eef0", "@Vec4b_Insert44eef0@16")
-ASM_PROC(FUN_450330)    // vector<24 bytes>::insert_aux
+extern "C" void FUN_450330(); KING_ALIAS("_FUN_450330", "@Rec24Vec_InsertAux@16")    // vector<24 bytes>::insert_aux
 ASM_PROC(FUN_4505a0)
 
 ASM_VAR(PtrVec, g_68cbe8, $L_68cbe8)
@@ -1784,14 +1784,14 @@ extern "C" void __cdecl Copy56(void* dst, const void* src);
 KING_ALIAS("_Copy56", "_Rec458660_Construct")
 extern "C" void __cdecl AI_Error4a54e0(int code, int a, const char* name);
 KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
-ASM_PROC(FUN_451230)    // vector<36 bytes>::insert_aux
+extern "C" void FUN_451230(); KING_ALIAS("_FUN_451230", "@Rec36Vec_InsertAux@16")    // vector<36 bytes>::insert_aux
 extern "C" void FUN_4514b0(); KING_ALIAS("_FUN_4514b0", "@Vec4b_Insert4514b0@16")    // vector<4 bytes>::insert_aux
 extern "C" void FUN_451740(); KING_ALIAS("_FUN_451740", "@Vec16_Insert451740@16")    // vector<16 bytes>::insert_aux
 extern "C" void FUN_451a80(); KING_ALIAS("_FUN_451a80", "@Vec4b_Insert451a80@16")
 extern "C" void FUN_451d40(); KING_ALIAS("_FUN_451d40", "@Vec4b_Insert451d40@16")
 extern "C" void FUN_452000(); KING_ALIAS("_FUN_452000", "@Vec4b_Insert452000@16")
-ASM_PROC(FUN_452610)    // vector<12 bytes>::insert_aux
-ASM_PROC(FUN_452bc0)    // vector<56 bytes>::insert_aux
+extern "C" void FUN_452610(); KING_ALIAS("_FUN_452610", "@CharVecVec_InsertAux@16")    // vector<12 bytes>::insert_aux
+extern "C" void FUN_452bc0(); KING_ALIAS("_FUN_452bc0", "@Rec56Vec_InsertAux@16")    // vector<56 bytes>::insert_aux
 extern "C" void FUN_44b0f0(); KING_ALIAS("_FUN_44b0f0", "_ListNode16_Make@4")    // list: a new node holding x
 extern "C" void FUN_44b250(); KING_ALIAS("_FUN_44b250", "_ListNode16_MakeB@4")
 extern "C" void FUN_44b310(); KING_ALIAS("_FUN_44b310", "_ListNode64_Make@4")
@@ -7635,7 +7635,7 @@ extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** las
 
 ASM_PROC(FUN_45dbb0)    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
 ASM_PROC(FUN_471780)    // an order's route for a position (order, PositionId32)
-ASM_PROC(FUN_450960)    // vector<order>::insert_aux (thiscall pos, order)
+extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall pos, order)
 ASM_PROC(FUN_41b320)    // a cargo present's place (cargo, PositionId32)
 extern "C" void FUN_44ab90(); KING_ALIAS("_FUN_44ab90", "@Vec16_Free@8")
 extern "C" BYTE* __fastcall Order_Construct(BYTE* self, void*);                 // cargo_orders.cpp
@@ -8238,7 +8238,7 @@ extern "C" int __cdecl Ai_LoadOrder(BYTE* player, int townId, unsigned orderid, 
 // loading the script lists ms.sch, vd.sch and names.sch
 
 ASM_PROC(FUN_4b4c20)    // reads a value from a port (out, reader, port by value)
-ASM_PROC(FUN_44c710)    // vector<StrRef>::insert_aux (thiscall pos, x)
+extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<StrRef>::insert_aux (thiscall pos, x)
 ASM_PROC(FUN_4b0ea0)    // a number's int value (thiscall)
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 extern "C" void FUN_4b0e90(); KING_ALIAS("_FUN_4b0e90", "@SchNumber_Value@8")
@@ -8655,7 +8655,7 @@ extern "C" BYTE* __cdecl Ai_ReadAmbush(void* reader, StrRef h)
 
 ASM_PROC(FUN_43bf10)    // a player's next position (out, player, PositionId32, double*, int)
 extern "C" void FUN_4376a0(); KING_ALIAS("_FUN_4376a0", "_Ai_GetNoncontradictoryPosition")    // a player's position (out, player)
-ASM_PROC(FUN_456ea0)    // vector<32-byte entry>::insert_aux (thiscall pos, x)
+extern "C" void FUN_456ea0(); KING_ALIAS("_FUN_456ea0", "@Entry32Vec_InsertAux@16")    // vector<32-byte entry>::insert_aux (thiscall pos, x)
 ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
 ASM_PROC(FUN_45e370)    // final insertion sort of entries (first, last, cmp)
 ASM_PROC(FUN_4d8b20)    // loads a vehicle (id)
@@ -14811,7 +14811,7 @@ extern "C" void __cdecl Ai_CallHelpers(BYTE* p)
 // ---------------------------------------------------------------------------
 // a list of player kinds
 
-ASM_PROC(FUN_452380)    // vector<int>::insert(pos, first, last) (thiscall)
+extern "C" void FUN_452380(); KING_ALIAS("_FUN_452380", "@IntVec_InsertRange@20")    // vector<int>::insert(pos, first, last) (thiscall)
 extern "C" void __fastcall Vec4b_Insert452000(DWORD* v, void*, DWORD* pos, const DWORD* x);
 
 static void Kinds_PushBack(DWORD* v, int kind)
@@ -15063,7 +15063,7 @@ extern "C" void __cdecl Ai_RemovePlayer(BYTE* p)
 // getOrderList(PlayerId player, AI_Town* town, OrderList& list)
 
 ASM_VAR(AsmLabel, s_getOrderList, $L_66ee8c)
-ASM_PROC(FUN_452e80)    // vector<192 bytes>::insert_aux (thiscall pos, x)
+extern "C" void FUN_452e80(); KING_ALIAS("_FUN_452e80", "@OrderInfoVec_InsertAux@16")    // vector<192 bytes>::insert_aux (thiscall pos, x)
 extern "C" double __cdecl AI_Time();   // ai_task.cpp
 
 static void Orders_PushBack(BYTE** v, const BYTE* oi)
@@ -16099,4 +16099,387 @@ extern "C" BYTE** __cdecl Ai_NewGoods(BYTE** out, BYTE* from, BYTE* town, int ki
     Trace_Tag((const DWORD*)g_tagMpl);
     Trace_CopyName(s_newGoods66d5d4);
     return out;
+}
+
+// ---------------------------------------------------------------------------
+// vector inserts
+
+ASM_PROC(FUN_453110)    // order info (192 bytes) copy constructor (thiscall src)
+ASM_PROC(FUN_453350)    // order info copy constructor, second instance (thiscall src)
+extern "C" void FUN_442800(); KING_ALIAS("_FUN_442800", "@Rec_FirstNonEmpty@8")    // order info: fix its first-non-empty pointers (thiscall)
+extern "C" void FUN_463da0(); KING_ALIAS("_FUN_463da0", "_Rec192_CopyBack")    // copy_backward of order infos (first, last, result, -, 0)
+extern "C" void FUN_453620(); KING_ALIAS("_FUN_453620", "@Rec192_Assign@12")    // order info assignment (thiscall src)
+ASM_PROC(FUN_467580)    // uninitialized copy of order infos (first, last, dest, -)
+extern "C" void FUN_463b80(); KING_ALIAS("_FUN_463b80", "_CharVecs_CopyBack")    // copy_backward of vector<char> (first, last, result, -, 0)
+ASM_PROC(FUN_467320)    // uninitialized copy of vector<char> (first, last, dest, -)
+extern "C" void FUN_458500(); KING_ALIAS("_FUN_458500", "@Rec458500_Copy@12")    // 36-byte record copy constructor (thiscall src)
+extern "C" void FUN_459610(); KING_ALIAS("_FUN_459610", "@Vec4b_CopyB@12")    // vector<4 bytes> copy constructor (thiscall src)
+extern "C" void FUN_463940(); KING_ALIAS("_FUN_463940", "_Rec36_CopyBack")    // copy_backward of 36-byte records (first, last, result, -, 0)
+extern "C" void FUN_45acc0(); KING_ALIAS("_FUN_45acc0", "@Vec4_Assign@12")    // vector<4 bytes> assignment (thiscall src)
+ASM_PROC(FUN_4671c0)    // uninitialized copy of 36-byte records (first, last, dest, -)
+extern "C" void FUN_44b0d0(); KING_ALIAS("_FUN_44b0d0", "@Vec4_Free@8")    // vector<4 bytes> destructor (thiscall)
+
+// [FUN_452380] vector<int>::insert(pos, first, last) (thiscall), the same as FUN_44d170
+extern "C" void __fastcall IntVec_InsertRange(DWORD** self, void*, DWORD* pos, const DWORD* first, const DWORD* last)
+{
+    DwordVec_InsertRange(self, 0, pos, first, last);
+}
+
+// new length of a full vector: twice the size, 1 when empty
+static unsigned Vec_Grow(BYTE** v, unsigned size)
+{
+    unsigned n = (unsigned)(v[1] - v[0]) / size;
+    return n ? n * 2 : 1;
+}
+
+// [FUN_452e80] vector<order info (192 bytes)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall OrderInfoVec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_453110, v[1], v[1] - 192);
+        v[1] += 192;
+        BYTE tmp[192];
+        CallThis(FUN_453350, tmp, x);
+        CallThis(FUN_442800, tmp);
+        CallC(FUN_463da0, pos, v[1] - 384, v[1] - 192, pos, 0);
+        CallThis(FUN_453620, pos, tmp);
+        CallThis(FUN_442800, pos);
+        CallThis(FUN_440dd0, tmp);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 192);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 192);
+    BYTE* e = CallC<BYTE*>(FUN_467580, v[0], pos, buf, pos);
+    if (e)
+        CallThis(FUN_453110, e, x);
+    e = CallC<BYTE*>(FUN_467580, pos, v[1], e + 192, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 192)
+        CallThis(FUN_440dd0, d);
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 192;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 192);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 192;
+}
+
+// [FUN_452610] vector<vector<char>>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall CharVecVec_InsertAux(BYTE** v, void*, BYTE* pos, BYTE* const* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_44dd90, v[1], v[1] - 12);
+        v[1] += 12;
+        BYTE* tmp[3];
+        char alloc;
+        CallThis(FUN_44a490, tmp, (unsigned)(x[1] - x[0]), &alloc);
+        memmove(tmp[0], x[0], x[1] - x[0]);
+        tmp[1] = tmp[0] + (x[1] - x[0]);
+        CallC(FUN_463b80, pos, v[1] - 24, v[1] - 12, pos, 0);
+        if ((BYTE*)tmp != pos)
+            PodVec_Assign((BYTE**)pos, 0, tmp);
+        CallThis(FUN_44b090, tmp);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 12);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 12);
+    BYTE* e = CallC<BYTE*>(FUN_467320, v[0], pos, buf, pos);
+    CallC(FUN_4611e0, e, x);
+    e = CallC<BYTE*>(FUN_467320, pos, v[1], e + 12, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 12)
+        CallThis(FUN_44b090, d);   // (after FUN_50d190, a no-op)
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 12;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 12);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 12;
+}
+
+// [FUN_451230] vector<36-byte record (3 words, vector<char>, vector<4 bytes>)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall Rec36Vec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_458500, v[1], v[1] - 36);
+        v[1] += 36;
+        BYTE tmp[36];
+        memcpy(tmp, x, 12);
+        CallThis(FUN_44dd90, tmp + 12, x + 12);
+        CallThis(FUN_459610, tmp + 24, x + 24);
+        CallC(FUN_463940, pos, v[1] - 72, v[1] - 36, pos, 0);
+        memcpy(pos, tmp, 12);
+        PodVec_Assign((BYTE**)(pos + 12), 0, (BYTE* const*)(tmp + 12));
+        CallThis(FUN_45acc0, pos + 24, tmp + 24);
+        CallThis(FUN_44b0d0, tmp + 24);
+        CallThis(FUN_404420, tmp + 12);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 36);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 36);
+    BYTE* e = CallC<BYTE*>(FUN_4671c0, v[0], pos, buf, pos);
+    if (e)
+        CallThis(FUN_458500, e, x);
+    e = CallC<BYTE*>(FUN_4671c0, pos, v[1], e + 36, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 36) {
+        CallThis(FUN_447970, d + 24);
+        CallThis(FUN_404420, d + 12);
+    }
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 36;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 36);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 36;
+}
+
+extern "C" void FUN_458660(); KING_ALIAS("_FUN_458660", "@Rec458660_Copy@12")    // 56-byte record copy constructor (thiscall src)
+extern "C" void FUN_463c60(); KING_ALIAS("_FUN_463c60", "_Rec56_CopyBack")    // copy_backward of 56-byte records (first, last, result, -, 0)
+ASM_PROC(FUN_467440)    // uninitialized copy of 56-byte records (first, last, dest, -)
+extern "C" void FUN_468d10(); KING_ALIAS("_FUN_468d10", "_UninitCopy32Skip1")    // uninitialized copy of 32-byte entries (first, last, dest, -)
+extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")    // 32-byte entry copy (thiscall src; skips word 1)
+
+// [FUN_452bc0] vector<56-byte record (int, vector<char>, words; +36 not copied)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall Rec56Vec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_458660, v[1], v[1] - 56);
+        v[1] += 56;
+        BYTE tmp[56];
+        F(int, tmp, 0) = F(int, x, 0);
+        CallThis(FUN_44dd90, tmp + 4, x + 4);
+        memcpy(tmp + 16, x + 16, 20);
+        memcpy(tmp + 40, x + 40, 16);
+        CallC(FUN_463c60, pos, v[1] - 112, v[1] - 56, pos, 0);
+        F(int, pos, 0) = F(int, tmp, 0);
+        PodVec_Assign((BYTE**)(pos + 4), 0, (BYTE* const*)(tmp + 4));
+        memcpy(pos + 16, tmp + 16, 20);
+        memcpy(pos + 40, tmp + 40, 16);
+        CallThis(FUN_404420, tmp + 4);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 56);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 56);
+    BYTE* e = CallC<BYTE*>(FUN_467440, v[0], pos, buf, pos);
+    if (e)
+        CallThis(FUN_458660, e, x);
+    e = CallC<BYTE*>(FUN_467440, pos, v[1], e + 56, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 56)
+        CallThis(FUN_404420, d + 4);
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 56;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 56);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 56;
+}
+
+// [FUN_456ea0] vector<32-byte entry>::insert_aux(pos, x) (thiscall); new entries are made by FUN_458a40 (which
+// skips word 1), and the inserted one keeps pos's word 1 (the original copies an uninitialized word there)
+extern "C" void __fastcall Entry32Vec_InsertAux(BYTE** v, void*, BYTE* pos, const DWORD* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_458a40, v[1], v[1] - 32);
+        v[1] += 32;
+        DWORD tmp[8];
+        memcpy(tmp, x, 32);
+        tmp[1] = ((DWORD*)pos)[1];
+        BYTE* s = v[1] - 64;
+        BYTE* d = v[1] - 32;
+        for (int n = (int)(s - pos) >> 5; n > 0; n--) {
+            s -= 32;
+            d -= 32;
+            memcpy(d, s, 32);
+        }
+        memcpy(pos, tmp, 32);
+        return;
+    }
+    unsigned n = (unsigned)(v[1] - v[0]) >> 5;
+    unsigned len = n ? n * 2 : 1;
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 32);
+    BYTE* e = CallC<BYTE*>(FUN_468d10, v[0], pos, buf, pos);
+    if (e)
+        CallThis(FUN_458a40, e, x);
+    e = CallC<BYTE*>(FUN_468d10, pos, v[1], e + 32, pos);
+    unsigned cnt = (unsigned)(v[2] - v[0]) >> 5;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 32);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 32;
+}
+
+extern "C" void FUN_40c220(); KING_ALIAS("_FUN_40c220", "@Rec40c220_Copy@12")    // 104-byte record copy constructor (thiscall src)
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")    // script handle assignment (thiscall src)
+extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")    // script handle copy constructor (thiscall src)
+extern "C" void FUN_462500(); KING_ALIAS("_FUN_462500", "_Rec104_CopyBack")    // copy_backward of 104-byte records (first, last, result, -, 0)
+ASM_PROC(FUN_466590)    // uninitialized copy of 104-byte records (first, last, dest, -)
+extern "C" void FUN_460960(); KING_ALIAS("_FUN_460960", "_Rec40c220_Construct")    // construct a 104-byte record in place (dest, src)
+extern "C" void FUN_4581f0(); KING_ALIAS("_FUN_4581f0", "@Rec4581f0_Copy@12")    // 24-byte record copy constructor (thiscall src)
+extern "C" void FUN_463390(); KING_ALIAS("_FUN_463390", "_Rec24b_CopyBack")    // copy_backward of 24-byte records (first, last, result, -, 0)
+ASM_PROC(FUN_466d50)    // uninitialized copy of 24-byte records (first, last, dest, -)
+
+// the words of a 104-byte record that are copied as words
+static void Rec104_CopyWords(BYTE* d, const BYTE* s)
+{
+    memcpy(d + 16, s + 16, 36);
+    memcpy(d + 56, s + 56, 20);
+    memcpy(d + 80, s + 80, 8);
+}
+
+// [FUN_44da60] vector<104-byte record (script handle, words, vector<char> at +88)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall Rec104Vec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_40c220, v[1], v[1] - 104);
+        v[1] += 104;
+        BYTE tmp[104];
+        CallThis(FUN_454580, tmp, x);
+        Rec104_CopyWords(tmp, x);
+        CallThis(FUN_44dd90, tmp + 88, x + 88);
+        CallC(FUN_462500, pos, v[1] - 208, v[1] - 104, pos, 0);
+        CallThis(FUN_40c100, pos, tmp);
+        Rec104_CopyWords(pos, tmp);
+        PodVec_Assign((BYTE**)(pos + 88), 0, (BYTE* const*)(tmp + 88));
+        CallThis(FUN_404420, tmp + 88);
+        CallThis(FUN_4a36c0, tmp);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 104);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 104);
+    BYTE* e = CallC<BYTE*>(FUN_466590, v[0], pos, buf, pos);
+    CallC(FUN_460960, e, x);
+    e = CallC<BYTE*>(FUN_466590, pos, v[1], e + 104, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 104) {
+        CallThis(FUN_404420, d + 88);
+        CallThis(FUN_4a36c0, d);
+    }
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 104;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 104);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 104;
+}
+
+// [FUN_450330] vector<24-byte record (2 words, vector<char>)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall Rec24Vec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_4581f0, v[1], v[1] - 24);
+        v[1] += 24;
+        BYTE tmp[24];
+        memcpy(tmp, x, 8);
+        CallThis(FUN_44dd90, tmp + 8, x + 8);
+        CallC(FUN_463390, pos, v[1] - 48, v[1] - 24, pos, 0);
+        memcpy(pos, tmp, 8);
+        PodVec_Assign((BYTE**)(pos + 8), 0, (BYTE* const*)(tmp + 8));
+        CallThis(FUN_44b090, tmp + 8);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 24);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 24);
+    BYTE* e = CallC<BYTE*>(FUN_466d50, v[0], pos, buf, pos);
+    if (e)
+        CallThis(FUN_4581f0, e, x);
+    e = CallC<BYTE*>(FUN_466d50, pos, v[1], e + 24, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 24)
+        CallThis(FUN_404420, d + 8);
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 24;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 24);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 24;
+}
+
+extern "C" void FUN_462430(); KING_ALIAS("_FUN_462430", "_StrRefs_CopyBack")    // copy_backward of script handles (first, last, result, -, 0)
+extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")    // construct a script handle in place (dest, src)
+
+// [FUN_44c710] vector<StrRef>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall StrRefVec_InsertAux(BYTE** v, void*, StrRef* pos, const StrRef* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_454580, v[1], v[1] - 12);
+        v[1] += 12;
+        StrRef tmp;
+        tmp.CopyFrom(x);
+        CallC(FUN_462430, pos, v[1] - 24, v[1] - 12, pos, 0);
+        if (pos->ptr && pos->Owns()) {
+            if (--F(int, pos->ptr, 4) == 0 && !Str_Same(pos, &tmp) && pos->ptr)
+                CallVirt(pos->ptr, 12, 1);
+        }
+        pos->CopyFrom(&tmp);
+        Str_Release(&tmp);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 12);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 12);
+    BYTE* e = CallC<BYTE*>(FUN_467780, v[0], (BYTE*)pos, buf, pos);
+    CallC(FUN_460910, e, x);
+    e = CallC<BYTE*>(FUN_467780, (BYTE*)pos, v[1], e + 12, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 12)
+        Str_Release((StrRef*)d);
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 12;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 12);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 12;
+}
+
+extern "C" void FUN_443860(); KING_ALIAS("_FUN_443860", "@Order144_CopyConstruct@12")    // order copy constructor (thiscall src)
+extern "C" void FUN_450ce0(); KING_ALIAS("_FUN_450ce0", "@Vec16Rec_Copy@12")    // order's +120 container copy constructor (thiscall src)
+extern "C" void FUN_463700(); KING_ALIAS("_FUN_463700", "_Order144_CopyBack")    // copy_backward of orders (first, last, result, -, 0)
+extern "C" void FUN_458bc0(); KING_ALIAS("_FUN_458bc0", "@Vec16_Assign@12")    // order's +120 container assignment (thiscall src)
+extern "C" void FUN_448610(); KING_ALIAS("_FUN_448610", "@VecByteVec16_Destroy@8")    // order's +120 container destructor (thiscall)
+ASM_PROC(FUN_467000)    // uninitialized copy of orders (first, last, dest, -)
+extern "C" void FUN_460d20(); KING_ALIAS("_FUN_460d20", "_Rec458a80_Construct")    // construct an order in place (dest, src)
+extern "C" void FUN_450de0(); KING_ALIAS("_FUN_450de0", "@Vec16_Destroy@8")    // order's +120 container destructor, second instance (thiscall)
+
+// the words of an order (144 bytes) copied as words (not +20 and +108)
+static void Order144_CopyWords(BYTE* d, const BYTE* s)
+{
+    memcpy(d, s, 20);
+    memcpy(d + 24, s + 24, 84);
+    memcpy(d + 112, s + 112, 8);
+}
+
+// [FUN_450960] vector<order (144 bytes)>::insert_aux(pos, x) (thiscall)
+extern "C" void __fastcall OrderVec_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            CallThis(FUN_443860, v[1], v[1] - 144);
+        v[1] += 144;
+        BYTE tmp[144];
+        Order144_CopyWords(tmp, x);
+        CallThis(FUN_450ce0, tmp + 120, x + 120);
+        F(int, tmp, 136) = F(int, x, 136);
+        CallC(FUN_463700, pos, v[1] - 288, v[1] - 144, pos, 0);
+        Order144_CopyWords(pos, tmp);
+        CallThis(FUN_458bc0, pos + 120, tmp + 120);
+        F(int, pos, 136) = F(int, tmp, 136);
+        CallThis(FUN_448610, tmp + 120);
+        return;
+    }
+    unsigned len = Vec_Grow(v, 144);
+    BYTE* buf = (BYTE*)Stl_Allocate(len * 144);
+    BYTE* e = CallC<BYTE*>(FUN_467000, v[0], pos, buf, pos);
+    CallC(FUN_460d20, e, x);
+    e = CallC<BYTE*>(FUN_467000, pos, v[1], e + 144, pos);
+    for (BYTE* d = v[0]; d != v[1]; d += 144)
+        CallThis(FUN_450de0, d + 120);
+    unsigned cnt = (unsigned)(v[2] - v[0]) / 144;
+    if (cnt)
+        Ai_PoolFree(v[0], cnt * 144);
+    v[0] = buf;
+    v[1] = e;
+    v[2] = buf + len * 144;
 }
