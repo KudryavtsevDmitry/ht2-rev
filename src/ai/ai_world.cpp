@@ -3130,7 +3130,7 @@ extern "C" BYTE* __cdecl Rec24_Copy(const BYTE* first, const BYTE* last, BYTE* d
 // medium-sized functions, batch 5
 
 extern "C" void FUN_487230(); KING_ALIAS("_FUN_487230", "_Route_Call4870e0")    // (player, node)
-ASM_PROC(FUN_41bca0)    // an order's three sums (iterator, &a, &b, &c, cargo record, arg)
+extern "C" void FUN_41bca0(); KING_ALIAS("_FUN_41bca0", "_Ai_CargoAmounts")    // an order's three sums (iterator, &a, &b, &c, cargo record, arg)
 extern "C" void FUN_471200(); KING_ALIAS("_FUN_471200", "_Order_SetPrice")    // (player list node, order, direct, urgent)
 
 // a player's route must start at the node of its last waypoint
@@ -7964,8 +7964,8 @@ extern "C" void __cdecl Ai_PlacePresents(double t)
 // ---------------------------------------------------------------------------
 // loadOrder
 
-ASM_PROC(FUN_4774e0)    // a competitor's arrival (player, double delay, count)
-ASM_PROC(FUN_429850)    // a computer player's order update (player)
+extern "C" void FUN_4774e0(); KING_ALIAS("_FUN_4774e0", "_Ai_AddArrivals")    // a competitor's arrival (player, double delay, count)
+extern "C" void FUN_429850(); KING_ALIAS("_FUN_429850", "_Ai_MaybeArrival")    // a computer player's order update (player)
 extern "C" void FUN_4262a0(); KING_ALIAS("_FUN_4262a0", "_Ai_AddCompetitor")    // adds a competitor
 ASM_PROC(FUN_457a40)    // finds an order equal to one passed by value (first, last, order144)
 extern "C" void FUN_4715f0(); KING_ALIAS("_FUN_4715f0", "_Order_Init4715f0")    // (order, template, town, PositionId32, double q)
@@ -9399,7 +9399,7 @@ extern "C" BYTE* __cdecl Ai_ReadTown(void* reader, StrRef h)
 
 ASM_PROC(FUN_438d70)    // the module and room of a position (PositionId32, out44)
 ASM_PROC(FUN_4397e0)    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
-ASM_PROC(FUN_41bbe0)    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
+extern "C" void FUN_41bbe0(); KING_ALIAS("_FUN_41bbe0", "_Ai_CargoCosts")    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
 ASM_VAR(AsmLabel, g_text77e5e0b, $L_77e5e0)
 
@@ -10682,7 +10682,7 @@ extern "C" PositionId* __cdecl Ai_GetNoncontradictoryPosition(PositionId* out, B
 // actOnArrival
 
 extern "C" void FUN_417820(); KING_ALIAS("_FUN_417820", "_Ai_ArriveAt")    // a player's arrival at a position (player, PositionId32)
-ASM_PROC(FUN_4194a0)
+extern "C" void FUN_4194a0(); KING_ALIAS("_FUN_4194a0", "_Ai_RestartWaitTimer")
 extern "C" void FUN_416b80(); KING_ALIAS("_FUN_416b80", "_Ai_RaceNextCheckpoint")
 extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
 ASM_PROC(FUN_4194e0)
@@ -16482,4 +16482,174 @@ extern "C" void __fastcall OrderVec_InsertAux(BYTE** v, void*, BYTE* pos, const 
     v[0] = buf;
     v[1] = e;
     v[2] = buf + len * 144;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: the human's timers, a player's cargo cost limits, competitors' arrivals
+
+ASM_VAR(double, g_68d170, $L_68d170)
+ASM_VAR(double, g_zero64b678, $L_64b678)
+ASM_VAR(double, g_64b6f8, $L_64b6f8)
+ASM_VAR(double, g_64b5b8, $L_64b5b8)
+ASM_VAR(double, g_64b840, $L_64b840)
+ASM_VAR(AsmLabel, s_disqualified66da60, $L_66da60)
+ASM_VAR(AsmLabel, s_fmt66ddb4, $L_66ddb4)
+extern "C" void FUN_40b0d0(); KING_ALIAS("_FUN_40b0d0", "_Player_CopyState")    // a player's six state words (out, player)
+extern "C" void FUN_41b910(); KING_ALIAS("_FUN_41b910", "_Player_AllCosts")    // (player, double*, double*)
+extern "C" void FUN_41b830(); KING_ALIAS("_FUN_41b830", "_Vehicle_AddCosts")    // (int, double*, double*)
+extern "C" void FUN_41bad0(); KING_ALIAS("_FUN_41bad0", "_Player_CargoSums")    // (player, double*, double*)
+extern "C" void FUN_417680(); KING_ALIAS("_FUN_417680", "_Player_StopWaiting")    // (player)
+extern "C" void __cdecl AI_SortTimes(double* first, double* last, int, int, int);
+extern "C" void __fastcall Vec8_Insert479760(BYTE** v, void*, BYTE* pos, const BYTE* x);
+
+// [FUN_4194a0] unless the human is in state 5, an empty waiting list restarts the waiting timer
+extern "C" void __cdecl Ai_RestartWaitTimer()
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (F(int, h, 100) != 5 && g_68cf60 == g_68cf64) {
+        g_66c6e0 = 3;
+        g_68d170 = CallC<double>(FUN_401000);
+    }
+}
+
+// [FUN_409f70] the human's lead on a player at +504; true when positive
+extern "C" bool __cdecl Ai_HumanLead(BYTE* p, double* out)
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    double d = F(double, h, 504) - F(double, p, 504);
+    *out = d;
+    return d > g_zero64b678;
+}
+
+extern "C" int __cdecl Ai_HumanFinished();
+
+// [FUN_427920] a racing human: refreshes its race time and, past a day, finishes
+extern "C" void __cdecl Ai_HumanRaceTick()
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players || F(int, h, 100) != 5)
+        return;
+    if (F(DWORD, h, 96) & 0x4000) {
+        F(double, h, 808) = CallC<double>(FUN_401000) - F(double, h, 792);
+        h = (BYTE*)s;
+    }
+    if (F(double, h, 808) > g_dayLength66c698) {
+        Ai_PlayerEvent(h, 13, 0);
+        Ai_HumanFinished();
+    }
+}
+
+// [FUN_427430] the human finishes: a racer is disqualified (and a hired one leaves its hire), then the
+// waiting timer, its race time and the bankruptcy check
+extern "C" int __cdecl Ai_HumanFinished()
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players)
+        return 0;
+    if (F(int, h, 100) == 5) {
+        CallC(FUN_417680, h);
+        CallC(FUN_56ae60, Message_Text((const char*)s_disqualified66da60));
+        if (CallC<char>(FUN_417660, s)) {
+            Players_ResetMarks();
+            F(int, (BYTE*)s, 524) = 0;
+            F(int, (BYTE*)s, 528) = 0;
+            F(int, (BYTE*)s, 532) = -1;
+        }
+        CallC(FUN_477210, s);
+    }
+    Ai_RestartWaitTimer();
+    h = (BYTE*)s;
+    F(double, h, 808) = CallC<double>(FUN_401000) - F(double, h, 792);
+    if (!g_68d188)
+        F(int, (BYTE*)s, 536) = 0;
+    CallC(FUN_426f20, s);
+    return 0;
+}
+
+// [FUN_4774e0] count competitors arrive delay from now; the arrival times stay sorted
+extern "C" void __cdecl Ai_AddArrivals(BYTE* p, double delay, int count)
+{
+    for (int i = count; i > 0; i--) {
+        double z = 0;
+        double** v = (double**)(p + 144);
+        if (v[1] != v[2]) {
+            if (v[1])
+                *v[1] = z;
+            v[1]++;
+        } else
+            Vec8_Insert479760((BYTE**)v, 0, (BYTE*)v[1], (const BYTE*)&z);
+        double* last = F(double*, p, 148);
+        last[-1] = CallC<double>(FUN_401000) + delay;
+    }
+    AI_SortTimes(F(double*, p, 144), F(double*, p, 148), 0, 0, 0);
+}
+
+// [FUN_429850] now and then (more often the richer the human) a competitor arrives in 300
+extern "C" void __cdecl Ai_MaybeArrival()
+{
+    int s;
+    int div = 1;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h != (BYTE*)g_players) {
+        if (F(double, h, 768) > g_64b5b8)
+            div = 2;
+        if (F(double, h, 768) > g_64b840)
+            div = 4;
+    }
+    unsigned r = AiRandom();
+    if (r % (unsigned)(24 / div) == 0)
+        Ai_AddArrivals((BYTE*)s, 300.0, 1);
+}
+
+// the cargo limits shared by FUN_41bca0 and FUN_41bbe0: each amount kept within what the other allows, scaled,
+// and the quantity out of the first
+static void Cargo_Limit(double* a, double* b, double* q, const BYTE* rec)
+{
+    double x = *b * F(double, rec, 16) / F(double, rec, 24);
+    if (!(x >= *a))
+        *a = x;
+    double y = F(double, rec, 24) * *a / F(double, rec, 16);
+    if (!(y >= *b))
+        *b = y;
+    *a *= g_64b6f8;
+    *b *= g_64b6f8;
+    *q = *a / F(double, rec, 16);
+}
+
+// [FUN_41bca0] an order's cargo amounts for a player
+extern "C" void __cdecl Ai_CargoAmounts(int player, double* a, double* b, double* q, const BYTE* rec, int arg)
+{
+    CallC(FUN_41b910, player, a, b);
+    if (arg != -1)
+        CallC(FUN_41b830, arg, a, b);
+    Cargo_Limit(a, b, q, rec);
+}
+
+// [FUN_41bbe0] the same, less what the player already carries
+extern "C" void __cdecl Ai_CargoCosts(int player, double* a, double* b, double* q, const BYTE* rec, int arg)
+{
+    CallC(FUN_41b910, player, a, b);
+    if (arg != -1)
+        CallC(FUN_41b830, arg, a, b);
+    double da, db;
+    CallC(FUN_41bad0, player, &da, &db);
+    *a -= da;
+    *b -= db;
+    Cargo_Limit(a, b, q, rec);
+}
+
+// [FUN_42d640] the human's six state words, printed into the trace
+extern "C" void __cdecl Ai_TraceHumanState()
+{
+    int s;
+    DWORD w[6];
+    char buf[1024];
+    Player_FromId(&s);
+    CallC(FUN_40b0d0, w, s);
+    sprintf(buf, (const char*)s_fmt66ddb4, w[0], w[1], w[2], w[3], w[4], w[5]);
+    Trace_CopyName(buf);
 }

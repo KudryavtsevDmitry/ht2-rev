@@ -1152,6 +1152,7 @@ PUBLIC $L_66ee8c, $L_66f3d4
 PUBLIC $L_66c7f8, $L_66d224, $L_66d2bc, $L_66d304, $L_68d115, $L_68d118
 PUBLIC $L_66cc5c, $L_66d264, $L_66d378, $L_66d470, $L_66d5d4, $L_66dcc8
 PUBLIC $L_66dd14, $L_66f1c8, $L_68cf40, $L_68d0e8
+PUBLIC $L_64b6f8, $L_66da60, $L_66ddb4, $L_68d170
 
 ;===================================
 _TEXT SEGMENT
@@ -18515,6 +18516,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_409f70 PROC
 
             push ECX
@@ -18544,6 +18547,10 @@ $L_409fae::
             pop ECX
             ret 
 FUN_409f70 ENDP
+ELSE
+EXTERN _Ai_HumanLead:PROC
+FUN_409f70 TEXTEQU <_Ai_HumanLead>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -43534,6 +43541,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4194a0 PROC
 
             push ECX
@@ -43560,6 +43569,10 @@ $L_4194dc::
             pop ECX
             ret 
 FUN_4194a0 ENDP
+ELSE
+EXTERN _Ai_RestartWaitTimer:PROC
+FUN_4194a0 TEXTEQU <_Ai_RestartWaitTimer>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -47608,6 +47621,8 @@ EXTERN _Player_CargoSums:PROC
 FUN_41bad0 TEXTEQU <_Player_CargoSums>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41bbe0 PROC
 
             push EBP
@@ -47706,12 +47721,18 @@ $L_41bc77::
             pop EBP
             ret 
 FUN_41bbe0 ENDP
+ELSE
+EXTERN _Ai_CargoCosts:PROC
+FUN_41bbe0 TEXTEQU <_Ai_CargoCosts>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_41bca0 PROC
 
             push ESI
@@ -47786,6 +47807,10 @@ $L_41bd07::
             fstp QWORD PTR [ECX]
             ret 
 FUN_41bca0 ENDP
+ELSE
+EXTERN _Ai_CargoAmounts:PROC
+FUN_41bca0 TEXTEQU <_Ai_CargoAmounts>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -66072,6 +66097,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_427430 PROC
 
             push ECX
@@ -66159,6 +66186,10 @@ $L_42750c::
             pop ECX
             ret 
 FUN_427430 ENDP
+ELSE
+EXTERN _Ai_HumanFinished:PROC
+FUN_427430 TEXTEQU <_Ai_HumanFinished>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -66578,6 +66609,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_427920 PROC
 
             push ECX
@@ -66631,6 +66664,10 @@ $L_427994::
             pop ECX
             ret 
 FUN_427920 ENDP
+ELSE
+EXTERN _Ai_HumanRaceTick:PROC
+FUN_427920 TEXTEQU <_Ai_HumanRaceTick>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -69627,6 +69664,8 @@ EXTERN @PlayerId_Over020@8:PROC
 FUN_429820 TEXTEQU <@PlayerId_Over020@8>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_429850 PROC
 
             push ECX
@@ -69708,6 +69747,10 @@ $L_429927::
             pop ECX
             ret 
 FUN_429850 ENDP
+ELSE
+EXTERN _Ai_MaybeArrival:PROC
+FUN_429850 TEXTEQU <_Ai_MaybeArrival>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -76284,6 +76327,8 @@ FUN_42d390 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42d640 PROC
 
             sub ESP,1048
@@ -76347,6 +76392,10 @@ $L_42d6d1::
             add ESP,1048
             ret 
 FUN_42d640 ENDP
+ELSE
+EXTERN _Ai_TraceHumanState:PROC
+FUN_42d640 TEXTEQU <_Ai_TraceHumanState>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -212843,6 +212892,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4774e0 PROC
 
             push EBP
@@ -212915,6 +212966,10 @@ $L_477555::
             pop EBP
             ret 
 FUN_4774e0 ENDP
+ELSE
+EXTERN _Ai_AddArrivals:PROC
+FUN_4774e0 TEXTEQU <_Ai_AddArrivals>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
