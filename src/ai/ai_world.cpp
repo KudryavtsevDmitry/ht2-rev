@@ -5722,7 +5722,7 @@ ASM_VAR(BYTE*, g_anchors68cf58, $L_68cf58)
 ASM_VAR(BYTE**, g_roadNodesCap68cf08, $L_68cf08)
 ASM_VAR(char, s_anode, $L_66c920)                    // "anode"
 ASM_PROC(FUN_4709b0)    // a road node's constructor (name)
-ASM_PROC(FUN_405c00)
+extern "C" void FUN_405c00(); KING_ALIAS("_FUN_405c00", "_Ai_BuildEdgesFrom")
 extern "C" void __cdecl Construct4(DWORD* d, const DWORD* s);
 extern "C" void FUN_44cbf0(); KING_ALIAS("_FUN_44cbf0", "@Vec4b_InsertI@16")
 
@@ -10684,7 +10684,7 @@ extern "C" PositionId* __cdecl Ai_GetNoncontradictoryPosition(PositionId* out, B
 extern "C" void FUN_417820(); KING_ALIAS("_FUN_417820", "_Ai_ArriveAt")    // a player's arrival at a position (player, PositionId32)
 ASM_PROC(FUN_4194a0)
 extern "C" void FUN_416b80(); KING_ALIAS("_FUN_416b80", "_Ai_RaceNextCheckpoint")
-ASM_PROC(FUN_419760)
+extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
 ASM_PROC(FUN_4194e0)
 extern "C" void FUN_4185d0(); KING_ALIAS("_FUN_4185d0", "_Ai_TruckerNextOrder")
 extern "C" void FUN_417ed0(); KING_ALIAS("_FUN_417ed0", "_Ai_GoToGoodsTown")
@@ -13247,9 +13247,9 @@ extern "C" int __cdecl Ai_UpdateNavigator(BYTE* p)
 // ---------------------------------------------------------------------------
 // offerBribe(PlayerId giver, PlayerId taker, unsigned long int flags)
 
-ASM_PROC(FUN_431420)    // (out int*)
+extern "C" void FUN_431420(); KING_ALIAS("_FUN_431420", "_Ai_LastOfSorted")    // (out int*)
 extern "C" void FUN_40a690(); KING_ALIAS("_FUN_40a690", "_Ai_CallHelpers")    // (int by value)
-ASM_PROC(FUN_40aa00)    // (int by value)
+extern "C" void FUN_40aa00(); KING_ALIAS("_FUN_40aa00", "_Ai_CallMafia")    // (int by value)
 ASM_PROC(FUN_4452c0)    // (player)
 extern "C" void __fastcall Rec4725e0_Init(BYTE* self, void*);   // ai_drivers.cpp
 extern "C" BYTE* __fastcall Bribe_Construct(BYTE* s, void*, int a);
@@ -14144,7 +14144,7 @@ extern "C" int __cdecl Ai_FindPositionHops(HopVec* hops, PositionId pos)
 // ---------------------------------------------------------------------------
 // createDealerForSale(ParkingData & parkingData, double distance)
 
-ASM_PROC(FUN_418c10)    // a free parking place (out town, out place, parking data, double distance)
+extern "C" void FUN_418c10(); KING_ALIAS("_FUN_418c10", "_Ai_FindParkingPlace")    // a free parking place (out town, out place, parking data, double distance)
 extern "C" void FUN_421a20(); KING_ALIAS("_FUN_421a20", "_Ai_CreateDealerAt")    // a new player at a position (out, PositionId32, int, int)
 ASM_VAR(AsmLabel, s_createDealerForSale, $L_66d8a4)
 
@@ -15564,4 +15564,539 @@ extern "C" void __cdecl Ai_StartWorld()
         if (F(BYTE*, d, 16) == F(BYTE*, d, 20) && F(BYTE*, d, 64) != F(BYTE*, d, 68))
             AiError(0, 1, s_mainFile, s_mainId, 8392, "Internal error 325700", &g_aiEmpty, &g_aiEmpty);
     }
+}
+
+// ---------------------------------------------------------------------------
+// the two closest free mafia players (kind 6) head for the player
+
+ASM_VAR(AsmLabel, s_callMafia66cc5c, $L_66cc5c)
+
+// [FUN_40aa00] collects the free players of kind 6, sorts them by distance to the player's position and sends the
+// first two there (they remember the player at +968)
+extern "C" void __cdecl Ai_CallMafia(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_callMafia66cc5c);
+    if (F(int, p, 100) == 5) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_callMafia66cc5c);
+        return;
+    }
+    DWORD* v[3] = { 0, 0, 0 };
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = AI_ListData(it);
+        if (F(int, d, 84) != 6)
+            continue;
+        DWORD f = F(DWORD, d, 88);
+        if (((f >> 2) & 1) || (f & 0x80000))
+            continue;
+        int id;
+        int* x = Int_Set(&id, 0, (int)it);
+        if (v[1] != v[2]) {
+            Construct4(v[1], (const DWORD*)x);
+            v[1]++;
+        } else
+            Vec4b_InsertM((DWORD*)v, 0, v[1], (const DWORD*)x);
+    }
+    DVec3 pt;
+    DVec3 at = *Road_PointOf(&pt, F(PositionId, p, 40));
+    DWORD* first = v[0];
+    DWORD* last = v[1];
+    if (first != last) {
+        int depth = 0;
+        for (int n = (int)(last - first); n != 1; n >>= 1)
+            depth++;
+        const DWORD* a = (const DWORD*)&at;
+        CallC(FUN_45bab0, first, last, 0, depth * 2, a[0], a[1], a[2], a[3], a[4], a[5]);
+        CallC(FUN_45bbc0, first, last, a[0], a[1], a[2], a[3], a[4], a[5]);
+    }
+    DWORD* it = v[0];
+    for (int i = 0; it != v[1] && i < 2; i++, it++) {
+        BYTE* h = (BYTE*)*it;
+        Player_GoTo(h, F(PositionId, p, 40), 2);
+        F(BYTE*, h, 968) = p;
+    }
+    unsigned cap = (unsigned)(v[2] - v[0]);
+    if (cap)
+        Ai_PoolFree(v[0], cap * 4);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_callMafia66cc5c);
+}
+
+// ---------------------------------------------------------------------------
+// a player goes idle
+
+ASM_VAR(AsmLabel, s_goIdle66d470, $L_66d470)
+extern "C" int __cdecl Player_Flag4(BYTE* p);
+extern "C" BYTE* __fastcall Vec12_Erase(BYTE* self, void*, BYTE* first, BYTE* last);
+extern "C" int* __cdecl Road_NearestNode(int* out, const DVec3* p);
+
+// [FUN_419760] a player (not a kind-9 one) leaves its hire or sale state and its market place, and (unless human)
+// heads for its goods' town, its next order or the nearest node
+extern "C" int __cdecl Ai_GoIdle(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_goIdle66d470);
+    if (F(int, p, 92) == 9) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_goIdle66d470);
+        return 0;
+    }
+    if (F(int, p, 100) == 256) {
+        BYTE* r = F(BYTE*, p, 972);
+        F(int, r, 4)--;
+        if ((BYTE)Player_Flag4(p))
+            F(int, F(BYTE*, p, 972), 12)--;
+    }
+    if (F(int, p, 100) == 257) {
+        g_68d14c--;
+        if ((BYTE)Player_Flag4(p))
+            g_68d154--;
+    }
+    Vec12_Clear(p + 24, 0);
+    F(BYTE, p, 872) = 1;
+    F(int, p, 100) = 0;
+    F(DWORD, p, 96) &= 0xfffffbbf;
+    Player_EndDealOf(p);
+    int m = F(int, p, 120);
+    if (m != -1) {
+        F(int, p, 120) = -1;
+        BYTE* slot = F(BYTE*, (BYTE*)g_68cc98[m], 28) + F(int, p, 124) * 36;
+        F(void*, slot, 8) = g_players;
+        slot = F(BYTE*, (BYTE*)g_68cc98[m], 28) + F(int, p, 124) * 36;
+        F(DWORD, slot, 4) &= ~3u;
+        F(int, (BYTE*)g_68cc98[m], 40)--;
+    }
+    F(int, p, 972) = 0;
+    if (F(int, p, 92) == 1) {
+        Vec12_Erase(p + 24, 0, F(BYTE*, p, 24), F(BYTE*, p, 28));
+        F(BYTE, p, 872) = 1;
+        Waypoints_Clear(p + 72, 0);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Buf_AppendString(&g_trace, 0, s_goIdle66d470);
+        return 0;
+    }
+    DVec3 pt;
+    Road_PointOf(&pt, F(PositionId, p, 40));
+    if (!Player_FirstGoods(p + 8)) {
+        if (F(int, p, 92) == 2)
+            Ai_TruckerNextOrder(p);
+        else {
+            int n;
+            Ai_GoToNode(p, *Road_NearestNode(&n, &pt));
+        }
+    } else {
+        Ai_GoToGoodsTown(p);
+        F(int, p, 100) = 4;
+    }
+    Player_Call477bd0(p, 0, 0x40340000);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_goIdle66d470);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// findAppropriateParkingPlace(int& index, ParkingData& parkingData, double distance)
+
+ASM_VAR(AsmLabel, s_findParkingPlace66d378, $L_66d378)
+extern "C" void* __cdecl Recs_Search418bb0(void* out, BYTE* v, const int* key, int b, int c);
+extern "C" int* __cdecl Parking_RandomFree(int* market, int* point);
+
+// [FUN_418c10] the market with the fewest used places (below 1000, not full) that has a matching free place;
+// a random one of its matching places (index); a random free place of any market when that one has none
+extern "C" int* __cdecl Ai_FindParkingPlace(int* market, int* place, const int* key, int b, int c)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_findParkingPlace66d378);
+    int best = -1;
+    int fewest = 1000;
+    for (void** m = g_68cc98; m != g_68cc9c; m++) {
+        DWORD v[3];
+        Recs_Search418bb0(v, (BYTE*)*m, key, b, c);
+        if (v[0] != v[1]) {
+            int used = F(int, (BYTE*)*m, 40);
+            if (fewest > used && (unsigned)used < (unsigned)((F(BYTE*, (BYTE*)*m, 32) - F(BYTE*, (BYTE*)*m, 28)) / 36)) {
+                fewest = used;
+                best = (int)(m - g_68cc98);
+            }
+        }
+        unsigned cap = (v[2] - v[0]) & ~3u;
+        if (cap)
+            Ai_PoolFree((void*)v[0], cap);
+    }
+    if (best == -1) {
+        char text[64];
+        sprintf(text, "(%d %d %d %d)", key[0], key[2], key[1], key[3]);
+        AiError(0, 1, s_mainFile, s_mainId, 4724, "Internal error 07467", text, &g_aiEmpty);
+        *market = -1;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, s_findParkingPlace66d378);
+        return market;
+    }
+    BYTE* mk = (BYTE*)g_68cc98[best];
+    DWORD v[3];
+    Recs_Search418bb0(v, mk, key, b, c);
+    if (v[0] != v[1]) {
+        CallC(FUN_45cf80, v[0], v[1], 0, 0, mk + 28);
+        *place = (int)(((BYTE**)v[1])[-1] - F(BYTE*, mk, 28)) / 36;
+        *market = best;
+    } else
+        Parking_RandomFree(market, place);
+    unsigned cap = (v[2] - v[0]) & ~3u;
+    if (cap)
+        Ai_PoolFree((void*)v[0], cap);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, s_findParkingPlace66d378);
+    return market;
+}
+
+// ---------------------------------------------------------------------------
+// the player with the best key among those of the list at 68a980
+
+extern "C" void FUN_4660b0(); KING_ALIAS("_FUN_4660b0", "_Sort_MedianBy504")    // median of three (a, b, c, cmp) -> pointer
+extern "C" void FUN_466160(); KING_ALIAS("_FUN_466160", "_Sort_PartitionBy504")    // unguarded partition (first, last, pivot, cmp)
+ASM_PROC(FUN_45f8d0)    // introsort loop (first, last, 0, depth, cmp)
+ASM_PROC(FUN_465fd0)    // partial sort (first, middle, last, cmp)
+ASM_PROC(FUN_45f990)    // final insertion sort (first, last, cmp)
+
+// [FUN_431420] a sorted copy of the players at 68a980; the last one (the head when there are none)
+extern "C" void** __cdecl Ai_LastOfSorted(void** out)
+{
+    if (g_68a980 == g_68a984) {
+        *out = g_players;
+        return out;
+    }
+    unsigned n = (unsigned)(g_68a984 - g_68a980);
+    void** buf = n ? (void**)Stl_Allocate(n * 4) : 0;
+    void** e = (void**)UninitCopyDwords((const DWORD*)g_68a980, (const DWORD*)g_68a984, (DWORD*)buf);
+    int cmp = (int)out;
+    if (buf != e) {
+        int depth = 0;
+        for (int k = (int)(e - buf); k != 1; k >>= 1)
+            depth++;
+        depth *= 2;
+        void** l = e;
+        if ((int)(((BYTE*)e - (BYTE*)buf) & ~3) > 64) {
+            for (;;) {
+                if (depth == 0) {
+                    CallC(FUN_465fd0, buf, l, l, cmp);
+                    break;
+                }
+                depth--;
+                int half = (int)(l - buf) / 2;
+                void* pivot = *CallC<void**>(FUN_4660b0, buf, buf + half, l - 1, cmp);
+                void** cut = CallC<void**>(FUN_466160, buf, l, pivot, cmp);
+                CallC(FUN_45f8d0, cut, l, 0, depth, cmp);
+                l = cut;
+                if ((int)(((BYTE*)cut - (BYTE*)buf) & ~3) <= 64)
+                    break;
+            }
+        }
+        CallC(FUN_45f990, buf, e, cmp);
+    }
+    *out = e[-1];
+    if (n)
+        Ai_PoolFree(buf, n * 4);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// building the road edges from the node graph
+
+ASM_VAR(int, g_68d0e8, $L_68d0e8)
+ASM_VAR(RoadEdge**, g_roadEdgesCap, $L_68cf40)
+
+static void Ptrs_PushBack(BYTE* vec, void* x, bool k)
+{
+    void*** v = (void***)vec;
+    if (v[1] != v[2]) {
+        if (v[1])
+            *v[1] = x;
+        v[1]++;
+    } else if (k)
+        Vec4b_InsertK((DWORD*)v, 0, (DWORD*)v[1], (const DWORD*)&x);
+    else
+        Vec4b_Insert44ceb0((DWORD*)v, 0, (DWORD*)v[1], (const DWORD*)&x);
+}
+
+// [FUN_405c00] from a node (once): each of its unvisited links starts a road edge (184 bytes) that follows the
+// chain through junction-free nodes to the next junction, collecting the links (reversed where walked backwards);
+// the edge goes to the edges and to both junctions, and the far node is visited the same way
+extern "C" void __cdecl Ai_BuildEdgesFrom(BYTE* node)
+{
+    if (F(int, node, 0) != 0)
+        return;
+    if (!(g_68d0e8 & 63))
+        CallC(AI_Step3, 116);
+    g_68d0e8++;
+    BYTE* junction = F(BYTE*, node, 32);
+    F(DWORD, node, 0) |= 1;
+    for (BYTE** it = F(BYTE**, node, 36); it != F(BYTE**, node, 40); it += 3) {
+        if (F(BYTE, *it, 8) & 1)
+            continue;
+        BYTE* o = (BYTE*)operator new(184);
+        if (o) {
+            char alloc;
+            CallThis(FUN_487730, o, &alloc);
+            for (int k = 16; k <= 44; k += 4)
+                F(int, o, k) = 0;
+            for (int k = 0; k < 4; k++) {
+                F(int, o, 48 + k * 16) = 0;
+                F(int, o, 52 + k * 16) = 0;
+                F(BYTE, o, 56 + k * 16) = 0;
+            }
+            CallThis(FUN_487730, o + 120, &alloc);
+            DVec3* lo = (DVec3*)(o + 136);
+            DVec3* hi = (DVec3*)(o + 160);
+            lo->x = lo->y = lo->z = 1.7976931348623157e308;
+            hi->x = hi->y = hi->z = -1.7976931348623157e308;
+        }
+        F(BYTE*, o, 112) = junction;
+        BYTE** l = it;
+        BYTE* cur = node;
+        BYTE* farJ;
+        for (;;) {
+            if (F(BYTE, *l, 8) & 1)
+                AiError(0, 100, s_mainFile, s_mainId, 1413, "Internal error", &g_aiEmpty, &g_aiEmpty);
+            F(DWORD, *l, 8) |= 1;
+            if ((BYTE*)l[1] == cur)
+                cur = l[2];
+            else if ((BYTE*)l[2] == cur) {
+                cur = l[1];
+                CallVirt(*l, 28);
+            } else
+                AiError(0, 100, s_mainFile, s_mainId, 1426, "Internal error", &g_aiEmpty, &g_aiEmpty);
+            Ptrs_PushBack(o + 120, *l, true);
+            farJ = F(BYTE*, cur, 32);
+            if (farJ)
+                break;
+            BYTE** e = F(BYTE**, cur, 36);
+            if (*l == e[0])
+                l = e + 3;
+            else {
+                l = e;
+                if (e[0] == e[3])
+                    AiError(0, 100, s_mainFile, s_mainId, 1446, "Internal error", &g_aiEmpty, &g_aiEmpty);
+            }
+        }
+        F(BYTE*, o, 116) = farJ;
+        Ai_BuildEdgesFrom(cur);
+        Ptrs_PushBack((BYTE*)&g_roadEdges, o, false);
+        Ptrs_PushBack(junction + 20, o, false);
+        Ptrs_PushBack(farJ + 32, o, false);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// players entering other rooms
+
+ASM_VAR(AsmLabel, s_updateRooms66dd14, $L_66dd14)
+ASM_VAR(AsmLabel, s_room66d638, $L_66d638)
+ASM_VAR(AsmLabel, s_room66d628, $L_66d628)
+extern "C" void FUN_42c9b0(); KING_ALIAS("_FUN_42c9b0", "_Position_Keys")    // the rooms of a position (PositionId32, out48)
+
+// [FUN_42cb20] each player's rooms (from its position); a change is reported to the event hook (kind 5)
+extern "C" void __cdecl Ai_UpdatePlayerRooms()
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_updateRooms66dd14);
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        int r[12] = { 0 };
+        r[5] = (int)(const char*)s_room66d638;
+        r[6] = (int)(const char*)s_room66d628;
+        r[10] = -1;
+        r[11] = -1;
+        PositionId pos;
+        Rec_Copy32(AI_ListData(it) + 16, 0, &pos);
+        CallC(FUN_42c9b0, pos, r);
+        BYTE* d = AI_ListData(it);
+        if (r[10] != F(int, d, 848) || r[9] != F(int, AI_ListData(it), 844)) {
+            int id;
+            Ai_PlayerEvent((BYTE*)*Int_Set(&id, 0, (int)it), 5, 0);
+        }
+        F(int, AI_ListData(it), 848) = r[10];
+        F(int, AI_ListData(it), 844) = r[9];
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_updateRooms66dd14);
+}
+
+// ---------------------------------------------------------------------------
+// an ambushing player turns on the human
+
+ASM_VAR(AsmLabel, s_ambushAttack66dcc8, $L_66dcc8)
+
+// [FUN_42c570] the ambushes holding the player release it (lights on); it chases the human player (+968) and the
+// human calls mafia (ambush kind 1) or helpers (kind 2)
+extern "C" void __cdecl Ai_AmbushAttack(BYTE* p)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_ambushAttack66dcc8);
+    if (Player_NotValid(p)) {
+        sprintf(g_numberText, s_idFormat);
+        AiError(33, 100, s_mainFile, s_mainId, 11469, s_invalidId, s_playerIdType, g_numberText);
+    }
+    for (void** e = g_68a970; e != g_68a974; e++) {
+        BYTE* amb = (BYTE*)*e;
+        if (F(BYTE*, amb, 124) != p)
+            continue;
+        Ai_ReleaseAttachedPlayer(amb);
+        AI_LightsOn((BYTE*)*e);
+        int h;
+        Player_FromId(&h);
+        Player_GoTo(p, F(PositionId, (BYTE*)h + 8, 32), 2);
+        Player_FromId(&h);
+        F(int, p, 968) = h;
+        int kind = F(int, (BYTE*)*e, 36);
+        if (kind == 1) {
+            Player_FromId(&h);
+            Ai_CallMafia((BYTE*)h);
+        } else if (kind == 2) {
+            Player_FromId(&h);
+            Ai_CallHelpers((BYTE*)h);
+        }
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_ambushAttack66dcc8);
+}
+
+// ---------------------------------------------------------------------------
+// heading for a town, avoiding sharp turns
+
+ASM_VAR(AsmLabel, s_goToTown66d264, $L_66d264)
+extern "C" double __cdecl Road_MinTurnCos(const HopVec* hops);
+
+// [FUN_417b70] like FUN_417820, but a route with a turn sharper than cos -0.8 is dropped and searched again
+// (up to 3 tries)
+extern "C" void __cdecl Ai_GoToTownSmooth(BYTE* p, PositionId pos)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_goToTown66d264);
+    Vec12_Clear(p + 24, 0);
+    F(BYTE, p, 872) = 1;
+    int town = 0;
+    if (pos.node != -1)
+        town = F(int, g_68cf00[pos.node], 12);
+    int tries = 0;
+    while (F(BYTE*, p, 24) == F(BYTE*, p, 28)) {
+        int pair[2];
+        int pp = (int)p;
+        Pair_SetFromPtr(pair, 0, town, &pp);
+        int n;
+        Nodes_Find456140(&n, pair[0], pair[1], (int)&g_rng68b9c8);
+        if (n == -1)
+            AiError(0, 100, s_mainFile, s_mainId, 4461, "Can not find node to trace to", &g_aiEmpty, &g_aiEmpty);
+        PositionId to;
+        PositionInit(&to, n);
+        Player_GoTo(p, to, 1);
+        tries++;
+        if (!(Road_MinTurnCos((const HopVec*)(p + 24)) >= -0.8) && tries < 3) {
+            Vec12_Clear(p + 24, 0);
+            F(BYTE, p, 872) = 1;
+        }
+    }
+    AdvanceRoad_Check(&F(PositionId, p, 40), 4468);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_goToTown66d264);
+}
+
+// ---------------------------------------------------------------------------
+// whether a player has an order for a town
+
+ASM_VAR(AsmLabel, s_hasOrderFor66f1c8, $L_66f1c8)
+
+// [FUN_443ac0] whether one of the player's orders (144 bytes) goes to the town
+extern "C" bool __cdecl Ai_HasOrderForTown(BYTE* p, int townId)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_hasOrderFor66f1c8);
+    int town;
+    Town_ById(&town, townId);
+    BYTE* end = ((BYTE**)Player_Orders(p, (BYTE*)townId))[1];
+    BYTE* o = ((BYTE**)Player_Orders(p, (BYTE*)townId))[0];
+    while (o != end && F(int, o, 12) != town)
+        o += 144;
+    if (o == ((BYTE**)Player_Orders(p, (BYTE*)townId))[1]) {
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Trace_CopyName(s_hasOrderFor66f1c8);
+        return false;
+    }
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, s_hasOrderFor66f1c8);
+    return true;
+}
+
+// ---------------------------------------------------------------------------
+// a new piece of goods
+
+ASM_VAR(AsmLabel, s_newGoods66d5d4, $L_66d5d4)
+ASM_PROC(FUN_5d2ba0)    // console: print (text, x)
+extern "C" int* __cdecl Recs104_Random(int* out, int a, int b);
+extern "C" int* __cdecl Recs104_RandomMasked(int* out, int a, int b);
+extern "C" int* __cdecl Items_Find41b2a0(int* out, BYTE* p, int a, int b);
+extern "C" void __cdecl Price_Set(BYTE* item, BYTE* table);
+extern "C" int __fastcall PlayerId_Over025(int id, void*);
+
+// [FUN_41b3a0] a new piece of goods (32 bytes) of a random kind (or one of the town's kinds), due in 200..499 s,
+// priced; sometimes (1 in 5, when allowed) disguised as another kind (the real one at +8)
+extern "C" BYTE** __cdecl Ai_NewGoods(BYTE** out, BYTE* from, BYTE* town, int kind)
+{
+    Buf_Append(&g_trace, 0, g_tagArt, 8);
+    Buf_AppendString(&g_trace, 0, s_newGoods66d5d4);
+    *out = 0;
+    BYTE* o = 0;
+    for (int tries = 0; !o; ) {
+        int* r;
+        int tmp;
+        if (F(BYTE, from, 4) & 4) {
+            int a2 = (int)town;
+            r = Recs104_Random(&a2, 4, 4);
+        } else
+            r = Items_Find41b2a0(&tmp, town, kind != 1 ? 16 : 8, 28);
+        int id = *r;
+        if (id == -1) {
+            Trace_Tag((const DWORD*)g_tagMpl);
+            Buf_AppendString(&g_trace, 0, s_newGoods66d5d4);
+            return out;
+        }
+        o = (BYTE*)operator new(32);
+        if (o) {
+            int t;
+            int v = *Town_Find5(&t, (int)town, id);
+            F(int, o, 0) = id;
+            F(int, o, 4) = -1;
+            F(int, o, 8) = -1;
+            F(int, o, 16) = 0;
+            F(int, o, 24) = 0;
+            F(int, o, 12) = v;
+            F(int, o, 20) = 0;
+            F(int, o, 28) = 0;
+        }
+        if (++tries >= 100 && !o) {
+            Trace_Tag((const DWORD*)g_tagMpl);
+            Buf_AppendString(&g_trace, 0, s_newGoods66d5d4);
+            return out;
+        }
+    }
+    unsigned due = AiRandom() % 300 + 200;
+    double now = CallC<double>(FUN_401000);
+    F(double, o, 16) = now + (double)(__int64)due;
+    Price_Set(o, town);
+    if (!(F(BYTE, g_68ccb8 + F(int, o, 0) * 104, 48) & 4) && (BYTE)PlayerId_Over025((int)g_68ccb8, 0)
+        && AiRandom() % 5 == 2) {
+        int k = kind;
+        int d = *Recs104_RandomMasked(&k, (kind != 1 ? 16 : 8) | 1, 25);
+        F(int, o, 4) = d;
+        if (d != -1) {
+            F(int, o, 8) = F(int, o, 0);
+            F(int, o, 0) = F(int, o, 4);
+        } else {
+            AiError(0, 200, s_mainFile, s_mainId, 5936, "Internal error 066321", &g_aiEmpty, &g_aiEmpty);
+            CallC(FUN_5d2ba0, "additional: ", kind);
+        }
+    }
+    *out = o;
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Trace_CopyName(s_newGoods66d5d4);
+    return out;
 }
