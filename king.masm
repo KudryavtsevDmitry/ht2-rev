@@ -1180,6 +1180,7 @@ PUBLIC $L_64b728, $L_64b780, $L_64b7d0, $L_66d98c
 PUBLIC $L_64b660, $L_64b958, $L_66f408, $L_66f414, $L_66f420
 PUBLIC $L_64b900, $L_66e1d4
 PUBLIC $L_64b7b8, $L_66dd3c
+PUBLIC $L_64b720
 
 ;===================================
 _TEXT SEGMENT
@@ -54798,6 +54799,8 @@ $L_420040 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_420360 PROC
 
             sub ESP,312
@@ -55203,6 +55206,10 @@ $L_4207de::
             add ESP,312
             ret 
 FUN_420360 ENDP
+ELSE
+EXTERN _Ai_NavigatorTurn:PROC
+FUN_420360 TEXTEQU <_Ai_NavigatorTurn>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
