@@ -1795,7 +1795,7 @@ extern "C" void FUN_452bc0(); KING_ALIAS("_FUN_452bc0", "@Rec56Vec_InsertAux@16"
 extern "C" void FUN_44b0f0(); KING_ALIAS("_FUN_44b0f0", "_ListNode16_Make@4")    // list: a new node holding x
 extern "C" void FUN_44b250(); KING_ALIAS("_FUN_44b250", "_ListNode16_MakeB@4")
 extern "C" void FUN_44b310(); KING_ALIAS("_FUN_44b310", "_ListNode64_Make@4")
-ASM_PROC(FUN_402ec0)    // a hashtable value's destructor
+extern "C" void FUN_402ec0(); KING_ALIAS("_FUN_402ec0", "@RopeRef_Destroy@8")    // a hashtable value's destructor
 ASM_VAR(AiText, g_strPair, $L_66cb08)
 
 static BYTE** ListInsert(void* list, BYTE** out, BYTE** pos, const void* x, void (*make)())
@@ -7967,7 +7967,7 @@ extern "C" void __cdecl Ai_PlacePresents(double t)
 extern "C" void FUN_4774e0(); KING_ALIAS("_FUN_4774e0", "_Ai_AddArrivals")    // a competitor's arrival (player, double delay, count)
 extern "C" void FUN_429850(); KING_ALIAS("_FUN_429850", "_Ai_MaybeArrival")    // a computer player's order update (player)
 extern "C" void FUN_4262a0(); KING_ALIAS("_FUN_4262a0", "_Ai_AddCompetitor")    // adds a competitor
-ASM_PROC(FUN_457a40)    // finds an order equal to one passed by value (first, last, order144)
+extern "C" void FUN_457a40(); KING_ALIAS("_FUN_457a40", "_Orders_FindEqual")    // finds an order equal to one passed by value (first, last, order144)
 extern "C" void FUN_4715f0(); KING_ALIAS("_FUN_4715f0", "_Order_Init4715f0")    // (order, template, town, PositionId32, double q)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
 extern "C" BYTE* __cdecl Order144_CopyA(const BYTE* f, const BYTE* l, BYTE* d);
@@ -20145,4 +20145,60 @@ extern "C" void __cdecl Ai_BuildNameMaps()
         Rope_Drop(pr[0]);
         Rope_Drop(rope);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Batch: destructors and an order search
+
+extern "C" void FUN_458a80(); KING_ALIAS("_FUN_458a80", "@Rec458a80_Copy@12")    // an order's copy constructor (thiscall: src)
+ASM_PROC(FUN_460840)    // find of an order (first, last, order by value, -)
+ASM_PROC(FUN_460d10)    // a 16-byte record's destructor (rec)
+extern "C" void FUN_457b40(); KING_ALIAS("_FUN_457b40", "_AI_Free")    // frees a large block (p, bytes)
+
+// [FUN_449910] vector<580-byte element>::~vector (thiscall)
+extern "C" void __fastcall Vec580_Destroy(BYTE** v, void*)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 580)
+        CallThis(FUN_50d190, e);
+    int n = (v[2] - v[0]) / 580;
+    if (n)
+        Ai_PoolFree(v[0], n * 580);
+}
+
+// [FUN_402ec0] a rope handle's destructor (thiscall on the handle)
+extern "C" void __fastcall RopeRef_Destroy(BYTE** self, void*)
+{
+    if (*self)
+        Rope_Unref(*self, 0);
+}
+
+// [FUN_447570] vector<StrRef>::~vector (thiscall)
+extern "C" void __fastcall StrRefVec_Destroy(BYTE** v, void*)
+{
+    for (StrRef* e = (StrRef*)v[0]; e != (StrRef*)v[1]; e++)
+        Str_Release(e);
+    int n = (v[2] - v[0]) / 12;
+    if (n)
+        Ai_PoolFree(v[0], n * 12);
+}
+
+// [FUN_457a40] the order in [first, last) equal to one given by value (last when none)
+extern "C" BYTE* __cdecl Orders_FindEqual(BYTE* first, BYTE* last, Blob144 order)
+{
+    Blob144 copy;
+    CallThis(FUN_458a80, &copy, &order);
+    BYTE* r = CallC<BYTE*>(FUN_460840, first, last, copy, last);
+    BYTE* b = F(BYTE*, &order, 120);
+    for (BYTE* e = b; e != F(BYTE*, &order, 124); e += 16)
+        CallC(FUN_460d10, e);
+    b = F(BYTE*, &order, 120);
+    int n = (F(BYTE*, &order, 128) - b) >> 4;
+    if (n) {
+        unsigned bytes = n << 4;
+        if (bytes > 128)
+            CallC(FUN_457b40, b, bytes);
+        else
+            Ai_PoolFree(b, bytes);
+    }
+    return r;
 }
