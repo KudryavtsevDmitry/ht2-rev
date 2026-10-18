@@ -12493,7 +12493,7 @@ extern "C" void __cdecl Ai_SetPlayerPosition(BYTE* p, const DVec3* v)
 // ---------------------------------------------------------------------------
 // cleanBeforeLaw(PlayerId player)
 
-ASM_PROC(FUN_444f80)    // (player)
+extern "C" void FUN_444f80(); KING_ALIAS("_FUN_444f80", "_Ai_CancelIllegalOrders")    // (player)
 extern "C" void __cdecl Player_UpdateFlags(BYTE* p);            // ai_drivers.cpp
 extern "C" void __fastcall Rec4725b0_Init(BYTE* self, void*);   // ai_drivers.cpp
 ASM_VAR(AsmLabel, s_cleanBeforeLaw, $L_66dfc8)
@@ -18372,5 +18372,149 @@ extern "C" int __cdecl Ai_Initialize(const char* dir, AiEventHook eventHook, Pre
     CallC(FUN_430480);
     if (v.capacityEnd != v.begin)
         Ai_PoolFree(v.begin, v.capacityEnd - v.begin);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: picking up a present
+
+ASM_VAR(AsmLabel, s_pickPresent, $L_66d794)
+ASM_VAR(AsmLabel, s_presentId66d64c, $L_66d64c)
+ASM_VAR(AsmLabel, s_pickParked66d770, $L_66d770)
+extern "C" void FUN_456cb0(); KING_ALIAS("_FUN_456cb0", "_Rec_NotValid")    // whether a present id is invalid (present)
+extern "C" void FUN_41f3d0(); KING_ALIAS("_FUN_41f3d0", "@Rec41f3d0_Destroy@8")    // an order's destructor (thiscall)
+extern "C" void FUN_472270(); KING_ALIAS("_FUN_472270", "_Player_Call471ec0")    // (player)
+extern "C" void FUN_41ef10(); KING_ALIAS("_FUN_41ef10", "_Present_Destroy")    // destroys a present (present)
+
+// [FUN_41f0d0] _pickPresent(PlayerId player, PresentId present): a non-race present ends the human's race;
+// one holding an order (flag 0x20) replaces the player's trailer order (+520) and starts its first order's
+// timer; then its spot (+108) is freed and the present destroyed
+extern "C" void __cdecl Ai_PickPresent(int player, int present)
+{
+    Trace_EnterBuffered((const char*)s_pickPresent);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 6853, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    if (CallC<int>(FUN_456cb0, present)) {
+        sprintf(g_text77e5e0, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 6854, s_invalidId, s_presentId66d64c, g_text77e5e0);
+    }
+    CallC(FUN_417660, player);
+    BYTE* rec = F(BYTE*, (BYTE*)present, 8);
+    if ((F(DWORD, rec, 8) & 0xf0) != 16)
+        Ai_HumanFinished();
+    DWORD fl = F(DWORD, F(BYTE*, (BYTE*)present, 8), 8);
+    if (fl & 128) {
+        AiError(0, 1, s_mainFile, s_mainId, 6870, s_pickParked66d770, &g_aiEmpty, &g_aiEmpty);
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_pickPresent);
+        return;
+    }
+    rec = F(BYTE*, (BYTE*)present, 8);
+    if ((fl & 32) && F(BYTE*, rec, 20)) {
+        BYTE* old = F(BYTE*, p, 520);
+        if (old) {
+            CallThis(FUN_41f3d0, old);
+            operator delete(old);
+        }
+        BYTE* o = F(BYTE*, F(BYTE*, (BYTE*)present, 8), 20);
+        F(BYTE*, p, 520) = o;
+        F(int, o, 0) = F(int, F(BYTE*, (BYTE*)present, 8), 0);
+        F(BYTE*, F(BYTE*, (BYTE*)present, 8), 20) = 0;
+        if (!F(BYTE, F(BYTE*, (BYTE*)present, 8), 104)) {
+            BYTE* m = F(BYTE*, p, 520);
+            BYTE* first = F(BYTE*, m, 28);
+            if (first != F(BYTE*, m, 32))
+                F(double, first, 72) = CallC<double>(FUN_401000) + F(double, first, 88);
+        }
+        if (CallC<char>(FUN_417660, player))
+            CallC(FUN_472270, player);
+    }
+    int spot = F(int, F(BYTE*, (BYTE*)present, 8), 108);
+    if (spot != -1)
+        F(int, (BYTE*)g_spots68d0b8[spot], 40)--;
+    CallC(FUN_41ef10, present);
+    CallC(FUN_425790, player);
+    CallC(FUN_41ef90, player);
+    CallC(FUN_56f6d0);
+    Trace_Leave((const char*)s_pickPresent);
+}
+
+ASM_VAR(AsmLabel, s_pickPresentTask, $L_66d7c8)
+
+// [FUN_41f5e0] pickPresent(PlayerId player, PresentId present): a non-race present ends the human's race;
+// unless parked, a pick task for it goes to the front of the task list
+extern "C" void __cdecl Ai_PickPresentLater(int player, int present)
+{
+    Trace_EnterBuffered((const char*)s_pickPresentTask);
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 6935, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    if (CallC<int>(FUN_456cb0, present)) {
+        sprintf(g_text77e5e0, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 6936, s_invalidId, s_presentId66d64c, g_text77e5e0);
+    }
+    CallC(FUN_417660, player);
+    if ((F(DWORD, F(BYTE*, (BYTE*)present, 8), 8) & 0xf0) != 16)
+        Ai_HumanFinished();
+    if (F(BYTE, F(BYTE*, (BYTE*)present, 8), 8) & 128)
+        AiError(0, 1, s_mainFile, s_mainId, 6952, s_pickParked66d770, &g_aiEmpty, &g_aiEmpty);
+    else {
+        BYTE* t = (BYTE*)operator new(56);
+        BYTE* task = t ? Pick_Construct(t, 0, player, present) : 0;
+        BYTE* list = (BYTE*)&g_68b99c;
+        BYTE* it;
+        ListB_Insert(list, 0, &it, (BYTE**)*(BYTE**)*(BYTE**)list, &task);
+    }
+    Trace_Leave((const char*)s_pickPresentTask);
+}
+
+ASM_VAR(AsmLabel, s_cancelIllegalOrders, $L_66f294)
+ASM_VAR(AsmLabel, s_loadSeized66f288, $L_66f288)
+extern "C" void FUN_457b80(); KING_ALIAS("_FUN_457b80", "_Order144_Copy")    // copy of orders (first, last, dest)
+extern "C" void FUN_461b00(); KING_ALIAS("_FUN_461b00", "@Rec41ce50_DeletingDestructor@12")    // an order's destructor (thiscall: flags)
+
+// [FUN_444f80] cancelIllegalOrders(PlayerId player): drops each order whose +4 is set (not -1), telling a
+// human LOAD_SEIZED each time
+extern "C" int __cdecl Ai_CancelIllegalOrders(int player)
+{
+    Trace_EnterBuffered((const char*)s_cancelIllegalOrders);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 17948, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    BYTE* fa = p;
+    BYTE* fb = 0;
+    BYTE* fc = 0;
+    BYTE* fd = p;
+    for (;;) {
+        fa = Player_Orders(p, fa);
+        BYTE* end = F(BYTE*, fa, 4);
+        fb = Player_Orders(p, fb);
+        BYTE* it = F(BYTE*, fb, 0);
+        while (it != end && F(int, it, 4) == -1)
+            it += 144;
+        fc = Player_Orders(p, fc);
+        if (it == F(BYTE*, fc, 4))
+            break;
+        fd = Player_Orders(p, fd);
+        if (it + 144 != F(BYTE*, fd, 4))
+            CallC(FUN_457b80, it + 144, F(BYTE*, fd, 4), it);
+        F(BYTE*, fd, 4) -= 144;
+        CallThis(FUN_461b00, F(BYTE*, fd, 4), 0);
+        if (CallC<char>(FUN_417660, player))
+            CallC(FUN_56ae60, Message_Text((const char*)s_loadSeized66f288));
+    }
+    F(BYTE, p, 200) = 0;
+    CallC(FUN_425790, player);
+    CallC(FUN_41ef90, player);
+    CallC(FUN_477210, player);
+    CallC(FUN_56f6d0);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, (const char*)s_cancelIllegalOrders);
     return 0;
 }
