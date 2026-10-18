@@ -17360,7 +17360,7 @@ extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16"
 extern "C" void FUN_402740(); KING_ALIAS("_FUN_402740", "@Pos_Before@40")    // whether a position comes before another (thiscall: other)
 extern "C" void FUN_4165e0(); KING_ALIAS("_FUN_4165e0", "_Player_Flag4")    // (player) returns bool
 extern "C" void FUN_477d60(); KING_ALIAS("_FUN_477d60", "_Player_EndDealOf")    // (player)
-ASM_PROC(FUN_41a9d0)    // (player) returns double
+extern "C" void FUN_41a9d0(); KING_ALIAS("_FUN_41a9d0", "_Ai_PrescribeAdvance")    // (player) returns double
 extern "C" void FUN_435a90(); KING_ALIAS("_FUN_435a90", "_Ai_AdvancePlayer")    // (player, double*)
 extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")    // goIdle (player)
 extern "C" void FUN_41ae60(); KING_ALIAS("_FUN_41ae60", "_Ai_ProcessMove")    // processMove (player)
@@ -19647,4 +19647,92 @@ extern "C" BYTE* __cdecl Ai_OrientationFrom(BYTE* out, const DVec3* point, const
     F(DVec3, out, 72) = pt;
     Trace_Leave((const char*)s_getOrientationPD);
     return out;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: a computer player's advance per tick
+
+ASM_VAR(AsmLabel, s_prescribeAdvance, $L_66d548)
+ASM_VAR(double, g_64b6e8, $L_64b6e8)
+ASM_VAR(double, g_64b6e0, $L_64b6e0)
+ASM_VAR(double, g_66c708, $L_66c708)
+ASM_VAR(double, g_66c6b8, $L_66c6b8)
+ASM_VAR(double, g_66c6c0, $L_66c6c0)
+ASM_VAR(double, g_66c6c8, $L_66c6c8)
+ASM_VAR(double, g_66c718, $L_66c718)
+ASM_VAR(double, g_64b6d0, $L_64b6d0)
+ASM_VAR(double, g_64b6c8, $L_64b6c8)
+ASM_VAR(double, g_64b6c0, $L_64b6c0)
+ASM_VAR(double, g_64b6b8, $L_64b6b8)
+ASM_PROC(FUN_4d5c50)    // a vehicle's set speed (vehicle) returns double
+extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730")    // (vehicle) returns double
+extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")    // (vehicle) returns int
+extern "C" void FUN_4881b0(); KING_ALIAS("_FUN_4881b0", "@Filter2_Update@16")    // a speed filter step (thiscall: double) returns double
+
+// [FUN_41a9d0] prescribeAdvance(PlayerId player): how far the player moves since the last tick: at its vehicle's
+// set speed when there is one, else at the cruise speed slowed by FUN_4cd730, for a racer by its distance to
+// the human (faster behind, slower ahead), and through the vehicle's speed filter (+456) with a curve limit
+extern "C" double __cdecl Ai_PrescribeAdvance(int player)
+{
+    Trace_EnterBuffered((const char*)s_prescribeAdvance);
+    BYTE* p = (BYTE*)player;
+    double v = CallC<double>(FUN_4d5c50, F(int, p, 84));
+    if (v >= g_zero64b678) {
+        double res = (CallC<double>(FUN_401000) - g_lastSpeedTime68d0f0) * v;
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_prescribeAdvance);
+        return res;
+    }
+    double s = 13.88888888888889;
+    if (g_64b6e8 < g_humanSpeed66c6a0)
+        s = g_humanSpeed66c6a0;
+    double x = F(int, p, 84) == -1 ? g_zero64b678 : CallC<double>(FUN_4cd730, F(int, p, 84));
+    s = (g_64b670 - x * g_64b6e0) * s;
+    if (CallC<char>(FUN_4172e0, player) && !(F(DWORD, p, 96) & 0x1000000)) {
+        double lead;
+        bool ahead = Ai_HumanLead(p, &lead);
+        double r = (lead < 0 ? -lead : lead) / g_66c708;
+        if (!(r >= g_zero64b678))
+            r = g_zero64b678;
+        else if (r > g_64b670)
+            r = g_64b670;
+        if (ahead) {
+            s = (g_66c6b8 * r + g_64b670) * g_humanSpeed66c6a0;
+            if (!g_68d188 && !F(BYTE, p, 512))
+                Ai_RetraceCompetitorRegular(player);
+        } else {
+            s = (g_64b670 - g_66c6c0 * r) * g_humanSpeed66c6a0;
+            if (!g_68d188 && F(BYTE, p, 512))
+                Ai_RetraceCompetitorRegular(player);
+        }
+        if (!(s >= g_66c6c8))
+            s = g_66c6c8;
+        F(BYTE, p, 512) = ahead;
+    }
+    if (F(int, p, 92) == 5)
+        s = g_66c718 * s;
+    if (F(int, p, 84) != -1 && CallC<int>(FUN_4d8a40, F(int, p, 84)) != 0) {
+        double t = CallC<double>(FUN_401000) - g_lastSpeedTime68d0f0;
+        if (t > g_64b6d8) {
+            double m = 1.0;
+            if (!F(BYTE, p, 976)) {
+                double y = F(double, p, 984) + g_64b6d0;
+                if (y > g_zero64b678 && y < g_64b6c8)
+                    m = F(double, p, 984) * g_64b6c0;
+            }
+            for (int k = Ftol(t * g_64b6a0) - 1; k > 0; k--)
+                CallThis<double>(FUN_4881b0, p + 456, m);
+            s = CallThis<double>(FUN_4881b0, p + 456, m) * s;
+            if (F(double, p, 984) > g_zero64b678) {
+                double vx = F(double, p, 352), vy = F(double, p, 360), vz = F(double, p, 368);
+                double len = x87_sqrt((vx * vx + vy * vy) + vz * vz);
+                double lim = len + len * len * g_64b6b8 / (F(double, p, 984) + g_64b5b8) * t;
+                if (s > lim)
+                    s = lim;
+            }
+        }
+    }
+    double res = (CallC<double>(FUN_401000) - g_lastSpeedTime68d0f0) * s;
+    Trace_Leave((const char*)s_prescribeAdvance);
+    return res;
 }
