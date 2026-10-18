@@ -1170,6 +1170,7 @@ PUBLIC $L_66d81c, $L_66e36c, $L_66e384, $L_66f08c, $L_686360
 PUBLIC $L_66d770, $L_66d794, $L_66d7c8, $L_66f288, $L_66f294
 PUBLIC $L_64b6a0, $L_66ccb0, $L_66ccb8, $L_66ccc0, $L_66ccd0, $L_66d9d4
 PUBLIC $L_66d9e0
+PUBLIC $L_64b6d8, $L_64b738, $L_66f494
 
 ;===================================
 _TEXT SEGMENT
@@ -143567,6 +143568,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_454230 PROC
 
             push -1
@@ -143843,6 +143846,10 @@ $L_4544a5::
             add ESP,52
             ret 
 FUN_454230 ENDP
+ELSE
+EXTERN _Towns_PickWeighted:PROC
+FUN_454230 TEXTEQU <_Towns_PickWeighted>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -147858,6 +147865,8 @@ $L_456449::
             nop
 $L_456400 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_456460 PROC
 
             push EBP
@@ -148100,6 +148109,10 @@ $L_4566a9::
             pop EBP
             ret 
 FUN_456460 ENDP
+ELSE
+EXTERN _Recs_FarFromCamera:PROC
+FUN_456460 TEXTEQU <_Recs_FarFromCamera>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -148494,6 +148507,8 @@ EXTERN _Pick_RandomMasked:PROC
 FUN_456880 TEXTEQU <_Pick_RandomMasked>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_456a10 PROC
 
             push -1
@@ -148761,6 +148776,10 @@ $L_456c79::
             add ESP,52
             ret 
 FUN_456a10 ENDP
+ELSE
+EXTERN _Goods_PickWeighted:PROC
+FUN_456a10 TEXTEQU <_Goods_PickWeighted>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
