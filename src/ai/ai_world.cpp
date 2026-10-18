@@ -17812,7 +17812,7 @@ extern "C" void FUN_4455b0(); KING_ALIAS("_FUN_4455b0", "_Ai_DropOrders")    // 
 extern "C" void FUN_427090(); KING_ALIAS("_FUN_427090", "_Ai_ClearPlayerFromMafia")    // clearPlayerFromMafia (player)
 extern "C" void FUN_414760(); KING_ALIAS("_FUN_414760", "_Vehicle_IndexByKey")    // a vehicle by model (out, model)
 extern "C" void FUN_433f60(); KING_ALIAS("_FUN_433f60", "@Rec_Zero10@8")    // a vehicle order's constructor (thiscall)
-ASM_PROC(FUN_433660)    // (player, dealer, model, order*) returns int
+extern "C" void FUN_433660(); KING_ALIAS("_FUN_433660", "_Ai_PrepareVehicleOrder")    // (player, dealer, model, order*) returns int
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")    // a vector's storage free (thiscall)
 extern "C" void FUN_4466a0(); KING_ALIAS("_FUN_4466a0", "_Ai_RemovePlayer")    // removes a player (player)
 
@@ -20444,4 +20444,85 @@ extern "C" void __cdecl Ai_BuildVehicleQueues()
     IntVec_Shuffle((BYTE**)((BYTE*)g_68cbf8 + 108));
     CallThis(FUN_448ab0, owned);
     CallThis(FUN_448ab0, other);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: checking a vehicle order
+
+ASM_VAR(AsmLabel, s_err0880, $L_66e154)
+ASM_VAR(double, g_64b8f8, $L_64b8f8)
+ASM_VAR(double, g_64b8f0, $L_64b8f0)
+extern "C" void FUN_41b8a0(); KING_ALIAS("_FUN_41b8a0", "_Vehicle_Costs")    // a vehicle's price parts (vehicle, out, double*)
+ASM_PROC(FUN_45fdd0)    // introsort of market iterators by distance (first, last, -, depth, point)
+ASM_PROC(FUN_4601c0)    // the final insertion sort (first, last, point)
+extern "C" void FUN_433240(); KING_ALIAS("_FUN_433240", "_AI_BaseDistance")    // a price factor at a point (point by value) returns double
+
+// [FUN_433660] fills a vehicle order (r) for a model from a dealer: 3 when the dealer can't sell (a kind-6 one
+// with a fine or the mafia, or not kind 6/7/9); the vehicle's data, the closest market's first free slot, the
+// price factor; 1 when the dealer's assortment lacks the vehicle
+extern "C" int __cdecl Ai_PrepareVehicleOrder(int player, int dealer, const char* model, BYTE* r)
+{
+    BYTE* d = (BYTE*)dealer;
+    int kind = F(int, d, 92);
+    if (kind == 6) {
+        if (F(double, d, 224) > g_zero64b678 || F(BYTE, d, 201))
+            return 3;
+    } else if (kind != 7 && kind != 9)
+        return 3;
+    if (!model)
+        return 0;
+    int veh;
+    CallC(FUN_414760, &veh, model);
+    BYTE* v = (BYTE*)g_vehicles[veh];
+    F(double, r, 24) = F(double, v, 48);
+    F(int, r, 12) = F(int, (BYTE*)g_vehicles[veh], 72);
+    DWORD x[2] = {0, 0};
+    CallC(FUN_41b8a0, veh, r + 16, x);
+    F(double, r, 32) = F(double, (BYTE*)g_vehicles[veh], 56);
+    DVec3 pt;
+    CallC(FUN_40b0d0, &pt, dealer);
+    BYTE* w[3];
+    Nodes_FarFrom(w, (BYTE**)g_68cc98, (BYTE**)g_68cc9c, &pt);
+    DVec3 p2 = pt;
+    if (w[0] != w[1]) {
+        int k = 0;
+        for (unsigned n = (unsigned)(w[1] - w[0]) >> 2; n != 1; n >>= 1)
+            k++;
+        CallC(FUN_45fdd0, w[0], w[1], 0, k * 2, p2);
+        CallC(FUN_4601c0, w[0], w[1], p2);
+    }
+    BYTE** first = *(BYTE***)w[0];
+    BYTE* m = *first;
+    BYTE* s = F(BYTE*, m, 28);
+    for (; s != F(BYTE*, m, 32); s += 36)
+        if (F(DWORD, s, 4) >> 2 & 1)
+            break;
+    F(int, r, 56) = first - (BYTE**)g_68cc98;
+    F(BYTE*, r, 60) = s;
+    F(int, r, 64) = (s - F(BYTE*, *first, 28)) / 36;
+    F(DWORD, r, 52) = F(DWORD, s, 0);
+    F(DWORD, r, 48) = F(DWORD, s, 12);
+    F(BYTE, r, 68) = F(DWORD, s, 4) >> 5 & 1;
+    int res = 0;
+    if (F(int, d, 92) == 6)
+        F(double, r, 40) = CallC<double>(FUN_433240, p2) * g_64b8f8 + g_64b8f0;
+    else {
+        BYTE* asst;
+        res = Ai_GetAssortment(dealer, &asst, (double*)(r + 40));
+        if (!res) {
+            if (!asst)
+                AiError(0, 100, s_mainFile, s_mainId, 13484, s_err0880, &g_aiEmpty, &g_aiEmpty);
+            if (F(int*, asst, 0) == F(int*, asst, 4))
+                AiError(0, 100, s_mainFile, s_mainId, 13487, s_err0875, &g_aiEmpty, &g_aiEmpty);
+            int* e = F(int*, asst, 0);
+            for (; e != F(int*, asst, 4); e++)
+                if (*e == veh)
+                    break;
+            res = e == F(int*, asst, 4) ? 1 : 0;
+        }
+    }
+    int cap = (int)(w[2] - w[0]) >> 2;
+    if (cap)
+        Ai_PoolFree(w[0], cap * 4);
+    return res;
 }

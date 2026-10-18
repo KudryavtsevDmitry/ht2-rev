@@ -1191,6 +1191,7 @@ PUBLIC $L_66cd68
 PUBLIC $L_64b700
 PUBLIC $L_64b960, $L_659d60, $L_66dcb4, $L_66f484, $L_68d20c
 PUBLIC $L_64b888
+PUBLIC $L_64b8f0, $L_64b8f8, $L_66e154
 
 ;===================================
 _TEXT SEGMENT
@@ -86704,6 +86705,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_433660 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -87217,6 +87220,10 @@ $L_433b4a::
             add ESP,84
             ret 
 FUN_433660 ENDP
+ELSE
+EXTERN _Ai_PrepareVehicleOrder:PROC
+FUN_433660 TEXTEQU <_Ai_PrepareVehicleOrder>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
