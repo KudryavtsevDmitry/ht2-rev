@@ -1162,6 +1162,8 @@ PUBLIC $L_66dd8c, $L_66dda0, $L_66e444, $L_66e45c, $L_66e4a4, $L_68a820
 PUBLIC $L_68d0f8, $L_68d198
 PUBLIC $L_66d168, $L_66da70, $L_66eb70, $L_66ebb8, $L_66f2bc, $L_66f2c4
 PUBLIC $L_66f340
+PUBLIC $L_66e168, $L_66e8c0, $L_66f300
+PUBLIC $L_64b698
 
 ;===================================
 _TEXT SEGMENT
@@ -76773,6 +76775,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42d960 PROC
 
             push EBP
@@ -77008,6 +77012,10 @@ $L_42db7a::
             pop EBP
             ret 
 FUN_42d960 ENDP
+ELSE
+EXTERN @Tasks_RunDue@8:PROC
+FUN_42d960 TEXTEQU <@Tasks_RunDue@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -86989,6 +86997,8 @@ $L_433b4a::
 FUN_433660 ENDP
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_433b60 PROC
 
             push -1
@@ -87306,6 +87316,10 @@ $L_433f32::
             add ESP,148
             ret 
 FUN_433b60 ENDP
+ELSE
+EXTERN _Ai_OrderVehicle:PROC
+FUN_433b60 TEXTEQU <_Ai_OrderVehicle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -99820,6 +99834,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43bf10 PROC
 
             push -1
@@ -100172,6 +100188,10 @@ $L_43c2b5::
             add ESP,80
             ret 
 FUN_43bf10 ENDP
+ELSE
+EXTERN _Ai_AdvancePlayerPosition:PROC
+FUN_43bf10 TEXTEQU <_Ai_AdvancePlayerPosition>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -115060,6 +115080,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_445740 PROC
 
             push EBP
@@ -115378,6 +115400,10 @@ $L_445a71::
             pop EBP
             ret 
 FUN_445740 ENDP
+ELSE
+EXTERN _Ai_MafiaAttack:PROC
+FUN_445740 TEXTEQU <_Ai_MafiaAttack>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -149877,6 +149903,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4575d0 PROC
 
             push EBP
@@ -150092,6 +150120,10 @@ $L_4577dc::
             pop EBP
             ret 
 FUN_4575d0 ENDP
+ELSE
+EXTERN _Nodes_FarFrom:PROC
+FUN_4575d0 TEXTEQU <_Nodes_FarFrom>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD

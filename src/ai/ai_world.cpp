@@ -4976,7 +4976,7 @@ int* __cdecl Rec_FirstId(int* out, int idx)
 
 }
 
-ASM_PROC(FUN_43bf10)    // a player's next position along its route
+extern "C" void FUN_43bf10(); KING_ALIAS("_FUN_43bf10", "_Ai_AdvancePlayerPosition")    // a player's next position along its route
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<int>::operator=
 ASM_VAR(AsmLabel, g_68b99c, $L_68b99c)
 extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
@@ -8653,7 +8653,7 @@ extern "C" BYTE* __cdecl Ai_ReadAmbush(void* reader, StrRef h)
 // ---------------------------------------------------------------------------
 // xLoadEntities
 
-ASM_PROC(FUN_43bf10)    // a player's next position (out, player, PositionId32, double*, int)
+extern "C" void FUN_43bf10(); KING_ALIAS("_FUN_43bf10", "_Ai_AdvancePlayerPosition")    // a player's next position (out, player, PositionId32, double*, int)
 extern "C" void FUN_4376a0(); KING_ALIAS("_FUN_4376a0", "_Ai_GetNoncontradictoryPosition")    // a player's position (out, player)
 extern "C" void FUN_456ea0(); KING_ALIAS("_FUN_456ea0", "@Entry32Vec_InsertAux@16")    // vector<32-byte entry>::insert_aux (thiscall pos, x)
 ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
@@ -17341,7 +17341,7 @@ ASM_VAR(double, t_68d198, $L_68d198)
 extern "C" void FUN_483a20(); KING_ALIAS("_FUN_483a20", "_AI_Time")    // returns double
 ASM_PROC(FUN_5e48f0)
 extern "C" void FUN_424550(); KING_ALIAS("_FUN_424550", "_Ai_LoadEntities")
-ASM_PROC(FUN_42d960)    // (thiscall 68b998)
+extern "C" void FUN_42d960(); KING_ALIAS("_FUN_42d960", "@Tasks_RunDue@8")    // (thiscall 68b998)
 extern "C" void FUN_446af0(); KING_ALIAS("_FUN_446af0", "_Ai_KillDelayedPlayers")
 ASM_PROC(FUN_423a90)
 extern "C" void FUN_477420(); KING_ALIAS("_FUN_477420", "_Player_ExpireLicences")    // (player)
@@ -17798,4 +17798,243 @@ extern "C" int __cdecl Ai_DropOrdersForfeit(int player)
     CallC(FUN_426f20, player);
     Trace_Leave((const char*)s_dropOrdersForfeit);
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: a mafia attack, advancing a player's position, ordering a vehicle
+
+ASM_VAR(AsmLabel, s_mafiaAttack, $L_66f300)
+ASM_VAR(AsmLabel, s_advancePositionOf, $L_66e8c0)
+ASM_VAR(AsmLabel, s_orderVehicle, $L_66e168)
+ASM_VAR(double, g_66c788, $L_66c788)
+extern "C" void FUN_42bb10(); KING_ALIAS("_FUN_42bb10", "_AI_LightsOff1")
+extern "C" void FUN_4455b0(); KING_ALIAS("_FUN_4455b0", "_Ai_DropOrders")    // __dropOrders (player)
+extern "C" void FUN_427090(); KING_ALIAS("_FUN_427090", "_Ai_ClearPlayerFromMafia")    // clearPlayerFromMafia (player)
+extern "C" void FUN_414760(); KING_ALIAS("_FUN_414760", "_Vehicle_IndexByKey")    // a vehicle by model (out, model)
+extern "C" void FUN_433f60(); KING_ALIAS("_FUN_433f60", "@Rec_Zero10@8")    // a vehicle order's constructor (thiscall)
+ASM_PROC(FUN_433660)    // (player, dealer, model, order*) returns int
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")    // a vector's storage free (thiscall)
+extern "C" void FUN_4466a0(); KING_ALIAS("_FUN_4466a0", "_Ai_RemovePlayer")    // removes a player (player)
+
+// [FUN_445740] mafiaAttack(PlayerId player): carrying orders worth more than its fine (+224), the player
+// forfeits them (a forfeit task); otherwise it pays the fine; then the fine is cleared
+extern "C" int __cdecl Ai_MafiaAttack(int player)
+{
+    Trace_EnterBuffered((const char*)s_mafiaAttack);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 18054, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    CallC(FUN_42bb10);
+    double sum = 0;
+    double fine = F(double, p, 224);
+    BYTE* o = 0;
+    o = F(BYTE*, Player_Orders(p, (BYTE*)&o), 0);
+    BYTE* w = 0;
+    for (;;) {
+        w = Player_Orders(p, w);
+        if (o == F(BYTE*, w, 4))
+            break;
+        sum = CallC<double>(FUN_471420, o) + sum;
+        o += 144;
+    }
+    if (sum > fine) {
+        CallC(FUN_4455b0, player);
+        CallC(FUN_483e80, 21, 0);
+        BYTE* t = (BYTE*)operator new(64);
+        BYTE* task = t ? Forfeit_Construct(t, 0, player, F(int, &sum, 0), F(int, &sum, 4)) : 0;
+        BYTE* it;
+        ListB_Insert(&g_68b99c, 0, &it, (BYTE**)*(BYTE**)&g_68b99c, &task);
+    } else {
+        CallC(FUN_483e60, F(double, p, 224));
+        CallC(FUN_483e80, 20, 0);
+        F(double, p, 136) = F(double, p, 136) - F(double, p, 224);
+    }
+    F(DWORD, p, 224) = 0;
+    F(DWORD, p, 228) = 0;
+    F(DWORD, p, 232) = 0;
+    CallC(FUN_477210, player);
+    CallC(FUN_426f20, player);
+    CallC(FUN_427090, player);
+    Trace_Leave((const char*)s_mafiaAttack);
+    return 0;
+}
+
+// [FUN_43bf10] advancePosition(PlayerId player, PositionId pos, double & offset, bool sendmessage)
+extern "C" PositionId* __cdecl Ai_AdvancePlayerPosition(PositionId* out, int player, PositionId pos, double* offset,
+                                                        bool sendmessage)
+{
+    Trace_EnterBuffered((const char*)s_advancePositionOf);
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 15894, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    AdvanceRoad_Check(&pos, 15895);
+    DVec3 pt;
+    Road_PointOf(&pt, pos);
+    PositionId res;
+    pos = *Ai_AdvancePosition(&res, player, (BYTE*)player + 8, pos, offset, sendmessage);
+    AdvanceRoad_Check(&pos, 15899);
+    *out = pos;
+    Trace_Leave((const char*)s_advancePositionOf);
+    return out;
+}
+
+// [FUN_433b60] orderVehicle(PlayerId player, PlayerId dealer, char const * _vehicleModel): returns
+// FUN_433660's refusal, or 2 when a kind-6 dealer's roll fails; otherwise the player pays (+136), and a
+// new dealer for sale at the order's node takes its market slot
+extern "C" int __cdecl Ai_OrderVehicle(int player, int dealer, const char* model)
+{
+    Trace_EnterBuffered((const char*)s_orderVehicle);
+    int veh;
+    CallC(FUN_414760, &veh, model);
+    BYTE r[80];
+    CallThis(FUN_433f60, r);
+    F(DWORD, r, 40) = 0;
+    F(DWORD, r, 44) = 0;
+    F(int, r, 52) = -1;
+    F(int, r, 56) = -1;
+    int res = CallC<int>(FUN_433660, player, dealer, model, r);
+    if (res) {
+        CallThis(FUN_404420, r);
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_orderVehicle);
+        return res;
+    }
+    BYTE* p = (BYTE*)player;
+    F(double, p, 136) = F(double, p, 136) - F(double, r, 40);
+    CallC(FUN_426f20, player);
+    if (F(int, (BYTE*)dealer, 92) == 6) {
+        double v = g_66c788;
+        unsigned roll = Rng_Random(&g_rng68b9c8, 0, 1000000);
+        if (v * g_64b6b0 > (double)roll) {
+            CallThis(FUN_404420, r);
+            Buf_Append(&g_trace, 0, g_tagMpl, 8);
+            Buf_AppendString(&g_trace, 0, (const char*)s_orderVehicle);
+            return 2;
+        }
+    }
+    int prev = F(int, F(BYTE*, r, 60), 8);
+    if (prev != (int)g_players)
+        CallC(FUN_4466a0, prev);
+    PositionId pos;
+    pos.road = -1;
+    pos.node = F(int, r, 52);
+    pos.t = 0;
+    pos.segment = 0;
+    pos.object = 0;
+    pos.m_24 = 0;
+    pos.m_28 = -1;
+    int id;
+    Ai_CreateDealerAt(&id, pos, 0, veh);
+    BYTE* d = (BYTE*)id;
+    F(int, d, 100) = 256;
+    g_68ced0[1]++;
+    int m = F(int, r, 56);
+    int k = F(int, r, 64);
+    F(int, d, 120) = m;
+    F(int, d, 124) = k;
+    BYTE* slot = F(BYTE*, (BYTE*)g_68cc98[m], 28) + k * 36;
+    F(BYTE*, slot, 8) = d;
+    F(int, (BYTE*)g_68cc98[m], 40)++;
+    F(void*, d, 972) = &g_68ced0;
+    F(DWORD, d, 96) |= 64;
+    slot = F(BYTE*, (BYTE*)g_68cc98[m], 28) + k * 36;
+    F(DWORD, slot, 4) |= 1;
+    F(int, F(BYTE*, d, 972), 12)++;
+    if (F(int, (BYTE*)dealer, 92) == 6)
+        F(DWORD, F(BYTE*, d, 516), 40) |= 2;
+    if (F(char, r, 68))
+        F(DWORD, F(BYTE*, d, 516), 40) |= 1;
+    unsigned n = F(BYTE*, r, 8) - F(BYTE*, r, 0);
+    if (n)
+        Ai_PoolFree(F(BYTE*, r, 0), n);
+    Trace_Leave((const char*)s_orderVehicle);
+    return 0;
+}
+
+ASM_VAR(double, g_64b698, $L_64b698)
+ASM_VAR(double, g_64b860, $L_64b860)
+extern "C" void FUN_447bc0(); KING_ALIAS("_FUN_447bc0", "_List_Erase@8")    // list erase (thiscall: out, node)
+extern "C" void FUN_45faf0(); KING_ALIAS("_FUN_45faf0", "_Find36Flag4")    // (first, last, a, b) returns int*
+extern "C" void FUN_4577f0(); KING_ALIAS("_FUN_4577f0", "_DVec3_Length")    // a vector's length (v) returns double
+extern "C" void FUN_45fb10(); KING_ALIAS("_FUN_45fb10", "@Vec4b_InsertF@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
+extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")    // uninitialized_copy of 4-byte elements (first, last, dest, -)
+
+// [FUN_42d960] (thiscall on 68b998: flag, list of tasks) when flagged, runs the first task that is due:
+// it leaves the list, runs (traced by its name at +32), gets its next time (+16 by its period +24, or from
+// now when that is too far behind) and goes back at the end unless it ended (+8 bit 0, then deleted)
+extern "C" void __fastcall Tasks_RunDue(BYTE* self, void*)
+{
+    if (!F(BYTE, self, 0))
+        return;
+    BYTE* list = self + 4;
+    BYTE* head = F(BYTE*, self, 4);
+    BYTE* node = *(BYTE**)head;
+    BYTE* task;
+    for (;; node = *(BYTE**)node) {
+        if (node == F(BYTE*, self, 4))
+            return;
+        task = F(BYTE*, node, 8);
+        if (CallC<double>(FUN_401000) > F(double, task, 16))
+            break;
+    }
+    BYTE* next;
+    CallThis(FUN_447bc0, list, &next, node);
+    const char* name = F(const char*, task, 32);
+    Trace_EnterInline(name);
+    CallVirt(task, 0);
+    Trace_Leave(name);
+    F(double, task, 16) = F(double, task, 24) + F(double, task, 16);
+    double now = CallC<double>(FUN_401000);
+    if (!(F(double, task, 24) * g_64b698 + F(double, task, 16) >= now))
+        F(double, task, 16) = CallC<double>(FUN_401000) + F(double, task, 24);
+    F(BYTE, self, 0) = 0;
+    if (!(F(BYTE, task, 8) & 1)) {
+        BYTE* it;
+        ListB_Insert(list, 0, &it, (BYTE**)F(BYTE*, self, 4), &task);
+    } else
+        operator delete(task);
+}
+
+// [FUN_4575d0] the positions in [first, last) whose object (+28..+32 list) holds a node farther than 64b860
+// from v, as a new vector
+extern "C" BYTE** __cdecl Nodes_FarFrom(BYTE** out, BYTE** first, BYTE** last, const DVec3* v)
+{
+    BYTE* tmp[3] = {0, 0, 0};
+    for (BYTE** it = first; it != last; it++) {
+        BYTE* e = *it;
+        int* r = CallC<int*>(FUN_45faf0, F(BYTE*, e, 28), F(BYTE*, e, 32), first, it);
+        if ((BYTE*)r == F(BYTE*, e, 32))
+            continue;
+        BYTE* n = (BYTE*)g_roadNodes[*r];
+        DVec3 d;
+        double dz = F(double, n, 64) - v->z;
+        double dy = F(double, n, 56) - v->y;
+        double dx = F(double, n, 48) - v->x;
+        d.x = dx;
+        d.y = dy;
+        d.z = dz;
+        if (CallC<double>(FUN_4577f0, &d) > g_64b860) {
+            BYTE** e2 = (BYTE**)tmp[1];
+            if (tmp[1] != tmp[2]) {
+                if (e2)
+                    *e2 = (BYTE*)it;
+                tmp[1] += 4;
+            } else
+                CallThis(FUN_45fb10, tmp, tmp[1], &it);
+        }
+    }
+    unsigned n = (unsigned)(tmp[1] - tmp[0]) >> 2;
+    out[0] = out[1] = out[2] = 0;
+    BYTE** buf = n ? (BYTE**)Stl_Allocate(n * 4) : 0;
+    out[0] = (BYTE*)buf;
+    out[1] = (BYTE*)buf;
+    out[2] = (BYTE*)(buf + n);
+    out[1] = CallC<BYTE*>(FUN_46b0e0, tmp[0], tmp[1], buf, last);
+    unsigned cap = (unsigned)(tmp[2] - tmp[0]) >> 2;
+    if (cap)
+        Ai_PoolFree(tmp[0], cap * 4);
+    return out;
 }
