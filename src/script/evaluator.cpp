@@ -1524,7 +1524,7 @@ void __cdecl Sch4ab570_Construct(BYTE* d, const BYTE* s)
 
 extern "C" void FUN_4a4540(); KING_ALIAS("_FUN_4a4540", "_Vec12_AllocCopyS@12")    // allocate n values and copy [first, last) (stdcall)
 extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")    // construct a value copy at p
-ASM_PROC(FUN_44c710)    // vector of values: insert at the end (reallocating)
+extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector of values: insert at the end (reallocating)
 extern "C" void FUN_4a5910(); KING_ALIAS("_FUN_4a5910", "_Sch_Message0")    // script message (ctx, code)
 
 extern "C" {
