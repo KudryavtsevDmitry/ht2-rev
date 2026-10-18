@@ -10685,7 +10685,7 @@ extern "C" void FUN_417820(); KING_ALIAS("_FUN_417820", "_Ai_ArriveAt")    // a 
 extern "C" void FUN_4194a0(); KING_ALIAS("_FUN_4194a0", "_Ai_RestartWaitTimer")
 extern "C" void FUN_416b80(); KING_ALIAS("_FUN_416b80", "_Ai_RaceNextCheckpoint")
 extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
-ASM_PROC(FUN_4194e0)
+extern "C" void FUN_4194e0(); KING_ALIAS("_FUN_4194e0", "_Ai_SendForSomething")
 extern "C" void FUN_4185d0(); KING_ALIAS("_FUN_4185d0", "_Ai_TruckerNextOrder")
 extern "C" void FUN_417ed0(); KING_ALIAS("_FUN_417ed0", "_Ai_GoToGoodsTown")
 extern "C" void FUN_40a2a0(); KING_ALIAS("_FUN_40a2a0", "_Ai_GoToNode")    // sends a player to a node (player, node)
@@ -12991,7 +12991,7 @@ extern "C" void __cdecl Ai_RaceNextCheckpoint(BYTE* p)
 // ---------------------------------------------------------------------------
 // getOrientationSmoothed(PlayerId player, PositionId pos)
 
-ASM_PROC(FUN_439a70)    // getOrientation (out, PositionId32)
+extern "C" void FUN_439a70(); KING_ALIAS("_FUN_439a70", "_Ai_GetOrientation")    // getOrientation (out, PositionId32)
 ASM_VAR(AsmLabel, s_getOrientationSmoothed, $L_66e700)
 ASM_VAR(AsmLabel, s_invalidPositionId, $L_66cbe0)
 
@@ -16665,7 +16665,7 @@ ASM_VAR(double, g_66f8a0, $L_66f8a0)
 ASM_VAR(BYTE, w_hash68cf10, $L_68cf10)
 extern "C" void FUN_478260(); KING_ALIAS("_FUN_478260", "_Player_GoTo")    // (player, 32-byte position, int)
 extern "C" void FUN_478630(); KING_ALIAS("_FUN_478630", "_Player_RemoveWaypoint")    // (player, int)
-ASM_PROC(FUN_428230)
+extern "C" void FUN_428230(); KING_ALIAS("_FUN_428230", "_Ai_RecalculateCompetitionPlace")
 extern "C" void FUN_427f40(); KING_ALIAS("_FUN_427f40", "_Ai_CalculateNewPlace")    // (int*, double*)
 extern "C" void FUN_404e80(); KING_ALIAS("_FUN_404e80", "_Town_Id")    // a town's node (out, town)
 extern "C" void FUN_487500(); KING_ALIAS("_FUN_487500", "_Road_PositionCostBest")    // a route's length (int, from, to, double* out)
@@ -16849,7 +16849,7 @@ extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
 extern "C" void FUN_41ef90(); KING_ALIAS("_FUN_41ef90", "_Player_CheckTownAA")
 ASM_PROC(FUN_56f6d0)
 extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")    // a player's current order (player)
-ASM_PROC(FUN_42c0b0)
+extern "C" void FUN_42c0b0(); KING_ALIAS("_FUN_42c0b0", "_Ai_MarkAmbushes")
 extern "C" void FUN_442850(); KING_ALIAS("_FUN_442850", "_Ai_AccountForGuilt")    // accountForGuilt (player)
 ASM_VAR(AsmLabel, s_calculateNewPlace, $L_66dab4)
 ASM_VAR(AsmLabel, s_accountForChangeInLoadState, $L_66f124)
@@ -17114,4 +17114,208 @@ extern "C" void __cdecl Ai_AccountForChangeInLoadState(int player)
         F(DWORD, p, 96) &= 0xfeefffff;
     CallC(FUN_42c0b0);
     Trace_Leave((const char*)s_accountForChangeInLoadState);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: ambush marks, the competition place, advancements, setting positions, orientations, sending players
+
+ASM_VAR(AsmLabel, s_markAmbushes, $L_66dca4)
+ASM_VAR(AsmLabel, s_recalculateCompetitionPlace, $L_66daec)
+ASM_VAR(AsmLabel, s_updateAdvancementsRegular, $L_66db28)
+ASM_VAR(AsmLabel, s_setPlayerPositionRoom, $L_66eae0)
+ASM_VAR(AsmLabel, s_getOrientation, $L_66e6e0)
+ASM_VAR(AsmLabel, s_sendForSomething, $L_66d44c)
+ASM_VAR(double, g_64b878, $L_64b878)
+ASM_VAR(double, g_64b670, $L_64b670)
+ASM_VAR(double, g_64b6b0, $L_64b6b0)
+typedef DVec3 Offsets4[4];
+ASM_VAR(Offsets4, g_offsets68cc28, $L_68cc28)
+extern "C" void FUN_429820(); KING_ALIAS("_FUN_429820", "@PlayerId_Over020@8")    // (no args) returns bool
+extern "C" void FUN_487e50(); KING_ALIAS("_FUN_487e50", "_DMatrix_Multiply")    // matrix product (out, a, b)
+extern "C" void FUN_436bd0(); KING_ALIAS("_FUN_436bd0", "_Ai_GetPositionIdRoom")    // getPositionId in a room (out, room, v)
+extern "C" void FUN_43dc60(); KING_ALIAS("_FUN_43dc60", "_Ai_SetPlayerPosition")    // setPlayerPosition (player, v)
+extern "C" void FUN_4390a0(); KING_ALIAS("_FUN_4390a0", "_Ai__GetTangent")    // a position's direction (out, pos)
+ASM_PROC(FUN_4397e0)    // an orientation (out, point, direction)
+extern "C" void FUN_418fe0(); KING_ALIAS("_FUN_418fe0", "_Player_WaitsInTownOf")    // (player) returns bool
+extern "C" void FUN_474210(); KING_ALIAS("_FUN_474210", "@Player_GetPlace@8")    // (thiscall player) its vehicle
+extern "C" void FUN_419030(); KING_ALIAS("_FUN_419030", "_Ai_GoHireIt")    // goHireIt (player)
+extern "C" void FUN_417820(); KING_ALIAS("_FUN_417820", "_Ai_ArriveAt")    // (player, pos)
+extern "C" void FUN_4185d0(); KING_ALIAS("_FUN_4185d0", "_Ai_TruckerNextOrder")    // (player)
+
+static bool Ambush_Roll()
+{
+    unsigned r = AiRandom() % 1000000;
+    return (double)r < g_64b878;
+}
+
+// [FUN_42c0b0] markAmbushes(): marks (+240) each kind-2 ambush, and each kind-1 one while the human carries
+// something (or its flag at +201 is set) and FUN_429820 allows it, by a random roll under 64b878 per million
+extern "C" void __cdecl Ai_MarkAmbushes()
+{
+    Trace_EnterAppend((const char*)s_markAmbushes);
+    for (void** e = g_68a970; e != g_68a974; e++) {
+        BYTE* a = (BYTE*)*e;
+        F(BYTE, a, 240) = 0;
+        int kind = F(int, a, 36);
+        if (kind == 2)
+            F(BYTE, a, 240) = Ambush_Roll();
+        else if (kind == 1) {
+            int s;
+            BYTE* h = (BYTE*)*Player_FromId(&s) + 200;
+            if (!(F(double, h, 24) > g_zero64b678) && !F(char, h, 1))
+                continue;
+            bool mark = false;
+            if (CallC<char>(FUN_429820))
+                mark = Ambush_Roll();
+            F(BYTE, (BYTE*)*e, 240) = mark;
+        }
+    }
+    Trace_Leave((const char*)s_markAmbushes);
+}
+
+// [FUN_428230] recalculateCompetitionPlace(): the human's place (+528) among the competitors (+524 their
+// count); when the closest one is over 12 away, the place it would have at the four offsets of 68cc28 from
+// its matrix decides (the advancement stays at the first better one)
+extern "C" void __cdecl Ai_RecalculateCompetitionPlace()
+{
+    Trace_EnterBuffered((const char*)s_recalculateCompetitionPlace);
+    int n = 0;
+    double best = 1.7976931348623157e308;
+    Ai_CalculateNewPlace(&n, &best);
+    if (best > g_64b710) {
+        int s;
+        BYTE* h = (BYTE*)*Player_FromId(&s);
+        if (h != (BYTE*)g_players) {
+            F(int, h, 524) = (g_68a984 - g_68a980) + g_68d164;
+            int place = g_68d164 + n;
+            if (!g_68d188 && F(int, (BYTE*)s, 100) != 5) {
+                h = (BYTE*)s;
+                BYTE mat[96];
+                memcpy(mat, h + 552, 96);
+                for (int k = 0; k < 4; k++) {
+                    BYTE m[96], mc[96], out[96];
+                    Rec_InitTimes(m, 0, 1.0);
+                    DVec3_Assign((DVec3*)(m + 72), 0, &g_offsets68cc28[k]);
+                    memcpy(mc, m, 96);
+                    CallC(FUN_487e50, out, mc, mat);
+                    PositionId pos;
+                    Ai_GetPositionIdEx(&pos, F(int, (BYTE*)s, 852), (const DVec3*)(out + 72));
+                    if (pos.road == -1 && pos.node == -1 && !(pos.t < 0 || pos.t > 0) && !pos.segment && !pos.object
+                        && !pos.m_24)
+                        continue;
+                    Ai_UpdateAdvancementRegular((BYTE*)s + 8, pos);
+                    Ai_CalculateNewPlace(&n, &best);
+                    if (place > (int)(g_68d164 + n)) {
+                        F(int, (BYTE*)s, 528) = g_68d164 + n;
+                        Trace_Tag((const DWORD*)g_tagMpl);
+                        Buf_AppendString(&g_trace, 0, (const char*)s_recalculateCompetitionPlace);
+                        return;
+                    }
+                }
+                Ai_UpdateAdvancementRegular((BYTE*)s + 8, F(PositionId, (BYTE*)s, 40));
+            }
+            F(int, (BYTE*)s, 528) = place;
+        }
+    }
+    Trace_Leave((const char*)s_recalculateCompetitionPlace);
+}
+
+// [FUN_4287b0] updateAdvancementsRegular(): the human's and each racer's advancement; a racer whose
+// advancement (+496) changed by more than 64b670 flips its flag at +505
+extern "C" void __cdecl Ai_UpdateAdvancementsRegular()
+{
+    Trace_EnterBuffered((const char*)s_updateAdvancementsRegular);
+    int s;
+    BYTE* h;
+    if (g_68a980 == g_68a984 || (h = (BYTE*)*Player_FromId(&s)) == (BYTE*)g_players || F(int, h, 100) == 5) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_updateAdvancementsRegular);
+        return;
+    }
+    Ai_UpdateAdvancementRegular(h + 8, F(PositionId, h, 40));
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        if (!CallC<char>(FUN_4172e0, (int)it))
+            continue;
+        double before = F(double, d, 496);
+        Ai_UpdateAdvancementRegular(d, F(PositionId, d, 32));
+        double ch = F(double, d, 496) - before;
+        if (ch < 0)
+            ch = -ch;
+        if (ch > g_64b670)
+            F(BYTE, d, 505) = F(BYTE, d, 505) == 0;
+    }
+    Trace_Leave((const char*)s_updateAdvancementsRegular);
+}
+
+// [FUN_43e2a0] _setPlayerPosition(RoomId room, PlayerId player, dvector3 const & v): a player without
+// hops goes to the room's closest road object position, otherwise (or with no room) setPlayerPosition
+extern "C" void __cdecl Ai_SetPlayerPositionRoom(int room, int player, const DVec3* v)
+{
+    Trace_EnterBuffered((const char*)s_setPlayerPositionRoom);
+    BYTE* p = (BYTE*)player;
+    BYTE* r;
+    if (F(BYTE*, p, 24) == F(BYTE*, p, 28) && room != -1
+        && F(BYTE*, r = g_vec68d0d8[room], 28) != F(BYTE*, r, 32)) {
+        PositionId pos;
+        CallC(FUN_436bd0, &pos, room, v);
+        PositionId chk = pos;
+        if (!PositionValid(&chk)) {
+            sprintf(g_positionText77e6e0, "(%d %g %d %d %x)", pos.road, pos.t, pos.segment, pos.object, pos.m_24);
+            AiError(33, 100, s_mainFile, s_mainId, 16313, s_invalidId, "PositionId", g_positionText77e6e0);
+        }
+        Player_SetPosition(p + 8, 0, &pos);
+    } else
+        CallC(FUN_43dc60, player, v);
+    Trace_Leave((const char*)s_setPlayerPositionRoom);
+}
+
+// [FUN_439a70] _getOrientation(PositionId pos): the orientation at a position's point along its direction
+extern "C" BYTE* __cdecl Ai_GetOrientation(BYTE* out, PositionId pos)
+{
+    Trace_EnterAppend((const char*)s_getOrientation);
+    AdvanceRoad_Check(&pos, 15408);
+    DVec3 dir, pt;
+    void* d = CallC<void*>(FUN_4390a0, &dir, pos);
+    CallC(FUN_4397e0, out, Road_PointOf(&pt, pos), d);
+    Trace_Leave((const char*)s_getOrientation);
+    return out;
+}
+
+// [FUN_4194e0] sendForSomething(PlayerId player): with hire places free, an idle kind-2 player whose dealer
+// (+520, else +516) has nothing goes to hire; otherwise by a roll against its vehicle's +40 it takes its next
+// order or arrives where it is
+extern "C" void __cdecl Ai_SendForSomething(int player)
+{
+    Trace_EnterBuffered((const char*)s_sendForSomething);
+    BYTE* p = (BYTE*)player;
+    if (!g_68d188) {
+        bool done = false;
+        if (g_68d14c < g_68d150 && F(int, p, 92) == 2 && !F(int, p, 100) && CallC<char>(FUN_418fe0, player)) {
+            BYTE* m = F(BYTE*, p, 520);
+            DWORD* v;
+            if (m && F(int, m, 4) != -1)
+                v = (DWORD*)(m + 28);
+            else if ((m = F(BYTE*, p, 516)) != 0 && F(int, m, 4) != -1)
+                v = (DWORD*)(m + 28);
+            else {
+                AiError(0, 1, &g_strAiPlayH, s_mainId, 740, &g_strErr9012, &g_aiEmpty, &g_aiEmpty);
+                v = (DWORD*)p;
+            }
+            if (v[0] == v[1]) {
+                CallC(FUN_419030, player);
+                done = true;
+            }
+        }
+        if (!done) {
+            BYTE* veh = CallThis<BYTE*>(FUN_474210, p + 8);
+            double x = F(double, veh, 40);
+            unsigned r = AiRandom() % 1000000;
+            if (x * g_64b6b0 > (double)r)
+                CallC(FUN_4185d0, player);
+            else
+                CallC(FUN_417820, player, F(PositionId, p, 40));
+        }
+    }
+    Trace_Leave((const char*)s_sendForSomething);
 }

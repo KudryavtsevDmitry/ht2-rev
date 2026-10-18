@@ -1155,6 +1155,8 @@ PUBLIC $L_66dd14, $L_66f1c8, $L_68cf40, $L_68d0e8
 PUBLIC $L_64b6f8, $L_66da60, $L_66ddb4, $L_68d170
 PUBLIC $L_64b6a8, $L_66cb88, $L_66db0c, $L_66f8a0
 PUBLIC $L_64b530, $L_64b898, $L_66dab4, $L_66f124
+PUBLIC $L_64b6b0, $L_64b878, $L_66d44c, $L_66daec, $L_66db28, $L_66dca4
+PUBLIC $L_66e6e0, $L_66eae0, $L_68cc28
 
 ;===================================
 _TEXT SEGMENT
@@ -43590,6 +43592,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4194e0 PROC
 
             push -1
@@ -43819,6 +43823,10 @@ $L_419748::
             add ESP,28
             ret 
 FUN_4194e0 ENDP
+ELSE
+EXTERN _Ai_SendForSomething:PROC
+FUN_4194e0 TEXTEQU <_Ai_SendForSomething>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -67460,6 +67468,8 @@ $L_428130::
             nop
 $L_428120 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_428230 PROC
 
             push EBP
@@ -67746,6 +67756,10 @@ $L_428558::
             pop EBP
             ret 
 FUN_428230 ENDP
+ELSE
+EXTERN _Ai_RecalculateCompetitionPlace:PROC
+FUN_428230 TEXTEQU <_Ai_RecalculateCompetitionPlace>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -67971,6 +67985,8 @@ EXTERN _Ai_ReportCompetitionState:PROC
 FUN_4285c0 TEXTEQU <_Ai_ReportCompetitionState>
 ENDIF
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4287b0 PROC
 
             push EBP
@@ -68173,6 +68189,10 @@ $L_4289ca::
             pop EBP
             ret 
 FUN_4287b0 ENDP
+ELSE
+EXTERN _Ai_UpdateAdvancementsRegular:PROC
+FUN_4287b0 TEXTEQU <_Ai_UpdateAdvancementsRegular>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -74194,6 +74214,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42c0b0 PROC
 
             push -1
@@ -74406,6 +74428,10 @@ $L_42c314::
             add ESP,40
             ret 
 FUN_42c0b0 ENDP
+ELSE
+EXTERN _Ai_MarkAmbushes:PROC
+FUN_42c0b0 TEXTEQU <_Ai_MarkAmbushes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -96297,6 +96323,8 @@ FUN_4397e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_439a70 PROC
 
             push -1
@@ -96533,6 +96561,10 @@ $L_439ccc::
             add ESP,76
             ret 
 FUN_439a70 ENDP
+ELSE
+EXTERN _Ai_GetOrientation:PROC
+FUN_439a70 TEXTEQU <_Ai_GetOrientation>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -103302,6 +103334,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43e2a0 PROC
 
             push -1
@@ -103515,6 +103549,10 @@ $L_43e4be::
             add ESP,84
             ret 
 FUN_43e2a0 ENDP
+ELSE
+EXTERN _Ai_SetPlayerPositionRoom:PROC
+FUN_43e2a0 TEXTEQU <_Ai_SetPlayerPositionRoom>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
