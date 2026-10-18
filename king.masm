@@ -1,3 +1,4 @@
+PUBLIC $L_42a1c0, $L_42a2c0, $L_42a3f0
 PUBLIC $L_684a20
 PUBLIC $L_7242a0
 PUBLIC $L_724378
@@ -1192,6 +1193,11 @@ PUBLIC $L_64b700
 PUBLIC $L_64b960, $L_659d60, $L_66dcb4, $L_66f484, $L_68d20c
 PUBLIC $L_64b888
 PUBLIC $L_64b8f0, $L_64b8f8, $L_66e154
+PUBLIC $L_64b7a8, $L_64b908, $L_64b910, $L_64b918, $L_64b928, $L_66c6e8
+PUBLIC $L_66e1f0, $L_66e1fc, $L_66e208, $L_66e218, $L_66e224, $L_66e234
+PUBLIC $L_66e248, $L_66e25c, $L_66e278, $L_66e28c, $L_66e2a0, $L_66e2b0
+PUBLIC $L_66e2cc, $L_66e2e0, $L_66e2f0, $L_66e300, $L_66e310, $L_66e320
+PUBLIC $L_66e330, $L_66e340, $L_66e34c, $L_66e35c, $L_68d108
 
 ;===================================
 _TEXT SEGMENT
@@ -88448,6 +88454,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_434780 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -89112,6 +89120,10 @@ $L_434dca::
             fsubr QWORD PTR [$L_64b670]
             call __CIpow
 FUN_434780 ENDP
+ELSE
+EXTERN _Ai_StartGame:PROC
+FUN_434780 TEXTEQU <_Ai_StartGame>
+ENDIF
 $L_434e2b PROC
 
             fmul QWORD PTR [$L_64b910]
