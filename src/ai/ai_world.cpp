@@ -2438,7 +2438,7 @@ KING_ALIAS("_Node_Name", "FUN_436490")
 extern "C" void __cdecl Str_56ae60(const char* s);
 KING_ALIAS("_Str_56ae60", "_Messages_Add")
 extern "C" void __cdecl Item_41cff0(void* p);
-KING_ALIAS("_Item_41cff0", "FUN_41cff0")
+KING_ALIAS("_Item_41cff0", "_Ai_PresentAtNode")
 extern "C" void __cdecl Item_41f970(void* p);
 KING_ALIAS("_Item_41f970", "_Present_DestroyFound")
 extern "C" void __cdecl Obj_483c10(void* p);
@@ -18904,4 +18904,99 @@ extern "C" BYTE* __cdecl Ai_GetOrientationSmoothedF(BYTE* out, int player, Posit
              (float)row2->x, (float)z2.y, (float)z1.z, (float)t3.x, (float)t2.y, (float)t1.z);
     Trace_Leave((const char*)s_getOrientationSmoothedF);
     return out;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: orientations as float matrices
+
+ASM_VAR(AsmLabel, s_getOrientationF, $L_66e774)
+
+// a 96-byte orientation (three rows and a point) as the float matrix at out (FUN_41cd40)
+static void Orientation_ToFloats(BYTE* out, BYTE* r)
+{
+    DVec3 b[3];
+    const DVec3* row2 = (const DVec3*)Rec_Get24(r, 0, &b[0], 2);
+    const DVec3* row1 = (const DVec3*)Rec_Get24(r, 0, &b[1], 1);
+    const DVec3* row0 = (const DVec3*)Rec_Get24(r, 0, &b[2], 0);
+    const DVec3& t = F(DVec3, r, 72);
+    CallThis(FUN_41cd40, out, (float)row0->x, (float)row0->y, (float)row0->z, (float)row1->x, (float)row1->y,
+             (float)row1->z, (float)row2->x, (float)row2->y, (float)F(DVec3, r, 48).z, (float)t.x, (float)t.y,
+             (float)t.z);
+}
+
+// [FUN_43a780] getOrientation(PositionId pos) as a float matrix
+extern "C" BYTE* __cdecl Ai_GetOrientationF(BYTE* out, PositionId pos)
+{
+    Trace_EnterAppend((const char*)s_getOrientationF);
+    AdvanceRoad_Check(&pos, 15566);
+    BYTE m[96];
+    Orientation_ToFloats(out, Ai_GetOrientation(m, pos));
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, (const char*)s_getOrientationF);
+    return out;
+}
+
+ASM_VAR(AsmLabel, s_err08321, $L_66d6bc)
+ASM_VAR(AsmLabel, s_err08322, $L_66d6a4)
+ASM_PROC(FUN_41d310)    // a spot's weight (spot) returns double
+
+// [FUN_41cff0] a present at a node (once: the node's flag 0x10), placed at a spot picked by weight
+// (+108 its index, the spot's count +40), then announced
+extern "C" void __cdecl Ai_PresentAtNode(int node)
+{
+    if (F(BYTE, g_roadNodes[node], 12) & 16) {
+        AiError(0, 1, s_mainFile, s_mainId, 6512, s_err08321, &g_aiEmpty, &g_aiEmpty);
+        return;
+    }
+    BYTE* o = (BYTE*)operator new(112);
+    if (o) {
+        F(int, o, 0) = -1;
+        F(DWORD, o, 4) = 0x12345678;
+        F(DWORD, o, 8) = 0;
+        F(int, o, 12) = -1;
+        F(int, o, 16) = -1;
+        F(DWORD, o, 20) = 0;
+        F(int, o, 24) = -1;
+        F(int, o, 56) = -1;
+        F(int, o, 60) = -1;
+        for (int k = 64; k <= 80; k += 4)
+            F(DWORD, o, k) = 0;
+        F(int, o, 84) = -1;
+        F(DWORD, o, 96) = 0xffffffff;
+        F(DWORD, o, 88) = 0;
+        F(DWORD, o, 100) = 0x7fefffff;
+        F(BYTE, o, 104) = 0;
+        F(int, o, 108) = -1;
+    }
+    F(int, o, 24) = node;
+    F(DWORD, o, 8) |= 1152;
+    F(DVec3, o, 32) = F(DVec3, g_roadNodes[node], 48);
+    PositionId tmp;
+    F(PositionId, o, 56) = *Ai_GetPositionIdAll(&tmp, (const DVec3*)(o + 32));
+    F(DWORD, g_roadNodes[node], 12) |= 16;
+    g_68cf34++;
+    void** first = g_spots68d0b8;
+    void** last = g_spots68d0bc;
+    BYTE* c[3] = {0, 0, 0};
+    BYTE* w[3] = {0, 0, 0};
+    double sum = 0;
+    for (void** it = first; it != last; it++) {
+        BYTE dummy[4];
+        double x = CallThis<double>(FUN_41d310, dummy, *it);
+        if (x > g_zero64b678) {
+            sum = x + sum;
+            Weighted_Add(c, w, (BYTE*)it, x, FUN_45d630);
+        }
+    }
+    void** spot = (void**)Weighted_Pick(c, w, sum, &g_rng68b9c8, (BYTE*)last);
+    if (spot == g_spots68d0bc) {
+        AiError(0, 1, s_mainFile, s_mainId, 6529, s_err08322, &g_aiEmpty, &g_aiEmpty);
+        return;
+    }
+    F(int, o, 108) = spot - g_spots68d0b8;
+    F(int, (BYTE*)*spot, 40)++;
+    F(double, o, 96) = CallC<double>(FUN_401000);
+    int id;
+    Presents_Append(&id, (int)o);
+    g_presentHook68d11c(id, 1);
 }
