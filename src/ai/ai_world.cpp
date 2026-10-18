@@ -19560,3 +19560,49 @@ extern "C" int __cdecl Ai_NavigatorTurn(BYTE* p)
         return 15;
     return 16;
 }
+
+// ---------------------------------------------------------------------------
+// Batch: an ambush ahead of the human
+
+ASM_VAR(double, g_64b868, $L_64b868)
+ASM_VAR(double, g_64b870, $L_64b870)
+extern "C" void FUN_484690(); KING_ALIAS("_FUN_484690", "_Road_OrientHops")    // orients the hops of a route (route)
+
+// [FUN_42b550] whether an ambush lies ahead of the human: between 64b868 and 64b870 away, reachable by a route
+// of at least two hops, and facing (+88) along the road at its position (+144)
+extern "C" bool __cdecl Ambush_AheadOfHuman(BYTE* a)
+{
+    if (!a)
+        return false;
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players)
+        return false;
+    double dx = F(double, a, 56) - F(double, h, 624);
+    double dy = F(double, a, 64) - F(double, h, 632);
+    double dz = F(double, a, 72) - F(double, h, 640);
+    double dist = x87_sqrt((dy * dy + dz * dz) + dx * dx);
+    if (!(dist >= g_64b868))
+        return false;
+    if (dist > g_64b870)
+        return false;
+    BYTE* r[3];
+    double cost = 0;
+    CallC(FUN_4858b0, r, 1, F(PositionId, h, 40), F(PositionId, a, 144), &cost);
+    bool res = false;
+    if ((unsigned)((r[1] - r[0]) / 12) >= 2) {
+        CallC(FUN_484690, r);
+        DVec3 d;
+        CallC(FUN_4390a0, &d, F(PositionId, a, 144));
+        if (F(BYTE, r[1], -16) & 1) {
+            d.x = -d.x;
+            d.y = -d.y;
+            d.z = -d.z;
+        }
+        res = (d.z * F(double, a, 104) + d.y * F(double, a, 96)) + d.x * F(double, a, 88) > g_zero64b678;
+    }
+    int cap = (r[2] - r[0]) / 12;
+    if (cap)
+        Ai_PoolFree(r[0], cap * 12);
+    return res;
+}

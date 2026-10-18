@@ -1181,6 +1181,7 @@ PUBLIC $L_64b660, $L_64b958, $L_66f408, $L_66f414, $L_66f420
 PUBLIC $L_64b900, $L_66e1d4
 PUBLIC $L_64b7b8, $L_66dd3c
 PUBLIC $L_64b720
+PUBLIC $L_64b868, $L_64b870
 
 ;===================================
 _TEXT SEGMENT
@@ -73001,6 +73002,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42b550 PROC
 
             push EBP
@@ -73322,6 +73325,10 @@ $L_42b84e::
             pop EBP
             ret 
 FUN_42b550 ENDP
+ELSE
+EXTERN _Ambush_AheadOfHuman:PROC
+FUN_42b550 TEXTEQU <_Ambush_AheadOfHuman>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
