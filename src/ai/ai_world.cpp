@@ -19465,3 +19465,98 @@ extern "C" void __cdecl Ai_UpdatePlayerBoxes()
     }
     Trace_Leave((const char*)s_updatePlayerBoxes);
 }
+
+// ---------------------------------------------------------------------------
+// Batch: the navigator's turn at the next junction
+
+ASM_VAR(double, g_64b720, $L_64b720)
+extern "C" void FUN_47ff20(); KING_ALIAS("_FUN_47ff20", "_Road_StartOf")    // a road's start position by index (out, road)
+extern "C" void FUN_4800a0(); KING_ALIAS("_FUN_4800a0", "_Road_EndOf")    // a road's end position by index (out, road)
+extern "C" void FUN_487dc0(); KING_ALIAS("_FUN_487dc0", "_DVec3_Cross")    // the cross product (out, a, b)
+
+// [FUN_420360] the navigator's sign for a player at the next junction (a node with more than two roads) on its
+// hops, when within 64b728 of it: 14 left, 15 right, 16 straight by the turn's cross product, 17 none (also
+// for a plain fork of two ordinary roads)
+extern "C" int __cdecl Ai_NavigatorTurn(BYTE* p)
+{
+    int idx = Ai_FindPositionHops((HopVec*)(p + 16), F(PositionId, p, 32)) + 1;
+    BYTE* hops = F(BYTE*, p, 16);
+    BYTE* h = hops + idx * 12;
+    if (!F(void*, h, 4))
+        return 17;
+    int node;
+    for (;;) {
+        node = F(int, h, 0);
+        BYTE* n = (BYTE*)g_roadNodes[node];
+        int deg = (int)((F(BYTE*, n, 36) - F(BYTE*, n, 32)) >> 2) + (int)((F(BYTE*, n, 24) - F(BYTE*, n, 20)) >> 2);
+        if (deg > 2)
+            break;
+        if (!F(void*, h, 16))
+            return 17;
+        h += 12;
+        idx++;
+    }
+    BYTE* n = (BYTE*)g_roadNodes[node];
+    int plain = 0, special = 0;
+    for (int j = 0; j < 2; j++)
+        for (BYTE** e = F(BYTE**, n, 20 + j * 12); e != F(BYTE**, n, 24 + j * 12); e++)
+            if (F(BYTE, *F(BYTE**, *e, 120), 8) & 16)
+                special++;
+            else
+                plain++;
+    BYTE* edge = F(BYTE*, hops + idx * 12, 4);
+    PositionId q;
+    q.road = -1;
+    q.node = -1;
+    q.t = 0;
+    q.segment = 0;
+    q.object = 0;
+    q.m_24 = 0;
+    q.m_28 = -1;
+    PositionId tmp;
+    if (node == F(int, F(BYTE*, edge, 112), 16))
+        q = *CallC<const PositionId*>(FUN_47ff20, &tmp, F(int, edge, 12));
+    else if (node == F(int, F(BYTE*, edge, 116), 16)) {
+        q = *CallC<const PositionId*>(FUN_4800a0, &tmp, F(int, edge, 12));
+        q.m_24 |= 1;
+    }
+    DVec3 pt = (F(BYTE, p, 88) & 1) ? F(DVec3, p, 616) : F(DVec3, p, 304);
+    DVec3 r;
+    const DVec3* rp = Road_PointOf(&r, q);
+    double x = pt.x - rp->x;
+    double y = pt.y - rp->y;
+    double z = pt.z - rp->z;
+    if (x87_sqrt((x * x + y * y) + z * z) > g_64b728)
+        return 17;
+    double off = 8.0;
+    PositionId a1, a2;
+    Ai_AdvancePosition(&a1, (int)g_players, p, q, &off, 0);
+    off = -8.0;
+    Ai_AdvancePosition(&a2, (int)g_players, p, q, &off, 0);
+    RoomInfo info;
+    RoomInfo_Init(&info);
+    Road_GetRoadParameters(a2, &info);
+    if (!(info.flags & 16)) {
+        Road_GetRoadParameters(a1, &info);
+        if (!(info.flags & 16) && plain == 2)
+            return 17;
+    }
+    DVec3 d1, d2;
+    CallC(FUN_4390a0, &d1, a1);
+    CallC(FUN_4390a0, &d2, a2);
+    d1.z = 0;
+    double inv = g_64b670 / x87_sqrt(d1.x * d1.x + d1.y * d1.y);
+    d2.z = 0;
+    d1.x = inv * d1.x;
+    d1.y = d1.y * inv;
+    double inv2 = g_64b670 / x87_sqrt(d2.x * d2.x + d2.y * d2.y);
+    d2.x = inv2 * d2.x;
+    d2.y = d2.y * inv2;
+    DVec3 c;
+    CallC(FUN_487dc0, &c, &d1, &d2);
+    if (c.z > g_64b5b8)
+        return 14;
+    if (!(c.z >= g_64b720))
+        return 15;
+    return 16;
+}
