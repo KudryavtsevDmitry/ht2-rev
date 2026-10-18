@@ -19106,3 +19106,101 @@ extern "C" void __cdecl Ai_SeeIfMustBeRetraced(int room, int player)
     Buf_Append(&g_trace, 0, g_tagMpl, 8);
     Buf_AppendString(&g_trace, 0, (const char*)s_seeIfMustBeRetraced);
 }
+
+// ---------------------------------------------------------------------------
+// Batch: setting a player's matrix
+
+ASM_VAR(AsmLabel, s_setPlayerPositionMatrix, $L_66ec88)
+ASM_VAR(AsmLabel, s_xControlled66ec40, $L_66ec40)
+extern "C" void FUN_420890(); KING_ALIAS("_FUN_420890", "_Player_DoneWaitingOf")    // (player) returns bool
+extern "C" void FUN_4bdef0(); KING_ALIAS("_FUN_4bdef0", "@Vec3_SetThis@20")    // a float vector (thiscall: x, y, z)
+extern "C" void FUN_4289e0(); KING_ALIAS("_FUN_4289e0", "_Ai_UpdateNavigator")    // updateNavigator (player)
+extern "C" void FUN_422210(); KING_ALIAS("_FUN_422210", "_Player_PlaceAtDealer")    // (player + 8)
+
+// [FUN_43ee70] setPlayerPosition(PlayerId player, vrMatrix const & m): only for a computer-driven player
+// (+96 bit 0); unless FUN_420890, the matrix's point also moves its position (limited), and the human's
+// navigator or a kind-9 player's dealer follows
+extern "C" void __cdecl Ai_SetPlayerMatrix(int player, const float* m)
+{
+    Trace_EnterBuffered((const char*)s_setPlayerPositionMatrix);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 16496, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    if (!(F(BYTE, p, 96) & 1)) {
+        AiError(0, 1, s_mainFile, s_mainId, 16524, s_xControlled66ec40, &g_aiEmpty, &g_aiEmpty);
+        Trace_Tag((const DWORD*)g_tagMpl);
+        Buf_AppendString(&g_trace, 0, (const char*)s_setPlayerPositionMatrix);
+        return;
+    }
+    if (CallC<char>(FUN_420890, player)) {
+        for (int i = 0; i < 12; i++)
+            F(double, p, 552 + i * 8) = (double)m[i];
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_setPlayerPositionMatrix);
+        return;
+    }
+    float f[3];
+    CallThis(FUN_4bdef0, f, m[9], m[10], m[11]);
+    DVec3 v;
+    v.x = f[0];
+    v.y = f[1];
+    v.z = f[2];
+    Ai_SetPlayerPositionTo(player, &v, 1);
+    for (int i = 0; i < 12; i++)
+        F(double, p, 552 + i * 8) = (double)m[i];
+    if (F(int, p, 92) == 1)
+        CallC(FUN_4289e0, player);
+    else if (F(int, p, 92) == 9)
+        CallC(FUN_422210, p + 8);
+    Trace_Tag((const DWORD*)g_tagMpl);
+    Buf_AppendString(&g_trace, 0, (const char*)s_setPlayerPositionMatrix);
+}
+
+ASM_VAR(AsmLabel, s_setPlayerPositionRoomMatrix, $L_66ecc0)
+extern "C" void FUN_43f5b0(); KING_ALIAS("_FUN_43f5b0", "_Vec3_MulMatrix")    // a float point through a float matrix (out, point, m)
+extern "C" void FUN_43e4d0(); KING_ALIAS("_FUN_43e4d0", "_Ai_SetPlayerPositionV")    // (room, player, v)
+
+// [FUN_43f240] setPlayerPosition(RoomId room, PlayerId player, vrMatrix const & m): as FUN_43ee70 within a room,
+// then the retrace check, and for the human the matrix's origin point through FUN_43e4d0 and the navigator
+extern "C" void __cdecl Ai_SetPlayerMatrixInRoom(int room, int player, const float* m)
+{
+    Trace_EnterBuffered((const char*)s_setPlayerPositionRoomMatrix);
+    BYTE* p = (BYTE*)player;
+    if (CallC<int>(FUN_4566c0, player)) {
+        sprintf(g_numberText, (const char*)s_idFormat66d4e4);
+        AiError(33, 100, s_mainFile, s_mainId, 16531, s_invalidId, s_playerId66d4d8, g_numberText);
+    }
+    if (!(F(BYTE, p, 96) & 1))
+        AiError(0, 1, s_mainFile, s_mainId, 16558, s_xControlled66ec40, &g_aiEmpty, &g_aiEmpty);
+    else if (CallC<char>(FUN_420890, player)) {
+        for (int i = 0; i < 12; i++)
+            F(double, p, 552 + i * 8) = (double)m[i];
+    } else {
+        float f[3];
+        CallThis(FUN_4bdef0, f, m[9], m[10], m[11]);
+        DVec3 v;
+        v.x = f[0];
+        v.y = f[1];
+        v.z = f[2];
+        Ai_SetPlayerPositionInRoom(room, player, &v, 1);
+        for (int i = 0; i < 12; i++)
+            F(double, p, 552 + i * 8) = (double)m[i];
+        Ai_SeeIfMustBeRetraced(room, player);
+        if (F(int, p, 92) == 1) {
+            float zero[3] = {0, 0, 0};
+            float out[3];
+            const float* o = CallC<const float*>(FUN_43f5b0, out, zero, m);
+            DVec3 w;
+            w.x = o[0];
+            w.y = o[1];
+            w.z = o[2];
+            CallC(FUN_43e4d0, room, player, &w);
+            CallC(FUN_4289e0, player);
+        } else if (F(int, p, 92) == 9)
+            CallC(FUN_422210, p + 8);
+    }
+    Buf_Append(&g_trace, 0, g_tagMpl, 8);
+    Buf_AppendString(&g_trace, 0, (const char*)s_setPlayerPositionRoomMatrix);
+}
