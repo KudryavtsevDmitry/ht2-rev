@@ -301,7 +301,7 @@ ASM_VAR(AiText, g_undefinedRoom, $L_66d628)     // "UNDEFINED_ROOM"
 extern "C" PositionId* __cdecl Road_Advance(PositionId* out, PositionId pos, double* distance, int);
 KING_ALIAS("_Road_Advance", "_Ai_AdvancePositionRoad")
 extern "C" void __cdecl Road_RoomInfo(PositionId pos, RoomInfo* info);
-KING_ALIAS("_Road_RoomInfo", "FUN_438d70")
+KING_ALIAS("_Road_RoomInfo", "_Road_GetRoadParameters")
 
 #define EDGE_DOUBLE(e, off) (*(double*)((BYTE*)(e) + (off)))   // +24 length, +40 total up to its end
 
