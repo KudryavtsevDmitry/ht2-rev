@@ -18309,7 +18309,7 @@ extern "C" void FUN_4842a0(); KING_ALIAS("_FUN_4842a0", "_Road_ResetCosts")
 extern "C" void FUN_406370(); KING_ALIAS("_FUN_406370", "_Ai_CollectRoomEdges")
 extern "C" void FUN_40d1b0(); KING_ALIAS("_FUN_40d1b0", "_Ai_LoadNames")
 ASM_PROC(FUN_40c3b0)
-ASM_PROC(FUN_40cef0)
+extern "C" void FUN_40cef0(); KING_ALIAS("_FUN_40cef0", "_Ai_ReadRestable")
 extern "C" void FUN_42e9f0(); KING_ALIAS("_FUN_42e9f0", "_Ai_LoadVehicles")
 extern "C" void FUN_42f4c0(); KING_ALIAS("_FUN_42f4c0", "_Ai_LoadTrashboxes")
 extern "C" void FUN_430230(); KING_ALIAS("_FUN_430230", "_Vehicles_ResolveModels")
@@ -19858,4 +19858,115 @@ extern "C" void __cdecl Vehicles_ResolveModels()
         }
         CallThis(FUN_4a36c0, &it);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Batch: reading game.cnf
+
+ASM_VAR(AsmLabel, s_gameCnf66cb30, $L_66cb30)
+ASM_VAR(AsmLabel, s_port66cb28, $L_66cb28)
+ASM_VAR(AsmLabel, s_cannotOpen66cb1c, $L_66cb1c)
+ASM_VAR(int, g_68d110, $L_68d110)
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert (thiscall: pos, first, last)
+
+// [FUN_409310] reads game.cnf in the AI's directory: its player types (FUN_409100), then 68d110 into the
+// world record (68cf28 +28)
+extern "C" void __cdecl Ai_ReadGameCnf()
+{
+    char name[9];
+    memcpy(name, (const char*)s_gameCnf66cb30, 9);
+    BYTE* path[3];
+    unsigned n = g_wayDirEnd68bacc - g_wayDir68bac8;
+    Vec1_Reserve((VecMethods*)path, 0, n, 0);
+    memmove(path[0], g_wayDir68bac8, g_wayDirEnd68bacc - g_wayDir68bac8);
+    path[1] = path[0] + n;
+    CallThis(FUN_44c220, path, path[1], name, name + strlen(name) + 1);
+    StrRef r;
+    int pb = (int)path[0];
+    int one = 1;
+    StrRef* rv = (StrRef*)Port_MakeA((DWORD*)&r, 0, &pb, &one);
+    StrRef v = {0, 0, 0};
+    if (rv->ptr) {
+        if (CallVirt<int>(rv->ptr, 0) != 11)
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(rv->ptr, 4), (const char*)s_port66cb28);
+        else {
+            v.ptr = rv->ptr;
+            v.flags = rv->flags;
+            F(int, v.ptr, 4)++;
+        }
+    }
+    CallThis(FUN_4a36c0, &r);
+    CheckHandle(&v);
+    if (CallVirt<int>(v.ptr, 40))
+        AiError(23, 100, s_mainFile, s_mainId, 2023, s_cannotOpen66cb1c, name, &g_aiEmpty);
+    StrRef vc;
+    Str_CopyConstruct(&vc, 0, &v);
+    StrRef w;
+    CallC(FUN_4b4c20, &w, g_reader68bb58, vc.ptr, vc.len, vc.flags);
+    StrRef l = {0, 0, 0};
+    if (w.ptr) {
+        if (CallVirt<int>(w.ptr, 0) != 2)
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(w.ptr, 4), (const char*)s_pair66cb08);
+        else {
+            l.ptr = w.ptr;
+            l.flags = w.flags;
+            F(int, l.ptr, 4)++;
+        }
+    }
+    Pairs_ReadPlayerTypes((int)g_reader68bb58, l);
+    F(int, g_68cf28, 28) = g_68d110;
+    Str_Release(&w);
+    CallThis(FUN_4a36c0, &v);
+    if (path[2] != path[0])
+        Ai_PoolFree(path[0], path[2] - path[0]);
+}
+
+ASM_VAR(AsmLabel, s_restable66cd78, $L_66cd78)
+extern "C" void FUN_44aa60(); KING_ALIAS("_FUN_44aa60", "@Vec24_Erase@16")    // vector<24-byte record>::erase (thiscall: first, last)
+ASM_PROC(FUN_40c680)    // a resource record from a pair (out, reader, pair by value)
+
+// [FUN_40cef0] reads restable.sch into the resource records at 68cc08 (one per list entry, FUN_40c680)
+extern "C" void __cdecl Ai_ReadRestable()
+{
+    CallThis(FUN_44aa60, &g_init68cc08, g_resources68cc08, g_resourcesEnd68cc0c);
+    char name[13];
+    memcpy(name, (const char*)s_restable66cd78, 13);
+    int one = 1;
+    StrRef r;
+    StrRef* rv = (StrRef*)Port_MakeD((DWORD*)&r, 0, (int)name, &one);
+    StrRef v = {0, 0, 0};
+    if (rv->ptr) {
+        if (CallVirt<int>(rv->ptr, 0) != 11)
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(rv->ptr, 4), (const char*)s_port66cb28);
+        else {
+            v.ptr = rv->ptr;
+            v.flags = rv->flags;
+            F(int, v.ptr, 4)++;
+        }
+    }
+    CallThis(FUN_4a36c0, &r);
+    CheckHandle(&v);
+    if (CallVirt<int>(v.ptr, 40))
+        AiError(23, 100, s_mainFile, s_mainId, 2732, s_cannotOpen66cb1c, name, &g_aiEmpty);
+    StrRef vc;
+    Str_CopyConstruct(&vc, 0, &v);
+    StrRef w;
+    CallC(FUN_4b4c20, &w, g_reader68bb58, vc.ptr, vc.len, vc.flags);
+    StrRef l;
+    l.CopyFrom(&w);
+    while ((BYTE)l.flags == 2) {
+        StrRef car;
+        Str_Member20(&car, &l);
+        BYTE rec[24];
+        BYTE* p = CallC<BYTE*>(FUN_40c680, rec, g_reader68bb58, car.ptr, car.len, car.flags);
+        Vec24_PushBackB(&g_init68cc08, 0, p);
+        Rec40cb60_Destroy(rec, 0);
+        StrRef tmp;
+        StrRef* nx = CallC<StrRef*>(FUN_4090a0, &tmp, &l);
+        CallThis(FUN_40c100, &l, nx);
+        Str_Release(&tmp);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &w);
+    CallThis(FUN_4a36c0, &v);
 }
