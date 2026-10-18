@@ -1179,6 +1179,7 @@ PUBLIC $L_66ec40, $L_66ec88, $L_66ecc0
 PUBLIC $L_64b728, $L_64b780, $L_64b7d0, $L_66d98c
 PUBLIC $L_64b660, $L_64b958, $L_66f408, $L_66f414, $L_66f420
 PUBLIC $L_64b900, $L_66e1d4
+PUBLIC $L_64b7b8, $L_66dd3c
 
 ;===================================
 _TEXT SEGMENT
@@ -75804,6 +75805,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_42cf50 PROC
 
             push EBP
@@ -76199,6 +76202,10 @@ $L_42d36c::
             pop EBP
             ret 
 FUN_42cf50 ENDP
+ELSE
+EXTERN _Ai_UpdatePlayerBoxes:PROC
+FUN_42cf50 TEXTEQU <_Ai_UpdatePlayerBoxes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

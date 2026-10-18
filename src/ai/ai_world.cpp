@@ -17353,7 +17353,7 @@ extern "C" void FUN_419cb0(); KING_ALIAS("_FUN_419cb0", "_Ai_ActOnArrival")    /
 extern "C" void FUN_42a4b0(); KING_ALIAS("_FUN_42a4b0", "_Ai_ProvideNoncontradictoryPositions")
 extern "C" void FUN_423f40(); KING_ALIAS("_FUN_423f40", "_Ai_CalculatePlayerSpeedsAndFares")
 extern "C" void FUN_42cb20(); KING_ALIAS("_FUN_42cb20", "_Ai_UpdatePlayerRooms")
-ASM_PROC(FUN_42cf50)
+extern "C" void FUN_42cf50(); KING_ALIAS("_FUN_42cf50", "_Ai_UpdatePlayerBoxes")
 extern "C" void FUN_46dee0(); KING_ALIAS("_FUN_46dee0", "_Net_AddPlayerStates")
 extern "C" void FUN_460d20(); KING_ALIAS("_FUN_460d20", "_Rec458a80_Construct")    // construct a 144-byte order in place (dest, src)
 extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall: pos, x)
@@ -19407,4 +19407,61 @@ extern "C" void __cdecl Markets_FillAssortments()
         }
     }
     CallThis(FUN_447970, v0);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: the players' boxes on their roads
+
+ASM_VAR(AsmLabel, s_updatePlayerBoxes, $L_66dd3c)
+ASM_VAR(double, g_64b7b8, $L_64b7b8)
+extern "C" void FUN_487ee0(); KING_ALIAS("_FUN_487ee0", "@DBox_Init@16")    // a box from two points (thiscall: a, b)
+extern "C" void FUN_483ff0(); KING_ALIAS("_FUN_483ff0", "_Route_Call529880")    // (player, road)
+
+// [FUN_42cf50] updatePlayerBoxes(): each human's box (+888) of its points along its road (+936, restarted on a
+// new road); once it spans enough of the road's box (64b7b8), the road gets flag 0x200 and FUN_483ff0
+extern "C" void __cdecl Ai_UpdatePlayerBoxes()
+{
+    Trace_EnterBuffered((const char*)s_updatePlayerBoxes);
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 84) != 1)
+            continue;
+        PositionId pos = F(PositionId, CallC<BYTE*>(FUN_40a9f0, it), 32);
+        int road = pos.road;
+        if (road == -1)
+            continue;
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        DVec3 pt = (F(BYTE, d, 88) & 1) ? F(DVec3, d, 616) : F(DVec3, d, 304);
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 936) != road) {
+            F(int, CallC<BYTE*>(FUN_40a9f0, it), 936) = road;
+            BYTE box[48];
+            BYTE* b = CallThis<BYTE*>(FUN_487ee0, box, &pt, &pt);
+            BYTE* dst = CallC<BYTE*>(FUN_40a9f0, it) + 888;
+            for (int i = 0; i < 2; i++)
+                DVec3_Assign((DVec3*)(dst + i * 24), 0, (const DVec3*)(b + i * 24));
+            continue;
+        }
+        CallThis(FUN_487f60, CallC<BYTE*>(FUN_40a9f0, it) + 888, &pt);
+        if (F(DWORD, g_roadEdges[F(int, CallC<BYTE*>(FUN_40a9f0, it), 936)], 16) & 512)
+            continue;
+        BYTE* a = CallC<BYTE*>(FUN_40a9f0, it);
+        BYTE* bx = CallC<BYTE*>(FUN_40a9f0, it) + 888;
+        double x = F(double, bx, 0) - F(double, a, 912);
+        double y = F(double, bx, 8) - F(double, a, 920);
+        double z = F(double, bx, 16) - F(double, a, 928);
+        double span = x87_sqrt((x * x + y * y) + z * z);
+        const BYTE* e160 = (const BYTE*)g_roadEdges[F(int, CallC<BYTE*>(FUN_40a9f0, it), 936)] + 160;
+        const BYTE* v = (const BYTE*)RoadId_Edge((const int*)(CallC<BYTE*>(FUN_40a9f0, it) + 936), 0) + 136;
+        double x2 = F(double, v, 0) - F(double, e160, 0);
+        double y2 = F(double, v, 8) - F(double, e160, 8);
+        double z2 = F(double, v, 16) - F(double, e160, 16);
+        double size = x87_sqrt((x2 * x2 + y2 * y2) + z2 * z2);
+        BYTE* obj = F(BYTE**, (BYTE*)g_roadEdges[road], 120)[pos.object];
+        if (F(BYTE, obj, 8) & 16)
+            continue;
+        if (span * g_64b7b8 > size) {
+            F(DWORD, g_roadEdges[F(int, CallC<BYTE*>(FUN_40a9f0, it), 936)], 16) |= 512;
+            CallC(FUN_483ff0, it, F(int, CallC<BYTE*>(FUN_40a9f0, it), 936));
+        }
+    }
+    Trace_Leave((const char*)s_updatePlayerBoxes);
 }
