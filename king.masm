@@ -1160,6 +1160,8 @@ PUBLIC $L_66e6e0, $L_66eae0, $L_68cc28
 PUBLIC $L_66cb60, $L_66cb74, $L_66d56c, $L_66dd50, $L_66dd64, $L_66dd78
 PUBLIC $L_66dd8c, $L_66dda0, $L_66e444, $L_66e45c, $L_66e4a4, $L_68a820
 PUBLIC $L_68d0f8, $L_68d198
+PUBLIC $L_66d168, $L_66da70, $L_66eb70, $L_66ebb8, $L_66f2bc, $L_66f2c4
+PUBLIC $L_66f340
 
 ;===================================
 _TEXT SEGMENT
@@ -66261,6 +66263,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_427520 PROC
 
             push EBP
@@ -66589,6 +66593,10 @@ $L_427893::
             pop EBP
             ret 
 FUN_427520 ENDP
+ELSE
+EXTERN _Ai_StartRaces:PROC
+FUN_427520 TEXTEQU <_Ai_StartRaces>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -103721,6 +103729,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43e610 PROC
 
             push EBP
@@ -103966,10 +103976,16 @@ $L_43e8a8::
             pop EBP
             ret 
 FUN_43e610 ENDP
+ELSE
+EXTERN _Ai_SetPlayerPositionTo:PROC
+FUN_43e610 TEXTEQU <_Ai_SetPlayerPositionTo>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_43e8c0 PROC
 
             push EBP
@@ -104225,6 +104241,10 @@ $L_43eb6c::
             pop EBP
             ret 
 FUN_43e8c0 ENDP
+ELSE
+EXTERN _Ai_SetPlayerPositionInRoom:PROC
+FUN_43e8c0 TEXTEQU <_Ai_SetPlayerPositionInRoom>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -114592,6 +114612,8 @@ $L_44529b::
 FUN_444f80 ENDP
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4452c0 PROC
 
             push EBP
@@ -114865,6 +114887,10 @@ $L_44558a::
             pop EBP
             ret 
 FUN_4452c0 ENDP
+ELSE
+EXTERN _Ai_DropOrdersForfeit:PROC
+FUN_4452c0 TEXTEQU <_Ai_DropOrdersForfeit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -115566,6 +115592,8 @@ FUN_445b20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_445c90 PROC
 
             push -1
@@ -115818,6 +115846,10 @@ $L_445f44::
             add ESP,100
             ret 
 FUN_445c90 ENDP
+ELSE
+EXTERN _Ai_GetRightDirectionOf:PROC
+FUN_445c90 TEXTEQU <_Ai_GetRightDirectionOf>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
