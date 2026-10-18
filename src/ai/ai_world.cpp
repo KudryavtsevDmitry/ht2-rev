@@ -19332,3 +19332,79 @@ extern "C" void __cdecl Ai_HitPlayer(int player, double impact, int)
     }
     Trace_Leave((const char*)s_hitPlayer);
 }
+
+// ---------------------------------------------------------------------------
+// Batch: the markets' assortments
+
+ASM_VAR(AsmLabel, s_noCarsForOrder66e1d4, $L_66e1d4)
+ASM_VAR(double, g_64b900, $L_64b900)
+extern "C" void FUN_457820(); KING_ALIAS("_FUN_457820", "_Players_SelectBmw")    // the orderable vehicle types (out, first, last, -)
+extern "C" void FUN_434700(); KING_ALIAS("_FUN_434700", "@Height_Closeness@12")    // a type's weight (thiscall {limit}: it) returns double
+extern "C" void FUN_45a030(); KING_ALIAS("_FUN_45a030", "@Vec4_PushBackJ@12")    // vector<4 bytes>::push_back (thiscall: &x)
+extern "C" void FUN_447530(); KING_ALIAS("_FUN_447530", "@Vec8_PushBack@12")    // vector<double>::push_back (thiscall: &x)
+ASM_PROC(FUN_460770)    // the next type matching a list (first, last, list, -)
+extern "C" void FUN_450f70(); KING_ALIAS("_FUN_450f70", "@Vec4b_InsertL@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
+extern "C" void FUN_457b50(); KING_ALIAS("_FUN_457b50", "_CopyDwords")    // copy of 4-byte elements (first, last, dest)
+extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")    // vector<char> destructor (thiscall)
+
+// [FUN_434270] fills each market slot's assortment (+24): up to the market's count (+48) of vehicle types picked
+// by weight, each bringing every type that matches its list (+20 of its record) into the slot
+extern "C" void __cdecl Markets_FillAssortments()
+{
+    DWORD junk = 0;
+    BYTE* v0[3];
+    CallC(FUN_457820, v0, g_vehicles, g_vehiclesEnd, junk);
+    if (v0[0] == v0[1])
+        AiError(0, 1, s_mainFile, s_mainId, 13809, s_noCarsForOrder66e1d4, &g_aiEmpty, &g_aiEmpty);
+    for (void** mp = g_68cc98; mp != g_68cc9c; mp++) {
+        double cnt = F(double, (BYTE*)*mp, 48);
+        for (BYTE* s = F(BYTE*, (BYTE*)*mp, 28); s != F(BYTE*, (BYTE*)*mp, 32); s += 36) {
+            BYTE** v = (BYTE**)(s + 24);
+            BYTE* w[3];
+            Vec4_Reserve((VecMethods*)w, 0, (unsigned)(v0[1] - v0[0]) >> 2, 0);
+            w[1] = CallC<BYTE*>(FUN_46b0e0, v0[0], v0[1], w[0], s);
+            if (g_zero64b678 < cnt)
+                for (int k = 0; w[0] != w[1];) {
+                    double limit = cnt * g_64b900;
+                    BYTE* c[3] = {0, 0, 0};
+                    BYTE* wt[3] = {0, 0, 0};
+                    double sum = 0;
+                    for (BYTE* it = w[0]; it != w[1]; it += 4) {
+                        double x = CallThis<double>(FUN_434700, &limit, it);
+                        if (x > g_zero64b678) {
+                            sum = x + sum;
+                            CallThis(FUN_45a030, c, &it);
+                            CallThis(FUN_447530, wt, &x);
+                        }
+                    }
+                    BYTE* pick = Weighted_Pick(c, wt, sum, &g_rng68b9c8, w[1]);
+                    if (pick == w[1])
+                        break;
+                    BYTE* r = **(BYTE***)pick;
+                    BYTE* q[3];
+                    Vec1_Reserve((VecMethods*)q, 0, F(BYTE*, r, 24) - F(BYTE*, r, 20), 0);
+                    q[1] = CallC<BYTE*>(FUN_4072f0, F(BYTE*, r, 20), F(BYTE*, r, 24), q[0]);
+                    for (;;) {
+                        BYTE** it2 = CallC<BYTE**>(FUN_460770, w[0], w[1], q[0], s);
+                        if ((BYTE*)it2 == w[1])
+                            break;
+                        DWORD val = **(DWORD**)*it2;
+                        if (v[1] != v[2]) {
+                            CallC(FUN_4611c0, v[1], &val);
+                            v[1] += 4;
+                        } else
+                            CallThis(FUN_450f70, v, v[1], &val);
+                        if ((BYTE*)(it2 + 1) != w[1])
+                            CallC(FUN_457b50, it2 + 1, w[1], it2);
+                        w[1] -= 4;
+                    }
+                    CallThis(FUN_44b090, q);
+                    k++;
+                    if (!((double)k < cnt))
+                        break;
+                }
+            CallThis(FUN_44b0d0, w);
+        }
+    }
+    CallThis(FUN_447970, v0);
+}
