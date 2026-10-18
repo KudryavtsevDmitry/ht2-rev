@@ -1187,6 +1187,7 @@ PUBLIC $L_64b6c0, $L_64b6c8, $L_64b6d0, $L_64b6e8, $L_66c6b8, $L_66c6c0
 PUBLIC $L_66c6c8, $L_66c708, $L_66c718, $L_66d548
 PUBLIC $L_66c8f0, $L_66cdec, $L_68b9bc
 PUBLIC $L_66cb1c, $L_66cb30, $L_66cd78, $L_68d110
+PUBLIC $L_66cd68
 
 ;===================================
 _TEXT SEGMENT
@@ -22483,6 +22484,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40c3b0 PROC
 
             push -1
@@ -22742,6 +22745,10 @@ $L_40c629::
             add ESP,200
             ret 
 FUN_40c3b0 ENDP
+ELSE
+EXTERN _Ai_ReadMerchandise:PROC
+FUN_40c3b0 TEXTEQU <_Ai_ReadMerchandise>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -22752,6 +22759,8 @@ FUN_40c3b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_40c680 PROC
 
             push EBP
@@ -23118,6 +23127,10 @@ $L_40ca04::
             pop EBP
             ret 
 FUN_40c680 ENDP
+ELSE
+EXTERN _Resource_FromEntry:PROC
+FUN_40c680 TEXTEQU <_Resource_FromEntry>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

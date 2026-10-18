@@ -18308,7 +18308,7 @@ extern "C" void FUN_406340(); KING_ALIAS("_FUN_406340", "_Road_NameEdges")
 extern "C" void FUN_4842a0(); KING_ALIAS("_FUN_4842a0", "_Road_ResetCosts")
 extern "C" void FUN_406370(); KING_ALIAS("_FUN_406370", "_Ai_CollectRoomEdges")
 extern "C" void FUN_40d1b0(); KING_ALIAS("_FUN_40d1b0", "_Ai_LoadNames")
-ASM_PROC(FUN_40c3b0)
+extern "C" void FUN_40c3b0(); KING_ALIAS("_FUN_40c3b0", "_Ai_ReadMerchandise")
 extern "C" void FUN_40cef0(); KING_ALIAS("_FUN_40cef0", "_Ai_ReadRestable")
 extern "C" void FUN_42e9f0(); KING_ALIAS("_FUN_42e9f0", "_Ai_LoadVehicles")
 extern "C" void FUN_42f4c0(); KING_ALIAS("_FUN_42f4c0", "_Ai_LoadTrashboxes")
@@ -19923,7 +19923,7 @@ extern "C" void __cdecl Ai_ReadGameCnf()
 
 ASM_VAR(AsmLabel, s_restable66cd78, $L_66cd78)
 extern "C" void FUN_44aa60(); KING_ALIAS("_FUN_44aa60", "@Vec24_Erase@16")    // vector<24-byte record>::erase (thiscall: first, last)
-ASM_PROC(FUN_40c680)    // a resource record from a pair (out, reader, pair by value)
+extern "C" void FUN_40c680(); KING_ALIAS("_FUN_40c680", "_Resource_FromEntry")    // a resource record from a pair (out, reader, pair by value)
 
 // [FUN_40cef0] reads restable.sch into the resource records at 68cc08 (one per list entry, FUN_40c680)
 extern "C" void __cdecl Ai_ReadRestable()
@@ -19969,4 +19969,114 @@ extern "C" void __cdecl Ai_ReadRestable()
     CallThis(FUN_4a36c0, &l);
     CallThis(FUN_4a36c0, &w);
     CallThis(FUN_4a36c0, &v);
+}
+
+// ---------------------------------------------------------------------------
+// Batch: merchandise.sch and the resource records
+
+ASM_VAR(AsmLabel, s_merchandise66cd68, $L_66cd68)
+extern "C" void FUN_44a590(); KING_ALIAS("_FUN_44a590", "@Vec104_Erase@16")    // vector<104-byte record>::erase (thiscall: first, last)
+extern "C" void FUN_4af480(); KING_ALIAS("_FUN_4af480", "_SchList_Nth")    // the n-th element of a list (out, n, list by value)
+extern "C" void FUN_455760(); KING_ALIAS("_FUN_455760", "@StringHandle_From@12")    // a string handle from a value (thiscall: value)
+extern "C" void FUN_4556d0(); KING_ALIAS("_FUN_4556d0", "@NumberHandle_From@12")    // a number handle from a value (thiscall: value)
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")    // a handle's object (thiscall)
+extern "C" void FUN_4b0e90(); KING_ALIAS("_FUN_4b0e90", "@SchNumber_Value@8")    // a number's value (thiscall) returns double
+extern "C" void FUN_40ca70(); KING_ALIAS("_FUN_40ca70", "@Rec40ca70_Construct@20")    // a resource entry (thiscall: text, double)
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")    // an empty vector (thiscall: &alloc)
+
+// [FUN_40c3b0] reads merchandise.sch into the merchandise classes at 68ccb8 (one record per list entry)
+extern "C" void __cdecl Ai_ReadMerchandise()
+{
+    CallThis(FUN_44a590, &g_68ccb8, g_68ccb8, g_68ccbc);
+    char name[16];
+    memcpy(name, (const char*)s_merchandise66cd68, 16);
+    int one = 1;
+    StrRef r;
+    StrRef* rv = (StrRef*)Port_MakeC((DWORD*)&r, 0, (int)name, &one);
+    StrRef v = {0, 0, 0};
+    if (rv->ptr) {
+        if (CallVirt<int>(rv->ptr, 0) != 11)
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(rv->ptr, 4), (const char*)s_port66cb28);
+        else {
+            v.ptr = rv->ptr;
+            v.flags = rv->flags;
+            F(int, v.ptr, 4)++;
+        }
+    }
+    CallThis(FUN_4a36c0, &r);
+    CheckHandle(&v);
+    if (CallVirt<int>(v.ptr, 40))
+        AiError(23, 100, s_mainFile, s_mainId, 2698, s_cannotOpen66cb1c, name, &g_aiEmpty);
+    StrRef vc;
+    Str_CopyConstruct(&vc, 0, &v);
+    StrRef w;
+    CallC(FUN_4b4c20, &w, g_reader68bb58, vc.ptr, vc.len, vc.flags);
+    StrRef l;
+    l.CopyFrom(&w);
+    while ((BYTE)l.flags == 2) {
+        StrRef car;
+        Str_Member20(&car, &l);
+        BYTE rec[104];
+        BYTE* p = Ai_ReadRecord40b920(rec, g_reader68bb58, car);
+        Vec104_PushBack(&g_68ccb8, 0, p);
+        ValueBuf_Destroy((void**)rec, 0);
+        StrRef tmp;
+        StrRef* nx = CallC<StrRef*>(FUN_4090a0, &tmp, &l);
+        CallThis(FUN_40c100, &l, nx);
+        Str_Release(&tmp);
+    }
+    CallThis(FUN_4a36c0, &l);
+    CallThis(FUN_4a36c0, &w);
+    CallThis(FUN_4a36c0, &v);
+}
+
+// [FUN_40c680] a resource record from a list entry: its name (+20 member) and, for each (text number) pair of
+// the rest, a {number, text} entry
+extern "C" BYTE* __cdecl Resource_FromEntry(BYTE* out, int reader, StrRef e)
+{
+    BYTE rec[24];
+    CallThis(FUN_4bd4d0, rec);
+    char alloc;
+    CallThis(FUN_487730, rec + 12, &alloc);
+    StrRef tmp;
+    CallThis(FUN_40c100, rec, Str_Member20(&tmp, &e));
+    Str_Release(&tmp);
+    StrRef l = {0, 0, 0};
+    StrRef t2;
+    CallThis(FUN_40c100, &l, CallC<StrRef*>(FUN_4090a0, &t2, &e));
+    Str_Release(&t2);
+    while ((BYTE)l.flags == 2) {
+        StrRef a;
+        Str_Member20(&a, &l);
+        StrRef c1;
+        Str_CopyConstruct(&c1, 0, &a);
+        BYTE o1[12];
+        BYTE* r1 = CallC<BYTE*>(FUN_4af480, o1, 0, c1.ptr, c1.len, c1.flags);
+        BYTE x[12];
+        CallThis(FUN_455760, x, r1);
+        CallThis(FUN_4a36c0, o1);
+        StrRef c2;
+        Str_CopyConstruct(&c2, 0, &a);
+        BYTE o2[12];
+        BYTE* r2 = CallC<BYTE*>(FUN_4af480, o2, 1, c2.ptr, c2.len, c2.flags);
+        BYTE y[12];
+        CallThis(FUN_4556d0, y, r2);
+        CallThis(FUN_4a36c0, o2);
+        double d = CallThis<double>(FUN_4b0e90, CallThis<BYTE*>(FUN_4aa430, y));
+        BYTE t[24];
+        BYTE* tp = CallThis<BYTE*>(FUN_40ca70, t, CallThis<BYTE*>(FUN_4aa430, x) + 12, d);
+        Vec24_PushBackA(rec + 12, 0, tp);
+        CallThis(FUN_404420, t + 8);
+        CallThis(FUN_4a36c0, y);
+        CallThis(FUN_4a36c0, x);
+        CallThis(FUN_4a36c0, &a);
+        StrRef t3;
+        CallThis(FUN_40c100, &l, CallC<StrRef*>(FUN_4090a0, &t3, &l));
+        CallThis(FUN_4a36c0, &t3);
+    }
+    CallThis(FUN_40cda0, out, rec);
+    CallThis(FUN_4a36c0, &l);
+    Rec40cb60_Destroy(rec, 0);
+    CallThis(FUN_4a36c0, &e);
+    return out;
 }
