@@ -16,7 +16,7 @@ extern "C" void __cdecl Carat_Message(const char* text, int);
 KING_ALIAS("_Carat_Message", "_Sys_Log")
 
 ASM_PROC(FUN_578100)
-ASM_PROC(FUN_5d31e0)
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 extern "C" void FUN_579420(); KING_ALIAS("_FUN_579420", "@Pool_Destruct@8")
 extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")

@@ -2298,7 +2298,7 @@ extern "C" BYTE* __fastcall Controls530120_Construct(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors and destructors (exception frames dropped).
 
-ASM_PROC(FUN_5d31e0)
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 extern "C" void FUN_53e230(); KING_ALIAS("_FUN_53e230", "@Light_Setup@8")
 extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
 extern "C" void FUN_5319f0(); KING_ALIAS("_FUN_5319f0", "@Player_DetachCar@8")

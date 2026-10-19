@@ -364,7 +364,7 @@ extern "C" BYTE* __fastcall WasmObj5a35b0_Construct(BYTE* self, void*) { return 
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
-ASM_PROC(FUN_5d31e0)    // named object: constructor (id, name)
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")    // named object: constructor (id, name)
 ASM_PROC(FUN_4e41d9)    // an angle checked for NaN (angle, where)
 extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")    // a double of an ini file (section, key, default, out, file)
 extern "C" void FUN_4e5dce(); KING_ALIAS("_FUN_4e5dce", "_Model_FindPart2")
@@ -867,7 +867,7 @@ void __fastcall TvCamera_CreateMonitor(BYTE* self, void*)
 
 }
 
-ASM_PROC(FUN_5d9f60)
+extern "C" void FUN_5d9f60(); KING_ALIAS("_FUN_5d9f60", "@RoomWindow_Construct@24")
 extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
 extern "C" void FUN_5eb1e0(); KING_ALIAS("_FUN_5eb1e0", "@Camera_Init@8")
 extern "C" void FUN_5e4210(); KING_ALIAS("_FUN_5e4210", "@Windows_Add@12")
@@ -1682,10 +1682,10 @@ extern "C" int __fastcall Worobj_Pack(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors and destructors (exception frames dropped).
 
-ASM_PROC(FUN_5d31e0)
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 ASM_PROC(FUN_5a3f50)
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
-ASM_PROC(FUN_5d3110)
+extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 ASM_VAR(AsmLabel, s_worobj67e8e8, $L_67e8e8)
 ASM_VAR(AsmLabel, s_worobj67e8e0, $L_67e8e0)
