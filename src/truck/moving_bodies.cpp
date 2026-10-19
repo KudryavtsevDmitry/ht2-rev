@@ -947,3 +947,119 @@ extern "C" BYTE* __fastcall Holder_Construct(BYTE* self, void*, BYTE** p, int af
     return self;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_592cf0)
+extern "C" void FUN_5930a0(); KING_ALIAS("_FUN_5930a0", "@Body593040_Destroy@8")
+ASM_VAR(DWORD, g_movbod6f6638, $L_6f6638)
+ASM_VAR(DWORD, g_movbod6f663c, $L_6f663c)
+ASM_VAR(DWORD, g_movbod6f6640, $L_6f6640)
+ASM_VAR(DWORD, g_movbod6f6648, $L_6f6648)
+ASM_VAR(DWORD, g_movbod6f664c, $L_6f664c)
+ASM_VAR(DWORD, g_movbod6f6650, $L_6f6650)
+ASM_VAR(DWORD, g_movbod6f6654, $L_6f6654)
+ASM_VAR(DWORD, g_movbod6f6658, $L_6f6658)
+ASM_VAR(DWORD, g_movbod6f665c, $L_6f665c)
+ASM_VAR(DWORD, g_movbod6f6660, $L_6f6660)
+ASM_VAR(DWORD, g_movbod6f6664, $L_6f6664)
+ASM_VAR(DWORD, g_movbod6f6668, $L_6f6668)
+ASM_VAR(DWORD, g_movbod6f666c, $L_6f666c)
+ASM_VAR(DWORD, g_movbod6f6670, $L_6f6670)
+ASM_VAR(DWORD, g_movbod6f6674, $L_6f6674)
+ASM_VAR(DWORD, g_movbod6f6678, $L_6f6678)
+ASM_VAR(DWORD, g_movbod6f667c, $L_6f667c)
+ASM_VAR(DWORD, g_movbod6f6680, $L_6f6680)
+ASM_VAR(DWORD, g_movbod6f6684, $L_6f6684)
+ASM_VAR(DWORD, g_movbod6f6688, $L_6f6688)
+ASM_VAR(DWORD, g_movbod6f668c, $L_6f668c)
+ASM_VAR(DWORD, g_movbod6f6690, $L_6f6690)
+ASM_VAR(DWORD, g_movbod6f6694, $L_6f6694)
+ASM_VAR(DWORD, g_movbod6f6698, $L_6f6698)
+ASM_VAR(DWORD, g_movbod6f669c, $L_6f669c)
+ASM_VAR(DWORD, g_movbod6f66a0, $L_6f66a0)
+ASM_VAR(DWORD, g_movbod6f66a4, $L_6f66a4)
+
+static BYTE* Movbod_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_593010]
+extern "C" int __fastcall Movbod_593010(BYTE* s, void*, int, int, int) { return 1; }
+// [$L_592c20]
+extern "C" BYTE* __fastcall Movbod592c20_DeletingDestructor(BYTE* s, void*, int flags) { return Movbod_DeleteAfter(s, flags, FUN_592cf0); }
+// [$L_593020]
+extern "C" BYTE* __fastcall Movbod593020_DeletingDestructor(BYTE* s, void*, int flags) { return Movbod_DeleteAfter(s, flags, FUN_5930a0); }
+// [$L_593280]
+extern "C" void __cdecl MovbodInit_593280() { g_movbod6f6638 = 0x0; g_movbod6f663c = 0x0; g_movbod6f6640 = 0xc099eb85; }
+// [$L_5932b0]
+extern "C" void __cdecl MovbodInit_5932b0() { g_movbod6f6668 = 0x3f800000; g_movbod6f666c = 0x3f800000; g_movbod6f6670 = 0x3f73f3f4; g_movbod6f6674 = 0x3f4ccccd; }
+// [$L_5933b0]
+extern "C" void __cdecl MovbodInit_5933b0() { g_movbod6f6658 = 0x3f800000; g_movbod6f665c = 0x3f800000; g_movbod6f6660 = 0x3f70f0f1; g_movbod6f6664 = 0x3f3ebebf; }
+// [$L_5933f0]
+extern "C" void __cdecl MovbodInit_5933f0() { g_movbod6f6648 = 0x0; g_movbod6f664c = 0x3f7efeff; g_movbod6f6650 = 0x3f44c4c5; g_movbod6f6654 = 0x3eeeeeef; }
+// [$L_5932f0]
+extern "C" void __cdecl MovbodInit_5932f0() { g_movbod6f6688 = 0x3f800000; g_movbod6f668c = 0x3f800000; g_movbod6f6690 = 0x3f5fdfe0; g_movbod6f6694 = 0x3efefeff; }
+// [$L_593330]
+extern "C" void __cdecl MovbodInit_593330() { g_movbod6f6678 = 0x0; g_movbod6f667c = 0x3f77f7f8; g_movbod6f6680 = 0x3f42c2c3; g_movbod6f6684 = 0x3e44c4c5; }
+// [$L_593370]
+extern "C" void __cdecl MovbodInit_593370() { g_movbod6f6698 = 0x3f800000; g_movbod6f669c = 0x3f800000; g_movbod6f66a0 = 0x3f800000; g_movbod6f66a4 = 0x3f800000; }
+
+extern "C" void FUN_5f1cc0(); KING_ALIAS("_FUN_5f1cc0", "@Buckets_Push@16")
+extern "C" void FUN_581ba0(); KING_ALIAS("_FUN_581ba0", "@Item_Apply84@16")
+ASM_PROC(FUN_582960)
+ASM_PROC(FUN_585da0)
+extern "C" void FUN_592e70(); KING_ALIAS("_FUN_592e70", "@ListNode_CutNext@8")
+extern "C" void FUN_592e90(); KING_ALIAS("_FUN_592e90", "@ListNode_592e90@12")
+ASM_VAR(float, g_movbod650890, $L_650890)
+ASM_VAR(float, g_movbod650894, $L_650894)
+ASM_VAR(float, g_movbod650898, $L_650898)
+ASM_VAR(float, g_movbod6f662c, $L_6f662c)
+ASM_VAR(float, g_movbod6f6628, $L_6f6628)
+
+// [$L_593270]
+extern "C" int __fastcall Movbod_593270(BYTE* s, void*, int, int b) { return CallThis<int>(FUN_5f1cc0, s, 0, b); }
+// [$L_58fba0]
+extern "C" int __fastcall Movbod_58fba0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_581ba0, s, a, b); }
+// [$L_58e270]
+extern "C" int __fastcall Movbod_58e270(BYTE* s, void*, int a, int b, int c) { return CallThis<int>(FUN_585da0, s, a, b, c); }
+// [$L_58fb80]
+extern "C" BYTE* __fastcall Movbod_58fb80(BYTE* s, void*, BYTE* p)
+{
+    CallThis(FUN_582960, s, p);
+    return p;
+}
+
+// [$L_592f20] removes node p (next at +0) from the front of the list (+4 head, +8 tail)
+extern "C" int __fastcall Movbod_ListPop(BYTE* s, void*, BYTE* p)
+{
+    if (F(BYTE*, s, 4) == p) {
+        F(int, s, 4) = 0;
+        F(int, s, 8) = 0;
+        return (int)s;
+    }
+    F(int, s, 8) = F(int, p, 0);
+    return CallThis<int>(FUN_592e70, s);
+}
+
+// [$L_592f50] appends the chain n (linked through +4) to the list; the tail goes to +8
+extern "C" void __fastcall Movbod_ListAppend(BYTE* s, void*, BYTE* n)
+{
+    if (!F(BYTE*, s, 4))
+        F(BYTE*, s, 4) = n;
+    else
+        CallThis(FUN_592e90, F(BYTE*, s, 8), n);
+    BYTE* t = n;
+    while (F(BYTE*, t, 4))
+        t = F(BYTE*, t, 4);
+    F(BYTE*, s, 8) = t;
+}
+
+// [$L_592b90] static initializers: angles atan(1 / (650890 / x))
+extern "C" void __cdecl MovbodInit_592b90() { g_movbod6f662c = (float)x87_atan2((double)g_movbod650890 / g_movbod650894, 1.0); }
+// [$L_592bc0]
+extern "C" void __cdecl MovbodInit_592bc0() { g_movbod6f6628 = (float)x87_atan2((double)g_movbod650890 / g_movbod650898, 1.0); }

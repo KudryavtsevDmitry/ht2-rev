@@ -1100,3 +1100,55 @@ extern "C" int __fastcall Rt_ReadFile(BYTE* self, void*, const char* name)
     return r;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_490fa0(); KING_ALIAS("_FUN_490fa0", "@RingMember_Destruct@8")
+extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
+ASM_PROC(FUN_491090)
+extern "C" void FUN_491100(); KING_ALIAS("_FUN_491100", "@Rec491100_Destroy@8")
+ASM_PROC(FUN_4914c0)
+ASM_PROC(FUN_491590)
+ASM_VAR(AsmLabel, g_run64bee4, $L_64bee4)
+ASM_VAR(AsmLabel, g_run6705ec, $L_6705ec)
+ASM_VAR(AsmLabel, g_run6705f4, $L_6705f4)
+ASM_VAR(AsmLabel, g_run6705fc, $L_6705fc)
+
+static BYTE* Run_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_490f50]
+extern "C" int __fastcall Run_490f50(BYTE* s) { return (int)g_run6705ec; }
+// [$L_490f60]
+extern "C" int __fastcall Run_490f60(BYTE* s) { return 4; }
+// [$L_490f70]
+extern "C" int __fastcall Run_490f70(BYTE* s) { return (int)g_run6705f4; }
+// [$L_491400]
+extern "C" int __fastcall Run_491400(BYTE* s) { return 5; }
+// [$L_491410]
+extern "C" int __fastcall Run_491410(BYTE* s) { return (int)g_run6705fc; }
+// [$L_490f80]
+extern "C" BYTE* __fastcall Run490f80_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_490fa0); }
+// [$L_490fd0]
+extern "C" BYTE* __fastcall Run490fd0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_run64bee4;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+// [$L_490ff0]
+extern "C" BYTE* __fastcall Run490ff0_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_491010); }
+// [$L_491070]
+extern "C" BYTE* __fastcall Run491070_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_491090); }
+// [$L_4910e0]
+extern "C" BYTE* __fastcall Run4910e0_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_491100); }
+// [$L_4914a0]
+extern "C" BYTE* __fastcall Run4914a0_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_4914c0); }
+// [$L_491570]
+extern "C" BYTE* __fastcall Run491570_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_491590); }

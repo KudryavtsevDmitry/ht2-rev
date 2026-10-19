@@ -857,3 +857,35 @@ extern "C" void __fastcall Pool6928_Free(BYTE** self, void*)
     if (a)
         operator delete(a - 4);
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_4bd570(); KING_ALIAS("_FUN_4bd570", "@EffectBuf_Destroy@8")
+extern "C" void FUN_579650(); KING_ALIAS("_FUN_579650", "@FrameTask_Destroy@8")
+extern "C" void FUN_57c360(); KING_ALIAS("_FUN_57c360", "@PoolNode_Destroy@8")
+ASM_VAR(DWORD, g_forfee6f63b8, $L_6f63b8)
+ASM_VAR(DWORD, g_forfee6f63bc, $L_6f63bc)
+ASM_VAR(DWORD, g_forfee6f63c0, $L_6f63c0)
+ASM_VAR(DWORD, g_forfee6f63c4, $L_6f63c4)
+ASM_VAR(DWORD, g_forfee6f63d8, $L_6f63d8)
+ASM_VAR(DWORD, g_forfee6f63dc, $L_6f63dc)
+ASM_VAR(DWORD, g_forfee6f63e0, $L_6f63e0)
+
+static BYTE* Forfee_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5795e0]
+extern "C" BYTE* __fastcall Forfee5795e0_DeletingDestructor(BYTE* s, void*, int flags) { return Forfee_DeleteAfter(s, flags, FUN_579650); }
+// [$L_57c320]
+extern "C" BYTE* __fastcall Forfee57c320_DeletingDestructor(BYTE* s, void*, int flags) { return Forfee_DeleteAfter(s, flags, FUN_4bd570); }
+// [$L_57c340]
+extern "C" BYTE* __fastcall Forfee57c340_DeletingDestructor(BYTE* s, void*, int flags) { return Forfee_DeleteAfter(s, flags, FUN_57c360); }
+// [$L_57c970]
+extern "C" void __cdecl ForfeeInit_57c970() { g_forfee6f63d8 = 0x0; g_forfee6f63dc = 0x0; g_forfee6f63e0 = 0xc11ccccd; }
+// [$L_579900]
+extern "C" void __cdecl ForfeeInit_579900() { g_forfee6f63b8 = 0x0; g_forfee6f63bc = 0x0; g_forfee6f63c0 = 0x0; g_forfee6f63c4 = 0x0; }

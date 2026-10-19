@@ -886,3 +886,18 @@ extern "C" void __fastcall Body_SetControlMode(BYTE* self, void*, int mode, int 
     CallThis(FUN_4f1ef0, self, v);
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_530190)
+
+static BYTE* Vehphy_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_4eb2d0]
+extern "C" BYTE* __fastcall Vehphy4eb2d0_DeletingDestructor(BYTE* s, void*, int flags) { return Vehphy_DeleteAfter(s, flags, FUN_530190); }

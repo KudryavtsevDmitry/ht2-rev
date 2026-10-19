@@ -1908,3 +1908,114 @@ extern "C" int __fastcall Route_PushRoad(BYTE* self, void*, void* key, Vec3* p)
     return -4;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_569930(); KING_ALIAS("_FUN_569930", "@Copter569930_Destroy@8")
+extern "C" void FUN_56afb0(); KING_ALIAS("_FUN_56afb0", "@Notice_Destruct@8")
+ASM_PROC(FUN_56d6b0)
+ASM_VAR(DWORD, g_hel6f3248, $L_6f3248)
+ASM_VAR(DWORD, g_hel6f324c, $L_6f324c)
+ASM_VAR(DWORD, g_hel6f3250, $L_6f3250)
+ASM_VAR(DWORD, g_hel6f3254, $L_6f3254)
+ASM_VAR(DWORD, g_hel6f32e8, $L_6f32e8)
+ASM_VAR(DWORD, g_hel6f32ec, $L_6f32ec)
+ASM_VAR(DWORD, g_hel6f32f0, $L_6f32f0)
+ASM_VAR(DWORD, g_hel6f32f4, $L_6f32f4)
+ASM_VAR(DWORD, g_hel6f32f8, $L_6f32f8)
+ASM_VAR(DWORD, g_hel6f32fc, $L_6f32fc)
+ASM_VAR(DWORD, g_hel6f3300, $L_6f3300)
+ASM_VAR(DWORD, g_hel6f3304, $L_6f3304)
+ASM_VAR(DWORD, g_hel6f3308, $L_6f3308)
+ASM_VAR(DWORD, g_hel6f330c, $L_6f330c)
+
+static BYTE* Hel_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_569910]
+extern "C" BYTE* __fastcall Hel569910_DeletingDestructor(BYTE* s, void*, int flags) { return Hel_DeleteAfter(s, flags, FUN_569930); }
+// [$L_56af90]
+extern "C" BYTE* __fastcall Hel56af90_DeletingDestructor(BYTE* s, void*, int flags) { return Hel_DeleteAfter(s, flags, FUN_56afb0); }
+// [$L_56d690]
+extern "C" BYTE* __fastcall Hel56d690_DeletingDestructor(BYTE* s, void*, int flags) { return Hel_DeleteAfter(s, flags, FUN_56d6b0); }
+// [$L_56f3b0]
+extern "C" void __cdecl HelInit_56f3b0() { g_hel6f3248 = 0x0; g_hel6f324c = 0x0; g_hel6f3250 = 0x0; g_hel6f3254 = 0x0; }
+// [$L_568e50]
+extern "C" void __cdecl HelInit_568e50() { g_hel6f32e8 = 0x0; g_hel6f32ec = 0x0; g_hel6f3300 = 0x47ae147b; g_hel6f3304 = 0x3f847ae1; g_hel6f32f0 = 0x0; g_hel6f32f4 = 0x0; g_hel6f3308 = 0x47ae147b; g_hel6f330c = 0x3f847ae1; g_hel6f32f8 = 0x0; g_hel6f32fc = 0x0; }
+
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+ASM_PROC(FUN_5f98c0)
+ASM_PROC(FUN_5f9d20)
+extern "C" void FUN_5691c0(); KING_ALIAS("_FUN_5691c0", "_Copter_Send962")
+extern "C" void FUN_4297b0(); KING_ALIAS("_FUN_4297b0", "_AI_True")
+ASM_VAR(DWORD, g_hel68cf6c, $L_68cf6c)
+ASM_VAR(DWORD, g_hel6f2f08, $L_6f2f08)
+ASM_VAR(float, g_hel67b294, $L_67b294)
+ASM_VAR(float, g_hel67b290, $L_67b290)
+ASM_VAR(DWORD, g_hel67b284, $L_67b284)
+ASM_VAR(DWORD, g_hel6f2c3c, $L_6f2c3c)
+ASM_VAR(float, g_hel6f2c38, $L_6f2c38)
+ASM_VAR(BYTE*, g_hel696ca0, $L_696ca0)
+ASM_VAR(double, g_hel64b788, $L_64b788)
+ASM_VAR(int, g_hel67c4b4, $L_67c4b4)
+ASM_VAR(double, g_hel64b670, $L_64b670)
+ASM_VAR(double, g_hel6f3520, $L_6f3520)
+ASM_VAR(int, g_hel6f33f0, $L_6f33f0)
+
+// [$L_56cd80]
+extern "C" int __fastcall Hel_Release56cd80(BYTE* s) { return CallThis<int>(FUN_5d32f0, s, 1); }
+// [$L_5736d0]
+extern "C" int __fastcall Hel_Release5736d0(BYTE* s) { return CallThis<int>(FUN_5d32f0, s, 1); }
+
+// [$L_56ba90] static initializers
+extern "C" void __cdecl HelInit_56ba90() { g_hel6f2f08 = g_hel68cf6c; }
+// [$L_561d90]
+extern "C" void __cdecl HelInit_561d90()
+{
+    g_hel6f2c3c = g_hel67b284;
+    g_hel6f2c38 = (float)((double)g_hel67b294 / g_hel67b290);
+}
+// [$L_576d00]
+extern "C" void __cdecl HelInit_576d00() { g_hel6f3520 = g_hel64b670 / (double)g_hel67c4b4; }
+
+// [$L_5737e0] FUN_5e1a10 (+96, +152), then FUN_5f98c0 (a, b)
+extern "C" int __fastcall Hel_5737e0(BYTE* s, void*, int a, int b)
+{
+    CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
+    return CallThis<int>(FUN_5f98c0, s, a, b);
+}
+
+// [$L_573b30] the same with FUN_5f9d20 (a, b, c, d)
+extern "C" int __fastcall Hel_573b30(BYTE* s, void*, int a, int b, int c, int d)
+{
+    CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
+    return CallThis<int>(FUN_5f9d20, s, a, b, c, d);
+}
+
+// [$L_573960] as 5737e0 unless 6f33f0 is set or FUN_4297b0 says no
+extern "C" int __fastcall Hel_573960(BYTE* s, void*, int a, int b)
+{
+    if (g_hel6f33f0)
+        return 0;
+    if (!CallThis<char>(FUN_4297b0, s))
+        return 0;
+    CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
+    return CallThis<int>(FUN_5f98c0, s, a, b);
+}
+
+// [$L_573810] once the time (+368) plus 64b788 has passed: FUN_5691c0 on +344 with 1, then with +408 (cleared)
+extern "C" int __fastcall Hel_573810(BYTE* s)
+{
+    if (!(F(double, s, 368) + g_hel64b788 >= F(double, g_hel696ca0, 2968))) {
+        F(int, s, 408) = 0;
+        CallC(FUN_5691c0, F(int, s, 344), 1);
+        CallC(FUN_5691c0, F(int, s, 344), F(int, s, 408));
+    }
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}

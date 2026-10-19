@@ -261,3 +261,18 @@ int __cdecl Music_Start()
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_5ffb10(); KING_ALIAS("_FUN_5ffb10", "@Thread_Destroy@8")
+
+static BYTE* Soufil_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5ffaf0]
+extern "C" BYTE* __fastcall Soufil5ffaf0_DeletingDestructor(BYTE* s, void*, int flags) { return Soufil_DeleteAfter(s, flags, FUN_5ffb10); }

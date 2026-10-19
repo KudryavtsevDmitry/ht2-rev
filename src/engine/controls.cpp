@@ -566,3 +566,26 @@ extern "C" int __fastcall Ctl_PointTo(BYTE* self, void*, int x, int y)
     return CallVirt<int>(s, 36, rx, ry);
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_5bda90)
+ASM_PROC(FUN_5be870)
+ASM_PROC(FUN_5bf7d0)
+
+static BYTE* Con_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5bd700]
+extern "C" int __fastcall Con_5bd700(BYTE* s, void*, int, int) { return 0; }
+// [$L_5bdb30]
+extern "C" BYTE* __fastcall Con5bdb30_DeletingDestructor(BYTE* s, void*, int flags) { return Con_DeleteAfter(s, flags, FUN_5bda90); }
+// [$L_5be850]
+extern "C" BYTE* __fastcall Con5be850_DeletingDestructor(BYTE* s, void*, int flags) { return Con_DeleteAfter(s, flags, FUN_5be870); }
+// [$L_5bf7b0]
+extern "C" BYTE* __fastcall Con5bf7b0_DeletingDestructor(BYTE* s, void*, int flags) { return Con_DeleteAfter(s, flags, FUN_5bf7d0); }

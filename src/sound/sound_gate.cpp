@@ -929,3 +929,11 @@ extern "C" int __cdecl Gate_Start(const char* name)
     return 0;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_VAR(DWORD, g_sougat723d88, $L_723d88)
+
+// [$L_601040]
+extern "C" void __cdecl SougatInit_601040() { g_sougat723d88 = 0x0; }

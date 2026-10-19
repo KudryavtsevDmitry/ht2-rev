@@ -1708,3 +1708,18 @@ extern "C" int __fastcall Rn_ClipIds(BYTE* self, void*, int a1, int n, int* out,
     return cnt;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_5bbca0(); KING_ALIAS("_FUN_5bbca0", "@Texture_Destruct@8")
+
+static BYTE* Ren_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5ba470]
+extern "C" BYTE* __fastcall Ren5ba470_DeletingDestructor(BYTE* s, void*, int flags) { return Ren_DeleteAfter(s, flags, FUN_5bbca0); }

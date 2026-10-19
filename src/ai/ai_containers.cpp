@@ -2336,3 +2336,28 @@ extern "C" void __cdecl Stream_SetWindow(BYTE* s)
     F(BYTE*, s, 20) = s + 45 + len;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+typedef char AsmLabel[1];
+
+ASM_PROC(FUN_459e90)
+ASM_VAR(AsmLabel, g_aicon64b5a8, $L_64b5a8)
+
+static BYTE* Aicon_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_45a060]
+extern "C" BYTE* __fastcall Aicon45a060_DeletingDestructor(BYTE* s, void*, int flags) { return Aicon_DeleteAfter(s, flags, FUN_459e90); }
+// [$L_45a080]
+extern "C" BYTE* __fastcall Aicon45a080_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_aicon64b5a8;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

@@ -463,3 +463,80 @@ extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const c
         return CallVirt<int>(a, 28, 0);
     return CallVirt<int>(a, 28, self + 256);
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_595c60(); KING_ALIAS("_FUN_595c60", "@WorldObj_DestroyBase@8")
+ASM_PROC(FUN_5a53a0)
+ASM_PROC(FUN_5a63a0)
+ASM_PROC(FUN_5a6aa0)
+ASM_PROC(FUN_5a7240)
+ASM_PROC(FUN_5a7310)
+ASM_PROC(FUN_5a73f0)
+ASM_VAR(DWORD, g_wea6fb3d0, $L_6fb3d0)
+ASM_VAR(DWORD, g_wea6fb3d4, $L_6fb3d4)
+ASM_VAR(DWORD, g_wea6fb3d8, $L_6fb3d8)
+ASM_VAR(DWORD, g_wea6fb3dc, $L_6fb3dc)
+ASM_VAR(DWORD, g_wea6fb3e0, $L_6fb3e0)
+ASM_VAR(DWORD, g_wea6fb3e4, $L_6fb3e4)
+ASM_VAR(DWORD, g_wea6fb3e8, $L_6fb3e8)
+ASM_VAR(DWORD, g_wea6fb3ec, $L_6fb3ec)
+ASM_VAR(DWORD, g_wea702620, $L_702620)
+ASM_VAR(DWORD, g_wea702624, $L_702624)
+ASM_VAR(DWORD, g_wea702628, $L_702628)
+ASM_VAR(DWORD, g_wea702630, $L_702630)
+ASM_VAR(DWORD, g_wea702634, $L_702634)
+ASM_VAR(DWORD, g_wea702638, $L_702638)
+ASM_VAR(DWORD, g_wea702640, $L_702640)
+ASM_VAR(DWORD, g_wea702644, $L_702644)
+ASM_VAR(DWORD, g_wea702648, $L_702648)
+ASM_VAR(DWORD, g_wea702650, $L_702650)
+ASM_VAR(DWORD, g_wea702654, $L_702654)
+ASM_VAR(DWORD, g_wea702658, $L_702658)
+
+static BYTE* Wea_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5a72e0]
+extern "C" int __fastcall Wea_5a72e0(BYTE* s) { return F(int, s, 104); }
+// [$L_5aca70]
+extern "C" void __cdecl WeaInit_5aca70() {  }
+// [$L_5a5380]
+extern "C" BYTE* __fastcall Wea5a5380_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_5a53a0); }
+// [$L_5a6140]
+extern "C" BYTE* __fastcall Wea5a6140_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_595c60); }
+// [$L_5a6380]
+extern "C" BYTE* __fastcall Wea5a6380_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_5a63a0); }
+// [$L_5a6a80]
+extern "C" BYTE* __fastcall Wea5a6a80_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_5a6aa0); }
+// [$L_5a72a0]
+extern "C" BYTE* __fastcall Wea5a72a0_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_5a7240); }
+// [$L_5a72f0]
+extern "C" BYTE* __fastcall Wea5a72f0_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_5a7310); }
+// [$L_5a7410]
+extern "C" BYTE* __fastcall Wea5a7410_DeletingDestructor(BYTE* s, void*, int flags) { return Wea_DeleteAfter(s, flags, FUN_5a73f0); }
+// [$L_5ab340]
+extern "C" void __cdecl WeaInit_5ab340() { g_wea702650 = 0x0; g_wea702654 = 0x0; g_wea702658 = 0x0; }
+// [$L_5ab370]
+extern "C" void __cdecl WeaInit_5ab370() { g_wea702640 = 0x3f800000; g_wea702644 = 0x0; g_wea702648 = 0x0; }
+// [$L_5ab3a0]
+extern "C" void __cdecl WeaInit_5ab3a0() { g_wea702620 = 0x0; g_wea702624 = 0x3f800000; g_wea702628 = 0x0; }
+// [$L_5ab3d0]
+extern "C" void __cdecl WeaInit_5ab3d0() { g_wea702630 = 0x0; g_wea702634 = 0x0; g_wea702638 = 0x3f800000; }
+// [$L_5a73a0]
+extern "C" void __cdecl WeaInit_5a73a0() { g_wea6fb3e4 = 0x3ff00000; g_wea6fb3dc = 0; g_wea6fb3d8 = 0; g_wea6fb3d4 = 0; g_wea6fb3d0 = 0; g_wea6fb3e0 = 0; g_wea6fb3e8 = 0; g_wea6fb3ec = 0x3ff00000; }
+
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
+extern "C" void FUN_5d3350(); KING_ALIAS("_FUN_5d3350", "@Queue_PostEvent1@12")
+
+// [$L_5a6ab0]
+extern "C" int __fastcall Wea_5a6ab0(BYTE* s, void*, int a) { return CallThis<int>(FUN_5d33d0, s, a); }
+// [$L_5a6ac0]
+extern "C" int __fastcall Wea_5a6ac0(BYTE* s, void*, int a) { return CallThis<int>(FUN_5d3350, s, a); }
+// [$L_5ad130] 1 when +8244 is set
+extern "C" int __fastcall Wea_Has8244(BYTE* s) { return F(int, s, 8244) != 0; }

@@ -3738,3 +3738,31 @@ extern "C" void __cdecl Fx_Init696740()
     dst[1] = src[1];
     dst[2] = src[2];
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_VAR(DWORD, g_eff696278, $L_696278)
+ASM_VAR(DWORD, g_eff696280, $L_696280)
+ASM_VAR(DWORD, g_eff696284, $L_696284)
+ASM_VAR(DWORD, g_eff696288, $L_696288)
+ASM_VAR(DWORD, g_eff69628c, $L_69628c)
+ASM_VAR(DWORD, g_eff696290, $L_696290)
+ASM_VAR(DWORD, g_eff696294, $L_696294)
+ASM_VAR(DWORD, g_eff696298, $L_696298)
+ASM_VAR(DWORD, g_eff69629c, $L_69629c)
+ASM_VAR(DWORD, g_eff6962a0, $L_6962a0)
+ASM_VAR(DWORD, g_eff6962a4, $L_6962a4)
+ASM_VAR(DWORD, g_eff6962a8, $L_6962a8)
+ASM_VAR(DWORD, g_eff6962ac, $L_6962ac)
+ASM_VAR(DWORD, g_eff6962b0, $L_6962b0)
+ASM_VAR(DWORD, g_eff6962b4, $L_6962b4)
+ASM_VAR(DWORD, g_eff6962b8, $L_6962b8)
+ASM_VAR(float, g_eff64c308, $L_64c308)
+ASM_VAR(float, g_eff672c48, $L_672c48)
+ASM_VAR(float, g_eff696370, $L_696370)
+
+// [$L_4d2a70]
+extern "C" void __cdecl EffInit_4d2a70() { g_eff696280 = 0x0; g_eff696284 = 0x0; g_eff696288 = 0x0; g_eff69628c = 0x0; g_eff696290 = 0x0; g_eff696294 = 0x0; g_eff696298 = 0x0; g_eff69629c = 0x0; g_eff6962a0 = 0x0; g_eff6962a4 = 0x0; g_eff6962a8 = 0x0; g_eff6962ac = 0x0; g_eff6962b0 = 0x0; g_eff6962b4 = 0x0; g_eff6962b8 = 0x0; g_eff696278 = 0x1; }
+// [$L_4da4b0]
+extern "C" void __cdecl EffInit_4da4b0() { g_eff696370 = (float)((double)g_eff672c48 * g_eff64c308); }
