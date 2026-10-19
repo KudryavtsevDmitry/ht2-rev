@@ -850,3 +850,109 @@ void __fastcall Grid_RemoveUnusedPoints(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_6063f0(); KING_ALIAS("_FUN_6063f0", "@GridTriangle_Destruct@8")
+extern "C" void FUN_608aa0(); KING_ALIAS("_FUN_608aa0", "@GridObj_SetVtables@8")
+ASM_PROC(FUN_60bbb0)
+
+static BYTE* Gsp_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_6063d0]
+extern "C" BYTE* __fastcall Gsp6063d0_DeletingDestructor(BYTE* s, void*, int flags) { return Gsp_DeleteAfter(s, flags, FUN_6063f0); }
+// [$L_608a80]
+extern "C" BYTE* __fastcall Gsp608a80_DeletingDestructor(BYTE* s, void*, int flags) { return Gsp_DeleteAfter(s, flags, FUN_608aa0); }
+// [$L_60be20]
+extern "C" BYTE* __fastcall Gsp60be20_DeletingDestructor(BYTE* s, void*, int flags) { return Gsp_DeleteAfter(s, flags, FUN_60bbb0); }
+
+// static initializers of constants
+ASM_VAR(DWORD, g_gsp7241b8, $L_7241b8)
+ASM_VAR(DWORD, g_gsp725d30, $L_725d30)
+ASM_VAR(DWORD, g_gsp725d34, $L_725d34)
+ASM_VAR(DWORD, g_gsp725d38, $L_725d38)
+ASM_VAR(float, g_gsp64c258, $L_64c258)
+ASM_VAR(float, g_gsp64c41c, $L_64c41c)
+ASM_VAR(float, g_gsp64d4e8, $L_64d4e8)
+ASM_VAR(float, g_gsp652e44, $L_652e44)
+ASM_VAR(float, g_gsp652e50, $L_652e50)
+ASM_VAR(float, g_gsp652f04, $L_652f04)
+ASM_VAR(float, g_gsp652f08, $L_652f08)
+ASM_VAR(float, g_gsp652f10, $L_652f10)
+ASM_VAR(float, g_gsp652f14, $L_652f14)
+ASM_VAR(float, g_gsp652f18, $L_652f18)
+ASM_VAR(float, g_gsp652f1c, $L_652f1c)
+ASM_VAR(float, g_gsp652f20, $L_652f20)
+ASM_VAR(float, g_gsp652f2c, $L_652f2c)
+ASM_VAR(float, g_gsp652f30, $L_652f30)
+ASM_VAR(float, g_gsp653224, $L_653224)
+ASM_VAR(float, g_gsp724288, $L_724288)
+ASM_VAR(float, g_gsp724290, $L_724290)
+ASM_VAR(float, g_gsp724388, $L_724388)
+ASM_VAR(float, g_gsp724394, $L_724394)
+ASM_VAR(float, g_gsp72439c, $L_72439c)
+ASM_VAR(float, g_gsp7243a4, $L_7243a4)
+ASM_VAR(float, g_gsp7243ac, $L_7243ac)
+ASM_VAR(float, g_gsp7243b4, $L_7243b4)
+ASM_VAR(float, g_gsp72495c, $L_72495c)
+ASM_VAR(float, g_gsp724960, $L_724960)
+ASM_VAR(float, g_gsp72554c, $L_72554c)
+ASM_VAR(float, g_gsp725550, $L_725550)
+ASM_VAR(float, g_gsp728800, $L_728800)
+// [$L_613840]
+extern "C" void __cdecl GspInit_613840() {  }
+// [$L_6058e0]
+extern "C" void __cdecl GspInit_6058e0() { g_gsp7241b8 = 0x0; }
+// [$L_607070]
+extern "C" void __cdecl GspInit_607070() { g_gsp724290 = (float)((double)g_gsp652e50 + (double)g_gsp652e50); }
+// [$L_60a830]
+extern "C" void __cdecl GspInit_60a830() { g_gsp724388 = (float)((double)g_gsp652f04 + (double)g_gsp652f04); }
+// [$L_60b930]
+extern "C" void __cdecl GspInit_60b930() { g_gsp7243a4 = (float)((double)g_gsp652f14 + (double)g_gsp652f14); }
+// [$L_60b950]
+extern "C" void __cdecl GspInit_60b950() { g_gsp7243ac = (float)((double)g_gsp652f18 + (double)g_gsp652f18); }
+// [$L_60b970]
+extern "C" void __cdecl GspInit_60b970() { g_gsp7243b4 = (float)((double)g_gsp652f1c + (double)g_gsp652f1c); }
+// [$L_60b990]
+extern "C" void __cdecl GspInit_60b990() { g_gsp72495c = (float)((double)g_gsp652f20 + (double)g_gsp652f20); }
+// [$L_60b9b0]
+extern "C" void __cdecl GspInit_60b9b0() { g_gsp724960 = (float)((double)g_gsp64c41c / g_gsp652f20); }
+// [$L_60bb30]
+extern "C" void __cdecl GspInit_60bb30() { g_gsp72554c = (float)((double)g_gsp652f2c + (double)g_gsp652f2c); }
+// [$L_60bb80]
+extern "C" void __cdecl GspInit_60bb80() { g_gsp725d30 = 0x0; g_gsp725d34 = 0x0; g_gsp725d38 = 0x0; }
+// [$L_605820]
+extern "C" void __cdecl GspInit_605820() { g_gsp724288 = (float)((double)g_gsp652e44 + (double)g_gsp652e44); }
+// [$L_60a860]
+extern "C" void __cdecl GspInit_60a860() { g_gsp724394 = (float)((double)g_gsp652f08 + (double)g_gsp652f08); }
+// [$L_60aa40]
+extern "C" void __cdecl GspInit_60aa40() { g_gsp72439c = (float)((double)g_gsp652f10 + (double)g_gsp652f10); }
+// [$L_60bb50]
+extern "C" void __cdecl GspInit_60bb50() { g_gsp725550 = (float)((double)g_gsp652f30 - g_gsp64d4e8 - g_gsp64c258); }
+// [$L_613a60]
+extern "C" void __cdecl GspInit_613a60() { g_gsp728800 = (float)((double)g_gsp653224 + (double)g_gsp653224); }
+ASM_VAR(AsmLabel, g_gsp652e48, $L_652e48)
+ASM_VAR(AsmLabel, g_gsp652ef4, $L_652ef4)
+
+// [$L_606150] the base destructor (vtable 652e48) inlined
+extern "C" BYTE* __fastcall Gsp606150_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_gsp652e48;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+// [$L_608010] the base destructor (vtable 652ef4) inlined
+extern "C" BYTE* __fastcall Gsp608010_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_gsp652ef4;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

@@ -266,3 +266,79 @@ extern "C" void __fastcall TGrid_FollowCamera(BYTE* s, void*, const float* pos, 
     TGrid_ViewEdges(s, 60, TGrid_Get16((BYTE*)&g_tgrid72c108b, 0), nx, ny);
     TGrid_ViewEdges(s, 76, TGrid_Get20((BYTE*)&g_tgrid72c108b, 0), nx, ny);
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_61b920(); KING_ALIAS("_FUN_61b920", "@TGrid61b920_Destroy@8")
+extern "C" void FUN_61c170(); KING_ALIAS("_FUN_61c170", "@TGrid_Get36@8")
+
+static BYTE* Tgr_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_61b900]
+extern "C" BYTE* __fastcall Tgr61b900_DeletingDestructor(BYTE* s, void*, int flags) { return Tgr_DeleteAfter(s, flags, FUN_61b920); }
+
+// static initializers of constants
+ASM_VAR(DWORD, g_tgr72c0f0, $L_72c0f0)
+ASM_VAR(DWORD, g_tgr72c0f4, $L_72c0f4)
+ASM_VAR(DWORD, g_tgr72c0f8, $L_72c0f8)
+ASM_VAR(float, g_tgr64c258, $L_64c258)
+ASM_VAR(float, g_tgr64d4e8, $L_64d4e8)
+ASM_VAR(float, g_tgr6533c4, $L_6533c4)
+ASM_VAR(float, g_tgr6533c8, $L_6533c8)
+ASM_VAR(float, g_tgr6533cc, $L_6533cc)
+ASM_VAR(float, g_tgr6533d8, $L_6533d8)
+ASM_VAR(float, g_tgr6533e8, $L_6533e8)
+ASM_VAR(float, g_tgr6533ec, $L_6533ec)
+ASM_VAR(float, g_tgr6533f0, $L_6533f0)
+ASM_VAR(float, g_tgr72c0e0, $L_72c0e0)
+ASM_VAR(float, g_tgr72c0e8, $L_72c0e8)
+ASM_VAR(float, g_tgr72c0ec, $L_72c0ec)
+ASM_VAR(float, g_tgr72c130, $L_72c130)
+ASM_VAR(float, g_tgr72c138, $L_72c138)
+ASM_VAR(float, g_tgr72c140, $L_72c140)
+ASM_VAR(float, g_tgr72c148, $L_72c148)
+// [$L_61bff0]
+extern "C" void __cdecl TgrInit_61bff0() { g_tgr72c0e0 = (float)((double)g_tgr6533c4 + (double)g_tgr6533c4); }
+// [$L_61c010]
+extern "C" void __cdecl TgrInit_61c010() { g_tgr72c0e8 = (float)((double)g_tgr6533c8 + (double)g_tgr6533c8); }
+// [$L_61c060]
+extern "C" void __cdecl TgrInit_61c060() { g_tgr72c0f0 = 0x0; g_tgr72c0f4 = 0x0; g_tgr72c0f8 = 0x0; }
+// [$L_61c090]
+extern "C" void __cdecl TgrInit_61c090() { g_tgr72c130 = (float)((double)g_tgr6533d8 + (double)g_tgr6533d8); }
+// [$L_61c190]
+extern "C" void __cdecl TgrInit_61c190() { g_tgr72c138 = (float)((double)g_tgr6533e8 + (double)g_tgr6533e8); }
+// [$L_61c1e0]
+extern "C" void __cdecl TgrInit_61c1e0() { g_tgr72c140 = (float)((double)g_tgr6533ec + (double)g_tgr6533ec); }
+// [$L_61c230]
+extern "C" void __cdecl TgrInit_61c230() { g_tgr72c148 = (float)((double)g_tgr6533f0 + (double)g_tgr6533f0); }
+// [$L_61c030]
+extern "C" void __cdecl TgrInit_61c030() { g_tgr72c0ec = (float)((double)g_tgr6533cc - g_tgr64d4e8 - g_tgr64c258); }
+typedef char AsmLabel[1];
+ASM_VAR(AsmLabel, g_tgr72c108, $L_72c108)
+ASM_VAR(AsmLabel, g_tgr6533a8, $L_6533a8)
+
+// [$L_61bfd0]
+extern "C" int __cdecl Tgr_61bfd0() { return CallThis<int>(FUN_61c170, g_tgr72c108); }
+// [$L_61bfe0]
+extern "C" void __fastcall Tgr_Set92(BYTE* s, void*, int v) { F(int, s, 92) = v; }
+// [$L_61bbc0]
+extern "C" void __fastcall Tgr_Clear96(BYTE* s)
+{
+    F(int, s, 96) = 0;
+    F(int, s, 100) = 0;
+    F(int, s, 104) = 0;
+}
+// [$L_61b8e0] the base destructor (vtable 6533a8) inlined
+extern "C" BYTE* __fastcall Tgr61b8e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_tgr6533a8;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

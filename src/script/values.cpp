@@ -1000,3 +1000,72 @@ extern "C" int __fastcall Value_ToInt(BYTE* self, void*)
     return Values_Trunc(*(double*)(self + 16));
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_4b5b70)
+extern "C" void FUN_4b5f50(); KING_ALIAS("_FUN_4b5f50", "@SchItem4b5f50_Destruct@8")
+extern "C" void FUN_4b6340(); KING_ALIAS("_FUN_4b6340", "@SchBuf4b6340_Destruct@8")
+extern "C" void FUN_4b6580(); KING_ALIAS("_FUN_4b6580", "@SchBuf4b6580_Destruct@8")
+extern "C" void FUN_4b6840(); KING_ALIAS("_FUN_4b6840", "@Item4b6840_Destroy@8")
+extern "C" void FUN_4b11f0(); KING_ALIAS("_FUN_4b11f0", "@Sch4b11f0_Destroy@8")
+extern "C" void FUN_4ad230(); KING_ALIAS("_FUN_4ad230", "_SchPool1_Free")
+
+static BYTE* Val_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_4b59d0]
+extern "C" BYTE* __fastcall Val4b59d0_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b5b70); }
+// [$L_4b5f10]
+extern "C" BYTE* __fastcall Val4b5f10_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b5f50); }
+// [$L_4b61a0]
+extern "C" BYTE* __fastcall Val4b61a0_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b6340); }
+// [$L_4b63e0]
+extern "C" BYTE* __fastcall Val4b63e0_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b6580); }
+// [$L_4b66d0]
+extern "C" BYTE* __fastcall Val4b66d0_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b6840); }
+ASM_VAR(AsmLabel, s_val66cb08, $L_66cb08)
+ASM_VAR(AsmLabel, s_val66ca58, $L_66ca58)
+ASM_VAR(AsmLabel, s_val66ce4c, $L_66ce4c)
+ASM_VAR(AsmLabel, s_val6708e4, $L_6708e4)
+extern "C" void Val_putc(); KING_ALIAS("_Val_putc", "_putc")
+
+// [$L_4b10e0] type ids and names
+extern "C" int __fastcall Pair_TypeId(BYTE*) { return 2; }
+// [$L_4b10f0]
+extern "C" const char* __fastcall Pair_TypeName(BYTE*) { return s_val66cb08; }
+// [$L_4b6180]
+extern "C" int __fastcall String_TypeId(BYTE*) { return 3; }
+// [$L_4b6190]
+extern "C" const char* __fastcall String_TypeName(BYTE*) { return s_val66ca58; }
+// [$L_4b63c0]
+extern "C" int __fastcall Identifier_TypeId(BYTE*) { return 9; }
+// [$L_4b63d0]
+extern "C" const char* __fastcall Identifier_TypeName(BYTE*) { return s_val66ce4c; }
+// [$L_4b66b0]
+extern "C" int __fastcall Val4b66b0_TypeId(BYTE*) { return 10; }
+// [$L_4b66c0]
+extern "C" const char* __fastcall Val4b66c0_TypeName(BYTE*) { return s_val6708e4; }
+
+// [$L_4b5890] port: +20
+extern "C" int __fastcall Port_Get20(BYTE* s) { return F(int, s, 20); }
+// [$L_4b5880] port: bit 1 of the flags
+extern "C" int __fastcall Port_Flag2(BYTE* s) { return F(int, s, 16) & 2; }
+// [$L_4b5f00]
+extern "C" int __fastcall Port_None(BYTE*) { return -1; }
+// [$L_4b58a0] port: writes a character to its file (+12)
+extern "C" int __fastcall Port_PutChar(BYTE* s, void*, char c) { return CallC<int>(Val_putc, (int)c, F(void*, s, 12)); }
+
+// [$L_4b1100] pairs come from the value pool and go back to it
+extern "C" BYTE* __fastcall Pair_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_4b11f0, s);
+    if (flags & 1)
+        CallC(FUN_4ad230, s);
+    return s;
+}
