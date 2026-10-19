@@ -1255,6 +1255,8 @@ PUBLIC $L_673340, $L_673d20, $L_678480, $L_67a298, $L_67a3c4, $L_67f6e8
 PUBLIC $L_67f70c, $L_67f728, $L_696cb8, $L_696cbc
 PUBLIC $L_67361c, $L_673620, $L_67362c, $L_67e068, $L_67f0f0, $L_684320
 PUBLIC $L_724130
+PUBLIC $L_66c4f8, $L_66c51c, $L_67f3d8, $L_67fdf0, $L_6834ac, $L_683640
+PUBLIC $L_702f3c, $L_720120, $L_72071c, $L_721770, $L_723a90
 
 ;===================================
 _TEXT SEGMENT
@@ -1385,6 +1387,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4010c0 PROC
 
             sub ESP,144
@@ -1504,6 +1508,10 @@ $L_40111e::
             add ESP,144
             ret 
 FUN_4010c0 ENDP
+ELSE
+EXTERN _Ai_FormatReport:PROC
+FUN_4010c0 TEXTEQU <_Ai_FormatReport>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -687425,6 +687433,8 @@ $L_5a46e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a4700 PROC
 
             push EBP
@@ -687557,6 +687567,10 @@ $L_5a47e7::
             pop EBP
             ret 8
 FUN_5a4700 ENDP
+ELSE
+EXTERN @Obj_AttachResource@16:PROC
+FUN_5a4700 TEXTEQU <@Obj_AttachResource@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -704488,6 +704502,8 @@ FUN_5aeda0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5aeed0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -704618,6 +704634,10 @@ $L_5aefe7::
             add ESP,16
             ret 20
 FUN_5aeed0 ENDP
+ELSE
+EXTERN @Rn_ClipIds@28:PROC
+FUN_5aeed0 TEXTEQU <@Rn_ClipIds@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -730930,6 +730950,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5be1d0 PROC
 
             push EBX
@@ -731050,6 +731072,10 @@ $L_5be29e::
             pop EBX
             ret 16
 FUN_5be1d0 ENDP
+ELSE
+EXTERN @Ctl_DrawAll@24:PROC
+FUN_5be1d0 TEXTEQU <@Ctl_DrawAll@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731593,6 +731619,8 @@ $L_5be621::
             ret 8
 $L_5be5f0 ENDP
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5be630 PROC
 
             push EBX
@@ -731716,6 +731744,10 @@ $L_5be6ed::
             pop EBX
             ret 8
 FUN_5be630 ENDP
+ELSE
+EXTERN @Ctl_PointTo@16:PROC
+FUN_5be630 TEXTEQU <@Ctl_PointTo@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -768656,6 +768688,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/video_mode.cpp, nmake ASM_VIDEO_MODE=1 assembles the original
+IFDEF ASM_VIDEO_MODE
 FUN_5d3b40 PROC
 
             mov AL,BYTE PTR [$L_720120]
@@ -768782,6 +768816,10 @@ $L_5d3c51::
             pop EBX
             ret 
 FUN_5d3b40 ENDP
+ELSE
+EXTERN _Gdi_DrawFrame:PROC
+FUN_5d3b40 TEXTEQU <_Gdi_DrawFrame>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -769650,6 +769688,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 FUN_5d4330 PROC
 
             mov EAX,DWORD PTR [$L_7208a8]
@@ -769757,6 +769797,10 @@ $L_5d4447::
             add ESP,240
             ret 
 FUN_5d4330 ENDP
+ELSE
+EXTERN _Dd_FillRect:PROC
+FUN_5d4330 TEXTEQU <_Dd_FillRect>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -808136,6 +808180,8 @@ FUN_5e8160 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e8c60 PROC
 
             push EBP
@@ -808252,10 +808298,16 @@ $L_5e8cf8::
             pop EBP
             ret 
 FUN_5e8c60 ENDP
+ELSE
+EXTERN _Font_LoadFile:PROC
+FUN_5e8c60 TEXTEQU <_Font_LoadFile>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e8d10 PROC
 
             push EBX
@@ -808390,6 +808442,10 @@ $L_5e8ddc::
             pop EBX
             ret 
 FUN_5e8d10 ENDP
+ELSE
+EXTERN _Font_ReadFile:PROC
+FUN_5e8d10 TEXTEQU <_Font_ReadFile>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -825503,6 +825559,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f1620 PROC
 
             push EBX
@@ -825632,6 +825690,10 @@ $L_5f170d::
             nop
             nop
 FUN_5f1620 ENDP
+ELSE
+EXTERN _Mesh_Draw:PROC
+FUN_5f1620 TEXTEQU <_Mesh_Draw>
+ENDIF
 $L_5f1720 PROC
 
             mov EAX,DWORD PTR [$L_683b54]
@@ -829559,6 +829621,8 @@ $L_5f3620 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f36d0 PROC
 
             push EBX
@@ -829666,6 +829730,10 @@ $L_5f379b::
             pop EBX
             ret 8
 FUN_5f36d0 ENDP
+ELSE
+EXTERN @Obj_DrawTested@16:PROC
+FUN_5f36d0 TEXTEQU <@Obj_DrawTested@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -504,3 +504,65 @@ extern "C" int __fastcall Ctl_Contains(BYTE* self, void*, int x, int y)
     return 1;
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5bd940)
+extern "C" void FUN_5be5a0(); KING_ALIAS("_FUN_5be5a0", "@Ctl_Dispatch@16")
+extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
+ASM_VAR(int, g_ct67f3d8, $L_67f3d8)
+ASM_VAR(int, g_ct702f24, $L_702f24)
+ASM_VAR(BYTE*, g_ct702f3c, $L_702f3c)
+typedef void (__cdecl* CtHook)(BYTE*, BYTE*);
+ASM_VAR(CtHook, g_ct702f4c, $L_702f4c)
+
+// the first child (from +288) that holds the input (+36)
+static BYTE* Ct_Captured(BYTE* self)
+{
+    for (BYTE* c = F(BYTE*, self, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c))
+        if (F(int, c, 36))
+            return c;
+    return 0;
+}
+
+// [FUN_5be1d0] draws the control (unless hidden) and its children at its offset (+44, +48); a capturing child draws alone
+extern "C" int __fastcall Ctl_DrawAll(BYTE* self, void*, int a, int x, int y, int focus)
+{
+    if (F(int, self, 40) && !F(BYTE, self, 24))
+        return 0;
+    BYTE* c = Ct_Captured(self);
+    if (c)
+    {
+        CallVirt(c, 28, a, F(int, self, 44) + x, F(int, self, 48) + y, focus);
+        return 1;
+    }
+    CallThis(FUN_5bd940, self, a, x, y, focus);
+    for (BYTE* s = F(BYTE*, self, 288); s; s = CallThis<BYTE*>(FUN_5d3080, s))
+        CallVirt(s, 28, a, x + F(int, self, 44), y + F(int, self, 48), (focus && s == F(BYTE*, self, 292)) ? 1 : 0);
+    return 0;
+}
+
+// [FUN_5be630] passes a point (made relative) to the capturing child, or to the child under it (focusing it and telling hook 702f4c)
+extern "C" int __fastcall Ctl_PointTo(BYTE* self, void*, int x, int y)
+{
+    if (F(int, self, 40))
+        return 0;
+    int rx = x - F(int, self, 44);
+    int ry = y - F(int, self, 48);
+    BYTE* c = Ct_Captured(self);
+    if (c)
+        return CallVirt<int>(c, 36, rx, ry);
+    BYTE* s = CallThis<BYTE*>(FUN_5be5a0, self, rx, ry);
+    if (!s)
+        return 0;
+    if (g_ct67f3d8 && !g_ct702f24 && !(F(DWORD, s, 32) & 0x40000000))
+        CallThis(FUN_5bdba0, self, s);
+    if (g_ct702f3c != s && !g_ct702f24 && !CallVirt<int>(s, 44))
+    {
+        g_ct702f3c = s;
+        if (g_ct702f4c)
+            g_ct702f4c(self, s);
+    }
+    return CallVirt<int>(s, 36, rx, ry);
+}
+

@@ -2006,3 +2006,71 @@ extern "C" void __fastcall Resources_FreeTables(BYTE* self, void*)
     }
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5e8e20(); KING_ALIAS("_FUN_5e8e20", "_Font_LoadImage")
+extern "C" void FUN_5e8d10(); KING_ALIAS("_FUN_5e8d10", "_Font_ReadFile")
+ASM_VAR(AsmLabel, s_6834ac, $L_6834ac)
+extern "C" int __cdecl fseek(FILE* f, long off, int origin);
+extern "C" int __cdecl getc(FILE* f);
+
+// [FUN_5e8c60] loads a font file: an image of cells for extension 6834ac, else the font format
+extern "C" BYTE* __cdecl Font_LoadFile(const char* name)
+{
+    FILE* f = fopen(name, s_6703e8);
+    if (!f)
+    {
+        g_7218bc = 1;
+        return 0;
+    }
+    int n = strlen(name) - 1;
+    if (n > 0)
+        while (name[n] != '.' && --n > 0)
+            ;
+    if (!n)
+        return 0;
+    BYTE* r = !strcmp(name + n, s_6834ac) ? CallC<BYTE*>(FUN_5e8e20, f) : CallC<BYTE*>(FUN_5e8d10, f);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e8d10] reads a font file: the character count and first code, cell size, the widths (+12), and the 1-bit masks (+28)
+extern "C" BYTE* __cdecl Font_ReadFile(FILE* f)
+{
+    BYTE* o = (BYTE*)operator new(40);
+    if (o)
+    {
+        F(int, o, 8) = 0;
+        F(int, o, 4) = 0;
+        F(int, o, 28) = 0;
+        F(int, o, 12) = 0;
+        F(int, o, 0) = 0;
+        F(int, o, 32) = -1;
+        F(int, o, 16) = 0;
+        F(int, o, 36) = 0;
+    }
+    fseek(f, 16, 0);
+    int n = getc(f);
+    int first = getc(f) + 32;
+    F(int, o, 4) = first;
+    F(int, o, 8) = first + n - 1;
+    getc(f);
+    F(int, o, 24) = getc(f);
+    F(int, o, 20) = getc(f);
+    F(int, o, 32) = -1;
+    fseek(f, 250, 0);
+    F(void*, o, 12) = operator new(n);
+    void* p = operator new(n);
+    F(void*, o, 16) = p;
+    memset(p, 0, n);
+    fread(F(void*, o, 12), n, 1, f);
+    if (*F(BYTE*, o, 12))
+        F(DWORD, o, 0) |= 1;
+    fseek(f, 344, 0);
+    int size = ((F(int, o, 24) - 1) / 8 + 1) * F(int, o, 20) * n;
+    void* m = operator new(size);
+    F(void*, o, 28) = m;
+    fread(m, size, 1, f);
+    return o;
+}
+

@@ -367,3 +367,44 @@ extern "C" void __cdecl Dd_ChooseTextureFormat(int kind, int b)
     g_dd720894 = kind;
     g_dd720898 = ctx[9];
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(BYTE*, g_ddPrimary2, $L_7208fc)
+ASM_VAR(BYTE*, g_ddLocked2, $L_7208a8)
+ASM_VAR(int, g_ddWidth2, $L_72089c)
+ASM_VAR(int, g_ddHeight2, $L_7208a0)
+ASM_VAR(int, g_ddWindowed2, $L_7208f0)
+ASM_VAR(int, g_dd7208b8b, $L_7208b8)
+ASM_VAR(AsmLabel, s_dd67fdf0, $L_67fdf0)
+ASM_PROC(FUN_5d4c10)
+
+// [FUN_5d4330] fills a rectangle (clipped to the screen) of the primary surface with a color, unlocking it first and locking it again after
+extern "C" void __cdecl Dd_FillRect(int x0, int y0, unsigned x1, unsigned y1, DWORD color)
+{
+    if (g_ddLocked2)
+    {
+        if (!Dd_ComCall(g_ddPrimary2, 128, 0))
+            g_ddLocked2 = 0;
+        else if (g_ddLocked2)
+            return;
+    }
+    DWORD fx[25];
+    fx[0] = 100;
+    fx[20] = color;
+    if (x1 > (unsigned)g_ddWidth2)
+        x1 = g_ddWidth2;
+    if (y1 > (unsigned)g_ddHeight2)
+        y1 = g_ddHeight2;
+    RECT r = {x0, y0, (LONG)x1, (LONG)y1};
+    long hr = Dd_ComCall(g_ddPrimary2, 20, &r, (void*)0, (void*)0, 16778240, fx);
+    if (hr)
+        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, (char*)s_dd67fdf0), 0);
+    DWORD desc[31];
+    desc[0] = 124;
+    desc[1] = 8387054;
+    if (g_ddWindowed2 || g_dd7208b8b)
+        return;
+    if (!Dd_ComCall(g_ddPrimary2, 100, (void*)0, desc, 1, 0))
+        g_ddLocked2 = (BYTE*)desc[9];
+}
+

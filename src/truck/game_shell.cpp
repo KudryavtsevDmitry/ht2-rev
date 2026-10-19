@@ -25,7 +25,7 @@ KING_ALIAS("_Carat_Read7df0", "FUN_507df0")
 extern "C" BYTE* __cdecl Carat_Window(int a, int b);
 KING_ALIAS("_Carat_Window", "FUN_50e200")
 extern "C" int __cdecl Carat_LoadFont(const char* name);
-KING_ALIAS("_Carat_LoadFont", "FUN_5e8c60")
+KING_ALIAS("_Carat_LoadFont", "_Font_LoadFile")
 extern "C" void __cdecl Carat_Draw5b86c0(int a, int b, int c, int d);
 KING_ALIAS("_Carat_Draw5b86c0", "_Bitmap_Draw")
 extern "C" BYTE* __cdecl Messages_Clear1276();                     // copter.cpp

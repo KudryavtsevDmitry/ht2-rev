@@ -829,3 +829,67 @@ extern "C" int __fastcall Node_Remove(BYTE* self, void*)
     return 1;
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+ASM_PROC(FUN_5b1020)
+ASM_PROC(FUN_5af9e0)
+extern "C" void FUN_5b1950(); KING_ALIAS("_FUN_5b1950", "@Rn_DrawStrided@24")
+extern "C" void FUN_5b1df0(); KING_ALIAS("_FUN_5b1df0", "@Rn_DrawIndexedStrided@24")
+ASM_VAR(DWORD, g_sc702e8c, $L_702e8c)
+ASM_VAR(BYTE*, g_scDevice, $L_720908)
+ASM_VAR(AsmLabel, s_sc683640, $L_683640)
+ASM_VAR(int, g_sc721770, $L_721770)
+ASM_VAR(BYTE*, g_sc723a90, $L_723a90)
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+
+// a device render state
+static void Sc_RenderState(int s, int v)
+{
+    ((long(__stdcall*)(BYTE*, int, int))(*(void***)g_scDevice)[20])(g_scDevice, s, v);
+}
+
+// [FUN_5f36d0] draws the object when it passes the tests; names starting with 683640 are drawn with states 14 = 0 and 23 = 8
+extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, self, a, b))
+        return 0;
+    if (!CallThis<int>(FUN_5b4fc0, b, self + 20))
+        return 0;
+    int swap = 0;
+    if (F(char*, self, 12) && (g_sc702e8c & 0x4000) && !strncmp(F(char*, self, 12), s_sc683640, 3))
+    {
+        g_sc702e8c &= ~0x4000u;
+        swap = 1;
+        Sc_RenderState(14, 0);
+        Sc_RenderState(23, 8);
+    }
+    CallThis(FUN_5f2080, self, 0, a, b);
+    if (swap)
+    {
+        g_sc702e8c |= 0x4000;
+        Sc_RenderState(14, 1);
+        Sc_RenderState(23, 4);
+    }
+    return 1;
+}
+
+struct ScVec3 { DWORD x, y, z; };
+
+// [FUN_5f1620] draws a mesh: prepares the material (5b1020), transforms (5af9e0) and draws its strided vertices, or indexed with the shared vertices 723a90
+extern "C" long __cdecl Mesh_Draw(BYTE* r, BYTE* mesh, BYTE* mat, ScVec3* p, int prim)
+{
+    if (!F(int, mesh, 32))
+    {
+        CallThis(FUN_5b1020, r, mat, F(int, mesh, 24) != 0, g_sc721770 ? 2 : 0, 0);
+        CallThis(FUN_5af9e0, r, mesh, (int)F(WORD, mesh, 0), mat, *p);
+        return CallThis<long>(FUN_5b1950, r, mat, prim, mesh, (int)F(WORD, mesh, 0));
+    }
+    BYTE* v = g_sc723a90;
+    if (!v)
+        return 0;
+    CallThis(FUN_5b1020, r, mat, (F(DWORD, v, 8) >> 4) & 1, g_sc721770 ? 3 : 0, 0);
+    CallThis(FUN_5af9e0, r, v, (int)F(WORD, v, 0), mat, *p);
+    return CallThis<long>(FUN_5b1df0, r, mat, prim, mesh, g_sc723a90);
+}
+

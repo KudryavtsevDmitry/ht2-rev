@@ -273,3 +273,36 @@ extern "C" void __cdecl Dd_Present()
     if (!Vm_ComCall(g_directDraw, 100, (void*)0, desc, 1, 0))
         g_waitVsync = (int)desc[9];
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(BYTE, g_vm720120, $L_720120)
+ASM_VAR(BYTE*, g_vm72071c, $L_72071c)
+
+// [FUN_5d3b40] draws a frame buffer to the window through GDI (a 256-entry palette-index header), stretched by 67fcf0/67fcf4 unless both are 1
+extern "C" int __cdecl Gdi_DrawFrame(void* bits)
+{
+    if (!(g_vm720120 & 1))
+    {
+        g_vm720120 |= 1;
+        g_vm72071c = (BYTE*)operator new(2044);
+    }
+    BYTE* b = g_vm72071c;
+    F(DWORD, b, 0) = 40;
+    F(int, b, 4) = g_width;
+    F(int, b, 8) = -g_height;
+    F(WORD, b, 12) = 1;
+    F(WORD, b, 14) = (WORD)(g_bitDepth * 8);
+    F(DWORD, b, 16) = 0;
+    F(DWORD, b, 20) = 0;
+    F(DWORD, b, 24) = 0;
+    F(DWORD, b, 28) = 0;
+    F(DWORD, b, 32) = 256;
+    F(DWORD, b, 36) = 256;
+    for (WORD i = 0; i < 256; i++)
+        F(WORD, b, 40 + i * 2) = i;
+    UINT usage = g_bitDepth == 1;
+    if (g_67fcf0 == 1 && g_67fcf4 == 1)
+        return SetDIBitsToDevice(g_paletteDc, 0, 0, g_width, g_height, 0, 0, 0, g_height, bits, (BITMAPINFO*)b, usage);
+    return StretchDIBits(g_paletteDc, 0, 0, g_67fcf0 * g_width, g_67fcf4 * g_height, 0, 0, g_width, g_height, bits, (BITMAPINFO*)b, usage, 13369376);
+}
+
