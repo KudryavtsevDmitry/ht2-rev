@@ -1762,3 +1762,217 @@ extern "C" void __fastcall Car_ApplyPlacement(BYTE* self, void*)
     }
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods of the car: the trailer (+21880) adds its share to
+// the car's sums, part forwarders, destructors.
+
+extern "C" void FUN_5300b0(); KING_ALIAS("_FUN_5300b0", "@Controls_Axis@12")
+ASM_PROC(FUN_556a70)
+ASM_PROC(FUN_5561b0)
+ASM_PROC(FUN_5562e0)
+extern "C" void FUN_54c950(); KING_ALIAS("_FUN_54c950", "@Car_NamePart@16")
+extern "C" void FUN_54c9d0(); KING_ALIAS("_FUN_54c9d0", "@Car_Set54c9d0@16")
+extern "C" void FUN_54ca20(); KING_ALIAS("_FUN_54ca20", "@Car_Set54ca20@16")
+ASM_PROC(FUN_547030)
+extern "C" void FUN_546890(); KING_ALIAS("_FUN_546890", "_Switches_Apply")
+ASM_PROC(FUN_556410)
+extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
+ASM_PROC(FUN_557440)
+ASM_PROC(FUN_557450)
+ASM_PROC(FUN_531950)
+extern "C" void FUN_5560e0(); KING_ALIAS("_FUN_5560e0", "@Car_ApplyZero@8")
+extern "C" void FUN_555eb0(); KING_ALIAS("_FUN_555eb0", "@Car_SumAbs9@8")
+extern "C" void FUN_555500(); KING_ALIAS("_FUN_555500", "@Car_555500@8")
+ASM_PROC(FUN_555e10)
+extern "C" void FUN_555d80(); KING_ALIAS("_FUN_555d80", "@Car_Level3@8")
+ASM_PROC(FUN_555d10)
+ASM_PROC(FUN_555c20)
+extern "C" void FUN_555b50(); KING_ALIAS("_FUN_555b50", "@Car_Level2@8")
+extern "C" void FUN_555b10(); KING_ALIAS("_FUN_555b10", "@Car_Level1@8")
+ASM_PROC(FUN_555e80)
+ASM_VAR(float, g_vh64c264, $L_64c264)    // 0
+ASM_VAR(float, g_vh64c258, $L_64c258)
+
+// [$L_5565b0]
+extern "C" double __fastcall Car_Get9596(BYTE* s) { return F(float, s, 9596); }
+// [$L_5565c0]
+extern "C" void __fastcall Car_Set9596(BYTE* s, void*, DWORD v) { F(DWORD, s, 9596) = v; }
+
+// [$L_53b4a0]
+extern "C" int __cdecl Car_ControlsAxis2() { return CallThis<int>(FUN_5300b0, g_controls6d1db8, 2); }
+
+// [$L_55edf0] full (1.0) setting of the record at +21584, then FUN_556a70
+extern "C" void __fastcall Car_55edf0(BYTE* s)
+{
+    F(WORD, F(BYTE*, s, 21584), 10006) = 1;
+    F(DWORD, F(BYTE*, s, 21584), 10000) = 0x3f800000;
+    CallThis(FUN_556a70, s);
+}
+
+// [$L_556550] forwarders of two arguments
+extern "C" int __fastcall Car_556550(BYTE* s, void*, DWORD a, DWORD b) { return CallThis<int>(FUN_5561b0, s, a, b); }
+// [$L_556570]
+extern "C" int __fastcall Car_556570(BYTE* s, void*, DWORD a, DWORD b) { return CallThis<int>(FUN_5562e0, s, a, b); }
+// [$L_55d120]
+extern "C" int __fastcall Car_55d120(BYTE* s, void*, DWORD a, DWORD b) { return CallThis<int>(FUN_54c950, s, a, b); }
+// [$L_55ee20]
+extern "C" int __fastcall Car_55ee20(BYTE* s, void*, DWORD a, DWORD b) { return CallThis<int>(FUN_54c9d0, s, a, b); }
+// [$L_55ee40]
+extern "C" int __fastcall Car_55ee40(BYTE* s, void*, DWORD a, DWORD b) { return CallThis<int>(FUN_54ca20, s, a, b); }
+// [$L_55ee60]
+extern "C" int __fastcall Car_55ee60(BYTE* s, void*, DWORD a, DWORD b) { return CallThis<int>(FUN_547030, s, a, b); }
+// [$L_556590]
+extern "C" int __fastcall Car_556590(BYTE* s, void*, DWORD a, DWORD b, DWORD c) { return CallThis<int>(FUN_556410, s, a, b, c); }
+
+// [$L_5468e0] the switches (+9520, +9516)
+extern "C" int __fastcall Car_ApplySwitches(BYTE* s) { return CallC<int>(FUN_546890, F(int, s, 9520), F(int, s, 9516)); }
+
+// [$L_5574a0] the ramps of the cab (+21600) to 1.0
+extern "C" void __fastcall Car_RampA(BYTE* s)
+{
+    BYTE* c = F(BYTE*, s, 21600);
+    if (c)
+        CallThis(FUN_4eb6a0, c + 16164, 0x3f800000);
+}
+// [$L_5574c0]
+extern "C" void __fastcall Car_RampB(BYTE* s)
+{
+    BYTE* c = F(BYTE*, s, 21600);
+    if (c)
+        CallThis(FUN_4eb6a0, c + 16216, 0x3f800000);
+}
+
+// [$L_54d640] sets +1204 and both flags of the record at +21584
+extern "C" void __fastcall Car_SetFlag1204(BYTE* s, void*, int v)
+{
+    F(int, s, 1204) = v;
+    BYTE* r = F(BYTE*, s, 21584);
+    if (!r)
+        return;
+    WORD w = v ? 1 : 0;
+    F(WORD, r, 10048) = w;
+    F(WORD, F(BYTE*, s, 21584), 10050) = w;
+}
+
+// [$L_55e740] values of the trailer, 0 without one
+extern "C" double __fastcall Car_Trailer136(BYTE* s) { BYTE* t = F(BYTE*, s, 21880); return t ? CallVirt<double>(t, 136) : g_vh64c264; }
+// [$L_55e760]
+extern "C" double __fastcall Car_Trailer140(BYTE* s) { BYTE* t = F(BYTE*, s, 21880); return t ? CallVirt<double>(t, 140) : g_vh64c264; }
+// [$L_55e780]
+extern "C" double __fastcall Car_Trailer144(BYTE* s) { BYTE* t = F(BYTE*, s, 21880); return t ? CallVirt<double>(t, 144) : g_vh64c264; }
+// [$L_55e7a0]
+extern "C" double __fastcall Car_Trailer148(BYTE* s) { BYTE* t = F(BYTE*, s, 21880); return t ? CallVirt<double>(t, 148) : g_vh64c264; }
+// [$L_55ea80]
+extern "C" double __fastcall Car_Trailer184(BYTE* s) { BYTE* t = F(BYTE*, s, 21880); return t ? CallVirt<double>(t, 184) : g_vh64c264; }
+
+// [$L_55e9c0]
+extern "C" double __fastcall Car_Trailer144x2(BYTE* s)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return g_vh64c264;
+    double v = CallVirt<double>(t, 144);
+    return v + v;
+}
+
+// [$L_55e540]
+extern "C" void __fastcall Car_55e540(BYTE* s)
+{
+    CallThis(FUN_557440, s);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        CallVirt(t, 100);
+}
+// [$L_55e560]
+extern "C" void __fastcall Car_55e560(BYTE* s)
+{
+    CallThis(FUN_557450, s);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        CallVirt(t, 104);
+}
+
+// [$L_55e720]
+extern "C" void __fastcall Car_55e720(BYTE* s)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        CallVirt(t, 132);
+    CallThis(FUN_5560e0, s);
+}
+
+// [$L_55e470] the car's FUN_555eb0 plus the trailer's vtbl+64
+extern "C" int __fastcall Car_55e470(BYTE* s)
+{
+    int n = CallThis<int>(FUN_555eb0, s);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        n += CallVirt<int>(t, 64);
+    return n;
+}
+
+// the car's value (rounded to float) plus the trailer's
+static double Car_PlusTrailer(BYTE* s, void (*own)(), unsigned vtbl)
+{
+    float v = (float)CallThis<double>(own, s);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        return CallVirt<double>(t, vtbl) + v;
+    return v;
+}
+// [$L_55e320]
+extern "C" double __fastcall Car_Sum36(BYTE* s) { return Car_PlusTrailer(s, FUN_555e10, 36); }
+// [$L_55e350]
+extern "C" double __fastcall Car_Sum40(BYTE* s) { return Car_PlusTrailer(s, FUN_555d80, 40); }
+// [$L_55e380]
+extern "C" double __fastcall Car_Sum44(BYTE* s) { return Car_PlusTrailer(s, FUN_555d10, 44); }
+// [$L_55e3b0]
+extern "C" double __fastcall Car_Sum48(BYTE* s) { return Car_PlusTrailer(s, FUN_555c20, 48); }
+// [$L_55e3e0]
+extern "C" double __fastcall Car_Sum52(BYTE* s) { return Car_PlusTrailer(s, FUN_555b50, 52); }
+// [$L_55e410]
+extern "C" double __fastcall Car_Sum56(BYTE* s) { return Car_PlusTrailer(s, FUN_555b10, 56); }
+// [$L_55e440]
+extern "C" double __fastcall Car_Sum60(BYTE* s) { return Car_PlusTrailer(s, FUN_555e80, 60); }
+
+// [$L_55e4b0] FUN_555500 of the car plus that of the trailer
+extern "C" double __fastcall Car_Sum555500(BYTE* s)
+{
+    float v = (float)CallThis<double>(FUN_555500, s);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        return CallThis<double>(FUN_555500, t) + v;
+    return v;
+}
+
+// [$L_55e9e0] *p scaled by 64c258 through vtbl+152 (a, &v), then doubled back into *p
+extern "C" void __fastcall Car_Scaled152(BYTE* s, void*, DWORD a, float* p)
+{
+    float v = (float)((double)*p * g_vh64c258);
+    CallVirt(s, 152, a, &v);
+    *p = (float)((double)v + v);
+}
+// [$L_55ea10]
+extern "C" void __fastcall Car_Scaled156(BYTE* s, void*, DWORD a, float* p)
+{
+    float v = (float)((double)*p * g_vh64c258);
+    CallVirt(s, 156, a, &v);
+    *p = (float)((double)v + v);
+}
+// [$L_55ea40]
+extern "C" void __fastcall Car_Scaled160(BYTE* s, void*, DWORD a, DWORD b, float* p)
+{
+    float v = (float)((double)*p * g_vh64c258);
+    CallVirt(s, 160, a, b, &v);
+    *p = (float)((double)v + v);
+}
+
+// [$L_531930]
+extern "C" BYTE* __fastcall Car531930_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_531950, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
