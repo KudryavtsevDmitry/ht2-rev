@@ -554,3 +554,46 @@ extern "C" void __cdecl WeaInit_5ab230()
         m[i] = 0;
     m[0] = m[4] = m[8] = 0x3f800000;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+ASM_PROC(FUN_5fdaf0)
+ASM_PROC(FUN_5a4ca0)
+ASM_VAR(AsmLabel, g_wea6fd7dc, $L_6fd7dc)
+
+// the color entry 48 of the room's palette (+100 of +468 of the weather's world +100)
+static BYTE* Wea_SkyColor(BYTE* s) { return *F(BYTE**, F(BYTE*, F(BYTE*, F(BYTE*, s, 100), 468), 100), 0) + 48; }
+
+// [$L_5a5610] the thunder sound once its time (+144 after +136) has come; lightning flashes the sky color
+extern "C" void __fastcall Wea_Lightning(BYTE* s)
+{
+    if (F(double, F(BYTE*, s, 100), 2960) + F(double, s, 144) >= F(double, s, 136) && !F(int, s, 180)) {
+        F(int, s, 180) = 1;
+        if (F(BYTE*, s, 176)) {
+            float v = (float)F(double, s, 184);
+            CallThis(FUN_5fdaf0, F(BYTE*, s, 176), *(DWORD*)&v, *(DWORD*)&v);
+        }
+    }
+    CallThis(FUN_5a4ca0, s);
+    int m = F(int, s, 16);
+    if (m != 0 && m != 1)
+        return;
+    BYTE* w = F(BYTE*, s, 100);
+    if (F(BYTE, w, 3020) & 64 || CallVirt<int>(w, 28) != 2)
+        return;
+    BYTE* c = Wea_SkyColor(s);
+    BYTE* save = (BYTE*)g_wea6fd7dc;
+    if (m == 0) {
+        save[0] = c[0];
+        save[1] = c[1];
+        save[2] = c[2];
+        c[0] = 235;
+        c[1] = 235;
+        c[2] = 255;
+    } else {
+        c[0] = save[0];
+        c[1] = save[1];
+        c[2] = save[2];
+    }
+}

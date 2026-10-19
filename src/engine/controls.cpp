@@ -933,3 +933,48 @@ extern "C" void __fastcall Con_ScrollLayout(BYTE* s)
         F(int, c, 56) += v;
     }
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+typedef void (*AsmFnC)();
+
+// [$L_5bf0d0] a slider being dragged (+324 == 1) follows the mouse; leaving it ends the drag
+extern "C" int __fastcall Con_SliderMove(BYTE* s, void*, int x, int y)
+{
+    if (!CallVirt<int>(s, 24, x, y)) {
+        int st = F(int, s, 324);
+        if (st == 0 || st == 2 || st == 1) {
+            F(int, s, 324) = -1;
+            if (F(BYTE*, s, 292))
+                F(int, F(BYTE*, s, 292), 284) = 0;
+            if (s == g_con702f24)
+                CallC(FUN_5bd590);
+        }
+    }
+    x -= F(int, s, 44);
+    y -= F(int, s, 48);
+    if (F(int, s, 324) == 1) {
+        CallThis(FUN_5d3080, F(BYTE*, s, 288));
+        int half = F(int, s, 312) / 2;
+        int lo = F(int, s, 304), hi = F(int, s, 308);
+        int p = F(int, s, 328) == 1 ? x : y;
+        short* v = F(short*, s, 300);
+        if (p < lo + half)
+            *v = 0;
+        else if (p > hi + half)
+            *F(short*, s, 300) = F(short, s, 296);
+        else
+            *F(short*, s, 300) = (short)(int)((double)(p - lo - half) / (hi - lo) * F(short, s, 296));
+        AsmFnC hook = F(AsmFnC, s, 332);
+        if (hook)
+            CallC(hook, F(int, s, 336));
+    }
+    if (F(int, s, 324) == -1) {
+        BYTE* h = CallThis<BYTE*>(FUN_5be5a0, s, x, y);
+        CallThis(FUN_5bdba0, s, h);
+        if (h)
+            return CallVirt<int>(h, 36, x, y);
+    }
+    return 1;
+}
