@@ -1361,6 +1361,10 @@ PUBLIC $L_6762a4
 PUBLIC $L_676294
 PUBLIC $L_676284
 PUBLIC $L_676278
+PUBLIC $L_6723f0, $L_672400, $L_672410, $L_672420, $L_672430, $L_672440
+PUBLIC $L_672450, $L_672468, $L_672480, $L_672498, $L_696250, $L_696708
+PUBLIC $L_69670c, $L_696710, $L_696714, $L_696718, $L_69671c, $L_696720
+PUBLIC $L_696724, $L_696728
 
 ;===================================
 _TEXT SEGMENT
@@ -336389,6 +336393,8 @@ EXTERN _Fx_FindByName:PROC
 FUN_4b8720 TEXTEQU <_Fx_FindByName>
 ENDIF
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4b87a0 PROC
 
             push -1
@@ -336616,6 +336622,10 @@ $L_4b89c0::
             add ESP,16
             ret 
 FUN_4b87a0 ENDP
+ELSE
+EXTERN _Eff_CreateSounds:PROC
+FUN_4b87a0 TEXTEQU <_Eff_CreateSounds>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -357059,6 +357069,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c4df0 PROC
 
             push -1
@@ -357239,6 +357251,10 @@ $L_4c4ecf::
             add ESP,16
             ret 
 FUN_4c4df0 ENDP
+ELSE
+EXTERN _Eff_CreateSparks:PROC
+FUN_4c4df0 TEXTEQU <_Eff_CreateSparks>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
