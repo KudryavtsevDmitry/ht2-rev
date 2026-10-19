@@ -556,3 +556,112 @@ extern "C" void __fastcall Terrain_FreeObjects(BYTE* self, int)
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_614490(); KING_ALIAS("_FUN_614490", "@Terrain614490_Destroy@8")
+extern "C" void FUN_619ae0(); KING_ALIAS("_FUN_619ae0", "@Terrain619ae0_Destroy@8")
+
+static BYTE* Ter_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_614470]
+extern "C" BYTE* __fastcall Ter614470_DeletingDestructor(BYTE* s, void*, int flags) { return Ter_DeleteAfter(s, flags, FUN_614490); }
+// [$L_619ac0]
+extern "C" BYTE* __fastcall Ter619ac0_DeletingDestructor(BYTE* s, void*, int flags) { return Ter_DeleteAfter(s, flags, FUN_619ae0); }
+
+// static initializers of constants
+ASM_VAR(DWORD, g_ter728810, $L_728810)
+ASM_VAR(DWORD, g_ter728814, $L_728814)
+ASM_VAR(DWORD, g_ter728818, $L_728818)
+ASM_VAR(DWORD, g_ter728820, $L_728820)
+ASM_VAR(DWORD, g_ter728824, $L_728824)
+ASM_VAR(DWORD, g_ter728828, $L_728828)
+ASM_VAR(DWORD, g_ter72c078, $L_72c078)
+ASM_VAR(DWORD, g_ter72c07c, $L_72c07c)
+ASM_VAR(DWORD, g_ter72c080, $L_72c080)
+ASM_VAR(DWORD, g_ter72c088, $L_72c088)
+ASM_VAR(DWORD, g_ter72c08c, $L_72c08c)
+ASM_VAR(DWORD, g_ter72c090, $L_72c090)
+ASM_VAR(DWORD, g_ter72c098, $L_72c098)
+ASM_VAR(DWORD, g_ter72c09c, $L_72c09c)
+ASM_VAR(DWORD, g_ter72c0a0, $L_72c0a0)
+ASM_VAR(DWORD, g_ter72c0b0, $L_72c0b0)
+ASM_VAR(DWORD, g_ter72c0b4, $L_72c0b4)
+ASM_VAR(DWORD, g_ter72c0b8, $L_72c0b8)
+ASM_VAR(DWORD, g_ter72c0d0, $L_72c0d0)
+ASM_VAR(DWORD, g_ter72c0d4, $L_72c0d4)
+ASM_VAR(DWORD, g_ter72c0d8, $L_72c0d8)
+ASM_VAR(float, g_ter64c250, $L_64c250)
+ASM_VAR(float, g_ter64c258, $L_64c258)
+ASM_VAR(float, g_ter64c450, $L_64c450)
+ASM_VAR(float, g_ter64c664, $L_64c664)
+ASM_VAR(float, g_ter64d4e8, $L_64d4e8)
+ASM_VAR(float, g_ter653238, $L_653238)
+ASM_VAR(float, g_ter65323c, $L_65323c)
+ASM_VAR(float, g_ter6532c8, $L_6532c8)
+ASM_VAR(float, g_ter6532d0, $L_6532d0)
+ASM_VAR(float, g_ter6532d8, $L_6532d8)
+ASM_VAR(float, g_ter653358, $L_653358)
+ASM_VAR(float, g_ter653370, $L_653370)
+ASM_VAR(float, g_ter653374, $L_653374)
+ASM_VAR(float, g_ter653378, $L_653378)
+ASM_VAR(float, g_ter65337c, $L_65337c)
+ASM_VAR(float, g_ter653380, $L_653380)
+ASM_VAR(float, g_ter728808, $L_728808)
+ASM_VAR(float, g_ter72882c, $L_72882c)
+ASM_VAR(float, g_ter728830, $L_728830)
+ASM_VAR(float, g_ter728838, $L_728838)
+ASM_VAR(float, g_ter72c0a4, $L_72c0a4)
+ASM_VAR(float, g_ter72c0a8, $L_72c0a8)
+ASM_VAR(float, g_ter72c0ac, $L_72c0ac)
+ASM_VAR(float, g_ter72c0c8, $L_72c0c8)
+ASM_VAR(float, g_ter72c0cc, $L_72c0cc)
+// [$L_616c80]
+extern "C" void __cdecl TerInit_616c80() {  }
+// [$L_614180]
+extern "C" void __cdecl TerInit_614180() { g_ter72882c = (float)((double)g_ter653238 + (double)g_ter653238); }
+// [$L_6141d0]
+extern "C" void __cdecl TerInit_6141d0() { g_ter72c088 = 0x0; g_ter72c08c = 0x0; g_ter72c090 = 0x0; }
+// [$L_614200]
+extern "C" void __cdecl TerInit_614200() { g_ter728838 = (float)((double)g_ter6532c8 + g_ter64c450); }
+// [$L_614230]
+extern "C" void __cdecl TerInit_614230() { g_ter728808 = (float)((double)g_ter728838 + g_ter64c664); }
+// [$L_615740]
+extern "C" void __cdecl TerInit_615740() { g_ter728820 = 0x3dcccccd; g_ter728824 = 0x0; g_ter728828 = 0x0; }
+// [$L_615770]
+extern "C" void __cdecl TerInit_615770() { g_ter728810 = 0x0; g_ter728814 = 0x3dcccccd; g_ter728818 = 0x0; }
+// [$L_61a760]
+extern "C" void __cdecl TerInit_61a760() { g_ter72c0a4 = (float)((double)g_ter64c250 - g_ter653370); }
+// [$L_61a790]
+extern "C" void __cdecl TerInit_61a790() { g_ter72c0ac = (float)((double)g_ter653378 - g_ter653374); }
+// [$L_61a7c0]
+extern "C" void __cdecl TerInit_61a7c0() { g_ter72c0b0 = 0x0; g_ter72c0b4 = 0x0; g_ter72c0b8 = 0x3f800000; }
+// [$L_61a7f0]
+extern "C" void __cdecl TerInit_61a7f0() { g_ter72c098 = 0x0; g_ter72c09c = 0x0; g_ter72c0a0 = 0x3f800000; }
+// [$L_61a820]
+extern "C" void __cdecl TerInit_61a820() { g_ter72c0c8 = (float)((double)g_ter65337c + (double)g_ter65337c); }
+// [$L_61a870]
+extern "C" void __cdecl TerInit_61a870() { g_ter72c0d0 = 0x0; g_ter72c0d4 = 0x0; g_ter72c0d8 = 0x0; }
+// [$L_6141a0]
+extern "C" void __cdecl TerInit_6141a0() { g_ter728830 = (float)((double)g_ter65323c - g_ter64d4e8 - g_ter64c258); }
+// [$L_61a740]
+extern "C" void __cdecl TerInit_61a740() { g_ter72c0a8 = (float)((double)g_ter653358 + (double)g_ter653358); }
+// [$L_614290]
+extern "C" void __cdecl TerInit_614290() { g_ter72c078 = 0x0; g_ter72c07c = 0x0; g_ter72c080 = 0x3f800000; }
+// [$L_61a840]
+extern "C" void __cdecl TerInit_61a840() { g_ter72c0cc = (float)((double)g_ter653380 - g_ter64d4e8 - g_ter64c258); }
+#include "x87.h"
+ASM_VAR(float, g_ter72880c, $L_72880c)
+ASM_VAR(float, g_ter728834, $L_728834)
+ASM_VAR(double, g_ter6532e0, $L_6532e0)
+
+// [$L_6142c0]
+extern "C" void __cdecl TerInit_6142c0() { g_ter72880c = (float)-((double)*(float*)&g_ter72c080 * g_ter6532e0); }
+// [$L_614260]
+extern "C" void __cdecl TerInit_614260() { g_ter728834 = (float)x87_cos((double)g_ter6532d0 * g_ter6532d8); }

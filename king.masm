@@ -1261,6 +1261,22 @@ PUBLIC $L_64c1bc, $L_64c1e4, $L_64c308, $L_671110, $L_672c48, $L_672c4c
 PUBLIC $L_695d20, $L_696368, $L_69636c, $L_696374, $L_696378, $L_69637c
 PUBLIC $L_6966f8, $L_6966fc, $L_696700, $L_69672c, $L_696740
 PUBLIC $L_651ee8, $L_652130, $L_683b54, $L_6968a4, $L_6ce9f0
+PUBLIC $L_64c41c, $L_64c664, $L_652e44, $L_652e50, $L_652f04, $L_652f08
+PUBLIC $L_652f10, $L_652f14, $L_652f18, $L_652f1c, $L_652f20, $L_652f2c
+PUBLIC $L_652f30, $L_653224, $L_653238, $L_65323c, $L_6532c8, $L_6532d0
+PUBLIC $L_6532d8, $L_6532e0, $L_653358, $L_653370, $L_653374, $L_653378
+PUBLIC $L_65337c, $L_653380, $L_6533c4, $L_6533c8, $L_6533cc, $L_6533d8
+PUBLIC $L_6533e8, $L_6533ec, $L_6533f0, $L_7241b8, $L_724288, $L_724290
+PUBLIC $L_724388, $L_724394, $L_72439c, $L_7243a4, $L_7243ac, $L_7243b4
+PUBLIC $L_72495c, $L_72554c, $L_725550, $L_725d30, $L_725d34, $L_725d38
+PUBLIC $L_728800, $L_728808, $L_72880c, $L_728810, $L_728814, $L_728818
+PUBLIC $L_728820, $L_728824, $L_728828, $L_72882c, $L_728830, $L_728834
+PUBLIC $L_728838, $L_72c078, $L_72c07c, $L_72c080, $L_72c088, $L_72c08c
+PUBLIC $L_72c090, $L_72c098, $L_72c09c, $L_72c0a0, $L_72c0a4, $L_72c0a8
+PUBLIC $L_72c0ac, $L_72c0b0, $L_72c0b4, $L_72c0b8, $L_72c0c8, $L_72c0cc
+PUBLIC $L_72c0d0, $L_72c0d4, $L_72c0d8, $L_72c0e0, $L_72c0e8, $L_72c0ec
+PUBLIC $L_72c0f0, $L_72c0f4, $L_72c0f8, $L_72c130, $L_72c138, $L_72c140
+PUBLIC $L_72c148
 
 ;===================================
 _TEXT SEGMENT
@@ -321433,11 +321449,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b10e0 PROC
 
             mov EAX,2
             ret 
 $L_4b10e0 ENDP
+ELSE
+EXTERN @Pair_TypeId@4:PROC
+$L_4b10e0 TEXTEQU <@Pair_TypeId@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -321448,11 +321470,17 @@ $L_4b10e0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b10f0 PROC
 
             mov EAX,OFFSET $L_66cb08
             ret 
 $L_4b10f0 ENDP
+ELSE
+EXTERN @Pair_TypeName@4:PROC
+$L_4b10f0 TEXTEQU <@Pair_TypeName@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -321463,6 +321491,8 @@ $L_4b10f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b1100 PROC
 
             push ESI
@@ -321482,6 +321512,10 @@ $L_4b1118::
             pop ESI
             ret 4
 $L_4b1100 ENDP
+ELSE
+EXTERN @Pair_DeletingDestructor@12:PROC
+$L_4b1100 TEXTEQU <@Pair_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -330043,6 +330077,8 @@ $L_4b5872::
             ret 
 $L_4b5790 ENDP
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b5880 PROC
 
             mov EAX,DWORD PTR [ECX+16]
@@ -330059,11 +330095,21 @@ $L_4b5880 PROC
             nop
             nop
 $L_4b5880 ENDP
+ELSE
+EXTERN @Port_Flag2@4:PROC
+$L_4b5880 TEXTEQU <@Port_Flag2@4>
+ENDIF
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b5890 PROC
 
             mov EAX,DWORD PTR [ECX+20]
             ret 
 $L_4b5890 ENDP
+ELSE
+EXTERN @Port_Get20@4:PROC
+$L_4b5890 TEXTEQU <@Port_Get20@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -330076,6 +330122,8 @@ $L_4b5890 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b58a0 PROC
 
             mov EAX,DWORD PTR [ECX+12]
@@ -330087,6 +330135,10 @@ $L_4b58a0 PROC
             add ESP,8
             ret 4
 $L_4b58a0 ENDP
+ELSE
+EXTERN @Port_PutChar@12:PROC
+$L_4b58a0 TEXTEQU <@Port_PutChar@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -330208,6 +330260,8 @@ EXTERN @SchState_Construct@8:PROC
 FUN_4b58c0 TEXTEQU <@SchState_Construct@8>
 ENDIF
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b59d0 PROC
 
             push ESI
@@ -330227,6 +330281,10 @@ $L_4b59e8::
             pop ESI
             ret 4
 $L_4b59d0 ENDP
+ELSE
+EXTERN @Val4b59d0_DeletingDestructor@12:PROC
+$L_4b59d0 TEXTEQU <@Val4b59d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -330816,11 +330874,17 @@ $L_4b5e60 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b5f00 PROC
 
             or EAX,4294967295
             ret 
 $L_4b5f00 ENDP
+ELSE
+EXTERN @Port_None@4:PROC
+$L_4b5f00 TEXTEQU <@Port_None@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -330833,6 +330897,8 @@ $L_4b5f00 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b5f10 PROC
 
             push ESI
@@ -330852,6 +330918,10 @@ $L_4b5f28::
             pop ESI
             ret 4
 $L_4b5f10 ENDP
+ELSE
+EXTERN @Val4b5f10_DeletingDestructor@12:PROC
+$L_4b5f10 TEXTEQU <@Val4b5f10_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -331142,11 +331212,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b6180 PROC
 
             mov EAX,3
             ret 
 $L_4b6180 ENDP
+ELSE
+EXTERN @String_TypeId@4:PROC
+$L_4b6180 TEXTEQU <@String_TypeId@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -331157,11 +331233,17 @@ $L_4b6180 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b6190 PROC
 
             mov EAX,OFFSET $L_66ca58
             ret 
 $L_4b6190 ENDP
+ELSE
+EXTERN @String_TypeName@4:PROC
+$L_4b6190 TEXTEQU <@String_TypeName@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -331172,6 +331254,8 @@ $L_4b6190 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b61a0 PROC
 
             push ESI
@@ -331191,6 +331275,10 @@ $L_4b61b8::
             pop ESI
             ret 4
 $L_4b61a0 ENDP
+ELSE
+EXTERN @Val4b61a0_DeletingDestructor@12:PROC
+$L_4b61a0 TEXTEQU <@Val4b61a0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -331454,11 +331542,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b63c0 PROC
 
             mov EAX,9
             ret 
 $L_4b63c0 ENDP
+ELSE
+EXTERN @Identifier_TypeId@4:PROC
+$L_4b63c0 TEXTEQU <@Identifier_TypeId@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -331469,11 +331563,17 @@ $L_4b63c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b63d0 PROC
 
             mov EAX,OFFSET $L_66ce4c
             ret 
 $L_4b63d0 ENDP
+ELSE
+EXTERN @Identifier_TypeName@4:PROC
+$L_4b63d0 TEXTEQU <@Identifier_TypeName@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -331484,6 +331584,8 @@ $L_4b63d0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b63e0 PROC
 
             push ESI
@@ -331503,6 +331605,10 @@ $L_4b63f8::
             pop ESI
             ret 4
 $L_4b63e0 ENDP
+ELSE
+EXTERN @Val4b63e0_DeletingDestructor@12:PROC
+$L_4b63e0 TEXTEQU <@Val4b63e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -331883,11 +331989,17 @@ EXTERN @SchItem4b6670_Construct@12:PROC
 FUN_4b6670 TEXTEQU <@SchItem4b6670_Construct@12>
 ENDIF
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b66b0 PROC
 
             mov EAX,10
             ret 
 $L_4b66b0 ENDP
+ELSE
+EXTERN @Val4b66b0_TypeId@4:PROC
+$L_4b66b0 TEXTEQU <@Val4b66b0_TypeId@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -331898,11 +332010,17 @@ $L_4b66b0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b66c0 PROC
 
             mov EAX,OFFSET $L_6708e4
             ret 
 $L_4b66c0 ENDP
+ELSE
+EXTERN @Val4b66c0_TypeName@4:PROC
+$L_4b66c0 TEXTEQU <@Val4b66c0_TypeName@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -331913,6 +332031,8 @@ $L_4b66c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b66d0 PROC
 
             push ESI
@@ -331932,6 +332052,10 @@ $L_4b66e8::
             pop ESI
             ret 4
 $L_4b66d0 ENDP
+ELSE
+EXTERN @Val4b66d0_DeletingDestructor@12:PROC
+$L_4b66d0 TEXTEQU <@Val4b66d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -737953,6 +738077,8 @@ FUN_5c0f00 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c10d0 PROC
 
             push ESI
@@ -737972,6 +738098,10 @@ $L_5c10e8::
             pop ESI
             ret 4
 $L_5c10d0 ENDP
+ELSE
+EXTERN @Med5c10d0_DeletingDestructor@12:PROC
+$L_5c10d0 TEXTEQU <@Med5c10d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -741506,6 +741636,8 @@ $L_5c2f40 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c2f60 PROC
 
             push ESI
@@ -741525,6 +741657,10 @@ $L_5c2f78::
             pop ESI
             ret 4
 $L_5c2f60 ENDP
+ELSE
+EXTERN @Med5c2f60_DeletingDestructor@12:PROC
+$L_5c2f60 TEXTEQU <@Med5c2f60_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -742953,10 +743089,16 @@ FUN_5c3800 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c3960 PROC
 
             ret 8
 $L_5c3960 ENDP
+ELSE
+EXTERN @Med_Nothing8@16:PROC
+$L_5c3960 TEXTEQU <@Med_Nothing8@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -742970,6 +743112,8 @@ $L_5c3960 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c3970 PROC
 
             push ESI
@@ -742989,6 +743133,10 @@ $L_5c3988::
             pop ESI
             ret 4
 $L_5c3970 ENDP
+ELSE
+EXTERN @Med5c3970_DeletingDestructor@12:PROC
+$L_5c3970 TEXTEQU <@Med5c3970_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -743633,6 +743781,8 @@ $L_5c4079::
 FUN_5c3f20 ENDP
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c4090 PROC
 
             push ESI
@@ -743652,6 +743802,10 @@ $L_5c40a8::
             pop ESI
             ret 4
 $L_5c4090 ENDP
+ELSE
+EXTERN @Med5c4090_DeletingDestructor@12:PROC
+$L_5c4090 TEXTEQU <@Med5c4090_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -743706,6 +743860,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c4100 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -743726,6 +743882,10 @@ $L_5c4100 PROC
             pop ESI
             ret 4
 $L_5c4100 ENDP
+ELSE
+EXTERN @Med_5c4100@12:PROC
+$L_5c4100 TEXTEQU <@Med_5c4100@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -743992,6 +744152,8 @@ $L_5c4130 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c4310 PROC
 
             push ESI
@@ -744008,6 +744170,10 @@ $L_5c4310 PROC
             pop ESI
             ret 
 $L_5c4310 ENDP
+ELSE
+EXTERN @Med_Unload@4:PROC
+$L_5c4310 TEXTEQU <@Med_Unload@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745916,6 +746082,8 @@ ELSE
 EXTERN @Timeline_Construct@12:PROC
 FUN_5c5310 TEXTEQU <@Timeline_Construct@12>
 ENDIF
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c5350 PROC
 
             push ESI
@@ -745935,6 +746103,10 @@ $L_5c5368::
             pop ESI
             ret 4
 $L_5c5350 ENDP
+ELSE
+EXTERN @Med5c5350_DeletingDestructor@12:PROC
+$L_5c5350 TEXTEQU <@Med5c5350_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -747749,6 +747921,8 @@ $L_5c63bf ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c63e0 PROC
 
             jmp $L_5c63f0
@@ -747767,6 +747941,10 @@ $L_5c63f0::
 
             ret 
 $L_5c63e0 ENDP
+ELSE
+EXTERN _MedInit_5c63e0:PROC
+$L_5c63e0 TEXTEQU <_MedInit_5c63e0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -750761,6 +750939,8 @@ $L_5c866d::
 FUN_5c85a0 ENDP
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c8760 PROC
 
             push ESI
@@ -750780,6 +750960,10 @@ $L_5c8778::
             pop ESI
             ret 4
 $L_5c8760 ENDP
+ELSE
+EXTERN @Med5c8760_DeletingDestructor@12:PROC
+$L_5c8760 TEXTEQU <@Med5c8760_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -758137,6 +758321,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5cdc90 PROC
 
             push ESI
@@ -758156,6 +758342,10 @@ $L_5cdca8::
             pop ESI
             ret 4
 $L_5cdc90 ENDP
+ELSE
+EXTERN @Med5cdc90_DeletingDestructor@12:PROC
+$L_5cdc90 TEXTEQU <@Med5cdc90_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -758962,6 +759152,8 @@ ELSE
 EXTERN @Light_Construct@16:PROC
 FUN_5ce560 TEXTEQU <@Light_Construct@16>
 ENDIF
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ce590 PROC
 
             push ESI
@@ -758981,6 +759173,10 @@ $L_5ce5a8::
             pop ESI
             ret 4
 $L_5ce590 ENDP
+ELSE
+EXTERN @Med5ce590_DeletingDestructor@12:PROC
+$L_5ce590 TEXTEQU <@Med5ce590_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -759135,6 +759331,8 @@ $L_5ce640 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ce6b0 PROC
 
             push ESI
@@ -759162,6 +759360,10 @@ $L_5ce6ce::
             pop ESI
             ret 4
 $L_5ce6b0 ENDP
+ELSE
+EXTERN @Med_ChainCall24@12:PROC
+$L_5ce6b0 TEXTEQU <@Med_ChainCall24@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -759312,6 +759514,8 @@ $L_5ce7f7::
 FUN_5ce6e0 ENDP
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ce840 PROC
 
             fld QWORD PTR [ECX+16]
@@ -759319,9 +759523,15 @@ $L_5ce840 PROC
             fstp QWORD PTR [ECX+16]
             ret 8
 $L_5ce840 ENDP
+ELSE
+EXTERN @Med_SubTime@16:PROC
+$L_5ce840 TEXTEQU <@Med_SubTime@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ce850 PROC
 
             push ESI
@@ -759341,6 +759551,10 @@ $L_5ce868::
             pop ESI
             ret 4
 $L_5ce850 ENDP
+ELSE
+EXTERN @Med5ce850_DeletingDestructor@12:PROC
+$L_5ce850 TEXTEQU <@Med5ce850_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -759465,6 +759679,8 @@ FUN_5ce930 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ce990 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -759494,6 +759710,10 @@ $L_5ce9bc::
 
             ret 4
 $L_5ce990 ENDP
+ELSE
+EXTERN @Med_5ce990@12:PROC
+$L_5ce990 TEXTEQU <@Med_5ce990@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5ce9c0 PROC
@@ -759574,6 +759794,8 @@ $L_5ce9d5::
             ret 36
 FUN_5ce9c0 ENDP
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ceac0 PROC
 
             push ESI
@@ -759593,6 +759815,10 @@ $L_5cead8::
             pop ESI
             ret 4
 $L_5ceac0 ENDP
+ELSE
+EXTERN @Med5ceac0_DeletingDestructor@12:PROC
+$L_5ceac0 TEXTEQU <@Med5ceac0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -760184,6 +760410,8 @@ $L_5cf11f::
             ret 
 FUN_5cf070 ENDP
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5cf150 PROC
 
             push ESI
@@ -760203,6 +760431,10 @@ $L_5cf168::
             pop ESI
             ret 4
 $L_5cf150 ENDP
+ELSE
+EXTERN @Med5cf150_DeletingDestructor@12:PROC
+$L_5cf150 TEXTEQU <@Med5cf150_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -765726,6 +765958,8 @@ $L_5d2230 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5d22c0 PROC
 
             push ESI
@@ -765753,6 +765987,10 @@ $L_5d22df::
             pop ESI
             ret 4
 $L_5d22c0 ENDP
+ELSE
+EXTERN @Med_NewHolder@12:PROC
+$L_5d22c0 TEXTEQU <@Med_NewHolder@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -765768,6 +766006,8 @@ $L_5d22c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5d2300 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -765777,6 +766017,10 @@ $L_5d2300 PROC
 
             ret 4
 $L_5d2300 ENDP
+ELSE
+EXTERN @Med_Forward8@12:PROC
+$L_5d2300 TEXTEQU <@Med_Forward8@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864826,6 +865070,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_605820 PROC
 
             jmp $L_605830
@@ -864848,6 +865094,10 @@ $L_605830::
             fstp DWORD PTR [$L_724288]
             ret 
 $L_605820 ENDP
+ELSE
+EXTERN _GspInit_605820:PROC
+$L_605820 TEXTEQU <_GspInit_605820>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_MESH_CONSTRUCT
@@ -864950,6 +865200,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_6058e0 PROC
 
             jmp $L_6058f0
@@ -864969,6 +865221,10 @@ $L_6058f0::
             mov DWORD PTR [$L_7241b8],0
             ret 
 $L_6058e0 ENDP
+ELSE
+EXTERN _GspInit_6058e0:PROC
+$L_6058e0 TEXTEQU <_GspInit_6058e0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -865939,6 +866195,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_606150 PROC
 
             mov AL,BYTE PTR [ESP+4]
@@ -865958,6 +866216,10 @@ $L_60616a::
             pop ESI
             ret 4
 $L_606150 ENDP
+ELSE
+EXTERN @Gsp606150_DeletingDestructor@12:PROC
+$L_606150 TEXTEQU <@Gsp606150_DeletingDestructor@12>
+ENDIF
 ALIGN 16
 IFDEF ASM_GRID_TOPOLOGY
 FUN_606170 PROC
@@ -866299,6 +866561,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_6063d0 PROC
 
             push ESI
@@ -866318,6 +866582,10 @@ $L_6063e8::
             pop ESI
             ret 4
 $L_6063d0 ENDP
+ELSE
+EXTERN @Gsp6063d0_DeletingDestructor@12:PROC
+$L_6063d0 TEXTEQU <@Gsp6063d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -868159,6 +868427,8 @@ FUN_606d50 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_607070 PROC
 
             jmp $L_607080
@@ -868180,6 +868450,10 @@ $L_607080::
             fstp DWORD PTR [$L_724290]
             ret 
 $L_607070 ENDP
+ELSE
+EXTERN _GspInit_607070:PROC
+$L_607070 TEXTEQU <_GspInit_607070>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_MESH_CONSTRUCT
@@ -869927,6 +870201,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_608010 PROC
 
             mov AL,BYTE PTR [ESP+4]
@@ -869946,6 +870222,10 @@ $L_60802a::
             pop ESI
             ret 4
 $L_608010 ENDP
+ELSE
+EXTERN @Gsp608010_DeletingDestructor@12:PROC
+$L_608010 TEXTEQU <@Gsp608010_DeletingDestructor@12>
+ENDIF
 ALIGN 16
 ; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
 IFDEF ASM_GRID_TOPOLOGY
@@ -871045,6 +871325,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_608a80 PROC
 
             push ESI
@@ -871064,6 +871346,10 @@ $L_608a98::
             pop ESI
             ret 4
 $L_608a80 ENDP
+ELSE
+EXTERN @Gsp608a80_DeletingDestructor@12:PROC
+$L_608a80 TEXTEQU <@Gsp608a80_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -874748,6 +875034,8 @@ FUN_60a460 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60a830 PROC
 
             jmp $L_60a840
@@ -874769,6 +875057,10 @@ $L_60a840::
             fstp DWORD PTR [$L_724388]
             ret 
 $L_60a830 ENDP
+ELSE
+EXTERN _GspInit_60a830:PROC
+$L_60a830 TEXTEQU <_GspInit_60a830>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
@@ -874789,6 +875081,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60a860 PROC
 
             jmp $L_60a870
@@ -874811,6 +875105,10 @@ $L_60a870::
             fstp DWORD PTR [$L_724394]
             ret 
 $L_60a860 ENDP
+ELSE
+EXTERN _GspInit_60a860:PROC
+$L_60a860 TEXTEQU <_GspInit_60a860>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_MARINE_CORE
@@ -875075,6 +875373,8 @@ ELSE
 EXTERN _MarineMatrix_Multiply:PROC
 FUN_60a9b0 TEXTEQU <_MarineMatrix_Multiply>
 ENDIF
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60aa40 PROC
 
             jmp $L_60aa50
@@ -875097,6 +875397,10 @@ $L_60aa50::
             fstp DWORD PTR [$L_72439c]
             ret 
 $L_60aa40 ENDP
+ELSE
+EXTERN _GspInit_60aa40:PROC
+$L_60aa40 TEXTEQU <_GspInit_60aa40>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/marine_core.cpp, nmake ASM_MARINE_CORE=1 assembles the original
@@ -876909,6 +877213,8 @@ $L_60b91c           DWORD $L_60b3a0
           DWORD $L_60b3ae
           DWORD $L_60b3b5
           DWORD $L_60b3bc
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60b930 PROC
 
             jmp $L_60b940
@@ -876930,7 +877236,13 @@ $L_60b940::
             fstp DWORD PTR [$L_7243a4]
             ret 
 $L_60b930 ENDP
+ELSE
+EXTERN _GspInit_60b930:PROC
+$L_60b930 TEXTEQU <_GspInit_60b930>
+ENDIF
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60b950 PROC
 
             jmp $L_60b960
@@ -876952,7 +877264,13 @@ $L_60b960::
             fstp DWORD PTR [$L_7243ac]
             ret 
 $L_60b950 ENDP
+ELSE
+EXTERN _GspInit_60b950:PROC
+$L_60b950 TEXTEQU <_GspInit_60b950>
+ENDIF
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60b970 PROC
 
             jmp $L_60b980
@@ -876974,7 +877292,13 @@ $L_60b980::
             fstp DWORD PTR [$L_7243b4]
             ret 
 $L_60b970 ENDP
+ELSE
+EXTERN _GspInit_60b970:PROC
+$L_60b970 TEXTEQU <_GspInit_60b970>
+ENDIF
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60b990 PROC
 
             jmp $L_60b9a0
@@ -876996,7 +877320,13 @@ $L_60b9a0::
             fstp DWORD PTR [$L_72495c]
             ret 
 $L_60b990 ENDP
+ELSE
+EXTERN _GspInit_60b990:PROC
+$L_60b990 TEXTEQU <_GspInit_60b990>
+ENDIF
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60b9b0 PROC
 
             jmp $L_60b9c0
@@ -877018,6 +877348,10 @@ $L_60b9c0::
             fstp DWORD PTR [$L_724960]
             ret 
 $L_60b9b0 ENDP
+ELSE
+EXTERN _GspInit_60b9b0:PROC
+$L_60b9b0 TEXTEQU <_GspInit_60b9b0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -877218,6 +877552,8 @@ FUN_60bb20 PROC
             jmp $L_60baf0
 FUN_60bb20 ENDP
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60bb30 PROC
 
             jmp $L_60bb40
@@ -877239,7 +877575,13 @@ $L_60bb40::
             fstp DWORD PTR [$L_72554c]
             ret 
 $L_60bb30 ENDP
+ELSE
+EXTERN _GspInit_60bb30:PROC
+$L_60bb30 TEXTEQU <_GspInit_60bb30>
+ENDIF
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60bb50 PROC
 
             jmp $L_60bb60
@@ -877262,6 +877604,10 @@ $L_60bb60::
             fstp DWORD PTR [$L_725550]
             ret 
 $L_60bb50 ENDP
+ELSE
+EXTERN _GspInit_60bb50:PROC
+$L_60bb50 TEXTEQU <_GspInit_60bb50>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -877269,6 +877615,8 @@ $L_60bb50 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60bb80 PROC
 
             jmp $L_60bb90
@@ -877290,6 +877638,10 @@ $L_60bb90::
             mov DWORD PTR [$L_725d38],0
             ret 
 $L_60bb80 ENDP
+ELSE
+EXTERN _GspInit_60bb80:PROC
+$L_60bb80 TEXTEQU <_GspInit_60bb80>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_60bbb0 PROC
@@ -877673,6 +878025,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60be20 PROC
 
             push ESI
@@ -877692,6 +878046,10 @@ $L_60be38::
             pop ESI
             ret 4
 $L_60be20 ENDP
+ELSE
+EXTERN @Gsp60be20_DeletingDestructor@12:PROC
+$L_60be20 TEXTEQU <@Gsp60be20_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -892590,6 +892948,8 @@ EXTERN _MarineGrid_InitRandomDiameter:PROC
 $L_613820 TEXTEQU <_MarineGrid_InitRandomDiameter>
 ENDIF
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_613840 PROC
 
             jmp $L_613850
@@ -892608,6 +892968,10 @@ $L_613850::
 
             ret 
 $L_613840 ENDP
+ELSE
+EXTERN _GspInit_613840:PROC
+$L_613840 TEXTEQU <_GspInit_613840>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -892805,6 +893169,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_613a60 PROC
 
             jmp $L_613a70
@@ -892827,6 +893193,10 @@ $L_613a70::
             fstp DWORD PTR [$L_728800]
             ret 
 $L_613a60 ENDP
+ELSE
+EXTERN _GspInit_613a60:PROC
+$L_613a60 TEXTEQU <_GspInit_613a60>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
@@ -893440,6 +893810,8 @@ $L_614111::
 FUN_613b50 ENDP
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_614180 PROC
 
             jmp $L_614190
@@ -893461,7 +893833,13 @@ $L_614190::
             fstp DWORD PTR [$L_72882c]
             ret 
 $L_614180 ENDP
+ELSE
+EXTERN _TerInit_614180:PROC
+$L_614180 TEXTEQU <_TerInit_614180>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_6141a0 PROC
 
             jmp $L_6141b0
@@ -893484,6 +893862,10 @@ $L_6141b0::
             fstp DWORD PTR [$L_728830]
             ret 
 $L_6141a0 ENDP
+ELSE
+EXTERN _TerInit_6141a0:PROC
+$L_6141a0 TEXTEQU <_TerInit_6141a0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -893491,6 +893873,8 @@ $L_6141a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_6141d0 PROC
 
             jmp $L_6141e0
@@ -893512,7 +893896,13 @@ $L_6141e0::
             mov DWORD PTR [$L_72c090],0
             ret 
 $L_6141d0 ENDP
+ELSE
+EXTERN _TerInit_6141d0:PROC
+$L_6141d0 TEXTEQU <_TerInit_6141d0>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_614200 PROC
 
             jmp $L_614210
@@ -893534,6 +893924,10 @@ $L_614210::
             fstp DWORD PTR [$L_728838]
             ret 
 $L_614200 ENDP
+ELSE
+EXTERN _TerInit_614200:PROC
+$L_614200 TEXTEQU <_TerInit_614200>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -893547,6 +893941,8 @@ $L_614200 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_614230 PROC
 
             jmp $L_614240
@@ -893568,6 +893964,10 @@ $L_614240::
             fstp DWORD PTR [$L_728808]
             ret 
 $L_614230 ENDP
+ELSE
+EXTERN _TerInit_614230:PROC
+$L_614230 TEXTEQU <_TerInit_614230>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -893581,6 +893981,8 @@ $L_614230 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_614260 PROC
 
             jmp $L_614270
@@ -893604,6 +894006,10 @@ $L_614270::
             fstp DWORD PTR [$L_728834]
             ret 
 $L_614260 ENDP
+ELSE
+EXTERN _TerInit_614260:PROC
+$L_614260 TEXTEQU <_TerInit_614260>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -893615,6 +894021,8 @@ $L_614260 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_614290 PROC
 
             jmp $L_6142a0
@@ -893638,6 +894046,12 @@ $L_6142a0::
 
             nop
 $L_614290 ENDP
+ELSE
+EXTERN _TerInit_614290:PROC
+$L_614290 TEXTEQU <_TerInit_614290>
+ENDIF
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_6142c0 PROC
 
             jmp $L_6142d0
@@ -893660,6 +894074,10 @@ $L_6142d0::
             fstp DWORD PTR [$L_72880c]
             ret 
 $L_6142c0 ENDP
+ELSE
+EXTERN _TerInit_6142c0:PROC
+$L_6142c0 TEXTEQU <_TerInit_6142c0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -893816,6 +894234,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_614470 PROC
 
             push ESI
@@ -893835,6 +894255,10 @@ $L_614488::
             pop ESI
             ret 4
 $L_614470 ENDP
+ELSE
+EXTERN @Ter614470_DeletingDestructor@12:PROC
+$L_614470 TEXTEQU <@Ter614470_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -895800,6 +896224,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_615740 PROC
 
             jmp $L_615750
@@ -895821,7 +896247,13 @@ $L_615750::
             mov DWORD PTR [$L_728828],0
             ret 
 $L_615740 ENDP
+ELSE
+EXTERN _TerInit_615740:PROC
+$L_615740 TEXTEQU <_TerInit_615740>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_615770 PROC
 
             jmp $L_615780
@@ -895843,6 +896275,10 @@ $L_615780::
             mov DWORD PTR [$L_728818],0
             ret 
 $L_615770 ENDP
+ELSE
+EXTERN _TerInit_615770:PROC
+$L_615770 TEXTEQU <_TerInit_615770>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_6157a0 PROC
@@ -897825,6 +898261,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_616c80 PROC
 
             jmp $L_616c90
@@ -897843,6 +898281,10 @@ $L_616c90::
 
             ret 
 $L_616c80 ENDP
+ELSE
+EXTERN _TerInit_616c80:PROC
+$L_616c80 TEXTEQU <_TerInit_616c80>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -901799,6 +902241,8 @@ ELSE
 EXTERN @Terrain6199a0_CreateTrees@8:PROC
 FUN_6199a0 TEXTEQU <@Terrain6199a0_CreateTrees@8>
 ENDIF
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_619ac0 PROC
 
             push ESI
@@ -901818,6 +902262,10 @@ $L_619ad8::
             pop ESI
             ret 4
 $L_619ac0 ENDP
+ELSE
+EXTERN @Ter619ac0_DeletingDestructor@12:PROC
+$L_619ac0 TEXTEQU <@Ter619ac0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -902819,6 +903267,8 @@ $L_61a72c           DWORD $L_61a3fb
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a740 PROC
 
             jmp $L_61a750
@@ -902841,7 +903291,13 @@ $L_61a750::
             fstp DWORD PTR [$L_72c0a8]
             ret 
 $L_61a740 ENDP
+ELSE
+EXTERN _TerInit_61a740:PROC
+$L_61a740 TEXTEQU <_TerInit_61a740>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a760 PROC
 
             jmp $L_61a770
@@ -902863,6 +903319,10 @@ $L_61a770::
             fstp DWORD PTR [$L_72c0a4]
             ret 
 $L_61a760 ENDP
+ELSE
+EXTERN _TerInit_61a760:PROC
+$L_61a760 TEXTEQU <_TerInit_61a760>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -902876,6 +903336,8 @@ $L_61a760 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a790 PROC
 
             jmp $L_61a7a0
@@ -902897,6 +903359,10 @@ $L_61a7a0::
             fstp DWORD PTR [$L_72c0ac]
             ret 
 $L_61a790 ENDP
+ELSE
+EXTERN _TerInit_61a790:PROC
+$L_61a790 TEXTEQU <_TerInit_61a790>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -902910,6 +903376,8 @@ $L_61a790 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a7c0 PROC
 
             jmp $L_61a7d0
@@ -902931,7 +903399,13 @@ $L_61a7d0::
             mov DWORD PTR [$L_72c0b8],1065353216
             ret 
 $L_61a7c0 ENDP
+ELSE
+EXTERN _TerInit_61a7c0:PROC
+$L_61a7c0 TEXTEQU <_TerInit_61a7c0>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a7f0 PROC
 
             jmp $L_61a800
@@ -902953,7 +903427,13 @@ $L_61a800::
             mov DWORD PTR [$L_72c0a0],1065353216
             ret 
 $L_61a7f0 ENDP
+ELSE
+EXTERN _TerInit_61a7f0:PROC
+$L_61a7f0 TEXTEQU <_TerInit_61a7f0>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a820 PROC
 
             jmp $L_61a830
@@ -902975,7 +903455,13 @@ $L_61a830::
             fstp DWORD PTR [$L_72c0c8]
             ret 
 $L_61a820 ENDP
+ELSE
+EXTERN _TerInit_61a820:PROC
+$L_61a820 TEXTEQU <_TerInit_61a820>
+ENDIF
           BYTE 090H
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a840 PROC
 
             jmp $L_61a850
@@ -903006,6 +903492,12 @@ $L_61a850::
             nop
             nop
 $L_61a840 ENDP
+ELSE
+EXTERN _TerInit_61a840:PROC
+$L_61a840 TEXTEQU <_TerInit_61a840>
+ENDIF
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 $L_61a870 PROC
 
             jmp $L_61a880
@@ -903027,6 +903519,10 @@ $L_61a880::
             mov DWORD PTR [$L_72c0d8],0
             ret 
 $L_61a870 ENDP
+ELSE
+EXTERN _TerInit_61a870:PROC
+$L_61a870 TEXTEQU <_TerInit_61a870>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_61a8a0 PROC
@@ -904451,6 +904947,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61b8e0 PROC
 
             mov AL,BYTE PTR [ESP+4]
@@ -904470,6 +904968,12 @@ $L_61b8fa::
             pop ESI
             ret 4
 $L_61b8e0 ENDP
+ELSE
+EXTERN @Tgr61b8e0_DeletingDestructor@12:PROC
+$L_61b8e0 TEXTEQU <@Tgr61b8e0_DeletingDestructor@12>
+ENDIF
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61b900 PROC
 
             push ESI
@@ -904489,6 +904993,10 @@ $L_61b918::
             pop ESI
             ret 4
 $L_61b900 ENDP
+ELSE
+EXTERN @Tgr61b900_DeletingDestructor@12:PROC
+$L_61b900 TEXTEQU <@Tgr61b900_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -904799,6 +905307,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61bbc0 PROC
 
             xor EAX,EAX
@@ -904807,6 +905317,10 @@ $L_61bbc0 PROC
             mov DWORD PTR [ECX+104],EAX
             ret 
 $L_61bbc0 ENDP
+ELSE
+EXTERN @Tgr_Clear96@4:PROC
+$L_61bbc0 TEXTEQU <@Tgr_Clear96@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -905254,29 +905768,43 @@ $L_61bfc9::
             ret 8
 $L_61bf20 ENDP
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61bfd0 PROC
 
             mov ECX,OFFSET $L_72c108
             jmp FUN_61c170
 $L_61bfd0 ENDP
+ELSE
+EXTERN _Tgr_61bfd0:PROC
+$L_61bfd0 TEXTEQU <_Tgr_61bfd0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61bfe0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
             mov DWORD PTR [ECX+92],EAX
             ret 4
 $L_61bfe0 ENDP
+ELSE
+EXTERN @Tgr_Set92@12:PROC
+$L_61bfe0 TEXTEQU <@Tgr_Set92@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61bff0 PROC
 
             jmp $L_61c000
@@ -905298,7 +905826,13 @@ $L_61c000::
             fstp DWORD PTR [$L_72c0e0]
             ret 
 $L_61bff0 ENDP
+ELSE
+EXTERN _TgrInit_61bff0:PROC
+$L_61bff0 TEXTEQU <_TgrInit_61bff0>
+ENDIF
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c010 PROC
 
             jmp $L_61c020
@@ -905320,7 +905854,13 @@ $L_61c020::
             fstp DWORD PTR [$L_72c0e8]
             ret 
 $L_61c010 ENDP
+ELSE
+EXTERN _TgrInit_61c010:PROC
+$L_61c010 TEXTEQU <_TgrInit_61c010>
+ENDIF
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c030 PROC
 
             jmp $L_61c040
@@ -905343,6 +905883,10 @@ $L_61c040::
             fstp DWORD PTR [$L_72c0ec]
             ret 
 $L_61c030 ENDP
+ELSE
+EXTERN _TgrInit_61c030:PROC
+$L_61c030 TEXTEQU <_TgrInit_61c030>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -905350,6 +905894,8 @@ $L_61c030 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c060 PROC
 
             jmp $L_61c070
@@ -905371,7 +905917,13 @@ $L_61c070::
             mov DWORD PTR [$L_72c0f8],0
             ret 
 $L_61c060 ENDP
+ELSE
+EXTERN _TgrInit_61c060:PROC
+$L_61c060 TEXTEQU <_TgrInit_61c060>
+ENDIF
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c090 PROC
 
             jmp $L_61c0a0
@@ -905393,6 +905945,10 @@ $L_61c0a0::
             fstp DWORD PTR [$L_72c130]
             ret 
 $L_61c090 ENDP
+ELSE
+EXTERN _TgrInit_61c090:PROC
+$L_61c090 TEXTEQU <_TgrInit_61c090>
+ENDIF
           BYTE 090H
 $L_61c0b0 PROC
 
@@ -905575,6 +906131,8 @@ $L_61c180 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c190 PROC
 
             jmp $L_61c1a0
@@ -905596,6 +906154,10 @@ $L_61c1a0::
             fstp DWORD PTR [$L_72c138]
             ret 
 $L_61c190 ENDP
+ELSE
+EXTERN _TgrInit_61c190:PROC
+$L_61c190 TEXTEQU <_TgrInit_61c190>
+ENDIF
           BYTE 090H
 ALIGN 16
 IFDEF ASM_GRID_TOPOLOGY
@@ -905628,6 +906190,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c1e0 PROC
 
             jmp $L_61c1f0
@@ -905649,6 +906213,10 @@ $L_61c1f0::
             fstp DWORD PTR [$L_72c140]
             ret 
 $L_61c1e0 ENDP
+ELSE
+EXTERN _TgrInit_61c1e0:PROC
+$L_61c1e0 TEXTEQU <_TgrInit_61c1e0>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
@@ -905679,6 +906247,8 @@ FUN_61c200 TEXTEQU <@TGrid_Set@24>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c230 PROC
 
             jmp $L_61c240
@@ -905700,6 +906270,10 @@ $L_61c240::
             fstp DWORD PTR [$L_72c148]
             ret 
 $L_61c230 ENDP
+ELSE
+EXTERN _TgrInit_61c230:PROC
+$L_61c230 TEXTEQU <_TgrInit_61c230>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original

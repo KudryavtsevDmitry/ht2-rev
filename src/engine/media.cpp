@@ -1633,3 +1633,113 @@ extern "C" void __fastcall Media_Close(BYTE* self, void*)
     CallC(FUN_5c2f00);
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_5c10f0(); KING_ALIAS("_FUN_5c10f0", "@NamedItem_Destroy@8")
+extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
+ASM_PROC(FUN_5c3990)
+ASM_PROC(FUN_5c4410)
+extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
+extern "C" void FUN_5c8780(); KING_ALIAS("_FUN_5c8780", "@Media5c8780_Destroy@8")
+ASM_PROC(FUN_5cdcb0)
+ASM_PROC(FUN_5ce5b0)
+ASM_PROC(FUN_5ce930)
+extern "C" void FUN_5ceae0(); KING_ALIAS("_FUN_5ceae0", "@Media5ceae0_Destroy@8")
+ASM_PROC(FUN_5cf170)
+extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
+extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
+extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
+ASM_PROC(FUN_5dc230)
+ASM_PROC(FUN_5d4c10)
+
+static BYTE* Med_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5c10d0]
+extern "C" BYTE* __fastcall Med5c10d0_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5c10f0); }
+// [$L_5c2f60]
+extern "C" BYTE* __fastcall Med5c2f60_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5ce630); }
+// [$L_5c3970]
+extern "C" BYTE* __fastcall Med5c3970_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5c3990); }
+// [$L_5c4090]
+extern "C" BYTE* __fastcall Med5c4090_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5c4410); }
+// [$L_5c5350]
+extern "C" BYTE* __fastcall Med5c5350_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5c53e0); }
+// [$L_5c8760]
+extern "C" BYTE* __fastcall Med5c8760_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5c8780); }
+// [$L_5cdc90]
+extern "C" BYTE* __fastcall Med5cdc90_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5cdcb0); }
+// [$L_5ce590]
+extern "C" BYTE* __fastcall Med5ce590_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5ce5b0); }
+// [$L_5ce850]
+extern "C" BYTE* __fastcall Med5ce850_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5ce930); }
+// [$L_5ceac0]
+extern "C" BYTE* __fastcall Med5ceac0_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5ceae0); }
+// [$L_5cf150]
+extern "C" BYTE* __fastcall Med5cf150_DeletingDestructor(BYTE* s, void*, int flags) { return Med_DeleteAfter(s, flags, FUN_5cf170); }
+
+// static initializers of constants
+
+// [$L_5c63e0]
+extern "C" void __cdecl MedInit_5c63e0() {  }
+ASM_VAR(AsmLabel, s_med671204, $L_671204)
+ASM_VAR(AsmLabel, g_med64d81c, $L_64d81c)
+
+// [$L_5c3960]
+extern "C" void __fastcall Med_Nothing8(BYTE*, void*, int, int) {}
+// [$L_5ce840] takes dt off the time at +16
+extern "C" void __fastcall Med_SubTime(BYTE* s, void*, double dt) { F(double, s, 16) = F(double, s, 16) - dt; }
+// [$L_5d2300] forwards to vtbl+8
+extern "C" int __fastcall Med_Forward8(BYTE* s, void*, int a) { return CallVirt<int>(s, 8, a); }
+
+// [$L_5c4310] unloads the room, then the two players at +7976 and +8300
+extern "C" void __fastcall Med_Unload(BYTE* s)
+{
+    CallThis(FUN_5da8a0, s);
+    F(int, s, 488) = 0;
+    CallThis(FUN_5c2fe0, s + 7976);
+    CallThis(FUN_5c33a0, s + 8300);
+}
+
+// [$L_5c4100] vtbl+188 with the translated text
+extern "C" int __fastcall Med_5c4100(BYTE* s, void*, int a)
+{
+    const char* t = CallThis<const char*>(FUN_5dc230, s, (const char*)s_med671204);
+    return CallVirt<int>(s, 188, t, a, 0);
+}
+
+// [$L_5ce6b0] vtbl+24 (a) of each item of the chain at +24 (next +8)
+extern "C" void __fastcall Med_ChainCall24(BYTE* s, void*, int a)
+{
+    for (BYTE* o = F(BYTE*, s, 24); o; o = F(BYTE*, o, 8))
+        CallVirt(o, 24, a);
+}
+
+// [$L_5d22c0] a new 12-byte object (vtable 64d81c) given a through its vtbl+12
+extern "C" BYTE* __fastcall Med_NewHolder(BYTE*, void*, int a)
+{
+    BYTE* o = (BYTE*)operator new(12);
+    if (o) {
+        F(int, o, 4) = 0;
+        F(int, o, 8) = 0;
+        F(void*, o, 0) = g_med64d81c;
+    }
+    CallVirt(o, 12, a);
+    return o;
+}
+
+// [$L_5ce990] the surface of a (+48) through its vtbl+116 (1, 66, s+60, +36, 0); a result goes to FUN_5d4c10
+extern "C" void __fastcall Med_5ce990(BYTE* s, void*, BYTE* a)
+{
+    BYTE* o = F(BYTE*, a, 48);
+    void* fn = *(void**)(F(BYTE*, o, 0) + 116);
+    int r = ((int(__stdcall*)(BYTE*, int, int, BYTE*, int, int))fn)(o, 1, 66, s + 60, F(int, s, 36), 0);
+    if (r)
+        CallC(FUN_5d4c10, r, 0);
+}
