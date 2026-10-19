@@ -2505,3 +2505,304 @@ extern "C" void __fastcall Shell_518820(BYTE* s, void*, int a)
     CallThis(FUN_5c0020, s, a);
     Gs_DrawItem(s, F(BYTE*, s, 316), FUN_518760, 478, 203, 483, 276, false);
 }
+
+// ---------------------------------------------------------------------------
+// Larger shell screens: option pages, the race clock, the time table, sounds.
+
+extern "C" void FUN_515270(); KING_ALIAS("_FUN_515270", "@Keys_Bind@12")
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+ASM_PROC(FUN_5ea1b0)
+extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
+extern "C" void FUN_51d0e0(); KING_ALIAS("_FUN_51d0e0", "_Save_ListEntries")
+ASM_PROC(FUN_5d8b90)
+extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
+extern "C" void FUN_43f760(); KING_ALIAS("_FUN_43f760", "_Player_Value136")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fcd40(); KING_ALIAS("_FUN_5fcd40", "_Sound_SetVolume")
+extern "C" void FUN_5ffc30(); KING_ALIAS("_FUN_5ffc30", "_Set683c58")
+extern "C" void FUN_5ffa30(); KING_ALIAS("_FUN_5ffa30", "_Music_Start")
+extern "C" void FUN_5ffb20(); KING_ALIAS("_FUN_5ffb20", "_Obj723d44_Delete")
+extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
+extern "C" void FUN_603c70(); KING_ALIAS("_FUN_603c70", "_Ini_WriteInt")
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+ASM_VAR(int, g_gs6ce9f0n, $L_6ce9f0)
+ASM_VAR(AsmLabel, g_gs6ce9f4, $L_6ce9f4)
+ASM_VAR(AsmLabel, g_gs6cea74, $L_6cea74)
+ASM_VAR(AsmLabel, s_gs66d9c4, $L_66d9c4)
+ASM_VAR(BYTE*, g_gs6ced24, $L_6ced24)
+ASM_VAR(int, g_gs6ced18, $L_6ced18)
+ASM_VAR(int, g_gs6ced14, $L_6ced14)
+ASM_VAR(BYTE*, g_gs6cecd8, $L_6cecd8)
+ASM_VAR(AsmLabel, g_gs6ce390, $L_6ce390)
+ASM_VAR(double, g_gs64b678, $L_64b678)
+ASM_VAR(double, g_gs64b5a0, $L_64b5a0)
+ASM_VAR(double, g_gs64b6e0, $L_64b6e0)
+ASM_VAR(double, g_gs64b670, $L_64b670)
+ASM_VAR(AsmLabel, s_gs677a18, $L_677a18)
+ASM_VAR(int, g_gs6f6914, $L_6f6914)
+ASM_VAR(double, g_gs64b658, $L_64b658)
+ASM_VAR(int, g_gs696868, $L_696868)
+ASM_VAR(BYTE*, g_gs6ced6c, $L_6ced6c)
+ASM_VAR(double, g_gs64b930, $L_64b930)
+ASM_VAR(AsmLabel, g_gs696750, $L_696750)
+ASM_VAR(AsmLabel, s_gs672998, $L_672998)
+ASM_VAR(AsmLabel, s_gs676e10, $L_676e10)
+ASM_VAR(AsmLabel, s_gs676e08, $L_676e08)
+ASM_VAR(AsmLabel, s_gs676e00, $L_676e00)
+ASM_VAR(AsmLabel, s_gs676df8, $L_676df8)
+ASM_VAR(BYTE*, g_gs6ced5c, $L_6ced5c)
+ASM_VAR(double, g_gs64e918, $L_64e918)
+ASM_VAR(double, g_gs64b918, $L_64b918)
+ASM_VAR(double, g_gs64b890, $L_64b890)
+
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
+extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
+
+// the distance of a mouse event from the screen's middle 400,327
+static double Gs_DistFromMiddle(BYTE* ev)
+{
+    int dx = F(short, ev, 2) - 400;
+    int dy = F(short, ev, 4) - 327;
+    dx = dx < 0 ? -dx : dx;
+    dy = dy < 0 ? -dy : dy;
+    return x87_sqrt((double)(dy * dy + dx * dx));
+}
+
+// [$L_516c60] activates; the buttons of the mode (+408 bits 4-7: 16, 32, 48, 64) from +376's +288 on
+extern "C" void __fastcall Shell_516c60(BYTE* s)
+{
+    CallThis(FUN_5d8610, s);
+    F(WORD, s, 368) = F(WORD, s, 420);
+    F(WORD, s, 370) = F(WORD, s, 422);
+    F(int, s, 372) = F(int, s, 408);
+    BYTE* c = F(BYTE*, F(BYTE*, s, 376), 288);
+    for (int m = 16; m <= 64; m += 16) {
+        if (m > 16)
+            c = CallThis<BYTE*>(FUN_5d3080, c);
+        if ((BYTE)(F(int, s, 408) & 240) == m)
+            F(unsigned, c, 284) |= 2;
+        else
+            F(unsigned, c, 284) &= ~2u;
+    }
+}
+
+// [$L_527890] near the middle the target (+372) takes mouse moves; a click elsewhere activates the screen
+extern "C" int __fastcall Shell_527890(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) == 512 && !(Gs_DistFromMiddle(ev) >= g_gamshe64dea0) && F(BYTE*, s, 372))
+        return CallVirt<int>(F(BYTE*, s, 372), 52, ev);
+    int r = CallThis<int>(FUN_5d8bb0, s, ev);
+    BYTE* cur = g_gamshe696848;
+    if (!r) {
+        if (cur == s && F(BYTE*, s, 372) && F(WORD, ev, 0) != 512)
+            return CallVirt<int>(F(BYTE*, s, 372), 52, ev);
+    } else if (cur != s && F(WORD, ev, 0) == 513) {
+        CallVirt(s, 36);
+    }
+    return 1;
+}
+
+// [$L_5153e0] the same with 6cec80; the current screen first maps key-downs to its choice (+516)
+extern "C" int __fastcall Shell_5153e0(BYTE* s, void*, BYTE* ev)
+{
+    WORD t = F(WORD, ev, 0);
+    if (t == 512 && Gs_DistFromMiddle(ev) > g_gamshe64dea0)
+        return CallVirt<int>(g_6cec80, 52, ev);
+    if (g_gamshe696848 != s)
+        return CallThis<int>(FUN_5d8bb0, s, ev);
+    if (t == 256) {
+        int r = CallThis<int>(FUN_515270, s, (int)F(short, ev, 6));
+        if (r >= 0)
+            F(int, s, 516) = r;
+    }
+    if (!CallThis<int>(FUN_5d8bb0, s, ev) && g_gamshe696848 == s && F(WORD, ev, 0) != 512)
+        return CallVirt<int>(g_6cec80, 52, ev);
+    return 1;
+}
+
+// [$L_522af0] draws the list of the 6ce9f0 entries: a yes/no text (98/99, 6cea74) and the name (6ce9f4)
+extern "C" void __fastcall Shell_522af0(BYTE* s, void*, int a)
+{
+    CallThis(FUN_5c0020, s, a);
+    for (int i = 0; i < g_gs6ce9f0n; i++) {
+        char buf[64];
+        const char* t = CallC<const char*>(FUN_5d2e50, ((int*)g_gs6cea74)[i] ? 98 : 99);
+        CallC(Gs_sprintf, buf, (const char*)s_gs66d9c4, t);
+        if (!g_gs6ced24)
+            continue;
+        int y = i * 13 + g_gs6ced18 + 538;
+        CallC(FUN_5ea1b0, a, g_gs6ced14 + 60, y, 67, g_gs6ced24, (BYTE*)g_gs6ce9f4 + i * 16, 4, 0);
+        CallC(FUN_5ea170, a, g_gs6ced14 + 131, y, g_gs6ced24, buf, 4, 0);
+    }
+}
+
+// [$L_51d220] the options page: buttons 111/112 by 6cec6c's +1304, 273/274 by +1312, the list (+396) refilled
+extern "C" void __fastcall Shell_51d220(BYTE* s)
+{
+    BYTE* c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 392), F(int, g_6cec6c, 1304) ? 111 : 112);
+    F(unsigned, c, 284) |= 2;
+    c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 392), F(int, g_6cec6c, 1304) ? 112 : 111);
+    F(unsigned, c, 284) &= ~2u;
+    c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 392), F(int, g_6cec6c, 1312) ? 273 : 274);
+    F(unsigned, c, 284) |= 2;
+    c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 392), F(int, g_6cec6c, 1312) ? 274 : 273);
+    F(unsigned, c, 284) &= ~2u;
+    CallThis(FUN_5c0cf0, F(BYTE*, s, 396));
+    CallC(FUN_51d0e0, g_gs6cecd8 + 632, F(BYTE*, s, 396));
+    CallThis(FUN_5c0c20, F(BYTE*, s, 396), 0);
+    BYTE* o = F(BYTE*, F(BYTE*, s, 396), 300);
+    F(int, F(BYTE*, s, 388), 40) = (!o || !F(int, o, 12)) ? 1 : 0;
+    F(WORD, s, 382) = F(WORD, s, 402);
+    F(WORD, s, 380) = F(WORD, s, 400);
+    F(WORD, s, 384) = F(WORD, s, 404);
+    CallThis(FUN_5d8610, s);
+}
+
+// [$L_50cfa0] static initializer: nine 40-byte records (word 6 = 0.5, words 0-8 otherwise zero)
+extern "C" void __cdecl GamsheInit_50cfa0()
+{
+    static const int off[9] = {0x000, 0x028, 0x050, 0x078, 0x0a0, 0x5a8, 0x5d0, 0x5f8, 0x7a8};
+    for (int r = 0; r < 9; r++) {
+        DWORD* p = (DWORD*)((BYTE*)g_gs6ce390 + off[r]);
+        for (int k = 0; k < 9; k++)
+            p[k] = k == 6 ? 0x3f000000 : 0;
+    }
+}
+
+// [$L_520ce0] the refuelling screen: 2 leaves, 276 a full tank (100), 275 pays for the fuel
+extern "C" void __fastcall Shell_Refuel(BYTE* s, void*, int cmd)
+{
+    if (cmd == 2) {
+        Gs_BackToWorld(s - 64);
+        return;
+    }
+    if (cmd == 276) {
+        F(short, s, 336) = 100;
+        return;
+    }
+    if (cmd != 275)
+        return;
+    if (F(double, s, 304) > g_gs64b678)
+        return;
+    double v = (double)F(short, s, 336) * F(double, s, 320) * g_gs64b5a0 - F(double, s, 312);
+    F(double, s, 304) = v;
+    if (!(v >= g_gs64b678)) {
+        F(DWORD, s, 304) = 0;
+        F(DWORD, s, 308) = 0;
+    }
+    DWORD tmp;
+    CallC(FUN_568f60, &tmp);
+    double money = CallC<double>(FUN_43f760, tmp);
+    if (F(double, s, 304) + F(double, s, 304) > money)
+        F(double, s, 304) = money * g_gs64b6e0 - g_gs64b670;
+    if (!(F(double, s, 304) >= g_gs64b678)) {
+        F(DWORD, s, 304) = 0;
+        F(DWORD, s, 308) = 0;
+    }
+    if (F(double, s, 304) > g_gs64b678) {
+        BYTE* snd = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_gs677a18);
+        CallThis(FUN_5fdaf0, snd, 0x3f800000, 0x3f800000);
+    }
+}
+
+// [$L_510010] the race display: the mode picture and the clock (minutes and seconds of 696ca0's +7968)
+extern "C" void __fastcall Shell_RaceClock(BYTE* s)
+{
+    CallThis(FUN_5d8b90, s);
+    int* r = (int*)(F(BYTE*, F(BYTE*, s, 56), 288) + 44);
+    int x0 = r[0], y0 = r[1];
+    if (!F(int, g_gamshe6d2078, 1400)) {
+        F(int, s, 416) = 1;
+    } else {
+        if (g_gs6f6914 == 0)
+            F(int, s, 416) = 0;
+        else if (g_gs6f6914 == 2)
+            F(int, s, 416) = 3;
+        if (g_gs6f6914 == 1)
+            F(int, s, 416) = 2;
+    }
+    CallC(FUN_5b8980, F(int, s, 12), x0 + F(int, s, 416) * 52 + 12, y0 + 31, F(int, s, 368), -1);
+    unsigned t = (unsigned)(int)(F(double, g_gamshe696ca0, 7968) * g_gs64b658);
+    int sec = (int)(t % 60);
+    int min = (int)(t / 60) % 99;
+    int y = y0 + 53;
+    CallC(FUN_5b8980, F(int, s, 12), x0 + 260, y, F(int, s, 372 + (min / 10) * 4), -1);
+    CallC(FUN_5b8980, F(int, s, 12), x0 + 268, y, F(int, s, 372 + (min % 10) * 4), -1);
+    CallC(FUN_5b8980, F(int, s, 12), x0 + 276, y, F(int, s, 412), -1);
+    CallC(FUN_5b8980, F(int, s, 12), x0 + 284, y, F(int, s, 372 + (sec / 10) * 4), -1);
+    CallC(FUN_5b8980, F(int, s, 12), x0 + 292, y, F(int, s, 372 + (sec % 10) * 4), -1);
+}
+
+// the sound settings (+318 volume, +320) to the sound system
+static void Gs_ApplySound(BYTE* s)
+{
+    CallC<double>(FUN_5fcd40, (float)((double)F(short, s, 318) * g_gs64b5a0));
+    CallC(FUN_5ffc30, (double)(F(short, s, 318) * F(short, s, 320)) * g_gs64b930);
+}
+
+// [$L_517310] the sound page: Enter/Esc (2, 27) take the values and apply them, 184 also saves them
+extern "C" void __fastcall Shell_SoundPage(BYTE* s, void*, int cmd)
+{
+    int ini = g_gs696868;
+    if (cmd == 2 || cmd == 27) {
+        F(WORD, s, 318) = F(WORD, s, 308);
+        F(WORD, s, 320) = F(WORD, s, 310);
+        F(WORD, s, 324) = F(WORD, s, 314);
+        F(WORD, s, 326) = F(WORD, s, 316);
+        CallVirt(s - 64, 32);
+        CallThis(FUN_5d8610, g_gs6ced6c);
+        Gs_ApplySound(s);
+        if (F(short, s, 320) > 5 && !F(short, s, 328)) {
+            CallC(FUN_5ffa30);
+            F(short, s, 328) = 1;
+        }
+        if (F(short, s, 320) < 5 && F(short, s, 328)) {
+            CallC(FUN_5ffb20);
+            F(short, s, 328) = 0;
+        }
+        return;
+    }
+    if (cmd != 184)
+        return;
+    CallVirt(s - 64, 32);
+    Gs_ApplySound(s);
+    Gs_DropBackdrop();
+    CallVirt(g_gamshe696ca0, 36);
+    CallThis(FUN_5e4250, (BYTE*)g_gs696750, F(int, s, 304));
+    CallC(FUN_50bd60);
+    CallC(FUN_4e12b0, 1);
+    CallC(FUN_603c70, (const char*)s_gs672998, (const char*)s_gs676e10, (int)F(short, s, 318), ini);
+    CallC(FUN_603c70, (const char*)s_gs672998, (const char*)s_gs676e08, (int)F(short, s, 320), ini);
+    CallC(FUN_603c70, (const char*)s_gs672998, (const char*)s_gs676e00, (int)F(short, s, 324), ini);
+    CallC(FUN_603c70, (const char*)s_gs672998, (const char*)s_gs676df8, (int)F(short, s, 326), ini);
+}
+
+// a text centered on the column at +312 (scaled by 64b6e0, plus 64e918) at y
+static void Gs_CenteredText(BYTE* s, const char* buf, int y)
+{
+    int w = CallThis<int>(FUN_5ea0e0, g_gamshe6ced28, buf);
+    int x = (int)((F(double, s, 312) - w) * g_gs64b6e0 + g_gs64e918);
+    CallC(FUN_5ea170, F(int, s, -52), x, y, g_gs6ced24, buf, 4, 0);
+}
+
+// [$L_522f60] the waiting screen: the picture 6ced5c centered, two texts and the seconds left; at the end command 161
+extern "C" void __fastcall Shell_Waiting(BYTE* s, void*, int a)
+{
+    BYTE* d = g_69684c;
+    BYTE* img = g_gs6ced5c;
+    int x = (CallVirt<int>(d, 20) - F(WORD, img, 20)) / 2;
+    int y = (CallVirt<int>(d, 24) - F(WORD, g_gs6ced5c, 22)) / 2;
+    CallC(FUN_5b86c0, F(int, d, 12), x, y, g_gs6ced5c);
+    CallThis(FUN_5c0020, s, a);
+    char buf[64];
+    CallC(Gs_sprintf, buf, CallC<const char*>(FUN_5d2e50, 123));
+    Gs_CenteredText(s, buf, 560);
+    CallC(Gs_sprintf, buf, CallC<const char*>(FUN_5d2e50, 124));
+    Gs_CenteredText(s, buf, 575);
+    int left = (int)(g_gs64b918 - (CallC<double>(FUN_6037e0) - F(double, s, 304)) * g_gs64b658);
+    CallC(Gs_sprintf, buf, CallC<const char*>(FUN_5d2e50, 125), left);
+    Gs_CenteredText(s, buf, 590);
+    if (CallC<double>(FUN_6037e0) - F(double, s, 304) > g_gs64b890)
+        CallVirt(s, 60, 161);
+}
