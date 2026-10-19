@@ -642,3 +642,12 @@ void __fastcall Node5fcc70_Destroy(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// [FUN_5ef800] counts a test call; returns !(flag 1 of +40)
+extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int)
+{
+    g_testInfoCount++;
+    return ~F(BYTE, self, 40) & 1;
+}
+

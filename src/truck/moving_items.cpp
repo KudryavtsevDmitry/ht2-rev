@@ -29,8 +29,8 @@ ASM_PROC(FUN_5c3800)
 ASM_PROC(FUN_52e740)
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
-ASM_PROC(FUN_4e5140)
-ASM_PROC(FUN_4e51b1)
+extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
+extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
 ASM_PROC(FUN_4e4d82)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
@@ -187,7 +187,7 @@ extern "C" void __fastcall Slots6_Remove(BYTE* self, void*, int v)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
 extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
@@ -342,5 +342,17 @@ extern "C" void __stdcall SceneObj_PlaceByName(const char* rec)
     BYTE* o = CallC<BYTE*>(FUN_5ef2b0, 0, name);
     if (o)
         CallC(FUN_5e19b0, o, 0, m);
+}
+
+
+// ---------------------------------------------------------------------------
+// [FUN_581c80] keeps the flags (+892) at +896 and clears bits 0 and 2; returns 1
+extern "C" int __fastcall Item_ResetFlags(BYTE* self, void*, int, int)
+{
+    DWORD f = F(DWORD, self, 892);
+    F(int, self, 3464) = 0;
+    F(DWORD, self, 896) = f;
+    F(DWORD, self, 892) = f & ~5u;
+    return 1;
 }
 

@@ -31,8 +31,8 @@ ASM_PROC(FUN_5c3800)
 ASM_PROC(FUN_52e740)
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
-ASM_PROC(FUN_4e5140)
-ASM_PROC(FUN_4e51b1)
+extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
+extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
 ASM_PROC(FUN_4e4d82)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
@@ -189,7 +189,7 @@ extern "C" void __fastcall Node_Position(BYTE* self, void*, Vec3Bits* out)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
 extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
@@ -313,3 +313,15 @@ extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*)
         F(float, self, 104) = (float)(F(double, F(BYTE*, self, 88), 2960)
                                      + F(float, self, 104));
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_4e1e10(); KING_ALIAS("_FUN_4e1e10", "@Ini4e1e10_Construct@12")
+ASM_VAR(AsmLabel, g_ini696750, $L_696750)
+ASM_VAR(AsmLabel, s_6733b0, $L_6733b0)
+
+// [FUN_4e1de0] constructs the ini object 696750 on 6733b0
+extern "C" void* __cdecl Startup_Ini696750()
+{
+    return CallThis<void*>(FUN_4e1e10, g_ini696750, (char*)s_6733b0);
+}
+

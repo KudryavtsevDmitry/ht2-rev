@@ -10,7 +10,7 @@
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
-ASM_PROC(FUN_4eb350)
+extern "C" void FUN_4eb350(); KING_ALIAS("_FUN_4eb350", "@Trigger_Check@12")
 extern "C" void __fastcall Body_SetLoad(BYTE* self, void*, float load);
 extern "C" void __fastcall Body_UpdateHitch(BYTE* self, void*, int keep);
 ASM_PROC(FUN_4f2670)
@@ -783,5 +783,54 @@ extern "C" void __fastcall Car_CountType(BYTE* self, void*)
         World_Fatal(text);
     }
     CallThis(FUN_4ee980, self, 0);
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_4ebbe0)
+ASM_PROC(FUN_4eb2f0)
+ASM_VAR(AsmLabel, g_697608, $L_697608)
+ASM_VAR(AsmLabel, g_6975b8, $L_6975b8)
+ASM_VAR(int, g_697658, $L_697658)
+ASM_VAR(int, g_69765c, $L_69765c)
+ASM_VAR(int, g_697660, $L_697660)
+
+// [FUN_4eb350..$L_4eb399] at or past +20: once, asks the car (+36) for 4ebbe0(+28); fails mark +32
+extern "C" void __fastcall Trigger_Check(BYTE* self, void*, float x)
+{
+    if (!(x >= F(float, self, 20)) || F(int, self, 32))
+        return;
+    if (F(BYTE*, self, 36))
+    {
+        int r = CallThis<int>(FUN_4ebbe0, F(BYTE*, self, 36), F(int, self, 28));
+        if (r)
+        {
+            CallThis(FUN_4eb2f0, self);
+            if (r == 1)
+                F(int, F(BYTE*, self, 36), 15496) = r;
+            return;
+        }
+    }
+    F(int, self, 32) = 1;
+}
+
+// [FUN_4eb190] +128
+extern "C" int __fastcall Obj_Get128(BYTE* self, void*)
+{
+    return F(int, self, 128);
+}
+
+// [FUN_4eb210] flag 1 of +20
+extern "C" int __fastcall Obj_Flag20(BYTE* self, void*)
+{
+    return (F(DWORD, self, 20) & 1) != 0;
+}
+
+// [FUN_4eb230] clears the two 20-dword tables and three counters
+extern "C" void __cdecl Tables_Clear697608()
+{
+    memset(g_697608, 0, 80);
+    memset(g_6975b8, 0, 80);
+    g_697658 = g_69765c = g_697660 = 0;
 }
 

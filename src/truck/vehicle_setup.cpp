@@ -480,3 +480,72 @@ extern "C" int __cdecl Car_ResetSettings35(float* p)
     return i;
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_4eb5e0(); KING_ALIAS("_FUN_4eb5e0", "@Ramp_Value@8")
+extern "C" void FUN_4eb690(); KING_ALIAS("_FUN_4eb690", "@Ramp_Position@8")
+extern "C" void FUN_507380(); KING_ALIAS("_FUN_507380", "_Car_EngineTorque")
+extern "C" void FUN_507440(); KING_ALIAS("_FUN_507440", "_Car_ThrottleTorque")
+extern "C" void FUN_4ff3e0(); KING_ALIAS("_FUN_4ff3e0", "@Car_EngineBrakeTorque@12")
+extern "C" void FUN_501480(); KING_ALIAS("_FUN_501480", "@Car_GetSettings@12")
+extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+ASM_PROC(FUN_4eacce)    // filter: feed (value, name)
+ASM_PROC(FUN_4eaf98)    // filter: output
+ASM_VAR(AsmLabel, s_674914, $L_674914)
+ASM_VAR(AsmLabel, s_674870, $L_674870)
+
+// [FUN_4ff460..$L_4ff492] the engine torque at rpm from the torque-rpm (+7304) and the two ramps
+extern "C" double __fastcall Car_TorqueAt(BYTE* self, void*, float rpm)
+{
+    float scale = (float)CallThis<double>(FUN_4eb5e0, self + 16320);
+    float maxTorque = (float)CallThis<double>(FUN_4eb5e0, self + 16060);
+    return CallC<double>(FUN_507380, rpm, F(float, self, 7304), maxTorque, scale);
+}
+
+// [FUN_4ff4a0..$L_4ff4ac] the engine torque at the current rpm (+7300)
+extern "C" double __fastcall Car_TorqueNow(BYTE* self, void*)
+{
+    return Car_TorqueAt(self, 0, F(float, self, 7300));
+}
+
+// [FUN_4ff500..$L_4ff50e] -brake / (torque - brake) at rpm
+extern "C" double __fastcall Car_TorqueRatio(BYTE* self, void*, float rpm)
+{
+    float t = (float)Car_TorqueAt(self, 0, rpm);
+    double u = CallThis<double>(FUN_4ff3e0, self, rpm);
+    return -(u / ((double)t - u));
+}
+
+// [FUN_4ff4b0..$L_4ff4bf] the throttle torque of the car type between torque and brake at rpm
+extern "C" double __fastcall Car_TorqueThrottle(BYTE* self, void*, float rpm, float throttle)
+{
+    float t = (float)Car_TorqueAt(self, 0, rpm);
+    float u = (float)CallThis<double>(FUN_4ff3e0, self, rpm);
+    return CallC<double>(FUN_507440, F(int, self, 2252), t, u, throttle);
+}
+
+// [FUN_5014b0..$L_501543] the settings, then +3808 and the 7 ramp positions; returns 35
+extern "C" int __fastcall Car_ReadSettings35(BYTE* self, void*, float* p)
+{
+    int i = CallThis<int>(FUN_501480, self, p);
+    p[i++] = (float)F(double, self, 3808);
+    for (int off = 16060; off <= 16372; off += 52)
+        p[i++] = (float)CallThis<double>(FUN_4eb690, self + off);
+    if (i != 35)
+        World_Fatal(s_674914);
+    return i;
+}
+
+// [FUN_4ff790] starts the engine: state 1, start time, rpm 2*idle*ratio through the rpm filter
+extern "C" void __fastcall Car_StartEngine(BYTE* self, void*)
+{
+    F(int, self, 7196) = 1;
+    F(int, self, 7204) = 0;
+    F(float, self, 7228) = (float)CallC<double>(FUN_4e27a5);
+    double d = (double)F(float, self, 10712) * F(float, self, 7304);
+    float v = (float)(d + d);
+    F(float, self, 7300) = v;
+    CallThis(FUN_4eacce, self + 6992, v, (char*)s_674870);
+    F(float, self, 7300) = (float)CallThis<double>(FUN_4eaf98, self + 6992);
+}
+

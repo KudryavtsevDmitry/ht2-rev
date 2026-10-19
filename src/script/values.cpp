@@ -987,3 +987,16 @@ extern "C" void** __fastcall SchSymbol_Init(void** self, int, const char* name)
     self[1] = &g_6703f8;
     return self;
 }
+
+// ---------------------------------------------------------------------------
+static __declspec(noinline) int Values_Trunc(double x)
+{
+    return (int)x;
+}
+
+// [FUN_4b0ea0] the number at +16 truncated
+extern "C" int __fastcall Value_ToInt(BYTE* self, void*)
+{
+    return Values_Trunc(*(double*)(self + 16));
+}
+

@@ -29,8 +29,8 @@ ASM_PROC(FUN_5c3800)
 ASM_PROC(FUN_52e740)
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
-ASM_PROC(FUN_4e5140)
-ASM_PROC(FUN_4e51b1)
+extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
+extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
 ASM_PROC(FUN_4e4d82)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
@@ -299,7 +299,7 @@ extern "C" char* __cdecl NextToken(char** pp)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
 extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
@@ -414,5 +414,17 @@ extern "C" void __fastcall WeatherNode_Attach(BYTE* self, void*, BYTE* node)
     }
     CallC(FUN_5de950, *(Weather_Mat48*)(self + 60), self + 160, self + 168, self + 176, self + 184, self + 192, self + 200);
     memcpy(self + 108, self + 60, 48);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" size_t __cdecl fread(void* p, size_t size, size_t n, FILE* f);
+
+// [FUN_5ab0f0] a signed 16-bit value from the file
+extern "C" int __cdecl File_ReadShort(FILE* f)
+{
+    short v;
+    fread(&v, 2, 1, f);
+    return v;
 }
 

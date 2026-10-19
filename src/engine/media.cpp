@@ -1460,3 +1460,38 @@ extern "C" BYTE* __cdecl Media_FindFmt2(BYTE* obj, int a, int b)
     return Media_FindName(obj, g_name70de78);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
+extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
+extern "C" void FUN_5c53b0(); KING_ALIAS("_FUN_5c53b0", "@Timeline_Reset@8")
+ASM_PROC(FUN_5e02f0)
+ASM_PROC(FUN_5c4940)
+ASM_PROC(FUN_5cc6b0)
+
+// [FUN_5cda30] +4
+extern "C" int __fastcall Media_Get4(BYTE* self, void*) { return F(int, self, 4); }
+
+// [FUN_5c4910] clears the table (+7976), the list (+8300) and then 5e02f0
+extern "C" void __fastcall Media_Clear5c4910(BYTE* self, void*)
+{
+    CallThis(FUN_5c2fe0, self + 7976);
+    CallThis(FUN_5c33a0, self + 8300);
+    CallThis(FUN_5e02f0, self);
+}
+
+// [FUN_5c5380] resets the timeline, frees all 1000 slots and runs 5c4940
+extern "C" void __fastcall Media_Reset5c5380(BYTE* self, void*)
+{
+    CallThis(FUN_5c53b0, self);
+    memset(self + 8372, 0, 1000);
+    CallThis(FUN_5c4940, self);
+}
+
+// [FUN_5cc680] 5cc6b0(0, b, obj) (passing this on), then obj's vtbl+8(1.0)
+extern "C" void __fastcall Media_Call5cc680(void* self, void*, int a, int b, BYTE* obj)
+{
+    CallThis(FUN_5cc6b0, self, 0, b, obj);
+    CallVirt(obj, 8, 1.0f);
+}
+

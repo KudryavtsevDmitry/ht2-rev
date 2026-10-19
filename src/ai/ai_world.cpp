@@ -8239,7 +8239,7 @@ extern "C" int __cdecl Ai_LoadOrder(BYTE* player, int townId, unsigned orderid, 
 
 ASM_PROC(FUN_4b4c20)    // reads a value from a port (out, reader, port by value)
 extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<StrRef>::insert_aux (thiscall pos, x)
-ASM_PROC(FUN_4b0ea0)    // a number's int value (thiscall)
+extern "C" void FUN_4b0ea0(); KING_ALIAS("_FUN_4b0ea0", "@Value_ToInt@8")    // a number's int value (thiscall)
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 extern "C" void FUN_4b0e90(); KING_ALIAS("_FUN_4b0e90", "@SchNumber_Value@8")
 extern "C" BYTE* __fastcall MultValue_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
@@ -9041,7 +9041,7 @@ extern "C" void __cdecl Ai_ReadSetting(int arg, StrRef pair)
 // ---------------------------------------------------------------------------
 // queryBribeSum
 
-ASM_PROC(FUN_4715a0)    // an order's pay (order, double done, int)
+extern "C" void FUN_4715a0(); KING_ALIAS("_FUN_4715a0", "_Order_PayTotal")    // an order's pay (order, double done, int)
 extern "C" int __cdecl Player_Driver(BYTE* p);
 extern "C" int __cdecl Player_HasPlaceFlag1(BYTE* p);
 extern "C" double __cdecl Order_Pay(const BYTE* o, double late, int bonus);
@@ -15290,7 +15290,7 @@ extern "C" void __cdecl Ai_GoToNode(BYTE* p, int node)
 
 ASM_PROC(FUN_45c8d0)    // random_shuffle (first, last, 0, 0, rng-like player)
 ASM_PROC(FUN_4654c0)    // stable sort with a buffer (first, last, buf, len, cmp)
-ASM_PROC(FUN_462410)    // temporary buffer destructor (thiscall)
+extern "C" void FUN_462410(); KING_ALIAS("_FUN_462410", "@Vec_FreeStorage8@8")    // temporary buffer destructor (thiscall)
 extern "C" int* __fastcall TempBuf_Construct(int* self, void*, BYTE* first, BYTE* last);
 extern "C" void __cdecl Sort_Stable32(BYTE** first, BYTE** last, int);
 extern "C" DWORD* __cdecl Select_Records56(DWORD* out, BYTE* first, BYTE* last, int a, int b);
@@ -21120,5 +21120,15 @@ extern "C" void __cdecl Ai_Report(int a1, int level, int a3, int a4, int a5, int
         Sys_Fatal(text, 0);
     if (text)
         operator delete(text);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void __cdecl free(void* p);
+
+// [FUN_462410] frees the storage at +8
+extern "C" void __fastcall Vec_FreeStorage8(BYTE* self, void*)
+{
+    free(F(void*, self, 8));
 }
 

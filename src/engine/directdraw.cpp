@@ -318,3 +318,22 @@ extern "C" int __cdecl Dd_CreateDevices(DWORD flags)
     g_7208b4 = (flags >> 13) & 1;
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
+extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
+
+// [FUN_5d85f0] the rect of the window at +12 into out
+extern "C" void* __fastcall Win_GetRect(BYTE* self, void*, void* out)
+{
+    CallThis(FUN_5b6710, F(BYTE*, self, 12), out);
+    return out;
+}
+
+// [FUN_5d8610] flags 3 and makes this the app's active window
+extern "C" int __fastcall Win_Activate(BYTE* self, void*)
+{
+    F(DWORD, self, 16) |= 3;
+    return CallThis<int>(FUN_5e4250, g_pApp, self);
+}
+

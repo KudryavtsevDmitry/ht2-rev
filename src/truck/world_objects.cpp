@@ -682,7 +682,7 @@ extern "C" void __fastcall Table124_Add(BYTE* self, void*, int a, int b, const V
 // Effect drawing: validate its secondary render base, submit it, and apply
 // the position stored by the effect before completing the draw.
 ASM_PROC(FUN_5b4fc0)
-ASM_PROC(FUN_5ef800)
+extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
 ASM_PROC(FUN_5b3010)
 extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*); // engine.cpp
 ASM_VAR(float, g_effectOne, $L_64c250)

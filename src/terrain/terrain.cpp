@@ -405,7 +405,7 @@ void __fastcall Terrain6199a0_CreateTrees(BYTE* self, void*)
 // x87 functions of the unit: height tables and vector copies
 
 extern "C" void __cdecl rewind(FILE* f);
-ASM_PROC(FUN_5ab0f0)    // a 16-bit word from a file
+extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")    // a 16-bit word from a file
 
 // [FUN_613a80] (tdata.cpp) reads 257x257 16-bit heights into the floats at a 16-byte stride
 extern "C" int __fastcall Tile_ReadHeights(BYTE* self,void*,FILE* f)

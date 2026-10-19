@@ -41,7 +41,7 @@ ASM_VAR(AsmLabel, s_683538, $L_683538)
 ASM_VAR(AsmLabel, g_enum5d8c60, $L_5d8c60)
 ASM_VAR(AsmLabel, g_enum5d94d0, $L_5d94d0)
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
-ASM_PROC(FUN_5e43e0)
+extern "C" void FUN_5e43e0(); KING_ALIAS("_FUN_5e43e0", "@Loader_Construct@12")
 ASM_PROC(FUN_5dd0d0)
 ASM_VAR(AsmLabel, g_vtbl652168, $L_652168)
 ASM_VAR(AsmLabel, g_vtbl652738, $L_652738)
@@ -1136,5 +1136,129 @@ extern "C" int __fastcall Resources_Create(BYTE* self, void*, int id, const char
     F(BYTE**, self, row * 4)[slot] = r;
     Resources_Bind(self, 0, name, r);
     return F(int, r, 0);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5ab790(); KING_ALIAS("_FUN_5ab790", "@Vec3_Read@12")
+extern "C" void FUN_5ab190(); KING_ALIAS("_FUN_5ab190", "_File_ReadFloat")
+extern "C" void FUN_5e44a0(); KING_ALIAS("_FUN_5e44a0", "@ResRef_Release@8")
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
+extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
+extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
+extern "C" void Fw_ThreadProc(); KING_ALIAS("_Fw_ThreadProc", "$L_5e4390")
+ASM_PROC(FUN_5e4e00)
+ASM_PROC(FUN_5baa70)
+ASM_VAR(double, g_652730, $L_652730)
+ASM_VAR(AsmLabel, s_6832bc, $L_6832bc)
+ASM_VAR(AsmLabel, s_683294, $L_683294)
+ASM_VAR(AsmLabel, s_683288, $L_683288)
+
+// [FUN_5e5720] reads two vectors and two floats (+28, then +24)
+extern "C" void __fastcall Fw_Read5e5720(BYTE* self, void*, FILE* f)
+{
+    CallThis(FUN_5ab790, self, f);
+    CallThis(FUN_5ab790, self + 12, f);
+    F(float, self, 28) = CallC<float>(FUN_5ab190, f);
+    F(float, self, 24) = CallC<float>(FUN_5ab190, f);
+}
+
+// [FUN_5e56f0] reads a vector and two floats (+12, +16)
+extern "C" void __fastcall Fw_Read5e56f0(BYTE* self, void*, FILE* f)
+{
+    CallThis(FUN_5ab790, self, f);
+    F(float, self, 12) = CallC<float>(FUN_5ab190, f);
+    F(float, self, 16) = CallC<float>(FUN_5ab190, f);
+}
+
+// [FUN_5e43e0] a loader thread on scenes a, with its wake event
+extern "C" BYTE* __fastcall Loader_Construct(BYTE* self, void*, int a)
+{
+    F(int, self, 8) = 0;
+    F(int, self, 28) = a;
+    F(int, self, 24) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 16) = 0;
+    F(double, self, 0) = Timer_Now();
+    F(void*, self, 32) = CallStd<void*>(Afx_BeginThread, Fw_ThreadProc, self, 0, 0, 0, 0);
+    SECURITY_ATTRIBUTES sa = { 12, 0, 1 };
+    F(HANDLE, self, 36) = CreateEventA(&sa, 0, 0, s_683288);
+    return self;
+}
+
+// [FUN_5e44e0..$L_5e45ad] asks the loader thread for scene name (a 1-2 letter code), or lowers/raises its priority
+extern "C" void __fastcall Loader_Request(BYTE* self, void*, int unused, const char* name)
+{
+    if (!name)
+        return;
+    if (F(int, self, 16))
+    {
+        CallThis(FUN_5e44a0, self);
+        SetThreadPriority(F(HANDLE, F(BYTE*, self, 32), 40), 0);
+        return;
+    }
+    if (F(int, self, 20))
+    {
+        double due = F(double, self, 0) + g_652730;
+        if (!(Timer_Now() > due))
+            return;
+        F(double, self, 0) = Timer_Now();
+        SetLastError(0);
+        if (!SetThreadPriority(F(HANDLE, F(BYTE*, self, 32), 40), 1))
+            CallC(FUN_5d2ba0, (char*)s_6832bc, GetLastError());
+        return;
+    }
+    int code = 0, n = 0;
+    while (name[n])
+        code = code * 256 + (signed char)name[n++];
+    if (n > 2)
+        Sys_Fatal(s_683294, name);
+    if (F(int, self, 8) == code)
+        return;
+    if (CallThis<BYTE*>(FUN_5d9290, F(BYTE*, self, 28), name))
+        return;
+    F(int, self, 8) = code;
+    if (F(void*, self, 24))
+        operator delete(F(void*, self, 24));
+    DWORD* p = (DWORD*)operator new(432);
+    if (p)
+    {
+        p[0] = p[1] = p[2] = p[3] = p[4] = p[5] = 0;
+        p[107] = p[106] = 0;
+        memset(p + 6, 0, 400);
+    }
+    F(DWORD*, self, 24) = p;
+    BYTE* t = CallVirt<BYTE*>(F(BYTE*, self, 28), 112);
+    if (t)
+        CallThis(FUN_5e4f60, t, name);
+    CallVirt(F(BYTE*, self, 28), 84, name, 0, F(DWORD*, self, 24));
+    F(const char*, self, 20) = name;
+    F(double, self, 0) = Timer_Now();
+    SetEvent(F(HANDLE, self, 36));
+}
+
+// [FUN_5e0180] clears the resources (+704) and the owner at +2992
+extern "C" void __fastcall Fw_Clear5e0180(BYTE* self, void*)
+{
+    CallThis(FUN_5e4e00, self + 704);
+    F(int, self, 3040) = 0;
+    CallThis(FUN_5d3460, self + 2992);
+}
+
+// [FUN_5e0150] vtbl+68, vtbl+204, 5baa70(0) and no surface for the window at +12
+extern "C" void __fastcall Fw_Close5e0150(BYTE* self, void*)
+{
+    CallVirt(self, 68);
+    CallVirt(self, 204);
+    CallC(FUN_5baa70, 0);
+    CallThis(FUN_5b64e0, F(BYTE*, self, 12), 0);
+}
+
+// [FUN_5e27b0] operator delete (stdcall)
+extern "C" void __stdcall Fw_Delete(void* p)
+{
+    operator delete(p);
 }
 

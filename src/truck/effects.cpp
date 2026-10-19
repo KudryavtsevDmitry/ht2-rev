@@ -1960,7 +1960,7 @@ void __fastcall Notify4dc860_Destroy(BYTE* self, void*)
 ASM_PROC(FUN_55eaa0)
 ASM_PROC(FUN_543e00)
 extern "C" void FUN_4cf260(); KING_ALIAS("_FUN_4cf260", "_Fx_AttachVehicle")
-ASM_PROC(FUN_556110)
+extern "C" void FUN_556110(); KING_ALIAS("_FUN_556110", "@Car_ApplyTypeVec@8")
 ASM_PROC(FUN_5586f0)
 ASM_PROC(FUN_5fd870)    // sound: play (position by value, ...)
 extern "C" void FUN_4dd9c0(); KING_ALIAS("_FUN_4dd9c0", "@CopySound_Construct@12")
@@ -3447,5 +3447,13 @@ extern "C" void __cdecl Fx_LoadNumbered()
         if (!g_fx696214)
             Sys_Fatal(s_67251c, 0);
     } while (more);
+}
+
+
+// ---------------------------------------------------------------------------
+// [FUN_4c4ac0] 0
+extern "C" int __cdecl Fx_Zero()
+{
+    return 0;
 }
 
