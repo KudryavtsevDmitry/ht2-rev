@@ -3080,3 +3080,53 @@ extern "C" BYTE* __fastcall ShellArrows_Construct(BYTE* s, void*, int parent)
     CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Shell screen below its parent with two buttons (exception frame dropped).
+
+ASM_PROC(FUN_5bdc80)
+ASM_VAR(DWORD, g_q29_6ce3fc, $L_6ce3fc)
+ASM_VAR(AsmLabel, g_q29_6ce3e0, $L_6ce3e0)
+ASM_VAR(AsmLabel, g_q29_64e848, $L_64e848)
+ASM_VAR(AsmLabel, g_q29_64e808, $L_64e808)
+ASM_VAR(AsmLabel, s_q29_677aa0, $L_677aa0)
+ASM_VAR(AsmLabel, s_q29_677a88, $L_677a88)
+ASM_VAR(AsmLabel, s_q29_677a80, $L_677a80)
+ASM_VAR(AsmLabel, s_q29_677a78, $L_677a78)
+ASM_VAR(int, g_q29_6ced14, $L_6ced14)
+ASM_VAR(int, g_q29_6ced18, $L_6ced18)
+
+static void Shell_MoveCtl(BYTE* m, int x, int y)
+{
+    F(int, m, 52) += x - F(int, m, 44);
+    F(int, m, 44) = x;
+    F(int, m, 56) += y - F(int, m, 48);
+    F(int, m, 48) = y;
+}
+// [FUN_5228e0] constructor (parent): a shell screen (vtables 64e848, 64e808 at +64) in the area below its
+// parent, a panel with two mode buttons (163, 162) placed at 6ced14
+extern "C" BYTE* __fastcall ShellScreen5228e0_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q29_64e848;
+    F(void*, s, 64) = g_q29_64e808;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p = Shell_NewPanel(4);
+    g_q29_6ce3fc = CallC<DWORD>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_q29_677aa0 : (const char*)s_q29_677a88);
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, p + 68 + k * 36, (void*)g_q29_6ce3e0);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q29_677a80, 163);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    Shell_MoveCtl(b, 56, 729);
+    b = Shell_ModeButtonC((int)(const char*)s_q29_677a78, 162);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    Shell_MoveCtl(b, 56, 689);
+    CallThis(FUN_5bdc80, p);
+    Shell_MoveCtl(p, g_q29_6ced14, g_q29_6ced18);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    return s;
+}
