@@ -1315,6 +1315,8 @@ PUBLIC $L_68cda4, $L_68cda8, $L_68d328, $L_68d400, $L_68d404, $L_68d408
 PUBLIC $L_7208d0
 PUBLIC $L_6d2510, $L_6d256c
 PUBLIC $L_592fe0, $L_6fd7dc
+PUBLIC $L_64c488, $L_64c74c, $L_64c754
+PUBLIC $L_64ca78
 
 ;===================================
 _TEXT SEGMENT
@@ -353118,6 +353120,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c2b30 PROC
 
             push ECX
@@ -353255,6 +353259,10 @@ $L_4c2c1d::
             pop ECX
             ret 4
 $L_4c2b30 ENDP
+ELSE
+EXTERN @Eff_Particles@12:PROC
+$L_4c2b30 TEXTEQU <@Eff_Particles@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -353840,6 +353848,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c31d0 PROC
 
             sub ESP,24
@@ -353953,6 +353963,10 @@ $L_4c329b::
             add ESP,24
             ret 
 $L_4c31d0 ENDP
+ELSE
+EXTERN @Eff_Color4c31d0@4:PROC
+$L_4c31d0 TEXTEQU <@Eff_Color4c31d0@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -354677,6 +354691,8 @@ ELSE
 EXTERN @Eff_4c3940@12:PROC
 $L_4c3940 TEXTEQU <@Eff_4c3940@12>
 ENDIF
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c3970 PROC
 
             sub ESP,24
@@ -354790,6 +354806,10 @@ $L_4c3a3b::
             add ESP,24
             ret 
 $L_4c3970 ENDP
+ELSE
+EXTERN @Eff_Color4c3970@4:PROC
+$L_4c3970 TEXTEQU <@Eff_Color4c3970@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -354868,6 +354888,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c3b70 PROC
 
             sub ESP,24
@@ -354981,6 +355003,10 @@ $L_4c3c3b::
             add ESP,24
             ret 
 $L_4c3b70 ENDP
+ELSE
+EXTERN @Eff_Color4c3b70@4:PROC
+$L_4c3b70 TEXTEQU <@Eff_Color4c3b70@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -370605,6 +370631,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4ce160 PROC
 
             push ESI
@@ -370782,6 +370810,10 @@ $L_4ce2c7::
             pop ESI
             ret 
 $L_4ce160 ENDP
+ELSE
+EXTERN @Eff_TrafficLight@4:PROC
+$L_4ce160 TEXTEQU <@Eff_TrafficLight@4>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
@@ -690921,6 +690953,8 @@ FUN_5a4ff0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5a5000 PROC
 
             sub ESP,108
@@ -691015,6 +691049,10 @@ $L_5a50d6::
             nop
             nop
 $L_5a5000 ENDP
+ELSE
+EXTERN @Wea_RainSound@4:PROC
+$L_5a5000 TEXTEQU <@Wea_RainSound@4>
+ENDIF
 ALIGN 16
 FUN_5a50f0 PROC
 

@@ -597,3 +597,28 @@ extern "C" void __fastcall Wea_Lightning(BYTE* s)
         c[2] = save[2];
     }
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+ASM_PROC(FUN_5fd870)
+
+// [$L_5a5000] the rain sound (+176) is placed at the point (+88..+96) seen from the camera
+extern "C" void __fastcall Wea_RainSound(BYTE* s)
+{
+    if (!F(int, s, 16) && F(BYTE*, s, 176)) {
+        BYTE frame[108];  // the original's stack frame: the matrix at +12, the camera buffer at +64
+        float* m = (float*)(frame + 12);
+        BYTE* cam = CallThis<BYTE*>(FUN_5dbcc0, F(BYTE*, s, 100), frame + 64);
+        CallC(FUN_5ac2e0, m, cam);
+        float px = F(float, s, 88), py = F(float, s, 92), pz = F(float, s, 96);
+        float v[3];
+        v[0] = (float)((double)m[1] * px + (double)m[7] * pz + (double)m[4] * py + m[10]);
+        v[1] = (float)((double)m[2] * px + (double)m[8] * pz + (double)m[5] * py + m[11]);
+        v[2] = (float)((double)m[3] * px + (double)m[9] * pz + (double)m[6] * py + m[12]);
+        CallThis(FUN_5fd870, F(BYTE*, s, 176), *(DWORD*)&v[0], *(DWORD*)&v[1], *(DWORD*)&v[2], 50.0, F(double, s, 184));
+    }
+    CallThis(FUN_5a4ca0, s);
+}
