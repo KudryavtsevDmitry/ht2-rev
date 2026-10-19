@@ -47,7 +47,7 @@ extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    
 extern "C" void FUN_569000(); KING_ALIAS("_FUN_569000", "_Copter_Send963")
 extern "C" void FUN_569250(); KING_ALIAS("_FUN_569250", "_Copter_Send961")
 extern "C" void __fastcall Messages_AddText(BYTE* self, void*, const char* text);
-ASM_PROC(FUN_5d3290)    // destructor of the notice's base class
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")    // destructor of the notice's base class
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 extern "C" void FUN_5b9660(); KING_ALIAS("_FUN_5b9660", "@Palette_Nearest@20")
 extern "C" void FUN_5b6210(); KING_ALIAS("_FUN_5b6210", "_Pixel_Pack")

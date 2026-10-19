@@ -2245,3 +2245,52 @@ extern "C" int __fastcall Car_WheelLevels(BYTE* s, void*, int a)
     Car_StepLevel(s, ok, 15540, 1, a, F(int, s, 10472));
     return ok;
 }
+
+extern "C" void FUN_55ed50(); KING_ALIAS("_FUN_55ed50", "@Car_55ed50@8")
+extern "C" void FUN_558930(); KING_ALIAS("_FUN_558930", "@Car_558930@8")
+ASM_PROC(FUN_544df0)
+extern "C" void FUN_592bf0(); KING_ALIAS("_FUN_592bf0", "@ListItem592bf0_Construct@12")
+extern "C" void FUN_52fd90(); KING_ALIAS("_FUN_52fd90", "@Obj52fd90_Reset@8")
+ASM_VAR(AsmLabel, g_veh64f96c, $L_64f96c)
+ASM_VAR(AsmLabel, g_veh64f880, $L_64f880)
+ASM_VAR(AsmLabel, g_veh64f834, $L_64f834)
+ASM_VAR(AsmLabel, g_veh64f830, $L_64f830)
+ASM_VAR(AsmLabel, g_veh64fb8c, $L_64fb8c)
+ASM_VAR(AsmLabel, g_veh64faa0, $L_64faa0)
+ASM_VAR(AsmLabel, g_veh64fa54, $L_64fa54)
+ASM_VAR(AsmLabel, g_veh64fa50, $L_64fa50)
+ASM_VAR(AsmLabel, g_veh6d20dc, $L_6d20dc)
+ASM_VAR(AsmLabel, g_veh64f2ec, $L_64f2ec)
+ASM_VAR(AsmLabel, g_veh64f2e8, $L_64f2e8)
+
+// a truck's vtables (+0, +16, +272, +392); its trailer (+21880) is unhitched first
+static void Car_DestroyWith(BYTE* s, AsmLabel& v0, AsmLabel& v16, AsmLabel& v272, AsmLabel& v392, void (*unhitch)())
+{
+    F(void*, s, 0) = v0;
+    F(void*, s, 16) = v16;
+    F(void*, s, 272) = v272;
+    F(void*, s, 392) = v392;
+    if (F(BYTE*, s, 21880))
+        CallThis(unhitch, F(BYTE*, s, 21880));
+    F(int, s, 21880) = 0;
+    CallThis(FUN_544df0, s);
+}
+// [FUN_5587d0]
+extern "C" void __fastcall Truck5587d0_Destroy(BYTE* s) { Car_DestroyWith(s, g_veh64f96c, g_veh64f880, g_veh64f834, g_veh64f830, FUN_55ed50); }
+// [FUN_55ebf0]
+extern "C" void __fastcall Truck55ebf0_Destroy(BYTE* s) { Car_DestroyWith(s, g_veh64fb8c, g_veh64faa0, g_veh64fa54, g_veh64fa50, FUN_558930); }
+
+// [FUN_530120] constructor: the controls record (6d20dc) and an empty part list
+extern "C" BYTE* __fastcall Controls530120_Construct(BYTE* s)
+{
+    CallThis(FUN_592bf0, s, (BYTE*)g_veh6d20dc);
+    F(void*, s, 0) = g_veh64f2ec;
+    CallThis(FUN_52fd90, s + 36);
+    F(int, s, 32) = 0;
+    F(int, s, 28) = 0;
+    F(int, s, 24) = 0;
+    F(int, s, 20) = 0;
+    F(int, s, 16) = 0;
+    F(void*, s, 0) = g_veh64f2e8;
+    return s;
+}

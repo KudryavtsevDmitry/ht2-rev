@@ -694,8 +694,8 @@ extern "C" DWORD __fastcall MarineMesh_ConstructGrid(BYTE*,void*,const DWORD*,fl
 extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
-ASM_PROC(FUN_5d3290)
-ASM_PROC(FUN_5ef660)
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD*, const DWORD*, const DWORD*, float);
 ASM_VAR(AsmLabel, g_marineMeshVtable, $L_652ff8)
 ASM_VAR(AsmLabel, g_marineTaskVtable, $L_653040)

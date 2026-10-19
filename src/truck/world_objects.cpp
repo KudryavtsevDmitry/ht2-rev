@@ -1352,7 +1352,7 @@ extern "C" BYTE* __fastcall Spark_Construct2(BYTE* s, void*, BYTE* view, const V
     return s;
 }
 
-ASM_PROC(FUN_5d3290)    // the scene object base destructor
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")    // the scene object base destructor
 ASM_VAR(char, vt_650f5c, $L_650f5c)
 
 // [FUN_59dbb0] destructor of a world object class (vtable 650f5c)

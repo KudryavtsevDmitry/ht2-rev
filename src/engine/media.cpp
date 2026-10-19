@@ -22,10 +22,10 @@ extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 ASM_PROC(FUN_5c4410)
 extern "C" void FUN_5cc930(); KING_ALIAS("_FUN_5cc930", "@Trees_Construct@8")
 ASM_PROC(FUN_5f4a90)
-ASM_PROC(FUN_5ef660)
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-ASM_PROC(FUN_5ce930)
+extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 ASM_VAR(AsmLabel, g_vtbl6518e4, $L_6518e4)
 ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
 ASM_VAR(AsmLabel, g_vtbl651dec, $L_651dec)
@@ -1639,13 +1639,13 @@ extern "C" void __fastcall Media_Close(BYTE* self, void*)
 
 extern "C" void FUN_5c10f0(); KING_ALIAS("_FUN_5c10f0", "@NamedItem_Destroy@8")
 extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
-ASM_PROC(FUN_5c3990)
+extern "C" void FUN_5c3990(); KING_ALIAS("_FUN_5c3990", "@Med5c3990_Destroy@4")
 ASM_PROC(FUN_5c4410)
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c8780(); KING_ALIAS("_FUN_5c8780", "@Media5c8780_Destroy@8")
 ASM_PROC(FUN_5cdcb0)
 ASM_PROC(FUN_5ce5b0)
-ASM_PROC(FUN_5ce930)
+extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 extern "C" void FUN_5ceae0(); KING_ALIAS("_FUN_5ceae0", "@Media5ceae0_Destroy@8")
 ASM_PROC(FUN_5cf170)
 extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
@@ -1916,4 +1916,38 @@ extern "C" int __fastcall Med_ListMouse(BYTE* s, void*, int msg, int x, int y)
             break;
         }
     return F(int, s, 28) | 0x8000;
+}
+
+extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
+extern "C" void FUN_5e3010(); KING_ALIAS("_FUN_5e3010", "@CGameApp_Destruct@8")
+extern "C" void Med_VecDtor(); KING_ALIAS("_Med_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_VAR(AsmLabel, g_med65195c, $L_65195c)
+ASM_VAR(AsmLabel, g_med651dcc, $L_651dcc)
+
+// [FUN_5c3260]
+extern "C" void __fastcall Med5c3260_Destroy(BYTE* s)
+{
+    CallThis(FUN_5c33a0, s);
+    F(void*, s, 0) = g_med64d81c;
+}
+// [FUN_5c3990] (vtable 65195c)
+extern "C" void __fastcall Med5c3990_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_med65195c;
+    CallThis(FUN_5c3a80, s);
+    CallThis(FUN_5e3010, s);
+}
+// [FUN_5c2f80] the table, then the ten 32-byte channels
+extern "C" void __fastcall Med5c2f80_Destroy(BYTE* s)
+{
+    CallThis(FUN_5c2fe0, s);
+    CallStd(Med_VecDtor, s, 32, 10, FUN_5ce630);
+}
+// [FUN_5ce930] (vtable 651dcc) frees +40 and +56
+extern "C" void __fastcall Med5ce930_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_med651dcc;
+    operator delete(F(void*, s, 40));
+    operator delete(F(void*, s, 56));
+    F(void*, s, 0) = g_med64d81c;
 }

@@ -2083,16 +2083,16 @@ extern "C" void FUN_5de5b0(); KING_ALIAS("_FUN_5de5b0", "@Clock_Start@8")
 extern "C" void FUN_5de5d0(); KING_ALIAS("_FUN_5de5d0", "@Clock_Stop@8")
 extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
 ASM_PROC(FUN_5d8850)
-ASM_PROC(FUN_5d8b30)
+extern "C" void FUN_5d8b30(); KING_ALIAS("_FUN_5d8b30", "@Fw5d8b30_Destroy@4")
 ASM_PROC(FUN_5da790)
 ASM_PROC(FUN_5ddb40)
 ASM_PROC(FUN_5dd2d0)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
 ASM_PROC(FUN_5c06a0)
-ASM_PROC(FUN_5e2e80)
-ASM_PROC(FUN_5e2ee0)
-ASM_PROC(FUN_5e2f40)
+extern "C" void FUN_5e2e80(); KING_ALIAS("_FUN_5e2e80", "@GdiObject5e2e80_Destroy@4")
+extern "C" void FUN_5e2ee0(); KING_ALIAS("_FUN_5e2ee0", "@GdiObject5e2ee0_Destroy@4")
+extern "C" void FUN_5e2f40(); KING_ALIAS("_FUN_5e2f40", "@Fw5e2f40_Destroy@4")
 extern "C" void FUN_5e4810(); KING_ALIAS("_FUN_5e4810", "@NamedTable_Destroy@8")
 ASM_PROC(FUN_5daa30)
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
@@ -2339,4 +2339,57 @@ extern "C" void __fastcall Fw_OnSize(BYTE*, void*, int type, int cx, int cy)
         h = F(int, app, 260) * w / F(int, app, 256);
     F(int, app, 284) = w;
     F(int, g_fw721750, 288) = h;
+}
+
+// ---------------------------------------------------------------------------
+// Destructors (their exception frames dropped: exceptions are always fatal).
+
+extern "C" void Fw_GdiDelete(); KING_ALIAS("_Fw_GdiDelete", "?DeleteObject@CGdiObject@@QAEHXZ")
+extern "C" void Fw_FrameWndDtor(); KING_ALIAS("_Fw_FrameWndDtor", "??1CFrameWnd@@UAE@XZ")
+ASM_PROC(FUN_5bda90)
+ASM_VAR(AsmLabel, g_fra654420, $L_654420)
+ASM_VAR(AsmLabel, g_fra652238, $L_652238)
+ASM_VAR(AsmLabel, g_fra652570, $L_652570)
+ASM_VAR(AsmLabel, g_fra6521f0, $L_6521f0)
+ASM_VAR(AsmLabel, g_fra6521b0, $L_6521b0)
+
+// [FUN_5e2e80] a GDI object (vtable 654420) deletes its handle
+extern "C" void __fastcall GdiObject5e2e80_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra654420;
+    CallThis(Fw_GdiDelete, s);
+}
+// [FUN_5e2ee0]
+extern "C" void __fastcall GdiObject5e2ee0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra654420;
+    CallThis(Fw_GdiDelete, s);
+}
+
+// [FUN_5d8b30] (vtable 652238) deletes its child (+56)
+extern "C" void __fastcall Fw5d8b30_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra652238;
+    if (F(BYTE*, s, 56))
+        CallVirt(F(BYTE*, s, 56), 0, 1);
+    CallThis(FUN_5d8850, s);
+}
+
+// [FUN_5e2f40] a frame window (vtable 652570) deletes its child (+188, vtbl+4)
+extern "C" void __fastcall Fw5e2f40_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra652570;
+    if (F(BYTE*, s, 188))
+        CallVirt(F(BYTE*, s, 188), 4, 1);
+    CallThis(Fw_FrameWndDtor, s);
+}
+
+// [FUN_5d89e0] (vtables 6521f0, 6521b0 at +64)
+extern "C" void __fastcall Fw5d89e0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra6521f0;
+    F(void*, s, 64) = g_fra6521b0;
+    F(int, s, 56) = 0;
+    CallThis(FUN_5bda90, s ? s + 64 : 0);
+    CallThis(FUN_5d8b30, s);
 }

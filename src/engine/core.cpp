@@ -884,7 +884,7 @@ extern "C" void __fastcall Owner_Detach(BYTE* self, void*, BYTE* node)
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_5d3290)
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
 
 static BYTE* Cor_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -896,7 +896,7 @@ static BYTE* Cor_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 // [$L_5d31c0]
 extern "C" BYTE* __fastcall Cor5d31c0_DeletingDestructor(BYTE* s, void*, int flags) { return Cor_DeleteAfter(s, flags, FUN_5d3290); }
 
-ASM_PROC(FUN_5d2950)
+extern "C" void FUN_5d2950(); KING_ALIAS("_FUN_5d2950", "@Cor5d2950_Destroy@4")
 extern "C" void FUN_5d2a10(); KING_ALIAS("_FUN_5d2a10", "_Pool71e830_Free")
 extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
 extern "C" void FUN_5d3070(); KING_ALIAS("_FUN_5d3070", "_Pool7200c0_Free")
@@ -916,4 +916,26 @@ extern "C" BYTE* __fastcall Cor5d30c0_DeletingDestructor(BYTE* s, void*, int fla
     if (flags & 1)
         CallC(FUN_5d3070, s);
     return s;
+}
+
+extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
+ASM_VAR(AsmLabel, g_cor651ea0, $L_651ea0)
+ASM_VAR(AsmLabel, g_cor651ec8, $L_651ec8)
+ASM_VAR(AsmLabel, g_cor64d81c, $L_64d81c)
+
+// [FUN_5d2950] (vtable 651ea0) frees +12
+extern "C" void __fastcall Cor5d2950_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_cor651ea0;
+    operator delete(F(void*, s, 12));
+    F(void*, s, 0) = g_cor64d81c;
+}
+// [FUN_5d3290] the base object (vtable 651ec8): its links (FUN_5d33b0) and its name (+28)
+extern "C" void __fastcall Object_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_cor651ec8;
+    CallThis(FUN_5d33b0, s);
+    if (F(void*, s, 28))
+        operator delete(F(void*, s, 28));
+    F(void*, s, 0) = g_cor64d81c;
 }

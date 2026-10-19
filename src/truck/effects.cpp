@@ -123,8 +123,8 @@ ASM_VAR(AsmLabel, g_vtbl64cebc, $L_64cebc)
 ASM_VAR(AsmLabel, g_vtbl64ceb8, $L_64ceb8)
 extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
 extern "C" void FUN_57c450(); KING_ALIAS("_FUN_57c450", "@FF_PoolStart@28")    // sounds: play
-ASM_PROC(FUN_5d3290)    // Task::~Task
-ASM_PROC(FUN_5ef660)    // module destructor
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")    // Task::~Task
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")    // module destructor
 extern "C" void FUN_4bf510(); KING_ALIAS("_FUN_4bf510", "@Fx_CameraPair@8")    // particles: reset
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
 extern "C" void FUN_4c09d0(); KING_ALIAS("_FUN_4c09d0", "@Effect4c09d0_Destroy@8")    // CRenderer::~CRenderer
@@ -1873,7 +1873,7 @@ void __cdecl Fx_SpawnPuffSpark(int a1, int a2)
 // ---------------------------------------------------------------------------
 // Constructors and destructors with exception frames (frames dropped).
 
-ASM_PROC(FUN_5587d0)
+extern "C" void FUN_5587d0(); KING_ALIAS("_FUN_5587d0", "@Truck5587d0_Destroy@4")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_VAR(char, g_vtbl64d234, $L_64d234)
 ASM_VAR(char, g_vtbl64d148, $L_64d148)
@@ -3133,7 +3133,7 @@ extern "C" double __cdecl Fx_TurnRate(Bytes32 pos, double d, int id, int back)
     return ang / diff;
 }
 
-ASM_PROC(FUN_5d3290)    // the scene object base destructor
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")    // the scene object base destructor
 ASM_PROC(FUN_5f1a70)
 ASM_VAR(char, vt_64c90c, $L_64c90c)
 ASM_VAR(char, vt_64d49c, $L_64d49c)
@@ -3177,7 +3177,7 @@ extern "C" void __fastcall Effect4bcbd0_Destroy(void** self, int)
 }
 
 ASM_VAR(char, vt_64c63c, $L_64c63c)
-ASM_PROC(FUN_5ef660)
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 ASM_VAR(char, g_6724f8, $L_6724f8)
 ASM_VAR(char, g_6726e8, $L_6726e8)

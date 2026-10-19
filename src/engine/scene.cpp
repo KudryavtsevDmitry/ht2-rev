@@ -33,7 +33,7 @@ extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
 ASM_PROC(FUN_5f1a70)
 ASM_PROC(FUN_5f4a90)
 extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
-ASM_PROC(FUN_5ef660)
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 ASM_VAR(AsmLabel, g_dtor5a3df0, $L_5a3df0)
 ASM_VAR(AsmLabel, g_dtor5e57a0, $L_5e57a0)
 ASM_VAR(AsmLabel, g_vtbl65282c, $L_65282c)
@@ -897,7 +897,7 @@ extern "C" long __cdecl Mesh_Draw(BYTE* r, BYTE* mesh, BYTE* mat, ScVec3* p, int
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_5ef660)
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 extern "C" void FUN_5f06e0(); KING_ALIAS("_FUN_5f06e0", "@Node5f06e0_Destroy@8")
 extern "C" void FUN_5f07a0(); KING_ALIAS("_FUN_5f07a0", "@Node5f07a0_Destroy@8")
 extern "C" void FUN_5f0810(); KING_ALIAS("_FUN_5f0810", "@Node5f0810_Destroy@8")
@@ -1740,4 +1740,15 @@ extern "C" int __fastcall Sce_DrawItems(BYTE* s, void*, int a, BYTE* b)
             CallThis(FUN_5b3010, b, F(BYTE*, s, 52) + i * 40, F(DWORD, s, 56), F(DWORD, s, 60), F(DWORD, s, 64));
     }
     return 1;
+}
+
+ASM_VAR(AsmLabel, g_sce652840, $L_652840)
+ASM_VAR(AsmLabel, g_sce64d81c, $L_64d81c)
+
+// [FUN_5ef660] (vtable 652840) frees +12
+extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_sce652840;
+    operator delete(F(void*, s, 12));
+    F(void*, s, 0) = g_sce64d81c;
 }

@@ -468,10 +468,10 @@ extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const c
 // Small virtual methods and static initializers.
 
 extern "C" void FUN_595c60(); KING_ALIAS("_FUN_595c60", "@WorldObj_DestroyBase@8")
-ASM_PROC(FUN_5a53a0)
+extern "C" void FUN_5a53a0(); KING_ALIAS("_FUN_5a53a0", "@Wea5a53a0_Destroy@4")
 ASM_PROC(FUN_5a63a0)
 ASM_PROC(FUN_5a6aa0)
-ASM_PROC(FUN_5a7240)
+extern "C" void FUN_5a7240(); KING_ALIAS("_FUN_5a7240", "@Wea5a7240_Destroy@4")
 ASM_PROC(FUN_5a7310)
 ASM_PROC(FUN_5a73f0)
 ASM_VAR(DWORD, g_wea6fb3d0, $L_6fb3d0)
@@ -621,4 +621,26 @@ extern "C" void __fastcall Wea_RainSound(BYTE* s)
         CallThis(FUN_5fd870, F(BYTE*, s, 176), *(DWORD*)&v[0], *(DWORD*)&v[1], *(DWORD*)&v[2], 50.0, F(double, s, 184));
     }
     CallThis(FUN_5a4ca0, s);
+}
+
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
+ASM_VAR(AsmLabel, g_wea6514d4, $L_6514d4)
+ASM_VAR(AsmLabel, g_wea651590, $L_651590)
+
+// [FUN_5a53a0] (vtable 6514d4) frees +40 and +36
+extern "C" void __fastcall Wea5a53a0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_wea6514d4;
+    operator delete(F(void*, s, 40));
+    operator delete(F(void*, s, 36));
+    CallThis(FUN_5d3290, s);
+}
+// [FUN_5a7240] (vtable 651590) frees +76 and +80
+extern "C" void __fastcall Wea5a7240_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_wea651590;
+    operator delete(F(void*, s, 76));
+    operator delete(F(void*, s, 80));
+    CallThis(FUN_5ef660, s);
 }

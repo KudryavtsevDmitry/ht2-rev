@@ -862,7 +862,7 @@ extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
 extern "C" void FUN_594d70(); KING_ALIAS("_FUN_594d70", "_Faders_DeleteAll")    // deletes all faders
 ASM_PROC(FUN_5f1a70)
-ASM_PROC(FUN_5d3290)
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
 
 // [FUN_593670] destructor of a fading body (vtables 65094c, 650900 at +32)
 extern "C" void __fastcall FadeBody_Destroy(BYTE* self, int)
