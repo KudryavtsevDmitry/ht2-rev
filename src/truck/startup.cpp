@@ -325,3 +325,342 @@ extern "C" void* __cdecl Startup_Ini696750()
     return CallThis<void*>(FUN_4e1e10, g_ini696750, (char*)s_6733b0);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+ASM_PROC(FUN_5e52b0)    // resources: send a message (id, kind, size, data)
+ASM_VAR(int, g_suTypeClass5, $L_6ce344)
+ASM_VAR(int, g_suCarTypeCount, $L_6ce32c)
+ASM_VAR(BYTE*, g_su6ef204, $L_6ef204)
+ASM_VAR(AsmLabel, s_su672f50, $L_672f50)
+ASM_VAR(AsmLabel, s_su672f78, $L_672f78)
+ASM_VAR(Vec3, g_suZero702650, $L_702650)
+extern "C" void __cdecl World_Fatal(const char* msg);
+struct SuBlob48 { DWORD d[12]; };
+
+// [FUN_4df540..$L_4df6e9] sends the creation message of a network object by its id: class 2 (156 bytes: sub-id, index, two names) or 3 (160 bytes: id n+300000, a code from name+5, scale 600)
+extern "C" int __cdecl Net_CreateById(BYTE* res, int kind, const char* name, const char* name2, int a5, int a6, int id, SuBlob48 state, int a20)
+{
+    int low = id % 1000;
+    int cls = id / 100000;
+    int mid = id % 100000 / 1000;
+    if (cls == 2)
+    {
+        BYTE msg[156];
+        memset(msg, 0, sizeof msg);
+        F(int, msg, 0) = mid;
+        F(int, msg, 4) = low;
+        F(int, msg, 8) = 1;
+        F(int, msg, 12) = 0;
+        F(int, msg, 16) = a20;
+        F(Vec3, msg, 20) = g_suZero702650;
+        F(Vec3, msg, 32) = g_suZero702650;
+        F(SuBlob48, msg, 44) = state;
+        strncpy((char*)msg + 92, name, 31);
+        strncpy((char*)msg + 124, name2, 31);
+        CallThis(FUN_5e52b0, res + 704, id, kind, 156, msg);
+        return 0;
+    }
+    if (cls != 3)
+        return 0;
+    int oid = low + 300000;
+    char code[12];
+    BYTE msg[160];
+    memset(msg, 0, sizeof msg);
+    F(int, msg, 0) = g_suTypeClass5 < g_suCarTypeCount ? g_suTypeClass5 : 0;
+    F(int, msg, 4) = 11;
+    F(int, msg, 12) = 1;
+    F(int, msg, 16) = a20;
+    F(Vec3, msg, 20) = g_suZero702650;
+    F(Vec3, msg, 32) = g_suZero702650;
+    F(SuBlob48, msg, 44) = state;
+    F(float, msg, 92) = 600.0f;
+    strncpy((char*)msg + 96, name, 31);
+    strncpy((char*)msg + 128, s_su672f78, 31);
+    strncpy(code, name + 5, 2);
+    code[2] = 0;
+    BYTE* table = res + 704;
+    CallThis(FUN_5e52b0, table, oid, code, 160, msg);
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, table, oid);
+    if (g_su6ef204)
+    {
+        F(int, r, 16) = F(int, g_su6ef204, 16);
+        return 0;
+    }
+    World_Fatal(s_su672f50);
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
+extern "C" void FUN_50a5a0(); KING_ALIAS("_FUN_50a5a0", "_VehTech_Load")
+extern "C" void FUN_506f50(); KING_ALIAS("_FUN_506f50", "_Car_CopyTypeNames")
+extern "C" void FUN_4e260c(); KING_ALIAS("_FUN_4e260c", "_World_Fatal")
+extern "C" void FUN_4df950(); KING_ALIAS("_FUN_4df950", "_Startup_ReadSection")
+ASM_PROC(FUN_508000)
+ASM_PROC(FUN_508300)
+ASM_PROC(FUN_50a740)
+ASM_VAR(AsmLabel, s_su671518, $L_671518)
+ASM_VAR(AsmLabel, s_su672ec8, $L_672ec8)      // the ini file
+ASM_VAR(AsmLabel, s_su6730ac, $L_6730ac)
+ASM_VAR(AsmLabel, s_su6729a8, $L_6729a8)
+ASM_VAR(AsmLabel, s_su6730a4, $L_6730a4)
+ASM_VAR(AsmLabel, s_su6730a0, $L_6730a0)
+ASM_VAR(AsmLabel, s_su672994, $L_672994)
+ASM_VAR(AsmLabel, s_su673094, $L_673094)
+ASM_VAR(AsmLabel, s_su673084, $L_673084)
+ASM_VAR(AsmLabel, s_su673070, $L_673070)
+ASM_VAR(AsmLabel, s_su673064, $L_673064)
+ASM_VAR(int, g_su696c74, $L_696c74)
+ASM_VAR(int, g_su696c6c, $L_696c6c)
+ASM_VAR(int, g_su696c70, $L_696c70)
+ASM_VAR(int, g_su672d80, $L_672d80)
+ASM_VAR(int, g_su696c58, $L_696c58)
+ASM_VAR(void*, g_su6ce36c, $L_6ce36c)
+ASM_VAR(void*, g_su697858, $L_697858)
+ASM_VAR(int, g_su697860, $L_697860)
+ASM_VAR(AsmLabel, g_su696bc8, $L_696bc8)
+
+// whether the ini value of a key is the text 672994
+static int Startup_IniIs(const char* key)
+{
+    char buf[16];
+    GetPrivateProfileStringA(s_su6730a0, key, s_su6729a8, buf, 16, s_su672ec8);
+    return !strcmp(buf, s_su672994);
+}
+
+// [FUN_4dfec0..$L_4dff1a] reads the startup options of the ini file (fatal when it is missing), sets the fatal hooks and loads the vehicle techs
+extern "C" void __cdecl Startup_ReadOptions()
+{
+    FILE* f = fopen(s_su672ec8, s_su671518);
+    if (!f)
+    {
+        char dir[200], text[300];
+        GetCurrentDirectoryA(200, dir);
+        sprintf(text, s_su6730ac, (char*)s_su672ec8, dir);
+        World_Fatal(text);
+    }
+    fclose(f);
+    g_su696c74 = Startup_IniIs(s_su6730a4);
+    g_su696c6c = Startup_IniIs(s_su673094);
+    g_su696c70 = Startup_IniIs(s_su673084);
+    g_su672d80 = Startup_IniIs(s_su673070);
+    int v;
+    CallC(FUN_603b70, (char*)s_su6730a0, (char*)s_su673064, -1, &v, (char*)s_su672ec8);
+    g_su696c58 = v;
+    CallC(FUN_4df950);
+    g_su6ce36c = (void*)FUN_4e260c;
+    g_su697858 = (void*)FUN_4e260c;
+    g_su697860 = CallC<int>(FUN_508000);
+    if (g_su697860)
+    {
+        g_su697860 = CallC<int>(FUN_50a5a0);
+        if (g_su697860)
+            return;
+    }
+    CallC(FUN_508300, (BYTE*)g_su696bc8, 1);
+    CallC(FUN_506f50);
+    CallC(FUN_50a740, (BYTE*)g_su696bc8, 1);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_507fa0(); KING_ALIAS("_FUN_507fa0", "_Carat_ReadFill2")    // reads a 5-float ini value (section, key, default, out, file, n)
+extern "C" void FUN_4e12d0(); KING_ALIAS("_FUN_4e12d0", "_Path_Join")    // a path moved to a drive (path, drive, out)
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+extern "C" void FUN_5d2ef0(); KING_ALIAS("_FUN_5d2ef0", "_Sys_Exit")
+ASM_VAR(AsmLabel, s_su672eb8, $L_672eb8)
+ASM_VAR(AsmLabel, s_su673050, $L_673050)
+ASM_VAR(AsmLabel, s_su67305c, $L_67305c)
+ASM_VAR(AsmLabel, s_su673024, $L_673024)
+ASM_VAR(AsmLabel, s_su67301c, $L_67301c)
+ASM_VAR(AsmLabel, s_su673014, $L_673014)
+ASM_VAR(AsmLabel, s_su673008, $L_673008)
+ASM_VAR(AsmLabel, s_su672ffc, $L_672ffc)
+ASM_VAR(AsmLabel, s_su672ff0, $L_672ff0)
+ASM_VAR(AsmLabel, s_su672fe4, $L_672fe4)
+ASM_VAR(AsmLabel, s_su672fd8, $L_672fd8)
+ASM_VAR(AsmLabel, s_su672fcc, $L_672fcc)
+ASM_VAR(AsmLabel, s_su672fc0, $L_672fc0)
+ASM_VAR(AsmLabel, s_su672fb8, $L_672fb8)
+ASM_VAR(AsmLabel, s_su672fb0, $L_672fb0)
+ASM_VAR(AsmLabel, s_su672fa8, $L_672fa8)
+ASM_VAR(AsmLabel, s_su672fa0, $L_672fa0)
+ASM_VAR(AsmLabel, s_su672f94, $L_672f94)
+ASM_VAR(AsmLabel, s_su672f88, $L_672f88)
+ASM_VAR(AsmLabel, s_su672f7c, $L_672f7c)
+ASM_VAR(int, g_su696c40, $L_696c40)
+ASM_VAR(float, g_su696bdc, $L_696bdc)
+ASM_VAR(float, g_su696be0, $L_696be0)
+ASM_VAR(short, g_su696bda, $L_696bda)
+ASM_VAR(int, g_su696be4, $L_696be4)
+ASM_VAR(int, g_su696be8, $L_696be8)
+ASM_VAR(int, g_su696bec, $L_696bec)
+ASM_VAR(AsmLabel, g_su696bf0, $L_696bf0)
+ASM_VAR(AsmLabel, g_su696c04, $L_696c04)
+ASM_VAR(AsmLabel, g_su696c18, $L_696c18)
+ASM_VAR(AsmLabel, g_su696c2c, $L_696c2c)
+ASM_VAR(float, g_su696c44, $L_696c44)
+ASM_VAR(int, g_su696c54, $L_696c54)
+ASM_VAR(int, g_su696c48, $L_696c48)
+ASM_VAR(int, g_su696c4c, $L_696c4c)
+ASM_VAR(int, g_su696c50, $L_696c50)
+ASM_VAR(int, g_su696c5c, $L_696c5c)
+ASM_VAR(int, g_su696c60, $L_696c60)
+ASM_VAR(int, g_su696c64, $L_696c64)
+
+// whether the value of a key of section 672eb8 is the text 672994
+static int Startup_OptIs(const char* key, const char* def)
+{
+    char buf[16];
+    GetPrivateProfileStringA(s_su672eb8, key, def, buf, 16, s_su672ec8);
+    return !strcmp(buf, s_su672994);
+}
+
+// [FUN_4df950..$L_4df9bd] reads the options of section 672eb8 of the ini file: the name (696bc8, fatal without it), flags, the four 5-float tables and their scales
+extern "C" void __cdecl Startup_ReadSection()
+{
+    char buf[80];
+    GetPrivateProfileStringA(s_su672eb8, s_su673050, s_su67305c, buf, 70, s_su672ec8);
+    if (!strcmp(buf, s_su67305c))
+        World_Fatal(s_su673024);
+    sprintf(g_su696bc8, s_su67301c, buf);
+    g_su696c40 = Startup_OptIs(s_su673014, s_su6729a8);
+    g_su696bdc = 1.4f;
+    g_su696be0 = 0.5f;
+    g_su696bda = 1;
+    g_su696be4 = Startup_OptIs(s_su673008, s_su6729a8);
+    g_su696be8 = Startup_OptIs(s_su672ffc, s_su6729a8);
+    g_su696bec = Startup_OptIs(s_su672ff0, s_su6729a8);
+    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fe4, 0, (char*)g_su696bf0, (char*)s_su672ec8, 5);
+    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fd8, 10, (char*)g_su696c04, (char*)s_su672ec8, 5);
+    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fcc, 380, (char*)g_su696c18, (char*)s_su672ec8, 5);
+    CallC(FUN_507fa0, (char*)s_su672eb8, (char*)s_su672fc0, 430, (char*)g_su696c2c, (char*)s_su672ec8, 5);
+    g_su696c44 = 1.5f;
+    g_su696c54 = Startup_OptIs(s_su672fb8, s_su672994);
+    g_su696c48 = Startup_OptIs(s_su672fb0, s_su6729a8);
+    g_su696c4c = Startup_OptIs(s_su672fa8, s_su6729a8);
+    g_su696c50 = Startup_OptIs(s_su672fa0, s_su6729a8);
+    g_su696c5c = Startup_OptIs(s_su672f94, s_su672994);
+    g_su696c60 = Startup_OptIs(s_su672f88, s_su6729a8);
+    g_su696c64 = Startup_OptIs(s_su672f7c, s_su6729a8);
+}
+
+ASM_VAR(const char*, g_suIni, $L_696868)
+ASM_VAR(BYTE*, g_su696ca0, $L_696ca0)
+ASM_VAR(AsmLabel, s_su6733c4, $L_6733c4)
+ASM_VAR(AsmLabel, s_su6733cc, $L_6733cc)
+ASM_VAR(AsmLabel, s_su6733d4, $L_6733d4)
+ASM_VAR(AsmLabel, s_su6733bc, $L_6733bc)
+ASM_VAR(AsmLabel, s_su6733b0, $L_6733b0)
+ASM_VAR(AsmLabel, s_su6733ac, $L_6733ac)
+ASM_VAR(AsmLabel, s_su6733a4, $L_6733a4)
+ASM_VAR(AsmLabel, s_su67339c, $L_67339c)
+ASM_VAR(AsmLabel, s_su673398, $L_673398)
+ASM_VAR(AsmLabel, s_su67338c, $L_67338c)
+ASM_VAR(AsmLabel, s_su673384, $L_673384)
+ASM_VAR(AsmLabel, s_su67337c, $L_67337c)
+ASM_VAR(AsmLabel, s_su673374, $L_673374)
+ASM_VAR(AsmLabel, s_su67336c, $L_67336c)
+ASM_VAR(AsmLabel, s_su673364, $L_673364)
+ASM_VAR(AsmLabel, s_su673358, $L_673358)
+
+// moves the ini path of a key of section 6733c4 to a drive: reads it (n chars) into buf, rewrites it as out
+static void Startup_MovePath(const char* key, int n, char* buf, const char* drive, char* out)
+{
+    GetPrivateProfileStringA(s_su6733c4, key, s_su6733ac, buf, n, g_suIni);
+    CallC(FUN_4e12d0, buf, drive, out);
+    WritePrivateProfileStringA(s_su6733c4, key, out, g_suIni);
+}
+
+// a copy of the ini path of a key of section 6733c4 ending in a backslash (unless it is 673358, which is fatal when fatal is set)
+static char* Startup_DirOf(const char* key, int fatal)
+{
+    char buf[64];
+    GetPrivateProfileStringA(s_su6733c4, key, s_su6733ac, buf, 60, g_suIni);
+    char* p = (char*)operator new(strlen(buf) + 2);
+    strcpy(p, buf);
+    char* end = p;
+    while (*end)
+        end++;
+    if (strcmp(buf, s_su673358))
+    {
+        end[0] = '\\';
+        end[1] = 0;
+    }
+    else if (fatal)
+        CallC(FUN_5d2ef0, CallC<const char*>(FUN_5d2e50, 1));
+    return p;
+}
+
+// [FUN_4e1320..$L_4e1991] when the game's data file isn't found, looks for it on the CD drives and points the ini paths there (by the install kind of 6733cc) and the world's two directories (+644, +648)
+extern "C" void __cdecl Startup_FindCd()
+{
+    char buf[256];
+    bool kind2 = false, kind3 = false, kind1 = false;
+    GetPrivateProfileStringA(s_su6733c4, s_su6733cc, s_su6733d4, buf, 30, g_suIni);
+    if (!strcmp(buf, s_su6733d4))
+        kind2 = true;
+    else if (!strcmp(buf, s_su6733bc))
+        kind3 = true;
+    else
+        kind1 = true;
+    GetPrivateProfileStringA(s_su6733c4, s_su6733a4, s_su6733ac, buf, 100, s_su6733b0);
+    strcat(buf, s_su67339c);
+    FILE* f = fopen(buf, s_su673398);
+    if (f)
+    {
+        fclose(f);
+        return;
+    }
+    char drives[1024];
+    char out1[1024], out2[1024], out3[1024];
+    GetLogicalDriveStringsA(1024, drives);
+    char* d = drives;
+    if (!*d)
+        return;
+    do
+    {
+        if (GetDriveTypeA(d) == 5)
+        {
+            sprintf(buf, s_su67338c, d);
+            f = fopen(buf, s_su673398);
+            if (f)
+            {
+                if (kind2)
+                {
+                    Startup_MovePath(s_su6733a4, 100, buf, d, out1);
+                    Startup_MovePath(s_su673384, 255, buf, d, out1);
+                    Startup_MovePath(s_su67337c, 100, buf, d, out1);
+                    Startup_MovePath(s_su673374, 60, buf, d, out1);
+                }
+                if (kind3)
+                {
+                    Startup_MovePath(s_su6733a4, 100, buf, d, out2);
+                    Startup_MovePath(s_su67337c, 100, buf, d, out2);
+                    GetPrivateProfileStringA(s_su6733c4, s_su67336c, s_su6733ac, out2, 100, g_suIni);
+                    WritePrivateProfileStringA(s_su6733c4, s_su673374, out2, g_suIni);
+                    strncat(out2, s_su673364, 7);
+                    WritePrivateProfileStringA(s_su6733c4, s_su673384, out2, g_suIni);
+                }
+                if (kind1)
+                    Startup_MovePath(s_su6733a4, 100, buf, d, out3);
+                if (g_su696ca0)
+                {
+                    char* p = Startup_DirOf(s_su67336c, 1);
+                    if (F(char*, g_su696ca0, 644))
+                        operator delete(F(char*, g_su696ca0, 644));
+                    F(char*, g_su696ca0, 644) = p;
+                    p = Startup_DirOf(s_su673374, 0);
+                    if (F(char*, g_su696ca0, 648))
+                        operator delete(F(char*, g_su696ca0, 648));
+                    F(char*, g_su696ca0, 648) = p;
+                }
+                fclose(f);
+            }
+        }
+        while (*d)
+            d++;
+        d++;
+    } while (*d);
+}

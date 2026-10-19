@@ -1262,3 +1262,323 @@ extern "C" void __stdcall Fw_Delete(void* p)
     operator delete(p);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
+ASM_PROC(FUN_5ec0f0)    // image: read (this, name, file, kind, path)
+ASM_PROC(FUN_5d2f90)
+extern "C" void FUN_5e9ff0(); KING_ALIAS("_FUN_5e9ff0", "_Image_ErrorText")
+ASM_VAR(AsmLabel, s_682b34, $L_682b34)
+ASM_VAR(AsmLabel, s_682cdc, $L_682cdc)
+ASM_VAR(AsmLabel, s_6703e8, $L_6703e8)
+ASM_VAR(AsmLabel, s_6765fc, $L_6765fc)
+ASM_VAR(AsmLabel, s_682cd8, $L_682cd8)
+ASM_VAR(AsmLabel, s_673398, $L_673398)
+ASM_VAR(AsmLabel, s_682cd4, $L_682cd4)
+ASM_VAR(AsmLabel, s_682cb8, $L_682cb8)
+ASM_VAR(AsmLabel, s_682ca4, $L_682ca4)
+ASM_VAR(AsmLabel, s_682c64, $L_682c64)
+ASM_VAR(int, g_7218bc, $L_7218bc)
+
+// for each object of a room: a type 14 object with flag 2 whose names (+132 in the old room's list, +164 in its children) match is enumerated into the context's room
+static int __cdecl Fw_LinkOldObject(BYTE* obj, BYTE* ctx)
+{
+    if (F(int, obj, 16) != 14 || !(F(BYTE, obj, 40) & 2))
+        return -1;
+    BYTE* e = F(BYTE*, ctx, 4);
+    if (!e)
+        return -1;
+    while (strcmp(F(char*, e, 60), (char*)obj + 132))
+    {
+        e = F(BYTE*, e, 8);
+        if (!e)
+            return -1;
+    }
+    e = F(BYTE*, e, 64);
+    if (!e)
+        return -1;
+    while (strcmp(F(char*, e, 12), (char*)obj + 164))
+    {
+        e = F(BYTE*, e, 8);
+        if (!e)
+            return -1;
+    }
+    Fw_Enumerate5d94d0(F(int, ctx, 8), e);
+    F(int, obj, 128) = 0;
+    return -1;
+}
+
+// [FUN_5d9530..$L_5d9567] links the objects of a new room to the current one (+468); fatal when the current room is the base one
+extern "C" void __fastcall Fw_LinkRoom(BYTE* self, void*, BYTE* room)
+{
+    if (F(BYTE*, self, 468) == room)
+        return;
+    if (F(BYTE*, self, 468) == F(BYTE*, F(BYTE*, F(BYTE*, self, 488), 76), 36))
+        Sys_Fatal(s_682b34, F(char*, room, 60));
+    BYTE ctx[432];
+    memset(ctx, 0, sizeof ctx);
+    F(BYTE*, ctx, 4) = F(BYTE*, self, 468);
+    F(BYTE*, ctx, 8) = room;
+    CallThis(FUN_5ead00, room, (int(__cdecl*)(BYTE*, BYTE*))Fw_LinkOldObject, ctx);
+}
+
+// [FUN_5dac90..$L_5dae22] reads an image whose path's extension is tried as 682cdc (kind 3), 6765fc (2), 682cd8 and 682cd4 (1); returns the kind, 0 without an extension
+extern "C" int __cdecl Image_LoadAny(BYTE* img, int a2, char* path)
+{
+    char* p = path;
+    while (*p)
+        p++;
+    if (*p != '.')
+    {
+        while (p > path)
+            if (*--p == '.')
+                break;
+        if (*p != '.')
+            return 0;
+    }
+    p++;
+    int kind;
+    strcpy(p, s_682cdc);
+    kind = 3;
+    FILE* f = fopen(path, s_6703e8);
+    if (!f)
+    {
+        strcpy(p, s_6765fc);
+        kind = 2;
+        f = fopen(path, s_6703e8);
+        if (!f)
+        {
+            strcpy(p, s_682cd8);
+            kind = 1;
+            f = fopen(path, s_673398);
+            if (!f)
+            {
+                strcpy(p, s_682cd4);
+                f = fopen(path, s_673398);
+                if (!f)
+                    Sys_Fatal(s_682cb8, path);
+            }
+        }
+    }
+    int err = CallThis<int>(FUN_5ec0f0, img, a2, f, kind, path);
+    if (err)
+    {
+        if (CallC<int>(FUN_5d2f90) < 150000)
+            Sys_Fatal(s_682ca4, 0);
+        else
+        {
+            sprintf(path, s_682c64, F(char*, img, 60), err, CallC<const char*>(FUN_5e9ff0, g_7218bc));
+            Sys_Fatal(path, 0);
+        }
+    }
+    if (kind == 1)
+        fclose(f);
+    return kind;
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
+ASM_PROC($L_5d9a20)     // room object callback: queue the objects to delete
+ASM_VAR(BOOL, g_fwTaskDump, $L_721768)
+ASM_VAR(BYTE*, g_fwTraceData, $L_71e814)
+ASM_VAR(int, g_fwTracePos, $L_71e818)
+ASM_VAR(int, g_fwTraceSize, $L_71e810)
+ASM_VAR(AsmLabel, s_682bc8, $L_682bc8)
+ASM_VAR(AsmLabel, s_682bb8, $L_682bb8)
+ASM_VAR(AsmLabel, s_682ba4, $L_682ba4)
+ASM_VAR(AsmLabel, s_682b94, $L_682b94)
+ASM_VAR(AsmLabel, s_682b84, $L_682b84)
+ASM_VAR(AsmLabel, s_682b74, $L_682b74)
+ASM_VAR(AsmLabel, s_682b58, $L_682b58)
+
+// appends a text to the trace buffer when tasks are dumped
+static void Fw_TraceText(const char* p)
+{
+    if (!g_fwTaskDump || !g_fwTraceData || !*p)
+        return;
+    while (g_fwTracePos < g_fwTraceSize)
+    {
+        g_fwTraceData[g_fwTracePos] = *p++;
+        g_fwTracePos++;
+        if (!*p)
+            break;
+    }
+}
+
+// [FUN_5d96c0..$L_5d99fe] switches to a room by name: deletes the old room's queued objects, unloads it, loads the new room's file, resources and objects, then finds the module (fatal on failures); returns the room
+extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, const char* module)
+{
+    BYTE ctx[432];
+    memset(ctx, 0, sizeof ctx);
+    F(BYTE*, ctx, 20) = self;
+    BYTE* res = CallVirt<BYTE*>(self, 112);
+    BYTE* cur = F(BYTE*, F(BYTE*, self, 488), 76);
+    if (cur)
+    {
+        BYTE* old = F(BYTE*, cur, 36);
+        CallThis(FUN_5ead00, old, $L_5d9a20, ctx);
+        BYTE** items = (BYTE**)(ctx + 24);
+        int& tail = F(int, ctx, 428);
+        while (F(int, ctx, 424) != tail)
+        {
+            if (items[tail])
+                CallVirt(items[tail], 0, 1);
+            items[tail] = 0;
+            tail = (tail + 1) % 100;
+        }
+        if (res)
+            Resources_Load(res, 0, F(const char*, old, 60));
+        Fw_LinkRoom(self, 0, old);
+        CallThis(FUN_5d21b0, old);
+        if (old)
+            CallVirt(old, 0, 1);
+    }
+    BYTE a[80], b[80], c[80];
+    CallVirt(self, 88, name, a, b, c);
+    BYTE* room = CallThis<BYTE*>(FUN_5dae90, self, a, b, c);
+    if (!room)
+        Sys_Fatal(s_682bc8, name);
+    const char* missing = CallThis<const char*>(FUN_5d27c0, g_objectNames);
+    if (missing)
+        Sys_Fatal(missing, 0);
+    if (res)
+    {
+        Fw_TraceText(s_682bb8);
+        CallThis(FUN_5e4f60, res, F(const char*, room, 60));
+        Fw_TraceText(s_682ba4);
+        CallVirt(self, 92, room);
+        Fw_TraceText(s_682b94);
+        Resources_Unload(res, 0, F(const char*, room, 60));
+    }
+    Fw_TraceText(s_682b84);
+    CallVirt(self, 80, room);
+    Fw_TraceText(s_682b74);
+    F(BYTE*, F(BYTE*, self, 488), 76) = CallThis<BYTE*>(FUN_5ef390, room, module);
+    if (!F(BYTE*, F(BYTE*, self, 488), 76))
+        Sys_Fatal(s_682b58, 0);
+    F(int, F(BYTE*, self, 484), 8) = -1;
+    return room;
+}
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5e7770)    // image: load (name, 0, 0)
+extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
+ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
+ASM_VAR(BYTE*, g_fwDevice, $L_720908)
+ASM_VAR(BYTE*, g_fwD3d, $L_72090c)
+ASM_VAR(AsmLabel, s_6834e8, $L_6834e8)
+ASM_VAR(AsmLabel, s_6834d4, $L_6834d4)
+ASM_VAR(AsmLabel, s_6834b4, $L_6834b4)
+
+template <class R = long, class... A>
+static R Fw_ComCall(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// whether the pixel at p (of the image's type: 1 bytes, 2 words, else 3-byte) is set
+static bool Font_PixelSet(int type, BYTE* p)
+{
+    if (type == 1 || type != 2)
+        return *p != 0;
+    return *(WORD*)p != 0;
+}
+
+// [FUN_5e8e20..$L_5e92dc] loads a font from an image of 16x16 cells: per character the first and end columns of its top row (+16, +12) and 1-bit masks of the other rows (+28); the image itself becomes a surface (+36)
+extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
+{
+    BYTE* f = (BYTE*)operator new(40);
+    if (f)
+    {
+        F(int, f, 8) = 0;
+        F(int, f, 4) = 0;
+        F(int, f, 28) = 0;
+        F(int, f, 12) = 0;
+        F(int, f, 0) = 0;
+        F(int, f, 32) = -1;
+        F(int, f, 16) = 0;
+        F(int, f, 36) = 0;
+    }
+    else
+        f = 0;
+    F(int, f, 4) = 0;
+    F(int, f, 8) = 255;
+    BYTE* img = CallC<BYTE*>(FUN_5e7770, name, 0, 0);
+    F(int, f, 24) = F(WORD, img, 20) >> 4;
+    F(int, f, 32) = -1;
+    F(int, f, 20) = (F(WORD, img, 22) >> 4) - 1;
+    F(BYTE*, f, 12) = (BYTE*)operator new(256);
+    F(BYTE*, f, 16) = (BYTE*)operator new(256);
+    int rowBytes = (F(int, f, 24) - 1) / 8 + 1;
+    int charBytes = rowBytes * F(int, f, 20);
+    F(BYTE*, f, 28) = (BYTE*)operator new(charBytes << 8);
+    int type = F(WORD, img, 24);
+    int width = F(WORD, img, 20);
+    int bpp = type == 1 ? 1 : type == 2 ? 2 : 3;
+    for (int c = 0; c < 256; c++)
+    {
+        int cw = F(int, f, 24);
+        BYTE* row = F(BYTE*, img, 8) + ((F(int, f, 20) + 1) * (c / 16) * width + c % 16 * cw) * bpp;
+        int x = 0;
+        while (x < cw && !Font_PixelSet(type, row + x * bpp))
+            x++;
+        int start = x;
+        while (x < cw && Font_PixelSet(type, row + x * bpp))
+            x++;
+        F(BYTE*, f, 16)[c] = (BYTE)start;
+        if (x)
+            x++;
+        F(BYTE*, f, 12)[c] = (BYTE)x;
+        BYTE* bits = F(BYTE*, f, 28) + c * charBytes;
+        for (int y = 0; y < F(int, f, 20); y++, bits += rowBytes)
+        {
+            row += width * bpp;
+            for (int i = 0; i < F(int, f, 24); i++)
+            {
+                if (!(i % 8))
+                    bits[i / 8] = 0;
+                if (Font_PixelSet(type, row + i * bpp))
+                    bits[i / 8] |= 128 >> (i % 8);
+            }
+        }
+    }
+    F(DWORD, f, 0) |= 1;
+    if (g_fwDevice)
+    {
+        int depth = CallC<int>(FUN_5d8350);
+        DWORD desc[31];
+        memset(desc, 0, sizeof desc);
+        desc[0] = 124;
+        desc[1] = 7;
+        desc[2] = F(WORD, img, 22);
+        desc[3] = F(WORD, img, 20);
+        desc[26] = 2048;
+        BYTE* surf;
+        long hr = Fw_ComCall(g_fwD3d, 24, desc, &surf, 0);
+        if (hr)
+            Sys_Fatal(CallC<const char*>(FUN_5d4c10, hr, (char*)s_6834b4), 0);
+        else
+        {
+            if (!surf)
+                Sys_Fatal(s_6834e8, 0);
+            DWORD key[2] = {0, 0};
+            Fw_ComCall(surf, 116, 8, key);
+            DWORD lock[31];
+            lock[0] = 124;
+            lock[1] = 8387054;
+            BYTE* dst;
+            if (!Fw_ComCall(surf, 100, (void*)0, lock, 1, 0) && (dst = (BYTE*)lock[9]) != 0)
+            {
+                memcpy(dst, F(BYTE*, img, 8), (unsigned)F(WORD, img, 22) * F(WORD, img, 20) * depth);
+                Fw_ComCall(surf, 128, 0);
+            }
+            else
+                CallC(FUN_5d2ba0, (char*)s_6834d4, 0);
+            F(BYTE*, f, 36) = surf;
+        }
+    }
+    if (img)
+        CallVirt(img, 0, 1);
+    return f;
+}
