@@ -1715,3 +1715,96 @@ extern "C" BYTE* __fastcall Worobj5a3e00_Construct(BYTE* s, void*, BYTE* w, int 
     CallThis(FUN_5d3570, w + 2992, s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors of the world object classes (exception frames dropped).
+
+extern "C" void FUN_579310(); KING_ALIAS("_FUN_579310", "@Pooled_Construct@8")
+extern "C" void FUN_5fa6a0(); KING_ALIAS("_FUN_5fa6a0", "@Mesh_Construct@8")
+ASM_VAR(AsmLabel, g_worobjVt650c2c, $L_650c2c)
+ASM_VAR(AsmLabel, g_worobjVt650c78, $L_650c78)
+ASM_VAR(AsmLabel, g_worobjVt650c8c, $L_650c8c)
+ASM_VAR(AsmLabel, g_worobjVt650cd8, $L_650cd8)
+ASM_VAR(AsmLabel, g_worobjVt650ce0, $L_650ce0)
+ASM_VAR(AsmLabel, g_worobjVt650d2c, $L_650d2c)
+ASM_VAR(AsmLabel, g_worobjVt650d34, $L_650d34)
+ASM_VAR(AsmLabel, g_worobjVt650d80, $L_650d80)
+ASM_VAR(AsmLabel, g_worobjVt650d88, $L_650d88)
+ASM_VAR(AsmLabel, g_worobjVt650dd4, $L_650dd4)
+ASM_VAR(AsmLabel, g_worobjVt650ddc, $L_650ddc)
+ASM_VAR(AsmLabel, g_worobjVt650e28, $L_650e28)
+ASM_VAR(AsmLabel, g_worobjVt650e38, $L_650e38)
+ASM_VAR(AsmLabel, g_worobjVt650e84, $L_650e84)
+ASM_VAR(AsmLabel, g_worobjVt650e8c, $L_650e8c)
+ASM_VAR(AsmLabel, g_worobjVt650ed8, $L_650ed8)
+ASM_VAR(AsmLabel, g_worobjVt650ee8, $L_650ee8)
+ASM_VAR(AsmLabel, g_worobjVt650f34, $L_650f34)
+ASM_VAR(AsmLabel, g_worobjVt650f7c, $L_650f7c)
+ASM_VAR(AsmLabel, g_worobjVt650fc8, $L_650fc8)
+ASM_VAR(AsmLabel, g_worobjVt650fd4, $L_650fd4)
+ASM_VAR(AsmLabel, g_worobjVt651020, $L_651020)
+ASM_VAR(AsmLabel, g_worobjVt65102c, $L_65102c)
+ASM_VAR(AsmLabel, g_worobjVt651078, $L_651078)
+ASM_VAR(AsmLabel, g_worobjVt651080, $L_651080)
+ASM_VAR(AsmLabel, g_worobjVt6510cc, $L_6510cc)
+ASM_VAR(AsmLabel, g_worobjVt6510d4, $L_6510d4)
+ASM_VAR(AsmLabel, g_worobjVt651120, $L_651120)
+ASM_VAR(AsmLabel, g_worobjVt651128, $L_651128)
+ASM_VAR(AsmLabel, g_worobjVt651174, $L_651174)
+ASM_VAR(AsmLabel, g_worobjVt6511ac, $L_6511ac)
+ASM_VAR(AsmLabel, g_worobjVt6511f8, $L_6511f8)
+ASM_VAR(AsmLabel, g_worobjVt651200, $L_651200)
+ASM_VAR(AsmLabel, g_worobjVt65124c, $L_65124c)
+
+// the base (FUN_579310) and the node at +20 (FUN_5fa6a0); the fields from first to last zeroed, then the
+// two vtables
+static BYTE* Worobj_ConstructObject(BYTE* s, int first, int last, void* vt0, void* vt20)
+{
+    CallThis(FUN_579310, s);
+    CallThis(FUN_5fa6a0, s + 20);
+    for (int o = first; o <= last; o += 4)
+        F(int, s, o) = 0;
+    F(void*, s, 20) = vt20;
+    F(void*, s, 0) = vt0;
+    return s;
+}
+// [$L_5a2e90]
+extern "C" BYTE* __fastcall Worobj5a2e90_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 156, g_worobjVt650fc8, g_worobjVt650f7c); }
+// [$L_5a34e0]
+extern "C" BYTE* __fastcall Worobj5a34e0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 156, g_worobjVt651120, g_worobjVt6510d4); }
+// [$L_5a19e0]
+extern "C" BYTE* __fastcall Worobj5a19e0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt651174, g_worobjVt651128); }
+// [$L_5a1bc0]
+extern "C" BYTE* __fastcall Worobj5a1bc0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650d80, g_worobjVt650d34); }
+// [$L_5a1e00]
+extern "C" BYTE* __fastcall Worobj5a1e00_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650c78, g_worobjVt650c2c); }
+// [$L_5a1fe0]
+extern "C" BYTE* __fastcall Worobj5a1fe0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650d2c, g_worobjVt650ce0); }
+// [$L_5a2410]
+extern "C" BYTE* __fastcall Worobj5a2410_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650dd4, g_worobjVt650d88); }
+// [$L_5a25f0]
+extern "C" BYTE* __fastcall Worobj5a25f0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650e84, g_worobjVt650e38); }
+// [$L_5a27d0]
+extern "C" BYTE* __fastcall Worobj5a27d0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650e28, g_worobjVt650ddc); }
+// [$L_5a29b0]
+extern "C" BYTE* __fastcall Worobj5a29b0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt650ed8, g_worobjVt650e8c); }
+// [$L_5a3060]
+extern "C" BYTE* __fastcall Worobj5a3060_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt651020, g_worobjVt650fd4); }
+// [$L_5a32a0]
+extern "C" BYTE* __fastcall Worobj5a32a0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt6510cc, g_worobjVt651080); }
+// [$L_5a3710]
+extern "C" BYTE* __fastcall Worobj5a3710_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 168, g_worobjVt651078, g_worobjVt65102c); }
+// [$L_5a2220]
+extern "C" BYTE* __fastcall Worobj5a2220_Construct(BYTE* s)
+{
+    Worobj_ConstructObject(s, 148, 168, g_worobjVt650cd8, g_worobjVt650c8c);
+    for (int o = 192; o <= 200; o += 4)
+        F(int, s, o) = 0;
+    return s;
+}
+// [$L_5a2c10]
+extern "C" BYTE* __fastcall Worobj5a2c10_Construct(BYTE* s) { return Worobj_ConstructObject(s, 148, 180, g_worobjVt650f34, g_worobjVt650ee8); }
+// [$L_5a15e0]
+extern "C" BYTE* __fastcall Worobj5a15e0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 156, 164, g_worobjVt65124c, g_worobjVt651200); }
+// [$L_5a17b0]
+extern "C" BYTE* __fastcall Worobj5a17b0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 156, 164, g_worobjVt6511f8, g_worobjVt6511ac); }

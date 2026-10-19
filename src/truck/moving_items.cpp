@@ -444,3 +444,43 @@ extern "C" int __fastcall Movite_RunSteps(BYTE* s, void*, int a)
     F(int, s, 1440) = 0;
     return st;
 }
+
+// ---------------------------------------------------------------------------
+// Network messages and small constructors (exception frames dropped).
+
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+ASM_VAR(short, g_movite67d10a, $L_67d10a)
+ASM_VAR(BYTE*, g_movite6ef1fc, $L_6ef1fc)
+
+// sends a network message with the record d of n bytes (packet built on the stack, then sent by 6ef1fc)
+static void Movite_Send(const void* d, int n)
+{
+    BYTE pkt[32];
+    CallThis(FUN_602be0, pkt);
+    CallThis(FUN_603110, pkt, (int)g_movite67d10a, d, n);
+    CallThis(FUN_5c3630, g_movite6ef1fc, pkt);
+    CallThis(FUN_602e80, pkt);
+}
+// [$L_5860e0] message 3 for the item (+1188)
+extern "C" void __fastcall Movite_Send3(BYTE* s)
+{
+    int d[2] = {F(int, s, 1188), 3};
+    Movite_Send(d, 8);
+}
+// [$L_5861a0] message 4 unless +372 is set
+extern "C" void __fastcall Movite_Send4(BYTE* s)
+{
+    if (F(int, s, 372))
+        return;
+    int d[2] = {F(int, s, 1188), 4};
+    Movite_Send(d, 8);
+}
+// [$L_586720] message 2 (a, the item, b)
+extern "C" void __fastcall Movite_Send2(BYTE* s, void*, int a, int b)
+{
+    int d[4] = {2, a, F(int, s, 1188), b};
+    Movite_Send(d, 16);
+}
