@@ -1891,3 +1891,29 @@ extern "C" void __fastcall Med_Read5d2230(BYTE* s, void*, void* f)
     CallC(Med_fread, &v, 4, 1, f);
     F(int, s, 4) = v ? 1 : 0;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+// [$L_5c0b00] a list box: the scroll bar (+340) takes its events, a click in the rows selects the row (+300)
+extern "C" int __fastcall Med_ListMouse(BYTE* s, void*, int msg, int x, int y)
+{
+    BYTE* sb = F(BYTE*, s, 340);
+    if (CallVirt<int>(sb, 24, x - F(int, s, 44), y - F(int, s, 48)))
+        return CallVirt<int>(F(BYTE*, s, 340), 32, msg, x - F(int, s, 44), y - F(int, s, 48));
+    int px = x - (F(int, s, 44) + F(int, s, 312));
+    int py = y - (F(int, s, 48) + F(int, s, 316));
+    if (px < 0 || py < 0)
+        return msg;
+    if (px > F(int, s, 320) - F(int, s, 312))
+        return msg;
+    if (py > F(int, s, 324) - F(int, s, 316))
+        return msg;
+    int row = py / (F(int, F(BYTE*, s, 16), 20) + F(int, s, 344));
+    for (BYTE* p = F(BYTE*, s, 336); p; p = F(BYTE*, p, 8), row--)
+        if (row <= 0) {
+            F(BYTE*, s, 300) = p;
+            break;
+        }
+    return F(int, s, 28) | 0x8000;
+}

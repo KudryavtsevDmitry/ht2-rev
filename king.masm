@@ -1313,6 +1313,7 @@ PUBLIC $L_6ced6c, $L_723a48, $L_723a50, $L_723a8c, $L_723a94
 PUBLIC $L_6729e0, $L_6729f4, $L_672a44, $L_68baa0, $L_68ccc8, $L_68cda0
 PUBLIC $L_68cda4, $L_68cda8, $L_68d328, $L_68d400, $L_68d404, $L_68d408
 PUBLIC $L_7208d0
+PUBLIC $L_6d2510, $L_6d256c
 
 ;===================================
 _TEXT SEGMENT
@@ -516897,6 +516898,8 @@ $L_52e948 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52e970 PROC
 
             sub ESP,100
@@ -517023,6 +517026,10 @@ $L_52ea7a::
             add ESP,100
             ret 4
 $L_52e970 ENDP
+ELSE
+EXTERN @Scy_Message@12:PROC
+$L_52e970 TEXTEQU <@Scy_Message@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -571356,6 +571363,8 @@ FUN_555550 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_555910 PROC
 
             push ECX
@@ -571500,6 +571509,10 @@ $L_555a62::
             pop ECX
             ret 4
 $L_555910 ENDP
+ELSE
+EXTERN @Car_WheelLevels@12:PROC
+$L_555910 TEXTEQU <@Car_WheelLevels@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -584481,6 +584494,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_55ee80 PROC
 
             push ESI
@@ -584598,6 +584613,10 @@ $L_55ef72::
             pop ESI
             ret 8
 $L_55ee80 ENDP
+ELSE
+EXTERN @Car_Lamps@16:PROC
+$L_55ee80 TEXTEQU <@Car_Lamps@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -616263,6 +616282,8 @@ $L_571f20 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_573590 PROC
 
             push ESI
@@ -616349,6 +616370,10 @@ $L_57360b::
             pop ESI
             ret 8
 $L_573590 ENDP
+ELSE
+EXTERN @Hel_573590@16:PROC
+$L_573590 TEXTEQU <@Hel_573590@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -616357,6 +616382,8 @@ $L_573590 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_573630 PROC
 
             push ESI
@@ -616446,6 +616473,10 @@ $L_5736ab::
             pop ESI
             ret 8
 $L_573630 ENDP
+ELSE
+EXTERN @Hel_573630@16:PROC
+$L_573630 TEXTEQU <@Hel_573630@16>
+ENDIF
 ; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 IFDEF ASM_HELICOPTER
 $L_5736d0 PROC
@@ -626835,6 +626866,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 $L_5796e0 PROC
 
             sub ESP,12
@@ -626962,6 +626995,10 @@ $L_5797be::
             add ESP,12
             ret 
 $L_5796e0 ENDP
+ELSE
+EXTERN @Ff_ClearPools@4:PROC
+$L_5796e0 TEXTEQU <@Ff_ClearPools@4>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
@@ -641723,6 +641760,8 @@ $L_5842ac::
             nop
             nop
 $L_584060 ENDP
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 $L_584320 PROC
 
             push ECX
@@ -641804,6 +641843,10 @@ $L_5843ac::
             pop ECX
             ret 4
 $L_584320 ENDP
+ELSE
+EXTERN @Movite_RunSteps@12:PROC
+$L_584320 TEXTEQU <@Movite_RunSteps@12>
+ENDIF
 ALIGN 16
 FUN_5843c0 PROC
 
@@ -682431,6 +682474,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a00e0 PROC
 
             sub ESP,20
@@ -682551,6 +682596,10 @@ $L_5a01bd::
 
             nop
 $L_5a00e0 ENDP
+ELSE
+EXTERN @Worobj_Pack@4:PROC
+$L_5a00e0 TEXTEQU <@Worobj_Pack@4>
+ENDIF
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -738822,6 +738871,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c0b00 PROC
 
             push EBX
@@ -738958,6 +739009,10 @@ $L_5c0beb::
             pop EBX
             ret 12
 $L_5c0b00 ENDP
+ELSE
+EXTERN @Med_ListMouse@20:PROC
+$L_5c0b00 TEXTEQU <@Med_ListMouse@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -908010,6 +908065,8 @@ $L_61bee0 PROC
 $L_61bee0 ENDP
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61bf20 PROC
 
             push EBX
@@ -908101,6 +908158,10 @@ $L_61bfc9::
             pop EBX
             ret 8
 $L_61bf20 ENDP
+ELSE
+EXTERN @Tgr_Draw@16:PROC
+$L_61bf20 TEXTEQU <@Tgr_Draw@16>
+ENDIF
           BYTE 090H
 ; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
 IFDEF ASM_TERRAIN_GRID

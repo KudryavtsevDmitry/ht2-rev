@@ -2179,3 +2179,69 @@ extern "C" int __fastcall Car_546ad0(BYTE* s, void*, int a, int b)
         CallC(FUN_4e480c, F(int, (BYTE*)g_veh6d2114, F(int, s, 10148) * 1488 + 36), k);
     return CallThis<int>(FUN_5f9b00, s, a, b);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_43f840(); KING_ALIAS("_FUN_43f840", "_Player_Value156")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+ASM_PROC(FUN_501b90)
+extern "C" void FUN_501e30(); KING_ALIAS("_FUN_501e30", "@Wheel_StepLevel@20")
+ASM_VAR(int, g_veh68b990, $L_68b990)
+ASM_VAR(AsmLabel, g_veh6d2510, $L_6d2510)
+ASM_VAR(AsmLabel, g_veh6d219c, $L_6d219c)
+ASM_VAR(AsmLabel, g_veh6d256c, $L_6d256c)
+ASM_VAR(AsmLabel, g_veh69809c, $L_69809c)
+
+// a field of the cab model's record (1488 bytes, model +10148) at base
+static int Car_ModelField(BYTE* s, BYTE* base) { return F(int, base, F(int, s, 10148) * 1488); }
+
+// [$L_55ee80] the lamps of the cab model: the trailer's (+21608) player's lamp frame, the hitch light, the turn light
+extern "C" int __fastcall Car_Lamps(BYTE* s, void*, int a, int b)
+{
+    BYTE* t = F(BYTE*, s, 21608);
+    if (t) {
+        if (F(int, t, 20636) != g_veh68b990) {
+            int n = CallC<int>(FUN_43f840, F(int, t, 20636)) + 1;
+            CallC(FUN_5e1a10, Car_ModelField(s, (BYTE*)g_veh6d2510 + 16), n);
+        } else {
+            CallC(FUN_5e1a10, Car_ModelField(s, (BYTE*)g_veh6d2510 + 16), 0);
+        }
+        int v = Car_ModelField(s, (BYTE*)g_veh6d219c + 92);
+        if (v)
+            CallC(FUN_4e480c, v, 0);
+    } else {
+        int v = Car_ModelField(s, (BYTE*)g_veh6d219c + 92);
+        if (v)
+            CallC(FUN_4e480c, v, 1);
+    }
+    int w = Car_ModelField(s, (BYTE*)g_veh6d256c + 336);
+    if (w)
+        CallC(FUN_5e1a10, w, F(int, s, 20124) == 2 ? 1 : 0);
+    return CallThis<int>(FUN_547030, s, a, b);
+}
+
+// a wheel step of the cab when its level pair is equal (cab +15520.. by 20), while all still pass
+static void Car_StepLevel(BYTE* s, int& ok, int off, int k, int a, int v)
+{
+    BYTE* c = F(BYTE*, s, 21600);
+    if (F(int, c, off) != F(int, c, off + 4))
+        return;
+    if (ok && CallThis<int>(FUN_501e30, c, k, a, v))
+        ok = 1;
+    else
+        ok = 0;
+}
+// [$L_555910] the cab's wheels follow level a: the model's wheel count (69809c +44, 2416-byte records) then the two axles
+extern "C" int __fastcall Car_WheelLevels(BYTE* s, void*, int a)
+{
+    if (!F(BYTE*, s, 21600))
+        return 0;
+    CallThis(FUN_501b90, F(BYTE*, s, 21600), 2, a, F(int, s, 10476));
+    int ok = 1;
+    for (int i = 0, o = 0; i < F(int, (BYTE*)g_veh69809c, F(int, s, 10420) * 2416 + 44) && o < 40; i++, o += 20)
+        Car_StepLevel(s, ok, 15580 + o, i + 3, a, F(int, s, 10480 + i * 4));
+    Car_StepLevel(s, ok, 15520, 0, a, F(int, s, 10468));
+    Car_StepLevel(s, ok, 15540, 1, a, F(int, s, 10472));
+    return ok;
+}

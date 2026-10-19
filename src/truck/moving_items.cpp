@@ -417,3 +417,30 @@ extern "C" int __fastcall Movite_585d30(BYTE* s, void*, int a, int b, int c, int
         return CallC<int>(FUN_5855a0, s, a, b, c, d, e);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+// [$L_584320] runs the item's steps (vtbl+96 start, +100.. per step) until the last; the state goes back
+extern "C" int __fastcall Movite_RunSteps(BYTE* s, void*, int a)
+{
+    int st = 0;
+    if (CallVirt<int>(s, 96, a, &st)) {
+        int r;
+        do {
+            CallVirt(s, 100, &st);
+            CallVirt(s, 104, 0x3f800000);
+            CallVirt(s, 108, a);
+            if (!F(int, s, 1672)) {
+                r = CallVirt<int>(s, 112, &st);
+            } else {
+                CallVirt(s, 120, a, F(int, s, 1456));
+                CallVirt(s, 124, a);
+                r = CallVirt<int>(s, 128);
+            }
+        } while (r);
+        CallVirt(s, 132, &st);
+    }
+    F(int, s, 1440) = 0;
+    return st;
+}

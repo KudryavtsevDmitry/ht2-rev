@@ -804,3 +804,46 @@ extern "C" void __fastcall Scy_52e630(BYTE* s)
     if (F(int, s, 896) && F(int, s, 3632) == 2)
         F(int, s, 3632) = 0;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_52e7c0(); KING_ALIAS("_FUN_52e7c0", "@Car_SendNamed@20")
+ASM_PROC(FUN_52e740)
+extern "C" void FUN_52e540(); KING_ALIAS("_FUN_52e540", "@Obj52e540_Set3576@12")
+extern "C" void FUN_57c9e0(); KING_ALIAS("_FUN_57c9e0", "_Moving_Of")
+extern "C" void FUN_53f7b0(); KING_ALIAS("_FUN_53f7b0", "_Car_53f7b0")
+
+// [$L_52e970] a message for the object: a named place (kinds 2, 2 with a name) moves it there; a moving body is attached
+extern "C" void __fastcall Scy_Message(BYTE* s, void*, BYTE* p)
+{
+    if (F(int, s, 372))
+        return;
+    BYTE* m = F(BYTE*, p, 100);
+    if (!F(int, p, 116) && m && F(int, m, 0) == 2 && F(int, m, 4) == 2 && F(int, m, 8) && F(BYTE*, m, 12)) {
+        int x = *F(int*, m, 12);
+        if (F(int, s, 3640))
+            CallC(FUN_5e1a10, F(int, s, 3640), 0);
+        int e = F(int, s, 3576);
+        if (e) {
+            char buf[101];
+            const char* src = F(char*, F(BYTE*, p, 100), 12) + 4;
+            int n = 0;
+            while (src[n] && n < 100) {
+                buf[n] = src[n];
+                n++;
+            }
+            buf[n] = 0;
+            CallThis(FUN_52e7c0, s, e, x, buf);
+            CallThis(FUN_52e740, s, F(int, s, 3576), x, buf);
+            F(int, s, 3632) = 1;
+        }
+        CallThis(FUN_52e540, s, 0);
+    }
+    int t = F(int, p, 116);
+    if (t) {
+        int r = CallC<int>(FUN_57c9e0, t);
+        if (r)
+            CallThis(FUN_52e540, s, CallC<int>(FUN_53f7b0, r));
+    }
+}
