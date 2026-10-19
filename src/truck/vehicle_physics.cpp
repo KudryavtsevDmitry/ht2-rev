@@ -901,3 +901,14 @@ static BYTE* Vehphy_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 }
 // [$L_4eb2d0]
 extern "C" BYTE* __fastcall Vehphy4eb2d0_DeletingDestructor(BYTE* s, void*, int flags) { return Vehphy_DeleteAfter(s, flags, FUN_530190); }
+
+ASM_PROC(FUN_4eb260)
+
+// [FUN_4eb3c0] a new 40-byte part (FUN_4eb260 (self, a, +4, b))
+extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)
+{
+    BYTE* o = (BYTE*)operator new(40);
+    if (!o)
+        return 0;
+    return CallThis<int>(FUN_4eb260, o, s, a, F(int, s, 4), b);
+}

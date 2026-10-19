@@ -571,8 +571,8 @@ extern "C" int __fastcall Ctl_PointTo(BYTE* self, void*, int x, int y)
 // Small virtual methods and static initializers.
 
 ASM_PROC(FUN_5bda90)
-ASM_PROC(FUN_5be870)
-ASM_PROC(FUN_5bf7d0)
+extern "C" void FUN_5be870(); KING_ALIAS("_FUN_5be870", "@Con5be870_Destroy@4")
+extern "C" void FUN_5bf7d0(); KING_ALIAS("_FUN_5bf7d0", "@Con5bf7d0_Destroy@4")
 
 static BYTE* Con_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -977,4 +977,22 @@ extern "C" int __fastcall Con_SliderMove(BYTE* s, void*, int x, int y)
             return CallVirt<int>(h, 36, x, y);
     }
     return 1;
+}
+
+ASM_VAR(AsmLabel, g_con64dc84, $L_64dc84)
+ASM_VAR(AsmLabel, g_con64d81c, $L_64d81c)
+
+// [FUN_5be870] (vtable 64dc84) frees +12
+extern "C" void __fastcall Con5be870_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_con64dc84;
+    operator delete(F(void*, s, 12));
+    F(void*, s, 0) = g_con64d81c;
+}
+// [FUN_5bf7d0]
+extern "C" void __fastcall Con5bf7d0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_con64dc84;
+    operator delete(F(void*, s, 12));
+    F(void*, s, 0) = g_con64d81c;
 }

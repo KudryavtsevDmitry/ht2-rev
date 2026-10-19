@@ -1108,7 +1108,7 @@ extern "C" void FUN_490fa0(); KING_ALIAS("_FUN_490fa0", "@RingMember_Destruct@8"
 extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
 ASM_PROC(FUN_491090)
 extern "C" void FUN_491100(); KING_ALIAS("_FUN_491100", "@Rec491100_Destroy@8")
-ASM_PROC(FUN_4914c0)
+extern "C" void FUN_4914c0(); KING_ALIAS("_FUN_4914c0", "@Run4914c0_Destroy@4")
 ASM_PROC(FUN_491590)
 ASM_VAR(AsmLabel, g_run64bee4, $L_64bee4)
 ASM_VAR(AsmLabel, g_run6705ec, $L_6705ec)
@@ -1161,4 +1161,16 @@ extern "C" void __fastcall Run_491690(BYTE* s)
 {
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, s, 24) - F(BYTE*, s, 20)) / 44); i++)
         CallVirt(F(BYTE*, s, 20) + i * 44, 0);
+}
+
+extern "C" void FUN_491520(); KING_ALIAS("_FUN_491520", "_Tasks_Queue")
+ASM_VAR(AsmLabel, g_run64bf38, $L_64bf38)
+ASM_VAR(AsmLabel, g_run64bee4, $L_64bee4)
+
+// [FUN_4914c0] (vtable 64bf38) FUN_491520 (+12, +16)
+extern "C" void __fastcall Run4914c0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_run64bf38;
+    CallC(FUN_491520, F(int, s, 12), F(int, s, 16));
+    F(void*, s, 0) = g_run64bee4;
 }

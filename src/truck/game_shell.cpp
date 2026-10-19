@@ -97,7 +97,7 @@ ASM_VAR(AsmLabel, g_vtbl64e5e0, $L_64e5e0)
 ASM_VAR(AsmLabel, g_720938, $L_720938)
 ASM_VAR(AsmLabel, g_vtbl64eb58, $L_64eb58)
 ASM_PROC(FUN_5c13a0)    // avi: open
-ASM_PROC(FUN_5d89e0)
+extern "C" void FUN_5d89e0(); KING_ALIAS("_FUN_5d89e0", "@Fw5d89e0_Destroy@4")
 
 ASM_VAR(int, g_696890, $L_696890)
 typedef wchar_t WideBuf[260];
@@ -1259,7 +1259,7 @@ extern "C" double __cdecl Cpu_SpeedFactor()
     return (double)(mhz - 300) * k_0_0025;
 }
 
-ASM_PROC(FUN_5d89e0)    // the screen base destructor
+extern "C" void FUN_5d89e0(); KING_ALIAS("_FUN_5d89e0", "@Fw5d89e0_Destroy@4")    // the screen base destructor
 ASM_VAR(char, vt_64ddc0, $L_64ddc0)
 ASM_VAR(char, vt_64dd80, $L_64dd80)
 ASM_VAR(char, vt_64e6a8, $L_64e6a8)
