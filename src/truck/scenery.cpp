@@ -24,7 +24,7 @@ extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12"
 ASM_PROC(FUN_57d060)
 extern "C" void FUN_52e550(); KING_ALIAS("_FUN_52e550", "@Crowd_Init@12")
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
-ASM_PROC(FUN_5c3630)
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 ASM_VAR(AsmLabel, g_vtbl64f198, $L_64f198)
 ASM_VAR(AsmLabel, g_vtbl64f14c, $L_64f14c)

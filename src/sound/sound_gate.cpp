@@ -896,3 +896,36 @@ extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int)
     *(void**)self = &vt_652de0;
     MsgBuf_FreeStorage(self, 0);
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_600b50(); KING_ALIAS("_FUN_600b50", "_Gate_600b50")    // an error text
+extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
+ASM_VAR(BYTE, g_sg723df0, $L_723df0)
+ASM_VAR(AsmLabel, g_sg683ca0, $L_683ca0)
+ASM_VAR(AsmLabel, s_sg68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, s_sg684320, $L_684320)
+ASM_VAR(AsmLabel, s_sg683c78, $L_683c78)
+ASM_VAR(AsmLabel, s_sg68422c, $L_68422c)
+
+// [FUN_6021f0] starts the sound gate once with a name (up to 16 chars); -1 when COM fails
+extern "C" int __cdecl Gate_Start(const char* name)
+{
+    if (g_sg723df0)
+        return 0;
+    HRESULT hr = CoInitialize(0);
+    if (hr < 0)
+    {
+        CallC(FUN_401010, 6, 100, (char*)s_sg68422c, (char*)s_sg683c78, 1134, (char*)s_sg684320,
+              CallC<const char*>(FUN_600b50, hr), (char*)s_sg68d1c0);
+        return -1;
+    }
+    if (name && strlen(name))
+    {
+        unsigned n = strlen(name);
+        strncpy(g_sg683ca0, name, n < 16 ? n : 16);
+    }
+    CallC(FUN_6016f0);
+    g_sg723df0 = 1;
+    return 0;
+}
+

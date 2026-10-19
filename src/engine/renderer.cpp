@@ -1587,3 +1587,86 @@ extern "C" void __fastcall Texture_Destruct(BYTE* self, void*)
     CallThis(FUN_5bad10, self);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
+extern "C" void FUN_5b61f0(); KING_ALIAS("_FUN_5b61f0", "_Words_Fill")
+extern "C" void FUN_5e7ed0(); KING_ALIAS("_FUN_5e7ed0", "_Data_Read5e8160")
+ASM_PROC(FUN_5e8160)
+ASM_PROC(FUN_5bae30)
+ASM_PROC(FUN_5bb660)
+extern "C" void FUN_5d7740(); KING_ALIAS("_FUN_5d7740", "_Com_Release")
+ASM_PROC(FUN_5d7750)
+ASM_VAR(AsmLabel, s_rn67f0f0, $L_67f0f0)
+
+// [FUN_5b6ed0] clears the surface (flag 0x4000): the viewport rectangle through the device (+116 == 1), else each row of its memory (+48)
+extern "C" void __fastcall Surface_ClearRows(BYTE* self, void*)
+{
+    if (!(F(DWORD, self, 12) & 0x4000))
+        return;
+    if (F(int, self, 116) == 1)
+    {
+        int r[4];
+        CallStd(FUN_5b6710, r);
+        int rect[4] = {r[0], r[1], r[2], r[3]};
+        long hr = Com(g_device, 40, 1, rect, 2, 0, 1.0f, 0);
+        if (hr)
+            CallC(FUN_5d2ba0, (char*)s_rn67f0f0, hr);
+        return;
+    }
+    if (!F(void*, self, 48))
+        return;
+    for (int y = 0; y < F(WORD, self, 2); y++)
+        CallC(FUN_5b61f0, F(BYTE*, self, 48) + F(WORD, self, 8) * y * 2, 0, (int)F(WORD, self, 0));
+}
+
+// [FUN_5ba810] loads the image's data when first used (flag 4, counted at +60): from its file (+4) or the +32 bytes at +48, and makes its texture
+extern "C" int __fastcall Image_LoadData(BYTE* self, void*)
+{
+    DWORD f = F(DWORD, self, 52);
+    if (!(f & 4))
+        return 0;
+    F(int, self, 60)++;
+    if (f & 1)
+        return 0;
+    if (!F(int, self, 32) && F(void*, self, 4))
+        CallC(FUN_5e7ed0, self, F(void*, self, 4));
+    else if (!(f & 0x200))
+    {
+        int type = F(WORD, self, 24);
+        if (type == 1 || !(f & 0x400))
+        {
+            F(void*, self, 8) = operator new(F(WORD, self, 22) * F(WORD, self, 20) * type);
+            CallC(FUN_5e8160, self, F(void*, self, 48), F(int, self, 32));
+        }
+    }
+    f = F(DWORD, self, 52) | 1;
+    F(DWORD, self, 52) = f;
+    if (g_rnD3d && F(WORD, self, 24) > 1 && !(f & 0x800))
+        CallThis(FUN_5bae30, self, (f >> 10) & 1);
+    return 0;
+}
+
+// [FUN_5bbbf0] prepares the image for drawing (flag 2): restores and uploads its surface (+72), or without a device makes its bitmap (+44); 1 when the bitmap was made
+extern "C" int __fastcall Image_Prepare(BYTE* self, void*, int a, int b)
+{
+    if (!(F(BYTE, self, 52) & 2))
+        return 0;
+    BYTE* s = F(BYTE*, self, 72);
+    if (g_device && s && (F(WORD, self, 26) || (F(WORD, self, 20) == 1 && F(WORD, self, 22) == 1)))
+    {
+        if (Com(s, 96) == (int)0x887601C2)
+            Com(F(BYTE*, self, 72), 108);
+        CallThis(FUN_5bb660, self, (F(DWORD, self, 52) >> 10) & 1, 0, a, b);
+        return 0;
+    }
+    if (F(WORD, self, 26))
+        return 0;
+    if (F(void*, self, 44))
+        CallC(FUN_5d7740, F(void*, self, 44));
+    F(void*, self, 44) = CallC<void*>(FUN_5d7750, (int)F(WORD, self, 20), (int)F(WORD, self, 22), F(void*, self, 8));
+    if (!F(void*, self, 44))
+        return 0;
+    F(DWORD, self, 52) |= 2;
+    return 1;
+}

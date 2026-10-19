@@ -2299,3 +2299,40 @@ extern "C" void __fastcall Buf459df0_Destruct(BYTE* self, void*)
         CallVirt(F(BYTE*, self, 20), 0, 1);
 }
 
+
+// ---------------------------------------------------------------------------
+
+// [FUN_46c7d0] points a stream's window (+12 begin, +16 cursor, +20 end) at its current part: in place for kind 0, else up to 15 bytes copied around the cursor into +45 through the part's source (method +4)
+extern "C" void __cdecl Stream_SetWindow(BYTE* s)
+{
+    BYTE* e = F(BYTE**, s, 24)[F(int, s, 40)];
+    int base = F(int, s, 8);
+    int cur = F(int, s, 0);
+    int kind = (signed char)F(BYTE, e, 8);
+    if (kind == 0)
+    {
+        F(int, s, 12) = F(int, e, 20);
+        F(int, s, 16) = F(int, e, 20) - base + cur;
+        F(int, s, 20) = F(int, s, 12) + F(int, e, 0);
+        return;
+    }
+    if (kind <= 1 || kind > 3)
+        return;
+    unsigned end = F(int, e, 0) + base;
+    BYTE* src = F(BYTE*, e, 20);
+    unsigned from = base;
+    int len = 15;
+    if ((unsigned)(base + 15) <= (unsigned)cur)
+    {
+        from = cur - 3;
+        if (from + 15 > end)
+            from = end - 15;
+    }
+    if (from + 15 > end)
+        len = end - from;
+    CallVirt(src, 4, from - base, len, s + 45);
+    F(BYTE*, s, 12) = s + 45;
+    F(BYTE*, s, 16) = s + 45 + (cur - from);
+    F(BYTE*, s, 20) = s + 45 + len;
+}
+

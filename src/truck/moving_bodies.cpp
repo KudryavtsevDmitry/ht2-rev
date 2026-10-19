@@ -858,7 +858,7 @@ extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int)
 
 ASM_VAR(char, vt_65094c, $L_65094c)
 ASM_VAR(char, vt_650900, $L_650900)
-ASM_PROC(FUN_5ef780)
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
 extern "C" void FUN_594d70(); KING_ALIAS("_FUN_594d70", "_Faders_DeleteAll")    // deletes all faders
 ASM_PROC(FUN_5f1a70)
@@ -916,5 +916,34 @@ extern "C" void __cdecl Mb_Fatal(const char* text)
     }
     printf(text);
     exit(0);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_592d70(); KING_ALIAS("_FUN_592d70", "@ListNode_Construct@8")
+extern "C" void FUN_592d80(); KING_ALIAS("_FUN_592d80", "@ListItem_PutOnHead@12")
+extern "C" void FUN_592dd0(); KING_ALIAS("_FUN_592dd0", "@ListItem_PutOnTail@12")
+ASM_VAR(AsmLabel, g_vt65089c, $L_65089c)
+ASM_VAR(AsmLabel, s_mb67e068, $L_67e068)
+
+// [FUN_592c40] constructs a holder of the pointer *p (+12 = p): chains onto the existing one (front, or after with flag) or becomes it
+extern "C" BYTE* __fastcall Holder_Construct(BYTE* self, void*, BYTE** p, int after)
+{
+    BYTE* link = self + 4;
+    CallThis(FUN_592d70, link);
+    F(void*, self, 0) = g_vt65089c;
+    if (!p)
+        Mb_Fatal(s_mb67e068);
+    if (*p)
+    {
+        if (!after)
+            *p = CallThis<BYTE*>(FUN_592d80, link, *p);
+        else
+            CallThis(FUN_592dd0, link, *p);
+    }
+    else
+        *p = self ? link : 0;
+    F(BYTE**, self, 12) = p;
+    return self;
 }
 

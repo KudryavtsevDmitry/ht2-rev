@@ -612,3 +612,61 @@ extern "C" void __cdecl Play_Stop(int id)
     CallVirt(p, 0, 1);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_604230(); KING_ALIAS("_FUN_604230", "@Play_Delete@8")
+extern "C" void FUN_605200(); KING_ALIAS("_FUN_605200", "@StreamPlay_Construct@32")
+extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
+ASM_VAR(AsmLabel, g_ds724130, $L_724130)    // the wave format
+
+template <class R = long, class... A>
+static R Ds_ComCall(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// [FUN_604c80] sets the cooperative level of a DirectSound for a window and creates its primary buffer in format 724130; *size = its bytes; 0 on failure
+extern "C" int __cdecl Ds_CreatePrimary(void* ds, void** buf, DWORD* size, HWND wnd)
+{
+    DWORD desc[9] = {};
+    desc[0] = 36;
+    desc[1] = 129;
+    if (!Ds_ComCall(ds, 24, wnd, 2) && !Ds_ComCall(ds, 12, desc, buf, (void*)0)
+        && !Ds_ComCall(*buf, 56, (void*)g_ds724130))
+    {
+        DWORD caps[5];
+        caps[0] = 20;
+        Ds_ComCall(*buf, 12, caps);
+        *size = caps[2];
+        return 1;
+    }
+    *buf = 0;
+    *size = 0;
+    return 0;
+}
+
+// [FUN_604f20] starts a sound of record i with an id (restarting a stopped one), its object (72 bytes) made by 605200; 0 when it can't
+extern "C" int __cdecl Snd_Start(int i, int id, int a3, int a4, int a5, int a6)
+{
+    if (i < (int)(g_ds724168 & 0xffff) && id != -1 && F(int, g_ds724164, i * 24))
+    {
+        BYTE* p = CallC<BYTE*>(FUN_6042e0, id);
+        if (p)
+        {
+            if (CallVirt<int>(p, 28))
+                goto fail;
+            CallVirt(p, 24);
+            if (F(int, p, 40))
+                goto fail;
+            CallThis(FUN_604230, p);
+        }
+        BYTE* o = (BYTE*)operator new(72);
+        if (o)
+            o = CallThis<BYTE*>(FUN_605200, o, i, id, a3, a4, a5, a6);
+        return CallVirt<int>(o, 4);
+    }
+fail:
+    CallC(FUN_6051b0);
+    return 0;
+}
+

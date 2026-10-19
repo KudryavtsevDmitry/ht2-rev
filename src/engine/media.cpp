@@ -35,7 +35,7 @@ ASM_VAR(int, g_707f98, $L_707f98)
 ASM_VAR(WORD, g_quadIndex, $L_707f9c)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
-ASM_PROC(FUN_6021f0)
+extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
 extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
@@ -1580,5 +1580,56 @@ extern "C" long __cdecl Media_Start()
         return r;
     }
     return 0;
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+extern "C" void FUN_5ab160(); KING_ALIAS("_FUN_5ab160", "_File_WriteInt")    // writes an int to a file (v, file)
+extern "C" void FUN_5c2450(); KING_ALIAS("_FUN_5c2450", "@Avi_Start@8")
+ASM_PROC(FUN_6303b8)
+ASM_PROC(FUN_6303b2)
+extern "C" void FUN_5c2f00(); KING_ALIAS("_FUN_5c2f00", "_Set702f94")
+ASM_VAR(BYTE*, g_md707f6c, $L_707f6c)
+ASM_VAR(int, g_md7208b8, $L_7208b8)
+extern "C" size_t __cdecl fwrite(const void* buf, size_t size, size_t n, FILE* f);
+
+// [FUN_5c3630] records a block (rec +4 .. +8): to 6021b0 when the player is set, and to the record file (+7928, when +7936) as -1, length, bytes, length
+extern "C" void __fastcall Media_RecordBlock(BYTE* self, void*, BYTE* rec)
+{
+    if (!F(int, self, 7948))
+        return;
+    BYTE* p = F(BYTE*, rec, 4);
+    int n = F(BYTE*, rec, 8) - p;
+    if (F(int, g_md707f6c, 416))
+        CallC(FUN_6021b0, p, n);
+    FILE* f = F(FILE*, self, 7928);
+    if (!f || !F(int, self, 7936))
+        return;
+    CallC(FUN_5ab160, -1, f);
+    CallC(FUN_5ab160, F(BYTE*, rec, 8) - F(BYTE*, rec, 4), F(FILE*, self, 7928));
+    fwrite(F(BYTE*, rec, 4), F(BYTE*, rec, 8) - F(BYTE*, rec, 4), 1, F(FILE*, self, 7928));
+    CallC(FUN_5ab160, F(BYTE*, rec, 8) - F(BYTE*, rec, 4), F(FILE*, self, 7928));
+}
+
+// [FUN_5c12a0] closes the media player: frees its buffers, events and the device (+2176)
+extern "C" void __fastcall Media_Close(BYTE* self, void*)
+{
+    CallThis(FUN_5c2450, self);
+    if (F(void*, self, 4)) { operator delete(F(void*, self, 4)); F(void*, self, 4) = 0; }
+    if (F(void*, self, 0)) { operator delete(F(void*, self, 0)); F(void*, self, 0) = 0; }
+    if (F(void*, self, 2200)) { operator delete(F(void*, self, 2200)); F(void*, self, 2200) = 0; }
+    if (F(void*, self, 2204)) { operator delete(F(void*, self, 2204)); F(void*, self, 2204) = 0; }
+    if (F(HANDLE, self, 36)) { CloseHandle(F(HANDLE, self, 36)); F(HANDLE, self, 36) = 0; }
+    if (F(HANDLE, self, 40)) { CloseHandle(F(HANDLE, self, 40)); F(HANDLE, self, 40) = 0; }
+    if (F(int, self, 2176))
+    {
+        CallStd(FUN_6303b8, F(int, self, 2176), 16398, 0, 0);
+        CallStd(FUN_6303b2, F(int, self, 2176));
+        F(int, self, 2176) = 0;
+    }
+    F(int, self, 2208) = 0;
+    g_md7208b8 = 0;
+    CallC(FUN_5c2f00);
 }
 

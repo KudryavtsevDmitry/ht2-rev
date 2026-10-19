@@ -26,7 +26,7 @@ ASM_VAR(BYTE*, g_musicEnd, $L_723d2c)
 ASM_VAR(AsmLabel, g_vtbl652dc0, $L_652dc0)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
-ASM_PROC(FUN_6021f0)
+extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
 extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")

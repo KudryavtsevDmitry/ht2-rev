@@ -17,7 +17,7 @@ typedef char AsmLabel[1];
 extern "C" void FUN_566020(); KING_ALIAS("_FUN_566020", "@Copter_NearestVisible@16")    // copter: the vehicle to follow (mode, a)
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
-ASM_PROC(FUN_5c3630)
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
 ASM_PROC(FUN_5d31e0)
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
@@ -1019,7 +1019,7 @@ BYTE* __fastcall Wipers_Construct(BYTE* self, void*, int a)
 
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")    // message: constructor
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")    // message: set (id, data, size)
-ASM_PROC(FUN_5c3630)    // sends a message
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")    // sends a message
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")    // message: destructor
 
 static void CopyText(char* to, const char* s)

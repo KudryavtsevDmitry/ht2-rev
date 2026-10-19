@@ -29,7 +29,7 @@ extern "C" int __cdecl Mixer_Load(int idx, int a, int b);                       
 
 ASM_PROC(FUN_5f2a40)
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // base node constructor (name, kind)
-ASM_PROC(FUN_5e5840)
+extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
 ASM_PROC(FUN_5f1a70)
 ASM_PROC(FUN_5f4a90)
 extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
@@ -795,5 +795,37 @@ extern "C" void __fastcall Chain_MoveTo(BYTE* self, void*)
         CallThis(FUN_5e6800, F(BYTE*, self, 52) + i * 40, &t);
         CallThis(FUN_5e5580, self + 20, &t);
     }
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+
+// [FUN_5ef780] removes this node from its bucket table (+44) or, when linked (+4), from its list; 0 when it isn't in one
+extern "C" int __fastcall Node_Remove(BYTE* self, void*)
+{
+    if (F(BYTE*, self, 4))
+    {
+        CallThis(FUN_5d21b0, self);
+        F(int, self, 44) = 0;
+        F(int, self, 36) = 0;
+        return 1;
+    }
+    BYTE* t = F(BYTE*, self, 44);
+    if (!t)
+        return 0;
+    int n = F(int, t, 52), i = 0;
+    for (; i < n; i++)
+        if (F(BYTE**, t, 48)[i] == self)
+            break;
+    if (i == n)
+        return 0;
+    F(BYTE**, t, 48)[i] = F(BYTE*, self, 8);
+    if (F(BYTE*, self, 8))
+        F(BYTE*, F(BYTE*, self, 8), 4) = 0;
+    F(BYTE*, self, 4) = 0;
+    F(BYTE*, self, 8) = 0;
+    F(BYTE*, self, 44) = 0;
+    return 1;
 }
 

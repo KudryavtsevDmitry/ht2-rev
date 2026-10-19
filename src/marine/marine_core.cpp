@@ -693,7 +693,7 @@ extern "C" DWORD __fastcall MarineMesh_DrainEdges(BYTE* self, void*)
 extern "C" DWORD __fastcall MarineMesh_ConstructGrid(BYTE*,void*,const DWORD*,float,float,DWORD);
 extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE*,void*,DWORD,DWORD,DWORD);
 extern "C" void __fastcall MarineGreed_Destruct(BYTE*, void*);
-ASM_PROC(FUN_5ef780)
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 ASM_PROC(FUN_5d3290)
 ASM_PROC(FUN_5ef660)
 extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD*, const DWORD*, const DWORD*, float);
