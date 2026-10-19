@@ -1504,3 +1504,103 @@ extern "C" void __fastcall WorldObj_Reset(BYTE* self, int)
     *(void**)(self + 96) = r;
     F(int, self, 160) = 1;
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_595230(); KING_ALIAS("_FUN_595230", "@WorldObj595230_Destroy@8")
+extern "C" void FUN_59dbb0(); KING_ALIAS("_FUN_59dbb0", "@WorldObj59dbb0_Destroy@8")
+extern "C" void FUN_5a00c0(); KING_ALIAS("_FUN_5a00c0", "@WorldObj5a00c0_Destroy@8")
+ASM_VAR(float, g_worobj64c330, $L_64c330)
+ASM_VAR(float, g_worobj64c334, $L_64c334)
+ASM_VAR(float, g_worobj64c460, $L_64c460)
+ASM_VAR(float, g_worobj650b68, $L_650b68)
+ASM_VAR(float, g_worobj650b80, $L_650b80)
+ASM_VAR(float, g_worobj6f6a54, $L_6f6a54)
+ASM_VAR(float, g_worobj6f6a58, $L_6f6a58)
+ASM_VAR(float, g_worobj6f6a5c, $L_6f6a5c)
+ASM_VAR(float, g_worobj6f6a60, $L_6f6a60)
+
+static BYTE* Worobj_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_59eab0]
+extern "C" int __fastcall Worobj_59eab0(BYTE* s, void*, int, int) { return 1; }
+// [$L_595210]
+extern "C" BYTE* __fastcall Worobj595210_DeletingDestructor(BYTE* s, void*, int flags) { return Worobj_DeleteAfter(s, flags, FUN_595230); }
+// [$L_59db90]
+extern "C" BYTE* __fastcall Worobj59db90_DeletingDestructor(BYTE* s, void*, int flags) { return Worobj_DeleteAfter(s, flags, FUN_59dbb0); }
+// [$L_5a00a0]
+extern "C" BYTE* __fastcall Worobj5a00a0_DeletingDestructor(BYTE* s, void*, int flags) { return Worobj_DeleteAfter(s, flags, FUN_5a00c0); }
+// [$L_59a6c0]
+extern "C" void __cdecl WorobjInit_59a6c0() { g_worobj6f6a58 = (float)((double)g_worobj650b68 * g_worobj64c460); }
+// [$L_59a6f0]
+extern "C" void __cdecl WorobjInit_59a6f0() { g_worobj6f6a60 = (float)((double)g_worobj650b68 * g_worobj64c334); }
+// [$L_59a720]
+extern "C" void __cdecl WorobjInit_59a720() { g_worobj6f6a54 = (float)((double)g_worobj650b68 * g_worobj64c330); }
+// [$L_59a750]
+extern "C" void __cdecl WorobjInit_59a750() { g_worobj6f6a5c = (float)((double)g_worobj650b68 * g_worobj650b80); }
+
+extern "C" void FUN_59a9a0(); KING_ALIAS("_FUN_59a9a0", "@Effect_Draw@16")
+extern "C" void FUN_59ac40(); KING_ALIAS("_FUN_59ac40", "@Effect_DrawFade@16")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+ASM_VAR(BYTE*, g_worobj696ca0, $L_696ca0)
+ASM_VAR(AsmLabel, g_worobj6f67e0, $L_6f67e0)
+
+// the current item (+88) of the object list at +100
+static BYTE* Worobj_Current(BYTE* s) { return F(BYTE**, s, 100)[F(int, s, 88)]; }
+
+// [$L_59e2d0]
+extern "C" int __fastcall Worobj_59e2d0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_59a9a0, s, a, b); }
+
+// [$L_59f760] clears +88 of the current item first
+extern "C" int __fastcall Worobj_59f760(BYTE* s, void*, int a, int b)
+{
+    F(int, Worobj_Current(s), 88) = 0;
+    return CallThis<int>(FUN_59a9a0, s, a, b);
+}
+
+// [$L_59d760] clears flag 0x1000 of the current item
+extern "C" int __fastcall Worobj_59d760(BYTE* s, void*, int a, int b)
+{
+    F(int, Worobj_Current(s), 32) &= ~0x1000;
+    return CallThis<int>(FUN_59ac40, s, a, b);
+}
+
+// [$L_59dec0] sets flag 0x1000 of the current item and gives it +176
+extern "C" int __fastcall Worobj_59dec0(BYTE* s, void*, int a, int b)
+{
+    F(int, Worobj_Current(s), 32) |= 0x1000;
+    F(int, Worobj_Current(s), 40) = F(int, s, 176);
+    return CallThis<int>(FUN_59ac40, s, a, b);
+}
+
+// [$L_595240]
+extern "C" int __fastcall Worobj_595240(BYTE*, void*, int a)
+{
+    CallVirt(g_worobj696ca0, 52, a);
+    return 1;
+}
+
+// [$L_595ca0] static initializer: six zero 12-byte records at 6f67d8
+extern "C" void __cdecl WorobjInit_595ca0()
+{
+    DWORD* p = (DWORD*)g_worobj6f67e0 - 2;
+    for (int i = 0; i < 18; i++)
+        p[i] = 0;
+}
+
+// [$L_5a3e90] the frame of the animation: the fraction of time / period (+48) times the count (+40)
+extern "C" int __fastcall Worobj_5a3e90(BYTE* s)
+{
+    double t = F(double, F(BYTE*, s, 32), 2968) / F(double, s, 48);
+    int whole = (int)t;
+    int frame = (int)((t - whole) * F(int, s, 40));
+    CallC(FUN_5e1a10, F(int, s, 36), frame);
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}

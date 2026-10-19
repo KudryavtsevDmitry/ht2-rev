@@ -129,3 +129,18 @@ extern "C" int __cdecl Tsc_Calibrate(int)
     SetThreadPriority(GetCurrentThread(), prio);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_603e90(); KING_ALIAS("_FUN_603e90", "@Thread_Destroy@8")
+
+static BYTE* Tim_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_603e40]
+extern "C" BYTE* __fastcall Tim603e40_DeletingDestructor(BYTE* s, void*, int flags) { return Tim_DeleteAfter(s, flags, FUN_603e90); }

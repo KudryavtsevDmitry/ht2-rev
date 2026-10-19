@@ -880,3 +880,18 @@ extern "C" void __fastcall Owner_Detach(BYTE* self, void*, BYTE* node)
     F(BYTE*, node, 12) = 0;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_5d3290)
+
+static BYTE* Cor_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5d31c0]
+extern "C" BYTE* __fastcall Cor5d31c0_DeletingDestructor(BYTE* s, void*, int flags) { return Cor_DeleteAfter(s, flags, FUN_5d3290); }

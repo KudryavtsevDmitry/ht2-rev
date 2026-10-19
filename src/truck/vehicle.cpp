@@ -1976,3 +1976,101 @@ extern "C" BYTE* __fastcall Car531930_DeletingDestructor(BYTE* s, void*, int fla
         operator delete(s);
     return s;
 }
+
+extern "C" void FUN_53f7e0(); KING_ALIAS("_FUN_53f7e0", "@Obj53f7e0_Construct@8")
+ASM_PROC(FUN_54c820)
+extern "C" void FUN_4ff790(); KING_ALIAS("_FUN_4ff790", "@Car_StartEngine@8")
+extern "C" void FUN_5573e0(); KING_ALIAS("_FUN_5573e0", "@Car_Call555550@12")
+extern "C" void FUN_557400(); KING_ALIAS("_FUN_557400", "@Car_Part16Call@12")
+extern "C" void FUN_557420(); KING_ALIAS("_FUN_557420", "@Car_Member148@12")
+extern "C" void FUN_557460(); KING_ALIAS("_FUN_557460", "@Car_Member156@12")
+extern "C" void FUN_555da0(); KING_ALIAS("_FUN_555da0", "@Car_StepLevels@12")
+extern "C" void FUN_555d60(); KING_ALIAS("_FUN_555d60", "@Car_Set501b90b@12")
+extern "C" void FUN_555c80(); KING_ALIAS("_FUN_555c80", "@Car_PassItems3@12")
+extern "C" void FUN_555b70(); KING_ALIAS("_FUN_555b70", "@Car_PassItems11@12")
+extern "C" void FUN_555b30(); KING_ALIAS("_FUN_555b30", "@Car_Set501b90a@12")
+ASM_PROC(FUN_555a70)
+ASM_PROC(FUN_555ee0)
+extern "C" void FUN_557480(); KING_ALIAS("_FUN_557480", "@Car_Forward21600@12")
+extern "C" void FUN_5566e0(); KING_ALIAS("_FUN_5566e0", "@Obj5566e0_Start@20")
+ASM_PROC(FUN_5455d0)
+ASM_VAR(AsmLabel, g_veh6d20f0, $L_6d20f0)
+
+// [$L_53f720] static initializer: constructs the 80 records of 1488 bytes at 6d20f0
+extern "C" void __cdecl VehInit_53f720()
+{
+    BYTE* p = (BYTE*)g_veh6d20f0;
+    for (int i = 0; i < 80; i++, p += 1488)
+        CallThis(FUN_53f7e0, p);
+}
+
+// [$L_557390] with a cab (+21600) FUN_54c820 (a, b) and FUN_4ff790 of the cab, else vtbl+140 of the body at +16
+extern "C" int __fastcall Car_557390(BYTE* s, void*, int a, int b, int)
+{
+    if (F(BYTE*, s, 21600)) {
+        CallThis(FUN_54c820, s, a, b);
+        return CallThis<int>(FUN_4ff790, F(BYTE*, s, 21600));
+    }
+    return CallVirt<int>(s + 16, 140, a, b);
+}
+
+// the trailer (+21880) first, then the car itself
+static void Car_TrailerThen(BYTE* s, unsigned vtbl, void (*own)(), int a)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        CallVirt(t, vtbl, a);
+    CallThis(own, s, a);
+}
+// [$L_55e1a0]
+extern "C" void __fastcall Car_55e1a0(BYTE* s, void*, int a) { Car_TrailerThen(s, 80, FUN_5573e0, a); }
+// [$L_55e4e0]
+extern "C" void __fastcall Car_55e4e0(BYTE* s, void*, int a) { Car_TrailerThen(s, 92, FUN_557400, a); }
+// [$L_55e510]
+extern "C" void __fastcall Car_55e510(BYTE* s, void*, int a) { Car_TrailerThen(s, 96, FUN_557420, a); }
+
+// the car itself first, then the trailer (+21880)
+static void Car_ThenTrailer(BYTE* s, void (*own)(), unsigned vtbl, int a)
+{
+    CallThis(own, s, a);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t)
+        CallVirt(t, vtbl, a);
+}
+// [$L_55e1d0]
+extern "C" void __fastcall Car_55e1d0(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555da0, 8, a); }
+// [$L_55e200]
+extern "C" void __fastcall Car_55e200(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555d60, 12, a); }
+// [$L_55e230]
+extern "C" void __fastcall Car_55e230(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555c80, 16, a); }
+// [$L_55e260]
+extern "C" void __fastcall Car_55e260(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555b70, 20, a); }
+// [$L_55e290]
+extern "C" void __fastcall Car_55e290(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555b30, 24, a); }
+// [$L_55e2c0]
+extern "C" void __fastcall Car_55e2c0(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555a70, 28, a); }
+// [$L_55e2f0]
+extern "C" void __fastcall Car_55e2f0(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_555ee0, 32, a); }
+// [$L_55e5c0]
+extern "C" void __fastcall Car_55e5c0(BYTE* s, void*, int a) { Car_ThenTrailer(s, FUN_557480, 112, a); }
+
+// [$L_55e580] as above with vtbl+108; the trailer's cab flag 10050 is cleared
+extern "C" void __fastcall Car_55e580(BYTE* s, void*, int a)
+{
+    CallThis(FUN_557460, s, a);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (t) {
+        CallVirt(t, 108, a);
+        F(WORD, F(BYTE*, F(BYTE*, s, 21880), 21600), 10050) = 0;
+    }
+}
+
+// [$L_556150] vtbl+132, FUN_5566e0 (a, b, c) of +9556, then FUN_5455d0 (+9604, copy of +9556)
+extern "C" int __fastcall Car_556150(BYTE* s, void*, int a, int b, int c)
+{
+    CallVirt(s, 132);
+    BYTE* p = s + 9556;
+    CallThis(FUN_5566e0, p, a, b, c);
+    DWORD v[3] = {F(DWORD, p, 0), F(DWORD, p, 4), F(DWORD, p, 8)};
+    return CallThis<int>(FUN_5455d0, s, F(int, s, 9604), v);
+}

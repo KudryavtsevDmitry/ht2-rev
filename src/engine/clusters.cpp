@@ -531,3 +531,121 @@ extern "C" int __fastcall Cluster_Set2(BYTE* self, void*)
     return 1;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_5ea9b0)
+ASM_PROC(FUN_5edb20)
+ASM_PROC(FUN_5eddf0)
+extern "C" void FUN_5ee220(); KING_ALIAS("_FUN_5ee220", "@Texture_Destroy@8")
+extern "C" void FUN_5ef450(); KING_ALIAS("_FUN_5ef450", "@Node_Destroy@8")
+
+static BYTE* Clu_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5ede70]
+extern "C" void __fastcall Clu_5ede70(BYTE*, void*, int) {}
+// [$L_5ea670]
+extern "C" BYTE* __fastcall Clu5ea670_DeletingDestructor(BYTE* s, void*, int flags) { return Clu_DeleteAfter(s, flags, FUN_5ea9b0); }
+// [$L_5edb00]
+extern "C" BYTE* __fastcall Clu5edb00_DeletingDestructor(BYTE* s, void*, int flags) { return Clu_DeleteAfter(s, flags, FUN_5edb20); }
+// [$L_5ede90]
+extern "C" BYTE* __fastcall Clu5ede90_DeletingDestructor(BYTE* s, void*, int flags) { return Clu_DeleteAfter(s, flags, FUN_5eddf0); }
+// [$L_5ee200]
+extern "C" BYTE* __fastcall Clu5ee200_DeletingDestructor(BYTE* s, void*, int flags) { return Clu_DeleteAfter(s, flags, FUN_5ee220); }
+// [$L_5ef430]
+extern "C" BYTE* __fastcall Clu5ef430_DeletingDestructor(BYTE* s, void*, int flags) { return Clu_DeleteAfter(s, flags, FUN_5ef450); }
+
+extern "C" void FUN_5eb2c0(); KING_ALIAS("_FUN_5eb2c0", "@Camera_Apply@12")
+extern "C" void FUN_5ee470(); KING_ALIAS("_FUN_5ee470", "@Overlay_DrawOn@16")
+extern "C" void FUN_5edfe0(); KING_ALIAS("_FUN_5edfe0", "@Cluster_Clear2@8")
+extern "C" void FUN_5bac90(); KING_ALIAS("_FUN_5bac90", "@Texture_ReleaseSurface@8")
+extern "C" void FUN_5ee020(); KING_ALIAS("_FUN_5ee020", "@Cluster_Set2@8")
+ASM_PROC(FUN_5bae30)
+extern "C" void FUN_5ee300(); KING_ALIAS("_FUN_5ee300", "@List5ee300_Add@12")
+
+// [$L_5ed9a0] FUN_5eb2c0 of a with self
+extern "C" int __fastcall Clu_5ed9a0(BYTE* s, void*, BYTE* a) { return CallThis<int>(FUN_5eb2c0, a, s); }
+// [$L_5edaf0] the owner (+40) through its vtbl+32
+extern "C" int __fastcall Clu_5edaf0(BYTE* s, void*, int a) { return CallVirt<int>(F(BYTE*, s, 40), 32, a); }
+// [$L_5ede80] the owner (+40) through its vtbl+28
+extern "C" int __fastcall Clu_5ede80(BYTE* s, void*, int a) { return CallVirt<int>(F(BYTE*, s, 40), 28, a); }
+// [$L_5ee2f0] vtbl+40 when a is set
+extern "C" int __fastcall Clu_5ee2f0(BYTE* s, void*, int a) { return a ? CallVirt<int>(s, 40) : a; }
+
+// [$L_5ed9b0] FUN_5ee470 (a, self) of +136 of the object at +8624
+extern "C" void __fastcall Clu_5ed9b0(BYTE* s, void*, int a)
+{
+    if (!a)
+        return;
+    BYTE* o = F(BYTE*, s, 8624);
+    if (!o || !F(BYTE*, o, 136))
+        return;
+    CallThis(FUN_5ee470, F(BYTE*, o, 136), a, s);
+}
+
+// [$L_5ee3a0] vtbl+24 (a) of each child (+32, count +28)
+extern "C" void __fastcall Clu_ChildrenCall24(BYTE* s, void*, int a)
+{
+    for (int i = 0; i < F(int, s, 28); i++)
+        CallVirt(F(BYTE**, s, 32)[i], 24, a);
+}
+
+// [$L_5edd70] after FUN_5edfe0: FUN_5bac90 of each item (+68, count +44)
+extern "C" int __fastcall Clu_5edd70(BYTE* s)
+{
+    int r = CallThis<int>(FUN_5edfe0, s);
+    if (!r)
+        return r;
+    for (int i = 0; i < F(int, s, 44); i++)
+        CallThis(FUN_5bac90, F(BYTE**, s, 68)[i]);
+    return 1;
+}
+// [$L_5eddb0] after FUN_5ee020: FUN_5bae30 (0) of each item
+extern "C" int __fastcall Clu_5eddb0(BYTE* s)
+{
+    int r = CallThis<int>(FUN_5ee020, s);
+    if (!r)
+        return r;
+    for (int i = 0; i < F(int, s, 44); i++)
+        CallThis(FUN_5bae30, F(BYTE**, s, 68)[i], 0);
+    return 1;
+}
+
+// [$L_5ee340] the larger of the two +16 when FUN_5ee300 (p) agrees
+extern "C" int __fastcall Clu_Max16(BYTE* s, void*, BYTE* p)
+{
+    int r = CallThis<int>(FUN_5ee300, s, p);
+    if (r && F(int, p, 16) > F(int, s, 16))
+        F(int, s, 16) = F(int, p, 16);
+    return r;
+}
+// [$L_5ee370] p's +16 added when FUN_5ee300 (p) agrees
+extern "C" int __fastcall Clu_Add16(BYTE* s, void*, BYTE* p)
+{
+    int r = CallThis<int>(FUN_5ee300, s, p);
+    if (r)
+        F(int, s, 16) += F(int, p, 16);
+    return r;
+}
+
+// [$L_5ee260] attaches o at +44 (the old one gets vtbl+36), marks +20 and tells the owner (+40, vtbl+28)
+extern "C" void __fastcall Clu_Attach(BYTE* s, void*, BYTE* o)
+{
+    if (!o)
+        return;
+    BYTE* old = F(BYTE*, s, 44);
+    if (old != o) {
+        if (old)
+            CallVirt(old, 36);
+        F(BYTE*, s, 44) = o;
+    }
+    F(int, s, 20) |= 1;
+    if (F(BYTE*, s, 40))
+        CallVirt(F(BYTE*, s, 40), 28, s);
+}

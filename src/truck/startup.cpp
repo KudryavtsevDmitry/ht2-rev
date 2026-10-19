@@ -694,3 +694,110 @@ extern "C" void __cdecl Obj_HookHandlers(BYTE* o)
     F(void*, o, 2712) = (void*)$L_52ee70;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_4e0140(); KING_ALIAS("_FUN_4e0140", "@Wnd4e0140_Destruct@8")
+ASM_PROC(FUN_5f0770)
+ASM_VAR(AsmLabel, g_sta64d81c, $L_64d81c)
+
+static BYTE* Sta_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_4e01b0]
+extern "C" BYTE* __fastcall Sta4e01b0_DeletingDestructor(BYTE* s, void*, int flags) { return Sta_DeleteAfter(s, flags, FUN_4e0140); }
+// [$L_4e1d90]
+extern "C" BYTE* __fastcall Sta4e1d90_DeletingDestructor(BYTE* s, void*, int flags) { return Sta_DeleteAfter(s, flags, FUN_5f0770); }
+// [$L_4e1db0]
+extern "C" BYTE* __fastcall Sta4e1db0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_sta64d81c;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+ASM_PROC(FUN_4e24ca)
+ASM_PROC(FUN_5dfa90)
+ASM_PROC(FUN_5dff20)
+ASM_PROC(FUN_5de600)
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+extern "C" void FUN_4eb230(); KING_ALIAS("_FUN_4eb230", "_Tables_Clear697608")
+extern "C" void FUN_57cab0(); KING_ALIAS("_FUN_57cab0", "_Race_ResetState")
+extern "C" void FUN_53fd60(); KING_ALIAS("_FUN_53fd60", "_Cars_ResetGlobals")
+extern "C" void FUN_557510(); KING_ALIAS("_FUN_557510", "_Car_ClearGlobals6ef2b8")
+ASM_PROC(FUN_578100)
+ASM_PROC(FUN_4e35cf)
+ASM_PROC(FUN_4e0280)
+ASM_PROC(FUN_53fcf0)
+extern "C" void FUN_52ad30(); KING_ALIAS("_FUN_52ad30", "_Cars_LoadCollision")
+ASM_PROC(FUN_5c5370)
+ASM_PROC(FUN_4b9570)
+ASM_VAR(AsmLabel, s_sta671204, $L_671204)
+ASM_VAR(double, g_sta64b658, $L_64b658)
+ASM_VAR(double, g_sta696d08, $L_696d08)
+ASM_VAR(AsmLabel, g_sta696c78, $L_696c78)
+ASM_VAR(AsmLabel, g_sta6d1cd0, $L_6d1cd0)
+ASM_VAR(int, g_sta6968d4, $L_6968d4)
+ASM_VAR(AsmLabel, g_sta696750, $L_696750)
+ASM_VAR(WORD, g_sta67d10a, $L_67d10a)
+ASM_VAR(WORD, g_sta672d84, $L_672d84)
+
+// [$L_4e01a0]
+extern "C" BYTE* __fastcall King_At704(BYTE* s) { return s + 704; }
+// [$L_4e1e30]
+extern "C" void __fastcall King_Set340(BYTE* s) { F(int, s, 340) = 1; }
+// [$L_4e24c0]
+extern "C" void __cdecl King_4e24c0() { CallC(FUN_4e24ca); }
+
+// [$L_4e0160]
+extern "C" int __fastcall King_4e0160(BYTE* s, void*, int a)
+{
+    CallVirt(s, 148, a);
+    return 0;
+}
+// [$L_4e0180]
+extern "C" int __fastcall King_4e0180(BYTE* s, void*, int a) { return CallVirt<int>(s, 196, (const char*)s_sta671204, a); }
+// [$L_4e0b50]
+extern "C" int __fastcall King_4e0b50(BYTE* s)
+{
+    CallVirt(s, 76);
+    return CallThis<int>(FUN_5dfa90, s);
+}
+// [$L_4e0930]
+extern "C" int __fastcall King_4e0930(BYTE* s, void*, int a, int b, int c, int d) { return CallThis<int>(FUN_5dff20, s, a, b, c, d); }
+
+// [$L_4e0b80] the game clock (+2968) less the scaled real time to 696d08, resets, 696c78..696c8c cleared
+extern "C" int __fastcall King_4e0b80(BYTE* s)
+{
+    CallThis(FUN_5de600, s);
+    double t = CallC<double>(FUN_6037e0) * g_sta64b658;
+    g_sta696d08 = F(double, s, 2968) - t;
+    CallC(FUN_4eb230);
+    CallC(FUN_57cab0);
+    CallC(FUN_53fd60);
+    CallC(FUN_557510);
+    DWORD* z = (DWORD*)g_sta696c78;
+    z[0] = z[1] = z[2] = z[3] = z[4] = z[5] = 0;
+    return 0;
+}
+
+// [$L_4e0560] the world's start
+extern "C" void __fastcall King_4e0560(BYTE* s)
+{
+    CallC(FUN_578100, 0);
+    CallC(FUN_4e35cf);
+    CallThis(FUN_4e0280, g_sta6d1cd0);
+    CallC(FUN_53fcf0, s, (BYTE*)g_sta696750, 980, g_sta6968d4);
+    g_sta672d84 = (WORD)(g_sta67d10a + 1);
+    CallC(FUN_52ad30);
+    F(float, s, 9376) = (float)F(double, s, 3048);
+    F(float, s, 9380) = (float)F(double, s, 3056);
+    CallThis(FUN_5c5370, s);
+    CallC(FUN_4b9570, s);
+}

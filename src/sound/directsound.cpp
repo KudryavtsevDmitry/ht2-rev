@@ -670,3 +670,126 @@ fail:
     return 0;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_604120(); KING_ALIAS("_FUN_604120", "@Play_DestructBase@8")
+ASM_PROC(FUN_6052b0)
+ASM_VAR(float, g_dir652e40, $L_652e40)
+ASM_VAR(float, g_dir7241ac, $L_7241ac)
+
+static BYTE* Dir_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_604100]
+extern "C" BYTE* __fastcall Dir604100_DeletingDestructor(BYTE* s, void*, int flags) { return Dir_DeleteAfter(s, flags, FUN_604120); }
+// [$L_605290]
+extern "C" BYTE* __fastcall Dir605290_DeletingDestructor(BYTE* s, void*, int flags) { return Dir_DeleteAfter(s, flags, FUN_6052b0); }
+// [$L_605750]
+extern "C" void __cdecl DirInit_605750() { g_dir7241ac = (float)((double)g_dir652e40 + (double)g_dir652e40); }
+
+extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
+extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
+ASM_PROC(FUN_605310)
+extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
+extern "C" void FUN_6052c0(); KING_ALIAS("_FUN_6052c0", "@Play_UpdateVolume@8")
+extern "C" void FUN_6054f0(); KING_ALIAS("_FUN_6054f0", "@Play_Arbitrate@8")
+ASM_VAR(int, g_dir6843ec, $L_6843ec)
+
+// a COM method of the buffer o (vtable slot at byte offset off)
+template <class R = int, class... A>
+static R Dir_Com(void* o, unsigned off, A... args)
+{
+    void* fn = *(void**)(*(char**)o + off);
+    return ((R(__stdcall*)(void*, A...))fn)(o, args...);
+}
+
+// [$L_604080] format (+28, +32, +36 word)
+extern "C" void __fastcall Dir_SetFormat(BYTE* s, void*, int a, int b, WORD w)
+{
+    F(int, s, 28) = a;
+    F(int, s, 32) = b;
+    F(WORD, s, 36) = w;
+}
+
+// [$L_6040e0] the frequency (+44) in thousandths of the base (+48)
+extern "C" unsigned __fastcall Dir_Rate(BYTE* s) { return F(unsigned, s, 44) * 1000 / F(unsigned, s, 48); }
+
+// [$L_6040a0] the frequency from a rate in thousandths, kept within 100..100000
+extern "C" void __fastcall Dir_SetRate(BYTE* s, void*, unsigned rate)
+{
+    F(unsigned, s, 44) = F(unsigned, s, 48) * rate / 1000;
+    if (F(unsigned, s, 44) > 100000)
+        F(unsigned, s, 44) = 100000;
+    if (F(unsigned, s, 44) < 100)
+        F(unsigned, s, 44) = 100;
+}
+
+// [$L_6056c0] the buffer's frequency read back (vtbl+32 into +44), as a rate
+extern "C" unsigned __fastcall Dir_ReadRate(BYTE* s)
+{
+    void* b = F(void*, s, 56);
+    if (b)
+        Dir_Com(b, 32, s + 44);
+    return F(unsigned, s, 44) * 1000 / F(unsigned, s, 48);
+}
+
+// [$L_6055a0] the buffer's vtbl+72
+extern "C" void __fastcall Dir_Buffer72(BYTE* s)
+{
+    void* b = F(void*, s, 56);
+    if (b)
+        Dir_Com(b, 72);
+}
+
+// [$L_605580] releases the buffer
+extern "C" void __fastcall Dir_ReleaseBuffer(BYTE* s)
+{
+    void* b = F(void*, s, 56);
+    if (b)
+        Dir_Com(b, 8);
+    F(int, s, 60) = 0;
+    F(int, s, 56) = 0;
+}
+
+// [$L_6055b0] 1 while playing (status bit 0) or without a buffer
+extern "C" int __fastcall Dir_IsPlaying(BYTE* s)
+{
+    void* b = F(void*, s, 56);
+    if (!b)
+        return 1;
+    DWORD st;
+    Dir_Com(b, 36, &st);
+    return st & 1;
+}
+
+// [$L_605460]
+extern "C" int __fastcall Dir_605460(BYTE* s)
+{
+    CallThis(FUN_604a60, s);
+    CallC(FUN_6051b0);
+    int r = CallThis<int>(FUN_605310, s);
+    if (r)
+        g_dir6843ec = 3;
+    CallC(FUN_604a70);
+    return r;
+}
+
+// [$L_605530] a new format; the buffer gets volume (+64) and pan (+68) again
+extern "C" int __fastcall Dir_Reformat(BYTE* s, void*, int a, int b, WORD w)
+{
+    F(int, s, 32) = b;
+    F(int, s, 28) = a;
+    F(WORD, s, 36) = w;
+    CallThis(FUN_6052c0, s);
+    if (F(void*, s, 56)) {
+        Dir_Com(F(void*, s, 56), 64, F(int, s, 64));
+        Dir_Com(F(void*, s, 56), 60, F(int, s, 68));
+    }
+    return CallThis<int>(FUN_6054f0, s);
+}

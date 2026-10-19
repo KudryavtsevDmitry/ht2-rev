@@ -683,3 +683,23 @@ extern "C" void __fastcall DequeDw_PushBackAux(BYTE* self, int, const DWORD* x)
     F(BYTE*, self, 32) = first + 512;
     F(BYTE*, self, 24) = F(BYTE*, self, 28);
 }
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+extern "C" void FUN_4a3fd0(); KING_ALIAS("_FUN_4a3fd0", "@SchScope_Destroy@8")
+ASM_VAR(AsmLabel, g_nat67060c, $L_67060c)
+
+static BYTE* Nat_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_4a2eb0]
+extern "C" int __fastcall Nat_4a2eb0(BYTE* s) { return 12; }
+// [$L_4a2ec0]
+extern "C" int __fastcall Nat_4a2ec0(BYTE* s) { return (int)g_nat67060c; }
+// [$L_4a2ed0]
+extern "C" BYTE* __fastcall Nat4a2ed0_DeletingDestructor(BYTE* s, void*, int flags) { return Nat_DeleteAfter(s, flags, FUN_4a3fd0); }

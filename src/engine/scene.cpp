@@ -893,3 +893,166 @@ extern "C" long __cdecl Mesh_Draw(BYTE* r, BYTE* mesh, BYTE* mat, ScVec3* p, int
     return CallThis<long>(FUN_5b1df0, r, mat, prim, mesh, g_sc723a90);
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods and static initializers.
+
+ASM_PROC(FUN_5ef660)
+extern "C" void FUN_5f06e0(); KING_ALIAS("_FUN_5f06e0", "@Node5f06e0_Destroy@8")
+extern "C" void FUN_5f07a0(); KING_ALIAS("_FUN_5f07a0", "@Node5f07a0_Destroy@8")
+extern "C" void FUN_5f0810(); KING_ALIAS("_FUN_5f0810", "@Node5f0810_Destroy@8")
+ASM_PROC(FUN_5f08c0)
+extern "C" void FUN_5f15a0(); KING_ALIAS("_FUN_5f15a0", "@Node5f1530_Destroy@8")
+ASM_PROC(FUN_5f1a70)
+ASM_PROC(FUN_5fa720)
+extern "C" void FUN_5faa60(); KING_ALIAS("_FUN_5faa60", "@Node5faa60_Destroy@8")
+extern "C" void FUN_5fcc70(); KING_ALIAS("_FUN_5fcc70", "@Node5fcc70_Destroy@8")
+
+static BYTE* Sce_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5ef6b0]
+extern "C" BYTE* __fastcall Sce5ef6b0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5ef660); }
+// [$L_5f06c0]
+extern "C" BYTE* __fastcall Sce5f06c0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5f06e0); }
+// [$L_5f0780]
+extern "C" BYTE* __fastcall Sce5f0780_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5f07a0); }
+// [$L_5f07f0]
+extern "C" BYTE* __fastcall Sce5f07f0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5f0810); }
+// [$L_5f0880]
+extern "C" BYTE* __fastcall Sce5f0880_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5faa60); }
+// [$L_5f08a0]
+extern "C" BYTE* __fastcall Sce5f08a0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5f08c0); }
+// [$L_5f1510]
+extern "C" BYTE* __fastcall Sce5f1510_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5f15a0); }
+// [$L_5f1a50]
+extern "C" BYTE* __fastcall Sce5f1a50_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5f1a70); }
+// [$L_5fa6d0]
+extern "C" BYTE* __fastcall Sce5fa6d0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5fa720); }
+// [$L_5fc6c0]
+extern "C" BYTE* __fastcall Sce5fc6c0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5fcc70); }
+
+ASM_PROC(FUN_5f21e0)
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+ASM_PROC(FUN_5f1db0)
+extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
+ASM_PROC(FUN_5f8bf0)
+extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
+extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
+extern "C" void FUN_5ab790(); KING_ALIAS("_FUN_5ab790", "@Vec3_Read@12")
+
+// [$L_5fa5d0] the vector at +56 to out
+extern "C" int __fastcall Sce_Get56(BYTE* s, void*, DWORD* out)
+{
+    out[0] = F(DWORD, s, 56);
+    out[1] = F(DWORD, s, 60);
+    out[2] = F(DWORD, s, 64);
+    return 1;
+}
+// [$L_5fab30] the vector at +56 from v
+extern "C" int __fastcall Sce_Set56(BYTE* s, void*, const DWORD* v)
+{
+    F(DWORD, s, 56) = v[0];
+    F(DWORD, s, 60) = v[1];
+    F(DWORD, s, 64) = v[2];
+    return 1;
+}
+// [$L_5fada0] the vector at +84 to out
+extern "C" int __fastcall Sce_Get84(BYTE* s, void*, DWORD* out)
+{
+    out[0] = F(DWORD, s, 84);
+    out[1] = F(DWORD, s, 88);
+    out[2] = F(DWORD, s, 92);
+    return 1;
+}
+
+// [$L_5fb7b0] FUN_5f21e0 (0, a, b) unless hidden (+40 bit 0)
+extern "C" int __fastcall Sce_5fb7b0(BYTE* s, void*, int a, int b)
+{
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    return CallThis<int>(FUN_5f21e0, s, 0, a, b);
+}
+
+// [$L_5f96e0] FUN_5f21e0 with the count (+56, or +56 of the source at +60) limited to +52
+extern "C" int __fastcall Sce_5f96e0(BYTE* s, void*, int a, int b)
+{
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    int n = F(int, s, 56);
+    if (F(BYTE*, s, 60))
+        n = F(int, F(BYTE*, s, 60), 56);
+    if (n > F(int, s, 52))
+        n = F(int, s, 52);
+    return CallThis<int>(FUN_5f21e0, s, n, a, b);
+}
+
+// the node's part of a load: FUN_5f1db0 (file, FUN_5ab140 (file), kind, b, c)
+static int Sce_LoadTail(BYTE* s, int file, int kind, int b, int c)
+{
+    int r = CallC<int>(FUN_5ab140, file);
+    return CallThis<int>(FUN_5f1db0, s, file, r, kind, b, c);
+}
+// [$L_5fca20]
+extern "C" int __fastcall Sce_Load5fca20(BYTE* s, void*, int f, int b, int c) { return Sce_LoadTail(s, f, 1, b, c); }
+// [$L_5fb510]
+extern "C" int __fastcall Sce_Load5fb510(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    return Sce_LoadTail(s, f, 1, b, c);
+}
+// [$L_5f4960]
+extern "C" int __fastcall Sce_Load5f4960(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    CallThis(FUN_5ac7f0, s + 56, f);
+    return Sce_LoadTail(s, f, 3, b, c);
+}
+// [$L_5f8ed0]
+extern "C" int __fastcall Sce_Load5f8ed0(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    CallThis(FUN_5f8bf0, s + 56, f);
+    return Sce_LoadTail(s, f, 2, b, c);
+}
+
+// [$L_5faad0] reads +20, the flag/count word (bit 0 clear sets +48, the rest to +52), +56 and +68
+extern "C" int __fastcall Sce_Load5faad0(BYTE* s, void*, int f, int, int)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    int r = CallC<int>(FUN_5ab140, f);
+    F(int, s, 48) = (r & 1) ? 0 : 1;
+    F(int, s, 52) = r >> 1;
+    CallThis(FUN_5ab790, s + 56, f);
+    F(int, s, 68) = CallC<int>(FUN_5ab140, f);
+    return 1;
+}
+
+// [$L_5fa4b0]
+extern "C" int __fastcall Sce_5fa4b0(BYTE* s, void*, int a, int b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    CallThis(FUN_5f2080, s, 0, a, b);
+    return 1;
+}
+
+// [$L_5f9720] after FUN_5ef780: the object at +76 gets vtbl+36, is deleted and cleared
+extern "C" int __fastcall Sce_5f9720(BYTE* s)
+{
+    int r = CallThis<int>(FUN_5ef780, s);
+    if (!r)
+        return r;
+    if (F(BYTE*, s, 76)) {
+        CallVirt(F(BYTE*, s, 76), 36);
+        if (F(BYTE*, s, 76))
+            CallVirt(F(BYTE*, s, 76), 0, 1);
+        F(int, s, 76) = 0;
+    }
+    return 1;
+}
