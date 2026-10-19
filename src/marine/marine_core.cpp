@@ -16,7 +16,7 @@ extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);
 extern "C" void __fastcall GridEdge_Destruct(BYTE*,void*);
 extern "C" void __fastcall GridBranch_Destruct(BYTE*,void*);
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
-ASM_PROC(FUN_60aa60)
+extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*, void*, BYTE*, DWORD);
 extern "C" DWORD __fastcall MarineQueue_Empty(BYTE*,void*);
@@ -974,7 +974,7 @@ extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWOR
 
 // Marine task deferred bounds and update dispatch.
 extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
-ASM_PROC(FUN_5d32f0)
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
 ASM_PROC(FUN_5b4fc0)
 extern "C" void __fastcall MarineTask_DrawPending(BYTE*,void*,const float*,const float*,BYTE*);
 ASM_VAR(float, g_mt_axisX, $L_702620)
@@ -1031,8 +1031,8 @@ extern "C" DWORD __fastcall MarineTask_DispatchUpdate(BYTE* self, void*, DWORD u
 // Marine task construction and scene resources.
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
 ASM_PROC(FUN_5d3110)
-ASM_PROC(FUN_5d3570)
-ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
@@ -1690,3 +1690,24 @@ extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE* self,void*,DWOR
     F(float,owner,72)=(float)previous;
     MarineMesh_ResponseRange(owner,previous);
 }
+
+// ---------------------------------------------------------------------------
+#include <stdarg.h>
+ASM_PROC(FUN_5d2ba0)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_60aa60..$L_60aab3] a grid message: printf-style text, fatal for level 2, else logged
+extern "C" void __cdecl Grd_Message(int level, const char* fmt, ...)
+{
+    char text[256];
+    text[0] = 0;
+    va_list va;
+    va_start(va, fmt);
+    wvsprintfA(text + lstrlenA(text), fmt, va);
+    va_end(va);
+    if (level == 2)
+        Sys_Fatal(text, 0);
+    else
+        CallC(FUN_5d2ba0, text, 0);
+}
+

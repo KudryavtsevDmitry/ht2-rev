@@ -27,7 +27,7 @@ extern "C" BYTE* __cdecl Scene_FindObject(BYTE* scene, const char* name);       
 
 extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
-ASM_PROC(FUN_5e5130)
+extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
 extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
 extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
@@ -53,7 +53,7 @@ ASM_PROC(FUN_5da950)
 ASM_PROC(FUN_5dbf00)
 ASM_PROC(FUN_6037e0)    // time in ms, returns double
 ASM_PROC(FUN_5e48f0)
-ASM_PROC(FUN_5e4900)
+extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
 ASM_PROC(FUN_5ea1b0)    // draws text
 extern "C" void* __stdcall AfxGetThread_();
 KING_ALIAS("_AfxGetThread_@0", "?AfxGetThread@@YGPAVCWinThread@@XZ")
@@ -974,3 +974,167 @@ int __cdecl Screen_GrabToFile(const char* file)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5d27c0(); KING_ALIAS("_FUN_5d27c0", "@NameHash_ResolvePending@8")
+extern "C" void FUN_5ea990(); KING_ALIAS("_FUN_5ea990", "@Room_EachGroup@8")
+extern "C" void FUN_5e4740(); KING_ALIAS("_FUN_5e4740", "@Resource_Free@8")
+extern "C" void FUN_5e48a0(); KING_ALIAS("_FUN_5e48a0", "@ResTable_Remove@12")
+extern "C" void FUN_5e4ec0(); KING_ALIAS("_FUN_5e4ec0", "@Resources_Find@12")
+extern "C" void FUN_5e4660(); KING_ALIAS("_FUN_5e4660", "@Resource_Construct@16")
+ASM_PROC(FUN_5dc230)    // (this, a) -> b
+ASM_PROC(FUN_5dae90)    // (this, b, c, d)
+ASM_PROC(FUN_5e4f60)    // resources: load table (this, name)
+ASM_PROC(FUN_5e48f0)
+ASM_PROC(FUN_5d2ba0)
+ASM_VAR(AsmLabel, g_objectNames, $L_71e820)
+ASM_VAR(AsmLabel, s_6832d4, $L_6832d4)
+ASM_VAR(AsmLabel, s_683338, $L_683338)
+ASM_VAR(AsmLabel, s_6833a8, $L_6833a8)
+ASM_VAR(AsmLabel, s_683384, $L_683384)
+ASM_VAR(AsmLabel, s_683314, $L_683314)
+ASM_VAR(AsmLabel, s_6832fc, $L_6832fc)
+ASM_VAR(AsmLabel, s_6833cc, $L_6833cc)
+ASM_VAR(AsmLabel, s_68337c, $L_68337c)
+ASM_VAR(AsmLabel, s_68335c, $L_68335c)
+ASM_VAR(int, g_702e9c, $L_702e9c)
+ASM_VAR(int, g_720930, $L_720930)
+ASM_VAR(int, g_resPending, $L_7217a4)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_5e4860..$L_5e488a] puts a resource into the first free one of the 1000 slots at +12; returns the table's +4012 (-1 and fatal when full)
+extern "C" int __fastcall ResTable_Add(BYTE* self, void*, BYTE* res)
+{
+    for (int i = 0; i < 1000; i++)
+        if (!F(BYTE*, self, 12 + i * 4))
+        {
+            F(BYTE*, self, 12 + i * 4) = res;
+            F(BYTE*, res, 12) = self;
+            return F(int, self, 4012);
+        }
+    Sys_Fatal(s_6832d4, 0);
+    return -1;
+}
+
+// [FUN_5dc3e0..$L_5dc417] sets (a, b, c) through 5dc230/5dae90, resolves pending object names (fatal on a missing one) and walks the room's groups
+extern "C" void __fastcall Light_Update(BYTE* self, void*, int a, int b, int c)
+{
+    int x = CallThis<int>(FUN_5dc230, self, a);
+    CallThis(FUN_5dae90, self, x, b, c);
+    const char* missing = CallThis<const char*>(FUN_5d27c0, g_objectNames);
+    if (missing)
+        Sys_Fatal(missing, 0);
+    if (F(BYTE*, self, 468))
+        CallThis(FUN_5ea990, F(BYTE*, self, 468));
+}
+
+// [FUN_5e50d0..$L_5e50ec] allocates row idx (of 400) of 500 cleared slots; 0 when it exists already
+extern "C" int __fastcall Resources_NewRow(BYTE* self, void*, int idx)
+{
+    if (idx >= 400)
+        Sys_Fatal(s_683338, 0);
+    if (F(int*, self, idx * 4))
+        return 0;
+    F(int*, self, idx * 4) = (int*)operator new(2000);
+    for (int i = 0; i < 500; i++)
+        F(int*, self, idx * 4)[i] = 0;
+    return 1;
+}
+
+// [FUN_5e5210..$L_5e5272] frees and deletes resource id (row id/1000, slot id%1000); -1 for a missing row, else 3
+extern "C" int __fastcall Resources_Delete(BYTE* self, void*, int id)
+{
+    int row = id / 1000, slot = id % 1000;
+    if (row >= 400)
+        Sys_Fatal(s_6833a8, 0);
+    if (!F(BYTE**, self, row * 4))
+        return -1;
+    if (slot >= 500)
+        Sys_Fatal(s_683384, 0);
+    BYTE* r = F(BYTE**, self, row * 4)[slot];
+    if (r)
+    {
+        CallThis(FUN_5e4740, r);
+        operator delete(r);
+        F(BYTE**, self, row * 4)[slot] = 0;
+    }
+    return 3;
+}
+
+typedef void (__cdecl* ResCallback)(BYTE* res, int loaded);
+
+// [FUN_5e4900..$L_5e49ba] charges a waiting resource's size to the table's budget and tells its callback (or reports it doesn't fit)
+extern "C" void __fastcall ResTable_Charge(BYTE* self, void*, BYTE* tab)
+{
+    if (F(int, F(BYTE*, self, 12), 4012) == 2 || F(int, self, 0) != 2)
+        return;
+    if (!F(ResCallback, tab, 2004))
+        return;
+    if (F(unsigned, tab, 2000) < F(unsigned, self, 16))
+    {
+        F(ResCallback, tab, 2004)(self, 0);
+        return;
+    }
+    if (F(int, self, 28))
+    {
+        CallC(FUN_5d2ba0, (char*)s_683314, F(int, self, 4));
+        Sys_Fatal(s_6832fc, 0);
+    }
+    F(int, self, 0) = 1;
+    F(unsigned, tab, 2000) -= F(unsigned, self, 16);
+    g_720930 = g_702e9c;
+    F(ResCallback, tab, 2004)(self, 1);
+    if (F(unsigned, self, 16) > 0)
+    {
+        g_resPending++;
+        CallC(FUN_5e48f0, F(int, tab, 2000), self, 0);
+    }
+}
+
+// [FUN_5e5420..$L_5e549d] moves a resource into the table named name (loading the table when needed; fatal when there is none)
+extern "C" int __fastcall Resources_Bind(BYTE* self, void*, const char* name, BYTE* res)
+{
+    if (!res)
+        return -1;
+    if (F(BYTE*, res, 12))
+        CallThis(FUN_5e48a0, F(BYTE*, res, 12), res);
+    if (!name)
+        return -1;
+    BYTE* t = CallThis<BYTE*>(FUN_5e4ec0, self, name);
+    if (!t)
+    {
+        CallThis(FUN_5e4f60, self, name);
+        t = CallThis<BYTE*>(FUN_5e4ec0, self, name);
+        if (!t)
+        {
+            char text[84];
+            sprintf(text, s_6833cc, name);
+            Sys_Fatal(text, 0);
+        }
+    }
+    return ResTable_Add(t, 0, res);
+}
+
+// [FUN_5e5130..$L_5e51ad] creates resource id in table name; -1 for a missing row, -2 when it exists, else the new resource's first field
+extern "C" int __fastcall Resources_Create(BYTE* self, void*, int id, const char* name)
+{
+    int row = id / 1000, slot = id % 1000;
+    if (row >= 400)
+        Sys_Fatal(s_683338, 0);
+    if (!F(BYTE**, self, row * 4))
+        return -1;
+    if (slot >= 500)
+    {
+        char text[12];
+        sprintf(text, s_68337c, id);
+        Sys_Fatal(s_68335c, text);
+    }
+    if (F(BYTE**, self, row * 4)[slot])
+        return -2;
+    void* m = operator new(32);
+    BYTE* r = m ? CallThis<BYTE*>(FUN_5e4660, m, id, name) : 0;
+    F(BYTE**, self, row * 4)[slot] = r;
+    Resources_Bind(self, 0, name, r);
+    return F(int, r, 0);
+}
+

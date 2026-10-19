@@ -85,10 +85,10 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 }
 
 ASM_PROC(FUN_5cfb30)
-ASM_PROC(FUN_5d2ac0)
+extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 ASM_PROC(FUN_6037e0)    // time in seconds, returns double
 ASM_PROC(FUN_5d35b0)
-ASM_PROC(FUN_5d3790)
+extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
 ASM_PROC(FUN_5d3080)    // next sibling
 ASM_PROC(FUN_5d38c0)
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
@@ -560,3 +560,195 @@ void __fastcall Queue_Insert(BYTE* self, void*, BYTE* ev)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Fatal errors and the event queues' holders (split procs: their code ran on
+// past ENDP after the call to the fatal error function, which never returns).
+
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
+extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void FUN_5d3090(); KING_ALIAS("_FUN_5d3090", "@Event_Construct@16")
+extern "C" void FUN_5d30e0(); KING_ALIAS("_FUN_5d30e0", "@Event_Construct3@20")
+extern "C" void FUN_5d3630(); KING_ALIAS("_FUN_5d3630", "@Queue_Log@8")
+extern "C" void FUN_5d3660(); KING_ALIAS("_FUN_5d3660", "@Queue_Insert@12")
+extern "C" void FUN_5d3a60(); KING_ALIAS("_FUN_5d3a60", "@Queue_Remove@12")
+extern "C" void FUN_5d2b20(); KING_ALIAS("_FUN_5d2b20", "@Pool_Used@12")
+ASM_PROC(FUN_5d3060)    // event pool: allocate (size ignored)
+ASM_PROC(FUN_5d3080)    // next sibling
+ASM_PROC(FUN_5d2ba0)    // log (text, value)
+ASM_VAR(AsmLabel, s_67fbc4, $L_67fbc4)
+ASM_VAR(AsmLabel, g_text71fc20, $L_71fc20)
+ASM_VAR(AsmLabel, s_67fbe0, $L_67fbe0)
+ASM_VAR(AsmLabel, g_text720028, $L_720028)
+ASM_VAR(AsmLabel, g_text720080, $L_720080)
+ASM_VAR(AsmLabel, s_67fbd0, $L_67fbd0)
+ASM_VAR(AsmLabel, g_text71f820, $L_71f820)
+ASM_VAR(AsmLabel, s_67fc94, $L_67fc94)
+ASM_VAR(AsmLabel, s_67fc78, $L_67fc78)
+ASM_VAR(AsmLabel, s_67fc54, $L_67fc54)
+ASM_VAR(AsmLabel, s_67fb40, $L_67fb40)
+ASM_VAR(AsmLabel, s_67fb24, $L_67fb24)
+ASM_VAR(AsmLabel, s_67fbfc, $L_67fbfc)
+ASM_VAR(AsmLabel, s_67fcb4, $L_67fcb4)
+ASM_VAR(AsmLabel, s_67fc3c, $L_67fc3c)
+ASM_VAR(AsmLabel, g_pool7200c0, $L_7200c0)
+ASM_VAR(int, g_720118, $L_720118)
+extern "C" __declspec(noreturn) void __cdecl _exit(int code);
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_5d2ef0] ends the program: logs "<date> <time>" with the message, runs the fatal hook and exits
+extern "C" void __cdecl Sys_Exit(const char* msg)
+{
+    SYSTEMTIME t;
+    GetLocalTime(&t);
+    sprintf(g_text720028, s_67fbe0, t.wDay, t.wMonth, t.wYear % 100, t.wHour, t.wMinute);
+    sprintf(g_text71f820, s_67fbd0, (char*)g_text720080, (char*)g_text720028, msg);
+    CallC(FUN_5d2ba0, (char*)g_text71f820, 0);
+    g_pfnOnFatal();
+    _exit(0);
+}
+
+// [FUN_5d2e70..$L_5d2e9e] the fatal error: formats (fmt, arg) after resource text 0 and ends the program
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg)
+{
+    const char* head = CallC<const char*>(FUN_5d2e50, 0);
+    sprintf(g_text71fc20, s_67fbc4, head, fmt, arg);
+    Sys_Exit(g_text71fc20);
+}
+
+// [FUN_5d3600..$L_5d3622] a pool failure: fatal, with the text of code 1 or of the others
+extern "C" void __cdecl Pool_Fail(int code)
+{
+    if (code == 1)
+        Sys_Fatal(s_67fc94, 0);
+    Sys_Fatal(s_67fc78, 0);
+}
+
+// [FUN_5d3570..$L_5d358b] attaches a node (one without an owner) to this owner's list at +4
+extern "C" void __fastcall Owner_Attach(BYTE* self, void*, BYTE* node)
+{
+    if (F(int, node, 12))
+        Sys_Fatal(s_67fc54, 0);
+    F(BYTE*, node, 12) = self;
+    BYTE* head = F(BYTE*, self, 4);
+    if (!head)
+    {
+        F(BYTE*, self, 4) = node;
+        return;
+    }
+    CallThis(FUN_5d2190, node, head);
+}
+
+// [FUN_5d2ac0..$L_5d2b0d] frees an element of a fixed-size pool {size, count, base, used flags}; fatal when it isn't one
+extern "C" void __fastcall Pool_FreeItem(BYTE* pool, void*, BYTE* p)
+{
+    unsigned i = (unsigned)(p - F(BYTE*, pool, 8)) / F(unsigned, pool, 0);
+    if ((int)i < 0 || i >= F(unsigned, pool, 4))
+        Sys_Fatal(s_67fb40, 0);
+    if (!F(BYTE*, pool, 12)[i])
+        Sys_Fatal(s_67fb24, 0);
+    F(BYTE*, pool, 12)[i] = 0;
+}
+
+// posts an event built by make to the queue at +12 (fatal when the pool is out of events)
+static int Queue_PostMade(BYTE* self, int arg, int kind)
+{
+    if (!F(void*, self, 12))
+        return 0;
+    void* m = CallC<void*>(FUN_5d3060, 24);
+    BYTE* ev = 0;
+    if (m)
+        ev = kind < 0 ? CallThis<BYTE*>(FUN_5d3090, m, self, arg)
+                      : CallThis<BYTE*>(FUN_5d30e0, m, self, arg, kind);
+    if (!ev)
+    {
+        CallThis(FUN_5d3630, F(void*, self, 12));
+        Sys_Fatal(s_67fbfc, 0);
+    }
+    return CallThis<int>(FUN_5d3660, F(void*, self, 12), ev);
+}
+
+// [FUN_5d32f0..$L_5d3341] posts an event (this, arg) to the queue at +12
+extern "C" int __fastcall Queue_PostEvent(BYTE* self, void*, int arg)
+{
+    return Queue_PostMade(self, arg, -1);
+}
+
+// [FUN_5d3350..$L_5d33a3] posts a kind-1 event (this, arg) to the queue at +12
+extern "C" int __fastcall Queue_PostEvent1(BYTE* self, void*, int arg)
+{
+    return Queue_PostMade(self, arg, 1);
+}
+
+// [FUN_5d33d0..$L_5d3423] posts a kind-2 event (this, arg) to the queue at +12
+extern "C" int __fastcall Queue_PostEvent2(BYTE* self, void*, int arg)
+{
+    return Queue_PostMade(self, arg, 2);
+}
+
+// removes and deletes the children of list whose +12 is key
+static void Queue_DropKey(BYTE* self, BYTE* list, int key)
+{
+    for (BYTE* n = list; n; )
+    {
+        BYTE* next = CallThis<BYTE*>(FUN_5d3080, n);
+        if (F(int, n, 12) == key)
+        {
+            CallThis(FUN_5d3a60, self, n);
+            if (n)
+                CallVirt(n, 0, 1);
+        }
+        n = next;
+    }
+}
+
+// [FUN_5d3790..$L_5d37af] deletes the queued events (both lists) of owner key; fatal for the running one
+extern "C" void __fastcall Queue_RemoveKey(BYTE* self, void*, int key)
+{
+    if (g_720118 == key)
+        Sys_Fatal(s_67fcb4, 0);
+    Queue_DropKey(self, F(BYTE*, self, 12), key);
+    Queue_DropKey(self, F(BYTE*, self, 8), key);
+}
+
+// unlinks and deletes every child of list
+static void Owner_DeleteChildren(BYTE* list)
+{
+    for (BYTE* n = CallThis<BYTE*>(FUN_5d3080, list); n; n = CallThis<BYTE*>(FUN_5d3080, list))
+    {
+        CallThis(FUN_5d21b0, n);
+        if (n)
+            CallVirt(n, 0, 1);
+    }
+}
+
+// [FUN_5d3460..$L_5d34fc] deletes the three lists at +12, +8 (a pooled one) and +4 with their children
+extern "C" void __fastcall Owner_Clear(BYTE* self, void*)
+{
+    F(int, self, 0) = 0;
+    BYTE* q = F(BYTE*, self, 12);
+    if (q)
+    {
+        Owner_DeleteChildren(q);
+        CallVirt(q, 0, 1);
+        F(BYTE*, self, 12) = 0;
+    }
+    q = F(BYTE*, self, 8);
+    if (q)
+    {
+        Owner_DeleteChildren(q);
+        if (!CallThis<int>(FUN_5d2b20, g_pool7200c0, q))
+            Sys_Fatal(s_67fc3c, 0);
+        CallVirt(q, 0, 1);
+        F(BYTE*, self, 8) = 0;
+    }
+    q = F(BYTE*, self, 4);
+    if (q)
+    {
+        Owner_DeleteChildren(q);
+        CallVirt(q, 0, 1);
+        F(BYTE*, self, 4) = 0;
+    }
+}
+

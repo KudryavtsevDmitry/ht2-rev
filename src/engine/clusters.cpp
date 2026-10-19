@@ -413,3 +413,59 @@ int __cdecl FileList_ReadLine(FILE* f, char** name)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, s_683604, $L_683604)
+ASM_VAR(AsmLabel, s_68381c, $L_68381c)
+ASM_VAR(AsmLabel, s_683834, $L_683834)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_5eacc0..$L_5eacd9] appends a value to the array at +100 (count +32, capacity +96); returns its index
+extern "C" int __fastcall Group_Push(BYTE* self, void*, int v)
+{
+    if (F(int, self, 32) == F(int, self, 96))
+        Sys_Fatal(s_683604, 0);
+    F(int*, self, 100)[F(int, self, 32)] = v;
+    return F(int, self, 32)++;
+}
+
+// [FUN_5ee490..$L_5ee4b1] deletes the overlay lists at +0 (fatal for one still locked) and +8
+extern "C" void __fastcall Overlays_Destroy(BYTE* self, void*)
+{
+    for (BYTE* n = F(BYTE*, self, 0); n; )
+    {
+        BYTE* next = F(BYTE*, n, 8);
+        if (F(int, n, 40))
+            Sys_Fatal(s_68381c, 0);
+        if (n)
+            CallVirt(n, 0, 1);
+        n = next;
+    }
+    for (BYTE* n = F(BYTE*, self, 8); n; )
+    {
+        BYTE* next = F(BYTE*, n, 8);
+        if (n)
+            CallVirt(n, 0, 1);
+        n = next;
+    }
+}
+
+// [FUN_5ee4f0..$L_5ee53f] mode 1 gives each overlay of the list a locked global block of its size (+16); then hands each its block
+extern "C" int __fastcall Overlays_Alloc(BYTE* self, void*, int mode)
+{
+    if (!mode)
+        return 1;
+    if (mode == 1)
+        for (BYTE* n = F(BYTE*, self, 0); n; n = F(BYTE*, n, 8))
+        {
+            HGLOBAL h = GlobalAlloc(0, F(int, n, 16));
+            F(HGLOBAL, n, 52) = h;
+            F(void*, n, 48) = GlobalLock(h);
+            if (!F(void*, n, 48))
+                Sys_Fatal(s_683834, 0);
+        }
+    for (BYTE* n = F(BYTE*, self, 0); n; n = F(BYTE*, n, 8))
+        CallVirt(n, 24, F(void*, n, 48));
+    return 1;
+}
+

@@ -88,8 +88,8 @@ ASM_PROC(FUN_4d9460)
 ASM_PROC(FUN_5ef780)
 ASM_PROC(FUN_5f1a70)
 ASM_PROC(FUN_5d31e0)
-ASM_PROC(FUN_5d3570)
-ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_5a0000(); KING_ALIAS("_FUN_5a0000", "@VehGlowManager_Construct@12")
 ASM_PROC(FUN_5d3110)
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
@@ -142,7 +142,7 @@ KING_ALIAS("_Fx_Message", "FUN_5d2ba0")
 extern "C" int __cdecl Fx_Find4e5bf5(int a, int b, int c, char* buf);
 KING_ALIAS("_Fx_Find4e5bf5", "FUN_4e5bf5")
 extern "C" void __cdecl Fx_DefaultData(void* data);
-KING_ALIAS("_Fx_DefaultData", "FUN_5469e0")
+KING_ALIAS("_Fx_DefaultData", "_Car_ResetSetup")
 extern "C" int __cdecl Fx_Handle(int a);
 KING_ALIAS("_Fx_Handle", "_Objects_Find")
 
@@ -3003,7 +3003,7 @@ extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    /
 ASM_PROC(FUN_4cf080)
 extern "C" void __fastcall Car_SetInMode(BYTE* car, void*, int mode);
 extern "C" void __fastcall Flags1196_Clear(BYTE* self, void*, int bits);
-ASM_PROC(FUN_58f290)
+extern "C" void FUN_58f290(); KING_ALIAS("_FUN_58f290", "@Body_SetMoveMode@12")
 ASM_VAR(int, g_noVehicle68b990, $L_68b990)
 ASM_VAR(BYTE*, g_fx696340, $L_696340)
 ASM_VAR(int, g_fx696328, $L_696328)
@@ -3178,7 +3178,7 @@ extern "C" void __fastcall Effect4bcbd0_Destroy(void** self, int)
 
 ASM_VAR(char, vt_64c63c, $L_64c63c)
 ASM_PROC(FUN_5ef660)
-ASM_PROC(FUN_60aa60)
+extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 ASM_VAR(char, g_6724f8, $L_6724f8)
 ASM_VAR(char, g_6726e8, $L_6726e8)
 ASM_VAR(char, g_6726e0, $L_6726e0)
@@ -3412,3 +3412,40 @@ extern "C" void __cdecl Fx_ResetShadows()
     if (g_6949fc)
         Set70ebf4(0);
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, s_672554, $L_672554)
+ASM_VAR(AsmLabel, s_67251c, $L_67251c)
+extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_4b8b80..$L_4b8c26] loads the numbered effects "<672554><n>" from 1 on into 695908 until one is missing (fatal when not even the first exists)
+extern "C" void __cdecl Fx_LoadNumbered()
+{
+    int more = 1;
+    g_fx696214 = 0;
+    int i = 1;
+    BYTE** slot = (BYTE**)&g_fx695908;
+    do
+    {
+        char name[256];
+        sprintf(name, &s_fmt67254c, (char*)s_672554, i);
+        BYTE* fx = CallC<BYTE*>(FUN_4b8720, name, g_lib696200);
+        *slot = fx;
+        if (!fx)
+            more = 0;
+        else
+        {
+            g_fx696214++;
+            F(int, fx, 40) = 249;
+            F(DWORD, *slot, 32) |= 0x1000;
+            F(DWORD, *slot, 32) |= 0x40000;
+            F(DWORD, *slot, 32) |= 0x200;
+            i++;
+            slot++;
+        }
+        if (!g_fx696214)
+            Sys_Fatal(s_67251c, 0);
+    } while (more);
+}
+

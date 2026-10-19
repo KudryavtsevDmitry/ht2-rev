@@ -32,7 +32,7 @@ extern "C" BYTE* __cdecl Messages_Clear1276();                     // copter.cpp
 extern "C" int __cdecl Carat_Resource(int id);
 KING_ALIAS("_Carat_Resource", "_Table71e858_Get")
 extern "C" void __cdecl Carat_51d8f0(int a, int b);
-KING_ALIAS("_Carat_51d8f0", "FUN_51d8f0")
+KING_ALIAS("_Carat_51d8f0", "_Save_WriteEntry")
 extern "C" int __cdecl Carat_5d3ab0();
 KING_ALIAS("_Carat_5d3ab0", "FUN_5d3ab0")
 extern "C" void __cdecl Carat_Message(const char* text, int);
@@ -54,7 +54,7 @@ ASM_VAR(AsmLabel, s_676320, $L_676320)
 extern "C" void FUN_5ffb40(); KING_ALIAS("_FUN_5ffb40", "_Music_Clear")
 ASM_PROC(FUN_5ba4a0)
 ASM_PROC(FUN_5bae30)
-ASM_PROC(FUN_5d4200)
+extern "C" void FUN_5d4200(); KING_ALIAS("_FUN_5d4200", "_Dd_LockBack")
 extern "C" void FUN_5d41e0(); KING_ALIAS("_FUN_5d41e0", "_Dd_WaitVsync")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
 extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
@@ -1464,7 +1464,7 @@ extern "C" int __cdecl Shell_LeaveRace()
     return CallC<int>(FUN_512c70);
 }
 
-ASM_PROC(FUN_51bfa0)    // opens the save storage (path, mode), stdcall
+extern "C" void FUN_51bfa0(); KING_ALIAS("_FUN_51bfa0", "_Save_OpenStorage@8")    // opens the save storage (path, mode), stdcall
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")    // a temporary wide string of a name
 ASM_PROC(FUN_513270)    // opens a stream of a storage (storage, name, mode)
 extern "C" void FUN_513850(); KING_ALIAS("_FUN_513850", "@Keys_Assign@8")
@@ -1696,3 +1696,158 @@ extern "C" BYTE* __cdecl Storage_ReadSubImage(const char* name, BYTE* arg)
     ComCall(stg, 8);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
+ASM_PROC(FUN_4d90c0)
+ASM_PROC(FUN_4833a0)    // writes the save into a storage
+ASM_PROC(FUN_51d6d0)    // writes the screenshot (storage, a)
+ASM_VAR(AsmLabel, s_671204, $L_671204)
+ASM_VAR(AsmLabel, s_677588, $L_677588)
+ASM_VAR(AsmLabel, s_676848, $L_676848)
+ASM_VAR(AsmLabel, s_677764, $L_677764)
+ASM_VAR(AsmLabel, s_67773c, $L_67773c)
+ASM_VAR(AsmLabel, s_6773e0, $L_6773e0)
+ASM_VAR(AsmLabel, s_676cac, $L_676cac)
+ASM_VAR(AsmLabel, s_fmtInt66c8cc, $L_66c8cc)
+ASM_VAR(AsmLabel, g_carTypes698166, $L_698166)
+ASM_VAR(AsmLabel, g_carNames675b0c, $L_675b0c)
+ASM_VAR(AsmLabel, g_keyNames675470, $L_675470)
+ASM_VAR(int, g_6d206c, $L_6d206c)
+extern "C" void* g_impStgCreateDocfile; KING_ALIAS("_g_impStgCreateDocfile", "__imp__StgCreateDocfile@16")
+extern "C" void* g_impStgOpenStorage; KING_ALIAS("_g_impStgOpenStorage", "__imp__StgOpenStorage@24")
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_51bfa0..$L_51c06c] opens (mode 1 read, 2 read/write) or creates (mode 0) the storage file "<dir><name>.pl1"
+extern "C" void* __stdcall Save_OpenStorage(const char* name, int mode)
+{
+    char path[40];
+    void* stg = 0;
+    strcpy(path, s_671204);
+    strcat(path, name);
+    strcat(path, ".pl1");
+    if (!mode)
+    {
+        if (CallStd<long>((void (*)())g_impStgCreateDocfile, CallC<const WCHAR*>(FUN_50bc90, path), 4113, 0, &stg))
+            Sys_Fatal(s_677588, 0);
+        return stg;
+    }
+    DWORD flags = (mode != 1 ? 2 : 0) | 16;
+    CallStd<long>((void (*)())g_impStgOpenStorage, CallC<const WCHAR*>(FUN_50bc90, path), (void*)0, flags, (void*)0, 0, &stg);
+    return stg;
+}
+
+// [FUN_51a4e0..$L_51a570] the index of the chosen car type among the loaded ones; fatal when it isn't loaded
+extern "C" int __cdecl Shell_CarTypeIndex()
+{
+    const char* want = ((const char**)g_carNames675b0c)[F(int, g_6cec94, 808)];
+    for (int i = 0; i < g_6ce32c; i++)
+        if (!strcmp(want, (char*)g_carTypes698166 + i * 2416))
+            return i;
+    Sys_Fatal(s_6773e0, ((const char**)g_carNames675b0c)[F(int, g_6cec94, 808)]);
+    return 0;
+}
+
+// [FUN_51d9e0..$L_51da45] deletes the element name of the save storage's sub-storage 67683c
+extern "C" void __cdecl Save_DeleteEntry(const char* name)
+{
+    CallC(FUN_4d90c0);
+    void* stg = Save_OpenStorage((char*)g_6cecd8 + 632, 2);
+    if (!stg)
+        Sys_Fatal(s_676848, 0);
+    void* sub = 0;
+    ComCall(stg, 24, CallC<const WCHAR*>(FUN_50bc90, (char*)s_storage67683c), (void*)0, 17, (void*)0, 0, &sub);
+    if (!sub)
+        Sys_Fatal(s_677764, 0);
+    ComCall(sub, 48, CallC<const WCHAR*>(FUN_50bc90, name));
+    ComCall(sub, 8);
+    ComCall(stg, 8);
+}
+
+// [FUN_51d8f0..$L_51d999] creates the element name in the save storage's sub-storage 67683c and writes the save and screenshot into it
+extern "C" void __cdecl Save_WriteEntry(const char* name, int a)
+{
+    CallC(FUN_4d90c0);
+    void* stg = Save_OpenStorage((char*)g_6cecd8 + 632, 2);
+    if (!stg)
+        Sys_Fatal(s_676848, 0);
+    void* sub = 0;
+    ComCall(stg, 24, CallC<const WCHAR*>(FUN_50bc90, (char*)s_storage67683c), (void*)0, 17, (void*)0, 0, &sub);
+    if (!sub)
+        Sys_Fatal(s_677764, 0);
+    void* entry = 0;
+    ComCall(sub, 20, CallC<const WCHAR*>(FUN_50bc90, name), 4113, 0, 0, &entry);
+    if (!entry)
+        Sys_Fatal(s_67773c, 0);
+    CallC(FUN_4833a0, entry);
+    CallC(FUN_51d6d0, entry, a);
+    ComCall(entry, 8);
+    ComCall(sub, 8);
+    ComCall(stg, 8);
+}
+
+// [FUN_512460..$L_5124ad] when the save storage holds the record named by text 103: copies that name into 6f2d18, closes the record and resets
+extern "C" void __cdecl Save_FindRecord103()
+{
+    if (F(int, g_6cec6c, 1316))
+        return;
+    void* stg = Save_OpenStorage((char*)g_6cecd8 + 632, 1);
+    if (!stg)
+        Sys_Fatal(s_676848, 0);
+    void* sub = 0;
+    void* rec = 0;
+    ComCall(stg, 24, CallC<const WCHAR*>(FUN_50bc90, (char*)s_storage67683c), (void*)0, 16, (void*)0, 0, &sub);
+    if (!sub)
+    {
+        ComCall(stg, 8);
+        return;
+    }
+    ComCall(sub, 24, CallC<const WCHAR*>(FUN_50bc90, CallC<const char*>(FUN_5d2e50, 103)), (void*)0, 16, (void*)0, 0, &rec);
+    if (!rec)
+    {
+        ComCall(sub, 8);
+        ComCall(stg, 8);
+        return;
+    }
+    sprintf((char*)&g_6f2d18, CallC<const char*>(FUN_5d2e50, 103));
+    ComCall(rec, 8);
+    ComCall(sub, 8);
+    ComCall(stg, 8);
+    CallThis(FUN_5c4340, g_696ca0);
+    F(int, g_696ca0, 3024) = 1;
+    if (F(int, g_6cec6c, 1344))
+        CallC(FUN_5ffb20);
+}
+
+// [FUN_515270..$L_51532b] binds key to the control being assigned (+516) unless that key is taken by another control; returns -1 bound, -2 refused, or the clashing control
+extern "C" int __fastcall Keys_Bind(BYTE* self, void*, int key)
+{
+    if (F(int, self, 516) < 0 || !((int*)g_keyNames675470)[key])
+        return -2;
+    if (g_6d206c == 1 && ((key >= 291 && key <= 294) || key == 259 || key == 260 || key == 264 || key == 265))
+        return -2;
+    BYTE* ctl = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, self, 524), F(int, self, 516) + 1000);
+    if (!ctl)
+    {
+        char text[100];
+        sprintf(text, s_fmtInt66c8cc, F(int, self, 516));
+        Sys_Fatal(s_676cac, text);
+    }
+    int old = F(int, self, 716 + F(int, self, 516) * 4);
+    for (int i = 0; i < 47; i++)
+    {
+        int* second = (int*)(self + 716) + i;
+        if (second[-47] == key || (old >= 0 && *second == old) || *second == key)
+            if (i != F(int, self, 516) && !CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, self, 524), i + 1000))
+                return i;
+    }
+    if (key < 259)
+        F(int, self, 528 + F(int, self, 516) * 4) = key;
+    else
+        F(int, self, 716 + F(int, self, 516) * 4) = key;
+    F(DWORD, ctl, 284) &= ~2u;
+    F(int, self, 516) = -1;
+    return -1;
+}
+

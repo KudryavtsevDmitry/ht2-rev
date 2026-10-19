@@ -18,7 +18,7 @@ typedef float Floats[1];
 extern "C" void FUN_606750(); KING_ALIAS("_FUN_606750", "@GridEdge_Destruct@8")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report (code, format, file, line, date)
 ASM_PROC(FUN_60ab70)
-ASM_PROC(FUN_60aa60)
+extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 extern "C" void FUN_60f690(); KING_ALIAS("_FUN_60f690", "@MarineQueue_RemoveNode@12")
 extern "C" void FUN_6136f0(); KING_ALIAS("_FUN_6136f0", "@MarineQueue_RemoveLink@12")
 extern "C" void FUN_608c70(); KING_ALIAS("_FUN_608c70", "@TGrid_MakeNode@16")

@@ -16,7 +16,7 @@ ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
 ASM_PROC(FUN_5d79d0)
 extern "C" void FUN_5d8260(); KING_ALIAS("_FUN_5d8260", "_Dd_Release")
-ASM_PROC(FUN_5d75a0)
+extern "C" void FUN_5d75a0(); KING_ALIAS("_FUN_5d75a0", "_Dd_CreateDevices")
 
 ASM_VAR(int, g_bitDepth, $L_720890)
 ASM_VAR(int, g_bitDepth2, $L_720894)
@@ -232,4 +232,89 @@ void __cdecl Dd_Release()
     g_ddWindowed = 0;
 }
 
+}
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5d8460)
+ASM_VAR(int, g_7208b8, $L_7208b8)
+ASM_VAR(int, g_72092c, $L_72092c)
+ASM_VAR(BYTE*, g_7208e0, $L_7208e0)
+ASM_VAR(AsmLabel, s_67fdc0, $L_67fdc0)
+ASM_VAR(AsmLabel, s_67fdb8, $L_67fdb8)
+extern "C" void Dd_EnumDevice(); KING_ALIAS("_Dd_EnumDevice", "$L_5d72a0")
+extern "C" void* g_impDirectDrawEnumerateA; KING_ALIAS("_g_impDirectDrawEnumerateA", "__imp__DirectDrawEnumerateA@8")
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// a COM method at vtbl+off
+template <class R = long, class... A>
+static R Dd_ComCall(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// [FUN_5d4200..$L_5d430b] locks the back surface (restoring it when lost); returns its memory and *pitch, 0 when not in a DirectDraw mode
+extern "C" BYTE* __cdecl Dd_LockBack(int* pitch)
+{
+    if (!g_ddMode || g_7208b8)
+        return 0;
+    DWORD desc[31];
+    if (Dd_ComCall(g_directDraw, 96) == (long)0x887601C2)
+    {
+        long hr = Dd_ComCall(g_directDraw, 108);
+        if (hr)
+        {
+            char text[256];
+            strcpy(text, s_67fdc0);
+            strcat(text, CallC<const char*>(FUN_5d4c10, hr, 0));
+            Sys_Fatal(text, 0);
+        }
+    }
+    desc[0] = 124;
+    desc[1] = 8387054;
+    long failed = Dd_ComCall(g_directDraw, 100, (void*)0, desc, 1, (void*)0) != 0;
+    if (failed)
+        Sys_Fatal(CallC<const char*>(FUN_5d4c10, failed, (const char*)s_67fdb8), 0);
+    *pitch = desc[4];
+    return (BYTE*)desc[9];
+}
+
+// [FUN_5d75a0..$L_5d7684] picks the DirectDraw devices by enumeration for the mode flags; 0 (and no DirectDraw mode) without flags 0x600
+extern "C" int __cdecl Dd_CreateDevices(DWORD flags)
+{
+    DWORD s[52];
+    memset(s, 0, sizeof s);
+    s[51] = 0x80070057;
+    if (!(flags & 0x600))
+    {
+        g_ddMode = 0;
+        return 0;
+    }
+    s[0] = g_width;
+    s[3] = flags | 0x8000;
+    s[2] = g_bitDepth;
+    s[1] = g_height;
+    g_72092c = g_deviceIndex;
+    CallStd((void (*)())g_impDirectDrawEnumerateA, Dd_EnumDevice, s);
+    if (s[51])
+        Sys_Fatal(CallC<const char*>(FUN_5d4c10, s[51], (char*)&s[31]), 0);
+    g_dd = (BYTE*)s[10];
+    g_d3d = (BYTE*)s[11];
+    g_ddFront = (BYTE*)s[14];
+    g_device = (BYTE*)s[13];
+    g_720904 = (BYTE*)s[12];
+    g_directDraw = (BYTE*)s[15];
+    g_720900 = (BYTE*)s[16];
+    g_ddPalette = (BYTE*)s[30];
+    g_7208e0 = (BYTE*)s[8];
+    g_ddMode = (flags & 0x400) ? 2 : 1;
+    if (flags & 0x1000)
+    {
+        g_ddWindowed = 1;
+        CallC(FUN_5d8460, g_bitDepth2, -1);
+    }
+    else
+        g_ddWindowed = 0;
+    g_flipPending = 0;
+    g_7208b4 = (flags >> 13) & 1;
+    return 0;
 }

@@ -760,3 +760,28 @@ extern "C" void __fastcall Body_ResetMotion(BYTE* self, void*)
     Copy3i(self + 3416, self + 3392);
 }
 #undef FL
+
+// ---------------------------------------------------------------------------
+typedef char AsmLabel[1];
+extern "C" void FUN_4ee980(); KING_ALIAS("_FUN_4ee980", "@Body_UpdateHitch@12")
+ASM_VAR(AsmLabel, g_carTypeNames, $L_69809c)
+ASM_VAR(AsmLabel, s_67456c, $L_67456c)
+extern "C" void __cdecl World_Fatal(const char* msg);
+
+// [FUN_4ee900..$L_4ee965] counts one more use of the car type's (2416-byte record) counter at +44 into +3540/+13120 (fatal from 8 on), state 2
+extern "C" void __fastcall Car_CountType(BYTE* self, void*)
+{
+    BYTE* type = (BYTE*)g_carTypeNames + F(int, self, 2252) * 2416;
+    F(int, self, 10104) = 2;
+    int n = F(int, type, 44) + 1;
+    F(int, self, 3540) = n;
+    F(int, self, 13120) = n;
+    if (n >= 8)
+    {
+        char text[300];
+        wsprintfA(text, s_67456c, F(int, type, 44), 8);
+        World_Fatal(text);
+    }
+    CallThis(FUN_4ee980, self, 0);
+}
+
