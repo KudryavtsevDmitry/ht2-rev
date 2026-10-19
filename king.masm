@@ -1371,6 +1371,8 @@ PUBLIC $L_67e9f0
 PUBLIC $L_685dac
 PUBLIC $L_64e0d8, $L_64e118, $L_67663c, $L_676c9c, $L_67726c, $L_677274
 PUBLIC $L_67727c, $L_677290, $L_6ce3ac, $L_72093c, $L_720940, $L_720944
+PUBLIC $L_64e808, $L_64e848, $L_677a78, $L_677a80, $L_677a88, $L_677aa0
+PUBLIC $L_6ce3fc
 
 ;===================================
 _TEXT SEGMENT
@@ -498088,6 +498090,8 @@ $L_5228c0           DWORD $L_522610
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5228e0 PROC
 
             push -1
@@ -498274,6 +498278,10 @@ $L_5229b4::
             add ESP,32
             ret 4
 FUN_5228e0 ENDP
+ELSE
+EXTERN @ShellScreen5228e0_Construct@12:PROC
+FUN_5228e0 TEXTEQU <@ShellScreen5228e0_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
