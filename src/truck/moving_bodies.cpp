@@ -1063,3 +1063,38 @@ extern "C" void __fastcall Movbod_ListAppend(BYTE* s, void*, BYTE* n)
 extern "C" void __cdecl MovbodInit_592b90() { g_movbod6f662c = (float)x87_atan2((double)g_movbod650890 / g_movbod650894, 1.0); }
 // [$L_592bc0]
 extern "C" void __cdecl MovbodInit_592bc0() { g_movbod6f6628 = (float)x87_atan2((double)g_movbod650890 / g_movbod650898, 1.0); }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+ASM_VAR(float, g_movbod702620, $L_702620)
+ASM_VAR(float, g_movbod702624, $L_702624)
+ASM_VAR(float, g_movbod702628, $L_702628)
+ASM_VAR(float, g_movbod64f404, $L_64f404)
+ASM_VAR(float, g_movbod6f6558, $L_6f6558)
+ASM_VAR(float, g_movbod6f655c, $L_6f655c)
+ASM_VAR(float, g_movbod6f6560, $L_6f6560)
+ASM_VAR(DWORD, g_movbod6f6548, $L_6f6548)
+ASM_VAR(DWORD, g_movbod6f654c, $L_6f654c)
+ASM_VAR(DWORD, g_movbod6f6550, $L_6f6550)
+
+// [$L_58e1e0] static initializer: the up vector 702620 scaled by 64f404, and a copy
+extern "C" void __cdecl MovbodInit_58e1e0()
+{
+    g_movbod6f6558 = (float)((double)g_movbod702620 * g_movbod64f404);
+    g_movbod6f6548 = *(DWORD*)&g_movbod702620;
+    g_movbod6f655c = (float)((double)g_movbod702624 * g_movbod64f404);
+    g_movbod6f654c = *(DWORD*)&g_movbod702624;
+    g_movbod6f6560 = (float)((double)g_movbod702628 * g_movbod64f404);
+    g_movbod6f6550 = *(DWORD*)&g_movbod702628;
+}
+
+// [$L_590ce0] FUN_5e1a10 of each 20-byte record (+9520, count +9516)
+extern "C" void __fastcall Movbod_590ce0(BYTE* s)
+{
+    for (int i = 0; i < F(int, s, 9516); i++) {
+        BYTE* r = F(BYTE*, s, 9520) + i * 20;
+        CallC(FUN_5e1a10, F(int, r, 0), F(int, r, 4));
+    }
+}

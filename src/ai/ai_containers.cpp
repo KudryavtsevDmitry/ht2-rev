@@ -2361,3 +2361,22 @@ extern "C" BYTE* __fastcall Aicon45a080_DeletingDestructor(BYTE* s, void*, int f
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+// [$L_459e20] reads n bytes at pos to dst: from memory (kind 0 of +8 of +32) or the stream (kinds 2, 3)
+extern "C" int __fastcall Stream_ReadAt(BYTE* s, void*, int pos, int n, BYTE* dst)
+{
+    BYTE* d = F(BYTE*, s, 32);
+    signed char kind = F(signed char, d, 8);
+    if (kind == 0) {
+        BYTE* src = F(BYTE*, d, 20) + F(int, s, 36) + pos;
+        for (int k = 0; k < n; k++)
+            dst[k] = src[k];
+        return 0;
+    }
+    if (kind > 1 && kind <= 3)
+        return CallVirt<int>(F(BYTE*, d, 20), 4, F(int, s, 36) + pos, n, dst);
+    return 0;
+}

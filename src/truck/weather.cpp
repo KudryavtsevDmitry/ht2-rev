@@ -540,3 +540,17 @@ extern "C" int __fastcall Wea_5a6ab0(BYTE* s, void*, int a) { return CallThis<in
 extern "C" int __fastcall Wea_5a6ac0(BYTE* s, void*, int a) { return CallThis<int>(FUN_5d3350, s, a); }
 // [$L_5ad130] 1 when +8244 is set
 extern "C" int __fastcall Wea_Has8244(BYTE* s) { return F(int, s, 8244) != 0; }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+ASM_VAR(AsmLabel, g_wea7025f0, $L_7025f0)
+
+// [$L_5ab230] static initializer: the identity matrix and zero translation at 7025f0
+extern "C" void __cdecl WeaInit_5ab230()
+{
+    DWORD* m = (DWORD*)g_wea7025f0;
+    for (int i = 0; i < 12; i++)
+        m[i] = 0;
+    m[0] = m[4] = m[8] = 0x3f800000;
+}

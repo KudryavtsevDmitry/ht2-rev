@@ -262,3 +262,36 @@ DWORD* __fastcall BoolHandle_From(DWORD* self, void*, const DWORD* v) { return T
 DWORD* __fastcall CharHandle_From(DWORD* self, void*, const DWORD* v) { return TypedHandle_From(self, v, 8, "Char"); }
 
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+
+ASM_VAR(AsmLabel, g_natvalRng691cd8, $L_691cd8)
+ASM_VAR(DWORD, g_natvalRng691db0, $L_691db0)
+ASM_VAR(DWORD, g_natvalRng691db4, $L_691db4)
+ASM_VAR(DWORD, g_natvalRng691db8, $L_691db8)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Natval_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_49e760]
+extern "C" void __cdecl NatvalInit_49e760() { Natval_RngInit((DWORD*)g_natvalRng691cd8, &g_natvalRng691db0, &g_natvalRng691db4, &g_natvalRng691db8); }

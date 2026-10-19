@@ -793,3 +793,25 @@ extern "C" int __fastcall Dir_Reformat(BYTE* s, void*, int a, int b, WORD w)
     }
     return CallThis<int>(FUN_6054f0, s);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+// [$L_605650] the rate in thousandths (1000 keeps the base) to +44 and the buffer (vtbl+68)
+extern "C" int __fastcall Dir_SetRateBuffer(BYTE* s, void*, unsigned rate)
+{
+    if (rate == 1000) {
+        F(int, s, 44) = F(int, s, 48);
+        if (F(void*, s, 56))
+            return Dir_Com(F(void*, s, 56), 68, 0);
+        return (int)F(void*, s, 56);
+    }
+    F(unsigned, s, 44) = F(unsigned, s, 48) * rate / 1000;
+    if (F(unsigned, s, 44) > 100000)
+        F(unsigned, s, 44) = 100000;
+    if (F(unsigned, s, 44) < 100)
+        F(unsigned, s, 44) = 100;
+    if (F(void*, s, 56))
+        return Dir_Com(F(void*, s, 56), 68, F(int, s, 44));
+    return 0;
+}

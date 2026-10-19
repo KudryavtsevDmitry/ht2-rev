@@ -911,3 +911,34 @@ extern "C" void __cdecl ForfeeInit_579940()
     for (int i = 0; i < 160; i++)
         p[i] = 0;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_579880(); KING_ALIAS("_FUN_579880", "@Pool_HasNoFree@8")
+extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
+extern "C" void FUN_579a30(); KING_ALIAS("_FUN_579a30", "@Triangles_Draw@16")
+
+// a COM method of the device d (vtable slot at byte offset off)
+template <class... A>
+static int Ff_Com(void* d, unsigned off, A... args)
+{
+    void* fn = *(void**)(*(char**)d + off);
+    return ((int(__stdcall*)(void*, A...))fn)(d, args...);
+}
+
+// [$L_57c3d0] draws the effects of the list (+76) with render state 22 at 1, then restored
+extern "C" int __fastcall Ff_DrawList(BYTE* s, void*, int, int b)
+{
+    Ff_Com(F(void*, s, 84), 80, 136, 1);
+    DWORD old;
+    Ff_Com(F(void*, s, 84), 84, 22, &old);
+    Ff_Com(F(void*, s, 84), 80, 22, 1);
+    BYTE* l = s + 76;
+    while (!CallThis<int>(FUN_579880, l)) {
+        BYTE* o = CallThis<BYTE*>(FUN_5798d0, l);
+        CallThis(FUN_579a30, o, b, F(int, s, 84));
+    }
+    Ff_Com(F(void*, s, 84), 80, 22, old);
+    return 1;
+}

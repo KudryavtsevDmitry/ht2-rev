@@ -394,3 +394,37 @@ extern "C" double __cdecl Order_PayTotal(const int* o, double late, int bonus)
     double lost = full - Order_Value(o);
     return Order_Pay((const BYTE*)o, late, bonus) + lost;
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+typedef char AsmLabel[1];
+
+ASM_VAR(AsmLabel, g_carordRng68d410, $L_68d410)
+ASM_VAR(DWORD, g_carordRng68d4e8, $L_68d4e8)
+ASM_VAR(DWORD, g_carordRng68d4ec, $L_68d4ec)
+ASM_VAR(DWORD, g_carordRng68d4f0, $L_68d4f0)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Carord_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_471800]
+extern "C" void __cdecl CarordInit_471800() { Carord_RngInit((DWORD*)g_carordRng68d410, &g_carordRng68d4e8, &g_carordRng68d4ec, &g_carordRng68d4f0); }

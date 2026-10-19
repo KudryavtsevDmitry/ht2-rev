@@ -1069,3 +1069,36 @@ extern "C" BYTE* __fastcall Pair_DeletingDestructor(BYTE* s, void*, int flags)
         CallC(FUN_4ad230, s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+
+ASM_VAR(AsmLabel, g_valRng694748, $L_694748)
+ASM_VAR(DWORD, g_valRng694820, $L_694820)
+ASM_VAR(DWORD, g_valRng694824, $L_694824)
+ASM_VAR(DWORD, g_valRng694828, $L_694828)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Val_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_4b53e0]
+extern "C" void __cdecl ValInit_4b53e0() { Val_RngInit((DWORD*)g_valRng694748, &g_valRng694820, &g_valRng694824, &g_valRng694828); }

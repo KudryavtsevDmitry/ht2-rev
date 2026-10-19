@@ -739,3 +739,43 @@ extern "C" void __cdecl Traffic_Init68d308()
     char alloc;
     CallThis(FUN_487730, &g_ctor68d308, &alloc);
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+typedef char AsmLabel[1];
+
+ASM_VAR(AsmLabel, g_aitraRng68d220, $L_68d220)
+ASM_VAR(DWORD, g_aitraRng68d2f8, $L_68d2f8)
+ASM_VAR(DWORD, g_aitraRng68d2fc, $L_68d2fc)
+ASM_VAR(DWORD, g_aitraRng68d300, $L_68d300)
+ASM_VAR(AsmLabel, g_aitraRng68d7d8, $L_68d7d8)
+ASM_VAR(DWORD, g_aitraRng68d8b0, $L_68d8b0)
+ASM_VAR(DWORD, g_aitraRng68d8b4, $L_68d8b4)
+ASM_VAR(DWORD, g_aitraRng68d8b8, $L_68d8b8)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Aitra_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_46d450]
+extern "C" void __cdecl AitraInit_46d450() { Aitra_RngInit((DWORD*)g_aitraRng68d220, &g_aitraRng68d2f8, &g_aitraRng68d2fc, &g_aitraRng68d300); }
+// [$L_484090]
+extern "C" void __cdecl AitraInit_484090() { Aitra_RngInit((DWORD*)g_aitraRng68d7d8, &g_aitraRng68d8b0, &g_aitraRng68d8b4, &g_aitraRng68d8b8); }

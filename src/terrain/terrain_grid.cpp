@@ -342,3 +342,25 @@ extern "C" BYTE* __fastcall Tgr61b8e0_DeletingDestructor(BYTE* s, void*, int fla
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+ASM_VAR(float, g_tgr72c0cc, $L_72c0cc)
+
+// [$L_61bbd0] a triangle (a, b, c vertices of +92, 40 bytes each) to the list below the water level
+// 72c0cc (+108, count +100) or to the other list (+20106, count +104)
+extern "C" void __fastcall Tgr_AddTriangle(BYTE* s, void*, unsigned a, unsigned b, unsigned c, int)
+{
+    BYTE* v = F(BYTE*, s, 92);
+    bool below = !(F(float, v, (a & 0xffff) * 40 + 8) >= g_tgr72c0cc)
+              && !(F(float, v, (b & 0xffff) * 40 + 8) >= g_tgr72c0cc)
+              && !(F(float, v, (c & 0xffff) * 40 + 8) >= g_tgr72c0cc);
+    int cnt = below ? 100 : 104;
+    int base = below ? 108 : 20106;
+    int n = F(int, s, cnt);
+    F(WORD, s, base + n * 2) = (WORD)a;
+    F(WORD, s, base + F(int, s, cnt) * 2 + 2) = (WORD)c;
+    F(WORD, s, base + F(int, s, cnt) * 2 + 4) = (WORD)b;
+    F(int, s, cnt) += 3;
+}

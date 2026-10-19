@@ -754,3 +754,53 @@ extern "C" int __fastcall Scy_52d5f0(BYTE* s, void*, int a, int b)
 
 // [$L_52f6e0] static initializer: FUN_5ac0c0 (6d1830, -pi/2)
 extern "C" void __cdecl ScyInit_52f6e0() { CallC(FUN_5ac0c0, (BYTE*)g_scy6d1830, 0xBFC90FDA); }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_52fd90(); KING_ALIAS("_FUN_52fd90", "@Obj52fd90_Reset@8")
+ASM_PROC(FUN_52e060)
+ASM_VAR(AsmLabel, g_scy6cf4d8, $L_6cf4d8)
+ASM_VAR(AsmLabel, g_scy6d1db8, $L_6d1db8)
+ASM_VAR(AsmLabel, g_scy6cf3b0, $L_6cf3b0)
+ASM_VAR(AsmLabel, g_scy702650, $L_702650)
+ASM_VAR(BYTE*, g_scy6ef1fc, $L_6ef1fc)
+ASM_VAR(double, g_scy64b660, $L_64b660)
+
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+
+// [$L_52f6a0] static initializer: the 13 records of 696 bytes at 6cf4d8 and the one at 6d1db8
+extern "C" void __cdecl ScyInit_52f6a0()
+{
+    BYTE* p = (BYTE*)g_scy6cf4d8;
+    for (int i = 0; i < 13; i++, p += 696)
+        CallThis(FUN_52fd90, p);
+    CallThis(FUN_52fd90, (BYTE*)g_scy6d1db8);
+}
+
+// [$L_52f600] static initializer: 6cf3b0..6cf4b7 zero
+extern "C" void __cdecl ScyInit_52f600()
+{
+    DWORD* d = (DWORD*)g_scy6cf3b0;
+    for (int i = 0; i < 66; i++)
+        d[i] = 0;
+}
+
+// [$L_52e630] state 1 (+3632) places the object (+3580, +3584) at rest; the light (+3640) goes out after 64b660
+extern "C" void __fastcall Scy_52e630(BYTE* s)
+{
+    if (F(int, s, 3632) == 1) {
+        F(int, s, 3632) = 2;
+        CallVirt(s, 140, F(int, s, 3580), s + 3584);
+        CallVirt(s, 144, (BYTE*)g_scy702650, 0);
+        CallVirt(s, 148, (BYTE*)g_scy702650, 0);
+    }
+    int c = F(int, s, 3640);
+    if (c && F(double, g_scy6ef1fc, 2968) - F(float, s, 3644) > g_scy64b660) {
+        CallC(FUN_5e1a10, c, 0);
+        F(int, s, 3640) = 0;
+    }
+    CallThis(FUN_52e060, s);
+    if (F(int, s, 896) && F(int, s, 3632) == 2)
+        F(int, s, 3632) = 0;
+}

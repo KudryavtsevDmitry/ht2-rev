@@ -1152,3 +1152,13 @@ extern "C" BYTE* __fastcall Run4910e0_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Run4914a0_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_4914c0); }
 // [$L_491570]
 extern "C" BYTE* __fastcall Run491570_DeletingDestructor(BYTE* s, void*, int flags) { return Run_DeleteAfter(s, flags, FUN_491590); }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+// [$L_491690] destroys each 44-byte element of the vector at +20 (vtbl+0)
+extern "C" void __fastcall Run_491690(BYTE* s)
+{
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, s, 24) - F(BYTE*, s, 20)) / 44); i++)
+        CallVirt(F(BYTE*, s, 20) + i * 44, 0);
+}

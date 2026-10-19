@@ -801,3 +801,87 @@ extern "C" void __fastcall King_4e0560(BYTE* s)
     CallThis(FUN_5c5370, s);
     CallC(FUN_4b9570, s);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_4bac00(); KING_ALIAS("_FUN_4bac00", "_Effects_Shutdown")
+extern "C" void FUN_5e0180(); KING_ALIAS("_FUN_5e0180", "@Fw_Clear5e0180@8")
+extern "C" void FUN_56eea0(); KING_ALIAS("_FUN_56eea0", "_World_FreeAll")
+ASM_PROC(FUN_53fd30)
+ASM_PROC(FUN_5c5910)
+ASM_PROC(FUN_56d0f0)
+extern "C" void FUN_586d90(); KING_ALIAS("_FUN_586d90", "_SceneObj_DispatchCommand")
+ASM_PROC(FUN_46d7f0)
+ASM_PROC(FUN_4bc540)
+ASM_PROC(FUN_53fd40)
+extern "C" void FUN_4e0630(); KING_ALIAS("_FUN_4e0630", "@Obj_4e0630@12")
+extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
+extern "C" void FUN_5c5380(); KING_ALIAS("_FUN_5c5380", "@Media_Reset5c5380@8")
+ASM_PROC(FUN_4b9b90)
+extern "C" void FUN_5e30c0(); KING_ALIAS("_FUN_5e30c0", "@CGameApp_SetMousePos@16")
+extern "C" void Sta_sprintf(); KING_ALIAS("_Sta_sprintf", "_sprintf")
+ASM_VAR(int, g_sta6d2078, $L_6d2078)
+ASM_VAR(int, g_sta696cb8, $L_696cb8)
+ASM_VAR(AsmLabel, g_sta696cbc, $L_696cbc)
+ASM_VAR(AsmLabel, s_sta673340, $L_673340)
+ASM_VAR(int, g_sta6974bc, $L_6974bc)
+ASM_VAR(BYTE, g_sta6d1db0, $L_6d1db0)
+ASM_VAR(BYTE, g_sta6d1db1, $L_6d1db1)
+ASM_VAR(int, g_sta67b2b8, $L_67b2b8)
+ASM_VAR(int, g_sta696850, $L_696850)
+ASM_VAR(int, g_sta696854, $L_696854)
+ASM_VAR(AsmLabel, g_sta6d1948, $L_6d1948)
+ASM_VAR(AsmLabel, g_sta696b08, $L_696b08)
+ASM_VAR(AsmLabel, g_sta696910, $L_696910)
+
+extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
+
+// [$L_4e05e0] leaving the world
+extern "C" void __fastcall King_LeaveWorld(BYTE* s)
+{
+    CallThis(FUN_4bac00, s);
+    CallThis(FUN_5e0180, s);
+    CallC(FUN_56eea0);
+    g_sta6d2078 = 0;
+    g_sta696cb8 = 0;
+    CallC(Sta_sprintf, (char*)g_sta696cbc, (const char*)s_sta673340);
+    CallC(FUN_53fd30);
+    CallC(FUN_578100, 0);
+}
+
+// [$L_4e0ce0] a command for the first part that takes it
+extern "C" int __fastcall King_Command(BYTE* s, void*, int a, int b, int c)
+{
+    if (CallThis<int>(FUN_5c5910, s, a, b, c))
+        return 1;
+    if (CallC<int>(FUN_56d0f0, a, b, c) || CallC<int>(FUN_586d90, a, b, c) || CallC<int>(FUN_46d7f0, a, b, c)
+        || CallC<int>(FUN_4bc540, a, b, c))
+        return 1;
+    return 0;
+}
+
+// [$L_4e06f0] entering the world
+extern "C" void __fastcall King_EnterWorld(BYTE* s)
+{
+    g_sta6d2078 = 0;
+    CallC(FUN_53fd40);
+    int rect[4] = {0, 40, 640, 300};
+    CallThis(FUN_4e0630, s, rect);
+    g_sta6974bc = 0;
+    g_sta6d1db0 = 1;
+    g_sta6d1db1 = 0;
+    g_sta67b2b8 = 0;
+    CallC(FUN_4e5ea8);
+    CallThis(FUN_5c5380, s);
+    CallC(FUN_4b9b90, s);
+    F(int, s, 3028) = 0;
+    CallThis(FUN_5e30c0, (BYTE*)g_sta696750, g_sta696850 / 2, g_sta696854 / 2);
+    CallThis(FUN_530020, (BYTE*)g_sta6d1948);
+    DWORD* p = (DWORD*)g_sta696b08;
+    for (int i = 0; i < 36; i++)
+        p[i] = 0;
+    p = (DWORD*)g_sta696910;
+    for (int i = 0; i < 36; i++)
+        p[i] = 0;
+}
