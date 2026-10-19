@@ -20543,10 +20543,10 @@ extern "C" void $L_42a120(); KING_ALIAS("_$L_42a120", "_Task_PresentOrdersExpire
 extern "C" void __cdecl Task_DropOldPresents();
 extern "C" void __cdecl Task_DropOldRacePresents();
 ASM_PROC($L_432dd0)
-ASM_PROC($L_420040)
+extern "C" void $L_420040(); KING_ALIAS("_$L_420040", "_Task_TrafficJam")
 extern "C" void __cdecl Task_FarSounds();
-ASM_PROC($L_4208b0)
-ASM_PROC($L_420b90)
+extern "C" void $L_4208b0(); KING_ALIAS("_$L_4208b0", "_Task_ChangeLanes")
+extern "C" void $L_420b90(); KING_ALIAS("_$L_420b90", "_Task_RandomHits")
 extern "C" void FUN_403940(); KING_ALIAS("_FUN_403940", "_Ai_Reset")
 extern "C" void FUN_4305f0(); KING_ALIAS("_FUN_4305f0", "_Ambushes_Link")
 extern "C" void FUN_414670(); KING_ALIAS("_FUN_414670", "_Towns_Costs")
@@ -20996,3 +20996,129 @@ extern "C" void __cdecl Task_Waiting()
     CallC(FUN_422280);
     CallC(FUN_4221d0, 720.0);
 }
+
+// ---------------------------------------------------------------------------
+// Batch: AI task callbacks (traffic jams, lanes, collisions) and two small helpers
+
+ASM_VAR(AsmLabel, s_changeLanes66d840, $L_66d840)
+ASM_VAR(int, g_68d1ac, $L_68d1ac)
+extern "C" void FUN_4207f0(); KING_ALIAS("_FUN_4207f0", "_Player_AtTarget")    // (player + 8) returns bool
+
+// [FUN_420b60] a player's point (+616 when driven by the physics, flag 1, else +304)
+extern "C" DVec3* __cdecl Player_Point(DVec3* out, const BYTE* d)
+{
+    *out = (F(BYTE, d, 88) & 1) ? F(DVec3, d, 616) : F(DVec3, d, 304);
+    return out;
+}
+
+// [FUN_420840] FUN_4207f0 of a player's data
+extern "C" bool __cdecl Player_Check4207f0(int player) { return CallC<char>(FUN_4207f0, (BYTE*)player + 8) != 0; }
+
+// [$L_420040] (task) a traffic jam (68d138) when more than two of the slow players stand within 64b6f0 of
+// another one
+extern "C" void __cdecl Task_TrafficJam()
+{
+    g_loadNear68d138 = 0;
+    BYTE* v[3];
+    Players_SlowList(v, *(BYTE**)g_players, (BYTE*)g_players);
+    if ((unsigned)((v[1] - v[0]) >> 2) > 2) {
+        int count = 0;
+        for (BYTE** i = (BYTE**)v[0]; i != (BYTE**)v[1]; i++)
+            for (BYTE** j = (BYTE**)v[0]; j != i; j++) {
+                DVec3 a, b;
+                const DVec3* pj = CallC<const DVec3*>(FUN_40b0d0, &a, *j);
+                const DVec3* pi = CallC<const DVec3*>(FUN_40b0d0, &b, *i);
+                double x = pi->x - pj->x;
+                double y = pi->y - pj->y;
+                double z = pi->z - pj->z;
+                if (!(x87_sqrt((x * x + y * y) + z * z) < g_64b6f0))
+                    continue;
+                if (!(F(DWORD, *i, 96) & 2)) {
+                    F(DWORD, *i, 96) |= 2;
+                    count++;
+                }
+                if (!(F(DWORD, *j, 96) & 2)) {
+                    F(DWORD, *j, 96) |= 2;
+                    count++;
+                }
+            }
+        for (BYTE** i = (BYTE**)v[0]; i != (BYTE**)v[1]; i++)
+            F(DWORD, *i, 96) &= ~2u;
+        if (count > 2)
+            g_loadNear68d138 = 1;
+    }
+    int cap = (int)(v[2] - v[0]) >> 2;
+    if (cap)
+        Ai_PoolFree(v[0], cap * 4);
+}
+
+// [$L_4208b0] (task changeLanes()) each driving computer player near the camera shows its navigator turn
+// (event of the sign) when it changes
+extern "C" void __cdecl Task_ChangeLanes()
+{
+    Trace_EnterBuffered((const char*)s_changeLanes66d840);
+    g_68d1ac++;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        if (!d || F(int, CallC<BYTE*>(FUN_40a9f0, it), 76) == -1
+            || !CallC<int>(FUN_4d8a40, F(int, CallC<BYTE*>(FUN_40a9f0, it), 76))
+            || F(int, CallC<BYTE*>(FUN_40a9f0, it), 84) == 1 || Player_Check4207f0((int)it))
+            continue;
+        DVec3 tmp;
+        const DVec3* p = Player_Point(&tmp, CallC<BYTE*>(FUN_40a9f0, it));
+        double x = p->x - g_68bab0.x;
+        double y = p->y - g_68bab0.y;
+        double z = p->z - g_68bab0.z;
+        if (!(x87_sqrt((x * x + y * y) + z * z) < g_64b6a0))
+            continue;
+        int sign = Ai_NavigatorTurn(CallC<BYTE*>(FUN_40a9f0, it));
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 880) == sign)
+            continue;
+        Ai_PlayerEvent(it, sign, 0);
+        F(int, CallC<BYTE*>(FUN_40a9f0, it), 880) = sign;
+    }
+    Trace_Leave((const char*)s_changeLanes66d840);
+}
+
+// [$L_420b90] (task) kind-2 players are hit (impact 4) by a roll against their vehicle's +48
+extern "C" void __cdecl Task_RandomHits()
+{
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        if (!d || F(int, (d = CallC<BYTE*>(FUN_40a9f0, it)), 84) != 2)
+            continue;
+        double val = F(double, CallThis<BYTE*>(FUN_474210, d), 48);
+        unsigned r = AiRandom() % 1000000;
+        if (!(val * g_64b6b0 > (double)r))
+            Ai_HitPlayer((int)it, 4.0, 0);
+    }
+}
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_4010c0)    // formats an AI message (same args) into a new buffer
+ASM_VAR(int, g_aiLevel68a828, $L_68a828)
+ASM_VAR(AsmLabel, s_file66c4e8, $L_66c4e8)
+ASM_VAR(AsmLabel, s_mode66c4f4, $L_66c4f4)
+extern "C" int __cdecl fputs(const char* s, FILE* f);
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+extern "C" void __cdecl Sys_Exit(const char* msg);
+
+// [FUN_401010..$L_40109e] an AI message (level, format args...): appended to the AI log file; level >= 200 is shown, 2..199 ends the program, others are fatal
+extern "C" void __cdecl Ai_Report(int a1, int level, int a3, int a4, int a5, int a6, int a7, int a8)
+{
+    g_aiLevel68a828 = level;
+    char* text = CallC<char*>(FUN_4010c0, a1, level, a3, a4, a5, a6, a7, a8);
+    FILE* f = fopen(s_file66c4e8, s_mode66c4f4);
+    fputs(text, f);
+    fputs(s_suffix66c4e4, f);
+    fclose(f);
+    if (level >= 200)
+        CallC(FUN_5d2ba0, text, 0);
+    else if (level > 1)
+        Sys_Exit(text);
+    else
+        Sys_Fatal(text, 0);
+    if (text)
+        operator delete(text);
+}
+

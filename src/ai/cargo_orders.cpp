@@ -160,7 +160,7 @@ struct OrdrPos { int road, node; double t; int segment, object, m_24, m_28; };  
 
 extern "C" void __cdecl AiError(int kind, int code, const char* file, const char* id, int line,
                                 const char* msg, const char* a, const char* b);
-KING_ALIAS("_AiError", "FUN_401010")
+KING_ALIAS("_AiError", "_Ai_Report")
 extern "C" int* __cdecl Town_Id(int* out, BYTE* town);                                 // aimain.cpp
 extern "C" void __cdecl Road_PositionCostBest(int side, OrdrPos from, OrdrPos to, double* cost);   // aitrce.cpp
 extern "C" double __cdecl Order_Value(const int* o);

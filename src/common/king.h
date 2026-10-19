@@ -108,8 +108,8 @@ extern "C" void FUN_5b6330(); KING_ALIAS("_FUN_5b6330", "@Rect_Contains@16")    
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // list node: unlink
 extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")    // CWindow::Clear
 extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")    // CWindow::Present
-ASM_PROC(FUN_5d3460)    // ObjectContainer::DeleteAll
-ASM_PROC(FUN_5d3570)    // ObjectContainer::Add
+extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")    // ObjectContainer::DeleteAll
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")    // ObjectContainer::Add
 extern "C" void FUN_5d81c0(); KING_ALIAS("_FUN_5d81c0", "_Dd_RequestMode")    // Video_SetMode
 ASM_PROC(FUN_5e8c60)    // Font_Load
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")    // Font::~Font

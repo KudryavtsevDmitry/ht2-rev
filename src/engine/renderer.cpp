@@ -1186,3 +1186,19 @@ void __fastcall Image_RleTo16(BYTE* self, void*, int unused)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5b4d40)    // draws an item (this, a, b, c, d, e, item+60)
+ASM_VAR(AsmLabel, s_67f0a0, $L_67f0a0)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_5b4cd0..$L_5b4cf0] draws item idx (124-byte records at +8260, count +1940) when its flag 16 is set
+extern "C" void __fastcall Draw_ListItem(BYTE* self, void*, DWORD a, DWORD b, DWORD c, DWORD d, DWORD e, int idx)
+{
+    if (idx < 0 || idx > F(int, self, 1940))
+        Sys_Fatal(s_67f0a0, 0);
+    BYTE* item = F(BYTE*, self, 8260) + idx * 124;
+    if (F(BYTE, item, 32) & 16)
+        CallThis(FUN_5b4d40, self, a, b, c, d, e, F(DWORD, item, 60));
+}
+

@@ -18,7 +18,7 @@ extern "C" int __cdecl rand();
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 ASM_PROC(FUN_5d2ba0)    // log (text, value)
-ASM_PROC(FUN_5d3460)
+extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 ASM_PROC(FUN_5c4410)
 extern "C" void FUN_5cc930(); KING_ALIAS("_FUN_5cc930", "@Trees_Construct@8")
 ASM_PROC(FUN_5f4a90)
@@ -100,10 +100,10 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 }
 
 ASM_PROC(FUN_5cfb30)
-ASM_PROC(FUN_5d2ac0)
+extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 ASM_PROC(FUN_6037e0)    // time in seconds, returns double
 ASM_PROC(FUN_5d35b0)
-ASM_PROC(FUN_5d3790)
+extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
 ASM_PROC(FUN_5d3080)    // next sibling
 ASM_PROC(FUN_5d38c0)
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
@@ -1408,3 +1408,55 @@ void __fastcall Media5ceae0_Destroy(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5ef540(); KING_ALIAS("_FUN_5ef540", "_Table124_Find")
+ASM_VAR(AsmLabel, s_67f8e0, $L_67f8e0)
+ASM_VAR(AsmLabel, s_67ef70, $L_67ef70)
+ASM_VAR(AsmLabel, s_67ef78, $L_67ef78)
+ASM_VAR(AsmLabel, s_67f958, $L_67f958)
+ASM_VAR(AsmLabel, g_name70dd90, $L_70dd90)
+ASM_VAR(AsmLabel, g_name70de78, $L_70de78)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_5c5bc0..$L_5c5be8] takes a free 10-byte slot of the 1000 at +8368 (used flags at +8372); fatal when none is left
+extern "C" BYTE* __fastcall Media_TakeSlot(BYTE* self, void*)
+{
+    for (int i = 0; i < 1000; i++)
+        if (!F(BYTE, self, 8372 + i))
+        {
+            F(BYTE, self, 8372 + i) = 1;
+            return F(BYTE*, self, 8368) + i * 10;
+        }
+    Sys_Fatal(s_67f8e0, 0);
+    return (BYTE*)-1;
+}
+
+// looks up the formatted name in the table of obj+36; fatal when it isn't there
+static BYTE* Media_FindName(BYTE* obj, char* name)
+{
+    int found;
+    char text[248];
+    BYTE* r = CallC<BYTE*>(FUN_5ef540, name, F(int, obj, 36), &found);
+    if (!r)
+    {
+        sprintf(text, s_67f958, name, F(int, F(BYTE*, obj, 36), 60));
+        Sys_Fatal(text, 0);
+    }
+    return r;
+}
+
+// [FUN_5c84a0..$L_5c8505] the entry of obj's table named by format 67ef70 with a
+extern "C" BYTE* __cdecl Media_FindFmt1(BYTE* obj, int a)
+{
+    sprintf(g_name70dd90, s_67ef70, a);
+    return Media_FindName(obj, g_name70dd90);
+}
+
+// [FUN_5c8520..$L_5c858a] the entry of obj's table named by format 67ef78 with (a, b)
+extern "C" BYTE* __cdecl Media_FindFmt2(BYTE* obj, int a, int b)
+{
+    sprintf(g_name70de78, s_67ef78, a, b);
+    return Media_FindName(obj, g_name70de78);
+}
+

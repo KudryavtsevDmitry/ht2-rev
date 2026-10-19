@@ -461,3 +461,22 @@ extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*)
         F(DWORD, s, 7224) = F(DWORD, s, 7716);
     }
 }
+
+// ---------------------------------------------------------------------------
+typedef char AsmLabel[1];
+extern "C" void FUN_501710(); KING_ALIAS("_FUN_501710", "_Car_ClearSettings")
+ASM_VAR(AsmLabel, s_674950, $L_674950)
+extern "C" void __cdecl World_Fatal(const char* msg);
+
+// [FUN_501730..$L_501790] clears the 27 first settings, then one zero and seven ones; returns 35
+extern "C" int __cdecl Car_ResetSettings35(float* p)
+{
+    int i = CallC<int>(FUN_501710, p);
+    p[i++] = 0;
+    for (int k = 0; k < 7; k++)
+        p[i++] = 1.0f;
+    if (i != 35)
+        World_Fatal(s_674950);
+    return i;
+}
+

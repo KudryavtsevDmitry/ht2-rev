@@ -23,7 +23,7 @@ extern "C" double __cdecl atof(const char* s);
 
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")    // rewinds the service provider list
 extern "C" void FUN_600b50(); KING_ALIAS("_FUN_600b50", "_Gate_600b50")    // DirectPlay error text (hr)
-ASM_PROC(FUN_401010)    // fatal error report
+extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")    // fatal error report
 extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
 ASM_PROC(FUN_602320)
 extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")

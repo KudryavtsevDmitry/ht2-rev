@@ -20,8 +20,8 @@ extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 ASM_PROC(FUN_5c3630)
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
 ASM_PROC(FUN_5d31e0)
-ASM_PROC(FUN_5d3570)
-ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
@@ -625,8 +625,8 @@ extern "C" BYTE* __fastcall Obj576c00_DeletingDestructor(BYTE* self, void*, int 
 // medium-sized functions of the unit
 
 ASM_PROC(FUN_561800)
-ASM_PROC(FUN_4e4750)    // a child of the object by name (object, name, flags)
-ASM_PROC(FUN_4e480c)    // show or hide an object (object, show)
+extern "C" void FUN_4e4750(); KING_ALIAS("_FUN_4e4750", "_Scene_FindOrFail")    // a child of the object by name (object, name, flags)
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")    // show or hide an object (object, show)
 ASM_VAR(BYTE*, g_truck, $L_6f33ac)              // +88: the hour (double)
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 ASM_VAR(double, g_64b840, $L_64b840)            // 0.2
@@ -1523,8 +1523,8 @@ extern "C" void __cdecl Copter_ResetPlayers()
 }
 
 ASM_PROC(FUN_5d31e0)    // scene object base constructor (kind, name)
-ASM_PROC(FUN_5d3570)
-ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
 ASM_PROC(FUN_5e8c60)    // loads a font
 extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
@@ -1588,3 +1588,96 @@ extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game)
     F(int, self, 1272) = (int)Timer_Now();
     return self;
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
+extern "C" void FUN_568680(); KING_ALIAS("_FUN_568680", "@Copter_UpdateWarning@8")
+extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
+ASM_PROC(FUN_568090)
+ASM_PROC(FUN_566970)
+ASM_PROC(FUN_567dc0)
+ASM_PROC(FUN_563600)
+ASM_PROC(FUN_561f30)
+ASM_PROC(FUN_50c3a0)    // writes the state (stream, 72, 54, 0)
+ASM_VAR(AsmLabel, s_67b2bc, $L_67b2bc)
+ASM_VAR(AsmLabel, s_67b7ec, $L_67b7ec)
+ASM_VAR(AsmLabel, s_fmt6772a8, $L_6772a8)
+ASM_VAR(AsmLabel, s_stream6772a0, $L_6772a0)
+ASM_VAR(AsmLabel, s_677684, $L_677684)
+extern "C" void* g_impStgCreateDocfile; KING_ALIAS("_g_impStgCreateDocfile", "__imp__StgCreateDocfile@16")
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+extern "C" void __cdecl World_Fatal(const char* msg);
+
+// a COM method at vtbl+off
+template <class R = long, class... A>
+static R Copter_ComCall(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// [FUN_560fd0..$L_56101e] drops n entries of the stack (top +3000, words at +0, used flags at +2000) and returns the top's word
+extern "C" unsigned short __fastcall Stack_DropTo(BYTE* self, void*, int n)
+{
+    if (F(int, self, 3000) > n)
+        F(int, self, 3000) -= n;
+    int i = F(int, self, 3000);
+    if (F(char, self, 2000 + i))
+    {
+        World_Fatal(s_67b2bc);
+        i = ++F(int, self, 3000);
+    }
+    return F(unsigned short, self, i * 2);
+}
+
+// [FUN_5687b0..$L_56881c] unless +3548 is set: refreshes the followed car (+3248, its +21880 into +3252) and runs the copter's update steps
+extern "C" void __fastcall Copter_UpdateAll(BYTE* self, void*)
+{
+    if (F(int, self, 3548))
+        return;
+    BYTE* car = CallC<BYTE*>(FUN_53f750, F(BYTE*, self, 3248));
+    F(BYTE*, self, 3248) = car;
+    if (car)
+    {
+        if (CallVirt<int>(car, 4) == 1)
+            F(int, self, 3252) = F(int, F(BYTE*, self, 3248), 21880);
+        else
+            F(int, self, 3252) = 0;
+    }
+    CallThis(FUN_568090, self);
+    CallThis(FUN_566970, self);
+    CallThis(FUN_567dc0, self);
+    CallThis(FUN_563600, self);
+    CallThis(FUN_561f30, self);
+    CallThis(FUN_568680, self);
+}
+
+// [FUN_568ed0..$L_568f3c] advances *id to a free object id of the screen (keeping id%1000 below 500); fatal after 500 tries
+extern "C" void __cdecl Objects_FreeId(int* id)
+{
+    int tries = 0;
+    while (CallThis<int>(FUN_5e5370, g_696ca0 + 704, *id))
+    {
+        int v = ++*id;
+        if (v % 1000 >= 500)
+            *id = v / 1000 * 1000;
+        if (++tries > 500)
+            Sys_Fatal(s_67b7ec, 0);
+    }
+}
+
+// [FUN_56cd90..$L_56ce0a] saves the copter state n into a new storage file with one stream
+extern "C" void __cdecl Copter_SaveState(int n)
+{
+    char name[64];
+    void* stg;
+    void* stream;
+    sprintf(name, s_fmt6772a8, n);
+    CallStd<long>((void (*)())g_impStgCreateDocfile, CallC<const WCHAR*>(FUN_50bc90, name), 4113, 0, &stg);
+    Copter_ComCall(stg, 12, CallC<const WCHAR*>(FUN_50bc90, (char*)s_stream6772a0), 4113, 0, 0, &stream);
+    if (!stream)
+        Sys_Fatal(s_677684, 0);
+    CallC(FUN_50c3a0, stream, 72, 54, 0);
+    Copter_ComCall(stream, 8);
+    Copter_ComCall(stg, 8);
+}
+

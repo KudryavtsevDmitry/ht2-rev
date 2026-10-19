@@ -472,8 +472,8 @@ extern "C" void __fastcall Arrays_FillLongAgo(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
-ASM_PROC(FUN_4e5dce)    // an object's first part to query
-ASM_PROC(FUN_4e5c77)    // an object's other part to query
+extern "C" void FUN_4e5dce(); KING_ALIAS("_FUN_4e5dce", "_Model_FindPart2")    // an object's first part to query
+extern "C" void FUN_4e5c77(); KING_ALIAS("_FUN_4e5c77", "_Model_FindPart1")    // an object's other part to query
 ASM_PROC(FUN_4e5d60)
 ASM_PROC(FUN_4e6362)
 extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);   // vecmath.cpp
@@ -674,3 +674,179 @@ extern "C" int __cdecl World_MathErr(int* e)
     }
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Fatal errors with the world state, and checked object accessors.
+extern "C" void FUN_4cf5e0(); KING_ALIAS("_FUN_4cf5e0", "@Fx_Get12@8")       // an object's name
+extern "C" void FUN_4eb150(); KING_ALIAS("_FUN_4eb150", "@Obj4eb150_Kind@8")
+extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
+extern "C" void FUN_5e19f0(); KING_ALIAS("_FUN_5e19f0", "_Frame_GetLocal")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+ASM_PROC(FUN_4e4468)    // writes the world state text
+ASM_PROC(FUN_4e2556)    // writes a text to the log
+ASM_PROC(FUN_53f0c0)
+ASM_VAR(AsmLabel, g_state696e5c, $L_696e5c)
+ASM_VAR(char*, g_fatalText696d20, $L_696d20)
+ASM_VAR(AsmLabel, g_fatalBuf696d24, $L_696d24)
+ASM_VAR(AsmLabel, g_fatalBufEnd696e23, $L_696e23)
+ASM_VAR(char*, g_cmdLine672d10, $L_672d10)
+ASM_VAR(AsmLabel, g_level697460, $L_697460)
+ASM_VAR(AsmLabel, g_levelEnd69746f, $L_69746f)
+ASM_VAR(AsmLabel, s_673680, $L_673680)
+ASM_VAR(AsmLabel, s_6736a8, $L_6736a8)
+ASM_VAR(AsmLabel, s_673a30, $L_673a30)
+ASM_VAR(AsmLabel, s_673a44, $L_673a44)
+ASM_VAR(AsmLabel, s_673ad4, $L_673ad4)
+ASM_VAR(AsmLabel, s_673ae4, $L_673ae4)
+ASM_VAR(AsmLabel, s_673b0c, $L_673b0c)
+ASM_VAR(AsmLabel, s_673b30, $L_673b30)
+ASM_VAR(AsmLabel, s_673b40, $L_673b40)
+ASM_VAR(AsmLabel, s_673b94, $L_673b94)
+ASM_VAR(AsmLabel, s_673ba0, $L_673ba0)
+ASM_VAR(AsmLabel, s_673a68, $L_673a68)
+ASM_VAR(AsmLabel, s_673a6c, $L_673a6c)
+ASM_VAR(AsmLabel, s_673a9c, $L_673a9c)
+ASM_VAR(AsmLabel, s_673cc8, $L_673cc8)
+ASM_VAR(AsmLabel, s_673d18, $L_673d18)
+ASM_VAR(AsmLabel, s_673d2c, $L_673d2c)
+ASM_VAR(AsmLabel, s_673d58, $L_673d58)
+extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// [FUN_4e260c..$L_4e2741] the world's fatal error: logs the world state, the level name and msg, then ends the program
+extern "C" void __cdecl World_Fatal(const char* msg)
+{
+    CallC(FUN_4e4468, (char*)g_state696e5c);
+    int n = (int)(strlen(g_state696e5c) + strlen(msg) + 161);
+    if (n > 255)
+        g_fatalText696d20 = (char*)operator new(n);
+    else
+        g_fatalText696d20 = g_fatalBuf696d24;
+    int i;
+    for (i = 0; i < 50; i++)
+        if (g_cmdLine672d10[i] == '=')
+            break;
+    strncpy(g_level697460, g_cmdLine672d10 + i + 1, 15);
+    g_levelEnd69746f[0] = 0;
+    sprintf(g_fatalText696d20, s_673680, (char*)g_state696e5c, (char*)g_level697460, msg);
+    CallC(FUN_4e2556, g_fatalText696d20);
+    CallC(FUN_53f0c0);
+    if (n > 255)
+    {
+        strncpy(g_fatalBuf696d24, g_fatalText696d20, 255);
+        g_fatalBufEnd696e23[0] = 0;
+        operator delete(g_fatalText696d20);
+    }
+    Sys_Fatal(s_6736a8, 0);
+}
+
+// [FUN_4e460b..$L_4e466a] the world's fatal error about an object (its name and kind) or about none
+extern "C" void __cdecl World_ObjFatal(BYTE* obj, const char* msg)
+{
+    char text[152];
+    if (!obj)
+        sprintf(text, s_673a30, msg);
+    else
+    {
+        int kind = CallThis<int>(FUN_4eb150, obj);
+        sprintf(text, s_673a44, CallThis<const char*>(FUN_4cf5e0, obj), kind, msg);
+    }
+    World_Fatal(text);
+}
+
+// [FUN_4e480c..$L_4e488b] selects child idx of a switch object (kind 18); fatal for anything else or a bad index
+extern "C" int __cdecl Switch_SelectChecked(BYTE* obj, int idx)
+{
+    if (!obj)
+        World_ObjFatal(obj, s_673ad4);
+    if (CallThis<int>(FUN_4eb150, obj) != 18)
+        World_ObjFatal(obj, s_673ae4);
+    if (idx < 0 || idx >= CallVirt<int>(obj, 60))
+    {
+        char text[100];
+        int count = CallVirt<int>(obj, 60);
+        sprintf(text, s_673b0c, idx, count);
+        World_ObjFatal(obj, text);
+    }
+    return CallC<int>(FUN_5e1a10, obj, idx);
+}
+
+// [FUN_4e48e2..$L_4e4917] Frame_Apply on a frame object (kind 6); fatal for anything else
+extern "C" int __cdecl Frame_ApplyChecked(BYTE* obj, int a, int b)
+{
+    if (!obj)
+        World_ObjFatal(obj, s_673b30);
+    if (CallThis<int>(FUN_4eb150, obj) != 6)
+        World_ObjFatal(obj, s_673b40);
+    return CallC<int>(FUN_5e19b0, obj, a, b);
+}
+
+// [FUN_4e497a..$L_4e49af] Frame_GetLocal of a frame object (kind 6); fatal for anything else
+extern "C" int __cdecl Frame_GetLocalChecked(BYTE* obj, int a)
+{
+    if (!obj)
+        World_ObjFatal(obj, s_673b94);
+    if (CallThis<int>(FUN_4eb150, obj) != 6)
+        World_ObjFatal(obj, s_673ba0);
+    return CallC<int>(FUN_5e19f0, obj, a);
+}
+
+// [FUN_4e4750..$L_4e4802] the scene object name under parent; fatal (with an optional prefix text) when missing
+extern "C" BYTE* __cdecl Scene_FindOrFail(BYTE* parent, const char* name, const char* prefix)
+{
+    BYTE* r = CallC<BYTE*>(FUN_5ef2b0, parent, name);
+    if (!r)
+    {
+        char text[208];
+        int len = 0;
+        if (prefix)
+        {
+            sprintf(text, s_673a68, prefix);
+            len = (int)strlen(text);
+        }
+        if (!parent)
+            sprintf(text + len, s_673a6c, name);
+        else
+            sprintf(text + len, s_673a9c, name, CallThis<const char*>(FUN_4cf5e0, parent));
+        World_Fatal(text);
+    }
+    return r;
+}
+
+// the object named fmt % (obj's name minus its 4-letter prefix) under obj, remembered for the next call
+static BYTE* Model_FindCached(BYTE* obj, const char* fmt, const char* shortFmt, int* lastObj, BYTE** last, char* lastName)
+{
+    const char* name = CallThis<const char*>(FUN_4cf5e0, obj);
+    if (*lastObj == (int)obj && !strcmp(lastName, name))
+        return *last;
+    char text[200];
+    if ((int)strlen(name) < 4)
+    {
+        sprintf(text, shortFmt, name);
+        World_Fatal(text);
+    }
+    char rest[32];
+    strcpy(rest, name + 4);
+    sprintf(text, fmt, rest);
+    BYTE* r = CallC<BYTE*>(FUN_5ef2b0, obj, text);
+    if (r)
+    {
+        *lastObj = (int)obj;
+        *last = r;
+        strcpy(lastName, name);
+    }
+    return r;
+}
+
+// [FUN_4e5c77..$L_4e5ced] obj's sub-object named by format 673d18 (cached in 6974f0..)
+extern "C" BYTE* __cdecl Model_FindPart1(BYTE* obj)
+{
+    return Model_FindCached(obj, s_673d18, s_673cc8, &g_6974f0, (BYTE**)&g_6974f4, (char*)&g_6974f8);
+}
+
+// [FUN_4e5dce..$L_4e5e3b] obj's sub-object named by format 673d58 (cached in 697550..)
+extern "C" BYTE* __cdecl Model_FindPart2(BYTE* obj)
+{
+    return Model_FindCached(obj, s_673d58, s_673d2c, &g_697550, (BYTE**)&g_697554, (char*)&g_697558);
+}
+

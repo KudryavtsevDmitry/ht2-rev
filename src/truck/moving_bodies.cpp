@@ -881,3 +881,21 @@ extern "C" void __fastcall FadeBody_Destroy(BYTE* self, int)
     CallThis(FUN_5f1a70, self ? sub : 0);
     CallThis(FUN_5d3290, self);
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, s_67deec, $L_67deec)
+extern "C" void __cdecl World_Fatal(const char* msg);
+
+// [FUN_58f290..$L_58f2c2] sets mode 0/1 at +3976, or 2..3 at +3980 (fatal for others)
+extern "C" void __fastcall Body_SetMoveMode(BYTE* self, void*, int v)
+{
+    if (v == 0 || v == 1)
+    {
+        F(int, self, 3976) = v;
+        return;
+    }
+    if (v < 0 || v > 3)
+        World_Fatal(s_67deec);
+    F(int, self, 3980) = v;
+}
+

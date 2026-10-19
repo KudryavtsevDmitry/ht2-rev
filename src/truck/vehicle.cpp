@@ -19,7 +19,7 @@ typedef int Ints[1];
 
 ASM_PROC(FUN_52fdb0)
 extern "C" void __fastcall Engine_SetKeys(BYTE* self, void*, int a, int b);   // carphys.cpp
-ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void __cdecl Switch_SetChecked(BYTE* obj, int v);     // world.cpp
 ASM_PROC(FUN_545cc0)
 extern "C" BYTE* __fastcall ListItem592bf0_Construct(BYTE* self, void*, BYTE** list);   // movingb.cpp
@@ -1402,3 +1402,57 @@ extern "C" void __cdecl Car_ClearGlobals6ef2b8()
     g_6ef2bc = 0;
     g_6ef2c0 = 0;
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_589410(); KING_ALIAS("_FUN_589410", "@Progress_SetPart@12")
+extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
+ASM_PROC(FUN_501630)    // (thiscall on +21600) reads the 35 settings, returns their count
+ASM_VAR(AsmLabel, s_67a0b0, $L_67a0b0)
+ASM_VAR(AsmLabel, s_679fb8, $L_679fb8)
+ASM_VAR(AsmLabel, s_67a04c, $L_67a04c)
+extern "C" void __cdecl World_Fatal(const char* msg);
+extern "C" int __cdecl Car_ResetSettings35(float* p);
+
+// [FUN_5469e0..$L_546a25] resets a 49-value setup record: 9 zeros, 5 ones, then the 35 settings; returns 49
+extern "C" int __cdecl Car_ResetSetup(float* p)
+{
+    memset(p, 0, 36);
+    for (int i = 9; i < 14; i++)
+        p[i] = 1.0f;
+    int n = Car_ResetSettings35(p + 14) + 14;
+    if (n != 49)
+        World_Fatal(s_67a0b0);
+    return n;
+}
+
+// [FUN_545dc0..$L_545df9] copies a {offset, size, bytes} record into the car (fatal for an offset past 21880)
+extern "C" void __fastcall Car_SetBytes(BYTE* self, void*, int* rec)
+{
+    int off = rec[0];
+    if ((unsigned)off >= 21880)
+    {
+        char text[100];
+        sprintf(text, s_679fb8, off, 21880);
+        World_Fatal(text);
+    }
+    memcpy(self + off, rec + 2, rec[1]);
+}
+
+// [FUN_546900..$L_5469c5] applies a 49-value setup record: 9 progress parts, 4 ramps, vtbl+188, then the settings; returns the count read
+extern "C" int __fastcall Car_ApplySetup(BYTE* self, void*, DWORD* p)
+{
+    for (int k = 0; k < 9; k++)
+        CallThis(FUN_589410, F(BYTE*, self, 9536) + k * 20, p[k]);
+    CallThis(FUN_4eb6a0, self + 21152, p[9]);
+    CallThis(FUN_4eb6a0, self + 21204, p[10]);
+    CallThis(FUN_4eb6a0, self + 21256, p[11]);
+    CallThis(FUN_4eb6a0, self + 21308, p[12]);
+    CallVirt(self, 188, p[13]);
+    if (!F(BYTE*, self, 21600))
+        return 14;
+    int n = CallThis<int>(FUN_501630, F(BYTE*, self, 21600), p + 14) + 14;
+    if (n != 49)
+        World_Fatal(s_67a04c);
+    return n;
+}
+

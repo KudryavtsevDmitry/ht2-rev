@@ -17,9 +17,9 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl rand();
 
 extern "C" void FUN_5d3440(); KING_ALIAS("_FUN_5d3440", "@Handle_Count@8")
-ASM_PROC(FUN_5d33d0)
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_5d3430(); KING_ALIAS("_FUN_5d3430", "@Handle_Call3790@8")
-ASM_PROC(FUN_4e48e2)
+extern "C" void FUN_4e48e2(); KING_ALIAS("_FUN_4e48e2", "_Frame_ApplyChecked")
 extern "C" void FUN_598bd0(); KING_ALIAS("_FUN_598bd0", "@WorldObj_SetTarget@12")
 ASM_PROC(FUN_59a780)    // constructor of the effects' base class
 extern "C" void FUN_59e2f0(); KING_ALIAS("_FUN_59e2f0", "@Debris2_Construct@32")    // constructor of the base class of FUN_59e9a0
@@ -367,8 +367,8 @@ extern "C" BYTE* __fastcall WasmObj5a35b0_Construct(BYTE* self, void*) { return 
 ASM_PROC(FUN_5d31e0)    // named object: constructor (id, name)
 ASM_PROC(FUN_4e41d9)    // an angle checked for NaN (angle, where)
 extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")    // a double of an ini file (section, key, default, out, file)
-ASM_PROC(FUN_4e5dce)
-ASM_PROC(FUN_4e5c77)
+extern "C" void FUN_4e5dce(); KING_ALIAS("_FUN_4e5dce", "_Model_FindPart2")
+extern "C" void FUN_4e5c77(); KING_ALIAS("_FUN_4e5c77", "_Model_FindPart1")
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 ASM_VAR(AsmLabel, g_strTvcamera, $L_67e190)     // "tvcamera"
 ASM_VAR(AsmLabel, g_vtbl650a6c, $L_650a6c)
@@ -779,7 +779,7 @@ extern "C" void __fastcall Effect_MoveQuad(BYTE* self, void*)
 
 ASM_PROC(FUN_5e48f0)
 ASM_PROC(FUN_5fa720)
-ASM_PROC(FUN_5d3570)
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 ASM_PROC(FUN_5ef780)
 extern "C" void* __cdecl memset(void* d, int c, size_t n);
 extern "C" void FUN_59f790(); KING_ALIAS("_FUN_59f790", "@Wasm59f790_Construct@8")

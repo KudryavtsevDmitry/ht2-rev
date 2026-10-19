@@ -91,10 +91,10 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 }
 
 ASM_PROC(FUN_5cfb30)
-ASM_PROC(FUN_5d2ac0)
+extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 ASM_PROC(FUN_6037e0)    // time in seconds, returns double
 ASM_PROC(FUN_5d35b0)
-ASM_PROC(FUN_5d3790)
+extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
 ASM_PROC(FUN_5d3080)    // next sibling
 ASM_PROC(FUN_5d38c0)
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")

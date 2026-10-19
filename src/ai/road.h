@@ -107,7 +107,7 @@ extern "C" DVec3* __cdecl Road_Tangent(DVec3* out, PositionId pos);
 KING_ALIAS("_Road_Tangent", "_Ai__GetTangent")
 extern "C" void __cdecl AiError(int kind, int code, const char* file, const char* id, int line,
                                 const char* msg, const char* a, const char* b);
-KING_ALIAS("_AiError", "FUN_401010")
+KING_ALIAS("_AiError", "_Ai_Report")
 
 inline const char* Str(const CharVec* v)
 {

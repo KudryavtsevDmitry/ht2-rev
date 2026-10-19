@@ -32,7 +32,7 @@ ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_4e5140)
 ASM_PROC(FUN_4e51b1)
 ASM_PROC(FUN_4e4d82)
-ASM_PROC(FUN_4e480c)
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
 ASM_PROC(FUN_581ea0)
@@ -188,8 +188,8 @@ extern "C" void __fastcall Slots6_Remove(BYTE* self, void*, int v)
 // medium-sized functions
 
 ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
-ASM_PROC(FUN_4ee900)
-ASM_PROC(FUN_4e480c)
+extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
 ASM_PROC(FUN_4f1180)
 ASM_PROC(FUN_556a40)
@@ -323,3 +323,24 @@ extern "C" int __fastcall SceneObj_DispatchTarget(BYTE* self, void*, const BYTE*
 }
 
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
+ASM_VAR(AsmLabel, s_67d928, $L_67d928)
+extern "C" void __cdecl World_Fatal(const char* msg);
+
+// [FUN_586c30..$L_586c5e] a record "name\0" + 48-byte matrix: applies the matrix to the scene object of that name
+extern "C" void __stdcall SceneObj_PlaceByName(const char* rec)
+{
+    int len = (int)strlen(rec);
+    if (len >= 100)
+        World_Fatal(s_67d928);
+    DWORD m[12];
+    char name[100];
+    strcpy(name, rec);
+    memcpy(m, rec + len + 1, 48);
+    BYTE* o = CallC<BYTE*>(FUN_5ef2b0, 0, name);
+    if (o)
+        CallC(FUN_5e19b0, o, 0, m);
+}
+

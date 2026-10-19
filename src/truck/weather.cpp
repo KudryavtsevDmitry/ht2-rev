@@ -32,7 +32,7 @@ ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_4e5140)
 ASM_PROC(FUN_4e51b1)
 ASM_PROC(FUN_4e4d82)
-ASM_PROC(FUN_4e480c)
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
 ASM_PROC(FUN_581ea0)
@@ -300,8 +300,8 @@ extern "C" char* __cdecl NextToken(char** pp)
 // medium-sized functions
 
 ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
-ASM_PROC(FUN_4ee900)
-ASM_PROC(FUN_4e480c)
+extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
 ASM_PROC(FUN_4f1180)
 ASM_PROC(FUN_556a40)
@@ -364,3 +364,55 @@ static BYTE* SceneObj_FindCommandTarget(int key)
 }
 
 extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5e1ad0(); KING_ALIAS("_FUN_5e1ad0", "_Node_ParentRoot")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+ASM_PROC(FUN_5a3f50)    // (this, node)
+ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
+ASM_VAR(AsmLabel, s_67e8f0, $L_67e8f0)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+struct Weather_Mat48 { DWORD d[12]; };
+struct Weather_Vec12 { DWORD d[3]; };
+
+// [FUN_5a4250..$L_5a42b2] follows a scene node: takes its frame (kinds 2, 4, 17) or a position, the root, the world matrix and its six doubles
+extern "C" void __fastcall WeatherNode_Attach(BYTE* self, void*, BYTE* node)
+{
+    if (!node)
+        return;
+    CallThis(FUN_5a3f50, self, node);
+    switch (F(int, node, 16))
+    {
+    case 2:
+        F(BYTE*, self, 48) = F(BYTE*, node, 112);
+        break;
+    case 4:
+        F(BYTE*, self, 48) = F(BYTE*, node, 60);
+        break;
+    case 17:
+        F(BYTE*, self, 48) = F(BYTE*, node, 68);
+        if (!F(BYTE*, node, 68))
+        {
+            BYTE* p = F(BYTE*, node, 64);
+            if (F(int, p, 16) == 11)
+                F(BYTE*, self, 52) = p + 56;
+            else
+                Sys_Fatal(s_67e8f0, 0);
+        }
+        break;
+    default:
+        F(BYTE*, self, 48) = 0;
+    }
+    F(BYTE*, self, 56) = CallC<BYTE*>(FUN_5e1ad0, F(BYTE*, self, 32));
+    if (F(BYTE*, self, 48))
+        CallThis(FUN_5f25c0, F(BYTE*, self, 48), self + 60);
+    else
+    {
+        Weather_Mat48 m;
+        BYTE* r = CallC<BYTE*>(FUN_5abc40, &m, *F(Weather_Vec12*, self, 52));
+        memcpy(self + 60, r, 48);
+    }
+    CallC(FUN_5de950, *(Weather_Mat48*)(self + 60), self + 160, self + 168, self + 176, self + 184, self + 192, self + 200);
+    memcpy(self + 108, self + 60, 48);
+}
+
