@@ -3337,3 +3337,86 @@ extern "C" BYTE* __fastcall ShellScreen51e340_Construct(BYTE* s, void*, BYTE* pa
     F(int, s, 368) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Shell screen with four sliders read from the ini (exception frame dropped).
+
+extern "C" void FUN_5be130(); KING_ALIAS("_FUN_5be130", "@Ctl_LayoutRow@12")
+ASM_VAR(BYTE*, g_q32_696868, $L_696868)
+ASM_VAR(AsmLabel, g_q32_64df80, $L_64df80)
+ASM_VAR(AsmLabel, g_q32_64df40, $L_64df40)
+ASM_VAR(AsmLabel, g_q32_516db0, $L_516db0)
+ASM_VAR(AsmLabel, g_q32_516d50, $L_516d50)
+ASM_VAR(AsmLabel, s_q32_672998, $L_672998)
+#define Q32(x) ((const char*)s_q32_##x)
+ASM_VAR(AsmLabel, s_q32_676e78, $L_676e78)
+ASM_VAR(AsmLabel, s_q32_676e64, $L_676e64)
+ASM_VAR(AsmLabel, s_q32_676e60, $L_676e60)
+ASM_VAR(AsmLabel, s_q32_676e58, $L_676e58)
+ASM_VAR(AsmLabel, s_q32_676e50, $L_676e50)
+ASM_VAR(AsmLabel, s_q32_676e48, $L_676e48)
+ASM_VAR(AsmLabel, s_q32_676e40, $L_676e40)
+ASM_VAR(AsmLabel, s_q32_676e38, $L_676e38)
+ASM_VAR(AsmLabel, s_q32_676e30, $L_676e30)
+ASM_VAR(AsmLabel, s_q32_676e28, $L_676e28)
+ASM_VAR(AsmLabel, s_q32_676e20, $L_676e20)
+ASM_VAR(AsmLabel, s_q32_676e18, $L_676e18)
+ASM_VAR(AsmLabel, s_q32_676e10, $L_676e10)
+ASM_VAR(AsmLabel, s_q32_676e08, $L_676e08)
+ASM_VAR(AsmLabel, s_q32_676e00, $L_676e00)
+ASM_VAR(AsmLabel, s_q32_676df8, $L_676df8)
+
+static BYTE* Shell_AddSlider(BYTE* p, const char* a, const char* b, BYTE* value, void* fn, int id)
+{
+    BYTE* c = CallC<BYTE*>(FUN_50d860, a, b, value, fn, 140);
+    CallThis(FUN_5bdbf0, p, c, 0);
+    F(int, c, 28) = id;
+    return c;
+}
+static WORD Shell_IniWord(const char* key)
+{
+    int v;
+    CallC(FUN_603b70, Q32(672998), key, 50, &v, g_q32_696868);
+    return (WORD)v;
+}
+// [FUN_516ea0] constructor (parent): a settings screen (vtables 64df80, 64df40 at +64): buttons 184, 2 and four
+// sliders 183..180 on the words +390, +388, +384, +382 read from the ini (50 by default)
+extern "C" BYTE* __fastcall ShellSliders516ea0_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q32_64df80;
+    F(void*, s, 64) = g_q32_64df40;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    F(int, s, 368) = 0;
+    BYTE* p1 = Shell_NewPanel(4);
+    Shell_PlainStyles(p1 + 68, CallC<int>(FUN_568fd0) == 2 ? Q32(676e78) : Q32(676e64));
+    BYTE* p2 = Shell_NewPanel(0);
+    BYTE* b = Shell_ModeButtonC((int)Q32(676e60), 184);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 21, 762);
+    b = Shell_ModeButtonC((int)Q32(676e58), 2);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 77, 762);
+    CallThis(FUN_5bdbf0, p1, p2, 0);
+    BYTE* p3 = Shell_NewPanel(0);
+    Shell_AddSlider(p3, Q32(676e48), Q32(676e50), s + 390, 0, 183);
+    Shell_AddSlider(p3, Q32(676e38), Q32(676e40), s + 388, 0, 182);
+    Shell_AddSlider(p3, Q32(676e28), Q32(676e30), s + 384, (void*)g_q32_516db0, 181);
+    b = Shell_AddSlider(p3, Q32(676e18), Q32(676e20), s + 382, (void*)g_q32_516d50, 180);
+    CallThis(FUN_5be130, p3, F(int, b, 48) - F(int, b, 56) + 70);
+    Shell_MoveCtl(p3, 22, 489);
+    CallThis(FUN_5bdbf0, p1, p3, 0);
+    CallThis(FUN_5bdc80, p1);
+    Shell_MoveCtl(p1, g_q30_6ced0c, g_q30_6ced10);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
+    F(WORD, s, 382) = Shell_IniWord(Q32(676e10));
+    F(WORD, s, 384) = Shell_IniWord(Q32(676e08));
+    F(WORD, s, 388) = Shell_IniWord(Q32(676e00));
+    F(WORD, s, 390) = Shell_IniWord(Q32(676df8));
+    F(WORD, s, 386) = 50;
+    return s;
+}
