@@ -3216,7 +3216,7 @@ extern "C" void FUN_4ccb70(); KING_ALIAS("_FUN_4ccb70", "_Fade_Age")
 extern "C" void FUN_4ccbc0(); KING_ALIAS("_FUN_4ccbc0", "_Fade_Switch")
 extern "C" void FUN_4ccc70(); KING_ALIAS("_FUN_4ccc70", "_Fade_SwitchStep")
 extern "C" void FUN_4ccd20(); KING_ALIAS("_FUN_4ccd20", "_Fade_Set")
-ASM_PROC(FUN_5f36d0)
+extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
 
 // [FUN_4ccd50] runs the step of a fade for its stage
 extern "C" int __cdecl Fade_RunStage(void* f, int t)

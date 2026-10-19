@@ -21095,7 +21095,7 @@ extern "C" void __cdecl Task_RandomHits()
 }
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_4010c0)    // formats an AI message (same args) into a new buffer
+extern "C" void FUN_4010c0(); KING_ALIAS("_FUN_4010c0", "_Ai_FormatReport")    // formats an AI message (same args) into a new buffer
 ASM_VAR(int, g_aiLevel68a828, $L_68a828)
 ASM_VAR(AsmLabel, s_file66c4e8, $L_66c4e8)
 ASM_VAR(AsmLabel, s_mode66c4f4, $L_66c4f4)
@@ -21166,5 +21166,30 @@ extern "C" BYTE*** __cdecl Ptrs_FindName(BYTE*** first, BYTE*** last, const char
         if (!strcmp(name, F(char*, **first, 20)))
             break;
     return first;
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, s_aw66c51c, $L_66c51c)
+ASM_VAR(AsmLabel, s_aw66c4f8, $L_66c4f8)
+
+// [FUN_4010c0] formats an error report (a new buffer) with the local time and the last Windows error
+extern "C" char* __cdecl Ai_FormatReport(int a1, int a2, int a3, int a4, int a5, const char* s6, const char* s7, const char* s8)
+{
+    unsigned size = 1024;
+    if (s6)
+        size = strlen(s6) + 1024;
+    if (s7)
+        size += strlen(s7);
+    if (s8)
+        size += strlen(s8);
+    char* buf = (char*)operator new(size);
+    SYSTEMTIME t;
+    char when[128];
+    GetLocalTime(&t);
+    sprintf(when, s_aw66c51c, t.wYear, t.wMonth, t.wDay, t.wHour, t.wMinute, t.wSecond);
+    DWORD err = GetLastError();
+    sprintf(buf, s_aw66c4f8, a2, a1, when, a4, a3, a5, a1, err, s6, s7, s8);
+    return buf;
 }
 

@@ -22,7 +22,7 @@ extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
 ASM_PROC(FUN_5b22f0)
 ASM_PROC(FUN_5b6f90)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
-ASM_PROC(FUN_5d3b40)
+extern "C" void FUN_5d3b40(); KING_ALIAS("_FUN_5d3b40", "_Gdi_DrawFrame")
 extern "C" void FUN_5d4490(); KING_ALIAS("_FUN_5d4490", "_Dd_Present")
 ASM_PROC(FUN_5b6bf0)
 ASM_VAR(int, g_transformSerial, $L_67ef88)
@@ -1670,3 +1670,41 @@ extern "C" int __fastcall Image_Prepare(BYTE* self, void*, int a, int b)
     F(DWORD, self, 52) |= 2;
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5aeb10)
+ASM_PROC(FUN_5aebc0)
+
+// [FUN_5aeed0] walks a polygon's n vertex ids, writing to out the ids with an outcode (5aeb10) and the crossings (5aebc0) where it changes; returns the count
+extern "C" int __fastcall Rn_ClipIds(BYTE* self, void*, int a1, int n, int* out, int* ids, int a5)
+{
+    if (!n)
+        return 0;
+    BYTE* node = self + (ids[0] + 102) * 12;
+    int first = CallThis<int>(FUN_5aeb10, self, node, a5);
+    int prev = first, id0 = ids[0], lastId = 0, cnt = 0;
+    for (int i = 0; i < n; i++)
+    {
+        int r = CallThis<int>(FUN_5aeb10, self, node, a5);
+        if (r != prev)
+        {
+            CallThis(FUN_5aebc0, self, a1, out++, ids[i], lastId, a5);
+            cnt++;
+        }
+        if (r)
+        {
+            *out++ = ids[i];
+            cnt++;
+        }
+        lastId = ids[i];
+        prev = r;
+        node = self + (ids[i + 1] + 102) * 12;
+    }
+    if (first != prev)
+    {
+        CallThis(FUN_5aebc0, self, a1, out, id0, lastId, a5);
+        cnt++;
+    }
+    return cnt;
+}
+

@@ -428,3 +428,38 @@ extern "C" int __cdecl File_ReadShort(FILE* f)
     return v;
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+extern "C" void FUN_5e54c0(); KING_ALIAS("_FUN_5e54c0", "@Resources_AddRecord@20")
+
+// [FUN_5a4700] attaches the object's resource (+344) to a: re-adds it under a's name when that differs, then a's method +28 gets this +256; without a adds it under b and resets this
+extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const char* b)
+{
+    int id = F(int, self, 344);
+    BYTE* r = 0;
+    if (id >= 0)
+        r = CallThis<BYTE*>(FUN_5e5370, F(BYTE*, self, 36) + 704, id);
+    if (r)
+    {
+        id = F(int, self, 344);
+        if (!a)
+        {
+            if (id >= 0)
+                CallThis(FUN_5e54c0, F(BYTE*, self, 36) + 704, b, r, 0);
+            CallVirt(self, 28, 0);
+            return 0;
+        }
+        if (id >= 0)
+        {
+            const char* name = F(char*, F(BYTE*, a, 36), 60);
+            if (strcmp(name, F(char*, F(BYTE*, r, 12), 4016)))
+                CallThis(FUN_5e54c0, F(BYTE*, self, 36) + 704, name, r, 0);
+        }
+    }
+    else if (!a)
+        return 0;
+    if (!self)
+        return CallVirt<int>(a, 28, 0);
+    return CallVirt<int>(a, 28, self + 256);
+}
