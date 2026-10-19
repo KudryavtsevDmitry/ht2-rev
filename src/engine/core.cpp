@@ -895,3 +895,25 @@ static BYTE* Cor_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 }
 // [$L_5d31c0]
 extern "C" BYTE* __fastcall Cor5d31c0_DeletingDestructor(BYTE* s, void*, int flags) { return Cor_DeleteAfter(s, flags, FUN_5d3290); }
+
+ASM_PROC(FUN_5d2950)
+extern "C" void FUN_5d2a10(); KING_ALIAS("_FUN_5d2a10", "_Pool71e830_Free")
+extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
+extern "C" void FUN_5d3070(); KING_ALIAS("_FUN_5d3070", "_Pool7200c0_Free")
+
+// [$L_5d2930] freed with FUN_5d2a10
+extern "C" BYTE* __fastcall Cor5d2930_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5d2950, s);
+    if (flags & 1)
+        CallC(FUN_5d2a10, s);
+    return s;
+}
+// [$L_5d30c0] freed with FUN_5d3070
+extern "C" BYTE* __fastcall Cor5d30c0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5ce630, s);
+    if (flags & 1)
+        CallC(FUN_5d3070, s);
+    return s;
+}

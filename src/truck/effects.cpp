@@ -3766,3 +3766,87 @@ ASM_VAR(float, g_eff696370, $L_696370)
 extern "C" void __cdecl EffInit_4d2a70() { g_eff696280 = 0x0; g_eff696284 = 0x0; g_eff696288 = 0x0; g_eff69628c = 0x0; g_eff696290 = 0x0; g_eff696294 = 0x0; g_eff696298 = 0x0; g_eff69629c = 0x0; g_eff6962a0 = 0x0; g_eff6962a4 = 0x0; g_eff6962a8 = 0x0; g_eff6962ac = 0x0; g_eff6962b0 = 0x0; g_eff6962b4 = 0x0; g_eff6962b8 = 0x0; g_eff696278 = 0x1; }
 // [$L_4da4b0]
 extern "C" void __cdecl EffInit_4da4b0() { g_eff696370 = (float)((double)g_eff672c48 * g_eff64c308); }
+
+extern "C" void FUN_4dde10(); KING_ALIAS("_FUN_4dde10", "@Cab_Release@8")
+ASM_PROC(FUN_4cb560)
+ASM_PROC(FUN_546b60)
+extern "C" void FUN_60f000(); KING_ALIAS("_FUN_60f000", "@MarineTask_ForwardPoint@12")
+ASM_VAR(AsmLabel, g_eff695978, $L_695978)
+ASM_VAR(int, g_eff69624c, $L_69624c)
+
+// [$L_4c80e0] static initializer: 40 zero 16-byte records at 695970
+extern "C" void __cdecl EffInit_4c80e0()
+{
+    DWORD* p = (DWORD*)g_eff695978 - 2;
+    for (int i = 0; i < 160; i++)
+        p[i] = 0;
+}
+
+// [$L_4dddd0] after FUN_4dde10 the object at +4860 gets vtbl+36, is deleted and cleared; then vtbl+32
+extern "C" int __fastcall Eff_4dddd0(BYTE* s)
+{
+    CallThis(FUN_4dde10, s);
+    if (F(BYTE*, s, 4860)) {
+        CallVirt(F(BYTE*, s, 4860), 36);
+        if (F(BYTE*, s, 4860))
+            CallVirt(F(BYTE*, s, 4860), 0, 1);
+        F(int, s, 4860) = 0;
+    }
+    return CallVirt<int>(s, 32);
+}
+
+// [$L_4b84c0]
+extern "C" int __fastcall Eff_4b84c0(BYTE* s)
+{
+    int v = F(int, s, 40) ? F(int, s, 36) : 0;
+    return CallC<int>(FUN_4cb560, s + 8, s + 20, F(int, s, 32), v, F(int, s, 44));
+}
+
+// [$L_4d24f0] in mode 5 (+21608) +20652 takes +21652 first
+extern "C" int __fastcall Eff_4d24f0(BYTE* s, void*, int a, int b, int c, int d)
+{
+    if (F(int, s, 21608) == 5)
+        F(int, s, 20652) = F(int, s, 21652);
+    return CallThis<int>(FUN_546b60, s, a, b, c, d);
+}
+
+// [$L_4c3450] sets +40; a zero first stops the member at +64 (vtbl+12) and clears +16
+extern "C" void __fastcall Eff_4c3450(BYTE* s, void*, int a)
+{
+    if (!a)
+        CallVirt(s + 64, 12);
+    F(int, s, 40) = a;
+    if (!a)
+        F(int, s, 16) = a;
+}
+// [$L_4c3940] the same with the object pointed to by +64
+extern "C" void __fastcall Eff_4c3940(BYTE* s, void*, int a)
+{
+    if (!a)
+        CallVirt(F(BYTE*, s, 64), 12);
+    F(int, s, 40) = a;
+    if (!a)
+        F(int, s, 16) = a;
+}
+
+// [$L_4c4bd0] vtbl+36 of each 140-byte item (+32, count +40), then released
+extern "C" int __fastcall Eff_4c4bd0(BYTE* s)
+{
+    for (unsigned i = 0; i < F(unsigned, s, 40); i++)
+        CallVirt(F(BYTE*, s, 32) + i * 140, 36);
+    F(int, s, 40) = 0;
+    g_eff69624c = 0;
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_4c3840] advances p's +20 by k * rate (+36), p's +12 from FUN_60f000 of +68; 1 while +16 and +20 are under +24 and +32
+extern "C" int __fastcall Eff_4c3840(BYTE* s, void*, BYTE* p, float k)
+{
+    F(float, p, 20) = (float)((double)k * F(float, s, 36) + F(float, p, 20));
+    F(float, p, 12) = (float)CallThis<double>(FUN_60f000, F(BYTE*, s, 68), p + 4);
+    if (F(float, p, 16) >= F(float, s, 24))
+        return 0;
+    if (F(float, p, 20) >= F(float, s, 32))
+        return 0;
+    return 1;
+}

@@ -1723,3 +1723,22 @@ static BYTE* Ren_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 }
 // [$L_5ba470]
 extern "C" BYTE* __fastcall Ren5ba470_DeletingDestructor(BYTE* s, void*, int flags) { return Ren_DeleteAfter(s, flags, FUN_5bbca0); }
+
+ASM_VAR(float, g_ren651768, $L_651768)
+ASM_VAR(float, g_ren67f0e4, $L_67f0e4)
+ASM_VAR(int, g_ren702e88, $L_702e88)
+ASM_VAR(AsmLabel, g_ren651798, $L_651798)
+
+// [$L_5ba0f0] static initializer
+extern "C" void __cdecl RenInit_5ba0f0() { g_ren702e88 = (int)((double)g_ren651768 / g_ren67f0e4) >> 8; }
+
+// [$L_5bcf00] frees the two buffers (+12, +8) under the base vtable 651798
+extern "C" BYTE* __fastcall Ren5bcf00_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_ren651798;
+    operator delete(F(void*, s, 12));
+    operator delete(F(void*, s, 8));
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

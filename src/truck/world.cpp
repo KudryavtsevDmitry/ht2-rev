@@ -1096,3 +1096,8 @@ extern "C" void __cdecl Dump_Text(const char* text)
     fclose(f);
 }
 
+
+ASM_PROC(FUN_4e4aef)
+
+// [$L_4e4ae5]
+extern "C" void __cdecl World_4e4ae5() { CallC(FUN_4e4aef); }

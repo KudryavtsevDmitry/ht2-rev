@@ -589,3 +589,61 @@ extern "C" BYTE* __fastcall Con5bdb30_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Con5be850_DeletingDestructor(BYTE* s, void*, int flags) { return Con_DeleteAfter(s, flags, FUN_5be870); }
 // [$L_5bf7b0]
 extern "C" BYTE* __fastcall Con5bf7b0_DeletingDestructor(BYTE* s, void*, int flags) { return Con_DeleteAfter(s, flags, FUN_5bf7d0); }
+
+extern "C" void FUN_5be130(); KING_ALIAS("_FUN_5be130", "@Ctl_LayoutRow@12")
+extern "C" void FUN_5be630(); KING_ALIAS("_FUN_5be630", "@Ctl_PointTo@16")
+extern "C" void FUN_5be5a0(); KING_ALIAS("_FUN_5be5a0", "@Ctl_Dispatch@16")
+extern "C" void FUN_5bda20(); KING_ALIAS("_FUN_5bda20", "@Ctl_Contains@16")
+
+// [$L_5bf740]
+extern "C" int __fastcall Con_5bf740(BYTE* s) { return CallThis<int>(FUN_5be130, s, 4); }
+// [$L_5c06b0]
+extern "C" int __fastcall Con_5c06b0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_5be630, s, a, b); }
+
+// the command of a toggled control: its id (+28) plus the new state's bit, as a command (0x8000)
+static int Con_ToggleCommand(BYTE* s, unsigned mask)
+{
+    unsigned v = F(unsigned, s, 284) ^ mask;
+    F(unsigned, s, 284) = v;
+    return (int)((((~v) >> 1) & 1) + F(unsigned, s, 28)) | 0x8000;
+}
+
+// [$L_5bfa50] a button: Enter gives its command (13 while disabled, +40)
+extern "C" int __fastcall Con_ButtonKey(BYTE* s, void*, int key, int up)
+{
+    if (up || key != 13)
+        return key;
+    if (F(int, s, 40))
+        return 13;
+    return F(int, s, 28) | 0x8000;
+}
+
+// [$L_5bfcc0] a check box: Enter or Space toggles it
+extern "C" int __fastcall Con_CheckKey(BYTE* s, void*, int key, int up)
+{
+    if (up || (key != 13 && key != 32) || F(int, s, 40))
+        return key;
+    return Con_ToggleCommand(s, 2);
+}
+
+// [$L_5bfd00] a check box: a press (513) toggles it, a release (514) clears its pressed bit
+extern "C" int __fastcall Con_CheckMouse(BYTE* s, void*, int msg, int, int)
+{
+    if (msg == 514) {
+        F(unsigned, s, 284) &= ~4u;
+        return 32768;
+    }
+    if (msg != 513)
+        return msg;
+    if (F(int, s, 40))
+        return 513;
+    return Con_ToggleCommand(s, 6);
+}
+
+// [$L_5be5f0] a point (x, y): FUN_5be5a0 relative to the origin (+44, +48), else FUN_5bda20
+extern "C" int __fastcall Con_5be5f0(BYTE* s, void*, int x, int y)
+{
+    if (CallThis<int>(FUN_5be5a0, s, x - F(int, s, 44), y - F(int, s, 48)))
+        return 1;
+    return CallThis<int>(FUN_5bda20, s, x, y);
+}

@@ -2254,3 +2254,41 @@ extern "C" int __fastcall Shell_51fd30(BYTE* s, void*, int a)
         return 0;
     return CallThis<int>(FUN_5d8bb0, s, a);
 }
+
+extern "C" void FUN_4e12b0(); KING_ALIAS("_FUN_4e12b0", "_Joy_ForceFeedback")
+extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
+ASM_VAR(BYTE*, g_gamshe696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_gamshe6d2078, $L_6d2078)
+
+// [$L_51bf40] draws, then the pictures of the two choices (+552 at 342,129, +560 at 450,219)
+extern "C" void __fastcall Shell_51bf40(BYTE* s, void*, int a)
+{
+    CallThis(FUN_5c0020, s, a);
+    CallC(FUN_5b8980, F(int, s, -52), 342, 129, F(int, s, 304 + F(int, s, 552) * 4), -1);
+    CallC(FUN_5b8980, F(int, s, -52), 450, 219, F(int, s, 336 + F(int, s, 560) * 4), -1);
+}
+
+// [$L_522060] Esc (key-down 256, key 27) closes the screen, resumes the world and sets the cab's mode 2
+extern "C" int __fastcall Shell_522060(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) == 256 && F(WORD, ev, 6) == 27) {
+        CallVirt(s, 32);
+        CallVirt(g_gamshe696ca0, 36);
+        CallC(FUN_4e12b0, 1);
+        F(BYTE, F(BYTE*, F(BYTE*, g_gamshe6d2078, 616), 21600), 9984) = 2;
+    }
+    return CallThis<int>(FUN_5d8bb0, s, ev);
+}
+
+// [$L_51b5a0] activates; of the controls 111/112 (+372) the one for 6cec6c's +1304 is pressed; the colors 388.. to 376..
+extern "C" void __fastcall Shell_51b5a0(BYTE* s)
+{
+    CallThis(FUN_5d8610, s);
+    BYTE* c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 372), F(int, g_6cec6c, 1304) ? 111 : 112);
+    F(int, c, 284) |= 2;
+    c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 372), F(int, g_6cec6c, 1304) ? 112 : 111);
+    F(int, c, 284) &= ~2;
+    F(WORD, s, 376) = F(WORD, s, 388);
+    F(WORD, s, 378) = F(WORD, s, 390);
+    F(WORD, s, 380) = F(WORD, s, 392);
+}

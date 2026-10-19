@@ -704,3 +704,53 @@ extern "C" void __fastcall Part_Release(BYTE* self, void*)
     }
 }
 
+
+ASM_PROC(FUN_52bd20)
+ASM_PROC(FUN_52c120)
+ASM_PROC(FUN_590d20)
+extern "C" void FUN_52e1f0(); KING_ALIAS("_FUN_52e1f0", "@Scenery_Call57d580@16")
+ASM_PROC(FUN_586240)
+ASM_PROC(FUN_5864d0)
+ASM_PROC(FUN_585fd0)
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
+ASM_PROC(FUN_5f9b00)
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+ASM_VAR(AsmLabel, g_scy6cedc0, $L_6cedc0)
+ASM_VAR(AsmLabel, g_scy6d1830, $L_6d1830)
+
+// [$L_52b6c0]
+extern "C" void __fastcall Scy_Set1204(BYTE* s, void*, int v) { F(int, s, 1204) = v; }
+// [$L_52d5d0] forwarders
+extern "C" int __fastcall Scy_52d5d0(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_52bd20, s, a, b); }
+// [$L_52d630]
+extern "C" int __fastcall Scy_52d630(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_52c120, s, a, b); }
+// [$L_52d700]
+extern "C" int __fastcall Scy_52d700(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_590d20, s, a, b); }
+// [$L_52e710]
+extern "C" int __fastcall Scy_52e710(BYTE* s, void*, int a, int b) { return CallThis<int>(FUN_52e1f0, s, a, b); }
+// [$L_52d8e0]
+extern "C" int __fastcall Scy_52d8e0(BYTE* s, void*, int a, int b, int c) { return CallThis<int>(FUN_586240, s, a, b, c); }
+// [$L_52d900]
+extern "C" int __fastcall Scy_52d900(BYTE* s, void*, int a, int b, int c, int d, int e, int f)
+{
+    return CallThis<int>(FUN_5864d0, s, a, b, c, d, e, f);
+}
+
+// [$L_52e6f0] FUN_585fd0 (a) unless +3632 is set
+extern "C" int __fastcall Scy_52e6f0(BYTE* s, void*, int a)
+{
+    int v = F(int, s, 3632);
+    if (v)
+        return v;
+    return CallThis<int>(FUN_585fd0, s, a);
+}
+
+// [$L_52d5f0] the kind's entry (44-byte records at 6cedc0, index +9288) to FUN_4e480c, then FUN_5f9b00 (a, b)
+extern "C" int __fastcall Scy_52d5f0(BYTE* s, void*, int a, int b)
+{
+    CallC(FUN_4e480c, ((int*)g_scy6cedc0)[F(int, s, 9288) * 11], 1);
+    return CallThis<int>(FUN_5f9b00, s, a, b);
+}
+
+// [$L_52f6e0] static initializer: FUN_5ac0c0 (6d1830, -pi/2)
+extern "C" void __cdecl ScyInit_52f6e0() { CallC(FUN_5ac0c0, (BYTE*)g_scy6d1830, 0xBFC90FDA); }

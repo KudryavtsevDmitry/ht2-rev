@@ -375,3 +375,28 @@ extern "C" int __fastcall Item_Apply84(BYTE* self, void*, int a, int b)
     return r;
 }
 
+
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+
+// [$L_586180] released once (+1200)
+extern "C" void __fastcall Movite_586180(BYTE* s)
+{
+    if (F(int, s, 1200))
+        return;
+    F(int, s, 1200) = 1;
+    CallThis(FUN_5d32f0, s, 1);
+}
+
+// [$L_584030] counts a step (+1432); 1 while within +1680 + +1684
+extern "C" int __fastcall Movite_Step(BYTE* s)
+{
+    int n = ++F(int, s, 1432);
+    return n <= F(int, s, 1684) + F(int, s, 1680);
+}
+
+// [$L_5866f0] o's vtbl+192 (self, b) unless o's +372 is set
+extern "C" void __fastcall Movite_5866f0(BYTE* s, void*, BYTE* o, int b)
+{
+    if (!F(int, o, 372))
+        CallVirt(o, 192, s, b);
+}

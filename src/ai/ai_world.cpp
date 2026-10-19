@@ -21302,3 +21302,15 @@ extern "C" BYTE* __fastcall Ai4587b0_DeletingDestructor(BYTE* s, void*, int flag
 extern "C" BYTE* __fastcall Ai458920_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, FUN_458940); }
 // [$L_462a80]
 extern "C" BYTE* __fastcall Ai462a80_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, FUN_462b30); }
+
+ASM_VAR(AsmLabel, g_aiwor68ced0, $L_68ced0)
+
+// [$L_402610] static initializer: three 16-byte records at 68ced0 (-1, 0, 0, 0)
+extern "C" void __cdecl AiworInit_402610()
+{
+    DWORD* p = (DWORD*)g_aiwor68ced0;
+    for (int i = 0; i < 3; i++, p += 4) {
+        p[0] = 0xffffffff;
+        p[1] = p[2] = p[3] = 0;
+    }
+}

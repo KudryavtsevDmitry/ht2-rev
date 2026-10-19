@@ -1743,3 +1743,16 @@ extern "C" void __fastcall Med_5ce990(BYTE* s, void*, BYTE* a)
     if (r)
         CallC(FUN_5d4c10, r, 0);
 }
+
+extern "C" void FUN_5ab110(); KING_ALIAS("_FUN_5ab110", "_File_WriteShort")
+extern "C" void Med_fwrite(); KING_ALIAS("_Med_fwrite", "_fwrite")
+
+// [$L_5d21e0] writes the chunk tag 65534, then +8 and +4
+extern "C" void __fastcall Med_Write5d21e0(BYTE* s, void*, void* f)
+{
+    CallC(FUN_5ab110, 65534, f);
+    int v = F(int, s, 8);
+    CallC(Med_fwrite, &v, 4, 1, f);
+    int w = F(int, s, 4);
+    CallC(Med_fwrite, &w, 4, 1, f);
+}
