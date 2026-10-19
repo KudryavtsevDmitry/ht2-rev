@@ -1368,6 +1368,7 @@ PUBLIC $L_696724, $L_696728
 PUBLIC $L_651be8, $L_651c34
 PUBLIC $L_67e954, $L_67e970, $L_67e980, $L_67e99c, $L_67e9ac, $L_67e9d0
 PUBLIC $L_67e9f0
+PUBLIC $L_685dac
 
 ;===================================
 _TEXT SEGMENT
@@ -908841,6 +908842,8 @@ FUN_61bc90 TEXTEQU <@TGrid_Height@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61bd40 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -908991,6 +908994,10 @@ $L_61be9d::
             add ESP,12
             ret 8
 $L_61bd40 ENDP
+ELSE
+EXTERN @Tgr_Setup@16:PROC
+$L_61bd40 TEXTEQU <@Tgr_Setup@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

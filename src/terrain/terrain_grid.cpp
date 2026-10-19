@@ -396,3 +396,42 @@ extern "C" void __fastcall Tgr_Draw(BYTE* s, void*, void* dev, BYTE* b)
             CallC(FUN_5d4c10, r, 0);
     }
 }
+
+// ---------------------------------------------------------------------------
+// Grid setup (exception frame dropped).
+
+ASM_PROC(FUN_613b50)
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
+extern "C" void Tgr_VecCtor(); KING_ALIAS("_Tgr_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+ASM_VAR(AsmLabel, g_q27Ctor61bee0, $L_61bee0)
+ASM_VAR(AsmLabel, s_q27_6724f8, $L_6724f8)
+ASM_VAR(AsmLabel, s_q27_685dac, $L_685dac)
+ASM_VAR(AsmLabel, s_q27_6724b0, $L_6724b0)
+
+static BYTE* Tgr_NewCells()
+{
+    BYTE* p = (BYTE*)operator new(1056784);
+    if (p)
+        CallStd(Tgr_VecCtor, p, 16, 66049, (BYTE*)g_q27Ctor61bee0, FUN_50d190);
+    return p;
+}
+// [$L_61bd40] (a, b): three planes of 257x257 cells (+40192) and the grid's table loaded; 0 and an error report
+// if that fails
+extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
+{
+    F(int, s, 44) = a;
+    F(int, s, 48) = b;
+    F(DWORD, s, 40184) = 1189765120;
+    F(DWORD, s, 40188) = 1189765120;
+    BYTE** t = (BYTE**)operator new(12);
+    if (t) {
+        t[0] = Tgr_NewCells();
+        t[1] = Tgr_NewCells();
+        t[2] = Tgr_NewCells();
+    }
+    F(BYTE**, s, 40192) = t;
+    if (t && CallThis<int>(FUN_613b50, t, F(int, s, 40196), F(int, s, 40200)))
+        return 1;
+    CallC(FUN_60aad0, 2289444628u, (const char*)s_q27_6724b0, (const char*)s_q27_685dac, 175, (const char*)s_q27_6724f8);
+    return 0;
+}
