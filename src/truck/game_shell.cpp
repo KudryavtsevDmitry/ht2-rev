@@ -3610,3 +3610,95 @@ extern "C" BYTE* __fastcall ShellSound517530_Construct(BYTE* s, void*, BYTE* par
     F(WORD, s, 392) = Shell_IniWord(Q34(676e8c));
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Picture viewer screen with two button rows (exception frame dropped).
+
+extern "C" void FUN_5bdee0(); KING_ALIAS("_FUN_5bdee0", "@Ctl_LayoutColumn@12")
+ASM_VAR(BYTE*, g_q35_69684c, $L_69684c)
+ASM_VAR(AsmLabel, g_q35_64e6a8, $L_64e6a8)
+ASM_VAR(AsmLabel, g_q35_64e668, $L_64e668)
+#define Q35(x) ((const char*)s_q35_##x)
+ASM_VAR(AsmLabel, s_q35_677980, $L_677980)
+ASM_VAR(AsmLabel, s_q35_67796c, $L_67796c)
+ASM_VAR(AsmLabel, s_q35_677958, $L_677958)
+ASM_VAR(AsmLabel, s_q35_677944, $L_677944)
+ASM_VAR(AsmLabel, s_q35_677930, $L_677930)
+ASM_VAR(AsmLabel, s_q35_67791c, $L_67791c)
+ASM_VAR(AsmLabel, s_q35_677908, $L_677908)
+ASM_VAR(AsmLabel, s_q35_6778f4, $L_6778f4)
+ASM_VAR(AsmLabel, s_q35_6778e0, $L_6778e0)
+ASM_VAR(AsmLabel, s_q35_6778cc, $L_6778cc)
+ASM_VAR(AsmLabel, s_q35_6778b8, $L_6778b8)
+ASM_VAR(AsmLabel, s_q35_6778a4, $L_6778a4)
+ASM_VAR(AsmLabel, s_q35_677890, $L_677890)
+ASM_VAR(AsmLabel, s_q35_67787c, $L_67787c)
+ASM_VAR(AsmLabel, s_q35_677868, $L_677868)
+ASM_VAR(AsmLabel, s_q35_677854, $L_677854)
+ASM_VAR(AsmLabel, s_q35_67784c, $L_67784c)
+ASM_VAR(AsmLabel, s_q35_677844, $L_677844)
+ASM_VAR(AsmLabel, s_q35_67783c, $L_67783c)
+ASM_VAR(AsmLabel, s_q35_677834, $L_677834)
+ASM_VAR(AsmLabel, s_q35_67782c, $L_67782c)
+
+static int Shell_FindByMode(const char* m2, const char* other)
+{
+    return CallC<int>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? m2 : other);
+}
+// [FUN_51eea0] constructor (parent): a full-screen viewer (vtables 64e6a8, 64e668 at +64) with eight pages
+// (+368..+396, the first also 6ce3fc), two button rows (+436: 163, 168; +440: 163, 172, 168) centred on the screen
+extern "C" BYTE* __fastcall ShellViewer51eea0_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q35_64e6a8;
+    F(void*, s, 64) = g_q35_64e668;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p = Shell_NewPanel(4);
+    g_q29_6ce3fc = Shell_FindByMode(Q35(677980), Q35(67796c));
+    F(int, s, 368) = g_q29_6ce3fc;
+    F(int, s, 372) = Shell_FindByMode(Q35(677958), Q35(677944));
+    F(int, s, 376) = Shell_FindByMode(Q35(677930), Q35(67791c));
+    F(int, s, 380) = Shell_FindByMode(Q35(677908), Q35(6778f4));
+    F(int, s, 384) = Shell_FindByMode(Q35(6778e0), Q35(6778cc));
+    F(int, s, 388) = Shell_FindByMode(Q35(6778b8), Q35(6778a4));
+    F(int, s, 392) = Shell_FindByMode(Q35(677890), Q35(67787c));
+    F(int, s, 396) = Shell_FindByMode(Q35(677868), Q35(677854));
+    F(int, s, 400) = 0;
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, p + 68 + k * 36, (void*)g_q29_6ce3e0);
+    BYTE* q = Shell_NewPanel(4);
+    F(BYTE*, s, 436) = q;
+    F(BYTE*, s, 416) = Shell_ModeButtonC((int)Q35(67784c), 163);
+    CallThis(FUN_5bdbf0, q, F(BYTE*, s, 416), 0);
+    BYTE* b = Shell_ModeButtonC((int)Q35(677844), 168);
+    F(BYTE*, s, 420) = b;
+    CallThis(FUN_5bdbf0, q, b, 0);
+    CallThis(FUN_5bdee0, q, F(int, b, 44) - F(int, b, 52) + 290);
+    Shell_MoveCtl(q, 589, 687);
+    CallThis(FUN_5bdbf0, p, q, 0);
+    q = Shell_NewPanel(4);
+    F(BYTE*, s, 440) = q;
+    F(BYTE*, s, 424) = Shell_ModeButtonC((int)Q35(67783c), 163);
+    CallThis(FUN_5bdbf0, q, F(BYTE*, s, 424), 0);
+    F(BYTE*, s, 428) = Shell_ModeButtonC((int)Q35(677834), 172);
+    CallThis(FUN_5bdbf0, q, F(BYTE*, s, 428), 0);
+    b = Shell_ModeButtonC((int)Q35(67782c), 168);
+    F(BYTE*, s, 432) = b;
+    CallThis(FUN_5bdbf0, q, b, 0);
+    CallThis(FUN_5bdee0, q, F(int, b, 44) - F(int, b, 52) + 145);
+    Shell_MoveCtl(q, 589, 687);
+    CallThis(FUN_5bdbf0, p, q, 0);
+    CallThis(FUN_5bdc80, p);
+    BYTE* scr = g_q35_69684c;
+    BYTE* t = (BYTE*)g_q29_6ce3fc;
+    int x = (CallVirt<int>(scr, 20) - F(WORD, t, 20)) / 2;
+    int w = F(WORD, (BYTE*)g_q29_6ce3fc, 22);
+    int y = (CallVirt<int>(scr, 24) - w) / 2;
+    Shell_MoveCtl(p, x, y);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    F(int, s, 408) = 0;
+    F(int, s, 412) = 0;
+    return s;
+}
