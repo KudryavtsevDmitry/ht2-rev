@@ -3420,3 +3420,81 @@ extern "C" BYTE* __fastcall ShellSliders516ea0_Construct(BYTE* s, void*, BYTE* p
     F(WORD, s, 386) = 50;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Save screen with a list and a name field (exception frame dropped).
+
+ASM_VAR(AsmLabel, g_q33_64e510, $L_64e510)
+ASM_VAR(AsmLabel, g_q33_64e4d0, $L_64e4d0)
+ASM_VAR(AsmLabel, g_q33_64e160, $L_64e160)
+ASM_VAR(AsmLabel, g_q33_68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, s_q33_6777c4, $L_6777c4)
+ASM_VAR(AsmLabel, s_q33_6777ac, $L_6777ac)
+ASM_VAR(AsmLabel, s_q33_677794, $L_677794)
+
+// [FUN_51dab0] constructor (parent, -): a save screen (vtables 64e510, 64e4d0 at +64): buttons 172, 282, 173,
+// a list box 160 (+500) and a 32-character name field 174 (+504) on the text +372
+extern "C" BYTE* __fastcall ShellSave51dab0_Construct(BYTE* s, void*, BYTE* parent, int)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, g_q31_6ced2c);
+    F(void*, s, 0) = g_q33_64e510;
+    F(void*, s, 64) = g_q33_64e4d0;
+    DWORD st[9] = {0, 5, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    F(DWORD*, s, 48) = Shell_NewObjRef();
+    BYTE* p = Shell_NewPanel(4);
+    Shell_PlainStyles(p + 68, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_q33_6777c4 : (const char*)s_q33_6777ac);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q31_6777a4, 172);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    Shell_MoveCtl(b, 24, 769);
+    b = Shell_ModeButtonC((int)(const char*)s_q31_67779c, 282);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    Shell_MoveCtl(b, 24, 724);
+    b = Shell_ModeButtonC((int)(const char*)s_q33_677794, 173);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    if (F(int, g_q30_6cec6c, 1316))
+        F(int, b, 40) = 1;
+    Shell_MoveCtl(b, 24, 679);
+    BYTE* m = (BYTE*)operator new(352);
+    BYTE* l = m ? CallThis<BYTE*>(FUN_5c0550, m, (const char*)s_q31_677788, 4, 160) : 0;
+    F(BYTE*, s, 500) = l;
+    CallThis(FUN_5bd5a0, l + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, l + 104, (void*)g_6ce3b8);
+    CallThis(FUN_5bd5a0, l + 140, (void*)g_6ceb38);
+    CallThis(FUN_5bd5a0, l + 176, (void*)g_6ce988);
+    l = F(BYTE*, s, 500);
+    F(int, F(BYTE*, l, 340), 28) = 117;
+    F(int, l, 28) = 117;
+    CallThis(FUN_5c07c0, l, 10);
+    Button_SetImages(F(BYTE*, l, 340), (const char*)s_q31_67777c, (const char*)s_q31_677780);
+    Shell_MoveCtl(l, 44, 497);
+    Shell_MoveCtl(F(BYTE*, l, 340), -28, 11);
+    CallThis(FUN_5becd0, F(BYTE*, l, 340), 155);
+    CallThis(FUN_5bdbf0, p, l, 0);
+    BYTE* e = (BYTE*)operator new(300);
+    if (e) {
+        CallThis(FUN_5bd5e0, e, (const char*)g_q33_68d1c0, 0);
+        F(void*, e, 0) = g_q33_64e160;
+        F(BYTE*, e, 288) = s + 372;
+        F(int, e, 292) = 32;
+        F(int, e, 296) = 0;
+    }
+    F(BYTE*, s, 504) = e;
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, e + 68 + k * 36, st);
+    e = F(BYTE*, s, 504);
+    F(int, e, 28) = 174;
+    CallVirt(e, 20);
+    Shell_MoveCtl(e, 44, 472);
+    F(int, e, 52) = F(int, e, 44) + 100;
+    F(int, e, 32) |= 0x40000000;
+    CallThis(FUN_5bdbf0, p, e, 0);
+    CallThis(FUN_5bdc80, p);
+    Shell_MoveCtl(p, g_q30_6ced0c, g_q30_6ced10);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    F(int, s, 508) = 0;
+    F(int, s, 368) = 0;
+    F(BYTE, s, 372) = 0;
+    return s;
+}
