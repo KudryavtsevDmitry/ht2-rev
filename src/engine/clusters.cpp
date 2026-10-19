@@ -775,3 +775,32 @@ extern "C" BYTE* __fastcall Clu5edeb0_Construct(BYTE* s, void*, int n, int b)
     F(int, s, 28) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+#include <string.h>
+ASM_VAR(AsmLabel, g_clu65274c, $L_65274c)
+// [FUN_5ea880] constructor (name): a cluster (vtable 65274c) with its name copied
+extern "C" BYTE* __fastcall Cluster5ea880_Construct(BYTE* s, void*, const char* name)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = g_clu65274c;
+    F(int, s, 56) = 0;
+    F(int, s, 148) = 0;
+    F(int, s, 152) = 0;
+    F(int, s, 36) = 0;
+    F(int, s, 52) = 0;
+    size_t n = strlen(name) + 1;
+    char* t = (char*)operator new(n);
+    F(char*, s, 60) = t;
+    memcpy(t, name, n);
+    static const int zero[] = {132, 96, 80, 88, 72, 104, 112, 32, 28, 24, 20, 16, 12, 124, 128, 64, 68, 76, 84, 92,
+                               100, 108, 120, 116, 140, 136};
+    for (int o : zero)
+        F(int, s, o) = 0;
+    for (int o = 156; o < 180; o += 4)
+        F(int, s, o) = 0;
+    return s;
+}

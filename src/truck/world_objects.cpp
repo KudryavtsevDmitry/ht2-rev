@@ -1883,3 +1883,33 @@ extern "C" void __fastcall Worobj5a3160_MakePool(BYTE* s) { Worobj_MakePool(s, 5
 extern "C" void __fastcall Worobj5a33a0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 164, (void*)Worobj5a34e0_Construct, FUN_5a2a30, 2339); }
 // [$L_5a35d0]
 extern "C" void __fastcall Worobj5a35d0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 212, (void*)Worobj5a3710_Construct, FUN_5a2a30, 2382); }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+#include <string.h>
+extern "C" void FUN_5a4250(); KING_ALIAS("_FUN_5a4250", "@WeatherNode_Attach@12")
+ASM_VAR(AsmLabel, g_worobj7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_worobj6512e4, $L_6512e4)
+
+// [FUN_5a4120] constructor (world, name, c, d, e): an object with two identity matrices (+60, +108)
+extern "C" BYTE* __fastcall Worobj5a4120_Construct(BYTE* s, void*, BYTE* w, int name, int c, int d, int e)
+{
+    Worobj5a3ee0_Construct(s, 0, w, name, c);
+    memcpy(s + 60, g_worobj7025f0, 48);
+    memcpy(s + 108, g_worobj7025f0, 48);
+    F(int, s, 176) = 0;
+    F(int, s, 44) = e;
+    F(int, s, 168) = 0;
+    F(int, s, 160) = 0;
+    F(void*, s, 0) = g_worobj6512e4;
+    static const int zero[] = {180, 172, 164, 228, 224, 220, 216, 212, 248, 244, 240, 236, 232};
+    for (int o : zero)
+        F(int, s, o) = 0;
+    F(int, s, 40) = d;
+    CallThis(FUN_5a4250, s, c);
+    F(int, s, 208) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 52) = 0;
+    return s;
+}

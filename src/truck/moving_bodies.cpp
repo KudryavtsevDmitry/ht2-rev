@@ -389,7 +389,7 @@ extern "C" BYTE** __fastcall FreeList_Take(BYTE* self, void*)
 }
 
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 ASM_VAR(char, g_vtbl6508a8, $L_6508a8)
 
 extern "C" {
@@ -861,7 +861,7 @@ ASM_VAR(char, vt_650900, $L_650900)
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
 extern "C" void FUN_594d70(); KING_ALIAS("_FUN_594d70", "_Faders_DeleteAll")    // deletes all faders
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
 
 // [FUN_593670] destructor of a fading body (vtables 65094c, 650900 at +32)

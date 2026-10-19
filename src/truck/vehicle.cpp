@@ -2377,3 +2377,48 @@ extern "C" void __fastcall Car_SendKind(BYTE* s, void*, int k)
     }
     Car_Send(d, n);
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+#include <string.h>
+extern "C" void FUN_5c32f0(); KING_ALIAS("_FUN_5c32f0", "@List_Add6@20")
+ASM_VAR(short, g_veh672d84, $L_672d84)
+ASM_VAR(AsmLabel, s_veh672bd0, $L_672bd0)
+
+// [FUN_53e320] constructor (game): the controls object registered with the game's input (+8300); message 900 tells the others
+extern "C" BYTE* __fastcall Controls_Construct(BYTE* s, void*, BYTE* game)
+{
+    CallThis(FUN_5d31e0, s, 100, (const char*)s_veh6792e8);
+    F(void*, s, 0) = g_veh64f428;
+    CallThis(FUN_53e230, s);
+    int id = g_veh672d84;
+    CallThis(FUN_5c32f0, game + 8300, id, s + 36, 4);
+    BYTE pkt[32];
+    CallThis(FUN_602be0, pkt);
+    BYTE d[260];
+    strcpy((char*)d, (const char*)s_veh672bd0);
+    F(int, d, 160) = id;
+    CallThis(FUN_603110, pkt, 900, d, 250);
+    CallThis(FUN_5c3630, game, pkt);
+    CallThis(FUN_602e80, pkt);
+    return s;
+}
+
+// [FUN_546360] message 7: the cab's 11 lamps (state byte +21608, position +21652, value +21784)
+extern "C" void __fastcall Car_SendLamps(BYTE* s)
+{
+    if (!F(int, s, 1220) || F(int, s, 388))
+        return;
+    BYTE d[200];
+    F(int, d, 0) = F(int, s, 1204);
+    F(int, d, 4) = 7;
+    int n = 8;
+    for (int k = 0; k < 11; k++) {
+        d[n] = F(BYTE, s, 21608 + k * 4);
+        memcpy(d + n + 1, s + 21652 + k * 12, 12);
+        memcpy(d + n + 13, s + 21784 + k * 4, 4);
+        n += 17;
+    }
+    Car_Send(d, n);
+}

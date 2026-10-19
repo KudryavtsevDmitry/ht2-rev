@@ -484,3 +484,19 @@ extern "C" void __fastcall Movite_Send2(BYTE* s, void*, int a, int b)
     int d[4] = {2, a, F(int, s, 1188), b};
     Movite_Send(d, 16);
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+#include <string.h>
+// [FUN_586b40] message 12 (the item, the name and a matrix)
+extern "C" void __fastcall Movite_SendNamed(BYTE* s, void*, const char* name, const DWORD* mat)
+{
+    BYTE d[320];
+    F(int, d, 0) = F(int, s, 1188);
+    F(int, d, 4) = 12;
+    size_t n = strlen(name);
+    memcpy(d + 8, name, n + 1);
+    memcpy(d + n + 9, mat, 48);
+    Movite_Send(d, (int)n + 57);
+}

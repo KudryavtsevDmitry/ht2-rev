@@ -30,7 +30,7 @@ extern "C" int __cdecl Mixer_Load(int idx, int a, int b);                       
 ASM_PROC(FUN_5f2a40)
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // base node constructor (name, kind)
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 ASM_PROC(FUN_5f4a90)
 extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
@@ -903,7 +903,7 @@ extern "C" void FUN_5f07a0(); KING_ALIAS("_FUN_5f07a0", "@Node5f07a0_Destroy@8")
 extern "C" void FUN_5f0810(); KING_ALIAS("_FUN_5f0810", "@Node5f0810_Destroy@8")
 ASM_PROC(FUN_5f08c0)
 extern "C" void FUN_5f15a0(); KING_ALIAS("_FUN_5f15a0", "@Node5f1530_Destroy@8")
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 extern "C" void FUN_5fa720(); KING_ALIAS("_FUN_5fa720", "@Sce5fa720_Destroy@4")
 extern "C" void FUN_5faa60(); KING_ALIAS("_FUN_5faa60", "@Node5faa60_Destroy@8")
 extern "C" void FUN_5fcc70(); KING_ALIAS("_FUN_5fcc70", "@Node5fcc70_Destroy@8")
@@ -1770,4 +1770,56 @@ extern "C" void __fastcall Sce5fa720_Destroy(BYTE* s)
         operator delete(a - 4);
     }
     CallThis(FUN_5ef660, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+extern "C" void FUN_5fd1d0(); KING_ALIAS("_FUN_5fd1d0", "@SoundFile_Construct@12")
+extern "C" void FUN_5e9860(); KING_ALIAS("_FUN_5e9860", "_Data_Read5e99a0")
+extern "C" void FUN_5e9800(); KING_ALIAS("_FUN_5e9800", "_Data_Read5e9910")
+extern "C" void FUN_604e90(); KING_ALIAS("_FUN_604e90", "_Mixer_Load")
+ASM_VAR(AsmLabel, g_sce652cb4, $L_652cb4)
+ASM_VAR(int, g_sce723b28, $L_723b28)
+ASM_VAR(BYTE**, g_sce723b34, $L_723b34)
+
+// [FUN_5f1a70] a node (vtable 652cb4): the children of every slot (+48, count +52) unlinked and deleted
+extern "C" void __fastcall Node5f1a70_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_sce652cb4;
+    for (int j = 0; j < F(int, s, 52); j++) {
+        if (!F(BYTE**, s, 48)[j])
+            continue;
+        BYTE* c;
+        while ((c = F(BYTE*, F(BYTE**, s, 48)[j], 8))) {
+            CallThis(FUN_5d21b0, c);
+            if (c)
+                CallVirt(c, 0, 1);
+        }
+        if (F(BYTE**, s, 48)[j])
+            CallVirt(F(BYTE**, s, 48)[j], 0, 1);
+    }
+    operator delete(F(void*, s, 48));
+    CallThis(FUN_5ef660, s);
+}
+
+// [FUN_5fcf80] a sound (id, slot, streamed): made (streamed: a 28-byte stream object) and entered in the table 723b34
+extern "C" BYTE* __cdecl Sound_Create(int id, int slot, int streamed)
+{
+    if (!g_sce723b28)
+        return 0;
+    BYTE* r;
+    if (streamed) {
+        BYTE* m = (BYTE*)operator new(28);
+        BYTE* o = m ? CallThis<BYTE*>(FUN_5fd1d0, m, id) : 0;
+        r = CallC<BYTE*>(FUN_5e9860, o, id);
+    } else {
+        r = CallC<BYTE*>(FUN_5e9800, id);
+    }
+    if (!r)
+        return 0;
+    g_sce723b34[slot] = r;
+    F(int, r, 12) = slot;
+    CallC(FUN_604e90, slot, F(int, r, 8), F(int, r, 4));
+    return r;
 }
