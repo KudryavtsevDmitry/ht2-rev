@@ -4040,3 +4040,183 @@ extern "C" int __fastcall Eff_4bd760(BYTE* s, void*, int a, int b)
     }
     return CallThis<int>(FUN_5f3570, s, a, b);
 }
+
+// ---------------------------------------------------------------------------
+// Effect drawing: batched triangle lists, sprite lists, decals; logged
+// vehicle work.
+
+extern "C" void FUN_4c0d80(); KING_ALIAS("_FUN_4c0d80", "@EffectMat_Init@16")
+ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
+extern "C" void FUN_4c8030(); KING_ALIAS("_FUN_4c8030", "@RefStack_Empty@8")
+extern "C" void FUN_4c8080(); KING_ALIAS("_FUN_4c8080", "@RefStack_Pop@8")
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
+ASM_PROC(FUN_4cf620)
+ASM_PROC(FUN_4cfe70)
+ASM_PROC(FUN_556a70)
+ASM_PROC(FUN_55d5d0)
+ASM_VAR(void*, g_eff720908, $L_720908)
+ASM_VAR(int, g_eff7208d0, $L_7208d0)
+ASM_VAR(int, g_eff68b990, $L_68b990)
+ASM_VAR(int, g_eff721768, $L_721768)
+ASM_VAR(char*, g_eff71e814, $L_71e814)
+ASM_VAR(int, g_eff71e818, $L_71e818)
+ASM_VAR(int, g_eff71e810, $L_71e810)
+ASM_VAR(AsmLabel, s_eff6729f4, $L_6729f4)
+ASM_VAR(AsmLabel, s_eff6729e0, $L_6729e0)
+ASM_VAR(AsmLabel, s_eff672a44, $L_672a44)
+
+// a method of the Direct3D device d (vtable slot at byte offset off)
+template <class... A>
+static int Eff_Dev(void* d, unsigned off, A... args)
+{
+    void* fn = *(void**)(*(char**)d + off);
+    return ((int(__stdcall*)(void*, A...))fn)(d, args...);
+}
+
+// draws the n triangles (+68, 24-byte vertices at +76) in chunks of at most max
+static void Eff_DrawChunks(BYTE* s, unsigned max)
+{
+    unsigned n = F(unsigned, s, 68);
+    if (n <= max) {
+        Eff_Dev(g_eff720908, 100, 4, 322, F(BYTE*, s, 76), n, 0);
+        return;
+    }
+    unsigned i = 0;
+    if (n - max) {
+        for (; i < F(unsigned, s, 68) - max; i += max)
+            Eff_Dev(g_eff720908, 100, 4, 322, F(BYTE*, s, 76) + i * 24, max, 0);
+    }
+    if (F(unsigned, s, 68) > i)
+        Eff_Dev(g_eff720908, 100, 4, 322, F(BYTE*, s, 76) + i * 24, F(unsigned, s, 68) - i, 0);
+}
+
+// the triangles of the material +72 with render state 136 on, then the base drawing
+static int Eff_DrawTriangles(BYTE* s, int a, BYTE* b, unsigned max)
+{
+    if (!F(int, s, 68))
+        return CallThis<int>(FUN_4c0d80, s, a, b);
+    CallThis(FUN_5b1020, b, F(BYTE*, s, 72), 0, 0, 0);
+    Eff_Dev(g_eff720908, 80, 136, 1);
+    Eff_DrawChunks(s, max);
+    return CallThis<int>(FUN_4c0d80, s, a, b);
+}
+// [$L_4c0ba0]
+extern "C" int __fastcall Eff_Draw4c0ba0(BYTE* s, void*, int a, BYTE* b) { return Eff_DrawTriangles(s, a, b, 1023); }
+// [$L_4c2900]
+extern "C" int __fastcall Eff_Draw4c2900(BYTE* s, void*, int a, BYTE* b) { return Eff_DrawTriangles(s, a, b, 1023); }
+// [$L_4c0c90]
+extern "C" int __fastcall Eff_Draw4c0c90(BYTE* s, void*, int a, BYTE* b) { return Eff_DrawTriangles(s, a, b, 900); }
+
+// [$L_4c2770] the same with the material set to full opacity and flags 0x40000 and 32 (bit 1 off)
+extern "C" int __fastcall Eff_Draw4c2770(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!F(int, s, 68))
+        return CallThis<int>(FUN_4c0d80, s, a, b);
+    BYTE* m = F(BYTE*, s, 72);
+    F(DWORD, m, 88) = 0x3f800000;
+    F(unsigned, F(BYTE*, s, 72), 32) |= 0x40000;
+    F(unsigned, F(BYTE*, s, 72), 32) &= ~2u;
+    F(unsigned, F(BYTE*, s, 72), 32) |= 32;
+    CallThis(FUN_5b1020, b, F(BYTE*, s, 72), 0, 0, 0);
+    Eff_Dev(g_eff720908, 80, 136, 1);
+    Eff_DrawChunks(s, 1023);
+    return CallThis<int>(FUN_4c0d80, s, a, b);
+}
+
+// [$L_4bcaa0] after FUN_5f36d0 the two sprite groups (texture +64/+68, counts +248/+252, lists +160/+204)
+// are drawn with render state 22 on, then emptied
+extern "C" int __fastcall Eff_DrawSprites(BYTE* s, void*, int a, BYTE* b)
+{
+    CallThis(FUN_5f36d0, s, a, b);
+    Eff_Dev(g_eff720908, 80, 136, 1);
+    DWORD old;
+    Eff_Dev(g_eff720908, 84, 22, &old);
+    for (int k = 0; k < 2; k++) {
+        unsigned* cnt = &F(unsigned, s, 248 + k * 4);
+        if (!*cnt)
+            continue;
+        CallThis(FUN_5b1020, b, F(BYTE*, s, 64 + k * 4), 1, 0, 0);
+        Eff_Dev(g_eff720908, 80, 22, 1);
+        for (unsigned i = 0; i < *cnt; i++) {
+            unsigned c = F(unsigned, s, 160 + k * 44 + i * 4);
+            if (c)
+                Eff_Dev(g_eff720908, 100, 4, 274, F(BYTE*, s, (18 + k * 11 + i) * 4), c, 0);
+        }
+        *cnt = 0;
+    }
+    Eff_Dev(g_eff720908, 80, 22, old);
+    return 1;
+}
+
+// [$L_4cc8f0] after FUN_5f36d0 the decals (+13296 of them: textures +12896, quads +64, 128 bytes each)
+extern "C" int __fastcall Eff_DrawDecals(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5f36d0, s, a, b) || !F(int, s, 13296)) {
+        F(int, s, 13296) = 0;
+        return 0;
+    }
+    DWORD old;
+    Eff_Dev(g_eff720908, 84, 22, &old);
+    for (unsigned i = 0; i < F(unsigned, s, 13296); i++) {
+        CallThis(FUN_5b1020, b, F(BYTE*, s, 12896 + i * 4), 1, 0, 0);
+        Eff_Dev(g_eff720908, 80, 22, 1);
+        Eff_Dev(g_eff720908, 100, 6, 274, s + 64 + i * 128, 4, 0);
+    }
+    Eff_Dev(g_eff720908, 80, 22, old);
+    F(int, s, 13296) = 0;
+    return 1;
+}
+
+// [$L_4c88f0] the queued effects (+76) drawn on the device +92 with the textures +80/+84 and the colors +88/+36
+extern "C" int __fastcall Eff_DrawQueue(BYTE* s, void*, int, BYTE* b)
+{
+    if (CallThis<int>(FUN_4c8030, F(BYTE*, s, 76)))
+        return 0;
+    Eff_Dev(F(void*, s, 92), 80, 136, 1);
+    DWORD old;
+    Eff_Dev(F(void*, s, 92), 84, 22, &old);
+    Eff_Dev(F(void*, s, 92), 80, 22, 1);
+    CallVirt(b, 8, F(int, s, 88));
+    CallThis(FUN_5b1020, b, g_eff7208d0 ? F(int, s, 80) : F(int, s, 84), 0, 0, 0);
+    while (!CallThis<int>(FUN_4c8030, F(BYTE*, s, 76))) {
+        BYTE* o = CallThis<BYTE*>(FUN_4c8080, F(BYTE*, s, 76));
+        CallVirt(o, 8, F(int, s, 92));
+        if (o)
+            CallVirt(o, 0, 1);
+    }
+    CallVirt(b, 8, F(int, s, 36));
+    Eff_Dev(F(void*, s, 92), 80, 22, old);
+    return 1;
+}
+
+// appends a text to the log buffer 71e814 (position 71e818, size 71e810) when logging (721768)
+static void Eff_Log(const char* t)
+{
+    if (!g_eff721768 || !g_eff71e814 || !*t)
+        return;
+    while (g_eff71e818 < g_eff71e810) {
+        g_eff71e814[g_eff71e818] = *t++;
+        g_eff71e818++;
+        if (!*t)
+            break;
+    }
+}
+
+// the vehicle's step between the logged markers, when FUN_4cf620 allows it for the player (+20620)
+static void Eff_LoggedStep(BYTE* s, const char* before, void (*step)())
+{
+    int h = 0;
+    if (F(int, s, 20620) != g_eff68b990)
+        h = CallC<int>(FUN_43f620, F(int, s, 20620));
+    if (!CallC<int>(FUN_4cf620, s - 16, &h))
+        return;
+    Eff_Log(before);
+    CallThis(step, s);
+    Eff_Log((const char*)s_eff6729e0);
+    CallC(FUN_4cfe70, s - 16, &h);
+}
+// [$L_4d1040]
+extern "C" void __fastcall Eff_4d1040(BYTE* s) { Eff_LoggedStep(s, (const char*)s_eff6729f4, FUN_556a70); }
+// [$L_4d2660]
+extern "C" void __fastcall Eff_4d2660(BYTE* s) { Eff_LoggedStep(s, (const char*)s_eff672a44, FUN_55d5d0); }

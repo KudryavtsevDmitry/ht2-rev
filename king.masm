@@ -1310,6 +1310,9 @@ PUBLIC $L_6f6560
 PUBLIC $L_64b890, $L_64b930, $L_64e918, $L_676df8, $L_676e00, $L_676e08
 PUBLIC $L_676e10, $L_677a18, $L_6ce390, $L_6ce9f4, $L_6ced14, $L_6ced18
 PUBLIC $L_6ced6c, $L_723a48, $L_723a50, $L_723a8c, $L_723a94
+PUBLIC $L_6729e0, $L_6729f4, $L_672a44, $L_68baa0, $L_68ccc8, $L_68cda0
+PUBLIC $L_68cda4, $L_68cda8, $L_68d328, $L_68d400, $L_68d404, $L_68d408
+PUBLIC $L_7208d0
 
 ;===================================
 _TEXT SEGMENT
@@ -1609,6 +1612,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401210 PROC
 
             jmp $L_401220
@@ -1695,6 +1700,10 @@ $L_401277::
             nop
             nop
 $L_401210 ENDP
+ELSE
+EXTERN _AiworInit_401210:PROC
+$L_401210 TEXTEQU <_AiworInit_401210>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -2005,6 +2014,8 @@ $L_401430::
             nop
             nop
 $L_401420 ENDP
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401440 PROC
 
             jmp $L_401450
@@ -2090,6 +2101,10 @@ $L_4014a7::
             nop
             nop
 $L_401440 ENDP
+ELSE
+EXTERN _AiworInit_401440:PROC
+$L_401440 TEXTEQU <_AiworInit_401440>
+ENDIF
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
 $L_4014f0 PROC
@@ -145946,6 +145961,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4551d0 PROC
 
             push EBX
@@ -146032,6 +146049,10 @@ $L_455271::
             pop EBX
             ret 
 $L_4551d0 ENDP
+ELSE
+EXTERN @Path_Reverse@4:PROC
+$L_4551d0 TEXTEQU <@Path_Reverse@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -202808,6 +202829,8 @@ FUN_470ae0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
+IFDEF ASM_CARGO_ORDERS
 $L_470cd0 PROC
 
             jmp $L_470ce0
@@ -202893,6 +202916,10 @@ $L_470d37::
             nop
             nop
 $L_470cd0 ENDP
+ELSE
+EXTERN _CarordInit_470cd0:PROC
+$L_470cd0 TEXTEQU <_CarordInit_470cd0>
+ENDIF
 ALIGN 16
 ; AI orders: src\ai\cargo_orders.cpp, nmake ASM_CARGO_ORDERS=1 assembles the original
 IFDEF ASM_CARGO_ORDERS
@@ -342772,6 +342799,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4bcaa0 PROC
 
             sub ESP,8
@@ -342889,6 +342918,10 @@ $L_4bcb6c::
             add ESP,8
             ret 8
 $L_4bcaa0 ENDP
+ELSE
+EXTERN @Eff_DrawSprites@16:PROC
+$L_4bcaa0 TEXTEQU <@Eff_DrawSprites@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -349706,6 +349739,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c0ba0 PROC
 
             push ESI
@@ -349818,6 +349853,10 @@ $L_4c0c71::
             pop ESI
             ret 8
 $L_4c0ba0 ENDP
+ELSE
+EXTERN @Eff_Draw4c0ba0@16:PROC
+$L_4c0ba0 TEXTEQU <@Eff_Draw4c0ba0@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -349830,6 +349869,8 @@ $L_4c0ba0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c0c90 PROC
 
             push ESI
@@ -349942,6 +349983,10 @@ $L_4c0d61::
             pop ESI
             ret 8
 $L_4c0c90 ENDP
+ELSE
+EXTERN @Eff_Draw4c0c90@16:PROC
+$L_4c0c90 TEXTEQU <@Eff_Draw4c0c90@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -352491,6 +352536,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c2770 PROC
 
             push ESI
@@ -352616,6 +352663,10 @@ $L_4c2871::
             pop ESI
             ret 8
 $L_4c2770 ENDP
+ELSE
+EXTERN @Eff_Draw4c2770@16:PROC
+$L_4c2770 TEXTEQU <@Eff_Draw4c2770@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -352723,6 +352774,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c2900 PROC
 
             push ESI
@@ -352835,6 +352888,10 @@ $L_4c29d1::
             pop ESI
             ret 8
 $L_4c2900 ENDP
+ELSE
+EXTERN @Eff_Draw4c2900@16:PROC
+$L_4c2900 TEXTEQU <@Eff_Draw4c2900@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -362353,6 +362410,8 @@ EXTERN @Effect4c8890_Destroy@8:PROC
 FUN_4c8890 TEXTEQU <@Effect4c8890_Destroy@8>
 ENDIF
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c88f0 PROC
 
             push ECX
@@ -362476,6 +362535,10 @@ $L_4c899f::
             pop ECX
             ret 8
 $L_4c88f0 ENDP
+ELSE
+EXTERN @Eff_DrawQueue@16:PROC
+$L_4c88f0 TEXTEQU <@Eff_DrawQueue@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -367660,6 +367723,8 @@ ELSE
 EXTERN _Effect_AttachNode:PROC
 FUN_4cc850 TEXTEQU <_Effect_AttachNode>
 ENDIF
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4cc8f0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -367754,6 +367819,10 @@ $L_4cc9b8::
             pop EBP
             ret 8
 $L_4cc8f0 ENDP
+ELSE
+EXTERN @Eff_DrawDecals@16:PROC
+$L_4cc8f0 TEXTEQU <@Eff_DrawDecals@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -375142,6 +375211,8 @@ FUN_4d0fd0 TEXTEQU <@Vehicle4d0fd0_Destroy@8>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d1040 PROC
 
             push ECX
@@ -375253,6 +375324,10 @@ $L_4d113b::
             pop ECX
             ret 
 $L_4d1040 ENDP
+ELSE
+EXTERN @Eff_4d1040@4:PROC
+$L_4d1040 TEXTEQU <@Eff_4d1040@4>
+ENDIF
 ALIGN 16
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
@@ -377122,6 +377197,8 @@ FUN_4d25f0 TEXTEQU <@Effect4d25f0_Destroy@8>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d2660 PROC
 
             push ECX
@@ -377233,6 +377310,10 @@ $L_4d275b::
             pop ECX
             ret 
 $L_4d2660 ENDP
+ELSE
+EXTERN @Eff_4d2660@4:PROC
+$L_4d2660 TEXTEQU <@Eff_4d2660@4>
+ENDIF
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
 $L_4d2760 PROC
@@ -733937,6 +734018,8 @@ $L_5be488           BYTE ($L_5be478-$L_5be478)/4
             nop
             nop
 $L_5be2b0 ENDP
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5be4b0 PROC
 
             push EBX
@@ -734066,6 +734149,10 @@ $L_5be587::
             pop EBX
             ret 12
 $L_5be4b0 ENDP
+ELSE
+EXTERN @Con_GroupMouse@20:PROC
+$L_5be4b0 TEXTEQU <@Con_GroupMouse@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -734980,6 +735067,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5bedb0 PROC
 
             push EBX
@@ -735124,6 +735213,10 @@ $L_5beeeb::
             pop EBX
             ret 
 $L_5bedb0 ENDP
+ELSE
+EXTERN @Con_ScrollLayout@4:PROC
+$L_5bedb0 TEXTEQU <@Con_ScrollLayout@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -735242,6 +735335,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5befd0 PROC
 
             push EBX
@@ -735364,6 +735459,10 @@ $L_5bf0c2::
             pop EBX
             ret 12
 $L_5befd0 ENDP
+ELSE
+EXTERN @Con_ScrollMouse@20:PROC
+$L_5befd0 TEXTEQU <@Con_ScrollMouse@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -736236,6 +736335,8 @@ EXTERN @Button_ConstructId@20:PROC
 FUN_5bf820 TEXTEQU <@Button_ConstructId@20>
 ENDIF
           BYTE 090H
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5bf880 PROC
 
             push ESI
@@ -736338,8 +736439,14 @@ $L_5bf93c::
             pop ESI
             ret 
 $L_5bf880 ENDP
+ELSE
+EXTERN @Con_Size@4:PROC
+$L_5bf880 TEXTEQU <@Con_Size@4>
+ENDIF
           BYTE 090H
           BYTE 090H
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5bf940 PROC
 
             push ECX
@@ -736469,6 +736576,10 @@ $L_5bfa41::
             pop ECX
             ret 16
 $L_5bf940 ENDP
+ELSE
+EXTERN @Con_DrawText@24:PROC
+$L_5bf940 TEXTEQU <@Con_DrawText@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -736513,6 +736624,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5bfa80 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -736605,6 +736718,10 @@ $L_5bfb1d::
             nop
             nop
 $L_5bfa80 ENDP
+ELSE
+EXTERN @Con_ButtonMouse@20:PROC
+$L_5bfa80 TEXTEQU <@Con_ButtonMouse@20>
+ENDIF
 ; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
 IFDEF ASM_CONTROLS
 $L_5bfb30 PROC
@@ -821676,6 +821793,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 $L_5edce0 PROC
 
             push ESI
@@ -821767,6 +821886,10 @@ $L_5edd67::
             pop ESI
             ret 
 $L_5edce0 ENDP
+ELSE
+EXTERN @Clu_5edce0@4:PROC
+$L_5edce0 TEXTEQU <@Clu_5edce0@4>
+ENDIF
           BYTE 090H
 ; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
 IFDEF ASM_CLUSTERS

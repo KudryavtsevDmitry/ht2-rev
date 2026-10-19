@@ -752,3 +752,184 @@ extern "C" void __fastcall Con_PictureSize(BYTE* s)
     if (F(int, s, 56) < 0)
         F(int, s, 56) = 0;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_5bd590(); KING_ALIAS("_FUN_5bd590", "_Gui_Reset702f24")
+extern "C" void FUN_5bd560(); KING_ALIAS("_FUN_5bd560", "_Ctl_SetOrigin")
+extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
+ASM_PROC(FUN_5bd940)
+extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
+
+// [$L_5bfa80] a push button: a press (513) holds it, the release (514) over it gives its command
+extern "C" int __fastcall Con_ButtonMouse(BYTE* s, void*, int msg, int x, int y)
+{
+    if (msg == 514) {
+        if (F(int, s, 40))
+            return 514;
+        CallC(FUN_5bd590);
+        if (CallVirt<int>(s, 24, x, y)) {
+            F(unsigned, s, 284) &= ~2u;
+            return F(int, s, 28) | 0x8000;
+        }
+        return F(int, s, 28) | 0xa000;
+    }
+    if (msg != 513)
+        return msg;
+    if (F(int, s, 40))
+        return 513;
+    F(unsigned, s, 284) |= 2;
+    CallC(FUN_5bd560, s, x, y);
+    return F(int, s, 28) | 0xc000;
+}
+
+// [$L_5bf880] the size (+52, +56) from the picture (flags 16/36: +96, 72: +100) or the text (+12 in font +16)
+extern "C" void __fastcall Con_Size(BYTE* s)
+{
+    int f = F(int, s, 32);
+    if (f & (16 | 36)) {
+        BYTE* p = F(BYTE*, s, 96);
+        if (!p)
+            return;
+        F(int, s, 48) = 0;
+        F(int, s, 44) = 0;
+        F(int, s, 52) = F(WORD, p, 20) - 1;
+        F(int, s, 56) = F(WORD, p, 22) - 1;
+    } else if (f & 72) {
+        BYTE* p = F(BYTE*, s, 100);
+        if (!p)
+            return;
+        F(int, s, 48) = 0;
+        F(int, s, 44) = 0;
+        F(int, s, 52) = F(WORD, p, 4) - 1;
+        F(int, s, 56) = F(WORD, p, 6) - 1;
+    } else {
+        F(int, s, 48) = 0;
+        F(int, s, 44) = 0;
+        int w = CallThis<int>(FUN_5ea0e0, F(BYTE*, s, 16), F(int, s, 12));
+        F(int, s, 52) = w + F(int, s, 44) + 4;
+        F(int, s, 56) = F(int, F(BYTE*, s, 16), 20) + F(int, s, 48) + 4;
+    }
+    if (F(int, s, 32) & 0x300)
+        F(int, s, 60) = 1;
+    if (F(int, s, 52) < F(int, s, 44))
+        F(int, s, 52) = F(int, s, 44);
+    if (F(int, s, 56) < F(int, s, 48))
+        F(int, s, 56) = F(int, s, 48);
+}
+
+// [$L_5befd0] a scroll bar: a press on a part (+324) starts it, on the track pages (3 or 4), the release ends it
+extern "C" int __fastcall Con_ScrollMouse(BYTE* s, void*, int msg, int x, int y)
+{
+    BYTE* hit = CallThis<BYTE*>(FUN_5be5a0, s, x - F(int, s, 44), y - F(int, s, 48));
+    if (msg == 514) {
+        if (F(int, s, 324) == -1)
+            return 514;
+        if (hit)
+            F(unsigned, hit, 284) &= ~6u;
+        F(int, s, 324) = -1;
+        if (s == g_con702f24)
+            CallC(FUN_5bd590);
+        return 32768;
+    }
+    if (msg != 513)
+        return msg;
+    if (!hit) {
+        BYTE* n = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288));
+        F(int, s, 324) = x - F(int, s, 44) < F(int, n, 44) ? 4 : 3;
+    } else {
+        CallThis(FUN_5bdba0, s, hit);
+        F(int, s, 324) = CallVirt<int>(hit, 32, 513, x - F(int, s, 44), y - F(int, s, 48)) & ~0x8000;
+    }
+    CallC(FUN_5bd560, s, x, y);
+    return 32768;
+}
+
+// [$L_5be4b0] a mouse event goes to the child that has the capture (+36), else to the one under it
+extern "C" int __fastcall Con_GroupMouse(BYTE* s, void*, int msg, int x, int y)
+{
+    if (F(int, s, 40))
+        return msg;
+    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c))
+        if (F(int, c, 36)) {
+            if (CallVirt<int>(c, 24, x - F(int, s, 44), y - F(int, s, 48)))
+                return CallVirt<int>(c, 32, msg, x - F(int, s, 44), y - F(int, s, 48));
+            return 32768;
+        }
+    BYTE* hit = CallThis<BYTE*>(FUN_5be5a0, s, x - F(int, s, 44), y - F(int, s, 48));
+    if (!hit)
+        return msg;
+    if (msg == 513)
+        CallThis(FUN_5bdba0, s, hit);
+    if (hit == F(BYTE*, s, 292))
+        return CallVirt<int>(hit, 32, msg, x - F(int, s, 44), y - F(int, s, 48));
+    return msg;
+}
+
+// [$L_5bf940] draws the control, then its text (+12, font +16) aligned (+32 bits 12, 13) in the state's color
+extern "C" int __fastcall Con_DrawText(BYTE* s, void*, int a, int b, int c, int d)
+{
+    CallThis(FUN_5bd940, s, a, b, c, d);
+    BYTE* font = F(BYTE*, s, 16);
+    if (!font)
+        return 0;
+    int w = CallThis<int>(FUN_5ea0e0, font, F(int, s, 12));
+    int pad = F(int, s, 60);
+    int x;
+    if (F(int, s, 32) & 0x1000)
+        x = b + F(int, s, 44) + pad + 3;
+    else if (F(int, s, 32) & 0x2000)
+        x = b + (F(int, s, 52) - pad - w) - 3;
+    else
+        x = b + ((F(int, s, 52) - pad * 2 - F(int, s, 44)) / 2 - w / 2 + F(int, s, 44) + pad);
+    font = F(BYTE*, s, 16);
+    int t2 = (F(int, s, 56) - pad * 2 - F(int, s, 48)) / 2;
+    int y = F(int, font, 20) / 2 + F(int, s, 48) + t2 + pad + c;
+    int st = F(int, s, 284);
+    if (!d)
+        st &= 2;
+    int k = (st & 3) + 2;
+    CallC(FUN_5ea170, a, x, y, font, F(int, s, 12), F(int, s, k * 36), 0);
+    return 0;
+}
+
+// [$L_5bedb0] lays out the scroll bar's arrows and thumb (children from +288) along its direction (+328)
+extern "C" void __fastcall Con_ScrollLayout(BYTE* s)
+{
+    int a = F(int, s, 312);
+    F(int, s, 308) += a * 2;
+    F(int, s, 304) -= a;
+    BYTE* c = F(BYTE*, s, 288);
+    CallVirt(c, 20);
+    F(int, s, 304) += F(int, c, F(int, s, 328) == 1 ? 52 : 56);
+    c = CallThis<BYTE*>(FUN_5d3080, c);
+    CallVirt(c, 20);
+    int e;
+    if (F(int, s, 328) == 1) {
+        F(int, s, 308) += F(int, c, 44) - F(int, c, 52);
+        e = F(int, c, 52);
+    } else {
+        F(int, s, 308) += F(int, c, 44) - F(int, c, 56);
+        e = F(int, c, 56);
+    }
+    e -= F(int, c, 44);
+    c = CallThis<BYTE*>(FUN_5d3080, c);
+    CallVirt(c, 20);
+    int mode = F(int, s, 328);
+    F(int, s, 308) += F(int, c, 44) - F(int, c, mode == 1 ? 52 : 56);
+    int v = F(int, s, 308) - F(int, s, 60) + e;
+    int o = F(int, s, 320);
+    if (mode == 1) {
+        F(int, c, 52) += v;
+        F(int, c, 44) += v;
+        F(int, c, 48) += o;
+        F(int, c, 56) += o;
+    } else {
+        F(int, c, 44) += o;
+        F(int, c, 52) += o;
+        F(int, c, 48) += v;
+        F(int, c, 56) += v;
+    }
+}
