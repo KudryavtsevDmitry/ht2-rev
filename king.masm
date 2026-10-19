@@ -342476,6 +342476,8 @@ $L_4bc670 TEXTEQU <_Fx_Init695c54>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bc690 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -342632,6 +342634,10 @@ $L_4bc7ee::
             add ESP,272
             ret 12
 FUN_4bc690 ENDP
+ELSE
+EXTERN @Trail_Construct@20:PROC
+FUN_4bc690 TEXTEQU <@Trail_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -809929,6 +809935,8 @@ EXTERN _Image_LoadFile:PROC
 FUN_5e7730 TEXTEQU <_Image_LoadFile>
 ENDIF
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e7770 PROC
 
             push -1
@@ -810095,6 +810103,10 @@ $L_5e78c1::
             add ESP,16
             ret 
 FUN_5e7770 ENDP
+ELSE
+EXTERN _Image_FromFile:PROC
+FUN_5e7770 TEXTEQU <_Image_FromFile>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
