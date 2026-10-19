@@ -847,3 +847,44 @@ extern "C" void __fastcall Scy_Message(BYTE* s, void*, BYTE* p)
             CallThis(FUN_52e540, s, CallC<int>(FUN_53f7b0, r));
     }
 }
+
+// ---------------------------------------------------------------------------
+// Scenery object destructor (exception frame dropped).
+
+extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+ASM_PROC(FUN_5e52b0)
+extern "C" void FUN_57def0(); KING_ALIAS("_FUN_57def0", "@SceneObj_Get800@8")
+extern "C" void FUN_58b870(); KING_ALIAS("_FUN_58b870", "@Body58b870_Destroy@8")
+#include <string.h>
+ASM_VAR(AsmLabel, g_q25_64ec88, $L_64ec88)
+ASM_VAR(AsmLabel, g_q25_64ec3c, $L_64ec3c)
+ASM_VAR(AsmLabel, g_q25_64ec38, $L_64ec38)
+
+// [FUN_52bb40] destructor: a scenery object (vtables 64ec88, 64ec3c at +256, 64ec38 at +376); if the world keeps
+// its record (key cell +9544 / slot +9548) the 156-byte state is saved there; its part is released
+extern "C" void __fastcall Scenery_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_q25_64ec88;
+    F(void*, s, 256) = g_q25_64ec3c;
+    F(void*, s, 376) = g_q25_64ec38;
+    int key = F(int, s, 9548) + (CallC<int>(FUN_52ea90, F(int, s, 9544)) + 200) * 1000;
+    if (CallThis<int>(FUN_5e5370, F(BYTE*, s, 36) + 704, key)) {
+        const char* n1 = F(const char*, F(BYTE*, s, 320), 12);
+        const char* n2 = F(const char*, CallThis<BYTE*>(FUN_57def0, s), 12);
+        BYTE t[156];
+        memset(t, 0, sizeof t);
+        F(int, t, 0) = CallC<int>(FUN_52ea90, F(int, s, 9544));
+        F(int, t, 4) = F(int, s, 9548);
+        F(int, t, 8) = F(int, s, 372);
+        F(int, t, 12) = F(int, s, 1200);
+        F(int, t, 16) = 0;
+        memcpy(t + 20, s + 416, 24);
+        memcpy(t + 44, s + 500, 48);
+        strncpy((char*)t + 92, n2, 31);
+        strncpy((char*)t + 124, n1, 31);
+        CallThis(FUN_5e52b0, F(BYTE*, s, 36) + 704, key, F(int, F(BYTE*, s, 292), 60), 156, t);
+    }
+    Part_Release(s ? s + 9528 : 0, 0);
+    CallThis(FUN_58b870, s);
+}

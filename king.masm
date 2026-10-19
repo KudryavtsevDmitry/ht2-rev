@@ -1366,6 +1366,8 @@ PUBLIC $L_672450, $L_672468, $L_672480, $L_672498, $L_696250, $L_696708
 PUBLIC $L_69670c, $L_696710, $L_696714, $L_696718, $L_69671c, $L_696720
 PUBLIC $L_696724, $L_696728
 PUBLIC $L_651be8, $L_651c34
+PUBLIC $L_67e954, $L_67e970, $L_67e980, $L_67e99c, $L_67e9ac, $L_67e9d0
+PUBLIC $L_67e9f0
 
 ;===================================
 _TEXT SEGMENT
@@ -512825,6 +512827,8 @@ $L_52b9fc ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52bb40 PROC
 
             push -1
@@ -512973,6 +512977,10 @@ $L_52bcf0::
             add ESP,192
             ret 
 FUN_52bb40 ENDP
+ELSE
+EXTERN @Scenery_Destroy@4:PROC
+FUN_52bb40 TEXTEQU <@Scenery_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -693267,6 +693275,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a6160 PROC
 
             push -1
@@ -693479,6 +693489,10 @@ $L_5a6367::
             add ESP,48
             ret 40
 FUN_5a6160 ENDP
+ELSE
+EXTERN @Gauge_Construct@48:PROC
+FUN_5a6160 TEXTEQU <@Gauge_Construct@48>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

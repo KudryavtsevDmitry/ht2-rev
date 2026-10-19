@@ -990,7 +990,7 @@ void __fastcall CopterObj573c10_Destroy(BYTE* self, void*)
 }
 
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
-ASM_PROC(FUN_5a6160)
+extern "C" void FUN_5a6160(); KING_ALIAS("_FUN_5a6160", "@Gauge_Construct@48")
 ASM_VAR(char, g_vtbl64fe60, $L_64fe60)
 ASM_VAR(int, g_6968a8, $L_6968a8)
 
