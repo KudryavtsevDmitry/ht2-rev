@@ -4657,3 +4657,52 @@ extern "C" void __cdecl Eff_CreateSparks(BYTE* w)
         F(BYTE, g_q22_696248 + off, 40) |= 1;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Trail effect constructor, image from file (exception frames dropped).
+
+extern "C" void FUN_4bcc80(); KING_ALIAS("_FUN_4bcc80", "_Fx_FindByNameStd@8")
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
+extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
+ASM_VAR(AsmLabel, s_q26_67254c, $L_67254c)
+ASM_VAR(AsmLabel, s_q26_672688, $L_672688)
+ASM_VAR(AsmLabel, g_q26Ctor4bc820, $L_4bc820)
+
+static BYTE* Eff_NewItems240(int n)
+{
+    BYTE* m = (BYTE*)operator new(n * 240 + 4);
+    if (!m)
+        return 0;
+    *(int*)m = n;
+    CallStd(Eff_VecCtor, m + 4, 240, n, (BYTE*)g_q26Ctor4bc820, FUN_50d190);
+    return m + 4;
+}
+// [FUN_4bc690] constructor (name, world, n): a trail effect with two materials (+24, +28) named by name and
+// 0/1, n slots (+0, +4) and two arrays of n items of 240 bytes (+8, +12)
+extern "C" BYTE* __fastcall Trail_Construct(BYTE* s, void*, const char* name, int w, int n)
+{
+    F(int, s, 16) = w;
+    for (int i = 0; i < 2; i++) {
+        char buf[260];
+        sprintf(buf, (const char*)s_q26_67254c, name, i);
+        BYTE* room = CallThis<BYTE*>(FUN_5d9290, F(BYTE*, s, 16), (const char*)s_q26_672688);
+        BYTE* r = CallThis<BYTE*>(FUN_4bcc80, s, buf, room);
+        F(BYTE*, s, 24 + i * 4) = r;
+        F(int, r, 32) |= 0x40000;
+    }
+    F(int, s, 20) = n;
+    F(int*, s, 0) = (int*)operator new(n * 4);
+    F(int*, s, 4) = (int*)operator new(F(int, s, 20) * 4);
+    F(BYTE*, s, 8) = Eff_NewItems240(F(int, s, 20));
+    F(BYTE*, s, 12) = Eff_NewItems240(F(int, s, 20));
+    for (int i = 0; i < F(int, s, 20); i++) {
+        F(int*, s, 0)[i] = 0;
+        F(int*, s, 4)[i] = 0;
+    }
+    F(int, s, 32) = 0;
+    F(int, s, 84) = 0;
+    for (int k = 0; k < 10; k++)
+        F(int, s, 40 + k * 4) = 0;
+    return s;
+}

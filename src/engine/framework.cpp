@@ -1462,7 +1462,7 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
 }
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5e7770)    // image: load (name, 0, 0)
+extern "C" void FUN_5e7770(); KING_ALIAS("_FUN_5e7770", "_Image_FromFile")    // image: load (name, 0, 0)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
 ASM_VAR(BYTE*, g_fwDevice, $L_720908)
@@ -2728,4 +2728,47 @@ extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c,
     }
     BYTE* m = (BYTE*)operator new(124);
     F(BYTE*, s, 12) = m ? CallThis<BYTE*>(FUN_5b6530, m, F(BYTE*, p, 12), l, d & 16384) : 0;
+}
+
+// ---------------------------------------------------------------------------
+// Trail effect constructor, image from file (exception frames dropped).
+
+extern "C" void FUN_5ba710(); KING_ALIAS("_FUN_5ba710", "@Texture_Construct@12")
+ASM_PROC(FUN_5e7930)
+ASM_PROC(FUN_5e8160)
+ASM_VAR(int, g_q26_720904, $L_720904)
+ASM_VAR(int, g_q26_7218bc, $L_7218bc)
+
+// [FUN_5e7770] (file, name, flags): an image (84 bytes) read from the open file; a streamed one (flag 0x400 with
+// streaming on) keeps the file and position; otherwise its pixels are read now. 0 and 7218bc = 2 on failure
+extern "C" BYTE* __cdecl Image_FromFile(FILE* f, int name, int flags)
+{
+    BYTE* m = (BYTE*)operator new(84);
+    BYTE* o = m ? CallThis<BYTE*>(FUN_5ba710, m, name) : 0;
+    F(int, o, 52) |= flags;
+    if (!o)
+        return 0;
+    long pos = ftell(f);
+    CallC(FUN_5e7930, o, f, 0);
+    int fl = F(int, o, 52);
+    if ((fl & 0x400) && g_q26_720904) {
+        F(int, o, 32) = pos;
+        F(FILE*, o, 48) = f;
+        F(int, o, 52) = (fl & ~3) | flags;
+        return o;
+    }
+    int size = F(WORD, o, 24) * F(WORD, o, 20) * F(WORD, o, 22);
+    F(void*, o, 8) = operator new(size);
+    if (F(BYTE, o, 52) & 16)
+        F(void*, o, 12) = operator new(size / 2);
+    if (F(BYTE*, o, 8) && (!(F(BYTE, o, 52) & 16) || F(BYTE*, o, 12))) {
+        F(int, o, 28) = CallC<int>(FUN_4cef50, F(BYTE*, o, 8), F(WORD, o, 24) * F(WORD, o, 20) * F(WORD, o, 22));
+        if (CallC<int>(FUN_5e8160, o, f, pos))
+            return o;
+        CallVirt(o, 0, 1);
+        return 0;
+    }
+    CallVirt(o, 0, 1);
+    g_q26_7218bc = 2;
+    return 0;
 }
