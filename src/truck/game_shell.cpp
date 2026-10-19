@@ -2292,3 +2292,216 @@ extern "C" void __fastcall Shell_51b5a0(BYTE* s)
     F(WORD, s, 378) = F(WORD, s, 390);
     F(WORD, s, 380) = F(WORD, s, 392);
 }
+
+// ---------------------------------------------------------------------------
+// More shell screens: keys, mouse, pictures and the screens' start.
+
+extern "C" void FUN_569710(); KING_ALIAS("_FUN_569710", "_Messages_Clear1276")
+extern "C" void FUN_50bd60(); KING_ALIAS("_FUN_50bd60", "_Carat_SetScreenSize")
+extern "C" void FUN_50bd30(); KING_ALIAS("_FUN_50bd30", "_Carat_UpdateScreenSize")
+ASM_PROC(FUN_532950)
+extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
+extern "C" void FUN_50bfe0(); KING_ALIAS("_FUN_50bfe0", "_Carat_HasMovie")
+extern "C" void FUN_50c100(); KING_ALIAS("_FUN_50c100", "_Carat_CloseMovie")
+extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
+extern "C" void FUN_50c010(); KING_ALIAS("_FUN_50c010", "@Screen_Grab@8")
+extern "C" void FUN_4eb680(); KING_ALIAS("_FUN_4eb680", "@Ramp_High@8")
+extern "C" void FUN_4eb690(); KING_ALIAS("_FUN_4eb690", "@Ramp_Position@8")
+extern "C" void FUN_51c870(); KING_ALIAS("_FUN_51c870", "_Storage_ReadSubImage")
+extern "C" void FUN_518760(); KING_ALIAS("_FUN_518760", "_Storage_ReadImage")
+extern "C" void Gs_sprintf(); KING_ALIAS("_Gs_sprintf", "_sprintf")
+ASM_VAR(int, g_gamshe696c40, $L_696c40)
+ASM_VAR(BYTE*, g_gamshe6ced28, $L_6ced28)
+ASM_VAR(AsmLabel, g_gamshe6ce830, $L_6ce830)
+ASM_VAR(BYTE*, g_gamshe6cecb0, $L_6cecb0)
+ASM_VAR(AsmLabel, g_gamshe6d1948, $L_6d1948)
+ASM_VAR(AsmLabel, g_gamshe6ce4f4, $L_6ce4f4)
+ASM_VAR(double, g_gamshe64dea0, $L_64dea0)
+ASM_VAR(double, g_gamshe64b6a0, $L_64b6a0)
+ASM_VAR(BYTE*, g_gamshe696848, $L_696848)
+ASM_VAR(AsmLabel, s_gamshe6772b0, $L_6772b0)
+
+// the cab of the player's car
+static BYTE* Gs_Cab() { return F(BYTE*, F(BYTE*, g_gamshe6d2078, 616), 21600); }
+
+// closes the screen and goes back to the world (cab mode 2)
+static void Gs_BackToWorld(BYTE* s)
+{
+    CallVirt(s, 32);
+    CallVirt(g_gamshe696ca0, 36);
+    CallC(FUN_4e12b0, 1);
+    F(BYTE, Gs_Cab(), 9984) = 2;
+}
+
+// [$L_520c80] Esc goes back to the world
+extern "C" int __fastcall Shell_520c80(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) == 256 && F(WORD, ev, 6) == 27) {
+        Gs_BackToWorld(s);
+        return 1;
+    }
+    return CallThis<int>(FUN_5d8bb0, s, ev);
+}
+
+// drops the backdrop and lets the world run again
+static void Gs_DropBackdrop()
+{
+    if (g_6ce4f4)
+        CallVirt(g_6ce4f4, 0, 1);
+    g_6ce4f4 = 0;
+    F(int, g_gamshe696ca0, 16) |= 3;
+    CallC(FUN_569710);
+}
+
+// [$L_525ad0] F5 or Esc: back to the world
+extern "C" int __fastcall Shell_525ad0(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) == 256 && (F(WORD, ev, 6) == 116 || F(WORD, ev, 6) == 27)) {
+        Gs_DropBackdrop();
+        CallVirt(s, 32);
+        CallVirt(g_gamshe696ca0, 36);
+        CallC(FUN_50bd60);
+        CallC(FUN_4e12b0, 1);
+    }
+    return CallThis<int>(FUN_5d8bb0, s, ev);
+}
+
+// [$L_5277d0] F4 or Esc: back to the world
+extern "C" int __fastcall Shell_5277d0(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) == 256 && (F(WORD, ev, 6) == 115 || F(WORD, ev, 6) == 27)) {
+        CallVirt(s, 32);
+        CallVirt(g_gamshe696ca0, 36);
+        CallC(FUN_50bd60);
+        CallC(FUN_4e12b0, 1);
+        Gs_DropBackdrop();
+        return 1;
+    }
+    return CallThis<int>(FUN_5d8bb0, s, ev) != 0;
+}
+
+// [$L_50ff90] with 696c40, F5-F7 go to 6cec6c's +1356; other than mouse events the car (6d2078) sees them
+extern "C" int __fastcall Shell_50ff90(BYTE* s, void*, BYTE* ev)
+{
+    if (g_gamshe696c40 && F(WORD, ev, 0) == 256) {
+        int k = F(short, ev, 6);
+        if (k == 116 || k == 117 || k == 118) {
+            CallVirt(F(BYTE*, g_6cec6c, 1356), 148, ev);
+            return 1;
+        }
+    }
+    WORD t = F(WORD, ev, 0);
+    if (t != 513 && t != 514 && t != 512)
+        CallThis(FUN_532950, g_gamshe6d2078, ev);
+    CallThis(FUN_5d8bb0, s, ev);
+    return 1;
+}
+
+// [$L_516b10] the arrows (+316, +320) enabled by the page (+348 of +324), then the page text centered at 329..584
+extern "C" void __fastcall Shell_516b10(BYTE* s, void*, int a)
+{
+    F(int, F(BYTE*, s, 316), 40) = F(int, s, 348) ? 0 : 1;
+    F(int, F(BYTE*, s, 320), 40) = F(int, s, 348) >= F(int, s, 324) ? 1 : 0;
+    CallThis(FUN_5c0020, s, a);
+    int w = CallThis<int>(FUN_5ea0e0, g_gamshe6ced28, (BYTE*)g_gamshe6ce830);
+    CallC(FUN_5ea170, F(int, s, -52), (255 - w) / 2 + 329, 257, g_gamshe6ced28, (BYTE*)g_gamshe6ce830, 4, 0);
+}
+
+// [$L_5116c0] leaving the screen once the game has run (+2992 of +368 at 5 or more)
+extern "C" void __fastcall Shell_5116c0(BYTE* s)
+{
+    if (F(int, F(BYTE*, s, 368), 2992) < 5)
+        return;
+    if (F(BYTE, g_gamshe6cecb0, 16) & 2)
+        return;
+    BYTE* g = g_6cec6c;
+    if ((F(int, g, 1296) || F(int, g, 1284) || F(int, g, 1288)) && CallC<int>(FUN_50bfe0)) {
+        F(int, g_6cec6c, 1284) = 0;
+        F(int, g_6cec6c, 1288) = 0;
+        F(int, g_6cec6c, 1296) = 0;
+        CallC(FUN_50c100);
+        CallC(FUN_4e12b0, 1);
+        return;
+    }
+    CallThis(FUN_530020, (BYTE*)g_gamshe6d1948);
+    CallC(FUN_50bd30);
+    CallC(FUN_4e12b0, 0);
+    CallThis(FUN_50c010, (BYTE*)g_gamshe6ce4f4);
+    CallThis(FUN_5d8610, s);
+}
+
+// [$L_516bc0] a mouse move far from 400,327 or an unhandled event of the current screen goes to 6cec80
+extern "C" int __fastcall Shell_516bc0(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) == 512) {
+        int dx = F(short, ev, 2) - 400;
+        int dy = F(short, ev, 4) - 327;
+        dx = dx < 0 ? -dx : dx;
+        dy = dy < 0 ? -dy : dy;
+        if (x87_sqrt((double)(dy * dy + dx * dx)) > g_gamshe64dea0)
+            return CallVirt<int>(g_6cec80, 52, ev);
+    }
+    if (!CallThis<int>(FUN_5d8bb0, s, ev) && g_gamshe696848 == s && F(WORD, ev, 0) != 512)
+        return CallVirt<int>(g_6cec80, 52, ev);
+    return 1;
+}
+
+// [$L_5205a0] the gearbox screen's start: the cab's ratio values, the controls and the cab's settings
+extern "C" void __fastcall Shell_5205a0(BYTE* s)
+{
+    CallC(FUN_50bd30);
+    CallThis(FUN_5d8610, s);
+    F(double, s, 384) = CallThis<double>(FUN_4eb680, Gs_Cab() + 16112);
+    double t = CallThis<double>(FUN_4eb690, Gs_Cab() + 16112) * F(double, s, 384);
+    F(int, s, 368) = 0;
+    F(int, s, 392) = 0;
+    F(int, s, 372) = 0;
+    F(int, s, 396) = 0;
+    F(double, s, 376) = t;
+    F(short, s, 400) = (short)(int)(t * g_gamshe64b6a0 / F(double, s, 384));
+    F(int, F(BYTE*, s, 404), 284) &= ~2;
+    F(BYTE, Gs_Cab(), 9984) = 0;
+    F(DWORD, Gs_Cab(), 10000) = 0x3f000000;
+    F(int, Gs_Cab(), 9996) = 0;
+    F(WORD, Gs_Cab(), 10004) = 0;
+    F(WORD, Gs_Cab(), 10006) = 1;
+    F(WORD, Gs_Cab(), 10054) = 21;
+    CallThis(FUN_530020, (BYTE*)g_gamshe6d1948);
+    CallC(FUN_4e12b0, 0);
+}
+
+// draws the picture of the chosen item and its four numbers (bytes 2, 3, 5, 6 of its record)
+static void Gs_DrawItem(BYTE* s, BYTE* list, void (*find)(), int px, int py, int tx, int ty, bool textFirst)
+{
+    BYTE* o = F(BYTE*, list, 300);
+    if (o)
+        o = F(BYTE*, o, 12);
+    BYTE rec[164];
+    BYTE* pic = CallC<BYTE*>(find, o, rec);
+    if (!pic)
+        return;
+    char buf[64];
+    if (!textFirst) {
+        CallC(FUN_5b86c0, F(int, s, -52), px, py, pic);
+        CallVirt(pic, 0, 1);
+    }
+    CallC(Gs_sprintf, buf, (const char*)s_gamshe6772b0, rec[2], rec[3], rec[5], rec[6]);
+    if (textFirst)
+        CallC(FUN_5b86c0, F(int, s, -52), px, py, pic);
+    CallC(FUN_5ea170, F(int, s, -52), tx, ty, F(int, g_gamshe696ca0, 2864), buf, 5, 0);
+    if (textFirst)
+        CallVirt(pic, 0, 1);
+}
+// [$L_51d600]
+extern "C" void __fastcall Shell_51d600(BYTE* s, void*, int a)
+{
+    CallThis(FUN_5c0020, s, a);
+    Gs_DrawItem(s, F(BYTE*, s, 332), FUN_51c870, 487, 390, 490, 464, true);
+}
+// [$L_518820]
+extern "C" void __fastcall Shell_518820(BYTE* s, void*, int a)
+{
+    CallThis(FUN_5c0020, s, a);
+    Gs_DrawItem(s, F(BYTE*, s, 316), FUN_518760, 478, 203, 483, 276, false);
+}

@@ -1756,3 +1756,138 @@ extern "C" void __fastcall Med_Write5d21e0(BYTE* s, void*, void* f)
     int w = F(int, s, 4);
     CallC(Med_fwrite, &w, 4, 1, f);
 }
+
+// ---------------------------------------------------------------------------
+// Sound channels, list boxes and their readers.
+
+extern "C" void FUN_5cba00(); KING_ALIAS("_FUN_5cba00", "@Branch_Construct@16")
+extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
+ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5cf3f0(); KING_ALIAS("_FUN_5cf3f0", "@Obj_Notify104@8")
+extern "C" void FUN_5c0c00(); KING_ALIAS("_FUN_5c0c00", "@List_IndexOf300@8")
+extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
+extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+extern "C" void Med_printf(); KING_ALIAS("_Med_printf", "_printf")
+extern "C" void Med_exit(); KING_ALIAS("_Med_exit", "_exit")
+extern "C" void Med_fread(); KING_ALIAS("_Med_fread", "_fread")
+ASM_VAR(float, g_med64c264, $L_64c264)
+ASM_VAR(double, g_med64b678, $L_64b678)
+ASM_VAR(AsmLabel, s_med67fad0, $L_67fad0)
+
+// the channel at +off, made (40 bytes, FUN_5cba00 (self, a)) on first use while the volume (+24) is not negative
+static BYTE* Med_Channel(BYTE* s, int off, int a)
+{
+    if (!(F(float, s, 24) >= g_med64c264))
+        return 0;
+    if (F(BYTE*, s, off))
+        return F(BYTE*, s, off);
+    BYTE* o = (BYTE*)operator new(40);
+    if (!o) {
+        F(BYTE*, s, off) = 0;
+        return 0;
+    }
+    return F(BYTE*, s, off) = CallThis<BYTE*>(FUN_5cba00, o, s, a);
+}
+// [$L_5cbb30]
+extern "C" BYTE* __fastcall Med_Channel8(BYTE* s, void*, int a) { return Med_Channel(s, 8, a); }
+// [$L_5cbb80]
+extern "C" BYTE* __fastcall Med_Channel4(BYTE* s, void*, int a) { return Med_Channel(s, 4, a); }
+// [$L_5cbbd0] the same at +12 with full volume
+extern "C" BYTE* __fastcall Med_Channel12(BYTE* s, void*, int a)
+{
+    if (!(F(float, s, 24) >= g_med64c264))
+        return 0;
+    if (F(BYTE*, s, 12))
+        return F(BYTE*, s, 12);
+    BYTE* o = (BYTE*)operator new(40);
+    F(BYTE*, s, 12) = o ? CallThis<BYTE*>(FUN_5cba00, o, s, a) : 0;
+    F(DWORD, F(BYTE*, s, 12), 24) = 0x3f800000;
+    return F(BYTE*, s, 12);
+}
+
+// [$L_5cf310]
+extern "C" int __fastcall Med_5cf310(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!F(int, s, 64))
+        return 0;
+    F(int, s, 32) = 0;
+    int r = CallThis<int>(FUN_5f36d0, s, a, b);
+    if (!r)
+        return r;
+    CallThis(FUN_5b1020, b, F(int, s, 124), 0, 0, 0);
+    CallThis(FUN_5cf3f0, s - 32);
+    return 1;
+}
+
+// [$L_5cf410] the sound (+96) at the time of +100; once it has played out it is deleted and vtbl+28 (1)
+extern "C" void __fastcall Med_5cf410(BYTE* s)
+{
+    BYTE* o = F(BYTE*, s, 96);
+    if (!o)
+        return;
+    CallVirt(o, 20, F(double, F(BYTE*, s, 100), 2960));
+    o = F(BYTE*, s, 96);
+    if (F(double, o, 16) > g_med64b678) {
+        CallThis(FUN_5d32f0, s, 1);
+        return;
+    }
+    if (o)
+        CallVirt(o, 0, 1);
+    F(int, s, 96) = 0;
+    CallVirt(s, 28, 1);
+}
+
+// [$L_5ce640] the sounds of the list (+24, next +8) at time (a, b); played-out ones are removed
+extern "C" void __fastcall Med_5ce640(BYTE* s, void*, int a, int b)
+{
+    for (BYTE* o = F(BYTE*, s, 24); o;) {
+        BYTE* next = F(BYTE*, o, 8);
+        CallVirt(o, 20, a, b);
+        if (!(F(double, o, 16) > g_med64b678)) {
+            if (F(BYTE*, s, 24) == o)
+                F(BYTE*, s, 24) = next;
+            CallThis(FUN_5d21b0, o);
+            if (o)
+                CallVirt(o, 0, 1);
+        }
+        o = next;
+    }
+    if (!F(BYTE*, s, 24)) {
+        F(DWORD, s, 16) = 0;
+        F(DWORD, s, 20) = 0xbff00000;
+    }
+}
+
+// [$L_5c0aa0] a list box: Enter gives its command, up and down move the selection
+extern "C" int __fastcall Med_ListKey(BYTE* s, void*, int key, int up)
+{
+    if (up)
+        return key;
+    if (key == 13)
+        return F(int, s, 28) | 0x8000;
+    if (key == 38) {
+        CallThis(FUN_5c0c20, s, CallThis<int>(FUN_5c0c00, s) - 1);
+        return 32806;
+    }
+    if (key == 40) {
+        CallThis(FUN_5c0c20, s, CallThis<int>(FUN_5c0c00, s) + 1);
+        return 32808;
+    }
+    return key;
+}
+
+// [$L_5d2230] reads the chunk (tag 65534, then the flags +8 and +4)
+extern "C" void __fastcall Med_Read5d2230(BYTE* s, void*, void* f)
+{
+    if (CallC<int>(FUN_5ab0f0, f) != 65534) {
+        CallC(Med_printf, (const char*)s_med67fad0);
+        CallC(Med_exit, 0);
+    }
+    int v;
+    CallC(Med_fread, &v, 4, 1, f);
+    F(int, s, 8) = v ? 1 : 0;
+    CallC(Med_fread, &v, 4, 1, f);
+    F(int, s, 4) = v ? 1 : 0;
+}
