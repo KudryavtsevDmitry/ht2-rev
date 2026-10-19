@@ -3457,3 +3457,284 @@ extern "C" int __cdecl Fx_Zero()
     return 0;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods of the effect classes and the static initializers of
+// effect constants.
+
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")    // releases an object (flags)
+ASM_PROC(FUN_4cb8d0)
+extern "C" void FUN_5fcdb0(); KING_ALIAS("_FUN_5fcdb0", "@Sound_ResetSlot@8")
+extern "C" void FUN_4dd9f0(); KING_ALIAS("_FUN_4dd9f0", "@Obj4dd9f0_Destruct@8")
+ASM_PROC(FUN_4ce6d0)
+ASM_PROC(FUN_547030)
+ASM_PROC(FUN_5f0870)
+ASM_PROC(FUN_4dc410)
+ASM_PROC(FUN_4ddd50)
+ASM_VAR(float, g_fx696700, $L_696700)
+ASM_VAR(float, g_fx69637c, $L_69637c)
+ASM_VAR(float, g_fx6966fc, $L_6966fc)
+ASM_VAR(float, g_fx6966f8, $L_6966f8)
+ASM_VAR(float, g_fx672c48, $L_672c48)
+ASM_VAR(float, g_fx672c4c, $L_672c4c)
+ASM_VAR(float, g_fx69672c, $L_69672c)
+ASM_VAR(float, g_fx69636c, $L_69636c)
+ASM_VAR(float, g_fx696368, $L_696368)
+ASM_VAR(float, g_fx696374, $L_696374)
+ASM_VAR(float, g_fx696378, $L_696378)
+ASM_VAR(float, g_fx64c308, $L_64c308)
+ASM_VAR(float, g_fx64c1e4, $L_64c1e4)
+ASM_VAR(int, g_fx64c1bc, $L_64c1bc)
+ASM_VAR(int, g_fx68b990, $L_68b990)
+ASM_VAR(FxDwords, g_fx695d20, $L_695d20)
+ASM_VAR(FxDwords, g_fx702650, $L_702650)
+ASM_VAR(FxDwords, g_fx696740, $L_696740)
+
+static BYTE* Fx_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// [$L_4b9ff0]
+extern "C" BYTE* __fastcall Fx4b9ff0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Fx_DestructA); }
+// [$L_4bcbb0]
+extern "C" BYTE* __fastcall Fx4bcbb0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4bcbd0_Destroy); }
+// [$L_4bd7f0]
+extern "C" BYTE* __fastcall Fx4bd7f0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Fx_DestructB); }
+// [$L_4bea40]
+extern "C" BYTE* __fastcall Fx4bea40_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4bedb0_Destroy); }
+// [$L_4bef80]
+extern "C" BYTE* __fastcall Fx4bef80_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4bf3f0_Destroy); }
+// [$L_4c08d0]
+extern "C" BYTE* __fastcall Fx4c08d0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, FUN_4c09d0); }
+// [$L_4c0910]
+extern "C" BYTE* __fastcall Fx4c0910_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())RendererA_Destruct); }
+// [$L_4c0950]
+extern "C" BYTE* __fastcall Fx4c0950_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())RendererB_Destruct); }
+// [$L_4c26c0]
+extern "C" BYTE* __fastcall Fx4c26c0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())List_Destruct); }
+// [$L_4c2890]
+extern "C" BYTE* __fastcall Fx4c2890_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())RendererC_Destruct); }
+// [$L_4c29f0]
+extern "C" BYTE* __fastcall Fx4c29f0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())RendererD_Destruct); }
+// [$L_4c4180]
+extern "C" BYTE* __fastcall Fx4c4180_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, FUN_4c1790); }
+// [$L_4c41a0]
+extern "C" BYTE* __fastcall Fx4c41a0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4c45d0_Destroy); }
+// [$L_4c4ad0]
+extern "C" BYTE* __fastcall Fx4c4ad0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, FUN_5f0870); }
+// [$L_4c4c20]
+extern "C" BYTE* __fastcall Fx4c4c20_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4c4c40_Destroy); }
+// [$L_4c8170]
+extern "C" BYTE* __fastcall Fx4c8170_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Fx_SetVtbl8a8); }
+// [$L_4c8870]
+extern "C" BYTE* __fastcall Fx4c8870_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4c8890_Destroy); }
+// [$L_4c99e0]
+extern "C" BYTE* __fastcall Fx4c99e0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4c9a00_Destroy); }
+// [$L_4cc9d0]
+extern "C" BYTE* __fastcall Fx4cc9d0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4cc9f0_Destroy); }
+// [$L_4d9cb0]
+extern "C" BYTE* __fastcall Fx4d9cb0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Task4d9ec0_Destroy); }
+// [$L_4d9e50]
+extern "C" BYTE* __fastcall Fx4d9e50_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4d9e70_Destroy); }
+// [$L_4da7b0]
+extern "C" BYTE* __fastcall Fx4da7b0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4da7d0_Destroy); }
+// [$L_4db870]
+extern "C" BYTE* __fastcall Fx4db870_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4db890_Destroy); }
+// [$L_4dbf10]
+extern "C" BYTE* __fastcall Fx4dbf10_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())TankNotify_Destroy); }
+// [$L_4dc3f0]
+extern "C" BYTE* __fastcall Fx4dc3f0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, FUN_4dc410); }
+// [$L_4dc840]
+extern "C" BYTE* __fastcall Fx4dc840_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Notify4dc860_Destroy); }
+// [$L_4dd5e0]
+extern "C" BYTE* __fastcall Fx4dd5e0_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, (void (*)())Effect4dd600_Destroy); }
+// [$L_4ddd30]
+extern "C" BYTE* __fastcall Fx4ddd30_DeletingDestructor(BYTE* s, void*, int flags) { return Fx_DeleteAfter(s, flags, FUN_4ddd50); }
+
+// [$L_4c85c0] the base destructor (vtable 64c8a8) inlined
+extern "C" BYTE* __fastcall Fx4c85c0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_vtbl64c8a8;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+// [$L_4c17a0] the base destructor (vtable 64c63c) inlined
+extern "C" BYTE* __fastcall Fx4c17a0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_vtbl64c63c;
+    F(int, s, 4) = 0;
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+// [$L_4dda10] destroys and frees itself after FUN_5fcdb0
+extern "C" void __fastcall Fx4dda10_Destroy(BYTE* s)
+{
+    CallThis(FUN_5fcdb0, s);
+    if (s) {
+        CallThis(FUN_4dd9f0, s);
+        operator delete(s);
+    }
+}
+
+// [$L_4b9b60]
+extern "C" int __fastcall Fx4b9b60_Count(BYTE* s) { return F(int, s, 52); }
+// [$L_4bd560]
+extern "C" int __fastcall Fx4bd560_Get56(BYTE* s) { return F(int, s, 56); }
+// [$L_4bd520]
+extern "C" int __fastcall Fx4bd520_Zero(BYTE*, void*, int, int, int) { return 0; }
+// [$L_4bd530]
+extern "C" int __fastcall Fx4bd530_Zero(BYTE*, void*, int) { return 0; }
+// [$L_4c5050]
+extern "C" int __fastcall Fx4c5050_Zero(BYTE*, void*, int, int) { return 0; }
+// [$L_4bd550]
+extern "C" int __fastcall Fx4bd550_None(BYTE*) { return -1; }
+// [$L_4c1270]
+extern "C" void __fastcall Fx4c1270_Clear4(BYTE* s) { F(int, s, 4) = 0; }
+// [$L_4ddd10] clears flag bits 0 and 1 of +16
+extern "C" void __fastcall Fx4ddd10_ClearFlags(BYTE* s) { F(int, s, 16) &= ~3; }
+// [$L_4ddce0] the words of the record at +12
+extern "C" int __fastcall Fx4ddce0_Word0(BYTE* s) { return F(WORD, F(BYTE*, s, 12), 0); }
+// [$L_4ddcf0]
+extern "C" int __fastcall Fx4ddcf0_Word1(BYTE* s) { return F(WORD, F(BYTE*, s, 12), 2); }
+// [$L_4ddd00]
+extern "C" int __fastcall Fx4ddd00_Word2(BYTE* s) { return F(WORD, F(BYTE*, s, 12), 4); }
+// [$L_4ddd20] forwards to vtbl+52
+extern "C" int __fastcall Fx4ddd20_Forward52(BYTE* s, void*, int a) { return CallVirt<int>(s, 52, a); }
+// [$L_4bd540] calls fn(self, arg)
+extern "C" int __fastcall Fx4bd540_Apply(BYTE* s, void*, void (*fn)(), int arg) { return CallC<int>(fn, s, arg); }
+// [$L_4c3440] the member at +64 gets +4 through its vtbl+16
+extern "C" int __fastcall Fx4c3440_Pass(BYTE* s) { return CallVirt<int>(s + 64, 16, F(int, s, 4)); }
+
+// [$L_4c30a0] sets +40; a zero also clears +16
+extern "C" int __fastcall Fx4c30a0_Set40(BYTE* s, void*, int a)
+{
+    F(int, s, 40) = a;
+    if (!a)
+        F(int, s, 16) = a;
+    return a;
+}
+
+// [$L_4b9b40] the 12 bytes at +20 to out
+extern "C" int __fastcall Fx4b9b40_Get20(BYTE* s, void*, DWORD* out)
+{
+    out[0] = F(DWORD, s, 20);
+    out[1] = F(DWORD, s, 24);
+    out[2] = F(DWORD, s, 28);
+    return 1;
+}
+
+// [$L_4b9b70] item i of the list at +48 (count +52), 0 past the end
+extern "C" int __fastcall Fx4b9b70_Item(BYTE* s, void*, int i)
+{
+    if (i >= F(int, s, 52))
+        return 0;
+    return F(int*, s, 48)[i];
+}
+
+// [$L_4ba040]
+extern "C" int __fastcall Fx4ba040_Release(BYTE* s)
+{
+    Fx_ResetShadows();
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_4b83d0]
+extern "C" int __fastcall Fx4b83d0_Draw(BYTE* s)
+{
+    return CallC<int>(FUN_4cb8d0, F(int, s, 8), s + 12, s + 24, F(int, s, 36), F(int, s, 40));
+}
+
+// [$L_4d2760] (a, b): FUN_4ce6d0 on the object 272 bytes before, then FUN_547030
+extern "C" int __fastcall Fx4d2760_Pass(BYTE* s, void*, int a, int b)
+{
+    CallC(FUN_4ce6d0, s - 272, b);
+    return CallThis<int>(FUN_547030, s, a, b);
+}
+
+// [$L_4c3360] advances p's +20 by k * rate (+36); 1 while it stays past +32
+extern "C" int __fastcall Fx4c3360_Advance(BYTE* s, void*, BYTE* p, float k)
+{
+    double t = (double)k * F(float, s, 36) + F(float, p, 20);
+    F(float, p, 20) = (float)t;
+    return t > F(float, s, 32) ? 1 : 0;
+}
+
+// [$L_4c30c0] advances p's +20 by k * rate (+36); 1 while p's +16 is under +24 and the sum under +32
+extern "C" int __fastcall Fx4c30c0_Advance(BYTE* s, void*, BYTE* p, float k)
+{
+    double t = (double)k * F(float, s, 36) + F(float, p, 20);
+    F(float, p, 20) = (float)t;
+    if (F(float, p, 16) >= F(float, s, 24))
+        return 0;
+    if (t >= F(float, s, 32))
+        return 0;
+    return 1;
+}
+
+// [$L_4dbee0] the time (+2960 of the owner +40) added to +44: past +48 vtbl+28 (1), else released
+extern "C" int __fastcall Fx4dbee0_Tick(BYTE* s)
+{
+    double t = F(double, F(BYTE*, s, 40), 2960) + F(float, s, 44);
+    F(float, s, 44) = (float)t;
+    if (t > F(float, s, 48))
+        return CallVirt<int>(s, 28, 1);
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_4dc810] the same with the owner at +44, time +48, limit +52
+extern "C" int __fastcall Fx4dc810_Tick(BYTE* s)
+{
+    double t = F(double, F(BYTE*, s, 44), 2960) + F(float, s, 48);
+    F(float, s, 48) = (float)t;
+    if (t > F(float, s, 52))
+        return CallVirt<int>(s, 28, 1);
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_4da410] static initializers of effect values
+extern "C" void __cdecl Fx_Init696700() { g_fx696700 = 0; }
+// [$L_4da460]
+extern "C" void __cdecl Fx_Init69637c() { g_fx69637c = 0; }
+// [$L_4dbfa0]
+extern "C" void __cdecl Fx_Init6966fc() { g_fx6966fc = 0; }
+// [$L_4dbff0]
+extern "C" void __cdecl Fx_Init6966f8() { g_fx6966f8 = 0; }
+// [$L_4cf240]
+extern "C" void __cdecl Fx_Init6962cc() { g_fx6962cc = g_fx68b990; }
+// [$L_4b86a0]
+extern "C" void __cdecl Fx_Init694830() { g_fx694830 = g_fx64c1bc; }
+// [$L_4bc670]
+extern "C" void __cdecl Fx_Init695c54() { *(float*)g_fx695c54 = (float)x87_cos(g_fx64c1e4); }
+// [$L_4da430]
+extern "C" void __cdecl Fx_Init69672c() { g_fx69672c = (float)((double)g_fx672c48 - g_fx696700); }
+// [$L_4da480]
+extern "C" void __cdecl Fx_Init69636c() { g_fx69636c = (float)((double)g_fx672c48 - g_fx69637c); }
+// [$L_4dbfc0]
+extern "C" void __cdecl Fx_Init696368() { g_fx696368 = (float)((double)g_fx672c4c - g_fx6966fc); }
+// [$L_4dc010]
+extern "C" void __cdecl Fx_Init696374() { g_fx696374 = (float)((double)g_fx672c4c - g_fx6966f8); }
+// [$L_4dc040]
+extern "C" void __cdecl Fx_Init696378() { g_fx696378 = (float)((double)g_fx672c4c * g_fx64c308); }
+// [$L_4c80a0]
+extern "C" void __cdecl Fx_Init695d20()
+{
+    DWORD* d = g_fx695d20;
+    d[0] = d[1] = d[2] = d[3] = 0;
+}
+// [$L_4dda80]
+extern "C" void __cdecl Fx_Init696740()
+{
+    DWORD* src = g_fx702650;
+    DWORD* dst = g_fx696740;
+    dst[0] = src[0];
+    dst[1] = src[1];
+    dst[2] = src[2];
+}

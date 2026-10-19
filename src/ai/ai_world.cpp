@@ -21193,3 +21193,112 @@ extern "C" char* __cdecl Ai_FormatReport(int a1, int a2, int a3, int a4, int a5,
     return buf;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods of the AI's world objects and route holders.
+
+ASM_PROC(FUN_48ce40)
+ASM_PROC(FUN_48d100)
+ASM_PROC(FUN_48d530)
+ASM_PROC(FUN_48c710)
+ASM_PROC(FUN_48d710)
+extern "C" void FUN_458940(); KING_ALIAS("_FUN_458940", "@Rec458940_Destroy@8")
+ASM_PROC(FUN_462b30)
+
+// [$L_401d80]
+extern "C" void __cdecl Ai_Nothing401d80() {}
+
+// [$L_401d30] static initializer of the start position (-2048, 0, 0)
+extern "C" void __cdecl Ai_InitStartPos()
+{
+    (&g_startX68b9a0)[0] = -2048.0;
+    (&g_startX68b9a0)[1] = 0;
+    (&g_startX68b9a0)[2] = 0;
+}
+
+// [$L_462a70]
+extern "C" BYTE* __fastcall Ai462a70_At12(BYTE* s) { return s + 12; }
+
+// [$L_4555c0] the number of 24-byte points at +88 less one
+extern "C" int __fastcall Path_SegmentCount(BYTE* s)
+{
+    return (F(BYTE*, s, 92) - F(BYTE*, s, 88)) / 24 - 1;
+}
+
+// [$L_4551b0] the number of 1592-byte records at +56
+extern "C" int __fastcall Ai4551b0_Count(BYTE* s)
+{
+    return (F(BYTE*, s, 60) - F(BYTE*, s, 56)) / 1592;
+}
+
+// [$L_4554d0] (out, -, -, i): point i+1 less point i of the path at +88
+extern "C" double* __fastcall Path_Segment(BYTE* s, void*, double* out, int, int, int i)
+{
+    double* a = (double*)(F(BYTE*, s, 88) + i * 24);
+    double* b = a + 3;
+    out[0] = b[0] - a[0];
+    out[1] = b[1] - a[1];
+    out[2] = b[2] - a[2];
+    return out;
+}
+
+// [$L_432db0] cleanBeforeLaw for the object at +48 when it is still alive (12345678 at +88)
+extern "C" void __fastcall Ai432db0_Update(BYTE* s)
+{
+    BYTE* o = F(BYTE*, s, 48);
+    if (F(int, o, 88) == 305419896)
+        Ai_CleanBeforeLaw(o);
+}
+
+// [$L_445b00]
+extern "C" void __fastcall Ai445b00_Report(BYTE* s)
+{
+    AI_AddToBanner(F(double, s, 56));
+    eventBanner(6, 0);
+}
+
+// [$L_455560] forwarders to the member at +56
+extern "C" int __fastcall Ai455560_Forward(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d)
+{
+    return CallThis<int>(FUN_48ce40, s + 56, a, b, c, d);
+}
+// [$L_455580]
+extern "C" int __fastcall Ai455580_Forward(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d)
+{
+    return CallThis<int>(FUN_48d100, s + 56, a, b, c, d);
+}
+// [$L_4555a0]
+extern "C" int __fastcall Ai4555a0_Forward(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d)
+{
+    return CallThis<int>(FUN_48d530, s + 56, a, b, c, d);
+}
+// [$L_455520]
+extern "C" int __fastcall Ai455520_Forward(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d, DWORD e,
+                                           DWORD f, DWORD g, DWORD h, DWORD i, DWORD j)
+{
+    return CallThis<int>(FUN_48c710, s + 56, a, b, c, d, e, f, g, h, i, j);
+}
+// [$L_455620]
+extern "C" int __fastcall Ai455620_Forward(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d, DWORD e, DWORD f)
+{
+    return CallThis<int>(FUN_48d710, s + 56, a, b, c, d, e, f);
+}
+
+static BYTE* Ai_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// [$L_448590]
+extern "C" BYTE* __fastcall Ai448590_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, (void (*)())BadAlloc_Destroy); }
+// [$L_458790]
+extern "C" BYTE* __fastcall Ai458790_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, (void (*)())Rec4549a0_Destroy); }
+// [$L_4587b0]
+extern "C" BYTE* __fastcall Ai4587b0_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, (void (*)())Rec4587d0_Destroy); }
+// [$L_458920]
+extern "C" BYTE* __fastcall Ai458920_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, FUN_458940); }
+// [$L_462a80]
+extern "C" BYTE* __fastcall Ai462a80_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, FUN_462b30); }
