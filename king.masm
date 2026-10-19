@@ -1321,6 +1321,10 @@ PUBLIC $L_64f2e8, $L_64f2ec, $L_64f830, $L_64f834, $L_64f880, $L_64f96c
 PUBLIC $L_64fa50, $L_64fa54, $L_64faa0, $L_64fb8c, $L_6514d4, $L_651590
 PUBLIC $L_65195c, $L_651dcc, $L_651ea0, $L_651ec8, $L_6521b0, $L_6521f0
 PUBLIC $L_652570
+PUBLIC $L_64f2f0, $L_64f428, $L_6512a0, $L_6512c0, $L_65130c, $L_651358
+PUBLIC $L_651390, $L_6513b0, $L_651548, $L_6515dc, $L_651780, $L_651794
+PUBLIC $L_651a20, $L_651e34, $L_651e80, $L_65229c, $L_65277c, $L_6527b0
+PUBLIC $L_6792e8, $L_67e8e0, $L_67e8e8
 
 ;===================================
 _TEXT SEGMENT
@@ -261940,6 +261944,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_490ea0 PROC
 
             push -1
@@ -261992,6 +261998,10 @@ $L_490efb::
             nop
             nop
 FUN_490ea0 ENDP
+ELSE
+EXTERN @StrPair_Destroy@4:PROC
+FUN_490ea0 TEXTEQU <@StrPair_Destroy@4>
+ENDIF
 ALIGN 16
 ; AI helpers: src\script\runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 IFDEF ASM_RUNTIME
@@ -394127,6 +394137,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ddd50 PROC
 
             push -1
@@ -394164,6 +394176,10 @@ FUN_4ddd50 PROC
             add ESP,16
             ret 
 FUN_4ddd50 ENDP
+ELSE
+EXTERN @Eff4ddd50_Destroy@4:PROC
+FUN_4ddd50 TEXTEQU <@Eff4ddd50_Destroy@4>
+ENDIF
           BYTE 090H
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
@@ -522273,6 +522289,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_531950 PROC
 
             push -1
@@ -522318,6 +522336,10 @@ FUN_531950 PROC
             add ESP,16
             ret 
 FUN_531950 ENDP
+ELSE
+EXTERN @Car531950_Destroy@4:PROC
+FUN_531950 TEXTEQU <@Car531950_Destroy@4>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
@@ -539101,6 +539123,8 @@ FUN_53e320 PROC
 FUN_53e320 ENDP
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_53e420 PROC
 
             push -1
@@ -539137,6 +539161,10 @@ FUN_53e420 PROC
             add ESP,16
             ret 8
 FUN_53e420 ENDP
+ELSE
+EXTERN @Car53e420_Construct@16:PROC
+FUN_53e420 TEXTEQU <@Car53e420_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -689030,6 +689058,8 @@ $L_5a3dfe::
 $L_5a3d4f ENDP
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_5a3e00 PROC
 
             push -1
@@ -689074,6 +689104,10 @@ FUN_5a3e00 PROC
             add ESP,16
             ret 20
 FUN_5a3e00 ENDP
+ELSE
+EXTERN @Worobj5a3e00_Construct@28:PROC
+FUN_5a3e00 TEXTEQU <@Worobj5a3e00_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -689136,6 +689170,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_5a3ee0 PROC
 
             push -1
@@ -689172,6 +689208,10 @@ FUN_5a3ee0 PROC
             add ESP,16
             ret 12
 FUN_5a3ee0 ENDP
+ELSE
+EXTERN @Worobj5a3ee0_Construct@20:PROC
+FUN_5a3ee0 TEXTEQU <@Worobj5a3ee0_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -690218,6 +690258,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a47f0 PROC
 
             push -1
@@ -690268,6 +690310,10 @@ $L_5a4840::
             add ESP,16
             ret 
 FUN_5a47f0 ENDP
+ELSE
+EXTERN @Wea5a47f0_Destroy@4:PROC
+FUN_5a47f0 TEXTEQU <@Wea5a47f0_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -690840,6 +690886,8 @@ FUN_5a4ca0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a4e90 PROC
 
             push -1
@@ -690877,6 +690925,10 @@ FUN_5a4e90 PROC
             add ESP,20
             ret 
 FUN_5a4e90 ENDP
+ELSE
+EXTERN @Wea5a4e90_Destroy@4:PROC
+FUN_5a4e90 TEXTEQU <@Wea5a4e90_Destroy@4>
+ENDIF
 ALIGN 16
 FUN_5a4f00 PROC
 
@@ -693039,6 +693091,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a63a0 PROC
 
             push -1
@@ -693083,6 +693137,10 @@ $L_5a63f7::
             add ESP,16
             ret 
 FUN_5a63a0 ENDP
+ELSE
+EXTERN @Wea5a63a0_Destroy@4:PROC
+FUN_5a63a0 TEXTEQU <@Wea5a63a0_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -694697,6 +694755,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a7310 PROC
 
             push -1
@@ -694749,6 +694809,10 @@ $L_5a7361::
             add ESP,16
             ret 
 FUN_5a7310 ENDP
+ELSE
+EXTERN @Wea5a7310_Destroy@4:PROC
+FUN_5a7310 TEXTEQU <@Wea5a7310_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -731302,6 +731366,8 @@ $L_5bcf40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5bcf60 PROC
 
             push -1
@@ -731345,6 +731411,10 @@ FUN_5bcf60 PROC
             add ESP,16
             ret 
 FUN_5bcf60 ENDP
+ELSE
+EXTERN @Ren5bcf60_Destroy@4:PROC
+FUN_5bcf60 TEXTEQU <@Ren5bcf60_Destroy@4>
+ENDIF
 ALIGN 16
 ; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
 IFDEF ASM_CONTROLS
@@ -746089,6 +746159,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c4410 PROC
 
             push -1
@@ -746139,6 +746211,10 @@ $L_5c4459::
             add ESP,16
             ret 
 FUN_5c4410 ENDP
+ELSE
+EXTERN @Media_Destroy@4:PROC
+FUN_5c4410 TEXTEQU <@Media_Destroy@4>
+ENDIF
           BYTE 090H
 $L_5c44b0 PROC
 
@@ -760993,6 +761069,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5ce5b0 PROC
 
             push -1
@@ -761042,6 +761120,10 @@ $L_5ce60d::
             add ESP,16
             ret 
 FUN_5ce5b0 ENDP
+ELSE
+EXTERN @Med5ce5b0_Destroy@4:PROC
+FUN_5ce5b0 TEXTEQU <@Med5ce5b0_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -762533,6 +762615,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cf370 PROC
 
             push -1
@@ -762573,6 +762657,10 @@ FUN_5cf370 PROC
             add ESP,16
             ret 
 FUN_5cf370 ENDP
+ELSE
+EXTERN @Med5cf370_Destroy@4:PROC
+FUN_5cf370 TEXTEQU <@Med5cf370_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -781803,6 +781891,8 @@ $L_5d8830::
             nop
 FUN_5d8710 ENDP
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5d8850 PROC
 
             push -1
@@ -781843,6 +781933,10 @@ $L_5d8893::
             add ESP,16
             ret 
 FUN_5d8850 ENDP
+ELSE
+EXTERN @Window_Destroy@4:PROC
+FUN_5d8850 TEXTEQU <@Window_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -785489,6 +785583,8 @@ $L_5da6b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5da790 PROC
 
             push -1
@@ -785548,6 +785644,10 @@ $L_5da816::
             add ESP,20
             ret 
 FUN_5da790 ENDP
+ELSE
+EXTERN @RoomWindow_Destroy@4:PROC
+FUN_5da790 TEXTEQU <@RoomWindow_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -821781,6 +821881,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5edb20 PROC
 
             push -1
@@ -821817,6 +821919,10 @@ FUN_5edb20 PROC
             add ESP,16
             ret 
 FUN_5edb20 ENDP
+ELSE
+EXTERN @Clu5edb20_Destroy@4:PROC
+FUN_5edb20 TEXTEQU <@Clu5edb20_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -822263,6 +822369,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5eddf0 PROC
 
             push -1
@@ -822316,6 +822424,10 @@ $L_5ede3d::
             add ESP,16
             ret 
 FUN_5eddf0 ENDP
+ELSE
+EXTERN @Clu5eddf0_Destroy@4:PROC
+FUN_5eddf0 TEXTEQU <@Clu5eddf0_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -844925,6 +845037,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fa720 PROC
 
             push -1
@@ -844968,6 +845082,10 @@ $L_5fa771::
             add ESP,16
             ret 
 FUN_5fa720 ENDP
+ELSE
+EXTERN @Sce5fa720_Destroy@4:PROC
+FUN_5fa720 TEXTEQU <@Sce5fa720_Destroy@4>
+ENDIF
 ; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
 IFDEF ASM_SCENE
 $L_5fa790 PROC

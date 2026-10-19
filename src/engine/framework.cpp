@@ -2082,9 +2082,9 @@ extern "C" BYTE* __cdecl Font_ReadFile(FILE* f)
 extern "C" void FUN_5de5b0(); KING_ALIAS("_FUN_5de5b0", "@Clock_Start@8")
 extern "C" void FUN_5de5d0(); KING_ALIAS("_FUN_5de5d0", "@Clock_Stop@8")
 extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
-ASM_PROC(FUN_5d8850)
+extern "C" void FUN_5d8850(); KING_ALIAS("_FUN_5d8850", "@Window_Destroy@4")
 extern "C" void FUN_5d8b30(); KING_ALIAS("_FUN_5d8b30", "@Fw5d8b30_Destroy@4")
-ASM_PROC(FUN_5da790)
+extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 ASM_PROC(FUN_5ddb40)
 ASM_PROC(FUN_5dd2d0)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
@@ -2392,4 +2392,42 @@ extern "C" void __fastcall Fw5d89e0_Destroy(BYTE* s)
     F(int, s, 56) = 0;
     CallThis(FUN_5bda90, s ? s + 64 : 0);
     CallThis(FUN_5d8b30, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+ASM_VAR(AsmLabel, g_fra652168, $L_652168)
+ASM_VAR(AsmLabel, g_fra64d81c, $L_64d81c)
+ASM_VAR(AsmLabel, g_fra65229c, $L_65229c)
+extern "C" void Fw_VecDtor(); KING_ALIAS("_Fw_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+
+// [FUN_5d8850] a window (vtable 652168): its surface (+12) and its buffer (+48)
+extern "C" void __fastcall Window_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra652168;
+    BYTE* p = F(BYTE*, s, 12);
+    if (p) {
+        CallThis(FUN_5b6a90, p);
+        operator delete(p);
+    }
+    operator delete(F(void*, s, 48));
+    F(void*, s, 0) = g_fra64d81c;
+}
+
+// [FUN_5da790] a room window (vtable 65229c): its room data (+464, with 20 80-byte items at +6224) and the room
+extern "C" void __fastcall RoomWindow_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra65229c;
+    BYTE* o = F(BYTE*, s, 464);
+    if (o) {
+        CallThis(FUN_5e48f0, o + 7824);
+        CallStd(Fw_VecDtor, o + 6224, 80, 20, FUN_5e48f0);
+        operator delete(o);
+    }
+    if (F(int, s, 468) && !(F(BYTE, s, 16) & 8))
+        CallThis(FUN_5da8a0, s);
+    CallThis(FUN_5d8850, s);
 }

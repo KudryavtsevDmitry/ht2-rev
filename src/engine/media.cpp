@@ -19,7 +19,7 @@ extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // 
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
-ASM_PROC(FUN_5c4410)
+extern "C" void FUN_5c4410(); KING_ALIAS("_FUN_5c4410", "@Media_Destroy@4")
 extern "C" void FUN_5cc930(); KING_ALIAS("_FUN_5cc930", "@Trees_Construct@8")
 ASM_PROC(FUN_5f4a90)
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
@@ -1640,11 +1640,11 @@ extern "C" void __fastcall Media_Close(BYTE* self, void*)
 extern "C" void FUN_5c10f0(); KING_ALIAS("_FUN_5c10f0", "@NamedItem_Destroy@8")
 extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
 extern "C" void FUN_5c3990(); KING_ALIAS("_FUN_5c3990", "@Med5c3990_Destroy@4")
-ASM_PROC(FUN_5c4410)
+extern "C" void FUN_5c4410(); KING_ALIAS("_FUN_5c4410", "@Media_Destroy@4")
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c8780(); KING_ALIAS("_FUN_5c8780", "@Media5c8780_Destroy@8")
 ASM_PROC(FUN_5cdcb0)
-ASM_PROC(FUN_5ce5b0)
+extern "C" void FUN_5ce5b0(); KING_ALIAS("_FUN_5ce5b0", "@Med5ce5b0_Destroy@4")
 extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 extern "C" void FUN_5ceae0(); KING_ALIAS("_FUN_5ceae0", "@Media5ceae0_Destroy@8")
 ASM_PROC(FUN_5cf170)
@@ -1950,4 +1950,57 @@ extern "C" void __fastcall Med5ce930_Destroy(BYTE* s)
     operator delete(F(void*, s, 40));
     operator delete(F(void*, s, 56));
     F(void*, s, 0) = g_med64d81c;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
+ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
+extern "C" void FUN_5c4340(); KING_ALIAS("_FUN_5c4340", "@Rec_Close@8")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void FUN_5c3260(); KING_ALIAS("_FUN_5c3260", "@Med5c3260_Destroy@4")
+extern "C" void FUN_5c2f80(); KING_ALIAS("_FUN_5c2f80", "@Med5c2f80_Destroy@4")
+ASM_PROC(FUN_5ddb40)
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+ASM_VAR(AsmLabel, g_med651e80, $L_651e80)
+ASM_VAR(AsmLabel, g_med651e34, $L_651e34)
+ASM_VAR(AsmLabel, g_med651db0, $L_651db0)
+ASM_VAR(AsmLabel, g_med651a20, $L_651a20)
+ASM_VAR(BYTE*, g_med707f6c, $L_707f6c)
+
+// [FUN_5cf370] (vtables 651e80, 651e34 at +32)
+extern "C" void __fastcall Med5cf370_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_med651e80;
+    F(void*, s, 32) = g_med651e34;
+    CallThis(FUN_5ef780, s + 32);
+    CallThis(FUN_5d33b0, s);
+    CallThis(FUN_5f1a70, s ? s + 32 : 0);
+    CallThis(FUN_5d3290, s);
+}
+// [FUN_5ce5b0] a sound list (vtable 651db0) deletes its sounds (+24, next +8)
+extern "C" void __fastcall Med5ce5b0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_med651db0;
+    for (BYTE* c = F(BYTE*, s, 24); c;) {
+        BYTE* next = F(BYTE*, c, 8);
+        if (c)
+            CallVirt(c, 0, 1);
+        c = next;
+    }
+    F(void*, s, 0) = g_med64d81c;
+}
+// [FUN_5c4410] the media player (vtable 651a20)
+extern "C" void __fastcall Media_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_med651a20;
+    if (F(int, g_med707f6c, 416))
+        operator delete(F(void*, s, 7924));
+    CallThis(FUN_5c4340, s);
+    CallThis(FUN_602e80, s + 8336);
+    CallThis(FUN_5c3260, s + 8300);
+    CallThis(FUN_5c2f80, s + 7976);
+    CallThis(FUN_5ddb40, s);
 }

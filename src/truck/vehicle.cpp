@@ -1780,7 +1780,7 @@ ASM_PROC(FUN_556410)
 extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
 ASM_PROC(FUN_557440)
 ASM_PROC(FUN_557450)
-ASM_PROC(FUN_531950)
+extern "C" void FUN_531950(); KING_ALIAS("_FUN_531950", "@Car531950_Destroy@4")
 extern "C" void FUN_5560e0(); KING_ALIAS("_FUN_5560e0", "@Car_ApplyZero@8")
 extern "C" void FUN_555eb0(); KING_ALIAS("_FUN_555eb0", "@Car_SumAbs9@8")
 extern "C" void FUN_555500(); KING_ALIAS("_FUN_555500", "@Car_555500@8")
@@ -2293,4 +2293,40 @@ extern "C" BYTE* __fastcall Controls530120_Construct(BYTE* s)
     F(int, s, 16) = 0;
     F(void*, s, 0) = g_veh64f2e8;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+ASM_PROC(FUN_5d31e0)
+extern "C" void FUN_53e230(); KING_ALIAS("_FUN_53e230", "@Light_Setup@8")
+extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
+extern "C" void FUN_5319f0(); KING_ALIAS("_FUN_5319f0", "@Player_DetachCar@8")
+extern "C" void FUN_4eac8e(); KING_ALIAS("_FUN_4eac8e", "@Arrays_Free@8")
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+ASM_VAR(AsmLabel, s_veh6792e8, $L_6792e8)
+ASM_VAR(AsmLabel, g_veh64f428, $L_64f428)
+ASM_VAR(AsmLabel, g_veh64f2f0, $L_64f2f0)
+
+// [FUN_53e420] constructor (a, b): a named object (100) registered with a's media (+7976)
+extern "C" BYTE* __fastcall Car53e420_Construct(BYTE* s, void*, BYTE* a, int b)
+{
+    CallThis(FUN_5d31e0, s, 100, (const char*)s_veh6792e8);
+    F(void*, s, 0) = g_veh64f428;
+    CallThis(FUN_53e230, s);
+    CallThis(FUN_5c3070, a + 7976, b, s + 36, 4);
+    return s;
+}
+
+// [FUN_531950] (vtable 64f2f0): its parts, the five sound holders (+408..+280)
+extern "C" void __fastcall Car531950_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_veh64f2f0;
+    CallThis(FUN_5319f0, s);
+    CallThis(FUN_4eac8e, s + 408);
+    CallThis(FUN_4eac8e, s + 376);
+    CallThis(FUN_4eac8e, s + 344);
+    CallThis(FUN_4eac8e, s + 312);
+    CallThis(FUN_4eac8e, s + 280);
+    CallThis(FUN_5d3290, s);
 }
