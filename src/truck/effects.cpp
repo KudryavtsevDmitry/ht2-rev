@@ -4220,3 +4220,146 @@ static void Eff_LoggedStep(BYTE* s, const char* before, void (*step)())
 extern "C" void __fastcall Eff_4d1040(BYTE* s) { Eff_LoggedStep(s, (const char*)s_eff6729f4, FUN_556a70); }
 // [$L_4d2660]
 extern "C" void __fastcall Eff_4d2660(BYTE* s) { Eff_LoggedStep(s, (const char*)s_eff672a44, FUN_55d5d0); }
+
+// ---------------------------------------------------------------------------
+// Effect colors taken from the room's palette.
+
+extern "C" void FUN_4be5e0(); KING_ALIAS("_FUN_4be5e0", "_Color_ToHsl")
+extern "C" void FUN_4be7f0(); KING_ALIAS("_FUN_4be7f0", "_Color_FromHsl")
+ASM_VAR(float, g_eff64c488, $L_64c488)
+ASM_VAR(float, g_eff64c258b, $L_64c258)
+ASM_VAR(float, g_eff64c74c, $L_64c74c)
+ASM_VAR(float, g_eff64c754, $L_64c754)
+ASM_VAR(float, g_eff64c250, $L_64c250)
+ASM_VAR(float, g_eff64c264b, $L_64c264)
+ASM_VAR(float, g_eff64c458, $L_64c458)
+
+// the color (+60) from palette entry 48 of the effect's room (+4): its brightness halved and its
+// saturation raised by add (within 0..1); then the member obj gets the room (vtbl+16)
+static void Eff_PaletteColor(BYTE* s, const float* add, BYTE* obj)
+{
+    BYTE* c = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, F(BYTE*, s, 4), 12)) + 48;
+    float r = (float)((double)c[0] * g_eff64c488);
+    float g = (float)((double)c[1] * g_eff64c488);
+    float b = (float)((double)c[2] * g_eff64c488);
+    float h, sat, v;
+    CallC(FUN_4be5e0, *(DWORD*)&r, *(DWORD*)&g, *(DWORD*)&b, &h, &sat, &v);
+    v = (float)((double)v * g_eff64c258b);
+    double t = (double)sat + *add;
+    sat = (float)t;
+    if (t > g_eff64c250)
+        sat = 1.0f;
+    else if (!(sat >= g_eff64c264b))
+        sat = 0;
+    float out[3];
+    CallC(FUN_4be7f0, *(DWORD*)&h, *(DWORD*)&sat, *(DWORD*)&v, &out[0], &out[1], &out[2]);
+    int col = (int)((double)out[0] * g_eff64c458);
+    col = (col | 0xffffff00) << 8;
+    col = (col | (int)((double)out[1] * g_eff64c458)) << 8;
+    col |= (int)((double)out[2] * g_eff64c458);
+    F(int, s, 60) = col;
+    CallVirt(obj, 16, F(int, s, 4));
+}
+// [$L_4c31d0]
+extern "C" void __fastcall Eff_Color4c31d0(BYTE* s) { Eff_PaletteColor(s, &g_eff64c74c, s + 4672); }
+// [$L_4c3970]
+extern "C" void __fastcall Eff_Color4c3970(BYTE* s) { Eff_PaletteColor(s, &g_eff64c754, F(BYTE*, s, 64)); }
+// [$L_4c3b70]
+extern "C" void __fastcall Eff_Color4c3b70(BYTE* s) { Eff_PaletteColor(s, &g_eff64c754, s + 64); }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+ASM_VAR(BYTE*, g_eff6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_eff696ca0, $L_696ca0)
+ASM_VAR(double, g_eff64b658, $L_64b658)
+ASM_VAR(double, g_eff64ca78, $L_64ca78)
+
+// [$L_4ce160] a traffic light: the phase of the clock (12 steps) sets the frames of its two lamps (+40, +44)
+extern "C" int __fastcall Eff_TrafficLight(BYTE* s)
+{
+    double t = F(double, F(BYTE*, s, 32), 2968);
+    if (F(int, g_eff6cec6c, 1300) == 2)
+        t = F(double, g_eff696ca0, 7968) * g_eff64b658;
+    int ph = (int)(t * g_eff64ca78) % 12;
+    int a, b;
+    if (ph < 4) {
+        F(int, s, 36) = 0;
+        a = 0;
+        b = 3;
+    } else if (ph == 4) {
+        F(int, s, 36) = 0;
+        int k = (int)(t + t) % 2;
+        a = k;
+        b = (k != 0) + 3;
+    } else if (ph == 5) {
+        F(int, s, 36) = 0;
+        a = 2;
+        b = 5;
+    } else if (ph < 10) {
+        F(int, s, 36) = 1;
+        a = 3;
+        b = 0;
+    } else if (ph == 10) {
+        F(int, s, 36) = 1;
+        int k = (int)(t + t) % 2;
+        a = (k != 0) + 3;
+        b = k;
+    } else {
+        F(int, s, 36) = 0;
+        a = 5;
+        b = 2;
+    }
+    CallC(FUN_5e1a10, F(int, s, 40), a);
+    CallC(FUN_5e1a10, F(int, s, 44), b);
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_4c2b30] the particles: live ones (+52 list) are moved (vtbl+4) or go to the free list (+48);
+// new ones are emitted every +12 seconds (+16 left) while emitting (+40)
+extern "C" void __fastcall Eff_Particles(BYTE* s, void*, float dt)
+{
+    F(int, s, 44) = 0;
+    CallVirt(s, 12);
+    BYTE* prev = 0;
+    for (BYTE* o = F(BYTE*, s, 52); o;) {
+        if (CallVirt<int>(s, 4, o, *(DWORD*)&dt)) {
+            F(int, s, 44)++;
+            prev = o;
+            o = *(BYTE**)o;
+        } else {
+            BYTE* next = *(BYTE**)o;
+            *(BYTE**)o = F(BYTE*, s, 48);
+            F(BYTE*, s, 48) = o;
+            if (prev)
+                *(BYTE**)prev = next;
+            if (o == F(BYTE*, s, 52))
+                F(BYTE*, s, 52) = next;
+            o = next;
+        }
+    }
+    if (!F(int, s, 40) || !(dt > g_eff64c264b))
+        return;
+    float rem = dt;
+    for (;;) {
+        if (!(rem > F(float, s, 16))) {
+            F(float, s, 16) = (float)((double)F(float, s, 16) - rem);
+            return;
+        }
+        rem = (float)((double)rem - F(float, s, 16));
+        F(DWORD, s, 16) = F(DWORD, s, 12);
+        BYTE* o = F(BYTE*, s, 48);
+        if (o) {
+            if (!CallVirt<int>(s, 8, o)) {
+                F(int, s, 16) = 0;
+                return;
+            }
+            F(BYTE*, s, 48) = *(BYTE**)F(BYTE*, s, 48);
+            *(BYTE**)o = F(BYTE*, s, 52);
+            F(BYTE*, s, 52) = o;
+            F(int, s, 44)++;
+        }
+        if (!(rem > g_eff64c264b))
+            return;
+    }
+}
