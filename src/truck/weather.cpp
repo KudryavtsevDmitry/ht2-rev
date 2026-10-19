@@ -784,3 +784,80 @@ extern "C" BYTE* __fastcall WeatherLayer_Construct(BYTE* s, void*, BYTE* w, cons
     CallThis(FUN_5d3570, F(BYTE*, s, 32) + 2992, s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Gauge constructor (exception frame dropped).
+
+extern "C" void FUN_5a5790(); KING_ALIAS("_FUN_5a5790", "@Weather_Construct@40")
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+extern "C" void FUN_5b63e0(); KING_ALIAS("_FUN_5b63e0", "@Surface_Construct@12")
+extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
+extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
+ASM_VAR(AsmLabel, g_q24_651548, $L_651548)
+ASM_VAR(int, g_q24_7025b0, $L_7025b0)
+ASM_VAR(AsmLabel, s_q24_67e9f0, $L_67e9f0)
+ASM_VAR(AsmLabel, s_q24_66d9c4, $L_66d9c4)
+ASM_VAR(AsmLabel, s_q24_67e9d0, $L_67e9d0)
+ASM_VAR(AsmLabel, s_q24_67e9ac, $L_67e9ac)
+ASM_VAR(AsmLabel, s_q24_67e99c, $L_67e99c)
+ASM_VAR(AsmLabel, s_q24_67e980, $L_67e980)
+ASM_VAR(AsmLabel, s_q24_67e970, $L_67e970)
+ASM_VAR(AsmLabel, s_q24_67e954, $L_67e954)
+
+static BYTE* Wea_Find(const char* fmt, int name)
+{
+    char buf[64];
+    sprintf(buf, fmt, name);
+    return CallC<BYTE*>(FUN_5ef3d0, buf);
+}
+// [FUN_5a6160] constructor (a1, a2, world, name, a5..a10): a gauge (vtable 651548, kind 9) with its object's
+// surface (+148, +152), two more images (+64, +68) and its room material (+200)
+extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE* w, int name, int a5, int a6,
+                                            int a7, int a8, int a9, int a10)
+{
+    CallThis(FUN_5a5790, s, a1, 9, a5, a6, a7, a8, a9, a10);
+    F(void*, s, 0) = g_q24_651548;
+    if (!w)
+        CallC(FUN_5d2ba0, (const char*)s_q24_67e9f0, 0);
+    F(BYTE*, s, 196) = w;
+    BYTE* r = Wea_Find((const char*)s_q24_66d9c4, name);
+    if (!r) {
+        CallC(FUN_5d2ba0, (const char*)s_q24_67e9d0, 0);
+        F(int, s, 148) = 0;
+    } else {
+        F(int, s, 148) = F(int, r, 76);
+    }
+    if (!F(int, s, 148))
+        CallC(FUN_5d2ba0, (const char*)s_q24_67e9ac, 0);
+    F(int, s, 200) = 0;
+    int k = F(int, r, 44);
+    if (k >= 0 && w && g_q24_7025b0)
+        F(int, s, 200) = F(int, F(BYTE*, F(BYTE*, w, 36), 76) + k * 124, 76);
+    else
+        F(int, r, 44) = -1;
+    F(BYTE*, s, 64) = Wea_Find((const char*)s_q24_67e99c, name);
+    if (!F(BYTE*, s, 64))
+        CallC(FUN_5d2ba0, (const char*)s_q24_67e980, 0);
+    F(BYTE*, s, 68) = Wea_Find((const char*)s_q24_67e970, name);
+    if (!F(BYTE*, s, 68))
+        CallC(FUN_5d2ba0, (const char*)s_q24_67e954, 0);
+    F(int, s, 40) = 0;
+    F(int, s, 192) = a2;
+    F(DWORD, s, 176) = 2468160491u;
+    F(DWORD, s, 44) = 1077149696u;
+    F(DWORD, s, 180) = 3216983739u;
+    F(int, s, 104) = 61;
+    F(int, s, 108) = 190;
+    F(int, s, 96) = 64;
+    F(int, s, 100) = 234;
+    if (F(int, s, 148)) {
+        BYTE* m = (BYTE*)operator new(124);
+        BYTE* o = m ? CallThis<BYTE*>(FUN_5b63e0, m, F(int, s, 148)) : 0;
+        F(BYTE*, s, 152) = o;
+        CallThis(FUN_5b6e00, o, 0, 1);
+    } else {
+        F(int, s, 152) = 0;
+    }
+    return s;
+}
