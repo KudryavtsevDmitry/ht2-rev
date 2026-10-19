@@ -3850,3 +3850,193 @@ extern "C" int __fastcall Eff_4c3840(BYTE* s, void*, BYTE* p, float k)
         return 0;
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods of the effects: emitters, drawing, particle sources.
+
+ASM_PROC(FUN_4c8af0)
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+ASM_PROC(FUN_5f98c0)
+ASM_PROC(FUN_5ae580)
+extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
+extern "C" void FUN_5f3570(); KING_ALIAS("_FUN_5f3570", "@Obj_Test@16")
+ASM_PROC(FUN_4c5680)
+extern "C" void Eff_rand(); KING_ALIAS("_Eff_rand", "_rand")
+extern "C" void Eff_VecDtor(); KING_ALIAS("_Eff_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_VAR(AsmLabel, g_eff6962d0, $L_6962d0)
+ASM_VAR(float, g_eff64c254, $L_64c254)
+ASM_VAR(float, g_eff64c334, $L_64c334)
+ASM_VAR(float, g_eff64c350, $L_64c350)
+ASM_VAR(float, g_eff64c748, $L_64c748)
+
+// [$L_4d2990] static initializer: 6962d0..696310 zero, 696314.. the vector at 702650
+extern "C" void __cdecl EffInit_4d2990()
+{
+    DWORD* d = (DWORD*)g_eff6962d0;
+    for (int i = 0; i < 17; i++)
+        d[i] = 0;
+    d[17] = g_fx702650[0];
+    d[18] = g_fx702650[1];
+    d[19] = g_fx702650[2];
+}
+
+// [$L_4c85e0] draws the strip (+2216 vertices at +4, +2212 indices at +2084) on the device
+extern "C" void __fastcall Eff_DrawStrip(BYTE* s, void*, void* dev)
+{
+    if (!F(int, s, 2216) || !F(int, s, 2212))
+        return;
+    void** vt = *(void***)dev;
+    ((int(__stdcall*)(void*, int, int))vt[20])(dev, 136, 1);
+    vt = *(void***)dev;
+    ((int(__stdcall*)(void*, int, int, BYTE*, int, BYTE*, int, int))vt[26])(dev, 4, 578, s + 4, F(int, s, 2216), s + 2084, F(int, s, 2212), 0);
+}
+
+// [$L_4b9fa0] destroys and frees each item (+32, count +36), then released
+extern "C" int __fastcall Eff_4b9fa0(BYTE* s)
+{
+    for (unsigned i = 0; i < F(unsigned, s, 36); i++) {
+        BYTE* o = F(BYTE**, s, 32)[i];
+        if (o) {
+            CallVirt(o, 0);
+            operator delete(F(BYTE**, s, 32)[i]);
+        }
+    }
+    F(int, s, 36) = 0;
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_4c3320] sets +40; a zero first stops the members at +64 and +4672 (vtbl+12) and clears +16
+extern "C" void __fastcall Eff_4c3320(BYTE* s, void*, int a)
+{
+    if (!a) {
+        CallVirt(s + 64, 12);
+        CallVirt(s + 4672, 12);
+    }
+    F(int, s, 40) = a;
+    if (!a)
+        F(int, s, 16) = a;
+}
+
+// [$L_4c4b50] the position: the matrix +88.. (rows of 3) times the vector +20, plus +124
+extern "C" int __fastcall Eff_Position(BYTE* s, void*, float* out)
+{
+    double x = (double)F(float, s, 100) * F(float, s, 24) + (double)F(float, s, 112) * F(float, s, 28)
+             + (double)F(float, s, 20) * F(float, s, 88) + F(float, s, 124);
+    double y = (double)F(float, s, 104) * F(float, s, 24) + (double)F(float, s, 92) * F(float, s, 20)
+             + (double)F(float, s, 116) * F(float, s, 28) + F(float, s, 128);
+    double z = (double)F(float, s, 108) * F(float, s, 24) + (double)F(float, s, 96) * F(float, s, 20)
+             + (double)F(float, s, 120) * F(float, s, 28) + F(float, s, 132);
+    out[0] = (float)x;
+    out[1] = (float)y;
+    out[2] = (float)z;
+    return 0;
+}
+
+// [$L_4b82e0]
+extern "C" int __fastcall Eff_4b82e0(BYTE* s)
+{
+    BYTE* v = F(int, s, 256) ? s + 48 : 0;
+    return CallC<int>(FUN_4c8af0, s + 8, F(int, s, 20), F(int, s, 24), s + 28, F(int, s, 40), F(int, s, 44), v);
+}
+
+// [$L_4c1cd0] a random one of the first items (+4, at most 50) through vtbl+4 (i, a, b)
+extern "C" int __fastcall Eff_RandomItem(BYTE* s, void*, int a, int b)
+{
+    unsigned n = F(unsigned, s, 4);
+    if (!n)
+        return 0;
+    int m = n > 49 ? 49 : (int)n - 1;
+    int r = CallC<int>(Eff_rand);
+    int i = (int)((double)r * m * g_eff64c254);
+    return CallVirt<int>(s, 4, i, a, b);
+}
+
+// a particle from the source src (vtbl+0 (pos, dir)): out +4.. the position, +16 the size, +20 w
+static int Eff_Particle(BYTE* src, BYTE* out, DWORD size, DWORD w, const float* lift)
+{
+    float v[3] = {0, 0, 0}, d[3] = {0, 0, 0};
+    if (!CallVirt<int>(src, 0, v, d))
+        return 0;
+    F(DWORD, out, 16) = size;
+    F(DWORD, out, 20) = w;
+    F(float, out, 4) = v[0];
+    F(float, out, 8) = v[1];
+    F(float, out, 12) = lift ? (float)(v[2] + (double)*lift) : v[2];
+    return 1;
+}
+// the size +28 scaled by 64c350, as float bits
+static DWORD Eff_Scaled28(BYTE* s)
+{
+    float f = (float)((double)F(float, s, 28) * g_eff64c350);
+    return *(DWORD*)&f;
+}
+// [$L_4c3390] from the member at +64, lifted by 64c334, weight 1
+extern "C" int __fastcall Eff_4c3390(BYTE* s, void*, BYTE* out) { return Eff_Particle(s + 64, out, F(DWORD, s, 28), 0x3f800000, &g_eff64c334); }
+// [$L_4c3890] from the object at +64, size scaled by 64c350
+extern "C" int __fastcall Eff_4c3890(BYTE* s, void*, BYTE* out)
+{
+    return Eff_Particle(F(BYTE*, s, 64), out, Eff_Scaled28(s), 0, 0);
+}
+// [$L_4c3ac0] the same from the member at +64
+extern "C" int __fastcall Eff_4c3ac0(BYTE* s, void*, BYTE* out)
+{
+    return Eff_Particle(s + 64, out, Eff_Scaled28(s), 0, 0);
+}
+// [$L_4c3100] from the member at +4672 when a random number passes 64c748, else from +64
+extern "C" int __fastcall Eff_4c3100(BYTE* s, void*, BYTE* out)
+{
+    int r = CallC<int>(Eff_rand);
+    BYTE* src = s + 4672;
+    if (!((double)r * g_eff64c254 > g_eff64c748))
+        src = s + 64;
+    return Eff_Particle(src, out, F(DWORD, s, 28), 0, 0);
+}
+
+// vector deleting destructor of an array of n-byte items with destructor dtor
+static BYTE* Eff_VecDelete(BYTE* s, int flags, unsigned size, void (*dtor)())
+{
+    if (flags & 2) {
+        BYTE* base = s - 4;
+        CallStd(Eff_VecDtor, s, size, F(int, s, -4), dtor);
+        if (flags & 1)
+            operator delete(base);
+        return base;
+    }
+    CallThis(dtor, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+// [$L_4c4790]
+extern "C" BYTE* __fastcall Eff4c4790_VectorDeletingDestructor(BYTE* s, void*, int flags) { return Eff_VecDelete(s, flags, 140, FUN_5f0870); }
+// [$L_4c5690]
+extern "C" BYTE* __fastcall Eff4c5690_VectorDeletingDestructor(BYTE* s, void*, int flags) { return Eff_VecDelete(s, flags, 116, FUN_4c5680); }
+
+// [$L_4c4af0] frame 1 (+136), b gets +88, FUN_5f98c0 (a, b), b restored, frame 0
+extern "C" int __fastcall Eff_4c4af0(BYTE* s, void*, int a, BYTE* b)
+{
+    CallC(FUN_5e1a10, F(int, s, 136), 1);
+    CallThis(FUN_5ae580, b, s + 88, 0);
+    int r = CallThis<int>(FUN_5f98c0, s, a, b);
+    CallThis(FUN_5ae8a0, b);
+    CallC(FUN_5e1a10, F(int, s, 136), 0);
+    return r;
+}
+
+// [$L_4bd760] the two lights (+88/+92 color, +76/+80 source) go into the owner's (+44) lists of ten
+extern "C" int __fastcall Eff_4bd760(BYTE* s, void*, int a, int b)
+{
+    for (int k = 0; k < 2; k++) {
+        unsigned e = F(unsigned, s, 88 + k * 4);
+        if (!e)
+            continue;
+        BYTE* d = F(BYTE*, s, 44);
+        unsigned n = F(unsigned, d, 248 + k * 4);
+        if (n > 9)
+            continue;
+        F(int, d, (n + k * 11) * 4 + 72) = F(int, s, 76 + k * 4);
+        F(unsigned, d, (F(unsigned, d, 248 + k * 4) + k * 11) * 4 + 160) = e < 1200 ? e : 1200;
+        F(unsigned, d, 248 + k * 4)++;
+    }
+    return CallThis<int>(FUN_5f3570, s, a, b);
+}

@@ -1056,3 +1056,465 @@ extern "C" int __fastcall Sce_5f9720(BYTE* s)
     }
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Virtual methods of the scene nodes: event handling, drawing passes, loading.
+
+extern "C" void FUN_5ef820(); KING_ALIAS("_FUN_5ef820", "@Obj_Flag0Clear@24")
+extern "C" void FUN_5f2100(); KING_ALIAS("_FUN_5f2100", "@Slots_Call56@28")
+extern "C" void FUN_5b4cd0(); KING_ALIAS("_FUN_5b4cd0", "@Draw_ListItem@32")
+extern "C" void FUN_5aba10(); KING_ALIAS("_FUN_5aba10", "@Matrix_Read@12")
+ASM_PROC(FUN_5d2650)
+extern "C" void FUN_5ab190(); KING_ALIAS("_FUN_5ab190", "_File_ReadFloat")
+extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
+extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
+extern "C" void FUN_5ae560(); KING_ALIAS("_FUN_5ae560", "@Render_CurrentFrame@8")
+ASM_PROC(FUN_5f88d0)
+ASM_PROC(FUN_5ad180)
+extern "C" void FUN_5adc20(); KING_ALIAS("_FUN_5adc20", "@Render_PopLight@12")
+ASM_PROC(FUN_5e6520)
+ASM_PROC(FUN_5e5580)
+extern "C" void FUN_5f92b0(); KING_ALIAS("_FUN_5f92b0", "@Ints3_Read@12")
+extern "C" void FUN_5b4f70(); KING_ALIAS("_FUN_5b4f70", "@Clip_InFront@12")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+ASM_PROC(FUN_5b4fc0)
+extern "C" void Sce_fread(); KING_ALIAS("_Sce_fread", "_fread")
+extern "C" void Sce_strncmp(); KING_ALIAS("_Sce_strncmp", "_strncmp")
+ASM_VAR(AsmLabel, g_sce71e820, $L_71e820)
+ASM_VAR(int, g_sce723aa4, $L_723aa4)
+ASM_VAR(AsmLabel, g_sce71f800, $L_71f800)
+ASM_VAR(AsmLabel, g_sce71f810, $L_71f810)
+ASM_VAR(AsmLabel, s_sce67fb20, $L_67fb20)
+ASM_VAR(AsmLabel, g_sce723b58, $L_723b58)
+ASM_VAR(DWORD, g_sce723c30, $L_723c30)
+ASM_VAR(DWORD, g_sce723c34, $L_723c34)
+ASM_VAR(DWORD, g_sce723c38, $L_723c38)
+ASM_VAR(void*, g_sce720908, $L_720908)
+
+typedef void (*AsmFn)();
+
+// a 32-byte name from the file, looked up in the name table 71e820 into *out
+static void Sce_ReadName(void* f, void* out)
+{
+    char buf[64];
+    CallC(Sce_fread, buf, 32, 1, f);
+    CallThis(FUN_5d2650, g_sce71e820, buf, out);
+}
+
+// the children (+48 list, next +8) get the event through vtbl+28; unhandled it goes to vtbl+20 (0, ev)
+static int Sce_PassToChildren(BYTE* s, int ev)
+{
+    for (BYTE* o = *F(BYTE**, s, 48); o; o = F(BYTE*, o, 8))
+        if (CallVirt<int>(o, 28, ev))
+            return 1;
+    CallVirt(s, 20, 0, ev);
+    return 1;
+}
+// [$L_5f3ef0]
+extern "C" int __fastcall Sce_5f3ef0(BYTE* s, void*, int ev) { return Sce_PassToChildren(s, ev); }
+// [$L_5f3a10] not in state 1 (+140)
+extern "C" int __fastcall Sce_5f3a10(BYTE* s, void*, int ev) { return F(int, s, 140) == 1 ? 0 : Sce_PassToChildren(s, ev); }
+// [$L_5f3800] not with +56 set
+extern "C" int __fastcall Sce_5f3800(BYTE* s, void*, int ev) { return F(int, s, 56) ? 0 : Sce_PassToChildren(s, ev); }
+
+// [$L_5fab50] after FUN_5ef800: FUN_5b4cd0 of b with +48, +52, the vector +56 and +68
+extern "C" int __fastcall Sce_5fab50(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    CallThis(FUN_5b4cd0, b, F(int, s, 48), F(int, s, 52), F(DWORD, s, 56), F(DWORD, s, 60), F(DWORD, s, 64), F(int, s, 68));
+    return 1;
+}
+
+// after FUN_5ef820 (a, b, c, d): FUN_5f2100 (k, a, b, c, d)
+static int Sce_Pass4(BYTE* s, int k, int a, int b, int c, int d)
+{
+    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+        return 0;
+    CallThis(FUN_5f2100, s, k, a, b, c, d);
+    return 1;
+}
+// [$L_5f37b0]
+extern "C" int __fastcall Sce_5f37b0(BYTE* s, void*, int a, int b, int c, int d) { return Sce_Pass4(s, 0, a, b, c, d); }
+// [$L_5f2790]
+extern "C" int __fastcall Sce_5f2790(BYTE* s, void*, int a, int b, int c, int d) { return Sce_Pass4(s, 0, a, b, c, d); }
+// [$L_5fa310] the last slot (+52 - 1)
+extern "C" int __fastcall Sce_5fa310(BYTE* s, void*, int a, int b, int c, int d)
+{
+    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+        return 0;
+    CallThis(FUN_5f2100, s, F(int, s, 52) - 1, a, b, c, d);
+    return 1;
+}
+
+// the current slot: +56, or +56 of the source at +60, at most +52
+static int Sce_CurrentSlot(BYTE* s)
+{
+    int n = F(int, s, 56);
+    if (F(BYTE*, s, 60))
+        n = F(int, F(BYTE*, s, 60), 56);
+    if (n > F(int, s, 52))
+        n = F(int, s, 52);
+    return n;
+}
+// [$L_5f9680]
+extern "C" int __fastcall Sce_5f9680(BYTE* s, void*, int a, int b, int c, int d)
+{
+    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+        return 0;
+    CallThis(FUN_5f2100, s, Sce_CurrentSlot(s), a, b, c, d);
+    return 1;
+}
+// [$L_5f9630]
+extern "C" int __fastcall Sce_5f9630(BYTE* s, void*, int a, int b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    CallThis(FUN_5f2080, s, Sce_CurrentSlot(s), a, b);
+    return 1;
+}
+
+// [$L_5f48f0] slots 0, 1 and 2
+extern "C" int __fastcall Sce_5f48f0(BYTE* s, void*, int a, int b, int c, int d)
+{
+    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+        return 0;
+    CallThis(FUN_5f2100, s, 0, a, b, c, d);
+    CallThis(FUN_5f2100, s, 1, a, b, c, d);
+    CallThis(FUN_5f2100, s, 2, a, b, c, d);
+    return 1;
+}
+
+// [$L_5f39a0] slot 0; in state 1 (+140) with +136 then FUN_5ad180 of d with +56
+extern "C" int __fastcall Sce_5f39a0(BYTE* s, void*, int a, int b, int c, BYTE* d)
+{
+    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+        return 0;
+    CallThis(FUN_5f2100, s, 0, a, b, c, d);
+    if (F(int, s, 140) == 1 && F(int, s, 136))
+        CallThis(FUN_5ad180, d, s + 56);
+    return 1;
+}
+
+// [$L_5f8f70] slot 0 when FUN_5f88d0 of +56 accepts +36 of the record FUN_5ac2e0 gives for b, else slot 1
+extern "C" int __fastcall Sce_5f8f70(BYTE* s, void*, int a, int b, int c, int d)
+{
+    if (!CallThis<int>(FUN_5ef820, s, a, b, c, d))
+        return 0;
+    BYTE loc[48];
+    BYTE* r = CallC<BYTE*>(FUN_5ac2e0, loc, b);
+    int k = CallThis<int>(FUN_5f88d0, s + 56, r + 36) ? 0 : 1;
+    CallThis(FUN_5f2100, s, k, a, b, c, d);
+    return 1;
+}
+
+// [$L_5f8f10] the same choice for FUN_5ae560 of b, with FUN_5f2080
+extern "C" int __fastcall Sce_5f8f10(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    int x = CallThis<int>(FUN_5ae560, b);
+    int k = CallThis<int>(FUN_5f88d0, s + 56, x) ? 0 : 1;
+    CallThis(FUN_5f2080, s, k, a, b);
+    return 1;
+}
+
+// [$L_5f9380] b's vtbl+0 with +48, without flag 2 and +64
+extern "C" int __fastcall Sce_5f9380(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    if (a & 2)
+        return 0;
+    if (F(int, s, 64))
+        return 0;
+    CallVirt(b, 0, s + 48);
+    return 1;
+}
+
+// [$L_5f3920] not in a state (+140); with +136 the effect at +56 is applied around slot 0
+extern "C" int __fastcall Sce_5f3920(BYTE* s, void*, int a, BYTE* b)
+{
+    if (F(int, s, 140))
+        return 0;
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    if (F(int, s, 136))
+        CallThis(FUN_5ad180, b, s + 56);
+    CallThis(FUN_5f2080, s, 0, a, b);
+    if (F(int, s, 136))
+        CallThis(FUN_5adc20, b, s + 56);
+    return 1;
+}
+
+// [$L_5f4880] FUN_5b4f70 of b with +56 decides the order of slots 0 and 2; slot 1 last
+extern "C" int __fastcall Sce_5f4880(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    int r = CallThis<int>(FUN_5b4f70, b, s + 56);
+    int first = (r ^ (a & 1)) ? 0 : 2;
+    CallThis(FUN_5f2080, s, first, a, b);
+    CallThis(FUN_5f2080, s, 2 - first, a, b);
+    CallThis(FUN_5f2080, s, 1, a, b);
+    return 1;
+}
+
+// [$L_5fccd0] FUN_5f21e0 inside the lock 71f800 (count 723aa4)
+extern "C" int __fastcall Sce_5fccd0(BYTE* s, void*, int a, int b)
+{
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    if (!g_sce723aa4)
+        CallC(FUN_5d2fa0, (BYTE*)g_sce71f800);
+    g_sce723aa4++;
+    int r = CallThis<int>(FUN_5f21e0, s, 0, a, b);
+    if (--g_sce723aa4 == 0)
+        CallC(FUN_5d2fc0, (BYTE*)g_sce71f800, (BYTE*)g_sce71f810);
+    return r;
+}
+
+// [$L_5f35c0] an event with flag 4: to the target (+56, vtbl+52, flag 1 added) or the handler (+52)
+extern "C" int __fastcall Sce_5f35c0(BYTE* s, void*, int a, int b)
+{
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    if (!(a & 4))
+        return 0;
+    BYTE* o = F(BYTE*, s, 56);
+    if (o) {
+        if (a & 1)
+            return 0;
+        return CallVirt<int>(o, 52, a | 1, b);
+    }
+    AsmFn fn = F(AsmFn, s, 52);
+    if (fn)
+        return CallC<int>(fn, a, b, s);
+    return 0;
+}
+
+// an event: flag 1 or no target goes to FUN_5f21e0; with flag 4 the target gets it, and when it
+// takes it, b's +116 gets the value at vo
+static int Sce_EventToTarget(BYTE* s, int a, BYTE* b, int to, int vo)
+{
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    if (!(a & 1)) {
+        BYTE* o = F(BYTE*, s, to);
+        if (o && (a & 4)) {
+            int r = CallVirt<int>(o, 52, a | 1, b);
+            if (r & 1)
+                F(int, b, 116) = F(int, s, vo);
+            return r;
+        }
+    }
+    return CallThis<int>(FUN_5f21e0, s, 0, a, b);
+}
+// [$L_5f2e00]
+extern "C" int __fastcall Sce_5f2e00(BYTE* s, void*, int a, BYTE* b) { return Sce_EventToTarget(s, a, b, 104, 112); }
+// [$L_5f38b0]
+extern "C" int __fastcall Sce_5f38b0(BYTE* s, void*, int a, BYTE* b) { return Sce_EventToTarget(s, a, b, 56, 60); }
+
+// [$L_5f0a80] the bounds (+20) of the parts (+56, 88 bytes each, count +52 word) under the matrix +48
+extern "C" void __fastcall Sce_Bounds(BYTE* s)
+{
+    DWORD loc[4] = {0, 0, 0, 0};
+    if (F(WORD, s, 52) < 1)
+        return;
+    CallThis(FUN_5e6520, F(BYTE*, s, 56), s + 20, F(int, s, 48));
+    for (int i = 1; i < F(WORD, s, 52); i++) {
+        CallThis(FUN_5e6520, F(BYTE*, s, 56) + i * 88, loc, F(int, s, 48));
+        CallThis(FUN_5e5580, s + 20, loc);
+    }
+}
+
+// [$L_5f2640] loads +64 and the on flag (+56), then the node part
+extern "C" int __fastcall Sce_Load5f2640(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5aba10, s + 64, f);
+    int r = CallC<int>(FUN_5ab140, f);
+    if (r == 0)
+        F(int, s, 56) = 0;
+    else if (r == 1)
+        F(int, s, 56) = 1;
+    return Sce_LoadTail(s, f, 1, b, c);
+}
+// [$L_5f3850] +20 and the name +56
+extern "C" int __fastcall Sce_Load5f3850(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    Sce_ReadName((void*)f, s + 56);
+    return Sce_LoadTail(s, f, 1, b, c);
+}
+// [$L_5f4340] +20 and the names +60, +56
+extern "C" int __fastcall Sce_Load5f4340(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    Sce_ReadName((void*)f, s + 60);
+    Sce_ReadName((void*)f, s + 56);
+    return Sce_LoadTail(s, f, 1, b, c);
+}
+// [$L_5f9850] +20 and the names +68, +64
+extern "C" int __fastcall Sce_Load5f9850(BYTE* s, void*, int f, int, int)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    Sce_ReadName((void*)f, s + 68);
+    Sce_ReadName((void*)f, s + 64);
+    return 1;
+}
+// [$L_5f3620] a name starting with 67fb20 goes to +52, others to +56; then the name +48 and +60
+extern "C" int __fastcall Sce_Load5f3620(BYTE* s, void*, int f, int, int)
+{
+    char buf[64];
+    CallThis(FUN_5ac7f0, s + 20, f);
+    CallC(Sce_fread, buf, 32, 1, f);
+    if (CallC<int>(Sce_strncmp, buf, (const char*)s_sce67fb20, 2) == 0) {
+        CallThis(FUN_5d2650, g_sce71e820, buf, s + 52);
+        F(int, s, 56) = 0;
+    } else {
+        CallThis(FUN_5d2650, g_sce71e820, buf, s + 56);
+        F(int, s, 52) = 0;
+    }
+    Sce_ReadName((void*)f, s + 48);
+    CallThis(FUN_5f92b0, s + 60, f);
+    return 1;
+}
+// [$L_5f4030] +20, the doubles +72, +56, +64 (a word skipped) and +96
+extern "C" int __fastcall Sce_Load5f4030(BYTE* s, void*, int f, int b, int c)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    F(double, s, 72) = CallC<double>(FUN_5ab190, f);
+    CallC(FUN_5ab140, f);
+    F(double, s, 56) = CallC<double>(FUN_5ab190, f);
+    F(double, s, 64) = CallC<double>(FUN_5ab190, f);
+    F(int, s, 96) = CallC<int>(FUN_5ab140, f);
+    return Sce_LoadTail(s, f, 1, b, c);
+}
+// [$L_5f9300] by the kind (+64): 6 and 7 read +48 first, 7 also +20 and +68
+extern "C" int __fastcall Sce_Load5f9300(BYTE* s, void*, int f, int, int)
+{
+    int t = F(int, s, 64);
+    if (t == 6 || t == 7) {
+        if (t == 7) {
+            CallThis(FUN_5ac7f0, s + 20, f);
+            F(int, s, 68) = CallC<int>(FUN_5ab140, f);
+        }
+        CallThis(FUN_5f92b0, s + 48, f);
+        CallThis(FUN_5f8bf0, s + 64, f);
+    } else {
+        CallThis(FUN_5ac7f0, s + 20, f);
+        CallThis(FUN_5f8bf0, s + 64, f);
+        CallThis(FUN_5f92b0, s + 48, f);
+    }
+    return 1;
+}
+// [$L_5fadc0] the light: words +52, +48, +56, the name +80, +84, +96 and the floats +64..+76, +60
+extern "C" int __fastcall Sce_Load5fadc0(BYTE* s, void*, int f, int, int)
+{
+    F(int, s, 52) = CallC<int>(FUN_5ab140, f);
+    F(int, s, 48) = CallC<int>(FUN_5ab140, f);
+    F(int, s, 56) = CallC<int>(FUN_5ab140, f);
+    Sce_ReadName((void*)f, s + 80);
+    CallThis(FUN_5ab790, s + 84, f);
+    CallThis(FUN_5ab790, s + 96, f);
+    F(float, s, 64) = (float)CallC<double>(FUN_5ab190, f);
+    F(float, s, 68) = (float)CallC<double>(FUN_5ab190, f);
+    F(float, s, 72) = (float)CallC<double>(FUN_5ab190, f);
+    F(float, s, 76) = (float)CallC<double>(FUN_5ab190, f);
+    F(float, s, 60) = (float)CallC<double>(FUN_5ab190, f);
+    return 1;
+}
+
+// [$L_5ff160] static initializer: the subtractive random generator (55 words at 723b58)
+extern "C" void __cdecl SceInit_5ff160()
+{
+    DWORD* a = (DWORD*)g_sce723b58;
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    g_sce723c30 = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    g_sce723c34 = 0;
+    g_sce723c38 = 31;
+}
+
+// [$L_5f1d20] links node into slot i (+48, count +52), after parent or at the end of the slot's chain
+extern "C" BYTE* __fastcall Sce_LinkChild(BYTE* s, void*, int i, BYTE* node, BYTE* parent)
+{
+    if (i >= F(int, s, 52))
+        return 0;
+    if (parent) {
+        F(int, node, 44) = F(int, parent, 44);
+        CallThis(FUN_5d2190, node, parent);
+        F(int, node, 36) = F(int, parent, 36);
+        return node;
+    }
+    F(BYTE*, node, 44) = s;
+    F(int, node, 36) = F(int, s, 36);
+    BYTE** slot = &F(BYTE**, s, 48)[i];
+    if (!*slot) {
+        *slot = node;
+        F(int, node, 8) = 0;
+        F(int, node, 4) = 0;
+        return node;
+    }
+    BYTE* last = *slot;
+    while (F(BYTE*, last, 8))
+        last = F(BYTE*, last, 8);
+    CallThis(FUN_5d2190, node, last);
+    return node;
+}
+
+// [$L_5fa9d0] render state 136 from b's +8272, the light (+52, +48) to stage 482
+extern "C" int __fastcall Sce_5fa9d0(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    int r = CallThis<int>(FUN_5b4fc0, b, s + 20);
+    if (!r)
+        return r;
+    void* d = g_sce720908;
+    void* fn = *(void**)(*(char**)d + 80);
+    ((int(__stdcall*)(void*, int, int))fn)(d, 136, F(int, b, 8272) ? 1 : 0);
+    if (F(int, s, 52)) {
+        d = g_sce720908;
+        fn = *(void**)(*(char**)d + 100);
+        ((int(__stdcall*)(void*, int, int, int, int, int))fn)(d, 1, 482, F(int, s, 52), F(int, s, 48), 0);
+    }
+    return 1;
+}
+
+// [$L_5fcba0] b's material from the table (+276, count +284) by b's +8660, and the colors +288..+312
+extern "C" int __fastcall Sce_5fcba0(BYTE* s, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    if (F(int, s, 56))
+        CallVirt(b, 4, F(int, s, 56));
+    int i = F(int, b, 8660);
+    if (i >= 0 && i < F(int, s, 284)) {
+        int k = F(int, s, 276 + i * 4);
+        F(int, b, 8632) = F(int, F(BYTE*, b, 8260), k * 124 + 76);
+        F(int, b, 8640) = F(int, b, 8648);
+        F(int, b, 8644) = F(int, b, 8652);
+        F(float, b, 8672) = (float)F(double, s, 288);
+        F(float, b, 8676) = (float)F(double, s, 296);
+        F(float, b, 8680) = (float)F(double, s, 304);
+        F(float, b, 8684) = (float)F(double, s, 312);
+    } else {
+        F(int, b, 8632) = 0;
+    }
+    CallThis(FUN_5f2080, s, 0, a, b);
+    return 1;
+}

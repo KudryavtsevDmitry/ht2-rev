@@ -2260,3 +2260,83 @@ extern "C" BYTE* __fastcall Fw5e2ec0_DeletingDestructor(BYTE* s, void*, int flag
 extern "C" BYTE* __fastcall Fw5e2f20_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5e2f40); }
 // [$L_5e47f0]
 extern "C" BYTE* __fastcall Fw5e47f0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5e4810); }
+
+// ---------------------------------------------------------------------------
+// More window methods: camera drawing, key commands, window sizing.
+
+extern "C" void FUN_5eb280(); KING_ALIAS("_FUN_5eb280", "@Camera_Render@24")
+extern "C" void FUN_5b39a0(); KING_ALIAS("_FUN_5b39a0", "@Rn_Chain5af000@20")
+extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
+extern "C" void FUN_5d3f70(); KING_ALIAS("_FUN_5d3f70", "_Video_Get67fcf0")
+extern "C" void FUN_5d3f80(); KING_ALIAS("_FUN_5d3f80", "_Video_Get67fcf4")
+ASM_VAR(AsmLabel, g_fra7025f0, $L_7025f0)
+
+typedef void (*AsmFn)();
+ASM_PROC(FUN_5bae30)
+
+// [$L_5df6a0] the room's camera (+76 of +488) gets the matrix 7025f0, then the scene is drawn
+extern "C" void __fastcall Fw_DrawRoom(BYTE* s)
+{
+    BYTE* c = F(BYTE*, F(BYTE*, s, 488), 76);
+    if (c)
+        CallVirt(c, 56, 4, (BYTE*)g_fra7025f0, (BYTE*)g_fra7025f0, F(int, s, 464));
+    CallThis(FUN_5eb280, F(BYTE*, s, 468), F(int, s, 488), F(int, s, 472), 1, F(int, s, 464));
+}
+
+// [$L_5d9e60] FUN_5b39a0 (a, b, c), then the hook (+520 of +20976) gets (self, a, result, c)
+extern "C" int __fastcall Fw_5d9e60(BYTE* s, void*, int a, int b, int c)
+{
+    int r = CallThis<int>(FUN_5b39a0, s, a, b, c);
+    AsmFn hook = F(AsmFn, F(BYTE*, s, 20976), 520);
+    if (hook)
+        return CallC<int>(hook, s, a, r, c);
+    return r;
+}
+
+// [$L_5dae40] after FUN_5b6bf0 of +12 the sound (+92 of +468) restarts when the application wants it
+extern "C" void __fastcall Fw_5dae40(BYTE* s)
+{
+    CallThis(FUN_5b6bf0, F(BYTE*, s, 12));
+    BYTE* o = F(BYTE*, s, 468);
+    if (!o || !F(int, o, 88))
+        return;
+    if (!(F(int, g_fw721750, 268) & 0x800) || !F(int, g_fw721750, 336))
+        return;
+    CallThis(FUN_5bae30, *F(BYTE**, o, 92), 0);
+}
+
+// [$L_5e1940] commands 3 and 4 set +3024 / +3036; they and 27 close the dialog (+2856)
+extern "C" int __fastcall Fw_5e1940(BYTE* s, void*, int cmd)
+{
+    if (cmd == 3)
+        F(int, s, 3024) = 1;
+    else if (cmd == 4)
+        F(int, s, 3036) = 1;
+    else if (cmd != 27)
+        return 0;
+    if (F(BYTE*, s, 2856)) {
+        CallVirt(F(BYTE*, s, 2856), 32);
+        CallThis(FUN_5e4250, g_fw721750, s);
+    }
+    return 1;
+}
+
+// [$L_5dd5d0] a window size (type 0 or 2) in a window that may be resized: the screen size in units
+extern "C" void __fastcall Fw_OnSize(BYTE*, void*, int type, int cx, int cy)
+{
+    BYTE* app = g_fw721750;
+    if (F(int, app, 268) & 0x400)
+        return;
+    if (F(BYTE, app, 292) & 1)
+        return;
+    if (type != 0 && type != 2)
+        return;
+    int w = cx / CallC<int>(FUN_5d3f70);
+    int h = cy / CallC<int>(FUN_5d3f80);
+    w = (w + 1) & ~3;
+    app = g_fw721750;
+    if (F(BYTE, app, 292) & 16)
+        h = F(int, app, 260) * w / F(int, app, 256);
+    F(int, app, 284) = w;
+    F(int, g_fw721750, 288) = h;
+}

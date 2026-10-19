@@ -647,3 +647,108 @@ extern "C" int __fastcall Con_5be5f0(BYTE* s, void*, int x, int y)
         return 1;
     return CallThis<int>(FUN_5bda20, s, x, y);
 }
+
+// ---------------------------------------------------------------------------
+// Radio buttons, sliders and control layout.
+
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
+ASM_VAR(BYTE*, g_con702f24, $L_702f24)
+
+// [$L_5bfb30] vtbl+24 (a, b); for the focused control (702f24) bit 1 of +284 follows the result
+extern "C" int __fastcall Con_5bfb30(BYTE* s, void*, int a, int b)
+{
+    int r = CallVirt<int>(s, 24, a, b);
+    if (s != g_con702f24)
+        return r != 0;
+    if (r)
+        F(unsigned, s, 284) |= 2;
+    else
+        F(unsigned, s, 284) &= ~2u;
+    return 1;
+}
+
+// clears the bits of +284 on the siblings before (+4 chain) and after (FUN_5d3080) the control
+static void Con_ClearGroup(BYTE* s, unsigned keep)
+{
+    for (BYTE* o = F(BYTE*, s, 4); o; o = F(BYTE*, o, 4))
+        F(unsigned, o, 284) &= keep;
+    for (BYTE* o = CallThis<BYTE*>(FUN_5d3080, s); o; o = CallThis<BYTE*>(FUN_5d3080, o))
+        F(unsigned, o, 284) &= keep;
+}
+
+// [$L_5bfb90] a radio button: Enter selects it
+extern "C" int __fastcall Con_RadioKey(BYTE* s, void*, int key, int up)
+{
+    if (up || key != 13)
+        return key;
+    if (F(int, s, 40))
+        return 13;
+    Con_ClearGroup(s, ~2u);
+    F(unsigned, s, 284) |= 2;
+    return F(int, s, 28) | 0x8000;
+}
+
+// [$L_5bfc20] a radio button: a press (513) selects it, a release (514) clears its pressed bit
+extern "C" int __fastcall Con_RadioMouse(BYTE* s, void*, int msg, int, int)
+{
+    if (msg == 514) {
+        F(unsigned, s, 284) &= ~4u;
+        return 32768;
+    }
+    if (msg != 513)
+        return msg;
+    if (F(int, s, 40))
+        return 513;
+    Con_ClearGroup(s, ~6u);
+    F(unsigned, s, 284) |= 6;
+    return F(int, s, 28) | 0x8000;
+}
+
+// [$L_5bf280] a slider: the arrows (left/right when horizontal, +328 == 1, else up/down) move the
+// value (*+300) by the step (+340) within 0..+296
+extern "C" int __fastcall Con_SliderKey(BYTE* s, void*, int key, int up)
+{
+    if (up)
+        return key;
+    int dec = F(int, s, 328) == 1 ? 37 : 38;
+    int inc = F(int, s, 328) == 1 ? 39 : 40;
+    short* v = F(short*, s, 300);
+    if (key == dec) {
+        *v = (short)(*v - F(short, s, 340));
+        if (*F(short*, s, 300) < 0)
+            *F(short*, s, 300) = 0;
+        return 32768;
+    }
+    if (key == inc) {
+        *v = (short)(*v + F(short, s, 340));
+        if (*F(short*, s, 300) > F(short, s, 296))
+            *F(short*, s, 300) = F(short, s, 296);
+        return 32768;
+    }
+    return key;
+}
+
+// [$L_5c02e0] the size (+52, +56) of the picture: +20/+22 of +96 (flags 16, 36) or +4/+6 of +100 (72)
+extern "C" void __fastcall Con_PictureSize(BYTE* s)
+{
+    int f = F(int, s, 32);
+    F(int, s, 48) = 0;
+    F(int, s, 44) = 0;
+    if (f & (16 | 36)) {
+        BYTE* p = F(BYTE*, s, 96);
+        if (!p)
+            return;
+        F(int, s, 52) = F(WORD, p, 20) - 1;
+        F(int, s, 56) = F(WORD, p, 22) - 1;
+    } else if (f & 72) {
+        BYTE* p = F(BYTE*, s, 100);
+        if (!p)
+            return;
+        F(int, s, 52) = F(WORD, p, 4) - 1;
+        F(int, s, 56) = F(WORD, p, 6) - 1;
+    }
+    if (F(int, s, 52) < 0)
+        F(int, s, 52) = 0;
+    if (F(int, s, 56) < 0)
+        F(int, s, 56) = 0;
+}

@@ -2074,3 +2074,108 @@ extern "C" int __fastcall Car_556150(BYTE* s, void*, int a, int b, int c)
     DWORD v[3] = {F(DWORD, p, 0), F(DWORD, p, 4), F(DWORD, p, 8)};
     return CallThis<int>(FUN_5455d0, s, F(int, s, 9604), v);
 }
+
+// ---------------------------------------------------------------------------
+// The trailer's hitch: after a trailer method the cab is pulled back along
+// the hitch direction.
+
+ASM_PROC(FUN_4eec80)
+extern "C" void FUN_4eeaf0(); KING_ALIAS("_FUN_4eeaf0", "@Body_SetLoad@12")
+extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
+extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
+ASM_PROC(FUN_4f1240)
+ASM_PROC(FUN_4f0fc0)
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
+ASM_PROC(FUN_5f9b00)
+ASM_VAR(AsmLabel, g_veh702630, $L_702630)
+ASM_VAR(AsmLabel, g_veh6d2114, $L_6d2114)
+
+// the cab of the car gets FUN_4eec80 of the trailer's cab for the reversed hitch direction 702630
+static void Car_PullCab(BYTE* s)
+{
+    const float* h = (const float*)g_veh702630;
+    float v[3] = {-h[0], -h[1], -h[2]};
+    float f = (float)CallThis<double>(FUN_4eec80, F(BYTE*, F(BYTE*, s, 21880), 21600), v);
+    CallThis(FUN_4eeaf0, F(BYTE*, s, 21600), *(DWORD*)&f);
+}
+
+// [$L_55e920]
+extern "C" void __fastcall Car_55e920(BYTE* s, void*, int a, int b, int c)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return;
+    CallVirt(t, 160, a, b, c);
+    Car_PullCab(s);
+}
+// [$L_55e5f0]
+extern "C" void __fastcall Car_55e5f0(BYTE* s, void*, int a, int b, int c)
+{
+    CallVirt(s, 132);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return;
+    CallVirt(t, 128, a, b, c);
+    Car_PullCab(s);
+}
+// [$L_55e690]
+extern "C" void __fastcall Car_55e690(BYTE* s)
+{
+    CallVirt(s, 132);
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return;
+    CallVirt(t, 124);
+    Car_PullCab(s);
+}
+// [$L_55e7c0]
+extern "C" int __fastcall Car_55e7c0(BYTE* s, void*, int a, int b)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return 0;
+    int r = CallVirt<int>(t, 152, a, b);
+    Car_PullCab(s);
+    return r;
+}
+// [$L_55e870]
+extern "C" int __fastcall Car_55e870(BYTE* s, void*, int a, int b)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return 0;
+    int r = CallVirt<int>(t, 156, a, b);
+    Car_PullCab(s);
+    return r;
+}
+
+// [$L_54c8d0] (a, b) to the body, the part at +21588 and in mode 1 (+10908) the cab (+21584)
+extern "C" void __fastcall Car_54c8d0(BYTE* s, void*, int a, int b)
+{
+    CallThis(FUN_581230, s, a, b);
+    if (F(BYTE*, s, 21588))
+        CallThis(FUN_561d10, F(BYTE*, s, 21588), a, b);
+    BYTE* c = F(BYTE*, s, 21584);
+    if (!c || F(int, s, 10908) != 1)
+        return;
+    if (F(int, s, 892)) {
+        CallThis(FUN_4f1240, c, 1, a, b);
+        return;
+    }
+    if (F(int, c, 13124))
+        CallThis(FUN_4f0fc0, c, F(int, s, 800), s + 500);
+}
+
+// [$L_546ad0] the sound of the cab model (1488-byte records at 6d2114, +36) for the gear mode (+9896)
+extern "C" int __fastcall Car_546ad0(BYTE* s, void*, int a, int b)
+{
+    int k = -1;
+    switch (F(BYTE, s, 9896)) {
+    case 1: k = 2; break;
+    case 2: k = 0; break;
+    case 3: k = 1; break;
+    }
+    if (k >= 0)
+        CallC(FUN_4e480c, F(int, (BYTE*)g_veh6d2114, F(int, s, 10148) * 1488 + 36), k);
+    return CallThis<int>(FUN_5f9b00, s, a, b);
+}

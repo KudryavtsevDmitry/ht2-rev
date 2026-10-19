@@ -2019,3 +2019,90 @@ extern "C" int __fastcall Hel_573810(BYTE* s)
     }
     return CallThis<int>(FUN_5d32f0, s, 1);
 }
+
+// ---------------------------------------------------------------------------
+// More helicopter tasks and its random generator.
+
+extern "C" void FUN_569380(); KING_ALIAS("_FUN_569380", "_Copter_Send956")
+ASM_PROC(FUN_5f9b00)
+ASM_VAR(double, g_hel64b730, $L_64b730)
+ASM_VAR(double, g_hel64fe58, $L_64fe58)
+ASM_VAR(double, g_hel64b7e0, $L_64b7e0)
+ASM_VAR(AsmLabel, g_hel6f3160, $L_6f3160)
+ASM_VAR(DWORD, g_hel6f3238, $L_6f3238)
+ASM_VAR(DWORD, g_hel6f323c, $L_6f323c)
+ASM_VAR(DWORD, g_hel6f3240, $L_6f3240)
+
+// [$L_573b70] the start time (+368) once; after 64b670 released, before it state 3; FUN_569380 of +344 with 2 and the state
+extern "C" void __fastcall Hel_573b70(BYTE* s)
+{
+    if (!F(int, s, 16)) {
+        F(DWORD, s, 368) = F(DWORD, g_hel696ca0, 2968);
+        F(DWORD, s, 372) = F(DWORD, g_hel696ca0, 2972);
+    }
+    if (F(double, s, 368) + g_hel64b670 > F(double, g_hel696ca0, 2968))
+        CallThis(FUN_5d32f0, s, 1);
+    else
+        F(int, s, 408) = 3;
+    CallC(FUN_569380, F(int, s, 344), 2);
+    CallC(FUN_569380, F(int, s, 344), F(int, s, 408));
+}
+
+// [$L_5739b0] as 5737e0 with FUN_5f9b00; when it succeeds b's record (+100) remembers +100
+extern "C" int __fastcall Hel_5739b0(BYTE* s, void*, int a, BYTE* b)
+{
+    if (g_hel6f33f0)
+        return 0;
+    if (!CallThis<char>(FUN_4297b0, s))
+        return 0;
+    CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 152));
+    int r = CallThis<int>(FUN_5f9b00, s, a, b);
+    if (r) {
+        BYTE* o = F(BYTE*, b, 100);
+        if (o) {
+            if (!F(int, o, 12)) {
+                F(void*, o, 12) = operator new(4);
+                F(int, o, 8) = 1;
+            }
+            *F(int*, o, 12) = F(int, s, 100);
+        }
+    }
+    return r;
+}
+
+// [$L_56b9f0] the timer (+32) of the mode (+60): modes 5 and 10 end after 64b7e0, the others from 3 after 64fe58
+extern "C" int __fastcall Hel_56b9f0(BYTE* s)
+{
+    if (F(int, s, 16) < 2)
+        F(double, s, 32) = F(double, g_hel696ca0, 2968) * g_hel64b730;
+    int m = F(int, s, 60);
+    if (m >= 3) {
+        double lim = F(double, s, 32) + (m == 5 || m == 10 ? g_hel64b7e0 : g_hel64fe58);
+        if (F(double, g_hel696ca0, 2968) * g_hel64b730 > lim)
+            F(int, s, 60) = 0;
+    }
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// [$L_568da0] static initializer: the subtractive random generator (55 words at 6f3160)
+extern "C" void __cdecl HelInit_568da0()
+{
+    DWORD* a = (DWORD*)g_hel6f3160;
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    g_hel6f3238 = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    g_hel6f323c = 0;
+    g_hel6f3240 = 31;
+}
