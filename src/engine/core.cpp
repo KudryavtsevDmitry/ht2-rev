@@ -939,3 +939,52 @@ extern "C" void __fastcall Object_Destroy(BYTE* s)
         operator delete(F(void*, s, 28));
     F(void*, s, 0) = g_cor64d81c;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors and window resizing (exception frames dropped).
+
+#include <string.h>
+
+// a copy of the string t in new memory
+static char* Cor_StrDup(const char* t)
+{
+    size_t n = strlen(t) + 1;
+    char* d = (char*)operator new(n);
+    memcpy(d, t, n);
+    return d;
+}
+// [FUN_5d28a0] constructor (name): a named object (vtable 651ea0)
+extern "C" BYTE* __fastcall Cor5d28a0_Construct(BYTE* s, void*, const char* name)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = g_cor651ea0;
+    F(char*, s, 12) = Cor_StrDup(name);
+    F(int, s, 16) = 0;
+    F(int, s, 20) = 0;
+    return s;
+}
+// [FUN_5d3110] constructor (name): the base object (vtable 651ec8), its name (+28) copied when given
+extern "C" BYTE* __fastcall Object_Construct(BYTE* s, void*, const char* name)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = g_cor651ec8;
+    F(int, s, 16) = 0;
+    F(int, s, 20) = 0;
+    F(int, s, 12) = 0;
+    F(char*, s, 28) = name ? Cor_StrDup(name) : 0;
+    return s;
+}
+// [FUN_5d31e0] constructor (kind, name): the same with the kind at +20
+extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const char* name)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = g_cor651ec8;
+    F(int, s, 20) = kind;
+    F(int, s, 16) = 0;
+    F(int, s, 12) = 0;
+    F(char*, s, 28) = name ? Cor_StrDup(name) : 0;
+    return s;
+}

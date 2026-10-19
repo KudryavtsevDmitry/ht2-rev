@@ -48,7 +48,7 @@ struct CharVec {
 };
 
 // A scheduled object of the engine, kept in an ObjectContainer (32 bytes).
-ASM_PROC(FUN_5d3110)    // Task::Task(const char* name)
+extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")    // Task::Task(const char* name)
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
 struct Task {
     void** vtbl;

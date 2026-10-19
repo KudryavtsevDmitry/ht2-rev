@@ -2346,7 +2346,7 @@ extern "C" void __fastcall Fw_OnSize(BYTE*, void*, int type, int cx, int cy)
 
 extern "C" void Fw_GdiDelete(); KING_ALIAS("_Fw_GdiDelete", "?DeleteObject@CGdiObject@@QAEHXZ")
 extern "C" void Fw_FrameWndDtor(); KING_ALIAS("_Fw_FrameWndDtor", "??1CFrameWnd@@UAE@XZ")
-ASM_PROC(FUN_5bda90)
+extern "C" void FUN_5bda90(); KING_ALIAS("_FUN_5bda90", "@ConGroup_Destroy@4")
 ASM_VAR(AsmLabel, g_fra654420, $L_654420)
 ASM_VAR(AsmLabel, g_fra652238, $L_652238)
 ASM_VAR(AsmLabel, g_fra652570, $L_652570)
@@ -2430,4 +2430,109 @@ extern "C" void __fastcall RoomWindow_Destroy(BYTE* s)
     if (F(int, s, 468) && !(F(BYTE, s, 16) & 8))
         CallThis(FUN_5da8a0, s);
     CallThis(FUN_5d8850, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and window resizing (exception frames dropped).
+
+extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
+ASM_PROC(FUN_5da180)
+extern "C" void FUN_5ed970(); KING_ALIAS("_FUN_5ed970", "@Renderer_Construct@12")
+ASM_PROC(FUN_5b6530)
+ASM_PROC(FUN_5d8710)
+ASM_VAR(AsmLabel, g_fra652280, $L_652280)
+
+// [$L_5e57a0] frees its buffers (+8, +12..+24), then the table at +52
+extern "C" void __fastcall Fw5e57a0_Destroy(BYTE* s)
+{
+    operator delete(F(void*, s, 8));
+    for (int o = 12; o <= 24; o += 4)
+        if (F(void*, s, o))
+            operator delete(F(void*, s, o));
+    CallThis(FUN_5e5840, s + 52);
+}
+
+// deletes the room data (+464): its 20 80-byte items at +6224 and the one at +7824
+static void Fw_DeleteRoomData(BYTE* s)
+{
+    BYTE* o = F(BYTE*, s, 464);
+    if (!o)
+        return;
+    CallThis(FUN_5e48f0, o + 7824);
+    CallStd(Fw_VecDtor, o + 6224, 80, 20, FUN_5e48f0);
+    operator delete(o);
+}
+// new room data (20976 bytes) for the window's surface (+12)
+static BYTE* Fw_NewRoomData(BYTE* s, unsigned size)
+{
+    BYTE* m = (BYTE*)operator new(size);
+    return m ? CallThis<BYTE*>(FUN_5ed970, m, F(int, s, 12)) : 0;
+}
+
+// [$L_5da5f0] a new size (FUN_5da180) with new room data
+extern "C" void __fastcall Fw_Resize(BYTE* s, void*, int a, int b, int c, int d)
+{
+    CallThis(FUN_5da180, s, a, b, c, d);
+    Fw_DeleteRoomData(s);
+    F(BYTE*, s, 464) = Fw_NewRoomData(s, 20976);
+}
+// [$L_5dba80] the same with the 20992-byte room data of the main view (vtable 652280, owner at +20976, +20984)
+extern "C" void __fastcall Fw_ResizeMain(BYTE* s, void*, int a, int b, int c, int d)
+{
+    CallThis(FUN_5da180, s, a, b, c, d);
+    Fw_DeleteRoomData(s);
+    BYTE* m = (BYTE*)operator new(20992);
+    if (!m) {
+        F(int, s, 464) = 0;
+        return;
+    }
+    CallThis(FUN_5ed970, m, F(int, s, 12));
+    F(BYTE*, m, 20976) = s;
+    F(void*, m, 0) = g_fra652280;
+    F(BYTE*, m, 20984) = s;
+    F(BYTE*, s, 464) = m;
+}
+
+// [FUN_5da360] a new surface (124 bytes, FUN_5b6530) of the rectangle (a..d) unless it is the main window
+extern "C" void __fastcall Fw_NewSurface(BYTE* s, void*, int a, int b, int c, int d)
+{
+    BYTE* main = F(BYTE*, g_fw721750, 252);
+    if (main == s)
+        return;
+    BYTE* old = F(BYTE*, s, 12);
+    int flags = F(int, old, 12);
+    if (old) {
+        CallThis(FUN_5b6a90, old);
+        operator delete(old);
+    }
+    BYTE* m = (BYTE*)operator new(124);
+    F(BYTE*, s, 12) = m ? CallThis<BYTE*>(FUN_5b6530, m, F(int, main, 12), &a, flags & 0x4000) : 0;
+    CallVirt(s, 60);
+}
+
+// [$L_5da6b0] a new surface and new room data, keeping the room data's +8452
+extern "C" void __fastcall Fw_NewSurfaceRoom(BYTE* s, void*, int a, int b, int c, int d)
+{
+    Fw_NewSurface(s, 0, a, b, c, d);
+    BYTE* o = F(BYTE*, s, 464);
+    int keep = F(int, o, 8452);
+    Fw_DeleteRoomData(s);
+    F(BYTE*, s, 464) = Fw_NewRoomData(s, 20976);
+    F(int, F(BYTE*, s, 464), 8452) = keep;
+}
+
+// [FUN_5d9f60] constructor (a, b, c, d) of a room window (vtable 65229c)
+extern "C" BYTE* __fastcall RoomWindow_Construct(BYTE* s, void*, int a, int b, int c, int d)
+{
+    CallThis(FUN_5d8710, s, a, b, F(int, g_fw721750, 268) & 0x4000);
+    F(void*, s, 0) = g_fra65229c;
+    F(int, s, 520) = 0;
+    F(BYTE*, s, 464) = Fw_NewRoomData(s, 20976);
+    F(int, s, 472) = d;
+    F(int, s, 16) |= 3;
+    static const int zero[] = {512, 496, 504, 468, 536, 532, 528, 524, 456, 460, 480, 476, 484, 516, 500, 508};
+    for (int o : zero)
+        F(int, s, o) = 0;
+    F(int, s, 488) = c;
+    return s;
 }

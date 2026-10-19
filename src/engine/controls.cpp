@@ -570,7 +570,7 @@ extern "C" int __fastcall Ctl_PointTo(BYTE* self, void*, int x, int y)
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_5bda90)
+extern "C" void FUN_5bda90(); KING_ALIAS("_FUN_5bda90", "@ConGroup_Destroy@4")
 extern "C" void FUN_5be870(); KING_ALIAS("_FUN_5be870", "@Con5be870_Destroy@4")
 extern "C" void FUN_5bf7d0(); KING_ALIAS("_FUN_5bf7d0", "@Con5bf7d0_Destroy@4")
 
@@ -992,6 +992,30 @@ extern "C" void __fastcall Con5be870_Destroy(BYTE* s)
 // [FUN_5bf7d0]
 extern "C" void __fastcall Con5bf7d0_Destroy(BYTE* s)
 {
+    F(void*, s, 0) = g_con64dc84;
+    operator delete(F(void*, s, 12));
+    F(void*, s, 0) = g_con64d81c;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and window resizing (exception frames dropped).
+
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+ASM_VAR(AsmLabel, g_con65179c, $L_65179c)
+
+// [FUN_5bda90] a control group (vtable 65179c) deletes its children (from +288) and the first one
+extern "C" void __fastcall ConGroup_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_con65179c;
+    BYTE* c = F(BYTE*, s, 288);
+    if (c) {
+        for (BYTE* o = CallThis<BYTE*>(FUN_5d3080, c); o; o = CallThis<BYTE*>(FUN_5d3080, c)) {
+            CallThis(FUN_5d21b0, o);
+            if (o)
+                CallVirt(o, 0, 1);
+        }
+        CallVirt(c, 0, 1);
+    }
     F(void*, s, 0) = g_con64dc84;
     operator delete(F(void*, s, 12));
     F(void*, s, 0) = g_con64d81c;

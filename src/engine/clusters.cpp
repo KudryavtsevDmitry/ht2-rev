@@ -21,7 +21,7 @@ extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
 ASM_PROC(FUN_5acd40)    // base constructor
 extern "C" void FUN_5bad60(); KING_ALIAS("_FUN_5bad60", "@Texture_Size@8")    // size of an object
 extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    // size of an object
-ASM_PROC(FUN_5edeb0)    // base constructor (a, b)
+extern "C" void FUN_5edeb0(); KING_ALIAS("_FUN_5edeb0", "@Clu5edeb0_Construct@16")    // base constructor (a, b)
 extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")    // base destructor
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // selects a palette
 ASM_FUNC(Scene_FindCallback, $L_5ef310)
@@ -748,4 +748,30 @@ extern "C" void __fastcall Clu5edb20_Destroy(BYTE* s)
     operator delete(F(void*, s, 72));
     operator delete(F(void*, s, 76));
     CallThis(FUN_5eddf0, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and window resizing (exception frames dropped).
+
+// [FUN_5edeb0] constructor (n, b): a cluster list (vtable 6527b0) with n empty slots (+32)
+extern "C" BYTE* __fastcall Clu5edeb0_Construct(BYTE* s, void*, int n, int b)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = g_clu6527b0;
+    F(int, s, 12) = b;
+    F(int, s, 16) = 0;
+    F(int, s, 20) = 0;
+    F(int, s, 40) = 0;
+    F(int, s, 36) = 0;
+    F(int, s, 24) = n;
+    if (n) {
+        F(void*, s, 32) = operator new(n * 4);
+        for (int i = 0; i < n; i++)
+            F(int*, s, 32)[i] = 0;
+    } else {
+        F(int, s, 32) = 0;
+    }
+    F(int, s, 28) = 0;
+    return s;
 }
