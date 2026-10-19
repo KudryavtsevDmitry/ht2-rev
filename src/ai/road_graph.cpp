@@ -1072,3 +1072,43 @@ extern "C" void __fastcall Vec40_Reserve(BYTE** v, void*, unsigned n) { Vec_Rese
 
 // [FUN_47af30] vector<16-byte record>::reserve
 extern "C" void __fastcall Vec16_Reserve(BYTE** v, void*, unsigned n) { Vec_Reserve(v, n, 16, FUN_461dc0, FUN_602ca0); }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+typedef char AsmLabel[1];
+
+ASM_VAR(AsmLabel, g_roagraRng68d4f8, $L_68d4f8)
+ASM_VAR(DWORD, g_roagraRng68d5d0, $L_68d5d0)
+ASM_VAR(DWORD, g_roagraRng68d5d4, $L_68d5d4)
+ASM_VAR(DWORD, g_roagraRng68d5d8, $L_68d5d8)
+ASM_VAR(AsmLabel, g_roagraRng68d5e0, $L_68d5e0)
+ASM_VAR(DWORD, g_roagraRng68d6b8, $L_68d6b8)
+ASM_VAR(DWORD, g_roagraRng68d6bc, $L_68d6bc)
+ASM_VAR(DWORD, g_roagraRng68d6c0, $L_68d6c0)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Roagra_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_47f9d0]
+extern "C" void __cdecl RoagraInit_47f9d0() { Roagra_RngInit((DWORD*)g_roagraRng68d4f8, &g_roagraRng68d5d0, &g_roagraRng68d5d4, &g_roagraRng68d5d8); }
+// [$L_4805a0]
+extern "C" void __cdecl RoagraInit_4805a0() { Roagra_RngInit((DWORD*)g_roagraRng68d5e0, &g_roagraRng68d6b8, &g_roagraRng68d6bc, &g_roagraRng68d6c0); }

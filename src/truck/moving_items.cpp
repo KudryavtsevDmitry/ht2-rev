@@ -400,3 +400,20 @@ extern "C" void __fastcall Movite_5866f0(BYTE* s, void*, BYTE* o, int b)
     if (!F(int, o, 372))
         CallVirt(o, 192, s, b);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+ASM_PROC(FUN_5843c0)
+ASM_PROC(FUN_5855a0)
+
+// [$L_585d30] by the kind (+392): kind 1 with flag 4 to FUN_5843c0, kind 1 or kind 2 with flag 2 to FUN_5855a0
+extern "C" int __fastcall Movite_585d30(BYTE* s, void*, int a, int b, int c, int d, int e)
+{
+    int k = F(int, s, 392);
+    if (k == 1 && (e & 4))
+        return CallC<int>(FUN_5843c0, s, a, b, c, d);
+    if (k == 1 || (k == 2 && (e & 2)))
+        return CallC<int>(FUN_5855a0, s, a, b, c, d, e);
+    return 0;
+}

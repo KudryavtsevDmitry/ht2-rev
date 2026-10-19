@@ -21314,3 +21314,111 @@ extern "C" void __cdecl AiworInit_402610()
         p[1] = p[2] = p[3] = 0;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+
+ASM_VAR(AsmLabel, g_aiworRng68a870, $L_68a870)
+ASM_VAR(DWORD, g_aiworRng68a948, $L_68a948)
+ASM_VAR(DWORD, g_aiworRng68a94c, $L_68a94c)
+ASM_VAR(DWORD, g_aiworRng68a950, $L_68a950)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Aiwor_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_4014f0]
+extern "C" void __cdecl AiworInit_4014f0() { Aiwor_RngInit((DWORD*)g_aiworRng68a870, &g_aiworRng68a948, &g_aiworRng68a94c, &g_aiworRng68a950); }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+typedef void (*AiFn)();
+extern "C" void FUN_48e450(); KING_ALIAS("_FUN_48e450", "@Poly1392_AbsDiff01@8")
+ASM_PROC(FUN_48dd50)
+ASM_VAR(DWORD, g_aiwor68baa4, $L_68baa4)
+ASM_VAR(DWORD, g_aiwor68baa8, $L_68baa8)
+ASM_VAR(AsmLabel, g_aiwor68b9c8, $L_68b9c8)
+ASM_VAR(DWORD, g_aiwor68d108, $L_68d108)
+ASM_VAR(DWORD, g_aiwor68d10c, $L_68d10c)
+ASM_VAR(double, g_aiwor64b670, $L_64b670)
+ASM_VAR(double, g_aiwor64b678, $L_64b678)
+ASM_VAR(AsmLabel, g_aiwor68cc28, $L_68cc28)
+
+// [$L_455440] (out, t, i): the point at t between points i and i+1 of the path (+88)
+extern "C" double* __fastcall Path_Lerp(BYTE* s, void*, double* out, double t, int i)
+{
+    double* a = (double*)(F(BYTE*, s, 88) + i * 24);
+    double* b = a + 3;
+    double n0 = b[0] * t, n1 = b[1] * t, n2 = b[2] * t;
+    double u = g_aiwor64b670 - t;
+    double c0 = a[0] * u, c1 = a[1] * u, c2 = a[2] * u;
+    out[0] = c0 + n0;
+    out[1] = c1 + n1;
+    out[2] = c2 + n2;
+    return out;
+}
+
+// [$L_435690] runs the task (+40), then its next time 600..899 s ahead from the generator at 68b9c8
+extern "C" void __fastcall Task_RunAndReschedule(BYTE* s)
+{
+    CallThis(F(AiFn, s, 40), s);
+    DWORD* a = (DWORD*)g_aiwor68b9c8;
+    DWORD i = (g_aiwor68baa4 + 1) % 55;
+    g_aiwor68baa4 = i;
+    DWORD j = (g_aiwor68baa8 + 1) % 55;
+    g_aiwor68baa8 = j;
+    a[i] -= a[j];
+    F(double, s, 24) = (double)(a[g_aiwor68baa4] % 300 + 600);
+    g_aiwor68d108 = F(DWORD, s, 16);
+    g_aiwor68d10c = F(DWORD, s, 20);
+}
+
+// [$L_4553c0] the sum of FUN_48e450 of the 1592-byte records at +56
+extern "C" double __fastcall Ai4553c0_Sum(BYTE* s)
+{
+    double t = g_aiwor64b678;
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, s, 60) - F(BYTE*, s, 56)) / 1592); i++)
+        t = CallThis<double>(FUN_48e450, F(BYTE*, s, 56) + i * 1592) + t;
+    return t;
+}
+
+// [$L_454e80] the last record (+56) for which FUN_48dd50 (a, b, c) holds, its index to *out
+extern "C" int __fastcall Ai454e80_Find(BYTE* s, void*, int a, int b, int c, int* out)
+{
+    int found = 0;
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, s, 60) - F(BYTE*, s, 56)) / 1592); i++)
+        if (CallThis<int>(FUN_48dd50, F(BYTE*, s, 56) + i * 1592, a, b, c)) {
+            found = 1;
+            *out = i;
+        }
+    return found;
+}
+
+// [$L_428120] static initializer: two records of the doubles (-12, 0, 0, 10, 0, 0)
+extern "C" void __cdecl AiworInit_428120()
+{
+    static const DWORD v[24] = {0, 0xc0280000, 0, 0, 0, 0, 0, 0x40280000, 0, 0, 0, 0,
+                                0, 0, 0, 0xc0280000, 0, 0, 0, 0, 0, 0x40280000, 0, 0};
+    DWORD* d = (DWORD*)g_aiwor68cc28;
+    for (int k = 0; k < 24; k++)
+        d[k] = v[k];
+}

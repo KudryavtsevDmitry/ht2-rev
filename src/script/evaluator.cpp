@@ -2121,3 +2121,36 @@ extern "C" int __fastcall Eva_4a74f0(BYTE*, void*, BYTE* p)
         name = CallVirt<const char*>(F(BYTE*, e, 0), 4);
     return CallC<int>(FUN_4a5a60, p, 29, name);
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers of random generators.
+
+ASM_VAR(AsmLabel, g_evaRng694660, $L_694660)
+ASM_VAR(DWORD, g_evaRng694738, $L_694738)
+ASM_VAR(DWORD, g_evaRng69473c, $L_69473c)
+ASM_VAR(DWORD, g_evaRng694740, $L_694740)
+
+// the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
+static void Eva_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
+{
+    for (int i = 0; i < 55; i++)
+        a[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    *seed = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    *i1 = 0;
+    *i2 = 31;
+}
+
+// [$L_4ad180]
+extern "C" void __cdecl EvaInit_4ad180() { Eva_RngInit((DWORD*)g_evaRng694660, &g_evaRng694738, &g_evaRng69473c, &g_evaRng694740); }

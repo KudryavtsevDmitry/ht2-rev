@@ -649,3 +649,38 @@ extern "C" void __fastcall Clu_Attach(BYTE* s, void*, BYTE* o)
     if (F(BYTE*, s, 40))
         CallVirt(F(BYTE*, s, 40), 28, s);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_5edf50(); KING_ALIAS("_FUN_5edf50", "@Cluster_Clear1@8")
+extern "C" void FUN_5bad10(); KING_ALIAS("_FUN_5bad10", "@Texture_Release@8")
+extern "C" void FUN_5bbe80(); KING_ALIAS("_FUN_5bbe80", "@Bitmap_Unload@8")
+extern "C" void FUN_5fd350(); KING_ALIAS("_FUN_5fd350", "@SoundFile_Unload@8")
+
+// [$L_5ee2a0] vtbl+44 of each child (+32, count +24), marks +20 and tells the owner (+40, vtbl+32)
+extern "C" void __fastcall Clu_5ee2a0(BYTE* s, void*, int a)
+{
+    if (!a)
+        return;
+    for (int i = 0; i < F(int, s, 24); i++)
+        CallVirt(F(BYTE**, s, 32)[i], 44);
+    F(int, s, 20) |= 2;
+    if (F(BYTE*, s, 40))
+        CallVirt(F(BYTE*, s, 40), 32, s);
+}
+
+// [$L_5edc70] after FUN_5edf50: the items of the three lists (+68/+44, +72/+52, +76/+60)
+extern "C" int __fastcall Clu_5edc70(BYTE* s)
+{
+    int r = CallThis<int>(FUN_5edf50, s);
+    if (!r)
+        return r;
+    for (int i = 0; i < F(int, s, 44); i++)
+        CallThis(FUN_5bad10, F(BYTE**, s, 68)[i]);
+    for (int i = 0; i < F(int, s, 52); i++)
+        CallThis(FUN_5bbe80, F(BYTE**, s, 72)[i]);
+    for (int i = 0; i < F(int, s, 60); i++)
+        CallThis(FUN_5fd350, F(BYTE**, s, 76)[i]);
+    return 1;
+}

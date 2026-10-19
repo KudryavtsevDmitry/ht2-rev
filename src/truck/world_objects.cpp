@@ -1604,3 +1604,47 @@ extern "C" int __fastcall Worobj_5a3e90(BYTE* s)
     CallC(FUN_5e1a10, F(int, s, 36), frame);
     return CallThis<int>(FUN_5d32f0, s, 1);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
+extern "C" void FUN_4cca70(); KING_ALIAS("_FUN_4cca70", "_Fx_Scale75")
+ASM_VAR(BYTE*, g_worobj696224, $L_696224)
+ASM_VAR(float, g_worobj64c458, $L_64c458)
+ASM_VAR(AsmLabel, g_worobj650f3c, $L_650f3c)
+
+// [$L_59e8f0] the current item (+88 of +100) gets a random color (771 of the palette) while it is drawn
+extern "C" void __fastcall Worobj_59e8f0(BYTE* s, void*, int a, int b)
+{
+    F(int, Worobj_Current(s), 88) = 0;
+    F(int, Worobj_Current(s), 40) = 249;
+    BYTE* p = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, g_worobj696224, 12)) + 771;
+    p[0] = (BYTE)(int)(CallC<double>(FUN_4cca70) * g_worobj64c458);
+    p[1] = (BYTE)(int)(CallC<double>(FUN_4cca70) * g_worobj64c458);
+    p[2] = (BYTE)(int)(CallC<double>(FUN_4cca70) * g_worobj64c458);
+    F(int, Worobj_Current(s), 32) |= 0x1000;
+    CallThis(FUN_59a9a0, s, a, b);
+    F(int, Worobj_Current(s), 32) &= ~0x1000;
+}
+
+// [$L_59da00] palette entries 780.. (three colors) scaled by one random value (factors at 650f3c..650f58)
+extern "C" int __fastcall Worobj_59da00(BYTE* s)
+{
+    float v = (float)CallC<double>(FUN_4cca70);
+    const float* k = (const float*)g_worobj650f3c;  // 650f3c..650f58: k[0]..k[7]
+    BYTE* p = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, F(BYTE*, s, 32), 12)) + 780;
+    p[0] = (BYTE)(int)((double)v * k[7]);
+    BYTE g = (BYTE)(int)((double)v * k[6]);
+    p[1] = g;
+    p[2] = (BYTE)(int)((double)v * k[5]);
+    p = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, F(BYTE*, s, 32), 12)) + 783;
+    p[0] = (BYTE)(int)((double)v * k[4]);
+    p[1] = g;
+    p[2] = (BYTE)(int)((double)v * k[3]);
+    p = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, F(BYTE*, s, 32), 12)) + 786;
+    p[0] = (BYTE)(int)((double)v * k[2]);
+    p[1] = (BYTE)(int)((double)v * k[1]);
+    p[2] = (BYTE)(int)((double)v * k[0]);
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
