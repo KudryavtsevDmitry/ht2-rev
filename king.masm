@@ -1385,6 +1385,10 @@ PUBLIC $L_64e160, $L_677794, $L_6777ac, $L_6777c4
 PUBLIC $L_64e890, $L_64e8d0, $L_676e8c, $L_676ea4, $L_676eac, $L_676ebc
 PUBLIC $L_676ec4, $L_676ecc, $L_676ed4, $L_676edc, $L_676ee4, $L_676eec
 PUBLIC $L_676f04, $L_677ab8, $L_677abc, $L_677ac4, $L_677ad8, $L_6ce400
+PUBLIC $L_67782c, $L_677834, $L_67783c, $L_677844, $L_67784c, $L_677854
+PUBLIC $L_677868, $L_67787c, $L_677890, $L_6778a4, $L_6778b8, $L_6778cc
+PUBLIC $L_6778e0, $L_6778f4, $L_677908, $L_67791c, $L_677930, $L_677944
+PUBLIC $L_677958, $L_67796c, $L_677980
 
 ;===================================
 _TEXT SEGMENT
@@ -492698,6 +492702,8 @@ $L_51ee04           BYTE ($L_51edf4-$L_51edf4)/4
             nop
 $L_51ed30 ENDP
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51eea0 PROC
 
             push -1
@@ -493118,6 +493124,10 @@ $L_51f1df::
             add ESP,16
             ret 4
 FUN_51eea0 ENDP
+ELSE
+EXTERN @ShellViewer51eea0_Construct@12:PROC
+FUN_51eea0 TEXTEQU <@ShellViewer51eea0_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_51f340 PROC
