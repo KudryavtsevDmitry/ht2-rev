@@ -1024,7 +1024,7 @@ extern "C" void __fastcall ConGroup_Destroy(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors, destructors and setup (exception frames dropped).
 
-ASM_PROC(FUN_5be700)
+extern "C" void FUN_5be700(); KING_ALIAS("_FUN_5be700", "@ScrollBar_Construct@24")
 extern "C" void FUN_5bdbf0(); KING_ALIAS("_FUN_5bdbf0", "@Ctl_AddChild@16")
 #include <string.h>
 ASM_VAR(AsmLabel, g_con6518b0, $L_6518b0)
@@ -1099,5 +1099,34 @@ extern "C" BYTE* __fastcall ListBox_Construct(BYTE* s, void*, const char* name, 
     F(int, s, 320) = F(int, s, 52) - F(int, s, 44) - 1;
     F(int, s, 344) = 5;
     F(int, s, 348) = 0;
+    return s;
+}
+
+// ---------------------------------------------------------------------------
+// Scroll bar construction and chat (exception frames dropped).
+
+extern "C" void FUN_5bf820(); KING_ALIAS("_FUN_5bf820", "@Button_ConstructId@20")
+ASM_VAR(AsmLabel, g_con651804, $L_651804)
+ASM_VAR(AsmLabel, g_con6517d0, $L_6517d0)
+
+// [FUN_5be700] constructor (name, id, b, kind): a scroll bar (vtable 651804) with its three buttons (FUN_5bf820, parts 0-2)
+extern "C" BYTE* __fastcall ScrollBar_Construct(BYTE* s, void*, const char* name, int id, int b, int kind)
+{
+    Control_Construct(s, 0, name, id);
+    F(int, s, 288) = 0;
+    F(int, s, 292) = 0;
+    F(void*, s, 0) = g_con651804;
+    F(int, s, 328) = kind;
+    for (int k = 0; k < 3; k++) {
+        BYTE* m = (BYTE*)operator new(288);
+        if (m) {
+            CallThis(FUN_5bf820, m, (BYTE*)g_con68d1c0, b, k);
+            F(void*, m, 0) = g_con6517d0;
+        }
+        CallThis(FUN_5bdbf0, s, m, 0);
+    }
+    F(int, s, 324) = -1;
+    F(int, s, 340) = 1;
+    F(BYTE, s, 24) = 1;
     return s;
 }
