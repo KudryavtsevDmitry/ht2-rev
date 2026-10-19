@@ -2089,3 +2089,36 @@ extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b)
     F(int, s, 428) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scroll bar construction and chat (exception frames dropped).
+
+extern "C" void FUN_6021d0(); KING_ALIAS("_FUN_6021d0", "_Dp_SendTo")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+typedef BYTE (__cdecl* MedChatFn)(const char*, int);
+
+// [FUN_5c5450] (-, text): in a network game (707f6c +420 == 2) the chat text (at most 64 characters) is sent
+extern "C" int __fastcall Media_SendChat(BYTE* s, void*, int, const char* text)
+{
+    if (F(int, g_med707f6c, 420) != 2)
+        return 1;
+    BYTE pkt[32];
+    CallThis(FUN_602be0, pkt);
+    size_t n = strlen(text);
+    if (n > 64) {
+        CallThis(FUN_602e80, pkt);
+        return 0;
+    }
+    int id = F(int, g_med707f6c, 440);
+    BYTE d[80];
+    MedChatFn fn = F(MedChatFn, s, 444);
+    d[1] = fn ? fn(text, id) : 255;
+    F(int, g_med707f6c, 440)++;
+    d[0] = (BYTE)id;
+    memcpy(d + 2, text, n + 1);
+    CallThis(FUN_603110, pkt, 901, d, (int)n + 3);
+    CallC(FUN_6021d0, F(int, s, 408), F(BYTE*, pkt, 4), F(BYTE*, pkt, 8) - F(BYTE*, pkt, 4));
+    CallThis(FUN_602e80, pkt);
+    return 1;
+}

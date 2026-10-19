@@ -1333,6 +1333,7 @@ PUBLIC $L_64c1f0, $L_6504f4, $L_6504f8, $L_650544, $L_6518b0, $L_67266c
 PUBLIC $L_672678, $L_67273c, $L_672750, $L_67275c, $L_672778, $L_67e940
 PUBLIC $L_67f87c, $L_67f888, $L_67f890, $L_682f40, $L_696240, $L_6ceca8
 PUBLIC $L_707f70
+PUBLIC $L_6517d0, $L_651804
 
 ;===================================
 _TEXT SEGMENT
@@ -734978,6 +734979,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5be700 PROC
 
             push -1
@@ -735107,6 +735110,10 @@ $L_5be80f::
             add ESP,16
             ret 16
 FUN_5be700 ENDP
+ELSE
+EXTERN @ScrollBar_Construct@24:PROC
+FUN_5be700 TEXTEQU <@ScrollBar_Construct@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -748490,6 +748497,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c5450 PROC
 
             push -1
@@ -748622,6 +748631,10 @@ $L_5c5592::
             add ESP,176
             ret 8
 FUN_5c5450 ENDP
+ELSE
+EXTERN @Media_SendChat@16:PROC
+FUN_5c5450 TEXTEQU <@Media_SendChat@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
