@@ -2079,7 +2079,7 @@ void __fastcall Effect4bc950_Attach(BYTE* self, void*, BYTE* a)
 }
 
 extern "C" void FUN_4c1790(); KING_ALIAS("_FUN_4c1790", "@EffectLink_Init@8")
-ASM_PROC(FUN_43fc40)    // vehicle info by id (id, info)
+extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")    // vehicle info by id (id, info)
 ASM_PROC(FUN_4ebd00)
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
 ASM_VAR(char, gv64c604, $L_64c604)
@@ -2998,7 +2998,7 @@ extern "C" void __cdecl Fx_CrashBurst(Vec3 p, Vec3 v, Vec3 w, int flags, float s
     }
 }
 
-ASM_PROC(FUN_43fc40)    // a vehicle's info by id (id, out)
+extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")    // a vehicle's info by id (id, out)
 extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    // sets a vehicle's flags (id, flags)
 ASM_PROC(FUN_4cf080)
 extern "C" void __fastcall Car_SetInMode(BYTE* car, void*, int mode);
