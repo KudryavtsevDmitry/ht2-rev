@@ -86,7 +86,7 @@ extern "C" void FUN_59c420(); KING_ALIAS("_FUN_59c420", "@Effect59c420_Construct
 extern "C" void FUN_59d4a0(); KING_ALIAS("_FUN_59d4a0", "@Effect59d4a0_Construct@28")
 ASM_PROC(FUN_4d9460)
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
@@ -3134,7 +3134,7 @@ extern "C" double __cdecl Fx_TurnRate(Bytes32 pos, double d, int id, int back)
 }
 
 extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")    // the scene object base destructor
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 ASM_VAR(char, vt_64c90c, $L_64c90c)
 ASM_VAR(char, vt_64d49c, $L_64d49c)
 ASM_VAR(char, vt_64d4c8, $L_64d4c8)

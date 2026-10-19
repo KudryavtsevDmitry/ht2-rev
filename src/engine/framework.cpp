@@ -2085,7 +2085,7 @@ extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
 extern "C" void FUN_5d8850(); KING_ALIAS("_FUN_5d8850", "@Window_Destroy@4")
 extern "C" void FUN_5d8b30(); KING_ALIAS("_FUN_5d8b30", "@Fw5d8b30_Destroy@4")
 extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
-ASM_PROC(FUN_5ddb40)
+extern "C" void FUN_5ddb40(); KING_ALIAS("_FUN_5ddb40", "@MainView_Destroy@4")
 ASM_PROC(FUN_5dd2d0)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
@@ -2535,4 +2535,84 @@ extern "C" BYTE* __fastcall RoomWindow_Construct(BYTE* s, void*, int a, int b, i
         F(int, s, o) = 0;
     F(int, s, 488) = c;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+extern "C" void FUN_5d8af0(); KING_ALIAS("_FUN_5d8af0", "@FrameWindow_Construct@28")
+extern "C" void FUN_5bfde0(); KING_ALIAS("_FUN_5bfde0", "@Panel_ConstructRect@44")
+extern "C" void FUN_5e44a0(); KING_ALIAS("_FUN_5e44a0", "@ResRef_Release@8")
+extern "C" void FUN_5e0150(); KING_ALIAS("_FUN_5e0150", "@Fw_Close5e0150@8")
+extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
+ASM_PROC(FUN_5b9520)
+extern "C" void FUN_5d3560(); KING_ALIAS("_FUN_5d3560", "@Owner_Clear@8")
+extern "C" void FUN_5e4eb0(); KING_ALIAS("_FUN_5e4eb0", "@Resources_FreeTables@8")
+ASM_VAR(AsmLabel, g_fra68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_fra652310, $L_652310)
+
+// [FUN_5d8900] constructor (a1, rect a2..a5, a6, a7, a8): a window with its control group (+64, vtable 6521b0)
+extern "C" BYTE* __fastcall ControlWindow_Construct(BYTE* s, void*, int a1, int a2, int a3, int a4, int a5, int a6, int a7, int a8)
+{
+    CallThis(FUN_5d8af0, s, a1, a2, a3, a4, a5);
+    BYTE* g = s + 64;
+    CallThis(FUN_5bfde0, g, (BYTE*)g_fra68d1c0, a6, a7, 4, a2, a3, a4, a5, a8);
+    F(void*, s, 0) = g_fra6521f0;
+    F(void*, g, 0) = g_fra6521b0;
+    F(BYTE*, s, 56) = s ? g : 0;
+    F(int, F(BYTE*, s, 56), 44) = 0;
+    F(int, F(BYTE*, s, 56), 48) = 0;
+    F(int, F(BYTE*, s, 56), 52) = F(WORD, F(BYTE*, s, 12), 0);
+    F(int, F(BYTE*, s, 56), 56) = F(WORD, F(BYTE*, s, 12), 2);
+    return s;
+}
+
+// [FUN_5d9cf0] constructor (a, b, view): the main room window with the view's room data (20992 bytes)
+extern "C" BYTE* __fastcall MainRoomWindow_Construct(BYTE* s, void*, int a, int b, BYTE* view)
+{
+    CallThis(FUN_5d8710, s, a, b, F(int, g_fw721750, 268) & 0x4000);
+    F(void*, s, 0) = g_fra65229c;
+    F(int, s, 484) = 0;
+    F(int, s, 520) = 0;
+    BYTE* m = (BYTE*)operator new(20992);
+    if (m) {
+        CallThis(FUN_5ed970, m, F(int, s, 12));
+        F(BYTE*, m, 20976) = view;
+        F(void*, m, 0) = g_fra652280;
+        F(BYTE*, m, 20984) = view;
+    }
+    F(int, s, 16) |= 3;
+    static const int zero[] = {512, 496, 504, 468, 488, 536, 532, 528, 524, 456, 460, 480, 476, 516, 500, 508};
+    for (int o : zero)
+        F(int, s, o) = 0;
+    F(BYTE*, s, 464) = m;
+    F(BYTE*, s, 472) = view + 2720;
+    return s;
+}
+
+// [FUN_5ddb40] the main view (vtable 652310): waits for its loader thread (+484) to end, then its parts
+extern "C" void __fastcall MainView_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_fra652310;
+    BYTE* t = F(BYTE*, s, 484);
+    if (t && F(int, t, 20)) {
+        while (!F(int, F(BYTE*, s, 484), 16))
+            Sleep(10);
+        CallThis(FUN_5e44a0, F(BYTE*, s, 484));
+    }
+    CallThis(FUN_5e0150, s);
+    if (F(BYTE*, s, 3912))
+        CallVirt(F(BYTE*, s, 3912), 0, 1);
+    if (F(void*, s, 640))
+        operator delete(F(void*, s, 640));
+    BYTE* p = F(BYTE*, s, 2864);
+    if (p) {
+        CallThis(FUN_5bc2f0, p);
+        operator delete(p);
+    }
+    CallThis(FUN_5b9520, s + 3096);
+    CallThis(FUN_5d3560, s + 2992);
+    F(void*, s, 2720) = g_fra64d81c;
+    CallThis(FUN_5e4eb0, s + 704);
+    CallThis(FUN_5da790, s);
 }

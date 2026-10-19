@@ -654,7 +654,7 @@ extern "C" void FUN_5bad90(); KING_ALIAS("_FUN_5bad90", "@Texture_SetPixels@20")
 extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
 extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
-ASM_PROC(FUN_5f1a70)
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 extern "C" void Wea_VecDtor(); KING_ALIAS("_Wea_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 ASM_VAR(AsmLabel, g_wea651390, $L_651390)
 ASM_VAR(AsmLabel, g_wea6513b0, $L_6513b0)
@@ -709,4 +709,46 @@ extern "C" void __fastcall Wea5a7310_Destroy(BYTE* s)
     operator delete(F(void*, s, 64));
     CallThis(FUN_5e5840, s + 68);
     CallThis(FUN_5f1a70, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and messages (exception frames dropped).
+
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+ASM_VAR(AsmLabel, s_wea67e94c, $L_67e94c)
+ASM_VAR(AsmLabel, g_wea6514f4, $L_6514f4)
+
+// [FUN_5a5790] constructor (world, name, a..f): the weather (vtable 6514f4) registered with the world
+extern "C" BYTE* __fastcall Weather_Construct(BYTE* s, void*, BYTE* w, int name, int a, int b, int c, int d, int e, int f)
+{
+    CallThis(FUN_5d31e0, s, name, (const char*)s_wea67e94c);
+    F(int, s, 124) = a;
+    F(int, s, 128) = b;
+    F(int, s, 132) = c;
+    F(int, s, 136) = d;
+    F(int, s, 140) = e;
+    F(DWORD, s, 112) = 1293080650;
+    F(DWORD, s, 80) = 1431655765;
+    F(DWORD, s, 88) = 1202590843;
+    F(DWORD, s, 72) = 0;
+    F(void*, s, 0) = g_wea6514f4;
+    F(BYTE*, s, 32) = w;
+    F(int, s, 144) = f;
+    F(int, s, 164) = 0;
+    F(DWORD, s, 116) = 1073291771;
+    F(int, s, 120) = 1;
+    F(DWORD, s, 84) = 1070945621;
+    F(DWORD, s, 92) = 1072724705;
+    F(DWORD, s, 76) = 1072693248;
+    F(int, s, 96) = 200;
+    F(int, s, 100) = 100;
+    F(int, s, 168) = 0;
+    CallThis(FUN_5d3570, w + 2992, s);
+    static const int zero[] = {56, 48, 176, 184, 60, 52, 156, 180, 152, 188};
+    for (int o : zero)
+        F(int, s, o) = 0;
+    F(int, s, 104) = 30;
+    F(int, s, 108) = 97;
+    return s;
 }
