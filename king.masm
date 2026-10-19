@@ -1,4 +1,3 @@
-PUBLIC $L_42a1c0, $L_42a2c0, $L_42a3f0
 PUBLIC $L_684a20
 PUBLIC $L_7242a0
 PUBLIC $L_724378
@@ -1198,6 +1197,8 @@ PUBLIC $L_66e1f0, $L_66e1fc, $L_66e208, $L_66e218, $L_66e224, $L_66e234
 PUBLIC $L_66e248, $L_66e25c, $L_66e278, $L_66e28c, $L_66e2a0, $L_66e2b0
 PUBLIC $L_66e2cc, $L_66e2e0, $L_66e2f0, $L_66e300, $L_66e310, $L_66e320
 PUBLIC $L_66e330, $L_66e340, $L_66e34c, $L_66e35c, $L_68d108
+PUBLIC $L_64b730, $L_64b758, $L_64b848, $L_64b850, $L_64b858, $L_66dbd8
+PUBLIC $L_66dbe8
 
 ;===================================
 _TEXT SEGMENT
@@ -70725,6 +70726,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_429fb0 PROC
 
             push EBP
@@ -70868,6 +70871,10 @@ $L_42a10f::
             pop EBP
             ret 
 $L_429fb0 ENDP
+ELSE
+EXTERN _Task_OrdersExpired:PROC
+$L_429fb0 TEXTEQU <_Task_OrdersExpired>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -70880,6 +70887,8 @@ $L_429fb0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_42a120 PROC
 
             push EBP
@@ -71277,6 +71286,16 @@ $L_42a4a3::
             pop EBP
             ret 
 $L_42a120 ENDP
+ELSE
+EXTERN _Task_PresentOrdersExpired:PROC
+$L_42a120 TEXTEQU <_Task_PresentOrdersExpired>
+EXTERN _Task_DropOldPresents:PROC
+$L_42a1c0 TEXTEQU <_Task_DropOldPresents>
+EXTERN _Task_DropOldRacePresents:PROC
+$L_42a2c0 TEXTEQU <_Task_DropOldRacePresents>
+EXTERN _Task_FarSounds:PROC
+$L_42a3f0 TEXTEQU <_Task_FarSounds>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
