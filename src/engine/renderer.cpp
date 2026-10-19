@@ -29,7 +29,7 @@ ASM_VAR(int, g_transformSerial, $L_67ef88)
 ASM_VAR(int, g_720904, $L_720904)
 ASM_PROC(FUN_5b3a40)
 ASM_PROC(FUN_5b42c0)
-ASM_PROC(FUN_6037e0)
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 ASM_PROC(FUN_5ad780)
 ASM_PROC(FUN_5ad970)
 ASM_VAR(AsmLabel, g_dtor5baa30, $L_5baa30)
@@ -1517,5 +1517,73 @@ extern "C" long __fastcall Rn_DrawIndexedStrided(BYTE* self, void*, BYTE* mat, i
     if (hr)
         CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
     return hr;
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5af000)
+extern "C" void FUN_5e9480(); KING_ALIAS("_FUN_5e9480", "_Data_Read5e9690")
+ASM_PROC(FUN_5e9690)
+ASM_PROC(FUN_5b9520)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+extern "C" void FUN_5bad10(); KING_ALIAS("_FUN_5bad10", "@Texture_Release@8")
+ASM_VAR(AsmLabel, g_vt65176c, $L_65176c)
+
+// [FUN_5b39a0] passes v through 5af000 with each of the n (+8244) 16-byte records at +7904; 0 when one returns 0
+extern "C" int __fastcall Rn_Chain5af000(BYTE* self, void*, int a, int v, int c)
+{
+    BYTE* r = self + 7904;
+    for (int i = 0; i < F(int, self, 8244); i++, r += 16)
+    {
+        v = CallThis<int>(FUN_5af000, self, a, v, c, r);
+        if (!v)
+            return 0;
+    }
+    return v;
+}
+
+// [FUN_5bbe10] loads the texture's data once (flag 4 set, 1 not): from its file (+0) or, without one, the +20 bytes of +24 into a new +12-byte buffer
+extern "C" int __fastcall Texture_LoadData(BYTE* self, void*)
+{
+    DWORD f = F(DWORD, self, 28);
+    if (!(f & 4) || (f & 1))
+        return 0;
+    if (F(void*, self, 0))
+    {
+        CallC(FUN_5e9480, self, F(void*, self, 0));
+        F(DWORD, self, 28) |= 1;
+        return 0;
+    }
+    if (F(int, self, 20) && !(f & 0x200))
+    {
+        F(void*, self, 16) = operator new(F(int, self, 12));
+        CallC(FUN_5e9690, self, F(void*, self, 24), F(int, self, 20));
+    }
+    F(DWORD, self, 28) |= 1;
+    return 0;
+}
+
+// [FUN_5bbca0] the texture's destructor body
+extern "C" void __fastcall Texture_Destruct(BYTE* self, void*)
+{
+    F(void*, self, 0) = g_vt65176c;
+    if (F(void*, self, 8) && !(F(BYTE, self, 52) & 4))
+    {
+        operator delete(F(void*, self, 8));
+        F(void*, self, 8) = 0;
+        if (F(void*, self, 12))
+            operator delete(F(void*, self, 12));
+    }
+    BYTE* p = F(BYTE*, self, 16);
+    if (p)
+    {
+        CallThis(FUN_5b9520, p);
+        operator delete(p);
+    }
+    if (F(void*, self, 4))
+        operator delete(F(void*, self, 4));
+    if (F(void*, self, 28))
+        CallC(FUN_5e48f0, F(void*, self, 28));
+    CallThis(FUN_5bad10, self);
 }
 

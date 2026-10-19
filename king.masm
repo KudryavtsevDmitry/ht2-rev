@@ -1251,6 +1251,8 @@ PUBLIC $L_696c4c, $L_696c50, $L_696c54, $L_696c60, $L_696c64
 PUBLIC $L_6741e0, $L_6741e4, $L_6746e4, $L_67fb5c, $L_67fb80, $L_67fb84
 PUBLIC $L_6974d4, $L_6cf3a0, $L_6cf3a4, $L_6ef24c, $L_6ef250, $L_6f6634
 PUBLIC $L_702f4c, $L_720068
+PUBLIC $L_673340, $L_673d20, $L_678480, $L_67a298, $L_67a3c4, $L_67f6e8
+PUBLIC $L_67f70c, $L_67f728, $L_696cb8, $L_696cbc
 
 ;===================================
 _TEXT SEGMENT
@@ -168447,6 +168449,8 @@ $L_460759::
             nop
 $L_460710 ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_460770 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -168509,6 +168513,10 @@ $L_4607c1::
             pop EBX
             ret 
 FUN_460770 ENDP
+ELSE
+EXTERN _Ptrs_FindName:PROC
+FUN_460770 TEXTEQU <_Ptrs_FindName>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -247583,6 +247591,8 @@ $L_489568::
             nop
 FUN_4890b0 ENDP
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_4895b0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -247636,6 +247646,10 @@ $L_4895eb::
             nop
             nop
 FUN_4895b0 ENDP
+ELSE
+EXTERN @Rt_ReadFile@12:PROC
+FUN_4895b0 TEXTEQU <@Rt_ReadFile@12>
+ENDIF
 $L_489600 PROC
 
             sub ESP,8
@@ -376379,10 +376393,15 @@ FUN_4d2970 PROC
             nop
 FUN_4d2970 ENDP
 ALIGN 16
+IFDEF ASM_EFFECTS
 FUN_4d2980 PROC
 
             jmp FUN_4f2f60
 FUN_4d2980 ENDP
+ELSE
+EXTERN @Wheels_MinGrip@8:PROC
+FUN_4d2980 TEXTEQU <@Wheels_MinGrip@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -402157,6 +402176,8 @@ $L_4e352f::
             pop EBP
             ret 
 $L_4e3497 ENDP
+; src/world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e3537 PROC
 
             push EBP
@@ -402222,6 +402243,10 @@ FUN_4e3537 PROC
             pop EBP
             ret 
 FUN_4e3537 ENDP
+ELSE
+EXTERN _Matrix_FromPosAngles:PROC
+FUN_4e3537 TEXTEQU <_Matrix_FromPosAngles>
+ENDIF
 FUN_4e35cf PROC
 
             push EBP
@@ -405657,6 +405682,8 @@ EXTERN _Query_4e560a:PROC
 FUN_4e560a TEXTEQU <_Query_4e560a>
 ENDIF
 ALIGN 8
+; src/world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e5698 PROC
 
             push EBP
@@ -405710,6 +405737,10 @@ FUN_4e5698 PROC
             pop EBP
             ret 
 FUN_4e5698 ENDP
+ELSE
+EXTERN _Obj_TransformVecs:PROC
+FUN_4e5698 TEXTEQU <_Obj_TransformVecs>
+ENDIF
 ; world: src\truck\world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
 FUN_4e570f PROC
@@ -406290,6 +406321,8 @@ ELSE
 EXTERN _Query_HitObject:PROC
 FUN_4e5ba7 TEXTEQU <_Query_HitObject>
 ENDIF
+; src/world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e5bf5 PROC
 
             push EBP
@@ -406354,6 +406387,10 @@ $L_4e5c73::
             pop EBP
             ret 
 FUN_4e5bf5 ENDP
+ELSE
+EXTERN _Obj_Lookup4e5b22:PROC
+FUN_4e5bf5 TEXTEQU <_Obj_Lookup4e5b22>
+ENDIF
 ; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
 FUN_4e5c77 PROC
@@ -406459,6 +406496,8 @@ EXTERN _Model_FindPart1:PROC
 FUN_4e5c77 TEXTEQU <_Model_FindPart1>
 ENDIF
 ALIGN 16
+; src/world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e5d60 PROC
 
             push EBP
@@ -406507,6 +406546,10 @@ $L_4e5dca::
             pop EBP
             ret 
 FUN_4e5d60 ENDP
+ELSE
+EXTERN _Obj_FindPart673d20:PROC
+FUN_4e5d60 TEXTEQU <_Obj_FindPart673d20>
+ENDIF
 ALIGN 2
 ; src/world.cpp, nmake ASM_WORLD=1 assembles the original
 IFDEF ASM_WORLD
@@ -438142,6 +438185,8 @@ $L_4fc998           DWORD $L_4fc944
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+IFDEF ASM_VEHICLE_PHYSICS
 FUN_4fc9b0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -438187,6 +438232,10 @@ $L_4fca09::
             pop ESI
             ret 20
 FUN_4fc9b0 ENDP
+ELSE
+EXTERN @Body_SetControlMode@28:PROC
+FUN_4fc9b0 TEXTEQU <@Body_SetControlMode@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -459825,6 +459874,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50ba90 PROC
 
             sub ESP,160
@@ -459873,6 +459924,10 @@ $L_50bac0::
             add ESP,160
             ret 
 FUN_50ba90 ENDP
+ELSE
+EXTERN _Rec128_Combine:PROC
+FUN_50ba90 TEXTEQU <_Rec128_Combine>
+ENDIF
 $L_50bb00 PROC
 
             jmp $L_50bb10
@@ -509168,10 +509223,15 @@ FUN_529890 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+IFDEF ASM_GAME_SHELL
 $L_52abe0 PROC
 
             jmp FUN_602bd0
 $L_52abe0 ENDP
+ELSE
+EXTERN _Gate_602bd0:PROC
+$L_52abe0 TEXTEQU <_Gate_602bd0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -509769,6 +509829,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52afa0 PROC
 
             sub ESP,200
@@ -509825,6 +509887,10 @@ $L_52b01f::
             add ESP,200
             ret 
 FUN_52afa0 ENDP
+ELSE
+EXTERN @Part_Release@8:PROC
+FUN_52afa0 TEXTEQU <@Part_Release@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -520398,6 +520464,8 @@ FUN_531950 PROC
 FUN_531950 ENDP
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_5319f0 PROC
 
             push ESI
@@ -520457,6 +520525,10 @@ $L_531a92::
             pop ESI
             ret 
 FUN_5319f0 ENDP
+ELSE
+EXTERN @Player_DetachCar@8:PROC
+FUN_5319f0 TEXTEQU <@Player_DetachCar@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -557784,6 +557856,8 @@ $L_54c8d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_54c950 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -557839,6 +557913,10 @@ $L_54c9c1::
             add ESP,400
             ret 8
 FUN_54c950 ENDP
+ELSE
+EXTERN @Car_NamePart@16:PROC
+FUN_54c950 TEXTEQU <@Car_NamePart@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -567594,6 +567672,8 @@ $L_55465c           DWORD $L_553604
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_554670 PROC
 
             push EBX
@@ -567659,6 +567739,10 @@ $L_554706::
             pop EBX
             ret 
 FUN_554670 ENDP
+ELSE
+EXTERN @Car_ApplyPlacement@8:PROC
+FUN_554670 TEXTEQU <@Car_ApplyPlacement@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -569755,6 +569839,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555b70 PROC
 
             push EDI
@@ -569822,6 +569908,10 @@ $L_555bef::
             pop EDI
             ret 4
 FUN_555b70 ENDP
+ELSE
+EXTERN @Car_PassItems11@12:PROC
+FUN_555b70 TEXTEQU <@Car_PassItems11@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_555c20 PROC
@@ -569869,6 +569959,8 @@ FUN_555c20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555c80 PROC
 
             push ESI
@@ -569923,6 +570015,10 @@ $L_555ce7::
             pop ESI
             ret 4
 FUN_555c80 ENDP
+ELSE
+EXTERN @Car_PassItems3@12:PROC
+FUN_555c80 TEXTEQU <@Car_PassItems3@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -572425,10 +572521,15 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_VEHICLE
 FUN_5573f0 PROC
 
             jmp FUN_555500
 FUN_5573f0 ENDP
+ELSE
+EXTERN @Car_555500@8:PROC
+FUN_5573f0 TEXTEQU <@Car_555500@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -711740,6 +711841,8 @@ $L_5b3990 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b39a0 PROC
 
             push EBX
@@ -711790,6 +711893,10 @@ $L_5b39ec::
             pop EBX
             ret 12
 FUN_5b39a0 ENDP
+ELSE
+EXTERN @Rn_Chain5af000@20:PROC
+FUN_5b39a0 TEXTEQU <@Rn_Chain5af000@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -716203,10 +716310,15 @@ FUN_5b6530 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_RENDERER
 FUN_5b6700 PROC
 
             jmp FUN_5b64c0
 FUN_5b6700 ENDP
+ELSE
+EXTERN @Window_RootSurface@8:PROC
+FUN_5b6700 TEXTEQU <@Window_RootSurface@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -726203,6 +726315,8 @@ $L_5bbc6e::
             ret 8
 FUN_5bbbf0 ENDP
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5bbca0 PROC
 
             push ESI
@@ -726271,6 +726385,10 @@ $L_5bbd0f::
             pop ESI
             ret 
 FUN_5bbca0 ENDP
+ELSE
+EXTERN @Texture_Destruct@8:PROC
+FUN_5bbca0 TEXTEQU <@Texture_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -726434,6 +726552,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5bbe10 PROC
 
             push ESI
@@ -726493,6 +726613,10 @@ $L_5bbe6d::
             pop ESI
             ret 
 FUN_5bbe10 ENDP
+ELSE
+EXTERN @Texture_LoadData@8:PROC
+FUN_5bbe10 TEXTEQU <@Texture_LoadData@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -728597,6 +728721,8 @@ $L_5bd252::
 FUN_5bcff0 ENDP
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5bd260 PROC
 
             push ESI
@@ -728660,6 +728786,10 @@ $L_5bd2ba::
             pop ESI
             ret 4
 FUN_5bd260 ENDP
+ELSE
+EXTERN @Chain_AddControl@12:PROC
+FUN_5bd260 TEXTEQU <@Chain_AddControl@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -729622,6 +729752,8 @@ FUN_5bd940 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5bda20 PROC
 
             push ESI
@@ -729689,6 +729821,10 @@ $L_5bda7e::
             pop ESI
             ret 8
 FUN_5bda20 ENDP
+ELSE
+EXTERN @Ctl_Contains@16:PROC
+FUN_5bda20 TEXTEQU <@Ctl_Contains@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -739449,6 +739585,8 @@ FUN_5c2800 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c29d0 PROC
 
             mov EAX,DWORD PTR [$L_702fa0]
@@ -739519,6 +739657,10 @@ $L_5c2a44::
             pop ESI
             ret 
 FUN_5c29d0 ENDP
+ELSE
+EXTERN _Media_Start:PROC
+FUN_5c29d0 TEXTEQU <_Media_Start>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -746091,6 +746233,8 @@ $L_5c6060 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c6080 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -746139,6 +746283,10 @@ FUN_5c6080 PROC
             pop ESI
             ret 8
 FUN_5c6080 ENDP
+ELSE
+EXTERN @Item_Register@16:PROC
+FUN_5c6080 TEXTEQU <@Item_Register@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -767424,10 +767572,15 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_CORE
 FUN_5d3560 PROC
 
             jmp FUN_5d3460
 FUN_5d3560 ENDP
+ELSE
+EXTERN @Owner_Clear@8:PROC
+FUN_5d3560 TEXTEQU <@Owner_Clear@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -768969,10 +769122,15 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_VIDEO_MODE
 FUN_5d3fd0 PROC
 
             jmp FUN_5d8260
 FUN_5d3fd0 ENDP
+ELSE
+EXTERN _Dd_Release:PROC
+FUN_5d3fd0 TEXTEQU <_Dd_Release>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -777868,6 +778026,8 @@ $L_5d8360 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 FUN_5d8460 PROC
 
             mov ECX,DWORD PTR [$L_720908]
@@ -777931,6 +778091,10 @@ $L_5d852b::
             add ESP,208
             ret 
 FUN_5d8460 ENDP
+ELSE
+EXTERN _Dd_ChooseTextureFormat:PROC
+FUN_5d8460 TEXTEQU <_Dd_ChooseTextureFormat>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -787649,6 +787813,8 @@ $L_5dd710 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5dd720 PROC
 
             xor EAX,EAX
@@ -787716,6 +787882,10 @@ FUN_5dd720 PROC
             mov DWORD PTR [ECX+648],EAX
             ret 
 FUN_5dd720 ENDP
+ELSE
+EXTERN @Window_ResetState@8:PROC
+FUN_5dd720 TEXTEQU <@Window_ResetState@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -806378,6 +806548,8 @@ $L_5e7eb4           DWORD $L_5e79e5
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e7ed0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -806427,6 +806599,10 @@ $L_5e7ef5::
             nop
             nop
 FUN_5e7ed0 ENDP
+ELSE
+EXTERN _Data_Read5e8160:PROC
+FUN_5e7ed0 TEXTEQU <_Data_Read5e8160>
+ENDIF
 ALIGN 16
 FUN_5e7f20 PROC
 
@@ -808883,6 +809059,8 @@ FUN_5e9360 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e9420 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -808928,6 +809106,10 @@ $L_5e944b::
             add ESP,36
             ret 
 FUN_5e9420 ENDP
+ELSE
+EXTERN _Data_Read5e94d0:PROC
+FUN_5e9420 TEXTEQU <_Data_Read5e94d0>
+ENDIF
 ALIGN 16
 ; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 IFDEF ASM_FRAMEWORK
@@ -818684,6 +818866,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5edf90 PROC
 
             push ESI
@@ -818731,6 +818915,10 @@ $L_5edfce::
             pop ESI
             ret 
 FUN_5edf90 ENDP
+ELSE
+EXTERN @Cluster_Set1@8:PROC
+FUN_5edf90 TEXTEQU <@Cluster_Set1@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -818796,6 +818984,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5ee020 PROC
 
             push ESI
@@ -818843,6 +819033,10 @@ $L_5ee058::
             pop ESI
             ret 
 FUN_5ee020 ENDP
+ELSE
+EXTERN @Cluster_Set2@8:PROC
+FUN_5ee020 TEXTEQU <@Cluster_Set2@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -829058,6 +829252,8 @@ $L_5f3410 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f3570 PROC
 
             push EBX
@@ -829103,6 +829299,10 @@ $L_5f35ac::
             pop EBX
             ret 8
 FUN_5f3570 ENDP
+ELSE
+EXTERN @Obj_Test@16:PROC
+FUN_5f3570 TEXTEQU <@Obj_Test@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -840537,6 +840737,8 @@ $L_5fa5d0 PROC
 $L_5fa5d0 ENDP
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fa5f0 PROC
 
             sub ESP,16
@@ -840606,6 +840808,10 @@ $L_5fa68f::
             add ESP,16
             ret 
 FUN_5fa5f0 ENDP
+ELSE
+EXTERN @Chain_MoveTo@8:PROC
+FUN_5fa5f0 TEXTEQU <@Chain_MoveTo@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -845062,6 +845268,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fcf10 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -845120,6 +845328,10 @@ $L_5fcf7f::
 
             ret 
 FUN_5fcf10 ENDP
+ELSE
+EXTERN _Sound_Stop:PROC
+FUN_5fcf10 TEXTEQU <_Sound_Stop>
+ENDIF
 ALIGN 16
 FUN_5fcf80 PROC
 
@@ -850107,10 +850319,15 @@ $L_5ffaf0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_SOUND_FILES
 FUN_5ffb10 PROC
 
             jmp FUN_603e90
 FUN_5ffb10 ENDP
+ELSE
+EXTERN @Thread_Destroy@8:PROC
+FUN_5ffb10 TEXTEQU <@Thread_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -852273,10 +852490,15 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_SOUND_GATE
 FUN_600b60 PROC
 
             jmp FUN_6037e0
 FUN_600b60 ENDP
+ELSE
+EXTERN _Tsc_Now:PROC
+FUN_600b60 TEXTEQU <_Tsc_Now>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -858246,10 +858468,15 @@ EXTERN @Bytes_Insert@16:PROC
 FUN_6035c0 TEXTEQU <@Bytes_Insert@16>
 ENDIF
 ALIGN 16
+IFDEF ASM_SOUND_GATE
 FUN_6037e0 PROC
 
             jmp FUN_603ec0
 FUN_6037e0 ENDP
+ELSE
+EXTERN _Tsc_Now:PROC
+FUN_6037e0 TEXTEQU <_Tsc_Now>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -858279,10 +858506,15 @@ FUN_6037f0 TEXTEQU <_Timer_Calibrate>
 ENDIF
           BYTE 090H
           BYTE 090H
+IFDEF ASM_SOUND_GATE
 $L_603800 PROC
 
             jmp FUN_4cef50
 $L_603800 ENDP
+ELSE
+EXTERN _Effect_Zero:PROC
+$L_603800 TEXTEQU <_Effect_Zero>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -859822,6 +860054,8 @@ EXTERN @Play_Insert@8:PROC
 FUN_604130 TEXTEQU <@Play_Insert@8>
 ENDIF
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6041b0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -859884,6 +860118,10 @@ $L_604229::
             pop ESI
             ret 
 FUN_6041b0 ENDP
+ELSE
+EXTERN _Play_Stop:PROC
+FUN_6041b0 TEXTEQU <_Play_Stop>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -862021,10 +862259,15 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+IFDEF ASM_DIRECTSOUND
 FUN_605130 PROC
 
             jmp FUN_6051b0
 FUN_605130 ENDP
+ELSE
+EXTERN _Streams_Collect:PROC
+FUN_605130 TEXTEQU <_Streams_Collect>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

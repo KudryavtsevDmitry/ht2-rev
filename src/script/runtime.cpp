@@ -1084,3 +1084,19 @@ extern "C" void __fastcall RingMember_Destruct(BYTE* self, void*) { Rt_RingUnlin
 // [FUN_491010] the same for the other ring member class
 extern "C" void __fastcall RingMember2_Destruct(BYTE* self, void*) { Rt_RingUnlink(self); }
 
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_4890b0)
+ASM_VAR(AsmLabel, s_rt6703e8, $L_6703e8)
+
+// [FUN_4895b0] reads a file through 4890b0; -1 when it can't be opened
+extern "C" int __fastcall Rt_ReadFile(BYTE* self, void*, const char* name)
+{
+    FILE* f = fopen(name, s_rt6703e8);
+    if (!f)
+        return -1;
+    int r = CallThis<int>(FUN_4890b0, self, f);
+    fclose(f);
+    return r;
+}
+

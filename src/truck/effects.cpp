@@ -54,7 +54,7 @@ ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
 ASM_VAR(BYTE*, g_world, $L_696ca0)
 ASM_VAR(unsigned, g_67b738, $L_67b738)
 
-ASM_PROC(FUN_5b6700)    // the palette of a surface
+extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")    // the palette of a surface
 extern "C" void FUN_59aea0(); KING_ALIAS("_FUN_59aea0", "@Spark59aea0_Construct@44")
 extern "C" void FUN_59bed0(); KING_ALIAS("_FUN_59bed0", "@Spark59bed0_Construct@32")
 extern "C" void FUN_59ad70(); KING_ALIAS("_FUN_59ad70", "@Spark59ad70_Construct@32")
@@ -140,7 +140,7 @@ KING_ALIAS("_Fx_Update4df0", "FUN_4c4df0")
 extern "C" void __cdecl Fx_Message(const char* text, int);
 KING_ALIAS("_Fx_Message", "_Sys_Log")
 extern "C" int __cdecl Fx_Find4e5bf5(int a, int b, int c, char* buf);
-KING_ALIAS("_Fx_Find4e5bf5", "FUN_4e5bf5")
+KING_ALIAS("_Fx_Find4e5bf5", "_Obj_Lookup4e5b22")
 extern "C" void __cdecl Fx_DefaultData(void* data);
 KING_ALIAS("_Fx_DefaultData", "_Car_ResetSetup")
 extern "C" int __cdecl Fx_Handle(int a);

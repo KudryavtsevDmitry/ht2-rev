@@ -21,7 +21,7 @@ extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // 
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5fdaf0)    // sound: play (volume, pitch)
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")    // query: constructor
-ASM_PROC(FUN_4e5698)    // query: finish a hit
+extern "C" void FUN_4e5698(); KING_ALIAS("_FUN_4e5698", "_Obj_TransformVecs")    // query: finish a hit
 
 ASM_VAR(BYTE*, g_6974c4, $L_6974c4)             // +2960 the frame time, +2968 the time (doubles)
 ASM_VAR(float, g_radToDeg, $L_6735d0)
@@ -474,7 +474,7 @@ extern "C" void __fastcall Arrays_FillLongAgo(BYTE* self, void*)
 
 extern "C" void FUN_4e5dce(); KING_ALIAS("_FUN_4e5dce", "_Model_FindPart2")    // an object's first part to query
 extern "C" void FUN_4e5c77(); KING_ALIAS("_FUN_4e5c77", "_Model_FindPart1")    // an object's other part to query
-ASM_PROC(FUN_4e5d60)
+extern "C" void FUN_4e5d60(); KING_ALIAS("_FUN_4e5d60", "_Obj_FindPart673d20")
 extern "C" void FUN_4e6362(); KING_ALIAS("_FUN_4e6362", "_Vec3_RejectFrom")
 extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);   // vecmath.cpp
 ASM_VAR(double, g_64b658, $L_64b658)            // 0.001
@@ -999,4 +999,76 @@ extern "C" void __cdecl VehLog_Value(int v) { Wd_LogValue(s_wd6741e0, v); }
 
 // [FUN_4ea2cb] writes a value to the vehicle log (format 6741e4)
 extern "C" void __cdecl VehLog_Value2(int v) { Wd_LogValue(s_wd6741e4, v); }
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_4cf5e0(); KING_ALIAS("_FUN_4cf5e0", "@Fx_Get12@8")    // an object's name
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_43f5b0(); KING_ALIAS("_FUN_43f5b0", "_Vec3_MulMatrix")
+extern "C" void FUN_4cb2b0(); KING_ALIAS("_FUN_4cb2b0", "_Vec3_RotateBy")
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" void FUN_4e5b22(); KING_ALIAS("_FUN_4e5b22", "_Query_4e5b22")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+extern "C" void FUN_5abee0(); KING_ALIAS("_FUN_5abee0", "_Matrix_RotationX")
+extern "C" void FUN_5abfd0(); KING_ALIAS("_FUN_5abfd0", "_Matrix_RotationY")
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+ASM_VAR(BYTE*, g_wd697520, $L_697520)
+ASM_VAR(BYTE*, g_wd697524, $L_697524)
+ASM_VAR(AsmLabel, g_wd697528, $L_697528)
+ASM_VAR(AsmLabel, s_wd673d20, $L_673d20)
+
+// [FUN_4e5d60] the sub-object 673d20 of an object, cached by object and name
+extern "C" BYTE* __cdecl Obj_FindPart673d20(BYTE* o)
+{
+    const char* name = CallThis<const char*>(FUN_4cf5e0, o);
+    if (g_wd697520 == o && !strcmp(g_wd697528, name))
+        return g_wd697524;
+    strcpy(g_wd697528, name);
+    g_wd697524 = CallC<BYTE*>(FUN_5ef2b0, o, (char*)s_wd673d20);
+    g_wd697520 = o;
+    return g_wd697524;
+}
+
+// [FUN_4e5698] transforms the two vectors at +52 and +64 by the matrix made from +4
+extern "C" void __cdecl Obj_TransformVecs(BYTE* o)
+{
+    BYTE m[48];
+    Vec3 t;
+    CallC(FUN_5ac2e0, m, o + 4);
+    F(Vec3, o, 52) = *CallC<Vec3*>(FUN_43f5b0, &t, o + 52, m);
+    F(Vec3, o, 64) = *CallC<Vec3*>(FUN_4cb2b0, &t, o + 64, m);
+}
+
+// [FUN_4e5bf5] looks a point up through 4e5b22 when out is empty: flag 2 returns the found object (+104), flag 4 copies its name (+124) to out, else clears out; returns a
+extern "C" int __cdecl Obj_Lookup4e5b22(int a, int b, int c, char* out)
+{
+    if (*out)
+        return a;
+    BYTE r[208];
+    CallThis(FUN_5ef5c0, r);
+    int f = CallC<int>(FUN_4e5b22, a, b, c, r);
+    if (f & 2)
+        return F(int, r, 104);
+    if (f & 4)
+        strcpy(out, (char*)r + 124);
+    else
+        *out = 0;
+    return a;
+}
+
+// [FUN_4e3537] out = translation(p) * (5abfd0(rz) * 5abee0(ry)) * 5ac0c0(rx)
+extern "C" BYTE* __cdecl Matrix_FromPosAngles(BYTE* out, Vec3 p, float rx, float ry, float rz)
+{
+    BYTE t[48], a[48], b[48], c[48], d[48], e[48];
+    void* T = CallC<void*>(FUN_5abc40, t, p);
+    void* R1 = CallC<void*>(FUN_5ac0c0, a, rx);
+    void* R2 = CallC<void*>(FUN_5abee0, b, ry);
+    void* R3 = CallC<void*>(FUN_5abfd0, c, rz);
+    void* M1 = CallC<void*>(FUN_5aba40, d, R3, R2);
+    void* M2 = CallC<void*>(FUN_5aba40, e, M1, R1);
+    CallC(FUN_5aba40, out, M2, T);
+    return out;
+}
 

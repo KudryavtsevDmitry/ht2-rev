@@ -1871,7 +1871,7 @@ extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (t
 extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void* p);
 struct GsStatStg { WCHAR* pwcsName; DWORD rest[17]; };    // STATSTG
 ASM_PROC(FUN_5b6bf0)    // surface: prepare
-ASM_PROC(FUN_5d8460)
+extern "C" void FUN_5d8460(); KING_ALIAS("_FUN_5d8460", "_Dd_ChooseTextureFormat")
 ASM_PROC($L_5d7b90)     // the video mode dialog (8 args)
 ASM_PROC($L_5d7c20)     // tries a video mode (w, h, cres, flags, 3 outs)
 ASM_PROC($L_5dd8c0)     // window: set the video mode (w, h, cres, flags)
@@ -2099,5 +2099,24 @@ extern "C" void* __cdecl Save_FindNamedStream(void* stg, const char* name, int m
     strcpy(head, name);
     ComCall(stream, 16, head, 256, &n);
     return stream;
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_50b4f0(); KING_ALIAS("_FUN_50b4f0", "@DMat_Zero@8")
+extern "C" void FUN_50b810(); KING_ALIAS("_FUN_50b810", "_DRow_MulMat")
+extern "C" void FUN_50b4c0(); KING_ALIAS("_FUN_50b4c0", "@DRow_Copy@12")
+extern "C" void FUN_50b520(); KING_ALIAS("_FUN_50b520", "@DMat_CopyNew@12")
+
+// [FUN_50ba90] out = the four 32-byte parts of a, each combined with b through 50b810
+extern "C" BYTE* __cdecl Rec128_Combine(BYTE* out, BYTE* a, int b)
+{
+    BYTE tmp[32];
+    BYTE r[128];
+    CallThis(FUN_50b4f0, r);
+    for (int i = 0; i < 4; i++)
+        CallThis(FUN_50b4c0, r + i * 32, CallC<void*>(FUN_50b810, tmp, a + i * 32, b));
+    CallThis(FUN_50b520, out, r);
+    return out;
 }
 

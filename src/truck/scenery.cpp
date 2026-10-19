@@ -679,3 +679,28 @@ extern "C" int __fastcall Scenery_Call57d580(void* self, void*, int a, int b)
     return CallThis<int>(FUN_57d580, self, a, b);
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, g_sn6cedac, $L_6cedac)          // use counts, 11 per car row
+ASM_VAR(AsmLabel, g_sn6ced98, $L_6ced98)
+ASM_VAR(AsmLabel, s_sn678480, $L_678480)
+
+// [FUN_52afa0] releases a use of the part model (row +4, column +0); the last use calls its method +36
+extern "C" void __fastcall Part_Release(BYTE* self, void*)
+{
+    int i = F(int, self, 4) * 11 + F(int, self, 0);
+    int* cnt = (int*)(char*)g_sn6cedac;
+    cnt[i]--;
+    if (!cnt[i])
+    {
+        BYTE* m = ((BYTE**)(char*)g_sn6ced98)[i];
+        if (m)
+            CallVirt(m, 36);
+    }
+    if (cnt[i] < 0)
+    {
+        char buf[200];
+        sprintf(buf, s_sn678480, F(int, self, 4), cnt[i]);
+    }
+}
+
