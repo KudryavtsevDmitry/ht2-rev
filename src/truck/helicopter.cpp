@@ -1309,7 +1309,7 @@ extern "C" BYTE* __fastcall Copter_NearestVisible(BYTE* s, void*, int a, int b)
     return 0;
 }
 
-ASM_PROC(FUN_5cf180)    // a screen object's constructor (owner, name, -)
+extern "C" void FUN_5cf180(); KING_ALIAS("_FUN_5cf180", "@MediaObj_Construct@20")    // a screen object's constructor (owner, name, -)
 ASM_PROC(FUN_5cec90)    // a gauge's constructor
 ASM_VAR(char, g_strZero, $L_67c178)      // "zero"
 ASM_VAR(char, g_vtbl64feec, $L_64feec)

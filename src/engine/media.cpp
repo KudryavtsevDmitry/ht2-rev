@@ -2122,3 +2122,46 @@ extern "C" int __fastcall Media_SendChat(BYTE* s, void*, int, const char* text)
     CallThis(FUN_602e80, pkt);
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors and surfaces (exception frames dropped).
+
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+ASM_VAR(AsmLabel, s_q20_67fa68, $L_67fa68)
+ASM_VAR(AsmLabel, g_q20_68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_q20_64c26c, $L_64c26c)
+ASM_VAR(AsmLabel, g_q20_651e80, $L_651e80)
+ASM_VAR(AsmLabel, g_q20_651e34, $L_651e34)
+ASM_VAR(AsmLabel, g_q20_7025f0, $L_7025f0)
+ASM_VAR(int, g_q20_720908, $L_720908)
+
+// [FUN_5cf180] constructor (world, name, owner): a media object (vtables 651e80, 651e34 at +32) registered with
+// its owner (or the world's +524), its entry (+156) the world room list item called name
+extern "C" BYTE* __fastcall MediaObj_Construct(BYTE* s, void*, BYTE* w, const char* name, BYTE* owner)
+{
+    CallThis(FUN_5d31e0, s, 100, (const char*)s_q20_67fa68);
+    CallThis(FUN_5f19b0, s + 32, (BYTE*)g_q20_68d1c0, 5, 1);
+    F(void*, s, 32) = g_q20_64c26c;
+    F(int, s, 88) = 0;
+    F(int, s, 92) = 0;
+    memcpy(s + 104, g_q20_7025f0, 48);
+    F(int, s, 152) = 0;
+    F(void*, s, 0) = g_q20_651e80;
+    F(void*, s, 32) = g_q20_651e34;
+    BYTE* o = owner ? owner : F(BYTE*, w, 524);
+    if (o)
+        CallVirt(o, 20, 0, s ? s + 32 : 0);
+    F(BYTE*, s, 100) = w;
+    CallThis(FUN_5d3570, w + 2992, s);
+    BYTE* l = F(BYTE*, w, 468);
+    int n = F(int, l, 72), i = 0;
+    for (; i < n; i++)
+        if (!strcmp(name, (const char*)(F(BYTE*, l, 76) + i * 124)))
+            break;
+    F(BYTE*, s, 156) = i < n ? F(BYTE*, l, 76) + i * 124 : 0;
+    F(int, s, 96) = 0;
+    F(int, s, 152) = g_q20_720908;
+    return s;
+}
