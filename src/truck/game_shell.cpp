@@ -3007,3 +3007,76 @@ extern "C" BYTE* __cdecl Shell_ButtonD(int n, int id, int x, int y)
     Shell_MoveTo(m, x, y);
     return m;
 }
+
+// ---------------------------------------------------------------------------
+// Shell window with its two arrow buttons (exception frame dropped).
+
+extern "C" void FUN_5d8900(); KING_ALIAS("_FUN_5d8900", "@ControlWindow_Construct@40")
+extern "C" void FUN_50ef60(); KING_ALIAS("_FUN_50ef60", "_Carat_MoveWindow")
+extern "C" void FUN_5bdd70(); KING_ALIAS("_FUN_5bdd70", "@Ctl_AutoSize@8")
+extern "C" void FUN_5bdbf0(); KING_ALIAS("_FUN_5bdbf0", "@Ctl_AddChild@16")
+ASM_VAR(int, g_q28_720938, $L_720938)
+ASM_VAR(int, g_q28_72093c, $L_72093c)
+ASM_VAR(int, g_q28_720940, $L_720940)
+ASM_VAR(int, g_q28_720944, $L_720944)
+ASM_VAR(int, g_q28_6ced24, $L_6ced24)
+ASM_VAR(DWORD, g_q28_6ce3ac, $L_6ce3ac)
+ASM_VAR(AsmLabel, g_q28_6ce390, $L_6ce390)
+ASM_VAR(AsmLabel, g_q28_64e118, $L_64e118)
+ASM_VAR(AsmLabel, g_q28_64e0d8, $L_64e0d8)
+ASM_VAR(AsmLabel, g_q28_64dc50, $L_64dc50)
+ASM_VAR(AsmLabel, s_q28_676c9c, $L_676c9c)
+ASM_VAR(AsmLabel, s_q28_677290, $L_677290)
+ASM_VAR(AsmLabel, s_q28_67663c, $L_67663c)
+ASM_VAR(AsmLabel, s_q28_67727c, $L_67727c)
+ASM_VAR(AsmLabel, s_q28_677274, $L_677274)
+ASM_VAR(AsmLabel, s_q28_67726c, $L_67726c)
+
+// the four styles from 6ce390 with the texture named t
+static void Shell_PlainStyles(BYTE* at, const char* t)
+{
+    g_q28_6ce3ac = CallC<DWORD>(FUN_5ef3d0, t);
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, at + k * 36, (void*)g_q28_6ce390);
+}
+static BYTE* Shell_NewPanel(int id)
+{
+    BYTE* p = (BYTE*)operator new(296);
+    if (p) {
+        CallThis(FUN_5bd5e0, p, (const char*)s_q28_67663c, id);
+        F(int, p, 288) = 0;
+        F(int, p, 292) = 0;
+        F(void*, p, 0) = g_q28_64dc50;
+    }
+    return p;
+}
+// [FUN_518480] constructor (parent): a shell window (vtables 64e118, 64e0d8 at +64) of the screen size, its
+// background and a panel at (155, 229) with the left and right arrow buttons
+extern "C" BYTE* __fastcall ShellArrows_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q28_64e118;
+    F(void*, s, 64) = g_q28_64e0d8;
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, (const char*)s_q28_676c9c);
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    Shell_PlainStyles(s + 132, (const char*)s_q28_677290);
+    BYTE* p1 = Shell_NewPanel(0);
+    BYTE* p2 = Shell_NewPanel(4);
+    Shell_PlainStyles(p2 + 68, (const char*)s_q28_67727c);
+    CallThis(FUN_5bdbf0, p2, CallC<BYTE*>(FUN_50ef60, (const char*)s_q28_677274, 153, 290, 304), 0);
+    CallThis(FUN_5bdbf0, p2, CallC<BYTE*>(FUN_50ef60, (const char*)s_q28_67726c, 154, 381, 304), 0);
+    F(int, p2, 52) += 155 - F(int, p2, 44);
+    F(int, p2, 44) = 155;
+    F(int, p2, 56) += 229 - F(int, p2, 48);
+    F(int, p2, 48) = 229;
+    CallThis(FUN_5bdd70, p2);
+    CallThis(FUN_5bdbf0, p1, p2, 0);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
+    return s;
+}
