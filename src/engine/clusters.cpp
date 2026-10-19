@@ -684,3 +684,39 @@ extern "C" int __fastcall Clu_5edc70(BYTE* s)
         CallThis(FUN_5fd350, F(BYTE**, s, 76)[i]);
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+typedef void (*CluFn)();
+extern "C" void FUN_5edf90(); KING_ALIAS("_FUN_5edf90", "@Cluster_Set1@8")
+extern "C" void FUN_5ba810(); KING_ALIAS("_FUN_5ba810", "@Image_LoadData@8")
+extern "C" void FUN_5bbe10(); KING_ALIAS("_FUN_5bbe10", "@Texture_LoadData@8")
+extern "C" void FUN_5fd2e0(); KING_ALIAS("_FUN_5fd2e0", "@SoundFile_Load@8")
+
+// [$L_5edce0] after FUN_5edf90 the items of the three lists, each followed by the owner's (+12) hook +56
+extern "C" int __fastcall Clu_5edce0(BYTE* s)
+{
+    int r = CallThis<int>(FUN_5edf90, s);
+    if (!r)
+        return r;
+    for (int i = 0; i < F(int, s, 44); i++) {
+        CallThis(FUN_5ba810, F(BYTE**, s, 68)[i]);
+        CluFn fn = F(CluFn, F(BYTE*, s, 12), 56);
+        if (fn)
+            CallThis(fn, F(BYTE*, s, 12));
+    }
+    for (int i = 0; i < F(int, s, 52); i++) {
+        CallThis(FUN_5bbe10, F(BYTE**, s, 72)[i]);
+        CluFn fn = F(CluFn, F(BYTE*, s, 12), 56);
+        if (fn)
+            CallThis(fn, F(BYTE*, s, 12));
+    }
+    for (int i = 0; i < F(int, s, 60); i++) {
+        CallThis(FUN_5fd2e0, F(BYTE**, s, 76)[i]);
+        CluFn fn = F(CluFn, F(BYTE*, s, 12), 56);
+        if (fn)
+            CallThis(fn, F(BYTE*, s, 12));
+    }
+    return 1;
+}

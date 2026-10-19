@@ -428,3 +428,14 @@ static void Carord_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 
 // [$L_471800]
 extern "C" void __cdecl CarordInit_471800() { Carord_RngInit((DWORD*)g_carordRng68d410, &g_carordRng68d4e8, &g_carordRng68d4ec, &g_carordRng68d4f0); }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+ASM_VAR(AsmLabel, g_carordRng68d328, $L_68d328)
+ASM_VAR(DWORD, g_carordRng68d400, $L_68d400)
+ASM_VAR(DWORD, g_carordRng68d404, $L_68d404)
+ASM_VAR(DWORD, g_carordRng68d408, $L_68d408)
+
+// [$L_470cd0]
+extern "C" void __cdecl CarordInit_470cd0() { Carord_RngInit((DWORD*)g_carordRng68d328, &g_carordRng68d400, &g_carordRng68d404, &g_carordRng68d408); }

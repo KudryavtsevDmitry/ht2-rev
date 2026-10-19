@@ -21422,3 +21422,40 @@ extern "C" void __cdecl AiworInit_428120()
     for (int k = 0; k < 24; k++)
         d[k] = v[k];
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods and static initializers.
+
+ASM_PROC(FUN_469a20)
+ASM_PROC(FUN_48e190)
+ASM_VAR(AsmLabel, g_aiworRng68ccc8, $L_68ccc8)
+ASM_VAR(DWORD, g_aiworRng68cda0, $L_68cda0)
+ASM_VAR(DWORD, g_aiworRng68cda4, $L_68cda4)
+ASM_VAR(DWORD, g_aiworRng68cda8, $L_68cda8)
+ASM_VAR(DWORD, g_aiworRng68baa0, $L_68baa0)
+
+// [$L_401210] static initializers of random generators
+extern "C" void __cdecl AiworInit_401210() { Aiwor_RngInit((DWORD*)g_aiworRng68ccc8, &g_aiworRng68cda0, &g_aiworRng68cda4, &g_aiworRng68cda8); }
+// [$L_401440]
+extern "C" void __cdecl AiworInit_401440() { Aiwor_RngInit((DWORD*)g_aiwor68b9c8, &g_aiworRng68baa0, &g_aiwor68baa4, &g_aiwor68baa8); }
+
+// [$L_4551d0] reverses the path: flags 4 and 8 swap, the 1592-byte records (+56) in reverse order, each turned (FUN_48e190)
+extern "C" void __fastcall Path_Reverse(BYTE* s)
+{
+    unsigned f = F(unsigned, s, 8);
+    unsigned b4 = f & 4, b8 = f & 8;
+    F(unsigned, s, 8) = f & ~0xcu;
+    if (b4)
+        F(unsigned, s, 8) |= 8;
+    if (b8)
+        F(unsigned, s, 8) |= 4;
+    BYTE* lo = F(BYTE*, s, 56);
+    BYTE* hi = F(BYTE*, s, 60);
+    while (lo < hi) {
+        hi -= 1592;
+        CallC(FUN_469a20, lo, hi, 0);
+        lo += 1592;
+    }
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, s, 60) - F(BYTE*, s, 56)) / 1592); i++)
+        CallThis(FUN_48e190, F(BYTE*, s, 56) + i * 1592);
+}
