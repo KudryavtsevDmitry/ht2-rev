@@ -356,3 +356,22 @@ extern "C" int __fastcall Item_ResetFlags(BYTE* self, void*, int, int)
     return 1;
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_VAR(Vec3, g_mi702650, $L_702650)
+
+// [FUN_581ba0] asks method +84 for a value of a (into b), applies it (+92), then resets: method +140 (+800, +500) when +372, else +88 (b); clears +476 and +488
+extern "C" int __fastcall Item_Apply84(BYTE* self, void*, int a, int b)
+{
+    int r = 0;
+    if (CallVirt<int>(self, 84, a, &b))
+        r = CallVirt<int>(self, 92, b);
+    if (F(int, self, 372))
+        CallVirt(self, 140, F(int, self, 800), self + 500);
+    else
+        CallVirt(self, 88, b);
+    F(Vec3, self, 476) = g_mi702650;
+    F(Vec3, self, 488) = g_mi702650;
+    return r;
+}
+

@@ -683,7 +683,7 @@ extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
 extern "C" void FUN_5e19f0(); KING_ALIAS("_FUN_5e19f0", "_Frame_GetLocal")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 ASM_PROC(FUN_4e4468)    // writes the world state text
-ASM_PROC(FUN_4e2556)    // writes a text to the log
+extern "C" void FUN_4e2556(); KING_ALIAS("_FUN_4e2556", "_Dump_Text")    // writes a text to the log
 ASM_PROC(FUN_53f0c0)
 ASM_VAR(AsmLabel, g_state696e5c, $L_696e5c)
 ASM_VAR(char*, g_fatalText696d20, $L_696d20)
@@ -1070,5 +1070,29 @@ extern "C" BYTE* __cdecl Matrix_FromPosAngles(BYTE* out, Vec3 p, float rx, float
     void* M2 = CallC<void*>(FUN_5aba40, e, M1, R1);
     CallC(FUN_5aba40, out, M2, T);
     return out;
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, s_wd67361c, $L_67361c)
+ASM_VAR(AsmLabel, s_wd673620, $L_673620)
+ASM_VAR(AsmLabel, s_wd67362c, $L_67362c)
+extern "C" size_t __cdecl fwrite(const void* buf, size_t size, size_t n, FILE* f);
+
+// [FUN_4e2556] writes a text to the dump file 673620 (a long one as its length line and 50 bytes)
+extern "C" void __cdecl Dump_Text(const char* text)
+{
+    FILE* f = fopen(s_wd673620, s_wd67361c);
+    int n = strlen(text);
+    if (n < 0 || n > 10000)
+    {
+        char buf[100];
+        sprintf(buf, s_wd67362c, n, n);
+        fwrite(buf, strlen(buf), 1, f);
+        fwrite(text, 50, 1, f);
+    }
+    else
+        fwrite(text, strlen(text), 1, f);
+    fclose(f);
 }
 

@@ -1148,7 +1148,7 @@ extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
 extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
 extern "C" void Fw_ThreadProc(); KING_ALIAS("_Fw_ThreadProc", "$L_5e4390")
-ASM_PROC(FUN_5e4e00)
+extern "C" void FUN_5e4e00(); KING_ALIAS("_FUN_5e4e00", "@Resources_FreeTables@8")
 ASM_PROC(FUN_5baa70)
 ASM_VAR(double, g_652730, $L_652730)
 ASM_VAR(AsmLabel, s_6832bc, $L_6832bc)
@@ -1591,8 +1591,8 @@ ASM_PROC(FUN_5e6e90)
 ASM_PROC(FUN_5e7930)
 ASM_PROC(FUN_5e9690)
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
-ASM_PROC(FUN_5e9360)
-ASM_PROC(FUN_5e9910)
+extern "C" void FUN_5e9360(); KING_ALIAS("_FUN_5e9360", "_Texture_ReadFile")
+extern "C" void FUN_5e9910(); KING_ALIAS("_FUN_5e9910", "_Sound_ReadFile")
 extern "C" void FUN_5e99a0(); KING_ALIAS("_FUN_5e99a0", "_Image_SetData")
 ASM_VAR(AsmLabel, g_fwPath72183c, $L_72183c)
 extern "C" int __cdecl _stat(const char* path, void* buf);
@@ -1818,5 +1818,191 @@ extern "C" void __fastcall Window_ResetState(BYTE* c, void*)
     F(DWORD, c, 3060) = 1071854387;
     F(DWORD, c, 644) = 0;
     F(DWORD, c, 648) = 0;
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5e4450(); KING_ALIAS("_FUN_5e4450", "@Worker_Stop@8")
+extern "C" void FUN_5fcf10(); KING_ALIAS("_FUN_5fcf10", "_Sound_Stop")
+extern "C" void FUN_5d2370(); KING_ALIAS("_FUN_5d2370", "@NameHash_Clear@8")
+extern "C" void FUN_5fd250(); KING_ALIAS("_FUN_5fd250", "@SoundFile_Destroy@8")
+extern "C" void FUN_5bbdd0(); KING_ALIAS("_FUN_5bbdd0", "@Bitmap_Destroy@8")
+extern "C" void FUN_5e5420(); KING_ALIAS("_FUN_5e5420", "@Resources_Bind@16")
+extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")
+extern "C" void FUN_5e4740(); KING_ALIAS("_FUN_5e4740", "@Resource_Free@8")
+ASM_VAR(BYTE*, g_fw721750, $L_721750)
+ASM_VAR(int, g_fw71e844, $L_71e844)
+ASM_VAR(int, g_fw7217a4, $L_7217a4)
+extern "C" long __cdecl ftell(FILE* f);
+
+// [FUN_5e5840] frees the six buffers of a record
+extern "C" void __fastcall Rec5e5840_Free(BYTE* self, void*)
+{
+    static const int offs[6] = {24, 28, 32, 4, 16, 20};
+    for (int i = 0; i < 6; i++)
+        if (F(void*, self, offs[i]))
+            operator delete(F(void*, self, offs[i]));
+}
+
+// [FUN_5da8a0] unloads the current room (+468): frees +484, and unless flag 8 stops the sound and deletes the room with its children
+extern "C" void __fastcall Fw_UnloadRoom(BYTE* self, void*)
+{
+    if (!F(BYTE*, self, 468))
+        return;
+    BYTE* p = F(BYTE*, self, 484);
+    if (p)
+    {
+        CallThis(FUN_5e4450, p);
+        operator delete(p);
+    }
+    F(BYTE*, self, 484) = 0;
+    if (F(BYTE, self, 16) & 8)
+    {
+        F(BYTE*, self, 468) = 0;
+        return;
+    }
+    if (F(int, g_fw721750, 344))
+        CallC(FUN_5fcf10);
+    for (BYTE* c = F(BYTE*, F(BYTE*, self, 468), 8); c; )
+    {
+        BYTE* next = F(BYTE*, c, 8);
+        CallVirt(c, 0, 1);
+        c = next;
+    }
+    if (F(BYTE*, self, 468))
+        CallVirt(F(BYTE*, self, 468), 0, 1);
+    F(BYTE*, self, 468) = 0;
+    if (g_fw71e844)
+        CallThis(FUN_5d2370, (BYTE*)g_objectNames);
+}
+
+// [FUN_5e9910] reads a sound (28 bytes, its +4 bytes of data at +8) from a file; 0 on failure
+extern "C" BYTE* __cdecl Sound_ReadFile(FILE* f, int size)
+{
+    long pos = ftell(f);
+    BYTE* o = (BYTE*)operator new(28);
+    if (o)
+    {
+        F(int, o, 8) = 0;
+        F(int, o, 4) = 0;
+        F(int, o, 0) = 0;
+        F(int, o, 16) = 0;
+        F(int, o, 24) = 0;
+        F(int, o, 12) = -1;
+    }
+    if (CallC<int>(FUN_5e99a0, o, f, size))
+    {
+        F(void*, o, 8) = operator new(F(int, o, 4));
+        if (CallC<int>(FUN_5e99c0, o, f, pos))
+            return o;
+    }
+    if (o)
+    {
+        CallThis(FUN_5fd250, o);
+        operator delete(o);
+    }
+    return 0;
+}
+
+// [FUN_5e9360] reads a texture (40 bytes, +12 bytes of data at +16) from a file; 0 on failure (7218bc = 2 without memory)
+extern "C" BYTE* __cdecl Texture_ReadFile(FILE* f, int size)
+{
+    BYTE* o = (BYTE*)operator new(40);
+    if (!o)
+        return 0;
+    F(int, o, 12) = 0;
+    F(WORD, o, 8) = 0;
+    F(WORD, o, 6) = 0;
+    F(WORD, o, 4) = 0;
+    F(int, o, 16) = 0;
+    F(int, o, 0) = 0;
+    F(int, o, 24) = 0;
+    F(int, o, 28) = 0;
+    F(int, o, 36) = 0;
+    long pos = ftell(f);
+    CallC(FUN_5e94d0, o, f, size, 0);
+    F(void*, o, 16) = operator new(F(int, o, 12));
+    if (!F(void*, o, 16))
+    {
+        CallThis(FUN_5bbdd0, o);
+        operator delete(o);
+        g_7218bc = 2;
+        return 0;
+    }
+    if (!CallC<int>(FUN_5e9690, o, f, pos))
+    {
+        CallThis(FUN_5bbdd0, o);
+        operator delete(o);
+        return 0;
+    }
+    return o;
+}
+
+// [FUN_5e54c0] adds a resource record through 5e5420: kind 1 charges it (unless flagged), kind 2 of a type-1 record loads it (c) or counts its size; returns the kind, -1 without a record
+extern "C" int __fastcall Resources_AddRecord(BYTE* self, void*, int a, BYTE* rec, int c)
+{
+    if (!rec)
+        return -1;
+    int r = CallThis<int>(FUN_5e5420, self, a, rec);
+    if (r == -1)
+        return -1;
+    if (r == 1)
+    {
+        if (!(F(BYTE, rec, 8) & 1))
+            CallThis(FUN_5e4900, rec, self);
+        return r;
+    }
+    if (r == 2 && F(int, rec, 0) == 1)
+    {
+        if (c)
+        {
+            CallThis(FUN_5e49d0, rec, self);
+            return r;
+        }
+        F(int, self, 2000) += F(int, rec, 16);
+        if (F(unsigned, rec, 16))
+        {
+            g_fw7217a4--;
+            CallC(FUN_5e48f0, F(int, self, 2000), rec, 2);
+        }
+    }
+    return r;
+}
+
+// [FUN_5e4e00] frees the resource tables: 400 slots of 500 records and 100 lists
+extern "C" void __fastcall Resources_FreeTables(BYTE* self, void*)
+{
+    BYTE** slots = (BYTE**)self;
+    for (int i = 0; i < 400; i++)
+    {
+        if (!slots[i])
+            continue;
+        for (int j = 0; j < 500; j++)
+        {
+            BYTE* q = ((BYTE**)slots[i])[j];
+            if (q)
+            {
+                CallThis(FUN_5e4740, q);
+                operator delete(q);
+            }
+        }
+        operator delete(slots[i]);
+        slots[i] = 0;
+    }
+    BYTE** lists = (BYTE**)(self + 1600);
+    for (int i = 0; i < 100; i++)
+    {
+        if (!lists[i])
+            continue;
+        BYTE* n;
+        while ((n = F(BYTE*, lists[i], 8)) != 0)
+        {
+            CallThis(FUN_5d21b0, n);
+            CallVirt(n, 0, 1);
+        }
+        if (lists[i])
+            CallVirt(lists[i], 0, 1);
+        lists[i] = 0;
+    }
 }
 

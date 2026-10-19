@@ -649,7 +649,7 @@ ASM_PROC(FUN_50b620)    // DMat4: determinant
 extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
 ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
 ASM_PROC(FUN_5b6bf0)
-ASM_PROC(FUN_5b6ed0)
+extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 extern "C" void FUN_4e1320(); KING_ALIAS("_FUN_4e1320", "_Startup_FindCd")
 ASM_PROC(FUN_519750)

@@ -780,7 +780,7 @@ extern "C" void __fastcall Effect_MoveQuad(BYTE* self, void*)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_PROC(FUN_5fa720)
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
-ASM_PROC(FUN_5ef780)
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void* __cdecl memset(void* d, int c, size_t n);
 extern "C" void FUN_59f790(); KING_ALIAS("_FUN_59f790", "@Wasm59f790_Construct@8")
 ASM_VAR(char, g_vtbl650bd0, $L_650bd0)
