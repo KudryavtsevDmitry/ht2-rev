@@ -937,3 +937,34 @@ ASM_VAR(DWORD, g_sougat723d88, $L_723d88)
 
 // [$L_601040]
 extern "C" void __cdecl SougatInit_601040() { g_sougat723d88 = 0x0; }
+
+extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
+
+// a byte stream over a char vector (+4) with a position (+8)
+// [$L_602c80]
+extern "C" int __fastcall Stream_Begin(BYTE* s) { return F(int*, s, 4)[0]; }
+// [$L_602c90]
+extern "C" int __fastcall Stream_End(BYTE* s) { return F(int*, s, 4)[1]; }
+
+// [$L_600be0] writes n bytes of p at the position
+extern "C" int __fastcall Stream_Write(BYTE* s, void*, BYTE* p, int n)
+{
+    BYTE* v = F(BYTE*, s, 4);
+    CallThis(FUN_46e460, v, F(BYTE*, v, 0) + F(int, s, 8), p, p + n);
+    F(int, s, 8) += n;
+    return n;
+}
+
+// [$L_600c10] seeks: 0 from the start, 1 from the position, 2 back from the end
+extern "C" int __fastcall Stream_Seek(BYTE* s, void*, int off, int whence)
+{
+    if (whence == 1)
+        return F(int, s, 8) += off;
+    if (whence == 2) {
+        BYTE* v = F(BYTE*, s, 4);
+        return F(int, s, 8) = F(int, v, 4) - F(int, v, 0) - off;
+    }
+    if (whence == 0)
+        return F(int, s, 8) = off;
+    return -1;
+}

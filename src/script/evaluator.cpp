@@ -2106,3 +2106,18 @@ extern "C" BYTE* __fastcall Number_DeletingDestructor(BYTE* s, void*, int flags)
         SchPool2_Free(s);
     return s;
 }
+
+extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
+ASM_VAR(AsmLabel, s_eva671104, $L_671104)
+
+// [$L_4a74f0] message 29 about the scope's frame (+112, 28 bytes back): its name or 671104
+extern "C" int __fastcall Eva_4a74f0(BYTE*, void*, BYTE* p)
+{
+    BYTE* e = *(BYTE**)(F(BYTE*, p, 112) - 28);
+    const char* name;
+    if (F(int, e, 8) & 0x10000)
+        name = s_eva671104;
+    else
+        name = CallVirt<const char*>(F(BYTE*, e, 0), 4);
+    return CallC<int>(FUN_4a5a60, p, 29, name);
+}

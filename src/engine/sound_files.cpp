@@ -276,3 +276,23 @@ static BYTE* Soufil_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 }
 // [$L_5ffaf0]
 extern "C" BYTE* __fastcall Soufil5ffaf0_DeletingDestructor(BYTE* s, void*, int flags) { return Soufil_DeleteAfter(s, flags, FUN_5ffb10); }
+
+ASM_VAR(AsmLabel, g_soufil655310, $L_655310)
+ASM_VAR(AsmLabel, g_soufil723d50, $L_723d50)
+ASM_VAR(AsmLabel, g_soufil723da8, $L_723da8)
+
+static void Soufil_Copy4(DWORD* d, const DWORD* s)
+{
+    d[0] = s[0];
+    d[1] = s[1];
+    d[2] = s[2];
+    d[3] = s[3];
+}
+// [$L_600560] static initializers: copies of the four 16-byte constants at 655310
+extern "C" void __cdecl SoufilInit_600560() { Soufil_Copy4((DWORD*)g_soufil723da8, (DWORD*)g_soufil655310 + 12); }
+// [$L_6005a0]
+extern "C" void __cdecl SoufilInit_6005a0() { Soufil_Copy4((DWORD*)g_soufil723d50, (DWORD*)g_soufil655310 + 8); }
+// [$L_6005e0]
+extern "C" void __cdecl SoufilInit_6005e0() { Soufil_Copy4((DWORD*)g_soufil723da8 + 4, (DWORD*)g_soufil655310 + 4); }
+// [$L_600620]
+extern "C" void __cdecl SoufilInit_600620() { Soufil_Copy4((DWORD*)g_soufil723da8 + 8, (DWORD*)g_soufil655310); }

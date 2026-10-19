@@ -889,3 +889,25 @@ extern "C" BYTE* __fastcall Forfee57c340_DeletingDestructor(BYTE* s, void*, int 
 extern "C" void __cdecl ForfeeInit_57c970() { g_forfee6f63d8 = 0x0; g_forfee6f63dc = 0x0; g_forfee6f63e0 = 0xc11ccccd; }
 // [$L_579900]
 extern "C" void __cdecl ForfeeInit_579900() { g_forfee6f63b8 = 0x0; g_forfee6f63bc = 0x0; g_forfee6f63c0 = 0x0; g_forfee6f63c4 = 0x0; }
+
+extern "C" void FUN_5793f0(); KING_ALIAS("_FUN_5793f0", "_Pooled_Release")
+ASM_VAR(AsmLabel, g_forfee650334, $L_650334)
+ASM_VAR(AsmLabel, g_forfee6f6140, $L_6f6140)
+
+// [$L_579340] the base destructor (vtable 650334) inlined; freed with FUN_5793f0
+extern "C" BYTE* __fastcall Forfee579340_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    F(void*, s, 0) = g_forfee650334;
+    F(int, s, 4) = 0;
+    if (flags & 1)
+        CallC(FUN_5793f0, s);
+    return s;
+}
+
+// [$L_579940] static initializer: 40 zero 16-byte records at 6f6138
+extern "C" void __cdecl ForfeeInit_579940()
+{
+    DWORD* p = (DWORD*)g_forfee6f6140 - 2;
+    for (int i = 0; i < 160; i++)
+        p[i] = 0;
+}
