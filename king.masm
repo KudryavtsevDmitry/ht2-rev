@@ -1382,6 +1382,9 @@ PUBLIC $L_64df40, $L_64df80, $L_676e18, $L_676e20, $L_676e28, $L_676e30
 PUBLIC $L_676e38, $L_676e40, $L_676e48, $L_676e50, $L_676e58, $L_676e60
 PUBLIC $L_676e64, $L_676e78
 PUBLIC $L_64e160, $L_677794, $L_6777ac, $L_6777c4
+PUBLIC $L_64e890, $L_64e8d0, $L_676e8c, $L_676ea4, $L_676eac, $L_676ebc
+PUBLIC $L_676ec4, $L_676ecc, $L_676ed4, $L_676edc, $L_676ee4, $L_676eec
+PUBLIC $L_676f04, $L_677ab8, $L_677abc, $L_677ac4, $L_677ad8, $L_6ce400
 
 ;===================================
 _TEXT SEGMENT
@@ -480118,6 +480121,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_517530 PROC
 
             push -1
@@ -480567,6 +480572,10 @@ $L_517859::
             add ESP,60
             ret 4
 FUN_517530 ENDP
+ELSE
+EXTERN @ShellSound517530_Construct@12:PROC
+FUN_517530 TEXTEQU <@ShellSound517530_Construct@12>
+ENDIF
 $L_517a20 PROC
 
             push ESI
@@ -498551,6 +498560,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_522cf0 PROC
 
             push -1
@@ -498773,6 +498784,10 @@ $L_522dc4::
             add ESP,32
             ret 4
 FUN_522cf0 ENDP
+ELSE
+EXTERN @ShellDialog522cf0_Construct@12:PROC
+FUN_522cf0 TEXTEQU <@ShellDialog522cf0_Construct@12>
+ENDIF
           BYTE 090H
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 IFDEF ASM_GAME_SHELL
