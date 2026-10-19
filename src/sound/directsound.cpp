@@ -561,3 +561,25 @@ extern "C" void __cdecl Play_UpdateAll()
     while (BYTE* p = Play_BestWaiting(0xffff))
         CallThis(FUN_605310, p);
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_604300(); KING_ALIAS("_FUN_604300", "_Play_StopEntry")
+ASM_PROC(FUN_604390)
+extern "C" void FUN_604590(); KING_ALIAS("_FUN_604590", "@Wave_Free@8")
+ASM_VAR(DWORD, g_ds724168, $L_724168)
+ASM_VAR(BYTE*, g_ds724164, $L_724164)
+ASM_VAR(AsmLabel, g_vt652df8, $L_652df8)
+
+// [FUN_604ed0] stops and frees sound i (24-byte records at 724164) when it is in use
+extern "C" void __cdecl Snd_Free(int i)
+{
+    if (i >= (int)(g_ds724168 & 0xffff) || !F(int, g_ds724164, i * 24))
+        return;
+    CallC(FUN_604300, i);
+    CallC(FUN_604390, i);
+    CallThis(FUN_604590, g_ds724164 + i * 24);
+}
+
+// [FUN_604120] the base destructor body: sets the vtable
+extern "C" void __fastcall Play_DestructBase(BYTE* self, void*) { F(void*, self, 0) = g_vt652df8; }
+

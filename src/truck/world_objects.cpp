@@ -777,7 +777,7 @@ extern "C" void __fastcall Effect_MoveQuad(BYTE* self, void*)
     Effect_AnimateQuad(self, 0);
 }
 
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_PROC(FUN_5fa720)
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 ASM_PROC(FUN_5ef780)

@@ -17,7 +17,7 @@ extern "C" int __cdecl rand();
 
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 ASM_PROC(FUN_5c4410)
 extern "C" void FUN_5cc930(); KING_ALIAS("_FUN_5cc930", "@Trees_Construct@8")
@@ -102,9 +102,9 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 ASM_PROC(FUN_5cfb30)
 extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 ASM_PROC(FUN_6037e0)    // time in seconds, returns double
-ASM_PROC(FUN_5d35b0)
+extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
 extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
-ASM_PROC(FUN_5d3080)    // next sibling
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 ASM_VAR(int, g_67faa0, $L_67faa0)
@@ -1466,7 +1466,7 @@ extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
 extern "C" void FUN_5c53b0(); KING_ALIAS("_FUN_5c53b0", "@Timeline_Reset@8")
 ASM_PROC(FUN_5e02f0)
-ASM_PROC(FUN_5c4940)
+extern "C" void FUN_5c4940(); KING_ALIAS("_FUN_5c4940", "@Media_ClearList@8")
 ASM_PROC(FUN_5cc6b0)
 
 // [FUN_5cda30] +4
@@ -1495,3 +1495,34 @@ extern "C" void __fastcall Media_Call5cc680(void* self, void*, int a, int b, BYT
     CallVirt(obj, 8, 1.0f);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+ASM_PROC(FUN_5e03c0)
+ASM_VAR(AsmLabel, g_vt64d81c, $L_64d81c)
+
+// [FUN_5c4940] deletes the 3920 list (count +7920) from the end, resets the state and runs 5e03c0
+extern "C" int __fastcall Media_ClearList(BYTE* self, void*)
+{
+    while (F(int, self, 7920) > 0)
+    {
+        int n = --F(int, self, 7920);
+        BYTE* p = F(BYTE*, self, 3920 + n * 4);
+        if (p)
+        {
+            CallThis(FUN_602e80, p);
+            operator delete(p);
+        }
+    }
+    F(int, self, 7968) = 0;
+    F(int, self, 7944) = 1;
+    F(int, self, 7948) = 1;
+    F(int, self, 7972) = 0;
+    return CallThis<int>(FUN_5e03c0, self);
+}
+
+// [FUN_5c5440] returns 0 (19 arguments ignored)
+extern "C" int __stdcall Media_Zero19(int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int, int) { return 0; }
+
+// [FUN_5ce630] the base destructor body: sets the vtable
+extern "C" void __fastcall Light_DestructBase(BYTE* self, void*) { F(void*, self, 0) = g_vt64d81c; }

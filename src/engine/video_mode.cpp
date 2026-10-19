@@ -187,7 +187,7 @@ extern "C" BYTE* __cdecl Dd_LockPrimary()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5d4450(); KING_ALIAS("_FUN_5d4450", "_Dd_WaitFlip")    // waits for the flip
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 ASM_VAR(int, g_vm7208b4, $L_7208b4)
 ASM_VAR(int, g_vmFlipPending, $L_720928)
 ASM_VAR(HWND, g_vmHwnd, $L_720920)

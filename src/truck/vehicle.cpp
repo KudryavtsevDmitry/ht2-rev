@@ -1552,3 +1552,108 @@ extern "C" int __fastcall Car_Call555550(BYTE* self, void*, DWORD x)
     return CallThis<int>(FUN_555550, self, x);
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_556740(); KING_ALIAS("_FUN_556740", "@Obj556740_Stop@8")
+ASM_PROC(FUN_5455d0)
+extern "C" void FUN_4fc920(); KING_ALIAS("_FUN_4fc920", "@Body_SetMode@12")
+ASM_PROC(FUN_54e180)
+extern "C" void FUN_54ef20(); KING_ALIAS("_FUN_54ef20", "@Car_54ef20@12")
+ASM_PROC(FUN_54ff80)
+ASM_PROC(FUN_581430)
+ASM_PROC(FUN_5816d0)
+extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
+extern "C" void FUN_561d50(); KING_ALIAS("_FUN_561d50", "@Copter_SetVec112@12")
+extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
+extern "C" void FUN_4f1e20(); KING_ALIAS("_FUN_4f1e20", "@Body_SetVelocity@12")
+ASM_PROC(FUN_4f1240)
+ASM_VAR(Vec3, g_vhZero702650, $L_702650)
+
+// [FUN_530050] clears the low byte of each of the 295 words whose high byte is 0
+extern "C" int __fastcall Words295_ClearEmpty(BYTE* self, void*)
+{
+    for (int i = 0; i < 295; i++)
+        if (!self[i * 2 + 1])
+            self[i * 2] = 0;
+    return 0;
+}
+
+// [FUN_530020] clears the low bytes of the 295 words and the 10 records of 12 bytes at +592
+extern "C" int __fastcall Words295_Reset(BYTE* self, void*)
+{
+    for (int i = 0; i < 295; i++)
+        self[i * 2] = 0;
+    for (int i = 0; i < 10; i++)
+        F(int, self, 592 + i * 12) = 0;
+    return Words295_ClearEmpty(self, 0);
+}
+
+// [FUN_5560e0] with +9600: updates +9556 and applies a zero vector
+extern "C" void __fastcall Car_ApplyZero(BYTE* self, void*)
+{
+    if (F(int, self, 9600))
+    {
+        CallThis(FUN_556740, self + 9556);
+        CallThis(FUN_5455d0, self, 0, &g_vhZero702650);
+    }
+}
+
+// [FUN_557480] forwards a value to the object at +21600
+extern "C" void __fastcall Car_Forward21600(BYTE* self, void*, int v)
+{
+    BYTE* o = F(BYTE*, self, 21600);
+    if (o)
+        CallThis(FUN_4fc920, o, v);
+}
+
+// [FUN_555eb0] the sum of the absolute values of 9 ints (stride 20, from +4) of the object at +9536
+extern "C" int __fastcall Car_SumAbs9(BYTE* self, void*)
+{
+    BYTE* p = F(BYTE*, self, 9536) + 4;
+    int s = 0;
+    for (int i = 0; i < 9; i++, p += 20)
+        s += *(int*)p < 0 ? -*(int*)p : *(int*)p;
+    return s;
+}
+
+// [FUN_556a40] when 54e180 finds a value, applies it and runs 54ff80
+extern "C" void __fastcall Car_ApplyFound(BYTE* self, void*)
+{
+    int v = 0;
+    if (CallThis<int>(FUN_54e180, self, &v))
+    {
+        CallThis(FUN_54ef20, self, v);
+        CallThis(FUN_54ff80, self);
+    }
+}
+
+// [FUN_54c9d0] sets (a, b) through 581430, then updates the parts at +21588 (with +428) and +21584 (with +440)
+extern "C" void __fastcall Car_Set54c9d0(BYTE* self, void*, int a, int b)
+{
+    CallThis(FUN_581430, self, a, b);
+    if (F(BYTE*, self, 21588))
+        CallThis(FUN_561d50, F(BYTE*, self, 21588), self + 428);
+    if (F(BYTE*, self, 21584))
+        CallThis(FUN_4f1e20, F(BYTE*, self, 21584), self + 440);
+}
+
+// [FUN_54ca20] sets (a, b) through 5816d0, then updates the part at +21588 (with +428) and +21584 (with a)
+extern "C" void __fastcall Car_Set54ca20(BYTE* self, void*, int a, int b)
+{
+    CallThis(FUN_5816d0, self, a, b);
+    if (F(BYTE*, self, 21588))
+        CallThis(FUN_561d50, F(BYTE*, self, 21588), self + 428);
+    if (F(BYTE*, self, 21584))
+        CallThis(FUN_4f1e20, F(BYTE*, self, 21584), a);
+}
+
+// [FUN_54c880] passes (a, b) to +16 and the parts at +21604 and +21600
+extern "C" void __fastcall Car_Set54c880(BYTE* self, void*, int a, int b)
+{
+    CallThis(FUN_581230, self + 16, a, b);
+    if (F(BYTE*, self, 21604))
+        CallThis(FUN_561d10, F(BYTE*, self, 21604), a, b);
+    if (F(BYTE*, self, 21600))
+        CallThis(FUN_4f1240, F(BYTE*, self, 21600), 1, a, b);
+}
+

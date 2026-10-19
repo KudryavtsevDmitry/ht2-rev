@@ -469,3 +469,36 @@ extern "C" int __fastcall Overlays_Alloc(BYTE* self, void*, int mode)
     return 1;
 }
 
+
+// ---------------------------------------------------------------------------
+
+// [FUN_5ee300] adds an unowned object (+40 owner) to the list (+32, count +28, capacity +24); 1 when added
+extern "C" int __fastcall List5ee300_Add(BYTE* self, void*, BYTE* o)
+{
+    if (F(int, self, 28) >= F(int, self, 24))
+        return 0;
+    if (F(BYTE*, o, 40))
+        return 0;
+    F(BYTE*, o, 40) = self;
+    F(BYTE**, self, 32)[F(int, self, 28)] = o;
+    F(int, self, 28)++;
+    return 1;
+}
+
+// clears a flag of +20 and calls a method of every member; 0 when the flag wasn't set
+static int Cl_ClearAndCall(BYTE* self, DWORD flag, unsigned method)
+{
+    if (!(F(DWORD, self, 20) & flag))
+        return 0;
+    F(DWORD, self, 20) &= ~flag;
+    for (int i = 0; i < F(int, self, 24); i++)
+        CallVirt(F(BYTE**, self, 32)[i], method);
+    return 1;
+}
+
+// [FUN_5edf50] clears flag 1 and calls method +36 of every member
+extern "C" int __fastcall Cluster_Clear1(BYTE* self, void*) { return Cl_ClearAndCall(self, 1, 36); }
+
+// [FUN_5edfe0] clears flag 2 and calls method +44 of every member
+extern "C" int __fastcall Cluster_Clear2(BYTE* self, void*) { return Cl_ClearAndCall(self, 2, 44); }
+

@@ -2285,3 +2285,17 @@ extern "C" void __cdecl Doubles_StableSort(double* first, double* last, int pred
     Doubles_MergeNoBuf(first, cut1, m, len11, len22, pred);
     Doubles_MergeNoBuf(m, cut2, last, len1 - len11, len2 - len22, pred);
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // pool free (p, bytes)
+
+// [FUN_459df0] frees the buffer (+16, size +0 + 1) and, when owned (+24), deletes the object at +20
+extern "C" void __fastcall Buf459df0_Destruct(BYTE* self, void*)
+{
+    BYTE* p = F(BYTE*, self, 16);
+    if (p && F(int, self, 0) + 1)
+        CallC(FUN_44b4a0, p, F(int, self, 0) + 1);
+    if (F(BYTE, self, 24) && F(BYTE*, self, 20))
+        CallVirt(F(BYTE*, self, 20), 0, 1);
+}
+

@@ -13,7 +13,7 @@
 typedef char AsmLabel[1];
 extern "C" void __fastcall Chain_DeleteAll(BYTE* self, void*);    // movingb.cpp
 extern "C" void __cdecl Carat_Message(const char* text, int);
-KING_ALIAS("_Carat_Message", "FUN_5d2ba0")
+KING_ALIAS("_Carat_Message", "_Sys_Log")
 
 ASM_PROC(FUN_578100)
 ASM_PROC(FUN_5d31e0)
