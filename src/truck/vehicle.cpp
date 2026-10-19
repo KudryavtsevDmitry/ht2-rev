@@ -21,7 +21,7 @@ ASM_PROC(FUN_52fdb0)
 extern "C" void __fastcall Engine_SetKeys(BYTE* self, void*, int a, int b);   // carphys.cpp
 extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void __cdecl Switch_SetChecked(BYTE* obj, int v);     // world.cpp
-ASM_PROC(FUN_545cc0)
+extern "C" void FUN_545cc0(); KING_ALIAS("_FUN_545cc0", "@Car_SendKind@12")
 extern "C" BYTE* __fastcall ListItem592bf0_Construct(BYTE* self, void*, BYTE** list);   // movingb.cpp
 extern "C" void __fastcall Mass_Shares(float* self, void*, int wheels);
 extern "C" void __fastcall Car_SetView(BYTE* self, void*, int n);
@@ -2329,4 +2329,51 @@ extern "C" void __fastcall Car531950_Destroy(BYTE* s)
     CallThis(FUN_4eac8e, s + 312);
     CallThis(FUN_4eac8e, s + 280);
     CallThis(FUN_5d3290, s);
+}
+
+// ---------------------------------------------------------------------------
+// Network messages and small constructors (exception frames dropped).
+
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+ASM_VAR(short, g_veh67d10a, $L_67d10a)
+ASM_VAR(BYTE*, g_veh6ef1fc, $L_6ef1fc)
+
+static void Car_Send(const void* d, int n)
+{
+    BYTE pkt[32];
+    CallThis(FUN_602be0, pkt);
+    CallThis(FUN_603110, pkt, (int)g_veh67d10a, d, n);
+    CallThis(FUN_5c3630, g_veh6ef1fc, pkt);
+    CallThis(FUN_602e80, pkt);
+}
+// [FUN_545e20] message 5: the car (+1204), +412, the position +420 and the matrix +708
+extern "C" void __fastcall Car_SendState(BYTE* s)
+{
+    int d[18];
+    d[0] = F(int, s, 1204);
+    d[1] = 5;
+    d[2] = F(int, s, 412);
+    d[3] = F(int, s, 420);
+    d[4] = F(int, s, 424);
+    d[5] = F(int, s, 428);
+    for (int i = 0; i < 12; i++)
+        d[6 + i] = F(int, s, 708 + i * 4);
+    Car_Send(d, 72);
+}
+// [FUN_545cc0] message 8 of kind k (1 with +9544, 2 with +20396)
+extern "C" void __fastcall Car_SendKind(BYTE* s, void*, int k)
+{
+    int d[4] = {F(int, s, 1204), 8, k, 0};
+    int n = 12;
+    if (k == 1) {
+        d[3] = F(int, s, 9544);
+        n = 16;
+    } else if (k == 2) {
+        d[3] = F(int, s, 20396);
+        n = 16;
+    }
+    Car_Send(d, n);
 }

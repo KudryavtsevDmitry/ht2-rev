@@ -4379,3 +4379,23 @@ extern "C" void __fastcall Eff4ddd50_Destroy(BYTE* s)
     CallThis(FUN_4eac8e, s + 4724);
     CallThis(FUN_5da790, s);
 }
+
+// ---------------------------------------------------------------------------
+// Network messages and small constructors (exception frames dropped).
+
+extern "C" void FUN_5cdc10(); KING_ALIAS("_FUN_5cdc10", "@TreeShadow_Construct@8")
+ASM_PROC(FUN_5cdcd0)
+
+// [$L_4cb450] a new 224-byte object (FUN_5cdc10) set up by FUN_5cdcd0 (a, b, c, d); 0 when that fails
+extern "C" BYTE* __cdecl Eff_New4cb450(int a, int b, int c, int d)
+{
+    BYTE* m = (BYTE*)operator new(224);
+    BYTE* o = m ? CallThis<BYTE*>(FUN_5cdc10, m) : 0;
+    return CallThis<int>(FUN_5cdcd0, o, a, b, c, d) ? o : 0;
+}
+// [$L_4d2910] the two sound holders (+6992, +6960)
+extern "C" void __fastcall Eff4d2910_Destroy(BYTE* s)
+{
+    CallThis(FUN_4eac8e, s + 6992);
+    CallThis(FUN_4eac8e, s + 6960);
+}
