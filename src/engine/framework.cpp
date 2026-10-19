@@ -2074,3 +2074,189 @@ extern "C" BYTE* __cdecl Font_ReadFile(FILE* f)
     return o;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods of the framework's windows and their static
+// initializers.
+
+extern "C" void FUN_5de5b0(); KING_ALIAS("_FUN_5de5b0", "@Clock_Start@8")
+extern "C" void FUN_5de5d0(); KING_ALIAS("_FUN_5de5d0", "@Clock_Stop@8")
+extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
+ASM_PROC(FUN_5d8850)
+ASM_PROC(FUN_5d8b30)
+ASM_PROC(FUN_5da790)
+ASM_PROC(FUN_5ddb40)
+ASM_PROC(FUN_5dd2d0)
+extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
+extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
+ASM_PROC(FUN_5c06a0)
+ASM_PROC(FUN_5e2e80)
+ASM_PROC(FUN_5e2ee0)
+ASM_PROC(FUN_5e2f40)
+extern "C" void FUN_5e4810(); KING_ALIAS("_FUN_5e4810", "@NamedTable_Destroy@8")
+ASM_PROC(FUN_5daa30)
+extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
+extern "C" void FUN_5dbe60(); KING_ALIAS("_FUN_5dbe60", "@Messages_Take@8")
+ASM_PROC(FUN_5e05c0)
+extern "C" void FUN_5d3ca0(); KING_ALIAS("_FUN_5d3ca0", "_Video_CreatePalette")
+ASM_VAR(AsmLabel, s_fw651ee8, $L_651ee8)
+ASM_VAR(AsmLabel, s_fw652130, $L_652130)
+ASM_VAR(AsmLabel, s_fw671204, $L_671204)
+ASM_VAR(AsmLabel, g_fw720938, $L_720938)
+ASM_VAR(int, g_fw683b54, $L_683b54)
+ASM_VAR(HDC, g_fw72091c, $L_72091c)
+ASM_VAR(HWND, g_fw720920, $L_720920)
+
+// [$L_5d9ed0] the clock at +20984
+extern "C" void __fastcall Fw_ClockStart(BYTE* s) { CallThis(FUN_5de5b0, F(BYTE*, s, 20984)); }
+// [$L_5d9ee0]
+extern "C" void __fastcall Fw_ClockStop(BYTE* s) { CallThis(FUN_5de5d0, F(BYTE*, s, 20984)); }
+
+// [$L_5da170]
+extern "C" int __fastcall Fw_Zero4(BYTE*, void*, int) { return 0; }
+// [$L_5dd6f0]
+extern "C" int __fastcall Fw_One4(BYTE*, void*, int) { return 1; }
+// [$L_5dd710] class names
+extern "C" const char* __fastcall Fw_Name5dd710(BYTE*) { return s_fw651ee8; }
+// [$L_5e2930]
+extern "C" const char* __fastcall Fw_Name5e2930(BYTE*) { return s_fw652130; }
+
+// [$L_5e1730] fields of the application
+extern "C" int __cdecl Fw_App256() { return F(int, g_fw721750, 256); }
+// [$L_5e1740]
+extern "C" int __cdecl Fw_App260() { return F(int, g_fw721750, 260); }
+
+// [$L_5dd090] unloads the room and clears +488
+extern "C" void __fastcall Fw_Unload(BYTE* s)
+{
+    CallThis(FUN_5da8a0, s);
+    F(int, s, 488) = 0;
+}
+
+// [$L_5de060] passes a to the vtbl+160 of the object at +300
+extern "C" int __fastcall Fw_5de060(BYTE* s, void*, int a) { return CallVirt<int>(F(BYTE*, s, 300), 160, a); }
+
+// [$L_5dd070] vtbl+188 ("...", a, 0)
+extern "C" int __fastcall Fw_5dd070(BYTE* s, void*, int a) { return CallVirt<int>(s, 188, (const char*)s_fw671204, a, 0); }
+
+// [$L_5dd2e0] the application's vtbl+184 (a, b), 1
+extern "C" int __fastcall Fw_5dd2e0(BYTE*, void*, int a, int b)
+{
+    CallVirt(g_fw721750, 184, a, b);
+    return 1;
+}
+
+// [$L_5d9ea0] 1 when the object at +20976 has +520 or +8244 is set
+extern "C" int __fastcall Fw_5d9ea0(BYTE* s)
+{
+    return F(int, F(BYTE*, s, 20976), 520) || F(int, s, 8244) ? 1 : 0;
+}
+
+// [$L_5dd530] applies the palette of the application's window root surface
+extern "C" void __cdecl Fw_ApplyPalette()
+{
+    BYTE* w = F(BYTE*, g_fw721750, 252);
+    if (!w)
+        return;
+    BYTE* r = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, w, 12));
+    if (r)
+        CallThis(FUN_5ba3d0, r);
+}
+
+// [$L_5dc470] forwards 7 arguments
+extern "C" int __fastcall Fw_5dc470(BYTE* s, void*, DWORD a, DWORD b, DWORD c, DWORD d, DWORD e, DWORD f, DWORD g)
+{
+    return CallThis<int>(FUN_5daa30, s, a, b, c, d, e, f, g);
+}
+
+// [$L_5dff90] draws the camera (+468) when +524 is set
+extern "C" void __fastcall Fw_DrawCamera(BYTE* s)
+{
+    int v = F(int, s, 524);
+    if (v)
+        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(int, s, 488), v, F(int, s, 472), 1, F(int, s, 464));
+}
+
+// [$L_5df670] hands each waiting message to vtbl+72
+extern "C" void __fastcall Fw_DispatchMessages(BYTE* s)
+{
+    for (int m = CallThis<int>(FUN_5dbe60, s); m; m = CallThis<int>(FUN_5dbe60, s))
+        CallVirt(s, 72, m);
+}
+
+// [$L_5dd300] 0 only for windowed (+268 bit 10) without +300 and a == 0
+extern "C" int __fastcall Fw_5dd300(BYTE*, void*, int a)
+{
+    BYTE* app = g_fw721750;
+    if ((F(int, app, 268) & 0x400) && !F(int, app, 300) && !a)
+        return 0;
+    return 1;
+}
+
+// [$L_5dbb70] keys 116-118 go to FUN_5e05c0, 120 toggles 683b54, the rest to vtbl+52
+extern "C" int __fastcall Fw_OnKey(BYTE* s, void*, BYTE* ev)
+{
+    int k = F(short, ev, 6);
+    if (k >= 116) {
+        if (k <= 118)
+            return CallThis<int>(FUN_5e05c0, s, ev);
+        if (k == 120) {
+            g_fw683b54 ^= 1;
+            return k;
+        }
+    }
+    return CallVirt<int>(s, 52, ev);
+}
+
+// [$L_5dd3f0] the window's DC gets the palette, a 20 ms timer starts (id to +188)
+extern "C" int __fastcall Fw_OnCreate(BYTE* s, void*, int)
+{
+    HDC dc = GetDC(F(HWND, s, 28));
+    g_fw72091c = dc;
+    CallC(FUN_5d3ca0, dc);
+    g_fw720920 = F(HWND, s, 28);
+    F(UINT_PTR, s, 188) = SetTimer(F(HWND, s, 28), 0, 20, 0);
+    return 1;
+}
+
+// [$L_5dbe90] static initializers
+extern "C" void __cdecl Fw_Init721298()
+{
+    (&g_721298)[0] = 0;
+    (&g_721298)[1] = 0;
+    (&g_721298)[2] = 0;
+}
+// [$L_5dc4a0]
+extern "C" void __cdecl Fw_Init720938()
+{
+    DWORD* d = (DWORD*)g_fw720938;
+    d[0] = d[1] = d[2] = d[3] = 0;
+}
+
+static BYTE* Fw_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+// [$L_5d86f0]
+extern "C" BYTE* __fastcall Fw5d86f0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5d8850); }
+// [$L_5d8ad0]
+extern "C" BYTE* __fastcall Fw5d8ad0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5d8b30); }
+// [$L_5d9e20]
+extern "C" BYTE* __fastcall Fw5d9e20_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5da790); }
+// [$L_5dd0b0]
+extern "C" BYTE* __fastcall Fw5dd0b0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5ddb40); }
+// [$L_5dd2b0]
+extern "C" BYTE* __fastcall Fw5dd2b0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5dd2d0); }
+// [$L_5de080]
+extern "C" BYTE* __fastcall Fw5de080_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5c06a0); }
+// [$L_5e2e60]
+extern "C" BYTE* __fastcall Fw5e2e60_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5e2e80); }
+// [$L_5e2ec0]
+extern "C" BYTE* __fastcall Fw5e2ec0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5e2ee0); }
+// [$L_5e2f20]
+extern "C" BYTE* __fastcall Fw5e2f20_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5e2f40); }
+// [$L_5e47f0]
+extern "C" BYTE* __fastcall Fw5e47f0_DeletingDestructor(BYTE* s, void*, int flags) { return Fw_DeleteAfter(s, flags, FUN_5e4810); }

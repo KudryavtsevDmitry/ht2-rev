@@ -2120,3 +2120,137 @@ extern "C" BYTE* __cdecl Rec128_Combine(BYTE* out, BYTE* a, int b)
     return out;
 }
 
+
+// ---------------------------------------------------------------------------
+// Small virtual methods of the shell screens and their static initializers.
+
+ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5c0020(); KING_ALIAS("_FUN_5c0020", "@List_DrawAt@12")
+extern "C" void FUN_5d8610(); KING_ALIAS("_FUN_5d8610", "@Win_Activate@8")
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+extern "C" void FUN_50d510(); KING_ALIAS("_FUN_50d510", "@ShellBuf_Destroy@8")
+extern "C" void FUN_528fc0(); KING_ALIAS("_FUN_528fc0", "@Shell528fc0_Destroy@8")
+ASM_PROC(FUN_5b8980)
+extern "C" void FUN_528fb0(); KING_ALIAS("_FUN_528fb0", "@Screen_Set2304@12")
+extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
+extern "C" void FUN_5d8bb0(); KING_ALIAS("_FUN_5d8bb0", "@Frame_Ask@12")
+ASM_VAR(int, g_gs6ce9f0, $L_6ce9f0)
+ASM_VAR(int, g_gs6968a4, $L_6968a4)
+
+// [$L_528c10]
+extern "C" void __fastcall Shell_Nothing8(BYTE*, void*, int, int) {}
+// [$L_50d180]
+extern "C" int __fastcall Shell_One(BYTE*) { return 1; }
+// [$L_50d1b0]
+extern "C" int __fastcall Shell_First2(BYTE*, void*, int a, int) { return a; }
+// [$L_50d1a0]
+extern "C" int __fastcall Shell_First3(BYTE*, void*, int a, int, int) { return a; }
+// [$L_50ff60]
+extern "C" int __fastcall Shell_Second2(BYTE*, void*, int, int b) { return b; }
+
+// [$L_50ff50]
+extern "C" int __fastcall Shell_50ff50(BYTE* s) { return CallThis<int>(FUN_5b6bf0, F(BYTE*, s, 12)); }
+// [$L_50ff40]
+extern "C" int __fastcall Shell_DrawAt50ff40(BYTE* s, void*, int a) { return CallThis<int>(FUN_5c0020, s, a); }
+// [$L_518700]
+extern "C" int __fastcall Shell_DrawAt518700(BYTE* s, void*, int a) { return CallThis<int>(FUN_5c0020, s, a); }
+
+// [$L_511780] passes a to the vtbl+160 of the object at +304
+extern "C" int __fastcall Shell_511780(BYTE* s, void*, int a) { return CallVirt<int>(F(BYTE*, s, 304), 160, a); }
+
+// [$L_523150] activates, then the time stamp to +368
+extern "C" void __fastcall Shell_ActivateStamp(BYTE* s)
+{
+    CallThis(FUN_5d8610, s);
+    F(double, s, 368) = CallC<double>(FUN_6037e0);
+}
+
+// [$L_518460] command 1: the owner (64 bytes before) vtbl+32, then 6cec80's vtbl+36
+extern "C" void __fastcall Shell_518460(BYTE* s, void*, int cmd)
+{
+    if (cmd != 1)
+        return;
+    CallVirt(s - 64, 32);
+    CallVirt(g_6cec80, 36);
+}
+
+// [$L_518710] command 154 like 518460 with 6cec80's +372 cleared; 153 sets 6968a4
+extern "C" void __fastcall Shell_518710(BYTE* s, void*, int cmd)
+{
+    if (cmd == 153) {
+        g_gs6968a4 = 1;
+        return;
+    }
+    if (cmd != 154)
+        return;
+    CallVirt(s - 64, 32);
+    F(int, g_6cec80, 372) = 0;
+    CallVirt(g_6cec80, 36);
+}
+
+// [$L_50bfc0] static initializers
+extern "C" void __cdecl Shell_Init6ce4f4() { g_6ce4f4 = 0; }
+// [$L_50c7d0]
+extern "C" void __cdecl Shell_Init6ce9f0() { g_gs6ce9f0 = 0; }
+// [$L_529180]
+extern "C" void __cdecl Shell_Init6ce4f8()
+{
+    ((DWORD*)g_6ce4f8)[0] = 0;
+    ((DWORD*)g_6ce4f8)[1] = 0;
+}
+
+// [$L_50d4f0]
+extern "C" BYTE* __fastcall Shell50d4f0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_50d510, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+// [$L_528c80]
+extern "C" BYTE* __fastcall Shell528c80_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_528fc0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+// [$L_51ab50] draws, then the current picture (+744 row, +748 column) at 360,134
+extern "C" void __fastcall Shell_51ab50(BYTE* s, void*, int a)
+{
+    CallThis(FUN_5c0020, s, a);
+    int k = F(int, s, 748) + F(int, s, 744) * 4;
+    CallC(FUN_5b8980, F(int, s, -52), 360, 134, F(int, s, 308 + k * 4), -1);
+}
+
+// [$L_529020] Enter (key 13 of a key-down event 258) leaves the screen unless +2308 is 1
+extern "C" int __fastcall Shell_529020(BYTE* s, void*, BYTE* ev)
+{
+    if (F(WORD, ev, 0) != 258)
+        return 0;
+    if (F(WORD, ev, 6) != 13 || F(int, s, 2308) != 1)
+        CallThis(FUN_528fb0, s, 1);
+    return 1;
+}
+
+// draws the backdrop 6ce4f4 when there is one, then the screen
+static void Shell_DrawWithBackdrop(BYTE* s, int a)
+{
+    if (g_6ce4f4)
+        CallC(FUN_5b86c0, F(int, g_69684c, 12), 0, 0, g_6ce4f4);
+    CallThis(FUN_5c0020, s, a);
+}
+// [$L_5117a0]
+extern "C" void __fastcall Shell_5117a0(BYTE* s, void*, int a) { Shell_DrawWithBackdrop(s, a); }
+// [$L_51e840]
+extern "C" void __fastcall Shell_51e840(BYTE* s, void*, int a) { Shell_DrawWithBackdrop(s, a); }
+
+// [$L_51fd30] asks (FUN_5d8bb0) only in states 0-2, 5 and over except 6, and without +1316 of 6cec6c
+extern "C" int __fastcall Shell_51fd30(BYTE* s, void*, int a)
+{
+    int st = F(int, s, 404);
+    if ((st > 2 && st < 5) || st == 6 || F(int, g_6cec6c, 1316))
+        return 0;
+    return CallThis<int>(FUN_5d8bb0, s, a);
+}
