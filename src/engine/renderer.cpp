@@ -23,7 +23,7 @@ ASM_PROC(FUN_5b22f0)
 ASM_PROC(FUN_5b6f90)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 ASM_PROC(FUN_5d3b40)
-ASM_PROC(FUN_5d4490)
+extern "C" void FUN_5d4490(); KING_ALIAS("_FUN_5d4490", "_Dd_Present")
 ASM_PROC(FUN_5b6bf0)
 ASM_VAR(int, g_transformSerial, $L_67ef88)
 ASM_VAR(int, g_720904, $L_720904)
@@ -1200,5 +1200,322 @@ extern "C" void __fastcall Draw_ListItem(BYTE* self, void*, DWORD a, DWORD b, DW
     BYTE* item = F(BYTE*, self, 8260) + idx * 124;
     if (F(BYTE, item, 32) & 16)
         CallThis(FUN_5b4d40, self, a, b, c, d, e, F(DWORD, item, 60));
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_VAR(BYTE*, g_rnD3d, $L_72090c)
+ASM_VAR(AsmLabel, s_rn67f3ac, $L_67f3ac)
+ASM_VAR(AsmLabel, s_rn67f390, $L_67f390)
+ASM_VAR(AsmLabel, s_rn67f37c, $L_67f37c)
+ASM_VAR(AsmLabel, s_rn67f354, $L_67f354)
+ASM_VAR(AsmLabel, s_rn67f330, $L_67f330)
+ASM_VAR(AsmLabel, s_rn67f30c, $L_67f30c)
+ASM_VAR(AsmLabel, s_rn67f2e8, $L_67f2e8)
+ASM_PROC(FUN_5d2ba0)    // log (text, value)
+
+// [FUN_5bc060..$L_5bc291] makes the system-memory surface (+36) of an RLE image (+16, freed): runs of n pixels, bit 7 = transparent; 1 when it is (or was) made
+extern "C" int __fastcall Image_RleToSurface(BYTE* self, void*)
+{
+    if (F(BYTE, self, 28) & 2)
+        return 1;
+    if (!g_device)
+        return 0;
+    DWORD desc[31];
+    memset(desc, 0, sizeof desc);
+    desc[0] = 124;
+    desc[1] = 7;
+    desc[2] = F(WORD, self, 6);
+    desc[3] = F(WORD, self, 4);
+    desc[26] = 2048;
+    BYTE* surf;
+    long hr = Com(g_rnD3d, 24, desc, &surf, 0);
+    if (F(WORD, self, 8) != CallC<int>(FUN_5d8350))
+        Sys_Fatal(s_rn67f3ac, 0);
+    if (hr)
+    {
+        const char* t = 0;
+        if (hr == (long)0x88760064)
+            t = s_rn67f354;
+        else if (hr == (long)0x80070057)
+            t = s_rn67f330;
+        else if (hr == (long)0x88760091)
+            t = s_rn67f30c;
+        else if (hr == (long)0x8876005F)
+            t = s_rn67f2e8;
+        if (t)
+            CallC(FUN_5d2ba0, t, 0);
+        return 0;
+    }
+    if (!surf)
+        Sys_Fatal(s_rn67f390, 0);
+    DWORD key[2] = {0, 0};
+    Com(surf, 116, 8, key);
+    DWORD lock[31];
+    lock[0] = 124;
+    lock[1] = 8387054;
+    BYTE* row = 0;
+    if (!Com(surf, 100, 0, lock, 1, 0))
+        row = (BYTE*)lock[9];
+    int pitch = (int)lock[4];
+    if (row)
+    {
+        BYTE* src = F(BYTE*, self, 16);
+        for (int y = 0; y < F(WORD, self, 6); y++, row += pitch)
+        {
+            BYTE* dst = row;
+            for (int x = 0; x < F(WORD, self, 4); )
+            {
+                BYTE b = *src++;
+                int n = b & 127;
+                int bytes = F(WORD, self, 8) * n;
+                if (b & 128)
+                    memset(dst, 0, bytes);
+                else
+                {
+                    memcpy(dst, src, bytes);
+                    src += bytes;
+                }
+                dst += bytes;
+                x += n;
+            }
+        }
+        Com(surf, 128, 0);
+        operator delete(F(BYTE*, self, 16));
+        F(BYTE*, self, 16) = 0;
+    }
+    else
+        CallC(FUN_5d2ba0, (char*)s_rn67f37c, 0);
+    F(BYTE*, self, 36) = surf;
+    F(DWORD, self, 28) |= 2;
+    return 1;
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5b1740(); KING_ALIAS("_FUN_5b1740", "@Render_FirstVisible@12")    // the next visible entry of a chain
+extern "C" void FUN_5b1870(); KING_ALIAS("_FUN_5b1870", "_Vertices_Alpha")    // the alpha bytes of n vertices
+ASM_PROC(FUN_5b17f0)    // the texture coordinates of n vertices
+ASM_PROC(FUN_5b18e0)
+ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+typedef void (__cdecl* RnHook)(BYTE*);
+ASM_VAR(AsmLabel, s_rn67f084, $L_67f084)
+ASM_VAR(AsmLabel, s_rn67f058, $L_67f058)
+
+// [FUN_5b1950..$L_5b1da2] draws strided primitives (n <= 1023) with the clip status of +8272: once per visible texture stage of the material chain, or with the generated texture coordinates (+8656), alphas (+8664) or both passes (+8668); returns the result
+extern "C" long __fastcall Rn_DrawStrided(BYTE* self, void*, BYTE* mat, int prim, BYTE* v, int n)
+{
+    if (n > 1023)
+        Sys_Fatal(s_rn67f084, (char*)mat);
+    if (!n)
+        return 0;
+    DWORD fvf = F(DWORD, v, 8);
+    DWORD d[24];
+    DWORD flags = F(DWORD, self, 8272);
+    if (!flags)
+        Com(g_device, 80, 136, 0);
+    else
+    {
+        DWORD st = 0;
+        if (flags & 1) st = 32;
+        if (flags & 32) st |= 16;
+        if (flags & 2) st |= 1;
+        if (flags & 16) st |= 2;
+        if (flags & 4) st |= 4;
+        if (flags & 8) st |= 8;
+        d[0] = 1;
+        d[1] = st;
+        F(float, d, 8) = -1.0f;
+        F(float, d, 12) = 1.0f;
+        F(float, d, 16) = -1.0f;
+        F(float, d, 20) = 1.0f;
+        F(float, d, 24) = 0.0f;
+        F(float, d, 28) = 1.0f;
+        Com(g_device, 108, d);
+        Com(g_device, 80, 136, 1);
+    }
+    RnHook hook = F(RnHook, self, 8628);
+    if (hook)
+        hook(v);
+    long hr;
+    if (!g_7208d4 && F(int, mat, 44) != -1)
+    {
+        BYTE* data = F(BYTE*, v, 4);
+        memcpy(d, data, 96);
+        d[8] = F(DWORD, data, F(int, mat, 48) * 8 + 32);
+        d[9] = F(DWORD, data, F(int, mat, 48) * 8 + 36);
+        hr = Com(g_device, 116, prim, fvf, d, n, 0);
+        while (!(F(DWORD, mat, 32) & 0x4000))
+        {
+            mat = CallThis<BYTE*>(FUN_5b1740, self, mat);
+            if (!mat)
+                break;
+            BYTE* p = F(BYTE*, v, 4);
+            d[8] = F(DWORD, p, F(int, mat, 48) * 8 + 32);
+            d[9] = F(DWORD, p, F(int, mat, 48) * 8 + 36);
+            hr = Com(g_device, 116, prim, fvf, d, n, 0);
+        }
+    }
+    else
+    {
+        BYTE* m = self + 5216 + F(int, self, 8236) * 48;
+        if (F(int, self, 8656))
+        {
+            if (n > 1024)
+                Sys_Fatal(s_rn67f058, 0);
+            fvf = (fvf & ~0x100u) | 0x200;
+            BYTE* p = F(BYTE*, v, 4);
+            F(BYTE*, p, 40) = self + 8688;
+            F(int, p, 44) = 8;
+            p = F(BYTE*, v, 4);
+            void* r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b17f0, self + 8688, F(void*, p, 0), F(int, p, 4), self + 8672, n, r);
+        }
+        if (F(int, self, 8664))
+        {
+            if (n > 1024)
+                Sys_Fatal(s_rn67f058, 0);
+            fvf = (fvf & ~0x10u) | 0x40;
+            BYTE* p = F(BYTE*, v, 4);
+            F(BYTE*, p, 16) = self + 16880;
+            F(int, p, 20) = 4;
+            p = F(BYTE*, v, 4);
+            void* r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b1870, self + 16880, F(void*, p, 0), F(int, p, 4), n, r);
+        }
+        if (F(int, self, 8668))
+        {
+            if (n > 1024)
+                Sys_Fatal(s_rn67f058, 0);
+            BYTE* p = F(BYTE*, v, 4);
+            DWORD d2[24];
+            memcpy(d2, p, 96);
+            d2[8] = (DWORD)(self + 8688);
+            d2[9] = 8;
+            void* r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b18e0, self + 8688, F(void*, p, 0), F(int, p, 4), n, r);
+            p = F(BYTE*, v, 4);
+            d2[4] = (DWORD)(self + 16880);
+            d2[5] = 4;
+            r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b1870, self + 16880, F(void*, p, 0), F(int, p, 4), n, r);
+            return Com(g_device, 116, prim, (fvf & ~0x10u) | 0x40, d2, n, 0);
+        }
+        hr = Com(g_device, 116, prim, fvf, F(BYTE*, v, 4), n, 0);
+    }
+    if (hr)
+        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
+    return hr;
+}
+
+
+// ---------------------------------------------------------------------------
+
+// [FUN_5b1df0..$L_5b2285] the indexed variant of Rn_DrawStrided: idx = {count (word), +8 extra vertex flags, +32 indices}, v's vertex count is its word at +0
+extern "C" long __fastcall Rn_DrawIndexedStrided(BYTE* self, void*, BYTE* mat, int prim, BYTE* idx, BYTE* v)
+{
+    if (F(WORD, idx, 0) > 1023)
+        Sys_Fatal(s_rn67f084, (char*)mat);
+    DWORD fvf = F(DWORD, v, 8);
+    DWORD d[24];
+    DWORD flags = F(DWORD, self, 8272);
+    if (!flags)
+        Com(g_device, 80, 136, 0);
+    else
+    {
+        DWORD st = 0;
+        if (flags & 1) st = 32;
+        if (flags & 32) st |= 16;
+        if (flags & 2) st |= 1;
+        if (flags & 16) st |= 2;
+        if (flags & 4) st |= 4;
+        if (flags & 8) st |= 8;
+        d[0] = 1;
+        d[1] = st;
+        F(float, d, 8) = -1.0f;
+        F(float, d, 12) = 1.0f;
+        F(float, d, 16) = -1.0f;
+        F(float, d, 20) = 1.0f;
+        F(float, d, 24) = 0.0f;
+        F(float, d, 28) = 1.0f;
+        Com(g_device, 108, d);
+        Com(g_device, 80, 136, 1);
+    }
+    RnHook hook = F(RnHook, self, 8628);
+    if (hook)
+        hook(v);
+    long hr;
+    if (!g_7208d4 && F(int, mat, 44) != -1)
+    {
+        BYTE* data = F(BYTE*, v, 4);
+        memcpy(d, data, 96);
+        d[8] = F(DWORD, data, F(int, mat, 48) * 8 + 32);
+        d[9] = F(DWORD, data, F(int, mat, 48) * 8 + 36);
+        hr = Com(g_device, 120, prim, F(DWORD, idx, 8) | fvf, d, (DWORD)F(WORD, v, 0), F(void*, idx, 32), (DWORD)F(WORD, idx, 0), 0);
+        while (!(F(DWORD, mat, 32) & 0x4000))
+        {
+            mat = CallThis<BYTE*>(FUN_5b1740, self, mat);
+            if (!mat)
+                break;
+            BYTE* p = F(BYTE*, v, 4);
+            d[8] = F(DWORD, p, F(int, mat, 48) * 8 + 32);
+            d[9] = F(DWORD, p, F(int, mat, 48) * 8 + 36);
+            hr = Com(g_device, 120, prim, F(DWORD, idx, 8) | fvf, d, (DWORD)F(WORD, v, 0), F(void*, idx, 32), (DWORD)F(WORD, idx, 0), 0);
+        }
+    }
+    else
+    {
+        int n = F(WORD, v, 0);
+        BYTE* m = self + 5216 + F(int, self, 8236) * 48;
+        if (F(int, self, 8656))
+        {
+            if (n > 1024)
+                Sys_Fatal(s_rn67f058, 0);
+            fvf |= 0x200;
+            BYTE* p = F(BYTE*, v, 4);
+            F(BYTE*, p, 40) = self + 8688;
+            F(int, p, 44) = 8;
+            p = F(BYTE*, v, 4);
+            void* r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b17f0, self + 8688, F(void*, p, 0), F(int, p, 4), self + 8672, (int)F(WORD, v, 0), r);
+        }
+        else
+            fvf |= F(DWORD, idx, 8);
+        if (F(int, self, 8664))
+        {
+            if (n > 1024)
+                Sys_Fatal(s_rn67f058, 0);
+            fvf = (fvf & ~0x10u) | 0x40;
+            BYTE* p = F(BYTE*, v, 4);
+            F(BYTE*, p, 16) = self + 16880;
+            F(int, p, 20) = 4;
+            p = F(BYTE*, v, 4);
+            void* r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b1870, self + 16880, F(void*, p, 0), F(int, p, 4), n, r);
+        }
+        if (F(int, self, 8668))
+        {
+            if (n > 1024)
+                Sys_Fatal(s_rn67f058, 0);
+            BYTE* p = F(BYTE*, v, 4);
+            DWORD d2[24];
+            memcpy(d2, p, 96);
+            d2[8] = (DWORD)(self + 8688);
+            d2[9] = 8;
+            void* r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b18e0, self + 8688, F(void*, p, 0), F(int, p, 4), n, r);
+            p = F(BYTE*, v, 4);
+            d2[4] = (DWORD)(self + 16880);
+            d2[5] = 4;
+            r = CallC<void*>(FUN_5aba40, d, m, self + 8564);
+            CallC(FUN_5b1870, self + 16880, F(void*, p, 0), F(int, p, 4), n, r);
+            return Com(g_device, 120, prim, (fvf & ~0x10u) | 0x40, d2, (DWORD)F(WORD, v, 0), F(void*, idx, 32), (DWORD)F(WORD, idx, 0), 0);
+        }
+        hr = Com(g_device, 120, prim, fvf, F(BYTE*, v, 4), (DWORD)F(WORD, v, 0), F(void*, idx, 32), (DWORD)F(WORD, idx, 0), 0);
+    }
+    if (hr)
+        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
+    return hr;
 }
 

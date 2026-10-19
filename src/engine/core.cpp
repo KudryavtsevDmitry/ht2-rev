@@ -90,7 +90,7 @@ ASM_PROC(FUN_6037e0)    // time in seconds, returns double
 ASM_PROC(FUN_5d35b0)
 extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
 ASM_PROC(FUN_5d3080)    // next sibling
-ASM_PROC(FUN_5d38c0)
+extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 ASM_VAR(int, g_67faa0, $L_67faa0)
 ASM_VAR(int, g_71e800, $L_71e800)
@@ -767,5 +767,74 @@ extern "C" void __cdecl Pool71e830_Free(BYTE* p)
 extern "C" void __cdecl Core_5d2eb0()
 {
     CallC(FUN_5d3fd0, 0);
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5d35b0)    // queue: drop a task (this, task)
+ASM_VAR(AsmLabel, s_67fcdc, $L_67fcdc)
+ASM_VAR(AsmLabel, s_67fcd0, $L_67fcd0)
+ASM_VAR(AsmLabel, g_text7200d4, $L_7200d4)
+ASM_VAR(BYTE*, g_coreTraceData, $L_71e814)
+ASM_VAR(int, g_coreTracePos, $L_71e818)
+ASM_VAR(int, g_coreTraceSize, $L_71e810)
+extern "C" void __cdecl Pool_Fail(int code);
+
+// appends a text to the trace buffer while it has room
+static void Core_TraceText(const char* p)
+{
+    if (!g_coreTraceData || !*p)
+        return;
+    while (g_coreTracePos < g_coreTraceSize)
+    {
+        g_coreTraceData[g_coreTracePos] = *p++;
+        g_coreTracePos++;
+        if (!*p)
+            break;
+    }
+}
+
+// [FUN_5d38c0..$L_5d3a08] runs a due event of the queue: state 0 calls its task (traced when +20), 2 restarts it, others drop the task
+extern "C" void __fastcall Queue_RunEvent(BYTE* self, void*, BYTE* ev)
+{
+    BYTE* task = F(BYTE*, ev, 12);
+    if (!task)
+        return;
+    F(int, task, 24) = F(int, ev, 16);
+    int st = F(int, ev, 20);
+    if (st == 0)
+    {
+        g_720118 = (int)F(BYTE*, ev, 12);
+        if (!Pool_Used((BYTE*)g_pool7200c0, 0, ev))
+            Pool_Fail(0);
+        if (F(int, self, 20))
+        {
+            BYTE* t = F(BYTE*, ev, 12);
+            sprintf(g_text7200d4, s_67fcdc, F(int, t, 28), F(int, t, 20));
+            Core_TraceText(g_text7200d4);
+        }
+        CallVirt(F(BYTE*, ev, 12), 20);
+        if (F(int, self, 20))
+            Core_TraceText(s_67fcd0);
+        g_720118 = 0;
+        if (!Pool_Used((BYTE*)g_pool7200c0, 0, ev))
+            Pool_Fail(1);
+    }
+    else if (st == 2)
+    {
+        F(int, F(BYTE*, ev, 12), 16) = 0;
+        CallVirt(F(BYTE*, ev, 12), 20);
+    }
+    else
+    {
+        CallThis(FUN_5d35b0, self, task);
+        if (task)
+            CallVirt(task, 0, 1);
+        return;
+    }
+    F(int, F(BYTE*, ev, 12), 16)++;
+    Queue_Remove(self, 0, ev);
+    if (ev)
+        CallVirt(ev, 0, 1);
 }
 

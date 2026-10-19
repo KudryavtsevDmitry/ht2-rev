@@ -651,7 +651,7 @@ ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
 ASM_PROC(FUN_5b6bf0)
 ASM_PROC(FUN_5b6ed0)
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
-ASM_PROC(FUN_4e1320)
+extern "C" void FUN_4e1320(); KING_ALIAS("_FUN_4e1320", "_Startup_FindCd")
 ASM_PROC(FUN_519750)
 ASM_VAR(int, g_6ce370, $L_6ce370)               // the vehicle tech table is loaded
 ASM_VAR(const char*, g_vehTechName, $L_674ae0)
@@ -819,7 +819,7 @@ ASM_PROC(FUN_5dc230)
 ASM_PROC(FUN_5dae90)
 extern "C" void FUN_5c43c0(); KING_ALIAS("_FUN_5c43c0", "@Rec_Mark@8")
 extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
-ASM_PROC(FUN_51d0e0)
+extern "C" void FUN_51d0e0(); KING_ALIAS("_FUN_51d0e0", "_Save_ListEntries")
 extern "C" void FUN_5d8610(); KING_ALIAS("_FUN_5d8610", "@Win_Activate@8")
 ASM_PROC(FUN_531000)
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
@@ -1435,7 +1435,7 @@ ASM_PROC(FUN_5e48f0)
 extern "C" void FUN_42db90(); KING_ALIAS("_FUN_42db90", "_AI_FreeList68b99c")
 extern "C" void FUN_435a80(); KING_ALIAS("_FUN_435a80", "_AI_Reset")
 extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
-ASM_PROC(FUN_512c70)
+extern "C" void FUN_512c70(); KING_ALIAS("_FUN_512c70", "_Shell_LeaveGameScreens")
 
 // [FUN_511820] leaves a race: silences the sound, clears the window, resets the world, the AI and the network messages
 extern "C" int __cdecl Shell_LeaveRace()
@@ -1466,7 +1466,7 @@ extern "C" int __cdecl Shell_LeaveRace()
 
 extern "C" void FUN_51bfa0(); KING_ALIAS("_FUN_51bfa0", "_Save_OpenStorage@8")    // opens the save storage (path, mode), stdcall
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")    // a temporary wide string of a name
-ASM_PROC(FUN_513270)    // opens a stream of a storage (storage, name, mode)
+extern "C" void FUN_513270(); KING_ALIAS("_FUN_513270", "_Save_FindNamedStream")    // opens a stream of a storage (storage, name, mode)
 extern "C" void FUN_513850(); KING_ALIAS("_FUN_513850", "@Keys_Assign@8")
 extern "C" void FUN_513600(); KING_ALIAS("_FUN_513600", "@Settings_Save@8")
 ASM_PROC(FUN_5147b0)
@@ -1849,5 +1849,255 @@ extern "C" int __fastcall Keys_Bind(BYTE* self, void*, int key)
     F(DWORD, ctl, 284) &= ~2u;
     F(int, self, 516) = -1;
     return -1;
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_51bfa0(); KING_ALIAS("_FUN_51bfa0", "_Save_OpenStorage@8")
+extern "C" void FUN_50bcc0(); KING_ALIAS("_FUN_50bcc0", "_Str_FromWide")
+extern "C" void FUN_5c1140(); KING_ALIAS("_FUN_5c1140", "@List_AddNamed@12")
+extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
+extern "C" void FUN_603c70(); KING_ALIAS("_FUN_603c70", "_Ini_WriteInt")
+extern "C" void FUN_4ccf10(); KING_ALIAS("_FUN_4ccf10", "@Lights_Destruct@8")
+extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
+extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
+extern "C" void FUN_5db9f0(); KING_ALIAS("_FUN_5db9f0", "@Events_Put@12")
+extern "C" void FUN_50bd80(); KING_ALIAS("_FUN_50bd80", "_Carat_ScreenFlags")
+extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")
+extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
+extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
+extern "C" void FUN_527ea0(); KING_ALIAS("_FUN_527ea0", "_Carat_SetView")
+ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void* p);
+struct GsStatStg { WCHAR* pwcsName; DWORD rest[17]; };    // STATSTG
+ASM_PROC(FUN_5b6bf0)    // surface: prepare
+ASM_PROC(FUN_5d8460)
+ASM_PROC($L_5d7b90)     // the video mode dialog (8 args)
+ASM_PROC($L_5d7c20)     // tries a video mode (w, h, cres, flags, 3 outs)
+ASM_PROC($L_5dd8c0)     // window: set the video mode (w, h, cres, flags)
+ASM_VAR(BYTE*, g_gs6cecd8, $L_6cecd8)
+ASM_VAR(AsmLabel, s_gs677670, $L_677670)
+ASM_VAR(AsmLabel, s_gs67683c, $L_67683c)
+ASM_VAR(AsmLabel, s_gs677658, $L_677658)
+ASM_VAR(AsmLabel, s_gs676ce4, $L_676ce4)
+ASM_VAR(const char*, g_gsIni, $L_696868)
+ASM_VAR(AsmLabel, g_gs720770, $L_720770)
+ASM_VAR(AsmLabel, s_gs676cdc, $L_676cdc)
+ASM_VAR(AsmLabel, g_gs6ce830, $L_6ce830)
+ASM_VAR(AsmLabel, s_gs676cd4, $L_676cd4)
+ASM_VAR(AsmLabel, s_gs676ccc, $L_676ccc)
+ASM_VAR(AsmLabel, s_gs68d1c0, $L_68d1c0)
+ASM_VAR(BYTE*, g_gsLights, $L_6ce520)
+ASM_VAR(BYTE*, g_gs6cecf4, $L_6cecf4)
+ASM_VAR(DWORD, g_gs696874, $L_696874)
+ASM_VAR(BYTE*, g_gs6cec6c, $L_6cec6c)
+ASM_VAR(int, g_gs696878, $L_696878)
+ASM_VAR(BYTE*, g_gs6cec90, $L_6cec90)
+ASM_VAR(BYTE*, g_gs6ced54, $L_6ced54)
+ASM_VAR(BYTE*, g_gs6ced24, $L_6ced24)
+ASM_VAR(BYTE*, g_gs6ced2c, $L_6ced2c)
+ASM_VAR(BYTE*, g_gs6ced30, $L_6ced30)
+ASM_VAR(int, g_gs6cec74, $L_6cec74)
+ASM_VAR(BYTE*, g_gs6ced34, $L_6ced34)
+ASM_VAR(BYTE*, g_gs6ced38, $L_6ced38)
+ASM_VAR(AsmLabel, g_gs696750, $L_696750)
+ASM_VAR(DWORD, g_gs69685c, $L_69685c)
+ASM_VAR(BYTE*, g_gs69684c, $L_69684c)
+ASM_VAR(BYTE*, g_gs696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_gs6cecf8, $L_6cecf8)
+ASM_VAR(int, g_gs6f2ee8, $L_6f2ee8)
+ASM_VAR(int, g_gs6f2eec, $L_6f2eec)
+ASM_VAR(int, g_gs6f2ef0, $L_6f2ef0)
+ASM_VAR(int, g_gs6f2ed0, $L_6f2ed0)
+ASM_VAR(int, g_gs6f2ed4, $L_6f2ed4)
+ASM_VAR(int, g_gs6f2ed8, $L_6f2ed8)
+
+// [FUN_51d0e0..$L_51d114] adds the names of the elements of the sub-storage 67683c of a save storage to a list
+extern "C" void __cdecl Save_ListEntries(const char* name, BYTE* list)
+{
+    void* stg = CallStd<void*>(FUN_51bfa0, name, 1);
+    if (!stg)
+        Sys_Fatal((char*)g_gs6cecd8 + 632, s_gs677670);
+    void* sub = 0;
+    ComCall(stg, 24, CallC<const WCHAR*>(FUN_50bc90, (char*)s_gs67683c), (void*)0, 16, (void*)0, 0, &sub);
+    if (sub)
+    {
+        void* en;
+        long hr = ComCall(sub, 44, 0, (void*)0, 0, &en);
+        if (!hr)
+        {
+            ComCall(en, 20);
+            GsStatStg st;
+            memset(&st, 0, sizeof st);
+            if (!ComCall(en, 12, 1, &st, (void*)0))
+            {
+                do
+                {
+                    char* s = CallC<char*>(FUN_50bcc0, st.pwcsName);
+                    if (s && *s)
+                        CallThis(FUN_5c1140, list, s);
+                    if (st.pwcsName)
+                        CoTaskMemFree(st.pwcsName);
+                    memset(&st, 0, sizeof st);
+                } while (!ComCall(en, 12, 1, &st, (void*)0));
+            }
+            ComCall(en, 8);
+        }
+        else
+            CallC(FUN_5d2ba0, (char*)s_gs677658, hr);
+        ComCall(sub, 8);
+    }
+    ComCall(stg, 8);
+}
+
+// [FUN_515540..$L_51568b] the video settings of entry idx in a section of the ini: -1 runs the mode dialog and saves its choice; returns 1 after the dialog
+extern "C" int __cdecl Shell_VideoSettings(int idx, const char* section, int a3, int a4, int a5, DWORD a6, int* mode, int* chosen)
+{
+    char key[32];
+    int out0, out1, out2;
+    sprintf(key, s_gs676ce4, idx + 1);
+    int v;
+    CallC(FUN_603b70, key, section, -1, &v, g_gsIni);
+    if (v == -1)
+    {
+        int r = CallC<int>($L_5d7b90, a3, a4, a5, a6 | 0x8000, &out2, mode, &out0, &out1);
+        *chosen = r != 0;
+        int value;
+        if (*chosen)
+        {
+            WritePrivateProfileStringA(key, s_gs676cdc, g_gs720770, g_gsIni);
+            strcpy(g_gs6ce830, g_gs720770);
+            CallC(FUN_603c70, key, (char*)s_gs676cd4, out0, g_gsIni);
+            CallC(FUN_603c70, key, (char*)s_gs676ccc, out1, g_gsIni);
+            value = 0;
+        }
+        else
+            value = (*mode != 3) + 1;
+        CallC(FUN_603c70, key, section, value, g_gsIni);
+        return 1;
+    }
+    if (v == 0)
+    {
+        *chosen = 1;
+        GetPrivateProfileStringA(key, s_gs676cdc, s_gs68d1c0, g_gs6ce830, 130, g_gsIni);
+        return 0;
+    }
+    if (v == 1)
+    {
+        *chosen = 0;
+        *mode = 3;
+    }
+    else if (v == 2)
+    {
+        *chosen = 0;
+        *mode = 5;
+    }
+    return 0;
+}
+
+// [FUN_512c70..$L_512e06] leaves the game screens: frees the lights, fonts and menu objects, switches to 800x600 and back to the shell view
+extern "C" void __cdecl Shell_LeaveGameScreens()
+{
+    BYTE* lights = g_gsLights;
+    if (lights)
+    {
+        CallThis(FUN_4ccf10, lights);
+        operator delete(lights);
+    }
+    g_gsLights = 0;
+    if (g_gs6cecf4)
+        CallVirt(g_gs6cecf4, 40);
+    g_gs696878 = 0;
+    g_gs696874 |= 64;
+    F(int, g_gs6cec6c, 1300) = 0;
+    BYTE* c = CallThis<BYTE*>(FUN_5bdb50, g_gs6cec90 + 64, 146);
+    F(DWORD, c, 284) &= ~2u;
+    if (g_gs6ced54)
+    {
+        CallVirt(g_gs6ced54, 0, 1);
+        g_gs6ced54 = 0;
+    }
+    BYTE* f = g_gs6ced24;
+    if (f) { CallThis(FUN_5bc2f0, f); operator delete(f); }
+    f = g_gs6ced2c;
+    if (f) { CallThis(FUN_5bc2f0, f); operator delete(f); }
+    f = g_gs6ced30;
+    if (f) { CallThis(FUN_5bc2f0, f); operator delete(f); }
+    g_gs6ced38 = g_gs6ced34;
+    if (g_gs6cec74)
+    {
+        CallThis(FUN_5db9f0, (BYTE*)g_gs696750, g_gs6cec74);
+        g_gs6cec74 = 0;
+    }
+    int o0, o1, o2;
+    DWORD flags = g_gs69685c;
+    if (!CallC<int>($L_5d7c20, 800, 600, 1, (~(CallC<DWORD>(FUN_50bd80) | 0x4000) & flags) | 0xe00, &o2, &o1, &o0))
+    {
+        flags = g_gs69685c;
+        CallThis($L_5dd8c0, (BYTE*)g_gs696750, 800, 600, 1, ~(CallC<DWORD>(FUN_50bd80) | 0x4000) & flags);
+    }
+    flags = g_gs69685c;
+    CallThis($L_5dd8c0, (BYTE*)g_gs696750, 800, 600, 1, (~(CallC<DWORD>(FUN_50bd80) | 0x4000) & flags) | 0xe00);
+    CallThis(FUN_5b6bf0, F(BYTE*, g_gs69684c, 12));
+    CallThis(FUN_5d8630, g_gs69684c, 0);
+    CallThis(FUN_5d88c0, g_gs69684c);
+    CallThis(FUN_5ba3d0, *F(BYTE**, F(BYTE*, g_gs696ca0, 9396), 100));
+    F(int, g_gs6cec6c, 1356) = 0;
+    CallC(FUN_5d8460, 1, -1);
+    g_gs6ced24 = g_gs6cecf8;
+    g_gs6f2ed0 = g_gs6f2ee8;
+    g_gs6f2ed4 = g_gs6f2eec;
+    g_gs6f2ed8 = g_gs6f2ef0;
+    CallC(FUN_527ea0, 0, 0);
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, s_gs67694c, $L_67694c)
+ASM_VAR(AsmLabel, s_gs676934, $L_676934)
+
+// [FUN_513270..$L_513423] finds the stream of a storage holding a 256-byte name (streams named 67694c n); mode 0 opens it for writing (creating a new one), 2 rewrites a found one, else returns the found one
+extern "C" void* __cdecl Save_FindNamedStream(void* stg, const char* name, int mode)
+{
+    char sname[32];
+    char head[256];
+    ULONG n;
+    int i = 0;
+    void* stream = 0;
+    sprintf(sname, s_gs67694c, 0);
+    ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, sname), (void*)0, 16, 0, &stream);
+    while (stream)
+    {
+        ComCall(stream, 12, head, 256, &n);
+        if (!strcmp(head, name))
+            break;
+        ComCall(stream, 8);
+        i++;
+        sprintf(sname, s_gs67694c, i);
+        ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, sname), (void*)0, 16, 0, &stream);
+    }
+    if (mode == 0)
+    {
+        if (stream)
+        {
+            ComCall(stream, 8);
+            ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, sname), (void*)0, 17, 0, &stream);
+        }
+        else
+            ComCall(stg, 12, CallC<const WCHAR*>(FUN_50bc90, sname), 4113, 0, 0, &stream);
+        if (!stream)
+            Sys_Fatal(s_gs676934, name);
+    }
+    else if (mode == 2 && stream)
+    {
+        ComCall(stream, 8);
+        ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, sname), (void*)0, 17, 0, &stream);
+    }
+    else
+        return stream;
+    memset(head, 0, sizeof head);
+    strcpy(head, name);
+    ComCall(stream, 16, head, 256, &n);
+    return stream;
 }
 

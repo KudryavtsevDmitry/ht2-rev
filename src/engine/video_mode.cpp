@@ -125,3 +125,151 @@ int __cdecl Video_SetMode(int w, int h, int bits, int unused, int a, int b)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+typedef char VmLabel[1];
+ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
+ASM_VAR(int, g_vmWindowed, $L_7208f0)
+ASM_VAR(BYTE*, g_vmFront, $L_7208f8)
+ASM_VAR(int, g_vm7208b8, $L_7208b8)
+ASM_VAR(VmLabel, s_vm67fdd8, $L_67fdd8)
+ASM_VAR(VmLabel, s_vm67fdc0, $L_67fdc0)
+ASM_VAR(VmLabel, s_vm67fdb8, $L_67fdb8)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+template <class R = long, class... A>
+static R Vm_ComCall(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// restores a lost surface; fatal with the text when that fails
+static void Vm_RestoreLost(BYTE* s, const char* what)
+{
+    long hr = Vm_ComCall(s, 108);
+    if (hr)
+    {
+        char text[256];
+        strcpy(text, what);
+        strcat(text, CallC<const char*>(FUN_5d4c10, hr, 0));
+        Sys_Fatal(text, 0);
+    }
+}
+
+// [FUN_5d3fe0..$L_5d41c5] locks the primary surface (+7208fc) once, restoring lost surfaces; returns its memory (pitch in 7208a4), 0 when not in a fullscreen DirectDraw mode
+extern "C" BYTE* __cdecl Dd_LockPrimary()
+{
+    if (!g_ddMode || g_vmWindowed)
+        return 0;
+    if (Vm_ComCall(g_vmFront, 96) == (long)0x887601C2)
+        Vm_RestoreLost(g_vmFront, s_vm67fdd8);
+    if (Vm_ComCall(g_directDraw, 96) == (long)0x887601C2)
+    {
+        g_waitVsync = 0;
+        Vm_RestoreLost(g_directDraw, s_vm67fdc0);
+    }
+    if (g_waitVsync)
+        return (BYTE*)g_waitVsync;
+    if (g_vm7208b8)
+        return 0;
+    DWORD desc[31];
+    desc[0] = 124;
+    desc[1] = 8387054;
+    if (!Vm_ComCall(g_directDraw, 100, (void*)0, desc, 1, 0))
+    {
+        g_waitVsync = desc[9];
+        g_7208a4 = desc[4];
+        return (BYTE*)desc[9];
+    }
+    Sys_Fatal(CallC<const char*>(FUN_5d4c10, 0, (char*)s_vm67fdb8), 0);
+    return (BYTE*)g_waitVsync;
+}
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5d4450(); KING_ALIAS("_FUN_5d4450", "_Dd_WaitFlip")    // waits for the flip
+ASM_PROC(FUN_5d2ba0)    // log (text, value)
+ASM_VAR(int, g_vm7208b4, $L_7208b4)
+ASM_VAR(int, g_vmFlipPending, $L_720928)
+ASM_VAR(HWND, g_vmHwnd, $L_720920)
+ASM_VAR(VmLabel, s_vm67fe60, $L_67fe60)
+ASM_VAR(VmLabel, s_vm67fe4c, $L_67fe4c)
+ASM_VAR(VmLabel, s_vm67fe3c, $L_67fe3c)
+ASM_VAR(VmLabel, s_vm67fe28, $L_67fe28)
+ASM_VAR(VmLabel, s_vm67fe1c, $L_67fe1c)
+ASM_VAR(VmLabel, s_vm67fe10, $L_67fe10)
+ASM_VAR(VmLabel, s_vm67fe04, $L_67fe04)
+ASM_VAR(VmLabel, s_vm67fdf8, $L_67fdf8)
+
+// [FUN_5d4490..$L_5d4623] presents the frame: unlocks the primary, restores lost surfaces, blits (mode 2 without flipping, or windowed) or flips, then locks the primary again for the next frame
+extern "C" void __cdecl Dd_Present()
+{
+    if (!g_ddMode)
+        return;
+    if (g_waitVsync)
+    {
+        if (!Vm_ComCall(g_directDraw, 128, 0))
+            g_waitVsync = 0;
+        else if (g_waitVsync)
+            return;
+    }
+    if (Vm_ComCall(g_vmFront, 96) == (long)0x887601C2)
+    {
+        CallC(FUN_5d2ba0, (char*)s_vm67fe60, 0);
+        Vm_RestoreLost(g_vmFront, s_vm67fe4c);
+    }
+    if (Vm_ComCall(g_directDraw, 96) == (long)0x887601C2)
+    {
+        g_waitVsync = 0;
+        CallC(FUN_5d2ba0, (char*)s_vm67fe3c, 0);
+        Vm_RestoreLost(g_directDraw, s_vm67fe28);
+    }
+    DWORD fx[25] = {};
+    fx[0] = 100;
+    fx[2] = 13369376;
+    if (g_ddMode == 2)
+    {
+        if (!g_vm7208b4)
+        {
+            RECT src = {0, 0, g_width, g_height};
+            RECT dst = {0, 0, g_width, g_height};
+            if (Vm_ComCall(g_vmFront, 96) == (long)0x887601C2)
+                CallC(FUN_5d2ba0, (char*)s_vm67fe1c, 33);
+            if (Vm_ComCall(g_directDraw, 96) == (long)0x887601C2)
+                CallC(FUN_5d2ba0, (char*)s_vm67fe10, 33);
+            long hr = Vm_ComCall(g_vmFront, 20, &dst, g_directDraw, &src, 16908288, fx);
+            if (hr)
+                CallC(FUN_5d4c10, hr, 0);     // its text was never shown
+        }
+        else
+        {
+            for (;;)
+            {
+                CallC(FUN_5d4450);
+                long hr = Vm_ComCall(g_vmFront, 44, 0, 1);
+                if (!hr)
+                    break;
+                CallC(FUN_5d4c10, hr, 0);
+            }
+            g_vmFlipPending = 1;
+        }
+    }
+    else
+    {
+        RECT src = {0, 0, g_width, g_height};
+        RECT rc;
+        GetClientRect(g_vmHwnd, &rc);
+        POINT a = {rc.left, rc.top};
+        POINT b = {rc.right, rc.bottom};
+        ClientToScreen(g_vmHwnd, &a);
+        ClientToScreen(g_vmHwnd, &b);
+        RECT dst = {a.x, a.y, b.x, b.y};
+        Vm_ComCall(g_vmFront, 20, &dst, g_directDraw, &src, 131072, fx);
+    }
+    if (g_vmWindowed || g_vm7208b8)
+        return;
+    DWORD desc[31];
+    desc[0] = 124;
+    desc[1] = 8387054;
+    if (!Vm_ComCall(g_directDraw, 100, (void*)0, desc, 1, 0))
+        g_waitVsync = (int)desc[9];
+}

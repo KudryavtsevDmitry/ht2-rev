@@ -96,7 +96,7 @@ ASM_PROC(FUN_6037e0)    // time in seconds, returns double
 ASM_PROC(FUN_5d35b0)
 extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
 ASM_PROC(FUN_5d3080)    // next sibling
-ASM_PROC(FUN_5d38c0)
+extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 ASM_VAR(int, g_67faa0, $L_67faa0)
 ASM_VAR(int, g_71e800, $L_71e800)

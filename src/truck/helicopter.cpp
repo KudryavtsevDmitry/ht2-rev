@@ -698,7 +698,7 @@ extern "C" void __fastcall Copter_UpdateLights(BYTE* self, void*)
     CallC(FUN_4e480c, F(void*, self, 3160), night);
 }
 
-ASM_PROC(FUN_568830)    // adds a helicopter's way point
+extern "C" void FUN_568830(); KING_ALIAS("_FUN_568830", "_Net_CreatePlacedObject")    // adds a helicopter's way point
 extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
 ASM_PROC(FUN_5ea1b0)    // draws a text in a box
 extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);   // engine.cpp
@@ -1679,5 +1679,232 @@ extern "C" void __cdecl Copter_SaveState(int n)
     CallC(FUN_50c3a0, stream, 72, 54, 0);
     Copter_ComCall(stream, 8);
     Copter_ComCall(stg, 8);
+}
+
+
+// ---------------------------------------------------------------------------
+// Split procs (their code ran on past ENDP after the call to Sys_Fatal).
+extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
+extern "C" void FUN_568ed0(); KING_ALIAS("_FUN_568ed0", "_Objects_FreeId")
+extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
+extern "C" void FUN_5e4b30(); KING_ALIAS("_FUN_5e4b30", "@Resources_Read@12")
+extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
+ASM_PROC(FUN_5e52b0)    // resources: send a message (id, kind, size, data)
+ASM_VAR(AsmLabel, g_hcModels6c6b68, $L_6c6b68)     // 876 bytes per car model, the name at +0
+ASM_VAR(AsmLabel, s_hc6766b4, $L_6766b4)
+ASM_VAR(Vec3, g_hcZero702650, $L_702650)
+ASM_VAR(AsmLabel, g_hcParts6ced98, $L_6ced98)        // 11 dwords per car type
+ASM_VAR(AsmLabel, s_hc677738, $L_677738)
+ASM_VAR(AsmLabel, s_hc67c200, $L_67c200)
+ASM_VAR(AsmLabel, s_hc677704, $L_677704)
+ASM_VAR(AsmLabel, s_hc6776d4, $L_6776d4)
+ASM_VAR(AsmLabel, s_hc67c1d8, $L_67c1d8)
+ASM_VAR(int, g_6f32e8, $L_6f32e8)                 // 6 dwords read from the stream 677738
+ASM_VAR(int, g_6f32ec, $L_6f32ec)
+ASM_VAR(int, g_6f32f0, $L_6f32f0)
+ASM_VAR(int, g_6f32f4, $L_6f32f4)
+ASM_VAR(int, g_6f32f8, $L_6f32f8)
+ASM_VAR(int, g_6f32fc, $L_6f32fc)
+ASM_VAR(int, g_6f3310, $L_6f3310)                 // the options of the stream 677704
+ASM_VAR(int, g_6f3314, $L_6f3314)
+ASM_VAR(int, g_6f3318, $L_6f3318)
+ASM_VAR(int, g_6f331c, $L_6f331c)
+ASM_VAR(int, g_6f3320, $L_6f3320)
+struct Blob48 { DWORD d[12]; };
+
+// [FUN_571a80..$L_571b11] creates the network object of a car type (resource id (type*5+1000)*200 + free id) and sends its 156-byte creation message
+extern "C" int __cdecl Net_CreateCarObject(BYTE* res, int kind, const char* name, Blob48 state, int type)
+{
+    int num = CallC<int>(FUN_52ea90, type);
+    int id = (num * 5 + 1000) * 200;
+    CallC(FUN_568ed0, &id, type);
+    BYTE* table = res + 704;
+    CallThis(FUN_5e5130, table, id, kind);
+    const char* model = (char*)g_hcModels6c6b68 + type * 876;
+    BYTE* obj = CallC<BYTE*>(FUN_5ef2b0, 0, model);
+    if (!obj)
+        Sys_Fatal(model, s_hc6766b4);
+    BYTE msg[156];
+    memset(msg, 0, sizeof msg);
+    F(int, msg, 0) = num;
+    F(int, msg, 4) = id % 1000;
+    F(Vec3, msg, 20) = g_hcZero702650;
+    F(Vec3, msg, 32) = g_hcZero702650;
+    F(Blob48, msg, 44) = state;
+    strncpy((char*)msg + 92, name, 31);
+    strncpy((char*)msg + 124, F(char*, obj, 12), 31);
+    CallThis(FUN_5e52b0, table, id, kind, 156, msg);
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, table, id);
+    BYTE* part = ((BYTE**)(char*)g_hcParts6ced98)[type * 11];
+    if (part)
+        F(int, r, 16) = F(int, part, 16);
+    CallThis(FUN_5e4900, r, table);
+    return id;
+}
+
+// [FUN_571d20..$L_571eeb] reads the three streams of a saved game's storage: 6 dwords, the options (counted ints), the resources
+extern "C" void __cdecl Copter_LoadStreams(void* stg)
+{
+    void* stream = 0;
+    ULONG got;
+    Copter_ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, (char*)s_hc677738), (void*)0, 16, 0, &stream);
+    if (!stream)
+        Sys_Fatal(s_hc67c200, 0);
+    int six[6];
+    Copter_ComCall(stream, 12, six, 24, &got);
+    g_6f32e8 = six[0];
+    g_6f32ec = six[1];
+    g_6f32f0 = six[2];
+    g_6f32f4 = six[3];
+    g_6f32f8 = six[4];
+    g_6f32fc = six[5];
+    Copter_ComCall(stream, 8);
+    Copter_ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, (char*)s_hc677704), (void*)0, 16, 0, &stream);
+    if (stream)
+    {
+        int o[10] = {};
+        o[2] = 1;
+        Copter_ComCall(stream, 12, o, 4, &got);
+        Copter_ComCall(stream, 12, o, o[0] * 4, &got);   // over the count itself
+        g_6f3310 = o[0] % 2;
+        g_6f3314 = o[1] % 3;
+        g_6f3318 = o[2] % 2;
+        g_6f331c = o[3] % 4;
+        g_6f3320 = o[4] % 3;
+        F(int, g_6cec6c, 1304) = o[5] % 2;
+        Copter_ComCall(stream, 8);
+    }
+    Copter_ComCall(stg, 16, CallC<const WCHAR*>(FUN_50bc90, (char*)s_hc6776d4), (void*)0, 16, 0, &stream);
+    if (!stream)
+        Sys_Fatal(s_hc67c1d8, 0);
+    CallThis(FUN_5e4b30, g_696ca0 + 704, stream);
+    Copter_ComCall(stream, 8);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_437220(); KING_ALIAS("_FUN_437220", "_Ai_GetPositionIdV")
+extern "C" void FUN_437390(); KING_ALIAS("_FUN_437390", "_Ai_GetPositionIdRV")
+extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")
+extern "C" void FUN_4364f0(); KING_ALIAS("_FUN_4364f0", "_AI_Make449c40")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+ASM_VAR(int, g_hcTypeClass5, $L_6ce344)
+ASM_VAR(int, g_hcCarTypeCount, $L_6ce32c)
+ASM_VAR(BYTE*, g_hc6ef204, $L_6ef204)
+ASM_VAR(AsmLabel, s_hc672f50, $L_672f50)
+ASM_VAR(AsmLabel, s_hc672f78, $L_672f78)
+ASM_VAR(AsmLabel, s_hc66d638, $L_66d638)
+ASM_VAR(AsmLabel, s_hc66d628, $L_66d628)
+ASM_VAR(AsmLabel, s_hc67b2cc, $L_67b2cc)
+ASM_VAR(BYTE**, g_hc68cf38, $L_68cf38)          // the road nodes
+struct Blob32 { DWORD d[8]; };
+
+// [FUN_568830..$L_568afb] creates the network object of a static model at a position (id n+300000; an empty name takes the position's room name) and sends its 160-byte creation message
+extern "C" BYTE* __cdecl Net_CreatePlacedObject(BYTE* res, const char* name, int kind, Vec3 pos, int a7, int n, int a9, int a10)
+{
+    if (!g_696c5c)
+        return 0;
+    int id = n + 300000;
+    char room[104];
+    if (!strcmp(name, g_str68d1c0))
+    {
+        Blob32 pid;
+        CallC(FUN_437220, &pid, pos);
+        DWORD info[11] = {};
+        info[4] = (DWORD)(char*)s_hc66d638;
+        info[5] = (DWORD)(char*)s_hc66d628;
+        info[9] = 0xffffffff;
+        info[10] = 0xffffffff;
+        CallC(FUN_438d70, pid, info);
+        strcpy(room, (char*)info[5]);
+        name = room;
+    }
+    BYTE* table = res + 704;
+    CallThis(FUN_5e5130, table, id, kind);
+    BYTE m[48];
+    CallC(FUN_5abc40, m, pos);
+    BYTE msg[160];
+    memset(msg, 0, sizeof msg);
+    F(int, msg, 0) = g_hcTypeClass5 < g_hcCarTypeCount ? g_hcTypeClass5 : 0;
+    F(int, msg, 4) = 11;
+    F(int, msg, 12) = a9;
+    F(int, msg, 16) = a10;
+    F(Vec3, msg, 20) = g_zeroVec;
+    F(Vec3, msg, 32) = g_zeroVec;
+    memcpy(msg + 44, m, 48);
+    F(int, msg, 92) = a7;
+    strncpy((char*)msg + 96, name, 31);
+    strncpy((char*)msg + 128, s_hc672f78, 31);
+    CallThis(FUN_5e52b0, table, id, kind, 160, msg);
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, table, id);
+    if (!g_hc6ef204)
+    {
+        World_Fatal(s_hc672f50);
+        return r;
+    }
+    F(int, r, 16) = F(int, g_hc6ef204, 16);
+    return r;
+}
+
+// [FUN_5610f0..$L_5612f3] puts the road of a point (from a room key) on the route stack: drops back to it when it is there (1 when it wasn't the top, 0 at the top), else pushes it: 2 as a pair, 3/4 one end, -3 full, -1/-2 not found
+extern "C" int __fastcall Route_PushRoad(BYTE* self, void*, void* key, Vec3* p)
+{
+    int room;
+    CallC(FUN_4364f0, &room, key);
+    if (room == -1)
+        return -1;
+    int node;
+    CallC(FUN_437390, &node, room, *p);
+    if (node == -1)
+        return -2;
+    BYTE* r = g_hc68cf38[node];
+    short a = F(short, F(BYTE*, r, 112), 16);
+    short b = F(short, F(BYTE*, r, 116), 16);
+    int i = 0;
+    short x, y;
+    for (;;)
+    {
+        x = Stack_Peek(self, 0, i);
+        y = Stack_Peek(self, 0, i + 1);
+        if ((a == x && b == y) || (a == y && b == x))
+        {
+            BYTE* used = self + 2000 + (F(int, self, 3000) - i);
+            if (*used)
+                *used = 0;
+            Stack_DropTo(self, 0, i);
+            return i != 0;
+        }
+        i++;
+        if (!y || i >= F(int, self, 3000))
+            break;
+    }
+    x = Stack_Peek(self, 0, 0);
+    y = Stack_Peek(self, 0, 1);
+    if (self[F(int, self, 3000) + 1999] && a != x && b != x && (a == y || b == y))
+    {
+        Stack_SwapTop(self, 0);
+        x = Stack_Peek(self, 0, 0);
+        y = Stack_Peek(self, 0, 1);
+    }
+    if (a == y || b == y)
+    {
+        Stack_DropTo(self, 0, 1);
+        x = Stack_Peek(self, 0, 0);
+        y = Stack_Peek(self, 0, 1);
+    }
+    if (a != x)
+    {
+        if (b != x)
+            return Stack_PushPair(self, 0, a, b) ? 2 : -3;
+        if (Stack_Push(self, 0, a))
+            return 3;
+    }
+    if (b != x && Stack_Push(self, 0, b))
+        return 4;
+    World_Fatal(s_hc67b2cc);
+    return -4;
 }
 
