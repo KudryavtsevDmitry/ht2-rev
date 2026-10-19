@@ -42,7 +42,7 @@ extern "C" void FUN_50c010(); KING_ALIAS("_FUN_50c010", "@Screen_Grab@8")
 extern "C" void __fastcall CGameApp_SetMousePos(void* app, void*, int x, int y);   // gameapp.cpp
 extern "C" void FUN_5d85f0(); KING_ALIAS("_FUN_5d85f0", "@Win_GetRect@12")    // window: its rectangle
 extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
-ASM_PROC(FUN_5bd5e0)
+extern "C" void FUN_5bd5e0(); KING_ALIAS("_FUN_5bd5e0", "@Control_Construct@16")
 extern "C" void FUN_5bef30(); KING_ALIAS("_FUN_5bef30", "@Ctl_SetStyles@28")
 extern "C" void FUN_5bef90(); KING_ALIAS("_FUN_5bef90", "@Ctl_SetStyle5@16")
 ASM_VAR(AsmLabel, s_676310, $L_676310)
@@ -2805,4 +2805,43 @@ extern "C" void __fastcall Shell_Waiting(BYTE* s, void*, int a)
     Gs_CenteredText(s, buf, 590);
     if (CallC<double>(FUN_6037e0) - F(double, s, 304) > g_gs64b890)
         CallVirt(s, 60, 161);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void FUN_53e490(); KING_ALIAS("_FUN_53e490", "@Obj53e490_Restart@8")
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+ASM_PROC(FUN_51f380)
+ASM_VAR(int, g_gs675460, $L_675460)
+ASM_VAR(int, g_gs675464, $L_675464)
+ASM_VAR(int, g_gs696850, $L_696850)
+ASM_VAR(int, g_gs696854, $L_696854)
+ASM_VAR(BYTE*, g_gs6ceca8, $L_6ceca8)
+
+// [$L_522be0] the network screen: 162 starts the game (controls ready, screen centre), 163 sends a ready message
+extern "C" void __fastcall Shell_NetCommand(BYTE* s, void*, int cmd)
+{
+    if (cmd == 162) {
+        CallVirt(s - 64, 32);
+        CallVirt(g_gamshe696ca0, 36);
+        CallThis(FUN_53e490, F(BYTE*, g_gamshe6d2078, 1632));
+        g_gs675460 = g_gs696850 / 2;
+        g_gs675464 = g_gs696854 / 2;
+        CallC(FUN_50bd60);
+        CallC(FUN_4e12b0, 1);
+        return;
+    }
+    if (cmd != 163)
+        return;
+    CallVirt(s - 64, 32);
+    BYTE pkt[32];
+    CallThis(FUN_602be0, pkt);
+    CallThis(FUN_603110, pkt, 952, &cmd, 3);
+    CallC(FUN_6021b0, F(BYTE*, pkt, 4), F(BYTE*, pkt, 8) - F(BYTE*, pkt, 4));
+    CallThis(FUN_51f380, g_gs6ceca8, 4);
+    CallThis(FUN_602e80, pkt);
 }

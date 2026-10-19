@@ -40,7 +40,7 @@ extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
 extern "C" void FUN_6022a0(); KING_ALIAS("_FUN_6022a0", "_Dp_Shutdown")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 extern "C" void FUN_5ab160(); KING_ALIAS("_FUN_5ab160", "_File_WriteInt")  // write an int to a file (value, file)
-ASM_PROC(FUN_5c3f20)
+extern "C" void FUN_5c3f20(); KING_ALIAS("_FUN_5c3f20", "@Media_Construct@12")
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 
 // msavi
@@ -2003,4 +2003,89 @@ extern "C" void __fastcall Media_Destroy(BYTE* s)
     CallThis(FUN_5c3260, s + 8300);
     CallThis(FUN_5c2f80, s + 7976);
     CallThis(FUN_5ddb40, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+ASM_PROC(FUN_5dc4d0)
+ASM_PROC(FUN_5c2f10)
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_5e3150(); KING_ALIAS("_FUN_5e3150", "@CGameApp_Construct@16")
+extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
+#include <string.h>
+ASM_VAR(AsmLabel, g_med651948, $L_651948)
+ASM_VAR(AsmLabel, s_med6730a0, $L_6730a0)
+ASM_VAR(AsmLabel, s_med67f888, $L_67f888)
+ASM_VAR(AsmLabel, s_med67f890, $L_67f890)
+ASM_VAR(AsmLabel, s_med67f87c, $L_67f87c)
+ASM_VAR(AsmLabel, s_med6729a8, $L_6729a8)
+ASM_VAR(AsmLabel, s_med672994, $L_672994)
+ASM_VAR(BYTE*, g_med707f70, $L_707f70)
+ASM_VAR(BYTE*, g_med67fb7c, $L_67fb7c)
+ASM_VAR(AsmLabel, g_medHook5c37e0, $L_5c37e0)
+
+// [FUN_5c3f20] constructor (a): the media player (vtable 651a20); with sound (707f6c +416) its device name from the ini
+extern "C" BYTE* __fastcall Media_Construct(BYTE* s, void*, int a)
+{
+    CallThis(FUN_5dc4d0, s, a);
+    CallThis(FUN_5c2f10, s + 7976, s);
+    F(int, s, 8304) = 0;
+    F(int, s, 8308) = 0;
+    F(void*, s, 8300) = g_med651948;
+    F(int, s, 8312) = -1;
+    F(int, s, 8316) = -1;
+    F(int, s, 8320) = 0;
+    F(BYTE*, s, 8332) = s;
+    CallThis(FUN_602be0, s + 8336);
+    F(int, s, 7960) = 0;
+    F(void*, s, 0) = g_med651a20;
+    F(int, s, 7924) = 0;
+    F(int, s, 7928) = 0;
+    F(int, s, 7936) = 0;
+    F(int, s, 7932) = 0;
+    F(DWORD, s, 7964) = 0x3ff00000;
+    F(int, s, 7944) = 1;
+    F(int, s, 7948) = 1;
+    F(int, s, 7952) = 0;
+    F(int, s, 7920) = 0;
+    if (F(int, g_med707f6c, 416)) {
+        char buf[64];
+        GetPrivateProfileStringA((const char*)s_med6730a0, (const char*)s_med67f888, (const char*)s_med67f890, buf, 50,
+                                 F(const char*, s, 640));
+        size_t n = strlen(buf) + 1;
+        char* t = (char*)operator new(n);
+        F(char*, s, 7924) = t;
+        memcpy(t, buf, n);
+    }
+    return s;
+}
+
+// [FUN_5c3800] constructor (a, b): the sound system (vtable 65195c, also 707f6c); network test mode from the ini
+extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b)
+{
+    CallThis(FUN_5e3150, s, a, b);
+    F(int, s, 408) = 0;
+    F(int, s, 412) = 0;
+    F(void*, s, 0) = g_med65195c;
+    g_med707f6c = s;
+    g_med707f70 = g_med67fb7c;
+    g_med67fb7c = (BYTE*)g_medHook5c37e0;
+    char buf[80];
+    GetPrivateProfileStringA((const char*)s_med6730a0, (const char*)s_med67f87c, (const char*)s_med6729a8, buf, 16,
+                             F(const char*, s, 280));
+    F(int, s, 416) = strcmp(buf, (const char*)s_med672994) == 0 ? 1 : 0;
+    if (F(int, s, 416)) {
+        char t[12] = "nettest";
+        if (CallC<int>(FUN_6021f0, t))
+            F(int, s, 416) = 0;
+    }
+    F(int, s, 440) = 1;
+    F(int, s, 420) = 0;
+    F(int, s, 432) = 0;
+    F(int, s, 436) = 0;
+    F(int, s, 444) = 0;
+    F(int, s, 424) = 0;
+    F(int, s, 428) = 0;
+    return s;
 }

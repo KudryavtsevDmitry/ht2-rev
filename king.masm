@@ -1329,6 +1329,10 @@ PUBLIC $L_651080, $L_6510cc, $L_6510d4, $L_651120, $L_651200, $L_65124c
 PUBLIC $L_65179c, $L_652280
 PUBLIC $L_67e428
 PUBLIC $L_6512e4, $L_6514f4, $L_652310, $L_672bd0, $L_67e94c
+PUBLIC $L_64c1f0, $L_6504f4, $L_6504f8, $L_650544, $L_6518b0, $L_67266c
+PUBLIC $L_672678, $L_67273c, $L_672750, $L_67275c, $L_672778, $L_67e940
+PUBLIC $L_67f87c, $L_67f888, $L_67f890, $L_682f40, $L_696240, $L_6ceca8
+PUBLIC $L_707f70
 
 ;===================================
 _TEXT SEGMENT
@@ -346779,6 +346783,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bee30 PROC
 
             push -1
@@ -346906,6 +346912,10 @@ $L_4bef55::
             add ESP,16
             ret 8
 FUN_4bee30 ENDP
+ELSE
+EXTERN @Sky_Construct@16:PROC
+FUN_4bee30 TEXTEQU <@Sky_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -356405,6 +356415,8 @@ $L_4c4830 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c4910 PROC
 
             push -1
@@ -356516,6 +356528,10 @@ $L_4c4a2a::
             add ESP,16
             ret 
 FUN_4c4910 ENDP
+ELSE
+EXTERN _Eff_CreateSmokeFor:PROC
+FUN_4c4910 TEXTEQU <_Eff_CreateSmokeFor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -356869,6 +356885,8 @@ EXTERN @Effect4c4c40_Destroy@8:PROC
 FUN_4c4c40 TEXTEQU <@Effect4c4c40_Destroy@8>
 ENDIF
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c4ca0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -356982,6 +357000,10 @@ $L_4c4dc0::
             add ESP,20
             ret 
 FUN_4c4ca0 ENDP
+ELSE
+EXTERN _Eff_CreateSmokeAgain:PROC
+FUN_4c4ca0 TEXTEQU <_Eff_CreateSmokeAgain>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -398462,6 +398484,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4e07b0 PROC
 
             push -1
@@ -398572,6 +398596,10 @@ $L_4e08d9::
             add ESP,16
             ret 
 $L_4e07b0 ENDP
+ELSE
+EXTERN @King_CreatePlayer@4:PROC
+$L_4e07b0 TEXTEQU <@King_CreatePlayer@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -498265,6 +498293,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_522be0 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -498352,6 +498382,10 @@ $L_522cd2::
             add ESP,40
             ret 4
 $L_522be0 ENDP
+ELSE
+EXTERN @Shell_NetCommand@12:PROC
+$L_522be0 TEXTEQU <@Shell_NetCommand@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -632720,6 +632754,8 @@ FUN_57d060 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 FUN_57d490 PROC
 
             push -1
@@ -632819,6 +632855,10 @@ $L_57d549::
             add ESP,16
             ret 
 FUN_57d490 ENDP
+ELSE
+EXTERN @MovingItem_Destroy@4:PROC
+FUN_57d490 TEXTEQU <@MovingItem_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -691586,6 +691626,8 @@ $L_5a5250 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a5270 PROC
 
             push -1
@@ -691703,6 +691745,10 @@ FUN_5a5270 PROC
             add ESP,16
             ret 28
 FUN_5a5270 ENDP
+ELSE
+EXTERN @WeatherLayer_Construct@36:PROC
+FUN_5a5270 TEXTEQU <@WeatherLayer_Construct@36>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -732418,6 +732464,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5bd5e0 PROC
 
             push -1
@@ -732533,6 +732581,10 @@ $L_5bd67a::
             add ESP,16
             ret 8
 FUN_5bd5e0 ENDP
+ELSE
+EXTERN @Control_Construct@16:PROC
+FUN_5bd5e0 TEXTEQU <@Control_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
@@ -738659,6 +738711,8 @@ $L_5c0350 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5c0550 PROC
 
             push -1
@@ -738769,6 +738823,10 @@ $L_5c0658::
             nop
             nop
 FUN_5c0550 ENDP
+ELSE
+EXTERN @ListBox_Construct@20:PROC
+FUN_5c0550 TEXTEQU <@ListBox_Construct@20>
+ENDIF
 ALIGN 16
 FUN_5c06a0 PROC
 
@@ -745107,6 +745165,8 @@ $L_5c37e0 PROC
             nop
 $L_5c37e0 ENDP
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c3800 PROC
 
             push -1
@@ -745229,6 +745289,10 @@ $L_5c391b::
             add ESP,92
             ret 8
 FUN_5c3800 ENDP
+ELSE
+EXTERN @SoundSystem_Construct@16:PROC
+FUN_5c3800 TEXTEQU <@SoundSystem_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -745818,6 +745882,8 @@ FUN_5c3c50 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c3f20 PROC
 
             push -1
@@ -745930,6 +745996,10 @@ $L_5c4079::
             add ESP,80
             ret 4
 FUN_5c3f20 ENDP
+ELSE
+EXTERN @Media_Construct@12:PROC
+FUN_5c3f20 TEXTEQU <@Media_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
@@ -795670,6 +795740,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5e01b0 PROC
 
             push -1
@@ -795795,6 +795867,10 @@ $L_5e02c0::
             add ESP,16
             ret 
 $L_5e01b0 ENDP
+ELSE
+EXTERN @Fw_SetupRoom@4:PROC
+$L_5e01b0 TEXTEQU <@Fw_SetupRoom@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -822072,6 +822148,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 FUN_5ed9e0 PROC
 
             push -1
@@ -822195,6 +822273,10 @@ $L_5edad5::
             add ESP,16
             ret 20
 FUN_5ed9e0 ENDP
+ELSE
+EXTERN @ClusterSet_Construct@28:PROC
+FUN_5ed9e0 TEXTEQU <@ClusterSet_Construct@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -850045,6 +850127,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd060 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -850151,6 +850235,10 @@ $L_5fd117::
             add ESP,12
             ret 
 FUN_5fd060 ENDP
+ELSE
+EXTERN _Sound_CreateFromFile:PROC
+FUN_5fd060 TEXTEQU <_Sound_CreateFromFile>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

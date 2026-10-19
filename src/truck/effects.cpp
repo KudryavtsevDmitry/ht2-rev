@@ -134,7 +134,7 @@ extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    
 extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")    // vehicle: release
 extern "C" void FUN_5fd370(); KING_ALIAS("_FUN_5fd370", "@Sound_Construct@20")    // sound: constructor
 extern "C" void __cdecl Fx_Update4910(void* x);
-KING_ALIAS("_Fx_Update4910", "FUN_4c4910")
+KING_ALIAS("_Fx_Update4910", "_Eff_CreateSmokeFor")
 extern "C" void __cdecl Fx_Update4df0(void* x);
 KING_ALIAS("_Fx_Update4df0", "FUN_4c4df0")
 extern "C" void __cdecl Fx_Message(const char* text, int);
@@ -4398,4 +4398,105 @@ extern "C" void __fastcall Eff4d2910_Destroy(BYTE* s)
 {
     CallThis(FUN_4eac8e, s + 6992);
     CallThis(FUN_4eac8e, s + 6960);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
+extern "C" void FUN_4bf470(); KING_ALIAS("_FUN_4bf470", "@Particles_Construct@12")
+extern "C" void FUN_4bf6b0(); KING_ALIAS("_FUN_4bf6b0", "@Particles_Alloc@12")
+extern "C" void FUN_4c0930(); KING_ALIAS("_FUN_4c0930", "@RendererB_Construct@8")
+extern "C" void FUN_4c0a90(); KING_ALIAS("_FUN_4c0a90", "@Renderer_CreateNamed@24")
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+extern "C" void Eff_VecCtor(); KING_ALIAS("_Eff_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+ASM_VAR(BYTE*, g_eff696244, $L_696244)
+ASM_VAR(BYTE*, g_eff696240, $L_696240)
+ASM_VAR(AsmLabel, s_eff672678, $L_672678)
+ASM_VAR(AsmLabel, s_eff672778, $L_672778)
+ASM_VAR(AsmLabel, g_eff64c770, $L_64c770)
+ASM_VAR(AsmLabel, g_effCtor4c4a50, $L_4c4a50)
+ASM_VAR(AsmLabel, s_eff67275c, $L_67275c)
+ASM_VAR(AsmLabel, g_eff64c464, $L_64c464)
+ASM_VAR(int, g_eff64c1f0, $L_64c1f0)
+ASM_VAR(AsmLabel, s_eff672750, $L_672750)
+ASM_VAR(AsmLabel, s_eff67273c, $L_67273c)
+ASM_VAR(AsmLabel, s_eff67266c, $L_67266c)
+
+// the world's smoke manager (696240): 100 emitters of 140 bytes for the texture 672678
+static void Eff_CreateSmoke(BYTE* w)
+{
+    BYTE* tex = CallC<BYTE*>(FUN_5ef2b0, F(int, w, 524), (const char*)s_eff672678);
+    if (!tex) {
+        g_eff696240 = 0;
+        return;
+    }
+    BYTE* m = (BYTE*)operator new(44);
+    if (!m) {
+        g_eff696240 = 0;
+        return;
+    }
+    BYTE* world = g_eff696244;
+    CallThis(FUN_5d31e0, m, 1, (const char*)s_eff672778);
+    F(void*, m, 0) = g_eff64c770;
+    F(BYTE*, m, 36) = tex;
+    BYTE* a = (BYTE*)operator new(14004);
+    BYTE* e = 0;
+    if (a) {
+        *(int*)a = 100;
+        e = a + 4;
+        CallStd(Eff_VecCtor, e, 140, 100, (BYTE*)g_effCtor4c4a50, FUN_5f0870);
+    }
+    F(BYTE*, m, 32) = e;
+    F(int, m, 40) = 0;
+    g_eff69624c = 0;
+    CallThis(FUN_5d3570, world + 2992, m);
+    CallThis(FUN_5d33d0, m, 1);
+    g_eff696240 = m;
+}
+// [FUN_4c4910] (world)
+extern "C" void __cdecl Eff_CreateSmokeFor(BYTE* w)
+{
+    g_eff696244 = w;
+    Eff_CreateSmoke(w);
+}
+// [FUN_4c4ca0] for the current world (696244)
+extern "C" void __cdecl Eff_CreateSmokeAgain()
+{
+    if (!g_eff696244) {
+        g_eff696240 = 0;
+        return;
+    }
+    Eff_CreateSmoke(g_eff696244);
+}
+
+// [FUN_4bee30] constructor (world, material): the sky effect (vtable 64c464) with its two parts
+extern "C" BYTE* __fastcall Sky_Construct(BYTE* s, void*, BYTE* w, BYTE* mat)
+{
+    CallThis(FUN_5d31e0, s, 98, (const char*)s_eff67275c);
+    F(void*, s, 0) = g_eff64c464;
+    F(BYTE*, s, 44) = w;
+    CallThis(FUN_5d3570, w + 2992, s);
+    CallThis(FUN_5d33d0, s, 1);
+    F(DWORD, mat, 88) = 0x3f800000;
+    F(int, mat, 32) |= 0x40002;
+    BYTE* m = (BYTE*)operator new(140);
+    F(BYTE*, s, 36) = m ? CallThis<BYTE*>(FUN_4bf470, m, w) : 0;
+    CallThis(FUN_4bf6b0, F(BYTE*, s, 36), 0);
+    F(int, F(BYTE*, s, 36), 12) = g_eff64c1f0;
+    BYTE* m2 = (BYTE*)operator new(84);
+    F(BYTE*, s, 32) = m2 ? CallThis<BYTE*>(FUN_4c0930, m2) : 0;
+    BYTE* r = CallC<BYTE*>(FUN_5ef2b0, F(int, w, 524), (const char*)s_eff672750);
+    if (!r) {
+        CallC(FUN_5d2ba0, (const char*)s_eff67273c, 0);
+        r = CallC<BYTE*>(FUN_5ef2b0, F(int, w, 524), (const char*)s_eff67266c);
+        CallThis(FUN_4c0a90, F(BYTE*, s, 32), r, mat, 2000, 0);
+    } else {
+        CallThis(FUN_4c0a90, F(BYTE*, s, 32), r, mat, 2000, 1);
+    }
+    F(int, s, 48) = 1;
+    return s;
 }

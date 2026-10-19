@@ -27,7 +27,7 @@ extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12"
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
 ASM_PROC(FUN_5dbbb0)
-ASM_PROC(FUN_5c3800)
+extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
 ASM_PROC(FUN_52e740)
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
@@ -884,4 +884,38 @@ extern "C" void __fastcall King_EnterWorld(BYTE* s)
     p = (DWORD*)g_sta696910;
     for (int i = 0; i < 36; i++)
         p[i] = 0;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+ASM_PROC(FUN_5de0a0)
+ASM_PROC(FUN_531290)
+ASM_PROC(FUN_532430)
+extern "C" void FUN_53e320(); KING_ALIAS("_FUN_53e320", "@Controls_Construct@12")
+ASM_PROC(FUN_56e5a0)
+ASM_VAR(BYTE*, g_staCar6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_sta6cec6c, $L_6cec6c)
+ASM_VAR(AsmLabel, s_sta672ec8, $L_672ec8)
+
+// [$L_4e07b0] the world's start: the player's truck (1636 bytes, kind 99), its controls in a single player game
+extern "C" void __fastcall King_CreatePlayer(BYTE* s)
+{
+    CallThis(FUN_5de0a0, s);
+    BYTE* m = (BYTE*)operator new(1636);
+    g_staCar6d2078 = m ? CallThis<BYTE*>(FUN_531290, m, 99, s, (BYTE*)g_sta696750) : 0;
+    F(int, g_staCar6d2078, 1404) |= 128;
+    CallThis(FUN_5d3570, s + 2992, g_staCar6d2078);
+    F(int, g_staCar6d2078, 1404) |= 64;
+    F(int, g_staCar6d2078, 1404) |= 1;
+    CallThis(FUN_532430, g_staCar6d2078);
+    int mode = F(int, g_sta6cec6c, 1316);
+    if (mode == 1 || mode == 0) {
+        BYTE* m2 = (BYTE*)operator new(88);
+        F(BYTE*, g_staCar6d2078, 1632) = m2 ? CallThis<BYTE*>(FUN_53e320, m2, s) : 0;
+        CallThis(FUN_5d3570, s + 2992, F(BYTE*, g_staCar6d2078, 1632));
+        F(int, F(BYTE*, g_staCar6d2078, 1632), 80) = 1;
+    }
+    CallC(FUN_56e5a0, s, (const char*)s_sta672ec8);
 }

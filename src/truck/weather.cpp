@@ -25,7 +25,7 @@ extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12"
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
 ASM_PROC(FUN_5dbbb0)
-ASM_PROC(FUN_5c3800)
+extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
 ASM_PROC(FUN_52e740)
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
@@ -750,5 +750,37 @@ extern "C" BYTE* __fastcall Weather_Construct(BYTE* s, void*, BYTE* w, int name,
         F(int, s, o) = 0;
     F(int, s, 104) = 30;
     F(int, s, 108) = 97;
+    return s;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+#include <string.h>
+ASM_VAR(AsmLabel, s_wea67e940, $L_67e940)
+
+static char* Wea_StrDup(const char* t)
+{
+    size_t n = strlen(t) + 1;
+    char* d = (char*)operator new(n);
+    memcpy(d, t, n);
+    return d;
+}
+// [FUN_5a5270] constructor (world, name1, name2, a, b, c, d): a weather layer (vtable 6514d4) started now
+extern "C" BYTE* __fastcall WeatherLayer_Construct(BYTE* s, void*, BYTE* w, const char* n1, const char* n2, int a, int b, int c, int d)
+{
+    CallThis(FUN_5d31e0, s, 100, (const char*)s_wea67e940);
+    F(void*, s, 0) = g_wea6514d4;
+    F(BYTE*, s, 32) = w;
+    F(int, s, 72) = 0;
+    F(char*, s, 40) = Wea_StrDup(n1);
+    F(char*, s, 36) = Wea_StrDup(n2);
+    F(DWORD, s, 48) = F(DWORD, w, 2968);
+    F(DWORD, s, 52) = F(DWORD, w, 2972);
+    F(int, s, 56) = a;
+    F(int, s, 60) = b;
+    F(int, s, 64) = c;
+    F(int, s, 68) = d;
+    CallThis(FUN_5d3570, F(BYTE*, s, 32) + 2992, s);
     return s;
 }

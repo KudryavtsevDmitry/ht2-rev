@@ -1823,3 +1823,32 @@ extern "C" BYTE* __cdecl Sound_Create(int id, int slot, int streamed)
     CallC(FUN_604e90, slot, F(int, r, 8), F(int, r, 4));
     return r;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+extern "C" void FUN_5fd230(); KING_ALIAS("_FUN_5fd230", "@SoundFile_ConstructData@16")
+extern "C" void FUN_5e99a0(); KING_ALIAS("_FUN_5e99a0", "_Image_SetData")
+extern "C" void FUN_5e9910(); KING_ALIAS("_FUN_5e9910", "_Sound_ReadFile")
+extern "C" void Sce_ftell(); KING_ALIAS("_Sce_ftell", "_ftell")
+
+// [FUN_5fd060] a sound from an open file (file, slot, size, streamed): like Sound_Create
+extern "C" BYTE* __cdecl Sound_CreateFromFile(void* file, int slot, int size, int streamed)
+{
+    if (!g_sce723b28)
+        return 0;
+    BYTE* r;
+    if (streamed) {
+        BYTE* m = (BYTE*)operator new(28);
+        BYTE* o = m ? CallThis<BYTE*>(FUN_5fd230, m, file, CallC<int>(Sce_ftell, file)) : 0;
+        r = CallC<BYTE*>(FUN_5e99a0, o, file, size);
+    } else {
+        r = CallC<BYTE*>(FUN_5e9910, file, size);
+    }
+    if (!r)
+        return 0;
+    g_sce723b34[slot] = r;
+    F(int, r, 12) = slot;
+    CallC(FUN_604e90, slot, F(int, r, 8), F(int, r, 4));
+    return r;
+}

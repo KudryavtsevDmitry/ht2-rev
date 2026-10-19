@@ -19,7 +19,7 @@ typedef char AsmLabel[1];
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 ASM_PROC(FUN_5bc430)    // distance of a point to segment i, returns double
 ASM_PROC(FUN_5bdc80)    // relayout
-ASM_PROC(FUN_5bd5e0)    // base control constructor (a, flags)
+extern "C" void FUN_5bd5e0(); KING_ALIAS("_FUN_5bd5e0", "@Control_Construct@16")    // base control constructor (a, flags)
 
 ASM_VAR(int, g_702f24, $L_702f24)
 ASM_VAR(int, g_702f28, $L_702f28)
@@ -1019,4 +1019,85 @@ extern "C" void __fastcall ConGroup_Destroy(BYTE* s)
     F(void*, s, 0) = g_con64dc84;
     operator delete(F(void*, s, 12));
     F(void*, s, 0) = g_con64d81c;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+ASM_PROC(FUN_5be700)
+extern "C" void FUN_5bdbf0(); KING_ALIAS("_FUN_5bdbf0", "@Ctl_AddChild@16")
+#include <string.h>
+ASM_VAR(AsmLabel, g_con6518b0, $L_6518b0)
+ASM_VAR(AsmLabel, g_con68d1c0, $L_68d1c0)
+ASM_VAR(BYTE*, g_con702f40, $L_702f40)
+ASM_VAR(int, g_con702f44, $L_702f44)
+
+// [FUN_5bd5e0] constructor (name, id): a control (vtable 64dc84) sized for its name in the default font (702f40)
+extern "C" BYTE* __fastcall Control_Construct(BYTE* s, void*, const char* name, int id)
+{
+    F(void*, s, 0) = g_con64d81c;
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(int, s, 56) = 0;
+    F(int, s, 52) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 44) = 0;
+    for (int k = 0; k < 6; k++) {
+        BYTE* r = s + 68 + k * 36;
+        for (int o = 0; o < 36; o += 4)
+            F(DWORD, r, o) = o == 24 ? 0x3f000000 : 0;
+    }
+    F(void*, s, 0) = g_con64dc84;
+    F(BYTE*, s, 16) = g_con702f40;
+    F(int, s, 20) = g_con702f44;
+    int w = 0, h = 0;
+    if (g_con702f40) {
+        h = F(int, g_con702f40, 20);
+        w = CallThis<int>(FUN_5ea0e0, g_con702f40, name);
+    }
+    F(int, s, 52) = w + 6;
+    F(int, s, 56) = h + 4;
+    F(int, s, 48) = 0;
+    F(int, s, 44) = 0;
+    F(int, s, 60) = 0;
+    F(int, s, 64) = 0;
+    size_t n = strlen(name) + 1;
+    char* t = (char*)operator new(n);
+    F(int, s, 32) = id;
+    F(char*, s, 12) = t;
+    memcpy(t, name, n);
+    F(int, s, 284) = 0;
+    F(int, s, 36) = 0;
+    F(int, s, 28) = -1;
+    F(int, s, 40) = 0;
+    F(BYTE, s, 24) = 0;
+    return s;
+}
+
+// [FUN_5c0550] constructor (name, id, rows): a list box (vtable 6518b0) with its scroll bar (+340)
+extern "C" BYTE* __fastcall ListBox_Construct(BYTE* s, void*, const char* name, int id, int rows)
+{
+    Control_Construct(s, 0, name, id);
+    static const int zero[] = {288, 292, 324, 320, 316, 312};
+    for (int o : zero)
+        F(int, s, o) = 0;
+    F(void*, s, 0) = g_con6518b0;
+    F(int, s, 336) = 0;
+    F(int, s, 300) = 0;
+    F(int, s, 296) = 0;
+    F(WORD, s, 332) = 0;
+    BYTE* m = (BYTE*)operator new(344);
+    F(BYTE*, s, 340) = m ? CallThis<BYTE*>(FUN_5be700, m, (BYTE*)g_con68d1c0, id, id, 0) : 0;
+    F(int, F(BYTE*, s, 340), 340) = 1;
+    CallThis(FUN_5bdbf0, s, F(BYTE*, s, 340), 0);
+    F(int, s, 308) = rows;
+    F(int, s, 328) = 0;
+    F(int, s, 312) = 1;
+    F(int, s, 56) += rows + 2;
+    F(int, s, 316) = F(BYTE*, s, 16) ? F(int, F(BYTE*, s, 16), 20) + 2 : 2;
+    F(int, s, 324) = F(int, s, 316) + rows;
+    F(int, s, 320) = F(int, s, 52) - F(int, s, 44) - 1;
+    F(int, s, 344) = 5;
+    F(int, s, 348) = 0;
+    return s;
 }
