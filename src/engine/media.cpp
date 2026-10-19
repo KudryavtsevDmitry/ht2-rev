@@ -2165,3 +2165,91 @@ extern "C" BYTE* __fastcall MediaObj_Construct(BYTE* s, void*, BYTE* w, const ch
     F(int, s, 152) = g_q20_720908;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Network item destructor, sorted list box insert (exception frames dropped).
+
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void FUN_6030b0(); KING_ALIAS("_FUN_6030b0", "@Msg_Write45@16")
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
+extern "C" void FUN_5c5c00(); KING_ALIAS("_FUN_5c5c00", "@Timeline_Clear@12")
+extern "C" void FUN_5c40b0(); KING_ALIAS("_FUN_5c40b0", "@Pool_Keep@12")
+extern "C" void FUN_5a47f0(); KING_ALIAS("_FUN_5a47f0", "@Wea5a47f0_Destroy@4")
+extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+ASM_PROC(FUN_5c06d0)
+extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
+ASM_VAR(AsmLabel, g_q23_651c34, $L_651c34)
+ASM_VAR(AsmLabel, g_q23_651be8, $L_651be8)
+ASM_VAR(AsmLabel, g_q23_6518e4, $L_6518e4)
+
+// [FUN_5c6210] destructor: a networked item (vtables 651c34, 651be8 at +256): its three parts (+352..360) deleted;
+// unless remote (+372) in a network game its removal (904) is announced
+extern "C" void __fastcall NetItem_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_q23_651c34;
+    F(void*, s, 256) = g_q23_651be8;
+    for (int o = 352; o <= 360; o += 4) {
+        if (!F(BYTE*, s, o))
+            continue;
+        CallThis(FUN_5d21b0, F(BYTE*, s, o));
+        if (F(BYTE*, s, o))
+            CallVirt(F(BYTE*, s, o), 0, 1);
+    }
+    if (!F(int, s, 372) && (F(int, g_med707f6c, 416) || F(int, F(BYTE*, s, 36), 7928))) {
+        BYTE a[32];
+        CallThis(FUN_602be0, a);
+        CallThis(FUN_6030b0, a, F(int, s, 364), 0);
+        CallThis(FUN_5c3630, F(BYTE*, s, 36), a);
+        CallThis(FUN_5c5c00, F(BYTE*, s, 36), F(int, s, 364));
+        BYTE* m = (BYTE*)operator new(28);
+        BYTE* p = m ? CallThis<BYTE*>(FUN_602be0, m) : 0;
+        BYTE d[8];
+        F(int, d, 0) = F(int, s, 364);
+        d[4] = 0;
+        CallThis(FUN_603110, p, 904, d, 5);
+        CallThis(FUN_5c40b0, F(BYTE*, s, 36), p);
+        CallThis(FUN_602e80, a);
+    }
+    CallThis(FUN_5a47f0, s);
+}
+
+// [FUN_5c0f00] (text): a list box line (16 bytes, vtable 6518e4, its text +12) inserted in order into the list
+// (+296 first, +300 current, +336); the scroll range follows
+extern "C" void __fastcall ListBox_AddSorted(BYTE* s, void*, const char* text)
+{
+    BYTE* n = (BYTE*)operator new(16);
+    if (n) {
+        F(int, n, 4) = 0;
+        F(int, n, 8) = 0;
+        F(void*, n, 0) = g_q23_6518e4;
+        size_t len = strlen(text) + 1;
+        char* t = (char*)operator new(len);
+        F(char*, n, 12) = t;
+        memcpy(t, text, len);
+    }
+    BYTE* e = F(BYTE*, s, 296);
+    if (!e) {
+        F(BYTE*, s, 336) = n;
+        F(BYTE*, s, 300) = n;
+        F(BYTE*, s, 296) = n;
+    } else {
+        while (F(BYTE*, e, 8) && strcmp(text, F(const char*, e, 12)) > 0)
+            e = F(BYTE*, e, 8);
+        if (strcmp(text, F(const char*, e, 12)) > 0) {
+            CallThis(FUN_5d2190, n, e);
+        } else if (!F(BYTE*, e, 4)) {
+            F(BYTE*, s, 336) = n;
+            F(BYTE*, s, 300) = n;
+            F(BYTE*, s, 296) = n;
+            F(BYTE*, n, 8) = e;
+            F(BYTE*, e, 4) = n;
+        } else {
+            CallThis(FUN_5d2190, n, F(BYTE*, e, 4));
+        }
+        F(BYTE*, s, 300) = n;
+    }
+    F(int, s, 328)++;
+    if (F(int, s, 328) > CallThis<int>(FUN_5c06d0, s))
+        F(WORD, F(BYTE*, s, 340), 296)++;
+    CallThis(FUN_5c0c20, s, 0);
+}

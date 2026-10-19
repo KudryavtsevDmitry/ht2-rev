@@ -1365,6 +1365,7 @@ PUBLIC $L_6723f0, $L_672400, $L_672410, $L_672420, $L_672430, $L_672440
 PUBLIC $L_672450, $L_672468, $L_672480, $L_672498, $L_696250, $L_696708
 PUBLIC $L_69670c, $L_696710, $L_696714, $L_696718, $L_69671c, $L_696720
 PUBLIC $L_696724, $L_696728
+PUBLIC $L_651be8, $L_651c34
 
 ;===================================
 _TEXT SEGMENT
@@ -740130,6 +740131,8 @@ FUN_5c0e90 TEXTEQU <@List_FindName@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c0f00 PROC
 
             push -1
@@ -740355,6 +740358,10 @@ $L_5c10ac::
             add ESP,20
             ret 4
 FUN_5c0f00 ENDP
+ELSE
+EXTERN @ListBox_AddSorted@12:PROC
+FUN_5c0f00 TEXTEQU <@ListBox_AddSorted@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -750055,6 +750062,8 @@ FUN_5c6170 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c6210 PROC
 
             push -1
@@ -750201,6 +750210,10 @@ $L_5c6385::
             add ESP,304
             ret 
 FUN_5c6210 ENDP
+ELSE
+EXTERN @NetItem_Destroy@4:PROC
+FUN_5c6210 TEXTEQU <@NetItem_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
