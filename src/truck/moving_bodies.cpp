@@ -1098,3 +1098,46 @@ extern "C" void __fastcall Movbod_590ce0(BYTE* s)
         CallC(FUN_5e1a10, F(int, r, 0), F(int, r, 4));
     }
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
+extern "C" void FUN_593230(); KING_ALIAS("_FUN_593230", "_Vec3_TransformByObject")
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
+extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+extern "C" void Movbod_qsort(); KING_ALIAS("_Movbod_qsort", "_qsort")
+ASM_VAR(AsmLabel, g_movbodCmp592fe0, $L_592fe0)
+
+// [$L_593100] sorts the children (+48 list) by their depth for b: they are taken off, sorted (+56, 8-byte
+// pairs of node and depth) and linked back in order, then slot 0 is drawn
+extern "C" int __fastcall Movbod_SortChildren(BYTE* s, void*, int a, int b)
+{
+    int r = CallThis<int>(FUN_5ef800, s, a, b);
+    if (!r)
+        return r;
+    if (!*F(BYTE**, s, 48))
+        return 0;
+    float v[3] = {0, 0, 0};
+    unsigned n = 0;
+    for (BYTE* o = *F(BYTE**, s, 48); o && n < 1000; o = *F(BYTE**, s, 48), n++) {
+        BYTE** pair = (BYTE**)(F(BYTE*, s, 56) + n * 8);
+        pair[0] = o;
+        CallVirt(pair[0], 40, v);
+        CallC(FUN_593230, v, b);
+        *(float*)(F(BYTE*, s, 56) + n * 8 + 4) = v[1];
+        CallThis(FUN_5ef780, *(BYTE**)(F(BYTE*, s, 56) + n * 8));
+    }
+    CallC(Movbod_qsort, F(BYTE*, s, 56), n, 8, (BYTE*)g_movbodCmp592fe0);
+    CallThis(FUN_5f1cc0, s, 0, *F(BYTE**, s, 56));
+    for (unsigned i = 1; i < n; i++) {
+        BYTE* prev = *(BYTE**)(F(BYTE*, s, 56) + i * 8 - 8);
+        BYTE* cur = *(BYTE**)(F(BYTE*, s, 56) + i * 8);
+        F(int, cur, 44) = F(int, prev, 44);
+        CallThis(FUN_5d2190, cur, prev);
+        F(int, cur, 36) = F(int, prev, 36);
+    }
+    CallThis(FUN_5f2080, s, 0, a, b);
+    return 1;
+}

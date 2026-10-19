@@ -21459,3 +21459,97 @@ extern "C" void __fastcall Path_Reverse(BYTE* s)
     for (unsigned i = 0; i < (unsigned)((F(BYTE*, s, 60) - F(BYTE*, s, 56)) / 1592); i++)
         CallThis(FUN_48e190, F(BYTE*, s, 56) + i * 1592);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_48e100(); KING_ALIAS("_FUN_48e100", "_Bounded_Step@12")
+ASM_PROC(FUN_48df80)
+extern "C" void FUN_48e430(); KING_ALIAS("_FUN_48e430", "@Poly1392_AbsDiff@24")
+
+// the path's 1592-byte record i (+56) and the record count
+static BYTE* Path_Rec(BYTE* s, int i) { return F(BYTE*, s, 56) + i * 1592; }
+static unsigned Path_Count(BYTE* s) { return (unsigned)((F(BYTE*, s, 60) - F(BYTE*, s, 56)) / 1592); }
+
+// [$L_455060] moves along the path by t from record *idx (forwards for t > 0, backwards for t < 0)
+extern "C" int __fastcall Path_Advance(BYTE* s, void*, double* out, double t, int* idx)
+{
+    int r = 0;
+    if (t > g_aiwor64b678) {
+        if ((unsigned)*idx >= Path_Count(s))
+            return r;
+        do {
+            r = CallThis<int>(FUN_48e100, Path_Rec(s, *idx), out, t);
+            if (!r || (unsigned)*idx >= Path_Count(s) - 1)
+                return r;
+            (*idx)++;
+            ((DWORD*)out)[0] = 0;
+            ((DWORD*)out)[1] = 0;
+        } while ((unsigned)*idx < Path_Count(s));
+        return r;
+    }
+    if (t >= g_aiwor64b678)
+        return r;
+    if (*idx < 0)
+        return r;
+    do {
+        r = CallThis<int>(FUN_48e100, Path_Rec(s, *idx), out, t);
+        if (!r || *idx == 0)
+            return r;
+        (*idx)--;
+        ((DWORD*)out)[0] = 0;
+        ((DWORD*)out)[1] = 0x3ff00000;
+    } while (*idx >= 0);
+    return r;
+}
+
+// [$L_454f10] the same with t at *tp and an extra argument for FUN_48df80
+extern "C" int __fastcall Path_Advance2(BYTE* s, void*, double* out, double* tp, int c, int* idx)
+{
+    int r = 0;
+    if (*tp > g_aiwor64b678) {
+        if ((unsigned)*idx >= Path_Count(s))
+            return r;
+        do {
+            r = CallThis<int>(FUN_48df80, Path_Rec(s, *idx), out, tp, c);
+            if (!r || (unsigned)*idx >= Path_Count(s) - 1)
+                return r;
+            (*idx)++;
+            ((DWORD*)out)[0] = 0;
+            ((DWORD*)out)[1] = 0;
+        } while ((unsigned)*idx < Path_Count(s));
+        return r;
+    }
+    if (*tp >= g_aiwor64b678)
+        return r;
+    if (*idx < 0)
+        return r;
+    do {
+        r = CallThis<int>(FUN_48df80, Path_Rec(s, *idx), out, tp, c);
+        if (!r || *idx == 0)
+            return r;
+        (*idx)--;
+        ((DWORD*)out)[0] = 0;
+        ((DWORD*)out)[1] = 0x3ff00000;
+    } while (*idx >= 0);
+    return r;
+}
+
+// [$L_455280] the length of the path from (t1 in record i1) to (t2 in record i2)
+extern "C" double __fastcall Path_Length(BYTE* s, void*, double t1, int i1, double t2, int i2)
+{
+    if ((unsigned)i1 == Path_Count(s)) {
+        t1 = t1 + g_aiwor64b670;
+        i1--;
+    }
+    if ((unsigned)i2 == Path_Count(s)) {
+        t2 = t2 + g_aiwor64b670;
+        i2--;
+    }
+    if (i1 == i2)
+        return CallThis<double>(FUN_48e430, Path_Rec(s, i1), t1, t2);
+    double d = CallThis<double>(FUN_48e430, Path_Rec(s, i1), t1, 1.0);
+    for (int k = i1 + 1; k < i2; k++)
+        d = CallThis<double>(FUN_48e450, Path_Rec(s, k)) + d;
+    return CallThis<double>(FUN_48e430, Path_Rec(s, i2), 0.0, t2) + d;
+}
