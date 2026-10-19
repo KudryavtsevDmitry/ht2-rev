@@ -1808,3 +1808,78 @@ extern "C" BYTE* __fastcall Worobj5a2c10_Construct(BYTE* s) { return Worobj_Cons
 extern "C" BYTE* __fastcall Worobj5a15e0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 156, 164, g_worobjVt65124c, g_worobjVt651200); }
 // [$L_5a17b0]
 extern "C" BYTE* __fastcall Worobj5a17b0_Construct(BYTE* s) { return Worobj_ConstructObject(s, 156, 164, g_worobjVt6511f8, g_worobjVt6511ac); }
+
+// ---------------------------------------------------------------------------
+// Object pools of the world object classes (exception frames dropped).
+
+extern "C" void Worobj_VecCtor(); KING_ALIAS("_Worobj_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+extern "C" void FUN_5a2a30(); KING_ALIAS("_FUN_5a2a30", "@WorldObj5a2a30_Destroy@8")
+extern "C" void FUN_5a2ca0(); KING_ALIAS("_FUN_5a2ca0", "@WorldObj5a2ca0_Destroy@8")
+ASM_VAR(AsmLabel, s_worobj6724f8, $L_6724f8)
+ASM_VAR(AsmLabel, s_worobj67e428, $L_67e428)
+ASM_VAR(AsmLabel, s_worobj6724b0, $L_6724b0)
+
+// a pool (+16) of n objects of size S made by ctor (dtor for unwinding), linked both ways (+8 next,
+// +12 previous) and owned by the pool (+16); +4 the free head, +8 none in use. A failed allocation is
+// reported with the source line.
+static void Worobj_MakePool(BYTE* s, int n, int S, void* ctor, void (*dtor)(), int line)
+{
+    BYTE* m = (BYTE*)operator new(n * S + 4);
+    BYTE* e = 0;
+    if (m) {
+        *(int*)m = n;
+        e = m + 4;
+        CallStd(Worobj_VecCtor, e, S, n, ctor, dtor);
+    }
+    F(BYTE*, s, 16) = e;
+    if (!e)
+        CallC(FUN_60aad0, 2289444627u, (const char*)s_worobj6724b0, (const char*)s_worobj67e428, line, (const char*)s_worobj6724f8);
+    unsigned cnt = F(unsigned, s, 12);
+    for (unsigned i = 0; i + 1 < cnt; i++)
+        F(BYTE*, F(BYTE*, s, 16) + i * S, 8) = F(BYTE*, s, 16) + (i + 1) * S;
+    F(int, F(BYTE*, s, 16) + F(unsigned, s, 12) * S - S, 8) = 0;
+    for (unsigned i = 1; i < F(unsigned, s, 12); i++)
+        F(BYTE*, F(BYTE*, s, 16) + i * S, 12) = F(BYTE*, s, 16) + (i - 1) * S;
+    F(int, F(BYTE*, s, 16), 12) = 0;
+    for (unsigned i = 0; i < F(unsigned, s, 12); i++)
+        F(BYTE*, F(BYTE*, s, 16) + i * S, 16) = s;
+    F(int, s, 8) = 0;
+    F(BYTE*, s, 4) = F(BYTE*, s, 16);
+    CallThis(FUN_5e48f0, s);
+}
+// [$L_5a14a0]
+extern "C" void __fastcall Worobj5a14a0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 188, (void*)Worobj5a15e0_Construct, FUN_5a2a30, 1680); }
+// [$L_5a1670]
+extern "C" void __fastcall Worobj5a1670_MakePool(BYTE* s) { Worobj_MakePool(s, 1000, 188, (void*)Worobj5a17b0_Construct, FUN_5a2a30, 1724); }
+// [$L_5a18a0]
+extern "C" void __fastcall Worobj5a18a0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 196, (void*)Worobj5a19e0_Construct, FUN_5a2a30, 1769); }
+// [$L_5a1a80]
+extern "C" void __fastcall Worobj5a1a80_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 192, (void*)Worobj5a1bc0_Construct, FUN_5a2a30, 1814); }
+// [$L_5a1cc0]
+extern "C" void __fastcall Worobj5a1cc0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 192, (void*)Worobj5a1e00_Construct, FUN_5a2a30, 1858); }
+// [$L_5a1ea0]
+extern "C" void __fastcall Worobj5a1ea0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 176, (void*)Worobj5a1fe0_Construct, FUN_5a2a30, 1902); }
+// [$L_5a20e0]
+extern "C" void __fastcall Worobj5a20e0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 212, (void*)Worobj5a2220_Construct, FUN_5a2a30, 1945); }
+// [$L_5a22d0]
+extern "C" void __fastcall Worobj5a22d0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 176, (void*)Worobj5a2410_Construct, FUN_5a2a30, 1989); }
+// [$L_5a24b0]
+extern "C" void __fastcall Worobj5a24b0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 192, (void*)Worobj5a25f0_Construct, FUN_5a2a30, 2033); }
+// [$L_5a2690]
+extern "C" void __fastcall Worobj5a2690_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 192, (void*)Worobj5a27d0_Construct, FUN_5a2a30, 2078); }
+// [$L_5a2870]
+extern "C" void __fastcall Worobj5a2870_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 180, (void*)Worobj5a29b0_Construct, FUN_5a2a30, 2122); }
+// [$L_5a2ad0]
+extern "C" void __fastcall Worobj5a2ad0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 200, (void*)Worobj5a2c10_Construct, FUN_5a2ca0, 2165); }
+// [$L_5a2d50]
+extern "C" void __fastcall Worobj5a2d50_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 180, (void*)Worobj5a2e90_Construct, FUN_5a2a30, 2209); }
+// [$L_5a2f20]
+extern "C" void __fastcall Worobj5a2f20_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 204, (void*)Worobj5a3060_Construct, FUN_5a2a30, 2253); }
+// [$L_5a3160]
+extern "C" void __fastcall Worobj5a3160_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 196, (void*)Worobj5a32a0_Construct, FUN_5a2a30, 2296); }
+// [$L_5a33a0]
+extern "C" void __fastcall Worobj5a33a0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 164, (void*)Worobj5a34e0_Construct, FUN_5a2a30, 2339); }
+// [$L_5a35d0]
+extern "C" void __fastcall Worobj5a35d0_MakePool(BYTE* s) { Worobj_MakePool(s, 500, 212, (void*)Worobj5a3710_Construct, FUN_5a2a30, 2382); }
