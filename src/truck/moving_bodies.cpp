@@ -12,7 +12,7 @@
 typedef char AsmLabel[1];
 
 ASM_PROC(FUN_589640)
-ASM_PROC(FUN_592cc0)    // fatal error with a message
+extern "C" void FUN_592cc0(); KING_ALIAS("_FUN_592cc0", "_Mb_Fatal")    // fatal error with a message
 
 ASM_VAR(AsmLabel, g_vtbl65089c, $L_65089c)
 ASM_VAR(AsmLabel, g_strPutOnHead, $L_67e088)    // "ListItem::put_on_head():this==NULL||next!=NULL||prev!=NULL"
@@ -897,5 +897,24 @@ extern "C" void __fastcall Body_SetMoveMode(BYTE* self, void*, int v)
     if (v < 0 || v > 3)
         World_Fatal(s_67deec);
     F(int, self, 3980) = v;
+}
+
+
+// ---------------------------------------------------------------------------
+typedef void (__cdecl* MbFail)(const char*);
+ASM_VAR(MbFail, g_mbFail6f6634, $L_6f6634)
+extern "C" int __cdecl printf(const char* format, ...);
+extern "C" __declspec(noreturn) void __cdecl exit(int code);
+
+// [FUN_592cc0] a fatal error: the hook when set, else prints the text and exits
+extern "C" void __cdecl Mb_Fatal(const char* text)
+{
+    if (g_mbFail6f6634)
+    {
+        g_mbFail6f6634(text);
+        return;
+    }
+    printf(text);
+    exit(0);
 }
 

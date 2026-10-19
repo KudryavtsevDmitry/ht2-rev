@@ -31,7 +31,7 @@ extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
 extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
 extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
-ASM_PROC(FUN_5d2ba0)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 ASM_PROC(FUN_5e9d40)
 ASM_VAR(int, g_721754, $L_721754)
 ASM_VAR(void*, g_67fb7c, $L_67fb7c)
@@ -52,7 +52,7 @@ ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
 ASM_PROC(FUN_5da950)
 ASM_PROC(FUN_5dbf00)
 ASM_PROC(FUN_6037e0)    // time in ms, returns double
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
 ASM_PROC(FUN_5ea1b0)    // draws text
 extern "C" void* __stdcall AfxGetThread_();
@@ -985,8 +985,8 @@ extern "C" void FUN_5e4660(); KING_ALIAS("_FUN_5e4660", "@Resource_Construct@16"
 ASM_PROC(FUN_5dc230)    // (this, a) -> b
 ASM_PROC(FUN_5dae90)    // (this, b, c, d)
 ASM_PROC(FUN_5e4f60)    // resources: load table (this, name)
-ASM_PROC(FUN_5e48f0)
-ASM_PROC(FUN_5d2ba0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 ASM_VAR(AsmLabel, g_objectNames, $L_71e820)
 ASM_VAR(AsmLabel, s_6832d4, $L_6832d4)
 ASM_VAR(AsmLabel, s_683338, $L_683338)
@@ -1266,7 +1266,7 @@ extern "C" void __stdcall Fw_Delete(void* p)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
 ASM_PROC(FUN_5ec0f0)    // image: read (this, name, file, kind, path)
-ASM_PROC(FUN_5d2f90)
+extern "C" void FUN_5d2f90(); KING_ALIAS("_FUN_5d2f90", "_Sys_FreeMemory")
 extern "C" void FUN_5e9ff0(); KING_ALIAS("_FUN_5e9ff0", "_Image_ErrorText")
 ASM_VAR(AsmLabel, s_682b34, $L_682b34)
 ASM_VAR(AsmLabel, s_682cdc, $L_682cdc)
@@ -1582,3 +1582,149 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
         CallVirt(img, 0, 1);
     return f;
 }
+
+// ---------------------------------------------------------------------------
+typedef void (__cdecl* FwHook2)(int, int);
+ASM_VAR(FwHook2, g_fw702f4c, $L_702f4c)
+extern "C" void FUN_5e6de0(); KING_ALIAS("_FUN_5e6de0", "_Files_Open")    // opens a data file (name, mode)
+ASM_PROC(FUN_5e6e90)
+ASM_PROC(FUN_5e7930)
+ASM_PROC(FUN_5e9690)
+extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
+ASM_PROC(FUN_5e9360)
+ASM_PROC(FUN_5e9910)
+extern "C" void FUN_5e99a0(); KING_ALIAS("_FUN_5e99a0", "_Image_SetData")
+ASM_VAR(AsmLabel, g_fwPath72183c, $L_72183c)
+extern "C" int __cdecl _stat(const char* path, void* buf);
+
+// [FUN_5d8a50] clears the two low flags of +16 and calls the hook 702f4c (0, 0)
+extern "C" void __fastcall Window_ClearFlags(BYTE* self, void*)
+{
+    F(DWORD, self, 16) &= ~3u;
+    if (g_fw702f4c)
+        g_fw702f4c(0, 0);
+}
+
+// [FUN_5d8bb0] asks the frame (+56) for flags of a; bit 15 set: passes the other bits back and returns 1
+extern "C" int __fastcall Frame_Ask(BYTE* self, void*, int a)
+{
+    DWORD r = CallVirt<DWORD>(F(BYTE*, self, 56), 56, a);
+    if (!(r & 0x8000))
+        return 0;
+    r &= ~0x8000u;
+    if (r)
+        CallVirt(F(BYTE*, self, 56), 60, r);
+    return 1;
+}
+
+// opens a data file with mode 6703e8; 7218bc = 1 when it fails
+static FILE* Fw_OpenData(const char* name)
+{
+    FILE* f = CallC<FILE*>(FUN_5e6de0, name, (char*)s_6703e8);
+    if (!f)
+        g_7218bc = 1;
+    return f;
+}
+
+// the size of the file named by 72183c
+static int Fw_DataSize()
+{
+    DWORD st[9];
+    _stat(g_fwPath72183c, st);
+    return (int)st[5];
+}
+
+// [FUN_5e6e50] reads a data file through 5e6e90
+extern "C" void* __cdecl Data_Read5e6e90(const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e6e90, f);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e7730] loads an image from a data file
+extern "C" void* __cdecl Image_LoadFile(const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e7770, f, 0, 0);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e78e0] reads a data file into a through 5e7930
+extern "C" void* __cdecl Data_Read5e7930(void* a, const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e7930, a, f, 0);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e9480] reads a data file into a through 5e9690
+extern "C" void* __cdecl Data_Read5e9690(void* a, const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e9690, a, f, 0);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e98c0] reads a data file into a through 5e99c0
+extern "C" void* __cdecl Data_Read5e99c0(void* a, const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e99c0, a, f, 0);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e9300] reads a whole data file through 5e9360 (file, size)
+extern "C" void* __cdecl Data_Read5e9360(const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e9360, f, Fw_DataSize());
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e9800] reads a whole data file through 5e9910 (file, size)
+extern "C" void* __cdecl Data_Read5e9910(const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e9910, f, Fw_DataSize());
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e9860] reads a whole data file into a through 5e99a0 (a, file, size)
+extern "C" void* __cdecl Data_Read5e99a0(void* a, const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e99a0, a, f, Fw_DataSize());
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e1720] does nothing (one argument)
+extern "C" void __fastcall Fw_Nop1(BYTE* self, void*, int) {}
+
+// [FUN_5e48f0] does nothing
+extern "C" void __cdecl Fw_Nop() {}
+

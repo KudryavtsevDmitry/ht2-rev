@@ -705,7 +705,7 @@ extern "C" void FUN_45dde0(); KING_ALIAS("_FUN_45dde0", "@Vec4b_InsertE@16")
 extern "C" void FUN_4072f0(); KING_ALIAS("_FUN_4072f0", "_Copy1")
 extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
 extern "C" void FUN_46b110(); KING_ALIAS("_FUN_46b110", "_UninitFill4s")
-ASM_PROC(FUN_462d10)
+extern "C" void FUN_462d10(); KING_ALIAS("_FUN_462d10", "_Str_ClearFirst@4")
 extern "C" void FUN_40a580(); KING_ALIAS("_FUN_40a580", "@Pair_Set@16")
 extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")
 
@@ -13921,7 +13921,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePositionRoad(PositionId* out, PositionI
 // the AI world cleared
 
 ASM_PROC(FUN_470ae0)    // a node record's destructor (thiscall)
-ASM_PROC(FUN_5e48f0)    // ()
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // ()
 extern "C" DWORD* __cdecl FillDwords(DWORD* d, unsigned n, const DWORD* v);        // ai_containers.cpp
 extern "C" BYTE* __cdecl Rec104_Copy(const BYTE* f, const BYTE* l, BYTE* d);         // ai_containers.cpp
 extern "C" void __fastcall Road47fa80_Destroy(BYTE* self, void*);                    // road_graph.cpp
@@ -16030,7 +16030,7 @@ extern "C" bool __cdecl Ai_HasOrderForTown(BYTE* p, int townId)
 // a new piece of goods
 
 ASM_VAR(AsmLabel, s_newGoods66d5d4, $L_66d5d4)
-ASM_PROC(FUN_5d2ba0)    // console: print (text, x)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, x)
 extern "C" int* __cdecl Recs104_Random(int* out, int a, int b);
 extern "C" int* __cdecl Recs104_RandomMasked(int* out, int a, int b);
 extern "C" int* __cdecl Items_Find41b2a0(int* out, BYTE* p, int a, int b);
@@ -17339,7 +17339,7 @@ ASM_VAR(BYTE, t_68b998, $L_68b998)
 ASM_VAR(double, t_68d0f8, $L_68d0f8)
 ASM_VAR(double, t_68d198, $L_68d198)
 extern "C" void FUN_483a20(); KING_ALIAS("_FUN_483a20", "_AI_Time")    // returns double
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_424550(); KING_ALIAS("_FUN_424550", "_Ai_LoadEntities")
 extern "C" void FUN_42d960(); KING_ALIAS("_FUN_42d960", "@Tasks_RunDue@8")    // (thiscall 68b998)
 extern "C" void FUN_446af0(); KING_ALIAS("_FUN_446af0", "_Ai_KillDelayedPlayers")
@@ -21131,4 +21131,28 @@ extern "C" void __fastcall Vec_FreeStorage8(BYTE* self, void*)
 {
     free(F(void*, self, 8));
 }
+
+
+// ---------------------------------------------------------------------------
+
+// [FUN_45a270] lower_bound of *key among the unsigned values [first, last)
+extern "C" unsigned* __cdecl U32_LowerBound(unsigned* first, unsigned* last, unsigned* key)
+{
+    int n = last - first;
+    while (n > 0)
+    {
+        int h = n >> 1;
+        if (first[h] < *key)
+        {
+            first += h + 1;
+            n -= h + 1;
+        }
+        else
+            n = h;
+    }
+    return first;
+}
+
+// [FUN_462d10] clears the first byte of a string
+extern "C" void __stdcall Str_ClearFirst(char* s) { *s = 0; }
 

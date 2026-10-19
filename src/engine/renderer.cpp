@@ -46,7 +46,7 @@ ASM_PROC(FUN_5b0810)
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 ASM_PROC(FUN_5feace)    // fills words
 ASM_PROC(FUN_5b6770)
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_PROC(FUN_5b81c0)    // blits a bitmap (dst, bitmap, rect, x, y)
 ASM_PROC(FUN_5d3d30)    // sets palette entries
 ASM_PROC(FUN_5baa70)
@@ -1212,7 +1212,7 @@ ASM_VAR(AsmLabel, s_rn67f354, $L_67f354)
 ASM_VAR(AsmLabel, s_rn67f330, $L_67f330)
 ASM_VAR(AsmLabel, s_rn67f30c, $L_67f30c)
 ASM_VAR(AsmLabel, s_rn67f2e8, $L_67f2e8)
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 
 // [FUN_5bc060..$L_5bc291] makes the system-memory surface (+36) of an RLE image (+16, freed): runs of n pixels, bit 7 = transparent; 1 when it is (or was) made
 extern "C" int __fastcall Image_RleToSurface(BYTE* self, void*)

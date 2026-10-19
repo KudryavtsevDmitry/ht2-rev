@@ -834,3 +834,34 @@ extern "C" void __cdecl Tables_Clear697608()
     g_697658 = g_69765c = g_697660 = 0;
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // checks a vector (v, name, limit)
+ASM_PROC(FUN_4f0530)
+extern "C" void FUN_4f0720(); KING_ALIAS("_FUN_4f0720", "@Body_SaveState@8")
+ASM_PROC(FUN_4fef20)
+ASM_VAR(AsmLabel, s_vp6746e4, $L_6746e4)
+
+// [FUN_4f1dd0] sets the position (+64) after checking it, then updates the body
+extern "C" void __fastcall Body_SetPosition(BYTE* self, void*, Vec3* p)
+{
+    CallC(FUN_4e2821, p, (char*)s_vp6746e4, 100.0f);
+    F(Vec3, self, 64) = *p;
+    CallThis(FUN_4f0530, self);
+    CallThis(FUN_4f0720, self);
+}
+
+// [FUN_4feee0] copies the pending mode (+10112) to +15500 and clears it; without one runs 4fef20 until it returns 0
+extern "C" void __fastcall Body_TakeMode(BYTE* self, void*)
+{
+    int m = F(int, self, 10112);
+    F(int, self, 15500) = m;
+    if (m)
+    {
+        F(int, self, 10112) = 0;
+        return;
+    }
+    while (CallThis<int>(FUN_4fef20, self))
+        ;
+}
+

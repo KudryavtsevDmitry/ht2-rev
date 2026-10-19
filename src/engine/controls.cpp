@@ -16,7 +16,7 @@
 
 typedef char AsmLabel[1];
 
-ASM_PROC(FUN_5d3080)    // next sibling
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 ASM_PROC(FUN_5bc430)    // distance of a point to segment i, returns double
 ASM_PROC(FUN_5bdc80)    // relayout
 ASM_PROC(FUN_5bd5e0)    // base control constructor (a, flags)

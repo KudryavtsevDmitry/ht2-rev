@@ -30,7 +30,7 @@ extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c
 extern "C" void FUN_490d30(); KING_ALIAS("_FUN_490d30", "_Rational_Error@4")
 extern "C" void FUN_48af50(); KING_ALIAS("_FUN_48af50", "_Int_CompareMagnitude")
 ASM_PROC(FUN_48b8a0)
-ASM_PROC(FUN_491010)
+extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
 extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 ASM_VAR(AsmLabel, s_divByZero, $L_67055c)
 extern "C" void FUN_470950(); KING_ALIAS("_FUN_470950", "@CharVec_Assign@12")
@@ -1052,3 +1052,35 @@ void __fastcall Rec491100_Destroy(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(AsmLabel, g_vt64bed0, $L_64bed0)
+ASM_VAR(AsmLabel, g_vt64bee4, $L_64bee4)
+
+// [FUN_48a9d0] frees the buffer *this when its word at +2 (capacity) is set
+extern "C" void __fastcall WBuf_Free(BYTE** self, void*)
+{
+    BYTE* p = *self;
+    if (p && F(WORD, p, 2))
+        operator delete(p);
+}
+
+// unlinks a ring member (+12 prev, +16 next) and sets the base vtables
+static void Rt_RingUnlink(BYTE* self)
+{
+    F(void*, self, 0) = g_vt64bed0;
+    BYTE* prev = F(BYTE*, self, 12);
+    if (prev)
+        F(BYTE*, prev, 16) = F(BYTE*, self, 16);
+    BYTE* next = F(BYTE*, self, 16);
+    if (next)
+        F(BYTE*, next, 12) = F(BYTE*, self, 12);
+    F(void*, self, 0) = g_vt64bee4;
+}
+
+// [FUN_490fa0] the ring member's destructor body
+extern "C" void __fastcall RingMember_Destruct(BYTE* self, void*) { Rt_RingUnlink(self); }
+
+// [FUN_491010] the same for the other ring member class
+extern "C" void __fastcall RingMember2_Destruct(BYTE* self, void*) { Rt_RingUnlink(self); }
+

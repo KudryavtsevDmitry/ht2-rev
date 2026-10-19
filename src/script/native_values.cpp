@@ -175,7 +175,7 @@ extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
 ASM_PROC(FUN_4f1180)
-ASM_PROC(FUN_556a40)
+extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
 ASM_PROC(FUN_55f5f0)
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
@@ -196,7 +196,7 @@ ASM_VAR(CarParts, g_carPartUses, $L_6cedac)
 // the crowd (the ovation sound) of a scene object: its matrix is the object's
 // moved by ten times the vector at 702630; fn is called when it plays
 
-ASM_PROC(FUN_5e48f0)    // an empty function: the default callback
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // an empty function: the default callback
 ASM_VAR(float, g_eng702630, $L_702630)
 ASM_VAR(float, g_eng702634, $L_702634)
 ASM_VAR(float, g_eng702638, $L_702638)

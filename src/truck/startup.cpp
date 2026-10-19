@@ -194,7 +194,7 @@ extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
 ASM_PROC(FUN_4f1180)
-ASM_PROC(FUN_556a40)
+extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
 ASM_PROC(FUN_55f5f0)
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
@@ -215,7 +215,7 @@ ASM_VAR(CarParts, g_carPartUses, $L_6cedac)
 // the crowd (the ovation sound) of a scene object: its matrix is the object's
 // moved by ten times the vector at 702630; fn is called when it plays
 
-ASM_PROC(FUN_5e48f0)    // an empty function: the default callback
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // an empty function: the default callback
 ASM_VAR(float, g_eng702630, $L_702630)
 ASM_VAR(float, g_eng702634, $L_702634)
 ASM_VAR(float, g_eng702638, $L_702638)
@@ -664,3 +664,33 @@ extern "C" void __cdecl Startup_FindCd()
         d++;
     } while (*d);
 }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_568b10(); KING_ALIAS("_FUN_568b10", "_Helicopters_Init")
+ASM_PROC($L_5451c0)
+ASM_PROC($L_545550)
+ASM_PROC($L_52ebc0)
+ASM_PROC($L_52ee70)
+ASM_VAR(int, g_su67b2b8, $L_67b2b8)
+ASM_VAR(void*, g_su6ef24c, $L_6ef24c)
+ASM_VAR(void*, g_su6ef250, $L_6ef250)
+ASM_VAR(void*, g_su6cf3a0, $L_6cf3a0)
+ASM_VAR(void*, g_su6cf3a4, $L_6cf3a4)
+ASM_VAR(BYTE*, g_su6cec6c, $L_6cec6c)
+
+// [FUN_4e0660] hooks the object's two handlers (+2708, +2712) twice, saving the old ones, and creates its copter objects in single player
+extern "C" void __cdecl Obj_HookHandlers(BYTE* o)
+{
+    g_su67b2b8 = 0;
+    g_su6ef24c = F(void*, o, 2708);
+    F(void*, o, 2708) = (void*)$L_5451c0;
+    g_su6ef250 = F(void*, o, 2712);
+    F(void*, o, 2712) = (void*)$L_545550;
+    if (!F(int, g_su6cec6c, 1316) && F(int, g_su6cec6c, 1300) <= 1)
+        CallC(FUN_568b10, o);
+    g_su6cf3a0 = F(void*, o, 2708);
+    F(void*, o, 2708) = (void*)$L_52ebc0;
+    g_su6cf3a4 = F(void*, o, 2712);
+    F(void*, o, 2712) = (void*)$L_52ee70;
+}
+

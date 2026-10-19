@@ -29,7 +29,7 @@ ASM_VAR(float, g_gridRandomRadius, $L_653220)
 struct GridNoiseStorage { DWORD v[2600]; };
 ASM_VAR(GridNoiseStorage, g_gridNoise, $L_725fd0)
 #define GRID_NOISE(offset) (g_gridNoise.v+(offset))
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_PROC(FUN_60bb20)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")

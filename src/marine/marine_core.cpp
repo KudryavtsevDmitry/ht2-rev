@@ -802,7 +802,7 @@ extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD time
 }
 
 // Marine graph ownership and teardown.
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_VAR(AsmLabel, g_marineBaseVtable, $L_652f48)
 ASM_VAR(AsmLabel, g_marineTreeFile, $L_684a20)
 static void MarineTree_Detach(BYTE* node)
@@ -1693,7 +1693,7 @@ extern "C" void __fastcall MarineMesh_CreateMotionResponse(BYTE* self,void*,DWOR
 
 // ---------------------------------------------------------------------------
 #include <stdarg.h>
-ASM_PROC(FUN_5d2ba0)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
 // [FUN_60aa60..$L_60aab3] a grid message: printf-style text, fatal for level 2, else logged

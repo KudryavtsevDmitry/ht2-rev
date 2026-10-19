@@ -13,7 +13,7 @@ typedef char AsmLabel[1];
 extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
 
 ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 ASM_PROC(FUN_5d79d0)
 extern "C" void FUN_5d8260(); KING_ALIAS("_FUN_5d8260", "_Dd_Release")
 extern "C" void FUN_5d75a0(); KING_ALIAS("_FUN_5d75a0", "_Dd_CreateDevices")

@@ -1215,7 +1215,7 @@ BYTE* __cdecl Players_Append(int kind)
 }
 
 ASM_PROC(FUN_4872f0)    // re-plans a player's route to a position (player, position by value)
-ASM_PROC(FUN_5d2ba0)    // console: print (text, 0)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, 0)
 extern "C" const char* __cdecl Rec_Name8(BYTE* p);
 
 static void PrintPosition(const PositionId* p)

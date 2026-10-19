@@ -961,3 +961,42 @@ extern "C" float* __cdecl Vec3_PlaneHitT(float* out, float* a, float* b, float* 
     return out;
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_4e9ce4(); KING_ALIAS("_FUN_4e9ce4", "_WarnLog_Open")    // log: lock
+extern "C" void FUN_4e9d90(); KING_ALIAS("_FUN_4e9d90", "_WarnLog_Close")    // log: unlock
+ASM_VAR(int, g_wd6974d4, $L_6974d4)
+ASM_VAR(int, g_wd6974d0, $L_6974d0)
+ASM_VAR(FILE*, g_wd6975a8, $L_6975a8)
+ASM_VAR(AsmLabel, s_wd6741e0, $L_6741e0)
+ASM_VAR(AsmLabel, s_wd6741e4, $L_6741e4)
+extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
+
+// [FUN_4eac8e] frees the two buffers (+8, +12) when +28 is set
+extern "C" void __fastcall Arrays_Free(BYTE* self, void*)
+{
+    if (F(int, self, 28))
+    {
+        operator delete(F(void*, self, 8));
+        operator delete(F(void*, self, 12));
+    }
+}
+
+// writes a value with a format to the vehicle log when it is open
+static void Wd_LogValue(const char* fmt, int v)
+{
+    if (g_wd6974d4)
+        CallC(FUN_4e9ce4);
+    if (!g_wd6974d0 || !g_wd6975a8)
+        return;
+    fprintf(g_wd6975a8, fmt, v);
+    if (g_wd6974d4)
+        CallC(FUN_4e9d90);
+}
+
+// [FUN_4ea27e] writes a value to the vehicle log (format 6741e0)
+extern "C" void __cdecl VehLog_Value(int v) { Wd_LogValue(s_wd6741e0, v); }
+
+// [FUN_4ea2cb] writes a value to the vehicle log (format 6741e4)
+extern "C" void __cdecl VehLog_Value2(int v) { Wd_LogValue(s_wd6741e4, v); }
+

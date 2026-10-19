@@ -36,7 +36,7 @@ KING_ALIAS("_Carat_51d8f0", "_Save_WriteEntry")
 extern "C" int __cdecl Carat_5d3ab0();
 KING_ALIAS("_Carat_5d3ab0", "FUN_5d3ab0")
 extern "C" void __cdecl Carat_Message(const char* text, int);
-KING_ALIAS("_Carat_Message", "FUN_5d2ba0")
+KING_ALIAS("_Carat_Message", "_Sys_Log")
 extern "C" int __fastcall Lights_Release(BYTE* self, void*, int a);   // aeffects.cpp
 extern "C" void FUN_50c010(); KING_ALIAS("_FUN_50c010", "@Screen_Grab@8")
 extern "C" void __fastcall CGameApp_SetMousePos(void* app, void*, int x, int y);   // gameapp.cpp
@@ -646,7 +646,7 @@ size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 int __cdecl fseek(FILE* f, long off, int origin);
 }
 ASM_PROC(FUN_50b620)    // DMat4: determinant
-ASM_PROC(FUN_530020)
+extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
 ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
 ASM_PROC(FUN_5b6bf0)
 ASM_PROC(FUN_5b6ed0)
@@ -1431,7 +1431,7 @@ extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
 extern "C" void FUN_598d80(); KING_ALIAS("_FUN_598d80", "@Wasm_598d80@8")
 extern "C" void FUN_5c4340(); KING_ALIAS("_FUN_5c4340", "@Rec_Close@8")
 extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_42db90(); KING_ALIAS("_FUN_42db90", "_AI_FreeList68b99c")
 extern "C" void FUN_435a80(); KING_ALIAS("_FUN_435a80", "_AI_Reset")
 extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
@@ -1867,7 +1867,7 @@ extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")
 extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
 extern "C" void FUN_527ea0(); KING_ALIAS("_FUN_527ea0", "_Carat_SetView")
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void* p);
 struct GsStatStg { WCHAR* pwcsName; DWORD rest[17]; };    // STATSTG
 ASM_PROC(FUN_5b6bf0)    // surface: prepare

@@ -17,7 +17,7 @@ extern "C" int __cdecl rand();
 
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 ASM_PROC(FUN_6021f0)
@@ -87,9 +87,9 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 ASM_PROC(FUN_5cfb30)
 extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 ASM_PROC(FUN_6037e0)    // time in seconds, returns double
-ASM_PROC(FUN_5d35b0)
+extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
 extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
-ASM_PROC(FUN_5d3080)    // next sibling
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 ASM_VAR(int, g_67faa0, $L_67faa0)
@@ -575,8 +575,8 @@ extern "C" void FUN_5d3660(); KING_ALIAS("_FUN_5d3660", "@Queue_Insert@12")
 extern "C" void FUN_5d3a60(); KING_ALIAS("_FUN_5d3a60", "@Queue_Remove@12")
 extern "C" void FUN_5d2b20(); KING_ALIAS("_FUN_5d2b20", "@Pool_Used@12")
 ASM_PROC(FUN_5d3060)    // event pool: allocate (size ignored)
-ASM_PROC(FUN_5d3080)    // next sibling
-ASM_PROC(FUN_5d2ba0)    // log (text, value)
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 ASM_VAR(AsmLabel, s_67fbc4, $L_67fbc4)
 ASM_VAR(AsmLabel, g_text71fc20, $L_71fc20)
 ASM_VAR(AsmLabel, s_67fbe0, $L_67fbe0)
@@ -771,7 +771,7 @@ extern "C" void __cdecl Core_5d2eb0()
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5d35b0)    // queue: drop a task (this, task)
+extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")    // queue: drop a task (this, task)
 ASM_VAR(AsmLabel, s_67fcdc, $L_67fcdc)
 ASM_VAR(AsmLabel, s_67fcd0, $L_67fcd0)
 ASM_VAR(AsmLabel, g_text7200d4, $L_7200d4)
@@ -836,5 +836,47 @@ extern "C" void __fastcall Queue_RunEvent(BYTE* self, void*, BYTE* ev)
     Queue_Remove(self, 0, ev);
     if (ev)
         CallVirt(ev, 0, 1);
+}
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+ASM_VAR(AsmLabel, g_logName67fb5c, $L_67fb5c)
+ASM_VAR(AsmLabel, s_67fb80, $L_67fb80)
+ASM_VAR(AsmLabel, s_67fb84, $L_67fb84)
+ASM_VAR(FILE*, g_logFile720068, $L_720068)
+extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
+
+// [FUN_5d2ba0] appends (text, value) to the log file when it has a name
+extern "C" void __cdecl Sys_Log(const char* text, int value)
+{
+    if (!g_logName67fb5c[0])
+        return;
+    g_logFile720068 = fopen(g_logName67fb5c, s_67fb80);
+    fprintf(g_logFile720068, s_67fb84, text, value);
+    fclose(g_logFile720068);
+}
+
+// [FUN_5d2f90] the free memory, always 1000000
+extern "C" int __cdecl Sys_FreeMemory() { return 1000000; }
+
+// [FUN_5d3080] the next sibling (+8)
+extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*) { return F(BYTE*, self, 8); }
+
+// [FUN_5d35b0] detaches a task from this owner's list (+4 head)
+extern "C" void __fastcall Owner_Detach(BYTE* self, void*, BYTE* node)
+{
+    CallThis(FUN_5d3790, self, node);
+    if (node == F(BYTE*, self, 4))
+    {
+        F(BYTE*, self, 4) = F(BYTE*, node, 8);
+        if (F(BYTE*, node, 8))
+            F(BYTE*, F(BYTE*, node, 8), 4) = 0;
+        F(BYTE*, node, 12) = 0;
+        return;
+    }
+    CallThis(FUN_5d21b0, node);
+    F(BYTE*, node, 12) = 0;
 }
 

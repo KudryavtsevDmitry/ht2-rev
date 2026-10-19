@@ -138,7 +138,7 @@ KING_ALIAS("_Fx_Update4910", "FUN_4c4910")
 extern "C" void __cdecl Fx_Update4df0(void* x);
 KING_ALIAS("_Fx_Update4df0", "FUN_4c4df0")
 extern "C" void __cdecl Fx_Message(const char* text, int);
-KING_ALIAS("_Fx_Message", "FUN_5d2ba0")
+KING_ALIAS("_Fx_Message", "_Sys_Log")
 extern "C" int __cdecl Fx_Find4e5bf5(int a, int b, int c, char* buf);
 KING_ALIAS("_Fx_Find4e5bf5", "FUN_4e5bf5")
 extern "C" void __cdecl Fx_DefaultData(void* data);
@@ -1252,7 +1252,7 @@ extern "C" void __cdecl Fx_Shadow(int a, int b, int c, int d, int tree)
 }
 
 extern "C" void FUN_4ccd50(); KING_ALIAS("_FUN_4ccd50", "_Fade_RunStage")
-ASM_PROC(FUN_5d2ba0)    // shows an error text (text, a)
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // shows an error text (text, a)
 extern "C" Matrix* __fastcall Matrix_IdentityThis(Matrix* self, void*);   // vecmath.cpp
 ASM_VAR(BYTE*, g_glows, $L_696248)              // 100 records of 116 bytes
 ASM_VAR(int, g_glowCount, $L_69624c)
@@ -1874,7 +1874,7 @@ void __cdecl Fx_SpawnPuffSpark(int a1, int a2)
 // Constructors and destructors with exception frames (frames dropped).
 
 ASM_PROC(FUN_5587d0)
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_VAR(char, g_vtbl64d234, $L_64d234)
 ASM_VAR(char, g_vtbl64d148, $L_64d148)
 ASM_VAR(char, g_vtbl64d0fc, $L_64d0fc)
@@ -3248,7 +3248,7 @@ ASM_VAR(int, g_fx69622c, $L_69622c)
 ASM_VAR(int, g_fx696230, $L_696230)
 ASM_VAR(int, g_fx696234, $L_696234)
 extern "C" void FUN_5c64f0(); KING_ALIAS("_FUN_5c64f0", "_Effects_FreeTrees")
-ASM_PROC(FUN_5e48f0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_4bcbe0(); KING_ALIAS("_FUN_4bcbe0", "@LightPool_Free@8")
 ASM_PROC(FUN_4c4780)
 extern "C" void FUN_4b89e0(); KING_ALIAS("_FUN_4b89e0", "_Fx_FreeBuffers")

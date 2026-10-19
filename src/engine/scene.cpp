@@ -49,8 +49,8 @@ extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    /
 ASM_PROC(FUN_604730)
 ASM_PROC(FUN_604d70)
 ASM_PROC(FUN_605130)
-ASM_PROC(FUN_604ed0)
-ASM_PROC(FUN_5e98c0)
+extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
+extern "C" void FUN_5e98c0(); KING_ALIAS("_FUN_5e98c0", "_Data_Read5e99c0")
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
 ASM_FUNC(Mixer_Close, $L_604a40)
 ASM_FUNC(Scene_EachCallback, $L_5fc780)
@@ -650,4 +650,87 @@ extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int)
     g_testInfoCount++;
     return ~F(BYTE, self, 40) & 1;
 }
+
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_604a80)
+ASM_PROC(FUN_604730)
+ASM_PROC($L_5fcdc0)
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
+ASM_VAR(int, g_sc723b28, $L_723b28)
+ASM_VAR(int, g_sc723b30, $L_723b30)
+ASM_VAR(int, g_sc723b34, $L_723b34)
+ASM_VAR(int, g_sc723b38, $L_723b38)
+ASM_VAR(AsmLabel, g_sc723aa8, $L_723aa8)
+ASM_VAR(CRITICAL_SECTION, g_sc723b40, $L_723b40)
+extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
+
+// [FUN_5fcdf0] starts the sound system once; returns the error text of a failure, else 0
+extern "C" const char* __cdecl Sound_Start()
+{
+    if (g_sc723b28)
+        return 0;
+    g_sc723b28 = 1;
+    g_sc723b30 = 0;
+    g_sc723b34 = 0;
+    int r = CallC<int>(FUN_604a80, 10, $L_5fcdc0);
+    g_sc723b38 = 0;
+    memset(g_sc723aa8, 0, 128);
+    if (!r)
+        return 0;
+    return CallC<const char*>(FUN_604730, r);
+}
+
+// [FUN_5f92b0] reads three ints and the third's count of ints (+12, new) from a file
+extern "C" void __fastcall Ints3_Read(BYTE* self, void*, FILE* f)
+{
+    F(int, self, 0) = CallC<int>(FUN_5ab140, f);
+    F(int, self, 4) = CallC<int>(FUN_5ab140, f);
+    F(int, self, 8) = CallC<int>(FUN_5ab140, f);
+    if (F(int, self, 8))
+    {
+        void* p = operator new(F(int, self, 8) * 4);
+        F(void*, self, 12) = p;
+        fread(p, 4, F(int, self, 8), f);
+    }
+}
+
+// [FUN_5f1cc0] puts a node at the head of bucket i (+48, count +52) of this table; 0 when i is out of range
+extern "C" int __fastcall Buckets_Push(BYTE* self, void*, int i, BYTE* n)
+{
+    if (i >= F(int, self, 52))
+        return 0;
+    F(BYTE*, n, 44) = self;
+    F(int, n, 36) = F(int, self, 36);
+    BYTE** slot = F(BYTE**, self, 48) + i;
+    BYTE* head = *slot;
+    if (!head)
+    {
+        *slot = n;
+        F(BYTE*, n, 8) = 0;
+        F(BYTE*, n, 4) = 0;
+        return 1;
+    }
+    F(BYTE*, n, 8) = head;
+    F(BYTE*, n, 4) = 0;
+    F(BYTE*, head, 4) = n;
+    F(BYTE**, self, 48)[i] = n;
+    return 1;
+}
+
+// [FUN_5fcdb0] resets +20 and +24 (-1)
+extern "C" void __fastcall Sound_ResetSlot(BYTE* self, void*)
+{
+    F(int, self, 20) = 0;
+    F(int, self, 24) = -1;
+}
+
+// [FUN_5ef820] whether bit 0 of +40 is clear (4 arguments ignored)
+extern "C" int __fastcall Obj_Flag0Clear(BYTE* self, void*, int, int, int, int)
+{
+    return ~F(BYTE, self, 40) & 1;
+}
+
+// [FUN_5ff220] initializes the sound lock
+extern "C" void __cdecl Sound_InitLock() { InitializeCriticalSection(&g_sc723b40); }
 
