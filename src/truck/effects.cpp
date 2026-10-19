@@ -136,7 +136,7 @@ extern "C" void FUN_5fd370(); KING_ALIAS("_FUN_5fd370", "@Sound_Construct@20")  
 extern "C" void __cdecl Fx_Update4910(void* x);
 KING_ALIAS("_Fx_Update4910", "_Eff_CreateSmokeFor")
 extern "C" void __cdecl Fx_Update4df0(void* x);
-KING_ALIAS("_Fx_Update4df0", "FUN_4c4df0")
+KING_ALIAS("_Fx_Update4df0", "_Eff_CreateSparks")
 extern "C" void __cdecl Fx_Message(const char* text, int);
 KING_ALIAS("_Fx_Message", "_Sys_Log")
 extern "C" int __cdecl Fx_Find4e5bf5(int a, int b, int c, char* buf);
@@ -4550,4 +4550,110 @@ extern "C" BYTE* __fastcall View3D_Construct(BYTE* s, void*, int a, int, int, in
     F(int, s, 4868) = 0;
     F(int, s, 548) = 0;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Effect sounds and sparks (exception frames dropped).
+
+extern "C" void FUN_4dd900(); KING_ALIAS("_FUN_4dd900", "@Fx_HandleInit@12")
+extern "C" void FUN_5fa4f0(); KING_ALIAS("_FUN_5fa4f0", "@Node_Set48@16")
+ASM_PROC(FUN_4c5680)
+ASM_VAR(BYTE*, g_q22_696248, $L_696248)
+ASM_VAR(BYTE*, g_q22_696250, $L_696250)
+ASM_VAR(AsmLabel, g_q22Ctor4c5020, $L_4c5020)
+ASM_VAR(AsmLabel, g_q22Ctor4c5000, $L_4c5000)
+ASM_VAR(AsmLabel, g_q22Dtor4c47f0, $L_4c47f0)
+ASM_VAR(BYTE*, g_q22_696704, $L_696704)
+ASM_VAR(BYTE*, g_q22_696708, $L_696708)
+ASM_VAR(BYTE*, g_q22_69670c, $L_69670c)
+ASM_VAR(BYTE*, g_q22_696710, $L_696710)
+ASM_VAR(BYTE*, g_q22_696714, $L_696714)
+ASM_VAR(BYTE*, g_q22_696718, $L_696718)
+ASM_VAR(BYTE*, g_q22_69671c, $L_69671c)
+ASM_VAR(BYTE*, g_q22_696720, $L_696720)
+ASM_VAR(BYTE*, g_q22_696724, $L_696724)
+ASM_VAR(BYTE*, g_q22_696728, $L_696728)
+ASM_VAR(AsmLabel, s_q22_672498, $L_672498)
+ASM_VAR(AsmLabel, s_q22_672480, $L_672480)
+ASM_VAR(AsmLabel, s_q22_672468, $L_672468)
+ASM_VAR(AsmLabel, s_q22_672450, $L_672450)
+ASM_VAR(AsmLabel, s_q22_672440, $L_672440)
+ASM_VAR(AsmLabel, s_q22_672430, $L_672430)
+ASM_VAR(AsmLabel, s_q22_672420, $L_672420)
+ASM_VAR(AsmLabel, s_q22_672410, $L_672410)
+ASM_VAR(AsmLabel, s_q22_672400, $L_672400)
+ASM_VAR(AsmLabel, s_q22_6723f0, $L_6723f0)
+
+static BYTE* Eff_NewSound(const char* name)
+{
+    BYTE* m = (BYTE*)operator new(4);
+    return m ? CallThis<BYTE*>(FUN_4dd900, m, name) : 0;
+}
+// [FUN_4b87a0] the ten effect sounds (696704..696728)
+extern "C" void __cdecl Eff_CreateSounds()
+{
+    g_q22_696704 = Eff_NewSound((const char*)s_q22_672498);
+    g_q22_696708 = Eff_NewSound((const char*)s_q22_672480);
+    g_q22_69670c = Eff_NewSound((const char*)s_q22_672468);
+    g_q22_696710 = Eff_NewSound((const char*)s_q22_672450);
+    g_q22_696714 = Eff_NewSound((const char*)s_q22_672440);
+    g_q22_696718 = Eff_NewSound((const char*)s_q22_672430);
+    g_q22_69671c = Eff_NewSound((const char*)s_q22_672420);
+    g_q22_696720 = Eff_NewSound((const char*)s_q22_672410);
+    g_q22_696724 = Eff_NewSound((const char*)s_q22_672400);
+    g_q22_696728 = Eff_NewSound((const char*)s_q22_6723f0);
+}
+
+static DWORD* Eff_NewQuad(DWORD a, DWORD b, DWORD c, DWORD d)
+{
+    DWORD* q = (DWORD*)operator new(16);
+    q[0] = a;
+    q[1] = b;
+    q[2] = c;
+    q[3] = d;
+    return q;
+}
+// [FUN_4c4df0] (world): the 100 sparks (696248, 116 bytes each), each a one-quad mesh of 11 units on the smoke texture
+extern "C" void __cdecl Eff_CreateSparks(BYTE* w)
+{
+    g_q22_696250 = w;
+    g_eff696244 = w;
+    if (!g_q22_696248) {
+        BYTE* m = (BYTE*)operator new(11604);
+        BYTE* e = 0;
+        if (m) {
+            *(int*)m = 100;
+            e = m + 4;
+            CallStd(Eff_VecCtor, e, 116, 100, (BYTE*)g_q22Ctor4c5020, FUN_4c5680);
+        }
+        g_q22_696248 = e;
+    }
+    BYTE* tex = CallC<BYTE*>(FUN_5ef2b0, F(int, w, 524), (const char*)s_eff672678);
+    for (int off = 0; off < 11600; off += 116) {
+        F(int, g_q22_696248 + off, 68) = 0;
+        BYTE* it = g_q22_696248 + off;
+        BYTE* m = (BYTE*)operator new(44);
+        BYTE* e = 0;
+        if (m) {
+            *(int*)m = 1;
+            e = m + 4;
+            CallStd(Eff_VecCtor, e, 40, 1, (BYTE*)g_q22Ctor4c5000, (BYTE*)g_q22Dtor4c47f0);
+        }
+        F(WORD, e, 0) = 2;
+        F(WORD, e, 4) = 4;
+        F(DWORD*, e, 8) = Eff_NewQuad(0, 0x3f800000, 0x3f800000, 0);
+        F(DWORD*, e, 12) = Eff_NewQuad(0x3f800000, 0x3f800000, 0, 0);
+        F(DWORD*, e, 16) = Eff_NewQuad(0xc0b00000, 0x40b00000, 0x40b00000, 0xc0b00000);
+        F(int, e, 24) = 0;
+        F(DWORD*, e, 20) = Eff_NewQuad(0xc0b00000, 0xc0b00000, 0x40b00000, 0x40b00000);
+        F(BYTE, e, 1) |= 1;
+        F(WORD, e, 34) = 4095;
+        F(int, e, 36) = 0;
+        CallThis(FUN_5fa4f0, it, e, 1);
+        CallVirt(it, 72);
+        CallVirt(tex, 20, 0, it);
+        F(BYTE, it, 40) |= 1;
+        F(int, F(BYTE*, g_q22_696248 + off, 52), 36) = 0;
+        F(BYTE, g_q22_696248 + off, 40) |= 1;
+    }
 }
