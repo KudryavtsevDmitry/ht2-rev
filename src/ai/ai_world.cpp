@@ -20538,13 +20538,13 @@ ASM_PROC($L_422370)
 ASM_PROC($L_42b3a0)
 ASM_PROC($L_4279d0)
 ASM_PROC($L_429930)
-ASM_PROC($L_429fb0)
-ASM_PROC($L_42a120)
-ASM_VAR(AsmLabel, f_42a1c0, $L_42a1c0)
-ASM_VAR(AsmLabel, f_42a2c0, $L_42a2c0)
+extern "C" void $L_429fb0(); KING_ALIAS("_$L_429fb0", "_Task_OrdersExpired")
+extern "C" void $L_42a120(); KING_ALIAS("_$L_42a120", "_Task_PresentOrdersExpired")
+extern "C" void __cdecl Task_DropOldPresents();
+extern "C" void __cdecl Task_DropOldRacePresents();
 ASM_PROC($L_432dd0)
 ASM_PROC($L_420040)
-ASM_VAR(AsmLabel, f_42a3f0, $L_42a3f0)
+extern "C" void __cdecl Task_FarSounds();
 ASM_PROC($L_4208b0)
 ASM_PROC($L_420b90)
 extern "C" void FUN_403940(); KING_ALIAS("_FUN_403940", "_Ai_Reset")
@@ -20746,14 +20746,145 @@ extern "C" void __cdecl Ai_StartGame(const char* saved, DWORD flags, const BYTE*
     Task_Add(Task_New(0, 0x403d8000, s_task66e2a0, $L_429930));
     Task_Add(Task_New(0, 0x3ff00000, s_task66e28c, $L_429fb0));
     Task_Add(Task_New(0, 0x3ff00000, s_task66e278, $L_42a120));
-    Task_Add(Task_New(0, 0x40240000, s_task66e25c, (void (*)())&f_42a1c0));
-    Task_Add(Task_New(0, 0x40330000, s_task66e248, (void (*)())&f_42a2c0));
+    Task_Add(Task_New(0, 0x40240000, s_task66e25c, Task_DropOldPresents));
+    Task_Add(Task_New(0, 0x40330000, s_task66e248, Task_DropOldRacePresents));
     Task_Add(Task_New(0, 0x40080000, s_task66e234, $L_432dd0));
     Task_Add(Task_New(0, 0x4072c000, s_task66e224, (void (*)())Ai_MarkAmbushes));
     Task_Add(Task_New(0x66666666, 0x40226666, s_task66e218, $L_420040));
-    Task_Add(Task_New(0x9999999a, 0x403a9999, s_task66e208, (void (*)())&f_42a3f0));
+    Task_Add(Task_New(0x9999999a, 0x403a9999, s_task66e208, Task_FarSounds));
     Task_Add(Task_New(0x33333333, 0x401d3333, s_task66e1fc, $L_4208b0));
     Task_Add(Task_New(0x66666666, 0x40146666, s_task66e1f0, $L_420b90));
 done:
     r_68d0ec = 1;
+}
+
+// ---------------------------------------------------------------------------
+// Batch: AI task callbacks (orders expiring, presents)
+
+ASM_VAR(AsmLabel, s_orderExpired66dbd8, $L_66dbd8)
+ASM_VAR(AsmLabel, s_err09768, $L_66dbe8)
+ASM_VAR(double, g_64b850, $L_64b850)
+ASM_VAR(double, g_64b848, $L_64b848)
+ASM_VAR(double, g_64b858, $L_64b858)
+ASM_VAR(double, g_64b758, $L_64b758)
+ASM_VAR(double, g_64b730, $L_64b730)
+extern "C" void FUN_429cd0(); KING_ALIAS("_FUN_429cd0", "_Orders_RemoveExpired")    // drops expired orders, with their value (orders, double*) returns bool
+extern "C" void FUN_569150(); KING_ALIAS("_FUN_569150", "_Screen_569150")    // (id)
+
+// [$L_429fb0] (task) the human's expired orders: their value is taken off its money and announced
+extern "C" void __cdecl Task_OrdersExpired()
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players)
+        return;
+    double lost = 0;
+    bool any = CallC<char>(FUN_429cd0, Player_Orders(h, 0), &lost) != 0;
+    F(double, h, 136) = F(double, h, 136) - lost;
+    if (any) {
+        CallC(FUN_425790, s);
+        CallC(FUN_41ef90, s);
+        CallC(FUN_477210, s);
+        Ai_PlayerEvent((BYTE*)s, 13, 0);
+        char buf[128];
+        sprintf(buf, Message_Text((const char*)s_orderExpired66dbd8), lost);
+        CallC(FUN_56ae60, buf);
+        CallC(FUN_56f6d0);
+        CallC(FUN_483e60, lost);
+        CallC(FUN_483e80, 8, 0);
+    }
+    CallC(FUN_426f20, s);
+}
+
+// [$L_42a120] (task) a present holding a trailer order whose orders all expired waits again (68d01c)
+extern "C" void __cdecl Task_PresentOrdersExpired()
+{
+    BYTE* head = (BYTE*)g_68cf6c;
+    for (BYTE* n = *(BYTE**)head; n != (BYTE*)g_68cf6c; n = *(BYTE**)n) {
+        BYTE* p = F(BYTE*, n, 8);
+        BYTE* o = F(BYTE*, p, 20);
+        if (!F(BYTE, p, 104) || !o || F(BYTE*, o, 28) == F(BYTE*, o, 32))
+            continue;
+        double lost = 0;
+        CallC(FUN_429cd0, o + 28, &lost);
+        if (F(BYTE*, o, 28) == F(BYTE*, o, 32)) {
+            F(DWORD, p, 8) &= ~0x40u;
+            F(double, p, 96) = CallC<double>(FUN_401000);
+            g_68d01c++;
+            g_68d0e4--;
+        }
+    }
+}
+
+static double Present_DistTo(const BYTE* d, const BYTE* p)
+{
+    double x = F(double, d, 616) - F(double, p, 32);
+    double y = F(double, d, 624) - F(double, p, 40);
+    double z = F(double, d, 632) - F(double, p, 48);
+    return x87_sqrt((y * y + z * z) + x * x);
+}
+
+// (task, at $L_42a1c0 in $L_42a120's PROC) long-waiting empty trailer presents far from the human go away
+extern "C" void __cdecl Task_DropOldPresents()
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players)
+        return;
+    BYTE* d = h + 8;
+restart:
+    for (BYTE* n = *(BYTE**)g_68cf6c; n != (BYTE*)g_68cf6c; n = *(BYTE**)n) {
+        BYTE* p = F(BYTE*, n, 8);
+        if (!(CallC<double>(FUN_401000) - F(double, p, 96) > g_64b850))
+            continue;
+        BYTE* o = F(BYTE*, p, 20);
+        if (!F(BYTE, p, 104) || !o || F(BYTE*, o, 28) != F(BYTE*, o, 32))
+            continue;
+        if (!(Present_DistTo(d, p) > g_64b848))
+            continue;
+        CallC(FUN_41ef10, n);
+        goto restart;
+    }
+}
+
+// (task, at $L_42a2c0) long-waiting race presents (kind 0x80, not 0x400) far from the human go away,
+// freeing their spot
+extern "C" void __cdecl Task_DropOldRacePresents()
+{
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h == (BYTE*)g_players)
+        return;
+    BYTE* d = h + 8;
+restart:
+    for (BYTE* n = *(BYTE**)g_68cf6c; n != (BYTE*)g_68cf6c; n = *(BYTE**)n) {
+        BYTE* p = F(BYTE*, n, 8);
+        DWORD fl = F(DWORD, p, 8);
+        if ((fl & 0x400) || (fl & 0xf0) != 0x80)
+            continue;
+        if (!(CallC<double>(FUN_401000) - F(double, p, 96) > g_64b858))
+            continue;
+        if (!(Present_DistTo(d, p) > g_64b758))
+            continue;
+        if (F(int, p, 108) == -1)
+            AiError(0, 1, s_mainFile, s_mainId, 10638, s_err09768, &g_aiEmpty, &g_aiEmpty);
+        F(int, (BYTE*)g_spots68d0b8[F(int, p, 108)], 40)--;
+        CallC(FUN_41ef10, n);
+        goto restart;
+    }
+}
+
+// (task, at $L_42a3f0) the sounds (FUN_569150 of each id mod 1000) of the records at 68cbe8 far from the camera
+extern "C" void __cdecl Task_FarSounds()
+{
+    for (void** e = g_68cbe8; e != g_68cbec; e++) {
+        BYTE* o = (BYTE*)*e;
+        double x = g_68bab0.x - F(double, o, 336);
+        double y = g_68bab0.y - F(double, o, 344);
+        double z = g_68bab0.z - F(double, o, 352);
+        if (!(g_64b730 < x87_sqrt((y * y + z * z) + x * x)))
+            continue;
+        for (unsigned* id = F(unsigned*, o, 360); id != F(unsigned*, o, 364); id++)
+            CallC(FUN_569150, *id % 1000);
+    }
 }
