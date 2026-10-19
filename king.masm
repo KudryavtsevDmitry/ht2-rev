@@ -1199,6 +1199,7 @@ PUBLIC $L_66e2cc, $L_66e2e0, $L_66e2f0, $L_66e300, $L_66e310, $L_66e320
 PUBLIC $L_66e330, $L_66e340, $L_66e34c, $L_66e35c, $L_68d108
 PUBLIC $L_64b730, $L_64b758, $L_64b848, $L_64b850, $L_64b858, $L_66dbd8
 PUBLIC $L_66dbe8
+PUBLIC $L_64b6f0
 
 ;===================================
 _TEXT SEGMENT
@@ -47115,6 +47116,8 @@ EXTERN _Ai_NewGoods:PROC
 FUN_41b3a0 TEXTEQU <_Ai_NewGoods>
 ENDIF
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_41b720 PROC
 
             push ECX
@@ -47253,6 +47256,10 @@ $L_41b828::
             pop ECX
             ret 
 $L_41b720 ENDP
+ELSE
+EXTERN _Task_FormOrders:PROC
+$L_41b720 TEXTEQU <_Task_FormOrders>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -52494,6 +52501,8 @@ $L_41ed3b ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_41ed50 PROC
 
             push 1082515456
@@ -52503,6 +52512,10 @@ $L_41ed50 PROC
             add ESP,8
             ret 
 $L_41ed50 ENDP
+ELSE
+EXTERN _Task_PlacePresents:PROC
+$L_41ed50 TEXTEQU <_Task_PlacePresents>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -54217,6 +54230,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_41fcf0 PROC
 
             push EBP
@@ -54500,6 +54515,10 @@ $L_41fff0::
             pop EBP
             ret 
 $L_41fcf0 ENDP
+ELSE
+EXTERN _Task_Standings:PROC
+$L_41fcf0 TEXTEQU <_Task_Standings>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -58110,6 +58129,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_422370 PROC
 
             call FUN_421c00
@@ -58123,6 +58144,10 @@ $L_422370 PROC
             add ESP,8
             ret 
 $L_422370 ENDP
+ELSE
+EXTERN _Task_Waiting:PROC
+$L_422370 TEXTEQU <_Task_Waiting>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

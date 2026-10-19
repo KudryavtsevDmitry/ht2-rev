@@ -20530,11 +20530,11 @@ extern "C" int __cdecl Ai_PrepareVehicleOrder(int player, int dealer, const char
 // ---------------------------------------------------------------------------
 // Batch: the AI start of a game
 
-ASM_PROC($L_41b720)
-ASM_PROC($L_41fcf0)
-ASM_PROC($L_41ed50)
+extern "C" void $L_41b720(); KING_ALIAS("_$L_41b720", "_Task_FormOrders")
+extern "C" void $L_41fcf0(); KING_ALIAS("_$L_41fcf0", "_Task_Standings")
+extern "C" void $L_41ed50(); KING_ALIAS("_$L_41ed50", "_Task_PlacePresents")
 ASM_PROC($L_420ed0)
-ASM_PROC($L_422370)
+extern "C" void $L_422370(); KING_ALIAS("_$L_422370", "_Task_Waiting")
 ASM_PROC($L_42b3a0)
 ASM_PROC($L_4279d0)
 ASM_PROC($L_429930)
@@ -20887,4 +20887,112 @@ extern "C" void __cdecl Task_FarSounds()
         for (unsigned* id = F(unsigned*, o, 360); id != F(unsigned*, o, 364); id++)
             CallC(FUN_569150, *id % 1000);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Batch: AI task callbacks (orders, presents, standings)
+
+ASM_VAR(double, g_64b6f0, $L_64b6f0)
+extern "C" void FUN_41fca0(); KING_ALIAS("_FUN_41fca0", "_Player_CostA")    // a driving player's first cost total (player) returns double
+extern "C" void FUN_4880e0(); KING_ALIAS("_FUN_4880e0", "@Filter1_Update@16")    // a filter step (thiscall: double) returns double
+extern "C" void FUN_421c00(); KING_ALIAS("_FUN_421c00", "_Players_DropIdleFar")
+extern "C" void FUN_422280(); KING_ALIAS("_FUN_422280", "_Players_DropFar")
+extern "C" void FUN_4221d0(); KING_ALIAS("_FUN_4221d0", "_Markets_Grow")    // (double)
+
+// [$L_41b720] (task formOrders) outside network games and away from the last human load: each town's due
+// goods (+16 passed) go away, and each free route slot (flags not 9) gets new goods when the town has kinds
+extern "C" void __cdecl Task_FormOrders()
+{
+    double dt = CallC<double>(FUN_401000) - g_lastHumanLoad68d100;
+    if (dt < 0)
+        dt = -dt;
+    if (!(dt >= g_64b6f0) || g_68d188)
+        return;
+    for (void** t = g_towns; t != g_townsEnd; t++) {
+        BYTE* town = (BYTE*)*t;
+        if (F(BYTE*, town, 28) == F(BYTE*, town, 32))
+            continue;
+        for (BYTE* e = F(BYTE*, town, 28); e != F(BYTE*, (BYTE*)*t, 32); e += 16) {
+            if (F(BYTE, e, 4) & 9)
+                continue;
+            for (int j = 0; j < 2; j++) {
+                BYTE* g = F(BYTE*, e, 8 + j * 4);
+                if (g && !(CallC<double>(FUN_401000) < F(double, g, 16))) {
+                    operator delete(g);
+                    F(BYTE*, e, 8 + j * 4) = 0;
+                }
+            }
+        }
+        town = (BYTE*)*t;
+        if (F(BYTE*, town, 40) == F(BYTE*, town, 44))
+            continue;
+        for (BYTE* e = F(BYTE*, town, 28); e != F(BYTE*, town, 32); e += 16) {
+            if (F(BYTE, e, 4) & 9)
+                continue;
+            for (int j = 0; j < 2; j++)
+                if (!F(BYTE*, e, 8 + j * 4))
+                    Ai_NewGoods((BYTE**)(e + 8 + j * 4), e, (BYTE*)*t, j);
+            town = (BYTE*)*t;
+        }
+    }
+}
+
+// [$L_41ed50] (task) places the missing presents, 720 ahead
+extern "C" void __cdecl Task_PlacePresents() { Ai_PlacePresents(720.0); }
+
+// [$L_41fcf0] (task) the players' standings: each one's speed filter takes its distance (+752, reset), then
+// each team leader's share of all costs (+768 total, +760 share); a leader or the human passing the share
+// mark (66c710, then 1.05) for the first time raises event 12
+extern "C" void __cdecl Task_Standings()
+{
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        double dist = F(double, d, 752);
+        CallThis<double>(FUN_4880e0, CallC<BYTE*>(FUN_40a9f0, it) + 728, dist);
+        d = CallC<BYTE*>(FUN_40a9f0, it);
+        F(DWORD, d, 752) = 0;
+        F(DWORD, d, 756) = 0;
+    }
+    double total = 0;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it)
+        total = CallC<double>(FUN_41fca0, it) + total;
+    if (!(total < 0 || total > 0))
+        return;
+    for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        double y = 0;
+        BYTE* d = CallC<BYTE*>(FUN_40a9f0, it);
+        if (F(void*, d, 168) == g_players) {
+            y = CallC<double>(FUN_41fca0, it);
+            for (BYTE* e = F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 152); e != F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 156);
+                 e += 16)
+                y = CallC<double>(FUN_41fca0, F(BYTE*, e, 0)) + y;
+        }
+        F(double, CallC<BYTE*>(FUN_40a9f0, it), 768) = y;
+        F(double, CallC<BYTE*>(FUN_40a9f0, it), 760) = y / total;
+        if (!(F(double, CallC<BYTE*>(FUN_40a9f0, it), 760) < r_66c710) && !F(BYTE, CallC<BYTE*>(FUN_40a9f0, it), 776)) {
+            F(BYTE, CallC<BYTE*>(FUN_40a9f0, it), 776) = 1;
+            F(DWORD, &r_66c710, 0) = 0xcccccccd;
+            F(DWORD, &r_66c710, 4) = 0x3ff0cccc;
+            g_allowKind7_68d1a0 = 1;
+            Ai_PlayerEvent(it, 12, 0);
+        }
+    }
+    int s;
+    BYTE* h = (BYTE*)*Player_FromId(&s);
+    if (h != (BYTE*)g_players && !(F(double, h, 768) < r_66c710) && !F(BYTE, h, 784)) {
+        F(BYTE, h, 784) = 1;
+        F(DWORD, &r_66c710, 0) = 0xcccccccd;
+        F(DWORD, &r_66c710, 4) = 0x3ff0cccc;
+        g_allowKind7_68d1a0 = 1;
+        int s2;
+        Ai_PlayerEvent((BYTE*)*Player_FromId(&s2), 12, 0);
+    }
+}
+
+// [$L_422370] (task) removing idle waiting players, FUN_422280, then FUN_4221d0 720 ahead
+extern "C" void __cdecl Task_Waiting()
+{
+    CallC(FUN_421c00);
+    CallC(FUN_422280);
+    CallC(FUN_4221d0, 720.0);
 }
