@@ -904,7 +904,7 @@ extern "C" void FUN_5f0810(); KING_ALIAS("_FUN_5f0810", "@Node5f0810_Destroy@8")
 ASM_PROC(FUN_5f08c0)
 extern "C" void FUN_5f15a0(); KING_ALIAS("_FUN_5f15a0", "@Node5f1530_Destroy@8")
 ASM_PROC(FUN_5f1a70)
-ASM_PROC(FUN_5fa720)
+extern "C" void FUN_5fa720(); KING_ALIAS("_FUN_5fa720", "@Sce5fa720_Destroy@4")
 extern "C" void FUN_5faa60(); KING_ALIAS("_FUN_5faa60", "@Node5faa60_Destroy@8")
 extern "C" void FUN_5fcc70(); KING_ALIAS("_FUN_5fcc70", "@Node5fcc70_Destroy@8")
 
@@ -1751,4 +1751,23 @@ extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s)
     F(void*, s, 0) = g_sce652840;
     operator delete(F(void*, s, 12));
     F(void*, s, 0) = g_sce64d81c;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+extern "C" void Sce_VecDtor(); KING_ALIAS("_Sce_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_VAR(AsmLabel, g_sce652d10, $L_652d10)
+ASM_VAR(AsmLabel, g_sce4c47f0, $L_4c47f0)
+
+// [FUN_5fa720] (vtable 652d10) deletes its array of 40-byte items (+52)
+extern "C" void __fastcall Sce5fa720_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_sce652d10;
+    BYTE* a = F(BYTE*, s, 52);
+    if (a) {
+        CallStd(Sce_VecDtor, a, 40, F(int, a, -4), (BYTE*)g_sce4c47f0);
+        operator delete(a - 4);
+    }
+    CallThis(FUN_5ef660, s);
 }

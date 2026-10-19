@@ -469,10 +469,10 @@ extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const c
 
 extern "C" void FUN_595c60(); KING_ALIAS("_FUN_595c60", "@WorldObj_DestroyBase@8")
 extern "C" void FUN_5a53a0(); KING_ALIAS("_FUN_5a53a0", "@Wea5a53a0_Destroy@4")
-ASM_PROC(FUN_5a63a0)
+extern "C" void FUN_5a63a0(); KING_ALIAS("_FUN_5a63a0", "@Wea5a63a0_Destroy@4")
 ASM_PROC(FUN_5a6aa0)
 extern "C" void FUN_5a7240(); KING_ALIAS("_FUN_5a7240", "@Wea5a7240_Destroy@4")
-ASM_PROC(FUN_5a7310)
+extern "C" void FUN_5a7310(); KING_ALIAS("_FUN_5a7310", "@Wea5a7310_Destroy@4")
 ASM_PROC(FUN_5a73f0)
 ASM_VAR(DWORD, g_wea6fb3d0, $L_6fb3d0)
 ASM_VAR(DWORD, g_wea6fb3d4, $L_6fb3d4)
@@ -643,4 +643,70 @@ extern "C" void __fastcall Wea5a7240_Destroy(BYTE* s)
     operator delete(F(void*, s, 76));
     operator delete(F(void*, s, 80));
     CallThis(FUN_5ef660, s);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
+extern "C" void FUN_5fa720(); KING_ALIAS("_FUN_5fa720", "@Sce5fa720_Destroy@4")
+extern "C" void FUN_5bad90(); KING_ALIAS("_FUN_5bad90", "@Texture_SetPixels@20")
+extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
+extern "C" void FUN_5d33b0(); KING_ALIAS("_FUN_5d33b0", "@Handle_Release@8")
+extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
+ASM_PROC(FUN_5f1a70)
+extern "C" void Wea_VecDtor(); KING_ALIAS("_Wea_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_VAR(AsmLabel, g_wea651390, $L_651390)
+ASM_VAR(AsmLabel, g_wea6513b0, $L_6513b0)
+ASM_VAR(AsmLabel, g_wea651548, $L_651548)
+ASM_VAR(AsmLabel, g_wea651358, $L_651358)
+ASM_VAR(AsmLabel, g_wea65130c, $L_65130c)
+ASM_VAR(AsmLabel, g_wea6515dc, $L_6515dc)
+ASM_VAR(AsmLabel, g_wea5a3df0, $L_5a3df0)
+
+// [FUN_5a4e90] (vtables 651390, 6513b0 at +32)
+extern "C" void __fastcall Wea5a4e90_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_wea651390;
+    F(void*, s, 32) = g_wea6513b0;
+    CallThis(FUN_5ef780, s + 32);
+    CallThis(FUN_5fa720, s ? s + 32 : 0);
+    CallThis(FUN_5d3290, s);
+}
+// [FUN_5a63a0] (vtable 651548): its picture (+148) stopped, its surface (+152) freed
+extern "C" void __fastcall Wea5a63a0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_wea651548;
+    CallThis(FUN_5bad90, F(BYTE*, s, 148), 0, 0, 0);
+    BYTE* p = F(BYTE*, s, 152);
+    if (p) {
+        CallThis(FUN_5b6a90, p);
+        operator delete(p);
+    }
+    CallThis(FUN_5d3290, s);
+}
+// [FUN_5a47f0] the helicopter's object (vtables 651358, 65130c at +256)
+extern "C" void __fastcall Wea5a47f0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_wea651358;
+    F(void*, s, 256) = g_wea65130c;
+    CallVirt(F(BYTE*, s, 32), 36);
+    if (F(BYTE*, s, 324))
+        CallVirt(F(BYTE*, s, 324), 0, 1);
+    CallThis(FUN_5d33b0, s);
+    CallThis(FUN_5ef660, s ? s + 256 : 0);
+    CallThis(FUN_5d3290, s);
+}
+// [FUN_5a7310] (vtable 6515dc): its 28-byte items (+60), +64, +68
+extern "C" void __fastcall Wea5a7310_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_wea6515dc;
+    BYTE* a = F(BYTE*, s, 60);
+    if (a) {
+        CallStd(Wea_VecDtor, a, 28, F(int, a, -4), (BYTE*)g_wea5a3df0);
+        operator delete(a - 4);
+    }
+    operator delete(F(void*, s, 64));
+    CallThis(FUN_5e5840, s + 68);
+    CallThis(FUN_5f1a70, s);
 }

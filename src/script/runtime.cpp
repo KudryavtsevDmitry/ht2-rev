@@ -1174,3 +1174,17 @@ extern "C" void __fastcall Run4914c0_Destroy(BYTE* s)
     CallC(FUN_491520, F(int, s, 12), F(int, s, 16));
     F(void*, s, 0) = g_run64bee4;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+// [FUN_490ea0] a pair of strings: frees each one with a length (+2 word)
+extern "C" void __fastcall StrPair_Destroy(BYTE* s)
+{
+    BYTE* a = F(BYTE*, s, 4);
+    if (a && F(WORD, a, 2))
+        operator delete(a);
+    BYTE* b = F(BYTE*, s, 0);
+    if (b && F(WORD, b, 2))
+        operator delete(b);
+}

@@ -778,7 +778,7 @@ extern "C" void __fastcall Effect_MoveQuad(BYTE* self, void*)
 }
 
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
-ASM_PROC(FUN_5fa720)
+extern "C" void FUN_5fa720(); KING_ALIAS("_FUN_5fa720", "@Sce5fa720_Destroy@4")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void* __cdecl memset(void* d, int c, size_t n);
@@ -1370,7 +1370,7 @@ ASM_VAR(char, vt_650ee8, $L_650ee8)
 ASM_VAR(char, vt_64d81c, $L_64d81c)
 ASM_VAR(int, g_count6f6a6c, $L_6f6a6c)
 ASM_VAR(char, g_6f68b0, $L_6f68b0)
-ASM_PROC(FUN_5da790)
+extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 extern "C" void FUN_59aa90(); KING_ALIAS("_FUN_59aa90", "@Wasm59aa90_Destroy@8")
 ASM_PROC($L_5973a0)
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
@@ -1677,4 +1677,41 @@ extern "C" int __fastcall Worobj_Pack(BYTE* s)
     }
     F(unsigned, s, 6432) = k;
     return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+ASM_PROC(FUN_5d31e0)
+ASM_PROC(FUN_5a3f50)
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+ASM_PROC(FUN_5d3110)
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+ASM_VAR(AsmLabel, s_worobj67e8e8, $L_67e8e8)
+ASM_VAR(AsmLabel, s_worobj67e8e0, $L_67e8e0)
+ASM_VAR(AsmLabel, g_worobj6512c0, $L_6512c0)
+ASM_VAR(AsmLabel, g_worobj6512a0, $L_6512a0)
+
+// [FUN_5a3ee0] constructor (world, name, c): registered with the world's objects (+2992)
+extern "C" BYTE* __fastcall Worobj5a3ee0_Construct(BYTE* s, void*, BYTE* w, int name, int c)
+{
+    CallThis(FUN_5d31e0, s, name, (const char*)s_worobj67e8e8);
+    F(void*, s, 0) = g_worobj6512c0;
+    CallThis(FUN_5a3f50, s, c);
+    F(BYTE*, s, 36) = w;
+    CallThis(FUN_5d3570, w + 2992, s);
+    return s;
+}
+// [FUN_5a3e00] constructor (world, b, c, d, e): an animation (FUN_5ef2b0 (0, b)) registered with the world
+extern "C" BYTE* __fastcall Worobj5a3e00_Construct(BYTE* s, void*, BYTE* w, int b, int c, int d, int e)
+{
+    CallThis(FUN_5d3110, s, (const char*)s_worobj67e8e0);
+    F(int, s, 40) = c;
+    F(int, s, 48) = d;
+    F(void*, s, 0) = g_worobj6512a0;
+    F(int, s, 52) = e;
+    F(BYTE*, s, 32) = w;
+    F(int, s, 36) = CallC<int>(FUN_5ef2b0, 0, b);
+    CallThis(FUN_5d3570, w + 2992, s);
+    return s;
 }

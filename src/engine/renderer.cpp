@@ -1742,3 +1742,22 @@ extern "C" BYTE* __fastcall Ren5bcf00_DeletingDestructor(BYTE* s, void*, int fla
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+ASM_VAR(AsmLabel, g_ren651794, $L_651794)
+ASM_VAR(AsmLabel, g_ren651780, $L_651780)
+ASM_VAR(AsmLabel, g_ren64d81c, $L_64d81c)
+
+// [FUN_5bcf60] (vtables 651794, 651780 at +16) frees +28, +12, +8
+extern "C" void __fastcall Ren5bcf60_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_ren651794;
+    F(void*, s, 16) = g_ren651780;
+    operator delete(F(void*, s, 28));
+    *(void**)(s ? s + 16 : 0) = g_ren64d81c;
+    F(void*, s, 0) = g_ren651798;
+    operator delete(F(void*, s, 12));
+    operator delete(F(void*, s, 8));
+}

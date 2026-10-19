@@ -22,7 +22,7 @@ ASM_PROC(FUN_5acd40)    // base constructor
 extern "C" void FUN_5bad60(); KING_ALIAS("_FUN_5bad60", "@Texture_Size@8")    // size of an object
 extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    // size of an object
 ASM_PROC(FUN_5edeb0)    // base constructor (a, b)
-ASM_PROC(FUN_5eddf0)    // base destructor
+extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")    // base destructor
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // selects a palette
 ASM_FUNC(Scene_FindCallback, $L_5ef310)
 
@@ -536,8 +536,8 @@ extern "C" int __fastcall Cluster_Set2(BYTE* self, void*)
 // Small virtual methods and static initializers.
 
 ASM_PROC(FUN_5ea9b0)
-ASM_PROC(FUN_5edb20)
-ASM_PROC(FUN_5eddf0)
+extern "C" void FUN_5edb20(); KING_ALIAS("_FUN_5edb20", "@Clu5edb20_Destroy@4")
+extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")
 extern "C" void FUN_5ee220(); KING_ALIAS("_FUN_5ee220", "@Texture_Destroy@8")
 extern "C" void FUN_5ef450(); KING_ALIAS("_FUN_5ef450", "@Node_Destroy@8")
 
@@ -719,4 +719,33 @@ extern "C" int __fastcall Clu_5edce0(BYTE* s)
             CallThis(fn, F(BYTE*, s, 12));
     }
     return 1;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")
+ASM_VAR(AsmLabel, g_clu65277c, $L_65277c)
+ASM_VAR(AsmLabel, g_clu6527b0, $L_6527b0)
+ASM_VAR(AsmLabel, g_clu64d81c, $L_64d81c)
+
+// [FUN_5eddf0] a cluster list (vtable 6527b0) deletes its items (+32, count +28) and frees its arrays
+extern "C" void __fastcall Clu5eddf0_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_clu6527b0;
+    for (int i = 0; i < F(int, s, 28); i++)
+        if (F(BYTE**, s, 32)[i])
+            CallVirt(F(BYTE**, s, 32)[i], 0, 1);
+    operator delete(F(void*, s, 32));
+    operator delete(F(void*, s, 36));
+    F(void*, s, 0) = g_clu64d81c;
+}
+// [FUN_5edb20] (vtable 65277c) frees +68, +72, +76
+extern "C" void __fastcall Clu5edb20_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_clu65277c;
+    operator delete(F(void*, s, 68));
+    operator delete(F(void*, s, 72));
+    operator delete(F(void*, s, 76));
+    CallThis(FUN_5eddf0, s);
 }

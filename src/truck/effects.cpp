@@ -3470,7 +3470,7 @@ ASM_PROC(FUN_4ce6d0)
 ASM_PROC(FUN_547030)
 ASM_PROC(FUN_5f0870)
 ASM_PROC(FUN_4dc410)
-ASM_PROC(FUN_4ddd50)
+extern "C" void FUN_4ddd50(); KING_ALIAS("_FUN_4ddd50", "@Eff4ddd50_Destroy@4")
 ASM_VAR(float, g_fx696700, $L_696700)
 ASM_VAR(float, g_fx69637c, $L_69637c)
 ASM_VAR(float, g_fx6966fc, $L_6966fc)
@@ -4362,4 +4362,20 @@ extern "C" void __fastcall Eff_Particles(BYTE* s, void*, float dt)
         if (!(rem > g_eff64c264b))
             return;
     }
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and destructors (exception frames dropped).
+
+extern "C" void FUN_4eac8e(); KING_ALIAS("_FUN_4eac8e", "@Arrays_Free@8")
+extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
+
+// [FUN_4ddd50] the four sound holders (+4828..+4724), then the window
+extern "C" void __fastcall Eff4ddd50_Destroy(BYTE* s)
+{
+    CallThis(FUN_4eac8e, s + 4828);
+    CallThis(FUN_4eac8e, s + 4788);
+    CallThis(FUN_4eac8e, s + 4756);
+    CallThis(FUN_4eac8e, s + 4724);
+    CallThis(FUN_5da790, s);
 }
