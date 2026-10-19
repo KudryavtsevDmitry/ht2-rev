@@ -2022,3 +2022,87 @@ extern "C" void __cdecl Sch_TypeError(int code, int severity, const char* name)
     if (r && r <= 1)
         exit(-1);
 }
+
+// ---------------------------------------------------------------------------
+// Virtual methods of the value classes: type ids and names, deleting
+// destructors.
+
+ASM_VAR(AsmLabel, s_tSpecialForm, $L_671110)
+ASM_VAR(AsmLabel, s_port, $L_66cb28)
+ASM_VAR(AsmLabel, s_tNumber, $L_66ca60)
+
+
+// [$L_4a7550]
+extern "C" int __fastcall SpecialForm_TypeId(BYTE*) { return 34; }
+// [$L_4a7560]
+extern "C" const char* __fastcall SpecialForm_TypeName(BYTE*) { return s_tSpecialForm; }
+// [$L_4a81f0]
+extern "C" const char* __fastcall Lambda_TypeName(BYTE*) { return s_tLambda; }
+// [$L_4a85a0]
+extern "C" const char* __fastcall Begin_TypeName(BYTE*) { return s_tBegin; }
+// [$L_4a8710]
+extern "C" const char* __fastcall If_TypeName(BYTE*) { return s_tIf; }
+// [$L_4a8ab0]
+extern "C" const char* __fastcall Quote_TypeName(BYTE*) { return s_tQuote; }
+// [$L_4a8bf0]
+extern "C" const char* __fastcall Set_TypeName(BYTE*) { return s_tSet; }
+// [$L_4a9060]
+extern "C" const char* __fastcall Define_TypeName(BYTE*) { return s_tDefine; }
+// [$L_4a9790]
+extern "C" const char* __fastcall Eval_TypeName(BYTE*) { return s_tEval; }
+// [$L_4a9a90]
+extern "C" const char* __fastcall CallCC_TypeName(BYTE*) { return s_tCallCC; }
+// [$L_4a9ea0]
+extern "C" const char* __fastcall Apply_TypeName(BYTE*) { return s_tApply; }
+// [$L_4aa810]
+extern "C" int __fastcall Unspecified_TypeId(BYTE*) { return 255; }
+// [$L_4aa820]
+extern "C" const char* __fastcall Unspecified_TypeName(BYTE*) { return s_tUnspecified; }
+// [$L_4abe60]
+extern "C" int __fastcall Port_TypeId(BYTE*) { return 11; }
+// [$L_4abe70]
+extern "C" const char* __fastcall Port_TypeName(BYTE*) { return s_port; }
+// [$L_4b0b20]
+extern "C" int __fastcall Number_TypeId(BYTE*) { return 6; }
+// [$L_4b0b30]
+extern "C" const char* __fastcall Number_TypeName(BYTE*) { return s_tNumber; }
+
+static BYTE* Sch_DeleteAfter(BYTE* self, int flags, void (*dtor)())
+{
+    CallThis(dtor, self);
+    if (flags & 1)
+        operator delete(self);
+    return self;
+}
+
+// [$L_4a7090]
+extern "C" BYTE* __fastcall Sch4a7090_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchListNode_Destroy); }
+// [$L_4a7570]
+extern "C" BYTE* __fastcall SpecialForm_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, FUN_4b13b0); }
+// [$L_4a8200]
+extern "C" BYTE* __fastcall Lambda_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a8570_Destroy); }
+// [$L_4a85b0]
+extern "C" BYTE* __fastcall Begin_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a86e0_Destroy); }
+// [$L_4a8720]
+extern "C" BYTE* __fastcall If_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a8a80_Destroy); }
+// [$L_4a8ac0]
+extern "C" BYTE* __fastcall Quote_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a8bc0_Destroy); }
+// [$L_4a8c00]
+extern "C" BYTE* __fastcall Set_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a9030_Destroy); }
+// [$L_4a9070]
+extern "C" BYTE* __fastcall Define_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a9760_Destroy); }
+// [$L_4a97a0]
+extern "C" BYTE* __fastcall Eval_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a9a60_Destroy); }
+// [$L_4a9aa0]
+extern "C" BYTE* __fastcall CallCC_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4a9e70_Destroy); }
+// [$L_4a9eb0]
+extern "C" BYTE* __fastcall Apply_DeletingDestructor(BYTE* s, void*, int flags) { return Sch_DeleteAfter(s, flags, (void (*)())SchNode4aa150_Destroy); }
+
+// [$L_4b0b40] numbers come from the value pool and go back to it
+extern "C" BYTE* __fastcall Number_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_4b13b0, s);
+    if (flags & 1)
+        SchPool2_Free(s);
+    return s;
+}
