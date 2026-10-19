@@ -3130,3 +3130,95 @@ extern "C" BYTE* __fastcall ShellScreen5228e0_Construct(BYTE* s, void*, BYTE* pa
     CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Centred shell dialog with two mode buttons (exception frame dropped).
+
+ASM_VAR(BYTE*, g_q30_6ce3b0, $L_6ce3b0)
+ASM_VAR(int, g_q30_68b990, $L_68b990)
+ASM_VAR(AsmLabel, g_q30_64e9e8, $L_64e9e8)
+ASM_VAR(AsmLabel, g_q30_64e9a8, $L_64e9a8)
+ASM_VAR(AsmLabel, s_q30_6780a0, $L_6780a0)
+ASM_VAR(AsmLabel, s_q30_678088, $L_678088)
+ASM_VAR(AsmLabel, s_q30_67807c, $L_67807c)
+ASM_VAR(AsmLabel, s_q30_678074, $L_678074)
+
+// [FUN_525b50] constructor (parent): a dialog (vtables 64e9e8, 64e9a8 at +64) whose panel with its background
+// (6ce3b0) and buttons 188, 189 is centred on the parent
+extern "C" BYTE* __fastcall ShellDialog525b50_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, 0);
+    for (int k = 0; k < 5; k++)
+        F(int, s, 380 + k * 4) = g_q30_68b990;
+    F(void*, s, 0) = g_q30_64e9e8;
+    F(void*, s, 64) = g_q30_64e9a8;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p1 = Shell_NewPanel(0);
+    BYTE* p2 = Shell_NewPanel(8);
+    g_q30_6ce3b0 = CallC<BYTE*>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_q30_6780a0 : (const char*)s_q30_678088);
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, p2 + 68 + k * 36, (void*)g_q28_6ce390);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q30_67807c, 188);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 30, 135);
+    b = Shell_ModeButtonC((int)(const char*)s_q30_678074, 189);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 137, 146);
+    CallThis(FUN_5bdbf0, p1, p2, 0);
+    CallThis(FUN_5bdc80, p1);
+    int x = (CallVirt<int>(parent, 20) - F(WORD, g_q30_6ce3b0, 4)) / 2;
+    int y = (CallVirt<int>(parent, 24) - F(WORD, g_q30_6ce3b0, 6)) / 2;
+    Shell_MoveCtl(p1, x, y);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
+    return s;
+}
+
+ASM_VAR(AsmLabel, g_q30_64e620, $L_64e620)
+ASM_VAR(AsmLabel, g_q30_64e5e0, $L_64e5e0)
+ASM_VAR(AsmLabel, s_q30_676808, $L_676808)
+ASM_VAR(AsmLabel, s_q30_6767f0, $L_6767f0)
+ASM_VAR(AsmLabel, s_q30_677824, $L_677824)
+ASM_VAR(AsmLabel, s_q30_67781c, $L_67781c)
+ASM_VAR(AsmLabel, s_q30_677814, $L_677814)
+ASM_VAR(BYTE*, g_q30_6cec6c, $L_6cec6c)
+ASM_VAR(int, g_q30_6ced0c, $L_6ced0c)
+ASM_VAR(int, g_q30_6ced10, $L_6ced10)
+
+// [FUN_51e9a0] constructor (parent): a shell screen (vtables 64e620, 64e5e0 at +64), a panel at 6ced0c holding
+// buttons 172, 171, 170 (the last on in a network game)
+extern "C" BYTE* __fastcall ShellScreen51e9a0_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q30_64e620;
+    F(void*, s, 64) = g_q30_64e5e0;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p1 = Shell_NewPanel(4);
+    Shell_PlainStyles(p1 + 68, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_q30_676808 : (const char*)s_q30_6767f0);
+    BYTE* p2 = Shell_NewPanel(0);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q30_677824, 172);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 18, 664);
+    b = Shell_ModeButtonC((int)(const char*)s_q30_67781c, 171);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 18, 614);
+    b = Shell_ModeButtonC((int)(const char*)s_q30_677814, 170);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    if (F(int, g_q30_6cec6c, 1316))
+        F(int, b, 40) = 1;
+    Shell_MoveCtl(b, 18, 564);
+    CallThis(FUN_5bdc80, p2);
+    CallThis(FUN_5bdbf0, p1, p2, 0);
+    CallThis(FUN_5bdc80, p1);
+    Shell_MoveCtl(p1, g_q30_6ced0c, g_q30_6ced10);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
+    F(int, s, 368) = 0;
+    return s;
+}
