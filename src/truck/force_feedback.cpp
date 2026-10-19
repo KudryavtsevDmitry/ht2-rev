@@ -942,3 +942,44 @@ extern "C" int __fastcall Ff_DrawList(BYTE* s, void*, int, int b)
     Ff_Com(F(void*, s, 84), 80, 22, old);
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_579460(); KING_ALIAS("_FUN_579460", "@Pool_NextUsed@12")
+
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+
+// [$L_5796e0] the pools (+32, count +432): each used item gets vtbl+4 until no new first item appears, then the
+// items marked +4 are deleted; then released
+extern "C" int __fastcall Ff_ClearPools(BYTE* s)
+{
+    for (unsigned i = 0; i < F(unsigned, s, 432); i++) {
+        BYTE* pool = F(BYTE*, s, 32 + i * 4);
+        BYTE* prev = 0;
+        BYTE* first;
+        do {
+            first = CallThis<BYTE*>(FUN_579460, pool, 0);
+            if (first != prev) {
+                BYTE* p = first;
+                BYTE* n;
+                do {
+                    n = CallThis<BYTE*>(FUN_579460, pool, p);
+                    CallVirt(p, 4);
+                    p = n;
+                } while (n != prev);
+            }
+            prev = first;
+        } while (CallThis<BYTE*>(FUN_579460, pool, 0) != first);
+    }
+    for (unsigned i = 0; i < F(unsigned, s, 432); i++) {
+        BYTE* pool = F(BYTE*, s, 32 + i * 4);
+        for (BYTE* p = CallThis<BYTE*>(FUN_579460, pool, 0); p;) {
+            BYTE* n = CallThis<BYTE*>(FUN_579460, pool, p);
+            if (F(int, p, 4) && p)
+                CallVirt(p, 0, 1);
+            p = n;
+        }
+    }
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}

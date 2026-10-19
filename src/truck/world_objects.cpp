@@ -1648,3 +1648,33 @@ extern "C" int __fastcall Worobj_59da00(BYTE* s)
     p[2] = (BYTE)(int)((double)v * k[0]);
     return CallThis<int>(FUN_5d32f0, s, 1);
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")
+
+// [$L_5a00e0] keeps only the 124-byte records (+32, count +6432) in use (+108), packed to the front, then released
+extern "C" int __fastcall Worobj_Pack(BYTE* s)
+{
+    BYTE** list = (BYTE**)(s + 6232);
+    unsigned k = 0;
+    for (unsigned i = 0; i < F(unsigned, s, 6432); i++) {
+        BYTE* r = s + 32 + i * 124;
+        if (F(int, r, 108))
+            list[k++] = r;
+    }
+    for (unsigned i = 0; i < k; i++) {
+        BYTE* d = s + 32 + i * 124;
+        BYTE* src = list[i];
+        F(int, d, 0) = F(int, src, 0);
+        F(int, d, 4) = F(int, src, 4);
+        for (int j = 0; j < 6; j++)
+            CallThis(FUN_5cda50, d + 8 + j * 16, src + 8 + j * 16);
+        for (int o = 104; o <= 120; o += 4)
+            F(int, d, o) = F(int, src, o);
+        F(int, d, 108) = 0;
+    }
+    F(unsigned, s, 6432) = k;
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}

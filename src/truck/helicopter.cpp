@@ -2106,3 +2106,30 @@ extern "C" void __cdecl HelInit_568da0()
     g_hel6f323c = 0;
     g_hel6f3240 = 31;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+typedef void (*HelFn)();
+
+// the frames of the rotors (+96..+108) by the state bits (+160)
+static void Hel_RotorFrames(BYTE* s)
+{
+    CallC(FUN_5e1a10, F(int, s, 96), F(int, s, 160) ? 1 : 0);
+    CallC(FUN_5e1a10, F(int, s, 100), (F(BYTE, s, 160) & 3) ? 1 : 0);
+    CallC(FUN_5e1a10, F(int, s, 104), (F(BYTE, s, 160) & 12) ? 1 : 0);
+    CallC(FUN_5e1a10, F(int, s, 108), (F(BYTE, s, 160) & 48) ? 1 : 0);
+}
+// [$L_573590]
+extern "C" int __fastcall Hel_573590(BYTE* s, void*, int a, int b)
+{
+    Hel_RotorFrames(s);
+    return CallThis<int>(FUN_5f98c0, s, a, b);
+}
+// [$L_573630] the same, then fn (the object 256 bytes before, b)
+extern "C" int __fastcall Hel_573630(BYTE* s, void*, HelFn fn, int b)
+{
+    Hel_RotorFrames(s);
+    BYTE* o = (DWORD)s != 256 ? s : 0;
+    return CallC<int>(fn, o, b);
+}

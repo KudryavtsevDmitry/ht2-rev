@@ -364,3 +364,35 @@ extern "C" void __fastcall Tgr_AddTriangle(BYTE* s, void*, unsigned a, unsigned 
     F(WORD, s, base + F(int, s, cnt) * 2 + 4) = (WORD)b;
     F(int, s, cnt) += 3;
 }
+
+// ---------------------------------------------------------------------------
+// More virtual methods.
+
+ASM_PROC(FUN_5b1020)
+ASM_PROC(FUN_5d4c10)
+
+// a method of the Direct3D device d (vtable slot at byte offset off)
+template <class... A>
+static int Tgr_Dev(void* d, unsigned off, A... args)
+{
+    void* fn = *(void**)(*(char**)d + off);
+    return ((int(__stdcall*)(void*, A...))fn)(d, args...);
+}
+
+// [$L_61bf20] draws the two triangle lists (+108 count +100, +20106 count +104) with their textures
+extern "C" void __fastcall Tgr_Draw(BYTE* s, void*, void* dev, BYTE* b)
+{
+    Tgr_Dev(dev, 80, 136, 1);
+    CallThis(FUN_5b1020, b, F(int, s, 40104), 1, 0, 0);
+    if (F(int, s, 100)) {
+        int r = Tgr_Dev(dev, 104, 4, 530, F(int, s, 92), F(int, s, 96), s + 108, F(int, s, 100), 0);
+        if (r < 0)
+            CallC(FUN_5d4c10, r, 0);
+    }
+    CallThis(FUN_5b1020, b, F(int, s, 40112), 1, 0, 0);
+    if (F(int, s, 104)) {
+        int r = Tgr_Dev(dev, 104, 4, 530, F(int, s, 92), F(int, s, 96), s + 20106, F(int, s, 104), 0);
+        if (r < 0)
+            CallC(FUN_5d4c10, r, 0);
+    }
+}
