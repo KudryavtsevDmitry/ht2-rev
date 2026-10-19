@@ -3222,3 +3222,118 @@ extern "C" BYTE* __fastcall ShellScreen51e9a0_Construct(BYTE* s, void*, BYTE* pa
     F(int, s, 368) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Shell screen with a slider and three buttons (exception frame dropped).
+
+ASM_PROC(FUN_50d860)
+ASM_VAR(AsmLabel, g_q31_64e730, $L_64e730)
+ASM_VAR(AsmLabel, g_q31_64e6f0, $L_64e6f0)
+ASM_VAR(AsmLabel, s_q31_6779dc, $L_6779dc)
+ASM_VAR(AsmLabel, s_q31_6779c8, $L_6779c8)
+ASM_VAR(AsmLabel, s_q31_6779c0, $L_6779c0)
+ASM_VAR(AsmLabel, s_q31_6779b8, $L_6779b8)
+ASM_VAR(AsmLabel, s_q31_6779b0, $L_6779b0)
+
+// the panel styles from 6ce3e0 with the texture (6ce3fc) by mode
+static void Shell_PanelStyles(BYTE* at, const char* m2, const char* other)
+{
+    g_q29_6ce3fc = CallC<DWORD>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? m2 : other);
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, at + k * 36, (void*)g_q29_6ce3e0);
+}
+// [FUN_520240] constructor (parent): a shell screen (vtables 64e730, 64e6f0 at +64): buttons 2, 275, the mode
+// button 276 (+404) and a slider (155) on the value +400, the panel at 6ced14
+extern "C" BYTE* __fastcall ShellScreen520240_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q31_64e730;
+    F(void*, s, 64) = g_q31_64e6f0;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p1 = Shell_NewPanel(4);
+    Shell_PanelStyles(p1 + 68, (const char*)s_q31_6779dc, (const char*)s_q31_6779c8);
+    BYTE* p2 = Shell_NewPanel(0);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q31_6779c0, 2);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 123, 755);
+    b = Shell_ModeButtonC((int)(const char*)s_q31_6779b8, 275);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 52, 755);
+    b = Shell_ModeButtonA((int)(const char*)s_q31_6779b0, 276, 0);
+    F(BYTE*, s, 404) = b;
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    Shell_MoveCtl(b, 175, 655);
+    b = CallC<BYTE*>(FUN_50d860, 0, 0, s + 400, 0, 155);
+    CallThis(FUN_5bdbf0, p2, b, 0);
+    F(int, b, 28) = 278;
+    Shell_MoveCtl(b, 25, 655);
+    CallThis(FUN_5bdbf0, p1, p2, 0);
+    CallThis(FUN_5bdc80, p1);
+    Shell_MoveCtl(p1, g_q29_6ced14, g_q29_6ced18);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
+    return s;
+}
+
+extern "C" void FUN_5c07c0(); KING_ALIAS("_FUN_5c07c0", "@List_Layout@12")
+extern "C" void FUN_5c0550(); KING_ALIAS("_FUN_5c0550", "@ListBox_Construct@20")
+extern "C" void FUN_5becd0(); KING_ALIAS("_FUN_5becd0", "@Split_Resize@12")
+ASM_VAR(int, g_q31_6ced2c, $L_6ced2c)
+ASM_VAR(AsmLabel, g_q31_64e598, $L_64e598)
+ASM_VAR(AsmLabel, g_q31_64e558, $L_64e558)
+ASM_VAR(AsmLabel, s_q31_6777fc, $L_6777fc)
+ASM_VAR(AsmLabel, s_q31_6777e4, $L_6777e4)
+ASM_VAR(AsmLabel, s_q31_6777a4, $L_6777a4)
+ASM_VAR(AsmLabel, s_q31_67779c, $L_67779c)
+ASM_VAR(AsmLabel, s_q31_6777dc, $L_6777dc)
+ASM_VAR(AsmLabel, s_q31_677788, $L_677788)
+ASM_VAR(AsmLabel, s_q31_677780, $L_677780)
+ASM_VAR(AsmLabel, s_q31_67777c, $L_67777c)
+
+// [FUN_51e340] constructor (parent, -): a shell screen (vtables 64e598, 64e558 at +64): buttons 172, 282 and the
+// lit 110 (+500), a list box 190 of 10 lines (+504) with its scroll bar; the panel at 6ced0c
+extern "C" BYTE* __fastcall ShellScreen51e340_Construct(BYTE* s, void*, BYTE* parent, int)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, g_q31_6ced2c);
+    F(void*, s, 0) = g_q31_64e598;
+    F(void*, s, 64) = g_q31_64e558;
+    F(DWORD*, s, 48) = Shell_NewObjRef();
+    BYTE* p = Shell_NewPanel(4);
+    Shell_PlainStyles(p + 68, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_q31_6777fc : (const char*)s_q31_6777e4);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q31_6777a4, 172);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    Shell_MoveCtl(b, 24, 769);
+    b = Shell_ModeButtonC((int)(const char*)s_q31_67779c, 282);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    Shell_MoveCtl(b, 24, 724);
+    b = Shell_ModeButtonC((int)(const char*)s_q31_6777dc, 110);
+    F(BYTE*, s, 500) = b;
+    CallThis(FUN_5bdbf0, p, b, 0);
+    F(int, b, 40) = 1;
+    Shell_MoveCtl(b, 24, 679);
+    BYTE* m = (BYTE*)operator new(352);
+    BYTE* l = m ? CallThis<BYTE*>(FUN_5c0550, m, (const char*)s_q31_677788, 4, 190) : 0;
+    F(BYTE*, s, 504) = l;
+    CallThis(FUN_5bd5a0, l + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, l + 104, (void*)g_6ce3b8);
+    CallThis(FUN_5bd5a0, l + 140, (void*)g_6ceb38);
+    CallThis(FUN_5bd5a0, l + 176, (void*)g_6ce988);
+    F(int, F(BYTE*, F(BYTE*, s, 504), 340), 28) = 116;
+    F(int, F(BYTE*, s, 504), 28) = 116;
+    CallThis(FUN_5c07c0, F(BYTE*, s, 504), 10);
+    Button_SetImages(F(BYTE*, F(BYTE*, s, 504), 340), (const char*)s_q31_67777c, (const char*)s_q31_677780);
+    Shell_MoveCtl(F(BYTE*, F(BYTE*, s, 504), 340), -28, 11);
+    CallThis(FUN_5becd0, F(BYTE*, F(BYTE*, s, 504), 340), 195);
+    Shell_MoveCtl(F(BYTE*, s, 504), 44, 457);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 504), 0);
+    CallThis(FUN_5bdc80, p);
+    Shell_MoveCtl(p, g_q30_6ced0c, g_q30_6ced10);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    F(int, s, 368) = 0;
+    return s;
+}

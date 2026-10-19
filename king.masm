@@ -1375,6 +1375,9 @@ PUBLIC $L_64e808, $L_64e848, $L_677a78, $L_677a80, $L_677a88, $L_677aa0
 PUBLIC $L_6ce3fc
 PUBLIC $L_6767f0, $L_676808, $L_677814, $L_67781c, $L_677824, $L_678074
 PUBLIC $L_67807c, $L_678088, $L_6780a0, $L_6ce3b0, $L_6ced0c, $L_6ced10
+PUBLIC $L_67777c, $L_677780, $L_677788, $L_67779c, $L_6777a4, $L_6777dc
+PUBLIC $L_6777e4, $L_6777fc, $L_6779b0, $L_6779b8, $L_6779c0, $L_6779c8
+PUBLIC $L_6779dc
 
 ;===================================
 _TEXT SEGMENT
@@ -491392,6 +491395,8 @@ $L_51e2d3 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51e340 PROC
 
             push -1
@@ -491709,6 +491714,10 @@ $L_51e57d::
             add ESP,32
             ret 8
 FUN_51e340 ENDP
+ELSE
+EXTERN @ShellScreen51e340_Construct@16:PROC
+FUN_51e340 TEXTEQU <@ShellScreen51e340_Construct@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -494515,6 +494524,8 @@ EXTERN _Car_ApplyPlayerSettings:PROC
 FUN_520000 TEXTEQU <_Car_ApplyPlayerSettings>
 ENDIF
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_520240 PROC
 
             push -1
@@ -494784,6 +494795,10 @@ $L_520399::
             add ESP,32
             ret 4
 FUN_520240 ENDP
+ELSE
+EXTERN @ShellScreen520240_Construct@12:PROC
+FUN_520240 TEXTEQU <@ShellScreen520240_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
