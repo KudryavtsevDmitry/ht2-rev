@@ -1327,6 +1327,7 @@ PUBLIC $L_651a20, $L_651e34, $L_651e80, $L_65229c, $L_65277c, $L_6527b0
 PUBLIC $L_6792e8, $L_67e8e0, $L_67e8e8
 PUBLIC $L_651080, $L_6510cc, $L_6510d4, $L_651120, $L_651200, $L_65124c
 PUBLIC $L_65179c, $L_652280
+PUBLIC $L_67e428
 
 ;===================================
 _TEXT SEGMENT
@@ -684322,6 +684323,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a14a0 PROC
 
             push -1
@@ -684451,6 +684454,10 @@ $L_5a15bb::
             add ESP,16
             ret 
 $L_5a14a0 ENDP
+ELSE
+EXTERN @Worobj5a14a0_MakePool@4:PROC
+$L_5a14a0 TEXTEQU <@Worobj5a14a0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -684534,6 +684541,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a1670 PROC
 
             push -1
@@ -684663,6 +684672,10 @@ $L_5a178b::
             add ESP,16
             ret 
 $L_5a1670 ENDP
+ELSE
+EXTERN @Worobj5a1670_MakePool@4:PROC
+$L_5a1670 TEXTEQU <@Worobj5a1670_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -684806,6 +684819,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a18a0 PROC
 
             push -1
@@ -684935,6 +684950,10 @@ $L_5a19bb::
             add ESP,16
             ret 
 $L_5a18a0 ENDP
+ELSE
+EXTERN @Worobj5a18a0_MakePool@4:PROC
+$L_5a18a0 TEXTEQU <@Worobj5a18a0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -685018,6 +685037,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a1a80 PROC
 
             push -1
@@ -685146,6 +685167,10 @@ $L_5a1b99::
             add ESP,16
             ret 
 $L_5a1a80 ENDP
+ELSE
+EXTERN @Worobj5a1a80_MakePool@4:PROC
+$L_5a1a80 TEXTEQU <@Worobj5a1a80_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -685291,6 +685316,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a1cc0 PROC
 
             push -1
@@ -685419,6 +685446,10 @@ $L_5a1dd9::
             add ESP,16
             ret 
 $L_5a1cc0 ENDP
+ELSE
+EXTERN @Worobj5a1cc0_MakePool@4:PROC
+$L_5a1cc0 TEXTEQU <@Worobj5a1cc0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -685504,6 +685535,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a1ea0 PROC
 
             push -1
@@ -685633,6 +685666,10 @@ $L_5a1fbc::
             add ESP,16
             ret 
 $L_5a1ea0 ENDP
+ELSE
+EXTERN @Worobj5a1ea0_MakePool@4:PROC
+$L_5a1ea0 TEXTEQU <@Worobj5a1ea0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
@@ -685775,6 +685812,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a20e0 PROC
 
             push -1
@@ -685905,6 +685944,10 @@ $L_5a21fd::
             add ESP,16
             ret 
 $L_5a20e0 ENDP
+ELSE
+EXTERN @Worobj5a20e0_MakePool@4:PROC
+$L_5a20e0 TEXTEQU <@Worobj5a20e0_MakePool@4>
+ENDIF
           BYTE 090H
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -685987,6 +686030,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a22d0 PROC
 
             push -1
@@ -686116,6 +686161,10 @@ $L_5a23ec::
             add ESP,16
             ret 
 $L_5a22d0 ENDP
+ELSE
+EXTERN @Worobj5a22d0_MakePool@4:PROC
+$L_5a22d0 TEXTEQU <@Worobj5a22d0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
@@ -686198,6 +686247,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a24b0 PROC
 
             push -1
@@ -686326,6 +686377,10 @@ $L_5a25c9::
             add ESP,16
             ret 
 $L_5a24b0 ENDP
+ELSE
+EXTERN @Worobj5a24b0_MakePool@4:PROC
+$L_5a24b0 TEXTEQU <@Worobj5a24b0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -686411,6 +686466,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2690 PROC
 
             push -1
@@ -686539,6 +686596,10 @@ $L_5a27a9::
             add ESP,16
             ret 
 $L_5a2690 ENDP
+ELSE
+EXTERN @Worobj5a2690_MakePool@4:PROC
+$L_5a2690 TEXTEQU <@Worobj5a2690_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -686624,6 +686685,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2870 PROC
 
             push -1
@@ -686752,6 +686815,10 @@ $L_5a2989::
             add ESP,16
             ret 
 $L_5a2870 ENDP
+ELSE
+EXTERN @Worobj5a2870_MakePool@4:PROC
+$L_5a2870 TEXTEQU <@Worobj5a2870_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -686924,6 +686991,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2ad0 PROC
 
             push -1
@@ -687052,6 +687121,10 @@ $L_5a2be9::
             add ESP,16
             ret 
 $L_5a2ad0 ENDP
+ELSE
+EXTERN @Worobj5a2ad0_MakePool@4:PROC
+$L_5a2ad0 TEXTEQU <@Worobj5a2ad0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -687222,6 +687295,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2d50 PROC
 
             push -1
@@ -687350,6 +687425,10 @@ $L_5a2e69::
             add ESP,16
             ret 
 $L_5a2d50 ENDP
+ELSE
+EXTERN @Worobj5a2d50_MakePool@4:PROC
+$L_5a2d50 TEXTEQU <@Worobj5a2d50_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -687434,6 +687513,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2f20 PROC
 
             push -1
@@ -687564,6 +687645,10 @@ $L_5a303d::
             add ESP,16
             ret 
 $L_5a2f20 ENDP
+ELSE
+EXTERN @Worobj5a2f20_MakePool@4:PROC
+$L_5a2f20 TEXTEQU <@Worobj5a2f20_MakePool@4>
+ENDIF
           BYTE 090H
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -687705,6 +687790,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a3160 PROC
 
             push -1
@@ -687834,6 +687921,10 @@ $L_5a327b::
             add ESP,16
             ret 
 $L_5a3160 ENDP
+ELSE
+EXTERN @Worobj5a3160_MakePool@4:PROC
+$L_5a3160 TEXTEQU <@Worobj5a3160_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -687977,6 +688068,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a33a0 PROC
 
             push -1
@@ -688105,6 +688198,10 @@ $L_5a34b9::
             add ESP,16
             ret 
 $L_5a33a0 ENDP
+ELSE
+EXTERN @Worobj5a33a0_MakePool@4:PROC
+$L_5a33a0 TEXTEQU <@Worobj5a33a0_MakePool@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -688249,6 +688346,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a35d0 PROC
 
             push -1
@@ -688379,6 +688478,10 @@ $L_5a36ed::
             add ESP,16
             ret 
 $L_5a35d0 ENDP
+ELSE
+EXTERN @Worobj5a35d0_MakePool@4:PROC
+$L_5a35d0 TEXTEQU <@Worobj5a35d0_MakePool@4>
+ENDIF
           BYTE 090H
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
