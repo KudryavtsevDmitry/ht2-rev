@@ -2616,3 +2616,47 @@ extern "C" void __fastcall MainView_Destroy(BYTE* s)
     CallThis(FUN_5e4eb0, s + 704);
     CallThis(FUN_5da790, s);
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
+extern "C" void FUN_5da840(); KING_ALIAS("_FUN_5da840", "@Fw_EnsureHelper484@8")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
+extern "C" void FUN_5d9f10(); KING_ALIAS("_FUN_5d9f10", "@Scene_FindSpecial@8")
+ASM_VAR(AsmLabel, s_fra682f40, $L_682f40)
+ASM_VAR(AsmLabel, g_fra64c7dc, $L_64c7dc)
+
+// [$L_5e01b0] the room is set up: its camera (+616) and matrix, the sky texture holder (+532)
+extern "C" void __fastcall Fw_SetupRoom(BYTE* s)
+{
+    F(int, s, 488) = F(int, F(BYTE*, s, 468), 120);
+    BYTE* r = F(BYTE*, s, 488);
+    F(int, s, 616) = r ? F(int, r, 80) : 0;
+    if (F(BYTE*, s, 616))
+        CallThis(FUN_5f25c0, F(BYTE*, s, 616), s + 652);
+    if (F(BYTE*, s, 488))
+        F(int, s, 700) = F(int, F(BYTE*, s, 488), 76);
+    if (!F(int, s, 700))
+        CallThis(FUN_5da840, s);
+    if (F(BYTE*, s, 532))
+        CallVirt(F(BYTE*, s, 532), 0, 1);
+    F(BYTE*, s, 532) = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_fra682f40);
+    if (F(BYTE*, s, 532)) {
+        BYTE* o = (BYTE*)operator new(88);
+        if (o) {
+            CallThis(FUN_5ef6d0, o, 0, 17);
+            for (int k = 48; k <= 80; k += 4)
+                F(int, o, k) = 0;
+            F(void*, o, 0) = g_fra64c7dc;
+            F(int, o, 84) = -1;
+        }
+        F(int, o, 68) = F(int, s, 616);
+        F(int, o, 64) = F(int, s, 532);
+        F(BYTE*, s, 532) = o;
+    }
+    CallThis(FUN_5d9f10, s);
+    CallVirt(s, 140);
+    F(int, s, 3040) = 1;
+}

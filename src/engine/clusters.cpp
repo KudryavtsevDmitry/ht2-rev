@@ -804,3 +804,33 @@ extern "C" BYTE* __fastcall Cluster5ea880_Construct(BYTE* s, void*, const char* 
         F(int, s, o) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+// a zeroed array of n words, or 0
+static int* Clu_NewZeroed(int n)
+{
+    if (!n)
+        return 0;
+    int* p = (int*)operator new(n * 4);
+    for (int i = 0; i < n; i++)
+        p[i] = 0;
+    return p;
+}
+// [FUN_5ed9e0] constructor (n1, n2, n3, slots, b): a cluster set (vtable 65277c) with three item arrays
+extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2, int n3, int slots, int b)
+{
+    Clu5edeb0_Construct(s, 0, slots, b);
+    F(void*, s, 0) = g_clu65277c;
+    F(int, s, 48) = 0;
+    F(int, s, 44) = n1;
+    F(int*, s, 68) = Clu_NewZeroed(n1);
+    F(int, s, 56) = 0;
+    F(int, s, 52) = n2;
+    F(int*, s, 72) = Clu_NewZeroed(n2);
+    F(int, s, 64) = 0;
+    F(int, s, 60) = n3;
+    F(int*, s, 76) = Clu_NewZeroed(n3);
+    return s;
+}

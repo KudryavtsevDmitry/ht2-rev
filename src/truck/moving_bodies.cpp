@@ -842,7 +842,7 @@ extern "C" int __fastcall Body_Clear9516(BYTE* self, int)
 ASM_VAR(char, vt_650718, $L_650718)
 ASM_VAR(char, vt_6506cc, $L_6506cc)
 ASM_VAR(char, vt_6506c8, $L_6506c8)
-ASM_PROC(FUN_57d490)
+extern "C" void FUN_57d490(); KING_ALIAS("_FUN_57d490", "@MovingItem_Destroy@4")
 
 // [FUN_58b870] destructor: frees the owned buffer at +9520
 extern "C" void __fastcall Body58b870_Destroy(BYTE* self, int)

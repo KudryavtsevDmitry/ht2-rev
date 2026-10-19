@@ -154,3 +154,47 @@ void __fastcall Placement_Init(BYTE* self, void*)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Constructors, destructors and setup (exception frames dropped).
+
+extern "C" void FUN_57ca70(); KING_ALIAS("_FUN_57ca70", "_Id_Free6f6380")
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void FUN_587c50(); KING_ALIAS("_FUN_587c50", "@Slots6_Remove@12")
+ASM_PROC(FUN_592cf0)
+ASM_PROC(FUN_5c6210)
+ASM_VAR(AsmLabel, g_objids650544, $L_650544)
+ASM_VAR(AsmLabel, g_objids6504f8, $L_6504f8)
+ASM_VAR(AsmLabel, g_objids6504f4, $L_6504f4)
+ASM_VAR(BYTE*, g_objids6f653c, $L_6f653c)
+
+// [FUN_57d490] a moving item (vtables 650544, 6504f8 at +256, 6504f4 at +376): its id freed, its parts
+// (+3468, count +3504) deleted, the other items forget it
+extern "C" void __fastcall MovingItem_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_objids650544;
+    F(void*, s, 256) = g_objids6504f8;
+    F(void*, s, 376) = g_objids6504f4;
+    CallC(FUN_57ca70, F(int, s, 20));
+    for (int k = 0; k < F(int, s, 3504); k++) {
+        BYTE** p = &F(BYTE*, s, 3468 + k * 4);
+        if (!*p)
+            continue;
+        CallThis(FUN_5d21b0, *p);
+        if (*p)
+            CallVirt(*p, 0, 1);
+        *p = 0;
+    }
+    BYTE* it = g_objids6f653c;
+    if (it) {
+        for (BYTE* e = it - 4; e;) {
+            CallThis(FUN_587c50, e - 376, s);
+            BYTE* n = F(BYTE*, e, 8);
+            if (!n)
+                break;
+            e = n - 4;
+        }
+    }
+    CallThis(FUN_592cf0, s ? s + 376 : 0);
+    CallThis(FUN_5c6210, s);
+}
