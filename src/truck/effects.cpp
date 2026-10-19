@@ -4500,3 +4500,54 @@ extern "C" BYTE* __fastcall Sky_Construct(BYTE* s, void*, BYTE* w, BYTE* mat)
     F(int, s, 48) = 1;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors and surfaces (exception frames dropped).
+
+extern "C" void FUN_5d9f60(); KING_ALIAS("_FUN_5d9f60", "@RoomWindow_Construct@24")
+extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void FUN_4eab58(); KING_ALIAS("_FUN_4eab58", "@History_Construct@24")
+#include <string.h>
+ASM_VAR(AsmLabel, g_q20_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q20_4eaa41, $L_4eaa41)
+ASM_VAR(AsmLabel, g_q20_64d5ec, $L_64d5ec)
+ASM_VAR(BYTE*, g_q20_696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_q20_696cac, $L_696cac)
+ASM_VAR(int, g_q20_69684c, $L_69684c)
+
+// [FUN_4ddac0] constructor (a 16-byte rectangle by value): the 3D view (vtable 64d5ec) with 80 matrices (+560),
+// four fade values (+4724..) and three more matrices
+extern "C" BYTE* __fastcall View3D_Construct(BYTE* s, void*, int a, int, int, int)
+{
+    CallThis(FUN_5d9f60, s, g_q20_69684c, &a, g_q20_696cac, F(int, g_q20_696ca0, 472));
+    for (int k = 0; k < 80; k++) {
+        CallStd(FUN_4011e0, s + 560 + k * 48, 12, 4, FUN_4bd4d0);
+        memcpy(s + 560 + k * 48, g_q20_7025f0, 48);
+    }
+    void* L = g_q20_4eaa41;
+    CallThis(FUN_4eab58, s + 4724, L, 0x3e99999a, 0, 0);
+    CallThis(FUN_4eab58, s + 4756, L, 0x3f800000, L, 0);
+    CallThis(FUN_4eab58, s + 4788, L, 0x3f000000, L, 0);
+    CallThis(FUN_4eab58, s + 4828, L, 0x3f19999a, 0, 0);
+    memcpy(s + 4924, g_q20_7025f0, 48);
+    memcpy(s + 4972, g_q20_7025f0, 48);
+    memcpy(s + 5020, g_q20_7025f0, 48);
+    F(int, s, 5092) = 0;
+    F(int, s, 5096) = 0;
+    F(int, s, 5100) = 0;
+    F(void*, s, 0) = g_q20_64d5ec;
+    F(BYTE*, s, 4820) = g_q20_696ca0;
+    F(DWORD, g_q20_696cac, 88) = 0x40000000;
+    F(DWORD, g_q20_696cac, 84) = 0x3fc00000;
+    for (int k = 0; k < 80; k++) {
+        F(int, s, 4400 + k * 4) = 0;
+        memcpy(s + 560 + k * 48, g_q20_7025f0, 48);
+    }
+    F(int, s, 4720) = 0;
+    F(int, s, 4864) = 0;
+    F(int, s, 4860) = 0;
+    F(int, s, 4868) = 0;
+    F(int, s, 548) = 0;
+    return s;
+}

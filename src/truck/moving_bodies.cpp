@@ -1141,3 +1141,72 @@ extern "C" int __fastcall Movbod_SortChildren(BYTE* s, void*, int a, int b)
     CallThis(FUN_5f2080, s, 0, a, b);
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Constructors and surfaces (exception frames dropped).
+
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
+#include <string.h>
+extern "C" void Movbod_VecCtor(); KING_ALIAS("_Movbod_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+ASM_VAR(AsmLabel, s_q20_67e100, $L_67e100)
+ASM_VAR(AsmLabel, g_q20_64c26c, $L_64c26c)
+ASM_VAR(AsmLabel, g_q20_65094c, $L_65094c)
+ASM_VAR(AsmLabel, g_q20_650900, $L_650900)
+ASM_VAR(AsmLabel, g_q20Ctor593610, $L_593610)
+ASM_VAR(AsmLabel, s_q20_672688, $L_672688)
+ASM_VAR(AsmLabel, s_q20_67c178, $L_67c178)
+
+// [FUN_593430] constructor (world): a moving body manager (vtables 65094c, 650900 at +32): 8193 cells (+112),
+// a free list of 256 items of 124 bytes (+100, head +104), the room list entry 67c178 (+116)
+extern "C" BYTE* __fastcall MovBodies_Construct(BYTE* s, void*, BYTE* w)
+{
+    CallThis(FUN_5d31e0, s, 98, (const char*)s_q20_67e100);
+    CallThis(FUN_5f19b0, s + 32, (const char*)s_q20_67e100, 5, 1);
+    F(void*, s, 32) = g_q20_64c26c;
+    F(int, s, 88) = 0;
+    F(int, s, 92) = 0;
+    F(void*, s, 0) = g_q20_65094c;
+    F(void*, s, 32) = g_q20_650900;
+    BYTE* a = (BYTE*)operator new(131088);
+    if (a)
+        for (int k = 0; k < 8193; k++) {
+            F(int, a, k * 16) = 0;
+            F(int, a, k * 16 + 4) = 0;
+            F(int, a, k * 16 + 8) = 0;
+        }
+    F(BYTE*, s, 112) = a;
+    BYTE* m = (BYTE*)operator new(31748);
+    BYTE* e = 0;
+    if (m) {
+        *(int*)m = 256;
+        e = m + 4;
+        CallStd(Movbod_VecCtor, e, 124, 256, (BYTE*)g_q20Ctor593610, FUN_50d190);
+    }
+    F(BYTE*, s, 100) = e;
+    memset(e, 0, 31744);
+    for (int o = 0; o < 31620; o += 124)
+        F(BYTE*, F(BYTE*, s, 100) + o, 0) = F(BYTE*, s, 100) + o + 124;
+    F(int, F(BYTE*, s, 100), 31620) = 0;
+    F(BYTE*, s, 104) = F(BYTE*, s, 100);
+    F(int, s, 108) = 0;
+    BYTE* o = F(BYTE*, w, 524);
+    if (o)
+        CallVirt(o, 20, 0, s ? s + 32 : 0);
+    BYTE* l = CallThis<BYTE*>(FUN_5d9290, w, (const char*)s_q20_672688);
+    F(int, s, 116) = 0;
+    unsigned n = F(unsigned, l, 72);
+    for (unsigned i = 0; i < n; i++)
+        if (!strcmp((const char*)(F(BYTE*, l, 76) + i * 124), (const char*)s_q20_67c178)) {
+            F(BYTE*, s, 116) = F(BYTE*, l, 76) + i * 124;
+            break;
+        }
+    F(BYTE*, s, 96) = w;
+    CallThis(FUN_5d3570, w + 2992, s);
+    CallThis(FUN_5d33d0, s, 1);
+    return s;
+}

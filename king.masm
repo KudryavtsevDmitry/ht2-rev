@@ -1334,6 +1334,7 @@ PUBLIC $L_672678, $L_67273c, $L_672750, $L_67275c, $L_672778, $L_67e940
 PUBLIC $L_67f87c, $L_67f888, $L_67f890, $L_682f40, $L_696240, $L_6ceca8
 PUBLIC $L_707f70
 PUBLIC $L_6517d0, $L_651804
+PUBLIC $L_4eaa41, $L_64c26c, $L_64d5ec, $L_67e100, $L_67fa68, $L_696cac
 
 ;===================================
 _TEXT SEGMENT
@@ -393876,6 +393877,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ddac0 PROC
 
             push -1
@@ -394052,6 +394055,10 @@ $L_4ddc87::
             add ESP,20
             ret 16
 FUN_4ddac0 ENDP
+ELSE
+EXTERN @View3D_Construct@24:PROC
+FUN_4ddac0 TEXTEQU <@View3D_Construct@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -663890,6 +663897,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 FUN_593430 PROC
 
             push -1
@@ -664095,6 +664104,10 @@ $L_5935d5::
             add ESP,28
             ret 4
 FUN_593430 ENDP
+ELSE
+EXTERN @MovBodies_Construct@12:PROC
+FUN_593430 TEXTEQU <@MovBodies_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -762731,6 +762744,8 @@ FUN_5cf170 PROC
             nop
 FUN_5cf170 ENDP
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cf180 PROC
 
             push -1
@@ -762894,6 +762909,10 @@ $L_5cf2c6::
             add ESP,16
             ret 12
 FUN_5cf180 ENDP
+ELSE
+EXTERN @MediaObj_Construct@20:PROC
+FUN_5cf180 TEXTEQU <@MediaObj_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -785323,6 +785342,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5da180 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -785543,6 +785564,10 @@ $L_5da340::
             add ESP,32
             ret 16
 FUN_5da180 ENDP
+ELSE
+EXTERN @Fw_RemakeSurface@24:PROC
+FUN_5da180 TEXTEQU <@Fw_RemakeSurface@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

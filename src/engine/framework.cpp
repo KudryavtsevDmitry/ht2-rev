@@ -2436,7 +2436,7 @@ extern "C" void __fastcall RoomWindow_Destroy(BYTE* s)
 // Constructors and window resizing (exception frames dropped).
 
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
-ASM_PROC(FUN_5da180)
+extern "C" void FUN_5da180(); KING_ALIAS("_FUN_5da180", "@Fw_RemakeSurface@24")
 extern "C" void FUN_5ed970(); KING_ALIAS("_FUN_5ed970", "@Renderer_Construct@12")
 ASM_PROC(FUN_5b6530)
 ASM_PROC(FUN_5d8710)
@@ -2659,4 +2659,73 @@ extern "C" void __fastcall Fw_SetupRoom(BYTE* s)
     CallThis(FUN_5d9f10, s);
     CallVirt(s, 140);
     F(int, s, 3040) = 1;
+}
+
+// ---------------------------------------------------------------------------
+// Constructors and surfaces (exception frames dropped).
+
+extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
+extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
+extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
+ASM_PROC(FUN_5b6530)
+ASM_VAR(BYTE*, g_q20_721750, $L_721750)
+
+// [FUN_5da180] (x, y, w, h): the window's surface (+12) is made again; the main window gets a new one of that
+// size, a child one the part of its parent's (anchored by flags +16 bits 16/32, 64/128)
+extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c, int d)
+{
+    BYTE* p = F(BYTE*, g_q20_721750, 252);
+    if (p == s) {
+        BYTE* o = F(BYTE*, s, 12);
+        if (o) {
+            CallThis(FUN_5b6a90, o);
+            operator delete(o);
+        }
+        BYTE* m = (BYTE*)operator new(124);
+        BYTE* r = m ? CallThis<BYTE*>(FUN_5b6a50, m, a, b, c, d) : 0;
+        F(BYTE*, s, 12) = r;
+        CallThis(FUN_5b6e00, r, 0, 0);
+        return;
+    }
+    int l[4];
+    memcpy(l, F(BYTE*, s, 12) + 100, 16);
+    int fl = F(int, s, 16);
+    if (fl & 16) {
+        if (fl & 32) {
+            l[0] = 0;
+            l[2] = F(WORD, F(BYTE*, p, 12), 0);
+        } else {
+            l[2] -= l[0];
+            l[0] = 0;
+        }
+    } else if (l[0] >= CallVirt<int>(p, 20)) {
+        int dd = l[2] - l[0];
+        l[2] = CallVirt<int>(p, 20);
+        l[0] = l[2] - dd;
+        if (l[0] < 0)
+            l[0] = 0;
+    }
+    fl = F(int, s, 16);
+    if (fl & 64) {
+        if (fl & 128) {
+            l[1] = 0;
+            l[3] = F(WORD, F(BYTE*, p, 12), 2);
+        } else {
+            l[3] -= l[1];
+            l[1] = 0;
+        }
+    } else if (l[1] >= CallVirt<int>(p, 24)) {
+        int dd = l[3] - l[1];
+        l[3] = CallVirt<int>(p, 24);
+        l[1] = l[3] - dd;
+        if (l[1] < 0)
+            l[1] = 0;
+    }
+    BYTE* o = F(BYTE*, s, 12);
+    if (o) {
+        CallThis(FUN_5b6a90, o);
+        operator delete(o);
+    }
+    BYTE* m = (BYTE*)operator new(124);
+    F(BYTE*, s, 12) = m ? CallThis<BYTE*>(FUN_5b6530, m, F(BYTE*, p, 12), l, d & 16384) : 0;
 }
