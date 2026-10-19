@@ -502,3 +502,32 @@ extern "C" int __fastcall Cluster_Clear1(BYTE* self, void*) { return Cl_ClearAnd
 // [FUN_5edfe0] clears flag 2 and calls method +44 of every member
 extern "C" int __fastcall Cluster_Clear2(BYTE* self, void*) { return Cl_ClearAndCall(self, 2, 44); }
 
+
+// ---------------------------------------------------------------------------
+
+// [FUN_5edf90] sets flag 1 and calls method +40 of every member and +28 of the owner (+40); 0 when it was set
+extern "C" int __fastcall Cluster_Set1(BYTE* self, void*)
+{
+    if (F(DWORD, self, 20) & 1)
+        return 0;
+    F(DWORD, self, 20) |= 1;
+    for (int i = 0; i < F(int, self, 24); i++)
+        CallVirt(F(BYTE**, self, 32)[i], 40);
+    if (F(BYTE*, self, 40))
+        CallVirt(F(BYTE*, self, 40), 28, self);
+    return 1;
+}
+
+// [FUN_5ee020] calls method +48 of every member and +32 of the owner, then sets flag 2; 0 when it was set
+extern "C" int __fastcall Cluster_Set2(BYTE* self, void*)
+{
+    if (F(BYTE, self, 20) & 2)
+        return 0;
+    for (int i = 0; i < F(int, self, 24); i++)
+        CallVirt(F(BYTE**, self, 32)[i], 48);
+    if (F(BYTE*, self, 40))
+        CallVirt(F(BYTE*, self, 40), 32, self);
+    F(DWORD, self, 20) |= 2;
+    return 1;
+}
+

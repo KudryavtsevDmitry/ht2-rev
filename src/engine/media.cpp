@@ -101,7 +101,7 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
 
 ASM_PROC(FUN_5cfb30)
 extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
-ASM_PROC(FUN_6037e0)    // time in seconds, returns double
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in seconds, returns double
 extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
 extern "C" void FUN_5d3790(); KING_ALIAS("_FUN_5d3790", "@Queue_RemoveKey@12")
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
@@ -132,7 +132,7 @@ ASM_FUNC(List_RowCallback, $L_5c0700)
 ASM_PROC(FUN_5c06d0)    // visible rows of a list
 ASM_PROC(FUN_6303c4)    // ICDecompress
 ASM_PROC(FUN_6303b8)    // ICSendMessage
-ASM_PROC(FUN_5c29d0)
+extern "C" void FUN_5c29d0(); KING_ALIAS("_FUN_5c29d0", "_Media_Start")
 ASM_PROC(FUN_5c1d40)    // draws the video frame
 ASM_PROC(FUN_5c34a0)
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
@@ -1526,3 +1526,59 @@ extern "C" int __stdcall Media_Zero19(int, int, int, int, int, int, int, int, in
 
 // [FUN_5ce630] the base destructor body: sets the vtable
 extern "C" void __fastcall Light_DestructBase(BYTE* self, void*) { F(void*, self, 0) = g_vt64d81c; }
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5c3020(); KING_ALIAS("_FUN_5c3020", "@Table_Add@20")
+extern "C" void FUN_5c30d0(); KING_ALIAS("_FUN_5c30d0", "@Table_Add5@24")
+ASM_PROC($L_5c6120)
+extern "C" void FUN_5c2ce0(); KING_ALIAS("_FUN_5c2ce0", "_Msavi_Restore")
+extern "C" void FUN_5c2a50(); KING_ALIAS("_FUN_5c2a50", "_Msavi_FillBuffer")
+ASM_VAR(BYTE*, g_md702fa0, $L_702fa0)
+ASM_VAR(AsmLabel, s_md67f728, $L_67f728)
+ASM_VAR(AsmLabel, s_md67f70c, $L_67f70c)
+ASM_VAR(AsmLabel, s_md67f6e8, $L_67f6e8)
+extern "C" void __cdecl Sys_Log(const char* text, int value);
+
+// [FUN_5c6080] registers the three controls of this item in the owner's table (+7976) from index n
+extern "C" void __fastcall Item_Register(BYTE* self, void*, BYTE* owner, int n)
+{
+    BYTE* t = owner + 7976;
+    F(int, self, 368) = n + 1;
+    F(int, self, 364) = n;
+    F(int, self, 360) = CallThis<int>(FUN_5c3020, t, n, 2, self);
+    int k = F(int, self, 368);
+    F(int, self, 368) = k + 1;
+    F(int, self, 352) = CallThis<int>(FUN_5c3020, t, k, 1, F(int, self, 324));
+    k = F(int, self, 368);
+    F(int, self, 368) = k + 1;
+    F(int, self, 356) = CallThis<int>(FUN_5c30d0, t, k, self, $L_5c6120, 64);
+    F(DWORD, self, 208) |= 5;
+    F(int, self, 372) = 1;
+}
+
+// [FUN_5c29d0] starts the media player (702fa0): 5c2ce0, 5c2a50, then its method +48 (0, 0, 1); a failure is logged and returned
+extern "C" long __cdecl Media_Start()
+{
+    if (!g_md702fa0)
+        return (long)0x80004005;
+    long r = CallC<long>(FUN_5c2ce0);
+    if (r < 0)
+    {
+        Sys_Log(s_md67f728, r);
+        return r;
+    }
+    r = CallC<long>(FUN_5c2a50);
+    if (r < 0)
+    {
+        Sys_Log(s_md67f70c, r);
+        return r;
+    }
+    r = ((long(__stdcall*)(BYTE*, int, int, int))(*(void***)g_md702fa0)[12])(g_md702fa0, 0, 0, 1);
+    if (r < 0)
+    {
+        Sys_Log(s_md67f6e8, r);
+        return r;
+    }
+    return 0;
+}
+

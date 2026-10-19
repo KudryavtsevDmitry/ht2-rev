@@ -18,7 +18,7 @@ ASM_PROC(FUN_6047d0)
 ASM_VAR(AsmLabel, g_vtbl652e20, $L_652e20)
 ASM_PROC(FUN_604b40)
 ASM_PROC(FUN_604410)    // play a table entry (a, b)
-ASM_PROC(FUN_6041b0)    // stop sound id
+extern "C" void FUN_6041b0(); KING_ALIAS("_FUN_6041b0", "_Play_Stop")    // stop sound id
 
 ASM_VAR(int, g_72411c, $L_72411c)
 ASM_VAR(int, g_724120, $L_724120)
@@ -582,4 +582,33 @@ extern "C" void __cdecl Snd_Free(int i)
 
 // [FUN_604120] the base destructor body: sets the vtable
 extern "C" void __fastcall Play_DestructBase(BYTE* self, void*) { F(void*, self, 0) = g_vt652df8; }
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_6042e0(); KING_ALIAS("_FUN_6042e0", "_Play_Find")
+extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
+extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
+ASM_VAR(BYTE*, g_ds724128, $L_724128)
+ASM_VAR(BYTE*, g_ds724124, $L_724124)
+
+// [FUN_6041b0] stops a playing sound by id, unlinks it (+16 prev, +20 next; list 724124..724128) and deletes it
+extern "C" void __cdecl Play_Stop(int id)
+{
+    BYTE* p = CallC<BYTE*>(FUN_6042e0, id);
+    if (!p)
+        return;
+    CallC(FUN_604a60);
+    F(int, p, 40) = 0;
+    CallVirt(p, 24);
+    if (p != g_ds724128)
+        F(BYTE*, F(BYTE*, p, 16), 20) = F(BYTE*, p, 20);
+    else
+        g_ds724128 = F(BYTE*, p, 20);
+    if (p != g_ds724124)
+        F(BYTE*, F(BYTE*, p, 20), 16) = F(BYTE*, p, 16);
+    else
+        g_ds724124 = F(BYTE*, p, 16);
+    CallC(FUN_604a70);
+    CallVirt(p, 0, 1);
+}
 

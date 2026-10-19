@@ -9719,7 +9719,7 @@ extern "C" void FUN_4611e0(); KING_ALIAS("_FUN_4611e0", "_Bytes_Construct")
 ASM_PROC(FUN_45b3d0)    // introsort loop of 12-byte records (first, last, 0, depth, cmp)
 extern "C" void FUN_45b4e0(); KING_ALIAS("_FUN_45b4e0", "_Sort_FinalInsertion12")
 ASM_PROC(FUN_488620)    // a way file parser's constructor
-ASM_PROC(FUN_4895b0)    // parses a way file (name)
+extern "C" void FUN_4895b0(); KING_ALIAS("_FUN_4895b0", "@Rt_ReadFile@12")    // parses a way file (name)
 ASM_PROC(FUN_4886e0)    // the parser's destructor
 extern "C" void FUN_488350(); KING_ALIAS("_FUN_488350", "_Crc_File")
 extern "C" void FUN_4054a0(); KING_ALIAS("_FUN_4054a0", "_Registry52_Get")
@@ -19342,7 +19342,7 @@ extern "C" void FUN_457820(); KING_ALIAS("_FUN_457820", "_Players_SelectBmw")   
 extern "C" void FUN_434700(); KING_ALIAS("_FUN_434700", "@Height_Closeness@12")    // a type's weight (thiscall {limit}: it) returns double
 extern "C" void FUN_45a030(); KING_ALIAS("_FUN_45a030", "@Vec4_PushBackJ@12")    // vector<4 bytes>::push_back (thiscall: &x)
 extern "C" void FUN_447530(); KING_ALIAS("_FUN_447530", "@Vec8_PushBack@12")    // vector<double>::push_back (thiscall: &x)
-ASM_PROC(FUN_460770)    // the next type matching a list (first, last, list, -)
+extern "C" void FUN_460770(); KING_ALIAS("_FUN_460770", "_Ptrs_FindName")    // the next type matching a list (first, last, list, -)
 extern "C" void FUN_450f70(); KING_ALIAS("_FUN_450f70", "@Vec4b_InsertL@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
 extern "C" void FUN_457b50(); KING_ALIAS("_FUN_457b50", "_CopyDwords")    // copy of 4-byte elements (first, last, dest)
 extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")    // vector<char> destructor (thiscall)
@@ -21155,4 +21155,16 @@ extern "C" unsigned* __cdecl U32_LowerBound(unsigned* first, unsigned* last, uns
 
 // [FUN_462d10] clears the first byte of a string
 extern "C" void __stdcall Str_ClearFirst(char* s) { *s = 0; }
+
+
+// ---------------------------------------------------------------------------
+
+// [FUN_460770] the first entry of [first, last) whose object's name (**p +20) is name
+extern "C" BYTE*** __cdecl Ptrs_FindName(BYTE*** first, BYTE*** last, const char* name)
+{
+    for (; first != last; first++)
+        if (!strcmp(name, F(char*, **first, 20)))
+            break;
+    return first;
+}
 

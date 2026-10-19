@@ -865,3 +865,24 @@ extern "C" void __fastcall Body_TakeMode(BYTE* self, void*)
         ;
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_4f1240)
+ASM_PROC(FUN_4f1ef0)
+
+// [FUN_4fc9b0] switches the control mode (+9784) to 1..3 with (a, b) for 4f1240, a position and 4f1ef0's value; mode 0 just clears it
+extern "C" void __fastcall Body_SetControlMode(BYTE* self, void*, int mode, int a, int b, Vec3* pos, int v)
+{
+    if (!mode)
+    {
+        F(int, self, 9784) = 0;
+        return;
+    }
+    if (mode < 0 || mode > 3 || F(int, self, 9784) == mode)
+        return;
+    F(int, self, 9784) = mode;
+    CallThis(FUN_4f1240, self, 2, a, b);
+    Body_SetPosition(self, 0, pos);
+    CallThis(FUN_4f1ef0, self, v);
+}
+

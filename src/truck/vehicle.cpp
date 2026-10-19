@@ -1657,3 +1657,108 @@ extern "C" void __fastcall Car_Set54c880(BYTE* self, void*, int a, int b)
         CallThis(FUN_4f1240, F(BYTE*, self, 21600), 1, a, b);
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_501b90)
+extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
+ASM_PROC(FUN_5812a0)
+extern "C" void FUN_561d70(); KING_ALIAS("_FUN_561d70", "@Copter_SetVec100@12")
+extern "C" void FUN_4f1dd0(); KING_ALIAS("_FUN_4f1dd0", "@Body_SetPosition@12")
+extern "C" void FUN_4dde10(); KING_ALIAS("_FUN_4dde10", "@Cab_Release@8")
+extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
+extern "C" void FUN_4e9d90(); KING_ALIAS("_FUN_4e9d90", "_WarnLog_Close")
+extern "C" void FUN_4e9d36(); KING_ALIAS("_FUN_4e9d36", "_VehLogs_Close")
+ASM_PROC(FUN_4f0fc0)
+ASM_VAR(AsmLabel, g_vh69809c, $L_69809c)          // car types, 2416 bytes each
+ASM_VAR(BYTE*, g_vh696cb0, $L_696cb0)
+ASM_VAR(int, g_vh696cb8, $L_696cb8)
+ASM_VAR(AsmLabel, g_vh696cbc, $L_696cbc)
+ASM_VAR(AsmLabel, s_vh673340, $L_673340)
+ASM_VAR(int, g_vh696c70, $L_696c70)
+ASM_VAR(int, g_vh672d80, $L_672d80)
+ASM_VAR(int, g_vh696c74, $L_696c74)
+ASM_VAR(AsmLabel, s_vh68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, s_vh66c4e4, $L_66c4e4)
+ASM_VAR(AsmLabel, s_vh67a298, $L_67a298)
+ASM_VAR(AsmLabel, s_vh67a3c4, $L_67a3c4)
+
+// the count at +44 of the car's type record
+static int Vh_TypeCount(BYTE* self)
+{
+    return F(int, (BYTE*)g_vh69809c, F(int, self, 10420) * 2416 + 44);
+}
+
+// [FUN_555c80] passes the values at +10480 to the body (+21600) as items 3.. with a, then sets its ramp at +16164 to 1
+extern "C" void __fastcall Car_PassItems3(BYTE* self, void*, int a)
+{
+    for (int i = 0; i < Vh_TypeCount(self); i++)
+        CallThis(FUN_501b90, F(BYTE*, self, 21600), i + 3, a, F(int, self, 10480 + i * 4));
+    CallThis(FUN_4eb6a0, F(BYTE*, self, 21600) + 16164, 1.0f);
+}
+
+// [FUN_555b70] passes the values at +10512 and +10544 as items 11.. and 19.., then sets the ramps at +16216 and +16268 to 1
+extern "C" void __fastcall Car_PassItems11(BYTE* self, void*, int a)
+{
+    for (int i = 0; i < Vh_TypeCount(self); i++)
+    {
+        CallThis(FUN_501b90, F(BYTE*, self, 21600), i + 11, a, F(int, self, 10512 + i * 4));
+        CallThis(FUN_501b90, F(BYTE*, self, 21600), i + 19, a, F(int, self, 10544 + i * 4));
+    }
+    CallThis(FUN_4eb6a0, F(BYTE*, self, 21600) + 16216, 1.0f);
+    CallThis(FUN_4eb6a0, F(BYTE*, self, 21600) + 16268, 1.0f);
+}
+
+// [FUN_54c950] names the part (b or a default) at a position, then updates the parts at +21588 (with +416) and +21584
+extern "C" void __fastcall Car_NamePart(BYTE* self, void*, Vec3* pos, const char* b)
+{
+    char buf[400];
+    if (b)
+        sprintf(buf, s_vh67a298, b, (char*)s_vh68d1c0);
+    else
+        sprintf(buf, s_vh67a298, (char*)s_vh68d1c0, (char*)s_vh66c4e4);
+    CallThis(FUN_5812a0, self, pos, buf);
+    if (F(BYTE*, self, 21588))
+        CallThis(FUN_561d70, F(BYTE*, self, 21588), self + 416);
+    if (F(BYTE*, self, 21584))
+        CallThis(FUN_4f1dd0, F(BYTE*, self, 21584), pos);
+}
+
+// [FUN_5319f0] detaches the player's car (+616): resets its controls and flags, and closes the vehicle log when logging is on
+extern "C" void __fastcall Player_DetachCar(BYTE* self, void*)
+{
+    CallThis(FUN_4dde10, g_vh696cb0);
+    g_vh696cb8 = 0;
+    sprintf(g_vh696cbc, s_vh673340);
+    if (!CallC<int>(FUN_53f750, F(BYTE*, self, 616)))
+        return;
+    CallVirt(F(BYTE*, self, 616), 100);
+    CallVirt(F(BYTE*, self, 616), 108, 0);
+    F(int, F(BYTE*, self, 616), 20956) = 0;
+    F(DWORD, F(BYTE*, self, 616), 20900) &= 0xffffffcbu;
+    F(BYTE*, self, 616) = 0;
+    F(int, self, 104) = 0;
+    F(int, self, 624) = 0;
+    if (g_vh696c70 || g_vh672d80 || g_vh696c74)
+    {
+        CallC(FUN_4e9d90);
+        CallC(FUN_4e9d36);
+    }
+}
+
+// [FUN_554670] applies the car's position, name and orientation to its model (+16) and parts
+extern "C" void __fastcall Car_ApplyPlacement(BYTE* self, void*)
+{
+    BYTE* m = self + 16;
+    CallThis(FUN_581230, m, F(int, self, 820), self + 564);
+    CallThis(FUN_5812a0, m, self + 468, (char*)s_vh67a3c4);
+    CallThis(FUN_5816d0, m, self + 480, 0);
+    if (F(BYTE*, self, 21604))
+        CallThis(FUN_561d10, F(BYTE*, self, 21604), F(int, self, 820), self + 564);
+    if (F(BYTE*, self, 21600) && F(int, self, 10924) == 1)
+    {
+        CallThis(FUN_4f0fc0, F(BYTE*, self, 21600), F(int, self, 820), self + 564);
+        CallThis(FUN_4f1dd0, F(BYTE*, self, 21600), self + 468);
+        CallThis(FUN_4f1e20, F(BYTE*, self, 21600), self + 480);
+    }
+}
+

@@ -466,3 +466,41 @@ extern "C" void __cdecl Ctl_SetOrigin(int a, int b, int c)
     g_702f30 = g_702f38 - c;
 }
 
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5bcfe0(); KING_ALIAS("_FUN_5bcfe0", "@Ctl_Owner@8")
+ASM_PROC(FUN_5bcff0)
+extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
+
+// [FUN_5bd260] adds a control to the chain *this: 5bcff0 with every member, then links it after the last
+extern "C" void __fastcall Chain_AddControl(BYTE** self, void*, BYTE* c)
+{
+    BYTE* p = *self;
+    if (!p)
+    {
+        *self = c;
+        return;
+    }
+    if (CallThis<BYTE*>(FUN_5bcfe0, p))
+    {
+        do
+        {
+            CallThis(FUN_5bcff0, p, c);
+            p = CallThis<BYTE*>(FUN_5bcfe0, p);
+        } while (CallThis<BYTE*>(FUN_5bcfe0, p));
+    }
+    CallThis(FUN_5bcff0, p, c);
+    CallThis(FUN_5d2190, c + 16, p ? p + 16 : 0);
+}
+
+// [FUN_5bda20] whether (x, y) is inside [+44, +52] x [+48, +56]
+extern "C" int __fastcall Ctl_Contains(BYTE* self, void*, int x, int y)
+{
+    CallVirt<int>(self, 44);
+    if (x < F(int, self, 44) || x > F(int, self, 52))
+        return 0;
+    if (y < F(int, self, 48) || y > F(int, self, 56))
+        return 0;
+    return 1;
+}
+

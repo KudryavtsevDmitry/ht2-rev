@@ -48,7 +48,7 @@ extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")  
 extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    // mixer volume, returns double
 ASM_PROC(FUN_604730)
 ASM_PROC(FUN_604d70)
-ASM_PROC(FUN_605130)
+extern "C" void FUN_605130(); KING_ALIAS("_FUN_605130", "_Streams_Collect")
 extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
 extern "C" void FUN_5e98c0(); KING_ALIAS("_FUN_5e98c0", "_Data_Read5e99c0")
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
@@ -733,4 +733,67 @@ extern "C" int __fastcall Obj_Flag0Clear(BYTE* self, void*, int, int, int, int)
 
 // [FUN_5ff220] initializes the sound lock
 extern "C" void __cdecl Sound_InitLock() { InitializeCriticalSection(&g_sc723b40); }
+
+
+// ---------------------------------------------------------------------------
+extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
+ASM_PROC(FUN_5b4fc0)
+ASM_PROC(FUN_604e10)
+extern "C" void FUN_5fd250(); KING_ALIAS("_FUN_5fd250", "@SoundFile_Destroy@8")
+ASM_PROC(FUN_605050)
+ASM_PROC(FUN_5e6800)
+ASM_PROC(FUN_5e5580)
+ASM_VAR(BYTE**, g_sc723b34p, $L_723b34)
+struct ScVec { float x, y, z; };
+typedef int (__cdecl* ScTest)(int, BYTE*, BYTE*);
+
+// [FUN_5f3570] tests (a, b) against this object: 5ef800, then b's 5b4fc0 with +20, then the test hook +48 (a, b, this); 0 when one fails
+extern "C" int __fastcall Obj_Test(BYTE* self, void*, int a, BYTE* b)
+{
+    if (!CallThis<int>(FUN_5ef800, self, a, b))
+        return 0;
+    if (!CallThis<int>(FUN_5b4fc0, b, self + 20))
+        return 0;
+    ScTest t = F(ScTest, self, 48);
+    if (!t)
+        return 0;
+    return t(a, b, self);
+}
+
+// [FUN_5fcf10] stops the sound system: frees the sounds (723b34, count 723b30) and the tables
+extern "C" void __cdecl Sound_Stop()
+{
+    if (!g_sc723b28)
+        return;
+    g_sc723b28 = 0;
+    CallC(FUN_604e10);
+    for (int i = 0; i < g_sc723b30; i++)
+    {
+        BYTE* p = g_sc723b34p[i];
+        if (p)
+        {
+            CallThis(FUN_5fd250, p);
+            operator delete(p);
+        }
+    }
+    operator delete(g_sc723b34p);
+    memset(g_sc723aa8, 0, 128);
+    CallC(FUN_605050);
+}
+
+// [FUN_5fa5f0] moves the chain of n (+48) segments (40 bytes each, at +52) to the point +56: the first to it, the others following
+extern "C" void __fastcall Chain_MoveTo(BYTE* self, void*)
+{
+    ScVec t = {0, 0, 0};
+    if (F(int, self, 48) < 1)
+        return;
+    F(ScVec, self, 20) = F(ScVec, self, 56);
+    CallThis(FUN_5e6800, F(BYTE*, self, 52), self + 20);
+    for (int i = 1; i < F(int, self, 48); i++)
+    {
+        t = F(ScVec, self, 56);
+        CallThis(FUN_5e6800, F(BYTE*, self, 52) + i * 40, &t);
+        CallThis(FUN_5e5580, self + 20, &t);
+    }
+}
 

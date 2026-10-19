@@ -35,7 +35,7 @@ extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 ASM_PROC(FUN_5e9d40)
 ASM_VAR(int, g_721754, $L_721754)
 ASM_VAR(void*, g_67fb7c, $L_67fb7c)
-ASM_VAR(AsmLabel, g_start603800, $L_603800)
+ASM_VAR(AsmLabel, g_start603800, _Effect_Zero)
 ASM_VAR(BYTE*, g_7208fc, $L_7208fc)
 ASM_VAR(AsmLabel, s_683538, $L_683538)
 ASM_VAR(AsmLabel, g_enum5d8c60, $L_5d8c60)
@@ -51,7 +51,7 @@ extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
 ASM_PROC(FUN_5da950)
 ASM_PROC(FUN_5dbf00)
-ASM_PROC(FUN_6037e0)    // time in ms, returns double
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in ms, returns double
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
 ASM_PROC(FUN_5ea1b0)    // draws text
@@ -1727,4 +1727,96 @@ extern "C" void __fastcall Fw_Nop1(BYTE* self, void*, int) {}
 
 // [FUN_5e48f0] does nothing
 extern "C" void __cdecl Fw_Nop() {}
+
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5e94d0)
+ASM_PROC(FUN_5e8160)
+
+// [FUN_5e9420] reads a whole data file into a through 5e94d0 (a, file, size, 0)
+extern "C" void* __cdecl Data_Read5e94d0(void* a, const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e94d0, a, f, Fw_DataSize(), 0);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5e7ed0] reads a data file into a through 5e8160
+extern "C" void* __cdecl Data_Read5e8160(void* a, const char* name)
+{
+    FILE* f = Fw_OpenData(name);
+    if (!f)
+        return 0;
+    void* r = CallC<void*>(FUN_5e8160, a, f, 0);
+    fclose(f);
+    return r;
+}
+
+// [FUN_5dd720] resets the window's state fields
+extern "C" void __fastcall Window_ResetState(BYTE* c, void*)
+{
+    const DWORD k9a = 2576980378u;
+    F(DWORD, c, 3912) = 0;
+    F(BYTE*, c, 472) = c + 2720;
+    F(DWORD, c, 2864) = 0;
+    F(DWORD, c, 552) = 0;
+    F(DWORD, c, 2716) = 0;
+    F(BYTE*, c, 3016) = c + 2968;
+    F(DWORD, c, 2968) = 0;
+    F(DWORD, c, 548) = 0;
+    F(DWORD, c, 2972) = 0;
+    F(DWORD, c, 2856) = 0;
+    F(DWORD, c, 2860) = 0;
+    F(DWORD, c, 632) = 0;
+    F(DWORD, c, 3080) = 0;
+    F(DWORD, c, 2880) = 0;
+    F(DWORD, c, 2872) = 0;
+    F(DWORD, c, 2888) = 0;
+    F(DWORD, c, 592) = 0;
+    F(DWORD, c, 2960) = k9a;
+    F(DWORD, c, 2976) = k9a;
+    F(DWORD, c, 600) = 0;
+    F(DWORD, c, 2928) = 0;
+    F(DWORD, c, 2936) = 0;
+    F(DWORD, c, 2944) = 0;
+    F(DWORD, c, 2904) = 0;
+    F(DWORD, c, 2912) = 0;
+    F(DWORD, c, 2920) = 0;
+    F(DWORD, c, 3048) = k9a;
+    F(DWORD, c, 3056) = 858993459;
+    F(DWORD, c, 636) = 1073217536;
+    F(DWORD, c, 2984) = 0;
+    F(DWORD, c, 3084) = 1072693248;
+    F(BYTE, c, 3090) = 0;
+    F(BYTE, c, 3089) = 0;
+    F(BYTE, c, 3088) = 0;
+    F(DWORD, c, 3036) = 0;
+    F(DWORD, c, 3024) = 0;
+    F(DWORD, c, 3040) = 0;
+    F(DWORD, c, 3028) = 1;
+    F(DWORD, c, 3044) = 1;
+    F(DWORD, c, 2884) = 0;
+    F(DWORD, c, 2876) = 0;
+    F(DWORD, c, 2892) = 0;
+    F(DWORD, c, 596) = 0;
+    F(DWORD, c, 2964) = 1069128089;
+    F(DWORD, c, 2980) = 1069128089;
+    F(DWORD, c, 604) = 0;
+    F(DWORD, c, 3032) = 0;
+    F(DWORD, c, 2932) = 0;
+    F(DWORD, c, 2940) = 0;
+    F(DWORD, c, 2948) = 0;
+    F(DWORD, c, 2908) = 0;
+    F(DWORD, c, 2916) = 0;
+    F(DWORD, c, 2924) = 0;
+    F(DWORD, c, 544) = 0xffffffff;
+    F(DWORD, c, 3020) = 0;
+    F(DWORD, c, 3052) = 1072273817;
+    F(DWORD, c, 3060) = 1071854387;
+    F(DWORD, c, 644) = 0;
+    F(DWORD, c, 648) = 0;
+}
 

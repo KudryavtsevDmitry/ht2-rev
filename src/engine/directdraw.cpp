@@ -235,7 +235,7 @@ void __cdecl Dd_Release()
 }
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5d8460)
+extern "C" void FUN_5d8460(); KING_ALIAS("_FUN_5d8460", "_Dd_ChooseTextureFormat")
 ASM_VAR(int, g_7208b8, $L_7208b8)
 ASM_VAR(int, g_72092c, $L_72092c)
 ASM_VAR(BYTE*, g_7208e0, $L_7208e0)
@@ -337,3 +337,33 @@ extern "C" int __fastcall Win_Activate(BYTE* self, void*)
     return CallThis<int>(FUN_5e4250, g_pApp, self);
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_PROC($L_5d8360)     // texture format enumeration callback
+ASM_VAR(int, g_dd7208ac, $L_7208ac)
+ASM_VAR(int, g_dd7208b0, $L_7208b0)
+ASM_VAR(int, g_dd720894, $L_720894)
+ASM_VAR(int, g_dd720898, $L_720898)
+ASM_VAR(BYTE*, g_ddDevice, $L_720908)
+
+// [FUN_5d8460] picks the texture format for a kind (b, -1: 7208ac) from the device's formats; without a device kind 2 means 4 bytes
+extern "C" void __cdecl Dd_ChooseTextureFormat(int kind, int b)
+{
+    if (!g_ddDevice)
+    {
+        g_dd720894 = kind;
+        if (kind == 2)
+            g_dd720898 = 4;
+        return;
+    }
+    if (b == -1)
+        b = g_dd7208ac;
+    g_dd7208b0 = b;
+    DWORD ctx[52];
+    memset(ctx, 0, sizeof ctx);
+    ctx[51] = 0x80070057;
+    ctx[2] = kind;
+    ((long(__stdcall*)(BYTE*, void*, void*))(*(void***)g_ddDevice)[4])(g_ddDevice, (void*)$L_5d8360, ctx);
+    g_dd720894 = kind;
+    g_dd720898 = ctx[9];
+}
