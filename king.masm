@@ -1335,6 +1335,32 @@ PUBLIC $L_67f87c, $L_67f888, $L_67f890, $L_682f40, $L_696240, $L_6ceca8
 PUBLIC $L_707f70
 PUBLIC $L_6517d0, $L_651804
 PUBLIC $L_4eaa41, $L_64c26c, $L_64d5ec, $L_67e100, $L_67fa68, $L_696cac
+PUBLIC $L_64dcb8
+PUBLIC $L_676460
+PUBLIC $L_676450
+PUBLIC $L_67643c
+PUBLIC $L_67642c
+PUBLIC $L_67641c
+PUBLIC $L_676408
+PUBLIC $L_6763bc
+PUBLIC $L_6763b0
+PUBLIC $L_6763a4
+PUBLIC $L_676398
+PUBLIC $L_67638c
+PUBLIC $L_676380
+PUBLIC $L_676374
+PUBLIC $L_676368
+PUBLIC $L_67635c
+PUBLIC $L_676350
+PUBLIC $L_676344
+PUBLIC $L_6762cc
+PUBLIC $L_6762c4
+PUBLIC $L_6762bc
+PUBLIC $L_6762b0
+PUBLIC $L_6762a4
+PUBLIC $L_676294
+PUBLIC $L_676284
+PUBLIC $L_676278
 
 ;===================================
 _TEXT SEGMENT
@@ -464285,6 +464311,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50d1c0 PROC
 
             push -1
@@ -464514,6 +464542,10 @@ $L_50d354::
             add ESP,228
             ret 
 FUN_50d1c0 ENDP
+ELSE
+EXTERN _Shell_ModeButtonA:PROC
+FUN_50d1c0 TEXTEQU <_Shell_ModeButtonA>
+ENDIF
           BYTE 090H
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 IFDEF ASM_GAME_SHELL
@@ -464567,6 +464599,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50d530 PROC
 
             push -1
@@ -464796,6 +464830,10 @@ $L_50d6c4::
             add ESP,228
             ret 
 FUN_50d530 ENDP
+ELSE
+EXTERN _Shell_ModeButtonB:PROC
+FUN_50d530 TEXTEQU <_Shell_ModeButtonB>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_50d860 PROC
@@ -465389,6 +465427,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50def0 PROC
 
             push -1
@@ -465603,6 +465643,10 @@ $L_50e144::
             add ESP,228
             ret 
 FUN_50def0 ENDP
+ELSE
+EXTERN _Shell_ModeButtonC:PROC
+FUN_50def0 TEXTEQU <_Shell_ModeButtonC>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -465614,6 +465658,8 @@ FUN_50def0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50e200 PROC
 
             push -1
@@ -465812,6 +465858,10 @@ $L_50e441::
             add ESP,228
             ret 
 FUN_50e200 ENDP
+ELSE
+EXTERN _Shell_ButtonA:PROC
+FUN_50e200 TEXTEQU <_Shell_ButtonA>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -466322,6 +466372,8 @@ FUN_50e830 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50ec10 PROC
 
             push -1
@@ -466552,6 +466604,10 @@ $L_50ef41::
             add ESP,228
             ret 
 FUN_50ec10 ENDP
+ELSE
+EXTERN _Shell_ButtonC:PROC
+FUN_50ec10 TEXTEQU <_Shell_ButtonC>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -467171,6 +467227,8 @@ FUN_50f300 PROC
             nop
 FUN_50f300 ENDP
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50f650 PROC
 
             push -1
@@ -467410,6 +467468,10 @@ $L_50f8f3::
             add ESP,192
             ret 
 FUN_50f650 ENDP
+ELSE
+EXTERN _Shell_ButtonD:PROC
+FUN_50f650 TEXTEQU <_Shell_ButtonD>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

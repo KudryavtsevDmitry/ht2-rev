@@ -23,7 +23,7 @@ KING_ALIAS("_Carat_Read7ad0", "FUN_507ad0")
 extern "C" int __cdecl Carat_Read7df0(int a, int b, int* values, int c, int d, int n);
 KING_ALIAS("_Carat_Read7df0", "FUN_507df0")
 extern "C" BYTE* __cdecl Carat_Window(int a, int b);
-KING_ALIAS("_Carat_Window", "FUN_50e200")
+KING_ALIAS("_Carat_Window", "_Shell_ButtonA")
 extern "C" int __cdecl Carat_LoadFont(const char* name);
 KING_ALIAS("_Carat_LoadFont", "_Font_LoadFile")
 extern "C" void __cdecl Carat_Draw5b86c0(int a, int b, int c, int d);
@@ -2844,4 +2844,166 @@ extern "C" void __fastcall Shell_NetCommand(BYTE* s, void*, int cmd)
     CallC(FUN_6021b0, F(BYTE*, pkt, 4), F(BYTE*, pkt, 8) - F(BYTE*, pkt, 4));
     CallThis(FUN_51f380, g_gs6ceca8, 4);
     CallThis(FUN_602e80, pkt);
+}
+
+// ---------------------------------------------------------------------------
+// Shell buttons with their four or five image styles (exception frames dropped).
+
+ASM_VAR(AsmLabel, g_q21_68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_q21_64dcb8, $L_64dcb8)
+ASM_VAR(AsmLabel, s_q21_x, $L_x)
+ASM_VAR(AsmLabel, s_q21_6762c4, $L_6762c4)
+ASM_VAR(AsmLabel, s_q21_6762bc, $L_6762bc)
+ASM_VAR(AsmLabel, s_q21_6762b0, $L_6762b0)
+ASM_VAR(AsmLabel, s_q21_6762a4, $L_6762a4)
+ASM_VAR(AsmLabel, s_q21_676294, $L_676294)
+ASM_VAR(AsmLabel, s_q21_676284, $L_676284)
+ASM_VAR(AsmLabel, s_q21_676278, $L_676278)
+ASM_VAR(AsmLabel, s_q21_6762cc, $L_6762cc)
+ASM_VAR(AsmLabel, s_q21_676344, $L_676344)
+ASM_VAR(AsmLabel, s_q21_676374, $L_676374)
+ASM_VAR(AsmLabel, s_q21_676368, $L_676368)
+ASM_VAR(AsmLabel, s_q21_67635c, $L_67635c)
+ASM_VAR(AsmLabel, s_q21_676350, $L_676350)
+ASM_VAR(AsmLabel, s_q21_6763a4, $L_6763a4)
+ASM_VAR(AsmLabel, s_q21_676398, $L_676398)
+ASM_VAR(AsmLabel, s_q21_67638c, $L_67638c)
+ASM_VAR(AsmLabel, s_q21_676380, $L_676380)
+ASM_VAR(AsmLabel, s_q21_6763bc, $L_6763bc)
+ASM_VAR(AsmLabel, s_q21_6763b0, $L_6763b0)
+ASM_VAR(AsmLabel, s_q21_676460, $L_676460)
+ASM_VAR(AsmLabel, s_q21_676450, $L_676450)
+ASM_VAR(AsmLabel, s_q21_67643c, $L_67643c)
+ASM_VAR(AsmLabel, s_q21_67642c, $L_67642c)
+ASM_VAR(AsmLabel, s_q21_67641c, $L_67641c)
+ASM_VAR(AsmLabel, s_q21_676408, $L_676408)
+
+// a 36-byte image style (0.5 at +24) copied from proto, its texture (+28) the object named by the format
+struct ShellImg { DWORD d[9]; };
+static void Shell_Img(ShellImg& r, void* proto, const char* fmt, int a, int b = 0)
+{
+    char buf[128];
+    sprintf(buf, fmt, a, b);
+    memset(&r, 0, sizeof r);
+    r.d[6] = 0x3f000000;
+    CallThis(FUN_5bd5a0, &r, proto);
+    r.d[7] = CallC<DWORD>(FUN_5ef3d0, buf);
+}
+static BYTE* Shell_NewButton(int kind, int id, bool vt)
+{
+    BYTE* m = (BYTE*)operator new(288);
+    if (m) {
+        CallThis(FUN_5bf820, m, (BYTE*)g_q21_68d1c0, kind, id);
+        if (vt)
+            F(void*, m, 0) = g_q21_64dcb8;
+    }
+    return m;
+}
+static void Shell_Fill(BYTE* m, ShellImg& a, ShellImg& b, ShellImg& c, ShellImg& d)
+{
+    CallThis(FUN_5bd5a0, m + 68, &b);
+    CallThis(FUN_5bd5a0, m + 104, &a);
+    CallThis(FUN_5bd5a0, m + 140, &d);
+    CallThis(FUN_5bd5a0, m + 176, &c);
+}
+static void Shell_MoveTo(BYTE* m, int x, int y)
+{
+    F(int, m, 52) += x - F(int, m, 44);
+    F(int, m, 44) = x;
+    F(int, m, 56) += y - F(int, m, 48);
+    F(int, m, 48) = y;
+}
+static const char* Shell_ModeName()
+{
+    return CallC<int>(FUN_568fd0) == 2 ? (const char*)s_q21_6762c4 : (const char*)s_q21_6762bc;
+}
+// the mode button shapes (6762b0 ..): the extra image (+212) from fmtE
+static BYTE* Shell_ModeButton(int n, int id, int flag, const char* fmtE)
+{
+    BYTE* m = Shell_NewButton(4, id, true);
+    if (flag)
+        F(int, m, 284) |= 2;
+    int sel = (int)Shell_ModeName();
+    ShellImg a, b, c, d, e;
+    Shell_Img(a, g_6ce3b8, (const char*)s_q21_6762b0, sel, n);
+    Shell_Img(b, g_6ce408, (const char*)s_q21_6762a4, sel, n);
+    Shell_Img(c, g_6ce988, (const char*)s_q21_676294, sel, n);
+    Shell_Img(d, g_6ceb38, (const char*)s_q21_676284, sel, n);
+    Shell_Fill(m, a, b, c, d);
+    Shell_Img(e, g_6ceb38, fmtE, sel, n);
+    CallThis(FUN_5bd5a0, m + 212, &e);
+    CallVirt(m, 20);
+    return m;
+}
+// [FUN_50d1c0] (n, id, flag)
+extern "C" BYTE* __cdecl Shell_ModeButtonA(int n, int id, int flag) { return Shell_ModeButton(n, id, flag, (const char*)s_q21_676278); }
+// [FUN_50d530] (n, id, flag)
+extern "C" BYTE* __cdecl Shell_ModeButtonB(int n, int id, int flag) { return Shell_ModeButton(n, id, flag, (const char*)s_q21_6762cc); }
+
+// [FUN_50def0] (n, id): a mode button whose pressed image is the lit one
+extern "C" BYTE* __cdecl Shell_ModeButtonC(int n, int id)
+{
+    int sel = (int)Shell_ModeName();
+    ShellImg a, b, c, d, e;
+    Shell_Img(a, g_6ce3b8, (const char*)s_q21_6762b0, sel, n);
+    Shell_Img(b, g_6ce408, (const char*)s_q21_6762a4, sel, n);
+    Shell_Img(c, g_6ce988, (const char*)s_q21_676294, sel, n);
+    Shell_Img(d, g_6ceb38, (const char*)s_q21_676294, sel, n);
+    BYTE* m = Shell_NewButton(4, id, false);
+    Shell_Fill(m, a, b, c, d);
+    Shell_Img(e, g_6ceb38, (const char*)s_q21_676344, sel, n);
+    CallThis(FUN_5bd5a0, m + 212, &e);
+    CallVirt(m, 20);
+    return m;
+}
+
+// a button of n's images (formats fa..fe), the extra one at +eOff
+static BYTE* Shell_NamedButton(int n, int id, int kind, bool vt, const char* fa, const char* fb, const char* fc,
+                               const char* fd, const char* fe, int eOff)
+{
+    ShellImg a, b, c, d, e;
+    Shell_Img(a, g_6ce3b8, fa, n);
+    Shell_Img(b, g_6ce408, fb, n);
+    Shell_Img(c, g_6ce988, fc, n);
+    Shell_Img(d, g_6ceb38, fd, n);
+    BYTE* m = Shell_NewButton(kind, id, vt);
+    Shell_Fill(m, a, b, c, d);
+    Shell_Img(e, g_6ceb38, fe, n);
+    CallThis(FUN_5bd5a0, m + eOff, &e);
+    CallVirt(m, 20);
+    return m;
+}
+// [FUN_50e200] (n, id)
+extern "C" BYTE* __cdecl Shell_ButtonA(int n, int id)
+{
+    return Shell_NamedButton(n, id, 4, false, (const char*)s_q21_676374, (const char*)s_q21_676368, (const char*)s_q21_67635c,
+                             (const char*)s_q21_67635c, (const char*)s_q21_676350, 212);
+}
+// [FUN_50ec10] (n, id, x, y, flag)
+extern "C" BYTE* __cdecl Shell_ButtonC(int n, int id, int x, int y, int flag)
+{
+    BYTE* m = Shell_NamedButton(n, id, 4, true, (const char*)s_q21_676374, (const char*)s_q21_676368, (const char*)s_q21_67635c,
+                                (const char*)s_q21_6763bc, (const char*)s_q21_6763b0, 248);
+    Shell_MoveTo(m, x, y);
+    if (flag)
+        F(int, m, 284) |= 2;
+    return m;
+}
+// [FUN_50f650] (n, id, x, y): images by mode, the pressed one sharing the lit texture
+extern "C" BYTE* __cdecl Shell_ButtonD(int n, int id, int x, int y)
+{
+    bool m2 = CallC<int>(FUN_568fd0) == 2;
+    ShellImg a, b, c, d;
+    Shell_Img(a, g_6ce3b8, m2 ? (const char*)s_q21_676460 : (const char*)s_q21_67642c, n);
+    Shell_Img(b, g_6ce408, m2 ? (const char*)s_q21_676450 : (const char*)s_q21_67641c, n);
+    Shell_Img(c, g_6ce988, m2 ? (const char*)s_q21_67643c : (const char*)s_q21_676408, n);
+    memset(&d, 0, sizeof d);
+    d.d[6] = 0x3f000000;
+    CallThis(FUN_5bd5a0, &d, (void*)g_6ceb38);
+    d.d[7] = c.d[7];
+    BYTE* m = Shell_NewButton(4, id, false);
+    Shell_Fill(m, a, b, c, d);
+    CallVirt(m, 20);
+    Shell_MoveTo(m, x, y);
+    return m;
 }
