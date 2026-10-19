@@ -58,8 +58,8 @@ ASM_PROC(FUN_5c3800)
 ASM_PROC(FUN_52e740)
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
-ASM_PROC(FUN_4e5140)
-ASM_PROC(FUN_4e51b1)
+extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
+extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
 ASM_PROC(FUN_4e4d82)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
@@ -283,7 +283,7 @@ extern "C" void __cdecl Sound_Loop386(void* s, int a, float v, int b)
 // ---------------------------------------------------------------------------
 // medium-sized functions
 
-ASM_PROC(FUN_4e2821)    // (vector, name, scale as float)
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
 extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
@@ -669,3 +669,13 @@ void __fastcall Car_SendNamed(BYTE* self, void*, const BYTE* c, int b, const cha
 }
 
 }
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_57d580)
+
+// [FUN_52e1f0] 57d580(a, b) on this
+extern "C" int __fastcall Scenery_Call57d580(void* self, void*, int a, int b)
+{
+    return CallThis<int>(FUN_57d580, self, a, b);
+}
+

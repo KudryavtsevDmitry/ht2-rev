@@ -451,3 +451,18 @@ void __fastcall Split_Resize(BYTE* self, void*, int d)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+ASM_VAR(int, g_702f34, $L_702f34)
+ASM_VAR(int, g_702f38, $L_702f38)
+ASM_VAR(int, g_702f2c, $L_702f2c)
+ASM_VAR(int, g_702f30, $L_702f30)
+
+// [FUN_5bd560] sets 702f24 and the offsets 702f2c/30 from the sizes
+extern "C" void __cdecl Ctl_SetOrigin(int a, int b, int c)
+{
+    g_702f2c = g_702f34 - b;
+    g_702f24 = a;
+    g_702f30 = g_702f38 - c;
+}
+

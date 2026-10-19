@@ -381,3 +381,16 @@ extern "C" void __fastcall Vec12_Insert46e6b0(BYTE** v, void*, BYTE* pos, const 
 {
     VecPod_InsertAux(v, pos, x, 12, FUN_47e3e0);
 }
+
+// ---------------------------------------------------------------------------
+extern "C" double __cdecl Order_FullValue(const int* o);
+extern "C" double __cdecl Order_Value(const int* o);
+extern "C" double __cdecl Order_Pay(const BYTE* o, double late, int bonus);
+
+// [FUN_4715a0] the pay for (late, bonus) plus the value lost so far
+extern "C" double __cdecl Order_PayTotal(const int* o, double late, int bonus)
+{
+    double full = Order_FullValue(o);
+    double lost = full - Order_Value(o);
+    return Order_Pay((const BYTE*)o, late, bonus) + lost;
+}

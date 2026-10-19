@@ -752,3 +752,20 @@ extern "C" void __fastcall Owner_Clear(BYTE* self, void*)
     }
 }
 
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_5d3fd0)
+ASM_VAR(AsmLabel, g_pool71e830, $L_71e830)
+
+// [FUN_5d2a10] frees an element of the pool at 71e830
+extern "C" void __cdecl Pool71e830_Free(BYTE* p)
+{
+    Pool_FreeItem((BYTE*)g_pool71e830, 0, p);
+}
+
+// [FUN_5d2eb0] 5d3fd0(0)
+extern "C" void __cdecl Core_5d2eb0()
+{
+    CallC(FUN_5d3fd0, 0);
+}
+

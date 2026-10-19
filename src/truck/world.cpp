@@ -475,7 +475,7 @@ extern "C" void __fastcall Arrays_FillLongAgo(BYTE* self, void*)
 extern "C" void FUN_4e5dce(); KING_ALIAS("_FUN_4e5dce", "_Model_FindPart2")    // an object's first part to query
 extern "C" void FUN_4e5c77(); KING_ALIAS("_FUN_4e5c77", "_Model_FindPart1")    // an object's other part to query
 ASM_PROC(FUN_4e5d60)
-ASM_PROC(FUN_4e6362)
+extern "C" void FUN_4e6362(); KING_ALIAS("_FUN_4e6362", "_Vec3_RejectFrom")
 extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);   // vecmath.cpp
 ASM_VAR(double, g_64b658, $L_64b658)            // 0.001
 
@@ -848,5 +848,116 @@ extern "C" BYTE* __cdecl Model_FindPart1(BYTE* obj)
 extern "C" BYTE* __cdecl Model_FindPart2(BYTE* obj)
 {
     return Model_FindCached(obj, s_673d58, s_673d2c, &g_697550, (BYTE**)&g_697554, (char*)&g_697558);
+}
+
+
+// ---------------------------------------------------------------------------
+ASM_PROC(FUN_4e4f78)    // (a, b, c, &lo, &hi)
+ASM_PROC(FUN_4e28b0)
+ASM_PROC(FUN_5fdaf0)
+ASM_PROC(FUN_5fd430)
+extern "C" void FUN_4eac5f(); KING_ALIAS("_FUN_4eac5f", "@Arrays_FillLongAgo@8")
+extern "C" void FUN_4bde00(); KING_ALIAS("_FUN_4bde00", "_Vec3_Sub")
+extern "C" void FUN_610f00(); KING_ALIAS("_FUN_610f00", "_Vec3_Dot")
+extern "C" void FUN_4bdd60(); KING_ALIAS("_FUN_4bdd60", "_Vec3_Scaled")
+extern "C" void FUN_4bddb0(); KING_ALIAS("_FUN_4bddb0", "_Vec3_Add")
+ASM_VAR(double, g_64b5a0, $L_64b5a0)
+ASM_VAR(double, g_64d668, $L_64d668)
+ASM_VAR(float, g_64c264, $L_64c264)
+ASM_VAR(float, g_64c250, $L_64c250)
+ASM_VAR(AsmLabel, s_6736e4, $L_6736e4)
+ASM_VAR(AsmLabel, s_67431c, $L_67431c)
+
+static __declspec(noinline) int World_Trunc(double x)
+{
+    return (int)x;
+}
+
+static void World_PlayRange(BYTE* obj, int a, int b, int c, bool three)
+{
+    if (!obj)
+        return;
+    float lo, hi;
+    CallC(FUN_4e4f78, a, b, c, &lo, &hi);
+    float mx = lo > hi ? lo : hi;
+    if (!(mx > g_64b5a0))
+        return;
+    if (three)
+        CallThis(FUN_5fd430, obj, lo, hi, 0);
+    else
+        CallThis(FUN_5fdaf0, obj, lo, hi);
+}
+
+// [FUN_4e51b1..$L_4e51d8] plays a sound at the range of (a, b, c) when it is loud enough
+extern "C" void __cdecl Sound_PlayRange(BYTE* obj, int a, int b, int c)
+{
+    World_PlayRange(obj, a, b, c, false);
+}
+
+// [FUN_4e5140..$L_4e5167] plays a sound (5fd430) at the range of (a, b, c) when it is loud enough
+extern "C" void __cdecl Sound_PlayRange3(BYTE* obj, int a, int b, int c)
+{
+    World_PlayRange(obj, a, b, c, true);
+}
+
+// [FUN_4e2821..$L_4e28a9] fatal when the point (z ignored) fails the 4e28b0 check against lim
+extern "C" void __cdecl World_CheckPoint(float* v, const char* name, float lim)
+{
+    float p[3] = { v[0], v[1], 0 };
+    if (CallC<int>(FUN_4e28b0, p, lim))
+    {
+        char text[1012];
+        sprintf(text, s_6736e4, name, (double)lim, (double)v[0], (double)v[1], (double)v[2]);
+        World_Fatal(text);
+    }
+}
+
+// [FUN_4eab58..$L_4eab7b] a history of length/step samples: two arrays, step at +0, rate at +4
+extern "C" BYTE* __fastcall History_Construct(BYTE* self, void*, int a, float length, int c, int d)
+{
+    if (!(length > g_64c264))
+        World_Fatal(s_67431c);
+    F(int, self, 20) = a;
+    F(int, self, 24) = c;
+    F(int, self, 28) = World_Trunc(length / g_64d668);
+    F(float, self, 0) = length;
+    F(float, self, 4) = (float)(g_64c250 / F(float, self, 0));
+    F(void*, self, 8) = operator new(F(int, self, 28) * 4);
+    F(void*, self, 12) = operator new(F(int, self, 28) * 4);
+    F(int, self, 16) = d;
+    CallThis(FUN_4eac5f, self);
+    return self;
+}
+
+// [FUN_4e6362] out = c - b*dot(b, c - a)
+extern "C" float* __cdecl Vec3_RejectFrom(float* out, float* a, float* b, float* c)
+{
+    float t[3], s[3];
+    double d = CallC<double>(FUN_610f00, b, CallC<float*>(FUN_4bde00, t, c, a));
+    CallC(FUN_4bdd60, s, b, (float)d);
+    CallC(FUN_4bde00, out, c, s);
+    return out;
+}
+
+// [FUN_4e6490] the point c + e*t on the plane (a, normal b): t = dot(b, c - a) / dot(b, e)
+extern "C" float* __cdecl Vec3_PlaneHit(float* out, float* a, float* b, float* c, float* e)
+{
+    float t[3], s[3];
+    double n = CallC<double>(FUN_610f00, b, CallC<float*>(FUN_4bde00, t, c, a));
+    double r = n / CallC<double>(FUN_610f00, b, e);
+    CallC(FUN_4bdd60, s, e, (float)r);
+    CallC(FUN_4bddb0, out, c, s);
+    return out;
+}
+
+// [FUN_4e6502] Vec3_PlaneHit that also stores t
+extern "C" float* __cdecl Vec3_PlaneHitT(float* out, float* a, float* b, float* c, float* e, double* tOut)
+{
+    float t[3], s[3];
+    double n = CallC<double>(FUN_610f00, b, CallC<float*>(FUN_4bde00, t, c, a));
+    *tOut = n / CallC<double>(FUN_610f00, b, e);
+    CallC(FUN_4bdd60, s, e, (float)*tOut);
+    CallC(FUN_4bddb0, out, c, s);
+    return out;
 }
 

@@ -29,9 +29,9 @@ extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 extern "C" float __fastcall Ramp_Position(BYTE* self, void*);   // carphys.cpp
-ASM_PROC(FUN_5014b0)
+extern "C" void FUN_5014b0(); KING_ALIAS("_FUN_5014b0", "@Car_ReadSettings35@12")
 extern "C" void FUN_501550(); KING_ALIAS("_FUN_501550", "@Car_MinWearFactor@8")
-ASM_PROC(FUN_556110)
+extern "C" void FUN_556110(); KING_ALIAS("_FUN_556110", "@Car_ApplyTypeVec@8")
 ASM_PROC(FUN_5561b0)
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
@@ -1191,7 +1191,7 @@ extern "C" int __cdecl Wheels_Mean(BYTE* wheels, int n, Vec3* pos, Vec3* nrm)
 }
 
 ASM_PROC(FUN_4e28b0)
-ASM_PROC(FUN_4e2821)
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")
 ASM_PROC(FUN_4fc930)
 ASM_PROC(FUN_541ad0)
 ASM_PROC(FUN_551970)
@@ -1454,5 +1454,101 @@ extern "C" int __fastcall Car_ApplySetup(BYTE* self, void*, DWORD* p)
     if (n != 49)
         World_Fatal(s_67a04c);
     return n;
+}
+
+
+// ---------------------------------------------------------------------------
+#include "x87.h"
+extern "C" void FUN_5c32f0(); KING_ALIAS("_FUN_5c32f0", "@List_Add6@20")
+extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_530070(); KING_ALIAS("_FUN_530070", "@Controls_ActionState@12")
+extern "C" void FUN_5300b0(); KING_ALIAS("_FUN_5300b0", "@Controls_Axis@12")
+extern "C" void FUN_589490(); KING_ALIAS("_FUN_589490", "@BodyLevel_Step@16")
+ASM_PROC(FUN_5427a0)
+ASM_PROC(FUN_501b90)
+ASM_PROC(FUN_555550)
+ASM_VAR(AsmLabel, g_carTypes697914, $L_697914)
+ASM_VAR(AsmLabel, g_controls6d1db8, $L_6d1db8)
+ASM_VAR(AsmLabel, s_679ef8, $L_679ef8)
+ASM_VAR(AsmLabel, s_67a3dc, $L_67a3dc)
+
+static double Car_Level(BYTE* self, int off, int scale)
+{
+    return x87_fabs(F(float, F(BYTE*, self, 21600), off)) * F(float, self, scale);
+}
+
+// [FUN_555b10] |level 15532| * +10468
+extern "C" double __fastcall Car_Level1(BYTE* self, void*) { return Car_Level(self, 15532, 10468); }
+// [FUN_555b50] |level 15552| * +10472
+extern "C" double __fastcall Car_Level2(BYTE* self, void*) { return Car_Level(self, 15552, 10472); }
+// [FUN_555d80] |level 15572| * +10476
+extern "C" double __fastcall Car_Level3(BYTE* self, void*) { return Car_Level(self, 15572, 10476); }
+
+// [FUN_556110] vtbl+128 with the car type's three floats at +104
+extern "C" void __fastcall Car_ApplyTypeVec(BYTE* self, void*)
+{
+    BYTE* t = (BYTE*)g_carTypes697914 + F(int, self, 10420) * 2416;
+    CallVirt(self, 128, F(float, t, 104), F(float, t, 108), F(float, t, 112));
+}
+
+// [FUN_543d10] registers the car with the scene's list x (+8300), notes the time and finds object 679ef8
+extern "C" void __fastcall Car_Register(BYTE* self, void*, BYTE* x)
+{
+    CallThis(FUN_5427a0, self);
+    F(int, self, 10096) = F(int, self, 384);
+    F(int, self, 384)++;
+    BYTE* r = CallThis<BYTE*>(FUN_5c32f0, x + 8300, F(int, self, 10096), self + 10104, F(int, self, 10092));
+    F(BYTE*, self, 3484 + F(int, self, 3520) * 4) = r;
+    F(int, self, 3520)++;
+    F(float, self, 10932) = (float)CallC<double>(FUN_4e27a5);
+    F(BYTE*, self, 10920) = CallC<BYTE*>(FUN_5ef2b0, 0, (char*)s_679ef8);
+}
+
+// [FUN_555da0] steps the four body levels (+9536 parts 1, 0, 3, 2) by x
+extern "C" void __fastcall Car_StepLevels(BYTE* self, void*, DWORD x)
+{
+    BYTE* b = F(BYTE*, self, 9536);
+    CallThis(FUN_589490, b + 20, x, F(DWORD, self, 10436));
+    CallThis(FUN_589490, F(BYTE*, self, 9536), x, F(DWORD, self, 10432));
+    CallThis(FUN_589490, F(BYTE*, self, 9536) + 60, x, F(DWORD, self, 10444));
+    CallThis(FUN_589490, F(BYTE*, self, 9536) + 40, x, F(DWORD, self, 10440));
+}
+
+// [FUN_555b30] 501b90(1, x, +10472) on +21600
+extern "C" int __fastcall Car_Set501b90a(BYTE* self, void*, DWORD x)
+{
+    return CallThis<int>(FUN_501b90, F(BYTE*, self, 21600), 1, x, F(DWORD, self, 10472));
+}
+
+// [FUN_555d60] 501b90(2, x, +10476) on +21600
+extern "C" int __fastcall Car_Set501b90b(BYTE* self, void*, DWORD x)
+{
+    return CallThis<int>(FUN_501b90, F(BYTE*, self, 21600), 2, x, F(DWORD, self, 10476));
+}
+
+// [FUN_53b400] control action 0 is on
+extern "C" int __cdecl Action0() { return CallThis<int>(FUN_530070, g_controls6d1db8, 0) != 0; }
+// [FUN_53b420] control action 3 is on
+extern "C" int __cdecl Action3() { return CallThis<int>(FUN_530070, g_controls6d1db8, 3) != 0; }
+// [FUN_53b440] control action 4 is on
+extern "C" int __cdecl Action4() { return CallThis<int>(FUN_530070, g_controls6d1db8, 4) != 0; }
+// [FUN_53b460] control action 1 is on
+extern "C" int __cdecl Action1() { return CallThis<int>(FUN_530070, g_controls6d1db8, 1) != 0; }
+// [FUN_53b480] control action 2 is on
+extern "C" int __cdecl Action2() { return CallThis<int>(FUN_530070, g_controls6d1db8, 2) != 0; }
+// [FUN_53b4b0] control axis 0
+extern "C" int __cdecl Axis0() { return CallThis<int>(FUN_5300b0, g_controls6d1db8, 0); }
+
+// [FUN_557400] vtbl+144 of the part at +16 with (x, 67a3dc)
+extern "C" int __fastcall Car_Part16Call(BYTE* self, void*, DWORD x)
+{
+    return CallVirt<int>(self + 16, 144, x, (char*)s_67a3dc);
+}
+
+// [FUN_5573e0] 555550 on this
+extern "C" int __fastcall Car_Call555550(BYTE* self, void*, DWORD x)
+{
+    return CallThis<int>(FUN_555550, self, x);
 }
 
