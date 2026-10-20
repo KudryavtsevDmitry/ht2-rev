@@ -1761,3 +1761,16 @@ extern "C" void __fastcall Ren5bcf60_Destroy(BYTE* s)
     operator delete(F(void*, s, 12));
     operator delete(F(void*, s, 8));
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_5bcf60(); KING_ALIAS("_FUN_5bcf60", "@Ren5bcf60_Destroy@4")
+// [$L_5bcf40]
+extern "C" BYTE* __fastcall Dtor5bcf40_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5bcf60, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

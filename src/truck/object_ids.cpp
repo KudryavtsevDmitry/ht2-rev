@@ -198,3 +198,16 @@ extern "C" void __fastcall MovingItem_Destroy(BYTE* s)
     CallThis(FUN_592cf0, s ? s + 376 : 0);
     CallThis(FUN_5c6210, s);
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_57d490(); KING_ALIAS("_FUN_57d490", "@MovingItem_Destroy@4")
+// [$L_57cfa0]
+extern "C" BYTE* __fastcall Dtor57cfa0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_57d490, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

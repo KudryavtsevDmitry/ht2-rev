@@ -4640,3 +4640,136 @@ extern "C" BYTE* __fastcall ShellRace523270_Construct(BYTE* s, void*, BYTE* pare
         F(DWORD, s, slot[k]) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(tn[k][0], tn[k][1]));
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+ASM_PROC(FUN_519740)
+// [$L_50ff70]
+extern "C" BYTE* __fastcall Dtor50ff70_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_519740, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_511800(); KING_ALIAS("_FUN_511800", "@Screen511800_Destroy@8")
+// [$L_5117e0]
+extern "C" BYTE* __fastcall Dtor5117e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_511800, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_5154c0(); KING_ALIAS("_FUN_5154c0", "@Shell5154c0_Destroy@8")
+// [$L_514790]
+extern "C" BYTE* __fastcall Dtor514790_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5154c0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_517d40(); KING_ALIAS("_FUN_517d40", "@Shell517d40_Destroy@8")
+// [$L_517a20]
+extern "C" BYTE* __fastcall Dtor517a20_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_517d40, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_51e000(); KING_ALIAS("_FUN_51e000", "@Shell51e000_Destroy@8")
+// [$L_51dfe0]
+extern "C" BYTE* __fastcall Dtor51dfe0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_51e000, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_51e730(); KING_ALIAS("_FUN_51e730", "@Shell51e730_Destroy@8")
+// [$L_51e710]
+extern "C" BYTE* __fastcall Dtor51e710_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_51e730, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_51f360(); KING_ALIAS("_FUN_51f360", "@Screen51f360_Destroy@8")
+// [$L_51f340]
+extern "C" BYTE* __fastcall Dtor51f340_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_51f360, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_520580(); KING_ALIAS("_FUN_520580", "@Screen520580_Destroy@8")
+// [$L_520560]
+extern "C" BYTE* __fastcall Dtor520560_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_520580, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_521410(); KING_ALIAS("_FUN_521410", "@Screen521410_Destroy@8")
+// [$L_5213f0]
+extern "C" BYTE* __fastcall Dtor5213f0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_521410, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_524510(); KING_ALIAS("_FUN_524510", "@Screen524510_Destroy@8")
+// [$L_5244f0]
+extern "C" BYTE* __fastcall Dtor5244f0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_524510, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_525e20(); KING_ALIAS("_FUN_525e20", "@Screen525e20_Destroy@8")
+// [$L_525e00]
+extern "C" BYTE* __fastcall Dtor525e00_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_525e20, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_526ba0(); KING_ALIAS("_FUN_526ba0", "@Screen526ba0_Destroy@8")
+// [$L_526b80]
+extern "C" BYTE* __fastcall Dtor526b80_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_526ba0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_527cd0(); KING_ALIAS("_FUN_527cd0", "@Screen_Destruct@8")
+// [$L_527d00]
+extern "C" BYTE* __fastcall Dtor527d00_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_527cd0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

@@ -2422,3 +2422,26 @@ extern "C" void __fastcall Car_SendLamps(BYTE* s)
     }
     Car_Send(d, n);
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+ASM_PROC(FUN_544df0)
+// [$L_543de0]
+extern "C" BYTE* __fastcall Dtor543de0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_544df0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_55ebf0(); KING_ALIAS("_FUN_55ebf0", "@Truck55ebf0_Destroy@4")
+// [$L_55ebd0]
+extern "C" BYTE* __fastcall Dtor55ebd0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_55ebf0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

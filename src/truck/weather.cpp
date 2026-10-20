@@ -861,3 +861,36 @@ extern "C" BYTE* __fastcall Gauge_Construct(BYTE* s, void*, int a1, int a2, BYTE
     }
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_5a47f0(); KING_ALIAS("_FUN_5a47f0", "@Wea5a47f0_Destroy@4")
+// [$L_5a46e0]
+extern "C" BYTE* __fastcall Dtor5a46e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5a47f0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_5a4e90(); KING_ALIAS("_FUN_5a4e90", "@Wea5a4e90_Destroy@4")
+// [$L_5a4c80]
+extern "C" BYTE* __fastcall Dtor5a4c80_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5a4e90, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+ASM_PROC(FUN_5a4ff0)
+// [$L_5a5250]
+extern "C" BYTE* __fastcall Dtor5a5250_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5a4ff0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

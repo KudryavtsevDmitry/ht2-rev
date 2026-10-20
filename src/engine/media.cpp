@@ -2253,3 +2253,26 @@ extern "C" void __fastcall ListBox_AddSorted(BYTE* s, void*, const char* text)
         F(WORD, F(BYTE*, s, 340), 296)++;
     CallThis(FUN_5c0c20, s, 0);
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_5c6210(); KING_ALIAS("_FUN_5c6210", "@NetItem_Destroy@4")
+// [$L_5c6060]
+extern "C" BYTE* __fastcall Dtor5c6060_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5c6210, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_5cf370(); KING_ALIAS("_FUN_5cf370", "@Med5cf370_Destroy@4")
+// [$L_5cf2f0]
+extern "C" BYTE* __fastcall Dtor5cf2f0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5cf370, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

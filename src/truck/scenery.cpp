@@ -888,3 +888,46 @@ extern "C" void __fastcall Scenery_Destroy(BYTE* s)
     Part_Release(s ? s + 9528 : 0, 0);
     CallThis(FUN_58b870, s);
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_52bb40(); KING_ALIAS("_FUN_52bb40", "@Scenery_Destroy@4")
+// [$L_52b6d0]
+extern "C" BYTE* __fastcall Dtor52b6d0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_52bb40, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+ASM_PROC(FUN_52d6f0)
+// [$L_52d3e0]
+extern "C" BYTE* __fastcall Dtor52d3e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_52d6f0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+ASM_PROC(FUN_52dec0)
+// [$L_52da10]
+extern "C" BYTE* __fastcall Dtor52da10_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_52dec0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+ASM_PROC(FUN_52e520)
+// [$L_52e2e0]
+extern "C" BYTE* __fastcall Dtor52e2e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_52e520, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
