@@ -18,7 +18,7 @@ extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
 extern "C" void FUN_46b460(); KING_ALIAS("_FUN_46b460", "_Names_AdjustHeap")
 extern "C" void FUN_46b740(); KING_ALIAS("_FUN_46b740", "_Far_AdjustHeap")
 extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")
-ASM_PROC(FUN_46bf20)
+extern "C" void FUN_46bf20(); KING_ALIAS("_FUN_46bf20", "_Heap32_Adjust")
 extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
 extern "C" void FUN_46c190(); KING_ALIAS("_FUN_46c190", "_Heap504_Adjust")
 ASM_PROC(FUN_46ad50)
@@ -823,4 +823,25 @@ extern "C" int __cdecl Static68d308_Init(void)
 {
     CallC(q197_FUN_46d510);
     return Static68d308_AtExit();
+}
+
+// [FUN_46bf20] adjust_heap of 32-byte entries by the double at +8 (smallest first): the hole at hole moves down to
+// a leaf through the smaller children, then v (copied) is pushed back up from there
+extern "C" void __cdecl Heap32_Adjust(Entry32* first, int hole, int len, Entry32 v, int)
+{
+    int top = hole;
+    int child = 2 * hole + 2;
+    for (; child < len; child = 2 * child + 2) {
+        if (first[child].key > first[child - 1].key)
+            child--;
+        first[hole] = first[child];
+        hole = child;
+    }
+    if (child == len) {
+        first[hole] = first[child - 1];
+        hole = child - 1;
+    }
+    Entry32 c;
+    CallThis(FUN_458a40, &c, &v);
+    Heap32_Push(first, hole, top, c);
 }

@@ -193906,6 +193906,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 FUN_46bf20 PROC
 
             push EBX
@@ -193984,6 +193986,10 @@ $L_46bf8a::
             pop EBX
             ret 
 FUN_46bf20 ENDP
+ELSE
+EXTERN _Heap32_Adjust:PROC
+FUN_46bf20 TEXTEQU <_Heap32_Adjust>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
