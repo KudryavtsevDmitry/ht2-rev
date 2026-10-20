@@ -1192,7 +1192,7 @@ extern "C" int __cdecl Wheels_Mean(BYTE* wheels, int n, Vec3* pos, Vec3* nrm)
 
 ASM_PROC(FUN_4e28b0)
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")
-ASM_PROC(FUN_4fc930)
+extern "C" void FUN_4fc930(); KING_ALIAS("_FUN_4fc930", "@Body4fc930_SetMode@28")
 ASM_PROC(FUN_541ad0)
 ASM_PROC(FUN_551970)
 ASM_PROC(FUN_586df0)
@@ -2524,4 +2524,42 @@ extern "C" void __fastcall Veh548100_ReleaseAttachment(BYTE* s, void*)
     if (F(int, s, 9616))
         CallThis(FUN_552940, s);
     F(int, s, 9616) = 0;
+}
+
+// ---------------------------------------------------------------------------
+// Part frees and the item event handler.
+
+extern "C" void FUN_4e260c(); KING_ALIAS("_FUN_4e260c", "_World_Fatal")
+ASM_VAR(void*, g_q54_6ef250, $L_6ef250)
+ASM_VAR(AsmLabel, s_q54_679f8c, $L_679f8c)
+// [$L_543d90] frees the two parts (+0, +4) with their +12 blocks
+extern "C" void __fastcall Veh543d90_FreeParts(BYTE* s, void*)
+{
+    for (int k = 0; k < 2; k++) {
+        BYTE* p = F(BYTE*, s, k * 4);
+        if (p) {
+            if (F(void*, p, 12))
+                operator delete(F(void*, p, 12));
+            operator delete(p);
+        }
+    }
+}
+// [$L_545550] the item event handler: the 6ef250 hook first; items 3xxxxx with no thousands delete their +28
+// object (1), a missing one is fatal
+extern "C" int __cdecl Item_OnEvent(BYTE* it, int e)
+{
+    if (g_q54_6ef250) {
+        int r = ((int(__cdecl*)(BYTE*, int))g_q54_6ef250)(it, e);
+        if (r)
+            return r;
+    }
+    int id = F(int, it, 4);
+    if (id / 100000 == 3 && id % 100000 / 1000 == 0) {
+        if (F(BYTE*, it, 28)) {
+            CallVirt(F(BYTE*, it, 28), 0, 1);
+            return 1;
+        }
+        CallC(FUN_4e260c, (const char*)s_q54_679f8c);
+    }
+    return 0;
 }

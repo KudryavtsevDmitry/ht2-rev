@@ -973,3 +973,26 @@ extern "C" const char* __cdecl Sound_ErrorText(int kind)
     }
     return (const char*)s_q53_68480c;
 }
+
+// ---------------------------------------------------------------------------
+// The channel array.
+
+extern "C" void Dir_VecCtor(); KING_ALIAS("_Dir_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+ASM_VAR(WORD, g_q54_724168, $L_724168)
+ASM_VAR(AsmLabel, g_q54_604de0, $L_604de0)
+// [FUN_604d70] creates the n 24-byte channels (724164, count 724168) unless they exist: 1 when created
+extern "C" int __cdecl Channels_Create(int n)
+{
+    if (g_q52_724164)
+        return 0;
+    g_q54_724168 = (WORD)n;
+    int* p = (int*)operator new(n * 24 + 4);
+    BYTE* a = 0;
+    if (p) {
+        p[0] = n;
+        CallStd(Dir_VecCtor, p + 1, 24, n, (BYTE*)g_q54_604de0, (BYTE*)g_q52_604e00);
+        a = (BYTE*)(p + 1);
+    }
+    g_q52_724164 = a;
+    return a != 0;
+}

@@ -668,7 +668,7 @@ extern "C" void __cdecl Startup_FindCd()
 // ---------------------------------------------------------------------------
 extern "C" void FUN_568b10(); KING_ALIAS("_FUN_568b10", "_Helicopters_Init")
 ASM_PROC($L_5451c0)
-ASM_PROC($L_545550)
+extern "C" int __cdecl Item_OnEvent(BYTE* it, int e);    // vehicle.cpp
 ASM_PROC($L_52ebc0)
 ASM_PROC($L_52ee70)
 ASM_VAR(int, g_su67b2b8, $L_67b2b8)
@@ -685,7 +685,7 @@ extern "C" void __cdecl Obj_HookHandlers(BYTE* o)
     g_su6ef24c = F(void*, o, 2708);
     F(void*, o, 2708) = (void*)$L_5451c0;
     g_su6ef250 = F(void*, o, 2712);
-    F(void*, o, 2712) = (void*)$L_545550;
+    F(void*, o, 2712) = (void*)Item_OnEvent;
     if (!F(int, g_su6cec6c, 1316) && F(int, g_su6cec6c, 1300) <= 1)
         CallC(FUN_568b10, o);
     g_su6cf3a0 = F(void*, o, 2708);

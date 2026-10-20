@@ -1952,3 +1952,69 @@ extern "C" void __fastcall Wasm5975b0_FreeParts(BYTE* s, void*)
         F(BYTE*, s, 116) = 0;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Vector deleting destructors of the world objects.
+
+extern "C" void FUN_5a2ca0(); KING_ALIAS("_FUN_5a2ca0", "@WorldObj5a2ca0_Destroy@8")
+extern "C" void WObj_VecDtor(); KING_ALIAS("_WObj_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+// vector deleting destructor: flag 2 destroys the array (count before it), flag 1 frees it (pooled when single)
+static BYTE* WObj_VecDelete(BYTE* s, unsigned flags, int size, void (*dtor)())
+{
+    if (flags & 2) {
+        BYTE* blk = s - 4;
+        CallStd(WObj_VecDtor, s, size, F(int, s, -4), dtor);
+        if (flags & 1)
+            operator delete(blk);
+        return blk;
+    }
+    CallThis(dtor, s);
+    if (flags & 1)
+        CallC(FUN_5793f0, s);
+    return s;
+}
+// [$L_5a1820] vector deleting destructor (188-byte objects)
+extern "C" BYTE* __fastcall WObj5a1820_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 188, FUN_5a2a30);
+}
+// [$L_5a1c40] vector deleting destructor (192-byte objects)
+extern "C" BYTE* __fastcall WObj5a1c40_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 192, FUN_5a2a30);
+}
+// [$L_5a2060] vector deleting destructor (176-byte objects)
+extern "C" BYTE* __fastcall WObj5a2060_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 176, FUN_5a2a30);
+}
+// [$L_5a2a50] vector deleting destructor (180-byte objects)
+extern "C" BYTE* __fastcall WObj5a2a50_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 180, FUN_5a2a30);
+}
+// [$L_5a2cd0] vector deleting destructor (200-byte objects)
+extern "C" BYTE* __fastcall WObj5a2cd0_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 200, FUN_5a2ca0);
+}
+// [$L_5a30e0] vector deleting destructor (204-byte objects)
+extern "C" BYTE* __fastcall WObj5a30e0_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 204, FUN_5a2a30);
+}
+// [$L_5a3320] vector deleting destructor (196-byte objects)
+extern "C" BYTE* __fastcall WObj5a3320_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 196, FUN_5a2a30);
+}
+// [$L_5a3550] vector deleting destructor (164-byte objects)
+extern "C" BYTE* __fastcall WObj5a3550_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 164, FUN_5a2a30);
+}
+// [$L_5a3790] vector deleting destructor (212-byte objects)
+extern "C" BYTE* __fastcall WObj5a3790_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
+{
+    return WObj_VecDelete(s, flags, 212, FUN_5a2a30);
+}

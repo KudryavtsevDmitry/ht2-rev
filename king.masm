@@ -1432,6 +1432,7 @@ PUBLIC $L_702ea0, $L_721778, $L_723df4
 PUBLIC $L_604e00
 PUBLIC $L_674b20, $L_68480c, $L_684834, $L_68487c, $L_6848b8, $L_6848fc
 PUBLIC $L_684938, $L_684964, $L_684998
+PUBLIC $L_679f8c, $L_67f854, $L_702f58, $L_702f5c, $L_702f60
 
 ;===================================
 _TEXT SEGMENT
@@ -440018,6 +440019,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+IFDEF ASM_VEHICLE_PHYSICS
 FUN_4fc930 PROC
 
             push ESI
@@ -440071,6 +440074,10 @@ $L_4fc998           DWORD $L_4fc944
           DWORD $L_4fc953
           DWORD $L_4fc962
           DWORD $L_4fc962
+ELSE
+EXTERN @Body4fc930_SetMode@28:PROC
+FUN_4fc930 TEXTEQU <@Body4fc930_SetMode@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -520058,6 +520065,8 @@ $L_52fcc0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52fce0 PROC
 
             mov EDX,ECX
@@ -520122,6 +520131,10 @@ $L_52fd38::
             pop EBX
             ret 
 $L_52fce0 ENDP
+ELSE
+EXTERN @Scy52fce0_Construct@8:PROC
+$L_52fce0 TEXTEQU <@Scy52fce0_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -547888,6 +547901,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_543d90 PROC
 
             push ESI
@@ -547948,6 +547963,10 @@ $L_543dd3::
             nop
             nop
 $L_543d90 ENDP
+ELSE
+EXTERN @Veh543d90_FreeParts@8:PROC
+$L_543d90 TEXTEQU <@Veh543d90_FreeParts@8>
+ENDIF
 ; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
 IFDEF ASM_VEHICLE
 $L_543de0 PROC
@@ -549978,6 +549997,8 @@ $L_54553b::
             pop EBP
             ret 
 $L_545367 ENDP
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_545550 PROC
 
             mov EAX,DWORD PTR [$L_6ef250]
@@ -550043,6 +550064,10 @@ $L_5455c6::
             pop ESI
             ret 
 $L_545550 ENDP
+ELSE
+EXTERN _Item_OnEvent:PROC
+$L_545550 TEXTEQU <_Item_OnEvent>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -638159,6 +638184,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 $L_580ff0 PROC
 
             sub ESP,48
@@ -638207,6 +638234,10 @@ $L_581046::
             add ESP,48
             ret 
 $L_580ff0 ENDP
+ELSE
+EXTERN @Obj580ff0_Place@8:PROC
+$L_580ff0 TEXTEQU <@Obj580ff0_Place@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -685591,6 +685622,8 @@ ELSE
 EXTERN @Worobj5a17b0_Construct@4:PROC
 $L_5a17b0 TEXTEQU <@Worobj5a17b0_Construct@4>
 ENDIF
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a1820 PROC
 
             push EBX
@@ -685642,6 +685675,10 @@ $L_5a1870::
             pop EBX
             ret 4
 $L_5a1820 ENDP
+ELSE
+EXTERN @WObj5a1820_VecDeletingDestructor@12:PROC
+$L_5a1820 TEXTEQU <@WObj5a1820_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -686088,6 +686125,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a1c40 PROC
 
             push EBX
@@ -686139,6 +686178,10 @@ $L_5a1c90::
             pop EBX
             ret 4
 $L_5a1c40 ENDP
+ELSE
+EXTERN @WObj5a1c40_VecDeletingDestructor@12:PROC
+$L_5a1c40 TEXTEQU <@WObj5a1c40_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -686584,6 +686627,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2060 PROC
 
             push EBX
@@ -686635,6 +686680,10 @@ $L_5a20b0::
             pop EBX
             ret 4
 $L_5a2060 ENDP
+ELSE
+EXTERN @WObj5a2060_VecDeletingDestructor@12:PROC
+$L_5a2060 TEXTEQU <@WObj5a2060_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -687763,6 +687812,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2a50 PROC
 
             push EBX
@@ -687814,6 +687865,10 @@ $L_5a2aa0::
             pop EBX
             ret 4
 $L_5a2a50 ENDP
+ELSE
+EXTERN @WObj5a2a50_VecDeletingDestructor@12:PROC
+$L_5a2a50 TEXTEQU <@WObj5a2a50_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -688067,6 +688122,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a2cd0 PROC
 
             push EBX
@@ -688118,6 +688175,10 @@ $L_5a2d20::
             pop EBX
             ret 4
 $L_5a2cd0 ENDP
+ELSE
+EXTERN @WObj5a2cd0_VecDeletingDestructor@12:PROC
+$L_5a2cd0 TEXTEQU <@WObj5a2cd0_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -688562,6 +688623,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a30e0 PROC
 
             push EBX
@@ -688613,6 +688676,10 @@ $L_5a3130::
             pop EBX
             ret 4
 $L_5a30e0 ENDP
+ELSE
+EXTERN @WObj5a30e0_VecDeletingDestructor@12:PROC
+$L_5a30e0 TEXTEQU <@WObj5a30e0_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -688840,6 +688907,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a3320 PROC
 
             push EBX
@@ -688891,6 +688960,10 @@ $L_5a3370::
             pop EBX
             ret 4
 $L_5a3320 ENDP
+ELSE
+EXTERN @WObj5a3320_VecDeletingDestructor@12:PROC
+$L_5a3320 TEXTEQU <@WObj5a3320_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -689118,6 +689191,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a3550 PROC
 
             push EBX
@@ -689169,6 +689244,10 @@ $L_5a35a0::
             pop EBX
             ret 4
 $L_5a3550 ENDP
+ELSE
+EXTERN @WObj5a3550_VecDeletingDestructor@12:PROC
+$L_5a3550 TEXTEQU <@WObj5a3550_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -689395,6 +689474,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a3790 PROC
 
             push EBX
@@ -689446,6 +689527,10 @@ $L_5a37e0::
             pop EBX
             ret 4
 $L_5a3790 ENDP
+ELSE
+EXTERN @WObj5a3790_VecDeletingDestructor@12:PROC
+$L_5a3790 TEXTEQU <@WObj5a3790_VecDeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -744571,6 +744656,8 @@ $L_5c2d70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c2e60 PROC
 
             push ESI
@@ -744631,6 +744718,10 @@ $L_5c2edb::
             mov DWORD PTR [$L_702f94],0
             ret 
 FUN_5c2e60 ENDP
+ELSE
+EXTERN _Media_StartThread:PROC
+FUN_5c2e60 TEXTEQU <_Media_StartThread>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -775243,6 +775334,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 $L_5d4b90 PROC
 
             mov ECX,DWORD PTR [ESP+8]
@@ -775312,6 +775405,10 @@ $L_5d4c07::
             pop ESI
             ret 8
 $L_5d4b90 ENDP
+ELSE
+EXTERN _Dd_MatchMode@8:PROC
+$L_5d4b90 TEXTEQU <_Dd_MatchMode@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -784772,6 +784869,8 @@ EXTERN _Fw_Enumerate5d94d0:PROC
 FUN_5d9470 TEXTEQU <_Fw_Enumerate5d94d0>
 ENDIF
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5d94d0 PROC
 
             push EDI
@@ -784831,6 +784930,10 @@ $L_5d952b::
             pop EDI
             ret 
 $L_5d94d0 ENDP
+ELSE
+EXTERN _Node_ClearLinkByName:PROC
+$L_5d94d0 TEXTEQU <_Node_ClearLinkByName>
+ENDIF
 ALIGN 16
 ; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 IFDEF ASM_FRAMEWORK
@@ -867560,6 +867663,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604d70 PROC
 
             mov EAX,DWORD PTR [$L_724164]
@@ -867610,6 +867715,10 @@ $L_604dc8::
             setne AL
             ret 
 FUN_604d70 ENDP
+ELSE
+EXTERN _Channels_Create:PROC
+FUN_604d70 TEXTEQU <_Channels_Create>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

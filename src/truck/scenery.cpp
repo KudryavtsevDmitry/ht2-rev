@@ -947,3 +947,28 @@ extern "C" void __fastcall Scy52e520_Destruct(BYTE* s, void*)
     F(void*, s, 376) = g_q47_64f148;
     CallThis(FUN_52dec0, s);
 }
+
+// ---------------------------------------------------------------------------
+// A scenery record constructor.
+
+// [$L_52fce0] constructor: ten 12-byte entries (+592), 590 zero bytes, 47 zero words at +712, then the flags
+extern "C" BYTE* __fastcall Scy52fce0_Construct(BYTE* s, void*)
+{
+    for (int k = 0; k < 10; k++) {
+        F(float, s, 592 + k * 12) = 0.5f;
+        F(float, s, 596 + k * 12) = 1.0f;
+        F(int, s, 600 + k * 12) = 0;
+    }
+    for (int k = 0; k < 590; k++)
+        s[k] = 0;
+    for (int k = 0; k < 47; k++)
+        F(int, s, 712 + k * 4) = 0;
+    for (int k = 0; k < 10; k++) {
+        F(int, s, 592 + k * 12) = 0;
+        F(int, s, 600 + k * 12) = 0;
+    }
+    static const int ones[] = {712, 876, 716, 720, 724, 728, 796, 808, 812, 816, 820};
+    for (int k = 0; k < 11; k++)
+        F(int, s, ones[k]) = 1;
+    return s;
+}

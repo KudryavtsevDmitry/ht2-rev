@@ -408,3 +408,32 @@ extern "C" void __cdecl Dd_FillRect(int x0, int y0, unsigned x1, unsigned y1, DW
         g_ddLocked2 = (BYTE*)desc[9];
 }
 
+
+// ---------------------------------------------------------------------------
+// Display mode matching.
+
+// [$L_5d4b90] display mode enumeration: marks the request r (+24) when the mode m has its size and the depth
+// (1: palette, 2: 16 bit, 4: 32 bit); 0 stops
+extern "C" int __stdcall Dd_MatchMode(BYTE* m, int* r)
+{
+    if (*(int*)(m + 12) != r[0] || *(int*)(m + 8) != r[1])
+        return 1;
+    switch (r[2]) {
+    case 1:
+        if (!(m[76] & 32))
+            return 1;
+        r[6] = 1;
+        return 0;
+    case 2:
+        if (!(m[76] & 64) || *(int*)(m + 84) != 16)
+            return 1;
+        r[6] = 1;
+        return 1;
+    case 4:
+        if (!(m[76] & 64) || *(int*)(m + 84) != 32)
+            return 1;
+        r[6] = 1;
+        return 0;
+    }
+    return 1;
+}

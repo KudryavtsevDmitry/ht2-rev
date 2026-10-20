@@ -211,3 +211,22 @@ extern "C" BYTE* __fastcall Dtor57cfa0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Object placement.
+
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+extern "C" void FUN_4e5bf5(); KING_ALIAS("_FUN_4e5bf5", "_Obj_Lookup4e5b22")
+// [$L_580ff0] places the object: its world matrix (+692 by +500), the cell looked up from it (or +800 after slot
+// 28), then slot 64 with the matrix and the cell
+extern "C" void __fastcall Obj580ff0_Place(BYTE* s, void*)
+{
+    float m[12];
+    CallC(FUN_5aba40, m, s + 692, s + 500);
+    int c = CallC<int>(FUN_4e5bf5, F(int, s, 800), s + 536, m + 8, s + 1132);
+    if (!c) {
+        c = F(int, s, 800);
+        CallVirt(s, 28, 1);
+    }
+    CallVirt(s, 64, m, c);
+}
