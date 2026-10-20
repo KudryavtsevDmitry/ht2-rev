@@ -2419,3 +2419,36 @@ extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, in
         CallC(FUN_605000, F(int, s, 24), (float)(v * g_q182_64da58), (float)(p * g_q182_64da58), a3);
     F(int, s, 12) = g_q182_723b38;
 }
+
+ASM_PROC($L_5ffc60)
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+// [$L_5ff150] destroys the static vector 723d28
+extern "C" void __cdecl Static723d28_Destroy(void) { CallThis($L_5ffc60, (void*)g_q47_723d28); }
+// [$L_5ff140] destroys it at exit
+extern "C" int __cdecl Static723d28_AtExit(void) { return atexit(Static723d28_Destroy); }
+// [$L_5ff110] the static initializer of 723d28
+extern "C" int __cdecl Static723d28_Init(void)
+{
+    Static723d28_Construct();
+    return Static723d28_AtExit();
+}
+// [$L_5ff240] deletes the sound lock
+extern "C" void __cdecl Sound_DeleteLock(void) { DeleteCriticalSection(&g_sc723b40); }
+// [$L_5ff230] deletes it at exit
+extern "C" int __cdecl Sound_LockAtExit(void) { return atexit(Sound_DeleteLock); }
+// [$L_5ff210] the static initializer of the sound lock
+extern "C" int __cdecl Sound_LockInit(void)
+{
+    Sound_InitLock();
+    return Sound_LockAtExit();
+}
+// [$L_5ff5d0] frees the static vector 723d38
+extern "C" void __cdecl Static723d38_Destroy(void) { CallThis(FUN_404420, (void*)g_q47_723d38); }
+// [$L_5ff5c0] frees it at exit
+extern "C" int __cdecl Static723d38_AtExit(void) { return atexit(Static723d38_Destroy); }
+// [$L_5ff590] the static initializer of 723d38
+extern "C" int __cdecl Static723d38_Init(void)
+{
+    Static723d38_Construct();
+    return Static723d38_AtExit();
+}

@@ -423,3 +423,16 @@ extern "C" int __fastcall GridTask_Alloc(BYTE* self,void*,int n,int m)
     CallC(FUN_60aad0,2289444628u,g_topError,g_grdFile,240,g_topDate);
     return 0;
 }
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void __cdecl Grid_Reset725d28();
+// [$L_60c2a0] nothing to do at exit
+extern "C" void __cdecl Grid725d28_Destroy(void) {}
+// [$L_60c290] registers it at exit
+extern "C" int __cdecl Grid725d28_AtExit(void) { return atexit(Grid725d28_Destroy); }
+// [$L_60c270] the static initializer of 725d28
+extern "C" int __cdecl Grid725d28_Init(void)
+{
+    Grid_Reset725d28();
+    return Grid725d28_AtExit();
+}
