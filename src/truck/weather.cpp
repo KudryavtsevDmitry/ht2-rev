@@ -935,7 +935,7 @@ extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o)
     return 0;
 }
 
-ASM_PROC(FUN_5aa4f0)
+extern "C" void FUN_5aa4f0(); KING_ALIAS("_FUN_5aa4f0", "@Water_Height@20")
 ASM_VAR(double, g_q175_64b5b8, $L_64b5b8)
 ASM_VAR(double, g_q175_64b780, $L_64b780)
 ASM_VAR(float, g_q175_64c250, $L_64c250)
@@ -958,4 +958,39 @@ extern "C" double __fastcall Surface_HeightNormal(BYTE* s, void*, float x, float
     out[1] = (float)ny;
     out[2] = (float)x87_sqrt(g_q175_64c250 - nx * nx - ny * ny);
     return h0;
+}
+
+ASM_VAR(float, g_q176_64c320, $L_64c320)
+ASM_VAR(double, g_q176_64d908, $L_64d908)
+ASM_VAR(double, g_q176_64b6e0, $L_64b6e0)
+ASM_VAR(double, g_q176_64d900, $L_64d900)
+// [FUN_5aa4f0] the wave height of water s at p: two waves along directions +4 and +16 (wave lengths +40, +48)
+// moving with the world time, each bending the other, amplitude +72
+extern "C" double __fastcall Water_Height(BYTE* s, void*, float px, float py, float pz)
+{
+    (void)pz;
+    float k = g_q176_64c320;
+    double t = F(double, F(BYTE*, s, 0), 2968);
+    float tf = (float)t;
+    const float* d = (const float*)(s + 4);
+    float ax = (float)(d[0] * k), ay = (float)(d[1] * k), az = (float)(d[2] * k);
+    float tax = (float)(ax * t), tay = (float)(ay * t);
+    double taz = t * az;
+    float qx = (float)(px - tax), qy = (float)(py - tay);
+    double dot1 = qy * d[1] + -taz * d[2];
+    dot1 = dot1 + qx * d[0];
+    double ph1 = dot1 * g_q176_64d908 / F(double, s, 40);
+    const float* e = (const float*)(s + 16);
+    double bx = e[0] * k;
+    float by = (float)(e[1] * k), bz = (float)(e[2] * k);
+    double bxt = bx * tf;
+    float byt = (float)(by * tf), bzt = (float)(bz * tf);
+    double rx = px - bxt, ry = py - byt;
+    double dot2 = ry * e[1] + -bzt * e[2];
+    dot2 = dot2 + rx * e[0];
+    double ph2 = dot2 * g_q176_64d908 / F(double, s, 48);
+    double a = F(double, s, 72);
+    double t1 = x87_sin(x87_sin(ph2 * g_q176_64b6e0) * g_q176_64d900 + ph1) * a;
+    double t2 = x87_sin(x87_sin(ph1 * g_q176_64b6e0) * g_q176_64d900 + ph2) * a;
+    return t1 + t2;
 }
