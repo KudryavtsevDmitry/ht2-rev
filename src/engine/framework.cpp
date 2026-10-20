@@ -3545,3 +3545,40 @@ extern "C" void __cdecl Tga_Write(BYTE* s, FILE* f)
     }
     CallC(FUN_5d41e0, p);
 }
+
+// ---------------------------------------------------------------------------
+// Resetting the world.
+
+extern "C" void FUN_5e4d30(); KING_ALIAS("_FUN_5e4d30", "@Resources_FreeAll@8")
+extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
+extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
+ASM_VAR(double, g_q105_64b658, $L_64b658)
+ASM_VAR(BYTE*, g_q105_721750, $L_721750)
+// [FUN_5e03c0] resets world s: frees its resources, clears the view and time state (fog 0.1, the start time
+// scaled by 64b658), the camera's +140 and the owned windows, runs the sound frame with sound on and calls the
+// reset methods (vtbl+124, +120)
+extern "C" void __fastcall World_Reset(BYTE* s)
+{
+    CallThis(FUN_5e4d30, s + 704);
+    if (BYTE* o = F(BYTE*, s, 484))
+        F(int, o, 8) = 0;
+    F(int, s, 2968) = 0;
+    F(int, s, 2972) = 0;
+    double t = CallC<double>(FUN_6037e0) * g_q105_64b658;
+    F(double, s, 2960) = 0.1;
+    F(double, s, 2976) = 0.1;
+    F(int, s, 600) = 0;
+    F(double, s, 592) = t;
+    static const short z[14] = {2888, 2872, 2880, 2896, 2952, 604, 2892, 2876, 2884, 2900, 2956, 2984, 460, 456};
+    for (int k = 0; k < 14; k++)
+        F(int, s, z[k]) = 0;
+    F(int, s, 544) = -1;
+    F(int, F(BYTE*, s, 468), 140) = 0;
+    if (F(int, g_q105_721750, 344))
+        CallC(FUN_5fd160);
+    F(int, s, 2988) = 0;
+    CallThis(FUN_5d3460, s + 2992);
+    CallVirt(s, 124);
+    CallVirt(s, 120);
+    F(int, s, 3024) = 0;
+}

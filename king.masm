@@ -1465,6 +1465,7 @@ PUBLIC $L_7208c0
 PUBLIC $L_694b0c, $L_6969a0, $L_6969d0, $L_696b98
 PUBLIC $L_64c790, $L_672788
 PUBLIC $L_6f54bc, $L_6f66b8
+PUBLIC $L_720128, $L_720148, $L_720728, $L_720870
 
 ;===================================
 _TEXT SEGMENT
@@ -734204,6 +734205,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5bd940 PROC
 
             sub ESP,16
@@ -734304,6 +734307,10 @@ $L_5bd9e0::
             add ESP,16
             ret 16
 FUN_5bd940 ENDP
+ELSE
+EXTERN @Ctl_DrawFace@24:PROC
+FUN_5bd940 TEXTEQU <@Ctl_DrawFace@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -783226,6 +783233,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 $L_5d8360 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -783333,6 +783342,10 @@ $L_5d844f::
             pop ESI
             ret 8
 $L_5d8360 ENDP
+ELSE
+EXTERN _Dd_TextureFormat@8:PROC
+$L_5d8360 TEXTEQU <_Dd_TextureFormat@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -797686,6 +797699,8 @@ FUN_5e02f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e03c0 PROC
 
             push ESI
@@ -797756,6 +797771,10 @@ $L_5e04a0::
             pop ESI
             ret 
 FUN_5e03c0 ENDP
+ELSE
+EXTERN @World_Reset@4:PROC
+FUN_5e03c0 TEXTEQU <@World_Reset@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

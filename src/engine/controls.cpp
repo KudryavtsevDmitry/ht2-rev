@@ -506,7 +506,7 @@ extern "C" int __fastcall Ctl_Contains(BYTE* self, void*, int x, int y)
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5bd940)
+extern "C" void FUN_5bd940(); KING_ALIAS("_FUN_5bd940", "@Ctl_DrawFace@24")
 extern "C" void FUN_5be5a0(); KING_ALIAS("_FUN_5be5a0", "@Ctl_Dispatch@16")
 extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
@@ -759,7 +759,7 @@ extern "C" void __fastcall Con_PictureSize(BYTE* s)
 extern "C" void FUN_5bd590(); KING_ALIAS("_FUN_5bd590", "_Gui_Reset702f24")
 extern "C" void FUN_5bd560(); KING_ALIAS("_FUN_5bd560", "_Ctl_SetOrigin")
 extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
-ASM_PROC(FUN_5bd940)
+extern "C" void FUN_5bd940(); KING_ALIAS("_FUN_5bd940", "@Ctl_DrawFace@24")
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
 
@@ -1129,4 +1129,27 @@ extern "C" BYTE* __fastcall ScrollBar_Construct(BYTE* s, void*, const char* name
     F(int, s, 340) = 1;
     F(BYTE, s, 24) = 1;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Drawing a control's face.
+
+// [FUN_5bd940] draws control s at x, y on dst in the style of its state: disabled (+40) +212, pressed or held
+// (+284 bit 2 with +276/+280) +248, else by +284 bits 0-1 (bit 0 only with focus) one of the four from +68
+extern "C" int __fastcall Ctl_DrawFace(BYTE* s, void*, BYTE* dst, int x, int y, int focus)
+{
+    int r[4] = {F(int, s, 44) + x, F(int, s, 48) + y, F(int, s, 52) + x, F(int, s, 56) + y};
+    const DWORD* st;
+    if (F(int, s, 40))
+        st = (const DWORD*)(s + 212);
+    else if ((F(int, s, 284) & 4) && (F(int, s, 280) || F(int, s, 276)))
+        st = (const DWORD*)(s + 248);
+    else {
+        int k = F(int, s, 284);
+        if (!focus)
+            k &= 2;
+        st = (const DWORD*)(s + 68 + (k & 3) * 36);
+    }
+    Ctl_DrawFrame(dst, r, F(DWORD, s, 32), st[0], st[1], st[2], st[3], st[4], st[5], st[6], (BYTE*)st[7], st[8]);
+    return 0;
 }

@@ -1498,7 +1498,7 @@ extern "C" void __fastcall Media_Call5cc680(void* self, void*, int a, int b, BYT
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
-ASM_PROC(FUN_5e03c0)
+extern "C" void FUN_5e03c0(); KING_ALIAS("_FUN_5e03c0", "@World_Reset@4")
 ASM_VAR(AsmLabel, g_vt64d81c, $L_64d81c)
 
 // [FUN_5c4940] deletes the 3920 list (count +7920) from the end, resets the state and runs 5e03c0
