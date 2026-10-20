@@ -648,7 +648,7 @@ int __cdecl fseek(FILE* f, long off, int origin);
 ASM_PROC(FUN_50b620)    // DMat4: determinant
 extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
 ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
-ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 extern "C" void FUN_4e1320(); KING_ALIAS("_FUN_4e1320", "_Startup_FindCd")
@@ -1425,7 +1425,7 @@ ASM_VAR(char, g_music696750, $L_696750)
 ASM_VAR(char, g_6f68b0s, $L_6f68b0)
 extern "C" void FUN_5fcd40(); KING_ALIAS("_FUN_5fcd40", "_Sound_SetVolume")
 extern "C" void FUN_5ffb20(); KING_ALIAS("_FUN_5ffb20", "_Obj723d44_Delete")
-ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")
 extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
 extern "C" void FUN_598d80(); KING_ALIAS("_FUN_598d80", "@Wasm_598d80@8")
@@ -1870,7 +1870,7 @@ extern "C" void FUN_527ea0(); KING_ALIAS("_FUN_527ea0", "_Carat_SetView")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 extern "C" __declspec(dllimport) void __stdcall CoTaskMemFree(void* p);
 struct GsStatStg { WCHAR* pwcsName; DWORD rest[17]; };    // STATSTG
-ASM_PROC(FUN_5b6bf0)    // surface: prepare
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")    // surface: prepare
 extern "C" void FUN_5d8460(); KING_ALIAS("_FUN_5d8460", "_Dd_ChooseTextureFormat")
 ASM_PROC($L_5d7b90)     // the video mode dialog (8 args)
 ASM_PROC($L_5d7c20)     // tries a video mode (w, h, cres, flags, 3 outs)
@@ -2124,7 +2124,7 @@ extern "C" BYTE* __cdecl Rec128_Combine(BYTE* out, BYTE* a, int b)
 // ---------------------------------------------------------------------------
 // Small virtual methods of the shell screens and their static initializers.
 
-ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5c0020(); KING_ALIAS("_FUN_5c0020", "@List_DrawAt@12")
 extern "C" void FUN_5d8610(); KING_ALIAS("_FUN_5d8610", "@Win_Activate@8")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
@@ -5878,7 +5878,7 @@ extern "C" void __fastcall Shell_SetMode(BYTE* s, void*, int m)
 // Starting a game.
 
 extern "C" void FUN_512ea0(); KING_ALIAS("_FUN_512ea0", "_Shell_SetVideoMode")
-ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_510a10(); KING_ALIAS("_FUN_510a10", "_Shell_LoadScene")
 extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
 extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")

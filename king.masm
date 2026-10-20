@@ -721641,6 +721641,8 @@ EXTERN @Surface_Present@8:PROC
 FUN_5b6b10 TEXTEQU <@Surface_Present@8>
 ENDIF
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b6bf0 PROC
 
             sub ESP,40
@@ -721891,6 +721893,10 @@ $L_5b6df4::
             add ESP,40
             ret 
 FUN_5b6bf0 ENDP
+ELSE
+EXTERN @Surface_Prepare@4:PROC
+FUN_5b6bf0 TEXTEQU <@Surface_Prepare@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
