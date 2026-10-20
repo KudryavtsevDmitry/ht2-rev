@@ -994,3 +994,49 @@ extern "C" double __fastcall Water_Height(BYTE* s, void*, float px, float py, fl
     double t2 = x87_sin(x87_sin(ph1 * g_q176_64b6e0) * g_q176_64d900 + ph2) * a;
     return t1 + t2;
 }
+
+ASM_VAR(float, g_q177_64c258, $L_64c258)
+// [FUN_5a8c20] the colour at x of the gradient a (at f0), b (midway), c (at f1) into out
+extern "C" void __cdecl Gradient3(const float* a, const float* b, const float* c, float f0, float x, float f1,
+                                  float* out)
+{
+    double mid = (f0 + f1) * g_q177_64c258;
+    if (!(x <= f1)) {
+        memcpy(out, c, 12);
+        return;
+    }
+    if (!(x >= f0)) {
+        memcpy(out, a, 12);
+        return;
+    }
+    if (x > mid) {
+        double u = (x - mid) / (f1 - mid), w = g_q175_64c250 - u;
+        for (int k = 0; k < 3; k++)
+            out[k] = (float)(w * b[k] + u * c[k]);
+    } else {
+        double u = (mid - x) / (mid - f0), w = g_q175_64c250 - u;
+        for (int k = 0; k < 3; k++)
+            out[k] = (float)(u * a[k] + w * b[k]);
+    }
+}
+
+ASM_VAR(double, g_q178_64f398, $L_64f398)
+ASM_VAR(double, g_q178_64b840, $L_64b840)
+ASM_VAR(double, g_q178_64b678, $L_64b678)
+ASM_VAR(double, g_q178_64d338, $L_64d338)
+// [FUN_5a8da0] the sky colour at height x into out from the colour table s (two 3-colour gradients, the second
+// set at +48; the middle colours 1 or 3 by half day a2) mixed by t; mode 1 uses the other height range
+extern "C" void __cdecl Sky_Color(float x, float a2, float t, float* out, BYTE* s, int mode)
+{
+    double hi = g_q178_64f398, lo = g_q178_64b840;
+    if (mode == 1) {
+        hi = g_q178_64b678;
+        lo = g_q178_64d338;
+    }
+    int m = a2 <= g_q176_64b6e0 || !(a2 > g_q176_64b6e0) ? 1 : 3;
+    float f0 = (float)hi, f1 = (float)lo;
+    float c1[3], c2[3];
+    Gradient3((const float*)s, (const float*)(s + m * 12), (const float*)(s + 24), f0, x, f1, c1);
+    Gradient3((const float*)(s + 48), (const float*)(s + 48 + m * 12), (const float*)(s + 72), f0, x, f1, c2);
+    Color_Lerp(c1, c2, t, out);
+}

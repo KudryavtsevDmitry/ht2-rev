@@ -1491,6 +1491,7 @@ PUBLIC $L_6ef260
 PUBLIC $L_67d494
 PUBLIC $L_67d420, $L_67d434
 PUBLIC $L_64d900, $L_64d908
+PUBLIC $L_64d338, $L_64f398
 
 ;===================================
 _TEXT SEGMENT
@@ -699358,6 +699359,8 @@ FUN_5a89a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a8c20 PROC
 
             fld DWORD PTR [ESP+16]
@@ -699465,6 +699468,10 @@ $L_5a8cdc::
             fstp DWORD PTR [EDX+8]
             ret 
 FUN_5a8c20 ENDP
+ELSE
+EXTERN _Gradient3:PROC
+FUN_5a8c20 TEXTEQU <_Gradient3>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -699533,6 +699540,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a8da0 PROC
 
             mov EAX,DWORD PTR [ESP+24]
@@ -699616,6 +699625,10 @@ $L_5a8de6::
             add ESP,24
             ret 
 FUN_5a8da0 ENDP
+ELSE
+EXTERN _Sky_Color:PROC
+FUN_5a8da0 TEXTEQU <_Sky_Color>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
