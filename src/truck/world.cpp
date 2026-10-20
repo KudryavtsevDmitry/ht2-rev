@@ -1097,7 +1097,22 @@ extern "C" void __cdecl Dump_Text(const char* text)
 }
 
 
-ASM_PROC(FUN_4e4aef)
+extern "C" void FUN_4e4aef(); KING_ALIAS("_FUN_4e4aef", "_World_InitSideDirections")
 
 // [$L_4e4ae5]
 extern "C" void __cdecl World_4e4ae5() { CallC(FUN_4e4aef); }
+
+// ---------------------------------------------------------------------------
+// Small setup procs: static vectors, a light array, the race start, a stream read.
+
+extern "C" void FUN_4bdef0(); KING_ALIAS("_FUN_4bdef0", "@Vec3_SetThis@20")
+extern "C" void FUN_5ab400(); KING_ALIAS("_FUN_5ab400", "_Vec3_Normalized")
+ASM_VAR(AsmLabel, g_q48_696e28, $L_696e28)
+ASM_VAR(AsmLabel, g_q48_696e38, $L_696e38)
+// [FUN_4e4aef] the static directions 696e28 = normalized (-1, 0.5, 0) and 696e38 = normalized (1, 0.5, 0)
+extern "C" void __cdecl World_InitSideDirections(void)
+{
+    float a[3], b[3];
+    CallC(FUN_5ab400, (void*)g_q48_696e28, CallThis<float*>(FUN_4bdef0, a, -1.0f, 0.5f, 0.0f));
+    CallC(FUN_5ab400, (void*)g_q48_696e38, CallThis<float*>(FUN_4bdef0, b, 1.0f, 0.5f, 0.0f));
+}

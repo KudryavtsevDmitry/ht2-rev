@@ -100,7 +100,7 @@ void __fastcall Thread_Destroy(BYTE* self, void*)
 ASM_VAR(int, g_tscUncalibrated, $L_6843e0)       // 1 until FUN_603f30 ran
 ASM_VAR(double, g_tscScale, $L_6843d8)           // milliseconds per tick
 ASM_VAR(const double, k_2pow32, $L_652df0)
-ASM_PROC(FUN_60573b)    // rdtsc into a 64-bit value
+extern "C" void FUN_60573b(); KING_ALIAS("_FUN_60573b", "_Cpu_ReadTsc")    // rdtsc into a 64-bit value
 extern "C" int __cdecl Tsc_Calibrate(int);
 
 // [FUN_603ec0] the time stamp counter in milliseconds (calibrated on first use)

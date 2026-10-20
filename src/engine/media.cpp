@@ -2009,7 +2009,7 @@ extern "C" void __fastcall Media_Destroy(BYTE* s)
 // Constructors, destructors and setup (exception frames dropped).
 
 ASM_PROC(FUN_5dc4d0)
-ASM_PROC(FUN_5c2f10)
+extern "C" void FUN_5c2f10(); KING_ALIAS("_FUN_5c2f10", "@Lights5c2f10_Construct@12")
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
 extern "C" void FUN_5e3150(); KING_ALIAS("_FUN_5e3150", "@CGameApp_Construct@16")
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
@@ -2299,4 +2299,18 @@ extern "C" void __fastcall Med5cdcb0_Destruct(BYTE* s, void*)
     F(BYTE, s, 40) |= 1;
     F(void*, s, 0) = g_q47_651d64;
     CallThis(FUN_5f1a70, s);
+}
+
+// ---------------------------------------------------------------------------
+// Small setup procs: static vectors, a light array, the race start, a stream read.
+
+extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
+extern "C" void Med_VecCtor(); KING_ALIAS("_Med_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+ASM_VAR(AsmLabel, g_q48_5c2f40, $L_5c2f40)
+// [FUN_5c2f10] constructor (x): ten 32-byte lights, x at +320
+extern "C" BYTE* __fastcall Lights5c2f10_Construct(BYTE* s, void*, int x)
+{
+    CallStd(Med_VecCtor, s, 32, 10, (BYTE*)g_q48_5c2f40, FUN_5ce630);
+    F(int, s, 320) = x;
+    return s;
 }

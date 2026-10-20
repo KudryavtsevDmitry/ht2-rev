@@ -2486,3 +2486,22 @@ extern "C" void __cdecl World_ResetAll(void)
     g_q47_6ef200 = 0;
     World_ResetState(g_vh696cb0, 0);
 }
+
+// ---------------------------------------------------------------------------
+// Small setup procs: static vectors, a light array, the race start, a stream read.
+
+extern "C" void FUN_57ca00(); KING_ALIAS("_FUN_57ca00", "_Race_SetMode")
+ASM_PROC(FUN_4e24e8)
+ASM_PROC(FUN_4de290)
+ASM_PROC(FUN_53fdb0)
+ASM_VAR(int, g_q48_6ef1fc, $L_6ef1fc)
+// [FUN_53fcf0] starts a race (a, b, mode c, d): the mode, the race globals, 6ef1fc = a, the world 696cb0 for a,
+// then 53fdb0
+extern "C" void __cdecl Race_Start(int a, int b, int c, int d)
+{
+    CallC(FUN_57ca00, c);
+    CallC(FUN_4e24e8, a, b, d);
+    g_q48_6ef1fc = a;
+    CallThis(FUN_4de290, g_vh696cb0, a);
+    CallC(FUN_53fdb0);
+}
