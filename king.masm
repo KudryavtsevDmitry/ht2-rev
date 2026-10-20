@@ -220298,6 +220298,8 @@ $L_479f28::
             nop
 FUN_479cb0 ENDP
 ALIGN 16
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 FUN_479f50 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -220403,6 +220405,10 @@ $L_479ffc::
             pop EBX
             ret 
 FUN_479f50 ENDP
+ELSE
+EXTERN _CharVec_Load:PROC
+FUN_479f50 TEXTEQU <_CharVec_Load>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -327047,6 +327053,8 @@ $L_4b321e::
             ret 
 FUN_4b2e90 ENDP
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b3240 PROC
 
             push ECX
@@ -327122,6 +327130,10 @@ $L_4b3295::
             nop
             nop
 FUN_4b3240 ENDP
+ELSE
+EXTERN _Reader_NextItem:PROC
+FUN_4b3240 TEXTEQU <_Reader_NextItem>
+ENDIF
 ALIGN 16
 FUN_4b32d0 PROC
 

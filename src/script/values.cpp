@@ -1102,3 +1102,27 @@ static void Val_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 
 // [$L_4b53e0]
 extern "C" void __cdecl ValInit_4b53e0() { Val_RngInit((DWORD*)g_valRng694748, &g_valRng694820, &g_valRng694824, &g_valRng694828); }
+
+extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
+ASM_PROC(FUN_4b2ca0)
+ASM_PROC(FUN_4b2e90)
+// [FUN_4b3240] reads the next item of reader r into out: drops the current character (the deque at +8: cur, first
+// +12, last +16, node +20; +68 the position), refills, then 4b2ca0 and 4b2e90
+extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
+{
+    CallThis(FUN_4b2b60, r, 1);
+    if (F(BYTE*, r, 8) != F(BYTE*, r, 16) - 4)
+        F(BYTE*, r, 8) += 4;
+    else {
+        free(F(void*, r, 12));
+        F(BYTE**, r, 20)++;
+        F(BYTE*, r, 12) = *F(BYTE**, r, 20);
+        F(BYTE*, r, 16) = F(BYTE*, r, 12) + 512;
+        F(BYTE*, r, 8) = F(BYTE*, r, 12);
+    }
+    F(int, r, 68)++;
+    CallThis(FUN_4b2b60, r, 1);
+    CallC(FUN_4b2ca0, a, r);
+    CallC(FUN_4b2e90, out, a, r);
+    return out;
+}
