@@ -2592,3 +2592,11 @@ extern "C" int __fastcall Car_OnMessage(BYTE* s, void*, int* m)
     }
     return 0;
 }
+
+static int Veh102_Abs(int v) { return v < 0 ? -v : v; }
+// [$L_555e50] whether the controls (+9536) of car s have any input on +24, +44 or +64
+extern "C" int __fastcall Car_HasInput(BYTE* s)
+{
+    BYTE* o = F(BYTE*, s, 9536);
+    return (Veh102_Abs(F(int, o, 64)) + Veh102_Abs(F(int, o, 44)) + Veh102_Abs(F(int, o, 24))) != 0;
+}

@@ -972,3 +972,43 @@ extern "C" BYTE* __fastcall Scy52fce0_Construct(BYTE* s, void*)
         F(int, s, ones[k]) = 1;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Messages to cars.
+
+extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
+ASM_VAR(void*, g_q102_6cf3a4, $L_6cf3a4)
+ASM_VAR(BYTE*, g_q102_6f653c, $L_6f653c)
+// [$L_52ee70] delivers message m (id +4, sender +28) unless the 6cf3a4 hook takes it: a message of the 2xxxxx
+// range goes to the first active car of the 6f653c list (as a driven car: +3568 = 1, or one with +392 = 1) whose
+// object or car id (type number + 200, times 1000, plus its number) matches; that car's vtbl+0 gets 1
+extern "C" int __cdecl Cars_Deliver(BYTE* m, int b)
+{
+    if (g_q102_6cf3a4)
+        if (int r = ((int(__cdecl*)(BYTE*, int))g_q102_6cf3a4)(m, b))
+            return r;
+    if (F(int, m, 4) / 100000 != 2 || !g_q102_6f653c)
+        return 0;
+    for (BYTE* n = g_q102_6f653c - 4; n;) {
+        BYTE* c = n - 376;
+        if (F(int, n, 16) == 2 && F(int, c, 3568) == 1) {
+            if (F(BYTE*, m, 28) == c ||
+                (CallC<int>(FUN_52ea90, F(int, c, 9544)) + 200) * 1000 + F(int, c, 9548) == F(int, m, 4)) {
+                CallVirt(c, 0, 1);
+                return 1;
+            }
+        }
+        if (F(int, c, 392) == 1) {
+            if (F(BYTE*, m, 28) == c ||
+                (CallC<int>(FUN_52ea90, F(int, c, 3568)) + 200) * 1000 + F(int, c, 3572) == F(int, m, 4)) {
+                CallVirt(c, 0, 1);
+                return 1;
+            }
+        }
+        BYTE* next = F(BYTE*, n, 8);
+        if (!next)
+            return 0;
+        n = next - 4;
+    }
+    return 0;
+}
