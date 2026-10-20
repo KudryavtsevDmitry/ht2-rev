@@ -1514,6 +1514,7 @@ PUBLIC $L_67b904, $L_67b910, $L_67b91c, $L_67b928, $L_67b938
 PUBLIC $L_64eba8
 PUBLIC $L_702e90
 PUBLIC $L_682f24, $L_682f30, $L_682f34, $L_721764
+PUBLIC $L_71e7e8, $L_71e7ec, $L_71e7f0, $L_71e7f8
 
 ;===================================
 _TEXT SEGMENT
@@ -769984,6 +769985,8 @@ $L_5d15d0           DWORD $L_5d1519
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d15f0 PROC
 
             push ECX
@@ -770119,6 +770122,10 @@ $L_5d1731::
             pop ECX
             ret 
 FUN_5d15f0 ENDP
+ELSE
+EXTERN _Poly_FillZ:PROC
+FUN_5d15f0 TEXTEQU <_Poly_FillZ>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
