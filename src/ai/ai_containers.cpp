@@ -17,7 +17,7 @@ extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void __cdecl Sort_LinearInsert12(BYTE* first, BYTE* last, int, void* cmp);
 KING_ALIAS("_Sort_LinearInsert12", "FUN_467820")
 extern "C" void __cdecl Sort_UnguardedInsertion12(BYTE* first, BYTE* last, int, void* cmp);
-KING_ALIAS("_Sort_UnguardedInsertion12", "FUN_4679d0")
+KING_ALIAS("_Sort_UnguardedInsertion12", "_Names_InsertionSortRest")
 ASM_PROC(FUN_45b570)    // vector<1592 bytes>::insert_aux
 extern "C" void FUN_45cb00(); KING_ALIAS("_FUN_45cb00", "@Vec4b_InsertC@16")    // vector<4 bytes>::insert_aux
 ASM_PROC(FUN_45d8f0)
@@ -2538,4 +2538,16 @@ extern "C" int __cdecl Rope_CompareRope(RopeIt60 a, RopeIt60 b, RopeIt60 c, Rope
     if (!Aicon232_Same(&c, &d))
         return -1;
     return !Aicon232_Same(&a, &b);
+}
+
+extern "C" void FUN_469850(); KING_ALIAS("_FUN_469850", "_Names_InsertLinear")
+// [FUN_4679d0] the unguarded insertion sort of the 12-byte names [first, last): each one (copied by value) is
+// moved back into place
+extern "C" void __cdecl Names_InsertionSortRest(BYTE* first, BYTE* last, int, int cmp)
+{
+    for (BYTE* e = first; e != last; e += 12) {
+        Name12 v;
+        CallThis(FUN_44dd90, &v, e);
+        CallC(FUN_469850, e, v, cmp);
+    }
 }
