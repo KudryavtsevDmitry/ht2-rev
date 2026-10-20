@@ -1499,6 +1499,7 @@ PUBLIC $L_67d5f0
 PUBLIC $L_67d594
 PUBLIC $L_64c348, $L_64d494, $L_651c84, $L_651c88, $L_651c8c, $L_651c90
 PUBLIC $L_651c94
+PUBLIC $L_651c64, $L_651c98, $L_651c9c
 
 ;===================================
 _TEXT SEGMENT
@@ -754593,6 +754594,8 @@ EXTERN _Swing_Step:PROC
 FUN_5c8010 TEXTEQU <_Swing_Step>
 ENDIF
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c8130 PROC
 
             fld DWORD PTR [$L_651c64]
@@ -754711,6 +754714,10 @@ $L_5c82c0           DWORD $L_5c815b
           DWORD $L_5c81b4
           DWORD $L_5c820d
           DWORD $L_5c8266
+ELSE
+EXTERN _Swing_Quarters:PROC
+FUN_5c8130 TEXTEQU <_Swing_Quarters>
+ENDIF
 ALIGN 16
 ; src\engine\media.cpp, nmake ASM_MEDIA=1 assembles the original
 IFDEF ASM_MEDIA
