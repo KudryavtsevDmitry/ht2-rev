@@ -2796,3 +2796,14 @@ extern "C" void __fastcall Wnd5d8b90_Notify(BYTE* s, void*)
     if (o)
         CallVirt(o, 52, F(int, s, 12));
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: message filters, record copies, frees and deleting destructors.
+
+extern "C" void FUN_5e44e0(); KING_ALIAS("_FUN_5e44e0", "@Loader_Request@16")
+// [$L_5dfef0] on a 4095 message, asks the loader l for its +12 item
+extern "C" void __cdecl Loader_OnMessage(int* m, BYTE* l)
+{
+    if (m[0] == 4095 && l)
+        CallThis(FUN_5e44e0, l, 4095, m[3]);
+}

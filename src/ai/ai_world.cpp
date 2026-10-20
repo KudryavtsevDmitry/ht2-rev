@@ -18296,7 +18296,7 @@ ASM_VAR(AsmLabel, s_noNodes66e384, $L_66e384)
 ASM_VAR(AsmLabel, s_noRoads66e36c, $L_66e36c)
 ASM_VAR(void*, g_670b04, $L_670b04)
 ASM_VAR(BYTE, g_686360, $L_686360)
-ASM_PROC($L_401310)
+extern "C" void $L_401310(); KING_ALIAS("_$L_401310", "_Ai_ReportUnless5")
 extern "C" void FUN_4a52d0(); KING_ALIAS("_FUN_4a52d0", "_Sch_Exchange69224c")    // registers a function (fn)
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // a string assigned from a vector<char> (thiscall: &v)
 extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")    // vector<char>::insert_aux (thiscall: pos, &c)
@@ -21607,4 +21607,27 @@ static void __cdecl AiStatic68ceb0_Free(void)
 extern "C" int __cdecl AiStatic68ceb0_AtExit(void)
 {
     return atexit(AiStatic68ceb0_Free);
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: message filters, record copies, frees and deleting destructors.
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
+ASM_VAR(AsmLabel, s_q50_66c7b0, $L_66c7b0)
+ASM_VAR(AsmLabel, s_q50_66c558, $L_66c558)
+// [$L_462ca0] returns the vector storage (+0 .. +8) to the pool
+extern "C" void __fastcall AiVec_FreeStorage(BYTE* s, void*)
+{
+    BYTE* p = F(BYTE*, s, 0);
+    int n = F(BYTE*, s, 8) - p;
+    if (p && n)
+        CallC(FUN_44b4a0, p, n);
+}
+// [$L_401310] reports (kind, a, b) at line 130 unless kind is 5
+extern "C" void __cdecl Ai_ReportUnless5(int kind, int a, int b)
+{
+    if (kind != 5)
+        CallC(FUN_401010, kind, a, (const char*)s_q50_66c7b0, (const char*)s_q50_66c558, 130, b,
+              &g_empty68d1c0, &g_empty68d1c0);
 }
