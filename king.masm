@@ -248987,6 +248987,8 @@ ELSE
 EXTERN @Rt_ReadFile@12:PROC
 FUN_4895b0 TEXTEQU <@Rt_ReadFile@12>
 ENDIF
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 $L_489600 PROC
 
             sub ESP,8
@@ -249137,6 +249139,10 @@ $L_48974f::
             inc EDI
             jmp $L_4896f7
 $L_489600 ENDP
+ELSE
+EXTERN @List48_Destroy@4:PROC
+$L_489600 TEXTEQU <@List48_Destroy@4>
+ENDIF
           BYTE 090H
 ; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
 IFDEF ASM_RUNTIME
@@ -319950,6 +319956,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 $L_4afc30 PROC
 
             sub ESP,8
@@ -320109,6 +320117,10 @@ $L_4afd7c::
             add ESP,8
             ret 
 $L_4afc30 ENDP
+ELSE
+EXTERN @ValueList_Destroy@4:PROC
+$L_4afc30 TEXTEQU <@ValueList_Destroy@4>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; AI script evaluator: src\script\evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
