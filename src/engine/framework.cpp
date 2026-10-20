@@ -3778,3 +3778,27 @@ extern "C" void __fastcall View_MirrorMove(BYTE* s, void*, float* a, const float
     BYTE t[48];
     CallThis(FUN_5abc00, a, CallC<BYTE*>(FUN_5abc40, t, v));
 }
+
+extern "C" void FUN_5ab710(); KING_ALIAS("_FUN_5ab710", "@Vec3_AddAssign@16")
+extern "C" void FUN_5ab660(); KING_ALIAS("_FUN_5ab660", "@Vec3_DivAssign@16")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+// [FUN_5e6520] the sphere around polygon s's vertices (+4 count, +8 indices into v, 28 bytes each): their centre
+// and the largest distance from it into out
+extern "C" void __fastcall Poly_BoundingSphere(BYTE* s, void*, float* out, const BYTE* v)
+{
+    float c[3] = {0, 0, 0}, tmp[3];
+    int n = F(WORD, s, 4);
+    for (int i = 0; i < n; i++)
+        CallThis(FUN_5ab710, c, tmp, v + F(WORD*, s, 8)[i] * 28);
+    CallThis(FUN_5ab660, c, tmp, (float)n);
+    float r = 0;
+    for (int i = 0; i < (int)F(WORD, s, 4); i++) {
+        const float* p = (const float*)(v + F(WORD*, s, 8)[i] * 28);
+        float d[3] = {(float)(c[0] - p[0]), (float)(c[1] - p[1]), (float)(c[2] - p[2])};
+        double l = CallC<double>(FUN_5ab4d0, d);
+        if (r < l)
+            r = (float)l;
+    }
+    memcpy(out, c, 12);
+    out[3] = r;
+}

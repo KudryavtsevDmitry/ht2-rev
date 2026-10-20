@@ -809991,6 +809991,8 @@ FUN_5e5cd0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e6520 PROC
 
             sub ESP,36
@@ -810105,6 +810107,10 @@ $L_5e6626::
             add ESP,36
             ret 8
 FUN_5e6520 ENDP
+ELSE
+EXTERN @Poly_BoundingSphere@16:PROC
+FUN_5e6520 TEXTEQU <@Poly_BoundingSphere@16>
+ENDIF
 ALIGN 16
 FUN_5e6650 PROC
 
