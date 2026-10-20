@@ -3476,3 +3476,72 @@ extern "C" int __cdecl Texture_ReadChunks(BYTE* dst, FILE* f, int depth, int siz
     } while (end > ftell(f));
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Writing a TGA file.
+
+extern "C" void FUN_5d4200(); KING_ALIAS("_FUN_5d4200", "_Dd_LockBack")
+extern "C" void FUN_5d41e0(); KING_ALIAS("_FUN_5d41e0", "_Dd_WaitVsync")
+extern "C" void FUN_5ab110(); KING_ALIAS("_FUN_5ab110", "_File_WriteShort")
+extern "C" int __cdecl fputc(int c, FILE* f);
+extern "C" void FUN_5d3ab0(); KING_ALIAS("_FUN_5d3ab0", "_Mode_TextureLevel")
+// [FUN_5e9a10] writes surface s to f as a TGA: 8-bit images with the root palette (BGR), 16-bit ones as
+// uncompressed true colour; a surface on the screen (+116) is read from the locked back buffer, its 565 pixels
+// turned into 555 ones unless the mode is 3
+extern "C" void __cdecl Tga_Write(BYTE* s, FILE* f)
+{
+    fputc(0, f);
+    int pal = F(WORD, s, 4) != 2;
+    fputc(pal, f);
+    int type = F(WORD, s, 4) == 2 ? 2 : 1;
+    fputc(type, f);
+    CallC(FUN_5ab110, 0, f);
+    CallC(FUN_5ab110, 256, f);
+    fputc(24, f);
+    CallC(FUN_5ab110, 0, f);
+    CallC(FUN_5ab110, 0, f);
+    int w = F(WORD, s, 0);
+    CallC(FUN_5ab110, w, f);
+    int h = F(WORD, s, 2);
+    CallC(FUN_5ab110, h, f);
+    fputc(F(WORD, s, 4) != 2 ? 8 : 16, f);
+    fputc(32, f);
+    if (pal) {
+        const BYTE* q = CallThis<BYTE*>(FUN_5b6700, s) + 24;
+        for (int k = 256; k; k--, q += 3) {
+            fputc(q[2], f);
+            fputc(q[1], f);
+            fputc(q[0], f);
+        }
+    }
+    BYTE* data = F(BYTE*, s, 24 + F(int, s, 16) * 4);
+    if (type == 1) {
+        fwrite(data, h * w, 1, f);
+        return;
+    }
+    if (type != 2)
+        return;
+    if (!F(int, s, 116)) {
+        fwrite(data, F(WORD, s, 4) * h * w, 1, f);
+        return;
+    }
+    int pitch;
+    BYTE* p = CallC<BYTE*>(FUN_5d4200, &pitch);
+    if (CallC<int>(FUN_5d3ab0) == 3) {
+        for (int y = 0; y < (int)F(WORD, s, 2); y++) {
+            fwrite(p, F(WORD, s, 4) * w, 1, f);
+            p += pitch;
+        }
+    } else {
+        WORD* buf = (WORD*)operator new(F(WORD, s, 0) * 2);
+        for (int y = 0; y < (int)F(WORD, s, 2); y++) {
+            const WORD* src = (const WORD*)p;
+            for (int x = 0; x < (int)F(WORD, s, 0); x++)
+                buf[x] = (WORD)(((src[x] >> 1) & 0x7fe0) | (src[x] & 31));
+            fwrite(buf, F(WORD, s, 4) * w, 1, f);
+            p += pitch;
+        }
+        operator delete(buf);
+    }
+    CallC(FUN_5d41e0, p);
+}

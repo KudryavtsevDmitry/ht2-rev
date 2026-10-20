@@ -129,7 +129,7 @@ extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, in
 extern "C" void __cdecl Video_SetPalette(const BYTE* rgb, DWORD first, DWORD count);    // video_mode.cpp
 ASM_PROC(FUN_5be8c0)    // lays out list rows (thiscall on the drop part)
 ASM_FUNC(List_RowCallback, $L_5c0700)
-ASM_PROC(FUN_5c06d0)    // visible rows of a list
+extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")    // visible rows of a list
 ASM_PROC(FUN_6303c4)    // ICDecompress
 ASM_PROC(FUN_6303b8)    // ICSendMessage
 extern "C" void FUN_5c29d0(); KING_ALIAS("_FUN_5c29d0", "_Media_Start")
@@ -2176,7 +2176,7 @@ extern "C" void FUN_5c5c00(); KING_ALIAS("_FUN_5c5c00", "@Timeline_Clear@12")
 extern "C" void FUN_5c40b0(); KING_ALIAS("_FUN_5c40b0", "@Pool_Keep@12")
 extern "C" void FUN_5a47f0(); KING_ALIAS("_FUN_5a47f0", "@Wea5a47f0_Destroy@4")
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
-ASM_PROC(FUN_5c06d0)
+extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")
 extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
 ASM_VAR(AsmLabel, g_q23_651c34, $L_651c34)
 ASM_VAR(AsmLabel, g_q23_651be8, $L_651be8)
@@ -2494,4 +2494,85 @@ extern "C" void __fastcall MappedFile_Close(BYTE* s)
         CloseHandle(f);
     F(HANDLE, s, 0) = INVALID_HANDLE_VALUE;
     F(BYTE, s, 20) = 0;
+}
+
+// ---------------------------------------------------------------------------
+// List rows and edit field keys.
+
+// [FUN_5c06d0] the rows a list shows: its height (+308) over the font's line height (+16's +20) and the spacing
+// (+344); 0 without a font
+extern "C" int __fastcall List_VisibleRows(BYTE* s)
+{
+    BYTE* f = F(BYTE*, s, 16);
+    if (!f)
+        return 0;
+    int r = F(int, s, 308) / (F(int, f, 20) + F(int, s, 344));
+    return r >= 0 ? r : 0;
+}
+
+// [$L_5c0040] a key of an edit field (text +288 of +292 bytes, cursor +296; +32 bit 31 = select all): with
+// type 0 backspace, delete, left and right edit the text and enter gives the field's command (+28), handled keys
+// with bit 15; else a character 32..255 is inserted (replacing all of a selected text)
+extern "C" int __fastcall Edit_Key(BYTE* s, void*, int key, int type)
+{
+    char* t = F(char*, s, 288);
+    if (!t)
+        return key;
+    if (type) {
+        if (F(unsigned, s, 32) & 0x80000000) {
+            F(unsigned, s, 32) &= 0x7fffffff;
+            F(int, s, 296) = 0;
+            *t = 0;
+        }
+        if (key >= 32 && key <= 255 && F(int, s, 296) < F(int, s, 292) - 2) {
+            char* p = F(char*, s, 288) + F(int, s, 296);
+            if (!*p)
+                p[1] = 0;
+            F(char*, s, 288)[F(int, s, 296)] = (char)key;
+            F(int, s, 296)++;
+        }
+        return key;
+    }
+    int i;
+    switch (key) {
+    case 8:
+        F(unsigned, s, 32) &= 0x7fffffff;
+        if (F(int, s, 296) <= 0)
+            break;
+        i = --F(int, s, 296);
+        if (t[i])
+            do {
+                t[i] = t[i + 1];
+                i++;
+            } while (F(char*, s, 288)[i]);
+        break;
+    case 46:
+        F(unsigned, s, 32) &= 0x7fffffff;
+        i = F(int, s, 296);
+        if (t[i])
+            do {
+                t[i] = t[i + 1];
+                i++;
+            } while (F(char*, s, 288)[i]);
+        break;
+    case 37:
+        F(unsigned, s, 32) &= 0x7fffffff;
+        if (F(int, s, 296) > 0)
+            F(int, s, 296)--;
+        break;
+    case 39:
+        F(unsigned, s, 32) &= 0x7fffffff;
+        if (t[F(int, s, 296)])
+            F(int, s, 296)++;
+        break;
+    case 13:
+        key = F(int, s, 28);
+        F(unsigned, s, 32) &= 0x7fffffff;
+        break;
+    case 190:
+        break;
+    default:
+        return key;
+    }
+    return key | 0x8000;
 }
