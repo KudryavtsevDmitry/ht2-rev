@@ -3676,3 +3676,70 @@ extern "C" void __fastcall View_SetCamera(BYTE* s, void*, int r, BYTE* n)
     CallThis(FUN_5f2190, F(BYTE*, s, 616), m, 0);
     F(int, F(BYTE*, s, 488), 76) = r;
 }
+
+extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
+ASM_VAR(float, g_q132_721210, $L_721210)
+// [FUN_5dffc0] draws object +524 of view s alone (its sky draw first) with the camera (+468) of the room
+// (+488); the time it took goes to 721210
+extern "C" void __fastcall View_DrawObject(BYTE* s)
+{
+    BYTE m1[48], m2[48], t[48];
+    memcpy(m2, (BYTE*)g_q77_7025f0, 48);
+    memcpy(m1, (BYTE*)g_q77_7025f0, 48);
+    if (!F(BYTE*, s, 488))
+        return;
+    memcpy(m1, View_CameraMatrix(s, 0, t), 48);
+    memcpy(m2, m1, 48);
+    float t0 = (float)CallC<double>(FUN_6037e0);
+    if (g_q77_702e8c & 0x100)
+        CallThis(FUN_5adc70, F(BYTE*, s, 464), F(int, s, 548));
+    BYTE* r = F(BYTE*, s, 464);
+    F(int, r, 8480) = F(int, s, 2960);
+    F(int, r, 8484) = F(int, s, 2964);
+    r = F(BYTE*, s, 464);
+    F(int, r, 8488) = F(int, s, 2968);
+    F(int, r, 8492) = F(int, s, 2972);
+    if (BYTE* o = F(BYTE*, s, 524)) {
+        CallThis(FUN_5ae0e0, F(BYTE*, s, 464), (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
+        CallVirt(F(BYTE*, s, 524), 56, F(int, g_q77_721750, 344) ? 1 : 5, m2, m1, F(BYTE*, s, 464));
+    }
+    if (F(BYTE*, s, 524))
+        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(BYTE*, s, 488), F(BYTE*, s, 524), F(BYTE*, s, 472), 1,
+                 F(BYTE*, s, 464));
+    g_q132_721210 = (float)(CallC<double>(FUN_6037e0) - t0);
+}
+
+ASM_PROC(FUN_5eaf40)
+extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+struct Fw133_V3 { float x, y, z; };
+// [$L_5df920] prepares the view's overlay: the room's sky node (+488's +80) placement, the view's projection
+// (vtbl+96) set on the camera when +472's +76 is set (and its switch +480 chosen), the frame +476 moved to the
+// sky height scaled by +472 (+96, +104), then the overlay object (+528) drawn
+extern "C" void __fastcall View_PrepareOverlay(BYTE* s)
+{
+    BYTE m[48];
+    memcpy(m, (BYTE*)g_q77_7025f0, 48);
+    CallThis(FUN_5f25c0, F(BYTE*, F(BYTE*, s, 488), 80), m);
+    DWORD v[4];
+    DWORD a, b;
+    CallVirt(s, 96, m, v, &a, &b);
+    BYTE* c = F(BYTE*, s, 472);
+    if (F(int, c, 76) >= 0) {
+        CallThis(FUN_5eaf40, F(BYTE*, s, 468), F(BYTE*, s, 488), v[0], a, b, F(BYTE*, s, 464), c);
+        CallC(FUN_5e1a10, F(BYTE*, s, 480), F(int, F(BYTE*, s, 472), 76) + 1);
+    } else
+        CallC(FUN_5e1a10, F(BYTE*, s, 480), 0);
+    c = F(BYTE*, s, 472);
+    Fw133_V3 t;
+    t.x = F(float, m, 36);
+    t.y = F(float, m, 40);
+    t.z = (float)((F(float, m, 44) - F(double, c, 96)) * F(double, c, 104) + F(double, c, 96));
+    BYTE tm[48];
+    CallC(FUN_5e19b0, F(BYTE*, s, 476), 0, CallC<BYTE*>(FUN_5abc40, tm, t));
+    if (BYTE* o = F(BYTE*, s, 528))
+        CallThis(FUN_5eb310, F(BYTE*, s, 468), F(BYTE*, s, 488), o, F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+    if (BYTE* o = F(BYTE*, s, 528))
+        CallVirt(o, 56, 4, (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0, F(BYTE*, s, 464));
+}
