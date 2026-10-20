@@ -19,7 +19,6 @@ extern "C" long __cdecl ftell(FILE* f);
 extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" void** __stdcall List_Erase(void** out, void** node);     // aimain.cpp
 extern "C" double __cdecl Int_ToDouble(const void* n);
-KING_ALIAS("_Int_ToDouble", "FUN_48a750")
 extern "C" void* __cdecl Int_FromInt(int v, int a);
 KING_ALIAS("_Int_FromInt", "_BigInt_FromInt")
 extern "C" void __cdecl Poly_48d8f0(void* out, void* a, int b, int n, int c);
@@ -1280,4 +1279,90 @@ extern "C" BYTE* __fastcall Poly_Multiply(BYTE* s, void*, BYTE* out, BYTE* b)
         }
     memcpy(out, r, 196);
     return out;
+}
+
+// [FUN_48ef00] the derivative of vector polynomial s (24-byte coefficients, highest first, count at +576) into
+// out
+extern "C" BYTE* __fastcall VPoly_Derivative(BYTE* s, void*, BYTE* out)
+{
+    BYTE r[580];
+    F(int, r, 576) = 0;
+    const double* a = (const double*)s;
+    for (unsigned i = 0; i < (unsigned)(F(int, s, 576) * 24 / 24 - 1); i++) {
+        double k = (double)(__int64)(unsigned)(F(int, s, 576) * 24 / 24 - i - 1);
+        double* d = (double*)(r + F(int, r, 576) * 24);
+        d[0] = a[i * 3] * k;
+        d[1] = a[i * 3 + 1] * k;
+        d[2] = a[i * 3 + 2] * k;
+        F(int, r, 576)++;
+    }
+    memcpy(out, r, 580);
+    return out;
+}
+
+// [FUN_48f1c0] vector polynomial s with each coefficient scaled by v component-wise, into out
+extern "C" BYTE* __fastcall VPoly_Scale(BYTE* s, void*, BYTE* out, const double* v)
+{
+    double k[3] = {v[0], v[1], v[2]};
+    BYTE r[580];
+    F(int, r, 576) = 0;
+    const double* a = (const double*)s;
+    for (unsigned i = 0; i < (unsigned)(F(int, s, 576) * 24 / 24); i++) {
+        double* d = (double*)(r + F(int, r, 576) * 24);
+        d[0] = a[i * 3] * k[0];
+        d[1] = a[i * 3 + 1] * k[1];
+        d[2] = k[2] * a[i * 3 + 2];
+        F(int, r, 576)++;
+    }
+    memcpy(out, r, 580);
+    return out;
+}
+
+ASM_VAR(double, g_q115_64b678, $L_64b678)
+ASM_VAR(double, g_q115_64bea8, $L_64bea8)
+ASM_VAR(double, g_q115_64b670, $L_64b670)
+ASM_VAR(double, g_q115_6865d8, $L_6865d8)
+// [FUN_48a750] the value of big integer n (word count +0, sign +4: 0 negative, words from +6, last the highest);
+// at the 64bea8 limit the 6865d8 one
+extern "C" double __cdecl Int_ToDouble(const void* n)
+{
+    const BYTE* p = (const BYTE*)n;
+    double v = g_q115_64b678;
+    for (int i = F(WORD, p, 0) - 1; i >= 0; i--)
+        for (WORD bit = 0x8000; bit; bit >>= 1) {
+            if (v >= g_q115_64bea8)
+                return F(short, p, 4) ? g_q115_6865d8 : -g_q115_6865d8;
+            v += v;
+            if (F(WORD, p, 6 + i * 2) & bit)
+                v += g_q115_64b670;
+        }
+    return F(short, p, 4) ? v : -v;
+}
+
+// [$L_48d600] reverses the 24-byte points of s (+32..+36)
+extern "C" void __fastcall Points_Reverse(BYTE* s)
+{
+    BYTE* b = F(BYTE*, s, 32);
+    BYTE* e = F(BYTE*, s, 36);
+    while (b < e) {
+        e -= 24;
+        BYTE t[24];
+        memcpy(t, b, 24);
+        memcpy(b, e, 24);
+        memcpy(e, t, 24);
+        b += 24;
+    }
+}
+
+// [$L_48d670] the length of the polyline of s (24-byte points +32..+36)
+extern "C" double __fastcall Points_Length(BYTE* s)
+{
+    double len = g_q115_64b678;
+    const double* p = F(const double*, s, 32);
+    unsigned n = (F(int, s, 36) - F(int, s, 32)) / 24 - 1;
+    for (unsigned i = 0; i < n; i++, p += 3) {
+        double dx = p[3] - p[0], dy = p[4] - p[1], dz = p[5] - p[2];
+        len += x87_sqrt(dy * dy + dz * dz + dx * dx);
+    }
+    return len;
 }
