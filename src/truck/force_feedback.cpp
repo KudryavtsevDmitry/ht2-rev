@@ -1042,3 +1042,110 @@ extern "C" void __cdecl Ff_InitRecords(void)
         memcpy(p, (BYTE*)g_q103_7025f0, 48);
     }
 }
+
+// ---------------------------------------------------------------------------
+// Force feedback effects: a DIEFFECT (56 bytes) for one axis, created on the joystick device.
+
+ASM_PROC(FUN_592f90)
+extern "C" void $L_578fb0(); KING_ALIAS("_$L_578fb0", "_Ff_GetRect@8")
+ASM_VAR(AsmLabel, s_q210_67c6f8, $L_67c6f8)
+ASM_VAR(AsmLabel, s_q210_67c60c, $L_67c60c)
+ASM_VAR(AsmLabel, s_q210_67c6d0, $L_67c6d0)
+ASM_VAR(AsmLabel, s_q210_67c798, $L_67c798)
+ASM_VAR(AsmLabel, s_q210_67c758, $L_67c758)
+ASM_VAR(AsmLabel, s_q210_67c730, $L_67c730)
+ASM_VAR(AsmLabel, g_q210_655390, $L_655390)
+ASM_VAR(AsmLabel, g_q210_655380, $L_655380)
+// the effect s (+4 the IDirectInputEffect) of type guid from the effect d, logging a failure; +4 is 0 then
+static bool Ff210_Create(DWORD* s, const void* guid, DWORD* d, const char* fmt)
+{
+    int hr = ComCall577(g_joyDevice, 72, guid, d, s + 1, 0);
+    if (hr >= 0)
+        return true;
+    char text[256];
+    wsprintfA(text, fmt, hr);
+    Joy_Log(text);
+    s[1] = 0;
+    return false;
+}
+// whether the device has effects of type t (logged)
+static bool Ff210_Enum(int t, const char* start, const char* fail, DWORD* s)
+{
+    Joy_Log(start);
+    BYTE guid[16];
+    if (ComCall577(g_joyDevice, 76, $L_578fb0, guid, t) >= 0)
+        return true;
+    Joy_Log(fail);
+    s[1] = 0;
+    return false;
+}
+// [FUN_5773c0] a periodic effect: magnitude 2000, period 1000000 (+8 duration, +12 period)
+extern "C" DWORD* __fastcall FfPeriodic_Construct(DWORD* s)
+{
+    s[0] = 0;
+    s[1] = 0;
+    if (!g_joyDevice || !g_joyForceFeedback)
+        return s;
+    if (!Ff210_Enum(3, (const char*)s_q210_67c6f8, (const char*)s_q210_67c60c, s))
+        return s;
+    DWORD d[14] = {0};
+    DWORD periodic[4] = {2000, 0, 0, 1000000};
+    DWORD axis = 0;
+    int dir = 1;
+    d[0] = 56;
+    d[1] = 18;                 // DIEFF_CARTESIAN | DIEFF_OBJECTOFFSETS
+    d[2] = 1000000;
+    d[3] = 0;
+    d[4] = 10000;
+    d[5] = (DWORD)-1;
+    d[6] = 0;
+    d[7] = 1;
+    d[8] = (DWORD)&axis;
+    d[9] = (DWORD)&dir;
+    d[10] = 0;
+    d[11] = 16;
+    d[12] = (DWORD)periodic;
+    if (!Ff210_Create(s, g_q210_655390, d, (const char*)s_q210_67c6d0))
+        return s;
+    CallThis(FUN_592f90, g_joyEffects, s);
+    s[2] = d[2];
+    s[3] = periodic[3];
+    return s;
+}
+// [FUN_577630] a condition effect of coefficient c (+4..+36 the DICONDITION, +8 the gain)
+extern "C" DWORD* __fastcall FfCondition_Construct(DWORD* s, void*, int c)
+{
+    s[0] = 0;
+    s[1] = 0;
+    if (!g_joyDevice || !g_joyForceFeedback)
+        return s;
+    if (!Ff210_Enum(4, (const char*)s_q210_67c798, (const char*)s_q210_67c758, s))
+        return s;
+    DWORD d[14] = {0};
+    DWORD axis = 0;
+    int dir = 1;
+    s[4] = 0;
+    d[7] = 1;
+    d[12] = (DWORD)(s + 4);
+    s[2] = 10000;
+    d[9] = (DWORD)&dir;
+    s[5] = c;
+    s[6] = c;
+    s[7] = 10000;
+    s[8] = 10000;
+    s[9] = 0;
+    s[3] = 0;
+    d[0] = 56;
+    d[3] = 0;
+    d[5] = (DWORD)-1;
+    d[6] = 0;
+    d[4] = 10000;
+    d[1] = 18;
+    d[2] = 1000000;
+    d[8] = (DWORD)&axis;
+    d[10] = 0;
+    d[11] = 24;
+    if (Ff210_Create(s, g_q210_655380, d, (const char*)s_q210_67c730))
+        CallThis(FUN_592f90, g_joyEffects, s);
+    return s;
+}
