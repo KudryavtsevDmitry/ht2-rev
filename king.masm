@@ -1483,6 +1483,7 @@ PUBLIC $L_64c828, $L_672794, $L_697688, $L_6976f8, $L_6f6968, $L_702f54
 PUBLIC $L_71e838, $L_71e83c
 PUBLIC $L_64b96c, $L_64b974, $L_64b97c
 PUBLIC $L_64f788, $L_6533e0
+PUBLIC $L_64eba0, $L_67ef54
 
 ;===================================
 _TEXT SEGMENT
@@ -701698,6 +701699,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5aa470 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -701741,6 +701744,10 @@ $L_5aa4e0::
             add ESP,80
             ret 
 $L_5aa470 ENDP
+ELSE
+EXTERN _Weather_LogPos:PROC
+$L_5aa470 TEXTEQU <_Weather_LogPos>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -707690,6 +707697,8 @@ $L_5adde7::
 FUN_5adc80 ENDP
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5addf0 PROC
 
             fld QWORD PTR [ESP+12]
@@ -707758,6 +707767,10 @@ $L_5ade94::
             pop ESI
             ret 24
 FUN_5addf0 ENDP
+ELSE
+EXTERN @Render_SetAmbient@32:PROC
+FUN_5addf0 TEXTEQU <@Render_SetAmbient@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -708894,6 +708907,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5aeb10 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -708986,6 +709001,10 @@ $L_5aebb0           BYTE ($L_5aeb98-$L_5aeb98)/4
           BYTE ($L_5aebac-$L_5aeb98)/4
           BYTE ($L_5aebac-$L_5aeb98)/4
           BYTE ($L_5aeba8-$L_5aeb98)/4
+ELSE
+EXTERN _Clip_Inside@8:PROC
+FUN_5aeb10 TEXTEQU <_Clip_Inside@8>
+ENDIF
 ALIGN 16
 FUN_5aebc0 PROC
 
