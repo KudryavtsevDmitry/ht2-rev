@@ -55,7 +55,7 @@ extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8"
 extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
 ASM_PROC(FUN_5dbbb0)
 extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
-ASM_PROC(FUN_52e740)
+extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
 extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
@@ -809,7 +809,7 @@ extern "C" void __fastcall Scy_52e630(BYTE* s)
 // More virtual methods.
 
 extern "C" void FUN_52e7c0(); KING_ALIAS("_FUN_52e7c0", "@Car_SendNamed@20")
-ASM_PROC(FUN_52e740)
+extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
 extern "C" void FUN_52e540(); KING_ALIAS("_FUN_52e540", "@Obj52e540_Set3576@12")
 extern "C" void FUN_57c9e0(); KING_ALIAS("_FUN_57c9e0", "_Moving_Of")
 extern "C" void FUN_53f7b0(); KING_ALIAS("_FUN_53f7b0", "_Car_53f7b0")
@@ -1034,3 +1034,20 @@ extern "C" int __fastcall q198_MovingItem_Fly(BYTE* s); KING_ALIAS("@q198_Moving
 extern "C" int __fastcall Thunk52e210(BYTE* s) { return q198_MovingItem_Fly(s); }
 // [$L_52f4b0] forwards to Dtor52b6d0_DeletingDestructor for the object 256 bytes before
 extern "C" int __fastcall Thunk52f4b0(BYTE* s, void* d, int a0) { return q198_Dtor52b6d0_DeletingDestructor(s - 256, d, a0); }
+
+extern "C" void FUN_52f9d0(); KING_ALIAS("_FUN_52f9d0", "_Sound_Loop386")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+ASM_VAR(AsmLabel, g_q215_702620, $L_702620)
+// [FUN_52e740] starts scene s's event for object o (its handler +3648 with t, unless o is busy at +388): the loop
+// sound +3636, the switch object named name selected (+3640), and the clock 6ef1fc's time kept (+3644)
+extern "C" void __fastcall Scenery_StartEvent(BYTE* s, void*, BYTE* o, float t, const char* name)
+{
+    if (o && !F(int, o, 388))
+        ((void(__cdecl*)(BYTE*, double))F(void*, s, 3648))(o, t);
+    CallC(FUN_52f9d0, F(int, s, 3636), 1.0f, 1.0f, (void*)g_q215_702620);
+    BYTE* n = CallC<BYTE*>(FUN_5ef2b0, 0, name);
+    F(BYTE*, s, 3640) = n;
+    CallC(FUN_5e1a10, n, 1);
+    F(float, s, 3644) = (float)F(double, g_6ef1fc, 2968);
+}
