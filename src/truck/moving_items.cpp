@@ -729,3 +729,28 @@ extern "C" void __fastcall MovingItem_Place(BYTE* s, void*, int a)
     CallC(FUN_4e2821, s + 1732, (const char*)s_q186_67d5f0, 15000.0f);
     F(int, s, 1672) = CallVirt<int>(s, 68, s + 1696, s + 1456, s + 1460, s + 1464, a);
 }
+
+extern "C" void FUN_4e3132(); KING_ALIAS("_FUN_4e3132", "_Vec3_DivComponents")
+ASM_VAR(AsmLabel, s_q187_67d594, $L_67d594)
+ASM_VAR(AsmLabel, s_q187_66c4e4, $L_66c4e4)
+ASM_VAR(AsmLabel, s_q187_68d1c0, $L_68d1c0)
+// [FUN_5816d0] sets the spin of moving item s to v (+440; its local form over the inertia +404 into +428, checked
+// against the world under name), and keeps both (+3312, +3324)
+extern "C" void __fastcall MovingItem_SetSpin(BYTE* s, void*, const float* v, const char* name)
+{
+    float* w = (float*)(s + 440);
+    memcpy(w, v, 12);
+    float l[3], t[3];
+    l[0] = (float)(F(float, s, 620) * w[2] + F(float, s, 608) * w[1] + F(float, s, 596) * w[0]);
+    l[1] = (float)(F(float, s, 624) * w[2] + F(float, s, 612) * w[1] + F(float, s, 600) * w[0]);
+    l[2] = (float)(F(float, s, 628) * w[2] + F(float, s, 616) * w[1] + F(float, s, 604) * w[0]);
+    memcpy(s + 428, CallC<float*>(FUN_4e3132, t, l, s + 404), 12);
+    char buf[296];
+    if (name)
+        sprintf(buf, (const char*)s_q187_67d594, name, (const char*)s_q187_66c4e4);
+    else
+        sprintf(buf, (const char*)s_q187_67d594, (const char*)s_q187_68d1c0, (const char*)s_q187_68d1c0);
+    CallC(FUN_4e2821, s + 428, buf, 50.0f);
+    memcpy(s + 3312, s + 428, 12);
+    memcpy(s + 3324, s + 440, 12);
+}
