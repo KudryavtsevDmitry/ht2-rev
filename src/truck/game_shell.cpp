@@ -5213,3 +5213,56 @@ extern "C" void __fastcall LoadScreen_OnCommand(BYTE* s, void*, int cmd)
     F(int, g_696ca0, 3024) = 1;
     CallVirt(g_696ca0, 36);
 }
+
+// ---------------------------------------------------------------------------
+// The network session screen on show.
+
+extern "C" void FUN_51bd50(); KING_ALIAS("_FUN_51bd50", "_Storage_OpenStream")
+extern "C" void FUN_5c0e90(); KING_ALIAS("_FUN_5c0e90", "@List_FindName@12")
+ASM_VAR(AsmLabel, s_q65_677580, $L_677580)
+typedef long(__stdcall* StreamRead65)(void*, void*, ULONG, ULONG*);
+typedef ULONG(__stdcall* ComRelease65)(void*);
+// [$L_51bdc0] on show: lists the saved sessions (the 677580 files, names without the extension) in +604, keeps
+// the player name (+632 to +668), activates, reads the two saved values (+616, +624 when present) from the
+// settings stream and keeps them (+620, +628), then selects the player's entry (or the first)
+extern "C" void __fastcall SessionScreen_OnShow(BYTE* s, void*)
+{
+    WIN32_FIND_DATAA fd;
+    HANDLE h = FindFirstFileA((const char*)s_q65_677580, &fd);
+    CallThis(FUN_5c0cf0, F(BYTE*, s, 604));
+    F(DWORD, F(BYTE*, s, 608), 32) |= 0x80000000;
+    if (h != INVALID_HANDLE_VALUE) {
+        do {
+            if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+                char name[MAX_PATH];
+                strcpy(name, fd.cFileName);
+                int i = 0;
+                while (name[i] && name[i] != '.')
+                    i++;
+                name[i] = 0;
+                CallThis(FUN_5c1140, F(BYTE*, s, 604), name);
+            }
+        } while (FindNextFileA(h, &fd));
+    }
+    strcpy((char*)s + 668, (const char*)s + 632);
+    CallThis(FUN_5d8610, s);
+    void* stg = 0;
+    void* st = CallC<void*>(FUN_51bd50, &stg, 1);
+    if (st) {
+        ULONG got;
+        DWORD buf[2];
+        ((StreamRead65)(*(void***)st)[3])(st, buf, 8, &got);
+        F(DWORD, s, 616) = buf[0];
+        if (got > 4)
+            F(DWORD, s, 624) = buf[1];
+        ((ComRelease65)(*(void***)st)[2])(st);
+    }
+    if (stg)
+        ((ComRelease65)(*(void***)stg)[2])(stg);
+    F(DWORD, s, 628) = F(DWORD, s, 624);
+    F(DWORD, s, 620) = F(DWORD, s, 616);
+    int k = CallThis<int>(FUN_5c0e90, F(BYTE*, s, 604), (const char*)s + 632);
+    if (k < 0)
+        k = 0;
+    CallThis(FUN_5c0c20, F(BYTE*, s, 604), k);
+}
