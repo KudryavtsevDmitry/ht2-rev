@@ -1440,6 +1440,7 @@ PUBLIC $L_67f818, $L_67f830
 PUBLIC $L_678278, $L_6cec8c, $L_6cec9c, $L_6cecdc, $L_6cece0, $L_6cece4
 PUBLIC $L_6cece8
 PUBLIC $L_6968f8, $L_6cecc8, $L_6cecd0
+PUBLIC $L_676cfc, $L_677630, $L_677638
 
 ;===================================
 _TEXT SEGMENT
@@ -490111,6 +490112,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51d380 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -490348,6 +490351,10 @@ $L_51d5f5::
             add ESP,32
             ret 4
 $L_51d380 ENDP
+ELSE
+EXTERN @Options_OnCommand@12:PROC
+$L_51d380 TEXTEQU <@Options_OnCommand@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -492850,6 +492857,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51ed30 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -493094,6 +493103,10 @@ $L_51ee04           BYTE ($L_51edf4-$L_51edf4)/4
             nop
             nop
 $L_51ed30 ENDP
+ELSE
+EXTERN @RaceEnd_OnCommand@12:PROC
+$L_51ed30 TEXTEQU <@RaceEnd_OnCommand@12>
+ENDIF
 ALIGN 16
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 IFDEF ASM_GAME_SHELL
