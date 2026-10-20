@@ -1488,6 +1488,7 @@ PUBLIC $L_70ebfc, $L_70ef1c, $L_70f0ac, $L_70f23c, $L_70f3d0, $L_70ed88
 PUBLIC $L_64fa38
 PUBLIC $L_65170c, $L_651cec, $L_67f994
 PUBLIC $L_6ef260
+PUBLIC $L_67d494
 
 ;===================================
 _TEXT SEGMENT
@@ -638497,6 +638498,8 @@ $L_580b25 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 FUN_580ce0 PROC
 
             sub ESP,24
@@ -638569,6 +638572,10 @@ FUN_580ce0 PROC
             add ESP,24
             ret 
 FUN_580ce0 ENDP
+ELSE
+EXTERN @MovingItem_Fly@4:PROC
+FUN_580ce0 TEXTEQU <@MovingItem_Fly@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -661842,6 +661849,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_5916e0 PROC
 
             sub ESP,36
@@ -661921,6 +661930,10 @@ $L_5917da::
             add ESP,36
             ret 8
 $L_5916e0 ENDP
+ELSE
+EXTERN @Body_HitAt@16:PROC
+$L_5916e0 TEXTEQU <@Body_HitAt@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -1259,3 +1259,24 @@ extern "C" BYTE* __fastcall Rec593610_Construct(BYTE* s)
     memset(s + 4, 0, 60);
     return s;
 }
+
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_5ab400(); KING_ALIAS("_FUN_5ab400", "_Vec3_Normalized")
+ASM_VAR(float, g_q173_64c40c, $L_64c40c)
+// [$L_5916e0] a hit on body s at p with speed v: for a fast enough hit (|v| / +396 at least 64c40c) of a body
+// with +9516/+9520 set and +372 clear, the hit point in body space is computed and normalised (the result is not
+// used, as in the original)
+extern "C" void __fastcall Body_HitAt(BYTE* s, void*, const float* p, const float* v)
+{
+    if (F(int, s, 372) || !F(int, s, 9520) || !F(int, s, 9516))
+        return;
+    float c[3] = {v[0], v[1], v[2]};
+    if (!(CallC<double>(FUN_5ab4d0, c) / F(float, s, 396) >= g_q173_64c40c))
+        return;
+    const float* m = (const float*)(s + 596);
+    float q[3], out[3];
+    q[0] = (float)(m[3] * p[1] + m[6] * p[2] + p[0] * m[0] + m[9]);
+    q[1] = (float)(m[1] * p[0] + m[4] * p[1] + m[7] * p[2] + m[10]);
+    q[2] = (float)(m[2] * p[0] + m[5] * p[1] + m[8] * p[2] + m[11]);
+    CallC(FUN_5ab400, out, q);
+}
