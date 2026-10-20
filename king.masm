@@ -467219,6 +467219,8 @@ EXTERN _Carat_MoveWindow:PROC
 FUN_50ef60 TEXTEQU <_Carat_MoveWindow>
 ENDIF
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50efb0 PROC
 
             push -1
@@ -467495,6 +467497,10 @@ $L_50f07e::
             add ESP,156
             ret 
 FUN_50efb0 ENDP
+ELSE
+EXTERN _Shell_MakeMaskSlider:PROC
+FUN_50efb0 TEXTEQU <_Shell_MakeMaskSlider>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
