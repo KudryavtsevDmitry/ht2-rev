@@ -2548,3 +2548,36 @@ ASM_VAR(char, g_q198_723978, $L_723978)
 extern "C" int __fastcall q198_Node_Destroy(BYTE* s, void* d); KING_ALIAS("@q198_Node_Destroy@8", "@Node_Destroy@8")
 // [$L_5ef4b0] Node_Destroy on the static object 723978
 extern "C" void __cdecl Static723978_Destroy(void) { q198_Node_Destroy((BYTE*)&g_q198_723978, 0); }
+
+ASM_PROC(FUN_5adc80)
+extern "C" void FUN_5addf0(); KING_ALIAS("_FUN_5addf0", "@Render_SetAmbient@32")
+extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+ASM_VAR(unsigned, g_q217_702e8c, $L_702e8c)
+// [$L_5f3da0] draws node s with its own fog (+56, +64, +96; flag 4 of 702e8c on when +96 >= 0) and ambient (+72..)
+// on renderer r, then puts r's fog (its range +8536, +8540 scaled by +8464, mode +8544 or none) and ambient (+8512)
+// back; 1
+extern "C" int __fastcall Node_DrawWithFog(BYTE* s, void*, int a, BYTE* r)
+{
+    unsigned saved = g_q217_702e8c & 4;
+    double end = F(float, r, 8540) * F(double, r, 8464);
+    int mode = F(int, r, 8544);
+    double amb = F(double, r, 8512);
+    double start = F(float, r, 8536) * F(double, r, 8464);
+    if (F(int, s, 96) >= 0)
+        g_q217_702e8c |= 4;
+    else
+        g_q217_702e8c &= ~4u;
+    CallThis(FUN_5adc80, r, F(double, s, 56), F(double, s, 64), F(int, s, 96));
+    CallThis(FUN_5addf0, r, F(double, s, 72), F(double, s, 80), F(double, s, 88));
+    CallThis(FUN_5f2080, s, 0, a, r);
+    g_q217_702e8c &= ~4u;
+    if (saved) {
+        g_q217_702e8c |= saved;
+        CallThis(FUN_5adc80, r, end, start, mode);
+    } else {
+        g_q217_702e8c &= ~4u;
+        CallThis(FUN_5adc80, r, end, start, -1);
+    }
+    CallThis(FUN_5addf0, r, amb, -1.0, -1.0);
+    return 1;
+}
