@@ -3765,7 +3765,7 @@ extern "C" BYTE* __fastcall ShellColumns520e30_Construct(BYTE* s, void*, BYTE* p
     return s;
 }
 
-ASM_PROC(FUN_50efb0)
+extern "C" void FUN_50efb0(); KING_ALIAS("_FUN_50efb0", "_Shell_MakeMaskSlider")
 extern "C" void FUN_50e830(); KING_ALIAS("_FUN_50e830", "_Shell_MakeTexButton")
 extern "C" void FUN_5159d0(); KING_ALIAS("_FUN_5159d0", "_Video_PickModes")
 ASM_PROC(FUN_50e500)
@@ -6707,4 +6707,49 @@ extern "C" BYTE* __cdecl Shell_MakeTexButton(const char* name, int id, int x, in
     if (checked)
         F(unsigned, b, 284) |= 2;
     return b;
+}
+
+// ---------------------------------------------------------------------------
+// A slider with mask faces.
+
+ASM_PROC(FUN_5be8c0)
+extern "C" void FUN_5be700(); KING_ALIAS("_FUN_5be700", "@ScrollBar_Construct@24")
+extern "C" void FUN_5bef30(); KING_ALIAS("_FUN_5bef30", "@Ctl_SetStyles@28")
+// style st from template t with the mask fmt % name as its pattern
+static void Gs126_Mask(DWORD* st, const BYTE* t, const char* fmt, const char* name)
+{
+    char buf[32];
+    sprintf(buf, fmt, name);
+    CallThis(FUN_5bd5a0, st, t);
+    st[8] = CallC<DWORD>(FUN_5ef3d0, buf);
+}
+static void Gs126_Masks(BYTE* c, DWORD* a, DWORD* p, DWORD* ap, const char* name, int part)
+{
+    Gs126_Mask(a, (BYTE*)g_q125_6ce3b8, "%s_a.msk", name);
+    Gs126_Mask(p, (BYTE*)g_q125_6ce408, "%s_p.msk", name);
+    Gs126_Mask(ap, (BYTE*)g_q125_6ce3b8, "%s_ap.msk", name);
+    CallThis(FUN_5bef30, c, a, ap, p, p, part);
+}
+// [FUN_50efb0] a scroll bar at x, y (value a3, range a6..a7) with the mask faces of name1 (bar), the runner and name2
+extern "C" BYTE* __cdecl Shell_MakeMaskSlider(const char* name1, const char* name2, int a3, int x, int y, int a6,
+                                              int a7)
+{
+    DWORD a[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD p[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD ap[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    BYTE* c = (BYTE*)operator new(344);
+    c = c ? CallThis<BYTE*>(FUN_5be700, c, (BYTE*)g_q125_68d1c0, 0, 8, 1) : 0;
+    CallThis(FUN_5be8c0, c, 100, a3, a6, 0, a7, 12, 0, 0);
+    Gs126_Masks(c, a, p, ap, name1, 0);
+    Gs126_Masks(c, a, p, ap, "runner", 1);
+    Gs126_Masks(c, a, p, ap, name2, 2);
+    CallVirt(c, 20);
+    F(int, c, 56) += 10;
+    int dx = x - F(int, c, 44);
+    F(int, c, 44) = x;
+    F(int, c, 52) += dx;
+    int dy = y - F(int, c, 48);
+    F(int, c, 48) = y;
+    F(int, c, 56) += dy;
+    return c;
 }
