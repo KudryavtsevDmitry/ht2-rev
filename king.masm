@@ -175018,6 +175018,8 @@ $L_46324c           DWORD $L_463191
             nop
 $L_4630ac ENDP
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_463260 PROC
 
             mov EAX,DWORD PTR [ESP+88]
@@ -175060,6 +175062,10 @@ $L_463299::
             pop ESI
             ret 
 FUN_463260 ENDP
+ELSE
+EXTERN _Rec60_Call4667d0:PROC
+FUN_463260 TEXTEQU <_Rec60_Call4667d0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -175068,6 +175074,8 @@ FUN_463260 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_4632d0 PROC
 
             mov EAX,DWORD PTR [ESP+128]
@@ -175091,10 +175099,16 @@ FUN_4632d0 PROC
             add ESP,128
             ret 
 FUN_4632d0 ENDP
+ELSE
+EXTERN _Rec60_Call4668d0:PROC
+FUN_4632d0 TEXTEQU <_Rec60_Call4668d0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_463310 PROC
 
             mov EAX,DWORD PTR [ESP+200]
@@ -175145,6 +175159,10 @@ $L_46334c::
             pop ESI
             ret 
 FUN_463310 ENDP
+ELSE
+EXTERN _Rec60_Call466a00:PROC
+FUN_463310 TEXTEQU <_Rec60_Call466a00>
+ENDIF
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 IFDEF ASM_AI_CONTAINERS
@@ -294302,6 +294320,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 FUN_4a29a0 PROC
 
             mov ECX,DWORD PTR [ESP+20]
@@ -294325,6 +294345,10 @@ FUN_4a29a0 PROC
             add ESP,32
             ret 
 FUN_4a29a0 ENDP
+ELSE
+EXTERN _DequeIt_Pass0:PROC
+FUN_4a29a0 TEXTEQU <_DequeIt_Pass0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -294729,6 +294753,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 FUN_4a2cb0 PROC
 
             push 0
@@ -294749,6 +294775,10 @@ FUN_4a2cb0 PROC
             add ESP,36
             ret 
 FUN_4a2cb0 ENDP
+ELSE
+EXTERN _DequeIt_Pass1:PROC
+FUN_4a2cb0 TEXTEQU <_DequeIt_Pass1>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -294757,6 +294787,8 @@ FUN_4a2cb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 FUN_4a2ce0 PROC
 
             mov EAX,DWORD PTR [ESP+20]
@@ -294778,6 +294810,10 @@ FUN_4a2ce0 PROC
             add ESP,36
             ret 
 FUN_4a2ce0 ENDP
+ELSE
+EXTERN _DequeIt_Pass2:PROC
+FUN_4a2ce0 TEXTEQU <_DequeIt_Pass2>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314471,6 +314507,8 @@ $L_4accd8 PROC
             nop
 $L_4accd8 ENDP
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4acd20 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -314504,6 +314542,10 @@ FUN_4acd20 PROC
             pop ESI
             ret 
 FUN_4acd20 ENDP
+ELSE
+EXTERN _Deque_CopyBackward:PROC
+FUN_4acd20 TEXTEQU <_Deque_CopyBackward>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

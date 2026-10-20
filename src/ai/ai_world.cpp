@@ -22178,3 +22178,36 @@ extern "C" int* __fastcall Id411bd0_Init(int* s)
     *s = -1;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// By-value forwarders of 60-byte records: each record is copied (Rec60_Copy) into the call.
+
+extern "C" void FUN_461b20(); KING_ALIAS("_FUN_461b20", "@Rec60_Copy@12")
+ASM_PROC(FUN_4667d0)
+ASM_PROC(FUN_4668d0)
+ASM_PROC(FUN_466a00)
+struct Rec60v { DWORD d[15]; };
+static Rec60v Rec60v_Copy(const Rec60v& s)
+{
+    Rec60v r;
+    CallThis(FUN_461b20, &r, &s);
+    return r;
+}
+// [FUN_463260] FUN_4667d0 with copies of x and y
+extern "C" void __cdecl Rec60_Call4667d0(int a, int b, Rec60v x, Rec60v y)
+{
+    Rec60v y2 = Rec60v_Copy(y), x2 = Rec60v_Copy(x);
+    CallC(FUN_4667d0, a, b, x2, y2);
+}
+// [FUN_4632d0] FUN_4668d0 with copies of x and y
+extern "C" void __cdecl Rec60_Call4668d0(Rec60v x, Rec60v y, int a, int b)
+{
+    Rec60v y2 = Rec60v_Copy(y), x2 = Rec60v_Copy(x);
+    CallC(FUN_4668d0, x2, y2, a, b);
+}
+// [FUN_463310] FUN_466a00 with copies of the four records
+extern "C" void __cdecl Rec60_Call466a00(Rec60v a, Rec60v b, Rec60v c, Rec60v d)
+{
+    Rec60v d2 = Rec60v_Copy(d), c2 = Rec60v_Copy(c), b2 = Rec60v_Copy(b), a2 = Rec60v_Copy(a);
+    CallC(FUN_466a00, a2, b2, c2, d2);
+}
