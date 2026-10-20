@@ -2423,3 +2423,32 @@ extern "C" BYTE* __cdecl Orders_Find(BYTE* first, BYTE* last, Order144 order, in
     }
     return p;
 }
+
+extern "C" void FUN_464050(); KING_ALIAS("_FUN_464050", "_Sort_MedianByName")
+extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
+extern "C" void FUN_4640d0(); KING_ALIAS("_FUN_4640d0", "_Names_Partition")
+extern "C" void FUN_46b3f0(); KING_ALIAS("_FUN_46b3f0", "_MakeHeap12")
+extern "C" void FUN_46b6b0(); KING_ALIAS("_FUN_46b6b0", "_Mult_46b6b0")
+struct Name12 { DWORD d[3]; };
+// [FUN_45b3d0] the introsort loop over the 12-byte names [first, last) with cmp: while more than 16 are left,
+// partition around the median of three (copied by value into the partition) and sort the right part; past the depth
+// limit the range is heap sorted
+extern "C" void __cdecl Names_IntroSort(BYTE* first, BYTE* last, int, int depth, int cmp)
+{
+    while ((last - first) / 12 > 16) {
+        if (!depth) {
+            CallC(FUN_46b3f0, first, last, cmp, 0, 0);
+            for (; (last - first) / 12 > 1; last -= 12)
+                CallC(FUN_46b6b0, first, last, cmp);
+            return;
+        }
+        depth--;
+        BYTE* mid = first + (int)((last - first) / 12 / 2) * 12;
+        BYTE* m = CallC<BYTE*>(FUN_464050, first, mid, last - 12, cmp);
+        Name12 pivot;
+        CallThis(FUN_44dd90, &pivot, m);
+        BYTE* cut = CallC<BYTE*>(FUN_4640d0, first, last, pivot, cmp);
+        Names_IntroSort(cut, last, 0, depth, cmp);
+        last = cut;
+    }
+}
