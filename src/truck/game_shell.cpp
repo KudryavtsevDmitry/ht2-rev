@@ -5270,7 +5270,7 @@ extern "C" void __fastcall SessionScreen_OnShow(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // The video mode choice of a driver.
 
-ASM_PROC(FUN_515710)
+extern "C" void FUN_515710(); KING_ALIAS("_FUN_515710", "_Shell_DefaultSettings")
 extern "C" int __cdecl Mode_TextureLevel(void);    // core.cpp
 ASM_VAR(int, g_q66_7208e4, $L_7208e4)
 ASM_VAR(AsmLabel, s_q66_676d30, $L_676d30)
@@ -6239,4 +6239,98 @@ extern "C" void __cdecl Shell_LoadWorld(void)
     case 0: g_q92_7208c0 = 0; g_q92_67b738 = 71680; CallC(FUN_5e1a10, tex, 2); break;
     }
     CallC(FUN_512720);
+}
+
+// ---------------------------------------------------------------------------
+// The default settings for this machine.
+
+extern "C" void FUN_513740(); KING_ALIAS("_FUN_513740", "_Cpu_SpeedFactor")
+ASM_VAR(int, g_q120_696868, $L_696868)
+ASM_VAR(BYTE*, g_q120_6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_q120_6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_q120_6cec9c, $L_6cec9c)
+ASM_VAR(double, g_q120_64b6a0, $L_64b6a0)
+ASM_VAR(double, g_q120_64deb0, $L_64deb0)
+ASM_VAR(double, g_q120_64dea8, $L_64dea8)
+ASM_VAR(AsmLabel, s_q120_672998, $L_672998)
+// ln x the way the original computes it (fldln2, fyl2x)
+static __declspec(noinline) double Gs120_Ln(double x) { __asm { fldln2 } __asm { fld x } __asm { fyl2x } }
+static void Gs120_Write(const char* key, int v)
+{
+    CallC(FUN_603c70, (const char*)s_q120_672998, key, v, g_q120_696868);
+}
+static void Gs120_Mark(BYTE* c, bool on)
+{
+    if (!c)
+        return;
+    if (on)
+        F(unsigned, c, 284) |= 2;
+    else
+        F(unsigned, c, 284) &= ~2u;
+}
+// [FUN_515710] writes the defaults for this machine: all effects, the view distance by the processor speed,
+// the detail by the video memory (DRV1 vmem), the traffic by both; the video mode by the usable modes (c640,
+// c800, c1024: 800x600 with good detail and 1024x768 usable, else 640x480, 800x600 or 1024x768) marked on the
+// options screen's mode buttons (135-138)
+extern "C" void __cdecl Shell_DefaultSettings(int c640, int c800, int c1024, int)
+{
+    Gs120_Write("eff", 1023);
+    BYTE *b138 = 0, *b137 = 0, *b136 = 0, *b135 = 0;
+    if (BYTE* o = g_q120_6cec70) {
+        b138 = CallThis<BYTE*>(FUN_5bdb50, o + 64, 138);
+        b137 = CallThis<BYTE*>(FUN_5bdb50, g_q120_6cec70 + 64, 137);
+        b136 = CallThis<BYTE*>(FUN_5bdb50, g_q120_6cec70 + 64, 136);
+        b135 = CallThis<BYTE*>(FUN_5bdb50, g_q120_6cec70 + 64, 135);
+    }
+    int d = (int)(CallC<double>(FUN_513740) * g_q120_64b6a0);
+    Gs120_Write("dtl", d);
+    if (g_q120_6cec70)
+        F(short, g_q120_6cec70, 422) = (short)d;
+    int vm = 0;
+    CallC(FUN_603b70, "DRV1", "vmem", 0, &vm, g_q120_696868);
+    int q = 0;
+    if (vm) {
+        int mb = vm / 0x100000;
+        q = (int)((Gs120_Ln((double)mb) - g_q120_64deb0) * g_q120_64dea8 * g_q120_64b6a0);
+        if (q > 100)
+            q = 100;
+        else if (q < 0)
+            q = 0;
+    }
+    Gs120_Write("grf", q);
+    if (g_q120_6cec70)
+        F(short, g_q120_6cec70, 420) = (short)q;
+    int t = q * d / 100;
+    if (g_q120_6cec9c)
+        F(short, g_q120_6cec9c, 400) = (short)t;
+    if (g_q120_6cec98)
+        F(short, g_q120_6cec98, 388) = (short)t;
+    Gs120_Write("trafs", t);
+    Gs120_Write("trafm", t);
+    int mode;
+    if (q > 50 && c800 && c1024) {
+        mode = 290;
+        Gs120_Mark(b135, false);
+        Gs120_Mark(b138, false);
+        Gs120_Mark(b137, false);
+        Gs120_Mark(b136, true);
+    } else {
+        Gs120_Mark(b135, false);
+        Gs120_Mark(b138, false);
+        Gs120_Mark(b137, false);
+        Gs120_Mark(b136, false);
+        if (c640) {
+            mode = 274;
+            Gs120_Mark(b135, true);
+        } else if (c800) {
+            mode = 290;
+            Gs120_Mark(b136, true);
+        } else {
+            mode = 306;
+            Gs120_Mark(b137, true);
+        }
+    }
+    if (g_q120_6cec70)
+        F(int, g_q120_6cec70, 408) = mode;
+    Gs120_Write("video", mode);
 }
