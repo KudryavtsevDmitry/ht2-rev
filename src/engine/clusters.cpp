@@ -24,7 +24,7 @@ extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    //
 extern "C" void FUN_5edeb0(); KING_ALIAS("_FUN_5edeb0", "@Clu5edeb0_Construct@16")    // base constructor (a, b)
 extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")    // base destructor
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // selects a palette
-ASM_FUNC(Scene_FindCallback, $L_5ef310)
+extern "C" int __cdecl Scene_FindCallback(BYTE* n, int* q);
 
 ASM_VAR(AsmLabel, g_vtbl65274c, $L_65274c)
 ASM_VAR(AsmLabel, g_vtbl652538, $L_652538)
@@ -844,4 +844,22 @@ ASM_VAR(AsmLabel, g_q46_5ef410, $L_5ef410)
 extern "C" int __cdecl Static723978_Construct(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_5ef410, (void*)g_q46_723978);
+}
+
+// ---------------------------------------------------------------------------
+// The scene search callback.
+
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+// [$L_5ef310] scene search visitor: takes the node n into q (+0) when its name (+12) matches q's name (+4), the
+// whole name, or its first +8 characters when positive; always -1 (go on)
+extern "C" int __cdecl Scene_FindCallback(BYTE* n, int* q)
+{
+    const char* name = (const char*)q[1];
+    const char* nn = F(const char*, n, 12);
+    if (name && nn) {
+        int len = q[2];
+        if (len <= 0 ? strcmp(name, nn) == 0 : strncmp(name, nn, len) == 0)
+            q[0] = (int)n;
+    }
+    return -1;
 }

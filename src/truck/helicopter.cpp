@@ -718,7 +718,7 @@ ASM_VAR(AsmLabel, g_str66c4f4, $L_66c4f4)
 ASM_VAR(AsmLabel, g_str67b670, $L_67b670)       // "room_at_004"
 ASM_VAR(AsmLabel, g_str67b66c, $L_67b66c)
 ASM_VAR(AsmLabel, g_str67b668, $L_67b668)
-ASM_VAR(AsmLabel, g_cb569090, $L_569090)
+extern "C" int __cdecl Copter_SetSideState(int i, int state, BYTE* s);
 ASM_VAR(double, g_64ff10, $L_64ff10)            // 6200
 ASM_VAR(double, g_64b5f0, $L_64b5f0)            // 10000
 ASM_VAR(Ints, g_colors67b73c, $L_67b73c)        // 8 colors
@@ -819,7 +819,7 @@ extern "C" void __cdecl Gate_Passed(int id, int side, BYTE* car)
         Vec3_ZeroThis((Vec3*)((BYTE*)&m + k * 12), 0);
     m = g_identity;
     Node_Matrix(b, 0, &m);
-    CallC(FUN_4ba0c0, &m, side, (void*)g_cb569090, b);
+    CallC(FUN_4ba0c0, &m, side, (void*)Copter_SetSideState, b);
 }
 
 extern "C" void __cdecl Colors_Init(BYTE* surface)
@@ -2227,4 +2227,27 @@ static void PoolVec_Free_H(BYTE* s, int size)
 extern "C" void __fastcall Vec192_FreeStorage(BYTE* s, void*)
 {
     PoolVec_Free_H(s, 192);
+}
+
+// ---------------------------------------------------------------------------
+// The per-side state bits of a helicopter request.
+
+extern "C" void FUN_569000(); KING_ALIAS("_FUN_569000", "_Copter_Send963")
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+// [$L_569090] sets the two bits of side i in the +416 mask of the request s by the state (0: bit 1, 1: bit 2),
+// sends the mask before and after, stores it in the +344 resource; 1 when the side had bits set
+extern "C" int __cdecl Copter_SetSideState(int i, int state, BYTE* s)
+{
+    int sh = i * 2;
+    int had = (3 << sh) & F(int, s, 416);
+    CallC(FUN_569000, F(int, s, 344), F(int, s, 416));
+    if (state == 0)
+        F(int, s, 416) |= 1 << sh;
+    else if (state == 1)
+        F(int, s, 416) |= 2 << sh;
+    CallC(FUN_569000, F(int, s, 344), F(int, s, 416));
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, g_696ca0 + 704, F(int, s, 344));
+    if (r && F(BYTE*, r, 24))
+        F(int, F(BYTE*, r, 24), 4) = F(int, s, 416);
+    return had != 0;
 }

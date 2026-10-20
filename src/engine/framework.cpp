@@ -2922,3 +2922,35 @@ extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx)
             F(int, n, 128) = 0;
     return -1;
 }
+
+// ---------------------------------------------------------------------------
+// The window size limits.
+
+extern "C" void FUN_5d3f70(); KING_ALIAS("_FUN_5d3f70", "_Video_Get67fcf0")
+extern "C" void FUN_5d3f80(); KING_ALIAS("_FUN_5d3f80", "_Video_Get67fcf4")
+extern "C" int __cdecl Wnd_FrameExtra(int edge);    // directdraw.cpp
+// [$L_5dd650] the size limits (MINMAXINFO) of the 721750 frame with flag 1: the video size by the scale (+256,
+// +260) plus the frame, as the maximized, minimum and maximum track sizes; else the default
+extern "C" void __fastcall Frame5dd650_OnGetMinMaxInfo(BYTE* s, void*, MINMAXINFO* mm)
+{
+    if (!(F(BYTE, g_q51_721750, 292) & 1)) {
+        CallThis(Mfc_WndDefault, s);
+        return;
+    }
+    mm->ptMaxPosition.x = 0;
+    mm->ptMaxPosition.y = 0;
+    int sx = F(int, g_q51_721750, 256);
+    int w = CallC<int>(FUN_5d3f70) * sx;
+    w += Wnd_FrameExtra(2);
+    w += Wnd_FrameExtra(1);
+    int sy = F(int, g_q51_721750, 260);
+    int h = CallC<int>(FUN_5d3f80) * sy;
+    h += Wnd_FrameExtra(4);
+    h += Wnd_FrameExtra(3);
+    mm->ptMaxSize.x = w;
+    mm->ptMinTrackSize.x = w;
+    mm->ptMaxTrackSize.x = w;
+    mm->ptMaxSize.y = h;
+    mm->ptMinTrackSize.y = h;
+    mm->ptMaxTrackSize.y = h;
+}

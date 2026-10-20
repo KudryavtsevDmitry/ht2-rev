@@ -437,3 +437,22 @@ extern "C" int __stdcall Dd_MatchMode(BYTE* m, int* r)
     }
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// The window frame size.
+
+extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
+ASM_VAR(AsmLabel, s_q56_682a30, $L_682a30)
+// [FUN_5d8540] the frame size added by the overlapped window style: 2 the width, 4 the height, else 0
+extern "C" int __cdecl Wnd_FrameExtra(int edge)
+{
+    RECT r = {100, 100, 200, 200};
+    BOOL ok = AdjustWindowRect(&r, WS_OVERLAPPEDWINDOW, FALSE);
+    if (!ok)
+        CallC(FUN_5d2e70, (const char*)s_q56_682a30, ok);
+    if (edge == 2)
+        return 100 - 200 - r.left + r.right;
+    if (edge == 4)
+        return 100 - 200 - r.top + r.bottom;
+    return 0;
+}

@@ -1433,6 +1433,8 @@ PUBLIC $L_604e00
 PUBLIC $L_674b20, $L_68480c, $L_684834, $L_68487c, $L_6848b8, $L_6848fc
 PUBLIC $L_684938, $L_684964, $L_684998
 PUBLIC $L_679f8c, $L_67f854, $L_702f58, $L_702f5c, $L_702f60
+PUBLIC $L_682a30, $L_70f3d8, $L_70f3f0, $L_71e7bc, $L_71e7c4, $L_71e7d8
+PUBLIC $L_71e7dc
 
 ;===================================
 _TEXT SEGMENT
@@ -600698,6 +600700,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_569090 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -600771,6 +600775,10 @@ $L_569136::
             pop EBX
             ret 
 $L_569090 ENDP
+ELSE
+EXTERN _Copter_SetSideState:PROC
+$L_569090 TEXTEQU <_Copter_SetSideState>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -764325,6 +764333,8 @@ FUN_5cf480 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cf630 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -764416,6 +764426,10 @@ $L_5cf6e5::
             nop
             nop
 FUN_5cf630 ENDP
+ELSE
+EXTERN _Span_FillRows:PROC
+FUN_5cf630 TEXTEQU <_Span_FillRows>
+ENDIF
 ALIGN 16
 FUN_5cf6f0 PROC
 
@@ -782909,6 +782923,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 FUN_5d8540 PROC
 
             sub ESP,16
@@ -782998,6 +783014,10 @@ $L_5d85dc::
           BYTE 090H
           BYTE 090H
 FUN_5d8540 ENDP
+ELSE
+EXTERN _Wnd_FrameExtra:PROC
+FUN_5d8540 TEXTEQU <_Wnd_FrameExtra>
+ENDIF
 ALIGN 16
 ; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
 IFDEF ASM_DIRECTDRAW
@@ -792751,6 +792771,8 @@ ELSE
 EXTERN @Fw_OnSize@20:PROC
 $L_5dd5d0 TEXTEQU <@Fw_OnSize@20>
 ENDIF
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5dd650 PROC
 
             mov EAX,DWORD PTR [$L_721750]
@@ -792825,6 +792847,10 @@ $L_5dd6dc::
             nop
             nop
 $L_5dd650 ENDP
+ELSE
+EXTERN @Frame5dd650_OnGetMinMaxInfo@12:PROC
+$L_5dd650 TEXTEQU <@Frame5dd650_OnGetMinMaxInfo@12>
+ENDIF
 ; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 IFDEF ASM_FRAMEWORK
 $L_5dd6f0 PROC
@@ -827001,6 +827027,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 $L_5ef310 PROC
 
             push EBP
@@ -827082,6 +827110,10 @@ $L_5ef37d::
             pop EBP
             ret 
 $L_5ef310 ENDP
+ELSE
+EXTERN _Scene_FindCallback:PROC
+$L_5ef310 TEXTEQU <_Scene_FindCallback>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
