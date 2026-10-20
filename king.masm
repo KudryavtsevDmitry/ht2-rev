@@ -258804,6 +258804,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48f000 PROC
 
             push EBP
@@ -258973,6 +258975,10 @@ $L_48f1b3::
             fstp ST(0)
             jmp $L_48f121
 FUN_48f000 ENDP
+ELSE
+EXTERN @VPoly_Multiply@16:PROC
+FUN_48f000 TEXTEQU <@VPoly_Multiply@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -260882,6 +260888,8 @@ $L_49037f::
             nop
 FUN_4901b0 ENDP
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_4903a0 PROC
 
             push EBP
@@ -260981,6 +260989,10 @@ $L_49047f::
             pop EBP
             ret 8
 FUN_4903a0 ENDP
+ELSE
+EXTERN @VPoly_Divide@16:PROC
+FUN_4903a0 TEXTEQU <@VPoly_Divide@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
