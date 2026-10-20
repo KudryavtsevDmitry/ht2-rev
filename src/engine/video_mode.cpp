@@ -306,3 +306,70 @@ extern "C" int __cdecl Gdi_DrawFrame(void* bits)
     return StretchDIBits(g_paletteDc, 0, 0, g_67fcf0 * g_width, g_67fcf4 * g_height, 0, 0, g_width, g_height, bits, (BITMAPINFO*)b, usage, 13369376);
 }
 
+
+// ---------------------------------------------------------------------------
+// Choosing the Direct3D device.
+
+ASM_VAR(int, g_q155_72092c, $L_72092c)
+ASM_VAR(int, g_q155_7208e8, $L_7208e8)
+ASM_VAR(int, g_q155_7208dc, $L_7208dc)
+ASM_VAR(int, g_q155_7208bc, $L_7208bc)
+ASM_VAR(int, g_q155_7208d0, $L_7208d0)
+ASM_VAR(int, g_q155_7208d4, $L_7208d4)
+ASM_VAR(int, g_q155_7208c0, $L_7208c0)
+ASM_VAR(int, g_q155_7208c4, $L_7208c4)
+ASM_VAR(int, g_q155_7208c8, $L_7208c8)
+ASM_VAR(int, g_q155_7208cc, $L_7208cc)
+// [$L_5d4900] device enumeration callback: takes the 72092c-th hardware device that renders in ctx's bit depth
+// (+16): its z-buffer depth (+28: the wanted 7208e8 one or the deepest), its GUID (+104, +100 pointing at it),
+// the texture filter level (7208dc) and the multitexture and other capabilities (7208bc..7208cc); 1 goes on
+extern "C" int __stdcall D3d_ChooseDevice(const char*, const char*, const BYTE* dd, BYTE* ctx)
+{
+    if (!(F(DWORD, dd, 0) & 0x80000) || !(F(DWORD, ctx, 16) & F(DWORD, dd, 116)))
+        return 1;
+    if (g_q155_72092c > 0) {
+        g_q155_72092c--;
+        return 1;
+    }
+    DWORD z = F(DWORD, dd, 120);
+    if (g_q155_7208e8 > 0) {
+        F(int, ctx, 28) = 0;
+        if (g_q155_7208e8 == 16) {
+            if (z & 0x400)
+                F(int, ctx, 28) = 16;
+        } else if (g_q155_7208e8 == 24) {
+            if (z & 0x200)
+                F(int, ctx, 28) = 24;
+        } else if (g_q155_7208e8 == 32) {
+            if (z & 0x100)
+                F(int, ctx, 28) = 32;
+        }
+    } else
+        F(int, ctx, 28) = (z & 0x100) ? 32 : (z & 0x200) ? 24 : (z & 0x400) ? 16 : (z & 0x800) ? 8 : 0;
+    memcpy(ctx + 104, dd + 196, 16);
+    F(BYTE*, ctx, 100) = ctx + 104;
+    DWORD f = F(DWORD, dd, 0);
+    if (f & 0x1000)
+        g_q155_7208dc = 3;
+    else if (f & 0x200)
+        g_q155_7208dc = 2;
+    else
+        g_q155_7208dc = (f >> 8) & 1;
+    DWORD t = F(DWORD, dd, 180);
+    if (F(WORD, dd, 186) >= 2 && !(f & 0x4000)) {
+        g_q155_7208bc = 1;
+        g_q155_7208d0 = (t & 255) >> 3 & 1;
+        g_q155_7208d4 = t >> 15 & 1;
+        if (!g_q155_7208d0 && !g_q155_7208d4)
+            g_q155_7208bc = 0;
+    } else {
+        g_q155_7208bc = 0;
+        g_q155_7208d0 = 1;
+        g_q155_7208d4 = 1;
+    }
+    g_q155_7208c0 = (F(DWORD, dd, 96) & 255) >> 5 & 1;
+    g_q155_7208c4 = F(DWORD, dd, 180) >> 21 & 1;
+    g_q155_7208c8 = (F(DWORD, dd, 180) & 255) >> 2 & 1;
+    g_q155_7208cc = F(DWORD, dd, 180) >> 13 & 1;
+    return 0;
+}
