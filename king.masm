@@ -1493,6 +1493,7 @@ PUBLIC $L_67d420, $L_67d434
 PUBLIC $L_64d900, $L_64d908
 PUBLIC $L_64d338, $L_64f398
 PUBLIC $L_64ca48
+PUBLIC $L_683c0c
 
 ;===================================
 _TEXT SEGMENT
@@ -853360,6 +853361,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fd430 PROC
 
             mov EAX,DWORD PTR [$L_723b28]
@@ -853476,6 +853479,10 @@ $L_5fd56f::
             pop ESI
             ret 12
 FUN_5fd430 ENDP
+ELSE
+EXTERN @Sound_Play@20:PROC
+FUN_5fd430 TEXTEQU <@Sound_Play@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
