@@ -3759,3 +3759,22 @@ extern "C" BYTE* __cdecl Matrix_FromPose(BYTE* out, double x, double y, double z
     CallC(FUN_5aba40, out, r6, r1);
     return out;
 }
+
+#include "x87.h"
+extern "C" void FUN_5abc00(); KING_ALIAS("_FUN_5abc00", "@Matrix_Transform2@12")
+// [$L_5dec80] the view's mirror step: with +2984 = 1 a copies m; else a is moved along the plane normal of p
+// (+64..+72) by its distance from m's position
+extern "C" void __fastcall View_MirrorMove(BYTE* s, void*, float* a, const float* m, const float* p)
+{
+    if (F(int, s, 2984) == 1) {
+        memcpy(a, m, 48);
+        return;
+    }
+    double dx = a[9] - m[9], dy = a[10] - m[10], dz = a[11] - m[11];
+    double d = dz * p[18] + dy * p[17];
+    d = d + dx * p[16];
+    d = x87_fabs(d);
+    Fw133_V3 v = {(float)(d * p[16]), (float)(d * p[17]), (float)(d * p[18])};
+    BYTE t[48];
+    CallThis(FUN_5abc00, a, CallC<BYTE*>(FUN_5abc40, t, v));
+}

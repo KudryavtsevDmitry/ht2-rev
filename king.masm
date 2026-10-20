@@ -796081,6 +796081,8 @@ FUN_5de950 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5dec80 PROC
 
             mov EAX,DWORD PTR [ECX+2984]
@@ -796155,6 +796157,10 @@ $L_5deca7::
             add ESP,60
             ret 12
 $L_5dec80 ENDP
+ELSE
+EXTERN @View_MirrorMove@20:PROC
+$L_5dec80 TEXTEQU <@View_MirrorMove@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
