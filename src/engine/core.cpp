@@ -574,7 +574,7 @@ extern "C" void FUN_5d3630(); KING_ALIAS("_FUN_5d3630", "@Queue_Log@8")
 extern "C" void FUN_5d3660(); KING_ALIAS("_FUN_5d3660", "@Queue_Insert@12")
 extern "C" void FUN_5d3a60(); KING_ALIAS("_FUN_5d3a60", "@Queue_Remove@12")
 extern "C" void FUN_5d2b20(); KING_ALIAS("_FUN_5d2b20", "@Pool_Used@12")
-ASM_PROC(FUN_5d3060)    // event pool: allocate (size ignored)
+extern "C" void FUN_5d3060(); KING_ALIAS("_FUN_5d3060", "_Static7200c0_Cleanup")    // event pool: allocate (size ignored)
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 ASM_VAR(AsmLabel, s_67fbc4, $L_67fbc4)
@@ -987,4 +987,22 @@ extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const
     F(int, s, 12) = 0;
     F(char*, s, 28) = name ? Cor_StrDup(name) : 0;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+ASM_VAR(AsmLabel, g_q46_71e820, $L_71e820)
+ASM_VAR(AsmLabel, g_q46_5d2310, $L_5d2310)
+ASM_VAR(AsmLabel, g_q46_7200c0, $L_7200c0)
+ASM_VAR(AsmLabel, g_q46_5d2a70, $L_5d2a70)
+// [FUN_5d2b50] cleans up the static 71e820
+extern "C" int __cdecl Static71e820_Cleanup(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_5d2310, (void*)g_q46_71e820);
+}
+// [FUN_5d3060] cleans up the static 7200c0
+extern "C" int __cdecl Static7200c0_Cleanup(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_5d2a70, (void*)g_q46_7200c0);
 }

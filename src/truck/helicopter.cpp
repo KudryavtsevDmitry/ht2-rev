@@ -2186,3 +2186,27 @@ extern "C" BYTE* __fastcall Dtor573bf0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+ASM_PROC(FUN_573d10)
+// [$L_573cf0]
+extern "C" BYTE* __fastcall Dtor573cf0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_573d10, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+ASM_VAR(BYTE*, g_q46_6f3438, $L_6f3438)
+ASM_VAR(AsmLabel, g_q46_56aa00, $L_56aa00)
+// [FUN_569750] runs 56aa00 on the helicopter object 6f3438
+extern "C" int __cdecl Heli_Run569750(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_56aa00, g_q46_6f3438);
+}
