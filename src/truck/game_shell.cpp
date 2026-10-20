@@ -5013,3 +5013,95 @@ extern "C" void __fastcall TrackChoice_OnCommand(BYTE* s, void*, int cmd)
         break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Command handlers of the options and the race end screens.
+
+ASM_PROC(FUN_510bc0)
+extern "C" void FUN_51e070(); KING_ALIAS("_FUN_51e070", "@Screen_SetPlayer@12")
+extern "C" void FUN_511820(); KING_ALIAS("_FUN_511820", "_Shell_LeaveRace")
+ASM_VAR(AsmLabel, s_q62_676978, $L_676978)
+ASM_VAR(AsmLabel, s_q62_67696c, $L_67696c)
+ASM_VAR(AsmLabel, s_q62_676cfc, $L_676cfc)
+ASM_VAR(AsmLabel, s_q62_677638, $L_677638)
+ASM_VAR(AsmLabel, s_q62_677630, $L_677630)
+ASM_VAR(AsmLabel, s_q62_66d9c4, $L_66d9c4)
+static void Options_WriteIni(const char* key, int v)
+{
+    CallC(FUN_603c70, (const char*)s_672998, key, v, g_q32_696868);
+}
+// [$L_51d380] commands of the options part (the screen at -64): 2 cancels (back to 6cec80, the choices
+// +316..+320 kept in +336..+340), 109 saves them to the ini and starts, 110 starts the chosen track (+332, its
+// +300 name unless the default text 85), 111/112 and 273/274 switch the +1304 and +1312 options
+extern "C" void __fastcall Options_OnCommand(BYTE* s, void*, int cmd)
+{
+    switch (cmd) {
+    case 2:
+        CallVirt(s - 64, 32);
+        F(int, g_6cec80, 372) = 0;
+        CallVirt(g_6cec80, 36);
+        F(WORD, s, 336) = F(WORD, s, 316);
+        F(WORD, s, 338) = F(WORD, s, 318);
+        F(WORD, s, 340) = F(WORD, s, 320);
+        break;
+    case 109:
+        if (!CallC<int>(FUN_50c800, g_q59_6cec9c))
+            break;
+        Options_WriteIni((const char*)s_q62_676978, F(int, g_q59_6cec6c, 1304));
+        Options_WriteIni((const char*)s_q62_67696c, F(int, g_q59_6cec6c, 1312));
+        Options_WriteIni((const char*)s_q62_676cfc, F(short, s, 336));
+        Options_WriteIni((const char*)s_q62_677638, F(short, s, 338));
+        Options_WriteIni((const char*)s_q62_677630, F(short, s, 340));
+        CallC(FUN_510bc0, 0, 1);
+        break;
+    case 110: {
+        if (!CallC<int>(FUN_50c800, g_q59_6cec9c))
+            break;
+        BYTE* t = F(BYTE*, F(BYTE*, s, 332), 300);
+        if (!t || !F(const char*, t, 12))
+            break;
+        if (strcmp(F(const char*, t, 12), CallC<const char*>(FUN_5d2e50, 85)) == 0)
+            break;
+        t = F(BYTE*, F(BYTE*, s, 332), 300);
+        char buf[64];
+        sprintf(buf, (const char*)s_q62_66d9c4, t ? F(const char*, t, 12) : 0);
+        CallC(FUN_510bc0, buf, 1);
+        break;
+    }
+    case 111: F(int, g_q59_6cec6c, 1304) = 1; break;
+    case 112: F(int, g_q59_6cec6c, 1304) = 0; break;
+    case 273: F(int, g_q59_6cec6c, 1312) = 1; break;
+    case 274: F(int, g_q59_6cec6c, 1312) = 0; break;
+    }
+}
+// [$L_51ed30] commands of the race end part (the screen at -64): 27 and 172 close it back to the shell window,
+// 170 hands the player +308 to 6ceca0, 171 leaves: the movie and the screens go, then the race (+308 1) or the
+// game (2: 6968a4)
+extern "C" void __fastcall RaceEnd_OnCommand(BYTE* s, void*, int cmd)
+{
+    switch (cmd) {
+    case 27:
+    case 172:
+        CallVirt(s - 64, 32);
+        CallThis(FUN_5d8610, g_gs6ced6c);
+        break;
+    case 170:
+        CallThis(FUN_51e070, g_6ceca0, F(int, s, 308));
+        CallVirt(s - 64, 32);
+        break;
+    case 171:
+        CallVirt(s - 64, 32);
+        if (g_6ce4f4)
+            CallVirt(g_6ce4f4, 0, 1);
+        g_6ce4f4 = 0;
+        F(DWORD, g_696ca0, 16) |= 3;
+        CallC(FUN_569710);
+        CallC(FUN_50bd60);
+        CallC(FUN_4e12b0, 0);
+        if (F(int, s, 308) == 1)
+            CallC(FUN_511820);
+        else if (F(int, s, 308) == 2)
+            g_gs6968a4 = 1;
+        break;
+    }
+}
