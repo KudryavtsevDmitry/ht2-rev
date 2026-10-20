@@ -331300,6 +331300,8 @@ $L_4b562d::
             nop
             nop
 FUN_4b54b0 ENDP
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b5640 PROC
 
             mov EAX,4100
@@ -331443,6 +331445,10 @@ $L_4b5776::
             add ESP,4100
             ret 
 $L_4b5640 ENDP
+ELSE
+EXTERN @CipherReader_Get@4:PROC
+$L_4b5640 TEXTEQU <@CipherReader_Get@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
