@@ -3353,3 +3353,126 @@ extern "C" void __fastcall View_Draw(BYTE* s)
     }
     CallC(FUN_5d2fc0, (BYTE*)g_q77_71e850, (BYTE*)g_q77_71f808);
 }
+
+// ---------------------------------------------------------------------------
+// The pause sign.
+
+extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
+extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
+extern "C" void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int a5, int light, int dark,
+                                      int dx, int dy, int fill, BYTE* bmp, int pattern);    // controls.cpp
+ASM_VAR(AsmLabel, s_q78_682f50, $L_682f50)
+// [$L_5e04d0] with a font (+2864) draws PAUSE in a frame at 130,90 on the surface (+12) and presents it
+extern "C" void __fastcall View_DrawPause(BYTE* s)
+{
+    if (!F(BYTE*, s, 2864))
+        return;
+    int w = CallThis<int>(FUN_5ea0e0, F(BYTE*, s, 2864), (const char*)s_q78_682f50) + 140;
+    int h = F(int, F(BYTE*, s, 2864), 20) + 10;
+    int r[4] = {130, 90, w, h + 90};
+    Ctl_DrawFrame(F(BYTE*, s, 12), r, 513, 2, 0, 4, 0, 0, 0, 0x3f000000, 0, 0);
+    CallC(FUN_5ea170, F(BYTE*, s, 12), 135, h + 85, F(BYTE*, s, 2864), (const char*)s_q78_682f50, 5, 0);
+    CallThis(FUN_5b6b10, F(BYTE*, s, 12));
+}
+
+// ---------------------------------------------------------------------------
+// Sector reads of an mmio file.
+
+// [FUN_5e6c70] copies n bytes at pos to dst: from the pending data (+131588, +131592 left) when there is some,
+// else reading whole 512-byte sectors into the buffer (+4, at most 257 at a time)
+extern "C" int __fastcall Mmio_Read(BYTE* s, void*, int pos, BYTE* dst, int n)
+{
+    if (BYTE* p = F(BYTE*, s, 131588)) {
+        memcpy(dst, p, n);
+        int left = F(int, s, 131592) - n;
+        F(BYTE*, s, 131588) += n;
+        F(int, s, 131592) = left;
+        if (left <= 0)
+            F(BYTE*, s, 131588) = 0;
+        return 1;
+    }
+    int off = pos % 512;
+    int sectors = (off + n) / 512 + ((off + n) % 512 != 0);
+    mmioSeek(F(HMMIO, s, 0), pos - off, 0);
+    while (n > 0) {
+        int chunk, k;
+        if (sectors > 257) {
+            chunk = 257;
+            k = 131584 - off;
+        } else {
+            chunk = sectors;
+            k = n;
+        }
+        mmioRead(F(HMMIO, s, 0), (HPSTR)(s + 4), chunk * 512);
+        memcpy(dst, s + 4 + off, k);
+        dst += k;
+        n -= k;
+        off = 0;
+        sectors -= chunk;
+    }
+    return 1;
+}
+
+// ---------------------------------------------------------------------------
+// Texture chunks.
+
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+extern "C" int __cdecl fgetc(FILE* f);
+// [FUN_5e7f20] reads the chunks of a texture (size bytes of f) into dst: DIMS gives the levels, height and width
+// (with several levels dst moves past the bigger ones); DATA is read as is when the file and wanted depths match
+// (1/1 or 2/2), or turned from palette indices (pal, 3 bytes each) into 4-byte BGR0 pixels for 4/1; 0 when DATA
+// comes before DIMS
+extern "C" int __cdecl Texture_ReadChunks(BYTE* dst, FILE* f, int depth, int size, const BYTE* pal, int want)
+{
+    int levels = -1, h = -1, w = -1;
+    int end = ftell(f) + size;
+    if (end <= ftell(f))
+        return 1;
+    do {
+        char tag[4];
+        tag[0] = (char)fgetc(f);
+        tag[1] = (char)fgetc(f);
+        tag[2] = (char)fgetc(f);
+        tag[3] = (char)fgetc(f);
+        int len = (CallC<int>(FUN_5ab140, f) + 3) & ~3;
+        int start = ftell(f);
+        if (strncmp(tag, "DIMS", 4) == 0) {
+            int a = CallC<int>(FUN_5ab140, f);
+            levels = a;
+            h = CallC<int>(FUN_5ab140, f);
+            w = CallC<int>(FUN_5ab140, f);
+            int n = w * h * depth * 4;
+            if (a > 1) {
+                levels = 1;
+                for (int k = a - 1; k; k--) {
+                    dst += n;
+                    n <<= 2;
+                }
+            }
+        } else if (strncmp(tag, "DATA", 4) == 0) {
+            if (levels == -1)
+                return 0;
+            int n = w * h * depth;
+            if (depth == 1) {
+                if (want == 1)
+                    fread(dst, n, 1, f);
+            } else if (depth == 2) {
+                if (want == 2)
+                    fread(dst, n, 1, f);
+            } else if (depth == 4 && want == 1) {
+                BYTE* d = dst;
+                for (int y = h; y > 0; y--)
+                    for (int x = w; x > 0; x--, d += 4) {
+                        const BYTE* p = pal + (BYTE)fgetc(f) * 3;
+                        d[0] = p[2];
+                        d[1] = p[1];
+                        d[2] = p[0];
+                        d[3] = 0;
+                    }
+            }
+        }
+        fseek(f, start + len, 0);
+    } while (end > ftell(f));
+    return 1;
+}
