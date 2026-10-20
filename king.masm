@@ -1454,6 +1454,7 @@ PUBLIC $L_68352c
 PUBLIC $L_71e850, $L_71f808
 PUBLIC $L_682f50
 PUBLIC $L_6d2044
+PUBLIC $L_677994, $L_6779a4, $L_67b75c
 
 ;===================================
 _TEXT SEGMENT
@@ -493682,6 +493683,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_51f380 PROC
 
             push EBX
@@ -493992,6 +493995,10 @@ $L_51f73c           DWORD $L_51f3ba
           DWORD $L_51f4fb
           DWORD $L_51f4fb
           DWORD $L_51f493
+ELSE
+EXTERN @Shell_SetMode@12:PROC
+FUN_51f380 TEXTEQU <@Shell_SetMode@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

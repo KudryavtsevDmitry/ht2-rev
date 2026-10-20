@@ -2815,7 +2815,7 @@ extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 extern "C" void FUN_53e490(); KING_ALIAS("_FUN_53e490", "@Obj53e490_Restart@8")
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
-ASM_PROC(FUN_51f380)
+extern "C" void FUN_51f380(); KING_ALIAS("_FUN_51f380", "@Shell_SetMode@12")
 ASM_VAR(int, g_gs675460, $L_675460)
 ASM_VAR(int, g_gs675464, $L_675464)
 ASM_VAR(int, g_gs696850, $L_696850)
@@ -5770,5 +5770,106 @@ extern "C" void __fastcall SaveList_Command(BYTE* s, void*, int cmd)
         strcpy((char*)s + 320, name ? name : (const char*)g_q87_68d1c0);
         break;
     }
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Switching the game screen's mode.
+
+ASM_PROC(FUN_574530)
+extern "C" void FUN_5bac90(); KING_ALIAS("_FUN_5bac90", "@Texture_ReleaseSurface@8")
+extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
+ASM_VAR(BYTE*, g_q88_6ce3fc, $L_6ce3fc)
+ASM_VAR(AsmLabel, g_q88_6ce3e0, $L_6ce3e0)
+ASM_VAR(BYTE*, g_q88_696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_q88_6cec78, $L_6cec78)
+ASM_VAR(BYTE*, g_q88_6cec74, $L_6cec74)
+ASM_VAR(BYTE*, g_q88_6ceca0, $L_6ceca0)
+ASM_VAR(BYTE*, g_q88_6cecbc, $L_6cecbc)
+ASM_VAR(BYTE*, g_q88_6cecb0, $L_6cecb0)
+ASM_VAR(BYTE*, g_q88_6cecac, $L_6cecac)
+ASM_VAR(BYTE*, g_q88_6cecb4, $L_6cecb4)
+ASM_VAR(BYTE*, g_q88_696cb0, $L_696cb0)
+ASM_VAR(BYTE*, g_q88_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_q88_6cec98, $L_6cec98)
+ASM_VAR(int, g_q88_67b75c, $L_67b75c)
+ASM_VAR(AsmLabel, g_q88_6f68b0, $L_6f68b0)
+ASM_VAR(AsmLabel, s_q88_6779a4, $L_6779a4)
+ASM_VAR(AsmLabel, s_q88_677994, $L_677994)
+// sets the shown state (+40) of the screen's switch buttons: a for +424..+432 and +440, !a for +416, +420, +436
+static void Gs88_Buttons(BYTE* s, int a)
+{
+    F(int, F(BYTE*, s, 432), 40) = a;
+    F(int, F(BYTE*, s, 428), 40) = a;
+    F(int, F(BYTE*, s, 424), 40) = a;
+    F(int, F(BYTE*, s, 440), 40) = a;
+    F(int, F(BYTE*, s, 420), 40) = !a;
+    F(int, F(BYTE*, s, 416), 40) = !a;
+    F(int, F(BYTE*, s, 436), 40) = !a;
+}
+// [FUN_51f380] switches to mode m (0, 1, 2, 5: the backgrounds +368, +372, +376, +396), resets the styles and
+// the windows, stops sound and force feedback and starts the mode's music; in a race the background follows the
+// race kind (67b75c, 6cec98 +384); the background (+400) is bound and marked
+extern "C" void __fastcall Shell_SetMode(BYTE* s, void*, int m)
+{
+    if (F(BYTE*, s, 400)) {
+        CallThis(FUN_5bac90, F(BYTE*, s, 400));
+        F(unsigned, F(BYTE*, s, 400), 52) &= ~1u;
+    }
+    int bg = -1;
+    switch (m) {
+    case 0: bg = 368; break;
+    case 1: bg = 372; break;
+    case 2: bg = 376; break;
+    case 5: bg = 396; break;
+    }
+    if (bg >= 0) {
+        g_q88_6ce3fc = F(BYTE*, s, bg);
+        F(BYTE*, s, 400) = F(BYTE*, s, bg);
+        Gs88_Buttons(s, m != 2);
+        CallThis(FUN_5bdba0, F(BYTE*, s, 352), F(BYTE*, s, m == 2 ? 440 : 436));
+    }
+    F(int, s, 404) = m;
+    BYTE* e = F(BYTE*, s, 352);
+    CallThis(FUN_5bd5a0, e + 68, (BYTE*)g_q88_6ce3e0);
+    CallThis(FUN_5bd5a0, e + 104, (BYTE*)g_q88_6ce3e0);
+    CallThis(FUN_5bd5a0, e + 140, (BYTE*)g_q88_6ce3e0);
+    CallThis(FUN_5bd5a0, e + 176, (BYTE*)g_q88_6ce3e0);
+    CallThis(FUN_5bdba0, F(BYTE*, s, 436), F(BYTE*, s, 420));
+    CallThis(FUN_5bdba0, F(BYTE*, s, 440), F(BYTE*, s, 432));
+    CallThis(FUN_5d8610, s);
+    CallVirt(F(BYTE*, g_q88_696ca0, 2856), 32);
+    CallVirt(g_q88_6cec78, 32);
+    CallVirt(g_q88_6cec74, 32);
+    CallVirt(g_q88_6ceca0, 32);
+    CallVirt(g_q88_696ca0, 32);
+    CallVirt(g_q88_6cecbc, 32);
+    CallVirt(g_q88_6cecb0, 32);
+    CallVirt(g_q88_6cecac, 32);
+    CallVirt(g_q88_6cecb4, 32);
+    CallThis(FUN_598d80, (BYTE*)g_q88_6f68b0);
+    CallVirt(g_q88_696cb0, 32);
+    CallC(FUN_5fd160);
+    CallC(FUN_5fd3e0);
+    CallC(FUN_4e12b0, 0);
+    if (F(int, g_q88_6cec6c, 1344))
+        CallC(FUN_5ffb20);
+    F(double, s, 408) = CallC<double>(FUN_6037e0);
+    int mode = F(int, s, 404);
+    if (F(int, g_q88_6cec6c, 1316) && mode && mode != 5) {
+        CallC(FUN_574530);
+        if (g_q88_67b75c == 1) {
+            CallThis(FUN_5fdaf0, CallC<BYTE*>(FUN_5ef3d0, (const char*)s_q88_6779a4), 1.0f, 1.0f);
+            F(BYTE*, s, 400) = F(BYTE*, s, F(int, g_q88_6cec98, 384) < 2 ? 380 : 388);
+        } else if (g_q88_67b75c == 0) {
+            CallThis(FUN_5fdaf0, CallC<BYTE*>(FUN_5ef3d0, (const char*)s_q88_677994), 1.0f, 1.0f);
+            F(BYTE*, s, 400) = F(BYTE*, s, F(int, g_q88_6cec98, 384) < 2 ? 384 : 392);
+        }
+    } else
+        CallThis(FUN_5fdaf0, CallC<BYTE*>(FUN_5ef3d0, (const char*)(mode == 2 ? s_q88_6779a4 : s_q88_677994)), 1.0f,
+                 1.0f);
+    if (F(BYTE*, s, 400)) {
+        CallThis(FUN_5bae30, F(BYTE*, s, 400), 3);
+        F(unsigned, F(BYTE*, s, 400), 52) |= 1;
     }
 }
