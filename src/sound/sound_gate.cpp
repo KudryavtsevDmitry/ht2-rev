@@ -999,3 +999,15 @@ extern "C" int __stdcall Gate_AddRecord(const DWORD* r, DWORD* list, int)
     }
     return 1;
 }
+
+// [$L_600b90] reads up to n bytes from memory stream s (buffer +4: begin, end; position +8) into dst; the new
+// position
+extern "C" unsigned __fastcall MemStream_Read(BYTE* s, void*, void* dst, unsigned n)
+{
+    BYTE** b = F(BYTE**, s, 4);
+    unsigned avail = (unsigned)(b[1] - b[0]) - F(unsigned, s, 8);
+    if (n > avail)
+        n = avail;
+    memcpy(dst, b[0] + F(unsigned, s, 8), n);
+    return F(unsigned, s, 8) += n;
+}

@@ -1470,6 +1470,7 @@ PUBLIC $L_64bea8, $L_6865d8
 PUBLIC $L_64dea8, $L_64deb0
 PUBLIC $L_64d0f0, $L_676834, $L_676838
 PUBLIC $L_64dad0, $L_697868
+PUBLIC $L_69818e
 
 ;===================================
 _TEXT SEGMENT
@@ -556919,6 +556920,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_549900 PROC
 
             push ESI
@@ -556955,6 +556958,10 @@ $L_549958::
             pop ESI
             ret 4
 FUN_549900 ENDP
+ELSE
+EXTERN @CarEffect_Start@12:PROC
+FUN_549900 TEXTEQU <@CarEffect_Start@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -557146,6 +557153,8 @@ FUN_549960 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_549b90 PROC
 
             push ESI
@@ -557189,6 +557198,10 @@ $L_549bdf::
             pop ESI
             ret 
 FUN_549b90 ENDP
+ELSE
+EXTERN @CarEffect_Stop@4:PROC
+FUN_549b90 TEXTEQU <@CarEffect_Stop@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -574245,6 +574258,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_5565d0 PROC
 
             mov EAX,DWORD PTR [ECX+9600]
@@ -574267,6 +574282,10 @@ $L_5565e1::
             nop
             nop
 FUN_5565d0 ENDP
+ELSE
+EXTERN @Car_5565d0@4:PROC
+FUN_5565d0 TEXTEQU <@Car_5565d0@4>
+ENDIF
 ALIGN 16
 FUN_5565f0 PROC
 
@@ -859370,6 +859389,8 @@ ELSE
 EXTERN @DpHandler_Construct@12:PROC
 FUN_600b70 TEXTEQU <@DpHandler_Construct@12>
 ENDIF
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_600b90 PROC
 
             mov EDX,ECX
@@ -859415,6 +859436,10 @@ $L_600bb3::
             pop EBX
             ret 8
 $L_600b90 ENDP
+ELSE
+EXTERN @MemStream_Read@16:PROC
+$L_600b90 TEXTEQU <@MemStream_Read@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
