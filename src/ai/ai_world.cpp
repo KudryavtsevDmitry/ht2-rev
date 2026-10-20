@@ -21727,3 +21727,30 @@ extern "C" BYTE* __fastcall AiExc462b00_Copy(BYTE* s, void*, const BYTE* o)
 {
     return AiW157_Copy(s, o, (BYTE*)g_q157_64b97c);
 }
+
+// the point at t of the 3D polynomial at c (+576 coefficient count, highest first), by Horner's rule
+static double* Aiwor190_Poly(double* out, const BYTE* c, double t)
+{
+    const double* k = (const double*)c;
+    double x = k[0], y = k[1], z = k[2];
+    unsigned n = F(int, c, 576) * 24 / 24;
+    for (unsigned i = 1; i < n; i++) {
+        x = x * t + k[i * 3];
+        y = y * t + k[i * 3 + 1];
+        z = z * t + k[i * 3 + 2];
+    }
+    out[0] = x;
+    out[1] = y;
+    out[2] = z;
+    return out;
+}
+// [$L_454b00] the point at t of route segment i's (+56, 1592 bytes each) first curve
+extern "C" double* __fastcall Route_CurvePoint(BYTE* s, void*, double* out, double t, int i)
+{
+    return Aiwor190_Poly(out, F(BYTE*, s, 56) + i * 1592, t);
+}
+// [$L_454bd0] the same for its second curve (+616)
+extern "C" double* __fastcall Route_CurvePoint2(BYTE* s, void*, double* out, double t, int i)
+{
+    return Aiwor190_Poly(out, F(BYTE*, s, 56) + i * 1592 + 616, t);
+}
