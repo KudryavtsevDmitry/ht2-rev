@@ -2505,3 +2505,23 @@ extern "C" void __cdecl Race_Start(int a, int b, int c, int d)
     CallThis(FUN_4de290, g_vh696cb0, a);
     CallC(FUN_53fdb0);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+extern "C" void FUN_5319f0(); KING_ALIAS("_FUN_5319f0", "@Player_DetachCar@8")
+ASM_PROC(FUN_552940)
+ASM_VAR(BYTE*, g_q49_6d2078, $L_6d2078)
+// [$L_531aa0] detaches the car of the player 6d2078 unless keep
+extern "C" void __cdecl Player_DetachCarUnless(int keep)
+{
+    if (g_q49_6d2078 && !keep)
+        CallThis(FUN_5319f0, g_q49_6d2078);
+}
+// [$L_548100] releases the +9616 object (552940) and clears it
+extern "C" void __fastcall Veh548100_ReleaseAttachment(BYTE* s, void*)
+{
+    if (F(int, s, 9616))
+        CallThis(FUN_552940, s);
+    F(int, s, 9616) = 0;
+}

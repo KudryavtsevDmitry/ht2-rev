@@ -4786,3 +4786,13 @@ extern "C" void __cdecl Eff_ClearAndDestroyGlows(void)
     CallC(FUN_4c4de0);
     Glows_Destroy();
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+// [$L_4ce6c0] frees the +12 block
+extern "C" void __fastcall Eff4ce6c0_FreeBlock(BYTE* s, void*)
+{
+    if (F(void*, s, 12))
+        operator delete(F(void*, s, 12));
+}

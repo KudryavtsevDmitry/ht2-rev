@@ -2514,7 +2514,7 @@ extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
 ASM_PROC(FUN_5ea1b0)
 extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
 extern "C" void FUN_51d0e0(); KING_ALIAS("_FUN_51d0e0", "_Save_ListEntries")
-ASM_PROC(FUN_5d8b90)
+extern "C" void FUN_5d8b90(); KING_ALIAS("_FUN_5d8b90", "@Wnd5d8b90_Notify@8")
 extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
 extern "C" void FUN_43f760(); KING_ALIAS("_FUN_43f760", "_Player_Value136")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
@@ -4795,4 +4795,17 @@ extern "C" BYTE* __fastcall Dtor51ec80_DeletingDestructor(BYTE* s, void*, int fl
     if (flags & 1)
         operator delete(s);
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+extern "C" void FUN_50c770(); KING_ALIAS("_FUN_50c770", "@Names_Add@12")
+ASM_VAR(int, g_q49_6ce9f0, $L_6ce9f0)
+// [$L_513250] adds the name to the 6ce9f0 list: 255 when it holds 8 already
+extern "C" int __cdecl Names_AddLimited(const char* name)
+{
+    if (g_q49_6ce9f0 >= 8)
+        return 255;
+    return CallThis<int>(FUN_50c770, &g_q49_6ce9f0, name);
 }

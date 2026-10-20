@@ -2314,3 +2314,15 @@ extern "C" BYTE* __fastcall Lights5c2f10_Construct(BYTE* s, void*, int x)
     F(int, s, 320) = x;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+typedef ULONG(__stdcall* ComRelease)(void*);
+// [$L_5c2490] releases the COM object at +0
+extern "C" void __fastcall ComPtr_Release(BYTE* s, void*)
+{
+    void* p = F(void*, s, 0);
+    if (p)
+        ((ComRelease)(*(void***)p)[2])(p);
+}

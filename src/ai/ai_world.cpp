@@ -21563,3 +21563,48 @@ extern "C" int __cdecl MsgBuf_FreeThunk(BYTE* p)
 {
     return CallThis<int>(FUN_602ca0, p);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
+ASM_VAR(BYTE, g_q49_68a84c, $L_68a84c)
+ASM_VAR(BYTE, g_q49_68a84d, $L_68a84d)
+ASM_VAR(AsmLabel, g_q49_68cff0, $L_68cff0)
+ASM_VAR(AsmLabel, g_q49_68d008, $L_68d008)
+ASM_VAR(AsmLabel, g_q49_68cf10, $L_68cf10)
+ASM_VAR(AsmLabel, g_q49_68ceb0, $L_68ceb0)
+ASM_VAR(AsmLabel, g_q49_4028f0, $L_4028f0)
+// constructs the static at o once, by the guard bit
+static void AiStatic_ConstructOnce(BYTE& guard, BYTE bit, void* o)
+{
+    if (guard & bit)
+        return;
+    guard |= bit;
+    CallThis((void (*)())(void*)g_q49_4028f0, o);
+}
+// [$L_4028d0] constructs the static 68cff0 once
+extern "C" void __cdecl AiStatic68cff0_Init(void)
+{
+    AiStatic_ConstructOnce(g_q49_68a84c, 1, (void*)g_q49_68cff0);
+}
+// [$L_402b70] constructs the static 68d008 once
+extern "C" void __cdecl AiStatic68d008_Init(void)
+{
+    AiStatic_ConstructOnce(g_q49_68a84d, 1, (void*)g_q49_68d008);
+}
+// [$L_402bc0] constructs the static 68cf10 once
+extern "C" void __cdecl AiStatic68cf10_Init(void)
+{
+    AiStatic_ConstructOnce(g_q49_68a84d, 2, (void*)g_q49_68cf10);
+}
+static void __cdecl AiStatic68ceb0_Free(void)
+{
+    CallThis(FUN_447970, (void*)g_q49_68ceb0);
+}
+// [$L_402280] frees the storage of the static 68ceb0 at exit
+extern "C" int __cdecl AiStatic68ceb0_AtExit(void)
+{
+    return atexit(AiStatic68ceb0_Free);
+}
