@@ -2835,3 +2835,17 @@ extern "C" int __fastcall Frame5dd330_OnActivate(BYTE* s, void*, int a, int)
     }
     return CallThis<int>(Mfc_WndDefault, s);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+extern "C" void Mfc_FrameOnSetCursor(); KING_ALIAS("_Mfc_FrameOnSetCursor", "?OnSetCursor@CFrameWnd@@IAEHPAVCWnd@@II@Z")
+// [$L_5dd3a0] hides the cursor while the 721750 frame has flag 0x400 or over the client area, else the default
+extern "C" int __fastcall Frame5dd3a0_OnSetCursor(BYTE* s, void*, void* wnd, unsigned hit, unsigned msg)
+{
+    if ((F(DWORD, g_q51_721750, 268) & 0x400) || hit == 1) {
+        SetCursor(0);
+        return 1;
+    }
+    return CallThis<int>(Mfc_FrameOnSetCursor, s, wnd, hit, msg);
+}

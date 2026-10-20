@@ -877,7 +877,7 @@ extern "C" void __cdecl Cpu_ReadTsc(unsigned* t)
 // ---------------------------------------------------------------------------
 // Small setup procs: static vectors, a light array, the race start, a stream read.
 
-ASM_PROC(FUN_604e10)
+extern "C" void FUN_604e10(); KING_ALIAS("_FUN_604e10", "_Channels_Release")
 extern "C" void FUN_603ff0(); KING_ALIAS("_FUN_603ff0", "_Mixer_Clear724120")
 extern "C" void FUN_605090(); KING_ALIAS("_FUN_605090", "_Mixer_Stop")
 extern "C" void FUN_6050b0(); KING_ALIAS("_FUN_6050b0", "_Mixer_SetVolume")
@@ -923,4 +923,27 @@ extern "C" int __cdecl Cpu_HasTsc(void)
         return 0;
     __cpuid(r, 1);
     return (r[3] & 16) ? 1 : 0;
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+extern "C" void FUN_604e80(); KING_ALIAS("_FUN_604e80", "_Mixer_SetState1")
+extern "C" void Dir_VecDtor(); KING_ALIAS("_Dir_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_VAR(BYTE*, g_q52_724164, $L_724164)
+ASM_VAR(AsmLabel, g_q52_604e00, $L_604e00)
+// [FUN_604e10] releases the channels: state 1, stops and deletes the sounds, destroys the 24-byte channel array
+// 724164 (count before it) and clears it
+extern "C" void __cdecl Channels_Release(void)
+{
+    if (g_q52_724164) {
+        CallC(FUN_604e80);
+        Play_StopAndDeleteAll();
+        if (g_q52_724164) {
+            BYTE* a = g_q52_724164;
+            CallStd(Dir_VecDtor, a, 24, F(int, a, -4), (BYTE*)g_q52_604e00);
+            operator delete(a - 4);
+        }
+    }
+    g_q52_724164 = 0;
 }

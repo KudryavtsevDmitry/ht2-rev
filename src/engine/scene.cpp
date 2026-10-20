@@ -655,7 +655,7 @@ extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int)
 // ---------------------------------------------------------------------------
 ASM_PROC(FUN_604a80)
 ASM_PROC(FUN_604730)
-ASM_PROC($L_5fcdc0)
+extern "C" void $L_5fcdc0(); KING_ALIAS("_$L_5fcdc0", "_Slots723aa8_Destroy")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
 ASM_VAR(int, g_sc723b28, $L_723b28)
 ASM_VAR(int, g_sc723b30, $L_723b30)
@@ -738,7 +738,7 @@ extern "C" void __cdecl Sound_InitLock() { InitializeCriticalSection(&g_sc723b40
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
 ASM_PROC(FUN_5b4fc0)
-ASM_PROC(FUN_604e10)
+extern "C" void FUN_604e10(); KING_ALIAS("_FUN_604e10", "_Channels_Release")
 extern "C" void FUN_5fd250(); KING_ALIAS("_FUN_5fd250", "@SoundFile_Destroy@8")
 extern "C" void FUN_605050(); KING_ALIAS("_FUN_605050", "_Mixer_Shutdown")
 ASM_PROC(FUN_5e6800)
@@ -1861,13 +1861,13 @@ ASM_VAR(AsmLabel, g_q46_722940, $L_722940)
 ASM_VAR(AsmLabel, g_q46_723190, $L_723190)
 ASM_VAR(AsmLabel, g_q46s_5ef410, $L_5ef410)
 ASM_VAR(AsmLabel, g_q46_652a08, $L_652a08)
-// [FUN_5ef4d0] cleans up the static 722940
-extern "C" int __cdecl Static722940_Cleanup(void)
+// [FUN_5ef4d0] constructs the static 722940
+extern "C" int __cdecl Static722940_Construct(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46s_5ef410, (void*)g_q46_722940);
 }
-// [FUN_5ef510] cleans up the static 723190
-extern "C" int __cdecl Static723190_Cleanup(void)
+// [FUN_5ef510] constructs the static 723190
+extern "C" int __cdecl Static723190_Construct(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46s_5ef410, (void*)g_q46_723190);
 }
@@ -1910,4 +1910,18 @@ static void __cdecl Static722940_Destroy(void)
 extern "C" int __cdecl Static722940_AtExit(void)
 {
     return atexit(Static722940_Destroy);
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+ASM_VAR(BYTE*, g_q52_723aa8, $L_723aa8)
+// [$L_5fcdc0] destroys the object in slot i of 723aa8 (slot 0) and clears it
+extern "C" void __cdecl Slots723aa8_Destroy(int i)
+{
+    BYTE* o = (&g_q52_723aa8)[i];
+    if (o) {
+        CallVirt(o, 0);
+        (&g_q52_723aa8)[i] = 0;
+    }
 }

@@ -951,7 +951,7 @@ extern "C" BYTE* __fastcall Holder_Construct(BYTE* self, void*, BYTE** p, int af
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_592cf0)
+extern "C" void FUN_592cf0(); KING_ALIAS("_FUN_592cf0", "@Linked592cf0_Destruct@8")
 extern "C" void FUN_5930a0(); KING_ALIAS("_FUN_5930a0", "@Body593040_Destroy@8")
 ASM_VAR(DWORD, g_movbod6f6638, $L_6f6638)
 ASM_VAR(DWORD, g_movbod6f663c, $L_6f663c)
@@ -1232,4 +1232,23 @@ extern "C" BYTE* __fastcall Dtor593650_DeletingDestructor(BYTE* s, void*, int fl
     if (flags & 1)
         operator delete(s);
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+extern "C" void FUN_592e40(); KING_ALIAS("_FUN_592e40", "@ListNode_Unlink@8")
+ASM_VAR(AsmLabel, g_q52_65089c, $L_65089c)
+// [FUN_592cf0] destructor: the 65089c vtable; when the owner's head (+12) is this node (+4), moves it to the next
+// (+4) or the previous (+8), then unlinks the node
+extern "C" void __fastcall Linked592cf0_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q52_65089c;
+    BYTE* node = s ? s + 4 : 0;
+    BYTE** head = F(BYTE**, s, 12);
+    if (*head == node) {
+        BYTE* n = F(BYTE*, s, 4);
+        *head = n ? n : F(BYTE*, s, 8);
+    }
+    CallThis(FUN_592e40, s + 4);
 }

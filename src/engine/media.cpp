@@ -2282,8 +2282,8 @@ extern "C" BYTE* __fastcall Dtor5cf2f0_DeletingDestructor(BYTE* s, void*, int fl
 
 ASM_VAR(AsmLabel, g_q46_71e808, $L_71e808)
 ASM_VAR(AsmLabel, g_q46_5d2080, $L_5d2080)
-// [FUN_5d2050] cleans up the static 71e808
-extern "C" int __cdecl Static71e808_Cleanup(void)
+// [FUN_5d2050] constructs the static 71e808
+extern "C" int __cdecl Static71e808_Construct(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_5d2080, (void*)g_q46_71e808);
 }
@@ -2325,4 +2325,21 @@ extern "C" void __fastcall ComPtr_Release(BYTE* s, void*)
     void* p = F(void*, s, 0);
     if (p)
         ((ComRelease)(*(void***)p)[2])(p);
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+ASM_VAR(int, g_q52_71e844, $L_71e844)
+// [$L_5d2310] constructor: an empty table of 500 pointers (+8, capacity +4), marks 71e844
+extern "C" BYTE* __fastcall PtrTable500_Construct(BYTE* s, void*)
+{
+    F(int, s, 12) = 0;
+    F(int, s, 4) = 500;
+    F(int, s, 0) = 0;
+    F(void**, s, 8) = (void**)operator new(2000);
+    for (int k = 0; k < F(int, s, 4); k++)
+        F(void**, s, 8)[k] = 0;
+    g_q52_71e844 = 1;
+    return s;
 }
