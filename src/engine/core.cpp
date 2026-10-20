@@ -1385,3 +1385,12 @@ extern "C" void __cdecl Span_EdgeUV(const BYTE* a, const BYTE* b)
         F(int, r, 8) = c;
     }
 }
+
+ASM_VAR(void*, g_q156_71e838, $L_71e838)
+ASM_VAR(void*, g_q156_71e83c, $L_71e83c)
+// [$L_5d29e0] static exit: frees the 71e838 and 71e83c blocks
+extern "C" void __cdecl Core_Free71e838(void)
+{
+    operator delete(g_q156_71e838);
+    operator delete(g_q156_71e83c);
+}

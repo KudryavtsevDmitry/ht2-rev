@@ -403,7 +403,7 @@ extern "C" void __fastcall Tgr_Draw(BYTE* s, void*, void* dev, BYTE* b)
 ASM_PROC(FUN_613b50)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" void Tgr_VecCtor(); KING_ALIAS("_Tgr_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
-ASM_VAR(AsmLabel, g_q27Ctor61bee0, $L_61bee0)
+extern "C" BYTE* __fastcall Cell61bee0_Construct(BYTE* s);
 ASM_VAR(AsmLabel, s_q27_6724f8, $L_6724f8)
 ASM_VAR(AsmLabel, s_q27_685dac, $L_685dac)
 ASM_VAR(AsmLabel, s_q27_6724b0, $L_6724b0)
@@ -412,7 +412,7 @@ static BYTE* Tgr_NewCells()
 {
     BYTE* p = (BYTE*)operator new(1056784);
     if (p)
-        CallStd(Tgr_VecCtor, p, 16, 66049, (BYTE*)g_q27Ctor61bee0, FUN_50d190);
+        CallStd(Tgr_VecCtor, p, 16, 66049, (BYTE*)Cell61bee0_Construct, FUN_50d190);
     return p;
 }
 // [$L_61bd40] (a, b): three planes of 257x257 cells (+40192) and the grid's table loaded; 0 and an error report
@@ -441,7 +441,7 @@ extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
 
 ASM_VAR(AsmLabel, g_q46_72c108, $L_72c108)
 ASM_VAR(AsmLabel, g_q46_61c180, $L_61c180)
-ASM_VAR(AsmLabel, g_q46_61c160, $L_61c160)
+extern "C" int __fastcall Grid_Get32(BYTE* s);
 ASM_VAR(AsmLabel, g_q46_61c0f0, $L_61c0f0)
 // [FUN_6072b0] the deepest level allowed (+24 of the static grid 72c108)
 extern "C" int __cdecl Grid_DeepestLevel(void)
@@ -451,10 +451,20 @@ extern "C" int __cdecl Grid_DeepestLevel(void)
 // [FUN_6072c0] the +32 value of the static grid 72c108
 extern "C" int __cdecl Grid_Level32(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_61c160, (void*)g_q46_72c108);
+    return Grid_Get32((BYTE*)g_q46_72c108);
 }
 // [FUN_61c0c0] constructs the static grid 72c108
 extern "C" int __cdecl Grid72c108_Construct(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_61c0f0, (void*)g_q46_72c108);
 }
+
+// [$L_61bee0] constructor: cleared
+extern "C" BYTE* __fastcall Cell61bee0_Construct(BYTE* s)
+{
+    memset(s, 0, 16);
+    return s;
+}
+
+// [$L_61c160] +32 of s
+extern "C" int __fastcall Grid_Get32(BYTE* s) { return F(int, s, 32); }

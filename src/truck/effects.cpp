@@ -4560,7 +4560,7 @@ extern "C" void FUN_5fa4f0(); KING_ALIAS("_FUN_5fa4f0", "@Node_Set48@16")
 ASM_PROC(FUN_4c5680)
 ASM_VAR(BYTE*, g_q22_696248, $L_696248)
 ASM_VAR(BYTE*, g_q22_696250, $L_696250)
-ASM_VAR(AsmLabel, g_q22Ctor4c5020, $L_4c5020)
+extern "C" BYTE* __fastcall Mesh4c5020_Construct(BYTE* s);
 ASM_VAR(AsmLabel, g_q22Ctor4c5000, $L_4c5000)
 ASM_VAR(AsmLabel, g_q22Dtor4c47f0, $L_4c47f0)
 ASM_VAR(BYTE*, g_q22_696704, $L_696704)
@@ -4624,7 +4624,7 @@ extern "C" void __cdecl Eff_CreateSparks(BYTE* w)
         if (m) {
             *(int*)m = 100;
             e = m + 4;
-            CallStd(Eff_VecCtor, e, 116, 100, (BYTE*)g_q22Ctor4c5020, FUN_4c5680);
+            CallStd(Eff_VecCtor, e, 116, 100, (BYTE*)Mesh4c5020_Construct, FUN_4c5680);
         }
         g_q22_696248 = e;
     }
@@ -4909,5 +4909,19 @@ extern "C" BYTE* __fastcall Rec4bc820_Construct(BYTE* s)
         memset(s + b, 0, 36);
         memcpy(s + b + 36, (BYTE*)g_q97_7025f0, 48);
     }
+    return s;
+}
+
+extern "C" void FUN_5fa6f0(); KING_ALIAS("_FUN_5fa6f0", "@Mesh_ConstructNamed@12")
+ASM_VAR(AsmLabel, s_q156_672794, $L_672794)
+ASM_VAR(AsmLabel, g_q156_64c828, $L_64c828)
+// [$L_4c5020] constructor: a mesh named 672794 with +104..+112 cleared
+extern "C" BYTE* __fastcall Mesh4c5020_Construct(BYTE* s)
+{
+    CallThis(FUN_5fa6f0, s, (const char*)s_q156_672794);
+    F(int, s, 104) = 0;
+    F(int, s, 108) = 0;
+    F(int, s, 112) = 0;
+    F(void*, s, 0) = (BYTE*)g_q156_64c828;
     return s;
 }

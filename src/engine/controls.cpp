@@ -1153,3 +1153,12 @@ extern "C" int __fastcall Ctl_DrawFace(BYTE* s, void*, BYTE* dst, int x, int y, 
     Ctl_DrawFrame(dst, r, F(DWORD, s, 32), st[0], st[1], st[2], st[3], st[4], st[5], st[6], (BYTE*)st[7], st[8]);
     return 0;
 }
+
+ASM_VAR(AsmLabel, g_q156_651798, $L_651798)
+// [$L_5bcee0] destructor: frees the two blocks (+12, +8)
+extern "C" void __fastcall Ctl5bcee0_Destruct(BYTE* s)
+{
+    F(void*, s, 0) = (BYTE*)g_q156_651798;
+    operator delete(F(void*, s, 12));
+    operator delete(F(void*, s, 8));
+}

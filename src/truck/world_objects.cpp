@@ -2123,3 +2123,7 @@ extern "C" void __fastcall WObj_SetMode(BYTE* s, void*, int a)
     BYTE* r4 = CallC<BYTE*>(FUN_5aba40, t4, r3, r2);
     CallThis(FUN_596470, F(BYTE*, s, 124), 0, *(WObj107_M*)r4);
 }
+
+ASM_VAR(AsmLabel, g_q156_6f6968, $L_6f6968)
+// [$L_59a6a0] static init: constructs the 6f6968 camera record
+extern "C" BYTE* __cdecl WObj_Init6f6968(void) { return Rec598db0_Construct((BYTE*)g_q156_6f6968); }
