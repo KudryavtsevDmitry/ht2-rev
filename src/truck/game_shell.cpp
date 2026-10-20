@@ -1469,7 +1469,7 @@ extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")    // a t
 extern "C" void FUN_513270(); KING_ALIAS("_FUN_513270", "_Save_FindNamedStream")    // opens a stream of a storage (storage, name, mode)
 extern "C" void FUN_513850(); KING_ALIAS("_FUN_513850", "@Keys_Assign@8")
 extern "C" void FUN_513600(); KING_ALIAS("_FUN_513600", "@Settings_Save@8")
-ASM_PROC(FUN_5147b0)
+extern "C" void FUN_5147b0(); KING_ALIAS("_FUN_5147b0", "@Input_ApplyBindings@4")
 ASM_VAR(char, s_stream676958, $L_676958)
 ASM_VAR(char, s_stream6d1db8, $L_6d1db8)
 
@@ -5541,5 +5541,86 @@ extern "C" void __fastcall Shell_InputOnShow(BYTE* s)
     for (int i = 0; i < 4; i++) {
         F(unsigned, s, 512) |= b[i * 2] ? 1u << i : 0;
         F(unsigned, s, 508) |= F(unsigned, s, 512);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Applying the input settings.
+
+ASM_VAR(int, g_q84_6d205c, $L_6d205c)
+ASM_VAR(int, g_q84_6d2060, $L_6d2060)
+ASM_VAR(int, g_q84_6d2068, $L_6d2068)
+ASM_VAR(BYTE*, g_q84_6d2040, $L_6d2040)
+ASM_VAR(BYTE*, g_q84_6d203c, $L_6d203c)
+ASM_VAR(BYTE*, g_q84_6d2044, $L_6d2044)
+ASM_VAR(AsmLabel, g_q84_6d1948, $L_6d1948)
+ASM_VAR(AsmLabel, g_q84_6d1bb0, $L_6d1bb0)
+ASM_VAR(BYTE*, g_q84_6d1ec0, $L_6d1ec0)
+ASM_VAR(BYTE*, g_q84_6d1f7c, $L_6d1f7c)
+// [FUN_5147b0] applies the bindings of the input screen s: the joystick flag (+1280), the key states cleared
+// (6d1969 set), the joystick axes of actions 0-3 (+716.., from 300 on: axis (v-300)/4, odd ones inverted) and the
+// key pointers of the 47 actions (+528.. and +716.. below 296); the keys of most actions are marked as used
+extern "C" void __fastcall Input_ApplyBindings(BYTE* s)
+{
+    BYTE* keys = (BYTE*)g_q84_6d1948;
+    BYTE* axes = (BYTE*)g_q84_6d1bb0;
+    BYTE** k1 = &g_q84_6d1ec0;
+    BYTE** k2 = &g_q84_6d1f7c;
+    g_q84_6d205c = g_q84_6d2060 = F(int, s, 1280) ? 1 : 0;
+    for (BYTE* p = keys + 1; p < keys + 0x24f; p += 2)
+        *p = 0;
+    keys[0x21] = 1;
+    for (int i = 0; i < 47; i++) {
+        int inv = 0;
+        int v = F(int, s, 716 + i * 4);
+        switch (i) {
+        case 3:
+            inv = 1;
+        case 0:
+            if (v <= 295)
+                break;
+            g_q84_6d2068 = (F(int, s, 728) - 300) / 4 != (F(int, s, 716) - 300) / 4;
+            if (!g_q84_6d2068) {
+                int a = (v - 300) / 4;
+                g_q84_6d2040 = axes + a * 12;
+                int m = (v - 300) % 4;
+                if (m >= 0)
+                    F(int, axes, a * 12 + 8) = m & 1 ? inv ^ 1 : inv;
+            } else {
+                int a = (v - 300) / 4;
+                int m = (v - 300) % 4;
+                if (m >= 0)
+                    F(int, axes, a * 12 + 8) = m & 1;
+                if (i == 0)
+                    g_q84_6d2040 = axes + a * 12;
+                else
+                    g_q84_6d203c = axes + a * 12;
+            }
+            break;
+        case 2:
+            inv = 1;
+        case 1:
+            if (v <= 295)
+                break;
+            {
+                int a = (v - 300) / 4;
+                g_q84_6d2044 = axes + a * 12;
+                int m = (v - 300) % 4;
+                if (m >= 0)
+                    F(int, axes, a * 12 + 8) = m & 1 ? inv ^ 1 : inv;
+            }
+            break;
+        }
+        int w = F(int, s, 528 + i * 4);
+        if (w <= 295)
+            k1[i] = keys + w * 2;
+        if (F(int, s, 716 + i * 4) <= 295)
+            k2[i] = keys + F(int, s, 716 + i * 4) * 2;
+        if (i <= 27 && !(i == 5 || i == 6 || (i >= 15 && i <= 17) || i == 20 || i == 22 || i == 23)) {
+            if (k1[i])
+                k1[i][1] = 1;
+            if (k2[i])
+                k2[i][1] = 1;
+        }
     }
 }
