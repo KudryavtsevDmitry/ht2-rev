@@ -463157,6 +463157,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50bcf0 PROC
 
             mov ECX,DWORD PTR [$L_6ce520]
@@ -463174,6 +463176,10 @@ $L_50bd0e::
 
             ret 
 FUN_50bcf0 ENDP
+ELSE
+EXTERN _Shell_AddLight:PROC
+FUN_50bcf0 TEXTEQU <_Shell_AddLight>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
@@ -869023,6 +869029,8 @@ EXTERN _Play_StopEntry:PROC
 FUN_604300 TEXTEQU <_Play_StopEntry>
 ENDIF
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604390 PROC
 
             push ESI
@@ -869071,6 +869079,10 @@ $L_6043c0::
             nop
             nop
 FUN_604390 ENDP
+ELSE
+EXTERN _Streams_StopId:PROC
+FUN_604390 TEXTEQU <_Streams_StopId>
+ENDIF
 ; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 IFDEF ASM_DIRECTSOUND
 $L_6043d0 PROC

@@ -6827,3 +6827,13 @@ extern "C" BYTE* __cdecl Shell_MakeMaskButton(const char* name, int id, int x, i
 extern "C" int __fastcall q198_Dtor51aad0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor51aad0_DeletingDestructor@12", "@Dtor51aad0_DeletingDestructor@12")
 // [$L_52abf0] forwards to Dtor51aad0_DeletingDestructor for the object 64 bytes before
 extern "C" int __fastcall Thunk52abf0(BYTE* s, void* d, int a0) { return q198_Dtor51aad0_DeletingDestructor(s - 64, d, a0); }
+
+extern "C" void FUN_4cd470(); KING_ALIAS("_FUN_4cd470", "@Lights_Add@20")
+ASM_VAR(BYTE*, g_q202_6ce520, $L_6ce520)
+struct Shell202_Light { BYTE b[104]; };
+// [FUN_50bcf0] adds the light l (by value) with a and b to the light list 6ce520, if there is one
+extern "C" void __cdecl Shell_AddLight(Shell202_Light l, int a, int b)
+{
+    if (g_q202_6ce520)
+        CallThis(FUN_4cd470, g_q202_6ce520, &l, a, b);
+}
