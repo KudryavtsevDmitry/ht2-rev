@@ -6334,3 +6334,88 @@ extern "C" void __cdecl Shell_DefaultSettings(int c640, int c800, int c1024, int
         F(int, g_q120_6cec70, 408) = mode;
     Gs120_Write("video", mode);
 }
+
+// ---------------------------------------------------------------------------
+// The input settings screen's commands.
+
+extern "C" void FUN_5134b0(); KING_ALIAS("_FUN_5134b0", "@Settings_Load@8")
+extern "C" void __fastcall Input_ApplyBindings(BYTE* s);
+ASM_VAR(int, g_q121_6d207c, $L_6d207c)
+ASM_VAR(BYTE*, g_q121_696848, $L_696848)
+ASM_VAR(BYTE*, g_q121_6cec80, $L_6cec80)
+ASM_VAR(BYTE*, g_q121_6cec6c, $L_6cec6c)
+ASM_VAR(int, g_q121_696868, $L_696868)
+ASM_VAR(AsmLabel, g_q121_6d1bb0, $L_6d1bb0)
+ASM_VAR(AsmLabel, s_q121_672998, $L_672998)
+ASM_VAR(AsmLabel, s_q121_6767d0, $L_6767d0)
+// [$L_514a40] commands of the input screen (s is its +64 part): 142/143 the previous/next player profile (saved,
+// switched, loaded, applied), 2 cancel (the profile and bindings restored), 1 OK (saved, applied, the joystick
+// flag written), 33 the next control, 141 waits for a key; 1000-1046 start binding an action with the axes shown
+extern "C" void __fastcall InputScreen_Command(BYTE* s, void*, int cmd)
+{
+    BYTE* w = s - 64;
+    int idx;
+    switch (cmd) {
+    case 142:
+        if (!F(int, s, 1216))
+            return;
+        CallThis(FUN_513600, w);
+        idx = F(int, s, 1216) - 1;
+        goto profile;
+    case 143:
+        if (F(int, s, 1216) >= g_q121_6d207c - 1)
+            return;
+        CallThis(FUN_513600, w);
+        idx = F(int, s, 1216) + 1;
+    profile:
+        F(int, s, 1216) = idx;
+        CallC(FUN_531000, idx);
+        CallThis(FUN_5134b0, w);
+        Input_ApplyBindings(w);
+        return;
+    case 2:
+        if (F(int, s, 452) >= 0)
+            return;
+        CallVirt(w, 32);
+        F(int, g_q121_6cec80, 372) = 0;
+        CallVirt(g_q121_6cec80, 36);
+        F(int, s, 1216) = F(int, s, 456);
+        memcpy(s + 464, s + 840, 376);
+        return;
+    case 1:
+        if (F(int, s, 452) >= 0)
+            return;
+        if (g_q121_696848 == w)
+            CallVirt(g_q121_6cec80, 36);
+        CallVirt(w, 32);
+        F(int, g_q121_6cec80, 372) = 0;
+        CallThis(FUN_513600, w);
+        Input_ApplyBindings(w);
+        CallC(FUN_603c70, (const char*)s_q121_672998, (const char*)s_q121_6767d0, F(int, g_q121_6cec6c, 1280),
+              g_q121_696868);
+        return;
+    case 33: {
+        BYTE* l = F(BYTE*, s, 288);
+        BYTE* n = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, l, 292));
+        CallThis(FUN_5bdba0, l, n ? n : F(BYTE*, l, 288));
+        return;
+    }
+    case 141:
+        F(int, s, 452) = -1;
+        CallThis(FUN_513850, w);
+        return;
+    }
+    if (F(int, s, 452) >= 0 || cmd < 1000 || cmd >= 1047)
+        return;
+    F(int, s, 452) = cmd - 1000;
+    const BYTE* t = (const BYTE*)g_q121_6d1bb0;
+    for (int k = 0; k < 8; k++, t += 12) {
+        double d = F(float, t, 0);
+        F(double, s, 304 + k * 8) = d;
+        F(double, s, 368 + k * 8) = d;
+        if (F(int, t, 8)) {
+            F(double, s, 368 + k * 8) = -d;
+            F(double, s, 304 + k * 8) = -F(double, s, 304 + k * 8);
+        }
+    }
+}

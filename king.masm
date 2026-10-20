@@ -476454,6 +476454,8 @@ ELSE
 EXTERN @Input_ApplyBindings@4:PROC
 FUN_5147b0 TEXTEQU <@Input_ApplyBindings@4>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_514a40 PROC
 
             push EBP
@@ -476822,6 +476824,10 @@ $L_514c80           BYTE ($L_514c64-$L_514c64)/4
           BYTE ($L_514c70-$L_514c64)/4
           BYTE ($L_514c74-$L_514c64)/4
           BYTE ($L_514c78-$L_514c64)/4
+ELSE
+EXTERN @InputScreen_Command@12:PROC
+$L_514a40 TEXTEQU <@InputScreen_Command@12>
+ENDIF
           BYTE 090H
 $L_514d10 PROC
 
