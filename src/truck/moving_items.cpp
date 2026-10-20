@@ -606,3 +606,53 @@ extern "C" BYTE* __fastcall Track587c80_Construct(BYTE* s)
     F(int, s, 2816) = 0;
     return s;
 }
+
+// [$L_582460] starts a step of moving item s: *out cleared, +1688 = whether +1432 <= +1680, +1676 cleared, the
+// previous matrices (+1792 -> +1888, +1840 -> +1936) and +2032 -> +2036 kept, the point +3448 through matrix
+// +1696 into +1996 and the matrix's position into +2008
+extern "C" void __fastcall MovingItem_StepStart(BYTE* s, void*, int* out)
+{
+    *out = 0;
+    F(int, s, 1688) = F(int, s, 1432) <= F(int, s, 1680);
+    F(int, s, 1676) = 0;
+    memcpy(s + 1888, s + 1792, 48);
+    F(int, s, 2036) = F(int, s, 2032);
+    memcpy(s + 1936, s + 1840, 48);
+    const float* m = (const float*)(s + 1696);
+    float px = F(float, s, 3448), py = F(float, s, 3452), pz = F(float, s, 3456);
+    double x = m[6] * pz + m[3] * py;
+    x = x + px * m[0];
+    x = x + m[9];
+    double y = m[7] * pz + m[1] * px;
+    y = y + m[4] * py;
+    y = y + m[10];
+    double z = m[8] * pz + m[2] * px;
+    z = z + m[5] * py;
+    z = z + m[11];
+    F(float, s, 1996) = (float)x;
+    F(float, s, 2000) = (float)y;
+    F(float, s, 2004) = (float)z;
+    memcpy(s + 2008, s + 1732, 12);
+}
+
+extern "C" void FUN_5ab620(); KING_ALIAS("_FUN_5ab620", "@Vec3_MulAssign@16")
+// [$L_583c30] ends a step of moving item s (unless +1432 > +1680 or flags bit 2): its velocity (+1984) is the
+// move from +2020 to +416 times +396 (a tenth of it with +1672 bit 25), applied with +1516 through vtbl+164,
+// then vtbl+116
+extern "C" void __fastcall MovingItem_StepEnd(BYTE* s, void*, int flags)
+{
+    if (F(int, s, 1432) > F(int, s, 1680) || (flags & 4))
+        return;
+    double dx = F(float, s, 416) - F(float, s, 2020);
+    float dy = (float)(F(float, s, 420) - F(float, s, 2024));
+    float k = F(float, s, 396);
+    float dz = (float)(F(float, s, 424) - F(float, s, 2028));
+    float v[3] = {(float)(dx * k), (float)(dy * k), (float)(dz * k)};
+    memcpy(s + 1984, v, 12);
+    float w[3], tmp[3];
+    memcpy(w, s + 1516, 12);
+    if (F(DWORD, s, 1672) & 0x2000000)
+        CallThis(FUN_5ab620, v, tmp, 0.1f);
+    CallVirt(s, 164, w, v);
+    CallVirt(s, 116);
+}

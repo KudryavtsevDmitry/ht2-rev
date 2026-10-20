@@ -640799,6 +640799,8 @@ $L_582140 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 $L_582460 PROC
 
             sub ESP,12
@@ -640878,6 +640880,10 @@ $L_582460 PROC
             add ESP,12
             ret 4
 $L_582460 ENDP
+ELSE
+EXTERN @MovingItem_StepStart@12:PROC
+$L_582460 TEXTEQU <@MovingItem_StepStart@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -642733,6 +642739,8 @@ $L_583c18 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 $L_583c30 PROC
 
             sub ESP,36
@@ -642814,6 +642822,10 @@ $L_583d2c::
             add ESP,36
             ret 4
 $L_583c30 ENDP
+ELSE
+EXTERN @MovingItem_StepEnd@12:PROC
+$L_583c30 TEXTEQU <@MovingItem_StepEnd@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
