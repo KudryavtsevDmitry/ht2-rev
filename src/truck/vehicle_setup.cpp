@@ -571,3 +571,28 @@ extern "C" void __cdecl Block697684_Free(void)
     if (g_q49_697684)
         operator delete(g_q49_697684);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+extern "C" int __cdecl printf(const char* f, ...);
+extern "C" int __cdecl fprintf(FILE* f, const char* t, ...);
+extern "C" void __cdecl exit(int code);
+ASM_VAR(void*, g_q53_6ce36c, $L_6ce36c)
+ASM_VAR(AsmLabel, s_q53_674b20, $L_674b20)
+ASM_VAR(AsmLabel, s_q53_66c4f4, $L_66c4f4)
+// [FUN_507c80] a fatal setup error: to the 6ce36c handler when set, else printed, appended to the 674b20 log and
+// the game exits
+extern "C" int __cdecl Setup_Fatal(const char* msg)
+{
+    if (g_q53_6ce36c)
+        return ((int(__cdecl*)(const char*))g_q53_6ce36c)(msg);
+    printf(msg);
+    FILE* f = fopen((const char*)s_q53_674b20, (const char*)s_q53_66c4f4);
+    if (f) {
+        fprintf(f, msg);
+        fclose(f);
+    }
+    exit(0);
+    return 0;
+}

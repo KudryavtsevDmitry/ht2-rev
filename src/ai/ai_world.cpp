@@ -21659,3 +21659,40 @@ extern "C" void __fastcall Vec104_FreeStorage(BYTE* s, void*)
 {
     PoolVec_Free_W(s, 104);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+extern "C" void __cdecl free(void*);
+ASM_PROC(FUN_4731e0)
+ASM_VAR(AsmLabel, g_q53_48d600, $L_48d600)
+// [$L_4485d0] frees a list (sentinel at +0): each node's +8 destroyed, then the sentinel
+extern "C" void __fastcall List4485d0_Destroy(BYTE* s, void*)
+{
+    for (BYTE* n = F(BYTE*, F(BYTE*, s, 0), 0); n != F(BYTE*, s, 0);) {
+        BYTE* e = n;
+        n = F(BYTE*, n, 0);
+        CallThis(FUN_4731e0, e + 8);
+        free(e);
+    }
+    F(BYTE*, F(BYTE*, s, 0), 0) = F(BYTE*, s, 0);
+    F(BYTE*, F(BYTE*, s, 0), 4) = F(BYTE*, s, 0);
+    free(F(BYTE*, s, 0));
+}
+// [$L_44b050] frees the storage of a vector of 580-byte records
+extern "C" void __fastcall Vec580_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_W(s, 580);
+}
+// [$L_4555e0] swaps the flags 4 and 8 (+8), then 48d600 on the +56 part
+extern "C" int __fastcall Ai4555e0_SwapSides(BYTE* s, void*)
+{
+    DWORD f = F(DWORD, s, 8);
+    DWORD n = f & ~12u;
+    if (f & 4)
+        n |= 8;
+    if (f & 8)
+        n |= 4;
+    F(DWORD, s, 8) = n;
+    return CallThis<int>((void (*)())(void*)g_q53_48d600, s + 56);
+}

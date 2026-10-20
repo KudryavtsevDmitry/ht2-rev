@@ -1147,7 +1147,7 @@ extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
 extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
-extern "C" void Fw_ThreadProc(); KING_ALIAS("_Fw_ThreadProc", "$L_5e4390")
+extern "C" unsigned __cdecl Fw_LoaderThread(BYTE* p);
 extern "C" void FUN_5e4e00(); KING_ALIAS("_FUN_5e4e00", "@Resources_FreeTables@8")
 ASM_PROC(FUN_5baa70)
 ASM_VAR(double, g_652730, $L_652730)
@@ -1182,7 +1182,7 @@ extern "C" BYTE* __fastcall Loader_Construct(BYTE* self, void*, int a)
     F(int, self, 20) = 0;
     F(int, self, 16) = 0;
     F(double, self, 0) = Timer_Now();
-    F(void*, self, 32) = CallStd<void*>(Afx_BeginThread, Fw_ThreadProc, self, 0, 0, 0, 0);
+    F(void*, self, 32) = CallStd<void*>(Afx_BeginThread, (void*)Fw_LoaderThread, self, 0, 0, 0, 0);
     SECURITY_ATTRIBUTES sa = { 12, 0, 1 };
     F(HANDLE, self, 36) = CreateEventA(&sa, 0, 0, s_683288);
     return self;
@@ -2848,4 +2848,65 @@ extern "C" int __fastcall Frame5dd3a0_OnSetCursor(BYTE* s, void*, void* wnd, uns
         return 1;
     }
     return CallThis<int>(Mfc_FrameOnSetCursor, s, wnd, hit, msg);
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
+extern "C" void FUN_5e3ba0(); KING_ALIAS("_FUN_5e3ba0", "_Fw_Startup")
+extern "C" void FUN_5f33e0(); KING_ALIAS("_FUN_5f33e0", "@Node_Call5f2a40b@12")
+extern "C" void FUN_5f2dd0(); KING_ALIAS("_FUN_5f2dd0", "@Node_Call5f2a40a@12")
+extern "C" void FUN_5fa910(); KING_ALIAS("_FUN_5fa910", "@Mesh_BuildVertices@12")
+ASM_PROC(FUN_5f0b10)
+extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "?AfxEndThread@@YGXIH@Z")
+ASM_VAR(AsmLabel, g_q53_5d9370, $L_5d9370)
+ASM_VAR(HDC, g_q53_72091c, $L_72091c)
+// [$L_5d9300] switching the current room (+468) to r: walks r with the 5d9370 visitor and a zeroed 432-byte
+// record holding the old and the new room
+extern "C" void __fastcall Wnd5d9300_EnterRoom(BYTE* s, void*, BYTE* r)
+{
+    if (!r || F(BYTE*, s, 468) == r)
+        return;
+    DWORD rec[108];
+    for (int k = 0; k < 108; k++)
+        rec[k] = 0;
+    rec[1] = F(DWORD, s, 468);
+    rec[2] = (DWORD)r;
+    CallThis(FUN_5ead00, r, (void*)g_q53_5d9370, rec);
+}
+// [$L_5e4390] the loader thread p: every wake (or 30 s) ends when +12 is set, else runs the pending request
+// (+20, once per +16 flag) on the +28 object with +24
+extern "C" unsigned __cdecl Fw_LoaderThread(BYTE* p)
+{
+    for (;;) {
+        WaitForSingleObject(F(HANDLE, p, 36), 30000);
+        if (F(int, p, 12)) {
+            F(int, p, 32) = 0;
+            CallStd(Mfc_AfxEndThread, 0, 1);
+        }
+        if (F(int, p, 20) && F(int, p, 16) != 1) {
+            CallVirt(F(BYTE*, p, 28), 84, F(int, p, 20), 1, F(int, p, 24));
+            F(int, p, 16) = 1;
+        }
+    }
+}
+// [$L_5dd560] on destroy: leaves the 721750 frame's full screen (+328, +340; spins when +396 is set) and starts it,
+// releases the 72091c DC of the window (+28) and quits
+extern "C" void __fastcall Frame5dd560_OnDestroy(BYTE* s, void*)
+{
+    BYTE* f = g_q51_721750;
+    if (f) {
+        if (F(int, f, 328)) {
+            F(int, f, 328) = 0;
+            F(int, g_q51_721750, 340) = 1;
+            if (F(int, g_q51_721750, 396))
+                for (;;) {
+                }
+        }
+        CallThis(FUN_5e3ba0, g_q51_721750);
+    }
+    if (g_q53_72091c)
+        ReleaseDC(F(HWND, s, 28), g_q53_72091c);
+    PostQuitMessage(0);
 }
