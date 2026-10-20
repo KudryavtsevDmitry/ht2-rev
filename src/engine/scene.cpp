@@ -1072,7 +1072,7 @@ extern "C" void FUN_5ae560(); KING_ALIAS("_FUN_5ae560", "@Render_CurrentFrame@8"
 ASM_PROC(FUN_5f88d0)
 ASM_PROC(FUN_5ad180)
 extern "C" void FUN_5adc20(); KING_ALIAS("_FUN_5adc20", "@Render_PopLight@12")
-ASM_PROC(FUN_5e6520)
+extern "C" void FUN_5e6520(); KING_ALIAS("_FUN_5e6520", "@Poly_BoundingSphere@16")
 ASM_PROC(FUN_5e5580)
 extern "C" void FUN_5f92b0(); KING_ALIAS("_FUN_5f92b0", "@Ints3_Read@12")
 extern "C" void FUN_5b4f70(); KING_ALIAS("_FUN_5b4f70", "@Clip_InFront@12")
