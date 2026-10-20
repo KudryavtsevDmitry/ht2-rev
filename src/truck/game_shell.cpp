@@ -6571,3 +6571,86 @@ extern "C" void __cdecl Shell_WriteThumbnail(void* st, int w, int h, int fromIma
         ((long(__stdcall*)(void*, void*))(*(void***)o)[32])(o, 0);
     }
 }
+
+// ---------------------------------------------------------------------------
+// The vehicle data cache.
+
+extern "C" void Gs124_difftime(); KING_ALIAS("_Gs124_difftime", "_difftime")
+extern "C" int __cdecl _stat(const char* path, void* buf);
+ASM_VAR(const char*, g_q124_674ae0, $L_674ae0)
+ASM_VAR(int, g_q124_697860, $L_697860)
+ASM_VAR(int, g_q124_6ce32c, $L_6ce32c)
+ASM_VAR(AsmLabel, g_q124_697868, $L_697868)
+ASM_VAR(AsmLabel, g_q124_69809c, $L_69809c)
+ASM_VAR(AsmLabel, g_q124_6c6b68, $L_6c6b68)
+ASM_VAR(double, g_q124_64dad0, $L_64dad0)
+ASM_VAR(double, g_q124_64b678, $L_64b678)
+static double Gs124_Diff(long a, long b) { return CallC<double>(Gs124_difftime, a, b); }
+// [FUN_508000] loads the vehicle data cache (674ae0): valid (697860 = 1) when the data file named in it is not
+// newer than the cache and has its recorded time, all records (2416 bytes, up to 6c6b68) read, and every
+// vehicle file (+2212 of the first 6ce32c records, repeats skipped) exists unchanged since its recorded time
+extern "C" int __cdecl VehCache_Load(void)
+{
+    g_q124_697860 = 0;
+    FILE* f = fopen(g_q124_674ae0, "rb");
+    if (!f)
+        return g_q124_697860;
+    int len;
+    fread(&len, 4, 1, f);
+    if (len >= 200 || len < 0)
+        return g_q124_697860;
+    char name[200];
+    BYTE st[36];
+    fread(name, 1, len, f);
+    name[len] = 0;
+    _stat(g_q124_674ae0, st);
+    long cacheTime = F(long, st, 28);
+    long t0;
+    fread(&t0, 4, 1, f);
+    if (_stat(name, st) != -1) {
+        if (!(Gs124_Diff(F(long, st, 28), cacheTime) < g_q124_64dad0))
+            return g_q124_697860;
+        if (!(Gs124_Diff(F(long, st, 28), t0) <= g_q124_64b678))
+            return g_q124_697860;
+    }
+    int v;
+    fread(&v, 4, 1, f);
+    if (v != 2416)
+        return g_q124_697860;
+    for (int k = 0; k < 8; k++)
+        fread(&g_q124_6ce32c + k, 4, 1, f);
+    int r = v;
+    for (BYTE* p = (BYTE*)g_q124_697868; r == 2416;) {
+        r = fread(p, 1, r, f);
+        p += 2416;
+        if (p >= (BYTE*)g_q124_6c6b68) {
+            if (r == 2416)
+                g_q124_697860 = 1;
+            break;
+        }
+    }
+    if (g_q124_697860) {
+        int missing = 0, found = 0;
+        char* nm = (char*)g_q124_69809c + 112;
+        for (int i = 0; i < g_q124_6ce32c; i++, nm += 2416) {
+            long t;
+            fread(&t, 4, 1, f);
+            if (nm > (char*)g_q124_69809c + 112 && strcmp(nm, nm - 2416) == 0)
+                continue;
+            if (_stat(nm, st) == -1) {
+                missing++;
+                continue;
+            }
+            if (!(Gs124_Diff(F(long, st, 28), cacheTime) < g_q124_64dad0) ||
+                !(Gs124_Diff(F(long, st, 28), t) == g_q124_64b678)) {
+                g_q124_697860 = 0;
+                break;
+            }
+            found++;
+        }
+        if (g_q124_697860 && missing * found)
+            g_q124_697860 = 0;
+    }
+    fclose(f);
+    return g_q124_697860;
+}
