@@ -145384,6 +145384,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_454b00 PROC
 
             push EBP
@@ -145465,6 +145467,10 @@ $L_454ba9::
             pop EBP
             ret 16
 $L_454b00 ENDP
+ELSE
+EXTERN @Route_CurvePoint@24:PROC
+$L_454b00 TEXTEQU <@Route_CurvePoint@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -145479,6 +145485,8 @@ $L_454b00 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_454bd0 PROC
 
             push EBP
@@ -145560,6 +145568,10 @@ $L_454c7d::
             pop EBP
             ret 16
 $L_454bd0 ENDP
+ELSE
+EXTERN @Route_CurvePoint2@24:PROC
+$L_454bd0 TEXTEQU <@Route_CurvePoint2@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
