@@ -1471,6 +1471,7 @@ PUBLIC $L_64dea8, $L_64deb0
 PUBLIC $L_64d0f0, $L_676834, $L_676838
 PUBLIC $L_64dad0, $L_697868
 PUBLIC $L_69818e
+PUBLIC $L_71f7f8, $L_720020
 
 ;===================================
 _TEXT SEGMENT
@@ -787053,6 +787054,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5da080 PROC
 
             push ESI
@@ -787113,6 +787116,10 @@ $L_5da166::
             pop ESI
             ret 
 FUN_5da080 ENDP
+ELSE
+EXTERN @View_RenderFrame@4:PROC
+FUN_5da080 TEXTEQU <@View_RenderFrame@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -797386,6 +797393,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5dff20 PROC
 
             sub ESP,48
@@ -797429,6 +797438,10 @@ FUN_5dff20 PROC
             add ESP,48
             ret 16
 FUN_5dff20 ENDP
+ELSE
+EXTERN _Matrix_Angles@16:PROC
+FUN_5dff20 TEXTEQU <_Matrix_Angles@16>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
@@ -797814,6 +797827,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e02f0 PROC
 
             sub ESP,12
@@ -797882,6 +797897,10 @@ $L_5e0365::
             add ESP,12
             ret 
 FUN_5e02f0 ENDP
+ELSE
+EXTERN @View_PlaceCamera@4:PROC
+FUN_5e02f0 TEXTEQU <@View_PlaceCamera@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

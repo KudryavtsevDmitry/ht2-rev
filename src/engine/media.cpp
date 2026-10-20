@@ -1465,7 +1465,7 @@ extern "C" BYTE* __cdecl Media_FindFmt2(BYTE* obj, int a, int b)
 extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
 extern "C" void FUN_5c53b0(); KING_ALIAS("_FUN_5c53b0", "@Timeline_Reset@8")
-ASM_PROC(FUN_5e02f0)
+extern "C" void FUN_5e02f0(); KING_ALIAS("_FUN_5e02f0", "@View_PlaceCamera@4")
 extern "C" void FUN_5c4940(); KING_ALIAS("_FUN_5c4940", "@Media_ClearList@8")
 ASM_PROC(FUN_5cc6b0)
 
