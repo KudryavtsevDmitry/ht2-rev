@@ -2584,3 +2584,27 @@ extern "C" void __fastcall Render_SetFog(BYTE* s, void*, double start, double en
     f = (float)end;
     Ren154_RS(g_q150_720908, 37, *(int*)&f);
 }
+
+ASM_PROC(FUN_5ad5c0)
+// [FUN_5ad9e0] how sphere sp (centre, radius) lies against renderer s's clip planes (+8240 of them, 80 bytes each
+// from +6224): the centre is moved by the current matrix (+8236 into the stack at +5216), then the highest plane
+// result; 0 without planes
+extern "C" int __fastcall Render_ClipSphere(BYTE* s, void*, const float* sp)
+{
+    int n = F(int, s, 8240);
+    if (n <= 0)
+        return 0;
+    const float* m = (const float*)(s + 5216 + F(int, s, 8236) * 48);
+    float c[4];
+    c[0] = (float)(sp[2] * m[6] + sp[1] * m[3] + sp[0] * m[0] + m[9]);
+    c[1] = (float)(sp[2] * m[7] + sp[1] * m[4] + sp[0] * m[1] + m[10]);
+    c[2] = (float)(sp[2] * m[8] + sp[1] * m[5] + sp[0] * m[2] + m[11]);
+    c[3] = sp[3];
+    int best = 0;
+    for (int i = n - 1; i >= 0; i--) {
+        int r = CallThis<int>(FUN_5ad5c0, s + 6224 + i * 80, c);
+        if (r > best)
+            best = r;
+    }
+    return best;
+}
