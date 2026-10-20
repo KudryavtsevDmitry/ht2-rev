@@ -763728,6 +763728,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5ce870 PROC
 
             sub ESP,24
@@ -763805,6 +763807,10 @@ $L_5ce923::
             add ESP,24
             ret 16
 FUN_5ce870 ENDP
+ELSE
+EXTERN @Mesh_ScaleColors@24:PROC
+FUN_5ce870 TEXTEQU <@Mesh_ScaleColors@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
