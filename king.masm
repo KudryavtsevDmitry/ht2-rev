@@ -1474,6 +1474,7 @@ PUBLIC $L_69818e
 PUBLIC $L_71f7f8, $L_720020
 PUBLIC $L_721210
 PUBLIC $L_723a88
+PUBLIC $L_67fa80
 
 ;===================================
 _TEXT SEGMENT
@@ -766833,6 +766834,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d05e0 PROC
 
             push ECX
@@ -767013,6 +767016,10 @@ $L_5d077c::
             pop ECX
             ret 
 FUN_5d05e0 ENDP
+ELSE
+EXTERN _Span_EdgeD:PROC
+FUN_5d05e0 TEXTEQU <_Span_EdgeD>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -767028,6 +767035,8 @@ FUN_5d05e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d0790 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -767245,6 +767254,10 @@ $L_5d0983::
             nop
             nop
 FUN_5d0790 ENDP
+ELSE
+EXTERN _Span_EdgeDV:PROC
+FUN_5d0790 TEXTEQU <_Span_EdgeDV>
+ENDIF
 ALIGN 16
 FUN_5d0990 PROC
 

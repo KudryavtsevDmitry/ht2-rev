@@ -1184,3 +1184,137 @@ extern "C" void __cdecl Span_EdgeV(const BYTE* a, const BYTE* b)
     if (F(int, r, 8) >= 16777216)
         F(int, r, 8) = 16777215;
 }
+
+ASM_VAR(AsmLabel, g_q136_67fa80, $L_67fa80)
+// [FUN_5d05e0] like 5d02b0 with a value at +40 interpolated into +20 of the rows (dithered by the 67fa80 table
+// after the first row)
+extern "C" void __cdecl Span_EdgeD(const BYTE* a, const BYTE* b)
+{
+    const BYTE *p1, *p2;
+    int side = g_q134_723a88;
+    if (F(int, a, 16) < F(int, b, 16)) {
+        p1 = a;
+        p2 = b;
+        side = (side ^ 1) ? 0 : 1;
+    } else {
+        p1 = b;
+        p2 = a;
+        side ^= 1;
+    }
+    int y1 = F(int, p1, 16), y2 = F(int, p2, 16);
+    int dy = (y2 - y1) >> 10;
+    int frac = (y1 >> 10) & 1023;
+    int row = y1 >> 20, last = y2 >> 20;
+    BYTE* t = (BYTE*)g_q134_70f3f0 + side * 1300 * 24;
+    if (row == last) {
+        if (frac || !(y2 & 0xffc00))
+            return;
+        F(int, t, row * 24) = F(int, p1, 12);
+        F(int, t, row * 24 + 20) = F(int, p1, 40);
+        if (row < g_q134_71e7dc)
+            g_q134_71e7dc = row;
+        if (row > g_q134_71e7d8)
+            g_q134_71e7d8 = row;
+        return;
+    }
+    int f = frac;
+    if (frac) {
+        row++;
+        f = 1023 - frac;
+    }
+    if (row < g_q134_71e7dc)
+        g_q134_71e7dc = row;
+    if ((F(int, p2, 16) >> 20) > g_q134_71e7d8)
+        g_q134_71e7d8 = F(int, p2, 16) >> 20;
+    int sx = 0, sv = 0;
+    if (dy) {
+        sx = (F(int, p2, 12) - F(int, p1, 12)) / dy;
+        sv = (F(int, p2, 40) - F(int, p1, 40)) / dy;
+    }
+    int x = sx * f + F(int, p1, 12);
+    int v = sv * f + F(int, p1, 40);
+    sx <<= 10;
+    sv <<= 10;
+    BYTE* r = t + row * 24;
+    F(int, r, 0) = x;
+    F(int, r, 20) = v;
+    const int* d = (const int*)g_q136_67fa80;
+    for (int k = row + 1; k <= F(int, p2, 16) >> 20; k++) {
+        x += sx;
+        v += sv;
+        r += 24;
+        F(int, r, 0) = x;
+        F(int, r, 20) = d[k & 7] + v;
+    }
+}
+
+// [FUN_5d0790] 5d05e0 and 5d0400 together: +40 into +20 (dithered) and +20 into +8 (not moved by the first
+// row's fraction)
+extern "C" void __cdecl Span_EdgeDV(const BYTE* a, const BYTE* b)
+{
+    const BYTE *p1, *p2;
+    int side = g_q134_723a88;
+    if (F(int, a, 16) < F(int, b, 16)) {
+        p1 = a;
+        p2 = b;
+        side = (side ^ 1) ? 0 : 1;
+    } else {
+        p1 = b;
+        p2 = a;
+        side ^= 1;
+    }
+    int y1 = F(int, p1, 16), y2 = F(int, p2, 16);
+    int dy = (y2 - y1) >> 10;
+    int frac = (y1 >> 10) & 1023;
+    int row = y1 >> 20, last = y2 >> 20;
+    BYTE* t = (BYTE*)g_q134_70f3f0 + side * 1300 * 24;
+    if (row == last) {
+        if (frac || !(y2 & 0xffc00))
+            return;
+        F(int, t, row * 24) = F(int, p1, 12);
+        F(int, t, row * 24 + 20) = F(int, p1, 40);
+        F(int, t, row * 24 + 8) = F(int, p1, 20);
+        if (row < g_q134_71e7dc)
+            g_q134_71e7dc = row;
+        if (row > g_q134_71e7d8)
+            g_q134_71e7d8 = row;
+        return;
+    }
+    int f = frac;
+    if (frac) {
+        row++;
+        f = 1023 - frac;
+    }
+    if (row < g_q134_71e7dc)
+        g_q134_71e7dc = row;
+    if ((F(int, p2, 16) >> 20) > g_q134_71e7d8)
+        g_q134_71e7d8 = F(int, p2, 16) >> 20;
+    int sx = 0, dv = 0, sw = 0;
+    if (dy) {
+        sx = (F(int, p2, 12) - F(int, p1, 12)) / dy;
+        if (dy > 2048)
+            dv = ((F(int, p2, 20) - F(int, p1, 20)) << 6) / (dy >> 4);
+        else
+            dv = ((F(int, p2, 20) - F(int, p1, 20)) << 6) / dy << 4;
+        sw = (F(int, p2, 40) - F(int, p1, 40)) / dy;
+    }
+    int x = sx * f + F(int, p1, 12);
+    int w = sw * f + F(int, p1, 40);
+    int v = F(int, p1, 20);
+    sx <<= 10;
+    sw <<= 10;
+    BYTE* r = t + row * 24;
+    F(int, r, 0) = x;
+    F(int, r, 20) = w;
+    F(int, r, 8) = v;
+    const int* d = (const int*)g_q136_67fa80;
+    for (int k = row + 1; k <= F(int, p2, 16) >> 20; k++) {
+        w += sw;
+        x += sx;
+        r += 24;
+        F(int, r, 0) = x;
+        F(int, r, 20) = d[k & 7] + w;
+        v += dv;
+        F(int, r, 8) = v;
+    }
+}
