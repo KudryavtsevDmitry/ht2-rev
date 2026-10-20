@@ -3885,7 +3885,7 @@ extern "C" void FUN_6014a0(); KING_ALIAS("_FUN_6014a0", "@DpRecord_ProviderName@
 extern "C" void FUN_601570(); KING_ALIAS("_FUN_601570", "_Dp_NextProvider")
 extern "C" void FUN_6015b0(); KING_ALIAS("_FUN_6015b0", "_Dp_FirstProvider")
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
-ASM_PROC(FUN_50f300)
+extern "C" void FUN_50f300(); KING_ALIAS("_FUN_50f300", "_Shell_SkinScrollBar")
 ASM_VAR(AsmLabel, g_q38_601260, $L_601260)
 ASM_VAR(AsmLabel, g_q38_64e2e4, $L_64e2e4)
 ASM_VAR(AsmLabel, g_q38_64e2a4, $L_64e2a4)
@@ -6752,4 +6752,37 @@ extern "C" BYTE* __cdecl Shell_MakeMaskSlider(const char* name1, const char* nam
     F(int, c, 48) = y;
     F(int, c, 56) += dy;
     return c;
+}
+
+// ---------------------------------------------------------------------------
+// The skin of a list's scroll bar.
+
+extern "C" void FUN_5bef90(); KING_ALIAS("_FUN_5bef90", "@Ctl_SetStyle5@16")
+extern "C" void FUN_5becd0(); KING_ALIAS("_FUN_5becd0", "@Split_Resize@12")
+// [FUN_50f300] skins scroll bar c with the atop (part 0) and abot (part 2) mask buttons and frames, a plain
+// runner (part 1), moves it to x 0, y 2 and sizes it to h
+extern "C" int __cdecl Shell_SkinScrollBar(BYTE* c, int h)
+{
+    DWORD a[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD p[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD ap[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    Gs126_Masks(c, a, p, ap, "atop", 0);
+    Gs126_Mask(ap, (BYTE*)g_q125_6ce3b8, "%s_f.msk", "atop");
+    CallThis(FUN_5bef90, c, ap, 0);
+    CallThis(FUN_5bd5a0, a, (BYTE*)g_q125_6ce3b8);
+    a[8] = 0;
+    CallThis(FUN_5bd5a0, p, (BYTE*)g_q125_6ce408);
+    p[8] = 0;
+    CallThis(FUN_5bd5a0, ap, (BYTE*)g_q125_6ce3b8);
+    ap[8] = 0;
+    CallThis(FUN_5bef30, c, a, ap, p, p, 1);
+    Gs126_Masks(c, a, p, ap, "abot", 2);
+    Gs126_Mask(ap, (BYTE*)g_q125_6ce3b8, "%s_f.msk", "abot");
+    CallThis(FUN_5bef90, c, ap, 2);
+    CallVirt(c, 20);
+    F(int, c, 52) -= F(int, c, 44);
+    F(int, c, 44) = 0;
+    F(int, c, 56) += 2 - F(int, c, 48);
+    F(int, c, 48) = 2;
+    return CallThis<int>(FUN_5becd0, c, h);
 }
