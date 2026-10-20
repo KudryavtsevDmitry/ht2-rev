@@ -1947,3 +1947,86 @@ extern "C" void __fastcall Value_Free(int* s)
         break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Reading scene nodes.
+
+ASM_PROC(FUN_5f1db0)
+ASM_PROC(FUN_5ae580)
+ASM_PROC(FUN_5b4fc0)
+ASM_PROC(FUN_5d2650)
+extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
+extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
+extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
+extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
+extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
+extern "C" double __cdecl atof(const char* s);
+extern "C" long __cdecl atol(const char* s);
+ASM_VAR(AsmLabel, g_q109_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q109_71e820, $L_71e820)
+static void Sce109_SetBits(BYTE* s, int off, DWORD lo, DWORD hi)
+{
+    F(DWORD, s, off) = lo;
+    F(DWORD, s, off + 4) = hi;
+}
+// [FUN_5f3f30] reads node s of a scene file f: its plane (+20), a 32-byte text of up to four values (+56 default
+// 300, +64, the int +96 default 8, +72 default 0.3), then its children
+extern "C" void __fastcall SceneNode5f3f30_Read(BYTE* s, void*, FILE* f, int a2, int a3)
+{
+    char buf[64];
+    CallThis(FUN_5ac7f0, s + 20, f);
+    fread(buf, 32, 1, f);
+    char* p = buf;
+    const char* t;
+    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+        F(double, s, 56) = atof(t);
+    else
+        Sce109_SetBits(s, 56, 0, 1081262080);
+    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+        F(double, s, 64) = atof(t);
+    else
+        Sce109_SetBits(s, 64, 0, 1084715008);
+    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+        F(int, s, 96) = atol(t);
+    else
+        F(int, s, 96) = 8;
+    if ((t = CallC<const char*>(FUN_5ab1b0, &p)) != 0)
+        F(double, s, 72) = atof(t);
+    else
+        Sce109_SetBits(s, 72, 858993459, 1070805811);
+    int n = CallC<int>(FUN_5ab140, f);
+    CallThis(FUN_5f1db0, s, f, n, 1, a2, a3);
+}
+
+// [$L_5f9580] reads node s of a scene file f: its plane (+20), a value kept for its children, +56; a "refer"
+// node (by name +12) registers the referred name (from its 7th character) to +60; then its children
+extern "C" void __fastcall SceneNode5f9580_Read(BYTE* s, void*, FILE* f, int a2, int a3)
+{
+    char name[64];
+    CallThis(FUN_5ac7f0, s + 20, f);
+    int x = CallC<int>(FUN_5ab140, f);
+    F(int, s, 56) = CallC<int>(FUN_5ab140, f);
+    strcpy(name, F(const char*, s, 12));
+    if (strncmp(name, "refer", 5) == 0)
+        CallThis(FUN_5d2650, (BYTE*)g_q109_71e820, name + 6, s + 60);
+    int n = CallC<int>(FUN_5ab140, f);
+    CallThis(FUN_5f1db0, s, f, n, x, a2, a3);
+}
+
+// [$L_5f4170] draws node s through view b when its info test passes: the world matrix, the clip test of its
+// plane (+20) and the slots (+48 calls); always 1 after a passed test, else 0
+extern "C" int __fastcall SceneNode5f4170_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
+{
+    BYTE m[48];
+    memcpy(m, (BYTE*)g_q109_7025f0, 48);
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, 60), m);
+    CallThis(FUN_5ae580, b, m, w);
+    if (CallThis<int>(FUN_5b4fc0, b, s + 20))
+        CallThis(FUN_5f2080, s, 0, a, b);
+    CallThis(FUN_5ae8a0, b);
+    return 1;
+}
