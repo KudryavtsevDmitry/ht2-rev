@@ -530163,6 +530163,8 @@ $L_535b11 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_535f80 PROC
 
             push EBP
@@ -530310,6 +530312,10 @@ $L_5360df::
             pop EBP
             ret 4
 FUN_535f80 ENDP
+ELSE
+EXTERN @Car_ViewMatrix@12:PROC
+FUN_535f80 TEXTEQU <@Car_ViewMatrix@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
