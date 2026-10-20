@@ -723837,6 +723837,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b7f20 PROC
 
             push EBX
@@ -724176,6 +724178,10 @@ $L_5b81b0::
             pop EBX
             ret 
 FUN_5b7f20 ENDP
+ELSE
+EXTERN _Surface_VLine:PROC
+FUN_5b7f20 TEXTEQU <_Surface_VLine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
