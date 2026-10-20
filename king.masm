@@ -1516,6 +1516,7 @@ PUBLIC $L_702e90
 PUBLIC $L_682f24, $L_682f30, $L_682f34, $L_721764
 PUBLIC $L_71e7e8, $L_71e7ec, $L_71e7f0, $L_71e7f8
 PUBLIC $L_6cf3a8
+PUBLIC $L_6d217c
 
 ;===================================
 _TEXT SEGMENT
@@ -553745,6 +553746,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_546b60 PROC
 
             push ESI
@@ -553922,6 +553925,10 @@ $L_546ce7::
             pop ESI
             ret 16
 FUN_546b60 ENDP
+ELSE
+EXTERN @CarPart_Draw@24:PROC
+FUN_546b60 TEXTEQU <@CarPart_Draw@24>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
