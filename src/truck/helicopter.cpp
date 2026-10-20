@@ -2024,7 +2024,7 @@ extern "C" int __fastcall Hel_573810(BYTE* s)
 // More helicopter tasks and its random generator.
 
 extern "C" void FUN_569380(); KING_ALIAS("_FUN_569380", "_Copter_Send956")
-ASM_PROC(FUN_5f9b00)
+extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
 ASM_VAR(double, g_hel64b730, $L_64b730)
 ASM_VAR(double, g_hel64fe58, $L_64fe58)
 ASM_VAR(double, g_hel64b7e0, $L_64b7e0)
