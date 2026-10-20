@@ -2656,3 +2656,29 @@ extern "C" void __fastcall Mesh_ScaleColors(BYTE* s, void*, int n, const DWORD* 
         F(DWORD*, s, 40)[i] = (c & 0xff000000) | (((r << 8) | g) << 8 | b);
     }
 }
+
+// ---------------------------------------------------------------------------
+// The random tables of particles.
+
+extern "C" int __cdecl rand(void);
+ASM_VAR(double, g_q166_64b958, $L_64b958)
+ASM_VAR(double, g_q166_64b670, $L_64b670)
+ASM_VAR(AsmLabel, g_q166_70ef1c, $L_70ef1c)
+ASM_VAR(AsmLabel, g_q166_70f0ac, $L_70f0ac)
+ASM_VAR(AsmLabel, g_q166_70f23c, $L_70f23c)
+ASM_VAR(AsmLabel, g_q166_70ebfc, $L_70ebfc)
+ASM_VAR(AsmLabel, g_q166_70ed88, $L_70ed88)
+ASM_VAR(int, g_q166_70f3d0, $L_70f3d0)
+// [FUN_5cf070] fills the 100 random particle directions (70ef1c, 70f0ac, 70f23c: -1..1), colours (70ebfc) and
+// sizes (70ed8c) once (70f3d0)
+extern "C" void __cdecl Particles_InitRandom(void)
+{
+    for (int i = 0; i < 100; i++) {
+        ((float*)g_q166_70ef1c)[i] = (float)((rand() % 100) * g_q166_64b958 - g_q166_64b670);
+        ((float*)g_q166_70f0ac)[i] = (float)((rand() % 100) * g_q166_64b958 - g_q166_64b670);
+        ((float*)g_q166_70f23c)[i] = (float)((rand() % 100) * g_q166_64b958 - g_q166_64b670);
+        ((DWORD*)g_q166_70ebfc)[i] = ((rand() % 2) ? 4290773008u : 0u) + 4290822368u;
+        ((DWORD*)g_q166_70ed88)[i + 1] = ((rand() % 2) ? 14160u : 0u) + 4294953070u;
+    }
+    g_q166_70f3d0 = 1;
+}
