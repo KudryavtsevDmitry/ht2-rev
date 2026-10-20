@@ -956,3 +956,30 @@ extern "C" BYTE* __fastcall Gsp608010_DeletingDestructor(BYTE* s, void*, int fla
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_60ba20(); KING_ALIAS("_FUN_60ba20", "_Tables_InitSin")
+extern "C" void FUN_60bab0(); KING_ALIAS("_FUN_60bab0", "_Tables_InitCos")
+ASM_VAR(float, g_q47_64c264, $L_64c264)
+ASM_VAR(float, g_q47_652f24, $L_652f24)
+ASM_VAR(float, g_q47_64c904, $L_64c904)
+ASM_VAR(float, g_q47_64c250, $L_64c250)
+ASM_VAR(float, g_q47_724f04, $L_724f04)
+// [$L_60baf0] the 300-entry table 724f04: 64c250 - x * 64c904 with x stepping by 652f24 from 64c264
+extern "C" void __cdecl Tables_InitLinear(void)
+{
+    double x = g_q47_64c264;
+    for (float* p = &g_q47_724f04; p < &g_q47_724f04 + 300; p++) {
+        x += g_q47_652f24;
+        *p = (float)(g_q47_64c250 - x * g_q47_64c904);
+    }
+}
+// [FUN_60bb20] fills the sine, cosine and linear tables
+extern "C" void __cdecl Tables_InitAll(void)
+{
+    CallC(FUN_60ba20);
+    CallC(FUN_60bab0);
+    Tables_InitLinear();
+}

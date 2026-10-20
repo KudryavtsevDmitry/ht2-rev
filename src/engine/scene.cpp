@@ -1877,3 +1877,22 @@ extern "C" void __fastcall Sce5f08c0_Destruct(BYTE* s, void*)
     F(void*, s, 0) = g_q46_652a08;
     CallThis(FUN_5ef660, s);
 }
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+ASM_VAR(AsmLabel, g_q47_723d28, $L_723d28)
+ASM_VAR(AsmLabel, g_q47_723d38, $L_723d38)
+// [FUN_5ff120] constructs the static vector 723d28
+extern "C" void __cdecl Static723d28_Construct(void)
+{
+    char a;
+    CallThis(FUN_487730, (void*)g_q47_723d28, &a);
+}
+// [FUN_5ff5a0] constructs the static vector 723d38
+extern "C" void __cdecl Static723d38_Construct(void)
+{
+    char a;
+    CallThis(FUN_487730, (void*)g_q47_723d38, &a);
+}

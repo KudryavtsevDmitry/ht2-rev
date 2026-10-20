@@ -473,7 +473,7 @@ extern "C" void FUN_5a63a0(); KING_ALIAS("_FUN_5a63a0", "@Wea5a63a0_Destroy@4")
 extern "C" void FUN_5a6aa0(); KING_ALIAS("_FUN_5a6aa0", "@Wea5a6aa0_Destruct@8")
 extern "C" void FUN_5a7240(); KING_ALIAS("_FUN_5a7240", "@Wea5a7240_Destroy@4")
 extern "C" void FUN_5a7310(); KING_ALIAS("_FUN_5a7310", "@Wea5a7310_Destroy@4")
-ASM_PROC(FUN_5a73f0)
+extern "C" void FUN_5a73f0(); KING_ALIAS("_FUN_5a73f0", "@Wea5a73f0_Destruct@8")
 ASM_VAR(DWORD, g_wea6fb3d0, $L_6fb3d0)
 ASM_VAR(DWORD, g_wea6fb3d4, $L_6fb3d4)
 ASM_VAR(DWORD, g_wea6fb3d8, $L_6fb3d8)
@@ -904,5 +904,18 @@ ASM_VAR(AsmLabel, g_q46_651568, $L_651568)
 extern "C" void __fastcall Wea5a6aa0_Destruct(BYTE* s, void*)
 {
     F(void*, s, 0) = g_q46_651568;
+    CallThis(FUN_5d3290, s);
+}
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+ASM_VAR(AsmLabel, g_q47_651628, $L_651628)
+ASM_VAR(int, g_q47_7025b8, $L_7025b8)
+// [FUN_5a73f0] destructor: the 651628 vtable, clears the 7025b8 instance, then the object
+extern "C" void __fastcall Wea5a73f0_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q47_651628;
+    g_q47_7025b8 = 0;
     CallThis(FUN_5d3290, s);
 }

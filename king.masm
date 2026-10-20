@@ -1424,6 +1424,7 @@ PUBLIC $L_677ef8, $L_677f10, $L_677f28, $L_677f3c, $L_677f50, $L_677f5c
 PUBLIC $L_677f64, $L_677f70, $L_677f7c, $L_677f88, $L_677f94, $L_677fac
 PUBLIC $L_677fc4, $L_677fdc, $L_677ff4, $L_678008
 PUBLIC $L_651568, $L_652a08, $L_722940, $L_723190, $L_723978
+PUBLIC $L_651628, $L_652f24, $L_6974a8, $L_6ef200, $L_723d38, $L_724f04
 
 ;===================================
 _TEXT SEGMENT
@@ -169617,6 +169618,8 @@ FUN_460cf0 TEXTEQU <_Destroy16s>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_460d10 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -169630,6 +169633,10 @@ FUN_460d10 PROC
             nop
             nop
 FUN_460d10 ENDP
+ELSE
+EXTERN _MsgBuf_FreeThunk:PROC
+FUN_460d10 TEXTEQU <_MsgBuf_FreeThunk>
+ENDIF
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -356305,12 +356312,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c4770 PROC
 
             call FUN_4c4ca0
 
             jmp $L_4c56f0
 FUN_4c4770 ENDP
+ELSE
+EXTERN _Eff_ResetSmokeAndGlows:PROC
+FUN_4c4770 TEXTEQU <_Eff_ResetSmokeAndGlows>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -356318,12 +356331,18 @@ FUN_4c4770 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c4780 PROC
 
             call FUN_4c4de0
 
             jmp $L_4c5720
 FUN_4c4780 ENDP
+ELSE
+EXTERN _Eff_ClearAndDestroyGlows:PROC
+FUN_4c4780 TEXTEQU <_Eff_ClearAndDestroyGlows>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -357983,6 +358002,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c56f0 PROC
 
             mov EAX,DWORD PTR [$L_696248]
@@ -358004,6 +358025,10 @@ $L_4c5718::
 
             ret 
 $L_4c56f0 ENDP
+ELSE
+EXTERN _Glows_MarkAllFree:PROC
+$L_4c56f0 TEXTEQU <_Glows_MarkAllFree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -358011,6 +358036,8 @@ $L_4c56f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c5720 PROC
 
             mov EAX,DWORD PTR [$L_696248]
@@ -358045,6 +358072,10 @@ $L_4c5760::
 
             ret 
 $L_4c5720 ENDP
+ELSE
+EXTERN _Glows_Destroy:PROC
+$L_4c5720 TEXTEQU <_Glows_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -395070,6 +395101,8 @@ FUN_4de290 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_4de510 PROC
 
             xor EAX,EAX
@@ -395088,6 +395121,10 @@ $L_4de510 PROC
 
             ret 
 $L_4de510 ENDP
+ELSE
+EXTERN @World_ResetState@8:PROC
+$L_4de510 TEXTEQU <@World_ResetState@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4de550 PROC
@@ -401999,6 +402036,8 @@ EXTERN _King_4e24c0:PROC
 $L_4e24c0 TEXTEQU <_King_4e24c0>
 ENDIF
 ALIGN 2
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 FUN_4e24ca PROC
 
             push EBP
@@ -402012,6 +402051,10 @@ FUN_4e24ca PROC
             pop EBP
             ret 
 FUN_4e24ca ENDP
+ELSE
+EXTERN _Static6974a8_Init:PROC
+FUN_4e24ca TEXTEQU <_Static6974a8_Init>
+ENDIF
 ALIGN 8
 FUN_4e24e8 PROC
 
@@ -516926,6 +516969,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52e520 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_64f198
@@ -516933,6 +516978,10 @@ FUN_52e520 PROC
             mov DWORD PTR [ECX+376],OFFSET $L_64f148
             jmp FUN_52dec0
 FUN_52e520 ENDP
+ELSE
+EXTERN @Scy52e520_Destruct@8:PROC
+FUN_52e520 TEXTEQU <@Scy52e520_Destruct@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; engine: src\truck\scenery.cpp, nmake ASM_SCENERY=1 assembles the original
@@ -542076,6 +542125,8 @@ FUN_53fd30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_53fd40 PROC
 
             call FUN_57ca80
@@ -542086,6 +542137,10 @@ FUN_53fd40 PROC
             mov DWORD PTR [$L_6ef200],EAX
             jmp $L_4de510
 FUN_53fd40 ENDP
+ELSE
+EXTERN _World_ResetAll:PROC
+FUN_53fd40 TEXTEQU <_World_ResetAll>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -695726,12 +695781,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a73f0 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_651628
             mov DWORD PTR [$L_7025b8],0
             jmp FUN_5d3290
 FUN_5a73f0 ENDP
+ELSE
+EXTERN @Wea5a73f0_Destruct@8:PROC
+FUN_5a73f0 TEXTEQU <@Wea5a73f0_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -761165,6 +761226,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cdcb0 PROC
 
             mov AL,BYTE PTR [ECX+40]
@@ -761173,6 +761236,10 @@ FUN_5cdcb0 PROC
             mov BYTE PTR [ECX+40],AL
             jmp FUN_5f1a70
 FUN_5cdcb0 ENDP
+ELSE
+EXTERN @Med5cdcb0_Destruct@8:PROC
+FUN_5cdcb0 TEXTEQU <@Med5cdcb0_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -769991,6 +770058,8 @@ $L_5d29e0 PROC
             nop
 $L_5d29e0 ENDP
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d2a00 PROC
 
             mov ECX,OFFSET $L_71e830
@@ -770003,6 +770072,10 @@ FUN_5d2a00 PROC
             nop
             nop
 FUN_5d2a00 ENDP
+ELSE
+EXTERN _Static71e830_Cleanup:PROC
+FUN_5d2a00 TEXTEQU <_Static71e830_Cleanup>
+ENDIF
 ALIGN 16
 ; src/core.cpp, nmake ASM_CORE=1 assembles the original
 IFDEF ASM_CORE
@@ -854509,6 +854582,8 @@ $L_5ff110 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ff120 PROC
 
             push ECX
@@ -854520,6 +854595,10 @@ FUN_5ff120 PROC
             pop ECX
             ret 
 FUN_5ff120 ENDP
+ELSE
+EXTERN _Static723d28_Construct:PROC
+FUN_5ff120 TEXTEQU <_Static723d28_Construct>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -855091,6 +855170,8 @@ $L_5ff590 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ff5a0 PROC
 
             push ECX
@@ -855102,6 +855183,10 @@ FUN_5ff5a0 PROC
             pop ECX
             ret 
 FUN_5ff5a0 ENDP
+ELSE
+EXTERN _Static723d38_Construct:PROC
+FUN_5ff5a0 TEXTEQU <_Static723d38_Construct>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -881370,6 +881455,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 $L_60baf0 PROC
 
             fld DWORD PTR [$L_64c264]
@@ -881388,8 +881475,14 @@ $L_60bafb::
             fstp ST(0)
             ret 
 $L_60baf0 ENDP
+ELSE
+EXTERN _Tables_InitLinear:PROC
+$L_60baf0 TEXTEQU <_Tables_InitLinear>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60bb20 PROC
 
             call FUN_60ba20
@@ -881398,6 +881491,10 @@ FUN_60bb20 PROC
 
             jmp $L_60baf0
 FUN_60bb20 ENDP
+ELSE
+EXTERN _Tables_InitAll:PROC
+FUN_60bb20 TEXTEQU <_Tables_InitAll>
+ENDIF
           BYTE 090H
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
 IFDEF ASM_GRID_SUPPORT

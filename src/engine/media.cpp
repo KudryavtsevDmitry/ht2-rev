@@ -1643,7 +1643,7 @@ extern "C" void FUN_5c3990(); KING_ALIAS("_FUN_5c3990", "@Med5c3990_Destroy@4")
 extern "C" void FUN_5c4410(); KING_ALIAS("_FUN_5c4410", "@Media_Destroy@4")
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c8780(); KING_ALIAS("_FUN_5c8780", "@Media5c8780_Destroy@8")
-ASM_PROC(FUN_5cdcb0)
+extern "C" void FUN_5cdcb0(); KING_ALIAS("_FUN_5cdcb0", "@Med5cdcb0_Destruct@8")
 extern "C" void FUN_5ce5b0(); KING_ALIAS("_FUN_5ce5b0", "@Med5ce5b0_Destroy@4")
 extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 extern "C" void FUN_5ceae0(); KING_ALIAS("_FUN_5ceae0", "@Media5ceae0_Destroy@8")
@@ -2286,4 +2286,17 @@ ASM_VAR(AsmLabel, g_q46_5d2080, $L_5d2080)
 extern "C" int __cdecl Static71e808_Cleanup(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_5d2080, (void*)g_q46_71e808);
+}
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
+ASM_VAR(AsmLabel, g_q47_651d64, $L_651d64)
+// [FUN_5cdcb0] destructor: sets +40 bit 0, the 651d64 vtable, then the node
+extern "C" void __fastcall Med5cdcb0_Destruct(BYTE* s, void*)
+{
+    F(BYTE, s, 40) |= 1;
+    F(void*, s, 0) = g_q47_651d64;
+    CallThis(FUN_5f1a70, s);
 }

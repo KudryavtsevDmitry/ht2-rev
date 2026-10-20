@@ -827,3 +827,49 @@ extern "C" void __fastcall Play6052b0_Destruct(BYTE* s, void*)
     F(void*, s, 0) = g_q46_652e20;
     CallThis(FUN_604120, s);
 }
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_604290(); KING_ALIAS("_FUN_604290", "_Play_StopAll")
+extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
+extern "C" unsigned __int64 __rdtsc(void);
+extern "C" void __cpuid(int info[4], int leaf);
+extern "C" unsigned int __readeflags(void);
+extern "C" void __writeeflags(unsigned int v);
+#pragma intrinsic(__rdtsc, __cpuid, __readeflags, __writeeflags)
+ASM_VAR(BYTE*, g_q47_72412c, $L_72412c)
+// [$L_6043d0] under the mixer lock, stops (slot 12) and deletes each sound of the 72412c list
+extern "C" void __cdecl Play_DeleteAll(void)
+{
+    CallC(FUN_604a60);
+    while (g_q47_72412c) {
+        CallVirt(g_q47_72412c, 12);
+        if (!g_q47_72412c)
+            break;
+        CallVirt(g_q47_72412c, 0, 1);
+    }
+    Mixer_Unlock();
+}
+// [FUN_604e70] stops all sounds, then deletes them
+extern "C" void __cdecl Play_StopAndDeleteAll(void)
+{
+    CallC(FUN_604290);
+    Play_DeleteAll();
+}
+// [FUN_6056f0] the EFLAGS bits that changed on toggling bit 21: nonzero when CPUID is available
+extern "C" unsigned __cdecl Cpu_HasCpuid(void)
+{
+    unsigned o = (unsigned)__readeflags();
+    __writeeflags(o ^ 0x200000);
+    return (unsigned)__readeflags() ^ o;
+}
+// [FUN_60573b] the time stamp counter (after a serialising CPUID) into t
+extern "C" void __cdecl Cpu_ReadTsc(unsigned* t)
+{
+    int r[4];
+    __cpuid(r, 0);
+    unsigned __int64 v = __rdtsc();
+    t[0] = (unsigned)v;
+    t[1] = (unsigned)(v >> 32);
+}
