@@ -1517,6 +1517,7 @@ PUBLIC $L_682f24, $L_682f30, $L_682f34, $L_721764
 PUBLIC $L_71e7e8, $L_71e7ec, $L_71e7f0, $L_71e7f8
 PUBLIC $L_6cf3a8
 PUBLIC $L_6d217c
+PUBLIC $L_651e10
 
 ;===================================
 _TEXT SEGMENT
@@ -765384,6 +765385,8 @@ $L_5ce990 TEXTEQU <@Med_5ce990@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5ce9c0 PROC
 
             sub ESP,24
@@ -765461,6 +765464,10 @@ $L_5ce9d5::
             add ESP,24
             ret 36
 FUN_5ce9c0 ENDP
+ELSE
+EXTERN @Stream_Construct@44:PROC
+FUN_5ce9c0 TEXTEQU <@Stream_Construct@44>
+ENDIF
           BYTE 090H
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 IFDEF ASM_MEDIA
