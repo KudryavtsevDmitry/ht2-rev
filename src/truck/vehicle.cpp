@@ -1989,7 +1989,7 @@ extern "C" void FUN_555d60(); KING_ALIAS("_FUN_555d60", "@Car_Set501b90b@12")
 extern "C" void FUN_555c80(); KING_ALIAS("_FUN_555c80", "@Car_PassItems3@12")
 extern "C" void FUN_555b70(); KING_ALIAS("_FUN_555b70", "@Car_PassItems11@12")
 extern "C" void FUN_555b30(); KING_ALIAS("_FUN_555b30", "@Car_Set501b90a@12")
-ASM_PROC(FUN_555a70)
+extern "C" void FUN_555a70(); KING_ALIAS("_FUN_555a70", "@Car_ResetControls@12")
 extern "C" void FUN_555ee0(); KING_ALIAS("_FUN_555ee0", "@Car_StepAllLevels@12")
 extern "C" void FUN_557480(); KING_ALIAS("_FUN_557480", "@Car_Forward21600@12")
 extern "C" void FUN_5566e0(); KING_ALIAS("_FUN_5566e0", "@Obj5566e0_Start@20")
@@ -2741,4 +2741,28 @@ extern "C" double __cdecl Clamp542250(float x, float lim)
     if (x <= lim)
         return x;
     return lim;
+}
+
+// ---------------------------------------------------------------------------
+// Resetting a car's controls.
+
+ASM_PROC(FUN_5494c0)
+extern "C" void FUN_4eb6e0(); KING_ALIAS("_FUN_4eb6e0", "@Ramp_Down@12")
+extern "C" void FUN_4eb720(); KING_ALIAS("_FUN_4eb720", "@Ramp_FromTop@12")
+extern "C" void FUN_549bf0(); KING_ALIAS("_FUN_549bf0", "@Obj549bf0_Get@8")
+ASM_VAR(double, g_q169_64b840, $L_64b840)
+// [FUN_555a70] resets car s with a: the body's setting (+10468), its ramp (body +15520: 0/1 from the top, 2 down
+// by 0.6), the +21568 state 1 or 2 restarted (5494c0), the +21596 time from the controls' +32
+extern "C" void __fastcall Car_ResetControls(BYTE* s, void*, int a)
+{
+    CallThis(FUN_501b90, F(BYTE*, s, 21600), 0, a, F(int, s, 10468));
+    BYTE* b = F(BYTE*, s, 21600);
+    int st = F(int, b, 15520);
+    if (st == 0 || st == 1)
+        CallThis(FUN_4eb720, b + 16060, 0);
+    else if (st == 2)
+        CallThis(FUN_4eb6e0, b + 16060, 0xbf19999a);
+    if (CallThis<int>(FUN_549bf0, s + 21568) == 1 || CallThis<int>(FUN_549bf0, s + 21568) == 2)
+        CallThis(FUN_5494c0, s, 1);
+    F(float, s, 21596) = (float)(F(float, F(BYTE*, s, 9536), 32) + g_q169_64b840);
 }
