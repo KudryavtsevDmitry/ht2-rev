@@ -467510,6 +467510,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50f300 PROC
 
             sub ESP,132
@@ -467785,6 +467787,10 @@ FUN_50f300 PROC
             nop
             nop
 FUN_50f300 ENDP
+ELSE
+EXTERN _Shell_SkinScrollBar:PROC
+FUN_50f300 TEXTEQU <_Shell_SkinScrollBar>
+ENDIF
 ALIGN 16
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 IFDEF ASM_GAME_SHELL
