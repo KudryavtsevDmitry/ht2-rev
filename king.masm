@@ -1477,6 +1477,7 @@ PUBLIC $L_723a88
 PUBLIC $L_67fa80
 PUBLIC $L_64da58
 PUBLIC $L_67f114, $L_702ea8
+PUBLIC $L_702e80
 
 ;===================================
 _TEXT SEGMENT
@@ -710931,6 +710932,8 @@ FUN_5af9e0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b0120 PROC
 
             mov EAX,DWORD PTR [$L_720908]
@@ -711300,6 +711303,10 @@ $L_5b04b2::
             add ESP,84
             ret 
 FUN_5b0120 ENDP
+ELSE
+EXTERN _Device_SetStates:PROC
+FUN_5b0120 TEXTEQU <_Device_SetStates>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
