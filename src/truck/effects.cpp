@@ -4418,7 +4418,7 @@ ASM_VAR(BYTE*, g_eff696240, $L_696240)
 ASM_VAR(AsmLabel, s_eff672678, $L_672678)
 ASM_VAR(AsmLabel, s_eff672778, $L_672778)
 ASM_VAR(AsmLabel, g_eff64c770, $L_64c770)
-ASM_VAR(AsmLabel, g_effCtor4c4a50, $L_4c4a50)
+extern "C" BYTE* __fastcall Light4c4a50_Construct(BYTE* s);
 ASM_VAR(AsmLabel, s_eff67275c, $L_67275c)
 ASM_VAR(AsmLabel, g_eff64c464, $L_64c464)
 ASM_VAR(int, g_eff64c1f0, $L_64c1f0)
@@ -4448,7 +4448,7 @@ static void Eff_CreateSmoke(BYTE* w)
     if (a) {
         *(int*)a = 100;
         e = a + 4;
-        CallStd(Eff_VecCtor, e, 140, 100, (BYTE*)g_effCtor4c4a50, FUN_5f0870);
+        CallStd(Eff_VecCtor, e, 140, 100, (BYTE*)Light4c4a50_Construct, FUN_5f0870);
     }
     F(BYTE*, m, 32) = e;
     F(int, m, 40) = 0;
@@ -4847,4 +4847,51 @@ extern "C" void __cdecl Eff_InitRecords694b0c(void)
         Array_ForEach(p, 12, 4, (void (*)())Vec3_ZeroThis);
         memcpy(p, (BYTE*)g_q93_7025f0, 48);
     }
+}
+
+// ---------------------------------------------------------------------------
+// A light node.
+
+extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
+ASM_VAR(AsmLabel, s_q95_672788, $L_672788)
+ASM_VAR(AsmLabel, g_q95_64c7dc, $L_64c7dc)
+ASM_VAR(AsmLabel, g_q95_64c790, $L_64c790)
+ASM_VAR(AsmLabel, g_q95_7025f0, $L_7025f0)
+// [$L_4c4a50] constructor: a node of type 17, its fields cleared (+84 = -1) and the identity matrix at +88
+extern "C" BYTE* __fastcall Light4c4a50_Construct(BYTE* s)
+{
+    CallThis(FUN_5ef6d0, s, (const char*)s_q95_672788, 17);
+    for (int o = 48; o <= 80; o += 4)
+        F(int, s, o) = 0;
+    F(void*, s, 0) = (BYTE*)g_q95_64c7dc;
+    F(int, s, 84) = -1;
+    memset(s + 88, 0, 48);
+    memcpy(s + 88, (BYTE*)g_q95_7025f0, 48);
+    F(void*, s, 0) = (BYTE*)g_q95_64c790;
+    return s;
+}
+
+// ---------------------------------------------------------------------------
+// Collecting lights.
+
+ASM_VAR(BYTE*, g_q96_696240, $L_696240)
+// [$L_4c4830] visitor: adds light l of scene object o to the 696240 list (at most 100 records of 140 bytes:
+// the light's +44 at +64 and +136, o's current matrix at +88, 16 bytes of the light's +20 at +20) and tells the
+// list's owner (+36, vtbl+20); always 1
+extern "C" int __cdecl Lights_Collect(void*, BYTE* o, BYTE* l)
+{
+    BYTE* g = g_q96_696240;
+    if (!g)
+        return 1;
+    BYTE* p = F(BYTE*, l, 44);
+    if (F(int, g, 40) == 100)
+        return 1;
+    BYTE* rec = F(BYTE*, g, 32) + F(int, g, 40) * 140;
+    F(BYTE*, rec, 64) = p;
+    F(BYTE*, rec, 136) = p;
+    memcpy(rec + 88, o + 5216 + F(int, o, 8236) * 48, 48);
+    memcpy(rec + 20, p + 20, 16);
+    CallVirt(F(BYTE*, g, 36), 20, 0, F(BYTE*, g, 32) + F(int, g, 40) * 140);
+    F(int, g, 40)++;
+    return 1;
 }
