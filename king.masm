@@ -1462,6 +1462,7 @@ PUBLIC $L_6768f4, $L_676900, $L_67690c, $L_676918, $L_7208bc, $L_7208d8
 PUBLIC $L_4d8b60, $L_67262c, $L_6768a8, $L_6768b8, $L_6768c4, $L_6768d0
 PUBLIC $L_6768d8, $L_6768e0, $L_6768e8, $L_6768f0, $L_6cec84, $L_702e98
 PUBLIC $L_7208c0
+PUBLIC $L_694b0c, $L_6969a0, $L_6969d0, $L_696b98
 
 ;===================================
 _TEXT SEGMENT
@@ -361850,6 +361851,8 @@ $L_4c80e0 TEXTEQU <_EffInit_4c80e0>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c8110 PROC
 
             jmp $L_4c8120
@@ -361897,6 +361900,10 @@ $L_4c812e::
             pop EBX
             ret 
 $L_4c8110 ENDP
+ELSE
+EXTERN _Eff_InitRecords694b0c:PROC
+$L_4c8110 TEXTEQU <_Eff_InitRecords694b0c>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -394128,6 +394135,8 @@ $L_4dda10 TEXTEQU <@Fx4dda10_Destroy@4>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4dda30 PROC
 
             jmp $L_4dda40
@@ -394168,6 +394177,10 @@ $L_4dda40::
             pop ESI
             ret 
 $L_4dda30 ENDP
+ELSE
+EXTERN _Eff_InitMatrices:PROC
+$L_4dda30 TEXTEQU <_Eff_InitMatrices>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -396944,6 +396957,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4df7c0 PROC
 
             push EBX
@@ -397010,6 +397025,10 @@ $L_4df83c::
             pop EBX
             ret 76
 $L_4df7c0 ENDP
+ELSE
+EXTERN @Sta_Media4df7c0@84:PROC
+$L_4df7c0 TEXTEQU <@Sta_Media4df7c0@84>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -397023,6 +397042,8 @@ $L_4df7c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4df850 PROC
 
             push EBX
@@ -397089,6 +397110,10 @@ $L_4df8cc::
             pop EBX
             ret 76
 $L_4df850 ENDP
+ELSE
+EXTERN @Sta_Media4df850@84:PROC
+$L_4df850 TEXTEQU <@Sta_Media4df850@84>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -448163,6 +448188,8 @@ $L_5021a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 $L_5021c0 PROC
 
             push ESI
@@ -448202,6 +448229,10 @@ $L_5021c0 PROC
             pop ESI
             ret 
 $L_5021c0 ENDP
+ELSE
+EXTERN @Tuning_SetDefaults@4:PROC
+$L_5021c0 TEXTEQU <@Tuning_SetDefaults@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

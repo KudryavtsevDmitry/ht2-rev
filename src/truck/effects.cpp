@@ -4820,3 +4820,31 @@ extern "C" int __cdecl Eff_KindFlag(int kind)
     static const int bits[6] = {1, 16, 2, 4, 8, 32};
     return kind >= 1 && kind <= 6 ? bits[kind - 1] : 0;
 }
+
+// ---------------------------------------------------------------------------
+// Static matrices.
+
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
+ASM_VAR(AsmLabel, g_q93_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q93_6969d0, $L_6969d0)
+ASM_VAR(AsmLabel, g_q93_696b98, $L_696b98)
+ASM_VAR(AsmLabel, g_q93_6969a0, $L_6969a0)
+ASM_VAR(AsmLabel, g_q93_694b0c, $L_694b0c)
+
+// [$L_4dda30] static init: the three matrices 6969d0, 696b98 and 6969a0 start as the identity
+extern "C" void __cdecl Eff_InitMatrices(void)
+{
+    memcpy((BYTE*)g_q93_6969d0, (BYTE*)g_q93_7025f0, 48);
+    memcpy((BYTE*)g_q93_696b98, (BYTE*)g_q93_7025f0, 48);
+    memcpy((BYTE*)g_q93_6969a0, (BYTE*)g_q93_7025f0, 48);
+}
+
+// [$L_4c8110] static init: the 40 52-byte records of 694b0c get zeroed vectors and the identity matrix
+extern "C" void __cdecl Eff_InitRecords694b0c(void)
+{
+    BYTE* p = (BYTE*)g_q93_694b0c;
+    for (int k = 40; k; k--, p += 52) {
+        Array_ForEach(p, 12, 4, (void (*)())Vec3_ZeroThis);
+        memcpy(p, (BYTE*)g_q93_7025f0, 48);
+    }
+}

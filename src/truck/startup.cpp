@@ -947,3 +947,30 @@ extern "C" BYTE* __fastcall Sta4e0200_Construct(BYTE* s, void*)
     }
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Media handlers of the startup windows.
+
+ASM_PROC(FUN_4d8350)
+extern "C" void FUN_4df540(); KING_ALIAS("_FUN_4df540", "_Net_CreateById")
+extern "C" void FUN_5c5440(); KING_ALIAS("_FUN_5c5440", "_Media_Zero19@76")
+#define STA94_ARGS a1, a2, a3, a4, a5, a6, a7, a8, a9, a10, a11, a12, a13, a14, a15, a16, a17, a18, a19
+#define STA94_PARAMS                                                                                            \
+    DWORD a1, DWORD a2, DWORD a3, DWORD a4, DWORD a5, DWORD a6, DWORD a7, DWORD a8, DWORD a9, DWORD a10,        \
+        DWORD a11, DWORD a12, DWORD a13, DWORD a14, DWORD a15, DWORD a16, DWORD a17, DWORD a18, DWORD a19
+
+// [$L_4df7c0] a media event: the common handler first, then 4d8350 when it did not take it
+extern "C" int __fastcall Sta_Media4df7c0(BYTE* s, void*, STA94_PARAMS)
+{
+    if (int r = CallThis<int>(FUN_5c5440, s, STA94_ARGS))
+        return r;
+    return CallC<int>(FUN_4d8350, s, STA94_ARGS);
+}
+
+// [$L_4df850] a media event: the common handler first, then 4df540 when it did not take it
+extern "C" int __fastcall Sta_Media4df850(BYTE* s, void*, STA94_PARAMS)
+{
+    if (int r = CallThis<int>(FUN_5c5440, s, STA94_ARGS))
+        return r;
+    return CallC<int>(FUN_4df540, s, STA94_ARGS);
+}
