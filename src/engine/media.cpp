@@ -2611,7 +2611,7 @@ extern "C" int __fastcall List_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int
     return 0;
 }
 
-ASM_PROC(FUN_5ce870)
+extern "C" void FUN_5ce870(); KING_ALIAS("_FUN_5ce870", "@Mesh_ScaleColors@24")
 // [$L_5ceb40] sets up mesh s with n vertices (5ce870) and keeps a copy of its first n index words (+40) at +172
 extern "C" void __fastcall Mesh5ceb40_Setup(BYTE* s, void*, int n, int a2, int a3, int a4)
 {
@@ -2642,4 +2642,17 @@ extern "C" int __cdecl Avi_AudioRead(int n, void* buf, int* got, BYTE* s)
     *got = v;
     g_q156_702f54 += v;
     return r;
+}
+
+// [FUN_5ce870] fills the +36 vertex colours of mesh s (+40) from the n colours (repeated), their red, green and
+// blue scaled by k (alpha kept)
+extern "C" void __fastcall Mesh_ScaleColors(BYTE* s, void*, int n, const DWORD* colors, double k)
+{
+    for (int i = 0; i < F(int, s, 36); i++) {
+        DWORD c = colors[i % n];
+        int r = (int)((double)(__int64)((c >> 16) & 255) * k);
+        int g = (int)((double)(__int64)((c >> 8) & 255) * k);
+        int b = (int)((double)(__int64)(c & 255) * k);
+        F(DWORD*, s, 40)[i] = (c & 0xff000000) | (((r << 8) | g) << 8 | b);
+    }
 }
