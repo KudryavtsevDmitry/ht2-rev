@@ -1204,3 +1204,22 @@ extern "C" int __fastcall FileReader_Get(BYTE* s)
     F(char*, s, 32) = F(char*, s, 36);
     return c;
 }
+
+// [$L_4b5640] the next character of cipher reader s, consumed (-1 at the end): CipherReader_Peek's refill, then
+// FileReader_Get's step through the buffer pages
+extern "C" int __fastcall CipherReader_Get(BYTE* s)
+{
+    int c = CipherReader_Peek(s);
+    if (c < 0)
+        return -1;
+    if (F(char*, s, 32) != F(char*, s, 40) - 1) {
+        F(char*, s, 32)++;
+        return c;
+    }
+    CallC(FUN_44b4a0, F(void*, s, 36), 512);
+    F(char**, s, 44)++;
+    F(char*, s, 36) = *F(char**, s, 44);
+    F(char*, s, 40) = F(char*, s, 36) + 512;
+    F(char*, s, 32) = F(char*, s, 36);
+    return c;
+}
