@@ -2452,3 +2452,72 @@ extern "C" void __cdecl Names_IntroSort(BYTE* first, BYTE* last, int, int depth,
         last = cut;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Comparing a character range with a rope range; the rope iterators are passed by value (60 bytes: +0 position,
+// +4 root, +16 the current character in the cached leaf, +20 the leaf's end).
+
+ASM_PROC(FUN_46b140)    // caches the leaf of a rope iterator
+ASM_PROC(FUN_46c4a0)    // moves a rope iterator into the next leaf
+struct RopeIt60 { int pos, root, d2, d3; char* cur; char* end; int d6[9]; };
+static char Aicon232_Char(RopeIt60* a)
+{
+    if (!a->cur)
+        CallC(FUN_46b140, a);
+    return *a->cur;
+}
+static void Aicon232_Next(RopeIt60* a)
+{
+    if (a->cur && a->cur + 1 < a->end) {
+        a->cur++;
+        a->pos++;
+        return;
+    }
+    a->pos++;
+    if (!a->cur)
+        return;
+    unsigned left = a->end - a->cur;
+    if (left > 1)
+        a->cur++;
+    else if (left == 1) {
+        a->cur++;
+        CallC(FUN_46c4a0, a);
+    } else
+        a->cur = 0;
+}
+static bool Aicon232_Same(const RopeIt60* a, const RopeIt60* b) { return a->pos == b->pos && a->root == b->root; }
+// [FUN_4667d0] compares the characters [f, l) with the rope range [a, b): -1, 0 or 1
+extern "C" int __cdecl Chars_CompareRope(const char* f, const char* l, RopeIt60 a, RopeIt60 b)
+{
+    if (f != l) {
+        while (!Aicon232_Same(&a, &b)) {
+            if (*f < Aicon232_Char(&a))
+                return -1;
+            if (Aicon232_Char(&a) < *f)
+                return 1;
+            f++;
+            Aicon232_Next(&a);
+            if (f == l)
+                break;
+        }
+    }
+    if (!Aicon232_Same(&a, &b))
+        return -1;
+    return f != l;
+}
+// [FUN_4668d0] compares the rope range [a, b) with the characters [f, l): -1, 0 or 1
+extern "C" int __cdecl Rope_CompareChars(RopeIt60 a, RopeIt60 b, const char* f, const char* l)
+{
+    for (;;) {
+        if (Aicon232_Same(&a, &b))
+            return f != l ? -1 : 0;
+        if (f == l)
+            return 1;
+        if (Aicon232_Char(&a) < *f)
+            return -1;
+        if (*f < Aicon232_Char(&a))
+            return 1;
+        Aicon232_Next(&a);
+        f++;
+    }
+}

@@ -182022,6 +182022,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_4667d0 PROC
 
             push EBX
@@ -182165,10 +182167,16 @@ $L_4668c5::
             pop EBX
             ret 
 FUN_4667d0 ENDP
+ELSE
+EXTERN _Chars_CompareRope:PROC
+FUN_4667d0 TEXTEQU <_Chars_CompareRope>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_4668d0 PROC
 
             mov EAX,DWORD PTR [ESP+20]
@@ -182330,6 +182338,10 @@ $L_4669ef::
             pop EBX
             ret 
 FUN_4668d0 ENDP
+ELSE
+EXTERN _Rope_CompareChars:PROC
+FUN_4668d0 TEXTEQU <_Rope_CompareChars>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
