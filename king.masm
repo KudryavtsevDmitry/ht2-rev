@@ -1439,6 +1439,7 @@ PUBLIC $L_678550, $L_679ff0, $L_67c55c, $L_67cd88
 PUBLIC $L_67f818, $L_67f830
 PUBLIC $L_678278, $L_6cec8c, $L_6cec9c, $L_6cecdc, $L_6cece0, $L_6cece4
 PUBLIC $L_6cece8
+PUBLIC $L_6968f8, $L_6cecc8, $L_6cecd0
 
 ;===================================
 _TEXT SEGMENT
@@ -480987,6 +480988,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_517ad0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -481297,6 +481300,10 @@ $L_517c84           BYTE ($L_517c70-$L_517c70)/4
           BYTE ($L_517c80-$L_517c70)/4
           BYTE ($L_517c80-$L_517c70)/4
           BYTE ($L_517c7c-$L_517c70)/4
+ELSE
+EXTERN @RaceStart_OnCommand@12:PROC
+$L_517ad0 TEXTEQU <@RaceStart_OnCommand@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -485933,6 +485940,8 @@ ELSE
 EXTERN @Shell_51ab50@12:PROC
 $L_51ab50 TEXTEQU <@Shell_51ab50@12>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51ab90 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -486215,6 +486224,10 @@ $L_51ad54           BYTE ($L_51ad38-$L_51ad38)/4
           BYTE ($L_51ad44-$L_51ad38)/4
           BYTE ($L_51ad48-$L_51ad38)/4
           BYTE ($L_51ad4c-$L_51ad38)/4
+ELSE
+EXTERN @TrackChoice_OnCommand@12:PROC
+$L_51ab90 TEXTEQU <@TrackChoice_OnCommand@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
