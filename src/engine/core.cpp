@@ -1318,3 +1318,70 @@ extern "C" void __cdecl Span_EdgeDV(const BYTE* a, const BYTE* b)
         F(int, r, 8) = v;
     }
 }
+
+// [FUN_5d0e40] like 5d02b0 with texture coordinates (+24, +28 into +12, +16 of the rows) and +20 copied to +8;
+// a one-row edge does not widen the row range
+extern "C" void __cdecl Span_EdgeUV(const BYTE* a, const BYTE* b)
+{
+    const BYTE *p1, *p2;
+    int side = g_q134_723a88;
+    if (F(int, a, 16) < F(int, b, 16)) {
+        p1 = a;
+        p2 = b;
+        side = (side ^ 1) ? 0 : 1;
+    } else {
+        p1 = b;
+        p2 = a;
+        side ^= 1;
+    }
+    int y1 = F(int, p1, 16), y2 = F(int, p2, 16);
+    int dy = (y2 - y1) >> 10;
+    int frac = (y1 >> 10) & 1023;
+    int row = y1 >> 20, last = y2 >> 20;
+    BYTE* t = (BYTE*)g_q134_70f3f0 + side * 1300 * 24;
+    if (row == last) {
+        if (frac || !(y2 & 0xffc00))
+            return;
+        BYTE* r = t + row * 24;
+        F(int, r, 0) = F(int, p1, 12);
+        F(int, r, 12) = F(int, p1, 24);
+        F(int, r, 16) = F(int, p1, 28);
+        F(int, r, 8) = F(int, p1, 20);
+        return;
+    }
+    int f = frac;
+    if (frac) {
+        row++;
+        f = 1023 - frac;
+    }
+    if (row < g_q134_71e7dc)
+        g_q134_71e7dc = row;
+    if ((F(int, p2, 16) >> 20) > g_q134_71e7d8)
+        g_q134_71e7d8 = F(int, p2, 16) >> 20;
+    int sx = 0, su = 0, sv = 0;
+    if (dy & ~15) {
+        sx = (F(int, p2, 12) - F(int, p1, 12)) / dy;
+        su = ((F(int, p2, 24) - F(int, p1, 24)) << 6) / (dy >> 4);
+        sv = ((F(int, p2, 28) - F(int, p1, 28)) << 6) / (dy >> 4);
+    }
+    int c = F(int, p1, 20);
+    int x = sx * f + F(int, p1, 12);
+    int u = (su >> 10) * f + F(int, p1, 24);
+    int v = (sv >> 10) * f + F(int, p1, 28);
+    sx <<= 10;
+    BYTE* r = t + row * 24;
+    F(int, r, 0) = x;
+    F(int, r, 12) = u;
+    F(int, r, 16) = v;
+    F(int, r, 8) = c;
+    for (int k = row + 1; k <= F(int, p2, 16) >> 20; k++) {
+        r += 24;
+        x += sx;
+        u += su;
+        v += sv;
+        F(int, r, 0) = x;
+        F(int, r, 12) = u;
+        F(int, r, 16) = v;
+        F(int, r, 8) = c;
+    }
+}
