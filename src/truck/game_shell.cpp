@@ -3764,3 +3764,114 @@ extern "C" BYTE* __fastcall ShellColumns520e30_Construct(BYTE* s, void*, BYTE* p
     F(int, s, 376) = 0;
     return s;
 }
+
+ASM_PROC(FUN_50efb0)
+ASM_PROC(FUN_50e830)
+ASM_PROC(FUN_5159d0)
+ASM_PROC(FUN_50e500)
+extern "C" void Wnd_SetPos_(); KING_ALIAS("_Wnd_SetPos_", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
+extern "C" void __cdecl _exit(int);
+ASM_VAR(BYTE*, g_q37_6968d0, $L_6968d0)
+ASM_VAR(AsmLabel, g_q37_72da58, $L_72da58)
+ASM_VAR(int, g_q37_7208e4, $L_7208e4)
+ASM_VAR(AsmLabel, g_q37_6cecfc, $L_6cecfc)
+ASM_VAR(AsmLabel, g_q37_6ced00, $L_6ced00)
+ASM_VAR(AsmLabel, g_q37_6ced04, $L_6ced04)
+ASM_VAR(AsmLabel, g_q37_6ced08, $L_6ced08)
+ASM_VAR(AsmLabel, g_q37_64def8, $L_64def8)
+ASM_VAR(AsmLabel, g_q37_64deb8, $L_64deb8)
+ASM_VAR(AsmLabel, s_q37_6730a0, $L_6730a0)
+#define Q37(x) ((const char*)s_q37_##x)
+ASM_VAR(AsmLabel, s_q37_676dd0, $L_676dd0)
+ASM_VAR(AsmLabel, s_q37_676dc8, $L_676dc8)
+ASM_VAR(AsmLabel, s_q37_676d98, $L_676d98)
+ASM_VAR(AsmLabel, s_q37_676d90, $L_676d90)
+ASM_VAR(AsmLabel, s_q37_676cec, $L_676cec)
+ASM_VAR(AsmLabel, s_q37_676c9c, $L_676c9c)
+ASM_VAR(AsmLabel, s_q37_676d80, $L_676d80)
+ASM_VAR(AsmLabel, s_q37_676d78, $L_676d78)
+ASM_VAR(AsmLabel, s_q37_676d64, $L_676d64)
+ASM_VAR(AsmLabel, s_q37_676d10, $L_676d10)
+ASM_VAR(AsmLabel, s_q37_676d04, $L_676d04)
+ASM_VAR(AsmLabel, s_q37_676c58, $L_676c58)
+ASM_VAR(AsmLabel, s_q37_676c50, $L_676c50)
+ASM_VAR(AsmLabel, s_q37_676d5c, $L_676d5c)
+ASM_VAR(AsmLabel, s_q37_676d54, $L_676d54)
+ASM_VAR(AsmLabel, s_q37_676d4c, $L_676d4c)
+ASM_VAR(AsmLabel, s_q37_676d44, $L_676d44)
+ASM_VAR(AsmLabel, s_q37_676d38, $L_676d38)
+
+// [FUN_515ca0] constructor (parent): the display setup screen (vtables 64def8, 64deb8 at +64): reads the ini,
+// picks the video mode through 5159d0 (exits with a message box when none fits), centres the 640x480 window,
+// two sliders 139/140 (+422, +420), four depth switches 138..135 (+376) by +408, buttons 134 (+384), 133 (+380)
+extern "C" BYTE* __fastcall ShellDisplay515ca0_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q37_64def8;
+    F(void*, s, 64) = g_q37_64deb8;
+    int v;
+    CallC(FUN_603b70, Q32(672998), Q37(676dd0), 3, &v, g_q32_696868);
+    F(int, s, 388) = v;
+    CallC(FUN_603b70, Q37(6730a0), Q37(676dc8), 1, &v, g_q32_696868);
+    F(int, s, 412) = v - 1;
+    g_q37_7208e4 = v - 1;
+    if (!CallC<int>(FUN_5159d0, F(int, s, 412), s + 416, (void*)g_q37_6cecfc, s + 392, (void*)g_q37_6ced00,
+                    s + 396, (void*)g_q37_6ced04, s + 400, (void*)g_q37_6ced08, s + 404)) {
+        CallC(FUN_5d2ba0, Q37(676d98), 0);
+        MessageBoxA(0, Q37(676d98), Q37(676d90), 0);
+        _exit(0);
+    }
+    CallC(FUN_603b70, Q32(672998), Q37(676cec), 290, &v, g_q32_696868);
+    F(int, s, 408) = v;
+    if (F(int, s, 396) == 0 && (v & 240) > 16)
+        F(int, s, 408) = (v & ~0xff) | (v & 31) | 16;
+    int w = GetSystemMetrics(0);
+    int h = GetSystemMetrics(1);
+    CallThis(Wnd_SetPos_, g_q37_6968d0, (void*)g_q37_72da58, (w - 640) / 2, (h - 480) / 2, 640, 480, 64);
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, Q37(676c9c));
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    Shell_PlainStyles(s + 132, Q37(676d80));
+    BYTE* outer = Shell_NewPanel(0);
+    BYTE* p = Shell_NewPanel(4);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q37(676d78), 2, 348, 452), 0);
+    g_q28_6ce3ac = CallC<DWORD>(FUN_5ef3d0, Q37(676d64));
+    CallThis(FUN_5bd5a0, p + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, p + 104, (void*)g_q28_6ce390);
+    CallThis(FUN_5bd5a0, p + 140, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, p + 176, (void*)g_6ce408);
+    CallC(FUN_603b70, Q32(672998), Q37(676d10), 100, &v, g_q32_696868);
+    F(WORD, s, 422) = (WORD)v;
+    BYTE* b = CallC<BYTE*>(FUN_50efb0, Q37(676c50), Q37(676c58), s + 422, 349, 405, 0, 182);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    F(int, b, 28) = 139;
+    CallC(FUN_603b70, Q32(672998), Q37(676d04), 100, &v, g_q32_696868);
+    F(WORD, s, 420) = (WORD)v;
+    b = CallC<BYTE*>(FUN_50efb0, Q37(676c50), Q37(676c58), s + 420, 349, 370, 0, 182);
+    CallThis(FUN_5bdbf0, p, b, 0);
+    F(int, b, 28) = 140;
+    BYTE* d = Shell_NewPanel(0);
+    F(BYTE*, s, 376) = d;
+    int depth = F(int, s, 408) & 240;
+    CallThis(FUN_5bdbf0, d, CallC<BYTE*>(FUN_50e830, Q37(676d5c), 138, 441, 330, depth == 64, 0), 0);
+    CallThis(FUN_5bdbf0, d, CallC<BYTE*>(FUN_50e830, Q37(676d54), 137, 329, 330, depth == 48, 0), 0);
+    CallThis(FUN_5bdbf0, d, CallC<BYTE*>(FUN_50e830, Q37(676d4c), 136, 441, 293, depth == 32, 0), 0);
+    CallThis(FUN_5bdbf0, d, CallC<BYTE*>(FUN_50e830, Q37(676d44), 135, 329, 293, depth == 16, 0), 0);
+    CallThis(FUN_5bdbf0, p, d, 0);
+    F(BYTE*, s, 384) = CallC<BYTE*>(FUN_50e500, Q37(676c58), 134, 536, 263);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 384), 0);
+    F(BYTE*, s, 380) = CallC<BYTE*>(FUN_50e500, Q37(676c50), 133, 324, 263);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 380), 0);
+    F(int, F(BYTE*, s, 380), 40) = 1;
+    Shell_MoveCtl(p, 310, 218);
+    CallThis(FUN_5bdd70, p);
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    CallThis(FUN_5bdbf0, outer, CallC<BYTE*>(FUN_50ef60, Q37(676d38), 132, 348, 157), 0);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), outer, 0);
+    return s;
+}
