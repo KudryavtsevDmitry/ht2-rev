@@ -868868,6 +868868,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604a80 PROC
 
             mov EAX,DWORD PTR [$L_7241a4]
@@ -868923,6 +868925,10 @@ $L_604ae8::
             pop ESI
             ret 
 FUN_604a80 ENDP
+ELSE
+EXTERN _Mixer_Init:PROC
+FUN_604a80 TEXTEQU <_Mixer_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
