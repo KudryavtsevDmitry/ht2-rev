@@ -2265,3 +2265,25 @@ extern "C" void __fastcall Radio_NextMessage(BYTE* s)
     F(int, s, 1216) = 1;
     F(double, s, 32) = CallC<double>(FUN_6037e0);
 }
+
+extern "C" void FUN_566240(); KING_ALIAS("_FUN_566240", "@Copter_566240@8")
+ASM_VAR(double, g_q180_64b780, $L_64b780)
+ASM_VAR(double, g_q180_64b678, $L_64b678)
+ASM_VAR(double, g_q180_64b670, $L_64b670)
+ASM_VAR(double, g_q180_64ca48, $L_64ca48)
+// [FUN_5668c0] the helicopter's climb state: the vertical speed share (+3448, from the velocity +100..+108 along
+// the up axis +52/+64/+76), its sign (+3436), and with a landing place (566240) its position (+3468)
+extern "C" void __fastcall Copter_ClimbState(BYTE* s)
+{
+    F(int, s, 3388) = 0;
+    double d = F(float, s, 76) * F(float, s, 108) + F(float, s, 104) * F(float, s, 64);
+    d = d + F(float, s, 52) * F(float, s, 100);
+    double r = -d / (x87_fabs(d) + g_q180_64b780);
+    F(float, s, 3448) = (float)r;
+    F(int, s, 3436) = (int)(!(r >= g_q180_64b678) ? g_q180_64ca48 : g_q180_64b670);
+    if (BYTE* p = CallThis<BYTE*>(FUN_566240, s)) {
+        F(int, s, 3464) = 1;
+        BYTE t[48];
+        memcpy(s + 3468, CallThis<BYTE*>(FUN_57de90, p + 16, t) + 36, 12);
+    }
+}

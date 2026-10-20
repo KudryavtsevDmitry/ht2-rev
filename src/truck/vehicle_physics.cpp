@@ -868,7 +868,7 @@ extern "C" void __fastcall Body_TakeMode(BYTE* self, void*)
 
 // ---------------------------------------------------------------------------
 ASM_PROC(FUN_4f1240)
-ASM_PROC(FUN_4f1ef0)
+extern "C" void FUN_4f1ef0(); KING_ALIAS("_FUN_4f1ef0", "@Body_SetVec88@12")
 
 // [FUN_4fc9b0] switches the control mode (+9784) to 1..3 with (a, b) for 4f1240, a position and 4f1ef0's value; mode 0 just clears it
 extern "C" void __fastcall Body_SetControlMode(BYTE* self, void*, int mode, int a, int b, Vec3* pos, int v)
@@ -917,7 +917,7 @@ extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)
 // Body mode.
 
 ASM_PROC(FUN_4f1240)
-ASM_PROC(FUN_4f1ef0)
+extern "C" void FUN_4f1ef0(); KING_ALIAS("_FUN_4f1ef0", "@Body_SetVec88@12")
 extern "C" void FUN_4f1dd0(); KING_ALIAS("_FUN_4f1dd0", "@Body_SetPosition@12")
 // [FUN_4fc930] sets the body mode (+9784): 0, 1, or 2/3 with the frame (a, b), the position c and d
 extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int a, int b, int c, int d)
@@ -1014,4 +1014,24 @@ extern "C" int __fastcall Body_SetUpright(BYTE* s)
     CallThis(FUN_4f1240, s, 2, F(int, s, 244), m);
     CallThis(FUN_4f0050, s);
     return 0;
+}
+
+extern "C" void FUN_4e30f4(); KING_ALIAS("_FUN_4e30f4", "_Vec3_MulComponents")
+extern "C" void FUN_4f07e0(); KING_ALIAS("_FUN_4f07e0", "@Body_SaveVec88@8")
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+// [FUN_4f1ef0] sets body s's local vector (+88) to v and its world form (+76: v scaled by +8008, turned by the
+// body's axes +16..+48), then saves it
+extern "C" void __fastcall Body_SetVec88(BYTE* s, void*, const float* v)
+{
+    memcpy(s + 88, v, 12);
+    float t[3];
+    const float* r = CallC<const float*>(FUN_4e30f4, t, s + 88, s + 8008);
+    float x = (float)(F(float, s, 28) * r[1] + F(float, s, 40) * r[2] + r[0] * F(float, s, 16));
+    float y = (float)(F(float, s, 32) * r[1] + F(float, s, 20) * r[0] + F(float, s, 44) * r[2]);
+    float z = (float)(F(float, s, 36) * r[1] + F(float, s, 24) * r[0] + F(float, s, 48) * r[2]);
+    F(float, s, 76) = x;
+    F(float, s, 80) = y;
+    F(float, s, 84) = z;
+    CallThis(FUN_5e48f0, s);
+    CallThis(FUN_4f07e0, s);
 }
