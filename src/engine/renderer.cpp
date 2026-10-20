@@ -45,7 +45,7 @@ ASM_PROC(FUN_5b1020)
 ASM_PROC(FUN_5b0810)
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 ASM_PROC(FUN_5feace)    // fills words
-ASM_PROC(FUN_5b6770)
+extern "C" void FUN_5b6770(); KING_ALIAS("_FUN_5b6770", "@Surface_Create@24")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_PROC(FUN_5b81c0)    // blits a bitmap (dst, bitmap, rect, x, y)
 ASM_PROC(FUN_5d3d30)    // sets palette entries
@@ -2006,4 +2006,78 @@ extern "C" BYTE* __fastcall SubSurface_Construct(BYTE* s, void*, BYTE* p, int* r
         F(BYTE*, s, 24) = F(BYTE*, p, 24) + F(WORD, p, 6) * r[1] + F(WORD, s, 4) * r[0];
     F(int, s, 56) = CallC<int>(FUN_4cef50, F(BYTE*, s, 24), F(WORD, s, 6) * F(WORD, s, 2));
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Creating a surface.
+
+extern "C" void FUN_5d3fe0(); KING_ALIAS("_FUN_5d3fe0", "_Dd_LockPrimary")
+extern "C" void FUN_5d3b00(); KING_ALIAS("_FUN_5d3b00", "_Video_Get7208a4")
+// allocates buffer k of surface s (+24.. video memory blocks, +56.. their cleared counts)
+static void Ren149_Buffer(BYTE* s, int k)
+{
+    int n = F(WORD, s, 4) * F(WORD, s, 2) * F(WORD, s, 0);
+    BYTE* p = CallC<BYTE*>(FUN_5d3fe0, n);
+    F(BYTE*, s, 24 + k * 4) = p;
+    F(int, s, 56 + k * 4) = CallC<int>(FUN_4cef50, p, F(WORD, s, 4) * F(WORD, s, 2) * F(WORD, s, 0));
+}
+// [FUN_5b6770] sets up surface s of w x h pixels of bpp bytes with flags: a 3D one (bit 12) only notes the
+// texture level; in video memory (bit 9) with up to 3 or 6 buffers (bits 0 and 8) and the mode's pitch, else
+// one block in memory; bit 14 adds a 2-byte-per-pixel side buffer (+48)
+extern "C" void __fastcall Surface_Create(BYTE* s, void*, int w, int h, int bpp, DWORD flags)
+{
+    F(WORD, s, 6) = (WORD)(bpp * w);
+    F(int, s, 96) = 0;
+    F(DWORD, s, 12) = flags;
+    F(WORD, s, 0) = (WORD)w;
+    F(WORD, s, 2) = (WORD)h;
+    F(WORD, s, 4) = (WORD)bpp;
+    F(WORD, s, 8) = 0;
+    F(int, s, 80) = 0;
+    F(int, s, 84) = 0;
+    F(float, s, 88) = 0.5f;
+    F(BYTE, s, 92) = 0;
+    F(int, s, 120) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 20) = 1;
+    F(int, s, 116) = 0;
+    if (flags & 0x1000) {
+        g_q148_702e94 = CallC<int>(FUN_5d3ab0);
+        F(int, s, 116) = 1;
+        F(int, s, 24) = 0;
+        return;
+    }
+    bool more = false;
+    if (flags & 0x200) {
+        Ren149_Buffer(s, 0);
+        F(WORD, s, 6) = CallC<WORD>(FUN_5d3b00);
+        if (F(BYTE, s, 12) & 1) {
+            Ren149_Buffer(s, 1);
+            Ren149_Buffer(s, 2);
+            F(int, s, 16) = 1;
+            if (F(DWORD, s, 12) & 0x100) {
+                Ren149_Buffer(s, 3);
+                Ren149_Buffer(s, 4);
+                Ren149_Buffer(s, 5);
+                F(int, s, 20) = 6;
+            } else
+                F(int, s, 20) = 3;
+            more = true;
+        }
+    } else {
+        int n = (WORD)bpp * (WORD)h * (WORD)w;
+        BYTE* p = (BYTE*)operator new(n);
+        F(BYTE*, s, 24) = p;
+        F(int, s, 56) = CallC<int>(FUN_4cef50, p, F(WORD, s, 4) * F(WORD, s, 2) * F(WORD, s, 0));
+    }
+    if (!more) {
+        F(int, s, 16) = 0;
+        F(int, s, 20) = 1;
+    }
+    if (F(DWORD, s, 12) & 0x4000) {
+        F(void*, s, 48) = operator new(F(WORD, s, 2) * F(WORD, s, 0) * 2);
+        F(WORD, s, 8) = F(WORD, s, 0);
+    } else
+        F(int, s, 48) = 0;
 }
