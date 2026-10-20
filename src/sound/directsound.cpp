@@ -564,7 +564,7 @@ extern "C" void __cdecl Play_UpdateAll()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_604300(); KING_ALIAS("_FUN_604300", "_Play_StopEntry")
-ASM_PROC(FUN_604390)
+extern "C" void __cdecl Streams_StopId(int id);
 extern "C" void FUN_604590(); KING_ALIAS("_FUN_604590", "@Wave_Free@8")
 ASM_VAR(DWORD, g_ds724168, $L_724168)
 ASM_VAR(BYTE*, g_ds724164, $L_724164)
@@ -576,7 +576,7 @@ extern "C" void __cdecl Snd_Free(int i)
     if (i >= (int)(g_ds724168 & 0xffff) || !F(int, g_ds724164, i * 24))
         return;
     CallC(FUN_604300, i);
-    CallC(FUN_604390, i);
+    Streams_StopId(i);
     CallThis(FUN_604590, g_ds724164 + i * 24);
 }
 
@@ -1059,4 +1059,21 @@ extern "C" bool __fastcall Wave_Open(BYTE* s, void*, BYTE* data, DWORD size)
     }
     Wave_Free(s, 0);
     return false;
+}
+
+// [FUN_604390] stops and deletes the stream with id (+12). As in the game, the search never moves past the
+// first stream: unless that one has the id, this waits forever
+extern "C" void __cdecl Streams_StopId(int id)
+{
+    BYTE* s = g_streams;
+    if (!s)
+        return;
+    for (;;) {
+        while (*(volatile int*)(s + 12) != id)
+            ;
+        Mixer_Lock();
+        CallVirt(s, 8);
+        CallVirt(s, 0, 1);
+        Mixer_Unlock();
+    }
 }
