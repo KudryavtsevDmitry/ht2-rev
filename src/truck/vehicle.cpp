@@ -2632,3 +2632,49 @@ extern "C" void __fastcall Car_StepAllLevels(BYTE* s, void*, float* v)
     for (int i = 0; i < 9; i++)
         CallThis(FUN_589490, F(BYTE*, s, 9536) + i * 20, v, F(int, s, 10432 + i * 4));
 }
+
+// ---------------------------------------------------------------------------
+// Car lights and effects.
+
+ASM_PROC($L_549580)
+extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+extern "C" void FUN_4ba060(); KING_ALIAS("_FUN_4ba060", "_Effect_New4daf40")
+extern "C" void FUN_54a310(); KING_ALIAS("_FUN_54a310", "@Flasher_Release@8")
+ASM_VAR(float, g_q129_64c938, $L_64c938)
+ASM_VAR(double, g_q129_64b840, $L_64b840)
+ASM_VAR(AsmLabel, g_q129_6981b0, $L_69818e)
+ASM_VAR(BYTE*, g_q129_69622c, $L_69622c)
+// [FUN_5565d0] the value of +9572 when +9600 is set, else the 64c938 default
+extern "C" float __fastcall Car_5565d0(BYTE* s) { return F(int, s, 9600) ? F(float, s, 9572) : g_q129_64c938; }
+
+// [FUN_549900] starts effect s (state +20's +12 from 0 to 1) at t: its end time (+28), its start (+4); a car
+// (+24) of type kind 3 gets the 549580 effect
+extern "C" void __fastcall CarEffect_Start(BYTE* s, void*, float t)
+{
+    BYTE* o = F(BYTE*, s, 20);
+    if (F(int, o, 12))
+        return;
+    F(float, s, 28) = (float)(t + g_q129_64b840);
+    F(int, o, 12) = 1;
+    F(float, s, 4) = (float)CallC<double>(FUN_4e27a5);
+    BYTE* car = F(BYTE*, s, 24);
+    if (F(int, (BYTE*)g_q129_6981b0, 34 + F(int, car, 10420) * 2416) == 3)
+        CallC(FUN_4ba060, car, $L_549580);
+}
+
+// [FUN_549b90] stops effect s (state 1 or 2 becomes 4): the stop time (+8), the 69622c sound off, the flasher
+// (+16) freed
+extern "C" void __fastcall CarEffect_Stop(BYTE* s)
+{
+    BYTE* o = F(BYTE*, s, 20);
+    if (F(int, o, 12) != 1 && F(int, o, 12) != 2)
+        return;
+    F(int, o, 12) = 4;
+    F(float, s, 8) = (float)CallC<double>(FUN_4e27a5);
+    CallVirt(g_q129_69622c, 64, 0);
+    if (BYTE* p = F(BYTE*, s, 16)) {
+        CallThis(FUN_54a310, p);
+        operator delete(p);
+    }
+    F(BYTE*, s, 16) = 0;
+}
