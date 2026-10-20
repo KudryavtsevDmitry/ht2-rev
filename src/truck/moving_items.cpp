@@ -678,3 +678,24 @@ extern "C" void __fastcall MovingItem_Fly(BYTE* s)
         F(float, s, 3160 + k * 4) = (float)(dt * F(float, s, 428 + k * 4));
     CallC(FUN_4e2821, p, (const char*)s_q173_67d494, 150.0f);
 }
+
+ASM_PROC(FUN_4e8ae1)
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+ASM_VAR(AsmLabel, s_q174_67d434, $L_67d434)
+ASM_VAR(AsmLabel, s_q174_67d420, $L_67d420)
+// [FUN_5808c0] the contact forces of item s with a2/a3 (4e8ae1 with its matrix +3172 and its inverse, position,
+// spin, +3288, +3268 and +1424) applied as a push (vtbl+144) and a turn (vtbl+148)
+extern "C" void __cdecl MovingItem_Contact(BYTE* s, int a2, int a3)
+{
+    BYTE m[48], inv[48];
+    memcpy(m, s + 3172, 48);
+    CallC(FUN_5ac2e0, inv, m);
+    float pos[3], spin[3], w[3];
+    float f[3] = {0, 0, 0}, t[3] = {0, 0, 0};
+    memcpy(pos, s + 416, 12);
+    memcpy(spin, s + 428, 12);
+    memcpy(w, s + 3288, 12);
+    CallC(FUN_4e8ae1, m, inv, pos, spin, w, a2, a3, F(float, s, 3268), F(float, s, 1424), 0, f, t);
+    CallVirt(s, 144, f, (const char*)s_q174_67d434);
+    CallVirt(s, 148, t, (const char*)s_q174_67d420);
+}

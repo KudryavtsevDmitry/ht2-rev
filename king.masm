@@ -1489,6 +1489,7 @@ PUBLIC $L_64fa38
 PUBLIC $L_65170c, $L_651cec, $L_67f994
 PUBLIC $L_6ef260
 PUBLIC $L_67d494
+PUBLIC $L_67d420, $L_67d434
 
 ;===================================
 _TEXT SEGMENT
@@ -638166,6 +638167,8 @@ $L_58084e ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 FUN_5808c0 PROC
 
             sub ESP,156
@@ -638261,6 +638264,10 @@ FUN_5808c0 PROC
             add ESP,156
             ret 
 FUN_5808c0 ENDP
+ELSE
+EXTERN _MovingItem_Contact:PROC
+FUN_5808c0 TEXTEQU <_MovingItem_Contact>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
