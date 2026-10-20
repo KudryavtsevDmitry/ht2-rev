@@ -998,3 +998,30 @@ extern "C" int __stdcall Ff_GetRect(BYTE* r, DWORD* out)
     }
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Joystick dead zone.
+
+extern "C" int __cdecl fprintf(FILE* f, const char* t, ...);
+ASM_VAR(AsmLabel, s_q57_67cd88, $L_67cd88)
+ASM_VAR(AsmLabel, s_q57_67c55c, $L_67c55c)
+ASM_VAR(AsmLabel, s_q57_677268, $L_677268)
+typedef long(__stdcall* DevSetProperty)(void*, int, void*);
+// [FUN_578680] sets the dead zone (property 5) of the axis 0..7 (by its 4-byte offset) to v, logging to the file
+extern "C" long __cdecl Joy_SetDeadZone(unsigned axis, int v, FILE* log)
+{
+    DWORD p[5] = {20, 16, 0, 1, (DWORD)v};
+    if (axis <= 7)
+        p[2] = axis * 4;
+    if (log)
+        fprintf(log, (const char*)s_q57_67cd88, axis);
+    void* d = g_joyDevice;
+    long r = ((DevSetProperty)(*(void***)d)[6])(d, 5, p);
+    if (log) {
+        if (r < 0)
+            fprintf(log, (const char*)s_q57_67c55c, r);
+        else
+            fprintf(log, (const char*)s_q57_677268);
+    }
+    return r;
+}

@@ -2563,3 +2563,32 @@ extern "C" int __cdecl Item_OnEvent(BYTE* it, int e)
     }
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Car messages.
+
+ASM_PROC(FUN_545ef0)
+extern "C" void FUN_546300(); KING_ALIAS("_FUN_546300", "@Car_Restore546300@12")
+extern "C" void FUN_546480(); KING_ALIAS("_FUN_546480", "@Car_Restore546480@12")
+extern "C" void FUN_545d90(); KING_ALIAS("_FUN_545d90", "@Car_Command@12")
+extern "C" void FUN_545dc0(); KING_ALIAS("_FUN_545dc0", "@Car_SetBytes@12")
+extern "C" int __fastcall SceneObj_OnMessage(BYTE* s, void*, int* m);    // moving_items.cpp
+ASM_VAR(AsmLabel, s_q57_679ff0, $L_679ff0)
+// [$L_5464e0] handles the message m for the car (this at +16 of it): the scene object part first, then the car
+// types 5, 7, 8, 9, 11 with the data (+8); 1 when handled
+extern "C" int __fastcall Car_OnMessage(BYTE* s, void*, int* m)
+{
+    if (SceneObj_OnMessage(s, 0, m))
+        return 1;
+    if (m[0] != F(int, s, 1188))
+        CallC(FUN_4e260c, (const char*)s_q57_679ff0);
+    BYTE* car = s - 16;
+    switch (m[1]) {
+    case 5: CallThis(FUN_545ef0, car, m + 2); return 1;
+    case 7: CallThis(FUN_546480, car, m + 2); return 1;
+    case 8: CallThis(FUN_545d90, car, m + 2); return 1;
+    case 9: CallThis(FUN_545dc0, car, m + 2); return 1;
+    case 11: CallThis(FUN_546300, car, m + 2); return 1;
+    }
+    return 0;
+}

@@ -1435,6 +1435,7 @@ PUBLIC $L_684938, $L_684964, $L_684998
 PUBLIC $L_679f8c, $L_67f854, $L_702f58, $L_702f5c, $L_702f60
 PUBLIC $L_682a30, $L_70f3d8, $L_70f3f0, $L_71e7bc, $L_71e7c4, $L_71e7d8
 PUBLIC $L_71e7dc
+PUBLIC $L_678550, $L_679ff0, $L_67c55c, $L_67cd88
 
 ;===================================
 _TEXT SEGMENT
@@ -551455,6 +551456,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_5464e0 PROC
 
             push ESI
@@ -551559,6 +551562,10 @@ $L_54659c           DWORD $L_546527
           DWORD $L_54657f
           DWORD $L_546595
           DWORD $L_54653d
+ELSE
+EXTERN @Car_OnMessage@12:PROC
+$L_5464e0 TEXTEQU <@Car_OnMessage@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -625841,6 +625848,8 @@ $L_578290 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_578680 PROC
 
             sub ESP,20
@@ -625959,6 +625968,10 @@ $L_578774           DWORD $L_5786cb
           DWORD $L_5786f9
           DWORD $L_5786ff
           DWORD $L_578709
+ELSE
+EXTERN _Joy_SetDeadZone:PROC
+FUN_578680 TEXTEQU <_Joy_SetDeadZone>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -646463,6 +646476,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 FUN_586cd0 PROC
 
             push ESI
@@ -646567,6 +646582,10 @@ $L_586d7c           BYTE ($L_586d68-$L_586d68)/4
             nop
             nop
 FUN_586cd0 ENDP
+ELSE
+EXTERN @SceneObj_OnMessage@12:PROC
+FUN_586cd0 TEXTEQU <@SceneObj_OnMessage@12>
+ENDIF
 ALIGN 16
 IFDEF ASM_MOVING_ITEMS
 FUN_586d90 PROC
@@ -783922,6 +783941,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5d8c60 PROC
 
             push EBX
@@ -784020,6 +784041,10 @@ $L_5d8cff::
             pop EBX
             ret 
 $L_5d8c60 ENDP
+ELSE
+EXTERN _Node_LinkByNames:PROC
+$L_5d8c60 TEXTEQU <_Node_LinkByNames>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

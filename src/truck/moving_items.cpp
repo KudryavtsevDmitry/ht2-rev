@@ -520,3 +520,23 @@ extern "C" void __cdecl Rec_GetValue32(int* r, int* out)
     if (r && out && r[0] == 32)
         *out = r[1];
 }
+
+// ---------------------------------------------------------------------------
+// Scene object messages.
+
+extern "C" void FUN_586c30(); KING_ALIAS("_FUN_586c30", "_SceneObj_PlaceByName@4")
+ASM_VAR(AsmLabel, s_q57_678550, $L_678550)
+// [FUN_586cd0] handles the message m for the object (its id at +1188, fatal otherwise): type 1 slot 176 with the
+// data (+8), 3 slot 216, 4 slot 212, 12 placement by name; 1 when handled
+extern "C" int __fastcall SceneObj_OnMessage(BYTE* s, void*, int* m)
+{
+    if (m[0] != F(int, s, 1188))
+        CallC(FUN_4e260c, (const char*)s_q57_678550);
+    switch (m[1]) {
+    case 1: CallVirt(s, 176, m + 2); return 1;
+    case 3: CallVirt(s, 216); return 1;
+    case 4: CallVirt(s, 212); return 1;
+    case 12: CallThis(FUN_586c30, s, m + 2); return 1;
+    }
+    return 0;
+}
