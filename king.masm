@@ -1463,6 +1463,7 @@ PUBLIC $L_4d8b60, $L_67262c, $L_6768a8, $L_6768b8, $L_6768c4, $L_6768d0
 PUBLIC $L_6768d8, $L_6768e0, $L_6768e8, $L_6768f0, $L_6cec84, $L_702e98
 PUBLIC $L_7208c0
 PUBLIC $L_694b0c, $L_6969a0, $L_6969d0, $L_696b98
+PUBLIC $L_64c790, $L_672788
 
 ;===================================
 _TEXT SEGMENT
@@ -356612,6 +356613,8 @@ $L_4c47f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c4830 PROC
 
             mov EAX,DWORD PTR [$L_696240]
@@ -356693,6 +356696,10 @@ $L_4c48f9::
             add ESP,16
             ret 
 $L_4c4830 ENDP
+ELSE
+EXTERN _Lights_Collect:PROC
+$L_4c4830 TEXTEQU <_Lights_Collect>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -356839,6 +356846,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c4a50 PROC
 
             push EBX
@@ -356890,6 +356899,10 @@ $L_4c4a96::
             nop
             nop
 $L_4c4a50 ENDP
+ELSE
+EXTERN @Light4c4a50_Construct@4:PROC
+$L_4c4a50 TEXTEQU <@Light4c4a50_Construct@4>
+ENDIF
 ALIGN 16
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
