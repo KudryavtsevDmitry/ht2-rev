@@ -1436,6 +1436,7 @@ PUBLIC $L_679f8c, $L_67f854, $L_702f58, $L_702f5c, $L_702f60
 PUBLIC $L_682a30, $L_70f3d8, $L_70f3f0, $L_71e7bc, $L_71e7c4, $L_71e7d8
 PUBLIC $L_71e7dc
 PUBLIC $L_678550, $L_679ff0, $L_67c55c, $L_67cd88
+PUBLIC $L_67f818, $L_67f830
 
 ;===================================
 _TEXT SEGMENT
@@ -727611,6 +727612,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5ba4a0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -727733,6 +727736,10 @@ $L_5ba5a4           DWORD $L_5ba4db
           DWORD $L_5ba4e4
           DWORD $L_5ba4ed
           DWORD $L_5ba4f6
+ELSE
+EXTERN @Texture5ba4a0_Construct@20:PROC
+FUN_5ba4a0 TEXTEQU <@Texture5ba4a0_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -744560,6 +744567,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c2d70 PROC
 
             sub ESP,28
@@ -744670,6 +744679,10 @@ $L_5c2e2a::
             add ESP,28
             ret 
 $L_5c2d70 ENDP
+ELSE
+EXTERN _Media_ThreadProc:PROC
+$L_5c2d70 TEXTEQU <_Media_ThreadProc>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -2371,7 +2371,7 @@ ASM_VAR(HANDLE, g_q54_702f5c, $L_702f5c)
 ASM_VAR(int, g_q54_702f98, $L_702f98)
 ASM_VAR(int, g_q54_702f9c, $L_702f9c)
 ASM_VAR(int, g_q54_702f94, $L_702f94)
-ASM_VAR(AsmLabel, g_q54_5c2d70, $L_5c2d70)
+extern "C" unsigned __cdecl Media_ThreadProc(void*);
 ASM_VAR(AsmLabel, s_q54_67f854, $L_67f854)
 // [FUN_5c2e60] starts the media thread for the window w: COM, two events; without a device d it opens one
 // (logs and gives up on failure), then the 5c2d70 thread
@@ -2391,7 +2391,7 @@ extern "C" void __cdecl Media_StartThread(int w, int d)
         g_q54_702f98 = d;
         g_q54_702f9c = 0;
     }
-    CallStd(Mfc_AfxBeginThread, (void*)g_q54_5c2d70, 0, 1, 4096, 0, 0);
+    CallStd(Mfc_AfxBeginThread, (void*)Media_ThreadProc, 0, 1, 4096, 0, 0);
     g_q54_702f94 = 0;
 }
 
@@ -2433,4 +2433,45 @@ extern "C" void __cdecl Span_FillRows(int mode, int c)
         if (y > g_q56_71e7d8)
             break;
     }
+}
+
+// ---------------------------------------------------------------------------
+// The media thread.
+
+extern "C" void FUN_5c2ba0(); KING_ALIAS("_FUN_5c2ba0", "_Msavi_HandleNotification")
+extern "C" void FUN_5c26f0(); KING_ALIAS("_FUN_5c26f0", "_Msavi_Free")
+ASM_VAR(AsmLabel, s_q58_67f830, $L_67f830)
+ASM_VAR(AsmLabel, s_q58_67f818, $L_67f818)
+// [$L_5c2d70] the media thread: waits on the two events (702f58, 702f5c) and the messages; the first event runs
+// the movie notifications (a failure other than E_FAIL is logged) and ends the thread, as does the 702f94 flag;
+// frees the movie and closes the events
+extern "C" unsigned __cdecl Media_ThreadProc(void*)
+{
+    g_q54_702f94 = 0;
+    for (;;) {
+        DWORD r = MsgWaitForMultipleObjects(2, &g_q54_702f58, FALSE, INFINITE, QS_ALLINPUT);
+        if (r == 0) {
+            long hr = CallC<long>(FUN_5c2ba0);
+            if (hr < 0) {
+                if (hr != (long)0x80004005) {
+                    CallC(FUN_5d2ba0, (const char*)s_q58_67f830, hr);
+                    CallC(FUN_5d2ba0, (const char*)s_q58_67f818, 0);
+                }
+                g_q54_702f94 = 1;
+                break;
+            }
+        } else if (r == 2) {
+            MSG m;
+            while (PeekMessageA(&m, 0, 0, 0, PM_REMOVE)) {
+                TranslateMessage(&m);
+                DispatchMessageA(&m);
+            }
+        }
+        if (g_q54_702f94)
+            break;
+    }
+    CallC(FUN_5c26f0);
+    CloseHandle(g_q54_702f58);
+    CloseHandle(g_q54_702f5c);
+    return 1;
 }
