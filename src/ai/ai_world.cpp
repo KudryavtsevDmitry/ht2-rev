@@ -22185,7 +22185,7 @@ extern "C" int* __fastcall Id411bd0_Init(int* s)
 extern "C" void FUN_461b20(); KING_ALIAS("_FUN_461b20", "@Rec60_Copy@12")
 extern "C" void FUN_4667d0(); KING_ALIAS("_FUN_4667d0", "_Chars_CompareRope")
 extern "C" void FUN_4668d0(); KING_ALIAS("_FUN_4668d0", "_Rope_CompareChars")
-ASM_PROC(FUN_466a00)
+extern "C" void FUN_466a00(); KING_ALIAS("_FUN_466a00", "_Rope_CompareRope")
 struct Rec60v { DWORD d[15]; };
 static Rec60v Rec60v_Copy(const Rec60v& s)
 {
