@@ -4925,3 +4925,25 @@ extern "C" BYTE* __fastcall Mesh4c5020_Construct(BYTE* s)
     F(void*, s, 0) = (BYTE*)g_q156_64c828;
     return s;
 }
+
+// [$L_4c0dd0] visitor: a record of kind 16 (a) adds the point of b (+4, +8 and a's +12 height) to b's ring of
+// 50 (b +0: count +4, points from +8)
+extern "C" int __cdecl Ring50_AddPoint(const BYTE* a, const BYTE* b)
+{
+    BYTE* r = F(BYTE*, b, 0);
+    if (F(int, a, 0) != 16)
+        return (int)b;
+    float p[3] = {F(float, b, 4), F(float, b, 8), *F(const float*, a, 12)};
+    memcpy(r + 8 + (F(unsigned, r, 4) % 50) * 12, p, 12);
+    return ++F(int, r, 4);
+}
+
+// [$L_4cce30] sort order: by +108, largest first
+extern "C" int __cdecl Cmp4cce30_Desc(const BYTE* a, const BYTE* b)
+{
+    if (F(float, b, 108) > F(float, a, 108))
+        return 1;
+    if (F(float, b, 108) < F(float, a, 108))
+        return -1;
+    return 0;
+}

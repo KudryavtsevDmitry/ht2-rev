@@ -1482,6 +1482,7 @@ PUBLIC $L_7208c4, $L_7208c8, $L_7208cc, $L_7208dc
 PUBLIC $L_64c828, $L_672794, $L_697688, $L_6976f8, $L_6f6968, $L_702f54
 PUBLIC $L_71e838, $L_71e83c
 PUBLIC $L_64b96c, $L_64b974, $L_64b97c
+PUBLIC $L_64f788, $L_6533e0
 
 ;===================================
 _TEXT SEGMENT
@@ -350494,6 +350495,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c0dd0 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -350533,6 +350536,10 @@ $L_4c0e2a::
             add ESP,12
             ret 
 $L_4c0dd0 ENDP
+ELSE
+EXTERN _Ring50_AddPoint:PROC
+$L_4c0dd0 TEXTEQU <_Ring50_AddPoint>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_4c0e30 PROC
@@ -369066,6 +369073,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4cce30 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -369109,6 +369118,10 @@ $L_4cce60::
             nop
             nop
 $L_4cce30 ENDP
+ELSE
+EXTERN _Cmp4cce30_Desc:PROC
+$L_4cce30 TEXTEQU <_Cmp4cce30_Desc>
+ENDIF
 ALIGN 16
 ; effects: src\truck\effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
@@ -546046,6 +546059,8 @@ $L_542234           DWORD $L_541ec8
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_542250 PROC
 
             fld DWORD PTR [ESP+8]
@@ -546072,6 +546087,10 @@ $L_54227d::
 
             ret 
 FUN_542250 ENDP
+ELSE
+EXTERN _Clamp542250:PROC
+FUN_542250 TEXTEQU <_Clamp542250>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -911741,6 +911760,8 @@ $L_61c0e0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c0f0 PROC
 
             fld QWORD PTR [$L_64f788]
@@ -911762,6 +911783,10 @@ $L_61c0f0 PROC
             fstp DWORD PTR [EAX+12]
             ret 
 $L_61c0f0 ENDP
+ELSE
+EXTERN @Grid61c0f0_Construct@4:PROC
+$L_61c0f0 TEXTEQU <@Grid61c0f0_Construct@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

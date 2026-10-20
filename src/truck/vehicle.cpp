@@ -2732,3 +2732,13 @@ extern "C" double __fastcall Car_ControlSum9(BYTE* s)
         v = v + F(float, o, k * 20) * d[k];
     return v;
 }
+
+// [FUN_542250] x clamped to -lim..lim
+extern "C" double __cdecl Clamp542250(float x, float lim)
+{
+    if (x < -lim)
+        return -lim;
+    if (x <= lim)
+        return x;
+    return lim;
+}

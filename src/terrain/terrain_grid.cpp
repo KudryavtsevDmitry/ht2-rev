@@ -442,7 +442,7 @@ extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
 ASM_VAR(AsmLabel, g_q46_72c108, $L_72c108)
 ASM_VAR(AsmLabel, g_q46_61c180, $L_61c180)
 extern "C" int __fastcall Grid_Get32(BYTE* s);
-ASM_VAR(AsmLabel, g_q46_61c0f0, $L_61c0f0)
+extern "C" BYTE* __fastcall Grid61c0f0_Construct(BYTE* s);
 // [FUN_6072b0] the deepest level allowed (+24 of the static grid 72c108)
 extern "C" int __cdecl Grid_DeepestLevel(void)
 {
@@ -456,7 +456,7 @@ extern "C" int __cdecl Grid_Level32(void)
 // [FUN_61c0c0] constructs the static grid 72c108
 extern "C" int __cdecl Grid72c108_Construct(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_61c0f0, (void*)g_q46_72c108);
+    return (int)Grid61c0f0_Construct((BYTE*)g_q46_72c108);
 }
 
 // [$L_61bee0] constructor: cleared
@@ -468,3 +468,22 @@ extern "C" BYTE* __fastcall Cell61bee0_Construct(BYTE* s)
 
 // [$L_61c160] +32 of s
 extern "C" int __fastcall Grid_Get32(BYTE* s) { return F(int, s, 32); }
+
+ASM_VAR(double, g_q159_64f788, $L_64f788)
+ASM_VAR(double, g_q159_6533e0, $L_6533e0)
+// [$L_61c0f0] constructor: the grid defaults (cell size 8, the cosines of the two limit angles, 12 and 3000)
+extern "C" BYTE* __fastcall Grid61c0f0_Construct(BYTE* s)
+{
+    float c = (float)x87_cos(g_q159_64f788);
+    F(int, s, 24) = 12;
+    F(int, s, 28) = 12;
+    F(DWORD, s, 0) = 1090519040;
+    F(DWORD, s, 4) = 1090519040;
+    F(DWORD, s, 16) = 1065749138;
+    F(DWORD, s, 20) = 1061752795;
+    F(int, s, 32) = 3000;
+    F(int, s, 36) = 3000;
+    F(float, s, 8) = c;
+    F(float, s, 12) = (float)x87_cos(g_q159_6533e0);
+    return s;
+}
