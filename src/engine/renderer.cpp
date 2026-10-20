@@ -1524,7 +1524,7 @@ extern "C" long __fastcall Rn_DrawIndexedStrided(BYTE* self, void*, BYTE* mat, i
 ASM_PROC(FUN_5af000)
 extern "C" void FUN_5e9480(); KING_ALIAS("_FUN_5e9480", "_Data_Read5e9690")
 extern "C" void FUN_5e9690(); KING_ALIAS("_FUN_5e9690", "_Mask_ReadPixels")
-ASM_PROC(FUN_5b9520)
+extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5bad10(); KING_ALIAS("_FUN_5bad10", "@Texture_Release@8")
 ASM_VAR(AsmLabel, g_vt65176c, $L_65176c)
@@ -1834,4 +1834,42 @@ extern "C" BYTE* __fastcall Texture5ba4a0_Construct(BYTE* s, void*, unsigned w, 
     F(int, s, 72) = 0;
     F(int, s, 76) = 0;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Freeing texture sets; fading 4444 pixels.
+
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+// [FUN_5b9520] frees the three texture sets of s (+0/+4, +8/+12, +16/+20: the blocks and their resource ids;
+// counts +796, +800, +804)
+extern "C" void __fastcall TexSets_Free(BYTE* s)
+{
+    for (int g = 0; g < 3; g++) {
+        for (int i = 0; i < F(int, s, 796 + g * 4); i++)
+            operator delete(F(void**, s, g * 8)[i]);
+        operator delete(F(void*, s, g * 8));
+        for (int i = 0; i < F(int, s, 796 + g * 4); i++)
+            CallC(FUN_5e48f0, (int)F(WORD*, s, g * 8 + 4)[i]);
+        operator delete(F(void*, s, g * 8 + 4));
+    }
+}
+
+ASM_VAR(double, g_q146_64da58, $L_64da58)
+ASM_VAR(double, g_q146_64b678, $L_64b678)
+// [FUN_5bb590] scales the alpha of n 4444 pixels by k (at most 64da58): a negative k scales the alpha nibble,
+// a positive one gives the top bits of alpha times k
+extern "C" void __cdecl Pixels4444_Fade(WORD* p, unsigned n, double k)
+{
+    if (!(k <= g_q146_64da58) || !n)
+        return;
+    for (; n; n--, p++) {
+        int v = *p;
+        int a = (WORD)v >> 12, r = (v >> 8) & 15, g = (v >> 4) & 15, b = v & 15;
+        int w;
+        if (k < g_q146_64b678)
+            w = ((((int)(-k * a) << 4 | r) << 4 | g) << 4) | b;
+        else
+            w = ((int)(a * k) & 0xf000) | (r << 4 | g) << 4 | b;
+        *p = (WORD)w;
+    }
 }

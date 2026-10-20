@@ -2545,7 +2545,7 @@ extern "C" void FUN_5bfde0(); KING_ALIAS("_FUN_5bfde0", "@Panel_ConstructRect@44
 extern "C" void FUN_5e44a0(); KING_ALIAS("_FUN_5e44a0", "@ResRef_Release@8")
 extern "C" void FUN_5e0150(); KING_ALIAS("_FUN_5e0150", "@Fw_Close5e0150@8")
 extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
-ASM_PROC(FUN_5b9520)
+extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
 extern "C" void FUN_5d3560(); KING_ALIAS("_FUN_5d3560", "@Owner_Clear@8")
 extern "C" void FUN_5e4eb0(); KING_ALIAS("_FUN_5e4eb0", "@Resources_FreeTables@8")
 ASM_VAR(AsmLabel, g_fra68d1c0, $L_68d1c0)
