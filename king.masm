@@ -332190,6 +332190,8 @@ $L_4b5d80 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 $L_4b5e60 PROC
 
             mov EAX,4096
@@ -332266,6 +332268,10 @@ $L_4b5ee7::
             add ESP,4096
             ret 
 $L_4b5e60 ENDP
+ELSE
+EXTERN @FileReader_Peek@4:PROC
+$L_4b5e60 TEXTEQU <@FileReader_Peek@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
