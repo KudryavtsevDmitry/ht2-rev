@@ -767713,6 +767713,8 @@ FUN_5d0990 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d0e40 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -767912,6 +767914,10 @@ $L_5d1023::
             add ESP,16
             ret 
 FUN_5d0e40 ENDP
+ELSE
+EXTERN _Span_EdgeUV:PROC
+FUN_5d0e40 TEXTEQU <_Span_EdgeUV>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
