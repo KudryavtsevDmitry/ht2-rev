@@ -255836,6 +255836,8 @@ FUN_48d100 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48d530 PROC
 
             fld QWORD PTR [ESP+8]
@@ -255928,6 +255930,10 @@ $L_48d5de::
             xor EAX,EAX
             ret 16
 FUN_48d530 ENDP
+ELSE
+EXTERN @Path_StepIndex@24:PROC
+FUN_48d530 TEXTEQU <@Path_StepIndex@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -258178,6 +258184,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48eae0 PROC
 
             push EBP
@@ -258293,6 +258301,10 @@ $L_48ebd2::
             pop EBP
             ret 8
 FUN_48eae0 ENDP
+ELSE
+EXTERN @Poly_Multiply@16:PROC
+FUN_48eae0 TEXTEQU <@Poly_Multiply@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

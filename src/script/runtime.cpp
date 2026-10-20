@@ -1229,3 +1229,55 @@ extern "C" void __fastcall Vec44_FreeStorage(BYTE* s, void*)
 {
     PoolVec_Free_U(s, 44);
 }
+
+// ---------------------------------------------------------------------------
+// Stepping along a polyline and polynomial products.
+
+ASM_VAR(double, g_q113_64b678, $L_64b678)
+// [FUN_48d530] steps index *i of the 24-byte points of s (+32..+36) forward when t is above 64b678, else back;
+// the fraction *f becomes 0 (1 at the second last point); 1 when it cannot move
+extern "C" int __fastcall Path_StepIndex(BYTE* s, void*, double* f, double t, unsigned* i)
+{
+    if (t > g_q113_64b678) {
+        int n = (F(int, s, 36) - F(int, s, 32)) / 24;
+        if (*i >= (unsigned)(n - 1))
+            return 1;
+        if (*i >= (unsigned)(n - 2)) {
+            if (F(DWORD, f, 0) == 0 && F(DWORD, f, 4) == 0x3ff00000)
+                return 1;
+            *f = 1.0;
+            return 0;
+        }
+        ++*i;
+    } else {
+        if ((int)*i <= 0)
+            return 1;
+        --*i;
+    }
+    *f = 0.0;
+    return 0;
+}
+
+// [FUN_48eae0] the product of polynomials s and b (doubles, count at +192) into out
+extern "C" BYTE* __fastcall Poly_Multiply(BYTE* s, void*, BYTE* out, BYTE* b)
+{
+    BYTE r[196];
+    F(int, r, 192) = 0;
+    const double* a = (const double*)s;
+    const double* c = (const double*)b;
+    int na = F(int, s, 192), nb = F(int, b, 192);
+    if (na && nb)
+        for (unsigned k = 0; k < (unsigned)(na + nb - 1); k++) {
+            double acc = g_q113_64b678;
+            int lo = k >= (unsigned)na ? k - na + 1 : 0;
+            int hi = nb < (int)(k + 1) ? nb : k + 1;
+            for (int j = lo; j < hi; j++)
+                acc += a[k - j] * c[j];
+            F(double, r, F(int, r, 192) * 8) = acc;
+            F(int, r, 192)++;
+            na = F(int, s, 192);
+            nb = F(int, b, 192);
+        }
+    memcpy(out, r, 196);
+    return out;
+}
