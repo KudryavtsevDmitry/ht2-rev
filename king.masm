@@ -14724,6 +14724,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4073b0 PROC
 
             sub ESP,12
@@ -14913,6 +14915,10 @@ $L_407552::
             inc EDI
             jmp $L_4074fd
 $L_4073b0 ENDP
+ELSE
+EXTERN @Rec4073b0_FreeVectors@4:PROC
+$L_4073b0 TEXTEQU <@Rec4073b0_FreeVectors@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -123283,6 +123289,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_449130 PROC
 
             sub ESP,12
@@ -123462,6 +123470,10 @@ $L_4492aa::
             inc EDI
             jmp $L_449255
 $L_449130 ENDP
+ELSE
+EXTERN @Vec56b_Destroy@4:PROC
+$L_449130 TEXTEQU <@Vec56b_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -174138,6 +174150,8 @@ FUN_462b30 PROC
             nop
             nop
 FUN_462b30 ENDP
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_462b40 PROC
 
             sub ESP,12
@@ -174290,6 +174304,10 @@ $L_462c83::
             inc EDI
             jmp $L_462c2e
 $L_462b40 ENDP
+ELSE
+EXTERN @VecBytes_FreeStorage@4:PROC
+$L_462b40 TEXTEQU <@VecBytes_FreeStorage@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -207528,6 +207546,8 @@ FUN_4729e0 PROC
 FUN_4729e0 ENDP
           BYTE 090H
           BYTE 090H
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 $L_472f10 PROC
 
             sub ESP,8
@@ -207670,6 +207690,10 @@ $L_47305d::
             add ESP,8
             ret 
 $L_472f10 ENDP
+ELSE
+EXTERN @Vec12_FreeStorage@4:PROC
+$L_472f10 TEXTEQU <@Vec12_FreeStorage@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -207684,6 +207708,8 @@ $L_472f10 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 $L_473070 PROC
 
             sub ESP,12
@@ -207841,6 +207867,10 @@ $L_4731c4::
             inc EDI
             jmp $L_47316f
 $L_473070 ENDP
+ELSE
+EXTERN @Vec40_FreeStorage@4:PROC
+$L_473070 TEXTEQU <@Vec40_FreeStorage@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -218041,6 +218071,8 @@ EXTERN @Orders144_Destroy@8:PROC
 FUN_478ac0 TEXTEQU <@Orders144_Destroy@8>
 ENDIF
           BYTE 090H
+; src/road_graph.cpp, nmake ASM_ROAD_GRAPH=1 assembles the original
+IFDEF ASM_ROAD_GRAPH
 $L_478c80 PROC
 
             sub ESP,12
@@ -218192,6 +218224,10 @@ $L_478dc3::
             inc EDI
             jmp $L_478d6e
 $L_478c80 ENDP
+ELSE
+EXTERN @Vec8_FreeStorage@4:PROC
+$L_478c80 TEXTEQU <@Vec8_FreeStorage@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -319209,6 +319245,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 $L_4af6b0 PROC
 
             sub ESP,8
@@ -319356,6 +319394,10 @@ $L_4af7f7::
             inc EDI
             jmp $L_4af79f
 $L_4af6b0 ENDP
+ELSE
+EXTERN @List16_Destroy@4:PROC
+$L_4af6b0 TEXTEQU <@List16_Destroy@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

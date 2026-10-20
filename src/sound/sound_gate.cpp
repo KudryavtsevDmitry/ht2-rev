@@ -1013,7 +1013,7 @@ extern "C" unsigned __fastcall MemStream_Read(BYTE* s, void*, void* dst, unsigne
 }
 
 extern "C" void $L_602550(); KING_ALIAS("_$L_602550", "@Providers_Destroy@8")
-ASM_PROC($L_4af6b0)
+extern "C" void $L_4af6b0(); KING_ALIAS("_$L_4af6b0", "@List16_Destroy@4")
 // [$L_601560] destroys the global container 723d60
 extern "C" void __cdecl Gate_Destroy723d60(void) { CallThis($L_602550, &g_723d60); }
 // [$L_601550] destroys it at exit
