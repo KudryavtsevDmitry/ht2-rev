@@ -573,3 +573,36 @@ extern "C" void __fastcall Cars_ApplyUpdate(BYTE* s, void*, const BYTE* r)
         e = next - 4;
     }
 }
+
+// ---------------------------------------------------------------------------
+// The 64-slot track of moving items.
+
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, g_q108_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q108_702650, $L_702650)
+// [FUN_587c80] constructor: 64 slots, each with two default positions (+0, +768), cleared values (+1536, +1792,
+// +2048, +2304, +2560, +2820, +3076) and an identity matrix (+3332); the slot counter (+2816) ends at 0
+extern "C" BYTE* __fastcall Track587c80_Construct(BYTE* s)
+{
+    memset(s, 0, 1536);
+    for (int i = 0; i < 64; i++) {
+        Array_ForEach(s + 3332 + i * 48, 12, 4, FUN_4bd4d0);
+        memcpy(s + 3332 + i * 48, (BYTE*)g_q108_7025f0, 48);
+    }
+    for (int i = 0; i < 64; i++) {
+        F(int, s, 2816) = i;
+        memcpy(s + i * 12, (BYTE*)g_q108_702650, 12);
+        memcpy(s + (i + 64) * 12, (BYTE*)g_q108_702650, 12);
+        F(int, s, 1536 + i * 4) = 0;
+        F(int, s, 1792 + i * 4) = 0;
+        F(int, s, 2048 + i * 4) = 0;
+        F(int, s, 2304 + i * 4) = 0;
+        F(int, s, 2560 + i * 4) = 0;
+        F(int, s, 2820 + i * 4) = 0;
+        memcpy(s + 3332 + i * 48, (BYTE*)g_q108_7025f0, 48);
+        F(int, s, 3076 + i * 4) = 0;
+    }
+    F(int, s, 2816) = 0;
+    return s;
+}
