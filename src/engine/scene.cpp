@@ -2138,15 +2138,14 @@ extern "C" int __fastcall SceneNode5f2f40_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
 
 extern "C" void FUN_5ef820(); KING_ALIAS("_FUN_5ef820", "@Obj_Flag0Clear@24")
 extern "C" void FUN_5f2100(); KING_ALIAS("_FUN_5f2100", "@Slots_Call56@28")
-// [$L_5f3060] draws transform node s for (a1, matrix m, a3, view b) when its test passes: m becomes the node's
-// world matrix times a3 while its slots draw, then is restored; 1 after a passed test
-extern "C" int __fastcall SceneNode5f3060_Draw(BYTE* s, void*, void* a1, BYTE* m, BYTE* a3, BYTE* b)
+// the draw of transform nodes with the world node at +node
+static int Sce141_DrawXform(BYTE* s, int node, void* a1, BYTE* m, BYTE* a3, BYTE* b)
 {
     BYTE w1[48], saved[48], t[48];
     memcpy(w1, (BYTE*)g_q109_7025f0, 48);
     if (!CallThis<int>(FUN_5ef820, s, a1, m, a3, b))
         return 0;
-    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, 112), w1);
+    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, node), w1);
     memcpy(saved, m, 48);
     memcpy(m, CallC<BYTE*>(FUN_5aba40, t, w1, a3), 48);
     CallThis(FUN_5ae580, b, w1, w);
@@ -2155,13 +2154,16 @@ extern "C" int __fastcall SceneNode5f3060_Draw(BYTE* s, void*, void* a1, BYTE* m
     memcpy(m, saved, 48);
     return 1;
 }
+// [$L_5f3060] draws transform node s for (a1, matrix m, a3, view b) when its test passes: m becomes the node's
+// world matrix times a3 while its slots draw, then is restored; 1 after a passed test
+extern "C" int __fastcall SceneNode5f3060_Draw(BYTE* s, void*, void* a1, BYTE* m, BYTE* a3, BYTE* b)
+{
+    return Sce141_DrawXform(s, 112, a1, m, a3, b);
+}
 
 ASM_PROC(FUN_5f21e0)
-// [$L_5f3410] a ray/hit test of transform node s (skipped with +40 bit 0): the record's matrix (+4) is moved
-// into the node's space (the inverse world matrix, alone for kind 0 or applied for 1) for the children test
-// (5f21e0, or the +56 object's vtbl+52 with flags bit 2, copying +116 on a hit); restored unless bit 0 of the
-// result is set
-extern "C" int __fastcall SceneNode5f3410_Hit(BYTE* s, void*, int flags, BYTE* rec)
+// the hit test of transform nodes with the world node at +node and the hit value at +copy
+static int Sce141_HitXform(BYTE* s, int node, int copy, int flags, BYTE* rec)
 {
     BYTE w1[48], saved[48], t[48];
     memcpy(w1, (BYTE*)g_q109_7025f0, 48);
@@ -2169,7 +2171,7 @@ extern "C" int __fastcall SceneNode5f3410_Hit(BYTE* s, void*, int flags, BYTE* r
         return 0;
     BYTE* m = rec + 4;
     memcpy(saved, m, 48);
-    int kind = CallThis<int>(FUN_5f25c0, F(BYTE*, s, 112), w1);
+    int kind = CallThis<int>(FUN_5f25c0, F(BYTE*, s, node), w1);
     memcpy(w1, CallC<BYTE*>(FUN_5ac2e0, t, w1), 48);
     if (kind == 0)
         memcpy(m, w1, 48);
@@ -2183,7 +2185,7 @@ extern "C" int __fastcall SceneNode5f3410_Hit(BYTE* s, void*, int flags, BYTE* r
         if (o && (flags & 4)) {
             r = CallVirt<int>(o, 52, flags | 1, rec);
             if (r & 1) {
-                F(int, rec, 116) = F(int, s, 116);
+                F(int, rec, 116) = F(int, s, copy);
                 return r;
             }
         } else
@@ -2192,4 +2194,24 @@ extern "C" int __fastcall SceneNode5f3410_Hit(BYTE* s, void*, int flags, BYTE* r
     if (!(r & 1))
         memcpy(m, saved, 48);
     return r;
+}
+// [$L_5f3410] a ray/hit test of transform node s (skipped with +40 bit 0): the record's matrix (+4) is moved
+// into the node's space (the inverse world matrix, alone for kind 0 or applied for 1) for the children test
+// (5f21e0, or the +56 object's vtbl+52 with flags bit 2, copying +116 on a hit); restored unless bit 0 of the
+// result is set
+extern "C" int __fastcall SceneNode5f3410_Hit(BYTE* s, void*, int flags, BYTE* rec)
+{
+    return Sce141_HitXform(s, 112, 116, flags, rec);
+}
+
+// [$L_5f4210] 5f3060 for nodes with the world node at +60
+extern "C" int __fastcall SceneNode5f4210_Draw(BYTE* s, void*, void* a1, BYTE* m, BYTE* a3, BYTE* b)
+{
+    return Sce141_DrawXform(s, 60, a1, m, a3, b);
+}
+
+// [$L_5f43d0] 5f3410 for nodes with the world node at +60 and the hit value at +64
+extern "C" int __fastcall SceneNode5f43d0_Hit(BYTE* s, void*, int flags, BYTE* rec)
+{
+    return Sce141_HitXform(s, 60, 64, flags, rec);
 }
