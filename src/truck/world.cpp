@@ -18,7 +18,7 @@ ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*);    // carphys.cpp
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
-ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
+extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
 ASM_PROC(FUN_5fdaf0)    // sound: play (volume, pitch)
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")    // query: constructor
 extern "C" void FUN_4e5698(); KING_ALIAS("_FUN_4e5698", "_Obj_TransformVecs")    // query: finish a hit
@@ -855,7 +855,7 @@ extern "C" BYTE* __cdecl Model_FindPart2(BYTE* obj)
 ASM_PROC(FUN_4e4f78)    // (a, b, c, &lo, &hi)
 ASM_PROC(FUN_4e28b0)
 ASM_PROC(FUN_5fdaf0)
-ASM_PROC(FUN_5fd430)
+extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")
 extern "C" void FUN_4eac5f(); KING_ALIAS("_FUN_4eac5f", "@Arrays_FillLongAgo@8")
 extern "C" void FUN_4bde00(); KING_ALIAS("_FUN_4bde00", "_Vec3_Sub")
 extern "C" void FUN_610f00(); KING_ALIAS("_FUN_610f00", "_Vec3_Dot")

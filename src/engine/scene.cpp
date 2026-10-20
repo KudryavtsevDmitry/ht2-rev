@@ -2378,3 +2378,44 @@ extern "C" int __fastcall SceneNode5f9760_WorldPos(BYTE* s, void*, float* out)
     }
     return Sce163_WorldPos(s, F(BYTE*, s, 68), out);
 }
+
+extern "C" void FUN_5fd580(); KING_ALIAS("_FUN_5fd580", "_Sound_TakeChannel")
+extern "C" void FUN_604f20(); KING_ALIAS("_FUN_604f20", "_Snd_Start")
+extern "C" void FUN_605000(); KING_ALIAS("_FUN_605000", "_Channel_Call8")
+ASM_VAR(int, g_q182_723b28, $L_723b28)
+ASM_VAR(BYTE**, g_q182_723b34, $L_723b34)
+ASM_VAR(int, g_q182_723b38, $L_723b38)
+ASM_VAR(float, g_q182_683c0c, $L_683c0c)
+ASM_VAR(float, g_q182_64c250, $L_64c250)
+ASM_VAR(float, g_q182_64c264, $L_64c264)
+ASM_VAR(double, g_q182_64da58, $L_64da58)
+// v scaled by 683c0c and kept in 0..1
+static float Sce182_Unit(float v)
+{
+    v = g_q182_683c0c * v;
+    if (v > g_q182_64c250)
+        return 1.0f;
+    if (!(v >= g_q182_64c264))
+        return 0;
+    return v;
+}
+// [FUN_5fd430] plays sound s (when sound is on and its sample +28 is loaded) at volume vol and pitch pitch: a new
+// channel (5fd580) is started (+20 playing, +24 the channel), a playing one updated; +12 the play stamp
+extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3)
+{
+    if (!g_q182_723b28 || !(F(BYTE, g_q182_723b34[F(int, s, 28)], 24) & 1))
+        return;
+    float v = Sce182_Unit(vol), p = Sce182_Unit(pitch);
+    if (!F(int, s, 20)) {
+        int ch = CallC<int>(FUN_5fd580, s);
+        if (ch == -1)
+            return;
+        F(int, s, 24) = ch;
+        F(int, s, 20) = 1;
+        F(int, s, 16) = 0;
+        CallC(FUN_604f20, F(int, s, 28), ch, (float)(v * g_q182_64da58), (float)(p * g_q182_64da58), a3,
+              (int)F(BYTE, s, 8));
+    } else
+        CallC(FUN_605000, F(int, s, 24), (float)(v * g_q182_64da58), (float)(p * g_q182_64da58), a3);
+    F(int, s, 12) = g_q182_723b38;
+}
