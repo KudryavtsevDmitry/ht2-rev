@@ -1672,7 +1672,7 @@ extern "C" int __fastcall Image_Prepare(BYTE* self, void*, int a, int b)
 }
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5aeb10)
+extern "C" void FUN_5aeb10(); KING_ALIAS("_FUN_5aeb10", "_Clip_Inside@8")
 ASM_PROC(FUN_5aebc0)
 
 // [FUN_5aeed0] walks a polygon's n vertex ids, writing to out the ids with an outcode (5aeb10) and the crossings (5aebc0) where it changes; returns the count
@@ -2467,4 +2467,38 @@ extern "C" double __fastcall Light_FogAt(const BYTE* s, void*, const float* p, d
     if (k == 2 || k == 3)
         return t;
     return *(const float*)&p;
+}
+
+ASM_VAR(double, g_q161_64eba0, $L_64eba0)
+// [FUN_5addf0] sets the ambient light of renderer s to (r, g, b) (g and b default to r when negative; r kept at
+// +8512) as the device's ambient render state
+extern "C" void __fastcall Render_SetAmbient(BYTE* s, void*, double r, double g, double b)
+{
+    F(double, s, 8512) = r;
+    if (!(g >= g_q151_64b678))
+        g = r;
+    if (!(b >= g_q151_64b678))
+        b = r;
+    void* d = g_q150_720908;
+    if (!d)
+        return;
+    int c = ((int)(r * g_q161_64eba0) | 0xffffff00) << 8;
+    c = (c | (int)(g * g_q161_64eba0)) << 8;
+    c |= (int)(b * g_q161_64eba0);
+    Ren154_RS(d, 139, c);
+}
+
+ASM_VAR(float, g_q161_64c250, $L_64c250)
+// [FUN_5aeb10] whether vertex v is inside clip plane k (1: y above 64c250, 2: x >= -y, 4: z <= y, 8: z >= -y,
+// 16: x <= y; others always)
+extern "C" int __stdcall Clip_Inside(const float* v, int k)
+{
+    switch (k) {
+    case 1: return v[1] >= g_q161_64c250 ? 1 : 0;
+    case 2: return -v[1] > v[0] ? 0 : 1;
+    case 4: return v[2] > v[1] ? 0 : 1;
+    case 8: return -v[1] > v[2] ? 0 : 1;
+    case 16: return v[0] > v[1] ? 0 : 1;
+    }
+    return 1;
 }

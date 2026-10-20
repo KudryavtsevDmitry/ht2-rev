@@ -919,3 +919,18 @@ extern "C" void __fastcall Wea5a73f0_Destruct(BYTE* s, void*)
     g_q47_7025b8 = 0;
     CallThis(FUN_5d3290, s);
 }
+
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+ASM_VAR(AsmLabel, s_q161_67ef54, $L_67ef54)
+// [$L_5aa470] debug visitor: with renderer r's +8620 set logs the position (+20..+28) of object o
+extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o)
+{
+    if (F(int, r, 8620) == 1) {
+        char buf[64];
+        float p[4];
+        memcpy(p, o + 20, 16);
+        sprintf(buf, (const char*)s_q161_67ef54, (double)p[0], (double)p[1], (double)p[2]);
+        CallC(FUN_5d2ba0, buf, 0);
+    }
+    return 0;
+}
