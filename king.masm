@@ -1472,6 +1472,7 @@ PUBLIC $L_64d0f0, $L_676834, $L_676838
 PUBLIC $L_64dad0, $L_697868
 PUBLIC $L_69818e
 PUBLIC $L_71f7f8, $L_720020
+PUBLIC $L_721210
 
 ;===================================
 _TEXT SEGMENT
@@ -796845,6 +796846,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5df920 PROC
 
             sub ESP,120
@@ -796987,6 +796990,10 @@ $L_5dfa7a::
             add ESP,120
             ret 
 $L_5df920 ENDP
+ELSE
+EXTERN @View_PrepareOverlay@4:PROC
+$L_5df920 TEXTEQU <@View_PrepareOverlay@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -797479,6 +797486,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5dffc0 PROC
 
             sub ESP,148
@@ -797622,6 +797631,10 @@ $L_5e013f::
             add ESP,148
             ret 
 FUN_5dffc0 ENDP
+ELSE
+EXTERN @View_DrawObject@4:PROC
+FUN_5dffc0 TEXTEQU <@View_DrawObject@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
