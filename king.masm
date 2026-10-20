@@ -740423,6 +740423,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c0920 PROC
 
             sub ESP,16
@@ -740576,6 +740578,10 @@ $L_5c0a7f::
             add ESP,16
             ret 16
 $L_5c0920 ENDP
+ELSE
+EXTERN @List_Draw@24:PROC
+$L_5c0920 TEXTEQU <@List_Draw@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
