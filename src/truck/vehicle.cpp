@@ -2958,3 +2958,41 @@ extern "C" int __fastcall Car_Query(BYTE* s, void*, BYTE* out)
     memcpy(out, q, 208);
     return r;
 }
+
+ASM_PROC(FUN_4de990)
+ASM_PROC(FUN_5de950)
+extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_5d85f0(); KING_ALIAS("_FUN_5d85f0", "@Win_GetRect@12")
+ASM_VAR(int, g_q234_6cec68, $L_6cec68)
+struct Veh234_Mat { DWORD v[12]; };
+struct Veh234_Rect { int l, t, r, b; };
+// [FUN_535f80] the car's view matrix (+1568) into out; in the game view (6cec68) the camera pose is also taken
+// apart and rebuilt level (the results are not used) and the view window (+32) is fitted to the screen below the top
+// 672d7c (method 44 when its rectangle differs)
+extern "C" BYTE* __fastcall Car_ViewMatrix(BYTE* s, void*, BYTE* out)
+{
+    if (!g_q234_6cec68) {
+        memcpy(out, s + 1568, 48);
+        return out;
+    }
+    Veh234_Mat m;
+    CallC(FUN_4de990, &m, 0);
+    double x, y, z, a, b, c;
+    CallC(FUN_5de950, m, &x, &y, &z, &a, &b, &c);
+    BYTE level[48], inv[48];
+    CallC(FUN_5da950, level, x, y, z, 0.0, b, 0.0);
+    CallC(FUN_5ac2e0, inv, level);
+    BYTE view[48];
+    memcpy(view, s + 1568, 48);
+    BYTE* w = F(BYTE*, s, 36);
+    int right = F(int, w, 256), bottom = F(int, w, 260), top = g_minTop672d7c;
+    Veh234_Rect r;
+    CallThis(FUN_5d85f0, F(BYTE*, s, 32), &r);
+    if (r.l || r.t != top || r.r != right || r.b != bottom) {
+        Veh234_Rect n = {0, top, right, bottom};
+        CallVirt(F(BYTE*, s, 32), 44, n);
+    }
+    memcpy(out, view, 48);
+    return out;
+}
