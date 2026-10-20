@@ -2204,11 +2204,11 @@ extern "C" BYTE* __fastcall Dtor573cf0_DeletingDestructor(BYTE* s, void*, int fl
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
 ASM_VAR(BYTE*, g_q46_6f3438, $L_6f3438)
-ASM_VAR(AsmLabel, g_q46_56aa00, $L_56aa00)
+extern "C" void __fastcall Radio_NextMessage(BYTE* s);
 // [FUN_569750] runs 56aa00 on the helicopter object 6f3438
 extern "C" int __cdecl Heli_Run569750(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_56aa00, g_q46_6f3438);
+    return CallThis<int>((void (*)())Radio_NextMessage, g_q46_6f3438);
 }
 
 // ---------------------------------------------------------------------------
@@ -2250,4 +2250,18 @@ extern "C" int __cdecl Copter_SetSideState(int i, int state, BYTE* s)
     if (r && F(BYTE*, r, 24))
         F(int, F(BYTE*, r, 24), 4) = F(int, s, 416);
     return had != 0;
+}
+
+// ---------------------------------------------------------------------------
+// The message queue of the radio.
+
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+// [$L_56aa00] shows the next of the 4 queued messages (+684, 128 bytes each, +1212 the current one) in +556 and
+// marks the time (+32)
+extern "C" void __fastcall Radio_NextMessage(BYTE* s)
+{
+    strcpy((char*)s + 556, (const char*)s + 684 + F(int, s, 1212) * 128);
+    F(int, s, 1212) = (F(int, s, 1212) + 1) % 4;
+    F(int, s, 1216) = 1;
+    F(double, s, 32) = CallC<double>(FUN_6037e0);
 }

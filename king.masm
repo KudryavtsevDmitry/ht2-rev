@@ -1464,6 +1464,7 @@ PUBLIC $L_6768d8, $L_6768e0, $L_6768e8, $L_6768f0, $L_6cec84, $L_702e98
 PUBLIC $L_7208c0
 PUBLIC $L_694b0c, $L_6969a0, $L_6969d0, $L_696b98
 PUBLIC $L_64c790, $L_672788
+PUBLIC $L_6f54bc, $L_6f66b8
 
 ;===================================
 _TEXT SEGMENT
@@ -603682,6 +603683,8 @@ $L_56a9ec           DWORD $L_56a539
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_56aa00 PROC
 
             push EBX
@@ -603731,6 +603734,10 @@ $L_56aa4c::
             pop EBX
             ret 
 $L_56aa00 ENDP
+ELSE
+EXTERN @Radio_NextMessage@4:PROC
+$L_56aa00 TEXTEQU <@Radio_NextMessage@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -628544,6 +628551,8 @@ $L_579940 TEXTEQU <_ForfeeInit_579940>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 $L_579970 PROC
 
             jmp $L_579980
@@ -628590,6 +628599,10 @@ $L_57998e::
             pop EBX
             ret 
 $L_579970 ENDP
+ELSE
+EXTERN _Ff_InitRecords:PROC
+$L_579970 TEXTEQU <_Ff_InitRecords>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -668888,6 +668901,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_595cd0 PROC
 
             jmp $L_595ce0
@@ -668945,6 +668960,10 @@ $L_595cee::
             nop
             nop
 $L_595cd0 ENDP
+ELSE
+EXTERN _WObj_InitMatrices:PROC
+$L_595cd0 TEXTEQU <_WObj_InitMatrices>
+ENDIF
 ALIGN 16
 FUN_595d20 PROC
 
@@ -671041,6 +671060,8 @@ ELSE
 EXTERN _Pyramid_SetSize:PROC
 FUN_5972d0 TEXTEQU <_Pyramid_SetSize>
 ENDIF
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5973a0 PROC
 
             mov EAX,ECX
@@ -671092,6 +671113,10 @@ $L_5973bd::
             pop EBX
             ret 
 $L_5973a0 ENDP
+ELSE
+EXTERN @Rec5973a0_Construct@4:PROC
+$L_5973a0 TEXTEQU <@Rec5973a0_Construct@4>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
