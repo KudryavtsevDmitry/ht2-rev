@@ -1410,6 +1410,19 @@ PUBLIC $L_6772f8, $L_677304, $L_677314, $L_67732c
 PUBLIC $L_6712a0, $L_6712a4, $L_675494, $L_676964, $L_67696c, $L_676978
 PUBLIC $L_676980, $L_676c60, $L_676c74, $L_676c7c, $L_676c84, $L_676c8c
 PUBLIC $L_6d207c
+PUBLIC $L_675b38, $L_677aec, $L_677b00, $L_677b14, $L_677b28, $L_677b3c
+PUBLIC $L_677b50, $L_677b64, $L_677b78, $L_677b8c, $L_677ba0, $L_677bb4
+PUBLIC $L_677bc8, $L_677bdc, $L_677bf0, $L_677c04, $L_677c18, $L_677c2c
+PUBLIC $L_677c3c, $L_677c4c, $L_677c58, $L_677c60, $L_677c68, $L_677c74
+PUBLIC $L_677c7c, $L_677c90, $L_677c9c, $L_677ca4, $L_677cb0, $L_677cbc
+PUBLIC $L_677cc8, $L_677ce0, $L_677cf8, $L_677d10, $L_677d28, $L_677d40
+PUBLIC $L_677d58, $L_677d6c, $L_677d80, $L_677d8c, $L_677d94, $L_677da0
+PUBLIC $L_677dac, $L_677db8, $L_677dd0, $L_677de8, $L_677e00, $L_677e18
+PUBLIC $L_677e30, $L_677e48, $L_677e5c, $L_677e70, $L_677e84, $L_677e90
+PUBLIC $L_677e98, $L_677ea4, $L_677eb0, $L_677ebc, $L_677ec8, $L_677ee0
+PUBLIC $L_677ef8, $L_677f10, $L_677f28, $L_677f3c, $L_677f50, $L_677f5c
+PUBLIC $L_677f64, $L_677f70, $L_677f7c, $L_677f88, $L_677f94, $L_677fac
+PUBLIC $L_677fc4, $L_677fdc, $L_677ff4, $L_678008
 
 ;===================================
 _TEXT SEGMENT
@@ -499202,6 +499215,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_523270 PROC
 
             push -1
@@ -500830,6 +500845,10 @@ $L_5244d4           DWORD $L_523392
             nop
             nop
 FUN_523270 ENDP
+ELSE
+EXTERN @ShellRace523270_Construct@16:PROC
+FUN_523270 TEXTEQU <@ShellRace523270_Construct@16>
+ENDIF
 $L_5244f0 PROC
 
             push ESI

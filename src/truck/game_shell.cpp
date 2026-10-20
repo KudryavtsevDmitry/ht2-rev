@@ -4444,3 +4444,199 @@ extern "C" BYTE* __fastcall ShellControls513b30_Construct(BYTE* s, void*, int pa
     F(int, s, 1344) = Shell_IniIs(Q37(6730a0), Q42(673384), Q34(672994), 30);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Race setup screen in four variants (exception frame dropped).
+
+ASM_VAR(AsmLabel, g_q43_68b990, $L_68b990)
+ASM_VAR(AsmLabel, g_q43_64e960, $L_64e960)
+ASM_VAR(AsmLabel, g_q43_64e920, $L_64e920)
+ASM_VAR(AsmLabel, g_q43_675b38, $L_675b38)
+#define Q43(x) ((const char*)s_q43_##x)
+ASM_VAR(AsmLabel, s_q43_678008, $L_678008)
+ASM_VAR(AsmLabel, s_q43_677ff4, $L_677ff4)
+ASM_VAR(AsmLabel, s_q43_677fdc, $L_677fdc)
+ASM_VAR(AsmLabel, s_q43_677fc4, $L_677fc4)
+ASM_VAR(AsmLabel, s_q43_677fac, $L_677fac)
+ASM_VAR(AsmLabel, s_q43_677f94, $L_677f94)
+ASM_VAR(AsmLabel, s_q43_677f88, $L_677f88)
+ASM_VAR(AsmLabel, s_q43_677f7c, $L_677f7c)
+ASM_VAR(AsmLabel, s_q43_677f70, $L_677f70)
+ASM_VAR(AsmLabel, s_q43_677f64, $L_677f64)
+ASM_VAR(AsmLabel, s_q43_677f5c, $L_677f5c)
+ASM_VAR(AsmLabel, s_q43_677f50, $L_677f50)
+ASM_VAR(AsmLabel, s_q43_677f3c, $L_677f3c)
+ASM_VAR(AsmLabel, s_q43_677f28, $L_677f28)
+ASM_VAR(AsmLabel, s_q43_677f10, $L_677f10)
+ASM_VAR(AsmLabel, s_q43_677ef8, $L_677ef8)
+ASM_VAR(AsmLabel, s_q43_677ee0, $L_677ee0)
+ASM_VAR(AsmLabel, s_q43_677ec8, $L_677ec8)
+ASM_VAR(AsmLabel, s_q43_677ebc, $L_677ebc)
+ASM_VAR(AsmLabel, s_q43_677eb0, $L_677eb0)
+ASM_VAR(AsmLabel, s_q43_677ea4, $L_677ea4)
+ASM_VAR(AsmLabel, s_q43_677e98, $L_677e98)
+ASM_VAR(AsmLabel, s_q43_677e90, $L_677e90)
+ASM_VAR(AsmLabel, s_q43_677e84, $L_677e84)
+ASM_VAR(AsmLabel, s_q43_677e5c, $L_677e5c)
+ASM_VAR(AsmLabel, s_q43_677e48, $L_677e48)
+ASM_VAR(AsmLabel, s_q43_677e30, $L_677e30)
+ASM_VAR(AsmLabel, s_q43_677e18, $L_677e18)
+ASM_VAR(AsmLabel, s_q43_677e00, $L_677e00)
+ASM_VAR(AsmLabel, s_q43_677de8, $L_677de8)
+ASM_VAR(AsmLabel, s_q43_677dd0, $L_677dd0)
+ASM_VAR(AsmLabel, s_q43_677db8, $L_677db8)
+ASM_VAR(AsmLabel, s_q43_677dac, $L_677dac)
+ASM_VAR(AsmLabel, s_q43_677da0, $L_677da0)
+ASM_VAR(AsmLabel, s_q43_677d94, $L_677d94)
+ASM_VAR(AsmLabel, s_q43_677d8c, $L_677d8c)
+ASM_VAR(AsmLabel, s_q43_677d80, $L_677d80)
+ASM_VAR(AsmLabel, s_q43_677d6c, $L_677d6c)
+ASM_VAR(AsmLabel, s_q43_677d58, $L_677d58)
+ASM_VAR(AsmLabel, s_q43_677d40, $L_677d40)
+ASM_VAR(AsmLabel, s_q43_677d28, $L_677d28)
+ASM_VAR(AsmLabel, s_q43_677d10, $L_677d10)
+ASM_VAR(AsmLabel, s_q43_677cf8, $L_677cf8)
+ASM_VAR(AsmLabel, s_q43_677ce0, $L_677ce0)
+ASM_VAR(AsmLabel, s_q43_677cc8, $L_677cc8)
+ASM_VAR(AsmLabel, s_q43_677cbc, $L_677cbc)
+ASM_VAR(AsmLabel, s_q43_677cb0, $L_677cb0)
+ASM_VAR(AsmLabel, s_q43_677ca4, $L_677ca4)
+ASM_VAR(AsmLabel, s_q43_677c9c, $L_677c9c)
+ASM_VAR(AsmLabel, s_q43_677c90, $L_677c90)
+ASM_VAR(AsmLabel, s_q43_677e70, $L_677e70)
+ASM_VAR(AsmLabel, s_q43_677c7c, $L_677c7c)
+ASM_VAR(AsmLabel, s_q43_677c74, $L_677c74)
+ASM_VAR(AsmLabel, s_q43_677c68, $L_677c68)
+ASM_VAR(AsmLabel, s_q43_677c60, $L_677c60)
+ASM_VAR(AsmLabel, s_q43_677c58, $L_677c58)
+ASM_VAR(AsmLabel, s_q43_677c4c, $L_677c4c)
+ASM_VAR(AsmLabel, s_q43_677c3c, $L_677c3c)
+ASM_VAR(AsmLabel, s_q43_677c2c, $L_677c2c)
+ASM_VAR(AsmLabel, s_q43_677c18, $L_677c18)
+ASM_VAR(AsmLabel, s_q43_677c04, $L_677c04)
+ASM_VAR(AsmLabel, s_q43_677bf0, $L_677bf0)
+ASM_VAR(AsmLabel, s_q43_677bdc, $L_677bdc)
+ASM_VAR(AsmLabel, s_q43_677bc8, $L_677bc8)
+ASM_VAR(AsmLabel, s_q43_677bb4, $L_677bb4)
+ASM_VAR(AsmLabel, s_q43_677ba0, $L_677ba0)
+ASM_VAR(AsmLabel, s_q43_677b8c, $L_677b8c)
+ASM_VAR(AsmLabel, s_q43_677b78, $L_677b78)
+ASM_VAR(AsmLabel, s_q43_677b64, $L_677b64)
+ASM_VAR(AsmLabel, s_q43_677b50, $L_677b50)
+ASM_VAR(AsmLabel, s_q43_677b3c, $L_677b3c)
+ASM_VAR(AsmLabel, s_q43_677b28, $L_677b28)
+ASM_VAR(AsmLabel, s_q43_677b14, $L_677b14)
+ASM_VAR(AsmLabel, s_q43_677b00, $L_677b00)
+ASM_VAR(AsmLabel, s_q43_677aec, $L_677aec)
+
+// a column of mode buttons at x 11 from y 205 (or 250) down by 45
+static void Shell_ModeColumn(BYTE* p, const char* const* names, const int* ids, int n, int y)
+{
+    for (int k = 0; k < n; k++, y += 45) {
+        BYTE* b = Shell_ModeButtonC((int)names[k], ids[k]);
+        CallThis(FUN_5bdbf0, p, b, 0);
+        Shell_MoveCtl(b, 11, y);
+    }
+}
+// [FUN_523270] constructor (parent, variant): a race setup screen (vtables 64e960, 64e920 at +64) in four
+// variants (+368): two button columns (+384, +388), for 1 and 3 a third panel (+392) with buttons 206, 207,
+// 121, 120, 122 and the 27 x 4 textures by the 675b38 names (+428);
+// the textures +396..+404 and +868..+896, centred on the parent
+extern "C" BYTE* __fastcall ShellRace523270_Construct(BYTE* s, void*, BYTE* parent, int variant)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 0, g_q28_6ced24, 0);
+    F(DWORD, s, 424) = F(DWORD, g_q43_68b990, 0);
+    F(void*, s, 0) = g_q43_64e960;
+    F(void*, s, 64) = g_q43_64e920;
+    F(int, s, 392) = 0;
+    F(int, s, 368) = variant;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    F(int, s, 404) = 0;
+    for (int k = 920; k <= 936; k += 4)
+        F(int, s, k) = 0;
+    memset(s + 940, 0, 32);
+    BYTE* p = Shell_NewPanel(8);
+    // per variant: the background, +396, +400, +404 textures (two names each by mode), the first column
+    const struct {
+        const char* tex[8];
+        const char* col[4];
+        int ids[4];
+        int n;
+        const char* col2[2];
+    } V[4] = {
+        {{Q43(678008), Q43(677ff4), Q43(677fdc), Q43(677fc4), Q43(677fac), Q43(677f94), 0, 0},
+         {Q43(677f88), Q43(677f7c), Q43(677f70), Q43(677f64)}, {190, 191, 192, 193}, 4, {Q43(677f5c), Q43(677f50)}},
+        {{Q43(677f3c), Q43(677f28), Q43(677f10), Q43(677ef8), Q43(677ee0), Q43(677ec8), 0, 0},
+         {Q43(677ebc), Q43(677eb0), Q43(677ea4), Q43(677e98)}, {194, 195, 196, 197}, 4, {Q43(677e90), Q43(677e84)}},
+        {{Q43(677e5c), Q43(677e48), Q43(677e30), Q43(677e18), Q43(677e00), Q43(677de8), Q43(677dd0), Q43(677db8)},
+         {Q43(677dac), Q43(677da0), Q43(677d94)}, {198, 199, 200}, 3, {Q43(677d8c), Q43(677d80)}},
+        {{Q43(677d6c), Q43(677d58), Q43(677d40), Q43(677d28), Q43(677d10), Q43(677cf8), Q43(677ce0), Q43(677cc8)},
+         {Q43(677cbc), Q43(677cb0), Q43(677ca4)}, {202, 203, 204}, 3, {Q43(677c9c), Q43(677c90)}},
+    };
+    if ((unsigned)F(int, s, 368) <= 3) {
+        const auto& v = V[F(int, s, 368)];
+        g_q34_6ce400 = CallC<BYTE*>(FUN_5ef3d0, Shell_ByMode(v.tex[0], v.tex[1]));
+        for (int k = 0; k < 4; k++)
+            CallThis(FUN_5bd5a0, p + 68 + k * 36, (void*)g_q29_6ce3e0);
+        F(DWORD, s, 396) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(v.tex[2], v.tex[3]));
+        F(DWORD, s, 400) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(v.tex[4], v.tex[5]));
+        if (v.tex[6])
+            F(DWORD, s, 404) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(v.tex[6], v.tex[7]));
+        BYTE* c = Shell_NewPanel(0);
+        F(BYTE*, s, 384) = c;
+        Shell_ModeColumn(c, v.col, v.ids, v.n, 205);
+        CallThis(FUN_5bdbf0, p, c, 0);
+        c = Shell_NewPanel(0);
+        F(BYTE*, s, 388) = c;
+        static const int ids2[2] = {206, 207};
+        Shell_ModeColumn(c, v.col2, ids2, 2, 250);
+        CallThis(FUN_5bdbf0, p, c, 0);
+        if (F(int, s, 368) & 1) {
+            c = Shell_NewPanel(8);
+            F(BYTE*, s, 392) = c;
+            g_q34_6ce400 = CallC<BYTE*>(FUN_5ef3d0, Shell_ByMode(Q43(677e70), Q43(677c7c)));
+            for (int k = 0; k < 4; k++)
+                CallThis(FUN_5bd5a0, c + 68 + k * 36, (void*)g_q29_6ce3e0);
+            const struct { const char* n; int id, x, y; } B[5] = {
+                {Q43(677c74), 206, 59, 356}, {Q43(677c68), 207, 141, 356}, {Q43(677c60), 121, 35, 84},
+                {Q43(677c58), 120, 225, 84}, {Q43(677c4c), 122, 106, 186}};
+            for (int k = 0; k < 5; k++) {
+                BYTE* b = Shell_ModeButtonC((int)B[k].n, B[k].id);
+                CallThis(FUN_5bdbf0, c, b, 0);
+                Shell_MoveCtl(b, B[k].x, B[k].y);
+            }
+            CallThis(FUN_5bdbf0, p, c, 0);
+        }
+    }
+    if (F(int, s, 368) == 1 || F(int, s, 368) == 3) {
+        char buf[64];
+        BYTE* at = s + 428;
+        const char** names = (const char**)(void*)g_q43_675b38;
+        for (int k = 0; k < 27; k++)
+            for (int i = 1; i <= 4; i++, at += 4) {
+                sprintf(buf, Shell_ByMode(Q43(677c3c), Q43(677c2c)), names[k], i);
+                F(DWORD, at, 0) = CallC<DWORD>(FUN_5ef3d0, buf);
+            }
+    }
+    if (F(BYTE*, s, 392))
+        F(int, F(BYTE*, s, 392), 40) = 1;
+    F(int, F(BYTE*, s, 388), 40) = 1;
+    F(int, F(BYTE*, s, 384), 40) = 1;
+    CallThis(FUN_5bdc80, p);
+    int x = (CallVirt<int>(parent, 20) - F(WORD, g_q34_6ce400, 4)) / 2;
+    int y = (CallVirt<int>(parent, 24) - F(WORD, g_q34_6ce400, 6)) / 2;
+    Shell_MoveCtl(p, x, y);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    F(int, s, 860) = 0;
+    F(int, s, 864) = 0;
+    F(int, s, 376) = 1;
+    static const int slot[8] = {884, 888, 892, 896, 868, 872, 876, 880};
+    const char* const tn[8][2] = {
+        {Q43(677c18), Q43(677c04)}, {Q43(677bf0), Q43(677bdc)}, {Q43(677bc8), Q43(677bb4)}, {Q43(677ba0), Q43(677b8c)},
+        {Q43(677b78), Q43(677b64)}, {Q43(677b50), Q43(677b3c)}, {Q43(677b28), Q43(677b14)}, {Q43(677b00), Q43(677aec)}};
+    for (int k = 0; k < 8; k++)
+        F(DWORD, s, slot[k]) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(tn[k][0], tn[k][1]));
+    return s;
+}
