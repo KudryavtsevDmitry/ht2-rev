@@ -3891,3 +3891,28 @@ extern "C" void __fastcall View_BeginFrame(BYTE* s)
     }
     g_q219_702e8c = F(int, s, 3020);
 }
+
+// [FUN_5e6800] the sphere around outline s's points (+4 count; x at +16, z at +20) placed at v: their centre and
+// the largest distance from it, into v
+extern "C" void __fastcall Outline_BoundingSphere(BYTE* s, void*, float* v)
+{
+    float c[3] = {0, 0, 0}, tmp[3];
+    int n = F(WORD, s, 4);
+    for (int i = 0; i < n; i++) {
+        float p[3] = {(float)(F(float*, s, 16)[i] + v[0]), v[1], (float)(F(float*, s, 20)[i] + v[2])};
+        CallThis(FUN_5ab710, c, tmp, p);
+    }
+    CallThis(FUN_5ab660, c, tmp, (float)n);
+    float r = 0;
+    for (int i = 0; i < (int)F(WORD, s, 4); i++) {
+        double px = F(float*, s, 16)[i] + v[0];
+        float py = v[1];
+        float pz = (float)(F(float*, s, 20)[i] + v[2]);
+        float d[3] = {(float)(c[0] - px), (float)(c[1] - py), (float)(c[2] - pz)};
+        double l = CallC<double>(FUN_5ab4d0, d);
+        if (!(r >= l))
+            r = (float)l;
+    }
+    memcpy(v, c, 12);
+    v[3] = r;
+}

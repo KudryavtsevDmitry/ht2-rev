@@ -741,7 +741,7 @@ ASM_PROC(FUN_5b4fc0)
 extern "C" void FUN_604e10(); KING_ALIAS("_FUN_604e10", "_Channels_Release")
 extern "C" void FUN_5fd250(); KING_ALIAS("_FUN_5fd250", "@SoundFile_Destroy@8")
 extern "C" void FUN_605050(); KING_ALIAS("_FUN_605050", "_Mixer_Shutdown")
-ASM_PROC(FUN_5e6800)
+extern "C" void FUN_5e6800(); KING_ALIAS("_FUN_5e6800", "@Outline_BoundingSphere@12")
 extern "C" void FUN_5e5580(); KING_ALIAS("_FUN_5e5580", "@Sphere_Merge@12")
 ASM_VAR(BYTE**, g_sc723b34p, $L_723b34)
 struct ScVec { float x, y, z; };
