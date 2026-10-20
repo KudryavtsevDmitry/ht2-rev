@@ -2394,3 +2394,43 @@ extern "C" void __cdecl Media_StartThread(int w, int d)
     CallStd(Mfc_AfxBeginThread, (void*)g_q54_5c2d70, 0, 1, 4096, 0, 0);
     g_q54_702f94 = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Polygon span fill.
+
+ASM_PROC(FUN_5fedbc)
+ASM_PROC(FUN_5fef04)
+ASM_VAR(int, g_q56_71e7dc, $L_71e7dc)
+ASM_VAR(int, g_q56_71e7d8, $L_71e7d8)
+ASM_VAR(int, g_q56_71e7bc, $L_71e7bc)
+ASM_VAR(int, g_q56_71e7c4, $L_71e7c4)
+ASM_VAR(int, g_q56_70f3d8, $L_70f3d8)
+ASM_VAR(int, g_q56_70f3f0, $L_70f3f0)
+// [FUN_5cf630] fills the spans of the rows 71e7dc..71e7d8 from the edge tables (70f3f0 left, 31200 bytes on the
+// right, 24 bytes a row: x in 12.20 fixed point, z at +20) with the color c; mode | 2 set first
+extern "C" void __cdecl Span_FillRows(int mode, int c)
+{
+    CallC(FUN_5fedbc, mode | 2, 0);
+    int y = g_q56_71e7dc;
+    int row = y * g_q56_71e7bc;
+    if (y > g_q56_71e7d8)
+        return;
+    int* e = &g_q56_70f3f0 + y * 6;
+    for (;;) {
+        int l = e[0];
+        int r = e[7800] >> 20;
+        int z = e[5];
+        int x = l >> 20;
+        if (l & 0xf0000)
+            x++;
+        if (x <= r) {
+            int n = r - x + 1;
+            CallC(FUN_5fef04, g_q56_70f3d8 * x + g_q56_71e7c4 + row, n, z, (e[7805] - z) / n, c, 0, 0, 0);
+        }
+        y++;
+        e += 6;
+        row += g_q56_71e7bc;
+        if (y > g_q56_71e7d8)
+            break;
+    }
+}
