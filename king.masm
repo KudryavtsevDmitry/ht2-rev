@@ -1475,6 +1475,7 @@ PUBLIC $L_71f7f8, $L_720020
 PUBLIC $L_721210
 PUBLIC $L_723a88
 PUBLIC $L_67fa80
+PUBLIC $L_64da58
 
 ;===================================
 _TEXT SEGMENT
@@ -726335,6 +726336,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b9520 PROC
 
             push ESI
@@ -726485,6 +726488,10 @@ $L_5b964b::
             pop ESI
             ret 
 FUN_5b9520 ENDP
+ELSE
+EXTERN @TexSets_Free@4:PROC
+FUN_5b9520 TEXTEQU <@TexSets_Free@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -730284,6 +730291,8 @@ $L_5bb586::
             ret 36
 FUN_5bb260 ENDP
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5bb590 PROC
 
             fld QWORD PTR [ESP+12]
@@ -730368,6 +730377,10 @@ $L_5bb654::
             pop EBP
             ret 
 FUN_5bb590 ENDP
+ELSE
+EXTERN _Pixels4444_Fade:PROC
+FUN_5bb590 TEXTEQU <_Pixels4444_Fade>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
