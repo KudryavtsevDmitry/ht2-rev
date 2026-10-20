@@ -5444,7 +5444,7 @@ extern "C" void __fastcall Map_DrawLine(double* s, void*, BYTE* d, double sx, do
 // ---------------------------------------------------------------------------
 // Entering the world.
 
-ASM_PROC(FUN_512920)
+extern "C" void FUN_512920(); KING_ALIAS("_FUN_512920", "_Shell_LoadWorld")
 ASM_PROC(FUN_50c9d0)
 extern "C" void FUN_5ba300(); KING_ALIAS("_FUN_5ba300", "@Palette_Blend@32")
 extern "C" void FUN_597560(); KING_ALIAS("_FUN_597560", "@Wasm_Set92@12")
@@ -6135,4 +6135,108 @@ extern "C" void __cdecl Shell_SetVideoMode(BYTE* world, int)
     int n = (g_q91_7208d8 ? F(short, g_q91_6cec70, 420) : F(short, g_q91_6cec70, 422)) * 4 / 100 + 4;
     void* p = operator new(16);
     g_q91_6ce520 = p ? CallThis<void*>(FUN_4cce70, p, n, g_q91_720908) : 0;
+}
+
+// ---------------------------------------------------------------------------
+// Loading the world.
+
+ASM_PROC(FUN_50f990)
+extern "C" void FUN_510690(); KING_ALIAS("_FUN_510690", "_Loading_Step")
+extern "C" void FUN_5a5720(); KING_ALIAS("_FUN_5a5720", "_Set7025b0")
+extern "C" void FUN_5107c0(); KING_ALIAS("_FUN_5107c0", "_Model_Load")
+extern "C" void FUN_5d27c0(); KING_ALIAS("_FUN_5d27c0", "@NameHash_ResolvePending@8")
+extern "C" void FUN_435730(); KING_ALIAS("_FUN_435730", "_Ai_Initialize")
+extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+extern "C" void FUN_512720(); KING_ALIAS("_FUN_512720", "_Replay_Open")
+extern "C" void __cdecl Shell_LoadScene(const char* dir, const char* name);
+ASM_VAR(BYTE*, g_q92_696ca0, $L_696ca0)
+ASM_VAR(int, g_q92_6ced70, $L_6ced70)
+ASM_VAR(int, g_q92_702e98, $L_702e98)
+ASM_VAR(unsigned, g_q92_702e8c, $L_702e8c)
+ASM_VAR(BYTE*, g_q92_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_q92_6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_q92_6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_q92_6cec84, $L_6cec84)
+ASM_VAR(BYTE*, g_q92_69684c, $L_69684c)
+ASM_VAR(int, g_q92_7208c0, $L_7208c0)
+ASM_VAR(int, g_q92_67b738, $L_67b738)
+ASM_VAR(AsmLabel, g_q92_71e820, $L_71e820)
+ASM_VAR(AsmLabel, g_q92_696750, $L_696750)
+ASM_VAR(AsmLabel, g_q92_4d76b0, $L_4d76b0)
+ASM_VAR(AsmLabel, g_q92_4d8b60, $L_4d8b60)
+ASM_VAR(AsmLabel, s_q92_676770, $L_676770)
+ASM_VAR(AsmLabel, s_q92_672688, $L_672688)
+ASM_VAR(AsmLabel, s_q92_6768f0, $L_6768f0)
+ASM_VAR(AsmLabel, s_q92_6768e8, $L_6768e8)
+ASM_VAR(AsmLabel, s_q92_66cd44, $L_66cd44)
+ASM_VAR(AsmLabel, s_q92_6768e0, $L_6768e0)
+ASM_VAR(AsmLabel, s_q92_6768d8, $L_6768d8)
+ASM_VAR(AsmLabel, s_q92_6768d0, $L_6768d0)
+ASM_VAR(AsmLabel, s_q92_67262c, $L_67262c)
+ASM_VAR(AsmLabel, s_q92_6768c4, $L_6768c4)
+ASM_VAR(AsmLabel, s_q92_6768b8, $L_6768b8)
+ASM_VAR(AsmLabel, s_q92_6768a8, $L_6768a8)
+// [FUN_512920..$L_5129ca] loads the world with the loading bar: the common models, the escape screen, cabins and
+// the truck parts (fatal on a missing name); the AI of the map (ENV, or MENV/MTR in a race) or the network game
+// screen; the geometry and texture size switches by the view distance and detail level; then the replay
+extern "C" void __cdecl Shell_LoadWorld(void)
+{
+    F(void*, g_q92_696ca0, 536) = (void*)FUN_510690;
+    CallC(FUN_5a5720, 0);
+    g_q92_702e98 = g_q92_6ced70 == 4 || g_q92_6ced70 == 3;
+    const char* dir = (const char*)s_q92_676770;
+    CallC(FUN_5107c0, dir, (const char*)s_q92_672688);
+    Shell_LoadScene(dir, (const char*)s_q92_6768f0);
+    F(int, CallC<BYTE*>(FUN_5107c0, dir, (const char*)s_q92_6768e8), 56) = 0;
+    F(int, CallC<BYTE*>(FUN_5107c0, dir, (const char*)s_q92_66cd44), 56) = 0;
+    if (const char* bad = CallThis<const char*>(FUN_5d27c0, (BYTE*)g_q92_71e820))
+        CallC(FUN_5d2e70, bad, 0);
+    F(BYTE*, g_q92_6cec6c, 1356) = g_q92_696ca0;
+    if (F(int, g_q92_6cec6c, 1300) <= 1) {
+        const char* map = 0;
+        if (!F(int, g_q92_6cec6c, 1316))
+            map = (const char*)s_q92_6768e0;
+        else if (F(int, g_q92_6cec98, 384) == 0)
+            map = (const char*)s_q92_6768d8;
+        else if (F(int, g_q92_6cec98, 384) == 1)
+            map = (const char*)s_q92_6768d0;
+        if (map)
+            CallC(FUN_435730, App_Path(g_q92_696ca0, 0, map), (BYTE*)g_q92_4d76b0, (BYTE*)g_q92_4d8b60);
+    } else {
+        BYTE* q = (BYTE*)operator new(424);
+        q = q ? CallThis<BYTE*>(FUN_50f990, q) : 0;
+        g_q92_6cec84 = q;
+        CallThis(FUN_5e41f0, (BYTE*)g_q92_696750, q);
+        CallVirt(g_q92_6cec84, 36);
+    }
+    F(void*, g_q92_696ca0, 536) = 0;
+    CallThis(FUN_5b64e0, F(BYTE*, g_q92_69684c, 12), F(DWORD, F(BYTE*, F(BYTE*, g_q92_696ca0, 468), 100), 0));
+    F(int, F(BYTE*, g_q92_696ca0, 472), 112) = F(short, g_q92_6cec70, 422);
+    void* geo = CallC<void*>(FUN_5ef2b0, 0, (const char*)s_q92_67262c);
+    int g = 2 - F(short, g_q92_6cec70, 422) / 35;
+    CallC(FUN_4e480c, geo, g);
+    if (BYTE* o = CallC<BYTE*>(FUN_5ef3d0, (const char*)(g == 2 ? s_q92_6768c4 : s_q92_6768b8)))
+        CallVirt(o, 40);
+    short v = F(short, g_q92_6cec70, 420);
+    if (v < 30)
+        g_q92_7208c0 = 0;
+    if (v < 60) {
+        F(unsigned, g_q92_696ca0, 3020) |= 0x2000000;
+        g_q92_702e8c |= 0x2000000;
+    } else {
+        F(unsigned, g_q92_696ca0, 3020) &= 0xfdffffff;
+        g_q92_702e8c &= 0xfdffffff;
+    }
+    void* tex = CallC<void*>(FUN_5ef2b0, 0, (const char*)s_q92_6768a8);
+    switch (g_q92_6ced70) {
+    case 4: g_q92_67b738 = 460800; CallC(FUN_5e1a10, tex, 0); break;
+    case 3: g_q92_67b738 = 163840; CallC(FUN_5e1a10, tex, 0); break;
+    case 2: g_q92_67b738 = 163840; CallC(FUN_5e1a10, tex, 1); break;
+    case 1: g_q92_67b738 = 122880; CallC(FUN_5e1a10, tex, 1); break;
+    case 0: g_q92_7208c0 = 0; g_q92_67b738 = 71680; CallC(FUN_5e1a10, tex, 2); break;
+    }
+    CallC(FUN_512720);
 }
