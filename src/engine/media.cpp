@@ -1647,7 +1647,7 @@ extern "C" void FUN_5cdcb0(); KING_ALIAS("_FUN_5cdcb0", "@Med5cdcb0_Destruct@8")
 extern "C" void FUN_5ce5b0(); KING_ALIAS("_FUN_5ce5b0", "@Med5ce5b0_Destroy@4")
 extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 extern "C" void FUN_5ceae0(); KING_ALIAS("_FUN_5ceae0", "@Media5ceae0_Destroy@8")
-ASM_PROC(FUN_5cf170)
+extern "C" void FUN_5cf170(); KING_ALIAS("_FUN_5cf170", "@Thunk5cf170@4")
 extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
 extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
@@ -2862,3 +2862,16 @@ extern "C" int __fastcall q238_Fw_SetupRoom(BYTE* s); KING_ALIAS("@q238_Fw_Setup
 extern "C" int __fastcall q238_MappedFile_Close(BYTE* s); KING_ALIAS("@q238_MappedFile_Close@4", "@MappedFile_Close@4")
 // [FUN_5c5370] forwards to Fw_SetupRoom
 extern "C" int __fastcall Thunk5c5370(BYTE* s) { return q238_Fw_SetupRoom(s); }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q240_MappedFile_Close(BYTE* s); KING_ALIAS("@q240_MappedFile_Close@4", "@MappedFile_Close@4")
+extern "C" int __fastcall q240_Med5ce5b0_Destroy(BYTE* s); KING_ALIAS("@q240_Med5ce5b0_Destroy@4", "@Med5ce5b0_Destroy@4")
+// [FUN_5cf170] forwards to Med5ce5b0_Destroy
+extern "C" int __fastcall Thunk5cf170(BYTE* s) { return q240_Med5ce5b0_Destroy(s); }
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q241_L_5d2070(); KING_ALIAS("_q241_L_5d2070", "$L_5d2070")
+// [$L_5d2060] registers 5d2070 at exit
+extern "C" int __cdecl Static5d2060_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_5d2070); }

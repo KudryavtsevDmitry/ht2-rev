@@ -21844,7 +21844,7 @@ extern "C" void q197_FUN_4056f0(); KING_ALIAS("_q197_FUN_4056f0", "_AI_Init68cf5
 extern "C" void q197_FUN_415260(); KING_ALIAS("_q197_FUN_415260", "_AI_Init68a860")
 extern "C" void q197_FUN_447570(); KING_ALIAS("_q197_FUN_447570", "@StrRefVec_Destroy@8")
 extern "C" void q197_FUN_447970(); KING_ALIAS("_q197_FUN_447970", "@Vec4_FreeStorage@8")
-extern "C" void q197_L_401390(); KING_ALIAS("_q197_L_401390", "$L_401390")
+extern "C" void q197_L_401390(); KING_ALIAS("_q197_L_401390", "_Static68cf28_Destroy")
 extern "C" void q197_L_4013e0(); KING_ALIAS("_q197_L_4013e0", "$L_4013e0")
 extern "C" void q197_L_401990(); KING_ALIAS("_q197_L_401990", "$L_401990")
 extern "C" void q197_L_401e30(); KING_ALIAS("_q197_L_401e30", "$L_401e30")
@@ -22255,3 +22255,28 @@ extern "C" void __fastcall Rec4073b0_FreeVectors(BYTE* s)
     if (n)
         Ai_PoolFree(p, n * 24);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+ASM_VAR(char, g_q240_68a830, $L_68a830)
+ASM_VAR(char, g_q240_68cf28, $L_68cf28)
+extern "C" int __fastcall q240_Vec4_FreeStorageB(BYTE* s, void* d); KING_ALIAS("@q240_Vec4_FreeStorageB@8", "@Vec4_FreeStorageB@8")
+// [$L_401390] Vec4_FreeStorageB on the static object 68cf28
+extern "C" void __cdecl Static68cf28_Destroy(void) { q240_Vec4_FreeStorageB((BYTE*)&g_q240_68cf28, 0); }
+// [$L_402490] Vec4_FreeStorageB on the static object 68a830
+extern "C" void __cdecl Static68a830_Destroy(void) { q240_Vec4_FreeStorageB((BYTE*)&g_q240_68a830, 0); }
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q241_L_401e80(); KING_ALIAS("_q241_L_401e80", "$L_401e80")
+// [$L_401e70] registers 401e80 at exit
+extern "C" int __cdecl Static401e70_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_401e80); }
+extern "C" void q241_L_401ed0(); KING_ALIAS("_q241_L_401ed0", "_Static68cf00_Destroy")
+// [$L_401ec0] registers 401ed0 at exit
+extern "C" int __cdecl Static401ec0_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_401ed0); }
+extern "C" void q241_L_402150(); KING_ALIAS("_q241_L_402150", "_Static68cbe8_Destroy")
+// [$L_402140] registers 402150 at exit
+extern "C" int __cdecl Static402140_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_402150); }
+extern "C" void q241_L_402490(); KING_ALIAS("_q241_L_402490", "_Static68a830_Destroy")
+// [$L_402480] registers 402490 at exit
+extern "C" int __cdecl Static402480_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_402490); }

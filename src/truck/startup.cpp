@@ -992,3 +992,10 @@ extern "C" int __cdecl Static696750_Init(void)
     CallC(q197_FUN_4e1de0);
     return Static696750_AtExit();
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q240_View_EndFrame(BYTE* s); KING_ALIAS("@q240_View_EndFrame@4", "@View_EndFrame@4")
+// [$L_4e0b70] forwards to View_EndFrame
+extern "C" int __fastcall Thunk4e0b70(BYTE* s) { return q240_View_EndFrame(s); }

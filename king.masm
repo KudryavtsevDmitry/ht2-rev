@@ -1,4 +1,4 @@
-PUBLIC $L_401e30, $L_402100, $L_402240, $L_402430, $L_402730
+PUBLIC $L_401e80, $L_401e30, $L_402100, $L_402240, $L_402430, $L_402730
 PUBLIC $L_5d7b90, $L_5d7c20, $L_5dd8c0
 PUBLIC $L_684a20
 PUBLIC $L_7242a0
@@ -2106,6 +2106,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401390 PROC
 
             mov ECX,OFFSET $L_68cf28
@@ -2118,6 +2120,10 @@ $L_401390 PROC
             nop
             nop
 $L_401390 ENDP
+ELSE
+EXTERN _Static68cf28_Destroy:PROC
+$L_401390 TEXTEQU <_Static68cf28_Destroy>
+ENDIF
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
 $L_4013a0 PROC
@@ -3628,6 +3634,8 @@ ELSE
 EXTERN _AI_Init68cc08:PROC
 FUN_401e50 TEXTEQU <_AI_Init68cc08>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401e70 PROC
 
             push OFFSET $L_401e80
@@ -3636,6 +3644,10 @@ $L_401e70 PROC
             pop ECX
             ret 
 $L_401e70 ENDP
+ELSE
+EXTERN _Static401e70_AtExit:PROC
+$L_401e70 TEXTEQU <_Static401e70_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3692,6 +3704,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401ec0 PROC
 
             push OFFSET $L_401ed0
@@ -3700,6 +3714,10 @@ $L_401ec0 PROC
             pop ECX
             ret 
 $L_401ec0 ENDP
+ELSE
+EXTERN _Static401ec0_AtExit:PROC
+$L_401ec0 TEXTEQU <_Static401ec0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4351,6 +4369,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402140 PROC
 
             push OFFSET $L_402150
@@ -4359,6 +4379,10 @@ $L_402140 PROC
             pop ECX
             ret 
 $L_402140 ENDP
+ELSE
+EXTERN _Static402140_AtExit:PROC
+$L_402140 TEXTEQU <_Static402140_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5162,6 +5186,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402480 PROC
 
             push OFFSET $L_402490
@@ -5170,10 +5196,16 @@ $L_402480 PROC
             pop ECX
             ret 
 $L_402480 ENDP
+ELSE
+EXTERN _Static402480_AtExit:PROC
+$L_402480 TEXTEQU <_Static402480_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402490 PROC
 
             mov ECX,OFFSET $L_68a830
@@ -5186,6 +5218,10 @@ $L_402490 PROC
             nop
             nop
 $L_402490 ENDP
+ELSE
+EXTERN _Static68a830_Destroy:PROC
+$L_402490 TEXTEQU <_Static68a830_Destroy>
+ENDIF
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
 $L_4024a0 PROC
@@ -359084,6 +359120,8 @@ $L_4c561f::
 $L_4c5060 ENDP
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4c5680 PROC
 
             jmp FUN_5fa720
@@ -359100,6 +359138,10 @@ FUN_4c5680 PROC
             nop
             nop
 FUN_4c5680 ENDP
+ELSE
+EXTERN @Thunk4c5680@4:PROC
+FUN_4c5680 TEXTEQU <@Thunk4c5680@4>
+ENDIF
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
 $L_4c5690 PROC
@@ -400313,6 +400355,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4e0b70 PROC
 
             jmp $L_5de7d0
@@ -400329,6 +400373,10 @@ $L_4e0b70 PROC
             nop
             nop
 $L_4e0b70 ENDP
+ELSE
+EXTERN @Thunk4e0b70@4:PROC
+$L_4e0b70 TEXTEQU <@Thunk4e0b70@4>
+ENDIF
 ; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
 IFDEF ASM_STARTUP
 $L_4e0b80 PROC
@@ -669034,6 +669082,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_594de0 PROC
 
             push OFFSET $L_594df0
@@ -669042,6 +669092,10 @@ $L_594de0 PROC
             pop ECX
             ret 
 $L_594de0 ENDP
+ELSE
+EXTERN _Static594de0_AtExit:PROC
+$L_594de0 TEXTEQU <_Static594de0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -766058,6 +766112,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cf170 PROC
 
             jmp FUN_5ce5b0
@@ -766074,6 +766130,10 @@ FUN_5cf170 PROC
             nop
             nop
 FUN_5cf170 ENDP
+ELSE
+EXTERN @Thunk5cf170@4:PROC
+FUN_5cf170 TEXTEQU <@Thunk5cf170@4>
+ENDIF
 ALIGN 16
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 IFDEF ASM_MEDIA
@@ -771306,6 +771366,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5d2060 PROC
 
             push OFFSET $L_5d2070
@@ -771314,6 +771376,10 @@ $L_5d2060 PROC
             pop ECX
             ret 
 $L_5d2060 ENDP
+ELSE
+EXTERN _Static5d2060_AtExit:PROC
+$L_5d2060 TEXTEQU <_Static5d2060_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -830043,6 +830109,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ef4a0 PROC
 
             push OFFSET $L_5ef4b0
@@ -830051,6 +830119,10 @@ $L_5ef4a0 PROC
             pop ECX
             ret 
 $L_5ef4a0 ENDP
+ELSE
+EXTERN _Static5ef4a0_AtExit:PROC
+$L_5ef4a0 TEXTEQU <_Static5ef4a0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
