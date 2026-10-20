@@ -4667,7 +4667,7 @@ extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 ASM_VAR(AsmLabel, s_q26_67254c, $L_67254c)
 ASM_VAR(AsmLabel, s_q26_672688, $L_672688)
-ASM_VAR(AsmLabel, g_q26Ctor4bc820, $L_4bc820)
+extern "C" BYTE* __fastcall Rec4bc820_Construct(BYTE* s);
 
 static BYTE* Eff_NewItems240(int n)
 {
@@ -4675,7 +4675,7 @@ static BYTE* Eff_NewItems240(int n)
     if (!m)
         return 0;
     *(int*)m = n;
-    CallStd(Eff_VecCtor, m + 4, 240, n, (BYTE*)g_q26Ctor4bc820, FUN_50d190);
+    CallStd(Eff_VecCtor, m + 4, 240, n, (BYTE*)Rec4bc820_Construct, FUN_50d190);
     return m + 4;
 }
 // [FUN_4bc690] constructor (name, world, n): a trail effect with two materials (+24, +28) named by name and
@@ -4894,4 +4894,20 @@ extern "C" int __cdecl Lights_Collect(void*, BYTE* o, BYTE* l)
     CallVirt(F(BYTE*, g, 36), 20, 0, F(BYTE*, g, 32) + F(int, g, 40) * 140);
     F(int, g, 40)++;
     return 1;
+}
+
+// ---------------------------------------------------------------------------
+// A 240-byte record with two placements.
+
+ASM_VAR(AsmLabel, g_q97_7025f0, $L_7025f0)
+// [$L_4bc820] constructor: +0..+47 cleared; two placements (+56 and +148: 36 cleared bytes and an identity
+// matrix after them)
+extern "C" BYTE* __fastcall Rec4bc820_Construct(BYTE* s)
+{
+    memset(s, 0, 48);
+    for (int b = 56; b <= 148; b += 92) {
+        memset(s + b, 0, 36);
+        memcpy(s + b + 36, (BYTE*)g_q97_7025f0, 48);
+    }
+    return s;
 }

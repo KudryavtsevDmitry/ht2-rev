@@ -342869,6 +342869,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4bc820 PROC
 
             sub ESP,12
@@ -342981,6 +342983,10 @@ $L_4bc8ea::
             nop
             nop
 $L_4bc820 ENDP
+ELSE
+EXTERN @Rec4bc820_Construct@4:PROC
+$L_4bc820 TEXTEQU <@Rec4bc820_Construct@4>
+ENDIF
 ALIGN 16
 ; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
 IFDEF ASM_EFFECTS
@@ -421065,6 +421071,8 @@ $L_4ed6c8 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+IFDEF ASM_VEHICLE_PHYSICS
 $L_4ee4d0 PROC
 
             push ESI
@@ -421105,6 +421113,10 @@ $L_4ee4d0 PROC
             nop
             nop
 $L_4ee4d0 ENDP
+ELSE
+EXTERN @Placed4ee4d0_Construct@4:PROC
+$L_4ee4d0 TEXTEQU <@Placed4ee4d0_Construct@4>
+ENDIF
 ALIGN 16
 FUN_4ee540 PROC
 
@@ -455025,6 +455037,8 @@ $L_506fc0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 $L_507230 PROC
 
             jmp $L_507240
@@ -455124,6 +455138,10 @@ $L_507254::
             pop ECX
             ret 
 $L_507230 ENDP
+ELSE
+EXTERN _VehSet_InitRecords:PROC
+$L_507230 TEXTEQU <_VehSet_InitRecords>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
