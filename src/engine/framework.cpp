@@ -2088,6 +2088,7 @@ extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 extern "C" void FUN_5ddb40(); KING_ALIAS("_FUN_5ddb40", "@MainView_Destroy@4")
 ASM_PROC(FUN_5dd2d0)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
+extern "C" int __cdecl fprintf(FILE*, const char*, ...);
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
 ASM_PROC(FUN_5c06a0)
 extern "C" void FUN_5e2e80(); KING_ALIAS("_FUN_5e2e80", "@GdiObject5e2e80_Destroy@4")
@@ -3915,4 +3916,42 @@ extern "C" void __fastcall Outline_BoundingSphere(BYTE* s, void*, float* v)
     }
     memcpy(v, c, 12);
     v[3] = r;
+}
+
+extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
+extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
+extern "C" void FUN_5aea50(); KING_ALIAS("_FUN_5aea50", "@Render_EndFrame@8")
+extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
+extern "C" void FUN_5de5b0(); KING_ALIAS("_FUN_5de5b0", "@Clock_Start@8")
+extern "C" void FUN_5de5d0(); KING_ALIAS("_FUN_5de5d0", "@Clock_Stop@8")
+ASM_VAR(int, g_q221_721764, $L_721764)
+ASM_VAR(AsmLabel, s_q221_67fb80, $L_67fb80)
+ASM_VAR(AsmLabel, s_q221_682f34, $L_682f34)
+ASM_VAR(AsmLabel, s_q221_682f30, $L_682f30)
+ASM_VAR(AsmLabel, s_q221_682f24, $L_682f24)
+// [$L_5de7d0] ends a frame of view s: a changed palette (+3092) is applied to the window, the renderer finishes,
+// the sound is updated (when on) and, with the camera log on (721764), the clock and the camera matrix are written
+// to the log file (the clock paused meanwhile)
+extern "C" void __fastcall View_EndFrame(BYTE* s)
+{
+    if (F(int, s, 3092)) {
+        CallThis(FUN_5ba3d0, s + 3096);
+        BYTE* w = F(BYTE*, s, 468);
+        CallThis(FUN_5b64e0, F(BYTE*, s, 12), F(int*, w, 100)[F(int, w, 140)]);
+        F(int, s, 3092) = 0;
+    }
+    CallThis(FUN_5aea50, F(BYTE*, s, 464));
+    if (F(int, g_fw721750, 344))
+        CallC(FUN_5fd160);
+    if (!g_q221_721764)
+        return;
+    CallThis(FUN_5de5b0, s);
+    FILE* f = fopen((const char*)s_q221_682f34, (const char*)s_q221_67fb80);
+    fprintf(f, (const char*)s_q221_682f30, F(double, s, 2968));
+    float m[12];
+    Camera_Get(s, 0, m);
+    for (int i = 0; i < 12; i += 3)
+        fprintf(f, (const char*)s_q221_682f24, (double)m[i], (double)m[i + 1], (double)m[i + 2]);
+    fclose(f);
+    CallThis(FUN_5de5d0, s);
 }
