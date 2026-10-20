@@ -1486,3 +1486,32 @@ extern "C" int __fastcall Curve_Advance(BYTE* s, void*, double* t, double* d, do
     *d = 0.0;
     return 0;
 }
+
+// the length of segment i of polyline points p
+static double Run119_SegLen(const double* p, int i)
+{
+    const double* a = p + i * 3;
+    double dx = a[3] - a[0], dy = a[4] - a[1], dz = a[5] - a[2];
+    return x87_sqrt(dy * dy + dz * dz + dx * dx);
+}
+// [FUN_48d710] the distance along the polyline of s (24-byte points +32..+36) from fraction t1 of segment i1 to
+// fraction t2 of segment i2 (an index at the last point counts as the end of the segment before it)
+extern "C" double __fastcall Points_Distance(BYTE* s, void*, double t1, int i1, double t2, int i2)
+{
+    const double* p = F(const double*, s, 32);
+    int n = (F(int, s, 36) - F(int, s, 32)) / 24;
+    if (i1 + 1 == n) {
+        t1 += g_q115_64b670;
+        i1--;
+    }
+    if (i2 + 1 == n) {
+        t2 += g_q115_64b670;
+        i2--;
+    }
+    if (i1 == i2)
+        return Run119_SegLen(p, i1) * (t2 - t1);
+    double len = Run119_SegLen(p, i1) * (g_q115_64b670 - t1);
+    for (int j = i1 + 1; j < i2; j++)
+        len += Run119_SegLen(p, j);
+    return len + Run119_SegLen(p, i2) * t2;
+}
