@@ -2153,3 +2153,84 @@ extern "C" void __fastcall Surface_Prepare(BYTE* s)
             CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
     F(int, s, 24 + F(int, s, 16) * 4) = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Horizontal lines.
+
+ASM_PROC(FUN_5b73a0)
+ASM_PROC(FUN_5fe9b3)
+ASM_PROC(FUN_5fea6c)
+ASM_PROC(FUN_5feb12)
+ASM_PROC(FUN_5feace)
+ASM_PROC(FUN_5feafa)
+extern "C" void FUN_5b64c0(); KING_ALIAS("_FUN_5b64c0", "@Window_RootSurface@8")
+extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
+extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
+ASM_VAR(double, g_q151_64b670, $L_64b670)
+ASM_VAR(double, g_q151_64b678, $L_64b678)
+ASM_VAR(float, g_q151_64c458, $L_64c458)
+// x87 equality: also true for unordered values
+static bool Ren151_Eq(double a, double b) { return !(a < b || a > b); }
+// [FUN_5b7ce0] draws the line x1..x2 of row y on surface s in color (a palette index unless raw), clipped; a 3D
+// surface draws it as a line; blend mode 2 (+80) with an alpha (+88) other than 1 blends through the palette's
+// tables
+extern "C" void __cdecl Surface_HLine(BYTE* s, int y, int x1, int x2, int color, int raw)
+{
+    BYTE* pal = CallThis<BYTE*>(FUN_5b64c0, s);
+    if (y < 0 || y >= (int)F(WORD, s, 2))
+        return;
+    int a = x1, b = x2;
+    if (b < a) {
+        a = x2;
+        b = x1;
+    }
+    int w = F(WORD, s, 0);
+    if (a >= w || b < 0)
+        return;
+    if (a < 0)
+        a = 0;
+    if (b >= w)
+        b = w - 1;
+    if (F(int, s, 116) == 1) {
+        CallC(FUN_5b73a0, s, a, y, b, y, color, 0);
+        return;
+    }
+    BYTE* buf = F(BYTE*, s, 24 + F(int, s, 16) * 4);
+    if (!buf)
+        return;
+    WORD bpp = F(WORD, s, 4);
+    int n = b - a + 1;
+    BYTE* p = buf + bpp * a + F(WORD, s, 6) * y;
+    int mode = F(int, s, 80);
+    if (mode != 0 && !(mode == 2 && Ren151_Eq(F(float, s, 88), g_q151_64b670))) {
+        if (mode != 2 || !pal || Ren151_Eq(F(float, s, 88), g_q151_64b678))
+            return;
+        BYTE* t = CallThis<BYTE*>(FUN_5b94b0, pal, (int)(F(int, pal, 796) * F(float, s, 88)));
+        if (bpp == 1)
+            CallC(FUN_5fe9b3, t, p, color, n);
+        else if (bpp == 2)
+            CallC(FUN_5fea6c, t, p, color, n);
+        else if (bpp == 4) {
+            int c = raw ? color : CallThis<int>(FUN_5ba3f0, pal, color);
+            CallC(FUN_5feb12, (int)(F(float, s, 88) * g_q151_64c458), p, c, n);
+        }
+        return;
+    }
+    if (bpp == 1)
+        memset(p, (BYTE)color, n);
+    else if (bpp == 2) {
+        if (!raw) {
+            if (!pal)
+                return;
+            color = CallThis<int>(FUN_5ba3f0, pal, color);
+        }
+        CallC(FUN_5feace, p, color, n);
+    } else if (bpp == 4) {
+        if (!raw) {
+            if (!pal)
+                return;
+            color = CallThis<int>(FUN_5ba3f0, pal, color);
+        }
+        CallC(FUN_5feafa, p, color, n);
+    }
+}
