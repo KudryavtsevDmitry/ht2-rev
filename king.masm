@@ -1442,6 +1442,7 @@ PUBLIC $L_6cece8
 PUBLIC $L_6968f8, $L_6cecc8, $L_6cecd0
 PUBLIC $L_676cfc, $L_677630, $L_677638
 PUBLIC $L_676cf4, $L_677484, $L_67748c, $L_6ceccc
+PUBLIC $L_6772c4
 
 ;===================================
 _TEXT SEGMENT
@@ -482544,6 +482545,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_518900 PROC
 
             sub ESP,360
@@ -482654,6 +482657,10 @@ $L_5189e7::
             add ESP,360
             ret 
 $L_518900 ENDP
+ELSE
+EXTERN @LoadScreen_OnShow@8:PROC
+$L_518900 TEXTEQU <@LoadScreen_OnShow@8>
+ENDIF
 $L_5189f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -492351,6 +492358,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51e880 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -492476,6 +492485,10 @@ $L_51e990::
             pop EBX
             ret 4
 $L_51e880 ENDP
+ELSE
+EXTERN @LoadScreen_OnCommand@12:PROC
+$L_51e880 TEXTEQU <@LoadScreen_OnCommand@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

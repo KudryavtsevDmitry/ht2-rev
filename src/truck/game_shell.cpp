@@ -5146,3 +5146,70 @@ extern "C" void __fastcall RaceSettings_OnCommand(BYTE* s, void*, int cmd)
     case 152: F(int, s, 320) = 2; break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// The load screen: listing and commands.
+
+extern "C" void FUN_5c0f00(); KING_ALIAS("_FUN_5c0f00", "@ListBox_AddSorted@12")
+extern "C" void FUN_51d9e0(); KING_ALIAS("_FUN_51d9e0", "_Save_DeleteEntry")
+extern "C" void FUN_5c0d60(); KING_ALIAS("_FUN_5c0d60", "@List_RemoveName@12")
+ASM_VAR(AsmLabel, s_q64_6772c4, $L_6772c4)
+// [$L_518900] on show: activates, takes the +1300 game kind (+368, flag 2 of the +372 button), lists the saved
+// games (the 6772c4 files, names without the extension) in the +380 list and marks the +376 control
+extern "C" void __fastcall LoadScreen_OnShow(BYTE* s, void*)
+{
+    CallThis(FUN_5d8610, s);
+    F(int, s, 368) = F(int, g_q59_6cec6c, 1300);
+    if (F(int, s, 368))
+        F(DWORD, F(BYTE*, s, 372), 284) |= 2;
+    else
+        F(DWORD, F(BYTE*, s, 372), 284) &= ~2u;
+    WIN32_FIND_DATAA fd;
+    HANDLE h = FindFirstFileA((const char*)s_q64_6772c4, &fd);
+    CallThis(FUN_5c0cf0, F(BYTE*, s, 380));
+    F(DWORD, F(BYTE*, s, 376), 32) |= 0x80000000;
+    if (h == INVALID_HANDLE_VALUE)
+        return;
+    do {
+        if (!(fd.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
+            char name[MAX_PATH];
+            strcpy(name, fd.cFileName);
+            int i = 0;
+            while (name[i] && name[i] != '.')
+                i++;
+            name[i] = 0;
+            CallThis(FUN_5c0f00, F(BYTE*, s, 380), name);
+        }
+    } while (FindNextFileA(h, &fd));
+    FindClose(h);
+}
+// [$L_51e880] commands of the load part (the screen at -64): 27 and 172 close it back to the shell window, 110
+// loads the chosen game (+440, its +300 name into 6f2d18) and starts it, 282 deletes the chosen save
+extern "C" void __fastcall LoadScreen_OnCommand(BYTE* s, void*, int cmd)
+{
+    if (cmd == 27 || cmd == 172) {
+        CallVirt(s - 64, 32);
+        CallThis(FUN_5d8610, g_gs6ced6c);
+        return;
+    }
+    if (cmd != 110 && cmd != 282)
+        return;
+    BYTE* t = F(BYTE*, F(BYTE*, s, 440), 300);
+    const char* name = t ? F(const char*, t, 12) : 0;
+    if (cmd == 282) {
+        CallC(FUN_51d9e0, name);
+        CallThis(FUN_5c0d60, F(BYTE*, s, 440), name);
+        return;
+    }
+    strcpy((char*)&g_6f2d18, name);
+    CallVirt(s - 64, 32);
+    CallC(FUN_50bd60);
+    CallC(FUN_4e12b0, 1);
+    if (g_6ce4f4)
+        CallVirt(g_6ce4f4, 0, 1);
+    g_6ce4f4 = 0;
+    F(DWORD, g_696ca0, 16) |= 3;
+    CallC(FUN_569710);
+    F(int, g_696ca0, 3024) = 1;
+    CallVirt(g_696ca0, 36);
+}
