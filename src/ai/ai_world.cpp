@@ -22149,3 +22149,17 @@ extern "C" int __cdecl Static68a860_Init(void)
     CallC(q197_FUN_415260);
     return Static68a860_AtExit();
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+ASM_VAR(char, g_q198_68cbe8, $L_68cbe8)
+ASM_VAR(char, g_q198_68cf00, $L_68cf00)
+extern "C" int __fastcall q198_Points_Length(BYTE* s); KING_ALIAS("@q198_Points_Length@4", "@Points_Length@4")
+extern "C" int __fastcall q198_Vec4_FreeStorage(BYTE* s, void* d); KING_ALIAS("@q198_Vec4_FreeStorage@8", "@Vec4_FreeStorage@8")
+// [$L_401ed0] Vec4_FreeStorage on the static object 68cf00
+extern "C" void __cdecl Static68cf00_Destroy(void) { q198_Vec4_FreeStorage((BYTE*)&g_q198_68cf00, 0); }
+// [$L_402150] Vec4_FreeStorage on the static object 68cbe8
+extern "C" void __cdecl Static68cbe8_Destroy(void) { q198_Vec4_FreeStorage((BYTE*)&g_q198_68cbe8, 0); }
+// [$L_455650] forwards to Points_Length for the object 56 bytes after
+extern "C" int __fastcall Thunk455650(BYTE* s) { return q198_Points_Length(s + 56); }

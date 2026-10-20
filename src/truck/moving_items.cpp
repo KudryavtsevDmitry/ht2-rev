@@ -754,3 +754,10 @@ extern "C" void __fastcall MovingItem_SetSpin(BYTE* s, void*, const float* v, co
     memcpy(s + 3312, s + 428, 12);
     memcpy(s + 3324, s + 440, 12);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor57cfa0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor57cfa0_DeletingDestructor@12", "@Dtor57cfa0_DeletingDestructor@12")
+// [$L_5893b0] forwards to Dtor57cfa0_DeletingDestructor for the object 256 bytes before
+extern "C" int __fastcall Thunk5893b0(BYTE* s, void* d, int a0) { return q198_Dtor57cfa0_DeletingDestructor(s - 256, d, a0); }

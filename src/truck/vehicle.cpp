@@ -2880,3 +2880,13 @@ extern "C" double __fastcall CarEffect_Curve(BYTE* s, void*, float* a, float* b)
     *b = 0;
     return g_q158_64c264;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Car_HasInput(BYTE* s); KING_ALIAS("@q198_Car_HasInput@4", "@Car_HasInput@4")
+extern "C" int __fastcall q198_Dtor543de0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor543de0_DeletingDestructor@12", "@Dtor543de0_DeletingDestructor@12")
+// [$L_5574e0] forwards to Dtor543de0_DeletingDestructor for the object 16 bytes before
+extern "C" int __fastcall Thunk5574e0(BYTE* s, void* d, int a0) { return q198_Dtor543de0_DeletingDestructor(s - 16, d, a0); }
+// [$L_55e4a0] forwards to Car_HasInput
+extern "C" int __fastcall Thunk55e4a0(BYTE* s) { return q198_Car_HasInput(s); }

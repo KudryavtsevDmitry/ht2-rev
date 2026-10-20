@@ -4947,3 +4947,10 @@ extern "C" int __cdecl Cmp4cce30_Desc(const BYTE* a, const BYTE* b)
         return -1;
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor4d25d0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor4d25d0_DeletingDestructor@12", "@Dtor4d25d0_DeletingDestructor@12")
+// [$L_4d9370] forwards to Dtor4d25d0_DeletingDestructor for the object 16 bytes before
+extern "C" int __fastcall Thunk4d9370(BYTE* s, void* d, int a0) { return q198_Dtor4d25d0_DeletingDestructor(s - 16, d, a0); }

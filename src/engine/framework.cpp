@@ -3830,3 +3830,10 @@ extern "C" void __fastcall Sphere_Merge(float* s, void*, const float* b)
     float e[3] = {(float)(p1x - p2x), (float)(p1y - p2y), (float)(p1z - p2z)};
     s[3] = (float)(CallC<double>(FUN_5ab4d0, e) * h);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor5d88e0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor5d88e0_DeletingDestructor@12", "@Dtor5d88e0_DeletingDestructor@12")
+// [$L_5e5570] forwards to Dtor5d88e0_DeletingDestructor for the object 64 bytes before
+extern "C" int __fastcall Thunk5e5570(BYTE* s, void* d, int a0) { return q198_Dtor5d88e0_DeletingDestructor(s - 64, d, a0); }

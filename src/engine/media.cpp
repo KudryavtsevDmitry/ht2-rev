@@ -2811,3 +2811,14 @@ extern "C" void __cdecl Swing_Quarters(float t, float a, float b, float* p0, flo
     *p[(6 - i) & 3] = (float)(c * a * g_q189_651c98);
     *p[(7 - i) & 3] = (float)(c * b * g_q188_651c90);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor5c6060_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor5c6060_DeletingDestructor@12", "@Dtor5c6060_DeletingDestructor@12")
+extern "C" int __fastcall q198_Dtor5cf2f0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor5cf2f0_DeletingDestructor@12", "@Dtor5cf2f0_DeletingDestructor@12")
+extern "C" int __fastcall q198_MappedFile_Close(BYTE* s); KING_ALIAS("@q198_MappedFile_Close@4", "@MappedFile_Close@4")
+// [$L_5c63b0] forwards to Dtor5c6060_DeletingDestructor for the object 256 bytes before
+extern "C" int __fastcall Thunk5c63b0(BYTE* s, void* d, int a0) { return q198_Dtor5c6060_DeletingDestructor(s - 256, d, a0); }
+// [$L_5cf470] forwards to Dtor5cf2f0_DeletingDestructor for the object 32 bytes before
+extern "C" int __fastcall Thunk5cf470(BYTE* s, void* d, int a0) { return q198_Dtor5cf2f0_DeletingDestructor(s - 32, d, a0); }

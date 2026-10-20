@@ -1502,6 +1502,7 @@ PUBLIC $L_64c348, $L_64d494, $L_651c84, $L_651c88, $L_651c8c, $L_651c90
 PUBLIC $L_651c94
 PUBLIC $L_651c64, $L_651c98, $L_651c9c
 PUBLIC $L_68321c, $L_683c60, $L_683c68, $L_683c70
+PUBLIC $L_6508a0
 
 ;===================================
 _TEXT SEGMENT
@@ -3689,11 +3690,17 @@ $L_401ec0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401ed0 PROC
 
             mov ECX,OFFSET $L_68cf00
             jmp FUN_447970
 $L_401ed0 ENDP
+ELSE
+EXTERN _Static68cf00_Destroy:PROC
+$L_401ed0 TEXTEQU <_Static68cf00_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4342,11 +4349,17 @@ $L_402140 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402150 PROC
 
             mov ECX,OFFSET $L_68cbe8
             jmp FUN_447970
 $L_402150 ENDP
+ELSE
+EXTERN _Static68cbe8_Destroy:PROC
+$L_402150 TEXTEQU <_Static68cbe8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -147371,11 +147384,17 @@ ELSE
 EXTERN @Ai455620_Forward@32:PROC
 $L_455620 TEXTEQU <@Ai455620_Forward@32>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_455650 PROC
 
             add ECX,56
             jmp $L_48d670
 $L_455650 ENDP
+ELSE
+EXTERN @Thunk455650@4:PROC
+$L_455650 TEXTEQU <@Thunk455650@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -388570,11 +388589,17 @@ $L_4d9364::
             ret 
 FUN_4d90c0 ENDP
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d9370 PROC
 
             sub ECX,16
             jmp $L_4d25d0
 $L_4d9370 ENDP
+ELSE
+EXTERN @Thunk4d9370@12:PROC
+$L_4d9370 TEXTEQU <@Thunk4d9370@12>
+ENDIF
 $L_4d9378 PROC
 
             int 3
@@ -512780,11 +512805,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_52abf0 PROC
 
             sub ECX,64
             jmp $L_51aad0
 $L_52abf0 ENDP
+ELSE
+EXTERN @Thunk52abf0@12:PROC
+$L_52abf0 TEXTEQU <@Thunk52abf0@12>
+ENDIF
 $L_52abf8 PROC
 
             int 3
@@ -517891,10 +517922,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52e210 PROC
 
             jmp FUN_580ce0
 $L_52e210 ENDP
+ELSE
+EXTERN @Thunk52e210@4:PROC
+$L_52e210 TEXTEQU <@Thunk52e210@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -519979,11 +520016,17 @@ $L_52efbd ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52f4b0 PROC
 
             sub ECX,256
             jmp $L_52b6d0
 $L_52f4b0 ENDP
+ELSE
+EXTERN @Thunk52f4b0@12:PROC
+$L_52f4b0 TEXTEQU <@Thunk52f4b0@12>
+ENDIF
 $L_52f4bb PROC
 
             int 3
@@ -576697,11 +576740,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_5574e0 PROC
 
             sub ECX,16
             jmp $L_543de0
 $L_5574e0 ENDP
+ELSE
+EXTERN @Thunk5574e0@12:PROC
+$L_5574e0 TEXTEQU <@Thunk5574e0@12>
+ENDIF
 $L_5574e8 PROC
 
             int 3
@@ -585303,10 +585352,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_55e4a0 PROC
 
             jmp $L_555e50
 $L_55e4a0 ENDP
+ELSE
+EXTERN @Thunk55e4a0@4:PROC
+$L_55e4a0 TEXTEQU <@Thunk55e4a0@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -624044,11 +624099,17 @@ FUN_576c00 TEXTEQU <@Obj576c00_DeletingDestructor@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_576c20 PROC
 
             sub ECX,256
             jmp $L_573870
 $L_576c20 ENDP
+ELSE
+EXTERN @Thunk576c20@12:PROC
+$L_576c20 TEXTEQU <@Thunk576c20@12>
+ENDIF
 $L_576c2b PROC
 
             int 3
@@ -651043,11 +651104,17 @@ $L_58938c           DWORD $L_5880b3
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 $L_5893b0 PROC
 
             sub ECX,256
             jmp $L_57cfa0
 $L_5893b0 ENDP
+ELSE
+EXTERN @Thunk5893b0@12:PROC
+$L_5893b0 TEXTEQU <@Thunk5893b0@12>
+ENDIF
 $L_5893bb PROC
 
             int 3
@@ -664461,11 +664528,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_592b40 PROC
 
             sub ECX,256
             jmp $L_58b700
 $L_592b40 ENDP
+ELSE
+EXTERN @Thunk592b40@12:PROC
+$L_592b40 TEXTEQU <@Thunk592b40@12>
+ENDIF
 $L_592b4b PROC
 
             int 3
@@ -665192,11 +665265,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_592ed0 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_6508a0
             jmp FUN_592ee0
 $L_592ed0 ENDP
+ELSE
+EXTERN @Thunk592ed0@8:PROC
+$L_592ed0 TEXTEQU <@Thunk592ed0@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -668442,11 +668521,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_594db0 PROC
 
             sub ECX,32
             jmp $L_593650
 $L_594db0 ENDP
+ELSE
+EXTERN @Thunk594db0@12:PROC
+$L_594db0 TEXTEQU <@Thunk594db0@12>
+ENDIF
 $L_594db8 PROC
 
             int 3
@@ -668502,11 +668587,17 @@ $L_594de0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_594df0 PROC
 
             mov ECX,OFFSET $L_6f68b0
             jmp $L_5975b0
 $L_594df0 ENDP
+ELSE
+EXTERN _Static6f68b0_Destroy:PROC
+$L_594df0 TEXTEQU <_Static6f68b0_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -691425,11 +691516,17 @@ $L_5a3b50::
             add ESP,16
             ret 
 FUN_5a37f0 ENDP
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_5a3d40 PROC
 
             sub ECX,20
             jmp $L_5a3320
 $L_5a3d40 ENDP
+ELSE
+EXTERN @Thunk5a3d40@12:PROC
+$L_5a3d40 TEXTEQU <@Thunk5a3d40@12>
+ENDIF
 $L_5a3d48 PROC
 
             int 3
@@ -703308,11 +703405,17 @@ $L_5ab0a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5ab0c0 PROC
 
             sub ECX,32
             jmp $L_5a5250
 $L_5ab0c0 ENDP
+ELSE
+EXTERN @Thunk5ab0c0@12:PROC
+$L_5ab0c0 TEXTEQU <@Thunk5ab0c0@12>
+ENDIF
 $L_5ab0c8 PROC
 
             int 3
@@ -734793,11 +734896,17 @@ FUN_5bd2d0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 $L_5bd550 PROC
 
             sub ECX,16
             jmp $L_5bcf40
 $L_5bd550 ENDP
+ELSE
+EXTERN @Thunk5bd550@12:PROC
+$L_5bd550 TEXTEQU <@Thunk5bd550@12>
+ENDIF
 $L_5bd558 PROC
 
             int 3
@@ -752727,11 +752836,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c63b0 PROC
 
             sub ECX,256
             jmp $L_5c6060
 $L_5c63b0 ENDP
+ELSE
+EXTERN @Thunk5c63b0@12:PROC
+$L_5c63b0 TEXTEQU <@Thunk5c63b0@12>
+ENDIF
 $L_5c63bb PROC
 
             int 3
@@ -765811,11 +765926,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5cf470 PROC
 
             sub ECX,32
             jmp $L_5cf2f0
 $L_5cf470 ENDP
+ELSE
+EXTERN @Thunk5cf470@12:PROC
+$L_5cf470 TEXTEQU <@Thunk5cf470@12>
+ENDIF
 $L_5cf478 PROC
 
             int 3
@@ -808988,11 +809109,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5e5570 PROC
 
             sub ECX,64
             jmp $L_5d88e0
 $L_5e5570 ENDP
+ELSE
+EXTERN @Thunk5e5570@12:PROC
+$L_5e5570 TEXTEQU <@Thunk5e5570@12>
+ENDIF
 $L_5e5578 PROC
 
             int 3
@@ -829306,11 +829433,17 @@ $L_5ef4a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ef4b0 PROC
 
             mov ECX,OFFSET $L_723978
             jmp FUN_5ef450
 $L_5ef4b0 ENDP
+ELSE
+EXTERN _Static723978_Destroy:PROC
+$L_5ef4b0 TEXTEQU <_Static723978_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

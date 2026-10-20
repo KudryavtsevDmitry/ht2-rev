@@ -1280,3 +1280,18 @@ extern "C" void __fastcall Body_HitAt(BYTE* s, void*, const float* p, const floa
     q[2] = (float)(m[2] * p[0] + m[5] * p[1] + m[8] * p[2] + m[11]);
     CallC(FUN_5ab400, out, q);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+ASM_VAR(char, g_q198_6508a0, $L_6508a0)
+extern "C" int __fastcall q198_Chain_DeleteAll(BYTE* s, void* d); KING_ALIAS("@q198_Chain_DeleteAll@8", "@Chain_DeleteAll@8")
+extern "C" int __fastcall q198_Dtor58b700_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor58b700_DeletingDestructor@12", "@Dtor58b700_DeletingDestructor@12")
+// [$L_592b40] forwards to Dtor58b700_DeletingDestructor for the object 256 bytes before
+extern "C" int __fastcall Thunk592b40(BYTE* s, void* d, int a0) { return q198_Dtor58b700_DeletingDestructor(s - 256, d, a0); }
+// [$L_592ed0] sets the vtable 6508a0, then Chain_DeleteAll
+extern "C" int __fastcall Thunk592ed0(BYTE* s, void* d)
+{
+    F(void*, s, 0) = &g_q198_6508a0;
+    return q198_Chain_DeleteAll(s, d);
+}
