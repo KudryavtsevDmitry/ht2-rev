@@ -2529,3 +2529,20 @@ extern "C" void __fastcall Clip_Interpolate(BYTE* s, void*, int flags, int* out,
         w[k] = (float)((w[j] - w[i]) * t + w[i]);
     F(int, s, 1932)++;
 }
+
+// [$L_5ae880] nothing to do
+extern "C" void __fastcall Ren5ae880_Nop(BYTE*) {}
+// [$L_5ae890] nothing to do
+extern "C" void __fastcall Ren5ae890_Nop(BYTE*) {}
+// [$L_5b2940] nothing to do
+extern "C" void __fastcall Ren5b2940_Nop(BYTE*) {}
+// [$L_5b3000] nothing to do
+extern "C" void __fastcall Ren5b3000_Nop(BYTE*) {}
+// [$L_5b3990] nothing to do
+extern "C" void __fastcall Ren5b3990_Nop(BYTE*) {}
+// [$L_5baa20] clears +184
+extern "C" BYTE* __fastcall Ren5baa20_Init(BYTE* s)
+{
+    F(int, s, 184) = 0;
+    return s;
+}

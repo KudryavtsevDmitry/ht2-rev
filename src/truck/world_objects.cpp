@@ -2141,3 +2141,15 @@ extern "C" int __fastcall Thunk594db0(BYTE* s, void* d, int a0) { return q198_Dt
 extern "C" void __cdecl Static6f68b0_Destroy(void) { q198_Wasm5975b0_FreeParts((BYTE*)&g_q198_6f68b0, 0); }
 // [$L_5a3d40] forwards to WObj5a3320_VecDeletingDestructor for the object 20 bytes before
 extern "C" int __fastcall Thunk5a3d40(BYTE* s, void* d, int a0) { return q198_WObj5a3320_VecDeletingDestructor(s - 20, d, a0); }
+
+ASM_VAR(char, g_q199_650334, $L_650334)
+// [$L_59a010] nothing to do
+extern "C" void __fastcall WObj59a010_Nop(BYTE*) {}
+// [$L_59a020] nothing to do
+extern "C" void __fastcall WObj59a020_Nop(BYTE*) {}
+// [$L_59a970] the base part: vtable 650334, +4 cleared
+extern "C" void __fastcall WObj59a970_Init(BYTE* s)
+{
+    F(void*, s, 0) = &g_q199_650334;
+    F(int, s, 4) = 0;
+}

@@ -2890,3 +2890,33 @@ extern "C" int __fastcall q198_Dtor543de0_DeletingDestructor(BYTE* s, void* d, i
 extern "C" int __fastcall Thunk5574e0(BYTE* s, void* d, int a0) { return q198_Dtor543de0_DeletingDestructor(s - 16, d, a0); }
 // [$L_55e4a0] forwards to Car_HasInput
 extern "C" int __fastcall Thunk55e4a0(BYTE* s) { return q198_Car_HasInput(s); }
+
+ASM_VAR(float, g_q199_64c938, $L_64c938)
+ASM_VAR(float, g_q199_64c264, $L_64c264)
+// [$L_548120] marks car s (+9616)
+extern "C" void __fastcall Car_SetFlag9616(BYTE* s) { F(int, s, 9616) = 1; }
+// [$L_54d830] o's method 72 with a
+extern "C" int __cdecl Obj_Call72(int a, BYTE* o) { return CallVirt<int>(o, 72, a); }
+// [FUN_5565f0] the hold's value +9576, 64c938 without a hold
+extern "C" float __fastcall Car_HoldValue(BYTE* s)
+{
+    if (!F(int, s, 9600))
+        return g_q199_64c938;
+    return F(float, s, 9576);
+}
+// [$L_556770] the cargo's load (+24)
+extern "C" float __fastcall Cargo_Load(BYTE* c) { return F(float, c, 24); }
+// [FUN_556610] the hold's load, 0 without a hold
+extern "C" float __fastcall Car_HoldLoad(BYTE* s)
+{
+    if (!F(int, s, 9600))
+        return g_q199_64c264;
+    return Cargo_Load(s + 9556);
+}
+// [FUN_556630] the hold's value +9592, 0 without a hold
+extern "C" float __fastcall Car_HoldValue2(BYTE* s)
+{
+    if (!F(int, s, 9600))
+        return g_q199_64c264;
+    return F(float, s, 9592);
+}

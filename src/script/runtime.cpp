@@ -1530,3 +1530,13 @@ extern "C" int __cdecl Static490d50_Init(void)
     CallC(q197_FUN_490d60);
     return Static490d50_AtExit();
 }
+
+extern "C" void FUN_490c00(); KING_ALIAS("_FUN_490c00", "_Save_SkipBlock")
+ASM_VAR(char, g_q199_64bee4, $L_64bee4)
+// [$L_489760] skips the rest of the load block (the stream at *s[0], start, size)
+extern "C" int __fastcall LoadBlock_Skip(BYTE* s)
+{
+    return CallC<int>(FUN_490c00, *F(int*, s, 0), F(int, s, 4), F(int, s, 8));
+}
+// [$L_4913f0] sets the base vtable 64bee4
+extern "C" void __fastcall Run4913f0_SetVtbl(BYTE* s) { F(void*, s, 0) = &g_q199_64bee4; }

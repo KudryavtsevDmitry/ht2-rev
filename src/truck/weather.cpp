@@ -1047,3 +1047,16 @@ extern "C" void __cdecl Sky_Color(float x, float a2, float t, float* out, BYTE* 
 extern "C" int __fastcall q198_Dtor5a5250_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor5a5250_DeletingDestructor@12", "@Dtor5a5250_DeletingDestructor@12")
 // [$L_5ab0c0] forwards to Dtor5a5250_DeletingDestructor for the object 32 bytes before
 extern "C" int __fastcall Thunk5ab0c0(BYTE* s, void* d, int a0) { return q198_Dtor5a5250_DeletingDestructor(s - 32, d, a0); }
+
+// [$L_5a72c0] clears the seven words of s
+extern "C" BYTE* __fastcall Wea5a72c0_Init(BYTE* s)
+{
+    F(int, s, 0) = 0;
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 12) = 0;
+    F(int, s, 24) = 0;
+    F(int, s, 20) = 0;
+    return s;
+}
