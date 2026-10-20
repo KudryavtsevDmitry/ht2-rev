@@ -724,7 +724,7 @@ extern "C" BYTE* __fastcall Sta4e1db0_DeletingDestructor(BYTE* s, void*, int fla
 
 extern "C" void FUN_4e24ca(); KING_ALIAS("_FUN_4e24ca", "_Static6974a8_Init")
 ASM_PROC(FUN_5dfa90)
-ASM_PROC(FUN_5dff20)
+extern "C" void FUN_5dff20(); KING_ALIAS("_FUN_5dff20", "_Matrix_Angles@16")
 ASM_PROC(FUN_5de600)
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 extern "C" void FUN_4eb230(); KING_ALIAS("_FUN_4eb230", "_Tables_Clear697608")

@@ -3582,3 +3582,76 @@ extern "C" void __fastcall World_Reset(BYTE* s)
     CallVirt(s, 120);
     F(int, s, 3024) = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Rendering a frame; camera angles.
+
+ASM_PROC(FUN_5de950)
+ASM_PROC(FUN_5df3d0)
+extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
+extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
+extern "C" void FUN_5aea50(); KING_ALIAS("_FUN_5aea50", "@Render_EndFrame@8")
+extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
+extern "C" void FUN_5d96c0(); KING_ALIAS("_FUN_5d96c0", "@Fw_LoadRoom@16")
+ASM_VAR(double, g_q130_71f7f8, $L_71f7f8)
+ASM_VAR(double, g_q130_71f808, $L_71f808)
+ASM_VAR(double, g_q130_720020, $L_720020)
+struct Fw130_M { DWORD v[12]; };
+// [FUN_5da080] renders a frame of view s with a room (+488): the timers cleared, the frame number (camera +148)
+// passed to the renderer (+464), the three draw passes (vtbl+104, +100, +108); the times of the passes kept in
+// +496, +504, +512
+extern "C" void __fastcall View_RenderFrame(BYTE* s)
+{
+    if (!F(BYTE*, s, 488))
+        return;
+    CallThis(FUN_5b6ed0, F(BYTE*, s, 12));
+    g_q130_71f808 = 0;
+    g_q130_71f7f8 = 0;
+    g_q130_720020 = 0;
+    F(int, F(BYTE*, s, 464), 8452) = F(int, F(BYTE*, s, 468), 148);
+    F(int, F(BYTE*, s, 468), 148)++;
+    CallC(FUN_5b6180);
+    CallThis(FUN_5ae9b0, F(BYTE*, s, 464), -1);
+    CallVirt(s, 104);
+    CallVirt(s, 100);
+    CallVirt(s, 108);
+    CallThis(FUN_5aea50, F(BYTE*, s, 464));
+    CallC(FUN_5b6190);
+    F(double, s, 496) = g_q130_71f808 * g_q105_64b658;
+    F(double, s, 504) = g_q130_71f7f8 * g_q105_64b658;
+    F(double, s, 512) = g_q130_720020 * g_q105_64b658;
+}
+
+// [FUN_5dff20] the angles of matrix m: heading, and pitch and roll negated
+extern "C" void __stdcall Matrix_Angles(const Fw130_M* m, float* h, float* p, float* r)
+{
+    double d[6];
+    CallC(FUN_5de950, *m, d + 5, d + 4, d + 3, d, d + 1, d + 2);
+    *h = (float)d[0];
+    *p = (float)-d[1];
+    *r = (float)-d[2];
+}
+
+// [FUN_5e02f0] places the camera of view s: with a room (+488) the camera node (+616) gets the matrix +652, the
+// room its distances (+3048, +3056) and the view its room (+700, or loaded from the room's names); the camera
+// position (+2904..) goes to +568 and +580 as floats
+extern "C" void __fastcall View_PlaceCamera(BYTE* s)
+{
+    if (F(BYTE*, s, 488)) {
+        CallThis(FUN_5f2190, F(BYTE*, s, 616), s + 652, 0);
+        F(float, F(BYTE*, s, 488), 88) = (float)F(double, s, 3048);
+        F(float, F(BYTE*, s, 488), 84) = (float)F(double, s, 3056);
+        CallThis(FUN_5df3d0, s, s + 652);
+        if (!F(int, s, 700))
+            CallThis(FUN_5d96c0, s, F(BYTE*, s, 488) + 12, F(BYTE*, s, 488) + 44);
+        else
+            F(int, F(BYTE*, s, 488), 76) = F(int, s, 700);
+    }
+    float x = (float)F(double, s, 2904), y = (float)F(double, s, 2912), z = (float)F(double, s, 2920);
+    F(float, s, 568) = x;
+    F(float, s, 580) = x;
+    F(float, s, 572) = y;
+    F(float, s, 584) = y;
+    F(float, s, 576) = z;
+    F(float, s, 588) = z;
+}
