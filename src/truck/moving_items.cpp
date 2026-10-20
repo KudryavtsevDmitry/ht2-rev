@@ -656,3 +656,25 @@ extern "C" void __fastcall MovingItem_StepEnd(BYTE* s, void*, int flags)
     CallVirt(s, 164, w, v);
     CallVirt(s, 116);
 }
+
+extern "C" void FUN_4e2749(); KING_ALIAS("_FUN_4e2749", "_Game_FrameTime")
+extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")
+ASM_VAR(AsmLabel, s_q173_67d494, $L_67d494)
+// [FUN_580ce0] moves item s by its velocity (+788..+796) over the frame time, keeps the frame's move (+3148) and
+// spin (+3160, from +428) and checks the new position against the world
+extern "C" void __fastcall MovingItem_Fly(BYTE* s)
+{
+    double dt = CallC<double>(FUN_4e2749);
+    double a = dt * F(float, s, 788);
+    float b = (float)(dt * F(float, s, 792));
+    float c = (float)(dt * F(float, s, 796));
+    float* p = (float*)(s + 416);
+    p[0] = (float)(a + p[0]);
+    p[1] = (float)(b + p[1]);
+    p[2] = (float)(c + p[2]);
+    for (int k = 0; k < 3; k++)
+        F(float, s, 3148 + k * 4) = (float)(dt * p[k]);
+    for (int k = 0; k < 3; k++)
+        F(float, s, 3160 + k * 4) = (float)(dt * F(float, s, 428 + k * 4));
+    CallC(FUN_4e2821, p, (const char*)s_q173_67d494, 150.0f);
+}
