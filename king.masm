@@ -723524,6 +723524,8 @@ $L_5b7cc8::
             nop
 FUN_5b7af0 ENDP
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b7ce0 PROC
 
             push EBX
@@ -723826,6 +723828,10 @@ $L_5b7f17::
             pop EBX
             ret 
 FUN_5b7ce0 ENDP
+ELSE
+EXTERN _Surface_HLine:PROC
+FUN_5b7ce0 TEXTEQU <_Surface_HLine>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

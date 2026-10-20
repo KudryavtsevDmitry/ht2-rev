@@ -93,7 +93,7 @@ int __cdecl strcmp(const char* a, const char* b);
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // Timer_Now
 extern "C" void FUN_5b6180(); KING_ALIAS("_FUN_5b6180", "_Device_BeginScene")    // Gfx_BeginScene
 extern "C" void FUN_5b6190(); KING_ALIAS("_FUN_5b6190", "_Device_WaitIdle")    // Gfx_EndScene
-ASM_PROC(FUN_5b7ce0)    // Gfx_HLine
+extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")    // Gfx_HLine
 ASM_PROC(FUN_5b7f20)    // Gfx_VLine
 ASM_PROC(FUN_5b8980)    // Gfx_DrawImage
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // Gfx_DrawText

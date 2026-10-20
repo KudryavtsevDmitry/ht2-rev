@@ -40,7 +40,7 @@ ASM_PROC(FUN_5b6f90)    // fills a rectangle
 ASM_PROC(FUN_5b8980)    // draws a pattern
 ASM_PROC(FUN_5b9020)    // tiles a bitmap
 ASM_PROC(FUN_5b7f20)    // vertical line
-ASM_PROC(FUN_5b7ce0)    // horizontal line
+extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")    // horizontal line
 extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);   // framework.cpp
 extern "C" int __fastcall Window_Set80(BYTE* self, void*, int v);               // renderer.cpp
 extern "C" void __cdecl Bitmap_Draw(BYTE* dst, int x, int y, BYTE* bmp);       // renderer.cpp
