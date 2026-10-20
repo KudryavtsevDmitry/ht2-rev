@@ -492,7 +492,7 @@ BYTE* __fastcall Body58b720_Construct(BYTE* self, void*, int a1, int a2, int a3,
 
 #include <string.h>
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
-ASM_PROC(FUN_587c80)
+extern "C" void FUN_587c80(); KING_ALIAS("_FUN_587c80", "@Track587c80_Construct@4")
 
 // [FUN_592a20] the deepest flagged contact of a body: its points, normal and plane into out, its depth to *depth
 extern "C" int __cdecl Body_DeepestContact(BYTE* obj, BYTE* out, float* depth)

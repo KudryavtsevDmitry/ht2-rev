@@ -224,7 +224,7 @@ void __fastcall RoomObjects_Clear(BYTE* self, void*)
 }
 
 ASM_PROC(FUN_60bbb0)
-ASM_PROC(FUN_5f4a90)
+extern "C" void FUN_5f4a90(); KING_ALIAS("_FUN_5f4a90", "@Value_Free@4")
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 ASM_VAR(char, g_vtbl6532ec, $L_6532ec)
 ASM_VAR(char, g_vtbl653308, $L_653308)

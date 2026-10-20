@@ -31,7 +31,7 @@ ASM_PROC(FUN_5f2a40)
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // base node constructor (name, kind)
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
-ASM_PROC(FUN_5f4a90)
+extern "C" void FUN_5f4a90(); KING_ALIAS("_FUN_5f4a90", "@Value_Free@4")
 extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 ASM_VAR(AsmLabel, g_dtor5a3df0, $L_5a3df0)
@@ -1923,5 +1923,27 @@ extern "C" void __cdecl Slots723aa8_Destroy(int i)
     if (o) {
         CallVirt(o, 0);
         (&g_q52_723aa8)[i] = 0;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Freeing a typed value.
+
+extern "C" void Sce108_VecDtor(); KING_ALIAS("_Sce108_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_PROC($L_5f4b20)
+// [FUN_5f4a90] frees the data (+8) of value s by its type (+0): 1-5 and 7 a plain block, 6 an array of 48-byte
+// records (count before it) each freeing its +4
+extern "C" void __fastcall Value_Free(int* s)
+{
+    switch (s[0]) {
+    case 1: case 2: case 3: case 4: case 5: case 7:
+        operator delete((void*)s[2]);
+        break;
+    case 6:
+        if (BYTE* p = (BYTE*)s[2]) {
+            CallStd(Sce108_VecDtor, p, 48, F(int, p, -4), $L_5f4b20);
+            operator delete(p - 4);
+        }
+        break;
     }
 }

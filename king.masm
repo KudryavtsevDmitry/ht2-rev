@@ -648150,6 +648150,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 FUN_587c80 PROC
 
             sub ESP,8
@@ -648270,6 +648272,10 @@ $L_587d09::
             add ESP,8
             ret 
 FUN_587c80 ENDP
+ELSE
+EXTERN @Track587c80_Construct@4:PROC
+FUN_587c80 TEXTEQU <@Track587c80_Construct@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -838308,6 +838314,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f4a90 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -838399,6 +838407,19 @@ $L_5f4b20::
             pop ECX
             ret 
 FUN_5f4a90 ENDP
+ELSE
+EXTERN @Value_Free@4:PROC
+FUN_5f4a90 TEXTEQU <@Value_Free@4>
+; the element destructor that shares the original's code stays in assembly
+PUBLIC $L_5f4b20
+$L_5f4b20 PROC
+            mov EAX,DWORD PTR [ECX+4]
+            push EAX
+            call ??3@YAXPAX@Z
+            pop ECX
+            ret 
+$L_5f4b20 ENDP
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
