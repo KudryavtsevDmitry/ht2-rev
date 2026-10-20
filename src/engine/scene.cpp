@@ -2085,3 +2085,73 @@ extern "C" int __fastcall SceneNode5fcaf0_Pass(BYTE* s, void*, void* a)
     CallVirt(s, 20, 0, a);
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Drawing animated and transformed nodes.
+
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+ASM_VAR(BYTE*, g_q140_723a94, $L_723a94)
+ASM_VAR(int, g_q140_723a50, $L_723a50)
+ASM_VAR(int, g_q140_723a48, $L_723a48)
+ASM_VAR(int, g_q140_723a8c, $L_723a8c)
+ASM_VAR(BYTE*, g_q140_723a90, $L_723a90)
+// [$L_5f2f40] draws animated node s through view b: like 5f4170, with the node's texture animation published
+// while its slots draw (723a94 the node, 723a50 its kind +108, 723a48 +60, 723a8c/723a90 the frame and its
+// table +72 for kinds 1-3) and its +64/+68 passed to the view
+extern "C" int __fastcall SceneNode5f2f40_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
+{
+    BYTE m[48];
+    memcpy(m, (BYTE*)g_q109_7025f0, 48);
+    g_q140_723a94 = s;
+    if (!CallThis<int>(FUN_5ef800, s, a, b))
+        return 0;
+    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, 112), m);
+    CallThis(FUN_5ae580, b, m, w);
+    F(int, b, 8252) = F(int, s, 64);
+    F(int, b, 8256) = F(int, s, 68);
+    g_q140_723a50 = F(int, s, 108);
+    g_q140_723a48 = F(int, s, 60);
+    switch (F(int, s, 108)) {
+    case 1:
+    case 3:
+        g_q140_723a8c = F(int, s, 100);
+        g_q140_723a90 = s + 72;
+        break;
+    case 2:
+        g_q140_723a8c = F(int, s, 96);
+        g_q140_723a90 = s + 72;
+        break;
+    default:
+        g_q140_723a8c = 0;
+        g_q140_723a90 = 0;
+    }
+    if (CallThis<int>(FUN_5b4fc0, b, s + 20))
+        CallThis(FUN_5f2080, s, 0, a, b);
+    g_q140_723a8c = 0;
+    g_q140_723a48 = 0;
+    g_q140_723a50 = 0;
+    g_q140_723a90 = 0;
+    g_q140_723a94 = 0;
+    CallThis(FUN_5ae8a0, b);
+    return 1;
+}
+
+extern "C" void FUN_5ef820(); KING_ALIAS("_FUN_5ef820", "@Obj_Flag0Clear@24")
+extern "C" void FUN_5f2100(); KING_ALIAS("_FUN_5f2100", "@Slots_Call56@28")
+// [$L_5f3060] draws transform node s for (a1, matrix m, a3, view b) when its test passes: m becomes the node's
+// world matrix times a3 while its slots draw, then is restored; 1 after a passed test
+extern "C" int __fastcall SceneNode5f3060_Draw(BYTE* s, void*, void* a1, BYTE* m, BYTE* a3, BYTE* b)
+{
+    BYTE w1[48], saved[48], t[48];
+    memcpy(w1, (BYTE*)g_q109_7025f0, 48);
+    if (!CallThis<int>(FUN_5ef820, s, a1, m, a3, b))
+        return 0;
+    BYTE* w = CallThis<BYTE*>(FUN_5f25c0, F(BYTE*, s, 112), w1);
+    memcpy(saved, m, 48);
+    memcpy(m, CallC<BYTE*>(FUN_5aba40, t, w1, a3), 48);
+    CallThis(FUN_5ae580, b, w1, w);
+    CallThis(FUN_5f2100, s, 0, a1, m, a3, b);
+    CallThis(FUN_5ae8a0, b);
+    memcpy(m, saved, 48);
+    return 1;
+}
