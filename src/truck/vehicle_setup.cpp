@@ -549,3 +549,14 @@ extern "C" void __fastcall Car_StartEngine(BYTE* self, void*)
     F(float, self, 7300) = (float)CallThis<double>(FUN_4eaf98, self + 6992);
 }
 
+
+// ---------------------------------------------------------------------------
+// Small setup procs: static vectors, a light array, the race start, a stream read.
+
+extern "C" void Is_ExtractText(); KING_ALIAS("_Is_ExtractText", "??5istream@@QAEAAV0@PAD@Z")
+// [FUN_507ab0] reads a word from the stream into buf: 1 unless the stream failed (state bits 2, 4)
+extern "C" int __cdecl Stream_ReadWord(BYTE* is, char* buf)
+{
+    BYTE* r = CallThis<BYTE*>(Is_ExtractText, is, buf);
+    return (F(int, r + F(int, F(BYTE*, r, 0), 4), 8) & 6) == 0;
+}

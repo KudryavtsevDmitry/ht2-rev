@@ -734,7 +734,7 @@ extern "C" void FUN_557510(); KING_ALIAS("_FUN_557510", "_Car_ClearGlobals6ef2b8
 ASM_PROC(FUN_578100)
 ASM_PROC(FUN_4e35cf)
 ASM_PROC(FUN_4e0280)
-ASM_PROC(FUN_53fcf0)
+extern "C" void FUN_53fcf0(); KING_ALIAS("_FUN_53fcf0", "_Race_Start")
 extern "C" void FUN_52ad30(); KING_ALIAS("_FUN_52ad30", "_Cars_LoadCollision")
 ASM_PROC(FUN_5c5370)
 ASM_PROC(FUN_4b9570)

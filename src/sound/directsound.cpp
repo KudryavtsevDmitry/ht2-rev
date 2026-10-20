@@ -873,3 +873,23 @@ extern "C" void __cdecl Cpu_ReadTsc(unsigned* t)
     t[0] = (unsigned)v;
     t[1] = (unsigned)(v >> 32);
 }
+
+// ---------------------------------------------------------------------------
+// Small setup procs: static vectors, a light array, the race start, a stream read.
+
+ASM_PROC(FUN_604e10)
+extern "C" void FUN_603ff0(); KING_ALIAS("_FUN_603ff0", "_Mixer_Clear724120")
+extern "C" void FUN_605090(); KING_ALIAS("_FUN_605090", "_Mixer_Stop")
+extern "C" void FUN_6050b0(); KING_ALIAS("_FUN_6050b0", "_Mixer_SetVolume")
+ASM_VAR(int, g_q48_72418c, $L_72418c)
+ASM_VAR(int, g_q48_6843fc, $L_6843fc)
+// [FUN_605050] shuts the mixer down: 604e10, clears it, sets the 72418c volume keeping 6843fc, stops it
+extern "C" void __cdecl Mixer_Shutdown(void)
+{
+    CallC(FUN_604e10);
+    CallC(FUN_603ff0);
+    int keep = g_q48_6843fc;
+    CallC(FUN_6050b0, g_q48_72418c);
+    g_q48_6843fc = keep;
+    CallC(FUN_605090);
+}

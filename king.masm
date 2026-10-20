@@ -1425,6 +1425,7 @@ PUBLIC $L_677f64, $L_677f70, $L_677f7c, $L_677f88, $L_677f94, $L_677fac
 PUBLIC $L_677fc4, $L_677fdc, $L_677ff4, $L_678008
 PUBLIC $L_651568, $L_652a08, $L_722940, $L_723190, $L_723978
 PUBLIC $L_651628, $L_652f24, $L_6974a8, $L_6ef200, $L_723d38, $L_724f04
+PUBLIC $L_696e28, $L_696e38, $L_72418c
 
 ;===================================
 _TEXT SEGMENT
@@ -406121,6 +406122,8 @@ ELSE
 EXTERN _World_4e4ae5:PROC
 $L_4e4ae5 TEXTEQU <_World_4e4ae5>
 ENDIF
+; src/world.cpp, nmake ASM_WORLD=1 assembles the original
+IFDEF ASM_WORLD
 FUN_4e4aef PROC
 
             push EBP
@@ -406152,6 +406155,10 @@ FUN_4e4aef PROC
             pop EBP
             ret 
 FUN_4e4aef ENDP
+ELSE
+EXTERN _World_InitSideDirections:PROC
+FUN_4e4aef TEXTEQU <_World_InitSideDirections>
+ENDIF
 $L_4e4b3d PROC
 
             push EBP
@@ -455744,6 +455751,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_507ab0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -455760,6 +455769,10 @@ FUN_507ab0 PROC
             inc EAX
             ret 
 FUN_507ab0 ENDP
+ELSE
+EXTERN _Stream_ReadWord:PROC
+FUN_507ab0 TEXTEQU <_Stream_ReadWord>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_507ad0 PROC
@@ -542081,6 +542094,8 @@ EXTERN @Car_53fcd0@12:PROC
 FUN_53fcd0 TEXTEQU <@Car_53fcd0@12>
 ENDIF
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_53fcf0 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -542107,6 +542122,10 @@ FUN_53fcf0 PROC
             pop ESI
             ret 
 FUN_53fcf0 ENDP
+ELSE
+EXTERN _Race_Start:PROC
+FUN_53fcf0 TEXTEQU <_Race_Start>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -744399,6 +744418,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c2f10 PROC
 
             push ESI
@@ -744416,6 +744437,10 @@ FUN_5c2f10 PROC
             pop ESI
             ret 4
 FUN_5c2f10 ENDP
+ELSE
+EXTERN @Lights5c2f10_Construct@12:PROC
+FUN_5c2f10 TEXTEQU <@Lights5c2f10_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -865940,6 +865965,8 @@ $L_6043c0::
             nop
             nop
 FUN_604390 ENDP
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 $L_6043d0 PROC
 
             call FUN_604a60
@@ -865967,6 +865994,10 @@ $L_6043fe::
 
             jmp FUN_604a70
 $L_6043d0 ENDP
+ELSE
+EXTERN _Play_DeleteAll:PROC
+$L_6043d0 TEXTEQU <_Play_DeleteAll>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867320,12 +867351,18 @@ FUN_604e10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604e70 PROC
 
             call FUN_604290
 
             jmp $L_6043d0
 FUN_604e70 ENDP
+ELSE
+EXTERN _Play_StopAndDeleteAll:PROC
+FUN_604e70 TEXTEQU <_Play_StopAndDeleteAll>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -867654,6 +867691,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_605050 PROC
 
             push ECX
@@ -867674,6 +867713,10 @@ FUN_605050 PROC
             add ESP,8
             ret 
 FUN_605050 ENDP
+ELSE
+EXTERN _Mixer_Shutdown:PROC
+FUN_605050 TEXTEQU <_Mixer_Shutdown>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868761,6 +868804,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_6056f0 PROC
 
             pushfd 
@@ -868774,6 +868819,10 @@ FUN_6056f0 PROC
             xor EAX,ECX
             ret 
 FUN_6056f0 ENDP
+ELSE
+EXTERN _Cpu_HasCpuid:PROC
+FUN_6056f0 TEXTEQU <_Cpu_HasCpuid>
+ENDIF
 $L_605700 PROC
 
             push EBX
@@ -868813,6 +868862,8 @@ $L_60572c PROC
             leave 
             ret 
 $L_60572c ENDP
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_60573b PROC
 
             push EBP
@@ -868828,6 +868879,10 @@ FUN_60573b PROC
             leave 
             ret 
 FUN_60573b ENDP
+ELSE
+EXTERN _Cpu_ReadTsc:PROC
+FUN_60573b TEXTEQU <_Cpu_ReadTsc>
+ENDIF
 ; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
 IFDEF ASM_DIRECTSOUND
 $L_605750 PROC
