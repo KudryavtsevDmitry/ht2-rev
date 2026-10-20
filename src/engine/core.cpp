@@ -995,7 +995,7 @@ extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const
 ASM_VAR(AsmLabel, g_q46_71e820, $L_71e820)
 extern "C" BYTE* __fastcall PtrTable500_Construct(BYTE* s, void*);    // media.cpp
 ASM_VAR(AsmLabel, g_q46_7200c0, $L_7200c0)
-ASM_VAR(AsmLabel, g_q46_5d2a70, $L_5d2a70)
+extern "C" BYTE* __fastcall Pool_AllocSlot(BYTE* s, void*);
 // [FUN_5d2b50] constructs the static pointer table 71e820
 extern "C" int __cdecl Static71e820_Construct(void)
 {
@@ -1004,7 +1004,7 @@ extern "C" int __cdecl Static71e820_Construct(void)
 // [FUN_5d3060] a free slot of the static pool 7200c0
 extern "C" int __cdecl Pool7200c0_Alloc(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_5d2a70, (void*)g_q46_7200c0);
+    return (int)Pool_AllocSlot((BYTE*)(void*)g_q46_7200c0, 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -1014,7 +1014,7 @@ ASM_VAR(AsmLabel, g_q47_71e830, $L_71e830)
 // [FUN_5d2a00] a free slot of the static pool 71e830
 extern "C" int __cdecl Pool71e830_Alloc(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_5d2a70, (void*)g_q47_71e830);
+    return (int)Pool_AllocSlot((BYTE*)(void*)g_q47_71e830, 0);
 }
 
 // ---------------------------------------------------------------------------
@@ -1040,4 +1040,25 @@ extern "C" int __cdecl Mode_TextureLevel(void)
     case 4: return 6;
     }
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+// [$L_5d2a70] a free slot of the pool s (element size +0, count +4, base +8, used bytes +12, next +16), or 0
+extern "C" BYTE* __fastcall Pool_AllocSlot(BYTE* s, void*)
+{
+    unsigned i = F(unsigned, s, 16);
+    unsigned n = F(unsigned, s, 4);
+    BYTE* used = F(BYTE*, s, 12);
+    int tries = (int)n;
+    while (used[i]) {
+        if (tries <= 0)
+            return 0;
+        i = (i + 1) % n;
+        tries--;
+    }
+    used[i] = 1;
+    F(unsigned, s, 16) = i;
+    return F(int, s, 0) * i + F(BYTE*, s, 8);
 }

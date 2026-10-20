@@ -46,7 +46,7 @@ ASM_VAR(AsmLabel, g_vtbl652cb4, $L_652cb4)
 ASM_VAR(AsmLabel, g_vtbl652924, $L_652924)
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object constructor (name, kind, flag)
 extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    // mixer volume, returns double
-ASM_PROC(FUN_604730)
+extern "C" void FUN_604730(); KING_ALIAS("_FUN_604730", "_Sound_ErrorText")
 ASM_PROC(FUN_604d70)
 extern "C" void FUN_605130(); KING_ALIAS("_FUN_605130", "_Streams_Collect")
 extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
@@ -654,7 +654,7 @@ extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int)
 
 // ---------------------------------------------------------------------------
 ASM_PROC(FUN_604a80)
-ASM_PROC(FUN_604730)
+extern "C" void FUN_604730(); KING_ALIAS("_FUN_604730", "_Sound_ErrorText")
 extern "C" void $L_5fcdc0(); KING_ALIAS("_$L_5fcdc0", "_Slots723aa8_Destroy")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
 ASM_VAR(int, g_sc723b28, $L_723b28)

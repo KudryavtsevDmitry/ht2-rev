@@ -1530,7 +1530,7 @@ extern "C" void __fastcall Light_DestructBase(BYTE* self, void*) { F(void*, self
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5c3020(); KING_ALIAS("_FUN_5c3020", "@Table_Add@20")
 extern "C" void FUN_5c30d0(); KING_ALIAS("_FUN_5c30d0", "@Table_Add5@24")
-ASM_PROC($L_5c6120)
+extern "C" void $L_5c6120(); KING_ALIAS("_$L_5c6120", "_View_ShowNamed")
 extern "C" void FUN_5c2ce0(); KING_ALIAS("_FUN_5c2ce0", "_Msavi_Restore")
 extern "C" void FUN_5c2a50(); KING_ALIAS("_FUN_5c2a50", "_Msavi_FillBuffer")
 ASM_VAR(BYTE*, g_md702fa0, $L_702fa0)
@@ -2342,4 +2342,20 @@ extern "C" BYTE* __fastcall PtrTable500_Construct(BYTE* s, void*)
         F(void**, s, 8)[k] = 0;
     g_q52_71e844 = 1;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+// [$L_5c6120] shows the scene object named name in the view o (resets +256 by slot 36, then slot 40 with the object
+// and the text after the name)
+extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
+{
+    int obj = CallC<int>(FUN_5ef2b0, 0, name);
+    const char* rest = name + strlen(name) + 1;
+    if (obj && rest) {
+        CallVirt(o + 256, 36);
+        CallVirt(o, 40, obj, rest);
+    }
 }

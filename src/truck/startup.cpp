@@ -930,3 +930,20 @@ extern "C" void __cdecl Static6974a8_Init(void)
 {
     CallThis(FUN_4bdef0, (void*)g_q47_6974a8, 1.0f, 1.0f, 1.0f);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+// [$L_4e0200] constructor: zero counters and the eleven +132 values, the eleven +180 values at 4
+extern "C" BYTE* __fastcall Sta4e0200_Construct(BYTE* s, void*)
+{
+    static const int z[] = {0, 4, 8, 12, 16, 20, 24, 28, 32, 40, 44, 48, 52, 64, 68, 72, 76, 80, 84, 88, 92, 112,
+                            108, 116, 120, 124, 128};
+    for (int k = 0; k < (int)(sizeof z / sizeof z[0]); k++)
+        F(int, s, z[k]) = 0;
+    for (int k = 0; k < 11; k++) {
+        F(int, s, 132 + k * 4) = 0;
+        F(float, s, 180 + k * 4) = 4.0f;
+    }
+    return s;
+}

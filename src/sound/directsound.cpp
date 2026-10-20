@@ -947,3 +947,29 @@ extern "C" void __cdecl Channels_Release(void)
     }
     g_q52_724164 = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
+
+ASM_VAR(AsmLabel, s_q53_684998, $L_684998)
+ASM_VAR(AsmLabel, s_q53_6848fc, $L_6848fc)
+ASM_VAR(AsmLabel, s_q53_684938, $L_684938)
+ASM_VAR(AsmLabel, s_q53_684964, $L_684964)
+ASM_VAR(AsmLabel, s_q53_68487c, $L_68487c)
+ASM_VAR(AsmLabel, s_q53_6848b8, $L_6848b8)
+ASM_VAR(AsmLabel, s_q53_684834, $L_684834)
+ASM_VAR(AsmLabel, s_q53_68480c, $L_68480c)
+// [FUN_604730] the text for the error kind 1..7, else the generic one
+extern "C" const char* __cdecl Sound_ErrorText(int kind)
+{
+    switch (kind) {
+    case 1: return (const char*)s_q53_684998;
+    case 2: return (const char*)s_q53_6848fc;
+    case 3: return (const char*)s_q53_684938;
+    case 4: return (const char*)s_q53_684964;
+    case 5: return (const char*)s_q53_68487c;
+    case 6: return (const char*)s_q53_6848b8;
+    case 7: return (const char*)s_q53_684834;
+    }
+    return (const char*)s_q53_68480c;
+}
