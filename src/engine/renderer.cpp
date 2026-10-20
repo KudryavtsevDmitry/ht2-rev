@@ -24,7 +24,7 @@ ASM_PROC(FUN_5b6f90)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 extern "C" void FUN_5d3b40(); KING_ALIAS("_FUN_5d3b40", "_Gdi_DrawFrame")
 extern "C" void FUN_5d4490(); KING_ALIAS("_FUN_5d4490", "_Dd_Present")
-ASM_PROC(FUN_5b6bf0)
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 ASM_VAR(int, g_transformSerial, $L_67ef88)
 ASM_VAR(int, g_720904, $L_720904)
 ASM_PROC(FUN_5b3a40)
@@ -2080,4 +2080,76 @@ extern "C" void __fastcall Surface_Create(BYTE* s, void*, int w, int h, int bpp,
         F(WORD, s, 8) = F(WORD, s, 0);
     } else
         F(int, s, 48) = 0;
+}
+
+// ---------------------------------------------------------------------------
+// Preparing a surface for drawing.
+
+ASM_PROC(FUN_5d4c10)
+extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
+ASM_VAR(int, g_q150_72090c, $L_72090c)
+ASM_VAR(void*, g_q150_7208f8, $L_7208f8)
+ASM_VAR(void*, g_q150_7208fc, $L_7208fc)
+ASM_VAR(void*, g_q150_720900, $L_720900)
+ASM_VAR(void*, g_q150_720908, $L_720908)
+typedef long(__stdcall* Ren150_Com0)(void*);
+// restores DirectDraw surface d when it was lost, logging a failure with line
+static void Ren150_Restore(void* d, int line)
+{
+    if (!d || ((Ren150_Com0)(*(void***)d)[24])(d) != (long)0x887601c2)
+        return;
+    if (long hr = ((Ren150_Com0)(*(void***)d)[27])(d))
+        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), line);
+}
+// [FUN_5b6bf0] prepares surface s for drawing: lost DirectDraw surfaces are restored first (for a top surface);
+// a 3D surface sets the device viewport to its visible part; a video surface locks its buffer; a sub-surface
+// takes its address in the parent's locked buffer
+extern "C" void __fastcall Surface_Prepare(BYTE* s)
+{
+    if (!F(BYTE*, s, 96) && g_q150_72090c) {
+        Ren150_Restore(g_q150_7208f8, 18);
+        if (!(F(DWORD, s, 12) & 0x2000))
+            Ren150_Restore(g_q150_7208fc, 17);
+        Ren150_Restore(g_q150_720900, 16);
+    }
+    BYTE* p = F(BYTE*, s, 96);
+    if (!(F(DWORD, s, 12) & 0x1000) && !(p && (F(DWORD, p, 12) & 0x1000))) {
+        if (F(DWORD, s, 12) & 0x200) {
+            F(BYTE*, s, 24 + F(int, s, 16) * 4) = CallC<BYTE*>(FUN_5d3fe0, F(int, s, 16));
+            F(WORD, s, 6) = CallC<WORD>(FUN_5d3b00);
+            return;
+        }
+        if (!p)
+            return;
+        BYTE* b = F(BYTE*, p, 24 + F(int, p, 16) * 4);
+        if (!b)
+            F(int, s, 24) = 0;
+        else
+            F(BYTE*, s, 24) = b + F(WORD, p, 6) * F(int, s, 104) + F(WORD, s, 4) * F(int, s, 100);
+        F(WORD, s, 6) = F(WORD, p, 6);
+        return;
+    }
+    DWORD vp[6] = {0, 0, 0, 0, 0, 0};
+    int o[2];
+    CallThis(FUN_5b6710, s, o);
+    int x = o[0], w = F(WORD, s, 0);
+    if (x < 0) {
+        w += x;
+        x = 0;
+    }
+    vp[0] = x;
+    int y = o[1], h = F(WORD, s, 2);
+    if (y < 0) {
+        h += y;
+        y = 0;
+    }
+    vp[3] = h;
+    vp[1] = y;
+    vp[2] = w;
+    vp[5] = 0x3f800000;
+    vp[4] = 0;
+    if (void* d = g_q150_720908)
+        if (long hr = ((long(__stdcall*)(void*, DWORD*))(*(void***)d)[13])(d, vp))
+            CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
+    F(int, s, 24 + F(int, s, 16) * 4) = 0;
 }
