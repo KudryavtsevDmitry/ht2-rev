@@ -561575,6 +561575,8 @@ $L_54a380 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_54c6d0 PROC
 
             sub ESP,208
@@ -561701,6 +561703,10 @@ $L_54c802::
             add ESP,208
             ret 4
 $L_54c6d0 ENDP
+ELSE
+EXTERN @Car_Query@12:PROC
+$L_54c6d0 TEXTEQU <@Car_Query@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
