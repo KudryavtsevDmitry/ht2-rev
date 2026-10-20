@@ -73350,6 +73350,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_42b3a0 PROC
 
             push EBP
@@ -73462,6 +73464,10 @@ $L_42b4af::
             pop EBP
             ret 
 $L_42b3a0 ENDP
+ELSE
+EXTERN _AI_SwitchToRandom:PROC
+$L_42b3a0 TEXTEQU <_AI_SwitchToRandom>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
