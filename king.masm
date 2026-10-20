@@ -1478,6 +1478,7 @@ PUBLIC $L_67fa80
 PUBLIC $L_64da58
 PUBLIC $L_67f114, $L_702ea8
 PUBLIC $L_702e80
+PUBLIC $L_7208c4, $L_7208c8, $L_7208cc, $L_7208dc
 
 ;===================================
 _TEXT SEGMENT
@@ -775859,6 +775860,8 @@ FUN_5d4490 TEXTEQU <_Dd_Present>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/video_mode.cpp, nmake ASM_VIDEO_MODE=1 assembles the original
+IFDEF ASM_VIDEO_MODE
 $L_5d4900 PROC
 
             mov ECX,DWORD PTR [ESP+12]
@@ -776051,6 +776054,10 @@ $L_5d4a83::
             pop ESI
             ret 16
 $L_5d4900 ENDP
+ELSE
+EXTERN _D3d_ChooseDevice@16:PROC
+$L_5d4900 TEXTEQU <_D3d_ChooseDevice@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
