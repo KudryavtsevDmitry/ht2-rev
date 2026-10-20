@@ -3875,3 +3875,103 @@ extern "C" BYTE* __fastcall ShellDisplay515ca0_Construct(BYTE* s, void*, int par
     CallThis(FUN_5bdbf0, F(BYTE*, s, 56), outer, 0);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Network provider screen (exception frame dropped).
+
+extern "C" void Gsh_VecCtor(); KING_ALIAS("_Gsh_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void FUN_5c39e0(); KING_ALIAS("_FUN_5c39e0", "@Music_Play@20")
+extern "C" void FUN_6014a0(); KING_ALIAS("_FUN_6014a0", "@DpRecord_ProviderName@8")
+extern "C" void FUN_601570(); KING_ALIAS("_FUN_601570", "_Dp_NextProvider")
+extern "C" void FUN_6015b0(); KING_ALIAS("_FUN_6015b0", "_Dp_FirstProvider")
+extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
+ASM_PROC(FUN_50f300)
+ASM_VAR(AsmLabel, g_q38_601260, $L_601260)
+ASM_VAR(AsmLabel, g_q38_64e2e4, $L_64e2e4)
+ASM_VAR(AsmLabel, g_q38_64e2a4, $L_64e2a4)
+ASM_VAR(AsmLabel, g_q38_675ab4, $L_675ab4)
+#define Q38(x) ((const char*)s_q38_##x)
+ASM_VAR(AsmLabel, s_q38_677460, $L_677460)
+ASM_VAR(AsmLabel, s_q38_67744c, $L_67744c)
+ASM_VAR(AsmLabel, s_q38_677424, $L_677424)
+ASM_VAR(AsmLabel, s_q38_6773d8, $L_6773d8)
+ASM_VAR(AsmLabel, s_q38_67741c, $L_67741c)
+ASM_VAR(AsmLabel, s_q38_677414, $L_677414)
+ASM_VAR(AsmLabel, s_q38_67740c, $L_67740c)
+ASM_VAR(AsmLabel, s_q38_677400, $L_677400)
+ASM_VAR(AsmLabel, s_q38_6773f4, $L_6773f4)
+
+// [FUN_51a580] constructor (parent): the network provider screen (vtables 64e2e4, 64e2a4 at +64): eight 32-byte
+// provider records (+552), their names in the list box 123 (+548), buttons 121, 120, 122, 118, 119, 2 and the
+// 4 x 11 textures by the 675ab4 names (+372, rows of 16 bytes)
+extern "C" BYTE* __fastcall ShellProviders51a580_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    CallStd(Gsh_VecCtor, s + 552, 32, 8, (BYTE*)g_q38_601260, FUN_601470);
+    F(void*, s, 0) = g_q38_64e2e4;
+    F(void*, s, 64) = g_q38_64e2a4;
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, Q37(676c9c));
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    Shell_PlainStyles(s + 132, Q38(677460));
+    BYTE* outer = Shell_NewPanel(0);
+    BYTE* p = Shell_NewPanel(4);
+    g_q28_6ce3ac = CallC<DWORD>(FUN_5ef3d0, Q38(67744c));
+    CallThis(FUN_5bd5a0, p + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, p + 104, (void*)g_q28_6ce390);
+    CallThis(FUN_5bd5a0, p + 140, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, p + 176, (void*)g_6ce408);
+    BYTE* m = (BYTE*)operator new(352);
+    BYTE* l = m ? CallThis<BYTE*>(FUN_5c0550, m, Q38(677424), 8, 70) : 0;
+    F(BYTE*, s, 548) = l;
+    CallThis(FUN_5bd5a0, l + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, l + 104, (void*)g_6ce3b8);
+    CallThis(FUN_5bd5a0, l + 140, (void*)g_6ceb38);
+    CallThis(FUN_5bd5a0, l + 176, (void*)g_6ce988);
+    CallThis(FUN_5c39e0, &g_music696750, Q38(6773d8), 0, 0);
+    if (g_music6968f0) {
+        CallC(FUN_6016f0);
+        if (!CallC<int>(FUN_6015b0, s + 552)) {
+            CallThis(FUN_5c1140, F(BYTE*, s, 548), CallThis<const char*>(FUN_6014a0, s + 552));
+            for (BYTE* e = s + 584; !CallC<int>(FUN_601570, e); e += 32)
+                CallThis(FUN_5c1140, F(BYTE*, s, 548), CallThis<const char*>(FUN_6014a0, e));
+        }
+        CallThis(FUN_5c3a80, &g_music696750);
+    }
+    l = F(BYTE*, s, 548);
+    F(int, F(BYTE*, l, 340), 28) = 123;
+    F(int, l, 28) = 123;
+    CallThis(FUN_5c0c20, l, 1);
+    Shell_MoveCtl(F(BYTE*, s, 548), 323, 350);
+    F(int, F(BYTE*, s, 548), 348) = 41;
+    CallThis(FUN_5c07c0, F(BYTE*, s, 548), 10);
+    CallC(FUN_50f300, F(BYTE*, F(BYTE*, s, 548), 340), 64);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 548), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c50), 121, 323, 200), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c58), 120, 528, 200), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q38(67741c), 122, 390, 303), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q38(677414), 118, 451, 428), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q38(67740c), 119, 348, 428), 0);
+    Shell_MoveCtl(p, 310, 102);
+    CallThis(FUN_5bdd70, p);
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    CallThis(FUN_5bdbf0, outer, CallC<BYTE*>(FUN_50ef60, Q38(677400), 2, 323, 488), 0);
+    CallThis(FUN_5bdc80, outer);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), outer, 0);
+    F(int, s, 368) = 0;
+    const char** names = (const char**)(void*)g_q38_675ab4;
+    for (int i = 0; i < 4; i++)
+        for (int k = 0; k < 11; k++) {
+            char buf[64];
+            sprintf(buf, Q38(6773f4), names[k], i);
+            F(DWORD, s, 372 + i * 4 + k * 16) = CallC<DWORD>(FUN_5ef3d0, buf);
+        }
+    F(int, s, 808) = 0;
+    F(int, s, 812) = 0;
+    return s;
+}
