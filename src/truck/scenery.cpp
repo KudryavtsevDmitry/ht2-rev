@@ -1012,3 +1012,8 @@ extern "C" int __cdecl Cars_Deliver(BYTE* m, int b)
     }
     return 0;
 }
+
+extern "C" void Scy128_4e0200(); KING_ALIAS("_Scy128_4e0200", "@Sta4e0200_Construct@8")
+ASM_VAR(AsmLabel, g_q128_6d1cd0, $L_6d1cd0)
+// [$L_52f5e0] static init: constructs the 6d1cd0 object
+extern "C" BYTE* __cdecl Scy_Init6d1cd0(void) { return CallThis<BYTE*>(Scy128_4e0200, (BYTE*)g_q128_6d1cd0); }

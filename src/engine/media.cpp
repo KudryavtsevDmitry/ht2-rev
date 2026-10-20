@@ -2023,7 +2023,7 @@ ASM_VAR(AsmLabel, s_med6729a8, $L_6729a8)
 ASM_VAR(AsmLabel, s_med672994, $L_672994)
 ASM_VAR(BYTE*, g_med707f70, $L_707f70)
 ASM_VAR(BYTE*, g_med67fb7c, $L_67fb7c)
-ASM_VAR(AsmLabel, g_medHook5c37e0, $L_5c37e0)
+extern "C" void __cdecl Media_ExitHook(void);
 
 // [FUN_5c3f20] constructor (a): the media player (vtable 651a20); with sound (707f6c +416) its device name from the ini
 extern "C" BYTE* __fastcall Media_Construct(BYTE* s, void*, int a)
@@ -2070,7 +2070,7 @@ extern "C" BYTE* __fastcall SoundSystem_Construct(BYTE* s, void*, int a, int b)
     F(void*, s, 0) = g_med65195c;
     g_med707f6c = s;
     g_med707f70 = g_med67fb7c;
-    g_med67fb7c = (BYTE*)g_medHook5c37e0;
+    g_med67fb7c = (BYTE*)Media_ExitHook;
     char buf[80];
     GetPrivateProfileStringA((const char*)s_med6730a0, (const char*)s_med67f87c, (const char*)s_med6729a8, buf, 16,
                              F(const char*, s, 280));
@@ -2620,4 +2620,13 @@ extern "C" void __fastcall Mesh5ceb40_Setup(BYTE* s, void*, int n, int a2, int a
     void* p = operator new(n * 4);
     F(void*, s, 172) = p;
     memcpy(p, F(void*, s, 40), n * 4);
+}
+
+extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
+ASM_VAR(BYTE*, g_q128_707f6c, $L_707f6c)
+// [$L_5c37e0] exit hook: stops the music, then runs the previous hook (707f70)
+extern "C" void __cdecl Media_ExitHook(void)
+{
+    CallThis(FUN_5c3a80, g_q128_707f6c);
+    ((void(__cdecl*)())g_med707f70)();
 }

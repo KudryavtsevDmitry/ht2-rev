@@ -519470,6 +519470,8 @@ $L_52f597::
             nop
             nop
 $L_52f4bf ENDP
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52f5e0 PROC
 
             jmp $L_52f5f0
@@ -519490,6 +519492,10 @@ $L_52f5f0::
             mov ECX,OFFSET $L_6d1cd0
             jmp $L_4e0200
 $L_52f5e0 ENDP
+ELSE
+EXTERN _Scy_Init6d1cd0:PROC
+$L_52f5e0 TEXTEQU <_Scy_Init6d1cd0>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -665397,6 +665403,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_593610 PROC
 
             mov EAX,ECX
@@ -665418,6 +665426,10 @@ $L_593610 PROC
             mov DWORD PTR [EAX+60],ECX
             ret 
 $L_593610 ENDP
+ELSE
+EXTERN @Rec593610_Construct@4:PROC
+$L_593610 TEXTEQU <@Rec593610_Construct@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -746764,6 +746776,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c37e0 PROC
 
             mov ECX,DWORD PTR [$L_707f6c]
@@ -746787,6 +746801,10 @@ $L_5c37e0 PROC
             nop
             nop
 $L_5c37e0 ENDP
+ELSE
+EXTERN _Media_ExitHook:PROC
+$L_5c37e0 TEXTEQU <_Media_ExitHook>
+ENDIF
 ALIGN 16
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 IFDEF ASM_MEDIA
@@ -817743,6 +817761,8 @@ $L_5ea785::
 $L_5ea6ea ENDP
           BYTE 090H
           BYTE 090H
+; src/clusters.cpp, nmake ASM_CLUSTERS=1 assembles the original
+IFDEF ASM_CLUSTERS
 $L_5ea830 PROC
 
             mov EAX,ECX
@@ -817772,6 +817792,10 @@ $L_5ea830 PROC
             mov BYTE PTR [EAX+120],238
             ret 
 $L_5ea830 ENDP
+ELSE
+EXTERN @Clu5ea830_Construct@4:PROC
+$L_5ea830 TEXTEQU <@Clu5ea830_Construct@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
