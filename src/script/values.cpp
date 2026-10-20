@@ -1148,3 +1148,59 @@ extern "C" int __fastcall FileReader_Peek(BYTE* s)
         return *F(BYTE*, s, 32);
     return -1;
 }
+
+extern "C" size_t __cdecl fread(void*, size_t, size_t, void*);
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// [$L_4b5790] FileReader_Peek for a block file: reads up to 4096 bytes, deciphered when +64 is set (each byte xored
+// with the low byte of the next value of the reader's subtractive generator: table +68, indices +288, +292)
+extern "C" int __fastcall CipherReader_Peek(BYTE* s)
+{
+    BYTE buf[4096];
+    if (F(char*, s, 48) == F(char*, s, 32)) {
+        int n = (int)fread(buf, 1, 4096, F(void*, s, 12));
+        if (F(BYTE, s, 64)) {
+            DWORD* t = (DWORD*)(s + 68);
+            for (int i = 0; i < n; i++) {
+                unsigned a = (F(unsigned, s, 288) + 1) % 55;
+                unsigned b = (F(unsigned, s, 292) + 1) % 55;
+                F(unsigned, s, 288) = a;
+                F(unsigned, s, 292) = b;
+                t[a] -= t[b];
+                buf[i] ^= (BYTE)t[F(unsigned, s, 288)];
+            }
+        }
+        if (n) {
+            Val207_It end;
+            CallThis(FUN_4abe80, s + 24, &end);
+            CallThis(FUN_4ac0b0, s + 24, end, buf, buf + n);
+        } else
+            F(int, s, 16) |= 2;
+    }
+    if (F(char*, s, 48) != F(char*, s, 32))
+        return *F(BYTE*, s, 32);
+    return -1;
+}
+// [$L_4b5d80] the next character of file reader s, consumed (-1 at the end): a line is read when the buffer is
+// empty; a used-up 512-byte page of the buffer goes back to the pool
+extern "C" int __fastcall FileReader_Get(BYTE* s)
+{
+    char buf[4096];
+    if (F(char*, s, 48) == F(char*, s, 32) && fgets(buf, 4096, F(void*, s, 12))) {
+        Val207_It end;
+        CallThis(FUN_4abe80, s + 24, &end);
+        CallThis(FUN_4ac0b0, s + 24, end, buf, buf + strlen(buf));
+    }
+    if (F(char*, s, 48) == F(char*, s, 32))
+        return -1;
+    int c = *F(BYTE*, s, 32);
+    if (F(char*, s, 32) != F(char*, s, 40) - 1) {
+        F(char*, s, 32)++;
+        return c;
+    }
+    CallC(FUN_44b4a0, F(void*, s, 36), 512);
+    F(char**, s, 44)++;
+    F(char*, s, 36) = *F(char**, s, 44);
+    F(char*, s, 40) = F(char*, s, 36) + 512;
+    F(char*, s, 32) = F(char*, s, 36);
+    return c;
+}
