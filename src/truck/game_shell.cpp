@@ -4216,3 +4216,88 @@ extern "C" BYTE* __fastcall ShellScreen526470_Construct(BYTE* s, void*, BYTE* pa
         }
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Network join screen (exception frame dropped).
+
+ASM_VAR(AsmLabel, g_q41_64e1d4, $L_64e1d4)
+ASM_VAR(AsmLabel, g_q41_64e194, $L_64e194)
+#define Q41(x) ((const char*)s_q41_##x)
+ASM_VAR(AsmLabel, s_q41_67732c, $L_67732c)
+ASM_VAR(AsmLabel, s_q41_677314, $L_677314)
+ASM_VAR(AsmLabel, s_q41_677304, $L_677304)
+ASM_VAR(AsmLabel, s_q41_6772f8, $L_6772f8)
+ASM_VAR(AsmLabel, s_q41_6772f0, $L_6772f0)
+ASM_VAR(AsmLabel, s_q41_6772dc, $L_6772dc)
+ASM_VAR(AsmLabel, s_q41_6772d4, $L_6772d4)
+ASM_VAR(AsmLabel, s_q41_6772cc, $L_6772cc)
+
+// [FUN_518d20] constructor (parent): the network join screen (vtables 64e1d4, 64e194 at +64): a list box 149
+// (+380), buttons 281, 145, 2, a 34-character field 148 (+376) on +384 (text 81 at the start), the button 146 (+372)
+extern "C" BYTE* __fastcall ShellJoin518d20_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q41_64e1d4;
+    F(void*, s, 64) = g_q41_64e194;
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, Q37(676c9c));
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    Shell_PlainStyles(s + 132, Q41(67732c));
+    BYTE* outer = Shell_NewPanel(0);
+    BYTE* p = Shell_NewPanel(4);
+    g_q28_6ce3ac = CallC<DWORD>(FUN_5ef3d0, Q41(677314));
+    Shell_FrameStyles(p);
+    BYTE* m = (BYTE*)operator new(352);
+    BYTE* l = m ? CallThis<BYTE*>(FUN_5c0550, m, Q41(677304), 8, 110) : 0;
+    F(BYTE*, s, 380) = l;
+    Shell_FieldStyles(l);
+    Shell_MoveCtl(F(BYTE*, s, 380), 332, 199);
+    F(int, F(BYTE*, s, 380), 348) = 41;
+    F(int, F(BYTE*, F(BYTE*, s, 380), 340), 28) = 149;
+    F(int, F(BYTE*, s, 380), 28) = 149;
+    CallThis(FUN_5c07c0, F(BYTE*, s, 380), 10);
+    CallC(FUN_50f300, F(BYTE*, F(BYTE*, s, 380), 340), 118);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 380), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q41(6772f8), 281, 475, 285), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q41(6772f0), 145, 332, 145), 0);
+    Shell_MoveCtl(p, 300, 141);
+    CallThis(FUN_5bdd70, p);
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    p = Shell_NewPanel(4);
+    g_q28_6ce3ac = CallC<DWORD>(FUN_5ef3d0, Q41(6772dc));
+    Shell_FrameStyles(p);
+    F(char, s, 384) = 0;
+    BYTE* e = (BYTE*)operator new(300);
+    if (e) {
+        CallThis(FUN_5bd5e0, e, (const char*)g_q33_68d1c0, 0);
+        F(void*, e, 0) = g_q33_64e160;
+        F(BYTE*, e, 288) = s + 384;
+        F(int, e, 292) = 34;
+        F(int, e, 296) = 0;
+    }
+    F(BYTE*, s, 376) = e;
+    F(int, e, 28) = 148;
+    Shell_FieldStyles(F(BYTE*, s, 376));
+    F(int, F(BYTE*, s, 376), 44) = 341;
+    F(int, F(BYTE*, s, 376), 48) = 407;
+    e = F(BYTE*, s, 376);
+    F(int, e, 52) = F(int, e, 44) + 125;
+    e = F(BYTE*, s, 376);
+    F(int, e, 56) = F(int, e, 48) + 10;
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 376), 0);
+    F(BYTE*, s, 372) = Shell_ButtonC((int)Q41(6772d4), 146, 332, 343, 0);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 372), 0);
+    Shell_MoveCtl(p, 300, 341);
+    CallThis(FUN_5bdd70, p);
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    CallThis(FUN_5bdbf0, outer, CallC<BYTE*>(FUN_50ef60, Q41(6772cc), 2, 332, 465), 0);
+    CallThis(FUN_5bdc80, outer);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), outer, 0);
+    strcpy((char*)s + 384, CallC<const char*>(FUN_5d2e50, 81));
+    return s;
+}
