@@ -20151,7 +20151,7 @@ extern "C" void __cdecl Ai_BuildNameMaps()
 // Batch: destructors and an order search
 
 extern "C" void FUN_458a80(); KING_ALIAS("_FUN_458a80", "@Rec458a80_Copy@12")    // an order's copy constructor (thiscall: src)
-ASM_PROC(FUN_460840)    // find of an order (first, last, order by value, -)
+extern "C" BYTE* __cdecl Orders_Find(BYTE* first, BYTE* last, Blob144 order, BYTE*);
 extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")    // a 16-byte record's destructor (rec)
 extern "C" void FUN_457b40(); KING_ALIAS("_FUN_457b40", "_AI_Free")    // frees a large block (p, bytes)
 
@@ -20187,7 +20187,7 @@ extern "C" BYTE* __cdecl Orders_FindEqual(BYTE* first, BYTE* last, Blob144 order
 {
     Blob144 copy;
     CallThis(FUN_458a80, &copy, &order);
-    BYTE* r = CallC<BYTE*>(FUN_460840, first, last, copy, last);
+    BYTE* r = Orders_Find(first, last, copy, last);
     BYTE* b = F(BYTE*, &order, 120);
     for (BYTE* e = b; e != F(BYTE*, &order, 124); e += 16)
         CallC(FUN_460d10, e);

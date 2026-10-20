@@ -2398,3 +2398,28 @@ extern "C" void __fastcall Vec1592_FreeStorage(BYTE* s, void*)
 {
     PoolVec_Free_C(s, 1592);
 }
+
+extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")
+extern "C" void FUN_457b40(); KING_ALIAS("_FUN_457b40", "_AI_Free")
+struct Order144 { BYTE b[144]; };
+// [FUN_460840] the order in [first, last) with the id (+0) and kind (+12) of order (by value; its parts vector +120
+// is freed here); last when none
+extern "C" BYTE* __cdecl Orders_Find(BYTE* first, BYTE* last, Order144 order, int)
+{
+    BYTE* p = first;
+    for (; p != last; p += 144)
+        if (F(int, p, 0) == F(int, &order, 0) && F(int, p, 12) == F(int, &order, 12))
+            break;
+    BYTE* b = F(BYTE*, &order, 120);
+    for (BYTE* e = b; e != F(BYTE*, &order, 124); e += 16)
+        CallC(FUN_460d10, e);
+    int n = (F(BYTE*, &order, 128) - b) >> 4;
+    if (n) {
+        unsigned bytes = n << 4;
+        if (bytes > 128)
+            CallC(FUN_457b40, b, bytes);
+        else
+            CallC(FUN_44b4a0, b, bytes);
+    }
+    return p;
+}
