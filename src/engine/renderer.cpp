@@ -2502,3 +2502,30 @@ extern "C" int __stdcall Clip_Inside(const float* v, int k)
     }
     return 1;
 }
+
+// [FUN_5aeda0] adds the clip vertex at t between vertices i and j of renderer s (positions +1224, 12 bytes
+// each; with flags bit 5 the texture coordinates +1488/+1576, with bit 7 the values +1664); its index goes to
+// *out
+extern "C" void __fastcall Clip_Interpolate(BYTE* s, void*, int flags, int* out, int i, int j, double t)
+{
+    *out = F(int, s, 1932);
+    const float* a = (const float*)(s + 1224 + i * 12);
+    const float* b = (const float*)(s + 1224 + j * 12);
+    float dy = (float)(b[1] - a[1]);
+    float* n = (float*)(s + 1224 + F(int, s, 1932) * 12);
+    float dz = (float)(b[2] - a[2]);
+    n[0] = (float)((b[0] - a[0]) * t + a[0]);
+    n[1] = (float)(dy * t + a[1]);
+    n[2] = (float)(dz * t + a[2]);
+    float* u = (float*)(s + 1488);
+    float* v = (float*)(s + 1576);
+    float* w = (float*)(s + 1664);
+    int k = F(int, s, 1932);
+    if (flags & 32) {
+        u[k] = (float)((u[j] - u[i]) * t + u[i]);
+        v[k] = (float)((v[j] - v[i]) * t + v[i]);
+    }
+    if (flags & 128)
+        w[k] = (float)((w[j] - w[i]) * t + w[i]);
+    F(int, s, 1932)++;
+}

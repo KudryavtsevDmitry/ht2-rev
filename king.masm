@@ -709175,6 +709175,8 @@ $L_5aed8c           BYTE ($L_5aed74-$L_5aed74)/4
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5aeda0 PROC
 
             push ECX
@@ -709265,6 +709267,10 @@ $L_5aeeb5::
             pop ECX
             ret 24
 FUN_5aeda0 ENDP
+ELSE
+EXTERN @Clip_Interpolate@32:PROC
+FUN_5aeda0 TEXTEQU <@Clip_Interpolate@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -835159,6 +835165,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f2e70 PROC
 
             sub ESP,60
@@ -835232,6 +835240,10 @@ $L_5f2e83::
             add ESP,60
             ret 4
 $L_5f2e70 ENDP
+ELSE
+EXTERN @SceneNode5f2e70_WorldPos@12:PROC
+$L_5f2e70 TEXTEQU <@SceneNode5f2e70_WorldPos@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
