@@ -653,7 +653,7 @@ extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int)
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_604a80)
+extern "C" void FUN_604a80(); KING_ALIAS("_FUN_604a80", "_Mixer_Init")
 extern "C" void FUN_604730(); KING_ALIAS("_FUN_604730", "_Sound_ErrorText")
 extern "C" void $L_5fcdc0(); KING_ALIAS("_$L_5fcdc0", "_Slots723aa8_Destroy")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file

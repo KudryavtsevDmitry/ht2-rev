@@ -996,3 +996,24 @@ extern "C" int __cdecl Channels_Create(int n)
     g_q52_724164 = a;
     return a != 0;
 }
+
+ASM_VAR(float, g_q193_72418c, $L_72418c)
+// [FUN_604a80] opens the mixer for the mixer window (on failure: 3 when 724120 can be set to n, else the
+// start's error), keeps the volume (72418c), applies 6843fc and sets the play-done callback; 0 when open
+extern "C" int __cdecl Mixer_Init(int n, PlayDoneFn done)
+{
+    int r = Mixer_Open(-1, g_mixerWindow);
+    if (r)
+        return r;
+    if (Mixer_Set724120(3, n))
+        return 3;
+    r = Mixer_Start();
+    if (r) {
+        Mixer_Clear724120();
+        return r;
+    }
+    g_q193_72418c = (float)Mixer_GetVolume();
+    Mixer_SetVolume(g_mixerVolume);
+    g_playDoneCb724178 = done;
+    return 0;
+}
