@@ -487,3 +487,18 @@ extern "C" BYTE* __fastcall Grid61c0f0_Construct(BYTE* s)
     F(float, s, 12) = (float)x87_cos(g_q159_6533e0);
     return s;
 }
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+// [$L_61c0e0] the static grid 72c108's (empty) teardown
+extern "C" void __cdecl Grid72c108_Destroy(void) { CallThis(FUN_5e48f0, (void*)&g_tgrid72c108b); }
+// [$L_61c0d0] registers it at exit
+extern "C" int __cdecl Grid72c108_AtExit(void) { return atexit(Grid72c108_Destroy); }
+// [$L_61c0b0] the static initializer of 72c108
+extern "C" int __cdecl Grid72c108_Init(void)
+{
+    Grid72c108_Construct();
+    return Grid72c108_AtExit();
+}
+// [$L_61ba00] sets the base vtable 6533a8
+extern "C" void __fastcall TGridBase_SetVtbl(BYTE* s) { F(void*, s, 0) = g_tgr6533a8; }

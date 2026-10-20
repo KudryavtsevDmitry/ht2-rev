@@ -861312,12 +861312,18 @@ ELSE
 EXTERN @DpRecord_ProviderName@8:PROC
 FUN_6014a0 TEXTEQU <@DpRecord_ProviderName@8>
 ENDIF
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_601520 PROC
 
             call FUN_601530
 
             jmp $L_601550
 $L_601520 ENDP
+ELSE
+EXTERN _Gate_723d60Init:PROC
+$L_601520 TEXTEQU <_Gate_723d60Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -861356,6 +861362,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_601550 PROC
 
             push OFFSET $L_601560
@@ -861364,15 +861372,25 @@ $L_601550 PROC
             pop ECX
             ret 
 $L_601550 ENDP
+ELSE
+EXTERN _Gate_723d60AtExit:PROC
+$L_601550 TEXTEQU <_Gate_723d60AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_601560 PROC
 
             mov ECX,OFFSET $L_723d60
             jmp $L_602550
 $L_601560 ENDP
+ELSE
+EXTERN _Gate_Destroy723d60:PROC
+$L_601560 TEXTEQU <_Gate_Destroy723d60>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -863067,6 +863085,8 @@ FUN_602320 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_6023d0 PROC
 
             call FUN_6023e0
@@ -863080,6 +863100,10 @@ $L_6023d0 PROC
             nop
             nop
 $L_6023d0 ENDP
+ELSE
+EXTERN _Gate_723d90Init:PROC
+$L_6023d0 TEXTEQU <_Gate_723d90Init>
+ENDIF
 ALIGN 16
 ; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
 IFDEF ASM_SOUND_GATE
@@ -863098,6 +863122,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_6023f0 PROC
 
             push OFFSET $L_602400
@@ -863106,15 +863132,25 @@ $L_6023f0 PROC
             pop ECX
             ret 
 $L_6023f0 ENDP
+ELSE
+EXTERN _Gate_723d90AtExit:PROC
+$L_6023f0 TEXTEQU <_Gate_723d90AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_602400 PROC
 
             mov ECX,OFFSET $L_723d90
             jmp $L_4af6b0
 $L_602400 ENDP
+ELSE
+EXTERN _Gate_Free723d90:PROC
+$L_602400 TEXTEQU <_Gate_Free723d90>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -884617,12 +884653,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 $L_60c270 PROC
 
             call FUN_60c280
 
             jmp $L_60c290
 $L_60c270 ENDP
+ELSE
+EXTERN _Grid725d28_Init:PROC
+$L_60c270 TEXTEQU <_Grid725d28_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -884646,6 +884688,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 $L_60c290 PROC
 
             push OFFSET $L_60c2a0
@@ -884654,14 +884698,24 @@ $L_60c290 PROC
             pop ECX
             ret 
 $L_60c290 ENDP
+ELSE
+EXTERN _Grid725d28_AtExit:PROC
+$L_60c290 TEXTEQU <_Grid725d28_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/grid_topology.cpp, nmake ASM_GRID_TOPOLOGY=1 assembles the original
+IFDEF ASM_GRID_TOPOLOGY
 $L_60c2a0 PROC
 
             ret 
 $L_60c2a0 ENDP
+ELSE
+EXTERN _Grid725d28_Destroy:PROC
+$L_60c2a0 TEXTEQU <_Grid725d28_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -911118,11 +911172,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61ba00 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_6533a8
             ret 
 $L_61ba00 ENDP
+ELSE
+EXTERN @TGridBase_SetVtbl@4:PROC
+$L_61ba00 TEXTEQU <@TGridBase_SetVtbl@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -911982,12 +912042,18 @@ EXTERN _TgrInit_61c090:PROC
 $L_61c090 TEXTEQU <_TgrInit_61c090>
 ENDIF
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c0b0 PROC
 
             call FUN_61c0c0
 
             jmp $L_61c0d0
 $L_61c0b0 ENDP
+ELSE
+EXTERN _Grid72c108_Init:PROC
+$L_61c0b0 TEXTEQU <_Grid72c108_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -912012,6 +912078,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c0d0 PROC
 
             push OFFSET $L_61c0e0
@@ -912020,15 +912088,25 @@ $L_61c0d0 PROC
             pop ECX
             ret 
 $L_61c0d0 ENDP
+ELSE
+EXTERN _Grid72c108_AtExit:PROC
+$L_61c0d0 TEXTEQU <_Grid72c108_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_61c0e0 PROC
 
             mov ECX,OFFSET $L_72c108
             jmp FUN_5e48f0
 $L_61c0e0 ENDP
+ELSE
+EXTERN _Grid72c108_Destroy:PROC
+$L_61c0e0 TEXTEQU <_Grid72c108_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

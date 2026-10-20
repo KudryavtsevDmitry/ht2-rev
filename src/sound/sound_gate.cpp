@@ -1011,3 +1011,26 @@ extern "C" unsigned __fastcall MemStream_Read(BYTE* s, void*, void* dst, unsigne
     memcpy(dst, b[0] + F(unsigned, s, 8), n);
     return F(unsigned, s, 8) += n;
 }
+
+ASM_PROC($L_602550)
+ASM_PROC($L_4af6b0)
+// [$L_601560] destroys the global container 723d60
+extern "C" void __cdecl Gate_Destroy723d60(void) { CallThis($L_602550, &g_723d60); }
+// [$L_601550] destroys it at exit
+extern "C" int __cdecl Gate_723d60AtExit(void) { return atexit(Gate_Destroy723d60); }
+// [$L_601520] the static initializer of 723d60
+extern "C" int __cdecl Gate_723d60Init(void)
+{
+    Gate_Init723d60();
+    return Gate_723d60AtExit();
+}
+// [$L_602400] the final destructor of 723d90
+extern "C" void __cdecl Gate_Free723d90(void) { CallThis($L_4af6b0, &g_723d90); }
+// [$L_6023f0] runs it at exit
+extern "C" int __cdecl Gate_723d90AtExit(void) { return atexit(Gate_Free723d90); }
+// [$L_6023d0] the static initializer of 723d90
+extern "C" int __cdecl Gate_723d90Init(void)
+{
+    Gate_Destroy723d90();
+    return Gate_723d90AtExit();
+}
