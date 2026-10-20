@@ -846524,6 +846524,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f9d20 PROC
 
             sub ESP,148
@@ -846682,6 +846684,10 @@ $L_5f9e44::
             nop
             nop
 FUN_5f9d20 ENDP
+ELSE
+EXTERN @SceneNode5f9d20_Draw@24:PROC
+FUN_5f9d20 TEXTEQU <@SceneNode5f9d20_Draw@24>
+ENDIF
 ; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
 IFDEF ASM_SCENE
 $L_5f9e70 PROC

@@ -1951,7 +1951,7 @@ extern "C" void __cdecl HelInit_568e50() { g_hel6f32e8 = 0x0; g_hel6f32ec = 0x0;
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 ASM_PROC(FUN_5f98c0)
-ASM_PROC(FUN_5f9d20)
+extern "C" void FUN_5f9d20(); KING_ALIAS("_FUN_5f9d20", "@SceneNode5f9d20_Draw@24")
 extern "C" void FUN_5691c0(); KING_ALIAS("_FUN_5691c0", "_Copter_Send962")
 extern "C" void FUN_4297b0(); KING_ALIAS("_FUN_4297b0", "_AI_True")
 ASM_VAR(DWORD, g_hel68cf6c, $L_68cf6c)
