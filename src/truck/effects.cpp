@@ -3860,7 +3860,7 @@ extern "C" void FUN_5f98c0(); KING_ALIAS("_FUN_5f98c0", "@SceneNode5f98c0_Draw@1
 ASM_PROC(FUN_5ae580)
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 extern "C" void FUN_5f3570(); KING_ALIAS("_FUN_5f3570", "@Obj_Test@16")
-ASM_PROC(FUN_4c5680)
+extern "C" void FUN_4c5680(); KING_ALIAS("_FUN_4c5680", "@Thunk4c5680@4")
 extern "C" void Eff_rand(); KING_ALIAS("_Eff_rand", "_rand")
 extern "C" void Eff_VecDtor(); KING_ALIAS("_Eff_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 ASM_VAR(AsmLabel, g_eff6962d0, $L_6962d0)
@@ -4557,7 +4557,7 @@ extern "C" BYTE* __fastcall View3D_Construct(BYTE* s, void*, int a, int, int, in
 
 extern "C" void FUN_4dd900(); KING_ALIAS("_FUN_4dd900", "@Fx_HandleInit@12")
 extern "C" void FUN_5fa4f0(); KING_ALIAS("_FUN_5fa4f0", "@Node_Set48@16")
-ASM_PROC(FUN_4c5680)
+extern "C" void FUN_4c5680(); KING_ALIAS("_FUN_4c5680", "@Thunk4c5680@4")
 ASM_VAR(BYTE*, g_q22_696248, $L_696248)
 ASM_VAR(BYTE*, g_q22_696250, $L_696250)
 extern "C" BYTE* __fastcall Mesh4c5020_Construct(BYTE* s);
@@ -5007,3 +5007,10 @@ extern "C" int __cdecl Fx_HandleMessage(int msg, BYTE* m)
     }
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q240_Sce5fa720_Destroy(BYTE* s); KING_ALIAS("@q240_Sce5fa720_Destroy@4", "@Sce5fa720_Destroy@4")
+// [FUN_4c5680] forwards to Sce5fa720_Destroy
+extern "C" int __fastcall Thunk4c5680(BYTE* s) { return q240_Sce5fa720_Destroy(s); }

@@ -2153,3 +2153,8 @@ extern "C" void __fastcall WObj59a970_Init(BYTE* s)
     F(void*, s, 0) = &g_q199_650334;
     F(int, s, 4) = 0;
 }
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q241_L_594df0(); KING_ALIAS("_q241_L_594df0", "_Static6f68b0_Destroy")
+// [$L_594de0] registers 594df0 at exit
+extern "C" int __cdecl Static594de0_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_594df0); }

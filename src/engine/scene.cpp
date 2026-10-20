@@ -2591,3 +2591,8 @@ extern "C" int __fastcall q238_Sce5ef660_Destroy(BYTE* s); KING_ALIAS("@q238_Sce
 extern "C" int __fastcall Thunk5f0770(BYTE* s) { return q238_Node5f1a70_Destroy(s); }
 // [FUN_5f0870] forwards to Sce5ef660_Destroy
 extern "C" int __fastcall Thunk5f0870(BYTE* s) { return q238_Sce5ef660_Destroy(s); }
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q241_L_5ef4b0(); KING_ALIAS("_q241_L_5ef4b0", "_Static723978_Destroy")
+// [$L_5ef4a0] registers 5ef4b0 at exit
+extern "C" int __cdecl Static5ef4a0_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_5ef4b0); }
