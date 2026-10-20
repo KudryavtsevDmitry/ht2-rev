@@ -1507,6 +1507,9 @@ PUBLIC $L_71e828, $L_7200c8, $L_7200cc
 PUBLIC $L_66e430, $L_66f920, $L_66f9d8
 PUBLIC $L_655380, $L_655390, $L_67c60c, $L_67c6d0, $L_67c6f8, $L_67c730
 PUBLIC $L_67c758, $L_67c798
+PUBLIC $L_655370, $L_6553a0, $L_67c7d0, $L_67c7fc, $L_67c840, $L_67c880
+PUBLIC $L_67c928, $L_67c968
+PUBLIC $L_67cb28, $L_67cb68, $L_67cb8c
 
 ;===================================
 _TEXT SEGMENT
@@ -625780,6 +625783,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_5778a0 PROC
 
             sub ESP,368
@@ -625908,6 +625913,10 @@ $L_577a01::
             add ESP,368
             ret 
 FUN_5778a0 ENDP
+ELSE
+EXTERN @FfDamper_Construct@4:PROC
+FUN_5778a0 TEXTEQU <@FfDamper_Construct@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -626228,6 +626237,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_577ce0 PROC
 
             sub ESP,360
@@ -626355,6 +626366,10 @@ $L_577e39::
             add ESP,360
             ret 4
 FUN_577ce0 ENDP
+ELSE
+EXTERN @FfConstant_Construct@12:PROC
+FUN_577ce0 TEXTEQU <@FfConstant_Construct@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -626703,6 +626718,8 @@ FUN_577fc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 FUN_578100 PROC
 
             mov EAX,DWORD PTR [$L_6f4b88]
@@ -626823,6 +626840,10 @@ $L_57821b::
             add ESP,276
             ret 
 FUN_578100 ENDP
+ELSE
+EXTERN _Joy_SetAutoCenter:PROC
+FUN_578100 TEXTEQU <_Joy_SetAutoCenter>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

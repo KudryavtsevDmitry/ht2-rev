@@ -15,7 +15,7 @@ extern "C" void __fastcall Chain_DeleteAll(BYTE* self, void*);    // movingb.cpp
 extern "C" void __cdecl Carat_Message(const char* text, int);
 KING_ALIAS("_Carat_Message", "_Sys_Log")
 
-ASM_PROC(FUN_578100)
+extern "C" void FUN_578100(); KING_ALIAS("_FUN_578100", "_Joy_SetAutoCenter")
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 extern "C" void FUN_579420(); KING_ALIAS("_FUN_579420", "@Pool_Destruct@8")
@@ -1148,4 +1148,115 @@ extern "C" DWORD* __fastcall FfCondition_Construct(DWORD* s, void*, int c)
     if (Ff210_Create(s, g_q210_655380, d, (const char*)s_q210_67c730))
         CallThis(FUN_592f90, g_joyEffects, s);
     return s;
+}
+
+ASM_VAR(AsmLabel, s_q211_67c840, $L_67c840)
+ASM_VAR(AsmLabel, s_q211_67c7fc, $L_67c7fc)
+ASM_VAR(AsmLabel, s_q211_67c7d0, $L_67c7d0)
+ASM_VAR(AsmLabel, s_q211_67c968, $L_67c968)
+ASM_VAR(AsmLabel, s_q211_67c928, $L_67c928)
+ASM_VAR(AsmLabel, s_q211_67c880, $L_67c880)
+ASM_VAR(AsmLabel, g_q211_655370, $L_655370)
+ASM_VAR(AsmLabel, g_q211_6553a0, $L_6553a0)
+// [FUN_5778a0] a damper-like condition effect: coefficients 5000, saturation 10000, dead band 500 (+8 the gain)
+extern "C" DWORD* __fastcall FfDamper_Construct(DWORD* s)
+{
+    s[0] = 0;
+    s[1] = 0;
+    if (!g_joyDevice || !g_joyForceFeedback)
+        return s;
+    if (!Ff210_Enum(4, (const char*)s_q211_67c840, (const char*)s_q211_67c7fc, s))
+        return s;
+    DWORD d[14] = {0};
+    DWORD cond[6] = {0, 5000, 5000, 10000, 10000, 500};
+    DWORD axis = 0;
+    int dir = 1;
+    d[7] = 1;
+    d[4] = 10000;
+    d[12] = (DWORD)cond;
+    s[2] = 10000;
+    d[0] = 56;
+    d[3] = 0;
+    d[5] = (DWORD)-1;
+    d[6] = 0;
+    d[9] = (DWORD)&dir;
+    d[8] = (DWORD)&axis;
+    d[1] = 18;
+    d[2] = 1000000;
+    d[10] = 0;
+    d[11] = 24;
+    if (Ff210_Create(s, g_q211_655370, d, (const char*)s_q211_67c7d0))
+        CallThis(FUN_592f90, g_joyEffects, s);
+    return s;
+}
+// [FUN_577ce0] a constant force of magnitude and gain m for 100000 (+8 the gain)
+extern "C" DWORD* __fastcall FfConstant_Construct(DWORD* s, void*, int m)
+{
+    s[0] = 0;
+    s[1] = 0;
+    if (!g_joyDevice || !g_joyForceFeedback)
+        return s;
+    DWORD force[4] = {(DWORD)m, 0, 0, 1000000};
+    if (!Ff210_Enum(1, (const char*)s_q211_67c968, (const char*)s_q211_67c928, s))
+        return s;
+    DWORD d[14] = {0};
+    DWORD axis = 0;
+    int dir = 1;
+    d[7] = 1;
+    d[12] = (DWORD)force;
+    s[2] = m;
+    d[0] = 56;
+    d[3] = 0;
+    d[5] = (DWORD)-1;
+    d[6] = 0;
+    d[4] = m;
+    d[9] = (DWORD)&dir;
+    d[8] = (DWORD)&axis;
+    d[1] = 18;
+    d[2] = 100000;
+    d[11] = 16;
+    if (Ff210_Create(s, g_q211_6553a0, d, (const char*)s_q211_67c880))
+        CallThis(FUN_592f90, g_joyEffects, s);
+    return s;
+}
+
+ASM_VAR(AsmLabel, s_q212_67cb8c, $L_67cb8c)
+ASM_VAR(AsmLabel, s_q212_67cb68, $L_67cb68)
+ASM_VAR(AsmLabel, s_q212_67cb28, $L_67cb28)
+// [FUN_578100] turns the joystick's auto-centering on or off (DIPROP_AUTOCENTER, the device unacquired around it);
+// the result, a failure logged with its kind
+extern "C" int __cdecl Joy_SetAutoCenter(int on)
+{
+    int hr = (int)0x80070015;
+    if (g_joyDevice && g_joyForceFeedback) {
+        DWORD p[5] = {20, 16, 0, 0, 0};    // DIPROPDWORD, DIPH_DEVICE
+        if (on) {
+            Joy_Log((const char*)s_q212_67cb8c);
+            p[4] = 1;
+        } else {
+            Joy_Log((const char*)s_q212_67cb68);
+            p[4] = 0;
+        }
+        ComCall577(g_joyDevice, 32);
+        hr = ComCall577(g_joyDevice, 24, 9, p);
+        ComCall577(g_joyDevice, 28);
+        if (hr >= 0)
+            return hr;
+    }
+    int i = 0;
+    if (hr > (int)0x80070015) {
+        if (hr == (int)0x80070057)
+            i = 2;
+        else if (hr == 1)
+            i = hr;
+    } else if (hr == (int)0x80070015)
+        i = 3;
+    else if (hr == (int)0x80004001)
+        i = 5;
+    else if (hr == (int)0x80070002)
+        i = 4;
+    char text[256];
+    wsprintfA(text, (const char*)s_q212_67cb28, hr, i);
+    Joy_Log(text);
+    return hr;
 }
