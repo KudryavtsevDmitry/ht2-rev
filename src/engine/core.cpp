@@ -1404,9 +1404,9 @@ extern "C" void q197_FUN_5d2b50(); KING_ALIAS("_q197_FUN_5d2b50", "_Static71e820
 extern "C" void q197_FUN_5d2c00(); KING_ALIAS("_q197_FUN_5d2c00", "FUN_5d2c00")
 extern "C" void q197_FUN_5d3010(); KING_ALIAS("_q197_FUN_5d3010", "_Pool7200c0_Init")
 extern "C" void q197_L_5d29e0(); KING_ALIAS("_q197_L_5d29e0", "_Core_Free71e838")
-extern "C" void q197_L_5d2b70(); KING_ALIAS("_q197_L_5d2b70", "$L_5d2b70")
+extern "C" void q197_L_5d2b70(); KING_ALIAS("_q197_L_5d2b70", "_Static71e820_Destroy")
 extern "C" void q197_L_5d2e20(); KING_ALIAS("_q197_L_5d2e20", "_Table71e858_FreeAll")
-extern "C" void q197_L_5d3040(); KING_ALIAS("_q197_L_5d3040", "$L_5d3040")
+extern "C" void q197_L_5d3040(); KING_ALIAS("_q197_L_5d3040", "_Pool7200c0_Release")
 // [$L_5d29d0] registers the teardown at exit
 extern "C" int __cdecl Static5d29a0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_5d29e0); }
 // [$L_5d29a0] the static initializer: FUN_5d29b0, then the teardown at exit
@@ -1438,4 +1438,24 @@ extern "C" int __cdecl Static5d3000_Init(void)
 {
     CallC(q197_FUN_5d3010);
     return Static5d3000_AtExit();
+}
+
+extern "C" void FUN_5d2370(); KING_ALIAS("_FUN_5d2370", "@NameHash_Clear@8")
+ASM_VAR(char, g_q200_71e820, $L_71e820)
+ASM_VAR(void*, g_q200_71e828, $L_71e828)
+ASM_VAR(int, g_q200_71e844, $L_71e844)
+ASM_VAR(void*, g_q200_7200c8, $L_7200c8)
+ASM_VAR(void*, g_q200_7200cc, $L_7200cc)
+// [$L_5d2b70] clears the name hash 71e820 and frees its table
+extern "C" void __cdecl Static71e820_Destroy(void)
+{
+    CallThis(FUN_5d2370, &g_q200_71e820);
+    operator delete(g_q200_71e828);
+    g_q200_71e844 = 0;
+}
+// [$L_5d3040] frees the pool 7200c0's two blocks
+extern "C" void __cdecl Pool7200c0_Release(void)
+{
+    operator delete(g_q200_7200c8);
+    operator delete(g_q200_7200cc);
 }

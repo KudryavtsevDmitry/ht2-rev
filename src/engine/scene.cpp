@@ -1758,7 +1758,7 @@ extern "C" void __fastcall Sce5ef660_Destroy(BYTE* s)
 
 extern "C" void Sce_VecDtor(); KING_ALIAS("_Sce_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 ASM_VAR(AsmLabel, g_sce652d10, $L_652d10)
-ASM_VAR(AsmLabel, g_sce4c47f0, $L_4c47f0)
+extern "C" AsmLabel g_sce4c47f0; KING_ALIAS("_g_sce4c47f0", "@FxRec_Free@4")
 
 // [FUN_5fa720] (vtable 652d10) deletes its array of 40-byte items (+52)
 extern "C" void __fastcall Sce5fa720_Destroy(BYTE* s)

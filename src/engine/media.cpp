@@ -2281,7 +2281,7 @@ extern "C" BYTE* __fastcall Dtor5cf2f0_DeletingDestructor(BYTE* s, void*, int fl
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
 ASM_VAR(AsmLabel, g_q46_71e808, $L_71e808)
-ASM_VAR(AsmLabel, g_q46_5d2080, $L_5d2080)
+extern "C" AsmLabel g_q46_5d2080; KING_ALIAS("_g_q46_5d2080", "@MappedFile_Init@4")
 // [FUN_5d2050] constructs the static 71e808
 extern "C" int __cdecl Static71e808_Construct(void)
 {
@@ -2306,7 +2306,7 @@ extern "C" void __fastcall Med5cdcb0_Destruct(BYTE* s, void*)
 
 extern "C" void FUN_5ce630(); KING_ALIAS("_FUN_5ce630", "@Light_DestructBase@8")
 extern "C" void Med_VecCtor(); KING_ALIAS("_Med_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
-ASM_VAR(AsmLabel, g_q48_5c2f40, $L_5c2f40)
+extern "C" AsmLabel g_q48_5c2f40; KING_ALIAS("_g_q48_5c2f40", "@MedRec_Init@4")
 // [FUN_5c2f10] constructor (x): ten 32-byte lights, x at +320
 extern "C" BYTE* __fastcall Lights5c2f10_Construct(BYTE* s, void*, int x)
 {
@@ -2830,3 +2830,27 @@ extern "C" void __fastcall Bstr_Free(wchar_t** s) { SysFreeString(*s); }
 extern "C" void __fastcall Med5c6ab0_Nop(BYTE*) {}
 // [$L_5c77f0] nothing to do
 extern "C" void __fastcall Med5c77f0_Nop(BYTE*) {}
+
+ASM_VAR(char, g_q200_651948, $L_651948)
+// [$L_5c2f40] an empty 32-byte media record (vtable 651948, no ids)
+extern "C" BYTE* __fastcall MedRec_Init(BYTE* s)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = &g_q200_651948;
+    F(int, s, 12) = -1;
+    F(int, s, 16) = -1;
+    F(int, s, 20) = 0;
+    return s;
+}
+// [$L_5d2080] an empty mapped file: no handles
+extern "C" BYTE* __fastcall MappedFile_Init(BYTE* s)
+{
+    F(int, s, 0) = -1;
+    F(int, s, 4) = -1;
+    F(int, s, 8) = 0;
+    F(int, s, 12) = 0;
+    F(int, s, 16) = 0;
+    F(BYTE, s, 20) = 0;
+    return s;
+}
