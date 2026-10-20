@@ -4885,3 +4885,32 @@ extern "C" void __fastcall MainMenu_OnCommand(BYTE* s, void*, int cmd)
     case 108: CallThis(FUN_527950, scr, g_q59_6cec8c); break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Driver choice list drawing.
+
+extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
+extern "C" void FUN_5c0020(); KING_ALIAS("_FUN_5c0020", "@List_DrawAt@12")
+extern "C" void FUN_569740(); KING_ALIAS("_FUN_569740", "_Messages_Get1288")
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
+// [$L_525f70] draws the list part on dc: the movie frame first when one plays, the list, then the caption of the
+// current driver (texts 111..116; 111 with none) in the message font at +51, +116 of the +288 frame
+extern "C" void __fastcall DriverChoice_Draw(BYTE* s, void*, int dc)
+{
+    if (g_6ce4f4)
+        CallC(FUN_5b86c0, F(int, g_69684c, 12), 0, 0, g_6ce4f4);
+    CallThis(FUN_5c0020, s, dc);
+    BYTE* fr = F(BYTE*, s, 288);
+    int x = F(int, fr, 44);
+    int y = F(int, fr, 48);
+    int id;
+    if (!F(int, s, 312))
+        id = 111;
+    else if ((unsigned)F(int, s, 308) <= 4)
+        id = 112 + F(int, s, 308);
+    else
+        return;
+    const char* t = CallC<const char*>(FUN_5d2e50, id);
+    int font = CallC<int>(FUN_569740);
+    CallC(FUN_5ea170, F(int, s, -52), x + 51, y + 116, font, t, 4, 0);
+}

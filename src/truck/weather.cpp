@@ -368,7 +368,7 @@ extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5e1ad0(); KING_ALIAS("_FUN_5e1ad0", "_Node_ParentRoot")
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
-ASM_PROC(FUN_5a3f50)    // (this, node)
+extern "C" void FUN_5a3f50(); KING_ALIAS("_FUN_5a3f50", "@Light5a3f50_Attach@12")    // (this, node)
 ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
 ASM_VAR(AsmLabel, s_67e8f0, $L_67e8f0)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);

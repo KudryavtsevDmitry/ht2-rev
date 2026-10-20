@@ -503862,6 +503862,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_525f70 PROC
 
             mov EAX,DWORD PTR [$L_6ce4f4]
@@ -504007,6 +504009,10 @@ $L_526068           DWORD $L_525fd1
           DWORD $L_525fd9
           DWORD $L_526008
           DWORD $L_526037
+ELSE
+EXTERN @DriverChoice_Draw@12:PROC
+$L_525f70 TEXTEQU <@DriverChoice_Draw@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -690452,6 +690458,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_5a3f50 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -690523,6 +690531,10 @@ $L_5a3fbc           BYTE ($L_5a3fa4-$L_5a3fa4)/4
           BYTE ($L_5a3fb8-$L_5a3fa4)/4
           BYTE ($L_5a3fb8-$L_5a3fa4)/4
           BYTE ($L_5a3fb4-$L_5a3fa4)/4
+ELSE
+EXTERN @Light5a3f50_Attach@12:PROC
+FUN_5a3f50 TEXTEQU <@Light5a3f50_Attach@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -788955,6 +788967,8 @@ $L_5db637 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5db660 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -789027,6 +789041,10 @@ $L_5db6c8           BYTE ($L_5db6b4-$L_5db6b4)/4
           BYTE ($L_5db6c4-$L_5db6b4)/4
           BYTE ($L_5db6c4-$L_5db6b4)/4
           BYTE ($L_5db6c0-$L_5db6b4)/4
+ELSE
+EXTERN _Node_Dispatch:PROC
+$L_5db660 TEXTEQU <_Node_Dispatch>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16

@@ -2970,3 +2970,18 @@ extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx)
     }
     return -1;
 }
+
+// ---------------------------------------------------------------------------
+// Node message dispatch.
+
+// [$L_5db660] passes the message m (by its type +16: 1, 2, 3, 22) with a to its handler; always -1
+extern "C" int __cdecl Node_Dispatch(BYTE* m, int a)
+{
+    switch (F(int, m, 16)) {
+    case 1: CallThis(FUN_5f0b10, m, a); break;
+    case 2: CallThis(FUN_5f33e0, m, a); break;
+    case 3: CallThis(FUN_5f2dd0, m, a); break;
+    case 22: CallThis(FUN_5fa910, m, a); break;
+    }
+    return -1;
+}
