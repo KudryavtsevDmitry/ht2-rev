@@ -1200,3 +1200,14 @@ extern "C" void __fastcall Ring491090_Destruct(BYTE* s, void*)
     F(void*, s, 0) = g_q46_64bef4;
     CallThis(FUN_491010, s);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+ASM_VAR(BYTE*, g_q49_691cd0, $L_691cd0)
+// [$L_490d90] frees the 691cd0 block when its +2 word is set
+extern "C" void __cdecl Block691cd0_Free(void)
+{
+    if (g_q49_691cd0 && F(WORD, g_q49_691cd0, 2))
+        operator delete(g_q49_691cd0);
+}

@@ -52,7 +52,7 @@ extern "C" void FUN_605130(); KING_ALIAS("_FUN_605130", "_Streams_Collect")
 extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
 extern "C" void FUN_5e98c0(); KING_ALIAS("_FUN_5e98c0", "_Data_Read5e99c0")
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
-ASM_FUNC(Mixer_Close, $L_604a40)
+extern "C" void Mixer_Close(); KING_ALIAS("_Mixer_Close", "_Mixer_ShutdownOnce")
 ASM_FUNC(Scene_EachCallback, $L_5fc780)
 
 ASM_VAR(Dwords, g_7025f0, $L_7025f0)            // the identity 3x4 matrix
@@ -1895,4 +1895,19 @@ extern "C" void __cdecl Static723d38_Construct(void)
 {
     char a;
     CallThis(FUN_487730, (void*)g_q47_723d38, &a);
+}
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void FUN_5ef450(); KING_ALIAS("_FUN_5ef450", "@Node_Destroy@8")
+static void __cdecl Static722940_Destroy(void)
+{
+    CallThis(FUN_5ef450, (void*)g_q46_722940);
+}
+// [$L_5ef4e0] destroys the static node 722940 at exit
+extern "C" int __cdecl Static722940_AtExit(void)
+{
+    return atexit(Static722940_Destroy);
 }

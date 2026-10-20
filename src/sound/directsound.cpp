@@ -893,3 +893,18 @@ extern "C" void __cdecl Mixer_Shutdown(void)
     g_q48_6843fc = keep;
     CallC(FUN_605090);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+extern "C" void FUN_6049f0(); KING_ALIAS("_FUN_6049f0", "_Mixer_Unload")
+ASM_VAR(int, g_q49_684404, $L_684404)
+// [$L_604a40] once: shuts the mixer down and unloads it (684404 = -1)
+extern "C" void __cdecl Mixer_ShutdownOnce(void)
+{
+    if (g_q49_684404)
+        return;
+    Mixer_Shutdown();
+    CallC(FUN_6049f0);
+    g_q49_684404 = -1;
+}

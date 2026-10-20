@@ -2785,3 +2785,14 @@ extern "C" BYTE* __fastcall Dtor5d88e0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+// [FUN_5d8b90] tells the +56 object (slot 52) the +12 value
+extern "C" void __fastcall Wnd5d8b90_Notify(BYTE* s, void*)
+{
+    BYTE* o = F(BYTE*, s, 56);
+    if (o)
+        CallVirt(o, 52, F(int, s, 12));
+}

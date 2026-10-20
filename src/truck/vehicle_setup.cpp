@@ -560,3 +560,14 @@ extern "C" int __cdecl Stream_ReadWord(BYTE* is, char* buf)
     BYTE* r = CallThis<BYTE*>(Is_ExtractText, is, buf);
     return (F(int, r + F(int, F(BYTE*, r, 0), 4), 8) & 6) == 0;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods and static helpers: guarded static construction, releases, frees.
+
+ASM_VAR(void*, g_q49_697684, $L_697684)
+// [$L_503e10] frees the 697684 block
+extern "C" void __cdecl Block697684_Free(void)
+{
+    if (g_q49_697684)
+        operator delete(g_q49_697684);
+}

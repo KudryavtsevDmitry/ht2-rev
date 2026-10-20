@@ -1426,6 +1426,7 @@ PUBLIC $L_677fc4, $L_677fdc, $L_677ff4, $L_678008
 PUBLIC $L_651568, $L_652a08, $L_722940, $L_723190, $L_723978
 PUBLIC $L_651628, $L_652f24, $L_6974a8, $L_6ef200, $L_723d38, $L_724f04
 PUBLIC $L_696e28, $L_696e38, $L_72418c
+PUBLIC $L_68a84c, $L_68a84d
 
 ;===================================
 _TEXT SEGMENT
@@ -4309,6 +4310,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402280 PROC
 
             push OFFSET $L_402290
@@ -4326,6 +4329,10 @@ $L_402290::
             mov ECX,OFFSET $L_68ceb0
             jmp FUN_447970
 $L_402280 ENDP
+ELSE
+EXTERN _AiStatic68ceb0_AtExit:PROC
+$L_402280 TEXTEQU <_AiStatic68ceb0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5416,6 +5423,8 @@ $L_4028c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4028d0 PROC
 
             mov CL,BYTE PTR [$L_68a84c]
@@ -5431,6 +5440,10 @@ $L_4028ee::
 
             ret 
 $L_4028d0 ENDP
+ELSE
+EXTERN _AiStatic68cff0_Init:PROC
+$L_4028d0 TEXTEQU <_AiStatic68cff0_Init>
+ENDIF
           BYTE 090H
 $L_4028f0 PROC
 
@@ -5746,6 +5759,8 @@ $L_402b60 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402b70 PROC
 
             mov CL,BYTE PTR [$L_68a84d]
@@ -5761,6 +5776,10 @@ $L_402b8e::
 
             ret 
 $L_402b70 ENDP
+ELSE
+EXTERN _AiStatic68d008_Init:PROC
+$L_402b70 TEXTEQU <_AiStatic68d008_Init>
+ENDIF
           BYTE 090H
 $L_402b90 PROC
 
@@ -5804,6 +5823,8 @@ $L_402bb0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402bc0 PROC
 
             mov CL,BYTE PTR [$L_68a84d]
@@ -5819,6 +5840,10 @@ $L_402bde::
 
             ret 
 $L_402bc0 ENDP
+ELSE
+EXTERN _AiStatic68cf10_Init:PROC
+$L_402bc0 TEXTEQU <_AiStatic68cf10_Init>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
@@ -261902,6 +261927,8 @@ $L_490d80 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 $L_490d90 PROC
 
             mov EAX,DWORD PTR [$L_691cd0]
@@ -261919,6 +261946,10 @@ $L_490da7::
 
             ret 
 $L_490d90 ENDP
+ELSE
+EXTERN _Block691cd0_Free:PROC
+$L_490d90 TEXTEQU <_Block691cd0_Free>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -371417,6 +371448,8 @@ $L_4ce300 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4ce6c0 PROC
 
             mov EAX,DWORD PTR [ECX+12]
@@ -371433,6 +371466,10 @@ $L_4ce6ce::
 
             nop
 $L_4ce6c0 ENDP
+ELSE
+EXTERN @Eff4ce6c0_FreeBlock@8:PROC
+$L_4ce6c0 TEXTEQU <@Eff4ce6c0_FreeBlock@8>
+ENDIF
 ALIGN 16
 FUN_4ce6d0 PROC
 
@@ -450450,6 +450487,8 @@ $L_503e00 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 $L_503e10 PROC
 
             mov EAX,DWORD PTR [$L_697684]
@@ -450464,6 +450503,10 @@ $L_503e20::
 
             ret 
 $L_503e10 ENDP
+ELSE
+EXTERN _Block697684_Free:PROC
+$L_503e10 TEXTEQU <_Block697684_Free>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -473706,6 +473749,8 @@ $L_513238::
             ret 
 $L_513044 ENDP
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_513250 PROC
 
             cmp DWORD PTR [$L_6ce9f0],8
@@ -473722,6 +473767,10 @@ $L_51325f::
 
             ret 
 $L_513250 ENDP
+ELSE
+EXTERN _Names_AddLimited:PROC
+$L_513250 TEXTEQU <_Names_AddLimited>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
@@ -522951,6 +523000,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_531aa0 PROC
 
             mov ECX,DWORD PTR [$L_6d2078]
@@ -522966,6 +523017,10 @@ $L_531ab7::
 
             ret 
 $L_531aa0 ENDP
+ELSE
+EXTERN _Player_DetachCarUnless:PROC
+$L_531aa0 TEXTEQU <_Player_DetachCarUnless>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -554113,6 +554168,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_548100 PROC
 
             push ESI
@@ -554128,6 +554185,10 @@ $L_548112::
             pop ESI
             ret 
 $L_548100 ENDP
+ELSE
+EXTERN @Veh548100_ReleaseAttachment@8:PROC
+$L_548100 TEXTEQU <@Veh548100_ReleaseAttachment@8>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_548120 PROC
@@ -743059,6 +743120,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c2490 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -743072,6 +743135,10 @@ $L_5c249c::
 
             ret 
 $L_5c2490 ENDP
+ELSE
+EXTERN @ComPtr_Release@8:PROC
+$L_5c2490 TEXTEQU <@ComPtr_Release@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -783409,6 +783476,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5d8b90 PROC
 
             mov EAX,DWORD PTR [ECX+56]
@@ -783424,6 +783493,10 @@ $L_5d8ba2::
 
             ret 
 FUN_5d8b90 ENDP
+ELSE
+EXTERN @Wnd5d8b90_Notify@8:PROC
+FUN_5d8b90 TEXTEQU <@Wnd5d8b90_Notify@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -826907,6 +826980,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ef4e0 PROC
 
             push OFFSET $L_5ef4f0
@@ -826924,6 +826999,10 @@ $L_5ef4f0::
             mov ECX,OFFSET $L_722940
             jmp FUN_5ef450
 $L_5ef4e0 ENDP
+ELSE
+EXTERN _Static722940_AtExit:PROC
+$L_5ef4e0 TEXTEQU <_Static722940_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -866787,6 +866866,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 $L_604a40 PROC
 
             mov EAX,DWORD PTR [$L_684404]
@@ -866802,6 +866883,10 @@ $L_604a5d::
 
             ret 
 $L_604a40 ENDP
+ELSE
+EXTERN _Mixer_ShutdownOnce:PROC
+$L_604a40 TEXTEQU <_Mixer_ShutdownOnce>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
