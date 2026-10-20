@@ -708582,6 +708582,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5ad9e0 PROC
 
             mov EDX,DWORD PTR [ECX+8240]
@@ -708681,6 +708683,10 @@ $L_5adadb::
             add ESP,28
             ret 4
 FUN_5ad9e0 ENDP
+ELSE
+EXTERN @Render_ClipSphere@12:PROC
+FUN_5ad9e0 TEXTEQU <@Render_ClipSphere@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
