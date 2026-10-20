@@ -21631,3 +21631,31 @@ extern "C" void __cdecl Ai_ReportUnless5(int kind, int a, int b)
         CallC(FUN_401010, kind, a, (const char*)s_q50_66c7b0, (const char*)s_q50_66c558, 130, b,
               &g_empty68d1c0, &g_empty68d1c0);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// returns the storage of a vector (+0 .. +8) of size-byte elements to the pool
+static void PoolVec_Free_W(BYTE* s, int size)
+{
+    BYTE* p = F(BYTE*, s, 0);
+    int n = (F(BYTE*, s, 8) - p) / size;
+    if (n)
+        CallC(FUN_44b4a0, p, n * size);
+}
+// [$L_44abb0] frees the storage of a vector of 144-byte records
+extern "C" void __fastcall Vec144_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_W(s, 144);
+}
+// [$L_44abe0] frees the storage of a vector of 36-byte records
+extern "C" void __fastcall Vec36_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_W(s, 36);
+}
+// [$L_44a6c0] frees the storage of a vector of 104-byte records
+extern "C" void __fastcall Vec104_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_W(s, 104);
+}

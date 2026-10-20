@@ -2807,3 +2807,31 @@ extern "C" void __cdecl Loader_OnMessage(int* m, BYTE* l)
     if (m[0] == 4095 && l)
         CallThis(FUN_5e44e0, l, 4095, m[3]);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void Mfc_AfxGetThread(); KING_ALIAS("_Mfc_AfxGetThread", "?AfxGetThread@@YGPAVCWinThread@@XZ")
+extern "C" void Mfc_WndDefault(); KING_ALIAS("_Mfc_WndDefault", "?Default@CWnd@@IAEJXZ")
+ASM_VAR(void*, g_q51_72177c, $L_72177c)
+ASM_VAR(int, g_q51_721778, $L_721778)
+ASM_VAR(BYTE*, g_q51_721750, $L_721750)
+// [$L_5dd510] the current thread, fetched once into 72177c
+extern "C" void* __stdcall App_Thread(int)
+{
+    if (!g_q51_72177c)
+        g_q51_72177c = CallStd<void*>(Mfc_AfxGetThread);
+    return g_q51_72177c;
+}
+// [$L_5dd330] on activation (a): stores it in the 721750 frame (+336, +328) and tells its view (+252, slot 60),
+// then the default handling
+extern "C" int __fastcall Frame5dd330_OnActivate(BYTE* s, void*, int a, int)
+{
+    if (g_q51_721778) {
+        F(int, g_q51_721750, 336) = a;
+        F(int, g_q51_721750, 328) = a;
+        if (F(int, g_q51_721750, 328))
+            CallVirt(F(BYTE*, g_q51_721750, 252), 60);
+    }
+    return CallThis<int>(Mfc_WndDefault, s);
+}

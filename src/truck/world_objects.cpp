@@ -1936,3 +1936,19 @@ extern "C" BYTE* __fastcall WorldObj59ab90_DeletingDestructor(BYTE* s, void*, in
         CallC(FUN_5793f0, s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+// [$L_5975b0] deletes the +16 and +116 objects
+extern "C" void __fastcall Wasm5975b0_FreeParts(BYTE* s, void*)
+{
+    if (F(BYTE*, s, 16)) {
+        CallVirt(F(BYTE*, s, 16), 0, 1);
+        F(BYTE*, s, 16) = 0;
+    }
+    if (F(BYTE*, s, 116)) {
+        CallVirt(F(BYTE*, s, 116), 0, 1);
+        F(BYTE*, s, 116) = 0;
+    }
+}

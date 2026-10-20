@@ -34,7 +34,7 @@ KING_ALIAS("_Carat_Resource", "_Table71e858_Get")
 extern "C" void __cdecl Carat_51d8f0(int a, int b);
 KING_ALIAS("_Carat_51d8f0", "_Save_WriteEntry")
 extern "C" int __cdecl Carat_5d3ab0();
-KING_ALIAS("_Carat_5d3ab0", "FUN_5d3ab0")
+KING_ALIAS("_Carat_5d3ab0", "_Mode_TextureLevel")
 extern "C" void __cdecl Carat_Message(const char* text, int);
 KING_ALIAS("_Carat_Message", "_Sys_Log")
 extern "C" int __fastcall Lights_Release(BYTE* self, void*, int a);   // aeffects.cpp

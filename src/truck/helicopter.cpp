@@ -2210,3 +2210,21 @@ extern "C" int __cdecl Heli_Run569750(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_56aa00, g_q46_6f3438);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// returns the storage of a vector (+0 .. +8) of size-byte elements to the pool
+static void PoolVec_Free_H(BYTE* s, int size)
+{
+    BYTE* p = F(BYTE*, s, 0);
+    int n = (F(BYTE*, s, 8) - p) / size;
+    if (n)
+        CallC(FUN_44b4a0, p, n * size);
+}
+// [$L_576bd0] frees the storage of a vector of 192-byte records
+extern "C" void __fastcall Vec192_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_H(s, 192);
+}
