@@ -2304,3 +2304,62 @@ extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color,
         else
             F(int, p, 0) = color;
 }
+
+// ---------------------------------------------------------------------------
+// Drawing run-length images.
+
+ASM_PROC(FUN_5feff3)
+ASM_PROC(FUN_5fea03)
+ASM_PROC(FUN_5fe860)
+ASM_VAR(unsigned, g_q153_702e8c, $L_702e8c)
+// [FUN_5b8720] draws run-length image img (w +4, h +6, data +16: a byte with bit 7 skips that many pixels, else
+// copies that many) at x, y on dst; blend mode 2 (+80) with an alpha other than 1 goes through the palette's
+// tables; 8-bit surfaces outside the 702e8c bit 14 mode use the fast 5feff3 copy
+extern "C" void __cdecl Surface_DrawRle(BYTE* dst, int x, int y, BYTE* img)
+{
+    BYTE* pal = CallThis<BYTE*>(FUN_5b64c0, dst);
+    BYTE* t = 0;
+    if (F(int, dst, 80) == 2) {
+        if (!pal || Ren151_Eq(F(float, dst, 88), g_q151_64b678))
+            return;
+        if (!Ren151_Eq(F(float, dst, 88), g_q151_64b670))
+            t = CallThis<BYTE*>(FUN_5b94b0, pal, (int)(F(int, pal, 796) * F(float, dst, 88)));
+    } else if (F(WORD, dst, 4) == 1 && !(g_q153_702e8c & 0x4000)) {
+        int pitch = F(WORD, dst, 6);
+        BYTE* d = F(BYTE*, dst, 24 + F(int, dst, 16) * 4) + pitch * y + x;
+        CallC(FUN_5feff3, F(BYTE*, img, 16), d, x, (int)F(WORD, img, 4), (int)F(WORD, img, 6), pitch);
+        return;
+    }
+    BYTE* buf = F(BYTE*, dst, 24 + F(int, dst, 16) * 4);
+    const BYTE* src = F(const BYTE*, img, 16);
+    if (!buf)
+        return;
+    BYTE* row = buf + F(WORD, dst, 4) * x + F(WORD, dst, 6) * y;
+    for (int yy = y; yy - y < (int)F(WORD, img, 6); yy++, row += F(WORD, dst, 6)) {
+        BYTE* d = row;
+        for (int cx = x; cx - x < (int)F(WORD, img, 4);) {
+            BYTE c = *src++;
+            WORD bpp = F(WORD, dst, 4);
+            if (c & 128) {
+                cx += c & 127;
+                d += bpp * (c & 127);
+                continue;
+            }
+            int n = c & 127;
+            if (bpp == 1) {
+                if (F(int, dst, 80) == 2 && t)
+                    CallC(FUN_5fe860, t, d, src, n);
+                else
+                    memcpy(d, src, n);
+            } else if (bpp == 2) {
+                if (F(int, dst, 80) == 2 && t)
+                    CallC(FUN_5fea03, t, d, src, n);
+                else
+                    memcpy(d, src, n * 2);
+            }
+            cx += n;
+            d += F(WORD, dst, 4) * n;
+            src += n;
+        }
+    }
+}

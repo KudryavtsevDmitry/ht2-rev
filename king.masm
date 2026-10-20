@@ -724838,6 +724838,8 @@ EXTERN _Bitmap_Draw:PROC
 FUN_5b86c0 TEXTEQU <_Bitmap_Draw>
 ENDIF
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b8720 PROC
 
             sub ESP,20
@@ -725088,6 +725090,10 @@ $L_5b8975::
             add ESP,20
             ret 
 FUN_5b8720 ENDP
+ELSE
+EXTERN _Surface_DrawRle:PROC
+FUN_5b8720 TEXTEQU <_Surface_DrawRle>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
