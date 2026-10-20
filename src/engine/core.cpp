@@ -1459,3 +1459,46 @@ extern "C" void __cdecl Pool7200c0_Release(void)
     operator delete(g_q200_7200c8);
     operator delete(g_q200_7200cc);
 }
+
+ASM_PROC(FUN_5fedbc)
+ASM_PROC(FUN_5fef04)
+extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
+ASM_VAR(BYTE*, g_q222_71e7ec, $L_71e7ec)
+ASM_VAR(int, g_q222_71e7f0, $L_71e7f0)
+ASM_VAR(int, g_q222_71e7f8, $L_71e7f8)
+ASM_VAR(int, g_q222_71e7bc, $L_71e7bc)
+ASM_VAR(BYTE*, g_q222_71e7e8, $L_71e7e8)
+ASM_VAR(int, g_q222_70f3d8, $L_70f3d8)
+ASM_VAR(BYTE*, g_q222_71e7c4, $L_71e7c4)
+// [FUN_5d15f0] fills the rows 71e7dc..71e7d8 of the walked polygon (left edges in 70f3f0, right ones 31200 bytes
+// on: x in 12.20 fixed point, z at +8) with colour c and its depth (z buffer 71e7e8, pitch 71e7f8 words; frame
+// 71e7c4, pitch 71e7bc, 70f3d8 bytes a pixel) by 5fef04; with flag 1 the row table is chosen by k first
+extern "C" void __cdecl Poly_FillZ(int flags, int c, int, float k)
+{
+    CallC(FUN_5fedbc, flags, 1);
+    if (flags & 1) {
+        BYTE* t = g_q222_71e7ec;
+        g_q222_71e7f0 = CallThis<int>(FUN_5b94b0, t, (int)(F(int, t, 796) * k));
+    }
+    int y = g_q134_71e7dc;
+    int zrow = g_q222_71e7f8 * y * 2;
+    int row = y * g_q222_71e7bc;
+    if (y > g_q134_71e7d8)
+        return;
+    for (int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24); y <= g_q134_71e7d8; y++, e += 6) {
+        int l = e[0], r = e[7800];
+        int x1 = r >> 20, x0 = l >> 20;
+        int w = (r - l) >> 16;
+        int dz = w < 16 ? 0 : ((e[7802] - e[2]) << 6) / w;
+        int sub = (l >> 16) & 15;
+        if (sub) {
+            sub = 16 - sub;
+            x0++;
+        }
+        if (x0 <= x1)
+            CallC(FUN_5fef04, g_q222_70f3d8 * x0 + g_q222_71e7c4 + row, x1 - x0 + 1, 0, 0, c,
+                  ((sub * dz) >> 6) + e[2], dz >> 2, g_q222_71e7e8 + x0 * 2 + zrow);
+        zrow += g_q222_71e7f8 * 2;
+        row += g_q222_71e7bc;
+    }
+}
