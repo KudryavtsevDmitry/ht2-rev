@@ -2297,3 +2297,30 @@ extern "C" int __fastcall Thunk576c20(BYTE* s, void* d, int a0) { return q198_Dt
 
 // [$L_56d0d0] whether object c has its +416 set
 extern "C" int __cdecl Obj56d0d0_Has416(int, int, BYTE* c) { return F(int, c, 416) != 0; }
+
+extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
+extern "C" void FUN_614f00(); KING_ALIAS("_FUN_614f00", "_Terrain_Call614960@12")
+extern "C" void FUN_615670(); KING_ALIAS("_FUN_615670", "@Terrain615670_Update@12")
+ASM_VAR(AsmLabel, g_q214_7025f0, $L_7025f0)
+ASM_VAR(float, g_q214_702620, $L_702620)
+ASM_VAR(float, g_q214_702624, $L_702624)
+ASM_VAR(float, g_q214_702628, $L_702628)
+ASM_VAR(AsmLabel, g_q214_702630, $L_702630)
+ASM_VAR(BYTE*, g_q214_6f33b4, $L_6f33b4)
+// [$L_569450] updates the terrain 6f33b4 for the camera: the direction 702620 turned by the camera's matrix and its
+// position (+36), then the step with b; 1
+extern "C" int __cdecl Terrain_FollowCamera(int, int b)
+{
+    float m[12], c[12];
+    memset(m, 0, 48);
+    memcpy(m, g_q214_7025f0, 48);
+    memcpy(m, CallThis<float*>(FUN_5dbcc0, F(BYTE*, g_6cec6c, 1356), c), 48);
+    double d0 = g_q214_702620, d1 = g_q214_702624, d2 = g_q214_702628;
+    float v[3];
+    v[0] = (float)(d2 * m[6] + d0 * m[0] + d1 * m[3]);
+    v[1] = (float)(d2 * m[7] + d1 * m[4] + d0 * m[1]);
+    v[2] = (float)(d2 * m[8] + d1 * m[5] + d0 * m[2]);
+    CallStd(FUN_614f00, m + 9, v, (void*)g_q214_702630);
+    CallThis(FUN_615670, g_q214_6f33b4, b);
+    return 1;
+}

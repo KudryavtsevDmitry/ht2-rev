@@ -602645,6 +602645,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_569450 PROC
 
             sub ESP,108
@@ -602726,6 +602728,10 @@ $L_56945e::
             add ESP,108
             ret 
 $L_569450 ENDP
+ELSE
+EXTERN _Terrain_FollowCamera:PROC
+$L_569450 TEXTEQU <_Terrain_FollowCamera>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
