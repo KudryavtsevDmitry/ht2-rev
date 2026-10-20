@@ -1469,6 +1469,7 @@ PUBLIC $L_720128, $L_720148, $L_720728, $L_720870
 PUBLIC $L_64bea8, $L_6865d8
 PUBLIC $L_64dea8, $L_64deb0
 PUBLIC $L_64d0f0, $L_676834, $L_676838
+PUBLIC $L_64dad0, $L_697868
 
 ;===================================
 _TEXT SEGMENT
@@ -456767,6 +456768,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_508000 PROC
 
             mov EAX,DWORD PTR [$L_674ae0]
@@ -457083,6 +457086,10 @@ $L_5082e4::
             add ESP,264
             ret 
 FUN_508000 ENDP
+ELSE
+EXTERN _VehCache_Load:PROC
+FUN_508000 TEXTEQU <_VehCache_Load>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
