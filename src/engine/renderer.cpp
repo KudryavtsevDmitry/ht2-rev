@@ -2363,3 +2363,52 @@ extern "C" void __cdecl Surface_DrawRle(BYTE* dst, int x, int y, BYTE* img)
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Direct3D device states.
+
+ASM_VAR(void*, g_q154_702e80, $L_702e80)
+static void Ren154_RS(void* d, int st, int v) { ((long(__stdcall*)(void*, int, int))(*(void***)d)[20])(d, st, v); }
+static void Ren154_TSS(void* d, int stage, int type, int v)
+{
+    ((long(__stdcall*)(void*, int, int, int))(*(void***)d)[37])(d, stage, type, v);
+}
+// a black material (all colours 0,0,0,1, power 0) with lighting and specular states on
+static void Ren154_Material(void* d)
+{
+    DWORD m[17] = {0, 0, 0, 0x3f800000, 0, 0, 0, 0x3f800000, 0, 0, 0, 0x3f800000, 0, 0, 0, 0x3f800000, 0};
+    Ren154_RS(d, 148, 1);
+    Ren154_RS(d, 145, 1);
+    ((long(__stdcall*)(void*, DWORD*))(*(void***)d)[16])(d, m);
+    Ren154_RS(d, 27, 0);
+}
+// [FUN_5b0120] sets the device's (720908) render states for drawing mode (1: plain textures, 2: with the 702e80
+// texture in stage 0 blended over stage 1, fog colour states)
+extern "C" void __cdecl Device_SetStates(int mode)
+{
+    void* d = g_q150_720908;
+    Ren154_RS(d, 22, 2);
+    Ren154_RS(g_q150_720908, 4, 1);
+    Ren154_RS(g_q150_720908, 41, 1);
+    Ren154_RS(g_q150_720908, 7, (g_q153_702e8c & 0x4000) ? 1 : 0);
+    static const BYTE rs[10][2] = {{9, 2}, {26, 1}, {19, 5}, {20, 6}, {27, 0}, {29, 1}, {141, 1}, {147, 0},
+                                   {146, 0}, {15, 0}};
+    for (int k = 0; k < 10; k++)
+        Ren154_RS(g_q150_720908, rs[k][0], rs[k][1]);
+    if (mode == 1) {
+        Ren154_TSS(g_q150_720908, 0, 4, 1);
+        Ren154_TSS(g_q150_720908, 0, 1, 1);
+        Ren154_Material(g_q150_720908);
+    } else if (mode == 2) {
+        d = g_q150_720908;
+        ((long(__stdcall*)(void*, int, void*))(*(void***)d)[35])(d, 0, g_q154_702e80);
+        static const BYTE ts[9][3] = {{0, 11, 0}, {0, 6, 2}, {0, 5, 0}, {0, 4, 10}, {0, 3, 2},
+                                      {0, 2, 0},  {0, 1, 2}, {1, 4, 1}, {1, 1, 1}};
+        for (int k = 0; k < 9; k++)
+            Ren154_TSS(g_q150_720908, ts[k][0], ts[k][1], ts[k][2]);
+        Ren154_Material(g_q150_720908);
+        Ren154_RS(g_q150_720908, 24, 15);
+        Ren154_RS(g_q150_720908, 15, 1);
+        Ren154_RS(g_q150_720908, 25, 5);
+    }
+}

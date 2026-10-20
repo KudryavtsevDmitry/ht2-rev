@@ -37,7 +37,7 @@ extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
 ASM_PROC(FUN_5adc80)
 ASM_PROC(FUN_5addf0)
 ASM_PROC(FUN_5eb4b0)
-ASM_PROC(FUN_5b0120)
+extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
 ASM_PROC(FUN_5d2650)    // name hash: add (name, value pointer)
 extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
 ASM_VAR(int, g_720904, $L_720904)
