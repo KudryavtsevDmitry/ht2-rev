@@ -863413,6 +863413,8 @@ EXTERN _Dp_Get723d88:PROC
 FUN_602540 TEXTEQU <_Dp_Get723d88>
 ENDIF
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_602550 PROC
 
             sub ESP,12
@@ -863580,6 +863582,10 @@ $L_6026aa::
             inc EDI
             jmp $L_602655
 $L_602550 ENDP
+ELSE
+EXTERN @Providers_Destroy@8:PROC
+$L_602550 TEXTEQU <@Providers_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -868094,6 +868100,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/directsound.cpp, nmake ASM_DIRECTSOUND=1 assembles the original
+IFDEF ASM_DIRECTSOUND
 FUN_604410 PROC
 
             sub ESP,40
@@ -868235,6 +868243,10 @@ $L_604581::
             add ESP,40
             ret 8
 FUN_604410 ENDP
+ELSE
+EXTERN @Wave_Open@16:PROC
+FUN_604410 TEXTEQU <@Wave_Open@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

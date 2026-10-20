@@ -17,7 +17,7 @@ typedef char AsmLabel[1];
 ASM_PROC(FUN_6047d0)
 ASM_VAR(AsmLabel, g_vtbl652e20, $L_652e20)
 ASM_PROC(FUN_604b40)
-ASM_PROC(FUN_604410)    // play a table entry (a, b)
+extern "C" void FUN_604410(); KING_ALIAS("_FUN_604410", "@Wave_Open@16")    // play a table entry (a, b)
 extern "C" void FUN_6041b0(); KING_ALIAS("_FUN_6041b0", "_Play_Stop")    // stop sound id
 
 ASM_VAR(int, g_72411c, $L_72411c)
@@ -229,8 +229,8 @@ bool __fastcall Wave_SkipChunk(BYTE* self, void*, const DWORD* ck)
 }
 
 // [FUN_604600] finds the chunk ck[0] (for RIFF also the form type ck[2])
-// inside parent, or in the whole file: its size in ck[1], data offset in ck[3]
-bool __fastcall Wave_FindChunk(BYTE* self, void*, const DWORD* parent, DWORD* ck)
+// inside parent (the second argument), or in the whole file: its size in ck[1], data offset in ck[3]
+bool __fastcall Wave_FindChunk(BYTE* self, void*, DWORD* ck, const DWORD* parent)
 {
     BYTE* base = F(BYTE*, self, 8);
     DWORD left;
@@ -1016,4 +1016,47 @@ extern "C" int __cdecl Mixer_Init(int n, PlayDoneFn done)
     Mixer_SetVolume(g_mixerVolume);
     g_playDoneCb724178 = done;
     return 0;
+}
+
+// [FUN_604410] opens sound data (data, size): a RIFF WAVE file's PCM format (+20) and data chunk (+0 data, +4
+// size); data without a RIFF header is taken as 8-bit mono 11025 Hz; false (and freed) on a bad file
+extern "C" bool __fastcall Wave_Open(BYTE* s, void*, BYTE* data, DWORD size)
+{
+    Wave_Free(s, 0);
+    if (!data || !size)
+        return false;
+    F(BYTE*, s, 12) = data;
+    F(BYTE*, s, 8) = data;
+    F(BYTE*, s, 0) = data;
+    F(DWORD, s, 16) = size;
+    F(DWORD, s, 4) = size;
+    DWORD riff[5] = {0x46464952, 0, 0x45564157, 0, 0};    // 'RIFF', 'WAVE'
+    if (!Wave_FindChunk(s, 0, riff, 0)) {
+        WORD* f = (WORD*)operator new(18);
+        F(WORD*, s, 20) = f;
+        f[0] = 1;
+        f[1] = 1;
+        F(DWORD, f, 4) = 11025;
+        F(DWORD, f, 8) = 11025;
+        f[6] = 1;
+        f[7] = 8;
+        f[8] = 0;
+        return true;
+    }
+    DWORD ck[5] = {0x20746d66, 0, 0, 0, 0};    // 'fmt '
+    if (Wave_FindChunk(s, 0, ck, riff)) {
+        F(BYTE*, s, 20) = F(BYTE*, s, 12);
+        if (*F(WORD*, s, 20) == 1 && Wave_SkipChunk(s, 0, ck)) {
+            DWORD d[5] = {0x61746164, 0, 0, 0, 0};    // 'data'
+            memcpy(ck, d, sizeof d);
+            if (Wave_FindChunk(s, 0, ck, riff)) {
+                F(BYTE*, s, 0) = F(BYTE*, s, 12);
+                F(DWORD, s, 4) = ck[1];
+                if (Wave_SkipChunk(s, 0, ck) && Wave_SkipChunk(s, 0, riff))
+                    return true;
+            }
+        }
+    }
+    Wave_Free(s, 0);
+    return false;
 }
