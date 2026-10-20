@@ -1137,3 +1137,35 @@ extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
 extern "C" int __fastcall SaveBlock_End(BYTE* s) { return CallC<int>(FUN_490ce0, F(int, s, 0), s + 4); }
 // [$L_478e30] the end check of the save block (stream, start, size)
 extern "C" int __fastcall SaveBlock_AtEnd(BYTE* s) { return CallC<int>(FUN_490c70, F(int, s, 0), F(int, s, 4), F(int, s, 8)); }
+
+extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
+extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")
+extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")
+// [FUN_479f50] loads the vector<char> v from the save stream at *cur: a count, then the bytes
+extern "C" void __cdecl CharVec_Load(BYTE** cur, char** v)
+{
+    unsigned n = *(unsigned*)*cur;
+    *cur += 4;
+    char* b = v[0];
+    char* e = v[1];
+    CallC(FUN_46ecd0, e, e, b, cur, 0);
+    v[1] += b - e;
+    if ((unsigned)(v[2] - v[0]) < n) {
+        int used = v[1] - v[0];
+        char* p = CallStd<char*>(FUN_458cf0, n, v[0], v[1]);
+        if (v[2] - v[0])
+            CallC(FUN_44b4a0, v[0], v[2] - v[0]);
+        v[0] = p;
+        v[1] = p + used;
+        v[2] = p + n;
+    }
+    for (; n; n--) {
+        char c = *(*cur)++;
+        if (v[1] != v[2]) {
+            if (v[1])
+                *v[1] = c;
+            v[1]++;
+        } else
+            CallThis(FUN_44bef0, v, v[1], &c);
+    }
+}
