@@ -699,3 +699,33 @@ extern "C" void __cdecl MovingItem_Contact(BYTE* s, int a2, int a3)
     CallVirt(s, 144, f, (const char*)s_q174_67d434);
     CallVirt(s, 148, t, (const char*)s_q174_67d420);
 }
+
+ASM_VAR(double, g_q186_64b5a0, $L_64b5a0)
+ASM_VAR(AsmLabel, s_q186_67d5f0, $L_67d5f0)
+// [$L_5827c0] places moving item s for a new step: with contacts (+1432) a point closer than +3284 to the plane
+// (+1528 normal, +1516 point) is pushed out along the normal (+1732 from +2008); the contact list is cleared, the
+// position checked against the world and the new contacts found (vtbl+68, count +1672)
+extern "C" void __fastcall MovingItem_Place(BYTE* s, void*, int a)
+{
+    if (F(int, s, 1432) > 0) {
+        double dx = F(float, s, 1996) - F(float, s, 1516);
+        double dy = F(float, s, 2000) - F(float, s, 1520);
+        double dz = F(float, s, 2004) - F(float, s, 1524);
+        double d = dz * F(float, s, 1536) + dy * F(float, s, 1532);
+        d = d + dx * F(float, s, 1528);
+        if (F(float, s, 3284) + g_q186_64b5a0 > d) {
+            double k = F(float, s, 3284) - d + g_q186_64b5a0;
+            float a0 = (float)(k * F(float, s, 1528)), a1 = (float)(k * F(float, s, 1532));
+            double a2 = k * F(float, s, 1536);
+            F(float, s, 1732) = (float)(a0 + F(float, s, 2008));
+            F(float, s, 1736) = (float)(a1 + F(float, s, 2012));
+            F(float, s, 1740) = (float)(a2 + F(float, s, 2016));
+        }
+    }
+    F(int, s, 1692) = 0;
+    F(int, s, 1208) = 0;
+    F(float, s, 1456) = 1.0f;
+    memset(s + 1212, 0, 200);
+    CallC(FUN_4e2821, s + 1732, (const char*)s_q186_67d5f0, 15000.0f);
+    F(int, s, 1672) = CallVirt<int>(s, 68, s + 1696, s + 1456, s + 1460, s + 1464, a);
+}
