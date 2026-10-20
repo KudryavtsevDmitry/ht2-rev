@@ -5017,7 +5017,7 @@ extern "C" void __fastcall TrackChoice_OnCommand(BYTE* s, void*, int cmd)
 // ---------------------------------------------------------------------------
 // Command handlers of the options and the race end screens.
 
-ASM_PROC(FUN_510bc0)
+extern "C" void FUN_510bc0(); KING_ALIAS("_FUN_510bc0", "_Shell_StartGame")
 extern "C" void FUN_51e070(); KING_ALIAS("_FUN_51e070", "@Screen_SetPlayer@12")
 extern "C" void FUN_511820(); KING_ALIAS("_FUN_511820", "_Shell_LeaveRace")
 ASM_VAR(AsmLabel, s_q62_676978, $L_676978)
@@ -5872,4 +5872,128 @@ extern "C" void __fastcall Shell_SetMode(BYTE* s, void*, int m)
         CallThis(FUN_5bae30, F(BYTE*, s, 400), 3);
         F(unsigned, F(BYTE*, s, 400), 52) |= 1;
     }
+}
+
+// ---------------------------------------------------------------------------
+// Starting a game.
+
+ASM_PROC(FUN_512ea0)
+ASM_PROC(FUN_5b6bf0)
+ASM_PROC(FUN_510a10)
+extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
+extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
+extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
+extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
+extern "C" void FUN_5105b0(); KING_ALIAS("_FUN_5105b0", "_Shell_SetupModeObjects")
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5dba30(); KING_ALIAS("_FUN_5dba30", "@CGameApp_DestroyWindowNow@12")
+extern "C" void FUN_522cf0(); KING_ALIAS("_FUN_522cf0", "@ShellDialog522cf0_Construct@12")
+extern "C" void FUN_5e41f0(); KING_ALIAS("_FUN_5e41f0", "@Windows_Add2@12")
+extern "C" void __fastcall Shell_ShowWithMusic(BYTE* s, void*, int m);
+extern "C" void __cdecl Shell_EnterWorld(int movie);
+ASM_VAR(int, g_q89_696868, $L_696868)
+ASM_VAR(BYTE*, g_q89_6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_q89_6cecd4, $L_6cecd4)
+ASM_VAR(const char*, g_q89_6ced68, $L_6ced68)
+ASM_VAR(char, g_q89_6ceb5c, $L_6ceb5c)
+ASM_VAR(char, g_q89_6f2d18, $L_6f2d18)
+ASM_VAR(BYTE*, g_q89_696ca0, $L_696ca0)
+ASM_VAR(int, g_q89_6cec68, $L_6cec68)
+ASM_VAR(BYTE*, g_q89_69684c, $L_69684c)
+ASM_VAR(BYTE*, g_q89_6cec80, $L_6cec80)
+ASM_VAR(void*, g_q89_6f2ed0, $L_6f2ed0)
+ASM_VAR(void*, g_q89_6f2ed4, $L_6f2ed4)
+ASM_VAR(void*, g_q89_6f2ed8, $L_6f2ed8)
+ASM_VAR(void**, g_q89_6cec64, $L_6cec64)
+ASM_VAR(BYTE*, g_q89_6cecb8, $L_6cecb8)
+ASM_VAR(char, g_q89_696750, $L_696750)
+ASM_VAR(AsmLabel, s_q89_672998, $L_672998)
+ASM_VAR(AsmLabel, s_q89_676798, $L_676798)
+ASM_VAR(AsmLabel, s_q89_67677c, $L_67677c)
+ASM_VAR(AsmLabel, s_q89_676770, $L_676770)
+ASM_VAR(AsmLabel, s_q89_676778, $L_676778)
+ASM_VAR(AsmLabel, s_q89_67675c, $L_67675c)
+ASM_VAR(AsmLabel, s_q89_676748, $L_676748)
+ASM_VAR(AsmLabel, s_q89_676734, $L_676734)
+ASM_VAR(AsmLabel, s_q89_676720, $L_676720)
+ASM_VAR(AsmLabel, s_q89_67670c, $L_67670c)
+ASM_VAR(AsmLabel, s_q89_6766f8, $L_6766f8)
+ASM_VAR(AsmLabel, s_q89_6766e4, $L_6766e4)
+ASM_VAR(AsmLabel, s_q89_6766d0, $L_6766d0)
+static bool Gs89_HighMode(int intro) { return (BYTE)(F(int, g_q89_6cec70, 408) & 240) == 64 && intro; }
+// [FUN_510bc0..$L_510d02] starts game name (0 for a new one): in the 1600x1200 mode with the intro set
+// (ini 676798) and ask set the intro screen (6cecd4) shows first; else the name goes to 6f2d18, the world view is
+// set up (fatal without one), the screen cleared, the mode's objects and the player's sounds found; with the
+// intro the intro dialog opens, else the world is entered
+extern "C" void __cdecl Shell_StartGame(const char* name, int ask)
+{
+    int intro = 1;
+    CallC(FUN_603b70, (const char*)s_q89_672998, (const char*)s_q89_676798, 1, &intro, g_q89_696868);
+    const char* n;
+    if (Gs89_HighMode(intro)) {
+        if (ask) {
+            if (!name)
+                g_q89_6ced68 = 0;
+            else {
+                g_q89_6ced68 = &g_q89_6ceb5c;
+                strcpy(&g_q89_6ceb5c, name);
+            }
+            Shell_ShowWithMusic(g_q89_6cecd4, 0, 0);
+            return;
+        }
+        n = g_q89_6ced68;
+    } else {
+        n = name;
+        g_q89_6ced68 = name;
+    }
+    if (!n)
+        g_q89_6f2d18 = 0;
+    else
+        strcpy(&g_q89_6f2d18, n);
+    CallC(FUN_512ea0, g_q89_696ca0, 1);
+    if (!g_q89_6cec68)
+        CallC(FUN_5d2e70, (const char*)s_q89_67677c, 0);
+    F(int, g_q89_6cec70, 416) = Mode_TextureLevel();
+    F(int, g_q89_696ca0, 536) = 0;
+    CallThis(FUN_5b6bf0, F(BYTE*, g_q89_69684c, 12));
+    CallThis(FUN_5b6e00, F(BYTE*, g_q89_69684c, 12), 0xff000000, 1);
+    CallThis(FUN_5d88c0, g_q89_69684c);
+    CallThis(FUN_5b6e00, F(BYTE*, g_q89_69684c, 12), 0xff000000, 1);
+    CallThis(FUN_5d88c0, g_q89_69684c);
+    CallC(FUN_510a10, (const char*)s_q89_676770, (const char*)s_q89_676778);
+    if (BYTE* o = F(BYTE*, g_q89_6cec80, 372))
+        CallVirt(o, 32);
+    F(BYTE*, g_q89_6cec80, 372) = 0;
+    CallVirt(g_q89_6cec80, 32);
+    CallC(FUN_5105b0);
+    if (CallC<int>(FUN_568fd0) == 2) {
+        g_q89_6f2ed0 = CallC<void*>(FUN_5ef3d0, (const char*)s_q89_67675c);
+        g_q89_6f2ed4 = CallC<void*>(FUN_5ef3d0, (const char*)s_q89_676748);
+        g_q89_6f2ed8 = CallC<void*>(FUN_5ef3d0, (const char*)s_q89_676734);
+    } else {
+        g_q89_6f2ed0 = CallC<void*>(FUN_5ef3d0, (const char*)s_q89_676720);
+        g_q89_6f2ed4 = CallC<void*>(FUN_5ef3d0, (const char*)s_q89_67670c);
+        g_q89_6f2ed8 = CallC<void*>(FUN_5ef3d0, (const char*)s_q89_6766f8);
+    }
+    if (g_q89_6cec64)
+        operator delete(g_q89_6cec64);
+    void** p = (void**)operator new(12);
+    if (p) {
+        p[0] = CallC<void*>(FUN_5ef3d0,
+                            (const char*)(CallC<int>(FUN_568fd0) == 2 ? s_q89_6766e4 : s_q89_6766d0));
+        p[1] = 0;
+        p[2] = 0;
+    }
+    g_q89_6cec64 = p;
+    if (Gs89_HighMode(intro)) {
+        if (g_q89_6cecb8)
+            CallThis(FUN_5dba30, &g_q89_696750, g_q89_6cecb8);
+        BYTE* q = (BYTE*)operator new(384);
+        q = q ? CallThis<BYTE*>(FUN_522cf0, q, g_q89_69684c) : 0;
+        g_q89_6cecb8 = q;
+        CallThis(FUN_5e41f0, &g_q89_696750, q);
+        CallVirt(g_q89_6cecb8, 36);
+        return;
+    }
+    Shell_EnterWorld(0);
 }
