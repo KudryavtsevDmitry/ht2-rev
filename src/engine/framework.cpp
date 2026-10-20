@@ -38,7 +38,7 @@ ASM_VAR(void*, g_67fb7c, $L_67fb7c)
 ASM_VAR(AsmLabel, g_start603800, _Effect_Zero)
 ASM_VAR(BYTE*, g_7208fc, $L_7208fc)
 ASM_VAR(AsmLabel, s_683538, $L_683538)
-ASM_VAR(AsmLabel, g_enum5d8c60, $L_5d8c60)
+extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx);
 extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx);
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
 extern "C" void FUN_5e43e0(); KING_ALIAS("_FUN_5e43e0", "@Loader_Construct@12")
@@ -856,7 +856,7 @@ int __cdecl Fw_Enumerate5d8c60(int a, int b, BYTE* obj)
     memset(ctx, 0, sizeof ctx);
     F(int, ctx, 0) = a;
     F(int, ctx, 16) = b;
-    return CallThis<int>(F(FwFn, F(BYTE*, obj, 0), 32), obj, (void*)g_enum5d8c60, ctx);
+    return CallThis<int>(F(FwFn, F(BYTE*, obj, 0), 32), obj, (void*)Node_LinkByNames, ctx);
 }
 
 // [FUN_5d9470]
@@ -2953,4 +2953,20 @@ extern "C" void __fastcall Frame5dd650_OnGetMinMaxInfo(BYTE* s, void*, MINMAXINF
     mm->ptMaxSize.y = h;
     mm->ptMinTrackSize.y = h;
     mm->ptMaxTrackSize.y = h;
+}
+
+// ---------------------------------------------------------------------------
+// Node link by room and object name.
+
+// [$L_5d8c60] links a type-14 node with flag 2 (+128) to the context object (+16) when its names (+132, +164)
+// are the context room's (+0, name +60) and the object's (+12)
+extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx)
+{
+    if (F(int, n, 16) == 14 && (F(BYTE, n, 40) & 2) &&
+        strcmp(F(const char*, ctx[0], 60), (const char*)n + 132) == 0) {
+        BYTE* o = ctx[4];
+        if (strcmp(F(const char*, o, 12), (const char*)n + 164) == 0)
+            F(BYTE*, n, 128) = o;
+    }
+    return -1;
 }
