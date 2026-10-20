@@ -4975,3 +4975,35 @@ extern "C" BYTE* __fastcall FxRec_Init(BYTE* s)
     F(int, s, 36) = 0;
     return s;
 }
+
+extern "C" void FUN_4ba130(); KING_ALIAS("_FUN_4ba130", "_Fx_Skid1")
+extern "C" void FUN_4ba210(); KING_ALIAS("_FUN_4ba210", "_Fx_Skid2")
+ASM_PROC(FUN_4bb4c0)
+extern "C" void FUN_4ba660(); KING_ALIAS("_FUN_4ba660", "_Fx_SparksByStrength")
+extern "C" void FUN_4bac90(); KING_ALIAS("_FUN_4bac90", "_Effect_New59c420")
+extern "C" void FUN_4baf90(); KING_ALIAS("_FUN_4baf90", "_Effect_NewVapor")
+extern "C" void FUN_4bc2d0(); KING_ALIAS("_FUN_4bc2d0", "_Fx_SparkBurst")
+extern "C" void FUN_4bc4d0(); KING_ALIAS("_FUN_4bc4d0", "_Effect_Start4d9460")
+// [FUN_4bc540] handles an effect message (957): by its kind (byte +0) starts the effect at the position +4 with its
+// parameters from +16; 1 when handled
+extern "C" int __cdecl Fx_HandleMessage(int msg, BYTE* m)
+{
+    if (msg != 957)
+        return 0;
+    BYTE* p = m + 4;
+    switch (m[0]) {
+    case 1: CallC(FUN_4ba130, p, m + 16, 0); return 1;
+    case 2: CallC(FUN_4ba210, p, m + 16, 0); return 1;
+    case 3:
+        CallC(FUN_4bb4c0, p, m + 16, m + 28, F(int, m, 40), F(int, m, 44), F(int, m, 48), 0);
+        return 1;
+    case 4: CallC(FUN_4ba660, p, m + 16, F(int, m, 28), 0); return 1;
+    case 5: CallC(FUN_4bac90, p, m + 16, F(int, m, 28), 0); return 1;
+    case 6: CallC(FUN_4baf90, p, F(int, m, 16), 0); return 1;
+    case 7:
+    case 8: return 1;
+    case 9: CallC(FUN_4bc2d0, p, m + 16, 0); return 1;
+    case 10: CallC(FUN_4bc4d0, p, 0); return 1;
+    }
+    return 0;
+}
