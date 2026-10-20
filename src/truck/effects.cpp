@@ -4561,8 +4561,8 @@ ASM_PROC(FUN_4c5680)
 ASM_VAR(BYTE*, g_q22_696248, $L_696248)
 ASM_VAR(BYTE*, g_q22_696250, $L_696250)
 extern "C" BYTE* __fastcall Mesh4c5020_Construct(BYTE* s);
-ASM_VAR(AsmLabel, g_q22Ctor4c5000, $L_4c5000)
-ASM_VAR(AsmLabel, g_q22Dtor4c47f0, $L_4c47f0)
+extern "C" AsmLabel g_q22Ctor4c5000; KING_ALIAS("_g_q22Ctor4c5000", "@FxRec_Init@4")
+extern "C" AsmLabel g_q22Dtor4c47f0; KING_ALIAS("_g_q22Dtor4c47f0", "@FxRec_Free@4")
 ASM_VAR(BYTE*, g_q22_696704, $L_696704)
 ASM_VAR(BYTE*, g_q22_696708, $L_696708)
 ASM_VAR(BYTE*, g_q22_69670c, $L_69670c)
@@ -4954,3 +4954,24 @@ extern "C" int __cdecl Cmp4cce30_Desc(const BYTE* a, const BYTE* b)
 extern "C" int __fastcall q198_Dtor4d25d0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor4d25d0_DeletingDestructor@12", "@Dtor4d25d0_DeletingDestructor@12")
 // [$L_4d9370] forwards to Dtor4d25d0_DeletingDestructor for the object 16 bytes before
 extern "C" int __fastcall Thunk4d9370(BYTE* s, void* d, int a0) { return q198_Dtor4d25d0_DeletingDestructor(s - 16, d, a0); }
+
+// [$L_4c47f0] frees the five buffers +8..+24 of a 40-byte effect record
+extern "C" void __fastcall FxRec_Free(BYTE* s)
+{
+    operator delete(F(void*, s, 8));
+    operator delete(F(void*, s, 12));
+    operator delete(F(void*, s, 16));
+    operator delete(F(void*, s, 20));
+    operator delete(F(void*, s, 24));
+}
+// [$L_4c5000] an empty 40-byte effect record
+extern "C" BYTE* __fastcall FxRec_Init(BYTE* s)
+{
+    F(int, s, 24) = 0;
+    F(int, s, 20) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 12) = 0;
+    F(int, s, 8) = 0;
+    F(int, s, 36) = 0;
+    return s;
+}

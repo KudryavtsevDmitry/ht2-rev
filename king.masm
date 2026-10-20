@@ -1503,6 +1503,7 @@ PUBLIC $L_651c94
 PUBLIC $L_651c64, $L_651c98, $L_651c9c
 PUBLIC $L_68321c, $L_683c60, $L_683c68, $L_683c70
 PUBLIC $L_6508a0
+PUBLIC $L_71e828, $L_7200c8, $L_7200cc
 
 ;===================================
 _TEXT SEGMENT
@@ -357339,6 +357340,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c47f0 PROC
 
             push ESI
@@ -357367,6 +357370,10 @@ $L_4c47f0 PROC
             pop ESI
             ret 
 $L_4c47f0 ENDP
+ELSE
+EXTERN @FxRec_Free@4:PROC
+$L_4c47f0 TEXTEQU <@FxRec_Free@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -358294,6 +358301,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c5000 PROC
 
             mov EAX,ECX
@@ -358306,6 +358315,10 @@ $L_4c5000 PROC
             mov DWORD PTR [EAX+36],ECX
             ret 
 $L_4c5000 ENDP
+ELSE
+EXTERN @FxRec_Init@4:PROC
+$L_4c5000 TEXTEQU <@FxRec_Init@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -746667,6 +746680,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c2f40 PROC
 
             mov EAX,ECX
@@ -746680,6 +746695,10 @@ $L_5c2f40 PROC
             mov DWORD PTR [EAX+20],ECX
             ret 
 $L_5c2f40 ENDP
+ELSE
+EXTERN @MedRec_Init@4:PROC
+$L_5c2f40 TEXTEQU <@MedRec_Init@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -770912,6 +770931,8 @@ $L_5d2070 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5d2080 PROC
 
             mov EAX,ECX
@@ -770924,6 +770945,10 @@ $L_5d2080 PROC
             mov BYTE PTR [EAX+20],CL
             ret 
 $L_5d2080 ENDP
+ELSE
+EXTERN @MappedFile_Init@4:PROC
+$L_5d2080 TEXTEQU <@MappedFile_Init@4>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
@@ -772740,6 +772765,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d2b70 PROC
 
             mov ECX,OFFSET $L_71e820
@@ -772753,6 +772780,10 @@ $L_5d2b70 PROC
             mov DWORD PTR [$L_71e844],0
             ret 
 $L_5d2b70 ENDP
+ELSE
+EXTERN _Static71e820_Destroy:PROC
+$L_5d2b70 TEXTEQU <_Static71e820_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -773514,6 +773545,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d3040 PROC
 
             mov EAX,DWORD PTR [$L_7200c8]
@@ -773527,6 +773560,10 @@ $L_5d3040 PROC
             add ESP,8
             ret 
 $L_5d3040 ENDP
+ELSE
+EXTERN _Pool7200c0_Release:PROC
+$L_5d3040 TEXTEQU <_Pool7200c0_Release>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
