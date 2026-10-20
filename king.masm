@@ -1444,6 +1444,7 @@ PUBLIC $L_676cfc, $L_677630, $L_677638
 PUBLIC $L_676cf4, $L_677484, $L_67748c, $L_6ceccc
 PUBLIC $L_6772c4
 PUBLIC $L_677580
+PUBLIC $L_676d18, $L_676d20, $L_676d28, $L_676d30
 
 ;===================================
 _TEXT SEGMENT
@@ -477923,6 +477924,8 @@ FUN_515710 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5159d0 PROC
 
             sub ESP,44
@@ -478178,6 +478181,10 @@ $L_515c35::
             add ESP,44
             ret 
 FUN_5159d0 ENDP
+ELSE
+EXTERN _Video_PickModes:PROC
+FUN_5159d0 TEXTEQU <_Video_PickModes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

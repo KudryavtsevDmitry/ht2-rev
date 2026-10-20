@@ -3767,7 +3767,7 @@ extern "C" BYTE* __fastcall ShellColumns520e30_Construct(BYTE* s, void*, BYTE* p
 
 ASM_PROC(FUN_50efb0)
 ASM_PROC(FUN_50e830)
-ASM_PROC(FUN_5159d0)
+extern "C" void FUN_5159d0(); KING_ALIAS("_FUN_5159d0", "_Video_PickModes")
 ASM_PROC(FUN_50e500)
 extern "C" void Wnd_SetPos_(); KING_ALIAS("_Wnd_SetPos_", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
 extern "C" void __cdecl _exit(int);
@@ -5265,4 +5265,60 @@ extern "C" void __fastcall SessionScreen_OnShow(BYTE* s, void*)
     if (k < 0)
         k = 0;
     CallThis(FUN_5c0c20, F(BYTE*, s, 604), k);
+}
+
+// ---------------------------------------------------------------------------
+// The video mode choice of a driver.
+
+ASM_PROC(FUN_515710)
+extern "C" int __cdecl Mode_TextureLevel(void);    // core.cpp
+ASM_VAR(int, g_q66_7208e4, $L_7208e4)
+ASM_VAR(AsmLabel, s_q66_676d30, $L_676d30)
+ASM_VAR(AsmLabel, s_q66_676d28, $L_676d28)
+ASM_VAR(AsmLabel, s_q66_676d20, $L_676d20)
+ASM_VAR(AsmLabel, s_q66_676d18, $L_676d18)
+// [FUN_5159d0] the video modes of driver d: the ini settings of 640x480, 800x600, 1024x768 and 1600x1200 (the
+// mode and whether one was chosen); when none ran the dialog and none is chosen, the entries are reset to -1 and
+// read again (the last pair then lands on the 1024x768 one, as the original does); 0 when nothing is usable
+// (7208e4 restored), else 1 with the texture level and the four pairs
+extern "C" int __cdecl Video_PickModes(int d, int* level, int* m640, int* c640, int* m800, int* c800, int* m1024,
+                                       int* c1024, int* m1600, int* c1600)
+{
+    int old = g_q66_7208e4;
+    g_q66_7208e4 = d;
+    int p640 = 0, q640 = 0, p800 = 0, q800 = 0, p1024 = 0, q1024 = 0, p1600 = 0, q1600 = 0;
+    int ran = Shell_VideoSettings(d, (const char*)s_q66_676d30, 640, 480, 2, 30208, &p640, &q640);
+    ran |= Shell_VideoSettings(d, (const char*)s_q66_676d28, 800, 600, 2, 30208, &p800, &q800);
+    ran |= Shell_VideoSettings(d, (const char*)s_q66_676d20, 1024, 768, 2, 30208, &p1024, &q1024);
+    ran |= Shell_VideoSettings(d, (const char*)s_q66_676d18, 1600, 1200, 2, 30208, &p1600, &q1600);
+    if (!ran) {
+        if (q640 || q800 || q1024 || q1600)
+            goto done;
+        char sec[16];
+        sprintf(sec, s_gs676ce4, d + 1);
+        CallC(FUN_603c70, sec, (const char*)s_q66_676d30, -1, g_q32_696868);
+        CallC(FUN_603c70, sec, (const char*)s_q66_676d28, -1, g_q32_696868);
+        CallC(FUN_603c70, sec, (const char*)s_q66_676d20, -1, g_q32_696868);
+        CallC(FUN_603c70, sec, (const char*)s_q66_676d18, -1, g_q32_696868);
+        Shell_VideoSettings(d, (const char*)s_q66_676d30, 640, 480, 2, 30208, &p640, &q640);
+        Shell_VideoSettings(d, (const char*)s_q66_676d28, 800, 600, 2, 30208, &p800, &q800);
+        Shell_VideoSettings(d, (const char*)s_q66_676d20, 1024, 768, 2, 30208, &p1024, &q1024);
+        Shell_VideoSettings(d, (const char*)s_q66_676d18, 1600, 1200, 2, 30208, &p1024, &q1024);
+    }
+    CallC(FUN_515710, q640, q800, q1024, q1600);
+    if (!q640 && !q800 && !q1024 && !q1600) {
+        g_q66_7208e4 = old;
+        return 0;
+    }
+done:
+    *level = Mode_TextureLevel();
+    *m640 = p640;
+    *c640 = q640;
+    *m800 = p800;
+    *c800 = q800;
+    *m1024 = p1024;
+    *c1024 = q1024;
+    *m1600 = p1600;
+    *c1600 = q1600;
+    return 1;
 }
