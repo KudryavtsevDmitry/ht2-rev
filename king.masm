@@ -762213,6 +762213,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cca60 PROC
 
             sub ESP,72
@@ -762276,6 +762278,10 @@ FUN_5cca60 PROC
             nop
             nop
 FUN_5cca60 ENDP
+ELSE
+EXTERN @Particles_StartAt@36:PROC
+FUN_5cca60 TEXTEQU <@Particles_StartAt@36>
+ENDIF
 ALIGN 16
 FUN_5ccb20 PROC
 

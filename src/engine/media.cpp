@@ -2875,3 +2875,26 @@ extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 extern "C" void q241_L_5d2070(); KING_ALIAS("_q241_L_5d2070", "$L_5d2070")
 // [$L_5d2060] registers 5d2070 at exit
 extern "C" int __cdecl Static5d2060_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_5d2070); }
+
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+extern "C" void FUN_5cc680(); KING_ALIAS("_FUN_5cc680", "@Media_Call5cc680@20")
+ASM_VAR(float, g_q243_702630, $L_702630)
+ASM_VAR(float, g_q243_702634, $L_702634)
+ASM_VAR(float, g_q243_702638, $L_702638)
+ASM_VAR(float, g_q243_64c748, $L_64c748)
+ASM_VAR(float, g_q243_64c330, $L_64c330)
+struct Med243_V3 { float x, y, z; };
+// [FUN_5cca60] starts particle source s for p at (x, y, z) moved by half of 702630: the translation matrix of that
+// point, p's rate (+32) from t over the source's count (+32), the source's length (+12) from t
+extern "C" void __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, float y, float z, int, int, float t)
+{
+    double hx = g_q243_702630 * g_q168_64c258;
+    float hy = (float)(g_q243_702634 * g_q168_64c258);
+    float hz = (float)(g_q243_702638 * g_q168_64c258);
+    Med243_V3 v = {(float)(x + hx), (float)(hy + y), (float)(hz + z)};
+    BYTE m[48];
+    CallC(FUN_5abc40, m, v);
+    F(float, p, 32) = (float)(t * g_q243_64c748 / (F(int, s, 32) + 1));
+    F(float, s, 12) = (float)(t * g_q243_64c330);
+    CallThis(FUN_5cc680, s, 0, m, p);
+}
