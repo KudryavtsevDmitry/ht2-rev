@@ -1417,3 +1417,72 @@ extern "C" BYTE* __fastcall VPoly_Multiply(BYTE* s, void*, BYTE* out, BYTE* b)
     memcpy(out, r, 580);
     return out;
 }
+
+// ---------------------------------------------------------------------------
+// The bounding sphere of points.
+
+extern "C" void FUN_487ee0(); KING_ALIAS("_FUN_487ee0", "@DBox_Init@16")
+extern "C" void FUN_487f60(); KING_ALIAS("_FUN_487f60", "@DBox_Extend@12")
+ASM_VAR(double, g_q117_64b6e0, $L_64b6e0)
+// [FUN_490a20] the sphere (centre, radius) around the points of vector v (24-byte doubles): the centre of their
+// box and the largest distance from it
+extern "C" double* __cdecl Points_BoundingSphere(double* out, const double* const* v)
+{
+    double box[6];
+    const double* p = v[0];
+    CallThis(FUN_487ee0, box, p, p + 3);
+    for (unsigned i = 2; i < (unsigned)((v[1] - v[0]) / 3); i++)
+        CallThis(FUN_487f60, box, v[0] + i * 3);
+    double sx = box[3] + box[0], sy = box[4] + box[1], sz = box[5] + box[2];
+    double s[4] = {sx * g_q117_64b6e0, sy * g_q117_64b6e0, sz * g_q117_64b6e0, 0.0};
+    unsigned n = (unsigned)((v[1] - v[0]) / 3);
+    for (p = v[0]; n; n--, p += 3) {
+        double dx = s[0] - p[0], dy = s[1] - p[1], dz = s[2] - p[2];
+        double d = x87_sqrt(dx * dx + dy * dy + dz * dz);
+        if (s[3] < d)
+            s[3] = d;
+    }
+    memcpy(out, s, 32);
+    return out;
+}
+
+// ---------------------------------------------------------------------------
+// Moving along a curve by a distance.
+
+extern "C" void FUN_48e3c0(); KING_ALIAS("_FUN_48e3c0", "@Poly1392_Diff@24")
+// [FUN_48df80] moves parameter *t of curve s by distance *d (48e3c0 measures the curve between two parameters):
+// when the rest of the curve is shorter, *t goes to its end and the rest of *d stays (1); else six secant steps
+// refine the parameter step *x, *t moves by it (kept in 0..1) and *d becomes 0 (0)
+extern "C" int __fastcall Curve_Advance(BYTE* s, void*, double* t, double* d, double* x)
+{
+    double t0 = *t;
+    if (*d > g_q113_64b678) {
+        double v = CallThis<double>(FUN_48e3c0, s, t0, 1.0);
+        if (!(v > *d)) {
+            *t = 1.0;
+            *d = *d - v;
+            if (*d < g_q113_64b678)
+                *d = 0.0;
+            return 1;
+        }
+    } else if (*d < g_q113_64b678) {
+        double v = CallThis<double>(FUN_48e3c0, s, t0, 0.0);
+        if (!(v < *d)) {
+            *t = 0.0;
+            *d = *d - v;
+            if (!(*d <= g_q113_64b678))
+                *d = 0.0;
+            return 1;
+        }
+    }
+    for (int k = 6; k; k--)
+        *x = *d / CallThis<double>(FUN_48e3c0, s, t0, t0 + *x) * *x;
+    double nt = *x + t0;
+    *t = nt;
+    if (!(nt <= g_q115_64b670))
+        *t = 1.0;
+    else if (nt < g_q113_64b678)
+        *t = 0.0;
+    *d = 0.0;
+    return 0;
+}

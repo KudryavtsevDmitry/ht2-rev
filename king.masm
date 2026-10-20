@@ -256939,6 +256939,8 @@ FUN_48de40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48df80 PROC
 
             push EBP
@@ -257102,6 +257104,10 @@ $L_48e0e1::
             pop EBP
             ret 12
 FUN_48df80 ENDP
+ELSE
+EXTERN @Curve_Advance@20:PROC
+FUN_48df80 TEXTEQU <@Curve_Advance@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -261596,6 +261602,8 @@ FUN_490930 TEXTEQU <@Vec8_Copy@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_490a20 PROC
 
             push EBP
@@ -261747,6 +261755,10 @@ $L_490b82::
             pop EBP
             ret 
 FUN_490a20 ENDP
+ELSE
+EXTERN _Points_BoundingSphere:PROC
+FUN_490a20 TEXTEQU <_Points_BoundingSphere>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

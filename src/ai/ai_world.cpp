@@ -21464,7 +21464,7 @@ extern "C" void __fastcall Path_Reverse(BYTE* s)
 // More virtual methods.
 
 extern "C" void FUN_48e100(); KING_ALIAS("_FUN_48e100", "_Bounded_Step@12")
-ASM_PROC(FUN_48df80)
+extern "C" void FUN_48df80(); KING_ALIAS("_FUN_48df80", "@Curve_Advance@20")
 extern "C" void FUN_48e430(); KING_ALIAS("_FUN_48e430", "@Poly1392_AbsDiff@24")
 
 // the path's 1592-byte record i (+56) and the record count
