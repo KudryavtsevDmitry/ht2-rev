@@ -1468,6 +1468,7 @@ PUBLIC $L_6f54bc, $L_6f66b8
 PUBLIC $L_720128, $L_720148, $L_720728, $L_720870
 PUBLIC $L_64bea8, $L_6865d8
 PUBLIC $L_64dea8, $L_64deb0
+PUBLIC $L_64d0f0, $L_676834, $L_676838
 
 ;===================================
 _TEXT SEGMENT
@@ -463278,6 +463279,8 @@ FUN_50c300 TEXTEQU <_Image_ReadStream>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50c3a0 PROC
 
             sub ESP,296
@@ -463573,6 +463576,10 @@ $L_50c6f8::
             add ESP,296
             ret 
 FUN_50c3a0 ENDP
+ELSE
+EXTERN _Shell_WriteThumbnail:PROC
+FUN_50c3a0 TEXTEQU <_Shell_WriteThumbnail>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -471528,6 +471535,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5119e0 PROC
 
             sub ESP,160
@@ -471778,6 +471787,10 @@ $L_511c42::
             add ESP,160
             ret 
 FUN_5119e0 ENDP
+ELSE
+EXTERN _Shell_PayRepair:PROC
+FUN_5119e0 TEXTEQU <_Shell_PayRepair>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

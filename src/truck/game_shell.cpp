@@ -6419,3 +6419,155 @@ extern "C" void __fastcall InputScreen_Command(BYTE* s, void*, int cmd)
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Paying for a repair.
+
+ASM_PROC(FUN_533590)
+extern "C" void FUN_53b3c0(); KING_ALIAS("_FUN_53b3c0", "@King_53b3c0@12")
+extern "C" void FUN_4eb600(); KING_ALIAS("_FUN_4eb600", "@Ramp_SetValue@12")
+extern "C" void FUN_43f7c0(); KING_ALIAS("_FUN_43f7c0", "_Player_Set136")
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
+extern "C" void FUN_477300(); KING_ALIAS("_FUN_477300", "_Player_ClearFlags")
+ASM_VAR(BYTE*, g_q122_6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_q122_6cec6c, $L_6cec6c)
+ASM_VAR(float, g_q122_64c250, $L_64c250)
+ASM_VAR(double, g_q122_64b5b8, $L_64b5b8)
+ASM_VAR(double, g_q122_64b7a8, $L_64b7a8)
+ASM_VAR(double, g_q122_64d0f0, $L_64d0f0)
+ASM_VAR(AsmLabel, s_q122_676838, $L_676838)
+ASM_VAR(AsmLabel, s_q122_676834, $L_676834)
+static int Gs122_PlayerId()
+{
+    int id;
+    CallC(FUN_568f60, &id);
+    return id;
+}
+// [FUN_5119e0] repairs the player's truck for cost when the money is enough: the repair (533590, special for
+// two car types), the health and the ramp restored, the money taken (and a flag message cleared), the msg text
+// with the cost shown outside races; else message 12 and the repair check alone
+extern "C" void __cdecl Shell_PayRepair(double cost, int msg)
+{
+    char buf[128];
+    double money = CallC<double>(FUN_43f760, Gs122_PlayerId());
+    BYTE* car = g_q122_6d2078;
+    double health = CallVirt<double>(F(BYTE*, car, 616), 84);
+    BYTE* ramp = F(BYTE*, F(BYTE*, g_q122_6d2078, 616), 21600) + 16112;
+    double high = CallThis<double>(FUN_4eb680, ramp);
+    ramp = F(BYTE*, F(BYTE*, g_q122_6d2078, 616), 21600) + 16112;
+    double rest = g_q122_64c250 - CallThis<double>(FUN_4eb690, ramp);
+    const char* name = F(const char*, F(BYTE*, F(BYTE*, g_q122_6d2078, 616), 308), 60);
+    int special = strcmp(name, (const char*)s_q122_676838) == 0 || strcmp(name, (const char*)s_q122_676834) == 0;
+    if (!(cost < money)) {
+        CallC(FUN_56ae60, CallC<const char*>(FUN_5d2e50, 12));
+        CallThis(FUN_533590, g_q122_6d2078, special);
+        return;
+    }
+    CallThis(FUN_533590, g_q122_6d2078, special);
+    CallThis(FUN_53b3c0, g_q122_6d2078, (float)(health + g_q122_64b5b8));
+    CallVirt(F(BYTE*, g_q122_6d2078, 616), 116);
+    CallVirt(F(BYTE*, g_q122_6d2078, 616), 120);
+    if (!(rest <= g_q122_64b7a8))
+        CallThis(FUN_4eb600, F(BYTE*, F(BYTE*, g_q122_6d2078, 616), 21600) + 16112, (float)(high * g_q122_64d0f0));
+    money -= cost;
+    CallC(FUN_43f7c0, Gs122_PlayerId(), money);
+    if (CallC<int>(FUN_43f620, Gs122_PlayerId()) & 0x2000000) {
+        CallC(FUN_56ae60, CallC<const char*>(FUN_5d2e50, 119));
+        CallC(FUN_477300, Gs122_PlayerId());
+    }
+    int c = (int)cost;
+    sprintf(buf, CallC<const char*>(FUN_5d2e50, msg), c);
+    if (!F(int, g_q122_6cec6c, 1316))
+        CallC(FUN_56ae60, buf);
+}
+
+// ---------------------------------------------------------------------------
+// The thumbnail of a saved game.
+
+extern "C" void FUN_5b6300(); KING_ALIAS("_FUN_5b6300", "_Pixel_Blue")
+extern "C" void FUN_5b62c0(); KING_ALIAS("_FUN_5b62c0", "_Pixel_Green")
+extern "C" void FUN_5b6280(); KING_ALIAS("_FUN_5b6280", "_Pixel_Red")
+extern "C" void FUN_5b9660(); KING_ALIAS("_FUN_5b9660", "@Palette_Nearest@20")
+ASM_VAR(BYTE*, g_q123_696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_q123_7208fc, $L_7208fc)
+ASM_VAR(BYTE*, g_q123_6ce4f4, $L_6ce4f4)
+typedef long(__stdcall* Gs123_Write)(void*, const void*, ULONG, ULONG*);
+static void Gs123_Put(void* st, const void* p, ULONG n, ULONG* done)
+{
+    ((Gs123_Write)(*(void***)st)[4])(st, p, n, done);
+}
+static int Gs123_Avg(void (*fn)(), int a, int b, int c, int d)
+{
+    int s = (BYTE)CallC<int>(fn, a);
+    s += (BYTE)CallC<int>(fn, b);
+    s += (BYTE)CallC<int>(fn, c);
+    s += (BYTE)CallC<int>(fn, d);
+    return s / 4;
+}
+// [FUN_50c3a0] writes to stream st a 100-byte header (size w x h, the local date and time) and a w x h thumbnail
+// of the screen (the locked back buffer, or with fromImage the 6ce4f4 image), each pixel the palette colour
+// nearest to the average of four screen pixels
+extern "C" void __cdecl Shell_WriteThumbnail(void* st, int w, int h, int fromImage)
+{
+    BYTE hdr[100];
+    memset(hdr, 0, 100);
+    hdr[0] = (BYTE)w;
+    hdr[1] = (BYTE)h;
+    SYSTEMTIME t;
+    GetLocalTime(&t);
+    hdr[3] = (BYTE)t.wMonth;
+    hdr[2] = (BYTE)t.wDay;
+    hdr[7] = (BYTE)t.wSecond;
+    hdr[6] = (BYTE)t.wMinute;
+    hdr[4] = (BYTE)((int)t.wYear % 100);
+    hdr[5] = (BYTE)t.wHour;
+    ULONG done;
+    Gs123_Put(st, hdr, 100, &done);
+    int sw = CallVirt<int>(g_q123_696ca0, 20) - 2;
+    int sh = CallVirt<int>(g_q123_696ca0, 24) - 2;
+    BYTE sd[124];
+    memset(sd, 0, sizeof sd);
+    F(DWORD, sd, 0) = 124;
+    F(DWORD, sd, 4) = 8387054;
+    BYTE* pal = F(BYTE*, F(BYTE*, F(BYTE*, g_q123_696ca0, 9396), 100), 0);
+    if (!pal)
+        return;
+    int pitch;
+    BYTE* bits;
+    if (!fromImage) {
+        BYTE* o = g_q123_7208fc;
+        if (((long(__stdcall*)(void*, void*, BYTE*, DWORD, void*))(*(void***)o)[25])(o, 0, sd, 17, 0))
+            return;
+        pitch = F(int, sd, 16);
+        bits = F(BYTE*, sd, 36);
+    } else {
+        BYTE* o = g_q123_6ce4f4;
+        pitch = F(WORD, o, 24) * F(WORD, o, 20);
+        bits = F(BYTE*, o, 8);
+    }
+    if (bits) {
+        float step = (float)((double)sw / w);
+        float y = 0.0f;
+        for (int r = h; r > 0; r--) {
+            float x = 0.0f;
+            const BYTE* row0 = bits + (int)y * pitch;
+            const BYTE* row1 = row0 + pitch;
+            for (int k = w; k > 0; k--) {
+                int c = (int)x;
+                int p00 = F(WORD, row0, c * 2), p01 = F(WORD, row0, c * 2 + 2);
+                int p10 = F(WORD, row1, c * 2), p11 = F(WORD, row1, c * 2 + 2);
+                x = step + x;
+                int b = Gs123_Avg(FUN_5b6300, p00, p01, p10, p11);
+                int g = Gs123_Avg(FUN_5b62c0, p00, p01, p10, p11);
+                int rr = Gs123_Avg(FUN_5b6280, p00, p01, p10, p11);
+                BYTE idx = CallThis<BYTE>(FUN_5b9660, pal, rr, g, b);
+                Gs123_Put(st, &idx, 1, &done);
+            }
+            y = (float)((double)sh / h + y);
+        }
+    }
+    if (!fromImage) {
+        BYTE* o = g_q123_7208fc;
+        ((long(__stdcall*)(void*, void*))(*(void***)o)[32])(o, 0);
+    }
+}
