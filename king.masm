@@ -1494,6 +1494,7 @@ PUBLIC $L_64d900, $L_64d908
 PUBLIC $L_64d338, $L_64f398
 PUBLIC $L_64ca48
 PUBLIC $L_683c0c
+PUBLIC $L_64c32c, $L_64d318, $L_64f744
 
 ;===================================
 _TEXT SEGMENT
@@ -557705,6 +557706,8 @@ FUN_549e60 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_549ff0 PROC
 
             mov EAX,DWORD PTR [ECX+20]
@@ -557811,6 +557814,10 @@ $L_54a0fb::
             mov DWORD PTR [EDX],0
             ret 8
 FUN_549ff0 ENDP
+ELSE
+EXTERN @CarEffect_Curve@16:PROC
+FUN_549ff0 TEXTEQU <@CarEffect_Curve@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
