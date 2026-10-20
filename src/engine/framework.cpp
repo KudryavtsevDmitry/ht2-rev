@@ -3840,3 +3840,54 @@ extern "C" int __fastcall Thunk5e5570(BYTE* s, void* d, int a0) { return q198_Dt
 
 // [$L_5e5ca0] nothing to do
 extern "C" void __fastcall Fw5e5ca0_Nop(BYTE*) {}
+
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
+extern "C" void FUN_5ba2c0(); KING_ALIAS("_FUN_5ba2c0", "@Palette_Copy@12")
+ASM_VAR(double, g_q219_64b658, $L_64b658)
+ASM_VAR(double, g_q219_64d0f0, $L_64d0f0)
+ASM_VAR(double, g_q219_64b678, $L_64b678)
+ASM_VAR(double, g_q219_64b6a0, $L_64b6a0)
+ASM_VAR(int, g_q219_702e90, $L_702e90)
+ASM_VAR(int, g_q219_702e8c, $L_702e8c)
+// [FUN_5de600] starts a frame of view s: the frame step +2960 (the fixed step +3032 when set, else the time since
+// the last frame +592 less the pause +600 and the app's lag (+360), at most 0.05 unless the step is negative) is
+// added to the clock +2968 and kept only within 0..64b6a0; then the renderer (+464) and the palette (+3096) are set
+// up for the world (+468) and the frame flags restored (+3020)
+extern "C" void __fastcall View_BeginFrame(BYTE* s)
+{
+    double t = CallC<double>(FUN_6037e0) * g_q219_64b658;
+    int fixed = F(int, s, 3032);
+    double e = t - F(double, s, 592);
+    F(double, s, 2976) = e;
+    if (fixed > 0)
+        F(double, s, 2960) = fixed * g_q219_64b658;
+    else {
+        double dt = e - F(double, s, 600) - F(double, g_app, 360) * g_q219_64b658;
+        F(double, s, 2960) = dt;
+        if (dt > g_q219_64d0f0 && fixed == 0)
+            F(double, s, 2960) = 0.05;
+    }
+    F(double, s, 2968) = F(double, s, 2968) + F(double, s, 2960);
+    if (!(F(double, s, 2960) >= g_q219_64b678) || F(double, s, 2960) > g_q219_64b6a0)
+        F(double, s, 2960) = 0;
+    BYTE* r = F(BYTE*, s, 464);
+    F(double, s, 600) = 0;
+    F(double, s, 592) = t;
+    CallThis(FUN_5ae9b0, r, -1);
+    r = F(BYTE*, s, 464);
+    F(double, r, 8496) = F(double, s, 3064);
+    F(double, r, 8504) = F(double, s, 3072);
+    BYTE* w = F(BYTE*, s, 468);
+    F(int, F(BYTE*, s, 464), 8452) = F(int, w, 148);
+    F(int, w, 148)++;
+    g_q219_702e90 = 0;
+    w = F(BYTE*, s, 468);
+    CallThis(FUN_5ba2c0, s + 3096, F(int*, w, 100)[F(int, w, 140)]);
+    int room = F(int, F(BYTE*, s, 468), 140);
+    if (F(int, s, 544) != room) {
+        F(int, s, 544) = room;
+        F(int, s, 3092) = 1;
+    }
+    g_q219_702e8c = F(int, s, 3020);
+}
