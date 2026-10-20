@@ -21696,3 +21696,34 @@ extern "C" int __fastcall Ai4555e0_SwapSides(BYTE* s, void*)
     F(DWORD, s, 8) = n;
     return CallThis<int>((void (*)())Points_Reverse, s + 56);
 }
+
+// ---------------------------------------------------------------------------
+// Copying the AI's exception types.
+
+extern "C" void AiW157_ExcCopy(); KING_ALIAS("_AiW157_ExcCopy", "??0exception@@QAE@ABV0@@Z")
+ASM_VAR(AsmLabel, g_q157_64b974, $L_64b974)
+ASM_VAR(AsmLabel, g_q157_64b96c, $L_64b96c)
+ASM_VAR(AsmLabel, g_q157_64b97c, $L_64b97c)
+// copies exception o into s (the base, then its 256-byte message) with vtable vt
+static BYTE* AiW157_Copy(BYTE* s, const BYTE* o, void* vt)
+{
+    CallThis(AiW157_ExcCopy, s, o);
+    memcpy(s + 12, o + 12, 256);
+    F(void*, s, 0) = vt;
+    return s;
+}
+// [$L_462aa0] copy constructor of the 64b974 exception
+extern "C" BYTE* __fastcall AiExc462aa0_Copy(BYTE* s, void*, const BYTE* o)
+{
+    return AiW157_Copy(s, o, (BYTE*)g_q157_64b974);
+}
+// [$L_462ad0] copy constructor of the 64b96c exception
+extern "C" BYTE* __fastcall AiExc462ad0_Copy(BYTE* s, void*, const BYTE* o)
+{
+    return AiW157_Copy(s, o, (BYTE*)g_q157_64b96c);
+}
+// [$L_462b00] copy constructor of the 64b97c exception
+extern "C" BYTE* __fastcall AiExc462b00_Copy(BYTE* s, void*, const BYTE* o)
+{
+    return AiW157_Copy(s, o, (BYTE*)g_q157_64b97c);
+}

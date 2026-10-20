@@ -1784,13 +1784,13 @@ extern "C" void FUN_531950(); KING_ALIAS("_FUN_531950", "@Car531950_Destroy@4")
 extern "C" void FUN_5560e0(); KING_ALIAS("_FUN_5560e0", "@Car_ApplyZero@8")
 extern "C" void FUN_555eb0(); KING_ALIAS("_FUN_555eb0", "@Car_SumAbs9@8")
 extern "C" void FUN_555500(); KING_ALIAS("_FUN_555500", "@Car_555500@8")
-ASM_PROC(FUN_555e10)
+extern "C" void FUN_555e10(); KING_ALIAS("_FUN_555e10", "@Car_ControlSum4@4")
 extern "C" void FUN_555d80(); KING_ALIAS("_FUN_555d80", "@Car_Level3@8")
-ASM_PROC(FUN_555d10)
-ASM_PROC(FUN_555c20)
+extern "C" void FUN_555d10(); KING_ALIAS("_FUN_555d10", "@Car_WheelSum@4")
+extern "C" void FUN_555c20(); KING_ALIAS("_FUN_555c20", "@Car_WheelLoads@4")
 extern "C" void FUN_555b50(); KING_ALIAS("_FUN_555b50", "@Car_Level2@8")
 extern "C" void FUN_555b10(); KING_ALIAS("_FUN_555b10", "@Car_Level1@8")
-ASM_PROC(FUN_555e80)
+extern "C" void FUN_555e80(); KING_ALIAS("_FUN_555e80", "@Car_ControlSum9@4")
 ASM_VAR(float, g_vh64c264, $L_64c264)    // 0
 ASM_VAR(float, g_vh64c258, $L_64c258)
 
@@ -2677,4 +2677,58 @@ extern "C" void __fastcall CarEffect_Stop(BYTE* s)
         operator delete(p);
     }
     F(BYTE*, s, 16) = 0;
+}
+
+// ---------------------------------------------------------------------------
+// Sums over the car's wheels and controls.
+
+ASM_VAR(float, g_q158_64c264, $L_64c264)
+ASM_VAR(AsmLabel, g_q158_69809c, $L_69809c)
+// the wheel count of car s's type
+static int Veh158_Wheels(BYTE* s) { return F(int, (BYTE*)g_q158_69809c, 44 + F(int, s, 10420) * 2416); }
+// [FUN_555c20] the weighted sum of the wheels' two loads (body +15752 and +15912, every 20 bytes; weights +10512
+// and +10544)
+extern "C" double __fastcall Car_WheelLoads(BYTE* s)
+{
+    double v = g_q158_64c264;
+    int n = Veh158_Wheels(s);
+    const BYTE* w = F(BYTE*, s, 21600) + 15912;
+    const float* d = (const float*)(s + 10544);
+    for (; n > 0; n--, w += 20, d++) {
+        v = x87_fabs(F(float, w, -160)) * d[-8] + v;
+        v = v + x87_fabs(F(float, w, 0)) * d[0];
+    }
+    return v;
+}
+
+// [FUN_555d10] the weighted sum of the wheels' +15592 values (weights +10480)
+extern "C" double __fastcall Car_WheelSum(BYTE* s)
+{
+    double v = g_q158_64c264;
+    int n = Veh158_Wheels(s);
+    const BYTE* w = F(BYTE*, s, 21600) + 15592;
+    const float* d = (const float*)(s + 10480);
+    for (; n > 0; n--, w += 20, d++)
+        v = x87_fabs(F(float, w, 0)) * d[0] + v;
+    return v;
+}
+
+// [FUN_555e10] the weighted sum of four controls (+9536: +32, +12, +72, +52; weights +10436.. )
+extern "C" double __fastcall Car_ControlSum4(BYTE* s)
+{
+    const BYTE* o = F(BYTE*, s, 9536);
+    double v = x87_fabs(F(float, o, 32)) * F(float, s, 10436) + x87_fabs(F(float, o, 12)) * F(float, s, 10432);
+    v = v + x87_fabs(F(float, o, 72)) * F(float, s, 10444);
+    return v + x87_fabs(F(float, o, 52)) * F(float, s, 10440);
+}
+
+// [FUN_555e80] the weighted sum of the 9 controls (+9536 from +12, every 20 bytes; weights +10432..)
+extern "C" double __fastcall Car_ControlSum9(BYTE* s)
+{
+    double v = g_q158_64c264;
+    const BYTE* o = F(BYTE*, s, 9536) + 12;
+    const float* d = (const float*)(s + 10432);
+    for (int k = 0; k < 9; k++)
+        v = v + F(float, o, k * 20) * d[k];
+    return v;
 }
