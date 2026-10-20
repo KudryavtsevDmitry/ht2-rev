@@ -808316,6 +808316,8 @@ $L_5e557f PROC
             int 3
 $L_5e557f ENDP
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e5580 PROC
 
             sub ESP,60
@@ -808425,6 +808427,10 @@ FUN_5e5580 PROC
             add ESP,60
             ret 4
 FUN_5e5580 ENDP
+ELSE
+EXTERN @Sphere_Merge@12:PROC
+FUN_5e5580 TEXTEQU <@Sphere_Merge@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
