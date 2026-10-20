@@ -2521,3 +2521,21 @@ extern "C" int __cdecl Rope_CompareChars(RopeIt60 a, RopeIt60 b, const char* f, 
         f++;
     }
 }
+
+// [FUN_466a00] compares the rope ranges [a, b) and [c, d): -1, 0 or 1
+extern "C" int __cdecl Rope_CompareRope(RopeIt60 a, RopeIt60 b, RopeIt60 c, RopeIt60 d)
+{
+    while (!Aicon232_Same(&a, &b) && !Aicon232_Same(&c, &d)) {
+        char x = Aicon232_Char(&a);
+        if (x < Aicon232_Char(&c))
+            return -1;
+        x = Aicon232_Char(&c);
+        if (x < Aicon232_Char(&a))
+            return 1;
+        Aicon232_Next(&a);
+        Aicon232_Next(&c);
+    }
+    if (!Aicon232_Same(&c, &d))
+        return -1;
+    return !Aicon232_Same(&a, &b);
+}

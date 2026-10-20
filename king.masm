@@ -182352,6 +182352,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_466a00 PROC
 
             push EBX
@@ -182592,6 +182594,10 @@ $L_466c18::
             pop EBX
             ret 
 FUN_466a00 ENDP
+ELSE
+EXTERN _Rope_CompareRope:PROC
+FUN_466a00 TEXTEQU <_Rope_CompareRope>
+ENDIF
 ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 IFDEF ASM_AI_CONTAINERS
