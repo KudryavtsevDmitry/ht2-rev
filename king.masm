@@ -1500,6 +1500,7 @@ PUBLIC $L_67d594
 PUBLIC $L_64c348, $L_64d494, $L_651c84, $L_651c88, $L_651c8c, $L_651c90
 PUBLIC $L_651c94
 PUBLIC $L_651c64, $L_651c98, $L_651c9c
+PUBLIC $L_68321c, $L_683c60, $L_683c68, $L_683c70
 
 ;===================================
 _TEXT SEGMENT
@@ -856549,12 +856550,18 @@ $L_5ff05f ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff110 PROC
 
             call FUN_5ff120
 
             jmp $L_5ff140
 $L_5ff110 ENDP
+ELSE
+EXTERN _Static723d28_Init:PROC
+$L_5ff110 TEXTEQU <_Static723d28_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856593,6 +856600,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff140 PROC
 
             push OFFSET $L_5ff150
@@ -856601,15 +856610,25 @@ $L_5ff140 PROC
             pop ECX
             ret 
 $L_5ff140 ENDP
+ELSE
+EXTERN _Static723d28_AtExit:PROC
+$L_5ff140 TEXTEQU <_Static723d28_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff150 PROC
 
             mov ECX,OFFSET $L_723d28
             jmp $L_5ffc60
 $L_5ff150 ENDP
+ELSE
+EXTERN _Static723d28_Destroy:PROC
+$L_5ff150 TEXTEQU <_Static723d28_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856706,12 +856725,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff210 PROC
 
             call FUN_5ff220
 
             jmp $L_5ff230
 $L_5ff210 ENDP
+ELSE
+EXTERN _Sound_LockInit:PROC
+$L_5ff210 TEXTEQU <_Sound_LockInit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -856736,6 +856761,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff230 PROC
 
             push OFFSET $L_5ff240
@@ -856744,10 +856771,16 @@ $L_5ff230 PROC
             pop ECX
             ret 
 $L_5ff230 ENDP
+ELSE
+EXTERN _Sound_LockAtExit:PROC
+$L_5ff230 TEXTEQU <_Sound_LockAtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff240 PROC
 
             push OFFSET $L_723b40
@@ -856755,6 +856788,10 @@ $L_5ff240 PROC
 
             ret 
 $L_5ff240 ENDP
+ELSE
+EXTERN _Sound_DeleteLock:PROC
+$L_5ff240 TEXTEQU <_Sound_DeleteLock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -857137,12 +857174,18 @@ FUN_5ff3b0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff590 PROC
 
             call FUN_5ff5a0
 
             jmp $L_5ff5c0
 $L_5ff590 ENDP
+ELSE
+EXTERN _Static723d38_Init:PROC
+$L_5ff590 TEXTEQU <_Static723d38_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -857181,6 +857224,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff5c0 PROC
 
             push OFFSET $L_5ff5d0
@@ -857189,15 +857234,25 @@ $L_5ff5c0 PROC
             pop ECX
             ret 
 $L_5ff5c0 ENDP
+ELSE
+EXTERN _Static723d38_AtExit:PROC
+$L_5ff5c0 TEXTEQU <_Static723d38_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ff5d0 PROC
 
             mov ECX,OFFSET $L_723d38
             jmp FUN_404420
 $L_5ff5d0 ENDP
+ELSE
+EXTERN _Static723d38_Destroy:PROC
+$L_5ff5d0 TEXTEQU <_Static723d38_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -857451,6 +857506,8 @@ $L_5ff87b::
             ret 
 FUN_5ff5e0 ENDP
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5ff890 PROC
 
             mov EAX,8424
@@ -857612,6 +857669,10 @@ $L_5ff9c9::
             add ESP,8424
             ret 
 FUN_5ff890 ENDP
+ELSE
+EXTERN _Sce_SetRootDir:PROC
+FUN_5ff890 TEXTEQU <_Sce_SetRootDir>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

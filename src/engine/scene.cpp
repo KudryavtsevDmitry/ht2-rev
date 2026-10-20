@@ -2452,3 +2452,46 @@ extern "C" int __cdecl Static723d38_Init(void)
     Static723d38_Construct();
     return Static723d38_AtExit();
 }
+
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+ASM_PROC(FUN_5ff5e0)
+extern "C" __declspec(dllimport) DWORD __stdcall timeGetTime(void);
+ASM_VAR(AsmLabel, s_q194_68321c, $L_68321c)
+ASM_VAR(AsmLabel, s_q194_683c70, $L_683c70)
+ASM_VAR(AsmLabel, s_q194_683c68, $L_683c68)
+ASM_VAR(AsmLabel, s_q194_683c60, $L_683c60)
+// [FUN_5ff890] reseeds the random generator 723b58 from the time, keeps dir's full path (with a trailing
+// backslash) in the vector 723d38 and adds the three default search folders (5ff5e0)
+extern "C" int __cdecl Sce_SetRootDir(const char* dir)
+{
+    DWORD a[57];
+    memset(a, 0, 55 * 4);
+    DWORD mj = timeGetTime() ^ 161803398, mk = 1;
+    a[54] = mj;
+    for (unsigned i = 0; i < 1134; i += 21) {
+        unsigned d = i % 55;
+        mj -= mk;
+        a[d] = mk;
+        DWORD t = mj;
+        mj = a[d];
+        mk = t;
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned j = 0; j < 55; j++)
+            a[j] -= a[(j + 31) % 55];
+    a[55] = 0;
+    a[56] = 31;
+    memcpy((void*)g_sce723b58, a, sizeof a);
+    char buf[8192];
+    char* part = 0;
+    GetFullPathNameA(dir, 8192, buf, &part);
+    if (part && buf[strlen(buf) - 1] != '\\')
+        strncat(buf, (const char*)s_q194_68321c, 8192);
+    char** v = (char**)(void*)g_q47_723d38;
+    v[1] = v[0];
+    CallThis(FUN_44c220, v, v[1], buf, buf + strlen(buf));
+    CallC(FUN_5ff5e0, (const char*)s_q194_683c70);
+    CallC(FUN_5ff5e0, (const char*)s_q194_683c68);
+    CallC(FUN_5ff5e0, (const char*)s_q194_683c60);
+    return 0;
+}
