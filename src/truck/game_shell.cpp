@@ -3702,3 +3702,65 @@ extern "C" BYTE* __fastcall ShellViewer51eea0_Construct(BYTE* s, void*, int pare
     F(int, s, 412) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Shell screen with four columns of mode buttons (exception frame dropped).
+
+ASM_VAR(AsmLabel, g_q36_64e7c0, $L_64e7c0)
+ASM_VAR(AsmLabel, g_q36_64e780, $L_64e780)
+ASM_VAR(AsmLabel, s_q36_677a58, $L_677a58)
+ASM_VAR(AsmLabel, s_q36_677a40, $L_677a40)
+ASM_VAR(AsmLabel, s_q36_677a38, $L_677a38)
+ASM_VAR(AsmLabel, s_q36_677a2c, $L_677a2c)
+ASM_VAR(AsmLabel, s_q36_677a24, $L_677a24)
+
+// a column of n buttons with ids id, id-2, .. at x, from y up by 19
+static void Shell_ButtonColumn(BYTE* p, BYTE* (__cdecl* make)(int, int, int), int n, int id, int x, int y)
+{
+    for (int k = 0; k < n; k++, id -= 2, y -= 19) {
+        BYTE* b = make((int)(const char*)s_q36_677a38, id, 0);
+        CallThis(FUN_5bdbf0, p, b, 0);
+        Shell_MoveCtl(b, x, y);
+    }
+}
+// [FUN_520e30] constructor (parent): a shell screen (vtables 64e7c0, 64e780 at +64): three columns of 50d1c0
+// buttons 255.., 241.., 227.. (+368), two columns of 50d530 buttons 271.., 263.. (+372), buttons 2, 279
+extern "C" BYTE* __fastcall ShellColumns520e30_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q36_64e7c0;
+    F(void*, s, 64) = g_q36_64e780;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p = Shell_NewPanel(4);
+    Shell_PanelStyles(p + 68, (const char*)s_q36_677a58, (const char*)s_q36_677a40);
+    BYTE* c = Shell_NewPanel(0);
+    F(BYTE*, s, 368) = c;
+    Shell_ButtonColumn(c, Shell_ModeButtonA, 7, 255, 362, 95);
+    Shell_ButtonColumn(c, Shell_ModeButtonA, 7, 241, 181, 95);
+    Shell_ButtonColumn(c, Shell_ModeButtonA, 6, 227, 0, 95);
+    Shell_MoveCtl(c, 231, 613);
+    CallThis(FUN_5bdbf0, p, c, 0);
+    c = Shell_NewPanel(0);
+    F(BYTE*, s, 372) = c;
+    Shell_ButtonColumn(c, Shell_ModeButtonB, 4, 271, 181, 57);
+    Shell_ButtonColumn(c, Shell_ModeButtonB, 4, 263, 0, 57);
+    Shell_MoveCtl(c, 412, 481);
+    CallThis(FUN_5bdbf0, p, c, 0);
+    c = Shell_NewPanel(0);
+    BYTE* b = Shell_ModeButtonC((int)(const char*)s_q36_677a2c, 2);
+    CallThis(FUN_5bdbf0, c, b, 0);
+    Shell_MoveCtl(b, 349, 800);
+    b = Shell_ModeButtonC((int)(const char*)s_q36_677a24, 279);
+    CallThis(FUN_5bdbf0, c, b, 0);
+    Shell_MoveCtl(b, 209, 800);
+    CallThis(FUN_5bdbf0, p, c, 0);
+    CallThis(FUN_5bdc80, p);
+    Shell_MoveCtl(p, F(WORD, F(BYTE*, s, 12), 0) - 640, g_q29_6ced18);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    F(int, s, 376) = 0;
+    return s;
+}
