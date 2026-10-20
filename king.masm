@@ -837615,6 +837615,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f40a0 PROC
 
             sub ESP,60
@@ -837688,6 +837690,10 @@ $L_5f40b3::
             add ESP,60
             ret 4
 $L_5f40a0 ENDP
+ELSE
+EXTERN @SceneNode5f40a0_WorldPos@12:PROC
+$L_5f40a0 TEXTEQU <@SceneNode5f40a0_WorldPos@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -846103,6 +846109,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f9760 PROC
 
             sub ESP,60
@@ -846193,6 +846201,10 @@ $L_5f97bd::
             add ESP,60
             ret 4
 $L_5f9760 ENDP
+ELSE
+EXTERN @SceneNode5f9760_WorldPos@12:PROC
+$L_5f9760 TEXTEQU <@SceneNode5f9760_WorldPos@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

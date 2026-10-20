@@ -2335,12 +2335,12 @@ extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* 
     return 1;
 }
 
-// [$L_5f2e70] the world position of node s's point (+20..+28) through its world node (+112) into out
-extern "C" void __fastcall SceneNode5f2e70_WorldPos(BYTE* s, void*, float* out)
+// the world position of node s's point (+20..+28) through world node n into out; the node's kind
+static int Sce163_WorldPos(BYTE* s, BYTE* n, float* out)
 {
     float m[12];
     memcpy(m, (BYTE*)g_q109_7025f0, 48);
-    CallThis(FUN_5f25c0, F(BYTE*, s, 112), m);
+    int k = CallThis<int>(FUN_5f25c0, n, m);
     float x = F(float, s, 20), y = F(float, s, 24), z = F(float, s, 28);
     double X = m[6] * z + m[3] * y;
     X = X + m[0] * x;
@@ -2354,4 +2354,27 @@ extern "C" void __fastcall SceneNode5f2e70_WorldPos(BYTE* s, void*, float* out)
     out[0] = (float)X;
     out[1] = (float)Y;
     out[2] = (float)Z;
+    return k;
+}
+
+// [$L_5f2e70] the world position of node s's point (+20..+28) through its world node (+112) into out
+extern "C" int __fastcall SceneNode5f2e70_WorldPos(BYTE* s, void*, float* out)
+{
+    return Sce163_WorldPos(s, F(BYTE*, s, 112), out);
+}
+
+// [$L_5f40a0] 5f2e70 with the world node at +60
+extern "C" int __fastcall SceneNode5f40a0_WorldPos(BYTE* s, void*, float* out)
+{
+    return Sce163_WorldPos(s, F(BYTE*, s, 60), out);
+}
+
+// [$L_5f9760] the point (+20..+28) of node s: through the world node +68 when there is one, else as it is (1)
+extern "C" int __fastcall SceneNode5f9760_WorldPos(BYTE* s, void*, float* out)
+{
+    if (!F(BYTE*, s, 68)) {
+        memcpy(out, s + 20, 12);
+        return 1;
+    }
+    return Sce163_WorldPos(s, F(BYTE*, s, 68), out);
 }
