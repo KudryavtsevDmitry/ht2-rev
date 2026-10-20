@@ -2793,3 +2793,21 @@ extern "C" double __cdecl Swing_Step(float* x, float* v, float* w, float k, floa
     }
     return a6 + dt;
 }
+
+ASM_VAR(float, g_q189_651c64, $L_651c64)
+ASM_VAR(float, g_q189_651c9c, $L_651c9c)
+ASM_VAR(float, g_q189_651c98, $L_651c98)
+// [FUN_5c8130] the four swing values from a and b, rotated over p0..p3 by the quarter (t scaled by 651c64) they
+// fall into
+extern "C" void __cdecl Swing_Quarters(float t, float a, float b, float* p0, float* p1, float* p2, float* p3)
+{
+    float c = g_q189_651c64;
+    int i = (int)(c * t) % 4;
+    if ((unsigned)i > 3)
+        return;
+    float* p[4] = {p0, p1, p2, p3};
+    *p[(4 - i) & 3] = (float)(c * a * g_q188_64d494);
+    *p[(5 - i) & 3] = (float)(c * b * g_q189_651c9c);
+    *p[(6 - i) & 3] = (float)(c * a * g_q189_651c98);
+    *p[(7 - i) & 3] = (float)(c * b * g_q188_651c90);
+}
