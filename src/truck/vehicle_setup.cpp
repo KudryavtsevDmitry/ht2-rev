@@ -668,3 +668,18 @@ ASM_VAR(AsmLabel, g_q156_697688, $L_697688)
 extern "C" BYTE* __cdecl VehSet_Init6976f8(void) { return Tuning501fb0_SetDefaults((BYTE*)g_q156_6976f8); }
 // [$L_502250] static init: the 697688 tuning defaults
 extern "C" BYTE* __cdecl VehSet_Init697688(void) { return Tuning_SetDefaults((BYTE*)g_q156_697688); }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q197_FUN_503dd0(); KING_ALIAS("_q197_FUN_503dd0", "_Car_InitDefaults")
+extern "C" void q197_L_503e10(); KING_ALIAS("_q197_L_503e10", "_Block697684_Free")
+// [$L_503e00] registers the teardown at exit
+extern "C" int __cdecl Static503dc0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_503e10); }
+// [$L_503dc0] the static initializer: FUN_503dd0, then the teardown at exit
+extern "C" int __cdecl Static503dc0_Init(void)
+{
+    CallC(q197_FUN_503dd0);
+    return Static503dc0_AtExit();
+}

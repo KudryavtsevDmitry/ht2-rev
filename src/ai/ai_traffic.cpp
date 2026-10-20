@@ -806,3 +806,21 @@ extern "C" void __fastcall Blocks487d70_Clear(BYTE* s, void*)
     }
     F(int, s, 8) = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(char, g_q197_68d308, $L_68d308)
+extern "C" void q197_FUN_447ef0(); KING_ALIAS("_q197_FUN_447ef0", "@Vec12_FreeStorage@8")
+extern "C" void q197_FUN_46d510(); KING_ALIAS("_q197_FUN_46d510", "_Traffic_Init68d308")
+// [$L_46d540] destroys the static object 68d308 at exit (FUN_447ef0)
+extern "C" void __cdecl Static68d308_Destroy(void) { CallThis(q197_FUN_447ef0, &g_q197_68d308); }
+// [$L_46d530] registers the teardown at exit
+extern "C" int __cdecl Static68d308_AtExit(void) { return atexit((void(__cdecl*)(void))Static68d308_Destroy); }
+// [$L_46d500] the static initializer: FUN_46d510, then the teardown at exit
+extern "C" int __cdecl Static68d308_Init(void)
+{
+    CallC(q197_FUN_46d510);
+    return Static68d308_AtExit();
+}

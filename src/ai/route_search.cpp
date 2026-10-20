@@ -591,3 +591,21 @@ extern "C" void __fastcall Vec12Array_FreeAll(BYTE* s, void*)
     for (BYTE* p = s; p != e; p += 12)
         CallThis(FUN_447ef0, p);
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(char, g_q197_691cc0, $L_691cc0)
+extern "C" void q197_FUN_488320(); KING_ALIAS("_q197_FUN_488320", "_Trce_488320")
+extern "C" void q197_L_487db0(); KING_ALIAS("_q197_L_487db0", "$L_487db0")
+// [$L_488340] destroys the static object 691cc0 at exit ($L_487db0)
+extern "C" void __cdecl Static691cc0_Destroy(void) { CallThis(q197_L_487db0, &g_q197_691cc0); }
+// [$L_488330] registers the teardown at exit
+extern "C" int __cdecl Static691cc0_AtExit(void) { return atexit((void(__cdecl*)(void))Static691cc0_Destroy); }
+// [$L_488310] the static initializer: FUN_488320, then the teardown at exit
+extern "C" int __cdecl Static691cc0_Init(void)
+{
+    CallC(q197_FUN_488320);
+    return Static691cc0_AtExit();
+}
