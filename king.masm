@@ -835601,6 +835601,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f3410 PROC
 
             sub ESP,152
@@ -835777,6 +835779,10 @@ $L_5f355d::
             add ESP,152
             ret 8
 $L_5f3410 ENDP
+ELSE
+EXTERN @SceneNode5f3410_Hit@16:PROC
+$L_5f3410 TEXTEQU <@SceneNode5f3410_Hit@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

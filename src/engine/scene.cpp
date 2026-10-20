@@ -2155,3 +2155,41 @@ extern "C" int __fastcall SceneNode5f3060_Draw(BYTE* s, void*, void* a1, BYTE* m
     memcpy(m, saved, 48);
     return 1;
 }
+
+ASM_PROC(FUN_5f21e0)
+// [$L_5f3410] a ray/hit test of transform node s (skipped with +40 bit 0): the record's matrix (+4) is moved
+// into the node's space (the inverse world matrix, alone for kind 0 or applied for 1) for the children test
+// (5f21e0, or the +56 object's vtbl+52 with flags bit 2, copying +116 on a hit); restored unless bit 0 of the
+// result is set
+extern "C" int __fastcall SceneNode5f3410_Hit(BYTE* s, void*, int flags, BYTE* rec)
+{
+    BYTE w1[48], saved[48], t[48];
+    memcpy(w1, (BYTE*)g_q109_7025f0, 48);
+    if (F(BYTE, s, 40) & 1)
+        return 0;
+    BYTE* m = rec + 4;
+    memcpy(saved, m, 48);
+    int kind = CallThis<int>(FUN_5f25c0, F(BYTE*, s, 112), w1);
+    memcpy(w1, CallC<BYTE*>(FUN_5ac2e0, t, w1), 48);
+    if (kind == 0)
+        memcpy(m, w1, 48);
+    else if (kind == 1)
+        memcpy(m, CallC<BYTE*>(FUN_5aba40, t, m, w1), 48);
+    int r;
+    if (flags & 1)
+        r = CallThis<int>(FUN_5f21e0, s, 0, flags, rec);
+    else {
+        BYTE* o = F(BYTE*, s, 56);
+        if (o && (flags & 4)) {
+            r = CallVirt<int>(o, 52, flags | 1, rec);
+            if (r & 1) {
+                F(int, rec, 116) = F(int, s, 116);
+                return r;
+            }
+        } else
+            r = CallThis<int>(FUN_5f21e0, s, 0, flags, rec);
+    }
+    if (!(r & 1))
+        memcpy(m, saved, 48);
+    return r;
+}
