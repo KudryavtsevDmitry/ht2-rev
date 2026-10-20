@@ -1497,6 +1497,8 @@ PUBLIC $L_683c0c
 PUBLIC $L_64c32c, $L_64d318, $L_64f744
 PUBLIC $L_67d5f0
 PUBLIC $L_67d594
+PUBLIC $L_64c348, $L_64d494, $L_651c84, $L_651c88, $L_651c8c, $L_651c90
+PUBLIC $L_651c94
 
 ;===================================
 _TEXT SEGMENT
@@ -754465,6 +754467,8 @@ FUN_5c7dc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c8010 PROC
 
             push ECX
@@ -754584,6 +754588,10 @@ $L_5c8124::
             pop ECX
             ret 
 FUN_5c8010 ENDP
+ELSE
+EXTERN _Swing_Step:PROC
+FUN_5c8010 TEXTEQU <_Swing_Step>
+ENDIF
 ALIGN 16
 FUN_5c8130 PROC
 

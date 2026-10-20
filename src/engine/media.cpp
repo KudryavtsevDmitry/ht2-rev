@@ -2749,3 +2749,47 @@ extern "C" int __cdecl Sound_PlayAt(BYTE* a, unsigned k)
     CallC(FUN_5d2ba0, buf, 0);
     return 0;
 }
+
+ASM_VAR(float, g_q188_64c348, $L_64c348)
+ASM_VAR(float, g_q188_651c94, $L_651c94)
+ASM_VAR(float, g_q188_64d494, $L_64d494)
+ASM_VAR(float, g_q188_64c264, $L_64c264)
+ASM_VAR(float, g_q188_651c90, $L_651c90)
+ASM_VAR(float, g_q188_651c8c, $L_651c8c)
+ASM_VAR(float, g_q188_64c350, $L_64c350)
+ASM_VAR(float, g_q188_64c258, $L_64c258)
+ASM_VAR(BYTE*, g_q188_7025b8, $L_7025b8)
+ASM_VAR(float, g_q188_651c88, $L_651c88)
+ASM_VAR(float, g_q188_651c84, $L_651c84)
+// [FUN_5c8010] integrates the swing x, v, w of a hanging object over dt in steps of at most 64c348 (w limited by
+// lim scaled by 64d494, damped harder past it), stiffness k and mass m (with the 7025b8 world's gravity); m + dt
+extern "C" double __cdecl Swing_Step(float* x, float* v, float* w, float k, float m, float a6, float dt)
+{
+    int n = 1;
+    double step = dt;
+    if (dt > g_q188_64c348) {
+        n = (int)(dt * g_q188_651c94);
+        step = g_q188_64c348;
+        if (n <= 0)
+            return a6 + dt;
+    }
+    float lim = (float)(k * g_q188_64d494);
+    for (; n; n--) {
+        double y = step * *v + *w;
+        double c;
+        if (!(lim >= x87_fabs(y))) {
+            *w = y > g_q188_64c264 ? lim : (float)(k * g_q188_651c90);
+            c = g_q188_64c350;
+        } else {
+            *w = (float)y;
+            c = g_q188_64c258;
+        }
+        double z = step * *x + *v;
+        *v = (float)z;
+        *x = (float)(k * *w * g_q188_651c8c - z * c);
+        double f = g_q188_7025b8 ? k * F(float, g_q188_7025b8, 532) * k * m * g_q188_651c88
+                                 : k * k * m * g_q188_651c84;
+        *x = (float)(f + *x);
+    }
+    return a6 + dt;
+}
