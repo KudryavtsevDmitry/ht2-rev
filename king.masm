@@ -850404,6 +850404,8 @@ FUN_5fbdf0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5fc2c0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -850500,6 +850502,10 @@ $L_5fc354::
             pop EBX
             ret 8
 $L_5fc2c0 ENDP
+ELSE
+EXTERN @SceneNode5fc2c0_Test@16:PROC
+$L_5fc2c0 TEXTEQU <@SceneNode5fc2c0_Test@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851171,6 +851177,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5fca50 PROC
 
             push EBX
@@ -851240,6 +851248,10 @@ $L_5fcac0::
             pop EBX
             ret 12
 FUN_5fca50 ENDP
+ELSE
+EXTERN @SceneNode5fca50_Read@20:PROC
+FUN_5fca50 TEXTEQU <@SceneNode5fca50_Read@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -851252,6 +851264,8 @@ FUN_5fca50 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5fcaf0 PROC
 
             push EBP
@@ -851368,6 +851382,10 @@ $L_5fcb92::
             pop EBP
             ret 4
 $L_5fcaf0 ENDP
+ELSE
+EXTERN @SceneNode5fcaf0_Pass@12:PROC
+$L_5fcaf0 TEXTEQU <@SceneNode5fcaf0_Pass@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -2030,3 +2030,58 @@ extern "C" int __fastcall SceneNode5f4170_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
     CallThis(FUN_5ae8a0, b);
     return 1;
 }
+
+ASM_PROC(FUN_5fbdf0)
+// [$L_5fc2c0] the base test of node s for a and b; when it sets bit 2 the name "<+132>::<+164>" goes to b + 124
+// (and 0 is returned)
+extern "C" int __fastcall SceneNode5fc2c0_Test(BYTE* s, void*, BYTE* a, BYTE* b)
+{
+    int r = CallThis<int>(FUN_5fbdf0, s, a, b);
+    if (!(r & 4))
+        return r;
+    char* d = (char*)b + 124;
+    strcpy(d, (const char*)s + 132);
+    strcat(d, "::");
+    strcat(d, (const char*)s + 164);
+    return 0;
+}
+
+// [FUN_5fca50] reads node s of a scene file f: four floats as doubles (+288..+312), a count (+284) of ints stored from
+// +276 (a third one lands on the count, as in the original), then its children
+extern "C" void __fastcall SceneNode5fca50_Read(BYTE* s, void*, FILE* f, int a2, int a3)
+{
+    F(double, s, 288) = CallC<double>(FUN_5ab190, f);
+    F(double, s, 296) = CallC<double>(FUN_5ab190, f);
+    F(double, s, 304) = CallC<double>(FUN_5ab190, f);
+    F(double, s, 312) = CallC<double>(FUN_5ab190, f);
+    F(int, s, 284) = CallC<int>(FUN_5ab140, f);
+    for (int i = 0; i < F(int, s, 284); i++)
+        F(int, s, 276 + i * 4) = CallC<int>(FUN_5ab140, f);
+    int n = CallC<int>(FUN_5ab140, f);
+    CallThis(FUN_5f1db0, s, f, n, 1, a2, a3);
+}
+
+ASM_VAR(unsigned, g_q111_702e8c, $L_702e8c)
+// [$L_5fcaf0] passes a to the children of s (+48's list): first the type 14 ones from the last back, then all
+// from the first, stopping at one that takes it (vtbl+28); else (or with 702e8c bit 14) s's own vtbl+20; 1
+// unless there are no children
+extern "C" int __fastcall SceneNode5fcaf0_Pass(BYTE* s, void*, void* a)
+{
+    if (g_q111_702e8c & 0x4000) {
+        CallVirt(s, 20, 0, a);
+        return 1;
+    }
+    BYTE* n = F(BYTE*, F(BYTE*, s, 48), 0);
+    if (!n)
+        return 0;
+    while (F(BYTE*, n, 8))
+        n = F(BYTE*, n, 8);
+    for (; n; n = F(BYTE*, n, 4))
+        if (F(int, n, 16) == 14 && CallVirt<int>(n, 28, a))
+            return 1;
+    for (n = F(BYTE*, F(BYTE*, s, 48), 0); n; n = F(BYTE*, n, 8))
+        if (CallVirt<int>(n, 28, a))
+            return 1;
+    CallVirt(s, 20, 0, a);
+    return 1;
+}
