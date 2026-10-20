@@ -661,3 +661,10 @@ extern "C" BYTE* __fastcall Tuning501fb0_SetDefaults(BYTE* s)
         F(DWORD, s, off[k]) = val[k];
     return s;
 }
+
+ASM_VAR(AsmLabel, g_q156_6976f8, $L_6976f8)
+ASM_VAR(AsmLabel, g_q156_697688, $L_697688)
+// [$L_5021a0] static init: the 6976f8 tuning defaults
+extern "C" BYTE* __cdecl VehSet_Init6976f8(void) { return Tuning501fb0_SetDefaults((BYTE*)g_q156_6976f8); }
+// [$L_502250] static init: the 697688 tuning defaults
+extern "C" BYTE* __cdecl VehSet_Init697688(void) { return Tuning_SetDefaults((BYTE*)g_q156_697688); }

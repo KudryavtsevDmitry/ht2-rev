@@ -1017,3 +1017,10 @@ extern "C" void Scy128_4e0200(); KING_ALIAS("_Scy128_4e0200", "@Sta4e0200_Constr
 ASM_VAR(AsmLabel, g_q128_6d1cd0, $L_6d1cd0)
 // [$L_52f5e0] static init: constructs the 6d1cd0 object
 extern "C" BYTE* __cdecl Scy_Init6d1cd0(void) { return CallThis<BYTE*>(Scy128_4e0200, (BYTE*)g_q128_6d1cd0); }
+
+// [$L_52d9f0] copies matrix b to a; a
+extern "C" BYTE* __stdcall Matrix52d9f0_Copy(BYTE* a, const BYTE* b, int, int, int)
+{
+    memcpy(a, b, 48);
+    return a;
+}

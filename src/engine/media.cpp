@@ -2630,3 +2630,16 @@ extern "C" void __cdecl Media_ExitHook(void)
     CallThis(FUN_5c3a80, g_q128_707f6c);
     ((void(__cdecl*)())g_med707f70)();
 }
+
+extern "C" void FUN_5c1b20(); KING_ALIAS("_FUN_5c1b20", "@Avi_ReadAudio@16")
+ASM_VAR(int, g_q156_702f54, $L_702f54)
+// [$L_5c1360] audio stream callback: reads up to n bytes from stream s into buf, stores the count in *got and
+// adds it to 702f54
+extern "C" int __cdecl Avi_AudioRead(int n, void* buf, int* got, BYTE* s)
+{
+    int v = n;
+    int r = CallThis<int>(FUN_5c1b20, s, buf, &v);
+    *got = v;
+    g_q156_702f54 += v;
+    return r;
+}
