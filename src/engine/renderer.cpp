@@ -2546,3 +2546,41 @@ extern "C" BYTE* __fastcall Ren5baa20_Init(BYTE* s)
     F(int, s, 184) = 0;
     return s;
 }
+
+extern "C" void FUN_5ba120(); KING_ALIAS("_FUN_5ba120", "_Fog_SetRange")
+extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
+ASM_VAR(double, g_q218_64eba8, $L_64eba8)
+// [FUN_5adc80] sets renderer s's fog from start to end (kept over the scale +8464 at +8540, +8536) with palette
+// colour mode (+8544; none when negative); with fog on (flag 4 of 702e8c) the device gets the fog states, the
+// colour from entry mode + 8 of the root surface's palette
+extern "C" void __fastcall Render_SetFog(BYTE* s, void*, double start, double end, int mode)
+{
+    float e = (float)(end / F(double, s, 8464));
+    F(int, s, 8544) = mode;
+    F(float, s, 8536) = e;
+    float b = (float)(start / F(double, s, 8464));
+    F(float, s, 8540) = b;
+    if (mode >= 0)
+        CallC(FUN_5ba120, b, e, mode);
+    void* d = g_q150_720908;
+    if (!d)
+        return;
+    if (!(F(BYTE, &g_q153_702e8c, 0) & 4)) {
+        Ren154_RS(d, 28, 0);
+        return;
+    }
+    Ren154_RS(d, 28, 1);
+    BYTE* pal = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, s, 1948));
+    if (pal) {
+        const BYTE* c = pal + 3 * (mode + 8);
+        int v = ((int)(c[0] * g_q218_64eba8 * g_q161_64eba0) | 0xffffff00) << 8;
+        v = (v | (int)(c[1] * g_q218_64eba8 * g_q161_64eba0)) << 8;
+        v |= (int)(c[2] * g_q218_64eba8 * g_q161_64eba0);
+        Ren154_RS(g_q150_720908, 34, v);
+    }
+    Ren154_RS(g_q150_720908, 140, 3);
+    float f = (float)start;
+    Ren154_RS(g_q150_720908, 36, *(int*)&f);
+    f = (float)end;
+    Ren154_RS(g_q150_720908, 37, *(int*)&f);
+}
