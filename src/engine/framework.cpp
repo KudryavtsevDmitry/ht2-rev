@@ -39,7 +39,7 @@ ASM_VAR(AsmLabel, g_start603800, _Effect_Zero)
 ASM_VAR(BYTE*, g_7208fc, $L_7208fc)
 ASM_VAR(AsmLabel, s_683538, $L_683538)
 ASM_VAR(AsmLabel, g_enum5d8c60, $L_5d8c60)
-ASM_VAR(AsmLabel, g_enum5d94d0, $L_5d94d0)
+extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx);
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
 extern "C" void FUN_5e43e0(); KING_ALIAS("_FUN_5e43e0", "@Loader_Construct@12")
 ASM_PROC(FUN_5dd0d0)
@@ -865,7 +865,7 @@ int __cdecl Fw_Enumerate5d94d0(int a, BYTE* obj)
     BYTE ctx[432];
     memset(ctx, 0, sizeof ctx);
     F(int, ctx, 0) = a;
-    return CallThis<int>(F(FwFn, F(BYTE*, obj, 0), 32), obj, (void*)g_enum5d94d0, ctx);
+    return CallThis<int>(F(FwFn, F(BYTE*, obj, 0), 32), obj, (void*)Node_ClearLinkByName, ctx);
 }
 
 // [FUN_5e3ba0] the start-up steps when not yet running
@@ -2909,4 +2909,16 @@ extern "C" void __fastcall Frame5dd560_OnDestroy(BYTE* s, void*)
     if (g_q53_72091c)
         ReleaseDC(F(HWND, s, 28), g_q53_72091c);
     PostQuitMessage(0);
+}
+
+// ---------------------------------------------------------------------------
+// Node link clearing by room name.
+
+// [$L_5d94d0] clears the +128 link of a type-14 node with flag 2 whose name (+132) is the context room name
+extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx)
+{
+    if (F(int, n, 16) == 14 && (F(BYTE, n, 40) & 2))
+        if (strcmp(F(const char*, *ctx, 60), (const char*)n + 132) == 0)
+            F(int, n, 128) = 0;
+    return -1;
 }

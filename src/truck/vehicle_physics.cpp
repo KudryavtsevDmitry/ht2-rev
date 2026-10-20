@@ -912,3 +912,25 @@ extern "C" int __fastcall Phys4eb3c0_NewPart(BYTE* s, void*, int a, int b)
         return 0;
     return CallThis<int>(FUN_4eb260, o, s, a, F(int, s, 4), b);
 }
+
+// ---------------------------------------------------------------------------
+// Body mode.
+
+ASM_PROC(FUN_4f1240)
+ASM_PROC(FUN_4f1ef0)
+extern "C" void FUN_4f1dd0(); KING_ALIAS("_FUN_4f1dd0", "@Body_SetPosition@12")
+// [FUN_4fc930] sets the body mode (+9784): 0, 1, or 2/3 with the frame (a, b), the position c and d
+extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int a, int b, int c, int d)
+{
+    switch (mode) {
+    case 0: F(int, s, 9784) = 0; break;
+    case 1: F(int, s, 9784) = 1; break;
+    case 2:
+    case 3:
+        CallThis(FUN_4f1240, s, 2, a, b);
+        CallThis(FUN_4f1dd0, s, c);
+        CallThis(FUN_4f1ef0, s, d);
+        F(int, s, 9784) = mode;
+        break;
+    }
+}

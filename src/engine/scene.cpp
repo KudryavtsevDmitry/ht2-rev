@@ -47,7 +47,7 @@ ASM_VAR(AsmLabel, g_vtbl652924, $L_652924)
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object constructor (name, kind, flag)
 extern "C" void FUN_6050f0(); KING_ALIAS("_FUN_6050f0", "_Mixer_GetVolume")    // mixer volume, returns double
 extern "C" void FUN_604730(); KING_ALIAS("_FUN_604730", "_Sound_ErrorText")
-ASM_PROC(FUN_604d70)
+extern "C" void FUN_604d70(); KING_ALIAS("_FUN_604d70", "_Channels_Create")
 extern "C" void FUN_605130(); KING_ALIAS("_FUN_605130", "_Streams_Collect")
 extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
 extern "C" void FUN_5e98c0(); KING_ALIAS("_FUN_5e98c0", "_Data_Read5e99c0")

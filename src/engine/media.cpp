@@ -2359,3 +2359,38 @@ extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
         CallVirt(o, 40, obj, rest);
     }
 }
+
+// ---------------------------------------------------------------------------
+// The media thread start.
+
+ASM_PROC(FUN_5c24a0)
+extern "C" void Mfc_AfxBeginThread(); KING_ALIAS("_Mfc_AfxBeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
+ASM_VAR(int, g_q54_702f60, $L_702f60)
+ASM_VAR(HANDLE, g_q54_702f58, $L_702f58)
+ASM_VAR(HANDLE, g_q54_702f5c, $L_702f5c)
+ASM_VAR(int, g_q54_702f98, $L_702f98)
+ASM_VAR(int, g_q54_702f9c, $L_702f9c)
+ASM_VAR(int, g_q54_702f94, $L_702f94)
+ASM_VAR(AsmLabel, g_q54_5c2d70, $L_5c2d70)
+ASM_VAR(AsmLabel, s_q54_67f854, $L_67f854)
+// [FUN_5c2e60] starts the media thread for the window w: COM, two events; without a device d it opens one
+// (logs and gives up on failure), then the 5c2d70 thread
+extern "C" void __cdecl Media_StartThread(int w, int d)
+{
+    CoInitialize(0);
+    g_q54_702f60 = w;
+    g_q54_702f58 = CreateEventA(0, 0, 0, 0);
+    g_q54_702f5c = CreateEventA(0, 0, 0, 0);
+    if (!d) {
+        g_q54_702f9c = 1;
+        if (CallC<int>(FUN_5c24a0, g_q54_702f60) < 0) {
+            CallC(FUN_5d2ba0, (const char*)s_q54_67f854, 0);
+            return;
+        }
+    } else {
+        g_q54_702f98 = d;
+        g_q54_702f9c = 0;
+    }
+    CallStd(Mfc_AfxBeginThread, (void*)g_q54_5c2d70, 0, 1, 4096, 0, 0);
+    g_q54_702f94 = 0;
+}
