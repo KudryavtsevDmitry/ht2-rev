@@ -1490,6 +1490,7 @@ PUBLIC $L_65170c, $L_651cec, $L_67f994
 PUBLIC $L_6ef260
 PUBLIC $L_67d494
 PUBLIC $L_67d420, $L_67d434
+PUBLIC $L_64d900, $L_64d908
 
 ;===================================
 _TEXT SEGMENT
@@ -701807,6 +701808,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5aa4f0 PROC
 
             sub ESP,40
@@ -701914,6 +701917,10 @@ FUN_5aa4f0 PROC
             add ESP,40
             ret 12
 FUN_5aa4f0 ENDP
+ELSE
+EXTERN @Water_Height@20:PROC
+FUN_5aa4f0 TEXTEQU <@Water_Height@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
