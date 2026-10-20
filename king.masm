@@ -1452,6 +1452,7 @@ PUBLIC $L_6d1b4e, $L_6d1b8e
 PUBLIC $L_6766a4, $L_6766ac, $L_720ad4, $L_720d8c
 PUBLIC $L_68352c
 PUBLIC $L_71e850, $L_71f808
+PUBLIC $L_682f50
 
 ;===================================
 _TEXT SEGMENT
@@ -797435,6 +797436,8 @@ FUN_5e03c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5e04d0 PROC
 
             sub ESP,52
@@ -797512,6 +797515,10 @@ $L_5e05b2::
             add ESP,52
             ret 
 $L_5e04d0 ENDP
+ELSE
+EXTERN @View_DrawPause@4:PROC
+$L_5e04d0 TEXTEQU <@View_DrawPause@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -809881,6 +809888,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e6c70 PROC
 
             push ECX
@@ -810031,6 +810040,10 @@ $L_5e6d9e::
             pop ECX
             ret 12
 FUN_5e6c70 ENDP
+ELSE
+EXTERN @Mmio_Read@20:PROC
+FUN_5e6c70 TEXTEQU <@Mmio_Read@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -812125,6 +812138,8 @@ EXTERN _Data_Read5e8160:PROC
 FUN_5e7ed0 TEXTEQU <_Data_Read5e8160>
 ENDIF
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e7f20 PROC
 
             sub ESP,24
@@ -812380,6 +812395,10 @@ $L_5e814e::
             add ESP,24
             ret 
 FUN_5e7f20 ENDP
+ELSE
+EXTERN _Texture_ReadChunks:PROC
+FUN_5e7f20 TEXTEQU <_Texture_ReadChunks>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
