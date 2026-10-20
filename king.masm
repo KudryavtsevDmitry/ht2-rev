@@ -720786,6 +720786,8 @@ FUN_5b6500 TEXTEQU <@Window_ToRoot@16>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b6530 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -720989,6 +720991,10 @@ $L_5b66ce::
             pop EBX
             ret 12
 FUN_5b6530 ENDP
+ELSE
+EXTERN @SubSurface_Construct@20:PROC
+FUN_5b6530 TEXTEQU <@SubSurface_Construct@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
