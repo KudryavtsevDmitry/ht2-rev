@@ -1511,6 +1511,7 @@ PUBLIC $L_655370, $L_6553a0, $L_67c7d0, $L_67c7fc, $L_67c840, $L_67c880
 PUBLIC $L_67c928, $L_67c968
 PUBLIC $L_67cb28, $L_67cb68, $L_67cb8c
 PUBLIC $L_67b904, $L_67b910, $L_67b91c, $L_67b928, $L_67b938
+PUBLIC $L_64eba8
 
 ;===================================
 _TEXT SEGMENT
@@ -708663,6 +708664,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5adc80 PROC
 
             sub ESP,8
@@ -708803,6 +708806,10 @@ $L_5adde7::
             add ESP,8
             ret 20
 FUN_5adc80 ENDP
+ELSE
+EXTERN @Render_SetFog@28:PROC
+FUN_5adc80 TEXTEQU <@Render_SetFog@28>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original

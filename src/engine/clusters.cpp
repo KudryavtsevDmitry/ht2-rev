@@ -34,7 +34,7 @@ ASM_VAR(AsmLabel, g_objectNames, $L_71e820)   // name hash of the scene objects
 
 extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
-ASM_PROC(FUN_5adc80)
+extern "C" void FUN_5adc80(); KING_ALIAS("_FUN_5adc80", "@Render_SetFog@28")
 extern "C" void FUN_5addf0(); KING_ALIAS("_FUN_5addf0", "@Render_SetAmbient@32")
 ASM_PROC(FUN_5eb4b0)
 extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
