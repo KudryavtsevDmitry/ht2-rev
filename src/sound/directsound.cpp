@@ -675,7 +675,7 @@ fail:
 // Small virtual methods and static initializers.
 
 extern "C" void FUN_604120(); KING_ALIAS("_FUN_604120", "@Play_DestructBase@8")
-ASM_PROC(FUN_6052b0)
+extern "C" void FUN_6052b0(); KING_ALIAS("_FUN_6052b0", "@Play6052b0_Destruct@8")
 ASM_VAR(float, g_dir652e40, $L_652e40)
 ASM_VAR(float, g_dir7241ac, $L_7241ac)
 
@@ -814,4 +814,16 @@ extern "C" int __fastcall Dir_SetRateBuffer(BYTE* s, void*, unsigned rate)
     if (F(void*, s, 56))
         return Dir_Com(F(void*, s, 56), 68, F(int, s, 44));
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+extern "C" void FUN_604120(); KING_ALIAS("_FUN_604120", "@Play_DestructBase@8")
+ASM_VAR(AsmLabel, g_q46_652e20, $L_652e20)
+// [FUN_6052b0] destructor: the 652e20 vtable, then the base
+extern "C" void __fastcall Play6052b0_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q46_652e20;
+    CallThis(FUN_604120, s);
 }

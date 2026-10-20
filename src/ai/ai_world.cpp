@@ -2966,7 +2966,7 @@ extern "C" void FUN_44f2c0(); KING_ALIAS("_FUN_44f2c0", "_Rope_CharAt")
 ASM_PROC(FUN_45a7d0)    // compare two strings
 ASM_PROC(FUN_4592b0)    // hash table: a new node for a key
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector of 24-byte records: allocate and copy (n, first, last)
-ASM_PROC(FUN_46c490)    // destroy a 24-byte record
+extern "C" void FUN_46c490(); KING_ALIAS("_FUN_46c490", "_Rec_DestroyThunk46c490")    // destroy a 24-byte record
 extern "C" void FUN_466c50(); KING_ALIAS("_FUN_466c50", "_Rec24b_Copy")    // copy 24-byte records (first, last, dest, -, 0)
 ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" double __cdecl Order_Value(const int* o);        // aiordr.cpp

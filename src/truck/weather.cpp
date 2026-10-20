@@ -470,7 +470,7 @@ extern "C" int __fastcall Obj_AttachResource(BYTE* self, void*, BYTE* a, const c
 extern "C" void FUN_595c60(); KING_ALIAS("_FUN_595c60", "@WorldObj_DestroyBase@8")
 extern "C" void FUN_5a53a0(); KING_ALIAS("_FUN_5a53a0", "@Wea5a53a0_Destroy@4")
 extern "C" void FUN_5a63a0(); KING_ALIAS("_FUN_5a63a0", "@Wea5a63a0_Destroy@4")
-ASM_PROC(FUN_5a6aa0)
+extern "C" void FUN_5a6aa0(); KING_ALIAS("_FUN_5a6aa0", "@Wea5a6aa0_Destruct@8")
 extern "C" void FUN_5a7240(); KING_ALIAS("_FUN_5a7240", "@Wea5a7240_Destroy@4")
 extern "C" void FUN_5a7310(); KING_ALIAS("_FUN_5a7310", "@Wea5a7310_Destroy@4")
 ASM_PROC(FUN_5a73f0)
@@ -893,4 +893,16 @@ extern "C" BYTE* __fastcall Dtor5a5250_DeletingDestructor(BYTE* s, void*, int fl
     if (flags & 1)
         operator delete(s);
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+extern "C" void FUN_5d3290(); KING_ALIAS("_FUN_5d3290", "@Object_Destroy@4")
+ASM_VAR(AsmLabel, g_q46_651568, $L_651568)
+// [FUN_5a6aa0] destructor: the 651568 vtable, then the object
+extern "C" void __fastcall Wea5a6aa0_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q46_651568;
+    CallThis(FUN_5d3290, s);
 }

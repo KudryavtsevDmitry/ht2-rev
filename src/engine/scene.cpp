@@ -901,7 +901,7 @@ extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 extern "C" void FUN_5f06e0(); KING_ALIAS("_FUN_5f06e0", "@Node5f06e0_Destroy@8")
 extern "C" void FUN_5f07a0(); KING_ALIAS("_FUN_5f07a0", "@Node5f07a0_Destroy@8")
 extern "C" void FUN_5f0810(); KING_ALIAS("_FUN_5f0810", "@Node5f0810_Destroy@8")
-ASM_PROC(FUN_5f08c0)
+extern "C" void FUN_5f08c0(); KING_ALIAS("_FUN_5f08c0", "@Sce5f08c0_Destruct@8")
 extern "C" void FUN_5f15a0(); KING_ALIAS("_FUN_5f15a0", "@Node5f1530_Destroy@8")
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 extern "C" void FUN_5fa720(); KING_ALIAS("_FUN_5fa720", "@Sce5fa720_Destroy@4")
@@ -1851,4 +1851,29 @@ extern "C" BYTE* __cdecl Sound_CreateFromFile(void* file, int slot, int size, in
     F(int, r, 12) = slot;
     CallC(FUN_604e90, slot, F(int, r, 8), F(int, r, 4));
     return r;
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
+ASM_VAR(AsmLabel, g_q46_722940, $L_722940)
+ASM_VAR(AsmLabel, g_q46_723190, $L_723190)
+ASM_VAR(AsmLabel, g_q46s_5ef410, $L_5ef410)
+ASM_VAR(AsmLabel, g_q46_652a08, $L_652a08)
+// [FUN_5ef4d0] cleans up the static 722940
+extern "C" int __cdecl Static722940_Cleanup(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46s_5ef410, (void*)g_q46_722940);
+}
+// [FUN_5ef510] cleans up the static 723190
+extern "C" int __cdecl Static723190_Cleanup(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46s_5ef410, (void*)g_q46_723190);
+}
+// [FUN_5f08c0] destructor: the 652a08 vtable, then the base
+extern "C" void __fastcall Sce5f08c0_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q46_652a08;
+    CallThis(FUN_5ef660, s);
 }

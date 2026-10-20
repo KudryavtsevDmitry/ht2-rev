@@ -2276,3 +2276,14 @@ extern "C" BYTE* __fastcall Dtor5cf2f0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+ASM_VAR(AsmLabel, g_q46_71e808, $L_71e808)
+ASM_VAR(AsmLabel, g_q46_5d2080, $L_5d2080)
+// [FUN_5d2050] cleans up the static 71e808
+extern "C" int __cdecl Static71e808_Cleanup(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_5d2080, (void*)g_q46_71e808);
+}

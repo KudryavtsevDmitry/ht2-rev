@@ -2445,3 +2445,16 @@ extern "C" BYTE* __fastcall Dtor55ebd0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_5587d0(); KING_ALIAS("_FUN_5587d0", "@Truck5587d0_Destroy@4")
+// [$L_5587b0]
+extern "C" BYTE* __fastcall Dtor5587b0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5587d0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

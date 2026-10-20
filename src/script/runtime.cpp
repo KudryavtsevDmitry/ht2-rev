@@ -1106,7 +1106,7 @@ extern "C" int __fastcall Rt_ReadFile(BYTE* self, void*, const char* name)
 
 extern "C" void FUN_490fa0(); KING_ALIAS("_FUN_490fa0", "@RingMember_Destruct@8")
 extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
-ASM_PROC(FUN_491090)
+extern "C" void FUN_491090(); KING_ALIAS("_FUN_491090", "@Ring491090_Destruct@8")
 extern "C" void FUN_491100(); KING_ALIAS("_FUN_491100", "@Rec491100_Destroy@8")
 extern "C" void FUN_4914c0(); KING_ALIAS("_FUN_4914c0", "@Run4914c0_Destroy@4")
 ASM_PROC(FUN_491590)
@@ -1187,4 +1187,16 @@ extern "C" void __fastcall StrPair_Destroy(BYTE* s)
     BYTE* b = F(BYTE*, s, 0);
     if (b && F(WORD, b, 2))
         operator delete(b);
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
+ASM_VAR(AsmLabel, g_q46_64bef4, $L_64bef4)
+// [FUN_491090] destructor: the 64bef4 vtable, then the ring member
+extern "C" void __fastcall Ring491090_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q46_64bef4;
+    CallThis(FUN_491010, s);
 }

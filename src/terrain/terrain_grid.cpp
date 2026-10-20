@@ -131,7 +131,7 @@ extern "C" DWORD* __cdecl GridNode_Midpoint(DWORD* out, const float* a, const fl
 }
 
 #include "x87.h"
-ASM_PROC(FUN_6072b0)    // the deepest level allowed
+extern "C" void FUN_6072b0(); KING_ALIAS("_FUN_6072b0", "_Grid72c108_6072b0")    // the deepest level allowed
 
 // [FUN_61ba10] the terrain grid's refinement priority of a node: 0 when hidden or too deep, else by distance and the view wedges
 extern "C" double __fastcall TGridCamera_NodePriority(BYTE* s, void*, BYTE* node)
@@ -434,4 +434,27 @@ extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
         return 1;
     CallC(FUN_60aad0, 2289444628u, (const char*)s_q27_6724b0, (const char*)s_q27_685dac, 175, (const char*)s_q27_6724f8);
     return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+ASM_VAR(AsmLabel, g_q46_72c108, $L_72c108)
+ASM_VAR(AsmLabel, g_q46_61c180, $L_61c180)
+ASM_VAR(AsmLabel, g_q46_61c160, $L_61c160)
+ASM_VAR(AsmLabel, g_q46_61c0f0, $L_61c0f0)
+// [FUN_6072b0] runs 61c180 on the static grid 72c108
+extern "C" int __cdecl Grid72c108_6072b0(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_61c180, (void*)g_q46_72c108);
+}
+// [FUN_6072c0] runs 61c160 on the static grid 72c108
+extern "C" int __cdecl Grid72c108_6072c0(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_61c160, (void*)g_q46_72c108);
+}
+// [FUN_61c0c0] runs 61c0f0 on the static grid 72c108
+extern "C" int __cdecl Grid72c108_61c0c0(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_61c0f0, (void*)g_q46_72c108);
 }

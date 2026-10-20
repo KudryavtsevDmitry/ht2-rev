@@ -779,3 +779,13 @@ static void Aitra_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 extern "C" void __cdecl AitraInit_46d450() { Aitra_RngInit((DWORD*)g_aitraRng68d220, &g_aitraRng68d2f8, &g_aitraRng68d2fc, &g_aitraRng68d300); }
 // [$L_484090]
 extern "C" void __cdecl AitraInit_484090() { Aitra_RngInit((DWORD*)g_aitraRng68d7d8, &g_aitraRng68d8b0, &g_aitraRng68d8b4, &g_aitraRng68d8b8); }
+
+// ---------------------------------------------------------------------------
+// Destructor thunks: the vtable, then the base destructor; static object cleanups.
+
+extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")
+// [FUN_46c490] destroys the record p
+extern "C" int __cdecl Rec_DestroyThunk46c490(BYTE* p)
+{
+    return CallThis<int>(FUN_40cc50, p);
+}
