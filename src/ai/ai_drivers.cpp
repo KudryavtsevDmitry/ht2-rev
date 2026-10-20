@@ -567,7 +567,7 @@ void __fastcall Waypoints_Clear(WaypointVec* self, void*) { self->Clear(); }    
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last): the save stream
 extern "C" void FUN_471b10(); KING_ALIAS("_FUN_471b10", "@Rec471b10_Save@12")    // writes a 16-byte record (stream)
 ASM_PROC(FUN_470e10)    // writes an order (stream)
-ASM_PROC(FUN_477600)
+extern "C" void __cdecl PlayerRef_Resolve(int* e);
 typedef DWORD Dwords[1];
 ASM_VAR(Dwords, g_playRng, $L_68b9c8)          // the AI's subtractive generator
 ASM_VAR(unsigned, g_playRngI, $L_68baa4)
@@ -670,16 +670,16 @@ extern "C" void __cdecl Player_AllocLogo(BYTE* p)
 extern "C" void __cdecl Player_Reset477600(BYTE* p)
 {
     for (BYTE* e = FIELD(BYTE*, p, 152); e != FIELD(BYTE*, p, 156); e += 16)
-        CallC(FUN_477600, e);
+        PlayerRef_Resolve((int*)(e));
     FIELD(BYTE*, p, 164) = FIELD(BYTE*, p, 152);
-    CallC(FUN_477600, p + 168);
+    PlayerRef_Resolve((int*)(p + 168));
     for (int k = 508; k <= 512; k += 4) {
         BYTE* o = FIELD(BYTE*, p, k);
         if (!o)
             continue;
         for (BYTE* it = FIELD(BYTE*, o, 28); it != FIELD(BYTE*, FIELD(BYTE*, p, k), 32); it += 144)
             for (BYTE* e = FIELD(BYTE*, it, 120); e != FIELD(BYTE*, it, 124); e += 16)
-                CallC(FUN_477600, e);
+                PlayerRef_Resolve((int*)(e));
     }
 }
 
@@ -1104,7 +1104,7 @@ void __cdecl Route_Each477600(BYTE* x)
         return;
     for (BYTE* e = F(BYTE*, v, 28); e != F(BYTE*, F(BYTE*, x, 20), 32); e += 144)
         for (BYTE* q = F(BYTE*, e, 120); q != F(BYTE*, e, 124); q += 16)
-            CallC(FUN_477600, q);
+            PlayerRef_Resolve((int*)(q));
 }
 
 }
@@ -1402,3 +1402,45 @@ ASM_VAR(int, g_q112_68b990, $L_68b990)
 ASM_VAR(int, g_q112_68d4f4, $L_68d4f4)
 // [$L_477ae0] static init: 68d4f4 starts as the empty list end (68b990)
 extern "C" void __cdecl AiDri_Init68d4f4(void) { g_q112_68d4f4 = g_q112_68b990; }
+
+// ---------------------------------------------------------------------------
+// Resolving player references: search the player list (begin/end iterators) with 4579e0.
+
+extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
+extern "C" void FUN_4579e0(); KING_ALIAS("_FUN_4579e0", "_Range_CallD")
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
+ASM_VAR(AsmLabel, s_q204_66f9d8, $L_66f9d8)
+ASM_VAR(AsmLabel, s_q204_66f920, $L_66f920)
+ASM_VAR(AsmLabel, s_q204_66e430, $L_66e430)
+ASM_VAR(AsmLabel, s_q204_68d1c0, $L_68d1c0)
+static BYTE* Aidri204_Find(int key)
+{
+    void* end;
+    void* begin;
+    CallThis(FUN_4afc20, &g_players, &end);
+    CallThis(FUN_4afbf0, &g_players, &begin);
+    BYTE* r;
+    CallC(FUN_4579e0, &r, begin, end, key);
+    return r;
+}
+// [FUN_477600] resolves the player of record e (key +4): +0 becomes the player, or the list head when the record
+// is short (+8 - +4 <= 1) or the player is missing (reported)
+extern "C" void __cdecl PlayerRef_Resolve(int* e)
+{
+    if ((unsigned)(e[2] - e[1]) <= 1) {
+        e[0] = (int)g_players;
+        return;
+    }
+    BYTE* r = Aidri204_Find(e[1]);
+    if (r == (BYTE*)g_players) {
+        CallC(FUN_401010, 0, 256, (const char*)s_q204_66f9d8, (const char*)s_q204_66f920, 1640,
+              (const char*)s_q204_66e430, e[1], (const char*)s_q204_68d1c0);
+        e[0] = (int)g_players;
+        return;
+    }
+    int v;
+    CallThis(FUN_426280, &v, r);
+    e[0] = v;
+}

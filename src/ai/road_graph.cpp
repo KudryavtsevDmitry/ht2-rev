@@ -212,7 +212,7 @@ extern "C" AiListNode** __cdecl AiList_FindActive(AiListNode** out, AiListNode* 
 extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")    // vector<char>::insert_aux(pos, x)
 extern "C" void FUN_47b790(); KING_ALIAS("_FUN_47b790", "@Vec12_Insert47b790@16")    // vector<12 bytes>::insert_aux(pos, x)
 extern "C" void FUN_478fb0(); KING_ALIAS("_FUN_478fb0", "_List1000_MakeNode@4")    // list: a new node holding x
-ASM_PROC(FUN_477600)
+extern "C" void FUN_477600(); KING_ALIAS("_FUN_477600", "_PlayerRef_Resolve")
 ASM_PROC(FUN_4731e0)
 extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16")
 extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
