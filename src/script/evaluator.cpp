@@ -2158,3 +2158,15 @@ extern "C" void __cdecl EvaInit_4ad180() { Eva_RngInit((DWORD*)g_evaRng694660, &
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 // [$L_4a4940] returns the 44-byte record s[0] to the pool
 extern "C" void __fastcall Eval4a4940_Free(BYTE* s) { CallC(FUN_44b4a0, F(void*, s, 0), 44); }
+
+extern "C" void FUN_4ad030(); KING_ALIAS("_FUN_4ad030", "_Deque_CopyBackwardLoop")
+// [FUN_4acd20] copies [a, b) backwards to the end c (copies of the three iterators), the result into out
+extern "C" DequeIt* __cdecl Deque_CopyBackward(DequeIt* out, DequeIt a, DequeIt b, DequeIt c)
+{
+    DequeIt c2, b2, a2;
+    CallThis(FUN_4abea0, &c2, &c);
+    CallThis(FUN_4abea0, &b2, &b);
+    CallThis(FUN_4abea0, &a2, &a);
+    CallC(FUN_4ad030, out, a2, b2, c2, out, 0);
+    return out;
+}

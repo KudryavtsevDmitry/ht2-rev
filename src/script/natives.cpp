@@ -703,3 +703,30 @@ extern "C" int __fastcall Nat_4a2eb0(BYTE* s) { return 12; }
 extern "C" int __fastcall Nat_4a2ec0(BYTE* s) { return (int)g_nat67060c; }
 // [$L_4a2ed0]
 extern "C" BYTE* __fastcall Nat4a2ed0_DeletingDestructor(BYTE* s, void*, int flags) { return Nat_DeleteAfter(s, flags, FUN_4a3fd0); }
+
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
+extern "C" void FUN_4abea0(); KING_ALIAS("_FUN_4abea0", "@Sch_Copy16@12")
+static DequeIt Nat201_Copy(const DequeIt& s)
+{
+    DequeIt r;
+    CallThis(FUN_4abea0, &r, &s);
+    return r;
+}
+// [FUN_4a2ce0] copies of the iterators a and b handed to an empty call
+extern "C" void __cdecl DequeIt_Pass2(DequeIt a, DequeIt b, int)
+{
+    DequeIt b2 = Nat201_Copy(b), a2 = Nat201_Copy(a);
+    CallC(FUN_50d190, a2, b2, (int)b.cur);
+}
+// [FUN_4a2cb0] FUN_4a2ce0 with copies of a and b
+extern "C" void __cdecl DequeIt_Pass1(DequeIt a, DequeIt b)
+{
+    DequeIt b2 = Nat201_Copy(b), a2 = Nat201_Copy(a);
+    DequeIt_Pass2(a2, b2, 0);
+}
+// [FUN_4a29a0] FUN_4a2cb0 with a copy of a and b as it is
+extern "C" void __cdecl DequeIt_Pass0(DequeIt a, DequeIt b)
+{
+    DequeIt b2 = b, a2 = Nat201_Copy(a);
+    DequeIt_Pass1(a2, b2);
+}
