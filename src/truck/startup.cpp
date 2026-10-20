@@ -699,7 +699,7 @@ extern "C" void __cdecl Obj_HookHandlers(BYTE* o)
 // Small virtual methods and static initializers.
 
 extern "C" void FUN_4e0140(); KING_ALIAS("_FUN_4e0140", "@Wnd4e0140_Destruct@8")
-ASM_PROC(FUN_5f0770)
+extern "C" void FUN_5f0770(); KING_ALIAS("_FUN_5f0770", "@Thunk5f0770@4")
 ASM_VAR(AsmLabel, g_sta64d81c, $L_64d81c)
 
 static BYTE* Sta_DeleteAfter(BYTE* self, int flags, void (*dtor)())
@@ -736,7 +736,7 @@ ASM_PROC(FUN_4e35cf)
 ASM_PROC(FUN_4e0280)
 extern "C" void FUN_53fcf0(); KING_ALIAS("_FUN_53fcf0", "_Race_Start")
 extern "C" void FUN_52ad30(); KING_ALIAS("_FUN_52ad30", "_Cars_LoadCollision")
-ASM_PROC(FUN_5c5370)
+extern "C" void FUN_5c5370(); KING_ALIAS("_FUN_5c5370", "@Thunk5c5370@4")
 ASM_PROC(FUN_4b9570)
 ASM_VAR(AsmLabel, s_sta671204, $L_671204)
 ASM_VAR(double, g_sta64b658, $L_64b658)

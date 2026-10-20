@@ -1914,7 +1914,7 @@ extern "C" int __fastcall Route_PushRoad(BYTE* self, void*, void* key, Vec3* p)
 
 extern "C" void FUN_569930(); KING_ALIAS("_FUN_569930", "@Copter569930_Destroy@8")
 extern "C" void FUN_56afb0(); KING_ALIAS("_FUN_56afb0", "@Notice_Destruct@8")
-ASM_PROC(FUN_56d6b0)
+extern "C" void FUN_56d6b0(); KING_ALIAS("_FUN_56d6b0", "@Thunk56d6b0@4")
 ASM_VAR(DWORD, g_hel6f3248, $L_6f3248)
 ASM_VAR(DWORD, g_hel6f324c, $L_6f324c)
 ASM_VAR(DWORD, g_hel6f3250, $L_6f3250)
@@ -2137,7 +2137,7 @@ extern "C" int __fastcall Hel_573630(BYTE* s, void*, HelFn fn, int b)
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
-ASM_PROC(FUN_56f110)
+extern "C" void FUN_56f110(); KING_ALIAS("_FUN_56f110", "@Thunk56f110@4")
 // [$L_56f0f0]
 extern "C" BYTE* __fastcall Dtor56f0f0_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -2373,3 +2373,31 @@ extern "C" void __cdecl Copter_RadioCommand(int c)
         break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(char, g_q237_6f2d98, $L_6f2d98)
+extern "C" void q237_FUN_56bac0(); KING_ALIAS("_q237_FUN_56bac0", "_CopterState_Init")
+extern "C" void q237_L_56bb30(); KING_ALIAS("_q237_L_56bb30", "$L_56bb30")
+// [$L_56bb20] destroys the static object 6f2d98 at exit ($L_56bb30)
+extern "C" void __cdecl Static6f2d98_Destroy(void) { CallThis(q237_L_56bb30, &g_q237_6f2d98); }
+// [$L_56bb10] registers the teardown at exit
+extern "C" int __cdecl Static6f2d98_AtExit(void) { return atexit((void(__cdecl*)(void))Static6f2d98_Destroy); }
+// [$L_56bab0] the static initializer: FUN_56bac0, then the teardown at exit
+extern "C" int __cdecl Static6f2d98_Init(void)
+{
+    CallC(q237_FUN_56bac0);
+    return Static6f2d98_AtExit();
+}
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Med5cf370_Destroy(BYTE* s); KING_ALIAS("@q238_Med5cf370_Destroy@4", "@Med5cf370_Destroy@4")
+extern "C" int __fastcall q238_Wea5a63a0_Destroy(BYTE* s); KING_ALIAS("@q238_Wea5a63a0_Destroy@4", "@Wea5a63a0_Destroy@4")
+// [FUN_56d6b0] forwards to Wea5a63a0_Destroy
+extern "C" int __fastcall Thunk56d6b0(BYTE* s) { return q238_Wea5a63a0_Destroy(s); }
+// [FUN_56f110] forwards to Med5cf370_Destroy
+extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s); }

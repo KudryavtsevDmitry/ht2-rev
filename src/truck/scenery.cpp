@@ -902,7 +902,7 @@ extern "C" BYTE* __fastcall Dtor52b6d0_DeletingDestructor(BYTE* s, void*, int fl
     return s;
 }
 
-ASM_PROC(FUN_52d6f0)
+extern "C" void FUN_52d6f0(); KING_ALIAS("_FUN_52d6f0", "@Thunk52d6f0@4")
 // [$L_52d3e0]
 extern "C" BYTE* __fastcall Dtor52d3e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -1051,3 +1051,13 @@ extern "C" void __fastcall Scenery_StartEvent(BYTE* s, void*, BYTE* o, float t, 
     CallC(FUN_5e1a10, n, 1);
     F(float, s, 3644) = (float)F(double, g_6ef1fc, 2968);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Scenery_Destroy(BYTE* s); KING_ALIAS("@q238_Scenery_Destroy@4", "@Scenery_Destroy@4")
+extern "C" int __fastcall q238_Thunk52e210(BYTE* s); KING_ALIAS("@q238_Thunk52e210@4", "@Thunk52e210@4")
+// [FUN_52d6f0] forwards to Scenery_Destroy
+extern "C" int __fastcall Thunk52d6f0(BYTE* s) { return q238_Scenery_Destroy(s); }
+// [$L_52e730] forwards to Thunk52e210
+extern "C" int __fastcall Thunk52e730(BYTE* s) { return q238_Thunk52e210(s); }

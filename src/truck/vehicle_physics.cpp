@@ -890,7 +890,7 @@ extern "C" void __fastcall Body_SetControlMode(BYTE* self, void*, int mode, int 
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_530190)
+extern "C" void FUN_530190(); KING_ALIAS("_FUN_530190", "@Thunk530190@8")
 
 static BYTE* Vehphy_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {

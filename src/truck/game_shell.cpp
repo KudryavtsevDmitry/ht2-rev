@@ -4644,7 +4644,7 @@ extern "C" BYTE* __fastcall ShellRace523270_Construct(BYTE* s, void*, BYTE* pare
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
-ASM_PROC(FUN_519740)
+extern "C" void FUN_519740(); KING_ALIAS("_FUN_519740", "@Thunk519740@4")
 // [$L_50ff70]
 extern "C" BYTE* __fastcall Dtor50ff70_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -6837,3 +6837,10 @@ extern "C" void __cdecl Shell_AddLight(Shell202_Light l, int a, int b)
     if (g_q202_6ce520)
         CallThis(FUN_4cd470, g_q202_6ce520, &l, a, b);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Fw5d89e0_Destroy(BYTE* s); KING_ALIAS("@q238_Fw5d89e0_Destroy@4", "@Fw5d89e0_Destroy@4")
+// [FUN_519740] forwards to Fw5d89e0_Destroy
+extern "C" int __fastcall Thunk519740(BYTE* s) { return q238_Fw5d89e0_Destroy(s); }

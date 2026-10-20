@@ -2581,3 +2581,13 @@ extern "C" int __fastcall Node_DrawWithFog(BYTE* s, void*, int a, BYTE* r)
     CallThis(FUN_5addf0, r, amb, -1.0, -1.0);
     return 1;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Node5f1a70_Destroy(BYTE* s); KING_ALIAS("@q238_Node5f1a70_Destroy@4", "@Node5f1a70_Destroy@4")
+extern "C" int __fastcall q238_Sce5ef660_Destroy(BYTE* s); KING_ALIAS("@q238_Sce5ef660_Destroy@4", "@Sce5ef660_Destroy@4")
+// [FUN_5f0770] forwards to Node5f1a70_Destroy
+extern "C" int __fastcall Thunk5f0770(BYTE* s) { return q238_Node5f1a70_Destroy(s); }
+// [FUN_5f0870] forwards to Sce5ef660_Destroy
+extern "C" int __fastcall Thunk5f0870(BYTE* s) { return q238_Sce5ef660_Destroy(s); }
