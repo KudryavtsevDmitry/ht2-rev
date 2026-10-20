@@ -355,7 +355,7 @@ extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*)
     return 1;
 }
 
-extern "C" void FUN_6072b0(); KING_ALIAS("_FUN_6072b0", "_Grid72c108_6072b0")    // the deepest level allowed
+extern "C" void FUN_6072b0(); KING_ALIAS("_FUN_6072b0", "_Grid_DeepestLevel")    // the deepest level allowed
 extern "C" DWORD __fastcall MarineQueue_SetDeferredPriority(BYTE* self,void*,BYTE* node,DWORD priority);
 
 // [FUN_60c6b0] re-prioritises the grid's nodes for up to a second, then refines while the output wants more points

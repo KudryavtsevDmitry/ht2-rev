@@ -1375,3 +1375,25 @@ extern "C" bool __cdecl Player_RemoveWaypoint(BYTE* p, int id)
         AiError(0, 1, s_playFile, s_playId, 2012, "Internal error 325697", &g_aiEmpty, &g_aiEmpty);
     return r;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+extern "C" void FUN_477b00(); KING_ALIAS("_FUN_477b00", "_Players_SetCurrent")
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+ASM_PROC(FUN_4731e0)
+ASM_VAR(BYTE*, g_q52_68b990, $L_68b990)
+// [FUN_4734f0] clears the 68b990 list: the current player from its head, then each node (+8 destroyed, 1000 bytes
+// back to the pool)
+extern "C" void __cdecl Players_Clear(void)
+{
+    CallC(FUN_477b00, g_q52_68b990);
+    for (BYTE* n = F(BYTE*, g_q52_68b990, 0); n != g_q52_68b990;) {
+        BYTE* e = n;
+        n = F(BYTE*, n, 0);
+        CallThis(FUN_4731e0, e + 8);
+        CallC(FUN_44b4a0, e, 1000);
+    }
+    F(BYTE*, g_q52_68b990, 0) = g_q52_68b990;
+    F(BYTE*, g_q52_68b990, 4) = g_q52_68b990;
+}

@@ -13,7 +13,7 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
 extern "C" double __cdecl atof(const char* s);
 
-ASM_FUNC(Thread_Main, $L_603df0)
+extern "C" void Thread_Main(); KING_ALIAS("_Thread_Main", "_Cached_Get@4")
 
 ASM_VAR(AsmLabel, s_N, $L_6761e8)                // "N", the missing value
 ASM_VAR(AsmLabel, s_g, $L_671350)                // "%g"
@@ -144,3 +144,15 @@ static BYTE* Tim_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 }
 // [$L_603e40]
 extern "C" BYTE* __fastcall Tim603e40_DeletingDestructor(BYTE* s, void*, int flags) { return Tim_DeleteAfter(s, flags, FUN_603e90); }
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+// [$L_603df0] the cached value of t (slot 4 once, flag 1 skips it), marking it read (flag 2)
+extern "C" int __stdcall Cached_Get(BYTE* t)
+{
+    if (!(F(BYTE, t, 8) & 1))
+        F(int, t, 4) = CallVirt<int>(t, 4);
+    F(DWORD, t, 8) |= 2;
+    return F(int, t, 4);
+}

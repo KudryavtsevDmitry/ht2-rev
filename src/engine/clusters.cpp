@@ -840,8 +840,8 @@ extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2,
 
 ASM_VAR(AsmLabel, g_q46_723978, $L_723978)
 ASM_VAR(AsmLabel, g_q46_5ef410, $L_5ef410)
-// [FUN_5ef400] cleans up the static 723978
-extern "C" int __cdecl Static723978_Cleanup(void)
+// [FUN_5ef400] constructs the static 723978
+extern "C" int __cdecl Static723978_Construct(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_5ef410, (void*)g_q46_723978);
 }

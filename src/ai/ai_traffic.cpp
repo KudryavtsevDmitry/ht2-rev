@@ -789,3 +789,20 @@ extern "C" int __cdecl Rec_DestroyThunk46c490(BYTE* p)
 {
     return CallThis<int>(FUN_40cc50, p);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+// [$L_487d70] frees the blocks of the (+0, count +4) 8-byte entries, clearing them, and the +8 count
+extern "C" void __fastcall Blocks487d70_Clear(BYTE* s, void*)
+{
+    for (int k = 0; k < F(int, s, 4); k++) {
+        void** e = (void**)(F(BYTE*, s, 0) + k * 8);
+        if (e[0]) {
+            operator delete(e[0]);
+            ((void**)(F(BYTE*, s, 0) + k * 8))[0] = 0;
+        }
+        ((void**)(F(BYTE*, s, 0) + k * 8))[1] = 0;
+    }
+    F(int, s, 8) = 0;
+}

@@ -4810,3 +4810,13 @@ extern "C" void __fastcall Eff4c2a90_Destruct(BYTE* s, void*)
         F(void*, s, 56) = 0;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
+
+// [FUN_4cfe20] the flag bit for the kind 1..6 (1, 16, 2, 4, 8, 32), else 0
+extern "C" int __cdecl Eff_KindFlag(int kind)
+{
+    static const int bits[6] = {1, 16, 2, 4, 8, 32};
+    return kind >= 1 && kind <= 6 ? bits[kind - 1] : 0;
+}

@@ -11316,7 +11316,7 @@ extern "C" int __cdecl Ai_LoadPresent(BYTE* player, BYTE* present, int* playeror
 // ---------------------------------------------------------------------------
 // resetting the AI state
 
-ASM_PROC(FUN_4734f0)
+extern "C" void FUN_4734f0(); KING_ALIAS("_FUN_4734f0", "_Players_Clear")
 extern "C" void FUN_404290(); KING_ALIAS("_FUN_404290", "@Rec404290_Destroy@8")
 extern "C" void FUN_404570(); KING_ALIAS("_FUN_404570", "@Rec404570_Destroy@8")
 extern "C" void FUN_4046b0(); KING_ALIAS("_FUN_4046b0", "@Rec4046b0_Destroy@8")
