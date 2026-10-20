@@ -339,7 +339,7 @@ extern "C" int __fastcall Win_Activate(BYTE* self, void*)
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC($L_5d8360)     // texture format enumeration callback
+extern "C" void $L_5d8360(); KING_ALIAS("_$L_5d8360", "_Dd_TextureFormat@8")     // texture format enumeration callback
 ASM_VAR(int, g_dd7208ac, $L_7208ac)
 ASM_VAR(int, g_dd7208b0, $L_7208b0)
 ASM_VAR(int, g_dd720894, $L_720894)
@@ -465,4 +465,33 @@ extern "C" int __stdcall Dd_MatchRecord(const BYTE* a, BYTE* b)
         return 1;
     memcpy(b + 68, a, 32);
     return 0;
+}
+
+ASM_VAR(AsmLabel, g_q105_720870, $L_720870)
+ASM_VAR(AsmLabel, g_q105_720128, $L_720128)
+ASM_VAR(AsmLabel, g_q105_720148, $L_720148)
+ASM_VAR(AsmLabel, g_q105_720728, $L_720728)
+// [$L_5d8360] texture format callback: keeps the 555, 4444 and 565 RGB formats (720870, 720128, 720148; ctx +36
+// bits 2, 4 and 1) and the 16-bit bump format (720728, bit 7); always goes on
+extern "C" int __stdcall Dd_TextureFormat(const BYTE* pf, BYTE* ctx)
+{
+    DWORD f = F(DWORD, pf, 4);
+    if (f & 64) {
+        if (F(int, pf, 24) == 31 && F(int, pf, 20) == 992 && F(int, pf, 16) == 31744 && !F(int, pf, 28)) {
+            memcpy((BYTE*)g_q105_720870, pf, 32);
+            F(DWORD, ctx, 36) |= 4;
+        }
+        if (F(int, pf, 24) == 15 && F(int, pf, 20) == 240 && F(int, pf, 16) == 3840 && F(int, pf, 28) == 61440) {
+            memcpy((BYTE*)g_q105_720128, pf, 32);
+            F(DWORD, ctx, 36) |= 16;
+        }
+        if (F(int, pf, 24) == 31 && F(int, pf, 20) == 2016 && F(int, pf, 16) == 63488) {
+            memcpy((BYTE*)g_q105_720148, pf, 32);
+            F(DWORD, ctx, 36) |= 2;
+        }
+    } else if ((f & 0x80000) && F(int, pf, 12) == 16 && F(int, pf, 16) == 255 && F(int, pf, 20) == 65280) {
+        memcpy((BYTE*)g_q105_720728, pf, 32);
+        F(DWORD, ctx, 36) |= 128;
+    }
+    return 1;
 }
