@@ -3768,7 +3768,7 @@ extern "C" BYTE* __fastcall ShellColumns520e30_Construct(BYTE* s, void*, BYTE* p
 extern "C" void FUN_50efb0(); KING_ALIAS("_FUN_50efb0", "_Shell_MakeMaskSlider")
 extern "C" void FUN_50e830(); KING_ALIAS("_FUN_50e830", "_Shell_MakeTexButton")
 extern "C" void FUN_5159d0(); KING_ALIAS("_FUN_5159d0", "_Video_PickModes")
-ASM_PROC(FUN_50e500)
+extern "C" void FUN_50e500(); KING_ALIAS("_FUN_50e500", "_Shell_MakeMaskButton")
 extern "C" void Wnd_SetPos_(); KING_ALIAS("_Wnd_SetPos_", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
 extern "C" void __cdecl _exit(int);
 ASM_VAR(BYTE*, g_q37_6968d0, $L_6968d0)
@@ -6785,4 +6785,38 @@ extern "C" int __cdecl Shell_SkinScrollBar(BYTE* c, int h)
     F(int, c, 56) += 2 - F(int, c, 48);
     F(int, c, 48) = 2;
     return CallThis<int>(FUN_5becd0, c, h);
+}
+
+// ---------------------------------------------------------------------------
+// A button with mask faces.
+
+// [FUN_50e500] a button (id) at x, y with the faces name_a/_p/_ap/_f.msk (the masks are the styles' patterns)
+extern "C" BYTE* __cdecl Shell_MakeMaskButton(const char* name, int id, int x, int y)
+{
+    DWORD a[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD p[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD ap[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD ap2[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    DWORD f[9] = {0, 0, 0, 0, 0, 0, 0x3f000000, 0, 0};
+    Gs126_Mask(a, (BYTE*)g_q125_6ce3b8, "%s_a.msk", name);
+    Gs126_Mask(p, (BYTE*)g_q125_6ce408, "%s_p.msk", name);
+    Gs126_Mask(ap, (BYTE*)g_q125_6ce988, "%s_ap.msk", name);
+    Gs126_Mask(ap2, (BYTE*)g_q125_6ceb38, "%s_ap.msk", name);
+    BYTE* b = (BYTE*)operator new(288);
+    if (b)
+        b = CallThis<BYTE*>(FUN_5bf820, b, (BYTE*)g_q125_68d1c0, 8, id);
+    CallThis(FUN_5bd5a0, b + 68, p);
+    CallThis(FUN_5bd5a0, b + 104, a);
+    CallThis(FUN_5bd5a0, b + 140, ap2);
+    CallThis(FUN_5bd5a0, b + 176, ap);
+    Gs126_Mask(f, (BYTE*)g_q125_6ceb38, "%s_f.msk", name);
+    CallThis(FUN_5bd5a0, b + 212, f);
+    CallVirt(b, 20);
+    int dx = x - F(int, b, 44);
+    F(int, b, 52) += dx;
+    F(int, b, 44) = x;
+    int dy = y - F(int, b, 48);
+    F(int, b, 48) = y;
+    F(int, b, 56) += dy;
+    return b;
 }
