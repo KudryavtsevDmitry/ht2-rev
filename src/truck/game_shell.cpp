@@ -5877,9 +5877,9 @@ extern "C" void __fastcall Shell_SetMode(BYTE* s, void*, int m)
 // ---------------------------------------------------------------------------
 // Starting a game.
 
-ASM_PROC(FUN_512ea0)
+extern "C" void FUN_512ea0(); KING_ALIAS("_FUN_512ea0", "_Shell_SetVideoMode")
 ASM_PROC(FUN_5b6bf0)
-ASM_PROC(FUN_510a10)
+extern "C" void FUN_510a10(); KING_ALIAS("_FUN_510a10", "_Shell_LoadScene")
 extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
 extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
 extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
@@ -5996,4 +5996,143 @@ extern "C" void __cdecl Shell_StartGame(const char* name, int ask)
         return;
     }
     Shell_EnterWorld(0);
+}
+
+// ---------------------------------------------------------------------------
+// Loading a shell scene.
+
+ASM_PROC(FUN_5ec0f0)
+extern "C" void FUN_5ea880(); KING_ALIAS("_FUN_5ea880", "@Cluster5ea880_Construct@12")
+extern "C" void FUN_5bc060(); KING_ALIAS("_FUN_5bc060", "@Image_RleToSurface@8")
+extern "C" void FUN_5db6e0(); KING_ALIAS("_FUN_5db6e0", "@Scenes_Add@12")
+extern "C" char* __fastcall App_Path(BYTE* s, void*, const char* name);
+ASM_VAR(BYTE*, g_q90_696ca0, $L_696ca0)
+// [FUN_510a10..$L_510b36] loads scene name from folder dir: its resources name15.res or name16.res (by the
+// colour depth; fatal when missing), the marked images and textures prepared, the scene added to the world
+extern "C" void __cdecl Shell_LoadScene(const char* dir, const char* name)
+{
+    BYTE* c = (BYTE*)operator new(180);
+    c = c ? CallThis<BYTE*>(FUN_5ea880, c, name) : 0;
+    char path[260];
+    strcpy(path, App_Path(g_q90_696ca0, 0, dir));
+    strcat(path, name);
+    strcat(path, CallC<int>(FUN_568fd0) == 2 ? "15.res" : "16.res");
+    FILE* f = fopen(path, "rb");
+    if (!f)
+        CallC(FUN_5d2e70, name, " not found");
+    CallThis(FUN_5ec0f0, c, dir, f, 2, path);
+    for (int i = 0; i < F(int, c, 104); i++) {
+        BYTE* t = F(BYTE**, c, 108)[i];
+        if (F(BYTE, t, 28) & 1)
+            CallThis(FUN_5bc060, t);
+    }
+    for (int i = 0; i < F(int, c, 80); i++) {
+        BYTE* t = F(BYTE**, c, 84)[i];
+        if (F(BYTE, t, 52) & 1)
+            CallThis(FUN_5bae30, t, 3);
+    }
+    CallThis(FUN_5db6e0, g_q90_696ca0, c);
+}
+
+// ---------------------------------------------------------------------------
+// Setting up the game's video mode.
+
+extern "C" void FUN_5d71f0(); KING_ALIAS("_FUN_5d71f0", "_Dd_FreeLocalVideoMemory")
+extern "C" void FUN_5e8c60(); KING_ALIAS("_FUN_5e8c60", "_Font_LoadFile")
+extern "C" void FUN_4cce70(); KING_ALIAS("_FUN_4cce70", "@Lights_Construct@16")
+ASM_VAR(BYTE*, g_q91_6cecf4, $L_6cecf4)
+ASM_VAR(BYTE*, g_q91_6cecf8, $L_6cecf8)
+ASM_VAR(BYTE*, g_q91_6ced24, $L_6ced24)
+ASM_VAR(BYTE*, g_q91_6ced2c, $L_6ced2c)
+ASM_VAR(BYTE*, g_q91_6ced30, $L_6ced30)
+ASM_VAR(BYTE*, g_q91_6cec70, $L_6cec70)
+ASM_VAR(unsigned, g_q91_702e8c, $L_702e8c)
+ASM_VAR(int, g_q91_696878, $L_696878)
+ASM_VAR(BYTE*, g_q91_69684c, $L_69684c)
+ASM_VAR(int, g_q91_6cec68, $L_6cec68)
+ASM_VAR(int, g_q91_6ced70, $L_6ced70)
+ASM_VAR(DWORD, g_q91_69685c, $L_69685c)
+ASM_VAR(AsmLabel, g_q91_696750, $L_696750)
+ASM_VAR(int, g_q91_7208e0, $L_7208e0)
+ASM_VAR(int, g_q91_7208bc, $L_7208bc)
+ASM_VAR(int, g_q91_72090c, $L_72090c)
+ASM_VAR(int, g_q91_7208d8, $L_7208d8)
+ASM_VAR(int, g_q91_720908, $L_720908)
+ASM_VAR(void*, g_q91_6ce520, $L_6ce520)
+ASM_VAR(AsmLabel, s_q91_676918, $L_676918)
+ASM_VAR(AsmLabel, s_q91_67690c, $L_67690c)
+ASM_VAR(AsmLabel, s_q91_676900, $L_676900)
+ASM_VAR(AsmLabel, s_q91_6768f4, $L_6768f4)
+static void Gs91_ClearTwice(BYTE* w)
+{
+    CallThis(FUN_5b6bf0, F(BYTE*, w, 12));
+    CallThis(FUN_5b6e00, F(BYTE*, w, 12), 0, 1);
+    CallThis(FUN_5d88c0, w);
+    CallThis(FUN_5b6e00, F(BYTE*, w, 12), 0, 1);
+    CallThis(FUN_5d88c0, w);
+}
+// [FUN_512ea0..$L_513044] sets the game's video mode (6cec70 +408: the size in bits 4-8, 2 = 16-bit colour),
+// picks the texture detail (6ced70) and texture mode (6cec68) by the video memory, at most 1 below 60 MB of RAM;
+// loads the three fonts, sets the view and creates the lights
+extern "C" void __cdecl Shell_SetVideoMode(BYTE* world, int)
+{
+    if (g_q91_6cecf4)
+        CallVirt(g_q91_6cecf4, 36);
+    g_q91_6cecf8 = g_q91_6ced24;
+    if (F(int, g_q91_6cec70, 408) & 0x100)
+        SetCursor(0);
+    F(unsigned, world, 3020) |= 0x4000;
+    g_q91_702e8c |= 0x4000;
+    g_q91_696878 = -1;
+    BYTE* w = g_q91_69684c;
+    Gs91_ClearTwice(w);
+    g_q91_6cec68 = 1;
+    int m = F(int, g_q91_6cec70, 408);
+    int depth = (BYTE)(m & 15) == 2 ? 2 : 1;
+    int sx = 0, sy = 0;
+    switch (m & 496) {
+    case 320: sx = 1600; sy = 1200; break;
+    case 304: sx = 1024; sy = 768; break;
+    case 288: sx = 800; sy = 600; break;
+    case 272: sx = 640; sy = 480; break;
+    }
+    if (sx)
+        CallThis($L_5dd8c0, (BYTE*)g_q91_696750, sx, sy, depth,
+                 (g_q91_69685c | CallC<DWORD>(FUN_50bd80)) | 0x4000);
+    int vm = g_q91_7208e0;
+    if (vm < 0x200000) {
+        g_q91_6cec68 = 0;
+        CallC(FUN_5d2e70, (const char*)s_q91_676918, 0);
+    } else if (vm < 0x400000) {
+        g_q91_6cec68 = 1;
+        g_q91_6ced70 = 0;
+    } else if (vm >= 0x800000 && g_q91_7208bc) {
+        g_q91_6cec68 = 3;
+        if (CallC<int>(FUN_5d71f0, g_q91_72090c) < 0x200000)
+            g_q91_6ced70 = 0;
+        else if (CallC<int>(FUN_5d71f0, g_q91_72090c) < 0x400000)
+            g_q91_6ced70 = 1;
+        else if (CallC<int>(FUN_5d71f0, g_q91_72090c) < 0x1000000)
+            g_q91_6ced70 = 2;
+        else
+            g_q91_6ced70 = 3 + (CallC<int>(FUN_5d71f0, g_q91_72090c) >= 0x2000000);
+    } else {
+        g_q91_6cec68 = 2;
+        g_q91_6ced70 = CallC<int>(FUN_5d71f0, g_q91_72090c) >= 0x200000;
+    }
+    MEMORYSTATUS ms;
+    GlobalMemoryStatus(&ms);
+    if (g_q91_6ced70 > 1 && ms.dwTotalPhys < 62914560)
+        g_q91_6ced70 = 1;
+    if (F(int, g_q91_6cec70, 408) & 0x100)
+        SetCursor(0);
+    CallC(FUN_5d8460, 2, -1);
+    g_q91_6ced24 = CallC<BYTE*>(FUN_5e8c60, (const char*)s_q91_67690c);
+    g_q91_6ced2c = CallC<BYTE*>(FUN_5e8c60, (const char*)s_q91_676900);
+    g_q91_6ced30 = CallC<BYTE*>(FUN_5e8c60, (const char*)s_q91_6768f4);
+    CallC(FUN_527ea0, 0, 0);
+    Gs91_ClearTwice(w);
+    int n = (g_q91_7208d8 ? F(short, g_q91_6cec70, 420) : F(short, g_q91_6cec70, 422)) * 4 / 100 + 4;
+    void* p = operator new(16);
+    g_q91_6ce520 = p ? CallThis<void*>(FUN_4cce70, p, n, g_q91_720908) : 0;
 }
