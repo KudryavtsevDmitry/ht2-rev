@@ -169677,6 +169677,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_460840 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -169763,6 +169765,10 @@ $L_4608df::
             pop EBX
             ret 
 FUN_460840 ENDP
+ELSE
+EXTERN _Orders_Find:PROC
+FUN_460840 TEXTEQU <_Orders_Find>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
