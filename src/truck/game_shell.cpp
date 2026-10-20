@@ -4809,3 +4809,79 @@ extern "C" int __cdecl Names_AddLimited(const char* name)
         return 255;
     return CallThis<int>(FUN_50c770, &g_q49_6ce9f0, name);
 }
+
+// ---------------------------------------------------------------------------
+// Driver choice screen commands.
+
+ASM_PROC(FUN_524b30)
+ASM_VAR(BYTE*, g_q59_6cecdc, $L_6cecdc)
+ASM_VAR(BYTE*, g_q59_6cece0, $L_6cece0)
+ASM_VAR(BYTE*, g_q59_6cece4, $L_6cece4)
+ASM_VAR(BYTE*, g_q59_6cece8, $L_6cece8)
+ASM_VAR(int, g_q59_68b990, $L_68b990)
+// [$L_525e40] commands of the screen part (the screen at -64): 188 moves to the next of the five drivers (+316,
+// +308 the current) that is set and enabled in the +304 mask; 189 hands the current one to its slot (6cecdc..
+// 6cece8) and closes the screen (slot 32)
+extern "C" void __fastcall DriverChoice_OnCommand(BYTE* s, void*, int cmd)
+{
+    if (cmd == 188) {
+        if (!F(int, s, 312))
+            return;
+        for (;;) {
+            int i = (F(int, s, 308) + 1) % 5;
+            F(int, s, 308) = i;
+            if (F(int, s, 316 + i * 4) != g_q59_68b990 && (F(int, s, 304) & (1 << i)))
+                return;
+        }
+    }
+    if (cmd != 189 || !F(int, s, 312) || (unsigned)F(int, s, 308) > 4)
+        return;
+    int i = F(int, s, 308);
+    BYTE* const slots[5] = {g_q59_6cecdc, g_q59_6cece0, g_q59_6cece4, g_q59_6cece8, g_q59_6cece8};
+    CallThis(FUN_524b30, slots[i], F(int, s, 316 + i * 4));
+    CallVirt(s - 64, 32);
+}
+
+extern "C" void FUN_527950(); KING_ALIAS("_FUN_527950", "@Screen_SetChild@12")
+extern "C" void FUN_50c800(); KING_ALIAS("_FUN_50c800", "_CD_Check")
+extern "C" void FUN_5279e0(); KING_ALIAS("_FUN_5279e0", "_Movie_Play")
+ASM_VAR(BYTE*, g_q59_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_q59_6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_q59_6cec8c, $L_6cec8c)
+ASM_VAR(BYTE*, g_q59_6cec90, $L_6cec90)
+ASM_VAR(BYTE*, g_q59_6cec94, $L_6cec94)
+ASM_VAR(BYTE*, g_q59_6cec9c, $L_6cec9c)
+ASM_VAR(BYTE*, g_q59_6cecd8, $L_6cecd8)
+ASM_VAR(AsmLabel, s_q59_678278, $L_678278)
+// [$L_527b90] commands of the main menu part (the screen at -64): 101..108 open their screens as the child, 106
+// plays the intro movie at 640x480 (with the CD) and closes the menu
+extern "C" void __fastcall MainMenu_OnCommand(BYTE* s, void*, int cmd)
+{
+    BYTE* scr = s - 64;
+    switch (cmd) {
+    case 101: CallThis(FUN_527950, scr, g_q59_6cec90); break;
+    case 102:
+        F(int, g_q59_6cec6c, 1316) = 0;
+        CallThis(FUN_527950, scr, g_q59_6cec9c);
+        break;
+    case 103: CallThis(FUN_527950, scr, g_q59_6cec6c); break;
+    case 104: CallThis(FUN_527950, scr, g_q59_6cec94); break;
+    case 105:
+        F(int, g_q59_6cecd8, 612) = 0;
+        CallThis(FUN_527950, scr, g_q59_6cecd8);
+        break;
+    case 106:
+        if (!CallC<int>(FUN_50c800, 0))
+            break;
+        CallThis($L_5dd8c0, (BYTE*)g_gs696750, 640, 480, 2, 15872);
+        if (!CallC<int>(FUN_5279e0, (const char*)s_q59_678278, 1))
+            break;
+        if (F(BYTE*, s, 308))
+            CallVirt(F(BYTE*, s, 308), 32);
+        F(BYTE*, s, 308) = 0;
+        CallVirt(scr, 32);
+        break;
+    case 107: CallThis(FUN_527950, scr, g_q59_6cec70); break;
+    case 108: CallThis(FUN_527950, scr, g_q59_6cec8c); break;
+    }
+}
