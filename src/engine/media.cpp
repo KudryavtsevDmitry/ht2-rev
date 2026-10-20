@@ -2704,3 +2704,48 @@ extern "C" void __fastcall Particles_Move(BYTE* s, void*, double dt)
     Mesh_ScaleColors(s, 0, F(int, s, 176), F(const DWORD*, s, 172), g_q167_67fa60);
     F(double, s, 16) = F(double, s, 16) - dt;
 }
+
+// ---------------------------------------------------------------------------
+// Sound effects of objects.
+
+ASM_VAR(void*, g_q168_70ebe8, $L_70ebe8)
+ASM_VAR(int, g_q168_70ebf4, $L_70ebf4)
+ASM_VAR(BYTE*, g_q168_707f94, $L_707f94)
+ASM_VAR(BYTE*, g_q168_707f98, $L_707f98)
+ASM_VAR(float, g_q168_64c258, $L_64c258)
+ASM_VAR(float, g_q168_64c330, $L_64c330)
+ASM_VAR(float, g_q168_651cec, $L_651cec)
+ASM_VAR(float, g_q168_64c25c, $L_64c25c)
+ASM_VAR(float, g_q168_65170c, $L_65170c)
+ASM_VAR(float, g_q168_64c250, $L_64c250)
+ASM_VAR(AsmLabel, s_q168_67f994, $L_67f994)
+// [FUN_5c87f0] plays sound kind k (0-6: one of the two sound objects 707f94/707f98 and its volume scale) at
+// object a's position (+20, 4 floats) through the 70ebe8 hook; logs and gives 0 for an unknown kind or sound
+extern "C" int __cdecl Sound_PlayAt(BYTE* a, unsigned k)
+{
+    if (!g_q168_70ebe8 || !g_q168_70ebf4)
+        return 0;
+    float scale = 0;
+    BYTE* o = 0;
+    bool ok = true;
+    switch (k) {
+    case 0: scale = g_q168_64c258; o = g_q168_707f98; break;
+    case 1: scale = g_q168_64c330; o = g_q168_707f94; break;
+    case 2: scale = g_q168_651cec; o = g_q168_707f94; break;
+    case 3: scale = g_q168_64c25c; o = g_q168_707f94; break;
+    case 4: scale = g_q168_64c25c; o = g_q168_707f98; break;
+    case 5: scale = g_q168_65170c; o = g_q168_707f94; break;
+    case 6: scale = g_q168_64c250; o = g_q168_707f94; break;
+    default: ok = false;
+    }
+    if (ok && o) {
+        F(DWORD, o, 32) |= 0x40200;
+        float v[4];
+        memcpy(v, a + 20, 16);
+        return ((int(__cdecl*)(BYTE*, BYTE*, float*, float))g_q168_70ebe8)(a, o, v, v[3] * scale);
+    }
+    char buf[256];
+    sprintf(buf, (const char*)s_q168_67f994);
+    CallC(FUN_5d2ba0, buf, 0);
+    return 0;
+}
