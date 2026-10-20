@@ -2772,3 +2772,16 @@ extern "C" BYTE* __cdecl Image_FromFile(FILE* f, int name, int flags)
     g_q26_7218bc = 2;
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_5d89e0(); KING_ALIAS("_FUN_5d89e0", "@Fw5d89e0_Destroy@4")
+// [$L_5d88e0]
+extern "C" BYTE* __fastcall Dtor5d88e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5d89e0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

@@ -1210,3 +1210,26 @@ extern "C" BYTE* __fastcall MovBodies_Construct(BYTE* s, void*, BYTE* w)
     CallThis(FUN_5d33d0, s, 1);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+extern "C" void FUN_58b870(); KING_ALIAS("_FUN_58b870", "@Body58b870_Destroy@8")
+// [$L_58b700]
+extern "C" BYTE* __fastcall Dtor58b700_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_58b870, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_593670(); KING_ALIAS("_FUN_593670", "@FadeBody_Destroy@8")
+// [$L_593650]
+extern "C" BYTE* __fastcall Dtor593650_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_593670, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

@@ -4706,3 +4706,46 @@ extern "C" BYTE* __fastcall Trail_Construct(BYTE* s, void*, const char* name, in
         F(int, s, 40 + k * 4) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+ASM_PROC(FUN_4d0bc0)
+// [$L_4d0ba0]
+extern "C" BYTE* __fastcall Dtor4d0ba0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_4d0bc0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_4d0fd0(); KING_ALIAS("_FUN_4d0fd0", "@Vehicle4d0fd0_Destroy@8")
+// [$L_4d0ed0]
+extern "C" BYTE* __fastcall Dtor4d0ed0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_4d0fd0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_4d12f0(); KING_ALIAS("_FUN_4d12f0", "@Vehicle4d12f0_Destroy@8")
+// [$L_4d12d0]
+extern "C" BYTE* __fastcall Dtor4d12d0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_4d12f0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_4d25f0(); KING_ALIAS("_FUN_4d25f0", "@Effect4d25f0_Destroy@8")
+// [$L_4d25d0]
+extern "C" BYTE* __fastcall Dtor4d25d0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_4d25f0, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}

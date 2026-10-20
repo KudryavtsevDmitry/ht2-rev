@@ -374973,6 +374973,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d0ba0 PROC
 
             push ESI
@@ -374992,6 +374994,10 @@ $L_4d0bb8::
             pop ESI
             ret 4
 $L_4d0ba0 ENDP
+ELSE
+EXTERN @Dtor4d0ba0_DeletingDestructor@12:PROC
+$L_4d0ba0 TEXTEQU <@Dtor4d0ba0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -375276,6 +375282,8 @@ ELSE
 EXTERN @Effect4d0e30_Construct@20:PROC
 FUN_4d0e30 TEXTEQU <@Effect4d0e30_Construct@20>
 ENDIF
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d0ed0 PROC
 
             push ESI
@@ -375295,6 +375303,10 @@ $L_4d0ee8::
             pop ESI
             ret 4
 $L_4d0ed0 ENDP
+ELSE
+EXTERN @Dtor4d0ed0_DeletingDestructor@12:PROC
+$L_4d0ed0 TEXTEQU <@Dtor4d0ed0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_4d0ef0 PROC
@@ -375666,6 +375678,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d12d0 PROC
 
             push ESI
@@ -375685,6 +375699,10 @@ $L_4d12e8::
             pop ESI
             ret 4
 $L_4d12d0 ENDP
+ELSE
+EXTERN @Dtor4d12d0_DeletingDestructor@12:PROC
+$L_4d12d0 TEXTEQU <@Dtor4d12d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -377349,6 +377367,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d25d0 PROC
 
             push ESI
@@ -377368,6 +377388,10 @@ $L_4d25e8::
             pop ESI
             ret 4
 $L_4d25d0 ENDP
+ELSE
+EXTERN @Dtor4d25d0_DeletingDestructor@12:PROC
+$L_4d25d0 TEXTEQU <@Dtor4d25d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -468078,6 +468102,8 @@ ELSE
 EXTERN @Shell_Second2@16:PROC
 $L_50ff60 TEXTEQU <@Shell_Second2@16>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_50ff70 PROC
 
             push ESI
@@ -468097,6 +468123,10 @@ $L_50ff88::
             pop ESI
             ret 4
 $L_50ff70 ENDP
+ELSE
+EXTERN @Dtor50ff70_DeletingDestructor@12:PROC
+$L_50ff70 TEXTEQU <@Dtor50ff70_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
@@ -470815,6 +470845,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_5117e0 PROC
 
             push ESI
@@ -470834,6 +470866,10 @@ $L_5117f8::
             pop ESI
             ret 4
 $L_5117e0 ENDP
+ELSE
+EXTERN @Dtor5117e0_DeletingDestructor@12:PROC
+$L_5117e0 TEXTEQU <@Dtor5117e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -475643,6 +475679,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_514790 PROC
 
             push ESI
@@ -475662,6 +475700,10 @@ $L_5147a8::
             pop ESI
             ret 4
 $L_514790 ENDP
+ELSE
+EXTERN @Dtor514790_DeletingDestructor@12:PROC
+$L_514790 TEXTEQU <@Dtor514790_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -480626,6 +480668,8 @@ ELSE
 EXTERN @ShellSound517530_Construct@12:PROC
 FUN_517530 TEXTEQU <@ShellSound517530_Construct@12>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_517a20 PROC
 
             push ESI
@@ -480645,6 +480689,10 @@ $L_517a38::
             pop ESI
             ret 4
 $L_517a20 ENDP
+ELSE
+EXTERN @Dtor517a20_DeletingDestructor@12:PROC
+$L_517a20 TEXTEQU <@Dtor517a20_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -491047,6 +491095,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51dfe0 PROC
 
             push ESI
@@ -491066,6 +491116,10 @@ $L_51dff8::
             pop ESI
             ret 4
 $L_51dfe0 ENDP
+ELSE
+EXTERN @Dtor51dfe0_DeletingDestructor@12:PROC
+$L_51dfe0 TEXTEQU <@Dtor51dfe0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -491815,6 +491869,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51e710 PROC
 
             push ESI
@@ -491834,6 +491890,10 @@ $L_51e728::
             pop ESI
             ret 4
 $L_51e710 ENDP
+ELSE
+EXTERN @Dtor51e710_DeletingDestructor@12:PROC
+$L_51e710 TEXTEQU <@Dtor51e710_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -493194,6 +493254,8 @@ FUN_51eea0 TEXTEQU <@ShellViewer51eea0_Construct@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51f340 PROC
 
             push ESI
@@ -493213,6 +493275,10 @@ $L_51f358::
             pop ESI
             ret 4
 $L_51f340 ENDP
+ELSE
+EXTERN @Dtor51f340_DeletingDestructor@12:PROC
+$L_51f340 TEXTEQU <@Dtor51f340_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -494910,6 +494976,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_520560 PROC
 
             push ESI
@@ -494929,6 +494997,10 @@ $L_520578::
             pop ESI
             ret 4
 $L_520560 ENDP
+ELSE
+EXTERN @Dtor520560_DeletingDestructor@12:PROC
+$L_520560 TEXTEQU <@Dtor520560_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -496263,6 +496335,8 @@ FUN_520e30 TEXTEQU <@ShellColumns520e30_Construct@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_5213f0 PROC
 
             push ESI
@@ -496282,6 +496356,10 @@ $L_521408::
             pop ESI
             ret 4
 $L_5213f0 ENDP
+ELSE
+EXTERN @Dtor5213f0_DeletingDestructor@12:PROC
+$L_5213f0 TEXTEQU <@Dtor5213f0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -500849,6 +500927,8 @@ ELSE
 EXTERN @ShellRace523270_Construct@16:PROC
 FUN_523270 TEXTEQU <@ShellRace523270_Construct@16>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_5244f0 PROC
 
             push ESI
@@ -500868,6 +500948,10 @@ $L_524508::
             pop ESI
             ret 4
 $L_5244f0 ENDP
+ELSE
+EXTERN @Dtor5244f0_DeletingDestructor@12:PROC
+$L_5244f0 TEXTEQU <@Dtor5244f0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -503339,6 +503423,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_525e00 PROC
 
             push ESI
@@ -503358,6 +503444,10 @@ $L_525e18::
             pop ESI
             ret 4
 $L_525e00 ENDP
+ELSE
+EXTERN @Dtor525e00_DeletingDestructor@12:PROC
+$L_525e00 TEXTEQU <@Dtor525e00_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -504610,6 +504700,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_526b80 PROC
 
             push ESI
@@ -504629,6 +504721,10 @@ $L_526b98::
             pop ESI
             ret 4
 $L_526b80 ENDP
+ELSE
+EXTERN @Dtor526b80_DeletingDestructor@12:PROC
+$L_526b80 TEXTEQU <@Dtor526b80_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -506486,6 +506582,8 @@ ELSE
 EXTERN @Screen_Destruct@8:PROC
 FUN_527cd0 TEXTEQU <@Screen_Destruct@8>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_527d00 PROC
 
             push ESI
@@ -506505,6 +506603,10 @@ $L_527d18::
             pop ESI
             ret 4
 $L_527d00 ENDP
+ELSE
+EXTERN @Dtor527d00_DeletingDestructor@12:PROC
+$L_527d00 TEXTEQU <@Dtor527d00_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 $L_527d20 PROC
@@ -512553,6 +512655,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52b6d0 PROC
 
             push ESI
@@ -512572,6 +512676,10 @@ $L_52b6e8::
             pop ESI
             ret 4
 $L_52b6d0 ENDP
+ELSE
+EXTERN @Dtor52b6d0_DeletingDestructor@12:PROC
+$L_52b6d0 TEXTEQU <@Dtor52b6d0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -514940,6 +515048,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52d3e0 PROC
 
             push ESI
@@ -514959,6 +515069,10 @@ $L_52d3f8::
             pop ESI
             ret 4
 $L_52d3e0 ENDP
+ELSE
+EXTERN @Dtor52d3e0_DeletingDestructor@12:PROC
+$L_52d3e0 TEXTEQU <@Dtor52d3e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -515697,6 +515811,8 @@ $L_52d9f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52da10 PROC
 
             push ESI
@@ -515716,6 +515832,10 @@ $L_52da28::
             pop ESI
             ret 4
 $L_52da10 ENDP
+ELSE
+EXTERN @Dtor52da10_DeletingDestructor@12:PROC
+$L_52da10 TEXTEQU <@Dtor52da10_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -516521,6 +516641,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52e2e0 PROC
 
             push ESI
@@ -516540,6 +516662,10 @@ $L_52e2f8::
             pop ESI
             ret 4
 $L_52e2e0 ENDP
+ELSE
+EXTERN @Dtor52e2e0_DeletingDestructor@12:PROC
+$L_52e2e0 TEXTEQU <@Dtor52e2e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -547555,6 +547681,8 @@ $L_543dd3::
             nop
             nop
 $L_543d90 ENDP
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_543de0 PROC
 
             push ESI
@@ -547574,6 +547702,10 @@ $L_543df8::
             pop ESI
             ret 4
 $L_543de0 ENDP
+ELSE
+EXTERN @Dtor543de0_DeletingDestructor@12:PROC
+$L_543de0 TEXTEQU <@Dtor543de0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -584635,6 +584767,8 @@ FUN_55eaa0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_55ebd0 PROC
 
             push ESI
@@ -584654,6 +584788,10 @@ $L_55ebe8::
             pop ESI
             ret 4
 $L_55ebd0 ENDP
+ELSE
+EXTERN @Dtor55ebd0_DeletingDestructor@12:PROC
+$L_55ebd0 TEXTEQU <@Dtor55ebd0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -610359,6 +610497,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_56f0f0 PROC
 
             push ESI
@@ -610378,6 +610518,10 @@ $L_56f108::
             pop ESI
             ret 4
 $L_56f0f0 ENDP
+ELSE
+EXTERN @Dtor56f0f0_DeletingDestructor@12:PROC
+$L_56f0f0 TEXTEQU <@Dtor56f0f0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -616955,6 +617099,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_5736e0 PROC
 
             push ESI
@@ -616974,6 +617120,10 @@ $L_5736f8::
             pop ESI
             ret 4
 $L_5736e0 ENDP
+ELSE
+EXTERN @Dtor5736e0_DeletingDestructor@12:PROC
+$L_5736e0 TEXTEQU <@Dtor5736e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -617136,6 +617286,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_573870 PROC
 
             push ESI
@@ -617155,6 +617307,10 @@ $L_573888::
             pop ESI
             ret 4
 $L_573870 ENDP
+ELSE
+EXTERN @Dtor573870_DeletingDestructor@12:PROC
+$L_573870 TEXTEQU <@Dtor573870_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -617361,6 +617517,8 @@ EXTERN @Hel_5739b0@16:PROC
 $L_5739b0 TEXTEQU <@Hel_5739b0@16>
 ENDIF
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_573a30 PROC
 
             push ESI
@@ -617380,6 +617538,10 @@ $L_573a48::
             pop ESI
             ret 4
 $L_573a30 ENDP
+ELSE
+EXTERN @Dtor573a30_DeletingDestructor@12:PROC
+$L_573a30 TEXTEQU <@Dtor573a30_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -617563,6 +617725,8 @@ $L_573b70 TEXTEQU <@Hel_573b70@4>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_573bf0 PROC
 
             push ESI
@@ -617582,6 +617746,10 @@ $L_573c08::
             pop ESI
             ret 4
 $L_573bf0 ENDP
+ELSE
+EXTERN @Dtor573bf0_DeletingDestructor@12:PROC
+$L_573bf0 TEXTEQU <@Dtor573bf0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -632620,6 +632788,8 @@ FUN_57cb70 PROC
 FUN_57cb70 ENDP
           BYTE 090H
           BYTE 090H
+; src/object_ids.cpp, nmake ASM_OBJECT_IDS=1 assembles the original
+IFDEF ASM_OBJECT_IDS
 $L_57cfa0 PROC
 
             push ESI
@@ -632639,6 +632809,10 @@ $L_57cfb8::
             pop ESI
             ret 4
 $L_57cfa0 ENDP
+ELSE
+EXTERN @Dtor57cfa0_DeletingDestructor@12:PROC
+$L_57cfa0 TEXTEQU <@Dtor57cfa0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -652194,6 +652368,8 @@ EXTERN @Body58b5b0_Construct@52:PROC
 FUN_58b5b0 TEXTEQU <@Body58b5b0_Construct@52>
 ENDIF
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_58b700 PROC
 
             push ESI
@@ -652213,6 +652389,10 @@ $L_58b718::
             pop ESI
             ret 4
 $L_58b700 ENDP
+ELSE
+EXTERN @Dtor58b700_DeletingDestructor@12:PROC
+$L_58b700 TEXTEQU <@Dtor58b700_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -664413,6 +664593,8 @@ $L_593610 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_593650 PROC
 
             push ESI
@@ -664432,6 +664614,10 @@ $L_593668::
             pop ESI
             ret 4
 $L_593650 ENDP
+ELSE
+EXTERN @Dtor593650_DeletingDestructor@12:PROC
+$L_593650 TEXTEQU <@Dtor593650_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -690685,6 +690871,8 @@ $L_5a468a::
 $L_5a45b8 ENDP
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5a46e0 PROC
 
             push ESI
@@ -690704,6 +690892,10 @@ $L_5a46f8::
             pop ESI
             ret 4
 $L_5a46e0 ENDP
+ELSE
+EXTERN @Dtor5a46e0_DeletingDestructor@12:PROC
+$L_5a46e0 TEXTEQU <@Dtor5a46e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -691272,6 +691464,8 @@ FUN_5a4880 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5a4c80 PROC
 
             push ESI
@@ -691291,6 +691485,10 @@ $L_5a4c98::
             pop ESI
             ret 4
 $L_5a4c80 ENDP
+ELSE
+EXTERN @Dtor5a4c80_DeletingDestructor@12:PROC
+$L_5a4c80 TEXTEQU <@Dtor5a4c80_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -691880,6 +692078,8 @@ FUN_5a50f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5a5250 PROC
 
             push ESI
@@ -691899,6 +692099,10 @@ $L_5a5268::
             pop ESI
             ret 4
 $L_5a5250 ENDP
+ELSE
+EXTERN @Dtor5a5250_DeletingDestructor@12:PROC
+$L_5a5250 TEXTEQU <@Dtor5a5250_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -731952,6 +732156,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 $L_5bcf40 PROC
 
             push ESI
@@ -731971,6 +732177,10 @@ $L_5bcf58::
             pop ESI
             ret 4
 $L_5bcf40 ENDP
+ELSE
+EXTERN @Dtor5bcf40_DeletingDestructor@12:PROC
+$L_5bcf40 TEXTEQU <@Dtor5bcf40_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -750052,6 +750262,8 @@ FUN_5c5f60 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c6060 PROC
 
             push ESI
@@ -750071,6 +750283,10 @@ $L_5c6078::
             pop ESI
             ret 4
 $L_5c6060 ENDP
+ELSE
+EXTERN @Dtor5c6060_DeletingDestructor@12:PROC
+$L_5c6060 TEXTEQU <@Dtor5c6060_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -763198,6 +763414,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5cf2f0 PROC
 
             push ESI
@@ -763217,6 +763435,10 @@ $L_5cf308::
             pop ESI
             ret 4
 $L_5cf2f0 ENDP
+ELSE
+EXTERN @Dtor5cf2f0_DeletingDestructor@12:PROC
+$L_5cf2f0 TEXTEQU <@Dtor5cf2f0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
@@ -782662,6 +782884,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5d88e0 PROC
 
             push ESI
@@ -782681,6 +782905,10 @@ $L_5d88f8::
             pop ESI
             ret 4
 $L_5d88e0 ENDP
+ELSE
+EXTERN @Dtor5d88e0_DeletingDestructor@12:PROC
+$L_5d88e0 TEXTEQU <@Dtor5d88e0_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16

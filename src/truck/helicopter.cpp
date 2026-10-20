@@ -2133,3 +2133,56 @@ extern "C" int __fastcall Hel_573630(BYTE* s, void*, HelFn fn, int b)
     BYTE* o = (DWORD)s != 256 ? s : 0;
     return CallC<int>(fn, o, b);
 }
+
+// ---------------------------------------------------------------------------
+// Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
+
+ASM_PROC(FUN_56f110)
+// [$L_56f0f0]
+extern "C" BYTE* __fastcall Dtor56f0f0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_56f110, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_573700(); KING_ALIAS("_FUN_573700", "@CopterObj573700_Destroy@8")
+// [$L_5736e0]
+extern "C" BYTE* __fastcall Dtor5736e0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_573700, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_573890(); KING_ALIAS("_FUN_573890", "@CopterObj573890_Destroy@8")
+// [$L_573870]
+extern "C" BYTE* __fastcall Dtor573870_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_573890, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_573a50(); KING_ALIAS("_FUN_573a50", "@CopterObj573a50_Destroy@8")
+// [$L_573a30]
+extern "C" BYTE* __fastcall Dtor573a30_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_573a50, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
+
+extern "C" void FUN_573c10(); KING_ALIAS("_FUN_573c10", "@CopterObj573c10_Destroy@8")
+// [$L_573bf0]
+extern "C" BYTE* __fastcall Dtor573bf0_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_573c10, s);
+    if (flags & 1)
+        operator delete(s);
+    return s;
+}
