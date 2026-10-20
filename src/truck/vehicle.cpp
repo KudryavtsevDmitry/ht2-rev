@@ -3051,3 +3051,36 @@ extern "C" void __cdecl Game_TruckMessage(int* m)
         }
     }
 }
+
+ASM_PROC(FUN_557090)
+ASM_PROC(FUN_4ca7e0)
+extern "C" void FUN_5f9d20(); KING_ALIAS("_FUN_5f9d20", "@SceneNode5f9d20_Draw@24")
+ASM_VAR(AsmLabel, g_q236_6d217c, $L_6d217c)
+// [FUN_546b60] draws the car part s (the car at s - 272): its two lamps of the model record (6d2510 +8, +12) lit
+// while +20652 is set and 557090 is above 64ca78 (else +20652 is cleared), the parent hook (s - 256, method 232),
+// the light pair of 6d217c (+20648 its strength, none while the car's +9264 shows a lit lamp), the switch +20228 on
+// with either light flag, then the node itself
+extern "C" void __fastcall CarPart_Draw(BYTE* s, void*, int a, int b, int c, int d)
+{
+    int on = 0;
+    if (F(int, s, 20652) && CallThis<double>(FUN_557090, s - 272) > g_q185_64ca78)
+        on = 1;
+    else
+        F(int, s, 20652) = 0;
+    CallC(FUN_5e1a10, Car_ModelField(s, (BYTE*)g_veh6d2510 + 8), on);
+    CallC(FUN_5e1a10, Car_ModelField(s, (BYTE*)g_veh6d2510 + 12), on);
+    CallVirt(s - 256, 232);
+    int k = F(int, s, 20648);
+    int l1 = Car_ModelField(s, (BYTE*)g_q236_6d217c + 8), l2 = Car_ModelField(s, (BYTE*)g_q236_6d217c + 12);
+    if (l1 || l2) {
+        int st = 0;
+        if (k) {
+            BYTE* e = F(BYTE*, s, 9264);
+            if (!(F(int, e, 24) || (F(int, e, 44) && F(int, e, 64))))
+                st = k;
+        }
+        CallC(FUN_4ca7e0, s - 272, l1, l2, st);
+    }
+    CallC(FUN_5e1a10, F(int, s, 20228), (F(int, s, 20648) || F(int, s, 20644)) ? 1 : 0);
+    CallThis(FUN_5f9d20, s, a, b, c, d);
+}

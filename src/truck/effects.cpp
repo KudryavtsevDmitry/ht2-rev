@@ -3769,7 +3769,7 @@ extern "C" void __cdecl EffInit_4da4b0() { g_eff696370 = (float)((double)g_eff67
 
 extern "C" void FUN_4dde10(); KING_ALIAS("_FUN_4dde10", "@Cab_Release@8")
 ASM_PROC(FUN_4cb560)
-ASM_PROC(FUN_546b60)
+extern "C" void FUN_546b60(); KING_ALIAS("_FUN_546b60", "@CarPart_Draw@24")
 extern "C" void FUN_60f000(); KING_ALIAS("_FUN_60f000", "@MarineTask_ForwardPoint@12")
 ASM_VAR(AsmLabel, g_eff695978, $L_695978)
 ASM_VAR(int, g_eff69624c, $L_69624c)
