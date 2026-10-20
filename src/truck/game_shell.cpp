@@ -3975,3 +3975,128 @@ extern "C" BYTE* __fastcall ShellProviders51a580_Construct(BYTE* s, void*, int p
     F(int, s, 812) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Network session screen (exception frame dropped).
+
+ASM_VAR(AsmLabel, g_q39_64e3f4, $L_64e3f4)
+ASM_VAR(AsmLabel, g_q39_64e3b4, $L_64e3b4)
+#define Q39(x) ((const char*)s_q39_##x)
+ASM_VAR(AsmLabel, s_q39_677564, $L_677564)
+ASM_VAR(AsmLabel, s_q39_67755c, $L_67755c)
+ASM_VAR(AsmLabel, s_q39_677548, $L_677548)
+ASM_VAR(AsmLabel, s_q39_67753c, $L_67753c)
+ASM_VAR(AsmLabel, s_q39_67752c, $L_67752c)
+ASM_VAR(AsmLabel, s_q39_677518, $L_677518)
+ASM_VAR(AsmLabel, s_q39_677510, $L_677510)
+ASM_VAR(AsmLabel, s_q39_677508, $L_677508)
+ASM_VAR(AsmLabel, s_q39_677500, $L_677500)
+ASM_VAR(AsmLabel, s_q39_6774f0, $L_6774f0)
+ASM_VAR(AsmLabel, s_q39_6774e0, $L_6774e0)
+
+// the 4 x 36-byte frame styles from 6ce408, 6ce390, 6ce408, 6ce408
+static void Shell_FrameStyles(BYTE* p)
+{
+    CallThis(FUN_5bd5a0, p + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, p + 104, (void*)g_q28_6ce390);
+    CallThis(FUN_5bd5a0, p + 140, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, p + 176, (void*)g_6ce408);
+}
+// the list box / edit field styles
+static void Shell_FieldStyles(BYTE* l)
+{
+    CallThis(FUN_5bd5a0, l + 68, (void*)g_6ce408);
+    CallThis(FUN_5bd5a0, l + 104, (void*)g_6ce3b8);
+    CallThis(FUN_5bd5a0, l + 140, (void*)g_6ceb38);
+    CallThis(FUN_5bd5a0, l + 176, (void*)g_6ce988);
+}
+// [FUN_51b640] constructor (parent): the network session screen (vtables 64e3f4, 64e3b4 at +64): a session list
+// 125 (+604), a 34-character name field 126 (+608) on +668, buttons 2, 127, 129..131, the player and session
+// names (+632, +668) and two numbers (+616, +624) from the ini, textures 1..8 (+368) and 1..51 (+400)
+extern "C" BYTE* __fastcall ShellSession51b640_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q39_64e3f4;
+    F(void*, s, 64) = g_q39_64e3b4;
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, Q37(676c9c));
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    Shell_PlainStyles(s + 132, Q39(677564));
+    BYTE* outer = Shell_NewPanel(0);
+    CallThis(FUN_5bdbf0, outer, CallC<BYTE*>(FUN_50ef60, Q39(67755c), 2, 323, 481), 0);
+    BYTE* p = Shell_NewPanel(8);
+    g_q30_6ce3b0 = CallC<BYTE*>(FUN_5ef3d0, Q39(677548));
+    Shell_FrameStyles(p);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q39(67753c), 127, 434, 418), 0);
+    BYTE* m = (BYTE*)operator new(352);
+    BYTE* l = m ? CallThis<BYTE*>(FUN_5c0550, m, Q39(67752c), 8, 120) : 0;
+    F(BYTE*, s, 604) = l;
+    Shell_FieldStyles(l);
+    Shell_MoveCtl(F(BYTE*, s, 604), 308, 322);
+    F(int, F(BYTE*, s, 604), 348) = 41;
+    F(int, F(BYTE*, F(BYTE*, s, 604), 340), 28) = 125;
+    F(int, F(BYTE*, s, 604), 28) = 125;
+    CallThis(FUN_5c07c0, F(BYTE*, s, 604), 10);
+    CallC(FUN_50f300, F(BYTE*, F(BYTE*, s, 604), 340), 128);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 604), 0);
+    Shell_MoveCtl(p, 295, 310);
+    CallThis(FUN_5bdd70, p);
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    p = Shell_NewPanel(8);
+    g_q30_6ce3b0 = CallC<BYTE*>(FUN_5ef3d0, Q39(677518));
+    Shell_FrameStyles(p);
+    BYTE* e = (BYTE*)operator new(300);
+    if (e) {
+        CallThis(FUN_5bd5e0, e, (const char*)g_q33_68d1c0, 0);
+        F(void*, e, 0) = g_q33_64e160;
+        F(BYTE*, e, 288) = s + 668;
+        F(int, e, 292) = 34;
+        F(int, e, 296) = 0;
+    }
+    F(BYTE*, s, 608) = e;
+    F(int, e, 28) = 126;
+    e = F(BYTE*, s, 608);
+    Shell_FieldStyles(e);
+    F(int, F(BYTE*, s, 608), 44) = 313;
+    F(int, F(BYTE*, s, 608), 48) = 274;
+    e = F(BYTE*, s, 608);
+    F(int, e, 52) = F(int, e, 44) + 90;
+    e = F(BYTE*, s, 608);
+    F(int, e, 56) = F(int, e, 48) + 10;
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c50), 129, 308, 175), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c58), 128, 463, 175), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c50), 131, 416, 265), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c58), 130, 571, 265), 0);
+    CallThis(FUN_5bdbf0, p, F(BYTE*, s, 608), 0);
+    Shell_MoveCtl(p, 295, 100);
+    CallThis(FUN_5bdd70, p);
+    F(int, p, 56) -= 30;
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    CallThis(FUN_5bdc80, outer);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), outer, 0);
+    F(int, s, 612) = 0;
+    GetPrivateProfileStringA(Q32(672998), Q39(677510), CallC<const char*>(FUN_5d2e50, 48), (char*)s + 632, 33,
+                             (const char*)g_q32_696868);
+    GetPrivateProfileStringA(Q32(672998), Q39(677510), CallC<const char*>(FUN_5d2e50, 48), (char*)s + 668, 33,
+                             (const char*)g_q32_696868);
+    int v;
+    CallC(FUN_603b70, Q32(672998), Q39(677508), 5, &v, g_q32_696868);
+    F(int, s, 616) = v;
+    CallC(FUN_603b70, Q32(672998), Q39(677500), 0, &v, g_q32_696868);
+    F(int, s, 624) = v;
+    char buf[32];
+    for (int i = 0; i < 8; i++) {
+        sprintf(buf, Q39(6774f0), i + 1);
+        F(DWORD, s, 368 + i * 4) = CallC<DWORD>(FUN_5ef3d0, buf);
+    }
+    for (int i = 0; i < 51; i++) {
+        sprintf(buf, Q39(6774e0), i + 1);
+        F(DWORD, s, 400 + i * 4) = CallC<DWORD>(FUN_5ef3d0, buf);
+    }
+    return s;
+}
