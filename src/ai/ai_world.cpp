@@ -9716,7 +9716,7 @@ extern "C" void __cdecl Ai_LoadWorld(const char* file)
 
 extern "C" void FUN_44a490(); KING_ALIAS("_FUN_44a490", "@Vec1_Reserve@16")
 extern "C" void FUN_4611e0(); KING_ALIAS("_FUN_4611e0", "_Bytes_Construct")
-ASM_PROC(FUN_45b3d0)    // introsort loop of 12-byte records (first, last, 0, depth, cmp)
+extern "C" void FUN_45b3d0(); KING_ALIAS("_FUN_45b3d0", "_Names_IntroSort")    // introsort loop of 12-byte records (first, last, 0, depth, cmp)
 extern "C" void FUN_45b4e0(); KING_ALIAS("_FUN_45b4e0", "_Sort_FinalInsertion12")
 ASM_PROC(FUN_488620)    // a way file parser's constructor
 extern "C" void FUN_4895b0(); KING_ALIAS("_FUN_4895b0", "@Rt_ReadFile@12")    // parses a way file (name)
@@ -22210,4 +22210,19 @@ extern "C" void __cdecl Rec60_Call466a00(Rec60v a, Rec60v b, Rec60v c, Rec60v d)
 {
     Rec60v d2 = Rec60v_Copy(d), c2 = Rec60v_Copy(c), b2 = Rec60v_Copy(b), a2 = Rec60v_Copy(a);
     CallC(FUN_466a00, a2, b2, c2, d2);
+}
+
+// [$L_447c50] drops the rope that s points to (Rope_Unref inlined)
+extern "C" void __fastcall RopePtr_Release(BYTE** s)
+{
+    if (*s)
+        Rope_Unref(*s, 0);
+}
+
+// [$L_449ad0] returns the storage of a vector of 32-byte elements (begin, -, capacity end) to the allocator
+extern "C" void __fastcall Vec32_FreeStorage(BYTE** v)
+{
+    int n = (int)(v[2] - v[0]) >> 5;
+    if (n)
+        Ai_PoolFree(v[0], n << 5);
 }

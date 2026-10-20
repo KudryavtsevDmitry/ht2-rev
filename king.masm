@@ -120483,6 +120483,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_447c50 PROC
 
             push ESI
@@ -120628,6 +120630,10 @@ $L_447d40           DWORD $L_447c86
           DWORD $L_447cbc
           DWORD $L_447d26
           DWORD $L_447cef
+ELSE
+EXTERN @RopePtr_Release@4:PROC
+$L_447c50 TEXTEQU <@RopePtr_Release@4>
+ENDIF
 $L_447d50 PROC
 
             push -1
@@ -124368,6 +124374,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_449ad0 PROC
 
             sub ESP,12
@@ -124519,6 +124527,10 @@ $L_449c13::
             inc EDI
             jmp $L_449bbe
 $L_449ad0 ENDP
+ELSE
+EXTERN @Vec32_FreeStorage@4:PROC
+$L_449ad0 TEXTEQU <@Vec32_FreeStorage@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -159471,6 +159483,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_45b3d0 PROC
 
             push EBX
@@ -159606,6 +159620,10 @@ $L_45b4d3::
             pop EBX
             ret 
 FUN_45b3d0 ENDP
+ELSE
+EXTERN _Names_IntroSort:PROC
+FUN_45b3d0 TEXTEQU <_Names_IntroSort>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
