@@ -5105,3 +5105,44 @@ extern "C" void __fastcall RaceEnd_OnCommand(BYTE* s, void*, int cmd)
         break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Command handler of the race settings screen.
+
+ASM_VAR(BYTE*, g_q63_6ceccc, $L_6ceccc)
+ASM_VAR(AsmLabel, s_q63_676cf4, $L_676cf4)
+ASM_VAR(AsmLabel, s_q63_67748c, $L_67748c)
+ASM_VAR(AsmLabel, s_q63_677484, $L_677484)
+// [$L_51b350] commands of the race settings part (the screen at -64): 2 cancels (back to 6cec80, the choices
+// +312..+316 kept in +324..+328), 111/112 the +1304 option, 124 saves the settings to the ini and starts the
+// 6ceccc race (with the CD), 150..152 the +320 choice
+extern "C" void __fastcall RaceSettings_OnCommand(BYTE* s, void*, int cmd)
+{
+    switch (cmd) {
+    case 2:
+        CallVirt(s - 64, 32);
+        F(int, g_6cec80, 372) = 0;
+        CallVirt(g_6cec80, 36);
+        F(WORD, s, 324) = F(WORD, s, 312);
+        F(WORD, s, 326) = F(WORD, s, 314);
+        F(WORD, s, 328) = F(WORD, s, 316);
+        break;
+    case 111: F(int, g_q59_6cec6c, 1304) = 1; break;
+    case 112: F(int, g_q59_6cec6c, 1304) = 0; break;
+    case 124:
+        if (!CallC<int>(FUN_50c800, g_6cec98s))
+            break;
+        Options_WriteIni((const char*)s_q62_676978, F(int, g_q59_6cec6c, 1304));
+        Options_WriteIni((const char*)s_q63_676cf4, F(short, s, 324));
+        Options_WriteIni((const char*)s_q63_67748c, F(short, s, 326));
+        Options_WriteIni((const char*)s_q63_677484, F(short, s, 328));
+        F(int, g_q59_6cec6c, 1316) = 1;
+        F(int, g_6cec80, 372) = 0;
+        CallVirt(s - 64, 32);
+        CallThis(FUN_519750, g_q63_6ceccc, 0);
+        break;
+    case 150: F(int, s, 320) = 0; break;
+    case 151: F(int, s, 320) = 1; break;
+    case 152: F(int, s, 320) = 2; break;
+    }
+}
