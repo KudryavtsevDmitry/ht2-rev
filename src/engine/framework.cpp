@@ -32,7 +32,7 @@ extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
 extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
 extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
-ASM_PROC(FUN_5e9d40)
+extern "C" void FUN_5e9d40(); KING_ALIAS("_FUN_5e9d40", "_Bmp_Write")
 ASM_VAR(int, g_721754, $L_721754)
 ASM_VAR(void*, g_67fb7c, $L_67fb7c)
 ASM_VAR(AsmLabel, g_start603800, _Effect_Zero)
@@ -1589,7 +1589,7 @@ ASM_VAR(FwHook2, g_fw702f4c, $L_702f4c)
 extern "C" void FUN_5e6de0(); KING_ALIAS("_FUN_5e6de0", "_Files_Open")    // opens a data file (name, mode)
 ASM_PROC(FUN_5e6e90)
 ASM_PROC(FUN_5e7930)
-ASM_PROC(FUN_5e9690)
+extern "C" void FUN_5e9690(); KING_ALIAS("_FUN_5e9690", "_Mask_ReadPixels")
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
 extern "C" void FUN_5e9360(); KING_ALIAS("_FUN_5e9360", "_Texture_ReadFile")
 extern "C" void FUN_5e9910(); KING_ALIAS("_FUN_5e9910", "_Sound_ReadFile")
@@ -2860,7 +2860,7 @@ extern "C" void FUN_5f2dd0(); KING_ALIAS("_FUN_5f2dd0", "@Node_Call5f2a40a@12")
 extern "C" void FUN_5fa910(); KING_ALIAS("_FUN_5fa910", "@Mesh_BuildVertices@12")
 ASM_PROC(FUN_5f0b10)
 extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "?AfxEndThread@@YGXIH@Z")
-ASM_VAR(AsmLabel, g_q53_5d9370, $L_5d9370)
+extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec);
 ASM_VAR(HDC, g_q53_72091c, $L_72091c)
 // [$L_5d9300] switching the current room (+468) to r: walks r with the 5d9370 visitor and a zeroed 432-byte
 // record holding the old and the new room
@@ -2873,7 +2873,7 @@ extern "C" void __fastcall Wnd5d9300_EnterRoom(BYTE* s, void*, BYTE* r)
         rec[k] = 0;
     rec[1] = F(DWORD, s, 468);
     rec[2] = (DWORD)r;
-    CallThis(FUN_5ead00, r, (void*)g_q53_5d9370, rec);
+    CallThis(FUN_5ead00, r, (void*)Room_LinkDoor, rec);
 }
 // [$L_5e4390] the loader thread p: every wake (or 30 s) ends when +12 is set, else runs the pending request
 // (+20, once per +16 flag) on the +28 object with +24
@@ -3112,4 +3112,244 @@ extern "C" int __cdecl Mask_ReadHeader(BYTE* m, FILE* f, int size, int pixels)
         F(unsigned, m, 28) |= 0x200;
     }
     return 1;
+}
+
+// ---------------------------------------------------------------------------
+// Mask data and room entry.
+
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+
+// [FUN_5e9690] reads the pixels of the mask at off in f into m (+16, +12 bytes) after checking its tag (MSKR and
+// MSK8 set +28 bit 7); +28 bit 0 marks it loaded; 0 for an unknown tag
+extern "C" int __cdecl Mask_ReadPixels(BYTE* m, FILE* f, long off)
+{
+    char tag[5];
+    fseek(f, off, 0);
+    fread(tag, 4, 1, f);
+    tag[4] = 0;
+    if (strcmp(tag, "MASK") != 0) {
+        if (strcmp(tag, "MSKR") == 0)
+            F(unsigned, m, 28) |= 128;
+        else if (strcmp(tag, "MS16") != 0) {
+            if (strcmp(tag, "MSK8") != 0)
+                return 0;
+            F(unsigned, m, 28) |= 128;
+        }
+    }
+    CallC<short>(FUN_5ab0f0, f);
+    CallC<short>(FUN_5ab0f0, f);
+    fseek(f, off + 776, 0);
+    fread(F(void*, m, 16), F(int, m, 12), 1, f);
+    F(unsigned, m, 28) |= 1;
+    return 1;
+}
+
+// [$L_5d9370] room visitor: a door node (type 14, +40 bit 1) whose target room (+132) is the new room of rec
+// (rec[1]'s list) and whose target node (+164) is in that room is linked to it (+128) and enumerated
+extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec)
+{
+    if (F(int, n, 16) != 14 || !(F(BYTE, n, 40) & 2))
+        return -1;
+    BYTE* e = F(BYTE*, rec, 4);
+    for (; e; e = F(BYTE*, e, 8))
+        if (F(const char*, e, 60) && strcmp(F(const char*, e, 60), (const char*)n + 132) == 0)
+            break;
+    if (!e)
+        return -1;
+    BYTE* g = F(BYTE*, e, 64);
+    for (; g; g = F(BYTE*, g, 8))
+        if (strcmp(F(const char*, g, 12), (const char*)n + 164) == 0)
+            break;
+    if (!g)
+        return -1;
+    Fw_Enumerate5d8c60(F(int, rec, 8), CallThis<int>(FUN_5ef640, n), g);
+    F(BYTE*, n, 128) = g;
+    return -1;
+}
+
+// ---------------------------------------------------------------------------
+// Saving the resource tables; window commands.
+
+extern "C" void FUN_5e4700(); KING_ALIAS("_FUN_5e4700", "@Resource_Write@12")
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+typedef HRESULT(__stdcall* Fw_StreamWrite)(void*, const void*, ULONG, ULONG*);
+static void Fw_WriteInt(void* st, int v)
+{
+    ULONG n;
+    ((Fw_StreamWrite)(*(void***)st)[4])(st, &v, 4, &n);
+}
+
+// [FUN_5e4c00] writes the 400 resource tables of s to stream st: 0 for an empty table, else 1 and per each of
+// its 500 records -1 or the id, the name length, the name and the record itself; -2 closes each table
+extern "C" int __fastcall Resources_Save(BYTE** s, void*, void* st)
+{
+    for (int i = 0; i < 400; i++) {
+        BYTE** t = (BYTE**)s[i];
+        if (!t)
+            Fw_WriteInt(st, 0);
+        else {
+            Fw_WriteInt(st, 1);
+            for (int j = 0; j < 500; j++) {
+                BYTE* e = t[j];
+                if (!e) {
+                    Fw_WriteInt(st, -1);
+                    continue;
+                }
+                Fw_WriteInt(st, F(int, e, 4));
+                const char* name = F(const char*, F(BYTE*, e, 12), 4016);
+                ULONG len = strlen(name) + 1, n;
+                Fw_WriteInt(st, len);
+                ((Fw_StreamWrite)(*(void***)st)[4])(st, F(const char*, F(BYTE*, e, 12), 4016), len, &n);
+                CallThis(FUN_5e4700, e, st);
+            }
+        }
+        Fw_WriteInt(st, -2);
+    }
+    return 0;
+}
+
+// [$L_5de430] runs the command of +36 on the window +32 (0: vtbl+184; 10/11: +548 = 0/1 and vtbl+108; 20/21:
+// vtbl+100; 30/31: vtbl+104; 40: vtbl+172; 400: vtbl+180), then posts event 1
+extern "C" void __fastcall Cmd5de430_Run(BYTE* s)
+{
+    BYTE* w = F(BYTE*, s, 32);
+    switch (F(int, s, 36)) {
+    case 0: CallVirt(w, 184); break;
+    case 10: F(int, w, 548) = 0; CallVirt(F(BYTE*, s, 32), 108); break;
+    case 11: F(int, w, 548) = 1; CallVirt(F(BYTE*, s, 32), 108); break;
+    case 20: F(int, w, 548) = 0; CallVirt(F(BYTE*, s, 32), 100); break;
+    case 21: F(int, w, 548) = 1; CallVirt(F(BYTE*, s, 32), 100); break;
+    case 30: F(int, w, 548) = 0; CallVirt(F(BYTE*, s, 32), 104); break;
+    case 31: F(int, w, 548) = 1; CallVirt(F(BYTE*, s, 32), 104); break;
+    case 40: CallVirt(w, 172); break;
+    case 400: CallVirt(w, 180); break;
+    }
+    CallThis(FUN_5d32f0, s, 1);
+}
+
+// ---------------------------------------------------------------------------
+// Writing a bitmap file.
+
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+ASM_VAR(AsmLabel, s_q76_68352c, $L_68352c)
+extern "C" size_t __cdecl fwrite(const void* p, size_t size, size_t n, FILE* f);
+// [FUN_5e9d40] writes bitmap hbm of dc as a BMP file to f with the header bi; palette images become 24-bit ones
+extern "C" void __cdecl Bmp_Write(FILE* f, BITMAPINFO* bi, HBITMAP hbm, HDC dc)
+{
+    BITMAPINFOHEADER* h = &bi->bmiHeader;
+    BYTE* bits = (BYTE*)GlobalAlloc(0, h->biSizeImage);
+    GetLastError();
+    SetLastError(0);
+    if (!GetDIBits(dc, hbm, 0, (WORD)h->biHeight, bits, bi, 0)) {
+        GetLastError();
+        CallC(FUN_5d2ba0, (const char*)s_q76_68352c, 0);
+    }
+    BITMAPINFOHEADER t;
+    if (h->biBitCount < 24) {
+        t = *h;
+        t.biBitCount = 24;
+        t.biClrUsed = 0;
+        t.biSizeImage = (((int)t.biWidth * 24 + 31) / 32 * (int)t.biHeight * 32) / 8;
+        BYTE* out = (BYTE*)GlobalAlloc(0, t.biSizeImage);
+        BYTE* src = bits;
+        BYTE* row = out;
+        for (int y = 0; y < (int)t.biHeight; y++) {
+            BYTE* d = row;
+            for (int x = 0; x < (int)t.biWidth; x++, d += 3) {
+                const BYTE* c = (const BYTE*)&bi->bmiColors[src[x]];
+                d[0] = c[0];
+                d[1] = c[1];
+                d[2] = c[2];
+            }
+            src += h->biSizeImage / (DWORD)h->biHeight;
+            row += t.biSizeImage / (DWORD)t.biHeight;
+        }
+        GlobalFree(bits);
+        bits = out;
+        h = &t;
+    }
+    BITMAPFILEHEADER fh;
+    fh.bfType = 19778;
+    fh.bfSize = h->biSize + h->biClrUsed * 4 + h->biSizeImage + 14;
+    fh.bfReserved1 = 0;
+    fh.bfReserved2 = 0;
+    fh.bfOffBits = h->biSize + h->biClrUsed * 4 + 14;
+    fwrite(&fh, 14, 1, f);
+    fwrite(h, h->biClrUsed * 4 + 40, 1, f);
+    fwrite(bits, h->biSizeImage, 1, f);
+    GlobalFree(bits);
+}
+
+// ---------------------------------------------------------------------------
+// Drawing a view.
+
+ASM_PROC(FUN_5da950)
+ASM_PROC(FUN_5ae0e0)
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_5b6190(); KING_ALIAS("_FUN_5b6190", "_Device_WaitIdle")
+extern "C" void FUN_5b6180(); KING_ALIAS("_FUN_5b6180", "_Device_BeginScene")
+extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
+extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
+extern "C" void FUN_5adc70(); KING_ALIAS("_FUN_5adc70", "@Render_Set8460@12")
+extern "C" void FUN_5eb280(); KING_ALIAS("_FUN_5eb280", "@Camera_Render@24")
+ASM_VAR(AsmLabel, g_q77_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q77_71e850, $L_71e850)
+ASM_VAR(AsmLabel, g_q77_71f808, $L_71f808)
+ASM_VAR(unsigned, g_q77_702e8c, $L_702e8c)
+ASM_VAR(BYTE*, g_q77_721750, $L_721750)
+
+// [FUN_5dbd30] the camera matrix of view s: the inverse of the one built from its position and angles
+// (+2904..+2948, the angle +2928 turned by +2952)
+extern "C" BYTE* __fastcall View_CameraMatrix(BYTE* s, void*, BYTE* out)
+{
+    BYTE m[48], t[48];
+    memcpy(m, CallC<BYTE*>(FUN_5da950, t, F(double, s, 2904), F(double, s, 2912), F(double, s, 2920),
+                           F(double, s, 2952) + F(double, s, 2928), F(double, s, 2936), F(double, s, 2944)), 48);
+    memcpy(m, CallC<BYTE*>(FUN_5ac2e0, t, m), 48);
+    memcpy(out, m, 48);
+    return out;
+}
+
+// [$L_5df6f0] draws view s: the overlay (+2860) first, then with a room (+488) the camera (+468) renders the room
+// with the renderer (+464, fog colours from +2960), the room's sky object (+76) drawn first and the overlay again
+// with its own matrix; the frame time goes to 71e850/71f808
+extern "C" void __fastcall View_Draw(BYTE* s)
+{
+    BYTE m1[48], m2[48], t[48];
+    memcpy(m2, (BYTE*)g_q77_7025f0, 48);
+    memcpy(m1, (BYTE*)g_q77_7025f0, 48);
+    if (F(BYTE*, s, 2860)) {
+        CallC(FUN_5b6190);
+        CallVirt(F(BYTE*, s, 2860), 48);
+        CallC(FUN_5b6180);
+    }
+    if (!F(BYTE*, s, 488))
+        return;
+    memcpy(m1, View_CameraMatrix(s, 0, t), 48);
+    memcpy(m2, m1, 48);
+    CallC(FUN_5d2fa0, (BYTE*)g_q77_71e850);
+    if (g_q77_702e8c & 0x100)
+        CallThis(FUN_5adc70, F(BYTE*, s, 464), F(int, s, 548));
+    BYTE* r = F(BYTE*, s, 464);
+    F(int, r, 8480) = F(int, s, 2960);
+    F(int, r, 8484) = F(int, s, 2964);
+    r = F(BYTE*, s, 464);
+    F(int, r, 8488) = F(int, s, 2968);
+    F(int, r, 8492) = F(int, s, 2972);
+    BYTE* room = F(BYTE*, s, 488);
+    if (room && F(BYTE*, room, 76)) {
+        CallThis(FUN_5ae0e0, F(BYTE*, s, 464), (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0);
+        room = F(BYTE*, s, 488);
+        BYTE* o = room ? F(BYTE*, room, 76) : 0;
+        CallVirt(o, 56, F(int, g_q77_721750, 344) ? 1 : 5, m2, m1, F(BYTE*, s, 464));
+    }
+    CallThis(FUN_5eb280, F(BYTE*, s, 468), F(BYTE*, s, 488), F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+    if (F(BYTE*, s, 2860)) {
+        F(int, F(BYTE*, s, 464), 8668) = 1;
+        BYTE* p = CallC<BYTE*>(FUN_5ac2e0, t, F(BYTE*, s, 2860) + 920);
+        memcpy(F(BYTE*, s, 464) + 8564, p, 48);
+        CallThis(FUN_5eb280, F(BYTE*, s, 468), F(BYTE*, s, 488), F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
+        F(int, F(BYTE*, s, 464), 8668) = 0;
+    }
+    CallC(FUN_5d2fc0, (BYTE*)g_q77_71e850, (BYTE*)g_q77_71f808);
 }

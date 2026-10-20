@@ -1450,6 +1450,8 @@ PUBLIC $L_678288, $L_6ced90
 PUBLIC $L_6767a0, $L_6ced1c, $L_6ced20
 PUBLIC $L_6d1b4e, $L_6d1b8e
 PUBLIC $L_6766a4, $L_6766ac, $L_720ad4, $L_720d8c
+PUBLIC $L_68352c
+PUBLIC $L_71e850, $L_71f808
 
 ;===================================
 _TEXT SEGMENT
@@ -784870,6 +784872,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5d9370 PROC
 
             push EBX
@@ -785021,6 +785025,10 @@ $L_5d9461::
             pop EBX
             ret 
 $L_5d9370 ENDP
+ELSE
+EXTERN _Room_LinkDoor:PROC
+$L_5d9370 TEXTEQU <_Room_LinkDoor>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -789924,6 +789932,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5dbd30 PROC
 
             push EBP
@@ -790048,6 +790058,36 @@ $L_5dbe54::
             nop
             nop
 FUN_5dbd30 ENDP
+ELSE
+EXTERN @View_CameraMatrix@12:PROC
+FUN_5dbd30 TEXTEQU <@View_CameraMatrix@12>
+; the ring push that shares the original's code stays in assembly
+$L_5dbe10 PROC
+            mov EDX,DWORD PTR [ECX+456]
+            mov EAX,DWORD PTR [ECX+460]
+            push ESI
+            lea ESI,DWORD PTR [EDX-1]
+            cmp EAX,ESI
+            pop ESI
+            je $L_5dbe54
+            cmp EAX,99
+            jne $L_5dbe2e
+            test EDX,EDX
+            je $L_5dbe54
+$L_5dbe2e::
+            mov EDX,DWORD PTR [ESP+4]
+            mov DWORD PTR [ECX+EAX*4+56],EDX
+            mov EDX,DWORD PTR [ECX+460]
+            inc EDX
+            mov EAX,EDX
+            mov DWORD PTR [ECX+460],EDX
+            cmp EAX,100
+            jl $L_5dbe54
+            mov DWORD PTR [ECX+460],0
+$L_5dbe54::
+            ret 4
+$L_5dbe10 ENDP
+ENDIF
 ALIGN 16
 ; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
 IFDEF ASM_FRAMEWORK
@@ -794347,6 +794387,8 @@ FUN_5de0a0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5de430 PROC
 
             push ESI
@@ -794528,6 +794570,10 @@ $L_5de58c           BYTE ($L_5de578-$L_5de578)/4
           BYTE ($L_5de588-$L_5de578)/4
           BYTE ($L_5de588-$L_5de578)/4
           BYTE ($L_5de584-$L_5de578)/4
+ELSE
+EXTERN @Cmd5de430_Run@4:PROC
+$L_5de430 TEXTEQU <@Cmd5de430_Run@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -796037,6 +796083,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5df6f0 PROC
 
             sub ESP,144
@@ -796236,6 +796284,10 @@ $L_5df910::
             add ESP,144
             ret 
 $L_5df6f0 ENDP
+ELSE
+EXTERN @View_Draw@4:PROC
+$L_5df6f0 TEXTEQU <@View_Draw@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -805780,6 +805832,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e4c00 PROC
 
             sub ESP,12
@@ -805917,6 +805971,10 @@ $L_5e4cf1::
             add ESP,12
             ret 4
 FUN_5e4c00 ENDP
+ELSE
+EXTERN @Resources_Save@12:PROC
+FUN_5e4c00 TEXTEQU <@Resources_Save@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -814894,6 +814952,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e9690 PROC
 
             sub ESP,8
@@ -815101,6 +815161,10 @@ $L_5e97ea::
             add ESP,8
             ret 
 FUN_5e9690 ENDP
+ELSE
+EXTERN _Mask_ReadPixels:PROC
+FUN_5e9690 TEXTEQU <_Mask_ReadPixels>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -815826,6 +815890,8 @@ EXTERN _Bitmap_Header24:PROC
 FUN_5e9cb0 TEXTEQU <_Bitmap_Header24>
 ENDIF
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e9d40 PROC
 
             sub ESP,60
@@ -816011,6 +816077,10 @@ $L_5e9e83::
             add ESP,60
             ret 
 FUN_5e9d40 ENDP
+ELSE
+EXTERN _Bmp_Write:PROC
+FUN_5e9d40 TEXTEQU <_Bmp_Write>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
