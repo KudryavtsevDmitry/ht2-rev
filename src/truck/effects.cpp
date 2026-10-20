@@ -3856,7 +3856,7 @@ extern "C" int __fastcall Eff_4c3840(BYTE* s, void*, BYTE* p, float k)
 
 ASM_PROC(FUN_4c8af0)
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
-ASM_PROC(FUN_5f98c0)
+extern "C" void FUN_5f98c0(); KING_ALIAS("_FUN_5f98c0", "@SceneNode5f98c0_Draw@16")
 ASM_PROC(FUN_5ae580)
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 extern "C" void FUN_5f3570(); KING_ALIAS("_FUN_5f3570", "@Obj_Test@16")

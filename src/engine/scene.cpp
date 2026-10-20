@@ -2280,3 +2280,57 @@ extern "C" int __fastcall SceneNode5f9d20_Draw(BYTE* s, void*, void* a1, BYTE* m
     memcpy(m, saved, 48);
     return r;
 }
+
+extern "C" void FUN_5ac640(); KING_ALIAS("_FUN_5ac640", "_Matrix_Transposed")
+extern "C" void FUN_5ab8f0(); KING_ALIAS("_FUN_5ab8f0", "@Plane_Transform@12")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_5ab660(); KING_ALIAS("_FUN_5ab660", "@Vec3_DivAssign@16")
+extern "C" void FUN_5ad150(); KING_ALIAS("_FUN_5ad150", "@Render_PushShade@12")
+extern "C" void FUN_5adc00(); KING_ALIAS("_FUN_5adc00", "@Render_PopShade@8")
+// [FUN_5f98c0] draws shaded reference node s through view b when its info test passes, in the space of node
+// +68: with +80 (or +76 without flags bit 4) its plane (+48) is moved into view space, normalised and pushed as
+// the shade around the referred object's (+64) draw (vtbl+48, flags bit 4 added with +80; its material +36 and
+// the view's +8276 from +84 set for it); 1 after a passed test
+extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* b)
+{
+    BYTE w1[48], t1[48], t2[48], t3[48], m[48], out[12];
+    memcpy(w1, (BYTE*)g_q109_7025f0, 48);
+    if (!CallThis<int>(FUN_5ef800, s, flags, b))
+        return 0;
+    if (BYTE* n = F(BYTE*, s, 68)) {
+        BYTE* w = CallThis<BYTE*>(FUN_5f25c0, n, w1);
+        CallThis(FUN_5ae580, b, w1, w);
+    }
+    if (CallThis<int>(FUN_5b4fc0, b, s + 20)) {
+        bool shade = F(int, s, 80) || (F(int, s, 76) && !(flags & 16));
+        if (shade) {
+            float p[4];
+            memcpy(p, s + 48, 16);
+            BYTE* a = b + 2240 + F(int, b, 8224) * 48;
+            BYTE* r = CallC<BYTE*>(FUN_5ac2e0, t1, b + 5216 + F(int, b, 8236) * 48);
+            r = CallC<BYTE*>(FUN_5aba40, m, r, a);
+            memcpy(m, CallC<BYTE*>(FUN_5ac2e0, t2, m), 48);
+            memcpy(m, CallC<BYTE*>(FUN_5ac640, t3, m), 48);
+            CallThis(FUN_5ab8f0, p, m);
+            double len = CallC<double>(FUN_5ab4d0, p);
+            CallThis(FUN_5ab660, p, out, (float)len);
+            p[3] = (float)(p[3] / len);
+            CallThis(FUN_5ad150, b, p);
+        }
+        BYTE* o = F(BYTE*, s, 64);
+        if (F(int, o, 36) != F(int, s, 36))
+            CallVirt(b, 8, F(int, o, 36));
+        int keep = F(int, b, 8276);
+        if (F(int, s, 84) >= 0)
+            F(int, b, 8276) = F(int, s, 84);
+        CallVirt(F(BYTE*, s, 64), 48, (F(int, s, 80) ? 16 : 0) | flags, b);
+        F(int, b, 8276) = keep;
+        if (F(int, F(BYTE*, s, 64), 36) != F(int, s, 36))
+            CallVirt(b, 8, F(int, s, 36));
+        if (F(int, s, 80) || (F(int, s, 76) && !(flags & 16)))
+            CallThis(FUN_5adc00, b);
+    }
+    if (F(BYTE*, s, 68))
+        CallThis(FUN_5ae8a0, b);
+    return 1;
+}
