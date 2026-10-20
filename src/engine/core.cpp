@@ -1502,3 +1502,46 @@ extern "C" void __cdecl Poly_FillZ(int flags, int c, int, float k)
         row += g_q222_71e7bc;
     }
 }
+
+ASM_PROC(FUN_5fe9b3)
+ASM_PROC(FUN_5feace)
+ASM_PROC(FUN_5fea6c)
+ASM_PROC(FUN_5feafa)
+ASM_PROC(FUN_5feb12)
+ASM_VAR(float, g_q223_64c458, $L_64c458)
+// [FUN_5d1430] fills the rows 71e7dc..71e7d8 of the walked polygon (edges in 70f3f0 and 31200 bytes on, from the
+// first pixel centre inside) with colour c; the mode is flags with the pixel size (2: 16 bits, 4: 32 bits) added:
+// 0 plain bytes, 1 bytes through the row table chosen by k, 2 and 4 plain words / dwords, 3 words blended a through
+// the table, 5 dwords blended a with k
+extern "C" void __cdecl Poly_Fill(int flags, int c, int a, float k)
+{
+    if (g_q222_70f3d8 == 2)
+        flags |= 2;
+    else if (g_q222_70f3d8 == 4)
+        flags |= 4;
+    BYTE* row = g_q134_71e7dc * g_q222_71e7bc + g_q222_71e7c4;
+    int table = 0;
+    if ((flags & 1) && (g_q222_70f3d8 == 1 || g_q222_70f3d8 == 2)) {
+        BYTE* t = g_q222_71e7ec;
+        table = CallThis<int>(FUN_5b94b0, t, (int)(F(int, t, 796) * k));
+    }
+    int y = g_q134_71e7dc;
+    if (y > g_q134_71e7d8)
+        return;
+    for (int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24 + 31200); y <= g_q134_71e7d8; y++, e += 6) {
+        int l = e[-7800];
+        int x0 = (l >> 20) + ((l & 0xfffff) != 0);
+        int n = (e[0] >> 20) - x0 + 1;
+        if (n > 0) {
+            switch ((unsigned)flags) {
+            case 0: memset(row + x0, (BYTE)c, n); break;
+            case 1: CallC(FUN_5fe9b3, table, row + x0, c, n); break;
+            case 2: CallC(FUN_5feace, row + x0 * 2, c, n); break;
+            case 3: CallC(FUN_5fea6c, table, row + x0 * 2, a, n); break;
+            case 4: CallC(FUN_5feafa, row + x0 * 4, c, n); break;
+            case 5: CallC(FUN_5feb12, (int)(k * g_q223_64c458), row + x0 * 4, a, n); break;
+            }
+        }
+        row += g_q222_71e7bc;
+    }
+}
