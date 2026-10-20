@@ -857975,6 +857975,8 @@ ELSE
 EXTERN _Set683c58:PROC
 FUN_5ffc30 TEXTEQU <_Set683c58>
 ENDIF
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ffc60 PROC
 
             sub ESP,12
@@ -858150,6 +858152,10 @@ $L_5ffdd3::
             inc EDI
             jmp $L_5ffd7e
 $L_5ffc60 ENDP
+ELSE
+EXTERN @Vec56_Destroy@8:PROC
+$L_5ffc60 TEXTEQU <@Vec56_Destroy@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

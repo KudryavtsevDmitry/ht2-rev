@@ -2420,7 +2420,7 @@ extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, in
     F(int, s, 12) = g_q182_723b38;
 }
 
-ASM_PROC($L_5ffc60)
+extern "C" void $L_5ffc60(); KING_ALIAS("_$L_5ffc60", "@Vec56_Destroy@8")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 // [$L_5ff150] destroys the static vector 723d28
 extern "C" void __cdecl Static723d28_Destroy(void) { CallThis($L_5ffc60, (void*)g_q47_723d28); }
@@ -2494,4 +2494,31 @@ extern "C" int __cdecl Sce_SetRootDir(const char* dir)
     CallC(FUN_5ff5e0, (const char*)s_q194_683c68);
     CallC(FUN_5ff5e0, (const char*)s_q194_683c60);
     return 0;
+}
+
+typedef void* SceFreeLists[17];
+ASM_VAR(SceFreeLists, g_q195_68d1c0, $L_68d1c0)
+ASM_VAR(volatile LONG, g_q195_68d204, $L_68d204)
+extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);
+extern "C" void __cdecl free(void*);
+// [$L_5ffc60] destroys a vector of 56-byte records (each one's storage freed) and returns its storage to the STL
+// allocator
+extern "C" void __fastcall Vec56_Destroy(BYTE** v, void*)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 56)
+        CallThis(FUN_404420, e);
+    BYTE* p = v[0];
+    int n = (int)(v[2] - p) / 56;
+    if (!n)
+        return;
+    unsigned bytes = n * 56;
+    if (bytes > 128) {
+        free(p);
+        return;
+    }
+    void** list = &g_q195_68d1c0[(bytes + 7) >> 3];
+    Stl_Lock(&g_q195_68d204, 0);
+    *(void**)p = *list;
+    *list = p;
+    g_q195_68d204 = 0;
 }
