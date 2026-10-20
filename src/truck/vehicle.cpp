@@ -2847,3 +2847,36 @@ extern "C" int __fastcall Car_TakeCargo(BYTE* s, void*, int a1, int a2, int a3)
     CallThis(FUN_5569c0, s + 9556, a1, a2, a3);
     return Veh184_ApplyLoad(s);
 }
+
+ASM_VAR(double, g_q185_64d318, $L_64d318)
+ASM_VAR(double, g_q185_64b898, $L_64b898)
+ASM_VAR(double, g_q185_64ca78, $L_64ca78)
+ASM_VAR(float, g_q185_64c320, $L_64c320)
+ASM_VAR(float, g_q185_64c32c, $L_64c32c)
+ASM_VAR(float, g_q185_64c938, $L_64c938)
+ASM_VAR(float, g_q185_64f744, $L_64f744)
+// [FUN_549ff0] the intensity curve of effect s at its time (+20: time +8, kind +12) into *a and *b; the value
+// (kinds 1, 2: saturating curves; 3, 4: exponential decays; others 0)
+extern "C" double __fastcall CarEffect_Curve(BYTE* s, void*, float* a, float* b)
+{
+    BYTE* o = F(BYTE*, s, 20);
+    float t = F(float, o, 8);
+    switch (F(int, o, 12)) {
+    case 1:
+    case 2:
+        *a = (float)(t * (F(int, o, 12) == 1 ? g_q185_64d318 : g_q185_64b898) / (t + g_q185_64c320) + g_q169_64b840);
+        *b = (float)(t * g_q185_64ca78 / (t + g_q185_64c32c) + g_q185_64d318);
+        return *a;
+    case 4:
+        *b = 0;
+        *a = 1.0f;
+        return x87_exp(t * t * g_q185_64c938);
+    case 3:
+        *a = 1.0f;
+        *b = 1.0f;
+        return x87_exp(t * g_q185_64f744);
+    }
+    *a = 0;
+    *b = 0;
+    return g_q158_64c264;
+}
