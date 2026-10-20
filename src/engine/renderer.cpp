@@ -1941,3 +1941,69 @@ extern "C" void __cdecl TexPool_Return(void* surf)
     Ren147_Desc(surf, d, 1);
     Ren147_Release(surf);
 }
+
+// ---------------------------------------------------------------------------
+// A sub-surface.
+
+extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
+extern "C" void FUN_5d3ab0(); KING_ALIAS("_FUN_5d3ab0", "_Mode_TextureLevel")
+ASM_VAR(int, g_q148_702e94, $L_702e94)
+// [FUN_5b6530] constructor: surface s as the rectangle r (clipped to it, written back) of surface p with flags
+// (p's +12 less some bits, plus flags and 32): its size, p's format and pitch, its pixels and their address; an
+// empty one when nothing is left; a 3D surface of p only notes the texture level
+extern "C" BYTE* __fastcall SubSurface_Construct(BYTE* s, void*, BYTE* p, int* r, int flags)
+{
+    memcpy(s + 100, r, 16);
+    F(DWORD, s, 12) = (F(DWORD, p, 12) & 0xffffb5fe) | flags | 32;
+    int right = r[2] < (int)F(WORD, p, 0) ? r[2] : F(WORD, p, 0) - 1;
+    r[2] = right;
+    int bottom = r[3] < (int)F(WORD, p, 2) ? r[3] : F(WORD, p, 2) - 1;
+    r[3] = bottom;
+    int left = right < 0 ? 0 : r[0];
+    r[0] = left;
+    int top = bottom < 0 ? 0 : r[1];
+    r[1] = top;
+    if (left > right || top > bottom || right < 0 || bottom < 0) {
+        F(WORD, s, 6) = 0;
+        F(WORD, s, 4) = 0;
+        F(WORD, s, 2) = 0;
+        F(WORD, s, 0) = 0;
+        F(int, s, 20) = 0;
+        F(int, s, 16) = 0;
+        F(int, s, 24) = 0;
+        F(int, s, 56) = 0;
+        return s;
+    }
+    F(WORD, s, 0) = (WORD)(r[2] - r[0] + 1);
+    F(WORD, s, 2) = (WORD)(r[3] - r[1] + 1);
+    F(WORD, s, 4) = F(WORD, p, 4);
+    F(WORD, s, 6) = F(WORD, p, 6);
+    F(WORD, s, 8) = F(WORD, p, 8);
+    F(int, s, 80) = 0;
+    F(int, s, 84) = 0;
+    F(float, s, 88) = 0.5f;
+    F(BYTE, s, 92) = 0;
+    F(int, s, 120) = 0;
+    F(BYTE*, s, 96) = p;
+    F(int, s, 48) = 0;
+    F(int, s, 24) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 20) = 1;
+    F(int, s, 116) = 0;
+    if (F(DWORD, p, 12) & 0x1000) {
+        g_q148_702e94 = CallC<int>(FUN_5d3ab0);
+        F(int, s, 116) = 1;
+        F(int, s, 24) = 0;
+        return s;
+    }
+    if (F(DWORD, s, 12) & 0x4000)
+        F(BYTE*, s, 48) = F(BYTE*, p, 48) + (F(WORD, p, 8) * r[1] + r[0]) * 2;
+    else
+        F(int, s, 48) = 0;
+    if (!F(BYTE*, p, 24))
+        F(int, s, 24) = 0;
+    else
+        F(BYTE*, s, 24) = F(BYTE*, p, 24) + F(WORD, p, 6) * r[1] + F(WORD, s, 4) * r[0];
+    F(int, s, 56) = CallC<int>(FUN_4cef50, F(BYTE*, s, 24), F(WORD, s, 6) * F(WORD, s, 2));
+    return s;
+}

@@ -2438,7 +2438,7 @@ extern "C" void __fastcall RoomWindow_Destroy(BYTE* s)
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
 extern "C" void FUN_5da180(); KING_ALIAS("_FUN_5da180", "@Fw_RemakeSurface@24")
 extern "C" void FUN_5ed970(); KING_ALIAS("_FUN_5ed970", "@Renderer_Construct@12")
-ASM_PROC(FUN_5b6530)
+extern "C" void FUN_5b6530(); KING_ALIAS("_FUN_5b6530", "@SubSurface_Construct@20")
 ASM_PROC(FUN_5d8710)
 ASM_VAR(AsmLabel, g_fra652280, $L_652280)
 
@@ -2667,7 +2667,7 @@ extern "C" void __fastcall Fw_SetupRoom(BYTE* s)
 extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
 extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
-ASM_PROC(FUN_5b6530)
+extern "C" void FUN_5b6530(); KING_ALIAS("_FUN_5b6530", "@SubSurface_Construct@20")
 ASM_VAR(BYTE*, g_q20_721750, $L_721750)
 
 // [FUN_5da180] (x, y, w, h): the window's surface (+12) is made again; the main window gets a new one of that
