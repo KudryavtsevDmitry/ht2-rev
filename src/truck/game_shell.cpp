@@ -4100,3 +4100,119 @@ extern "C" BYTE* __fastcall ShellSession51b640_Construct(BYTE* s, void*, int par
     }
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Shell screen with a list and five texture tables (exception frame dropped).
+
+ASM_VAR(AsmLabel, g_q40_64ea70, $L_64ea70)
+ASM_VAR(AsmLabel, g_q40_64ea30, $L_64ea30)
+ASM_VAR(AsmLabel, g_q40_675dd8, $L_675dd8)
+ASM_VAR(AsmLabel, g_q40_675c90, $L_675c90)
+ASM_VAR(AsmLabel, g_q40_675ce4, $L_675ce4)
+#define Q40(x) ((const char*)s_q40_##x)
+ASM_VAR(AsmLabel, s_q40_678238, $L_678238)
+ASM_VAR(AsmLabel, s_q40_678228, $L_678228)
+ASM_VAR(AsmLabel, s_q40_678220, $L_678220)
+ASM_VAR(AsmLabel, s_q40_678214, $L_678214)
+ASM_VAR(AsmLabel, s_q40_6781fc, $L_6781fc)
+ASM_VAR(AsmLabel, s_q40_6781e4, $L_6781e4)
+ASM_VAR(AsmLabel, s_q40_6781d0, $L_6781d0)
+ASM_VAR(AsmLabel, s_q40_6781bc, $L_6781bc)
+ASM_VAR(AsmLabel, s_q40_6781a8, $L_6781a8)
+ASM_VAR(AsmLabel, s_q40_678194, $L_678194)
+ASM_VAR(AsmLabel, s_q40_678180, $L_678180)
+ASM_VAR(AsmLabel, s_q40_67816c, $L_67816c)
+ASM_VAR(AsmLabel, s_q40_678154, $L_678154)
+ASM_VAR(AsmLabel, s_q40_67813c, $L_67813c)
+ASM_VAR(AsmLabel, s_q40_678124, $L_678124)
+ASM_VAR(AsmLabel, s_q40_67810c, $L_67810c)
+ASM_VAR(AsmLabel, s_q40_6780fc, $L_6780fc)
+ASM_VAR(AsmLabel, s_q40_6780ec, $L_6780ec)
+ASM_VAR(AsmLabel, s_q40_6780d8, $L_6780d8)
+ASM_VAR(AsmLabel, s_q40_6780c8, $L_6780c8)
+ASM_VAR(AsmLabel, s_q40_6780b8, $L_6780b8)
+
+static const char* Shell_ByMode(const char* m2, const char* other)
+{
+    return CallC<int>(FUN_568fd0) == 2 ? m2 : other;
+}
+// fills n texture slots from the format by mode with 1..n
+static void Shell_NumberedTex(BYTE* at, const char* m2, const char* other, int n)
+{
+    char buf[64];
+    for (int i = 1; i <= n; i++) {
+        sprintf(buf, Shell_ByMode(m2, other), i);
+        F(DWORD, at, (i - 1) * 4) = CallC<DWORD>(FUN_5ef3d0, buf);
+    }
+}
+static DWORD Shell_PrefixedTex(const char* fmt)
+{
+    char buf[64];
+    sprintf(buf, fmt, Shell_ByMode((const char*)s_q21_6762c4, (const char*)s_q21_6762bc));
+    return CallC<DWORD>(FUN_5ef3d0, buf);
+}
+// [FUN_526470] constructor (parent): a shell screen (vtables 64ea70, 64ea30 at +64): buttons 185 (+368), 186, a
+// list box 187 (+1032), and the textures: 1..51 (+372), three single (+668..+676), 1..8 (+576), 1..15 (+608),
+// four prefixed (+1016..+1028) and two per name of 675c90 (+680) and 675ce4 (+848)
+extern "C" BYTE* __fastcall ShellScreen526470_Construct(BYTE* s, void*, BYTE* parent)
+{
+    int r[4];
+    int* q = Carat_WindowRectBelow(r, parent);
+    CallThis(FUN_5d8900, s, parent, q[0], q[1], q[2], q[3], 0, g_q28_6ced24, g_q31_6ced2c);
+    F(void*, s, 0) = g_q40_64ea70;
+    F(void*, s, 64) = g_q40_64ea30;
+    DWORD* o = Shell_NewObjRef();
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p = Shell_NewPanel(4);
+    Shell_PanelStyles(p + 68, Q40(678238), Q40(678228));
+    BYTE* c = Shell_NewPanel(0);
+    BYTE* b = Shell_ModeButtonC((int)Q40(678220), 185);
+    F(BYTE*, s, 368) = b;
+    CallThis(FUN_5bdbf0, c, b, 0);
+    Shell_MoveCtl(b, 186, 774);
+    b = Shell_ModeButtonC((int)(const char*)g_q40_675dd8, 186);
+    CallThis(FUN_5bdbf0, c, b, 0);
+    Shell_MoveCtl(b, 85, 774);
+    CallThis(FUN_5bdbf0, p, c, 0);
+    c = Shell_NewPanel(0);
+    BYTE* m = (BYTE*)operator new(352);
+    BYTE* l = m ? CallThis<BYTE*>(FUN_5c0550, m, Q40(678214), 4, 201) : 0;
+    F(BYTE*, s, 1032) = l;
+    Shell_FieldStyles(l);
+    CallThis(FUN_5c07c0, F(BYTE*, s, 1032), 10);
+    Button_SetImages(F(BYTE*, F(BYTE*, s, 1032), 340), (const char*)s_q31_67777c, (const char*)s_q31_677780);
+    Shell_MoveCtl(F(BYTE*, F(BYTE*, s, 1032), 340), 319, -12);
+    CallThis(FUN_5becd0, F(BYTE*, F(BYTE*, s, 1032), 340), 219);
+    Shell_MoveCtl(F(BYTE*, s, 1032), 20, 537);
+    F(int, F(BYTE*, s, 1032), 344) = 8;
+    F(int, F(BYTE*, F(BYTE*, s, 1032), 340), 28) = 187;
+    F(int, F(BYTE*, s, 1032), 28) = 187;
+    CallThis(FUN_5bdbf0, c, F(BYTE*, s, 1032), 0);
+    CallThis(FUN_5bdbf0, p, c, 0);
+    CallThis(FUN_5bdc80, p);
+    Shell_MoveCtl(p, g_q30_6ced0c, g_q30_6ced10);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p, 0);
+    F(int, s, 1036) = 0;
+    Shell_NumberedTex(s + 372, Q40(6781fc), Q40(6781e4), 51);
+    F(DWORD, s, 668) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(Q40(6781d0), Q40(6781bc)));
+    F(DWORD, s, 672) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(Q40(6781a8), Q40(678194)));
+    F(DWORD, s, 676) = CallC<DWORD>(FUN_5ef3d0, Shell_ByMode(Q40(678180), Q40(67816c)));
+    Shell_NumberedTex(s + 576, Q40(678154), Q40(67813c), 8);
+    Shell_NumberedTex(s + 608, Q40(678124), Q40(67810c), 15);
+    F(DWORD, s, 1016) = Shell_PrefixedTex(Q40(6780fc));
+    F(DWORD, s, 1020) = Shell_PrefixedTex(Q40(6780ec));
+    F(DWORD, s, 1024) = Shell_PrefixedTex(Q40(6780d8));
+    F(DWORD, s, 1028) = Shell_PrefixedTex(Q40(6780c8));
+    const char** na = (const char**)(void*)g_q40_675c90;
+    const char** nb = (const char**)(void*)g_q40_675ce4;
+    char buf[64];
+    for (int k = 0; k < 21; k++)
+        for (int i = 0; i < 2; i++) {
+            sprintf(buf, Q40(6780b8), Shell_ByMode((const char*)s_q21_6762c4, (const char*)s_q21_6762bc), na[k], i);
+            F(DWORD, s, 680 + (k * 2 + i) * 4) = CallC<DWORD>(FUN_5ef3d0, buf);
+            sprintf(buf, Q40(6780b8), Shell_ByMode((const char*)s_q21_6762c4, (const char*)s_q21_6762bc), nb[k], i);
+            F(DWORD, s, 848 + (k * 2 + i) * 4) = CallC<DWORD>(FUN_5ef3d0, buf);
+        }
+    return s;
+}
