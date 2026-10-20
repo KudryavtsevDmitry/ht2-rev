@@ -1683,7 +1683,7 @@ extern "C" int __fastcall Worobj_Pack(BYTE* s)
 // Constructors and destructors (exception frames dropped).
 
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
-ASM_PROC(FUN_5a3f50)
+extern "C" void FUN_5a3f50(); KING_ALIAS("_FUN_5a3f50", "@Light5a3f50_Attach@12")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
@@ -2017,4 +2017,24 @@ extern "C" BYTE* __fastcall WObj5a3550_VecDeletingDestructor(BYTE* s, void*, uns
 extern "C" BYTE* __fastcall WObj5a3790_VecDeletingDestructor(BYTE* s, void*, unsigned flags)
 {
     return WObj_VecDelete(s, flags, 212, FUN_5a2a30);
+}
+
+// ---------------------------------------------------------------------------
+// Light attachment by node kind.
+
+// [FUN_5a3f50] attaches the light to the node n (+32): by the node type +16 into its +116 (2), +112 (3), +64 (4),
+// +60 (5) or +72 (17); other types detach it
+extern "C" void __fastcall Light5a3f50_Attach(BYTE* s, void*, BYTE* n)
+{
+    if (!n)
+        return;
+    F(BYTE*, s, 32) = n;
+    switch (F(int, n, 16)) {
+    case 2: F(BYTE*, n, 116) = s; return;
+    case 3: F(BYTE*, n, 112) = s; return;
+    case 4: F(BYTE*, n, 64) = s; return;
+    case 5: F(BYTE*, n, 60) = s; return;
+    case 17: F(BYTE*, n, 72) = s; return;
+    }
+    F(BYTE*, s, 32) = 0;
 }
