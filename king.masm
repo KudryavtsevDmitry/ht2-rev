@@ -838579,6 +838579,8 @@ $L_5f3a60 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f3da0 PROC
 
             push EBP
@@ -838710,6 +838712,10 @@ $L_5f3eb5::
             pop EBP
             ret 8
 $L_5f3da0 ENDP
+ELSE
+EXTERN @Node_DrawWithFog@16:PROC
+$L_5f3da0 TEXTEQU <@Node_DrawWithFog@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
