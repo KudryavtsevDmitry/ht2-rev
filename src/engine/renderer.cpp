@@ -2234,3 +2234,73 @@ extern "C" void __cdecl Surface_HLine(BYTE* s, int y, int x1, int x2, int color,
         CallC(FUN_5feafa, p, color, n);
     }
 }
+
+// [FUN_5b7f20] draws the line y1..y2 of column x on surface s like 5b7ce0 does for rows
+extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color, int raw)
+{
+    BYTE* pal = CallThis<BYTE*>(FUN_5b64c0, s);
+    if (x < 0 || x >= (int)F(WORD, s, 0))
+        return;
+    int a = y1, b = y2;
+    if (b < a) {
+        a = y2;
+        b = y1;
+    }
+    int h = F(WORD, s, 2);
+    if (a >= h || b < 0)
+        return;
+    if (a < 0)
+        a = 0;
+    if (b >= h)
+        b = h - 1;
+    if (F(int, s, 116) == 1) {
+        CallC(FUN_5b73a0, s, x, a, x, b, color, 0);
+        return;
+    }
+    BYTE* buf = F(BYTE*, s, 24 + F(int, s, 16) * 4);
+    if (!buf)
+        return;
+    WORD bpp = F(WORD, s, 4);
+    int pitch = F(WORD, s, 6);
+    BYTE* p = buf + pitch * a + bpp * x;
+    int n = b - a + 1;
+    int mode = F(int, s, 80);
+    if (mode != 0 && !(mode == 2 && Ren151_Eq(F(float, s, 88), g_q151_64b670))) {
+        if (mode != 2 || !pal || Ren151_Eq(F(float, s, 88), g_q151_64b678))
+            return;
+        BYTE* t = CallThis<BYTE*>(FUN_5b94b0, pal, (int)(F(int, pal, 796) * F(float, s, 88)));
+        if (a > b)
+            return;
+        if (bpp == 1) {
+            for (int c = color << 8; n; n--, p += pitch)
+                *p = t[c + *p];
+        } else if (bpp == 2) {
+            for (; n; n--, p += pitch)
+                CallC(FUN_5fea6c, t, p, color, 1);
+        } else if (bpp == 4) {
+            int c = raw ? color : CallThis<int>(FUN_5ba3f0, pal, color);
+            for (; n; n--, p += pitch)
+                CallC(FUN_5feb12, (int)(F(float, s, 88) * g_q151_64c458), p, c, 1);
+        }
+        return;
+    }
+    if (bpp == 1) {
+        for (; a <= b && n; n--, p += pitch)
+            *p = (BYTE)color;
+        return;
+    }
+    if (bpp != 2 && bpp != 4)
+        return;
+    if (!raw) {
+        if (!pal)
+            return;
+        color = CallThis<int>(FUN_5ba3f0, pal, color);
+    }
+    if (a > b)
+        return;
+    for (; n; n--, p += pitch)
+        if (bpp == 2)
+            F(WORD, p, 0) = (WORD)color;
+        else
+            F(int, p, 0) = color;
+}
