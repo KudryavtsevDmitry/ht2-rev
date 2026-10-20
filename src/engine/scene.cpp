@@ -2257,3 +2257,26 @@ extern "C" int __fastcall SceneNode5f9b00_Hit(BYTE* s, void*, int flags, BYTE* r
     F(int, rec, 116) = c;
     return r;
 }
+
+// [FUN_5f9d20] draws reference node s for (a1, matrix m, a3, view b) when its test passes: the referred object
+// (+64) draws with vtbl+56, in the space of node +68 when there is one (m moved into it for the call); its result
+extern "C" int __fastcall SceneNode5f9d20_Draw(BYTE* s, void*, void* a1, BYTE* m, BYTE* a3, BYTE* b)
+{
+    BYTE w1[48], saved[48], t[48];
+    memcpy(w1, (BYTE*)g_q109_7025f0, 48);
+    if (!CallThis<int>(FUN_5ef820, s, a1, m, a3, b))
+        return 0;
+    if (!F(BYTE*, s, 64))
+        return 0;
+    memcpy(saved, m, 48);
+    if (BYTE* n = F(BYTE*, s, 68)) {
+        BYTE* w = CallThis<BYTE*>(FUN_5f25c0, n, w1);
+        CallThis(FUN_5ae580, b, w1, w);
+        memcpy(m, CallC<BYTE*>(FUN_5aba40, t, w1, a3), 48);
+    }
+    int r = CallVirt<int>(F(BYTE*, s, 64), 56, a1, m, a3, b);
+    if (F(BYTE*, s, 68))
+        CallThis(FUN_5ae8a0, b);
+    memcpy(m, saved, 48);
+    return r;
+}
