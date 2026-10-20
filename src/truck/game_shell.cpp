@@ -4914,3 +4914,102 @@ extern "C" void __fastcall DriverChoice_Draw(BYTE* s, void*, int dc)
     int font = CallC<int>(FUN_569740);
     CallC(FUN_5ea170, F(int, s, -52), x + 51, y + 116, font, t, 4, 0);
 }
+
+// ---------------------------------------------------------------------------
+// Command handlers of the race start and the track choice screens.
+
+extern "C" void FUN_4ff770(); KING_ALIAS("_FUN_4ff770", "@Car_SetAuto@12")
+extern "C" void FUN_5c0c00(); KING_ALIAS("_FUN_5c0c00", "@List_IndexOf300@8")
+ASM_VAR(BYTE*, g_q61_6cecc8, $L_6cecc8)
+ASM_VAR(BYTE*, g_q61_6cecd0, $L_6cecd0)
+ASM_VAR(int, g_q61_6968f8, $L_6968f8)
+ASM_VAR(DWORD, g_q61_723da8, $L_723da8)
+// the transmission of the player's car by +330, then its +1404 flags (kept or reset) with bit 8 by +332
+static void RaceStart_ApplyCar(BYTE* s, bool reset)
+{
+    CallThis(FUN_4ff770, F(BYTE*, F(BYTE*, g_gamshe6d2078, 616), 21600), (int)F(short, s, 330));
+    DWORD f = reset ? 0xfffffeff : F(DWORD, g_gamshe6d2078, 1404) & ~0x100u;
+    F(DWORD, g_gamshe6d2078, 1404) = f;
+    if (F(short, s, 332))
+        F(DWORD, g_gamshe6d2078, 1404) |= 0x100;
+}
+// [$L_517ad0] commands of the race start part (the screen at -64): 2 and 27 keep the choices (+308..+316 to
+// +324..+332), close and apply them; 178/179 the manual or automatic gearbox; 184 starts the race: the movie
+// and the screens go, the race window +304 becomes active and the car takes the choices
+extern "C" void __fastcall RaceStart_OnCommand(BYTE* s, void*, int cmd)
+{
+    switch (cmd) {
+    case 2:
+    case 27:
+        for (int k = 0; k < 5; k++)
+            F(WORD, s, 324 + k * 2) = F(WORD, s, 308 + k * 2);
+        CallVirt(s - 64, 32);
+        CallThis(FUN_5d8610, g_gs6ced6c);
+        RaceStart_ApplyCar(s, false);
+        break;
+    case 178:
+        F(WORD, s, 330) = 1;
+        break;
+    case 179:
+        F(WORD, s, 330) = 0;
+        break;
+    case 184:
+        CallVirt(s - 64, 32);
+        if (g_6ce4f4)
+            CallVirt(g_6ce4f4, 0, 1);
+        g_6ce4f4 = 0;
+        F(DWORD, g_696ca0, 16) |= 3;
+        CallC(FUN_569710);
+        CallVirt(g_696ca0, 36);
+        CallThis(FUN_5e4250, (BYTE*)g_gs696750, F(int, s, 304));
+        CallC(FUN_50bd60);
+        CallC(FUN_4e12b0, 1);
+        RaceStart_ApplyCar(s, true);
+        break;
+    }
+}
+// [$L_51ab90] commands of the track choice part (the screen at -64): 2 back to 6cec80, 118 starts the chosen track
+// (with the CD; the tutorial record 723da8 goes to 6cecc8, others to 6cecd0), 119 to the 6cec98 screen, 120/121
+// the next/previous of the eleven pictures (+744), 122 the next of four views (+748)
+extern "C" void __fastcall TrackChoice_OnCommand(BYTE* s, void*, int cmd)
+{
+    switch (cmd) {
+    case 2:
+        CallVirt(s - 64, 32);
+        F(int, g_6cec80, 372) = 0;
+        CallVirt(g_6cec80, 36);
+        break;
+    case 118: {
+        if (!CallC<int>(FUN_50c800, g_q59_6cec94))
+            break;
+        g_q61_6968f8 = CallThis<int>(FUN_5c0c00, F(BYTE*, s, 484));
+        CallVirt(s - 64, 32);
+        F(int, g_6cec80, 372) = 0;
+        F(int, g_q59_6cec6c, 1316) = 2;
+        const DWORD* rec = (const DWORD*)(s + 488 + g_q61_6968f8 * 32);
+        const DWORD* tut = &g_q61_723da8;
+        if (rec[0] == tut[0] && rec[1] == tut[1] && rec[2] == tut[2] && rec[3] == tut[3]) {
+            F(BYTE, g_q61_6cecd0, 396) = 0;
+            CallThis(FUN_519750, g_q61_6cecc8, 0);
+        } else
+            CallThis(FUN_519750, g_q61_6cecd0, 0);
+        break;
+    }
+    case 119:
+        F(BYTE*, g_6cec80, 372) = g_6cec98s;
+        CallVirt(s - 64, 32);
+        CallVirt(g_6cec98s, 36);
+        g_q61_6968f8 = CallThis<int>(FUN_5c0c00, F(BYTE*, s, 484));
+        break;
+    case 120:
+        F(int, s, 744) = (F(int, s, 744) + 1) % 11;
+        break;
+    case 121:
+        if (--F(int, s, 744) < 0)
+            F(int, s, 744) += 11;
+        break;
+    case 122:
+        F(int, s, 748) = (F(int, s, 748) + 1) % 4;
+        break;
+    }
+}
