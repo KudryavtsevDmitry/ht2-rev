@@ -1513,6 +1513,7 @@ PUBLIC $L_67cb28, $L_67cb68, $L_67cb8c
 PUBLIC $L_67b904, $L_67b910, $L_67b91c, $L_67b928, $L_67b938
 PUBLIC $L_64eba8
 PUBLIC $L_702e90
+PUBLIC $L_682f24, $L_682f30, $L_682f34, $L_721764
 
 ;===================================
 _TEXT SEGMENT
@@ -796907,6 +796908,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5de7d0 PROC
 
             push EBP
@@ -797038,6 +797041,10 @@ $L_5de93b::
             pop EBP
             ret 
 $L_5de7d0 ENDP
+ELSE
+EXTERN @View_EndFrame@4:PROC
+$L_5de7d0 TEXTEQU <@View_EndFrame@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
