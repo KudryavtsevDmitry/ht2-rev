@@ -2920,3 +2920,41 @@ extern "C" float __fastcall Car_HoldValue2(BYTE* s)
         return g_q199_64c264;
     return F(float, s, 9592);
 }
+
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+extern "C" void FUN_4e623e(); KING_ALIAS("_FUN_4e623e", "_Query_Parts1")
+ASM_PROC(FUN_57e140)
+// [$L_54c6d0] the car's world query (kind 6) into the 208-byte record out: a query from the car's position +584
+// and direction +536 against its body (+804), through the parts list when the model (+21584) has one (+9992) or the
+// body's method 52 otherwise (on a new contact the car's method 28 is told); without a model, 57e140
+extern "C" int __fastcall Car_Query(BYTE* s, void*, BYTE* out)
+{
+    BYTE* m = F(BYTE*, s, 21584);
+    if (!m || F(int, m, 13124))
+        return CallThis<int>(FUN_57e140, s, out);
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    memcpy(q + 4, g_matrix7025f0, 48);
+    F(int, q, 76) = F(int, s, 584);
+    F(int, q, 116) = 0;
+    F(int, q, 80) = F(int, s, 588);
+    F(int, q, 100) = 0;
+    F(int, q, 88) = F(int, s, 536);
+    F(int, q, 84) = F(int, s, 592);
+    F(int, q, 92) = F(int, s, 540);
+    F(int, q, 96) = F(int, s, 544);
+    F(BYTE*, q, 120) = s - 16;
+    F(int, q, 0) = F(int, s, 40);
+    int r;
+    if (F(WORD, m, 9992)) {
+        r = CallC<int>(FUN_4e623e, F(BYTE*, s, 804), 6, q);
+    } else {
+        r = CallVirt<int>(F(BYTE*, s, 804), 52, 6, q);
+        if ((r & 2) && !F(int, q, 104)) {
+            F(BYTE*, q, 104) = F(BYTE*, s, 804);
+            CallVirt(s, 28, 1);
+        }
+    }
+    memcpy(out, q, 208);
+    return r;
+}
