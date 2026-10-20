@@ -1126,3 +1126,25 @@ extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
     CallC(FUN_4b2e90, out, a, r);
     return out;
 }
+
+extern "C" void FUN_4abe80(); KING_ALIAS("_FUN_4abe80", "@SchItem_Value@12")
+ASM_PROC(FUN_4ac0b0)
+struct Val207_It { char* cur; char* first; char* last; char** node; };
+extern "C" char* __cdecl fgets(char*, int, void*);
+// [$L_4b5e60] the next character of file reader s (-1 at the end): when its buffer (the deque at +24, current +32,
+// end +48) is empty, the next line of the file (+12) is appended; at the end of file +16 gets bit 2
+extern "C" int __fastcall FileReader_Peek(BYTE* s)
+{
+    char buf[4096];
+    if (F(char*, s, 48) == F(char*, s, 32)) {
+        if (fgets(buf, 4096, F(void*, s, 12))) {
+            Val207_It end;
+            CallThis(FUN_4abe80, s + 24, &end);
+            CallThis(FUN_4ac0b0, s + 24, end, buf, buf + strlen(buf));
+        } else
+            F(int, s, 16) |= 2;
+    }
+    if (F(char*, s, 48) != F(char*, s, 32))
+        return *F(BYTE*, s, 32);
+    return -1;
+}
