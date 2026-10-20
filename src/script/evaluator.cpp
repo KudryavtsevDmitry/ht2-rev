@@ -2170,3 +2170,18 @@ extern "C" DequeIt* __cdecl Deque_CopyBackward(DequeIt* out, DequeIt a, DequeIt 
     CallC(FUN_4ad030, out, a2, b2, c2, out, 0);
     return out;
 }
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// [$L_4af6b0] destroys a list of 16-byte nodes: every node and then the head go back to the allocator
+extern "C" void __fastcall List16_Destroy(BYTE** s)
+{
+    for (BYTE* n = *(BYTE**)*s; n != *s;) {
+        BYTE* next = *(BYTE**)n;
+        CallC(FUN_44b4a0, n, 16);
+        n = next;
+    }
+    BYTE* h = *s;
+    F(BYTE*, h, 0) = h;
+    F(BYTE*, *s, 4) = *s;
+    CallC(FUN_44b4a0, *s, 16);
+}

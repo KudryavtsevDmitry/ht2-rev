@@ -1444,3 +1444,18 @@ extern "C" void __cdecl PlayerRef_Resolve(int* e)
     CallThis(FUN_426280, &v, r);
     e[0] = v;
 }
+
+// [$L_473070] returns the storage of a vector of 40-byte elements to the allocator
+extern "C" void __fastcall Vec40_FreeStorage(BYTE** v)
+{
+    int n = (int)(v[2] - v[0]) / 40;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 40);
+}
+// [$L_472f10] returns the storage of a vector of 12-byte elements to the allocator
+extern "C" void __fastcall Vec12_FreeStorage(BYTE** v)
+{
+    int n = (int)(v[2] - v[0]) / 12;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n * 12);
+}

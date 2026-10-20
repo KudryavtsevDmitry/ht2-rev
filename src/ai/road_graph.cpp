@@ -1169,3 +1169,11 @@ extern "C" void __cdecl CharVec_Load(BYTE** cur, char** v)
             CallThis(FUN_44bef0, v, v[1], &c);
     }
 }
+
+// [$L_478c80] returns the storage of a vector of 8-byte elements to the allocator
+extern "C" void __fastcall Vec8_FreeStorage(BYTE** v)
+{
+    int n = (int)(v[2] - v[0]) >> 3;
+    if (n)
+        CallC(FUN_44b4a0, v[0], n << 3);
+}

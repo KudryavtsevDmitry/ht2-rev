@@ -21856,11 +21856,11 @@ extern "C" void q197_L_4028d0(); KING_ALIAS("_q197_L_4028d0", "_AiStatic68cff0_I
 extern "C" void q197_L_402b70(); KING_ALIAS("_q197_L_402b70", "_AiStatic68d008_Init")
 extern "C" void q197_L_402bc0(); KING_ALIAS("_q197_L_402bc0", "_AiStatic68cf10_Init")
 extern "C" void q197_L_4485d0(); KING_ALIAS("_q197_L_4485d0", "@List4485d0_Destroy@8")
-extern "C" void q197_L_449130(); KING_ALIAS("_q197_L_449130", "$L_449130")
+extern "C" void q197_L_449130(); KING_ALIAS("_q197_L_449130", "@Vec56b_Destroy@4")
 extern "C" void q197_L_4494c0(); KING_ALIAS("_q197_L_4494c0", "$L_4494c0")
 extern "C" void q197_L_449740(); KING_ALIAS("_q197_L_449740", "$L_449740")
 extern "C" void q197_L_4aee50(); KING_ALIAS("_q197_L_4aee50", "$L_4aee50")
-extern "C" void q197_L_4af6b0(); KING_ALIAS("_q197_L_4af6b0", "$L_4af6b0")
+extern "C" void q197_L_4af6b0(); KING_ALIAS("_q197_L_4af6b0", "@List16_Destroy@4")
 // [$L_401300] destroys the static object 68bb58 at exit ($L_4aee50)
 extern "C" void __cdecl Static68bb58_Destroy(void) { CallThis(q197_L_4aee50, &g_q197_68bb58); }
 // [$L_4012f0] registers the teardown at exit
@@ -22225,4 +22225,33 @@ extern "C" void __fastcall Vec32_FreeStorage(BYTE** v)
     int n = (int)(v[2] - v[0]) >> 5;
     if (n)
         Ai_PoolFree(v[0], n << 5);
+}
+
+// [$L_462b40] returns a byte vector's storage (begin, -, capacity end) to the allocator
+extern "C" void __fastcall VecBytes_FreeStorage(BYTE** v)
+{
+    if (v[0] && v[2] - v[0])
+        Ai_PoolFree(v[0], v[2] - v[0]);
+}
+// [$L_449130] frees the parts (+4) of each 56-byte element of vector v, then its storage
+extern "C" void __fastcall Vec56b_Destroy(BYTE** v)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 56)
+        CallThis(FUN_404420, e + 4);
+    int n = (int)(v[2] - v[0]) / 56;
+    if (n)
+        Ai_PoolFree(v[0], n * 56);
+}
+
+// [$L_4073b0] frees the storage of s's two vectors: 8-byte elements at +16 and 24-byte elements at +4
+extern "C" void __fastcall Rec4073b0_FreeVectors(BYTE* s)
+{
+    BYTE* p = F(BYTE*, s, 16);
+    int n = (int)(F(BYTE*, s, 24) - p) >> 3;
+    if (n)
+        Ai_PoolFree(p, n << 3);
+    p = F(BYTE*, s, 4);
+    n = (int)(F(BYTE*, s, 12) - p) / 24;
+    if (n)
+        Ai_PoolFree(p, n * 24);
 }
