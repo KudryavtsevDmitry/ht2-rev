@@ -787,7 +787,7 @@ extern "C" void __fastcall Car_CountType(BYTE* self, void*)
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_4ebbe0)
+extern "C" void FUN_4ebbe0(); KING_ALIAS("_FUN_4ebbe0", "@Car_RandomStep@12")
 ASM_PROC(FUN_4eb2f0)
 ASM_VAR(AsmLabel, g_697608, $L_697608)
 ASM_VAR(AsmLabel, g_6975b8, $L_6975b8)
@@ -954,4 +954,64 @@ extern "C" BYTE* __fastcall Placed4ee4d0_Construct(BYTE* s)
     F(int, s, 132) = 0;
     F(int, s, 240) = 0;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Random tuning steps.
+
+extern "C" void FUN_501870(); KING_ALIAS("_FUN_501870", "@Car_StepSetting@12")
+extern "C" int __cdecl rand(void);
+static int Vp100_Step(BYTE* s, int i, int last)
+{
+    if (F(int, s, 15520 + i * 20) >= F(int, s, 15524 + i * 20) - last)
+        return 2;
+    CallThis(FUN_501870, s, i);
+    return 1;
+}
+// [FUN_4ebbe0] steps one setting of car s of kind k (0: setting 3 or 4 below its last step, 1: setting 0,
+// 2: setting 1, 3: one of the +3540 settings from 19); 1 when stepped, 2 when it is at its end, 0 for other kinds
+extern "C" int __fastcall Car_RandomStep(BYTE* s, void*, int k)
+{
+    switch (k) {
+    case 0: return Vp100_Step(s, rand() % 2 + 3, 1);
+    case 1: return Vp100_Step(s, 0, 0);
+    case 2: return Vp100_Step(s, 1, 0);
+    case 3: return Vp100_Step(s, rand() % F(int, s, 3540) + 19, 0);
+    }
+    return 0;
+}
+
+// ---------------------------------------------------------------------------
+// Re-orthogonalising a body's matrix.
+
+ASM_PROC(FUN_5de950)
+ASM_PROC(FUN_5da950)
+extern "C" void FUN_4f0050(); KING_ALIAS("_FUN_4f0050", "@Body_CheckUpright@8")
+struct Vp101_Mat { DWORD v[12]; };
+// splits the matrix of body s (+16) into its position and angles
+static void Vp101_Split(BYTE* s, double* d)
+{
+    CallC(FUN_5de950, *(Vp101_Mat*)(s + 16), d, d + 1, d + 2, d + 3, d + 4, d + 5);
+}
+// [FUN_4f0c20] rebuilds the matrix of body s (+16) from its position and angles, then places the body there
+extern "C" void __fastcall Body_Rebuild(BYTE* s)
+{
+    double d[6];
+    BYTE m[48];
+    Vp101_Split(s, d);
+    memcpy(s + 16, CallC<BYTE*>(FUN_5da950, m, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
+    CallThis(FUN_4f09f0, s, d);
+}
+// [FUN_4f1180] with +13124 set: turns body s upright (its heading kept) and checks it; else 1
+extern "C" int __fastcall Body_SetUpright(BYTE* s)
+{
+    if (!F(int, s, 13124))
+        return 1;
+    double d[6];
+    BYTE m[48];
+    Vp101_Split(s, d);
+    CallC(FUN_5da950, m, d[0], d[1], d[2], d[3], 0.0, 0.0);
+    CallThis(FUN_4f1240, s, 2, F(int, s, 244), m);
+    CallThis(FUN_4f0050, s);
+    return 0;
 }
