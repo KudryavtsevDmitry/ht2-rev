@@ -1012,7 +1012,7 @@ extern "C" unsigned __fastcall MemStream_Read(BYTE* s, void*, void* dst, unsigne
     return F(unsigned, s, 8) += n;
 }
 
-ASM_PROC($L_602550)
+extern "C" void $L_602550(); KING_ALIAS("_$L_602550", "@Providers_Destroy@8")
 ASM_PROC($L_4af6b0)
 // [$L_601560] destroys the global container 723d60
 extern "C" void __cdecl Gate_Destroy723d60(void) { CallThis($L_602550, &g_723d60); }
@@ -1033,4 +1033,31 @@ extern "C" int __cdecl Gate_723d90Init(void)
 {
     Gate_Destroy723d90();
     return Gate_723d90AtExit();
+}
+
+typedef void* SgFreeLists[17];
+ASM_VAR(SgFreeLists, g_q196_68d1c0, $L_68d1c0)
+ASM_VAR(volatile LONG, g_q196_68d204, $L_68d204)
+extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);
+extern "C" void __cdecl free(void*);
+// [$L_602550] destroys the vector of 32-byte provider records (each one's buffers freed) and returns its storage
+// to the STL allocator
+extern "C" void __fastcall Providers_Destroy(BYTE** v, void*)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 32)
+        CallThis(FUN_601470, e);
+    BYTE* p = v[0];
+    int n = (int)(v[2] - p) >> 5;
+    if (!n)
+        return;
+    unsigned bytes = n << 5;
+    if (bytes > 128) {
+        free(p);
+        return;
+    }
+    void** list = &g_q196_68d1c0[(bytes + 7) >> 3];
+    Stl_Lock(&g_q196_68d204, 0);
+    *(void**)p = *list;
+    *list = p;
+    g_q196_68d204 = 0;
 }
