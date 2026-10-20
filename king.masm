@@ -1484,6 +1484,7 @@ PUBLIC $L_71e838, $L_71e83c
 PUBLIC $L_64b96c, $L_64b974, $L_64b97c
 PUBLIC $L_64f788, $L_6533e0
 PUBLIC $L_64eba0, $L_67ef54
+PUBLIC $L_70ebfc, $L_70ef1c, $L_70f0ac, $L_70f23c, $L_70f3d0, $L_70ed88
 
 ;===================================
 _TEXT SEGMENT
@@ -764521,6 +764522,8 @@ FUN_5cec90 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5cf070 PROC
 
             push ECX
@@ -764597,6 +764600,10 @@ $L_5cf11f::
             pop ECX
             ret 
 FUN_5cf070 ENDP
+ELSE
+EXTERN _Particles_InitRandom:PROC
+FUN_5cf070 TEXTEQU <_Particles_InitRandom>
+ENDIF
           BYTE 090H
 ; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
 IFDEF ASM_MEDIA
