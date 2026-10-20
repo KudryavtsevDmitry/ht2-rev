@@ -934,3 +934,24 @@ extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int
         break;
     }
 }
+
+// ---------------------------------------------------------------------------
+// A placed object.
+
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+ASM_VAR(AsmLabel, g_q98_702650, $L_702650)
+ASM_VAR(AsmLabel, g_q98_702630, $L_702630)
+// [$L_4ee4d0] constructor: the node part (+32) initialised, the position and size from the 702650 and 702630
+// defaults, the rest cleared
+extern "C" BYTE* __fastcall Placed4ee4d0_Construct(BYTE* s)
+{
+    memset(s, 0, 24);
+    CallThis(FUN_5ef5c0, s + 32);
+    memcpy(s, (BYTE*)g_q98_702650, 12);
+    memcpy(s + 12, (BYTE*)g_q98_702630, 12);
+    F(short, s, 24) = 0;
+    F(short, s, 26) = 0;
+    F(int, s, 132) = 0;
+    F(int, s, 240) = 0;
+    return s;
+}

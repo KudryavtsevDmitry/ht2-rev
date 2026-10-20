@@ -614,3 +614,28 @@ extern "C" BYTE* __fastcall Tuning_SetDefaults(BYTE* s)
         F(DWORD, s, off[k]) = val[k];
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// The static vehicle records.
+
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, g_q98_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q98_6c6b68, $L_6c6b68)
+// [$L_507230] static init: the 35 876-byte records at 6c6b68 + 72 get zeroed vectors, two identity matrices
+// and cleared fields
+extern "C" void __cdecl VehSet_InitRecords(void)
+{
+    BYTE* b = (BYTE*)g_q98_6c6b68 + 176;
+    for (int k = 35; k; k--, b += 876) {
+        Array_ForEach(b - 104, 12, 4, FUN_4bd4d0);
+        memcpy(b - 104, (BYTE*)g_q98_7025f0, 48);
+        Array_ForEach(b - 56, 12, 4, FUN_4bd4d0);
+        memcpy(b - 56, (BYTE*)g_q98_7025f0, 48);
+        memset(b - 8, 0, 24);
+        Array_ForEach(b + 28, 12, 20, FUN_4bd4d0);
+        memset(b + 268, 0, 36);
+        Array_ForEach(b + 312, 12, 4, FUN_4bd4d0);
+        Array_ForEach(b + 360, 16, 20, FUN_4bd4d0);
+    }
+}
