@@ -2803,7 +2803,7 @@ extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    
 extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector of 16-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
 ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
-ASM_PROC(FUN_460d10)    // destroy a 16-byte record
+extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")    // destroy a 16-byte record
 extern "C" BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags);   // aistl.cpp
 ASM_VAR(BYTE, g_vt64b5c0, $L_64b5c0)
 ASM_VAR(BYTE, g_vt64b62c, $L_64b62c)
@@ -20152,7 +20152,7 @@ extern "C" void __cdecl Ai_BuildNameMaps()
 
 extern "C" void FUN_458a80(); KING_ALIAS("_FUN_458a80", "@Rec458a80_Copy@12")    // an order's copy constructor (thiscall: src)
 ASM_PROC(FUN_460840)    // find of an order (first, last, order by value, -)
-ASM_PROC(FUN_460d10)    // a 16-byte record's destructor (rec)
+extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")    // a 16-byte record's destructor (rec)
 extern "C" void FUN_457b40(); KING_ALIAS("_FUN_457b40", "_AI_Free")    // frees a large block (p, bytes)
 
 // [FUN_449910] vector<580-byte element>::~vector (thiscall)
@@ -21552,4 +21552,14 @@ extern "C" double __fastcall Path_Length(BYTE* s, void*, double t1, int i1, doub
     for (int k = i1 + 1; k < i2; k++)
         d = CallThis<double>(FUN_48e450, Path_Rec(s, k)) + d;
     return CallThis<double>(FUN_48e430, Path_Rec(s, i2), 0.0, t2) + d;
+}
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")
+// [FUN_460d10] frees the storage of the message buffer p
+extern "C" int __cdecl MsgBuf_FreeThunk(BYTE* p)
+{
+    return CallThis<int>(FUN_602ca0, p);
 }

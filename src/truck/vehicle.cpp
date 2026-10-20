@@ -2458,3 +2458,31 @@ extern "C" BYTE* __fastcall Dtor5587b0_DeletingDestructor(BYTE* s, void*, int fl
         operator delete(s);
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_57ca80(); KING_ALIAS("_FUN_57ca80", "_Ids_Reset")
+extern "C" void FUN_4eac13(); KING_ALIAS("_FUN_4eac13", "@Arrays_Fill@16")
+ASM_VAR(int, g_q47_6ef200, $L_6ef200)
+// [$L_4de510] resets the world state: counters +5084, +5088, +5104, +5108, +5112, the bounds +5116, +5120 to
+// -1000 and the arrays at +4828
+extern "C" void __fastcall World_ResetState(BYTE* s, void*)
+{
+    F(int, s, 5084) = 0;
+    F(int, s, 5088) = 0;
+    F(int, s, 5104) = 0;
+    F(DWORD, s, 5120) = 0xc47a0000;
+    F(DWORD, s, 5116) = 0xc47a0000;
+    F(int, s, 5108) = 0;
+    F(int, s, 5112) = 0;
+    CallThis(FUN_4eac13, s + 4828, 0, 0);
+}
+// [FUN_53fd40] resets the ids, empties the vehicle list and resets the world 696cb0
+extern "C" void __cdecl World_ResetAll(void)
+{
+    CallC(FUN_57ca80);
+    g_vehicleList = 0;
+    g_q47_6ef200 = 0;
+    World_ResetState(g_vh696cb0, 0);
+}

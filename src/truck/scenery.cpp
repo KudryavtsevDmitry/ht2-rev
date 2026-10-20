@@ -922,7 +922,7 @@ extern "C" BYTE* __fastcall Dtor52da10_DeletingDestructor(BYTE* s, void*, int fl
     return s;
 }
 
-ASM_PROC(FUN_52e520)
+extern "C" void FUN_52e520(); KING_ALIAS("_FUN_52e520", "@Scy52e520_Destruct@8")
 // [$L_52e2e0]
 extern "C" BYTE* __fastcall Dtor52e2e0_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -930,4 +930,20 @@ extern "C" BYTE* __fastcall Dtor52e2e0_DeletingDestructor(BYTE* s, void*, int fl
     if (flags & 1)
         operator delete(s);
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+ASM_PROC(FUN_52dec0)
+ASM_VAR(AsmLabel, g_q47_64f198, $L_64f198)
+ASM_VAR(AsmLabel, g_q47_64f14c, $L_64f14c)
+ASM_VAR(AsmLabel, g_q47_64f148, $L_64f148)
+// [FUN_52e520] destructor: the vtables 64f198, 64f14c at +256, 64f148 at +376, then the base
+extern "C" void __fastcall Scy52e520_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q47_64f198;
+    F(void*, s, 256) = g_q47_64f14c;
+    F(void*, s, 376) = g_q47_64f148;
+    CallThis(FUN_52dec0, s);
 }

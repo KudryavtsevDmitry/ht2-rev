@@ -722,7 +722,7 @@ extern "C" BYTE* __fastcall Sta4e1db0_DeletingDestructor(BYTE* s, void*, int fla
     return s;
 }
 
-ASM_PROC(FUN_4e24ca)
+extern "C" void FUN_4e24ca(); KING_ALIAS("_FUN_4e24ca", "_Static6974a8_Init")
 ASM_PROC(FUN_5dfa90)
 ASM_PROC(FUN_5dff20)
 ASM_PROC(FUN_5de600)
@@ -814,7 +814,7 @@ ASM_PROC(FUN_56d0f0)
 extern "C" void FUN_586d90(); KING_ALIAS("_FUN_586d90", "_SceneObj_DispatchCommand")
 ASM_PROC(FUN_46d7f0)
 ASM_PROC(FUN_4bc540)
-ASM_PROC(FUN_53fd40)
+extern "C" void FUN_53fd40(); KING_ALIAS("_FUN_53fd40", "_World_ResetAll")
 extern "C" void FUN_4e0630(); KING_ALIAS("_FUN_4e0630", "@Obj_4e0630@12")
 extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
 extern "C" void FUN_5c5380(); KING_ALIAS("_FUN_5c5380", "@Media_Reset5c5380@8")
@@ -918,4 +918,15 @@ extern "C" void __fastcall King_CreatePlayer(BYTE* s)
         F(int, F(BYTE*, g_staCar6d2078, 1632), 80) = 1;
     }
     CallC(FUN_56e5a0, s, (const char*)s_sta672ec8);
+}
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_4bdef0(); KING_ALIAS("_FUN_4bdef0", "@Vec3_SetThis@20")
+ASM_VAR(AsmLabel, g_q47_6974a8, $L_6974a8)
+// [FUN_4e24ca] sets the static vector 6974a8 to 1, 1, 1
+extern "C" void __cdecl Static6974a8_Init(void)
+{
+    CallThis(FUN_4bdef0, (void*)g_q47_6974a8, 1.0f, 1.0f, 1.0f);
 }

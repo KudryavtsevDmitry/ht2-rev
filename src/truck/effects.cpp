@@ -3250,7 +3250,7 @@ ASM_VAR(int, g_fx696234, $L_696234)
 extern "C" void FUN_5c64f0(); KING_ALIAS("_FUN_5c64f0", "_Effects_FreeTrees")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_4bcbe0(); KING_ALIAS("_FUN_4bcbe0", "@LightPool_Free@8")
-ASM_PROC(FUN_4c4780)
+extern "C" void FUN_4c4780(); KING_ALIAS("_FUN_4c4780", "_Eff_ClearAndDestroyGlows")
 extern "C" void FUN_4b89e0(); KING_ALIAS("_FUN_4b89e0", "_Fx_FreeBuffers")
 extern "C" void FUN_4cca50(); KING_ALIAS("_FUN_4cca50", "_Fx_Delete6961fc")
 
@@ -4748,4 +4748,41 @@ extern "C" BYTE* __fastcall Dtor4d25d0_DeletingDestructor(BYTE* s, void*, int fl
     if (flags & 1)
         operator delete(s);
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+extern "C" void FUN_4c4ca0(); KING_ALIAS("_FUN_4c4ca0", "_Eff_CreateSmokeAgain")
+extern "C" void FUN_4c4de0(); KING_ALIAS("_FUN_4c4de0", "_Fx_Clear696244")
+// [$L_4c56f0] marks the 100 glows (116 bytes each) as free (+40 bit 0)
+extern "C" void __cdecl Glows_MarkAllFree(void)
+{
+    if (!g_glows)
+        return;
+    for (int k = 0; k < 100; k++)
+        F(BYTE, g_glows + k * 116, 40) |= 1;
+}
+// [$L_4c5720] runs slot 36 of each glow, deletes the array (slot 0 with 3) and clears it
+extern "C" void __cdecl Glows_Destroy(void)
+{
+    if (!g_glows)
+        return;
+    for (int k = 0; k < 100; k++)
+        CallVirt(g_glows + k * 116, 36);
+    if (g_glows)
+        CallVirt(g_glows, 0, 3);
+    g_glows = 0;
+}
+// [FUN_4c4770] creates the smoke again and frees the glows
+extern "C" void __cdecl Eff_ResetSmokeAndGlows(void)
+{
+    CallC(FUN_4c4ca0);
+    Glows_MarkAllFree();
+}
+// [FUN_4c4780] clears the 696244 effects and destroys the glows
+extern "C" void __cdecl Eff_ClearAndDestroyGlows(void)
+{
+    CallC(FUN_4c4de0);
+    Glows_Destroy();
 }

@@ -1006,3 +1006,13 @@ extern "C" int __cdecl Static7200c0_Cleanup(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_5d2a70, (void*)g_q46_7200c0);
 }
+
+// ---------------------------------------------------------------------------
+// Small static setup and teardown procs, destructors and thunks.
+
+ASM_VAR(AsmLabel, g_q47_71e830, $L_71e830)
+// [FUN_5d2a00] cleans up the static 71e830
+extern "C" int __cdecl Static71e830_Cleanup(void)
+{
+    return CallThis<int>((void (*)())(void*)g_q46_5d2a70, (void*)g_q47_71e830);
+}
