@@ -2996,3 +2996,58 @@ extern "C" BYTE* __fastcall Car_ViewMatrix(BYTE* s, void*, BYTE* out)
     memcpy(out, view, 48);
     return out;
 }
+
+ASM_PROC(FUN_56ffd0)
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_532cf0(); KING_ALIAS("_FUN_532cf0", "_Points_Nearest")
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+ASM_VAR(BYTE*, g_q235_6cec6c, $L_6cec6c)
+ASM_VAR(AsmLabel, g_q235_6cf3a8, $L_6cf3a8)
+// [$L_532f00] a message m for the player's truck (the game 6d2078, +616 the truck): 11 finds the nearest point to
+// the truck, 27 changes the gear-box mode (+1412, the last two kept at +1416, +1420; mode 2 clears +20944, the
+// switches with mode 3 show the hint 87 once, +1408), others go to 56ffd0 while the game view is current
+extern "C" void __cdecl Game_TruckMessage(int* m)
+{
+    BYTE* g = g_game;
+    if (!m || !g || !F(BYTE*, g, 616))
+        return;
+    if (m[0] == 11) {
+        BYTE l[48];
+        BYTE* r = CallThis<BYTE*>(FUN_57de90, F(BYTE*, g, 616) + 16, l);
+        CallC(FUN_532cf0, m, r + 36, (void*)g_q235_6cf3a8);
+        return;
+    }
+    if (m[0] != 27) {
+        if (F(BYTE*, g_q235_6cec6c, 1356) == g_696ca0)
+            CallC(FUN_56ffd0, m);
+        return;
+    }
+    if (F(int, g, 1412) != m[1]) {
+        F(int, g, 1420) = F(int, g, 1416);
+        F(int, g_game, 1416) = F(int, g_game, 1412);
+        F(int, g_game, 1412) = m[1];
+        g = g_game;
+    }
+    if (m[1] == 2) {
+        F(int, F(BYTE*, g, 616), 20944) = 0;
+        g = g_game;
+    }
+    if (m[1] == 1) {
+        F(int, g, 1408) = 0;
+        int f = CallC<int>(FUN_43f620, F(int, F(BYTE*, g_game, 616), 20636));
+        g = g_game;
+        if (!(f & 0x8000) && F(int, g, 1420) == 3) {
+            F(int, F(BYTE*, g, 616), 20944) = 34;
+            g = g_game;
+        }
+    }
+    if (m[1] == 2 && F(int, g, 1416) == 3 && !F(int, g, 1408)) {
+        int f = CallC<int>(FUN_43f620, F(int, F(BYTE*, g, 616), 20636));
+        if (!(f & 0x8000)) {
+            CallC(FUN_56ae60, CallC<int>(FUN_5d2e50, 87));
+            F(int, g_game, 1408) = 1;
+        }
+    }
+}
