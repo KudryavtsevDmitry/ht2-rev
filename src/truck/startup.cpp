@@ -670,7 +670,7 @@ extern "C" void FUN_568b10(); KING_ALIAS("_FUN_568b10", "_Helicopters_Init")
 ASM_PROC($L_5451c0)
 extern "C" int __cdecl Item_OnEvent(BYTE* it, int e);    // vehicle.cpp
 ASM_PROC($L_52ebc0)
-ASM_PROC($L_52ee70)
+extern "C" void $L_52ee70(); KING_ALIAS("_$L_52ee70", "_Cars_Deliver")
 ASM_VAR(int, g_su67b2b8, $L_67b2b8)
 ASM_VAR(void*, g_su6ef24c, $L_6ef24c)
 ASM_VAR(void*, g_su6ef250, $L_6ef250)

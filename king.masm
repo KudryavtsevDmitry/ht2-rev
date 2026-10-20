@@ -518592,6 +518592,8 @@ $L_52ee5e ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52ee70 PROC
 
             mov EAX,DWORD PTR [$L_6cf3a4]
@@ -518718,6 +518720,10 @@ $L_52ef78::
             pop EBX
             ret 
 $L_52ee70 ENDP
+ELSE
+EXTERN _Cars_Deliver:PROC
+$L_52ee70 TEXTEQU <_Cars_Deliver>
+ENDIF
           BYTE 090H
 $L_52ef80 PROC
 
@@ -573196,6 +573202,8 @@ FUN_555e10 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_555e50 PROC
 
             mov ECX,DWORD PTR [ECX+9536]
@@ -573222,6 +573230,10 @@ $L_555e50 PROC
             pop ESI
             ret 
 $L_555e50 ENDP
+ELSE
+EXTERN @Car_HasInput@4:PROC
+$L_555e50 TEXTEQU <@Car_HasInput@4>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_555e80 PROC
