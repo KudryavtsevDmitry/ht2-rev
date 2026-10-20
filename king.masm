@@ -418147,6 +418147,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+IFDEF ASM_VEHICLE_PHYSICS
 FUN_4ebbe0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -418273,6 +418275,10 @@ $L_4ebce4           DWORD $L_4ebbf8
           DWORD $L_4ebc3f
           DWORD $L_4ebc6c
           DWORD $L_4ebc99
+ELSE
+EXTERN @Car_RandomStep@12:PROC
+FUN_4ebbe0 TEXTEQU <@Car_RandomStep@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -424649,6 +424655,8 @@ FUN_4f09f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+IFDEF ASM_VEHICLE_PHYSICS
 FUN_4f0c20 PROC
 
             push EBP
@@ -424743,6 +424751,10 @@ FUN_4f0c20 PROC
             nop
             nop
 FUN_4f0c20 ENDP
+ELSE
+EXTERN @Body_Rebuild@4:PROC
+FUN_4f0c20 TEXTEQU <@Body_Rebuild@4>
+ENDIF
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
 IFDEF ASM_VEHICLE_PHYSICS
@@ -425170,6 +425182,8 @@ $L_4f1175::
 FUN_4f0fc0 ENDP
           BYTE 090H
 ALIGN 16
+; src/vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
+IFDEF ASM_VEHICLE_PHYSICS
 FUN_4f1180 PROC
 
             push EBP
@@ -425258,6 +425272,10 @@ $L_4f11a4::
             pop EBP
             ret 
 FUN_4f1180 ENDP
+ELSE
+EXTERN @Body_SetUpright@4:PROC
+FUN_4f1180 TEXTEQU <@Body_SetUpright@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -448078,6 +448096,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 $L_501fb0 PROC
 
             mov EAX,ECX
@@ -448177,6 +448197,10 @@ $L_501fb0 PROC
             pop EBX
             ret 
 $L_501fb0 ENDP
+ELSE
+EXTERN @Tuning501fb0_SetDefaults@4:PROC
+$L_501fb0 TEXTEQU <@Tuning501fb0_SetDefaults@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
