@@ -256107,6 +256107,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48d710 PROC
 
             push EBP
@@ -256306,6 +256308,10 @@ $L_48d895::
             pop EBP
             ret 24
 FUN_48d710 ENDP
+ELSE
+EXTERN @Points_Distance@32:PROC
+FUN_48d710 TEXTEQU <@Points_Distance@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
