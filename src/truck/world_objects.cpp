@@ -2075,3 +2075,21 @@ extern "C" BYTE* __fastcall Rec5973a0_Construct(BYTE* s)
     F(int, s, 80) = 0;
     return s;
 }
+
+// [$L_598db0] constructor: two identity matrices (+0, +48), the distance (+104) 5, the rest cleared, +160 = 1
+extern "C" BYTE* __fastcall Rec598db0_Construct(BYTE* s)
+{
+    memset(s, 0, 48);
+    memcpy(s, (BYTE*)g_q103_7025f0, 48);
+    memset(s + 48, 0, 48);
+    memcpy(s + 48, (BYTE*)g_q103_7025f0, 48);
+    memset(s + 136, 0, 24);
+    F(int, s, 96) = 0;
+    memcpy(s, (BYTE*)g_q103_7025f0, 48);
+    F(double, s, 104) = 5.0;
+    F(double, s, 112) = 0;
+    F(double, s, 120) = 0;
+    F(double, s, 128) = 0;
+    F(int, s, 160) = 1;
+    return s;
+}

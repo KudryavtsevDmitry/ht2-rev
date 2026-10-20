@@ -456,3 +456,13 @@ extern "C" int __cdecl Wnd_FrameExtra(int edge)
         return 100 - 200 - r.top + r.bottom;
     return 0;
 }
+
+// [$L_5d6e10] enumeration callback: when record a (+12) is the wanted one of b (+28), its 32 bytes go to b + 68
+// and the enumeration stops (0)
+extern "C" int __stdcall Dd_MatchRecord(const BYTE* a, BYTE* b)
+{
+    if (F(int, a, 12) != F(int, b, 28))
+        return 1;
+    memcpy(b + 68, a, 32);
+    return 0;
+}
