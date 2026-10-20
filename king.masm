@@ -184369,6 +184369,8 @@ FUN_467820 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_4679d0 PROC
 
             push EBX
@@ -184403,6 +184405,10 @@ $L_467a03::
             pop EBX
             ret 
 FUN_4679d0 ENDP
+ELSE
+EXTERN _Names_InsertionSortRest:PROC
+FUN_4679d0 TEXTEQU <_Names_InsertionSortRest>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
