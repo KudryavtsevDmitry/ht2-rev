@@ -2380,3 +2380,21 @@ extern "C" int __fastcall Stream_ReadAt(BYTE* s, void*, int pos, int n, BYTE* ds
         return CallVirt<int>(F(BYTE*, d, 20), 4, F(int, s, 36) + pos, n, dst);
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// returns the storage of a vector (+0 .. +8) of size-byte elements to the pool
+static void PoolVec_Free_C(BYTE* s, int size)
+{
+    BYTE* p = F(BYTE*, s, 0);
+    int n = (F(BYTE*, s, 8) - p) / size;
+    if (n)
+        CallC(FUN_44b4a0, p, n * size);
+}
+// [$L_45a0a0] frees the storage of a vector of 1592-byte records
+extern "C" void __fastcall Vec1592_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_C(s, 1592);
+}

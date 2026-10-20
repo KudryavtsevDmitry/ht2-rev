@@ -1211,3 +1211,21 @@ extern "C" void __cdecl Block691cd0_Free(void)
     if (g_q49_691cd0 && F(WORD, g_q49_691cd0, 2))
         operator delete(g_q49_691cd0);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// returns the storage of a vector (+0 .. +8) of size-byte elements to the pool
+static void PoolVec_Free_U(BYTE* s, int size)
+{
+    BYTE* p = F(BYTE*, s, 0);
+    int n = (F(BYTE*, s, 8) - p) / size;
+    if (n)
+        CallC(FUN_44b4a0, p, n * size);
+}
+// [$L_491720] frees the storage of a vector of 44-byte records
+extern "C" void __fastcall Vec44_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_U(s, 44);
+}

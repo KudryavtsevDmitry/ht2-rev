@@ -579,3 +579,15 @@ extern "C" void __cdecl Ai_Abort(const char* a, const char* b)
     fputs(s_66c4e4, f);
     abort();
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void FUN_447ef0(); KING_ALIAS("_FUN_447ef0", "@Vec12_FreeStorage@8")
+// [$L_487700] frees the +24576 count of 12-byte vectors at the start
+extern "C" void __fastcall Vec12Array_FreeAll(BYTE* s, void*)
+{
+    BYTE* e = s + *(int*)(s + 24576) * 12;
+    for (BYTE* p = s; p != e; p += 12)
+        CallThis(FUN_447ef0, p);
+}

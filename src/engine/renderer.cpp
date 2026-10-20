@@ -32,7 +32,7 @@ ASM_PROC(FUN_5b42c0)
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 ASM_PROC(FUN_5ad780)
 ASM_PROC(FUN_5ad970)
-ASM_VAR(AsmLabel, g_dtor5baa30, $L_5baa30)
+extern "C" void __fastcall Holder5baa30_ReleaseAll(BYTE* s, void*);
 ASM_VAR(double, g_500ms, $L_64b860)
 ASM_VAR(float, g_255f, $L_64c458)
 ASM_VAR(float, g_2pow24, $L_651768)
@@ -892,7 +892,7 @@ int __stdcall Draw_Dispatch(int a, DWORD flags, int b, int c, int d)
 void __fastcall Records188x6_Destroy(BYTE* self, void*)
 {
     for (int i = 5; i >= 0; i--)
-        CallThis((RFn)(void*)g_dtor5baa30, self + i * 188);
+        Holder5baa30_ReleaseAll(self + i * 188, 0);
 }
 
 // [FUN_5b6190] waits up to 500 ms while the device is busy
@@ -1773,4 +1773,19 @@ extern "C" BYTE* __fastcall Dtor5bcf40_DeletingDestructor(BYTE* s, void*, int fl
     if (flags & 1)
         operator delete(s);
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+ASM_VAR(int, g_q51_702ea0, $L_702ea0)
+// [$L_5baa30] releases the held COM objects (+124, count +184), each lowering the 702ea0 count
+extern "C" void __fastcall Holder5baa30_ReleaseAll(BYTE* s, void*)
+{
+    while (F(int, s, 184) > 0) {
+        int n = --F(int, s, 184);
+        void* o = F(void*, s, 124 + n * 4);
+        ((ULONG(__stdcall*)(void*))(*(void***)o)[2])(o);
+        g_q51_702ea0--;
+    }
 }

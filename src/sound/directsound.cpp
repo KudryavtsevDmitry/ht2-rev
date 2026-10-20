@@ -908,3 +908,19 @@ extern "C" void __cdecl Mixer_ShutdownOnce(void)
     CallC(FUN_6049f0);
     g_q49_684404 = -1;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+// [$L_605700] 1 when the CPU reports the time stamp counter (CPUID 1, EDX bit 4)
+extern "C" int __cdecl Cpu_HasTsc(void)
+{
+    if (!Cpu_HasCpuid())
+        return 0;
+    int r[4];
+    __cpuid(r, 0);
+    if (!r[0])
+        return 0;
+    __cpuid(r, 1);
+    return (r[3] & 16) ? 1 : 0;
+}

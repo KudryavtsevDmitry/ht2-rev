@@ -968,3 +968,34 @@ extern "C" int __fastcall Stream_Seek(BYTE* s, void*, int off, int whence)
         return F(int, s, 8) = off;
     return -1;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+ASM_VAR(BYTE*, g_q51_723ddc, $L_723ddc)
+ASM_VAR(int, g_q51_723df4, $L_723df4)
+typedef long(__stdcall* ComFn96)(void*, int, int);
+// [$L_601800] unless c has bit 0: asks the 723ddc object (slot 96) for (a, 1); 1 on failure, else sets 723df4
+extern "C" int __stdcall Gate_Enum601800(int a, int, int c, int)
+{
+    if (c & 1)
+        return 0;
+    BYTE* o = g_q51_723ddc;
+    if (((ComFn96)(*(void***)o)[24])(o, a, 1) < 0)
+        return 1;
+    g_q51_723df4 = 1;
+    return 0;
+}
+// [$L_601840] appends the 16-byte record r to the list (count at +0, at most 10 at +4); always 1
+extern "C" int __stdcall Gate_AddRecord(const DWORD* r, DWORD* list, int)
+{
+    if (list[0] < 10) {
+        DWORD* d = list + 1 + list[0] * 4;
+        d[0] = r[0];
+        d[1] = r[1];
+        d[2] = r[2];
+        d[3] = r[3];
+        list[0]++;
+    }
+    return 1;
+}

@@ -1112,3 +1112,21 @@ static void Roagra_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 extern "C" void __cdecl RoagraInit_47f9d0() { Roagra_RngInit((DWORD*)g_roagraRng68d4f8, &g_roagraRng68d5d0, &g_roagraRng68d5d4, &g_roagraRng68d5d8); }
 // [$L_4805a0]
 extern "C" void __cdecl RoagraInit_4805a0() { Roagra_RngInit((DWORD*)g_roagraRng68d5e0, &g_roagraRng68d6b8, &g_roagraRng68d6bc, &g_roagraRng68d6c0); }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// returns the storage of a vector (+0 .. +8) of size-byte elements to the pool
+static void PoolVec_Free_R(BYTE* s, int size)
+{
+    BYTE* p = F(BYTE*, s, 0);
+    int n = (F(BYTE*, s, 8) - p) / size;
+    if (n)
+        CallC(FUN_44b4a0, p, n * size);
+}
+// [$L_47aaa0] frees the storage of a vector of 40-byte records
+extern "C" void __fastcall Vec40_FreeStorage(BYTE* s, void*)
+{
+    PoolVec_Free_R(s, 40);
+}

@@ -1016,3 +1016,28 @@ extern "C" int __cdecl Static71e830_Cleanup(void)
 {
     return CallThis<int>((void (*)())(void*)g_q46_5d2a70, (void*)g_q47_71e830);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
+
+ASM_VAR(void*, g_q51_71e858, $L_71e858)
+ASM_VAR(int, g_q51_720890, $L_720890)
+ASM_VAR(int, g_q51_7208ac, $L_7208ac)
+// [$L_5d2e20] frees the 1000 entries of the 71e858 table
+extern "C" void __cdecl Table71e858_FreeAll(void)
+{
+    for (int k = 0; k < 1000; k++)
+        if ((&g_q51_71e858)[k])
+            operator delete((&g_q51_71e858)[k]);
+}
+// [FUN_5d3ab0] the texture level for the 720890 mode: 1, 2 or 3 (by 7208ac), 6, or 0
+extern "C" int __cdecl Mode_TextureLevel(void)
+{
+    switch (g_q51_720890) {
+    case 1: return 1;
+    case 2: return g_q51_7208ac ? 2 : 3;
+    case 3:
+    case 4: return 6;
+    }
+    return 0;
+}
