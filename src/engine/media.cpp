@@ -2610,3 +2610,14 @@ extern "C" int __fastcall List_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int
     F(int, F(BYTE*, s, 340), 40) = F(int, s, 328) > List_VisibleRows(s) ? 0 : 1;
     return 0;
 }
+
+ASM_PROC(FUN_5ce870)
+// [$L_5ceb40] sets up mesh s with n vertices (5ce870) and keeps a copy of its first n index words (+40) at +172
+extern "C" void __fastcall Mesh5ceb40_Setup(BYTE* s, void*, int n, int a2, int a3, int a4)
+{
+    CallThis(FUN_5ce870, s, n, a2, a3, a4);
+    F(int, s, 176) = n;
+    void* p = operator new(n * 4);
+    F(void*, s, 172) = p;
+    memcpy(p, F(void*, s, 40), n * 4);
+}

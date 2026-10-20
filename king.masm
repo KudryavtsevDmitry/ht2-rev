@@ -673864,6 +673864,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_598db0 PROC
 
             mov EAX,ECX
@@ -673944,6 +673946,10 @@ $L_598de5::
             nop
             nop
 $L_598db0 ENDP
+ELSE
+EXTERN @Rec598db0_Construct@4:PROC
+$L_598db0 TEXTEQU <@Rec598db0_Construct@4>
+ENDIF
 ALIGN 16
 ; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -763606,6 +763612,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5ceb40 PROC
 
             mov EAX,DWORD PTR [ESP+16]
@@ -763648,6 +763656,10 @@ $L_5ceb40 PROC
             pop EBX
             ret 16
 $L_5ceb40 ENDP
+ELSE
+EXTERN @Mesh5ceb40_Setup@24:PROC
+$L_5ceb40 TEXTEQU <@Mesh5ceb40_Setup@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -780704,6 +780716,8 @@ FUN_5d4c10 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/directdraw.cpp, nmake ASM_DIRECTDRAW=1 assembles the original
+IFDEF ASM_DIRECTDRAW
 $L_5d6e10 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -780731,6 +780745,10 @@ $L_5d6e35::
             pop ESI
             ret 8
 $L_5d6e10 ENDP
+ELSE
+EXTERN _Dd_MatchRecord@8:PROC
+$L_5d6e10 TEXTEQU <_Dd_MatchRecord@8>
+ENDIF
           BYTE 090H
 ALIGN 16
 FUN_5d6e40 PROC
