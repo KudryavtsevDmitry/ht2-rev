@@ -3766,7 +3766,7 @@ extern "C" BYTE* __fastcall ShellColumns520e30_Construct(BYTE* s, void*, BYTE* p
 }
 
 ASM_PROC(FUN_50efb0)
-ASM_PROC(FUN_50e830)
+extern "C" void FUN_50e830(); KING_ALIAS("_FUN_50e830", "_Shell_MakeTexButton")
 extern "C" void FUN_5159d0(); KING_ALIAS("_FUN_5159d0", "_Video_PickModes")
 ASM_PROC(FUN_50e500)
 extern "C" void Wnd_SetPos_(); KING_ALIAS("_Wnd_SetPos_", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
@@ -6653,4 +6653,58 @@ extern "C" int __cdecl VehCache_Load(void)
     }
     fclose(f);
     return g_q124_697860;
+}
+
+// ---------------------------------------------------------------------------
+// A button with texture faces.
+
+extern "C" void FUN_5bf820(); KING_ALIAS("_FUN_5bf820", "@Button_ConstructId@20")
+ASM_VAR(AsmLabel, g_q125_6ce3b8, $L_6ce3b8)
+ASM_VAR(AsmLabel, g_q125_6ce408, $L_6ce408)
+ASM_VAR(AsmLabel, g_q125_6ce988, $L_6ce988)
+ASM_VAR(AsmLabel, g_q125_6ceb38, $L_6ceb38)
+ASM_VAR(AsmLabel, g_q125_68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_q125_64dc1c, $L_64dc1c)
+// a face style from template t with the texture fmt % name as its bitmap
+static void Gs125_Face(DWORD* st, const BYTE* t, const char* fmt, const char* name)
+{
+    char buf[32];
+    sprintf(buf, fmt, name);
+    for (int k = 0; k < 9; k++)
+        st[k] = 0;
+    st[6] = 0x3f000000;
+    CallThis(FUN_5bd5a0, st, t);
+    st[7] = CallC<DWORD>(FUN_5ef3d0, buf);
+}
+// [FUN_50e830] a button (id) at x, y with the faces name_a/_p/_ap/_pp/_f/_ph.txr, checked as given
+extern "C" BYTE* __cdecl Shell_MakeTexButton(const char* name, int id, int x, int y, int checked)
+{
+    DWORD a[9], p[9], ap[9], pp[9], f[9], ph[9];
+    Gs125_Face(a, (BYTE*)g_q125_6ce3b8, "%s_a.txr", name);
+    Gs125_Face(p, (BYTE*)g_q125_6ce408, "%s_p.txr", name);
+    Gs125_Face(ap, (BYTE*)g_q125_6ce988, "%s_ap.txr", name);
+    Gs125_Face(pp, (BYTE*)g_q125_6ceb38, "%s_pp.txr", name);
+    BYTE* b = (BYTE*)operator new(288);
+    if (b) {
+        CallThis(FUN_5bf820, b, (BYTE*)g_q125_68d1c0, 4, id);
+        F(void*, b, 0) = (BYTE*)g_q125_64dc1c;
+    }
+    CallThis(FUN_5bd5a0, b + 68, p);
+    CallThis(FUN_5bd5a0, b + 104, a);
+    CallThis(FUN_5bd5a0, b + 140, pp);
+    CallThis(FUN_5bd5a0, b + 176, ap);
+    Gs125_Face(f, (BYTE*)g_q125_6ceb38, "%s_f.txr", name);
+    CallThis(FUN_5bd5a0, b + 212, f);
+    Gs125_Face(ph, (BYTE*)g_q125_6ceb38, "%s_ph.txr", name);
+    CallThis(FUN_5bd5a0, b + 248, ph);
+    CallVirt(b, 20);
+    int dx = x - F(int, b, 44);
+    F(int, b, 52) += dx;
+    F(int, b, 44) = x;
+    int dy = y - F(int, b, 48);
+    F(int, b, 48) = y;
+    F(int, b, 56) += dy;
+    if (checked)
+        F(unsigned, b, 284) |= 2;
+    return b;
 }

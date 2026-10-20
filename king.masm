@@ -466653,6 +466653,8 @@ FUN_50e500 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_50e830 PROC
 
             push -1
@@ -466914,6 +466916,10 @@ $L_50ebf2::
             add ESP,264
             ret 
 FUN_50e830 ENDP
+ELSE
+EXTERN _Shell_MakeTexButton:PROC
+FUN_50e830 TEXTEQU <_Shell_MakeTexButton>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
