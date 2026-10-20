@@ -1024,3 +1024,13 @@ extern "C" BYTE* __stdcall Matrix52d9f0_Copy(BYTE* a, const BYTE* b, int, int, i
     memcpy(a, b, 48);
     return a;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor52b6d0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor52b6d0_DeletingDestructor@12", "@Dtor52b6d0_DeletingDestructor@12")
+extern "C" int __fastcall q198_MovingItem_Fly(BYTE* s); KING_ALIAS("@q198_MovingItem_Fly@4", "@MovingItem_Fly@4")
+// [$L_52e210] forwards to MovingItem_Fly
+extern "C" int __fastcall Thunk52e210(BYTE* s) { return q198_MovingItem_Fly(s); }
+// [$L_52f4b0] forwards to Dtor52b6d0_DeletingDestructor for the object 256 bytes before
+extern "C" int __fastcall Thunk52f4b0(BYTE* s, void* d, int a0) { return q198_Dtor52b6d0_DeletingDestructor(s - 256, d, a0); }

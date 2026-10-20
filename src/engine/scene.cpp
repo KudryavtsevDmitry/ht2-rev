@@ -2540,3 +2540,11 @@ extern "C" int __cdecl Static723190_Init(void)
     CallC(q197_FUN_5ef510);
     return Static723190_AtExit();
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+ASM_VAR(char, g_q198_723978, $L_723978)
+extern "C" int __fastcall q198_Node_Destroy(BYTE* s, void* d); KING_ALIAS("@q198_Node_Destroy@8", "@Node_Destroy@8")
+// [$L_5ef4b0] Node_Destroy on the static object 723978
+extern "C" void __cdecl Static723978_Destroy(void) { q198_Node_Destroy((BYTE*)&g_q198_723978, 0); }

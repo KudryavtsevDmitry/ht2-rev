@@ -6820,3 +6820,10 @@ extern "C" BYTE* __cdecl Shell_MakeMaskButton(const char* name, int id, int x, i
     F(int, b, 56) += dy;
     return b;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor51aad0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor51aad0_DeletingDestructor@12", "@Dtor51aad0_DeletingDestructor@12")
+// [$L_52abf0] forwards to Dtor51aad0_DeletingDestructor for the object 64 bytes before
+extern "C" int __fastcall Thunk52abf0(BYTE* s, void* d, int a0) { return q198_Dtor51aad0_DeletingDestructor(s - 64, d, a0); }

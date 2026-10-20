@@ -2287,3 +2287,10 @@ extern "C" void __fastcall Copter_ClimbState(BYTE* s)
         memcpy(s + 3468, CallThis<BYTE*>(FUN_57de90, p + 16, t) + 36, 12);
     }
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor573870_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor573870_DeletingDestructor@12", "@Dtor573870_DeletingDestructor@12")
+// [$L_576c20] forwards to Dtor573870_DeletingDestructor for the object 256 bytes before
+extern "C" int __fastcall Thunk576c20(BYTE* s, void* d, int a0) { return q198_Dtor573870_DeletingDestructor(s - 256, d, a0); }

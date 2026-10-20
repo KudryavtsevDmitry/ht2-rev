@@ -2127,3 +2127,17 @@ extern "C" void __fastcall WObj_SetMode(BYTE* s, void*, int a)
 ASM_VAR(AsmLabel, g_q156_6f6968, $L_6f6968)
 // [$L_59a6a0] static init: constructs the 6f6968 camera record
 extern "C" BYTE* __cdecl WObj_Init6f6968(void) { return Rec598db0_Construct((BYTE*)g_q156_6f6968); }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+ASM_VAR(char, g_q198_6f68b0, $L_6f68b0)
+extern "C" int __fastcall q198_Dtor593650_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor593650_DeletingDestructor@12", "@Dtor593650_DeletingDestructor@12")
+extern "C" int __fastcall q198_WObj5a3320_VecDeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_WObj5a3320_VecDeletingDestructor@12", "@WObj5a3320_VecDeletingDestructor@12")
+extern "C" int __fastcall q198_Wasm5975b0_FreeParts(BYTE* s, void* d); KING_ALIAS("@q198_Wasm5975b0_FreeParts@8", "@Wasm5975b0_FreeParts@8")
+// [$L_594db0] forwards to Dtor593650_DeletingDestructor for the object 32 bytes before
+extern "C" int __fastcall Thunk594db0(BYTE* s, void* d, int a0) { return q198_Dtor593650_DeletingDestructor(s - 32, d, a0); }
+// [$L_594df0] Wasm5975b0_FreeParts on the static object 6f68b0
+extern "C" void __cdecl Static6f68b0_Destroy(void) { q198_Wasm5975b0_FreeParts((BYTE*)&g_q198_6f68b0, 0); }
+// [$L_5a3d40] forwards to WObj5a3320_VecDeletingDestructor for the object 20 bytes before
+extern "C" int __fastcall Thunk5a3d40(BYTE* s, void* d, int a0) { return q198_WObj5a3320_VecDeletingDestructor(s - 20, d, a0); }

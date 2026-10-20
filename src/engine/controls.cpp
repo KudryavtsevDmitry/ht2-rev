@@ -1162,3 +1162,10 @@ extern "C" void __fastcall Ctl5bcee0_Destruct(BYTE* s)
     operator delete(F(void*, s, 12));
     operator delete(F(void*, s, 8));
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q198_Dtor5bcf40_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor5bcf40_DeletingDestructor@12", "@Dtor5bcf40_DeletingDestructor@12")
+// [$L_5bd550] forwards to Dtor5bcf40_DeletingDestructor for the object 16 bytes before
+extern "C" int __fastcall Thunk5bd550(BYTE* s, void* d, int a0) { return q198_Dtor5bcf40_DeletingDestructor(s - 16, d, a0); }
