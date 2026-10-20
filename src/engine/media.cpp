@@ -2576,3 +2576,37 @@ extern "C" int __fastcall Edit_Key(BYTE* s, void*, int key, int type)
     }
     return key | 0x8000;
 }
+
+// ---------------------------------------------------------------------------
+// Drawing a list.
+
+ASM_PROC(FUN_5ea1b0)
+extern "C" void FUN_5be1d0(); KING_ALIAS("_FUN_5be1d0", "@Ctl_DrawAll@24")
+extern "C" void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int a5, int light, int dark,
+                                      int dx, int dy, int fill, BYTE* bmp, int pattern);    // controls.cpp
+extern "C" int __fastcall List_VisibleRows(BYTE* s);
+// [$L_5c0920] draws list s at x, y on dst: the controls, the frame (+312..+324 in the style of +104), the rows
+// from the first shown (+336) while they fit (+308), the chosen one (+300) in its font (+20) and colour (+108);
+// the scroll bar (+340) is hidden (+40 = 1) when all rows fit
+extern "C" int __fastcall List_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int a4)
+{
+    int line = F(int, F(BYTE*, s, 16), 20);
+    int top = F(int, s, 48) + line + y + 2;
+    CallThis(FUN_5be1d0, s, dst, x, y, a4);
+    int r[4];
+    r[0] = F(int, s, 312) + F(int, s, 44) + x;
+    r[1] = F(int, s, 316) + F(int, s, 48) + y;
+    r[2] = F(int, s, 320) + F(int, s, 44) + x;
+    r[3] = F(int, s, 324) + F(int, s, 48) + y;
+    Ctl_DrawFrame(dst, r, F(DWORD, s, 32), F(int, s, 104), F(int, s, 108), F(int, s, 112), F(int, s, 116),
+                  F(int, s, 120), F(int, s, 124), F(int, s, 128), F(BYTE*, s, 132), F(int, s, 136));
+    int dy = line;
+    for (BYTE* e = F(BYTE*, s, 336); e && dy < F(int, s, 308); e = F(BYTE*, e, 8)) {
+        bool sel = e == F(BYTE*, s, 300);
+        CallC(FUN_5ea1b0, dst, r[0] + 2, top + dy, F(int, s, 320) - F(int, s, 312) - 2,
+              sel ? F(BYTE*, s, 20) : F(BYTE*, s, 16), F(const char*, e, 12), sel ? F(int, s, 108) : F(int, s, 72), 0);
+        dy += F(int, F(BYTE*, s, 16), 20) + F(int, s, 344);
+    }
+    F(int, F(BYTE*, s, 340), 40) = F(int, s, 328) > List_VisibleRows(s) ? 0 : 1;
+    return 0;
+}
