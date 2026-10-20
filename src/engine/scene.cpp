@@ -2334,3 +2334,24 @@ extern "C" int __fastcall SceneNode5f98c0_Draw(BYTE* s, void*, int flags, BYTE* 
         CallThis(FUN_5ae8a0, b);
     return 1;
 }
+
+// [$L_5f2e70] the world position of node s's point (+20..+28) through its world node (+112) into out
+extern "C" void __fastcall SceneNode5f2e70_WorldPos(BYTE* s, void*, float* out)
+{
+    float m[12];
+    memcpy(m, (BYTE*)g_q109_7025f0, 48);
+    CallThis(FUN_5f25c0, F(BYTE*, s, 112), m);
+    float x = F(float, s, 20), y = F(float, s, 24), z = F(float, s, 28);
+    double X = m[6] * z + m[3] * y;
+    X = X + m[0] * x;
+    X = X + m[9];
+    double Y = m[7] * z + m[4] * y;
+    Y = Y + m[1] * x;
+    Y = Y + m[10];
+    double Z = m[8] * z + m[5] * y;
+    Z = Z + m[2] * x;
+    Z = Z + m[11];
+    out[0] = (float)X;
+    out[1] = (float)Y;
+    out[2] = (float)Z;
+}
