@@ -815,7 +815,7 @@ extern "C" int __cdecl Loading_Step()
     return CallThis<int>(FUN_5b6b10, F(void*, w, 12));
 }
 
-ASM_PROC(FUN_5dc230)
+extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")
 ASM_PROC(FUN_5dae90)
 extern "C" void FUN_5c43c0(); KING_ALIAS("_FUN_5c43c0", "@Rec_Mark@8")
 extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
@@ -5439,4 +5439,107 @@ extern "C" void __fastcall Map_DrawLine(double* s, void*, BYTE* d, double sx, do
     if (clip && (Carat_OutOfBox((const unsigned short*)d, x0, y0) || Carat_OutOfBox((const unsigned short*)d, x1, y1)))
         return;
     CallC(FUN_5b73a0, d, x0, y0, x1, y1, CallC<int>(FUN_5b6210, 0, 255, 120, 1));
+}
+
+// ---------------------------------------------------------------------------
+// Entering the world.
+
+ASM_PROC(FUN_512920)
+ASM_PROC(FUN_50c9d0)
+extern "C" void FUN_5ba300(); KING_ALIAS("_FUN_5ba300", "@Palette_Blend@32")
+extern "C" void FUN_597560(); KING_ALIAS("_FUN_597560", "@Wasm_Set92@12")
+ASM_VAR(BYTE*, g_q70_696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_q70_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_q70_6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_q70_6cec78, $L_6cec78)
+ASM_VAR(BYTE*, g_q70_6cec90, $L_6cec90)
+ASM_VAR(int, g_q70_6ced64, $L_6ced64)
+ASM_VAR(int, g_q70_6ced0c, $L_6ced0c)
+ASM_VAR(int, g_q70_6ced10, $L_6ced10)
+ASM_VAR(int, g_q70_6ced14, $L_6ced14)
+ASM_VAR(int, g_q70_6ced18, $L_6ced18)
+ASM_VAR(int, g_q70_6ced1c, $L_6ced1c)
+ASM_VAR(int, g_q70_6ced20, $L_6ced20)
+ASM_VAR(AsmLabel, g_q70_6f68b0, $L_6f68b0)
+ASM_VAR(char, g_q70_696750, $L_696750)
+ASM_VAR(AsmLabel, s_q70_6767a0, $L_6767a0)
+ASM_VAR(double, g_q70_64b5a0, $L_64b5a0)
+// [FUN_510f20] with movie set plays the 6767a0 movie; else leaves the network wait (6cec6c +1300/+1316, control
+// 146 of 6cec90 unmarked), sets the view rectangle of the mode (6cec70 +408 bits 4-7; 50 pixels added on the left,
+// top and bottom), loads the world, fades the palette in, restores the sound volume
+extern "C" void __cdecl Shell_EnterWorld(int movie)
+{
+    if (movie) {
+        CallC(FUN_5279e0, (const char*)s_q70_6767a0, 6);
+        return;
+    }
+    BYTE* o = g_q70_6cec6c;
+    if (F(int, o, 1300) == 1 && F(int, o, 1316)) {
+        F(int, o, 1300) = 0;
+        BYTE* c = CallThis<BYTE*>(FUN_5bdb50, g_q70_6cec90 + 64, 146);
+        F(unsigned, c, 284) &= ~2u;
+    }
+    g_q70_6ced64 = 1;
+    int x, y, b;
+    switch (F(int, g_q70_6cec70, 408) & 240) {
+    case 16: x = y = b = -360; g_q70_6ced0c = 0; g_q70_6ced14 = 416; g_q70_6ced1c = 254; break;
+    case 32: x = y = b = -300; g_q70_6ced0c = 0; g_q70_6ced14 = 576; g_q70_6ced1c = 414; break;
+    case 48: x = y = b = -216; g_q70_6ced0c = 0; g_q70_6ced14 = 800; g_q70_6ced1c = 639; break;
+    case 64: x = y = b = 0; g_q70_6ced0c = 0; g_q70_6ced14 = 1376; g_q70_6ced1c = 1215; break;
+    default: x = g_q70_6ced10; y = g_q70_6ced18; b = g_q70_6ced20; break;
+    }
+    g_q70_6ced18 = y - 50;
+    g_q70_6ced10 = x - 50;
+    g_q70_6ced20 = b - 50;
+    CallVirt(g_q70_696ca0, 36);
+    CallC(FUN_512920);
+    CallThis(FUN_5ba300, g_q70_696ca0 + 3096, 0, 255, 0, 0, 0, 255);
+    CallThis(FUN_5ba3d0, g_q70_696ca0 + 3096);
+    CallThis(FUN_597560, (BYTE*)g_q70_6f68b0, g_q70_696ca0);
+    CallC(FUN_50c9d0);
+    CallVirt(g_q70_696ca0, 136);
+    if (int e = F(int, g_q70_696ca0, 2856))
+        CallThis(FUN_5db9f0, &g_q70_696750, e);
+    CallVirt(g_q70_696ca0, 116);
+    F(int, g_q70_696ca0, 7940) = 0;
+    CallC<double>(FUN_5fcd40, (float)((double)F(short, g_q70_6cec78, 382) * g_q70_64b5a0));
+    g_q70_6ced64 = 0;
+}
+
+// ---------------------------------------------------------------------------
+// The input settings screen.
+
+ASM_VAR(AsmLabel, g_q71_6d1bb0, $L_6d1bb0)
+ASM_VAR(AsmLabel, g_q71_6d1b4e, $L_6d1b4e)
+ASM_VAR(AsmLabel, g_q71_6d1b8e, $L_6d1b8e)
+// [$L_513a30] on show: the working copy (+528, 376 bytes) goes to +904 and +1280 to +520; the three axis values
+// (6d1bb0, every 12 bytes) to +368 and +432; the 12 bytes from 6d1b4e and 4 from 6d1b8e (every 2) give the bits of
+// +500/+496 and +512/+508
+extern "C" void __fastcall Shell_InputOnShow(BYTE* s)
+{
+    CallThis(FUN_5d8610, s);
+    int v = F(int, s, 1280);
+    memcpy(s + 904, s + 528, 376);
+    F(int, s, 520) = v;
+    const float* a = (const float*)g_q71_6d1bb0;
+    for (int i = 0; i < 3; i++) {
+        double d = a[i * 3];
+        F(double, s, 368 + 8 * i) = d;
+        F(double, s, 432 + 8 * i) = d;
+    }
+    F(int, s, 496) = 0;
+    F(int, s, 500) = 0;
+    F(int, s, 504) = 0;
+    F(int, s, 508) = 0;
+    F(int, s, 512) = 0;
+    const BYTE* b = (const BYTE*)g_q71_6d1b4e;
+    for (int i = 0; i < 12; i++) {
+        F(unsigned, s, 500) |= b[i * 2] ? 1u << i : 0;
+        F(unsigned, s, 496) |= F(unsigned, s, 500);
+    }
+    b = (const BYTE*)g_q71_6d1b8e;
+    for (int i = 0; i < 4; i++) {
+        F(unsigned, s, 512) |= b[i * 2] ? 1u << i : 0;
+        F(unsigned, s, 508) |= F(unsigned, s, 512);
+    }
 }

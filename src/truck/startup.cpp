@@ -328,7 +328,7 @@ extern "C" void* __cdecl Startup_Ini696750()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
-ASM_PROC(FUN_5e52b0)    // resources: send a message (id, kind, size, data)
+extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")    // resources: send a message (id, kind, size, data)
 ASM_VAR(int, g_suTypeClass5, $L_6ce344)
 ASM_VAR(int, g_suCarTypeCount, $L_6ce32c)
 ASM_VAR(BYTE*, g_su6ef204, $L_6ef204)
