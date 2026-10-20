@@ -1062,3 +1062,125 @@ extern "C" BYTE* __fastcall Pool_AllocSlot(BYTE* s, void*)
     F(unsigned, s, 16) = i;
     return F(int, s, 0) * i + F(BYTE*, s, 8);
 }
+
+// ---------------------------------------------------------------------------
+// Polygon edges of the software span filler.
+
+ASM_VAR(int, g_q134_723a88, $L_723a88)
+ASM_VAR(int, g_q134_71e7dc, $L_71e7dc)
+ASM_VAR(int, g_q134_71e7d8, $L_71e7d8)
+ASM_VAR(AsmLabel, g_q134_70f3f0, $L_70f3f0)
+// [FUN_5d02b0] walks the edge from a to b (fixed point x +12, y +16 with the row in the top bits) into the span
+// table 70f3f0 (24-byte rows, the left or right side by 723a88 and the edge direction), widening the row range
+// 71e7dc..71e7d8
+extern "C" void __cdecl Span_Edge(const BYTE* a, const BYTE* b)
+{
+    const BYTE *p1, *p2;
+    int side = g_q134_723a88;
+    if (F(int, a, 16) < F(int, b, 16)) {
+        p1 = a;
+        p2 = b;
+        side = (side ^ 1) ? 0 : 1;
+    } else {
+        p1 = b;
+        p2 = a;
+        side ^= 1;
+    }
+    int y1 = F(int, p1, 16), y2 = F(int, p2, 16);
+    int dy = (y2 - y1) >> 10;
+    int frac = (y1 >> 10) & 1023;
+    int row = y1 >> 20, last = y2 >> 20;
+    BYTE* t = (BYTE*)g_q134_70f3f0 + side * 1300 * 24;
+    if (row == last) {
+        if (frac || !(y2 & 0xffc00))
+            return;
+        F(int, t, row * 24) = F(int, p1, 12);
+        if (row < g_q134_71e7dc)
+            g_q134_71e7dc = row;
+        if (row > g_q134_71e7d8)
+            g_q134_71e7d8 = row;
+        return;
+    }
+    int f = frac;
+    if (frac) {
+        row++;
+        f = 1023 - frac;
+    }
+    if (row < g_q134_71e7dc)
+        g_q134_71e7dc = row;
+    if (last > g_q134_71e7d8)
+        g_q134_71e7d8 = last;
+    int slope = dy ? (F(int, p2, 12) - F(int, p1, 12)) / dy : 0;
+    int x = slope * f + F(int, p1, 12);
+    F(int, t, row * 24) = x;
+    for (row++; row <= last; row++) {
+        x += slope << 10;
+        F(int, t, row * 24) = x;
+    }
+}
+
+// [FUN_5d0400] like 5d02b0 with a second value (+20, kept at +8 of the rows, at most 2^24 - 1 on the last row)
+// interpolated along the edge
+extern "C" void __cdecl Span_EdgeV(const BYTE* a, const BYTE* b)
+{
+    const BYTE *p1, *p2;
+    int side = g_q134_723a88;
+    if (F(int, a, 16) < F(int, b, 16)) {
+        p1 = a;
+        p2 = b;
+        side = (side ^ 1) ? 0 : 1;
+    } else {
+        p1 = b;
+        p2 = a;
+        side ^= 1;
+    }
+    int y1 = F(int, p1, 16), y2 = F(int, p2, 16);
+    int dy = (y2 - y1) >> 10;
+    int frac = (y1 >> 10) & 1023;
+    int row = y1 >> 20, last = y2 >> 20;
+    BYTE* t = (BYTE*)g_q134_70f3f0 + side * 1300 * 24;
+    if (row == last) {
+        if (frac || !(y2 & 0xffc00))
+            return;
+        F(int, t, row * 24) = F(int, p1, 12);
+        F(int, t, row * 24 + 8) = F(int, p1, 20);
+        if (row < g_q134_71e7dc)
+            g_q134_71e7dc = row;
+        if (row > g_q134_71e7d8)
+            g_q134_71e7d8 = row;
+        return;
+    }
+    int f = frac;
+    if (frac) {
+        row++;
+        f = 1024 - frac;
+    }
+    if (row < g_q134_71e7dc)
+        g_q134_71e7dc = row;
+    if (last > g_q134_71e7d8)
+        g_q134_71e7d8 = last;
+    int x = F(int, p1, 12), v = F(int, p1, 20);
+    int slope = 0, dv = 0;
+    if (dy) {
+        slope = (F(int, p2, 12) - x) / dy;
+        dv = ((F(int, p2, 20) - v) << 6) / dy << 4;
+        if (dy > 2048)
+            v += ((f >> 4) * dv) >> 6;
+        else
+            v += ((dv >> 4) * f) >> 6;
+        x += slope * f;
+    }
+    slope <<= 10;
+    BYTE* r = t + row * 24;
+    F(int, r, 0) = x;
+    F(int, r, 8) = v;
+    for (int k = row + 1; k <= F(int, p2, 16) >> 20; k++) {
+        r += 24;
+        x += slope;
+        v += dv;
+        F(int, r, 0) = x;
+        F(int, r, 8) = v;
+    }
+    if (F(int, r, 8) >= 16777216)
+        F(int, r, 8) = 16777215;
+}
