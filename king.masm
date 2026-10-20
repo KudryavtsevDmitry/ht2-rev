@@ -518722,6 +518722,8 @@ $L_52e730 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52e740 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -518777,6 +518779,10 @@ $L_52e769::
             nop
             nop
 FUN_52e740 ENDP
+ELSE
+EXTERN @Scenery_StartEvent@20:PROC
+FUN_52e740 TEXTEQU <@Scenery_StartEvent@20>
+ENDIF
 ALIGN 16
 ; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
 IFDEF ASM_SCENERY
