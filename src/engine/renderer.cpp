@@ -1789,3 +1789,49 @@ extern "C" void __fastcall Holder5baa30_ReleaseAll(BYTE* s, void*)
         g_q51_702ea0--;
     }
 }
+
+// ---------------------------------------------------------------------------
+// The software texture.
+
+extern "C" void FUN_5b94e0(); KING_ALIAS("_FUN_5b94e0", "@Palette_Construct@8")
+extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
+ASM_VAR(AsmLabel, g_q58_65176c, $L_65176c)
+// [FUN_5ba4a0] constructor (w, h, bytes per pixel): the 65176c vtable, the size words (+20..+24), the format (+64)
+// by the depth, zeroed pixels (+8, w*h*depth), a palette (+16), and for a square the mip level count (+26)
+extern "C" BYTE* __fastcall Texture5ba4a0_Construct(BYTE* s, void*, unsigned w, unsigned h, int depth)
+{
+    F(void*, s, 0) = g_q58_65176c;
+    F(int, s, 60) = 0;
+    F(WORD, s, 20) = (WORD)w;
+    F(WORD, s, 22) = (WORD)h;
+    F(WORD, s, 24) = (WORD)depth;
+    F(int, s, 56) = 0;
+    switch (depth) {
+    case 1: F(int, s, 64) = 1; break;
+    case 2: F(int, s, 64) = 3; break;
+    case 3: F(int, s, 64) = 6; break;
+    case 4: F(int, s, 64) = 7; break;
+    default: F(int, s, 64) = 0; break;
+    }
+    F(void*, s, 8) = operator new(w * h * depth);
+    F(int, s, 12) = 0;
+    BYTE* p = (BYTE*)operator new(816);
+    F(BYTE*, s, 16) = p ? CallThis<BYTE*>(FUN_5b94e0, p) : 0;
+    F(int, s, 4) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 32) = 0;
+    F(int, s, 40) = 0;
+    F(int, s, 68) = 1;
+    F(int, s, 28) = CallC<int>(FUN_4cef50, F(void*, s, 8), F(WORD, s, 24) * F(WORD, s, 20) * F(WORD, s, 22));
+    F(int, s, 52) = 1;
+    F(int, s, 44) = 0;
+    F(WORD, s, 26) = 0;
+    if (w == h) {
+        for (; w; w >>= 1)
+            F(WORD, s, 26)++;
+        F(WORD, s, 26)--;
+    }
+    F(int, s, 72) = 0;
+    F(int, s, 76) = 0;
+    return s;
+}
