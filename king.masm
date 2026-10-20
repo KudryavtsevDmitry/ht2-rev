@@ -1481,6 +1481,7 @@ PUBLIC $L_702e80
 PUBLIC $L_7208c4, $L_7208c8, $L_7208cc, $L_7208dc
 PUBLIC $L_64c828, $L_672794, $L_697688, $L_6976f8, $L_6f6968, $L_702f54
 PUBLIC $L_71e838, $L_71e83c
+PUBLIC $L_64b96c, $L_64b974, $L_64b97c
 
 ;===================================
 _TEXT SEGMENT
@@ -173418,6 +173419,8 @@ $L_462a80 TEXTEQU <@Ai462a80_DeletingDestructor@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_462aa0 PROC
 
             push EBX
@@ -173441,12 +173444,18 @@ $L_462aa0 PROC
             pop EBX
             ret 4
 $L_462aa0 ENDP
+ELSE
+EXTERN @AiExc462aa0_Copy@12:PROC
+$L_462aa0 TEXTEQU <@AiExc462aa0_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_462ad0 PROC
 
             push EBX
@@ -173470,12 +173479,18 @@ $L_462ad0 PROC
             pop EBX
             ret 4
 $L_462ad0 ENDP
+ELSE
+EXTERN @AiExc462ad0_Copy@12:PROC
+$L_462ad0 TEXTEQU <@AiExc462ad0_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_462b00 PROC
 
             push EBX
@@ -173499,6 +173514,10 @@ $L_462b00 PROC
             pop EBX
             ret 4
 $L_462b00 ENDP
+ELSE
+EXTERN @AiExc462b00_Copy@12:PROC
+$L_462b00 TEXTEQU <@AiExc462b00_Copy@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -573106,6 +573125,8 @@ FUN_555b70 TEXTEQU <@Car_PassItems11@12>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555c20 PROC
 
             mov EAX,DWORD PTR [ECX+10420]
@@ -573143,6 +573164,10 @@ $L_555c77::
             pop ESI
             ret 
 FUN_555c20 ENDP
+ELSE
+EXTERN @Car_WheelLoads@4:PROC
+FUN_555c20 TEXTEQU <@Car_WheelLoads@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -573226,6 +573251,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555d10 PROC
 
             mov EAX,DWORD PTR [ECX+10420]
@@ -573259,6 +573286,10 @@ $L_555d5a::
             pop ESI
             ret 
 FUN_555d10 ENDP
+ELSE
+EXTERN @Car_WheelSum@4:PROC
+FUN_555d10 TEXTEQU <@Car_WheelSum@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -573372,6 +573403,8 @@ EXTERN @Car_StepLevels@12:PROC
 FUN_555da0 TEXTEQU <@Car_StepLevels@12>
 ENDIF
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555e10 PROC
 
             mov EAX,DWORD PTR [ECX+9536]
@@ -573392,6 +573425,10 @@ FUN_555e10 PROC
             faddp ST(1),ST(0)
             ret 
 FUN_555e10 ENDP
+ELSE
+EXTERN @Car_ControlSum4@4:PROC
+FUN_555e10 TEXTEQU <@Car_ControlSum4@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -573433,6 +573470,8 @@ $L_555e50 TEXTEQU <@Car_HasInput@4>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555e80 PROC
 
             mov EAX,DWORD PTR [ECX+9536]
@@ -573452,6 +573491,10 @@ $L_555e9a::
 
             ret 
 FUN_555e80 ENDP
+ELSE
+EXTERN @Car_ControlSum9@4:PROC
+FUN_555e80 TEXTEQU <@Car_ControlSum9@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
