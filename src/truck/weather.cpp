@@ -934,3 +934,28 @@ extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o)
     }
     return 0;
 }
+
+ASM_PROC(FUN_5aa4f0)
+ASM_VAR(double, g_q175_64b5b8, $L_64b5b8)
+ASM_VAR(double, g_q175_64b780, $L_64b780)
+ASM_VAR(float, g_q175_64c250, $L_64c250)
+struct Wea175_V3 { float x, y, z; };
+// [FUN_5aa670] the height of surface s at x, y, z (5aa4f0) and its normal from the heights a step (64b5b8) away
+// in x and y into out
+extern "C" double __fastcall Surface_HeightNormal(BYTE* s, void*, float x, float y, float z, float* out)
+{
+    Wea175_V3 v = {x, y, z};
+    double h0 = CallThis<double>(FUN_5aa4f0, s, v);
+    float x1 = (float)(x + g_q175_64b5b8);
+    v.x = x1;
+    double h1 = CallThis<double>(FUN_5aa4f0, s, v);
+    v.x = (float)(x1 - g_q175_64b5b8);
+    v.y = (float)(y + g_q175_64b5b8);
+    double h2 = CallThis<double>(FUN_5aa4f0, s, v);
+    float nx = (float)((h0 - h1) * g_q175_64b780);
+    out[0] = nx;
+    double ny = (h0 - h2) * g_q175_64b780;
+    out[1] = (float)ny;
+    out[2] = (float)x87_sqrt(g_q175_64c250 - nx * nx - ny * ny);
+    return h0;
+}

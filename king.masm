@@ -701927,6 +701927,8 @@ FUN_5aa4f0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5aa670 PROC
 
             sub ESP,16
@@ -702000,6 +702002,10 @@ FUN_5aa670 PROC
             add ESP,16
             ret 16
 FUN_5aa670 ENDP
+ELSE
+EXTERN @Surface_HeightNormal@24:PROC
+FUN_5aa670 TEXTEQU <@Surface_HeightNormal@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
