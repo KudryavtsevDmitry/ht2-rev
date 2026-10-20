@@ -835027,6 +835027,8 @@ $L_5f2e70 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f2f40 PROC
 
             sub ESP,48
@@ -835150,6 +835152,12 @@ $L_5f302c::
             add ESP,48
             ret 8
 $L_5f2f40 ENDP
+ELSE
+EXTERN @SceneNode5f2f40_Draw@16:PROC
+$L_5f2f40 TEXTEQU <@SceneNode5f2f40_Draw@16>
+ENDIF
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5f3060 PROC
 
             sub ESP,152
@@ -835273,6 +835281,10 @@ $L_5f30ea::
             add ESP,152
             ret 16
 $L_5f3060 ENDP
+ELSE
+EXTERN @SceneNode5f3060_Draw@24:PROC
+$L_5f3060 TEXTEQU <@SceneNode5f3060_Draw@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
