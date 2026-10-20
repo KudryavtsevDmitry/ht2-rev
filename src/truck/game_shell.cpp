@@ -652,7 +652,7 @@ ASM_PROC(FUN_5b6bf0)
 extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 extern "C" void FUN_4e1320(); KING_ALIAS("_FUN_4e1320", "_Startup_FindCd")
-ASM_PROC(FUN_519750)
+extern "C" void FUN_519750(); KING_ALIAS("_FUN_519750", "@Shell_ShowWithMusic@12")
 ASM_VAR(int, g_6ce370, $L_6ce370)               // the vehicle tech table is loaded
 ASM_VAR(const char*, g_vehTechName, $L_674ae0)
 ASM_VAR(int, g_697860, $L_697860)
@@ -3345,8 +3345,8 @@ extern "C" void FUN_5be130(); KING_ALIAS("_FUN_5be130", "@Ctl_LayoutRow@12")
 ASM_VAR(BYTE*, g_q32_696868, $L_696868)
 ASM_VAR(AsmLabel, g_q32_64df80, $L_64df80)
 ASM_VAR(AsmLabel, g_q32_64df40, $L_64df40)
-ASM_VAR(AsmLabel, g_q32_516db0, $L_516db0)
-ASM_VAR(AsmLabel, g_q32_516d50, $L_516d50)
+extern "C" void __cdecl Shell_MusicSlider(void);
+extern "C" void __cdecl Shell_EffectsSlider(void);
 ASM_VAR(AsmLabel, s_q32_672998, $L_672998)
 #define Q32(x) ((const char*)s_q32_##x)
 ASM_VAR(AsmLabel, s_q32_676e78, $L_676e78)
@@ -3405,8 +3405,8 @@ extern "C" BYTE* __fastcall ShellSliders516ea0_Construct(BYTE* s, void*, BYTE* p
     BYTE* p3 = Shell_NewPanel(0);
     Shell_AddSlider(p3, Q32(676e48), Q32(676e50), s + 390, 0, 183);
     Shell_AddSlider(p3, Q32(676e38), Q32(676e40), s + 388, 0, 182);
-    Shell_AddSlider(p3, Q32(676e28), Q32(676e30), s + 384, (void*)g_q32_516db0, 181);
-    b = Shell_AddSlider(p3, Q32(676e18), Q32(676e20), s + 382, (void*)g_q32_516d50, 180);
+    Shell_AddSlider(p3, Q32(676e28), Q32(676e30), s + 384, (void*)Shell_MusicSlider, 181);
+    b = Shell_AddSlider(p3, Q32(676e18), Q32(676e20), s + 382, (void*)Shell_EffectsSlider, 180);
     CallThis(FUN_5be130, p3, F(int, b, 48) - F(int, b, 56) + 70);
     Shell_MoveCtl(p3, 22, 489);
     CallThis(FUN_5bdbf0, p1, p3, 0);
@@ -5321,4 +5321,122 @@ done:
     *m1600 = p1600;
     *c1600 = q1600;
     return 1;
+}
+
+// ---------------------------------------------------------------------------
+// The sound sliders and the music start of a screen.
+
+ASM_VAR(void*, g_q67_6cec78, $L_6cec78)
+ASM_VAR(BYTE*, g_q67_6cec80, $L_6cec80)
+ASM_VAR(BYTE*, g_q67_6cecd0, $L_6cecd0)
+ASM_VAR(int, g_q67_6968f0, $L_6968f0)
+ASM_VAR(void*, g_q67_69690c, $L_69690c)
+ASM_VAR(char, g_q67_696750, $L_696750)
+ASM_VAR(AsmLabel, s_q67_6773d8, $L_6773d8)
+ASM_VAR(double, g_q67_64b5a0, $L_64b5a0)
+ASM_VAR(double, g_q67_64b930, $L_64b930)
+extern "C" int __cdecl Names_AddLimited(const char* name);
+
+// [$L_516d50] the effects volume slider: the sound volume (+382) and the music volume (+382 * +384)
+extern "C" void __cdecl Shell_EffectsSlider(void)
+{
+    BYTE* o = (BYTE*)g_q67_6cec78;
+    CallC<double>(FUN_5fcd40, (float)((double)F(short, o, 382) * g_q67_64b5a0));
+    o = (BYTE*)g_q67_6cec78;
+    CallC(FUN_5ffc30, (double)(F(short, o, 384) * F(short, o, 382)) * g_q67_64b930);
+}
+
+// [$L_516db0] the music slider: the music volume (+382 * +384); above 5 the music starts (+392 set), below 5 it
+// stops
+extern "C" void __cdecl Shell_MusicSlider(void)
+{
+    BYTE* o = (BYTE*)g_q67_6cec78;
+    CallC(FUN_5ffc30, (double)(F(short, o, 384) * F(short, o, 382)) * g_q67_64b930);
+    o = (BYTE*)g_q67_6cec78;
+    if (F(short, o, 384) > 5 && !F(short, o, 392)) {
+        CallC(FUN_5ffa30);
+        F(short, (BYTE*)g_q67_6cec78, 392) = 1;
+        o = (BYTE*)g_q67_6cec78;
+    }
+    if (F(short, o, 384) < 5 && F(short, o, 392)) {
+        CallC(FUN_5ffb20);
+        F(short, (BYTE*)g_q67_6cec78, 392) = 0;
+    }
+}
+
+// [FUN_519750] shows the screen in mode m (+368): with +376 == 2 the music of 6cecd0's +396 plays and +384 takes
+// the time, with 3 the default music plays and new names go through 513250; without music 6cec80 shows instead
+extern "C" void __fastcall Shell_ShowWithMusic(BYTE* s, void*, int m)
+{
+    F(int, s, 368) = m;
+    int k = F(int, s, 376);
+    if (k == 2) {
+        CallThis(FUN_5c39e0, &g_q67_696750, (const char*)s_q67_6773d8, g_q67_6cecd0 + 396, 0);
+        if (!g_q67_6968f0) {
+            CallVirt(g_q67_6cec80, 36);
+            return;
+        }
+        F(double, s, 384) = CallC<double>(FUN_6037e0);
+    } else if (k == 3) {
+        CallThis(FUN_5c39e0, &g_q67_696750, (const char*)s_q67_6773d8, 0, 0);
+        if (!g_q67_6968f0) {
+            CallVirt(g_q67_6cec80, 36);
+            return;
+        }
+        g_q67_69690c = (void*)Names_AddLimited;
+    }
+    CallVirt(s, 36);
+}
+
+// ---------------------------------------------------------------------------
+// Leaving the game.
+
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+extern "C" void FUN_5dd4d0(); KING_ALIAS("_FUN_5dd4d0", "_App_CheckThread")
+ASM_VAR(BYTE*, g_q68_6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_q68_6cec6c, $L_6cec6c)
+ASM_VAR(void*, g_q68_6ced90, $L_6ced90)
+ASM_VAR(AsmLabel, s_q68_678288, $L_678288)
+// [$L_527d20] on the way out: logs the player truck's position and room (6d2078), stops the music of a race
+// (6cec6c's +1344), frees the AI and calls the 6ced90 hook
+extern "C" void __cdecl Game_Leave(void)
+{
+    if (g_q68_6d2078) {
+        BYTE* o = F(BYTE*, g_q68_6d2078, 616);
+        BYTE m[48];
+        float* p = (float*)(CallThis<BYTE*>(FUN_57de90, o + 16, m) + 36);
+        float x = p[0], y = p[1], z = p[2];
+        const char* room = F(const char*, CallThis<BYTE*>(FUN_5ef640, o + 272), 12);
+        char buf[124];
+        sprintf(buf, (const char*)s_q68_678288, (double)x, (double)y, (double)z, room);
+        CallC(FUN_5d2ba0, buf, 0);
+    }
+    CallC(FUN_5dd4d0);
+    if (g_q68_6cec6c && F(int, g_q68_6cec6c, 1344)) {
+        CallC(FUN_5ffb20);
+        CallC(FUN_5ffb40);
+    }
+    CallC(FUN_42db90);
+    CallC(FUN_435a80);
+    ((void(__cdecl*)())g_q68_6ced90)();
+}
+
+// ---------------------------------------------------------------------------
+// A line on the map.
+
+ASM_PROC(FUN_5b73a0)
+extern "C" void FUN_5b6210(); KING_ALIAS("_FUN_5b6210", "_Pixel_Pack")
+// [FUN_5290d0] draws the line of box s (doubles x0, y0, x1, y1) scaled by sx, sy and moved by dx, dy on surface
+// d in green; with clip set nothing is drawn when an end lies outside d
+extern "C" void __fastcall Map_DrawLine(double* s, void*, BYTE* d, double sx, double sy, double dx, double dy,
+                                        int clip)
+{
+    int x0 = (int)(sx * s[0] + dx);
+    int x1 = (int)(sx * s[2] + dx);
+    int y0 = (int)(sy * s[1] + dy);
+    int y1 = (int)(sy * s[3] + dy);
+    if (clip && (Carat_OutOfBox((const unsigned short*)d, x0, y0) || Carat_OutOfBox((const unsigned short*)d, x1, y1)))
+        return;
+    CallC(FUN_5b73a0, d, x0, y0, x1, y1, CallC<int>(FUN_5b6210, 0, 255, 120, 1));
 }

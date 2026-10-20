@@ -1445,6 +1445,8 @@ PUBLIC $L_676cf4, $L_677484, $L_67748c, $L_6ceccc
 PUBLIC $L_6772c4
 PUBLIC $L_677580
 PUBLIC $L_676d18, $L_676d20, $L_676d28, $L_676d30
+PUBLIC $L_69690c
+PUBLIC $L_678288, $L_6ced90
 
 ;===================================
 _TEXT SEGMENT
@@ -479785,6 +479787,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_516d50 PROC
 
             push ECX
@@ -479812,6 +479816,10 @@ $L_516d50 PROC
             add ESP,12
             ret 
 $L_516d50 ENDP
+ELSE
+EXTERN _Shell_EffectsSlider:PROC
+$L_516d50 TEXTEQU <_Shell_EffectsSlider>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -479821,6 +479829,8 @@ $L_516d50 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_516db0 PROC
 
             push ECX
@@ -479867,6 +479877,10 @@ $L_516e3c::
             pop ECX
             ret 
 $L_516db0 ENDP
+ELSE
+EXTERN _Shell_MusicSlider:PROC
+$L_516db0 TEXTEQU <_Shell_MusicSlider>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -483960,6 +483974,8 @@ FUN_519740 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_519750 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -484032,6 +484048,10 @@ $L_5197ea::
             pop ESI
             ret 4
 FUN_519750 ENDP
+ELSE
+EXTERN @Shell_ShowWithMusic@12:PROC
+FUN_519750 TEXTEQU <@Shell_ShowWithMusic@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -506943,6 +506963,8 @@ $L_527d00 TEXTEQU <@Dtor527d00_DeletingDestructor@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_527d20 PROC
 
             mov EAX,DWORD PTR [$L_6d2078]
@@ -507016,6 +507038,10 @@ $L_527dc8::
             add ESP,188
             ret 
 $L_527d20 ENDP
+ELSE
+EXTERN _Game_Leave:PROC
+$L_527d20 TEXTEQU <_Game_Leave>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
@@ -508999,6 +509025,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5290d0 PROC
 
             fld QWORD PTR [ESP+8]
@@ -509080,6 +509108,10 @@ $L_529170::
             pop EBX
             ret 40
 FUN_5290d0 ENDP
+ELSE
+EXTERN @Map_DrawLine@48:PROC
+FUN_5290d0 TEXTEQU <@Map_DrawLine@48>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
