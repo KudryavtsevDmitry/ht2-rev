@@ -2185,3 +2185,25 @@ extern "C" void __fastcall List16_Destroy(BYTE** s)
     F(BYTE*, *s, 4) = *s;
     CallC(FUN_44b4a0, *s, 16);
 }
+
+// [$L_4afc30] destroys a list of 24-byte nodes holding script values (+8 object, +16 flags; an object reference is
+// released unless the value is immediate), then the head
+extern "C" void __fastcall ValueList_Destroy(BYTE** s)
+{
+    for (BYTE* n = *(BYTE**)*s; n != *s;) {
+        BYTE* next = *(BYTE**)n;
+        BYTE* o = F(BYTE*, n, 8);
+        if (!(F(int, n, 16) & 0x10000) && o) {
+            F(int, o, 4)--;
+            o = F(BYTE*, n, 8);
+            if (!F(int, o, 4) && o)
+                CallVirt(o, 12, 1);
+        }
+        CallC(FUN_44b4a0, n, 24);
+        n = next;
+    }
+    BYTE* h = *s;
+    F(BYTE*, h, 0) = h;
+    F(BYTE*, *s, 4) = *s;
+    CallC(FUN_44b4a0, *s, 24);
+}

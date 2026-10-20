@@ -1540,3 +1540,19 @@ extern "C" int __fastcall LoadBlock_Skip(BYTE* s)
 }
 // [$L_4913f0] sets the base vtable 64bee4
 extern "C" void __fastcall Run4913f0_SetVtbl(BYTE* s) { F(void*, s, 0) = &g_q199_64bee4; }
+
+ASM_PROC(FUN_488450)
+// [$L_489600] destroys a list of 48-byte nodes (each value at +8 destroyed by 488450), then the head
+extern "C" void __fastcall List48_Destroy(BYTE** s)
+{
+    for (BYTE* n = *(BYTE**)*s; n != *s;) {
+        BYTE* next = *(BYTE**)n;
+        CallThis(FUN_488450, n + 8);
+        CallC(FUN_44b4a0, n, 48);
+        n = next;
+    }
+    BYTE* h = *s;
+    F(BYTE*, h, 0) = h;
+    F(BYTE*, *s, 4) = *s;
+    CallC(FUN_44b4a0, *s, 48);
+}
