@@ -15,7 +15,7 @@ typedef char AsmLabel[1];
 extern "C" int __cdecl fflush(FILE* f);
 
 ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
-ASM_PROC(FUN_5da950)
+extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*);    // carphys.cpp
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 ASM_PROC(FUN_5fd430)    // sound: play (volume, pitch, a)
