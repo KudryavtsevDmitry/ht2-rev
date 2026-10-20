@@ -472595,6 +472595,8 @@ EXTERN _Carat_Level3:PROC
 FUN_5125a0 TEXTEQU <_Carat_Level3>
 ENDIF
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_5125b0 PROC
 
             push EBX
@@ -472806,6 +472808,10 @@ $L_512710::
             pop EBX
             ret 16
 $L_5125b0 ENDP
+ELSE
+EXTERN @Game_SceneFiles@24:PROC
+$L_5125b0 TEXTEQU <@Game_SceneFiles@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -482708,6 +482714,8 @@ ELSE
 EXTERN @LoadScreen_OnShow@8:PROC
 $L_518900 TEXTEQU <@LoadScreen_OnShow@8>
 ENDIF
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_5189f0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -483078,6 +483086,10 @@ $L_518d08::
             add ESP,132
             ret 4
 $L_5189f0 ENDP
+ELSE
+EXTERN @SaveList_Command@12:PROC
+$L_5189f0 TEXTEQU <@SaveList_Command@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -497611,6 +497623,8 @@ $L_521dd4           DWORD $L_521bec
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_521e00 PROC
 
             sub ESP,228
@@ -497843,6 +497857,10 @@ $L_522048::
             add ESP,228
             ret 4
 $L_521e00 ENDP
+ELSE
+EXTERN @Stats_Draw@12:PROC
+$L_521e00 TEXTEQU <@Stats_Draw@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original

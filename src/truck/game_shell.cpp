@@ -5624,3 +5624,151 @@ extern "C" void __fastcall Input_ApplyBindings(BYTE* s)
         }
     }
 }
+
+// ---------------------------------------------------------------------------
+// Scene file names of the game.
+
+ASM_VAR(BYTE*, g_q85_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_q85_6cec98, $L_6cec98)
+ASM_VAR(int, g_q85_6ced70, $L_6ced70)
+// [$L_5125b0] the files of scene name: the folder of s (+648) with ENV\, or in a race (6cec6c +1316) MENV\, MTR\
+// or MTB\ by its kind (6cec98 +384); name.b3d; the resources name.res, name1.res or name2.res by the detail level
+extern "C" void __fastcall Game_SceneFiles(BYTE* s, void*, const char* name, char* dir, char* b3d, char* res)
+{
+    strcpy(dir, F(const char*, s, 648));
+    const char* sub;
+    if (!F(int, g_q85_6cec6c, 1316))
+        sub = "ENV\\";
+    else if (F(int, g_q85_6cec98, 384) == 0)
+        sub = "MENV\\";
+    else if (F(int, g_q85_6cec98, 384) == 1)
+        sub = "MTR\\";
+    else
+        sub = "MTB\\";
+    strcat(dir, sub);
+    strcpy(b3d, name);
+    strcat(b3d, ".b3d");
+    strcpy(res, name);
+    switch (g_q85_6ced70) {
+    case 4:
+    case 3: strcat(res, ".res"); break;
+    case 2:
+    case 1: strcat(res, "1.res"); break;
+    case 0: strcat(res, "2.res"); break;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// The statistics screen.
+
+ASM_PROC(FUN_574950)
+extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
+ASM_VAR(int, g_q86_6ced14, $L_6ced14)
+ASM_VAR(int, g_q86_6ced18, $L_6ced18)
+ASM_VAR(BYTE*, g_q86_6ced24, $L_6ced24)
+// [$L_521e00] draws the screen at a: the player's money and the race money (+312), the player's name, the 20
+// counters of +316 in three columns (the 247 one always) and the 8 of +396 in two
+extern "C" void __fastcall Stats_Draw(BYTE* s, void*, int a)
+{
+    char buf[32];
+    BYTE info[192];
+    BYTE* dst = F(BYTE*, s, -52);
+    CallThis(FUN_5c0020, s, a);
+    CallC(FUN_574950, a, g_q86_6ced14 - 362, g_q86_6ced18 - 233, 1);
+    int id;
+    CallC(FUN_568f60, &id);
+    sprintf(buf, "$%d", (int)CallC<double>(FUN_43f760, id));
+    CallC(FUN_5ea170, dst, g_q86_6ced14 - 140, g_q86_6ced18 + 764, g_q86_6ced24, buf, 5, 0);
+    sprintf(buf, "$%d", F(int, s, 312));
+    CallC(FUN_5ea170, F(BYTE*, s, -52), g_q86_6ced14 + 40, g_q86_6ced18 + 764, g_q86_6ced24, buf, 5, 0);
+    CallC(FUN_568f60, &id);
+    CallC(FUN_43fc40, id, info);
+    CallC(FUN_5ea170, F(BYTE*, s, -52), g_q86_6ced14 - 300, g_q86_6ced18 + 478, g_q86_6ced24,
+          F(const char*, info, 20), 5, 0);
+    int* p = (int*)(s + 316);
+    for (int k = -114; k < 266; k += 19, p++) {
+        int x = 0, y = k + 133;
+        if (k >= 133) {
+            x = 362;
+            y = k - 133;
+        } else if (k >= 0) {
+            x = 181;
+            y = k;
+        }
+        if (*p > 0 || k == 247) {
+            sprintf(buf, "%4d", *p);
+            CallC(FUN_5ea170, F(BYTE*, s, -52), g_q86_6ced14 + x - 221, g_q86_6ced18 + y + 612, g_q86_6ced24, buf,
+                  5, 0);
+        }
+    }
+    int* q = (int*)(s + 396);
+    for (int i = 0; i < 8; i++)
+        if (q[i] > 0) {
+            sprintf(buf, "%4d", q[i]);
+            CallC(FUN_5ea170, F(BYTE*, s, -52), g_q86_6ced14 + 181 * (i / 4) - 40, g_q86_6ced18 + 19 * (i % 4) + 499,
+                  g_q86_6ced24, buf, 5, 0);
+        }
+}
+
+// ---------------------------------------------------------------------------
+// The saved games screen.
+
+ASM_VAR(BYTE*, g_q87_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_q87_6cec80, $L_6cec80)
+ASM_VAR(AsmLabel, s_q87_671204, $L_671204)
+ASM_VAR(AsmLabel, g_q87_68d1c0, $L_68d1c0)
+static const char* SaveList_Chosen(BYTE* s)
+{
+    BYTE* e = F(BYTE*, F(BYTE*, s, 316), 300);
+    return e ? F(const char*, e, 12) : 0;
+}
+// [$L_5189f0] commands: 145 loads the chosen game (6cec6c +1300 = 2), 1 and 2 close the screen (2 restoring
+// +1300 from +304), 146/147 set +1300 to 1/0, 149 takes the chosen name into +320, 281 deletes the chosen game
+// (its .tr and the .mvp file) and takes the next one's name
+extern "C" void __fastcall SaveList_Command(BYTE* s, void*, int cmd)
+{
+    const char* name;
+    switch (cmd) {
+    case 145:
+        if (SaveList_Chosen(s)) {
+            F(int, g_q87_6cec6c, 1300) = 2;
+            CallC(FUN_510bc0, 0, 1);
+        }
+        break;
+    case 2:
+    case 1:
+        CallVirt(s - 64, 32);
+        F(int, g_q87_6cec80, 372) = 0;
+        CallVirt(g_q87_6cec80, 36);
+        if (cmd == 2)
+            F(int, g_q87_6cec6c, 1300) = F(int, s, 304);
+        break;
+    case 146:
+        F(int, g_q87_6cec6c, 1300) = 1;
+        break;
+    case 147:
+        F(int, g_q87_6cec6c, 1300) = 0;
+        break;
+    case 149:
+        if ((name = SaveList_Chosen(s)) != 0)
+            strcpy((char*)s + 320, name);
+        break;
+    case 281: {
+        if ((name = SaveList_Chosen(s)) == 0)
+            break;
+        char copy[64], path[64];
+        strcpy(copy, name);
+        CallThis(FUN_5c0d60, F(BYTE*, s, 316), name);
+        const char* t = CallC<const char*>(FUN_50bbf0, copy);
+        strcpy(path, (const char*)s_q87_671204);
+        strcat(path, t);
+        strcat(path, ".tr");
+        DeleteFileA(path);
+        strcpy(path + strlen(path) - 2, ".mvp");
+        DeleteFileA(path);
+        name = SaveList_Chosen(s);
+        strcpy((char*)s + 320, name ? name : (const char*)g_q87_68d1c0);
+        break;
+    }
+    }
+}
