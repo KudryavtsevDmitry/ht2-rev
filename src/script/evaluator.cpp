@@ -2154,3 +2154,7 @@ static void Eva_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 
 // [$L_4ad180]
 extern "C" void __cdecl EvaInit_4ad180() { Eva_RngInit((DWORD*)g_evaRng694660, &g_evaRng694738, &g_evaRng69473c, &g_evaRng694740); }
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+// [$L_4a4940] returns the 44-byte record s[0] to the pool
+extern "C" void __fastcall Eval4a4940_Free(BYTE* s) { CallC(FUN_44b4a0, F(void*, s, 0), 44); }

@@ -1130,3 +1130,10 @@ extern "C" void __fastcall Vec40_FreeStorage(BYTE* s, void*)
 {
     PoolVec_Free_R(s, 40);
 }
+
+extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
+// [$L_478e20] ends the save block of stream s[0] started at s+4
+extern "C" int __fastcall SaveBlock_End(BYTE* s) { return CallC<int>(FUN_490ce0, F(int, s, 0), s + 4); }
+// [$L_478e30] the end check of the save block (stream, start, size)
+extern "C" int __fastcall SaveBlock_AtEnd(BYTE* s) { return CallC<int>(FUN_490c70, F(int, s, 0), F(int, s, 4), F(int, s, 8)); }

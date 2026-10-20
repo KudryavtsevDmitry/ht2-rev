@@ -2822,3 +2822,11 @@ extern "C" int __fastcall q198_MappedFile_Close(BYTE* s); KING_ALIAS("@q198_Mapp
 extern "C" int __fastcall Thunk5c63b0(BYTE* s, void* d, int a0) { return q198_Dtor5c6060_DeletingDestructor(s - 256, d, a0); }
 // [$L_5cf470] forwards to Dtor5cf2f0_DeletingDestructor for the object 32 bytes before
 extern "C" int __fastcall Thunk5cf470(BYTE* s, void* d, int a0) { return q198_Dtor5cf2f0_DeletingDestructor(s - 32, d, a0); }
+
+extern "C" __declspec(dllimport) void __stdcall SysFreeString(wchar_t*);
+// [$L_5c19e0] frees the BSTR *s
+extern "C" void __fastcall Bstr_Free(wchar_t** s) { SysFreeString(*s); }
+// [$L_5c6ab0] nothing to do
+extern "C" void __fastcall Med5c6ab0_Nop(BYTE*) {}
+// [$L_5c77f0] nothing to do
+extern "C" void __fastcall Med5c77f0_Nop(BYTE*) {}

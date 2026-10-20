@@ -22163,3 +22163,18 @@ extern "C" void __cdecl Static68cf00_Destroy(void) { q198_Vec4_FreeStorage((BYTE
 extern "C" void __cdecl Static68cbe8_Destroy(void) { q198_Vec4_FreeStorage((BYTE*)&g_q198_68cbe8, 0); }
 // [$L_455650] forwards to Points_Length for the object 56 bytes after
 extern "C" int __fastcall Thunk455650(BYTE* s) { return q198_Points_Length(s + 56); }
+
+// [$L_410320] an empty range: start 0, scale 1.0 (+8)
+extern "C" BYTE* __fastcall Range410320_Init(BYTE* s)
+{
+    F(int, s, 8) = 0;
+    F(int, s, 0) = 0;
+    F(int, s, 12) = 0x3ff00000;
+    return s;
+}
+// [$L_411bd0] an id set to none (-1)
+extern "C" int* __fastcall Id411bd0_Init(int* s)
+{
+    *s = -1;
+    return s;
+}

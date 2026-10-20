@@ -2294,3 +2294,6 @@ extern "C" void __fastcall Copter_ClimbState(BYTE* s)
 extern "C" int __fastcall q198_Dtor573870_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor573870_DeletingDestructor@12", "@Dtor573870_DeletingDestructor@12")
 // [$L_576c20] forwards to Dtor573870_DeletingDestructor for the object 256 bytes before
 extern "C" int __fastcall Thunk576c20(BYTE* s, void* d, int a0) { return q198_Dtor573870_DeletingDestructor(s - 256, d, a0); }
+
+// [$L_56d0d0] whether object c has its +416 set
+extern "C" int __cdecl Obj56d0d0_Has416(int, int, BYTE* c) { return F(int, c, 416) != 0; }
