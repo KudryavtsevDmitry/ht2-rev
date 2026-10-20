@@ -2746,7 +2746,7 @@ extern "C" double __cdecl Clamp542250(float x, float lim)
 // ---------------------------------------------------------------------------
 // Resetting a car's controls.
 
-ASM_PROC(FUN_5494c0)
+extern "C" void FUN_5494c0(); KING_ALIAS("_FUN_5494c0", "@CarEffect_End@12")
 extern "C" void FUN_4eb6e0(); KING_ALIAS("_FUN_4eb6e0", "@Ramp_Down@12")
 extern "C" void FUN_4eb720(); KING_ALIAS("_FUN_4eb720", "@Ramp_FromTop@12")
 extern "C" void FUN_549bf0(); KING_ALIAS("_FUN_549bf0", "@Obj549bf0_Get@8")
@@ -2765,4 +2765,34 @@ extern "C" void __fastcall Car_ResetControls(BYTE* s, void*, int a)
     if (CallThis<int>(FUN_549bf0, s + 21568) == 1 || CallThis<int>(FUN_549bf0, s + 21568) == 2)
         CallThis(FUN_5494c0, s, 1);
     F(float, s, 21596) = (float)(F(float, F(BYTE*, s, 9536), 32) + g_q169_64b840);
+}
+
+extern "C" void FUN_4eb5e0(); KING_ALIAS("_FUN_4eb5e0", "@Ramp_Value@8")
+extern "C" void FUN_52f930(); KING_ALIAS("_FUN_52f930", "_Sound_Play3_386")
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+extern "C" void __fastcall CarEffect_Stop(BYTE* s);
+ASM_VAR(BYTE*, g_q170_6d2078, $L_6d2078)
+ASM_VAR(int, g_q170_6ef260, $L_6ef260)
+// [FUN_5494c0] ends the running effect (+21568, state 1 or 2) of car s; with keep 0 it first uses up one unit
+// of the +21360 ramp (not when it is empty; message 100 when it runs out); the player's car plays the 6ef260 sound
+extern "C" void __fastcall CarEffect_End(BYTE* s, void*, int keep)
+{
+    int use = keep == 0;
+    int st = CallThis<int>(FUN_549bf0, s + 21568);
+    if (st != 1 && CallThis<int>(FUN_549bf0, s + 21568) != 2)
+        return;
+    if (use) {
+        if (!F(int, s, 21400))
+            return;
+        BYTE* r = s + 21360;
+        if (!(CallThis<double>(FUN_4eb5e0, r) > g_q158_64c264))
+            return;
+        CallThis(FUN_4eb6e0, r, 0x3f800000);
+        if (!(CallThis<double>(FUN_4eb5e0, r) > g_q158_64c264))
+            CallC(FUN_56ae60, CallC<const char*>(FUN_5d2e50, 100));
+    }
+    CarEffect_Stop(s + 21568);
+    if (F(BYTE*, g_q170_6d2078, 616) == s)
+        CallC(FUN_52f930, g_q170_6ef260, 1.0f);
 }
