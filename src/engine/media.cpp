@@ -2898,3 +2898,34 @@ extern "C" void __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, f
     F(float, s, 12) = (float)(t * g_q243_64c330);
     CallThis(FUN_5cc680, s, 0, m, p);
 }
+
+ASM_PROC(FUN_5ce6e0)
+ASM_VAR(double, g_q244_651e10, $L_651e10)
+ASM_VAR(AsmLabel, g_q244_70ebfc, $L_70ebfc)
+ASM_VAR(AsmLabel, g_q244_70ef1c, $L_70ef1c)
+ASM_VAR(AsmLabel, g_q244_70f0ac, $L_70f0ac)
+ASM_VAR(AsmLabel, g_q244_70f23c, $L_70f23c)
+ASM_VAR(char, g_q244_651dec, $L_651dec)
+// [FUN_5ce9c0] constructs a particle stream s of n (at most 100) particles from (x, y, z) moved a random 0..9
+// steps of 651e10 along d, with the shared tables 70ebfc.. and spread 0.1; its direction kept at +160 (vtable 651dec)
+extern "C" BYTE* __fastcall Stream_Construct(BYTE* s, void*, int n, float x, float y, float z, float dx, float dy,
+                                             float dz, int a, int b)
+{
+    if (n > 100)
+        n = 100;
+    double k = rand() % 10 * g_q244_651e10;
+    float ox = (float)(dx * k), oy = (float)(dy * k);
+    Med243_V3 v = {(float)(x + ox), (float)(oy + y), (float)(dz * k + z)};
+    CallThis(FUN_5ce6e0, s, a, b, v, n, (void*)g_q244_70ebfc, (void*)g_q244_70ef1c, (void*)g_q244_70f0ac,
+             (void*)g_q244_70f23c, 0.1);
+    F(int, s, 160) = 0;
+    F(int, s, 164) = 0;
+    F(int, s, 168) = 0;
+    F(float, s, 160) = dx;
+    F(float, s, 164) = dy;
+    F(int, s, 172) = 0;
+    F(int, s, 176) = 0;
+    F(void*, s, 0) = &g_q244_651dec;
+    F(float, s, 168) = dz;
+    return s;
+}
