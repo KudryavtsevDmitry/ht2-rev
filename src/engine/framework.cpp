@@ -3655,3 +3655,24 @@ extern "C" void __fastcall View_PlaceCamera(BYTE* s)
     F(float, s, 576) = z;
     F(float, s, 588) = z;
 }
+
+extern "C" void FUN_5abee0(); KING_ALIAS("_FUN_5abee0", "_Matrix_RotationX")
+extern "C" void FUN_5abfd0(); KING_ALIAS("_FUN_5abfd0", "_Matrix_RotationY")
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+// [FUN_5df560] puts the camera of view s at node n (5df3d0, its position +36) turned by the view's angles
+// (+2928 z, +2936 x negated, +2944 y) and makes room r the view room's sky (+488's +76)
+extern "C" void __fastcall View_SetCamera(BYTE* s, void*, int r, BYTE* n)
+{
+    CallThis(FUN_5df3d0, s, n);
+    BYTE m[48], tz[48], tx[48], ty[48], t1[48], t2[48];
+    memcpy(m, (BYTE*)g_q77_7025f0, 48);
+    BYTE* rz = CallC<BYTE*>(FUN_5ac0c0, tz, (float)F(double, s, 2928));
+    BYTE* rx = CallC<BYTE*>(FUN_5abee0, tx, (float)-F(double, s, 2936));
+    BYTE* ry = CallC<BYTE*>(FUN_5abfd0, ty, (float)F(double, s, 2944));
+    BYTE* a = CallC<BYTE*>(FUN_5aba40, t1, ry, rx);
+    memcpy(m, CallC<BYTE*>(FUN_5aba40, t2, a, rz), 48);
+    memcpy(m + 36, n + 36, 12);
+    CallThis(FUN_5f2190, F(BYTE*, s, 616), m, 0);
+    F(int, F(BYTE*, s, 488), 76) = r;
+}

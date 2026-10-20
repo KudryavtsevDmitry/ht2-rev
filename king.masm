@@ -796433,6 +796433,8 @@ $L_5df53e::
 FUN_5df3d0 ENDP
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5df560 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -796532,6 +796534,10 @@ $L_5df581::
             add ESP,288
             ret 8
 FUN_5df560 ENDP
+ELSE
+EXTERN @View_SetCamera@16:PROC
+FUN_5df560 TEXTEQU <@View_SetCamera@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
