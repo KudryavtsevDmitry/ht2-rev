@@ -788328,6 +788328,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5da950 PROC
 
             sub ESP,300
@@ -788402,6 +788404,10 @@ FUN_5da950 PROC
             add ESP,300
             ret 
 FUN_5da950 ENDP
+ELSE
+EXTERN _Matrix_FromPose:PROC
+FUN_5da950 TEXTEQU <_Matrix_FromPose>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -985,7 +985,7 @@ extern "C" int __fastcall Car_RandomStep(BYTE* s, void*, int k)
 // Re-orthogonalising a body's matrix.
 
 ASM_PROC(FUN_5de950)
-ASM_PROC(FUN_5da950)
+extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" void FUN_4f0050(); KING_ALIAS("_FUN_4f0050", "@Body_CheckUpright@8")
 struct Vp101_Mat { DWORD v[12]; };
 // splits the matrix of body s (+16) into its position and angles

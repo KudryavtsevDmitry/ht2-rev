@@ -49,7 +49,7 @@ ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
-ASM_PROC(FUN_5da950)
+extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 ASM_PROC(FUN_5dbf00)
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in ms, returns double
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
@@ -3283,7 +3283,7 @@ extern "C" void __cdecl Bmp_Write(FILE* f, BITMAPINFO* bi, HBITMAP hbm, HDC dc)
 // ---------------------------------------------------------------------------
 // Drawing a view.
 
-ASM_PROC(FUN_5da950)
+extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 ASM_PROC(FUN_5ae0e0)
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
 extern "C" void FUN_5b6190(); KING_ALIAS("_FUN_5b6190", "_Device_WaitIdle")
@@ -3742,4 +3742,20 @@ extern "C" void __fastcall View_PrepareOverlay(BYTE* s)
         CallThis(FUN_5eb310, F(BYTE*, s, 468), F(BYTE*, s, 488), o, F(BYTE*, s, 472), 1, F(BYTE*, s, 464));
     if (BYTE* o = F(BYTE*, s, 528))
         CallVirt(o, 56, 4, (BYTE*)g_q77_7025f0, (BYTE*)g_q77_7025f0, F(BYTE*, s, 464));
+}
+
+// [FUN_5da950] the matrix of position x, y, z and angles a (z), b (x, negated), c (y) into out: the rotations
+// y, x, z applied in turn, then the translation
+extern "C" BYTE* __cdecl Matrix_FromPose(BYTE* out, double x, double y, double z, double a, double b, double c)
+{
+    Fw133_V3 v = {(float)x, (float)y, (float)z};
+    BYTE t[48], rz[48], rx[48], ry[48], m1[48], m2[48];
+    BYTE* r1 = CallC<BYTE*>(FUN_5abc40, t, v);
+    BYTE* r2 = CallC<BYTE*>(FUN_5ac0c0, rz, (float)a);
+    BYTE* r3 = CallC<BYTE*>(FUN_5abee0, rx, (float)-b);
+    BYTE* r4 = CallC<BYTE*>(FUN_5abfd0, ry, (float)c);
+    BYTE* r5 = CallC<BYTE*>(FUN_5aba40, m1, r4, r3);
+    BYTE* r6 = CallC<BYTE*>(FUN_5aba40, m2, r5, r2);
+    CallC(FUN_5aba40, out, r6, r1);
+    return out;
 }
