@@ -1366,3 +1366,54 @@ extern "C" double __fastcall Points_Length(BYTE* s)
     }
     return len;
 }
+
+// [FUN_4903a0] vector polynomial s with each coefficient divided by v component-wise, into out
+extern "C" BYTE* __fastcall VPoly_Divide(BYTE* s, void*, BYTE* out, const double* v)
+{
+    double kx = g_q115_64b670 / v[0], ky = g_q115_64b670 / v[1], kz = g_q115_64b670 / v[2];
+    BYTE r[580];
+    F(int, r, 576) = 0;
+    const double* a = (const double*)s;
+    for (unsigned i = 0; i < (unsigned)(F(int, s, 576) * 24 / 24); i++) {
+        double* d = (double*)(r + F(int, r, 576) * 24);
+        d[0] = a[i * 3] * kx;
+        d[1] = a[i * 3 + 1] * ky;
+        d[2] = a[i * 3 + 2] * kz;
+        F(int, r, 576)++;
+    }
+    memcpy(out, r, 580);
+    return out;
+}
+
+// [FUN_48f000] the component-wise product of vector polynomials s and b into out
+extern "C" BYTE* __fastcall VPoly_Multiply(BYTE* s, void*, BYTE* out, BYTE* b)
+{
+    BYTE r[580];
+    F(int, r, 576) = 0;
+    const double* a = (const double*)s;
+    const double* c = (const double*)b;
+    unsigned na = F(int, s, 576) * 24 / 24, nb = F(int, b, 576) * 24 / 24;
+    if (na && nb)
+        for (unsigned k = 0; k < na + nb - 1; k++) {
+            double x = g_q115_64b678, y = g_q115_64b678, z = g_q115_64b678;
+            int lo = k >= na ? k - na + 1 : 0;
+            int hi = (int)nb < (int)(k + 1) ? (int)nb : (int)(k + 1);
+            for (int j = lo; j < hi; j++) {
+                const double* p = a + (k - j) * 3;
+                const double* q = c + j * 3;
+                double px = p[0] * q[0], py = p[1] * q[1], pz = p[2] * q[2];
+                x += px;
+                y += py;
+                z += pz;
+            }
+            double* d = (double*)(r + F(int, r, 576) * 24);
+            d[0] = x;
+            d[1] = y;
+            d[2] = z;
+            F(int, r, 576)++;
+            na = F(int, s, 576) * 24 / 24;
+            nb = F(int, b, 576) * 24 / 24;
+        }
+    memcpy(out, r, 580);
+    return out;
+}
