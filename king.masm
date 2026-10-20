@@ -769772,6 +769772,8 @@ $L_5d1428::
             ret 
 FUN_5d1030 ENDP
 ALIGN 16
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 FUN_5d1430 PROC
 
             mov EAX,DWORD PTR [$L_70f3d8]
@@ -769976,6 +769978,10 @@ $L_5d15d0           DWORD $L_5d1519
           DWORD $L_5d155f
           DWORD $L_5d156d
           DWORD $L_5d157d
+ELSE
+EXTERN _Poly_Fill:PROC
+FUN_5d1430 TEXTEQU <_Poly_Fill>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
