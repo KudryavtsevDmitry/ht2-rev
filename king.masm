@@ -573943,6 +573943,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_5561b0 PROC
 
             sub ESP,60
@@ -574041,10 +574043,16 @@ $L_5561cc::
             add ESP,60
             ret 8
 FUN_5561b0 ENDP
+ELSE
+EXTERN @Car_LoadCargo@16:PROC
+FUN_5561b0 TEXTEQU <@Car_LoadCargo@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_5562e0 PROC
 
             sub ESP,60
@@ -574143,10 +574151,16 @@ $L_5562fc::
             add ESP,60
             ret 8
 FUN_5562e0 ENDP
+ELSE
+EXTERN @Car_UnloadCargo@16:PROC
+FUN_5562e0 TEXTEQU <@Car_UnloadCargo@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_556410 PROC
 
             sub ESP,60
@@ -574239,6 +574253,10 @@ $L_55652d::
             add ESP,60
             ret 12
 FUN_556410 ENDP
+ELSE
+EXTERN @Car_TakeCargo@20:PROC
+FUN_556410 TEXTEQU <@Car_TakeCargo@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

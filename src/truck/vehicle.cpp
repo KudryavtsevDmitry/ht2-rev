@@ -32,7 +32,7 @@ extern "C" float __fastcall Ramp_Position(BYTE* self, void*);   // carphys.cpp
 extern "C" void FUN_5014b0(); KING_ALIAS("_FUN_5014b0", "@Car_ReadSettings35@12")
 extern "C" void FUN_501550(); KING_ALIAS("_FUN_501550", "@Car_MinWearFactor@8")
 extern "C" void FUN_556110(); KING_ALIAS("_FUN_556110", "@Car_ApplyTypeVec@8")
-ASM_PROC(FUN_5561b0)
+extern "C" void FUN_5561b0(); KING_ALIAS("_FUN_5561b0", "@Car_LoadCargo@16")
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")
 extern "C" int __cdecl Fx_Skid1(const void* p, const void* v, int net);   // aeffects.cpp
@@ -1769,14 +1769,14 @@ extern "C" void __fastcall Car_ApplyPlacement(BYTE* self, void*)
 
 extern "C" void FUN_5300b0(); KING_ALIAS("_FUN_5300b0", "@Controls_Axis@12")
 ASM_PROC(FUN_556a70)
-ASM_PROC(FUN_5561b0)
-ASM_PROC(FUN_5562e0)
+extern "C" void FUN_5561b0(); KING_ALIAS("_FUN_5561b0", "@Car_LoadCargo@16")
+extern "C" void FUN_5562e0(); KING_ALIAS("_FUN_5562e0", "@Car_UnloadCargo@16")
 extern "C" void FUN_54c950(); KING_ALIAS("_FUN_54c950", "@Car_NamePart@16")
 extern "C" void FUN_54c9d0(); KING_ALIAS("_FUN_54c9d0", "@Car_Set54c9d0@16")
 extern "C" void FUN_54ca20(); KING_ALIAS("_FUN_54ca20", "@Car_Set54ca20@16")
 ASM_PROC(FUN_547030)
 extern "C" void FUN_546890(); KING_ALIAS("_FUN_546890", "_Switches_Apply")
-ASM_PROC(FUN_556410)
+extern "C" void FUN_556410(); KING_ALIAS("_FUN_556410", "@Car_TakeCargo@20")
 extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
 ASM_PROC(FUN_557440)
 ASM_PROC(FUN_557450)
@@ -2795,4 +2795,55 @@ extern "C" void __fastcall CarEffect_End(BYTE* s, void*, int keep)
     CarEffect_Stop(s + 21568);
     if (F(BYTE*, g_q170_6d2078, 616) == s)
         CallC(FUN_52f930, g_q170_6ef260, 1.0f);
+}
+
+// ---------------------------------------------------------------------------
+// Loading cargo onto a car.
+
+ASM_PROC(FUN_556780)
+ASM_PROC(FUN_556890)
+ASM_PROC(FUN_5455d0)
+extern "C" void FUN_5569c0(); KING_ALIAS("_FUN_5569c0", "@Obj5569c0_Take@20")
+// sets car s's total load (+9588 + +9604 + +9580) and its centre (the cargo point +9556 weighted by the two
+// loads, over the total) through 5455d0
+static int Veh184_ApplyLoad(BYTE* s)
+{
+    const float* p = (const float*)(s + 9556);
+    float m = (float)(F(float, s, 9588) + F(float, s, 9604) + F(float, s, 9580));
+    double k1 = F(float, s, 9588) + F(float, s, 9580);
+    float ax = (float)(p[0] * k1), ay = (float)(p[1] * k1);
+    double az = k1 * p[2];
+    double k2 = F(float, s, 9604);
+    float bx = (float)(p[0] * k2), by = (float)(p[1] * k2);
+    double bz = k2 * p[2];
+    float sx = (float)(bx + ax), sy = (float)(ay + by);
+    double sz = az + bz;
+    float v[3] = {(float)(sx / m), (float)(sy / m), (float)(sz / m)};
+    return CallThis<int>(FUN_5455d0, s, m, v);
+}
+// [FUN_5561b0] loads cargo a1, a2 into car s's hold (556780) and updates its load; -2 without a hold (+9600)
+extern "C" int __fastcall Car_LoadCargo(BYTE* s, void*, int a1, int a2)
+{
+    if (!F(int, s, 9600))
+        return -2;
+    int r = CallThis<int>(FUN_556780, s + 9556, a1, a2);
+    Veh184_ApplyLoad(s);
+    return r;
+}
+// [FUN_5562e0] unloads cargo a1, a2 (556890) like 5561b0
+extern "C" int __fastcall Car_UnloadCargo(BYTE* s, void*, int a1, int a2)
+{
+    if (!F(int, s, 9600))
+        return -2;
+    int r = CallThis<int>(FUN_556890, s + 9556, a1, a2);
+    Veh184_ApplyLoad(s);
+    return r;
+}
+// [FUN_556410] takes cargo a1..a3 from the hold (5569c0) and updates the load; 0 without a hold
+extern "C" int __fastcall Car_TakeCargo(BYTE* s, void*, int a1, int a2, int a3)
+{
+    if (!F(int, s, 9600))
+        return 0;
+    CallThis(FUN_5569c0, s + 9556, a1, a2, a3);
+    return Veh184_ApplyLoad(s);
 }
