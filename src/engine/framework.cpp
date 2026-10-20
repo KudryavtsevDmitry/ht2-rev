@@ -3802,3 +3802,31 @@ extern "C" void __fastcall Poly_BoundingSphere(BYTE* s, void*, float* out, const
     memcpy(out, c, 12);
     out[3] = r;
 }
+
+extern "C" void FUN_5ab400(); KING_ALIAS("_FUN_5ab400", "_Vec3_Normalized")
+ASM_VAR(float, g_q183_64c258, $L_64c258)
+// [FUN_5e5580] grows sphere s (centre, radius +12) to also hold sphere b: the new one spans from s's far side to
+// b's far side along the line between their centres
+extern "C" void __fastcall Sphere_Merge(float* s, void*, const float* b)
+{
+    float d[3] = {(float)(s[0] - b[0]), (float)(s[1] - b[1]), (float)(s[2] - b[2])};
+    float n[3];
+    CallC(FUN_5ab400, n, d);
+    double ra = s[3];
+    float p1x = (float)((float)(n[0] * ra) + s[0]);
+    float p1y = (float)((float)(n[1] * ra) + s[1]);
+    double p1z = ra * n[2] + s[2];
+    double rb = b[3];
+    float p2x = (float)(b[0] - (float)(n[0] * rb));
+    float p2y = (float)(b[1] - (float)(n[1] * rb));
+    double p2z = b[2] - rb * n[2];
+    double sx = p2x + p1x;
+    float sy = (float)(p1y + p2y);
+    float sz = (float)(p1z + p2z);
+    float h = g_q183_64c258;
+    s[0] = (float)(sx * h);
+    s[1] = (float)(sy * h);
+    s[2] = (float)(sz * h);
+    float e[3] = {(float)(p1x - p2x), (float)(p1y - p2y), (float)(p1z - p2z)};
+    s[3] = (float)(CallC<double>(FUN_5ab4d0, e) * h);
+}
