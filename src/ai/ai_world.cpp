@@ -21665,7 +21665,7 @@ extern "C" void __fastcall Vec104_FreeStorage(BYTE* s, void*)
 
 extern "C" void __cdecl free(void*);
 ASM_PROC(FUN_4731e0)
-ASM_VAR(AsmLabel, g_q53_48d600, $L_48d600)
+extern "C" void __fastcall Points_Reverse(BYTE* s);
 // [$L_4485d0] frees a list (sentinel at +0): each node's +8 destroyed, then the sentinel
 extern "C" void __fastcall List4485d0_Destroy(BYTE* s, void*)
 {
@@ -21694,5 +21694,5 @@ extern "C" int __fastcall Ai4555e0_SwapSides(BYTE* s, void*)
     if (f & 8)
         n |= 4;
     F(DWORD, s, 8) = n;
-    return CallThis<int>((void (*)())(void*)g_q53_48d600, s + 56);
+    return CallThis<int>((void (*)())Points_Reverse, s + 56);
 }
