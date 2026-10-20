@@ -1515,3 +1515,18 @@ extern "C" double __fastcall Points_Distance(BYTE* s, void*, double t1, int i1, 
         len += Run119_SegLen(p, j);
     return len + Run119_SegLen(p, i2) * t2;
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q197_FUN_490d60(); KING_ALIAS("_q197_FUN_490d60", "_Int_InitOne")
+extern "C" void q197_L_490d90(); KING_ALIAS("_q197_L_490d90", "_Block691cd0_Free")
+// [$L_490d80] registers the teardown at exit
+extern "C" int __cdecl Static490d50_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_490d90); }
+// [$L_490d50] the static initializer: FUN_490d60, then the teardown at exit
+extern "C" int __cdecl Static490d50_Init(void)
+{
+    CallC(q197_FUN_490d60);
+    return Static490d50_AtExit();
+}

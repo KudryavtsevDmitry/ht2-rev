@@ -974,3 +974,21 @@ extern "C" int __fastcall Sta_Media4df850(BYTE* s, void*, STA94_PARAMS)
         return r;
     return CallC<int>(FUN_4df540, s, STA94_ARGS);
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(char, g_q197_696750, $L_696750)
+extern "C" void q197_FUN_4e1de0(); KING_ALIAS("_q197_FUN_4e1de0", "_Startup_Ini696750")
+extern "C" void q197_FUN_4e1e60(); KING_ALIAS("_q197_FUN_4e1e60", "@CKingApp_Destruct@8")
+// [$L_4e1e00] destroys the static object 696750 at exit (FUN_4e1e60)
+extern "C" void __cdecl Static696750_Destroy(void) { CallThis(q197_FUN_4e1e60, &g_q197_696750); }
+// [$L_4e1df0] registers the teardown at exit
+extern "C" int __cdecl Static696750_AtExit(void) { return atexit((void(__cdecl*)(void))Static696750_Destroy); }
+// [$L_4e1dd0] the static initializer: FUN_4e1de0, then the teardown at exit
+extern "C" int __cdecl Static696750_Init(void)
+{
+    CallC(q197_FUN_4e1de0);
+    return Static696750_AtExit();
+}

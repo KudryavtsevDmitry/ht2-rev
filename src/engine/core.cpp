@@ -1394,3 +1394,48 @@ extern "C" void __cdecl Core_Free71e838(void)
     operator delete(g_q156_71e838);
     operator delete(g_q156_71e83c);
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+extern "C" void q197_FUN_5d29b0(); KING_ALIAS("_q197_FUN_5d29b0", "_Pool71e830_Init")
+extern "C" void q197_FUN_5d2b50(); KING_ALIAS("_q197_FUN_5d2b50", "_Static71e820_Construct")
+extern "C" void q197_FUN_5d2c00(); KING_ALIAS("_q197_FUN_5d2c00", "FUN_5d2c00")
+extern "C" void q197_FUN_5d3010(); KING_ALIAS("_q197_FUN_5d3010", "_Pool7200c0_Init")
+extern "C" void q197_L_5d29e0(); KING_ALIAS("_q197_L_5d29e0", "_Core_Free71e838")
+extern "C" void q197_L_5d2b70(); KING_ALIAS("_q197_L_5d2b70", "$L_5d2b70")
+extern "C" void q197_L_5d2e20(); KING_ALIAS("_q197_L_5d2e20", "_Table71e858_FreeAll")
+extern "C" void q197_L_5d3040(); KING_ALIAS("_q197_L_5d3040", "$L_5d3040")
+// [$L_5d29d0] registers the teardown at exit
+extern "C" int __cdecl Static5d29a0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_5d29e0); }
+// [$L_5d29a0] the static initializer: FUN_5d29b0, then the teardown at exit
+extern "C" int __cdecl Static5d29a0_Init(void)
+{
+    CallC(q197_FUN_5d29b0);
+    return Static5d29a0_AtExit();
+}
+// [$L_5d2b60] registers the teardown at exit
+extern "C" int __cdecl Static5d2b40_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_5d2b70); }
+// [$L_5d2b40] the static initializer: FUN_5d2b50, then the teardown at exit
+extern "C" int __cdecl Static5d2b40_Init(void)
+{
+    CallC(q197_FUN_5d2b50);
+    return Static5d2b40_AtExit();
+}
+// [$L_5d2e10] registers the teardown at exit
+extern "C" int __cdecl Static5d2bf0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_5d2e20); }
+// [$L_5d2bf0] the static initializer: FUN_5d2c00, then the teardown at exit
+extern "C" int __cdecl Static5d2bf0_Init(void)
+{
+    CallC(q197_FUN_5d2c00);
+    return Static5d2bf0_AtExit();
+}
+// [$L_5d3030] registers the teardown at exit
+extern "C" int __cdecl Static5d3000_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_5d3040); }
+// [$L_5d3000] the static initializer: FUN_5d3010, then the teardown at exit
+extern "C" int __cdecl Static5d3000_Init(void)
+{
+    CallC(q197_FUN_5d3010);
+    return Static5d3000_AtExit();
+}

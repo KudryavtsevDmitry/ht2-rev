@@ -21785,3 +21785,367 @@ extern "C" void __cdecl AI_SwitchToRandom()
         return;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Static initializers: construct a global, register its teardown at exit.
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(char, g_q197_68a850, $L_68a850)
+ASM_VAR(char, g_q197_68a860, $L_68a860)
+ASM_VAR(char, g_q197_68a958, $L_68a958)
+ASM_VAR(char, g_q197_68a970, $L_68a970)
+ASM_VAR(char, g_q197_68a980, $L_68a980)
+ASM_VAR(char, g_q197_68b990, $L_68b990)
+ASM_VAR(char, g_q197_68b9b8, $L_68b9b8)
+ASM_VAR(char, g_q197_68bac8, $L_68bac8)
+ASM_VAR(char, g_q197_68bb58, $L_68bb58)
+ASM_VAR(char, g_q197_68cbf8, $L_68cbf8)
+ASM_VAR(char, g_q197_68cec0, $L_68cec0)
+ASM_VAR(char, g_q197_68cf38, $L_68cf38)
+ASM_VAR(char, g_q197_68cf58, $L_68cf58)
+ASM_VAR(char, g_q197_68cf60, $L_68cf60)
+ASM_VAR(char, g_q197_68cf6c, $L_68cf6c)
+ASM_VAR(char, g_q197_68cfd8, $L_68cfd8)
+ASM_VAR(char, g_q197_68d0a8, $L_68d0a8)
+ASM_VAR(char, g_q197_68d0b8, $L_68d0b8)
+ASM_VAR(char, g_q197_68d0c8, $L_68d0c8)
+ASM_VAR(char, g_q197_68d0d8, $L_68d0d8)
+extern "C" void q197_FUN_4012e0(); KING_ALIAS("_q197_FUN_4012e0", "_AI_Init68bb58")
+extern "C" void q197_FUN_401360(); KING_ALIAS("_q197_FUN_401360", "_AI_Init68cf28")
+extern "C" void q197_FUN_4013b0(); KING_ALIAS("_q197_FUN_4013b0", "_AI_Init68a840")
+extern "C" void q197_FUN_401970(); KING_ALIAS("_q197_FUN_401970", "_AI_Destroy68b998")
+extern "C" void q197_FUN_401db0(); KING_ALIAS("_q197_FUN_401db0", "_AI_Init68bac8")
+extern "C" void q197_FUN_401e00(); KING_ALIAS("_q197_FUN_401e00", "_AI_Init68ccb8")
+extern "C" void q197_FUN_401ef0(); KING_ALIAS("_q197_FUN_401ef0", "_AI_Init68cf38")
+extern "C" void q197_FUN_401f40(); KING_ALIAS("_q197_FUN_401f40", "_AI_Init68b990")
+extern "C" void q197_FUN_401f90(); KING_ALIAS("_q197_FUN_401f90", "_AI_Init68d0d8")
+extern "C" void q197_FUN_401fe0(); KING_ALIAS("_q197_FUN_401fe0", "_AI_Init68d0c8")
+extern "C" void q197_FUN_402030(); KING_ALIAS("_q197_FUN_402030", "_AI_Init68cf6c")
+extern "C" void q197_FUN_402080(); KING_ALIAS("_q197_FUN_402080", "_AI_Init68cec0")
+extern "C" void q197_FUN_4020d0(); KING_ALIAS("_q197_FUN_4020d0", "_AI_Init68cc98")
+extern "C" void q197_FUN_402170(); KING_ALIAS("_q197_FUN_402170", "_AI_Init68cfd8")
+extern "C" void q197_FUN_4021c0(); KING_ALIAS("_q197_FUN_4021c0", "_AI_Init68d0b8")
+extern "C" void q197_FUN_402210(); KING_ALIAS("_q197_FUN_402210", "_AI_Init68cc18")
+extern "C" void q197_FUN_4022b0(); KING_ALIAS("_q197_FUN_4022b0", "_AI_Init68a970")
+extern "C" void q197_FUN_402300(); KING_ALIAS("_q197_FUN_402300", "_AI_Init68a850")
+extern "C" void q197_FUN_402350(); KING_ALIAS("_q197_FUN_402350", "_AI_Init68b9b8")
+extern "C" void q197_FUN_4023a0(); KING_ALIAS("_q197_FUN_4023a0", "_AI_Init68a958")
+extern "C" void q197_FUN_4023f0(); KING_ALIAS("_q197_FUN_4023f0", "_AI_Init68cca8")
+extern "C" void q197_FUN_4024b0(); KING_ALIAS("_q197_FUN_4024b0", "_AI_Init68cbf8")
+extern "C" void q197_FUN_4025d0(); KING_ALIAS("_q197_FUN_4025d0", "_AI_Init68d0a8")
+extern "C" void q197_FUN_402660(); KING_ALIAS("_q197_FUN_402660", "_AI_Init68a980")
+extern "C" void q197_FUN_4026b0(); KING_ALIAS("_q197_FUN_4026b0", "_AI_Init68cf60")
+extern "C" void q197_FUN_402700(); KING_ALIAS("_q197_FUN_402700", "_AI_Init68cc88")
+extern "C" void q197_FUN_4028b0(); KING_ALIAS("_q197_FUN_4028b0", "_AI_Destroy68cff0")
+extern "C" void q197_FUN_402b50(); KING_ALIAS("_q197_FUN_402b50", "_AI_Destroy68d008")
+extern "C" void q197_FUN_402ba0(); KING_ALIAS("_q197_FUN_402ba0", "_AI_Destroy68cf10")
+extern "C" void q197_FUN_404420(); KING_ALIAS("_q197_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void q197_FUN_4056f0(); KING_ALIAS("_q197_FUN_4056f0", "_AI_Init68cf58")
+extern "C" void q197_FUN_415260(); KING_ALIAS("_q197_FUN_415260", "_AI_Init68a860")
+extern "C" void q197_FUN_447570(); KING_ALIAS("_q197_FUN_447570", "@StrRefVec_Destroy@8")
+extern "C" void q197_FUN_447970(); KING_ALIAS("_q197_FUN_447970", "@Vec4_FreeStorage@8")
+extern "C" void q197_L_401390(); KING_ALIAS("_q197_L_401390", "$L_401390")
+extern "C" void q197_L_4013e0(); KING_ALIAS("_q197_L_4013e0", "$L_4013e0")
+extern "C" void q197_L_401990(); KING_ALIAS("_q197_L_401990", "$L_401990")
+extern "C" void q197_L_401e30(); KING_ALIAS("_q197_L_401e30", "$L_401e30")
+extern "C" void q197_L_402100(); KING_ALIAS("_q197_L_402100", "$L_402100")
+extern "C" void q197_L_402240(); KING_ALIAS("_q197_L_402240", "$L_402240")
+extern "C" void q197_L_402430(); KING_ALIAS("_q197_L_402430", "$L_402430")
+extern "C" void q197_L_402730(); KING_ALIAS("_q197_L_402730", "$L_402730")
+extern "C" void q197_L_4028d0(); KING_ALIAS("_q197_L_4028d0", "_AiStatic68cff0_Init")
+extern "C" void q197_L_402b70(); KING_ALIAS("_q197_L_402b70", "_AiStatic68d008_Init")
+extern "C" void q197_L_402bc0(); KING_ALIAS("_q197_L_402bc0", "_AiStatic68cf10_Init")
+extern "C" void q197_L_4485d0(); KING_ALIAS("_q197_L_4485d0", "@List4485d0_Destroy@8")
+extern "C" void q197_L_449130(); KING_ALIAS("_q197_L_449130", "$L_449130")
+extern "C" void q197_L_4494c0(); KING_ALIAS("_q197_L_4494c0", "$L_4494c0")
+extern "C" void q197_L_449740(); KING_ALIAS("_q197_L_449740", "$L_449740")
+extern "C" void q197_L_4aee50(); KING_ALIAS("_q197_L_4aee50", "$L_4aee50")
+extern "C" void q197_L_4af6b0(); KING_ALIAS("_q197_L_4af6b0", "$L_4af6b0")
+// [$L_401300] destroys the static object 68bb58 at exit ($L_4aee50)
+extern "C" void __cdecl Static68bb58_Destroy(void) { CallThis(q197_L_4aee50, &g_q197_68bb58); }
+// [$L_4012f0] registers the teardown at exit
+extern "C" int __cdecl Static68bb58_AtExit(void) { return atexit((void(__cdecl*)(void))Static68bb58_Destroy); }
+// [$L_4012d0] the static initializer: FUN_4012e0, then the teardown at exit
+extern "C" int __cdecl Static68bb58_Init(void)
+{
+    CallC(q197_FUN_4012e0);
+    return Static68bb58_AtExit();
+}
+// [$L_401380] registers the teardown at exit
+extern "C" int __cdecl Static401350_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_401390); }
+// [$L_401350] the static initializer: FUN_401360, then the teardown at exit
+extern "C" int __cdecl Static401350_Init(void)
+{
+    CallC(q197_FUN_401360);
+    return Static401350_AtExit();
+}
+// [$L_4013d0] registers the teardown at exit
+extern "C" int __cdecl Static4013a0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_4013e0); }
+// [$L_4013a0] the static initializer: FUN_4013b0, then the teardown at exit
+extern "C" int __cdecl Static4013a0_Init(void)
+{
+    CallC(q197_FUN_4013b0);
+    return Static4013a0_AtExit();
+}
+// [$L_401980] registers the teardown at exit
+extern "C" int __cdecl Static401960_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_401990); }
+// [$L_401960] the static initializer: FUN_401970, then the teardown at exit
+extern "C" int __cdecl Static401960_Init(void)
+{
+    CallC(q197_FUN_401970);
+    return Static401960_AtExit();
+}
+// [$L_401de0] destroys the static object 68bac8 at exit (FUN_404420)
+extern "C" void __cdecl Static68bac8_Destroy(void) { CallThis(q197_FUN_404420, &g_q197_68bac8); }
+// [$L_401dd0] registers the teardown at exit
+extern "C" int __cdecl Static68bac8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68bac8_Destroy); }
+// [$L_401da0] the static initializer: FUN_401db0, then the teardown at exit
+extern "C" int __cdecl Static68bac8_Init(void)
+{
+    CallC(q197_FUN_401db0);
+    return Static68bac8_AtExit();
+}
+// [$L_401e20] registers the teardown at exit
+extern "C" int __cdecl Static401df0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_401e30); }
+// [$L_401df0] the static initializer: FUN_401e00, then the teardown at exit
+extern "C" int __cdecl Static401df0_Init(void)
+{
+    CallC(q197_FUN_401e00);
+    return Static401df0_AtExit();
+}
+// [$L_401f20] destroys the static object 68cf38 at exit (FUN_447970)
+extern "C" void __cdecl Static68cf38_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68cf38); }
+// [$L_401f10] registers the teardown at exit
+extern "C" int __cdecl Static68cf38_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cf38_Destroy); }
+// [$L_401ee0] the static initializer: FUN_401ef0, then the teardown at exit
+extern "C" int __cdecl Static68cf38_Init(void)
+{
+    CallC(q197_FUN_401ef0);
+    return Static68cf38_AtExit();
+}
+// [$L_401f70] destroys the static object 68b990 at exit ($L_4485d0)
+extern "C" void __cdecl Static68b990_Destroy(void) { CallThis(q197_L_4485d0, &g_q197_68b990); }
+// [$L_401f60] registers the teardown at exit
+extern "C" int __cdecl Static68b990_AtExit(void) { return atexit((void(__cdecl*)(void))Static68b990_Destroy); }
+// [$L_401f30] the static initializer: FUN_401f40, then the teardown at exit
+extern "C" int __cdecl Static68b990_Init(void)
+{
+    CallC(q197_FUN_401f40);
+    return Static68b990_AtExit();
+}
+// [$L_401fc0] destroys the static object 68d0d8 at exit (FUN_447970)
+extern "C" void __cdecl Static68d0d8_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68d0d8); }
+// [$L_401fb0] registers the teardown at exit
+extern "C" int __cdecl Static68d0d8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68d0d8_Destroy); }
+// [$L_401f80] the static initializer: FUN_401f90, then the teardown at exit
+extern "C" int __cdecl Static68d0d8_Init(void)
+{
+    CallC(q197_FUN_401f90);
+    return Static68d0d8_AtExit();
+}
+// [$L_402010] destroys the static object 68d0c8 at exit (FUN_447970)
+extern "C" void __cdecl Static68d0c8_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68d0c8); }
+// [$L_402000] registers the teardown at exit
+extern "C" int __cdecl Static68d0c8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68d0c8_Destroy); }
+// [$L_401fd0] the static initializer: FUN_401fe0, then the teardown at exit
+extern "C" int __cdecl Static68d0c8_Init(void)
+{
+    CallC(q197_FUN_401fe0);
+    return Static68d0c8_AtExit();
+}
+// [$L_402060] destroys the static object 68cf6c at exit ($L_4af6b0)
+extern "C" void __cdecl Static68cf6c_Destroy(void) { CallThis(q197_L_4af6b0, &g_q197_68cf6c); }
+// [$L_402050] registers the teardown at exit
+extern "C" int __cdecl Static68cf6c_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cf6c_Destroy); }
+// [$L_402020] the static initializer: FUN_402030, then the teardown at exit
+extern "C" int __cdecl Static68cf6c_Init(void)
+{
+    CallC(q197_FUN_402030);
+    return Static68cf6c_AtExit();
+}
+// [$L_4020b0] destroys the static object 68cec0 at exit (FUN_447970)
+extern "C" void __cdecl Static68cec0_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68cec0); }
+// [$L_4020a0] registers the teardown at exit
+extern "C" int __cdecl Static68cec0_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cec0_Destroy); }
+// [$L_402070] the static initializer: FUN_402080, then the teardown at exit
+extern "C" int __cdecl Static68cec0_Init(void)
+{
+    CallC(q197_FUN_402080);
+    return Static68cec0_AtExit();
+}
+// [$L_4020f0] registers the teardown at exit
+extern "C" int __cdecl Static4020c0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_402100); }
+// [$L_4020c0] the static initializer: FUN_4020d0, then the teardown at exit
+extern "C" int __cdecl Static4020c0_Init(void)
+{
+    CallC(q197_FUN_4020d0);
+    return Static4020c0_AtExit();
+}
+// [$L_4021a0] destroys the static object 68cfd8 at exit (FUN_447970)
+extern "C" void __cdecl Static68cfd8_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68cfd8); }
+// [$L_402190] registers the teardown at exit
+extern "C" int __cdecl Static68cfd8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cfd8_Destroy); }
+// [$L_402160] the static initializer: FUN_402170, then the teardown at exit
+extern "C" int __cdecl Static68cfd8_Init(void)
+{
+    CallC(q197_FUN_402170);
+    return Static68cfd8_AtExit();
+}
+// [$L_4021f0] destroys the static object 68d0b8 at exit (FUN_447970)
+extern "C" void __cdecl Static68d0b8_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68d0b8); }
+// [$L_4021e0] registers the teardown at exit
+extern "C" int __cdecl Static68d0b8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68d0b8_Destroy); }
+// [$L_4021b0] the static initializer: FUN_4021c0, then the teardown at exit
+extern "C" int __cdecl Static68d0b8_Init(void)
+{
+    CallC(q197_FUN_4021c0);
+    return Static68d0b8_AtExit();
+}
+// [$L_402230] registers the teardown at exit
+extern "C" int __cdecl Static402200_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_402240); }
+// [$L_402200] the static initializer: FUN_402210, then the teardown at exit
+extern "C" int __cdecl Static402200_Init(void)
+{
+    CallC(q197_FUN_402210);
+    return Static402200_AtExit();
+}
+// [$L_4022e0] destroys the static object 68a970 at exit (FUN_447970)
+extern "C" void __cdecl Static68a970_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68a970); }
+// [$L_4022d0] registers the teardown at exit
+extern "C" int __cdecl Static68a970_AtExit(void) { return atexit((void(__cdecl*)(void))Static68a970_Destroy); }
+// [$L_4022a0] the static initializer: FUN_4022b0, then the teardown at exit
+extern "C" int __cdecl Static68a970_Init(void)
+{
+    CallC(q197_FUN_4022b0);
+    return Static68a970_AtExit();
+}
+// [$L_402330] destroys the static object 68a850 at exit (FUN_447570)
+extern "C" void __cdecl Static68a850_Destroy(void) { CallThis(q197_FUN_447570, &g_q197_68a850); }
+// [$L_402320] registers the teardown at exit
+extern "C" int __cdecl Static68a850_AtExit(void) { return atexit((void(__cdecl*)(void))Static68a850_Destroy); }
+// [$L_4022f0] the static initializer: FUN_402300, then the teardown at exit
+extern "C" int __cdecl Static68a850_Init(void)
+{
+    CallC(q197_FUN_402300);
+    return Static68a850_AtExit();
+}
+// [$L_402380] destroys the static object 68b9b8 at exit (FUN_447570)
+extern "C" void __cdecl Static68b9b8_Destroy(void) { CallThis(q197_FUN_447570, &g_q197_68b9b8); }
+// [$L_402370] registers the teardown at exit
+extern "C" int __cdecl Static68b9b8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68b9b8_Destroy); }
+// [$L_402340] the static initializer: FUN_402350, then the teardown at exit
+extern "C" int __cdecl Static68b9b8_Init(void)
+{
+    CallC(q197_FUN_402350);
+    return Static68b9b8_AtExit();
+}
+// [$L_4023d0] destroys the static object 68a958 at exit ($L_449130)
+extern "C" void __cdecl Static68a958_Destroy(void) { CallThis(q197_L_449130, &g_q197_68a958); }
+// [$L_4023c0] registers the teardown at exit
+extern "C" int __cdecl Static68a958_AtExit(void) { return atexit((void(__cdecl*)(void))Static68a958_Destroy); }
+// [$L_402390] the static initializer: FUN_4023a0, then the teardown at exit
+extern "C" int __cdecl Static68a958_Init(void)
+{
+    CallC(q197_FUN_4023a0);
+    return Static68a958_AtExit();
+}
+// [$L_402420] registers the teardown at exit
+extern "C" int __cdecl Static4023e0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_402430); }
+// [$L_4023e0] the static initializer: FUN_4023f0, then the teardown at exit
+extern "C" int __cdecl Static4023e0_Init(void)
+{
+    CallC(q197_FUN_4023f0);
+    return Static4023e0_AtExit();
+}
+// [$L_4025b0] destroys the static object 68cbf8 at exit ($L_4494c0)
+extern "C" void __cdecl Static68cbf8_Destroy(void) { CallThis(q197_L_4494c0, &g_q197_68cbf8); }
+// [$L_4025a0] registers the teardown at exit
+extern "C" int __cdecl Static68cbf8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cbf8_Destroy); }
+// [$L_4024a0] the static initializer: FUN_4024b0, then the teardown at exit
+extern "C" int __cdecl Static68cbf8_Init(void)
+{
+    CallC(q197_FUN_4024b0);
+    return Static68cbf8_AtExit();
+}
+// [$L_402600] destroys the static object 68d0a8 at exit (FUN_404420)
+extern "C" void __cdecl Static68d0a8_Destroy(void) { CallThis(q197_FUN_404420, &g_q197_68d0a8); }
+// [$L_4025f0] registers the teardown at exit
+extern "C" int __cdecl Static68d0a8_AtExit(void) { return atexit((void(__cdecl*)(void))Static68d0a8_Destroy); }
+// [$L_4025c0] the static initializer: FUN_4025d0, then the teardown at exit
+extern "C" int __cdecl Static68d0a8_Init(void)
+{
+    CallC(q197_FUN_4025d0);
+    return Static68d0a8_AtExit();
+}
+// [$L_402690] destroys the static object 68a980 at exit (FUN_447970)
+extern "C" void __cdecl Static68a980_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68a980); }
+// [$L_402680] registers the teardown at exit
+extern "C" int __cdecl Static68a980_AtExit(void) { return atexit((void(__cdecl*)(void))Static68a980_Destroy); }
+// [$L_402650] the static initializer: FUN_402660, then the teardown at exit
+extern "C" int __cdecl Static68a980_Init(void)
+{
+    CallC(q197_FUN_402660);
+    return Static68a980_AtExit();
+}
+// [$L_4026e0] destroys the static object 68cf60 at exit (FUN_447970)
+extern "C" void __cdecl Static68cf60_Destroy(void) { CallThis(q197_FUN_447970, &g_q197_68cf60); }
+// [$L_4026d0] registers the teardown at exit
+extern "C" int __cdecl Static68cf60_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cf60_Destroy); }
+// [$L_4026a0] the static initializer: FUN_4026b0, then the teardown at exit
+extern "C" int __cdecl Static68cf60_Init(void)
+{
+    CallC(q197_FUN_4026b0);
+    return Static68cf60_AtExit();
+}
+// [$L_402720] registers the teardown at exit
+extern "C" int __cdecl Static4026f0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_402730); }
+// [$L_4026f0] the static initializer: FUN_402700, then the teardown at exit
+extern "C" int __cdecl Static4026f0_Init(void)
+{
+    CallC(q197_FUN_402700);
+    return Static4026f0_AtExit();
+}
+// [$L_4028c0] registers the teardown at exit
+extern "C" int __cdecl Static4028a0_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_4028d0); }
+// [$L_4028a0] the static initializer: FUN_4028b0, then the teardown at exit
+extern "C" int __cdecl Static4028a0_Init(void)
+{
+    CallC(q197_FUN_4028b0);
+    return Static4028a0_AtExit();
+}
+// [$L_402b60] registers the teardown at exit
+extern "C" int __cdecl Static402b40_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_402b70); }
+// [$L_402b40] the static initializer: FUN_402b50, then the teardown at exit
+extern "C" int __cdecl Static402b40_Init(void)
+{
+    CallC(q197_FUN_402b50);
+    return Static402b40_AtExit();
+}
+// [$L_402bb0] registers the teardown at exit
+extern "C" int __cdecl Static402b90_AtExit(void) { return atexit((void(__cdecl*)(void))q197_L_402bc0); }
+// [$L_402b90] the static initializer: FUN_402ba0, then the teardown at exit
+extern "C" int __cdecl Static402b90_Init(void)
+{
+    CallC(q197_FUN_402ba0);
+    return Static402b90_AtExit();
+}
+// [$L_405720] destroys the static object 68cf58 at exit ($L_449740)
+extern "C" void __cdecl Static68cf58_Destroy(void) { CallThis(q197_L_449740, &g_q197_68cf58); }
+// [$L_405710] registers the teardown at exit
+extern "C" int __cdecl Static68cf58_AtExit(void) { return atexit((void(__cdecl*)(void))Static68cf58_Destroy); }
+// [$L_4056e0] the static initializer: FUN_4056f0, then the teardown at exit
+extern "C" int __cdecl Static68cf58_Init(void)
+{
+    CallC(q197_FUN_4056f0);
+    return Static68cf58_AtExit();
+}
+// [$L_415290] destroys the static object 68a860 at exit (FUN_404420)
+extern "C" void __cdecl Static68a860_Destroy(void) { CallThis(q197_FUN_404420, &g_q197_68a860); }
+// [$L_415280] registers the teardown at exit
+extern "C" int __cdecl Static68a860_AtExit(void) { return atexit((void(__cdecl*)(void))Static68a860_Destroy); }
+// [$L_415250] the static initializer: FUN_415260, then the teardown at exit
+extern "C" int __cdecl Static68a860_Init(void)
+{
+    CallC(q197_FUN_415260);
+    return Static68a860_AtExit();
+}

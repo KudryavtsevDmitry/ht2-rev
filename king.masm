@@ -1,3 +1,4 @@
+PUBLIC $L_401e30, $L_402100, $L_402240, $L_402430, $L_402730
 PUBLIC $L_5d7b90, $L_5d7c20, $L_5dd8c0
 PUBLIC $L_684a20
 PUBLIC $L_7242a0
@@ -1913,12 +1914,18 @@ ELSE
 EXTERN _AI_Step3:PROC
 FUN_4012c0 TEXTEQU <_AI_Step3>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4012d0 PROC
 
             call FUN_4012e0
 
             jmp $L_4012f0
 $L_4012d0 ENDP
+ELSE
+EXTERN _Static68bb58_Init:PROC
+$L_4012d0 TEXTEQU <_Static68bb58_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -1942,6 +1949,8 @@ EXTERN _AI_Init68bb58:PROC
 FUN_4012e0 TEXTEQU <_AI_Init68bb58>
 ENDIF
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4012f0 PROC
 
             push OFFSET $L_401300
@@ -1950,15 +1959,25 @@ $L_4012f0 PROC
             pop ECX
             ret 
 $L_4012f0 ENDP
+ELSE
+EXTERN _Static68bb58_AtExit:PROC
+$L_4012f0 TEXTEQU <_Static68bb58_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401300 PROC
 
             mov ECX,OFFSET $L_68bb58
             jmp $L_4aee50
 $L_401300 ENDP
+ELSE
+EXTERN _Static68bb58_Destroy:PROC
+$L_401300 TEXTEQU <_Static68bb58_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -2004,12 +2023,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401350 PROC
 
             call FUN_401360
 
             jmp $L_401380
 $L_401350 ENDP
+ELSE
+EXTERN _Static401350_Init:PROC
+$L_401350 TEXTEQU <_Static401350_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -2048,6 +2073,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401380 PROC
 
             push OFFSET $L_401390
@@ -2056,6 +2083,10 @@ $L_401380 PROC
             pop ECX
             ret 
 $L_401380 ENDP
+ELSE
+EXTERN _Static401350_AtExit:PROC
+$L_401380 TEXTEQU <_Static401350_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -2072,12 +2103,18 @@ $L_401390 PROC
             nop
             nop
 $L_401390 ENDP
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4013a0 PROC
 
             call FUN_4013b0
 
             jmp $L_4013d0
 $L_4013a0 ENDP
+ELSE
+EXTERN _Static4013a0_Init:PROC
+$L_4013a0 TEXTEQU <_Static4013a0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -2116,6 +2153,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4013d0 PROC
 
             push OFFSET $L_4013e0
@@ -2124,6 +2163,10 @@ $L_4013d0 PROC
             pop ECX
             ret 
 $L_4013d0 ENDP
+ELSE
+EXTERN _Static4013a0_AtExit:PROC
+$L_4013d0 TEXTEQU <_Static4013a0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -2829,12 +2872,18 @@ ELSE
 EXTERN @Buf_AppendPrefixed@8:PROC
 FUN_4018f0 TEXTEQU <@Buf_AppendPrefixed@8>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401960 PROC
 
             call FUN_401970
 
             jmp $L_401980
 $L_401960 ENDP
+ELSE
+EXTERN _Static401960_Init:PROC
+$L_401960 TEXTEQU <_Static401960_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -2859,6 +2908,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401980 PROC
 
             push OFFSET $L_401990
@@ -2867,6 +2918,10 @@ $L_401980 PROC
             pop ECX
             ret 
 $L_401980 ENDP
+ELSE
+EXTERN _Static401960_AtExit:PROC
+$L_401980 TEXTEQU <_Static401960_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3351,12 +3406,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401da0 PROC
 
             call FUN_401db0
 
             jmp $L_401dd0
 $L_401da0 ENDP
+ELSE
+EXTERN _Static68bac8_Init:PROC
+$L_401da0 TEXTEQU <_Static68bac8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3395,6 +3456,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401dd0 PROC
 
             push OFFSET $L_401de0
@@ -3403,27 +3466,43 @@ $L_401dd0 PROC
             pop ECX
             ret 
 $L_401dd0 ENDP
+ELSE
+EXTERN _Static68bac8_AtExit:PROC
+$L_401dd0 TEXTEQU <_Static68bac8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401de0 PROC
 
             mov ECX,OFFSET $L_68bac8
             jmp FUN_404420
 $L_401de0 ENDP
+ELSE
+EXTERN _Static68bac8_Destroy:PROC
+$L_401de0 TEXTEQU <_Static68bac8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401df0 PROC
 
             call FUN_401e00
 
             jmp $L_401e20
 $L_401df0 ENDP
+ELSE
+EXTERN _Static401df0_Init:PROC
+$L_401df0 TEXTEQU <_Static401df0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3463,6 +3542,8 @@ ELSE
 EXTERN _AI_Init68ccb8:PROC
 FUN_401e00 TEXTEQU <_AI_Init68ccb8>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401e20 PROC
 
             push OFFSET $L_401e30
@@ -3471,6 +3552,10 @@ $L_401e20 PROC
             pop ECX
             ret 
 $L_401e20 ENDP
+ELSE
+EXTERN _Static401df0_AtExit:PROC
+$L_401e20 TEXTEQU <_Static401df0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3615,12 +3700,18 @@ $L_401ed0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401ee0 PROC
 
             call FUN_401ef0
 
             jmp $L_401f10
 $L_401ee0 ENDP
+ELSE
+EXTERN _Static68cf38_Init:PROC
+$L_401ee0 TEXTEQU <_Static68cf38_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3659,6 +3750,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401f10 PROC
 
             push OFFSET $L_401f20
@@ -3667,27 +3760,43 @@ $L_401f10 PROC
             pop ECX
             ret 
 $L_401f10 ENDP
+ELSE
+EXTERN _Static68cf38_AtExit:PROC
+$L_401f10 TEXTEQU <_Static68cf38_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401f20 PROC
 
             mov ECX,OFFSET $L_68cf38
             jmp FUN_447970
 $L_401f20 ENDP
+ELSE
+EXTERN _Static68cf38_Destroy:PROC
+$L_401f20 TEXTEQU <_Static68cf38_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401f30 PROC
 
             call FUN_401f40
 
             jmp $L_401f60
 $L_401f30 ENDP
+ELSE
+EXTERN _Static68b990_Init:PROC
+$L_401f30 TEXTEQU <_Static68b990_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3726,6 +3835,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401f60 PROC
 
             push OFFSET $L_401f70
@@ -3734,27 +3845,43 @@ $L_401f60 PROC
             pop ECX
             ret 
 $L_401f60 ENDP
+ELSE
+EXTERN _Static68b990_AtExit:PROC
+$L_401f60 TEXTEQU <_Static68b990_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401f70 PROC
 
             mov ECX,OFFSET $L_68b990
             jmp $L_4485d0
 $L_401f70 ENDP
+ELSE
+EXTERN _Static68b990_Destroy:PROC
+$L_401f70 TEXTEQU <_Static68b990_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401f80 PROC
 
             call FUN_401f90
 
             jmp $L_401fb0
 $L_401f80 ENDP
+ELSE
+EXTERN _Static68d0d8_Init:PROC
+$L_401f80 TEXTEQU <_Static68d0d8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3793,6 +3920,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401fb0 PROC
 
             push OFFSET $L_401fc0
@@ -3801,27 +3930,43 @@ $L_401fb0 PROC
             pop ECX
             ret 
 $L_401fb0 ENDP
+ELSE
+EXTERN _Static68d0d8_AtExit:PROC
+$L_401fb0 TEXTEQU <_Static68d0d8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401fc0 PROC
 
             mov ECX,OFFSET $L_68d0d8
             jmp FUN_447970
 $L_401fc0 ENDP
+ELSE
+EXTERN _Static68d0d8_Destroy:PROC
+$L_401fc0 TEXTEQU <_Static68d0d8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401fd0 PROC
 
             call FUN_401fe0
 
             jmp $L_402000
 $L_401fd0 ENDP
+ELSE
+EXTERN _Static68d0c8_Init:PROC
+$L_401fd0 TEXTEQU <_Static68d0c8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3860,6 +4005,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402000 PROC
 
             push OFFSET $L_402010
@@ -3868,27 +4015,43 @@ $L_402000 PROC
             pop ECX
             ret 
 $L_402000 ENDP
+ELSE
+EXTERN _Static68d0c8_AtExit:PROC
+$L_402000 TEXTEQU <_Static68d0c8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402010 PROC
 
             mov ECX,OFFSET $L_68d0c8
             jmp FUN_447970
 $L_402010 ENDP
+ELSE
+EXTERN _Static68d0c8_Destroy:PROC
+$L_402010 TEXTEQU <_Static68d0c8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402020 PROC
 
             call FUN_402030
 
             jmp $L_402050
 $L_402020 ENDP
+ELSE
+EXTERN _Static68cf6c_Init:PROC
+$L_402020 TEXTEQU <_Static68cf6c_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3927,6 +4090,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402050 PROC
 
             push OFFSET $L_402060
@@ -3935,27 +4100,43 @@ $L_402050 PROC
             pop ECX
             ret 
 $L_402050 ENDP
+ELSE
+EXTERN _Static68cf6c_AtExit:PROC
+$L_402050 TEXTEQU <_Static68cf6c_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402060 PROC
 
             mov ECX,OFFSET $L_68cf6c
             jmp $L_4af6b0
 $L_402060 ENDP
+ELSE
+EXTERN _Static68cf6c_Destroy:PROC
+$L_402060 TEXTEQU <_Static68cf6c_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402070 PROC
 
             call FUN_402080
 
             jmp $L_4020a0
 $L_402070 ENDP
+ELSE
+EXTERN _Static68cec0_Init:PROC
+$L_402070 TEXTEQU <_Static68cec0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -3994,6 +4175,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4020a0 PROC
 
             push OFFSET $L_4020b0
@@ -4002,27 +4185,43 @@ $L_4020a0 PROC
             pop ECX
             ret 
 $L_4020a0 ENDP
+ELSE
+EXTERN _Static68cec0_AtExit:PROC
+$L_4020a0 TEXTEQU <_Static68cec0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4020b0 PROC
 
             mov ECX,OFFSET $L_68cec0
             jmp FUN_447970
 $L_4020b0 ENDP
+ELSE
+EXTERN _Static68cec0_Destroy:PROC
+$L_4020b0 TEXTEQU <_Static68cec0_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4020c0 PROC
 
             call FUN_4020d0
 
             jmp $L_4020f0
 $L_4020c0 ENDP
+ELSE
+EXTERN _Static4020c0_Init:PROC
+$L_4020c0 TEXTEQU <_Static4020c0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4061,6 +4260,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4020f0 PROC
 
             push OFFSET $L_402100
@@ -4069,6 +4270,10 @@ $L_4020f0 PROC
             pop ECX
             ret 
 $L_4020f0 ENDP
+ELSE
+EXTERN _Static4020c0_AtExit:PROC
+$L_4020f0 TEXTEQU <_Static4020c0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4148,12 +4353,18 @@ $L_402150 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402160 PROC
 
             call FUN_402170
 
             jmp $L_402190
 $L_402160 ENDP
+ELSE
+EXTERN _Static68cfd8_Init:PROC
+$L_402160 TEXTEQU <_Static68cfd8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4192,6 +4403,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402190 PROC
 
             push OFFSET $L_4021a0
@@ -4200,27 +4413,43 @@ $L_402190 PROC
             pop ECX
             ret 
 $L_402190 ENDP
+ELSE
+EXTERN _Static68cfd8_AtExit:PROC
+$L_402190 TEXTEQU <_Static68cfd8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4021a0 PROC
 
             mov ECX,OFFSET $L_68cfd8
             jmp FUN_447970
 $L_4021a0 ENDP
+ELSE
+EXTERN _Static68cfd8_Destroy:PROC
+$L_4021a0 TEXTEQU <_Static68cfd8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4021b0 PROC
 
             call FUN_4021c0
 
             jmp $L_4021e0
 $L_4021b0 ENDP
+ELSE
+EXTERN _Static68d0b8_Init:PROC
+$L_4021b0 TEXTEQU <_Static68d0b8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4259,6 +4488,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4021e0 PROC
 
             push OFFSET $L_4021f0
@@ -4267,27 +4498,43 @@ $L_4021e0 PROC
             pop ECX
             ret 
 $L_4021e0 ENDP
+ELSE
+EXTERN _Static68d0b8_AtExit:PROC
+$L_4021e0 TEXTEQU <_Static68d0b8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4021f0 PROC
 
             mov ECX,OFFSET $L_68d0b8
             jmp FUN_447970
 $L_4021f0 ENDP
+ELSE
+EXTERN _Static68d0b8_Destroy:PROC
+$L_4021f0 TEXTEQU <_Static68d0b8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402200 PROC
 
             call FUN_402210
 
             jmp $L_402230
 $L_402200 ENDP
+ELSE
+EXTERN _Static402200_Init:PROC
+$L_402200 TEXTEQU <_Static402200_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4326,6 +4573,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402230 PROC
 
             push OFFSET $L_402240
@@ -4334,6 +4583,10 @@ $L_402230 PROC
             pop ECX
             ret 
 $L_402230 ENDP
+ELSE
+EXTERN _Static402200_AtExit:PROC
+$L_402230 TEXTEQU <_Static402200_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4419,12 +4672,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4022a0 PROC
 
             call FUN_4022b0
 
             jmp $L_4022d0
 $L_4022a0 ENDP
+ELSE
+EXTERN _Static68a970_Init:PROC
+$L_4022a0 TEXTEQU <_Static68a970_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4463,6 +4722,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4022d0 PROC
 
             push OFFSET $L_4022e0
@@ -4471,27 +4732,43 @@ $L_4022d0 PROC
             pop ECX
             ret 
 $L_4022d0 ENDP
+ELSE
+EXTERN _Static68a970_AtExit:PROC
+$L_4022d0 TEXTEQU <_Static68a970_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4022e0 PROC
 
             mov ECX,OFFSET $L_68a970
             jmp FUN_447970
 $L_4022e0 ENDP
+ELSE
+EXTERN _Static68a970_Destroy:PROC
+$L_4022e0 TEXTEQU <_Static68a970_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4022f0 PROC
 
             call FUN_402300
 
             jmp $L_402320
 $L_4022f0 ENDP
+ELSE
+EXTERN _Static68a850_Init:PROC
+$L_4022f0 TEXTEQU <_Static68a850_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4531,6 +4808,8 @@ ELSE
 EXTERN _AI_Init68a850:PROC
 FUN_402300 TEXTEQU <_AI_Init68a850>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402320 PROC
 
             push OFFSET $L_402330
@@ -4539,27 +4818,43 @@ $L_402320 PROC
             pop ECX
             ret 
 $L_402320 ENDP
+ELSE
+EXTERN _Static68a850_AtExit:PROC
+$L_402320 TEXTEQU <_Static68a850_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402330 PROC
 
             mov ECX,OFFSET $L_68a850
             jmp FUN_447570
 $L_402330 ENDP
+ELSE
+EXTERN _Static68a850_Destroy:PROC
+$L_402330 TEXTEQU <_Static68a850_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402340 PROC
 
             call FUN_402350
 
             jmp $L_402370
 $L_402340 ENDP
+ELSE
+EXTERN _Static68b9b8_Init:PROC
+$L_402340 TEXTEQU <_Static68b9b8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4598,6 +4893,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402370 PROC
 
             push OFFSET $L_402380
@@ -4606,27 +4903,43 @@ $L_402370 PROC
             pop ECX
             ret 
 $L_402370 ENDP
+ELSE
+EXTERN _Static68b9b8_AtExit:PROC
+$L_402370 TEXTEQU <_Static68b9b8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402380 PROC
 
             mov ECX,OFFSET $L_68b9b8
             jmp FUN_447570
 $L_402380 ENDP
+ELSE
+EXTERN _Static68b9b8_Destroy:PROC
+$L_402380 TEXTEQU <_Static68b9b8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402390 PROC
 
             call FUN_4023a0
 
             jmp $L_4023c0
 $L_402390 ENDP
+ELSE
+EXTERN _Static68a958_Init:PROC
+$L_402390 TEXTEQU <_Static68a958_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4665,6 +4978,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4023c0 PROC
 
             push OFFSET $L_4023d0
@@ -4673,27 +4988,43 @@ $L_4023c0 PROC
             pop ECX
             ret 
 $L_4023c0 ENDP
+ELSE
+EXTERN _Static68a958_AtExit:PROC
+$L_4023c0 TEXTEQU <_Static68a958_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4023d0 PROC
 
             mov ECX,OFFSET $L_68a958
             jmp $L_449130
 $L_4023d0 ENDP
+ELSE
+EXTERN _Static68a958_Destroy:PROC
+$L_4023d0 TEXTEQU <_Static68a958_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4023e0 PROC
 
             call FUN_4023f0
 
             jmp $L_402420
 $L_4023e0 ENDP
+ELSE
+EXTERN _Static4023e0_Init:PROC
+$L_4023e0 TEXTEQU <_Static4023e0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4733,6 +5064,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402420 PROC
 
             push OFFSET $L_402430
@@ -4741,6 +5074,10 @@ $L_402420 PROC
             pop ECX
             ret 
 $L_402420 ENDP
+ELSE
+EXTERN _Static4023e0_AtExit:PROC
+$L_402420 TEXTEQU <_Static4023e0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4822,12 +5159,18 @@ $L_402490 PROC
             nop
             nop
 $L_402490 ENDP
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4024a0 PROC
 
             call FUN_4024b0
 
             jmp $L_4025a0
 $L_4024a0 ENDP
+ELSE
+EXTERN _Static68cbf8_Init:PROC
+$L_4024a0 TEXTEQU <_Static68cbf8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4931,6 +5274,8 @@ ELSE
 EXTERN _AI_Init68cbf8:PROC
 FUN_4024b0 TEXTEQU <_AI_Init68cbf8>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4025a0 PROC
 
             push OFFSET $L_4025b0
@@ -4939,27 +5284,43 @@ $L_4025a0 PROC
             pop ECX
             ret 
 $L_4025a0 ENDP
+ELSE
+EXTERN _Static68cbf8_AtExit:PROC
+$L_4025a0 TEXTEQU <_Static68cbf8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4025b0 PROC
 
             mov ECX,OFFSET $L_68cbf8
             jmp $L_4494c0
 $L_4025b0 ENDP
+ELSE
+EXTERN _Static68cbf8_Destroy:PROC
+$L_4025b0 TEXTEQU <_Static68cbf8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4025c0 PROC
 
             call FUN_4025d0
 
             jmp $L_4025f0
 $L_4025c0 ENDP
+ELSE
+EXTERN _Static68d0a8_Init:PROC
+$L_4025c0 TEXTEQU <_Static68d0a8_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -4998,6 +5359,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4025f0 PROC
 
             push OFFSET $L_402600
@@ -5006,15 +5369,25 @@ $L_4025f0 PROC
             pop ECX
             ret 
 $L_4025f0 ENDP
+ELSE
+EXTERN _Static68d0a8_AtExit:PROC
+$L_4025f0 TEXTEQU <_Static68d0a8_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402600 PROC
 
             mov ECX,OFFSET $L_68d0a8
             jmp FUN_404420
 $L_402600 ENDP
+ELSE
+EXTERN _Static68d0a8_Destroy:PROC
+$L_402600 TEXTEQU <_Static68d0a8_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5072,12 +5445,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402650 PROC
 
             call FUN_402660
 
             jmp $L_402680
 $L_402650 ENDP
+ELSE
+EXTERN _Static68a980_Init:PROC
+$L_402650 TEXTEQU <_Static68a980_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5116,6 +5495,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402680 PROC
 
             push OFFSET $L_402690
@@ -5124,27 +5505,43 @@ $L_402680 PROC
             pop ECX
             ret 
 $L_402680 ENDP
+ELSE
+EXTERN _Static68a980_AtExit:PROC
+$L_402680 TEXTEQU <_Static68a980_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402690 PROC
 
             mov ECX,OFFSET $L_68a980
             jmp FUN_447970
 $L_402690 ENDP
+ELSE
+EXTERN _Static68a980_Destroy:PROC
+$L_402690 TEXTEQU <_Static68a980_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4026a0 PROC
 
             call FUN_4026b0
 
             jmp $L_4026d0
 $L_4026a0 ENDP
+ELSE
+EXTERN _Static68cf60_Init:PROC
+$L_4026a0 TEXTEQU <_Static68cf60_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5183,6 +5580,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4026d0 PROC
 
             push OFFSET $L_4026e0
@@ -5191,27 +5590,43 @@ $L_4026d0 PROC
             pop ECX
             ret 
 $L_4026d0 ENDP
+ELSE
+EXTERN _Static68cf60_AtExit:PROC
+$L_4026d0 TEXTEQU <_Static68cf60_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4026e0 PROC
 
             mov ECX,OFFSET $L_68cf60
             jmp FUN_447970
 $L_4026e0 ENDP
+ELSE
+EXTERN _Static68cf60_Destroy:PROC
+$L_4026e0 TEXTEQU <_Static68cf60_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4026f0 PROC
 
             call FUN_402700
 
             jmp $L_402720
 $L_4026f0 ENDP
+ELSE
+EXTERN _Static4026f0_Init:PROC
+$L_4026f0 TEXTEQU <_Static4026f0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5250,6 +5665,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402720 PROC
 
             push OFFSET $L_402730
@@ -5258,6 +5675,10 @@ $L_402720 PROC
             pop ECX
             ret 
 $L_402720 ENDP
+ELSE
+EXTERN _Static4026f0_AtExit:PROC
+$L_402720 TEXTEQU <_Static4026f0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5461,12 +5882,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4028a0 PROC
 
             call FUN_4028b0
 
             jmp $L_4028c0
 $L_4028a0 ENDP
+ELSE
+EXTERN _Static4028a0_Init:PROC
+$L_4028a0 TEXTEQU <_Static4028a0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5491,6 +5918,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4028c0 PROC
 
             push OFFSET $L_4028d0
@@ -5499,6 +5928,10 @@ $L_4028c0 PROC
             pop ECX
             ret 
 $L_4028c0 ENDP
+ELSE
+EXTERN _Static4028a0_AtExit:PROC
+$L_4028c0 TEXTEQU <_Static4028a0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5797,12 +6230,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402b40 PROC
 
             call FUN_402b50
 
             jmp $L_402b60
 $L_402b40 ENDP
+ELSE
+EXTERN _Static402b40_Init:PROC
+$L_402b40 TEXTEQU <_Static402b40_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5827,6 +6266,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402b60 PROC
 
             push OFFSET $L_402b70
@@ -5835,6 +6276,10 @@ $L_402b60 PROC
             pop ECX
             ret 
 $L_402b60 ENDP
+ELSE
+EXTERN _Static402b40_AtExit:PROC
+$L_402b60 TEXTEQU <_Static402b40_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5861,12 +6306,18 @@ EXTERN _AiStatic68d008_Init:PROC
 $L_402b70 TEXTEQU <_AiStatic68d008_Init>
 ENDIF
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402b90 PROC
 
             call FUN_402ba0
 
             jmp $L_402bb0
 $L_402b90 ENDP
+ELSE
+EXTERN _Static402b90_Init:PROC
+$L_402b90 TEXTEQU <_Static402b90_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -5891,6 +6342,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_402bb0 PROC
 
             push OFFSET $L_402bc0
@@ -5899,6 +6352,10 @@ $L_402bb0 PROC
             pop ECX
             ret 
 $L_402bb0 ENDP
+ELSE
+EXTERN _Static402b90_AtExit:PROC
+$L_402bb0 TEXTEQU <_Static402b90_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -10846,12 +11303,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_4056e0 PROC
 
             call FUN_4056f0
 
             jmp $L_405710
 $L_4056e0 ENDP
+ELSE
+EXTERN _Static68cf58_Init:PROC
+$L_4056e0 TEXTEQU <_Static68cf58_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -10890,6 +11353,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_405710 PROC
 
             push OFFSET $L_405720
@@ -10898,15 +11363,25 @@ $L_405710 PROC
             pop ECX
             ret 
 $L_405710 ENDP
+ELSE
+EXTERN _Static68cf58_AtExit:PROC
+$L_405710 TEXTEQU <_Static68cf58_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_405720 PROC
 
             mov ECX,OFFSET $L_68cf58
             jmp $L_449740
 $L_405720 ENDP
+ELSE
+EXTERN _Static68cf58_Destroy:PROC
+$L_405720 TEXTEQU <_Static68cf58_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -37331,12 +37806,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_415250 PROC
 
             call FUN_415260
 
             jmp $L_415280
 $L_415250 ENDP
+ELSE
+EXTERN _Static68a860_Init:PROC
+$L_415250 TEXTEQU <_Static68a860_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -37375,6 +37856,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_415280 PROC
 
             push OFFSET $L_415290
@@ -37383,15 +37866,25 @@ $L_415280 PROC
             pop ECX
             ret 
 $L_415280 ENDP
+ELSE
+EXTERN _Static68a860_AtExit:PROC
+$L_415280 TEXTEQU <_Static68a860_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_415290 PROC
 
             mov ECX,OFFSET $L_68a860
             jmp FUN_404420
 $L_415290 ENDP
+ELSE
+EXTERN _Static68a860_Destroy:PROC
+$L_415290 TEXTEQU <_Static68a860_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -196416,12 +196909,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 $L_46d500 PROC
 
             call FUN_46d510
 
             jmp $L_46d530
 $L_46d500 ENDP
+ELSE
+EXTERN _Static68d308_Init:PROC
+$L_46d500 TEXTEQU <_Static68d308_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -196460,6 +196959,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 $L_46d530 PROC
 
             push OFFSET $L_46d540
@@ -196468,15 +196969,25 @@ $L_46d530 PROC
             pop ECX
             ret 
 $L_46d530 ENDP
+ELSE
+EXTERN _Static68d308_AtExit:PROC
+$L_46d530 TEXTEQU <_Static68d308_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 $L_46d540 PROC
 
             mov ECX,OFFSET $L_68d308
             jmp FUN_447ef0
 $L_46d540 ENDP
+ELSE
+EXTERN _Static68d308_Destroy:PROC
+$L_46d540 TEXTEQU <_Static68d308_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -246195,12 +246706,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+IFDEF ASM_ROUTE_SEARCH
 $L_488310 PROC
 
             call FUN_488320
 
             jmp $L_488330
 $L_488310 ENDP
+ELSE
+EXTERN _Static691cc0_Init:PROC
+$L_488310 TEXTEQU <_Static691cc0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -246225,6 +246742,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+IFDEF ASM_ROUTE_SEARCH
 $L_488330 PROC
 
             push OFFSET $L_488340
@@ -246233,15 +246752,25 @@ $L_488330 PROC
             pop ECX
             ret 
 $L_488330 ENDP
+ELSE
+EXTERN _Static691cc0_AtExit:PROC
+$L_488330 TEXTEQU <_Static691cc0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/route_search.cpp, nmake ASM_ROUTE_SEARCH=1 assembles the original
+IFDEF ASM_ROUTE_SEARCH
 $L_488340 PROC
 
             mov ECX,OFFSET $L_691cc0
             jmp $L_487db0
 $L_488340 ENDP
+ELSE
+EXTERN _Static691cc0_Destroy:PROC
+$L_488340 TEXTEQU <_Static691cc0_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -262138,12 +262667,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 $L_490d50 PROC
 
             call FUN_490d60
 
             jmp $L_490d80
 $L_490d50 ENDP
+ELSE
+EXTERN _Static490d50_Init:PROC
+$L_490d50 TEXTEQU <_Static490d50_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -262181,6 +262716,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 $L_490d80 PROC
 
             push OFFSET $L_490d90
@@ -262189,6 +262726,10 @@ $L_490d80 PROC
             pop ECX
             ret 
 $L_490d80 ENDP
+ELSE
+EXTERN _Static490d50_AtExit:PROC
+$L_490d80 TEXTEQU <_Static490d50_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -401650,12 +402191,18 @@ ELSE
 EXTERN @Sta4e1db0_DeletingDestructor@12:PROC
 $L_4e1db0 TEXTEQU <@Sta4e1db0_DeletingDestructor@12>
 ENDIF
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4e1dd0 PROC
 
             call FUN_4e1de0
 
             jmp $L_4e1df0
 $L_4e1dd0 ENDP
+ELSE
+EXTERN _Static696750_Init:PROC
+$L_4e1dd0 TEXTEQU <_Static696750_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -401677,6 +402224,8 @@ ELSE
 EXTERN _Startup_Ini696750:PROC
 FUN_4e1de0 TEXTEQU <_Startup_Ini696750>
 ENDIF
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4e1df0 PROC
 
             push OFFSET $L_4e1e00
@@ -401685,10 +402234,16 @@ $L_4e1df0 PROC
             pop ECX
             ret 
 $L_4e1df0 ENDP
+ELSE
+EXTERN _Static696750_AtExit:PROC
+$L_4e1df0 TEXTEQU <_Static696750_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/startup.cpp, nmake ASM_STARTUP=1 assembles the original
+IFDEF ASM_STARTUP
 $L_4e1e00 PROC
 
             mov ECX,OFFSET $L_696750
@@ -401701,6 +402256,10 @@ $L_4e1e00 PROC
             nop
             nop
 $L_4e1e00 ENDP
+ELSE
+EXTERN _Static696750_Destroy:PROC
+$L_4e1e00 TEXTEQU <_Static696750_Destroy>
+ENDIF
 ALIGN 16
 ; engine: src\truck\startup.cpp, nmake ASM_STARTUP=1 assembles the original
 IFDEF ASM_STARTUP
@@ -450842,12 +451401,18 @@ FUN_503ac0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 $L_503dc0 PROC
 
             call FUN_503dd0
 
             jmp $L_503e00
 $L_503dc0 ENDP
+ELSE
+EXTERN _Static503dc0_Init:PROC
+$L_503dc0 TEXTEQU <_Static503dc0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -450885,6 +451450,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 $L_503e00 PROC
 
             push OFFSET $L_503e10
@@ -450893,6 +451460,10 @@ $L_503e00 PROC
             pop ECX
             ret 
 $L_503e00 ENDP
+ELSE
+EXTERN _Static503dc0_AtExit:PROC
+$L_503e00 TEXTEQU <_Static503dc0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -771498,12 +772069,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d29a0 PROC
 
             call FUN_5d29b0
 
             jmp $L_5d29d0
 $L_5d29a0 ENDP
+ELSE
+EXTERN _Static5d29a0_Init:PROC
+$L_5d29a0 TEXTEQU <_Static5d29a0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -771540,6 +772117,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d29d0 PROC
 
             push OFFSET $L_5d29e0
@@ -771548,6 +772127,10 @@ $L_5d29d0 PROC
             pop ECX
             ret 
 $L_5d29d0 ENDP
+ELSE
+EXTERN _Static5d29a0_AtExit:PROC
+$L_5d29d0 TEXTEQU <_Static5d29a0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -771820,12 +772403,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d2b40 PROC
 
             call FUN_5d2b50
 
             jmp $L_5d2b60
 $L_5d2b40 ENDP
+ELSE
+EXTERN _Static5d2b40_Init:PROC
+$L_5d2b40 TEXTEQU <_Static5d2b40_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -771850,6 +772439,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d2b60 PROC
 
             push OFFSET $L_5d2b70
@@ -771858,6 +772449,10 @@ $L_5d2b60 PROC
             pop ECX
             ret 
 $L_5d2b60 ENDP
+ELSE
+EXTERN _Static5d2b40_AtExit:PROC
+$L_5d2b60 TEXTEQU <_Static5d2b40_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -771936,12 +772531,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d2bf0 PROC
 
             call FUN_5d2c00
 
             jmp $L_5d2e10
 $L_5d2bf0 ENDP
+ELSE
+EXTERN _Static5d2bf0_Init:PROC
+$L_5d2bf0 TEXTEQU <_Static5d2bf0_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -772205,6 +772806,8 @@ $L_5d2e05::
             ret 
 FUN_5d2c00 ENDP
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d2e10 PROC
 
             push OFFSET $L_5d2e20
@@ -772213,6 +772816,10 @@ $L_5d2e10 PROC
             pop ECX
             ret 
 $L_5d2e10 ENDP
+ELSE
+EXTERN _Static5d2bf0_AtExit:PROC
+$L_5d2e10 TEXTEQU <_Static5d2bf0_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -772558,12 +773165,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d3000 PROC
 
             call FUN_5d3010
 
             jmp $L_5d3030
 $L_5d3000 ENDP
+ELSE
+EXTERN _Static5d3000_Init:PROC
+$L_5d3000 TEXTEQU <_Static5d3000_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -772600,6 +773213,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/core.cpp, nmake ASM_CORE=1 assembles the original
+IFDEF ASM_CORE
 $L_5d3030 PROC
 
             push OFFSET $L_5d3040
@@ -772608,6 +773223,10 @@ $L_5d3030 PROC
             pop ECX
             ret 
 $L_5d3030 ENDP
+ELSE
+EXTERN _Static5d3000_AtExit:PROC
+$L_5d3030 TEXTEQU <_Static5d3000_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -828757,12 +829376,18 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ef500 PROC
 
             call FUN_5ef510
 
             jmp $L_5ef520
 $L_5ef500 ENDP
+ELSE
+EXTERN _Static723190_Init:PROC
+$L_5ef500 TEXTEQU <_Static723190_Init>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -828787,6 +829412,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ef520 PROC
 
             push OFFSET $L_5ef530
@@ -828795,15 +829422,25 @@ $L_5ef520 PROC
             pop ECX
             ret 
 $L_5ef520 ENDP
+ELSE
+EXTERN _Static723190_AtExit:PROC
+$L_5ef520 TEXTEQU <_Static723190_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 $L_5ef530 PROC
 
             mov ECX,OFFSET $L_723190
             jmp FUN_5ef450
 $L_5ef530 ENDP
+ELSE
+EXTERN _Static723190_Destroy:PROC
+$L_5ef530 TEXTEQU <_Static723190_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
