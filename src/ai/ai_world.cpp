@@ -21199,7 +21199,7 @@ extern "C" char* __cdecl Ai_FormatReport(int a1, int a2, int a3, int a4, int a5,
 
 ASM_PROC(FUN_48ce40)
 ASM_PROC(FUN_48d100)
-ASM_PROC(FUN_48d530)
+extern "C" void FUN_48d530(); KING_ALIAS("_FUN_48d530", "@Path_StepIndex@24")
 ASM_PROC(FUN_48c710)
 ASM_PROC(FUN_48d710)
 extern "C" void FUN_458940(); KING_ALIAS("_FUN_458940", "@Rec458940_Destroy@8")
