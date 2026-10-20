@@ -739109,6 +739109,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5c0040 PROC
 
             mov EDX,DWORD PTR [ECX+288]
@@ -739485,6 +739487,10 @@ $L_5c021c           BYTE ($L_5c0200-$L_5c0200)/4
           BYTE ($L_5c0218-$L_5c0200)/4
           BYTE ($L_5c0218-$L_5c0200)/4
           BYTE ($L_5c0214-$L_5c0200)/4
+ELSE
+EXTERN @Edit_Key@16:PROC
+$L_5c0040 TEXTEQU <@Edit_Key@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -739984,6 +739990,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c06d0 PROC
 
             mov EAX,DWORD PTR [ECX+16]
@@ -740124,6 +740132,116 @@ $L_5c07b2::
             pop EBX
             ret 
 FUN_5c06d0 ENDP
+ELSE
+EXTERN @List_VisibleRows@4:PROC
+FUN_5c06d0 TEXTEQU <@List_VisibleRows@4>
+; the row callback that shares the original's code stays in assembly
+$L_5c0700 PROC
+
+            push EBX
+            push EBP
+            push ESI
+            push EDI
+            mov EDI,DWORD PTR [ESP+20]
+            mov EAX,DWORD PTR [EDI+328]
+            test EAX,EAX
+            je $L_5c07b2
+
+            movsx EDX,WORD PTR [EDI+332]
+            mov ESI,DWORD PTR [EDI+296]
+            test EDX,EDX
+            jg $L_5c072f
+
+            mov DWORD PTR [EDI+336],ESI
+            jmp $L_5c074d
+$L_5c072f::
+
+            mov EAX,ESI
+            test EAX,EAX
+            je $L_5c0747
+$L_5c0735::
+
+            mov ECX,DWORD PTR [EAX+8]
+            test ECX,ECX
+            je $L_5c0747
+
+            test EDX,EDX
+            jle $L_5c0747
+
+            mov EAX,ECX
+            dec EDX
+            test EAX,EAX
+            jne $L_5c0735
+$L_5c0747::
+
+            mov DWORD PTR [EDI+336],EAX
+$L_5c074d::
+
+            mov EAX,DWORD PTR [EDI+336]
+            xor ECX,ECX
+            cmp ESI,EAX
+            je $L_5c0779
+
+            mov EDX,DWORD PTR [EDI+300]
+$L_5c075f::
+
+            cmp ESI,EDX
+            jne $L_5c0768
+
+            mov ECX,1
+$L_5c0768::
+
+            mov ESI,DWORD PTR [ESI+8]
+            cmp ESI,EAX
+            jne $L_5c075f
+
+            test ECX,ECX
+            je $L_5c0779
+
+            mov DWORD PTR [EDI+300],EAX
+$L_5c0779::
+
+            xor EBP,EBP
+            xor EBX,EBX
+            test ESI,ESI
+            je $L_5c07b2
+$L_5c0781::
+
+            mov ECX,EDI
+            call FUN_5c06d0
+
+            cmp EBX,EAX
+            jge $L_5c07a1
+
+            cmp ESI,DWORD PTR [EDI+300]
+            jne $L_5c0799
+
+            mov EBP,1
+$L_5c0799::
+
+            mov ESI,DWORD PTR [ESI+8]
+            inc EBX
+            test ESI,ESI
+            jne $L_5c0781
+$L_5c07a1::
+
+            test EBP,EBP
+            jne $L_5c07b2
+
+            test ESI,ESI
+            je $L_5c07b2
+
+            mov ESI,DWORD PTR [ESI+4]
+            mov DWORD PTR [EDI+300],ESI
+$L_5c07b2::
+
+            pop EDI
+            pop ESI
+            pop EBP
+            pop EBX
+            ret 
+$L_5c0700 ENDP
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -815530,6 +815648,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e9a10 PROC
 
             sub ESP,12
@@ -815833,6 +815953,10 @@ $L_5e9c9e::
             add ESP,12
             ret 
 FUN_5e9a10 ENDP
+ELSE
+EXTERN _Tga_Write:PROC
+FUN_5e9a10 TEXTEQU <_Tga_Write>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

@@ -97,7 +97,7 @@ ASM_PROC(FUN_5b7ce0)    // Gfx_HLine
 ASM_PROC(FUN_5b7f20)    // Gfx_VLine
 ASM_PROC(FUN_5b8980)    // Gfx_DrawImage
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // Gfx_DrawText
-ASM_PROC(FUN_5e9a10)    // Gfx_SaveTga
+extern "C" void FUN_5e9a10(); KING_ALIAS("_FUN_5e9a10", "_Tga_Write")    // Gfx_SaveTga
 extern "C" void FUN_5e9f00(); KING_ALIAS("_FUN_5e9f00", "_Screen_GrabToFile")    // Gfx_SaveScreenBmp
 ASM_PROC(FUN_5b6bf0)    // CSurface::Prepare
 extern "C" void FUN_5b6500(); KING_ALIAS("_FUN_5b6500", "@Window_ToRoot@16")    // CSurface::ScreenToClient
