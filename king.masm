@@ -1453,6 +1453,7 @@ PUBLIC $L_6766a4, $L_6766ac, $L_720ad4, $L_720d8c
 PUBLIC $L_68352c
 PUBLIC $L_71e850, $L_71f808
 PUBLIC $L_682f50
+PUBLIC $L_6d2044
 
 ;===================================
 _TEXT SEGMENT
@@ -475977,6 +475978,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_5147b0 PROC
 
             mov EAX,DWORD PTR [ECX+1280]
@@ -476241,6 +476244,10 @@ $L_514a24           BYTE ($L_514a1c-$L_514a1c)/4
           BYTE ($L_514a1c-$L_514a1c)/4
           BYTE ($L_514a1c-$L_514a1c)/4
           BYTE ($L_514a1c-$L_514a1c)/4
+ELSE
+EXTERN @Input_ApplyBindings@4:PROC
+FUN_5147b0 TEXTEQU <@Input_ApplyBindings@4>
+ENDIF
 $L_514a40 PROC
 
             push EBP
