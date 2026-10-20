@@ -598,7 +598,7 @@ extern "C" void __fastcall Vec12Array_FreeAll(BYTE* s, void*)
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 ASM_VAR(char, g_q197_691cc0, $L_691cc0)
 extern "C" void q197_FUN_488320(); KING_ALIAS("_q197_FUN_488320", "_Trce_488320")
-extern "C" void q197_L_487db0(); KING_ALIAS("_q197_L_487db0", "$L_487db0")
+extern "C" void q197_L_487db0(); KING_ALIAS("_q197_L_487db0", "@Thunk487db0@8")
 // [$L_488340] destroys the static object 691cc0 at exit ($L_487db0)
 extern "C" void __cdecl Static691cc0_Destroy(void) { CallThis(q197_L_487db0, &g_q197_691cc0); }
 // [$L_488330] registers the teardown at exit

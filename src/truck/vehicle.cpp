@@ -1778,8 +1778,8 @@ ASM_PROC(FUN_547030)
 extern "C" void FUN_546890(); KING_ALIAS("_FUN_546890", "_Switches_Apply")
 extern "C" void FUN_556410(); KING_ALIAS("_FUN_556410", "@Car_TakeCargo@20")
 extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
-ASM_PROC(FUN_557440)
-ASM_PROC(FUN_557450)
+extern "C" void FUN_557440(); KING_ALIAS("_FUN_557440", "@Thunk557440@8")
+extern "C" void FUN_557450(); KING_ALIAS("_FUN_557450", "@Thunk557450@4")
 extern "C" void FUN_531950(); KING_ALIAS("_FUN_531950", "@Car531950_Destroy@4")
 extern "C" void FUN_5560e0(); KING_ALIAS("_FUN_5560e0", "@Car_ApplyZero@8")
 extern "C" void FUN_555eb0(); KING_ALIAS("_FUN_555eb0", "@Car_SumAbs9@8")
@@ -3084,3 +3084,19 @@ extern "C" void __fastcall CarPart_Draw(BYTE* s, void*, int a, int b, int c, int
     CallC(FUN_5e1a10, F(int, s, 20228), (F(int, s, 20648) || F(int, s, 20644)) ? 1 : 0);
     CallThis(FUN_5f9d20, s, a, b, c, d);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" float __fastcall q238_Car_HoldLoad(BYTE* s); KING_ALIAS("@q238_Car_HoldLoad@4", "@Car_HoldLoad@4")
+extern "C" int __fastcall q238_Car_SetFlag9616(BYTE* s); KING_ALIAS("@q238_Car_SetFlag9616@4", "@Car_SetFlag9616@4")
+extern "C" int __fastcall q238_Linked592cf0_Destruct(BYTE* s, void* d); KING_ALIAS("@q238_Linked592cf0_Destruct@8", "@Linked592cf0_Destruct@8")
+extern "C" int __fastcall q238_Veh548100_ReleaseAttachment(BYTE* s, void* d); KING_ALIAS("@q238_Veh548100_ReleaseAttachment@8", "@Veh548100_ReleaseAttachment@8")
+// [FUN_530190] forwards to Linked592cf0_Destruct
+extern "C" int __fastcall Thunk530190(BYTE* s, void* d) { return q238_Linked592cf0_Destruct(s, d); }
+// [$L_556540] forwards to Car_HoldLoad
+extern "C" float __fastcall Thunk556540(BYTE* s) { return q238_Car_HoldLoad(s); }
+// [FUN_557440] forwards to Veh548100_ReleaseAttachment
+extern "C" int __fastcall Thunk557440(BYTE* s, void* d) { return q238_Veh548100_ReleaseAttachment(s, d); }
+// [FUN_557450] forwards to Car_SetFlag9616
+extern "C" int __fastcall Thunk557450(BYTE* s) { return q238_Car_SetFlag9616(s); }

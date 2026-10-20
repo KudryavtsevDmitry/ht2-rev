@@ -246021,10 +246021,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_traffic.cpp, nmake ASM_AI_TRAFFIC=1 assembles the original
+IFDEF ASM_AI_TRAFFIC
 $L_487db0 PROC
 
             jmp $L_487d70
 $L_487db0 ENDP
+ELSE
+EXTERN @Thunk487db0@8:PROC
+$L_487db0 TEXTEQU <@Thunk487db0@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -485217,10 +485223,16 @@ FUN_519300 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_519740 PROC
 
             jmp FUN_5d89e0
 FUN_519740 ENDP
+ELSE
+EXTERN @Thunk519740@4:PROC
+FUN_519740 TEXTEQU <@Thunk519740@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -517081,10 +517093,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 FUN_52d6f0 PROC
 
             jmp FUN_52bb40
 FUN_52d6f0 ENDP
+ELSE
+EXTERN @Thunk52d6f0@4:PROC
+FUN_52d6f0 TEXTEQU <@Thunk52d6f0@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -518809,10 +518827,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/scenery.cpp, nmake ASM_SCENERY=1 assembles the original
+IFDEF ASM_SCENERY
 $L_52e730 PROC
 
             jmp $L_52e210
 $L_52e730 ENDP
+ELSE
+EXTERN @Thunk52e730@4:PROC
+$L_52e730 TEXTEQU <@Thunk52e730@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -521968,10 +521992,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_530190 PROC
 
             jmp FUN_592cf0
 FUN_530190 ENDP
+ELSE
+EXTERN @Thunk530190@8:PROC
+FUN_530190 TEXTEQU <@Thunk530190@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -575223,10 +575253,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_556540 PROC
 
             jmp FUN_556610
 $L_556540 ENDP
+ELSE
+EXTERN @Thunk556540@4:PROC
+$L_556540 TEXTEQU <@Thunk556540@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -576934,10 +576970,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_557440 PROC
 
             jmp $L_548100
 FUN_557440 ENDP
+ELSE
+EXTERN @Thunk557440@8:PROC
+FUN_557440 TEXTEQU <@Thunk557440@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -576950,10 +576992,16 @@ FUN_557440 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_557450 PROC
 
             jmp $L_548120
 FUN_557450 ENDP
+ELSE
+EXTERN @Thunk557450@4:PROC
+FUN_557450 TEXTEQU <@Thunk557450@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -606910,6 +606958,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_56bab0 PROC
 
             call FUN_56bac0
@@ -606923,6 +606973,10 @@ $L_56bab0 PROC
             nop
             nop
 $L_56bab0 ENDP
+ELSE
+EXTERN _Static6f2d98_Init:PROC
+$L_56bab0 TEXTEQU <_Static6f2d98_Init>
+ENDIF
 ALIGN 16
 ; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 IFDEF ASM_HELICOPTER
@@ -606969,6 +607023,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_56bb10 PROC
 
             push OFFSET $L_56bb20
@@ -606977,15 +607033,25 @@ $L_56bb10 PROC
             pop ECX
             ret 
 $L_56bb10 ENDP
+ELSE
+EXTERN _Static6f2d98_AtExit:PROC
+$L_56bb10 TEXTEQU <_Static6f2d98_AtExit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_56bb20 PROC
 
             mov ECX,OFFSET $L_6f2d98
             jmp $L_56bb30
 $L_56bb20 ENDP
+ELSE
+EXTERN _Static6f2d98_Destroy:PROC
+$L_56bb20 TEXTEQU <_Static6f2d98_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -609797,10 +609863,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56d6b0 PROC
 
             jmp FUN_5a63a0
 FUN_56d6b0 ENDP
+ELSE
+EXTERN @Thunk56d6b0@4:PROC
+FUN_56d6b0 TEXTEQU <@Thunk56d6b0@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -612480,10 +612552,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56f110 PROC
 
             jmp FUN_5cf370
 FUN_56f110 ENDP
+ELSE
+EXTERN @Thunk56f110@4:PROC
+FUN_56f110 TEXTEQU <@Thunk56f110@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -694085,10 +694163,16 @@ FUN_5a4f00 PROC
             nop
 FUN_5a4f00 ENDP
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a4ff0 PROC
 
             jmp FUN_5a4e90
 FUN_5a4ff0 ENDP
+ELSE
+EXTERN @Thunk5a4ff0@4:PROC
+FUN_5a4ff0 TEXTEQU <@Thunk5a4ff0@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -741827,10 +741911,16 @@ EXTERN @ListBox_Construct@20:PROC
 FUN_5c0550 TEXTEQU <@ListBox_Construct@20>
 ENDIF
 ALIGN 16
+; src/controls.cpp, nmake ASM_CONTROLS=1 assembles the original
+IFDEF ASM_CONTROLS
 FUN_5c06a0 PROC
 
             jmp FUN_5bda90
 FUN_5c06a0 ENDP
+ELSE
+EXTERN @Thunk5c06a0@4:PROC
+FUN_5c06a0 TEXTEQU <@Thunk5c06a0@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -751508,10 +751598,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5c5370 PROC
 
             jmp $L_5e01b0
 FUN_5c5370 ENDP
+ELSE
+EXTERN @Thunk5c5370@4:PROC
+FUN_5c5370 TEXTEQU <@Thunk5c5370@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -831982,10 +832078,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f0770 PROC
 
             jmp FUN_5f1a70
 FUN_5f0770 ENDP
+ELSE
+EXTERN @Thunk5f0770@4:PROC
+FUN_5f0770 TEXTEQU <@Thunk5f0770@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -832133,10 +832235,16 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f0870 PROC
 
             jmp FUN_5ef660
 FUN_5f0870 ENDP
+ELSE
+EXTERN @Thunk5f0870@4:PROC
+FUN_5f0870 TEXTEQU <@Thunk5f0870@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -864117,11 +864225,17 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/sound_gate.cpp, nmake ASM_SOUND_GATE=1 assembles the original
+IFDEF ASM_SOUND_GATE
 $L_6021a0 PROC
 
             mov ECX,OFFSET $L_723d98
             jmp FUN_404420
 $L_6021a0 ENDP
+ELSE
+EXTERN _Static723d98_Destroy:PROC
+$L_6021a0 TEXTEQU <_Static723d98_Destroy>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

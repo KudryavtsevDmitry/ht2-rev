@@ -2090,7 +2090,7 @@ ASM_PROC(FUN_5dd2d0)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
 extern "C" int __cdecl fprintf(FILE*, const char*, ...);
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
-ASM_PROC(FUN_5c06a0)
+extern "C" void FUN_5c06a0(); KING_ALIAS("_FUN_5c06a0", "@Thunk5c06a0@4")
 extern "C" void FUN_5e2e80(); KING_ALIAS("_FUN_5e2e80", "@GdiObject5e2e80_Destroy@4")
 extern "C" void FUN_5e2ee0(); KING_ALIAS("_FUN_5e2ee0", "@GdiObject5e2ee0_Destroy@4")
 extern "C" void FUN_5e2f40(); KING_ALIAS("_FUN_5e2f40", "@Fw5e2f40_Destroy@4")

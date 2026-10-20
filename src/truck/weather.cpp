@@ -885,7 +885,7 @@ extern "C" BYTE* __fastcall Dtor5a4c80_DeletingDestructor(BYTE* s, void*, int fl
     return s;
 }
 
-ASM_PROC(FUN_5a4ff0)
+extern "C" void FUN_5a4ff0(); KING_ALIAS("_FUN_5a4ff0", "@Thunk5a4ff0@4")
 // [$L_5a5250]
 extern "C" BYTE* __fastcall Dtor5a5250_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -1060,3 +1060,10 @@ extern "C" BYTE* __fastcall Wea5a72c0_Init(BYTE* s)
     F(int, s, 20) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Wea5a4e90_Destroy(BYTE* s); KING_ALIAS("@q238_Wea5a4e90_Destroy@4", "@Wea5a4e90_Destroy@4")
+// [FUN_5a4ff0] forwards to Wea5a4e90_Destroy
+extern "C" int __fastcall Thunk5a4ff0(BYTE* s) { return q238_Wea5a4e90_Destroy(s); }

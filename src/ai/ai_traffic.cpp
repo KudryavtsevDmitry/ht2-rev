@@ -845,3 +845,10 @@ extern "C" void __cdecl Heap32_Adjust(Entry32* first, int hole, int len, Entry32
     CallThis(FUN_458a40, &c, &v);
     Heap32_Push(first, hole, top, c);
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Blocks487d70_Clear(BYTE* s, void* d); KING_ALIAS("@q238_Blocks487d70_Clear@8", "@Blocks487d70_Clear@8")
+// [$L_487db0] forwards to Blocks487d70_Clear
+extern "C" int __fastcall Thunk487db0(BYTE* s, void* d) { return q238_Blocks487d70_Clear(s, d); }

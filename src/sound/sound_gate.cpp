@@ -705,7 +705,7 @@ int __fastcall Music_Open(BYTE* self, void*, const char* path)
 
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")    // vector<char> constructor
 ASM_PROC(FUN_600e60)    // appends bytes to a vector<char> (vector, data, size)
-extern "C" void Gate_SendBufferDtor(); KING_ALIAS("_Gate_SendBufferDtor", "$L_6021a0")
+extern "C" void Gate_SendBufferDtor(); KING_ALIAS("_Gate_SendBufferDtor", "_Static723d98_Destroy")
 extern "C" int __cdecl atexit(void (__cdecl* fn)());
 ASM_VAR(BYTE, g_sendBufInit, $L_723d8c)
 typedef BYTE* SendBuf[3];
@@ -1061,3 +1061,11 @@ extern "C" void __fastcall Providers_Destroy(BYTE** v, void*)
     *list = p;
     g_q196_68d204 = 0;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+ASM_VAR(char, g_q238_723d98, $L_723d98)
+extern "C" int __fastcall q238_VecB_FreeStorage(BYTE* s, void* d); KING_ALIAS("@q238_VecB_FreeStorage@8", "@VecB_FreeStorage@8")
+// [$L_6021a0] VecB_FreeStorage on the static object 723d98
+extern "C" void __cdecl Static723d98_Destroy(void) { q238_VecB_FreeStorage((BYTE*)&g_q238_723d98, 0); }

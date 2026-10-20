@@ -2854,3 +2854,11 @@ extern "C" BYTE* __fastcall MappedFile_Init(BYTE* s)
     F(BYTE, s, 20) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Thunks.
+
+extern "C" int __fastcall q238_Fw_SetupRoom(BYTE* s); KING_ALIAS("@q238_Fw_SetupRoom@4", "@Fw_SetupRoom@4")
+extern "C" int __fastcall q238_MappedFile_Close(BYTE* s); KING_ALIAS("@q238_MappedFile_Close@4", "@MappedFile_Close@4")
+// [FUN_5c5370] forwards to Fw_SetupRoom
+extern "C" int __fastcall Thunk5c5370(BYTE* s) { return q238_Fw_SetupRoom(s); }
