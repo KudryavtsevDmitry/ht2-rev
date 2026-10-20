@@ -1978,7 +1978,7 @@ extern "C" BYTE* __fastcall Car531930_DeletingDestructor(BYTE* s, void*, int fla
 }
 
 extern "C" void FUN_53f7e0(); KING_ALIAS("_FUN_53f7e0", "@Obj53f7e0_Construct@8")
-ASM_PROC(FUN_54c820)
+extern "C" void FUN_54c820(); KING_ALIAS("_FUN_54c820", "@Car_Place@16")
 extern "C" void FUN_4ff790(); KING_ALIAS("_FUN_4ff790", "@Car_StartEngine@8")
 extern "C" void FUN_5573e0(); KING_ALIAS("_FUN_5573e0", "@Car_Call555550@12")
 extern "C" void FUN_557400(); KING_ALIAS("_FUN_557400", "@Car_Part16Call@12")
@@ -1990,7 +1990,7 @@ extern "C" void FUN_555c80(); KING_ALIAS("_FUN_555c80", "@Car_PassItems3@12")
 extern "C" void FUN_555b70(); KING_ALIAS("_FUN_555b70", "@Car_PassItems11@12")
 extern "C" void FUN_555b30(); KING_ALIAS("_FUN_555b30", "@Car_Set501b90a@12")
 ASM_PROC(FUN_555a70)
-ASM_PROC(FUN_555ee0)
+extern "C" void FUN_555ee0(); KING_ALIAS("_FUN_555ee0", "@Car_StepAllLevels@12")
 extern "C" void FUN_557480(); KING_ALIAS("_FUN_557480", "@Car_Forward21600@12")
 extern "C" void FUN_5566e0(); KING_ALIAS("_FUN_5566e0", "@Obj5566e0_Start@20")
 ASM_PROC(FUN_5455d0)
@@ -2599,4 +2599,36 @@ extern "C" int __fastcall Car_HasInput(BYTE* s)
 {
     BYTE* o = F(BYTE*, s, 9536);
     return (Veh102_Abs(F(int, o, 64)) + Veh102_Abs(F(int, o, 44)) + Veh102_Abs(F(int, o, 24))) != 0;
+}
+
+// ---------------------------------------------------------------------------
+// Placing a car; its level steps.
+
+extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
+extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
+extern "C" void FUN_589490(); KING_ALIAS("_FUN_589490", "@BodyLevel_Step@16")
+ASM_PROC(FUN_4f1240)
+ASM_VAR(float, g_q112_64c250, $L_64c250)
+struct Veh112_M { DWORD v[12]; };
+// [FUN_54c820] places car s at a with matrix m: its scene object (+16), the helicopter part (+21604) and the
+// body (+21600, with a copy of m)
+extern "C" void __fastcall Car_Place(BYTE* s, void*, void* a, const BYTE* m)
+{
+    CallThis(FUN_581230, s + 16, a, m);
+    if (BYTE* h = F(BYTE*, s, 21604))
+        CallThis(FUN_561d10, h, a, m);
+    if (BYTE* b = F(BYTE*, s, 21600)) {
+        Veh112_M c = *(const Veh112_M*)m;
+        CallThis(FUN_4f1240, b, 2, a, &c);
+    }
+}
+
+// [FUN_555ee0] steps the 9 levels of the car's controls (+9536, 20 bytes each) by *v (at most 1) with the
+// values of +10432
+extern "C" void __fastcall Car_StepAllLevels(BYTE* s, void*, float* v)
+{
+    if (*v > g_q112_64c250)
+        *v = 1.0f;
+    for (int i = 0; i < 9; i++)
+        CallThis(FUN_589490, F(BYTE*, s, 9536) + i * 20, v, F(int, s, 10432 + i * 4));
 }

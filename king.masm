@@ -214976,6 +214976,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 $L_477ae0 PROC
 
             jmp $L_477af0
@@ -215002,6 +215004,10 @@ $L_477af0::
             nop
             nop
 $L_477ae0 ENDP
+ELSE
+EXTERN _AiDri_Init68d4f4:PROC
+$L_477ae0 TEXTEQU <_AiDri_Init68d4f4>
+ENDIF
 ALIGN 16
 ; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
 IFDEF ASM_AI_DRIVERS
@@ -560650,6 +560656,8 @@ $L_54c6d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_54c820 PROC
 
             sub ESP,48
@@ -560696,6 +560704,10 @@ $L_54c86f::
             add ESP,48
             ret 8
 FUN_54c820 ENDP
+ELSE
+EXTERN @Car_Place@16:PROC
+FUN_54c820 TEXTEQU <@Car_Place@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -573305,6 +573317,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_555ee0 PROC
 
             push EBX
@@ -573344,6 +573358,10 @@ $L_555f09::
             pop EBX
             ret 4
 FUN_555ee0 ENDP
+ELSE
+EXTERN @Car_StepAllLevels@12:PROC
+FUN_555ee0 TEXTEQU <@Car_StepAllLevels@12>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original

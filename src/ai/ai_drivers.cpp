@@ -1397,3 +1397,8 @@ extern "C" void __cdecl Players_Clear(void)
     F(BYTE*, g_q52_68b990, 0) = g_q52_68b990;
     F(BYTE*, g_q52_68b990, 4) = g_q52_68b990;
 }
+
+ASM_VAR(int, g_q112_68b990, $L_68b990)
+ASM_VAR(int, g_q112_68d4f4, $L_68d4f4)
+// [$L_477ae0] static init: 68d4f4 starts as the empty list end (68b990)
+extern "C" void __cdecl AiDri_Init68d4f4(void) { g_q112_68d4f4 = g_q112_68b990; }
