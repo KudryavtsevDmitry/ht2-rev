@@ -983,3 +983,18 @@ extern "C" int __fastcall Ff_ClearPools(BYTE* s)
     }
     return CallThis<int>(FUN_5d32f0, s, 1);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: message filters, record copies, frees and deleting destructors.
+
+// [$L_578fb0] copies the 16 bytes after the +4 of r to out
+extern "C" int __stdcall Ff_GetRect(BYTE* r, DWORD* out)
+{
+    if (out) {
+        out[0] = F(DWORD, r, 4);
+        out[1] = F(DWORD, r, 8);
+        out[2] = F(DWORD, r, 12);
+        out[3] = F(DWORD, r, 16);
+    }
+    return 0;
+}

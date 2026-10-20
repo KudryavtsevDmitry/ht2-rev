@@ -500,3 +500,23 @@ extern "C" void __fastcall Movite_SendNamed(BYTE* s, void*, const char* name, co
     memcpy(d + n + 9, mat, 48);
     Movite_Send(d, (int)n + 57);
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: message filters, record copies, frees and deleting destructors.
+
+extern "C" void FUN_4e260c(); KING_ALIAS("_FUN_4e260c", "_World_Fatal")
+ASM_VAR(AsmLabel, s_q50_67d604, $L_67d604)
+// [$L_582920] *out = whether +1432 is set; fatal when +1672 is set
+extern "C" int __fastcall Item582920_HasLink(BYTE* s, void*, int* out)
+{
+    if (F(int, s, 1672))
+        CallC(FUN_4e260c, (const char*)s_q50_67d604);
+    *out = F(int, s, 1432) != 0;
+    return 0;
+}
+// [$L_587e00] *out = the value of a 32-typed record
+extern "C" void __cdecl Rec_GetValue32(int* r, int* out)
+{
+    if (r && out && r[0] == 32)
+        *out = r[1];
+}

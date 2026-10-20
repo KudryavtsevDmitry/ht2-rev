@@ -4796,3 +4796,17 @@ extern "C" void __fastcall Eff4ce6c0_FreeBlock(BYTE* s, void*)
     if (F(void*, s, 12))
         operator delete(F(void*, s, 12));
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: message filters, record copies, frees and deleting destructors.
+
+ASM_VAR(AsmLabel, g_q50_64c72c, $L_64c72c)
+// [$L_4c2a90] destructor: the 64c72c vtable, frees the +56 block
+extern "C" void __fastcall Eff4c2a90_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = g_q50_64c72c;
+    if (F(void*, s, 56)) {
+        operator delete(F(void*, s, 56));
+        F(void*, s, 56) = 0;
+    }
+}

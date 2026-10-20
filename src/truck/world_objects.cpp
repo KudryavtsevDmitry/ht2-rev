@@ -1913,3 +1913,26 @@ extern "C" BYTE* __fastcall Worobj5a4120_Construct(BYTE* s, void*, BYTE* w, int 
     F(int, s, 52) = 0;
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Small methods: message filters, record copies, frees and deleting destructors.
+
+extern "C" void FUN_5793f0(); KING_ALIAS("_FUN_5793f0", "_Pooled_Release")
+extern "C" void FUN_59aa90(); KING_ALIAS("_FUN_59aa90", "@Wasm59aa90_Destroy@8")
+extern "C" void FUN_5a2a30(); KING_ALIAS("_FUN_5a2a30", "@WorldObj5a2a30_Destroy@8")
+// [$L_59a980] deleting destructor (pooled)
+extern "C" BYTE* __fastcall Wasm59a980_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_59aa90, s);
+    if (flags & 1)
+        CallC(FUN_5793f0, s);
+    return s;
+}
+// [$L_59ab90] deleting destructor (pooled)
+extern "C" BYTE* __fastcall WorldObj59ab90_DeletingDestructor(BYTE* s, void*, int flags)
+{
+    CallThis(FUN_5a2a30, s);
+    if (flags & 1)
+        CallC(FUN_5793f0, s);
+    return s;
+}

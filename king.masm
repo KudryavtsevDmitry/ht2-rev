@@ -1427,6 +1427,7 @@ PUBLIC $L_651568, $L_652a08, $L_722940, $L_723190, $L_723978
 PUBLIC $L_651628, $L_652f24, $L_6974a8, $L_6ef200, $L_723d38, $L_724f04
 PUBLIC $L_696e28, $L_696e38, $L_72418c
 PUBLIC $L_68a84c, $L_68a84d
+PUBLIC $L_67d604
 
 ;===================================
 _TEXT SEGMENT
@@ -1891,6 +1892,8 @@ $L_401300 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_401310 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -1914,6 +1917,10 @@ $L_401345::
 
             ret 
 $L_401310 ENDP
+ELSE
+EXTERN _Ai_ReportUnless5:PROC
+$L_401310 TEXTEQU <_Ai_ReportUnless5>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -173585,6 +173592,8 @@ $L_462b40 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_462ca0 PROC
 
             mov EDX,DWORD PTR [ECX]
@@ -173605,6 +173614,10 @@ $L_462cb9::
 
             ret 
 $L_462ca0 ENDP
+ELSE
+EXTERN @AiVec_FreeStorage@8:PROC
+$L_462ca0 TEXTEQU <@AiVec_FreeStorage@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -353206,6 +353219,8 @@ ELSE
 EXTERN @Sparks_Construct@12:PROC
 FUN_4c2a40 TEXTEQU <@Sparks_Construct@12>
 ENDIF
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4c2a90 PROC
 
             push ESI
@@ -353225,6 +353240,10 @@ $L_4c2ab0::
             pop ESI
             ret 
 $L_4c2a90 ENDP
+ELSE
+EXTERN @Eff4c2a90_Destruct@8:PROC
+$L_4c2a90 TEXTEQU <@Eff4c2a90_Destruct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -626651,6 +626670,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
+IFDEF ASM_FORCE_FEEDBACK
 $L_578fb0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -626672,6 +626693,10 @@ $L_578fd5::
             xor EAX,EAX
             ret 8
 $L_578fb0 ENDP
+ELSE
+EXTERN _Ff_GetRect@8:PROC
+$L_578fb0 TEXTEQU <_Ff_GetRect@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -640404,6 +640429,8 @@ $L_5827c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 $L_582920 PROC
 
             mov EAX,DWORD PTR [ECX+1672]
@@ -640423,6 +640450,10 @@ $L_582942::
             push OFFSET $L_67d604
             call FUN_4e260c
 $L_582920 ENDP
+ELSE
+EXTERN @Item582920_HasLink@12:PROC
+$L_582920 TEXTEQU <@Item582920_HasLink@12>
+ENDIF
 $L_58294c PROC
 
             add ESP,4
@@ -647775,6 +647806,8 @@ FUN_587c80 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 $L_587e00 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -647794,6 +647827,10 @@ $L_587e1a::
 
             ret 
 $L_587e00 ENDP
+ELSE
+EXTERN _Rec_GetValue32:PROC
+$L_587e00 TEXTEQU <_Rec_GetValue32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -675883,6 +675920,8 @@ $L_59a970 PROC
 $L_59a970 ENDP
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_59a980 PROC
 
             push ESI
@@ -675902,6 +675941,10 @@ $L_59a998::
             pop ESI
             ret 4
 $L_59a980 ENDP
+ELSE
+EXTERN @Wasm59a980_DeletingDestructor@12:PROC
+$L_59a980 TEXTEQU <@Wasm59a980_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -676160,6 +676203,8 @@ ELSE
 EXTERN @Effect_Construct@44:PROC
 FUN_59ab10 TEXTEQU <@Effect_Construct@44>
 ENDIF
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_59ab90 PROC
 
             push ESI
@@ -676179,6 +676224,10 @@ $L_59aba8::
             pop ESI
             ret 4
 $L_59ab90 ENDP
+ELSE
+EXTERN @WorldObj59ab90_DeletingDestructor@12:PROC
+$L_59ab90 TEXTEQU <@WorldObj59ab90_DeletingDestructor@12>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -796200,6 +796249,8 @@ FUN_5dfa90 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5dfef0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -796218,6 +796269,10 @@ $L_5dff12::
 
             ret 
 $L_5dfef0 ENDP
+ELSE
+EXTERN _Loader_OnMessage:PROC
+$L_5dfef0 TEXTEQU <_Loader_OnMessage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
