@@ -1510,6 +1510,7 @@ PUBLIC $L_67c758, $L_67c798
 PUBLIC $L_655370, $L_6553a0, $L_67c7d0, $L_67c7fc, $L_67c840, $L_67c880
 PUBLIC $L_67c928, $L_67c968
 PUBLIC $L_67cb28, $L_67cb68, $L_67cb8c
+PUBLIC $L_67b904, $L_67b910, $L_67b91c, $L_67b928, $L_67b938
 
 ;===================================
 _TEXT SEGMENT
@@ -605208,6 +605209,8 @@ $L_56aa70 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_56ad20 PROC
 
             push ECX
@@ -605339,6 +605342,10 @@ $L_56ae40           DWORD $L_56ad42
           DWORD $L_56ad9d
           DWORD $L_56ade1
           DWORD $L_56adc9
+ELSE
+EXTERN _Copter_RadioCommand:PROC
+FUN_56ad20 TEXTEQU <_Copter_RadioCommand>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

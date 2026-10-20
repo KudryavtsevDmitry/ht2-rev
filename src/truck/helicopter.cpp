@@ -2324,3 +2324,52 @@ extern "C" int __cdecl Terrain_FollowCamera(int, int b)
     CallThis(FUN_615670, g_q214_6f33b4, b);
     return 1;
 }
+
+extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+extern "C" void FUN_5699b0(); KING_ALIAS("_FUN_5699b0", "@Messages_AddText@12")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_430a80(); KING_ALIAS("_FUN_430a80", "_Ai_CleanBeforeLaw")
+extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
+extern "C" void FUN_5279e0(); KING_ALIAS("_FUN_5279e0", "_Movie_Play")
+extern "C" void FUN_445740(); KING_ALIAS("_FUN_445740", "_Ai_MafiaAttack")
+ASM_VAR(AsmLabel, s_q216_67b938, $L_67b938)
+ASM_VAR(AsmLabel, s_q216_67b928, $L_67b928)
+ASM_VAR(AsmLabel, s_q216_67b91c, $L_67b91c)
+ASM_VAR(AsmLabel, s_q216_67b910, $L_67b910)
+ASM_VAR(AsmLabel, s_q216_67b904, $L_67b904)
+ASM_VAR(AsmLabel, g_q216_6d1948, $L_6d1948)
+ASM_VAR(double, g_q216_64b678, $L_64b678)
+// shows message m and plays the sound object named name
+static void Hel216_MessageSound(int m, const char* name)
+{
+    CallThis(FUN_5699b0, g_messages, CallC<int>(FUN_5d2e50, m));
+    BYTE* o = CallC<BYTE*>(FUN_5ef3d0, name);
+    if (o)
+        CallThis(FUN_5fdaf0, o, 1.0f, 1.0f);
+}
+// [FUN_56ad20] the helicopter radio command c for the player's car: messages 54 and 55 with their sounds, the
+// clean-up before the law (and its movie), message 73, or the mafia attack (and its movies)
+extern "C" void __cdecl Copter_RadioCommand(int c)
+{
+    BYTE* p;
+    CallC(FUN_568f60, &p);
+    switch (c) {
+    case 0: Hel216_MessageSound(54, (const char*)s_q216_67b938); break;
+    case 1: Hel216_MessageSound(55, (const char*)s_q216_67b928); break;
+    case 2:
+        CallC(FUN_430a80, p);
+        CallThis(FUN_530020, (void*)g_q216_6d1948);
+        CallC(FUN_5279e0, (const char*)s_q216_67b91c, 5);
+        break;
+    case 4: CallThis(FUN_5699b0, g_messages, CallC<int>(FUN_5d2e50, 73)); break;
+    case 3:
+        CallC(FUN_445740, p);
+        if (F(double, p, 224) > g_q216_64b678 || F(BYTE, p, 201))
+            CallC(FUN_5279e0, (const char*)s_q216_67b910, 5);
+        CallThis(FUN_530020, (void*)g_q216_6d1948);
+        CallC(FUN_5279e0, (const char*)s_q216_67b904, 5);
+        break;
+    }
+}
