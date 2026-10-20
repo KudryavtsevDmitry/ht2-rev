@@ -4301,3 +4301,146 @@ extern "C" BYTE* __fastcall ShellJoin518d20_Construct(BYTE* s, void*, int parent
     strcpy((char*)s + 384, CallC<const char*>(FUN_5d2e50, 81));
     return s;
 }
+
+// ---------------------------------------------------------------------------
+// Controls screen (exception frame dropped).
+
+ASM_PROC(FUN_5bdf80)
+ASM_VAR(int, g_q42_6d207c, $L_6d207c)
+ASM_VAR(AsmLabel, g_q42_64de50, $L_64de50)
+ASM_VAR(AsmLabel, g_q42_64de10, $L_64de10)
+ASM_VAR(AsmLabel, g_q42_675494, $L_675494)
+ASM_VAR(AsmLabel, s_q42_676980, $L_676980)
+ASM_VAR(AsmLabel, s_q42_67621c, $L_67621c)
+ASM_VAR(AsmLabel, s_q42_6712a0, $L_6712a0)
+ASM_VAR(AsmLabel, s_q42_6712a4, $L_6712a4)
+#define Q42(x) ((const char*)s_q42_##x)
+ASM_VAR(AsmLabel, s_q42_676c8c, $L_676c8c)
+ASM_VAR(AsmLabel, s_q42_676c84, $L_676c84)
+ASM_VAR(AsmLabel, s_q42_6767d0, $L_6767d0)
+ASM_VAR(AsmLabel, s_q42_676c7c, $L_676c7c)
+ASM_VAR(AsmLabel, s_q42_676c74, $L_676c74)
+ASM_VAR(AsmLabel, s_q42_676c60, $L_676c60)
+ASM_VAR(AsmLabel, s_q42_676978, $L_676978)
+ASM_VAR(AsmLabel, s_q42_67696c, $L_67696c)
+ASM_VAR(AsmLabel, s_q42_676964, $L_676964)
+ASM_VAR(AsmLabel, s_q42_673384, $L_673384)
+
+// the control name table slots (675494..6759a0) by their original address
+static const char*& Keys_NameSlot(DWORD addr)
+{
+    return *(const char**)((BYTE*)g_q42_675494 + (addr - 0x675494));
+}
+// a name string in the 676980..676c4c block by its original address
+static const char* Keys_Name(DWORD addr)
+{
+    return (const char*)s_q42_676980 + (addr - 0x676980);
+}
+// the key names, set for the keyboard layout (696890 == 3: the second column)
+static void Keys_SetNames(void)
+{
+    static const DWORD common4[][2] = {
+        {0x675504, 0x676c4c}, {0x67550c, 0x676c48}, {0x675508, 0x676c44}, {0x675510, 0x676c40}};
+    static const DWORD layout[][3] = {
+        {0x6754f0, 0x676c38, 0x676bf8}, {0x675528, 0x676c30, 0x676bf4}, {0x6754f8, 0x676c28, 0x676bec},
+        {0x6754f4, 0x676c20, 0x676be4}, {0x675524, 0x676c18, 0x676be0}, {0x675500, 0x676c10, 0x676bd8},
+        {0x6754fc, 0x676c0c, 0x676bd4}, {0x6754a4, 0x676c04, 0x676bcc}};
+    for (int k = 0; k < 4; k++)
+        Keys_NameSlot(common4[k][0]) = Keys_Name(common4[k][1]);
+    bool alt = g_696890 == 3;
+    for (int k = 0; k < 8; k++)
+        Keys_NameSlot(layout[k][0]) = Keys_Name(layout[k][alt ? 1 : 2]);
+    Keys_NameSlot(0x675768) = alt ? Q42(67621c) : Q42(6712a0);
+    Keys_NameSlot(0x675760) = alt ? Keys_Name(0x676c00) : Q42(6712a4);
+    static const DWORD common[][2] = {
+        {0x67561c, 0x676bc4}, {0x675624, 0x676bbc}, {0x675618, 0x676bb4}, {0x67562c, 0x676bac}, {0x675494, 0x676ba8}};
+    for (int k = 0; k < 5; k++)
+        Keys_NameSlot(common[k][0]) = Keys_Name(common[k][1]);
+    // 675870, then the runs 67587c..6758f8 and 675920..67599c, 8 bytes apart in the names from 676ba0 down
+    DWORD src = 0x676ba0;
+    Keys_NameSlot(0x675870) = Keys_Name(src);
+    for (DWORD a = 0x67587c; a <= 0x6758f8; a += 4)
+        Keys_NameSlot(a) = Keys_Name(src -= 8);
+    for (DWORD a = 0x675920; a <= 0x67599c; a += 4)
+        Keys_NameSlot(a) = Keys_Name(src -= 8);
+    for (DWORD a = 0x6758fc; a <= 0x675908; a += 4)
+        Keys_NameSlot(a) = Keys_Name(src -= 8);
+}
+// 1 when the ini text (at most n-1 characters) equals 672994
+static int Shell_IniIs(const char* sec, const char* key, const char* def, int n)
+{
+    char buf[64];
+    GetPrivateProfileStringA(sec, key, def, buf, n, (const char*)g_q32_696868);
+    return strcmp(buf, Q34(672994)) == 0;
+}
+// [FUN_513b30] constructor (parent): the controls screen (vtables 64de50, 64de10 at +64): the key assignments
+// (+1280 the scheme from the ini, below the 6d207c count), 22 action rows (+524) by the texts 102..41, buttons 2,
+// 141, 143, 142, the key name table, the ini switches +1320, +1352, +1344 and the values +1304, +1312
+extern "C" BYTE* __fastcall ShellControls513b30_Construct(BYTE* s, void*, int parent)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 4, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_q42_64de50;
+    F(void*, s, 64) = g_q42_64de10;
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, Q37(676c9c));
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    Shell_PlainStyles(s + 132, Q42(676c8c));
+    F(int, s, 1280) = 0;
+    CallThis(FUN_513850, s);
+    F(int, s, 1320) = 0;
+    if (Shell_IniIs(Q32(672998), Q42(676c84), (const char*)s_6729a8, 60))
+        F(int, s, 1320) = 1;
+    int v;
+    CallC(FUN_603b70, Q32(672998), Q42(6767d0), 0, &v, g_q32_696868);
+    F(int, s, 1280) = v;
+    if (v >= g_q42_6d207c)
+        F(int, s, 1280) = 0;
+    CallC(FUN_531000, F(int, s, 1280));
+    BYTE* outer = Shell_NewPanel(0);
+    CallThis(FUN_5bdbf0, outer, CallC<BYTE*>(FUN_50ef60, Q42(676c7c), 2, 323, 490), 0);
+    BYTE* p = Shell_NewPanel(4);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, Q42(676c74), 141, 350, 443), 0);
+    g_q28_6ce3ac = CallC<DWORD>(FUN_5ef3d0, Q42(676c60));
+    Shell_FrameStyles(p);
+    BYTE* rows = Shell_NewPanel(0);
+    F(BYTE*, s, 524) = rows;
+    static const int row[][2] = {
+        {102, 1028}, {17, 1034}, {18, 1033}, {21, 1035}, {22, 1025}, {23, 1024}, {24, 1027}, {25, 1026},
+        {26, 1020}, {65, 1043}, {29, 1038}, {30, 1021}, {64, 1040}, {62, 1023}, {63, 1041}, {35, 1006},
+        {36, 1005}, {37, 1022}, {38, 1003}, {39, 1000}, {40, 1002}, {41, 1001}};
+    for (int k = 0; k < 22; k++)
+        CallThis(FUN_5bdbf0, rows, Shell_NewScreenA(CallC<int>(FUN_5d2e50, row[k][0]), row[k][1]), 0);
+    CallThis(FUN_5bdf80, rows, 2, -180, -20);
+    Shell_MoveCtl(rows, 221, 199);
+    CallThis(FUN_5bdbf0, p, rows, 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c58), 143, 514, 157), 0);
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50e500, Q37(676c50), 142, 259, 157), 0);
+    Shell_MoveCtl(p, 200, 153);
+    CallThis(FUN_5bdd70, p);
+    CallThis(FUN_5bdbf0, outer, p, 0);
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), outer, 0);
+    F(int, s, 516) = -1;
+    Keys_SetNames();
+    F(int, s, 1316) = 0;
+    F(int, s, 1328) = 4;
+    F(int, s, 1336) = 0;
+    F(int, s, 1340) = 0;
+    F(int, s, 1300) = 0;
+    F(int, s, 1324) = 0;
+    F(int, s, 1284) = 0;
+    F(int, s, 1288) = 0;
+    F(int, s, 1292) = 0;
+    F(int, s, 1296) = 0;
+    CallC(FUN_603b70, Q32(672998), Q42(676978), 0, &v, g_q32_696868);
+    F(int, s, 1304) = v;
+    CallC(FUN_603b70, Q32(672998), Q42(67696c), 0, &v, g_q32_696868);
+    F(int, s, 1312) = v;
+    F(int, s, 1352) = Shell_IniIs(Q32(672998), Q42(676964), (const char*)s_6729a8, 4) ? 0 : 1;
+    F(int, s, 1344) = Shell_IniIs(Q37(6730a0), Q42(673384), Q34(672994), 30);
+    return s;
+}
