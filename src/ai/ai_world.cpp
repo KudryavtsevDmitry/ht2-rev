@@ -20535,7 +20535,7 @@ extern "C" void $L_41fcf0(); KING_ALIAS("_$L_41fcf0", "_Task_Standings")
 extern "C" void $L_41ed50(); KING_ALIAS("_$L_41ed50", "_Task_PlacePresents")
 ASM_PROC($L_420ed0)
 extern "C" void $L_422370(); KING_ALIAS("_$L_422370", "_Task_Waiting")
-ASM_PROC($L_42b3a0)
+extern "C" void $L_42b3a0(); KING_ALIAS("_$L_42b3a0", "_AI_SwitchToRandom")
 ASM_PROC($L_4279d0)
 ASM_PROC($L_429930)
 extern "C" void $L_429fb0(); KING_ALIAS("_$L_429fb0", "_Task_OrdersExpired")
@@ -21753,4 +21753,35 @@ extern "C" double* __fastcall Route_CurvePoint(BYTE* s, void*, double* out, doub
 extern "C" double* __fastcall Route_CurvePoint2(BYTE* s, void*, double* out, double t, int i)
 {
     return Aiwor190_Poly(out, F(BYTE*, s, 56) + i * 1592 + 616, t);
+}
+
+extern "C" void FUN_42b2a0(); KING_ALIAS("_FUN_42b2a0", "_AI_FirstActive")
+extern "C" void FUN_42b2d0(); KING_ALIAS("_FUN_42b2d0", "_AI_FarFrom500")
+extern "C" void FUN_42b170(); KING_ALIAS("_FUN_42b170", "_Rec_ActivateOnly")
+ASM_VAR(double, g_q191_64b860, $L_64b860)
+// [$L_42b3a0] when the active record (42b2a0) is far enough, up to five random records of 68cc18 are tried: the
+// first one that is also far enough and lies further than 64b860 from the active one (or with none active) is
+// activated instead
+extern "C" void __cdecl AI_SwitchToRandom()
+{
+    if ((void**)g_68cc18 == (void**)g_68cc1c)
+        return;
+    BYTE* cur = CallC<BYTE*>(FUN_42b2a0);
+    if (!CallC<bool>(FUN_42b2d0, cur))
+        return;
+    for (int k = 0; k < 5; k++) {
+        unsigned r = AiRandom();
+        BYTE* e = (BYTE*)((void**)g_68cc18)[r % (unsigned)(((void**)g_68cc1c - (void**)g_68cc18))];
+        if (!CallC<bool>(FUN_42b2d0, e))
+            continue;
+        if (cur) {
+            double dx = F(double, e, 64) - F(double, cur, 64);
+            double dy = F(double, e, 72) - F(double, cur, 72);
+            double dz = F(double, e, 80) - F(double, cur, 80);
+            if (!(x87_sqrt((dy * dy + dz * dz) + dx * dx) > g_q191_64b860))
+                continue;
+        }
+        CallC(FUN_42b170, e);
+        return;
+    }
 }
