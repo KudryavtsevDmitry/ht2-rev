@@ -2682,3 +2682,25 @@ extern "C" void __cdecl Particles_InitRandom(void)
     }
     g_q166_70f3d0 = 1;
 }
+
+extern "C" void FUN_5ab710(); KING_ALIAS("_FUN_5ab710", "@Vec3_AddAssign@16")
+ASM_VAR(double, g_q167_64fa38, $L_64fa38)
+ASM_VAR(double, g_q167_67fa60, $L_67fa60)
+// [$L_5ceba0] moves particle cloud s by dt: every particle (+56, +36 of them) and the cloud's position (+24) by
+// the velocity (+160..+168), the vertical speed slowed by 64fa38, the colours faded by 67fa60, the life (+16)
+// shortened
+extern "C" void __fastcall Particles_Move(BYTE* s, void*, double dt)
+{
+    for (int i = 0; i < F(int, s, 36); i++) {
+        float* p = (float*)(F(BYTE*, s, 56) + i * 12);
+        p[0] = (float)(F(float, s, 160) * dt + p[0]);
+        p[1] = (float)(F(float, s, 164) * dt + p[1]);
+        p[2] = (float)(F(float, s, 168) * dt + p[2]);
+    }
+    float v[3] = {(float)(dt * F(float, s, 160)), (float)(dt * F(float, s, 164)), (float)(dt * F(float, s, 168))};
+    float out[3];
+    CallThis(FUN_5ab710, s + 24, out, v);
+    F(float, s, 168) = (float)(F(float, s, 168) - dt * g_q167_64fa38);
+    Mesh_ScaleColors(s, 0, F(int, s, 176), F(const DWORD*, s, 172), g_q167_67fa60);
+    F(double, s, 16) = F(double, s, 16) - dt;
+}
