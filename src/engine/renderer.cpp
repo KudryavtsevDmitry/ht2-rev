@@ -1523,7 +1523,7 @@ extern "C" long __fastcall Rn_DrawIndexedStrided(BYTE* self, void*, BYTE* mat, i
 // ---------------------------------------------------------------------------
 ASM_PROC(FUN_5af000)
 extern "C" void FUN_5e9480(); KING_ALIAS("_FUN_5e9480", "_Data_Read5e9690")
-ASM_PROC(FUN_5e9690)
+extern "C" void FUN_5e9690(); KING_ALIAS("_FUN_5e9690", "_Mask_ReadPixels")
 ASM_PROC(FUN_5b9520)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5bad10(); KING_ALIAS("_FUN_5bad10", "@Texture_Release@8")
