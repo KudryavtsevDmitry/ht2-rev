@@ -1447,6 +1447,9 @@ PUBLIC $L_677580
 PUBLIC $L_676d18, $L_676d20, $L_676d28, $L_676d30
 PUBLIC $L_69690c
 PUBLIC $L_678288, $L_6ced90
+PUBLIC $L_6767a0, $L_6ced1c, $L_6ced20
+PUBLIC $L_6d1b4e, $L_6d1b8e
+PUBLIC $L_6766a4, $L_6766ac, $L_720ad4, $L_720d8c
 
 ;===================================
 _TEXT SEGMENT
@@ -470203,6 +470206,8 @@ $L_510d02 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 FUN_510f20 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -470365,6 +470370,10 @@ $L_5110ec::
             pop ESI
             ret 
 FUN_510f20 ENDP
+ELSE
+EXTERN _Shell_EnterWorld:PROC
+FUN_510f20 TEXTEQU <_Shell_EnterWorld>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -474883,6 +474892,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_513a30 PROC
 
             push EBX
@@ -474984,6 +474995,10 @@ $L_513afd::
             pop EBX
             ret 
 $L_513a30 ENDP
+ELSE
+EXTERN @Shell_InputOnShow@4:PROC
+$L_513a30 TEXTEQU <@Shell_InputOnShow@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -769090,6 +769105,8 @@ $L_5d2080 PROC
 $L_5d2080 ENDP
           BYTE 090H
           BYTE 090H
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 $L_5d20a0 PROC
 
             jmp $L_5d20b0
@@ -769142,6 +769159,10 @@ $L_5d20eb::
             pop ESI
             ret 
 $L_5d20a0 ENDP
+ELSE
+EXTERN @MappedFile_Close@4:PROC
+$L_5d20a0 TEXTEQU <@MappedFile_Close@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -785924,6 +785945,8 @@ $L_5d9c11::
             add ESP,240
             ret 12
 $L_5d9bf0 ENDP
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5d9c20 PROC
 
             push EBX
@@ -786050,6 +786073,10 @@ $L_5d9c20 PROC
             pop EBX
             ret 16
 $L_5d9c20 ENDP
+ELSE
+EXTERN @App_SceneFiles@24:PROC
+$L_5d9c20 TEXTEQU <@App_SceneFiles@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -790492,6 +790519,8 @@ $L_5dc218           BYTE ($L_5dc1f8-$L_5dc1f8)/4
             nop
 FUN_5dbf00 ENDP
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5dc230 PROC
 
             push EBX
@@ -790590,8 +790619,14 @@ $L_5dc298::
             pop EBX
             ret 4
 FUN_5dc230 ENDP
+ELSE
+EXTERN @App_Path@12:PROC
+FUN_5dc230 TEXTEQU <@App_Path@12>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5dc2d0 PROC
 
             push EBX
@@ -790753,6 +790788,10 @@ $L_5dc39c::
             pop EBX
             ret 8
 FUN_5dc2d0 ENDP
+ELSE
+EXTERN @App_SubPath@16:PROC
+FUN_5dc2d0 TEXTEQU <@App_SubPath@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -806749,6 +806788,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e52b0 PROC
 
             push EBX
@@ -806856,6 +806897,10 @@ $L_5e5334::
             pop EBX
             ret 16
 FUN_5e52b0 ENDP
+ELSE
+EXTERN @Resources_SetData@24:PROC
+FUN_5e52b0 TEXTEQU <@Resources_SetData@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -807444,6 +807489,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 $L_5e5760 PROC
 
             push ESI
@@ -807470,6 +807517,10 @@ $L_5e5760 PROC
             pop ESI
             ret 
 $L_5e5760 ENDP
+ELSE
+EXTERN @Obj5e5760_Construct@4:PROC
+$L_5e5760 TEXTEQU <@Obj5e5760_Construct@4>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -814596,6 +814647,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e94d0 PROC
 
             sub ESP,8
@@ -814831,6 +814884,10 @@ $L_5e9682::
             add ESP,8
             ret 
 FUN_5e94d0 ENDP
+ELSE
+EXTERN _Mask_ReadHeader:PROC
+FUN_5e94d0 TEXTEQU <_Mask_ReadHeader>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

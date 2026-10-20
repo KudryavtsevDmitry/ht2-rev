@@ -982,7 +982,7 @@ extern "C" void FUN_5e4740(); KING_ALIAS("_FUN_5e4740", "@Resource_Free@8")
 extern "C" void FUN_5e48a0(); KING_ALIAS("_FUN_5e48a0", "@ResTable_Remove@12")
 extern "C" void FUN_5e4ec0(); KING_ALIAS("_FUN_5e4ec0", "@Resources_Find@12")
 extern "C" void FUN_5e4660(); KING_ALIAS("_FUN_5e4660", "@Resource_Construct@16")
-ASM_PROC(FUN_5dc230)    // (this, a) -> b
+extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")    // (this, a) -> b
 ASM_PROC(FUN_5dae90)    // (this, b, c, d)
 ASM_PROC(FUN_5e4f60)    // resources: load table (this, name)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
@@ -1730,7 +1730,7 @@ extern "C" void __cdecl Fw_Nop() {}
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5e94d0)
+extern "C" void FUN_5e94d0(); KING_ALIAS("_FUN_5e94d0", "_Mask_ReadHeader")
 ASM_PROC(FUN_5e8160)
 
 // [FUN_5e9420] reads a whole data file into a through 5e94d0 (a, file, size, 0)
@@ -2984,4 +2984,132 @@ extern "C" int __cdecl Node_Dispatch(BYTE* m, int a)
     case 22: CallThis(FUN_5fa910, m, a); break;
     }
     return -1;
+}
+
+// ---------------------------------------------------------------------------
+// File paths of the application folder.
+
+ASM_VAR(AsmLabel, s_q72_671204, $L_671204)
+ASM_VAR(AsmLabel, s_q72_6766ac, $L_6766ac)
+ASM_VAR(AsmLabel, s_q72_6766a4, $L_6766a4)
+ASM_VAR(char, g_q72_720ad4, $L_720ad4)
+ASM_VAR(char, g_q72_720d8c, $L_720d8c)
+extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
+
+// [FUN_5dc230] the folder of s (+648, nothing when it is ".") followed by name, in a static buffer
+extern "C" char* __fastcall App_Path(BYTE* s, void*, const char* name)
+{
+    char* b = &g_q72_720ad4;
+    const char* d = F(const char*, s, 648);
+    if (strcmp(d, (const char*)s_q72_671204) == 0)
+        *b = 0;
+    else
+        strcpy(b, d);
+    strcat(b, name);
+    return b;
+}
+
+// [FUN_5dc2d0] like 5dc230 with a subfolder sub (left out when it is ".") before name, in another buffer
+extern "C" char* __fastcall App_SubPath(BYTE* s, void*, const char* sub, const char* name)
+{
+    char* b = &g_q72_720d8c;
+    const char* d = F(const char*, s, 648);
+    if (strcmp(d, (const char*)s_q72_671204) == 0)
+        *b = 0;
+    else
+        strcpy(b, d);
+    if (strcmp(sub, (const char*)s_q72_671204) != 0)
+        strcat(b, sub);
+    strcat(b, name);
+    return b;
+}
+
+// [$L_5d9c20] the files of a scene name: folder ".", name.b3d and name.res
+extern "C" void __fastcall App_SceneFiles(void*, void*, const char* name, char* dir, char* b3d, char* res)
+{
+    strcpy(dir, (const char*)s_q72_671204);
+    strcpy(b3d, name);
+    strcat(b3d, (const char*)s_q72_6766ac);
+    strcpy(res, name);
+    strcat(res, (const char*)s_q72_6766a4);
+}
+
+// [$L_5e5760] constructor: everything cleared, the scale (+28) 1, the +52 part initialised
+extern "C" BYTE* __fastcall Obj5e5760_Construct(BYTE* s)
+{
+    F(int, s, 32) = 0;
+    F(int, s, 36) = 0;
+    F(int, s, 40) = 0;
+    F(int, s, 44) = 0;
+    CallThis(FUN_5e5cb0, s + 52);
+    F(short, s, 4) = 0;
+    F(short, s, 6) = 0;
+    F(int, s, 20) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 12) = 0;
+    F(int, s, 8) = 0;
+    F(int, s, 24) = 0;
+    F(float, s, 28) = 1.0f;
+    return s;
+}
+
+// ---------------------------------------------------------------------------
+// Resource records and mask headers.
+
+extern "C" void FUN_5ab0f0(); KING_ALIAS("_FUN_5ab0f0", "_File_ReadShort")
+extern "C" void FUN_5bbeb0(); KING_ALIAS("_FUN_5bbeb0", "@Bitmap_SetPixels@16")
+
+// [FUN_5e52b0] replaces the data of record id (tables of 1000 at s) with a copy of size bytes of data, marks it
+// loaded (2) and binds it under a; -1 when there is no such record
+extern "C" int __fastcall Resources_SetData(BYTE** s, void*, int id, int a, unsigned size, const void* data)
+{
+    if (id < 0)
+        return -1;
+    BYTE** t = (BYTE**)s[id / 1000];
+    if (!t)
+        return -1;
+    BYTE* e = t[id % 1000];
+    if (!e)
+        return -1;
+    if (F(void*, e, 24))
+        operator delete(F(void*, e, 24));
+    F(unsigned, e, 20) = size;
+    F(void*, e, 24) = size ? operator new(size) : 0;
+    F(int, e, 28) = 0;
+    memcpy(F(void*, e, 24), data, size);
+    F(int, e, 0) = 2;
+    return CallThis<int>(FUN_5e5420, s, a, e);
+}
+
+// [FUN_5e94d0] reads a mask header (MASK, MSKR, MS16 or MSK8; R and 8 set +28 bit 7, MS16 is 2 bytes a pixel)
+// from f into m: width, height, the data size (size less the 776-byte header, doubled at 16 bits); with pixels
+// the bitmap takes them from the file; 0 for an unknown tag
+extern "C" int __cdecl Mask_ReadHeader(BYTE* m, FILE* f, int size, int pixels)
+{
+    char tag[5];
+    fread(tag, 4, 1, f);
+    tag[4] = 0;
+    if (strcmp(tag, "MASK") == 0)
+        F(short, m, 8) = 1;
+    else if (strcmp(tag, "MSKR") == 0) {
+        F(short, m, 8) = 1;
+        F(unsigned, m, 28) |= 128;
+    } else if (strcmp(tag, "MS16") == 0)
+        F(short, m, 8) = 2;
+    else if (strcmp(tag, "MSK8") == 0) {
+        F(short, m, 8) = 1;
+        F(unsigned, m, 28) |= 128;
+    } else
+        return 0;
+    F(short, m, 4) = CallC<short>(FUN_5ab0f0, f);
+    F(short, m, 6) = CallC<short>(FUN_5ab0f0, f);
+    F(int, m, 12) = size - 776;
+    if (CallC<int>(FUN_5d8350) == 2)
+        F(int, m, 12) *= 2;
+    F(int, m, 16) = 0;
+    if (pixels) {
+        CallThis(FUN_5bbeb0, m, ftell(f) + pixels + 768, 1);
+        F(unsigned, m, 28) |= 0x200;
+    }
+    return 1;
 }

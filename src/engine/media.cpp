@@ -1651,7 +1651,7 @@ ASM_PROC(FUN_5cf170)
 extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
 extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
-ASM_PROC(FUN_5dc230)
+extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")
 ASM_PROC(FUN_5d4c10)
 
 static BYTE* Med_DeleteAfter(BYTE* self, int flags, void (*dtor)())
@@ -2474,4 +2474,24 @@ extern "C" unsigned __cdecl Media_ThreadProc(void*)
     CloseHandle(g_q54_702f58);
     CloseHandle(g_q54_702f5c);
     return 1;
+}
+
+// ---------------------------------------------------------------------------
+// A mapped file.
+
+// [$L_5d20a0] closes it: the view (+12), the mapping (+4) and the file (+0); +20 cleared
+extern "C" void __fastcall MappedFile_Close(BYTE* s)
+{
+    if (F(void*, s, 12))
+        UnmapViewOfFile(F(void*, s, 12));
+    HANDLE m = F(HANDLE, s, 4);
+    F(void*, s, 12) = 0;
+    if (m != INVALID_HANDLE_VALUE)
+        CloseHandle(m);
+    HANDLE f = F(HANDLE, s, 0);
+    F(HANDLE, s, 4) = INVALID_HANDLE_VALUE;
+    if (f != INVALID_HANDLE_VALUE)
+        CloseHandle(f);
+    F(HANDLE, s, 0) = INVALID_HANDLE_VALUE;
+    F(BYTE, s, 20) = 0;
 }
