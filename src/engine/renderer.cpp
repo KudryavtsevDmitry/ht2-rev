@@ -31,7 +31,7 @@ ASM_PROC(FUN_5b3a40)
 ASM_PROC(FUN_5b42c0)
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 ASM_PROC(FUN_5ad780)
-ASM_PROC(FUN_5ad970)
+extern "C" void FUN_5ad970(); KING_ALIAS("_FUN_5ad970", "@Light_FogAt@20")
 extern "C" void __fastcall Holder5baa30_ReleaseAll(BYTE* s, void*);
 ASM_VAR(double, g_500ms, $L_64b860)
 ASM_VAR(float, g_255f, $L_64c458)
@@ -1295,8 +1295,8 @@ extern "C" int __fastcall Image_RleToSurface(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5b1740(); KING_ALIAS("_FUN_5b1740", "@Render_FirstVisible@12")    // the next visible entry of a chain
 extern "C" void FUN_5b1870(); KING_ALIAS("_FUN_5b1870", "_Vertices_Alpha")    // the alpha bytes of n vertices
-ASM_PROC(FUN_5b17f0)    // the texture coordinates of n vertices
-ASM_PROC(FUN_5b18e0)
+extern "C" void FUN_5b17f0(); KING_ALIAS("_FUN_5b17f0", "_Points_TexCoords")    // the texture coordinates of n vertices
+extern "C" void FUN_5b18e0(); KING_ALIAS("_FUN_5b18e0", "_Points_Project2")
 ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 typedef void (__cdecl* RnHook)(BYTE*);
@@ -2411,4 +2411,60 @@ extern "C" void __cdecl Device_SetStates(int mode)
         Ren154_RS(g_q150_720908, 15, 1);
         Ren154_RS(g_q150_720908, 25, 5);
     }
+}
+
+// ---------------------------------------------------------------------------
+// Projecting vertices.
+
+// [FUN_5b18e0] transforms n points (3 floats, every stride bytes) by the x and z rows of 3x4 matrix m into out
+// (2 floats each)
+extern "C" void __cdecl Points_Project2(float* out, const BYTE* in, unsigned stride, int n, const float* m)
+{
+    stride &= ~3u;
+    for (; n > 0; n--, in += stride, out += 2) {
+        const float* p = (const float*)in;
+        double y = p[2] * m[8] + p[0] * m[2];
+        y = y + m[5] * p[1];
+        y = y + m[11];
+        double x = m[3] * p[1] + p[2] * m[6];
+        x = x + p[0] * m[0];
+        x = x + m[9];
+        out[0] = (float)x;
+        out[1] = (float)y;
+    }
+}
+
+// [FUN_5b17f0] the texture coordinates of n points: transformed by m and mapped into rectangle r (u across
+// r[0]..r[2], v across r[3]..r[1])
+extern "C" void __cdecl Points_TexCoords(float* out, const BYTE* in, unsigned stride, const float* r, int n,
+                                         const float* m)
+{
+    stride &= ~3u;
+    for (; n > 0; n--, in += stride, out += 2) {
+        const float* p = (const float*)in;
+        double u = p[1] * m[4] + p[2] * m[7];
+        u = u + p[0] * m[1];
+        u = u + m[10];
+        double v = m[6] * p[2] + p[0] * m[0];
+        v = v + m[3] * p[1];
+        v = v + m[9];
+        out[0] = (float)((v - r[0]) / (r[2] - r[0]));
+        out[1] = (float)((u - r[3]) / (r[1] - r[3]));
+    }
+}
+
+ASM_VAR(double, g_q160_64b6e0, $L_64b6e0)
+// [FUN_5ad970] the fog value at point p for light s at t: a point light (kind 1) scales by how the point faces it
+// ((1 + dot(-p, +16..+24)) * 64b6e0, between t and 1); kinds 2 and 3 give t; others the argument's bits
+extern "C" double __fastcall Light_FogAt(const BYTE* s, void*, const float* p, double t)
+{
+    int k = F(int, s, 0);
+    if (k == 1) {
+        double d = F(float, s, 24) * -p[2] + F(float, s, 20) * -p[1];
+        d = d + F(float, s, 16) * -p[0];
+        return (d + g_q151_64b670) * g_q160_64b6e0 * (g_q151_64b670 - t) + t;
+    }
+    if (k == 2 || k == 3)
+        return t;
+    return *(const float*)&p;
 }

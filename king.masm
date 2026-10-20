@@ -707142,6 +707142,8 @@ $L_5ad956::
 FUN_5ad780 ENDP
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5ad970 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -707189,6 +707191,10 @@ $L_5ad9d3::
             fld DWORD PTR [ESP+4]
             ret 12
 FUN_5ad970 ENDP
+ELSE
+EXTERN @Light_FogAt@20:PROC
+FUN_5ad970 TEXTEQU <@Light_FogAt@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -713449,6 +713455,8 @@ EXTERN @Render_FirstVisible@12:PROC
 FUN_5b1740 TEXTEQU <@Render_FirstVisible@12>
 ENDIF
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b17f0 PROC
 
             push EBX
@@ -713508,6 +713516,10 @@ $L_5b186b::
             pop EBX
             ret 
 FUN_5b17f0 ENDP
+ELSE
+EXTERN _Points_TexCoords:PROC
+FUN_5b17f0 TEXTEQU <_Points_TexCoords>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -713578,6 +713590,8 @@ EXTERN _Vertices_Alpha:PROC
 FUN_5b1870 TEXTEQU <_Vertices_Alpha>
 ENDIF
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b18e0 PROC
 
             push EDI
@@ -713626,6 +713640,10 @@ $L_5b1941::
             pop EDI
             ret 
 FUN_5b18e0 ENDP
+ELSE
+EXTERN _Points_Project2:PROC
+FUN_5b18e0 TEXTEQU <_Points_Project2>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
