@@ -1149,7 +1149,7 @@ extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
 extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
 extern "C" unsigned __cdecl Fw_LoaderThread(BYTE* p);
 extern "C" void FUN_5e4e00(); KING_ALIAS("_FUN_5e4e00", "@Resources_FreeTables@8")
-ASM_PROC(FUN_5baa70)
+extern "C" void FUN_5baa70(); KING_ALIAS("_FUN_5baa70", "_TexPool_Return")
 ASM_VAR(double, g_652730, $L_652730)
 ASM_VAR(AsmLabel, s_6832bc, $L_6832bc)
 ASM_VAR(AsmLabel, s_683294, $L_683294)

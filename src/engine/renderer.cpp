@@ -49,7 +49,7 @@ ASM_PROC(FUN_5b6770)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 ASM_PROC(FUN_5b81c0)    // blits a bitmap (dst, bitmap, rect, x, y)
 ASM_PROC(FUN_5d3d30)    // sets palette entries
-ASM_PROC(FUN_5baa70)
+extern "C" void FUN_5baa70(); KING_ALIAS("_FUN_5baa70", "_TexPool_Return")
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")    // checksum (data, size)
 
 ASM_VAR(BYTE*, g_device, $L_720908)            // IDirect3DDevice
@@ -1872,4 +1872,72 @@ extern "C" void __cdecl Pixels4444_Fade(WORD* p, unsigned n, double k)
             w = ((int)(a * k) & 0xf000) | (r << 4 | g) << 4 | b;
         *p = (WORD)w;
     }
+}
+
+// ---------------------------------------------------------------------------
+// The texture surface pool.
+
+extern "C" void FUN_5bac70(); KING_ALIAS("_FUN_5bac70", "@Records188x6_Destroy@8")
+ASM_VAR(int, g_q147_702e98, $L_702e98)
+ASM_VAR(int, g_q147_702ea0, $L_702ea0)
+ASM_VAR(BYTE*, g_q147_702ea8, $L_702ea8)
+ASM_VAR(AsmLabel, s_q147_67f114, $L_67f114)
+typedef long(__stdcall* Ren147_GetDesc)(void*, BYTE*);
+// IUnknown::Release of a DirectDraw surface
+static void Ren147_Release(void* surf) { ((unsigned long(__stdcall*)(void*))(*(void***)surf)[2])(surf); }
+static void Ren147_Desc(void* surf, BYTE* d, int line)
+{
+    memset(d, 0, 124);
+    F(DWORD, d, 0) = 124;
+    if (((Ren147_GetDesc)(*(void***)surf)[22])(surf, d))
+        CallC(FUN_5d2ba0, (const char*)s_q147_67f114, line);
+}
+// [FUN_5baa70] gives texture surface surf back: with the pool on (702e98) a 64, 128 or 256 high surface goes to
+// the pool's set of its size and format (at most 6 sets of 15), else it is released; without surf the pool is
+// freed; with the pool off it is just released (702ea0 counting down)
+extern "C" void __cdecl TexPool_Return(void* surf)
+{
+    if (!g_q147_702e98) {
+        if (surf) {
+            g_q147_702ea0--;
+            Ren147_Release(surf);
+        }
+        return;
+    }
+    if (!surf) {
+        if (BYTE* p = g_q147_702ea8) {
+            CallThis(FUN_5bac70, p);
+            operator delete(p);
+        }
+        g_q147_702ea8 = 0;
+        return;
+    }
+    BYTE* pool = g_q147_702ea8;
+    BYTE d[124];
+    Ren147_Desc(surf, d, 51);
+    if (!(F(DWORD, d, 104) & 0x400000)) {
+        int n = F(int, pool, 1128);
+        int i;
+        for (i = 0; i < n; i++) {
+            BYTE* e = pool + i * 188;
+            if (F(int, d, 8) == F(int, e, 8) && F(int, d, 12) == F(int, e, 12) && F(int, d, 88) == F(int, e, 88) &&
+                F(int, d, 92) == F(int, e, 92) && F(int, d, 96) == F(int, e, 96) && F(int, d, 100) == F(int, e, 100))
+                break;
+        }
+        BYTE* e = 0;
+        if (i < n)
+            e = pool + i * 188;
+        else if (n < 6 && (F(int, d, 8) == 256 || F(int, d, 8) == 128 || F(int, d, 8) == 64)) {
+            memcpy(pool + n * 188, d, 124);
+            e = pool + n * 188;
+            F(int, pool, 1128) = n + 1;
+        }
+        if (e && F(int, e, 184) < 15) {
+            F(void*, e, 124 + F(int, e, 184) * 4) = surf;
+            F(int, e, 184)++;
+            return;
+        }
+    }
+    Ren147_Desc(surf, d, 1);
+    Ren147_Release(surf);
 }

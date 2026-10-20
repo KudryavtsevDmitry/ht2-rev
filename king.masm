@@ -1476,6 +1476,7 @@ PUBLIC $L_721210
 PUBLIC $L_723a88
 PUBLIC $L_67fa80
 PUBLIC $L_64da58
+PUBLIC $L_67f114, $L_702ea8
 
 ;===================================
 _TEXT SEGMENT
@@ -728975,6 +728976,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5baa70 PROC
 
             mov EAX,DWORD PTR [$L_702e98]
@@ -729200,6 +729203,10 @@ $L_5bac5f::
             add ESP,124
             ret 
 FUN_5baa70 ENDP
+ELSE
+EXTERN _TexPool_Return:PROC
+FUN_5baa70 TEXTEQU <_TexPool_Return>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
