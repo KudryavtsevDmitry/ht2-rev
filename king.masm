@@ -1443,6 +1443,7 @@ PUBLIC $L_6968f8, $L_6cecc8, $L_6cecd0
 PUBLIC $L_676cfc, $L_677630, $L_677638
 PUBLIC $L_676cf4, $L_677484, $L_67748c, $L_6ceccc
 PUBLIC $L_6772c4
+PUBLIC $L_677580
 
 ;===================================
 _TEXT SEGMENT
@@ -487727,6 +487728,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_51bdc0 PROC
 
             sub ESP,376
@@ -487900,6 +487903,10 @@ $L_51bf1e::
             add ESP,376
             ret 
 $L_51bdc0 ENDP
+ELSE
+EXTERN @SessionScreen_OnShow@8:PROC
+$L_51bdc0 TEXTEQU <@SessionScreen_OnShow@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
