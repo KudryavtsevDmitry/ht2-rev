@@ -1157,7 +1157,7 @@ ASM_VAR(AsmLabel, s_q20_67e100, $L_67e100)
 ASM_VAR(AsmLabel, g_q20_64c26c, $L_64c26c)
 ASM_VAR(AsmLabel, g_q20_65094c, $L_65094c)
 ASM_VAR(AsmLabel, g_q20_650900, $L_650900)
-ASM_VAR(AsmLabel, g_q20Ctor593610, $L_593610)
+extern "C" BYTE* __fastcall Rec593610_Construct(BYTE* s);
 ASM_VAR(AsmLabel, s_q20_672688, $L_672688)
 ASM_VAR(AsmLabel, s_q20_67c178, $L_67c178)
 
@@ -1185,7 +1185,7 @@ extern "C" BYTE* __fastcall MovBodies_Construct(BYTE* s, void*, BYTE* w)
     if (m) {
         *(int*)m = 256;
         e = m + 4;
-        CallStd(Movbod_VecCtor, e, 124, 256, (BYTE*)g_q20Ctor593610, FUN_50d190);
+        CallStd(Movbod_VecCtor, e, 124, 256, (BYTE*)Rec593610_Construct, FUN_50d190);
     }
     F(BYTE*, s, 100) = e;
     memset(e, 0, 31744);
@@ -1251,4 +1251,11 @@ extern "C" void __fastcall Linked592cf0_Destruct(BYTE* s, void*)
         *head = n ? n : F(BYTE*, s, 8);
     }
     CallThis(FUN_592e40, s + 4);
+}
+
+// [$L_593610] constructor: +4..+63 cleared
+extern "C" BYTE* __fastcall Rec593610_Construct(BYTE* s)
+{
+    memset(s + 4, 0, 60);
+    return s;
 }

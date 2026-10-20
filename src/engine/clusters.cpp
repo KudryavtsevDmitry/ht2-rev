@@ -863,3 +863,18 @@ extern "C" int __cdecl Scene_FindCallback(BYTE* n, int* q)
     }
     return -1;
 }
+
+// [$L_5ea830] constructor: cleared, -1 at +44 and +52, scales +96 and +100 at 1, +120 = 238
+extern "C" BYTE* __fastcall Clu5ea830_Construct(BYTE* s)
+{
+    static const short z[15] = {32, 40, 88, 76, 48, 108, 84, 80, 56, 60, 92, 36, 104, 68, 64};
+    F(int, s, 44) = -1;
+    F(int, s, 52) = -1;
+    for (int k = 0; k < 15; k++)
+        F(int, s, z[k]) = 0;
+    F(float, s, 100) = 1.0f;
+    F(float, s, 96) = 1.0f;
+    F(BYTE, s, 0) = 0;
+    F(BYTE, s, 120) = 238;
+    return s;
+}
