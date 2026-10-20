@@ -1025,3 +1025,20 @@ extern "C" long __cdecl Joy_SetDeadZone(unsigned axis, int v, FILE* log)
     }
     return r;
 }
+
+// ---------------------------------------------------------------------------
+// Static records.
+
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, g_q103_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q103_6f54bc, $L_6f54bc)
+// [$L_579970] static init: the 40 52-byte records of 6f54bc get zeroed vectors and the identity matrix
+extern "C" void __cdecl Ff_InitRecords(void)
+{
+    BYTE* p = (BYTE*)g_q103_6f54bc;
+    for (int k = 40; k; k--, p += 52) {
+        Array_ForEach(p, 12, 4, FUN_4bd4d0);
+        memcpy(p, (BYTE*)g_q103_7025f0, 48);
+    }
+}

@@ -1372,7 +1372,7 @@ ASM_VAR(int, g_count6f6a6c, $L_6f6a6c)
 ASM_VAR(char, g_6f68b0, $L_6f68b0)
 extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 extern "C" void FUN_59aa90(); KING_ALIAS("_FUN_59aa90", "@Wasm59aa90_Destroy@8")
-ASM_PROC($L_5973a0)
+extern "C" void $L_5973a0(); KING_ALIAS("_$L_5973a0", "@Rec5973a0_Construct@4")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
 extern "C" void FUN_5480f0(); KING_ALIAS("_FUN_5480f0", "@Obj5480f0_Get72@8")
 extern "C" void FUN_598d30(); KING_ALIAS("_FUN_598d30", "@Wasm_598d30@16")
@@ -2037,4 +2037,41 @@ extern "C" void __fastcall Light5a3f50_Attach(BYTE* s, void*, BYTE* n)
     case 17: F(BYTE*, n, 72) = s; return;
     }
     F(BYTE*, s, 32) = 0;
+}
+
+// ---------------------------------------------------------------------------
+// Static matrices and the camera record.
+
+extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, g_q103_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_q103_6f66b8, $L_6f66b8)
+// [$L_595cd0] static init: the 6 matrices of 6f66b8 start as the identity
+extern "C" void __cdecl WObj_InitMatrices(void)
+{
+    BYTE* p = (BYTE*)g_q103_6f66b8;
+    for (int k = 6; k; k--, p += 48) {
+        Array_ForEach(p, 12, 4, FUN_4bd4d0);
+        memcpy(p, (BYTE*)g_q103_7025f0, 48);
+    }
+}
+
+// [$L_5973a0] constructor: cleared, the identity matrix at +24
+extern "C" BYTE* __fastcall Rec5973a0_Construct(BYTE* s)
+{
+    memset(s, 0, 16);
+    memset(s + 24, 0, 48);
+    memcpy(s + 24, (BYTE*)g_q103_7025f0, 48);
+    F(int, s, 100) = 0;
+    F(int, s, 104) = 0;
+    F(int, s, 124) = 0;
+    F(int, s, 108) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 116) = 0;
+    F(int, s, 72) = 0;
+    F(int, s, 96) = 0;
+    F(int, s, 128) = 0;
+    F(int, s, 84) = 0;
+    F(int, s, 80) = 0;
+    return s;
 }
