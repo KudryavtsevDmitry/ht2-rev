@@ -343351,6 +343351,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4bc540 PROC
 
             cmp DWORD PTR [ESP+4],957
@@ -343489,6 +343491,10 @@ $L_4bc640           DWORD $L_4bc567
           DWORD $L_4bc635
           DWORD $L_4bc60f
           DWORD $L_4bc627
+ELSE
+EXTERN _Fx_HandleMessage:PROC
+FUN_4bc540 TEXTEQU <_Fx_HandleMessage>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
