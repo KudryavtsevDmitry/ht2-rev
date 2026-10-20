@@ -1440,7 +1440,7 @@ extern "C" void FUN_594c00(); KING_ALIAS("_FUN_594c00", "@Fader_Step@12")
 extern "C" void FUN_594ba0(); KING_ALIAS("_FUN_594ba0", "@Fader_Unlink@8")
 extern "C" void FUN_594bd0(); KING_ALIAS("_FUN_594bd0", "@Fader_Release@8")
 extern "C" void FUN_595c70(); KING_ALIAS("_FUN_595c70", "@Wasm_595c70@8")
-ASM_PROC(FUN_598c30)
+extern "C" void FUN_598c30(); KING_ALIAS("_FUN_598c30", "@WObj_SetMode@12")
 
 // [FUN_594c40] steps all faders, deleting the finished ones
 extern "C" void __cdecl Faders_Step(int dt)
@@ -2092,4 +2092,34 @@ extern "C" BYTE* __fastcall Rec598db0_Construct(BYTE* s)
     F(double, s, 128) = 0;
     F(int, s, 160) = 1;
     return s;
+}
+
+// ---------------------------------------------------------------------------
+// Placing a world object's model.
+
+ASM_PROC(FUN_596470)
+ASM_PROC(FUN_595eb0)
+extern "C" void FUN_594e00(); KING_ALIAS("_FUN_594e00", "_CarType_Point")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+struct WObj107_V3 { DWORD v[3]; };
+struct WObj107_M { DWORD v[12]; };
+// [FUN_598c30] sets mode a (+100) of object s; with a model (+124): mode 0 places it at point 0 of car +96 turned
+// half round, other modes go to 595eb0
+extern "C" void __fastcall WObj_SetMode(BYTE* s, void*, int a)
+{
+    F(int, s, 100) = a;
+    if (!F(BYTE*, s, 124))
+        return;
+    if (a) {
+        CallThis(FUN_595eb0, F(BYTE*, s, 124), 0);
+        return;
+    }
+    BYTE t1[12], t2[48], t3[48], t4[48];
+    WObj107_V3 v = *CallC<WObj107_V3*>(FUN_594e00, t1, F(BYTE*, s, 96), 0);
+    BYTE* r2 = CallC<BYTE*>(FUN_5abc40, t2, v);
+    BYTE* r3 = CallC<BYTE*>(FUN_5ac0c0, t3, 3.14159274f, r2);
+    BYTE* r4 = CallC<BYTE*>(FUN_5aba40, t4, r3, r2);
+    CallThis(FUN_596470, F(BYTE*, s, 124), 0, *(WObj107_M*)r4);
 }

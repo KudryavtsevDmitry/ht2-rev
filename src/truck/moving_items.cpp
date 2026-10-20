@@ -540,3 +540,36 @@ extern "C" int __fastcall SceneObj_OnMessage(BYTE* s, void*, int* m)
     }
     return 0;
 }
+
+// ---------------------------------------------------------------------------
+// A received car update.
+
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+ASM_VAR(BYTE*, g_q106_6f653c, $L_6f653c)
+// [FUN_585fd0] applies update record r (car id +0, a 208-byte node +4, +212, a matrix +216, two vectors +264 and
+// +276) to the car of the 6f653c list with that id (+812 of its list entry) through vtbl+168 of s
+extern "C" void __fastcall Cars_ApplyUpdate(BYTE* s, void*, const BYTE* r)
+{
+    BYTE node[208];
+    CallThis(FUN_5ef5c0, node);
+    int id = F(int, r, 0);
+    int a = F(int, r, 212);
+    memcpy(node, r + 4, 208);
+    BYTE m[48];
+    memcpy(m, r + 216, 48);
+    float v1[3], v2[3];
+    memcpy(v1, r + 264, 12);
+    memcpy(v2, r + 276, 12);
+    if (!g_q106_6f653c)
+        return;
+    for (BYTE* e = g_q106_6f653c - 4; e;) {
+        if (F(int, e, 812) == id) {
+            CallVirt(s, 168, node, e - 376, a, m, v1, v2);
+            return;
+        }
+        BYTE* next = F(BYTE*, e, 8);
+        if (!next)
+            return;
+        e = next - 4;
+    }
+}

@@ -645543,6 +645543,8 @@ FUN_585da0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 FUN_585fd0 PROC
 
             sub ESP,288
@@ -645663,6 +645665,10 @@ $L_5860c8::
             nop
             nop
 FUN_585fd0 ENDP
+ELSE
+EXTERN @Cars_ApplyUpdate@12:PROC
+FUN_585fd0 TEXTEQU <@Cars_ApplyUpdate@12>
+ENDIF
 ; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
 IFDEF ASM_MOVING_ITEMS
 $L_5860e0 PROC
@@ -673603,6 +673609,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 FUN_598c30 PROC
 
             sub ESP,156
@@ -673689,6 +673697,10 @@ $L_598cc9::
             nop
             nop
 FUN_598c30 ENDP
+ELSE
+EXTERN @WObj_SetMode@12:PROC
+FUN_598c30 TEXTEQU <@WObj_SetMode@12>
+ENDIF
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
