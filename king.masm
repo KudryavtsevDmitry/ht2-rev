@@ -846271,6 +846271,8 @@ FUN_5f98c0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f9b00 PROC
 
             sub ESP,272
@@ -846505,6 +846507,10 @@ $L_5f9cfd::
             add ESP,272
             ret 8
 FUN_5f9b00 ENDP
+ELSE
+EXTERN @SceneNode5f9b00_Hit@16:PROC
+FUN_5f9b00 TEXTEQU <@SceneNode5f9b00_Hit@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

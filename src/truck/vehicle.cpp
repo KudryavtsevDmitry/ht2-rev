@@ -2086,7 +2086,7 @@ extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
 ASM_PROC(FUN_4f1240)
 ASM_PROC(FUN_4f0fc0)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-ASM_PROC(FUN_5f9b00)
+extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
 ASM_VAR(AsmLabel, g_veh702630, $L_702630)
 ASM_VAR(AsmLabel, g_veh6d2114, $L_6d2114)
 

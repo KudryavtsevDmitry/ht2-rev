@@ -2215,3 +2215,45 @@ extern "C" int __fastcall SceneNode5f43d0_Hit(BYTE* s, void*, int flags, BYTE* r
 {
     return Sce141_HitXform(s, 60, 64, flags, rec);
 }
+
+// [FUN_5f9b00] a hit test of reference node s (skipped with +40 bit 0, +80 set or flags without bit 2): the
+// referred object (+64) tests the record with its matrix (+4) moved into the space of node +68; a miss, or a
+// hit on the record's own owner (+72 = rec +120), restores the record (matrix, +76, +88); else the hit is
+// marked with +72 (rec +116)
+extern "C" int __fastcall SceneNode5f9b00_Hit(BYTE* s, void*, int flags, BYTE* rec)
+{
+    BYTE w1[48], saved[48], t1[48], t2[48];
+    memcpy(w1, (BYTE*)g_q109_7025f0, 48);
+    if ((F(BYTE, s, 40) & 1) || F(int, s, 80) || !(flags & 4))
+        return 0;
+    BYTE* m = rec + 4;
+    memcpy(saved, m, 48);
+    if (!F(BYTE*, s, 64))
+        return 0;
+    DWORD v1[3], v2[3];
+    memcpy(v1, rec + 76, 12);
+    memcpy(v2, rec + 88, 12);
+    if (BYTE* n = F(BYTE*, s, 68)) {
+        int kind = CallThis<int>(FUN_5f25c0, n, w1);
+        if (kind == 0)
+            memcpy(m, CallC<BYTE*>(FUN_5ac2e0, t1, w1), 48);
+        else if (kind == 1) {
+            BYTE* inv = CallC<BYTE*>(FUN_5ac2e0, t1, w1);
+            memcpy(m, CallC<BYTE*>(FUN_5aba40, t2, m, inv), 48);
+        }
+    }
+    int r = CallVirt<int>(F(BYTE*, s, 64), 52, flags, rec);
+    if (!r) {
+        memcpy(m, saved, 48);
+        return 0;
+    }
+    int c = F(int, s, 72);
+    if (c && c == F(int, rec, 120)) {
+        memcpy(rec + 76, v1, 12);
+        memcpy(m, saved, 48);
+        memcpy(rec + 88, v2, 12);
+        return 0;
+    }
+    F(int, rec, 116) = c;
+    return r;
+}
