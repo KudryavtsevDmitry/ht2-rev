@@ -2602,7 +2602,7 @@ extern "C" int __cdecl Static5ef4a0_AtExit(void) { return atexit((void(__cdecl*)
 extern "C" void FUN_5ab6a0(); KING_ALIAS("_FUN_5ab6a0", "_Vec3_NearlyEqual")
 extern "C" void FUN_5e5720(); KING_ALIAS("_FUN_5e5720", "@Fw_Read5e5720@12")
 extern "C" void Sce_VecCtorEh(); KING_ALIAS("_Sce_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
-ASM_PROC(FUN_5e69a0)    // reads a 48-byte item (file)
+extern "C" void FUN_5e69a0(); KING_ALIAS("_FUN_5e69a0", "@Polygon_Read@12")    // reads a 48-byte item (file)
 ASM_VAR(AsmLabel, g_sd5e6980, $L_5e6980)    // its constructor
 ASM_VAR(AsmLabel, g_sd5f4b20, $L_5f4b20)    // its destructor
 ASM_VAR(char, s_sd683bcc, $L_683bcc)
@@ -2664,6 +2664,169 @@ void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
         break;
     }
     }
+}
+
+} // extern "C"
+
+// === vector<56 bytes>::insert_aux (FUN_5ffdf0)
+
+ASM_PROC(FUN_6000c0)    // copy constructor of a 56-byte record (this, src)
+ASM_PROC(FUN_600420)    // uninitialized copy of 56-byte records (first, last, dest, x)
+extern "C" void FUN_6002f0(); KING_ALIAS("_FUN_6002f0", "_Music_CopyBackward")
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
+extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")
+extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+
+extern "C" {
+
+// [FUN_5ffdf0] inserts a copy of record x (56 bytes: a byte vector, then 40 bytes) at pos of vector v: shifted up
+// within the capacity, or into a new buffer of twice the size (1 when empty)
+void __fastcall Vec56_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2]) {
+        BYTE* end = v[1];
+        if (end)
+            CallThis(FUN_6000c0, end, end - 56);
+        v[1] = end + 56;
+        BYTE t[56];
+        CallThis(FUN_44dd90, t, x);
+        memcpy(t + 16, x + 16, 40);
+        CallC(FUN_6002f0, pos, end - 56, end, x, 0);
+        CallThis(FUN_44c160, pos, t);
+        memcpy(pos + 16, t + 16, 40);
+        CallThis(FUN_44b090, t);
+        return;
+    }
+    int n = (int)(v[1] - v[0]) / 56;
+    int len = n ? n * 2 : 1;
+    BYTE* p = CallC<BYTE*>(FUN_44b740, len * 56);
+    BYTE* q = CallC<BYTE*>(FUN_600420, v[0], pos, p, x);
+    if (q)
+        CallThis(FUN_6000c0, q, x);
+    BYTE* e = CallC<BYTE*>(FUN_600420, pos, v[1], q + 56, x);
+    for (BYTE* r = v[0]; r != v[1]; r += 56)
+        CallThis(FUN_404420, r);
+    if (int bytes = (int)(v[2] - v[0]) / 56 * 56)
+        CallC(FUN_44b4a0, v[0], bytes);
+    v[1] = e;
+    v[0] = p;
+    v[2] = p + len * 56;
+}
+
+} // extern "C"
+
+// === loading an animated node ($L_5f3190)
+
+extern "C" void FUN_5e56f0(); KING_ALIAS("_FUN_5e56f0", "@Fw_Read5e56f0@12")
+extern "C" void __fastcall Wea5a72c0_Init(BYTE* s);
+
+extern "C" {
+
+// [$L_5f3190] reads animated node s from file f: its plane (+20), two names (+112, +56), the key kind (+108,
+// the low byte; the rest the values per key), the keys (+64, 28 bytes each, count +60) with their value pairs
+// (+20, count +24) and, by kind, a point (1, 2) or a value (3) per key (+68), then the node's part
+int __fastcall AnimNode_Load(BYTE* s, void*, void* f, int, int)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    Sce_ReadName(f, s + 112);
+    Sce_ReadName(f, s + 56);
+    if (F(int, s, 108))
+        F(int, s, 108) = CallC<int>(FUN_5ab140, f);
+    int per = F(int, s, 108) >> 8;
+    F(int, s, 108) &= 255;
+    int n = CallC<int>(FUN_5ab140, f);
+    F(int, s, 60) = n;
+    F(BYTE*, s, 64) = 0;
+    if (n) {
+        BYTE* a = (BYTE*)operator new(n * 28 + 4);
+        if (a) {
+            F(int, a, 0) = n;
+            CallStd(Sce_VecCtorEh, a + 4, 28, n, (void*)Wea5a72c0_Init, (void*)g_dtor5a3df0);
+            F(BYTE*, s, 64) = a + 4;
+        }
+    }
+    if (F(int, s, 108) > 0 && F(int, s, 60) > 0) {
+        int m = F(int, s, 60);
+        BYTE* b = (BYTE*)operator new((m + 1) * 12);
+        if (b)
+            memset(b, 0, (m + 1) * 12);
+        F(BYTE*, s, 68) = b;
+    }
+    for (int i = 0; i < F(int, s, 60); i++) {
+        BYTE* k = F(BYTE*, s, 64) + i * 28;
+        CallThis(FUN_5e56f0, k, f);
+        if (per > 0) {
+            F(int, k, 24) = per;
+            float* v = (float*)operator new(per * 8);
+            F(float*, k, 20) = v;
+            for (int j = 0; j < per; j++) {
+                F(float*, F(BYTE*, s, 64) + i * 28, 20)[j * 2] = (float)CallC<double>(FUN_5ab190, f);
+                F(float*, F(BYTE*, s, 64) + i * 28, 20)[j * 2 + 1] = (float)CallC<double>(FUN_5ab190, f);
+            }
+        }
+        int kind = F(int, s, 108);
+        if (kind == 1 || kind == 2)
+            CallThis(FUN_5ab790, F(BYTE*, s, 68) + i * 12, f);
+        else if (kind == 3)
+            F(float, F(BYTE*, s, 68), i * 12) = (float)CallC<double>(FUN_5ab190, f);
+    }
+    return Sce_LoadTail(s, (int)f, 1, F(int, s, 64), F(int, s, 68));
+}
+
+} // extern "C"
+
+// === loading an animated node with one name ($L_5f2800)
+
+extern "C" {
+
+// [$L_5f2800] like AnimNode_Load with one name (+104): the plane (+20), the key kind (+108), the keys (+60,
+// count +56) with their value pairs and, by kind, a point or a value per key (+64), then the node's part
+int __fastcall AnimNode1_Load(BYTE* s, void*, void* f, int, int)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    Sce_ReadName(f, s + 104);
+    if (F(int, s, 108))
+        F(int, s, 108) = CallC<int>(FUN_5ab140, f);
+    int per = F(int, s, 108) >> 8;
+    F(int, s, 108) &= 255;
+    int n = CallC<int>(FUN_5ab140, f);
+    F(int, s, 56) = n;
+    F(BYTE*, s, 60) = 0;
+    if (n) {
+        BYTE* a = (BYTE*)operator new(n * 28 + 4);
+        if (a) {
+            F(int, a, 0) = n;
+            CallStd(Sce_VecCtorEh, a + 4, 28, n, (void*)Wea5a72c0_Init, (void*)g_dtor5a3df0);
+            F(BYTE*, s, 60) = a + 4;
+        }
+    }
+    if (F(int, s, 108) > 0 && F(int, s, 56) > 0) {
+        int m = F(int, s, 56);
+        BYTE* b = (BYTE*)operator new((m + 1) * 12);
+        if (b)
+            memset(b, 0, (m + 1) * 12);
+        F(BYTE*, s, 64) = b;
+    }
+    for (int i = 0; i < F(int, s, 56); i++) {
+        BYTE* k = F(BYTE*, s, 60) + i * 28;
+        CallThis(FUN_5e56f0, k, f);
+        if (per > 0) {
+            F(int, k, 24) = per;
+            F(float*, k, 20) = (float*)operator new(per * 8);
+            for (int j = 0; j < per; j++) {
+                F(float*, F(BYTE*, s, 60) + i * 28, 20)[j * 2] = (float)CallC<double>(FUN_5ab190, f);
+                F(float*, F(BYTE*, s, 60) + i * 28, 20)[j * 2 + 1] = (float)CallC<double>(FUN_5ab190, f);
+            }
+        }
+        int kind = F(int, s, 108);
+        if (kind == 1 || kind == 2)
+            CallThis(FUN_5ab790, F(BYTE*, s, 64) + i * 12, f);
+        else if (kind == 3)
+            F(float, F(BYTE*, s, 64), i * 12) = (float)CallC<double>(FUN_5ab190, f);
+    }
+    return Sce_LoadTail(s, (int)f, 1, F(int, s, 60), F(int, s, 64));
 }
 
 } // extern "C"

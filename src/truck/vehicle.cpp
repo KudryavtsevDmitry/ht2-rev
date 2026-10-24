@@ -17,7 +17,7 @@
 typedef char AsmLabel[1];
 typedef int Ints[1];
 
-ASM_PROC(FUN_52fdb0)
+extern "C" void FUN_52fdb0(); KING_ALIAS("_FUN_52fdb0", "@ControlPreset_Default@4")
 extern "C" void __fastcall Engine_SetKeys(BYTE* self, void*, int a, int b);   // carphys.cpp
 extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void __cdecl Switch_SetChecked(BYTE* obj, int v);     // world.cpp
@@ -1768,7 +1768,7 @@ extern "C" void __fastcall Car_ApplyPlacement(BYTE* self, void*)
 // the car's sums, part forwarders, destructors.
 
 extern "C" void FUN_5300b0(); KING_ALIAS("_FUN_5300b0", "@Controls_Axis@12")
-ASM_PROC(FUN_556a70)
+extern "C" void FUN_556a70(); KING_ALIAS("_FUN_556a70", "@CarBody_Step@4")
 extern "C" void FUN_5561b0(); KING_ALIAS("_FUN_5561b0", "@Car_LoadCargo@16")
 extern "C" void FUN_5562e0(); KING_ALIAS("_FUN_5562e0", "@Car_UnloadCargo@16")
 extern "C" void FUN_54c950(); KING_ALIAS("_FUN_54c950", "@Car_NamePart@16")
@@ -2492,7 +2492,7 @@ extern "C" void __cdecl World_ResetAll(void)
 
 extern "C" void FUN_57ca00(); KING_ALIAS("_FUN_57ca00", "_Race_SetMode")
 ASM_PROC(FUN_4e24e8)
-ASM_PROC(FUN_4de290)
+extern "C" void FUN_4de290(); KING_ALIAS("_FUN_4de290", "@Cab_Setup@12")
 ASM_PROC(FUN_53fdb0)
 ASM_VAR(int, g_q48_6ef1fc, $L_6ef1fc)
 // [FUN_53fcf0] starts a race (a, b, mode c, d): the mode, the race globals, 6ef1fc = a, the world 696cb0 for a,
@@ -3995,6 +3995,310 @@ void __cdecl Vehicle_MakeDamageKeys(BYTE** out, int* count)
         F(float, k, i * 20 + 16) = i == 1 ? 0.05f : 0.1f;
         F(int, k, i * 20 + 8) = k_levels[i];
     }
+}
+
+} // extern "C"
+
+// === choosing a control preset (FUN_531000)
+
+ASM_VAR(int, g_cp6d207c, $L_6d207c)         // the preset count
+ASM_VAR(AsmLabel, g_cp6cf4d8, $L_6cf4d8)    // the presets, 696 bytes each
+ASM_VAR(AsmLabel, g_cp6d1948, $L_6d1948)    // the key states
+ASM_VAR(AsmLabel, g_cp6d2038, $L_6d2038)
+ASM_VAR(const char*, g_cp678744, $L_678744)
+ASM_VAR(int, g_cp6d206c, $L_6d206c)
+ASM_VAR(int, g_cp6d2064, $L_6d2064)
+ASM_VAR(int, g_cp696c74, $L_696c74)
+ASM_VAR(int, g_cp6f4b80, $L_6f4b80)
+extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
+extern "C" void FUN_578100(); KING_ALIAS("_FUN_578100", "_Joy_SetAutoCenter")
+extern "C" void FUN_578d50(); KING_ALIAS("_FUN_578d50", "_FF_578d50")
+ASM_PROC(FUN_577fc0)
+
+static void Cp_Mark(BYTE* key)
+{
+    if (key)
+        key[1] = 1;
+}
+
+extern "C" {
+
+// [FUN_531000] makes preset i the current controls (6d1db8): the key states cleared, the keys bound to the
+// actions in use marked, for the preset named like the default (678744) also the last preset's 8 keys at +480;
+// restarts the joystick's auto centre and force feedback; 1 for a bad index
+int __cdecl Controls_SelectPreset(int i)
+{
+    if (i < 0 || i >= g_cp6d207c)
+        return 1;
+    BYTE* c = (BYTE*)g_controls6d1db8;
+    BYTE* k = (BYTE*)g_cp6d1948;
+    memcpy(c, (BYTE*)g_cp6cf4d8 + i * 696, 696);
+    for (BYTE* p = k + 1; p < k + 591; p += 2)
+        *p = 0;
+    for (BYTE* p = k + 600; p < k + 720; p += 12)
+        F(int, p, 0) = 0;
+    CallThis(FUN_530020, k);
+    for (int j = 0; j < 47; j++)
+        if (F(int, k, 712 + j * 4)) {
+            Cp_Mark(F(BYTE*, c, 264 + j * 4));
+            Cp_Mark(F(BYTE*, c, 452 + j * 4));
+        }
+    BYTE* g = (BYTE*)g_cp6d2038;
+    for (int j = 0; j < 3; j++)
+        if (F(int, g, 24 + j * 4)) {
+            if (BYTE* a = F(BYTE*, g, j * 4))
+                F(int, a, 8) = 1;
+            if (BYTE* a = F(BYTE*, g, 12 + j * 4))
+                F(int, a, 8) = 1;
+        }
+    if (!strcmp((const char*)c, g_cp678744)) {
+        g_cp6d206c = 1;
+        g_cp6d2064 = 4;
+        for (int j = 0; j < 8; j++)
+            Cp_Mark(F(BYTE*, (BYTE*)g_cp6cf4d8 + g_cp6d207c * 696, 480 + j * 4));
+    }
+    CallC(FUN_578100, 0);
+    CallC(FUN_577fc0, 0);
+    CallC(FUN_578d50, F(int, c, 260));
+    if (g_cp696c74) {
+        g_696ca4 = 1;
+        g_cp6f4b80 = 1;
+        CallC(FUN_577fc0, 1);
+    } else if (g_696ca4 && g_cp6f4b80 == 1)
+        CallC(FUN_577fc0, 1);
+    CallC(FUN_578100, 1);
+    return 0;
+}
+
+} // extern "C"
+
+// === the start lights (the update $L_53e510)
+
+extern "C" void FUN_4e4ac4(); KING_ALIAS("_FUN_4e4ac4", "_Sound_PlayIf3")
+extern "C" void FUN_4e5220(); KING_ALIAS("_FUN_4e5220", "_Sound_PlayIf")
+extern "C" void FUN_53e4d0(); KING_ALIAS("_FUN_53e4d0", "@Obj53e4d0_Select@12")
+extern "C" void FUN_56d6e0(); KING_ALIAS("_FUN_56d6e0", "_Copter_ResetPlayers")
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+ASM_VAR(float, g_sl64d2f8, $L_64d2f8)
+ASM_VAR(double, g_sl64b5a0, $L_64b5a0)
+ASM_VAR(float, g_sl64c320, $L_64c320)
+ASM_VAR(double, g_sl64d300, $L_64d300)
+
+// lets the race start: the player's car body (+21600) state 2 at +9984, the copter's players reset
+static void Sl_Go()
+{
+    if (BYTE* car = F(BYTE*, g_game, 616))
+        if (BYTE* b = F(BYTE*, car, 21600))
+            F(BYTE, b, 9984) = 2;
+    CallC(FUN_56d6e0);
+}
+
+// the blinking light of phase n: on (value) for the counts n % 3 == k below lim, else off
+static int Sl_Blink(float t, float from, int k, int lim, int on)
+{
+    int n = (int)((t - from) * g_sl64d2f8 + g_sl64b5a0);
+    return n % 3 == k && n < lim ? on : 0;
+}
+
+extern "C" {
+
+// [$L_53e510] start lights s: state +72 (0 wait, 2 blinking amber, 3 green, 4 done) by the game time against
+// the switch times +56, +60, +64, +68; the shown light +36 (-1 off, 2 with a beep, 3 green with the start
+// sound once (+40) and the start (+80)) is selected; without lights (+84) and the race flag the start is direct
+void __fastcall StartLights_Update(BYTE* s)
+{
+    BYTE* g = g_game;
+    if (!g)
+        return;
+    if (!F(int, s, 84) && !(F(BYTE, g, 1404) & 1)) {
+        if (F(int, s, 80))
+            Sl_Go();
+        return;
+    }
+    if (F(int, s, 32) && !F(int, s, 84) && F(int, s, 72) < 4) {
+        float t = (float)CallC<double>(FUN_4e27a5);
+        if (F(int, s, 72) == 3) {
+            if (t > F(float, s, 68)) {
+                F(int, s, 72) = 4;
+                F(int, s, 36) = -1;
+            } else
+                F(int, s, 36) = 3;
+        }
+        if (F(int, s, 72) == 2) {
+            if (t > F(float, s, 64)) {
+                F(int, s, 72) = 3;
+                F(float, s, 64) = t;
+                F(int, s, 36) = 3;
+                F(float, s, 68) = t + g_sl64c320;
+            } else
+                F(int, s, 36) = Sl_Blink(t, F(float, s, 60), 2, 9, 2);
+        }
+        if (F(int, s, 72) == 1) {
+            if (t > F(float, s, 60)) {
+                F(int, s, 72) = 2;
+                F(float, s, 60) = t;
+                F(int, s, 36) = 2;
+                F(float, s, 64) = t + g_sl64d2f8;
+            } else
+                F(int, s, 36) = Sl_Blink(t, F(float, s, 56), 0, 5, 1);
+        }
+        if (F(int, s, 72) == 0 && !(t < F(float, s, 56))) {
+            F(int, s, 72) = 2;
+            F(float, s, 56) = t;
+            F(float, s, 60) = t;
+            F(int, s, 36) = 0;
+            F(float, s, 64) = (float)(t + g_sl64d300);
+        }
+    }
+    int light = F(int, s, 36);
+    if (light == 2)
+        CallC(FUN_4e4ac4, F(int, s, 76), 1.0f, 1.0f, 0);
+    if (F(int, s, 36) == -1) {
+        CallThis(FUN_53e4d0, s, 3);
+        if (F(int, s, 84))
+            CallThis(FUN_5d32f0, s, 1);
+        return;
+    }
+    if (F(int, s, 36) == 3) {
+        if (!F(int, s, 40)) {
+            F(int, s, 40) = 1;
+            CallC(FUN_4e5220, F(int, s, 76), 1.0f, 1.0f);
+            if (F(int, s, 80))
+                Sl_Go();
+        }
+        CallThis(FUN_53e4d0, s, 3);
+    } else
+        CallThis(FUN_53e4d0, s, F(int, s, 36));
+    CallThis(FUN_5d32f0, s, 1);
+}
+
+} // extern "C"
+
+// === drawing the cab view (the update $L_4df300)
+
+extern "C" void FUN_4de230(); KING_ALIAS("_FUN_4de230", "@Cab_SetState@12")
+extern "C" void FUN_5da080(); KING_ALIAS("_FUN_5da080", "@View_RenderFrame@4")
+ASM_PROC(FUN_4eacce)    // a dashboard text line: set (0, text)
+ASM_VAR(BYTE*, g_cv69684c, $L_69684c)
+ASM_VAR(BYTE*, g_cv6f33ac, $L_6f33ac)
+ASM_VAR(int, g_cv696cb4, $L_696cb4)
+ASM_VAR(double, g_cv64d6c0, $L_64d6c0)
+ASM_VAR(double, g_cv64b6e0, $L_64b6e0)
+ASM_VAR(AsmLabel, s_cv672f40, $L_672f40)
+ASM_VAR(AsmLabel, s_cv672f24, $L_672f24)
+ASM_VAR(AsmLabel, s_cv672f08, $L_672f08)
+
+// fits window w (its rectangle r) to the screen below 672d7c (method 44 when its rectangle differs)
+static void Cv_Fit(BYTE* w, const Veh234_Rect& r, int right, int bottom)
+{
+    if (r.l || r.t != g_minTop672d7c || r.r != right || r.b != bottom) {
+        Veh234_Rect n = {0, g_minTop672d7c, right, bottom};
+        CallVirt(w, 44, n);
+    }
+}
+
+extern "C" {
+
+// [$L_4df300] cab view s in the game (6cec68): fits it and its 3D window (+4820) to the screen; in a network
+// lobby (+1400) clears the three status lines; else selects the gear switch and the cab state of the player's
+// car and draws the frame with the ambient light pulsing with the hour
+void __fastcall Cab_Update(BYTE* s)
+{
+    if (!g_q234_6cec68)
+        return;
+    BYTE* g = g_game;
+    if (g && F(BYTE*, g, 616)) {
+        int w = CallVirt<int>(g_cv69684c, 20), h = CallVirt<int>(g_cv69684c, 24);
+        Veh234_Rect r1, r2;
+        CallThis(FUN_5d85f0, F(BYTE*, s, 4820), &r1);
+        CallThis(FUN_5d85f0, s, &r2);
+        Cv_Fit(s, r2, w, h);
+        Cv_Fit(F(BYTE*, s, 4820), r1, w, h);
+        if (F(int, g_game, 1400)) {
+            if (BYTE* o = F(BYTE*, s, 544))
+                F(BYTE, o, 40) |= 1;
+            F(int, s, 5084) = 0;
+            F(int, s, 5088) = 0;
+            CallThis(FUN_4eacce, s + 4724, 0, (const char*)s_cv672f40);
+            CallThis(FUN_4eacce, s + 4756, 0, (const char*)s_cv672f24);
+            CallThis(FUN_4eacce, s + 4788, 0, (const char*)s_cv672f08);
+            return;
+        }
+    }
+    BYTE* car = F(BYTE*, g_game, 616);
+    BYTE* body = F(BYTE*, car, 9536);
+    int v = F(int, body, 24);
+    if (v == F(int, body, 28))
+        v = 2;
+    CallC(FUN_5e1a10, g_cv696cb4, v);
+    F(int, F(BYTE*, s, 548), 84) = F(int, F(BYTE*, g_game, 616), 20396);
+    CallThis(FUN_4de230, s, F(int, F(BYTE*, g_game, 616), 20396) + 1);
+    double t = x87_sin(F(double, g_cv6f33ac, 88) * g_cv64d6c0);
+    double k = t * t * g_cv64b6e0 + g_cv64b6e0;
+    BYTE* c = F(BYTE*, s, 472);
+    float a = (float)F(double, c, 48), b = (float)F(double, c, 56), d = (float)F(double, c, 64);
+    F(double, c, 48) = k;
+    F(double, F(BYTE*, s, 472), 56) = k;
+    F(double, F(BYTE*, s, 472), 64) = k;
+    CallThis(FUN_5da080, s);
+    F(double, F(BYTE*, s, 472), 48) = a;
+    F(double, F(BYTE*, s, 472), 56) = b;
+    F(double, F(BYTE*, s, 472), 64) = d;
+}
+
+} // extern "C"
+
+// === a car's step (FUN_556a70)
+
+extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
+ASM_PROC(FUN_552940)
+ASM_PROC(FUN_556c60)    // whether the car is driven locally
+ASM_PROC(FUN_580dd0)    // the moving body's step
+ASM_PROC(FUN_58f560)
+ASM_VAR(float, g_cs64da74, $L_64da74)
+
+extern "C" {
+
+// [FUN_556a70] step of car body s (the car at -16) when active (+20920): driven here, its remote copy (+21584) is
+// updated and it stops (+3976 = 3) when its leader (+3508) is close, then the body moves; otherwise it takes the
+// remote copy's values (+20512..+20580); then the pending reset (+10564) and the history
+void __fastcall CarBody_Step(BYTE* s)
+{
+    if (!F(int, s, 20920))
+        return;
+    BYTE* car = s - 16;
+    if (CallThis<int>(FUN_556c60, car)) {
+        if (BYTE* r = F(BYTE*, s, 21584)) {
+            F(int, r, 10112) = 1;
+            CallVirt(F(BYTE*, s, 21584), 0);
+        }
+        BYTE* o = F(BYTE*, s, 3508);
+        if (F(int, s, 3976) != 3 && o) {
+            float x = F(float, o, 3372) - F(float, s, 536), y = F(float, o, 3376) - F(float, s, 540);
+            double z = (double)F(float, o, 3380) - F(float, s, 544);
+            if ((double)x * x + (double)y * y + z * z < g_cs64da74 && !CallThis<int>(FUN_58f560, s))
+                F(int, s, 3976) = 3;
+        }
+        CallThis(FUN_580dd0, s);
+    } else {
+        CallThis(FUN_556a40, car);
+        if (BYTE* r = F(BYTE*, s, 21584)) {
+            F(int, s, 20512) = F(int, r, 9996);
+            F(int, s, 20516) = F(int, r, 10012);
+            F(int, s, 20520) = F(int, r, 10000);
+            F(int, s, 20524) = F(short, r, 10004);
+            F(int, s, 20528) = F(short, r, 10006);
+            memcpy(s + 20532, s + 20660, 12);
+            memcpy(s + 20544, s + 536, 12);
+            memcpy(s + 20556, s + 416, 12);
+            memcpy(s + 20568, s + 428, 12);
+        }
+    }
+    if (F(int, s, 10564)) {
+        CallThis(FUN_552940, car);
+        F(int, s, 10564) = 0;
+    }
+    Vehicle_RecordHistory(car);
 }
 
 } // extern "C"

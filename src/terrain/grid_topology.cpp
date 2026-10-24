@@ -212,7 +212,7 @@ extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopDeferredNode(BYTE*,void*);
 extern "C" int __fastcall TGrid_Get36(BYTE* self,void*);
 ASM_PROC(FUN_607410)
-ASM_PROC(FUN_609de0)
+extern "C" void FUN_609de0(); KING_ALIAS("_FUN_609de0", "_GridTree_RemoveEdge")
 
 // [FUN_60c160] up to 50 refinement steps while the deferred queue's top beats the work queue's; whether it still does
 extern "C" int __fastcall GridMesh_Refine50(BYTE* self,void*)

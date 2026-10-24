@@ -885,7 +885,7 @@ extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
 extern "C" void FUN_4579e0(); KING_ALIAS("_FUN_4579e0", "_Range_CallD")
 extern "C" void FUN_46ea00(); KING_ALIAS("_FUN_46ea00", "@Ordr_First@8")
 extern "C" void FUN_4729e0(); KING_ALIAS("_FUN_4729e0", "@Player_Construct@12")
-ASM_PROC(FUN_4731e0)
+extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
 extern "C" void FUN_473420(); KING_ALIAS("_FUN_473420", "_Players_Append")
 extern "C" void FUN_474720(); KING_ALIAS("_FUN_474720", "@Player_Load@12")
 extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
@@ -1182,6 +1182,125 @@ ByteVec* __cdecl Route_Waypoints(ByteVec* out, int side, int from, int to, doubl
     if (int bytes = (int)(v[2] - v[0]) / 12 * 12)
         CallC(FUN_44b4a0, v[0], bytes);
     return out;
+}
+
+} // extern "C"
+
+// === sending a player's state (FUN_46dc50)
+
+extern "C" void FUN_475b20(); KING_ALIAS("_FUN_475b20", "@Player_Save@12")
+extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+ASM_VAR(BYTE*, g_sp68d318, $L_68d318)
+ASM_VAR(DWORD, g_sp66f62c, $L_66f62c)
+
+extern "C" {
+
+// [FUN_46dc50] in a network game sends player p's state (message 991, after the 66f62c tag): a remote player
+// (+84 = 1) gets the local machine's id (68d318 +8) at +712, others the least used machine (68d308, count +4)
+// and are marked remote (+88 bit 8) when that isn't the local one
+int __cdecl Net_SendPlayer(BYTE* p)
+{
+    if (!g_multOn)
+        return 0;
+    if (F(int, p, 84) == 1)
+        F(int, p, 712) = F(int, g_sp68d318, 8);
+    else {
+        BYTE* best = g_68d308;
+        for (BYTE* e = g_68d308; e != g_68d30c; e += 12)
+            if (F(int, e, 4) < F(int, best, 4))
+                best = e;
+        F(int, best, 4)++;
+        F(int, p, 712) = F(int, best, 8);
+        if (F(int, best, 8) != F(int, g_sp68d318, 8))
+            F(DWORD, p, 88) |= 0x100;
+    }
+    BYTE msg[32];
+    CallThis(FUN_602be0, msg);
+    ByteVec v = {0, 0, 0};
+    DWORD tag = g_sp66f62c;
+    CallThis(FUN_46e460, &v, (BYTE*)0, (BYTE*)&tag, (BYTE*)&tag + 4);
+    CallThis(FUN_475b20, p, &v);
+    CallThis(FUN_603110, msg, 991, v.begin, v.end - v.begin);
+    CallC(FUN_6021b0, F(BYTE*, msg, 4), F(BYTE*, msg, 8) - F(BYTE*, msg, 4));
+    if (v.cap - v.begin)
+        CallC(FUN_44b4a0, v.begin, v.cap - v.begin);
+    CallThis(FUN_602e80, msg);
+    return 0;
+}
+
+} // extern "C"
+
+// === listing the network machines (FUN_46d570)
+
+extern "C" void FUN_46e170(); KING_ALIAS("_FUN_46e170", "@Vec12_Erase@16")
+extern "C" void FUN_46e6b0(); KING_ALIAS("_FUN_46e6b0", "@Vec12_Insert46e6b0@16")
+extern "C" void FUN_46d550(); KING_ALIAS("_FUN_46d550", "@Mult46d550_Construct@12")
+extern "C" void FUN_6024d0(); KING_ALIAS("_FUN_6024d0", "_Dp_Receive")
+extern "C" void FUN_6024f0(); KING_ALIAS("_FUN_6024f0", "_Dp_TakeMessage")
+extern "C" void FUN_602540(); KING_ALIAS("_FUN_602540", "_Dp_Get723d88")
+extern "C" void FUN_487cc0(); KING_ALIAS("_FUN_487cc0", "_Rec12_Construct")
+extern "C" void __cdecl Rec12_StableSort(BYTE* first, BYTE* last, int, int, int comp);   // cargo_orders.cpp
+ASM_VAR(BYTE*, g_nm68d310, $L_68d310)
+
+// appends the machine record for id to the list at 68d308
+static void Nm_Add(DWORD id)
+{
+    BYTE r[12];
+    BYTE* p = CallThis<BYTE*>(FUN_46d550, r, id);
+    if (g_68d30c != g_nm68d310) {
+        CallC(FUN_487cc0, g_68d30c, p);
+        g_68d30c += 12;
+    } else
+        CallThis(FUN_46e6b0, (BYTE*)&g_68d308, g_68d30c, p);
+}
+
+extern "C" {
+
+// [FUN_46d570] rebuilds the list of the network's machines (68d308, 12 bytes: +1 local, +4 players, +8 id) from
+// the session's players and the local one, sorted by id; 68d318 / 68d320 the local machine, and the host
+// (66f62a) marks it and announces its id (message 994)
+void __cdecl Net_ListMachines()
+{
+    CallThis(FUN_46e170, (BYTE*)&g_68d308, g_68d308, g_68d30c);
+    if ((g_nm68d310 - g_68d308) / 12 < 8) {
+        int n = (int)(g_68d30c - g_68d308) / 12;
+        BYTE* p = Alloc12_Copy(8, g_68d308, g_68d30c);
+        if (int bytes = (int)(g_nm68d310 - g_68d308) / 12 * 12)
+            CallC(FUN_44b4a0, g_68d308, bytes);
+        g_68d308 = p;
+        g_68d30c = p + n * 12;
+        g_nm68d310 = p + 96;
+    }
+    g_pm68d314 = 0;
+    g_sp68d318 = 0;
+    DWORD id;
+    if (!CallC<int>(FUN_6024d0, &id))
+        do
+            Nm_Add(id);
+        while (!CallC<int>(FUN_6024f0, &id));
+    DWORD local = 0;
+    CallC(FUN_602540, &local);
+    Nm_Add(local);
+    F(BYTE, g_68d30c, -11) = 1;
+    Rec12_StableSort(g_68d308, g_68d30c, 0, 0, 0);
+    BYTE* e = g_68d308;
+    while (e != g_68d30c && !F(BYTE, e, 1))
+        e += 12;
+    g_sp68d318 = e;
+    g_68d320 = (int)(e - g_68d308) / 12;
+    if (g_pm66f62a) {
+        F(BYTE, e, 0) = 1;
+        g_pm68d314 = e;
+        DWORD x = F(DWORD, e, 8);
+        BYTE m[32];
+        CallThis(FUN_602be0, m);
+        CallThis(FUN_603110, m, 994, &x, 4);
+        CallC(FUN_6021b0, F(BYTE*, m, 4), F(BYTE*, m, 8) - F(BYTE*, m, 4));
+        CallThis(FUN_602e80, m);
+    }
 }
 
 } // extern "C"

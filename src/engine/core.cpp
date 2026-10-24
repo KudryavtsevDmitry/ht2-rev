@@ -1401,7 +1401,7 @@ extern "C" void __cdecl Core_Free71e838(void)
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 extern "C" void q197_FUN_5d29b0(); KING_ALIAS("_q197_FUN_5d29b0", "_Pool71e830_Init")
 extern "C" void q197_FUN_5d2b50(); KING_ALIAS("_q197_FUN_5d2b50", "_Static71e820_Construct")
-extern "C" void q197_FUN_5d2c00(); KING_ALIAS("_q197_FUN_5d2c00", "FUN_5d2c00")
+extern "C" void q197_FUN_5d2c00(); KING_ALIAS("_q197_FUN_5d2c00", "_Messages_Load")
 extern "C" void q197_FUN_5d3010(); KING_ALIAS("_q197_FUN_5d3010", "_Pool7200c0_Init")
 extern "C" void q197_L_5d29e0(); KING_ALIAS("_q197_L_5d29e0", "_Core_Free71e838")
 extern "C" void q197_L_5d2b70(); KING_ALIAS("_q197_L_5d2b70", "_Static71e820_Destroy")
@@ -1922,6 +1922,68 @@ void __cdecl Span_EdgeUVPersp(const BYTE* a, const BYTE* b)
     }
     if (F(int, r, 8) >= 16777216)
         F(int, r, 8) = 16777215;
+}
+
+} // extern "C"
+
+// === loading the message texts (FUN_5d2c00)
+
+ASM_VAR(char, s_mt67fba4, $L_67fba4)    // "Internal error, please con..."
+ASM_VAR(char, s_mt67fb98, $L_67fb98)    // "mess.txt"
+ASM_VAR(char, s_mt673398, $L_673398)    // "r"
+extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
+
+
+static char* Mt_Dup(const char* s)
+{
+    char* p = (char*)operator new(strlen(s) + 1);
+    strcpy(p, s);
+    return p;
+}
+
+extern "C" {
+
+// [FUN_5d2c00] loads the 1000 message texts (71e858) from mess.txt: one quoted string per entry (lines without a
+// quote skipped; \ddd octal escapes), the first three defaulting to the internal error text
+void __cdecl Messages_Load()
+{
+    char** t = (char**)g_71e858;
+    memset(t, 0, 4000);
+    for (int i = 0; i < 3; i++)
+        t[i] = Mt_Dup(&s_mt67fba4);
+    FILE* f = fopen(&s_mt67fb98, &s_mt673398);
+    if (!f)
+        return;
+    for (int i = 0; i < 1000; i++) {
+        char line[120], text[108];
+        int q;
+        for (;;) {
+            if (F(BYTE, f, 12) & 16)      // the end of file flag
+                goto next;
+            fgets(line, 100, f);
+            q = 0;
+            while (line[q] && line[q] != '"')
+                q++;
+            if (line[q] == '"')
+                break;
+        }
+        {
+            int n = 0;
+            for (char* p = line + q + 1; *p && *p != '"'; p++, n++) {
+                if (*p == 92) {
+                    int v = (p[1] << 6) + (((p[2] + 16) << 3) & 255) + p[3] - 48;
+                    text[n] = (char)v;
+                    p += 3;
+                } else
+                    text[n] = *p;
+            }
+            text[n] = 0;
+            if (t[i])
+                operator delete(t[i]);
+            t[i] = Mt_Dup(text);
+        }
+    next:;
+    }
 }
 
 } // extern "C"

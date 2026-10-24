@@ -4880,3 +4880,52 @@ void __cdecl Probe_Walk(BYTE* n)
 }
 
 } // extern "C"
+
+// === reading a polygon (FUN_5e69a0)
+
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_5ab710(); KING_ALIAS("_FUN_5ab710", "@Vec3_AddAssign@16")
+extern "C" void FUN_5ac6d0(); KING_ALIAS("_FUN_5ac6d0", "@Plane_FromPoints@44")
+extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")
+ASM_VAR(AsmLabel, g_pg702650, $L_702650)
+struct Pg_V3 { float x, y, z; };
+
+extern "C" {
+
+// [FUN_5e69a0] reads polygon s from file f: its points (+4, count +2), the plane of the first three (+32), the
+// centre (+8) and the largest distance of a point from it (+24); 1
+int __fastcall Polygon_Read(BYTE* s, void*, void* f)
+{
+    int n = CallC<int>(FUN_5ab140, f) & 0xFFFF;
+    F(WORD, s, 2) = (WORD)n;
+    BYTE* p = (BYTE*)operator new(n * 12);
+    if (p)
+        memset(p, 0, n * 12);
+    F(BYTE*, s, 4) = p;
+    for (int i = 0; i < F(WORD, s, 2); i++)
+        CallThis(FUN_5ab790, F(BYTE*, s, 4) + i * 12, f);
+    const Pg_V3* q = F(const Pg_V3*, s, 4);
+    BYTE pl[16];
+    CallThis(FUN_5cda50, s + 32, CallThis<BYTE*>(FUN_5ac6d0, pl, q[0], q[1], q[2]));
+    Pg_V3* c = (Pg_V3*)(s + 8);
+    memcpy(c, (BYTE*)g_pg702650, 12);
+    for (int i = 0; i < F(WORD, s, 2); i++) {
+        Pg_V3 t;
+        CallThis(FUN_5ab710, c, &t, F(BYTE*, s, 4) + i * 12);
+    }
+    double k = F(WORD, s, 2);
+    c->x = (float)(c->x / k);
+    c->y = (float)(c->y / k);
+    c->z = (float)(c->z / k);
+    F(double, s, 24) = 0.0;
+    for (int i = 0; i < F(WORD, s, 2); i++) {
+        const Pg_V3* v = F(const Pg_V3*, s, 4) + i;
+        float d[3] = {c->x - v->x, c->y - v->y, c->z - v->z};
+        double l = CallC<double>(FUN_5ab4d0, d);
+        if (l > F(double, s, 24))
+            F(double, s, 24) = l;
+    }
+    return 1;
+}
+
+} // extern "C"

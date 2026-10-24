@@ -20,7 +20,7 @@ extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 extern "C" BYTE* __fastcall MarineQueue_TopEdge(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*, void*, BYTE*, DWORD);
 extern "C" DWORD __fastcall MarineQueue_Empty(BYTE*,void*);
-ASM_PROC(FUN_606760)
+extern "C" void FUN_606760(); KING_ALIAS("_FUN_606760", "_GridMesh_RemoveEdge")
 ASM_VAR(DWORD, g_marineRefinementEnabled, $L_685abc)
 ASM_VAR(DWORD, g_marineRefinementLimit, $L_725e28)
 ASM_VAR(AsmLabel, g_marineDate, $L_6724f8)

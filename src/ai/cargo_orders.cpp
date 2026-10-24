@@ -727,3 +727,55 @@ void __cdecl Rec12_MergeLoop(E12* first, E12* last, E12* out, int step, int comp
 }
 
 } // extern "C"
+
+// === saving an order (FUN_470e10)
+
+extern "C" void FUN_471d70(); KING_ALIAS("_FUN_471d70", "@PlayerRefs_Save@12")
+
+// appends n bytes of p to the byte vector v
+static void Os_Put(BYTE** v, const void* p, int n)
+{
+    BYTE t[8];
+    memcpy(t, p, n);
+    CharVec_InsertRange(v, 0, v[1], t, t + n);
+}
+
+extern "C" {
+
+// [FUN_470e10] appends order o's fields to the byte vector v (+0, +12, +16, +48, +28, +24, the doubles +32,
+// +40, +44, +52, +56, +64, +96, +72, +80, +88, +104, +112), its player references (+120), then +4 and +8
+void __fastcall Order_Save(BYTE* o, void*, BYTE** v)
+{
+    static const signed char k_fields[][2] = {{0, 4}, {12, 4}, {16, 4}, {48, 4}, {28, 4}, {24, 4}, {32, 8},
+        {40, 4}, {44, 4}, {52, 4}, {56, 8}, {64, 8}, {96, 8}, {72, 8}, {80, 8}, {88, 8}, {104, 4}, {112, 8}};
+    for (const auto& f : k_fields)
+        Os_Put(v, o + f[0], f[1]);
+    CallThis(FUN_471d70, o + 120, v);
+    Os_Put(v, o + 4, 4);
+    Os_Put(v, o + 8, 4);
+}
+
+} // extern "C"
+
+// === an order list destructor (FUN_470ae0)
+
+extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
+extern "C" void Co_VecDtor(); KING_ALIAS("_Co_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+
+extern "C" {
+
+// [FUN_470ae0] destructor: the record at +192 (its byte vector at +40) deleted, the two vectors at +20 and the
+// vector at +0 freed
+void __fastcall Rec470ae0_Destroy(BYTE* s)
+{
+    if (BYTE* o = F(BYTE*, s, 192)) {
+        if (int n = (int)(F(BYTE*, o, 48) - F(BYTE*, o, 40)))
+            CallC(FUN_44b4a0, F(BYTE*, o, 40), n);
+        operator delete(o);
+    }
+    CallStd(Co_VecDtor, s + 20, 12, 2, (void*)FUN_447970);
+    if (int n = (int)(F(BYTE*, s, 8) - F(BYTE*, s, 0)))
+        CallC(FUN_44b4a0, F(BYTE*, s, 0), n);
+}
+
+} // extern "C"

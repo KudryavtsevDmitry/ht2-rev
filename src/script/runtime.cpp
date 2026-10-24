@@ -29,7 +29,7 @@ KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 extern "C" void FUN_490d30(); KING_ALIAS("_FUN_490d30", "_Rational_Error@4")
 extern "C" void FUN_48af50(); KING_ALIAS("_FUN_48af50", "_Int_CompareMagnitude")
-ASM_PROC(FUN_48b8a0)
+extern "C" void FUN_48b8a0(); KING_ALIAS("_FUN_48b8a0", "_BigInt_Quotient")
 extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
 extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 ASM_VAR(AsmLabel, s_divByZero, $L_67055c)
@@ -1570,8 +1570,8 @@ ASM_VAR(DWORD, g_sv670384, $L_670384)
 ASM_VAR(DWORD, g_sv67037c, $L_67037c)
 ASM_VAR(DWORD, g_sv67036c, $L_67036c)
 ASM_VAR(DWORD, g_sv670374, $L_670374)
-ASM_PROC(FUN_48a2c0)    // vector<void*>::insert_aux
-ASM_PROC(FUN_48a000)    // vector<void*>::insert_aux
+extern "C" void FUN_48a2c0(); KING_ALIAS("_FUN_48a2c0", "@Vec4_InsertAux48a2c0@16")    // vector<void*>::insert_aux
+extern "C" void FUN_48a000(); KING_ALIAS("_FUN_48a000", "@Vec4_InsertAux48a000@16")    // vector<void*>::insert_aux
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
 extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")
 
@@ -2331,7 +2331,7 @@ void __cdecl BigInt_DivMod(WORD** a, WORD** b, WORD** q, WORD** r)
 
 // === the interpolating polynomial at the Chebyshev nodes (FUN_48fe80)
 
-ASM_PROC(FUN_4901b0)    // polynomial sum (out, b)
+extern "C" void FUN_4901b0(); KING_ALIAS("_FUN_4901b0", "@Poly_Add@16")    // polynomial sum (out, b)
 ASM_VAR(double, g_ch64b828, $L_64b828)      // pi
 
 extern "C" {
@@ -2370,6 +2370,127 @@ Poly* __cdecl Poly_ChebyshevFit(Poly* out, double a, double b, int n, const Poly
         }
         memcpy(l, Poly_Scaled((Poly*)l, 0, (Poly*)tmp, &y), 196);
         memcpy(r, CallThis<BYTE*>(FUN_4901b0, r, tmp, l), 196);
+    }
+    memcpy(out, r, 196);
+    return out;
+}
+
+} // extern "C"
+
+// === vector<4 bytes>::insert_aux instances (FUN_48a2c0, FUN_48a000)
+
+extern "C" void __cdecl VecPod_InsertAux(BYTE** v, BYTE* pos, const BYTE* x, int n, void (*copy)());   // ai_world.cpp
+extern "C" void FUN_46b0e0(); KING_ALIAS("_FUN_46b0e0", "_UninitCopyDwords")
+
+extern "C" {
+
+// [FUN_48a2c0] vector<4 bytes>::insert_aux
+void __fastcall Vec4_InsertAux48a2c0(BYTE** v, void*, BYTE* pos, const BYTE* x) { VecPod_InsertAux(v, pos, x, 4, FUN_46b0e0); }
+
+// [FUN_48a000] the same (another instance)
+void __fastcall Vec4_InsertAux48a000(BYTE** v, void*, BYTE* pos, const BYTE* x) { VecPod_InsertAux(v, pos, x, 4, FUN_46b0e0); }
+
+} // extern "C"
+
+// === reversing a curve (FUN_48e190)
+
+ASM_PROC(FUN_48eda0)    // vector polynomial composed with another (out, inner)
+ASM_PROC(FUN_48dbb0)    // a curve record from a vector polynomial (src)
+extern "C" void FUN_461680(); KING_ALIAS("_FUN_461680", "_Construct24")
+extern "C" BYTE* __fastcall Rec1588_Copy(BYTE* s, void*, const BYTE* src);    // ai_containers.cpp
+
+extern "C" {
+
+// [FUN_48e190] curve record s (1588 bytes, its vector polynomial at +0) reversed: the polynomial composed with
+// 1 - t and the record rebuilt from it
+void __fastcall Curve_Reverse(BYTE* s)
+{
+    double one[3] = {1.0, 1.0, 1.0}, minus[3] = {-1.0, -1.0, -1.0};
+    BYTE p[580];
+    F(int, p, 576) = 0;
+    CallC(FUN_461680, p, minus);
+    F(int, p, 576)++;
+    CallC(FUN_461680, p + F(int, p, 576) * 24, one);
+    F(int, p, 576)++;
+    BYTE t[580], r[1592];
+    CallThis(FUN_48dbb0, r, CallThis<BYTE*>(FUN_48eda0, s, t, p));
+    Rec1588_Copy(s, 0, r);
+}
+
+} // extern "C"
+
+// === big integer quotient and polynomial sum (FUN_48b8a0, FUN_4901b0)
+
+extern "C" {
+
+// [FUN_48b8a0] out = a / b (truncated; by a single digit, else by Knuth's algorithm on the operands normalised by
+// 65536 / (b's top digit + 1)); a division by zero is reported
+WORD* __cdecl BigInt_Quotient(WORD* a, WORD* b, WORD* out)
+{
+    if (!a)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintNull);
+    if (!b)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintNull);
+    int lb = b[0], la = a[0];
+    if (!lb)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintDivZero);
+    int cmp = Int_CompareMagnitude((const BigInt*)a, (const BigInt*)b);
+    int qs = a[2] == b[2];
+    WORD* q;
+    if (cmp < 0)
+        q = (WORD*)Int_SetZero((BigInt*)out);
+    else if (cmp == 0)
+        q = (WORD*)Int_SetDigit((BigInt*)out, qs);
+    else if (lb == 1) {
+        q = WStr_Assign(out, a);
+        Int_DivSmall(q + 3, q[0], b[3], q + 3);
+    } else {
+        WORD d = (WORD)(65536 / ((unsigned)b[2 + lb] + 1));
+        WORD *v, *r;
+        if (d == 1 && b != out) {
+            v = b;
+            r = BigInt_Alloc(0, la + 1);
+            for (int i = 0; i < la; i++)
+                r[3 + i] = a[3 + i];
+        } else {
+            v = Int_MulInt(b, d, 0);
+            r = Int_MulInt(a, d, 0);
+        }
+        int n = la - lb + 1;
+        q = BigInt_Alloc(out, n);
+        Int_DivDigits(r + 3, v + 3, lb, q + 3, n);
+        if (v != b && v[1])
+            operator delete(v);
+        if (r[1])
+            operator delete(r);
+    }
+    q[2] = (WORD)qs;
+    return Int_Normalize(q);
+}
+
+// [FUN_4901b0] polynomial s plus b into out, aligned at their last coefficients
+Poly* __fastcall Poly_Add(const Poly* s, void*, Poly* out, const Poly* b)
+{
+    int na = s->N(), nb = b->N();
+    if (!na) {
+        memcpy(out, b, 196);
+        return out;
+    }
+    if (!nb) {
+        memcpy(out, s, 196);
+        return out;
+    }
+    BYTE r[200];
+    Poly* p = (Poly*)r;
+    p->count = 0;
+    const Poly* lo = na > nb ? s : b;
+    int d = na > nb ? na - nb : nb - na, n = na > nb ? na : nb;
+    for (int i = 0; i < d; i++)
+        memcpy(&p->c[p->count++], &lo->c[i], 8);
+    for (int i = d; i < n; i++) {
+        double x = na > nb ? s->c[i] : s->c[i - d];
+        double y = na > nb ? b->c[i - d] : b->c[i];
+        p->c[p->count++] = x + y;
     }
     memcpy(out, r, 196);
     return out;

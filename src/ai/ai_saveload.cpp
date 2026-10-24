@@ -1008,3 +1008,45 @@ void __cdecl Ai_LoadState(BYTE* p)
 }
 
 } // extern "C"
+
+// === saving the AI state (FUN_4833a0)
+
+extern "C" void FUN_480680(); KING_ALIAS("_FUN_480680", "_Ai_SaveGlobals")
+ASM_VAR(AsmLabel, s_sv66ff24, $L_66ff24)
+ASM_VAR(AsmLabel, s_sv66ff14, $L_66ff14)
+
+extern "C" {
+
+// [FUN_4833a0] saves the AI state into its stream of saved game stg: in one outer chunk the globals, players,
+// towns, routes, roads, ambushes and obstacles, built in a 256 KB buffer
+void __cdecl AI_SaveToStorage(IStorage* stg)
+{
+    WCHAR name[260];
+    MultiByteToWideChar(0, 0, s_aiStream66ff3c, -1, name, 260);
+    IStream* s;
+    if (stg->CreateStream(name, 17, 0, 0, &s) < 0)
+        AiError(0, 1, (const char*)s_svldFile, (const char*)s_svldId, 756, s_sv66ff24, &g_empty68d1c0s, &g_empty68d1c0s);
+    BYTE* v[3] = {0, 0, 0};
+    BYTE* p = Bytes_Clone(262144, 0, 0);
+    v[0] = v[1] = p;
+    v[2] = p + 262144;
+    int mark;
+    CallC(FUN_490c90, v, (const char*)g_tagAll66fec0, &mark);
+    CallC(FUN_480680, v);
+    Save_Players((BYTE*)v);
+    Save_Towns((BYTE*)v);
+    Save_Routes((BYTE*)v);
+    Save_Roads((BYTE*)v);
+    Save_Ambushes((BYTE*)v);
+    Save_Obstacles((BYTE*)v);
+    CallC(FUN_490ce0, v, &mark);
+    ULONG written = 0;
+    if (s->Write(v[0], (ULONG)(v[1] - v[0]), &written) < 0)
+        AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, 775, s_sv66ff14, &g_empty68d1c0s,
+                &g_empty68d1c0s);
+    s->Release();
+    if (v[2] - v[0])
+        CallC(FUN_44b4a0, v[0], (int)(v[2] - v[0]));
+}
+
+} // extern "C"

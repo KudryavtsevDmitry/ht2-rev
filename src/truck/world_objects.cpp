@@ -21,7 +21,7 @@ extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_5d3430(); KING_ALIAS("_FUN_5d3430", "@Handle_Call3790@8")
 extern "C" void FUN_4e48e2(); KING_ALIAS("_FUN_4e48e2", "_Frame_ApplyChecked")
 extern "C" void FUN_598bd0(); KING_ALIAS("_FUN_598bd0", "@WorldObj_SetTarget@12")
-ASM_PROC(FUN_59a780)    // constructor of the effects' base class
+extern "C" void FUN_59a780(); KING_ALIAS("_FUN_59a780", "@MotionTexture_Construct@52")    // constructor of the effects' base class
 extern "C" void FUN_59e2f0(); KING_ALIAS("_FUN_59e2f0", "@Debris2_Construct@32")    // constructor of the base class of FUN_59e9a0
 extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")    // sets a plane (a, b, c, d)
 extern "C" BYTE* __fastcall Pool_Construct(BYTE* self, void*, int size);    // mmt.cpp
@@ -2504,6 +2504,81 @@ void __fastcall TvCamera_Update(BYTE* cam)
     memcpy(cam + 32, cam + 268, 48);
     CallThis(FUN_5d32f0, cam, 1);
     CallThis(FUN_598d30, (BYTE*)g_tu6f68b0, F(BYTE*, cam, 316), cam + 268);
+}
+
+} // extern "C"
+
+// === the motion texture object (FUN_59a780)
+
+extern "C" void FUN_5fa4f0(); KING_ALIAS("_FUN_5fa4f0", "@Node_Set48@16")
+extern "C" void FUN_5fa5f0(); KING_ALIAS("_FUN_5fa5f0", "@Chain_MoveTo@8")
+extern "C" void FUN_5fa6f0(); KING_ALIAS("_FUN_5fa6f0", "@Mesh_ConstructNamed@12")
+extern "C" void Wo_VecCtorEh(); KING_ALIAS("_Wo_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void __fastcall FxRec_Init(BYTE* s);
+extern "C" void __fastcall FxRec_Free(BYTE* s);
+ASM_VAR(float, g_mt64c878, $L_64c878)
+
+// a new 16-byte record of four floats
+static float* Mt_Quad(float a, float b, float c, float d)
+{
+    float* q = (float*)operator new(16);
+    q[0] = a;
+    q[1] = b;
+    q[2] = c;
+    q[3] = d;
+    return q;
+}
+
+extern "C" {
+
+// [FUN_59a780] constructor (a, b, x, y, z, w, h, owner, t, c, d) of a moving texture (vtables 650bd0, 650b84 at
+// +20, the mesh motionTexture): one 40-byte face of two triangles and four corners with the texture coordinates
+// scaled by w and h, owned by owner's (+0) material, linked into b's list
+BYTE* __fastcall MotionTexture_Construct(BYTE* s, void*, int a, BYTE* b, DWORD x, DWORD y, DWORD z, float w,
+                                         float h, DWORD* owner, int t, int c, int d)
+{
+    CallThis(FUN_579310, s);
+    BYTE* m = s + 20;
+    CallThis(FUN_5fa6f0, m, "motionTexture");
+    F(int, s, 88) = a;
+    F(int, s, 96) = c;
+    F(BYTE*, s, 92) = b;
+    F(int, s, 100) = d;
+    F(DWORD*, s, 120) = owner;
+    F(DWORD, s, 76) = x;
+    F(void*, s, 0) = &g_vtbl650bd0;
+    F(DWORD, s, 80) = y;
+    F(void*, m, 0) = &g_vtbl650b84;
+    F(int, s, 128) = 0;
+    F(DWORD, s, 84) = z;
+    BYTE* f = 0;
+    if (BYTE* arr = (BYTE*)operator new(44)) {
+        F(int, arr, 0) = 1;
+        f = arr + 4;
+        CallStd(Wo_VecCtorEh, f, 40, 1, (void*)FxRec_Init, (void*)FxRec_Free);
+    }
+    F(WORD, f, 0) = 2;
+    F(WORD, f, 4) = 4;
+    F(float*, f, 8) = Mt_Quad(0, 1.0f, 1.0f, 0);
+    F(float*, f, 12) = Mt_Quad(1.0f, 1.0f, 0, 0);
+    float uw = (float)(w * g_mt64c878), uh = (float)(w * g_64c258);
+    F(float*, f, 16) = Mt_Quad(uw, uh, uh, uw);
+    F(int, f, 24) = 0;
+    float vw = (float)(h * g_mt64c878), vh = (float)(h * g_64c258);
+    F(float*, f, 20) = Mt_Quad(vw, vw, vh, vh);
+    F(WORD, f, 34) = 4095;
+    F(DWORD, f, 36) = *owner;
+    F(BYTE, f, 1) |= 1;
+    CallThis(FUN_5fa4f0, m, f, 1);
+    CallThis(FUN_5fa5f0, m);
+    CallVirt(b, 20, 0, s ? m : 0);
+    F(int, s, 104) = 0;
+    F(BYTE, s, 60) &= ~1;
+    F(int, s, 116) = 0;
+    F(int, s, 108) = 0;
+    F(int, s, 112) = t;
+    F(int, s, 124) = 0;
+    return s;
 }
 
 } // extern "C"

@@ -21,7 +21,7 @@ extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
 extern "C" void FUN_4b20d0(); KING_ALIAS("_FUN_4b20d0", "_Sch_ParseNumber")
 extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")
 extern "C" void FUN_4b5490(); KING_ALIAS("_FUN_4b5490", "@SchReader_Close@8")
-ASM_PROC(FUN_4b5b70)
+extern "C" void FUN_4b5b70(); KING_ALIAS("_FUN_4b5b70", "@FilePort_Destroy@4")
 extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")
 extern "C" void FUN_4b0be0(); KING_ALIAS("_FUN_4b0be0", "@Number_ConstructComplex@20")
 extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
@@ -1004,7 +1004,7 @@ extern "C" int __fastcall Value_ToInt(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_4b5b70)
+extern "C" void FUN_4b5b70(); KING_ALIAS("_FUN_4b5b70", "@FilePort_Destroy@4")
 extern "C" void FUN_4b5f50(); KING_ALIAS("_FUN_4b5f50", "@SchItem4b5f50_Destruct@8")
 extern "C" void FUN_4b6340(); KING_ALIAS("_FUN_4b6340", "@SchBuf4b6340_Destruct@8")
 extern "C" void FUN_4b6580(); KING_ALIAS("_FUN_4b6580", "@SchBuf4b6580_Destruct@8")
@@ -1248,8 +1248,8 @@ extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
 extern "C" void FUN_492250(); KING_ALIAS("_FUN_492250", "_SchValue_Make10007")
 extern "C" void FUN_4b32d0(); KING_ALIAS("_FUN_4b32d0", "_Reader_String")    // a string
-ASM_PROC(FUN_4b36a0)    // a symbol
-ASM_PROC(FUN_4b38d0)    // a vector
+extern "C" void FUN_4b36a0(); KING_ALIAS("_FUN_4b36a0", "_Reader_Symbol")    // a symbol
+extern "C" void FUN_4b38d0(); KING_ALIAS("_FUN_4b38d0", "_Reader_Vector")    // a vector
 extern "C" void FUN_4b3b10(); KING_ALIAS("_FUN_4b3b10", "_Reader_Char")    // a character
 extern "C" int __cdecl isdigit(int c);
 extern "C" int __cdecl isalnum(int c);
@@ -1488,7 +1488,7 @@ extern "C" void FUN_4a6860(); KING_ALIAS("_FUN_4a6860", "@SchValue_Name@8")
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 extern "C" void FUN_4a5420(); KING_ALIAS("_FUN_4a5420", "_Sch_TypeError")
 extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
-ASM_PROC(FUN_4b6b90)    // writes the rest of a list (out, the tail, port, context)
+extern "C" void FUN_4b6b90(); KING_ALIAS("_FUN_4b6b90", "_Sch_WriteListTail")    // writes the rest of a list (out, the tail, port, context)
 ASM_PROC(FUN_4b6e20)    // writes a number (handle by value, port)
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 ASM_VAR(AsmLabel, s_prEmpty, $L_66d4e4)          // "()"
@@ -1886,7 +1886,7 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
 ASM_VAR(AsmLabel, s_pd671400, $L_671400)
 extern "C" void FUN_48afa0(); KING_ALIAS("_FUN_48afa0", "_Int_AddSigned")
 extern "C" void FUN_48b350(); KING_ALIAS("_FUN_48b350", "_Int_Mul")
-ASM_PROC(FUN_4b1500)
+extern "C" void FUN_4b1500(); KING_ALIAS("_FUN_4b1500", "_Num_ReadExponent")
 extern "C" void FUN_4b2840(); KING_ALIAS("_FUN_4b2840", "@SchDeque_NextBlock@8")
 
 // the temporary big integer t freed when it owns its digits
@@ -2212,6 +2212,223 @@ BYTE** __cdecl Num_ReadReal(BYTE** out, int radix, BYTE* d)
         Pd_Free(n);
     Pd_Free(den);
     Pd_Free(num);
+    return out;
+}
+
+} // extern "C"
+
+// === writing the rest of a list (FUN_4b6b90)
+
+extern "C" {
+
+// [FUN_4b6b90] writes the elements of the pair v to port after the first: its car, then its cdr (a pair goes on,
+// another value after " . "), closing the list with ')'; out = the empty value
+BYTE* __cdecl Sch_WriteListTail(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
+{
+    BYTE h[16], t[16];
+    Pr_Typed(h, v, 2, s_prPair);
+    Pr_Check(h);
+    Sch_Write(t, F(BYTE*, h, 0) + 20, port, ctx);
+    Pr_ReleaseInline(t);
+    Pr_Check(h);
+    BYTE* cdr = F(BYTE*, h, 0) + 32;
+    if (!F(BYTE*, cdr, 0) && !F(DWORD, cdr, 8) && !F(DWORD, cdr, 4)) {
+        Pr_Char(port, ')');
+        F(int, ctx, 4)--;
+    } else {
+        Pr_Check(h);
+        if ((BYTE)F(DWORD, F(BYTE*, h, 0) + 32, 8) == 2) {
+            Pr_Check(h);
+            Sch_WriteListTail(t, F(BYTE*, h, 0) + 32, port, ctx);
+            CallThis(FUN_4a36c0, t);
+        } else {
+            Pr_Str(port, s_prDot);
+            Sch_Write(t, CallThis<BYTE*>(FUN_4aa430, h) + 32, port, ctx);
+            CallThis(FUN_4a36c0, t);
+            Pr_Char(port, ')');
+            F(int, ctx, 4)--;
+        }
+    }
+    CallThis(FUN_4bd4d0, out);
+    CallThis(FUN_4a36c0, h);
+    return out;
+}
+
+} // extern "C"
+
+// === reading a vector literal (FUN_4b38d0)
+
+extern "C" void FUN_4a2700(); KING_ALIAS("_FUN_4a2700", "_SchValue_MakeVector")
+extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")
+extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")
+
+extern "C" {
+
+// [FUN_4b38d0] reads a vector literal #(...) from reader r into out: the data up to ')' appended to a new
+// vector (in r's context +72)
+BYTE* __cdecl Reader_Vector(BYTE* out, int a, BYTE* r)
+{
+    Rd_Drop(r);
+    Rd_Drop(r);
+    BYTE v[16];
+    CallC(FUN_4a2700, v, 0, F(int, r, 72));
+    CallC(FUN_4b2ca0, a, r);
+    while (Rd_Peek(r, 0) != ')') {
+        BYTE t[16];
+        BYTE* e = Reader_Read(t, a, r);
+        Pr_Check(v);
+        BYTE** w = (BYTE**)(F(BYTE*, v, 0) + 20);
+        if (w[1] != w[2]) {
+            CallC(FUN_460910, w[1], e);
+            w[1] += 12;
+        } else
+            CallThis(FUN_44c710, w, w[1], e);
+        Pr_ReleaseInline(t);
+        CallC(FUN_4b2ca0, a, r);
+    }
+    Rd_Drop(r);
+    CallThis(FUN_454580, out, v);
+    Pr_ReleaseInline(v);
+    return out;
+}
+
+} // extern "C"
+
+// === reading a symbol (FUN_4b36a0)
+
+// appends c to the name of identifier value v (a vector of characters at +12)
+static void Rs_Append(BYTE* v, char c)
+{
+    Pr_Check(v);
+    BYTE** w = (BYTE**)(F(BYTE*, v, 0) + 12);
+    if (w[1] != w[2]) {
+        if (w[1])
+            *w[1] = c;
+        w[1]++;
+    } else
+        CallThis(FUN_44bef0, w, w[1], &c);
+}
+
+extern "C" {
+
+// [FUN_4b36a0] reads a symbol from reader r into out: a new identifier named by the following letters, digits
+// and symbol characters
+BYTE* __cdecl Reader_Symbol(BYTE* out, int a, BYTE* r)
+{
+    BYTE v[16];
+    Sch_MakeIdentifierNew((DWORD*)v);
+    SchReader_4b2e80(a, r);
+    int n = 0;
+    while (isalnum(Rd_Peek(r, n)) || Sch_IsSymbolChar(Rd_Peek(r, n)))
+        n++;
+    for (; n; n--) {
+        char c = (char)Rd_Peek(r, 0);
+        Rs_Append(v, c);
+        Rd_Drop(r);
+    }
+    Rs_Append(v, 0);
+    CallThis(FUN_454580, out, v);
+    Pr_ReleaseInline(v);
+    return out;
+}
+
+} // extern "C"
+
+// === reading an exponent (FUN_4b1500)
+
+ASM_VAR(AsmLabel, s_ex6713f0, $L_6713f0)
+
+static int Ex_Peek(BYTE* d)
+{
+    BYTE it[16];
+    return **CallThis<int**>(FUN_4b2730, d + 8, it, 0);
+}
+
+extern "C" {
+
+// [FUN_4b1500] the exponent after the marker at the front of the reader's deque d: an optional sign and decimal
+// digits (a type error without a digit)
+int __cdecl Num_ReadExponent(BYTE* d)
+{
+    Nm_Pop(d);
+    int sign = 1, n = 0;
+    int c = Ex_Peek(d);
+    if (c == '+')
+        Nm_Pop(d);
+    else if (c == '-') {
+        Nm_Pop(d);
+        sign = -1;
+    }
+    if (!isdigit(Ex_Peek(d)))
+        CallC(FUN_4a5420, 20, 768, (const char*)s_ex6713f0);
+    for (signed char ch = (signed char)toupper(Ex_Peek(d)); ch >= '0' && ch <= '9';
+         ch = (signed char)toupper(Ex_Peek(d))) {
+        n = n * 10 + ch - '0';
+        Nm_Pop(d);
+    }
+    return sign * n;
+}
+
+} // extern "C"
+
+// === the file port destructor (FUN_4b5b70)
+
+extern "C" void FUN_4a29a0(); KING_ALIAS("_FUN_4a29a0", "_DequeIt_Pass0")
+struct Fp_It { DWORD d[4]; };     // a deque iterator passed by value
+extern "C" void FUN_4abea0(); KING_ALIAS("_FUN_4abea0", "@Sch_Copy16@12")
+
+extern "C" {
+
+// [FUN_4b5b70] destructor of file port s (vtable 64c0b0): closes its file (+16 bit 0), destroys the characters of
+// its deque (+24) and frees its blocks and map
+void __fastcall FilePort_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_vtbl64c0b0;
+    if (F(BYTE, s, 16) & 1)
+        CallThis(FUN_4b5490, s);
+    BYTE* d = s + 24;
+    Fp_It a, b;
+    CallThis(FUN_4abea0, &a, d + 8);
+    memcpy(&b, d + 24, 16);
+    CallC(FUN_4a29a0, a, b);
+    if (F(void*, d, 0)) {
+        for (void** n = F(void**, d, 20); n < F(void**, d, 36) + 1; n++)
+            free(*n);
+        if (int m = F(int, d, 4))
+            CallC(FUN_44b4a0, F(void*, d, 0), m * 4);
+    }
+    SchNode_Destroy((void**)s, 0);
+}
+
+} // extern "C"
+
+// === reading a datum from a port (FUN_4b4c20)
+
+extern "C" void FUN_4abec0(); KING_ALIAS("_FUN_4abec0", "@Deque_FreeStorage@8")
+
+extern "C" {
+
+// [FUN_4b4c20] out = the next datum read from port p (by value) with a reader of context a
+BYTE* __cdecl Port_ReadDatum(BYTE* out, int a, DWORD p0, DWORD p1, DWORD p2)
+{
+    DWORD p[3] = {p0, p1, p2};
+    DWORD c[3];
+    CopyRef((BYTE*)c, (const BYTE*)p);
+    BYTE rd[96];
+    Item4b4e10_Construct(rd, 0, a, c[0], c[1], c[2]);
+    BYTE t[16];
+    Reader_Read(t, (int)p, rd);
+    CopyRef(out, t);
+    Pr_ReleaseInline(t);
+    if (int n = (int)(F(BYTE*, rd, 60) - F(BYTE*, rd, 52)))
+        CallC(FUN_44b4a0, F(BYTE*, rd, 52), n);
+    CallThis(FUN_4a36c0, rd + 40);
+    Fp_It x, y;
+    CallThis(FUN_4abea0, &y, rd + 24);
+    CallThis(FUN_4abea0, &x, rd + 8);
+    CallC(FUN_4a29a0, x, y);
+    CallThis(FUN_4abec0, rd);
+    Pr_ReleaseInline((BYTE*)p);
     return out;
 }
 

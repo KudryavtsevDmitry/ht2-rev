@@ -824,3 +824,112 @@ int __cdecl Item_NeighbourContact(BYTE* b, float* from, float* to, BYTE* m, BYTE
 }
 
 } // extern "C"
+
+// === a moving item's network message (FUN_587e20)
+
+extern "C" void FUN_5dbec0(); KING_ALIAS("_FUN_5dbec0", "_Light_Set@24")
+extern "C" void FUN_56f120(); KING_ALIAS("_FUN_56f120", "_Gate_Passed")
+extern "C" void FUN_56f210(); KING_ALIAS("_FUN_56f210", "_Screen_56f210")
+extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+ASM_VAR(float, g_im64c320, $L_64c320)
+ASM_VAR(AsmLabel, s_im67d99c, $L_67d99c)
+ASM_VAR(AsmLabel, s_im67d96c, $L_67d96c)
+
+extern "C" {
+
+// [FUN_587e20] message 2 for item s with kind k (+1208; 1, 4, 5, 6: the target a, b and position at +1212..; 5
+// with a value, 6 with two strings at +1232; 2: a value at +1212; 3: passing gate n (0..2) of the record found
+// at the item's position, once it moves); then marked updated (+892 bit 2) at the game time (+904); 1 for done
+int __fastcall Item_OnMessage(BYTE* s, void*, int msg, int k, int, int a, int b, const DWORD* pos, BYTE* v)
+{
+    if (msg != 2)
+        return 0;
+    F(int, s, 1208) = k;
+    switch (k) {
+    case 1:
+    case 4:
+    case 5:
+    case 6:
+        if (a) {
+            F(int, s, 1216) = a;
+            F(int, s, 1212) = b;
+            memcpy(s + 1220, pos, 12);
+            if (k == 5)
+                F(DWORD, s, 1232) = F(DWORD, v, 0);
+            else if (k == 6) {
+                size_t n = strlen((const char*)v);
+                strcpy((char*)s + 1232, (const char*)v);
+                strcpy((char*)s + 1232 + n + 1, (const char*)v + n + 1);
+            }
+        }
+        break;
+    case 2:
+        F(DWORD, s, 1212) = F(DWORD, v, 0);
+        break;
+    case 3:
+        if (!(CallC<double>(FUN_5ab4d0, s + 452) < g_im64c320)) {
+            int n = F(DWORD, v, 0) & 0xFFFF;
+            if (n > 2) {
+                char text[100];
+                sprintf(text, s_im67d99c, n);
+                CallC(FUN_4e260c, text);
+            }
+            int r = -1;
+            const DWORD* p = (const DWORD*)(s + 536);
+            CallStd(FUN_5dbec0, F(int, s, 800), p[0], p[1], p[2], (void*)Rec_GetValue32, &r);
+            if (r == -1)
+                CallC(FUN_4e260c, (const char*)s_im67d96c);
+            int f = CallC<int>(FUN_56f210, r);
+            static const int k_masks[3] = {3, 12, 48};
+            if (!(f & k_masks[n]))
+                CallC(FUN_56f120, r, n, s);
+        }
+        break;
+    default:
+        F(int, s, 1208) = 0;
+        return 0;
+    }
+    F(DWORD, s, 892) |= 4;
+    F(float, s, 904) = (float)CallC<double>(FUN_4e27a5);
+    return 1;
+}
+
+} // extern "C"
+
+// === a contact between two items (FUN_585da0)
+
+
+extern "C" {
+
+// [FUN_585da0] item s hits item b with contact c and strength k: a local b (+372 = 0) takes the impulse (its two
+// vectors +416, +428 scaled by k into +3148, +3160) by its vtable +172; a remote one is sent the contact (message
+// 67d10a: ids +1188, the contact, k, b's matrix and vectors)
+void __fastcall Item_SendContact(BYTE* s, void*, BYTE* b, const BYTE* c, float k)
+{
+    if (!F(int, b, 372)) {
+        for (int j = 0; j < 3; j++) {
+            F(float, b, 3148 + j * 4) = (float)(F(float, b, 416 + j * 4) * (double)k);
+            F(float, b, 3160 + j * 4) = (float)(F(float, b, 428 + j * 4) * (double)k);
+        }
+        ((void(__fastcall*)(BYTE*, void*, const BYTE*, BYTE*, float))(*(void***)b)[43])(b, 0, c, s, k);
+        return;
+    }
+    BYTE m[32];
+    CallThis(FUN_602be0, m);
+    BYTE d[296];
+    F(int, d, 0) = F(int, b, 1188);
+    F(int, d, 4) = 1;
+    F(int, d, 8) = F(int, s, 1188);
+    memcpy(d + 12, c, 208);
+    F(float, d, 220) = k;
+    BYTE mt[48];
+    memcpy(d + 224, CallThis<BYTE*>(FUN_57de90, b, mt), 48);
+    memcpy(d + 272, b + 416, 12);
+    memcpy(d + 284, b + 428, 12);
+    CallThis(FUN_603110, m, (int)g_sceneCommandCode, d, 296);
+    CallThis(FUN_5c3630, g_movite6ef1fc, m);
+    CallThis(FUN_602e80, m);
+}
+
+} // extern "C"

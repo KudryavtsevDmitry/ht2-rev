@@ -1478,3 +1478,48 @@ BYTE* __fastcall Render_Construct(BYTE* s, void*, BYTE* a)
 }
 
 } // extern "C"
+
+// === spawning lightning ($L_5a5400)
+
+ASM_PROC(FUN_5a50f0)    // a lightning flash: constructor (world, scene, x, y, z, height, a, b)
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+ASM_VAR(float, g_lt64c32c, $L_64c32c)
+ASM_VAR(float, g_lt64d0c8, $L_64d0c8)
+ASM_VAR(double, g_lt64b670, $L_64b670)
+extern "C" int __cdecl rand();
+
+extern "C" {
+
+// [$L_5a5400] lightning source s of world w (+32): every +56 seconds (unless off, +72 bit 0) a flash (+64, +68)
+// at a random side offset in front of the camera, 20 high, in the world's scene (+528) or room; +72 bit 1 marks
+// the second after it
+void __fastcall Lightning_Update(BYTE* s)
+{
+    BYTE* w = F(BYTE*, s, 32);
+    if (F(double, s, 56) + F(double, s, 48) < F(double, w, 2968) && !(F(BYTE, s, 72) & 1)) {
+        F(double, s, 48) = F(double, w, 2968);
+        BYTE* scene = F(BYTE*, w, 528);
+        float x = (float)(rand() % 600 - 300);
+        BYTE t[48];
+        const float* m = CallThis<const float*>(FUN_5dbcc0, F(BYTE*, s, 32), t);
+        float px = (float)((double)x * m[0] + (double)m[6] * g_lt64c32c + (double)m[3] * g_lt64d0c8 + m[9]);
+        float py = (float)((double)x * m[1] + (double)m[7] * g_lt64c32c + (double)m[4] * g_lt64d0c8 + m[10]);
+        if (!scene) {
+            BYTE* r = F(BYTE*, F(BYTE*, s, 32), 488);
+            scene = r ? F(BYTE*, r, 76) : 0;
+        }
+        BYTE* o = (BYTE*)operator new(192);
+        if (o)
+            o = CallThis<BYTE*>(FUN_5a50f0, o, F(BYTE*, s, 32), scene, px, py, 20.0f, 20.0, F(int, s, 40),
+                                F(int, s, 36));
+        F(int, o, 184) = F(int, s, 64);
+        F(int, o, 188) = F(int, s, 68);
+        CallVirt(o, 24, 1);
+        F(DWORD, s, 72) |= 2;
+    }
+    if (F(double, s, 48) + g_lt64b670 < F(double, F(BYTE*, s, 32), 2968))
+        F(DWORD, s, 72) &= ~2u;
+    CallThis(FUN_5d32f0, s, 1);
+}
+
+} // extern "C"

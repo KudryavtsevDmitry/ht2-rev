@@ -1069,3 +1069,118 @@ ASM_VAR(char, g_q238_723d98, $L_723d98)
 extern "C" int __fastcall q238_VecB_FreeStorage(BYTE* s, void* d); KING_ALIAS("@q238_VecB_FreeStorage@8", "@VecB_FreeStorage@8")
 // [$L_6021a0] VecB_FreeStorage on the static object 723d98
 extern "C" void __cdecl Static723d98_Destroy(void) { q238_VecB_FreeStorage((BYTE*)&g_q238_723d98, 0); }
+
+// === a received network block (FUN_600c60)
+
+extern "C" void FUN_4836f0(); KING_ALIAS("_FUN_4836f0", "_Bytes_Clone@12")
+ASM_PROC(FUN_62aaa0)    // a script value from bytes (p, n)
+ASM_PROC(FUN_62abc0)    // calls value v with handler h
+ASM_PROC(FUN_62a950)    // releases a script value (&v)
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+
+// empties byte vector v, keeping room for at least 2048 bytes
+static void Rb_Reset(BYTE** v)
+{
+    v[1] = v[0];
+    if ((unsigned)(v[2] - v[0]) < 2048) {
+        int size = (int)(v[1] - v[0]);
+        BYTE* p = CallStd<BYTE*>(FUN_4836f0, 2048, v[0], v[1]);
+        if (int bytes = (int)(v[2] - v[0]))
+            CallC(FUN_44b4a0, v[0], bytes);
+        v[0] = p;
+        v[1] = p + size;
+        v[2] = p + 2048;
+    }
+}
+
+extern "C" {
+
+// [FUN_600c60] network block b (n bytes) for the receive buffer v: a CPSD block is a script call (its value and a
+// new handler for v), anything else is copied into v
+void __cdecl Net_OnBlock(BYTE** v, const BYTE* b, int n)
+{
+    bool call = !strncmp((const char*)b, "CPSD", 4);
+    Rb_Reset(v);
+    if (call) {
+        void* r = CallC<void*>(FUN_62aaa0, b + 4, n - 4);
+        BYTE* h = (BYTE*)operator new(12);
+        void* hv = h ? DpHandler_Construct(h, 0, (int)v) : 0;
+        CallC(FUN_62abc0, r, hv);
+        CallC(FUN_62a950, &r);
+        CallC(FUN_62a950, &hv);
+    } else
+        CallThis(FUN_46e460, v, v[1], b, b + n);
+}
+
+} // extern "C"
+
+// === receiving the next network message (FUN_601060)
+
+extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
+ASM_VAR(BYTE, g_rm723d48, $L_723d48)
+ASM_VAR(AsmLabel, g_rm723d70, $L_723d70)    // the receive buffer (a byte vector)
+ASM_VAR(AsmLabel, g_rm601250, $L_601250)    // its destructor
+ASM_VAR(AsmLabel, s_rm684250, $L_684250)
+extern "C" int __cdecl atexit(void (__cdecl*)(void));
+
+// fills message m: kind, sender, the time and the data
+static void Rm_Set(BYTE* m, int kind, DWORD from, const void* p, DWORD n)
+{
+    F(DWORD, m, 12) = from;
+    F(double, m, 16) = CallC<double>(FUN_600b60);
+    F(int, m, 0) = kind;
+    Blob_Set(m, 0, p, n);
+}
+
+extern "C" {
+
+// [FUN_601060] receives the next DirectPlay message into m: a player joining (1) or leaving (2), or another
+// player's data (4, through Net_OnBlock); -1 when there is none, 0 otherwise (errors reported)
+int __cdecl Net_Receive(BYTE* m)
+{
+    if (!g_directPlay)
+        return -1;
+    BYTE* buf = 0;
+    DWORD size = 0;
+    for (;;) {
+        DWORD from = 0, to = 0;
+        int hr = Com(g_directPlay, 100, &from, &to, 1, buf, &size);
+        if (hr == (int)0x887700BE) {
+            operator delete(buf);
+            return -1;
+        }
+        if (hr == (int)0x8877001E) {
+            operator delete(buf);
+            buf = (BYTE*)operator new(size);
+            continue;
+        }
+        if (hr < 0) {
+            CallC(FUN_401010, 1, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 513, (const char*)s_rm684250,
+                  CallC<int>(FUN_600b50, hr), (void*)g_68d1c0);
+            break;
+        }
+        if (!from) {
+            int t = F(int, buf, 0);
+            if ((t == 3 || t == 5) && F(int, buf, 4) == 1) {
+                Rm_Set(m, t == 3 ? 1 : 2, F(DWORD, buf, 8), 0, 0);
+                break;
+            }
+            continue;
+        }
+        BYTE** v = (BYTE**)g_rm723d70;
+        if (!(g_rm723d48 & 1)) {
+            g_rm723d48 |= 1;
+            char alloc;
+            CallThis(FUN_487730, v, &alloc);
+            atexit((void (__cdecl*)(void))(void*)g_rm601250);
+        }
+        v[1] = v[0];
+        Net_OnBlock(v, buf, size);
+        Rm_Set(m, 4, from, v[0], (DWORD)(v[1] - v[0]));
+        break;
+    }
+    operator delete(buf);
+    return 0;
+}
+
+} // extern "C"

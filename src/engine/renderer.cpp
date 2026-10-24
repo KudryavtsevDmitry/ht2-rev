@@ -1189,7 +1189,7 @@ void __fastcall Image_RleTo16(BYTE* self, void*, int unused)
 }
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5b4d40)    // draws an item (this, a, b, c, d, e, item+60)
+extern "C" void FUN_5b4d40(); KING_ALIAS("_FUN_5b4d40", "@Render_Sprite@32")    // draws an item (this, a, b, c, d, e, item+60)
 ASM_VAR(AsmLabel, s_67f0a0, $L_67f0a0)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
@@ -1597,7 +1597,7 @@ ASM_PROC(FUN_5e8160)
 extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
 extern "C" void FUN_5bb660(); KING_ALIAS("_FUN_5bb660", "@Texture_Upload@24")
 extern "C" void FUN_5d7740(); KING_ALIAS("_FUN_5d7740", "_Com_Release")
-ASM_PROC(FUN_5d7750)
+extern "C" void FUN_5d7750(); KING_ALIAS("_FUN_5d7750", "_Dd_SurfaceFromPixels")
 ASM_VAR(AsmLabel, s_rn67f0f0, $L_67f0f0)
 
 // [FUN_5b6ed0] clears the surface (flag 0x4000): the viewport rectangle through the device (+116 == 1), else each row of its memory (+48)
@@ -3329,7 +3329,7 @@ ASM_VAR(AsmLabel, g_cm5ae540, $L_5ae540)
 ASM_VAR(AsmLabel, g_cm5ae530, $L_5ae530)
 ASM_VAR(double, g_cm64b5a0, $L_64b5a0)
 ASM_VAR(double, g_cm64b678, $L_64b678)
-ASM_PROC(FUN_5adea0)
+extern "C" void FUN_5adea0(); KING_ALIAS("_FUN_5adea0", "@Render_SetDeviceView@4")
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_5abe90(); KING_ALIAS("_FUN_5abe90", "_Matrix_Scale")
 extern "C" void FUN_5abee0(); KING_ALIAS("_FUN_5abee0", "_Matrix_RotationX")
@@ -4043,6 +4043,173 @@ void __fastcall Render_Line3D(BYTE* s, void*, float ax, float ay, float az, floa
     for (int i = 1; i < n; i++)
         CallC(FUN_5b73a0, scr, F(int, s, 20 + (i - 1) * 44), F(int, s, 24 + (i - 1) * 44), F(int, s, 20 + i * 44),
               F(int, s, 24 + i * 44), color, 0);
+}
+
+} // extern "C"
+
+// === the path constructor (FUN_5bcc60)
+
+extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void FUN_5bc320(); KING_ALIAS("_FUN_5bc320", "@Poly_GetRecord@16")
+extern "C" void FUN_5bc350(); KING_ALIAS("_FUN_5bc350", "@Poly_SetWeight@20")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+struct Pa_V3 { float x, y, z; };
+
+extern "C" {
+
+// [FUN_5bcc60] constructor (n, points, a, b, speed): a path (vtables 651794, 651780 at +16) through the n points
+// (12 bytes each) as translation matrices (+8) with weights 0..n-1, the cumulative segment lengths (+28),
+// a (+40), b (+44), the speed truncated (+48) and two empty tables of 10 (+64, +104)
+BYTE* __fastcall Path_Construct(BYTE* s, void*, int n, const Pa_V3* pts, int a, int b, double speed)
+{
+    F(void*, s, 0) = g_ren651798;
+    F(int, s, 4) = n;
+    F(void*, s, 12) = operator new(n * 4);
+    BYTE* arr = (BYTE*)operator new(n * 48);
+    if (arr)
+        for (int i = 0; i < n; i++) {
+            CallStd(FUN_4011e0, arr + i * 48, 12, 4, (void*)FUN_4bd4d0);
+            memcpy(arr + i * 48, (BYTE*)g_cm7025f0, 48);
+        }
+    F(BYTE*, s, 8) = arr;
+    F(void*, s, 16) = g_ren64d81c;
+    F(int, s, 20) = 0;
+    F(int, s, 24) = 0;
+    F(void*, s, 0) = g_ren651794;
+    F(void*, s, 16) = g_ren651780;
+    F(int, s, 52) = 0;
+    F(int, s, 40) = a;
+    F(int, s, 44) = b;
+    F(int, s, 48) = (int)speed;
+    F(int, s, 56) = 0;
+    F(int, s, 60) = 0;
+    F(double*, s, 28) = (double*)operator new(n * 8 - 8);
+    F(int, s, 32) = 0;
+    F(int, s, 36) = 0;
+    for (int i = 0; i < F(int, s, 4); i++) {
+        BYTE t[48];
+        CallThis(FUN_5bc320, s, i, CallC<BYTE*>(FUN_5abc40, t, pts[i]));
+        CallThis(FUN_5bc350, s, i, (double)i);
+        if (i) {
+            BYTE* m = F(BYTE*, s, 8);
+            const float* c = (const float*)(m + i * 48 + 36);
+            const float* p = (const float*)(m + i * 48 - 12);
+            float v[3] = {c[0] - p[0], c[1] - p[1], c[2] - p[2]};
+            double* len = F(double*, s, 28);
+            len[i - 1] = CallC<double>(FUN_5ab4d0, v);
+            if (i > 1)
+                len[i - 1] = len[i - 2] + len[i - 1];
+        }
+    }
+    for (int k = 0; k < 10; k++) {
+        F(int, s, 104 + k * 4) = 0;
+        F(int, s, 64 + k * 4) = 0;
+    }
+    return s;
+}
+
+} // extern "C"
+
+// === the hardware viewport and projection (FUN_5adea0)
+
+ASM_VAR(double, g_vp64b930, $L_64b930)
+
+extern "C" {
+
+// [FUN_5adea0] gives the 3D device renderer s's viewport (centre +1952/+1956 and half size +1960/+1964 in 12.20
+// fixed point, in the window's rectangle, kept at +8548..+8560) and the perspective projection of the top camera
+// matrix (+4256) with near +8464 and far +8472 (identity when near is not above 64b930)
+void __fastcall Render_SetDeviceView(BYTE* s)
+{
+    if (!g_device)
+        return;
+    int r[4];
+    CallThis(FUN_5b6710, F(BYTE*, s, 1948), r);
+    DWORD vp[6] = {0, 0, 0, 0, 0, 0};
+    int x = (F(int, s, 1952) >> 20) + r[0], y = (F(int, s, 1956) >> 20) + r[1];
+    F(int, s, 8548) = x;
+    vp[0] = x;
+    F(int, s, 8552) = y;
+    vp[1] = y;
+    int hw = (F(int, s, 1960) >> 20) + 1, hh = (F(int, s, 1964) >> 20) + 1;
+    F(int, s, 8556) = hw;
+    F(int, s, 8560) = hh;
+    vp[2] = (unsigned)(hw * 2) > (unsigned)(r[2] - r[0]) ? r[2] - r[0] : hw * 2;
+    vp[3] = (unsigned)(hh * 2) > (unsigned)(r[3] - r[1]) ? r[3] - r[1] : hh * 2;
+    F(float, vp, 16) = 0.0f;
+    F(float, vp, 20) = 1.0f;
+    ((long(__stdcall*)(void*, DWORD*))(*(void***)g_device)[13])(g_device, vp);
+    const float* m = (const float*)(s + 4256 + F(int, s, 8228) * 48);
+    float p[16];
+    memset(p, 0, sizeof p);
+    double n = F(double, s, 8464), f = F(double, s, 8472);
+    if (n > g_vp64b930) {
+        double d = f - n;
+        p[0] = m[0];
+        p[5] = m[8];
+        p[8] = m[3];
+        p[9] = m[5];
+        p[10] = (float)(f / d);
+        p[11] = 1.0f;
+        p[14] = (float)-(n * f / d);
+    } else
+        p[0] = p[5] = p[10] = p[15] = 1.0f;
+    ((long(__stdcall*)(void*, int, float*))(*(void***)g_device)[11])(g_device, 3, p);
+}
+
+} // extern "C"
+
+// === drawing a sprite (FUN_5b4d40)
+
+extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")
+ASM_VAR(float, g_sp651760, $L_651760)
+ASM_VAR(AsmLabel, s_sp67f0c0, $L_67f0c0)
+
+extern "C" {
+
+// [FUN_5b4d40] draws image idx (+8268, count +1944) of renderer s at (x, y, z): projected and scaled by distance
+// in 3D (mode 1; skipped outside y in (64c250, far +8472)), else at screen (x, y); anchored by align (1..8:
+// centre/right/middle combinations), skipped when off the viewport
+void __fastcall Render_Sprite(BYTE* s, void*, int mode, int align, float x, float y, float z, int idx)
+{
+    if (!F(BYTE*, s, 1948))
+        return;
+    if (idx < 0 || idx >= F(int, s, 1944))
+        CallC(FUN_5d2e70, (const char*)s_sp67f0c0, (const char*)0);
+    BYTE* img = F(BYTE**, s, 8268)[idx];
+    int w = F(WORD, img, 4), h = F(WORD, img, 6);
+    int px, py, scale;
+    if (mode == 1) {
+        float p[3] = {x, y, z};
+        CallThis(FUN_5ab950, p, s + 2240 + F(int, s, 8224) * 48);
+        if (!(p[1] > g_q161_64c250) || !(p[1] < F(double, s, 8472)))
+            return;
+        scale = (int)(g_q161_64c250 / p[1] * g_sp651760);
+        float qx = (float)(p[0] / p[1]), qz = (float)(p[2] / p[1]);
+        px = ((int)((qx + g_q161_64c250) * F(int, s, 1960)) + F(int, s, 1952) + 128) >> 20;
+        py = ((int)((g_q161_64c250 - qz) * F(int, s, 1964)) + F(int, s, 1956) + 128) >> 20;
+    } else {
+        scale = 0;
+        px = (int)x;
+        py = (int)y;
+    }
+    switch (align) {
+    case 1: px -= w / 2; break;
+    case 2: px -= w; break;
+    case 3: py -= h / 2; break;
+    case 4: px -= w / 2; py -= h / 2; break;
+    case 5: px -= w; py -= h / 2; break;
+    case 6: py -= h; break;
+    case 7: px -= w / 2; py -= h; break;
+    case 8: px -= w; py -= h; break;
+    }
+    if (px >= (F(int, s, 1952) + F(int, s, 1960) * 2) >> 20 || py >= (F(int, s, 1956) + F(int, s, 1964) * 2) >> 20 ||
+        px + w <= F(int, s, 1952) >> 20 || py + h <= F(int, s, 1956) >> 20)
+        return;
+    CallC(FUN_5b8980, F(BYTE*, s, 1948), px, py, img, scale);
+    g_720078++;
 }
 
 } // extern "C"

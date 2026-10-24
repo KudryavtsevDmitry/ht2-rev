@@ -1006,7 +1006,7 @@ KING_ALIAS("_Deque_AllocPages@8", "FUN_4a29e0")
 
 // sch_istr.cpp's Environment and Port value factories. Both return exactly
 // the three words of a Scheme value; the second argument is a compiler slot.
-ASM_PROC(FUN_4a2ef0)
+extern "C" void FUN_4a2ef0(); KING_ALIAS("_FUN_4a2ef0", "@SchScope_Copy@16")
 extern "C" BYTE* __fastcall SchItem4b5f30_Construct(BYTE*, void*, int, int);
 ASM_VAR(AsmLabel, g_inputEnvironmentName, $L_67060c)
 ASM_VAR(AsmLabel, g_inputPortName, $L_66cb28)
@@ -1419,7 +1419,7 @@ DequeIt* __cdecl Deque4acd70(DequeIt* out, int c, int d, DequeIt a, DequeIt b, D
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")    // uninitialized copy of 12-byte values (first, last, to)
 ASM_PROC(FUN_4ac330)    // deque<char>: allocate the pages of [first, last)
 extern "C" void FUN_4aa160(); KING_ALIAS("_FUN_4aa160", "@Vec44_At@12")
-ASM_PROC(FUN_4a55c0)
+extern "C" void FUN_4a55c0(); KING_ALIAS("_FUN_4a55c0", "_Sch_DumpFrame")
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // writes a string to a port (by value)
 extern "C" void FUN_4affd0(); KING_ALIAS("_FUN_4affd0", "_Sch_MakeClosureB")
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
@@ -2232,7 +2232,7 @@ extern "C" void FUN_4b08a0(); KING_ALIAS("_FUN_4b08a0", "_SchInput_MakeEnvironme
 extern "C" void FUN_4b0990(); KING_ALIAS("_FUN_4b0990", "_SchInput_MakePort")
 extern "C" void FUN_455f00(); KING_ALIAS("_FUN_455f00", "_Port_MakeB")
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
-ASM_PROC(FUN_4b4c20)    // read (out, p, port by value)
+extern "C" void FUN_4b4c20(); KING_ALIAS("_FUN_4b4c20", "_Port_ReadDatum")    // read (out, p, port by value)
 extern "C" void FUN_4a6af0(); KING_ALIAS("_FUN_4a6af0", "_Sch_EvalTop")    // eval (out, p, value by value)
 ASM_VAR(AsmLabel, g_sv64bed0, $L_64bed0)
 ASM_VAR(AsmLabel, s_sv6712f8, $L_6712f8)
@@ -3146,7 +3146,7 @@ extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
 extern "C" void FUN_4aa830(); KING_ALIAS("_FUN_4aa830", "_Sch_MakeIdentifierA")
 extern "C" void FUN_4aa910(); KING_ALIAS("_FUN_4aa910", "_Sch_MakeIdentifierB")
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
-ASM_PROC(FUN_4a6880)
+extern "C" void FUN_4a6880(); KING_ALIAS("_FUN_4a6880", "_Sch_EvalNested")
 extern "C" void FUN_4aa1d0(); KING_ALIAS("_FUN_4aa1d0", "@Vec44_Erase@16")
 extern "C" void FUN_4aa730(); KING_ALIAS("_FUN_4aa730", "_Sch_MakeUnspecified")
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
@@ -3688,6 +3688,246 @@ void __fastcall Lambda_Step(BYTE* self, void*, BYTE* p)
     CallVirt(frames[1], 4, 0);
     Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&c);
     CallThis(FUN_4a36c0, &c);
+}
+
+} // extern "C"
+
+// === the eval frame step (the frame step $L_4a97c0)
+
+extern "C" {
+
+// [$L_4a97c0] eval frame step of interpreter p: evaluates the expression (-16 = 0) and the environment (1), then
+// replaces the frame by a node frame for the expression (the frame's -28 node +12) in that environment (+24),
+// which must be an environment object (kind 12)
+void __fastcall Eval_Step(BYTE* self, void*, BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    if (F(int, top, -16) == 0) {
+        Sch_EvalNext(p, 1);
+        return;
+    }
+    if (F(int, top, -16) == 1) {
+        Sch_EvalNext(p, 2);
+        return;
+    }
+    BYTE* f = F(BYTE*, top, -28);
+    SchValue a, b;
+    CopyRef(&a, (SchValue*)(f + 12));
+    CopyRef(&b, (SchValue*)(f + 24));
+    BYTE** frames = (BYTE**)(p + 108);
+    frames[1] = F(BYTE*, p, 112) - 44;
+    CallVirt(frames[1], 4, 0);
+    BYTE n[44];
+    Vec44_PushBack((BYTE*)frames, 0, CallThis<BYTE*>(FUN_4a7060, n));
+    SchListNode_Destroy(n, 0);
+    top = F(BYTE*, p, 112);
+    SchValue* d = (SchValue*)(top - 40);
+    if (d->obj && !(d->flags & SCH_IMMEDIATE) && --F(int, d->obj, 4) == 0 &&
+        !(d->obj == a.obj && d->flags == a.flags && d->m_4 == a.m_4))
+        CallVirt(d->obj, 12, 1);
+    CopyRef(d, &a);
+    SchValue* e = (SchValue*)(top - 12);
+    if (e->obj && --F(int, e->obj, 4) == 0 && !CallC<char>(FUN_409070, e, &b) && e->obj)
+        CallVirt(e->obj, 12, 1);
+    if (!b.obj) {
+        e->obj = 0;
+        e->flags = 0;
+        e->m_4 = 0;
+    } else if (CallVirt<int>(b.obj, 0) != 12)
+        CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(b.obj, 4), (const char*)g_inputEnvironmentName);
+    else {
+        e->obj = b.obj;
+        e->flags = b.flags;
+        F(int, b.obj, 4)++;
+        e->m_4 = 0;
+    }
+    CallThis(FUN_4a36c0, &b);
+    CallThis(FUN_4a36c0, &a);
+}
+
+} // extern "C"
+
+// === spreading a list into the arguments (the frame step $L_4a9ed0)
+
+extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")      // a pair's car (out, value)
+extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")      // a pair's cdr (out, value)
+extern "C" void FUN_46c890(); KING_ALIAS("_FUN_46c890", "@MultValue_DeletingDestructor@12")
+
+extern "C" {
+
+// [$L_4a9ed0] apply frame step of interpreter p: once the operator is evaluated (-40), the last argument (a list)
+// is taken off the argument values (-28; the first, the operator's slot, dropped too) and its elements appended
+// (message 25 for an improper list)
+void __fastcall Apply_SpreadStep(BYTE* self, void*, BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    if (F(int, top, -32) || F(int, top, -40)) {
+        Sch_EvalNext(p, 0);
+        return;
+    }
+    SchValue v;
+    CopyRef(&v, (SchValue*)(F(BYTE*, top, -24) - 12));
+    F(BYTE*, top, -24) -= 12;
+    CallThis(FUN_4a36c0, F(BYTE*, top, -24));
+    top = F(BYTE*, p, 112);
+    BYTE** a = (BYTE**)(top - 28);
+    if (a[0] + 12 != a[1])
+        Values_Copy(a[0] + 12, a[1], a[0]);
+    a[1] -= 12;
+    CallThis(FUN_46c890, a[1], 0);
+    while (v.flags || v.obj) {
+        if ((BYTE)v.flags != 2) {
+            CallC(FUN_4a5910, p, 25);
+            break;
+        }
+        SchValue car, cdr;
+        CallC(FUN_407f00, &car, &v);
+        BYTE** w = (BYTE**)(F(BYTE*, p, 112) - 28);
+        if (w[1] != w[2]) {
+            CallC(FUN_460910, w[1], &car);
+            w[1] += 12;
+        } else
+            CallThis(FUN_44c710, w, w[1], &car);
+        ReleaseRef(&car);
+        SchValue* c = CallC<SchValue*>(FUN_4090a0, &cdr, &v);
+        Eva_AssignSame(&v, c);
+        ReleaseRef(&cdr);
+    }
+    CallThis(FUN_4a36c0, &v);
+}
+
+} // extern "C"
+
+// === evaluating a value in a nested run (FUN_4a6880)
+
+extern "C" {
+
+// [FUN_4a6880] out = the value of expression v (by value) evaluated by interpreter p in a new frame (in the
+// environment of the frame below) run to its end: its first value, or the unspecified value without one
+SchValue* __cdecl Sch_EvalNested(SchValue* out, BYTE* p, BYTE* v0, int v1, DWORD v2)
+{
+    SchValue v = {v0, v1, v2, 0};
+    BYTE node[44];
+    BYTE* n = CallThis<BYTE*>(FUN_4a7060, node);
+    BYTE** fr = (BYTE**)(p + 108);
+    if (fr[1] != fr[2]) {
+        CallC(FUN_4ab570, fr[1], n);
+        fr[1] += 44;
+    } else
+        CallThis(FUN_4aa460, fr, fr[1], n);
+    CallThis(FUN_4a7230, node);
+    BYTE* top = F(BYTE*, p, 112);
+    Eva_AssignSame((SchValue*)(top - 40), &v);
+    CallThis(FUN_40c100, F(BYTE*, p, 112) - 12, fr[0] + (fr[1] - fr[0]) / 44 * 44 - 56);
+    Sch_Run(p);
+    top = F(BYTE*, p, 112);
+    if (fr[0] != fr[1] && F(BYTE*, top, -28) != F(BYTE*, top, -24))
+        CopyRef(out, F(SchValue*, top, -28));
+    else {
+        SchValue t;
+        Sch_MakeUnspecified((DWORD*)&t);
+        CopyRef(out, &t);
+        CallThis(FUN_4a36c0, &t);
+    }
+    ReleaseRef(&v);
+    return out;
+}
+
+} // extern "C"
+
+// === resuming a continuation ($L_4a7590)
+
+extern "C" {
+
+// [$L_4a7590] continuation c applied by interpreter p: the frame stack replaced by the saved one (+20) and the
+// argument (the top frame's node +12) returned to the frame below
+void __fastcall Continuation_Resume(BYTE* c, void*, BYTE* p)
+{
+    SchValue v;
+    CopyRef(&v, (SchValue*)(F(BYTE*, F(BYTE*, p, 112), -28) + 12));
+    BYTE** s = (BYTE**)(c + 20);
+    BYTE** d = (BYTE**)(p + 108);
+    if (s != d) {
+        int n = (int)(s[1] - s[0]) / 44;
+        int size = (int)(d[1] - d[0]) / 44;
+        if ((unsigned)n > (unsigned)((d[2] - d[0]) / 44)) {
+            BYTE* q = Vec44_AllocCopy(n, s[0], s[1]);
+            for (BYTE* e = d[0]; e != d[1]; e += 44)
+                CallVirt(e, 4, 0);
+            if (int cap = (int)(d[2] - d[0]) / 44)
+                AiFree(d[0], cap * 44);
+            d[0] = q;
+            d[2] = q + n * 44;
+        } else if ((unsigned)size >= (unsigned)n) {
+            BYTE* to = Elems44_CopyB(s[0], s[1], d[0]);
+            for (BYTE* e = to; e != d[1]; e += 44)
+                CallVirt(e, 4, 0);
+        } else {
+            Elems44_CopyB(s[0], s[0] + size * 44, d[0]);
+            CallC(FUN_4abd20, s[0] + size * 44, s[1], d[1], 0);
+        }
+        d[1] = d[0] + n * 44;
+    }
+    Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&v);
+    ReleaseRef(&v);
+}
+
+} // extern "C"
+
+// === dumping a frame (FUN_4a55c0)
+
+extern "C" void FUN_4b8070(); KING_ALIAS("_FUN_4b8070", "_Sch4b8070")     // writes a value (out, ctx, value, port)
+extern "C" void FUN_4a16c0(); KING_ALIAS("_FUN_4a16c0", "@Vec12_At@12")
+ASM_VAR(char, s_fd67109c, $L_67109c)
+ASM_VAR(char, s_fd671090, $L_671090)
+ASM_VAR(char, s_fd671084, $L_671084)
+ASM_VAR(char, s_fd67107c, $L_67107c)
+
+// a counted copy of value v as three dwords
+static void Fd_Copy(DWORD* d, const BYTE* v) { CallThis(FUN_454580, d, v); }
+
+// writes value v of interpreter s to port p
+static void Fd_Write(BYTE* s, const BYTE* v, const DWORD* p)
+{
+    DWORD a[3], b[3], t[3];
+    Fd_Copy(a, (const BYTE*)p);
+    Fd_Copy(b, v);
+    CallC(FUN_4b8070, t, s, b[0], b[1], b[2], a[0], a[1], a[2]);
+    ReleaseRef((SchValue*)t);
+}
+
+static void Fd_Str(const char* text, const DWORD* p)
+{
+    DWORD a[3];
+    Fd_Copy(a, (const BYTE*)p);
+    CallC(FUN_4b1450, text, a[0], a[1], a[2]);
+}
+
+extern "C" {
+
+// [FUN_4a55c0] writes frame e of interpreter s to port p (by value): its values (+16) and its expression (+4)
+// between the 67109c / 671090 / 671084 / 67107c markers
+void __cdecl Sch_DumpFrame(BYTE* s, BYTE* e, DWORD p0, DWORD p1, DWORD p2)
+{
+    DWORD p[3] = {p0, p1, p2};
+    Fd_Str(&s_fd67109c, p);
+    Fd_Str(&s_fd671090, p);
+    BYTE** v = (BYTE**)(e + 16);
+    for (unsigned i = 0; i < (unsigned)((v[1] - v[0]) / 12); i++) {
+        DWORD a[3];
+        Fd_Copy(a, (const BYTE*)p);
+        BYTE* x = CallThis<BYTE*>(FUN_4a16c0, v, i);
+        DWORD b[3], t[3];
+        Fd_Copy(b, x);
+        CallC(FUN_4b8070, t, s, b[0], b[1], b[2], a[0], a[1], a[2]);
+        ReleaseRef((SchValue*)t);
+    }
+    Fd_Str(&s_fd671084, p);
+    Fd_Write(s, e + 4, p);
+    DWORD a[3];
+    CopyRef((SchValue*)a, (const SchValue*)p);
+    CallC(FUN_4b1450, &s_fd67107c, a[0], a[1], a[2]);
+    ReleaseRef((SchValue*)p);
 }
 
 } // extern "C"

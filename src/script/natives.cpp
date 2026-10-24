@@ -492,7 +492,7 @@ KING_ALIAS("_Deque_AllocPages@8", "FUN_4a29e0")
 
 // sch_istr.cpp's Environment and Port value factories. Both return exactly
 // the three words of a Scheme value; the second argument is a compiler slot.
-ASM_PROC(FUN_4a2ef0)
+extern "C" void FUN_4a2ef0(); KING_ALIAS("_FUN_4a2ef0", "@SchScope_Copy@16")
 extern "C" BYTE* __fastcall SchItem4b5f30_Construct(BYTE*, void*, int, int);
 ASM_VAR(AsmLabel, g_inputEnvironmentName, $L_67060c)
 ASM_VAR(AsmLabel, g_inputPortName, $L_66cb28)
@@ -980,7 +980,7 @@ extern "C" void FUN_4a1900(); KING_ALIAS("_FUN_4a1900", "@SchEmbd4a1900_Construc
 extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
 extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")
 extern "C" void FUN_4b20d0(); KING_ALIAS("_FUN_4b20d0", "_Sch_ParseNumber")    // a number parsed from a deque of characters (out, p, deque)
-ASM_PROC(FUN_4a1710)    // deque<int> destructor
+extern "C" void FUN_4a1710(); KING_ALIAS("_FUN_4a1710", "@Deque_Destroy@4")    // deque<int> destructor
 extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")           // a pair's car (out, value)
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")           // a pair's cdr (out, value)
 extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
@@ -1533,7 +1533,7 @@ extern "C" void FUN_4a2be0(); KING_ALIAS("_FUN_4a2be0", "_Values_Copy")
 extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
 extern "C" void FUN_4a1a40(); KING_ALIAS("_FUN_4a1a40", "@SchValues_InsertRange@20")    // vector<value>::insert(pos, first, last)
-ASM_PROC(FUN_4b4c20)    // read (out, p, port by value)
+extern "C" void FUN_4b4c20(); KING_ALIAS("_FUN_4b4c20", "_Port_ReadDatum")    // read (out, p, port by value)
 extern "C" void FUN_4b8070(); KING_ALIAS("_FUN_4b8070", "_Sch4b8070")    // write (out, p, value by value, port by value)
 ASM_VAR(AsmLabel, s_nStrLen, $L_670898)
 ASM_VAR(AsmLabel, s_nStrRef, $L_6708a8)
@@ -2821,6 +2821,176 @@ void __fastcall SchValues_InsertRange(BYTE** v, void*, BYTE* pos, BYTE* first, B
     v[1] = e;
     v[0] = p;
     v[2] = p + len * 12;
+}
+
+} // extern "C"
+
+// === copying a scope (FUN_4a2ef0)
+
+extern "C" void FUN_4a4870(); KING_ALIAS("_FUN_4a4870", "@SchMap_Copy@12")
+extern "C" void Nat_VecCtorEh(); KING_ALIAS("_Nat_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+
+// d = s for script values (12 bytes: object, -, flags); d's old object released unless it is s's
+static void Sc_Assign(DWORD* d, const DWORD* s)
+{
+    BYTE* o = (BYTE*)d[0];
+    if (o && !(d[2] & 0x10000) && --F(int, o, 4) == 0 && !(d[0] == s[0] && d[2] == s[2] && d[1] == s[1]) && d[0])
+        CallVirt((BYTE*)d[0], 12, 1);
+    if (s[2] & 0x10000) {
+        d[2] = s[2];
+        d[0] = s[0];
+        d[1] = s[1];
+        return;
+    }
+    d[1] = 0;
+    if (s[0]) {
+        d[0] = s[0];
+        d[2] = s[2];
+        F(int, (BYTE*)d[0], 4)++;
+    } else
+        d[0] = d[2] = 0;
+}
+
+extern "C" {
+
+// [FUN_4a2ef0] copy constructor (outer, s): a scope linked after outer's like s, with s's count (+20), values
+// (the 8 at +36 unless s has a map +144, which is copied), value vector (+132) and value +148
+BYTE* __fastcall SchScope_Copy(BYTE* self, void*, BYTE* outer, BYTE* s)
+{
+    F(int, self, 4) = 0;
+    F(int, self, 8) = 0;
+    F(void*, self, 0) = &gv64bed0_n;
+    BYTE* link = outer + 4;
+    BYTE* next = F(BYTE*, link, 12);
+    F(BYTE*, self, 12) = next;
+    F(BYTE*, self, 16) = link;
+    F(BYTE*, next, 16) = self;
+    F(BYTE*, F(BYTE*, self, 16), 12) = self;
+    F(int, self, 20) = F(int, s, 20);
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 32) = 0;
+    CallStd(Nat_VecCtorEh, self + 36, 12, 8, (void*)FUN_4bd4d0, (void*)FUN_4a36c0);
+    BYTE** v = (BYTE**)(self + 132);
+    BYTE** sv = (BYTE**)(s + 132);
+    int n = (int)(sv[1] - sv[0]) / 12;
+    v[0] = v[1] = v[2] = 0;
+    BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+    v[0] = v[1] = p;
+    v[2] = p + n * 12;
+    v[1] = UninitCopyStrRefs(sv[0], sv[1], p);
+    F(int, self, 144) = 0;
+    DWORD* d = (DWORD*)(self + 148);
+    const DWORD* x = (const DWORD*)(s + 148);
+    if (x[2] & 0x10000) {
+        d[2] = x[2];
+        d[0] = x[0];
+        d[1] = x[1];
+    } else {
+        d[1] = 0;
+        if (x[0]) {
+            d[0] = x[0];
+            d[2] = x[2];
+            F(int, (BYTE*)x[0], 4)++;
+        } else
+            d[0] = d[2] = 0;
+    }
+    F(void*, self, 0) = &gv64bf4c_n;
+    if (F(BYTE*, s, 144)) {
+        BYTE* m = (BYTE*)operator new(12);
+        if (m)
+            CallThis(FUN_4a4870, m, F(BYTE*, s, 144));
+        F(BYTE*, self, 144) = m;
+    } else
+        for (int i = 0; i < F(int, self, 20); i++)
+            Sc_Assign((DWORD*)(self + 36 + i * 12), (const DWORD*)(s + 36 + i * 12));
+    return self;
+}
+
+} // extern "C"
+
+// === reverse (FUN_4a0870)
+
+ASM_VAR(AsmLabel, s_rv6709ec, $L_6709ec)
+
+// releases the value v {object, -, flags}
+static void Rv_Release(DWORD* v)
+{
+    BYTE* o = (BYTE*)v[0];
+    if (!(v[2] & 0x10000) && o && --F(int, o, 4) == 0 && v[0])
+        CallVirt((BYTE*)v[0], 12, 1);
+}
+
+extern "C" {
+
+// [FUN_4a0870] out = the list v (by value) reversed into new pairs of context ctx; a type error (message 10)
+// and the empty value for an improper list
+DWORD* __cdecl Sch_Reverse(DWORD* out, BYTE* ctx, DWORD v0, DWORD v1, DWORD v2)
+{
+    DWORD v[3] = {v0, v1, v2};
+    DWORD acc[3] = {0, 0, 0};
+    while (v[2] || v[0]) {
+        if ((BYTE)v[2] != 2) {
+            CallC(FUN_4a5a60, ctx, 10, (const char*)s_rv6709ec);
+            CallThis(FUN_4bd4d0, out);
+            out[0] = 0;
+            out[2] = 0;
+            CallThis(FUN_4a36c0, acc);
+            Rv_Release(v);
+            return out;
+        }
+        DWORD t[3], car[3], cdr[3];
+        SchValue_MakePairB((SchValue*)t, 0, ctx);
+        CallC(FUN_407f00, car, v);
+        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, t) + 20, car);
+        CallThis(FUN_4a36c0, car);
+        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, t) + 32, acc);
+        CallThis(FUN_49c560, acc, t);
+        CallThis(FUN_4a36c0, t);
+        DWORD* c = CallC<DWORD*>(FUN_4090a0, cdr, v);
+        BYTE* o = (BYTE*)v[0];
+        if (o && !(v[2] & 0x10000) && --F(int, o, 4) == 0 && !CallC<char>(FUN_409070, v, c) && v[0])
+            CallVirt((BYTE*)v[0], 12, 1);
+        if (c[2] & 0x10000) {
+            v[2] = c[2];
+            v[0] = c[0];
+            v[1] = c[1];
+        } else {
+            v[1] = 0;
+            if (c[0]) {
+                v[0] = c[0];
+                v[2] = c[2];
+                F(int, (BYTE*)c[0], 4)++;
+            } else
+                v[0] = v[2] = 0;
+        }
+        Rv_Release(cdr);
+    }
+    CallThis(FUN_454580, out, acc);
+    CallThis(FUN_4a36c0, acc);
+    CallThis(FUN_4a36c0, v);
+    return out;
+}
+
+} // extern "C"
+
+// === the deque destructor (FUN_4a1710)
+
+extern "C" {
+
+// [FUN_4a1710] destructor of deque d: its elements destroyed, its blocks freed and its map returned to the pool
+void __fastcall Deque_Destroy(BYTE* d)
+{
+    DequeIt a, b;
+    CallThis(FUN_4abea0, &a, d + 8);
+    memcpy(&b, d + 24, 16);
+    DequeIt_Pass0(a, b);
+    if (F(void*, d, 0)) {
+        for (void** n = F(void**, d, 20); n < F(void**, d, 36) + 1; n++)
+            free(*n);
+        if (int m = F(int, d, 4))
+            CallC(FUN_44b4a0, F(void*, d, 0), m * 4);
+    }
 }
 
 } // extern "C"
