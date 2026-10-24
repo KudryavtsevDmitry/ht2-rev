@@ -1185,7 +1185,7 @@ void __cdecl Driver_SetDeadline(BYTE* x, double t)
 
 }
 
-ASM_PROC(FUN_4729e0)    // player constructor (kind)
+extern "C" void FUN_4729e0(); KING_ALIAS("_FUN_4729e0", "@Player_Construct@12")    // player constructor (kind)
 ASM_PROC(FUN_4731e0)    // player destructor
 extern "C" void FUN_478e50(); KING_ALIAS("_FUN_478e50", "@AiList_Insert@20")
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
@@ -2032,6 +2032,136 @@ int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
     if (int n = (int)(tmp[2] - tmp[0]) / 12)
         CallC(FUN_44b4a0, tmp[0], n * 12);
     return 0;
+}
+
+} // extern "C"
+
+// === the player constructor (FUN_4729e0)
+
+ASM_VAR(int, g_pcNone68b990, $L_68b990)
+ASM_VAR(AsmLabel, s_pc66fa34, $L_66fa34)       // the default name (8 bytes)
+extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
+extern "C" void FUN_488170(); KING_ALIAS("_FUN_488170", "@Filter2_Construct@8")
+extern "C" void FUN_4880b0(); KING_ALIAS("_FUN_4880b0", "@Filter1_Construct@8")
+ASM_PROC(FUN_401000)    // the time
+extern "C" void FUN_4881f0(); KING_ALIAS("_FUN_4881f0", "@Filter2_SetResponse@16")
+extern "C" void FUN_4881e0(); KING_ALIAS("_FUN_4881e0", "@Filter2_Set@16")
+extern "C" void FUN_4880d0(); KING_ALIAS("_FUN_4880d0", "@Filter1_Reset@8")
+extern "C" void FUN_488070(); KING_ALIAS("_FUN_488070", "@Filter1_SetLength@12")
+extern "C" void FUN_488100(); KING_ALIAS("_FUN_488100", "@Filter1_Set@16")
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+
+static double Pc_Bits(DWORD lo, DWORD hi)
+{
+    unsigned __int64 v = (unsigned __int64)hi << 32 | lo;
+    return *(double*)&v;
+}
+
+static void Pc_Zero(BYTE* p, int from, int to)
+{
+    for (int k = from; k <= to; k += 4)
+        F(int, p, k) = 0;
+}
+
+extern "C" {
+
+// [FUN_4729e0] constructor of a player of kind (thiscall): its name, route and positions, the speed filters,
+// the timers, and the default name 66fa34
+BYTE* __fastcall Player_Construct(BYTE* self, void*, int kind)
+{
+    char a;
+    CallThis(FUN_470900, self, kind);
+    CallThis(FUN_487730, self + 16, &a);
+    CallThis(FUN_4133a0, self + 32);
+    CallThis(FUN_487730, self + 64, &a);
+    F(int, self, 76) = -1;
+    F(int, self, 80) = 305419896;
+    F(int, self, 84) = -1;
+    F(int, self, 88) = 0;
+    F(int, self, 92) = 0;
+    F(int, self, 96) = g_pcNone68b990;
+    F(int, self, 104) = -1;
+    F(DWORD, self, 108) = 2146435071;          // +104: the largest double
+    F(int, self, 112) = -1;
+    F(int, self, 120) = -1;
+    F(int, self, 124) = -1;
+    Pc_Zero(self, 128, 144);
+    F(int, self, 148) = -1;
+    Pc_Zero(self, 152, 160);
+    F(int, self, 168) = g_pcNone68b990;
+    CallThis(FUN_487730, self + 172, &a);
+    F(int, self, 184) = 0;
+    F(int, self, 188) = 0;
+    F(BYTE, self, 192) = 0;
+    F(BYTE, self, 193) = 0;
+    Pc_Zero(self, 200, 208);
+    Pc_Zero(self, 216, 224);
+    Pc_Zero(self, 232, 252);
+    F(BYTE, self, 256) = 0;
+    Pc_Zero(self, 264, 272);
+    Pc_Zero(self, 280, 328);
+    F(DWORD, self, 332) = 1077149696;          // +328: 20.0
+    Pc_Zero(self, 336, 364);
+    CallThis(FUN_488170, self + 368);
+    CallThis(FUN_488170, self + 408);
+    CallThis(FUN_488170, self + 448);
+    F(int, self, 496) = 0;
+    F(BYTE, self, 488) = 0;
+    F(int, self, 500) = 0;
+    F(BYTE, self, 504) = 0;
+    F(BYTE, self, 505) = 0;
+    Pc_Zero(self, 508, 520);
+    F(int, self, 528) = 0;
+    Pc_Zero(self, 544, 652);
+    CallThis(FUN_488170, self + 664);
+    Pc_Zero(self, 712, 720);
+    CallThis(FUN_4880b0, self + 728);
+    Pc_Zero(self, 752, 772);
+    F(int, self, 800) = 0;
+    F(BYTE, self, 776) = 0;
+    F(BYTE, self, 792) = 0;
+    F(int, self, 804) = 0;
+    F(int, self, 808) = -1;
+    F(int, self, 812) = -1;
+    Pc_Zero(self, 816, 832);
+    F(int, self, 836) = -1;
+    F(BYTE, self, 840) = 0;
+    F(int, self, 844) = -1;
+    F(int, self, 848) = -1;
+    F(int, self, 856) = 0;
+    F(DWORD, self, 860) = 1083129856;          // +856: 1000.0
+    F(BYTE, self, 864) = 1;
+    F(int, self, 876) = 4096;
+    F(int, self, 880) = -1;
+    F(int, self, 936) = -1;
+    F(double, self, 944) = CallC<double>(FUN_401000);
+    F(int, self, 952) = 0;
+    F(DWORD, self, 956) = 1086556160;          // +952: 10000.0
+    F(int, self, 960) = g_pcNone68b990;
+    F(int, self, 976) = 0;
+    F(int, self, 964) = 0;
+    F(BYTE, self, 968) = 1;
+    F(DWORD, self, 980) = 1083129856;          // +976: 1000.0
+    F(int, self, 984) = -1;
+    CallThis(FUN_4881f0, self + 368, Pc_Bits(3944497965u, 1058682594));
+    CallThis(FUN_4881f0, self + 408, Pc_Bits(3539053052u, 1062232653));
+    CallThis(FUN_4881e0, self + 408, F(double, self, 336));
+    CallThis(FUN_4881f0, self + 448, Pc_Bits(1202590843, 1065646817));
+    CallThis(FUN_4881e0, self + 448, 1.0);
+    F(int, self, 164) = F(int, self, 152);
+    CallThis(FUN_4880d0, self + 728);
+    CallThis(FUN_488070, self + 728, 256);
+    CallThis(FUN_488100, self + 728, 2.0);
+    char name[8];
+    memcpy(name, s_pc66fa34, 8);
+    CallThis(FUN_44c220, self + 264, F(BYTE*, self, 268), name, name + strlen(name) + 1);
+    CallThis(FUN_4881f0, self + 664, 0.25);
+    CallThis(FUN_4881e0, self + 664, 0.0);
+    F(int, self, 656) = 0;
+    F(int, self, 660) = 0;
+    return self;
 }
 
 } // extern "C"

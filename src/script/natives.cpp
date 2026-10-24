@@ -1084,12 +1084,13 @@ static SchValue* Nat_IsKind(SchValue* out, BYTE* p, BYTE** args, const char* whe
     return out;
 }
 
-// * and /: like + from 1 (with one argument: * returns it, / its inverse)
-static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*op)(), bool divide)
+// *, / and -: like + from start (with one argument: * returns it, / its inverse, - its negation)
+static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*op)(), bool divide,
+                           int start = 1)
 {
     SchValue a = {0, 0, 0, 0};
     SchValue s;
-    int one = 1, zero = 0;
+    int one = start, zero = 0;
     CallC(FUN_4574e0, &s, 0, &zero, &one);
     if (Nat_Count(args) == 1) {
         CopyRef(out, &s);
@@ -2523,6 +2524,96 @@ int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
     Nat_Release(pa);
     Nat_Release(pb);
     return r;
+}
+
+}  // extern "C"
+
+// === eqv? (FUN_491ce0)
+
+ASM_VAR(AsmLabel, s_eq670640, $L_670640)
+extern "C" void FUN_492150(); KING_ALIAS("_FUN_492150", "@BoolHandle_From@12")
+extern "C" void FUN_4921d0(); KING_ALIAS("_FUN_4921d0", "@CharHandle_From@12")
+extern "C" void FUN_44ca00(); KING_ALIAS("_FUN_44ca00", "@Handle9_Init@12")
+extern "C" void FUN_4b0fb0(); KING_ALIAS("_FUN_4b0fb0", "_SchNumber_Eq")
+
+static bool Eq_Zero(const SchValue* v)
+{
+    return !v->obj && !v->m_4 && !v->flags;
+}
+
+extern "C" {
+
+// [$L_491ce0] eqv?: the same value, or equal booleans, symbols (ignoring case), characters or numbers
+SchValue* __cdecl Nat_Eqv(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &a, &b, args, (const char*)s_eq670640)) {
+        out->obj = 0;
+        out->m_4 = 0;
+        out->flags = 0;
+        Nat_Release(&b);
+        Nat_Release(&a);
+        return out;
+    }
+    int r = 0;
+    if (a.obj == b.obj && a.flags == b.flags && a.m_4 == b.m_4)
+        r = -1;
+    else if (Eq_Zero(&a) || Eq_Zero(&b) || (BYTE)(a.flags ^ b.flags))
+        r = 0;
+    else {
+        SchValue ha, hb;
+        switch ((BYTE)a.flags) {
+        case 7:
+            CallThis(FUN_492150, &ha, &a);
+            CallThis(FUN_492150, &hb, &b);
+            r = (ha.obj != 0) == (hb.obj != 0);
+            break;
+        case 9:
+            CallThis(FUN_44ca00, &hb, &a);
+            CallThis(FUN_44ca00, &ha, &b);
+            r = _stricmp(F(const char*, CallThis<BYTE*>(FUN_4aa430, &hb), 12),
+                         F(const char*, CallThis<BYTE*>(FUN_4aa430, &ha), 12)) == 0;
+            break;
+        case 8:
+            CallThis(FUN_4921d0, &ha, &a);
+            CallThis(FUN_4921d0, &hb, &b);
+            r = ha.obj == hb.obj;
+            break;
+        case 6:
+            CallThis(FUN_4556d0, &ha, &a);
+            CallThis(FUN_4556d0, &hb, &b);
+            r = CallC<BYTE>(FUN_4b0fb0, ha.obj, hb.obj);
+            break;
+        default:
+            CallC(FUN_492250, out, 0, 0);
+            Nat_Release(&b);
+            Nat_Release(&a);
+            return out;
+        }
+        CallC(FUN_492250, out, 0, r);
+        CallThis(FUN_4a36c0, &hb);
+        CallThis(FUN_4a36c0, &ha);
+        Nat_Release(&b);
+        Nat_Release(&a);
+        return out;
+    }
+    CallC(FUN_492250, out, 0, r);
+    SchValue_Release(&b);
+    SchValue_Release(&a);
+    return out;
+}
+
+} // extern "C"
+
+ASM_VAR(AsmLabel, s_nMinus, $L_6706b0)
+extern "C" void FUN_4b0f10(); KING_ALIAS("_FUN_4b0f10", "@SchNumber_Sub@12")
+
+extern "C" {
+
+// [$L_4954f0] -: the first argument minus the others (with one argument its negation)
+SchValue* __cdecl Nat_Minus(SchValue* out, BYTE* p, BYTE** args)
+{
+    return Nat_Arith(out, p, args, s_nMinus, FUN_4b0f10, true, 0);
 }
 
 }  // extern "C"

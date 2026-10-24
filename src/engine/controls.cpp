@@ -36,9 +36,9 @@ static __forceinline BYTE* Next(BYTE* c)
     return CallThis<BYTE*>(FUN_5d3080, c);
 }
 
-ASM_PROC(FUN_5b6f90)    // fills a rectangle
+extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle
 ASM_PROC(FUN_5b8980)    // draws a pattern
-ASM_PROC(FUN_5b9020)    // tiles a bitmap
+extern "C" void FUN_5b9020(); KING_ALIAS("_FUN_5b9020", "_Image_Tile")    // tiles a bitmap
 extern "C" void FUN_5b7f20(); KING_ALIAS("_FUN_5b7f20", "_Surface_VLine")    // vertical line
 extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")    // horizontal line
 extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);   // framework.cpp
@@ -1176,3 +1176,98 @@ extern "C" int __fastcall Thunk5bd550(BYTE* s, void* d, int a0) { return q198_Dt
 extern "C" int __fastcall q238_ConGroup_Destroy(BYTE* s); KING_ALIAS("@q238_ConGroup_Destroy@4", "@ConGroup_Destroy@4")
 // [FUN_5c06a0] forwards to ConGroup_Destroy
 extern "C" int __fastcall Thunk5c06a0(BYTE* s) { return q238_ConGroup_Destroy(s); }
+
+// === laying out a scroll bar (FUN_5be8c0)
+
+extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
+extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
+
+// child c of scroll bar s: s's four styles, placed at the track's start (margin +60, title height +64) with
+// the track's length +312 as its size
+static BYTE* Sb_Child(BYTE* s, BYTE* c)
+{
+    for (int k = 68; k <= 176; k += 36)
+        CallThis(FUN_5bd5a0, c + k, s + k);
+    int m = F(int, s, 60), len = F(int, s, 312);
+    F(int, c, 44) = m + 1;
+    F(int, c, 48) = F(int, s, 64) + m + 1;
+    F(int, c, 56) = F(int, c, 48) + len;
+    F(int, c, 52) = F(int, c, 44) + len;
+    return c;
+}
+
+// moves child c by along the bar (vertical bars, +328 = 1, along x) and across it
+static void Sb_Move(BYTE* s, BYTE* c, int along, int across)
+{
+    if (F(int, s, 328) != 1) {
+        int t = along;
+        along = across;
+        across = t;
+    }
+    F(int, c, 44) += along;
+    F(int, c, 52) += along;
+    F(int, c, 48) += across;
+    F(int, c, 56) += across;
+}
+
+extern "C" {
+
+// [FUN_5be8c0] sets scroll bar s (thiscall: the range pos, the position *at, a3, a4, size w x h, offset
+// along, offset across): its size (a vertical bar grows by its title's lines), the track (+304..+308, the
+// thumb length +312), and its three children: the first button, the thumb at *at, the second button
+void __fastcall ScrollBar_Layout(BYTE* s, void*, short range, short* at, int a3, int a4, int w, int h, int along,
+                                 int across)
+{
+    F(int, s, 332) = a3;
+    F(int, s, 336) = a4;
+    F(short, s, 296) = range;
+    F(short*, s, 300) = at;
+    F(int, s, 320) = across;
+    if (*at > range)
+        *at = range;
+    F(int, s, 44) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 316) = 0;
+    int a, b;
+    if (F(int, s, 328) == 1) {
+        a = h;
+        const char* t = F(const char*, s, 12);
+        if (t && *t) {
+            BYTE* font = F(BYTE*, s, 16);
+            F(int, s, 316) = 1;
+            F(int, s, 64) += F(int, font, 20) + 1;
+            a = h + F(int, font, 20) + 1;
+            for (; *t; t++)
+                if (*t == 10) {
+                    F(int, s, 316)++;
+                    F(int, s, 64) += F(int, font, 20);
+                    a += F(int, font, 20);
+                }
+        }
+        b = w;
+        F(int, s, 56) = a;
+        F(int, s, 52) = w;
+    } else {
+        a = h;
+        b = w;
+        F(int, s, 52) = h;
+        F(int, s, 56) = w;
+    }
+    int m = F(int, s, 60);
+    int len = a - (2 * m + 2) - F(int, s, 64);
+    F(int, s, 312) = len;
+    F(int, s, 304) = len + m + along + 2;
+    F(int, s, 308) = b - (2 * len + 2) - m;
+    BYTE* c = Sb_Child(s, F(BYTE*, s, 288));
+    Sb_Move(s, c, along, F(int, s, 320));
+    c = Sb_Child(s, CallThis<BYTE*>(FUN_5d3080, c));
+    if (short r = F(short, s, 296)) {
+        int lo = F(int, s, 304);
+        int t = (int)((double)(F(int, s, 308) - lo) * (double)*F(short*, s, 300) / (double)r + (double)lo);
+        Sb_Move(s, c, t, F(int, s, 320));
+    }
+    c = Sb_Child(s, CallThis<BYTE*>(FUN_5d3080, c));
+    Sb_Move(s, c, F(int, s, 312) - F(int, s, 60) + F(int, s, 308), F(int, s, 320));
+}
+
+} // extern "C"

@@ -53,7 +53,7 @@ ASM_VAR(AsmLabel, s_67632c, $L_67632c)
 ASM_VAR(AsmLabel, s_676320, $L_676320)
 extern "C" void FUN_5ffb40(); KING_ALIAS("_FUN_5ffb40", "_Music_Clear")
 extern "C" void FUN_5ba4a0(); KING_ALIAS("_FUN_5ba4a0", "@Texture5ba4a0_Construct@20")
-ASM_PROC(FUN_5bae30)
+extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
 extern "C" void FUN_5d4200(); KING_ALIAS("_FUN_5d4200", "_Dd_LockBack")
 extern "C" void FUN_5d41e0(); KING_ALIAS("_FUN_5d41e0", "_Dd_WaitVsync")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
@@ -96,7 +96,7 @@ ASM_VAR(AsmLabel, g_vtbl64e620, $L_64e620)
 ASM_VAR(AsmLabel, g_vtbl64e5e0, $L_64e5e0)
 ASM_VAR(AsmLabel, g_720938, $L_720938)
 ASM_VAR(AsmLabel, g_vtbl64eb58, $L_64eb58)
-ASM_PROC(FUN_5c13a0)    // avi: open
+extern "C" void FUN_5c13a0(); KING_ALIAS("_FUN_5c13a0", "@Video_Open@24")    // avi: open
 extern "C" void FUN_5d89e0(); KING_ALIAS("_FUN_5d89e0", "@Fw5d89e0_Destroy@4")
 
 ASM_VAR(int, g_696890, $L_696890)
@@ -647,7 +647,7 @@ int __cdecl fseek(FILE* f, long off, int origin);
 }
 ASM_PROC(FUN_50b620)    // DMat4: determinant
 extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
-ASM_PROC(FUN_5b81c0)    // draws a part of an image (surface, image, rect, a, y)
+extern "C" void FUN_5b81c0(); KING_ALIAS("_FUN_5b81c0", "_Image_DrawPart")    // draws a part of an image (surface, image, rect, a, y)
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
@@ -1390,7 +1390,7 @@ ASM_VAR(char, s_obj676658, $L_676658)
 ASM_VAR(char, s_obj676644, $L_676644)
 extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // finds a scene object by name
-ASM_PROC(FUN_5bae30)
+extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
 
 // [FUN_5105b0] sets the frame time limit and finds the two objects of the game mode, showing them
 extern "C" void __cdecl Shell_SetupModeObjects()
@@ -2511,7 +2511,7 @@ extern "C" void __fastcall Shell_518820(BYTE* s, void*, int a)
 
 extern "C" void FUN_515270(); KING_ALIAS("_FUN_515270", "@Keys_Bind@12")
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
-ASM_PROC(FUN_5ea1b0)
+extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")
 extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
 extern "C" void FUN_51d0e0(); KING_ALIAS("_FUN_51d0e0", "_Save_ListEntries")
 extern "C" void FUN_5d8b90(); KING_ALIAS("_FUN_5d8b90", "@Wnd5d8b90_Notify@8")
@@ -5445,7 +5445,7 @@ extern "C" void __fastcall Map_DrawLine(double* s, void*, BYTE* d, double sx, do
 // Entering the world.
 
 extern "C" void FUN_512920(); KING_ALIAS("_FUN_512920", "_Shell_LoadWorld")
-ASM_PROC(FUN_50c9d0)
+extern "C" void FUN_50c9d0(); KING_ALIAS("_FUN_50c9d0", "_Shell_CreateScreens")
 extern "C" void FUN_5ba300(); KING_ALIAS("_FUN_5ba300", "@Palette_Blend@32")
 extern "C" void FUN_597560(); KING_ALIAS("_FUN_597560", "@Wasm_Set92@12")
 ASM_VAR(BYTE*, g_q70_696ca0, $L_696ca0)
@@ -6140,7 +6140,7 @@ extern "C" void __cdecl Shell_SetVideoMode(BYTE* world, int)
 // ---------------------------------------------------------------------------
 // Loading the world.
 
-ASM_PROC(FUN_50f990)
+extern "C" void FUN_50f990(); KING_ALIAS("_FUN_50f990", "@MainMenu_Construct@8")
 extern "C" void FUN_510690(); KING_ALIAS("_FUN_510690", "_Loading_Step")
 extern "C" void FUN_5a5720(); KING_ALIAS("_FUN_5a5720", "_Set7025b0")
 extern "C" void FUN_5107c0(); KING_ALIAS("_FUN_5107c0", "_Model_Load")
@@ -6712,7 +6712,7 @@ extern "C" BYTE* __cdecl Shell_MakeTexButton(const char* name, int id, int x, in
 // ---------------------------------------------------------------------------
 // A slider with mask faces.
 
-ASM_PROC(FUN_5be8c0)
+extern "C" void FUN_5be8c0(); KING_ALIAS("_FUN_5be8c0", "@ScrollBar_Layout@40")
 extern "C" void FUN_5be700(); KING_ALIAS("_FUN_5be700", "@ScrollBar_Construct@24")
 extern "C" void FUN_5bef30(); KING_ALIAS("_FUN_5bef30", "@Ctl_SetStyles@28")
 // style st from template t with the mask fmt % name as its pattern
@@ -7035,7 +7035,7 @@ ASM_PROC(FUN_5c3c50)    // net: send a message (name, msg)
 ASM_PROC(FUN_5c55b0)    // net: the host's reply (reply, -)
 ASM_PROC(FUN_5c3ac0)    // net: whether the session is open
 ASM_PROC(FUN_5c5740)    // net: host (name, 0, 0)
-ASM_PROC(FUN_5ea1b0)    // text in a width (surface, x, y, width, font, text, align, -)
+extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // text in a width (surface, x, y, width, font, text, align, -)
 
 static const char* Nd_Str(int id)
 {
@@ -8358,6 +8358,614 @@ void __fastcall Dealer_Open(BYTE* self, void*, int id)
         int place = CallC<int>(FUN_43f8d0, F(int, self, 424));
         CallC(FUN_50bda0, F(BYTE*, F(BYTE*, g_vdImages, 668), 72), F(BYTE*, F(BYTE*, g_vdImages, place * 4 + 368), 72), 2);
     }
+}
+
+} // extern "C"
+
+// === creating the shell screens (FUN_50c9d0)
+
+ASM_VAR(BYTE*, g_scView69684c, $L_69684c)
+ASM_VAR(BYTE*, g_sc6ceca4, $L_6ceca4)
+ASM_VAR(BYTE*, g_sc6ceca0, $L_6ceca0)
+ASM_VAR(BYTE*, g_sc6ceca8, $L_6ceca8)
+ASM_VAR(BYTE*, g_sc6cecac, $L_6cecac)
+ASM_VAR(BYTE*, g_sc6cecb0, $L_6cecb0)
+ASM_VAR(BYTE*, g_sc6cecb4, $L_6cecb4)
+ASM_VAR(BYTE*, g_sc6cecbc, $L_6cecbc)
+ASM_VAR(BYTE*, g_sc6cecec, $L_6cecec)
+ASM_VAR(BYTE*, g_sc6cecf0, $L_6cecf0)
+ASM_VAR(BYTE*, g_sc6cecdc, $L_6cecdc)
+ASM_VAR(BYTE*, g_sc6cece0, $L_6cece0)
+ASM_VAR(BYTE*, g_sc6cece4, $L_6cece4)
+ASM_VAR(BYTE*, g_sc6cece8, $L_6cece8)
+ASM_VAR(BYTE*, g_sc6cec78, $L_6cec78)
+ASM_VAR(BYTE*, g_sc6cec74, $L_6cec74)
+ASM_VAR(BYTE*, g_sc6ced38, $L_6ced38)
+ASM_VAR(AsmLabel, s_sc676268, $L_676268)
+ASM_VAR(AsmLabel, s_sc676258, $L_676258)
+extern "C" void FUN_5dba30(); KING_ALIAS("_FUN_5dba30", "@CGameApp_DestroyWindowNow@12")
+extern "C" void FUN_5e41f0(); KING_ALIAS("_FUN_5e41f0", "@Windows_Add2@12")
+extern "C" void FUN_51e340(); KING_ALIAS("_FUN_51e340", "@ShellScreen51e340_Construct@16")
+extern "C" void FUN_51dab0(); KING_ALIAS("_FUN_51dab0", "@ShellSave51dab0_Construct@16")
+extern "C" void FUN_51eea0(); KING_ALIAS("_FUN_51eea0", "@ShellViewer51eea0_Construct@12")
+extern "C" void FUN_520240(); KING_ALIAS("_FUN_520240", "@ShellScreen520240_Construct@12")
+extern "C" void FUN_520e30(); KING_ALIAS("_FUN_520e30", "@ShellColumns520e30_Construct@12")
+extern "C" void FUN_5228e0(); KING_ALIAS("_FUN_5228e0", "@ShellScreen5228e0_Construct@12")
+extern "C" void FUN_526470(); KING_ALIAS("_FUN_526470", "@ShellScreen526470_Construct@12")
+extern "C" void FUN_51e9a0(); KING_ALIAS("_FUN_51e9a0", "@ShellScreen51e9a0_Construct@12")
+extern "C" void FUN_525b50(); KING_ALIAS("_FUN_525b50", "@ShellDialog525b50_Construct@12")
+extern "C" void FUN_523270(); KING_ALIAS("_FUN_523270", "@ShellRace523270_Construct@16")
+extern "C" void FUN_516ea0(); KING_ALIAS("_FUN_516ea0", "@ShellSliders516ea0_Construct@12")
+extern "C" void FUN_517530(); KING_ALIAS("_FUN_517530", "@ShellSound517530_Construct@12")
+
+// replaces the screen in slot: the old window destroyed, a new one of size bytes by ctor (view[, arg]), added
+// to the window list and shown (vtbl+32)
+static void Sc_Make(BYTE** slot, unsigned size, void (*ctor)(), BYTE* view, int arg, bool withArg)
+{
+    if (*slot)
+        CallThis(FUN_5dba30, (BYTE*)g_gs696750, *slot);
+    BYTE* p = (BYTE*)operator new(size);
+    if (p)
+        p = withArg ? CallThis<BYTE*>(ctor, p, view, arg) : CallThis<BYTE*>(ctor, p, view);
+    *slot = p;
+    CallThis(FUN_5e41f0, (BYTE*)g_gs696750, p);
+    CallVirt(*slot, 32);
+}
+
+extern "C" {
+
+// [FUN_50c9d0] (re)creates the shell's screens on the main view and picks the menu picture by game mode
+void __cdecl Shell_CreateScreens()
+{
+    BYTE* view = g_scView69684c;
+    Sc_Make(&g_sc6ceca4, 512, FUN_51e340, view, 0, true);
+    Sc_Make(&g_sc6ceca0, 520, FUN_51dab0, view, 0, true);
+    Sc_Make(&g_sc6ceca8, 448, FUN_51eea0, view, 0, false);
+    Sc_Make(&g_sc6cecac, 408, FUN_520240, view, 0, false);
+    Sc_Make(&g_sc6cecb0, 504, FUN_520e30, view, 0, false);
+    Sc_Make(&g_sc6cecb4, 368, FUN_5228e0, view, 0, false);
+    Sc_Make(&g_sc6cecbc, 1040, FUN_526470, view, 0, false);
+    Sc_Make(&g_sc6cecec, 376, FUN_51e9a0, view, 0, false);
+    Sc_Make(&g_sc6cecf0, 440, FUN_525b50, view, 0, false);
+    Sc_Make(&g_sc6cecdc, 976, FUN_523270, view, 0, true);
+    Sc_Make(&g_sc6cece0, 976, FUN_523270, view, 1, true);
+    Sc_Make(&g_sc6cece4, 976, FUN_523270, view, 2, true);
+    Sc_Make(&g_sc6cece8, 976, FUN_523270, view, 3, true);
+    Sc_Make(&g_sc6cec78, 400, FUN_516ea0, view, 0, false);
+    Sc_Make(&g_sc6cec74, 400, FUN_517530, view, 0, false);
+    g_sc6ced38 = CallC<BYTE*>(FUN_5ef3d0, CallC<int>(FUN_568fd0) == 2 ? (const char*)s_sc676268 : (const char*)s_sc676258);
+}
+
+} // extern "C"
+
+// === the key settings screen (FUN_517eb0)
+
+ASM_VAR(AsmLabel, s_ks677250, $L_677250)
+ASM_VAR(AsmLabel, s_ks677238, $L_677238)
+ASM_VAR(AsmLabel, s_ks677220, $L_677220)
+ASM_VAR(AsmLabel, s_ks677208, $L_677208)
+ASM_VAR(AsmLabel, s_ks6771f0, $L_6771f0)
+ASM_VAR(AsmLabel, s_ks6771d8, $L_6771d8)
+ASM_VAR(AsmLabel, s_ks6771c0, $L_6771c0)
+ASM_VAR(AsmLabel, s_ks6771a8, $L_6771a8)
+ASM_VAR(AsmLabel, s_ks677190, $L_677190)
+ASM_VAR(AsmLabel, s_ks677178, $L_677178)
+ASM_VAR(AsmLabel, s_ks677160, $L_677160)
+ASM_VAR(AsmLabel, s_ks677148, $L_677148)
+ASM_VAR(AsmLabel, s_ks677130, $L_677130)
+ASM_VAR(AsmLabel, s_ks677118, $L_677118)
+ASM_VAR(AsmLabel, s_ks677100, $L_677100)
+ASM_VAR(AsmLabel, s_ks6770e8, $L_6770e8)
+ASM_VAR(AsmLabel, s_ks6770cc, $L_6770cc)
+ASM_VAR(AsmLabel, s_ks6770b0, $L_6770b0)
+ASM_VAR(AsmLabel, s_ks677094, $L_677094)
+ASM_VAR(AsmLabel, s_ks677078, $L_677078)
+ASM_VAR(AsmLabel, s_ks67705c, $L_67705c)
+ASM_VAR(AsmLabel, s_ks677040, $L_677040)
+ASM_VAR(AsmLabel, s_ks677024, $L_677024)
+ASM_VAR(AsmLabel, s_ks677008, $L_677008)
+ASM_VAR(AsmLabel, s_ks676fec, $L_676fec)
+ASM_VAR(AsmLabel, s_ks676fd0, $L_676fd0)
+ASM_VAR(AsmLabel, s_ks676fb4, $L_676fb4)
+ASM_VAR(AsmLabel, s_ks676f98, $L_676f98)
+ASM_VAR(AsmLabel, s_ks676f7c, $L_676f7c)
+ASM_VAR(AsmLabel, s_ks676f60, $L_676f60)
+ASM_VAR(AsmLabel, s_ks676f44, $L_676f44)
+ASM_VAR(AsmLabel, s_ks676f28, $L_676f28)
+ASM_VAR(AsmLabel, s_ks677268, $L_677268)
+ASM_VAR(AsmLabel, s_ks676f1c, $L_676f1c)
+ASM_VAR(AsmLabel, g_ksVtbl64e090, $L_64e090)
+ASM_VAR(AsmLabel, g_ksVtbl64e050, $L_64e050)
+extern "C" void FUN_517e00(); KING_ALIAS("_FUN_517e00", "_Shell_NewScreenB")
+extern "C" void FUN_5bf820(); KING_ALIAS("_FUN_5bf820", "@Button_ConstructId@20")
+extern "C" void FUN_5be130(); KING_ALIAS("_FUN_5be130", "@Ctl_LayoutRow@12")
+extern "C" void FUN_5bdee0(); KING_ALIAS("_FUN_5bdee0", "@Ctl_LayoutColumn@12")
+static const char* const k_ksCol1[] = {s_ks677250, s_ks677238, s_ks677220, s_ks677208, s_ks6771f0, s_ks6771d8, s_ks6771c0, s_ks6771a8, s_ks677190, s_ks677178, s_ks677160, s_ks677148, s_ks677130, s_ks677118, s_ks677100, s_ks6770e8, };
+static const char* const k_ksCol2[] = {s_ks6770cc, s_ks6770b0, s_ks677094, s_ks677078, s_ks67705c, s_ks677040, s_ks677024, s_ks677008, s_ks676fec, s_ks676fd0, s_ks676fb4, s_ks676f98, s_ks676f7c, s_ks676f60, s_ks676f44, s_ks676f28, };
+
+// a column of rows made by Shell_NewScreenB for names
+static BYTE* Ks_Column(const char* const* names, int n)
+{
+    BYTE* c = Vw_Panel(0);
+    for (int i = 0; i < n; i++)
+        Vw_Add(c, CallC<BYTE*>(FUN_517e00, names[i]));
+    CallThis(FUN_5be130, c, -5);
+    return c;
+}
+
+extern "C" {
+
+// [FUN_517eb0] constructor of the key settings screen (parent): a button, two columns of 16 key rows, centered
+BYTE* __fastcall KeysScreen_Construct(BYTE* self, void*, BYTE* parent)
+{
+    RECT r = g_vw720938;
+    CallThis(FUN_5d8900, self, parent, r, 4, g_vwFont, 0);
+    F(void*, self, 0) = g_ksVtbl64e090;
+    F(void*, self, 64) = g_ksVtbl64e050;
+    CallThis(FUN_5bd5a0, self + 132, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 168, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 204, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 240, (void*)g_vwStyle6ce390);
+    BYTE* root = Vw_Panel(0);
+    BYTE* b = (BYTE*)operator new(288);
+    b = b ? CallThis<BYTE*>(FUN_5bf820, b, (const char*)s_ks677268, 1, 1) : 0;
+    Vw_Styles(b, g_vwStyle6ce408, g_vwStyle6ce3b8, g_vwStyle6ceb38, g_vwStyle6ce988);
+    Vw_Add(root, b);
+    BYTE* cols = Vw_Panel(0);
+    Vw_Add(cols, Ks_Column(k_ksCol1, sizeof k_ksCol1 / sizeof *k_ksCol1));
+    Vw_Add(cols, Ks_Column(k_ksCol2, sizeof k_ksCol2 / sizeof *k_ksCol2));
+    CallThis(FUN_5bdee0, cols, 4);
+    Vw_Add(root, cols);
+    CallThis(FUN_5be130, root, 30);
+    int half = (F(WORD, F(BYTE*, self, 12), 2) - F(int, root, 56) + F(int, root, 48)) / 2;
+    F(int, root, 44) += 150;
+    F(int, root, 52) += 150;
+    F(int, root, 48) += half;
+    F(int, root, 56) += half;
+    Vw_Add(F(BYTE*, self, 56), root);
+    F(BYTE*, self, 368) = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_ks676f1c);
+    return self;
+}
+
+} // extern "C"
+
+// === the main menu screen (FUN_50f990)
+
+ASM_VAR(AsmLabel, s_mm6765c0, $L_6765c0)
+ASM_VAR(AsmLabel, s_mm6765b0, $L_6765b0)
+ASM_VAR(AsmLabel, s_mm6765a0, $L_6765a0)
+ASM_VAR(AsmLabel, s_mm676590, $L_676590)
+ASM_VAR(AsmLabel, s_mm676580, $L_676580)
+ASM_VAR(AsmLabel, s_mm676570, $L_676570)
+ASM_VAR(AsmLabel, s_mm676560, $L_676560)
+ASM_VAR(AsmLabel, s_mm676550, $L_676550)
+ASM_VAR(AsmLabel, s_mm676540, $L_676540)
+ASM_VAR(AsmLabel, s_mm676530, $L_676530)
+ASM_VAR(AsmLabel, s_mm676520, $L_676520)
+ASM_VAR(AsmLabel, s_mm676510, $L_676510)
+ASM_VAR(AsmLabel, s_mm676500, $L_676500)
+ASM_VAR(AsmLabel, s_mm6764f0, $L_6764f0)
+ASM_VAR(AsmLabel, s_mm6764e0, $L_6764e0)
+ASM_VAR(AsmLabel, s_mm6764d0, $L_6764d0)
+ASM_VAR(AsmLabel, s_mm6764c0, $L_6764c0)
+ASM_VAR(AsmLabel, s_mm6764b0, $L_6764b0)
+ASM_VAR(AsmLabel, s_mm6764a0, $L_6764a0)
+ASM_VAR(AsmLabel, s_mm676490, $L_676490)
+ASM_VAR(AsmLabel, s_mm676480, $L_676480)
+ASM_VAR(AsmLabel, s_mm676470, $L_676470)
+ASM_VAR(AsmLabel, s_mm676628, $L_676628)
+ASM_VAR(AsmLabel, s_mm676614, $L_676614)
+ASM_VAR(AsmLabel, s_mm676600, $L_676600)
+ASM_VAR(AsmLabel, s_mm6765fc, $L_6765fc)
+ASM_VAR(AsmLabel, s_mm6765f8, $L_6765f8)
+ASM_VAR(AsmLabel, s_mm6765f4, $L_6765f4)
+ASM_VAR(AsmLabel, s_mm6765f0, $L_6765f0)
+ASM_VAR(AsmLabel, s_mm6765ec, $L_6765ec)
+ASM_VAR(AsmLabel, s_mm6765e8, $L_6765e8)
+ASM_VAR(AsmLabel, s_mm6765e4, $L_6765e4)
+ASM_VAR(AsmLabel, s_mm6765e0, $L_6765e0)
+ASM_VAR(AsmLabel, s_mm6765d0, $L_6765d0)
+ASM_VAR(AsmLabel, g_mmVtbl64dd2c, $L_64dd2c)
+ASM_VAR(AsmLabel, g_mmVtbl64dcec, $L_64dcec)
+extern "C" void FUN_50c930(); KING_ALIAS("_FUN_50c930", "_Shell_NewObjRef")
+extern "C" void FUN_50f650(); KING_ALIAS("_FUN_50f650", "_Shell_ButtonD")
+static const char* const k_mmPics2[11] = {s_mm6765c0, s_mm6765b0, s_mm6765a0, s_mm676590, s_mm676580, s_mm676570, s_mm676560, s_mm676550, s_mm676540, s_mm676530, s_mm676520, };
+static const char* const k_mmPics[11] = {s_mm676510, s_mm676500, s_mm6764f0, s_mm6764e0, s_mm6764d0, s_mm6764c0, s_mm6764b0, s_mm6764a0, s_mm676490, s_mm676480, s_mm676470, };
+ASM_VAR(AsmLabel, s_mm6729a8, $L_6729a8)
+static const struct { const char* name; short id, x, y; } k_mmButtons[9] = {
+    {s_mm6765fc, 215, 36, 13}, {s_mm6729a8, 216, 6, 13}, {s_mm6765f8, 208, 294, 3}, {s_mm6765f4, 209, 271, 3},
+    {s_mm6765f0, 213, 231, 8}, {s_mm6765ec, 210, 187, 8}, {s_mm6765e8, 212, 162, 8}, {s_mm6765e4, 211, 118, 8},
+    {s_mm6765e0, 214, 80, 8},
+};
+
+// a style: zeroed, scale 0.5 at +24
+static void Mm_Style(DWORD* s)
+{
+    memset(s, 0, 36);
+    s[6] = 1056964608;
+}
+
+extern "C" {
+
+// [FUN_50f990] constructor of the main menu screen: the button bar (game, options, network, demos, ...) in the
+// bottom right, its picture by game mode, and the screen pictures (+372..+412)
+BYTE* __fastcall MainMenu_Construct(BYTE* self, void*)
+{
+    RECT r = g_vw720938;
+    CallThis(FUN_5d8900, self, g_scView69684c, r, 0, g_vwFont, 0);
+    F(void*, self, 0) = g_mmVtbl64dd2c;
+    F(void*, self, 64) = g_mmVtbl64dcec;
+    DWORD s1[9], s2[9], s3[9], s4[9];
+    Mm_Style(s1);
+    Mm_Style(s2);
+    Mm_Style(s3);
+    Mm_Style(s4);
+    CallThis(FUN_5bd5a0, s1, (void*)g_vwStyle6ce3b8);
+    CallThis(FUN_5bd5a0, s2, (void*)g_vwStyle6ce408);
+    CallThis(FUN_5bd5a0, s3, (void*)g_vwStyle6ce988);
+    CallThis(FUN_5bd5a0, s4, (void*)g_vwStyle6ceb38);
+    BYTE* o = CallC<BYTE*>(FUN_50c930);
+    F(BYTE*, self, 52) = o;
+    F(BYTE*, self, 48) = o;
+    BYTE* bar = Vw_Panel(8);
+    int mode = CallC<int>(FUN_568fd0);
+    const char* pic = mode == 1 ? s_mm676628 : CallC<int>(FUN_568fd0) == 2 ? s_mm676614 : s_mm676600;
+    s2[8] = (DWORD)CallC<BYTE*>(FUN_5ef3d0, pic);
+    CallThis(FUN_5bd5a0, bar + 68, (void*)s2);
+    CallThis(FUN_5bd5a0, bar + 104, (void*)s2);
+    CallThis(FUN_5bd5a0, bar + 140, (void*)s2);
+    CallThis(FUN_5bd5a0, bar + 176, (void*)s2);
+    BYTE* row = Vw_Panel(0);
+    for (int i = 0; i < 9; i++)
+        Vw_Add(row, CallC<BYTE*>(FUN_50f650, k_mmButtons[i].name, k_mmButtons[i].id, k_mmButtons[i].x,
+                                 k_mmButtons[i].y));
+    Vw_Add(bar, row);
+    int x = F(WORD, F(BYTE*, self, 12), 0) - 400;
+    if (x < 0)
+        x = 0;
+    Vw_MoveTo(bar, x, F(WORD, F(BYTE*, self, 12), 2) - 70);
+    Vw_Add(F(BYTE*, self, 56), bar);
+    F(DWORD, self, 16) |= 4;
+    F(int, self, 416) = 0;
+    F(BYTE*, self, 368) = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_mm6765d0);
+    const char* const* pics = CallC<int>(FUN_568fd0) == 2 ? k_mmPics2 : k_mmPics;
+    for (int i = 0; i < 11; i++)
+        F(BYTE*, self, 372 + i * 4) = CallC<BYTE*>(FUN_5ef3d0, pics[i]);
+    return self;
+}
+
+} // extern "C"
+
+// === the vehicle exchange screen ($L_526c90)
+
+ASM_VAR(int, g_veY6ced10, $L_6ced10)
+ASM_VAR(int, g_veNone68b990, $L_68b990)
+ASM_VAR(double, g_ve64eac8, $L_64eac8)
+ASM_VAR(double, g_ve64eac0, $L_64eac0)
+ASM_VAR(double, g_ve64eab8, $L_64eab8)
+ASM_VAR(int, g_veClass6ce338, $L_6ce338)
+ASM_VAR(int, g_veClass6ce33c, $L_6ce33c)
+ASM_VAR(AsmLabel, g_veImages6f2e38, $L_6f2e38)
+ASM_VAR(AsmLabel, s_ve677a74, $L_677a74)
+ASM_VAR(AsmLabel, s_ve66c8cc, $L_66c8cc)
+extern "C" void FUN_5c0c00(); KING_ALIAS("_FUN_5c0c00", "@List_IndexOf300@8")
+extern "C" void FUN_5c08f0(); KING_ALIAS("_FUN_5c08f0", "@List_IndexOf336@8")
+extern "C" void FUN_43f760(); KING_ALIAS("_FUN_43f760", "_Player_Value136")
+extern "C" void FUN_4771e0(); KING_ALIAS("_FUN_4771e0", "_Player_FirstEntry")
+extern "C" void FUN_4771a0(); KING_ALIAS("_FUN_4771a0", "_Player_NextEntry")
+extern "C" void FUN_569740(); KING_ALIAS("_FUN_569740", "_Messages_Get1288")
+extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")
+ASM_PROC(FUN_50bda0)
+
+static int Ve_Car()
+{
+    int car;
+    return *CallC<int*>(FUN_568f60, &car);
+}
+
+static double Ve_Money()
+{
+    return CallC<double>(FUN_43f760, Ve_Car());
+}
+
+static bool Ve_Class(int t)
+{
+    return t >= g_veClass6ce338 && t < g_veClass6ce33c;
+}
+
+extern "C" {
+
+// [$L_526c90] draws the vehicle exchange screen on surface: the player's vehicle value and load, the money
+// split bar, the other vehicles on offer (value bar, price, name) with the selected one (+968) remembered, and
+// whether exchanging is possible (control +304)
+void __fastcall Exchange_Draw(BYTE* self, void*, BYTE* surface)
+{
+    if (g_vd6ce4f4)
+        CallC(FUN_5b86c0, F(BYTE*, g_vdView, 12), 0, 0, g_vd6ce4f4);
+    CallThis(FUN_5c0020, self, surface);
+    F(int, self, 972) = CallThis<int>(FUN_5c0c00, F(BYTE*, self, 968));
+    BYTE* s = F(BYTE*, self, -52);
+    int y = g_veY6ced10;
+    BYTE info[192];
+    CallC(FUN_43fc40, Ve_Car(), info);
+    char buf[48];
+    sprintf(buf, s_ve677a74, Vd_Int(F(double, info, 144)));
+    CallC(FUN_5ea170, s, 208, y + 496, g_vdFont, buf, 4, 0);
+    sprintf(buf, s_ve66c8cc, F(int, info, 52));
+    CallC(FUN_5ea170, s, 292, g_veY6ced10 + 496, g_vdFont, buf, 4, 0);
+    int bar1 = Vd_Int(Ve_Money() * g_ve64eac8 / F(double, info, 152));
+    int bar2 = Vd_Int((F(double, info, 144) - Ve_Money()) * g_ve64eac8 / F(double, info, 152));
+    int r[4];
+    r[0] = 32;
+    r[2] = bar1 + 32;
+    r[1] = g_veY6ced10 + 479;
+    r[3] = r[1] + 19;
+    CallC(FUN_5b6f90, surface, r, 5, 0);
+    r[0] = r[0] + 172 - bar2;
+    r[2] = r[0] + bar2;
+    CallC(FUN_5b6f90, surface, r, 6, 0);
+    sprintf(buf, s_ve677a74, Vd_Int(Ve_Money()));
+    CallC(FUN_5ea170, s, 35, g_veY6ced10 + 496, CallC<BYTE*>(FUN_569740), buf, 5, 0);
+    sprintf(buf, s_ve677a74, Vd_Int(F(double, info, 144) - Ve_Money()));
+    int w = CallThis<int>(FUN_5ea0e0, g_vdFont, buf);
+    CallC(FUN_5ea170, s, r[2] - w - 5, g_veY6ced10 + 496, CallC<BYTE*>(FUN_569740), buf, 5, 0);
+
+    int skip = CallThis<int>(FUN_5c08f0, F(BYTE*, self, 968));
+    int it;
+    CallC(FUN_4771e0, &it, Ve_Car());
+    if (it != g_veNone68b990)
+        while (skip > 0) {
+            skip--;
+            int n;
+            it = *CallC<int*>(FUN_4771a0, &n, Ve_Car());
+            if (it == g_veNone68b990)
+                break;
+        }
+    BYTE* sel = F(BYTE*, F(BYTE*, self, 968), 300);
+    const char* selName = sel ? F(const char*, sel, 12) : 0;
+    int chosen = g_veNone68b990;
+    for (int row = 0; it != g_veNone68b990; row += 20) {
+        CallC(FUN_43fc40, it, info);
+        if (strcmp(F(const char*, info, 48), selName) == 0)
+            chosen = it;
+        if (row < 200) {
+            int q[4];
+            q[0] = 89;
+            q[1] = row + g_veY6ced10 + 545;
+            q[3] = q[1] + 18;
+            q[2] = Vd_Int(F(double, info, 88) * g_ve64eac0 + g_ve64eab8);
+            CallC(FUN_5b6f90, s, q, 5, 0);
+            sprintf(buf, s_ve677a74, Vd_Int(F(double, info, 96)));
+            CallC(FUN_5ea170, s, 163, row + g_veY6ced10 + 563, g_vdFont, buf, 4, 0);
+            CallC(FUN_5ea170, s, 228, row + g_veY6ced10 + 563, g_vdFont, F(const char*, info, 20), 4, 0);
+        }
+        int n;
+        it = *CallC<int*>(FUN_4771a0, &n, Ve_Car());
+    }
+    F(int, F(BYTE*, self, 304), 40) = 1;
+    CallC(FUN_43fc40, Ve_Car(), info);
+    if (CallC<DWORD>(FUN_43f620, Ve_Car()) & 0x1000)
+        CallC(FUN_5b8980, surface, 31, g_veY6ced10 + 420, ((BYTE**)(char*)g_veImages6f2e38)[F(int, info, 56)], 0);
+    if (!Ve_Class(F(int, info, 12))) {
+        if (chosen == g_veNone68b990)
+            return;
+        CallC(FUN_43fc40, chosen, info);
+        if (!Ve_Class(F(int, info, 12)) && !(CallC<DWORD>(FUN_43f620, Ve_Car()) & 0x4000)
+            && !(CallC<DWORD>(FUN_43f620, chosen) & 0x4000))
+            F(int, F(BYTE*, self, 304), 40) = 0;
+    }
+    if (chosen == g_veNone68b990)
+        return;
+    int place = CallC<int>(FUN_43f8d0, chosen);
+    CallC(FUN_50bda0, F(BYTE*, F(BYTE*, self, 612), 72), F(BYTE*, F(BYTE*, self, 304 + place * 4), 72), 6);
+    CallC(FUN_5b86c0, s, 33, g_veY6ced10 + 761, F(BYTE*, self, 612));
+}
+
+} // extern "C"
+
+// === the display options window (FUN_51add0)
+
+ASM_VAR(AsmLabel, g_doVtbl64e36c, $L_64e36c)
+ASM_VAR(AsmLabel, g_doVtbl64e32c, $L_64e32c)
+ASM_VAR(AsmLabel, s_dw6774d0, $L_6774d0)
+ASM_VAR(AsmLabel, s_dw6774bc, $L_6774bc)
+ASM_VAR(AsmLabel, s_dw6774b4, $L_6774b4)
+ASM_VAR(AsmLabel, s_dw6774ac, $L_6774ac)
+ASM_VAR(AsmLabel, s_dw6774a4, $L_6774a4)
+ASM_VAR(AsmLabel, s_dw67749c, $L_67749c)
+ASM_VAR(AsmLabel, s_dw677494, $L_677494)
+ASM_VAR(AsmLabel, s_dw676cf4, $L_676cf4)
+ASM_VAR(AsmLabel, s_dw67748c, $L_67748c)
+ASM_VAR(AsmLabel, s_dw677484, $L_677484)
+ASM_VAR(AsmLabel, s_dw67747c, $L_67747c)
+ASM_VAR(AsmLabel, s_dw677470, $L_677470)
+
+static BYTE* Dw_Slider(short* value, int y)
+{
+    return CallC<BYTE*>(FUN_50efb0, (const char*)s_vw676c50, (const char*)s_vw676c58, value, 356, y, 0, 187);
+}
+
+extern "C" {
+
+// [FUN_51add0] constructor of the display options window (parent): two button groups (+372 the first), the
+// three sliders (+388/+390/+392 from the ini) and a caption
+BYTE* __fastcall DisplayOptions_Construct(BYTE* self, void*, BYTE* parent)
+{
+    RECT r = g_vw720938;
+    CallThis(FUN_5d8900, self, parent, r, 4, g_vwFont, 0);
+    F(void*, self, 0) = g_doVtbl64e36c;
+    F(void*, self, 64) = g_doVtbl64e32c;
+    BYTE* o = (BYTE*)operator new(12);
+    if (o) {
+        F(BYTE*, o, 0) = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_vw676c9c);
+        F(int, o, 4) = 0;
+        F(int, o, 8) = 0;
+    }
+    F(BYTE*, self, 52) = o;
+    F(BYTE*, self, 48) = o;
+    g_vw6ce3ac = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_dw6774d0);
+    CallThis(FUN_5bd5a0, self + 132, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 168, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 204, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 240, (void*)g_vwStyle6ce390);
+    BYTE* root = Vw_Panel(0);
+    BYTE* opts = Vw_Panel(4);
+    g_vw6ce3ac = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_dw6774bc);
+    Vw_Styles(opts, g_vwStyle6ce408, g_vwStyle6ce390, g_vwStyle6ce408, g_vwStyle6ce408);
+    BYTE* p = Vw_Panel(0);
+    F(BYTE*, self, 372) = p;
+    Vw_Add(p, Vw_Button(s_dw6774b4, 111, 348, 254, 0));
+    Vw_Add(p, Vw_Button(s_dw6774ac, 112, 450, 254, 1));
+    Vw_Add(opts, p);
+    p = Vw_Panel(0);
+    Vw_Add(p, Vw_Button(s_dw6774a4, 152, 473, 202, 0));
+    Vw_Add(p, Vw_Button(s_dw67749c, 151, 402, 202, 0));
+    Vw_Add(p, Vw_Button(s_dw677494, 150, 324, 202, 1));
+    Vw_Add(opts, p);
+    p = Vw_Panel(0);
+    int v;
+    Ini_GetInt(s_vo672998, s_dw676cf4, 50, &v, g_voIni);
+    F(short, self, 388) = (short)v;
+    Ini_GetInt(s_vo672998, s_dw67748c, 50, &v, g_voIni);
+    F(short, self, 390) = (short)v;
+    Ini_GetInt(s_vo672998, s_dw677484, 60, &v, g_voIni);
+    F(short, self, 392) = (short)v;
+    BYTE* s = Dw_Slider(&F(short, self, 392), 366);
+    Vw_Add(p, s);
+    F(int, s, 28) = 115;
+    s = Dw_Slider(&F(short, self, 390), 336);
+    Vw_Add(p, s);
+    F(int, s, 28) = 114;
+    s = Dw_Slider(&F(short, self, 388), 306);
+    Vw_Add(p, s);
+    F(int, s, 28) = 113;
+    Vw_Add(p, Vw_Window(s_dw67747c, 124, 372, 412));
+    Vw_Add(opts, p);
+    Vw_MoveTo(opts, 310, 182);
+    CallThis(FUN_5bdd70, opts);
+    Vw_Add(root, opts);
+    Vw_Add(root, Vw_Window(s_dw677470, 2, 323, 477));
+    CallThis(FUN_5bdc80, root);
+    Vw_Add(F(BYTE*, self, 56), root);
+    F(int, self, 368) = 0;
+    F(int, self, 384) = 0;
+    return self;
+}
+
+} // extern "C"
+
+// === the shell's info screen (FUN_519300)
+
+ASM_VAR(AsmLabel, g_is64e25c, $L_64e25c)
+ASM_VAR(AsmLabel, g_is64e21c, $L_64e21c)
+ASM_VAR(AsmLabel, g_is64e160, $L_64e160)
+ASM_VAR(BYTE*, g_is6ce3b0, $L_6ce3b0)
+ASM_VAR(AsmLabel, g_is6ce408, $L_6ce408)
+ASM_VAR(AsmLabel, g_is6ce3b8, $L_6ce3b8)
+ASM_VAR(AsmLabel, g_is6ceb38, $L_6ceb38)
+ASM_VAR(AsmLabel, g_is6ce988, $L_6ce988)
+ASM_VAR(AsmLabel, s_is68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, s_is6773d0, $L_6773d0)
+ASM_VAR(AsmLabel, s_is6773bc, $L_6773bc)
+ASM_VAR(AsmLabel, s_is6773b4, $L_6773b4)
+ASM_VAR(AsmLabel, s_is6773ac, $L_6773ac)
+ASM_VAR(AsmLabel, s_is677398, $L_677398)
+ASM_VAR(AsmLabel, s_is677390, $L_677390)
+ASM_VAR(AsmLabel, s_is67737c, $L_67737c)
+ASM_VAR(AsmLabel, s_is677374, $L_677374)
+ASM_VAR(AsmLabel, s_is67736c, $L_67736c)
+ASM_VAR(AsmLabel, s_is677358, $L_677358)
+ASM_VAR(AsmLabel, s_is677350, $L_677350)
+ASM_VAR(AsmLabel, s_is67733c, $L_67733c)
+
+static void Is_Add(BYTE* p, const AsmLabel& name, int a, int x, int y)
+{
+    CallThis(FUN_5bdbf0, p, CallC<BYTE*>(FUN_50ef60, (const char*)name, a, x, y), 0);
+}
+
+extern "C" {
+
+// [FUN_519300] constructor (parent, mode): a shell window (vtables 64e25c, 64e21c at +64) with a panel at
+// (153, 249) holding the mode's buttons (mode 4 also a text field into +396), the picture 6ce3b0 of the mode
+// and its height +372
+BYTE* __fastcall InfoScreen_Construct(BYTE* s, void*, int parent, int mode)
+{
+    CallThis(FUN_5d8900, s, parent, g_q28_720938, g_q28_72093c, g_q28_720940, g_q28_720944, 0, g_q28_6ced24, 0);
+    F(void*, s, 0) = g_is64e25c;
+    F(void*, s, 64) = g_is64e21c;
+    F(int, s, 376) = mode;
+    DWORD* o = (DWORD*)operator new(12);
+    if (o) {
+        o[0] = CallC<DWORD>(FUN_5ef3d0, (const char*)s_q28_676c9c);
+        o[1] = 0;
+        o[2] = 0;
+    }
+    F(DWORD*, s, 52) = o;
+    F(DWORD*, s, 48) = o;
+    BYTE* p1 = Shell_NewPanel(0);
+    BYTE* p2 = Shell_NewPanel(8);
+    const char* pic;
+    switch (mode) {
+    case 0:
+        Is_Add(p2, s_is6773d0, 1, 197, 96);
+        pic = (const char*)s_is6773bc;
+        break;
+    case 1:
+        Is_Add(p2, s_is6773b4, 156, 124, 96);
+        Is_Add(p2, s_is6773ac, 155, 240, 96);
+        pic = (const char*)s_is677398;
+        break;
+    case 2:
+        Is_Add(p2, s_is677390, 155, 182, 96);
+        pic = (const char*)s_is67737c;
+        break;
+    case 3:
+        Is_Add(p2, s_is677374, 157, 138, 96);
+        Is_Add(p2, s_is677350, 155, 226, 96);
+        pic = (const char*)s_is67733c;
+        break;
+    case 4: {
+        Is_Add(p2, s_is67736c, 1, 197, 108);
+        F(BYTE, s, 396) = 0;
+        BYTE* e = (BYTE*)operator new(300);
+        if (e) {
+            CallThis(FUN_5bd5e0, e, (const char*)s_is68d1c0, 0);
+            F(void*, e, 0) = g_is64e160;
+            F(BYTE*, e, 288) = s + 396;
+            F(int, e, 292) = 62;
+            F(int, e, 296) = 0;
+        }
+        F(int, e, 28) = 1;
+        CallThis(FUN_5bd5a0, e + 68, (void*)g_is6ce408);
+        CallThis(FUN_5bd5a0, e + 104, (void*)g_is6ce3b8);
+        CallThis(FUN_5bd5a0, e + 140, (void*)g_is6ceb38);
+        CallThis(FUN_5bd5a0, e + 176, (void*)g_is6ce988);
+        F(int, e, 44) = 118;
+        F(int, e, 48) = 86;
+        F(int, e, 52) = 401;
+        F(int, e, 56) = 100;
+        CallThis(FUN_5bdbf0, p2, e, 0);
+        pic = (const char*)s_is677358;
+        break;
+    }
+    default:
+        Is_Add(p2, s_is677374, 158, 138, 96);
+        Is_Add(p2, s_is677350, 159, 226, 96);
+        pic = (const char*)s_is67733c;
+        break;
+    }
+    BYTE* img = g_is6ce3b0 = CallC<BYTE*>(FUN_5ef3d0, pic);
+    F(int, s, 372) = img ? F(WORD, img, 4) : 100;
+    for (int k = 0; k < 4; k++)
+        CallThis(FUN_5bd5a0, p2 + 68 + k * 36, (void*)g_q28_6ce390);
+    CallThis(FUN_5bdbf0, p1, p2, 0);
+    CallVirt(p1, 20);
+    F(int, p2, 52) += 153 - F(int, p2, 44);
+    F(int, p2, 44) = 153;
+    F(int, p2, 56) += 249 - F(int, p2, 48);
+    F(int, p2, 48) = 249;
+    CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
+    return s;
 }
 
 } // extern "C"

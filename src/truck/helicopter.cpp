@@ -700,7 +700,7 @@ extern "C" void __fastcall Copter_UpdateLights(BYTE* self, void*)
 
 extern "C" void FUN_568830(); KING_ALIAS("_FUN_568830", "_Net_CreatePlacedObject")    // adds a helicopter's way point
 extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
-ASM_PROC(FUN_5ea1b0)    // draws a text in a box
+extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // draws a text in a box
 extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);   // engine.cpp
 extern "C" void __fastcall Node_Matrix(BYTE* self, void*, Matrix* out);          // engine.cpp
 ASM_VAR(int, g_wayCount, $L_67b2b8)
@@ -1335,7 +1335,7 @@ extern "C" void __cdecl Gauge_Create(DWORD x0, DWORD y0, DWORD z0, DWORD x1, DWO
 }
 
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")    // a vehicle's info by id (id, out)
-ASM_PROC(FUN_5ea1b0)    // text in a box
+extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // text in a box
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")    // a vehicle's flags by id
 ASM_VAR(void*, g_font6ced24, $L_6ced24)
 ASM_VAR(char, g_fmtPercent, $L_67c3e0)       // "%d%c"
@@ -2406,7 +2406,7 @@ extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s
 // The dashboard warning lights and the screen overlays (key list, car list or
 // scores, the player's status panel).
 
-ASM_PROC(FUN_5b6f90)    // fills a rectangle (surface, rect, color, flags)
+extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle (surface, rect, color, flags)
 ASM_PROC(FUN_4d2b30)
 ASM_PROC(FUN_529890)
 extern "C" void FUN_56bc80(); KING_ALIAS("_FUN_56bc80", "@CopterPanel_Draw@8")
@@ -2881,7 +2881,7 @@ extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 ASM_PROC(FUN_4d08d0)    // the player's vehicle for an effect (world, effect, player id)
 ASM_PROC(FUN_4ebd00)    // constructs a vehicle (scene object, matrix, type)
 ASM_PROC(FUN_5291a0)
-ASM_PROC(FUN_544920)    // constructs a network vehicle
+extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
 ASM_PROC(FUN_5a44c0)    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
 ASM_PROC(FUN_5d2540)    // registers a named callback (name, function)
 
@@ -3553,12 +3553,12 @@ ASM_PROC(FUN_56f6d0)
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
 extern "C" void FUN_598da0(); KING_ALIAS("_FUN_598da0", "@Wasm_Get108@8")
 extern "C" void FUN_597570(); KING_ALIAS("_FUN_597570", "@WorldObj_Attach@12")
-ASM_PROC(FUN_5975e0)
+extern "C" void FUN_5975e0(); KING_ALIAS("_FUN_5975e0", "@SceneObj_Place@20")
 extern "C" void FUN_597a20(); KING_ALIAS("_FUN_597a20", "@TvCamera_CreateMonitor@8")
 extern "C" void FUN_598bd0(); KING_ALIAS("_FUN_598bd0", "@WorldObj_SetTarget@12")
 extern "C" void FUN_56afe0(); KING_ALIAS("_FUN_56afe0", "@Notice_Set@16")
 extern "C" void FUN_4ce0d0(); KING_ALIAS("_FUN_4ce0d0", "@Effect4ce0d0_Construct@20")
-ASM_PROC(FUN_56d810)
+extern "C" void FUN_56d810(); KING_ALIAS("_FUN_56d810", "_CopterWorld_Setup")
 extern "C" void FUN_56d7d0(); KING_ALIAS("_FUN_56d7d0", "_Flags_Set6ce37c")
 extern "C" void FUN_483990(); KING_ALIAS("_FUN_483990", "_AI_StartXCycleTask")
 extern "C" BYTE* __fastcall CopterTask_Construct(BYTE* self, void*, BYTE* v);
@@ -4144,6 +4144,276 @@ void __fastcall Notice_Draw(BYTE* self, void*)
         Nt_Text((w - Nt_Width(lines[i])) / 2, y, g_ntFont, lines[i]);
     if (F(int, self, 60) == 8)
         F(int, self, 60) = 0;
+}
+
+} // extern "C"
+
+// === setting up the world around the vehicle (FUN_56d810)
+
+ASM_VAR(BYTE*, g_wsShell, $L_6cec6c)
+ASM_VAR(BYTE*, g_ws6cec78, $L_6cec78)
+ASM_VAR(BYTE*, g_ws6cec70, $L_6cec70)
+ASM_VAR(int, g_ws6cec68, $L_6cec68)
+ASM_VAR(int, g_ws7208d4, $L_7208d4)
+ASM_VAR(int, g_ws6ced70, $L_6ced70)
+ASM_VAR(double, g_ws64b930, $L_64b930)
+ASM_VAR(int, g_ws6f3408, $L_6f3408)
+ASM_VAR(BYTE*, g_wsWeather6f33ac, $L_6f33ac)
+ASM_VAR(BYTE*, g_wsWipers6f3498, $L_6f3498)
+ASM_VAR(int, g_ws6f3318, $L_6f3318)
+ASM_VAR(BYTE*, g_ws6f34a4, $L_6f34a4)
+ASM_VAR(BYTE*, g_ws6f34a8, $L_6f34a8)
+ASM_VAR(double, g_ws6f32f8, $L_6f32f8)
+ASM_VAR(AsmLabel, g_wsLight6f32e8, $L_6f32e8)   // 4 dwords
+ASM_VAR(AsmLabel, g_wsLight6f3300, $L_6f3300)   // 4 dwords
+ASM_VAR(int, g_ws696890, $L_696890)
+ASM_VAR(DWORD, g_ws696874, $L_696874)
+ASM_VAR(AsmLabel, s_ws6733c4, $L_6733c4)
+ASM_VAR(AsmLabel, s_ws673384, $L_673384)
+ASM_VAR(AsmLabel, s_ws6733ac, $L_6733ac)
+ASM_VAR(AsmLabel, s_ws67bb08, $L_67bb08)
+ASM_VAR(AsmLabel, s_ws67bb10, $L_67bb10)
+ASM_VAR(AsmLabel, s_ws67bb18, $L_67bb18)
+ASM_VAR(AsmLabel, s_ws67bb20, $L_67bb20)
+ASM_VAR(AsmLabel, s_ws67bb28, $L_67bb28)
+ASM_VAR(AsmLabel, s_ws67bb00, $L_67bb00)
+ASM_VAR(AsmLabel, s_ws672994, $L_672994)
+ASM_VAR(AsmLabel, s_ws67baf4, $L_67baf4)
+ASM_VAR(AsmLabel, s_ws67bae4, $L_67bae4)
+ASM_VAR(AsmLabel, s_ws676834, $L_676834)
+ASM_VAR(AsmLabel, s_ws676838, $L_676838)
+ASM_VAR(AsmLabel, s_ws67b69c, $L_67b69c)
+ASM_VAR(AsmLabel, s_ws67bae0, $L_67bae0)
+ASM_VAR(AsmLabel, s_ws6751b8, $L_6751b8)
+ASM_VAR(AsmLabel, s_ws67bad4, $L_67bad4)
+ASM_VAR(AsmLabel, s_ws67bacc, $L_67bacc)
+extern "C" void FUN_5ff890(); KING_ALIAS("_FUN_5ff890", "_Sce_SetRootDir")
+extern "C" void FUN_5ffc30(); KING_ALIAS("_FUN_5ffc30", "_Set683c58")
+extern "C" void FUN_5ffa30(); KING_ALIAS("_FUN_5ffa30", "_Music_Start")
+extern "C" void FUN_574030(); KING_ALIAS("_FUN_574030", "_Colors_Init")
+extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
+extern "C" void FUN_5972d0(); KING_ALIAS("_FUN_5972d0", "_Pyramid_SetSize")
+extern "C" void FUN_5a7430(); KING_ALIAS("_FUN_5a7430", "@WeatherObj_Construct@32")
+extern "C" void FUN_5a8960(); KING_ALIAS("_FUN_5a8960", "@Obj5a8960_Set@40")
+extern "C" void FUN_5a5720(); KING_ALIAS("_FUN_5a5720", "_Set7025b0")
+extern "C" void FUN_56d560(); KING_ALIAS("_FUN_56d560", "@Wipers_Construct@12")
+extern "C" void FUN_5a8e70(); KING_ALIAS("_FUN_5a8e70", "_Set6fb3e8")
+extern "C" void FUN_5a3e00(); KING_ALIAS("_FUN_5a3e00", "@Worobj5a3e00_Construct@28")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+
+extern "C" {
+
+// [FUN_56d810] sets up the world for the vehicle v: the music (network games), colors, the weather object with
+// its light, the wipers, the cabin pictures and sky mode by the truck model, the horizon distances
+void __cdecl CopterWorld_Setup(BYTE* v)
+{
+    if (F(int, g_wsShell, 1344)) {
+        char dir[80];
+        GetPrivateProfileStringA(s_ws6733c4, s_ws673384, s_ws6733ac, dir, 79, g_csIniPath);
+        CallC(FUN_5ff890, dir);
+        int n = F(short, g_ws6cec78, 384) * F(short, g_ws6cec78, 382);
+        CallC(FUN_5ffc30, n * g_ws64b930);
+        if (F(short, g_ws6cec78, 384) > 5)
+            CallC(FUN_5ffa30);
+    }
+    g_ws6f3408 = 0;
+    CallC(FUN_574030, *F(BYTE**, F(BYTE*, v, 468), 100));
+    CallC(FUN_4e5ea8);
+    CallC(FUN_5972d0, v);
+    F(int, F(BYTE*, v, 472), 84) = 0;
+    F(int, F(BYTE*, v, 472), 88) = 0;
+    F(int, F(BYTE*, CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0), 472), 84) = 0;
+    F(int, F(BYTE*, CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0), 472), 88) = 0;
+    BYTE* w = (BYTE*)operator new(584);
+    if (w)
+        w = CallThis<BYTE*>(FUN_5a7430, w, v, (const char*)s_ws67bb08, (const char*)s_ws67bb10,
+                            (const char*)s_ws67bb18, (const char*)s_ws67bb20, (const char*)s_ws67bb28);
+    g_wsWeather6f33ac = w;
+    const DWORD* l1 = (const DWORD*)(char*)g_wsLight6f32e8;
+    const DWORD* l2 = (const DWORD*)(char*)g_wsLight6f3300;
+    CallThis(FUN_5a8960, w, l1[0], l1[1], l1[2], l1[3], l2[0], l2[1], l2[2], l2[3]);
+    F(float, g_wsWeather6f33ac, 544) = (float)g_ws6f32f8;
+    if (F(int, g_wsShell, 1316))
+        F(DWORD, g_wsWeather6f33ac, 572) |= 0x10000;
+    char yes[12];
+    GetPrivateProfileStringA(s_cs672998, s_ws67bb00, s_cs6729a8, yes, 10, F(char*, v, 640));
+    F(int, g_wsWeather6f33ac, 568) = strcmp(yes, s_ws672994) == 0;
+    if (g_ws6cec68) {
+        if (g_ws7208d4 && (g_ws6ced70 == 4 || g_ws6ced70 == 3) && F(short, g_ws6cec70, 420) > 90
+            && F(short, g_ws6cec70, 422) > 90)
+            CallC(FUN_5a5720, 1);
+        BYTE* wp = (BYTE*)operator new(216);
+        wp = wp ? CallThis<BYTE*>(FUN_56d560, wp, v) : 0;
+        g_wsWipers6f3498 = wp;
+        F(BYTE*, g_wsWeather6f33ac, 496) = wp;
+        F(int, g_wsWipers6f3498, 212) = g_ws6f3318;
+    }
+    if (g_wsWipers6f3498) {
+        CallVirt(g_wsWipers6f3498, 24, 1);
+        F(int, g_wsWipers6f3498, 164) = 0;
+    }
+    g_ws6f34a4 = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_ws67baf4);
+    g_ws6f34a8 = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_ws67bae4);
+    BYTE* p = F(BYTE*, v, 488);
+    const char* model = F(const char*, F(BYTE*, p ? F(BYTE*, p, 76) : 0, 36), 60);
+    if (strcmp(model, s_ws676834) && strcmp(model, s_ws676838) && strcmp(model, s_ws67b69c)) {
+        if (!strcmp(model, s_ws67bae0) || !strcmp(model, s_ws6751b8))
+            CallC(FUN_5a8e70, 7, 0);
+        F(int, g_wsWeather6f33ac, 576) = 0;
+        if (g_ws6f34a4)
+            CallVirt(g_ws6f34a4, 40);
+    } else {
+        F(int, g_wsWeather6f33ac, 576) = 1;
+        if (g_ws6f34a8)
+            CallVirt(g_ws6f34a8, 40);
+        CallC(FUN_5a8e70, strcmp(model, s_ws67b69c) ? 6 : 5, 0);
+    }
+    BYTE* o = (BYTE*)operator new(56);
+    if (o)
+        o = CallThis<BYTE*>(FUN_5a3e00, o, v, (const char*)s_ws67bad4, 8, 0, 1072693248);
+    CallVirt(o, 24, 1);
+    BYTE* t = F(BYTE*, CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0), 472);
+    F(int, t, 32) = 0;
+    F(DWORD, t, 36) = 1080623104;          // +32: 200.0
+    F(int, F(BYTE*, v, 472), 32) = 0;
+    F(DWORD, F(BYTE*, v, 472), 36) = 1083129856;   // +32: 1000.0
+    CallC(FUN_5e1a10, CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_ws67bacc), g_ws696890 == 0 ? 1 : 0);
+    g_ws696874 &= ~0x40u;
+}
+
+} // extern "C"
+
+// === the copter's network messages (FUN_56d0f0)
+
+ASM_VAR(BYTE*, g_nm696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_nm6ceca8, $L_6ceca8)
+ASM_VAR(int, g_nm672984, $L_672984)
+ASM_VAR(int, g_nm67b730, $L_67b730)
+ASM_VAR(AsmLabel, s_nm67ba60, $L_67ba60)
+ASM_VAR(AsmLabel, s_nm68d1c0, $L_68d1c0)
+extern "C" void FUN_50c7f0(); KING_ALIAS("_FUN_50c7f0", "_Carat_SetFlag")
+extern "C" void FUN_51f380(); KING_ALIAS("_FUN_51f380", "@Shell_SetMode@12")
+extern "C" void FUN_576660(); KING_ALIAS("_FUN_576660", "_Set6f3338")
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+extern "C" void FUN_5a40b0(); KING_ALIAS("_FUN_5a40b0", "@Node_Position@12")
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+ASM_PROC(FUN_5a4f00)
+extern "C" void FUN_5a3fd0(); KING_ALIAS("_FUN_5a3fd0", "@Node_Matrix@12")
+extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
+ASM_PROC(FUN_56f910)
+
+// the world resource of id
+static BYTE* Nm_Resource(int id)
+{
+    return CallThis<BYTE*>(FUN_5e5370, CallVirt<BYTE*>(g_nm696ca0, 112), id);
+}
+
+struct Nm48 { DWORD d[12]; };
+ASM_VAR(AsmLabel, g_nm7025f0, $L_7025f0)
+
+static void Cp_Identity48(BYTE* m)
+{
+    memcpy(m, g_nm7025f0, 48);
+}
+
+extern "C" {
+
+// [FUN_56d0f0] handles a network message of the copter screen (id, data, size): flags, screen modes, the
+// weather light, object states and their effects, positions; 0
+int __cdecl CopterNet_Handle(int id, BYTE* data, int size)
+{
+    switch (id) {
+    case 951:
+        CallC(FUN_50c7f0, (int)data[0]);
+        break;
+    case 952:
+        if (data[0] == 6)
+            F(int, g_nm696ca0, 3036) = 1;
+        else
+            CallThis(FUN_51f380, g_nm6ceca8, (int)data[0]);
+        break;
+    case 953:
+        CallC(FUN_576660, (int)data[0], F(int, data, 1));
+        break;
+    case 955:
+        if (g_wsWeather6f33ac && (F(int, g_wsShell, 1300) > 1 || F(int, g_wsShell, 1316) == 2)) {
+            CallThis(FUN_5a8960, g_wsWeather6f33ac, (double)F(float, data, 0), (double)F(float, data, 4), 24.0, 1.0);
+            if (size > 8)
+                F(int, g_wsWeather6f33ac, 544) = F(int, data, 8);
+        }
+        break;
+    case 956: {
+        int v = F(int, data, 4);
+        BYTE* r = Nm_Resource(F(int, data, 0));
+        if (!r)
+            break;
+        F(int, F(BYTE*, r, 24), 4) = v;
+        BYTE* s = F(BYTE*, r, 28);
+        if (!s)
+            break;
+        F(int, s, 408) = v;
+        if (v != 2)
+            break;
+        int pos[3] = {0, 0, 0};
+        CallThis(FUN_5a40b0, s, pos);
+        BYTE* e = (BYTE*)operator new(192);
+        if (e) {
+            BYTE* root = CallThis<BYTE*>(FUN_5ef640, s + 256);
+            e = CallThis<BYTE*>(FUN_5a4f00, e, F(int, g_wsShell, 1356), root, pos[0], pos[1], pos[2], 0, 1073741824,
+                                (const char*)s_nm67ba60, (const char*)s_nm68d1c0, 3, 2576980378u, 1069128089);
+        }
+        CallVirt(e, 24, 1);
+        break;
+    }
+    case 961:
+    case 962: {
+        int v = F(int, data, 4);
+        BYTE* r = Nm_Resource(F(int, data, 0));
+        if (!r)
+            break;
+        if (id == 961)
+            F(int, F(BYTE*, r, 24), 4) = v;
+        if (BYTE* s = F(BYTE*, r, 28))
+            F(int, s, 408) = v;
+        break;
+    }
+    case 963: {
+        int v = F(int, data, 4);
+        BYTE* r = Nm_Resource(F(int, data, 0));
+        if (!r)
+            break;
+        BYTE* s = F(BYTE*, r, 28);
+        if (!s)
+            break;
+        if (F(int, s, 416) == 0 && v != 0) {
+            int bits = 0;
+            for (int k = v; k; k >>= 1)
+                bits++;
+            BYTE m[48];
+            Cp_Identity48(m);
+            CallThis(FUN_5a3fd0, s, m);
+            CallC(FUN_4ba0c0, m, bits / 2, (void*)Obj56d0d0_Has416, s);
+        }
+        F(int, s, 416) = v;
+        break;
+    }
+    case 958: {
+        int extra = size > 68 ? F(int, data, 116) : 0;
+        g_nm672984 = F(int, data, 0);
+        Nm48 m = *(const Nm48*)(data + 68);
+        CallC(FUN_56f910, F(int, data, 0), extra, data + 4, data + 36, m);
+        break;
+    }
+    case 959:
+        if (F(int, g_wsShell, 1300) > 1)
+            g_nm672984 = F(int, data, 0);
+        break;
+    case 960:
+        g_nm67b730 = data[0];
+        break;
+    }
+    return 0;
 }
 
 } // extern "C"

@@ -694,3 +694,135 @@ void __cdecl Load_RelinkPlayers()
 }
 
 }  // extern "C"
+
+// === loading a present (FUN_481b20)
+
+ASM_VAR(AsmLabel, g_tagPRES, $L_66fe40)
+ASM_VAR(AsmLabel, g_tag66fe38, $L_66fe38)
+ASM_VAR(AsmLabel, g_tag66fe30, $L_66fe30)
+ASM_VAR(void*, g_pr68d11c, $L_68d11c)
+extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
+extern "C" void FUN_41bd30(); KING_ALIAS("_FUN_41bd30", "_Presents_Append")
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_4488e0(); KING_ALIAS("_FUN_4488e0", "@Vec16_FreeStorage@8")
+extern "C" void FUN_466400(); KING_ALIAS("_FUN_466400", "_UninitFill16")
+extern "C" void FUN_467180(); KING_ALIAS("_FUN_467180", "@Vec16_Reserve@16")
+ASM_PROC(FUN_472410)
+extern "C" void FUN_478ac0(); KING_ALIAS("_FUN_478ac0", "@Orders144_Destroy@8")
+extern "C" void FUN_481740(); KING_ALIAS("_FUN_481740", "_Save_Read3Doubles")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+
+static DWORD Pr_32(BYTE** c) { DWORD v = F(DWORD, *c, 0); *c += 4; return v; }
+static void Pr_64(BYTE** c, BYTE* to) { F(DWORD, to, 0) = F(DWORD, *c, 0); F(DWORD, to, 4) = F(DWORD, *c, 4); *c += 8; }
+
+// the 32-byte record of a 66fe38 block
+static BYTE* Pr_Record32(BYTE** cur)
+{
+    BYTE* r = (BYTE*)operator new(32);
+    if (r) {
+        for (int k = 0; k < 16; k += 4)
+            F(int, r, k) = -1;
+        for (int k = 16; k < 32; k += 4)
+            F(int, r, k) = 0;
+    }
+    F(DWORD, r, 0) = Pr_32(cur);
+    F(DWORD, r, 4) = Pr_32(cur);
+    F(DWORD, r, 12) = Pr_32(cur);
+    Pr_64(cur, r + 16);
+    F(DWORD, r, 24) = F(DWORD, *cur, 0);
+    F(DWORD, r, 28) = F(DWORD, *cur, 4);
+    *cur += 16;
+    F(DWORD, r, 8) = Pr_32(cur);
+    return r;
+}
+
+// the 48-byte record of a 66fe30 block (the old one at e+20 destroyed)
+static void Pr_Record48(BYTE* e, BYTE** cur)
+{
+    if (BYTE* old = F(BYTE*, e, 20)) {
+        CallThis(FUN_478ac0, old + 28);
+        CallThis(FUN_4488e0, old + 16);
+        operator delete(old);
+    }
+    BYTE* r = (BYTE*)operator new(48);
+    if (r) {
+        F(DWORD, r, 8) = 0;
+        F(int, r, 0) = -1;
+        F(int, r, 4) = -1;
+        F(DWORD, r, 12) = 1072693248;
+        DWORD t[4] = {0, 0, 0, 1072693248};
+        BYTE alloc[2];
+        CallThis(FUN_467180, r + 16, 19, alloc);
+        F(BYTE*, r, 20) = CallC<BYTE*>(FUN_466400, F(BYTE*, r, 16), 19, t, r);
+        CallThis(FUN_487730, r + 28, alloc + 1);
+        F(DWORD, r, 40) = 0;
+    }
+    F(BYTE*, e, 20) = r;
+    CallThis(FUN_472410, r, cur);
+}
+
+extern "C" {
+
+// [FUN_481b20] loads a present (PRES): its 112-byte record with the sub-blocks 66fe38 (+88) and 66fe30 (+20,
+// whose orders' times are rebased), adds it to the presents and hands it to the handler 68d11c
+void __cdecl Load_Present(BYTE** cur)
+{
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagPRES)) {
+        BYTE* e = (BYTE*)operator new(112);
+        if (e) {
+            F(int, e, 0) = -1;
+            F(DWORD, e, 4) = 0x12345678;
+            F(int, e, 8) = 0;
+            F(int, e, 12) = -1;
+            F(int, e, 16) = -1;
+            F(int, e, 20) = 0;
+            F(int, e, 24) = -1;
+            CallThis(FUN_4133a0, e + 56);
+            F(int, e, 88) = 0;
+            F(DWORD, e, 96) = 0xffffffff;
+            F(DWORD, e, 100) = 0x7fefffff;
+            F(BYTE, e, 104) = 0;
+            F(int, e, 108) = -1;
+        }
+        F(DWORD, e, 8) = Pr_32(cur);
+        F(DWORD, e, 12) = Pr_32(cur);
+        F(DWORD, e, 16) = Pr_32(cur);
+        F(DWORD, e, 24) = Pr_32(cur);
+        F(DWORD, e, 0) = Pr_32(cur);
+        CallC(FUN_481740, cur, e + 32);
+        F(DWORD, e, 80) = Pr_32(cur);
+        F(DWORD, e, 60) = Pr_32(cur);
+        F(DWORD, e, 56) = Pr_32(cur);
+        Pr_64(cur, e + 64);
+        F(DWORD, e, 72) = Pr_32(cur);
+        F(DWORD, e, 76) = Pr_32(cur);
+        F(DWORD, e, 84) = Pr_32(cur);
+        Pr_64(cur, e + 96);
+        F(BYTE, e, 104) = **cur;
+        *cur += 1;
+        F(DWORD, e, 108) = Pr_32(cur);
+        CallC(FUN_480650, e + 96);
+        while (*c.cur != (BYTE*)(c.a + c.b)) {
+            LoadChunkS s;
+            LoadChunk_Open(&s, cur, g_tag66fe38);
+            if (s.tag == *(const DWORD*)g_tag66fe38)
+                F(BYTE*, e, 88) = Pr_Record32(cur);
+            else if (s.tag == *(const DWORD*)g_tag66fe30)
+                Pr_Record48(e, cur);
+            LoadChunk_Close(&s);
+        }
+        if (BYTE* r = F(BYTE*, e, 20))
+            for (BYTE* o = F(BYTE*, r, 28); o != F(BYTE*, F(BYTE*, e, 20), 32); o += 144) {
+                CallC(FUN_480650, o + 72);
+                CallC(FUN_480650, o + 80);
+            }
+        int it, copy;
+        CallC(FUN_41bd30, &it, e);
+        CallThis(FUN_41d300, &copy, &it);
+        ((void (__cdecl*)(int, int))g_pr68d11c)(copy, 1);
+    }
+    LoadChunk_Close(&c);
+}
+
+} // extern "C"

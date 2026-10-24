@@ -2233,7 +2233,7 @@ extern "C" void FUN_4b0990(); KING_ALIAS("_FUN_4b0990", "_SchInput_MakePort")
 extern "C" void FUN_455f00(); KING_ALIAS("_FUN_455f00", "_Port_MakeB")
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
 ASM_PROC(FUN_4b4c20)    // read (out, p, port by value)
-ASM_PROC(FUN_4a6af0)    // eval (out, p, value by value)
+extern "C" void FUN_4a6af0(); KING_ALIAS("_FUN_4a6af0", "_Sch_EvalTop")    // eval (out, p, value by value)
 ASM_VAR(AsmLabel, g_sv64bed0, $L_64bed0)
 ASM_VAR(AsmLabel, s_sv6712f8, $L_6712f8)
 ASM_VAR(AsmLabel, s_sv6712f0, $L_6712f0)
@@ -2253,7 +2253,7 @@ ASM_VAR(AsmLabel, s_sv6711e8, $L_6711e8)
 ASM_VAR(AsmLabel, s_svPort, $L_66cb28)          // "Port"
 extern "C" void Nat_MacroExpand();
 ASM_VAR(AsmLabel, s_rn6709d4, $L_6709d4)
-ASM_VAR(AsmLabel, g_rf491ce0, $L_491ce0)
+extern "C" SchValue* __cdecl Nat_Eqv(SchValue*, BYTE*, BYTE**);  // natives.cpp
 ASM_VAR(AsmLabel, s_rn670640, $L_670640)
 ASM_VAR(AsmLabel, s_rn670658, $L_670658)
 ASM_VAR(AsmLabel, g_rf493120, $L_493120)
@@ -2284,7 +2284,7 @@ extern "C" void Nat_NumGe();
 ASM_VAR(AsmLabel, s_rn671298, $L_671298)
 extern "C" void Nat_Plus();
 ASM_VAR(AsmLabel, s_rn6706ac, $L_6706ac)
-ASM_VAR(AsmLabel, g_rf4954f0, $L_4954f0)
+extern "C" SchValue* __cdecl Nat_Minus(SchValue*, BYTE*, BYTE**);  // natives.cpp
 ASM_VAR(AsmLabel, s_rn6706b0, $L_6706b0)
 extern "C" void Nat_Times();
 ASM_VAR(AsmLabel, s_rn6706b4, $L_6706b4)
@@ -2468,7 +2468,7 @@ extern "C" void Nat_EqP();
 struct SchNativeReg { void* fn; const char* name; };
 static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_MacroExpand, s_rn6709d4},
-    {(void*)g_rf491ce0, s_rn670640},
+    {(void*)Nat_Eqv, s_rn670640},
     {(void*)Nat_EqP, s_rn670658},
     {(void*)g_rf493120, s_rn67065c},
     {(void*)Nat_NumberP, s_rn670664},
@@ -2484,7 +2484,7 @@ static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_NumLe, s_rn67129c},
     {(void*)Nat_NumGe, s_rn671298},
     {(void*)Nat_Plus, s_rn6706ac},
-    {(void*)g_rf4954f0, s_rn6706b0},
+    {(void*)Nat_Minus, s_rn6706b0},
     {(void*)Nat_Times, s_rn6706b4},
     {(void*)Nat_Divide, s_rn670570},
     {(void*)Nat_Quotient, s_rn6706b8},
@@ -3132,3 +3132,229 @@ void __cdecl Sch_EvalNext(BYTE* p, int next)
 }
 
 }  // extern "C"
+
+// === evaluating a value at the top level (FUN_4a6af0)
+
+ASM_VAR(AsmLabel, s_ev64bf60, $L_64bf60)
+ASM_VAR(AsmLabel, s_ev6709d4, $L_6709d4)
+extern "C" void FUN_4a7060(); KING_ALIAS("_FUN_4a7060", "@SchNode4a7060_Construct@8")
+extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")
+ASM_PROC(FUN_4aa460)
+extern "C" void FUN_4a7230(); KING_ALIAS("_FUN_4a7230", "@SchListNode_Destroy@8")
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")
+extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
+extern "C" void FUN_4aa830(); KING_ALIAS("_FUN_4aa830", "_Sch_MakeIdentifierA")
+extern "C" void FUN_4aa910(); KING_ALIAS("_FUN_4aa910", "_Sch_MakeIdentifierB")
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+ASM_PROC(FUN_4a6880)
+extern "C" void FUN_4aa1d0(); KING_ALIAS("_FUN_4aa1d0", "@Vec44_Erase@16")
+extern "C" void FUN_4aa730(); KING_ALIAS("_FUN_4aa730", "_Sch_MakeUnspecified")
+extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
+
+// pushes a fresh frame record (44 bytes) on the interpreter's frame stack (+108) with environment +60
+static void Ev_PushFrame(BYTE* p)
+{
+    BYTE node[44];
+    BYTE* n = CallThis<BYTE*>(FUN_4a7060, node);
+    BYTE** v = (BYTE**)(p + 108);
+    if (v[1] != v[2]) {
+        CallC(FUN_4ab570, v[1], n);
+        v[1] += 44;
+    } else
+        CallThis(FUN_4aa460, v, v[1], n);
+    CallThis(FUN_4a7230, node);
+    CallThis(FUN_40c100, F(BYTE*, p, 112) - 12, p + 60);
+}
+
+static void Ev_ClearFrames(BYTE* p)
+{
+    BYTE** v = (BYTE**)(p + 108);
+    CallThis(FUN_4aa1d0, v, v[0], v[1]);
+}
+
+static BYTE* Ev_Obj(SchValue* v)
+{
+    return CallThis<BYTE*>(FUN_4aa430, v);
+}
+
+extern "C" {
+
+// [FUN_4a6af0] evaluates the value v at the top level of interpreter p: a fresh frame, the expression wrapped
+// in a call to the top environment's handler (64bf60 / 6709d4), the result in out (unspecified when the
+// evaluation was cut short, +120)
+SchValue* __cdecl Sch_EvalTop(SchValue* out, BYTE* p, SchValue12 arg)
+{
+    SchValue* v = (SchValue*)&arg;
+    F(int, p, 120) = 0;
+    Ev_PushFrame(p);
+    SchValue h1;
+    CallC(FUN_4a28c0, &h1, 0, p);
+    Eva_CheckObject(&h1);
+    Eva_AssignSame((SchValue*)(h1.obj + 20), v);
+    SchValue h2;
+    CallC(FUN_4a28c0, &h2, 0, p);
+    SchValue t;
+    SchValue* id = CallC<SchValue*>(FUN_4aa830, &t, 0, (const char*)s_ev64bf60);
+    Eva_CheckObject(&h2);
+    Eva_AssignSame((SchValue*)(h2.obj + 20), id);
+    SchHandle_Release((void**)&t, 0);
+    Eva_CheckObject(&h2);
+    Eva_AssignSame((SchValue*)(h2.obj + 32), &h1);
+    SchValue h3;
+    CallC(FUN_4a28c0, &h3, 0, p);
+    CallThis(FUN_40c100, Ev_Obj(&h3) + 20, &h2);
+    SchValue h4;
+    CallC(FUN_4a28c0, &h4, 0, p);
+    SchValue12 name;
+    CallC(FUN_4aa910, &name, 0, (const char*)s_ev6709d4);
+    int depth = 0, index = -1;
+    SchValue* found = CallThis<SchValue*>(FUN_4a3790, Ev_Obj((SchValue*)(p + 60)), &t, name, &depth, &index);
+    CallThis(FUN_40c100, Ev_Obj(&h4) + 20, found);
+    SchHandle_Release((void**)&t, 0);
+    CallThis(FUN_40c100, Ev_Obj(&h4) + 32, &h3);
+    SchValue r;
+    CallC(FUN_4a6880, &r, p, Sv_Copy(&h4));
+    if (F(int, p, 120) == 0) {
+        Ev_ClearFrames(p);
+        Ev_PushFrame(p);
+        CallC(FUN_4a6880, &t, p, Sv_Copy(&r));
+        Ev_ClearFrames(p);
+        CallThis(FUN_454580, out, &t);
+    } else
+        CallThis(FUN_454580, out, CallC<SchValue*>(FUN_4aa730, &t, 0));
+    SchHandle_Release((void**)&t, 0);
+    SchHandle_Release((void**)&r, 0);
+    SchHandle_Release((void**)&h4, 0);
+    SchHandle_Release((void**)&h3, 0);
+    SchHandle_Release((void**)&h2, 0);
+    SchHandle_Release((void**)&h1, 0);
+    SchHandle_Release((void**)&arg, 0);
+    return out;
+}
+
+} // extern "C"
+
+// === the interpreter's run loop (FUN_4a63d0)
+
+ASM_VAR(AsmLabel, s_rl66ce4c, $L_66ce4c)
+extern "C" void FUN_4a5910(); KING_ALIAS("_FUN_4a5910", "_Sch_Message0")
+extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
+extern "C" void FUN_4a5c40(); KING_ALIAS("_FUN_4a5c40", "_Sch4a5c40_Append")
+extern "C" void FUN_4a5db0(); KING_ALIAS("_FUN_4a5db0", "_Sch_EvalNext")
+extern "C" void FUN_4a6860(); KING_ALIAS("_FUN_4a6860", "@SchValue_Name@8")
+extern "C" void FUN_4aa180(); KING_ALIAS("_FUN_4aa180", "@Vec44_Back@8")
+extern "C" void FUN_4ab2d0(); KING_ALIAS("_FUN_4ab2d0", "_Elems44_Copy")
+
+// a value whose obj, m_4 and flags are all zero
+static bool Rl_Empty(const SchValue* v)
+{
+    return !v->obj && !v->flags && !v->m_4;
+}
+
+// the value at frame+4 (12 bytes)
+static SchValue* Rl_Value(BYTE* frame)
+{
+    return (SchValue*)(frame + 4);
+}
+
+// pops the top frame and hands value r to the frame below (FUN_4a5c40)
+static void Rl_Return(BYTE* p, SchValue* r)
+{
+    BYTE** fr = (BYTE**)(p + 108);
+    fr[1] -= 44;
+    CallVirt(fr[1], 4, 0);
+    CallC(FUN_4a5c40, p, F(BYTE*, p, 112) - 44, r);
+}
+
+static int Rl_Frames(BYTE* p)
+{
+    return (int)(F(BYTE*, p, 112) - F(BYTE*, p, 108)) / 44;
+}
+
+extern "C" {
+
+// [FUN_4a63d0] runs the interpreter p until its frame stack is down to one frame with nothing to evaluate:
+// continuations (type 34) are resumed, symbols (type 9) looked up in the frame's environment, other values
+// returned to the frame below; an abort (+120) clears the stack
+void __cdecl Sch_Run(BYTE* p)
+{
+    BYTE** fr = (BYTE**)(p + 108);
+    for (;;) {
+        if (fr[0] == fr[1])
+            CallC(FUN_4a52e0, 12, 1);
+        if (F(int, p, 120)) {
+            BYTE* end = F(BYTE*, p, 112);
+            BYTE* begin = fr[0];
+            BYTE* to = CallC<BYTE*>(FUN_4ab2d0, end, fr[1], begin);
+            for (BYTE* q = to; q != fr[1]; q += 44)
+                CallVirt(q, 4, 0);
+            fr[1] -= (int)(end - begin) / 44 * 44;
+            return;
+        }
+        BYTE* top = F(BYTE*, p, 112) - 44;
+        SchValue* val = Rl_Value(top);
+        BYTE** cont = (BYTE**)(top + 16);
+        if (Rl_Empty(val) && Rl_Frames(p) < 2)
+            return;
+        if (cont[0] != cont[1] && F(BYTE, cont[0], 8) == 34) {
+            CallVirt(*(BYTE**)cont[0], 8, p);
+            continue;
+        }
+        if (Rl_Empty(val)) {
+            if (Rl_Frames(p) < 2)
+                return;
+            if (cont[0] == cont[1]) {
+                SchValue r = {0, 0, 0, 0};
+                Rl_Return(p, &r);
+                SchValue_Release(&r);
+                continue;
+            }
+            SchValue h;
+            CopyRef(&h, (SchValue*)cont[0]);
+            if (Rl_Empty(&h))
+                CallC(FUN_4a5910, p, 31);
+            else {
+                if (h.flags & SCH_IMMEDIATE)
+                    CallC(FUN_4a5a60, p, 29, CallThis<const char*>(FUN_4a6860, F(BYTE*, F(BYTE*, p, 112), -28)));
+                CallVirt(h.obj, 8, p);
+            }
+            SchValue_Release(&h);
+            continue;
+        }
+        if (F(BYTE, top, 12) == 2) {
+            CallC(FUN_4a5db0, p, 0);
+            continue;
+        }
+        SchValue r = {0, 0, 0, 0};
+        if (F(BYTE, top, 12) == 9) {
+            SchValue sym = {0, 0, 0, 0};
+            if (val->obj) {
+                if (CallVirt<int>(val->obj, 0) != 9)
+                    CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(val->obj, 4, (const char*)s_rl66ce4c));
+                else {
+                    sym.obj = val->obj;
+                    sym.flags = val->flags;
+                    F(int, sym.obj, 4)++;
+                }
+            }
+            int index = -1, depth = 0;
+            SchValue found;
+            BYTE* env = Ev_Obj((SchValue*)(CallThis<BYTE*>(FUN_4aa180, fr) + 32));
+            CallThis(FUN_40c100, &r, CallThis<SchValue*>(FUN_4a3790, env, &found, Sv_Copy(&sym), &depth, &index));
+            SchValue_Release(&found);
+            if (index == -1) {
+                Eva_CheckObject(&sym);
+                CallC(FUN_4a5a60, p, 32, F(const char*, sym.obj, 12));
+                SchValue z = {0, 0, 0, 0};
+                CallThis(FUN_40c100, &r, &z);
+                SchHandle_Release((void**)&z, 0);
+            }
+            SchHandle_Release((void**)&sym, 0);
+        } else
+            CallThis(FUN_40c100, &r, val);
+        Rl_Return(p, &r);
+        SchHandle_Release((void**)&r, 0);
+    }
+}
+
+} // extern "C"

@@ -1289,3 +1289,89 @@ BYTE* __fastcall PlayerRec_Copy(BYTE* self, void*, const BYTE* src)
 }
 
 } // extern "C"
+
+// === saving the AI's global state (FUN_480680)
+
+ASM_VAR(AsmLabel, s_ag66fd68, $L_66fd68)
+ASM_VAR(AsmLabel, g_ag66fd64, $L_66fd64)
+ASM_VAR(AsmLabel, g_ag66c730, $L_66c730)
+ASM_VAR(AsmLabel, g_ag68d6c8, $L_68d6c8)
+ASM_VAR(AsmLabel, g_ag68d0f0, $L_68d0f0)
+ASM_VAR(AsmLabel, g_ag68d0f8, $L_68d0f8)
+ASM_VAR(AsmLabel, g_ag68d100, $L_68d100)
+ASM_VAR(AsmLabel, g_ag66c6d8, $L_66c6d8)
+ASM_VAR(AsmLabel, g_ag68d190, $L_68d190)
+ASM_VAR(AsmLabel, g_ag68d198, $L_68d198)
+ASM_VAR(AsmLabel, g_ag68d170, $L_68d170)
+ASM_VAR(AsmLabel, g_ag68b9c8, $L_68b9c8)
+ASM_VAR(AsmLabel, g_ag68a830, $L_68a830)
+ASM_VAR(AsmLabel, g_ag68d158, $L_68d158)
+ASM_VAR(AsmLabel, g_ag66c6a0, $L_66c6a0)
+ASM_VAR(AsmLabel, g_ag68d164, $L_68d164)
+ASM_VAR(AsmLabel, g_ag68d168, $L_68d168)
+ASM_VAR(AsmLabel, g_ag66c6e0, $L_66c6e0)
+ASM_VAR(AsmLabel, g_ag68cc88, $L_68cc88)
+ASM_VAR(AsmLabel, g_ag66c6f8, $L_66c6f8)
+ASM_VAR(AsmLabel, g_ag66c710, $L_66c710)
+ASM_VAR(AsmLabel, g_ag68d15c, $L_68d15c)
+ASM_VAR(AsmLabel, g_ag68d160, $L_68d160)
+ASM_VAR(AsmLabel, g_ag68d108, $L_68d108)
+extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
+extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
+ASM_PROC(FUN_401000)
+
+// appends n bytes at p to the byte vector v
+static void Ag_Put(BYTE** v, const void* p, int n)
+{
+    CallThis(FUN_46e460, v, v[1], (const BYTE*)p, (const BYTE*)p + n);
+}
+
+static void Ag_PutVec(BYTE** v, const BYTE* g)
+{
+    const DWORD* b = F(const DWORD*, g, 0);
+    int n = (int)(F(const BYTE*, g, 4) - (const BYTE*)b) >> 2;
+    Ag_Put(v, &n, 4);
+    for (unsigned i = 0; i < (unsigned)((F(const BYTE*, g, 4) - F(const BYTE*, g, 0)) >> 2); i++)
+        Ag_Put(v, F(const DWORD*, g, 0) + i, 4);
+}
+
+extern "C" {
+
+// [FUN_480680] writes the AI's global state (time, counters, prices, tables, the two id vectors) as a block
+// of the save data v
+void __cdecl Ai_SaveGlobals(BYTE** v)
+{
+    int mark;
+    CallC(FUN_490c90, v, (const char*)s_ag66fd68, &mark);
+    *(double*)(char*)g_ag68d6c8 = CallC<double>(FUN_401000);
+    Ag_Put(v, g_ag66fd64, 4);
+    Ag_Put(v, g_ag66c730, 4);
+    Ag_Put(v, g_ag68d6c8, 8);
+    Ag_Put(v, g_ag68d0f0, 8);
+    Ag_Put(v, g_ag68d0f8, 8);
+    Ag_Put(v, g_ag68d100, 8);
+    Ag_Put(v, g_ag66c6d8, 8);
+    Ag_Put(v, g_ag68d190, 8);
+    Ag_Put(v, g_ag68d198, 8);
+    Ag_Put(v, g_ag68d170, 8);
+    for (int i = 0; i < 55; i++)
+        Ag_Put(v, (const DWORD*)(char*)g_ag68b9c8 + i, 4);
+    int zero = 0;
+    Ag_Put(v, &zero, 4);
+    Ag_PutVec(v, (const BYTE*)g_ag68a830);
+    Ag_Put(v, g_ag68d158, 4);
+    Ag_Put(v, g_ag66c6a0, 8);
+    Ag_Put(v, g_ag68d164, 4);
+    Ag_Put(v, g_ag68d168, 1);
+    Ag_Put(v, g_ag66c6e0, 4);
+    Ag_PutVec(v, (const BYTE*)g_ag68cc88);
+    Ag_Put(v, g_ag66c6f8, 8);
+    Ag_Put(v, g_ag66c710, 8);
+    Ag_Put(v, g_ag68d15c, 4);
+    Ag_Put(v, g_ag68d160, 4);
+    Ag_Put(v, g_ag68d108, 8);
+    CallC(FUN_490ce0, v, &mark);
+}
+
+} // extern "C"
