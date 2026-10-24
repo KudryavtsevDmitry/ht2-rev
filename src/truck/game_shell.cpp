@@ -4813,7 +4813,7 @@ extern "C" int __cdecl Names_AddLimited(const char* name)
 // ---------------------------------------------------------------------------
 // Driver choice screen commands.
 
-ASM_PROC(FUN_524b30)
+extern "C" void FUN_524b30(); KING_ALIAS("_FUN_524b30", "@Dealer_Open@12")
 ASM_VAR(BYTE*, g_q59_6cecdc, $L_6cecdc)
 ASM_VAR(BYTE*, g_q59_6cece0, $L_6cece0)
 ASM_VAR(BYTE*, g_q59_6cece4, $L_6cece4)
@@ -7185,6 +7185,1178 @@ void __fastcall NetDialog_Draw(BYTE* self, void*, BYTE* surface)
     case 12:
         Nd_Centered(self, 309, 292);
         break;
+    }
+}
+
+} // extern "C"
+
+// === the service screen ($L_521430)
+
+ASM_VAR(AsmLabel, g_ss6d1948, $L_6d1948)
+ASM_VAR(BYTE*, g_ssGame, $L_6d2078)
+ASM_VAR(float, g_ssNear64c664, $L_64c664)       // how near a service station must be
+ASM_VAR(double, g_ssNoPrice64ca48, $L_64ca48)
+ASM_VAR(double, g_ssMin64b5a0, $L_64b5a0)
+ASM_VAR(double, g_ss64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ssScale64b848, $L_64b848)
+extern "C" void FUN_50bd30(); KING_ALIAS("_FUN_50bd30", "_Carat_UpdateScreenSize")
+extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
+extern "C" void FUN_4e12b0(); KING_ALIAS("_FUN_4e12b0", "_Joy_ForceFeedback")
+extern "C" void FUN_5d8610(); KING_ALIAS("_FUN_5d8610", "@Win_Activate@8")
+extern "C" void FUN_436300(); KING_ALIAS("_FUN_436300", "_List68cbe8_FirstId")
+extern "C" void FUN_436330(); KING_ALIAS("_FUN_436330", "_List68cbe8_NextId")
+extern "C" void FUN_441f40(); KING_ALIAS("_FUN_441f40", "_Service_Info")
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_4769c0(); KING_ALIAS("_FUN_4769c0", "_Table68cc08_Get")
+extern "C" void FUN_476930(); KING_ALIAS("_FUN_476930", "_Player_GetState")
+extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
+extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
+
+static __declspec(noinline) int Ss_Int(double d)
+{
+    return (int)d;
+}
+
+static void Ss_InitLights(BYTE* st)
+{
+    for (int k = 0; k < 19; k++) {
+        F(int, st, k * 16 + 8) = 0;
+        F(int, st, k * 16) = 0;
+        F(int, st, k * 16 + 12) = 1072693248;
+    }
+}
+
+// per service button 0..18: the light state it repairs and the price slot (self+off)
+static const short k_ssService[19][2] = {
+    {3, 380}, {4, 384}, {5, 388}, {6, 392}, {7, 396}, {17, 400}, {0, 404}, {1, 408}, {18, 412},
+    {9, 416}, {9, 420}, {13, 424}, {2, 428}, {15, 432}, {16, 436}, {10, 440}, {12, 444}, {8, 448}, {11, 452},
+};
+// per refill button 0..6: the vehicle's virtual getter of the amount
+static const short k_ssRefill[7] = {56, 40, 52, 48, 36, 60, 44};
+
+extern "C" {
+
+// [$L_521430] opens the service screen: the state of the service station nearest the vehicle (if close enough),
+// then per service button its price (+380..) and whether it applies, the total (+456), and per refill button its
+// price (+460..) and the total (+488); resets the vehicle's controls
+void __fastcall ServiceScreen_Open(BYTE* self, void*)
+{
+    CallC(FUN_50bd30);
+    CallThis(FUN_530020, (BYTE*)g_ss6d1948);
+    CallC(FUN_4e12b0, 0);
+    CallThis(FUN_5d8610, self);
+    BYTE station[19 * 16];
+    Ss_InitLights(station);
+    int id;
+    CallC(FUN_436300, &id);
+    while (id != -1) {
+        BYTE info[24 + 19 * 16];
+        F(int, info, 4) = -1;
+        F(int, info, 8) = 0;
+        F(int, info, 12) = 0;
+        F(int, info, 16) = 0;
+        Ss_InitLights(info + 24);
+        CallC(FUN_441f40, id, info);
+        float at[3] = {F(float, info, 8), F(float, info, 12), F(float, info, 16)};
+        BYTE m[64];
+        float* mt = CallThis<float*>(FUN_57de90, F(BYTE*, g_ssGame, 616) + 16, m) + 9;
+        float d[3];
+        d[0] = at[0] - mt[0];
+        d[1] = at[1] - mt[1];
+        d[2] = at[2] - mt[2];
+        if (!(CallC<double>(FUN_5ab4d0, d) >= g_ssNear64c664)) {
+            memcpy(station, info + 24, sizeof station);
+            break;
+        }
+        int next;
+        id = *CallC<int*>(FUN_436330, &next, id);
+    }
+    BYTE own[19 * 16];
+    Ss_InitLights(own);
+    int car;
+    CallC(FUN_476930, *CallC<int*>(FUN_568f60, &car), own);
+    F(int, self, 376) = 0;
+    F(int, self, 456) = 0;
+    F(int, self, 488) = 0;
+    for (int k = 0; k < 20; k++) {
+        BYTE* ctl = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, self, 368), 2 * k + 217);
+        int need = 0, offered = 0;
+        if (k == 19)
+            offered = 1;
+        else {
+            int s = k_ssService[k][0], off = k_ssService[k][1];
+            double price;
+            if (k == 9 || k == 10) {
+                int bit = k == 9 ? 1 : 2;
+                need = F(int, own, s * 16) == bit;
+                offered = (F(BYTE, station, s * 16) & bit) != 0;
+                price = offered ? CallC<double>(FUN_4769c0, s, bit) : g_ssNoPrice64ca48;
+            } else {
+                offered = F(int, station, s * 16);
+                need = F(int, own, s * 16);
+                price = offered ? CallC<double>(FUN_4769c0, s, 1) : g_ssNoPrice64ca48;
+            }
+            F(int, self, off) = Ss_Int(price);
+        }
+        if (need)
+            F(DWORD, ctl, 284) |= 2;
+        else
+            F(DWORD, ctl, 284) &= ~2u;
+        if (!offered)
+            F(int, ctl, 40) = 1;
+        else {
+            F(int, ctl, 40) = 0;
+            if (!need && k != 19)
+                F(int, self, 456) += F(int, self, 380 + k * 4);
+        }
+    }
+    F(int, self, 488) = 0;
+    for (int i = 0; i < 8; i++) {
+        BYTE* ctl = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, self, 372), 2 * i + 257);
+        double v;
+        if (i == 7)
+            v = g_ss64b6e0;
+        else {
+            v = CallVirt<double>(F(BYTE*, g_ssGame, 616), k_ssRefill[i]);
+            if (!(v >= g_ssMin64b5a0)) {
+                F(int, ctl, 40) = 1;
+                F(int, self, 460 + i * 4) = -1;
+                continue;
+            }
+        }
+        F(DWORD, ctl, 284) &= ~2u;
+        F(int, ctl, 40) = 0;
+        if (i != 7) {
+            int price = Ss_Int(v * g_ssScale64b848);
+            F(int, self, 460 + i * 4) = price;
+            F(int, self, 488) += price;
+        }
+    }
+    BYTE* veh = F(BYTE*, F(BYTE*, g_ssGame, 616), 21600);
+    F(BYTE, veh, 9984) = 0;
+    F(DWORD, veh, 10000) = 1056964608;     // 0.5f
+    F(int, veh, 9996) = 0;
+    F(short, veh, 10004) = 0;
+    F(short, veh, 10006) = 1;
+    F(short, veh, 10054) = 21;
+}
+
+} // extern "C"
+
+// === the vehicle dealer screen ($L_525250)
+
+ASM_VAR(BYTE*, g_vd6ce4f4, $L_6ce4f4)
+ASM_VAR(BYTE*, g_vdView, $L_69684c)
+ASM_VAR(BYTE*, g_vdFont, $L_6ced24)
+ASM_VAR(BYTE*, g_vdImages, $L_6cecbc)
+ASM_VAR(BYTE*, g_vdGame, $L_6d2078)
+ASM_VAR(double, g_vdWait64b7e0, $L_64b7e0)
+ASM_VAR(double, g_vdBlink64b770, $L_64b770)
+ASM_VAR(AsmLabel, s_vd66c8cc, $L_66c8cc)
+ASM_VAR(AsmLabel, s_vd66d9c4, $L_66d9c4)
+ASM_PROC(FUN_5b8980)
+ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void FUN_523210(); KING_ALIAS("_FUN_523210", "_Carat_TypeName")
+extern "C" void FUN_433660(); KING_ALIAS("_FUN_433660", "_Ai_PrepareVehicleOrder")
+extern "C" void FUN_43f8d0(); KING_ALIAS("_FUN_43f8d0", "_Player_PlaceField20")
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+
+static __declspec(noinline) int Vd_Int(double d)
+{
+    return (int)d;
+}
+
+static void Vd_Image(BYTE* self, int x, int y, BYTE* img)
+{
+    CallC(FUN_5b86c0, F(BYTE*, self, -52), x, y, img);
+}
+
+static void Vd_Text(BYTE* self, int x, int y, const char* text)
+{
+    CallC(FUN_5ea170, F(BYTE*, self, -52), x, y, g_vdFont, text, 4, 0);
+}
+
+static void Vd_Price(BYTE* self, int x, int y)
+{
+    Vd_Image(self, x + 132, y + 20, F(BYTE*, self, 336));
+    char buf[100];
+    sprintf(buf, s_vd66c8cc, Vd_Int(F(double, self, 344)));
+    Vd_Text(self, x + 170, y + 75, buf);
+}
+
+// waits: after 64b7e0 past +352 the state goes to 1 and control +320 is enabled
+static void Vd_Wait(BYTE* self, int x, int y, BYTE* img)
+{
+    Vd_Image(self, x + 132, y + 20, img);
+    double end = F(double, self, 352) + g_vdWait64b7e0;
+    if (Timer_Now() > end) {
+        F(int, self, 308) = 1;
+        F(int, F(BYTE*, self, 320), 40) = 0;
+    }
+}
+
+static BYTE* Vd_PlaceImage(int place, int table)
+{
+    return F(BYTE*, g_vdImages, place * 4 + table);
+}
+
+extern "C" {
+
+// [$L_525250] draws the vehicle dealer screen on surface: by state +308 a waiting picture, the price, or the
+// offered vehicle (+796 model, +800 color; models the dealer +360 lacks are skipped in the direction +312)
+// with its order data; then the dealer's or the player's place picture by mode +304
+void __fastcall Dealer_Draw(BYTE* self, void*, BYTE* surface)
+{
+    if (g_vd6ce4f4)
+        CallC(FUN_5b86c0, F(BYTE*, g_vdView, 12), 0, 0, g_vd6ce4f4);
+    CallThis(FUN_5c0020, self, surface);
+    int x = F(int, F(BYTE*, self, 288), 44);
+    int y = F(int, F(BYTE*, self, 288), 48);
+    int st = F(int, self, 308);
+    switch (st) {
+    case 0:
+        Vd_Wait(self, x, y, F(BYTE*, self, 332));
+        break;
+    case 2:
+        Vd_Price(self, x, y);
+        break;
+    case 4:
+        Vd_Wait(self, x, y, F(BYTE*, self, 340));
+        break;
+    case 3: {
+        // the vehicle order: +12 count, +16 / +32 / +40 doubles, +48 a text
+        BYTE o[64];
+        char a;
+        CallThis(FUN_487730, o, &a);
+        for (int k = 12; k <= 44; k += 4)
+            F(int, o, k) = 0;
+        F(int, o, 52) = -1;
+        F(int, o, 56) = -1;
+        for (;;) {
+            const char* model = CallC<const char*>(FUN_523210, F(int, self, 796), F(int, self, 800));
+            if (CallC<int>(FUN_433660, F(int, F(BYTE*, g_vdGame, 616), 20636), F(int, self, 360), model, o) != 1)
+                break;
+            if (F(int, self, 312))
+                F(int, self, 796) = (F(int, self, 796) + 1) % 27;
+            else if (--F(int, self, 796) < 0)
+                F(int, self, 796) += 27;
+        }
+        BYTE* img = F(BYTE*, self, (F(int, self, 800) + F(int, self, 796) * 4) * 4 + 364);
+        CallC(FUN_5b8980, F(BYTE*, self, -52), x + 60, y + 18, img, -1);
+        char buf[100];
+        sprintf(buf, s_vd66d9c4, F(int, o, 12));
+        Vd_Text(self, x + 103, y + 235, buf);
+        sprintf(buf, s_vd66c8cc, Vd_Int(F(double, o, 32)));
+        Vd_Text(self, x + 143, y + 255, buf);
+        sprintf(buf, s_vd66c8cc, Vd_Int(F(double, o, 16)));
+        Vd_Text(self, x + 143, y + 275, buf);
+        if (Vd_Int(Timer_Now() * g_vdBlink64b770) % 2)
+            Vd_Text(self, x + 143, y + 295, F(const char*, o, 48));
+        sprintf(buf, s_vd66c8cc, Vd_Int(F(double, o, 40)));
+        Vd_Text(self, x + 143, y + 335, buf);
+        if (unsigned size = F(BYTE*, o, 8) - F(BYTE*, o, 0))
+            CallC(FUN_44b4a0, F(BYTE*, o, 0), size);
+        return;
+    }
+    default:
+        if (st > 20) {
+            if (F(int, F(BYTE*, self, 908), 20) == 0) {
+                int m = F(int, self, 304);
+                BYTE* s;
+                if (st == 22)
+                    s = m < 2 ? F(BYTE*, self, 860) : F(BYTE*, self, 864);
+                else if (st == 24)
+                    s = F(BYTE*, self, 860);
+                else
+                    s = m == 1 ? F(BYTE*, self, 864) : F(BYTE*, self, 872);
+                F(BYTE*, self, 908) = s;
+                CallThis(FUN_5fdaf0, s, 1.0f, 1.0f);
+                F(int, self, 308) -= 10;
+            }
+        } else if (st > 10) {
+            if (F(int, F(BYTE*, self, 908), 20) == 0) {
+                if (st == 12)
+                    F(int, F(BYTE*, self, 324), 40) = 0;
+                else if (st == 13)
+                    F(int, F(BYTE*, self, 328), 40) = 0;
+                F(int, self, 308) -= 10;
+            } else if (st == 12)
+                Vd_Price(self, x, y);
+            else if (st == 14)
+                Vd_Image(self, x + 132, y + 20, F(BYTE*, self, 340));
+        }
+        break;
+    }
+    int mode = F(int, self, 304);
+    st = F(int, self, 308);
+    static const short k_car[4] = {820, 824, 828, 832};
+    static const short k_dealer[4] = {804, 808, 812, 816};
+    int i = mode == 0 || mode == 1 || mode == 2 ? mode : 3;
+    bool late = i >= 2;
+    bool dealer = st == 0 || st == 12 || (late && (st == 13 || st == 14));
+    if (late && !dealer && st == 3) {
+        CallC(FUN_5fd160);
+        return;
+    }
+    if (!dealer) {
+        Vd_Image(self, x + 149, y + 90, F(BYTE*, self, k_car[i]));
+        int car;
+        int place = CallC<int>(FUN_43f8d0, *CallC<int*>(FUN_568f60, &car));
+        Vd_Image(self, x + 155, y + 96, Vd_PlaceImage(place, 368));
+    } else {
+        Vd_Image(self, x + 19, y + 20, F(BYTE*, self, k_dealer[i]));
+        BYTE* img;
+        if (late)
+            img = F(BYTE*, g_vdImages, 668);
+        else
+            img = Vd_PlaceImage(CallC<int>(FUN_43f8d0, F(int, self, 360)), mode == 0 ? 604 : 572);
+        Vd_Image(self, x + 25, y + 26, img);
+    }
+    CallC(FUN_5fd160);
+}
+
+} // extern "C"
+
+// === the service screen's buttons ($L_5220c0)
+
+ASM_VAR(BYTE*, g_sb696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_sbShell, $L_6cec6c)
+ASM_VAR(AsmLabel, s_sb67320c, $L_67320c)
+ASM_VAR(double, g_sb64b5b8, $L_64b5b8)
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
+extern "C" void FUN_43f760(); KING_ALIAS("_FUN_43f760", "_Player_Value136")
+extern "C" void FUN_43f7c0(); KING_ALIAS("_FUN_43f7c0", "_Player_Set136")
+extern "C" void FUN_4769e0(); KING_ALIAS("_FUN_4769e0", "_Vehicle_SetTable516")
+extern "C" void FUN_477300(); KING_ALIAS("_FUN_477300", "_Player_ClearFlags")
+extern "C" void FUN_477310(); KING_ALIAS("_FUN_477310", "_Driver_CargoFactor")
+extern "C" void FUN_520000(); KING_ALIAS("_FUN_520000", "_Car_ApplyPlayerSettings")
+extern "C" void FUN_53b3c0(); KING_ALIAS("_FUN_53b3c0", "@King_53b3c0@12")
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+ASM_PROC(FUN_5fdaf0)
+
+// per refill button 0..6: the vehicle's virtual refill (amount*)
+static const short k_sbRefill[7] = {28, 12, 24, 20, 8, 32, 16};
+
+static BYTE* Sb_Ctl(BYTE* self, int list, int id)
+{
+    return CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, self, list), id);
+}
+
+static int Sb_Car()
+{
+    int car;
+    return *CallC<int*>(FUN_568f60, &car);
+}
+
+extern "C" {
+
+// [$L_5220c0] a button of the service screen (this = the screen + 64): service buttons 217..253 (even: take
+// off, odd: put on; 9 and 10 exclude each other) and refill buttons 257..269 change the total (+312); 255 / 271
+// select all; 2 closes; 279 pays: the repairs, the refills and the driver's cargo factor, if the money suffices
+void __fastcall ServiceScreen_Command(BYTE* self, void*, int id)
+{
+    if (id >= 217 && id < 255) {
+        int k = (id - 217) / 2;
+        if (id % 2 == 0) {
+            F(int, self, 312) -= F(int, self, 316 + k * 4);
+            F(int, self, 392) += F(int, self, 316 + k * 4);
+            F(DWORD, Sb_Ctl(self, 304, 255), 284) &= ~2u;
+            return;
+        }
+        if (k == 9 || k == 10) {
+            BYTE* other = Sb_Ctl(self, 304, k == 9 ? 237 : 235);
+            if (F(DWORD, other, 284) & 2) {
+                F(DWORD, other, 284) &= ~2u;
+                int p = F(int, self, k == 9 ? 356 : 352);
+                F(int, self, 312) -= p;
+                F(int, self, 392) += p;
+            }
+        }
+        F(int, self, 312) += F(int, self, 316 + k * 4);
+        F(int, self, 392) -= F(int, self, 316 + k * 4);
+        return;
+    }
+    if (id >= 257 && id < 271) {
+        int k = (id - 257) / 2;
+        if (id % 2 == 0) {
+            F(int, self, 312) -= F(int, self, 396 + k * 4);
+            F(int, self, 424) += F(int, self, 396 + k * 4);
+            F(DWORD, Sb_Ctl(self, 308, 271), 284) &= ~2u;
+        } else {
+            F(int, self, 312) += F(int, self, 396 + k * 4);
+            F(int, self, 424) -= F(int, self, 396 + k * 4);
+        }
+        return;
+    }
+    if (id == 255) {
+        for (int i = 0; i < 19; i++) {
+            BYTE* ctl = Sb_Ctl(self, 304, 2 * i + 217);
+            if (!(F(DWORD, ctl, 284) & 2) && F(int, ctl, 40) == 0) {
+                if (i == 10)
+                    F(DWORD, ctl, 284) &= ~2u;
+                else {
+                    F(DWORD, ctl, 284) |= 2;
+                    F(int, self, 312) += F(int, self, 316 + i * 4);
+                }
+            }
+        }
+        F(int, self, 392) = 0;
+        return;
+    }
+    if (id == 271) {
+        for (int j = 0; j < 7; j++) {
+            BYTE* ctl = Sb_Ctl(self, 308, 257 + 2 * j);
+            if (!(F(DWORD, ctl, 284) & 2) && F(int, ctl, 40) == 0) {
+                F(DWORD, ctl, 284) |= 2;
+                F(int, self, 312) += F(int, self, 396 + j * 4);
+            }
+        }
+        F(int, self, 424) = 0;
+        return;
+    }
+    if (id == 2) {
+        CallVirt(self - 64, 32);
+        CallVirt(g_sb696ca0, 36);
+        CallC(FUN_4e12b0, 1);
+        F(BYTE, F(BYTE*, F(BYTE*, g_ssGame, 616), 21600), 9984) = 2;
+        return;
+    }
+    if (id != 279)
+        return;
+
+    int extra = 0;
+    BYTE* all = Sb_Ctl(self, 308, 271);
+    if ((F(DWORD, all, 284) & 2) && (CallC<DWORD>(FUN_43f620, Sb_Car()) & 0x2000000))
+        extra = Ss_Int(CallC<double>(FUN_477310, Sb_Car()));
+    int cost = F(int, self, 312) + extra;
+    if ((double)cost > CallC<double>(FUN_43f760, Sb_Car())) {
+        CallC(FUN_56ae60, CallC<const char*>(FUN_5d2e50, 12));
+        return;
+    }
+    BYTE st[19 * 16];
+    Ss_InitLights(st);
+    CallC(FUN_476930, Sb_Car(), st);
+    F(int, st, 9 * 16) = 0;
+    for (int k = 0; k < 19; k++) {
+        BYTE* ctl = Sb_Ctl(self, 304, 2 * k + 217);
+        int on = F(DWORD, ctl, 284) >> 1 & 1;
+        int s = k_ssService[k][0];
+        if (k == 9 || k == 10) {
+            if (on)
+                F(int, st, s * 16) = k == 9 ? 1 : 2;
+        } else
+            F(int, st, s * 16) = on;
+    }
+    CallC(FUN_4769e0, Sb_Car(), st);
+    CallC(FUN_520000, F(BYTE*, g_ssGame, 616));
+    float amount = 1.0f;
+    for (int j = 0; j < 8; j++) {
+        BYTE* ctl = Sb_Ctl(self, 308, 257 + 2 * j);
+        if ((F(DWORD, ctl, 284) & 2) && j < 7)
+            CallVirt(F(BYTE*, g_ssGame, 616), k_sbRefill[j], &amount);
+    }
+    double money = CallC<double>(FUN_43f760, Sb_Car());
+    CallVirt(F(BYTE*, g_ssGame, 616), 116);
+    CallVirt(F(BYTE*, g_ssGame, 616), 120);
+    if (CallC<DWORD>(FUN_43f620, Sb_Car()) & 0x2000000) {
+        CallC(FUN_56ae60, CallC<const char*>(FUN_5d2e50, 119));
+        if (extra > 1)
+            CallC(FUN_477300, Sb_Car());
+    }
+    if (F(DWORD, all, 284) & 2) {
+        float f = (float)(CallVirt<double>(F(BYTE*, g_ssGame, 616), 84) + g_sb64b5b8);
+        CallThis(FUN_53b3c0, g_ssGame, f);
+    }
+    if (F(int, g_sbShell, 1316) == 0) {
+        CallC(FUN_43f7c0, Sb_Car(), money - (double)cost);
+        char buf[64];
+        sprintf(buf, CallC<const char*>(FUN_5d2e50, 10), cost);
+        CallC(FUN_56ae60, buf);
+    }
+    CallThis(FUN_5fdaf0, CallC<BYTE*>(FUN_5ef3d0, (const char*)s_sb67320c), 0.5f, 0.5f);
+    CallVirt(g_sb696ca0, 36);
+    F(BYTE, F(BYTE*, F(BYTE*, g_ssGame, 616), 21600), 9984) = 2;
+    CallC(FUN_4e12b0, 1);
+    CallVirt(self - 64, 32);
+}
+
+} // extern "C"
+
+// === the video options screen's buttons ($L_5162f0)
+
+ASM_VAR(char*, g_voIni, $L_696868)
+ASM_VAR(BYTE*, g_voView, $L_69684c)
+ASM_VAR(BYTE*, g_vo696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_vo6cec80, $L_6cec80)
+ASM_VAR(BYTE*, g_vo6cecc0, $L_6cecc0)
+ASM_VAR(BYTE*, g_vo696848, $L_696848)
+ASM_VAR(int, g_vo7208e4, $L_7208e4)
+ASM_VAR(int, g_vo675ab0, $L_675ab0)
+ASM_VAR(int, g_voMode6cecfc, $L_6cecfc)
+ASM_VAR(int, g_voMode6ced00, $L_6ced00)
+ASM_VAR(int, g_voMode6ced04, $L_6ced04)
+ASM_VAR(int, g_voMode6ced08, $L_6ced08)
+ASM_VAR(AsmLabel, s_vo672998, $L_672998)
+ASM_VAR(AsmLabel, s_vo6730a0, $L_6730a0)
+ASM_VAR(AsmLabel, s_vo676dd0, $L_676dd0)
+ASM_VAR(AsmLabel, s_vo676dc8, $L_676dc8)
+ASM_VAR(AsmLabel, s_vo676798, $L_676798)
+ASM_VAR(AsmLabel, s_vo676ce4, $L_676ce4)
+ASM_VAR(AsmLabel, s_vo676d18, $L_676d18)
+ASM_VAR(AsmLabel, s_vo676d20, $L_676d20)
+ASM_VAR(AsmLabel, s_vo676d28, $L_676d28)
+ASM_VAR(AsmLabel, s_vo676d30, $L_676d30)
+ASM_VAR(AsmLabel, s_vo676cec, $L_676cec)
+ASM_VAR(AsmLabel, s_vo676d04, $L_676d04)
+ASM_VAR(AsmLabel, s_vo676d10, $L_676d10)
+ASM_VAR(AsmLabel, s_vo676d98, $L_676d98)
+ASM_VAR(AsmLabel, s_vo676d90, $L_676d90)
+ASM_VAR(AsmLabel, s_vo676dd8, $L_676dd8)
+extern "C" void FUN_603c70(); KING_ALIAS("_FUN_603c70", "_Ini_WriteInt")    // Ini_WriteInt (section, key, value, file)
+extern "C" void FUN_5159d0(); KING_ALIAS("_FUN_5159d0", "_Video_PickModes")
+extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
+extern "C" void FUN_5d8630(); KING_ALIAS("_FUN_5d8630", "@Window_Show@12")
+extern "C" void FUN_5d88c0(); KING_ALIAS("_FUN_5d88c0", "@Window_Refresh@8")
+extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
+extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
+
+static void Vo_Write(const char* section, const char* key, int value)
+{
+    CallC(FUN_603c70, section, key, value, g_voIni);
+}
+
+static void Vo_SetMode(DWORD flags)
+{
+    CallThis($L_5dd8c0, (BYTE*)g_gs696750, 800, 600, 1, flags);
+}
+
+// picks the video modes of mode set +348
+static int Vo_Pick(BYTE* self)
+{
+    return CallC<int>(FUN_5159d0, F(int, self, 348), self + 352, &g_voMode6cecfc, self + 328, &g_voMode6ced00,
+                      self + 332, &g_voMode6ced04, self + 336, &g_voMode6ced08, self + 340);
+}
+
+static void Vo_Show()
+{
+    Vo_SetMode(3584);
+    CallThis(FUN_5b6bf0, F(BYTE*, g_voView, 12));
+    CallThis(FUN_5d8630, g_voView, 0);
+    CallThis(FUN_5d88c0, g_voView);
+    CallThis(FUN_5ba3d0, *F(BYTE**, F(BYTE*, g_vo696ca0, 9396), 100));
+}
+
+extern "C" {
+
+// [$L_5162f0] a button of the video options screen (this = the screen + 64): 1 applies (or asks to restart for
+// a mode that isn't available), 2 cancels, 132 resets the options, 133 / 134 pick a lower / higher mode set,
+// 135..138 the color depth
+void __fastcall VideoOptions_Command(BYTE* self, void*, int id)
+{
+    switch (id) {
+    case 132: {
+        F(int, self, 324) = 3;
+        Vo_Write(s_vo672998, s_vo676dd0, 3);
+        F(int, self, 348) = 0;
+        g_vo7208e4 = 0;
+        Vo_Write(s_vo6730a0, s_vo676dc8, F(int, self, 348) + 1);
+        Vo_Write(s_vo672998, s_vo676798, 1);
+        const char* keys[4] = {s_vo676d18, s_vo676d20, s_vo676d28, s_vo676d30};
+        for (int i = 0; i < 3; i++) {
+            char section[16];
+            sprintf(section, s_vo676ce4, i);
+            for (int k = 0; k < 4; k++) {
+                int v;
+                Ini_GetInt(section, keys[k], -1, &v, g_voIni);
+                if (v != -1)
+                    Vo_Write(section, keys[k], -1);
+            }
+        }
+        Vo_SetMode(0);
+        if (!Vo_Pick(self)) {
+            CallC(FUN_5d2ba0, (const char*)s_vo676d98, 0);
+            MessageBoxA(0, s_vo676d98, s_vo676d90, 0);
+            _exit(0);
+        }
+        Vo_Show();
+        F(int, F(BYTE*, self, 316), 40) = 1;
+        F(int, F(BYTE*, self, 320), 40) = 0;
+        break;
+    }
+    case 2:
+        CallVirt(self - 64, 32);
+        F(int, g_vo6cec80, 372) = 0;
+        CallVirt(g_vo6cec80, 36);
+        F(short, self, 356) = F(short, self, 304);
+        F(short, self, 358) = F(short, self, 306);
+        F(int, self, 344) = F(int, self, 308);
+        break;
+    case 1: {
+        DWORD m = F(DWORD, self, 344);
+        DWORD c = m & 496;
+        bool two = (m & 15) == 2;
+        int mode = 0;
+        bool missing = true;
+        if (c == 272 && two && F(int, self, 328) == 0)
+            mode = g_voMode6cecfc;
+        else if (c == 288 && two && F(int, self, 332) == 0)
+            mode = g_voMode6ced00;
+        else if (c == 304 && two && F(int, self, 336) == 0)
+            mode = g_voMode6ced04;
+        else if (c == 320 && two && F(int, self, 340) == 0)
+            mode = g_voMode6ced08;
+        else
+            missing = false;
+        if (missing) {
+            CallThis(FUN_519750, g_vo6cecc0, mode == 5 ? 4 : 2);
+            g_vo675ab0 = 0;
+            break;
+        }
+        CallVirt(self - 64, 32);
+        F(int, g_vo6cec80, 372) = 0;
+        if (g_vo696848 == self - 64)
+            CallVirt(g_vo6cec80, 36);
+        Vo_Write(s_vo672998, s_vo676cec, F(int, self, 344));
+        Vo_Write(s_vo6730a0, s_vo676dc8, F(int, self, 348) + 1);
+        Vo_Write(s_vo672998, s_vo676d04, F(short, self, 356));
+        Vo_Write(s_vo672998, s_vo676d10, F(short, self, 358));
+        break;
+    }
+    case 135:
+    case 136:
+    case 137:
+    case 138:
+        F(DWORD, self, 344) = (F(DWORD, self, 344) & 271) | (id - 134) * 16;
+        break;
+    case 133:
+        if (F(int, self, 348) == 0)
+            break;
+        Vo_SetMode(0);
+        F(int, self, 348)--;
+        if (!Vo_Pick(self)) {
+            F(int, self, 348)++;
+            CallC(FUN_5d2e70, (const char*)s_vo676dd8, 0);
+        }
+        Vo_Show();
+        if (F(int, self, 348) == 0)
+            F(int, F(BYTE*, self, 316), 40) = 1;
+        if (F(int, self, 348) < F(int, self, 324))
+            F(int, F(BYTE*, self, 320), 40) = 1;
+        break;
+    case 134:
+        if (F(int, self, 348) >= F(int, self, 324))
+            break;
+        Vo_SetMode(0);
+        F(int, self, 348)++;
+        if (!Vo_Pick(self)) {
+            F(int, self, 348)--;
+            F(int, self, 324) = F(int, self, 348);
+            Vo_Write(s_vo672998, s_vo676dd0, F(int, self, 348));
+        }
+        Vo_Show();
+        if (F(int, self, 348) > 0)
+            F(int, F(BYTE*, self, 316), 40) = 0;
+        if (F(int, self, 348) == F(int, self, 324))
+            F(int, F(BYTE*, self, 320), 40) = 1;
+        break;
+    }
+}
+
+} // extern "C"
+
+// === the game menu's commands ($L_511c50)
+
+ASM_VAR(BYTE*, g_gm6ce4f4, $L_6ce4f4)
+ASM_VAR(BYTE*, g_gm696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_gmShell, $L_6cec6c)
+ASM_VAR(BYTE*, g_gm6ceca0, $L_6ceca0)
+ASM_VAR(BYTE*, g_gm6ceca4, $L_6ceca4)
+ASM_VAR(BYTE*, g_gm6ceca8, $L_6ceca8)
+ASM_VAR(BYTE*, g_gm6cecec, $L_6cecec)
+ASM_VAR(BYTE*, g_gm6cec74, $L_6cec74)
+ASM_VAR(BYTE*, g_gm6cec78, $L_6cec78)
+ASM_VAR(BYTE*, g_gm6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_gmGame, $L_6d2078)
+ASM_VAR(int, g_gm6968a4, $L_6968a4)
+ASM_VAR(AsmLabel, g_gmNet696750, $L_696750)
+extern "C" void FUN_569710(); KING_ALIAS("_FUN_569710", "_Messages_Clear1276")
+extern "C" void FUN_51f380(); KING_ALIAS("_FUN_51f380", "@Shell_SetMode@12")
+extern "C" void FUN_51ed10(); KING_ALIAS("_FUN_51ed10", "@Screen_Set372@12")
+extern "C" void FUN_5ffb20(); KING_ALIAS("_FUN_5ffb20", "_Obj723d44_Delete")
+extern "C" void FUN_511820(); KING_ALIAS("_FUN_511820", "_Shell_LeaveRace")
+extern "C" void FUN_51e070(); KING_ALIAS("_FUN_51e070", "@Screen_SetPlayer@12")
+extern "C" void FUN_51e7a0(); KING_ALIAS("_FUN_51e7a0", "@Shell51e7a0_Apply@8")
+extern "C" void FUN_50bd60(); KING_ALIAS("_FUN_50bd60", "_Carat_SetScreenSize")
+extern "C" void FUN_5c4340(); KING_ALIAS("_FUN_5c4340", "@Rec_Close@8")
+extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
+ASM_PROC(FUN_533590)
+extern "C" void FUN_53b3c0(); KING_ALIAS("_FUN_53b3c0", "@King_53b3c0@12")
+extern "C" void FUN_4eb600(); KING_ALIAS("_FUN_4eb600", "@Ramp_SetValue@12")
+extern "C" void FUN_516e40(); KING_ALIAS("_FUN_516e40", "@Screen_SetState@12")
+extern "C" void FUN_517a40(); KING_ALIAS("_FUN_517a40", "@Screen_SetStateB@12")
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+
+// closes the screen at 6ce4f4 and the messages
+static void Gm_CloseScreen()
+{
+    if (BYTE* o = g_gm6ce4f4)
+        CallVirt(o, 0, 1);
+    g_gm6ce4f4 = 0;
+    F(DWORD, g_gm696ca0, 16) |= 3;
+    CallC(FUN_569710);
+}
+
+// sends network message 952 with 3 bytes
+static void Gm_Send952(BYTE b0)
+{
+    BYTE msg[32];
+    CallThis(FUN_602be0, msg);
+    BYTE data[4] = {b0, 0, 0, 0};
+    CallThis(FUN_603110, msg, 952, data, 3);
+    CallC(FUN_6021b0, F(BYTE*, msg, 4), F(BYTE*, msg, 8) - F(BYTE*, msg, 4));
+    if (F(int, g_gmShell, 1344))
+        CallC(FUN_5ffb20);
+    CallThis(FUN_602e80, msg);
+}
+
+static void Gm_Resume()
+{
+    CallC(FUN_50bd60);
+    CallC(FUN_4e12b0, 1);
+}
+
+static void Gm_HideMenu(BYTE* self)
+{
+    CallVirt(F(BYTE*, self, 2856), 32);
+}
+
+extern "C" {
+
+// [$L_511c50] a command of the game menu (1 when handled): 169 / 163 leave the game (to the menu, the network
+// lobby or the race end), 167 / 110 two submenus, 168 the replay, 166 continue (paying the tow in a
+// race), 164 / 165 two more screens, 27 closes the menu
+int __fastcall GameMenu_Command(BYTE* self, void*, int id)
+{
+    int mode = F(int, g_gmShell, 1316);
+    switch (id) {
+    case 169:
+    case 163:
+        Gm_HideMenu(self);
+        mode = F(int, g_gmShell, 1316);
+        if (mode == 0) {
+            CallThis(FUN_51ed10, g_gm6cecec, id == 169 ? 2 : 1);
+            return 1;
+        }
+        Gm_CloseScreen();
+        if (mode == 1) {
+            CallThis(FUN_51f380, g_gm6ceca8, id == 169 ? 6 : 4);
+            Gm_Send952(4);
+            return 1;
+        }
+        if (id == 163)
+            CallC(FUN_511820);
+        if (F(int, g_gmShell, 1344))
+            CallC(FUN_5ffb20);
+        if (id == 169)
+            g_gm6968a4 = 1;
+        return 1;
+    case 167:
+    case 110:
+        Gm_HideMenu(self);
+        if (F(int, g_gmShell, 1316) == 0) {
+            if (id == 167)
+                CallThis(FUN_51e070, g_gm6ceca0, 0);
+            else
+                CallThis(FUN_51e7a0, g_gm6ceca4);
+            return 1;
+        }
+        Gm_CloseScreen();
+        CallVirt(g_gm696ca0, 36);
+        Gm_Resume();
+        return 1;
+    case 168:
+        if (mode == 0) {
+            Gm_CloseScreen();
+            CallVirt(g_gm696ca0, 36);
+            CallThis(FUN_5c4340, self);
+            F(int, self, 3024) = 1;
+            Gm_Resume();
+            if (F(int, g_gmShell, 1344))
+                CallC(FUN_5ffb20);
+        } else if (mode == 1) {
+            Gm_CloseScreen();
+            CallThis(FUN_51f380, g_gm6ceca8, 3);
+            Gm_Send952(3);
+        }
+        Gm_HideMenu(self);
+        CallThis(FUN_5e4250, (BYTE*)g_gmNet696750, self);
+        return 1;
+    case 166:
+        Gm_CloseScreen();
+        CallVirt(g_gm696ca0, 36);
+        if (F(int, g_gmShell, 1316) != 0 && F(int, g_gm6cec98, 384) == 2) {
+            CallThis(FUN_533590, g_gmGame, 0);
+            CallThis(FUN_53b3c0, g_gmGame, 1.0f);
+            CallVirt(F(BYTE*, g_gmGame, 616), 116);
+            CallVirt(F(BYTE*, g_gmGame, 616), 120);
+            BYTE* ramp = F(BYTE*, F(BYTE*, g_gmGame, 616), 21600) + 16112;
+            float v = (float)Ramp_High(ramp, 0);
+            CallThis(FUN_4eb600, F(BYTE*, F(BYTE*, g_gmGame, 616), 21600) + 16112, v);
+            Gm_HideMenu(self);
+            CallThis(FUN_5e4250, (BYTE*)g_gmNet696750, self);
+            Gm_Resume();
+            return 1;
+        }
+        Shell_PayRepair(Player_LoadFactor(1000.0), 9);
+        Gm_HideMenu(self);
+        Gm_Resume();
+        return 1;
+    case 164:
+        Gm_HideMenu(self);
+        CallThis(FUN_516e40, g_gm6cec78, self);
+        return 1;
+    case 165:
+        Gm_HideMenu(self);
+        CallThis(FUN_517a40, g_gm6cec74, self);
+        return 1;
+    case 27:
+        if (F(BYTE*, self, 2856)) {
+            Gm_CloseScreen();
+            CallVirt(g_gm696ca0, 36);
+            Gm_HideMenu(self);
+            Gm_Resume();
+        }
+        return 1;
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === the video options window (FUN_51c980)
+
+ASM_VAR(RECT, g_vw720938, $L_720938)
+ASM_VAR(BYTE*, g_vwFont, $L_6ced24)
+ASM_VAR(BYTE*, g_vw6ce3ac, $L_6ce3ac)
+ASM_VAR(AsmLabel, g_vwStyle6ce390, $L_6ce390)
+ASM_VAR(AsmLabel, g_vwStyle6ce408, $L_6ce408)
+ASM_VAR(AsmLabel, g_vwStyle6ce3b8, $L_6ce3b8)
+ASM_VAR(AsmLabel, g_vwStyle6ceb38, $L_6ceb38)
+ASM_VAR(AsmLabel, g_vwStyle6ce988, $L_6ce988)
+ASM_VAR(AsmLabel, g_vwVtbl64e47c, $L_64e47c)
+ASM_VAR(AsmLabel, g_vwVtbl64e43c, $L_64e43c)
+ASM_VAR(AsmLabel, g_vwVtbl64dc50, $L_64dc50)
+ASM_VAR(AsmLabel, s_vw676c9c, $L_676c9c)
+ASM_VAR(AsmLabel, s_vw677648, $L_677648)
+ASM_VAR(AsmLabel, s_vw67663c, $L_67663c)
+ASM_VAR(AsmLabel, s_vw677640, $L_677640)
+ASM_VAR(AsmLabel, s_vw676cfc, $L_676cfc)
+ASM_VAR(AsmLabel, s_vw677638, $L_677638)
+ASM_VAR(AsmLabel, s_vw677630, $L_677630)
+ASM_VAR(AsmLabel, s_vw67761c, $L_67761c)
+ASM_VAR(AsmLabel, s_vw67760c, $L_67760c)
+ASM_VAR(AsmLabel, s_vw677604, $L_677604)
+ASM_VAR(AsmLabel, s_vw6775f0, $L_6775f0)
+ASM_VAR(AsmLabel, s_vw6775e4, $L_6775e4)
+ASM_VAR(AsmLabel, s_vw6775dc, $L_6775dc)
+ASM_VAR(AsmLabel, s_vw676c50, $L_676c50)
+ASM_VAR(AsmLabel, s_vw676c58, $L_676c58)
+ASM_VAR(AsmLabel, s_vw6775d4, $L_6775d4)
+ASM_VAR(AsmLabel, s_vw6775cc, $L_6775cc)
+ASM_VAR(AsmLabel, s_vw6775c4, $L_6775c4)
+extern "C" void FUN_5d8900(); KING_ALIAS("_FUN_5d8900", "@ControlWindow_Construct@40")
+extern "C" void FUN_5bd5a0(); KING_ALIAS("_FUN_5bd5a0", "@Style_Assign@12")
+extern "C" void FUN_5bd5e0(); KING_ALIAS("_FUN_5bd5e0", "@Control_Construct@16")
+extern "C" void FUN_50ef60(); KING_ALIAS("_FUN_50ef60", "_Carat_MoveWindow")
+extern "C" void FUN_5bdbf0(); KING_ALIAS("_FUN_5bdbf0", "@Ctl_AddChild@16")
+extern "C" void FUN_5c0550(); KING_ALIAS("_FUN_5c0550", "@ListBox_Construct@20")
+extern "C" void FUN_5c07c0(); KING_ALIAS("_FUN_5c07c0", "@List_Layout@12")
+extern "C" void FUN_50f300(); KING_ALIAS("_FUN_50f300", "_Shell_SkinScrollBar")
+extern "C" void FUN_5bdd70(); KING_ALIAS("_FUN_5bdd70", "@Ctl_AutoSize@8")
+extern "C" void FUN_50e830(); KING_ALIAS("_FUN_50e830", "_Shell_MakeTexButton")
+extern "C" void FUN_50efb0(); KING_ALIAS("_FUN_50efb0", "_Shell_MakeMaskSlider")
+ASM_PROC(FUN_5bdc80)
+
+static void Vw_Styles(BYTE* c, void* s0, void* s1, void* s2, void* s3)
+{
+    CallThis(FUN_5bd5a0, c + 68, s0);
+    CallThis(FUN_5bd5a0, c + 104, s1);
+    CallThis(FUN_5bd5a0, c + 140, s2);
+    CallThis(FUN_5bd5a0, c + 176, s3);
+}
+
+// a 296-byte panel control (flags)
+static BYTE* Vw_Panel(int flags)
+{
+    BYTE* c = (BYTE*)operator new(296);
+    if (!c)
+        return 0;
+    CallThis(FUN_5bd5e0, c, (const char*)s_vw67663c, flags);
+    F(int, c, 288) = 0;
+    F(int, c, 292) = 0;
+    F(void*, c, 0) = g_vwVtbl64dc50;
+    return c;
+}
+
+static void Vw_Add(BYTE* parent, BYTE* child)
+{
+    CallThis(FUN_5bdbf0, parent, child, 0);
+}
+
+// moves the rectangle at +44 of c to (x, y), keeping its size
+static void Vw_MoveTo(BYTE* c, int x, int y)
+{
+    int* r = (int*)(c + 44);
+    r[2] += x - r[0];
+    r[3] += y - r[1];
+    r[0] = x;
+    r[1] = y;
+}
+
+static BYTE* Vw_Window(const char* name, int id, int x, int y)
+{
+    return CallC<BYTE*>(FUN_50ef60, name, id, x, y);
+}
+
+static BYTE* Vw_Button(const char* name, int id, int x, int y, int flag)
+{
+    return CallC<BYTE*>(FUN_50e830, name, id, x, y, flag);
+}
+
+static BYTE* Vw_Slider(short* value, int y, int id)
+{
+    BYTE* s = CallC<BYTE*>(FUN_50efb0, (const char*)s_vw676c50, (const char*)s_vw676c58, value, 350, y, 0, 187);
+    return s;
+}
+
+extern "C" {
+
+// [FUN_51c980] constructor of the video options window (parent): the mode list (+396), the depth buttons, the
+// brightness/contrast/gamma sliders (+400/+402/+404 from the ini), and the OK/cancel buttons
+BYTE* __fastcall VideoOptions_Construct(BYTE* self, void*, BYTE* parent)
+{
+    RECT r = g_vw720938;
+    CallThis(FUN_5d8900, self, parent, r, 4, g_vwFont, 0);
+    F(void*, self, 0) = g_vwVtbl64e47c;
+    F(void*, self, 64) = g_vwVtbl64e43c;
+    BYTE* o = (BYTE*)operator new(12);
+    if (o) {
+        F(BYTE*, o, 0) = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_vw676c9c);
+        F(int, o, 4) = 0;
+        F(int, o, 8) = 0;
+    }
+    F(BYTE*, self, 52) = o;
+    F(BYTE*, self, 48) = o;
+    g_vw6ce3ac = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_vw677648);
+    CallThis(FUN_5bd5a0, self + 132, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 168, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 204, (void*)g_vwStyle6ce390);
+    CallThis(FUN_5bd5a0, self + 240, (void*)g_vwStyle6ce390);
+
+    BYTE* root = Vw_Panel(0);
+    Vw_Add(root, Vw_Window(s_vw677640, 2, 323, 485));
+    int v;
+    Ini_GetInt(s_vo672998, s_vw676cfc, 50, &v, g_voIni);
+    F(short, self, 400) = (short)v;
+    Ini_GetInt(s_vo672998, s_vw677638, 50, &v, g_voIni);
+    F(short, self, 402) = (short)v;
+    Ini_GetInt(s_vo672998, s_vw677630, 60, &v, g_voIni);
+    F(short, self, 404) = (short)v;
+
+    BYTE* modes = Vw_Panel(4);
+    g_vw6ce3ac = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_vw67761c);
+    Vw_Styles(modes, g_vwStyle6ce408, g_vwStyle6ce390, g_vwStyle6ce408, g_vwStyle6ce408);
+    BYTE* lb = (BYTE*)operator new(352);
+    lb = lb ? CallThis<BYTE*>(FUN_5c0550, lb, (const char*)s_vw67760c, 8, 50) : 0;
+    F(BYTE*, self, 396) = lb;
+    Vw_Styles(lb, g_vwStyle6ce408, g_vwStyle6ce3b8, g_vwStyle6ceb38, g_vwStyle6ce988);
+    F(int, F(BYTE*, F(BYTE*, self, 396), 340), 28) = 116;
+    F(int, F(BYTE*, self, 396), 28) = 116;
+    Vw_MoveTo(F(BYTE*, self, 396), 315, 407);
+    F(int, F(BYTE*, self, 396), 348) = 41;
+    CallThis(FUN_5c07c0, F(BYTE*, self, 396), 10);
+    CallC(FUN_50f300, F(BYTE*, F(BYTE*, self, 396), 340), 59);
+    Vw_Add(modes, F(BYTE*, self, 396));
+    BYTE* w = Vw_Window(s_vw677604, 110, 323, 355);
+    F(BYTE*, self, 388) = w;
+    Vw_Add(modes, w);
+    Vw_MoveTo(modes, 300, 353);
+    CallThis(FUN_5bdd70, modes);
+    Vw_Add(root, modes);
+
+    BYTE* opts = Vw_Panel(4);
+    F(BYTE*, self, 392) = opts;
+    g_vw6ce3ac = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_vw6775f0);
+    Vw_Styles(opts, g_vwStyle6ce408, g_vwStyle6ce390, g_vwStyle6ce408, g_vwStyle6ce408);
+    BYTE* p = Vw_Panel(0);
+    Vw_Add(p, Vw_Button(s_vw6775e4, 274, 444, 301, 0));
+    Vw_Add(p, Vw_Button(s_vw6775dc, 273, 350, 301, 1));
+    Vw_Add(opts, p);
+    p = Vw_Panel(0);
+    BYTE* s = Vw_Slider(&F(short, self, 404), 271, 0);
+    Vw_Add(p, s);
+    F(int, s, 28) = 115;
+    s = Vw_Slider(&F(short, self, 402), 241, 0);
+    Vw_Add(p, s);
+    F(int, s, 28) = 114;
+    s = Vw_Slider(&F(short, self, 400), 211, 0);
+    Vw_Add(p, s);
+    F(int, s, 28) = 113;
+    Vw_Add(opts, p);
+    p = Vw_Panel(0);
+    Vw_Add(p, Vw_Button(s_vw6775d4, 112, 444, 174, 1));
+    Vw_Add(p, Vw_Button(s_vw6775cc, 111, 350, 174, 0));
+    Vw_Add(p, Vw_Window(s_vw6775c4, 109, 323, 120));
+    Vw_Add(opts, p);
+    Vw_MoveTo(opts, 300, 92);
+    CallThis(FUN_5bdd70, opts);
+    Vw_Add(root, opts);
+    CallThis(FUN_5bdc80, root);
+    Vw_Add(F(BYTE*, self, 56), root);
+    F(int, self, 368) = 0;
+    return self;
+}
+
+} // extern "C"
+
+// === opening a dealer's screen (FUN_524b30)
+
+ASM_VAR(AsmLabel, s_do678070, $L_678070)
+ASM_VAR(AsmLabel, s_do67806c, $L_67806c)
+ASM_VAR(AsmLabel, s_do66ca48, $L_66ca48)
+ASM_VAR(AsmLabel, s_do66ca40, $L_66ca40)
+ASM_VAR(AsmLabel, s_do678064, $L_678064)
+ASM_VAR(AsmLabel, s_do67805c, $L_67805c)
+ASM_VAR(AsmLabel, s_do67804c, $L_67804c)
+ASM_VAR(AsmLabel, s_do678040, $L_678040)
+ASM_VAR(AsmLabel, g_doOffers675c50, $L_675c50)  // 4 offers per dealer type: an id, -1 for none
+extern "C" void FUN_4315f0(); KING_ALIAS("_FUN_4315f0", "_Ai_QueryBribeSum")
+ASM_PROC(FUN_50bda0)
+
+// the player picture name prefix of player id
+static const char* Do_Prefix(int id)
+{
+    BYTE info[192];
+    CallC(FUN_43fc40, id, info);
+    return F(int, info, 184) == 1 ? s_do678070 : s_do67806c;
+}
+
+static BYTE* Do_Find3(const char* fmt, const char* a, int n, const char* b)
+{
+    char buf[64];
+    sprintf(buf, fmt, a, n, b);
+    return CallC<BYTE*>(FUN_5ef3d0, buf);
+}
+
+static BYTE* Do_Find2(const char* fmt, int n, const char* b)
+{
+    char buf[64];
+    sprintf(buf, fmt, n, b);
+    return CallC<BYTE*>(FUN_5ef3d0, buf);
+}
+
+extern "C" {
+
+// [FUN_524b30] opens the screen of dealer id: its pictures by dealer type (+368) and player kind, the clock
+// (+416), and per offer button whether it is available (bribe sums, or a vehicle the dealer can sell) and
+// whether it is the current one (+904..)
+void __fastcall Dealer_Open(BYTE* self, void*, int id)
+{
+    CallThis(FUN_5d8610, self);
+    F(int, self, 424) = id;
+    int player = F(int, F(BYTE*, g_vdGame, 616), 20636);
+    char prefix[36];
+    strcpy(prefix, Do_Prefix(id));
+    char kind[96] = "";
+    int first = 0, step = 4;
+    switch (F(DWORD, self, 368)) {
+    case 0:
+        strcpy(kind, s_do66ca48);
+        first = 1;
+        break;
+    case 1:
+        strcpy(kind, s_do66ca40);
+        first = 7;
+        break;
+    case 2:
+        strcpy(kind, s_do678064);
+        first = 13;
+        step = 3;
+        break;
+    case 3:
+        strcpy(kind, s_do67805c);
+        first = 18;
+        step = 3;
+        break;
+    }
+    for (int n = 1; n <= 5; n++)
+        F(BYTE*, self, 916 + n * 4) = Do_Find3(s_do67804c, kind, n, prefix);
+    if (BYTE* o = F(BYTE*, self, 920))
+        CallThis(FUN_5fdaf0, o, 1.0f, 1.0f);
+    strcpy(prefix, Do_Prefix(player));
+    F(BYTE*, self, 940) = Do_Find2(s_do678040, first, prefix);
+    F(BYTE*, self, 944) = Do_Find2(s_do678040, first + 1, prefix);
+    F(BYTE*, self, 948) = Do_Find2(s_do678040, first + 2, prefix);
+    F(BYTE*, self, 952) = Do_Find2(s_do678040, first + 3, prefix);
+    F(BYTE*, self, 956) = Do_Find2(s_do678040, first + step, prefix);
+    F(BYTE*, self, 960) = Do_Find2(s_do678040, first + step + 1, prefix);
+    F(BYTE*, self, 964) = Do_Find2(s_do678040, 23, prefix);
+    F(BYTE*, self, 968) = Do_Find2(s_do678040, 24, prefix);
+    F(int, self, 372) = 0;
+    F(int, self, 380) = 0;
+    F(double, self, 416) = Timer_Now();
+    if (BYTE* c = F(BYTE*, self, 392))
+        F(int, c, 40) = 1;
+    F(int, F(BYTE*, self, 388), 40) = 1;
+    F(int, F(BYTE*, self, 384), 40) = 1;
+    F(int, self, 916) = 0;
+    F(int, self, 912) = 0;
+    F(int, self, 908) = 0;
+    F(int, self, 904) = 0;
+    F(int, self, 900) = 0;
+    for (int i = 0; i < 4; i++) {
+        int idx = i + F(int, self, 368) * 4;
+        int offer = ((int*)(char*)g_doOffers675c50)[idx];
+        BYTE* ctl = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, self, 384), idx + 190);
+        if (!ctl)
+            continue;
+        int disabled = 0;
+        F(int, self, 904 + i * 4) = 0;
+        if (offer != -1) {
+            if (F(int, ctl, 28) != 196 && F(int, ctl, 28) != 203) {
+                BYTE out[192];
+                int r = CallC<int>(FUN_4315f0, player, F(int, self, 424), offer, out);
+                if (r == 1)
+                    disabled = 1;
+                else if (r == 2)
+                    F(int, self, 904 + i * 4) = 1;
+            } else {
+                BYTE o[64];
+                char a;
+                CallThis(FUN_487730, o, &a);
+                for (int k = 12; k <= 44; k += 4)
+                    F(int, o, k) = 0;
+                F(int, o, 52) = -1;
+                F(int, o, 56) = -1;
+                if (CallC<int>(FUN_433660, F(int, F(BYTE*, g_vdGame, 616), 20636), F(int, self, 424), 0, o) == 3)
+                    disabled = 1;
+                if (unsigned size = F(BYTE*, o, 8) - F(BYTE*, o, 0))
+                    CallC(FUN_44b4a0, F(BYTE*, o, 0), size);
+            }
+        }
+        F(int, ctl, 40) = disabled;
+    }
+    if (F(int, self, 368) > 1) {
+        int place = CallC<int>(FUN_43f8d0, F(int, self, 424));
+        CallC(FUN_50bda0, F(BYTE*, F(BYTE*, g_vdImages, 668), 72), F(BYTE*, F(BYTE*, g_vdImages, place * 4 + 368), 72), 2);
     }
 }
 

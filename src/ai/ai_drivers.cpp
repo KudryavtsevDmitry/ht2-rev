@@ -1890,3 +1890,148 @@ void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
 }
 
 }  // extern "C"
+
+// === swapping two players' vehicles (FUN_4738c0)
+
+ASM_VAR(AsmLabel, s_sw66fa4c, $L_66fa4c)        // the "not enough money" message
+extern "C" void FUN_45a9b0(); KING_ALIAS("_FUN_45a9b0", "_Copy12s")    // copies 12-byte records (first, last, to)
+extern "C" void FUN_4abce0(); KING_ALIAS("_FUN_4abce0", "@Vec12_Reserve@16")
+extern "C" void FUN_4736d0(); KING_ALIAS("_FUN_4736d0", "_Player_ProfitOf")
+extern "C" void FUN_40e270(); KING_ALIAS("_FUN_40e270", "_Message_Text")
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
+extern "C" void FUN_4452c0(); KING_ALIAS("_FUN_4452c0", "_Ai_DropOrdersForfeit")
+extern "C" void FUN_4722a0(); KING_ALIAS("_FUN_4722a0", "_Player_Call472110")
+extern "C" void FUN_4736e0(); KING_ALIAS("_FUN_4736e0", "_Recs40_Swap")
+extern "C" void FUN_474290(); KING_ALIAS("_FUN_474290", "@Player_SetPosition@12")
+extern "C" void FUN_477d60(); KING_ALIAS("_FUN_477d60", "_Player_EndDealOf")
+extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
+extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
+extern "C" void FUN_472270(); KING_ALIAS("_FUN_472270", "_Player_Call471ec0")
+extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
+ASM_PROC(FUN_56f6d0)
+extern "C" void FUN_442c60(); KING_ALIAS("_FUN_442c60", "_Ai_AccountForChangeInLoadState")
+extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")
+extern "C" void FUN_401c50(); KING_ALIAS("_FUN_401c50", "_Ai_RescheduleLoadTask")
+
+// v = src for vectors of 12-byte records
+static void Sw_Assign(BYTE** v, BYTE* const* src)
+{
+    if ((BYTE* const*)v == src)
+        return;
+    BYTE* first = src[0];
+    BYTE* last = src[1];
+    unsigned n = (int)(last - first) / 12;
+    if (n > (unsigned)((int)(v[2] - v[0]) / 12)) {
+        BYTE* p = CallStd<BYTE*>(FUN_4593b0, n, first, last);
+        if (int cap = (int)(v[2] - v[0]) / 12)
+            CallC(FUN_44b4a0, v[0], cap * 12);
+        v[0] = p;
+        v[2] = p + n * 12;
+    } else {
+        unsigned have = (int)(v[1] - v[0]) / 12;
+        if (have >= n)
+            CallC(FUN_45a9b0, first, last, v[0]);
+        else {
+            CallC(FUN_45a9b0, first, first + have * 12, v[0]);
+            CallC(FUN_47e3e0, src[0] + (int)(v[1] - v[0]) / 12 * 12, src[1], v[1], 0);
+        }
+    }
+    v[1] = v[0] + n * 12;
+}
+
+static void Sw_Swap(BYTE* a, BYTE* b, int off, unsigned n)
+{
+    BYTE t[96];
+    memcpy(t, a + off, n);
+    memcpy(a + off, b + off, n);
+    memcpy(b + off, t, n);
+}
+
+extern "C" {
+
+// [FUN_4738c0] swaps the vehicles of players a and b: unless flags bit 0, the difference of their vehicles'
+// values is paid (-2 / -1 when b / a is a human who can't pay) and their orders are dropped; then routes,
+// positions, loads and vehicle data are exchanged and both players start over; 0 when done
+int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
+{
+    if (!(flags & 1)) {
+        double pa = CallC<double>(FUN_4736d0, a);
+        double d = pa - CallC<double>(FUN_4736d0, b);
+        if (d > 0) {
+            if (F(int, b, 92) == 1 && d > F(double, b, 136)) {
+                CallC(FUN_56ae60, CallC<const char*>(FUN_40e270, (const char*)s_sw66fa4c));
+                return -2;
+            }
+        } else if (F(int, a, 92) == 1 && -d > F(double, a, 136)) {
+            CallC(FUN_56ae60, CallC<const char*>(FUN_40e270, (const char*)s_sw66fa4c));
+            return -1;
+        }
+        F(double, b, 136) = F(double, b, 136) - d;
+        F(double, a, 136) = d + F(double, a, 136);
+        CallC(FUN_4452c0, a);
+        CallC(FUN_4452c0, b);
+    }
+    if (F(int, a, 92) == 1)
+        CallC(FUN_4722a0, a);
+    if (F(int, b, 92) == 1)
+        CallC(FUN_4722a0, b);
+    BYTE* tmp[3];
+    {
+        BYTE** va = (BYTE**)(a + 24);
+        char c;
+        CallThis(FUN_4abce0, tmp, (int)(va[1] - va[0]) / 12, &c);
+        tmp[1] = CallC<BYTE*>(FUN_47e3e0, va[0], va[1], tmp[0], 0);
+    }
+    Sw_Assign((BYTE**)(a + 24), (BYTE**)(b + 24));
+    Sw_Assign((BYTE**)(b + 24), tmp);
+    CallC(FUN_4736e0, a + 72, b + 72);
+    PositionId posA = F(PositionId, a, 40);
+    PositionId posB = F(PositionId, b, 40);
+    CallThis(FUN_474290, a + 8, &posB);
+    CallThis(FUN_474290, b + 8, &posA);
+    Sw_Swap(a, b, 552, 96);
+    Sw_Swap(a, b, 84, 4);
+    Sw_Swap(a, b, 516, 4);
+    Sw_Swap(a, b, 520, 4);
+    Sw_Swap(a, b, 288, 24);
+    Sw_Swap(a, b, 336, 8);
+    Sw_Swap(a, b, 344, 8);
+    Sw_Swap(a, b, 376, 40);
+    Sw_Swap(a, b, 416, 40);
+    Sw_Swap(a, b, 200, 72);
+    if (F(int, a, 92) != 9) {
+        CallC(FUN_477d60, a);
+        F(int, a, 100) = 0;
+    }
+    if (F(int, b, 92) != 9) {
+        CallC(FUN_477d60, b);
+        F(int, b, 100) = 0;
+    }
+    CallC(FUN_425790, a);
+    CallC(FUN_425790, b);
+    CallC(FUN_419760, a);
+    CallC(FUN_419760, b);
+    DWORD fa = F(DWORD, a, 96), fb = F(DWORD, b, 96);
+    F(DWORD, a, 96) = (fa & ~1u) | (fb & 1);
+    F(DWORD, b, 96) = (fb & ~1u) | (fa & 1);
+    if (F(int, a, 92) == 1)
+        F(DWORD, a, 96) |= 1;
+    if (F(int, b, 92) == 1)
+        F(DWORD, b, 96) |= 1;
+    if (F(int, a, 92) == 1)
+        CallC(FUN_472270, a);
+    if (F(int, b, 92) == 1)
+        CallC(FUN_472270, b);
+    if (CallC<bool>(FUN_417660, a) || CallC<bool>(FUN_417660, b))
+        CallC(FUN_56f6d0);
+    CallC(FUN_442c60, a);
+    CallC(FUN_442c60, b);
+    CallC(FUN_477210, a);
+    CallC(FUN_477210, b);
+    CallC(FUN_401c50);
+    if (int n = (int)(tmp[2] - tmp[0]) / 12)
+        CallC(FUN_44b4a0, tmp[0], n * 12);
+    return 0;
+}
+
+} // extern "C"

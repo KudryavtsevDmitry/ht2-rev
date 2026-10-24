@@ -1035,3 +1035,65 @@ extern "C" void __fastcall Body_SetVec88(BYTE* s, void*, const float* v)
     CallThis(FUN_5e48f0, s);
     CallThis(FUN_4f07e0, s);
 }
+
+// === a physics state's initial values (FUN_4f6cf0)
+
+ASM_VAR(AsmLabel, g_ps7025f0, $L_7025f0)        // a 4x3 identity matrix
+ASM_VAR(AsmLabel, g_ps702650, $L_702650)        // a vector
+ASM_VAR(AsmLabel, g_ps702630, $L_702630)        // a vector
+
+static void Ps_Vec(BYTE* p, const void* v)
+{
+    memcpy(p, v, 12);
+}
+
+extern "C" {
+
+// [FUN_4f6cf0] initializes a physics state (thiscall): five identity matrices (+32..), zeroed accumulators,
+// eight sets of vectors (+568, +664, +788) and the forces (+884..) from the default vectors, 0.1 damping
+// factors (+760..+776)
+BYTE* __fastcall PhysState_Init(BYTE* self, void*)
+{
+    for (int k = 0; k < 5; k++)
+        memcpy(self + 32 + k * 48, g_ps7025f0, 48);
+    memset(self + 272, 0, 228);
+    memset(self + 568, 0, 96);
+    memset(self + 664, 0, 96);
+    memset(self + 788, 0, 96);
+    memset(self + 884, 0, 72);
+    memcpy(self + 960, g_ps7025f0, 48);
+    memset(self + 1008, 0, 24);
+    for (int k = 0; k < 8; k++) {
+        F(int, self, k * 4) = 0;
+        F(int, self, 536 + k * 4) = 0;
+        F(int, self, 504 + k * 4) = 0;
+        Ps_Vec(self + 568 + k * 12, g_ps702650);
+        Ps_Vec(self + 664 + k * 12, g_ps702650);
+        Ps_Vec(self + 788 + k * 12, g_ps702650);
+    }
+    for (int k = 0; k < 5; k++)
+        memcpy(self + 32 + k * 48, g_ps7025f0, 48);
+    static const short k_vecs[11] = {272, 284, 296, 308, 320, 344, 356, 368, 404, 440, 452};
+    for (int i = 0; i < 11; i++)
+        Ps_Vec(self + k_vecs[i], g_ps702650);
+    F(DWORD, self, 760) = 1036831949;      // 0.1f
+    F(DWORD, self, 776) = 1036831949;
+    F(DWORD, self, 772) = 1036831949;
+    F(DWORD, self, 768) = 1036831949;
+    F(DWORD, self, 764) = 1036831949;
+    F(int, self, 500) = 0;
+    F(int, self, 780) = 1;
+    F(int, self, 784) = 0;
+    Ps_Vec(self + 884, g_ps702650);
+    Ps_Vec(self + 896, g_ps702650);
+    Ps_Vec(self + 908, g_ps702630);
+    Ps_Vec(self + 920, g_ps702650);
+    Ps_Vec(self + 932, g_ps702650);
+    Ps_Vec(self + 944, g_ps702650);
+    F(DWORD, self, 956) = 1065353216;      // 1.0f
+    memcpy(self + 960, g_ps7025f0, 48);
+    F(int, self, 1032) = 1;
+    return self;
+}
+
+} // extern "C"

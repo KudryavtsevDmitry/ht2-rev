@@ -3634,8 +3634,8 @@ void __cdecl CopterScreen_Start(BYTE* v)
     BYTE* p488 = F(BYTE*, v, 488);
     int target = p488 ? F(int, p488, 76) : 0;
     BYTE cam[48];
-    BYTE* c = CallThis<BYTE*>(FUN_5dbcc0, v, cam, 0);
-    CallThis(FUN_5975e0, g_csTv6f68b0, target, c);
+    BYTE* c = CallThis<BYTE*>(FUN_5dbcc0, v, cam);
+    CallThis(FUN_5975e0, g_csTv6f68b0, target, c, 0);
     CallThis(FUN_597a20, g_csTv6f68b0);
     CallThis(FUN_598bd0, g_csTv6f68b0, 1);
     if (F(int, g_csShell, 1300) > 1 && F(int, g_csGame, 1400) != 0)
@@ -3939,6 +3939,211 @@ void __fastcall CopterPanel_Draw(BYTE* self, void*)
     }
     }
     F(int, self, 32) = -1;
+}
+
+} // extern "C"
+
+// === the copter's on-screen notice (FUN_56b0a0)
+
+ASM_VAR(BYTE*, g_ntView, $L_69684c)
+ASM_VAR(BYTE*, g_ntFont, $L_6ced24)
+ASM_VAR(BYTE*, g_ntMessages, $L_6f3438)
+ASM_VAR(BYTE*, g_nt6cecd8, $L_6cecd8)
+ASM_VAR(BYTE, g_nt696904, $L_696904)
+ASM_VAR(int, g_nt696890, $L_696890)
+ASM_VAR(int, g_nt696c54, $L_696c54)
+ASM_VAR(int, g_nt6f3480, $L_6f3480)
+ASM_VAR(int, g_nt6f3484, $L_6f3484)
+ASM_VAR(int, g_nt6f3488, $L_6f3488)
+ASM_VAR(int, g_nt6f348c, $L_6f348c)
+ASM_VAR(double, g_nt64b700, $L_64b700)
+ASM_VAR(double, g_ntOne, $L_64b670)
+ASM_VAR(AsmLabel, s_nt66c8cc, $L_66c8cc)
+ASM_VAR(AsmLabel, s_nt677a74, $L_677a74)
+ASM_VAR(AsmLabel, s_nt67b998, $L_67b998)
+ASM_VAR(AsmLabel, s_nt67b988, $L_67b988)
+ASM_VAR(AsmLabel, s_nt67b978, $L_67b978)
+ASM_VAR(AsmLabel, s_nt67b9a0, $L_67b9a0)
+ASM_VAR(AsmLabel, s_nt67b9b0, $L_67b9b0)
+ASM_VAR(AsmLabel, s_nt67b9c0, $L_67b9c0)
+ASM_VAR(AsmLabel, s_nt67b9d0, $L_67b9d0)
+ASM_VAR(AsmLabel, s_nt67b9e0, $L_67b9e0)
+ASM_VAR(AsmLabel, s_nt67b9f0, $L_67b9f0)
+ASM_VAR(AsmLabel, s_nt6731dc, $L_6731dc)
+ASM_PROC(FUN_5b8980)    // an image with a transparent color (surface, x, y, image, key)
+extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+
+static __declspec(noinline) int Nt_Int(double d)
+{
+    return (int)d;
+}
+
+static const char* Nt_Str(int id)
+{
+    return CallC<const char*>(FUN_5d2e50, id);
+}
+
+static int Nt_Width(const char* text)
+{
+    return CallThis<int>(FUN_5ea0e0, g_ntFont, text);
+}
+
+static void Nt_Text(int x, int y, BYTE* font, const char* text)
+{
+    CallC(FUN_5ea170, F(BYTE*, g_ntView, 12), x, y, font, text, 6, 0);
+}
+
+static int Nt_ViewW()
+{
+    return CallVirt<int>(g_ntView, 20);
+}
+
+static int Nt_ViewH()
+{
+    return CallVirt<int>(g_ntView, 24);
+}
+
+extern "C" {
+
+// [FUN_56b0a0] draws the notice of kind +60 (1..10): one or two lines of text centered under its image (+44), the
+// copter results (5) or a score panel (10); kind 2 also sends message 951, kind 8 is shown once
+void __fastcall Notice_Draw(BYTE* self, void*)
+{
+    int kind = F(int, self, 60);
+    if (kind == 0)
+        return;
+    const char* lines[2];
+    int n = 0;
+    char buf[80];
+    char buf2[36];
+    switch (kind) {
+    case 1:
+        lines[0] = Nt_Str(7);
+        n = 1;
+        break;
+    case 2: {
+        lines[0] = Nt_Str(8);
+        n = 1;
+        BYTE msg[32];
+        CallThis(FUN_602be0, msg);
+        BYTE data[4];
+        data[0] = g_nt696904;
+        data[1] = 0;
+        CallThis(FUN_603110, msg, 951, data, 3);
+        CallC(FUN_6021b0, F(BYTE*, msg, 4), F(BYTE*, msg, 8) - F(BYTE*, msg, 4));
+        CallThis(FUN_602e80, msg);
+        break;
+    }
+    case 3:
+        sprintf(buf, Nt_Str(3), F(int, self, 52), F(int, self, 56));
+        lines[0] = buf;
+        n = 1;
+        break;
+    case 6:
+        lines[0] = Nt_Str(4);
+        lines[1] = Nt_Str(5);
+        n = 2;
+        break;
+    case 7:
+        sprintf(buf, Nt_Str(6), F(int, self, 52));
+        lines[0] = buf;
+        n = 1;
+        break;
+    case 8:
+    case 9:
+        lines[0] = F(const char*, self, 48);
+        n = 1;
+        break;
+    case 5: {
+        int car;
+        int on = !(CallC<DWORD>(FUN_43f620, *CallC<int*>(FUN_568f60, &car)) & 0x1000);
+        int a = F(int, self, 52);
+        const char* name;
+        if (CallC<int>(FUN_568fd0) == 2)
+            name = a == 0 ? s_nt67b9d0 : a == 1 && on ? s_nt67b9e0 : s_nt67b9f0;
+        else
+            name = a == 0 ? s_nt67b9a0 : a == 1 && on ? s_nt67b9b0 : s_nt67b9c0;
+        BYTE* img = CallC<BYTE*>(FUN_5ef3d0, name);
+        Nt_ViewW();
+        int y = (Nt_ViewH() - F(WORD, img, 6)) / 2 + 20;
+        int x = Nt_ViewW() - F(WORD, img, 4);
+        CallC(FUN_5b8980, F(BYTE*, g_ntView, 12), x, y, img, -1);
+        BYTE* font = F(BYTE*, g_ntMessages, 1288);
+        if (a > 0) {
+            sprintf(buf, s_nt66c8cc, F(int, self, 56) % 100);
+            Nt_Text(x + 165, y + 249, font, buf);
+            Nt_Text(x + 129, y + 274, F(BYTE*, g_ntMessages, 1288), (const char*)(g_nt6cecd8 + 632));
+            int t = F(int, self, 56) / 100 / 60;
+            if (g_nt696890 == 2) {
+                sprintf(buf, s_nt67b998, t);
+                Nt_Text(x + 125, y + 299, F(BYTE*, g_ntMessages, 1288), buf);
+            } else {
+                sprintf(buf, s_nt66c8cc, t);
+                Nt_Text(x + 165, y + 299, F(BYTE*, g_ntMessages, 1288), buf);
+            }
+        } else {
+            sprintf(buf, s_nt66c8cc, F(int, self, 56));
+            Nt_Text(x + 209, y + 153, font, buf);
+            sprintf(buf, s_nt66c8cc, g_nt6f3480);
+            Nt_Text(x + 172, y + 216, F(BYTE*, g_ntMessages, 1288), buf);
+            sprintf(buf, s_nt66c8cc, g_nt6f3484);
+            Nt_Text(x + 172, y + 195, F(BYTE*, g_ntMessages, 1288), buf);
+            sprintf(buf, s_nt66c8cc, g_nt6f3480 - g_nt6f3484);
+            Nt_Text(x + 172, y + 279, F(BYTE*, g_ntMessages, 1288), buf);
+        }
+        if (F(int, self, 16) == 2)
+            if (BYTE* o = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_nt6731dc))
+                CallThis(FUN_5fdaf0, o, 1.0f, 1.0f);
+        return;
+    }
+    case 10: {
+        sprintf(buf2, CallC<int>(FUN_568fd0) == 2 ? s_nt67b988 : s_nt67b978, F(int, self, 52));
+        BYTE* img = CallC<BYTE*>(FUN_5ef3d0, buf2);
+        if (!img)
+            break;
+        Nt_ViewW();
+        Nt_ViewH();
+        int x = Nt_ViewW() - F(WORD, img, 4);
+        CallC(FUN_5b8980, F(BYTE*, g_ntView, 12), x, 50, img, -1);
+        sprintf(buf2, s_nt677a74, F(int, self, 56));
+        int tw = Nt_Width(buf2);
+        int alt = g_nt696c54 == 0;
+        int a = F(int, self, 52);
+        int y = a < 9 || a == 20 ? 148 : a < 12 ? 157 : a == 16 ? 261 : a < 20 ? 431 : 0;
+        if (y)
+            Nt_Text((F(WORD, img, 4) - tw) / 2 + x, y, g_ntFont, buf2);
+        if (a == 14) {
+            tw = Nt_Width(F(const char*, self, 48));
+            Nt_Text((F(WORD, img, 4) - tw) / 2 + x, 160, g_ntFont, F(const char*, self, 48));
+        } else if (a == 10 || a == 16) {
+            double k = alt ? g_nt64b700 : g_ntOne;
+            sprintf(buf2, s_nt66c8cc, Nt_Int(g_nt6f3488 * k));
+            Nt_Text(a == 10 ? x + 82 : x + 137, a == 10 ? 272 : 142, g_ntFont, buf2);
+            k = alt ? g_nt64b700 : g_ntOne;
+            sprintf(buf2, s_nt66c8cc, Nt_Int(g_nt6f348c * k));
+            Nt_Text(a == 10 ? x + 82 : x + 137, a == 10 ? 318 : 158, g_ntFont, buf2);
+        } else if (a == 15) {
+            Nt_Width(F(const char*, self, 48));
+            CallC(FUN_5ea1b0, F(BYTE*, g_ntView, 12), x + 45, 227, 190, g_ntFont, F(const char*, self, 48), 6, 0);
+        }
+        return;
+    }
+    }
+    // the box: the image centered at the bottom, the lines below its top
+    int w = Nt_ViewW();
+    BYTE* img = F(BYTE*, self, 44);
+    int x = (w - F(WORD, img, 20)) / 2;
+    int y = Nt_ViewH() - F(WORD, img, 22);
+    CallC(FUN_5b86c0, F(BYTE*, g_ntView, 12), x, y, img);
+    y += 20;
+    for (int i = 0; i < n; i++, y += 10)
+        Nt_Text((w - Nt_Width(lines[i])) / 2, y, g_ntFont, lines[i]);
+    if (F(int, self, 60) == 8)
+        F(int, self, 60) = 0;
 }
 
 } // extern "C"

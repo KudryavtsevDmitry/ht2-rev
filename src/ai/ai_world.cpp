@@ -5760,7 +5760,7 @@ extern "C" void __cdecl Anchors_AttachNodes()
 }
 
 extern "C" void* __cdecl Player_FirstGoods(BYTE* p);
-ASM_PROC(FUN_486800)    // the route length between two positions
+extern "C" void FUN_486800(); KING_ALIAS("_FUN_486800", "_Road_PositionCost")    // the route length between two positions
 ASM_VAR(char, s_updateAdvancementRegular, $L_66d508) // "updateAdvancementRegular(AI_Player * p, PositionId position)"
 
 // [FUN_41a7d0] updateAdvancementRegular(AI_Player * p, PositionId position): minus the distance to the goods' town (by road beyond 100)
@@ -17618,7 +17618,7 @@ extern "C" void FUN_4175c0(); KING_ALIAS("_FUN_4175c0", "_Player_MarkListed")   
 extern "C" void FUN_4272d0(); KING_ALIAS("_FUN_4272d0", "_Ai_ClearPlayerFromTail")    // clearPlayerFromTail (player)
 extern "C" void FUN_4165f0(); KING_ALIAS("_FUN_4165f0", "_Ai_CalculateWeightsPerSubstate")    // calculateWeigthsPerSubstate
 extern "C" void FUN_436510(); KING_ALIAS("_FUN_436510", "_Node_ByName")    // a node by name (out, name)
-ASM_PROC(FUN_486800)    // the route length between two positions (int, from, to, double* out)
+extern "C" void FUN_486800(); KING_ALIAS("_FUN_486800", "_Road_PositionCost")    // the route length between two positions (int, from, to, double* out)
 extern "C" void FUN_471420(); KING_ALIAS("_FUN_471420", "_Order_FullValue")    // an order's value (order) returns double
 extern "C" void FUN_483e60(); KING_ALIAS("_FUN_483e60", "_AI_AddToBanner")    // AI_AddToBanner (double)
 extern "C" void FUN_483e80(); KING_ALIAS("_FUN_483e80", "_eventBanner")    // eventBanner (int, int)
@@ -20241,7 +20241,7 @@ extern "C" void Exc_Destroy();
 KING_ALIAS("_Exc_Destroy", "??1exception@@UAE@XZ")            // exception::~exception()
 extern "C" void Cxx_Throw();
 KING_ALIAS("_Cxx_Throw", "__CxxThrowException@8")             // _CxxThrowException(object, info)
-ASM_PROC($L_422400)    // creating the players for a network game
+extern "C" void $L_422400(); KING_ALIAS("_$L_422400", "_Ai_CreatePlayersNetwork")    // creating the players for a network game
 extern "C" void $L_422f20(); KING_ALIAS("_$L_422f20", "_Ai_CreatePlayersRegular")    // createPlayersRegular()
 extern "C" void FUN_42bb90(); KING_ALIAS("_FUN_42bb90", "_Ai_SetAmbushActive")   // setAmbushActive (ambush, on)
 
@@ -22477,6 +22477,179 @@ int __cdecl Ai_CreatePlayersRegular()
         Str_Release(&h);
     }
     Trace_Leave((const char*)s_cprName66d914);
+    return 0;
+}
+
+} // extern "C"
+
+// === creating the players for a network game ($L_422400)
+
+ASM_VAR(BYTE*, g_cpn68cfd8, $L_68cfd8)
+ASM_VAR(BYTE*, g_cpn68cfdc, $L_68cfdc)
+ASM_VAR(BYTE*, g_cpnFree68a860, $L_68a860)     // a byte per vehicle: 1 while free (begin, end, capacity end)
+ASM_VAR(BYTE*, g_cpnFree68a864, $L_68a864)
+ASM_VAR(BYTE*, g_cpnFree68a868, $L_68a868)
+ASM_VAR(AsmLabel, s_cpnStart66d8f8, $L_66d8f8)    // the start node name format (prefix, number)
+ASM_VAR(AsmLabel, s_cpnGoal66d198, $L_66d198)
+ASM_VAR(AsmLabel, s_cpnNode66d168, $L_66d168)
+extern "C" void FUN_44a490(); KING_ALIAS("_FUN_44a490", "@Vec1_Reserve@16")
+extern "C" void FUN_469410(); KING_ALIAS("_FUN_469410", "_FillBytes")
+extern "C" void FUN_459ac0(); KING_ALIAS("_FUN_459ac0", "_Bytes_AllocCopyB@12")
+extern "C" void FUN_603540(); KING_ALIAS("_FUN_603540", "_Bytes_Copy")
+extern "C" void FUN_46e120(); KING_ALIAS("_FUN_46e120", "_Mult_46e120")
+extern "C" void FUN_46e140(); KING_ALIAS("_FUN_46e140", "_Mult_PlayerCount")
+extern "C" void FUN_477c30(); KING_ALIAS("_FUN_477c30", "_Player_ClearDeadline")
+extern "C" void FUN_4152a0(); KING_ALIAS("_FUN_4152a0", "_Ai_CreatePlayerRandom")
+extern "C" void FUN_417770(); KING_ALIAS("_FUN_417770", "_Player_Retire")
+
+static __declspec(noinline) int Cp2_Int(double d)
+{
+    return (int)d;
+}
+
+// a player's start position at the node named by format fmt and number n
+static void Cpn_PlaceAt(BYTE* p, int n)
+{
+    char buf[64];
+    sprintf(buf, (const char*)s_cpnStart66d8f8, g_66c6e4, n);
+    int node;
+    Node_ByName(&node, buf);
+    PositionId pos;
+    pos.road = -1;
+    pos.node = node;
+    pos.t = 0;
+    pos.segment = 0;
+    pos.object = 0;
+    pos.m_24 = 0;
+    pos.m_28 = -1;
+    Player_SetPosition(p, 0, &pos);
+}
+
+// game mode 1: the player goes to node 66d168; mode 2: to the goal node of number n
+static void Cpn_SendOff(DWORD id, int n)
+{
+    int node;
+    if (g_68d188 == 1) {
+        Node_ByName(&node, (const char*)s_cpnNode66d168);
+        PositionId to;
+        Position_InitNode(&to, 0, node);
+        Player_GoTo((BYTE*)id, to, 1);
+    }
+    if (g_68d188 == 2) {
+        char buf[64];
+        sprintf(buf, (const char*)s_cpnGoal66d198, g_66c6e4, n);
+        Node_ByName(&node, buf);
+        PositionId to;
+        Position_InitNode(&to, 0, node);
+        Player_GoTo((BYTE*)id, to, 1);
+    }
+}
+
+extern "C" {
+
+// [$L_422400] creates the players of a network game: marks every vehicle free (68a860), the human at start node 1,
+// then truckers of type 2 (from the type's descriptions, else random) up to 66c6f0 times the type's limit, each at
+// its numbered start node; the positions are checked
+int __cdecl Ai_CreatePlayersNetwork()
+{
+    {
+        unsigned n = (unsigned)(g_cpn68cfdc - g_cpn68cfd8) >> 2;
+        BYTE* v[3];
+        char a, one = 1;
+        CallThis(FUN_44a490, v, n, &a);
+        v[1] = CallC<BYTE*>(FUN_469410, v[0], n, &one);
+        unsigned size = v[1] - v[0];
+        if (size > (unsigned)(g_cpnFree68a868 - g_cpnFree68a860)) {
+            BYTE* p = CallStd<BYTE*>(FUN_459ac0, size, v[0], v[1]);
+            if (unsigned cap = g_cpnFree68a868 - g_cpnFree68a860)
+                Ai_PoolFree(g_cpnFree68a860, cap);
+            g_cpnFree68a860 = p;
+            g_cpnFree68a868 = p + size;
+        } else {
+            unsigned have = g_cpnFree68a864 - g_cpnFree68a860;
+            if (have >= size)
+                CallC(FUN_603540, v[0], v[1], g_cpnFree68a860);
+            else {
+                CallC(FUN_603540, v[0], v[0] + have, g_cpnFree68a860);
+                CallC(FUN_603540, v[0] + have, v[1], g_cpnFree68a864);
+            }
+        }
+        g_cpnFree68a864 = g_cpnFree68a860 + size;
+        CallThis(FUN_44b090, v);
+    }
+    int* count = (int*)g_68cca8;
+    int* limit = (int*)g_68cf28;
+    if (count[1] < limit[1]) {
+        int k = r_68d31c ? CallC<int>(FUN_46e120) : 0;
+        BYTE* p = Ai_CreateNewPlayer(1, k, -1);
+        DWORD id;
+        Player_Register(&id, p);
+        F(int, p, 720) = k;
+        Cpn_PlaceAt(p, k + 1);
+        Cpn_SendOff(id, k + 1);
+        F(DWORD, p, 88) |= 1;
+        if (r_68d31c)
+            CallC(FUN_46dc50, p);
+        Rec_4015a0Both(id);
+    }
+    if (!r_66f62a)
+        return 0;
+    int players = CallC<int>(FUN_46e140);
+    double have = players;
+    int most = Cp2_Int((double)limit[2] * g_66c6f0 - have);
+    StrRef h;
+    Str_CopyConstruct(&h, 0, (const StrRef*)(*(BYTE**)&g_init68a840 + 24));
+    if (limit[2] * g_66c6f0 > have) {
+        int k = players;
+        int n = players + 1;
+        do {
+            if (count[2] >= most)
+                break;
+            bool described = false;
+            if ((BYTE)h.flags == 2) {
+                StrRef m;
+                Str_Member20Checked(&m, &h);
+                described = (BYTE)m.flags == 2;
+                Str_Release(&m);
+            }
+            BYTE* p;
+            if (described) {
+                StrRef m;
+                Str_Member20Checked(&m, &h);
+                StrRef descr;
+                Cpr_ListCopy(&descr, &m);
+                p = Ai_CreatePlayerDescr(2, descr);
+                Str_Release(&m);
+            } else
+                p = CallC<BYTE*>(FUN_4152a0, 2, 0, &g_rng68a870);
+            F(int, p, 720) = k;
+            CallC(FUN_477c30, p);
+            DWORD id;
+            BYTE* q = (BYTE*)*Player_Register(&id, p);
+            Cpn_PlaceAt(p, n);
+            Cpn_SendOff((DWORD)q, n);
+            k++;
+            n++;
+            PositionId at = F(PositionId, q, 40);
+            if (!Position_Valid(&at, 0))
+                Cpr_BadPosition(q, 8072);
+            Cpr_CheckObject(q, 8072);
+            if (F(int, p, 16) == F(int, p, 20))
+                AiError(0, 100, &g_strAiMainFile, &g_strAiMainId, 8074, (const char*)s_cpr66d8e4, &g_aiEmpty, &g_aiEmpty);
+            if (g_68d188 == 1 || g_68d188 == 2)
+                CallC(FUN_417770, q);
+            if (r_68d31c)
+                CallC(FUN_46dc50, p);
+            Rec_4015a0Both((int)q);
+            if ((BYTE)h.flags == 2) {
+                StrRef next;
+                Str_Member32Checked(&next, &h);
+                Cpr_ListAssign(&h, &next);
+                Str_Release(&next);
+            }
+        } while (limit[2] * g_66c6f0 > (double)k);
+    }
+    Str_Release(&h);
     return 0;
 }
 

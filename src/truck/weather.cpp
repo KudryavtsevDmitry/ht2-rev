@@ -1256,3 +1256,137 @@ void __cdecl Weather_LoadSettings(const char* ini)
 }
 
 }  // extern "C"
+
+// === the weather object (FUN_5a7430)
+
+ASM_VAR(AsmLabel, s_wo67eaa0, $L_67eaa0)
+ASM_VAR(AsmLabel, s_wo67ea90, $L_67ea90)
+ASM_VAR(AsmLabel, s_wo67ea84, $L_67ea84)
+ASM_VAR(AsmLabel, s_wo67ea80, $L_67ea80)
+ASM_VAR(AsmLabel, s_wo679a18, $L_679a18)
+ASM_VAR(AsmLabel, s_wo679a10, $L_679a10)
+ASM_VAR(AsmLabel, s_wo671488, $L_671488)
+ASM_VAR(AsmLabel, s_wo67ea78, $L_67ea78)
+ASM_VAR(AsmLabel, s_wo677738, $L_677738)
+ASM_VAR(AsmLabel, s_wo67ea64, $L_67ea64)
+ASM_VAR(AsmLabel, s_wo67ea54, $L_67ea54)
+ASM_VAR(AsmLabel, s_wo67ea4c, $L_67ea4c)
+ASM_VAR(AsmLabel, g_woVtbl651628, $L_651628)
+ASM_VAR(AsmLabel, g_woLevels67e848, $L_67e848)  // 16 doubles
+ASM_VAR(double, g_wo651650, $L_651650)
+ASM_VAR(double, g_wo651648, $L_651648)
+ASM_VAR(BYTE*, g_wo7025b8, $L_7025b8)
+ASM_VAR(AsmLabel, g_wo6fb3d0, $L_6fb3d0)
+ASM_PROC(FUN_5a6890)
+
+static BYTE* Wo_Find(const char* prefix, const char* suffix)
+{
+    char buf[32];
+    strcpy(buf, prefix);
+    strcat(buf, suffix);
+    return CallC<BYTE*>(FUN_5ef2b0, 0, buf);
+}
+
+static double Wo_Double(DWORD lo, DWORD hi)
+{
+    unsigned __int64 v = (unsigned __int64)hi << 32 | lo;
+    return *(double*)&v;
+}
+
+extern "C" {
+
+// [FUN_5a7430] constructor (view, names a, b, c, -, d): reads the weather settings, finds the scene keys of
+// the sky, light and fog objects by the name prefixes, the 16 levels (+160 keys, +224 / +232 doubles), and
+// makes the cloud (+500) and rain (+504) layers
+BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char* a, const char* b, const char* c,
+                                   int unused, const char* d)
+{
+    CallThis(FUN_5d31e0, self, 100, (const char*)s_wo67eaa0);
+    F(int, self, 556) = 0;
+    F(int, self, 560) = 0;
+    F(int, self, 564) = 0;
+    F(void*, self, 0) = g_woVtbl651628;
+    g_wo7025b8 = self;
+    Weather_LoadSettings(s_wo67ea90);
+    F(BYTE*, self, 492) = CallC<BYTE*>(FUN_5ef3d0, (const char*)s_wo67ea84);
+    F(BYTE*, self, 80) = view;
+    F(int, self, 132) = 0;
+    F(int, self, 136) = 0;
+    F(BYTE*, self, 148) = Wo_Find(a, s_wo67ea80);
+    F(BYTE*, self, 512) = Wo_Find(a, s_wo679a18);
+    F(BYTE*, self, 140) = Wo_Find(a, s_wo671488);
+    F(BYTE*, self, 156) = Wo_Find(b, s_wo67ea80);
+    F(BYTE*, self, 516) = Wo_Find(b, s_wo679a18);
+    F(BYTE*, self, 152) = Wo_Find(c, s_wo67ea80);
+    {
+        char buf[32];
+        strcpy(buf, c);
+        strcpy(buf + 4, s_wo67ea78);
+        F(BYTE*, self, 508) = CallC<BYTE*>(FUN_5ef3d0, buf);
+    }
+    F(BYTE*, self, 480) = Wo_Find(d, s_wo677738);
+    F(BYTE*, self, 484) = Wo_Find(d, s_wo679a18);
+    F(BYTE*, self, 488) = Wo_Find(d, s_wo679a10);
+    F(BYTE*, self, 144) = Wo_Find(d, s_wo671488);
+    const double* level = (const double*)(char*)g_woLevels67e848;
+    for (int i = 0; i < 16; i++) {
+        char buf[32];
+        sprintf(buf, s_wo67ea64, i);
+        F(BYTE*, self, 160 + i * 4) = CallC<BYTE*>(FUN_5ef2b0, 0, buf);
+        F(double, self, 224 + i * 16) = level[i] + g_wo651650;
+        if (i < 8)
+            F(double, self, 232 + i * 16) = level[i] + g_wo651648;
+        else
+            F(double, self, 232 + i * 16) = -1.0;
+    }
+    F(int, self, 104) = 0;
+    F(int, self, 88) = 0;
+    F(int, self, 96) = 0;
+    F(int, self, 112) = 0;
+    F(int, self, 108) = 0;
+    F(int, self, 92) = 0;
+    F(DWORD, self, 100) = 1077411840;      // +96: 24.0
+    F(DWORD, self, 116) = 1072693248;      // +112: 1.0
+    CallThis(FUN_5d3570, F(BYTE*, self, 80) + 2992, self);
+    CallThis(FUN_5d33d0, self, 1);
+    BYTE* o = (BYTE*)operator new(128);
+    if (o)
+        o = CallThis<BYTE*>(FUN_5a6890, o, F(BYTE*, self, 80), Wo_Double(1293080650, 3219726843u),
+                            Wo_Double(1893457979, 1070865199), a, 8, 215, 8);
+    F(BYTE*, self, 500) = o;
+    CallVirt(o, 24, 1);
+    o = (BYTE*)operator new(80);
+    if (o)
+        o = WeatherLayer_Construct(o, 0, F(BYTE*, self, 80), s_wo67ea4c, s_wo67ea54, 0, 1076101120, 858993459,
+                                   1070805811);
+    F(BYTE*, self, 504) = o;
+    CallVirt(o, 24, 1);
+    F(DWORD, F(BYTE*, self, 504), 72) |= 1;
+    F(DWORD, self, 120) = 1293080650;
+    F(int, self, 496) = 0;
+    F(DWORD, self, 528) = 1065353216;
+    F(DWORD, self, 524) = 1065353216;
+    F(DWORD, self, 520) = 1065353216;
+    F(int, self, 532) = 0;
+    F(int, self, 536) = 0;
+    F(int, self, 568) = 0;
+    F(int, self, 572) = 0;
+    F(DWORD, self, 540) = 1065353216;
+    F(DWORD, self, 544) = 1056964608;
+    F(DWORD, self, 124) = 3220775419u;
+    F(int, self, 576) = 0;
+    F(DWORD, self, 548) = 1065353216;
+    F(DWORD, self, 552) = 1065353216;
+    DWORD* g = (DWORD*)(char*)g_wo6fb3d0;
+    g[3] = 0;
+    g[2] = 0;
+    g[1] = 0;
+    g[0] = 0;
+    g[4] = 0;
+    g[5] = 1072693248;
+    g[6] = 0;
+    g[7] = 1072693248;
+    return self;
+}
+
+} // extern "C"

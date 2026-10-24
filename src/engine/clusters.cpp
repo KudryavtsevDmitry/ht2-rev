@@ -878,3 +878,195 @@ extern "C" BYTE* __fastcall Clu5ea830_Construct(BYTE* s)
     F(BYTE, s, 120) = 238;
     return s;
 }
+
+// === the material description reader (FUN_5eb7a0)
+
+extern "C" int __cdecl atoi(const char* s);
+extern "C" double __cdecl atof(const char* s);
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+extern "C" int __cdecl strcmp(const char* a, const char* b);
+ASM_VAR(double, g_mt64dae0, $L_64dae0)
+ASM_VAR(AsmLabel, s_mt6836bc, $L_6836bc)
+ASM_VAR(AsmLabel, s_mt6836b8, $L_6836b8)
+ASM_VAR(AsmLabel, s_mt6836b4, $L_6836b4)
+ASM_VAR(AsmLabel, s_mt6836b0, $L_6836b0)
+ASM_VAR(AsmLabel, s_mt678acc, $L_678acc)
+ASM_VAR(AsmLabel, s_mt6836a8, $L_6836a8)
+ASM_VAR(AsmLabel, s_mt68369c, $L_68369c)
+ASM_VAR(AsmLabel, s_mt683694, $L_683694)
+ASM_VAR(AsmLabel, s_mt683688, $L_683688)
+ASM_VAR(AsmLabel, s_mt683680, $L_683680)
+ASM_VAR(AsmLabel, s_mt683674, $L_683674)
+ASM_VAR(AsmLabel, s_mtPower676e94, $L_676e94)    // "power"
+ASM_VAR(AsmLabel, s_mt68366c, $L_68366c)
+ASM_VAR(AsmLabel, s_mt677738, $L_677738)
+ASM_VAR(AsmLabel, s_mt683664, $L_683664)
+ASM_VAR(AsmLabel, s_mt683660, $L_683660)
+ASM_VAR(AsmLabel, s_mt68365c, $L_68365c)
+ASM_VAR(AsmLabel, s_mt683654, $L_683654)
+ASM_VAR(AsmLabel, s_mt683648, $L_683648)
+ASM_VAR(AsmLabel, s_mt683644, $L_683644)
+ASM_VAR(AsmLabel, s_mt683640, $L_683640)
+ASM_VAR(AsmLabel, s_mt68363c, $L_68363c)
+ASM_VAR(AsmLabel, s_mt683634, $L_683634)
+ASM_VAR(AsmLabel, s_mt68362c, $L_68362c)
+ASM_VAR(AsmLabel, s_mt683624, $L_683624)
+
+// keywords that only set flags in +32
+static const struct { const char* name; DWORD flag; } k_mtFlags[] = {
+    {s_mt683688, 0x4000}, {s_mt683680, 0x100000}, {s_mt683674, 0x80000},
+};
+static const struct { const char* name; DWORD flag; } k_mtFlags2[] = {
+    {s_mt683640, 0x80}, {s_mt68363c, 0x100}, {s_mt683634, 0x200}, {s_mt68362c, 0x8000}, {s_mt683624, 0x10000},
+};
+
+static char* Mt_Next(char** p)
+{
+    return CallC<char*>(FUN_5ab1b0, p);
+}
+
+// t: an index (1-based in the text) into +off unless there is no token
+static bool Mt_Index(char** p, BYTE* o, int off)
+{
+    char* t = Mt_Next(p);
+    if (!t)
+        return false;
+    F(int, o, off) = atoi(t) - 1;
+    return true;
+}
+
+static void Mt_Float(char** p, BYTE* o, int off)
+{
+    if (char* t = Mt_Next(p))
+        F(float, o, off) = (float)atof(t);
+}
+
+static bool Mt_Is(const char* t, const char* k)
+{
+    return strcmp(t, k) == 0;
+}
+
+extern "C" {
+
+// [FUN_5eb7a0] reads a material description (keywords and values, quotes read as spaces) into o: flags at +32,
+// indices, factors and colors; returns 1
+int __cdecl Material_Read(char* text, BYTE* o)
+{
+    for (char* c = text; *c; c++)
+        if (*c == '"')
+            *c = ' ';
+    char* tok = Mt_Next(&text);
+    F(DWORD, o, 32) = 0;
+    F(int, o, 76) = 0;
+    F(int, o, 72) = 0;
+    while (tok) {
+        DWORD& flags = F(DWORD, o, 32);
+        bool found = false;
+        if (Mt_Is(tok, s_mt6836bc)) {
+            F(int, o, 40) = atoi(Mt_Next(&text)) - 1;
+            goto next;
+        }
+        {
+            DWORD f = Mt_Is(tok, s_mt6836b8) ? 1 : Mt_Is(tok, s_mt6836b4) ? 3 : Mt_Is(tok, s_mt6836b0) ? 65 : 0;
+            if (f) {
+                char* t = Mt_Next(&text);
+                flags |= f;
+                F(int, o, 56) = atoi(t) - 1;
+                goto next;
+            }
+        }
+        if (Mt_Is(tok, s_mt678acc)) {
+            char* t = Mt_Next(&text);
+            flags |= 16;
+            F(int, o, 60) = atoi(t) - 1;
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt6836a8)) {
+            char* t = Mt_Next(&text);
+            flags |= 32;
+            if (g_720904 == 0)
+                flags |= 384;
+            F(float, o, 88) = (float)atof(t);
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt68369c)) {
+            Mt_Float(&text, o, 92);
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt683694)) {
+            Mt_Float(&text, o, 104);
+            flags |= 0x2000;
+            goto next;
+        }
+        for (int i = 0; i < 3; i++)
+            if (Mt_Is(tok, k_mtFlags[i].name)) {
+                flags |= k_mtFlags[i].flag;
+                found = true;
+                break;
+            }
+        if (found)
+            goto next;
+        if (Mt_Is(tok, s_mtPower676e94)) {
+            if (char* t = Mt_Next(&text))
+                F(int, o, 36) = atoi(t);
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt68366c)) {
+            flags |= 0x1000;
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt677738)) {
+            Mt_Float(&text, o, 96);
+            Mt_Float(&text, o, 100);
+            F(int, o, 64) = 0;
+            flags |= 0x800;
+            goto next;
+        }
+        if (strncmp(tok, s_mt677738, 3) == 0) {
+            F(int, o, 64) = tok[3] ? tok[3] - '0' : 0;
+            Mt_Float(&text, o, 96);
+            Mt_Float(&text, o, 100);
+            flags |= 0x800;
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt683664)) {
+            Mt_Index(&text, o, 48);
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt683660)) {
+            if (Mt_Index(&text, o, 44))
+                flags |= 0x400;
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt68365c)) {
+            Mt_Index(&text, o, 52);
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt683654)) {
+            flags |= 4;
+            F(float, o, 80) = (float)atof(Mt_Next(&text));
+            F(float, o, 84) = (float)atof(Mt_Next(&text));
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt683648)) {
+            F(float, o, 112) = (float)atof(Mt_Next(&text));
+            F(float, o, 116) = (float)atof(Mt_Next(&text));
+            goto next;
+        }
+        if (Mt_Is(tok, s_mt683644)) {
+            flags |= 8;
+            F(float, o, 108) = (float)(atof(Mt_Next(&text)) * g_mt64dae0);
+            goto next;
+        }
+        for (int i = 0; i < 5; i++)
+            if (Mt_Is(tok, k_mtFlags2[i].name)) {
+                flags |= k_mtFlags2[i].flag;
+                break;
+            }
+    next:
+        tok = Mt_Next(&text);
+    }
+    return 1;
+}
+
+} // extern "C"

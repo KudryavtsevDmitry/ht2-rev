@@ -1556,3 +1556,145 @@ extern "C" void __fastcall List48_Destroy(BYTE** s)
     F(BYTE*, *s, 4) = *s;
     CallC(FUN_44b4a0, *s, 48);
 }
+
+// === reading a road object block of the save file (FUN_488a90)
+
+ASM_VAR(DWORD, g_sv6703b4, $L_6703b4)
+ASM_VAR(DWORD, g_sv6703ac, $L_6703ac)
+ASM_VAR(DWORD, g_sv6703a4, $L_6703a4)
+ASM_VAR(DWORD, g_sv67039c, $L_67039c)
+ASM_VAR(DWORD, g_sv670394, $L_670394)
+ASM_VAR(DWORD, g_sv67038c, $L_67038c)
+ASM_VAR(DWORD, g_sv670384, $L_670384)
+ASM_VAR(DWORD, g_sv67037c, $L_67037c)
+ASM_VAR(DWORD, g_sv67036c, $L_67036c)
+ASM_VAR(DWORD, g_sv670374, $L_670374)
+ASM_PROC(FUN_48a2c0)    // vector<void*>::insert_aux
+ASM_PROC(FUN_48a000)    // vector<void*>::insert_aux
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")
+
+static bool Sv_More(FILE* f, long pos, int size)
+{
+    return pos + size - ftell(f) != 0;
+}
+
+// push_back of pointer x to the vector at v
+static void Sv_PushPtr(BYTE** v, BYTE* x, void (*insert)())
+{
+    if (v[1] != v[2]) {
+        if (v[1])
+            *(BYTE**)v[1] = x;
+        v[1] += 4;
+    } else
+        CallThis(insert, v, v[1], &x);
+}
+
+static BYTE* Sv_Last(BYTE* self, int off)
+{
+    return F(BYTE**, self, off)[-1];
+}
+
+extern "C" {
+
+// [FUN_488a90] reads a block of the save file into the object (thiscall): an object block (6703b4) adds a
+// 144-byte record (+24) with its name, position, matrix and value; a list block (67038c) adds 56-byte records
+// (+12) with their values, names, points (+16, 24 bytes each) and pairs (+28, 8 bytes each); 0
+int __fastcall SaveBlock_Read(BYTE* self, void*, FILE* f)
+{
+    DWORD tag;
+    long pos;
+    int size;
+    Save_ReadHeader(f, &tag, &pos, &size);
+    if (tag == g_sv6703b4) {
+        DWORD id;
+        long p2;
+        int s2;
+        char name[1132] = {0};
+        Save_ReadHeader(f, &id, &p2, &s2);
+        if (id == g_sv6703ac)
+            fread(name, s2, 1, f);
+        Save_SkipBlock(f, p2, s2);
+        BYTE* r = (BYTE*)operator new(144);
+        r = r ? Rec_Init488900(r, 0, (int)name, 0) : 0;
+        Sv_PushPtr((BYTE**)(self + 24), r, FUN_48a2c0);
+        while (Sv_More(f, pos, size)) {
+            Save_ReadHeader(f, &id, &p2, &s2);
+            if (id == g_sv6703a4) {
+                DVec3 v;
+                Save_ReadVec(&v, f);
+                memcpy(Sv_Last(self, 28) + 16, &v, 24);
+            } else if (id == g_sv67039c) {
+                double m[12];
+                Save_ReadMatrix(m, f);
+                memcpy(Sv_Last(self, 28) + 40, m, 96);
+                memcpy(Sv_Last(self, 28) + 16, m + 9, 24);
+                F(BYTE, Sv_Last(self, 28), 140) = 1;
+            } else if (id == g_sv670394) {
+                int v;
+                fread(&v, 4, 1, f);
+                F(int, Sv_Last(self, 28), 136) = v;
+            }
+            Save_SkipBlock(f, p2, s2);
+        }
+    } else if (tag == g_sv67038c) {
+        while (Sv_More(f, pos, size)) {
+            DWORD id;
+            long p2;
+            int s2;
+            Save_ReadHeader(f, &id, &p2, &s2);
+            if (id == g_sv670384) {
+                DWORD flags;
+                fread(&flags, 4, 1, f);
+                DWORD* o = (DWORD*)operator new(56);
+                if (o)
+                    o = (flags & 1) ? Rec_Init488880a(o, 0, flags) : Rec_Init488880b(o, 0, flags);
+                Sv_PushPtr((BYTE**)(self + 12), (BYTE*)o, FUN_48a000);
+                double d;
+                fread(&d, 8, 1, f);
+                F(double, Sv_Last(self, 16), 0) = d;
+                int v;
+                fread(&v, 4, 1, f);
+                F(int, Sv_Last(self, 16), 8) = v;
+            } else if (id == g_sv67037c) {
+                char text[1024];
+                fread(text, s2, 1, f);
+                BYTE* last = Sv_Last(self, 16);
+                BYTE* end = F(BYTE*, last, 44);
+                size_t n = strlen(text);
+                CallThis(FUN_44c220, last + 40, end, (BYTE*)text, (BYTE*)text + n + 1);
+            } else if (id == g_sv67036c) {
+                int count;
+                fread(&count, 4, 1, f);
+                for (int i = count; i > 0; i--) {
+                    DVec3 v;
+                    Save_ReadVec(&v, f);
+                    BYTE** vec = (BYTE**)(Sv_Last(self, 16) + 16);
+                    if (vec[1] != vec[2]) {
+                        if (vec[1])
+                            memcpy(vec[1], &v, 24);
+                        vec[1] += 24;
+                    } else
+                        CallThis(FUN_489900, vec, vec[1], &v);
+                }
+            } else if (id == g_sv670374) {
+                while (Sv_More(f, p2, s2)) {
+                    DWORD pair[2];
+                    fread(pair, 8, 1, f);
+                    BYTE** vec = (BYTE**)(Sv_Last(self, 16) + 28);
+                    if (vec[1] != vec[2]) {
+                        if (vec[1])
+                            memcpy(vec[1], pair, 8);
+                        vec[1] += 8;
+                    } else
+                        CallThis(FUN_44c470, vec, vec[1], pair);
+                }
+            }
+            Save_SkipBlock(f, p2, s2);
+        }
+    }
+    Save_SkipBlock(f, pos, size);
+    return 0;
+}
+
+} // extern "C"

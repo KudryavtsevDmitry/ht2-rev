@@ -78,7 +78,7 @@ ASM_VAR(AsmLabel, g_vtbl64c628, $L_64c628)
 ASM_VAR(AsmLabel, g_vtbl64c650, $L_64c650)
 ASM_VAR(AsmLabel, g_vtbl64c668, $L_64c668)
 ASM_VAR(AsmLabel, g_7025f0, $L_7025f0)
-ASM_PROC(FUN_4daf40)
+extern "C" void FUN_4daf40(); KING_ALIAS("_FUN_4daf40", "@Fx4daf40_Construct@20")
 ASM_PROC(FUN_4dd2a0)
 extern "C" void FUN_579380(); KING_ALIAS("_FUN_579380", "_Pool_Prepare")
 extern "C" void FUN_59bb90(); KING_ALIAS("_FUN_59bb90", "@Effect59bb90_Construct@36")
@@ -5014,3 +5014,54 @@ extern "C" int __cdecl Fx_HandleMessage(int msg, BYTE* m)
 extern "C" int __fastcall q240_Sce5fa720_Destroy(BYTE* s); KING_ALIAS("@q240_Sce5fa720_Destroy@4", "@Sce5fa720_Destroy@4")
 // [FUN_4c5680] forwards to Sce5fa720_Destroy
 extern "C" int __fastcall Thunk4c5680(BYTE* s) { return q240_Sce5fa720_Destroy(s); }
+
+// === an effect with 14 random values (FUN_4daf40)
+
+ASM_VAR(AsmLabel, s_fx672c74, $L_672c74)
+ASM_VAR(AsmLabel, g_fxVtbl64d4c8, $L_64d4c8)
+ASM_VAR(float, g_fx64c254, $L_64c254)
+ASM_VAR(float, g_fx64d4c4, $L_64d4c4)
+ASM_VAR(float, g_fx64c350, $L_64c350)
+ASM_VAR(float, g_fx64c40c, $L_64c40c)
+
+// the constant fields (+144 .. +672): float bit patterns
+static const DWORD k_fx4daf40[][2] = {
+    {144, 3212836864u}, {148, 3239051264u}, {152, 1071225242u}, {156, 1065353216u}, {160, 3238002688u}, {164, 1073741824u}, {168, 1069128090u}, {172, 3235066675u}, {176, 1067869798u}, {180, 3216611738u}, {184, 3227516928u}, {188, 1067869798u}, {192, 1069128090u}, {196, 3225839206u}, {200, 1067869798u}, {204, 3216611738u}, {208, 0u}, {212, 1067869798u}, {216, 0u}, {220, 3222064333u}, {224, 1077936128u}, {228, 1069128090u}, {232, 0u}, {236, 1067869798u}, {240, 3216611738u}, {244, 3212836864u}, {248, 1067869798u}, {252, 0u}, {256, 1072064102u}, {260, 1077936128u}, {264, 3216611738u}, {268, 3225419776u}, {272, 1067869798u}, {276, 1069128090u}, {280, 3231711232u}, {284, 1067869798u}, {288, 3216611738u}, {292, 3233808384u}, {296, 1067869798u}, {300, 3212836864u}, {304, 3238002688u}, {308, 1068708659u}, {368, 3216611738u}, {372, 3235066675u}, {376, 1065353216u}, {380, 3216611738u}, {384, 3234018099u}, {388, 1065353216u}, {392, 3216611738u}, {396, 3232969523u}, {400, 1065353216u}, {404, 3216611738u}, {408, 3231920947u}, {412, 1065353216u}, {416, 3216611738u}, {420, 3230872371u}, {424, 1065353216u}, {428, 0u}, {432, 1072064102u}, {436, 1077936128u}, {440, 1069128090u}, {444, 3235066675u}, {448, 1065353216u}, {452, 1069128090u}, {456, 3234018099u}, {460, 1065353216u}, {464, 1069128090u}, {468, 3232969523u}, {472, 1065353216u}, {476, 1069128090u}, {480, 3231920947u}, {484, 1065353216u}, {488, 1069128090u}, {492, 3230872371u}, {496, 1065353216u}, {500, 0u}, {504, 3222064333u}, {508, 1077936128u}, {512, 3212836864u}, {516, 0u}, {520, 1082130432u}, {524, 3212836864u}, {528, 0u}, {532, 1082130432u}, {536, 3212836864u}, {540, 0u}, {544, 1082130432u}, {548, 3212836864u}, {552, 0u}, {556, 1082130432u}, {560, 3212836864u}, {564, 0u}, {568, 1082130432u}, {572, 0u}, {576, 0u}, {580, 1084227584u}, {584, 1065353216u}, {588, 0u}, {592, 1082130432u}, {596, 1065353216u}, {600, 0u}, {604, 1082130432u}, {608, 1065353216u}, {612, 0u}, {616, 1082130432u}, {620, 1065353216u}, {624, 0u}, {628, 1082130432u}, {632, 1065353216u}, {636, 0u}, {640, 1082130432u}, {644, 0u}, {648, 0u}, {652, 1084227584u}, {656, 1077936128u}, {660, 0u}, {672, 0u}
+};
+
+extern "C" {
+
+// [FUN_4daf40] constructor (view, a, b): fixed shape data, 14 random values at +88 (+664 their maximum, +668 that
+// plus 64c40c), owned by the view (+2992)
+BYTE* __fastcall Fx4daf40_Construct(BYTE* self, void*, BYTE* view, int a, int b)
+{
+    CallThis(FUN_5d3110, self, (const char*)s_fx672c74);
+    memset(self + 144, 0, 512);
+    F(void*, self, 0) = g_fxVtbl64d4c8;
+    F(BYTE*, self, 676) = view;
+    CallThis(FUN_5d3570, view + 2992, self);
+    F(int, self, 672) = 0;
+    F(int, self, 680) = a;
+    F(int, self, 684) = b;
+    for (unsigned i = 0; i < sizeof k_fx4daf40 / sizeof k_fx4daf40[0]; i++)
+        F(DWORD, self, k_fx4daf40[i][0]) = k_fx4daf40[i][1];
+    for (int k = 0; k < 14; k++) {
+        F(int, self, 32 + k * 4) = 0;
+        F(int, self, 312 + k * 4) = 0;
+        float r = (float)(rand() * g_fx64c254);
+        int r2 = rand();
+        F(float, self, 88 + k * 4) = (float)((r2 * (double)g_fx64c254 - r) * g_fx64d4c4 + (double)k * g_fx64c350);
+    }
+    F(float, self, 664) = 0;
+    double m = 0;
+    for (int k = 0; k < 14; k++) {
+        float x = F(float, self, 88 + k * 4);
+        m = F(float, self, 664) < x ? x : F(float, self, 664);
+        F(float, self, 664) = (float)m;
+    }
+    F(float, self, 668) = (float)(m + g_fx64c40c);
+    CallThis(FUN_5d33d0, self, 1);
+    return self;
+}
+
+} // extern "C"

@@ -218,7 +218,7 @@ extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16"
 extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
 ASM_PROC(FUN_479520)
 extern "C" void FUN_479760(); KING_ALIAS("_FUN_479760", "@Vec8_Insert479760@16")
-ASM_PROC(FUN_47a230)
+extern "C" void FUN_47a230(); KING_ALIAS("_FUN_47a230", "@PlayerRec_Copy@12")
 extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")
 extern "C" void FUN_47c070(); KING_ALIAS("_FUN_47c070", "_AiList_FindActive")
 extern "C" void FUN_47b530(); KING_ALIAS("_FUN_47b530", "_Alloc8_Copy@12")
@@ -1177,3 +1177,115 @@ extern "C" void __fastcall Vec8_FreeStorage(BYTE** v)
     if (n)
         CallC(FUN_44b4a0, v[0], n << 3);
 }
+
+// === the player record's copy constructor (FUN_47a230)
+
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // Stl_Allocate (bytes)
+extern "C" void FUN_4072f0(); KING_ALIAS("_FUN_4072f0", "_Copy1")    // copies bytes (first, last, to): the end
+extern "C" void FUN_4abce0(); KING_ALIAS("_FUN_4abce0", "@Vec12_Reserve@16")
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")
+extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")
+extern "C" void FUN_47e1f0(); KING_ALIAS("_FUN_47e1f0", "_Stl_UninitCopy8")
+ASM_PROC(FUN_466300)
+
+// d = a copy of the vector s of records of size n, made by copy (first, last, to, -)
+static void Pc_Vec(BYTE** d, BYTE* const* s, int n, void (*copy)())
+{
+    int count = (int)(s[1] - s[0]) / n;
+    BYTE* p = 0;
+    d[0] = d[1] = d[2] = 0;
+    if (count)
+        p = CallC<BYTE*>(FUN_44b740, count * n);
+    d[0] = d[1] = p;
+    d[2] = p + count * n;
+    d[1] = CallC<BYTE*>(copy, s[0], s[1], p, d);
+}
+
+// copies the bytes [from, to) of s to d
+static void Pc_Copy(BYTE* d, const BYTE* s, int from, int to)
+{
+    memcpy(d + from, s + from, to - from);
+}
+
+extern "C" {
+
+// [FUN_47a230] copy constructor of the 992-byte player record (thiscall): its vectors (+0 bytes, +16 hops,
+// +64 40-byte, +136 8-byte, +152 16-byte, +172 bytes, +264 bytes, +640 12-byte) are copied, the rest field by
+// field (the padding between fields isn't)
+BYTE* __fastcall PlayerRec_Copy(BYTE* self, void*, const BYTE* src)
+{
+    BYTE** v = (BYTE**)self;
+    BYTE* const* s = (BYTE* const*)src;
+    {
+        unsigned size = s[1] - s[0];
+        v[0] = v[1] = v[2] = 0;
+        BYTE* p = size ? CallC<BYTE*>(FUN_44b740, size) : 0;
+        v[0] = v[1] = p;
+        v[2] = p + size;
+        v[1] = CallC<BYTE*>(FUN_4072f0, s[0], s[1], p);
+    }
+    {
+        BYTE** d = (BYTE**)(self + 16);
+        BYTE* const* h = (BYTE* const*)(src + 16);
+        char a;
+        CallThis(FUN_4abce0, d, (int)(h[1] - h[0]) / 12, &a);
+        d[1] = CallC<BYTE*>(FUN_47e3e0, h[0], h[1], d[0], 0);
+    }
+    Pc_Copy(self, src, 32, 64);
+    Pc_Vec((BYTE**)(self + 64), (BYTE* const*)(src + 64), 40, FUN_47d330);
+    Pc_Copy(self, src, 76, 100);
+    Pc_Copy(self, src, 104, 136);
+    Pc_Vec((BYTE**)(self + 136), (BYTE* const*)(src + 136), 8, FUN_47e1f0);
+    Pc_Copy(self, src, 148, 152);
+    Pc_Vec((BYTE**)(self + 152), (BYTE* const*)(src + 152), 16, FUN_466300);
+    Pc_Copy(self, src, 164, 172);
+    {
+        BYTE** d = (BYTE**)(self + 172);
+        BYTE* const* b = (BYTE* const*)(src + 172);
+        unsigned size = b[1] - b[0];
+        d[0] = d[1] = d[2] = 0;
+        BYTE* p = size ? CallC<BYTE*>(FUN_44b740, size) : 0;
+        d[0] = d[1] = p;
+        d[2] = p + size;
+        d[1] = CallC<BYTE*>(FUN_4072f0, b[0], b[1], p);
+    }
+    Pc_Copy(self, src, 184, 264);
+    {
+        BYTE** d = (BYTE**)(self + 264);
+        BYTE* const* b = (BYTE* const*)(src + 264);
+        unsigned size = b[1] - b[0];
+        d[0] = d[1] = d[2] = 0;
+        BYTE* p = size ? CallC<BYTE*>(FUN_44b740, size) : 0;
+        d[0] = d[1] = p;
+        d[2] = p + size;
+        memmove(p, b[0], b[1] - b[0]);
+        d[1] = p + (b[1] - b[0]);
+    }
+    Pc_Copy(self, src, 280, 489);
+    Pc_Copy(self, src, 496, 506);
+    Pc_Copy(self, src, 508, 532);
+    Pc_Copy(self, src, 536, 640);
+    {
+        BYTE** d = (BYTE**)(self + 640);
+        BYTE* const* h = (BYTE* const*)(src + 640);
+        int n = (int)(h[1] - h[0]) / 12;
+        d[0] = d[1] = d[2] = 0;
+        BYTE* p = n ? CallC<BYTE*>(FUN_44b740, n * 12) : 0;
+        d[0] = d[1] = p;
+        d[2] = p + n * 12;
+        d[1] = CallC<BYTE*>(FUN_47e3e0, h[0], h[1], p, d);
+    }
+    Pc_Copy(self, src, 652, 724);
+    Pc_Copy(self, src, 728, 778);
+    Pc_Copy(self, src, 784, 793);
+    Pc_Copy(self, src, 800, 841);
+    Pc_Copy(self, src, 844, 852);
+    Pc_Copy(self, src, 856, 865);
+    Pc_Copy(self, src, 868, 884);
+    Pc_Copy(self, src, 888, 940);
+    Pc_Copy(self, src, 944, 969);
+    Pc_Copy(self, src, 976, 988);
+    return self;
+}
+
+} // extern "C"

@@ -1360,3 +1360,253 @@ int __cdecl Grd_DxErrorName(DWORD hr, char* buf, unsigned size)
 
 }  // extern "C"
 
+
+// === splitting grid triangles (FUN_605900)
+
+ASM_VAR(int, g_gsDepth7241b8, $L_7241b8)       // the count of the triangle stack
+ASM_VAR(AsmLabel, g_gsStack7241bc, $L_7241bc)   // the stack, from index 1
+ASM_VAR(float, g_gsHalf64c258, $L_64c258)
+extern "C" void FUN_60f4f0(); KING_ALIAS("_FUN_60f4f0", "@MarineQueue_SetNodePriority@16")
+extern "C" void FUN_606440(); KING_ALIAS("_FUN_606440", "@GridMesh_RemoveEdge@12")
+extern "C" void FUN_606730(); KING_ALIAS("_FUN_606730", "@Grid606750_Delete@12")
+extern "C" void FUN_6062c0(); KING_ALIAS("_FUN_6062c0", "@GridMesh_RemoveTriangle@12")
+extern "C" void FUN_606400(); KING_ALIAS("_FUN_606400", "@GridMesh_CreatePoint@12")
+extern "C" void FUN_606330(); KING_ALIAS("_FUN_606330", "@GridMesh_CreateTriangle@24")
+extern "C" void FUN_606100(); KING_ALIAS("_FUN_606100", "@GridEdge_Construct@8")
+extern "C" void FUN_606170(); KING_ALIAS("_FUN_606170", "@GridEdge_SetPairs@16")
+extern "C" void FUN_60f900(); KING_ALIAS("_FUN_60f900", "@MarineQueue_InsertEdge@12")
+extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16")
+
+static BYTE** Gs_Stack()
+{
+    return (BYTE**)(char*)g_gsStack7241bc;
+}
+
+static void Gs_Push(BYTE* t)
+{
+    Gs_Stack()[++g_gsDepth7241b8] = t;
+}
+
+static __declspec(noinline) int Gs_Mid(DWORD a, DWORD b)
+{
+    unsigned __int64 s = (DWORD)(a + b);
+    return (int)((double)(__int64)s * g_gsHalf64c258);
+}
+
+// drops the edge object e of a triangle: its triangles' back links (+56), then the edge itself
+static void Gs_DropEdge(BYTE* mesh, BYTE* e, bool checked)
+{
+    BYTE** p = F(BYTE**, e, 8);
+    if (!checked || p[0])
+        F(BYTE*, F(BYTE*, p[0], 12), 56) = 0;
+    if (!checked || p[1])
+        F(BYTE*, F(BYTE*, p[1], 12), 56) = 0;
+    if (BYTE** q = F(BYTE**, e, 12)) {
+        if (!checked || q[0])
+            F(BYTE*, F(BYTE*, q[0], 12), 56) = 0;
+        if (!checked || q[1])
+            F(BYTE*, F(BYTE*, q[1], 12), 56) = 0;
+    }
+    CallThis(FUN_606440, mesh, e);
+    CallThis(FUN_606730, e, 1);
+}
+
+// the two halves of triangle t at point p: (+20, p, +16) and (+24, p, +20), one level deeper
+static void Gs_Halves(BYTE* mesh, BYTE* t, BYTE* p, BYTE** a, BYTE** b)
+{
+    *a = CallThis<BYTE*>(FUN_606330, mesh, F(BYTE*, t, 20), p, F(BYTE*, t, 16), F(int, t, 36) + 1);
+    *b = CallThis<BYTE*>(FUN_606330, mesh, F(BYTE*, t, 24), p, F(BYTE*, t, 20), F(int, t, 36) + 1);
+}
+
+// the neighbor n of old (if any) now has neighbor nu instead (at +44, else at off)
+static void Gs_Relink(BYTE* n, BYTE* old, BYTE* nu, int off)
+{
+    if (!n)
+        return;
+    if (F(BYTE*, n, 44) == old)
+        F(BYTE*, n, 44) = nu;
+    else
+        F(BYTE*, n, off) = nu;
+}
+
+static BYTE* Gs_NewNode()
+{
+    BYTE* n = (BYTE*)operator new(20);
+    if (n) {
+        F(int, n, 8) = 0;
+        F(int, n, 4) = 0;
+        F(int, n, 0) = 0;
+        F(int, n, 12) = 0;
+    }
+    return n;
+}
+
+// the quadtree node q of triangle t gets children n0 (triangle a) and n1 (triangle b)
+static void Gs_Children(BYTE* t, BYTE* a, BYTE* b, BYTE* n0, BYTE* n1)
+{
+    BYTE* q = F(BYTE*, t, 32);
+    F(BYTE*, n0, 8) = q;
+    F(BYTE*, n0, 12) = a;
+    F(int, n0, 16) = F(int, t, 36) + 1;
+    F(BYTE*, n1, 8) = q;
+    F(BYTE*, n1, 12) = b;
+    F(int, n1, 16) = F(int, t, 36) + 1;
+    F(BYTE*, a, 32) = n0;
+    F(BYTE*, b, 32) = n1;
+    F(BYTE*, q, 0) = n0;
+    F(BYTE*, q, 4) = n1;
+    F(int, q, 12) = 0;
+}
+
+extern "C" {
+
+// [FUN_605900] refines the grid mesh at triangle node e (+12): unless deep enough (mesh+4 vtbl+16), splits the
+// triangle, and the chain of neighbors (+44) up to a mutual pair, at the midpoints of their long edges (+16..+24),
+// relinking neighbors and quadtree nodes; a final pair gets a new edge object priced by mesh+4 vtbl+32
+void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
+{
+    if (F(DWORD, e, 16) >= CallVirt<DWORD>(F(BYTE*, mesh, 4), 16)) {
+        CallThis(FUN_60f4f0, F(BYTE*, mesh, 32), F(BYTE*, e, 12), 0);
+        return;
+    }
+    BYTE* t = F(BYTE*, e, 12);
+    Gs_Push(t);
+    for (;;) {
+        BYTE* n = F(BYTE*, t, 44);
+        Gs_Push(n);
+        if (!n || F(BYTE*, n, 44) == t)
+            break;
+        t = n;
+    }
+    for (;;) {
+        BYTE* t1 = 0;
+        BYTE* t2 = 0;
+        if (g_gsDepth7241b8) {
+            t1 = Gs_Stack()[g_gsDepth7241b8--];
+            if (g_gsDepth7241b8)
+                t2 = Gs_Stack()[g_gsDepth7241b8--];
+        }
+        if (t1 && t2) {
+            int pt[2];
+            pt[0] = Gs_Mid(F(DWORD, F(BYTE*, t1, 24), 0), F(DWORD, F(BYTE*, t1, 16), 0));
+            pt[1] = Gs_Mid(F(DWORD, F(BYTE*, t1, 16), 4), F(DWORD, F(BYTE*, t1, 24), 4));
+            if (BYTE* e1 = F(BYTE*, t1, 56))
+                Gs_DropEdge(mesh, e1, false);
+            CallThis(FUN_6062c0, mesh, t1);
+            BYTE* p = CallThis<BYTE*>(FUN_606400, mesh, pt);
+            BYTE *a, *b, *c, *d;
+            Gs_Halves(mesh, t1, p, &a, &b);
+            if (BYTE* e2 = F(BYTE*, t2, 56))
+                Gs_DropEdge(mesh, e2, false);
+            CallThis(FUN_6062c0, mesh, t2);
+            Gs_Halves(mesh, t2, p, &c, &d);
+            F(BYTE*, a, 52) = d;
+            F(BYTE*, d, 48) = a;
+            F(BYTE*, b, 48) = c;
+            F(BYTE*, c, 52) = b;
+            F(BYTE*, a, 48) = b;
+            F(BYTE*, b, 52) = a;
+            F(BYTE*, a, 44) = F(BYTE*, t1, 48);
+            F(BYTE*, b, 44) = F(BYTE*, t1, 52);
+            Gs_Relink(F(BYTE*, t1, 48), t1, a, 52);
+            Gs_Relink(F(BYTE*, t1, 52), t1, b, 48);
+            F(BYTE*, c, 48) = d;
+            F(BYTE*, d, 52) = c;
+            F(BYTE*, c, 44) = F(BYTE*, t2, 48);
+            F(BYTE*, d, 44) = F(BYTE*, t2, 52);
+            Gs_Relink(F(BYTE*, t2, 48), t2, c, 52);
+            Gs_Relink(F(BYTE*, t2, 52), t2, d, 48);
+            BYTE* n0 = Gs_NewNode();
+            BYTE* n1 = Gs_NewNode();
+            BYTE* n2 = Gs_NewNode();
+            BYTE* n3 = Gs_NewNode();
+            Gs_Children(t1, a, b, n0, n1);
+            Gs_Children(t2, c, d, n2, n3);
+            if (g_gsDepth7241b8 == 0) {
+                // the last pair: a new edge object between the two quadtree nodes
+                BYTE* q2 = F(BYTE*, t2, 32);
+                BYTE* q1 = F(BYTE*, t1, 32);
+                BYTE* g = (BYTE*)operator new(108);
+                g = g ? CallThis<BYTE*>(FUN_606100, g) : 0;
+                if (!CallThis<int>(FUN_606170, g, q1, q2)) {
+                    if (g)
+                        CallThis(FUN_606730, g, 1);
+                } else {
+                    if (q1) {
+                        F(BYTE*, F(BYTE*, F(BYTE*, q1, 0), 12), 56) = g;
+                        F(BYTE*, F(BYTE*, F(BYTE*, q1, 4), 12), 56) = g;
+                    }
+                    if (q2) {
+                        F(BYTE*, F(BYTE*, F(BYTE*, q2, 0), 12), 56) = g;
+                        F(BYTE*, F(BYTE*, F(BYTE*, q2, 4), 12), 56) = g;
+                    }
+                    BYTE* pricer = F(BYTE*, mesh, 4);
+                    typedef double(__thiscall * PriceFn)(BYTE*, int, int, int, BYTE*, int, int, int, BYTE*);
+                    PriceFn fn = *(PriceFn*)(*(BYTE**)pricer + 32);
+                    if (F(int, g, 12))
+                        F(float, g, 72) = (float)fn(pricer, F(int, g, 20), F(int, g, 24), F(int, g, 28), g + 16,
+                                                    F(int, g, 48), F(int, g, 52), F(int, g, 56), g + 44);
+                    else
+                        F(float, g, 72) = (float)fn(pricer, F(int, g, 20), F(int, g, 24), F(int, g, 28), g + 16,
+                                                    0, 0, 0, 0);
+                    CallThis(FUN_60f900, F(BYTE*, mesh, 28), g);
+                    F(short, mesh, 52)++;
+                }
+                CallVirt(t1, 0, 1);
+                CallVirt(t2, 0, 1);
+                return;
+            }
+            BYTE* top = Gs_Stack()[g_gsDepth7241b8];
+            Gs_Push(F(BYTE*, t2, 48) == top ? c : d);
+            CallVirt(t1, 0, 1);
+            CallVirt(t2, 0, 1);
+            continue;
+        }
+        // a single triangle (no neighbor to split with)
+        BYTE* s = t2 ? t2 : t1;
+        int pt[2];
+        int y = Gs_Mid(F(DWORD, F(BYTE*, s, 24), 4), F(DWORD, F(BYTE*, s, 16), 4));
+        pt[0] = Gs_Mid(F(DWORD, F(BYTE*, s, 16), 0), F(DWORD, F(BYTE*, s, 24), 0));
+        pt[1] = y;
+        if (BYTE* e1 = F(BYTE*, s, 56))
+            Gs_DropEdge(mesh, e1, true);
+        CallThis(FUN_6062c0, mesh, s);
+        BYTE* p = CallThis<BYTE*>(FUN_606400, mesh, pt);
+        BYTE *a, *b;
+        Gs_Halves(mesh, s, p, &a, &b);
+        F(BYTE*, a, 48) = b;
+        F(BYTE*, b, 52) = a;
+        F(BYTE*, a, 52) = F(BYTE*, s, 44);
+        F(BYTE*, b, 48) = F(BYTE*, s, 44);
+        F(BYTE*, a, 44) = F(BYTE*, s, 48);
+        F(BYTE*, b, 44) = F(BYTE*, s, 52);
+        Gs_Relink(F(BYTE*, s, 48), s, a, 52);
+        Gs_Relink(F(BYTE*, s, 52), s, b, 48);
+        BYTE* n0 = Gs_NewNode();
+        BYTE* n1 = Gs_NewNode();
+        F(BYTE*, n0, 12) = a;
+        F(BYTE*, n1, 12) = b;
+        F(int, n0, 16) = F(int, s, 36) + 1;
+        F(int, n1, 16) = F(int, s, 36) + 1;
+        BYTE* q = F(BYTE*, s, 32);
+        F(BYTE*, q, 0) = n0;
+        F(BYTE*, q, 4) = n1;
+        F(int, q, 12) = 0;
+        F(BYTE*, n0, 8) = q;
+        F(BYTE*, n1, 8) = q;
+        F(BYTE*, b, 32) = n1;
+        F(BYTE*, a, 32) = n0;
+        if (g_gsDepth7241b8 == 0) {
+            CallThis(FUN_6064c0, mesh, F(BYTE*, s, 32), 0);
+            if (s)
+                CallVirt(s, 0, 1);
+            return;
+        }
+        BYTE* top = Gs_Stack()[g_gsDepth7241b8];
+        Gs_Push(F(BYTE*, s, 48) == top ? a : b);
+        if (s)
+            CallVirt(s, 0, 1);
+    }
+}
+
+} // extern "C"

@@ -986,3 +986,81 @@ HopVecFull* __cdecl Road_FindPositionRoute(HopVecFull* out, int side, PositionId
 }
 
 }  // extern "C"
+
+// === the cost between two positions (FUN_486800)
+
+extern "C" {
+
+// [FUN_486800] the cost of the route between two positions: by nodes when both are at nodes, else the cheapest
+// over the ends of their edges plus the priced lengths to them (the direct run when both are on one edge); a
+// position within 0.1 of an edge end is priced again from that node
+void __cdecl Road_PositionCost(int side, PositionId from, PositionId to, double* cost)
+{
+    if (from.road == -1 && from.node == -1 && !(from.t < 0.0 || from.t > 0.0) && from.segment == 0
+        && from.object == 0 && from.m_24 == 0)
+        AiError(0, 512, s_trceFile, s_trceId, 744, "Internal error 435", &g_aiEmpty, &g_aiEmpty);
+    if (from.node != -1 && to.node != -1) {
+        Road_NodeCost(side, from.node, to.node, cost);
+        return;
+    }
+    *cost = 0;
+    if (from.node != -1 && from.node == to.node)
+        return;
+    if (from.road == to.road && from.node == to.node && !(from.t < to.t || from.t > to.t)
+        && from.segment == to.segment && from.object == to.object)
+        return;
+    int starts[2], ends[2];
+    double startCost[2], endCost[2];
+    int nStarts = 0, nEnds = 0;
+    if (from.node != -1) {
+        starts[nStarts] = from.node;
+        startCost[nStarts++] = 0;
+    } else {
+        RoadEdge* e = g_roadEdges[from.road];
+        int n0 = e->from->id, n1 = e->to->id;
+        starts[nStarts] = n0;
+        startCost[nStarts] = Pos_EdgeLength(side, e, from, Pos_AtNode(n0));
+        if (!(startCost[nStarts++] >= g_trce64b5b8)) {
+            Road_PositionCost(side, Pos_AtNode(n0), to, cost);
+            return;
+        }
+        starts[nStarts] = n1;
+        startCost[nStarts] = Pos_EdgeLength(side, e, from, Pos_AtNode(n1));
+        if (!(startCost[nStarts++] >= g_trce64b5b8)) {
+            Road_PositionCost(side, Pos_AtNode(n1), to, cost);
+            return;
+        }
+    }
+    if (to.node != -1) {
+        ends[nEnds] = to.node;
+        endCost[nEnds++] = 0;
+    } else {
+        RoadEdge* e = g_roadEdges[to.road];
+        int n0 = e->from->id, n1 = e->to->id;
+        ends[nEnds] = n0;
+        endCost[nEnds] = Pos_EdgeLength(side, e, Pos_AtNode(n0), to);
+        if (!(endCost[nEnds++] >= g_trce64b5b8)) {
+            Road_PositionCost(side, from, Pos_AtNode(n0), cost);
+            return;
+        }
+        ends[nEnds] = n1;
+        endCost[nEnds] = Pos_EdgeLength(side, e, Pos_AtNode(n1), to);
+        if (!(endCost[nEnds++] >= g_trce64b5b8)) {
+            Road_PositionCost(side, from, Pos_AtNode(n1), cost);
+            return;
+        }
+    }
+    *cost = s_noRoute;
+    if (from.road == to.road)
+        *cost = Pos_EdgeLength(side, g_roadEdges[from.road], from, to);
+    for (int i = 0; i < nStarts; i++)
+        for (int j = 0; j < nEnds; j++) {
+            double c = 0;
+            Road_NodeCost(side, starts[i], ends[j], &c);
+            c = c + startCost[i] + endCost[j];
+            if (!(c >= *cost))
+                *cost = c;
+        }
+}
+
+}  // extern "C"
