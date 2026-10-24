@@ -10,7 +10,7 @@ extern "C" void __fastcall Lights_Destruct(BYTE*, void*); // aeffects.cpp
 extern "C" BYTE* __fastcall MarineQueue_Init(BYTE*, void*);
 extern "C" DWORD __fastcall MarineQueue_SetNodePriority(BYTE*, void*, BYTE*, DWORD);
 extern "C" BYTE* __fastcall MarineQueue_TopNode(BYTE*, void*);
-ASM_PROC(FUN_605900)
+extern "C" void FUN_605900(); KING_ALIAS("_FUN_605900", "_GridMesh_Refine")
 extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveLink(BYTE*,void*,BYTE*);
 extern "C" void __fastcall GridEdge_Destruct(BYTE*,void*);

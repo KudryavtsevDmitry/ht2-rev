@@ -133,7 +133,7 @@ extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")  
 ASM_PROC(FUN_6303c4)    // ICDecompress
 ASM_PROC(FUN_6303b8)    // ICSendMessage
 extern "C" void FUN_5c29d0(); KING_ALIAS("_FUN_5c29d0", "_Media_Start")
-ASM_PROC(FUN_5c1d40)    // draws the video frame
+extern "C" void FUN_5c1d40(); KING_ALIAS("_FUN_5c1d40", "@Video_DrawFrame@28")    // draws the video frame
 ASM_PROC(FUN_5c34a0)
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
@@ -2929,3 +2929,95 @@ extern "C" BYTE* __fastcall Stream_Construct(BYTE* s, void*, int n, float x, flo
     F(float, s, 168) = dz;
     return s;
 }
+
+// === drawing a video frame (FUN_5c1d40)
+
+ASM_VAR(AsmLabel, s_vf67f42c, $L_67f42c)
+extern "C" void FUN_5d3ab0(); KING_ALIAS("_FUN_5d3ab0", "_Mode_TextureLevel")    // the texture level: 2 for 565, 3 for 555 surfaces
+
+static WORD Vf_565(DWORD v)
+{
+    return (WORD)((((v >> 10) & 63) | (v >> 19) << 6) << 5 | (v >> 3) & 31);
+}
+
+static WORD Vf_555(DWORD v)
+{
+    return (WORD)((((v >> 19) & 31) << 5 | (v >> 11) & 31) << 5 | (v >> 3) & 31);
+}
+
+extern "C" {
+
+// [FUN_5c1d40] draws the decoded frame (+2204, +1112 x +1116 pixels of +1122 bits, bottom-up) on the DirectDraw
+// surface at (x, y) in w x h, clipped; scaled when +2240 bit 0 asks for it and the sizes differ; 16-bit
+// surfaces get 565 or 555 pixels, 8-bit frames are copied
+void __fastcall Video_DrawFrame(BYTE* self, void*, BYTE* surf, int x, int y, int w, int h)
+{
+    DWORD desc[31];
+    memset(desc, 0, sizeof desc);
+    desc[0] = 124;
+    desc[1] = 8387054;
+    typedef HRESULT(__stdcall * LockFn)(BYTE*, void*, void*, DWORD, void*);
+    typedef HRESULT(__stdcall * UnlockFn)(BYTE*, void*);
+    if ((*(LockFn*)(*(BYTE**)surf + 100))(surf, 0, desc, 33, 0)) {
+        CallC(FUN_5d2ba0, (const char*)s_vf67f42c, 0);
+        return;
+    }
+    int width = desc[3], height = desc[2], pitch = desc[4];
+    BYTE* bits = (BYTE*)desc[9];
+    unsigned srcW = F(DWORD, self, 1112), srcH = F(DWORD, self, 1116);
+    if (x >= width || y >= height || x + w == 0 || y + h == 0)
+        return;
+    if (x < 0) {
+        w = x + w;
+        x = 0;
+    }
+    if (y < 0) {
+        h = y + h;
+        y = 0;
+    }
+    if ((unsigned)(x + w) > (unsigned)width)
+        w = width - x;
+    if ((unsigned)(y + h) > (unsigned)height)
+        h = height - y;
+    unsigned bpp = F(WORD, self, 1122) >> 3;
+    BYTE* src = F(BYTE*, self, 2204);
+    BYTE* dst = bits + pitch * y + x * 2;
+    if ((F(BYTE, self, 2240) & 1) && (srcW != (unsigned)w || srcH != (unsigned)h)) {
+        int mode = CallC<int>(FUN_5d3ab0);
+        if (mode == 2 || (mode = CallC<int>(FUN_5d3ab0)) == 3) {
+            unsigned acc = 0;
+            for (unsigned r = (unsigned)h; r; r--, acc += srcH, dst += pitch) {
+                unsigned row = (srcH - acc / (unsigned)h - 1) * srcW;
+                WORD* d = (WORD*)dst;
+                unsigned col = 0;
+                for (unsigned c = (unsigned)w; c; c--, col += srcW) {
+                    DWORD v = F(DWORD, src, (col / (unsigned)w + row) * bpp);
+                    *d++ = mode == 2 ? Vf_565(v) : Vf_555(v);
+                }
+            }
+        }
+    } else {
+        int mode = CallC<int>(FUN_5d3ab0);
+        if (mode == 2 || (mode = CallC<int>(FUN_5d3ab0)) == 3) {
+            if (h) {
+                int step = -(int)(bpp * srcW);
+                int start = (srcH - 1) * bpp * srcW;
+                for (unsigned r = (unsigned)h; r; r--, start += step, dst += pitch) {
+                    WORD* d = (WORD*)dst;
+                    int o = start;
+                    for (unsigned c = (unsigned)w; c; c--, o += bpp) {
+                        DWORD v = F(DWORD, src, o);
+                        *d++ = mode == 2 ? Vf_565(v) : Vf_555(v);
+                    }
+                }
+            }
+        } else if (bpp == 1 && h) {
+            int o = (srcH - 1) * srcW;
+            for (unsigned r = (unsigned)h; r; r--, o -= srcW, dst += pitch)
+                memcpy(dst, src + o, w);
+        }
+    }
+    (*(UnlockFn*)(*(BYTE**)surf + 128))(surf, 0);
+}
+
+} // extern "C"

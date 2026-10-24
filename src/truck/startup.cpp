@@ -891,7 +891,7 @@ extern "C" void __fastcall King_EnterWorld(BYTE* s)
 
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 ASM_PROC(FUN_5de0a0)
-ASM_PROC(FUN_531290)
+extern "C" void FUN_531290(); KING_ALIAS("_FUN_531290", "@Car_Construct@20")
 ASM_PROC(FUN_532430)
 extern "C" void FUN_53e320(); KING_ALIAS("_FUN_53e320", "@Controls_Construct@12")
 extern "C" void FUN_56e5a0(); KING_ALIAS("_FUN_56e5a0", "_CopterScreen_Start")

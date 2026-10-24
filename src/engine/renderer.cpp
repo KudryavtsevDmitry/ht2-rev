@@ -43,7 +43,7 @@ ASM_VAR(double, g_eps001, $L_64b658)
 ASM_VAR(double, g_one64b670, $L_64b670)
 ASM_PROC(FUN_5b2950)
 ASM_PROC(FUN_5b1020)
-ASM_PROC(FUN_5b0810)
+extern "C" void FUN_5b0810(); KING_ALIAS("_FUN_5b0810", "@Material_SetStages@20")
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 ASM_PROC(FUN_5feace)    // fills words
 extern "C" void FUN_5b6770(); KING_ALIAS("_FUN_5b6770", "@Surface_Create@24")
@@ -1595,7 +1595,7 @@ extern "C" void FUN_5b61f0(); KING_ALIAS("_FUN_5b61f0", "_Words_Fill")
 extern "C" void FUN_5e7ed0(); KING_ALIAS("_FUN_5e7ed0", "_Data_Read5e8160")
 ASM_PROC(FUN_5e8160)
 ASM_PROC(FUN_5bae30)
-ASM_PROC(FUN_5bb660)
+extern "C" void FUN_5bb660(); KING_ALIAS("_FUN_5bb660", "@Texture_Upload@24")
 extern "C" void FUN_5d7740(); KING_ALIAS("_FUN_5d7740", "_Com_Release")
 ASM_PROC(FUN_5d7750)
 ASM_VAR(AsmLabel, s_rn67f0f0, $L_67f0f0)
@@ -2641,3 +2641,397 @@ extern "C" int __fastcall Light_ReachesSphere(int* l, void*, const float* sp)
     double a = x87_acos(dir[2] * n[2] + dir[1] * n[1] + dir[0] * n[0]);
     return a > g_q246_64da00 ? 0 : 2;
 }
+
+// === texture stages of a material (FUN_5b0810)
+
+ASM_VAR(int, g_ts7208bc, $L_7208bc)
+ASM_VAR(int, g_ts7208c0, $L_7208c0)
+ASM_VAR(int, g_ts7208c4, $L_7208c4)
+ASM_VAR(int, g_ts7208c8, $L_7208c8)
+ASM_VAR(int, g_ts7208cc, $L_7208cc)
+ASM_VAR(int, g_tsMulti7208d4, $L_7208d4)        // multitexturing
+ASM_VAR(int, g_ts702e84, $L_702e84)
+ASM_VAR(DWORD, g_tsCaps702e8c, $L_702e8c)
+ASM_VAR(float, g_ts64c458, $L_64c458)
+ASM_VAR(double, g_ts64fa38, $L_64fa38)
+ASM_VAR(double, g_ts651750, $L_651750)
+ASM_VAR(double, g_ts651748, $L_651748)
+ASM_VAR(AsmLabel, s_ts67f044, $L_67f044)
+extern "C" void FUN_5bbbf0(); KING_ALIAS("_FUN_5bbbf0", "@Image_Prepare@16")
+
+static void Ts_State(int stage, int state, DWORD value)
+{
+    BYTE* d = g_device;
+    (*(HRESULT(__stdcall**)(BYTE*, int, int, DWORD))(*(BYTE**)d + 148))(d, stage, state, value);
+}
+
+static void Ts_Texture(int stage, void* tex)
+{
+    BYTE* d = g_device;
+    (*(HRESULT(__stdcall**)(BYTE*, int, void*))(*(BYTE**)d + 140))(d, stage, tex);
+}
+
+static DWORD Ts_Bits(float f)
+{
+    return *(DWORD*)&f;
+}
+
+static __declspec(noinline) int Ts_Int(double d)
+{
+    return (int)d;
+}
+
+extern "C" {
+
+// [FUN_5b0810] sets up texture stage stage (and the next ones for linked materials, +44) for material m after
+// prev: the texture, coordinates, color and alpha operations by the material's flags (+32), bump mapping,
+// addressing and filters; 1 when a stage blends with the vertex alpha
+int __fastcall Material_SetStages(BYTE* self, void*, BYTE* m, BYTE* prev, int stage)
+{
+    int result = 0;
+    if (F(DWORD, m, 32) & 0x80000) {
+        while (!g_ts7208c4) {
+            DWORD f = F(DWORD, m, 32);
+            if (!g_ts7208bc || F(int, m, 44) < 0 || (f & 0x20000))
+                return 0;
+            result = 0;
+            m = F(BYTE*, self, 8260) + F(int, m, 44) * 124;
+            if (!(F(DWORD, m, 32) & 0x80000))
+                break;
+        }
+    }
+    int st = g_tsMulti7208d4 ? stage : 0;
+    int coords = g_tsMulti7208d4 ? F(int, m, 48) : 0;
+    if (stage == 0 || coords > F(int, self, 8248))
+        F(int, self, 8248) = coords;
+    DWORD flags = F(DWORD, m, 32);
+    if (!(flags & 1)) {
+        Ts_Texture(0, 0);
+        Ts_State(0, 1, 1);
+        Ts_State(0, 4, 1);
+        return 0;
+    }
+    BYTE* tex = F(BYTE*, m, 76);
+    if (F(int, tex, 64) == 5 && !(flags & 0x4000) && !g_ts702e84)
+        result = 1;
+    Ts_Texture(st, F(void*, tex, 76));
+    Ts_State(st, 11, coords);
+    if ((flags & 0x2000) && g_ts7208cc) {
+        BYTE* d = g_device;
+        (*(HRESULT(__stdcall**)(BYTE*, int, DWORD))(*(BYTE**)d + 80))(d, 60, Ts_Int((double)F(float, m, 104) * g_ts64c458) << 24);
+    }
+    BYTE* img = F(BYTE*, tex, 72);
+    if (!img) {
+        char buf[100];
+        sprintf(buf, s_ts67f044, m);
+        CallC(FUN_5d2ba0, buf, 0);
+    } else if ((*(HRESULT(__stdcall**)(BYTE*))(*(BYTE**)img + 96))(img) == (HRESULT)0x887601C2)
+        CallThis(FUN_5bbbf0, tex, 1.0);
+    if (!(prev && F(DWORD, prev, 32) == F(DWORD, m, 32)
+          && F(int, F(BYTE*, m, 76), 52) == F(int, F(BYTE*, prev, 76), 52))) {
+        if (stage == 0) {
+            Ts_State(st, 2, 2);
+            Ts_State(st, 3, 0);
+            Ts_State(st, 1, 4);
+            g_ts702e84 = 0;
+            flags = F(DWORD, m, 32);
+            if (flags & 0x4000) {
+                if (g_tsMulti7208d4 && (g_tsCaps702e8c & 0x1000000)) {
+                    g_ts702e84 = 1;
+                    Ts_State(st, 5, 2);
+                    Ts_State(st, 4, 2);
+                } else {
+                    Ts_State(st, 5, 2);
+                    Ts_State(st, 6, 0);
+                    Ts_State(st, 4, 4);
+                }
+            } else if (flags & 2) {
+                Ts_State(st, 5, 2);
+                Ts_State(st, 4, 2);
+            } else {
+                Ts_State(st, 5, 2);
+                Ts_State(st, 6, 0);
+                Ts_State(st, 4, 4);
+            }
+        } else {
+            flags = F(DWORD, m, 32);
+            bool plain = false;
+            if (flags & 64) {
+                if (g_ts7208bc) {
+                    Ts_State(st, 2, 2);
+                    Ts_State(st, 3, 1);
+                    Ts_State(st, 1, 4);
+                    if (F(int, F(BYTE*, m, 76), 64) == 5) {
+                        Ts_State(st, 5, 2);
+                        Ts_State(st, 6, 1);
+                        Ts_State(st, 4, 4);
+                    } else if (g_ts7208c8) {
+                        Ts_State(st, 6, 1);
+                        Ts_State(st, 4, 3);
+                    } else {
+                        Ts_State(st, 5, 1);
+                        Ts_State(st, 4, 2);
+                    }
+                } else
+                    plain = true;
+            } else if (flags & 0x80000) {
+                Ts_State(st, 2, 2);
+                Ts_State(st, 3, 1);
+                Ts_State(st, 1, 22);
+                Ts_State(st, 5, 1);
+                Ts_State(st, 4, 2);
+                double a = F(double, self, 8488) * g_ts64fa38;
+                double s = x87_sin(a);
+                float m10 = (float)(s * g_ts651750);
+                float m00 = (float)(x87_cos(a) * g_ts651750);
+                float m01 = (float)(s * g_ts651748);
+                Ts_State(st, 7, Ts_Bits(m00));
+                Ts_State(st, 8, Ts_Bits(m10));
+                Ts_State(st, 9, Ts_Bits(m01));
+                Ts_State(st, 10, Ts_Bits(m00));
+            } else if (g_tsMulti7208d4) {
+                Ts_State(st, 2, 2);
+                Ts_State(st, 3, 1);
+                if (g_ts702e84)
+                    Ts_State(st, 1, 16);
+                else if (!((flags & 0x2000) && g_ts7208cc) && F(int, F(BYTE*, m, 76), 64) == 5)
+                    Ts_State(st, 1, 13);
+                else
+                    Ts_State(st, 1, 14);
+                if (F(int, m, 64) == 3)
+                    Ts_State(st, 1, 2);
+                if (g_ts7208c8) {
+                    Ts_State(st, 6, g_ts702e84 == 0);
+                    Ts_State(st, 4, 3);
+                } else {
+                    Ts_State(st, 5, g_ts702e84 == 0);
+                    Ts_State(st, 4, 2);
+                }
+            } else
+                plain = true;
+            if (plain) {
+                Ts_State(st, 2, 2);
+                Ts_State(st, 1, 2);
+                Ts_State(st, 5, F(int, F(BYTE*, m, 76), 64) == 5 ? 2 : 3);
+                Ts_State(st, 4, 2);
+            }
+        }
+        tex = F(BYTE*, m, 76);
+        Ts_State(st, 12, !(F(DWORD, tex, 52) & 0x100) && !(F(DWORD, m, 32) & 0x200) ? 1 : 3);
+        if ((F(BYTE, F(BYTE*, m, 76), 52) & 8) && !(g_tsCaps702e8c & 0x4000000)) {
+            Ts_State(st, 16, 1);
+            Ts_State(st, 17, 1);
+        } else {
+            Ts_State(st, 16, 2);
+            Ts_State(st, 17, 2);
+        }
+        Ts_State(st, 18, g_ts7208c0 && F(int, F(BYTE*, m, 76), 68) > 1 ? 3 : 2);
+    }
+    int next = stage + 1;
+    if (!g_tsMulti7208d4) {
+        Ts_State(1, 1, 1);
+        Ts_State(1, 4, 1);
+        return result;
+    }
+    flags = F(DWORD, m, 32);
+    if (!(flags & 0x4000) || (g_tsCaps702e8c & 0x1000000)) {
+        if (next > 7)
+            return result;
+        BYTE* p = prev && F(int, prev, 44) >= 0 ? F(BYTE*, self, 8260) + F(int, prev, 44) * 124 : 0;
+        int link = F(int, m, 44);
+        if (link >= 0 && !(flags & 0x20000))
+            return result | Material_SetStages(self, 0, F(BYTE*, self, 8260) + link * 124, p, next);
+    }
+    Ts_State(next, 1, 1);
+    Ts_State(next, 4, 1);
+    return result;
+}
+
+} // extern "C"
+
+// === uploading an image to its texture surfaces (FUN_5bb660)
+
+ASM_VAR(BYTE*, g_tuDraw72090c, $L_72090c)       // IDirectDraw
+ASM_VAR(int, g_tuMips7208c0, $L_7208c0)
+ASM_VAR(AsmLabel, g_tuFmt720148, $L_720148)
+ASM_VAR(AsmLabel, g_tuFmt720870, $L_720870)
+ASM_VAR(AsmLabel, g_tuFmt720128, $L_720128)
+ASM_VAR(AsmLabel, g_tuFmt720728, $L_720728)
+ASM_VAR(AsmLabel, s_tu67f2d8, $L_67f2d8)
+ASM_VAR(AsmLabel, s_tu67f220, $L_67f220)
+ASM_VAR(AsmLabel, s_tu67f1e0, $L_67f1e0)
+ASM_VAR(AsmLabel, s_tu67f1a0, $L_67f1a0)
+ASM_VAR(AsmLabel, s_tu67f184, $L_67f184)
+ASM_VAR(AsmLabel, s_tu67f2b4, $L_67f2b4)
+ASM_VAR(AsmLabel, s_tu67f29c, $L_67f29c)
+ASM_VAR(AsmLabel, s_tu67f280, $L_67f280)
+extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
+extern "C" void FUN_5e6bc0(); KING_ALIAS("_FUN_5e6bc0", "@Mmio_ReadAt@16")
+extern "C" void FUN_5e6bb0(); KING_ALIAS("_FUN_5e6bb0", "@Mmio_Reset2@8")
+ASM_PROC(FUN_5bb260)
+extern "C" void FUN_5d3af0(); KING_ALIAS("_FUN_5d3af0", "_Video_Get720898")
+extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
+extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
+
+// a COM method (stdcall, this pushed) at vtbl+off of o
+template <class R = HRESULT, class... A>
+static R Tu_Com(void* o, int off, A... args)
+{
+    return ((R(__stdcall*)(void*, A...))*(void**)(*(BYTE**)o + off))(o, args...);
+}
+
+static void Tu_LogError(HRESULT hr)
+{
+    CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
+}
+
+extern "C" {
+
+// [FUN_5bb660] uploads the image's pixels (+8, or +36 read from the file +80 for flag 1; a region if given) to
+// its texture surface (+72) and, with mipmapping, the following levels (+68 of them, halving the size): by
+// locking the texture, or through a system memory surface of the format +64 and a blit
+void __fastcall Texture_Upload(BYTE* self, void*, int flags, int* region, int a, int b)
+{
+    if (!g_device || !F(BYTE*, self, 72))
+        return;
+    int bpp = CallC<int>(FUN_5d8350);
+    int left = 0, top = 0;
+    int fromFile = flags & 1;
+    BYTE* src = fromFile ? F(BYTE*, self, 36) : F(BYTE*, self, 8);
+    int width = F(WORD, self, 20);
+    int rows = F(WORD, self, 22);
+    int rowBytes = width * bpp;
+    if (region) {
+        src = (BYTE*)region[5];
+        width = region[4];
+        rowBytes = region[2];
+        rows = region[3];
+        left = region[0];
+        top = region[1];
+    }
+    BYTE* surf = F(BYTE*, self, 72);
+    if (Tu_Com<HRESULT>(surf, 96) == (HRESULT)0x887601C2)
+        Tu_Com<HRESULT>(surf, 108);
+    surf = F(BYTE*, self, 72);
+    int levelW = F(WORD, self, 20);
+    int levelH = F(WORD, self, 22);
+    int levels = F(int, self, 68);
+    for (;;) {
+        DWORD desc[31];
+        memset(desc, 0, sizeof desc);
+        desc[0] = 124;
+        desc[1] = 8387054;
+        if (fromFile)
+            CallThis(FUN_5e6bc0, F(BYTE*, self, 80), F(BYTE*, self, 32) + (int)src, rows * rowBytes);
+        bool done = false;
+        if (flags && Tu_Com<HRESULT>(surf, 100, 0, desc, 33, 0) == 0) {
+            int pitch = desc[4];
+            BYTE* dst = (BYTE*)desc[9] + pitch * top + left * bpp;
+            if (dst) {
+                CallThis(FUN_5bb260, self, dst, pitch, src, rowBytes, rows, width, a, b, flags);
+                Tu_Com<HRESULT>(surf, 128, 0);
+            } else
+                CallC(FUN_5d2ba0, (const char*)s_tu67f2d8, 0);
+            done = true;
+        }
+        if (!done) {
+            DWORD sd[31];
+            memset(sd, 0, sizeof sd);
+            sd[0] = 124;
+            sd[3] = levelW;
+            sd[1] = 4103;
+            sd[2] = levelH;
+            sd[26] = 6144;
+            const void* fmt = 0;
+            unsigned caps;
+            switch (F(int, self, 64)) {
+            case 2:
+                caps = CallC<unsigned>(FUN_5d3af0);
+                if (caps & 2)
+                    fmt = g_tuFmt720148;
+                else
+                    CallC(FUN_5d2e70, F(const char*, self, 4), (const char*)s_tu67f220);
+                break;
+            case 3:
+                caps = CallC<unsigned>(FUN_5d3af0);
+                if (caps & 4)
+                    fmt = g_tuFmt720870;
+                else
+                    CallC(FUN_5d2e70, F(const char*, self, 4), (const char*)s_tu67f1a0);
+                break;
+            case 5:
+                caps = CallC<unsigned>(FUN_5d3af0);
+                if (caps & 16)
+                    fmt = g_tuFmt720128;
+                else
+                    CallC(FUN_5d2e70, F(const char*, self, 4), (const char*)s_tu67f1e0);
+                break;
+            case 8:
+                caps = CallC<unsigned>(FUN_5d3af0);
+                fmt = (caps & 128) ? (const void*)g_tuFmt720728 : (const void*)g_tuFmt720128;
+                break;
+            default:
+                CallC(FUN_5d2e70, F(const char*, self, 4), (const char*)s_tu67f184);
+                break;
+            }
+            if (fmt)
+                memcpy(sd + 18, fmt, 32);
+            BYTE* dd = g_tuDraw72090c;
+            BYTE* tmp;
+            HRESULT hr = Tu_Com<HRESULT>(dd, 24, sd, &tmp, 0);
+            if (hr)
+                Tu_LogError(hr);
+            else if ((hr = Tu_Com<HRESULT>(tmp, 100, 0, desc, 33, 0)) != 0) {
+                CallC(FUN_5d2ba0, (const char*)s_tu67f29c, 0);
+                Tu_LogError(hr);
+            } else {
+                int pitch = desc[4];
+                BYTE* dst = (BYTE*)desc[9] + pitch * top + left * bpp;
+                if (dst)
+                    CallThis(FUN_5bb260, self, dst, pitch, src, rowBytes, rows, width, a, b, flags);
+                Tu_Com<HRESULT>(tmp, 128, 0);
+                DWORD fx[25];
+                memset(fx, 0, sizeof fx);
+                fx[0] = 100;
+                fx[2] = 13369376;
+                int right = rowBytes / bpp + left;
+                RECT dr = {left, top, right, top + rows};
+                RECT sr = dr;
+                hr = Tu_Com<HRESULT>(surf, 20, &dr, tmp, &sr, 16777216, fx);
+                if (hr) {
+                    CallC(FUN_5d2ba0, (const char*)s_tu67f2b4, 0);
+                    Tu_LogError(hr);
+                }
+                Tu_Com<ULONG>(tmp, 8);
+            }
+        }
+        if (fromFile)
+            CallThis(FUN_5e6bb0, F(BYTE*, self, 80));
+        if (levels <= 1 || !g_tuMips7208c0)
+            return;
+        if (surf == F(BYTE*, self, 72))
+            src = flags ? F(BYTE*, self, 40) : F(BYTE*, self, 12);
+        else
+            src += levelH * levelW * bpp;
+        DWORD scaps[4] = {0x401000, 0, 0, 0};    // DDSCAPS_TEXTURE | DDSCAPS_MIPMAP
+        BYTE* next = surf;
+        HRESULT hr = Tu_Com<HRESULT>(surf, 48, scaps, &next);
+        surf = next;
+        if (hr || !surf) {
+            CallC(FUN_5d2ba0, (const char*)s_tu67f280, levelW);
+            Tu_LogError(hr);
+            return;
+        }
+        Tu_Com<ULONG>(surf, 8);
+        levelW /= 2;
+        levelH /= 2;
+        rowBytes = levelW * bpp;
+        width = levelW;
+        rows = levelH;
+        levels--;
+        if (!surf)
+            return;
+    }
+}
+
+} // extern "C"

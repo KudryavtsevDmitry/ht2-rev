@@ -3100,3 +3100,146 @@ extern "C" float __fastcall Thunk556540(BYTE* s) { return q238_Car_HoldLoad(s); 
 extern "C" int __fastcall Thunk557440(BYTE* s, void* d) { return q238_Veh548100_ReleaseAttachment(s, d); }
 // [FUN_557450] forwards to Car_SetFlag9616
 extern "C" int __fastcall Thunk557450(BYTE* s) { return q238_Car_SetFlag9616(s); }
+
+// === the car object (FUN_531290)
+
+ASM_VAR(AsmLabel, s_cr67899c, $L_67899c)
+ASM_VAR(AsmLabel, g_crIdentity7025f0, $L_7025f0)  // a 4x3 identity matrix
+ASM_VAR(AsmLabel, g_crVtbl64f2f0, $L_64f2f0)
+ASM_VAR(AsmLabel, g_crHist4eaa41, $L_4eaa41)
+ASM_VAR(AsmLabel, g_crHist4eaa77, $L_4eaa77)
+ASM_VAR(AsmLabel, g_crHist4eaab0, $L_4eaab0)
+ASM_VAR(AsmLabel, g_cr6969d0, $L_6969d0)
+ASM_VAR(AsmLabel, g_cr696b98, $L_696b98)
+ASM_VAR(AsmLabel, g_cr6969a0, $L_6969a0)
+ASM_VAR(AsmLabel, g_cr696740, $L_696740)
+ASM_VAR(AsmLabel, g_cr702650, $L_702650)
+ASM_VAR(AsmLabel, g_cr696cbc, $L_696cbc)
+ASM_VAR(int, g_cr696cb8, $L_696cb8)
+ASM_VAR(AsmLabel, s_cr673340, $L_673340)
+ASM_VAR(BYTE*, g_cr6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_cr696ca0, $L_696ca0)
+ASM_VAR(AsmLabel, g_crNames678748, $L_678748)  // 7 char*
+ASM_VAR(AsmLabel, g_cr6d20a0, $L_6d20a0)
+ASM_VAR(AsmLabel, g_cr6d20bc, $L_6d20bc)
+ASM_VAR(AsmLabel, g_crDir702620, $L_702620)     // 3 floats
+ASM_VAR(float, g_cr64c2f8, $L_64c2f8)
+ASM_VAR(AsmLabel, s_cr67898c, $L_67898c)
+ASM_VAR(AsmLabel, s_cr67897c, $L_67897c)
+ASM_VAR(AsmLabel, s_cr67896c, $L_67896c)
+ASM_VAR(AsmLabel, s_cr67895c, $L_67895c)
+ASM_VAR(AsmLabel, s_cr67894c, $L_67894c)
+ASM_VAR(AsmLabel, s_cr67893c, $L_67893c)
+ASM_VAR(AsmLabel, s_cr67892c, $L_67892c)
+ASM_VAR(AsmLabel, s_cr67891c, $L_67891c)
+ASM_VAR(AsmLabel, s_cr67890c, $L_67890c)
+ASM_VAR(AsmLabel, s_cr6788fc, $L_6788fc)
+ASM_VAR(AsmLabel, s_cr6788f4, $L_6788f4)
+ASM_VAR(AsmLabel, s_cr6788e8, $L_6788e8)
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_4eab58(); KING_ALIAS("_FUN_4eab58", "@History_Construct@24")
+extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+
+static void Cr_Identity(BYTE* p)
+{
+    memcpy(p, g_crIdentity7025f0, 48);
+}
+
+static BYTE* Cr_Find(const char* name)
+{
+    return CallC<BYTE*>(FUN_5ef3d0, name);
+}
+
+extern "C" {
+
+// [FUN_531290] constructor of the car object (kind, scene object s, net): matrices, the input histories, the
+// camera matrix and its inverse into the globals, the gauges by dashboard style, the sound keys
+BYTE* __fastcall Car_Construct(BYTE* self, void*, int kind, BYTE* s, int net)
+{
+    CallThis(FUN_5d31e0, self, kind, (const char*)s_cr67899c);
+    Cr_Identity(self + 52);
+    for (int k = 204; k <= 224; k += 4)
+        F(int, self, k) = 0;
+    CallThis(FUN_4eab58, self + 280, (void*)g_crHist4eaa41, 1.0f, 0, 0);
+    CallThis(FUN_4eab58, self + 312, (void*)g_crHist4eaa77, 0.2f, 0, 0);
+    CallThis(FUN_4eab58, self + 344, (void*)g_crHist4eaab0, 1.0f, 0, 0);
+    CallThis(FUN_4eab58, self + 376, (void*)g_crHist4eaa41, 0.3f, 0, 0);
+    CallThis(FUN_4eab58, self + 408, (void*)g_crHist4eaa41, 0.3f, 0, 0);
+    F(int, self, 456) = 0;
+    F(int, self, 460) = 0;
+    F(int, self, 464) = 0;
+    static const short k_ident[10] = {472, 520, 568, 1116, 1164, 1212, 1424, 1472, 1520, 1568};
+    for (int i = 0; i < 10; i++)
+        Cr_Identity(self + k_ident[i]);
+    F(int, self, 1620) = 0;
+    F(int, self, 1624) = 0;
+    F(int, self, 1628) = 0;
+    F(void*, self, 0) = g_crVtbl64f2f0;
+    F(BYTE*, self, 32) = s;
+    F(int, self, 36) = net;
+    F(int, self, 1384) = 30;
+    F(int, self, 1388) = 30;
+    F(int, self, 616) = 0;
+    F(int, self, 624) = 0;
+    BYTE m[48];
+    memcpy(self + 52, CallThis<BYTE*>(FUN_5dbcc0, F(BYTE*, self, 32), m), 48);
+    BYTE* p = F(BYTE*, F(BYTE*, self, 32), 488);
+    F(int, self, 100) = p ? F(int, p, 76) : 0;
+    F(int, self, 104) = -1;
+    Cr_Identity(self + 472);
+    Cr_Identity(self + 520);
+    memcpy(self + 568, self + 520, 48);
+    memcpy(g_cr6969d0, self + 52, 48);
+    memcpy(g_cr696b98, g_cr6969d0, 48);
+    memcpy(g_cr6969a0, CallC<BYTE*>(FUN_5ac2e0, m, self + 52), 48);
+    memcpy(g_cr696740, g_cr702650, 12);
+    sprintf((char*)g_cr696cbc, s_cr673340);
+    g_cr696cb8 = 0;
+    F(int, self, 40) = 0;
+    F(int, self, 1404) = 254;
+    int style = F(int, g_cr6cec70, 408) & 15;
+    if (style == 1 || style == 2) {
+        bool one = style == 1;
+        F(BYTE*, self, 632) = Cr_Find(one ? s_cr67898c : s_cr67893c);
+        F(BYTE*, self, 636) = Cr_Find(one ? s_cr67897c : s_cr67892c);
+        F(BYTE*, self, 640) = Cr_Find(one ? s_cr67897c : s_cr67892c);
+        F(BYTE*, self, 644) = Cr_Find(one ? s_cr67896c : s_cr67891c);
+        F(BYTE*, self, 648) = Cr_Find(one ? s_cr67895c : s_cr67890c);
+        F(BYTE*, self, 652) = Cr_Find(one ? s_cr67895c : s_cr67890c);
+        F(BYTE*, self, 628) = Cr_Find(one ? s_cr67894c : s_cr6788fc);
+    } else
+        for (int k = 628; k <= 652; k += 4)
+            F(int, self, k) = 0;
+    F(int, self, 1632) = 0;
+    F(int, self, 1064) = 0;
+    F(int, self, 1068) = 0;
+    for (int k = 1076; k <= 1112; k += 4)
+        F(int, self, k) = 0;
+    Cr_Identity(self + 1116);
+    Cr_Identity(self + 1164);
+    F(DWORD, self, 1268) = 1120403456;     // 100.0f
+    F(DWORD, self, 1272) = 1082526354;     // 4.2f
+    F(DWORD, self, 1260) = 1109393408;     // 40.0f
+    F(DWORD, self, 1264) = 1082526354;
+    F(int, self, 112) = 1;
+    for (int k = 0; k < 7; k++) {
+        ((int*)(char*)g_cr6d20a0)[k] = 0;
+        ((int*)(char*)g_cr6d20bc)[k] = (int)strlen(((char**)(char*)g_crNames678748)[k]);
+    }
+    const float* dir = (const float*)(char*)g_crDir702620;
+    F(float, self, 456) = -dir[0];
+    F(float, self, 460) = -dir[1];
+    F(float, self, 464) = -dir[2];
+    F(float, self, 468) = (float)(CallC<double>(FUN_4e27a5) - g_cr64c2f8);
+    F(BYTE*, self, 440) = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_cr6788f4);
+    F(BYTE*, self, 444) = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_cr6788e8);
+    F(int, self, 448) = F(int, g_cr696ca0, 2992);
+    F(int, self, 452) = 2;
+    return self;
+}
+
+} // extern "C"
