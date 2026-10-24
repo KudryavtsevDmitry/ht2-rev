@@ -128,7 +128,7 @@ int __cdecl Video_SetMode(int w, int h, int bits, int unused, int a, int b)
 
 // ---------------------------------------------------------------------------
 typedef char VmLabel[1];
-ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
+extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
 ASM_VAR(int, g_vmWindowed, $L_7208f0)
 ASM_VAR(BYTE*, g_vmFront, $L_7208f8)
 ASM_VAR(int, g_vm7208b8, $L_7208b8)

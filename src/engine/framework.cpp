@@ -1464,7 +1464,7 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5e7770(); KING_ALIAS("_FUN_5e7770", "_Image_FromFile")    // image: load (name, 0, 0)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
-ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
+extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
 ASM_VAR(BYTE*, g_fwDevice, $L_720908)
 ASM_VAR(BYTE*, g_fwD3d, $L_72090c)
 ASM_VAR(AsmLabel, s_6834e8, $L_6834e8)
