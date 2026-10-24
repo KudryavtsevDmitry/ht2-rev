@@ -960,3 +960,558 @@ SchValue* __cdecl Nat_Plus(SchValue* out, BYTE* p, BYTE** args)
 }
 
 }  // extern "C"
+
+// ---------------------------------------------------------------------------
+// More natives: * and /, the unimplemented number functions (they return an
+// empty value), number<->string, pairs, symbols and characters.
+
+extern "C" void FUN_491aa0(); KING_ALIAS("_FUN_491aa0", "_Sch_Args2")
+extern "C" void FUN_4b1070(); KING_ALIAS("_FUN_4b1070", "_Sch_Zero12")             // an empty value (out, ...)
+extern "C" void FUN_4b0f30(); KING_ALIAS("_FUN_4b0f30", "@SchNumber_Mul@12")
+extern "C" void FUN_4b0f60(); KING_ALIAS("_FUN_4b0f60", "@SchNumber_Div@12")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void FUN_4b0c70(); KING_ALIAS("_FUN_4b0c70", "@Number_Write@12")       // writes a number's text (vector)
+extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
+extern "C" void FUN_4a1e30(); KING_ALIAS("_FUN_4a1e30", "_SchValue_MakeString")
+extern "C" void FUN_4a2230(); KING_ALIAS("_FUN_4a2230", "_SchValue_MakeIdent")
+extern "C" void FUN_4a2140(); KING_ALIAS("_FUN_4a2140", "_SchValue_MakePair")
+extern "C" void FUN_4a2310(); KING_ALIAS("_FUN_4a2310", "_SchValue_MakeNumber")
+extern "C" void FUN_4a1900(); KING_ALIAS("_FUN_4a1900", "@SchEmbd4a1900_Construct@16")    // deque<int> constructor
+extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
+extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")
+ASM_PROC(FUN_4b20d0)    // a number parsed from a deque of characters (out, p, deque)
+ASM_PROC(FUN_4a1710)    // deque<int> destructor
+extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")           // a pair's car (out, value)
+extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")           // a pair's cdr (out, value)
+extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
+extern "C" void FUN_4a19c0(); KING_ALIAS("_FUN_4a19c0", "@SchValue_AsChar@12")
+extern "C" void FUN_49c210(); KING_ALIAS("_FUN_49c210", "_SchValue_Make10008")
+extern "C" void FUN_4b0ea0(); KING_ALIAS("_FUN_4b0ea0", "@Value_ToInt@8")
+ASM_VAR(AsmLabel, s_nTimes, $L_6706b4)
+ASM_VAR(AsmLabel, s_nDivide, $L_670570)
+ASM_VAR(AsmLabel, s_nQuotient, $L_6706b8)
+ASM_VAR(AsmLabel, s_nRemainder, $L_6706c0)
+ASM_VAR(AsmLabel, s_nModulo, $L_6706cc)
+ASM_VAR(AsmLabel, s_nAtan2, $L_67073c)
+ASM_VAR(AsmLabel, s_nNumerator, $L_6706d4)
+ASM_VAR(AsmLabel, s_nDenominator, $L_6706e0)
+ASM_VAR(AsmLabel, s_nFloor, $L_6706ec)
+ASM_VAR(AsmLabel, s_nCeiling, $L_6706f4)
+ASM_VAR(AsmLabel, s_nTruncate, $L_6706fc)
+ASM_VAR(AsmLabel, s_nRound, $L_670708)
+ASM_VAR(AsmLabel, s_nExp, $L_670710)
+ASM_VAR(AsmLabel, s_nLog, $L_670714)
+ASM_VAR(AsmLabel, s_nSin, $L_670718)
+ASM_VAR(AsmLabel, s_nCos, $L_67071c)
+ASM_VAR(AsmLabel, s_nTan, $L_670720)
+ASM_VAR(AsmLabel, s_nAsin, $L_670724)
+ASM_VAR(AsmLabel, s_nAcos, $L_67072c)
+ASM_VAR(AsmLabel, s_nAtan, $L_670734)
+ASM_VAR(AsmLabel, s_nSqrt, $L_670744)
+ASM_VAR(AsmLabel, s_nExpt, $L_67074c)
+ASM_VAR(AsmLabel, s_nMakeRect, $L_670754)
+ASM_VAR(AsmLabel, s_nMakePolar, $L_670768)
+ASM_VAR(AsmLabel, s_nRealPart, $L_670774)
+ASM_VAR(AsmLabel, s_nImagPart, $L_670780)
+ASM_VAR(AsmLabel, s_nMagnitude, $L_67078c)
+ASM_VAR(AsmLabel, s_nAngle, $L_670798)
+ASM_VAR(AsmLabel, s_nToInexact, $L_6707a0)
+ASM_VAR(AsmLabel, s_nToExact, $L_6707b0)
+ASM_VAR(AsmLabel, s_nNumToStr, $L_6707c0)
+ASM_VAR(AsmLabel, s_nStrToNum, $L_6707d0)
+ASM_VAR(AsmLabel, s_nPairP, $L_6707e0)
+ASM_VAR(AsmLabel, s_nCons, $L_6707e8)
+ASM_VAR(AsmLabel, s_nCar, $L_66de28)
+ASM_VAR(AsmLabel, s_nCdr, $L_6707f0)
+ASM_VAR(AsmLabel, s_nSetCar, $L_6707f4)
+ASM_VAR(AsmLabel, s_nSetCdr, $L_670800)
+ASM_VAR(AsmLabel, s_nSymbolP, $L_67080c)
+ASM_VAR(AsmLabel, s_nSymToStr, $L_670814)
+ASM_VAR(AsmLabel, s_nStrToSym, $L_670824)
+ASM_VAR(AsmLabel, s_nCharP, $L_670834)
+ASM_VAR(AsmLabel, s_nCharEq, $L_67083c)
+ASM_VAR(AsmLabel, s_nCharLt, $L_670844)
+ASM_VAR(AsmLabel, s_nCharGt, $L_67084c)
+ASM_VAR(AsmLabel, s_nCharLe, $L_670854)
+ASM_VAR(AsmLabel, s_nCharGe, $L_67085c)
+ASM_VAR(AsmLabel, s_nCharToInt, $L_670864)
+ASM_VAR(AsmLabel, s_nIntToChar, $L_670874)
+ASM_VAR(AsmLabel, s_nPair, $L_66cb08)         // "Pair"
+ASM_VAR(AsmLabel, s_nIdentifier, $L_66ce4c)   // "Identifier"
+ASM_VAR(AsmLabel, s_nString, $L_66ca58)       // "String"
+
+static void Nat_Zero3(SchValue* v)
+{
+    v->obj = 0;
+    v->m_4 = 0;
+    v->flags = 0;
+}
+
+// a typed handle of v (an object of the type, its reference counted), else an error and an empty handle
+static void Nat_Typed(SchValue* h, const SchValue* v, int type, const char* typeName)
+{
+    if (v->obj) {
+        if (CallVirt<int>(v->obj, 0) == type) {
+            h->obj = v->obj;
+            h->flags = v->flags;
+            F(int, v->obj, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(v->obj, 4), typeName);
+    } else {
+        h->obj = 0;
+        h->flags = 0;
+    }
+}
+
+// the checks of a handle's use: not empty, not immediate
+static void Nat_Check(const SchValue* h)
+{
+    if (!h->obj)
+        CallC(FUN_4a52e0, 0, 1);
+    if (h->flags & SCH_IMMEDIATE)
+        CallC(FUN_4a52e0, 4, 1);
+}
+
+// type?: the argument's type is kind
+static SchValue* Nat_IsKind(SchValue* out, BYTE* p, BYTE** args, const char* where, int kind)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where))
+        Nat_Zero3(out);
+    else
+        Nat_Bool(out, (BYTE)v.flags == kind);
+    SchValue_Release(&v);
+    return out;
+}
+
+// * and /: like + from 1 (with one argument: * returns it, / its inverse)
+static SchValue* Nat_Arith(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*op)(), bool divide)
+{
+    SchValue a = {0, 0, 0, 0};
+    SchValue s;
+    int one = 1, zero = 0;
+    CallC(FUN_4574e0, &s, 0, &zero, &one);
+    if (Nat_Count(args) == 1) {
+        CopyRef(out, &s);
+        Nat_Release(&s);
+        SchValue_Release(&a);
+        return out;
+    }
+    CopyRef(&a, (SchValue*)(args[0] + 12));
+    if (Nat_Count(args) == 2) {
+        if (!divide) {
+            if ((BYTE)a.flags == 6) {
+                SchValue h;
+                CallThis(FUN_4bd4d0, &h);
+                Nat_Typed(&h, &a, 6, s_nNumber);
+                CopyRef(out, &a);
+                Nat_Release(&h);
+                Nat_Release(&s);
+                SchValue_Release(&a);
+                return out;
+            }
+            CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        } else {
+            if ((BYTE)a.flags == 6) {
+                SchValue h;
+                CallThis(FUN_4bd4d0, &h);
+                Nat_Typed(&h, &a, 6, s_nNumber);
+                CallThis(op, s.obj, h.obj);
+                Nat_Release(&h);
+            } else
+                CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+            CopyRef(out, &s);
+            Nat_Release(&s);
+            SchValue_Release(&a);
+            return out;
+        }
+    } else {
+        if ((BYTE)a.flags == 6) {
+            SchValue h;
+            CallThis(FUN_4556d0, &h, &a);
+            CallThis(FUN_4954c0, s.obj, h.obj);
+            Nat_Release(&h);
+        } else
+            CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        for (int i = 2; i != Nat_Count(args); i++) {
+            CallThis(FUN_40c100, &a, args[0] + i * 12);
+            if ((BYTE)a.flags == 6) {
+                SchValue h;
+                CallThis(FUN_4556d0, &h, &a);
+                CallThis(op, s.obj, h.obj);
+                Nat_Release(&h);
+            } else
+                CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        }
+    }
+    CallThis(FUN_454580, out, &s);
+    Nat_Release(&s);
+    Nat_Release(&a);
+    return out;
+}
+
+// the unimplemented functions of one number: an empty value
+static SchValue* Nat_Number1(SchValue* out, BYTE* p, BYTE** args, const char* where)
+{
+    SchValue v = {0, 0, 0, 0}, h;
+    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+        Nat_Zero3(&h);
+        Nat_Zero3(out);
+        Nat_Release(&h);
+    } else if ((BYTE)v.flags == 6) {
+        CallThis(FUN_4bd4d0, &h);
+        Nat_Typed(&h, &v, 6, s_nNumber);
+        SchValue t;
+        CopyRef(out, CallC<SchValue*>(FUN_4b1070, &t, p, h.obj));
+        Nat_Release(&t);
+        Nat_Release(&h);
+    } else {
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        CallThis(FUN_4bd4d0, &h);
+        CallThis(FUN_454580, out, &h);
+        Nat_Release(&h);
+    }
+    SchValue_Release(&v);
+    return out;
+}
+
+// the unimplemented functions of two numbers: an empty value
+static SchValue* Nat_Number2(SchValue* out, BYTE* p, BYTE** args, const char* where)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, where)) {
+        SchValue h;
+        CallThis(FUN_4bd4d0, &h);
+        CopyRef(out, &h);
+        Nat_Release(&h);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    if ((BYTE)x.flags == 6 && (BYTE)y.flags == 6) {
+        SchValue hx, hy, t;
+        CallThis(FUN_4bd4d0, &hx);
+        Nat_Typed(&hx, &x, 6, s_nNumber);
+        CallThis(FUN_4bd4d0, &hy);
+        Nat_Typed(&hy, &y, 6, s_nNumber);
+        CopyRef(out, CallC<SchValue*>(FUN_4b1070, &t, p, hx.obj, hy.obj));
+        Nat_Release(&t);
+        Nat_Release(&hy);
+        Nat_Release(&hx);
+    } else {
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, where);
+        SchValue t;
+        CallThis(FUN_4bd4d0, &t);
+        CallThis(FUN_454580, out, &t);
+        Nat_Release(&t);
+    }
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+// car, cdr: get(out, the pair)
+static SchValue* Nat_PairPart(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*get)())
+{
+    BYTE* a = args[0];
+    if ((args[1] - a) / 12 != 2) {
+        CallC(FUN_4a5a60, p, 33, where);
+        Nat_Zero3(out);
+        return out;
+    }
+    if (F(BYTE, a, 20) == 2) {
+        CallC(get, out, a + 12);
+        return out;
+    }
+    CallC(FUN_4a5b50, p, 15, (const char*)s_nPair, where);
+    Nat_Zero3(out);
+    return out;
+}
+
+// set-car!, set-cdr!: the pair's value at off = the second argument
+static SchValue* Nat_PairSet(SchValue* out, BYTE* p, BYTE** args, const char* where, int off)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0}, h;
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, where)) {
+        Nat_Zero3(&h);
+        Nat_Zero3(out);
+        Nat_Release(&h);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    if ((BYTE)x.flags == 2) {
+        CallThis(FUN_4bd4d0, &h);
+        Nat_Typed(&h, &x, 2, s_nPair);
+        Nat_Check(&h);
+        CallThis(FUN_40c100, h.obj + off, &y);
+        Nat_Release(&h);
+    } else
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nPair, where);
+    Nat_Zero3(out);
+    SchValue_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+// symbol->string, string->symbol: make(out, 0, the text at +12 of the argument of the type)
+static SchValue* Nat_Convert(SchValue* out, BYTE* p, BYTE** args, const char* where, int type, const char* typeName,
+                             void (*make)())
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where))
+        Nat_Zero3(out);
+    else if ((BYTE)v.flags == type) {
+        SchValue h = {0, 0, 0, 0}, t;
+        Nat_Typed(&h, &v, type, typeName);
+        Nat_Check(&h);
+        CopyRef(out, CallC<SchValue*>(make, &t, 0, h.obj + 12));
+        Nat_Release(&t);
+        Nat_Release(&h);
+    } else {
+        CallC(FUN_4a5b50, p, 15, typeName, where);
+        Nat_Zero3(out);
+    }
+    SchValue_Release(&v);
+    return out;
+}
+
+// char=? .. char>=?: compare the two characters
+static SchValue* Nat_CharCmp(SchValue* out, BYTE* p, BYTE** args, const char* where, int op)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, where)) {
+        SchValue h;
+        Nat_Zero3(&h);
+        Nat_Zero3(out);
+        Nat_Release(&h);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    if ((BYTE)x.flags == 8 && (BYTE)y.flags == 8) {
+        SchValue cx, cy;
+        CallThis(FUN_4a19c0, &cx, &x);
+        CallThis(FUN_4a19c0, &cy, &y);
+        int a = (int)cx.obj, b = (int)cy.obj, r;
+        switch (op) {
+        case 0: r = a == b; break;
+        case 1: r = a < b; break;
+        case 2: r = a > b; break;
+        case 3: r = a <= b; break;
+        default: r = a >= b; break;
+        }
+        Nat_Bool(out, r);
+        Nat_Release(&cy);
+        Nat_Release(&cx);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    Nat_Bool(out, 0);
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+extern "C" {
+
+// [$L_495920] *
+SchValue* __cdecl Nat_Times(SchValue* out, BYTE* p, BYTE** args) { return Nat_Arith(out, p, args, s_nTimes, FUN_4b0f30, false); }
+// $L_495d50: /
+SchValue* __cdecl Nat_Divide(SchValue* out, BYTE* p, BYTE** args) { return Nat_Arith(out, p, args, s_nDivide, FUN_4b0f60, true); }
+// $L_496180 .. $L_496780, $L_498760: quotent, reminder, modulo, atan2 (unimplemented)
+SchValue* __cdecl Nat_Quotient(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number2(out, p, args, s_nQuotient); }
+SchValue* __cdecl Nat_Remainder(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number2(out, p, args, s_nRemainder); }
+SchValue* __cdecl Nat_Modulo(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number2(out, p, args, s_nModulo); }
+SchValue* __cdecl Nat_Atan2(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number2(out, p, args, s_nAtan2); }
+// $L_496a80 .. $L_499cf0: the unimplemented functions of one number
+SchValue* __cdecl Nat_Numerator(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nNumerator); }
+SchValue* __cdecl Nat_Denominator(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nDenominator); }
+SchValue* __cdecl Nat_Floor(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nFloor); }
+SchValue* __cdecl Nat_Ceiling(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nCeiling); }
+SchValue* __cdecl Nat_Truncate(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nTruncate); }
+SchValue* __cdecl Nat_Round(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nRound); }
+SchValue* __cdecl Nat_Exp(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nExp); }
+SchValue* __cdecl Nat_Log(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nLog); }
+SchValue* __cdecl Nat_Sin(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nSin); }
+SchValue* __cdecl Nat_Cos(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nCos); }
+SchValue* __cdecl Nat_Tan(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nTan); }
+SchValue* __cdecl Nat_Asin(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nAsin); }
+SchValue* __cdecl Nat_Acos(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nAcos); }
+SchValue* __cdecl Nat_Atan(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nAtan); }
+SchValue* __cdecl Nat_Sqrt(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nSqrt); }
+SchValue* __cdecl Nat_Expt(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nExpt); }
+SchValue* __cdecl Nat_MakeRect(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nMakeRect); }
+SchValue* __cdecl Nat_MakePolar(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nMakePolar); }
+SchValue* __cdecl Nat_RealPart(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nRealPart); }
+SchValue* __cdecl Nat_ImagPart(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nImagPart); }
+SchValue* __cdecl Nat_Magnitude(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nMagnitude); }
+SchValue* __cdecl Nat_Angle(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nAngle); }
+SchValue* __cdecl Nat_ToInexact(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nToInexact); }
+SchValue* __cdecl Nat_ToExact(SchValue* out, BYTE* p, BYTE** args) { return Nat_Number1(out, p, args, s_nToExact); }
+
+// $L_499f00: number->string
+SchValue* __cdecl Nat_NumberToString(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0}, h;
+    if (CallC<int>(FUN_491c00, p, &v, args, s_nNumToStr)) {
+        Nat_Zero3(&h);
+        Nat_Zero3(out);
+        Nat_Release(&h);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags == 6) {
+        CallThis(FUN_4bd4d0, &h);
+        Nat_Typed(&h, &v, 6, s_nNumber);
+        BYTE text[12];
+        CallThis(FUN_487730, text, &args);
+        Nat_Check(&h);
+        CallThis(FUN_4b0c70, h.obj, text);
+        SchValue t;
+        CopyRef(out, CallC<SchValue*>(FUN_4a1e30, &t, 0, text));
+        Nat_Release(&t);
+        CallThis(FUN_44b090, text);
+        Nat_Release(&h);
+    } else {
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nNumToStr);
+        SchValue t;
+        CallThis(FUN_4bd4d0, &t);
+        CallThis(FUN_454580, out, &t);
+        Nat_Release(&t);
+    }
+    Nat_Release(&v);
+    return out;
+}
+
+// $L_49a150: string->number (the characters go through a deque<int>)
+SchValue* __cdecl Nat_StringToNumber(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0}, h;
+    if (CallC<int>(FUN_491c00, p, &v, args, s_nStrToNum)) {
+        Nat_Zero3(&h);
+        Nat_Zero3(out);
+        Nat_Release(&h);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags == 3) {
+        CallThis(FUN_4bd4d0, &h);
+        Nat_Typed(&h, &v, 3, s_nString);
+        BYTE dq[40];
+        CallThis(FUN_4a1900, dq, &args, 0);
+        Nat_Check(&h);
+        for (BYTE* c = F(BYTE*, h.obj, 12);; c++) {
+            Nat_Check(&h);
+            if (c == F(BYTE*, h.obj, 16))
+                break;
+            int ch = (signed char)*c;
+            if (F(BYTE*, dq, 24) == F(BYTE*, dq, 32) - 4)
+                CallThis(FUN_4a20a0, dq, &ch);
+            else {
+                CallC(FUN_4611c0, F(BYTE*, dq, 24), &ch);
+                F(BYTE*, dq, 24) += 4;
+            }
+        }
+        SchValue t;
+        CopyRef(out, CallC<SchValue*>(FUN_4b20d0, &t, p, dq));
+        Nat_Release(&t);
+        CallThis(FUN_4a1710, dq);
+        Nat_Release(&h);
+    } else {
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nString, (const char*)s_nStrToNum);
+        SchValue t;
+        CallThis(FUN_4bd4d0, &t);
+        CallThis(FUN_454580, out, &t);
+        Nat_Release(&t);
+    }
+    Nat_Release(&v);
+    return out;
+}
+
+// $L_49a400: pair?
+SchValue* __cdecl Nat_PairP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsKind(out, p, args, s_nPairP, 2); }
+
+// $L_49a520: cons
+SchValue* __cdecl Nat_Cons(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0}, t;
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, s_nCons)) {
+        Nat_Zero3(&t);
+        Nat_Zero3(out);
+        Nat_Release(&t);
+    } else {
+        CopyRef(out, CallC<SchValue*>(FUN_4a2140, &t, 0, p, &x, &y));
+        Nat_Release(&t);
+    }
+    SchValue_Release(&y);
+    SchValue_Release(&x);
+    return out;
+}
+
+// $L_49a720: car, $L_49a7c0: cdr
+SchValue* __cdecl Nat_Car(SchValue* out, BYTE* p, BYTE** args) { return Nat_PairPart(out, p, args, s_nCar, FUN_407f00); }
+SchValue* __cdecl Nat_Cdr(SchValue* out, BYTE* p, BYTE** args) { return Nat_PairPart(out, p, args, s_nCdr, FUN_4090a0); }
+// $L_49a860: set-car!, $L_49aab0: set-cdr!
+SchValue* __cdecl Nat_SetCar(SchValue* out, BYTE* p, BYTE** args) { return Nat_PairSet(out, p, args, s_nSetCar, 20); }
+SchValue* __cdecl Nat_SetCdr(SchValue* out, BYTE* p, BYTE** args) { return Nat_PairSet(out, p, args, s_nSetCdr, 32); }
+// $L_49ad00: symbol?
+SchValue* __cdecl Nat_SymbolP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsKind(out, p, args, s_nSymbolP, 9); }
+// $L_49ae20: symbol->string, $L_49b040: string->symbol
+SchValue* __cdecl Nat_SymbolToString(SchValue* out, BYTE* p, BYTE** args)
+{
+    return Nat_Convert(out, p, args, s_nSymToStr, 9, s_nIdentifier, FUN_4a1e30);
+}
+SchValue* __cdecl Nat_StringToSymbol(SchValue* out, BYTE* p, BYTE** args)
+{
+    return Nat_Convert(out, p, args, s_nStrToSym, 3, s_nString, FUN_4a2230);
+}
+// $L_49b260: char?
+SchValue* __cdecl Nat_CharP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsKind(out, p, args, s_nCharP, 8); }
+// $L_49b380 .. $L_49bc00: char=? char<? char>? char<=? char>=?
+SchValue* __cdecl Nat_CharEq(SchValue* out, BYTE* p, BYTE** args) { return Nat_CharCmp(out, p, args, s_nCharEq, 0); }
+SchValue* __cdecl Nat_CharLt(SchValue* out, BYTE* p, BYTE** args) { return Nat_CharCmp(out, p, args, s_nCharLt, 1); }
+SchValue* __cdecl Nat_CharGt(SchValue* out, BYTE* p, BYTE** args) { return Nat_CharCmp(out, p, args, s_nCharGt, 2); }
+SchValue* __cdecl Nat_CharLe(SchValue* out, BYTE* p, BYTE** args) { return Nat_CharCmp(out, p, args, s_nCharLe, 3); }
+SchValue* __cdecl Nat_CharGe(SchValue* out, BYTE* p, BYTE** args) { return Nat_CharCmp(out, p, args, s_nCharGe, 4); }
+
+// $L_49be20: char->integer
+SchValue* __cdecl Nat_CharToInteger(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, s_nCharToInt))
+        Nat_Zero3(out);
+    else if ((BYTE)v.flags == 8) {
+        SchValue c, t;
+        CallThis(FUN_4a19c0, &c, &v);
+        int zero = 0;
+        CopyRef(out, CallC<SchValue*>(FUN_4a2310, &t, 0, &zero, &c.obj));
+        Nat_Release(&t);
+        SchValue_Release(&c);
+    } else
+        Nat_Zero3(out);
+    SchValue_Release(&v);
+    return out;
+}
+
+// $L_49bfe0: integer->char
+SchValue* __cdecl Nat_IntegerToChar(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, s_nIntToChar))
+        Nat_Zero3(out);
+    else if ((BYTE)v.flags == 6) {
+        SchValue h = {0, 0, 0, 0};
+        Nat_Typed(&h, &v, 6, s_nNumber);
+        Nat_Check(&h);
+        CallC(FUN_49c210, out, 0, CallThis<int>(FUN_4b0ea0, h.obj));
+        if (!(h.flags & SCH_IMMEDIATE) && h.obj && --F(int, h.obj, 4) == 0)
+            CallVirt(h.obj, 12, 1);
+    } else
+        Nat_Zero3(out);
+    SchValue_Release(&v);
+    return out;
+}
+
+}  // extern "C"
