@@ -733,7 +733,7 @@ extern "C" void FUN_53fd60(); KING_ALIAS("_FUN_53fd60", "_Cars_ResetGlobals")
 extern "C" void FUN_557510(); KING_ALIAS("_FUN_557510", "_Car_ClearGlobals6ef2b8")
 extern "C" void FUN_578100(); KING_ALIAS("_FUN_578100", "_Joy_SetAutoCenter")
 extern "C" void FUN_4e35cf(); KING_ALIAS("_FUN_4e35cf", "_World_ReadMapSymbols")
-ASM_PROC(FUN_4e0280)
+extern "C" void FUN_4e0280(); KING_ALIAS("_FUN_4e0280", "@VehicleSounds_Find@4")
 extern "C" void FUN_53fcf0(); KING_ALIAS("_FUN_53fcf0", "_Race_Start")
 extern "C" void FUN_52ad30(); KING_ALIAS("_FUN_52ad30", "_Cars_LoadCollision")
 extern "C" void FUN_5c5370(); KING_ALIAS("_FUN_5c5370", "@Thunk5c5370@4")
@@ -809,7 +809,7 @@ extern "C" void FUN_4bac00(); KING_ALIAS("_FUN_4bac00", "_Effects_Shutdown")
 extern "C" void FUN_5e0180(); KING_ALIAS("_FUN_5e0180", "@Fw_Clear5e0180@8")
 extern "C" void FUN_56eea0(); KING_ALIAS("_FUN_56eea0", "_World_FreeAll")
 ASM_PROC(FUN_53fd30)
-ASM_PROC(FUN_5c5910)
+extern "C" void FUN_5c5910(); KING_ALIAS("_FUN_5c5910", "@Media_ObjectMessage@20")
 extern "C" void FUN_56d0f0(); KING_ALIAS("_FUN_56d0f0", "_CopterNet_Handle")
 extern "C" void FUN_586d90(); KING_ALIAS("_FUN_586d90", "_SceneObj_DispatchCommand")
 extern "C" void FUN_46d7f0(); KING_ALIAS("_FUN_46d7f0", "_Ai_NetMessage")
@@ -999,3 +999,76 @@ extern "C" int __cdecl Static696750_Init(void)
 extern "C" int __fastcall q240_View_EndFrame(BYTE* s); KING_ALIAS("@q240_View_EndFrame@4", "@View_EndFrame@4")
 // [$L_4e0b70] forwards to View_EndFrame
 extern "C" int __fastcall Thunk4e0b70(BYTE* s) { return q240_View_EndFrame(s); }
+
+// === finding the vehicle sounds (FUN_4e0280)
+
+
+static void* Vs_Find(const char* name) { return CallC<void*>(FUN_5ef3d0, name); }
+
+extern "C" {
+
+// [FUN_4e0280] looks up the sounds of vehicle sound set s by name; a missing helicopter, antiradar, startgloch
+// or kriak sound falls back to extcar, horn, applause or repair; +124 is pss2 when pss exists
+void __fastcall VehicleSounds_Find(BYTE* s)
+{
+    F(void*, s, 44) = Vs_Find("explosSound");
+    F(void*, s, 32) = Vs_Find("startSound");
+    F(void*, s, 36) = Vs_Find("start0Sound");
+    F(void*, s, 40) = Vs_Find("stop_engSound");
+    F(void*, s, 28) = Vs_Find("shakeSound");
+    F(void*, s, 0) = Vs_Find("breakSound");
+    F(void*, s, 4) = Vs_Find("hitSound");
+    F(void*, s, 8) = Vs_Find("crash2Sound");
+    F(void*, s, 12) = Vs_Find("crash4aSound");
+    F(void*, s, 16) = Vs_Find("crash9Sound");
+    F(void*, s, 20) = Vs_Find("hitmeSound");
+    F(void*, s, 24) = Vs_Find("hitgrndSound");
+    F(void*, s, 68) = Vs_Find("hornSound");
+    F(void*, s, 72) = Vs_Find("bighornSound");
+    F(void*, s, 76) = Vs_Find("extcarSound");
+    F(void*, s, 88) = Vs_Find("helicopterSound");
+    if (!F(void*, s, 88))
+        F(void*, s, 88) = F(void*, s, 76);
+    F(void*, s, 80) = Vs_Find("stonesSound");
+    F(void*, s, 84) = Vs_Find("waterSound");
+    F(void*, s, 48) = Vs_Find("idleSound");
+    F(void*, s, 52) = Vs_Find("fullSound");
+    F(void*, s, 56) = Vs_Find("jidleSound");
+    F(void*, s, 60) = Vs_Find("jfullSound");
+    F(void*, s, 64) = Vs_Find("gearSound");
+    F(void*, s, 92) = Vs_Find("repairSound");
+    F(void*, s, 96) = Vs_Find("applauseSound");
+    F(void*, s, 100) = Vs_Find("carhornSound");
+    F(void*, s, 104) = Vs_Find("ovationSound");
+    F(void*, s, 112) = Vs_Find("pss2Sound");
+    F(void*, s, 108) = Vs_Find("pssSound");
+    F(void*, s, 116) = Vs_Find("antiradarSound");
+    if (!F(void*, s, 116))
+        F(void*, s, 116) = F(void*, s, 68);
+    F(void*, s, 120) = Vs_Find("startglochSound");
+    if (!F(void*, s, 120))
+        F(void*, s, 120) = F(void*, s, 96);
+    F(void*, s, 124) = Vs_Find("pssSound");
+    if (F(void*, s, 124))
+        F(void*, s, 124) = F(void*, s, 112);
+    F(BYTE, s, 224) = 1;
+    F(BYTE, s, 225) = 0;
+    F(int, s, 228) = 0;
+    F(void*, s, 128) = Vs_Find("kriakSound");
+    if (!F(void*, s, 128))
+        F(void*, s, 128) = F(void*, s, 92);
+    F(void*, s, 176) = Vs_Find("squeakSound");
+    F(void*, s, 132) = Vs_Find("hit_gluh_fSound");
+    F(void*, s, 136) = Vs_Find("hit_gluh_mSound");
+    F(void*, s, 140) = Vs_Find("hit_gluh_rSound");
+    F(void*, s, 144) = Vs_Find("hit_gluh_squeakSound");
+    F(void*, s, 148) = Vs_Find("hit_def1Sound");
+    F(void*, s, 152) = Vs_Find("hit_def2Sound");
+    F(void*, s, 156) = Vs_Find("hit_def_faraSound");
+    F(void*, s, 160) = Vs_Find("hit_suspensionSound");
+    F(void*, s, 164) = Vs_Find("hit_signSound");
+    F(void*, s, 168) = Vs_Find("hit_ironpillarSound");
+    F(void*, s, 172) = Vs_Find("hit_bulletSound");
+}
+
+} // extern "C"

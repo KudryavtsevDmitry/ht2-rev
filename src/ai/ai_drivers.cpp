@@ -348,7 +348,7 @@ struct WaypointVec {
 
 extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16")    // vector<Waypoint>::insert_aux(pos, x)
 extern "C" void __cdecl Waypoints_Sort(Waypoint* first, Waypoint* last, int, int, int);
-KING_ALIAS("_Waypoints_Sort", "FUN_47c0a0")
+KING_ALIAS("_Waypoints_Sort", "_Road40_StableSort")
 
 // the same node, or the same place on the same road
 static bool SamePlace(const Waypoint* a, const Waypoint* b)

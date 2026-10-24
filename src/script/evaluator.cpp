@@ -2384,7 +2384,7 @@ extern "C" void Nat_CharToInteger();
 ASM_VAR(AsmLabel, s_rn670864, $L_670864)
 extern "C" void Nat_IntegerToChar();
 ASM_VAR(AsmLabel, s_rn670874, $L_670874)
-ASM_VAR(AsmLabel, g_rf49c230, $L_49c230)
+extern "C" SchValue* __cdecl Nat_MakeString(SchValue*, BYTE*, BYTE**);  // natives.cpp
 ASM_VAR(AsmLabel, s_rn670884, $L_670884)
 ASM_VAR(AsmLabel, g_rf49c610, $L_49c610)
 ASM_VAR(AsmLabel, s_rn670890, $L_670890)
@@ -2534,7 +2534,7 @@ static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_CharGe, s_rn67085c},
     {(void*)Nat_CharToInteger, s_rn670864},
     {(void*)Nat_IntegerToChar, s_rn670874},
-    {(void*)g_rf49c230, s_rn670884},
+    {(void*)Nat_MakeString, s_rn670884},
     {(void*)g_rf49c610, s_rn670890},
     {(void*)Nat_StringLength, s_rn670898},
     {(void*)Nat_StringRef, s_rn6708a8},
@@ -3052,7 +3052,7 @@ void __fastcall Sch_Destruct(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // Evaluating the elements of an expression
 
-ASM_PROC(FUN_4a3790)    // environment: look up an identifier (out, id by value, &depth, &index)
+extern "C" void FUN_4a3790(); KING_ALIAS("_FUN_4a3790", "@Env_Lookup@32")    // environment: look up an identifier (out, id by value, &depth, &index)
 extern "C" void FUN_4a3f10(); KING_ALIAS("_FUN_4a3f10", "@SchScope_Get@24")
 extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
 extern "C" void FUN_4a63a0(); KING_ALIAS("_FUN_4a63a0", "_SchValue_Immediate")
@@ -3536,6 +3536,158 @@ void __fastcall CallCC_Step(void*, void*, BYTE* p)
     ReleaseRef(&call);
     ReleaseRef(&cont);
     ReleaseRef(&args);
+}
+
+} // extern "C"
+
+// === if ($L_4a8740)
+
+extern "C" void FUN_4a1940(); KING_ALIAS("_FUN_4a1940", "@SchValue_AsBool@12")
+
+// the frame on top of p continues with the expression at e (a value at +20 of a pair)
+static void If_Continue(BYTE* p, const SchValue* e)
+{
+    SchValue c;
+    CopyRef(&c, e);
+    Sch4a70b0_Reset(CallThis<BYTE*>(FUN_4aa180, p + 108), 0, c.obj, c.m_4, c.flags);
+}
+
+// returns unspecified from the top frame
+static void If_ReturnUnspecified(BYTE* p)
+{
+    SchValue tmp, r;
+    Sch_MakeUnspecified((DWORD*)&tmp);
+    CopyRef(&r, &tmp);
+    ReleaseRef(&tmp);
+    Eva_PopReturn(p, &r);
+    ReleaseRef(&r);
+}
+
+extern "C" {
+
+// [$L_4a8740] if, one step on the top frame: state 0 evaluates the condition, state 1 goes on with the then or
+// (for #f) the else expression, or returns unspecified without one
+void __fastcall If_Step(void*, void*, BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    if (F(int, top, -16) == 0) {
+        Sch_EvalNext(p, 1);
+        return;
+    }
+    if (F(int, top, -16) != 1)
+        return;
+    SchValue v;
+    CopyRef(&v, (SchValue*)(F(BYTE*, top, -28) + 12));
+    int truth = -1;
+    if ((BYTE)v.flags == 7) {
+        SchValue h;
+        CallThis(FUN_4a1940, &h, &v);
+        truth = (int)h.obj;
+        CallThis(FUN_4a36c0, &h);
+    }
+    top = F(BYTE*, p, 112);
+    if (F(BYTE, top, -32) != 2)
+        If_ReturnUnspecified(p);
+    else if (truth) {
+        BYTE* e = (BYTE*)Sch_Deref2nd(0, (int*)(CallThis<BYTE*>(FUN_4aa180, p + 108) + 4));
+        If_Continue(p, (SchValue*)(e + 20));
+    } else if (F(BYTE, F(BYTE*, top, -40), 40) == 2) {
+        BYTE* e = (BYTE*)Sch_Deref2nd(0, (int*)(CallThis<BYTE*>(FUN_4aa180, p + 108) + 4));
+        e = (BYTE*)Sch_Deref2nd(0, (int*)(e + 32));
+        If_Continue(p, (SchValue*)(e + 20));
+    } else
+        If_ReturnUnspecified(p);
+    CallThis(FUN_4a36c0, &v);
+}
+
+} // extern "C"
+
+// === looking up a variable (FUN_4a3790)
+
+extern "C" {
+
+// [FUN_4a3790] out = the value of sym (by value) in environment e or its parents (each step up counted in
+// *depth); *index its slot there or -1, out empty when unbound
+SchValue* __fastcall Env_Lookup(BYTE* e, void*, SchValue* out, BYTE* s0, int s1, DWORD s2, int* depth, int* index)
+{
+    SchValue sym = {s0, s1, s2, 0};
+    *index = -1;
+    BYTE** vals = (BYTE**)(e + 132);
+    if (BYTE* map = F(BYTE*, e, 144)) {
+        BYTE* it;
+        CallThis(FUN_4a4fb0, map, &it, &sym);
+        if (it != F(BYTE*, map, 0)) {
+            *index = F(int, it, 40);
+            CopyRef(out, (SchValue*)(it + 28));
+            ReleaseRef(&sym);
+            return out;
+        }
+    } else {
+        for (int i = 0; i < F(int, e, 20); i++) {
+            const char* a = Es_Name((SchValue*)(e + 36 + i * 12));
+            const char* b = Es_Name(&sym);
+            if (tolower(b[0]) != tolower(a[0]))
+                continue;
+            b = Es_Name(&sym);
+            a = Es_Name((SchValue*)(e + 36 + i * 12));
+            if (_stricmp(a + 1, b + 1) == 0) {
+                *index = i;
+                CopyRef(out, (SchValue*)(vals[0] + i * 12));
+                ReleaseRef(&sym);
+                return out;
+            }
+        }
+    }
+    if (F(int, e, 156) || F(int, e, 148)) {
+        ++*depth;
+        SchValue s;
+        CallThis(FUN_454580, &s, &sym);
+        BYTE* up = (BYTE*)Sch_Deref2nd(0, (int*)(e + 148));
+        Env_Lookup(up, 0, out, s.obj, s.m_4, s.flags, depth, index);
+        ReleaseRef(&sym);
+        return out;
+    }
+    out->obj = 0;
+    out->m_4 = 0;
+    out->flags = 0;
+    ReleaseRef(&sym);
+    return out;
+}
+
+} // extern "C"
+
+// === evaluating a lambda (the frame step $L_4a8220)
+
+extern "C" {
+
+// [$L_4a8220] lambda frame step of interpreter p (vtable 64bf80): unless the top frame (+112) is done (-16), a new
+// closure gets the frame's name (-40, +20) at +32 and the value of the current expression at +20, the frame's
+// result (-12) is set to it, the expression frame (+108) is popped and the closure passed to the frame below
+void __fastcall Lambda_Step(BYTE* self, void*, BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    if (F(int, top, -16))
+        return;
+    SchValue c;
+    Sch_MakeClosure((DWORD*)&c, 0, (DWORD)p);
+    BYTE* f = F(BYTE*, top, -40);
+    Eva_CheckObject(&c);
+    Eva_AssignSame((SchValue*)(c.obj + 32), (SchValue*)(f + 20));
+    BYTE* back = CallThis<BYTE*>(FUN_4aa180, p + 108);
+    SchValue v;
+    CopyRef(&v, (SchValue*)(Sch_Deref2nd(0, (int*)(back + 4)) + 32));
+    SchValue r;
+    BYTE* e = (BYTE*)SchValue_Return((DWORD*)&r, (int)p, (int)(CallThis<BYTE*>(FUN_4aa180, p + 108) + 32),
+                                     (DWORD)v.obj, v.m_4, v.flags);
+    Eva_CheckObject(&c);
+    Eva_AssignSame((SchValue*)(c.obj + 20), (SchValue*)e);
+    ReleaseRef(&r);
+    CallThis(FUN_49c560, CallThis<BYTE*>(FUN_4aa430, &c) + 44, F(BYTE*, p, 112) - 12);
+    BYTE** frames = (BYTE**)(p + 108);
+    frames[1] -= 44;
+    CallVirt(frames[1], 4, 0);
+    Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&c);
+    CallThis(FUN_4a36c0, &c);
 }
 
 } // extern "C"

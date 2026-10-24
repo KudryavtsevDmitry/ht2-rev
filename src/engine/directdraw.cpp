@@ -241,7 +241,7 @@ ASM_VAR(int, g_72092c, $L_72092c)
 ASM_VAR(BYTE*, g_7208e0, $L_7208e0)
 ASM_VAR(AsmLabel, s_67fdc0, $L_67fdc0)
 ASM_VAR(AsmLabel, s_67fdb8, $L_67fdb8)
-extern "C" void Dd_EnumDevice(); KING_ALIAS("_Dd_EnumDevice", "$L_5d72a0")
+extern "C" int __stdcall Dd_EnumDevice(GUID* guid, char*, char*, BYTE* c);
 extern "C" void* g_impDirectDrawEnumerateA; KING_ALIAS("_g_impDirectDrawEnumerateA", "__imp__DirectDrawEnumerateA@8")
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
@@ -294,7 +294,7 @@ extern "C" int __cdecl Dd_CreateDevices(DWORD flags)
     s[2] = g_bitDepth;
     s[1] = g_height;
     g_72092c = g_deviceIndex;
-    CallStd((void (*)())g_impDirectDrawEnumerateA, Dd_EnumDevice, s);
+    CallStd((void (*)())g_impDirectDrawEnumerateA, (void*)Dd_EnumDevice, s);
     if (s[51])
         Sys_Fatal(CallC<const char*>(FUN_5d4c10, s[51], (char*)&s[31]), 0);
     g_dd = (BYTE*)s[10];
@@ -1022,6 +1022,114 @@ int __cdecl Dd_CreateDisplay(BYTE* c)
         return 0x80070057;
     }
     return hr;
+}
+
+} // extern "C"
+
+// === trying a DirectDraw device (the enumeration callback $L_5d72a0)
+
+extern "C" int __stdcall D3d_ChooseDevice(const char*, const char*, const BYTE* dd, BYTE* ctx);   // video_mode.cpp
+extern "C" void* g_impDirectDrawCreateEx; KING_ALIAS("_g_impDirectDrawCreateEx", "__imp__DirectDrawCreateEx@16")
+ASM_VAR(AsmLabel, g_ed6554a0, $L_6554a0)      // IID_IDirectDraw7
+ASM_VAR(AsmLabel, g_ed655490, $L_655490)      // IID_IDirect3D7
+ASM_VAR(char, g_ed720770, $L_720770)
+ASM_VAR(char, s_ed682924, $L_682924)
+ASM_VAR(char, s_ed682938, $L_682938)
+ASM_VAR(char, s_ed682954, $L_682954)
+ASM_VAR(char, s_ed682970, $L_682970)
+ASM_VAR(char, s_ed682984, $L_682984)
+
+// releases the interface at c+off
+static void Ed_Release(BYTE* c, int off)
+{
+    if (BYTE* p = F(BYTE*, c, off)) {
+        Com(p, 8);
+        F(BYTE*, c, off) = 0;
+    }
+}
+
+// the display modes of c's DirectDraw (+44) enumerated for the request; E_INVALIDARG with the text when none fits
+static int Ed_MatchModes(BYTE* c)
+{
+    if (Com(F(BYTE*, c, 44), 32, 0, 0, c, (void*)Dd_MatchMode) || !F(int, c, 24)) {
+        sprintf((char*)c + 124, &s_ed682984);
+        return 0x80070057;
+    }
+    return 0;
+}
+
+extern "C" {
+
+// [$L_5d72a0] DirectDrawEnumerate callback: creates the DirectDraw guid for request c (52 dwords: +0 width, +4
+// height, +8 bytes per pixel, +12 flags), with Direct3D (0x1000) a device by D3d_ChooseDevice, checks the mode
+// (0x400) and creates the display (0x8000); the result at +204 (0 stops the enumeration and names the adapter)
+int __stdcall Dd_EnumDevice(GUID* guid, char*, char*, BYTE* c)
+{
+    static const int k_rel[] = {52, 120, 64, 60, 56, 48, 44, 40};
+    for (int off : k_rel)
+        Ed_Release(c, off);
+    F(int, c, 100) = 0;
+    F(int, c, 28) = 0;
+    F(int, c, 24) = 0;
+    F(int, c, 32) = 0;
+    F(int, c, 36) = 0;
+    F(int, c, 80) = 0;
+    F(int, c, 204) = 0x80070057;
+    int hr = ((int(__stdcall*)(GUID*, BYTE**, void*, void*))g_impDirectDrawCreateEx)(guid, (BYTE**)(c + 40),
+                                                                                      g_ed6554a0, 0);
+    if (!hr) {
+        BYTE* dd = F(BYTE*, c, 40);
+        hr = Com(dd, 80, g_hWnd, (F(DWORD, c, 12) & 0x400) ? 0x105B : 8);
+        if (hr)
+            sprintf((char*)c + 124, &s_ed682924);
+        else {
+            F(BYTE*, c, 44) = dd;
+            Com(dd, 4);
+            if (!F(BYTE*, c, 44))
+                sprintf((char*)c + 124, &s_ed682938);
+            else if (F(DWORD, c, 12) & 0x1000) {
+                hr = Com(dd, 0, g_ed655490, c + 48);
+                if (hr || !F(BYTE*, c, 48))
+                    sprintf((char*)c + 124, &s_ed682954);
+                else {
+                    int bpp = F(int, c, 8);
+                    F(int, c, 20) = (bpp != 1) + 1;
+                    if (bpp >= 1 && bpp <= 4)
+                        F(int, c, 16) = 2048 >> (bpp - 1);
+                    if (Com(F(BYTE*, c, 48), 12, (void*)D3d_ChooseDevice, c) || !F(int, c, 100)) {
+                        sprintf((char*)c + 124, &s_ed682970);
+                        hr = 0x80070057;
+                    } else {
+                        if (F(DWORD, c, 12) & 0x400)
+                            hr = Ed_MatchModes(c);
+                        else
+                            F(int, c, 24) = 1;
+                        if (!hr && !F(int, c, 24)) {
+                            sprintf((char*)c + 124, &s_ed682984);
+                            hr = 0x80070057;
+                        }
+                        if (!hr && (F(DWORD, c, 12) & 0x8000)) {
+                            hr = Dd_CreateDisplay(c);
+                            if (!hr)
+                                F(DWORD, c, 32) = Dd_FreeVideoMemory(F(BYTE*, c, 44));
+                        }
+                    }
+                }
+            } else {
+                hr = Ed_MatchModes(c);
+                if (!hr && (F(DWORD, c, 12) & 0x8000))
+                    hr = Dd_CreateDisplay(c);
+            }
+        }
+    }
+    F(int, c, 204) = hr;
+    if (!hr) {
+        Dd_AdapterName(F(BYTE*, c, 44), &g_ed720770);
+        return 0;
+    }
+    if (BYTE* dd = F(BYTE*, c, 40))
+        Com(dd, 80, g_hWnd, 8);
+    return 1;
 }
 
 } // extern "C"

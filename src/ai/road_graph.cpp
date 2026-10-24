@@ -1379,7 +1379,7 @@ void __cdecl Ai_SaveGlobals(BYTE** v)
 // === stable sort of 40-byte road records with a buffer (FUN_47cf50)
 
 extern "C" void FUN_47dab0(); KING_ALIAS("_FUN_47dab0", "_Road40_Insertion")
-ASM_PROC(FUN_47de60)
+extern "C" void FUN_47de60(); KING_ALIAS("_FUN_47de60", "_Road40_MergeAdaptive")
 extern "C" void FUN_47f170(); KING_ALIAS("_FUN_47f170", "_Road40_MergeLoop")
 extern "C" void FUN_47f3f0(); KING_ALIAS("_FUN_47f3f0", "_Rec40_Merge")
 
@@ -1530,6 +1530,297 @@ void __cdecl Ai_LoadGlobals(const Lg_Chunk* c, BYTE** cur)
     if (Lg_More(c)) {
         Lg_Get(cur, g_ag68d108, 8);
         CallC(FUN_480650, (BYTE*)g_ag68d108);
+    }
+}
+
+} // extern "C"
+
+// === stable_sort's adaptive step for doubles (FUN_47c9a0)
+
+extern "C" void __cdecl Doubles_ChunkInsertion(double* first, double* last, int chunk);
+extern "C" void __cdecl Doubles_MergeLoop(double* first, double* last, double* result, int step);
+extern "C" void __cdecl Doubles_MergeAdaptive(double* first, double* middle, double* last, int len1, int len2,
+                                              double* buf, int bufSize, int pred);
+
+// insertion sort of runs of 7, then merge passes through the buffer and back
+static void SsD_SortWithBuffer(double* first, double* last, double* buf)
+{
+    int len = (int)(last - first);
+    Doubles_ChunkInsertion(first, last, 7);
+    for (int step = 7; step < len;) {
+        Doubles_MergeLoop(first, last, buf, step);
+        step *= 2;
+        Doubles_MergeLoop(buf, buf + len, first, step);
+        step *= 2;
+    }
+}
+
+extern "C" {
+
+// [FUN_47c9a0] stable_sort's adaptive step for [first, last) of doubles (descending) with the buffer buf (size n)
+void __cdecl Doubles_StableSortAdaptive(double* first, double* last, double* buf, int n, int pred)
+{
+    int len = (int)(last - first + 1) / 2;
+    double* mid = first + len;
+    if (len > n) {
+        Doubles_StableSortAdaptive(first, mid, buf, n, pred);
+        Doubles_StableSortAdaptive(mid, last, buf, n, pred);
+    } else {
+        SsD_SortWithBuffer(first, mid, buf);
+        SsD_SortWithBuffer(mid, last, buf);
+    }
+    Doubles_MergeAdaptive(first, mid, last, (int)(mid - first), (int)(last - mid), buf, n, pred);
+}
+
+} // extern "C"
+
+// === stable_sort of 40-byte records (FUN_47c0a0, FUN_47cca0)
+
+extern "C" void FUN_47dba0(); KING_ALIAS("_FUN_47dba0", "_Road40_MergeNoBuffer")    // merge without a buffer (first, middle, last, len1, len2, comp)
+extern "C" void __cdecl free(void* p);
+
+extern "C" {
+
+// [FUN_47cca0] inplace_stable_sort of [first, last) (40 bytes, by key +32): insertion sort below 15, else both
+// halves and a merge without a buffer
+void __cdecl Road40_InplaceStableSort(Rec40* first, Rec40* last, int comp)
+{
+    int n = (int)(last - first);
+    if (n < 15) {
+        if (first != last)
+            for (Rec40* i = first + 1; i != last; i++)
+                Rec40_LinearInsert(first, i);
+        return;
+    }
+    Rec40* mid = first + n / 2;
+    Road40_InplaceStableSort(first, mid, comp);
+    Road40_InplaceStableSort(mid, last, comp);
+    CallC(FUN_47dba0, first, mid, last, (int)(mid - first), (int)(last - mid), comp);
+}
+
+// [FUN_47c0a0] stable_sort of [first, last) (40-byte records by key +32) through a temporary buffer, in place
+// when none can be had
+void __cdecl Road40_StableSort(Rec40* first, Rec40* last, int, int, int comp)
+{
+    int tb[3];
+    TempBuf40_Init(tb, 0, first, last);
+    if (!tb[2])
+        Road40_InplaceStableSort(first, last, comp);
+    else
+        Road40_StableSortAdaptive((BYTE*)first, (BYTE*)last, (BYTE*)tb[2], tb[1], comp);
+    free((void*)tb[2]);
+}
+
+} // extern "C"
+
+// === chunked insertion sort and merge_adaptive of 40-byte records (FUN_47eed0, FUN_47de60)
+
+extern "C" void FUN_47f4b0(); KING_ALIAS("_FUN_47f4b0", "_Road40_RotateAdaptive")    // rotate_adaptive (first, middle, last, len1, len2, buf, n); the new middle
+
+static Rec40* R40_Copy(const Rec40* first, const Rec40* last, Rec40* to)
+{
+    for (; first != last; first++)
+        *to++ = *first;
+    return to;
+}
+
+static Rec40* R40_CopyBackward(const Rec40* first, const Rec40* last, Rec40* to)
+{
+    while (last != first)
+        *--to = *--last;
+    return to;
+}
+
+extern "C" {
+
+// [FUN_47eed0] insertion sorts of the runs of chunk records of [first, last) (40 bytes, by key +32)
+void __cdecl Road40_ChunkInsertion(Rec40* first, Rec40* last, int chunk, int comp)
+{
+    for (; last - first >= chunk; first += chunk)
+        CallC(FUN_47dab0, first, first + chunk, comp);
+    CallC(FUN_47dab0, first, last, comp);
+}
+
+// [FUN_47de60] merge_adaptive of the sorted runs [first, middle) and [middle, last) (by key +32) with buffer buf
+// (size n): through the buffer when a run fits, else split and rotated
+void __cdecl Road40_MergeAdaptive(Rec40* first, Rec40* middle, Rec40* last, int len1, int len2, Rec40* buf, int n,
+                                  int comp)
+{
+    for (;;) {
+        if (len1 <= len2 && len1 <= n) {
+            Rec40* bufEnd = R40_Copy(first, middle, buf);
+            Rec40* b = buf;
+            Rec40* out = first;
+            while (b != bufEnd && middle != last)
+                *out++ = middle->key < b->key ? *middle++ : *b++;
+            R40_Copy(middle, last, R40_Copy(b, bufEnd, out));
+            return;
+        }
+        if (len2 <= n) {
+            Rec40* bufEnd = R40_Copy(middle, last, buf);
+            Rec40* out = last;
+            if (first == middle) {
+                R40_CopyBackward(buf, bufEnd, out);
+                return;
+            }
+            if (buf == bufEnd) {
+                R40_CopyBackward(first, middle, out);
+                return;
+            }
+            Rec40* l1 = middle - 1;
+            Rec40* l2 = bufEnd - 1;
+            for (;;) {
+                if (l2->key < l1->key) {
+                    *--out = *l1;
+                    if (first == l1) {
+                        R40_CopyBackward(buf, l2 + 1, out);
+                        return;
+                    }
+                    l1--;
+                } else {
+                    *--out = *l2;
+                    if (buf == l2) {
+                        R40_CopyBackward(first, l1 + 1, out);
+                        return;
+                    }
+                    l2--;
+                }
+            }
+        }
+        Rec40* cut1;
+        Rec40* cut2;
+        int len11, len22;
+        if (len1 > len2) {
+            len11 = len1 / 2;
+            cut1 = first + len11;
+            cut2 = (Rec40*)LowerBound40((BYTE*)middle, (BYTE*)last, (const BYTE*)cut1);
+            len22 = (int)(cut2 - middle);
+        } else {
+            len22 = len2 / 2;
+            cut2 = middle + len22;
+            cut1 = (Rec40*)UpperBound40((BYTE*)first, (BYTE*)middle, (const BYTE*)cut2);
+            len11 = (int)(cut1 - first);
+        }
+        Rec40* mid = CallC<Rec40*>(FUN_47f4b0, cut1, middle, cut2, len1 - len11, len22, buf, n);
+        Road40_MergeAdaptive(first, cut1, mid, len11, len22, buf, n, comp);
+        first = mid;
+        middle = cut2;
+        len1 -= len11;
+        len2 -= len22;
+    }
+}
+
+} // extern "C"
+
+// === rotating and merging 40-byte records without a buffer (FUN_47f4b0, FUN_47dba0)
+
+extern "C" BYTE* __cdecl Rotate40(BYTE* f, BYTE* m, BYTE* l);                          // ai_containers.cpp
+
+extern "C" {
+
+// [FUN_47f4b0] rotate_adaptive: [first, middle) and [middle, last) swapped through buffer buf (size n) when the
+// shorter part fits, else in place; returns the new middle
+Rec40* __cdecl Road40_RotateAdaptive(Rec40* first, Rec40* middle, Rec40* last, int len1, int len2, Rec40* buf, int n)
+{
+    if (len1 > len2 && len2 <= n) {
+        Rec40* end = R40_Copy(middle, last, buf);
+        R40_CopyBackward(first, middle, last);
+        return R40_Copy(buf, end, first);
+    }
+    if (len1 <= n) {
+        Rec40* end = R40_Copy(first, middle, buf);
+        R40_Copy(middle, last, first);
+        return R40_CopyBackward(buf, end, last);
+    }
+    Rotate40((BYTE*)first, (BYTE*)middle, (BYTE*)last);
+    return first + (last - middle);
+}
+
+// [FUN_47dba0] merge_without_buffer of the sorted runs [first, middle) and [middle, last) (by key +32): split at
+// the longer run's middle, rotated and both parts merged
+void __cdecl Road40_MergeNoBuffer(Rec40* first, Rec40* middle, Rec40* last, int len1, int len2, int comp)
+{
+    while (len1 && len2) {
+        if (len1 + len2 == 2) {
+            if (middle->key < first->key) {
+                Rec40 t = *first;
+                *first = *middle;
+                *middle = t;
+            }
+            return;
+        }
+        Rec40* cut1;
+        Rec40* cut2;
+        int len11, len22;
+        if (len1 > len2) {
+            len11 = len1 / 2;
+            cut1 = first + len11;
+            cut2 = (Rec40*)LowerBound40((BYTE*)middle, (BYTE*)last, (const BYTE*)cut1);
+            len22 = (int)(cut2 - middle);
+        } else {
+            len22 = len2 / 2;
+            cut2 = middle + len22;
+            cut1 = (Rec40*)UpperBound40((BYTE*)first, (BYTE*)middle, (const BYTE*)cut2);
+            len11 = (int)(cut1 - first);
+        }
+        Rotate40((BYTE*)cut1, (BYTE*)middle, (BYTE*)cut2);
+        Rec40* mid = cut1 + len22;
+        Road40_MergeNoBuffer(first, cut1, mid, len11, len22, comp);
+        first = mid;
+        middle = cut2;
+        len1 -= len11;
+        len2 -= len22;
+    }
+}
+
+} // extern "C"
+
+// === loading a vector of orders (FUN_479cb0)
+
+extern "C" void FUN_460e60(); KING_ALIAS("_FUN_460e60", "_Order144_CopyA")
+extern "C" void FUN_461b00(); KING_ALIAS("_FUN_461b00", "@Rec41ce50_DeletingDestructor@12")
+extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")
+extern "C" void FUN_470d80(); KING_ALIAS("_FUN_470d80", "@Order_Construct@8")
+extern "C" void FUN_4710a0(); KING_ALIAS("_FUN_4710a0", "@Rec4710a0_Load@12")
+extern "C" void FUN_443860(); KING_ALIAS("_FUN_443860", "@Order144_CopyConstruct@12")
+extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")
+
+extern "C" {
+
+// [FUN_479cb0] replaces the orders of vector v (144 bytes each) by the count and orders read from *cur, reserving
+// room for all first
+void __cdecl Orders_Load(BYTE** cur, BYTE** v)
+{
+    unsigned n = F(unsigned, *cur, 0);
+    *cur += 4;
+    BYTE* begin = v[0];
+    BYTE* end = v[1];
+    BYTE* e = CallC<BYTE*>(FUN_460e60, end, end, begin, begin, 0);
+    for (BYTE* p = e; p != v[1]; p += 144)
+        CallThis(FUN_461b00, p, 0);
+    v[1] = end - (end - begin) / 144 * 144;
+    if ((unsigned)((v[2] - v[0]) / 144) < n) {
+        int size = (int)(v[1] - v[0]) / 144;
+        BYTE* p = Alloc144_Copy(n, v[0], v[1]);
+        for (BYTE* q = v[0]; q != v[1]; q += 144)
+            CallThis(FUN_41ce50, q);
+        if (int bytes = (int)(v[2] - v[0]) / 144 * 144)
+            CallC(FUN_44b4a0, v[0], bytes);
+        v[0] = p;
+        v[1] = p + size * 144;
+        v[2] = p + n * 144;
+    }
+    for (unsigned i = 0; i < n; i++) {
+        BYTE o[144];
+        CallThis(FUN_470d80, o);
+        CallThis(FUN_4710a0, o, cur);
+        if (v[1] != v[2]) {
+            if (v[1])
+                CallThis(FUN_443860, v[1], o);
+            v[1] += 144;
+        } else
+            CallThis(FUN_450960, v, v[1], o);
+        CallThis(FUN_450de0, o + 120);
     }
 }
 

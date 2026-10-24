@@ -137,7 +137,7 @@ extern "C" void FUN_5c1d40(); KING_ALIAS("_FUN_5c1d40", "@Video_DrawFrame@28")  
 ASM_PROC(FUN_5c34a0)
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
-ASM_PROC(FUN_5c49b0)    // next record time (forward)
+extern "C" void FUN_5c49b0(); KING_ALIAS("_FUN_5c49b0", "@Rec_Step@12")    // next record time (forward)
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
 ASM_PROC(FUN_5c4d30)
 ASM_VAR(DWORD, g_msaviBlock, $L_702f74)
@@ -3188,6 +3188,239 @@ fail:
     if (obj)
         Av_Com<ULONG>(obj, 8);
     return 1;
+}
+
+} // extern "C"
+
+// === waiting for the network music (FUN_5c3c50)
+
+extern "C" void FUN_602bc0(); KING_ALIAS("_FUN_602bc0", "@Stream_Construct@8")
+extern "C" void FUN_602bd0(); KING_ALIAS("_FUN_602bd0", "_Gate_602bd0")
+extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
+extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
+extern "C" void FUN_601c10(); KING_ALIAS("_FUN_601c10", "_Providers_Call601c70")
+extern "C" void FUN_603170(); KING_ALIAS("_FUN_603170", "@DpMessage_Set@16")
+extern "C" void FUN_6032f0(); KING_ALIAS("_FUN_6032f0", "@Gate_Set24@8")
+extern "C" void FUN_6034e0(); KING_ALIAS("_FUN_6034e0", "@Stream_ReadBlob@20")
+ASM_PROC(FUN_601060)    // the next received message (stream); 0 when there is one
+ASM_PROC(FUN_6031e0)    // a message's next record type (out); 0 when there is one
+ASM_PROC(FUN_603300)    // skips to the next record; 0 when there is one
+ASM_VAR(double, g_nm707f88, $L_707f88)
+ASM_VAR(double, g_nm64b5f0, $L_64b5f0)
+ASM_VAR(double, g_nm64b730, $L_64b730)
+ASM_VAR(AsmLabel, g_nm67f880, $L_67f880)
+
+extern "C" {
+
+// [FUN_5c3c50] music m waiting (+416) for the network's track (+420 not yet set): opens the session (+428; one
+// try per 64b5f0 seconds), asks for track name (message 902, every 64b730 seconds) and reads the replies: a
+// 901 record gives the track (+432, +436; 255 stops the music), its name into out and the time (+412)
+void __fastcall Music_WaitNetwork(BYTE* m, void*, const char* name, char* out)
+{
+    BYTE s[40];
+    CallThis(FUN_602bc0, s);
+    F(int, s, 12) = 0;
+    F(double, s, 16) = CallC<double>(FUN_600b60);
+    if (F(int, m, 416) && !F(int, m, 420)) {
+        if (!F(int, m, 428)) {
+            double t = CallC<double>(FUN_6037e0);
+            double lim = g_nm707f88 + g_nm64b5f0;
+            if (CallC<double>(FUN_6037e0) > lim) {
+                g_nm707f88 = t;
+                CallC(FUN_6016f0);
+                if (CallC<int>(FUN_601c10, F(int, m, 424), 0, 8, g_nm67f880))
+                    goto done;
+                F(int, m, 428) = 1;
+            }
+        }
+        if (F(int, m, 428)) {
+            double t = CallC<double>(FUN_6037e0);
+            double lim = g_nm707f88 + g_nm64b730;
+            if (CallC<double>(FUN_6037e0) > lim) {
+                BYTE q[32];
+                CallThis(FUN_602be0, q);
+                CallThis(FUN_603110, q, 902, name, (int)strlen(name) + 1);
+                CallC(FUN_6021b0, F(BYTE*, q, 4), F(BYTE*, q, 8) - F(BYTE*, q, 4));
+                g_nm707f88 = t;
+                CallThis(FUN_602e80, q);
+            }
+            BYTE r[32];
+            CallThis(FUN_602be0, r);
+            for (int more = CallC<int>(FUN_601060, s); !more; more = CallC<int>(FUN_601060, s)) {
+                if (F(int, s, 0) != 4)
+                    continue;
+                CallThis(FUN_603170, r, F(BYTE*, s, 4), F(int, s, 8));
+                if (CallThis<int>(FUN_6032f0, r))
+                    continue;
+                DWORD type, id, size;
+                BYTE blob[256];
+                bool found = false;
+                while (!CallThis<int>(FUN_6031e0, r, &type)) {
+                    if (type == 120 && !CallThis<int>(FUN_6034e0, r, &id, blob, &size) && id == 901) {
+                        found = true;
+                        break;
+                    }
+                    if (CallThis<int>(FUN_603300, r))
+                        break;
+                }
+                if (!found)
+                    continue;
+                if (blob[1] == 255)
+                    Music_Stop(m, 0);
+                else {
+                    F(int, m, 436) = blob[1];
+                    F(int, m, 432) = blob[0];
+                    F(int, m, 420) = 1;
+                    F(int, m, 412) = F(int, s, 12);
+                    strcpy(out, (const char*)blob + 2);
+                }
+                break;
+            }
+            CallThis(FUN_602e80, r);
+        }
+    }
+done:
+    CallThis(FUN_602bd0, s);
+}
+
+} // extern "C"
+
+// === network object messages (FUN_5c5910)
+
+extern "C" void FUN_5c3160(); KING_ALIAS("_FUN_5c3160", "@Table_Find@12")
+
+struct Om_Matrix { DWORD d[12]; };      // a matrix passed by value
+typedef void (__fastcall* Om_Create)(BYTE* self, void*, char* name, char* a, char* b, DWORD x, float f, DWORD y,
+                                     Om_Matrix m, DWORD id);
+
+// the object (+20) of entry key in s's table (+7976) when it is of kind 2 (+16); 0 when there is no such entry,
+// else 1 with *o set
+static int Om_Find(BYTE* s, DWORD key, BYTE** o)
+{
+    BYTE* e = CallThis<BYTE*>(FUN_5c3160, s + 7976, key);
+    if (!e || F(int, e, 16) != 2)
+        return 0;
+    *o = F(BYTE*, e, 20);
+    return 1;
+}
+
+extern "C" {
+
+// [FUN_5c5910] network message id for media s: with the object table (+7932) messages 900 and 903 mark a known
+// object (+160 its key) as shown (+296 bit 0) and 904 shows or hides one (+4); otherwise 900 / 903 create the
+// object (names at +0, +24, +48, +140, +130, +150, the matrix +72, the key +160) by the vtable entries 224 / 228
+int __fastcall Media_ObjectMessage(BYTE* s, void*, int id, BYTE* msg, int)
+{
+    if (F(int, s, 7932)) {
+        BYTE* o;
+        if (id == 900 || id == 903) {
+            if (Om_Find(s, F(DWORD, msg, 160), &o)) {
+                if (o)
+                    F(BYTE, o, 296) |= 1;
+                return 1;
+            }
+        } else if (id == 904) {
+            if (!Om_Find(s, F(DWORD, msg, 0), &o))
+                return 0;
+            if (o) {
+                if (F(BYTE, msg, 4))
+                    F(BYTE, o, 296) &= ~1;
+                else
+                    F(BYTE, o, 296) |= 1;
+            }
+            return 1;
+        }
+    }
+    if (id != 900 && id != 903)
+        return 0;
+    char a[32], b[32], c[32];
+    strcpy(a, (const char*)msg);
+    strcpy(b, (const char*)msg + 24);
+    strcpy(c, (const char*)msg + 48);
+    Om_Matrix m;
+    memcpy(&m, msg + 72, 48);
+    Om_Create fn = (*(Om_Create**)s)[id == 900 ? 56 : 57];
+    fn(s, 0, a, b, c, F(DWORD, msg, 140), F(float, msg, 130), F(DWORD, msg, 150), m, F(DWORD, msg, 160));
+    return 1;
+}
+
+} // extern "C"
+
+// === stepping through the records of a recording (FUN_5c49b0)
+
+static int Rs_Int(FILE* f) { return CallC<int>(FUN_5ab140, f); }
+
+// the time of a record's header: a packed word (kind 4: the low 20 bits to +7940, the rest in seconds) or the
+// next two ints (+7940, the time)
+static int Rs_Time(BYTE* s, FILE* f, int kind)
+{
+    if (kind == 4) {
+        int v = Rs_Int(f);
+        F(int, s, 7940) = v & 0xFFFFF;
+        return (v >> 20) * 1000;
+    }
+    F(int, s, 7940) = Rs_Int(f);
+    return Rs_Int(f);
+}
+
+extern "C" {
+
+// [FUN_5c49b0] moves recording s (file +7928) to the next (forward) or previous record, running the events
+// (-1 blocks) on the way; the record's time, or -1 at the end (-256 forward, -4096 backward) with the position
+// kept
+int __fastcall Rec_Step(BYTE* s, void*, int forward)
+{
+    FILE* f = F(FILE*, s, 7928);
+    long pos = ftell(f);
+    if (forward) {
+        for (int t = Rs_Int(f); t != -16; t = Rs_Int(f)) {
+            if (t == -256) {
+                fseek(f, pos, 0);
+                return -1;
+            }
+            if (t == -1)
+                CallThis(FUN_5c4d30, s, 0, 0);
+            else {
+                int n = Rs_Int(f) + 4;
+                fseek(f, ftell(f) + n, 0);
+            }
+        }
+        int kind = Rs_Int(f);
+        int r = Rs_Time(s, f, kind);
+        Rs_Int(f);
+        return r;
+    }
+    fseek(f, ftell(f) - 4, 0);
+    int r;
+    long p;
+    if (Rs_Int(f) == 4) {
+        fseek(f, ftell(f) - 8, 0);
+        r = Rs_Time(s, f, 4);
+        p = ftell(f) - 16;
+    } else {
+        fseek(f, ftell(f) - 12, 0);
+        r = Rs_Time(s, f, 0);
+        p = ftell(f) - 20;
+    }
+    fseek(f, p, 0);
+    int back = Rs_Int(f) + 12;
+    fseek(f, ftell(f) - back, 0);
+    for (int t = Rs_Int(f); t != -16; t = Rs_Int(f)) {
+        if (t == -4096) {
+            fseek(f, ftell(f) + back - 4, 0);
+            return -1;
+        }
+        if (t == -1) {
+            long q = ftell(f);
+            CallThis(FUN_5c4d30, s, 0, 0);
+            fseek(f, q - 8, 0);
+        } else
+            fseek(f, ftell(f) - 8, 0);
+        back = Rs_Int(f) + 12;
+        fseek(f, ftell(f) - back, 0);
+    }
+    fseek(f, ftell(f) + back - 4, 0);
+    return r;
 }
 
 } // extern "C"

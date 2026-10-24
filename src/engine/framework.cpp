@@ -50,7 +50,7 @@ extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
 ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
-ASM_PROC(FUN_5dbf00)
+extern "C" void FUN_5dbf00(); KING_ALIAS("_FUN_5dbf00", "_Probe_Walk")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in ms, returns double
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
@@ -4794,6 +4794,89 @@ void __fastcall World_SetupPasses(BYTE* w)
     }
     if (F(int, w, 3044))
         Rp_Pass(w, 40);
+}
+
+} // extern "C"
+
+// === walking the scene with a probe point (FUN_5dbf00)
+
+ASM_VAR(AsmLabel, g_pw721298, $L_721298)
+ASM_VAR(void*, g_pw7212b0, $L_7212b0)
+ASM_VAR(void*, g_pw7216bc, $L_7216bc)
+extern "C" void FUN_5ab950(); KING_ALIAS("_FUN_5ab950", "@Vec3_TransformPoint@12")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+ASM_PROC(FUN_5f88d0)
+extern "C" void __cdecl Probe_Walk(BYTE* n);
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+
+static void Pw_Children(BYTE* n, int k)
+{
+    for (BYTE* c = CallVirt<BYTE*>(n, 64, k); c; c = F(BYTE*, c, 8))
+        Probe_Walk(c);
+}
+
+// the probe point moved into the frame of node f
+static void Pw_IntoFrame(BYTE* f)
+{
+    BYTE m[48], inv[48];
+    for (int i = 0; i < 4; i++)
+        CallThis(FUN_4bd4d0, m + i * 12);
+    memcpy(m, (BYTE*)g_fra7025f0, 48);
+    CallThis(FUN_5f25c0, f, m);
+    CallThis(FUN_5ab950, (BYTE*)g_pw721298, CallC<BYTE*>(FUN_5ac2e0, inv, m));
+}
+
+extern "C" {
+
+// [FUN_5dbf00] walks the scene from node n with the probe point 721298: groups and switches into their children,
+// distance LODs by the point (+56), frames (kind 4) and instances (kind 17) with the point in their local
+// space; a leaf (kind 9) the point reaches (+64) goes to the callback 7216bc with its object (+48)
+void __cdecl Probe_Walk(BYTE* n)
+{
+    if (!n)
+        return;
+    DWORD saved[3];
+    switch (F(int, n, 16)) {
+    case 4:
+        memcpy(saved, (BYTE*)g_pw721298, 12);
+        if (BYTE* f = F(BYTE*, n, 60))
+            Pw_IntoFrame(f);
+        Pw_Children(n, 0);
+        memcpy((BYTE*)g_pw721298, saved, 12);
+        break;
+    case 5:
+    case 15:
+    case 21:
+        Pw_Children(n, 0);
+        break;
+    case 7:
+        Pw_Children(n, 0);
+        Pw_Children(n, 1);
+        break;
+    case 8:
+        Pw_Children(n, CallThis<int>(FUN_5f88d0, n + 56, (BYTE*)g_pw721298) ? 0 : 1);
+        break;
+    case 9:
+        if (CallThis<int>(FUN_5f88d0, n + 64, (BYTE*)g_pw721298))
+            ((void (__cdecl*)(BYTE*, void*))g_pw7216bc)(n + 48, g_pw7212b0);
+        break;
+    case 17: {
+        if (F(BYTE, n, 40) & 8)
+            break;
+        memcpy(saved, (BYTE*)g_pw721298, 12);
+        BYTE* t = F(BYTE*, n, 64);
+        if (BYTE* f = F(BYTE*, n, 68))
+            Pw_IntoFrame(f);
+        Probe_Walk(t);
+        memcpy((BYTE*)g_pw721298, saved, 12);
+        break;
+    }
+    case 18: {
+        BYTE* s = F(BYTE*, n, 60);
+        Pw_Children(n, s ? F(int, s, 56) : F(int, n, 56));
+        break;
+    }
+    }
 }
 
 } // extern "C"

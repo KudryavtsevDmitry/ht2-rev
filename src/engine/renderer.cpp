@@ -3936,3 +3936,113 @@ void __cdecl Device_ProbeMultitexture(BYTE* a, BYTE* b)
 }
 
 } // extern "C"
+
+// === pushing a model matrix (FUN_5ae580)
+
+ASM_VAR(BYTE, g_pm702a79, $L_702a79)
+ASM_VAR(AsmLabel, g_pm702a48, $L_702a48)
+ASM_VAR(AsmLabel, g_pm702a10, $L_702a10)
+ASM_VAR(AsmLabel, s_pm67ef94, $L_67ef94)
+
+extern "C" {
+
+// [FUN_5ae580] pushes model matrix m on renderer s's stack at +5216 (count +8236; multiplied onto the current one
+// unless replace is 0): the view-model product (by the camera +4208 and +4256) goes on the stack at +2288, its
+// inverse transposed at +3248 (count +8224, up to 18 each); a hardware device gets the world transform
+void __fastcall Render_PushMatrix(BYTE* s, void*, const BYTE* m, int multiply)
+{
+    BYTE* A = (BYTE*)g_pm702a48;
+    BYTE* B = (BYTE*)g_pm702a10;
+    if (!(g_pm702a79 & 1)) {
+        g_pm702a79 |= 1;
+        memcpy(A, (BYTE*)g_cm7025f0, 48);
+        atexit((void (__cdecl*)(void))(void*)Ren5ae890_Nop);
+    }
+    if (!(g_pm702a79 & 2)) {
+        g_pm702a79 |= 2;
+        memcpy(B, (BYTE*)g_cm7025f0, 48);
+        atexit((void (__cdecl*)(void))(void*)Ren5ae880_Nop);
+    }
+    if (F(int, s, 8236) >= 18 || F(int, s, 8224) >= 18)
+        return;
+    BYTE t1[48], t2[48];
+    BYTE* top = s + 5264 + F(int, s, 8236) * 48;
+    if (!multiply)
+        memcpy(top, m, 48);
+    else
+        memcpy(top, CallC<BYTE*>(FUN_5aba40, t2, m, top - 48), 48);
+    F(int, s, 8236)++;
+    BYTE* cam = s + 4256 + F(int, s, 8228) * 48;
+    BYTE* r = CallC<BYTE*>(FUN_5aba40, t2, CallC<BYTE*>(FUN_5aba40, t1, top, s + 4208), cam);
+    memcpy(A, r, 48);
+    memcpy(s + 2288 + F(int, s, 8224) * 48, A, 48);
+    if (g_720904) {
+        const float* f = (const float*)(s + 5216 + F(int, s, 8236) * 48);
+        float w[16];
+        for (int i = 0; i < 4; i++) {
+            w[i * 4] = f[i * 3];
+            w[i * 4 + 1] = f[i * 3 + 1];
+            w[i * 4 + 2] = f[i * 3 + 2];
+            w[i * 4 + 3] = 0.0f;
+        }
+        w[15] = 1.0f;
+        if (((long(__stdcall*)(void*, int, float*))(*(void***)g_device)[11])(g_device, 1, w))
+            CallC(FUN_5d2ba0, s_pm67ef94, 0);
+    }
+    CallC(FUN_5ac480, B, A);
+    CallC(FUN_5ac5f0, s + 3248 + F(int, s, 8224) * 48, B);
+    F(int, s, 8224)++;
+    F(int, s, 8444) = ++g_transformSerial;
+}
+
+} // extern "C"
+
+// === drawing a 3D line in software (FUN_5b49e0)
+
+extern "C" void FUN_5ab950(); KING_ALIAS("_FUN_5ab950", "@Vec3_TransformPoint@12")
+ASM_VAR(float, g_dl64c258, $L_64c258)
+
+extern "C" {
+
+// [FUN_5b49e0] draws the line (ax, ay, az)..(bx, by, bz) in color on renderer s's screen (+1948): both ends
+// transformed by the current matrix (+2240 + 48 * +8224) into vertices 0 and 1 (+1224), clipped by the planes
+// 1, 4, 16, 8, 2 between the id lists +1756 / +1844, projected (by 1 / y) into the points at +20 (44 bytes each)
+// and joined by segments
+void __fastcall Render_Line3D(BYTE* s, void*, float ax, float ay, float az, float bx, float by, float bz,
+                              int color)
+{
+    BYTE* m = s + 2240 + F(int, s, 8224) * 48;
+    float p[3] = {ax, ay, az};
+    CallThis(FUN_5ab950, p, m);
+    memcpy(s + 1224, p, 12);
+    int* lists = (int*)(s + 1756);    // two lists of 22 ids
+    lists[0] = 0;
+    float q[3] = {bx, by, bz};
+    CallThis(FUN_5ab950, q, m);
+    lists[1] = 1;
+    memcpy(s + 1236, q, 12);
+    F(int, s, 1932) = 2;
+    int n = 2, cur = 0;
+    F(DWORD, s, 8272) |= 31;
+    static const int k_planes[] = {1, 4, 16, 8, 2};
+    for (int plane : k_planes)
+        if (F(DWORD, s, 8272) & plane) {
+            n = Rn_ClipIds(s, 0, 0, n, lists + (cur ^ 1) * 22, lists + cur * 22, plane);
+            cur ^= 1;
+        }
+    if (!n)
+        return;
+    BYTE* scr = F(BYTE*, s, 1948);
+    double w = F(WORD, scr, 0), h = F(WORD, scr, 2);
+    for (int i = 0; i < n; i++) {
+        const float* v = (const float*)(s + 1224 + lists[cur * 22 + i] * 12);
+        double r = g_one64b670 / v[1];
+        F(int, s, 20 + i * 44) = (int)((r * v[0] + g_q161_64c250) * w * g_dl64c258);
+        F(int, s, 24 + i * 44) = (int)((g_q161_64c250 - r * v[2]) * h * g_dl64c258);
+    }
+    for (int i = 1; i < n; i++)
+        CallC(FUN_5b73a0, scr, F(int, s, 20 + (i - 1) * 44), F(int, s, 24 + (i - 1) * 44), F(int, s, 20 + i * 44),
+              F(int, s, 24 + i * 44), color, 0);
+}
+
+} // extern "C"

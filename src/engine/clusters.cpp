@@ -535,7 +535,7 @@ extern "C" int __fastcall Cluster_Set2(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_PROC(FUN_5ea9b0)
+extern "C" void FUN_5ea9b0(); KING_ALIAS("_FUN_5ea9b0", "@ClusterFile_Destroy@4")
 extern "C" void FUN_5edb20(); KING_ALIAS("_FUN_5edb20", "@Clu5edb20_Destroy@4")
 extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")
 extern "C" void FUN_5ee220(); KING_ALIAS("_FUN_5ee220", "@Texture_Destroy@8")
@@ -1067,6 +1067,214 @@ int __cdecl Material_Read(char* text, BYTE* o)
         tok = Mt_Next(&text);
     }
     return 1;
+}
+
+} // extern "C"
+
+// === a cluster file's destructor (FUN_5ea9b0)
+
+extern "C" void FUN_5d2430(); KING_ALIAS("_FUN_5d2430", "@NameHash_RemoveOwner@12")
+extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
+extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
+extern "C" void FUN_5bbdd0(); KING_ALIAS("_FUN_5bbdd0", "@Bitmap_Destroy@8")
+extern "C" void FUN_5e6b90(); KING_ALIAS("_FUN_5e6b90", "@Mmio_Close@8")
+extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
+extern "C" void Clu_VecDtor(); KING_ALIAS("_Clu_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+ASM_VAR(AsmLabel, g_clu64d578, $L_64d578)
+
+// deletes the nodes of list l (unlinking each from +8) and then the list
+static void Clf_DeleteList(BYTE* l)
+{
+    if (!l)
+        return;
+    while (F(BYTE*, l, 8)) {
+        BYTE* n = F(BYTE*, l, 8);
+        CallThis(FUN_5d21b0, n);
+        if (n)
+            CallVirt(n, 0, 1);
+    }
+    CallVirt(l, 0, 1);
+}
+
+extern "C" {
+
+// [FUN_5ea9b0] a cluster file (vtable 65274c): drops its names, frees +60, the 124-byte items (+76), the objects
+// (+84, count +80; +92, +88), texture sets (+100, +96), bitmaps (+108, +104), named buffers (+116, +112), the
+// name pairs (+124/+128, count +132), the lists +120, +68, +64, the overlays (+136); closes the file (+36), its
+// reader (+52) and, when mapped (+152 bit 0), the view (+40) and handles (+48, +44)
+void __fastcall ClusterFile_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_vtbl65274c;
+    CallThis(FUN_5d2430, g_objectNames, s);
+    if (F(void*, s, 60))
+        operator delete(F(void*, s, 60));
+    if (BYTE* a = F(BYTE*, s, 76)) {
+        CallStd(Clu_VecDtor, a, 124, F(int, a, -4), FUN_50d190);
+        operator delete(a - 4);
+    }
+    for (int i = 0; i < F(int, s, 80); i++)
+        if (F(BYTE**, s, 84)[i])
+            CallVirt(F(BYTE**, s, 84)[i], 0, 1);
+    if (F(void*, s, 84))
+        operator delete(F(void*, s, 84));
+    for (int i = 0; i < F(int, s, 88); i++)
+        if (F(BYTE**, s, 92)[i])
+            CallVirt(F(BYTE**, s, 92)[i], 0, 1);
+    if (F(void*, s, 92))
+        operator delete(F(void*, s, 92));
+    for (int i = 0; i < F(int, s, 96); i++)
+        if (BYTE* p = F(BYTE**, s, 100)[i]) {
+            CallThis(FUN_5b9520, p);
+            operator delete(p);
+        }
+    if (F(void*, s, 100))
+        operator delete(F(void*, s, 100));
+    for (int i = 0; i < F(int, s, 104); i++)
+        if (BYTE* p = F(BYTE**, s, 108)[i]) {
+            CallThis(FUN_5bbdd0, p);
+            operator delete(p);
+        }
+    if (F(void*, s, 108))
+        operator delete(F(void*, s, 108));
+    for (int i = 0; i < F(int, s, 112); i++)
+        if (BYTE* p = F(BYTE**, s, 116)[i]) {
+            F(void*, p, 0) = g_clu64d578;
+            operator delete(F(void*, p, 4));
+            operator delete(p);
+        }
+    if (F(void*, s, 116))
+        operator delete(F(void*, s, 116));
+    for (int i = 0; i < F(int, s, 132); i++) {
+        operator delete(F(void**, s, 124)[i]);
+        operator delete(F(void**, s, 128)[i]);
+    }
+    if (F(void*, s, 124))
+        operator delete(F(void*, s, 124));
+    if (F(void*, s, 128))
+        operator delete(F(void*, s, 128));
+    Clf_DeleteList(F(BYTE*, s, 120));
+    Clf_DeleteList(F(BYTE*, s, 68));
+    Clf_DeleteList(F(BYTE*, s, 64));
+    if (BYTE* o = F(BYTE*, s, 136)) {
+        Overlays_Destroy(o, 0);
+        operator delete(o);
+    }
+    if (F(FILE*, s, 36)) {
+        fclose(F(FILE*, s, 36));
+        if (BYTE* m = F(BYTE*, s, 52)) {
+            CallThis(FUN_5e6b90, m);
+            operator delete(m);
+        }
+        if (F(BYTE, s, 152) & 1) {
+            UnmapViewOfFile(F(void*, s, 40));
+            CloseHandle(F(HANDLE, s, 48));
+            CloseHandle(F(HANDLE, s, 44));
+        }
+    }
+    F(void*, s, 0) = g_clu64d81c;
+}
+
+} // extern "C"
+
+// === reading a cluster file's tables and nodes (FUN_5ed6b0)
+
+extern "C" int __cdecl fseek(FILE* f, long off, int origin);
+extern "C" void Clu_VecCtorEh(); KING_ALIAS("_Clu_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+typedef void (*Cr_Progress)();
+ASM_PROC(FUN_5ef830)    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
+ASM_PROC(FUN_5d2540)    // name hash: adds (name, object)
+ASM_VAR(int, g_cr72006c, $L_72006c)
+ASM_VAR(unsigned, g_cr723988, $L_723988)
+ASM_VAR(AsmLabel, g_cr64d7bc, $L_64d7bc)
+
+extern "C" {
+
+// [FUN_5ed6b0] reads cluster file f into c: after the header the 32-byte names (+76, 124 bytes each, count +72)
+// and the node list (111, then 333 records until 222; 444 skipped, 555 between records): objects go to their
+// room lists, kind 0 records are skipped, kind 1 a named 104-byte group chained at +120; +56 is called every
+// 5 records; 0 for a bad file
+int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
+{
+    g_cr72006c = 0;
+    char magic[4];
+    magic[0] = (char)fgetc(f);
+    magic[1] = (char)fgetc(f);
+    magic[2] = (char)fgetc(f);
+    fgetc(f);
+    magic[3] = 0;
+    CallC<int>(FUN_5ab140, f);
+    int names = CallC<int>(FUN_5ab140, f);
+    CallC<int>(FUN_5ab140, f);
+    int nodes = CallC<int>(FUN_5ab140, f);
+    CallC<int>(FUN_5ab140, f);
+    if (names) {
+        fseek(f, names * 4, 0);
+        int n = CallC<int>(FUN_5ab140, f);
+        BYTE* a = (BYTE*)operator new(n * 124 + 4);
+        BYTE* items = 0;
+        if (a) {
+            F(int, a, 0) = n;
+            items = a + 4;
+            CallStd(Clu_VecCtorEh, items, 124, n, (void*)Clu5ea830_Construct, (void*)FUN_50d190);
+        }
+        F(BYTE*, c, 76) = items;
+        F(int, c, 72) = n;
+        for (int i = 0; i < n; i++) {
+            char buf[32];
+            fread(buf, 32, 1, f);
+            strcpy((char*)F(BYTE*, c, 76) + i * 124, buf);
+        }
+    }
+    if (!nodes)
+        return 1;
+    fseek(f, nodes * 4, 0);
+    if (CallC<int>(FUN_5ab140, f) != 111)
+        return 0;
+    for (;;) {
+        int t = CallC<int>(FUN_5ab140, f);
+        if (t == 444)
+            continue;
+        if (t == 222)
+            return 1;
+        if (t != 333)
+            return 0;
+        int kind;
+        char* name;
+        BYTE* o = CallC<BYTE*>(FUN_5ef830, f, c, &kind, 0, 0, &name);
+        if (++g_cr723988 % 5 == 0 && F(Cr_Progress, c, 56))
+            F(Cr_Progress, c, 56)();
+        if (o)
+            Room_AddNode(c, 0, o);
+        else if (kind == 0)
+            fseek(f, 44, 1);
+        else if (kind == 1) {
+            BYTE* g = (BYTE*)operator new(104);
+            if (g) {
+                F(int, g, 4) = 0;
+                F(int, g, 8) = 0;
+                F(void*, g, 0) = g_cr64d7bc;
+                F(int, g, 80) = 0;
+                F(int, g, 76) = 0;
+                F(float, g, 88) = 1.0f;
+                F(float, g, 84) = 1.0f;
+                F(int, g, 96) = 0;
+                F(int, g, 92) = 0;
+                F(BYTE, g, 44) = 0;
+                F(BYTE, g, 12) = 0;
+                F(int, g, 100) = 0;
+            }
+            if (name[0])
+                CallThis(FUN_5d2540, g_objectNames, name, g);
+            Cluster_ReadNames(g, 0, f);
+            if (F(BYTE*, c, 120))
+                Node_Link(F(BYTE*, c, 120), 0, g);
+            F(BYTE*, c, 120) = g;
+        } else
+            return 0;
+        if (CallC<int>(FUN_5ab140, f) != 555)
+            return 0;
+    }
 }
 
 } // extern "C"

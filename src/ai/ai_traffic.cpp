@@ -985,3 +985,203 @@ int __cdecl Ai_NetMessage(int id, BYTE* data)
 }
 
 } // extern "C"
+
+// === moving a rope iterator to the next leaf (FUN_46c4a0)
+
+extern "C" void FUN_46c7d0(); KING_ALIAS("_FUN_46c7d0", "_Stream_SetWindow")
+
+// rope nodes: +0 size, +8 tag (0 leaf, 1 concatenation, 2 function, 3 substring), +16 C string,
+// +20 left / data / function, +24 right. Iterators: +0 position, +4 root, +8 leaf position, +12/+16/+20 the
+// buffer start / pointer / end, +24 the path cache (4 nodes), +40 its leaf index, +44 the right turns
+static int Rp_Tag(const BYTE* n) { return (signed char)F(BYTE, n, 8); }
+
+// the iterator's whole path from the root (_S_setcache)
+static void Rp_SetCache(BYTE* x)
+{
+    BYTE* path[64];
+    int depth = -1;
+    unsigned start = 0, pos = F(unsigned, x, 0);
+    BYTE dirns = 0;
+    BYTE* r = F(BYTE*, x, 4);
+    if (pos >= F(unsigned, r, 0)) {
+        F(BYTE*, x, 16) = 0;
+        return;
+    }
+    if (BYTE* cs = F(BYTE*, r, 16)) {
+        F(BYTE*, x, 12) = cs;
+        F(BYTE*, x, 20) = cs + F(unsigned, r, 0);
+        F(BYTE*, x, 16) = cs + pos;
+        F(BYTE*, x, 24) = r;
+        F(int, x, 40) = 0;
+        F(unsigned, x, 8) = 0;
+        return;
+    }
+    for (;;) {
+        path[++depth] = r;
+        int tag = Rp_Tag(r);
+        if (tag != 1) {
+            if (tag > 3)
+                continue;
+            break;
+        }
+        unsigned left = F(unsigned, F(BYTE*, r, 20), 0);
+        dirns <<= 1;
+        if (pos >= start + left) {
+            dirns |= 1;
+            r = F(BYTE*, r, 24);
+            start += left;
+        } else
+            r = F(BYTE*, r, 20);
+    }
+    F(unsigned, x, 8) = start;
+    int i = -1, j = depth - 3;
+    if (j < 0)
+        j = 0;
+    while (j <= depth)
+        F(BYTE*, x, 24 + 4 * ++i) = path[j++];
+    F(int, x, 40) = i;
+    F(BYTE, x, 44) = dirns;
+    CallC(FUN_46c7d0, x);
+}
+
+// the buffer over the leaf at the iterator (_S_setbuf, inlined here)
+static void Rp_SetBuf(BYTE* x, BYTE* leaf)
+{
+    unsigned lp = F(unsigned, x, 8), pos = F(unsigned, x, 0);
+    int tag = Rp_Tag(leaf);
+    if (tag == 0) {
+        F(BYTE*, x, 12) = F(BYTE*, leaf, 20);
+        F(BYTE*, x, 16) = F(BYTE*, leaf, 20) + (pos - lp);
+        F(BYTE*, x, 20) = F(BYTE*, x, 12) + F(unsigned, leaf, 0);
+    } else if (tag == 2 || tag == 3) {
+        unsigned len = 15, bs = lp, end = lp + F(unsigned, leaf, 0);
+        if (bs + len <= pos) {
+            bs = pos - 3;
+            if (bs + len > end)
+                bs = end - 15;
+        }
+        if (bs + len > end)
+            len = end - bs;
+        CallVirt(F(BYTE*, leaf, 20), 4, bs - lp, len, x + 45);
+        F(BYTE*, x, 12) = x + 45;
+        F(BYTE*, x, 16) = x + 45 + (pos - bs);
+        F(BYTE*, x, 20) = x + 45 + len;
+    }
+}
+
+extern "C" {
+
+// [FUN_46c4a0] rope iterator x after an increment (_S_setcache_for_incr): more of the current leaf, or up the
+// cached path to the next right branch and down its left edge, or the whole path again when the cache ran out
+void __cdecl Rope_SetCacheForIncr(BYTE* x)
+{
+    int idx = F(int, x, 40);
+    BYTE* node = F(BYTE*, x, 24 + idx * 4);
+    unsigned start = F(unsigned, x, 8);
+    BYTE dirns = F(BYTE, x, 44);
+    if (F(unsigned, x, 0) - start < F(unsigned, node, 0)) {
+        Rp_SetBuf(x, node);
+        return;
+    }
+    while (--idx >= 0) {
+        if (!(dirns & 1))
+            break;
+        node = F(BYTE*, x, 24 + idx * 4);
+        start -= F(unsigned, F(BYTE*, node, 20), 0);
+        dirns >>= 1;
+    }
+    if (idx < 0) {
+        Rp_SetCache(x);
+        return;
+    }
+    node = F(BYTE*, x, 24 + idx * 4);
+    start += F(unsigned, F(BYTE*, node, 20), 0);
+    node = F(BYTE*, node, 24);
+    F(BYTE*, x, 24 + ++idx * 4) = node;
+    dirns |= 1;
+    while (F(BYTE, node, 8) == 1) {
+        if (++idx == 4) {
+            for (int i = 0; i < 3; i++)
+                F(BYTE*, x, 24 + i * 4) = F(BYTE*, x, 28 + i * 4);
+            idx = 3;
+        }
+        node = F(BYTE*, node, 20);
+        F(BYTE*, x, 24 + idx * 4) = node;
+        dirns <<= 1;
+    }
+    F(int, x, 40) = idx;
+    F(unsigned, x, 8) = start;
+    F(BYTE, x, 44) = dirns;
+    Rp_SetBuf(x, F(BYTE*, x, 24 + idx * 4));
+}
+
+} // extern "C"
+
+// === the waypoints of a route from the next-hop tables (FUN_484810)
+
+extern "C" double __cdecl Road_EdgeCost(int side, BYTE* edge, int dir);            // ai_world.cpp
+extern "C" DWORD* __cdecl Rec12_Construct(DWORD* p, const DWORD* src);            // route_search.cpp
+extern "C" void __fastcall Vec12_Insert47b790(BYTE** v, void*, BYTE* pos, const BYTE* x);   // road_graph.cpp
+ASM_VAR(BYTE**, g_rw68cf00, $L_68cf00)        // the road nodes
+ASM_VAR(AsmLabel, s_rw6701e0, $L_6701e0)
+ASM_VAR(AsmLabel, s_rw6700c8, $L_6700c8)
+ASM_VAR(AsmLabel, s_rw670230, $L_670230)
+
+// appends waypoint record r (12 bytes) to vector v
+static void Rw_Push(BYTE** v, const DWORD* r)
+{
+    if (v[1] != v[2]) {
+        Rec12_Construct((DWORD*)v[1], r);
+        v[1] += 12;
+    } else
+        Vec12_Insert47b790(v, 0, v[1], (const BYTE*)r);
+}
+
+extern "C" {
+
+// [FUN_484810] out = the waypoints (node, edge, kind) of the route on side from node `from` to node `to` by the
+// next-hop bytes (node +196 + side * 4, per target: 127 none, 255 an error, else bit 7 the direction and the
+// edge index) ending with `to`; *cost = their edge costs, or the largest double and an empty vector without one
+ByteVec* __cdecl Route_Waypoints(ByteVec* out, int side, int from, int to, double* cost)
+{
+    BYTE* v[3] = {0, 0, 0};
+    *cost = 0.0;
+    BYTE hop = F(BYTE*, g_rw68cf00[from], 196 + side * 4)[to];
+    int node = from;
+    bool found = false;
+    while (hop != 127) {
+        if (hop == 255)
+            CallC(FUN_401010, 0, 1, (const char*)s_rw6701e0, (const char*)s_rw6700c8, 374, (const char*)s_rw670230,
+                  (const char*)s_pm68d1c0, (const char*)s_pm68d1c0);
+        int dir = hop >> 7, k = hop & 127;
+        BYTE* edge = F(BYTE**, g_rw68cf00[node], 20 + dir * 12)[k];
+        DWORD r[3] = {(DWORD)node, (DWORD)edge, (DWORD)hop << 16};
+        Rw_Push(v, r);
+        *cost = Road_EdgeCost(side, F(BYTE*, v[1], -8), dir) + *cost;
+        int next = F(int, F(BYTE*, F(BYTE*, v[1], -8), 112 + (dir ^ 1) * 4), 16);
+        if (next == to) {
+            found = true;
+            break;
+        }
+        node = next;
+        hop = F(BYTE*, g_rw68cf00[node], 196 + side * 4)[to];
+    }
+    out->begin = out->end = out->cap = 0;
+    if (!found) {
+        F(DWORD, cost, 0) = 0xFFFFFFFF;
+        F(DWORD, cost, 4) = 0x7FEFFFFF;
+    } else {
+        DWORD r[3] = {(DWORD)to, 0, 0x00FF0000};
+        Rw_Push(v, r);
+        int n = (int)(v[1] - v[0]) / 12;
+        BYTE* p = n ? (BYTE*)Stl_Allocate(n * 12) : 0;
+        out->begin = out->end = p;
+        out->cap = p + n * 12;
+        out->end = CallC<BYTE*>(FUN_47e3e0, v[0], v[1], p, side);
+    }
+    if (int bytes = (int)(v[2] - v[0]) / 12 * 12)
+        CallC(FUN_44b4a0, v[0], bytes);
+    return out;
+}
+
+} // extern "C"

@@ -549,7 +549,7 @@ ASM_VAR(AsmLabel, s_aiStream66ff3c, $L_66ff3c)
 ASM_VAR(AsmLabel, s_errOpen66ff58, $L_66ff58)
 ASM_VAR(AsmLabel, s_errRead66ff40, $L_66ff40)
 ASM_VAR(char, g_empty68d1c0s, $L_68d1c0)
-ASM_PROC(FUN_482a70)    // reads the AI state from a buffer
+extern "C" void FUN_482a70(); KING_ALIAS("_FUN_482a70", "_Ai_LoadState")    // reads the AI state from a buffer
 extern "C" void FUN_477780(); KING_ALIAS("_FUN_477780", "_Players_Each4776b0")
 extern "C" void FUN_478910(); KING_ALIAS("_FUN_478910", "_Routes_Each477600")
 extern "C" void FUN_478950(); KING_ALIAS("_FUN_478950", "_Ambushes_Each477600")
@@ -892,6 +892,119 @@ void __cdecl Save_Present(BYTE** v, BYTE* p)
         Sp_End(&b);
     }
     Sp_End(&outer);
+}
+
+} // extern "C"
+
+// === loading a town (FUN_481330)
+
+extern "C" void FUN_447230(); KING_ALIAS("_FUN_447230", "@CharVec_Clear@8")
+extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, x)
+ASM_VAR(AsmLabel, s_svld66fe14, $L_66fe14)
+ASM_VAR(AsmLabel, s_svld66fdfc, $L_66fdfc)
+ASM_VAR(AsmLabel, s_svld66d5ac, $L_66d5ac)
+
+extern "C" {
+
+// [FUN_481330] loads a town (TOWN): finds it by name, then reads each TNDE chunk into a new 32-byte node for its
+// entry (index; +0, +4, +12, +16, +24, then a skipped stale record, +8) and puts it into the entry's first free
+// node slot (+8 or +12)
+void __cdecl Load_Town(BYTE** cur)
+{
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagTOWN)) {
+        BYTE* v[3];
+        char alloc;
+        CallThis(FUN_487730, v, &alloc);
+        int n = F(int, *cur, 0);
+        *cur += 4;
+        CallThis(FUN_447230, v);
+        CallThis(FUN_47aad0, v, n);
+        for (; n; n--) {
+            BYTE ch = **cur;
+            (*cur)++;
+            CallThis(FUN_47ab20, v, &ch);
+        }
+        char*** it = Strings_Find((char***)g_ordrTowns[0], (char***)g_ordrTowns[1], (const char*)v[0]);
+        if (it == (char***)g_ordrTowns[1])
+            AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, 244, s_svld66fe14, (const char*)v[0],
+                    &g_ordrEmpty);
+        while (*c.cur != (BYTE*)(c.a + c.b)) {
+            LoadChunkS e;
+            if (LoadChunk_Open(&e, cur, g_tagTNDE)) {
+                int idx = F(int, *cur, 0);
+                *cur += 4;
+                DWORD* node = (DWORD*)operator new(32);
+                node[0] = node[1] = node[2] = node[3] = 0xFFFFFFFF;
+                node[4] = node[5] = node[6] = node[7] = 0;
+                node[0] = F(DWORD, *cur, 0);
+                node[1] = F(DWORD, *cur, 4);
+                node[3] = F(DWORD, *cur, 8);
+                node[4] = F(DWORD, *cur, 12);
+                node[5] = F(DWORD, *cur, 16);
+                node[6] = F(DWORD, *cur, 20);
+                node[7] = F(DWORD, *cur, 24);
+                node[2] = F(DWORD, *cur, 40);
+                *cur += 44;
+                if (node[0] == 0xFFFFFFFF) {
+                    AiError(0, 200, (const char*)s_svldFile, (const char*)s_svldId, 256, s_svld66fdfc, &g_ordrEmpty,
+                            &g_ordrEmpty);
+                    CallC(FUN_5d2ba0, s_svld66d5ac, node[2]);
+                    CallC(FUN_5d2ba0, s_svld66d5ac, node[1]);
+                }
+                CallC(FUN_480650, node + 4);
+                BYTE* entry = F(BYTE*, *it, 28) + idx * 16;
+                if (!F(DWORD*, entry, 8))
+                    F(DWORD*, entry, 8) = node;
+                else
+                    F(DWORD*, entry, 12) = node;
+            }
+            LoadChunk_Close(&e);
+        }
+        NameVec_Free(v);
+    }
+    LoadChunk_Close(&c);
+}
+
+} // extern "C"
+
+// === loading the AI state (FUN_482a70)
+
+ASM_VAR(AsmLabel, g_tagAll66fec0, $L_66fec0)
+ASM_VAR(AsmLabel, g_tagGlob66fd68, $L_66fd68)
+extern "C" void FUN_480b00(); KING_ALIAS("_FUN_480b00", "_Ai_LoadGlobals")
+
+// a loader of one record of a list chunk
+typedef void (__cdecl* Ld_Fn)(BYTE** cur);
+
+extern "C" {
+
+// [FUN_482a70] loads the AI state from the save data p: inside the outer chunk the globals and the lists of
+// players (PLRS), towns (TWNS), presents (PRSS), roads (RDDD), ambushes (AMBS) and obstacles (OBSS)
+void __cdecl Ai_LoadState(BYTE* p)
+{
+    static const struct { const char* tag; Ld_Fn fn; } k_lists[] = {
+        {g_tagPLRS, Load_Player}, {g_tagTWNS, Load_Town}, {g_tagPRSS, Load_Present},
+        {g_tagRDDD, Load_Road}, {g_tagAMBS, Load_Ambush}, {g_tagOBSS, Load_Obstacle},
+    };
+    BYTE** cur = &p;
+    LoadChunkS c;
+    if (LoadChunk_Open(&c, cur, g_tagAll66fec0))
+        while (*c.cur != (BYTE*)(c.a + c.b)) {
+            LoadChunkS e;
+            LoadChunk_Open(&e, cur, g_tagGlob66fd68);
+            if (e.tag == *(const DWORD*)g_tagGlob66fd68)
+                CallC(FUN_480b00, &e, cur);
+            else
+                for (const auto& l : k_lists)
+                    if (e.tag == *(const DWORD*)l.tag) {
+                        while (*e.cur != (BYTE*)(e.a + e.b))
+                            l.fn(cur);
+                        break;
+                    }
+            LoadChunk_Close(&e);
+        }
+    LoadChunk_Close(&c);
 }
 
 } // extern "C"
