@@ -79,7 +79,7 @@ ASM_VAR(AsmLabel, g_vtbl64c650, $L_64c650)
 ASM_VAR(AsmLabel, g_vtbl64c668, $L_64c668)
 ASM_VAR(AsmLabel, g_7025f0, $L_7025f0)
 extern "C" void FUN_4daf40(); KING_ALIAS("_FUN_4daf40", "@Fx4daf40_Construct@20")
-ASM_PROC(FUN_4dd2a0)
+extern "C" void FUN_4dd2a0(); KING_ALIAS("_FUN_4dd2a0", "@Glow_Construct@28")
 extern "C" void FUN_579380(); KING_ALIAS("_FUN_579380", "_Pool_Prepare")
 extern "C" void FUN_59bb90(); KING_ALIAS("_FUN_59bb90", "@Effect59bb90_Construct@36")
 extern "C" void FUN_59c420(); KING_ALIAS("_FUN_59c420", "@Effect59c420_Construct@32")
@@ -94,7 +94,7 @@ extern "C" void FUN_5a0000(); KING_ALIAS("_FUN_5a0000", "@VehGlowManager_Constru
 extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 ASM_PROC(FUN_4cf400)
-ASM_PROC(FUN_544df0)
+extern "C" void FUN_544df0(); KING_ALIAS("_FUN_544df0", "@Vehicle_Destruct@4")
 extern "C" void FUN_446c80(); KING_ALIAS("_FUN_446c80", "_Player_SetFlag20000")
 ASM_VAR(int, g_6f6a84, $L_6f6a84)
 ASM_VAR(int, g_6f6a8c, $L_6f6a8c)
@@ -5407,6 +5407,361 @@ BYTE* __fastcall Effects_Construct(BYTE* s, void*, BYTE* owner, BYTE* a, BYTE* b
     F(BYTE*, s, 36) = Em_Renderer(FUN_4c26f0, owner, F(BYTE*, s, 60));
     F(BYTE*, s, 68) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, owner, 524), (const char*)s_em672750);
     return s;
+}
+
+} // extern "C"
+
+// === loading a vehicle resource (FUN_4d8b20) and a present's car object ($L_4d8b60)
+
+ASM_VAR(BYTE*, g_pc696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_pc6cec6c, $L_6cec6c)
+ASM_VAR(int, g_pc68b990, $L_68b990)
+ASM_VAR(AsmLabel, g_pc6d24bc, $L_6d24bc)
+ASM_VAR(AsmLabel, g_pc6ced98, $L_6ced98)
+ASM_VAR(AsmLabel, g_pc7025f0, $L_7025f0)
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void FUN_41be60(); KING_ALIAS("_FUN_41be60", "_Ai_GetPresentData")
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_43f700(); KING_ALIAS("_FUN_43f700", "_Rec_Field8")
+extern "C" void FUN_43fbd0(); KING_ALIAS("_FUN_43fbd0", "_Rec_SetField0")
+extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
+extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
+extern "C" void FUN_571a80(); KING_ALIAS("_FUN_571a80", "_Net_CreateCarObject")
+ASM_PROC(FUN_571c20)
+extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
+extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")
+extern "C" void FUN_5e5210(); KING_ALIAS("_FUN_5e5210", "@Resources_Delete@12")
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+extern "C" void FUN_5e54c0(); KING_ALIAS("_FUN_5e54c0", "@Resources_AddRecord@20")
+
+struct Pc_M48 { DWORD d[12]; };
+
+// the present data the AI fills (272 bytes + 2 ints): +4 matrix, +64/+68/+72 kinds, +80 effect state,
+// +272 / +276 table indices
+struct Pc_Data { BYTE b[280]; };
+
+static void Pc_Init(Pc_Data* p)
+{
+    F(int, p, 0) = 0;
+    CallStd(FUN_4011e0, p->b + 4, 12, 4, FUN_4bd4d0);
+    memcpy(p->b + 4, (BYTE*)g_pc7025f0, 48);
+    for (int k = 52; k <= 68; k += 4)
+        F(int, p, k) = 0;
+    F(int, p, 72) = -1;
+    F(int, p, 76) = -1;
+    Fx_InitState(p->b + 80, 0);
+    F(int, p, 272) = -1;
+    F(int, p, 276) = -1;
+}
+
+static void Pc_Free(Pc_Data* p)
+{
+    CallThis(FUN_44b090, p->b + 168);
+    CallThis(FUN_44b090, p->b + 156);
+    CallThis(FUN_44b090, p->b + 144);
+    CallThis(FUN_404420, p->b + 132);
+}
+
+// the present it as the player's car sees it
+static void Pc_Get(Pc_Data* p, const int* it)
+{
+    int t, car;
+    CallThis(FUN_41d300, &t, it);
+    CallC(FUN_568f60, &car);
+    CallC(FUN_41be60, car, t, p);
+}
+
+extern "C" {
+
+// [FUN_4d8b20] charges the world resource of id (+704 of the world) when it isn't loaded yet
+void __cdecl Vehicle_LoadResource(int id)
+{
+    BYTE* r = CallThis<BYTE*>(FUN_5e5370, g_pc696ca0 + 704, id);
+    if (r && !F(int, r, 28))
+        CallThis(FUN_5e4900, r, g_pc696ca0 + 704);
+}
+
+// $L_4d8b60 (inside FUN_4d8b20): a present record's event (record it, kind): 1 creates its car object (by the
+// present's kind bits: a car, a trailer of table 6d24bc, a cargo) or updates the existing one's texture; 4
+// removes its world resource (not for the 101xxx ids); 0 for 1, else -1
+int __cdecl Present_OnEvent(BYTE* it, int kind)
+{
+    BYTE* world = F(BYTE*, g_pc6cec6c, 1356);
+    if (kind == 1) {
+        Pc_Data p;
+        Pc_Init(&p);
+        Pc_Get(&p, (int*)&it);
+        int id = F(int, F(BYTE*, it, 8), 0);
+        if (id < 0) {
+            Pc_M48 m = *(Pc_M48*)(p.b + 4);
+            int fl = CallC<int>(FUN_43f700, it);
+            if (fl & 16)
+                id = CallC<int>(FUN_571a80, world, F(int, &p, 64), F(int, &p, 68), m, F(int, &p, 272));
+            else if (fl & 32)
+                id = CallC<int>(FUN_571c20, world, F(int, &p, 64), F(int, &p, 68), m,
+                                F(int, &p, 272) + 1000 * F(int, &p, 276));
+            else if (fl & 192)
+                id = CallC<int>(FUN_571a80, world, F(int, &p, 64), F(int, &p, 68), m, F(int, &p, 272));
+            int t;
+            CallThis(FUN_41d300, &t, &it);
+            CallC(FUN_43fbd0, t, id);
+        } else {
+            int fl = CallC<int>(FUN_43f700, it);
+            BYTE* r = CallThis<BYTE*>(FUN_5e5370, world + 704, id);
+            BYTE* c;
+            if (fl & 32) {
+                if (r)
+                    F(int, F(BYTE*, r, 24), 296) = g_pc68b990;
+                c = F(BYTE*, (BYTE*)g_pc6d24bc + F(int, &p, 272) * 1488, 12);
+            } else
+                c = F(BYTE*, (BYTE*)g_pc6ced98 + F(int, &p, 272) * 44, 0);
+            if (c)
+                F(int, r, 16) = F(int, c, 16);
+        }
+        Pc_Free(&p);
+        return 0;
+    }
+    if (kind == 4) {
+        Pc_Data p;
+        Pc_Init(&p);
+        Pc_Get(&p, (int*)&it);
+        int id = F(int, F(BYTE*, it, 8), 0);
+        BYTE* r = CallThis<BYTE*>(FUN_5e5370, world + 704, id);
+        if (r && id / 1000 != 101) {
+            if (F(int, r, 28))
+                CallThis(FUN_5e49d0, r, world + 704);
+            CallThis(FUN_5e54c0, world + 704, 0, r, 0);
+            CallThis(FUN_5e5210, world + 704, id);
+        }
+        Pc_Free(&p);
+    }
+    return -1;
+}
+
+} // extern "C"
+
+// === setting up the world's effects (FUN_4b9b90)
+
+ASM_VAR(AsmLabel, g_ew64c2d8, $L_64c2d8)
+ASM_VAR(AsmLabel, g_ew64c2b8, $L_64c2b8)
+ASM_VAR(BYTE*, g_ew6961f4, $L_6961f4)
+ASM_VAR(BYTE*, g_ew696224, $L_696224)
+ASM_VAR(BYTE*, g_ew6f33b4, $L_6f33b4)
+ASM_VAR(BYTE*, g_ew6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_ew696200, $L_696200)
+ASM_VAR(BYTE*, g_ew6f66a8, $L_6f66a8)
+ASM_VAR(BYTE*, g_ew696238, $L_696238)
+ASM_VAR(BYTE*, g_ew696230, $L_696230)
+ASM_VAR(BYTE*, g_ew696234, $L_696234)
+ASM_VAR(BYTE*, g_ew6961f8, $L_6961f8)
+ASM_VAR(int, g_ew6cec68, $L_6cec68)
+ASM_VAR(int, g_ew6716fc, $L_6716fc)
+ASM_VAR(int, g_ew6716f8, $L_6716f8)
+ASM_VAR(float, g_ew696060, $L_696060)
+ASM_VAR(float, g_ew696080, $L_696080)
+ASM_VAR(float, g_ew696044, $L_696044)
+ASM_VAR(float, g_ew64c268, $L_64c268)
+ASM_VAR(float, g_ew64c13c, $L_64c13c)
+ASM_VAR(float, g_ew64c140, $L_64c140)
+ASM_VAR(float, g_ew64c144, $L_64c144)
+ASM_VAR(float, g_ew64c148, $L_64c148)
+ASM_VAR(float, g_ew64c258, $L_64c258)
+ASM_VAR(AsmLabel, s_ew672698, $L_672698)
+ASM_VAR(AsmLabel, s_ew672688, $L_672688)
+ASM_VAR(AsmLabel, s_ew672690, $L_672690)
+ASM_VAR(AsmLabel, s_ew672648, $L_672648)
+ASM_VAR(AsmLabel, s_ew672640, $L_672640)
+ASM_VAR(AsmLabel, s_ew672638, $L_672638)
+ASM_VAR(AsmLabel, s_ew672658, $L_672658)
+ASM_VAR(AsmLabel, s_ew672650, $L_672650)
+extern "C" void FUN_4b86c0(); KING_ALIAS("_FUN_4b86c0", "_Fx_SetPaletteColors")
+extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
+extern "C" void FUN_4b87a0(); KING_ALIAS("_FUN_4b87a0", "_Eff_CreateSounds")
+ASM_PROC(FUN_4b91a0)
+extern "C" void FUN_4bc690(); KING_ALIAS("_FUN_4bc690", "@Trail_Construct@20")
+extern "C" void FUN_4bc950(); KING_ALIAS("_FUN_4bc950", "@Effect4bc950_Attach@12")
+extern "C" void FUN_4bcbe0(); KING_ALIAS("_FUN_4bcbe0", "@LightPool_Free@8")
+ASM_PROC(FUN_4be8d0)
+extern "C" void FUN_4bee30(); KING_ALIAS("_FUN_4bee30", "@Sky_Construct@16")
+extern "C" void FUN_4c4770(); KING_ALIAS("_FUN_4c4770", "_Eff_ResetSmokeAndGlows")
+extern "C" void FUN_4c9970(); KING_ALIAS("_FUN_4c9970", "@Effect4c9970_Construct@16")
+extern "C" void FUN_4cb4d0(); KING_ALIAS("_FUN_4cb4d0", "_Effect_Shared6436")
+extern "C" void FUN_4cb550(); KING_ALIAS("_FUN_4cb550", "_Fx_Clear6f6a78")
+extern "C" void FUN_593430(); KING_ALIAS("_FUN_593430", "@MovBodies_Construct@12")
+extern "C" void FUN_59daf0(); KING_ALIAS("_FUN_59daf0", "_DustColor_Create")
+extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_6144f0(); KING_ALIAS("_FUN_6144f0", "@Terrain_SetDetail@16")
+ASM_PROC(FUN_614570)
+extern "C" void FUN_5a37f0(); KING_ALIAS("_FUN_5a37f0", "_WorldHandlers_Create")
+
+// the effect texture of name in the scene 696200
+static BYTE* Ew_Find(const AsmLabel& name)
+{
+    return CallC<BYTE*>(FUN_4b8720, (const char*)name, g_ew696200);
+}
+
+extern "C" {
+
+// [FUN_4b9b90] sets up the effects of world w: the effect manager objects (6961f4, kind 20; a plain one), the
+// sounds and tables, the terrain detail, moving bodies (6f66a8), handlers, 696238; with the weather (696230)
+// the season flags 6716fc / 6716f8 from the date (+2920), the sky, clouds and the effects (696234) when their
+// amounts are set; the colors, dust and the light trail (6961f8)
+void __cdecl Effects_SetupWorld(BYTE* w)
+{
+    BYTE* o = (BYTE*)operator new(40);
+    if (o) {
+        CallThis(FUN_5d31e0, o, 20, (const char*)s_ew672698);
+        F(void*, o, 0) = g_ew64c2d8;
+        BYTE* buf = (BYTE*)operator new(1020);
+        F(BYTE*, o, 32) = buf;
+        memset(buf, 0, 1020);
+        F(int, o, 36) = 0;
+        CallThis(FUN_5d3570, w + 2992, o);
+        CallThis(FUN_5d33d0, o, 1);
+    }
+    g_ew6961f4 = o;
+    CallC(FUN_4b87a0);
+    CallC(FUN_4b91a0);
+    g_ew696224 = w;
+    CallC(FUN_4cb550);
+    CallC(FUN_4cb4d0);
+    if (BYTE* t = g_ew6f33b4) {
+        float a = (float)(F(short, g_ew6cec70, 420) * (double)g_ew64c268);
+        float b = (float)(F(short, g_ew6cec70, 422) * (double)g_ew64c268);
+        CallThis(FUN_6144f0, t, a, b);
+        CallThis(FUN_614570, g_ew6f33b4, w);
+    }
+    g_ew696200 = CallThis<BYTE*>(FUN_5d9290, g_ew696224, (const char*)s_ew672688);
+    BYTE* mb = (BYTE*)operator new(120);
+    g_ew6f66a8 = mb ? CallThis<BYTE*>(FUN_593430, mb, g_ew696224) : 0;
+    CallC(FUN_5a37f0, w);
+    BYTE* e = (BYTE*)operator new(44);
+    g_ew696238 = e ? CallThis<BYTE*>(FUN_4c9970, e, g_ew696224, 0) : 0;
+    o = (BYTE*)operator new(32);
+    if (o) {
+        CallThis(FUN_5d3110, o, (const char*)s_ew672690);
+        F(void*, o, 0) = g_ew64c2b8;
+        CallThis(FUN_5d3570, w + 2992, o);
+        CallThis(FUN_5d33d0, o, 1);
+    }
+    if (g_ew696230) {
+        double d = F(double, g_ew696224, 2920);
+        g_ew6716fc = d > g_ew64c13c && d < g_ew64c140;
+        g_ew6716f8 = d > g_ew64c144 && d < g_ew64c148;
+        if (g_ew696060 > g_ew64c258) {
+            BYTE* s = (BYTE*)operator new(52);
+            if (s)
+                CallThis(FUN_4bee30, s, g_ew696224, Ew_Find(s_ew672648));
+        }
+        if (g_ew696080 > g_ew64c258) {
+            BYTE* s = (BYTE*)operator new(48);
+            if (s)
+                CallThis(FUN_4be8d0, s, g_ew696224, Ew_Find(s_ew672640));
+        }
+        if (g_ew696044 > g_ew64c258) {
+            BYTE* s = (BYTE*)operator new(72);
+            if (s) {
+                BYTE* b = Ew_Find(s_ew672648);
+                s = Effects_Construct(s, 0, g_ew696224, Ew_Find(s_ew672638), b);
+            }
+            g_ew696234 = s;
+        }
+    }
+    CallC(FUN_4b86c0);
+    CallC(FUN_59daf0, g_ew696224);
+    if (BYTE* old = g_ew6961f8) {
+        CallThis(FUN_4bcbe0, old);
+        operator delete(old);
+        BYTE* t = (BYTE*)operator new(88);
+        if (t)
+            t = CallThis<BYTE*>(FUN_4bc690, t, g_ew6cec68 ? (const char*)s_ew672658 : (const char*)s_ew672650,
+                                g_ew696224, 20);
+        g_ew6961f8 = t;
+        CallThis(FUN_4bc950, t, g_ew696230);
+    }
+    CallC(FUN_4c4770);
+}
+
+} // extern "C"
+
+// === a spinning glow (FUN_4dd2a0)
+
+ASM_VAR(AsmLabel, g_sg64d554, $L_64d554)
+ASM_VAR(AsmLabel, s_sg672ca4, $L_672ca4)
+ASM_VAR(float, g_sg64c254, $L_64c254)
+ASM_VAR(float, g_sg64c258, $L_64c258)
+ASM_VAR(float, g_sg64c350, $L_64c350)
+ASM_VAR(float, g_sg64c408, $L_64c408)
+ASM_VAR(double, g_sg64b660, $L_64b660)
+ASM_VAR(AsmLabel, g_sg7025f0, $L_7025f0)
+
+static void Sg_Set(BYTE* o, int off, const DWORD* v) { memcpy(o + off, v, 12); }
+
+extern "C" {
+
+// [FUN_4dd2a0] constructor (thiscall: owner, matrix m, kind, +180, +184) of a spinning glow attached to owner
+// at m: three axes (+56, +68, +80, with indices +92..+100) ordered by kind (kind 1 randomly), random spin
+// rates +32..+40 (each axis a bit faster), +116 the fastest and +120 that plus 64b660
+BYTE* __fastcall Glow_Construct(BYTE* o, void*, BYTE* owner, const BYTE* m, int kind, int a4, int a5)
+{
+    CallThis(FUN_5d3110, o, (const char*)s_sg672ca4);
+    memset(o + 56, 0, 36);
+    memset(o + 132, 0, 48);
+    memcpy(o + 132, (BYTE*)g_sg7025f0, 48);
+    F(void*, o, 0) = g_sg64d554;
+    F(BYTE*, o, 128) = owner;
+    CallThis(FUN_5d3570, owner + 2992, o);
+    F(int, o, 124) = 0;
+    memcpy(o + 132, m, 48);
+    F(int, o, 180) = a4;
+    F(int, o, 184) = a5;
+    static const DWORD A[3] = {3239051264u, 1065353216, 1065353216};
+    static const DWORD B[3] = {0, 1065353216, 1065353216};
+    static const DWORD C[3] = {1090519040, 1065353216, 1065353216};
+    if (kind == 0) {
+        Sg_Set(o, 56, A);
+        F(int, o, 92) = 0;
+        Sg_Set(o, 68, B);
+        F(int, o, 96) = 1;
+        F(int, o, 100) = 2;
+        Sg_Set(o, 80, C);
+    } else if (kind == 1) {
+        Sg_Set(o, 56, B);
+        F(int, o, 92) = 1;
+        if (rand() * (double)g_sg64c254 > g_sg64c258) {
+            F(int, o, 96) = 0;
+            F(int, o, 100) = 2;
+            Sg_Set(o, 68, A);
+            Sg_Set(o, 80, C);
+        } else {
+            F(int, o, 96) = 2;
+            Sg_Set(o, 68, C);
+            Sg_Set(o, 80, A);
+            F(int, o, 100) = 0;
+        }
+    } else {
+        Sg_Set(o, 56, C);
+        F(int, o, 92) = 2;
+        F(int, o, 96) = 1;
+        Sg_Set(o, 68, B);
+        Sg_Set(o, 80, A);
+        F(int, o, 100) = 0;
+    }
+    for (int i = 0; i < 3; i++) {
+        F(int, o, 44 + i * 4) = 0;
+        F(int, o, 104 + i * 4) = 0;
+        float r1 = (float)(rand() * (double)g_sg64c254);
+        double r2 = rand() * (double)g_sg64c254;
+        F(float, o, 32 + i * 4) = (float)((r2 - r1) * g_sg64c350 + (double)i * g_sg64c408);
+    }
+    F(float, o, 116) = 0;
+    for (int i = 0; i < 3; i++)
+        if (F(float, o, 116) < F(float, o, 32 + i * 4))
+            F(float, o, 116) = F(float, o, 32 + i * 4);
+    F(float, o, 120) = (float)(F(float, o, 116) + g_sg64b660);
+    CallThis(FUN_5d33d0, o, 1);
+    return o;
 }
 
 } // extern "C"

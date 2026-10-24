@@ -3659,3 +3659,280 @@ void __cdecl Surface_FillRect(BYTE* s, const int* r, DWORD color, int raw)
 }
 
 } // extern "C"
+
+// === drawing an RLE image (FUN_5b8980) and marking a pixel ($L_5b8fb0)
+
+ASM_VAR(AsmLabel, s_gd67f104, $L_67f104)
+extern "C" void FUN_5b8720(); KING_ALIAS("_FUN_5b8720", "_Surface_DrawRle")
+ASM_PROC(FUN_5fe887)
+ASM_PROC(FUN_5fe906)
+ASM_PROC(FUN_5fe943)
+
+extern "C" {
+
+// [FUN_5b8980] draws image img at (x, y) on surface s: blitted from its surface (+36) on a hardware surface,
+// else its RLE rows (+16: a byte n | 0x80 skips n pixels, n copies the next n) clipped and written by the
+// surface mode (+80: 2 blended by +88, 4 and 3 special blends, 16-bit and z-tested variants with flags)
+void __cdecl Gfx_DrawImage(BYTE* s, int x, int y, BYTE* img, int flags)
+{
+    BYTE* pal = CallThis<BYTE*>(FUN_5b64c0, s);
+    bool z = (g_702e8c & 0x4000) && flags > 0;
+    if (!img || !(F(BYTE, img, 28) & 1))
+        return;
+    int iw = F(WORD, img, 4), ih = F(WORD, img, 6);
+    if (F(int, s, 116) == 1) {
+        DWORD fx[25] = {100};
+        fx[2] = 0xcc0020;
+        int d[4], r[4];
+        d[0] = x >= 0 ? x : 0;
+        r[0] = x >= 0 ? 0 : -x;
+        d[2] = iw + x;
+        if (d[2] < 0)
+            return;
+        if (d[2] >= F(WORD, s, 0))
+            d[2] = F(WORD, s, 0);
+        r[2] = d[2] - d[0] + r[0];
+        d[1] = y >= 0 ? y : 0;
+        r[1] = y >= 0 ? 0 : -y;
+        d[3] = y + ih;
+        if (d[3] < 0)
+            return;
+        if (d[3] >= F(WORD, s, 2))
+            d[3] = F(WORD, s, 2);
+        r[3] = d[3] - d[1] + r[1];
+        if (d[1] > d[3] || d[0] > d[2])
+            return;
+        if (F(int, s, 96)) {
+            d[0] += F(int, s, 100);
+            d[2] += F(int, s, 100);
+            d[1] += F(int, s, 104);
+            d[3] += F(int, s, 104);
+        }
+        BYTE* dd = (BYTE*)g_q150_7208fc;
+        if (int hr = Com(dd, 20, d, F(BYTE*, img, 36), r, 0x1008000, fx))
+            CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, (const char*)s_gd67f104), 0);
+        return;
+    }
+    const BYTE* rle = F(const BYTE*, img, 16);
+    if (!rle)
+        return;
+    if (x >= 0 && y >= 0 && x + iw <= F(WORD, s, 0) && y + ih <= F(WORD, s, 2) && !(g_702e8c & 0x4000) && F(WORD, s, 4) == 1 &&
+        F(int, s, 80) != 4 && F(int, s, 80) != 3) {
+        CallC(FUN_5b8720, s, x, y, img);
+        return;
+    }
+    int mode = 0;
+    BYTE* tbl = 0;
+    DWORD pal0 = 0;
+    int key = 0;
+    switch (F(int, s, 80)) {
+    case 2:
+        if (!pal || F(float, s, 88) == g_cm64b678)
+            return;
+        if (F(float, s, 88) != g_one64b670) {
+            tbl = CallThis<BYTE*>(FUN_5b94b0, pal, (int)(F(int, pal, 796) * (double)F(float, s, 88)));
+            mode = 1;
+        }
+        break;
+    case 4:
+        mode = 8;
+        break;
+    case 3:
+        pal0 = F(DWORD, pal, 0);
+        mode = 16;
+        tbl = (BYTE*)(256 / F(int, pal, 796));
+        key = F(BYTE, s, 92);
+        break;
+    }
+    int bpp = F(WORD, s, 4);
+    if (bpp == 2)
+        mode |= 2;
+    WORD* zrow = 0;
+    if (z) {
+        mode |= 4;
+        zrow = F(WORD*, s, 48) + F(WORD, s, 8) * y + x;
+    }
+    BYTE* bits = F(BYTE*, s, 24 + F(int, s, 16) * 4);
+    if (!bits)
+        return;
+    BYTE* row = bits + bpp * x + F(WORD, s, 6) * y;
+    int sb = F(WORD, img, 8);
+    for (int cy = y; cy - y < ih; cy++, row += F(WORD, s, 6)) {
+        WORD* zp = zrow;
+        BYTE* dst = row;
+        int cx = x;
+        while (cx - x < iw) {
+            int n = *rle & 127;
+            if (*rle++ & 128) {
+                dst += bpp * n;
+                cx += n;
+                if (z)
+                    zp += n;
+                continue;
+            }
+            int W = F(WORD, s, 0);
+            if (cy >= 0 && cy < F(WORD, s, 2) && cx < W && cx + n >= 0) {
+                BYTE* d = dst;
+                const BYTE* src = rle;
+                WORD* zz = zp;
+                int c = n, from = cx;
+                if (from < 0) {
+                    d -= bpp * from;
+                    src -= sb * from;
+                    if (z)
+                        zz -= from;
+                    c = n + from;
+                    from = 0;
+                }
+                if (c + from > W)
+                    c = W - from;
+                switch (mode) {
+                case 0:
+                    memcpy(d, src, c);
+                    break;
+                case 1:
+                    CallC(FUN_5fe860, tbl, d, src, c);
+                    break;
+                case 2:
+                    memcpy(d, src, c * 2);
+                    break;
+                case 3:
+                    CallC(FUN_5fea03, tbl, d, src, c);
+                    break;
+                case 4:
+                    CallC(FUN_5fe943, d, src, c, zz, flags);
+                    break;
+                case 5:
+                    CallC(FUN_5fe906, tbl, d, src, c, zz, flags);
+                    break;
+                case 8:
+                case 12:
+                    CallC(FUN_5fe814, d, src, c);
+                    break;
+                case 10:
+                case 14:
+                    CallC(FUN_5fe837, d, src, c);
+                    break;
+                case 16:
+                    CallC(FUN_5fe887, pal0, d, src, c, key, tbl);
+                    break;
+                }
+            }
+            rle += sb * n;
+            dst += bpp * n;
+            if (z)
+                zp += n;
+            cx += n;
+        }
+        if (z)
+            zrow += F(WORD, s, 8);
+    }
+}
+
+// $L_5b8fb0 (inside FUN_5b8980): sets the high nibble of the second byte of pixel (x, y) of surface s, when image img is set
+void __cdecl Gfx_MarkPixel(BYTE* s, int x, int y, BYTE* img)
+{
+    if (!img || !(F(BYTE, img, 28) & 1))
+        return;
+    BYTE* bits = F(BYTE*, s, 24 + F(int, s, 16) * 4);
+    if (!bits || y >= F(WORD, s, 2) || x >= F(WORD, s, 0) || y < 0 || x < 0)
+        return;
+    bits[F(WORD, s, 4) * x + F(WORD, s, 6) * y + 1] |= 0xf0;
+}
+
+} // extern "C"
+
+// === probing the device's multitexturing (FUN_5b04c0)
+
+ASM_VAR(int, g_mt7208bc, $L_7208bc)
+ASM_VAR(int, g_mt7208c4, $L_7208c4)
+ASM_VAR(int, g_mt7208c8, $L_7208c8)
+ASM_VAR(int, g_mt7208cc, $L_7208cc)
+ASM_VAR(int, g_mt7208d0, $L_7208d0)
+ASM_VAR(int, g_mt7208d4, $L_7208d4)
+extern "C" void FUN_4cca90(); KING_ALIAS("_FUN_4cca90", "_Fx_IsRadeon")
+extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
+
+static void Mt_Stage(int stage, int type, int value) { Com(g_device, 148, stage, type, value); }
+
+// whether the device can draw with the stages as set
+static bool Mt_Valid()
+{
+    DWORD passes;
+    return Com(g_device, 152, &passes) == 0;
+}
+
+static void Mt_Texture(int stage, BYTE* img)
+{
+    if (img && F(BYTE*, img, 76))
+        Com(g_device, 140, stage, F(BYTE*, img, 76));
+}
+
+extern "C" {
+
+// [FUN_5b04c0] resets the device states, then (unless 702e8c bit 25 turns multitexturing off) checks with the
+// textures of a and b which two-stage blends validate: modulate (7208d4), the 7208cc variant, add (7208d0);
+// none of them clears 7208bc, a Radeon clears 7208c4
+void __cdecl Device_ProbeMultitexture(BYTE* a, BYTE* b)
+{
+    CallC(FUN_5b0120, 0);
+    Com(g_device, 80, 41, 0);
+    Mt_Stage(0, 11, 0);
+    Mt_Stage(1, 11, 1);
+    Mt_Stage(0, 16, 2);
+    Mt_Stage(0, 17, 2);
+    Mt_Stage(0, 18, 1);
+    Mt_Stage(1, 16, 2);
+    Mt_Stage(1, 17, 2);
+    Mt_Stage(1, 18, 1);
+    if (g_702e8c & 0x2000000) {
+        g_mt7208bc = 0;
+        g_mt7208d4 = 0;
+        g_mt7208d0 = 0;
+        g_mt7208cc = 0;
+        g_mt7208c4 = 0;
+        return;
+    }
+    if (g_mt7208bc) {
+        Mt_Stage(0, 2, 2);
+        Mt_Stage(0, 3, 0);
+        Mt_Stage(0, 1, 4);
+        Mt_Stage(0, 5, 2);
+        Mt_Stage(0, 6, 0);
+        Mt_Stage(0, 4, 4);
+        Mt_Texture(0, a);
+        Mt_Stage(1, 2, 2);
+        Mt_Stage(1, 3, 1);
+        Mt_Stage(1, 1, 13);
+        if (g_mt7208c8) {
+            Mt_Stage(1, 6, 1);
+            Mt_Stage(1, 4, 3);
+        } else {
+            Mt_Stage(1, 5, 1);
+            Mt_Stage(1, 4, 2);
+        }
+        Mt_Texture(1, b);
+        if (!Mt_Valid())
+            g_mt7208d4 = 0;
+        if (g_mt7208cc) {
+            Mt_Stage(1, 1, 14);
+            if (!Mt_Valid())
+                g_mt7208cc = 0;
+        }
+        Mt_Stage(1, 2, 2);
+        Mt_Stage(1, 3, 1);
+        Mt_Stage(1, 1, 4);
+        Mt_Stage(1, 5, 2);
+        Mt_Stage(1, 6, 1);
+        Mt_Stage(1, 4, 4);
+        if (!Mt_Valid())
+            g_mt7208d0 = 0;
+        if (!g_mt7208d4 && !g_mt7208d0)
+            g_mt7208bc = 0;
+        if (CallC<int>(FUN_4cca90))
+            g_mt7208c4 = 0;
+    }
+    Com(g_device, 80, 41, 1);
+}
+
+} // extern "C"

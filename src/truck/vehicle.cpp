@@ -1467,7 +1467,7 @@ extern "C" void FUN_5300b0(); KING_ALIAS("_FUN_5300b0", "@Controls_Axis@12")
 extern "C" void FUN_589490(); KING_ALIAS("_FUN_589490", "@BodyLevel_Step@16")
 ASM_PROC(FUN_5427a0)
 ASM_PROC(FUN_501b90)
-ASM_PROC(FUN_555550)
+extern "C" void FUN_555550(); KING_ALIAS("_FUN_555550", "@Vehicle_LowerStep@12")
 ASM_VAR(AsmLabel, g_carTypes697914, $L_697914)
 ASM_VAR(AsmLabel, g_controls6d1db8, $L_6d1db8)
 ASM_VAR(AsmLabel, s_679ef8, $L_679ef8)
@@ -2248,7 +2248,7 @@ extern "C" int __fastcall Car_WheelLevels(BYTE* s, void*, int a)
 
 extern "C" void FUN_55ed50(); KING_ALIAS("_FUN_55ed50", "@Car_55ed50@8")
 extern "C" void FUN_558930(); KING_ALIAS("_FUN_558930", "@Car_558930@8")
-ASM_PROC(FUN_544df0)
+extern "C" void FUN_544df0(); KING_ALIAS("_FUN_544df0", "@Vehicle_Destruct@4")
 extern "C" void FUN_592bf0(); KING_ALIAS("_FUN_592bf0", "@ListItem592bf0_Construct@12")
 extern "C" void FUN_52fd90(); KING_ALIAS("_FUN_52fd90", "@Obj52fd90_Reset@8")
 ASM_VAR(AsmLabel, g_veh64f96c, $L_64f96c)
@@ -2426,7 +2426,7 @@ extern "C" void __fastcall Car_SendLamps(BYTE* s)
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
-ASM_PROC(FUN_544df0)
+extern "C" void FUN_544df0(); KING_ALIAS("_FUN_544df0", "@Vehicle_Destruct@4")
 // [$L_543de0]
 extern "C" BYTE* __fastcall Dtor543de0_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -3453,6 +3453,475 @@ BYTE* __fastcall NetVehicle_Construct(BYTE* self, void*, BYTE* view, int type, i
     F(int, self, 3520)++;
     F(int, self, 10924) = 0;
     return self;
+}
+
+} // extern "C"
+
+// === the vehicle's destructor (FUN_544df0)
+
+ASM_VAR(AsmLabel, g_vd64f654, $L_64f654)
+ASM_VAR(AsmLabel, g_vd64f51c, $L_64f51c)
+ASM_VAR(AsmLabel, g_vd64f518, $L_64f518)
+ASM_VAR(AsmLabel, g_vd64f568, $L_64f568)
+ASM_VAR(BYTE*, g_vd6ef1fc, $L_6ef1fc)
+ASM_VAR(int, g_vd6ef1f0, $L_6ef1f0)
+ASM_VAR(BYTE*, g_vd6ef204, $L_6ef204)
+ASM_VAR(AsmLabel, g_vd6d24e0, $L_6d24e0)
+ASM_VAR(AsmLabel, g_vd6d24bc, $L_6d24bc)
+ASM_VAR(char, s_vd679f54, $L_679f54)
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void FUN_4eac8e(); KING_ALIAS("_FUN_4eac8e", "@Arrays_Free@8")
+extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
+extern "C" void FUN_57def0(); KING_ALIAS("_FUN_57def0", "@SceneObj_Get800@8")
+extern "C" void FUN_58b870(); KING_ALIAS("_FUN_58b870", "@Body58b870_Destroy@8")
+extern "C" void FUN_592cf0(); KING_ALIAS("_FUN_592cf0", "@Linked592cf0_Destruct@8")
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")
+
+typedef void (__cdecl* Vd_Callback)(int);
+
+// a record (+12 buffer) owned by a pointer
+static void Vd_FreeRec(BYTE* r)
+{
+    if (!r)
+        return;
+    if (F(void*, r, 12))
+        operator delete(F(void*, r, 12));
+    operator delete(r);
+}
+
+extern "C" {
+
+// [FUN_544df0] destructor of vehicle s: the callback +20956; a network car (+9548 = 5) leaves its state (model,
+// trailer, position, matrix, names) in the world's resource table and drops its trailer (+21604); others drop
+// their cab (+21600) and the use count of their model; then the two records +21872 / +21876 and the bases
+void __fastcall Vehicle_Destruct(BYTE* s)
+{
+    F(void*, s, 0) = g_vd64f654;
+    F(void*, s, 272) = g_vd64f51c;
+    F(void*, s, 392) = g_vd64f518;
+    F(void*, s, 16) = g_vd64f568;
+    if (Vd_Callback cb = F(Vd_Callback, s, 20956))
+        cb(0);
+    if (F(int, s, 9548) == 5) {
+        int kind = 3, other = 0;
+        DWORD speed = 1142292480;
+        if (BYTE* t = F(BYTE*, s, 21604)) {
+            kind = F(int, t, 3236);
+            BYTE* c = CallC<BYTE*>(FUN_53f750, F(int, t, 3248));
+            speed = F(DWORD, F(BYTE*, s, 21604), 3268);
+            if (c && !F(int, c, 1220))
+                other = F(int, c, 9544);
+        }
+        int obj = F(int, F(BYTE*, s, 336), 12);
+        int name = F(int, CallThis<BYTE*>(FUN_57def0, s + 16), 12);
+        BYTE r[160];
+        F(int, r, 0) = F(int, s, 10420);
+        F(int, r, 4) = kind;
+        F(int, r, 8) = other;
+        F(int, r, 12) = F(int, s, 388);
+        F(int, r, 16) = F(int, s, 380);
+        for (int k = 0; k < 4; k++)
+            CallThis(FUN_4bd4d0, r + 44 + k * 12);
+        memcpy(r + 20, s + 432, 12);
+        memcpy(r + 32, s + 444, 12);
+        memcpy(r + 44, s + 516, 48);
+        F(DWORD, r, 92) = speed;
+        strncpy((char*)r + 96, (const char*)name, 31);
+        strncpy((char*)r + 128, (const char*)obj, 31);
+        CallThis(FUN_5e52b0, g_vd6ef1fc + 704, name + 300000, F(int, F(BYTE*, s, 308), 60), 160, r);
+        if (BYTE* t = F(BYTE*, s, 21604)) {
+            CallThis(FUN_5e48f0, t);
+            operator delete(t);
+        }
+        F(BYTE*, s, 21604) = 0;
+        if (--g_vd6ef1f0 == 0)
+            CallVirt(g_vd6ef204, 36);
+    } else {
+        if (BYTE* c = F(BYTE*, s, 21600)) {
+            CallThis(FUN_4eac8e, c + 6992);
+            CallThis(FUN_4eac8e, c + 6960);
+            operator delete(c);
+        }
+        F(BYTE*, s, 21600) = 0;
+        int at = F(int, s, 10420) * 1488 + F(int, s, 20396) * 4;
+        int* n = (int*)((BYTE*)g_vd6d24e0 + at);
+        --*n;
+        if (*n == 0)
+            if (BYTE* o = F(BYTE*, (BYTE*)g_vd6d24bc + 12, at))
+                CallVirt(o, 36);
+        if (*n < 0) {
+            char text[64];
+            sprintf(text, &s_vd679f54, F(int, s, 10420), *n);
+        }
+    }
+    Vd_FreeRec(F(BYTE*, s, 21872));
+    Vd_FreeRec(F(BYTE*, s, 21876));
+    CallThis(FUN_58b870, s ? s + 16 : (BYTE*)0);
+    CallThis(FUN_592cf0, s);
+}
+
+} // extern "C"
+
+// === packing a vehicle's state for the network (FUN_541e80)
+
+ASM_VAR(float, g_pk64d680, $L_64d680)
+ASM_VAR(float, g_pk64f508, $L_64f508)
+ASM_VAR(double, g_pk64f500, $L_64f500)
+ASM_VAR(double, g_pk64b780, $L_64b780)
+ASM_VAR(double, g_pk64f4f8, $L_64f4f8)
+ASM_VAR(double, g_pk64f4f0, $L_64f4f0)
+ASM_VAR(double, g_pk64f4e8, $L_64f4e8)
+ASM_VAR(float, g_pk64c268, $L_64c268)
+ASM_VAR(double, g_pk64eba0, $L_64eba0)
+ASM_VAR(char, s_pk679e6c, $L_679e6c)
+ASM_VAR(char, s_pk679e5c, $L_679e5c)
+ASM_VAR(char, s_pk679e34, $L_679e34)
+ASM_VAR(char, s_pk679dfc, $L_679dfc)
+ASM_VAR(char, s_pk679dc0, $L_679dc0)
+extern "C" void FUN_4e260c(); KING_ALIAS("_FUN_4e260c", "_World_Fatal")
+ASM_PROC(FUN_4e41d9)
+
+// the float with bits u
+static float Pk_F(DWORD u)
+{
+    float f;
+    memcpy(&f, &u, 4);
+    return f;
+}
+
+// a byte from v clamped to +-lim and scaled
+static BYTE Pk_Byte(float v, float lim, double scale) { return (BYTE)(int)(Clamp542250(v, lim) * scale); }
+
+// an angle checked (where), clamped to +-lim
+static double Pk_Angle(float a, const char* where, float lim)
+{
+    float t = (float)CallC<double>(FUN_4e41d9, a, where);
+    return Clamp542250(t, lim);
+}
+
+extern "C" {
+
+// [FUN_541e80] packs vehicle state p (thiscall) into its byte buffer (+20): header words, flags +80 with the gear
+// +84, the kind and steering byte, per wheel its id, angle (10 bits) and load (6 bits), the contact bits, four
+// body angles and four pairs of suspension values, the light bits; the player's car (+80 bit 1) adds speeds,
+// controls and flags. The size must match +4 (or +8 / at most 58), else the world stops with an error
+void __fastcall Vehicle_PackState(BYTE* p)
+{
+    BYTE* b = p + 20;
+    F(WORD, p, 20) = F(WORD, p, 8);
+    F(WORD, p, 22) = F(WORD, p, 0);
+    if (F(BYTE, p, 84) > 7)
+        F(BYTE, p, 84) = 7;
+    F(DWORD, p, 80) |= (DWORD)F(BYTE, p, 84) << 7;
+    F(DWORD, p, 24) = F(DWORD, p, 80);
+    unsigned kind = F(unsigned, p, 92);
+    BYTE k = kind <= 4 ? (BYTE)kind : 0;
+    F(BYTE, p, 28) = (BYTE)(k - ((BYTE)(int)(F(float, p, 88) * (double)g_pk64d680) << 3));
+    F(BYTE, p, 29) = F(BYTE, p, 96);
+    int at = 10;
+    for (int i = 0; i < F(int, p, 16); i++) {
+        b[at++] = F(BYTE, p, 97 + i);
+        double a = Pk_Angle(F(float, p, 108 + i * 4), &s_pk679e6c, Pk_F(1078530011));
+        int v = (int)(a * g_pk64f508 * g_pk64f500) & 1023;
+        b[at++] = (BYTE)v;
+        b[at] = (BYTE)(v >> 8);
+        int w = (int)(Clamp542250(F(float, p, 140 + i * 4), Pk_F(1060320051)) * g_pk64b780);
+        b[at] |= (BYTE)(w << 2);
+        at++;
+    }
+    b[at++] = (BYTE)((((F(BYTE, p, 193) << 1 | F(BYTE, p, 192)) << 1 | F(BYTE, p, 191)) << 1) | F(BYTE, p, 190));
+    for (int i = 0; i < 4; i++) {
+        float d = F(float, p, 196) - F(float, p, 208 + i * 12);
+        b[at++] = (BYTE)(int)(Pk_Angle(d, &s_pk679e5c, Pk_F(1078530000)) * g_pk64f4f8);
+    }
+    for (int i = 0; i < 4; i++) {
+        b[at++] = Pk_Byte(F(float, p, 248 + i * 12), 1.0f, g_pk64f4f0);
+        b[at++] = Pk_Byte(F(float, p, 252 + i * 12), 1.0f, g_pk64f4f0);
+    }
+    b[at++] = (BYTE)((F(BYTE, p, 188) << 4) + F(BYTE, p, 189));
+    char text[100];
+    if (!(F(BYTE, p, 80) & 1)) {
+        F(WORD, p, 20) = (WORD)at;
+        if (at != F(int, p, 4)) {
+            sprintf(text, &s_pk679e34, at, F(int, p, 4));
+            CallC(FUN_4e260c, text);
+        }
+        return;
+    }
+    b[at++] = Pk_Byte(F(float, p, 176), 100.0f, g_pk64f4e8);
+    F(WORD, b, at) = (WORD)(int)(F(float, p, 172) * (double)g_pk64c268);
+    at += 2;
+    b[at++] = Pk_Byte(F(float, p, 180), 100.0f, g_pk64f4e8);
+    b[at++] = Pk_Byte(F(float, p, 184), 1.0f, g_pk64eba0);
+    b[at++] = (BYTE)(int)(F(float, p, 296) * g_pk64eba0);
+    if (F(int, p, 308) < 0 || F(int, p, 308) > 7)
+        CallC(FUN_4e260c, &s_pk679dfc);
+    BYTE f = (BYTE)(((F(BYTE, p, 316) << 4) | F(BYTE, p, 308)) << 2);
+    if (F(int, p, 312))
+        f |= 32;
+    if (F(int, p, 304))
+        f |= 2;
+    if (F(int, p, 300))
+        f |= 1;
+    b[at++] = f;
+    b[at++] = F(int, p, 320) != 0;
+    b[at++] = Pk_Byte(F(float, p, 324), 1.0f, g_pk64eba0);
+    b[at++] = Pk_Byte(F(float, p, 328), 1.0f, g_pk64eba0);
+    if (at > 58 || at != F(int, p, 8)) {
+        sprintf(text, &s_pk679dc0, at, 58, F(int, p, 8));
+        CallC(FUN_4e260c, text);
+    }
+}
+
+} // extern "C"
+
+// === stepping a vehicle's lowering (FUN_555550)
+
+ASM_VAR(float, g_lw64c250, $L_64c250)
+ASM_VAR(float, g_lw64c264, $L_64c264)
+ASM_VAR(double, g_lw64b840, $L_64b840)
+ASM_VAR(AsmLabel, g_lw69809c, $L_69809c)
+extern "C" void FUN_4eb6e0(); KING_ALIAS("_FUN_4eb6e0", "@Ramp_Down@12")
+extern "C" void FUN_4eb720(); KING_ALIAS("_FUN_4eb720", "@Ramp_FromTop@12")
+ASM_PROC(FUN_501b90)
+extern "C" void FUN_5494c0(); KING_ALIAS("_FUN_5494c0", "@CarEffect_End@12")
+extern "C" void FUN_549bf0(); KING_ALIAS("_FUN_549bf0", "@Obj549bf0_Get@8")
+extern "C" void FUN_555500(); KING_ALIAS("_FUN_555500", "@Car_555500@8")
+extern "C" void FUN_555f30(); KING_ALIAS("_FUN_555f30", "@Car_SetLights@12")
+extern "C" void FUN_589490(); KING_ALIAS("_FUN_589490", "@BodyLevel_Step@16")
+
+// the cab part k moved by x towards v
+static void Lw_Cab(BYTE* car, int k, float* x, int v) { CallThis(FUN_501b90, F(BYTE*, car, 21600), k, x, v); }
+
+// the body level at +off of +9536 stepped by x towards v
+static void Lw_Body(BYTE* car, int off, float* x, int v) { CallThis(FUN_589490, F(BYTE*, car, 9536) + off, x, v); }
+
+// the wheel links from i on (3 parts each, from slot k), up to the count of the car's model and below limit
+static int Lw_Links(BYTE* car, int i, float* x, int limit)
+{
+    int n = F(int, (BYTE*)g_lw69809c + F(int, car, 10420) * 2416, 44);
+    for (int k = i + 11; i < n && k < limit; i++, k++) {
+        Lw_Cab(car, k - 8, x, F(int, car, 10480 + i * 4));
+        Lw_Cab(car, k, x, F(int, car, 10512 + i * 4));
+        Lw_Cab(car, k + 8, x, F(int, car, 10544 + i * 4));
+    }
+    return i;
+}
+
+extern "C" {
+
+// [FUN_555550] steps the lowering of vehicle car by x (thiscall): above 64c250 it restarts at 1; below 64c264
+// only the lights and the virtual +32 step; else the effects end, the cab parts, ramps (+16060), body levels
+// (+9536) and wheel links move; 0 when x reaches 64c264, else 1
+int __fastcall Vehicle_LowerStep(BYTE* car, void*, float x)
+{
+    if (x > g_lw64c250)
+        x = 1.0f;
+    else if (x < g_lw64c264) {
+        if (F(BYTE, car, 32) & 1) {
+            CallThis(FUN_555f30, car, &x);
+            CallVirt(car, 32, &x);
+        } else {
+            CallVirt(car, 32, &x);
+            CallThis(FUN_555f30, car, &x);
+        }
+        return x == g_lw64c264 ? 0 : 1;
+    }
+    int st = CallThis<int>(FUN_549bf0, car + 21568);
+    if (st == 1 || CallThis<int>(FUN_549bf0, car + 21568) == 2)
+        CallThis(FUN_5494c0, car, 1);
+    CallThis<double>(FUN_555500, car);
+    BYTE* cab = F(BYTE*, car, 21600);
+    if (cab) {
+        Lw_Cab(car, 0, &x, F(int, car, 10468));
+        int t = F(int, F(BYTE*, car, 21600), 15520);
+        if (t == 0 || t == 1)
+            CallThis(FUN_4eb720, F(BYTE*, car, 21600) + 16060, 0);
+        else if (t == 2)
+            CallThis(FUN_4eb6e0, F(BYTE*, car, 21600) + 16060, -0.6f);
+        Lw_Cab(car, 1, &x, F(int, car, 10472));
+    }
+    Lw_Body(car, 20, &x, F(int, car, 10436));
+    F(float, car, 21596) = (float)(F(float, F(BYTE*, car, 9536), 32) + g_lw64b840);
+    int i = 0;
+    if (F(BYTE*, car, 21600) && F(int, (BYTE*)g_lw69809c + F(int, car, 10420) * 2416, 44) > 0)
+        i = Lw_Links(car, 0, &x, 13);
+    Lw_Body(car, 0, &x, F(int, car, 10432));
+    Lw_Body(car, 60, &x, F(int, car, 10444));
+    Lw_Body(car, 40, &x, F(int, car, 10440));
+    if (F(BYTE*, car, 21600))
+        Lw_Links(car, i, &x, 0x7fffffff);
+    Lw_Body(car, 160, &x, F(int, car, 10464));
+    Lw_Body(car, 140, &x, F(int, car, 10460));
+    Lw_Body(car, 120, &x, F(int, car, 10456));
+    Lw_Body(car, 100, &x, F(int, car, 10452));
+    Lw_Body(car, 80, &x, F(int, car, 10448));
+    Lw_Cab(car, 2, &x, F(int, car, 10476));
+    return x == g_lw64c264 ? 0 : 1;
+}
+
+} // extern "C"
+
+// === preparing the dashboard (FUN_53d530)
+
+ASM_VAR(int, g_db696c54, $L_696c54)
+ASM_VAR(int, g_db6d20ec, $L_6d20ec)
+ASM_VAR(int, g_db6cec68, $L_6cec68)
+ASM_VAR(double, g_db64b670, $L_64b670)
+ASM_VAR(double, g_db64f420, $L_64f420)
+ASM_VAR(double, g_db64b5b8, $L_64b5b8)
+ASM_VAR(double, g_db64d0e0, $L_64d0e0)
+ASM_VAR(float, g_db64f418, $L_64f418)
+extern "C" void FUN_4eb690(); KING_ALIAS("_FUN_4eb690", "@Ramp_Position@8")
+extern "C" void FUN_4ff5b0(); KING_ALIAS("_FUN_4ff5b0", "@Car_TopSpeed@12")
+extern "C" void FUN_53d040(); KING_ALIAS("_FUN_53d040", "@Dash_Draw@44")
+ASM_PROC(FUN_53d1f0)
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+
+extern "C" {
+
+// [FUN_53d530] draws dashboard d (thiscall: surface, mode) for its car (+616): the speed (car, trailer, cab
+// fallbacks; km/h or mph by 696c54) as three digits (9s when too fast), the odometer as five, the gear,
+// lamps and the ramp; single player through 53d040, network through 53d1f0
+void __fastcall Dash_Prepare(BYTE* d, void*, int a1, int a2)
+{
+    DWORD speedBits = 0;
+    int ramp = 0, cab7188 = 1, rampLow = 0, gear = 0, flag = 0, odo = 0, lamps = 0;
+    DWORD rpm = 1101004800, rampPos = 1065353216;
+    float& speed = *(float*)&speedBits;
+    BYTE* car = F(BYTE*, d, 616);
+    if (car) {
+        double scale = g_db696c54 ? g_db64b670 : g_db64f420;
+        odo = (int)(F(float, car, 20980) * scale);
+        lamps = F(int, car, 20996);
+        rpm = F(DWORD, car, 20976);
+        gear = F(int, car, 20972);
+        if (BYTE* cab = F(BYTE*, car, 21600)) {
+            cab7188 = F(int, cab, 7188);
+            ramp = F(int, cab, 15440);
+            double r = CallThis<double>(FUN_4eb690, cab + 16112);
+            *(float*)&rampPos = (float)r;
+            rampLow = r < g_db64b5b8;
+        }
+        BYTE* c = F(BYTE*, d, 616);
+        BYTE* cab = F(BYTE*, c, 21600);
+        if (!cab)
+            speedBits = F(DWORD, c, 20964);
+        else if (BYTE* t = F(BYTE*, c, 21604)) {
+            float v[3];
+            memcpy(v, t + 100, 12);
+            speed = (float)CallC<double>(FUN_5ab4d0, v);
+        } else if (F(int, cab, 13124))
+            speed = (float)CallC<double>(FUN_5ab4d0, c + 3316);
+        else {
+            speedBits = F(int, cab, 13412) ? F(DWORD, cab, 13096) : F(DWORD, cab, 13104);
+            if (g_db6d20ec)
+                speed = (float)CallThis<double>(FUN_4ff5b0, cab, lamps);
+        }
+        if (CallVirt<int>(F(BYTE*, d, 616), 4) == 1 && F(int, F(BYTE*, d, 616), 21880))
+            flag = 1;
+    }
+    double scale = g_db696c54 ? g_db64b670 : g_db64f420;
+    double v = speed * scale;
+    speed = (float)v;
+    int k = (int)(v * g_db64d0e0);
+    k = k < 0 ? -k : k;
+    int sd[3], od[5];
+    if (v < g_db64f418) {
+        sd[0] = k / 100;
+        sd[1] = (k - 100 * sd[0]) / 10;
+        sd[2] = k - 10 * (10 * sd[0] + sd[1]);
+    } else
+        sd[0] = sd[1] = sd[2] = 9;
+    int n = odo, p;
+    od[0] = n / 100000;
+    od[1] = (n - od[0] * 100000) / 10000;
+    p = od[1] + 10 * od[0];
+    od[2] = (n - p * 10000) / 1000;
+    p = od[2] + 10 * p;
+    od[3] = (n - p * 1000) / 100;
+    p = od[3] + 10 * p;
+    od[4] = (n - p * 100) / 10;
+    if (!g_db6cec68)
+        CallThis(FUN_53d040, d, a1, a2, sd, od, gear, rpm, lamps, cab7188, ramp);
+    else
+        CallThis(FUN_53d1f0, d, a1, a2, speedBits, od, gear, lamps, cab7188, ramp, rampPos, rampLow, flag);
+}
+
+} // extern "C"
+
+// === the vehicle's history ring (FUN_554710)
+
+extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
+
+// the reset point: the matrix m and the name of model +816
+static void Vh_ResetPoint(BYTE* c, const BYTE* m, const char* name)
+{
+    memcpy(c + 20212, m, 48);
+    strcpy((char*)c + 20260, name);
+}
+
+extern "C" {
+
+// [FUN_554710] every +10928 seconds records vehicle c (thiscall) into the 50-entry ring (+10936 the index):
+// the time, flags, matrix, cab wheels, matrix +20640, mode +10924, model and its name, speed, spin and the
+// forward speed; the reset point (+20192 flags, +20212 matrix, +20260 name) follows the mode: 2 and 5 take
+// the current place, 1 the place five samples back once five samples in a row were stable
+void __fastcall Vehicle_RecordHistory(BYTE* c)
+{
+    if (!(CallC<double>(FUN_4e27a5) - F(float, c, 10932) > F(float, c, 10928)))
+        return;
+    float t = (float)CallC<double>(FUN_4e27a5);
+    int i = (F(int, c, 10936) + 1) % 50;
+    F(float, c, 10932) = t;
+    F(int, c, 10936) = i;
+    F(float, c, 11140 + i * 4) = t;
+    F(DWORD, c, 10940 + i * 4) = F(DWORD, c, 32);
+    memcpy(c + 12740 + i * 48, c + 516, 48);
+    if (BYTE* cab = F(BYTE*, c, 21600))
+        memcpy(c + 17540 + i * 12, cab + 11072, 12);
+    memcpy(c + 15140 + i * 48, c + 20640, 48);
+    F(int, c, 18140 + i * 4) = F(int, c, 10924);
+    F(BYTE*, c, 18340 + i * 4) = F(BYTE*, c, 816);
+    strcpy((char*)c + 18540 + i * 33, F(const char*, F(BYTE*, c, 816), 12));
+    memcpy(c + 11540 + i * 12, c + 432, 12);
+    memcpy(c + 12140 + i * 12, c + 444, 12);
+    const float* v = (const float*)(c + 432);
+    F(float, c, 11340 + i * 4) = (float)(F(float, c, 640) * (double)v[2] + v[1] * (double)F(float, c, 628) +
+                                         F(float, c, 616) * (double)v[0]);
+    int* flags = (int*)(c + 20192);
+    switch (F(int, c, 10924)) {
+    case 1: {
+        for (int k = 4; k > 0; k--)
+            flags[k] = flags[k - 1];
+        flags[0] = 0;
+        BYTE* cab = F(BYTE*, c, 21600);
+        if (F(int, cab, 13124))
+            return;
+        bool ok = true;
+        for (int k = 0; k < F(int, c, 10428); k++)
+            if (!F(WORD, cab, 11112 + k * 248))
+                ok = false;
+        if (ok && !F(int, cab, 13416))
+            flags[0] = 1;
+        for (int k = 0; k < 5; k++)
+            if (!flags[k])
+                return;
+        int j = (F(int, c, 10936) + 45) % 50;
+        Vh_ResetPoint(c, c + 12740 + j * 48, (const char*)c + 18540 + j * 33);
+        return;
+    }
+    case 2:
+    case 5:
+        for (int k = 0; k < 5; k++)
+            flags[k] = 0;
+        Vh_ResetPoint(c, c + 516, F(const char*, F(BYTE*, c, 816), 12));
+        return;
+    default:
+        for (int k = 0; k < 5; k++)
+            flags[k] = 0;
+    }
 }
 
 } // extern "C"

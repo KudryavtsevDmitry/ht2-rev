@@ -704,7 +704,7 @@ extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
 
 extern "C" char* __cdecl strerror(int e);
 ASM_PROC(FUN_576d70)    // the DirectInput version text
-ASM_PROC(FUN_5787a0)    // opens joystick n
+extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")    // opens joystick n
 ASM_PROC(FUN_6303a0)    // DirectInputCreateA
 ASM_FUNC(Joy_EnumCallback, $L_576f90)
 typedef char JoyLabel[1];
@@ -822,7 +822,7 @@ extern "C" void __fastcall Shadow_Add(BYTE* s, void*, int a0, int a1, const floa
         ShadowStack_Pop(stack, 0);
 }
 
-ASM_PROC(FUN_5787a0)
+extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")
 extern "C" void FUN_579890(); KING_ALIAS("_FUN_579890", "@ShadowStack_Push@8")
 ASM_PROC(FUN_57b2d0)
 extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
@@ -1260,3 +1260,206 @@ extern "C" int __cdecl Joy_SetAutoCenter(int on)
     Joy_Log(text);
     return hr;
 }
+
+// === opening a joystick (FUN_5787a0)
+
+ASM_VAR(char, g_jo67ce9c, $L_67ce9c)
+ASM_VAR(char, g_jo67ce5c, $L_67ce5c)
+ASM_VAR(char, g_jo67ce48, $L_67ce48)
+ASM_VAR(char, g_jo67ce30, $L_67ce30)
+ASM_VAR(char, g_jo67ce0c, $L_67ce0c)
+ASM_VAR(char, g_jo67cdd0, $L_67cdd0)
+ASM_VAR(char, g_jo67cdb4, $L_67cdb4)
+ASM_VAR(char, g_jo67c5e8, $L_67c5e8)
+ASM_VAR(char, g_jo67c55c, $L_67c55c)
+ASM_VAR(AsmLabel, g_jo655278, $L_655278)
+ASM_VAR(int, g_jo67c4b4, $L_67c4b4)
+ASM_VAR(float, g_jo64c264, $L_64c264)
+ASM_VAR(double, g_jo64b6e0, $L_64b6e0)
+
+extern "C" {
+
+// [FUN_5787a0] opens joystick n for window wnd (remembered in 6f4bb4..6f4bbc): its data format, cooperative
+// level, the range of each of the 8 axes (axes failing it are marked off in its record) and their dead zones
+// from range (smaller ranges: 0 or 100 / 200 with force feedback), logged; then acquires it. 0 or the error
+int __cdecl Joy_Open(int n, int wnd, float range, FILE* log)
+{
+    char ver[340], text[300], err[256];
+    CallC(FUN_576d70, ver);
+    sprintf(text, &g_fmtJoyVersion, ver);
+    sprintf(text, &g_jo67ce9c, n, ver);
+    Joy_Log(text);
+    g_6f4bb8 = *(int*)&range;
+    g_6f4bb4 = wnd;
+    g_6f4bbc = (int)log;
+    if (g_joyDevice)
+        ComCall577(g_joyDevice, 32);
+    if (n < 0 || n >= g_joyCount)
+        return 0x80070057;
+    g_6f4b94 = n;
+    BYTE* rec = (BYTE*)g_joyRecords + n * 568;
+    g_joyDevice = ((void**)g_joy6f4b58)[n];
+    g_joy6f4b80 = ((int*)g_joyEnabled6f34e8)[n];
+    g_joy6f4b8c = (int)rec;
+    sprintf(text, &g_jo67ce5c, n + 1, g_joyCount, rec + 48, rec + 308);
+    Joy_Log(text);
+    Joy_Log(&g_jo67ce48);
+    int hr = ComCall577(g_joyDevice, 44, (void*)g_jo655278);
+    if (hr >= 0) {
+        Joy_Log(&g_strJoy677268);
+        Joy_Log(&g_jo67ce30);
+        hr = ComCall577(g_joyDevice, 52, wnd, 9);
+    }
+    if (hr < 0) {
+        sprintf(text, &g_jo67c5e8, hr, strerror(hr));
+        Joy_Log(text);
+        if (log)
+            fclose(log);
+        return hr;
+    }
+    Joy_Log(&g_strJoy677268);
+    int dw[5] = {20, 16, 0, 0, 0};
+    Joy_Log(&g_jo67ce0c);
+    hr = ComCall577(g_joyDevice, 20, 9, dw);
+    if (hr < 0) {
+        wsprintfA(err, &g_jo67cdd0, hr);
+        Joy_Log(err);
+    }
+    Joy_Log(&g_strJoy677268);
+    g_67c4bc = dw[4];
+    int rg[6] = {24, 16, 0, 1, -g_jo67c4b4, g_jo67c4b4};
+    for (int a = 0; a < 8; a++) {
+        int* on = (int*)(rec + 8 + a * 4);
+        rg[2] = a * 4;
+        dw[2] = a * 4;
+        *on = 1;
+        dw[3] = 1;
+        dw[4] = 0;
+        hr = ComCall577(g_joyDevice, 24, 4, rg);
+        Joy_Log(&g_jo67cdb4);
+        if (hr < 0)
+            sprintf(text, &g_jo67c55c, hr);
+        else
+            sprintf(text, &g_strJoy677268);
+        Joy_Log(text);
+        if (hr < 0) {
+            *on = 0;
+            continue;
+        }
+        int dz = (int)range;
+        if (range < g_jo64c264)
+            dz = g_joy6f4b80 == 1 ? (a ? 100 : 0) : (a ? 200 : 0);
+        else if (a == 0)
+            dz = (int)(range * g_jo64b6e0);
+        if (Joy_SetDeadZone(a, dz, log) < 0)
+            *on = 0;
+    }
+    if (g_joyDevice)
+        ComCall577(g_joyDevice, 28);
+    return 0;
+}
+
+} // extern "C"
+
+// === counting a joystick's objects ($L_578290)
+
+ASM_VAR(AsmLabel, g_eo655460, $L_655460)
+ASM_VAR(AsmLabel, g_eo655450, $L_655450)
+ASM_VAR(AsmLabel, g_eo655440, $L_655440)
+ASM_VAR(AsmLabel, g_eo655430, $L_655430)
+ASM_VAR(AsmLabel, g_eo655420, $L_655420)
+ASM_VAR(AsmLabel, g_eo655410, $L_655410)
+ASM_VAR(AsmLabel, g_eo655400, $L_655400)
+ASM_VAR(AsmLabel, g_eo6553f0, $L_6553f0)
+ASM_VAR(AsmLabel, g_eo6553e0, $L_6553e0)
+ASM_VAR(AsmLabel, g_eo6553d0, $L_6553d0)
+ASM_VAR(AsmLabel, g_eo6553c0, $L_6553c0)
+ASM_VAR(char, s_eo67cd48, $L_67cd48)
+ASM_VAR(char, s_eo67cd38, $L_67cd38)
+ASM_VAR(char, s_eo67cd28, $L_67cd28)
+ASM_VAR(char, s_eo67cd18, $L_67cd18)
+ASM_VAR(char, s_eo67cd08, $L_67cd08)
+ASM_VAR(char, s_eo67ccf8, $L_67ccf8)
+ASM_VAR(char, s_eo67cce8, $L_67cce8)
+ASM_VAR(char, s_eo67ccd8, $L_67ccd8)
+ASM_VAR(char, s_eo67ccc8, $L_67ccc8)
+ASM_VAR(char, s_eo67ccb8, $L_67ccb8)
+ASM_VAR(char, s_eo67cca8, $L_67cca8)
+ASM_VAR(char, s_eo67cd58, $L_67cd58)
+ASM_VAR(char, s_eo67cc70, $L_67cc70)
+ASM_VAR(char, s_eo67cc44, $L_67cc44)
+ASM_VAR(char, s_eo67cc14, $L_67cc14)
+ASM_VAR(char, s_eo67cbf4, $L_67cbf4)
+ASM_VAR(char, s_eo67cbd0, $L_67cbd0)
+
+static bool Eo_Is(const BYTE* guid, const AsmLabel& g) { return memcmp(guid, g, 16) == 0; }
+
+extern "C" {
+
+// [$L_578290] DirectInput object callback (inst, log file): counts the joystick's axes (+40), buttons (+42),
+// POVs (+44) and sliders (+46, up to 2) in its record, marks the X..RZ axes (+8..+28) and sliders (+32), and
+// logs the object's kind and fields; 1 (go on)
+int __stdcall Joy_EnumObject(const BYTE* inst, FILE* log)
+{
+    BYTE* rec = (BYTE*)g_joyRecords + g_joyCount * 568;
+    const BYTE* guid = inst + 4;
+    DWORD type = F(DWORD, inst, 24);
+    if (Eo_Is(guid, g_eo655400)) {
+        unsigned k = (type >> 8) & 0xffff;
+        if (k < 2)
+            F(int, rec, 32 + k * 4) = 1;
+        if (F(WORD, rec, 46) < 2)
+            F(WORD, rec, 46)++;
+    }
+    if (type & 3)
+        F(WORD, rec, 40)++;
+    if (type & 12)
+        F(WORD, rec, 42)++;
+    if (type & 16)
+        F(WORD, rec, 44)++;
+    if (Eo_Is(guid, g_eo655460))
+        F(int, rec, 8) = 1;
+    if (Eo_Is(guid, g_eo655450))
+        F(int, rec, 12) = 1;
+    if (Eo_Is(guid, g_eo655440))
+        F(int, rec, 16) = 1;
+    if (Eo_Is(guid, g_eo655430))
+        F(int, rec, 20) = 1;
+    if (Eo_Is(guid, g_eo655420))
+        F(int, rec, 24) = 1;
+    if (Eo_Is(guid, g_eo655410))
+        F(int, rec, 28) = 1;
+    if (!log || Eo_Is(guid, g_eo6553c0))
+        return 1;
+    fprintf(log, &s_eo67cd58, inst + 32);
+    if (Eo_Is(guid, g_eo655460))
+        fprintf(log, &s_eo67cd48);
+    if (Eo_Is(guid, g_eo655450))
+        fprintf(log, &s_eo67cd38);
+    if (Eo_Is(guid, g_eo655440))
+        fprintf(log, &s_eo67cd28);
+    if (Eo_Is(guid, g_eo655430))
+        fprintf(log, &s_eo67cd18);
+    if (Eo_Is(guid, g_eo655420))
+        fprintf(log, &s_eo67cd08);
+    if (Eo_Is(guid, g_eo655410))
+        fprintf(log, &s_eo67ccf8);
+    if (Eo_Is(guid, g_eo655400))
+        fprintf(log, &s_eo67cce8);
+    if (Eo_Is(guid, g_eo6553f0))
+        fprintf(log, &s_eo67ccd8);
+    if (Eo_Is(guid, g_eo6553e0))
+        fprintf(log, &s_eo67ccc8);
+    if (Eo_Is(guid, g_eo6553d0))
+        fprintf(log, &s_eo67ccb8);
+    if (Eo_Is(guid, g_eo6553c0))
+        fprintf(log, &s_eo67cca8);
+    fprintf(log, &s_eo67cc70, F(DWORD, inst, 0), F(DWORD, inst, 20), F(DWORD, inst, 24), F(DWORD, inst, 28));
+    fprintf(log, &s_eo67cc44, F(DWORD, inst, 292), F(DWORD, inst, 296));
+    fprintf(log, &s_eo67cc14, F(WORD, inst, 300), F(WORD, inst, 302));
+    fprintf(log, &s_eo67cbf4, F(WORD, inst, 304), F(WORD, inst, 306));
+    fprintf(log, &s_eo67cbd0, F(DWORD, inst, 308), F(WORD, inst, 312));
+    return 1;
+}
+
+} // extern "C"

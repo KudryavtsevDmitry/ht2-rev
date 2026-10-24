@@ -897,3 +897,131 @@ const char* __cdecl Dd_ErrorText(DWORD hr, const char* where)
 }
 
 }  // extern "C"
+
+// === creating the DirectDraw display (FUN_5d6e40)
+
+ASM_VAR(char, s_dc682810, $L_682810)
+ASM_VAR(char, s_dc682828, $L_682828)
+ASM_VAR(char, s_dc682848, $L_682848)
+ASM_VAR(char, s_dc6828d4, $L_6828d4)
+ASM_VAR(char, s_dc6828ec, $L_6828ec)
+ASM_VAR(char, s_dc682904, $L_682904)
+ASM_VAR(char, s_dc6828a8, $L_6828a8)
+ASM_VAR(char, s_dc6828c0, $L_6828c0)
+ASM_VAR(char, s_dc682864, $L_682864)
+ASM_VAR(char, s_dc682880, $L_682880)
+ASM_VAR(int, g_dc7208d8, $L_7208d8)
+ASM_VAR(AsmLabel, g_dc655480, $L_655480)
+
+// the error message m into c+124; hr returned
+static int Dc_Fail(BYTE* c, const char* m, int hr)
+{
+    sprintf((char*)c + 124, m);
+    return hr;
+}
+
+extern "C" {
+
+// [FUN_5d6e40] sets up display c (+0 width, +4 height, +8 bytes per pixel, +12 flags, +44 DirectDraw, +48
+// Direct3D): the full-screen mode (0x400), the primary surface (+56) with a flip chain (0x2000) or a clipped
+// window and an off-screen back surface (+60), a z-buffer (+64; 0x4000 with 3D 0x1000), the palette (+120)
+// for 8-bit, the 3D device (+52, needs texture formats bits 2 and 16 of +36); 0 or the error with its text
+int __cdecl Dd_CreateDisplay(BYTE* c)
+{
+    BYTE* dd = F(BYTE*, c, 44);
+    int hr;
+    DWORD fl = F(DWORD, c, 12);
+    if (fl & 0x400) {
+        hr = Com(F(BYTE*, c, 44), 84, F(int, c, 0), F(int, c, 4), F(int, c, 8) << 3, 0, 0);
+        if (hr)
+            return Dc_Fail(c, &s_dc682810, hr);
+    }
+    DWORD d[31];
+    memset(d, 0, sizeof d);
+    d[0] = 124;
+    d[18] = 32;
+    DWORD caps;
+    if (fl & 0x2000) {
+        d[1] = 33;
+        caps = 536;
+        d[5] = 1;
+    } else {
+        d[1] = 1;
+        caps = 512;
+    }
+    d[26] = caps | ((fl & 0x1000) << 1);
+    hr = Com(F(BYTE*, c, 44), 24, d, c + 56, 0);
+    if (hr)
+        return Dc_Fail(c, &s_dc682828, hr);
+    Dd_CheckPixelFormat(F(BYTE*, c, 56));
+    fl = F(DWORD, c, 12);
+    if (fl & 0x2000) {
+        DWORD sc[4] = {4, 0, 0, 0};
+        BYTE* prim = F(BYTE*, c, 56);
+        hr = Com(prim, 48, sc, c + 60);
+    } else {
+        memset(d, 0, sizeof d);
+        d[0] = 124;
+        d[1] = 7;
+        if (fl & 0x1000) {
+            BYTE* clip;
+            Com(F(BYTE*, c, 44), 16, 0, &clip, 0);
+            Com(clip, 32, 0, g_hWnd);
+            Com(F(BYTE*, c, 56), 112, clip);
+            d[26] = 8256;
+        } else
+            d[26] = 2048;
+        d[3] = F(int, c, 0);
+        d[2] = F(int, c, 4);
+        hr = Com(F(BYTE*, c, 44), 24, d, c + 60, 0);
+    }
+    if (hr)
+        return Dc_Fail(c, &s_dc682848, hr);
+    fl = F(DWORD, c, 12);
+    if ((fl & 0x4000) && (fl & 0x1000)) {
+        memset(d, 0, sizeof d);
+        d[2] = F(int, c, 4);
+        d[3] = F(int, c, 0);
+        d[0] = 124;
+        d[26] = 147456;
+        d[1] = 4103;
+        hr = Com(F(BYTE*, c, 48), 24, F(void*, c, 100), (void*)Dd_MatchRecord, c);
+        if (hr)
+            return Dc_Fail(c, &s_dc6828d4, hr);
+        memcpy(d + 18, c + 68, 32);
+        hr = Com(F(BYTE*, c, 44), 24, d, c + 64, 0);
+        if (hr)
+            return Dc_Fail(c, &s_dc6828ec, hr);
+        hr = Com(F(BYTE*, c, 60), 12, F(BYTE*, c, 64));
+        if (hr)
+            return Dc_Fail(c, &s_dc682904, hr);
+    }
+    if (F(int, c, 8) < 2) {
+        BYTE pal[1024];
+        for (int i = 0; i < 256; i++) {
+            pal[i * 4] = pal[i * 4 + 1] = pal[i * 4 + 2] = 0;
+            pal[i * 4 + 3] = 4;
+        }
+        hr = Com(F(BYTE*, c, 44), 20, 68, pal, c + 120, 0);
+        if (hr)
+            return Dc_Fail(c, &s_dc6828a8, hr);
+        hr = Com(F(BYTE*, c, 56), 124, F(BYTE*, c, 120));
+        if (hr)
+            return Dc_Fail(c, &s_dc6828c0, hr);
+    }
+    if (!(F(DWORD, c, 12) & 0x1000))
+        return hr;
+    hr = Com(F(BYTE*, c, 48), 16, F(void*, c, 100), F(BYTE*, c, 60), c + 52);
+    if (hr)
+        return Dc_Fail(c, &s_dc682864, hr);
+    if (!memcmp(F(BYTE*, c, 100), (BYTE*)g_dc655480, 16))
+        g_dc7208d8 = 1;
+    Com(F(BYTE*, c, 52), 16, (void*)Dd_TextureFormat, c);
+    if (!(F(BYTE, c, 36) & 2) || !(F(BYTE, c, 36) & 16)) {
+        sprintf((char*)c + 124, &s_dc682880);
+        return 0x80070057;
+    }
+    return hr;
+}
+
+} // extern "C"

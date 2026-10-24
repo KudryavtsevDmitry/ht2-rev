@@ -805,7 +805,7 @@ extern "C" void FUN_40a4d0(); KING_ALIAS("_FUN_40a4d0", "@Position_InitNode@12")
 extern "C" void FUN_47abf0(); KING_ALIAS("_FUN_47abf0", "@Vec12_PushBack@12")    // push_back of a 12-byte record
 extern "C" void FUN_448060(); KING_ALIAS("_FUN_448060", "@Vec12_Clear@8")    // clear of a vector of 12-byte records
 extern "C" void FUN_4867e0(); KING_ALIAS("_FUN_4867e0", "@Waypoint_Make@16")    // a hop (node, edge) with no kind
-ASM_PROC(FUN_4878b0)    // insert of a range of 12-byte records (pos, first, last)
+extern "C" void FUN_4878b0(); KING_ALIAS("_FUN_4878b0", "@Vec12_InsertRange@20")    // insert of a range of 12-byte records (pos, first, last)
 ASM_VAR(double, g_trce64b5b8, $L_64b5b8)       // 0.1: a position this close to a node is at the node
 
 static PositionId Pos_AtNode(int node)
@@ -1064,3 +1064,61 @@ void __cdecl Road_PositionCost(int side, PositionId from, PositionId to, double*
 }
 
 }  // extern "C"
+
+// === inserting a range into a vector of 12-byte records (FUN_4878b0)
+
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
+extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")
+extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")
+
+static BYTE* Ri_UninitCopy(const BYTE* first, const BYTE* last, BYTE* to, BYTE* pos)
+{
+    return CallC<BYTE*>(FUN_47e3e0, first, last, to, pos);
+}
+
+extern "C" {
+
+// [FUN_4878b0] vector<12-byte record>::insert(pos, first, last) (thiscall on v: begin, end, capacity)
+void __fastcall Vec12_InsertRange(BYTE** v, void*, BYTE* pos, const BYTE* first, const BYTE* last)
+{
+    if (first == last)
+        return;
+    unsigned n = (unsigned)((last - first) / 12);
+    if ((unsigned)((v[2] - v[1]) / 12) >= n) {
+        BYTE* end = v[1];
+        unsigned after = (unsigned)((end - pos) / 12);
+        if (after > n) {
+            Ri_UninitCopy(end - n * 12, end, end, pos);
+            v[1] += n * 12;
+            BYTE* from = end - n * 12;
+            for (int k = (int)((from - pos) / 12); k > 0; k--) {
+                from -= 12;
+                end -= 12;
+                memcpy(end, from, 12);
+            }
+            CallC(FUN_47c650, first, last, pos, pos, 0);
+        } else {
+            Ri_UninitCopy(first + after * 12, last, end, pos);
+            v[1] += (n - after) * 12;
+            Ri_UninitCopy(pos, end, v[1], pos);
+            v[1] += after * 12;
+            for (unsigned k = 0; k < after; k++)
+                memcpy(pos + k * 12, first + k * 12, 12);
+        }
+        return;
+    }
+    unsigned size = (unsigned)((v[1] - v[0]) / 12);
+    unsigned len = size + (size < n ? n : size);
+    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len * 12) : 0;
+    BYTE* e = Ri_UninitCopy(v[0], pos, p, pos);
+    e = Ri_UninitCopy(first, last, e, pos);
+    e = Ri_UninitCopy(pos, v[1], e, pos);
+    if (unsigned cap = (unsigned)((v[2] - v[0]) / 12))
+        CallC(FUN_44b4a0, v[0], cap * 12);
+    v[0] = p;
+    v[1] = e;
+    v[2] = p + len * 12;
+}
+
+} // extern "C"

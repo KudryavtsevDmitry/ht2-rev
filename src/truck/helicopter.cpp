@@ -3546,7 +3546,7 @@ static char* const k_csHud[8][2] = {
 };
 extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
 extern "C" void FUN_4d8ae0(); KING_ALIAS("_FUN_4d8ae0", "_Vehicle_Release")
-ASM_PROC(FUN_4d8b20)
+extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")
 ASM_PROC(FUN_531cc0)
 extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
 ASM_PROC(FUN_56f6d0)
@@ -3970,7 +3970,7 @@ ASM_VAR(AsmLabel, s_nt67b9d0, $L_67b9d0)
 ASM_VAR(AsmLabel, s_nt67b9e0, $L_67b9e0)
 ASM_VAR(AsmLabel, s_nt67b9f0, $L_67b9f0)
 ASM_VAR(AsmLabel, s_nt6731dc, $L_6731dc)
-ASM_PROC(FUN_5b8980)    // an image with a transparent color (surface, x, y, image, key)
+extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")    // an image with a transparent color (surface, x, y, image, key)
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
 ASM_PROC(FUN_5fdaf0)
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
@@ -4414,6 +4414,241 @@ int __cdecl CopterNet_Handle(int id, BYTE* data, int size)
         break;
     }
     return 0;
+}
+
+} // extern "C"
+
+// === boarding a car from the copter (FUN_56fc10)
+
+ASM_VAR(BYTE*, g_bc6d2078, $L_6d2078)
+ASM_VAR(int, g_bc68b990, $L_68b990)
+ASM_VAR(BYTE*, g_bc6f3434, $L_6f3434)
+ASM_VAR(AsmLabel, g_bc6f2d98, $L_6f2d98)
+ASM_VAR(int, g_bc6f33f4, $L_6f33f4)
+ASM_VAR(AsmLabel, g_bc6f68b0, $L_6f68b0)
+ASM_VAR(int, g_bc6f2dc0, $L_6f2dc0)
+ASM_VAR(float, g_bc64c32c, $L_64c32c)
+ASM_VAR(AsmLabel, g_bc7025f0, $L_7025f0)
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
+extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
+extern "C" void FUN_441d70(); KING_ALIAS("_FUN_441d70", "_Ai_GetParkingInfo")
+extern "C" void FUN_4738c0(); KING_ALIAS("_FUN_4738c0", "_Player_SwapVehicles")
+extern "C" void FUN_476bc0(); KING_ALIAS("_FUN_476bc0", "_Player_Hire")
+ASM_PROC(FUN_4d90c0)
+extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
+extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
+ASM_PROC(FUN_531cc0)
+extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
+extern "C" void FUN_541970(); KING_ALIAS("_FUN_541970", "@Obj541970_First@8")
+extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
+extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
+extern "C" void FUN_56fae0(); KING_ALIAS("_FUN_56fae0", "_Net_SendObjectMessage")
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_597570(); KING_ALIAS("_FUN_597570", "@WorldObj_Attach@12")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+
+static int Bc_Copy(const int* id)
+{
+    int t;
+    CallThis(FUN_41d300, &t, id);
+    return t;
+}
+
+static int Bc_Flags(int id) { return CallC<int>(FUN_43f620, id); }
+
+struct Bc_M48 { DWORD d[12]; };
+
+extern "C" {
+
+// [FUN_56fc10] single player: the first car near the player (closer than 64c32c) with a driver, not hidden
+// (0x100) and of the kinds 64 or 0x400 becomes the parking target (6f3434, 6f2d98); with 6f33f4 set the player
+// boards it: kind 64 swaps vehicles (the player's car left with the old driver), kind 0x400 goes through 476bc0
+void __cdecl Copter_BoardNearby()
+{
+    if (F(int, g_wsShell, 1300) > 1 || F(int, g_wsShell, 1316))
+        return;
+    BYTE* me = F(BYTE*, g_bc6d2078, 616);
+    BYTE* o = 0;
+    BYTE* res = 0;
+    int id = g_bc68b990;
+    for (BYTE* it = CallThis<BYTE*>(FUN_541970, me); it;) {
+        BYTE* c = CallThis<BYTE*>(FUN_541960, it);
+        if (c != F(BYTE*, g_bc6d2078, 616) && F(int, c, 20636) != g_bc68b990) {
+            id = F(int, c, 20636);
+            if (!(Bc_Flags(id) & 0x100)) {
+                res = CallThis<BYTE*>(FUN_5e5370, F(BYTE*, g_wsShell, 1356) + 704, F(int, (BYTE*)id, 84));
+                if ((Bc_Flags(id) & 64) || (Bc_Flags(id) & 0x400)) {
+                    BYTE m1[48], m2[48];
+                    float cp[3];
+                    memcpy(cp, CallThis<BYTE*>(FUN_57de90, c + 16, m1) + 36, 12);
+                    const float* mp =
+                        (const float*)(CallThis<BYTE*>(FUN_57de90, F(BYTE*, g_bc6d2078, 616) + 16, m2) + 36);
+                    float d[3] = {mp[0] - cp[0], mp[1] - cp[1], mp[2] - cp[2]};
+                    if (CallC<double>(FUN_5ab4d0, d) < g_bc64c32c) {
+                        o = c;
+                        break;
+                    }
+                }
+            }
+        }
+        it = F(BYTE*, it, 8);
+        if (!it)
+            break;
+        it -= 4;
+    }
+    if (!o)
+        return;
+    F(int, g_bc6f3434, 36) = -1;
+    if (CallC<int>(FUN_441d70, Bc_Copy(&id), (BYTE*)g_bc6f2d98))
+        return;
+    F(int, g_bc6f3434, 32) = (Bc_Flags(id) & 1024) ? 24 : 18;
+    F(int, g_bc6f3434, 36) = 0;
+    if (!g_bc6f33f4)
+        return;
+    g_bc6f33f4 = 0;
+    int car;
+    CallC(FUN_568f60, &car);
+    BYTE data[176];
+    CallC(FUN_43fc40, Bc_Copy(&id), data);
+    if (id == g_bc68b990)
+        return;
+    if (Bc_Flags(id) & 64) {
+        CallC(FUN_4d90c0);
+        CallC(FUN_4e5ea8);
+        int a = Bc_Copy(&id);
+        int b = Bc_Copy(&car);
+        if (CallC<int>(FUN_4738c0, b, a, 0))
+            return;
+        BYTE* p = F(BYTE*, g_bc6d2078, 616);
+        if (F(int, p, 21880))
+            CallC(FUN_55f4e0, p, 0);
+        Bc_M48 m = *(Bc_M48*)(BYTE*)g_bc7025f0;
+        CallC(FUN_56fae0, F(int, data, 36), F(int, res, 4), 0, 0, m);
+        CallThis(FUN_531cc0, g_bc6d2078, o);
+        F(WORD, F(BYTE*, o, 21600), 10048) = 1;
+        F(int, F(BYTE*, o, 21600), 10080) = 1;
+        F(int, o, 20636) = car;
+        CallThis(FUN_597570, (BYTE*)g_bc6f68b0, o);
+        CallThis(FUN_4ebaa0, F(BYTE*, me, 21600) + 9984, 1, 1);
+        F(WORD, F(BYTE*, me, 21600), 10054) = 100;
+        F(WORD, F(BYTE*, me, 21600), 10048) = 0;
+        F(int, F(BYTE*, me, 21600), 10080) = 0;
+        F(int, me, 20636) = g_bc6f2dc0;
+    } else if (Bc_Flags(id) & 0x400) {
+        int a = Bc_Copy(&id);
+        CallC(FUN_476bc0, a, id);
+    }
+}
+
+} // extern "C"
+
+// === the weather's update ($L_576830)
+
+ASM_VAR(int, g_wu6cec68, $L_6cec68)
+ASM_VAR(BYTE*, g_wu6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_wu6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_wu696ca0, $L_696ca0)
+ASM_VAR(int, g_wu67b730, $L_67b730)
+ASM_VAR(DWORD, g_wu6f6938, $L_6f6938)
+ASM_VAR(double, g_wu64b7a8, $L_64b7a8)
+ASM_VAR(float, g_wu64fdd0, $L_64fdd0)
+ASM_VAR(AsmLabel, g_wu6d1db8, $L_6d1db8)
+ASM_VAR(AsmLabel, g_wu7025f0, $L_7025f0)
+extern "C" void FUN_530070(); KING_ALIAS("_FUN_530070", "@Controls_ActionState@12")
+extern "C" void FUN_5a58c0(); KING_ALIAS("_FUN_5a58c0", "@Obj5a58c0_Start@8")
+ASM_PROC(FUN_5a6420)
+extern "C" void FUN_5a9d40(); KING_ALIAS("_FUN_5a9d40", "@Wave_Value@16")
+extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+
+// the weather level of 6f33ac
+static double Wu_Level() { return CallThis<double>(FUN_5a9d40, g_wsWeather6f33ac, 0, 0); }
+
+// records network message 960 with the wipers state
+static void Wu_Send(BYTE* w)
+{
+    BYTE msg[40], b[2] = {F(BYTE, w, 212), 0};
+    CallThis(FUN_602be0, msg);
+    CallThis(FUN_603110, msg, 960, b, 2);
+    CallThis(FUN_5c3630, g_wu696ca0, msg);
+    CallThis(FUN_602e80, msg);
+}
+
+extern "C" {
+
+// [$L_576830] updates weather w (thiscall): with precipitation (level above 64b7a8) the drops shown outside
+// (+164 bit 8) and on the glass (bit 16) by the camera mode and detail, else the effect restarts; the
+// wipers key (action 38) toggles +212 (sent to the other players), their sound (+208); the car's speed
+// into +184; bit 2 when it rains and the camera is under 64fdd0
+void __fastcall Weather_Update(BYTE* w)
+{
+    BYTE* pl = g_wu6d2078;
+    int outside, inCab;
+    if (!g_wu6cec68) {
+        outside = inCab = !F(int, pl, 1400) && !F(int, pl, 1396);
+    } else {
+        outside = F(int, pl, 1400) == 0;
+        inCab = F(int, pl, 1396) == 0;
+    }
+    DWORD& f = F(DWORD, w, 164);
+    if (Wu_Level() > g_wu64b7a8) {
+        bool detail = F(short, g_wu6cec70, 420) > 50;
+        if (outside && detail)
+            f |= 8;
+        else
+            f &= ~8u;
+        if ((!inCab || !outside) && detail)
+            f |= 16;
+        else
+            f &= ~16u;
+        f &= ~64u;
+    } else {
+        CallThis(FUN_5a58c0, w);
+        f &= ~2u;
+    }
+    for (int off = 124; off <= 132; off += 8)
+        if (BYTE* o = F(BYTE*, w, off)) {
+            if (outside)
+                F(BYTE, o, 40) &= 254;
+            else
+                F(BYTE, o, 40) |= 1;
+        }
+    if (CallThis<int>(FUN_530070, (BYTE*)g_wu6d1db8, 38)) {
+        if (F(int, g_wsShell, 1300) == 1)
+            Wu_Send(w);
+        F(int, w, 212) ^= 1;
+        if (F(int, g_wsShell, 1300) == 1)
+            Wu_Send(w);
+    }
+    if (F(int, g_wsShell, 1300) > 1)
+        F(int, w, 212) = g_wu67b730;
+    if (F(int, w, 168)) {
+        if (F(int, w, 212))
+            f &= ~4u;
+        else {
+            f |= 4;
+            if (F(BYTE*, w, 208) && outside)
+                CallThis(FUN_5fdaf0, F(BYTE*, w, 208), 0.6f, 0.6f);
+        }
+        F(int, w, 168) = 0;
+    }
+    g_wu6f6938 = f;
+    if (BYTE* car = F(BYTE*, g_wu6d2078, 616))
+        F(double, w, 184) = CallC<double>(FUN_5ab4d0, car + 432);
+    CallThis(FUN_5a6420, w);
+    BYTE m[48];
+    memcpy(m, (BYTE*)g_wu7025f0, 48);
+    if (BYTE* car = F(BYTE*, g_wu6d2078, 616)) {
+        BYTE t[48];
+        memcpy(m, CallThis<BYTE*>(FUN_57de90, car + 16, t), 48);
+    }
+    if (Wu_Level() > g_wu64b7a8 && F(float, m, 44) < g_wu64fdd0)
+        f |= 2;
+    else
+        f &= ~2u;
 }
 
 } // extern "C"

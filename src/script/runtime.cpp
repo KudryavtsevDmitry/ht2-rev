@@ -1085,7 +1085,7 @@ extern "C" void __fastcall RingMember2_Destruct(BYTE* self, void*) { Rt_RingUnli
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_4890b0)
+extern "C" void FUN_4890b0(); KING_ALIAS("_FUN_4890b0", "@Rt_ReadRoads@12")
 ASM_VAR(AsmLabel, s_rt6703e8, $L_6703e8)
 
 // [FUN_4895b0] reads a file through 4890b0; -1 when it can't be opened
@@ -1695,6 +1695,347 @@ int __fastcall SaveBlock_Read(BYTE* self, void*, FILE* f)
     }
     Save_SkipBlock(f, pos, size);
     return 0;
+}
+
+} // extern "C"
+
+// === reading the road file (FUN_4890b0)
+
+ASM_VAR(DWORD, g_rf6703dc, $L_6703dc)
+ASM_VAR(DWORD, g_rf6703d4, $L_6703d4)
+ASM_VAR(DWORD, g_rf6703cc, $L_6703cc)
+ASM_VAR(DWORD, g_rf6703c4, $L_6703c4)
+ASM_VAR(DWORD, g_rf6703bc, $L_6703bc)
+extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+
+// a named road (6703c4: its name block 6703bc, then its object blocks) appended to the list at self+24
+static void Rf_Road(BYTE* self, FILE* f, long pos, int size)
+{
+    DWORD id;
+    long p;
+    int n;
+    char name[1024] = {0};
+    Save_ReadHeader(f, &id, &p, &n);
+    if (id == g_rf6703bc)
+        fread(name, n, 1, f);
+    Save_SkipBlock(f, p, n);
+    DWORD rec[9];
+    Rec4883f0_Construct(rec, 0, (int)name);
+    BYTE* end;
+    CallThis(FUN_4afc20, self + 24, &end);
+    BYTE* it;
+    List489_Insert(self + 24, 0, &it, (BYTE**)end, rec);
+    CallThis(FUN_488450, rec);
+    while (Sv_More(f, pos, size))
+        SaveBlock_Read(F(BYTE*, F(BYTE*, self, 24), 4) + 8, 0, f);
+}
+
+// the roads of a 6703cc block
+static void Rf_Roads(BYTE* self, FILE* f, long pos, int size)
+{
+    while (Sv_More(f, pos, size)) {
+        DWORD id;
+        long p;
+        int n;
+        Save_ReadHeader(f, &id, &p, &n);
+        if (id == g_rf6703c4)
+            Rf_Road(self, f, p, n);
+        Save_SkipBlock(f, p, n);
+    }
+}
+
+extern "C" {
+
+// [FUN_4890b0] reads the road file f into self (thiscall): a 6703dc block holds names (6703d4, appended to the
+// text at self+0) and road groups (6703cc); a 6703cc block alone holds roads; 0
+int __fastcall Rt_ReadRoads(BYTE* self, void*, FILE* f)
+{
+    DWORD tag;
+    long pos;
+    int size;
+    Save_ReadHeader(f, &tag, &pos, &size);
+    if (tag == g_rf6703dc) {
+        while (Sv_More(f, pos, size)) {
+            DWORD id;
+            long p;
+            int n;
+            Save_ReadHeader(f, &id, &p, &n);
+            if (id == g_rf6703d4) {
+                char text[128];
+                fread(text, n, 1, f);
+                CallThis(FUN_44c220, self, F(BYTE*, self, 4), text, text + strlen(text) + 1);
+            } else if (id == g_rf6703cc)
+                Rf_Roads(self, f, p, n);
+            Save_SkipBlock(f, p, n);
+        }
+    } else if (tag == g_rf6703cc)
+        Rf_Roads(self, f, pos, size);
+    Save_SkipBlock(f, pos, size);
+    return 0;
+}
+
+} // extern "C"
+
+// === adding big integers (FUN_48afa0)
+
+extern "C" {
+
+// [FUN_48afa0] out = (+-a) + (+-b) (na / nb flip the signs of non-zero a / b): magnitudes added for equal
+// signs, else the smaller subtracted from the larger (sign of the larger); out may be a or b
+WORD* __cdecl Int_AddSigned(WORD* a, int na, WORD* b, int nb, WORD* out)
+{
+    if (!a)
+        BigInt_Fail(s_bigintNull);
+    if (!b)
+        BigInt_Fail(s_bigintNull);
+    int la = a[0], lb = b[0];
+    short sa = (na && la) ? (a[2] == 0) : (short)a[2];
+    short sb = (nb && lb) ? (b[2] == 0) : (short)b[2];
+    bool aOut = a == out, bOut = b == out;
+    WORD* r;
+    if (lb == 0)
+        return Int_Normalize(WStr_Make(out, a + 3, la, sa, la));
+    if (la == 0)
+        return Int_Normalize(WStr_Make(out, b + 3, lb, sb, lb));
+    int mx = la > lb ? la : lb;
+    if (sa == sb) {
+        r = (aOut || bOut) ? WStr_Resize(out, mx + 1) : BigInt_Alloc(out, mx + 1);
+        r[2] = sa;
+        WORD* d = r + 3;
+        const WORD *lo, *loEnd, *sh, *shEnd;
+        if (la >= lb) {
+            lo = aOut ? d : a + 3;
+            loEnd = lo + la;
+            sh = bOut ? d : b + 3;
+            shEnd = sh + lb;
+        } else {
+            sh = aOut ? d : a + 3;
+            shEnd = sh + la;
+            lo = bOut ? d : b + 3;
+            loEnd = lo + lb;
+        }
+        unsigned c = 0;
+        while (sh < shEnd) {
+            unsigned s = *sh++ + c + *lo++;
+            *d++ = (WORD)s;
+            c = s >> 16;
+        }
+        while (c) {
+            if (lo >= loEnd) {
+                *d = (WORD)c;
+                return Int_Normalize(r);
+            }
+            unsigned s = *lo++ + c;
+            *d++ = (WORD)s;
+            c = s >> 16;
+        }
+        if (d != lo)
+            while (lo < loEnd)
+                *d++ = *lo++;
+        return Int_Normalize(r);
+    }
+    int cmp = Int_CompareMagnitude((const BigInt*)a, (const BigInt*)b);
+    if (cmp == 0)
+        return Int_Normalize((WORD*)Int_SetZero((BigInt*)out));
+    r = (aOut || bOut) ? WStr_Resize(out, mx) : BigInt_Alloc(out, mx);
+    WORD* d = r + 3;
+    const WORD *lo, *loEnd, *sh, *shEnd;
+    if (cmp > 0) {
+        lo = aOut ? d : a + 3;
+        loEnd = lo + la;
+        sh = bOut ? d : b + 3;
+        shEnd = sh + lb;
+        r[2] = sa;
+    } else {
+        sh = aOut ? d : a + 3;
+        shEnd = sh + la;
+        lo = bOut ? d : b + 3;
+        loEnd = lo + lb;
+        r[2] = sb;
+    }
+    unsigned c = 1;
+    while (sh < shEnd) {
+        unsigned s = c + *lo++ - *sh++ + 65535;
+        *d++ = (WORD)s;
+        c = s >> 16;
+    }
+    if (!c)
+        while (lo < loEnd) {
+            unsigned s = *lo++ + 65535u;
+            *d++ = (WORD)s;
+            if (s & 0xffff0000)
+                break;
+        }
+    if (d != lo)
+        while (lo < loEnd)
+            *d++ = *lo++;
+    return Int_Normalize(r);
+}
+
+} // extern "C"
+
+// === multiplying big integers (FUN_48b350)
+
+// adds v at d[k] and carries up to n
+static void Im_Add(WORD* d, int k, int n, unsigned v)
+{
+    unsigned c = d[k] + v;
+    d[k] = (WORD)c;
+    c >>= 16;
+    for (int i = k + 1; c && i < n; i++) {
+        c += d[i];
+        d[i] = (WORD)c;
+        c >>= 16;
+    }
+}
+
+extern "C" {
+
+// [FUN_48b350] out = a * b (out may be a or b; a == b == out squares in place); the sign is + for equal signs
+WORD* __cdecl Int_Mul(WORD* a, WORD* b, WORD* out)
+{
+    if (!a)
+        BigInt_Fail(s_bigintNull);
+    if (!b)
+        BigInt_Fail(s_bigintNull);
+    WORD sign = a[2] == b[2];
+    int la = a[0], lb = b[0], n = la + lb;
+    bool aOut = a == out, bOut = b == out;
+    WORD* r;
+    if (!la || !lb)
+        r = (WORD*)Int_SetZero((BigInt*)out);
+    else if (la == 1 && a[3] == 1)
+        r = WStr_Assign(out, b);
+    else if (lb == 1 && b[3] == 1)
+        r = WStr_Assign(out, a);
+    else if (a == b && aOut) {
+        r = WStr_Resize(out, n);
+        WORD* d = r + 3;
+        int hi = la - 1, lo = la - 1;
+        for (int k = n - 2; k >= 0; k--) {
+            int i = lo, j = hi;
+            unsigned p = (unsigned)d[j] * d[i];
+            d[k] = 0;
+            for (;;) {
+                Im_Add(d, k, n, p);
+                if (j > i)
+                    Im_Add(d, k, n, p);
+                j--;
+                i++;
+                if (j < i)
+                    break;
+                p = (unsigned)d[i] * d[j];
+            }
+            if (lo > 0)
+                lo--;
+            else
+                hi--;
+        }
+    } else {
+        r = (aOut || bOut) ? WStr_Resize(out, n) : BigInt_Alloc(out, n);
+        WORD* d = r + 3;
+        const WORD *rd, *rdLow, *other;
+        int ol, w;
+        if (aOut) {
+            w = la - 1;
+            rdLow = d;
+            rd = d + la - 1;
+            other = b + 3;
+            ol = lb;
+        } else if (bOut) {
+            w = lb - 1;
+            rdLow = d;
+            rd = d + lb - 1;
+            other = a + 3;
+            ol = la;
+        } else if (la <= lb) {
+            w = la - 1;
+            rdLow = a + 3;
+            rd = a + 3 + la - 1;
+            other = b + 3;
+            ol = lb;
+        } else {
+            w = lb - 1;
+            rdLow = b + 3;
+            rd = b + 3 + lb - 1;
+            other = a + 3;
+            ol = la;
+        }
+        for (; rd >= rdLow; w--) {
+            unsigned m = *rd--;
+            d[w] = 0;
+            if (!m)
+                continue;
+            unsigned c = 0;
+            int k = w;
+            for (int i = 0; i < ol; i++, k++) {
+                c = other[i] * m + d[k] + c;
+                d[k] = (WORD)c;
+                c >>= 16;
+            }
+            for (; c && k < n; k++) {
+                c += d[k];
+                d[k] = (WORD)c;
+                c >>= 16;
+            }
+        }
+    }
+    r[2] = sign;
+    return Int_Normalize(r);
+}
+
+} // extern "C"
+
+// === inserting a range into a vector of 24-byte vectors (FUN_489c30)
+
+extern "C" void FUN_405f70(); KING_ALIAS("_FUN_405f70", "@DVec3_Assign@12")
+extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
+extern "C" void FUN_48a6a0(); KING_ALIAS("_FUN_48a6a0", "_CopyBackward24s")
+extern "C" void FUN_48a6e0(); KING_ALIAS("_FUN_48a6e0", "_Copy24s")
+extern "C" void FUN_48a720(); KING_ALIAS("_FUN_48a720", "_UninitCopy24s")
+
+static BYTE* Ri24_UninitCopy(const BYTE* first, const BYTE* last, BYTE* to, const BYTE* x)
+{
+    return CallC<BYTE*>(FUN_48a720, first, last, to, x);
+}
+
+extern "C" {
+
+// [FUN_489c30] vector<DVec3>::insert(pos, first, last) (thiscall on v: begin, end, capacity)
+void __fastcall VecD3_InsertRange(BYTE** v, void*, BYTE* pos, const BYTE* first, const BYTE* last)
+{
+    if (first == last)
+        return;
+    unsigned n = (unsigned)((last - first) / 24);
+    if ((unsigned)((v[2] - v[1]) / 24) >= n) {
+        BYTE* end = v[1];
+        unsigned after = (unsigned)((end - pos) / 24);
+        if (after > n) {
+            Ri24_UninitCopy(end - n * 24, end, end, first);
+            v[1] += n * 24;
+            CallC(FUN_48a6a0, pos, end - n * 24, end, first, 0);
+            CallC(FUN_48a6e0, first, last, pos, first, 0);
+        } else {
+            Ri24_UninitCopy(first + after * 24, last, end, first);
+            v[1] += (n - after) * 24;
+            Ri24_UninitCopy(pos, end, v[1], first);
+            v[1] += after * 24;
+            for (unsigned k = 0; k < after; k++)
+                CallThis(FUN_405f70, pos + k * 24, first + k * 24);
+        }
+        return;
+    }
+    unsigned size = (unsigned)((v[1] - v[0]) / 24);
+    unsigned len = size + (size < n ? n : size);
+    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len * 24) : 0;
+    BYTE* e = Ri24_UninitCopy(v[0], pos, p, p);
+    e = Ri24_UninitCopy(first, last, e, p);
+    e = Ri24_UninitCopy(pos, v[1], e, p);
+    if (unsigned cap = (unsigned)((v[2] - v[0]) / 24))
+        CallC(FUN_44b4a0, v[0], cap * 24);
+    v[0] = p;
+    v[1] = e;
+    v[2] = p + len * 24;
 }
 
 } // extern "C"
