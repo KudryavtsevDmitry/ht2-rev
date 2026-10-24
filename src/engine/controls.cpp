@@ -37,7 +37,7 @@ static __forceinline BYTE* Next(BYTE* c)
 }
 
 extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle
-ASM_PROC(FUN_5b8980)    // draws a pattern
+extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")    // draws a pattern
 extern "C" void FUN_5b9020(); KING_ALIAS("_FUN_5b9020", "_Image_Tile")    // tiles a bitmap
 extern "C" void FUN_5b7f20(); KING_ALIAS("_FUN_5b7f20", "_Surface_VLine")    // vertical line
 extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")    // horizontal line
@@ -1268,6 +1268,122 @@ void __fastcall ScrollBar_Layout(BYTE* s, void*, short range, short* at, int a3,
     }
     c = Sb_Child(s, CallThis<BYTE*>(FUN_5d3080, c));
     Sb_Move(s, c, F(int, s, 312) - F(int, s, 60) + F(int, s, 308), F(int, s, 320));
+}
+
+} // extern "C"
+
+// === drawing a scroll bar ($L_5bf340)
+
+ASM_VAR(int, g_sd702f34, $L_702f34)
+ASM_VAR(int, g_sd702f2c, $L_702f2c)
+extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")
+extern "C" void FUN_5bd590(); KING_ALIAS("_FUN_5bd590", "_Gui_Reset702f24")
+extern "C" void FUN_5be1d0(); KING_ALIAS("_FUN_5be1d0", "@Ctl_DrawAll@24")
+extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
+extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
+
+typedef void (__cdecl* Sb_Callback)(int);
+
+// moves child c to (x, y), keeping its size
+static void Sb_MoveTo(BYTE* c, int x, int y)
+{
+    F(int, c, 52) += x - F(int, c, 44);
+    F(int, c, 44) = x;
+    F(int, c, 56) += y - F(int, c, 48);
+    F(int, c, 48) = y;
+}
+
+extern "C" {
+
+// [$L_5bf340] draws scroll bar s (thiscall: surface, x, y, active): its children enabled like it, a held page
+// click (+324 3 / 4) repeats while the mouse is beyond the thumb, the step (+324: 0 / 2 one step +340 up /
+// down, 3 / 4 two) moves the position and calls +332(+336); the thumb is placed at the position, then the
+// title lines (vertical bars) centered above with a line under them; 0
+int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int active)
+{
+    BYTE* c = F(BYTE*, s, 288);
+    F(int, c, 40) = F(int, s, 40);
+    F(int, CallThis<BYTE*>(FUN_5d3080, c), 40) = F(int, s, 40);
+    F(int, CallThis<BYTE*>(FUN_5d3080, CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288))), 40) = F(int, s, 40);
+    if (F(int, s, 324) == 3 || F(int, s, 324) == 4) {
+        BYTE* t = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288));
+        int at = g_sd702f34 - F(int, s, 44) - g_sd702f2c;
+        if (at < F(int, t, 44))
+            F(int, s, 324) = 4;
+        else if (at > F(int, t, 44) + 4)
+            F(int, s, 324) = 3;
+        else {
+            F(int, s, 324) = -1;
+            CallC(FUN_5bd590);
+        }
+    }
+    short* pos = F(short*, s, 300);
+    short step = F(short, s, 340), range = F(short, s, 296);
+    bool moved = true;
+    switch (F(int, s, 324)) {
+    case 0:
+        *pos += step;
+        if (*pos > range)
+            *pos = range;
+        break;
+    case 3:
+        *pos += (short)(step * 2);
+        if (*pos > range)
+            *pos = range;
+        break;
+    case 2:
+        *pos -= step;
+        if (*pos < 0)
+            *pos = 0;
+        break;
+    case 4:
+        *pos += (short)(step * -2);
+        if (*pos < 0)
+            *pos = 0;
+        break;
+    default:
+        moved = false;
+    }
+    if (moved)
+        if (Sb_Callback cb = F(Sb_Callback, s, 332))
+            cb(F(int, s, 336));
+    BYTE* t = CallThis<BYTE*>(FUN_5d3080, F(BYTE*, s, 288));
+    bool horiz = F(int, s, 328) == 1;
+    int lo = F(int, s, 304);
+    if (range) {
+        int p = (int)((double)(F(int, s, 308) - lo) * (double)*pos / (double)range + (double)lo);
+        if (horiz)
+            Sb_MoveTo(t, p, F(int, t, 48));
+        else
+            Sb_MoveTo(t, F(int, t, 44), p);
+    } else if (horiz)
+        Sb_MoveTo(t, lo, F(int, t, 48));
+    else
+        Sb_MoveTo(t, F(int, t, 44), lo);
+    CallThis(FUN_5be1d0, s, surf, x, y, active);
+    const char* title = F(const char*, s, 12);
+    if (!horiz || !title || !*title)
+        return 0;
+    char buf[64];
+    strcpy(buf, title);
+    int base = F(int, s, 48) + y + F(int, s, 60) + 1;
+    char* p = buf;
+    for (int line = 0; line < F(int, s, 316); line++, p++) {
+        char* start = p;
+        while (*p && *p != 10)
+            p++;
+        *p = 0;
+        int w = CallThis<int>(FUN_5ea0e0, F(BYTE*, s, 16), start);
+        int tx = (F(int, s, 52) - 2 * F(int, s, 60) - F(int, s, 44)) / 2 - w / 2 + F(int, s, 60) + F(int, s, 44) + x;
+        base += F(int, F(BYTE*, s, 16), 20);
+        int f = active ? F(int, s, 284) : F(int, s, 284) & 2;
+        DWORD color = F(DWORD, s, ((f & 3) + 2) * 36);
+        CallC(FUN_5ea170, surf, tx, base - 2, F(BYTE*, s, 16), start, color, 0);
+    }
+    if (!(F(BYTE, s, 32) & 8))
+        CallC(FUN_5b7ce0, surf, base, F(int, s, 44) + F(int, s, 60) + x, F(int, s, 52) - F(int, s, 60) + x,
+              F(DWORD, s, 72), 0);
+    return 0;
 }
 
 } // extern "C"

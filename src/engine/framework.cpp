@@ -4744,3 +4744,56 @@ void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* te
 }
 
 } // extern "C"
+
+// === the framework's handlers and render passes (FUN_5de0a0)
+
+extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o);  // weather.cpp
+ASM_VAR(AsmLabel, g_rp5c8ae0, $L_5c8ae0)
+ASM_VAR(AsmLabel, g_rp5aa750, $L_5aa750)
+ASM_VAR(AsmLabel, s_rp682f14, $L_682f14)
+ASM_VAR(AsmLabel, s_rp682f00, $L_682f00)
+ASM_VAR(AsmLabel, s_rp682ef0, $L_682ef0)
+ASM_VAR(AsmLabel, s_rp682ee0, $L_682ee0)
+ASM_VAR(AsmLabel, g_rp652518, $L_652518)
+ASM_VAR(DWORD, g_rp702e8c, $L_702e8c)
+ASM_PROC(FUN_5d2540)
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+
+// a render pass object of kind k for world w
+static void Rp_Pass(BYTE* w, int k)
+{
+    BYTE* o = (BYTE*)operator new(40);
+    if (o) {
+        CallThis(FUN_5d31e0, o, k, (const char*)s_rp682ee0);
+        F(void*, o, 0) = g_rp652518;
+        F(BYTE*, o, 32) = w;
+        F(int, o, 36) = k;
+    }
+    CallThis(FUN_5d3570, w + 2992, o);
+    CallVirt(o, 24, 0);
+}
+
+extern "C" {
+
+// [FUN_5de0a0] registers three object name handlers (71e820) and resolves the pending names, then attaches the
+// render passes of world w: kinds 400, 0, 20, 30, 10, with hardware flag 0x100 also 21, 31, 11, and 40 when +3044
+void __fastcall World_SetupPasses(BYTE* w)
+{
+    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f14, (void*)Weather_LogPos);
+    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f00, (void*)g_rp5c8ae0);
+    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682ef0, (void*)g_rp5aa750);
+    CallThis(FUN_5d27c0, (BYTE*)g_objectNames);
+    static const int base[] = {400, 0, 20, 30, 10};
+    for (int k : base)
+        Rp_Pass(w, k);
+    if (g_rp702e8c & 0x100) {
+        Rp_Pass(w, 21);
+        Rp_Pass(w, 31);
+        Rp_Pass(w, 11);
+    }
+    if (F(int, w, 3044))
+        Rp_Pass(w, 40);
+}
+
+} // extern "C"

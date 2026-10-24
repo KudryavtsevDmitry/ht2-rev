@@ -1375,3 +1375,162 @@ void __cdecl Ai_SaveGlobals(BYTE** v)
 }
 
 } // extern "C"
+
+// === stable sort of 40-byte road records with a buffer (FUN_47cf50)
+
+extern "C" void FUN_47dab0(); KING_ALIAS("_FUN_47dab0", "_Road40_Insertion")
+ASM_PROC(FUN_47de60)
+extern "C" void FUN_47f170(); KING_ALIAS("_FUN_47f170", "_Road40_MergeLoop")
+extern "C" void FUN_47f3f0(); KING_ALIAS("_FUN_47f3f0", "_Rec40_Merge")
+
+static int Ss40_Count(const BYTE* a, const BYTE* b) { return (int)(b - a) / 40; }
+
+// one merge pass of runs of step from [first, last) to result
+static void Ss40_MergePass(BYTE* first, BYTE* last, BYTE* result, int step, int comp)
+{
+    int two = step * 2;
+    while (Ss40_Count(first, last) >= two) {
+        result = CallC<BYTE*>(FUN_47f3f0, first, first + step * 40, first + step * 40, first + two * 40, result, comp);
+        first += two * 40;
+    }
+    int s = Ss40_Count(first, last);
+    if (step < s)
+        s = step;
+    CallC(FUN_47f3f0, first, first + s * 40, first + s * 40, last, result, comp);
+}
+
+// insertion sort of runs of 7, then merge passes through the buffer and back
+static void Ss40_SortWithBuffer(BYTE* first, BYTE* last, BYTE* buf, int comp)
+{
+    int len = Ss40_Count(first, last);
+    BYTE* bufLast = buf + len * 40;
+    BYTE* p = first;
+    while (Ss40_Count(p, last) >= 7) {
+        CallC(FUN_47dab0, p, p + 280, comp);
+        p += 280;
+    }
+    CallC(FUN_47dab0, p, last, comp);
+    for (int step = 7; step < len;) {
+        Ss40_MergePass(first, last, buf, step, comp);
+        step *= 2;
+        CallC(FUN_47f170, buf, bufLast, first, step, comp);
+        step *= 2;
+    }
+}
+
+extern "C" {
+
+// [FUN_47cf50] stable_sort's adaptive step for [first, last) of 40-byte records with the buffer buf (size n):
+// each half sorted (recursively when it doesn't fit), then merged
+void __cdecl Road40_StableSortAdaptive(BYTE* first, BYTE* last, BYTE* buf, int n, int comp)
+{
+    int len = (Ss40_Count(first, last) + 1) / 2;
+    BYTE* mid = first + len * 40;
+    if (len > n) {
+        Road40_StableSortAdaptive(first, mid, buf, n, comp);
+        Road40_StableSortAdaptive(mid, last, buf, n, comp);
+    } else {
+        Ss40_SortWithBuffer(first, mid, buf, comp);
+        Ss40_SortWithBuffer(mid, last, buf, comp);
+    }
+    CallC(FUN_47de60, first, mid, last, Ss40_Count(first, mid), Ss40_Count(mid, last), buf, n, comp);
+}
+
+} // extern "C"
+
+// === loading the AI's global state (FUN_480b00)
+
+ASM_VAR(int, g_lg68d6d0, $L_68d6d0)
+ASM_VAR(AsmLabel, s_lg66fd70, $L_66fd70)
+ASM_VAR(AsmLabel, s_lg66fcb4, $L_66fcb4)
+ASM_VAR(AsmLabel, s_lg66fd94, $L_66fd94)
+ASM_VAR(AsmLabel, s_lg68d1c0, $L_68d1c0)
+extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
+extern "C" void FUN_448f00(); KING_ALIAS("_FUN_448f00", "@Vec4_PushBackG@12")
+extern "C" void FUN_44ac10(); KING_ALIAS("_FUN_44ac10", "@Vec4_Erase@16")
+extern "C" void FUN_480650(); KING_ALIAS("_FUN_480650", "_Save_RebaseTime")
+extern "C" void FUN_483800(); KING_ALIAS("_FUN_483800", "@PtrVec_Reserve@12")
+
+static void Lg_Get(BYTE** cur, void* to, int n)
+{
+    memcpy(to, *cur, n);
+    *cur += n;
+}
+
+static int Lg_Int(BYTE** cur)
+{
+    int v;
+    Lg_Get(cur, &v, 4);
+    return v;
+}
+
+static void Lg_Report(int a, int line)
+{
+    CallC(FUN_401010, a, 100, (const char*)s_lg66fd70, (const char*)s_lg66fcb4, line, (const char*)s_lg66fd94,
+          (const char*)s_lg68d1c0, (const char*)s_lg68d1c0);
+}
+
+// the vector at g refilled with n ints read from cur
+static void Lg_Vec(BYTE** cur, BYTE* g)
+{
+    int n = Lg_Int(cur);
+    CallThis(FUN_44ac10, g, F(BYTE*, g, 0), F(BYTE*, g, 4));
+    CallThis(FUN_483800, g, n);
+    for (int i = 0; i < n; i++) {
+        int v = Lg_Int(cur);
+        CallThis(FUN_448f00, g, &v);
+    }
+}
+
+struct Lg_Chunk { BYTE** cur; int a, b; };
+
+static bool Lg_More(const Lg_Chunk* c) { return c->a + c->b - (int)*c->cur != 0; }
+
+extern "C" {
+
+// [FUN_480b00] reads the AI's global state (the block Ai_SaveGlobals writes) from the save cursor cur of chunk c:
+// the versions checked, the times rebased, the tables and the two id vectors refilled; the last three fields
+// only when the chunk has them
+void __cdecl Ai_LoadGlobals(const Lg_Chunk* c, BYTE** cur)
+{
+    g_lg68d6d0 = Lg_Int(cur);
+    if (g_lg68d6d0 != *(int*)(char*)g_ag66fd64)
+        Lg_Report(0, 92);
+    if (Lg_Int(cur) != *(int*)(char*)g_ag66c730)
+        Lg_Report(1, 104);
+    Lg_Get(cur, g_ag68d6c8, 8);
+    Lg_Get(cur, g_ag68d0f0, 8);
+    Lg_Get(cur, g_ag68d0f8, 8);
+    Lg_Get(cur, g_ag68d100, 8);
+    Lg_Get(cur, g_ag66c6d8, 8);
+    Lg_Get(cur, g_ag68d190, 8);
+    Lg_Get(cur, g_ag68d198, 8);
+    Lg_Get(cur, g_ag68d170, 8);
+    Lg_Get(cur, g_ag68b9c8, 55 * 4);
+    *cur += 4;
+    Lg_Vec(cur, (BYTE*)g_ag68a830);
+    Lg_Get(cur, g_ag68d158, 4);
+    Lg_Get(cur, g_ag66c6a0, 8);
+    Lg_Get(cur, g_ag68d164, 4);
+    Lg_Get(cur, g_ag68d168, 1);
+    Lg_Get(cur, g_ag66c6e0, 4);
+    Lg_Vec(cur, (BYTE*)g_ag68cc88);
+    Lg_Get(cur, g_ag66c6f8, 8);
+    Lg_Get(cur, g_ag66c710, 8);
+    CallC(FUN_480650, (BYTE*)g_ag68d0f0);
+    CallC(FUN_480650, (BYTE*)g_ag68d0f8);
+    CallC(FUN_480650, (BYTE*)g_ag68d100);
+    CallC(FUN_480650, (BYTE*)g_ag66c6d8);
+    CallC(FUN_480650, (BYTE*)g_ag68d198);
+    CallC(FUN_480650, (BYTE*)g_ag68d170);
+    if (Lg_More(c))
+        Lg_Get(cur, g_ag68d15c, 4);
+    if (Lg_More(c))
+        Lg_Get(cur, g_ag68d160, 4);
+    if (Lg_More(c)) {
+        Lg_Get(cur, g_ag68d108, 8);
+        CallC(FUN_480650, (BYTE*)g_ag68d108);
+    }
+}
+
+} // extern "C"

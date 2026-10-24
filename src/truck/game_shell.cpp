@@ -2130,7 +2130,7 @@ extern "C" void FUN_5d8610(); KING_ALIAS("_FUN_5d8610", "@Win_Activate@8")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 extern "C" void FUN_50d510(); KING_ALIAS("_FUN_50d510", "@ShellBuf_Destroy@8")
 extern "C" void FUN_528fc0(); KING_ALIAS("_FUN_528fc0", "@Shell528fc0_Destroy@8")
-ASM_PROC(FUN_5b8980)
+extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")
 extern "C" void FUN_528fb0(); KING_ALIAS("_FUN_528fb0", "@Screen_Set2304@12")
 extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
 extern "C" void FUN_5d8bb0(); KING_ALIAS("_FUN_5d8bb0", "@Frame_Ask@12")
@@ -3226,7 +3226,7 @@ extern "C" BYTE* __fastcall ShellScreen51e9a0_Construct(BYTE* s, void*, BYTE* pa
 // ---------------------------------------------------------------------------
 // Shell screen with a slider and three buttons (exception frame dropped).
 
-ASM_PROC(FUN_50d860)
+extern "C" void FUN_50d860(); KING_ALIAS("_FUN_50d860", "_Shell_MakeScrollBar")
 ASM_VAR(AsmLabel, g_q31_64e730, $L_64e730)
 ASM_VAR(AsmLabel, g_q31_64e6f0, $L_64e6f0)
 ASM_VAR(AsmLabel, s_q31_6779dc, $L_6779dc)
@@ -6166,7 +6166,7 @@ ASM_VAR(int, g_q92_67b738, $L_67b738)
 ASM_VAR(AsmLabel, g_q92_71e820, $L_71e820)
 ASM_VAR(AsmLabel, g_q92_696750, $L_696750)
 ASM_VAR(AsmLabel, g_q92_4d76b0, $L_4d76b0)
-ASM_VAR(AsmLabel, g_q92_4d8b60, $L_4d8b60)
+extern "C" int __cdecl Present_OnEvent(BYTE* it, int kind);  // effects.cpp
 ASM_VAR(AsmLabel, s_q92_676770, $L_676770)
 ASM_VAR(AsmLabel, s_q92_672688, $L_672688)
 ASM_VAR(AsmLabel, s_q92_6768f0, $L_6768f0)
@@ -6204,7 +6204,7 @@ extern "C" void __cdecl Shell_LoadWorld(void)
         else if (F(int, g_q92_6cec98, 384) == 1)
             map = (const char*)s_q92_6768d0;
         if (map)
-            CallC(FUN_435730, App_Path(g_q92_696ca0, 0, map), (BYTE*)g_q92_4d76b0, (BYTE*)g_q92_4d8b60);
+            CallC(FUN_435730, App_Path(g_q92_696ca0, 0, map), (BYTE*)g_q92_4d76b0, (BYTE*)(void*)Present_OnEvent);
     } else {
         BYTE* q = (BYTE*)operator new(424);
         q = q ? CallThis<BYTE*>(FUN_50f990, q) : 0;
@@ -7355,7 +7355,7 @@ ASM_VAR(double, g_vdWait64b7e0, $L_64b7e0)
 ASM_VAR(double, g_vdBlink64b770, $L_64b770)
 ASM_VAR(AsmLabel, s_vd66c8cc, $L_66c8cc)
 ASM_VAR(AsmLabel, s_vd66d9c4, $L_66d9c4)
-ASM_PROC(FUN_5b8980)
+extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")
 ASM_PROC(FUN_5fdaf0)
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
@@ -8966,6 +8966,417 @@ BYTE* __fastcall InfoScreen_Construct(BYTE* s, void*, int parent, int mode)
     F(int, p2, 48) = 249;
     CallThis(FUN_5bdbf0, F(BYTE*, s, 56), p1, 0);
     return s;
+}
+
+} // extern "C"
+
+// === the bribe and dealer dialog's commands ($L_524530)
+
+ASM_VAR(AsmLabel, g_bd675c50, $L_675c50)
+ASM_VAR(AsmLabel, s_bd67801c, $L_67801c)
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_4315f0(); KING_ALIAS("_FUN_4315f0", "_Ai_QueryBribeSum")
+extern "C" void FUN_432560(); KING_ALIAS("_FUN_432560", "_Ai_OfferBribe")
+extern "C" void FUN_433b60(); KING_ALIAS("_FUN_433b60", "_Ai_OrderVehicle")
+extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
+ASM_PROC(FUN_5fdaf0)
+
+static int Bd_Copy(const void* it)
+{
+    int v;
+    CallThis(FUN_41d300, &v, it);
+    return v;
+}
+
+// the player and the dialog's partner (+360), as the AI takes them
+static int Bd_Player() { return Bd_Copy(F(BYTE*, g_gamshe6d2078, 616) + 20636); }
+
+static void Bd_Sound(BYTE* snd)
+{
+    if (snd)
+        CallThis(FUN_5fdaf0, snd, 1.0f, 1.0f);
+}
+
+// closes the dialog (s is the +64 part of the screen) and goes back to the world
+static void Bd_Close(BYTE* s)
+{
+    Gs_DropBackdrop();
+    CallVirt(s - 64, 32);
+    CallVirt(g_gamshe696ca0, 36);
+    CallC(FUN_50bd60);
+    CallC(FUN_4e12b0, 1);
+}
+
+// back to the offer page: the model buttons (+328, +324) on, the offers (+320) off
+static void Bd_Back(BYTE* s)
+{
+    if (BYTE* c = F(BYTE*, s, 328))
+        F(int, c, 40) = 1;
+    F(int, F(BYTE*, s, 324), 40) = 1;
+    F(int, F(BYTE*, s, 320), 40) = 0;
+    F(int, s, 308) = 1;
+}
+
+extern "C" {
+
+// [$L_524530] a command id of the bribe / dealer dialog s (state +308): on the offer page (1) ids 190..205 choose
+// an offer (675c50; -1 leaves, others offer a bribe or ask its sum); on the model pages (2, 3) 120..122 pick
+// the model and color, 206 orders, repairs or pays, 207 goes back
+void __fastcall BribeDialog_Command(BYTE* s, void*, int id)
+{
+    int st = F(int, s, 308);
+    if (st == 1) {
+        if (id < 190 || id > 205)
+            return;
+        int k = id - 190, j = k & 3;
+        F(BYTE*, s, 908) = F(BYTE*, s, 876 + j * 4);
+        Bd_Sound(F(BYTE*, s, 876 + j * 4));
+        BYTE* c = CallThis<BYTE*>(FUN_5bdb50, F(BYTE*, s, 320), id);
+        F(BYTE*, s, 316) = c;
+        F(int, c, 40) = 1;
+        int v = ((const int*)g_bd675c50)[k];
+        F(int, s, 836) = v;
+        if (v == -1) {
+            Bd_Close(s);
+            return;
+        }
+        if (id == 196 || id == 203)
+            F(int, s, 308) = 23;
+        else if (F(int, s, 840 + j * 4)) {
+            if (F(int, s, 304) == 0) {
+                int t = Bd_Copy(s + 360);
+                CallC(FUN_432560, Bd_Player(), t, v);
+                Bd_Close(s);
+            } else if (F(int, s, 304) == 1)
+                CallC(FUN_5d2e70, (const char*)s_bd67801c, 0);
+            else {
+                F(int, s, 308) = 24;
+                F(double, s, 352) = CallC<double>(FUN_6037e0);
+            }
+        } else {
+            F(int, s, 308) = 22;
+            if (id == 202)
+                F(double, s, 344) = Player_LoadFactor(500.0);
+            else {
+                double sum = 0;
+                int t = Bd_Copy(s + 360);
+                int car;
+                Player_CarId(&car);
+                CallC(FUN_4315f0, car, t, v, &sum);
+                F(double, s, 344) = sum;
+            }
+        }
+        F(int, F(BYTE*, s, 320), 40) = 1;
+        return;
+    }
+    if (st != 2 && st != 3)
+        return;
+    switch (id) {
+    case 120:
+        F(int, s, 312) = 1;
+        F(int, s, 796) = (F(int, s, 796) + 1) % 27;
+        break;
+    case 121:
+        F(int, s, 312) = 0;
+        if (--F(int, s, 796) < 0)
+            F(int, s, 796) += 27;
+        break;
+    case 122:
+        F(int, s, 800) = (F(int, s, 800) + 1) % 4;
+        break;
+    case 206: {
+        if (st == 2)
+            Bd_Sound(F(BYTE*, s, 892));
+        if (F(int, s, 308) == 3)
+            Bd_Sound(F(BYTE*, s, 900));
+        BYTE* m = F(BYTE*, s, 328);
+        if (m && F(int, m, 40) != 1) {
+            const char* name = Carat_TypeName(F(int, s, 796), F(int, s, 800));
+            int t = Bd_Copy(s + 360);
+            CallC(FUN_433b60, Bd_Player(), t, name);
+        } else if (F(int, s, 836) == 64)
+            Shell_PayRepair(F(double, s, 344), 10);
+        else {
+            int t = Bd_Copy(s + 360);
+            CallC(FUN_432560, Bd_Player(), t, F(int, s, 836));
+            if (F(int, s, 836) == 16) {
+                Bd_Close(s);
+                return;
+            }
+        }
+        Bd_Back(s);
+        break;
+    }
+    case 207:
+        if (st == 2)
+            Bd_Sound(F(BYTE*, s, 896));
+        if (F(int, s, 308) == 3)
+            Bd_Sound(F(BYTE*, s, 904));
+        Bd_Back(s);
+        if (F(int, s, 304) == 0)
+            Bd_Close(s);
+        break;
+    }
+}
+
+} // extern "C"
+
+// === opening the CB radio screen ($L_526080)
+
+ASM_VAR(int, g_cb68b990, $L_68b990)
+ASM_VAR(double, g_cb64b6a0, $L_64b6a0)
+extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
+extern "C" void FUN_50bd30(); KING_ALIAS("_FUN_50bd30", "_Carat_UpdateScreenSize")
+extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
+extern "C" void FUN_541970(); KING_ALIAS("_FUN_541970", "@Obj541970_First@8")
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+
+extern "C" {
+
+// [$L_526080] opens the CB radio screen s (thiscall): grabs the backdrop, resets the keys and the screen, then
+// finds the nearest driver within 64b6a0 of the player in each class (kind 5, kind 6, flag 128, flag 64,
+// others: ids +380.., distances +400.., bits +368, the last class +372, the count +376)
+void __fastcall CbRadio_Open(BYTE* s)
+{
+    CallThis(FUN_50c010, &g_6ce4f4);
+    CallThis(FUN_530020, g_6d1948);
+    CallC(FUN_50bd30);
+    CallC(FUN_4e12b0, 0);
+    CallThis(FUN_5d8610, s);
+    F(int, s, 368) = 0;
+    F(int, s, 376) = 0;
+    F(int, s, 372) = 0;
+    for (int k = 0; k < 5; k++) {
+        F(int, s, 380 + k * 4) = g_cb68b990;
+        F(double, s, 400 + k * 8) = 100.0;
+    }
+    BYTE m[48];
+    BYTE* me = F(BYTE*, g_gamshe6d2078, 616);
+    float pos[3];
+    memcpy(pos, CallThis<BYTE*>(FUN_57de90, me + 16, m) + 36, 12);
+    for (BYTE* it = CallThis<BYTE*>(FUN_541970, F(BYTE*, g_gamshe6d2078, 616)); it;) {
+        BYTE* o = CallThis<BYTE*>(FUN_541960, it);
+        if (o != F(BYTE*, g_gamshe6d2078, 616) && F(int, CallThis<BYTE*>(FUN_541960, it), 20636) != g_cb68b990) {
+            const float* q = (const float*)(CallThis<BYTE*>(FUN_57de90, CallThis<BYTE*>(FUN_541960, it) + 16, m) + 36);
+            float d3[3] = {q[0] - pos[0], q[1] - pos[1], q[2] - pos[2]};
+            double d = CallC<double>(FUN_5ab4d0, d3);
+            if (!(d > g_cb64b6a0)) {
+                BYTE m2[48], m3[48], inv[48];
+                CallThis(FUN_57de90, CallThis<BYTE*>(FUN_541960, it) + 16, m2);
+                CallC(FUN_5ac2e0, inv, CallThis<BYTE*>(FUN_57de90, F(BYTE*, g_gamshe6d2078, 616) + 16, m3));
+                int id = F(int, CallThis<BYTE*>(FUN_541960, it), 20636);
+                int t;
+                CallThis(FUN_41d300, &t, &id);
+                BYTE data[176];
+                CallC(FUN_43fc40, t, data);
+                int kind = F(int, data, 8), cls;
+                if (kind == 5)
+                    cls = 0;
+                else if (kind == 6)
+                    cls = 1;
+                else if (CallC<int>(FUN_43f620, id) & 128)
+                    cls = 2;
+                else if (CallC<int>(FUN_43f620, id) & 64)
+                    cls = 3;
+                else
+                    cls = 4;
+                if (!(d > F(double, s, 400 + cls * 8))) {
+                    F(double, s, 400 + cls * 8) = d;
+                    F(int, s, 380 + cls * 4) = id;
+                    F(int, s, 368) |= 1 << cls;
+                    F(int, s, 372) = cls;
+                    F(int, s, 376)++;
+                }
+            }
+        }
+        it = F(BYTE*, it, 8);
+        if (!it)
+            break;
+        it -= 4;
+    }
+}
+
+} // extern "C"
+
+// === the info screen's commands ($L_51a0f0)
+
+ASM_VAR(BYTE*, g_ic6cec80, $L_6cec80)
+ASM_VAR(BYTE*, g_ic6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_ic6cec94, $L_6cec94)
+ASM_VAR(BYTE*, g_ic6cec9c, $L_6cec9c)
+ASM_VAR(BYTE*, g_ic6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_ic6cecd0, $L_6cecd0)
+ASM_VAR(BYTE*, g_ic6cecc8, $L_6cecc8)
+ASM_VAR(int, g_ic6968f4, $L_6968f4)
+ASM_VAR(int, g_ic6968f8, $L_6968f8)
+ASM_VAR(BYTE, g_ic696908, $L_696908)
+ASM_VAR(int, g_ic6ce9f0, $L_6ce9f0)
+ASM_VAR(AsmLabel, g_ic6ce9f4, $L_6ce9f4)
+ASM_VAR(AsmLabel, g_ic723da8, $L_723da8)
+ASM_VAR(AsmLabel, g_ic696750, $L_696750)
+extern "C" void FUN_510bc0(); KING_ALIAS("_FUN_510bc0", "_Shell_StartGame")
+extern "C" void FUN_519750(); KING_ALIAS("_FUN_519750", "@Shell_ShowWithMusic@12")
+extern "C" void FUN_527950(); KING_ALIAS("_FUN_527950", "@Screen_SetChild@12")
+extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+
+static void Ic_StopMusic() { CallThis(FUN_5c3a80, (BYTE*)g_ic696750); }
+
+// closes the screen (s is its +64 part) back to the menu 6cec80, the music stopped
+static void Ic_Close(BYTE* s)
+{
+    CallVirt(s - 64, 32);
+    CallVirt(g_ic6cec80, 36);
+    Ic_StopMusic();
+}
+
+extern "C" {
+
+// [$L_51a0f0] a command id of the info screen s (+312 its mode): 155 closes it; mode 3 157 sends the game setup
+// (the options and player names, message 950) to the network and starts; mode 1 156 goes to the next screen
+// (by the session GUID); mode 4 1, mode 5 158 / 159 and the other modes' 1 go on as their +304 / +328 say
+void __fastcall InfoScreen_Command(BYTE* s, void*, int id)
+{
+    int mode = F(int, s, 312);
+    if (mode == 2) {
+        if (id == 155)
+            Ic_Close(s);
+        return;
+    }
+    if (mode == 3) {
+        if (id == 155)
+            Ic_Close(s);
+        else if (id == 157 && g_ic6968f4 == 2) {
+            BYTE buf[200];
+            memset(buf, 0, sizeof buf);  // the original sends the unwritten bytes as they were on the stack
+            BYTE* o = g_ic6cec98;
+            buf[0] = F(BYTE, o, 384);
+            buf[1] = F(BYTE, o, 388);
+            buf[2] = F(BYTE, o, 392);
+            buf[3] = F(BYTE, o, 390);
+            buf[4] = g_ic696908;
+            buf[5] = (BYTE)g_ic6ce9f0;
+            for (int i = 0; i < g_ic6ce9f0; i++)
+                strcpy((char*)buf + 10 + i * 20, (const char*)g_ic6ce9f4 + i * 16);
+            BYTE msg[40];
+            CallThis(FUN_602be0, msg);
+            CallThis(FUN_603110, msg, 950, buf, 200);
+            CallC(FUN_6021b0, F(BYTE*, msg, 4), F(BYTE*, msg, 8) - F(BYTE*, msg, 4));
+            CallVirt(s - 64, 32);
+            CallC(FUN_510bc0, 0, 1);
+            CallThis(FUN_602e80, msg);
+        }
+        return;
+    }
+    if (mode == 1) {
+        if (id == 155)
+            Ic_Close(s);
+        else if (id == 156) {
+            CallVirt(s - 64, 32);
+            Ic_StopMusic();
+            if (memcmp(g_ic6cec94 + 552 + g_ic6968f8 * 32, (BYTE*)g_ic723da8, 16))
+                CallThis(FUN_519750, g_ic6cecd0, 0);
+            else {
+                F(BYTE, g_ic6cecd0, 396) = 0;
+                CallThis(FUN_519750, g_ic6cecc8, 0);
+            }
+        }
+        return;
+    }
+    if (mode == 4) {
+        if (id == 1) {
+            CallVirt(s - 64, 32);
+            CallThis(FUN_519750, g_ic6cecc8, 0);
+        }
+        return;
+    }
+    if (mode == 5) {
+        if (id == 158) {
+            CallVirt(s - 64, 32);
+            CallC(FUN_510bc0, 0, 0);
+        } else if (id == 159) {
+            CallThis(FUN_527950, g_ic6cec80, g_ic6cec9c);
+            CallVirt(s - 64, 32);
+            CallVirt(g_ic6cec9c, 36);
+        }
+        return;
+    }
+    if (id != 1)
+        return;
+    int k = F(int, s, 304);
+    if (k == 2 || k == 4) {
+        F(DWORD, g_ic6cec70, 408) = (F(DWORD, g_ic6cec70, 408) & 0xffffff1f) | 16;
+        CallVirt(s - 64, 32);
+        CallVirt(g_ic6cec70, 36);
+    } else if (k == 11 || k == 12) {
+        CallVirt(s - 64, 32);
+        CallThis(FUN_527950, g_ic6cec80, g_ic6cec94);
+        Ic_StopMusic();
+    } else {
+        CallVirt(s - 64, 32);
+        CallThis(FUN_527950, g_ic6cec80, F(BYTE*, s, 328));
+    }
+}
+
+} // extern "C"
+
+// === a shell scroll bar (FUN_50d860)
+
+ASM_VAR(char, s_sb676310, $L_676310)
+ASM_VAR(char, s_sb676308, $L_676308)
+ASM_VAR(char, s_sb6762fc, $L_6762fc)
+ASM_VAR(char, s_sb6762f0, $L_6762f0)
+ASM_VAR(char, s_sb6762e4, $L_6762e4)
+ASM_VAR(char, s_sb6762dc, $L_6762dc)
+ASM_VAR(AsmLabel, s_sb68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_sb6ce3b8, $L_6ce3b8)
+ASM_VAR(AsmLabel, g_sb6ce408, $L_6ce408)
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5be700(); KING_ALIAS("_FUN_5be700", "@ScrollBar_Construct@24")
+extern "C" void FUN_5be8c0(); KING_ALIAS("_FUN_5be8c0", "@ScrollBar_Layout@40")
+extern "C" void FUN_5bef30(); KING_ALIAS("_FUN_5bef30", "@Ctl_SetStyles@28")
+
+// a style (36 bytes: alpha +24 0.5) from base with the texture named fmt(prefix, part) at +32
+static void Sb_Style(DWORD* st, const AsmLabel& base, const char* fmt, const char* prefix, const char* part)
+{
+    char name[32];
+    sprintf(name, fmt, prefix, part);
+    CallThis(FUN_5bd5a0, st, (void*)base);
+    st[8] = CallC<DWORD>(FUN_5ef3d0, name);
+}
+
+// the bar's styles for state k (0 plain, 1 pressed, 2 disabled), named with part
+static void Sb_States(BYTE* sb, DWORD* s1, DWORD* s2, DWORD* s3, const char* prefix, const char* part, int k)
+{
+    Sb_Style(s1, g_sb6ce3b8, &s_sb6762fc, prefix, part);
+    Sb_Style(s2, g_sb6ce408, &s_sb6762f0, prefix, part);
+    Sb_Style(s3, g_sb6ce408, &s_sb6762e4, prefix, part);
+    CallThis(FUN_5bef30, sb, s1, s2, s3, s3, k);
+}
+
+extern "C" {
+
+// [FUN_50d860] a horizontal scroll bar for the shell (100 steps over value at, width w, step a3): its plain,
+// pressed and disabled looks from the textures named by the game mode's prefix with a / 6762dc / b
+BYTE* __cdecl Shell_MakeScrollBar(const char* a, const char* b, short* at, int a3, int w)
+{
+    DWORD s1[9] = {0}, s2[9] = {0}, s3[9] = {0};
+    s1[6] = s2[6] = s3[6] = 0x3f000000;
+    const char* prefix = CallC<int>(FUN_568fd0) == 2 ? &s_sb676310 : &s_sb676308;
+    BYTE* sb = (BYTE*)operator new(344);
+    if (sb)
+        sb = CallThis<BYTE*>(FUN_5be700, sb, (const char*)s_sb68d1c0, 0, 8, 1);
+    CallThis(FUN_5be8c0, sb, (short)100, at, a3, 0, w, 12, 0, 0);
+    Sb_States(sb, s1, s2, s3, prefix, a, 0);
+    Sb_States(sb, s1, s2, s3, prefix, &s_sb6762dc, 1);
+    Sb_States(sb, s1, s2, s3, prefix, b, 2);
+    CallVirt(sb, 20);
+    return sb;
 }
 
 } // extern "C"

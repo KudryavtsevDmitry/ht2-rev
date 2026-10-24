@@ -1105,7 +1105,7 @@ extern "C" void __cdecl ValInit_4b53e0() { Val_RngInit((DWORD*)g_valRng694748, &
 
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
 ASM_PROC(FUN_4b2ca0)
-ASM_PROC(FUN_4b2e90)
+extern "C" void FUN_4b2e90(); KING_ALIAS("_FUN_4b2e90", "_Reader_ListTail")
 // [FUN_4b3240] reads the next item of reader r into out: drops the current character (the deque at +8: cur, first
 // +12, last +16, node +20; +68 the position), refills, then 4b2ca0 and 4b2e90
 extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
@@ -1880,3 +1880,163 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
 }
 
 }  // extern "C"
+
+// === parsing a number's digits (FUN_4b1720)
+
+ASM_VAR(AsmLabel, s_pd671400, $L_671400)
+extern "C" void FUN_48afa0(); KING_ALIAS("_FUN_48afa0", "_Int_AddSigned")
+extern "C" void FUN_48b350(); KING_ALIAS("_FUN_48b350", "_Int_Mul")
+ASM_PROC(FUN_4b1500)
+extern "C" void FUN_4b2840(); KING_ALIAS("_FUN_4b2840", "@SchDeque_NextBlock@8")
+
+// the temporary big integer t freed when it owns its digits
+static void Pd_Free(BYTE* t)
+{
+    if (t && F(WORD, t, 2))
+        operator delete(t);
+}
+
+static void Pd_Mul(BYTE** v, int k)
+{
+    BYTE* t = CallC<BYTE*>(FUN_48ade0, 0, k);
+    *v = CallC<BYTE*>(FUN_48b350, *v, t, *v);
+    Pd_Free(t);
+}
+
+static void Pd_Add(BYTE** v, int k)
+{
+    BYTE* t = CallC<BYTE*>(FUN_48ade0, 0, k);
+    *v = CallC<BYTE*>(FUN_48afa0, *v, 0, t, 0, *v);
+    Pd_Free(t);
+}
+
+// the next character of the reader's deque d (iterator +8, block end +16)
+static int Pd_Next(BYTE* d)
+{
+    BYTE** cur = (BYTE**)(d + 8);
+    if (*cur != F(BYTE*, d, 16) - 4)
+        *cur += 4;
+    else
+        CallThis(FUN_4b2840, d);
+    BYTE it[16];
+    return toupper(**CallThis<int**>(FUN_4b2730, d + 8, it, 0));
+}
+
+static void Pd_Digit(BYTE** num, int c, int radix)
+{
+    int k = c - '0';
+    if (k >= radix)
+        CallC(FUN_4a5420, 20, 768, (const char*)s_pd671400);
+    Pd_Mul(num, radix);
+    Pd_Add(num, k);
+}
+
+// an exponent: num or den times 10 per step
+static int Pd_Exponent(BYTE** num, BYTE** den, BYTE* d)
+{
+    int e = CallC<int>(FUN_4b1500, d);
+    for (int i = 0; i < e; i++)
+        Pd_Mul(num, 10);
+    for (int i = 0; i < -e; i++)
+        Pd_Mul(den, 10);
+    return 1;
+}
+
+static bool Pd_IsExponent(int c) { return c == 'D' || c == 'E' || c == 'F' || c == 'L' || c == 'S'; }
+
+extern "C" {
+
+// [FUN_4b1720] reads the digits of a number in radix from the reader's deque d into num / den (big integers):
+// '#' digits skipped, a '.' starts the fraction (each digit also scales den by 10), D E F L S an exponent;
+// 1 for a fraction or an exponent, 0 for an integer
+int __cdecl Num_ParseDigits(BYTE** num, BYTE** den, int radix, BYTE* d)
+{
+    BYTE it[16];
+    int c = toupper(**CallThis<int**>(FUN_4b2730, d + 8, it, 0));
+    for (;;) {
+        if (c == '#')
+            ;
+        else if (c >= '0' && c <= '9')
+            Pd_Digit(num, c, radix);
+        else if (c == '.')
+            break;
+        else if (Pd_IsExponent(c))
+            return Pd_Exponent(num, den, d);
+        else
+            return 0;
+        c = Pd_Next(d);
+    }
+    for (;;) {
+        c = Pd_Next(d);
+        if (c == '#')
+            continue;
+        if (c >= '0' && c <= '9') {
+            Pd_Digit(num, c, radix);
+            Pd_Mul(den, 10);
+        } else if (Pd_IsExponent(c))
+            return Pd_Exponent(num, den, d);
+        else
+            return 1;
+    }
+}
+
+} // extern "C"
+
+// === reading the rest of a list (FUN_4b2e90)
+
+ASM_VAR(AsmLabel, s_rl671470, $L_671470)
+ASM_VAR(AsmLabel, s_rl671464, $L_671464)
+extern "C" void FUN_4b2980(); KING_ALIAS("_FUN_4b2980", "_Sch_IsSpaceOrEof")
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+
+extern "C" {
+
+// [FUN_4b2e90] reads the rest of a list after '(' from reader r into out: ')' ends it (the empty list), else
+// a pair of the next datum and the rest, read recursively or after " . " a single datum and ')'; end of input
+// and a missing ')' are reported
+BYTE* __cdecl Reader_ListTail(BYTE* out, int a, BYTE* r)
+{
+    Rd_Fill(r, 1);
+    if (Rd_Peek(r, 0) == ')') {
+        Rd_Drop(r);
+        CallThis(FUN_4bd4d0, out);
+        F(int, out, 0) = 0;
+        F(int, out, 8) = 0;
+        return out;
+    }
+    DWORD pair[3], tmp[3];
+    CallC(FUN_4a28c0, pair, 0, F(int, r, 72));
+    BYTE* v = Reader_Read((BYTE*)tmp, a, r);
+    Rd_Check((BYTE*)pair);
+    Rd_Assign(F(BYTE*, pair, 0) + 20, v);
+    CallThis(FUN_4a36c0, tmp);
+    CallC(FUN_4b2ca0, a, r);
+    Rd_Fill(r, 2);
+    if (Rd_Peek(r, 0) == -1) {
+        Rd_Error(r, (const char*)s_rl671470);
+        CallThis(FUN_454580, out, pair);
+        CallThis(FUN_4a36c0, pair);
+        return out;
+    }
+    if (Rd_Peek(r, 0) == '.' && CallC<int>(FUN_4b2980, Rd_Peek(r, 1))) {
+        Rd_Drop(r);
+        BYTE* d = Reader_Read((BYTE*)tmp, a, r);
+        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, pair) + 32, d);
+        CallThis(FUN_4a36c0, tmp);
+        CallC(FUN_4b2ca0, a, r);
+        Rd_Fill(r, 1);
+        if (Rd_Peek(r, 0) == ')')
+            Rd_Drop(r);
+        else
+            Rd_Error(r, (const char*)s_rl671464);
+    } else {
+        BYTE* d = Reader_ListTail((BYTE*)tmp, a, r);
+        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, pair) + 32, d);
+        CallThis(FUN_4a36c0, tmp);
+    }
+    CallThis(FUN_454580, out, pair);
+    CallThis(FUN_4a36c0, pair);
+    return out;
+}
+
+} // extern "C"

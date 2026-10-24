@@ -1363,7 +1363,7 @@ BYTE* __stdcall ValueList_MakeNode(const DWORD* v)
 }
 
 extern "C" void FUN_4a50d0(); KING_ALIAS("_FUN_4a50d0", "_Sch_MakeIdentifierP")
-ASM_PROC(FUN_4a3180)
+extern "C" void FUN_4a3180(); KING_ALIAS("_FUN_4a3180", "@Env_Define@36")
 extern "C" void FUN_4abea0(); KING_ALIAS("_FUN_4abea0", "@Sch_Copy16@12")    // deque iterator copy
 extern "C" void FUN_4acb40(); KING_ALIAS("_FUN_4acb40", "_Deque_Copy4acb40")
 extern "C" void FUN_4acae0(); KING_ALIAS("_FUN_4acae0", "_Deque_CopyChars")
@@ -3355,6 +3355,187 @@ void __cdecl Sch_Run(BYTE* p)
         Rl_Return(p, &r);
         SchHandle_Release((void**)&r, 0);
     }
+}
+
+} // extern "C"
+
+// === set! ($L_4a8c20)
+
+extern "C" void FUN_4a3ac0(); KING_ALIAS("_FUN_4a3ac0", "@Env_Set@36")
+
+extern "C" {
+
+// [$L_4a8c20] set!, one step on the top frame: state 0 evaluates the value expression in a new frame, state 1
+// assigns the value to the variable in the environment (an unbound name is reported) and returns unspecified
+void __fastcall Set_Step(void*, void*, BYTE* p)
+{
+    BYTE* frame = F(BYTE*, p, 112) - 44;
+    int state = F(int, frame, 28);
+    if (state == 0) {
+        SchValue tmp;
+        Sch4a5c40_Append(p, frame, (const DWORD*)(F(BYTE*, frame, 4) + 20));
+        Eva_AssignSame((SchValue*)(frame + 4), CallC<SchValue*>(FUN_4090a0, &tmp, frame + 4));
+        ReleaseRef(&tmp);
+        F(int, frame, 28) = 1;
+        BYTE node[44];
+        CallThis(FUN_4aa190, p + 108, CallThis<BYTE*>(FUN_4a7060, node));
+        CallThis(FUN_4a7230, node);
+        BYTE* prev = F(BYTE*, p, 112) - 88;
+        Eva_AssignSame((SchValue*)(F(BYTE*, p, 112) - 40), (SchValue*)(F(BYTE*, prev, 4) + 20));
+        CallThis(FUN_40c100, F(BYTE*, p, 112) - 12, prev + 32);
+    } else if (state == 1) {
+        BYTE* args = F(BYTE*, frame, 16);
+        SchValue val, sym = {0, 0, 0, 0}, tmp, res;
+        CopyRef(&val, (SchValue*)(args + 24));
+        BYTE* o = F(BYTE*, args, 12);
+        if (o) {
+            if (CallVirt<int>(o, 0) != 9)
+                CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(o, 4, (const char*)s_tIdentifier));
+            else {
+                sym.obj = o;
+                sym.flags = F(DWORD, args, 20);
+                F(int, o, 4)++;
+            }
+        }
+        int found = -1;
+        SchValue v2, s2;
+        CallThis(FUN_454580, &v2, &val);
+        CallThis(FUN_454580, &s2, &sym);
+        BYTE* env = CallThis<BYTE*>(FUN_4aa430, CallThis<BYTE*>(FUN_4aa180, p + 108) + 32);
+        CallThis(FUN_4a3ac0, env, s2.obj, s2.m_4, s2.flags, v2.obj, v2.m_4, v2.flags, &found);
+        if (found == -1)
+            CallC(FUN_4a5a60, p, 32, F(const char*, CallThis<BYTE*>(FUN_4aa430, &sym), 12));
+        Sch_MakeUnspecified((DWORD*)&tmp);
+        CallThis(FUN_454580, &res, &tmp);
+        ReleaseRef(&tmp);
+        Eva_PopReturn(p, &res);
+        ReleaseRef(&res);
+        ReleaseRef(&sym);
+        ReleaseRef(&val);
+    }
+}
+
+} // extern "C"
+
+// === assigning a variable in an environment (FUN_4a3ac0)
+
+extern "C" void FUN_4a4fb0(); KING_ALIAS("_FUN_4a4fb0", "@NameMap_LowerBound@16")
+
+static const char* Es_Name(const SchValue* v)
+{
+    Eva_CheckObject(v);
+    return F(const char*, v->obj, 12);
+}
+
+extern "C" {
+
+// [FUN_4a3ac0] sets the variable sym to val (both by value) in environment e or the nearest parent (+148)
+// defining it; *found gets its index there, or stays -1
+void __fastcall Env_Set(BYTE* e, void*, BYTE* s0, int s1, DWORD s2, BYTE* v0, int v1, DWORD v2, int* found)
+{
+    SchValue sym = {s0, s1, s2, 0}, val = {v0, v1, v2, 0};
+    *found = -1;
+    BYTE** vals = (BYTE**)(e + 132);
+    if (BYTE* map = F(BYTE*, e, 144)) {
+        BYTE* it;
+        CallThis(FUN_4a4fb0, map, &it, &sym);
+        if (it != F(BYTE*, map, 0)) {
+            *found = F(int, it, 40);
+            Eva_AssignSame((SchValue*)(it + 28), &val);
+            Eva_AssignSame((SchValue*)(vals[0] + F(int, it, 40) * 12), &val);
+            ReleaseRef(&sym);
+            ReleaseRef(&val);
+            return;
+        }
+    } else {
+        for (int i = 0; i < F(int, e, 20); i++) {
+            const char* a = Es_Name((SchValue*)(e + 36 + i * 12));
+            const char* b = Es_Name(&sym);
+            if (tolower(b[0]) != tolower(a[0]))
+                continue;
+            b = Es_Name(&sym);
+            a = Es_Name((SchValue*)(e + 36 + i * 12));
+            if (_stricmp(a + 1, b + 1) == 0) {
+                *found = i;
+                CallThis(FUN_40c100, vals[0] + i * 12, &val);
+                ReleaseRef(&sym);
+                ReleaseRef(&val);
+                return;
+            }
+        }
+    }
+    if (F(int, e, 156) || F(int, e, 148)) {
+        SchValue s, v;
+        CallThis(FUN_454580, &v, &val);
+        CallThis(FUN_454580, &s, &sym);
+        BYTE* up = (BYTE*)Sch_Deref2nd(0, (int*)(e + 148));
+        Env_Set(up, 0, s.obj, s.m_4, s.flags, v.obj, v.m_4, v.flags, found);
+    }
+    ReleaseRef(&sym);
+    ReleaseRef(&val);
+}
+
+} // extern "C"
+
+// === call/cc ($L_4a9ac0)
+
+// d = s for vectors of 44-byte frames (begin, end, capacity)
+static void Cc_AssignFrames(BYTE** d, BYTE* const* s)
+{
+    int n = (int)(s[1] - s[0]) / 44;
+    int size = (int)(d[1] - d[0]) / 44;
+    if (n > (int)(d[2] - d[0]) / 44) {
+        BYTE* p = Vec44_AllocCopy(n, s[0], s[1]);
+        for (BYTE* e = d[0]; e != d[1]; e += 44)
+            CallVirt(e, 4, 0);
+        if (int cap = (int)(d[2] - d[0]) / 44)
+            AiFree(d[0], cap * 44);
+        d[0] = p;
+        d[2] = p + n * 44;
+    } else if (n <= size) {
+        BYTE* to = Elems44_Copy(s[0], s[1], d[0]);
+        for (BYTE* e = to; e != d[1]; e += 44)
+            CallVirt(e, 4, 0);
+    } else {
+        Elems44_Copy(s[0], s[0] + size * 44, d[0]);
+        CallC(FUN_4abd20, s[0] + size * 44, s[1], d[1], 0);
+    }
+    d[1] = d[0] + n * 44;
+}
+
+extern "C" {
+
+// [$L_4a9ac0] call/cc, one step on the top frame: state 0 evaluates the argument; state 1 makes a
+// continuation holding the frame stack (without this frame) and calls the procedure with it
+void __fastcall CallCC_Step(void*, void*, BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    if (F(int, top, -16) == 0) {
+        Sch_EvalNext(p, 1);
+        return;
+    }
+    if (F(int, top, -16) != 1)
+        return;
+    SchValue args, cont, call;
+    CallC(FUN_4a28c0, &args, 0, p);
+    Sch_MakeContinuation((DWORD*)&cont, 0, (DWORD)p);
+    Eva_CheckObject(&cont);
+    if ((BYTE*)(p + 108) != cont.obj + 20)
+        Cc_AssignFrames((BYTE**)(cont.obj + 20), (BYTE* const*)(p + 108));
+    Eva_CheckObject(&cont);
+    F(BYTE*, cont.obj, 24) -= 44;
+    CallVirt(F(BYTE*, cont.obj, 24), 4, 0);
+    Eva_CheckObject(&args);
+    Eva_AssignSame((SchValue*)(args.obj + 20), &cont);
+    CallC(FUN_4a28c0, &call, 0, p);
+    CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, &call) + 20, F(BYTE*, F(BYTE*, p, 112), -28) + 12);
+    CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, &call) + 32, &args);
+    SchValue c;
+    CallThis(FUN_454580, &c, &call);
+    Sch4a70b0_Reset(CallThis<BYTE*>(FUN_4aa180, p + 108), 0, c.obj, c.m_4, c.flags);
+    ReleaseRef(&call);
+    ReleaseRef(&cont);
+    ReleaseRef(&args);
 }
 
 } // extern "C"

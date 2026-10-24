@@ -2617,3 +2617,102 @@ SchValue* __cdecl Nat_Minus(SchValue* out, BYTE* p, BYTE** args)
 }
 
 }  // extern "C"
+
+// === defining a name in an environment (FUN_4a3180)
+
+extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")
+extern "C" void FUN_460910(); KING_ALIAS("_FUN_460910", "_ConstructStrRef")
+extern "C" void FUN_4a16d0(); KING_ALIAS("_FUN_4a16d0", "@Vec12_PushBackRef@12")
+extern "C" void FUN_4a3650(); KING_ALIAS("_FUN_4a3650", "@SchValue_Copy@12")
+extern "C" void FUN_4a44a0(); KING_ALIAS("_FUN_4a44a0", "@SchPair_Construct@16")
+extern "C" void FUN_4a47a0(); KING_ALIAS("_FUN_4a47a0", "@SchMap_Construct@16")
+extern "C" void FUN_4a4b00(); KING_ALIAS("_FUN_4a4b00", "@SchMap_InsertUnique@16")
+
+// the name of symbol value v (checked: set, not immediate)
+static const char* Df_Name(const SchValue* v)
+{
+    Nat_Check(v);
+    return F(const char*, v->obj, 12);
+}
+
+static void Df_Release(SchValue* v)
+{
+    CallThis(FUN_4a36c0, v);
+}
+
+extern "C" {
+
+// [FUN_4a3180] defines name as value in environment e (thiscall, both by value): up to 8 names live inline
+// (+36, count +20) with the values in the vector +132, matched without case; then a map (+144) from the name
+// to the value and its index takes over; a defined name gets the new value
+void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, BYTE* v0, int v1, DWORD v2)
+{
+    SchValue name = {n0, n1, n2, 0}, val = {v0, v1, v2, 0};
+    BYTE** vals = (BYTE**)(e + 132);
+    if (F(int, e, 20) < 8 && !F(BYTE*, e, 144)) {
+        for (int i = 0; i < F(int, e, 20); i++) {
+            const char* a = Df_Name((SchValue*)(e + 36 + i * 12));
+            const char* b = Df_Name(&name);
+            if (tolower(a[0]) != tolower(b[0]))
+                continue;
+            b = Df_Name(&name);
+            a = Df_Name((SchValue*)(e + 36 + i * 12));
+            if (_stricmp(a + 1, b + 1) == 0) {
+                CallThis(FUN_40c100, vals[0] + i * 12, &val);
+                Df_Release(&name);
+                Df_Release(&val);
+                return;
+            }
+        }
+        CallThis(FUN_40c100, e + 36 + F(int, e, 20) * 12, &name);
+        if (vals[1] != vals[2]) {
+            CallC(FUN_460910, vals[1], &val);
+            vals[1] += 12;
+        } else
+            CallThis(FUN_44c710, vals, vals[1], &val);
+        F(int, e, 20)++;
+        Df_Release(&name);
+        Df_Release(&val);
+        return;
+    }
+    if (!F(BYTE*, e, 144)) {
+        BYTE* m = (BYTE*)operator new(12);
+        BYTE x1, x2;
+        if (m)
+            m = CallThis<BYTE*>(FUN_4a47a0, m, &x2, &x1);
+        F(BYTE*, e, 144) = m;
+        for (int i = 0; i < F(int, e, 20); i++) {
+            DWORD mapped[4];
+            CallThis(FUN_454580, mapped, vals[0] + i * 12);
+            mapped[3] = i;
+            DWORD pair[7];
+            CallThis(FUN_454580, pair, e + 36 + i * 12);
+            CallThis(FUN_4a3650, pair + 3, mapped);
+            DWORD res[2];
+            CallThis(FUN_4a4b00, F(BYTE*, e, 144), res, pair);
+            Df_Release((SchValue*)(pair + 3));
+            Df_Release((SchValue*)pair);
+            Df_Release((SchValue*)mapped);
+        }
+    }
+    DWORD mapped[4];
+    CallThis(FUN_454580, mapped, &val);
+    mapped[3] = (int)(vals[1] - vals[0]) / 12;
+    DWORD pair[7];
+    CallThis(FUN_4a44a0, pair, &name, mapped);
+    DWORD res[2];
+    CallThis(FUN_4a4b00, F(BYTE*, e, 144), res, pair);
+    CallThis(FUN_4a36f0, pair);
+    BYTE* node = (BYTE*)res[0];
+    if ((BYTE)res[1])
+        CallThis(FUN_4a16d0, vals, &val);
+    else {
+        CallThis(FUN_40c100, node + 28, &val);
+        CallThis(FUN_40c100, vals[0] + F(int, node, 40) * 12, &val);
+    }
+    Df_Release((SchValue*)mapped);
+    Df_Release(&name);
+    Df_Release(&val);
+}
+
+} // extern "C"

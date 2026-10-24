@@ -2097,7 +2097,7 @@ extern "C" BYTE* __fastcall Rec598db0_Construct(BYTE* s)
 // ---------------------------------------------------------------------------
 // Placing a world object's model.
 
-ASM_PROC(FUN_596470)
+extern "C" void FUN_596470(); KING_ALIAS("_FUN_596470", "@TvCamera_SetMode@60")
 ASM_PROC(FUN_595eb0)
 extern "C" void FUN_594e00(); KING_ALIAS("_FUN_594e00", "_CarType_Point")
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
@@ -2322,6 +2322,188 @@ void __fastcall SceneObj_Place(BYTE* s, void*, int id, const BYTE* m, int)
             *g_psVars[i] = s_psValues[k][i];
     }
     g_ps6f68fc = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_ps67e1b8);
+}
+
+} // extern "C"
+
+// === a TV camera's mode (FUN_596470)
+
+ASM_VAR(BYTE*, g_tc6f6910, $L_6f6910)
+ASM_VAR(float, g_tc702630, $L_702630)
+ASM_VAR(float, g_tc702634, $L_702634)
+ASM_VAR(float, g_tc702638, $L_702638)
+ASM_VAR(float, g_tc64c408, $L_64c408)
+ASM_VAR(double, g_tc64c958, $L_64c958)
+ASM_VAR(double, g_tc64b660, $L_64b660)
+extern "C" void FUN_594e70(); KING_ALIAS("_FUN_594e70", "_Object_TraceRay")
+extern "C" void FUN_5969e0(); KING_ALIAS("_FUN_5969e0", "@TvCamera_Circle@12")
+
+// mode 3 / 4: the camera at the offset 702630 (scaled by 64c408) in the target's frame, its spin cleared
+static void Tc_Offset(BYTE* cam)
+{
+    WObj107_V3 v;
+    float o[3] = {(float)(g_tc702630 * (double)g_tc64c408), (float)(g_tc702634 * (double)g_tc64c408),
+                  (float)(g_tc702638 * (double)g_tc64c408)};
+    memcpy(&v, o, 12);
+    BYTE t[48], r[48];
+    BYTE* m = CallC<BYTE*>(FUN_5aba40, r, CallC<BYTE*>(FUN_5abc40, t, v), cam + 80);
+    memcpy(cam + 32, m, 48);
+    memcpy(cam + 128, m, 48);
+    F(int, cam, 248) = 0;
+    F(int, cam, 240) = 0;
+    F(int, cam, 252) = 0;
+    F(int, cam, 244) = 0;
+    memcpy(cam + 256, cam + 116, 12);
+}
+
+extern "C" {
+
+// [FUN_596470] sets TV camera cam to mode (thiscall, with matrix m by value) at the current target car
+// (6f6910, its matrix into +80): 0 m in the car's frame, 1 at the car's camera point, 2 circling (+268), 3 / 4
+// at a fixed offset, 5 m itself; then the ray from the camera (+116) to the car finds the visible object,
+// and the scene effect starts with the camera matrix (+32)
+void __fastcall TvCamera_SetMode(BYTE* cam, void*, int mode, WObj107_M m)
+{
+    if (!g_tc6f6910)
+        return;
+    F(int, cam, 328) = mode;
+    BYTE* root = CallThis<BYTE*>(FUN_5ef640, g_tc6f6910 + 272);
+    float hit[3] = {0, 0, 0};
+    CallThis(FUN_5a3fd0, g_tc6f6910 + 16, cam + 80);
+    BYTE t[48], r[48];
+    switch (mode) {
+    case 0:
+        memcpy(cam + 128, &m, 48);
+        memcpy(cam + 32, CallC<BYTE*>(FUN_5aba40, r, cam + 128, cam + 80), 48);
+        break;
+    case 1: {
+        memcpy(cam + 128, &m, 48);
+        BYTE pt[12];
+        const float* p = CallC<const float*>(FUN_594e00, pt, g_tc6f6910, -1);
+        float o[3] = {(float)(p[0] - g_tc64c958), (float)(p[1] - g_tc64b660), (float)(p[2] + g_tc64b660)};
+        WObj107_V3 v;
+        memcpy(&v, o, 12);
+        memcpy(cam + 176, CallC<BYTE*>(FUN_5abc40, t, v), 48);
+        memcpy(cam + 32, CallC<BYTE*>(FUN_5aba40, r, cam + 176, cam + 80), 48);
+        break;
+    }
+    case 2: {
+        BYTE* c = CallThis<BYTE*>(FUN_5969e0, cam, r);
+        memcpy(cam + 268, c, 48);
+        memcpy(cam + 32, c, 48);
+        break;
+    }
+    case 3:
+    case 4:
+        Tc_Offset(cam);
+        break;
+    case 5:
+        memcpy(cam + 128, &m, 48);
+        memcpy(cam + 32, &m, 48);
+        break;
+    }
+    memcpy(hit, cam + 68, 12);
+    WObj107_V3 from;
+    memcpy(&from, cam + 116, 12);
+    BYTE* o = CallC<BYTE*>(FUN_594e70, 4, g_tc6f6910 ? g_tc6f6910 + 16 : (BYTE*)0, root, from, hit);
+    memcpy(cam + 68, hit, 12);
+    CallThis(FUN_596850, cam, o, cam + 32);
+}
+
+} // extern "C"
+
+// === a TV camera's update ($L_596f80)
+
+ASM_VAR(AsmLabel, g_tc7025f0_tu, $L_7025f0)
+ASM_VAR(BYTE*, g_tu6f690c, $L_6f690c)
+ASM_VAR(int, g_tu6f6914, $L_6f6914)
+ASM_VAR(float, g_tu64c450, $L_64c450)
+ASM_VAR(float, g_tu64d4e8, $L_64d4e8)
+ASM_VAR(float, g_tu64d350, $L_64d350)
+ASM_VAR(AsmLabel, g_tu6f68b0, $L_6f68b0)
+ASM_PROC(FUN_595d20)
+extern "C" void FUN_5968c0(); KING_ALIAS("_FUN_5968c0", "@TvCamera_Follow@12")
+ASM_PROC(FUN_596b30)
+extern "C" void FUN_596e50(); KING_ALIAS("_FUN_596e50", "@Object_AimMatrix@16")
+extern "C" void FUN_598d30(); KING_ALIAS("_FUN_598d30", "@Wasm_598d30@16")
+ASM_PROC(FUN_599210)
+extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
+
+extern "C" {
+
+// [$L_596f80] updates TV camera cam (thiscall) unless stopped (+320): without a target car (6f6910) it posts its
+// event; else the car's matrix (+80) and root (+316), the shot time +228 grows, the mode (+328) makes the
+// camera matrix (5 aimed from +128, 2 circling, 0 in the car's frame, 1 following, 3 / 4 chasing; past their
+// time with 6f6914 set +324 asks for the next shot), the visible object is traced, and the matrix (+268, +32)
+// goes to the scene 6f68b0
+void __fastcall TvCamera_Update(BYTE* cam)
+{
+    if (F(int, cam, 320))
+        return;
+    if (!g_tc6f6910) {
+        CallThis(FUN_5d32f0, cam, 1);
+        return;
+    }
+    CallThis(FUN_5a3fd0, g_tc6f6910 + 16, cam + 80);
+    if (F(int, cam, 328) != 5)
+        F(BYTE*, cam, 316) = CallThis<BYTE*>(FUN_5ef640, g_tc6f6910 + 272);
+    CallThis(FUN_595d20, cam);
+    F(float, cam, 228) = (float)(F(float, cam, 228) + F(double, g_tu6f690c, 2960));
+    BYTE m[48], t[48];
+    memcpy(m, (BYTE*)g_tc7025f0_tu, 48);
+    int mode = F(int, cam, 328);
+    float limit = 0;
+    bool timed = false;
+    switch (mode) {
+    case 5:
+        memcpy(m, cam + 128, 48);
+        memcpy(m, CallThis<BYTE*>(FUN_596e50, cam, t, m), 48);
+        limit = g_tu64c450;
+        timed = true;
+        break;
+    case 2:
+        memcpy(m, CallThis<BYTE*>(FUN_5969e0, cam, t), 48);
+        limit = g_tu64d4e8;
+        timed = true;
+        break;
+    case 0:
+        memcpy(m, CallC<BYTE*>(FUN_5aba40, t, cam + 128, cam + 80), 48);
+        limit = g_tu64d350;
+        timed = true;
+        break;
+    case 1:
+        memcpy(m, CallThis<BYTE*>(FUN_5968c0, cam, t), 48);
+        break;
+    case 3:
+    case 4:
+        memcpy(m, CallThis<BYTE*>(FUN_596b30, cam, t), 48);
+        limit = g_tu64c450;
+        timed = true;
+        break;
+    }
+    if (timed && F(float, cam, 228) > limit && g_tu6f6914 == 1)
+        F(int, cam, 324) = 1;
+    mode = F(int, cam, 328);
+    if (mode >= 1 && mode <= 4) {
+        BYTE* node = g_tc6f6910 ? g_tc6f6910 + 16 : 0;
+        BYTE pt[12];
+        const float* p = CallC<const float*>(FUN_594e00, pt, g_tc6f6910, 1);
+        float v[3] = {F(float, cam, 116) + p[0], F(float, cam, 120) + p[1], F(float, cam, 124) + p[2]};
+        F(BYTE*, cam, 316) = CallC<BYTE*>(FUN_599210, node, F(BYTE*, cam, 316), cam + 80, v, m + 36, 0);
+    } else if (mode == 0) {
+        BYTE* node = g_tc6f6910 ? g_tc6f6910 + 16 : 0;
+        WObj107_V3 from;
+        memcpy(&from, cam + 116, 12);
+        F(BYTE*, cam, 316) = CallC<BYTE*>(FUN_594e70, 4, node, F(BYTE*, cam, 316), from, (float*)(m + 36));
+    }
+    mode = F(int, cam, 328);
+    if (mode == 2 || mode == 3 || mode == 4)
+        memcpy(cam + 268, CallThis<BYTE*>(FUN_596e50, cam, t, m), 48);
+    else
+        memcpy(cam + 268, m, 48);
+    memcpy(cam + 32, cam + 268, 48);
+    CallThis(FUN_5d32f0, cam, 1);
+    CallThis(FUN_598d30, (BYTE*)g_tu6f68b0, F(BYTE*, cam, 316), cam + 268);
 }
 
 } // extern "C"

@@ -18,7 +18,7 @@ extern "C" void __fastcall Group_EachOwner(BYTE* self, void*);                  
 extern "C" int __fastcall Hash_Lookup(BYTE* self, void*, const char* name, int* out); // core.cpp
 
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
-ASM_PROC(FUN_5acd40)    // base constructor
+extern "C" void FUN_5acd40(); KING_ALIAS("_FUN_5acd40", "@Render_Construct@12")    // base constructor
 extern "C" void FUN_5bad60(); KING_ALIAS("_FUN_5bad60", "@Texture_Size@8")    // size of an object
 extern "C" void FUN_5bbef0(); KING_ALIAS("_FUN_5bbef0", "@Bitmap_Bytes@8")    // size of an object
 extern "C" void FUN_5edeb0(); KING_ALIAS("_FUN_5edeb0", "@Clu5edeb0_Construct@16")    // base constructor (a, b)

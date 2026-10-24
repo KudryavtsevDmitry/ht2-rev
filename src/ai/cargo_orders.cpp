@@ -439,3 +439,65 @@ ASM_VAR(DWORD, g_carordRng68d408, $L_68d408)
 
 // [$L_470cd0]
 extern "C" void __cdecl CarordInit_470cd0() { Carord_RngInit((DWORD*)g_carordRng68d328, &g_carordRng68d400, &g_carordRng68d404, &g_carordRng68d408); }
+
+// === stable sort of 12-byte records with a buffer (FUN_46f0a0)
+
+extern "C" void FUN_46f470(); KING_ALIAS("_FUN_46f470", "_Rec12_Insertion")
+ASM_PROC(FUN_46f840)
+ASM_PROC(FUN_470110)
+extern "C" void FUN_4703a0(); KING_ALIAS("_FUN_4703a0", "_Rec12_Merge")
+
+static int Ss12_Count(const BYTE* a, const BYTE* b) { return (int)(b - a) / 12; }
+
+// one merge pass of runs of step from [first, last) to result
+static void Ss12_MergePass(BYTE* first, BYTE* last, BYTE* result, int step, int comp)
+{
+    int two = step * 2;
+    while (Ss12_Count(first, last) >= two) {
+        result = CallC<BYTE*>(FUN_4703a0, first, first + step * 12, first + step * 12, first + two * 12, result, comp);
+        first += two * 12;
+    }
+    int s = Ss12_Count(first, last);
+    if (step < s)
+        s = step;
+    CallC(FUN_4703a0, first, first + s * 12, first + s * 12, last, result, comp);
+}
+
+// insertion sort of runs of 7, then merge passes through the buffer and back
+static void Ss12_SortWithBuffer(BYTE* first, BYTE* last, BYTE* buf, int comp)
+{
+    int len = Ss12_Count(first, last);
+    BYTE* bufLast = buf + len * 12;
+    BYTE* p = first;
+    while (Ss12_Count(p, last) >= 7) {
+        CallC(FUN_46f470, p, p + 84, comp);
+        p += 84;
+    }
+    CallC(FUN_46f470, p, last, comp);
+    for (int step = 7; step < len;) {
+        Ss12_MergePass(first, last, buf, step, comp);
+        step *= 2;
+        CallC(FUN_470110, buf, bufLast, first, step, comp);
+        step *= 2;
+    }
+}
+
+extern "C" {
+
+// [FUN_46f0a0] stable_sort's adaptive step for [first, last) of 12-byte records with the buffer buf (size n):
+// each half sorted (recursively when it doesn't fit), then merged
+void __cdecl Rec12_StableSortAdaptive(BYTE* first, BYTE* last, BYTE* buf, int n, int comp)
+{
+    int len = (Ss12_Count(first, last) + 1) / 2;
+    BYTE* mid = first + len * 12;
+    if (len > n) {
+        Rec12_StableSortAdaptive(first, mid, buf, n, comp);
+        Rec12_StableSortAdaptive(mid, last, buf, n, comp);
+    } else {
+        Ss12_SortWithBuffer(first, mid, buf, comp);
+        Ss12_SortWithBuffer(mid, last, buf, comp);
+    }
+    CallC(FUN_46f840, first, mid, last, Ss12_Count(first, mid), Ss12_Count(mid, last), buf, n, comp);
+}
+
+} // extern "C"

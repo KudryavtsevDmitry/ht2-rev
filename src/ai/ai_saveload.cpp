@@ -36,7 +36,7 @@ extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20
 extern "C" void FUN_475b20(); KING_ALIAS("_FUN_475b20", "@Player_Save@12")
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
 extern "C" void FUN_4810e0(); KING_ALIAS("_FUN_4810e0", "_Save_Town")
-ASM_PROC(FUN_481790)
+extern "C" void FUN_481790(); KING_ALIAS("_FUN_481790", "_Save_Present")
 extern "C" void FUN_482320(); KING_ALIAS("_FUN_482320", "_Save_Ambush")
 typedef char AsmLabel[1];
 ASM_VAR(AsmLabel, g_tagAMBU, $L_66fe74)
@@ -823,6 +823,75 @@ void __cdecl Load_Present(BYTE** cur)
         ((void (__cdecl*)(int, int))g_pr68d11c)(copy, 1);
     }
     LoadChunk_Close(&c);
+}
+
+} // extern "C"
+
+// === saving a present (FUN_481790)
+
+extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
+extern "C" void FUN_4722c0(); KING_ALIAS("_FUN_4722c0", "@Rec4722c0_Save@12")
+extern "C" void FUN_4816d0(); KING_ALIAS("_FUN_4816d0", "_Save_Doubles3")
+extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
+extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+
+struct Sp_Block { BYTE** v; int mark; };
+
+static void Sp_Begin(Sp_Block* b, BYTE** v, const AsmLabel& tag)
+{
+    b->v = v;
+    CallC(FUN_490c90, v, (const char*)tag, &b->mark);
+}
+
+static void Sp_End(Sp_Block* b) { CallC(FUN_490ce0, b->v, &b->mark); }
+
+static void Sp_Put(BYTE** v, const void* p, int n)
+{
+    CallThis(FUN_46e460, v, v[1], (const BYTE*)p, (const BYTE*)p + n);
+}
+
+extern "C" {
+
+// [FUN_481790] writes present p as a PRES block of the save data v: the record (the layout Load_Present
+// reads), its 66fe38 sub-record (+88; 8 bytes of the block's own bookkeeping in the middle, which the loader
+// skips) and its 66fe30 orders (+20)
+void __cdecl Save_Present(BYTE** v, BYTE* p)
+{
+    Sp_Block outer;
+    Sp_Begin(&outer, v, g_tagPRES);
+    static const int first[] = {8, 12, 16, 24, 0};
+    for (int k : first)
+        Sp_Put(v, p + k, 4);
+    CallC(FUN_4816d0, v, p + 32);
+    Sp_Put(v, p + 80, 4);
+    Sp_Put(v, p + 60, 4);
+    Sp_Put(v, p + 56, 4);
+    Sp_Put(v, p + 64, 8);
+    Sp_Put(v, p + 72, 4);
+    Sp_Put(v, p + 76, 4);
+    Sp_Put(v, p + 84, 4);
+    Sp_Put(v, p + 96, 8);
+    Sp_Put(v, p + 104, 1);
+    Sp_Put(v, p + 108, 4);
+    if (BYTE* r = F(BYTE*, p, 88)) {
+        Sp_Block b;
+        Sp_Begin(&b, v, g_tag66fe38);
+        Sp_Put(v, r + 0, 4);
+        Sp_Put(v, r + 4, 4);
+        Sp_Put(v, r + 12, 4);
+        Sp_Put(v, r + 16, 8);
+        Sp_Put(v, r + 24, 8);
+        Sp_Put(v, &outer, 8);
+        Sp_Put(v, r + 8, 4);
+        Sp_End(&b);
+    }
+    if (BYTE* o = F(BYTE*, p, 20)) {
+        Sp_Block b;
+        Sp_Begin(&b, v, g_tag66fe30);
+        CallThis(FUN_4722c0, o, v);
+        Sp_End(&b);
+    }
+    Sp_End(&outer);
 }
 
 } // extern "C"

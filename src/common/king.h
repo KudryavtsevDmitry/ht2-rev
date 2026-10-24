@@ -95,7 +95,7 @@ extern "C" void FUN_5b6180(); KING_ALIAS("_FUN_5b6180", "_Device_BeginScene")   
 extern "C" void FUN_5b6190(); KING_ALIAS("_FUN_5b6190", "_Device_WaitIdle")    // Gfx_EndScene
 extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")    // Gfx_HLine
 extern "C" void FUN_5b7f20(); KING_ALIAS("_FUN_5b7f20", "_Surface_VLine")    // Gfx_VLine
-ASM_PROC(FUN_5b8980)    // Gfx_DrawImage
+extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")    // Gfx_DrawImage
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // Gfx_DrawText
 extern "C" void FUN_5e9a10(); KING_ALIAS("_FUN_5e9a10", "_Tga_Write")    // Gfx_SaveTga
 extern "C" void FUN_5e9f00(); KING_ALIAS("_FUN_5e9f00", "_Screen_GrabToFile")    // Gfx_SaveScreenBmp

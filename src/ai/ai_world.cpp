@@ -8658,7 +8658,7 @@ extern "C" void FUN_4376a0(); KING_ALIAS("_FUN_4376a0", "_Ai_GetNoncontradictory
 extern "C" void FUN_456ea0(); KING_ALIAS("_FUN_456ea0", "@Entry32Vec_InsertAux@16")    // vector<32-byte entry>::insert_aux (thiscall pos, x)
 ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
 ASM_PROC(FUN_45e370)    // final insertion sort of entries (first, last, cmp)
-ASM_PROC(FUN_4d8b20)    // loads a vehicle (id)
+extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")    // loads a vehicle (id)
 extern "C" int __cdecl Vehicle_Exists(int id);
 extern "C" int __cdecl Vehicle_Flag4012(int id);
 extern "C" int __cdecl Vehicle_TimeOver(int id);
@@ -14925,7 +14925,7 @@ extern "C" BYTE* __cdecl Ai_CreatePlayerRandom(int type, int, void* rng)
 // switching an ambush on or off
 
 ASM_VAR(AsmLabel, s_setAmbushActive, $L_66dc78)
-ASM_PROC(FUN_45f2c0)    // sort (first, last, point24 by value): by distance to the point
+extern "C" void FUN_45f2c0(); KING_ALIAS("_FUN_45f2c0", "_Nodes_SortByDistance")    // sort (first, last, point24 by value): by distance to the point
 extern "C" int __cdecl Player_Call477c30(BYTE* p);
 
 // an ambush without a player gets the free player (of the kind) farthest along the sort by distance to g_68bab0,
@@ -20537,7 +20537,7 @@ ASM_PROC($L_420ed0)
 extern "C" void $L_422370(); KING_ALIAS("_$L_422370", "_Task_Waiting")
 extern "C" void $L_42b3a0(); KING_ALIAS("_$L_42b3a0", "_AI_SwitchToRandom")
 ASM_PROC($L_4279d0)
-ASM_PROC($L_429930)
+extern "C" void $L_429930(); KING_ALIAS("_$L_429930", "_Ai_HireTask")
 extern "C" void $L_429fb0(); KING_ALIAS("_$L_429fb0", "_Task_OrdersExpired")
 extern "C" void $L_42a120(); KING_ALIAS("_$L_42a120", "_Task_PresentOrdersExpired")
 extern "C" void __cdecl Task_DropOldPresents();
@@ -22651,6 +22651,188 @@ int __cdecl Ai_CreatePlayersNetwork()
     }
     Str_Release(&h);
     return 0;
+}
+
+} // extern "C"
+
+// === the AI's hiring task ($L_429930)
+
+ASM_VAR(BYTE*, g_hr68b990, $L_68b990)
+ASM_VAR(int, g_hr66c700, $L_66c700)
+ASM_VAR(AsmLabel, g_hr68b9c8, $L_68b9c8)
+ASM_VAR(AsmLabel, s_hr66dbc8, $L_66dbc8)
+ASM_VAR(AsmLabel, s_hr66dbb8, $L_66dbb8)
+extern "C" void FUN_419000(); KING_ALIAS("_FUN_419000", "_Player_FreeTrader")
+extern "C" void FUN_429340(); KING_ALIAS("_FUN_429340", "@AI_FreeCars@8")
+extern "C" void FUN_429380(); KING_ALIAS("_FUN_429380", "@Players_CountBusyTraders@8")
+extern "C" void FUN_429690(); KING_ALIAS("_FUN_429690", "_Players_MinKey")
+extern "C" void FUN_429760(); KING_ALIAS("_FUN_429760", "@PlayerId_Rank@8")
+extern "C" void FUN_448790(); KING_ALIAS("_FUN_448790", "@Vec_EndMinus16@8")
+extern "C" void FUN_476bc0(); KING_ALIAS("_FUN_476bc0", "_Player_Hire")
+ASM_PROC(FUN_476f70)
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_40e270(); KING_ALIAS("_FUN_40e270", "_Message_Text")
+extern "C" void FUN_45ef70(); KING_ALIAS("_FUN_45ef70", "_Pick_RandomNodeB")
+extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
+extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
+extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+
+static int Hr_Copy(const void* it)
+{
+    int t;
+    CallThis(FUN_41d300, &t, it);
+    return t;
+}
+
+static void Hr_Say(const AsmLabel& id) { CallC(FUN_56ae60, CallC<const char*>(FUN_40e270, (const char*)id)); }
+
+extern "C" {
+
+// [$L_429930] the AI's hiring task: while fewer traders are busy than cars are free, the richest suitable
+// trader (kind 2, not 257, with goods; with hired drivers above rank 66c700, else free and without a boss)
+// hires a random free driver; when at most one trader is free, the cheapest player is let go: from its boss,
+// or its own drivers are dismissed (and 66c700 lowered)
+void __cdecl Ai_HireTask()
+{
+    if (CallThis<int>(FUN_429380, (void*)0) < CallThis<int>(FUN_429340, (void*)0)) {
+        BYTE* best = g_hr68b990;
+        double key = 0;
+        // the original AI_FreeCars leaves its unscaled count in ECX, which 429760 takes as its argument
+        int leftover = F(int, g_68cf28, 8) - g_68d150;
+        bool hasHired = CallThis<int>(FUN_429760, (void*)(INT_PTR)leftover) >= g_hr66c700;
+        for (BYTE* it = *(BYTE**)g_hr68b990; it != g_hr68b990; it = *(BYTE**)it) {
+            BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+            if (F(BYTE*, p, 136) == F(BYTE*, p, 140) || !(key < F(double, p, 128)) || F(int, p, 84) != 2 ||
+                F(int, p, 92) == 257)
+                continue;
+            bool empty = F(BYTE*, p, 152) == F(BYTE*, p, 156);
+            if (hasHired ? empty : (!empty || F(BYTE*, p, 168) != g_hr68b990))
+                continue;
+            key = F(double, p, 128);
+            CallThis(FUN_426280, &best, it);
+        }
+        if (best != g_hr68b990) {
+            BYTE* end;
+            BYTE* begin;
+            CallThis(FUN_4afc20, (BYTE*)&g_hr68b990, &end);
+            CallThis(FUN_4afbf0, (BYTE*)&g_hr68b990, &begin);
+            BYTE* r;
+            CallC(FUN_45ef70, &r, begin, end, 0, (BYTE*)g_hr68b9c8);
+            BYTE* pick = g_hr68b990;
+            if (r != g_hr68b990)
+                CallThis(FUN_426280, &pick, r);
+            if (pick != g_hr68b990)
+                CallC(FUN_476bc0, Hr_Copy(&best), pick);
+        }
+    }
+    int free = 0;
+    for (BYTE* it = *(BYTE**)g_hr68b990; it != g_hr68b990; it = *(BYTE**)it) {
+        int c = Hr_Copy(&it), id;
+        CallThis(FUN_426280, &id, c);
+        if (CallC<char>(FUN_419000, id))
+            free++;
+    }
+    if (free > 1)
+        return;
+    BYTE* m;
+    CallC(FUN_429690, &m);
+    if (m == g_hr68b990)
+        return;
+    DWORD keep0 = F(DWORD, m, 136), keep1 = F(DWORD, m, 140);
+    BYTE* d = m + 8;
+    if (F(BYTE*, d, 168) != g_hr68b990) {
+        CallC(FUN_476f70, Hr_Copy(d + 168), Hr_Copy(&m), 0);
+        if (F(int, F(BYTE*, d, 168), 92) == 1)
+            Hr_Say(s_hr66dbc8);
+        return;
+    }
+    while (F(BYTE*, d, 152) != F(BYTE*, d, 156)) {
+        BYTE* last = CallThis<BYTE*>(FUN_448790, d + 152, 0);
+        CallC(FUN_476f70, Hr_Copy(&m), Hr_Copy(last), 0);
+    }
+    if (F(int, d, 84) == 1)
+        Hr_Say(s_hr66dbb8);
+    F(DWORD, m, 136) = keep0;
+    F(DWORD, m, 140) = keep1;
+    if (g_hr66c700 > 1)
+        g_hr66c700--;
+}
+
+} // extern "C"
+
+// === sorting nodes by distance to a point (FUN_45f2c0)
+
+ASM_PROC(FUN_45f650)
+extern "C" void FUN_465d20(); KING_ALIAS("_FUN_465d20", "_CopyBackwardDwords2")
+ASM_PROC(FUN_465e80)
+ASM_PROC(FUN_468d60)
+ASM_PROC(FUN_4691a0)
+ASM_PROC(FUN_46ab50)
+extern "C" void FUN_46c010(); KING_ALIAS("_FUN_46c010", "_Near_LinearInsert")
+
+struct Ns_Pt { DWORD d[6]; };
+
+static int Ns_Copy(const int* x)
+{
+    int t;
+    CallThis(FUN_41d300, &t, x);
+    return t;
+}
+
+// whether node a is nearer the point than node b
+static bool Ns_Less(Ns_Pt* pt, int a, int b)
+{
+    int ia, ib;
+    CallThis(FUN_426280, &ib, b);
+    CallThis(FUN_426280, &ia, a);
+    return CallThis<char>(FUN_45f650, pt, &ia, &ib) != 0;
+}
+
+static void Ns_Insertion(int* first, int* end, Ns_Pt pt)
+{
+    for (int* i = first + 1; i != end; i++) {
+        int v = *i;
+        if (Ns_Less(&pt, v, *first)) {
+            CallC(FUN_465d20, first, i, i + 1);
+            *first = v;
+        } else
+            CallC(FUN_46c010, i, Ns_Copy(&v), pt);
+    }
+}
+
+extern "C" {
+
+// [FUN_45f2c0] std::sort of node references [first, last) by distance to the point pt (introsort: median of
+// three partitions down to 16, heap sort when too deep, then insertion sort)
+void __cdecl Nodes_SortByDistance(int* first, int* last, Ns_Pt pt)
+{
+    if (first == last)
+        return;
+    int n = (int)(last - first), depth = 0;
+    for (int k = n; k != 1; k >>= 1)
+        depth++;
+    depth *= 2;
+    int* end = last;
+    while (end - first > 16) {
+        if (depth == 0) {
+            CallC(FUN_46ab50, first, end, end, 0, pt);
+            break;
+        }
+        depth--;
+        int* mid = first + (int)(end - first) / 2;
+        int pivot = Ns_Copy(CallC<int*>(FUN_468d60, first, mid, end - 1, pt));
+        int* cut = CallC<int*>(FUN_4691a0, first, end, pivot, pt);
+        CallC(FUN_465e80, cut, end, 0, depth, pt);
+        end = cut;
+    }
+    if (n > 16) {
+        Ns_Insertion(first, first + 16, pt);
+        for (int* i = first + 16; i != last; i++)
+            CallC(FUN_46c010, i, Ns_Copy(i), pt);
+    } else
+        Ns_Insertion(first, last, pt);
 }
 
 } // extern "C"

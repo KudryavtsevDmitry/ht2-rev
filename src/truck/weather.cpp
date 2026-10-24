@@ -1390,3 +1390,91 @@ BYTE* __fastcall WeatherObj_Construct(BYTE* self, void*, BYTE* view, const char*
 }
 
 } // extern "C"
+
+// === the renderer's base constructor (FUN_5acd40)
+
+ASM_VAR(AsmLabel, g_rb651718, $L_651718)
+ASM_VAR(int, g_rb67ef88, $L_67ef88)
+extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void FUN_5ad4c0(); KING_ALIAS("_FUN_5ad4c0", "@Light_Init@8")
+
+// matrix m: its rows constructed, then the identity
+static void Rb_Matrix(BYTE* m)
+{
+    CallStd(FUN_4011e0, m, 12, 4, FUN_4bd4d0);
+    memcpy(m, (BYTE*)g_wea7025f0, 48);
+}
+
+static void Rb_Zero(BYTE* s, int from, int bytes) { memset(s + from, 0, bytes); }
+
+extern "C" {
+
+// [FUN_5acd40] constructor of a renderer on surface a (thiscall): the matrix stacks (+2288, 40; +4304 and
+// +5264, 20 each), the camera matrices, 20 lights (+6224) and one more (+7824), the clip planes from the
+// surface size, the fog, depth and scale defaults; +8620 whether the surface or its parent (+96) has flag
+// 0x1000
+BYTE* __fastcall Render_Construct(BYTE* s, void*, BYTE* a)
+{
+    Rb_Zero(s, 1224, 264);
+    for (int i = 0; i < 40; i++)
+        Rb_Matrix(s + 2288 + i * 48);
+    for (int i = 0; i < 4; i++)
+        CallThis(FUN_4bd4d0, s + 4208 + i * 12);
+    memcpy(s + 4208, (BYTE*)g_wea7025f0, 48);
+    for (int i = 0; i < 4; i++)
+        CallThis(FUN_4bd4d0, s + 4256 + i * 12);
+    memcpy(s + 4256, (BYTE*)g_wea7025f0, 48);
+    for (int i = 0; i < 20; i++)
+        Rb_Matrix(s + 4304 + i * 48);
+    for (int i = 0; i < 20; i++)
+        Rb_Matrix(s + 5264 + i * 48);
+    for (int i = 0; i < 20; i++)
+        CallThis(FUN_5ad4c0, s + 6224 + i * 80);
+    CallThis(FUN_5ad4c0, s + 7824);
+    Rb_Zero(s, 7904, 320);
+    for (int i = 0; i < 4; i++)
+        CallThis(FUN_4bd4d0, s + 8564 + i * 12);
+    memcpy(s + 8564, (BYTE*)g_wea7025f0, 48);
+    F(void*, s, 0) = g_rb651718;
+    F(BYTE*, s, 1948) = a;
+    F(int, s, 1952) = 0;
+    F(int, s, 1956) = 0;
+    F(int, s, 1960) = (F(WORD, a, 0) << 19) - 524288;
+    F(int, s, 1964) = (F(WORD, a, 2) << 19) - 524288;
+    static const int zeros[] = {8224, 8240, 8228, 8232, 8236, 8244, 8464, 8520, 8452, 8472, 8528, 8488, 8252, 8256,
+                                8260, 8264, 8624, 8456, 8532, 8492, 1940, 1944, 1936, 8460, 8276};
+    for (int k : zeros)
+        F(int, s, k) = 0;
+    F(BYTE, s, 8440) = 255;
+    F(int, s, 8444) = g_rb67ef88;
+    F(DWORD, s, 8468) = 0x3ff00000;
+    F(DWORD, s, 8524) = 0x3ff00000;
+    F(DWORD, s, 8480) = 2576980378u;
+    F(DWORD, s, 8512) = 858993459;
+    F(DWORD, s, 8476) = 1090021888;
+    F(DWORD, s, 8484) = 1069128089;
+    F(DWORD, s, 8516) = 1070805811;
+    F(DWORD, s, 8540) = 1148846080;
+    F(DWORD, s, 8536) = 1148846080;
+    BYTE* parent = F(BYTE*, a, 96);
+    F(int, s, 8620) = (F(DWORD, a, 12) & 0x1000) || (parent && (F(DWORD, parent, 12) & 0x1000));
+    Rb_Zero(s, 8280, 144);
+    F(int, s, 8432) = 0;
+    F(int, s, 8640) = 0;
+    F(int, s, 8648) = 0;
+    F(int, s, 8428) = 0;
+    F(int, s, 8436) = 0;
+    F(int, s, 8632) = 0;
+    F(DWORD, s, 8644) = 3220176896u;
+    F(DWORD, s, 8652) = 3220176896u;
+    F(int, s, 8660) = -1;
+    F(int, s, 8656) = 0;
+    F(int, s, 8664) = 0;
+    F(int, s, 8668) = 0;
+    memcpy(s + 8564, (BYTE*)g_wea7025f0, 48);
+    F(int, s, 8628) = 0;
+    return s;
+}
+
+} // extern "C"

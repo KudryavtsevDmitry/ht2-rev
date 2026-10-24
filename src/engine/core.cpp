@@ -1567,7 +1567,7 @@ extern "C" void FUN_5d15f0(); KING_ALIAS("_FUN_5d15f0", "_Poly_FillZ")
 ASM_PROC(FUN_5cf480)    // shaded rows with z (fog, colour)
 ASM_PROC(FUN_5cf920)    // textured rows, rotated (texture, mode)
 extern "C" void FUN_5d0990(); KING_ALIAS("_FUN_5d0990", "_Span_EdgeUVP")    // edge with texture and shade
-ASM_PROC(FUN_5d1030)    // edge with texture
+extern "C" void FUN_5d1030(); KING_ALIAS("_FUN_5d1030", "_Span_EdgeUVPersp")    // edge with texture
 ASM_PROC(FUN_5d1740)    // textured rows (texture, mode, step, level)
 ASM_PROC(FUN_5d18d0)    // textured shaded rows (texture, mode, step)
 ASM_PROC(FUN_5d1a80)    // textured rows with z (texture, mode)
@@ -1822,6 +1822,103 @@ void __cdecl Span_EdgeUVP(const BYTE* a, const BYTE* b)
         F(int, r, 16) = fixT ? t1 : dt * q + t1;
         w += sw;
         F(int, r, 20) = dith[k & 7] + w;
+    }
+    if (F(int, r, 8) >= 16777216)
+        F(int, r, 8) = 16777215;
+}
+
+} // extern "C"
+
+// === a textured polygon edge with perspective (FUN_5d1030)
+
+extern "C" {
+
+// [FUN_5d1030] like 5d0990 without the shade: the texture coordinates (+24, +28 into +12, +16) follow the
+// ratio of the interpolated +20 numerator to the depth (+20 into +8, at most 2^24 - 1 on the last row); a
+// coordinate changing by less than 15 stays constant
+void __cdecl Span_EdgeUVPersp(const BYTE* a, const BYTE* b)
+{
+    const BYTE *p1, *p2;
+    int side = g_q134_723a88;
+    if (F(int, a, 16) < F(int, b, 16)) {
+        p1 = a;
+        p2 = b;
+        side = (side ^ 1) ? 0 : 1;
+    } else {
+        p1 = b;
+        p2 = a;
+        side ^= 1;
+    }
+    int y1 = F(int, p1, 16), y2 = F(int, p2, 16);
+    int dy = (y2 - y1) >> 10;
+    int frac = (y1 >> 10) & 1023;
+    int row = y1 >> 20, last = y2 >> 20;
+    BYTE* t = (BYTE*)g_q134_70f3f0 + side * 1300 * 24;
+    if (row == last) {
+        if (frac || !(y2 & 0xffc00))
+            return;
+        BYTE* r = t + row * 24;
+        F(int, r, 0) = F(int, p1, 12);
+        F(int, r, 12) = F(int, p1, 24);
+        F(int, r, 16) = F(int, p1, 28);
+        F(int, r, 8) = F(int, p1, 20);
+        if (row < g_q134_71e7dc)
+            g_q134_71e7dc = row;
+        if (row > g_q134_71e7d8)
+            g_q134_71e7d8 = row;
+        return;
+    }
+    int f = frac;
+    if (frac) {
+        row++;
+        f = 1024 - frac;
+    }
+    if (row < g_q134_71e7dc)
+        g_q134_71e7dc = row;
+    if ((F(int, p2, 16) >> 20) > g_q134_71e7d8)
+        g_q134_71e7d8 = F(int, p2, 16) >> 20;
+    int x = F(int, p1, 12), v = F(int, p1, 20);
+    int num = 0, sx = 0, dnum = 0, dv = 0;
+    if (dy) {
+        sx = (F(int, p2, 12) - x) / dy;
+        int v2 = F(int, p2, 20);
+        if (dy > 2048) {
+            int d = dy >> 4;
+            dnum = (v2 << 6) / d;
+            dv = ((v2 - v) << 6) / d;
+            v += ((f >> 4) * dv) >> 6;
+            num = (f >> 4) * dnum;
+        } else {
+            dnum = ((v2 << 6) / dy) << 4;
+            dv = (((v2 - v) << 6) / dy) << 4;
+            v += ((dv >> 4) * f) >> 6;
+            num = (dnum >> 4) * f;
+        }
+        num >>= 6;
+        x += sx * f;
+    }
+    int q = (num << 6) / (v >> 4);
+    sx <<= 10;
+    int u1 = F(int, p1, 24), t1 = F(int, p1, 28);
+    int du = (F(int, p2, 24) - u1) >> 10;
+    int dt = (F(int, p2, 28) - t1) >> 10;
+    BYTE* r = t + row * 24;
+    F(int, r, 12) = du * q + u1;
+    F(int, r, 0) = x;
+    F(int, r, 16) = dt * q + t1;
+    F(int, r, 8) = v;
+    bool fixU = (du < 0 ? -du : du) < 15;
+    bool fixT = !fixU && (dt < 0 ? -dt : dt) < 15;
+    for (int k = row + 1; k <= F(int, p2, 16) >> 20; k++) {
+        v += dv;
+        num += dnum;
+        x += sx;
+        r += 24;
+        q = (num << 6) / (v >> 4);
+        F(int, r, 0) = x;
+        F(int, r, 8) = v;
+        F(int, r, 12) = fixU ? u1 : du * q + u1;
+        F(int, r, 16) = fixT ? t1 : dt * q + t1;
     }
     if (F(int, r, 8) >= 16777216)
         F(int, r, 8) = 16777215;
