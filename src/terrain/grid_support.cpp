@@ -17,7 +17,7 @@ typedef float Floats[1];
 
 extern "C" void FUN_606750(); KING_ALIAS("_FUN_606750", "@GridEdge_Destruct@8")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report (code, format, file, line, date)
-ASM_PROC(FUN_60ab70)
+extern "C" void FUN_60ab70(); KING_ALIAS("_FUN_60ab70", "_Grd_DxErrorName")
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 extern "C" void FUN_60f690(); KING_ALIAS("_FUN_60f690", "@MarineQueue_RemoveNode@12")
 extern "C" void FUN_6136f0(); KING_ALIAS("_FUN_6136f0", "@MarineQueue_RemoveLink@12")
@@ -983,3 +983,380 @@ extern "C" void __cdecl Tables_InitAll(void)
     CallC(FUN_60bab0);
     Tables_InitLinear();
 }
+
+// The DirectX (Direct3D/DirectDraw) error names of the grid code.
+ASM_VAR(AsmLabel, s_dx684aa4, $L_684aa4)
+ASM_VAR(AsmLabel, s_dx685a74, $L_685a74)
+ASM_VAR(AsmLabel, s_dx685a88, $L_685a88)
+ASM_VAR(AsmLabel, s_dx685a5c, $L_685a5c)
+ASM_VAR(AsmLabel, s_dx685a34, $L_685a34)
+ASM_VAR(AsmLabel, s_dx685a48, $L_685a48)
+ASM_VAR(AsmLabel, s_dx685a18, $L_685a18)
+ASM_VAR(AsmLabel, s_dx6859fc, $L_6859fc)
+ASM_VAR(AsmLabel, s_dx6859e0, $L_6859e0)
+ASM_VAR(AsmLabel, s_dx6859c8, $L_6859c8)
+ASM_VAR(AsmLabel, s_dx6859b8, $L_6859b8)
+ASM_VAR(AsmLabel, s_dx6859a4, $L_6859a4)
+ASM_VAR(AsmLabel, s_dx685988, $L_685988)
+ASM_VAR(AsmLabel, s_dx685974, $L_685974)
+ASM_VAR(AsmLabel, s_dx68595c, $L_68595c)
+ASM_VAR(AsmLabel, s_dx685948, $L_685948)
+ASM_VAR(AsmLabel, s_dx685934, $L_685934)
+ASM_VAR(AsmLabel, s_dx685918, $L_685918)
+ASM_VAR(AsmLabel, s_dx685904, $L_685904)
+ASM_VAR(AsmLabel, s_dx6858ec, $L_6858ec)
+ASM_VAR(AsmLabel, s_dx6858e0, $L_6858e0)
+ASM_VAR(AsmLabel, s_dx6858d0, $L_6858d0)
+ASM_VAR(AsmLabel, s_dx6858bc, $L_6858bc)
+ASM_VAR(AsmLabel, s_dx6858a8, $L_6858a8)
+ASM_VAR(AsmLabel, s_dx685864, $L_685864)
+ASM_VAR(AsmLabel, s_dx685894, $L_685894)
+ASM_VAR(AsmLabel, s_dx685880, $L_685880)
+ASM_VAR(AsmLabel, s_dx685848, $L_685848)
+ASM_VAR(AsmLabel, s_dx685830, $L_685830)
+ASM_VAR(AsmLabel, s_dx685820, $L_685820)
+ASM_VAR(AsmLabel, s_dx685814, $L_685814)
+ASM_VAR(AsmLabel, s_dx685800, $L_685800)
+ASM_VAR(AsmLabel, s_dx68574c, $L_68574c)
+ASM_VAR(AsmLabel, s_dx6857ec, $L_6857ec)
+ASM_VAR(AsmLabel, s_dx6857d8, $L_6857d8)
+ASM_VAR(AsmLabel, s_dx6857c4, $L_6857c4)
+ASM_VAR(AsmLabel, s_dx6857b0, $L_6857b0)
+ASM_VAR(AsmLabel, s_dx68579c, $L_68579c)
+ASM_VAR(AsmLabel, s_dx685784, $L_685784)
+ASM_VAR(AsmLabel, s_dx685770, $L_685770)
+ASM_VAR(AsmLabel, s_dx68575c, $L_68575c)
+ASM_VAR(AsmLabel, s_dx68573c, $L_68573c)
+ASM_VAR(AsmLabel, s_dx685728, $L_685728)
+ASM_VAR(AsmLabel, s_dx685714, $L_685714)
+ASM_VAR(AsmLabel, s_dx685548, $L_685548)
+ASM_VAR(AsmLabel, s_dx685530, $L_685530)
+ASM_VAR(AsmLabel, s_dx685518, $L_685518)
+ASM_VAR(AsmLabel, s_dx6854f4, $L_6854f4)
+ASM_VAR(AsmLabel, s_dx6854c8, $L_6854c8)
+ASM_VAR(AsmLabel, s_dx6856b0, $L_6856b0)
+ASM_VAR(AsmLabel, s_dx68546c, $L_68546c)
+ASM_VAR(AsmLabel, s_dx68544c, $L_68544c)
+ASM_VAR(AsmLabel, s_dx685438, $L_685438)
+ASM_VAR(AsmLabel, s_dx6856e4, $L_6856e4)
+ASM_VAR(AsmLabel, s_dx685420, $L_685420)
+ASM_VAR(AsmLabel, s_dx68540c, $L_68540c)
+ASM_VAR(AsmLabel, s_dx6853f0, $L_6853f0)
+ASM_VAR(AsmLabel, s_dx6853dc, $L_6853dc)
+ASM_VAR(AsmLabel, s_dx6853c8, $L_6853c8)
+ASM_VAR(AsmLabel, s_dx6853b4, $L_6853b4)
+ASM_VAR(AsmLabel, s_dx68539c, $L_68539c)
+ASM_VAR(AsmLabel, s_dx685384, $L_685384)
+ASM_VAR(AsmLabel, s_dx685364, $L_685364)
+ASM_VAR(AsmLabel, s_dx68534c, $L_68534c)
+ASM_VAR(AsmLabel, s_dx68533c, $L_68533c)
+ASM_VAR(AsmLabel, s_dx685644, $L_685644)
+ASM_VAR(AsmLabel, s_dx685690, $L_685690)
+ASM_VAR(AsmLabel, s_dx6855d8, $L_6855d8)
+ASM_VAR(AsmLabel, s_dx6854a4, $L_6854a4)
+ASM_VAR(AsmLabel, s_dx6855c4, $L_6855c4)
+ASM_VAR(AsmLabel, s_dx68548c, $L_68548c)
+ASM_VAR(AsmLabel, s_dx6856c8, $L_6856c8)
+ASM_VAR(AsmLabel, s_dx685604, $L_685604)
+ASM_VAR(AsmLabel, s_dx6855b4, $L_6855b4)
+ASM_VAR(AsmLabel, s_dx685660, $L_685660)
+ASM_VAR(AsmLabel, s_dx685678, $L_685678)
+ASM_VAR(AsmLabel, s_dx685588, $L_685588)
+ASM_VAR(AsmLabel, s_dx685574, $L_685574)
+ASM_VAR(AsmLabel, s_dx6856fc, $L_6856fc)
+ASM_VAR(AsmLabel, s_dx68561c, $L_68561c)
+ASM_VAR(AsmLabel, s_dx6855f0, $L_6855f0)
+ASM_VAR(AsmLabel, s_dx6854dc, $L_6854dc)
+ASM_VAR(AsmLabel, s_dx6855a0, $L_6855a0)
+ASM_VAR(AsmLabel, s_dx68562c, $L_68562c)
+ASM_VAR(AsmLabel, s_dx685558, $L_685558)
+ASM_VAR(AsmLabel, s_dx68531c, $L_68531c)
+ASM_VAR(AsmLabel, s_dx68528c, $L_68528c)
+ASM_VAR(AsmLabel, s_dx6852f4, $L_6852f4)
+ASM_VAR(AsmLabel, s_dx68527c, $L_68527c)
+ASM_VAR(AsmLabel, s_dx685308, $L_685308)
+ASM_VAR(AsmLabel, s_dx6852b4, $L_6852b4)
+ASM_VAR(AsmLabel, s_dx685240, $L_685240)
+ASM_VAR(AsmLabel, s_dx6852dc, $L_6852dc)
+ASM_VAR(AsmLabel, s_dx685268, $L_685268)
+ASM_VAR(AsmLabel, s_dx685250, $L_685250)
+ASM_VAR(AsmLabel, s_dx6852a0, $L_6852a0)
+ASM_VAR(AsmLabel, s_dx6852c0, $L_6852c0)
+ASM_VAR(AsmLabel, s_dx685228, $L_685228)
+ASM_VAR(AsmLabel, s_dx6851d4, $L_6851d4)
+ASM_VAR(AsmLabel, s_dx685214, $L_685214)
+ASM_VAR(AsmLabel, s_dx6851fc, $L_6851fc)
+ASM_VAR(AsmLabel, s_dx6851c0, $L_6851c0)
+ASM_VAR(AsmLabel, s_dx6851ec, $L_6851ec)
+ASM_VAR(AsmLabel, s_dx6851a8, $L_6851a8)
+ASM_VAR(AsmLabel, s_dx685190, $L_685190)
+ASM_VAR(AsmLabel, s_dx685178, $L_685178)
+ASM_VAR(AsmLabel, s_dx685160, $L_685160)
+ASM_VAR(AsmLabel, s_dx68514c, $L_68514c)
+ASM_VAR(AsmLabel, s_dx68512c, $L_68512c)
+ASM_VAR(AsmLabel, s_dx68510c, $L_68510c)
+ASM_VAR(AsmLabel, s_dx6850f0, $L_6850f0)
+ASM_VAR(AsmLabel, s_dx6850d0, $L_6850d0)
+ASM_VAR(AsmLabel, s_dx6850b8, $L_6850b8)
+ASM_VAR(AsmLabel, s_dx68509c, $L_68509c)
+ASM_VAR(AsmLabel, s_dx685084, $L_685084)
+ASM_VAR(AsmLabel, s_dx68506c, $L_68506c)
+ASM_VAR(AsmLabel, s_dx685050, $L_685050)
+ASM_VAR(AsmLabel, s_dx685030, $L_685030)
+ASM_VAR(AsmLabel, s_dx685010, $L_685010)
+ASM_VAR(AsmLabel, s_dx684ff4, $L_684ff4)
+ASM_VAR(AsmLabel, s_dx684fd4, $L_684fd4)
+ASM_VAR(AsmLabel, s_dx684fc0, $L_684fc0)
+ASM_VAR(AsmLabel, s_dx684fac, $L_684fac)
+ASM_VAR(AsmLabel, s_dx684f94, $L_684f94)
+ASM_VAR(AsmLabel, s_dx684f78, $L_684f78)
+ASM_VAR(AsmLabel, s_dx684f58, $L_684f58)
+ASM_VAR(AsmLabel, s_dx684f3c, $L_684f3c)
+ASM_VAR(AsmLabel, s_dx684f1c, $L_684f1c)
+ASM_VAR(AsmLabel, s_dx684efc, $L_684efc)
+ASM_VAR(AsmLabel, s_dx684edc, $L_684edc)
+ASM_VAR(AsmLabel, s_dx684ebc, $L_684ebc)
+ASM_VAR(AsmLabel, s_dx684e9c, $L_684e9c)
+ASM_VAR(AsmLabel, s_dx684e80, $L_684e80)
+ASM_VAR(AsmLabel, s_dx684e64, $L_684e64)
+ASM_VAR(AsmLabel, s_dx684e4c, $L_684e4c)
+ASM_VAR(AsmLabel, s_dx684e2c, $L_684e2c)
+ASM_VAR(AsmLabel, s_dx684e0c, $L_684e0c)
+ASM_VAR(AsmLabel, s_dx684dec, $L_684dec)
+ASM_VAR(AsmLabel, s_dx684dcc, $L_684dcc)
+ASM_VAR(AsmLabel, s_dx684db4, $L_684db4)
+ASM_VAR(AsmLabel, s_dx684d94, $L_684d94)
+ASM_VAR(AsmLabel, s_dx684d74, $L_684d74)
+ASM_VAR(AsmLabel, s_dx684d58, $L_684d58)
+ASM_VAR(AsmLabel, s_dx684d40, $L_684d40)
+ASM_VAR(AsmLabel, s_dx684d28, $L_684d28)
+ASM_VAR(AsmLabel, s_dx684d08, $L_684d08)
+ASM_VAR(AsmLabel, s_dx684cf0, $L_684cf0)
+ASM_VAR(AsmLabel, s_dx684cd4, $L_684cd4)
+ASM_VAR(AsmLabel, s_dx684cb8, $L_684cb8)
+ASM_VAR(AsmLabel, s_dx684ca0, $L_684ca0)
+ASM_VAR(AsmLabel, s_dx684c90, $L_684c90)
+ASM_VAR(AsmLabel, s_dx684c7c, $L_684c7c)
+ASM_VAR(AsmLabel, s_dx684c68, $L_684c68)
+ASM_VAR(AsmLabel, s_dx684c4c, $L_684c4c)
+ASM_VAR(AsmLabel, s_dx684c30, $L_684c30)
+ASM_VAR(AsmLabel, s_dx684c0c, $L_684c0c)
+ASM_VAR(AsmLabel, s_dx684b74, $L_684b74)
+ASM_VAR(AsmLabel, s_dx684b90, $L_684b90)
+ASM_VAR(AsmLabel, s_dx684bb4, $L_684bb4)
+ASM_VAR(AsmLabel, s_dx684bd0, $L_684bd0)
+ASM_VAR(AsmLabel, s_dx684bec, $L_684bec)
+ASM_VAR(AsmLabel, s_dx684b54, $L_684b54)
+ASM_VAR(AsmLabel, s_dx684b34, $L_684b34)
+ASM_VAR(AsmLabel, s_dx684b10, $L_684b10)
+ASM_VAR(AsmLabel, s_dx684b00, $L_684b00)
+ASM_VAR(AsmLabel, s_dx684ae8, $L_684ae8)
+ASM_VAR(AsmLabel, s_dx684ad0, $L_684ad0)
+ASM_VAR(AsmLabel, s_dx684abc, $L_684abc)
+ASM_VAR(AsmLabel, s_dx684aac, $L_684aac)
+ASM_VAR(AsmLabel, s_dxUnknownFmt, $L_684a90)
+extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
+struct DxErrName { DWORD hr; const char* name; };
+static const DxErrName k_dxErrNames[] = {
+    {0x00000000, s_dx684aa4},
+    {0x80004001, s_dx685a74},
+    {0x80004005, s_dx685a88},
+    {0x800401F0, s_dx685a5c},
+    {0x8007000E, s_dx685a34},
+    {0x80070057, s_dx685a48},
+    {0x88760005, s_dx685a18},
+    {0x8876000A, s_dx6859fc},
+    {0x88760014, s_dx6859e0},
+    {0x88760028, s_dx6859c8},
+    {0x88760037, s_dx6859b8},
+    {0x8876005A, s_dx6859a4},
+    {0x8876005F, s_dx685988},
+    {0x88760064, s_dx685974},
+    {0x8876006E, s_dx68595c},
+    {0x88760078, s_dx685948},
+    {0x88760082, s_dx685934},
+    {0x88760091, s_dx685918},
+    {0x88760096, s_dx685904},
+    {0x887600A0, s_dx6858ec},
+    {0x887600AA, s_dx6858e0},
+    {0x887600B4, s_dx6858d0},
+    {0x887600CD, s_dx6858bc},
+    {0x887600D2, s_dx6858a8},
+    {0x887600D4, s_dx685864},
+    {0x887600D7, s_dx685894},
+    {0x887600DC, s_dx685880},
+    {0x887600DE, s_dx685848},
+    {0x887600E1, s_dx685830},
+    {0x887600E6, s_dx685820},
+    {0x887600F0, s_dx685814},
+    {0x887600FA, s_dx685800},
+    {0x887600FF, s_dx68574c},
+    {0x88760104, s_dx6857ec},
+    {0x88760118, s_dx6857d8},
+    {0x88760122, s_dx6857c4},
+    {0x88760136, s_dx6857b0},
+    {0x8876013C, s_dx68579c},
+    {0x8876013D, s_dx685784},
+    {0x88760140, s_dx685770},
+    {0x8876014A, s_dx68575c},
+    {0x8876014F, s_dx68573c},
+    {0x88760154, s_dx685728},
+    {0x8876015E, s_dx685714},
+    {0x88760168, s_dx685548},
+    {0x8876017C, s_dx685530},
+    {0x8876017E, s_dx685518},
+    {0x88760180, s_dx6854f4},
+    {0x88760183, s_dx6854c8},
+    {0x88760190, s_dx6856b0},
+    {0x8876019A, s_dx68546c},
+    {0x887601A4, s_dx68544c},
+    {0x887601AE, s_dx685438},
+    {0x887601B3, s_dx6856e4},
+    {0x887601B8, s_dx685420},
+    {0x887601C2, s_dx68540c},
+    {0x887601CC, s_dx6853f0},
+    {0x887601D6, s_dx6853dc},
+    {0x887601E0, s_dx6853c8},
+    {0x887601EA, s_dx6853b4},
+    {0x887601FE, s_dx68539c},
+    {0x88760208, s_dx685384},
+    {0x88760219, s_dx685364},
+    {0x8876021C, s_dx68534c},
+    {0x88760230, s_dx68533c},
+    {0x88760231, s_dx685644},
+    {0x88760232, s_dx685690},
+    {0x88760233, s_dx6855d8},
+    {0x88760234, s_dx6854a4},
+    {0x88760235, s_dx6855c4},
+    {0x88760236, s_dx68548c},
+    {0x88760237, s_dx6856c8},
+    {0x88760238, s_dx685604},
+    {0x88760239, s_dx6855b4},
+    {0x8876023A, s_dx685660},
+    {0x8876023B, s_dx685678},
+    {0x8876023C, s_dx685588},
+    {0x8876023D, s_dx685574},
+    {0x8876023E, s_dx6856fc},
+    {0x8876023F, s_dx68561c},
+    {0x88760240, s_dx6855f0},
+    {0x88760241, s_dx6854dc},
+    {0x88760242, s_dx6855a0},
+    {0x88760243, s_dx68562c},
+    {0x88760244, s_dx685558},
+    {0x88760245, s_dx68531c},
+    {0x88760246, s_dx68528c},
+    {0x88760247, s_dx6852f4},
+    {0x88760248, s_dx68527c},
+    {0x88760249, s_dx685308},
+    {0x8876024A, s_dx6852b4},
+    {0x8876024B, s_dx685240},
+    {0x8876024C, s_dx6852dc},
+    {0x8876024D, s_dx685268},
+    {0x8876024E, s_dx685250},
+    {0x8876024F, s_dx6852a0},
+    {0x88760250, s_dx6852c0},
+    {0x8876026C, s_dx685228},
+    {0x88760276, s_dx6851d4},
+    {0x88760280, s_dx685214},
+    {0x88760294, s_dx6851fc},
+    {0x887602A8, s_dx6851c0},
+    {0x887602B2, s_dx6851ec},
+    {0x887602B7, s_dx6851a8},
+    {0x887602BC, s_dx685190},
+    {0x887602BD, s_dx685178},
+    {0x887602C1, s_dx685160},
+    {0x887602C2, s_dx68514c},
+    {0x887602C6, s_dx68512c},
+    {0x887602C7, s_dx68510c},
+    {0x887602C8, s_dx6850f0},
+    {0x887602C9, s_dx6850d0},
+    {0x887602CA, s_dx6850b8},
+    {0x887602CB, s_dx68509c},
+    {0x887602CC, s_dx685084},
+    {0x887602CD, s_dx68506c},
+    {0x887602D0, s_dx685050},
+    {0x887602D1, s_dx685030},
+    {0x887602D2, s_dx685010},
+    {0x887602D3, s_dx684ff4},
+    {0x887602D4, s_dx684fd4},
+    {0x887602D5, s_dx684fc0},
+    {0x887602D6, s_dx684fac},
+    {0x887602D7, s_dx684f94},
+    {0x887602D8, s_dx684f78},
+    {0x887602D9, s_dx684f58},
+    {0x887602DA, s_dx684f3c},
+    {0x887602DB, s_dx684f1c},
+    {0x887602DC, s_dx684efc},
+    {0x887602DD, s_dx684edc},
+    {0x887602DE, s_dx684ebc},
+    {0x887602DF, s_dx684e9c},
+    {0x887602E0, s_dx684e80},
+    {0x887602E1, s_dx684e64},
+    {0x887602E2, s_dx684e4c},
+    {0x887602E4, s_dx684e2c},
+    {0x887602E5, s_dx684e0c},
+    {0x887602E6, s_dx684dec},
+    {0x887602E7, s_dx684dcc},
+    {0x887602E8, s_dx684db4},
+    {0x887602E9, s_dx684d94},
+    {0x887602EA, s_dx684d74},
+    {0x887602EB, s_dx684d58},
+    {0x887602EE, s_dx684d40},
+    {0x887602EF, s_dx684d28},
+    {0x887602F0, s_dx684d08},
+    {0x887602F8, s_dx684cf0},
+    {0x887602F9, s_dx684cd4},
+    {0x887602FA, s_dx684cb8},
+    {0x887602FB, s_dx684ca0},
+    {0x88760302, s_dx684c90},
+    {0x88760303, s_dx684c7c},
+    {0x88760304, s_dx684c68},
+    {0x88760305, s_dx684c4c},
+    {0x88760306, s_dx684c30},
+    {0x88760819, s_dx684c0c},
+    {0x8876081A, s_dx684b74},
+    {0x8876081B, s_dx684b90},
+    {0x8876081C, s_dx684bb4},
+    {0x8876081D, s_dx684bd0},
+    {0x8876081E, s_dx684bec},
+    {0x8876081F, s_dx684b54},
+    {0x88760822, s_dx684b34},
+    {0x88760826, s_dx684b10},
+    {0x88762711, s_dx684b00},
+    {0x88762712, s_dx684ae8},
+    {0x88762713, s_dx684ad0},
+    {0x88762714, s_dx684abc},
+    {0x88762715, s_dx684aac},
+};
+
+extern "C" {
+
+// [FUN_60ab70] the name of DirectX error hr into buf (size bytes; an unknown error by its low 16 bits);
+// 0 without a buffer. An empty name leaves buf unterminated.
+int __cdecl Grd_DxErrorName(DWORD hr, char* buf, unsigned size)
+{
+    if (!buf || !size)
+        return 0;
+    char tmp[256];
+    const char* s = 0;
+    for (int i = 0; i < sizeof(k_dxErrNames) / sizeof(k_dxErrNames[0]); i++)
+        if (k_dxErrNames[i].hr == hr) {
+            s = k_dxErrNames[i].name;
+            break;
+        }
+    if (!s) {
+        wsprintfA(tmp, s_dxUnknownFmt, hr & 65535);
+        s = tmp;
+    }
+    unsigned n = strlen(s);
+    if (n >= size)
+        n = size - 1;
+    if (n) {
+        strncpy(buf, s, n);
+        buf[n] = 0;
+    }
+    return 1;
+}
+
+}  // extern "C"
+

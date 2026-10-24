@@ -2195,3 +2195,212 @@ SchValue* __cdecl Nat_StringAppend(SchValue* out, BYTE* p, BYTE** args)
 }
 
 }  // extern "C"
+
+// ---------------------------------------------------------------------------
+// not, null?, list and caar .. cddr.
+
+extern "C" void FUN_409070(); KING_ALIAS("_FUN_409070", "_Str_Same")
+extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
+ASM_VAR(AsmLabel, s_nNot, $L_670a04)
+ASM_VAR(AsmLabel, s_nNullP, $L_670a08)
+ASM_VAR(AsmLabel, s_nCaar, $L_670a10)
+ASM_VAR(AsmLabel, s_nCadr, $L_670a18)
+ASM_VAR(AsmLabel, s_nCdar, $L_670a20)
+ASM_VAR(AsmLabel, s_nCddr, $L_670a28)
+
+// the value at d = s, keeping d's object when s is the same value
+static void Nat_AssignSame(SchValue* d, const SchValue* s)
+{
+    if (d->obj && !(d->flags & SCH_IMMEDIATE) && --F(int, d->obj, 4) == 0
+        && !(d->obj == s->obj && d->flags == s->flags && d->m_4 == s->m_4) && d->obj)
+        CallVirt(d->obj, 12, 1);
+    CopyRef(d, s);
+}
+
+// the same, comparing with Str_Same
+static void Nat_AssignStr(SchValue* d, const SchValue* s)
+{
+    if (d->obj && !(d->flags & SCH_IMMEDIATE) && --F(int, d->obj, 4) == 0
+        && !CallC<char>(FUN_409070, d, s) && d->obj)
+        CallVirt(d->obj, 12, 1);
+    CopyRef(d, s);
+}
+
+// caar .. cddr: second(first(the pair))
+static SchValue* Nat_Cxxr(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*first)(), void (*second)())
+{
+    BYTE* a = args[0];
+    if ((args[1] - a) / 12 != 2) {
+        CallC(FUN_4a5a60, p, 33, where);
+        Nat_Zero3(out);
+        return out;
+    }
+    if (F(BYTE, a, 20) == 2) {
+        SchValue t;
+        bool pair = (BYTE)CallC<SchValue*>(first, &t, a + 12)->flags == 2;
+        SchValue_Release(&t);
+        if (pair) {
+            CallC(second, out, CallC<SchValue*>(first, &t, args[0] + 12));
+            SchValue_Release(&t);
+            return out;
+        }
+    }
+    CallC(FUN_4a5b50, p, 15, (const char*)s_nPair, where);
+    Nat_Zero3(out);
+    return out;
+}
+
+extern "C" {
+
+// [$L_4a0cc0] not
+SchValue* __cdecl Nat_Not(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nNot))
+        Nat_Zero3(out);
+    else
+        Nat_Bool(out, (BYTE)v.flags == 7 ? v.obj == 0 : 0);
+    SchValue_Release(&v);
+    return out;
+}
+
+// $L_4a0e30: null?
+SchValue* __cdecl Nat_NullP(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nNullP))
+        Nat_Zero3(out);
+    else
+        Nat_Bool(out, !v.obj && !v.flags && !v.m_4);
+    SchValue_Release(&v);
+    return out;
+}
+
+// $L_4a0f70: list (the arguments, consed from the last)
+SchValue* __cdecl Nat_List(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue acc = {0, 0, 0, 0};
+    for (int i = Nat_Count(args) - 1; i; i--) {
+        SchValue pr;
+        CallC(FUN_4a28c0, &pr, 0, p);
+        BYTE* e = args[0] + i * 12;
+        if (!pr.obj)
+            CallC(FUN_4a52e0, 0, 1);
+        if (pr.flags & SCH_IMMEDIATE)
+            CallC(FUN_4a52e0, 4, 1);
+        Nat_AssignSame((SchValue*)(pr.obj + 20), (const SchValue*)e);
+        if (!pr.obj)
+            CallC(FUN_4a52e0, 0, 1);
+        if (pr.flags & SCH_IMMEDIATE)
+            CallC(FUN_4a52e0, 4, 1);
+        Nat_AssignStr((SchValue*)(pr.obj + 32), &acc);
+        CallThis(FUN_40c100, &acc, &pr);
+        Nat_Release(&pr);
+    }
+    CallThis(FUN_454580, out, &acc);
+    Nat_Release(&acc);
+    return out;
+}
+
+// $L_4a11c0: caar, $L_4a1300: cadr, $L_4a1440: cdar, $L_4a1580: cddr
+SchValue* __cdecl Nat_Caar(SchValue* out, BYTE* p, BYTE** args) { return Nat_Cxxr(out, p, args, s_nCaar, FUN_407f00, FUN_407f00); }
+SchValue* __cdecl Nat_Cadr(SchValue* out, BYTE* p, BYTE** args) { return Nat_Cxxr(out, p, args, s_nCadr, FUN_4090a0, FUN_407f00); }
+SchValue* __cdecl Nat_Cdar(SchValue* out, BYTE* p, BYTE** args) { return Nat_Cxxr(out, p, args, s_nCdar, FUN_407f00, FUN_4090a0); }
+SchValue* __cdecl Nat_Cddr(SchValue* out, BYTE* p, BYTE** args) { return Nat_Cxxr(out, p, args, s_nCddr, FUN_4090a0, FUN_4090a0); }
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// eq?
+
+extern "C" void FUN_44ca00(); KING_ALIAS("_FUN_44ca00", "@Handle9_Init@12")         // an identifier handle from a value
+extern "C" void FUN_455760(); KING_ALIAS("_FUN_455760", "@StringHandle_From@12")
+extern "C" void FUN_4921d0(); KING_ALIAS("_FUN_4921d0", "@CharHandle_From@12")
+extern "C" void FUN_4b0fb0(); KING_ALIAS("_FUN_4b0fb0", "_SchNumber_Eq")
+ASM_VAR(AsmLabel, s_nEqP, $L_670658)
+
+extern "C" {
+
+// [$L_492270] eq?: the same value; else equal booleans, identifiers (case-insensitive), strings, characters or
+// numbers
+SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, (const char*)s_nEqP)) {
+        Nat_Zero3(out);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    int r = -2;
+    if (x.obj == y.obj && x.flags == y.flags && x.m_4 == y.m_4)
+        r = -1;
+    else if (!x.obj && !x.flags && !x.m_4)
+        r = 0;
+    else if (!y.obj && !y.flags && !y.m_4)
+        r = 0;
+    else if ((BYTE)(x.flags ^ y.flags))
+        r = 0;
+    if (r != -2) {
+        Nat_Bool(out, r);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    SchValue hx, hy;
+    switch ((BYTE)x.flags) {
+    case 7:
+        SchValue_AsBool(&hx, 0, &x);
+        SchValue_AsBool(&hy, 0, &y);
+        Nat_Bool(out, (hx.obj != 0) == (hy.obj != 0));
+        Nat_Release(&hy);
+        Nat_Release(&hx);
+        SchValue_Release(&y);
+        Nat_Release(&x);
+        return out;
+    case 9:
+        CallThis(FUN_44ca00, &hx, &x);
+        CallThis(FUN_44ca00, &hy, &y);
+        {
+            const char* sy = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hy), 12);
+            const char* sx = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hx), 12);
+            Nat_Bool(out, _stricmp(sx, sy) == 0);
+        }
+        Nat_Release(&hy);
+        Nat_Release(&hx);
+        break;
+    case 3:
+        CallThis(FUN_455760, &hx, &x);
+        CallThis(FUN_455760, &hy, &y);
+        {
+            const char* sy = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hy), 12);
+            const char* sx = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hx), 12);
+            Nat_Bool(out, strcmp(sx, sy) == 0);
+        }
+        Nat_Release(&hy);
+        Nat_Release(&hx);
+        break;
+    case 8:
+        CallThis(FUN_4921d0, &hx, &x);
+        CallThis(FUN_4921d0, &hy, &y);
+        Nat_Bool(out, hx.obj == hy.obj);
+        Nat_Release(&hy);
+        Nat_Release(&hx);
+        break;
+    case 6:
+        CallThis(FUN_4556d0, &hx, &x);
+        CallThis(FUN_4556d0, &hy, &y);
+        Nat_Bool(out, CallC<BYTE>(FUN_4b0fb0, hx.obj, hy.obj));
+        Nat_Release(&hy);
+        Nat_Release(&hx);
+        break;
+    default:
+        Nat_Bool(out, 0);
+        break;
+    }
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+}  // extern "C"

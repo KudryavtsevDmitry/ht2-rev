@@ -1578,13 +1578,47 @@ PUBLIC $L_6708d4, $L_6708ec, $L_6708fc, $L_670908, $L_670914, $L_670920
 PUBLIC $L_67092c, $L_67093c, $L_67094c, $L_670960, $L_670974, $L_670988
 PUBLIC $L_670994, $L_6709a0, $L_6709ac, $L_6709b8, $L_6709c4, $L_6709cc
 PUBLIC $L_6709d4, $L_6709ec
-PUBLIC $L_4a0e30, $L_4a0f70, $L_4a11c0, $L_4a1300, $L_4a1440, $L_4a1580
 PUBLIC $L_64bf60, $L_670640, $L_670658, $L_67065c, $L_6706b0, $L_670884
 PUBLIC $L_670890, $L_6709fc, $L_670a04, $L_670a08, $L_670a10, $L_670a18
 PUBLIC $L_670a20, $L_670a28, $L_6711e8, $L_6711f4, $L_671208, $L_671210
 PUBLIC $L_67121c, $L_671230, $L_671244, $L_67125c, $L_671270, $L_67128c
 PUBLIC $L_671298, $L_67129c, $L_6712a8, $L_6712ac, $L_6712b4, $L_6712d4
 PUBLIC $L_6712dc, $L_6712e4, $L_6712e8, $L_6712f0, $L_6712f8, $L_686340
+PUBLIC $L_64c094, $L_64c09c, $L_671490, $L_6714a4, $L_6714b0, $L_6715bc
+PUBLIC $L_6715c0, $L_6715d0, $L_6715dc, $L_6715e4, $L_6715f4, $L_671604
+PUBLIC $L_671608, $L_671614, $L_671624, $L_671634, $L_671644, $L_67164c
+PUBLIC $L_671654, $L_671660, $L_671664
+PUBLIC $L_684a90, $L_684aa4, $L_684aac, $L_684abc, $L_684ad0, $L_684ae8
+PUBLIC $L_684b00, $L_684b10, $L_684b34, $L_684b54, $L_684b74, $L_684b90
+PUBLIC $L_684bb4, $L_684bd0, $L_684bec, $L_684c0c, $L_684c30, $L_684c4c
+PUBLIC $L_684c68, $L_684c7c, $L_684c90, $L_684ca0, $L_684cb8, $L_684cd4
+PUBLIC $L_684cf0, $L_684d08, $L_684d28, $L_684d40, $L_684d58, $L_684d74
+PUBLIC $L_684d94, $L_684db4, $L_684dcc, $L_684dec, $L_684e0c, $L_684e2c
+PUBLIC $L_684e4c, $L_684e64, $L_684e80, $L_684e9c, $L_684ebc, $L_684edc
+PUBLIC $L_684efc, $L_684f1c, $L_684f3c, $L_684f58, $L_684f78, $L_684f94
+PUBLIC $L_684fac, $L_684fc0, $L_684fd4, $L_684ff4, $L_685010, $L_685030
+PUBLIC $L_685050, $L_68506c, $L_685084, $L_68509c, $L_6850b8, $L_6850d0
+PUBLIC $L_6850f0, $L_68510c, $L_68512c, $L_68514c, $L_685160, $L_685178
+PUBLIC $L_685190, $L_6851a8, $L_6851c0, $L_6851d4, $L_6851ec, $L_6851fc
+PUBLIC $L_685214, $L_685228, $L_685240, $L_685250, $L_685268, $L_68527c
+PUBLIC $L_68528c, $L_6852a0, $L_6852b4, $L_6852c0, $L_6852dc, $L_6852f4
+PUBLIC $L_685308, $L_68531c, $L_68533c, $L_68534c, $L_685364, $L_685384
+PUBLIC $L_68539c, $L_6853b4, $L_6853c8, $L_6853dc, $L_6853f0, $L_68540c
+PUBLIC $L_685420, $L_685438, $L_68544c, $L_68546c, $L_68548c, $L_6854a4
+PUBLIC $L_6854c8, $L_6854dc, $L_6854f4, $L_685518, $L_685530, $L_685548
+PUBLIC $L_685558, $L_685574, $L_685588, $L_6855a0, $L_6855b4, $L_6855c4
+PUBLIC $L_6855d8, $L_6855f0, $L_685604, $L_68561c, $L_68562c, $L_685644
+PUBLIC $L_685660, $L_685678, $L_685690, $L_6856b0, $L_6856c8, $L_6856e4
+PUBLIC $L_6856fc, $L_685714, $L_685728, $L_68573c, $L_68574c, $L_68575c
+PUBLIC $L_685770, $L_685784, $L_68579c, $L_6857b0, $L_6857c4, $L_6857d8
+PUBLIC $L_6857ec, $L_685800, $L_685814, $L_685820, $L_685830, $L_685848
+PUBLIC $L_685864, $L_685880, $L_685894, $L_6858a8, $L_6858bc, $L_6858d0
+PUBLIC $L_6858e0, $L_6858ec, $L_685904, $L_685918, $L_685934, $L_685948
+PUBLIC $L_68595c, $L_685974, $L_685988, $L_6859a4, $L_6859b8, $L_6859c8
+PUBLIC $L_6859e0, $L_6859fc, $L_685a18, $L_685a34, $L_685a48, $L_685a5c
+PUBLIC $L_685a74, $L_685a88
+PUBLIC $L_66fa68, $L_66fa70, $L_66fa80, $L_66fa88, $L_66fa90, $L_66fa98
+PUBLIC $L_66fa78
 
 ;===================================
 _TEXT SEGMENT
@@ -210503,6 +210537,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_474720 PROC
 
             push EBP
@@ -211721,6 +211757,10 @@ $L_475472::
             pop EBP
             ret 4
 FUN_474720 ENDP
+ELSE
+EXTERN @Player_Load@12:PROC
+FUN_474720 TEXTEQU <@Player_Load@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -212382,6 +212422,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_drivers.cpp, nmake ASM_AI_DRIVERS=1 assembles the original
+IFDEF ASM_AI_DRIVERS
 FUN_475b20 PROC
 
             push EBP
@@ -213616,6 +213658,10 @@ $L_476564::
             pop EBP
             ret 4
 FUN_475b20 ENDP
+ELSE
+EXTERN @Player_Save@12:PROC
+FUN_475b20 TEXTEQU <@Player_Save@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -265896,6 +265942,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 $L_492270 PROC
 
             push -1
@@ -266442,6 +266490,10 @@ $L_4927ad::
             add ESP,64
             ret 
 $L_492270 ENDP
+ELSE
+EXTERN _Nat_EqP:PROC
+$L_492270 TEXTEQU <_Nat_EqP>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -291186,6 +291238,8 @@ $L_4a0af0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 $L_4a0cc0 PROC
 
             push -1
@@ -292373,6 +292427,22 @@ $L_4a1688::
             add ESP,16
             ret 
 $L_4a0cc0 ENDP
+ELSE
+EXTERN _Nat_Not:PROC
+$L_4a0cc0 TEXTEQU <_Nat_Not>
+EXTERN _Nat_NullP:PROC
+$L_4a0e30 TEXTEQU <_Nat_NullP>
+EXTERN _Nat_List:PROC
+$L_4a0f70 TEXTEQU <_Nat_List>
+EXTERN _Nat_Caar:PROC
+$L_4a11c0 TEXTEQU <_Nat_Caar>
+EXTERN _Nat_Cadr:PROC
+$L_4a1300 TEXTEQU <_Nat_Cadr>
+EXTERN _Nat_Cdar:PROC
+$L_4a1440 TEXTEQU <_Nat_Cdar>
+EXTERN _Nat_Cddr:PROC
+$L_4a1580 TEXTEQU <_Nat_Cddr>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -328866,6 +328936,8 @@ FUN_4b3b10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b3e30 PROC
 
             push -1
@@ -330424,6 +330496,10 @@ $L_4b4bc4           BYTE ($L_4b4ba8-$L_4b4ba8)/4
           BYTE ($L_4b4bc0-$L_4b4ba8)/4
           BYTE ($L_4b4bc0-$L_4b4ba8)/4
           BYTE ($L_4b4bbc-$L_4b4ba8)/4
+ELSE
+EXTERN _Reader_Read:PROC
+FUN_4b3e30 TEXTEQU <_Reader_Read>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -334968,6 +335044,8 @@ FUN_4b6e20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/values.cpp, nmake ASM_VALUES=1 assembles the original
+IFDEF ASM_VALUES
 FUN_4b6f70 PROC
 
             push -1
@@ -336933,6 +337011,10 @@ $L_4b7f70           BYTE ($L_4b7f30-$L_4b7f30)/4
           BYTE ($L_4b7f6c-$L_4b7f30)/4
           BYTE ($L_4b7f6c-$L_4b7f30)/4
           BYTE ($L_4b7f68-$L_4b7f30)/4
+ELSE
+EXTERN _Sch_Write:PROC
+FUN_4b6f70 TEXTEQU <_Sch_Write>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -883464,6 +883546,8 @@ EXTERN _Grd_ReportError:PROC
 FUN_60aad0 TEXTEQU <_Grd_ReportError>
 ENDIF
 ALIGN 16
+; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
+IFDEF ASM_GRID_SUPPORT
 FUN_60ab70 PROC
 
             sub ESP,256
@@ -885150,6 +885234,10 @@ $L_60b91c           DWORD $L_60b3a0
           DWORD $L_60b3ae
           DWORD $L_60b3b5
           DWORD $L_60b3bc
+ELSE
+EXTERN _Grd_DxErrorName:PROC
+FUN_60ab70 TEXTEQU <_Grd_DxErrorName>
+ENDIF
 ; src/grid_support.cpp, nmake ASM_GRID_SUPPORT=1 assembles the original
 IFDEF ASM_GRID_SUPPORT
 $L_60b930 PROC
