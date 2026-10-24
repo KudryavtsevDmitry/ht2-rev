@@ -2255,7 +2255,6 @@ extern "C" void Nat_MacroExpand();
 ASM_VAR(AsmLabel, s_rn6709d4, $L_6709d4)
 ASM_VAR(AsmLabel, g_rf491ce0, $L_491ce0)
 ASM_VAR(AsmLabel, s_rn670640, $L_670640)
-ASM_VAR(AsmLabel, g_rf492270, $L_492270)
 ASM_VAR(AsmLabel, s_rn670658, $L_670658)
 ASM_VAR(AsmLabel, g_rf493120, $L_493120)
 ASM_VAR(AsmLabel, s_rn67065c, $L_67065c)
@@ -2451,25 +2450,26 @@ extern "C" void Nat_StringAppend();
 ASM_VAR(AsmLabel, s_rn6709ec, $L_6709ec)
 ASM_VAR(AsmLabel, g_rf4a0af0, $L_4a0af0)
 ASM_VAR(AsmLabel, s_rn6709fc, $L_6709fc)
-ASM_VAR(AsmLabel, g_rf4a0cc0, $L_4a0cc0)
 ASM_VAR(AsmLabel, s_rn670a04, $L_670a04)
-ASM_VAR(AsmLabel, g_rf4a0e30, $L_4a0e30)
 ASM_VAR(AsmLabel, s_rn670a08, $L_670a08)
-ASM_VAR(AsmLabel, g_rf4a0f70, $L_4a0f70)
 ASM_VAR(AsmLabel, s_rn671208, $L_671208)
-ASM_VAR(AsmLabel, g_rf4a11c0, $L_4a11c0)
 ASM_VAR(AsmLabel, s_rn670a10, $L_670a10)
-ASM_VAR(AsmLabel, g_rf4a1300, $L_4a1300)
 ASM_VAR(AsmLabel, s_rn670a18, $L_670a18)
-ASM_VAR(AsmLabel, g_rf4a1440, $L_4a1440)
 ASM_VAR(AsmLabel, s_rn670a20, $L_670a20)
-ASM_VAR(AsmLabel, g_rf4a1580, $L_4a1580)
 ASM_VAR(AsmLabel, s_rn670a28, $L_670a28)
+extern "C" void Nat_Not();
+extern "C" void Nat_NullP();
+extern "C" void Nat_List();
+extern "C" void Nat_Caar();
+extern "C" void Nat_Cadr();
+extern "C" void Nat_Cdar();
+extern "C" void Nat_Cddr();
+extern "C" void Nat_EqP();
 struct SchNativeReg { void* fn; const char* name; };
 static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_MacroExpand, s_rn6709d4},
     {(void*)g_rf491ce0, s_rn670640},
-    {(void*)g_rf492270, s_rn670658},
+    {(void*)Nat_EqP, s_rn670658},
     {(void*)g_rf493120, s_rn67065c},
     {(void*)Nat_NumberP, s_rn670664},
     {(void*)Nat_ComplexP, s_rn67066c},
@@ -2567,13 +2567,13 @@ static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_SetValues, s_rn671210},
     {(void*)Nat_StringAppend, s_rn6709ec},
     {(void*)g_rf4a0af0, s_rn6709fc},
-    {(void*)g_rf4a0cc0, s_rn670a04},
-    {(void*)g_rf4a0e30, s_rn670a08},
-    {(void*)g_rf4a0f70, s_rn671208},
-    {(void*)g_rf4a11c0, s_rn670a10},
-    {(void*)g_rf4a1300, s_rn670a18},
-    {(void*)g_rf4a1440, s_rn670a20},
-    {(void*)g_rf4a1580, s_rn670a28},
+    {(void*)Nat_Not, s_rn670a04},
+    {(void*)Nat_NullP, s_rn670a08},
+    {(void*)Nat_List, s_rn671208},
+    {(void*)Nat_Caar, s_rn670a10},
+    {(void*)Nat_Cadr, s_rn670a18},
+    {(void*)Nat_Cdar, s_rn670a20},
+    {(void*)Nat_Cddr, s_rn670a28},
 };
 
 struct SchValue12 { DWORD d[3]; };

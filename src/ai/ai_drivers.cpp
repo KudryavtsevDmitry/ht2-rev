@@ -1459,3 +1459,434 @@ extern "C" void __fastcall Vec12_FreeStorage(BYTE** v)
     if (n)
         CallC(FUN_44b4a0, v[0], n * 12);
 }
+
+// ---------------------------------------------------------------------------
+// Saving a player.
+
+extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
+extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
+extern "C" void FUN_4722c0(); KING_ALIAS("_FUN_4722c0", "@Rec4722c0_Save@12")
+extern "C" void FUN_471bf0(); KING_ALIAS("_FUN_471bf0", "@Rec471bf0_Save@12")
+extern "C" void FUN_472780(); KING_ALIAS("_FUN_472780", "@Gilt_Save@12")
+extern "C" void FUN_603570(); KING_ALIAS("_FUN_603570", "_Buf_WriteDword")
+extern "C" void FUN_4718b0(); KING_ALIAS("_FUN_4718b0", "@Waypoint_Save@12")
+extern "C" void FUN_471ba0(); KING_ALIAS("_FUN_471ba0", "@Pair_Save@12")
+extern "C" void FUN_476890(); KING_ALIAS("_FUN_476890", "@Name_Save@12")
+extern "C" void FUN_479a30(); KING_ALIAS("_FUN_479a30", "_Bytes_AppendCounted")
+extern "C" void FUN_474490(); KING_ALIAS("_FUN_474490", "_Doubles5_Save")
+extern "C" void FUN_474650(); KING_ALIAS("_FUN_474650", "_Matrix43_Save")
+extern "C" void FUN_4745d0(); KING_ALIAS("_FUN_4745d0", "_Doubles3_Save")
+ASM_VAR(AsmLabel, s_ps66fa98, $L_66fa98)
+ASM_VAR(AsmLabel, s_ps66fa90, $L_66fa90)
+ASM_VAR(AsmLabel, s_ps66fa88, $L_66fa88)
+ASM_VAR(AsmLabel, s_ps66fa80, $L_66fa80)
+ASM_VAR(AsmLabel, s_ps66fa70, $L_66fa70)
+ASM_VAR(AsmLabel, s_ps66fa68, $L_66fa68)
+ASM_VAR(int, g_ps68b990, $L_68b990)
+
+static void Ps_Bytes(BYTE* s, const void* p, int n)
+{
+    CallThis(FUN_46e460, s, F(BYTE*, s, 4), (const BYTE*)p, (const BYTE*)p + n);
+}
+static void Ps_32(BYTE* s, DWORD v) { Ps_Bytes(s, &v, 4); }
+static void Ps_64(BYTE* s, const BYTE* p) { DWORD v[2] = {F(DWORD, p, 0), F(DWORD, p, 4)}; Ps_Bytes(s, v, 8); }
+static void Ps_8(BYTE* s, BYTE v) { Ps_Bytes(s, &v, 1); }
+
+extern "C" {
+
+// [FUN_475b20] appends player self to the save stream s: the name, then blocks with the two records (+508,
+// +512), the 40-byte records (+64), the state, and the matrices (+888, +912)
+void __fastcall Player_Save(BYTE* self, void*, BYTE* s)
+{
+    CallThis(FUN_46e460, s, F(BYTE*, s, 4), F(BYTE*, self, 0), F(BYTE*, self, 4));
+    int outer, at;
+    CallC(FUN_490c90, s, (const char*)s_ps66fa98, &outer);
+    if (F(BYTE*, self, 508)) {
+        CallC(FUN_490c90, s, (const char*)s_ps66fa90, &at);
+        CallThis(FUN_4722c0, F(BYTE*, self, 508), s);
+        CallC(FUN_490ce0, s, &at);
+    }
+    if (F(BYTE*, self, 512)) {
+        CallC(FUN_490c90, s, (const char*)s_ps66fa88, &at);
+        CallThis(FUN_4722c0, F(BYTE*, self, 512), s);
+        CallC(FUN_490ce0, s, &at);
+    }
+    CallC(FUN_490c90, s, (const char*)s_ps66fa80, &at);
+    Ps_32(s, (F(BYTE*, self, 68) - F(BYTE*, self, 64)) / 40);
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 68) - F(BYTE*, self, 64)) / 40); i++)
+        CallThis(FUN_471bf0, F(BYTE*, self, 64) + i * 40, s);
+    CallC(FUN_490ce0, s, &at);
+
+    CallC(FUN_490c90, s, (const char*)s_ps66fa70, &at);
+    Ps_32(s, F(DWORD, self, 84));
+    Ps_32(s, F(DWORD, self, 88));
+    Ps_32(s, F(DWORD, self, 92));
+    Ps_64(s, self + 104);
+    Ps_32(s, F(DWORD, self, 56));
+    Ps_32(s, F(DWORD, self, 36));
+    Ps_32(s, F(DWORD, self, 32));
+    Ps_64(s, self + 40);
+    Ps_32(s, F(DWORD, self, 48));
+    Ps_32(s, F(DWORD, self, 52));
+    Ps_32(s, F(DWORD, self, 60));
+    Ps_32(s, F(DWORD, self, 76));
+    Ps_32(s, F(DWORD, self, 112));
+    Ps_32(s, F(DWORD, self, 116));
+    Ps_32(s, F(DWORD, self, 120));
+    Ps_32(s, F(DWORD, self, 124));
+    Ps_64(s, self + 128);
+    CallThis(FUN_472780, self + 192, s);
+    Ps_32(s, F(BYTE*, self, 268) - F(BYTE*, self, 264));
+    for (unsigned i = 0; i < (unsigned)(F(BYTE*, self, 268) - F(BYTE*, self, 264)); i++)
+        Ps_8(s, F(BYTE*, self, 264)[i]);
+    BYTE zero[8] = {0};
+    Ps_64(s, zero);
+    Ps_64(s, zero);
+    Ps_64(s, zero);
+    Ps_64(s, self + 280);
+    Ps_64(s, self + 288);
+    Ps_64(s, self + 296);
+    Ps_64(s, self + 304);
+    Ps_64(s, self + 312);
+    Ps_64(s, self + 320);
+    Ps_64(s, self + 328);
+    Ps_8(s, F(BYTE, self, 488));
+    Ps_64(s, self + 496);
+    Ps_8(s, F(BYTE, self, 504));
+    CallC(FUN_603570, 0, s, F(DWORD, self, 712));
+    Ps_32(s, F(DWORD, self, 720));
+    Ps_32(s, (F(BYTE*, self, 20) - F(BYTE*, self, 16)) / 12);
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 20) - F(BYTE*, self, 16)) / 12); i++)
+        CallThis(FUN_4718b0, F(BYTE*, self, 16) + i * 12, s);
+    Ps_32(s, F(DWORD, self, 716));
+    Ps_64(s, self + 784);
+    Ps_64(s, self + 800);
+    Ps_32(s, (F(BYTE*, self, 140) - F(BYTE*, self, 136)) >> 3);
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 140) - F(BYTE*, self, 136)) >> 3); i++)
+        CallThis(FUN_471ba0, F(BYTE*, self, 136) + i * 8, s);
+    Ps_32(s, F(DWORD, self, 148));
+    Ps_32(s, (F(BYTE*, self, 156) - F(BYTE*, self, 152)) >> 4);
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 156) - F(BYTE*, self, 152)) >> 4); i++)
+        CallThis(FUN_476890, F(BYTE*, self, 152) + i * 16, s);
+    if (F(int, self, 168) == g_ps68b990)
+        Ps_32(s, 0);
+    else
+        CallC(FUN_479a30, s, F(BYTE*, self, 168) + 8);
+    Ps_64(s, self + 184);
+    CallC(FUN_474490, s, self + 368);
+    Ps_8(s, F(BYTE, self, 488));
+    Ps_8(s, F(BYTE, self, 504));
+    Ps_8(s, F(BYTE, self, 505));
+    Ps_32(s, F(DWORD, self, 516));
+    Ps_32(s, F(DWORD, self, 520));
+    Ps_32(s, F(DWORD, self, 528));
+    Ps_64(s, self + 536);
+    CallC(FUN_474650, s, self + 544);
+    Ps_32(s, (F(BYTE*, self, 644) - F(BYTE*, self, 640)) / 12);
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 644) - F(BYTE*, self, 640)) / 12); i++)
+        CallThis(FUN_4718b0, F(BYTE*, self, 640) + i * 12, s);
+    Ps_32(s, F(DWORD, self, 652));
+    CallC(FUN_4745d0, s, self + 728);
+    Ps_64(s, self + 752);
+    Ps_64(s, self + 760);
+    Ps_8(s, F(BYTE, self, 776));
+    Ps_8(s, F(BYTE, self, 777));
+    Ps_64(s, self + 784);
+    Ps_64(s, self + 800);
+    Ps_32(s, F(DWORD, self, 832));
+    Ps_32(s, F(DWORD, self, 812));
+    Ps_32(s, F(DWORD, self, 808));
+    Ps_64(s, self + 816);
+    Ps_32(s, F(DWORD, self, 824));
+    Ps_32(s, F(DWORD, self, 828));
+    Ps_32(s, F(DWORD, self, 836));
+    Ps_64(s, self + 856);
+    Ps_32(s, F(DWORD, self, 984));
+    CallC(FUN_490ce0, s, &at);
+
+    CallC(FUN_490c90, s, (const char*)s_ps66fa68, &at);
+    Ps_Bytes(s, self + 888, 24);
+    Ps_Bytes(s, self + 912, 24);
+    Ps_32(s, F(DWORD, self, 936));
+    CallC(FUN_490ce0, s, &at);
+    CallC(FUN_490ce0, s, &outer);
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Loading a player.
+
+extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
+extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
+extern "C" void FUN_41f3d0(); KING_ALIAS("_FUN_41f3d0", "@Rec41f3d0_Destroy@8")
+extern "C" void FUN_4487a0(); KING_ALIAS("_FUN_4487a0", "@Vec16b_Construct@20")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+ASM_PROC(FUN_472410)    // loads a 48-byte record (cursor)
+extern "C" void FUN_478a00(); KING_ALIAS("_FUN_478a00", "@Vec40_Clear@8")
+extern "C" void FUN_47ac30(); KING_ALIAS("_FUN_47ac30", "@Vec40_Reserve@12")
+extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
+extern "C" void FUN_471cf0(); KING_ALIAS("_FUN_471cf0", "@Rec471cf0_Load@12")
+extern "C" void FUN_4789c0(); KING_ALIAS("_FUN_4789c0", "@Vec40_PushBack@12")
+extern "C" void FUN_474290(); KING_ALIAS("_FUN_474290", "@Player_SetPosition@12")
+extern "C" void FUN_46ea00(); KING_ALIAS("_FUN_46ea00", "@Ordr_First@8")
+extern "C" void FUN_448060(); KING_ALIAS("_FUN_448060", "@Vec12_Clear@8")
+extern "C" void FUN_47ab50(); KING_ALIAS("_FUN_47ab50", "@Vec12_Reserve@12")
+extern "C" void FUN_4754b0(); KING_ALIAS("_FUN_4754b0", "@Waypoint_Init@8")
+extern "C" void FUN_471940(); KING_ALIAS("_FUN_471940", "@Waypoint_Load@12")
+extern "C" void FUN_47abf0(); KING_ALIAS("_FUN_47abf0", "@Vec12_PushBack@12")
+extern "C" void FUN_473540(); KING_ALIAS("_FUN_473540", "@Player_SetVrId@12")
+extern "C" void FUN_4728c0(); KING_ALIAS("_FUN_4728c0", "@Gilt_Load@12")
+extern "C" void FUN_447230(); KING_ALIAS("_FUN_447230", "@CharVec_Clear@8")
+extern "C" void FUN_47aad0(); KING_ALIAS("_FUN_47aad0", "@Bytes_Reserve@12")
+extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
+extern "C" void FUN_46e170(); KING_ALIAS("_FUN_46e170", "@Vec12_Erase@16")
+extern "C" void FUN_47b4e0(); KING_ALIAS("_FUN_47b4e0", "@Vec8_Erase@16")
+extern "C" void FUN_47afc0(); KING_ALIAS("_FUN_47afc0", "@Vec8_Reserve@12")
+extern "C" void FUN_471bd0(); KING_ALIAS("_FUN_471bd0", "@Pair_Load@12")
+extern "C" void FUN_478de0(); KING_ALIAS("_FUN_478de0", "@Vec8_PushBackB@12")
+extern "C" void FUN_478e80(); KING_ALIAS("_FUN_478e80", "@Vec16c_Erase@16")
+extern "C" void FUN_47af30(); KING_ALIAS("_FUN_47af30", "@Vec16_Reserve@12")
+extern "C" void FUN_448a40(); KING_ALIAS("_FUN_448a40", "@Rec_InitPlayerIter@8")
+extern "C" void FUN_479f50(); KING_ALIAS("_FUN_479f50", "_CharVec_Load")
+extern "C" void FUN_478a80(); KING_ALIAS("_FUN_478a80", "@Vec16_PushBackB@12")
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void FUN_474560(); KING_ALIAS("_FUN_474560", "_Doubles5_Load")
+extern "C" void FUN_4746e0(); KING_ALIAS("_FUN_4746e0", "_Matrix43_Load")
+extern "C" void FUN_481740(); KING_ALIAS("_FUN_481740", "_Save_Read3Doubles")
+extern "C" void FUN_474160(); KING_ALIAS("_FUN_474160", "@Player_SetPlace@12")
+ASM_VAR(int, g_pl66fa98, $L_66fa98)
+ASM_VAR(int, g_pl66fa90, $L_66fa90)
+ASM_VAR(int, g_pl66fa88, $L_66fa88)
+ASM_VAR(int, g_pl66fa80, $L_66fa80)
+ASM_VAR(int, g_pl66fa78, $L_66fa78)
+ASM_VAR(int, g_pl66fa70, $L_66fa70)
+ASM_VAR(int, g_pl66fa68, $L_66fa68)
+ASM_VAR(int, g_pl66fa60, $L_66fa60)
+
+static DWORD Pl_32(BYTE** c) { DWORD v = F(DWORD, *c, 0); *c += 4; return v; }
+static BYTE Pl_8(BYTE** c) { BYTE v = **c; *c += 1; return v; }
+static short Pl_16(BYTE** c) { short v = F(short, *c, 0); *c += 2; return v; }
+static void Pl_64(BYTE** c, BYTE* to) { F(DWORD, to, 0) = F(DWORD, *c, 0); F(DWORD, to, 4) = F(DWORD, *c, 4); *c += 8; }
+static double Pl_F(BYTE** c) { float v = F(float, *c, 0); *c += 4; return v; }
+
+// a new 48-byte record at self+off (the old one destroyed), loaded from the cursor
+static void Pl_Record(BYTE* self, int off, BYTE** cur)
+{
+    BYTE* old = F(BYTE*, self, off);
+    if (old) {
+        CallThis(FUN_41f3d0, old);
+        operator delete(old);
+    }
+    BYTE* p = (BYTE*)operator new(48);
+    if (p) {
+        F(DWORD, p, 8) = 0;
+        F(int, p, 0) = -1;
+        F(int, p, 4) = -1;
+        F(DWORD, p, 12) = 1072693248;
+        DWORD t[4];
+        t[0] = 0;
+        t[2] = 0;
+        t[3] = 1072693248;
+        BYTE alloc[2];
+        CallThis(FUN_4487a0, p + 16, 19, t, alloc);
+        CallThis(FUN_487730, p + 28, alloc + 1);
+        F(DWORD, p, 40) = 0;
+    }
+    F(BYTE*, self, off) = p;
+    CallThis(FUN_472410, p, cur);
+}
+
+// the position (+0 -1, +4 -1, ..., +28 -1) read in the save's field order, then set
+static void Pl_Position(BYTE* self, BYTE** c)
+{
+    DWORD p[8] = {(DWORD)-1, (DWORD)-1, 0, 0, 0, 0, 0, (DWORD)-1};
+    p[6] = Pl_32(c);
+    p[1] = Pl_32(c);
+    p[0] = Pl_32(c);
+    Pl_64(c, (BYTE*)(p + 2));
+    p[4] = Pl_32(c);
+    p[5] = Pl_32(c);
+    p[7] = Pl_32(c);
+    CallThis(FUN_474290, self, p);
+}
+
+static void Pl_Waypoints(BYTE* self, int off, BYTE** c, bool erase)
+{
+    BYTE* v = self + off;
+    unsigned n = Pl_32(c);
+    if (erase)
+        CallThis(FUN_46e170, v, F(BYTE*, v, 0), F(BYTE*, v, 4));
+    else
+        CallThis(FUN_448060, v);
+    CallThis(FUN_47ab50, v, n);
+    for (; n; n--) {
+        BYTE w[12];
+        CallThis(FUN_4754b0, w);
+        CallThis(FUN_471940, w, c);
+        CallThis(FUN_47abf0, v, w);
+    }
+}
+
+static void Pl_OrderFirst(BYTE* self, BYTE** c)
+{
+    BYTE* at = *c;
+    F(int, self, 712) = CallThis<int>(FUN_46ea00, &at);
+    *c += 4;
+}
+
+extern "C" {
+
+// [FUN_474720] loads player self from the save cursor: the name, then the blocks of Player_Save (and the
+// older formats)
+void __fastcall Player_Load(BYTE* self, void*, BYTE** cur)
+{
+    CallThis(FUN_4471f0, self, F(BYTE*, self, 0), F(BYTE*, self, 4));
+    BYTE* name = *cur;
+    CallThis(FUN_44c220, self, F(BYTE*, self, 4), name, name + strlen((char*)name) + 1);
+    *cur = name + strlen((char*)name) + 1;
+    int id, size;
+    BYTE* data;
+    CallC(FUN_490c40, cur, &id, &data, &size);
+    if (id == g_pl66fa98 && data - *cur + size) {
+        do {
+            int bid, bsize;
+            BYTE* bdata;
+            CallC(FUN_490c40, cur, &bid, &bdata, &bsize);
+            if (bid == g_pl66fa90)
+                Pl_Record(self, 508, cur);
+            else if (bid == g_pl66fa88)
+                Pl_Record(self, 512, cur);
+            else if (bid == g_pl66fa80) {
+                unsigned n = Pl_32(cur);
+                CallThis(FUN_478a00, self + 64);
+                CallThis(FUN_47ac30, self + 64, n);
+                for (; n; n--) {
+                    BYTE r[40];
+                    CallThis(FUN_4133a0, r);
+                    CallThis(FUN_471cf0, r, cur);
+                    CallThis(FUN_4789c0, self + 64, r);
+                }
+            } else if (bid == g_pl66fa78) {
+                F(DWORD, self, 84) = Pl_32(cur);
+                F(DWORD, self, 88) = Pl_32(cur);
+                F(DWORD, self, 92) = Pl_32(cur);
+                Pl_Position(self, cur);
+                F(double, self, 328) = Pl_F(cur);
+                F(double, self, 496) = Pl_F(cur);
+                F(BYTE, self, 504) = Pl_8(cur);
+                Pl_OrderFirst(self, cur);
+                F(DWORD, self, 720) = Pl_32(cur);
+                Pl_Waypoints(self, 16, cur, false);
+                F(DWORD, self, 716) = Pl_32(cur);
+                F(double, self, 784) = Pl_F(cur);
+                F(double, self, 800) = Pl_F(cur);
+            } else if (bid == g_pl66fa70) {
+                F(DWORD, self, 84) = Pl_32(cur);
+                F(DWORD, self, 88) = Pl_32(cur);
+                F(DWORD, self, 92) = Pl_32(cur);
+                Pl_64(cur, self + 104);
+                Pl_Position(self, cur);
+                CallThis(FUN_473540, self, Pl_32(cur));
+                F(DWORD, self, 112) = Pl_32(cur);
+                F(DWORD, self, 116) = Pl_32(cur);
+                F(DWORD, self, 120) = Pl_32(cur);
+                F(DWORD, self, 124) = Pl_32(cur);
+                Pl_64(cur, self + 128);
+                CallThis(FUN_4728c0, self + 192, cur);
+                unsigned n = Pl_32(cur);
+                CallThis(FUN_447230, self + 264);
+                CallThis(FUN_47aad0, self + 264, n);
+                for (; n; n--) {
+                    char ch = (char)Pl_8(cur);
+                    CallThis(FUN_47ab20, self + 264, &ch);
+                }
+                *cur += 24;
+                for (int off = 280; off <= 328; off += 8)
+                    Pl_64(cur, self + off);
+                F(BYTE, self, 488) = Pl_8(cur);
+                Pl_64(cur, self + 496);
+                F(BYTE, self, 504) = Pl_8(cur);
+                Pl_OrderFirst(self, cur);
+                F(DWORD, self, 720) = Pl_32(cur);
+                Pl_Waypoints(self, 16, cur, true);
+                F(DWORD, self, 716) = Pl_32(cur);
+                Pl_64(cur, self + 784);
+                Pl_64(cur, self + 800);
+                n = Pl_32(cur);
+                CallThis(FUN_47b4e0, self + 136, F(BYTE*, self, 136), F(BYTE*, self, 140));
+                CallThis(FUN_47afc0, self + 136, n);
+                for (; n; n--) {
+                    DWORD pr[2] = {0, 0};
+                    CallThis(FUN_471bd0, pr, cur);
+                    CallThis(FUN_478de0, self + 136, pr);
+                }
+                F(DWORD, self, 148) = Pl_32(cur);
+                n = Pl_32(cur);
+                CallThis(FUN_478e80, self + 152, F(BYTE*, self, 152), F(BYTE*, self, 156));
+                CallThis(FUN_47af30, self + 152, n);
+                for (; n; n--) {
+                    BYTE r[16];
+                    CallThis(FUN_448a40, r);
+                    CallC(FUN_479f50, cur, r + 4);
+                    CallThis(FUN_478a80, self + 152, r);
+                    CallThis(FUN_404420, r + 4);
+                }
+                CallC(FUN_479f50, cur, self + 172);
+                Pl_64(cur, self + 184);
+                CallC(FUN_474560, cur, self + 368);
+                F(BYTE, self, 488) = Pl_8(cur);
+                F(BYTE, self, 504) = Pl_8(cur);
+                F(BYTE, self, 505) = Pl_8(cur);
+                F(DWORD, self, 516) = Pl_32(cur);
+                F(DWORD, self, 520) = Pl_32(cur);
+                F(DWORD, self, 528) = Pl_32(cur);
+                Pl_64(cur, self + 536);
+                CallC(FUN_4746e0, cur, self + 544);
+                Pl_Waypoints(self, 640, cur, true);
+                F(DWORD, self, 652) = Pl_32(cur);
+                CallC(FUN_481740, cur, self + 728);
+                Pl_64(cur, self + 752);
+                Pl_64(cur, self + 760);
+                F(BYTE, self, 776) = Pl_8(cur);
+                F(BYTE, self, 777) = Pl_8(cur);
+                Pl_64(cur, self + 784);
+                Pl_64(cur, self + 800);
+                F(DWORD, self, 832) = Pl_32(cur);
+                F(DWORD, self, 812) = Pl_32(cur);
+                F(DWORD, self, 808) = Pl_32(cur);
+                Pl_64(cur, self + 816);
+                F(DWORD, self, 824) = Pl_32(cur);
+                F(DWORD, self, 828) = Pl_32(cur);
+                F(DWORD, self, 836) = Pl_32(cur);
+                Pl_64(cur, self + 856);
+                CallThis(FUN_474160, self, Pl_32(cur));
+            } else if (bid == g_pl66fa68) {
+                for (int off = 888; off < 936; off += 8)
+                    Pl_64(cur, self + off);
+                F(DWORD, self, 936) = Pl_32(cur);
+            }
+            CallC(FUN_490c70, cur, bdata, bsize);
+        } while (data - *cur + size);
+    }
+    if (id == g_pl66fa60) {
+        F(DWORD, self, 88) = Pl_32(cur);
+        F(int, self, 56) = Pl_16(cur);
+        F(int, self, 36) = Pl_16(cur);
+        F(int, self, 32) = Pl_16(cur);
+        F(double, self, 40) = Pl_F(cur);
+        F(int, self, 48) = Pl_16(cur);
+        F(int, self, 52) = Pl_16(cur);
+        F(int, self, 60) = Pl_16(cur);
+        F(double, self, 328) = Pl_F(cur);
+        F(double, self, 496) = Pl_F(cur);
+        F(BYTE, self, 504) = Pl_8(cur) != 0;
+        F(DWORD, self, 720) = Pl_8(cur);
+        F(DWORD, self, 716) = Pl_8(cur);
+    }
+    CallC(FUN_490c70, cur, data, size);
+}
+
+}  // extern "C"

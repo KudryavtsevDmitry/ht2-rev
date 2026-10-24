@@ -821,7 +821,7 @@ BYTE* __fastcall BytesNode4b6400_Construct(BYTE* self, void*, BYTE* const* src) 
 
 }
 
-ASM_PROC(FUN_4b6f70)
+extern "C" void FUN_4b6f70(); KING_ALIAS("_FUN_4b6f70", "_Sch_Write")
 
 struct Value3v { BYTE* obj; int len; DWORD flags; };
 
@@ -1223,3 +1223,545 @@ extern "C" int __fastcall CipherReader_Get(BYTE* s)
     F(char*, s, 32) = F(char*, s, 36);
     return c;
 }
+
+// ---------------------------------------------------------------------------
+// The reader: one datum of the script text.
+
+extern "C" void FUN_4b2730(); KING_ALIAS("_FUN_4b2730", "@SchDequeIt_Plus@16")    // the character iterator + n (out, n)
+extern "C" void FUN_4b26e0(); KING_ALIAS("_FUN_4b26e0", "@SchDeque_PopFront@8")
+extern "C" void FUN_4b2a00(); KING_ALIAS("_FUN_4b2a00", "@Reader_ErrorLine@12")
+extern "C" void FUN_4b3610(); KING_ALIAS("_FUN_4b3610", "@SchReader_Skip@8")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
+extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")
+extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
+extern "C" void FUN_4b5140(); KING_ALIAS("_FUN_4b5140", "_Sch_MakeIdentifierQ")
+extern "C" void FUN_4b5220(); KING_ALIAS("_FUN_4b5220", "_Sch_MakeIdentifierC")
+extern "C" void FUN_4b5300(); KING_ALIAS("_FUN_4b5300", "_Sch_MakeIdentifierD")
+extern "C" void FUN_4b3670(); KING_ALIAS("_FUN_4b3670", "_SchReader_4b3670")      // a number
+extern "C" void FUN_4b29a0(); KING_ALIAS("_FUN_4b29a0", "_Sch_IsSymbolChar")
+extern "C" void FUN_409070(); KING_ALIAS("_FUN_409070", "_Str_Same")
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")
+extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
+extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void FUN_492250(); KING_ALIAS("_FUN_492250", "_SchValue_Make10007")
+ASM_PROC(FUN_4b32d0)    // a string
+ASM_PROC(FUN_4b36a0)    // a symbol
+ASM_PROC(FUN_4b38d0)    // a vector
+ASM_PROC(FUN_4b3b10)    // a character
+extern "C" int __cdecl isdigit(int c);
+extern "C" int __cdecl isalnum(int c);
+ASM_VAR(AsmLabel, s_rdBadChar, $L_6714b0)
+ASM_VAR(AsmLabel, s_rdUnterminated, $L_671490)
+ASM_VAR(AsmLabel, s_rdQuote, $L_64bf60)
+ASM_VAR(AsmLabel, s_rdQuasiquote, $L_6714a4)
+ASM_VAR(AsmLabel, s_rdUnquoteSplicing, $L_64c09c)
+ASM_VAR(AsmLabel, s_rdUnquote, $L_64c094)
+
+// the character n after the current one of reader r
+static int Rd_Peek(BYTE* r, int n)
+{
+    BYTE it[16];
+    return **CallThis<int**>(FUN_4b2730, r + 8, it, n);
+}
+
+static void Rd_Fill(BYTE* r, int n) { CallThis(FUN_4b2b60, r, n); }
+
+static void Rd_Drop(BYTE* r)
+{
+    Rd_Fill(r, 1);
+    CallThis(FUN_4b26e0, r);
+    F(int, r, 68)++;
+}
+
+static void Rd_Error(BYTE* r, const char* format)
+{
+    BYTE* line[3];
+    CallThis(FUN_487730, line, line);
+    CallThis(FUN_4b2a00, r, line);
+    CallC(FUN_4a54e0, 20, 768, format, line[0]);
+    CallThis(FUN_404420, line);
+}
+
+static void Rd_Check(const BYTE* v)
+{
+    if (!F(BYTE*, v, 0))
+        CallC(FUN_4a52e0, 0, 1);
+    if (F(DWORD, v, 8) & 0x10000)
+        CallC(FUN_4a52e0, 4, 1);
+}
+
+// the value at d = s, keeping d's object when it is the same value
+static void Rd_Assign(BYTE* d, const BYTE* s)
+{
+    BYTE* o = F(BYTE*, d, 0);
+    if (o && !(F(DWORD, d, 8) & 0x10000) && --F(int, o, 4) == 0 && !CallC<char>(FUN_409070, d, s)
+        && F(BYTE*, d, 0))
+        CallVirt(F(BYTE*, d, 0), 12, 1);
+    CopyRef(d, s);
+}
+
+static void Rd_Release(BYTE* v)
+{
+    BYTE* o = F(BYTE*, v, 0);
+    if (!(F(DWORD, v, 8) & 0x10000) && o && --F(int, o, 4) == 0 && F(BYTE*, v, 0))
+        CallVirt(F(BYTE*, v, 0), 12, 1);
+}
+
+// out = read(t, a, r) through the copy constructor
+static BYTE* Rd_Sub(BYTE* out, void (*read)(), int a, BYTE* r)
+{
+    BYTE t[16];
+    CallThis(FUN_454580, out, CallC<BYTE*>(read, t, a, r));
+    CallThis(FUN_4a36c0, t);
+    return out;
+}
+
+extern "C" {
+
+// [FUN_4b3e30] reads the next datum of reader r (+8 its characters, +68 the position, +72 the line) into out:
+// comments are skipped, a bad character is reported and skipped; empty at the end
+BYTE* __cdecl Reader_Read(BYTE* out, int a, BYTE* r)
+{
+    for (;;) {
+        Rd_Fill(r, 1);
+        CallC(FUN_4b2ca0, a, r);
+        int c = Rd_Peek(r, 0);
+        switch (c) {
+        case ';':
+            for (;;) {
+                BYTE ch = (BYTE)Rd_Peek(r, 0);
+                Rd_Drop(r);
+                if (ch == 10)
+                    break;
+                if (ch == 255) {
+                    CallThis(FUN_4bd4d0, out);
+                    return out;
+                }
+                Rd_Fill(r, 2);
+            }
+            continue;
+        case -1:
+            Rd_Drop(r);
+            F(DWORD, out, 0) = 0;
+            F(DWORD, out, 4) = 0;
+            F(DWORD, out, 8) = 0;
+            return out;
+        case '(': {
+            BYTE t[16];
+            CopyRef(out, (BYTE*)Reader_NextItem((int*)t, a, r));
+            CallThis(FUN_4a36c0, t);
+            return out;
+        }
+        case '"': {
+            BYTE t[16];
+            CopyRef(out, CallC<BYTE*>(FUN_4b32d0, t, a, r));
+            CallThis(FUN_4a36c0, t);
+            return out;
+        }
+        case '\'':
+        case '`': {
+            BYTE head[16], tail[16], t[16];
+            CallC(FUN_4a28c0, head, 0, F(void*, r, 72));
+            const char* name = Rd_Peek(r, 0) == '\'' ? s_rdQuote : s_rdQuasiquote;
+            BYTE* id = CallC<BYTE*>(FUN_4b5140, t, 0, &name);
+            Rd_Check(head);
+            Rd_Assign(F(BYTE*, head, 0) + 20, id);
+            CallThis(FUN_4a36c0, t);
+            Rd_Drop(r);
+            CallC(FUN_4a28c0, tail, 0, F(void*, r, 72));
+            Rd_Check(head);
+            Rd_Assign(F(BYTE*, head, 0) + 32, tail);
+            BYTE d[16];
+            BYTE* datum = Reader_Read(d, a, r);
+            Rd_Check(tail);
+            Rd_Assign(F(BYTE*, tail, 0) + 20, datum);
+            Rd_Release(d);
+            CopyRef(out, head);
+            CallThis(FUN_4a36c0, tail);
+            CallThis(FUN_4a36c0, head);
+            return out;
+        }
+        case ',': {
+            BYTE head[16], tail[16], t[16];
+            CallC(FUN_4a28c0, head, 0, F(void*, r, 72));
+            Rd_Fill(r, 2);
+            if (Rd_Peek(r, 1) == '@') {
+                BYTE* id = CallC<BYTE*>(FUN_4b5220, t, 0, (const char*)s_rdUnquoteSplicing);
+                Rd_Check(head);
+                Rd_Assign(F(BYTE*, head, 0) + 20, id);
+                CallThis(FUN_4a36c0, t);
+                Rd_Drop(r);
+            } else {
+                BYTE* id = CallC<BYTE*>(FUN_4b5300, t, 0, (const char*)s_rdUnquote);
+                Rd_Check(head);
+                Rd_Assign(F(BYTE*, head, 0) + 20, id);
+                CallThis(FUN_4a36c0, t);
+            }
+            Rd_Drop(r);
+            CallC(FUN_4a28c0, tail, 0, F(void*, r, 72));
+            Rd_Check(head);
+            Rd_Assign(F(BYTE*, head, 0) + 32, tail);
+            BYTE d[16];
+            BYTE* datum = Reader_Read(d, a, r);
+            Rd_Check(tail);
+            CallThis(FUN_40c100, F(BYTE*, tail, 0) + 20, datum);
+            Rd_Release(d);
+            CallThis(FUN_454580, out, head);
+            CallThis(FUN_4a36c0, tail);
+            CallThis(FUN_4a36c0, head);
+            return out;
+        }
+        case '+':
+        case '-':
+        case '.':
+            Rd_Fill(r, 2);
+            return Rd_Sub(out, isdigit(Rd_Peek(r, 1)) ? FUN_4b3670 : FUN_4b36a0, a, r);
+        case '#':
+            Rd_Fill(r, 2);
+            switch (Rd_Peek(r, 1)) {
+            case '(':
+                return Rd_Sub(out, FUN_4b38d0, a, r);
+            case '\\':
+                return Rd_Sub(out, FUN_4b3b10, a, r);
+            case 'b':
+            case 'd':
+            case 'e':
+            case 'i':
+            case 'o':
+            case 'x':
+                return Rd_Sub(out, FUN_4b3670, a, r);
+            case 't':
+                CallThis(FUN_4b3610, r);
+                CallThis(FUN_4b3610, r);
+                CallC(FUN_492250, out, 0, -1);
+                return out;
+            case 'f':
+                CallThis(FUN_4b3610, r);
+                CallThis(FUN_4b3610, r);
+                CallC(FUN_492250, out, 0, 0);
+                return out;
+            case '|':
+                // a block comment; at "|#" the reading goes on with its "|" as an ordinary character
+                for (;;) {
+                    Rd_Fill(r, 2);
+                    if (Rd_Peek(r, 0) == '|' && Rd_Peek(r, 1) == '#')
+                        break;
+                    if (Rd_Peek(r, 0) == -1) {
+                        Rd_Error(r, s_rdUnterminated);
+                        CallThis(FUN_4bd4d0, out);
+                        return out;
+                    }
+                    CallThis(FUN_4b3610, r);
+                }
+                break;
+            default:
+                Rd_Error(r, s_rdBadChar);
+                break;
+            }
+            // fall through to an ordinary character
+        default:
+            if (isdigit(Rd_Peek(r, 0)))
+                return Rd_Sub(out, FUN_4b3670, a, r);
+            if (isalnum(Rd_Peek(r, 0)) || CallC<int>(FUN_4b29a0, Rd_Peek(r, 0)))
+                return Rd_Sub(out, FUN_4b36a0, a, r);
+            Rd_Error(r, s_rdBadChar);
+            continue;
+        }
+    }
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// The printer: the written form of a value on a port.
+
+extern "C" void FUN_4b13c0(); KING_ALIAS("_FUN_4b13c0", "_Port_WriteChar")
+extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")
+extern "C" void FUN_4b6a80(); KING_ALIAS("_FUN_4b6a80", "_Sch_CaretLine")
+extern "C" void FUN_4556d0(); KING_ALIAS("_FUN_4556d0", "@NumberHandle_From@12")
+extern "C" void FUN_4a1940(); KING_ALIAS("_FUN_4a1940", "@SchValue_AsBool@12")
+extern "C" void FUN_4a19c0(); KING_ALIAS("_FUN_4a19c0", "@SchValue_AsChar@12")
+extern "C" void FUN_4a6860(); KING_ALIAS("_FUN_4a6860", "@SchValue_Name@8")
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+extern "C" void FUN_4a5420(); KING_ALIAS("_FUN_4a5420", "_Sch_TypeError")
+extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
+ASM_PROC(FUN_4b6b90)    // writes the rest of a list (out, the tail, port, context)
+ASM_PROC(FUN_4b6e20)    // writes a number (handle by value, port)
+extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
+ASM_VAR(AsmLabel, s_prEmpty, $L_66d4e4)          // "()"
+ASM_VAR(AsmLabel, s_prDot, $L_6715bc)            // " . "
+ASM_VAR(AsmLabel, s_prTrue, $L_671664)
+ASM_VAR(AsmLabel, s_prFalse, $L_671660)
+ASM_VAR(AsmLabel, s_prNewline, $L_671654)
+ASM_VAR(AsmLabel, s_prSpace, $L_67164c)
+ASM_VAR(AsmLabel, s_prClosure, $L_671608)
+ASM_VAR(AsmLabel, s_prClosureEnd, $L_671604)
+ASM_VAR(AsmLabel, s_prContinuation, $L_6715f4)
+ASM_VAR(AsmLabel, s_prSpecialForm, $L_6715e4)
+ASM_VAR(AsmLabel, s_prGt, $L_6712a0)
+ASM_VAR(AsmLabel, s_prIdentFmt, $L_6715d0)
+ASM_VAR(AsmLabel, s_prIdent, $L_6715dc)
+ASM_VAR(AsmLabel, s_prUnsupported, $L_6715c0)
+ASM_VAR(AsmLabel, s_prPort, $L_671644)
+ASM_VAR(AsmLabel, s_prEnvironment, $L_671634)
+ASM_VAR(AsmLabel, s_prUserDefined, $L_671624)
+ASM_VAR(AsmLabel, s_prUnspecified, $L_671614)
+ASM_VAR(AsmLabel, s_prImmediate, $L_671104)
+ASM_VAR(AsmLabel, s_prPair, $L_66cb08)
+ASM_VAR(AsmLabel, s_prString, $L_66ca58)
+ASM_VAR(AsmLabel, s_prIdentifier, $L_66ce4c)
+ASM_VAR(AsmLabel, s_prVector, $L_6708e4)
+ASM_VAR(AsmLabel, s_prClosureType, $L_6705f4)
+
+struct PrValue { DWORD d[3]; };
+
+static PrValue Pr_Port(const BYTE* port)
+{
+    PrValue v;
+    CallThis(FUN_454580, &v, port);
+    return v;
+}
+
+static void Pr_Char(const BYTE* port, int c) { CallC(FUN_4b13c0, c, Pr_Port(port)); }
+static void Pr_Str(const BYTE* port, const char* s) { CallC(FUN_4b1450, s, Pr_Port(port)); }
+
+// a typed handle of the value v (type, else a script error and empty)
+static void Pr_Typed(BYTE* h, const BYTE* v, int type, const char* name)
+{
+    F(DWORD, h, 0) = 0;
+    F(DWORD, h, 4) = 0;
+    F(DWORD, h, 8) = 0;
+    BYTE* o = F(BYTE*, v, 0);
+    if (o) {
+        if (CallVirt<int>(o, 0) == type) {
+            F(BYTE*, h, 0) = o;
+            F(DWORD, h, 8) = F(DWORD, v, 8);
+            F(int, o, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(o, 4), name);
+    } else {
+        F(DWORD, h, 0) = 0;
+        F(DWORD, h, 8) = 0;
+    }
+}
+
+static void Pr_Check(const BYTE* h)
+{
+    if (!F(BYTE*, h, 0))
+        CallC(FUN_4a52e0, 0, 1);
+    if (F(DWORD, h, 8) & 0x10000)
+        CallC(FUN_4a52e0, 4, 1);
+}
+
+static void Pr_ReleaseInline(BYTE* v)
+{
+    BYTE* o = F(BYTE*, v, 0);
+    if (!(F(DWORD, v, 8) & 0x10000) && o && --F(int, o, 4) == 0 && F(BYTE*, v, 0))
+        CallVirt(F(BYTE*, v, 0), 12, 1);
+}
+
+extern "C" {
+
+// [FUN_4b6f70] writes value v on the port (a value) in written form; ctx: +0 the options (bit 0 of its first
+// byte: closures with their code), +4 the depth; out is left empty
+BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx);
+
+BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
+{
+    BYTE h[16], t[16];
+    if (!F(BYTE*, v, 0) && !F(DWORD, v, 8) && !F(DWORD, v, 4)) {
+        Pr_Str(port, s_prEmpty);
+    } else
+        switch ((BYTE)F(DWORD, v, 8)) {
+        case 2:
+            Pr_Typed(h, v, 2, s_prPair);
+            F(int, ctx, 4)++;
+            CallC(FUN_4b6a80, port, ctx);
+            Pr_Char(port, '(');
+            Pr_Check(h);
+            Sch_Write(t, F(BYTE*, h, 0) + 20, port, ctx);
+            Pr_ReleaseInline(t);
+            Pr_Check(h);
+            {
+                BYTE* cdr = F(BYTE*, h, 0) + 32;
+                if (!F(BYTE*, cdr, 0) && !F(DWORD, cdr, 8) && !F(DWORD, cdr, 4)) {
+                    Pr_Char(port, ')');
+                    F(int, ctx, 4)--;
+                } else {
+                    Pr_Check(h);
+                    if ((BYTE)F(DWORD, F(BYTE*, h, 0) + 32, 8) == 2) {
+                        Pr_Check(h);
+                        CallC(FUN_4b6b90, t, F(BYTE*, h, 0) + 32, port, ctx);
+                        Pr_ReleaseInline(t);
+                    } else {
+                        Pr_Str(port, s_prDot);
+                        Pr_Check(h);
+                        Sch_Write(t, F(BYTE*, h, 0) + 32, port, ctx);
+                        Pr_ReleaseInline(t);
+                        Pr_Char(port, ')');
+                        F(int, ctx, 4)--;
+                    }
+                }
+            }
+            CallThis(FUN_4a36c0, h);
+            break;
+        case 3:
+            Pr_Typed(h, v, 3, s_prString);
+            Pr_Char(port, ' ');
+            Pr_Char(port, '"');
+            Pr_Check(h);
+            for (char* p = F(char*, F(BYTE*, h, 0), 12);; p++) {
+                Pr_Check(h);
+                if (p == F(char*, F(BYTE*, h, 0), 16))
+                    break;
+                char c = *p;
+                if (c == 10) {
+                    Pr_Char(port, '\\');
+                    Pr_Char(port, 'n');
+                } else if (c == '\\') {
+                    Pr_Char(port, '\\');
+                    Pr_Char(port, '\\');
+                } else if (c == '"') {
+                    Pr_Char(port, '\\');
+                    Pr_Char(port, '"');
+                } else if (!c)
+                    break;
+                else
+                    Pr_Char(port, *p);
+            }
+            Pr_Char(port, '"');
+            Pr_Char(port, ' ');
+            CallThis(FUN_4a36c0, h);
+            break;
+        case 4:
+            Pr_Str(port, s_prClosure);
+            Pr_Typed(h, v, 4, s_prClosureType);
+            Pr_Check(h);
+            if (CallVirt<int>(F(BYTE*, h, 0), 20) == 1) {
+                BYTE h2[16];
+                Pr_Typed(h2, h, 4, s_prClosureType);
+                PrValue pv = Pr_Port(port);
+                CallC(FUN_4b1450, F(const char*, CallThis<BYTE*>(FUN_4aa430, h2), 20), pv);
+                CallThis(FUN_4a36c0, h2);
+            } else {
+                Pr_Check(h);
+                if (CallVirt<int>(F(BYTE*, h, 0), 20) == 2 && (*F(BYTE*, ctx, 0) & 1)) {
+                    BYTE h2[16];
+                    Pr_Typed(h2, h, 4, s_prClosureType);
+                    Pr_Check(h2);
+                    Sch_Write(t, F(BYTE*, h2, 0) + 32, port, ctx);
+                    Pr_ReleaseInline(t);
+                    Pr_Check(h2);
+                    Sch_Write(t, F(BYTE*, h2, 0) + 20, port, ctx);
+                    Pr_ReleaseInline(t);
+                    CallThis(FUN_4a36c0, h2);
+                }
+            }
+            Pr_Str(port, s_prClosureEnd);
+            CallThis(FUN_4a36c0, h);
+            break;
+        case 5:
+            Pr_Str(port, s_prContinuation);
+            break;
+        case 6: {
+            Pr_Char(port, ' ');
+            PrValue n;
+            CallThis(FUN_4556d0, &n, v);
+            CallC(FUN_4b6e20, n, port);
+            Pr_Char(port, ' ');
+            break;
+        }
+        case 7:
+            Pr_Char(port, ' ');
+            CallThis(FUN_4a1940, h, v);
+            Pr_Str(port, F(BYTE*, h, 0) ? s_prTrue : s_prFalse);
+            CallThis(FUN_4a36c0, h);
+            Pr_Char(port, ' ');
+            break;
+        case 8:
+            Pr_Char(port, ' ');
+            CallThis(FUN_4a19c0, h, v);
+            if (F(int, h, 0) == 10)
+                Pr_Str(port, s_prNewline);
+            else if (F(int, h, 0) == 32)
+                Pr_Str(port, s_prSpace);
+            else {
+                Pr_Char(port, '#');
+                Pr_Char(port, '\\');
+                PrValue pv = Pr_Port(port);
+                CallC(FUN_4b13c0, (int)*CallThis<char*>(FUN_4bd510, h), pv);
+            }
+            Pr_Char(port, ' ');
+            CallThis(FUN_4a36c0, h);
+            break;
+        case 9:
+            Pr_Char(port, ' ');
+            Pr_Typed(h, v, 9, s_prIdentifier);
+            Pr_Check(h);
+            for (char* p = F(char*, F(BYTE*, h, 0), 12);; p++) {
+                Pr_Check(h);
+                if (p == F(char*, F(BYTE*, h, 0), 16) || !*p)
+                    break;
+                Pr_Char(port, *p);
+            }
+            Pr_Char(port, ' ');
+            CallThis(FUN_4a36c0, h);
+            break;
+        case 10:
+            Pr_Char(port, ' ');
+            Pr_Char(port, '#');
+            Pr_Char(port, '(');
+            Pr_Typed(h, v, 10, s_prVector);
+            Pr_Check(h);
+            for (BYTE* p = F(BYTE*, F(BYTE*, h, 0), 20);; p += 12) {
+                Pr_Check(h);
+                if (p == F(BYTE*, F(BYTE*, h, 0), 24))
+                    break;
+                Sch_Write(t, p, port, ctx);
+                Pr_ReleaseInline(t);
+            }
+            Pr_Char(port, ')');
+            Pr_Char(port, ' ');
+            CallThis(FUN_4a36c0, h);
+            break;
+        case 11: Pr_Str(port, s_prPort); break;
+        case 12: Pr_Str(port, s_prEnvironment); break;
+        case 64: Pr_Str(port, s_prUserDefined); break;
+        case 255: Pr_Str(port, s_prUnspecified); break;
+        case 34:
+            Pr_Str(port, s_prSpecialForm);
+            {
+                PrValue pv = Pr_Port(port);
+                CallC(FUN_4b1450, CallThis<const char*>(FUN_4a6860, v), pv);
+            }
+            Pr_Str(port, s_prGt);
+            break;
+        case 33: {
+            char buf[128];
+            sprintf(buf, s_prIdentFmt, (const char*)s_prIdent, F(DWORD, v, 0), F(DWORD, v, 4));
+            Pr_Str(port, buf);
+            break;
+        }
+        default: {
+            Pr_Str(port, s_prUnsupported);
+            PrValue pv = Pr_Port(port);
+            CallC(FUN_4b1450, CallThis<const char*>(FUN_4a6860, v), pv);
+            PrValue cp;
+            CopyRef((BYTE*)&cp, port);
+            CallC(FUN_4b1450, (const char*)s_prGt, cp);
+            const char* name = (F(DWORD, v, 8) & 0x10000) ? (const char*)s_prImmediate
+                                                          : CallVirt<const char*>(F(BYTE*, v, 0), 4);
+            CallC(FUN_4a5420, 21, 256, name);
+            break;
+        }
+        }
+    F(DWORD, out, 0) = 0;
+    F(DWORD, out, 4) = 0;
+    F(DWORD, out, 8) = 0;
+    return out;
+}
+
+}  // extern "C"
