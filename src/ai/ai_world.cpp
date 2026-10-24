@@ -5886,7 +5886,7 @@ extern "C" void FUN_4484d0(); KING_ALIAS("_FUN_4484d0", "@PlayerList_Construct@1
 extern "C" void FUN_448cd0(); KING_ALIAS("_FUN_448cd0", "@Vec4b_Construct@20")
 extern "C" void FUN_449680(); KING_ALIAS("_FUN_449680", "@List64_Construct@12")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
-ASM_PROC(FUN_4ad440)
+extern "C" void FUN_4ad440(); KING_ALIAS("_FUN_4ad440", "@Sch_Construct@16")
 ASM_PROC($L_401b90)
 ASM_PROC($L_447d50)
 ASM_VAR(char, g_init68a830, $L_68a830)

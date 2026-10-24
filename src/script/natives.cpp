@@ -1515,3 +1515,683 @@ SchValue* __cdecl Nat_IntegerToChar(SchValue* out, BYTE* p, BYTE** args)
 }
 
 }  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Strings, vectors, procedures and ports.
+
+extern "C" void FUN_4918c0(); KING_ALIAS("_FUN_4918c0", "_Sch_Args3")
+extern "C" void FUN_4a24e0(); KING_ALIAS("_FUN_4a24e0", "_SchValue_MakeNumberU")
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+extern "C" void FUN_4a25d0(); KING_ALIAS("_FUN_4a25d0", "_Sch_MakeVector4a25d0")
+extern "C" void FUN_4a5910(); KING_ALIAS("_FUN_4a5910", "_Sch_Message0")
+extern "C" void FUN_4a2700(); KING_ALIAS("_FUN_4a2700", "_SchValue_MakeVector")
+extern "C" void FUN_4a16d0(); KING_ALIAS("_FUN_4a16d0", "@Vec12_PushBackRef@12")
+extern "C" void FUN_4a27e0(); KING_ALIAS("_FUN_4a27e0", "_SchValue_MakeEnv")
+extern "C" void FUN_4557f0(); KING_ALIAS("_FUN_4557f0", "_Port_MakeA")
+extern "C" void FUN_4a2be0(); KING_ALIAS("_FUN_4a2be0", "_Values_Copy")
+extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
+extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
+ASM_PROC(FUN_4a1a40)    // vector<value>::insert(pos, first, last)
+ASM_PROC(FUN_4b4c20)    // read (out, p, port by value)
+extern "C" void FUN_4b8070(); KING_ALIAS("_FUN_4b8070", "_Sch4b8070")    // write (out, p, value by value, port by value)
+ASM_VAR(AsmLabel, s_nStrLen, $L_670898)
+ASM_VAR(AsmLabel, s_nStrRef, $L_6708a8)
+ASM_VAR(AsmLabel, s_nStrSet, $L_6708b4)
+ASM_VAR(AsmLabel, s_nVectorP, $L_6708c0)
+ASM_VAR(AsmLabel, s_nMakeVector, $L_6708c8)
+ASM_VAR(AsmLabel, s_nListToVector, $L_6708d4)
+ASM_VAR(AsmLabel, s_nVector, $L_6708e4)        // "Vector"
+ASM_VAR(AsmLabel, s_nVecLen, $L_6708ec)
+ASM_VAR(AsmLabel, s_nVecRef, $L_6708fc)
+ASM_VAR(AsmLabel, s_nVecSet, $L_670908)
+ASM_VAR(AsmLabel, s_nProcP, $L_670914)
+ASM_VAR(AsmLabel, s_nInPortP, $L_670920)
+ASM_VAR(AsmLabel, s_nOutPortP, $L_67092c)
+ASM_VAR(AsmLabel, s_nOpenIn, $L_67093c)
+ASM_VAR(AsmLabel, s_nOpenOut, $L_67094c)
+ASM_VAR(AsmLabel, s_nCloseIn, $L_670960)
+ASM_VAR(AsmLabel, s_nCloseOut, $L_670974)
+ASM_VAR(AsmLabel, s_nReadChar, $L_670988)
+ASM_VAR(AsmLabel, s_nPeekChar, $L_670994)
+ASM_VAR(AsmLabel, s_nEofP, $L_6709a0)
+ASM_VAR(AsmLabel, s_nCharReady, $L_6709ac)
+ASM_VAR(AsmLabel, s_nWriteChar, $L_6709b8)
+ASM_VAR(AsmLabel, s_nRead, $L_6709c4)
+ASM_VAR(AsmLabel, s_nWrite, $L_6709cc)
+ASM_VAR(AsmLabel, s_nMacroExpand, $L_6709d4)
+ASM_VAR(AsmLabel, s_nStrAppend, $L_6709ec)
+ASM_VAR(AsmLabel, s_nPort, $L_66cb28)          // "Port"
+ASM_VAR(AsmLabel, s_nChar, $L_670650)          // "Char"
+
+struct SchValue12 { DWORD d[3]; };              // a value passed by value
+
+static int Nat_StrLen(BYTE* s) { return F(BYTE*, s, 16) - F(BYTE*, s, 12) - 1; }
+static int Nat_VecLen(BYTE* v) { return (F(BYTE*, v, 24) - F(BYTE*, v, 20)) / 12; }
+
+// string-length, vector-length: the length of the argument of the type
+static SchValue* Nat_Length(SchValue* out, BYTE* p, BYTE** args, const char* where, int type, const char* typeName,
+                            int (*len)(BYTE*))
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where))
+        Nat_Zero3(out);
+    else if ((BYTE)v.flags == type) {
+        SchValue h = {0, 0, 0, 0}, t;
+        Nat_Typed(&h, &v, type, typeName);
+        Nat_Check(&h);
+        int zero = 0;
+        unsigned n = len(h.obj);
+        CopyRef(out, CallC<SchValue*>(FUN_4a24e0, &t, 0, &zero, &n));
+        Nat_Release(&t);
+        Nat_Release(&h);
+    } else
+        Nat_Zero3(out);
+    SchValue_Release(&v);
+    return out;
+}
+
+// procedure?: types 4 and 5
+static SchValue* Nat_IsProcedure(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nProcP))
+        Nat_Zero3(out);
+    else
+        Nat_Bool(out, (BYTE)v.flags == 4 || (BYTE)v.flags == 5);
+    SchValue_Release(&v);
+    return out;
+}
+
+// input-port?, output-port?: the port's flags (+8) & mask
+static SchValue* Nat_PortIs(SchValue* out, BYTE* p, BYTE** args, const char* where, int mask)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+        Nat_Zero3(out);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags == 11) {
+        SchValue h = {0, 0, 0, 0};
+        Nat_Typed(&h, &v, 11, s_nPort);
+        Nat_Check(&h);
+        Nat_Bool(out, F(DWORD, h.obj, 8) & mask);
+        if (!(h.flags & SCH_IMMEDIATE) && h.obj && --F(int, h.obj, 4) == 0)
+            CallVirt(h.obj, 12, 1);
+    } else
+        Nat_Bool(out, 0);
+    SchValue_Release(&v);
+    return out;
+}
+
+// open-input-file, open-output-file: a port on the file named by the string (mode 1 or 2)
+static SchValue* Nat_OpenFile(SchValue* out, BYTE* p, BYTE** args, const char* where, int mode)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+        Nat_Zero3(out);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags != 3) {
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nString, where);
+        CallThis(FUN_4bd4d0, out);
+        Nat_Release(&v);
+        return out;
+    }
+    SchValue hs, hp, t;
+    CallThis(FUN_4bd4d0, &hs);
+    Nat_Typed(&hs, &v, 3, s_nString);
+    Nat_Check(&hs);
+    char* name = F(char*, hs.obj, 12);
+    SchValue* r = CallC<SchValue*>(FUN_4557f0, &t, 0, &name, &mode);
+    CallThis(FUN_4bd4d0, &hp);
+    if (r->obj) {
+        if (CallVirt<int>(r->obj, 0) == 11) {
+            hp.obj = r->obj;
+            hp.flags = r->flags;
+            F(int, r->obj, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(r->obj, 4), (const char*)s_nPort);
+    } else {
+        hp.obj = 0;
+        hp.flags = 0;
+    }
+    Nat_Release(&t);
+    Nat_Check(&hp);
+    if (CallVirt<int>(hp.obj, 40)) {
+        Nat_Check(&hs);
+        CallC(FUN_4a5a60, p, 8, F(char*, hs.obj, 12));
+        Nat_Zero3(out);
+        Nat_Release(&hp);
+        Nat_Release(&hs);
+        SchValue_Release(&v);
+        return out;
+    }
+    CallThis(FUN_454580, out, &hp);
+    Nat_Release(&hp);
+    Nat_Release(&hs);
+    Nat_Release(&v);
+    return out;
+}
+
+// close-input-port, close-output-port: the port's close (vtbl+16)
+static SchValue* Nat_ClosePort(SchValue* out, BYTE* p, BYTE** args, const char* where)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (!CallC<int>(FUN_491c00, p, &v, args, where) && (BYTE)v.flags == 11) {
+        SchValue h = {0, 0, 0, 0};
+        Nat_Typed(&h, &v, 11, s_nPort);
+        Nat_Check(&h);
+        CallVirt(h.obj, 16);
+        if (!(h.flags & SCH_IMMEDIATE) && h.obj && --F(int, h.obj, 4) == 0)
+            CallVirt(h.obj, 12, 1);
+    }
+    Nat_Zero3(out);
+    SchValue_Release(&v);
+    return out;
+}
+
+// read-char, peek-char, char-ready?: make(the port's method at off) of the port argument or the current input
+// port (+72 of p); a non-port is reported when report
+static SchValue* Nat_PortGet(SchValue* out, BYTE* p, BYTE** args, const char* where, int off, void (*make)(), bool report)
+{
+    if ((unsigned)Nat_Count(args) <= 1) {
+        Nat_Check((SchValue*)(p + 72));
+        CallC(make, out, 0, CallVirt<int>(F(BYTE*, p, 72), off));
+        return out;
+    }
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+        Nat_Zero3(out);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags == 11) {
+        SchValue h = {0, 0, 0, 0};
+        Nat_Typed(&h, &v, 11, s_nPort);
+        Nat_Check(&h);
+        CallC(make, out, 0, CallVirt<int>(h.obj, off));
+        Nat_Release(&h);
+        SchValue_Release(&v);
+        return out;
+    }
+    if (report)
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nPort, where);
+    SchValue_Release(&v);
+    Nat_Zero3(out);
+    return out;
+}
+
+// $L_49e0b0 .. : a copy of the value at off of p
+static SchValue* Nat_Field(SchValue* out, BYTE* p, int off)
+{
+    CopyRef(out, (SchValue*)(p + off));
+    return out;
+}
+
+extern "C" {
+
+// [$L_49c730] string-length
+SchValue* __cdecl Nat_StringLength(SchValue* out, BYTE* p, BYTE** args)
+{
+    return Nat_Length(out, p, args, s_nStrLen, 3, s_nString, Nat_StrLen);
+}
+
+// $L_49c990: string-ref
+SchValue* __cdecl Nat_StringRef(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, (const char*)s_nStrRef)) {
+        Nat_Zero3(out);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    if ((BYTE)x.flags == 3 && (BYTE)y.flags == 6) {
+        SchValue hs, hn;
+        CallThis(FUN_4bd4d0, &hs);
+        Nat_Typed(&hs, &x, 3, s_nString);
+        CallThis(FUN_4bd4d0, &hn);
+        Nat_Typed(&hn, &y, 6, s_nNumber);
+        Nat_Check(&hn);
+        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        Nat_Check(&hs);
+        if (i >= (unsigned)Nat_StrLen(hs.obj)) {
+            CallC(FUN_4a5a60, p, 23, (const char*)s_nStrRef);
+            Nat_Release(&hn);
+            Nat_Release(&hs);
+            Nat_Zero3(out);
+        } else {
+            Nat_Check(&hs);
+            CallC(FUN_49c210, out, 0, (int)F(signed char*, hs.obj, 12)[i]);
+            Nat_Release(&hn);
+            Nat_Release(&hs);
+        }
+    } else {
+        CallC(FUN_4a5a60, p, 10, (const char*)s_nStrRef);
+        Nat_Zero3(out);
+    }
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+// $L_49cca0: string-set!
+SchValue* __cdecl Nat_StringSet(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0}, c = {0, 0, 0, 0};
+    if (CallC<int>(FUN_4918c0, p, &a, &b, &c, args, (const char*)s_nStrSet)) {
+        Nat_Zero3(out);
+        SchValue_Release(&c);
+        SchValue_Release(&b);
+        SchValue_Release(&a);
+        return out;
+    }
+    if ((BYTE)a.flags == 3 && (BYTE)b.flags == 6 && (BYTE)c.flags == 8) {
+        SchValue hs, hn, ch;
+        CallThis(FUN_4bd4d0, &hs);
+        Nat_Typed(&hs, &a, 3, s_nString);
+        CallThis(FUN_4bd4d0, &hn);
+        Nat_Typed(&hn, &b, 6, s_nNumber);
+        CallThis(FUN_4a19c0, &ch, &c);
+        Nat_Check(&hn);
+        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        if (i >= (unsigned)Nat_StrLen(CallThis<BYTE*>(FUN_4aa430, &hs)))
+            CallC(FUN_4a5a60, p, 23, (const char*)s_nStrSet);
+        else
+            F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hs), 12)[i] = (BYTE)(DWORD)ch.obj;
+        Nat_Release(&ch);
+        Nat_Release(&hn);
+        Nat_Release(&hs);
+    } else
+        CallC(FUN_4a5a60, p, 10, (const char*)s_nStrSet);
+    Nat_Zero3(out);
+    Nat_Release(&c);
+    Nat_Release(&b);
+    Nat_Release(&a);
+    return out;
+}
+
+// $L_49cfe0: vector?
+SchValue* __cdecl Nat_VectorP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsKind(out, p, args, s_nVectorP, 10); }
+
+// $L_49d100: make-vector (count [, fill])
+SchValue* __cdecl Nat_MakeVector(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue n = {0, 0, 0, 0};
+    CopyRef(&n, (SchValue*)(args[0] + 12));
+    if ((BYTE)n.flags != 6) {
+        CallC(FUN_4a5910, p, 21);
+        Nat_Zero3(out);
+        SchValue_Release(&n);
+        return out;
+    }
+    SchValue fill = {0, 0, 0, 0};
+    int want = 2;
+    if (Nat_Count(args) != 2) {
+        CopyRef(&fill, (SchValue*)(args[0] + 24));
+        want = 3;
+    }
+    if (want != Nat_Count(args))
+        CallC(FUN_4a5a60, p, 33, (const char*)s_nMakeVector);
+    SchValue h, t;
+    CallThis(FUN_4bd4d0, &h);
+    Nat_Typed(&h, &n, 6, s_nNumber);
+    Nat_Check(&h);
+    int k = CallThis<int>(FUN_4b0ea0, h.obj);
+    CallC(FUN_4a25d0, &t, 0, p, &k, &fill);
+    CallThis(FUN_454580, out, &t);
+    Nat_Release(&t);
+    Nat_Release(&h);
+    Nat_Release(&fill);
+    Nat_Release(&n);
+    return out;
+}
+
+// $L_49d3b0: list->vector
+SchValue* __cdecl Nat_ListToVector(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nListToVector)) {
+        Nat_Zero3(out);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags != 2) {
+        CallC(FUN_4a5a60, p, 21, (const char*)s_nListToVector);
+        Nat_Zero3(out);
+        SchValue_Release(&v);
+        return out;
+    }
+    SchValue vec, cur;
+    CallC(FUN_4a2700, &vec, 0, p);
+    CopyRef(&cur, &v);
+    while (cur.flags || cur.obj) {
+        if ((BYTE)cur.flags == 2) {
+            SchValue car;
+            SchValue* c = CallC<SchValue*>(FUN_407f00, &car, &cur);
+            Nat_Check(&vec);
+            CallThis(FUN_4a16d0, vec.obj + 20, c);
+            Nat_Release(&car);
+        } else
+            CallC(FUN_4a5a60, p, 17, (const char*)s_nListToVector);
+        SchValue cdr;
+        CallThis(FUN_40c100, &cur, CallC<SchValue*>(FUN_4090a0, &cdr, &cur));
+        SchValue_Release(&cdr);
+    }
+    CallThis(FUN_454580, out, &vec);
+    Nat_Release(&cur);
+    Nat_Release(&vec);
+    Nat_Release(&v);
+    return out;
+}
+
+// $L_49d660: vector-length
+SchValue* __cdecl Nat_VectorLength(SchValue* out, BYTE* p, BYTE** args)
+{
+    return Nat_Length(out, p, args, s_nVecLen, 10, s_nVector, Nat_VecLen);
+}
+
+// $L_49d8d0: vector-ref
+SchValue* __cdecl Nat_VectorRef(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, (const char*)s_nVecRef)) {
+        Nat_Zero3(out);
+        SchValue_Release(&y);
+        SchValue_Release(&x);
+        return out;
+    }
+    if ((BYTE)x.flags == 10 && (BYTE)y.flags == 6) {
+        SchValue hv, hn;
+        CallThis(FUN_4bd4d0, &hv);
+        Nat_Typed(&hv, &x, 10, s_nVector);
+        CallThis(FUN_4bd4d0, &hn);
+        Nat_Typed(&hn, &y, 6, s_nNumber);
+        Nat_Check(&hn);
+        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        Nat_Check(&hv);
+        if (i < (unsigned)Nat_VecLen(hv.obj)) {
+            Nat_Check(&hv);
+            CallThis(FUN_454580, out, F(BYTE*, hv.obj, 20) + i * 12);
+            Nat_Release(&hn);
+            Nat_Release(&hv);
+            SchValue_Release(&y);
+            Nat_Release(&x);
+            return out;
+        }
+        CallC(FUN_4a5a60, p, 23, (const char*)s_nVecRef);
+        Nat_Release(&hn);
+        Nat_Release(&hv);
+    } else
+        CallC(FUN_4a5a60, p, 10, (const char*)s_nVecRef);
+    CallThis(FUN_4bd4d0, out);
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+// $L_49dc30: vector-set
+SchValue* __cdecl Nat_VectorSet(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0}, c = {0, 0, 0, 0};
+    if (CallC<int>(FUN_4918c0, p, &a, &b, &c, args, (const char*)s_nVecSet)) {
+        Nat_Zero3(out);
+        SchValue_Release(&c);
+        SchValue_Release(&b);
+        SchValue_Release(&a);
+        return out;
+    }
+    if ((BYTE)a.flags == 10 && (BYTE)b.flags == 6) {
+        SchValue hv, hn;
+        CallThis(FUN_4bd4d0, &hv);
+        Nat_Typed(&hv, &a, 10, s_nVector);
+        CallThis(FUN_4bd4d0, &hn);
+        Nat_Typed(&hn, &b, 6, s_nNumber);
+        Nat_Check(&hn);
+        unsigned i = CallThis<int>(FUN_4b0ea0, hn.obj);
+        Nat_Check(&hv);
+        if (i >= (unsigned)Nat_VecLen(hv.obj))
+            CallC(FUN_4a5a60, p, 23, (const char*)s_nVecSet);
+        else
+            CallThis(FUN_40c100, F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hv), 20) + i * 12, &c);
+        Nat_Release(&hn);
+        Nat_Release(&hv);
+    } else
+        CallC(FUN_4a5a60, p, 10, (const char*)s_nVecSet);
+    CallThis(FUN_4bd4d0, out);
+    Nat_Release(&c);
+    Nat_Release(&b);
+    Nat_Release(&a);
+    return out;
+}
+
+// $L_49df70: procedure?
+SchValue* __cdecl Nat_ProcedureP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsProcedure(out, p, args); }
+// $L_49e0b0: current-input-port (+48), $L_49e1e0: +60, $L_49e6a0: +72, $L_49e700: +84
+SchValue* __cdecl Nat_Field48(SchValue* out, BYTE* p) { return Nat_Field(out, p, 48); }
+SchValue* __cdecl Nat_Field60(SchValue* out, BYTE* p) { return Nat_Field(out, p, 60); }
+SchValue* __cdecl Nat_Field72(SchValue* out, BYTE* p) { return Nat_Field(out, p, 72); }
+SchValue* __cdecl Nat_Field84(SchValue* out, BYTE* p) { return Nat_Field(out, p, 84); }
+
+// $L_49e110: a new environment (of p)
+SchValue* __cdecl Nat_MakeEnv(SchValue* out, BYTE* p)
+{
+    SchValue t;
+    CopyRef(out, CallC<SchValue*>(FUN_4a27e0, &t, 0, p));
+    SchValue_Release(&t);
+    return out;
+}
+
+// $L_49e240: input-port?, $L_49e470: output-port?
+SchValue* __cdecl Nat_InputPortP(SchValue* out, BYTE* p, BYTE** args) { return Nat_PortIs(out, p, args, s_nInPortP, 1); }
+SchValue* __cdecl Nat_OutputPortP(SchValue* out, BYTE* p, BYTE** args) { return Nat_PortIs(out, p, args, s_nOutPortP, 2); }
+
+// [$L_49e810] open-input-file, $L_49eb00: open-output-file
+SchValue* __cdecl Nat_OpenInputFile(SchValue* out, BYTE* p, BYTE** args) { return Nat_OpenFile(out, p, args, s_nOpenIn, 1); }
+SchValue* __cdecl Nat_OpenOutputFile(SchValue* out, BYTE* p, BYTE** args) { return Nat_OpenFile(out, p, args, s_nOpenOut, 2); }
+// $L_49edf0: close-input-port, $L_49efd0: close-output-port
+SchValue* __cdecl Nat_CloseInputPort(SchValue* out, BYTE* p, BYTE** args) { return Nat_ClosePort(out, p, args, s_nCloseIn); }
+SchValue* __cdecl Nat_CloseOutputPort(SchValue* out, BYTE* p, BYTE** args) { return Nat_ClosePort(out, p, args, s_nCloseOut); }
+// $L_49f1b0: read-char, $L_49f3f0: peek-char
+SchValue* __cdecl Nat_ReadChar(SchValue* out, BYTE* p, BYTE** args) { return Nat_PortGet(out, p, args, s_nReadChar, 20, FUN_49c210, false); }
+SchValue* __cdecl Nat_PeekChar(SchValue* out, BYTE* p, BYTE** args) { return Nat_PortGet(out, p, args, s_nPeekChar, 24, FUN_49c210, true); }
+
+// $L_49f6a0: eof-object? (true for a non-character)
+SchValue* __cdecl Nat_EofObjectP(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nEofP))
+        Nat_Zero3(out);
+    else if ((BYTE)v.flags == 8) {
+        SchValue c;
+        CallThis(FUN_4a19c0, &c, &v);
+        Nat_Bool(out, (int)c.obj == -1);
+        SchValue_Release(&c);
+    } else
+        Nat_Bool(out, -1);
+    SchValue_Release(&v);
+    return out;
+}
+
+// $L_49f850: char-ready?
+SchValue* __cdecl Nat_CharReadyP(SchValue* out, BYTE* p, BYTE** args) { return Nat_PortGet(out, p, args, s_nCharReady, 32, FUN_492250, false); }
+
+// $L_49fa90: write-char (char [, port])
+SchValue* __cdecl Nat_WriteChar(SchValue* out, BYTE* p, BYTE** args)
+{
+    BYTE* first = args[0];
+    int n = Nat_Count(args);
+    if ((unsigned)n < 2)
+        CallC(FUN_4a5a60, p, 33, (const char*)s_nWriteChar);
+    else if (F(BYTE, first, 20) != 8)
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nChar, (const char*)s_nWriteChar);
+    else if (n == 2) {
+        SchValue c;
+        CallThis(FUN_4a19c0, &c, first + 12);
+        Nat_Check((SchValue*)(p + 84));
+        CallVirt(F(BYTE*, p, 84), 28, c.obj);
+        Nat_Release(&c);
+    } else if (n == 3) {
+        SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
+        if (CallC<int>(FUN_491aa0, p, &a, &b, args, (const char*)s_nWriteChar)) {
+            Nat_Zero3(out);
+            SchValue_Release(&b);
+            SchValue_Release(&a);
+            return out;
+        }
+        if ((BYTE)b.flags == 11) {
+            SchValue c, h;
+            CallThis(FUN_4a19c0, &c, &a);
+            CallThis(FUN_4bd4d0, &h);
+            Nat_Typed(&h, &b, 11, s_nPort);
+            Nat_Check(&h);
+            CallVirt(h.obj, 28, c.obj);
+            Nat_Release(&h);
+            Nat_Release(&c);
+        } else
+            CallC(FUN_4a5b50, p, 15, (const char*)s_nPort, (const char*)s_nWriteChar);
+        SchValue_Release(&b);
+        Nat_Release(&a);
+    } else
+        CallC(FUN_4a5a60, p, 33, (const char*)s_nWriteChar);
+    Nat_Zero3(out);
+    return out;
+}
+
+// $L_49fdd0: read ([port]; the current input port +72 of p)
+SchValue* __cdecl Nat_Read(SchValue* out, BYTE* p, BYTE** args)
+{
+    if ((unsigned)Nat_Count(args) <= 1) {
+        SchValue12 port;
+        CallThis(FUN_454580, &port, p + 72);
+        CallC(FUN_4b4c20, out, p, port);
+        return out;
+    }
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nRead)) {
+        Nat_Zero3(out);
+        SchValue_Release(&v);
+        return out;
+    }
+    if ((BYTE)v.flags == 11) {
+        SchValue h = {0, 0, 0, 0};
+        Nat_Typed(&h, &v, 11, s_nPort);
+        SchValue12 port;
+        CallThis(FUN_454580, &port, &h);
+        CallC(FUN_4b4c20, out, p, port);
+        SchValue_Release(&h);
+        SchValue_Release(&v);
+        return out;
+    }
+    SchValue_Release(&v);
+    Nat_Zero3(out);
+    return out;
+}
+
+// $L_4a0040: write (value [, port]; the current output port +84 of p)
+SchValue* __cdecl Nat_Write(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue x, y, t;
+    CopyRef(&x, (SchValue*)(args[0] + 12));
+    if (Nat_Count(args) > 2)
+        CopyRef(&y, (SchValue*)(args[0] + 24));
+    else {
+        Nat_Zero3(&t);
+        CopyRef(&y, &t);
+    }
+    if ((BYTE)y.flags == 11) {
+        if (Nat_Count(args) == 3) {
+            SchValue12 port = {{0, 0, 0}};
+            Nat_Typed((SchValue*)&port, &y, 11, s_nPort);
+            SchValue12 val;
+            CallThis(FUN_454580, &val, &x);
+            CallC(FUN_4b8070, &t, p, val, port);
+            SchValue_Release(&t);
+        } else
+            CallC(FUN_4a5a60, p, 33, (const char*)s_nWrite);
+    } else {
+        SchValue12 port, val;
+        CallThis(FUN_454580, &port, p + 84);
+        CallThis(FUN_454580, &val, &x);
+        CallC(FUN_4b8070, &t, p, val, port);
+        SchValue_Release(&t);
+    }
+    Nat_Zero3(out);
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}
+
+// $L_4a0330: internal-macro-expand (the argument itself)
+SchValue* __cdecl Nat_MacroExpand(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nMacroExpand))
+        Nat_Zero3(out);
+    else
+        CopyRef(out, &v);
+    SchValue_Release(&v);
+    return out;
+}
+
+// $L_4a0460: replaces the values of p (+4224) by the arguments after the first, and reports message 1
+SchValue* __cdecl Nat_SetValues(SchValue* out, BYTE* p, BYTE** args)
+{
+    BYTE** vec = (BYTE**)(p + 4224);
+    BYTE* begin = vec[0];
+    BYTE* end = vec[1];
+    BYTE* e = vec[1];
+    for (BYTE* q = CallC<BYTE*>(FUN_4a2be0, end, end, begin, args, 0); q != e; q += 12)
+        CallThis(FUN_4a36c0, q);
+    vec[1] = vec[1] - (end - begin) / 12 * 12;
+    CallThis(FUN_4a1a40, vec, vec[1], args[0] + 12, args[1]);
+    CallC(FUN_4a5910, p, 1);
+    Nat_Zero3(out);
+    return out;
+}
+
+// $L_4a0520: string-append (two strings)
+SchValue* __cdecl Nat_StringAppend(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &a, &b, args, (const char*)s_nStrAppend)) {
+        Nat_Zero3(out);
+        SchValue_Release(&b);
+        SchValue_Release(&a);
+        return out;
+    }
+    if ((BYTE)a.flags == 3 && (BYTE)b.flags == 3) {
+        SchValue ha, hb, r;
+        CallThis(FUN_4bd4d0, &ha);
+        Nat_Typed(&ha, &a, 3, s_nString);
+        CallThis(FUN_4bd4d0, &hb);
+        Nat_Typed(&hb, &b, 3, s_nString);
+        CallC(FUN_4a2400, &r, 0);
+        Nat_Check(&ha);
+        BYTE* last = F(BYTE*, ha.obj, 16);
+        Nat_Check(&ha);
+        BYTE* first = F(BYTE*, ha.obj, 12);
+        Nat_Check(&r);
+        BYTE* pos = F(BYTE*, r.obj, 16);
+        CallThis(FUN_44c220, CallThis<BYTE*>(FUN_4aa430, &r) + 12, pos, first, last);
+        F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &r), 16) -= 1;
+        last = F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hb), 16);
+        first = F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &hb), 12);
+        pos = F(BYTE*, CallThis<BYTE*>(FUN_4aa430, &r), 16);
+        CallThis(FUN_44c220, CallThis<BYTE*>(FUN_4aa430, &r) + 12, pos, first, last);
+        CallThis(FUN_454580, out, &r);
+        Nat_Release(&r);
+        Nat_Release(&hb);
+        Nat_Release(&ha);
+    } else {
+        CallC(FUN_4a5a60, p, 10, (const char*)s_nStrAppend);
+        CallThis(FUN_4bd4d0, out);
+    }
+    Nat_Release(&b);
+    Nat_Release(&a);
+    return out;
+}
+
+}  // extern "C"

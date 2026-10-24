@@ -1573,6 +1573,18 @@ PUBLIC $L_6707b0, $L_6707c0, $L_6707d0, $L_6707e0, $L_6707e8, $L_6707f0
 PUBLIC $L_6707f4, $L_670800, $L_67080c, $L_670814, $L_670824, $L_670834
 PUBLIC $L_67083c, $L_670844, $L_67084c, $L_670854, $L_67085c, $L_670864
 PUBLIC $L_670874
+PUBLIC $L_670650, $L_670898, $L_6708a8, $L_6708b4, $L_6708c0, $L_6708c8
+PUBLIC $L_6708d4, $L_6708ec, $L_6708fc, $L_670908, $L_670914, $L_670920
+PUBLIC $L_67092c, $L_67093c, $L_67094c, $L_670960, $L_670974, $L_670988
+PUBLIC $L_670994, $L_6709a0, $L_6709ac, $L_6709b8, $L_6709c4, $L_6709cc
+PUBLIC $L_6709d4, $L_6709ec
+PUBLIC $L_4a0e30, $L_4a0f70, $L_4a11c0, $L_4a1300, $L_4a1440, $L_4a1580
+PUBLIC $L_64bf60, $L_670640, $L_670658, $L_67065c, $L_6706b0, $L_670884
+PUBLIC $L_670890, $L_6709fc, $L_670a04, $L_670a08, $L_670a10, $L_670a18
+PUBLIC $L_670a20, $L_670a28, $L_6711e8, $L_6711f4, $L_671208, $L_671210
+PUBLIC $L_67121c, $L_671230, $L_671244, $L_67125c, $L_671270, $L_67128c
+PUBLIC $L_671298, $L_67129c, $L_6712a8, $L_6712ac, $L_6712b4, $L_6712d4
+PUBLIC $L_6712dc, $L_6712e4, $L_6712e8, $L_6712f0, $L_6712f8, $L_686340
 
 ;===================================
 _TEXT SEGMENT
@@ -283587,6 +283599,8 @@ $L_49c71d::
             add ESP,28
             ret 
 $L_49c610 ENDP
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 $L_49c730 PROC
 
             push -1
@@ -287048,6 +287062,42 @@ $L_49e749::
             pop ECX
             ret 
 $L_49c730 ENDP
+ELSE
+EXTERN _Nat_StringLength:PROC
+$L_49c730 TEXTEQU <_Nat_StringLength>
+EXTERN _Nat_StringRef:PROC
+$L_49c990 TEXTEQU <_Nat_StringRef>
+EXTERN _Nat_StringSet:PROC
+$L_49cca0 TEXTEQU <_Nat_StringSet>
+EXTERN _Nat_VectorP:PROC
+$L_49cfe0 TEXTEQU <_Nat_VectorP>
+EXTERN _Nat_MakeVector:PROC
+$L_49d100 TEXTEQU <_Nat_MakeVector>
+EXTERN _Nat_ListToVector:PROC
+$L_49d3b0 TEXTEQU <_Nat_ListToVector>
+EXTERN _Nat_VectorLength:PROC
+$L_49d660 TEXTEQU <_Nat_VectorLength>
+EXTERN _Nat_VectorRef:PROC
+$L_49d8d0 TEXTEQU <_Nat_VectorRef>
+EXTERN _Nat_VectorSet:PROC
+$L_49dc30 TEXTEQU <_Nat_VectorSet>
+EXTERN _Nat_ProcedureP:PROC
+$L_49df70 TEXTEQU <_Nat_ProcedureP>
+EXTERN _Nat_Field48:PROC
+$L_49e0b0 TEXTEQU <_Nat_Field48>
+EXTERN _Nat_MakeEnv:PROC
+$L_49e110 TEXTEQU <_Nat_MakeEnv>
+EXTERN _Nat_Field60:PROC
+$L_49e1e0 TEXTEQU <_Nat_Field60>
+EXTERN _Nat_InputPortP:PROC
+$L_49e240 TEXTEQU <_Nat_InputPortP>
+EXTERN _Nat_OutputPortP:PROC
+$L_49e470 TEXTEQU <_Nat_OutputPortP>
+EXTERN _Nat_Field72:PROC
+$L_49e6a0 TEXTEQU <_Nat_Field72>
+EXTERN _Nat_Field84:PROC
+$L_49e700 TEXTEQU <_Nat_Field84>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -287146,6 +287196,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 $L_49e810 PROC
 
             push -1
@@ -290649,6 +290701,36 @@ $L_4a0858::
             add ESP,76
             ret 
 $L_49e810 ENDP
+ELSE
+EXTERN _Nat_OpenInputFile:PROC
+$L_49e810 TEXTEQU <_Nat_OpenInputFile>
+EXTERN _Nat_OpenOutputFile:PROC
+$L_49eb00 TEXTEQU <_Nat_OpenOutputFile>
+EXTERN _Nat_CloseInputPort:PROC
+$L_49edf0 TEXTEQU <_Nat_CloseInputPort>
+EXTERN _Nat_CloseOutputPort:PROC
+$L_49efd0 TEXTEQU <_Nat_CloseOutputPort>
+EXTERN _Nat_ReadChar:PROC
+$L_49f1b0 TEXTEQU <_Nat_ReadChar>
+EXTERN _Nat_PeekChar:PROC
+$L_49f3f0 TEXTEQU <_Nat_PeekChar>
+EXTERN _Nat_EofObjectP:PROC
+$L_49f6a0 TEXTEQU <_Nat_EofObjectP>
+EXTERN _Nat_CharReadyP:PROC
+$L_49f850 TEXTEQU <_Nat_CharReadyP>
+EXTERN _Nat_WriteChar:PROC
+$L_49fa90 TEXTEQU <_Nat_WriteChar>
+EXTERN _Nat_Read:PROC
+$L_49fdd0 TEXTEQU <_Nat_Read>
+EXTERN _Nat_Write:PROC
+$L_4a0040 TEXTEQU <_Nat_Write>
+EXTERN _Nat_MacroExpand:PROC
+$L_4a0330 TEXTEQU <_Nat_MacroExpand>
+EXTERN _Nat_SetValues:PROC
+$L_4a0460 TEXTEQU <_Nat_SetValues>
+EXTERN _Nat_StringAppend:PROC
+$L_4a0520 TEXTEQU <_Nat_StringAppend>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -315842,6 +315924,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4ad440 PROC
 
             push -1
@@ -318529,6 +318613,10 @@ $L_4aee38::
             add ESP,80
             ret 8
 FUN_4ad440 ENDP
+ELSE
+EXTERN @Sch_Construct@16:PROC
+FUN_4ad440 TEXTEQU <@Sch_Construct@16>
+ENDIF
           BYTE 090H
 $L_4aee50 PROC
 
