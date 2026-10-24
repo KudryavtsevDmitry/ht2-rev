@@ -730,3 +730,233 @@ extern "C" void __cdecl DequeIt_Pass0(DequeIt a, DequeIt b)
     DequeIt b2 = b, a2 = Nat201_Copy(a);
     DequeIt_Pass1(a2, b2);
 }
+
+// ---------------------------------------------------------------------------
+// The number natives: number? complex? real? rational? integer? exact?
+// inexact?, the comparison chains = < > <= >= and +.
+
+extern "C" void FUN_491c00(); KING_ALIAS("_FUN_491c00", "_Sch_SecondArg")
+extern "C" void FUN_492250(); KING_ALIAS("_FUN_492250", "_SchValue_Make10007")      // an immediate value (out, 0, v)
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")          // value assignment
+extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")   // value copy constructor
+extern "C" void FUN_4556d0(); KING_ALIAS("_FUN_4556d0", "@NumberHandle_From@12")   // a number handle from a value
+extern "C" void FUN_4574e0(); KING_ALIAS("_FUN_4574e0", "_Number_Make")
+extern "C" void FUN_4954c0(); KING_ALIAS("_FUN_4954c0", "@SchEmbd_Copy@12")        // number = number
+extern "C" void FUN_4b0ef0(); KING_ALIAS("_FUN_4b0ef0", "@SchNumber_Add@12")       // number += number
+extern "C" void FUN_4a5b50(); KING_ALIAS("_FUN_4a5b50", "_Sch_Message2")
+extern "C" void FUN_4b0eb0(); KING_ALIAS("_FUN_4b0eb0", "@SchNumber_IsReal@8")
+extern "C" void FUN_4b0ed0(); KING_ALIAS("_FUN_4b0ed0", "@SchNumber_IsInexact@8")
+extern "C" void FUN_4b0ee0(); KING_ALIAS("_FUN_4b0ee0", "@SchNumber_IsExact@8")
+extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")             // returns 0
+extern "C" void FUN_4b0fd0(); KING_ALIAS("_FUN_4b0fd0", "_SchNumber_Ne")
+extern "C" void FUN_4b0ff0(); KING_ALIAS("_FUN_4b0ff0", "_SchNumber_Lt")
+extern "C" void FUN_4b1010(); KING_ALIAS("_FUN_4b1010", "_SchNumber_Gt")
+extern "C" void FUN_4b1030(); KING_ALIAS("_FUN_4b1030", "_SchNumber_Le")
+extern "C" void FUN_4b1050(); KING_ALIAS("_FUN_4b1050", "_SchNumber_Ge")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, s_nNumberP, $L_670664)
+ASM_VAR(AsmLabel, s_nComplexP, $L_67066c)
+ASM_VAR(AsmLabel, s_nRealP, $L_670678)
+ASM_VAR(AsmLabel, s_nRationalP, $L_670680)
+ASM_VAR(AsmLabel, s_nIntegerP, $L_67068c)
+ASM_VAR(AsmLabel, s_nExactP, $L_670698)
+ASM_VAR(AsmLabel, s_nInexactP, $L_6706a0)
+ASM_VAR(AsmLabel, s_nPlus, $L_6706ac)
+ASM_VAR(AsmLabel, s_nNumber, $L_66ca60)       // "Number"
+
+static SchValue* Nat_Bool(SchValue* out, int v)
+{
+    return CallC<SchValue*>(FUN_492250, out, 0, v);
+}
+
+static void Nat_Release(SchValue* v)
+{
+    CallThis(FUN_4a36c0, v);
+}
+
+static int Nat_Count(BYTE** args)
+{
+    return (args[1] - args[0]) / 12;
+}
+
+// number?, complex?: the argument is a number
+static SchValue* Nat_IsNumber(SchValue* out, BYTE* p, BYTE** args, const char* where)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+        out->obj = 0;
+        out->m_4 = 0;
+        out->flags = 0;
+    } else
+        Nat_Bool(out, (BYTE)v.flags == 6);
+    SchValue_Release(&v);
+    return out;
+}
+
+// real? .. inexact?: false unless a number, else test(number)
+static SchValue* Nat_NumberTest(SchValue* out, BYTE* p, BYTE** args, const char* where, void (*test)())
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, where)) {
+        out->obj = 0;
+        out->m_4 = 0;
+        out->flags = 0;
+    } else if ((BYTE)v.flags == 6) {
+        BYTE* n = 0;
+        DWORD flags = 0;
+        if (v.obj) {
+            if (CallVirt<int>(v.obj, 0) == 6) {
+                n = v.obj;
+                flags = v.flags;
+                F(int, n, 4)++;
+            } else
+                CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(v.obj, 4), (const char*)s_nNumber);
+        }
+        if (!n)
+            CallC(FUN_4a52e0, 0, 1);
+        if (flags & SCH_IMMEDIATE)
+            CallC(FUN_4a52e0, 4, 1);
+        Nat_Bool(out, CallThis<int>(test, n));
+        if (!(flags & SCH_IMMEDIATE) && n && --F(int, n, 4) == 0)
+            CallVirt(n, 12, 1);
+    } else
+        Nat_Bool(out, 0);
+    SchValue_Release(&v);
+    return out;
+}
+
+// = < > <= >=: true unless stop(previous, next) for a pair of neighbours; false when one is not a number
+static SchValue* Nat_Chain(SchValue* out, BYTE** args, void (*stop)())
+{
+    SchValue a = {0, 0, 0, 0}, b = {0, 0, 0, 0};
+    int n = Nat_Count(args);
+    if (n == 1) {
+        Nat_Bool(out, -1);
+        SchValue_Release(&a);
+        SchValue_Release(&b);
+        return out;
+    }
+    CopyRef(&a, (SchValue*)(args[0] + 12));
+    if (Nat_Count(args) == 2) {
+        Nat_Bool(out, -1);
+        SchValue_Release(&a);
+        SchValue_Release(&b);
+        return out;
+    }
+    int result = -1;
+    for (int i = 2; i != Nat_Count(args); i++) {
+        CallThis(FUN_40c100, &b, &a);
+        CallThis(FUN_40c100, &a, args[0] + i * 12);
+        if ((BYTE)b.flags != 6 || (BYTE)a.flags != 6) {
+            result = 0;
+            break;
+        }
+        SchValue hb, ha;
+        CallThis(FUN_4556d0, &hb, &b);
+        CallThis(FUN_4556d0, &ha, &a);
+        if (CallC<char>(stop, hb.obj, ha.obj)) {
+            Nat_Bool(out, 0);
+            Nat_Release(&ha);
+            Nat_Release(&hb);
+            Nat_Release(&a);
+            Nat_Release(&b);
+            return out;
+        }
+        Nat_Release(&ha);
+        Nat_Release(&hb);
+    }
+    Nat_Bool(out, result);
+    Nat_Release(&a);
+    Nat_Release(&b);
+    return out;
+}
+
+extern "C" {
+
+// [$L_4932d0] number?
+SchValue* __cdecl Nat_NumberP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsNumber(out, p, args, s_nNumberP); }
+// $L_4933f0: complex?
+SchValue* __cdecl Nat_ComplexP(SchValue* out, BYTE* p, BYTE** args) { return Nat_IsNumber(out, p, args, s_nComplexP); }
+// $L_493510: real?
+SchValue* __cdecl Nat_RealP(SchValue* out, BYTE* p, BYTE** args) { return Nat_NumberTest(out, p, args, s_nRealP, FUN_4b0eb0); }
+// $L_493740: rational? (the same test as real?)
+SchValue* __cdecl Nat_RationalP(SchValue* out, BYTE* p, BYTE** args) { return Nat_NumberTest(out, p, args, s_nRationalP, FUN_4b0eb0); }
+// $L_493970: integer? (always false for numbers)
+SchValue* __cdecl Nat_IntegerP(SchValue* out, BYTE* p, BYTE** args) { return Nat_NumberTest(out, p, args, s_nIntegerP, FUN_4cef50); }
+// $L_493ba0: exact? (calls the test the names call IsInexact)
+SchValue* __cdecl Nat_ExactP(SchValue* out, BYTE* p, BYTE** args) { return Nat_NumberTest(out, p, args, s_nExactP, FUN_4b0ed0); }
+// $L_493dd0: inexact?
+SchValue* __cdecl Nat_InexactP(SchValue* out, BYTE* p, BYTE** args) { return Nat_NumberTest(out, p, args, s_nInexactP, FUN_4b0ee0); }
+// $L_494000: =
+SchValue* __cdecl Nat_NumEq(SchValue* out, BYTE* p, BYTE** args) { return Nat_Chain(out, args, FUN_4b0fd0); }
+// $L_494350: <
+SchValue* __cdecl Nat_NumLt(SchValue* out, BYTE* p, BYTE** args) { return Nat_Chain(out, args, FUN_4b1050); }
+// $L_4946a0: >
+SchValue* __cdecl Nat_NumGt(SchValue* out, BYTE* p, BYTE** args) { return Nat_Chain(out, args, FUN_4b1030); }
+// $L_4949f0: <=
+SchValue* __cdecl Nat_NumLe(SchValue* out, BYTE* p, BYTE** args) { return Nat_Chain(out, args, FUN_4b1010); }
+// $L_494d40: >=
+SchValue* __cdecl Nat_NumGe(SchValue* out, BYTE* p, BYTE** args) { return Nat_Chain(out, args, FUN_4b0ff0); }
+
+// $L_495090: + (the sum of the arguments; a non-number is reported and skipped)
+SchValue* __cdecl Nat_Plus(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue a = {0, 0, 0, 0};
+    SchValue s;
+    int zero1 = 0, zero2 = 0;
+    CallC(FUN_4574e0, &s, 0, &zero2, &zero1);
+    if (Nat_Count(args) == 1) {
+        CopyRef(out, &s);
+        Nat_Release(&s);
+        SchValue_Release(&a);
+        return out;
+    }
+    CopyRef(&a, (SchValue*)(args[0] + 12));
+    if (Nat_Count(args) == 2) {
+        if ((BYTE)a.flags == 6) {
+            SchValue h;
+            CallThis(FUN_4bd4d0, &h);
+            if (a.obj) {
+                if (CallVirt<int>(a.obj, 0) == 6) {
+                    h.obj = a.obj;
+                    h.flags = a.flags;
+                    F(int, a.obj, 4)++;
+                } else
+                    CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(a.obj, 4), (const char*)s_nNumber);
+            } else {
+                h.obj = 0;
+                h.flags = 0;
+            }
+            CopyRef(out, &a);
+            Nat_Release(&h);
+            Nat_Release(&s);
+            SchValue_Release(&a);
+            return out;
+        }
+        CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nPlus);
+    } else {
+        if ((BYTE)a.flags == 6) {
+            SchValue h;
+            CallThis(FUN_4556d0, &h, &a);
+            CallThis(FUN_4954c0, s.obj, h.obj);
+            Nat_Release(&h);
+        } else
+            CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nPlus);
+        for (int i = 2; i != Nat_Count(args); i++) {
+            CallThis(FUN_40c100, &a, args[0] + i * 12);
+            if ((BYTE)a.flags == 6) {
+                SchValue h;
+                CallThis(FUN_4556d0, &h, &a);
+                CallThis(FUN_4b0ef0, s.obj, h.obj);
+                Nat_Release(&h);
+            } else
+                CallC(FUN_4a5b50, p, 15, (const char*)s_nNumber, (const char*)s_nPlus);
+        }
+    }
+    CallThis(FUN_454580, out, &s);
+    Nat_Release(&s);
+    Nat_Release(&a);
+    return out;
+}
+
+}  // extern "C"
