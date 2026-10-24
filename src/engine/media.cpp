@@ -1652,7 +1652,7 @@ extern "C" void FUN_5da8a0(); KING_ALIAS("_FUN_5da8a0", "@Fw_UnloadRoom@8")
 extern "C" void FUN_5c2fe0(); KING_ALIAS("_FUN_5c2fe0", "@Table_Clear@8")
 extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
 extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")
-ASM_PROC(FUN_5d4c10)
+extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 
 static BYTE* Med_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {

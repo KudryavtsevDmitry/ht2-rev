@@ -8,6 +8,7 @@
 // procedures again.
 
 #include "king.h"
+#include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -1297,7 +1298,7 @@ extern "C" void FUN_5b1740(); KING_ALIAS("_FUN_5b1740", "@Render_FirstVisible@12
 extern "C" void FUN_5b1870(); KING_ALIAS("_FUN_5b1870", "_Vertices_Alpha")    // the alpha bytes of n vertices
 extern "C" void FUN_5b17f0(); KING_ALIAS("_FUN_5b17f0", "_Points_TexCoords")    // the texture coordinates of n vertices
 extern "C" void FUN_5b18e0(); KING_ALIAS("_FUN_5b18e0", "_Points_Project2")
-ASM_PROC(FUN_5d4c10)    // DirectDraw error text (hr, where)
+extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 typedef void (__cdecl* RnHook)(BYTE*);
 ASM_VAR(AsmLabel, s_rn67f084, $L_67f084)
@@ -2085,7 +2086,7 @@ extern "C" void __fastcall Surface_Create(BYTE* s, void*, int w, int h, int bpp,
 // ---------------------------------------------------------------------------
 // Preparing a surface for drawing.
 
-ASM_PROC(FUN_5d4c10)
+extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
 ASM_VAR(int, g_q150_72090c, $L_72090c)
 ASM_VAR(void*, g_q150_7208f8, $L_7208f8)
@@ -2585,7 +2586,7 @@ extern "C" void __fastcall Render_SetFog(BYTE* s, void*, double start, double en
     Ren154_RS(g_q150_720908, 37, *(int*)&f);
 }
 
-ASM_PROC(FUN_5ad5c0)
+extern "C" void FUN_5ad5c0(); KING_ALIAS("_FUN_5ad5c0", "@Light_ReachesSphere@12")
 // [FUN_5ad9e0] how sphere sp (centre, radius) lies against renderer s's clip planes (+8240 of them, 80 bytes each
 // from +6224): the centre is moved by the current matrix (+8236 into the stack at +5216), then the highest plane
 // result; 0 without planes
@@ -2607,4 +2608,36 @@ extern "C" int __fastcall Render_ClipSphere(BYTE* s, void*, const float* sp)
             best = r;
     }
     return best;
+}
+
+extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
+extern "C" void FUN_5ab660(); KING_ALIAS("_FUN_5ab660", "@Vec3_DivAssign@16")
+ASM_VAR(float, g_q246_64c264, $L_64c264)
+ASM_VAR(float, g_q246_64c450, $L_64c450)
+ASM_VAR(double, g_q246_64da00, $L_64da00)
+// [FUN_5ad5c0] how light l (+0 kind, +4 position, +16 direction, +36 attenuation) reaches sphere sp: 1 for kind 1
+// (everywhere), 2 when it may light it, 0 when not: a point light (2) within reach, a spot (3) also within its cone
+extern "C" int __fastcall Light_ReachesSphere(int* l, void*, const float* sp)
+{
+    int kind = l[0];
+    if (kind == 1)
+        return 1;
+    if (kind != 2 && kind != 3)
+        return 0;
+    const float* p = (const float*)(l + 1);
+    float v[3] = {(float)(p[0] - sp[0]), (float)(p[1] - sp[1]), (float)(p[2] - sp[2])};
+    double d = CallC<double>(FUN_5ab4d0, v) - sp[3];
+    if (!(d >= g_q246_64c264))
+        return 2;
+    bool reach = !(d * F(float, l, 36) * d > g_q246_64c450);
+    if (kind == 2)
+        return reach ? 2 : 0;
+    if (!reach)
+        return 0;
+    float tmp[3];
+    CallThis(FUN_5ab660, v, tmp, (float)CallC<double>(FUN_5ab4d0, v));
+    float n[3] = {-v[0], -v[1], -v[2]};
+    const float* dir = (const float*)(l + 4);
+    double a = x87_acos(dir[2] * n[2] + dir[1] * n[1] + dir[0] * n[0]);
+    return a > g_q246_64da00 ? 0 : 2;
 }
