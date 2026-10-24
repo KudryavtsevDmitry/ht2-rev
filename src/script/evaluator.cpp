@@ -2207,3 +2207,538 @@ extern "C" void __fastcall ValueList_Destroy(BYTE** s)
     F(BYTE*, *s, 4) = *s;
     CallC(FUN_44b4a0, *s, 24);
 }
+
+// ---------------------------------------------------------------------------
+// The interpreter constructor: the special forms and the 107 natives of the global environment, the
+// standard ports, and the start-up script.
+
+extern "C" void FUN_4aaed0(); KING_ALIAS("_FUN_4aaed0", "_Vec44_AllocCopy@12")
+extern "C" void FUN_4a27e0(); KING_ALIAS("_FUN_4a27e0", "_SchValue_MakeEnv")
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")
+extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
+extern "C" void FUN_4a3e40(); KING_ALIAS("_FUN_4a3e40", "@Eval4a3e40@28")         // environment: define (p, name, value)
+extern "C" void FUN_4b00c0(); KING_ALIAS("_FUN_4b00c0", "_Sch_MakeLambda")
+extern "C" void FUN_4aa9f0(); KING_ALIAS("_FUN_4aa9f0", "_Sch_MakeBegin")
+extern "C" void FUN_4b01a0(); KING_ALIAS("_FUN_4b01a0", "_Sch_MakeDefine")
+extern "C" void FUN_4b0280(); KING_ALIAS("_FUN_4b0280", "_Sch_MakeIf")
+extern "C" void FUN_4b0360(); KING_ALIAS("_FUN_4b0360", "_Sch_MakeQuote")
+extern "C" void FUN_4b0440(); KING_ALIAS("_FUN_4b0440", "_Sch_MakeSet")
+extern "C" void FUN_4b0520(); KING_ALIAS("_FUN_4b0520", "_Sch_MakeEval")
+extern "C" void FUN_4b0600(); KING_ALIAS("_FUN_4b0600", "_Sch_MakeCallCC")
+extern "C" void FUN_4b06e0(); KING_ALIAS("_FUN_4b06e0", "_Sch_MakeApply")
+extern "C" void FUN_4ad330(); KING_ALIAS("_FUN_4ad330", "_Sch4ad330")             // defines a native (p, env, name, function)
+extern "C" void FUN_4b07c0(); KING_ALIAS("_FUN_4b07c0", "_Sch_MakeStringP")
+extern "C" void FUN_4b08a0(); KING_ALIAS("_FUN_4b08a0", "_SchInput_MakeEnvironment")
+extern "C" void FUN_4b0990(); KING_ALIAS("_FUN_4b0990", "_SchInput_MakePort")
+extern "C" void FUN_455f00(); KING_ALIAS("_FUN_455f00", "_Port_MakeB")
+extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
+ASM_PROC(FUN_4b4c20)    // read (out, p, port by value)
+ASM_PROC(FUN_4a6af0)    // eval (out, p, value by value)
+ASM_VAR(AsmLabel, g_sv64bed0, $L_64bed0)
+ASM_VAR(AsmLabel, s_sv6712f8, $L_6712f8)
+ASM_VAR(AsmLabel, s_sv6712f0, $L_6712f0)
+ASM_VAR(AsmLabel, s_sv6712e8, $L_6712e8)
+ASM_VAR(AsmLabel, s_sv6712e4, $L_6712e4)
+ASM_VAR(AsmLabel, s_sv64bf60, $L_64bf60)
+ASM_VAR(AsmLabel, s_sv6712dc, $L_6712dc)
+ASM_VAR(AsmLabel, s_sv6712d4, $L_6712d4)
+ASM_VAR(AsmLabel, s_sv6712b4, $L_6712b4)
+ASM_VAR(AsmLabel, s_sv6712ac, $L_6712ac)
+ASM_VAR(AsmLabel, s_sv671204, $L_671204)
+ASM_VAR(AsmLabel, s_sv6711f4, $L_6711f4)
+ASM_VAR(AsmLabel, s_sv686340, $L_686340)
+ASM_VAR(AsmLabel, s_sv686360, $L_686360)
+ASM_VAR(AsmLabel, s_sv686380, $L_686380)
+ASM_VAR(AsmLabel, s_sv6711e8, $L_6711e8)
+ASM_VAR(AsmLabel, s_svPort, $L_66cb28)          // "Port"
+extern "C" void Nat_MacroExpand();
+ASM_VAR(AsmLabel, s_rn6709d4, $L_6709d4)
+ASM_VAR(AsmLabel, g_rf491ce0, $L_491ce0)
+ASM_VAR(AsmLabel, s_rn670640, $L_670640)
+ASM_VAR(AsmLabel, g_rf492270, $L_492270)
+ASM_VAR(AsmLabel, s_rn670658, $L_670658)
+ASM_VAR(AsmLabel, g_rf493120, $L_493120)
+ASM_VAR(AsmLabel, s_rn67065c, $L_67065c)
+extern "C" void Nat_NumberP();
+ASM_VAR(AsmLabel, s_rn670664, $L_670664)
+extern "C" void Nat_ComplexP();
+ASM_VAR(AsmLabel, s_rn67066c, $L_67066c)
+extern "C" void Nat_RealP();
+ASM_VAR(AsmLabel, s_rn670678, $L_670678)
+extern "C" void Nat_RationalP();
+ASM_VAR(AsmLabel, s_rn670680, $L_670680)
+extern "C" void Nat_IntegerP();
+ASM_VAR(AsmLabel, s_rn67068c, $L_67068c)
+extern "C" void Nat_ExactP();
+ASM_VAR(AsmLabel, s_rn670698, $L_670698)
+extern "C" void Nat_InexactP();
+ASM_VAR(AsmLabel, s_rn6706a0, $L_6706a0)
+extern "C" void Nat_NumEq();
+ASM_VAR(AsmLabel, s_rn6712a8, $L_6712a8)
+extern "C" void Nat_NumLt();
+ASM_VAR(AsmLabel, s_rn6712a4, $L_6712a4)
+extern "C" void Nat_NumGt();
+ASM_VAR(AsmLabel, s_rn6712a0, $L_6712a0)
+extern "C" void Nat_NumLe();
+ASM_VAR(AsmLabel, s_rn67129c, $L_67129c)
+extern "C" void Nat_NumGe();
+ASM_VAR(AsmLabel, s_rn671298, $L_671298)
+extern "C" void Nat_Plus();
+ASM_VAR(AsmLabel, s_rn6706ac, $L_6706ac)
+ASM_VAR(AsmLabel, g_rf4954f0, $L_4954f0)
+ASM_VAR(AsmLabel, s_rn6706b0, $L_6706b0)
+extern "C" void Nat_Times();
+ASM_VAR(AsmLabel, s_rn6706b4, $L_6706b4)
+extern "C" void Nat_Divide();
+ASM_VAR(AsmLabel, s_rn670570, $L_670570)
+extern "C" void Nat_Quotient();
+ASM_VAR(AsmLabel, s_rn6706b8, $L_6706b8)
+extern "C" void Nat_Remainder();
+ASM_VAR(AsmLabel, s_rn6706c0, $L_6706c0)
+extern "C" void Nat_Modulo();
+ASM_VAR(AsmLabel, s_rn6706cc, $L_6706cc)
+extern "C" void Nat_Numerator();
+ASM_VAR(AsmLabel, s_rn6706d4, $L_6706d4)
+extern "C" void Nat_Denominator();
+ASM_VAR(AsmLabel, s_rn6706e0, $L_6706e0)
+extern "C" void Nat_Floor();
+ASM_VAR(AsmLabel, s_rn6706ec, $L_6706ec)
+extern "C" void Nat_Ceiling();
+ASM_VAR(AsmLabel, s_rn6706f4, $L_6706f4)
+extern "C" void Nat_Truncate();
+ASM_VAR(AsmLabel, s_rn6706fc, $L_6706fc)
+extern "C" void Nat_Round();
+ASM_VAR(AsmLabel, s_rn670708, $L_670708)
+extern "C" void Nat_Exp();
+ASM_VAR(AsmLabel, s_rn670710, $L_670710)
+extern "C" void Nat_Log();
+ASM_VAR(AsmLabel, s_rn670714, $L_670714)
+extern "C" void Nat_Sin();
+ASM_VAR(AsmLabel, s_rn670718, $L_670718)
+extern "C" void Nat_Cos();
+ASM_VAR(AsmLabel, s_rn67071c, $L_67071c)
+extern "C" void Nat_Tan();
+ASM_VAR(AsmLabel, s_rn670720, $L_670720)
+extern "C" void Nat_Asin();
+ASM_VAR(AsmLabel, s_rn670724, $L_670724)
+extern "C" void Nat_Acos();
+ASM_VAR(AsmLabel, s_rn67072c, $L_67072c)
+extern "C" void Nat_Atan();
+ASM_VAR(AsmLabel, s_rn670734, $L_670734)
+extern "C" void Nat_Atan2();
+ASM_VAR(AsmLabel, s_rn67073c, $L_67073c)
+extern "C" void Nat_Sqrt();
+ASM_VAR(AsmLabel, s_rn670744, $L_670744)
+extern "C" void Nat_Expt();
+ASM_VAR(AsmLabel, s_rn67074c, $L_67074c)
+extern "C" void Nat_MakeRect();
+ASM_VAR(AsmLabel, s_rn670754, $L_670754)
+extern "C" void Nat_MakePolar();
+ASM_VAR(AsmLabel, s_rn670768, $L_670768)
+extern "C" void Nat_RealPart();
+ASM_VAR(AsmLabel, s_rn670774, $L_670774)
+extern "C" void Nat_ImagPart();
+ASM_VAR(AsmLabel, s_rn670780, $L_670780)
+extern "C" void Nat_Magnitude();
+ASM_VAR(AsmLabel, s_rn67078c, $L_67078c)
+extern "C" void Nat_Angle();
+ASM_VAR(AsmLabel, s_rn670798, $L_670798)
+extern "C" void Nat_ToInexact();
+ASM_VAR(AsmLabel, s_rn6707a0, $L_6707a0)
+extern "C" void Nat_ToExact();
+ASM_VAR(AsmLabel, s_rn6707b0, $L_6707b0)
+extern "C" void Nat_NumberToString();
+ASM_VAR(AsmLabel, s_rn6707c0, $L_6707c0)
+extern "C" void Nat_StringToNumber();
+ASM_VAR(AsmLabel, s_rn6707d0, $L_6707d0)
+extern "C" void Nat_PairP();
+ASM_VAR(AsmLabel, s_rn6707e0, $L_6707e0)
+extern "C" void Nat_Cons();
+ASM_VAR(AsmLabel, s_rn6707e8, $L_6707e8)
+extern "C" void Nat_Car();
+ASM_VAR(AsmLabel, s_rn66de28, $L_66de28)
+extern "C" void Nat_Cdr();
+ASM_VAR(AsmLabel, s_rn6707f0, $L_6707f0)
+extern "C" void Nat_SetCar();
+ASM_VAR(AsmLabel, s_rn6707f4, $L_6707f4)
+extern "C" void Nat_SetCdr();
+ASM_VAR(AsmLabel, s_rn670800, $L_670800)
+extern "C" void Nat_SymbolP();
+ASM_VAR(AsmLabel, s_rn67080c, $L_67080c)
+extern "C" void Nat_SymbolToString();
+ASM_VAR(AsmLabel, s_rn670814, $L_670814)
+extern "C" void Nat_StringToSymbol();
+ASM_VAR(AsmLabel, s_rn670824, $L_670824)
+extern "C" void Nat_CharP();
+ASM_VAR(AsmLabel, s_rn670834, $L_670834)
+extern "C" void Nat_CharEq();
+ASM_VAR(AsmLabel, s_rn67083c, $L_67083c)
+extern "C" void Nat_CharLt();
+ASM_VAR(AsmLabel, s_rn670844, $L_670844)
+extern "C" void Nat_CharGt();
+ASM_VAR(AsmLabel, s_rn67084c, $L_67084c)
+extern "C" void Nat_CharLe();
+ASM_VAR(AsmLabel, s_rn670854, $L_670854)
+extern "C" void Nat_CharGe();
+ASM_VAR(AsmLabel, s_rn67085c, $L_67085c)
+extern "C" void Nat_CharToInteger();
+ASM_VAR(AsmLabel, s_rn670864, $L_670864)
+extern "C" void Nat_IntegerToChar();
+ASM_VAR(AsmLabel, s_rn670874, $L_670874)
+ASM_VAR(AsmLabel, g_rf49c230, $L_49c230)
+ASM_VAR(AsmLabel, s_rn670884, $L_670884)
+ASM_VAR(AsmLabel, g_rf49c610, $L_49c610)
+ASM_VAR(AsmLabel, s_rn670890, $L_670890)
+extern "C" void Nat_StringLength();
+ASM_VAR(AsmLabel, s_rn670898, $L_670898)
+extern "C" void Nat_StringRef();
+ASM_VAR(AsmLabel, s_rn6708a8, $L_6708a8)
+extern "C" void Nat_StringSet();
+ASM_VAR(AsmLabel, s_rn6708b4, $L_6708b4)
+extern "C" void Nat_VectorP();
+ASM_VAR(AsmLabel, s_rn6708c0, $L_6708c0)
+extern "C" void Nat_MakeVector();
+ASM_VAR(AsmLabel, s_rn6708c8, $L_6708c8)
+extern "C" void Nat_ListToVector();
+ASM_VAR(AsmLabel, s_rn6708d4, $L_6708d4)
+extern "C" void Nat_VectorLength();
+ASM_VAR(AsmLabel, s_rn6708ec, $L_6708ec)
+extern "C" void Nat_VectorRef();
+ASM_VAR(AsmLabel, s_rn6708fc, $L_6708fc)
+extern "C" void Nat_VectorSet();
+ASM_VAR(AsmLabel, s_rn67128c, $L_67128c)
+extern "C" void Nat_ProcedureP();
+ASM_VAR(AsmLabel, s_rn670914, $L_670914)
+extern "C" void Nat_Field48();
+ASM_VAR(AsmLabel, s_rn671270, $L_671270)
+extern "C" void Nat_MakeEnv();
+ASM_VAR(AsmLabel, s_rn67125c, $L_67125c)
+extern "C" void Nat_Field60();
+ASM_VAR(AsmLabel, s_rn671244, $L_671244)
+extern "C" void Nat_InputPortP();
+ASM_VAR(AsmLabel, s_rn670920, $L_670920)
+extern "C" void Nat_OutputPortP();
+ASM_VAR(AsmLabel, s_rn67092c, $L_67092c)
+extern "C" void Nat_Field72();
+ASM_VAR(AsmLabel, s_rn671230, $L_671230)
+extern "C" void Nat_Field84();
+ASM_VAR(AsmLabel, s_rn67121c, $L_67121c)
+extern "C" void Nat_OpenInputFile();
+ASM_VAR(AsmLabel, s_rn67093c, $L_67093c)
+extern "C" void Nat_OpenOutputFile();
+ASM_VAR(AsmLabel, s_rn67094c, $L_67094c)
+extern "C" void Nat_CloseInputPort();
+ASM_VAR(AsmLabel, s_rn670960, $L_670960)
+extern "C" void Nat_CloseOutputPort();
+ASM_VAR(AsmLabel, s_rn670974, $L_670974)
+extern "C" void Nat_ReadChar();
+ASM_VAR(AsmLabel, s_rn670988, $L_670988)
+extern "C" void Nat_PeekChar();
+ASM_VAR(AsmLabel, s_rn670994, $L_670994)
+extern "C" void Nat_EofObjectP();
+ASM_VAR(AsmLabel, s_rn6709a0, $L_6709a0)
+extern "C" void Nat_CharReadyP();
+ASM_VAR(AsmLabel, s_rn6709ac, $L_6709ac)
+extern "C" void Nat_WriteChar();
+ASM_VAR(AsmLabel, s_rn6709b8, $L_6709b8)
+extern "C" void Nat_Read();
+ASM_VAR(AsmLabel, s_rn6709c4, $L_6709c4)
+extern "C" void Nat_Write();
+ASM_VAR(AsmLabel, s_rn6709cc, $L_6709cc)
+extern "C" void Nat_SetValues();
+ASM_VAR(AsmLabel, s_rn671210, $L_671210)
+extern "C" void Nat_StringAppend();
+ASM_VAR(AsmLabel, s_rn6709ec, $L_6709ec)
+ASM_VAR(AsmLabel, g_rf4a0af0, $L_4a0af0)
+ASM_VAR(AsmLabel, s_rn6709fc, $L_6709fc)
+ASM_VAR(AsmLabel, g_rf4a0cc0, $L_4a0cc0)
+ASM_VAR(AsmLabel, s_rn670a04, $L_670a04)
+ASM_VAR(AsmLabel, g_rf4a0e30, $L_4a0e30)
+ASM_VAR(AsmLabel, s_rn670a08, $L_670a08)
+ASM_VAR(AsmLabel, g_rf4a0f70, $L_4a0f70)
+ASM_VAR(AsmLabel, s_rn671208, $L_671208)
+ASM_VAR(AsmLabel, g_rf4a11c0, $L_4a11c0)
+ASM_VAR(AsmLabel, s_rn670a10, $L_670a10)
+ASM_VAR(AsmLabel, g_rf4a1300, $L_4a1300)
+ASM_VAR(AsmLabel, s_rn670a18, $L_670a18)
+ASM_VAR(AsmLabel, g_rf4a1440, $L_4a1440)
+ASM_VAR(AsmLabel, s_rn670a20, $L_670a20)
+ASM_VAR(AsmLabel, g_rf4a1580, $L_4a1580)
+ASM_VAR(AsmLabel, s_rn670a28, $L_670a28)
+struct SchNativeReg { void* fn; const char* name; };
+static const SchNativeReg k_schNatives[] = {
+    {(void*)Nat_MacroExpand, s_rn6709d4},
+    {(void*)g_rf491ce0, s_rn670640},
+    {(void*)g_rf492270, s_rn670658},
+    {(void*)g_rf493120, s_rn67065c},
+    {(void*)Nat_NumberP, s_rn670664},
+    {(void*)Nat_ComplexP, s_rn67066c},
+    {(void*)Nat_RealP, s_rn670678},
+    {(void*)Nat_RationalP, s_rn670680},
+    {(void*)Nat_IntegerP, s_rn67068c},
+    {(void*)Nat_ExactP, s_rn670698},
+    {(void*)Nat_InexactP, s_rn6706a0},
+    {(void*)Nat_NumEq, s_rn6712a8},
+    {(void*)Nat_NumLt, s_rn6712a4},
+    {(void*)Nat_NumGt, s_rn6712a0},
+    {(void*)Nat_NumLe, s_rn67129c},
+    {(void*)Nat_NumGe, s_rn671298},
+    {(void*)Nat_Plus, s_rn6706ac},
+    {(void*)g_rf4954f0, s_rn6706b0},
+    {(void*)Nat_Times, s_rn6706b4},
+    {(void*)Nat_Divide, s_rn670570},
+    {(void*)Nat_Quotient, s_rn6706b8},
+    {(void*)Nat_Remainder, s_rn6706c0},
+    {(void*)Nat_Modulo, s_rn6706cc},
+    {(void*)Nat_Numerator, s_rn6706d4},
+    {(void*)Nat_Denominator, s_rn6706e0},
+    {(void*)Nat_Floor, s_rn6706ec},
+    {(void*)Nat_Ceiling, s_rn6706f4},
+    {(void*)Nat_Truncate, s_rn6706fc},
+    {(void*)Nat_Round, s_rn670708},
+    {(void*)Nat_Exp, s_rn670710},
+    {(void*)Nat_Log, s_rn670714},
+    {(void*)Nat_Sin, s_rn670718},
+    {(void*)Nat_Cos, s_rn67071c},
+    {(void*)Nat_Tan, s_rn670720},
+    {(void*)Nat_Asin, s_rn670724},
+    {(void*)Nat_Acos, s_rn67072c},
+    {(void*)Nat_Atan, s_rn670734},
+    {(void*)Nat_Atan2, s_rn67073c},
+    {(void*)Nat_Sqrt, s_rn670744},
+    {(void*)Nat_Expt, s_rn67074c},
+    {(void*)Nat_MakeRect, s_rn670754},
+    {(void*)Nat_MakePolar, s_rn670768},
+    {(void*)Nat_RealPart, s_rn670774},
+    {(void*)Nat_ImagPart, s_rn670780},
+    {(void*)Nat_Magnitude, s_rn67078c},
+    {(void*)Nat_Angle, s_rn670798},
+    {(void*)Nat_ToInexact, s_rn6707a0},
+    {(void*)Nat_ToExact, s_rn6707b0},
+    {(void*)Nat_NumberToString, s_rn6707c0},
+    {(void*)Nat_StringToNumber, s_rn6707d0},
+    {(void*)Nat_PairP, s_rn6707e0},
+    {(void*)Nat_Cons, s_rn6707e8},
+    {(void*)Nat_Car, s_rn66de28},
+    {(void*)Nat_Cdr, s_rn6707f0},
+    {(void*)Nat_SetCar, s_rn6707f4},
+    {(void*)Nat_SetCdr, s_rn670800},
+    {(void*)Nat_SymbolP, s_rn67080c},
+    {(void*)Nat_SymbolToString, s_rn670814},
+    {(void*)Nat_StringToSymbol, s_rn670824},
+    {(void*)Nat_CharP, s_rn670834},
+    {(void*)Nat_CharEq, s_rn67083c},
+    {(void*)Nat_CharLt, s_rn670844},
+    {(void*)Nat_CharGt, s_rn67084c},
+    {(void*)Nat_CharLe, s_rn670854},
+    {(void*)Nat_CharGe, s_rn67085c},
+    {(void*)Nat_CharToInteger, s_rn670864},
+    {(void*)Nat_IntegerToChar, s_rn670874},
+    {(void*)g_rf49c230, s_rn670884},
+    {(void*)g_rf49c610, s_rn670890},
+    {(void*)Nat_StringLength, s_rn670898},
+    {(void*)Nat_StringRef, s_rn6708a8},
+    {(void*)Nat_StringSet, s_rn6708b4},
+    {(void*)Nat_VectorP, s_rn6708c0},
+    {(void*)Nat_MakeVector, s_rn6708c8},
+    {(void*)Nat_ListToVector, s_rn6708d4},
+    {(void*)Nat_VectorLength, s_rn6708ec},
+    {(void*)Nat_VectorRef, s_rn6708fc},
+    {(void*)Nat_VectorSet, s_rn67128c},
+    {(void*)Nat_ProcedureP, s_rn670914},
+    {(void*)Nat_Field48, s_rn671270},
+    {(void*)Nat_MakeEnv, s_rn67125c},
+    {(void*)Nat_Field60, s_rn671244},
+    {(void*)Nat_InputPortP, s_rn670920},
+    {(void*)Nat_OutputPortP, s_rn67092c},
+    {(void*)Nat_Field72, s_rn671230},
+    {(void*)Nat_Field84, s_rn67121c},
+    {(void*)Nat_OpenInputFile, s_rn67093c},
+    {(void*)Nat_OpenOutputFile, s_rn67094c},
+    {(void*)Nat_CloseInputPort, s_rn670960},
+    {(void*)Nat_CloseOutputPort, s_rn670974},
+    {(void*)Nat_ReadChar, s_rn670988},
+    {(void*)Nat_PeekChar, s_rn670994},
+    {(void*)Nat_EofObjectP, s_rn6709a0},
+    {(void*)Nat_CharReadyP, s_rn6709ac},
+    {(void*)Nat_WriteChar, s_rn6709b8},
+    {(void*)Nat_Read, s_rn6709c4},
+    {(void*)Nat_Write, s_rn6709cc},
+    {(void*)Nat_SetValues, s_rn671210},
+    {(void*)Nat_StringAppend, s_rn6709ec},
+    {(void*)g_rf4a0af0, s_rn6709fc},
+    {(void*)g_rf4a0cc0, s_rn670a04},
+    {(void*)g_rf4a0e30, s_rn670a08},
+    {(void*)g_rf4a0f70, s_rn671208},
+    {(void*)g_rf4a11c0, s_rn670a10},
+    {(void*)g_rf4a1300, s_rn670a18},
+    {(void*)g_rf4a1440, s_rn670a20},
+    {(void*)g_rf4a1580, s_rn670a28},
+};
+
+struct SchValue12 { DWORD d[3]; };
+
+static SchValue12 Sv_Copy(const SchValue* v)
+{
+    SchValue12 r;
+    CopyRef((SchValue*)&r, v);
+    return r;
+}
+
+// a value assignment that keeps the old object when it is the same value
+static void Sv_Assign(SchValue* to, const SchValue* from)
+{
+    if (to->obj && !(to->flags & SCH_IMMEDIATE) && --F(int, to->obj, 4) == 0
+        && !(to->obj == from->obj && to->flags == from->flags && to->m_4 == from->m_4) && to->obj)
+        CallVirt(to->obj, 12, 1);
+    CopyRef(to, from);
+}
+
+// a port (type 11) from v into the value at to, after releasing it; another type is an error and leaves it
+static void Sv_AssignPort(SchValue* to, const SchValue* v)
+{
+    if (to->obj && --F(int, to->obj, 4) == 0
+        && !(to->obj == v->obj && to->flags == v->flags && to->m_4 == v->m_4) && to->obj)
+        CallVirt(to->obj, 12, 1);
+    if (v->obj) {
+        if (CallVirt<int>(v->obj, 0) != 11) {
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(v->obj, 4), (const char*)s_svPort);
+            return;
+        }
+        to->obj = v->obj;
+        to->flags = v->flags;
+        F(int, v->obj, 4)++;
+    } else {
+        to->obj = 0;
+        to->flags = 0;
+    }
+    to->m_4 = 0;
+}
+
+static void Sv_Define(BYTE* self, void (*make)(), const char* name)
+{
+    SchValue t;
+    SchValue12 v = Sv_Copy(CallC<SchValue*>(make, &t, 0));
+    CallThis(FUN_4a3e40, CallThis<BYTE*>(FUN_4aa430, self + 48), self, name, v);
+    CallThis(FUN_4a36c0, &t);
+}
+
+extern "C" {
+
+// [FUN_4ad440] constructs the interpreter (self): startup names the start-up script (default $6711e8), name
+// the value defined as $6711f4 (default $671204)
+BYTE* __fastcall Sch_Construct(BYTE* self, void*, const char* startup, const char* name)
+{
+    F(DWORD, self, 0) = 0;
+    F(DWORD, self, 8) = 0;
+    F(DWORD, self, 12) = 0;
+    F(void*, self, 4) = g_sv64bed0;
+    F(DWORD, self, 16) = 0;
+    F(DWORD, self, 20) = 0;
+    F(DWORD, self, 28) = 0;
+    F(DWORD, self, 32) = 0;
+    F(void*, self, 24) = g_sv64bed0;
+    F(DWORD, self, 36) = 0;
+    F(DWORD, self, 40) = 0;
+    BYTE** head = CallC<BYTE**>(FUN_44b740, 12);
+    F(BYTE**, self, 44) = head;
+    head[0] = (BYTE*)head;
+    F(BYTE**, self, 44)[1] = (BYTE*)F(BYTE**, self, 44);
+    for (int k = 48; k <= 120; k += 4)
+        F(DWORD, self, k) = 0;
+    F(DWORD, self, 4220) = 0;
+    F(DWORD, self, 4224) = 0;
+    F(DWORD, self, 4228) = 0;
+    F(DWORD, self, 4232) = 0;
+    // the 44-byte elements at +108: reserve 256
+    BYTE** v44 = (BYTE**)(self + 108);
+    if ((unsigned)((v44[2] - v44[0]) / 44) < 256) {
+        int n = (v44[1] - v44[0]) / 44;
+        BYTE* nb = CallStd<BYTE*>(FUN_4aaed0, 256, v44[0], v44[1]);
+        for (BYTE* q = v44[0]; q != v44[1]; q += 44)
+            CallVirt(q, 4, 0);
+        if (int cap = (v44[2] - v44[0]) / 44)
+            CallC(FUN_44b4a0, v44[0], cap * 44);
+        v44[0] = nb;
+        v44[1] = nb + n * 44;
+        v44[2] = nb + 11264;
+    }
+    F(BYTE*, self, 16) = self + 24;
+    F(BYTE*, self, 40) = self + 4;
+    F(DWORD, self, 20) = 0;
+    F(DWORD, self, 36) = 0;
+    SchValue t;
+    CallThis(FUN_40c100, self + 48, CallC<SchValue*>(FUN_4a27e0, &t, 0, self));
+    CallThis(FUN_4a36c0, &t);
+
+    Sv_Define(self, FUN_4b00c0, s_sv6712f8);
+    Sv_Define(self, FUN_4aa9f0, s_sv6712f0);
+    Sv_Define(self, FUN_4b01a0, s_sv6712e8);
+    Sv_Define(self, FUN_4b0280, s_sv6712e4);
+    Sv_Define(self, FUN_4b0360, s_sv64bf60);
+    Sv_Define(self, FUN_4b0440, s_sv6712dc);
+    Sv_Define(self, FUN_4b0520, s_sv6712d4);
+    Sv_Define(self, FUN_4b0600, s_sv6712b4);
+    Sv_Define(self, FUN_4b06e0, s_sv6712ac);
+    for (int i = 0; i < sizeof(k_schNatives) / sizeof(k_schNatives[0]); i++) {
+        SchValue12 env;
+        CallThis(FUN_454580, &env, self + 48);
+        CallC(FUN_4ad330, self, env, k_schNatives[i].name, k_schNatives[i].fn);
+    }
+
+    if (!name)
+        name = s_sv671204;
+    SchValue12 v = Sv_Copy(CallC<SchValue*>(FUN_4b07c0, &t, 0, &name));
+    CallThis(FUN_4a3e40, CallThis<BYTE*>(FUN_4aa430, self + 48), self, (const char*)s_sv6711f4, v);
+    SchValue_Release(&t);
+
+    Sv_Assign((SchValue*)(self + 60), CallC<SchValue*>(FUN_4b08a0, &t, 0, self, F(DWORD, self, 48)));
+    SchValue_Release(&t);
+
+    const char* port = s_sv686340;
+    int mode = 1;
+    Sv_AssignPort((SchValue*)(self + 72), CallC<SchValue*>(FUN_4b0990, &t, 0, &port, &mode));
+    SchValue_Release(&t);
+    port = s_sv686360;
+    mode = 2;
+    Sv_AssignPort((SchValue*)(self + 84), CallC<SchValue*>(FUN_4b0990, &t, 0, &port, &mode));
+    SchValue_Release(&t);
+    port = s_sv686380;
+    mode = 2;
+    Sv_AssignPort((SchValue*)(self + 96), CallC<SchValue*>(FUN_4b0990, &t, 0, &port, &mode));
+    SchValue_Release(&t);
+
+    // the start-up script: read one expression and evaluate it
+    if (!startup)
+        startup = s_sv6711e8;
+    mode = 1;
+    SchValue* r = CallC<SchValue*>(FUN_455f00, &t, 0, &startup, &mode);
+    SchValue h = {0, 0, 0, 0};
+    if (r->obj) {
+        if (CallVirt<int>(r->obj, 0) == 11) {
+            h.obj = r->obj;
+            h.flags = r->flags;
+            F(int, h.obj, 4)++;
+        } else
+            CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(r->obj, 4), (const char*)s_svPort);
+    }
+    SchValue_Release(&t);
+    if (!h.obj)
+        CallC(FUN_4a52e0, 0, 1);
+    if (h.flags & SCH_IMMEDIATE)
+        CallC(FUN_4a52e0, 4, 1);
+    if (!CallVirt<int>(h.obj, 40)) {
+        SchValue e, x;
+        CallC(FUN_4b4c20, &e, self, Sv_Copy(&h));
+        if (e.flags || e.obj) {
+            CallC(FUN_4a6af0, &x, self, Sv_Copy(&e));
+            SchValue_Release(&x);
+        }
+        SchValue_Release(&e);
+    }
+    if (!(h.flags & SCH_IMMEDIATE) && h.obj && --F(int, h.obj, 4) == 0)
+        CallVirt(h.obj, 12, 1);
+    return self;
+}
+
+}  // extern "C"
