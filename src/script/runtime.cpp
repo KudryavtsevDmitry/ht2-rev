@@ -10,6 +10,7 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>
 #include "road.h"
+#include "x87.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -36,7 +37,7 @@ extern "C" void FUN_470950(); KING_ALIAS("_FUN_470950", "@CharVec_Assign@12")
 extern "C" void FUN_48ae10(); KING_ALIAS("_FUN_48ae10", "_BigInt_FromUnsigned")
 extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
 ASM_PROC(FUN_491420)
-ASM_PROC(FUN_48c260)
+extern "C" void FUN_48c260(); KING_ALIAS("_FUN_48c260", "_BigInt_Gcd")
 ASM_VAR(AsmLabel, s_bigint, $L_670408)
 ASM_VAR(AsmLabel, s_bigintTooLarge, $L_670410)
 ASM_VAR(AsmLabel, s_bigintNull, $L_670430)
@@ -47,8 +48,8 @@ extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 ASM_PROC(FUN_4897b0)    // list: a new node
 ASM_PROC(FUN_491750)
 ASM_PROC(FUN_488450)
-ASM_PROC(FUN_489900)    // vector<24 bytes>::insert_aux
-ASM_PROC(FUN_48f730)    // vector<580 bytes>::insert_aux
+extern "C" void FUN_489900(); KING_ALIAS("_FUN_489900", "@Vec24_InsertAux@16")    // vector<24 bytes>::insert_aux
+extern "C" void FUN_48f730(); KING_ALIAS("_FUN_48f730", "@Vec580_InsertAux@16")    // vector<580 bytes>::insert_aux
 
 typedef void (__cdecl* ErrorHandler)(const char* what, int x);
 ASM_VAR(ErrorHandler, g_onError, $L_670324)
@@ -2036,6 +2037,342 @@ void __fastcall VecD3_InsertRange(BYTE** v, void*, BYTE* pos, const BYTE* first,
     v[0] = p;
     v[1] = e;
     v[2] = p + len * 24;
+}
+
+} // extern "C"
+
+// === a cubic B-line from four points (FUN_4904e0)
+
+extern "C" void FUN_447270(); KING_ALIAS("_FUN_447270", "@Vec24_FreeStorage@8")
+extern "C" void FUN_44a530(); KING_ALIAS("_FUN_44a530", "@Vec8_Free@8")
+extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")
+extern "C" void FUN_458e00(); KING_ALIAS("_FUN_458e00", "_Vec8b_AllocCopy@12")
+extern "C" void FUN_4608f0(); KING_ALIAS("_FUN_4608f0", "_Construct8")
+extern "C" void FUN_48e8c0(); KING_ALIAS("_FUN_48e8c0", "@Rec_Init48e8c0@12")
+ASM_PROC(FUN_490820)
+extern "C" void FUN_490930(); KING_ALIAS("_FUN_490930", "@Vec8_Copy@12")
+
+// push_back of d to the vector of doubles v
+static void Bl_PushKnot(BYTE** v, double d)
+{
+    if (v[1] != v[2]) {
+        CallC(FUN_4608f0, v[1], &d);
+        v[1] += 8;
+    } else
+        CallThis(FUN_44c470, v, v[1], &d);
+}
+
+extern "C" {
+
+// [FUN_4904e0] out = the cubic B-line through the four points pts (24 bytes each): knots 0 0 0 0 1 1 1 1
+BYTE* __cdecl BLine_FromPoints(BYTE* out, const BYTE* pts)
+{
+    BYTE r[28];
+    CallThis(FUN_48e8c0, r, 3);
+    BYTE** knots = (BYTE**)(r + 16);
+    if ((unsigned)((knots[2] - knots[0]) >> 3) < 8) {
+        int n = (int)(knots[1] - knots[0]) >> 3;
+        BYTE* p = CallStd<BYTE*>(FUN_458e00, 8, knots[0], knots[1]);
+        if (int cap = (int)(knots[2] - knots[0]) >> 3)
+            CallC(FUN_44b4a0, knots[0], cap * 8);
+        knots[0] = p;
+        knots[1] = p + n * 8;
+        knots[2] = p + 64;
+    }
+    for (int i = 0; i < 4; i++)
+        Bl_PushKnot(knots, 0.0);
+    for (int i = 0; i < 4; i++)
+        Bl_PushKnot(knots, 1.0);
+    VecD3_InsertRange((BYTE**)(r + 4), 0, F(BYTE*, r, 8), pts, pts + 96);
+    F(int, out, 0) = F(int, r, 0);
+    CallThis(FUN_490820, out + 4, r + 4);
+    CallThis(FUN_490930, out + 16, r + 16);
+    CallThis(FUN_44a530, r + 16);
+    CallThis(FUN_447270, r + 4);
+    return out;
+}
+
+} // extern "C"
+
+extern "C" {
+
+// [FUN_48f2c0] vector polynomial s plus b into out, aligned at their last coefficients: the extra leading
+// coefficients of the longer one, then the sums
+BYTE* __fastcall VPoly_Add(BYTE* s, void*, BYTE* out, BYTE* b)
+{
+    int na = F(int, s, 576) * 24 / 24, nb = F(int, b, 576) * 24 / 24;
+    if (!na) {
+        memcpy(out, b, 580);
+        return out;
+    }
+    if (!nb) {
+        memcpy(out, s, 580);
+        return out;
+    }
+    BYTE r[580];
+    F(int, r, 576) = 0;
+    const double* a = (const double*)s;
+    const double* c = (const double*)b;
+    BYTE* lo = na > nb ? s : b;
+    int d = na > nb ? na - nb : nb - na, n = na > nb ? na : nb;
+    for (int i = 0; i < d; i++)
+        memcpy(r + F(int, r, 576)++ * 24, lo + i * 24, 24);
+    for (int i = d; i < n; i++) {
+        const double* p = na > nb ? a + i * 3 : a + (i - d) * 3;
+        const double* q = na > nb ? c + (i - d) * 3 : c + i * 3;
+        double* t = (double*)(r + F(int, r, 576)++ * 24);
+        t[0] = q[0] + p[0];
+        t[1] = q[1] + p[1];
+        t[2] = q[2] + p[2];
+    }
+    memcpy(out, r, 580);
+    return out;
+}
+
+} // extern "C"
+
+// === vector<580 bytes>::insert_aux (FUN_48f730)
+
+extern "C" {
+
+// [FUN_48f730] inserts a copy of vector polynomial x (580 bytes) at pos of vector s: shifted up within the
+// capacity, or copied into a new buffer of twice the size (1 when empty) with the old storage returned to the pool
+void __fastcall Vec580_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
+{
+    if (s[1] != s[2]) {
+        BYTE* end = s[1];
+        if (end)
+            memcpy(end, end - 580, 580);
+        s[1] = end + 580;
+        BYTE t[580];
+        memcpy(t, x, 580);
+        for (BYTE* d = end - 580; d > pos; d -= 580)
+            memcpy(d, d - 580, 580);
+        memcpy(pos, t, 580);
+        return;
+    }
+    int n = (int)(s[1] - s[0]) / 580;
+    int cap = n ? n * 2 : 1;
+    BYTE* buf = CallC<BYTE*>(FUN_44b740, cap * 580);
+    BYTE* p = UninitCopy580s(s[0], pos, buf);
+    if (p)
+        memcpy(p, x, 580);
+    BYTE* end = UninitCopy580s(pos, s[1], p + 580);
+    if (int bytes = (int)(s[2] - s[0]) / 580 * 580)
+        CallC(FUN_44b4a0, s[0], bytes);
+    s[1] = end;
+    s[0] = buf;
+    s[2] = buf + cap * 580;
+}
+
+} // extern "C"
+
+// === the greatest common divisor of big integers (FUN_48c260)
+
+// the number of trailing zero bits of the first n words of a and b together (both when b is given)
+static int Gcd_TrailingZeros(const WORD* a, int na, const WORD* b, int nb, int n)
+{
+    int k = 0;
+    for (int i = 0; i < n; i++) {
+        unsigned wa = i < na ? a[3 + i] : 0, wb = b && i < nb ? b[3 + i] : 0;
+        for (int j = 0; j < 16; j++, k++, wa >>= 1, wb >>= 1)
+            if ((wa | wb) & 1)
+                return k;
+    }
+    return k;
+}
+
+extern "C" {
+
+// [FUN_48c260] gcd(a, b) by the binary algorithm, as a new big integer (positive)
+WORD* __cdecl BigInt_Gcd(WORD* a, WORD* b)
+{
+    if (!a)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintNull);
+    if (!b)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintNull);
+    int lb = b[0], la = a[0];
+    if (!lb)
+        return WStr_Make(0, a + 3, la, 1, la);
+    if (!la)
+        return WStr_Make(0, b + 3, lb, 1, lb);
+    WORD* u = WStr_Make(0, a + 3, la, 1, la);
+    WORD* v = WStr_Make(0, b + 3, lb, 1, lb);
+    int k = Gcd_TrailingZeros(u, la, v, lb, la < lb ? la : lb);
+    if (k) {
+        u = Int_Shift(u, -k, u);
+        v = Int_Shift(v, -k, v);
+    }
+    WORD* t = (u[3] & 1) ? WStr_Make(0, v + 3, v[0], v[2] == 0, v[0]) : WStr_Make(0, u + 3, u[0], u[2], u[0]);
+    while (t[0]) {
+        if (int s = Gcd_TrailingZeros(t, t[0], 0, 0, t[0]))
+            t = Int_Shift(t, -s, t);
+        if (t[2] == 1) {
+            u = WStr_Assign(u, t);
+            t = Int_AddSigned(t, 0, v, 1, t);
+        } else {
+            v = WStr_Make(v, t + 3, t[0], t[2] == 0, t[0]);
+            t = Int_AddSigned(t, 0, u, 0, t);
+        }
+    }
+    if (t[1])
+        operator delete(t);
+    if (v[1])
+        operator delete(v);
+    if (k)
+        return Int_Shift(u, k, u);
+    return u;
+}
+
+} // extern "C"
+
+// === vector<24 bytes>::insert_aux (FUN_489900)
+
+extern "C" void FUN_48a720(); KING_ALIAS("_FUN_48a720", "_UninitCopy24s")
+
+extern "C" {
+
+// [FUN_489900] inserts a copy of point x (24 bytes) at pos of vector s: shifted up within the capacity, or
+// copied into a new buffer of twice the size (1 when empty) with the old storage returned to the pool
+void __fastcall Vec24_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
+{
+    if (s[1] != s[2]) {
+        BYTE* end = s[1];
+        if (end)
+            memcpy(end, end - 24, 24);
+        s[1] = end + 24;
+        BYTE t[24];
+        memcpy(t, x, 24);
+        for (BYTE* d = end - 24; d > pos; d -= 24)
+            memcpy(d, d - 24, 24);
+        memcpy(pos, t, 24);
+        return;
+    }
+    int n = (int)(s[1] - s[0]) / 24;
+    int cap = n ? n * 2 : 1;
+    BYTE* buf = CallC<BYTE*>(FUN_44b740, cap * 24);
+    BYTE* p = CallC<BYTE*>(FUN_48a720, s[0], pos, buf);
+    if (p)
+        memcpy(p, x, 24);
+    BYTE* end = CallC<BYTE*>(FUN_48a720, pos, s[1], p + 24);
+    if (int bytes = (int)(s[2] - s[0]) / 24 * 24)
+        CallC(FUN_44b4a0, s[0], bytes);
+    s[1] = end;
+    s[0] = buf;
+    s[2] = buf + cap * 24;
+}
+
+} // extern "C"
+
+// === big integer division (FUN_48bd80)
+
+ASM_VAR(AsmLabel, s_bigintDivZero, $L_670454)
+
+extern "C" {
+
+// [FUN_48bd80] *q = *a / *b and *r = *a % *b (r with a's sign): by a single digit, else by Knuth's algorithm on
+// the operands normalised by 65536 / (b's top digit + 1)
+void __cdecl BigInt_DivMod(WORD** a, WORD** b, WORD** q, WORD** r)
+{
+    WORD* x = *a;
+    if (!x)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintNull);
+    WORD* y = *b;
+    if (!y)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintNull);
+    WORD* qq = *q;
+    WORD* rr = *r;
+    int la = x[0], lb = y[0];
+    if (!lb)
+        g_onError((const char*)s_bigint, (int)(const char*)s_bigintDivZero);
+    int cmp = Int_CompareMagnitude((const BigInt*)x, (const BigInt*)y);
+    short sa = (short)x[2];
+    int qsign = sa == (short)y[2];
+    if (cmp < 0) {
+        qq = (WORD*)Int_SetZero((BigInt*)qq);
+        rr = WStr_Assign(rr, x);
+    } else if (cmp == 0) {
+        qq = (WORD*)Int_SetDigit((BigInt*)qq, qsign);
+        rr = (WORD*)Int_SetZero((BigInt*)rr);
+    } else if (lb == 1) {
+        qq = WStr_Assign(qq, x);
+        unsigned rem = Int_DivSmall(qq + 3, qq[0], y[3], qq + 3);
+        rr = BigInt_FromInt(rr, rem);
+        if (rem)
+            rr[2] = sa;
+    } else {
+        WORD d = (WORD)(65536 / ((unsigned)y[2 + lb] + 1));
+        WORD* v;
+        if (d == 1 && y != qq && y != rr) {
+            v = y;
+            rr = BigInt_Alloc(rr, la + 1);
+            for (int i = 0; i < la; i++)
+                rr[3 + i] = x[3 + i];
+        } else {
+            v = Int_MulInt(y, d, 0);
+            rr = Int_MulInt(x, d, rr);
+        }
+        int n = la - lb + 1;
+        qq = BigInt_Alloc(qq, n);
+        Int_DivDigits(rr + 3, v + 3, lb, qq + 3, n);
+        if (v != y && v[1])
+            operator delete(v);
+        if (d != 1) {
+            Int_Normalize(rr);
+            Int_DivSmall(rr + 3, rr[0], d, rr + 3);
+        }
+    }
+    qq[2] = (WORD)qsign;
+    *q = Int_Normalize(qq);
+    *r = Int_Normalize(rr);
+}
+
+} // extern "C"
+
+// === the interpolating polynomial at the Chebyshev nodes (FUN_48fe80)
+
+ASM_PROC(FUN_4901b0)    // polynomial sum (out, b)
+ASM_VAR(double, g_ch64b828, $L_64b828)      // pi
+
+extern "C" {
+
+// [FUN_48fe80] out = the polynomial through the points (x, sqrt(f(x))) at the n + 1 Chebyshev nodes of [a, b],
+// built from the Lagrange basis
+Poly* __cdecl Poly_ChebyshevFit(Poly* out, double a, double b, int n, const Poly* f)
+{
+    double x[24];
+    if (n >= 0) {
+        double d = ((double)n + g_q115_64b670) * 2, w = b - a, m = a + b;
+        for (int i = 0; i <= n; i++)
+            x[i] = (x87_cos(((double)i * 2 + g_q115_64b670) * g_ch64b828 / d) * w + m) * g_q117_64b6e0;
+    }
+    BYTE r[200];
+    F(unsigned, r, 192) = 0;
+    for (int k = 0; k <= n; k++) {
+        double xk = x[k];
+        double y = x87_sqrt(Poly_Eval(f, 0, &xk));
+        BYTE l[200], t[200], tmp[200];
+        F(unsigned, l, 192) = 0;
+        double one = 1.0;
+        CallC(FUN_4608f0, l, &one);
+        F(unsigned, l, 192)++;
+        for (int j = 0; j <= n; j++) {
+            if (j == k)
+                continue;
+            y = y / (x[k] - x[j]);
+            double neg = -x[j];
+            double one2 = 1.0;
+            F(unsigned, t, 192) = 0;
+            CallC(FUN_4608f0, t, &one2);
+            F(unsigned, t, 192)++;
+            Poly_Append((Poly*)t, 0, &neg);
+            memcpy(l, Poly_Multiply(l, 0, tmp, t), 196);
+        }
+        memcpy(l, Poly_Scaled((Poly*)l, 0, (Poly*)tmp, &y), 196);
+        memcpy(r, CallThis<BYTE*>(FUN_4901b0, r, tmp, l), 196);
+    }
+    memcpy(out, r, 196);
+    return out;
 }
 
 } // extern "C"

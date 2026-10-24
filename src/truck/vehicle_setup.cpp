@@ -8,6 +8,7 @@
 #define _CRT_SECURE_NO_WARNINGS     // strcpy as in the game
 #include <string.h>
 #include "car.h"
+#include "vecmath.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -683,3 +684,71 @@ extern "C" int __cdecl Static503dc0_Init(void)
     CallC(q197_FUN_503dd0);
     return Static503dc0_AtExit();
 }
+
+// === the axle line of the touching wheels (FUN_503ac0)
+
+ASM_VAR(Vec3, g_vs702650, $L_702650)
+extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);
+extern "C" Vec3* __cdecl Line_Project(Vec3* out, const Vec3* p2, const Vec3* n, const Vec3* p4, const Vec3* p5);
+
+extern "C" {
+
+// [FUN_503ac0] the contact record out (208 bytes) of car c's wheels (248 bytes from +248, count +3540) that are
+// on (+7156 flags) and touch (+24): a copy of the first one's record (+280, when +380 is set) or an empty one, with
+// the mean contact point (+0) at +52, projected on the line +76..+88, and the mean normal (+12) at +64; 0 for none
+int __fastcall Car_WheelContact(BYTE* c, void*, BYTE* out)
+{
+    Vec3 p[8], q[8], spare[8];
+    int idx[8];
+    memset(p, 0, sizeof p);
+    memset(q, 0, sizeof q);
+    memset(spare, 0, sizeof spare);
+    int n = 0;
+    for (int i = 0; i < F(int, c, 3540); i++) {
+        BYTE* w = c + 248 + i * 248;
+        if (!F(int, c, 7156 + i * 4) || !F(WORD, w, 24))
+            continue;
+        idx[n] = i;
+        p[n] = F(Vec3, w, 0);
+        q[n] = F(Vec3, w, 12);
+        n++;
+    }
+    if (!n)
+        return 0;
+    Vec3 a = g_vs702650, b = g_vs702650;
+    if (n == 1) {
+        a = p[0];
+        b = q[0];
+    } else {
+        for (int i = 0; i < n; i++) {
+            a.x = a.x + p[i].x;
+            a.y = a.y + p[i].y;
+            a.z = a.z + p[i].z;
+            b.x = b.x + q[i].x;
+            b.y = b.y + q[i].y;
+            b.z = b.z + q[i].z;
+        }
+        Vec3 t;
+        Vec3_DivAssign(&a, 0, &t, (float)n);
+        Vec3_DivAssign(&b, 0, &t, (float)n);
+    }
+    BYTE* w = c + idx[0] * 248;
+    if (F(int, w, 380))
+        memcpy(out, w + 280, 208);
+    else {
+        F(int, out, 0) = 0;
+        memcpy(out + 4, (BYTE*)g_q98_7025f0, 48);
+        F(int, out, 100) = 0;
+        F(int, out, 108) = 0;
+        F(int, out, 112) = 0;
+        F(int, out, 116) = 0;
+        F(int, out, 120) = 0;
+        F(BYTE, out, 124) = 0;
+    }
+    Vec3 r;
+    F(Vec3, out, 52) = *Line_Project(&r, &a, &b, (Vec3*)(out + 76), (Vec3*)(out + 88));
+    F(Vec3, out, 64) = b;
+    return 1;
+}
+
+} // extern "C"

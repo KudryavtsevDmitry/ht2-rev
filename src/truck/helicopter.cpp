@@ -4435,7 +4435,7 @@ extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
 extern "C" void FUN_441d70(); KING_ALIAS("_FUN_441d70", "_Ai_GetParkingInfo")
 extern "C" void FUN_4738c0(); KING_ALIAS("_FUN_4738c0", "_Player_SwapVehicles")
 extern "C" void FUN_476bc0(); KING_ALIAS("_FUN_476bc0", "_Player_Hire")
-ASM_PROC(FUN_4d90c0)
+extern "C" void FUN_4d90c0(); KING_ALIAS("_FUN_4d90c0", "_Fx_PlaceObjects")
 extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
 ASM_PROC(FUN_531cc0)
@@ -4649,6 +4649,167 @@ void __fastcall Weather_Update(BYTE* w)
         f |= 2;
     else
         f &= ~2u;
+}
+
+} // extern "C"
+
+// === the score table (FUN_574530)
+
+ASM_VAR(int, g_sc67b75c, $L_67b75c)
+ASM_VAR(int, g_sc6ce9f0, $L_6ce9f0)
+ASM_VAR(AsmLabel, g_sc6ce9f4, $L_6ce9f4)
+ASM_VAR(double, g_sc64b780, $L_64b780)
+
+extern "C" {
+
+// [FUN_574530] fills the score table (names, values, count): in single play (+384 of 6cec98 below 2) the moving
+// vehicles with a score (+128 over 64b780) that aren't hidden (0x4000), ascending; in mode 2 the network
+// players (6ce9f4, 16 bytes each) when one has over 1, descending; 67b75c = 2 for an empty table, else whether
+// the first is the player
+void __cdecl Score_Build()
+{
+    g_scoreCount = 0;
+    char** names = (char**)g_scoreNames;
+    double* values = g_scoreValues;
+    if (F(int, g_6cec98, 384) < 2) {
+        int n = 0;
+        int cur;
+        Players_First(&cur);
+        BYTE info[256];
+        while (cur != g_noVehicle68b990h && n < 60) {
+            CallC(FUN_43fc40, cur, info);
+            int type = F(int, info, 8);
+            if ((type == 1 || type == 2) && F(double, info, 128) > g_sc64b780 &&
+                !(CallC<DWORD>(FUN_43f620, cur) & 0x4000)) {
+                names[n] = F(char*, info, 48);
+                values[n] = F(double, info, 128);
+                n++;
+            }
+            int nx;
+            cur = *Players_Next(&nx, cur);
+        }
+        g_scoreCount = n;
+    } else {
+        bool any = false;
+        int k = g_sc6ce9f0;
+        for (int i = 0; i < k; i++) {
+            names[i] = (char*)g_sc6ce9f4 + i * 16;
+            values[i] = g_6f3338[i];
+            if (g_6f3338[i] > g_hel64b670)
+                any = true;
+        }
+        if (any)
+            g_scoreCount = k;
+    }
+    int last = g_scoreCount - 1;
+    bool swapped;
+    do {
+        swapped = false;
+        for (int j = 0; j < last; j++) {
+            int mode = F(int, g_6cec98, 384);
+            if ((mode < 2 && values[j] > values[j + 1]) || (mode == 2 && values[j] < values[j + 1])) {
+                double v = values[j];
+                values[j] = values[j + 1];
+                values[j + 1] = v;
+                char* t = names[j];
+                names[j] = names[j + 1];
+                names[j + 1] = t;
+                swapped = true;
+            }
+        }
+    } while (swapped);
+    if (!g_scoreCount) {
+        g_sc67b75c = 2;
+        return;
+    }
+    const char* me;
+    BYTE info[256];
+    if (F(int, g_6cec98, 384) < 2) {
+        int id;
+        CallC(FUN_43fc40, *Player_CarId(&id), info);
+        me = F(char*, info, 48);
+    } else
+        me = (const char*)(g_hd_6cecd8 + 632);
+    g_sc67b75c = names[0] && !strcmp(names[0], me) ? 1 : 0;
+}
+
+} // extern "C"
+
+// === the radio messages of the helicopter screen (the update $L_56aa70)
+
+extern "C" void FUN_41fa00(); KING_ALIAS("_FUN_41fa00", "_Ai_LooseSemitrailer")
+ASM_VAR(double, g_rm6f3470, $L_6f3470)
+ASM_VAR(double, g_rm6f3478, $L_6f3478)
+ASM_VAR(double, g_rm64b938, $L_64b938)
+ASM_VAR(double, g_rm64b958, $L_64b958)
+
+static double Rm_Now() { return CallC<double>(FUN_6037e0); }
+
+extern "C" {
+
+// [$L_56aa70] radio screen s: the semitrailer state (+1268: 1 coupled, 2 just let loose, 0 after 64b5f0 s);
+// the message typer (+1196 the shown characters, +32 its time) takes the next queued line (4 of 128 bytes at
+// +44, +1204 the next) into +556 and, past 1100, moves it into the history (+684, +1208 the next)
+void __fastcall Radio_Update(BYTE* s)
+{
+    BYTE* car = F(BYTE*, g_hd_game, 616);
+    if (car && CallVirt<int>(car, 4) == 1) {
+        if (F(int, car, 21880))
+            F(int, s, 1268) = 1;
+        else if (F(int, s, 1268) == 1) {
+            int id;
+            CallC(FUN_41fa00, *Player_CarId(&id));
+            F(int, s, 1268) = 2;
+            g_rm6f3470 = Rm_Now();
+        } else if (F(int, s, 1268) == 2) {
+            double lim = g_rm6f3470 + g_64b5f0;
+            if (Rm_Now() > lim)
+                F(int, s, 1268) = 0;
+        }
+    } else
+        F(int, s, 1268) = 0;
+    if (F(int, s, 1196) != 1) {
+        double lim = F(double, s, 32) + g_rm64b938;
+        if (Rm_Now() > lim) {
+            double now = Rm_Now();
+            int n = F(int, s, 1196);
+            double x = now - F(double, s, 32) + g_rm6f3478;
+            if (!n) {
+                F(int, s, 1196) = 1;
+                F(int, s, 1276) = 0;
+                g_rm6f3478 = 0.0;
+            } else {
+                F(int, s, 1196) = (int)(x * g_rm64b958 + n);
+                g_rm6f3478 = (double)((int)x % 50);
+            }
+            F(double, s, 32) = now;
+        }
+    } else {
+        char* line = (char*)s + 44 + F(int, s, 1204) * 128;
+        if (line[0]) {
+            strcpy((char*)s + 556, line);
+            line[0] = 0;
+            F(int, s, 1204) = (F(int, s, 1204) + 1) % 4;
+            F(int, s, 1196) = 2;
+            F(double, s, 32) = Rm_Now();
+            F(int, s, 1216) = 0;
+            if (F(BYTE*, s, 1280))
+                CallThis(FUN_5fdaf0, F(BYTE*, s, 1280), 0.2f, 0.2f);
+        } else if (F(int, s, 1216)) {
+            double lim = F(double, s, 32) + g_64b5f0;
+            if (Rm_Now() > lim)
+                F(int, s, 1216) = 0;
+        }
+    }
+    if (F(int, s, 1196) > 1100) {
+        F(int, s, 1196) = 0;
+        F(double, s, 32) = Rm_Now();
+        int k = F(int, s, 1208)++;
+        strcpy((char*)s + 684 + k * 128, (const char*)s + 556);
+        F(int, s, 1208) %= 4;
+        F(char, s, 556) = 0;
+    }
+    CallThis(FUN_5d32f0, s, 1);
 }
 
 } // extern "C"

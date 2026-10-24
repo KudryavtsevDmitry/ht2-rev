@@ -940,7 +940,7 @@ ASM_PROC(FUN_5f21e0)
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 ASM_PROC(FUN_5f1db0)
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
-ASM_PROC(FUN_5f8bf0)
+extern "C" void FUN_5f8bf0(); KING_ALIAS("_FUN_5f8bf0", "@Shape_ReadData@12")
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
@@ -1952,7 +1952,7 @@ extern "C" void __fastcall Value_Free(int* s)
 // Reading scene nodes.
 
 ASM_PROC(FUN_5f1db0)
-ASM_PROC(FUN_5ae580)
+extern "C" void FUN_5ae580(); KING_ALIAS("_FUN_5ae580", "@Render_PushMatrix@16")
 ASM_PROC(FUN_5b4fc0)
 ASM_PROC(FUN_5d2650)
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
@@ -2596,3 +2596,74 @@ extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 extern "C" void q241_L_5ef4b0(); KING_ALIAS("_q241_L_5ef4b0", "_Static723978_Destroy")
 // [$L_5ef4a0] registers 5ef4b0 at exit
 extern "C" int __cdecl Static5ef4a0_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_5ef4b0); }
+
+// === reading a node's shape data (FUN_5f8bf0)
+
+extern "C" void FUN_5ab6a0(); KING_ALIAS("_FUN_5ab6a0", "_Vec3_NearlyEqual")
+extern "C" void FUN_5e5720(); KING_ALIAS("_FUN_5e5720", "@Fw_Read5e5720@12")
+extern "C" void Sce_VecCtorEh(); KING_ALIAS("_Sce_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+ASM_PROC(FUN_5e69a0)    // reads a 48-byte item (file)
+ASM_VAR(AsmLabel, g_sd5e6980, $L_5e6980)    // its constructor
+ASM_VAR(AsmLabel, g_sd5f4b20, $L_5f4b20)    // its destructor
+ASM_VAR(char, s_sd683bcc, $L_683bcc)
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+
+// a zeroed n-byte block
+static BYTE* Sd_New(int n)
+{
+    BYTE* p = (BYTE*)operator new(n);
+    if (p)
+        memset(p, 0, n);
+    return p;
+}
+
+extern "C" {
+
+// [FUN_5f8bf0] reads the data of shape s (+0 kind) from file f into +8: a plane (kinds 1, 2, 5), a 32-byte
+// record (3, 4), +4 48-byte items (6, the count read first) or +4 points (7; fatal for two equal in a row)
+void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
+{
+    switch (F(int, s, 0)) {
+    case 1:
+    case 2:
+    case 5:
+        F(BYTE*, s, 8) = Sd_New(16);
+        CallThis(FUN_5ac7f0, F(BYTE*, s, 8), f);
+        break;
+    case 3:
+    case 4:
+        F(BYTE*, s, 8) = Sd_New(32);
+        CallThis(FUN_5e5720, F(BYTE*, s, 8), f);
+        break;
+    case 6: {
+        int n = CallC<int>(FUN_5ab140, f);
+        F(int, s, 4) = n;
+        BYTE* a = (BYTE*)operator new(n * 48 + 4);
+        BYTE* items = 0;
+        if (a) {
+            F(int, a, 0) = n;
+            items = a + 4;
+            CallStd(Sce_VecCtorEh, items, 48, n, (void*)g_sd5e6980, (void*)g_sd5f4b20);
+        }
+        F(BYTE*, s, 8) = items;
+        for (int i = 0; i < F(int, s, 4); i++)
+            CallThis(FUN_5e69a0, F(BYTE*, s, 8) + i * 48, f);
+        break;
+    }
+    case 7: {
+        F(BYTE*, s, 8) = Sd_New(F(int, s, 4) * 12);
+        for (int i = 0; i < F(int, s, 4); i++) {
+            float* v = (float*)(F(BYTE*, s, 8) + i * 12);
+            CallThis(FUN_5ab790, v, f);
+            if (i > 0 && CallC<int>(FUN_5ab6a0, v, v - 3)) {
+                char text[128];
+                sprintf(text, &s_sd683bcc, (double)v[0], (double)v[1], (double)v[2]);
+                Sys_Fatal(text, 0);
+            }
+        }
+        break;
+    }
+    }
+}
+
+} // extern "C"

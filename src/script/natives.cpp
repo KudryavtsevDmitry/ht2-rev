@@ -1532,7 +1532,7 @@ extern "C" void FUN_4557f0(); KING_ALIAS("_FUN_4557f0", "_Port_MakeA")
 extern "C" void FUN_4a2be0(); KING_ALIAS("_FUN_4a2be0", "_Values_Copy")
 extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
-ASM_PROC(FUN_4a1a40)    // vector<value>::insert(pos, first, last)
+extern "C" void FUN_4a1a40(); KING_ALIAS("_FUN_4a1a40", "@SchValues_InsertRange@20")    // vector<value>::insert(pos, first, last)
 ASM_PROC(FUN_4b4c20)    // read (out, p, port by value)
 extern "C" void FUN_4b8070(); KING_ALIAS("_FUN_4b8070", "_Sch4b8070")    // write (out, p, value by value, port by value)
 ASM_VAR(AsmLabel, s_nStrLen, $L_670898)
@@ -2713,6 +2713,114 @@ void __fastcall Env_Define(BYTE* e, void*, BYTE* p, BYTE* n0, int n1, DWORD n2, 
     Df_Release((SchValue*)mapped);
     Df_Release(&name);
     Df_Release(&val);
+}
+
+} // extern "C"
+
+// === make-string ($L_49c230)
+
+ASM_VAR(AsmLabel, s_ms670884, $L_670884)
+extern "C" void FUN_44a490(); KING_ALIAS("_FUN_44a490", "@Vec1_Reserve@16")
+extern "C" void FUN_469410(); KING_ALIAS("_FUN_469410", "_FillBytes")
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+extern "C" void FUN_49c560(); KING_ALIAS("_FUN_49c560", "@SchValue_Assign@12")
+extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
+
+extern "C" {
+
+// [$L_49c230] make-string: a string of n copies of the character (a space by default)
+SchValue* __cdecl Nat_MakeString(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v;
+    CopyRef(&v, (SchValue*)(args[0] + 12));
+    if ((BYTE)v.flags != 6) {
+        CallC(FUN_4a5910, p, 21);
+        Nat_Zero3(out);
+        Nat_Release(&v);
+        return out;
+    }
+    SchValue ch;
+    CallThis(FUN_4bd4d0, &ch);
+    int k = 2;
+    if (Nat_Count(args) != 2) {
+        SchValue c;
+        CallThis(FUN_4a19c0, &c, args[0] + 24);
+        CallThis(FUN_49c560, &ch, &c);
+        CallThis(FUN_4a36c0, &c);
+        k = 3;
+    }
+    if (Nat_Count(args) != k)
+        CallC(FUN_4a5a60, p, 33, (const char*)s_ms670884);
+    SchValue s, num;
+    CallC(FUN_4a2400, &s, 0);
+    CallThis(FUN_4bd4d0, &num);
+    Nat_Typed(&num, &v, 6, s_nNumber);
+    char fill = (!ch.obj && !ch.flags && !ch.m_4) ? ' ' : (char)(int)ch.obj;
+    Nat_Check(&num);
+    int len = CallThis<int>(FUN_4b0ea0, num.obj) + 1;
+    BYTE* tmp[3];
+    BYTE alloc;
+    CallThis(FUN_44a490, tmp, len, &alloc);
+    tmp[1] = CallC<BYTE*>(FUN_469410, tmp[0], len, &fill);
+    CallThis(FUN_44c160, CallThis<BYTE*>(FUN_4aa430, &s) + 12, tmp);
+    CallThis(FUN_404420, tmp);
+    BYTE* str = CallThis<BYTE*>(FUN_4aa430, &s) + 12;
+    F(BYTE*, str, 4)[-1] = 0;
+    CallThis(FUN_454580, out, &s);
+    CallThis(FUN_4a36c0, &num);
+    CallThis(FUN_4a36c0, &s);
+    CallThis(FUN_4a36c0, &ch);
+    CallThis(FUN_4a36c0, &v);
+    return out;
+}
+
+} // extern "C"
+
+// === vector<value>::insert of a range (FUN_4a1a40)
+
+extern "C" BYTE* __cdecl StrRefs_CopyBack(const BYTE* f, const BYTE* l, BYTE* d);   // ai_containers.cpp
+
+extern "C" {
+
+// [FUN_4a1a40] inserts the values [first, last) (12 bytes each) at pos of vector v: shifted within the capacity,
+// or into a new buffer of size + max(size, n) with the old values released and the storage returned to the pool
+void __fastcall SchValues_InsertRange(BYTE** v, void*, BYTE* pos, BYTE* first, BYTE* last)
+{
+    if (first == last)
+        return;
+    int n = (int)(last - first) / 12;
+    BYTE* end = v[1];
+    if ((unsigned)((v[2] - end) / 12) >= (unsigned)n) {
+        int after = (int)(end - pos) / 12;
+        if ((unsigned)after > (unsigned)n) {
+            UninitCopyStrRefs(end - n * 12, end, end);
+            v[1] += n * 12;
+            StrRefs_CopyBack(pos, end - n * 12, end);
+            Values_Copy(first, last, pos);
+        } else {
+            UninitCopyStrRefs(first + after * 12, last, end);
+            v[1] += (n - after) * 12;
+            UninitCopyStrRefs(pos, end, v[1]);
+            v[1] += after * 12;
+            for (int i = 0; i < after; i++)
+                CallThis(FUN_40c100, pos + i * 12, first + i * 12);
+        }
+        return;
+    }
+    unsigned size = (unsigned)(end - v[0]) / 12;
+    unsigned len = size + (size < (unsigned)n ? (unsigned)n : size);
+    BYTE* p = len ? CallC<BYTE*>(FUN_44b740, len * 12) : 0;
+    BYTE* e = UninitCopyStrRefs(v[0], pos, p);
+    e = UninitCopyStrRefs(first, last, e);
+    e = UninitCopyStrRefs(pos, v[1], e);
+    for (BYTE* q = v[0]; q != v[1]; q += 12)
+        CallThis(FUN_4a36c0, q);
+    if (int cap = (int)(v[2] - v[0]) / 12)
+        CallC(FUN_44b4a0, v[0], cap * 12);
+    v[1] = e;
+    v[0] = p;
+    v[2] = p + len * 12;
 }
 
 } // extern "C"

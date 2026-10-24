@@ -9724,7 +9724,7 @@ ASM_PROC(FUN_4886e0)    // the parser's destructor
 extern "C" void FUN_488350(); KING_ALIAS("_FUN_488350", "_Crc_File")
 extern "C" void FUN_4054a0(); KING_ALIAS("_FUN_4054a0", "_Registry52_Get")
 extern "C" void FUN_4055c0(); KING_ALIAS("_FUN_4055c0", "_Registry24_Get")
-ASM_PROC(FUN_4904e0)    // a B-line from points (out, points)
+extern "C" void FUN_4904e0(); KING_ALIAS("_FUN_4904e0", "_BLine_FromPoints")    // a B-line from points (out, points)
 extern "C" void FUN_48e8e0(); KING_ALIAS("_FUN_48e8e0", "@Rec_Make48d8f0@12")
 ASM_PROC(FUN_48dbb0)    // a B-line piece from a 580-byte item (thiscall item)
 extern "C" void FUN_459110(); KING_ALIAS("_FUN_459110", "@Vec1592_PushBack@12")
@@ -15289,7 +15289,7 @@ extern "C" void __cdecl Ai_GoToNode(BYTE* p, int node)
 // a new player's image
 
 ASM_PROC(FUN_45c8d0)    // random_shuffle (first, last, 0, 0, rng-like player)
-ASM_PROC(FUN_4654c0)    // stable sort with a buffer (first, last, buf, len, cmp)
+extern "C" void FUN_4654c0(); KING_ALIAS("_FUN_4654c0", "_Sort32_StableSortAdaptive")    // stable sort with a buffer (first, last, buf, len, cmp)
 extern "C" void FUN_462410(); KING_ALIAS("_FUN_462410", "@Vec_FreeStorage8@8")    // temporary buffer destructor (thiscall)
 extern "C" int* __fastcall TempBuf_Construct(int* self, void*, BYTE* first, BYTE* last);
 extern "C" void __cdecl Sort_Stable32(BYTE** first, BYTE** last, int);
@@ -20453,7 +20453,7 @@ ASM_VAR(AsmLabel, s_err0880, $L_66e154)
 ASM_VAR(double, g_64b8f8, $L_64b8f8)
 ASM_VAR(double, g_64b8f0, $L_64b8f0)
 extern "C" void FUN_41b8a0(); KING_ALIAS("_FUN_41b8a0", "_Vehicle_Costs")    // a vehicle's price parts (vehicle, out, double*)
-ASM_PROC(FUN_45fdd0)    // introsort of market iterators by distance (first, last, -, depth, point)
+extern "C" void FUN_45fdd0(); KING_ALIAS("_FUN_45fdd0", "_Markets_IntroSort")    // introsort of market iterators by distance (first, last, -, depth, point)
 ASM_PROC(FUN_4601c0)    // the final insertion sort (first, last, point)
 extern "C" void FUN_433240(); KING_ALIAS("_FUN_433240", "_AI_BaseDistance")    // a price factor at a point (point by value) returns double
 
@@ -22833,6 +22833,182 @@ void __cdecl Nodes_SortByDistance(int* first, int* last, Ns_Pt pt)
             CallC(FUN_46c010, i, Ns_Copy(i), pt);
     } else
         Ns_Insertion(first, last, pt);
+}
+
+} // extern "C"
+
+// === introsort of market iterators by distance (FUN_45fdd0)
+
+extern "C" void FUN_460110(); KING_ALIAS("_FUN_460110", "@Point_Farther@16")
+ASM_PROC(FUN_46add0)
+extern "C" void FUN_46c240(); KING_ALIAS("_FUN_46c240", "_Far_MakeHeap56")
+extern "C" void FUN_46cf00(); KING_ALIAS("_FUN_46cf00", "_Swap32")
+
+static bool Fs_Less(Ns_Pt* pt, int a, int b) { return CallThis<char>(FUN_460110, pt, a, b) != 0; }
+
+extern "C" {
+
+// [FUN_45fdd0] introsort loop over market iterators [first, last) by the distance of their positions (+56)
+// to pt: median-of-three partitions, recursing on the right part, heap sort when depth runs out
+void __cdecl Markets_IntroSort(int* first, int* last, int unused, int depth, Ns_Pt pt)
+{
+    while (last - first > 16) {
+        if (depth == 0) {
+            CallC(FUN_46c240, first, last, pt, 0, 0);
+            CallC(FUN_46add0, first, last, pt);
+            return;
+        }
+        depth--;
+        Ns_Pt cmp = pt;
+        int* mid = first + (int)(last - first) / 2;
+        int a = *first, b = *mid, c = last[-1];
+        int pivot;
+        if (Fs_Less(&cmp, a, b))
+            pivot = Fs_Less(&cmp, b, c) ? b : Fs_Less(&cmp, a, c) ? c : a;
+        else
+            pivot = Fs_Less(&cmp, a, c) ? a : Fs_Less(&cmp, b, c) ? c : b;
+        int* lo = first;
+        int* hi = last;
+        for (;;) {
+            while (Fs_Less(&cmp, *lo, pivot))
+                lo++;
+            hi--;
+            while (Fs_Less(&cmp, pivot, *hi))
+                hi--;
+            if (!(lo < hi))
+                break;
+            CallC(FUN_46cf00, lo, hi);
+            lo++;
+        }
+        Markets_IntroSort(lo, last, 0, depth, pt);
+        last = lo;
+    }
+}
+
+} // extern "C"
+
+// === stable_sort's adaptive step by nearness (FUN_465a20)
+
+extern "C" void __cdecl Near_ChunkInsertion(BYTE** f, BYTE** l, int chunk, int ctx);
+extern "C" void __cdecl Near_MergeLoop(BYTE** f, BYTE** l, BYTE** out, int step, int ctx);
+extern "C" void __cdecl Near_MergeAdaptive(BYTE** f, BYTE** m, BYTE** l, int n1, int n2, BYTE**, int, int ctx);
+extern "C" void** __cdecl Sort_MergeByNearest(void** f1, void** l1, void** f2, void** l2, void** d, const BYTE** list);
+
+// one merge pass of runs of step from [first, last) to out
+static void SsN_MergePass(BYTE** first, BYTE** last, BYTE** out, int step, int ctx)
+{
+    while (last - first >= step * 2) {
+        out = (BYTE**)Sort_MergeByNearest((void**)first, (void**)(first + step), (void**)(first + step),
+                                          (void**)(first + step * 2), (void**)out, (const BYTE**)ctx);
+        first += step * 2;
+    }
+    int s = step < last - first ? step : (int)(last - first);
+    Sort_MergeByNearest((void**)first, (void**)(first + s), (void**)(first + s), (void**)last, (void**)out,
+                        (const BYTE**)ctx);
+}
+
+// insertion sort of runs of 7, then merge passes through the buffer and back
+static void SsN_SortWithBuffer(BYTE** first, BYTE** last, BYTE** buf, int ctx)
+{
+    int len = (int)(last - first);
+    Near_ChunkInsertion(first, last, 7, ctx);
+    for (int step = 7; step < len;) {
+        SsN_MergePass(first, last, buf, step, ctx);
+        step *= 2;
+        Near_MergeLoop(buf, buf + len, first, step, ctx);
+        step *= 2;
+    }
+}
+
+extern "C" {
+
+// [FUN_465a20] stable_sort's adaptive step for [first, last) of pointers by nearness (ctx) with the buffer buf
+// (size n)
+void __cdecl Near_StableSortAdaptive(BYTE** first, BYTE** last, BYTE** buf, int n, int ctx)
+{
+    int len = (int)(last - first + 1) / 2;
+    BYTE** mid = first + len;
+    if (len > n) {
+        Near_StableSortAdaptive(first, mid, buf, n, ctx);
+        Near_StableSortAdaptive(mid, last, buf, n, ctx);
+    } else {
+        SsN_SortWithBuffer(first, mid, buf, ctx);
+        SsN_SortWithBuffer(mid, last, buf, ctx);
+    }
+    Near_MergeAdaptive(first, mid, last, (int)(mid - first), (int)(last - mid), buf, n, ctx);
+}
+
+} // extern "C"
+
+// === stable_sort's adaptive step by the field at +28 / +32 (FUN_464fe0, FUN_4654c0)
+
+extern "C" void __cdecl Sort_InsertionBy28(void** f, void** l);
+extern "C" void __cdecl Sort_InsertionBy32(void** f, void** l);
+extern "C" void** __cdecl Sort_MergeBy28(void** f1, void** l1, void** f2, void** l2, void** d);
+extern "C" void** __cdecl Sort_MergeBy32(void** f1, void** l1, void** f2, void** l2, void** d);
+extern "C" void __cdecl Sort_MergeLoop28(BYTE** f, BYTE** l, BYTE** r, int step);
+extern "C" void __cdecl Sort_MergeLoop32(BYTE** f, BYTE** l, BYTE** r, int step);
+extern "C" void __cdecl Merge28_Adaptive(BYTE** f, BYTE** m, BYTE** l, int n1, int n2, BYTE**, int, int);
+extern "C" void __cdecl Merge32_Adaptive(BYTE** f, BYTE** m, BYTE** l, int n1, int n2, BYTE**, int, int);
+
+// the pieces of one stable_sort instance over pointers
+struct SsP_Ops {
+    void (__cdecl* insertion)(void**, void**);
+    void** (__cdecl* merge)(void**, void**, void**, void**, void**);
+    void (__cdecl* mergeLoop)(BYTE**, BYTE**, BYTE**, int);
+    void (__cdecl* adaptive)(BYTE**, BYTE**, BYTE**, int, int, BYTE**, int, int);
+};
+
+static void SsP_SortWithBuffer(const SsP_Ops& o, BYTE** first, BYTE** last, BYTE** buf)
+{
+    int len = (int)(last - first);
+    BYTE** p = first;
+    for (; last - p >= 7; p += 7)
+        o.insertion((void**)p, (void**)(p + 7));
+    o.insertion((void**)p, (void**)last);
+    for (int step = 7; step < len;) {
+        BYTE** f = first;
+        BYTE** out = buf;
+        for (; last - f >= step * 2; f += step * 2)
+            out = (BYTE**)o.merge((void**)f, (void**)(f + step), (void**)(f + step), (void**)(f + step * 2), (void**)out);
+        int s = step < last - f ? step : (int)(last - f);
+        o.merge((void**)f, (void**)(f + s), (void**)(f + s), (void**)last, (void**)out);
+        step *= 2;
+        o.mergeLoop(buf, buf + len, first, step);
+        step *= 2;
+    }
+}
+
+static void SsP_SortAdaptive(const SsP_Ops& o, BYTE** first, BYTE** last, BYTE** buf, int n, int pred)
+{
+    int len = (int)(last - first + 1) / 2;
+    BYTE** mid = first + len;
+    if (len > n) {
+        SsP_SortAdaptive(o, first, mid, buf, n, pred);
+        SsP_SortAdaptive(o, mid, last, buf, n, pred);
+    } else {
+        SsP_SortWithBuffer(o, first, mid, buf);
+        SsP_SortWithBuffer(o, mid, last, buf);
+    }
+    o.adaptive(first, mid, last, (int)(mid - first), (int)(last - mid), buf, n, pred);
+}
+
+static const SsP_Ops k_ssBy28 = {Sort_InsertionBy28, Sort_MergeBy28, Sort_MergeLoop28, Merge28_Adaptive};
+static const SsP_Ops k_ssBy32 = {Sort_InsertionBy32, Sort_MergeBy32, Sort_MergeLoop32, Merge32_Adaptive};
+
+extern "C" {
+
+// [FUN_464fe0] stable_sort's adaptive step for [first, last) of pointers by their field at +28, with the buffer
+// buf (size n)
+void __cdecl Sort28_StableSortAdaptive(BYTE** first, BYTE** last, BYTE** buf, int n, int pred)
+{
+    SsP_SortAdaptive(k_ssBy28, first, last, buf, n, pred);
+}
+
+// [FUN_4654c0] the same by the field at +32
+void __cdecl Sort32_StableSortAdaptive(BYTE** first, BYTE** last, BYTE** buf, int n, int pred)
+{
+    SsP_SortAdaptive(k_ssBy32, first, last, buf, n, pred);
 }
 
 } // extern "C"

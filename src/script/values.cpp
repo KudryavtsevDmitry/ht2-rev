@@ -1247,10 +1247,10 @@ extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
 extern "C" void FUN_492250(); KING_ALIAS("_FUN_492250", "_SchValue_Make10007")
-ASM_PROC(FUN_4b32d0)    // a string
+extern "C" void FUN_4b32d0(); KING_ALIAS("_FUN_4b32d0", "_Reader_String")    // a string
 ASM_PROC(FUN_4b36a0)    // a symbol
 ASM_PROC(FUN_4b38d0)    // a vector
-ASM_PROC(FUN_4b3b10)    // a character
+extern "C" void FUN_4b3b10(); KING_ALIAS("_FUN_4b3b10", "_Reader_Char")    // a character
 extern "C" int __cdecl isdigit(int c);
 extern "C" int __cdecl isalnum(int c);
 ASM_VAR(AsmLabel, s_rdBadChar, $L_6714b0)
@@ -1769,7 +1769,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
 // ---------------------------------------------------------------------------
 // Number syntax
 
-ASM_PROC(FUN_4b1d40)    // a real number from the deque (out, radix, deque)
+extern "C" void FUN_4b1d40(); KING_ALIAS("_FUN_4b1d40", "_Num_ReadReal")    // a real number from the deque (out, radix, deque)
 extern "C" void FUN_48a9d0(); KING_ALIAS("_FUN_48a9d0", "@WBuf_Free@8")
 extern "C" void FUN_490ea0(); KING_ALIAS("_FUN_490ea0", "@StrPair_Destroy@4")
 ASM_VAR(char, s_badComplex671420, $L_671420)
@@ -2036,6 +2036,182 @@ BYTE* __cdecl Reader_ListTail(BYTE* out, int a, BYTE* r)
     }
     CallThis(FUN_454580, out, pair);
     CallThis(FUN_4a36c0, pair);
+    return out;
+}
+
+} // extern "C"
+
+// === reading a string literal (FUN_4b32d0)
+
+extern "C" void FUN_4a2400(); KING_ALIAS("_FUN_4a2400", "_SchValue_MakeStringB")
+extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
+extern "C" void FUN_4b3610(); KING_ALIAS("_FUN_4b3610", "@SchReader_Skip@8")
+
+// appends c to the characters of string value s
+static void Rs_Push(DWORD* s, char c)
+{
+    CallThis(FUN_47ab20, CallThis<BYTE*>(FUN_4aa430, s) + 12, &c);
+}
+
+extern "C" {
+
+// [FUN_4b32d0] reads a string literal after its '"' from reader r into out: \n \r \t escapes (any other escaped
+// character as itself) up to the closing '"'
+BYTE* __cdecl Reader_String(BYTE* out, int a, BYTE* r)
+{
+    Rd_Drop(r);
+    DWORD s[3];
+    CallC(FUN_4a2400, s, 0);
+    for (;;) {
+        Rd_Fill(r, 1);
+        int c = Rd_Peek(r, 0);
+        if (c == 92) {
+            Rd_Drop(r);
+            Rd_Fill(r, 1);
+            int e = Rd_Peek(r, 0);
+            char ch = e == 'n' ? 10 : e == 'r' ? 13 : e == 't' ? 9 : (char)e;
+            Rd_Check((BYTE*)s);
+            Rs_Push(s, ch);
+        } else if (c == '"') {
+            Rs_Push(s, 0);
+            CallThis(FUN_4b3610, r);
+            CallThis(FUN_454580, out, s);
+            CallThis(FUN_4a36c0, s);
+            return out;
+        } else
+            Rs_Push(s, (char)c);
+        Rd_Drop(r);
+    }
+}
+
+} // extern "C"
+
+// === reading a character literal (FUN_4b3b10)
+
+ASM_VAR(char, s_rc671480, $L_671480)
+ASM_VAR(char, s_rc671488, $L_671488)
+extern "C" void FUN_49c210(); KING_ALIAS("_FUN_49c210", "_SchValue_Make10008")
+extern "C" void FUN_49c560(); KING_ALIAS("_FUN_49c560", "@SchValue_Assign@12")
+
+// whether the next n characters spell name (from its second letter on); consumes them when they do
+static bool Rc_Name(BYTE* r, const char* name, int n)
+{
+    int i = 1;
+    while (i < n && Rd_Peek(r, i) == name[i])
+        i++;
+    if (i != n)
+        return false;
+    for (; i; i--)
+        CallThis(FUN_4b3610, r);
+    return true;
+}
+
+// ch = the character value of c
+static void Rc_Set(DWORD* ch, int c)
+{
+    DWORD v[3], t[3];
+    CallC(FUN_49c210, v, 0, c);
+    CallThis(FUN_4a19c0, t, v);
+    CallThis(FUN_49c560, ch, t);
+    CallThis(FUN_4a36c0, t);
+    CallThis(FUN_4a36c0, v);
+}
+
+extern "C" {
+
+// [FUN_4b3b10] reads a character literal #\x from reader r into out; #\newline and #\space by name (a partial
+// name gives the empty value)
+BYTE* __cdecl Reader_Char(BYTE* out, int a, BYTE* r)
+{
+    Rd_Drop(r);
+    Rd_Drop(r);
+    Rd_Fill(r, 1);
+    DWORD ch[3];
+    CallThis(FUN_4bd4d0, ch);
+    int c = Rd_Peek(r, 0);
+    if (c == 'n') {
+        Rd_Fill(r, 8);
+        if (Rc_Name(r, &s_rc671480, 7))
+            Rc_Set(ch, 10);
+    } else if (c == 's') {
+        Rd_Fill(r, 6);
+        if (Rc_Name(r, &s_rc671488, 5))
+            Rc_Set(ch, 32);
+    } else {
+        Rc_Set(ch, c);
+        Rd_Drop(r);
+    }
+    CallThis(FUN_454580, out, ch);
+    CallThis(FUN_4a36c0, ch);
+    return out;
+}
+
+} // extern "C"
+
+// === reading a real number (FUN_4b1d40)
+
+ASM_PROC(FUN_4b1b90)    // an integer in radix from the deque (out, radix, deque)
+extern "C" void FUN_490db0(); KING_ALIAS("_FUN_490db0", "@Rational_Reduce@8")
+
+// drops the current character of the reader's deque d
+static void Nm_Pop(BYTE* d)
+{
+    BYTE** cur = (BYTE**)(d + 8);
+    if (*cur != F(BYTE*, d, 16) - 4)
+        *cur += 4;
+    else
+        CallThis(FUN_4b2840, d);
+}
+
+extern "C" {
+
+// [FUN_4b1d40] reads a real number in radix from the reader's deque d into out (numerator, denominator): an
+// optional sign, the digits (radix 10 may end in a fraction or exponent), then "/denominator" when exact
+BYTE** __cdecl Num_ReadReal(BYTE** out, int radix, BYTE* d)
+{
+    BYTE* num = CallC<BYTE*>(FUN_48ade0, 0, 0);
+    BYTE* den = CallC<BYTE*>(FUN_48ade0, 0, 1);
+    BYTE it[16];
+    bool neg = false;
+    int c = **CallThis<int**>(FUN_4b2730, d + 8, it, 0);
+    if (c == '-') {
+        neg = true;
+        Nm_Pop(d);
+    } else if (c == '+')
+        Nm_Pop(d);
+    int inexact = 0;
+    if (radix == 10)
+        inexact = Num_ParseDigits(&num, &den, 10, d);
+    else {
+        BYTE* t;
+        CallC(FUN_4b1b90, &t, radix, d);
+        num = CallC<BYTE*>(FUN_48acd0, num, t);
+        Pd_Free(t);
+    }
+    if (**CallThis<int**>(FUN_4b2730, d + 8, it, 0) == '/' && !inexact) {
+        Nm_Pop(d);
+        BYTE* t;
+        CallC(FUN_4b1b90, &t, radix, d);
+        den = CallC<BYTE*>(FUN_48acd0, den, t);
+        Pd_Free(t);
+    }
+    BYTE* r[2];
+    BYTE* n = 0;
+    if (neg) {
+        Sch_Convert4b2050((DWORD*)&n, (DWORD*)&num);
+        r[0] = CallC<BYTE*>(FUN_48acd0, 0, n);
+    } else
+        r[0] = CallC<BYTE*>(FUN_48acd0, 0, num);
+    r[1] = CallC<BYTE*>(FUN_48acd0, 0, den);
+    CallThis(FUN_490db0, r);
+    out[0] = CallC<BYTE*>(FUN_48acd0, 0, r[0]);
+    out[1] = CallC<BYTE*>(FUN_48acd0, 0, r[1]);
+    Pd_Free(r[1]);
+    Pd_Free(r[0]);
+    if (neg)
+        Pd_Free(n);
+    Pd_Free(den);
+    Pd_Free(num);
     return out;
 }
 

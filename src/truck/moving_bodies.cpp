@@ -1295,3 +1295,63 @@ extern "C" int __fastcall Thunk592ed0(BYTE* s, void* d)
     F(void*, s, 0) = &g_q198_6508a0;
     return q198_Chain_DeleteAll(s, d);
 }
+
+// === a body's contacts with its neighbours (FUN_58ae30)
+
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_57c9a0(); KING_ALIAS("_FUN_57c9a0", "_Id_Same")
+ASM_PROC(FUN_584c70)    // sphere contacts (centre, other centre, radius, contacts, body, sign)
+ASM_PROC(FUN_58a020)    // box contacts (body, matrix, contacts, other, sign)
+ASM_VAR(AsmLabel, g_bc7025f0, $L_7025f0)
+
+static double Bc_Abs(double x) { return x < 0 ? -x : x; }
+
+extern "C" {
+
+// [FUN_58ae30] adds to contacts c the contacts of body b (in matrix m) with its up to 6 neighbours (+3508) while
+// they can be closer than their limits (+3532; by the gap +3300 moved for a frame and the radii +3272): spheres
+// (+392 = 1) and boxes (2) from their side in b's inverse frame, then b against each; the count added
+int __cdecl Body_NeighbourContacts(BYTE* b, BYTE* m, BYTE* c)
+{
+    float A[12], B[12], C[12], Mo[12], R[12], t1[12], t2[12], t3[12];
+    memcpy(A, (BYTE*)g_bc7025f0, 48);
+    memcpy(B, (BYTE*)g_bc7025f0, 48);
+    memcpy(C, (BYTE*)g_bc7025f0, 48);
+    int total = 0;
+    float dt = (float)Game_FrameTime();
+    for (int i = 0; i < 6; i++) {
+        BYTE* o = F(BYTE*, b, 3508 + i * 4);
+        if (!o)
+            break;
+        double d = (Bc_Abs(F(float, o, 3308) - (double)F(float, b, 3308)) +
+                    Bc_Abs(F(float, o, 3304) - (double)F(float, b, 3304)) +
+                    Bc_Abs(F(float, o, 3300) - (double)F(float, b, 3300))) * dt + F(float, o, 3272) + F(float, b, 3272);
+        if (F(float, b, 3532 + i * 4) > d * d)
+            break;
+        int type = F(int, o, 392);
+        if (type == 1 || type == 2) {
+            if (!i) {
+                CallThis(FUN_57de90, b, t1);
+                memcpy(A, CallThis<BYTE*>(FUN_57dec0, b, t2), 48);
+                memcpy(B, CallC<BYTE*>(FUN_5aba40, t3, A, m), 48);
+                memcpy(C, CallC<BYTE*>(FUN_5ac2e0, t1, B), 48);
+            }
+            CallThis(FUN_57de90, o, Mo);
+            CallC(FUN_5aba40, R, Mo, C);
+            int first = F(int, c, 2816);
+            if (type == 2)
+                total += CallC<int>(FUN_58a020, o, R, c, b, -1);
+            else if (int k = CallC<int>(FUN_584c70, Mo + 9, R + 9, F(DWORD, o, 3272), c, b, -1)) {
+                total += k;
+                F(int, c, 1532 + F(int, c, 2816) * 4) = CallC<int>(FUN_57c9a0, o);
+            }
+            for (int k = first; k < F(int, c, 2816); k++)
+                memcpy(c + 3332 + k * 48, C, 48);
+        }
+        total += CallC<int>(FUN_58a020, b, m, c, o, 1);
+    }
+    return total;
+}
+
+} // extern "C"

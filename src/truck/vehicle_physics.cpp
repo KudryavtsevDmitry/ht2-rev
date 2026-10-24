@@ -1097,3 +1097,70 @@ BYTE* __fastcall PhysState_Init(BYTE* self, void*)
 }
 
 } // extern "C"
+
+// === the engine constructor (FUN_4eb770)
+
+ASM_VAR(WORD, g_ec696bda, $L_696bda)
+ASM_VAR(float, g_ec64d970, $L_64d970)
+extern "C" void FUN_4eba10(); KING_ALIAS("_FUN_4eba10", "@Engine_Reset@8")
+
+extern "C" {
+
+// [FUN_4eb770] constructor of engine e: an identity matrix at +144, the five wheels' vectors (+200 the scaled
+// 702630, +260 .. +440 zero vectors), the gear settings (0.4, 0.6, 0.3 at +36, +40, +100), 16 zero vectors at
+// +512 with four counters at +704, then reset
+BYTE* __fastcall Engine_Construct(BYTE* e)
+{
+    memset(e + 144, 0, 48);
+    memcpy(e + 144, g_ps7025f0, 48);
+    memset(e + 200, 0, 312);
+    memset(e + 512, 0, 192);
+    F(WORD, e, 6) = 0;
+    F(WORD, e, 4) = 0;
+    F(WORD, e, 64) = 0;
+    F(WORD, e, 66) = 0;
+    F(int, e, 724) = 0;
+    F(WORD, e, 8) = g_ec696bda;
+    F(float, e, 36) = 0.4f;
+    F(float, e, 40) = 0.6f;
+    F(WORD, e, 74) = 1;
+    F(int, e, 92) = 0;
+    F(int, e, 80) = 1;
+    F(int, e, 84) = 1;
+    F(int, e, 76) = 0;
+    F(float, e, 100) = 0.3f;
+    F(int, e, 88) = 1;
+    F(int, e, 104) = 1;
+    F(int, e, 108) = 0;
+    F(int, e, 112) = 0;
+    const float* d = (const float*)g_ps702630;
+    for (int i = 0; i < 5; i++) {
+        float* v = (float*)(e + 200 + i * 12);
+        v[0] = (float)((double)d[0] * g_ec64d970);
+        v[1] = (float)((double)d[1] * g_ec64d970);
+        v[2] = (float)((double)d[2] * g_ec64d970);
+        for (int k = 1; k <= 4; k++)
+            memcpy(e + 200 + k * 60 + i * 12, g_ps702650, 12);
+    }
+    F(int, e, 116) = 1;
+    F(int, e, 192) = 0;
+    F(int, e, 196) = 0;
+    F(int, e, 120) = 0;
+    F(int, e, 136) = 0;
+    F(int, e, 124) = 0;
+    F(int, e, 96) = 0;
+    F(int, e, 128) = 0;
+    F(BYTE, e, 0) = 2;
+    F(int, e, 140) = 0;
+    F(int, e, 132) = 0;
+    for (int j = 0; j < 4; j++) {
+        for (int k = 0; k < 4; k++)
+            memcpy(e + 512 + (j * 4 + k) * 12, g_ps702650, 12);
+        F(int, e, 704 + j * 4) = 0;
+    }
+    F(int, e, 720) = 0;
+    CallThis(FUN_4eba10, e);
+    return e;
+}
+
+} // extern "C"

@@ -443,8 +443,8 @@ extern "C" void __cdecl CarordInit_470cd0() { Carord_RngInit((DWORD*)g_carordRng
 // === stable sort of 12-byte records with a buffer (FUN_46f0a0)
 
 extern "C" void FUN_46f470(); KING_ALIAS("_FUN_46f470", "_Rec12_Insertion")
-ASM_PROC(FUN_46f840)
-ASM_PROC(FUN_470110)
+extern "C" void FUN_46f840(); KING_ALIAS("_FUN_46f840", "_Rec12_MergeAdaptive")
+extern "C" void FUN_470110(); KING_ALIAS("_FUN_470110", "_Rec12_MergeLoop")
 extern "C" void FUN_4703a0(); KING_ALIAS("_FUN_4703a0", "_Rec12_Merge")
 
 static int Ss12_Count(const BYTE* a, const BYTE* b) { return (int)(b - a) / 12; }
@@ -498,6 +498,232 @@ void __cdecl Rec12_StableSortAdaptive(BYTE* first, BYTE* last, BYTE* buf, int n,
         Ss12_SortWithBuffer(mid, last, buf, comp);
     }
     CallC(FUN_46f840, first, mid, last, Ss12_Count(first, mid), Ss12_Count(mid, last), buf, n, comp);
+}
+
+} // extern "C"
+
+// === merging 12-byte records with a buffer (FUN_46f840, FUN_470490)
+
+static E12* E12_Copy(const E12* first, const E12* last, E12* to)
+{
+    for (int n = (int)(last - first); n > 0; n--)
+        *to++ = *first++;
+    return to;
+}
+
+extern "C" {
+
+// [FUN_470490] rotate_adaptive: [first, middle) and [middle, last) swapped through buffer buf (size n) when the
+// shorter part fits, else in place; returns the new middle
+E12* __cdecl E12_RotateAdaptive(E12* first, E12* middle, E12* last, int len1, int len2, E12* buf, int n)
+{
+    if (len1 > len2 && len2 <= n) {
+        E12* end = E12_Copy(middle, last, buf);
+        E12_CopyBackward(first, middle, last);
+        return E12_Copy(buf, end, first);
+    }
+    if (len1 <= n) {
+        E12* end = E12_Copy(first, middle, buf);
+        E12_Copy(middle, last, first);
+        return E12_CopyBackward(buf, end, last);
+    }
+    if (first == middle)
+        return last;
+    if (last == middle)
+        return first;
+    E12_Reverse(first, middle);
+    E12_Reverse(middle, last);
+    while (first != middle && middle != last)
+        E12_Swap(first++, --last);
+    if (first == middle) {
+        E12_Reverse(middle, last);
+        return last;
+    }
+    E12_Reverse(first, middle);
+    return first;
+}
+
+// [FUN_46f840] merge_adaptive of the sorted runs [first, middle) and [middle, last) (by key, +8) with buffer buf
+// (size n): through the buffer when a run fits, else split and rotated
+void __cdecl Rec12_MergeAdaptive(E12* first, E12* middle, E12* last, int len1, int len2, E12* buf, int n, int comp)
+{
+    for (;;) {
+        if (len1 <= len2 && len1 <= n) {
+            E12* bufEnd = E12_Copy(first, middle, buf);
+            E12* b = buf;
+            E12* out = first;
+            while (b != bufEnd && middle != last)
+                *out++ = middle->key < b->key ? *middle++ : *b++;
+            E12_Copy(middle, last, E12_Copy(b, bufEnd, out));
+            return;
+        }
+        if (len2 <= n) {
+            E12* bufEnd = E12_Copy(middle, last, buf);
+            E12* out = last;
+            if (first == middle) {
+                E12_CopyBackward(buf, bufEnd, out);
+                return;
+            }
+            if (buf == bufEnd) {
+                E12_CopyBackward(first, middle, out);
+                return;
+            }
+            E12* l1 = middle - 1;
+            E12* l2 = bufEnd - 1;
+            for (;;) {
+                if (l2->key < l1->key) {
+                    *--out = *l1;
+                    if (first == l1) {
+                        E12_CopyBackward(buf, l2 + 1, out);
+                        return;
+                    }
+                    l1--;
+                } else {
+                    *--out = *l2;
+                    if (buf == l2) {
+                        E12_CopyBackward(first, l1 + 1, out);
+                        return;
+                    }
+                    l2--;
+                }
+            }
+        }
+        E12* cut1;
+        E12* cut2;
+        int len11, len22;
+        if (len1 > len2) {
+            len11 = len1 / 2;
+            cut1 = first + len11;
+            cut2 = E12_LowerBound(middle, last, cut1);
+            len22 = (int)(cut2 - middle);
+        } else {
+            len22 = len2 / 2;
+            cut2 = middle + len22;
+            cut1 = E12_UpperBound(first, middle, cut2);
+            len11 = (int)(cut1 - first);
+        }
+        E12* mid = E12_RotateAdaptive(cut1, middle, cut2, len1 - len11, len22, buf, n);
+        Rec12_MergeAdaptive(first, cut1, mid, len11, len22, buf, n, comp);
+        first = mid;
+        middle = cut2;
+        len1 -= len11;
+        len2 -= len22;
+    }
+}
+
+} // extern "C"
+
+// === insertion sort of 12-byte records in chunks (FUN_46fe40)
+
+extern "C" void __cdecl Rec12_Insertion(BYTE* first, BYTE* last);   // ai_containers.cpp
+
+extern "C" {
+
+// [FUN_46fe40] insertion sorts of the runs of chunk records of [first, last) (12 bytes, by key +8)
+void __cdecl Rec12_ChunkInsertion(BYTE* first, BYTE* last, int chunk)
+{
+    for (; (last - first) / 12 >= chunk; first += chunk * 12)
+        Rec12_Insertion(first, first + chunk * 12);
+    Rec12_Insertion(first, last);
+}
+
+} // extern "C"
+
+// === stable_sort of 12-byte records (FUN_46ea10, FUN_46ede0)
+
+extern "C" void FUN_46f580(); KING_ALIAS("_FUN_46f580", "_Rec12_MergeNoBuffer")    // merge without a buffer (first, middle, last, len1, len2, comp)
+extern "C" void __cdecl Rec12_Insertion(BYTE* first, BYTE* last);   // ai_containers.cpp
+extern "C" void __cdecl free(void* p);
+
+extern "C" {
+
+// [FUN_46ede0] inplace_stable_sort of [first, last) (12 bytes, by key +8): insertion sort below 15, else both
+// halves and a merge without a buffer
+void __cdecl Rec12_InplaceStableSort(BYTE* first, BYTE* last, int comp)
+{
+    int n = (int)(last - first) / 12;
+    if (n < 15) {
+        Rec12_Insertion(first, last);
+        return;
+    }
+    BYTE* mid = first + n / 2 * 12;
+    Rec12_InplaceStableSort(first, mid, comp);
+    Rec12_InplaceStableSort(mid, last, comp);
+    CallC(FUN_46f580, first, mid, last, (int)(mid - first) / 12, (int)(last - mid) / 12, comp);
+}
+
+// [FUN_46ea10] stable_sort of [first, last) (12-byte records by key +8) through a temporary buffer, in place
+// when none can be had
+void __cdecl Rec12_StableSort(BYTE* first, BYTE* last, int, int, int comp)
+{
+    int tb[3];
+    TempBuf12_Construct(tb, 0, first, last);
+    if (!tb[2])
+        Rec12_InplaceStableSort(first, last, comp);
+    else
+        Rec12_StableSortAdaptive(first, last, (BYTE*)tb[2], tb[1], comp);
+    free((void*)tb[2]);
+}
+
+} // extern "C"
+
+// === merging 12-byte records without a buffer, and the merge pass (FUN_46f580, FUN_470110)
+
+extern "C" BYTE* __cdecl Rotate12(BYTE* f, BYTE* m, BYTE* l);                          // ai_containers.cpp
+
+// merge of the sorted runs [f1, l1) and [f2, l2) into out (stable, by key); the end of out
+static E12* E12_Merge(const E12* f1, const E12* l1, const E12* f2, const E12* l2, E12* out)
+{
+    while (f1 != l1 && f2 != l2)
+        *out++ = f2->key < f1->key ? *f2++ : *f1++;
+    return E12_Copy(f2, l2, E12_Copy(f1, l1, out));
+}
+
+extern "C" {
+
+// [FUN_46f580] merge_without_buffer of the sorted runs [first, middle) and [middle, last) (by key): split at the
+// longer run's middle, rotated and both parts merged
+void __cdecl Rec12_MergeNoBuffer(E12* first, E12* middle, E12* last, int len1, int len2, int comp)
+{
+    while (len1 && len2) {
+        if (len1 + len2 == 2) {
+            if (middle->key < first->key)
+                E12_Swap(first, middle);
+            return;
+        }
+        E12* cut1;
+        E12* cut2;
+        int len11, len22;
+        if (len1 > len2) {
+            len11 = len1 / 2;
+            cut1 = first + len11;
+            cut2 = E12_LowerBound(middle, last, cut1);
+            len22 = (int)(cut2 - middle);
+        } else {
+            len22 = len2 / 2;
+            cut2 = middle + len22;
+            cut1 = E12_UpperBound(first, middle, cut2);
+            len11 = (int)(cut1 - first);
+        }
+        Rotate12((BYTE*)cut1, (BYTE*)middle, (BYTE*)cut2);
+        E12* mid = cut1 + len22;
+        Rec12_MergeNoBuffer(first, cut1, mid, len11, len22, comp);
+        first = mid;
+        middle = cut2;
+        len1 -= len11;
+        len2 -= len22;
+    }
+}
+
+// [FUN_470110] one merge pass: the runs of step records of [first, last) merged in pairs into out
+void __cdecl Rec12_MergeLoop(E12* first, E12* last, E12* out, int step, int comp)
+{
+    while (last - first >= step * 2) {
+        out = E12_Merge(first, first + step, first + step, first + step * 2, out);
+        first += step * 2;
+    }
+    int s = (int)(last - first) < step ? (int)(last - first) : step;
+    E12_Merge(first, first + s, first + s, last, out);
 }
 
 } // extern "C"

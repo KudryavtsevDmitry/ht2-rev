@@ -761,3 +761,66 @@ extern "C" void __fastcall MovingItem_SetSpin(BYTE* s, void*, const float* v, co
 extern "C" int __fastcall q198_Dtor57cfa0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor57cfa0_DeletingDestructor@12", "@Dtor57cfa0_DeletingDestructor@12")
 // [$L_5893b0] forwards to Dtor57cfa0_DeletingDestructor for the object 256 bytes before
 extern "C" int __fastcall Thunk5893b0(BYTE* s, void* d, int a0) { return q198_Dtor57cfa0_DeletingDestructor(s - 256, d, a0); }
+
+// === the first contact of an item with its neighbours (FUN_584570)
+
+extern "C" void FUN_5ab6a0(); KING_ALIAS("_FUN_5ab6a0", "_Vec3_NearlyEqual")
+extern "C" void FUN_57c9a0(); KING_ALIAS("_FUN_57c9a0", "_Id_Same")
+extern "C" void FUN_4e5a45(); KING_ALIAS("_FUN_4e5a45", "_Query_4e5a45")
+extern "C" void __fastcall Value_Free(int* s);                  // scene.cpp
+ASM_PROC(FUN_5f6820)    // a shape value: hit test (kind, from, to, x)
+
+static double Ic_Abs(double x) { return x < 0 ? -x : x; }
+
+extern "C" {
+
+// [FUN_584570] the first contact of item b with its up to 6 neighbours (+3508) that can be closer than their
+// limits (+3532): a ball (+392 and +3976 both 2) as a sphere hit test of the move *from (b's position) to *to
+// (m's position), the contact c getting the points (+52, +64) and the ball's id (+116); others by their own
+// query (+256); nonzero for a contact
+int __cdecl Item_NeighbourContact(BYTE* b, float* from, float* to, BYTE* m, BYTE* c)
+{
+    float dt = (float)Game_FrameTime();
+    for (int i = 0; i < 6; i++) {
+        BYTE* o = F(BYTE*, b, 3508 + i * 4);
+        if (!o)
+            return 0;
+        double d = (Ic_Abs(F(float, o, 3300) - (double)F(float, b, 3300)) +
+                    Ic_Abs(F(float, o, 3304) - (double)F(float, b, 3304)) +
+                    Ic_Abs(F(float, o, 3308) - (double)F(float, b, 3308))) * dt + F(float, o, 3272) + F(float, b, 3272);
+        if (d * d < F(float, b, 3532 + i * 4))
+            continue;
+        if (F(int, o, 392) == 2 && F(int, o, 3976) == 2) {
+            float* s = (float*)operator new(16);
+            if (s)
+                s[0] = s[1] = s[2] = s[3] = 0;
+            BYTE mt[48];
+            const float* p = (const float*)(CallThis<BYTE*>(FUN_57de90, o, mt) + 36);
+            s[0] = p[0];
+            s[1] = p[1];
+            s[2] = p[2];
+            s[3] = F(float, o, 3272);
+            int val[3] = {1, 0, (int)s};
+            float P[3], Q[3];
+            memcpy(P, CallThis<BYTE*>(FUN_57de90, b, mt) + 36, 12);
+            memcpy(Q, m + 36, 12);
+            memcpy(from, P, 12);
+            memcpy(to, Q, 12);
+            if (!CallC<int>(FUN_5ab6a0, Q, P) && CallThis<int>(FUN_5f6820, val, 2, P, Q, F(DWORD, b, 3280))) {
+                memcpy(c + 52, P, 12);
+                memcpy(c + 64, Q, 12);
+                F(int, c, 116) = CallC<int>(FUN_57c9a0, F(BYTE*, b, 3508 + i * 4));
+                Value_Free(val);
+                return 1;
+            }
+            Value_Free(val);
+        } else {
+            int r = CallC<int>(FUN_4e5a45, o + 256, from, to, c, F(DWORD, b, 3280));
+            if (r & 1)
+                return r;
+        }
+    }
+    return 0;
+}
+
+} // extern "C"

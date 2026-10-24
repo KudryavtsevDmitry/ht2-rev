@@ -18,7 +18,7 @@ extern "C" void __cdecl Sort_LinearInsert12(BYTE* first, BYTE* last, int, void* 
 KING_ALIAS("_Sort_LinearInsert12", "FUN_467820")
 extern "C" void __cdecl Sort_UnguardedInsertion12(BYTE* first, BYTE* last, int, void* cmp);
 KING_ALIAS("_Sort_UnguardedInsertion12", "_Names_InsertionSortRest")
-ASM_PROC(FUN_45b570)    // vector<1592 bytes>::insert_aux
+extern "C" void FUN_45b570(); KING_ALIAS("_FUN_45b570", "@Vec1592_InsertAux@16")    // vector<1592 bytes>::insert_aux
 extern "C" void FUN_45cb00(); KING_ALIAS("_FUN_45cb00", "@Vec4b_InsertC@16")    // vector<4 bytes>::insert_aux
 ASM_PROC(FUN_45d8f0)
 extern "C" void FUN_4604b0(); KING_ALIAS("_FUN_4604b0", "@Vec4b_InsertG@16")
@@ -424,8 +424,7 @@ DWORD* __fastcall Rec60_Copy(DWORD* s, void*, const DWORD* src)                 
 // Batch 2
 
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
-extern "C" void __cdecl Tree_Erase469520(void* node, void* x);
-KING_ALIAS("_Tree_Erase469520", "FUN_469520")
+extern "C" void __cdecl Rope_AddLeafToForest(BYTE* r, BYTE** forest);  // ai_containers.cpp, below
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
 
@@ -558,7 +557,7 @@ extern "C" void __cdecl Tree_EraseRight(BYTE* node, void* x)
         Tree_EraseRight(F(BYTE*, node, 20), x);
         node = F(BYTE*, node, 24);
     }
-    Tree_Erase469520(node, x);
+    Rope_AddLeafToForest((BYTE*)node, (BYTE**)x);
 }
 
 // lexicographical compare of signed chars: -1, 0 or 1
@@ -2458,7 +2457,7 @@ extern "C" void __cdecl Names_IntroSort(BYTE* first, BYTE* last, int, int depth,
 // +4 root, +16 the current character in the cached leaf, +20 the leaf's end).
 
 ASM_PROC(FUN_46b140)    // caches the leaf of a rope iterator
-ASM_PROC(FUN_46c4a0)    // moves a rope iterator into the next leaf
+extern "C" void FUN_46c4a0(); KING_ALIAS("_FUN_46c4a0", "_Rope_SetCacheForIncr")    // moves a rope iterator into the next leaf
 struct RopeIt60 { int pos, root, d2, d3; char* cur; char* end; int d6[9]; };
 static char Aicon232_Char(RopeIt60* a)
 {
@@ -2551,3 +2550,99 @@ extern "C" void __cdecl Names_InsertionSortRest(BYTE* first, BYTE* last, int, in
         CallC(FUN_469850, e, v, cmp);
     }
 }
+
+// === adding a leaf to the rope balancing forest (FUN_469520)
+
+ASM_VAR(AsmLabel, g_rf64b984, $L_64b984)
+extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")
+ASM_PROC(FUN_462f30)
+
+static const unsigned* Rf_MinLen() { return (const unsigned*)(BYTE*)g_rf64b984; }
+
+// a reference to rope node n dropped (freed at zero)
+static void Rf_Unref(BYTE* n)
+{
+    if (n && InterlockedDecrement((LONG*)(n + 4)) == 0)
+        CallThis(FUN_44f1b0, n);
+}
+
+// l + r, flagged balanced (+12) when long enough for its depth (+13)
+static BYTE* Rf_Concat(BYTE* l, BYTE* r)
+{
+    BYTE* c = CallC<BYTE*>(FUN_462f30, l, r);
+    if (F(unsigned, c, 0) >= Rf_MinLen()[F(BYTE, c, 13)])
+        F(BYTE, c, 12) = 1;
+    return c;
+}
+
+extern "C" {
+
+// [FUN_469520] rope::_S_add_leaf_to_forest: the smaller forest entries joined into a piece before r, then the
+// sum carried up the forest (46 Fibonacci buckets) to the first bucket it is shorter than
+void __cdecl Rope_AddLeafToForest(BYTE* r, BYTE** forest)
+{
+    BYTE* tiny = 0;
+    unsigned s = F(unsigned, r, 0);
+    int i = 0;
+    for (; s >= Rf_MinLen()[i + 1]; i++)
+        if (forest[i]) {
+            BYTE* old = tiny;
+            tiny = Rf_Concat(forest[i], tiny);
+            Rf_Unref(forest[i]);
+            forest[i] = 0;
+            Rf_Unref(old);
+        }
+    BYTE* ins = Rf_Concat(tiny, r);
+    Rf_Unref(tiny);
+    for (;; i++) {
+        if (forest[i]) {
+            BYTE* old = ins;
+            ins = Rf_Concat(forest[i], ins);
+            Rf_Unref(forest[i]);
+            forest[i] = 0;
+            Rf_Unref(old);
+        }
+        if (i == 45 || F(unsigned, ins, 0) < Rf_MinLen()[i + 1]) {
+            forest[i] = ins;
+            return;
+        }
+    }
+}
+
+} // extern "C"
+
+// === vector<1592 bytes>::insert_aux (FUN_45b570)
+
+extern "C" {
+
+// [FUN_45b570] inserts a copy of record x (1592 bytes) at pos of vector s: shifted up within the capacity, or
+// copied into a new buffer of twice the size (1 when empty) with the old storage returned to the pool
+void __fastcall Vec1592_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
+{
+    if (s[1] != s[2]) {
+        BYTE* end = s[1];
+        if (end)
+            memcpy(end, end - 1592, 1592);
+        s[1] = end + 1592;
+        BYTE t[1592];
+        memcpy(t, x, 1592);
+        for (BYTE* d = end - 1592; d > pos; d -= 1592)
+            Rec1588_Copy(d, 0, d - 1592);
+        Rec1588_Copy(pos, 0, t);
+        return;
+    }
+    int n = (int)(s[1] - s[0]) / 1592;
+    int cap = n ? n * 2 : 1;
+    BYTE* buf = (BYTE*)Stl_Allocate(cap * 1592);
+    BYTE* p = UninitCopy1592(s[0], pos, buf);
+    if (p)
+        memcpy(p, x, 1592);
+    BYTE* end = UninitCopy1592(pos, s[1], p + 1592);
+    if (int bytes = (int)(s[2] - s[0]) / 1592 * 1592)
+        CallC(FUN_44b4a0, s[0], bytes);
+    s[1] = end;
+    s[0] = buf;
+    s[2] = buf + cap * 1592;
+}
+
+} // extern "C"

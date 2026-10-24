@@ -613,7 +613,7 @@ extern "C" int __cdecl Static691cc0_Init(void)
 // ---------------------------------------------------------------------------
 // Searching a route
 
-ASM_PROC(FUN_484810)    // the route from the route tables (out, side, from, to, cost)
+extern "C" void FUN_484810(); KING_ALIAS("_FUN_484810", "_Route_Waypoints")    // the route from the route tables (out, side, from, to, cost)
 extern "C" void FUN_4593b0(); KING_ALIAS("_FUN_4593b0", "_Vec12b_AllocCopyA@12")
 extern "C" void FUN_47c650(); KING_ALIAS("_FUN_47c650", "_Rec12_Copy")
 extern "C" void FUN_45a9b0(); KING_ALIAS("_FUN_45a9b0", "_Copy12s")

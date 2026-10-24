@@ -3925,3 +3925,76 @@ void __fastcall Vehicle_RecordHistory(BYTE* c)
 }
 
 } // extern "C"
+
+// === a vehicle's light switches (FUN_546d10)
+
+ASM_VAR(AsmLabel, g_ls6d2114, $L_6d2114)
+extern "C" void FUN_4e48a2(); KING_ALIAS("_FUN_4e48a2", "_Switch_SetChecked")
+extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
+
+extern "C" {
+
+// [FUN_546d10] sets the light switches of vehicle c's model (6d2114 + 1488 per model): the lamps on when dark
+// (+20900 bit 7 clear) or the body's lamps (+9536: +144, +124) are off, by the low (+20856) and high (+20860)
+// beams; the brake light (+20916) as state 2 and on its four switches; the cab light by +20920 / +20916
+void __fastcall Vehicle_SetLightSwitches(BYTE* c)
+{
+    BYTE* t = (BYTE*)g_ls6d2114 + F(int, c, 10420) * 1488;
+    bool dark = !(F(DWORD, c, 20900) & 0x80);
+    BYTE* body = F(BYTE*, c, 9536);
+    bool a = dark || !F(int, body, 144), b = dark || !F(int, body, 124);
+    int brake = F(int, c, 20916) ? 2 : 0;
+    CallC(FUN_4e48a2, F(BYTE*, t, 8), a && F(int, c, 20856) ? 1 : 0);
+    CallC(FUN_4e48a2, F(BYTE*, t, 24), a && F(int, c, 20860) ? 1 : 0);
+    CallC(FUN_4e48a2, F(BYTE*, t, 28), b && F(int, c, 20860) ? 1 : 0);
+    CallC(FUN_4e48a2, F(BYTE*, t, 8), b && F(int, c, 20856) ? 1 : brake);
+    CallC(FUN_4e48a2, F(BYTE*, t, 12), b && F(int, c, 20856) ? 1 : brake);
+    for (int i = 0; i < 4; i++)
+        CallC(FUN_5e1a10, F(BYTE*, t, 120 + i * 4), F(int, c, 20916) ? 1 : 0);
+    CallC(FUN_5e1a10, F(BYTE*, t, 216), 0);
+    CallC(FUN_5e1a10, F(BYTE*, t, 220), 0);
+    CallC(FUN_5e1a10, F(BYTE*, c, 20500), (F(int, c, 20920) || F(int, c, 20916)) ? 1 : 0);
+}
+
+} // extern "C"
+
+// === the damage keys of a vehicle (FUN_5465c0)
+
+extern "C" {
+
+// [FUN_5465c0] *out = the 9 damage key records (20 bytes: the scene object DamageXKey, +4, the level count +8,
+// +12, the step +16) for the parts 1, FC, FR, FL, R, L, BR, BL, BC; *count = 9
+void __cdecl Vehicle_MakeDamageKeys(BYTE** out, int* count)
+{
+    static const char* const k_parts[9] = {"1", "FC", "FR", "FL", "R", "L", "BR", "BL", "BC"};
+    static const int k_levels[9] = {4, 3, 3, 3, 1, 1, 3, 3, 1};
+    BYTE* k = (BYTE*)operator new(180);
+    if (k)
+        for (int i = 0; i < 9; i++) {
+            F(int, k, i * 20) = 0;
+            F(int, k, i * 20 + 4) = 0;
+            F(int, k, i * 20 + 8) = 1;
+            F(int, k, i * 20 + 12) = 0;
+            F(float, k, i * 20 + 16) = 0.05f;
+        }
+    *out = k;
+    *count = 9;
+    for (int i = 0; i < *count; i++) {
+        F(int, k, i * 20 + 4) = 0;
+        F(int, k, i * 20 + 12) = 0;
+        F(int, k, i * 20) = 0;
+    }
+    for (int i = 0; i < *count; i++) {
+        char name[64];
+        sprintf(name, "Damage%sKey", k_parts[i]);
+        F(void*, k, i * 20) = CallC<void*>(FUN_5ef2b0, 0, name);
+        F(int, k, i * 20 + 4) = 0;
+        F(int, k, i * 20 + 12) = 0;
+    }
+    for (int i = 0; i < 9; i++) {
+        F(float, k, i * 20 + 16) = i == 1 ? 0.05f : 0.1f;
+        F(int, k, i * 20 + 8) = k_levels[i];
+    }
+}
+
+} // extern "C"

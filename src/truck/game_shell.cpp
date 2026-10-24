@@ -1700,7 +1700,7 @@ extern "C" BYTE* __cdecl Storage_ReadSubImage(const char* name, BYTE* arg)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
 extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
-ASM_PROC(FUN_4d90c0)
+extern "C" void FUN_4d90c0(); KING_ALIAS("_FUN_4d90c0", "_Fx_PlaceObjects")
 ASM_PROC(FUN_4833a0)    // writes the save into a storage
 ASM_PROC(FUN_51d6d0)    // writes the screenshot (storage, a)
 ASM_VAR(AsmLabel, s_671204, $L_671204)
@@ -5776,7 +5776,7 @@ extern "C" void __fastcall SaveList_Command(BYTE* s, void*, int cmd)
 // ---------------------------------------------------------------------------
 // Switching the game screen's mode.
 
-ASM_PROC(FUN_574530)
+extern "C" void FUN_574530(); KING_ALIAS("_FUN_574530", "_Score_Build")
 extern "C" void FUN_5bac90(); KING_ALIAS("_FUN_5bac90", "@Texture_ReleaseSurface@8")
 extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
 ASM_VAR(BYTE*, g_q88_6ce3fc, $L_6ce3fc)
@@ -7031,7 +7031,7 @@ ASM_VAR(BYTE*, g_ndFont, $L_6ced28)
 ASM_VAR(AsmLabel, g_ndNet696750, $L_696750)
 ASM_VAR(AsmLabel, g_nd723d50, $L_723d50)
 ASM_VAR(double, g_nd64b5f0, $L_64b5f0)
-ASM_PROC(FUN_5c3c50)    // net: send a message (name, msg)
+extern "C" void FUN_5c3c50(); KING_ALIAS("_FUN_5c3c50", "@Music_WaitNetwork@16")    // net: send a message (name, msg)
 ASM_PROC(FUN_5c55b0)    // net: the host's reply (reply, -)
 ASM_PROC(FUN_5c3ac0)    // net: whether the session is open
 ASM_PROC(FUN_5c5740)    // net: host (name, 0, 0)

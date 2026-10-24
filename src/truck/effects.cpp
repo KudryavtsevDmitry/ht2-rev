@@ -3857,7 +3857,7 @@ extern "C" int __fastcall Eff_4c3840(BYTE* s, void*, BYTE* p, float k)
 ASM_PROC(FUN_4c8af0)
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 extern "C" void FUN_5f98c0(); KING_ALIAS("_FUN_5f98c0", "@SceneNode5f98c0_Draw@16")
-ASM_PROC(FUN_5ae580)
+extern "C" void FUN_5ae580(); KING_ALIAS("_FUN_5ae580", "@Render_PushMatrix@16")
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 extern "C" void FUN_5f3570(); KING_ALIAS("_FUN_5f3570", "@Obj_Test@16")
 extern "C" void FUN_4c5680(); KING_ALIAS("_FUN_4c5680", "@Thunk4c5680@4")
@@ -5762,6 +5762,85 @@ BYTE* __fastcall Glow_Construct(BYTE* o, void*, BYTE* owner, const BYTE* m, int 
     F(float, o, 120) = (float)(F(float, o, 116) + g_sg64b660);
     CallThis(FUN_5d33d0, o, 1);
     return o;
+}
+
+} // extern "C"
+
+// === placing the vehicles' effect objects (FUN_4d90c0)
+
+extern "C" void FUN_4d7630(); KING_ALIAS("_FUN_4d7630", "_Fx_SetObject")
+extern "C" void FUN_4d7680(); KING_ALIAS("_FUN_4d7680", "_Fx_SetObjectMatrix")
+extern "C" void FUN_4e5ba7(); KING_ALIAS("_FUN_4e5ba7", "_Query_HitObject")
+extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
+extern "C" void FUN_541970(); KING_ALIAS("_FUN_541970", "@Obj541970_First@8")
+extern "C" void FUN_546a30(); KING_ALIAS("_FUN_546a30", "@Car_GetState@12")
+extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
+extern "C" void FUN_57def0(); KING_ALIAS("_FUN_57def0", "@SceneObj_Get800@8")
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+extern "C" void FUN_5e54c0(); KING_ALIAS("_FUN_5e54c0", "@Resources_AddRecord@20")
+ASM_VAR(AsmLabel, g_po697868, $L_697868)    // the car models' 2416-byte records
+ASM_VAR(BYTE*, g_po6f653c, $L_6f653c)       // the moving objects
+
+extern "C" {
+
+// [FUN_4d90c0] places the effect object of every car (kinds 100 and 101 of +360 / 1000) by its body matrix
+// (+708, its model's +697868 record, its scene matrix) and the surface under it (the player's car records a
+// changed surface name), and copies the name and matrix of each kind-2 moving object (+3568 = 1) into its
+// effect record
+void __cdecl Fx_PlaceObjects()
+{
+    for (BYTE* it = CallThis<BYTE*>(FUN_541970, F(BYTE*, g_game, 616)); it;) {
+        BYTE* car = CallThis<BYTE*>(FUN_541960, it);
+        BYTE* res = CallThis<BYTE*>(FUN_5e5370, g_world + 704, F(int, car, 360));
+        int kind = F(int, car, 360) / 1000;
+        if (kind == 100 || kind == 101) {
+            BYTE m[48], t1[48], t2[48], w[48], hit[16], st[180];
+            memcpy(m, car + 708, 48);
+            BYTE* body = car + 16;
+            BYTE* sm = CallThis<BYTE*>(FUN_57de90, body, t1);
+            BYTE* model = (BYTE*)g_po697868 + F(int, car, 10420) * 2416;
+            memcpy(w, CallC<BYTE*>(FUN_5aba40, t2, CallC<BYTE*>(FUN_5aba40, w, model, m), sm), 48);
+            BYTE t3[48];
+            BYTE* pos = CallThis<BYTE*>(FUN_57de90, body, t3) + 36;
+            BYTE* q = CallC<BYTE*>(FUN_4e5ba7, CallThis<BYTE*>(FUN_57def0, body), pos, hit);
+            DWORD surf = F(DWORD, q, 12);
+            CallThis(FUN_546a30, car, st);
+            if (car == F(BYTE*, g_game, 616)) {
+                const char* name = F(const char*, F(BYTE*, q, 36), 60);
+                if (strcmp(name, F(const char*, F(BYTE*, res, 12), 4016)))
+                    CallThis(FUN_5e54c0, g_world + 704, name, res, 0);
+                CallC(FUN_4d7630, res, surf, w, st);
+            } else if (kind == 101)
+                CallC(FUN_4d7630, res, surf, w, st);
+            else
+                CallC(FUN_4d7680, res, w, st);
+        }
+        it = F(BYTE*, it, 8);
+        if (!it)
+            break;
+        it -= 4;
+    }
+    BYTE* p = g_po6f653c;
+    if (!p)
+        return;
+    for (p -= 4; p;) {
+        BYTE* o = p - 376;
+        if (F(int, p, 16) == 2 && F(int, o, 3568) == 1) {
+            if (BYTE* res = CallThis<BYTE*>(FUN_5e5370, g_world + 704, F(int, o, 344))) {
+                const char* name = F(const char*, CallThis<BYTE*>(FUN_57def0, o), 12);
+                BYTE mt[48];
+                CallThis(FUN_57de90, o, mt);
+                if (BYTE* d = F(BYTE*, res, 24)) {
+                    strcpy((char*)d + 92, name);
+                    memcpy(d + 44, mt, 48);
+                }
+            }
+        }
+        p = F(BYTE*, p, 8);
+        if (!p)
+            break;
+        p -= 4;
+    }
 }
 
 } // extern "C"
