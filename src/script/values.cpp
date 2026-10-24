@@ -18,7 +18,7 @@ extern "C" void __cdecl free(void* p);
 
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
-ASM_PROC(FUN_4b20d0)
+extern "C" void FUN_4b20d0(); KING_ALIAS("_FUN_4b20d0", "_Sch_ParseNumber")
 extern "C" void FUN_4b58c0(); KING_ALIAS("_FUN_4b58c0", "@SchState_Construct@8")
 extern "C" void FUN_4b5490(); KING_ALIAS("_FUN_4b5490", "@SchReader_Close@8")
 ASM_PROC(FUN_4b5b70)
@@ -1761,6 +1761,121 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
     F(DWORD, out, 0) = 0;
     F(DWORD, out, 4) = 0;
     F(DWORD, out, 8) = 0;
+    return out;
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Number syntax
+
+ASM_PROC(FUN_4b1d40)    // a real number from the deque (out, radix, deque)
+extern "C" void FUN_48a9d0(); KING_ALIAS("_FUN_48a9d0", "@WBuf_Free@8")
+extern "C" void FUN_490ea0(); KING_ALIAS("_FUN_490ea0", "@StrPair_Destroy@4")
+ASM_VAR(char, s_badComplex671420, $L_671420)
+
+static int Num_Peek(BYTE* d, int n)
+{
+    PtrDequeIt it;
+    SchDequeIt_Plus((PtrDequeIt*)(d + 8), 0, &it, n);
+    return *(int*)it.cur;
+}
+
+// a rational number n/1
+static void** Num_Int(void** r, int n)
+{
+    return SchSymbol_Init(r, 0, (const char*)n);
+}
+
+static void Num_Free(void** r)
+{
+    CallThis(FUN_48a9d0, &r[1]);
+    CallThis(FUN_48a9d0, &r[0]);
+}
+
+extern "C" {
+
+// [FUN_4b20d0] a number read from the deque of characters: #i #e #b #o #d #x prefixes, then +i, -i, a real, or
+// real@angle, real+i, real+imag i, real-imag i
+DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
+{
+    int inexact = 0, radix = 10;
+    for (int k = 0; k < 2 && Num_Peek(d, 0) == '#'; k++) {
+        switch (Num_Peek(d, 1)) {
+        case 'i': inexact = 1; break;
+        case 'e': inexact = 0; break;
+        case 'b': radix = 2; break;
+        case 'o': radix = 8; break;
+        case 'd': radix = 10; break;
+        case 'x': radix = 16; break;
+        }
+        SchDeque_PopFront(d, 0);
+        SchDeque_PopFront(d, 0);
+    }
+    void* re[2];
+    void* im[2];
+    if ((Num_Peek(d, 0) == '+' || Num_Peek(d, 0) == '-') && Num_Peek(d, 1) == 'i') {
+        int sign = Num_Peek(d, 0) == '+' ? 1 : -1;
+        SchDeque_PopFront(d, 0);
+        SchDeque_PopFront(d, 0);
+        Num_Int(im, sign);
+        Num_Int(re, 0);
+        Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+        Num_Free(re);
+        Num_Free(im);
+        return out;
+    }
+    CallC(FUN_4b1d40, re, radix, d);
+    int c = Num_Peek(d, 0);
+    if (c == '@') {
+        SchDeque_PopFront(d, 0);
+        CallC(FUN_4b1d40, im, radix, d);
+        Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+        Num_Free(im);
+    } else if (c == '+') {
+        SchDeque_PopFront(d, 0);
+        if (Num_Peek(d, 0) == 'i') {
+            SchDeque_PopFront(d, 0);
+            Num_Int(im, 1);
+            Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+            Num_Free(im);
+        } else {
+            CallC(FUN_4b1d40, im, radix, d);
+            if (Num_Peek(d, 0) == 'i')
+                SchDeque_PopFront(d, 0);
+            else
+                CallC(FUN_4a5420, 20, 768, &s_badComplex671420);
+            Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+            Num_Free(im);
+            CallThis(FUN_490ea0, re);
+            return out;
+        }
+    } else if (c == '-') {
+        // looks at the '-' again, so "-i" after a real is read as an imaginary part
+        if (Num_Peek(d, 0) == 'i') {
+            SchDeque_PopFront(d, 0);
+            SchDeque_PopFront(d, 0);
+            Num_Int(im, -1);
+            Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+        } else {
+            CallC(FUN_4b1d40, im, radix, d);
+            if (Num_Peek(d, 0) == 'i')
+                SchDeque_PopFront(d, 0);
+            else
+                CallC(FUN_4a5420, 20, 768, &s_badComplex671420);
+            Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+        }
+        CallThis(FUN_490ea0, im);
+        CallThis(FUN_490ea0, re);
+        return out;
+    } else {
+        Num_Int(im, 0);
+        Sch_MakeNumber3(out, 0, (DWORD*)&inexact, (DWORD)re, (DWORD)im);
+        CallThis(FUN_490ea0, im);
+        CallThis(FUN_490ea0, re);
+        return out;
+    }
+    Num_Free(re);
     return out;
 }
 

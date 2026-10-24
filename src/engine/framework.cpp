@@ -1587,7 +1587,7 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
 typedef void (__cdecl* FwHook2)(int, int);
 ASM_VAR(FwHook2, g_fw702f4c, $L_702f4c)
 extern "C" void FUN_5e6de0(); KING_ALIAS("_FUN_5e6de0", "_Files_Open")    // opens a data file (name, mode)
-ASM_PROC(FUN_5e6e90)
+extern "C" void FUN_5e6e90(); KING_ALIAS("_FUN_5e6e90", "_Palette_Load")
 ASM_PROC(FUN_5e7930)
 extern "C" void FUN_5e9690(); KING_ALIAS("_FUN_5e9690", "_Mask_ReadPixels")
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
@@ -3955,3 +3955,363 @@ extern "C" void __fastcall View_EndFrame(BYTE* s)
     fclose(f);
     CallThis(FUN_5de5d0, s);
 }
+
+// ---------------------------------------------------------------------------
+// The main view's constructor
+
+extern "C" void FUN_5d9cf0(); KING_ALIAS("_FUN_5d9cf0", "@MainRoomWindow_Construct@20")
+extern "C" void FUN_5dd720(); KING_ALIAS("_FUN_5dd720", "@Window_ResetState@8")
+extern "C" void FUN_5e4af0(); KING_ALIAS("_FUN_5e4af0", "@Resources_Construct@8")
+extern "C" void FUN_5eb1e0(); KING_ALIAS("_FUN_5eb1e0", "@Camera_Init@8")
+extern "C" void FUN_5b94e0(); KING_ALIAS("_FUN_5b94e0", "@Palette_Construct@8")
+extern "C" void FUN_5d2100(); KING_ALIAS("_FUN_5d2100", "@MapFile_Open@16")
+extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
+extern "C" void FUN_5d2ef0(); KING_ALIAS("_FUN_5d2ef0", "_Sys_Exit")
+extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")
+extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
+extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
+extern "C" double __cdecl atof(const char* s);
+extern "C" long __cdecl atol(const char* s);
+ASM_VAR(BYTE, g_mapFile71e808, $L_71e808)
+ASM_VAR(int, g_showFaceMode721770, $L_721770)
+ASM_VAR(double, g_tangLimit682a08, $L_682a08)
+ASM_VAR(double, g_stereo64dae0, $L_64dae0)
+ASM_VAR(double, g_fog64b788, $L_64b788)
+ASM_VAR(char, s_on672994, $L_672994)
+ASM_VAR(char, s_off6729a8, $L_6729a8)
+ASM_VAR(char, s_noinst673358, $L_673358)
+ASM_VAR(char, s_dot6733ac, $L_6733ac)
+ASM_VAR(char, s_ENV6730a0, $L_6730a0)
+ASM_VAR(char, s_RENDER682e68, $L_682e68)
+ASM_VAR(char, s_INSTALL6733c4, $L_6733c4)
+ASM_VAR(char, s_taskdump682e9c, $L_682e9c)
+ASM_VAR(char, s_statedump682e90, $L_682e90)
+ASM_VAR(char, s_debugtime682e84, $L_682e84)
+ASM_VAR(char, s_stereo682e7c, $L_682e7c)
+ASM_VAR(char, s_skys682e70, $L_682e70)
+ASM_VAR(char, s_showfacemode682e58, $L_682e58)
+ASM_VAR(char, s_ambient682e50, $L_682e50)
+ASM_VAR(char, s_detail682e48, $L_682e48)
+ASM_VAR(char, s_intensity682e3c, $L_682e3c)
+ASM_VAR(char, s_intenmap682e30, $L_682e30)
+ASM_VAR(char, s_alphamir682e24, $L_682e24)
+ASM_VAR(char, s_shadow672650, $L_672650)
+ASM_VAR(char, s_multitex682e18, $L_682e18)
+ASM_VAR(char, s_newkeying682e0c, $L_682e0c)
+ASM_VAR(char, s_fog682e08, $L_682e08)
+ASM_VAR(char, s_dcoeff682e00, $L_682e00)
+ASM_VAR(char, s_farplane682df4, $L_682df4)
+ASM_VAR(char, s_nearplane682de8, $L_682de8)
+ASM_VAR(char, s_skyzb682de0, $L_682de0)
+ASM_VAR(char, s_skyfun682dd8, $L_682dd8)
+ASM_VAR(char, s_tanglimith682dcc, $L_682dcc)
+ASM_VAR(char, s_zbuf682dc4, $L_682dc4)
+ASM_VAR(char, s_antialiasing682db4, $L_682db4)
+ASM_VAR(char, s_ponly682dac, $L_682dac)
+ASM_VAR(char, s_xpyramid67e1ac, $L_67e1ac)
+ASM_VAR(char, s_ypyramid682da0, $L_682da0)
+ASM_VAR(char, s_home67336c, $L_67336c)
+ASM_VAR(char, s_base673374, $L_673374)
+ASM_VAR(char, s_setup682d98, $L_682d98)
+
+static char* View_StrDup(const char* s, int extra)
+{
+    char* d = (char*)operator new(strlen(s) + 1 + extra);
+    memcpy(d, s, strlen(s) + 1);
+    return d;
+}
+
+// a [RENDER] switch: whether its value (default def) is "on"
+static bool View_On(BYTE* self, const char* key, const char* def, char* buf)
+{
+    GetPrivateProfileStringA(&s_RENDER682e68, key, def, buf, 60, F(const char*, self, 640));
+    return !strcmp(buf, &s_on672994);
+}
+
+static void View_RenderDouble(BYTE* self, const char* key, double def, double* out)
+{
+    CallC(FUN_603cb0, &s_RENDER682e68, key, def, out, F(const char*, self, 640));
+}
+
+static double View_Bits(DWORD lo, DWORD hi)
+{
+    DWORD b[2] = {lo, hi};
+    return *(double*)b;
+}
+
+// an [INSTALL] directory with a backslash appended; false when it is "__noinst"
+static bool View_InstallDir(BYTE* self, const char* key, int at, char* buf)
+{
+    GetPrivateProfileStringA(&s_INSTALL6733c4, key, &s_dot6733ac, buf, 60, F(const char*, self, 640));
+    char* d = View_StrDup(buf, 1);
+    F(char*, self, at) = d;
+    char* e = d + strlen(d);
+    if (!strcmp(buf, &s_noinst673358))
+        return false;
+    e[0] = 92;
+    e[1] = 0;
+    return true;
+}
+
+extern "C" {
+
+// [FUN_5dc4d0..$L_5dd046] the main view's constructor (vtable 652310): reads [ENV] taskdump, debugtime and stereo,
+// the [RENDER] settings into the view's flags (+3020) and its render parameters (+472), and the [INSTALL]
+// home and base directories; leaves the game when home is "__noinst" or setup is "off"
+BYTE* __fastcall MainView_Construct(BYTE* self, void*, int arg)
+{
+    CallThis(FUN_5d9cf0, self, F(int, g_app, 252), arg, self);
+    for (int o = 568; o <= 588; o += 4)
+        F(int, self, o) = 0;
+    for (int o = 652; o < 700; o += 4)
+        F(int, self, o) = 0;
+    memcpy(self + 652, &g_fra7025f0, 48);
+    CallThis(FUN_5e4af0, self + 704);
+    CallThis(FUN_5eb1e0, self + 2720);
+    for (int o = 2992; o <= 3016; o += 4)
+        F(int, self, o) = 0;
+    CallThis(FUN_5b94e0, self + 3096);
+    F(void*, self, 0) = g_fra652310;
+    F(char*, self, 640) = View_StrDup(F(const char*, g_app, 280), 0);
+    const char* ini = F(const char*, self, 640);
+    CallThis(FUN_5dd720, self);
+    DWORD& flags = F(DWORD, self, 3020);
+    if (F(DWORD, g_app, 268) & 256)
+        flags |= 256;
+    if (F(int, g_app, 264) == 1)
+        flags |= 32;
+
+    int v;
+    CallC(FUN_603b70, &s_ENV6730a0, &s_taskdump682e9c, 0, &v, ini);
+    if (v) {
+        g_fwTaskDump = 1;
+        F(int, self, 3012) = 1;
+        CallThis(FUN_5d2100, &g_mapFile71e808, &s_statedump682e90, 524288);
+    }
+    CallC(FUN_603b70, &s_ENV6730a0, &s_debugtime682e84, 0, &v, ini);
+    F(int, self, 3032) = v;
+    char buf[60];
+    char* cur = buf;
+    GetPrivateProfileStringA(&s_ENV6730a0, &s_stereo682e7c, &s_off6729a8, buf, 60, ini);
+    const char* t = CallC<const char*>(FUN_5ab1b0, &cur);
+    if (t && !strcmp(t, &s_on672994)) {
+        F(double, self, 3064) = 2.0;
+        F(double, self, 3072) = 0.0;
+        if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0) {
+            F(double, self, 3064) = atof(t);
+            if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0)
+                F(double, self, 3072) = atof(t) * g_stereo64dae0;
+        }
+    }
+
+    CallC(FUN_603b70, &s_RENDER682e68, &s_skys682e70, 0, F(BYTE*, self, 472) + 80, ini);
+    CallC(FUN_603b70, &s_RENDER682e68, &s_showfacemode682e58, 0, &v, ini);
+    g_showFaceMode721770 = v;
+    View_RenderDouble(self, &s_ambient682e50, View_Bits(858993459u, 1070805811u), (double*)(F(BYTE*, self, 472) + 48));
+    CallC(FUN_603b70, &s_RENDER682e68, &s_detail682e48, 100, F(BYTE*, self, 472) + 112, ini);
+    if (View_On(self, &s_intensity682e3c, &s_on672994, buf))
+        flags |= 64;
+    if (View_On(self, &s_intenmap682e30, &s_off6729a8, buf))
+        flags |= 16;
+    if (View_On(self, &s_alphamir682e24, &s_on672994, buf))
+        flags |= 0x1000000;
+    if (View_On(self, &s_shadow672650, &s_off6729a8, buf))
+        flags |= 8;
+    if (!View_On(self, &s_multitex682e18, &s_on672994, buf))
+        flags |= 0x2000000;
+    if (View_On(self, &s_newkeying682e0c, &s_off6729a8, buf))
+        flags |= 0x4000000;
+    GetPrivateProfileStringA(&s_RENDER682e68, &s_fog682e08, &s_off6729a8, buf, 60, ini);
+    cur = buf;
+    t = CallC<const char*>(FUN_5ab1b0, &cur);
+    if (t && !strcmp(t, &s_on672994)) {
+        flags |= 4;
+        BYTE* r = F(BYTE*, self, 472);
+        F(double, r, 24) = 304.0;
+        F(double, r, 16) = 900.0;
+        F(int, r, 72) = 8;
+        if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0) {
+            F(double, F(BYTE*, self, 472), 24) = atof(t);
+            if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0) {
+                F(double, F(BYTE*, self, 472), 16) = atof(t);
+                if ((t = CallC<const char*>(FUN_5ab1b0, &cur)) != 0)
+                    F(int, F(BYTE*, self, 472), 72) = atol(t);
+            } else {
+                r = F(BYTE*, self, 472);
+                F(double, r, 16) = F(double, r, 24) * g_fog64b788;
+            }
+        }
+        if (F(int, g_app, 296) >= 0)
+            F(int, g_app, 296) = F(int, F(BYTE*, self, 472), 72);
+    }
+    View_RenderDouble(self, &s_dcoeff682e00, 1.0, (double*)(F(BYTE*, self, 472) + 120));
+    View_RenderDouble(self, &s_farplane682df4, 98304.0, (double*)(F(BYTE*, self, 472) + 32));
+    View_RenderDouble(self, &s_nearplane682de8, 1.0, (double*)(F(BYTE*, self, 472) + 40));
+    View_RenderDouble(self, &s_skyzb682de0, 0.0, (double*)(F(BYTE*, self, 472) + 96));
+    View_RenderDouble(self, &s_skyfun682dd8, 1.0, (double*)(F(BYTE*, self, 472) + 104));
+    View_RenderDouble(self, &s_tanglimith682dcc, View_Bits(1412872442u, 1081320076u), &g_tangLimit682a08);
+    if (View_On(self, &s_zbuf682dc4, &s_on672994, buf))
+        flags |= 0x4000;
+    if (View_On(self, &s_antialiasing682db4, &s_off6729a8, buf))
+        flags = (flags & ~0x4000u) | 128;
+    if (View_On(self, &s_ponly682dac, &s_off6729a8, buf))
+        flags |= 2;
+    View_RenderDouble(self, &s_xpyramid67e1ac, View_Bits(2576980378u, 1072273817u), (double*)(self + 3048));
+    View_RenderDouble(self, &s_ypyramid682da0, View_Bits(858993459u, 1071854387u), (double*)(self + 3056));
+    if (!View_InstallDir(self, &s_home67336c, 644, buf))
+        CallC(FUN_5d2ef0, CallC<int>(FUN_5d2e50, 1));
+    View_InstallDir(self, &s_base673374, 648, buf);
+    GetPrivateProfileStringA(&s_INSTALL6733c4, &s_setup682d98, &s_on672994, buf, 60, ini);
+    if (!strcmp(buf, &s_off6729a8))
+        CallC(FUN_5d2ef0, CallC<int>(FUN_5d2e50, 2));
+    g_q77_702e8c = flags;
+    return self;
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Palette files
+
+extern "C" int __cdecl getc(FILE* f);
+extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
+extern "C" void FUN_5b9740(); KING_ALIAS("_FUN_5b9740", "@Textures_FreeAll@8")
+extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
+ASM_PROC(FUN_5b9850)    // palette: builds the opacity tables (a, b)
+ASM_PROC(FUN_5b9b60)    // palette: builds the fog tables (a, b)
+ASM_PROC(FUN_5b9e30)    // palette: builds the intensity tables (a)
+ASM_VAR(char, s_PLM683424, $L_683424)
+ASM_VAR(char, s_PALT68341c, $L_68341c)
+ASM_VAR(char, s_OPAC683414, $L_683414)
+ASM_VAR(char, s_OP1668340c, $L_68340c)
+ASM_VAR(char, s_FOG683408, $L_683408)
+ASM_VAR(char, s_FO16683400, $L_683400)
+ASM_VAR(char, s_INTE6833f8, $L_6833f8)
+ASM_VAR(char, s_IN166833f0, $L_6833f0)
+
+static int Plm_Int(FILE* f) { return CallC<int>(FUN_5ab140, f); }
+
+// a table set of the palette: count at +cnt, pointers at +tab, ids at +tab+4; each table of size bytes, 8-bit
+// tables read byte by byte and given an id, 16-bit ones read whole; false when out of memory (count = i + 1)
+static bool Plm_Tables(BYTE* pal, FILE* f, int cnt, int tab, int size, bool wide)
+{
+    int n = F(int, pal, cnt);
+    F(BYTE**, pal, tab) = (BYTE**)operator new(n * 4);
+    F(WORD*, pal, tab + 4) = (WORD*)operator new(n * 2);
+    for (int i = 0; i < F(int, pal, cnt); i++) {
+        BYTE* t = (BYTE*)operator new(size);
+        F(BYTE**, pal, tab)[i] = t;
+        if (wide) {
+            F(WORD*, pal, tab + 4)[i] = 0;
+            if (!F(BYTE**, pal, tab)[i]) {
+                F(int, pal, cnt) = i + 1;
+                return false;
+            }
+            fread(F(BYTE**, pal, tab)[i], size, 1, f);
+        } else {
+            F(WORD*, pal, tab + 4)[i] = (WORD)CallC<int>(FUN_4cef50, F(BYTE**, pal, tab)[i], size);
+            if (!F(BYTE**, pal, tab)[i]) {
+                F(int, pal, cnt) = i + 1;
+                return false;
+            }
+            for (int k = 0; k < size; k++)
+                F(BYTE**, pal, tab)[i][k] = (BYTE)getc(f);
+        }
+    }
+    return true;
+}
+
+extern "C" {
+
+// [FUN_5e6e90] a palette (816 bytes) read from a PLM file: PALT colours, OPAC/OP16 opacity, FOG/FO16 fog and
+// INTE/IN16 intensity tables; tables missing or of another bit depth than the screen's are built
+BYTE* __cdecl Palette_Load(FILE* f)
+{
+    char tag[5];
+    tag[0] = (char)getc(f);
+    tag[1] = (char)getc(f);
+    tag[2] = (char)getc(f);
+    tag[3] = (char)getc(f);
+    tag[4] = 0;
+    int c = strcmp(tag, &s_PLM683424);
+    if (c)
+        return (BYTE*)(c < 0 ? -1 : 1);
+    BYTE* pal = (BYTE*)operator new(816);
+    if (pal)
+        pal = CallThis<BYTE*>(FUN_5b94e0, pal);
+    F(int, pal, 796) = 0;
+    F(int, pal, 800) = 0;
+    F(int, pal, 0) = 0;
+    F(int, pal, 8) = 0;
+    F(int, pal, 808) = 0;
+    int end = Plm_Int(f);
+    end += ftell(f);
+    while (ftell(f) < end) {
+        tag[0] = (char)getc(f);
+        tag[1] = (char)getc(f);
+        tag[2] = (char)getc(f);
+        tag[3] = (char)getc(f);
+        int size = Plm_Int(f);
+        int padded = (size + 3) & ~3;
+        bool ok = true;
+        if (!strcmp(tag, &s_PALT68341c)) {
+            for (int i = 0; i < size / 3; i++) {
+                pal[24 + i * 3] = (BYTE)getc(f);
+                pal[25 + i * 3] = (BYTE)getc(f);
+                pal[26 + i * 3] = (BYTE)getc(f);
+            }
+        } else if (!strcmp(tag, &s_OPAC683414) || !strcmp(tag, &s_OP1668340c)) {
+            bool wide = strcmp(tag, &s_OPAC683414) != 0;
+            F(int, pal, 808) = wide ? 2 : 1;
+            F(int, pal, 796) = Plm_Int(f);
+            F(int, pal, 792) = Plm_Int(f);
+            Plm_Int(f);
+            ok = Plm_Tables(pal, f, 796, 0, F(int, pal, 792) << (wide ? 16 : 8), wide);
+        } else if (!strcmp(tag, &s_FOG683408) || !strcmp(tag, &s_FO16683400)) {
+            bool wide = strcmp(tag, &s_FOG683408) != 0;
+            F(int, pal, 808) = wide ? 2 : 1;
+            F(int, pal, 812) = Plm_Int(f);
+            F(int, pal, 800) = Plm_Int(f);
+            Plm_Int(f);
+            ok = Plm_Tables(pal, f, 800, 8, wide ? 65536 : 256, wide);
+        } else if (!strcmp(tag, &s_INTE6833f8) || !strcmp(tag, &s_IN166833f0)) {
+            bool wide = strcmp(tag, &s_INTE6833f8) != 0;
+            F(int, pal, 808) = wide ? 2 : 1;
+            Plm_Int(f);
+            F(int, pal, 804) = Plm_Int(f);
+            Plm_Int(f);
+            ok = Plm_Tables(pal, f, 804, 16, wide ? 65536 : 256, wide);
+        } else {
+            for (int i = 0; i < size; i++)
+                getc(f);
+        }
+        if (!ok) {
+            if (pal) {
+                CallThis(FUN_5b9520, pal);
+                operator delete(pal);
+            }
+            return 0;
+        }
+        for (int i = padded - size; i; i--)
+            getc(f);
+    }
+    if (F(int, pal, 808) != CallC<int>(FUN_5d8350)) {
+        CallThis(FUN_5b9740, pal);
+        F(int, pal, 808) = CallC<int>(FUN_5d8350);
+        CallThis(FUN_5b9850, pal, 1, 5);
+        CallThis(FUN_5b9b60, pal, 8, 4);
+        CallThis(FUN_5b9e30, pal, 8);
+    } else {
+        if (!F(BYTE*, pal, 0))
+            CallThis(FUN_5b9850, pal, 1, 5);
+        if (!F(BYTE*, pal, 8))
+            CallThis(FUN_5b9b60, pal, 32, 4);
+        if (!F(BYTE*, pal, 16))
+            CallThis(FUN_5b9e30, pal, 32);
+    }
+    return pal;
+}
+
+}  // extern "C"

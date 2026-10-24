@@ -1116,3 +1116,126 @@ extern "C" void __cdecl World_InitSideDirections(void)
     CallC(FUN_5ab400, (void*)g_q48_696e28, CallThis<float*>(FUN_4bdef0, a, -1.0f, 0.5f, 0.0f));
     CallC(FUN_5ab400, (void*)g_q48_696e38, CallThis<float*>(FUN_4bdef0, b, 1.0f, 0.5f, 0.0f));
 }
+
+// ---------------------------------------------------------------------------
+// Symbols from the developers' linker map
+
+extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+extern "C" unsigned long __cdecl strtoul(const char* s, char** end, int base);
+extern "C" int __cdecl abs(int n);
+ASM_VAR(DWORD, g_mapBase6735d4, $L_6735d4)          // the code base, FUN_401000 until the map gives it
+ASM_VAR(const char*, g_mapNames6735d8, $L_6735d8)   // the three symbol names
+ASM_VAR(DWORD, g_mapStart6974d8, $L_6974d8)         // their addresses, [3]
+ASM_VAR(DWORD, g_mapEnd6974e4, $L_6974e4)           // the addresses of the symbols after them, [3]
+ASM_VAR(char, s_exe6737e4, $L_6737e4)               // "htruck.exe"
+ASM_VAR(char, s_exe6737f0, $L_6737f0)               // "htruck2.exe"
+ASM_VAR(char, s_map6737fc, $L_6737fc)               // "htruck.map"
+ASM_VAR(char, s_map673808, $L_673808)               // "htruck2.map"
+ASM_VAR(char, s_rt673814, $L_673814)                // "rt"
+ASM_VAR(char, s_map673818, $L_673818)               // "htruck.map"
+ASM_VAR(char, s_prefix673824, $L_673824)            // " 0001:00000000       "
+
+extern "C" {
+
+// [FUN_4e35cf] when htruck.exe (or htruck2.exe) and its .map file of the same time are present, reads from the
+// map where three functions start and end; once read, does nothing
+void __cdecl World_ReadMapSymbols()
+{
+    DWORD* start = &g_mapStart6974d8;
+    DWORD* end = &g_mapEnd6974e4;
+    const char** names = &g_mapNames6735d8;
+    for (int i = 0; i < 3; i++)
+        if (start[i])
+            return;
+    WIN32_FIND_DATAA exe, map;
+    int first = 1;
+    HANDLE h = FindFirstFileA(&s_exe6737e4, &exe);
+    if (h == INVALID_HANDLE_VALUE) {
+        first = 0;
+        h = FindFirstFileA(&s_exe6737f0, &exe);
+    }
+    if (h == INVALID_HANDLE_VALUE)
+        return;
+    FindClose(h);
+    FILE* f = 0;
+    h = FindFirstFileA(first ? &s_map6737fc : &s_map673808, &map);
+    SYSTEMTIME tm, te;
+    if (h != INVALID_HANDLE_VALUE) {
+        FindClose(h);
+        FileTimeToSystemTime(&map.ftLastWriteTime, &tm);
+        FileTimeToSystemTime(&exe.ftLastWriteTime, &te);
+        f = fopen(&s_map673818, &s_rt673814);
+    }
+    if (!f || tm.wYear != te.wYear || tm.wMonth != te.wMonth || tm.wDay != te.wDay
+        || (tm.wHour != te.wHour && abs(tm.wHour - te.wHour) > 1 && abs(tm.wMinute - te.wMinute) > 2)
+        || abs(tm.wMinute - te.wMinute) > 2) {
+        if (g_6974c4) {
+            start[0] = 0;
+            start[1] = 0;
+        }
+        return;
+    }
+    const char* prefix = &s_prefix673824;
+    int len[3], cnt[3], alive[3];
+    for (int i = 0; i < 3; i++) {
+        len[i] = strlen(names[i]);
+        cnt[i] = 0;
+    }
+    int plen = strlen(prefix);
+    int found = 0, least = 0, cur = -1;
+    char line[200];
+    while (fgets(line, 200, f) && (least < 2 || !found)) {
+        int pos = 0;
+        if (!found && !strncmp(prefix, line, plen)) {
+            found = 1;
+            int j = plen + 1;
+            while (line[j] && line[j] != ' ')
+                j++;
+            g_mapBase6735d4 = strtoul(line + j, 0, 16);
+        }
+        if (least >= 2)
+            continue;
+        for (int k = 0; k < 3; k++)
+            alive[k] = 1;
+        for (int c = 0; line[c] && c < 30; c++) {
+            int m = -1;
+            for (int k = 0; k < 3; k++) {
+                if (line[c + 21] == names[k][pos] && alive[k] && !cnt[k])
+                    m = k;
+                else
+                    alive[k] = 0;
+            }
+            if (m == -1 && cur == -1)
+                break;
+            if (m != -1)
+                pos++;
+            if ((m != -1 && pos == len[m]) || (cur != -1 && cnt[cur] == 1)) {
+                int j = 1;
+                while (line[j] && line[j - 1] != ':')
+                    j++;
+                if (cur == -1 && m != -1 && !cnt[m]) {
+                    start[m] = strtoul(line + j, 0, 16);
+                    cur = m;
+                    cnt[cur]++;
+                } else {
+                    end[cur] = strtoul(line + j, 0, 16);
+                    cnt[cur]++;
+                    cur = -1;
+                }
+                least = 2;
+                for (int k = 0; k < 3; k++)
+                    if (cnt[k] < least)
+                        least = cnt[k];
+                break;
+            }
+        }
+    }
+    for (int i = 0; i < 3; i++) {
+        start[i] += g_mapBase6735d4;
+        end[i] += g_mapBase6735d4;
+    }
+    fclose(f);
+}
+
+}  // extern "C"

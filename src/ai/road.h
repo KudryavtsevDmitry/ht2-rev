@@ -127,7 +127,6 @@ struct HopVecFull {
 
 extern "C" double __cdecl Road_EdgeCost(int side, RoadEdge* e, int dir);
 extern "C" HopVecFull* __cdecl Road_FindRoute(HopVecFull* out, int side, int from, int to, double* cost);
-KING_ALIAS("_Road_FindRoute", "FUN_484c80")
 extern "C" void __cdecl Road_PositionCost(int side, PositionId from, PositionId to, double* cost);
 KING_ALIAS("_Road_PositionCost", "FUN_486800")
 

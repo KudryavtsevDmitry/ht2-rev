@@ -553,7 +553,7 @@ ASM_PROC(FUN_482a70)    // reads the AI state from a buffer
 extern "C" void FUN_477780(); KING_ALIAS("_FUN_477780", "_Players_Each4776b0")
 extern "C" void FUN_478910(); KING_ALIAS("_FUN_478910", "_Routes_Each477600")
 extern "C" void FUN_478950(); KING_ALIAS("_FUN_478950", "_Ambushes_Each477600")
-ASM_PROC(FUN_482d20)
+extern "C" void FUN_482d20(); KING_ALIAS("_FUN_482d20", "_Load_RelinkPlayers")
 extern "C" void FUN_483320(); KING_ALIAS("_FUN_483320", "_Load_FixPlayers")
 
 // [FUN_4835d0] loads the AI state from its stream in a saved game, then fixes the links
@@ -579,3 +579,118 @@ extern "C" void __cdecl AI_LoadFromStorage(IStorage* stg)
     CallC(FUN_482d20);
     CallC(FUN_483320);
 }
+
+// ---------------------------------------------------------------------------
+// Relinking after a load
+
+extern "C" void FUN_4175c0(); KING_ALIAS("_FUN_4175c0", "_Player_MarkListed")
+extern "C" void FUN_417770(); KING_ALIAS("_FUN_417770", "_Player_Retire")
+extern "C" void FUN_419490(); KING_ALIAS("_FUN_419490", "@Market_Get@8")
+extern "C" void FUN_448a60(); KING_ALIAS("_FUN_448a60", "@Vec36_At@12")
+ASM_VAR(BYTE**, g_towns68cc98, $L_68cc98)
+ASM_VAR(BYTE**, g_towns68cc9c, $L_68cc9c)
+ASM_VAR(BYTE**, g_68cf00, $L_68cf00)
+ASM_VAR(BYTE, g_count68ced0, $L_68ced0)         // three 16-byte records, a count at +4
+ASM_VAR(BYTE, g_count68cee0, $L_68cee0)
+ASM_VAR(BYTE, g_count68cef0, $L_68cef0)
+ASM_VAR(int, g_68d14c, $L_68d14c)
+ASM_VAR(int, g_68d18c, $L_68d18c)
+ASM_VAR(int, g_68a968, $L_68a968)
+ASM_VAR(int, g_68d01c, $L_68d01c)
+ASM_VAR(int, g_68cfe4, $L_68cfe4)
+ASM_VAR(int, g_68d0e4, $L_68d0e4)
+ASM_VAR(int, g_68cf34, $L_68cf34)
+ASM_VAR(char, g_msg77e460, $L_77e460)
+ASM_VAR(AsmLabel, s_fmt66e4d0, $L_66e4d0)
+ASM_VAR(AsmLabel, s_err66cbf4, $L_66cbf4)
+ASM_VAR(AsmLabel, s_err66fedc, $L_66fedc)
+ASM_VAR(AsmLabel, s_err66fec8, $L_66fec8)
+ASM_VAR(AsmLabel, s_err66fee8, $L_66fee8)
+
+static int Relink_Id(BYTE* it)
+{
+    int id;
+    CallThis(FUN_426280, &id, it);
+    return id;
+}
+
+// the town of a player of state 256/257 counts it, and the player's slot there gets its id and the flag
+static int Relink_Slot(BYTE* it, int line, DWORD flag)
+{
+    BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+    F(int, g_towns68cc98[F(int, p, 112)], 40)++;
+    int t = F(int, CallC<BYTE*>(FUN_40a9f0, it), 112);
+    if (t == -1)
+        AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, line, (const char*)s_err66fee8,
+                &g_ordrEmpty, &g_ordrEmpty);
+    if (t < 0 || t >= g_towns68cc9c - g_towns68cc98) {
+        sprintf(&g_msg77e460, (const char*)s_fmt66e4d0, t);
+        AiError(33, 100, (const char*)s_svldFile, (const char*)s_svldId, line + 1, (const char*)s_err66cbf4,
+                (const char*)s_err66fedc, &g_msg77e460);
+    }
+    BYTE* v = g_towns68cc98[t] + 28;
+    int n = (F(BYTE*, v, 4) - F(BYTE*, v, 0)) / 36;
+    int k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
+    if (!((unsigned)n > (unsigned)k))
+        AiError(0, 256, (const char*)s_svldFile, (const char*)s_svldId, line + 3, (const char*)s_err66fec8,
+                &g_ordrEmpty, &g_ordrEmpty);
+    int id = Relink_Id(it);
+    k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
+    BYTE* e = CallThis<BYTE*>(FUN_448a60, CallThis<BYTE*>(FUN_419490, &t) + 28, k);
+    F(int, e, 8) = id;
+    k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
+    F(DWORD, F(BYTE*, g_towns68cc98[t], 28) + k * 36, 4) |= flag;
+    return t;
+}
+
+extern "C" {
+
+// [FUN_482d20] after loading: links the players back into their towns' slots, sorts the hired drivers into the
+// three cargo-class counts, retires players of state 5, and counts the AI's objects by kind
+void __cdecl Load_RelinkPlayers()
+{
+    for (BYTE* r = &g_count68ced0 + 4; r < &g_count68ced0 + 52; r += 16)
+        F(int, r, 0) = 0;
+    g_68d14c = 0;
+    g_68d18c = 0;
+    for (BYTE* it = *(BYTE**)g_ordrPlayers; it != (BYTE*)g_ordrPlayers; it = *(BYTE**)it) {
+        if (F(BYTE, CallC<BYTE*>(FUN_40a9f0, it), 488))
+            CallC(FUN_4175c0, Relink_Id(it));
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 256) {
+            int t = Relink_Slot(it, 653, 1);
+            int k = F(int, CallC<BYTE*>(FUN_40a9f0, it), 116);
+            BYTE f = F(BYTE, F(BYTE*, g_towns68cc98[t], 28) + k * 36, 4);
+            BYTE* cls = (f & 8) ? &g_count68cef0 : (f & 32) ? &g_count68cee0 : &g_count68ced0;
+            F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 964) = cls;
+            F(int, F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 964), 4)++;
+        }
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 257) {
+            g_68d14c++;
+            Relink_Slot(it, 676, 2);
+        }
+        if (F(int, CallC<BYTE*>(FUN_40a9f0, it), 92) == 5)
+            CallC(FUN_417770, Relink_Id(it));
+        BYTE* p = CallC<BYTE*>(FUN_40a9f0, it);
+        if (F(int, p, 152) != F(int, p, 156))
+            g_68d18c++;
+    }
+    g_68a968 = 0;
+    g_68d01c = 0;
+    g_68cfe4 = 0;
+    g_68d0e4 = 0;
+    g_68cf34 = 0;
+    for (BYTE* n = *(BYTE**)g_68cf6c; n != g_68cf6c; n = *(BYTE**)n) {
+        BYTE* o = F(BYTE*, n, 8);
+        if (F(int, o, 24) != -1)
+            F(DWORD, g_68cf00[F(int, o, 24)], 12) |= 16;
+        switch (F(DWORD, F(BYTE*, n, 8), 8) & 240) {
+        case 16: g_68a968++; break;
+        case 32: g_68d01c++; break;
+        case 64: g_68cfe4++; break;
+        case 96: g_68d0e4++; break;
+        case 128: g_68cf34++; break;
+        }
+    }
+}
+
+}  // extern "C"
