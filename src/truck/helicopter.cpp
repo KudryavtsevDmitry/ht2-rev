@@ -3549,7 +3549,7 @@ extern "C" void FUN_4d8ae0(); KING_ALIAS("_FUN_4d8ae0", "_Vehicle_Release")
 extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")
 ASM_PROC(FUN_531cc0)
 extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
-ASM_PROC(FUN_56f6d0)
+extern "C" void FUN_56f6d0(); KING_ALIAS("_FUN_56f6d0", "_Copter_ApplyCargo")
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
 extern "C" void FUN_598da0(); KING_ALIAS("_FUN_598da0", "@Wasm_Get108@8")
 extern "C" void FUN_597570(); KING_ALIAS("_FUN_597570", "@WorldObj_Attach@12")
@@ -4810,6 +4810,106 @@ void __fastcall Radio_Update(BYTE* s)
         F(char, s, 556) = 0;
     }
     CallThis(FUN_5d32f0, s, 1);
+}
+
+} // extern "C"
+
+// === loading a room module for the helicopter screen ($L_56dde0)
+
+extern "C" void FUN_5ead00(); KING_ALIAS("_FUN_5ead00", "@Room_Each@16")
+extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
+extern "C" void FUN_5a9d40(); KING_ALIAS("_FUN_5a9d40", "@Wave_Value@16")
+extern "C" void FUN_616770(); KING_ALIAS("_FUN_616770", "@Terrain616770_SetCorners@16")
+extern "C" void FUN_615230(); KING_ALIAS("_FUN_615230", "_Terrain_Call614f70@12")
+extern "C" void FUN_42aba0(); KING_ALIAS("_FUN_42aba0", "_Ai_OnModuleLoadX")
+ASM_VAR(BYTE*, g_ml6f3420, $L_6f3420)
+ASM_VAR(char*, g_ml6f3424, $L_6f3424)
+ASM_VAR(int, g_ml7025bc, $L_7025bc)
+ASM_VAR(int, g_ml7208cc, $L_7208cc)
+ASM_VAR(AsmLabel, g_ml56e060, $L_56e060)    // the per-object callback
+ASM_VAR(AsmLabel, s_ml676838, $L_676838)
+ASM_VAR(AsmLabel, s_ml676834, $L_676834)
+ASM_VAR(AsmLabel, s_ml67bb58, $L_67bb58)    // "skyMirrorKey"
+ASM_VAR(AsmLabel, s_ml67bb30, $L_67bb30)
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+
+extern "C" {
+
+// [$L_56dde0] module load handler s for room r (+60 its name): every object through 56e060, the sky mirror
+// switch by the truck's wave, for the two terrain rooms (676838, 676834) the terrain's corners ter000, ter050,
+// ter100 and the camera direction; then the AI's hook and, with 7208cc, the records named like 67bb30 get flag
+// 0x2000 and 0.65 at +104
+void __fastcall Copter_OnModuleLoad(BYTE* s, void*, BYTE* r)
+{
+    g_ml6f3420 = s;
+    g_ml6f3424 = F(char*, r, 60);
+    CallThis(FUN_5ead00, r, (void*)g_ml56e060, 0);
+    BYTE* o = CallThis<BYTE*>(FUN_5ef390, r, (const char*)s_ml67bb58);
+    g_ml7025bc = 0;
+    if (o && F(int, o, 16) == 18 && g_6f33ac) {
+        double n = CallVirt<int>(o, 60);
+        CallC(FUN_5e1a10, o, (int)(CallThis<double>(FUN_5a9d40, (BYTE*)g_6f33ac, 0, 0) * n));
+    }
+    const char* name = F(const char*, r, 60);
+    if (!strcmp(name, s_ml676838) || !strcmp(name, s_ml676834)) {
+        BYTE* t[3] = {CallC<BYTE*>(FUN_5ef3d0, "ter000"), CallC<BYTE*>(FUN_5ef3d0, "ter050"),
+                      CallC<BYTE*>(FUN_5ef3d0, "ter100")};
+        CallThis(FUN_616770, g_terrain6f33b4, t, 3);
+        float m[12], c[12];
+        memset(m, 0, 48);
+        memcpy(m, g_q214_7025f0, 48);
+        memcpy(m, CallThis<float*>(FUN_5dbcc0, F(BYTE*, g_6cec6c, 1356), c), 48);
+        double d0 = g_q214_702620, d1 = g_q214_702624, d2 = g_q214_702628;
+        float v[3];
+        v[0] = (float)(d2 * m[6] + d0 * m[0] + d1 * m[3]);
+        v[1] = (float)(d2 * m[7] + d1 * m[4] + d0 * m[1]);
+        v[2] = (float)(m[8] * d2 + m[5] * d1 + m[2] * d0);
+        CallStd(FUN_615230, m + 9, v, (void*)g_q214_702630);
+    }
+    CallC(FUN_42aba0, F(char*, r, 60));
+    if (g_ml7208cc)
+        for (int i = 0; i < F(int, r, 72); i++) {
+            BYTE* e = F(BYTE*, r, 76) + i * 124;
+            if (!strncmp((const char*)e, s_ml67bb30, 13)) {
+                F(DWORD, e, 32) |= 0x2000;
+                F(DWORD, e, 104) = 0x3F266666;      // 0.65
+            }
+        }
+}
+
+} // extern "C"
+
+// === the load of the player's orders (FUN_56f6d0)
+
+extern "C" void FUN_520000(); KING_ALIAS("_FUN_520000", "_Car_ApplyPlayerSettings")
+
+extern "C" {
+
+// [FUN_56f6d0] gives the player's car (vtable +168) the cargo of its orders: the sums of the goods' two values
+// (+16, +24 of their properties) times the amounts (+8); then applies the player's car settings
+void __cdecl Copter_ApplyCargo()
+{
+    float a = 0, b = 0;
+    BYTE oi[192];
+    CallThis(FUN_4d06a0, oi);
+    int id;
+    Player_CarId(&id);
+    if (id != g_noVehicle68b990h) {
+        BYTE mp[40];
+        F(int, mp, 0) = 0;
+        for (unsigned i = 0; !Ai_GetPlayerOrderInfo((BYTE*)id, i, oi); i++) {
+            CallC(FUN_4401d0, F(int, oi, 0), mp);
+            a = (float)(F(double, mp, 16) * F(double, oi, 8) + a);
+            b = (float)(F(double, mp, 24) * F(double, oi, 8) + b);
+        }
+        BYTE* car = F(BYTE*, g_hd_game, 616);
+        ((void(__fastcall*)(BYTE*, void*, float*, float*))(*(void***)car)[42])(car, 0, &b, &a);
+    }
+    CallC(FUN_520000, F(BYTE*, g_hd_game, 616));
+    static const int k_vecs[] = {88, 76, 64, 52};
+    for (int off : k_vecs)
+        if (int n = (int)(F(BYTE*, oi, off + 8) - F(BYTE*, oi, off)))
+            Ai_PoolFree(F(BYTE*, oi, off), n);
 }
 
 } // extern "C"

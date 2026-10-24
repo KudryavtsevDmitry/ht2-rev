@@ -29,7 +29,7 @@ ASM_VAR(AsmLabel, s_66d9c4, $L_66d9c4)
 ASM_VAR(AsmLabel, s_6849fc, $L_6849fc)
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void FUN_613790(); KING_ALIAS("_FUN_613790", "@MarineQueue_TopWorkItem@8")
-ASM_PROC(FUN_609de0)
+extern "C" void FUN_609de0(); KING_ALIAS("_FUN_609de0", "_GridTree_RemoveEdge")
 
 ASM_VAR(AsmLabel, g_vtbl652ef4, $L_652ef4)
 ASM_VAR(AsmLabel, g_vtbl652f00, $L_652f00)
@@ -1607,6 +1607,193 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
         if (s)
             CallVirt(s, 0, 1);
     }
+}
+
+} // extern "C"
+
+// === removing an edge from the grid mesh (FUN_606760)
+
+extern "C" void __fastcall GridBranch_Destruct(BYTE* self, void*);     // grid_topology.cpp
+ASM_PROC(FUN_606d50)    // merges the four triangles around an inner edge (a0, a1, b0, b1, &out a, &out b)
+
+// deletes the two branches of pair p and makes node its triangle
+static void Gr_ResetPair(BYTE** p, BYTE* node)
+{
+    for (int k = 0; k < 2; k++)
+        if (BYTE* b = p[k]) {
+            GridBranch_Destruct(b, 0);
+            operator delete(b);
+        }
+    p[1] = 0;
+    p[0] = 0;
+    F(BYTE*, p, 12) = node;
+    F(BYTE**, node, 32) = p;
+}
+
+extern "C" {
+
+// [FUN_606760] removes edge e from mesh m (+44 the cursor, +52 the count, +28 the queue): the triangles on its
+// sides (+8, and +12 for an inner edge) are merged, their branches replaced by the merged triangles, and a new
+// edge made across the first one when its neighbours allow; the second one is offered for joining
+void __cdecl GridMesh_RemoveEdge(BYTE* e, BYTE* m)
+{
+    if (e == F(BYTE*, m, 44))
+        F(int, m, 44) = Pair_Next(F(BYTE**, m, 28), 0, (int*)e);
+    F(short, m, 52)--;
+    BYTE** a = F(BYTE**, e, 8);
+    BYTE** b = F(BYTE**, e, 12);
+    F(int, F(BYTE*, a[0], 12), 56) = 0;
+    F(int, F(BYTE*, a[1], 12), 56) = 0;
+    if (b) {
+        F(int, F(BYTE*, b[0], 12), 56) = 0;
+        F(int, F(BYTE*, b[1], 12), 56) = 0;
+    }
+    CallThis(FUN_6136f0, F(BYTE*, m, 28), e);
+    BYTE* r1 = 0;
+    BYTE* r2;
+    if (!b)
+        Grid_MergeTriangles(m, 0, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), &r2);
+    else
+        CallThis(FUN_606d50, m, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), F(BYTE*, b[0], 12), F(BYTE*, b[1], 12), &r2,
+                 &r1);
+    Gr_ResetPair(F(BYTE**, e, 8), r2);
+    if (F(BYTE**, e, 12))
+        Gr_ResetPair(F(BYTE**, e, 12), r1);
+    if (e) {
+        CallThis(FUN_606750, e);
+        operator delete(e);
+    }
+    BYTE* n = r2;
+    if (!F(int, n, 56) && (F(BYTE*, n, 48) || F(BYTE*, n, 52))) {
+        BYTE* n48 = F(BYTE*, n, 48);
+        BYTE** p = F(BYTE**, F(BYTE*, n, 32), 8);
+        BYTE* c0 = p[0];
+        BYTE* c1 = p[1];
+        if (c0 && c1) {
+            BYTE* x = 0;
+            bool make = false, check = false;
+            if (F(BYTE*, c0, 12) == n) {
+                BYTE* y = F(BYTE*, n, 52);
+                if (!y && !F(BYTE*, n48, 48))
+                    check = true;
+                else if (y && F(BYTE*, y, 52)) {
+                    x = F(BYTE*, F(BYTE*, y, 32), 8);
+                    if (x == F(BYTE*, F(BYTE*, F(BYTE*, y, 52), 32), 8))
+                        x ? make = true : check = true;
+                }
+            } else if (F(BYTE*, c1, 12) == n) {
+                if (!n48 && !F(BYTE*, F(BYTE*, n, 52), 52))
+                    check = true;
+                else if (n48 && F(BYTE*, n48, 48)) {
+                    x = F(BYTE*, F(BYTE*, n48, 32), 8);
+                    if (x == F(BYTE*, F(BYTE*, F(BYTE*, n48, 48), 32), 8))
+                        x ? make = true : check = true;
+                }
+            } else
+                CallC(FUN_60aad0, 0x88760112, (const char*)s_fileLine, (const char*)s_6849fc, 276,
+                      (const char*)s_buildDate);
+            if (check) {
+                x = 0;
+                BYTE** q = F(BYTE**, (BYTE*)p, 8);
+                if (q && (!q[0] || !q[1]))
+                    make = true;
+            }
+            if (make)
+                CallThis(FUN_6064c0, m, (BYTE*)p, x);
+        }
+    }
+    if (r1)
+        Grid_TryJoin(r1);
+}
+
+} // extern "C"
+
+// === removing an edge from the grid tree (FUN_609de0)
+
+extern "C" void FUN_60a1c0(); KING_ALIAS("_FUN_60a1c0", "@Grid_MergeCells@20")
+ASM_PROC(FUN_60a460)    // merges the four cells around an inner edge (a0, a1, b0, b1, &out a, &out b)
+ASM_VAR(AsmLabel, s_gt684a44, $L_684a44)
+
+// deletes the two branches of pair p and makes cell its node
+static void Gt_ResetPair(BYTE** p, BYTE* cell)
+{
+    for (int k = 0; k < 2; k++)
+        if (BYTE* b = p[k]) {
+            Btr_Destroy(b, 0);
+            operator delete(b);
+        }
+    p[1] = 0;
+    p[0] = 0;
+    F(BYTE*, p, 12) = cell;
+    F(BYTE**, cell, 40) = p;
+}
+
+extern "C" {
+
+// [FUN_609de0] removes edge e from tree grid g (+56 the cursor, +64 the count, +32 the queue): the cells on its
+// sides (+8, and +12 for an inner edge) are merged, their branches replaced by the merged cells, and a new link
+// made across the first one when its neighbours allow; the second one is joined
+void __cdecl GridTree_RemoveEdge(BYTE* e, BYTE* g)
+{
+    if (e == F(BYTE*, g, 56))
+        F(int, g, 56) = Pair_Next(F(BYTE**, g, 32), 0, (int*)e);
+    F(short, g, 64)--;
+    BYTE** a = F(BYTE**, e, 8);
+    BYTE** b = F(BYTE**, e, 12);
+    F(int, F(BYTE*, a[0], 12), 72) = 0;
+    F(int, F(BYTE*, a[1], 12), 72) = 0;
+    if (b) {
+        F(int, F(BYTE*, b[0], 12), 72) = 0;
+        F(int, F(BYTE*, b[1], 12), 72) = 0;
+    }
+    CallThis(FUN_6136f0, F(BYTE*, g, 32), e);
+    BYTE* r1 = 0;
+    BYTE* r2;
+    if (!b)
+        CallThis(FUN_60a1c0, g, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), &r2);
+    else
+        CallThis(FUN_60a460, g, F(BYTE*, a[0], 12), F(BYTE*, a[1], 12), F(BYTE*, b[0], 12), F(BYTE*, b[1], 12), &r2,
+                 &r1);
+    Gt_ResetPair(F(BYTE**, e, 8), r2);
+    if (F(BYTE**, e, 12))
+        Gt_ResetPair(F(BYTE**, e, 12), r1);
+    if (e) {
+        Grid_ResetVtables(e, 0);
+        operator delete(e);
+    }
+    BYTE* n = r2;
+    if (!F(int, n, 72) && (F(BYTE*, n, 64) || F(BYTE*, n, 68))) {
+        BYTE* n64 = F(BYTE*, n, 64);
+        BYTE** p = F(BYTE**, F(BYTE*, n, 40), 8);
+        BYTE* c0 = p[0];
+        BYTE* c1 = p[1];
+        if (c0 && c1) {
+            BYTE* x = 0;
+            bool link = false;
+            if (F(BYTE*, c0, 12) == n) {
+                BYTE* y = F(BYTE*, n, 68);
+                if (!y && !F(BYTE*, n64, 64))
+                    link = true;
+                else if (y && F(BYTE*, y, 68)) {
+                    x = F(BYTE*, F(BYTE*, y, 40), 8);
+                    link = x == F(BYTE*, F(BYTE*, F(BYTE*, y, 68), 40), 8);
+                }
+            } else if (F(BYTE*, c1, 12) == n) {
+                if (!n64 && !F(BYTE*, F(BYTE*, n, 68), 68))
+                    link = true;
+                else if (n64 && F(BYTE*, n64, 64)) {
+                    x = F(BYTE*, F(BYTE*, n64, 40), 8);
+                    link = x == F(BYTE*, F(BYTE*, F(BYTE*, n64, 64), 40), 8);
+                }
+            } else
+                CallC(FUN_60aad0, 0x88760112, (const char*)s_fileLine, (const char*)s_gt684a44, 372,
+                      (const char*)s_buildDate);
+            if (link)
+                CallStd(FUN_608fa0, (BYTE*)p, x);
+        }
+    }
+    if (r1)
+        Grd_JoinBranches(r1);
 }
 
 } // extern "C"

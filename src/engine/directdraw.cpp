@@ -1133,3 +1133,59 @@ int __stdcall Dd_EnumDevice(GUID* guid, char*, char*, BYTE* c)
 }
 
 } // extern "C"
+
+// === a surface from pixels (FUN_5d7750)
+
+ASM_VAR(AsmLabel, s_ts6829b4, $L_6829b4)
+ASM_VAR(AsmLabel, s_ts6829ac, $L_6829ac)
+ASM_VAR(AsmLabel, s_ts6829a4, $L_6829a4)
+ASM_VAR(AsmLabel, s_ts68299c, $L_68299c)
+
+extern "C" {
+
+// [FUN_5d7750] a new surface for the w x h image src (720894 bytes per pixel), cut into columns of 72089c pixels
+// stacked downwards (video memory with a device 720904, else system memory); 0 with the error logged
+BYTE* __cdecl Dd_SurfaceFromPixels(unsigned w, unsigned h, const BYTE* src)
+{
+    DWORD d[31];
+    memset(d, 0, sizeof d);
+    d[26] = g_720904 ? 0x800 : 0x4040;
+    unsigned tile = g_width, bpp = g_bitDepth2;
+    d[0] = 124;
+    d[1] = 7;
+    d[3] = tile;
+    d[2] = (w / tile + (w % tile ? 1 : 0)) * h;
+    BYTE* s = 0;
+    int hr = Com(g_d3d, 24, d, &s, 0);
+    if (hr) {
+        const char* m = hr == (int)0x88760064 ? s_ts6829b4 : hr == (int)0x80070057 ? s_ts6829ac
+                      : hr == (int)0x88760091 ? s_ts6829a4 : hr == (int)0x8876005F ? s_ts68299c : 0;
+        if (m)
+            CallC(FUN_5d2ba0, m, 0);
+        return 0;
+    }
+    if (!s)
+        return 0;
+    DWORD l[31];
+    l[0] = 124;
+    l[1] = 8387054;
+    BYTE* bits = 0;
+    if (!Com(s, 100, 0, l, 1, 0))
+        bits = (BYTE*)l[9];
+    int pitch = (int)l[4];
+    if (!bits)
+        return s;
+    for (unsigned y = 0; y < h; y++, src += bpp * w, bits += pitch) {
+        const BYTE* p = src;
+        BYTE* q = bits;
+        for (unsigned x = 0; x < w; x += tile, q += pitch * h) {
+            unsigned n = (x + tile < w ? tile : w - x) * bpp;
+            memcpy(q, p, n);
+            p += n;
+        }
+    }
+    Com(s, 128, 0);
+    return s;
+}
+
+} // extern "C"

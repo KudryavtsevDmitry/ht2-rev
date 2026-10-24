@@ -4053,7 +4053,7 @@ extern "C" void FUN_4c8080(); KING_ALIAS("_FUN_4c8080", "@RefStack_Pop@8")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
 ASM_PROC(FUN_4cf620)
 ASM_PROC(FUN_4cfe70)
-ASM_PROC(FUN_556a70)
+extern "C" void FUN_556a70(); KING_ALIAS("_FUN_556a70", "@CarBody_Step@4")
 ASM_PROC(FUN_55d5d0)
 ASM_VAR(void*, g_eff720908, $L_720908)
 ASM_VAR(int, g_eff7208d0, $L_7208d0)
@@ -5135,7 +5135,7 @@ ASM_PROC(FUN_4b91a0)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_57c290(); KING_ALIAS("_FUN_57c290", "@PoolNode_Construct@16")
-ASM_PROC(FUN_4c8640)
+extern "C" void FUN_4c8640(); KING_ALIAS("_FUN_4c8640", "@Reflection_Construct@16")
 extern "C" void FUN_593040(); KING_ALIAS("_FUN_593040", "@Body593040_Construct@12")
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 extern "C" void FUN_5c6400(); KING_ALIAS("_FUN_5c6400", "_Effects_InitTrees")
@@ -5841,6 +5841,157 @@ void __cdecl Fx_PlaceObjects()
             break;
         p -= 4;
     }
+}
+
+} // extern "C"
+
+// === subdividing a triangle (FUN_4c7d90)
+
+ASM_PROC(FUN_4c7850)    // one subdivision into 4 (vertices, &count, indices, &count, a, b, c, base)
+
+extern "C" {
+
+// [FUN_4c7d90] the triangle (a, b, c; 32-byte vertices) as vertices v and word indices x after `level`
+// subdivisions into 4 (0: itself, 1: once, else twice); the vertex and index counts in *nv and *nx
+void __cdecl Tri_Subdivide(BYTE* v, int* nv, WORD* x, int* nx, BYTE* a, BYTE* b, BYTE* c, int level)
+{
+    if (level == 0) {
+        memcpy(v, a, 32);
+        memcpy(v + 32, b, 32);
+        memcpy(v + 64, c, 32);
+        x[0] = 0;
+        x[1] = 1;
+        x[2] = 2;
+        *nx = 3;
+        *nv = 3;
+        return;
+    }
+    if (level == 1) {
+        CallC(FUN_4c7850, v, nv, x, nx, a, b, c, 0);
+        return;
+    }
+    BYTE tv[6 * 32];
+    WORD tx[14];
+    int n1 = 0, n2 = 0;
+    CallC(FUN_4c7850, tv, &n1, tx, &n2, a, b, c, 0);
+    for (int t = 0; t < 4; t++)
+        CallC(FUN_4c7850, v, &n1, x, &n2, tv + tx[t * 3] * 32, tv + tx[t * 3 + 1] * 32, tv + tx[t * 3 + 2] * 32,
+              t * 6);
+    *nx = n2 * 4;
+    *nv = n1 * 4;
+}
+
+} // extern "C"
+
+// === setting up the cab dashboard (FUN_4de290)
+
+extern "C" void FUN_4e497a(); KING_ALIAS("_FUN_4e497a", "_Frame_GetLocalChecked")
+extern "C" void FUN_507d00(); KING_ALIAS("_FUN_507d00", "_Carat_Read3")
+extern "C" void FUN_5d9ef0(); KING_ALIAS("_FUN_5d9ef0", "@Scenes_SetFirst@12")
+ASM_VAR(BYTE*, g_cd696cac, $L_696cac)
+ASM_VAR(AsmLabel, g_cd702650, $L_702650)
+
+extern "C" {
+
+// [FUN_4de290] sets up the cab view s for scene list a: 80 identity matrices (+560) with cleared slots (+4400),
+// the driver's seat (truck.ini CAR Driver_Seat, negated, +5092), the panel objects (Panel, PanelSpace,
+// TachoSpace, SpeedSpace, FuelArrowSpace, the panel's keys and the KMeterNKey digits) and the local matrices of
+// the three gauges' spaces (+4924, +4972, +5020)
+void __fastcall Cab_Setup(BYTE* s, void*, BYTE* a)
+{
+    F(BYTE*, s, 4820) = a;
+    for (int i = 0; i < 80; i++) {
+        F(int, s, 4400 + i * 4) = 0;
+        memcpy(s + 560 + i * 48, (BYTE*)g_7025f0, 48);
+    }
+    F(int, s, 4720) = 0;
+    CallThis(FUN_5d9ef0, s, F(int, a, 468));
+    float* seat = (float*)(s + 5092);
+    CallC(FUN_507d00, "CAR", "Driver_Seat", (BYTE*)g_cd702650, seat, ".\truck.ini");
+    seat[0] = -seat[0];
+    seat[1] = -seat[1];
+    seat[2] = -seat[2];
+    F(DWORD, g_cd696cac, 88) = 0x3FCCCCCD;      // 1.6
+    F(DWORD, g_cd696cac, 84) = 0x3F99999A;      // 1.2
+    F(int, s, 5080) = 0;
+    F(int, s, 4864) = 0;
+    F(int, s, 4860) = 0;
+    F(BYTE*, s, 4868) = CallC<BYTE*>(FUN_5ef2b0, 0, "Panel");
+    F(BYTE*, s, 4872) = CallC<BYTE*>(FUN_5ef2b0, 0, "PanelSpace");
+    F(BYTE*, s, 4876) = CallC<BYTE*>(FUN_5ef2b0, 0, "TachoSpace");
+    F(BYTE*, s, 4880) = CallC<BYTE*>(FUN_5ef2b0, 0, "SpeedSpace");
+    F(BYTE*, s, 4884) = CallC<BYTE*>(FUN_5ef2b0, 0, "FuelArrowSpace");
+    F(BYTE*, s, 4888) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, s, 4868), "GearKey");
+    F(BYTE*, s, 4892) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, s, 4868), "AvtoKey");
+    F(BYTE*, s, 4896) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, s, 4868), "ParkKey");
+    F(BYTE*, s, 4900) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, s, 4868), "FuelLampKey");
+    for (int i = 0; i < 5; i++) {
+        char name[80];
+        sprintf(name, "KMeter%dKey", i);
+        F(BYTE*, s, 4904 + i * 4) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, s, 4868), name);
+    }
+    static const int k_spaces[3][2] = {{4876, 4924}, {4880, 4972}, {4884, 5020}};
+    for (const auto& k : k_spaces)
+        if (BYTE* o = F(BYTE*, s, k[0]))
+            CallC(FUN_4e497a, o, s + k[1]);
+        else
+            memcpy(s + k[1], (BYTE*)g_7025f0, 48);
+    F(int, s, 548) = 0;
+    F(DWORD, s, 5076) = 1025563004;
+    F(DWORD, s, 5068) = 1036059899;
+    F(DWORD, s, 5072) = 1075235812;
+}
+
+} // extern "C"
+
+// === the reflection effect (FUN_4c8640)
+
+ASM_VAR(AsmLabel, s_rf6728d0, $L_6728d0)    // "Reflection"
+ASM_VAR(AsmLabel, s_rf6728c0, $L_6728c0)
+ASM_VAR(AsmLabel, s_rf6728b0, $L_6728b0)
+ASM_VAR(AsmLabel, s_rf67289c, $L_67289c)
+ASM_VAR(AsmLabel, g_rf64c8b4, $L_64c8b4)
+extern "C" BYTE* __fastcall RefStack_Clear(BYTE* s, void*);
+
+extern "C" {
+
+// [FUN_4c8640] constructor (scene, a): the reflection node (vtable 64c8b4, kind 24) with its reference stack
+// (+76), registered with the scene's list (+524), and the three materials of the trucks model (+88) it drives
+// (+80, +84 and the third), their flags set
+BYTE* __fastcall Reflection_Construct(BYTE* s, void*, BYTE* scene, int a)
+{
+    CallThis(FUN_5ef6d0, s, (const char*)s_rf6728d0, 24);
+    F(int, s, 72) = 0;
+    F(int, s, 56) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 52) = 0;
+    F(void*, s, 0) = g_rf64c8b4;
+    F(int, s, 92) = a;
+    BYTE* st = (BYTE*)operator new(404);
+    F(BYTE*, s, 76) = st ? RefStack_Clear(st, 0) : 0;
+    if (BYTE* l = F(BYTE*, scene, 524))
+        CallVirt(l, 20, 0, s);
+    BYTE* m = CallThis<BYTE*>(FUN_5d9290, scene, (const char*)g_strTrucks);
+    F(BYTE*, s, 88) = m;
+    F(BYTE*, s, 80) = 0;
+    F(BYTE*, s, 84) = 0;
+    BYTE* third = 0;
+    for (unsigned i = 0; i < F(unsigned, m, 72); i++) {
+        BYTE* r = F(BYTE*, m, 76) + i * 124;
+        if (!strcmp((const char*)r, s_rf6728c0))
+            F(BYTE*, s, 80) = r;
+        if (!strcmp((const char*)r, s_rf6728b0))
+            F(BYTE*, s, 84) = r;
+        if (!strcmp((const char*)r, s_rf67289c))
+            third = r;
+    }
+    if (!F(BYTE*, s, 80) || !F(BYTE*, s, 84) || !third)
+        CallC(FUN_60aad0, 0x88760115, (const char*)g_strErrFormat, (const char*)g_strErrFile, 5385,
+              (const char*)g_strErrDate);
+    F(DWORD, F(BYTE*, s, 80), 32) = (F(DWORD, F(BYTE*, s, 80), 32) & ~0x80u) | 0x40040;
+    F(DWORD, third, 32) |= 64;
+    F(DWORD, F(BYTE*, s, 84), 32) = (F(DWORD, F(BYTE*, s, 84), 32) & ~0x80u) | 0x40000;
+    return s;
 }
 
 } // extern "C"

@@ -1467,7 +1467,7 @@ extern "C" void FUN_5c33a0(); KING_ALIAS("_FUN_5c33a0", "@List_DeleteAll@8")
 extern "C" void FUN_5c53b0(); KING_ALIAS("_FUN_5c53b0", "@Timeline_Reset@8")
 extern "C" void FUN_5e02f0(); KING_ALIAS("_FUN_5e02f0", "@View_PlaceCamera@4")
 extern "C" void FUN_5c4940(); KING_ALIAS("_FUN_5c4940", "@Media_ClearList@8")
-ASM_PROC(FUN_5cc6b0)
+extern "C" void FUN_5cc6b0(); KING_ALIAS("_FUN_5cc6b0", "@Tree_Grow@20")
 
 // [FUN_5cda30] +4
 extern "C" int __fastcall Media_Get4(BYTE* self, void*) { return F(int, self, 4); }
@@ -2363,7 +2363,7 @@ extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
 // ---------------------------------------------------------------------------
 // The media thread start.
 
-ASM_PROC(FUN_5c24a0)
+extern "C" void FUN_5c24a0(); KING_ALIAS("_FUN_5c24a0", "_Msavi_OpenSound")
 extern "C" void Mfc_AfxBeginThread(); KING_ALIAS("_Mfc_AfxBeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
 ASM_VAR(int, g_q54_702f60, $L_702f60)
 ASM_VAR(HANDLE, g_q54_702f58, $L_702f58)
@@ -3202,7 +3202,7 @@ extern "C" void FUN_601c10(); KING_ALIAS("_FUN_601c10", "_Providers_Call601c70")
 extern "C" void FUN_603170(); KING_ALIAS("_FUN_603170", "@DpMessage_Set@16")
 extern "C" void FUN_6032f0(); KING_ALIAS("_FUN_6032f0", "@Gate_Set24@8")
 extern "C" void FUN_6034e0(); KING_ALIAS("_FUN_6034e0", "@Stream_ReadBlob@20")
-ASM_PROC(FUN_601060)    // the next received message (stream); 0 when there is one
+extern "C" void FUN_601060(); KING_ALIAS("_FUN_601060", "_Net_Receive")    // the next received message (stream); 0 when there is one
 ASM_PROC(FUN_6031e0)    // a message's next record type (out); 0 when there is one
 ASM_PROC(FUN_603300)    // skips to the next record; 0 when there is one
 ASM_VAR(double, g_nm707f88, $L_707f88)
@@ -3421,6 +3421,208 @@ int __fastcall Rec_Step(BYTE* s, void*, int forward)
     }
     fseek(f, ftell(f) + back - 4, 0);
     return r;
+}
+
+} // extern "C"
+
+// === growing a tree's branches (FUN_5cc6b0)
+
+extern "C" void FUN_5abfd0(); KING_ALIAS("_FUN_5abfd0", "_Matrix_RotationY")
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+ASM_VAR(float, g_tb64c900, $L_64c900)
+ASM_VAR(float, g_tb651d24, $L_651d24)
+ASM_VAR(float, g_tb651d20, $L_651d20)
+
+// the matrix of a child branch: moved along z by len, turned about y by a * ky and about z by b, then m
+static BYTE* Tb_Child(BYTE* out, const BYTE* m, float len, float a, float ky, float b)
+{
+    Med243_V3 v = {0, 0, len};
+    BYTE t[48], ry[48], rz[48], m1[48], m2[48];
+    CallC(FUN_5abc40, t, v);
+    CallC(FUN_5abfd0, ry, (float)(a * ky));
+    CallC(FUN_5ac0c0, rz, b);
+    CallC(FUN_5aba40, m1, rz, ry);
+    CallC(FUN_5aba40, m2, m1, t);
+    return CallC<BYTE*>(FUN_5aba40, out, m2, m);
+}
+
+extern "C" {
+
+// [FUN_5cc6b0] grows tree s from branch b at depth with matrix m: below the depth limit (+32) its two children
+// (b's vtable 0 and 4 by the length b->value * +28) are turned apart by the sway (+40, +16) and the spread (+24,
+// +20); at the limit, or without a branch, a leaf
+void __fastcall Tree_Grow(BYTE* s, void*, int depth, const BYTE* m, BYTE* b)
+{
+    if (depth >= F(int, s, 32) || !b) {
+        Leaves_Add(s, 0, (const DWORD*)m, b && depth >= F(int, s, 32) ? F(DWORD, b, 36) : 0);
+        return;
+    }
+    float len = (float)(Branch_Value(b, 0) * F(float, s, 28));
+    float a = (float)(F(float, s, 24) * g_tb64c900 + Branch_Sway(b, 0, F(float, s, 40)) * F(float, s, 16));
+    float z = (float)(F(float, s, 20) * g_tb651d24);
+    BYTE c[48];
+    Tb_Child(c, m, len, a, g_tb651d24, z);
+    Tree_Grow(s, 0, depth + 1, c, CallVirt<BYTE*>(b, 0, len));
+    float a2 = (float)((g_q168_64c250 - F(float, s, 24)) * g_tb64c900 +
+                       (g_q168_64c250 - Branch_Sway(b, 0, F(float, s, 40))) * F(float, s, 16));
+    float z2 = (float)(F(float, s, 20) * g_tb651d24);
+    Tb_Child(c, m, len, a2, g_tb651d20, z2);
+    Tree_Grow(s, 0, depth + 1, c, CallVirt<BYTE*>(b, 4, len));
+}
+
+} // extern "C"
+
+// === creating a network object (FUN_5c5c30)
+
+ASM_VAR(int, g_no67f878, $L_67f878)
+ASM_VAR(AsmLabel, g_no5c5ea0, $L_5c5ea0)    // its message handler
+extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
+
+extern "C" {
+
+// [FUN_5c5c30] registers object s with media m under a key (+364: from the preset id +344 or a free slot) and its
+// handler entries (+352, +356); records its creation message id (o's names, the third name from c for 900,
+// else s+268, x, f, the matrix, s+344, the key) and keeps a 904 message showing it
+void __fastcall NetObject_Create(BYTE* s, void*, BYTE* m, BYTE* o, BYTE* c, DWORD x, float f, int, Om_Matrix mt,
+                                 int, int id)
+{
+    F(int, s, 372) = 0;
+    F(int, s, 364) = 0;
+    F(int, s, 368) = 0;
+    F(int, s, 352) = 0;
+    F(int, s, 356) = 0;
+    F(int, s, 360) = 0;
+    if (g_no67f878 != -1) {
+        F(int, s, 344) = g_no67f878;
+        g_no67f878 = -1;
+    }
+    if (!F(int, g_707f6c, 416) && !F(int, m, 7928))
+        return;
+    if (F(int, s, 344) == -1)
+        F(int, s, 364) = (int)Media_TakeSlot(m, 0);
+    else
+        F(int, s, 364) = (F(int, s, 344) * 5 + 500000) * 2;
+    int k = F(int, s, 364) + 1;
+    F(int, s, 368) = k + 1;
+    F(BYTE*, s, 352) = List_Add(m + 8300, 0, k, 1, F(int, s, 324));
+    k = F(int, s, 368);
+    F(int, s, 368) = k + 1;
+    F(BYTE*, s, 356) = List_Add5(m + 8300, 0, k, (int)s, (int)(void*)g_no5c5ea0, 20);
+    BYTE msg[32];
+    CallThis(FUN_602be0, msg);
+    BYTE d[256];
+    memset(d, 0, sizeof d);     // the original sent the stack bytes between the fields
+    strncpy((char*)d, F(const char*, F(BYTE*, o, 36), 60), 24);
+    strncpy((char*)d + 24, F(const char*, o, 12), 24);
+    strncpy((char*)d + 48, id == 900 ? F(const char*, c, 12) : F(const char*, s, 268), 24);
+    memcpy(d + 72, &mt, 48);
+    F(int, d, 150) = F(int, s, 344);
+    F(DWORD, d, 140) = x;
+    F(float, d, 130) = f;
+    F(int, d, 160) = F(int, s, 364);
+    CallThis(FUN_603110, msg, id, d, 250);
+    Media_RecordBlock(m, 0, msg);
+    BYTE* q = (BYTE*)operator new(28);
+    if (q)
+        q = CallThis<BYTE*>(FUN_602be0, q);
+    BYTE e[8];
+    F(int, e, 0) = F(int, s, 364);
+    e[4] = 1;
+    CallThis(FUN_603110, q, 904, e, 5);
+    Pool_Keep(m, 0, q);
+    CallThis(FUN_602e80, msg);
+}
+
+} // extern "C"
+
+// === opening DirectSound for the movie player (FUN_5c24a0)
+
+extern "C" void* g_impDirectSoundCreate; KING_ALIAS("_g_impDirectSoundCreate", "__imp__DirectSoundCreate@12")
+ASM_VAR(DWORD, g_ds702f74, $L_702f74)
+ASM_VAR(AsmLabel, s_ds67f534, $L_67f534)
+ASM_VAR(AsmLabel, s_ds67f500, $L_67f500)
+ASM_VAR(AsmLabel, s_ds67f4d8, $L_67f4d8)
+ASM_VAR(AsmLabel, s_ds67f4c0, $L_67f4c0)
+ASM_VAR(AsmLabel, s_ds67f468, $L_67f468)
+ASM_VAR(AsmLabel, s_ds67f44c, $L_67f44c)
+
+#pragma pack(push, 2)
+struct Ms_WaveFormat { WORD wFormatTag, nChannels; DWORD nSamplesPerSec, nAvgBytesPerSec; WORD nBlockAlign, wBitsPerSample, cbSize; };
+#pragma pack(pop)
+
+extern "C" {
+
+// [FUN_5c24a0] opens DirectSound (702f98) for window w with the primary buffer at 22050 Hz in the best format the
+// card supports (16-bit stereo, 8-bit stereo or mono); 0 or the error, logged
+int __cdecl Msavi_OpenSound(HWND w)
+{
+    memset((BYTE*)g_msavi702f78, 0, 24);
+    BYTE* prim = 0;
+    g_msaviBufSize = 0;
+    g_ds702f74 = 0;
+    g_msaviWritePos = 0;
+    g_msaviPlayed = 0;
+    g_msaviLastPos = 0;
+    int hr = ((int(__stdcall*)(void*, BYTE**, void*))g_impDirectSoundCreate)(0, &g_msavi702f98, 0);
+    if (hr < 0) {
+        g_msavi702f98 = 0;
+        CallC(FUN_5d2ba0, s_ds67f534, hr);
+        return hr;
+    }
+    hr = Com(g_msavi702f98, 24, w, 2);
+    if (hr < 0) {
+        CallC(FUN_5d2ba0, s_ds67f500, hr);
+        return hr;
+    }
+    DWORD d[9];
+    memset(d, 0, sizeof d);
+    d[0] = 36;
+    d[1] = 1;
+    hr = Com(g_msavi702f98, 12, d, &prim, 0);
+    if (hr < 0) {
+        CallC(FUN_5d2ba0, s_ds67f4d8, hr);
+        return hr;
+    }
+    DWORD caps[24];
+    caps[0] = 96;
+    if (int r = Com(g_msavi702f98, 16, caps)) {
+        CallC(FUN_5d2ba0, s_ds67f4c0, r);
+        return (int)0x80004005;
+    }
+    WORD ch, bits;
+    BYTE f = (BYTE)caps[1];
+    if (f & 8) {
+        ch = 2;
+        bits = 16;
+    } else if (f & 2) {
+        ch = 2;
+        bits = 8;
+    } else if (f & 1) {
+        ch = 1;
+        bits = 8;
+    } else {
+        CallC(FUN_5d2ba0, s_ds67f44c, 0);
+        return (int)0x80004005;
+    }
+    Ms_WaveFormat wf;
+    memset(&wf, 0, sizeof wf);
+    wf.wFormatTag = 1;
+    wf.nChannels = ch;
+    wf.nSamplesPerSec = 22050;
+    wf.wBitsPerSample = bits;
+    wf.nBlockAlign = (WORD)((bits >> 3) * ch);
+    wf.nAvgBytesPerSec = wf.nBlockAlign * 22050;
+    hr = Com(prim, 56, &wf);
+    if (hr < 0) {
+        char text[256];
+        sprintf(text, s_ds67f468, bits, ch);
+        CallC(FUN_5d2ba0, text, hr);
+        return hr;
+    }
+    if (prim)
+        Com(prim, 8);
+    return 0;
 }
 
 } // extern "C"

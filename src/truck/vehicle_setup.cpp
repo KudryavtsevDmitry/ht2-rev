@@ -752,3 +752,55 @@ int __fastcall Car_WheelContact(BYTE* c, void*, BYTE* out)
 }
 
 } // extern "C"
+
+// === constructing the car model table (the static initializer $L_506fc0)
+
+extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+ASM_VAR(AsmLabel, g_cm697868, $L_697868)    // 80 models of 2416 bytes
+
+// count empty vectors of size bytes at p
+static void Cm_Vectors(BYTE* p, int size, int count) { CallStd(FUN_4011e0, p, size, count, (void*)FUN_4bd4d0); }
+
+static void Cm_Zero(BYTE* m, int off, int n)
+{
+    for (int i = 0; i < n; i++)
+        F(int, m, off + i * 4) = 0;
+}
+
+extern "C" {
+
+// [$L_506fc0] constructs the 80 car models (697868): two identity matrices, the empty vectors of the wheels,
+// lights, shapes and points, the zeroed values
+void __cdecl CarModels_Construct()
+{
+    for (int k = 0; k < 80; k++) {
+        BYTE* m = (BYTE*)g_cm697868 + k * 2416;
+        Cm_Vectors(m, 12, 4);
+        memcpy(m, (BYTE*)g_q98_7025f0, 48);
+        Cm_Vectors(m + 48, 12, 4);
+        memcpy(m + 48, (BYTE*)g_q98_7025f0, 48);
+        Cm_Zero(m, 288, 3);
+        Cm_Zero(m, 396, 3);
+        Cm_Zero(m, 412, 3);
+        Cm_Vectors(m + 424, 12, 8);
+        Cm_Vectors(m + 520, 12, 8);
+        Cm_Vectors(m + 616, 12, 8);
+        Cm_Zero(m, 848, 3);
+        Cm_Vectors(m + 880, 12, 20);
+        Cm_Vectors(m + 1120, 12, 20);
+        Cm_Zero(m, 1360, 9);
+        Cm_Vectors(m + 1400, 12, 4);
+        Cm_Vectors(m + 1448, 16, 20);
+        Cm_Vectors(m + 1780, 12, 5);
+        Cm_Zero(m, 1844, 9);
+        for (int i = 0; i < 9; i++)
+            CallThis(FUN_4bd4d0, m + 1880 + i * 12);
+        for (int i = 0; i < 4; i++)
+            CallThis(FUN_4bd4d0, m + 2000 + i * 12);
+        CallThis(FUN_4bd4d0, m + 2380);
+        CallThis(FUN_4bd4d0, m + 2392);
+    }
+}
+
+} // extern "C"

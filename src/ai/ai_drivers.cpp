@@ -91,7 +91,7 @@ extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
-ASM_PROC(FUN_479aa0)
+extern "C" void FUN_479aa0(); KING_ALIAS("_FUN_479aa0", "_NamedRecs_Load")
 extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")
 ASM_PROC(FUN_471ec0)
 ASM_PROC(FUN_472110)
@@ -195,7 +195,7 @@ PlaceCount* Player::GetPlace()
 extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "FUN_401000")
 extern "C" void __cdecl AI_SortTimes(double* first, double* last, int, int, int);
-KING_ALIAS("_AI_SortTimes", "FUN_47be40")
+KING_ALIAS("_AI_SortTimes", "_Doubles_StableSortBuf")
 extern "C" const char* __cdecl AI_Text(const char* key);
 KING_ALIAS("_AI_Text", "_Message_Text")
 extern "C" void __cdecl Messages_Add(const char* text);          // copter.cpp
@@ -566,7 +566,7 @@ void __fastcall Waypoints_Clear(WaypointVec* self, void*) { self->Clear(); }    
 
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last): the save stream
 extern "C" void FUN_471b10(); KING_ALIAS("_FUN_471b10", "@Rec471b10_Save@12")    // writes a 16-byte record (stream)
-ASM_PROC(FUN_470e10)    // writes an order (stream)
+extern "C" void FUN_470e10(); KING_ALIAS("_FUN_470e10", "@Order_Save@12")    // writes an order (stream)
 extern "C" void __cdecl PlayerRef_Resolve(int* e);
 typedef DWORD Dwords[1];
 ASM_VAR(Dwords, g_playRng, $L_68b9c8)          // the AI's subtractive generator
@@ -1186,7 +1186,7 @@ void __cdecl Driver_SetDeadline(BYTE* x, double t)
 }
 
 extern "C" void FUN_4729e0(); KING_ALIAS("_FUN_4729e0", "@Player_Construct@12")    // player constructor (kind)
-ASM_PROC(FUN_4731e0)    // player destructor
+extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")    // player destructor
 extern "C" void FUN_478e50(); KING_ALIAS("_FUN_478e50", "@AiList_Insert@20")
 extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
 extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
@@ -1381,7 +1381,7 @@ extern "C" bool __cdecl Player_RemoveWaypoint(BYTE* p, int id)
 
 extern "C" void FUN_477b00(); KING_ALIAS("_FUN_477b00", "_Players_SetCurrent")
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
-ASM_PROC(FUN_4731e0)
+extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
 ASM_VAR(BYTE*, g_q52_68b990, $L_68b990)
 // [FUN_4734f0] clears the 68b990 list: the current player from its head, then each node (+8 destroyed, 1000 bytes
 // back to the pool)
@@ -1908,7 +1908,7 @@ extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
 extern "C" void FUN_419760(); KING_ALIAS("_FUN_419760", "_Ai_GoIdle")
 extern "C" void FUN_472270(); KING_ALIAS("_FUN_472270", "_Player_Call471ec0")
 extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
-ASM_PROC(FUN_56f6d0)
+extern "C" void FUN_56f6d0(); KING_ALIAS("_FUN_56f6d0", "_Copter_ApplyCargo")
 extern "C" void FUN_442c60(); KING_ALIAS("_FUN_442c60", "_Ai_AccountForChangeInLoadState")
 extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")
 extern "C" void FUN_401c50(); KING_ALIAS("_FUN_401c50", "_Ai_RescheduleLoadTask")
@@ -2334,6 +2334,102 @@ int __cdecl Player_Hire(BYTE* a, BYTE* b)
     F(BYTE*, a, 172) = F(BYTE*, a, 160);
     if (((F(BYTE*, a, 164) - F(BYTE*, a, 160)) & ~15) == 16)
         CallC(FUN_476a30, a);
+    return 0;
+}
+
+} // extern "C"
+
+// === the player destructor (FUN_4731e0)
+
+extern "C" void FUN_478ac0(); KING_ALIAS("_FUN_478ac0", "@Orders144_Destroy@8")
+extern "C" void FUN_4488e0(); KING_ALIAS("_FUN_4488e0", "@Vec16_FreeStorage@8")
+extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")
+
+// returns the storage of the vector at p (+0 .. +8) of size-byte elements to the pool
+static void Pd_FreeVec(BYTE* p, int size)
+{
+    if (int n = (int)(F(BYTE*, p, 8) - F(BYTE*, p, 0)) / size)
+        CallC(FUN_44b4a0, F(BYTE*, p, 0), n * size);
+}
+
+extern "C" {
+
+// [FUN_4731e0] destructor of player p: its two order books (+508, +512), the vectors at +640, +264, +172,
+// +152 (16-byte records), +136, +64, +16 and +0
+void __fastcall Player_Destroy(BYTE* p)
+{
+    F(int, p, 80) = 0;
+    for (int off = 508; off <= 512; off += 4)
+        if (BYTE* o = F(BYTE*, p, off)) {
+            CallThis(FUN_478ac0, o + 28);
+            CallThis(FUN_4488e0, o + 16);
+            operator delete(o);
+        }
+    Pd_FreeVec(p + 640, 12);
+    Pd_FreeVec(p + 264, 1);
+    CallThis(FUN_44b090, p + 172);
+    for (BYTE* e = F(BYTE*, p, 152); e != F(BYTE*, p, 156); e += 16)
+        CallThis(FUN_461ae0, e, 0);
+    Pd_FreeVec(p + 152, 16);
+    Pd_FreeVec(p + 136, 8);
+    Pd_FreeVec(p + 64, 40);
+    Pd_FreeVec(p + 16, 12);
+    Pd_FreeVec(p, 1);
+}
+
+} // extern "C"
+
+// === handing a cargo to another player (FUN_476f70)
+
+extern "C" void FUN_47be20(); KING_ALIAS("_FUN_47be20", "_Find16_ByKey")
+extern "C" void FUN_47a050(); KING_ALIAS("_FUN_47a050", "_Rec16m_Copy")
+extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")
+extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
+extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+
+extern "C" {
+
+// [FUN_476f70] player a gives up its cargo record for player b (a's list +160, 16 bytes by key): b's cargo slot
+// (+176) is emptied, the cargo values moved from b to a (+136, unless flags bit 0; a negative rest goes to a too)
+// and both flags updated; 0, or -5 (the same player), -8 (no cargo), -4 (b has none), -1 (not found)
+int __cdecl Player_GiveBackCargo(BYTE* a, BYTE* b, int flags)
+{
+    if (a == b)
+        return -5;
+    if (F(BYTE*, a, 160) == F(BYTE*, a, 164))
+        return -8;
+    if (F(BYTE*, b, 176) == (BYTE*)g_players)
+        return -4;
+    BYTE* it = CallC<BYTE*>(FUN_47be20, F(BYTE*, a, 160), F(BYTE*, a, 164), &b, b);
+    if (it == F(BYTE*, a, 164))
+        return -1;
+    if (it + 16 != F(BYTE*, a, 164))
+        CallC(FUN_47a050, it + 16, F(BYTE*, a, 164), it);
+    F(BYTE*, a, 164) -= 16;
+    CallThis(FUN_461ae0, F(BYTE*, a, 164), 0);
+    BYTE* v[3];
+    char alloc;
+    CallThis(FUN_487730, v, &alloc);
+    F(BYTE*, b, 176) = (BYTE*)g_players;
+    CallThis(FUN_44c160, b + 180, v);
+    CallThis(FUN_404420, v);
+    F(int, b, 544) = 0;
+    F(int, b, 548) = 0;
+    if (!(flags & 1)) {
+        F(double, b, 136) = F(double, b, 136) - Player_CargoValueOf(b);
+        double s = Player_CargoValueOf(b) + F(double, a, 136);
+        F(double, a, 136) = s;
+        if (F(double, b, 136) < g_zero64b678) {
+            F(double, a, 136) = s + F(double, b, 136);
+            F(double, b, 136) = 0.0;
+        }
+    }
+    Player_UpdateFlags(a);
+    Player_UpdateFlags(b);
+    F(BYTE*, a, 172) = F(BYTE*, a, 160);
+    if (F(BYTE*, a, 160) == F(BYTE*, a, 164))
+        Player_ReleaseLogo(a);
     return 0;
 }
 

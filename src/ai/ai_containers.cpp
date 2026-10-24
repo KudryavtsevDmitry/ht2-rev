@@ -20,7 +20,7 @@ extern "C" void __cdecl Sort_UnguardedInsertion12(BYTE* first, BYTE* last, int, 
 KING_ALIAS("_Sort_UnguardedInsertion12", "_Names_InsertionSortRest")
 extern "C" void FUN_45b570(); KING_ALIAS("_FUN_45b570", "@Vec1592_InsertAux@16")    // vector<1592 bytes>::insert_aux
 extern "C" void FUN_45cb00(); KING_ALIAS("_FUN_45cb00", "@Vec4b_InsertC@16")    // vector<4 bytes>::insert_aux
-ASM_PROC(FUN_45d8f0)
+extern "C" void FUN_45d8f0(); KING_ALIAS("_FUN_45d8f0", "@Vec4b_Insert45d8f0@16")
 extern "C" void FUN_4604b0(); KING_ALIAS("_FUN_4604b0", "@Vec4b_InsertG@16")
 extern "C" void FUN_405870(); KING_ALIAS("_FUN_405870", "@Rec405870_Destroy@8")    // a list value's destructor
 extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")    // a 16-byte record's destructor
@@ -2643,6 +2643,63 @@ void __fastcall Vec1592_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
     s[1] = end;
     s[0] = buf;
     s[2] = buf + cap * 1592;
+}
+
+} // extern "C"
+
+// === a random neighbour node (FUN_45b8b0)
+
+extern "C" void FUN_464230(); KING_ALIAS("_FUN_464230", "@Vec4b_InsertH@16")
+ASM_VAR(BYTE**, g_rn68cf00, $L_68cf00)
+extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
+
+extern "C" {
+
+// [FUN_45b8b0] a random one of the node slots [first, last) other than node idx (not closed, +12 bit 3): for a
+// player in state 2 (+92) one on the other side (+168, by the side flags bits 0 / 1), else one with bit 6; last
+// when there is none
+BYTE** __cdecl Nodes_RandomOther(BYTE** first, BYTE** last, int idx, BYTE* player, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    BYTE* me = g_rn68cf00[idx];
+    for (BYTE** it = first; it != last; it++) {
+        BYTE* o = *it;
+        DWORD fl = F(DWORD, o, 12);
+        if ((fl & 8) || me == o)
+            continue;
+        DWORD mf = F(DWORD, me, 12) & 1;
+        bool add;
+        if (F(int, player, 92) == 2) {
+            if (mf && (fl & 2) && F(int, me, 168) != F(int, o, 168))
+                add = true;
+            else
+                add = !mf && (fl & 1) && F(int, me, 168) != F(int, o, 168);
+        } else
+            add = (fl & 64) != 0;
+        if (!add)
+            continue;
+        if (v[1] != v[2]) {
+            CallC(FUN_4611c0, v[1], &it);
+            v[1] += 4;
+        } else
+            CallThis(FUN_464230, v, v[1], &it);
+    }
+    BYTE** b = (BYTE**)v[0];
+    unsigned n = (BYTE**)v[1] - b;
+    if (!n) {
+        if (v[2] != v[0])
+            CallC(FUN_44b4a0, b, ((v[2] - v[0]) >> 2) << 2);
+        return last;
+    }
+    unsigned i = (rng[55] + 1) % 55;
+    unsigned j = (rng[56] + 1) % 55;
+    rng[55] = i;
+    rng[56] = j;
+    rng[i] -= rng[j];
+    BYTE** r = (BYTE**)b[rng[rng[55]] % n];
+    if (v[2] != v[0])
+        CallC(FUN_44b4a0, b, ((v[2] - v[0]) >> 2) << 2);
+    return r;
 }
 
 } // extern "C"

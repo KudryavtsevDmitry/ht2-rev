@@ -213,7 +213,7 @@ extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@1
 extern "C" void FUN_47b790(); KING_ALIAS("_FUN_47b790", "@Vec12_Insert47b790@16")    // vector<12 bytes>::insert_aux(pos, x)
 extern "C" void FUN_478fb0(); KING_ALIAS("_FUN_478fb0", "_List1000_MakeNode@4")    // list: a new node holding x
 extern "C" void FUN_477600(); KING_ALIAS("_FUN_477600", "_PlayerRef_Resolve")
-ASM_PROC(FUN_4731e0)
+extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
 extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16")
 extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
 ASM_PROC(FUN_479520)
@@ -1821,6 +1821,86 @@ void __cdecl Orders_Load(BYTE** cur, BYTE** v)
         } else
             CallThis(FUN_450960, v, v[1], o);
         CallThis(FUN_450de0, o + 120);
+    }
+}
+
+} // extern "C"
+
+// === stable_sort of doubles (FUN_47be40)
+
+extern "C" void FUN_47c790(); KING_ALIAS("_FUN_47c790", "_Doubles_StableSort")    // inplace stable sort
+
+extern "C" {
+
+// [FUN_47be40] stable_sort of [first, last) (doubles, descending) through a temporary buffer, in place when none
+// can be had
+void __cdecl Doubles_StableSortBuf(double* first, double* last, int, int, int pred)
+{
+    int tb[3];
+    TempBuf8_Construct(tb, 0, (BYTE*)first, (BYTE*)last);
+    if (!tb[2])
+        CallC(FUN_47c790, first, last, pred);
+    else
+        Doubles_StableSortAdaptive(first, last, (double*)tb[2], tb[1], pred);
+    free((void*)tb[2]);
+}
+
+} // extern "C"
+
+// === loading a vector of named records (FUN_479aa0)
+
+extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
+extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
+extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")
+extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")
+ASM_VAR(BYTE*, g_nr68b990, $L_68b990)
+
+extern "C" {
+
+// [FUN_479aa0] replaces the records of vector v (16 bytes: an id, none here, and a name) by the count and names
+// read from *cur, reserving room for all first
+void __cdecl NamedRecs_Load(BYTE** cur, BYTE** v)
+{
+    unsigned n = F(unsigned, *cur, 0);
+    *cur += 4;
+    BYTE* end = v[1];
+    BYTE* e = CallC<BYTE*>(FUN_469430, end, end, v[0], 0, 0);
+    for (BYTE* p = e; p != v[1]; p += 16)
+        CallThis(FUN_461ae0, p, 0);
+    v[1] = end - (end - v[0]) / 16 * 16;
+    if ((unsigned)((v[2] - v[0]) / 16) < n) {
+        int size = (int)(v[1] - v[0]) / 16;
+        BYTE* p = CallStd<BYTE*>(FUN_461dc0, n, v[0], v[1]);
+        for (BYTE* q = v[0]; q != v[1]; q += 16)
+            CallThis(FUN_602ca0, q);
+        if (int bytes = (int)(v[2] - v[0]) / 16 * 16)
+            CallC(FUN_44b4a0, v[0], bytes);
+        v[0] = p;
+        v[1] = p + size * 16;
+        v[2] = p + n * 16;
+    }
+    for (unsigned i = 0; i < n; i++) {
+        BYTE r[16];
+        F(BYTE*, r, 0) = g_nr68b990;
+        BYTE** name = (BYTE**)(r + 4);
+        name[0] = name[1] = name[2] = 0;
+        CallThis(FUN_4471f0, name, (BYTE*)0, (BYTE*)0);
+        int len = F(int, *cur, 0);
+        *cur += 4;
+        Bytes_Reserve(name, 0, len);
+        for (; len; len--) {
+            BYTE c = **cur;
+            (*cur)++;
+            CallThis(FUN_47ab20, name, &c);
+        }
+        if (v[1] != v[2]) {
+            if (v[1])
+                Rec47a140_Copy(v[1], 0, r);
+            v[1] += 16;
+        } else
+            CallThis(FUN_479520, v, v[1], r);
+        if (int bytes = (int)(name[2] - name[0]))
+            CallC(FUN_44b4a0, name[0], bytes);
     }
 }
 

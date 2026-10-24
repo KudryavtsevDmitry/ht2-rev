@@ -557,7 +557,7 @@ extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // S
 ASM_PROC(FUN_5fdaf0)    // Sound::Play
 extern "C" void FUN_5bd710(); KING_ALIAS("_FUN_5bd710", "_Ctl_DrawFrame")    // Gfx_DrawBox
 extern "C" void FUN_530050(); KING_ALIAS("_FUN_530050", "@Words295_ClearEmpty@8")    // Controls::Update
-ASM_PROC(FUN_578fe0)    // Joy_Read
+extern "C" void FUN_578fe0(); KING_ALIAS("_FUN_578fe0", "_Joy_ReadState")    // Joy_Read
 extern "C" void FUN_5c3990(); KING_ALIAS("_FUN_5c3990", "@Med5c3990_Destroy@4")    // destructor of CKingApp's base class
 extern "C" void __cdecl Loading_Update();       // carat.cpp
 ASM_PROC(FUN_56ce40)

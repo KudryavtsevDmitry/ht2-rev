@@ -1463,3 +1463,88 @@ int __stdcall Joy_EnumObject(const BYTE* inst, FILE* log)
 }
 
 } // extern "C"
+
+// === reading the joystick state (FUN_578fe0)
+
+ASM_VAR(AsmLabel, s_jd67cf74, $L_67cf74)    // "joydata.log"
+ASM_VAR(AsmLabel, s_jd66c4f4, $L_66c4f4)    // "at"
+ASM_VAR(AsmLabel, s_jd67cf68, $L_67cf68)
+ASM_VAR(AsmLabel, s_jd67a048, $L_67a048)    // "1"
+ASM_VAR(AsmLabel, s_jd677a08, $L_677a08)    // "0"
+ASM_VAR(AsmLabel, s_jd67b8b0, $L_67b8b0)    // " "
+ASM_VAR(AsmLabel, s_jd67cf60, $L_67cf60)
+ASM_VAR(AsmLabel, s_jd67cf48, $L_67cf48)
+ASM_VAR(AsmLabel, s_jd67cf3c, $L_67cf3c)
+ASM_VAR(AsmLabel, s_jd6779f8, $L_6779f8)    // "  %d"
+ASM_VAR(AsmLabel, s_jd67cf30, $L_67cf30)
+ASM_VAR(AsmLabel, s_jd67cf2c, $L_67cf2c)    // "%d "
+ASM_VAR(AsmLabel, s_jd67cf24, $L_67cf24)    // "0xFFFF "
+extern "C" FILE* __cdecl fopen(const char* name, const char* mode);
+extern "C" int __cdecl fclose(FILE* f);
+
+enum { JD_NOTINIT = (int)0x80070015, JD_LOST = (int)0x8007001E, JD_NOTACQ = (int)0x8007000C };
+
+extern "C" {
+
+// [FUN_578fe0] polls the joystick (reacquiring a lost one) and reads its 80-byte state into st; with dump the
+// buttons, axes, sliders and hats of the current device record (6f3528, 568 bytes) are appended to joydata.log;
+// 0 or the DirectInput error
+int __cdecl Joy_ReadState(DWORD* st, int dump)
+{
+    void* d = g_joyDevice;
+    if (!d)
+        return JD_NOTINIT;
+    for (;;) {
+        int hr = Ff_Com(d, 100);
+        if (hr < 0) {
+            if (hr == JD_NOTINIT)
+                return hr;
+            if (hr == JD_LOST)
+                hr = Ff_Com(g_joyDevice, 28);
+            if (hr == JD_NOTACQ)
+                hr = Ff_Com(g_joyDevice, 28);
+            if (hr < 0)
+                return hr;
+        }
+        int r = Ff_Com(g_joyDevice, 36, 80, st);
+        if (r == JD_LOST) {
+            r = Ff_Com(g_joyDevice, 28);
+            if (r < 0)
+                return r;
+        } else if (dump) {
+            FILE* f = fopen(s_jd67cf74, s_jd66c4f4);
+            fprintf(f, s_jd67cf68);
+            BYTE* caps = (BYTE*)g_joyRecords + g_6f4b94 * 568;
+            for (int i = 0; i < F(WORD, caps, 42); i++) {
+                fprintf(f, (((BYTE*)st)[48 + i] & 0x80) ? s_jd67a048 : s_jd677a08);
+                if (i % 8 == 7)
+                    fprintf(f, s_jd67b8b0);
+                caps = (BYTE*)g_joyRecords + g_6f4b94 * 568;
+            }
+            fprintf(f, s_jd67cf60);
+            fprintf(f, s_jd67cf48, st[0], st[1], st[2], st[3], st[4], st[5]);
+            fprintf(f, s_jd67cf3c);
+            caps = (BYTE*)g_joyRecords + g_6f4b94 * 568;
+            for (int i = 0; i < F(WORD, caps, 46); i++) {
+                fprintf(f, s_jd6779f8, st[6 + i]);
+                caps = (BYTE*)g_joyRecords + g_6f4b94 * 568;
+            }
+            if (F(WORD, caps, 44)) {
+                fprintf(f, s_jd67cf30);
+                for (int i = 0; i < F(WORD, (BYTE*)g_joyRecords + g_6f4b94 * 568, 44); i++)
+                    if (F(WORD, st, 32) == 0xFFFF)
+                        fprintf(f, s_jd67cf24);
+                    else
+                        fprintf(f, s_jd67cf2c, st[8 + i]);
+            }
+            fclose(f);
+        }
+        if (r == JD_LOST) {
+            d = g_joyDevice;
+            continue;
+        }
+        return r >= 0 ? 0 : r;
+    }
+}
+
+} // extern "C"

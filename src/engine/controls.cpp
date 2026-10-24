@@ -1387,3 +1387,132 @@ int __fastcall ScrollBar_Draw(BYTE* s, void*, BYTE* surf, int x, int y, int acti
 }
 
 } // extern "C"
+
+// === the nearest control polygon (FUN_5bd2d0)
+
+static double Cn_Abs(double x) { return x < 0 ? -x : x; }
+
+// takes polygon o's nearest edge to point p when nearer than *dist
+static bool Cn_Try(BYTE* o, BYTE* p, double* dist, int* idx, DWORD* pos, BYTE** best)
+{
+    double d;
+    DWORD at[3];
+    int i = Poly_Nearest(o, 0, p, &d, at);
+    if (!(Cn_Abs(*dist) > Cn_Abs(d)))
+        return false;
+    *dist = d;
+    *idx = i;
+    *best = o;
+    if (pos)
+        memcpy(pos, at, 12);
+    return true;
+}
+
+extern "C" {
+
+// [FUN_5bd2d0] the polygon of the chain from *s nearest to point p (+36 its position), first among those in
+// mask (fn(*s) when given), then those without a mask, else *s itself; a negative edge index moves on to a
+// neighbour (-1: the first child +64 in the mask, -1 - count: the last link +104) while it is nearer
+BYTE* __fastcall Ctl_FindNearest(BYTE** s, void*, BYTE* p, double* dist, int* idx, DWORD* pos, DWORD mask,
+                                 DWORD (__cdecl* fn)(BYTE*))
+{
+    *idx = 0;
+    *dist = 100000.0;
+    BYTE* best = 0;
+    if (pos)
+        memcpy(pos, p + 36, 12);
+    if (fn && *s)
+        mask = fn(*s);
+    for (BYTE* o = *s; o; o = Ctl_Owner(o, 0))
+        if (mask & F(DWORD, o, 40))
+            Cn_Try(o, p, dist, idx, pos, &best);
+    if (!best)
+        for (BYTE* o = *s; o; o = Ctl_Owner(o, 0))
+            if (!F(DWORD, o, 40))
+                Cn_Try(o, p, dist, idx, pos, &best);
+    if (!best) {
+        best = *s;
+        DWORD at[3];
+        *idx = Poly_Nearest(best, 0, p, dist, at);
+        if (pos)
+            memcpy(pos, at, 12);
+    }
+    while (*idx < 0) {
+        BYTE* e = 0;
+        if (*idx == -1) {
+            if (F(int, best, 56) <= 0)
+                return best;
+            for (int j = 0; j < F(int, best, 56); j++) {
+                e = F(BYTE*, best, 64 + j * 4);
+                if (!F(DWORD, e, 40) || (mask & F(DWORD, e, 40)))
+                    break;
+            }
+        } else if (*idx == -1 - F(int, best, 4)) {
+            if (F(int, best, 60) <= 0)
+                return best;
+            e = F(BYTE*, best, 104 + (F(int, best, 60) - 1) * 4);
+        } else
+            return best;
+        if (!e)
+            return best;
+        double d;
+        int i = Poly_Nearest(e, 0, p, &d, 0);
+        if (!(Cn_Abs(*dist) > Cn_Abs(d)))
+            return best;
+        *dist = d;
+        best = e;
+        *idx = i;
+    }
+    return best;
+}
+
+} // extern "C"
+
+// === drawing a text field ($L_5c0350)
+
+extern "C" void FUN_5ea020(); KING_ALIAS("_FUN_5ea020", "@Font_CharWidth@12")
+extern "C" void FUN_5ea050(); KING_ALIAS("_FUN_5ea050", "@Font_TextWidthN@16")
+extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")
+extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
+ASM_VAR(float, g_tf6518ac, $L_6518ac)
+
+extern "C" {
+
+// [$L_5c0350] text field s drawn on dst at (x, y): its face, then its text (+288, the cursor at +296) scrolled so
+// the cursor fits between the borders (+44..+60), in the colour of its state (+284), with a blinking cursor
+// (three lines in +108) when focused
+int __fastcall TextField_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int focus)
+{
+    CallThis(FUN_5bd940, s, dst, x, y, focus);
+    BYTE* font = F(BYTE*, s, 16);
+    if (!font)
+        return 0;
+    int b = F(int, s, 60);
+    int right = F(int, s, 52) - b + x - 4;
+    int left = F(int, s, 44) + b + x + 4;
+    int ty = y + (F(int, s, 48) + (F(int, s, 56) - b * 2 - F(int, s, 48)) / 2 + F(int, font, 20) / 2 + b);
+    const char* text = F(const char*, s, 288);
+    int len = (int)strlen(text);
+    if (len < F(int, s, 296))
+        F(int, s, 296) = len;
+    int wc = CallThis<int>(FUN_5ea050, font, text, F(int, s, 296));
+    char c = text[F(int, s, 296)];
+    int cw = c ? CallThis<int>(FUN_5ea020, F(BYTE*, s, 16), c) : F(int, F(BYTE*, s, 16), 24);
+    int start = 0;
+    if (cw + wc + left > right) {
+        for (int over = cw - right + wc + left; over > 0; start++)
+            over -= CallThis<int>(FUN_5ea020, F(BYTE*, s, 16), F(const char*, s, 288)[start]);
+        wc = CallThis<int>(FUN_5ea050, F(BYTE*, s, 16), F(const char*, s, 288) + start, F(int, s, 296) - start);
+    }
+    int color = F(int, s, ((F(int, s, 284) & 3) + 2) * 36);
+    CallC(FUN_5ea1b0, dst, left, ty, right - left, F(BYTE*, s, 16), F(const char*, s, 288) + start, color, 0);
+    if ((int)(CallC<double>(FUN_6037e0) * g_tf6518ac) % 2 && (F(BYTE, s, 284) & 1) && focus) {
+        int x0 = left + wc, x1 = left + wc + cw;
+        CallC(FUN_5b7ce0, dst, ty, x0, x1, F(int, s, 108), 0);
+        CallC(FUN_5b7ce0, dst, ty - 1, x0, x1, F(int, s, 108), 0);
+        CallC(FUN_5b7ce0, dst, ty - 2, x0, x1, F(int, s, 108), 0);
+    }
+    return 0;
+}
+
+} // extern "C"

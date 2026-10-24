@@ -1072,3 +1072,72 @@ void __fastcall VehicleSounds_Find(BYTE* s)
 }
 
 } // extern "C"
+
+// === drawing the world view ($L_4e0950)
+
+extern "C" void FUN_4e298b(); KING_ALIAS("_FUN_4e298b", "_Vec3_LengthSq4e298b")
+extern "C" void FUN_5dffc0(); KING_ALIAS("_FUN_5dffc0", "@View_DrawObject@4")
+ASM_PROC(FUN_53d9d0)    // the dashboard text overlay
+ASM_PROC(FUN_586830)    // a moving object's per-frame step
+ASM_VAR(float, g_wv6969f4, $L_6969f4)
+ASM_VAR(float, g_wv6969f8, $L_6969f8)
+ASM_VAR(float, g_wv6969fc, $L_6969fc)
+ASM_VAR(float, g_wv64d7b4, $L_64d7b4)
+ASM_VAR(float, g_wv64d7b0, $L_64d7b0)
+ASM_VAR(BYTE*, g_wv69622c, $L_69622c)
+ASM_VAR(BYTE*, g_wv6d2078, $L_6d2078)
+ASM_VAR(AsmLabel, s_wv67334c, $L_67334c)
+
+// the squared distance from point (x, y, z) to the position of o's matrix
+static double Wv_DistSq(BYTE* o, float x, float y, float z)
+{
+    BYTE m[48];
+    const float* p = (const float*)(CallThis<BYTE*>(FUN_57de90, o, m) + 36);
+    float d[3] = {x - p[0], y - p[1], z - p[2]};
+    return CallC<double>(FUN_4e298b, d);
+}
+
+extern "C" {
+
+// [$L_4e0950] draws world view s (vtable +216 after the object), steps the moving objects (+372) and deletes a
+// kind-3 one (+3568) that is far from the camera (6969f4) or from its own spot (+9588); then the dashboard text
+// and the scene's objects named 67334c are removed
+void __fastcall WorldView_Draw(BYTE* s)
+{
+    CallThis(FUN_5dffc0, s);
+    CallVirt(s, 216);
+    BYTE* p = g_sceneCommandList;
+    if (p)
+        for (p -= 4; p;) {
+            BYTE* o = p - 376;
+            if (F(int, p, -4))
+                CallThis(FUN_586830, o);
+            if (F(int, o, 392) == 2 && F(int, o, 3568) == 3) {
+                if (Wv_DistSq(o, g_wv6969f4, g_wv6969f8, g_wv6969fc) > g_wv64d7b4 ||
+                    Wv_DistSq(o, F(float, o, 9588), F(float, o, 9592), F(float, o, 9596)) > g_wv64d7b0) {
+                    CallVirt(o, 28, 1);
+                    return;
+                }
+            }
+            p = F(BYTE*, p, 8);
+            if (!p)
+                break;
+            p -= 4;
+        }
+    CallThis(FUN_53d9d0, g_wv6d2078);
+    for (BYTE* e = CallVirt<BYTE*>(g_wv69622c, 64, 0); e;) {
+        BYTE* next = F(BYTE*, e, 8);
+        const char* name = F(const char*, e, 12);
+        if (name && !strcmp(name, s_wv67334c)) {
+            CallVirt(e, 36);
+            CallThis(FUN_5e48f0, g_wv69622c);
+            if (BYTE* x = F(BYTE*, e, 68))
+                CallVirt(x, 0, 1);
+            if (e)
+                CallVirt(e, 0, 1);
+        }
+        e = next;
+    }
+}
+
+} // extern "C"

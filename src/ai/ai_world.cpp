@@ -5436,7 +5436,7 @@ int __cdecl Ai_SetPlayerImage(BYTE* player, int image)
 
 extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
 extern "C" void FUN_4561a0(); KING_ALIAS("_FUN_4561a0", "@Vec4b_InsertN@16")
-ASM_PROC(FUN_45cf80)    // random shuffle of pointers
+extern "C" void FUN_45cf80(); KING_ALIAS("_FUN_45cf80", "_Near_StableSortBuf")    // random shuffle of pointers
 
 extern "C" {
 
@@ -7371,12 +7371,12 @@ extern "C" BYTE** __fastcall PlayerList_Construct(BYTE** self, void*, int)
 
 extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
 extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
-ASM_PROC(FUN_45e520)    // find in the players (out, first, last, a, b)
+extern "C" void FUN_45e520(); KING_ALIAS("_FUN_45e520", "_Player_RandomTradePartner2")    // find in the players (out, first, last, a, b)
 ASM_PROC(FUN_45e710)
-ASM_PROC(FUN_45e8f0)    // the same with a pair and a third value
-ASM_PROC(FUN_45eba0)
+extern "C" void FUN_45e8f0(); KING_ALIAS("_FUN_45e8f0", "_Player_RandomPartner")    // the same with a pair and a third value
+extern "C" void FUN_45eba0(); KING_ALIAS("_FUN_45eba0", "_Player_RandomTradePartner")
 ASM_PROC(FUN_45ed90)
-ASM_PROC(FUN_45b8b0)    // find in the road nodes (first, last, a, b, c)
+extern "C" void FUN_45b8b0(); KING_ALIAS("_FUN_45b8b0", "_Nodes_RandomOther")    // find in the road nodes (first, last, a, b, c)
 ASM_PROC(FUN_45cdc0)
 
 // the player list iterator found by a search over the whole list; the end when nothing matches
@@ -7633,7 +7633,7 @@ extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** las
 // ---------------------------------------------------------------------------
 // placing the presents
 
-ASM_PROC(FUN_45dbb0)    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
+extern "C" void FUN_45dbb0(); KING_ALIAS("_FUN_45dbb0", "_Objects_RandomFar")    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
 ASM_PROC(FUN_471780)    // an order's route for a position (order, PositionId32)
 extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall pos, order)
 extern "C" void FUN_41b320(); KING_ALIAS("_FUN_41b320", "_Goods_SetDistance")    // a cargo present's place (cargo, PositionId32)
@@ -8237,7 +8237,7 @@ extern "C" int __cdecl Ai_LoadOrder(BYTE* player, int townId, unsigned orderid, 
 // ---------------------------------------------------------------------------
 // loading the script lists ms.sch, vd.sch and names.sch
 
-ASM_PROC(FUN_4b4c20)    // reads a value from a port (out, reader, port by value)
+extern "C" void FUN_4b4c20(); KING_ALIAS("_FUN_4b4c20", "_Port_ReadDatum")    // reads a value from a port (out, reader, port by value)
 extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<StrRef>::insert_aux (thiscall pos, x)
 extern "C" void FUN_4b0ea0(); KING_ALIAS("_FUN_4b0ea0", "@Value_ToInt@8")    // a number's int value (thiscall)
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
@@ -13752,7 +13752,7 @@ extern "C" PositionId* __cdecl Ai_GetRightDirection(PositionId* out, BYTE* playe
 // ---------------------------------------------------------------------------
 // calculatePlayerSpeedsAndFares()
 
-ASM_PROC(FUN_476f70)    // a player out of money (owner, player node, 0)
+extern "C" void FUN_476f70(); KING_ALIAS("_FUN_476f70", "_Player_GiveBackCargo")    // a player out of money (owner, player node, 0)
 extern "C" double __cdecl Driver_Load(BYTE* p);                   // ai_drivers.cpp
 extern "C" void __cdecl Messages_Add(const char* text);           // helicopter.cpp
 ASM_VAR(AsmLabel, s_calculatePlayerSpeedsAndFares, $L_66d95c)
@@ -13920,7 +13920,7 @@ extern "C" PositionId* __cdecl Ai_AdvancePositionRoad(PositionId* out, PositionI
 // ---------------------------------------------------------------------------
 // the AI world cleared
 
-ASM_PROC(FUN_470ae0)    // a node record's destructor (thiscall)
+extern "C" void FUN_470ae0(); KING_ALIAS("_FUN_470ae0", "@Rec470ae0_Destroy@4")    // a node record's destructor (thiscall)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // ()
 extern "C" DWORD* __cdecl FillDwords(DWORD* d, unsigned n, const DWORD* v);        // ai_containers.cpp
 extern "C" BYTE* __cdecl Rec104_Copy(const BYTE* f, const BYTE* l, BYTE* d);         // ai_containers.cpp
@@ -15187,9 +15187,9 @@ extern "C" void __cdecl Ai_CalculateWeightsPerSubstate()
 // ---------------------------------------------------------------------------
 // sending players to towns, nodes and markets
 
-ASM_PROC(FUN_45e0a0)    // a random free player (out, first, last, -, rng)
+extern "C" void FUN_45e0a0(); KING_ALIAS("_FUN_45e0a0", "_Player_RandomWaiting")    // a random free player (out, first, last, -, rng)
 extern "C" void FUN_43e610(); KING_ALIAS("_FUN_43e610", "_Ai_SetPlayerPositionTo")    // (player, RoadNode position +48, 0)
-ASM_PROC(FUN_46dc50)    // multiplayer: announce a new player (player)
+extern "C" void FUN_46dc50(); KING_ALIAS("_FUN_46dc50", "_Net_SendPlayer")    // multiplayer: announce a new player (player)
 ASM_VAR(BYTE, g_68d31c, $L_68d31c)
 extern "C" void __cdecl Ai_GoHireIt(BYTE* p);
 
@@ -15288,7 +15288,7 @@ extern "C" void __cdecl Ai_GoToNode(BYTE* p, int node)
 // ---------------------------------------------------------------------------
 // a new player's image
 
-ASM_PROC(FUN_45c8d0)    // random_shuffle (first, last, 0, 0, rng-like player)
+extern "C" void FUN_45c8d0(); KING_ALIAS("_FUN_45c8d0", "_Sort28_StableSort")    // random_shuffle (first, last, 0, 0, rng-like player)
 extern "C" void FUN_4654c0(); KING_ALIAS("_FUN_4654c0", "_Sort32_StableSortAdaptive")    // stable sort with a buffer (first, last, buf, len, cmp)
 extern "C" void FUN_462410(); KING_ALIAS("_FUN_462410", "@Vec_FreeStorage8@8")    // temporary buffer destructor (thiscall)
 extern "C" int* __fastcall TempBuf_Construct(int* self, void*, BYTE* first, BYTE* last);
@@ -16847,7 +16847,7 @@ ASM_PROC(FUN_466e50)    // uninitialized_copy of 24-byte records (first, last, d
 extern "C" void FUN_448300(); KING_ALIAS("_FUN_448300", "@Vec24_Destroy@8")    // vector<24 bytes> destructor (thiscall)
 extern "C" void FUN_425790(); KING_ALIAS("_FUN_425790", "_Player_CheckGoods")
 extern "C" void FUN_41ef90(); KING_ALIAS("_FUN_41ef90", "_Player_CheckTownAA")
-ASM_PROC(FUN_56f6d0)
+extern "C" void FUN_56f6d0(); KING_ALIAS("_FUN_56f6d0", "_Copter_ApplyCargo")
 extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")    // a player's current order (player)
 extern "C" void FUN_42c0b0(); KING_ALIAS("_FUN_42c0b0", "_Ai_MarkAmbushes")
 extern "C" void FUN_442850(); KING_ALIAS("_FUN_442850", "_Ai_AccountForGuilt")    // accountForGuilt (player)
@@ -18716,7 +18716,7 @@ ASM_VAR(double, g_64b6d8, $L_64b6d8)
 ASM_VAR(double, g_64b738, $L_64b738)
 extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")    // construct 4 bytes in place (dest, src)
 extern "C" void FUN_4608f0(); KING_ALIAS("_FUN_4608f0", "_Construct8")    // construct 8 bytes in place (dest, src)
-ASM_PROC(FUN_45d630)    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
+extern "C" void FUN_45d630(); KING_ALIAS("_FUN_45d630", "@Vec4b_Insert45d630@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
 extern "C" void FUN_45aed0(); KING_ALIAS("_FUN_45aed0", "@Vec4b_InsertA@16")    // vector<4 bytes>::insert_aux (thiscall: pos, &x)
 extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")    // vector<double>::insert_aux (thiscall: pos, &x)
 extern "C" void FUN_4473e0(); KING_ALIAS("_FUN_4473e0", "@Vec8_FreeStorage@8")    // vector<double> destructor (thiscall)
@@ -20555,7 +20555,7 @@ extern "C" void FUN_4340f0(); KING_ALIAS("_FUN_4340f0", "_Parkings_MarkNodes")
 extern "C" void FUN_434070(); KING_ALIAS("_FUN_434070", "_Towns_MarkSpecial")
 extern "C" void FUN_4095c0(); KING_ALIAS("_FUN_4095c0", "_Cars_CheckCount")
 extern "C" void FUN_4279a0(); KING_ALIAS("_FUN_4279a0", "_AI_SetStartKey")
-ASM_PROC(FUN_46d570)
+extern "C" void FUN_46d570(); KING_ALIAS("_FUN_46d570", "_Net_ListMachines")
 extern "C" void FUN_434720(); KING_ALIAS("_FUN_434720", "_Players_ClearFlags440")
 ASM_VAR(AsmLabel, s_task66e340, $L_66e340)
 ASM_VAR(AsmLabel, s_task66e330, $L_66e330)
@@ -21427,7 +21427,7 @@ extern "C" void __cdecl AiworInit_428120()
 // More virtual methods and static initializers.
 
 ASM_PROC(FUN_469a20)
-ASM_PROC(FUN_48e190)
+extern "C" void FUN_48e190(); KING_ALIAS("_FUN_48e190", "@Curve_Reverse@4")
 ASM_VAR(AsmLabel, g_aiworRng68ccc8, $L_68ccc8)
 ASM_VAR(DWORD, g_aiworRng68cda0, $L_68cda0)
 ASM_VAR(DWORD, g_aiworRng68cda4, $L_68cda4)
@@ -21575,14 +21575,14 @@ ASM_VAR(AsmLabel, g_q49_68cff0, $L_68cff0)
 ASM_VAR(AsmLabel, g_q49_68d008, $L_68d008)
 ASM_VAR(AsmLabel, g_q49_68cf10, $L_68cf10)
 ASM_VAR(AsmLabel, g_q49_68ceb0, $L_68ceb0)
-ASM_VAR(AsmLabel, g_q49_4028f0, $L_4028f0)
+extern "C" void __fastcall RopeHash_Destroy(BYTE* s);
 // constructs the static at o once, by the guard bit
 static void AiStatic_ConstructOnce(BYTE& guard, BYTE bit, void* o)
 {
     if (guard & bit)
         return;
     guard |= bit;
-    CallThis((void (*)())(void*)g_q49_4028f0, o);
+    RopeHash_Destroy((BYTE*)o);
 }
 // [$L_4028d0] constructs the static 68cff0 once
 extern "C" void __cdecl AiStatic68cff0_Init(void)
@@ -21664,7 +21664,7 @@ extern "C" void __fastcall Vec104_FreeStorage(BYTE* s, void*)
 // Small methods: pool slots, list teardown, loader thread, frame shutdown, message dispatch.
 
 extern "C" void __cdecl free(void*);
-ASM_PROC(FUN_4731e0)
+extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
 extern "C" void __fastcall Points_Reverse(BYTE* s);
 // [$L_4485d0] frees a list (sentinel at +0): each node's +8 destroyed, then the sentinel
 extern "C" void __fastcall List4485d0_Destroy(BYTE* s, void*)
@@ -22290,7 +22290,7 @@ ASM_VAR(AsmLabel, s_cpr66cc00, $L_66cc00)
 ASM_VAR(AsmLabel, s_cpr66d8e4, $L_66d8e4)
 ASM_VAR(double, g_cprStartY68b9a8, $L_68b9a8)
 ASM_VAR(double, g_cprStartZ68b9b0, $L_68b9b0)
-ASM_PROC(FUN_46dc50)    // (player)
+extern "C" void FUN_46dc50(); KING_ALIAS("_FUN_46dc50", "_Net_SendPlayer")    // (player)
 extern "C" void FUN_488100(); KING_ALIAS("_FUN_488100", "@Filter1_Set@16")    // Filter1_Set (this, double)
 
 // the position at +40 of q as text in 77e6e0, then error 33 at line
@@ -22669,7 +22669,7 @@ extern "C" void FUN_429690(); KING_ALIAS("_FUN_429690", "_Players_MinKey")
 extern "C" void FUN_429760(); KING_ALIAS("_FUN_429760", "@PlayerId_Rank@8")
 extern "C" void FUN_448790(); KING_ALIAS("_FUN_448790", "@Vec_EndMinus16@8")
 extern "C" void FUN_476bc0(); KING_ALIAS("_FUN_476bc0", "_Player_Hire")
-ASM_PROC(FUN_476f70)
+extern "C" void FUN_476f70(); KING_ALIAS("_FUN_476f70", "_Player_GiveBackCargo")
 extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
 extern "C" void FUN_40e270(); KING_ALIAS("_FUN_40e270", "_Message_Text")
 extern "C" void FUN_45ef70(); KING_ALIAS("_FUN_45ef70", "_Pick_RandomNodeB")
@@ -23009,6 +23009,271 @@ void __cdecl Sort28_StableSortAdaptive(BYTE** first, BYTE** last, BYTE** buf, in
 void __cdecl Sort32_StableSortAdaptive(BYTE** first, BYTE** last, BYTE** buf, int n, int pred)
 {
     SsP_SortAdaptive(k_ssBy32, first, last, buf, n, pred);
+}
+
+} // extern "C"
+
+extern "C" {
+
+// [FUN_45d8f0]
+void __fastcall Vec4b_Insert45d8f0(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+// [FUN_45d630]
+void __fastcall Vec4b_Insert45d630(DWORD* s, void*, DWORD* pos, const DWORD* x)
+{
+    Vec4b_InsertAt(s, pos, x);
+}
+
+} // extern "C"
+
+// === a random partner near the same goods (FUN_45e8f0)
+
+extern "C" void FUN_425bb0(); KING_ALIAS("_FUN_425bb0", "_Player_CanTrade2")
+extern "C" void FUN_425c60(); KING_ALIAS("_FUN_425c60", "_AI_PairOk")
+extern "C" void FUN_45bea0(); KING_ALIAS("_FUN_45bea0", "_DVec3_Sub")
+extern "C" void FUN_45eb50(); KING_ALIAS("_FUN_45eb50", "@Position_Equals@12")
+extern "C" void FUN_4777b0(); KING_ALIAS("_FUN_4777b0", "_Player_FirstGoods")
+extern "C" void FUN_45dde0(); KING_ALIAS("_FUN_45dde0", "@Vec4b_InsertE@16")
+ASM_VAR(double, g_rp66c6a8, $L_66c6a8)
+
+extern "C" {
+
+// [FUN_45e8f0] *out = a random node of the player list [first, last) whose player (+8) can trade with me, is in
+// state 4 (+92) and carries goods at t's place (+24, +12) within 66c6a8 of me (+624; its position +616 or
+// +304 by +88 bit 0); last when there is none
+BYTE** __cdecl Player_RandomPartner(BYTE** out, BYTE* first, BYTE* last, BYTE* me, BYTE* t, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* n = first; n != last; n = F(BYTE*, n, 0)) {
+        BYTE* p = n + 8;
+        if (F(BYTE*, p, 96) == me || !CallC<char>(FUN_425c60, me + 8, p) || !CallC<char>(FUN_425bb0, p) ||
+            F(int, p, 92) != 4)
+            continue;
+        BYTE* g = CallC<BYTE*>(FUN_4777b0, p);
+        if (!g || !CallThis<char>(FUN_45eb50, g + 24, t + 24) || F(int, g, 12) != F(int, t, 12))
+            continue;
+        double pos[3], d[3];
+        memcpy(pos, p + ((F(BYTE, p, 88) & 1) ? 616 : 304), 24);
+        if (!(CallC<double>(FUN_4577f0, CallC<double*>(FUN_45bea0, d, me + 624, pos)) < g_rp66c6a8))
+            continue;
+        if (v[1] != v[2]) {
+            CallC(FUN_4611c0, v[1], &n);
+            v[1] += 4;
+        } else
+            CallThis(FUN_45dde0, v, v[1], &n);
+    }
+    *out = PickRandom(v, last, rng);
+    return out;
+}
+
+} // extern "C"
+
+// === stable_sort by nearness (FUN_45cf80)
+
+ASM_PROC(FUN_462340)    // a temporary buffer of pointers for [first, last)
+extern "C" void __cdecl Near_StableSort(BYTE** f, BYTE** l, int ctx);   // ai_containers.cpp
+extern "C" void __cdecl free(void* p);
+
+extern "C" {
+
+// [FUN_45cf80] stable_sort of the pointers [first, last) by nearness (ctx) through a temporary buffer, in place
+// when none can be had
+void __cdecl Near_StableSortBuf(BYTE** first, BYTE** last, int, int, int ctx)
+{
+    int tb[3];
+    CallThis(FUN_462340, tb, first, last);
+    if (!tb[2])
+        Near_StableSort(first, last, ctx);
+    else
+        Near_StableSortAdaptive(first, last, (BYTE**)tb[2], tb[1], ctx);
+    free((void*)tb[2]);
+}
+
+} // extern "C"
+
+// === stable_sort by the field at +28 (FUN_45c8d0)
+
+extern "C" void __cdecl Sort_Stable28(BYTE** first, BYTE** last, int);   // ai_containers.cpp
+
+extern "C" {
+
+// [FUN_45c8d0] stable_sort of the pointers [first, last) by their field at +28 through a temporary buffer, in
+// place when none can be had
+void __cdecl Sort28_StableSort(BYTE** first, BYTE** last, int, int, int pred)
+{
+    int tb[3];
+    TempBuf_Construct(tb, 0, (BYTE*)first, (BYTE*)last);
+    if (!tb[2])
+        Sort_Stable28(first, last, pred);
+    else
+        Sort28_StableSortAdaptive(first, last, (BYTE**)tb[2], tb[1], pred);
+    free((void*)tb[2]);
+}
+
+} // extern "C"
+
+// === a random waiting player (FUN_45e0a0)
+
+extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")
+extern "C" void FUN_418fd0(); KING_ALIAS("_FUN_418fd0", "_Player_WaitsInTown2")
+
+extern "C" {
+
+// [FUN_45e0a0] *out = a random node of the player list [first, last) whose player (+8) has no vehicle (+76),
+// isn't flagged (+88 bit 0), is in state 2 (+84) with an order kind other than 256 / 257 (+92), isn't busy (+488)
+// and waits in a town; last when there is none
+BYTE** __cdecl Player_RandomWaiting(BYTE** out, BYTE* first, BYTE* last, int, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* n = first; n != last; n = F(BYTE*, n, 0)) {
+        BYTE* p = n + 8;
+        int veh = F(int, p, 76);
+        if (veh != -1 && CallC<int>(FUN_4d8a40, veh))
+            continue;
+        if ((F(BYTE, p, 88) & 1) || F(int, p, 84) != 2 || F(int, p, 92) == 256 || F(int, p, 92) == 257 ||
+            F(BYTE, p, 488) || !CallC<char>(FUN_418fd0, p))
+            continue;
+        if (v[1] != v[2]) {
+            CallC(FUN_4611c0, v[1], &n);
+            v[1] += 4;
+        } else
+            CallThis(FUN_45dde0, v, v[1], &n);
+    }
+    *out = PickRandom(v, last, rng);
+    return out;
+}
+
+} // extern "C"
+
+// === a random far named object (FUN_45dbb0)
+
+extern "C" void FUN_464230(); KING_ALIAS("_FUN_464230", "@Vec4b_InsertH@16")
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+struct Rf_DVec3 { double x, y, z; };
+
+extern "C" {
+
+// [FUN_45dbb0] a random one of the slots [first, last) whose object (not off, +12 bit 4) is named like name and at
+// least maxd from p (+48 its position); last when there is none
+BYTE** __cdecl Objects_RandomFar(BYTE** first, BYTE** last, const char* name, int, Rf_DVec3 p, double maxd,
+                                 DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE** it = first; it != last; it++) {
+        BYTE* o = *it;
+        if (F(BYTE, o, 12) & 16)
+            continue;
+        const char* s = F(BYTE*, o, 0) != F(BYTE*, o, 4) ? F(const char*, o, 0) : 0;
+        if (strncmp(name, s, strlen(name)))
+            continue;
+        double d[3];
+        if (CallC<double>(FUN_4577f0, CallC<double*>(FUN_45bea0, d, &p, o + 48)) < maxd)
+            continue;
+        if (v[1] != v[2]) {
+            if (v[1])
+                *(BYTE***)v[1] = it;
+            v[1] += 4;
+        } else
+            CallThis(FUN_464230, v, v[1], &it);
+    }
+    return (BYTE**)PickRandom(v, (BYTE*)last, rng);
+}
+
+} // extern "C"
+
+// === clearing a hash table of rope references ($L_4028f0)
+
+extern "C" void __cdecl Rope_UnrefIf(BYTE* n);
+
+extern "C" {
+
+// [$L_4028f0] destructor of hash table s (buckets +4 .. +12, count +16): every node (8 bytes: next, rope) released
+// to the pool after its rope, then the bucket array
+void __fastcall RopeHash_Destroy(BYTE* s)
+{
+    BYTE** b = F(BYTE**, s, 4);
+    for (unsigned i = 0; i < (unsigned)((F(BYTE**, s, 8) - F(BYTE**, s, 4))); i++) {
+        for (BYTE* n = F(BYTE**, s, 4)[i]; n;) {
+            BYTE* next = F(BYTE*, n, 0);
+            Rope_UnrefIf(F(BYTE*, n, 4));
+            CallC(FUN_44b4a0, n, 8);
+            n = next;
+        }
+        F(BYTE**, s, 4)[i] = 0;
+    }
+    F(int, s, 16) = 0;
+    b = F(BYTE**, s, 4);
+    if (int n = (int)(F(BYTE**, s, 12) - b))
+        CallC(FUN_44b4a0, b, n * 4);
+}
+
+} // extern "C"
+
+// === a random trade partner waiting (FUN_45eba0)
+
+extern "C" void FUN_425b40(); KING_ALIAS("_FUN_425b40", "_Player_CanTrade")
+extern "C" void FUN_425d40(); KING_ALIAS("_FUN_425d40", "_AI_PairOkWaiting")
+
+extern "C" {
+
+// [FUN_45eba0] *out = a random node of the player list [first, last) whose player (+8) other than me can trade
+// with me while waiting, isn't my partner (+168), has no vehicle (+76) and isn't flagged (+88 bit 0); last when
+// there is none
+BYTE** __cdecl Player_RandomTradePartner(BYTE** out, BYTE* first, BYTE* last, BYTE* me, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* n = first; n != last; n = F(BYTE*, n, 0)) {
+        BYTE* p = n + 8;
+        if (F(BYTE*, p, 96) == me || !CallC<char>(FUN_425d40, me + 8, p) || !CallC<char>(FUN_425b40, p) ||
+            F(BYTE*, p, 168) == me)
+            continue;
+        int veh = F(int, p, 76);
+        if (veh != -1 && CallC<int>(FUN_4d8a40, veh))
+            continue;
+        if (F(BYTE, p, 88) & 1)
+            continue;
+        if (v[1] != v[2]) {
+            CallC(FUN_4611c0, v[1], &n);
+            v[1] += 4;
+        } else
+            CallThis(FUN_45dde0, v, v[1], &n);
+    }
+    *out = PickRandom(v, last, rng);
+    return out;
+}
+
+} // extern "C"
+
+// === a random trade partner (FUN_45e520)
+
+extern "C" {
+
+// [FUN_45e520] like Player_RandomTradePartner with the plain pairing and trade checks (AI_PairOk,
+// Player_CanTrade2)
+BYTE** __cdecl Player_RandomTradePartner2(BYTE** out, BYTE* first, BYTE* last, BYTE* me, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* n = first; n != last; n = F(BYTE*, n, 0)) {
+        BYTE* p = n + 8;
+        if (F(BYTE*, p, 96) == me || !CallC<char>(FUN_425c60, me + 8, p) || !CallC<char>(FUN_425bb0, p) ||
+            F(BYTE*, p, 168) == me)
+            continue;
+        int veh = F(int, p, 76);
+        if (veh != -1 && CallC<int>(FUN_4d8a40, veh))
+            continue;
+        if (F(BYTE, p, 88) & 1)
+            continue;
+        if (v[1] != v[2]) {
+            CallC(FUN_4611c0, v[1], &n);
+            v[1] += 4;
+        } else
+            CallThis(FUN_45dde0, v, v[1], &n);
+    }
+    *out = PickRandom(v, last, rng);
+    return out;
 }
 
 } // extern "C"

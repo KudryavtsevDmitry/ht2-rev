@@ -37,7 +37,7 @@ ASM_PROC(FUN_52b0e0)
 extern "C" void FUN_5465c0(); KING_ALIAS("_FUN_5465c0", "_Vehicle_MakeDamageKeys")
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
-ASM_PROC(FUN_52dc50)
+extern "C" void FUN_52dc50(); KING_ALIAS("_FUN_52dc50", "@Car_SetModel@16")
 ASM_VAR(AsmLabel, g_vtbl64ec88, $L_64ec88)
 ASM_VAR(AsmLabel, g_vtbl64ec3c, $L_64ec3c)
 ASM_VAR(AsmLabel, g_vtbl64ec38, $L_64ec38)
@@ -1061,3 +1061,135 @@ extern "C" int __fastcall q238_Thunk52e210(BYTE* s); KING_ALIAS("@q238_Thunk52e2
 extern "C" int __fastcall Thunk52d6f0(BYTE* s) { return q238_Scenery_Destroy(s); }
 // [$L_52e730] forwards to Thunk52e210
 extern "C" int __fastcall Thunk52e730(BYTE* s) { return q238_Thunk52e210(s); }
+
+// === the default control preset (FUN_52fdb0)
+
+ASM_VAR(int, g_dp696890, $L_696890)
+ASM_VAR(AsmLabel, g_dp6d1948, $L_6d1948)    // the key states, 2 bytes each
+ASM_VAR(AsmLabel, s_dp678814, $L_678814)    // "CLAVIER..."
+ASM_VAR(AsmLabel, s_dp678800, $L_678800)
+ASM_VAR(AsmLabel, s_dp6787f0, $L_6787f0)
+
+extern "C" {
+
+// [FUN_52fdb0] constructor of control preset p: named by the input device (696890: 3, 1, else), no device
+// (+260 = -1), the action slots (+264, +452) cleared and the default keys bound, the axes (+640..+692) reset
+void __fastcall ControlPreset_Default(BYTE* p)
+{
+    static const unsigned short k_keys[][2] = {
+        {264, 0x4c},
+        {268, 0x4a},
+        {272, 0x4e},
+        {276, 0x50},
+        {280, 0x22},
+        {284, 0x82},
+        {288, 0xb4},
+        {292, 0xb0},
+        {296, 0x62},
+        {300, 0x64},
+        {304, 0x66},
+        {308, 0x68},
+        {312, 0x6a},
+        {316, 0x6c},
+        {320, 0x6e},
+        {324, 0x70},
+        {328, 0x72},
+        {332, 0x60},
+        {344, 0xac},
+        {348, 0x90},
+        {352, 0x84},
+        {356, 0x98},
+        {360, 0x48},
+        {364, 0x46},
+        {368, 0x5c},
+        {372, 0x44},
+        {376, 0x9a},
+        {380, 0xee},
+        {384, 0xf0},
+        {388, 0xe8},
+        {392, 0xea},
+        {396, 0xd6},
+        {400, 0xda},
+        {404, 0x12},
+        {408, 0xe2},
+        {412, 0xe4},
+        {416, 0xae},
+        {420, 0xe0},
+        {424, 0xa8},
+        {428, 0x40},
+        {432, 0x10},
+        {436, 0xa0},
+        {440, 0xe6}
+};
+    strcpy((char*)p, g_dp696890 == 3 ? s_dp678814 : g_dp696890 == 1 ? s_dp678800 : s_dp6787f0);
+    F(int, p, 260) = -1;
+    for (int i = 0; i < 47; i++) {
+        F(int, p, 264 + i * 4) = 0;
+        F(int, p, 452 + i * 4) = 0;
+    }
+    for (const auto& k : k_keys)
+        F(BYTE*, p, k[0]) = (BYTE*)g_dp6d1948 + k[1];
+    for (int i = 0; i < 3; i++) {
+        F(int, p, 640 + i * 4) = 0;
+        F(int, p, 652 + i * 4) = 0;
+    }
+    F(int, p, 688) = 0;
+    F(int, p, 676) = 0;
+    F(int, p, 680) = 0;
+    F(int, p, 692) = 0;
+    F(int, p, 684) = 4;
+    F(int, p, 664) = 1;
+    F(int, p, 668) = 1;
+    F(int, p, 672) = 1;
+    memset(p + 452, 0, 188);
+}
+
+} // extern "C"
+
+// === placing a car of a model (FUN_52dc50)
+
+extern "C" void FUN_4e497a(); KING_ALIAS("_FUN_4e497a", "_Frame_GetLocalChecked")
+extern "C" void FUN_57e030(); KING_ALIAS("_FUN_57e030", "@SceneObj_57e030@12")
+extern "C" void FUN_57e070(); KING_ALIAS("_FUN_57e070", "@Vehicle_MakeOut@8")
+extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
+extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
+
+extern "C" {
+
+// [FUN_52dc50] makes car c model i (6c6b68, 876 bytes) of kind 1 with b: its mass (+192), its centre (+180)
+// moved into the car's frame (+692) at +3436, its size (+168) at +404 and +3288, the model values +196, +200,
+// the scene root, the body matrix (+740 by the frame of +324) and its inverse (+500, +596), zero speeds
+void __fastcall Car_SetModel(BYTE* c, void*, int i, int b)
+{
+    F(int, c, 3568) = i;
+    F(int, c, 392) = 1;
+    F(int, c, 3572) = b;
+    BYTE* r = (BYTE*)g_carModelNames + i * 876;
+    F(DWORD, c, 396) = F(DWORD, r, 192);
+    float rx = F(float, r, 180), ry = F(float, r, 184), rz = F(float, r, 188);
+    float* p = (float*)(c + 3436);
+    p[0] = (float)((double)F(float, c, 716) * rz + (double)F(float, c, 704) * ry + (double)rx * F(float, c, 692) +
+                   F(float, c, 728));
+    p[1] = (float)((double)F(float, c, 720) * rz + (double)F(float, c, 696) * rx + (double)F(float, c, 708) * ry +
+                   F(float, c, 732));
+    p[2] = (float)((double)F(float, c, 724) * rz + (double)F(float, c, 700) * rx + (double)F(float, c, 712) * ry +
+                   F(float, c, 736));
+    F(DWORD, c, 400) = F(DWORD, r, 196);
+    memcpy(c + 404, r + 168, 12);
+    memcpy(c + 3288, r + 168, 12);
+    F(DWORD, c, 1424) = F(DWORD, r, 200);
+    F(DWORD, c, 1428) = F(DWORD, r, 200);
+    F(int, c, 800) = CallThis<int>(FUN_5ef640, c + 256);
+    BYTE m[48], t[48];
+    memcpy(m, g_7025f0, 48);
+    CallC(FUN_4e497a, F(BYTE*, c, 324), m);
+    memcpy(c + 500, CallC<BYTE*>(FUN_5aba40, t, c + 740, m), 48);
+    memcpy(c + 596, CallC<BYTE*>(FUN_5ac2e0, t, c + 500), 48);
+    for (int k = 0; k < 3; k++)
+        memcpy(c + 416 + k * 12, &g_702650, 12);
+    CallVirt(c, 52);
+    CallThis(FUN_57e030, c, c + 3268);
+    CallThis(FUN_57e070, c);
+}
+
+} // extern "C"

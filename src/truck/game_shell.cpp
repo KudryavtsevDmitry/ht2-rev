@@ -821,7 +821,7 @@ extern "C" void FUN_5c43c0(); KING_ALIAS("_FUN_5c43c0", "@Rec_Mark@8")
 extern "C" void FUN_5c0cf0(); KING_ALIAS("_FUN_5c0cf0", "@List_Clear@8")
 extern "C" void FUN_51d0e0(); KING_ALIAS("_FUN_51d0e0", "_Save_ListEntries")
 extern "C" void FUN_5d8610(); KING_ALIAS("_FUN_5d8610", "@Win_Activate@8")
-ASM_PROC(FUN_531000)
+extern "C" void FUN_531000(); KING_ALIAS("_FUN_531000", "_Controls_SelectPreset")
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
 extern "C" void FUN_5fd3e0(); KING_ALIAS("_FUN_5fd3e0", "_Sound_StopAll")
 extern "C" void FUN_5ffb20(); KING_ALIAS("_FUN_5ffb20", "_Obj723d44_Delete")
@@ -1701,7 +1701,7 @@ extern "C" BYTE* __cdecl Storage_ReadSubImage(const char* name, BYTE* arg)
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
 extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
 extern "C" void FUN_4d90c0(); KING_ALIAS("_FUN_4d90c0", "_Fx_PlaceObjects")
-ASM_PROC(FUN_4833a0)    // writes the save into a storage
+extern "C" void FUN_4833a0(); KING_ALIAS("_FUN_4833a0", "_AI_SaveToStorage")    // writes the save into a storage
 ASM_PROC(FUN_51d6d0)    // writes the screenshot (storage, a)
 ASM_VAR(AsmLabel, s_671204, $L_671204)
 ASM_VAR(AsmLabel, s_677588, $L_677588)
@@ -9377,6 +9377,80 @@ BYTE* __cdecl Shell_MakeScrollBar(const char* a, const char* b, short* at, int a
     Sb_States(sb, s1, s2, s3, prefix, b, 2);
     CallVirt(sb, 20);
     return sb;
+}
+
+} // extern "C"
+
+// === the leave-race dialog (the message handler $L_51fd70)
+
+extern "C" void FUN_598d60(); KING_ALIAS("_FUN_598d60", "@Wasm_598d60@8")
+extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
+extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
+extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
+extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
+ASM_VAR(int, g_lr6f3428, $L_6f3428)
+
+// sends network message id with n bytes of d
+static void Lr_Send(int id, const BYTE* d, int n)
+{
+    BYTE m[32];
+    CallThis(FUN_602be0, m);
+    CallThis(FUN_603110, m, id, d, n);
+    CallC(FUN_6021b0, F(BYTE*, m, 4), F(BYTE*, m, 8) - F(BYTE*, m, 4));
+    CallThis(FUN_602e80, m);
+}
+
+extern "C" {
+
+// [$L_51fd70] command of the leave-race dialog s (its window at -64; +340 the race kind): 163 leaves (in a network
+// game telling the others, message 952), 168 abandons (single play: the recording closed and the world reset; a
+// network host sends 954), 172 returns to the race
+void __fastcall LeaveDialog_Command(BYTE* s, void*, int cmd)
+{
+    BYTE* w = s - 64;
+    if (cmd == 163) {
+        if (F(int, g_6cec6c, 1316) == 1) {
+            BYTE d[3] = {6, 0, 0};
+            Lr_Send(952, d, 3);
+        }
+        CallVirt(w, 32);
+        g_lr6f3428 = 0;
+        if (F(int, s, 340) == 6) {
+            g_gs6968a4 = 1;
+            return;
+        }
+        Shell_LeaveRace();
+    } else if (cmd == 168) {
+        int net = F(int, g_6cec6c, 1316);
+        if (!net) {
+            CallThis(FUN_5c4340, g_696ca0);
+            CallVirt(g_696ca0, 140);
+            CallVirt(g_696ca0, 36);
+            CallVirt(w, 32);
+            g_lr6f3428 = 0;
+            return;
+        }
+        int kind = F(int, s, 340);
+        if (!kind || kind == 5) {
+            CallVirt(w, 32);
+            Shell_LeaveRace();
+        } else if (net == 1) {
+            CallVirt(w, 32);
+            CallVirt(g_696ca0, 36);
+            F(int, g_696ca0, 3024) = 1;
+            BYTE d[5] = {0, 0, 0, 0, 0};    // the original sent 5 stack bytes nothing set
+            Lr_Send(954, d, 5);
+        }
+        g_lr6f3428 = 0;
+    } else if (cmd == 172) {
+        CallVirt(w, 32);
+        F(DWORD, g_696cb0, 16) |= 3;
+        CallThis(FUN_598d60, (BYTE*)g_6f68b0);
+        CallVirt(g_696ca0, 36);
+        CallC(FUN_4e12b0, 1);
+        if (F(int, g_6cec6c, 1344) && F(short, g_6cec78, 384) > 5)
+            CallC(FUN_5ffa30);
+    }
 }
 
 } // extern "C"

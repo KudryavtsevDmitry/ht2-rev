@@ -1012,7 +1012,7 @@ extern "C" void __cdecl MovbodInit_593370() { g_movbod6f6698 = 0x3f800000; g_mov
 extern "C" void FUN_5f1cc0(); KING_ALIAS("_FUN_5f1cc0", "@Buckets_Push@16")
 extern "C" void FUN_581ba0(); KING_ALIAS("_FUN_581ba0", "@Item_Apply84@16")
 ASM_PROC(FUN_582960)
-ASM_PROC(FUN_585da0)
+extern "C" void FUN_585da0(); KING_ALIAS("_FUN_585da0", "@Item_SendContact@20")
 extern "C" void FUN_592e70(); KING_ALIAS("_FUN_592e70", "@ListNode_CutNext@8")
 extern "C" void FUN_592e90(); KING_ALIAS("_FUN_592e90", "@ListNode_592e90@12")
 ASM_VAR(float, g_movbod650890, $L_650890)
@@ -1352,6 +1352,59 @@ int __cdecl Body_NeighbourContacts(BYTE* b, BYTE* m, BYTE* c)
         total += CallC<int>(FUN_58a020, b, m, c, o, 1);
     }
     return total;
+}
+
+} // extern "C"
+
+// === placing a body by its position and direction ($L_58fbc0)
+
+extern "C" void FUN_4e3132(); KING_ALIAS("_FUN_4e3132", "_Vec3_DivComponents")
+extern "C" void FUN_4e5bf5(); KING_ALIAS("_FUN_4e5bf5", "_Obj_Lookup4e5b22")
+extern "C" void FUN_57e070(); KING_ALIAS("_FUN_57e070", "@Vehicle_MakeOut@8")
+extern "C" void FUN_581c80(); KING_ALIAS("_FUN_581c80", "@Item_ResetFlags@16")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+extern "C" void FUN_5abc90(); KING_ALIAS("_FUN_5abc90", "_Matrix_LookAt")
+ASM_VAR(int, g_bp6f6568, $L_6f6568)
+
+extern "C" {
+
+// [$L_58fbc0] body s placed (unless held, +3976: then flags bits 1 / 2): its matrix (+500) at the position
+// +3148 looking along +3160 times the frame +548, its inverse (+596), the speed +440 turned back and divided by
+// +404 into +428, and its room (+800, kept from +804 and reported when lost); 0, or 1 when held
+int __fastcall Body_Place(BYTE* s, void*, int a, DWORD* flags)
+{
+    g_bp6f6568 = 0;
+    CallThis(FUN_581c80, s, a, flags);
+    if (F(int, s, 3976)) {
+        if (F(int, s, 3976) == 2)
+            *flags |= 2;
+        if (F(int, s, 3976) == 1)
+            *flags |= 4;
+        return 1;
+    }
+    BYTE t1[48], t2[48], t3[48], t4[48], t5[48];
+    Vec3 p = F(Vec3, s, 3148), d = F(Vec3, s, 3160);
+    BYTE* tr = CallC<BYTE*>(FUN_5abc40, t1, p);
+    float len = (float)CallC<double>(FUN_5ab4d0, s + 3160);
+    BYTE* look = CallC<BYTE*>(FUN_5abc90, t2, g_gravity702650, d, len);
+    BYTE* m = CallC<BYTE*>(FUN_5aba40, t4, CallC<BYTE*>(FUN_5aba40, t3, look, s + 548), tr);
+    memcpy(s + 500, m, 48);
+    memcpy(s + 596, CallC<BYTE*>(FUN_5ac2e0, t5, s + 500), 48);
+    const float* q = (const float*)(s + 596);
+    float vx = F(float, s, 440), vy = F(float, s, 444), vz = F(float, s, 448);
+    float w[3];
+    w[0] = (float)((double)q[3] * vy + (double)q[6] * vz + (double)vx * q[0]);
+    w[1] = (float)((double)q[4] * vy + (double)q[7] * vz + (double)q[1] * vx);
+    w[2] = (float)((double)q[5] * vy + (double)q[8] * vz + (double)q[2] * vx);
+    float r[3];
+    memcpy(s + 428, CallC<BYTE*>(FUN_4e3132, r, w, s + 404), 12);
+    F(int, s, 800) = CallC<int>(FUN_4e5bf5, F(int, s, 804), s + 584, s + 536, s + 1132);
+    if (!F(int, s, 800)) {
+        F(int, s, 800) = F(int, s, 804);
+        CallVirt(s, 28, 1);
+    }
+    CallThis(FUN_57e070, s);
+    return 0;
 }
 
 } // extern "C"
