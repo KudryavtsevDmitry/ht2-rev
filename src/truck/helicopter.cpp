@@ -2401,3 +2401,435 @@ extern "C" int __fastcall q238_Wea5a63a0_Destroy(BYTE* s); KING_ALIAS("@q238_Wea
 extern "C" int __fastcall Thunk56d6b0(BYTE* s) { return q238_Wea5a63a0_Destroy(s); }
 // [FUN_56f110] forwards to Med5cf370_Destroy
 extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s); }
+
+// ---------------------------------------------------------------------------
+// The dashboard warning lights and the screen overlays (key list, car list or
+// scores, the player's status panel).
+
+ASM_PROC(FUN_5b6f90)    // fills a rectangle (surface, rect, color, flags)
+ASM_PROC(FUN_4d2b30)
+ASM_PROC(FUN_529890)
+ASM_PROC(FUN_56bc80)
+extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
+extern "C" void FUN_401aa0(); KING_ALIAS("_FUN_401aa0", "@Stl_Lock@8")
+extern "C" int* __cdecl Player_CarId(int* out);
+extern "C" int __cdecl Player_GetState(BYTE* player, void* dest);
+extern "C" void __cdecl Ai_GetPlayerData(BYTE* p, BYTE* o);
+extern "C" double __cdecl Player_Value136(BYTE* id);
+extern "C" double __cdecl Player_CargoValueOf(BYTE* p);
+extern "C" double __cdecl Player_ProfitOf(BYTE* p);
+extern "C" int __cdecl Ai_GetPlayerOrderInfo(BYTE* p, unsigned idx, BYTE* oi);
+extern "C" int __cdecl Ai_GetMerchandiseProperties(int id, BYTE* mp);
+extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);
+extern "C" float __fastcall Ramp_Position(BYTE* self, void*);
+extern "C" BYTE* __fastcall Node_Next(BYTE* self, void*);
+extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3);
+extern "C" double __cdecl Tsc_Now();
+extern "C" void __cdecl Carat_DrawMovie();
+extern "C" void __fastcall Wasm_595260(BYTE* self, void*);
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
+extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines);
+extern "C" void __cdecl Scores_Draw(BYTE* surface, int x, int y);
+extern "C" int __cdecl Messages_Get1288();
+
+ASM_VAR(BYTE*, g_hd_game, $L_6d2078)
+ASM_VAR(int, g_hd_class0, $L_6ce330)
+ASM_VAR(int, g_hd_class1, $L_6ce334)
+ASM_VAR(BYTE*, g_hd_images, $L_6cecbc)         // dashboard images (+672 .. +1028)
+ASM_VAR(double, g_hd_rampOn, $L_64b6e0)
+ASM_VAR(double, g_hd_rampLow, $L_64da58)
+ASM_VAR(BYTE*, g_hd_device, $L_720908)
+ASM_VAR(BYTE*, g_hd_mainView, $L_696ca0)
+ASM_VAR(BYTE*, g_hd_wnd, $L_6cec6c)
+ASM_VAR(AsmLabel, g_hd_6ce4f8, $L_6ce4f8)
+ASM_VAR(int, g_hd_x, $L_6ced0c)
+ASM_VAR(int, g_hd_y, $L_6ced10)
+ASM_VAR(BYTE*, g_hd_bmpKeys, $L_6f33d4)
+ASM_VAR(BYTE*, g_hd_bmpCars, $L_6f33d8)
+ASM_VAR(BYTE*, g_hd_bmpScores, $L_6f33dc)
+ASM_VAR(BYTE*, g_hd_bmpStatus, $L_6f33e0)
+ASM_VAR(BYTE*, g_hd_font, $L_6ced24)
+ASM_VAR(BYTE*, g_hd_font2, $L_6ced2c)
+ASM_VAR(AsmLabel, g_hd_keyNames, $L_675470)    // char* per key code
+ASM_VAR(AsmLabel, s_hd_67c3f0, $L_67c3f0)
+ASM_VAR(AsmLabel, s_hd_67c3f8, $L_67c3f8)
+ASM_VAR(AsmLabel, s_hd_67c3fc, $L_67c3fc)
+ASM_VAR(AsmLabel, s_hd_67c400, $L_67c400)
+ASM_VAR(AsmLabel, s_hd_67c404, $L_67c404)
+ASM_VAR(AsmLabel, s_hd_67c408, $L_67c408)
+ASM_VAR(AsmLabel, s_hd_67c40c, $L_67c40c)
+ASM_VAR(AsmLabel, s_hd_67c410, $L_67c410)
+ASM_VAR(AsmLabel, s_hd_67c414, $L_67c414)
+ASM_VAR(AsmLabel, s_hd_67c418, $L_67c418)
+ASM_VAR(AsmLabel, s_hd_67c41c, $L_67c41c)
+ASM_VAR(AsmLabel, s_hd_67c424, $L_67c424)
+ASM_VAR(AsmLabel, s_hd_67c42c, $L_67c42c)
+ASM_VAR(AsmLabel, s_hd_67c430, $L_67c430)
+ASM_VAR(BYTE*, g_hd_6cecd8, $L_6cecd8)
+ASM_VAR(double, g_hd_one, $L_64b670)
+ASM_VAR(double, g_hd_barScale, $L_650320)
+ASM_VAR(AsmLabel, s_hd_intFmt, $L_677a74)
+ASM_VAR(double, g_hd_orderScale, $L_650318)
+ASM_VAR(double, g_hd_loadScale, $L_64f340)
+ASM_VAR(BYTE*, g_hd_messages, $L_6f3438)
+ASM_VAR(double, g_hd_msec, $L_64b658)
+ASM_VAR(float, g_hd_gauge, $L_650310)
+ASM_VAR(float, g_hd_64c250, $L_64c250)
+ASM_VAR(BYTE*, g_hd_6f3434, $L_6f3434)
+ASM_VAR(AsmLabel, g_hd_6f68b0, $L_6f68b0)
+
+static void Hud_Image(BYTE* surface, int x, int y, int image)
+{
+    CallC(FUN_5b8980, surface, x, y, F(BYTE*, g_hd_images, image), 0);
+}
+
+static void Hud_Fill(BYTE* surface, int* r, int color)
+{
+    CallC(FUN_5b6f90, surface, r, color, 0);
+}
+
+static BYTE* Hud_Vehicle()
+{
+    return F(BYTE*, F(BYTE*, g_hd_game, 616), 21600);
+}
+
+// 19 light states: +0 on, +8 a double 1.0
+static void Hud_InitLights(BYTE* st)
+{
+    for (int k = 0; k < 19; k++) {
+        F(int, st, k * 16 + 8) = 0;
+        F(int, st, k * 16) = 0;
+        F(int, st, k * 16 + 12) = 1072693248;
+    }
+}
+
+extern "C" {
+
+// [FUN_574950] the dashboard and its warning lights at (x, y) for the player's vehicle; alt picks the other
+// dashboard picture. Vehicle types of class 1 have their own layout.
+void __cdecl Hud_DrawLights(BYTE* surface, int x, int y, int alt)
+{
+    BYTE st[19 * 16];
+    Hud_InitLights(st);
+    int id;
+    Player_CarId(&id);
+    Player_GetState((BYTE*)id, st);
+    BYTE* veh = Hud_Vehicle();
+#define ON(k) F(int, st, (k) * 16)
+#define RAMP(off) Ramp_Position(veh + (off), 0)
+    int type = F(int, veh, 2252);
+    if (type >= g_hd_class0 && type < g_hd_class1) {
+        CallC(FUN_5b86c0, surface, x + 17, y + 722, F(BYTE*, g_hd_images, alt ? 1028 : 1020));
+        for (int i = 0; i < 20; i++) {
+            switch (i) {
+            case 0: if (ON(3)) Hud_Image(surface, x + 117, y + 809, 852); break;
+            case 1: if (RAMP(16216) >= g_hd_rampOn && ON(4)) Hud_Image(surface, x + 40, y + 788, 860); break;
+            case 2: if (ON(5)) Hud_Image(surface, x + 43, y + 790, 868); break;
+            case 3: if (ON(6)) Hud_Image(surface, x + 23, y + 755, 876); break;
+            case 4: if (ON(7)) Hud_Image(surface, x + 60, y + 757, 884); break;
+            case 5: if (ON(17)) Hud_Image(surface, x + 25, y + 776, 892); break;
+            case 6: if (RAMP(16060) >= g_hd_rampOn && ON(0)) Hud_Image(surface, x + 33, y + 809, 900); break;
+            case 7: if (ON(1)) Hud_Image(surface, x + 61, y + 809, 908); break;
+            case 8: if (ON(18)) Hud_Image(surface, x + 50, y + 756, 916); break;
+            case 9:
+                if (RAMP(16164) >= g_hd_rampOn && ON(9) == 1) {
+                    Hud_Image(surface, x + 36, y + 783, 924);
+                    Hud_Image(surface, x + 114, y + 783, 924);
+                }
+                break;
+            case 10:
+                if (RAMP(16164) >= g_hd_rampOn && ON(9) == 2) {
+                    Hud_Image(surface, x + 36, y + 783, 932);
+                    Hud_Image(surface, x + 114, y + 783, 932);
+                }
+                break;
+            case 11: if (ON(13)) Hud_Image(surface, x + 123, y + 770, 940); break;
+            case 12: if (ON(2)) Hud_Image(surface, x + 117, y + 726, 948); break;
+            case 13: if (ON(15)) Hud_Image(surface, x + 63, y + 754, 956); break;
+            case 14: if (ON(16)) Hud_Image(surface, x + 61, y + 726, 964); break;
+            case 15: if (ON(10)) Hud_Image(surface, x + 33, y + 726, 972); break;
+            case 16: if (ON(12)) Hud_Image(surface, x + 89, y + 809, 980); break;
+            case 17: if (ON(8)) Hud_Image(surface, x + 89, y + 726, 988); break;
+            case 18: if (ON(11)) Hud_Image(surface, x + 33, y + 766, 996); break;
+            }
+        }
+        if (!(RAMP(16060) >= g_hd_rampLow))
+            Hud_Image(surface, x + 33, y + 809, 896);
+        if (!(RAMP(16216) >= g_hd_rampOn))
+            Hud_Image(surface, x + 40, y + 788, 856);
+        if (F(BYTE, veh, 15508) & 3)
+            Hud_Image(surface, x + 36, y + 783, 920);
+        if (F(BYTE, veh, 15508) & 12)
+            Hud_Image(surface, x + 114, y + 783, 920);
+        if (F(int, veh, 15504) > 0)
+            Hud_Image(surface, x + 68, y + 776, 1000);
+        if (F(int, veh, 15512) > 0)
+            Hud_Image(surface, x + 51, y + 767, 1008);
+        if (CallVirt<int>(F(BYTE*, g_hd_game, 616), 64) > 3)
+            Hud_Image(surface, x + 23, y + 755, 872);
+        if (CallVirt<int>(F(BYTE*, g_hd_game, 616), 68) > 0)
+            Hud_Image(surface, x + 25, y + 776, 888);
+        return;
+    }
+    CallC(FUN_5b86c0, surface, x + 17, y + 722, F(BYTE*, g_hd_images, alt ? 1024 : 1016));
+    for (int i = 0; i < 20; i++) {
+        switch (i) {
+        case 0: if (ON(3)) Hud_Image(surface, x + 117, y + 809, 684); break;
+        case 1: if (RAMP(16216) >= g_hd_rampOn && ON(4)) Hud_Image(surface, x + 44, y + 791, 692); break;
+        case 2: if (ON(5)) Hud_Image(surface, x + 47, y + 792, 700); break;
+        case 3: if (ON(6)) Hud_Image(surface, x + 27, y + 742, 708); break;
+        case 4: if (ON(7)) Hud_Image(surface, x + 28, y + 755, 716); break;
+        case 5: if (ON(17)) Hud_Image(surface, x + 24, y + 786, 724); break;
+        case 6: if (RAMP(16060) >= g_hd_rampOn && ON(0)) Hud_Image(surface, x + 33, y + 809, 732); break;
+        case 7: if (ON(1)) Hud_Image(surface, x + 61, y + 809, 740); break;
+        case 8: if (ON(18)) Hud_Image(surface, x + 61, y + 734, 748); break;
+        case 9:
+            if (RAMP(16164) >= g_hd_rampOn && ON(9) == 1) {
+                Hud_Image(surface, x + 41, y + 786, 756);
+                Hud_Image(surface, x + 103, y + 786, 756);
+                Hud_Image(surface, x + 126, y + 786, 756);
+            }
+            break;
+        case 10:
+            if (RAMP(16164) >= g_hd_rampOn && ON(9) == 2) {
+                Hud_Image(surface, x + 41, y + 786, 764);
+                Hud_Image(surface, x + 103, y + 786, 764);
+                Hud_Image(surface, x + 126, y + 786, 764);
+            }
+            break;
+        case 11: if (ON(13)) Hud_Image(surface, x + 71, y + 785, 772); break;
+        case 12: if (ON(2)) Hud_Image(surface, x + 117, y + 726, 780); break;
+        case 13: if (ON(15)) Hud_Image(surface, x + 21, y + 747, 788); break;
+        case 14: if (ON(16)) Hud_Image(surface, x + 117, y + 754, 796); break;
+        case 15: if (ON(10)) Hud_Image(surface, x + 89, y + 754, 804); break;
+        case 16: if (ON(12)) Hud_Image(surface, x + 89, y + 809, 812); break;
+        case 17: if (ON(8)) Hud_Image(surface, x + 89, y + 726, 820); break;
+        case 18: if (ON(11)) Hud_Image(surface, x + 38, y + 737, 828); break;
+        }
+    }
+    if (!(RAMP(16060) >= g_hd_rampLow))
+        Hud_Image(surface, x + 33, y + 809, 728);
+    if (!(RAMP(16216) >= g_hd_rampOn))
+        Hud_Image(surface, x + 44, y + 791, 688);
+    if (F(BYTE, veh, 15508) & 3)
+        Hud_Image(surface, x + 41, y + 786, 752);
+    if (F(BYTE, veh, 15508) & 12)
+        Hud_Image(surface, x + 103, y + 786, 752);
+    if (F(BYTE, veh, 15508) & 48)
+        Hud_Image(surface, x + 126, y + 786, 752);
+    if (F(int, veh, 15504) > 0)
+        Hud_Image(surface, x + 34, y + 773, 832);
+    if (F(int, veh, 15512) > 0)
+        Hud_Image(surface, x + 34, y + 763, 840);
+    if (CallVirt<int>(F(BYTE*, g_hd_game, 616), 64) > 3)
+        Hud_Image(surface, x + 27, y + 742, 704);
+    if (CallVirt<int>(F(BYTE*, g_hd_game, 616), 68) > 0)
+        Hud_Image(surface, x + 24, y + 786, 720);
+#undef ON
+#undef RAMP
+}
+
+// $L_5756f0: the overlays over the game screen: the key list, the car list or the scores, and the player's
+// status panel (cargo/profit bars, current orders, load gauges and the dashboard)
+void __cdecl Hud_DrawOverlays()
+{
+    BYTE* dev = g_hd_device;
+    (*(int(__stdcall**)(BYTE*, int, int))(*(BYTE**)dev + 80))(dev, 14, 1);
+    BYTE* surf = F(BYTE*, g_hd_mainView, 12);
+    CallC(FUN_4d2b30, surf);
+    int n = 0;
+    BYTE* w = g_hd_wnd;
+    if (F(int, w, 1292) && F(BYTE*, w, 1356) == g_hd_mainView)
+        CallThis(FUN_529890, (BYTE*)g_hd_6ce4f8, surf, F(int, w, 1292) - 1);
+
+    if (F(int, g_hd_wnd, 1296)) {
+        Carat_DrawMovie();
+        CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpKeys);
+        int xx = g_hd_x + 25, yy = g_hd_y + 462;
+        int* keys = (int*)(g_hd_wnd + 528);
+        for (BYTE* node = F(BYTE*, F(BYTE*, g_hd_wnd, 524), 288); node; node = Node_Next(node, 0)) {
+            int key = F(int, node, 28) - 1000;
+            int ly = yy + n % 18 * 20 + 10;
+            int lx = xx + n / 18 * 170;
+            CallC(FUN_5ea170, surf, lx, ly, g_hd_font, F(const char*, node, 12), 6, 0);
+            CallC(FUN_5ea170, surf, lx + 111, ly, g_hd_font, ((const char**)g_hd_keyNames)[keys[key]], 6, 0);
+            n++;
+        }
+        Menu_DrawEntry((int)surf, xx, yy, 97, s_hd_67c430, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 32, s_hd_67c42c, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 31, s_hd_67c424, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 84, s_hd_67c41c, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 16, s_hd_67c418, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 20, s_hd_67c414, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 19, s_hd_67c410, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 66, s_hd_67c40c, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 106, s_hd_67c408, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 107, s_hd_67c404, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 104, s_hd_67c400, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 105, s_hd_67c3fc, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 14, s_hd_67c3f8, n++);
+        Menu_DrawEntry((int)surf, xx, yy, 108, s_hd_67c3f0, n);
+    }
+
+    if (F(int, g_hd_wnd, 1284)) {
+        Carat_DrawMovie();
+        if (F(int, g_hd_wnd, 1316) == 0) {
+            CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpCars);
+            CarList_Draw(surf, g_hd_x + 17, g_hd_y + 471, 10);
+        } else {
+            CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpScores);
+            Scores_Draw(surf, g_hd_x + 17, g_hd_y + 545);
+        }
+    }
+
+    if (F(int, g_hd_wnd, 1288)) {
+        Carat_DrawMovie();
+        int r[4] = {0, 0, 0, 0};        // left, top, right, bottom
+        int load1 = 0, load2 = 0;
+        CallC(FUN_5b86c0, surf, g_hd_x, g_hd_y, g_hd_bmpStatus);
+        int bx = g_hd_x + 17, by = g_hd_y + 492;
+        BYTE pd[192];
+        int id;
+        Player_CarId(&id);
+        Ai_GetPlayerData((BYTE*)id, pd);
+        CallC(FUN_5ea1b0, surf, bx + 2, by, 148, g_hd_font, g_hd_6cecd8 + 632, 5, 0);
+        CallC(FUN_5ea1b0, surf, bx + 30, by + 228, 145, g_hd_font, F(BYTE*, pd, 20), 5, 0);
+
+        Player_CarId(&id);
+        double value = Player_Value136((BYTE*)id);
+        Player_CarId(&id);
+        double total = Player_CargoValueOf((BYTE*)id) + value;
+        if (!(total >= g_hd_one))
+            total = 1.0;
+        Player_CarId(&id);
+        int bar1 = (int)(Player_Value136((BYTE*)id) * g_hd_barScale / total);
+        Player_CarId(&id);
+        int bar2 = (int)(Player_ProfitOf((BYTE*)id) * g_hd_barScale / total);
+        if (bar1 < 0)
+            bar1 = 0;
+        if (bar2 < 0)
+            bar2 = 0;
+        if (bar1 > 158)
+            bar1 = 158;
+        if (bar2 > 158)
+            bar2 = 158;
+        r[0] = bx;
+        r[1] = by + 95;
+        r[2] = bar1 + bx;
+        r[3] = by + 114;
+        Hud_Fill(surf, r, 5);
+        r[0] = bx + 158 - bar2;
+        r[2] = bx + 158;
+        Hud_Fill(surf, r, 6);
+
+        char buf[160];
+        Player_CarId(&id);
+        sprintf(buf, s_hd_intFmt, (int)Player_Value136((BYTE*)id));
+        CallC(FUN_5ea170, surf, g_hd_x + 23, g_hd_y + 605, Messages_Get1288(), buf, 5, 0);
+        Player_CarId(&id);
+        sprintf(buf, s_hd_intFmt, (int)Player_CargoValueOf((BYTE*)id));
+        int width = Font_TextWidth(g_hd_font, 0, buf);
+        CallC(FUN_5ea170, surf, r[2] - width - 5, g_hd_y + 605, Messages_Get1288(), buf, 5, 0);
+
+        // the order info (+0 merchandise, +8 amount, +100/+104/+112 texts, +120/+128 doubles; vectors at
+        // +52/+64/+76/+88 that it owns)
+        BYTE oi[188];
+        F(int, oi, 0) = -1;
+        F(int, oi, 8) = 0;
+        F(int, oi, 12) = 0;
+        F(int, oi, 16) = -1;
+        F(int, oi, 20) = -1;
+        F(int, oi, 24) = 0;
+        F(int, oi, 28) = 0;
+        F(int, oi, 32) = 0;
+        F(int, oi, 36) = 0;
+        F(int, oi, 40) = 0;
+        F(int, oi, 44) = -1;
+        F(int, oi, 48) = -1;
+        for (int k = 52; k <= 112; k += 4)
+            F(int, oi, k) = 0;
+        for (int k = 120; k <= 176; k += 4)
+            F(int, oi, k) = 0;
+        F(int, oi, 180) = 1072693248;
+        F(BYTE, oi, 184) = 0;
+        Player_CarId(&id);
+        if (Ai_GetPlayerOrderInfo((BYTE*)id, 0, oi) == 0) {
+            sprintf(buf, s_hd_intFmt, (int)F(double, oi, 120));
+            CallC(FUN_5ea170, surf, bx + 110, by + 60, g_hd_font, buf, 4, 0);
+            r[0] = g_hd_x + 17;
+            r[2] = (int)(F(double, oi, 128) * g_hd_orderScale / F(double, oi, 120) + r[0]);
+            r[1] = g_hd_y + 557;
+            r[3] = g_hd_y + 565;
+            Hud_Fill(surf, r, 5);
+        }
+        int listed = 0;
+        BYTE mp[40];
+        F(int, mp, 0) = 0;
+        for (unsigned idx = 0;; idx++) {
+            Player_CarId(&id);
+            if (Ai_GetPlayerOrderInfo((BYTE*)id, idx, oi))
+                break;
+            Ai_GetMerchandiseProperties(F(int, oi, 0), mp);
+            load1 = (int)(F(double, mp, 16) * F(double, oi, 8) * g_hd_loadScale / F(double, pd, 176) + load1);
+            load2 = (int)(F(double, mp, 24) * F(double, oi, 8) * g_hd_loadScale / F(double, pd, 168) + load2);
+            if (listed == 0) {
+                BYTE st[19 * 16];
+                Hud_InitLights(st);
+                Player_CarId(&id);
+                Player_GetState((BYTE*)id, st);
+                if (F(int, st, 160) && F(int, oi, 104)) {
+                    Sound_Play(F(BYTE*, g_hd_messages, 1284), 0, 1.0f, 1.0f, 1);
+                    if ((int)(Tsc_Now() * g_hd_msec) % 2)
+                        CallC(FUN_5ea170, surf, bx + 3, by + 52, g_hd_font2, F(const char*, oi, 104), 4, 0);
+                    else
+                        CallC(FUN_5ea170, surf, bx + 3, by + 52, g_hd_font, F(const char*, oi, 100), 4, 0);
+                } else
+                    CallC(FUN_5ea170, surf, bx + 3, by + 52, g_hd_font, F(const char*, oi, 100), 4, 0);
+                CallC(FUN_5ea170, surf, bx + 3, by + 64, g_hd_font, F(const char*, oi, 112), 4, 0);
+            }
+            listed = 1;
+        }
+
+        // the load gauges: two pairs of bars, the load and the ramp positions
+        r[0] = bx;
+        r[1] = by + 136;
+        r[2] = bx + load1;
+        r[3] = by + 144;
+        Hud_Fill(surf, r, 5);
+        r[2] = (int)((double)Ramp_Position(Hud_Vehicle() + 16164, 0) * g_hd_gauge + r[0]);
+        r[1] = by + 166;
+        r[3] = by + 174;
+        Hud_Fill(surf, r, 5);
+        r[2] = (int)((double)Ramp_Position(Hud_Vehicle() + 16060, 0) * g_hd_gauge + r[0]);
+        r[1] = by + 196;
+        r[3] = by + 204;
+        Hud_Fill(surf, r, 5);
+        r[0] = bx + 79;
+        r[1] = by + 136;
+        r[2] = bx + 79 + load2;
+        r[3] = by + 144;
+        Hud_Fill(surf, r, 5);
+        r[2] = (int)((double)Ramp_Position(Hud_Vehicle() + 16216, 0) * g_hd_gauge + r[0]);
+        r[1] = by + 166;
+        r[3] = by + 174;
+        Hud_Fill(surf, r, 5);
+        r[2] = (int)(((double)g_hd_64c250 - F(float, Hud_Vehicle(), 15552)) * g_hd_gauge + r[0]);
+        r[1] = by + 196;
+        r[3] = by + 204;
+        Hud_Fill(surf, r, 5);
+
+        Hud_DrawLights(surf, g_hd_x, g_hd_y, 0);
+        CallC(FUN_5b86c0, surf, g_hd_x + 17, g_hd_y + 422, F(BYTE*, g_hd_images, 672));
+        for (int v = 88; v >= 52; v -= 12)
+            if (unsigned size = F(BYTE*, oi, v + 8) - F(BYTE*, oi, v))
+                Ai_PoolFree(F(BYTE*, oi, v), size);
+    }
+
+    if (g_hd_6f3434)
+        CallThis(FUN_56bc80, g_hd_6f3434);
+    Wasm_595260((BYTE*)g_hd_6f68b0, 0);
+    dev = g_hd_device;
+    (*(int(__stdcall**)(BYTE*, int, int))(*(BYTE**)dev + 80))(dev, 14, 1);
+}
+
+}  // extern "C"

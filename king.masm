@@ -1550,6 +1550,10 @@ PUBLIC $L_682664, $L_68267c, $L_682694, $L_6826ac, $L_6826c4, $L_6826dc
 PUBLIC $L_6826f4, $L_68270c, $L_682724, $L_68273c, $L_682754, $L_68276c
 PUBLIC $L_682780, $L_682798, $L_6827b4, $L_6827d0, $L_6827e8, $L_682800
 PUBLIC $L_720618
+PUBLIC $L_64f340, $L_650310, $L_650318, $L_650320, $L_677a74, $L_67c3f0
+PUBLIC $L_67c3f8, $L_67c3fc, $L_67c400, $L_67c404, $L_67c408, $L_67c40c
+PUBLIC $L_67c410, $L_67c414, $L_67c418, $L_67c41c, $L_67c424, $L_67c42c
+PUBLIC $L_67c430, $L_6ce330, $L_6f33d4, $L_6f33d8, $L_6f33dc, $L_6f33e0
 
 ;===================================
 _TEXT SEGMENT
@@ -621424,6 +621428,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_574950 PROC
 
             sub ESP,312
@@ -623811,6 +623817,12 @@ $L_576406::
             pop EBP
             ret 
 FUN_574950 ENDP
+ELSE
+EXTERN _Hud_DrawLights:PROC
+FUN_574950 TEXTEQU <_Hud_DrawLights>
+EXTERN _Hud_DrawOverlays:PROC
+$L_5756f0 TEXTEQU <_Hud_DrawOverlays>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
