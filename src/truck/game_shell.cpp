@@ -5661,7 +5661,7 @@ extern "C" void __fastcall Game_SceneFiles(BYTE* s, void*, const char* name, cha
 // ---------------------------------------------------------------------------
 // The statistics screen.
 
-ASM_PROC(FUN_574950)
+extern "C" void FUN_574950(); KING_ALIAS("_FUN_574950", "_Hud_DrawLights")
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
 ASM_VAR(int, g_q86_6ced14, $L_6ced14)
 ASM_VAR(int, g_q86_6ced18, $L_6ced18)
