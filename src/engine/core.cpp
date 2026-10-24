@@ -84,7 +84,7 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
     return (*(R(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
 }
 
-ASM_PROC(FUN_5cfb30)
+extern "C" void FUN_5cfb30(); KING_ALIAS("_FUN_5cfb30", "_Poly_Draw")
 extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in seconds, returns double
 extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
@@ -1545,3 +1545,181 @@ extern "C" void __cdecl Poly_Fill(int flags, int c, int a, float k)
         row += g_q222_71e7bc;
     }
 }
+
+// ---------------------------------------------------------------------------
+// Software polygon drawing
+
+extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
+extern "C" void FUN_5ba010(); KING_ALIAS("_FUN_5ba010", "@Palette_Shade@16")
+extern "C" void FUN_5ba070(); KING_ALIAS("_FUN_5ba070", "@Palette_Fog@16")
+extern "C" void FUN_5ba170(); KING_ALIAS("_FUN_5ba170", "@Palette_FogColor@12")
+extern "C" void FUN_5ba3f0(); KING_ALIAS("_FUN_5ba3f0", "@Palette_Color@12")
+extern "C" void FUN_5ba5c0(); KING_ALIAS("_FUN_5ba5c0", "@Texture_MipWidth@12")
+extern "C" void FUN_5ba5f0(); KING_ALIAS("_FUN_5ba5f0", "@Texture_MipPixels@12")
+extern "C" void FUN_5cf630(); KING_ALIAS("_FUN_5cf630", "_Span_FillRows")
+extern "C" void FUN_5d02b0(); KING_ALIAS("_FUN_5d02b0", "_Span_Edge")
+extern "C" void FUN_5d0400(); KING_ALIAS("_FUN_5d0400", "_Span_EdgeV")
+extern "C" void FUN_5d05e0(); KING_ALIAS("_FUN_5d05e0", "_Span_EdgeD")
+extern "C" void FUN_5d0790(); KING_ALIAS("_FUN_5d0790", "_Span_EdgeDV")
+extern "C" void FUN_5d0e40(); KING_ALIAS("_FUN_5d0e40", "_Span_EdgeUV")
+extern "C" void FUN_5d1430(); KING_ALIAS("_FUN_5d1430", "_Poly_Fill")
+extern "C" void FUN_5d15f0(); KING_ALIAS("_FUN_5d15f0", "_Poly_FillZ")
+ASM_PROC(FUN_5cf480)    // shaded rows with z (fog, colour)
+ASM_PROC(FUN_5cf920)    // textured rows, rotated (texture, mode)
+ASM_PROC(FUN_5d0990)    // edge with texture and shade
+ASM_PROC(FUN_5d1030)    // edge with texture
+ASM_PROC(FUN_5d1740)    // textured rows (texture, mode, step, level)
+ASM_PROC(FUN_5d18d0)    // textured shaded rows (texture, mode, step)
+ASM_PROC(FUN_5d1a80)    // textured rows with z (texture, mode)
+ASM_PROC(FUN_5d1c50)    // textured rows, perspective (texture, mode)
+ASM_PROC(FUN_5d1e50)    // textured rows, perspective, transparent (texture, mode)
+ASM_VAR(int, g_spanFogColor71e7b0, $L_71e7b0)
+ASM_VAR(int, g_spanWidth71e7b4, $L_71e7b4)
+ASM_VAR(int, g_spanHeight71e7b8, $L_71e7b8)
+ASM_VAR(int, g_spanBpp70f3d8, $L_70f3d8)
+ASM_VAR(int, g_span71e7bc, $L_71e7bc)
+ASM_VAR(int, g_span71e7f8, $L_71e7f8)
+ASM_VAR(int, g_spanBits71e7c4, $L_71e7c4)
+ASM_VAR(WORD, g_spanPitch71e7f4, $L_71e7f4)
+ASM_VAR(int, g_span71e7e8, $L_71e7e8)
+ASM_VAR(BYTE*, g_spanSurface71e7ec, $L_71e7ec)
+ASM_VAR(int, g_texWidth70f3e4, $L_70f3e4)
+ASM_VAR(int, g_texPixels71e7c8, $L_71e7c8)
+ASM_VAR(WORD, g_tex71e7fc, $L_71e7fc)
+ASM_VAR(BYTE, g_texShift70f3dc, $L_70f3dc)
+ASM_VAR(int, g_texStep67fa7c, $L_67fa7c)
+ASM_VAR(int, g_span70f3e0, $L_70f3e0)
+ASM_VAR(int, g_span71e7d0, $L_71e7d0)
+ASM_VAR(DWORD, g_poly702e8c, $L_702e8c)
+
+// the edges of the polygon of n vertices (44 bytes each), closing from the last to the first
+static void Poly_Edges(void (*edge)(), BYTE* v, int n)
+{
+    int last = 0;
+    for (int i = 0; i < n - 1; i++, last = i)
+        CallC(edge, v + i * 44, v + (i + 1) * 44);
+    CallC(edge, v + last * 44, v);
+}
+
+static bool Poly_Empty()
+{
+    return g_q134_71e7dc > g_q134_71e7d8;
+}
+
+extern "C" {
+
+// [FUN_5cfb30] draws a polygon into the window's surface: flags 32 textured (16 perspective, 2 rotated 1 with
+// z, 128 shaded), else 128 shaded or flat; fog (flag 64 on a 16-bit surface) and the z buffer as configured
+void __cdecl Poly_Draw(DWORD flags, BYTE* win, int n, BYTE* v, BYTE* mat, int level)
+{
+    int idx = F(int, win, 16);
+    g_spanBits71e7c4 = F(int, win, idx * 4 + 24);
+    if (!g_spanBits71e7c4)
+        return;
+    g_spanPitch71e7f4 = F(WORD, win, idx * 4 + 56);
+    g_span71e7e8 = F(int, win, 48);
+    g_spanWidth71e7b4 = F(WORD, win, 0);
+    g_spanHeight71e7b8 = F(WORD, win, 2);
+    g_spanBpp70f3d8 = F(WORD, win, 4);
+    g_span71e7bc = F(WORD, win, 6);
+    g_span71e7f8 = F(WORD, win, 8);
+    BYTE* s = CallThis<BYTE*>(FUN_5b6700, win);
+    g_spanSurface71e7ec = s;
+    if (!s)
+        return;
+    int fog = (F(int, s, 800) || g_spanBpp70f3d8 == 4) && (flags & 64) ? 4 : 0;
+    if (F(DWORD, mat, 32) & 0x100)
+        fog = 0;
+    int z = (g_poly702e8c & 0x4000) && !(F(BYTE, mat, 32) & 128) ? 1 : 0;
+    int two = (F(DWORD, mat, 32) >> 1) & 1;
+    BYTE* tex = F(BYTE*, mat, 76);
+    if (flags & 32) {
+        g_texWidth70f3e4 = CallThis<int>(FUN_5ba5c0, tex, g_71e800);
+        g_texPixels71e7c8 = CallThis<int>(FUN_5ba5f0, F(BYTE*, mat, 76), g_71e800);
+        g_tex71e7fc = F(WORD, F(BYTE*, mat, 76), 28);
+        g_texShift70f3dc = F(BYTE, F(BYTE*, mat, 76), 26) - (BYTE)g_71e800;
+        g_texStep67fa7c = (g_spanWidth71e7b4 != 320) + 4;
+        tex = F(BYTE*, mat, 76);
+        if ((flags & 16) && !fog) {
+            g_q134_71e7d8 = 0;
+            g_q134_71e7dc = g_spanHeight71e7b8 - 1;
+            Poly_Edges(FUN_5d0e40, v, n);
+            if (!Poly_Empty())
+                CallC(FUN_5d1e50, tex, two);
+            return;
+        }
+        if ((flags & 2) && (flags & 1)) {
+            g_q134_71e7dc = g_spanHeight71e7b8 - 1;
+            g_q134_71e7d8 = 0;
+            Poly_Edges(FUN_5d0e40, v, n);
+            if (!Poly_Empty())
+                CallC(FUN_5d1c50, tex, two | fog);
+            return;
+        }
+        if (!(flags & 2) && (flags & 1)) {
+            g_q134_71e7d8 = 0;
+            g_q134_71e7dc = g_spanWidth71e7b4 - 1;
+            for (int i = 0; i < n; i++) {
+                BYTE* p = v + i * 44;
+                int x = F(int, p, 12);
+                F(int, p, 12) = F(int, p, 16);
+                F(int, p, 16) = (g_spanWidth71e7b4 << 20) - x - 0x100000;
+            }
+            Poly_Edges(FUN_5d1030, v, n);
+            if (!Poly_Empty())
+                CallC(FUN_5cf920, tex, ((((F(DWORD, mat, 32) & 2) | 4) >> 1) | fog));
+            return;
+        }
+        g_q134_71e7d8 = 0;
+        g_q134_71e7dc = g_spanHeight71e7b8 - 1;
+        if (flags & 2) {
+            Poly_Edges(FUN_5d1030, v, n);
+            if (!Poly_Empty())
+                CallC(FUN_5d1a80, tex, two | fog);
+            return;
+        }
+        g_span70f3e0 = F(int, CallThis<BYTE*>(FUN_5b6700, win), 16);
+        if (flags & 128) {
+            Poly_Edges(FUN_5d0990, v, n);
+            if (!Poly_Empty())
+                CallC(FUN_5d18d0, F(BYTE*, mat, 76), two | fog, g_texStep67fa7c);
+        } else {
+            Poly_Edges(FUN_5d1030, v, n);
+            if (!Poly_Empty())
+                CallC(FUN_5d1740, F(BYTE*, mat, 76), two | fog, g_texStep67fa7c, level);
+        }
+        return;
+    }
+    if (flags & 128) {
+        if (fog)
+            g_spanFogColor71e7b0 = CallThis<int>(FUN_5ba170, s, g_67faa0);
+        int col = F(int, mat, 40);
+        g_span71e7d0 = F(int, CallThis<BYTE*>(FUN_5b6700, win), 20);
+        g_span70f3e0 = F(int, CallThis<BYTE*>(FUN_5b6700, win), 16);
+        g_q134_71e7d8 = 0;
+        g_q134_71e7dc = g_spanHeight71e7b8 - 1;
+        Poly_Edges(z ? FUN_5d0790 : FUN_5d05e0, v, n);
+        if (Poly_Empty())
+            return;
+        if (g_spanBpp70f3d8 != 1)
+            col = CallThis<int>(FUN_5ba3f0, CallThis<BYTE*>(FUN_5b6700, win), col);
+        CallC(z ? FUN_5cf480 : FUN_5cf630, fog, col);
+        return;
+    }
+    g_q134_71e7d8 = 0;
+    g_q134_71e7dc = g_spanHeight71e7b8 - 1;
+    Poly_Edges(z ? FUN_5d0400 : FUN_5d02b0, v, n);
+    if (Poly_Empty())
+        return;
+    int col = F(int, mat, 40);
+    if (g_spanBpp70f3d8 != 1 && !(flags & 0x100))
+        col = CallThis<int>(FUN_5ba3f0, g_spanSurface71e7ec, col);
+    if ((g_poly702e8c & 64) && level > 10)
+        col = CallThis<int>(FUN_5ba010, g_spanSurface71e7ec, col, level);
+    if (fog)
+        col = CallThis<int>(FUN_5ba070, g_spanSurface71e7ec, col, g_67faa0);
+    int tr = (F(BYTE, mat, 32) & 32) ? 1 : 0;
+    CallC(z ? FUN_5d15f0 : FUN_5d1430, tr, col, F(int, mat, 40), F(int, mat, 88));
+}
+
+}  // extern "C"

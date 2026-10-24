@@ -2409,7 +2409,7 @@ extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s
 ASM_PROC(FUN_5b6f90)    // fills a rectangle (surface, rect, color, flags)
 ASM_PROC(FUN_4d2b30)
 ASM_PROC(FUN_529890)
-ASM_PROC(FUN_56bc80)
+extern "C" void FUN_56bc80(); KING_ALIAS("_FUN_56bc80", "@CopterPanel_Draw@8")
 extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
 extern "C" void FUN_401aa0(); KING_ALIAS("_FUN_401aa0", "@Stl_Lock@8")
 extern "C" int* __cdecl Player_CarId(int* out);
@@ -3397,3 +3397,548 @@ int __cdecl Game_CreateObject(BYTE* obj, int flags)
 }
 
 }  // extern "C"
+
+// === copter screen start (FUN_56e5a0)
+
+ASM_VAR(AsmLabel, s_cs67c164, $L_67c164)
+ASM_VAR(AsmLabel, s_cs67c150, $L_67c150)
+ASM_VAR(AsmLabel, s_cs67c124, $L_67c124)
+ASM_VAR(AsmLabel, s_cs67c110, $L_67c110)
+ASM_VAR(AsmLabel, s_cs67c0fc, $L_67c0fc)
+ASM_VAR(AsmLabel, s_cs67c0e8, $L_67c0e8)
+ASM_VAR(AsmLabel, s_cs67c0d4, $L_67c0d4)
+ASM_VAR(AsmLabel, s_cs67c0c0, $L_67c0c0)
+ASM_VAR(AsmLabel, s_cs67c0ac, $L_67c0ac)
+ASM_VAR(AsmLabel, s_cs67c098, $L_67c098)
+ASM_VAR(AsmLabel, s_cs67c084, $L_67c084)
+ASM_VAR(AsmLabel, s_cs67c070, $L_67c070)
+ASM_VAR(AsmLabel, s_cs67c05c, $L_67c05c)
+ASM_VAR(AsmLabel, s_cs67c048, $L_67c048)
+ASM_VAR(AsmLabel, s_cs67c034, $L_67c034)
+ASM_VAR(AsmLabel, s_cs67c024, $L_67c024)
+ASM_VAR(AsmLabel, s_cs67c014, $L_67c014)
+ASM_VAR(AsmLabel, s_cs67c004, $L_67c004)
+ASM_VAR(AsmLabel, s_cs67bff0, $L_67bff0)
+ASM_VAR(AsmLabel, s_cs67bfe0, $L_67bfe0)
+ASM_VAR(AsmLabel, s_cs67bfd0, $L_67bfd0)
+ASM_VAR(AsmLabel, s_cs67bfc0, $L_67bfc0)
+ASM_VAR(AsmLabel, s_cs67bfb0, $L_67bfb0)
+ASM_VAR(AsmLabel, s_cs67bfa0, $L_67bfa0)
+ASM_VAR(AsmLabel, s_cs67bf90, $L_67bf90)
+ASM_VAR(AsmLabel, s_cs67bf80, $L_67bf80)
+ASM_VAR(AsmLabel, s_cs67bf70, $L_67bf70)
+ASM_VAR(AsmLabel, s_cs67bf60, $L_67bf60)
+ASM_VAR(AsmLabel, s_cs67bf4c, $L_67bf4c)
+ASM_VAR(AsmLabel, s_cs67bf38, $L_67bf38)
+ASM_VAR(AsmLabel, s_cs67bf0c, $L_67bf0c)
+ASM_VAR(AsmLabel, s_cs67bef8, $L_67bef8)
+ASM_VAR(AsmLabel, s_cs67bee4, $L_67bee4)
+ASM_VAR(AsmLabel, s_cs67bed0, $L_67bed0)
+ASM_VAR(AsmLabel, s_cs67bebc, $L_67bebc)
+ASM_VAR(AsmLabel, s_cs67bea8, $L_67bea8)
+ASM_VAR(AsmLabel, s_cs67be94, $L_67be94)
+ASM_VAR(AsmLabel, s_cs67be80, $L_67be80)
+ASM_VAR(AsmLabel, s_cs67be6c, $L_67be6c)
+ASM_VAR(AsmLabel, s_cs67be58, $L_67be58)
+ASM_VAR(AsmLabel, s_cs67be44, $L_67be44)
+ASM_VAR(AsmLabel, s_cs67be30, $L_67be30)
+ASM_VAR(AsmLabel, s_cs67be1c, $L_67be1c)
+ASM_VAR(AsmLabel, s_cs67be0c, $L_67be0c)
+ASM_VAR(AsmLabel, s_cs67bdfc, $L_67bdfc)
+ASM_VAR(AsmLabel, s_cs67bdec, $L_67bdec)
+ASM_VAR(AsmLabel, s_cs67bdd8, $L_67bdd8)
+ASM_VAR(AsmLabel, s_cs67bdc8, $L_67bdc8)
+ASM_VAR(AsmLabel, s_cs67bdb8, $L_67bdb8)
+ASM_VAR(AsmLabel, s_cs67bda8, $L_67bda8)
+ASM_VAR(AsmLabel, s_cs67bd98, $L_67bd98)
+ASM_VAR(AsmLabel, s_cs67bd88, $L_67bd88)
+ASM_VAR(AsmLabel, s_cs67bd78, $L_67bd78)
+ASM_VAR(AsmLabel, s_cs67bd68, $L_67bd68)
+ASM_VAR(AsmLabel, s_cs67bd58, $L_67bd58)
+ASM_VAR(AsmLabel, s_cs67bd48, $L_67bd48)
+ASM_VAR(AsmLabel, g_cs6f332c, $L_6f332c)
+ASM_VAR(AsmLabel, g_cs6f32e4, $L_6f32e4)
+ASM_VAR(AsmLabel, g_cs6f3330, $L_6f3330)
+ASM_VAR(AsmLabel, g_cs6f2df4, $L_6f2df4)
+ASM_VAR(AsmLabel, g_cs6f2de4, $L_6f2de4)
+ASM_VAR(AsmLabel, g_cs6f2de8, $L_6f2de8)
+ASM_VAR(AsmLabel, g_cs6f2dec, $L_6f2dec)
+ASM_VAR(AsmLabel, g_cs6f2df0, $L_6f2df0)
+ASM_VAR(AsmLabel, g_cs6f3258, $L_6f3258)
+ASM_VAR(AsmLabel, g_cs6f325c, $L_6f325c)
+ASM_VAR(AsmLabel, g_cs6f3260, $L_6f3260)
+ASM_VAR(AsmLabel, g_cs6f3264, $L_6f3264)
+ASM_VAR(AsmLabel, g_cs6f3380, $L_6f3380)
+ASM_VAR(AsmLabel, g_cs6f2c50, $L_6f2c50)
+ASM_VAR(AsmLabel, g_cs6f337c, $L_6f337c)
+ASM_VAR(AsmLabel, g_cs6f2d08, $L_6f2d08)
+ASM_VAR(AsmLabel, g_cs6f2d14, $L_6f2d14)
+ASM_VAR(AsmLabel, g_cs6f3378, $L_6f3378)
+ASM_VAR(AsmLabel, g_cs6f3268, $L_6f3268)
+ASM_VAR(AsmLabel, g_cs6f33a8, $L_6f33a8)
+ASM_VAR(AsmLabel, g_cs6f2e38, $L_6f2e38)
+ASM_VAR(AsmLabel, g_cs6f2e3c, $L_6f2e3c)
+ASM_VAR(AsmLabel, g_cs6f2e40, $L_6f2e40)
+ASM_VAR(AsmLabel, g_cs6f2e44, $L_6f2e44)
+ASM_VAR(AsmLabel, g_cs6f2e48, $L_6f2e48)
+ASM_VAR(AsmLabel, g_cs6f2e4c, $L_6f2e4c)
+ASM_VAR(AsmLabel, g_cs6f2e50, $L_6f2e50)
+ASM_VAR(AsmLabel, g_cs6f2e54, $L_6f2e54)
+static char* const k_csNames2[] = {s_cs67c164, s_cs67c150, s_cs67c124, s_cs67c110, s_cs67c0fc, s_cs67c0e8, s_cs67c0d4, s_cs67c0c0, s_cs67c0ac, s_cs67c098, s_cs67c084, s_cs67c070, s_cs67c05c, s_cs67c048, s_cs67c034, s_cs67c024, s_cs67c014, s_cs67c004, s_cs67bff0, s_cs67bfe0, s_cs67bfd0, s_cs67bfc0, s_cs67bfb0, s_cs67bfa0, s_cs67bf90, s_cs67bf80, s_cs67bf70, s_cs67bf60};
+static char* const k_csNames[] = {s_cs67bf4c, s_cs67bf38, s_cs67bf0c, s_cs67bef8, s_cs67bee4, s_cs67bed0, s_cs67bebc, s_cs67bea8, s_cs67be94, s_cs67be80, s_cs67be6c, s_cs67be58, s_cs67be44, s_cs67be30, s_cs67be1c, s_cs67be0c, s_cs67bdfc, s_cs67bdec, s_cs67bdd8, s_cs67bdc8, s_cs67bdb8, s_cs67bda8, s_cs67bd98, s_cs67bd88, s_cs67bd78, s_cs67bd68, s_cs67bd58, s_cs67bd48};
+static char* const k_csSlots[] = {g_cs6f332c, g_cs6f32e4, g_cs6f3330, g_cs6f2df4, g_cs6f2de4, g_cs6f2de8, g_cs6f2dec, g_cs6f2df0, g_cs6f3258, g_cs6f325c, g_cs6f3260, g_cs6f3264, g_cs6f3380, g_cs6f2c50, g_cs6f337c, g_cs6f2d08, g_cs6f2d14, g_cs6f3378, g_cs6f3268, g_cs6f33a8, g_cs6f2e38, g_cs6f2e3c, g_cs6f2e40, g_cs6f2e44, g_cs6f2e48, g_cs6f2e4c, g_cs6f2e50, g_cs6f2e54};
+ASM_VAR(AsmLabel, s_cs67c138, $L_67c138)         // "...%d%d" mode 2 frame names
+ASM_VAR(AsmLabel, s_cs67bf20, $L_67bf20)
+ASM_VAR(AsmLabel, g_csFrames, $L_6f2f0c)          // 24 x 6 frames
+ASM_VAR(AsmLabel, s_cs672998, $L_672998)
+ASM_VAR(AsmLabel, s_cs675dd8, $L_675dd8)
+ASM_VAR(AsmLabel, s_cs6729a8, $L_6729a8)
+ASM_VAR(AsmLabel, s_cs67bd40, $L_67bd40)
+ASM_VAR(AsmLabel, s_cs67bd18, $L_67bd18)
+ASM_VAR(AsmLabel, s_cs67bd2c, $L_67bd2c)
+ASM_VAR(AsmLabel, s_cs67bbdc, $L_67bbdc)
+ASM_VAR(AsmLabel, g_csVtbl64fe80, $L_64fe80)
+ASM_VAR(AsmLabel, g_csTv6f68b0, $L_6f68b0)
+ASM_VAR(char*, g_csIniPath, $L_696868)
+ASM_VAR(int, g_cs67b734, $L_67b734)
+ASM_VAR(int, g_cs696340, $L_696340)
+ASM_VAR(int, g_cs696328, $L_696328)
+ASM_VAR(BYTE*, g_cs696338, $L_696338)
+ASM_VAR(BYTE*, g_csShell, $L_6cec6c)
+ASM_VAR(BYTE*, g_cs6cec74, $L_6cec74)
+ASM_VAR(BYTE*, g_cs6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_cs6cecb4, $L_6cecb4)
+ASM_VAR(BYTE*, g_cs6d1f10, $L_6d1f10)
+ASM_VAR(BYTE*, g_csGame, $L_6d2078)
+ASM_VAR(BYTE*, g_cs6ef1f8, $L_6ef1f8)
+ASM_VAR(int, g_csNoCar, $L_68b990)
+ASM_VAR(int, g_cs6f331c, $L_6f331c)
+ASM_VAR(int, g_cs6f3320, $L_6f3320)
+ASM_VAR(int, g_cs6f33b8, $L_6f33b8)
+ASM_VAR(int, g_cs6f33bc, $L_6f33bc)
+ASM_VAR(int, g_cs6f3404, $L_6f3404)
+ASM_VAR(int, g_cs6f34b0, $L_6f34b0)
+ASM_VAR(BYTE*, g_cs6f3430, $L_6f3430)
+ASM_VAR(BYTE*, g_cs6f3434, $L_6f3434)
+ASM_VAR(BYTE*, g_cs6f3438, $L_6f3438)
+ASM_VAR(BYTE*, g_cs6f33ec, $L_6f33ec)
+ASM_VAR(AsmLabel, g_cs6f3338, $L_6f3338)
+ASM_VAR(AsmLabel, s_cs67bd04, $L_67bd04)
+ASM_VAR(AsmLabel, s_cs67bcf0, $L_67bcf0)
+ASM_VAR(AsmLabel, s_cs67bcdc, $L_67bcdc)
+ASM_VAR(AsmLabel, s_cs67bcc8, $L_67bcc8)
+ASM_VAR(AsmLabel, s_cs67bcb4, $L_67bcb4)
+ASM_VAR(AsmLabel, s_cs67bca0, $L_67bca0)
+ASM_VAR(AsmLabel, s_cs67bc8c, $L_67bc8c)
+ASM_VAR(AsmLabel, s_cs67bc78, $L_67bc78)
+ASM_VAR(AsmLabel, s_cs67bc68, $L_67bc68)
+ASM_VAR(AsmLabel, s_cs67bc58, $L_67bc58)
+ASM_VAR(AsmLabel, s_cs67bc48, $L_67bc48)
+ASM_VAR(AsmLabel, s_cs67bc38, $L_67bc38)
+ASM_VAR(AsmLabel, s_cs67bc20, $L_67bc20)
+ASM_VAR(AsmLabel, s_cs67bc08, $L_67bc08)
+ASM_VAR(AsmLabel, s_cs67bbf8, $L_67bbf8)
+ASM_VAR(AsmLabel, s_cs67bbe8, $L_67bbe8)
+ASM_VAR(AsmLabel, g_cs6f33c4, $L_6f33c4)
+static char* const k_csHud[8][2] = {
+    {s_cs67bd04, s_cs67bcf0}, {s_cs67bcdc, s_cs67bcc8}, {s_cs67bcb4, s_cs67bca0}, {s_cs67bc8c, s_cs67bc78},
+    {s_cs67bc68, s_cs67bc58}, {s_cs67bc48, s_cs67bc38}, {s_cs67bc20, s_cs67bc08}, {s_cs67bbf8, s_cs67bbe8},
+};
+extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
+extern "C" void FUN_4d8ae0(); KING_ALIAS("_FUN_4d8ae0", "_Vehicle_Release")
+ASM_PROC(FUN_4d8b20)
+ASM_PROC(FUN_531cc0)
+extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
+ASM_PROC(FUN_56f6d0)
+extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
+extern "C" void FUN_598da0(); KING_ALIAS("_FUN_598da0", "@Wasm_Get108@8")
+extern "C" void FUN_597570(); KING_ALIAS("_FUN_597570", "@WorldObj_Attach@12")
+ASM_PROC(FUN_5975e0)
+extern "C" void FUN_597a20(); KING_ALIAS("_FUN_597a20", "@TvCamera_CreateMonitor@8")
+extern "C" void FUN_598bd0(); KING_ALIAS("_FUN_598bd0", "@WorldObj_SetTarget@12")
+extern "C" void FUN_56afe0(); KING_ALIAS("_FUN_56afe0", "@Notice_Set@16")
+extern "C" void FUN_4ce0d0(); KING_ALIAS("_FUN_4ce0d0", "@Effect4ce0d0_Construct@20")
+ASM_PROC(FUN_56d810)
+extern "C" void FUN_56d7d0(); KING_ALIAS("_FUN_56d7d0", "_Flags_Set6ce37c")
+extern "C" void FUN_483990(); KING_ALIAS("_FUN_483990", "_AI_StartXCycleTask")
+extern "C" BYTE* __fastcall CopterTask_Construct(BYTE* self, void*, BYTE* v);
+extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game);
+
+static BYTE* CopterStart_Find(const char* name)
+{
+    return CallC<BYTE*>(FUN_5ef3d0, name);
+}
+
+extern "C" {
+
+// [FUN_56e5a0] starts the copter screen for the vehicle v: resets the shell counters, takes the player's car,
+// finds the screen's pictures and sounds (another set in game mode 2), sets up the TV camera, the notice, the
+// message objects and the effect, and starts the AI cycle task.
+void __cdecl CopterScreen_Start(BYTE* v)
+{
+    char* iniPath = g_csIniPath;
+    g_cs6f33b8 = g_cs6f331c;
+    g_cs6f33bc = g_cs6f3320;
+    F(int, g_csShell, 1308) = 0;
+    F(int, g_csShell, 1292) = 0;
+    F(int, g_csShell, 1288) = 0;
+    F(int, g_csShell, 1284) = 0;
+    F(int, g_csShell, 1296) = 0;
+    g_cs6f3404 = 0;
+    g_cs6f34b0 = 0;
+    if (g_cs696340 == 0) {
+        BYTE* o = g_cs6ef1f8 ? g_cs6ef1f8 - 4 : 0;
+        BYTE* r = CallThis<BYTE*>(FUN_541960, o);
+        CallC(FUN_4d8ae0, F(int, r, 360));
+        CallC(FUN_4d8b20, g_cs67b734);
+    }
+    CallThis(FUN_531cc0, g_csGame, g_cs696340);
+    int id;
+    if (*CallC<int*>(FUN_568f60, &id) != g_csNoCar) {
+        BYTE info[192];
+        int car;
+        car = *CallC<int*>(FUN_568f60, &car);
+        CallC(FUN_43fc40, car, info);
+        if (F(int, info, 24) >= 0)
+            CallC(FUN_55f4e0, F(BYTE*, g_csGame, 616), 0);
+    }
+    CallC(FUN_56f6d0);
+    if (F(short, g_cs6cec74, 396))
+        F(int, g_csGame, 1404) |= 0x100;
+    else
+        F(int, g_csGame, 1404) &= ~0x100;
+    if (g_cs696328)
+        CallThis(FUN_4ebaa0, F(BYTE*, F(BYTE*, g_csGame, 616), 21600) + 9984, 1, 1);
+
+    int mode2 = CallC<int>(FUN_568fd0) == 2;
+    char* const* names = mode2 ? k_csNames2 : k_csNames;
+    const int n = sizeof k_csSlots / sizeof k_csSlots[0];
+    for (int i = 0; i < 2; i++)
+        *(BYTE**)k_csSlots[i] = CopterStart_Find(names[i]);
+    BYTE** frame = (BYTE**)(char*)g_csFrames;
+    for (int a = 0; a < 24; a++)
+        for (int b = 0; b < 6; b++) {
+            char buf[256];
+            sprintf(buf, mode2 ? s_cs67c138 : s_cs67bf20, a, b);
+            *frame++ = CopterStart_Find(buf);
+        }
+    for (int i = 2; i < n; i++)
+        *(BYTE**)k_csSlots[i] = CopterStart_Find(names[i]);
+
+    BYTE* tv = CallThis<BYTE*>(FUN_598da0, g_csTv6f68b0);
+    F(double, F(BYTE*, tv, 472), 40) = 0.2;
+    F(double, F(BYTE*, v, 472), 40) = 0.2;
+    char value[60];
+    GetPrivateProfileStringA(s_cs672998, s_cs675dd8, s_cs6729a8, value, 60, iniPath);
+    CallThis(FUN_597570, g_csTv6f68b0, g_cs696340);
+    BYTE* p488 = F(BYTE*, v, 488);
+    int target = p488 ? F(int, p488, 76) : 0;
+    BYTE cam[48];
+    BYTE* c = CallThis<BYTE*>(FUN_5dbcc0, v, cam, 0);
+    CallThis(FUN_5975e0, g_csTv6f68b0, target, c);
+    CallThis(FUN_597a20, g_csTv6f68b0);
+    CallThis(FUN_598bd0, g_csTv6f68b0, 1);
+    if (F(int, g_csShell, 1300) > 1 && F(int, g_csGame, 1400) != 0)
+        *g_cs6d1f10 = 1;
+
+    BYTE* p = (BYTE*)operator new(64);
+    p = p ? CopterTask_Construct(p, 0, v) : 0;
+    g_cs6f3430 = p;
+    if (F(int, g_csShell, 1316) == 2)
+        CallThis(FUN_56afe0, p, 2, 0);
+
+    BYTE* o = (BYTE*)operator new(40);
+    if (o) {
+        CallThis(FUN_5d31e0, o, 9, (char*)s_cs67bd40);
+        F(void*, o, 0) = g_csVtbl64fe80;
+        F(int, o, 32) = -1;
+        F(int, o, 36) = -1;
+        CallThis(FUN_5d3570, v + 2992, o);
+        CallThis(FUN_5d33d0, o, 1);
+    }
+    g_cs6f3434 = o;
+
+    p = (BYTE*)operator new(1296);
+    g_cs6f3438 = p ? CopterScreen_Construct(p, 0, v) : 0;
+
+    p = (BYTE*)operator new(48);
+    p = p ? CallThis<BYTE*>(FUN_4ce0d0, p, v, (char*)s_cs67bd18, (char*)s_cs67bd2c) : 0;
+    g_cs696338 = p;
+    CallVirt(p, 24, 1);
+    CallC(FUN_56d810, v);
+    CallC(FUN_56d7d0, 882);
+    if (!(F(int, g_csShell, 1300) > 1)
+        && (F(int, g_csShell, 1316) == 0 || F(int, g_cs6cec98, 384) != 2))
+        CallC(FUN_483990);
+
+    for (int i = 0; i < 8; i++)
+        ((BYTE**)(char*)g_cs6f33c4)[i] = CopterStart_Find(k_csHud[i][CallC<int>(FUN_568fd0) == 2 ? 0 : 1]);
+    g_cs6f33ec = CopterStart_Find(s_cs67bbdc);
+    memset(g_cs6f3338, 0, 64);
+    if (F(int, g_csShell, 1316) == 1)
+        CallVirt(g_cs6cecb4, 36);
+}
+
+} // extern "C"
+
+// === copter screen panels (FUN_56bc80)
+
+ASM_VAR(BYTE*, g_cp696ca0, $L_696ca0)
+ASM_VAR(int, g_cpX, $L_6ced14)
+ASM_VAR(int, g_cpY, $L_6ced18)
+ASM_VAR(int, g_cpX2, $L_6ced1c)
+ASM_VAR(int, g_cpY2, $L_6ced20)
+ASM_VAR(BYTE*, g_cpFont, $L_6ced24)
+ASM_VAR(BYTE*, g_cpFont2, $L_6ced2c)
+ASM_VAR(BYTE*, g_cpImages, $L_6cecbc)
+ASM_VAR(BYTE*, g_cpImg6f33c4, $L_6f33c4)
+ASM_VAR(BYTE*, g_cpImg6f33c8, $L_6f33c8)
+ASM_VAR(BYTE*, g_cpImg6f33cc, $L_6f33cc)
+ASM_VAR(BYTE*, g_cpImg6f33d0, $L_6f33d0)
+ASM_VAR(BYTE, g_cp6f2dd8, $L_6f2dd8)
+ASM_VAR(char*, g_cp6f2da4, $L_6f2da4)
+ASM_VAR(double, g_cp6f2da8, $L_6f2da8)
+ASM_VAR(int, g_cp6f2db0, $L_6f2db0)
+ASM_VAR(int, g_cp6f2db4, $L_6f2db4)
+ASM_VAR(double, g_cp6f2db8, $L_6f2db8)
+ASM_VAR(int, g_cp6f2dc0, $L_6f2dc0)
+ASM_VAR(int, g_cp6f2dd0, $L_6f2dd0)
+ASM_VAR(int, g_cp6f2dd4, $L_6f2dd4)
+ASM_VAR(int, g_cp6f2f08, $L_6f2f08)
+ASM_VAR(int, g_cp68cf6c, $L_68cf6c)
+ASM_VAR(int, g_cpNoCar, $L_68b990)
+ASM_VAR(BYTE*, g_cpNotice, $L_6f3430)
+ASM_VAR(AsmLabel, g_cp7025f0, $L_7025f0)
+ASM_VAR(double, g_cpMsec, $L_64b658)
+ASM_VAR(double, g_cpOne, $L_64b670)
+ASM_VAR(double, g_cp64b6a0, $L_64b6a0)
+ASM_VAR(AsmLabel, s_cp67ba18, $L_67ba18)
+ASM_VAR(AsmLabel, s_cp66c8cc, $L_66c8cc)
+ASM_VAR(AsmLabel, s_cp67ba10, $L_67ba10)
+ASM_VAR(AsmLabel, s_cp67ba08, $L_67ba08)
+ASM_VAR(AsmLabel, s_cp67ba00, $L_67ba00)
+ASM_VAR(AsmLabel, s_cp67b8f8, $L_67b8f8)
+ASM_VAR(AsmLabel, s_cp677a74, $L_677a74)
+extern "C" void FUN_4d06a0(); KING_ALIAS("_FUN_4d06a0", "@Fx_InitState@8")
+extern "C" void FUN_41be60(); KING_ALIAS("_FUN_41be60", "_Ai_GetPresentData")
+extern "C" void FUN_4401d0(); KING_ALIAS("_FUN_4401d0", "_Ai_GetMerchandiseProperties")
+extern "C" void FUN_441950(); KING_ALIAS("_FUN_441950", "_Ai_GetOrderInfo")
+extern "C" void FUN_440f70(); KING_ALIAS("_FUN_440f70", "_Ai_GetTownInfo")
+extern "C" void FUN_43f8d0(); KING_ALIAS("_FUN_43f8d0", "_Player_PlaceField20")
+extern "C" void FUN_576c00(); KING_ALIAS("_FUN_576c00", "@Obj576c00_DeletingDestructor@12")
+extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
+extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
+
+static __declspec(noinline) int Cp_Int(double d)
+{
+    return (int)d;
+}
+
+static int Cp_TimeOdd(double k)
+{
+    return Cp_Int(F(double, g_cp696ca0, 2968) * k) % 2 != 0;
+}
+
+static void Cp_Text(int x, int y, BYTE* font, const char* text, int align = 5)
+{
+    CallC(FUN_5ea170, F(BYTE*, g_cp696ca0, 12), x, y, font, text, align, 0);
+}
+
+static void Cp_Image(int x, int y, BYTE* image)
+{
+    CallC(FUN_5b86c0, F(BYTE*, g_cp696ca0, 12), x, y, image);
+}
+
+static const char* Cp_Str(int id)
+{
+    return CallC<const char*>(FUN_5d2e50, id);
+}
+
+static void Cp_Notice(int text)
+{
+    BYTE* n = g_cpNotice;
+    if (n && F(int, n, 60) == 0)
+        CallThis(FUN_56afe0, n, 8, Cp_Str(text));
+}
+
+// the lines of an order info below its name at (x, y): price, time, rates and damage
+static void Cp_OrderLines(int x, int y, BYTE* oi, BYTE* mp, char* buf, const char* priceFmt, const char* timeFmt)
+{
+    sprintf(buf, priceFmt, Cp_Int(F(double, oi, 120)));
+    Cp_Text(x, y + 55, g_cpFont, buf);
+    int t = Cp_Int(F(double, oi, 136));
+    sprintf(buf, timeFmt, t / 60, t % 60);
+    Cp_Text(x, y + 75, g_cpFont, buf);
+    sprintf(buf, Cp_Str(70), F(double, oi, 144) * g_cpMsec);
+    Cp_Text(x, y + 95, g_cpFont, buf);
+    sprintf(buf, Cp_Str(71), F(int, oi, 152), F(int, oi, 156));
+    Cp_Text(x, y + 115, g_cpFont, buf);
+    sprintf(buf, s_cp67ba08, Cp_Int((g_cpOne - F(double, mp, 32)) * g_cp64b6a0));
+    Cp_Text(x, y + 135, g_cpFont, buf);
+}
+
+extern "C" {
+
+// [FUN_56bc80] draws the copter screen's panel of mode +32 (17 an order, 18 the player's state, 19 a town's
+// orders, 20/25 a present, 24 another vehicle) for the id at +36, then clears the mode
+void __fastcall CopterPanel_Draw(BYTE* self, void*)
+{
+    char buf[136];
+    switch (F(int, self, 32)) {
+    case 18: {
+        if (F(int, self, 36) < 0)
+            break;
+        int x = g_cpX, y = g_cpY;
+        Cp_Image(x, y, g_cpImg6f33c8);
+        int tx = x + 103, ty = y + 585;
+        BYTE st[19 * 16];
+        Hud_InitLights(st);
+        int id;
+        Player_GetState((BYTE*)*Player_CarId(&id), st);
+        if (F(int, st, 160) && (g_cp6f2dd8 & 4) && Cp_TimeOdd(1.0))
+            Cp_Text(tx, ty + 15, g_cpFont2, Cp_Str(109));
+        else if (F(int, st, 160) && (g_cp6f2dd8 & 8) && Cp_TimeOdd(1.0))
+            Cp_Text(tx, ty + 15, g_cpFont2, Cp_Str(110));
+        else
+            Cp_Text(tx, ty + 15, g_cpFont, g_cp6f2da4);
+        sprintf(buf, s_cp67ba18, g_cp6f2db0, g_cp6f2db4);
+        Cp_Text(tx, ty + 35, g_cpFont, buf);
+        sprintf(buf, s_cp66c8cc, Cp_Int(g_cp6f2db8));
+        Cp_Text(tx + 45, ty + 55, g_cpFont, buf);
+        sprintf(buf, s_cp66c8cc, Cp_Int(g_cp6f2da8));
+        Cp_Text(tx + 45, ty + 75, g_cpFont, buf);
+        Cp_Notice(58);
+        break;
+    }
+    case 24: {
+        if (F(int, self, 36) < 0)
+            break;
+        int x = g_cpX, y = g_cpY;
+        Cp_Image(x, y, g_cpImg6f33cc);
+        if (g_cp6f2dc0 == g_cpNoCar)
+            break;
+        int tx = x + 103, ty = y + 565;
+        BYTE info[192];
+        CallC(FUN_43fc40, g_cp6f2dc0, info);
+        Cp_Text(tx, ty + 15, g_cpFont, F(char*, info, 48));
+        sprintf(buf, s_cp67ba18, g_cp6f2dd0, g_cp6f2dd4);
+        Cp_Text(tx, ty + 35, g_cpFont, buf);
+        Cp_Text(tx, ty + 55, g_cpFont, g_cp6f2da4);
+        sprintf(buf, s_cp67ba18, g_cp6f2db0, g_cp6f2db4);
+        Cp_Text(tx, ty + 75, g_cpFont, buf);
+        sprintf(buf, s_cp66c8cc, Cp_Int(g_cp6f2db8));
+        Cp_Text(tx + 44, ty + 95, g_cpFont, buf);
+        sprintf(buf, s_cp66c8cc, Cp_Int(g_cp6f2da8));
+        Cp_Text(tx + 44, ty + 115, g_cpFont, buf);
+        int k = CallC<int>(FUN_43f8d0, g_cp6f2dc0);
+        Cp_Image(x + 98, g_cpY + 454, F(BYTE*, g_cpImages, k * 4 + 368));
+        Cp_Notice(72);
+        break;
+    }
+    case 20:
+    case 25: {
+        if (g_cp6f2f08 == g_cp68cf6c)
+            break;
+        // present data: +4 a 4x3 matrix, +80 the order info
+        BYTE pd[280];
+        F(int, pd, 0) = 0;
+        memcpy(pd + 4, g_cp7025f0, 48);
+        for (int k = 52; k <= 68; k += 4)
+            F(int, pd, k) = 0;
+        F(int, pd, 72) = -1;
+        F(int, pd, 76) = -1;
+        CallThis(FUN_4d06a0, pd + 80);
+        F(int, pd, 272) = -1;
+        F(int, pd, 276) = -1;
+        int id;
+        CallC(FUN_41be60, *Player_CarId(&id), g_cp6f2f08, pd);
+        BYTE* oi = pd + 80;
+        int merch = F(int, oi, 0);
+        if (merch != -1) {
+            int x = g_cpX, y = g_cpY;
+            Cp_Image(x, y, g_cpImg6f33c4);
+            BYTE mp[40];
+            F(int, mp, 0) = 0;
+            CallC(FUN_4401d0, merch, mp);
+            int tx = x + 125, ty = y + 557;
+            Cp_Text(tx, ty + 15, g_cpFont, F(char*, oi, 100));
+            if (Cp_TimeOdd(2.0))
+                Cp_Text(tx, ty + 35, g_cpFont, F(char*, oi, 112));
+            Cp_OrderLines(tx, ty, oi, mp, buf, s_cp66c8cc, s_cp67ba10);
+        }
+        CallThis(FUN_44b090, oi + 88);
+        CallThis(FUN_404420, oi + 76);
+        CallThis(FUN_404420, oi + 64);
+        CallThis(FUN_404420, oi + 52);
+        break;
+    }
+    case 17: {
+        int v = F(int, self, 36);
+        if (v % 100 == 0) {
+            Cp_Image(g_cpX, g_cpY, g_cpImg6f33c4);
+            Cp_Text(g_cpX + 100, g_cpY + 732, g_cpFont, Cp_Str(56), 4);
+            break;
+        }
+        BYTE oi[192];
+        CallThis(FUN_4d06a0, oi);
+        int id;
+        CallC(FUN_441950, *Player_CarId(&id), v / 100, v % 100, oi);
+        int merch = F(int, oi, 0);
+        if (merch != -1) {
+            int x = g_cpX, y = g_cpY;
+            Cp_Image(x, y, g_cpImg6f33c4);
+            int tx = x + 125, ty = y + 557;
+            sprintf(buf, s_cp67ba00, Cp_Str(60), F(int, self, 36) % 100);
+            Cp_Text(x + 100, ty + 175, g_cpFont, buf, 4);
+            BYTE mp[40];
+            F(int, mp, 0) = 0;
+            CallC(FUN_4401d0, merch, mp);
+            BYTE st[19 * 16];
+            Hud_InitLights(st);
+            Player_GetState((BYTE*)*Player_CarId(&id), st);
+            if (F(int, st, 160) && F(char*, oi, 104) && Cp_TimeOdd(1.0))
+                Cp_Text(tx, ty + 15, g_cpFont2, F(char*, oi, 104));
+            else
+                Cp_Text(tx, ty + 15, g_cpFont, F(char*, oi, 100));
+            Cp_Text(tx, ty + 35, g_cpFont, F(char*, oi, 112));
+            Cp_OrderLines(tx, ty, oi, mp, buf, s_cp677a74, s_cp67b8f8);
+        }
+        if (unsigned size = F(BYTE*, oi, 96) - F(BYTE*, oi, 88))
+            Ai_PoolFree(F(BYTE*, oi, 88), size);
+        CallThis(FUN_44b090, oi + 76);
+        CallThis(FUN_44b090, oi + 64);
+        CallThis(FUN_44b090, oi + 52);
+        break;
+    }
+    case 19: {
+        Cp_Image(g_cpX2 + 2, g_cpY2, g_cpImg6f33d0);
+        // town info: +20 a vector of 192-byte orders, +32 their count, +36 the first
+        BYTE ti[48];
+        for (int k = 8; k <= 40; k += 4)
+            F(int, ti, k) = 0;
+        int id;
+        CallC(FUN_440f70, *Player_CarId(&id), F(int, self, 36), ti);
+        int x = g_cpX2 + 49;
+        int count = F(int, ti, 32);
+        int y = g_cpY2 + 551;
+        for (int i = 0; i < count; i++, y += 20) {
+            BYTE* o = F(BYTE*, ti, 36) + i * 192;
+            Cp_Text(x, y, g_cpFont, F(char*, o, 100));
+            Cp_Text(x + 102, y, g_cpFont, F(char*, o, 108));
+            Cp_Text(x + 192, y, g_cpFont, F(char*, o, 112));
+            int t = Cp_Int(F(double, o, 168));
+            sprintf(buf, s_cp67b8f8, t / 60, t % 60);
+            Cp_Text(x + 280, y, g_cpFont, buf);
+        }
+        BYTE* b = F(BYTE*, ti, 20);
+        for (BYTE* p = b; p != F(BYTE*, ti, 24); p += 192)
+            CallThis(FUN_576c00, p, 0);
+        if (int n = (int)(F(BYTE*, ti, 28) - b) / 192)
+            Ai_PoolFree(b, n * 192);
+        break;
+    }
+    }
+    F(int, self, 32) = -1;
+}
+
+} // extern "C"

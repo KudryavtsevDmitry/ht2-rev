@@ -1067,3 +1067,192 @@ extern "C" BYTE* __fastcall Wea5a72c0_Init(BYTE* s)
 extern "C" int __fastcall q238_Wea5a4e90_Destroy(BYTE* s); KING_ALIAS("@q238_Wea5a4e90_Destroy@4", "@Wea5a4e90_Destroy@4")
 // [FUN_5a4ff0] forwards to Wea5a4e90_Destroy
 extern "C" int __fastcall Thunk5a4ff0(BYTE* s) { return q238_Wea5a4e90_Destroy(s); }
+
+// ---------------------------------------------------------------------------
+// Weather settings
+
+extern "C" void FUN_5a88f0(); KING_ALIAS("_FUN_5a88f0", "_Color_Parse")
+extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
+ASM_VAR(DWORD, g_weatherFlags6fca38, $L_6fca38)    // [8]: 1 rain, 2 sun, 4 thunder
+ASM_VAR(BYTE, g_w6f9cc0, $L_6f9cc0)
+ASM_VAR(BYTE, g_w6f9ccc, $L_6f9ccc)
+ASM_VAR(BYTE, g_w6f9cd8, $L_6f9cd8)
+ASM_VAR(BYTE, g_w6f9ce4, $L_6f9ce4)
+ASM_VAR(BYTE, g_w6f9cf0, $L_6f9cf0)
+ASM_VAR(BYTE, g_w6f9cfc, $L_6f9cfc)
+ASM_VAR(BYTE, g_w6f9d08, $L_6f9d08)
+ASM_VAR(BYTE, g_w6f9d14, $L_6f9d14)
+ASM_VAR(BYTE, g_w6fa150, $L_6fa150)
+ASM_VAR(BYTE, g_w6fa15c, $L_6fa15c)
+ASM_VAR(BYTE, g_w6fa168, $L_6fa168)
+ASM_VAR(BYTE, g_w6fa174, $L_6fa174)
+ASM_VAR(BYTE, g_w6fa180, $L_6fa180)
+ASM_VAR(BYTE, g_w6fa18c, $L_6fa18c)
+ASM_VAR(BYTE, g_w6fa198, $L_6fa198)
+ASM_VAR(BYTE, g_w6fa1a4, $L_6fa1a4)
+ASM_VAR(BYTE, g_w6fa450, $L_6fa450)
+ASM_VAR(BYTE, g_w6fa45c, $L_6fa45c)
+ASM_VAR(BYTE, g_w6fa468, $L_6fa468)
+ASM_VAR(BYTE, g_w6fa474, $L_6fa474)
+ASM_VAR(BYTE, g_w6fa480, $L_6fa480)
+ASM_VAR(BYTE, g_w6fa48c, $L_6fa48c)
+ASM_VAR(BYTE, g_w6fa498, $L_6fa498)
+ASM_VAR(BYTE, g_w6fa4a4, $L_6fa4a4)
+ASM_VAR(BYTE, g_w6fb3f4, $L_6fb3f4)
+ASM_VAR(BYTE, g_w6fb400, $L_6fb400)
+ASM_VAR(BYTE, g_w6fb40c, $L_6fb40c)
+ASM_VAR(BYTE, g_w6fb418, $L_6fb418)
+ASM_VAR(BYTE, g_w6fb424, $L_6fb424)
+ASM_VAR(BYTE, g_w6fb430, $L_6fb430)
+ASM_VAR(BYTE, g_w6fb43c, $L_6fb43c)
+ASM_VAR(BYTE, g_w6fb448, $L_6fb448)
+ASM_VAR(BYTE, g_w6fc9b8, $L_6fc9b8)
+ASM_VAR(BYTE, g_w6fc9bc, $L_6fc9bc)
+ASM_VAR(BYTE, g_w6fc9c0, $L_6fc9c0)
+ASM_VAR(BYTE, g_w6fc9c4, $L_6fc9c4)
+ASM_VAR(BYTE, g_w6fca58, $L_6fca58)
+ASM_VAR(BYTE, g_w6fca5c, $L_6fca5c)
+ASM_VAR(BYTE, g_w6fca60, $L_6fca60)
+ASM_VAR(BYTE, g_w6fca64, $L_6fca64)
+ASM_VAR(BYTE, g_w6fd75c, $L_6fd75c)
+ASM_VAR(BYTE, g_w6fd760, $L_6fd760)
+ASM_VAR(BYTE, g_w6fd764, $L_6fd764)
+ASM_VAR(BYTE, g_w6fd768, $L_6fd768)
+ASM_VAR(BYTE, g_w701ca0, $L_701ca0)
+ASM_VAR(BYTE, g_w701cac, $L_701cac)
+ASM_VAR(BYTE, g_w701cb8, $L_701cb8)
+ASM_VAR(BYTE, g_w701cc4, $L_701cc4)
+ASM_VAR(BYTE, g_w701cd0, $L_701cd0)
+ASM_VAR(BYTE, g_w701cdc, $L_701cdc)
+ASM_VAR(BYTE, g_w701ce8, $L_701ce8)
+ASM_VAR(BYTE, g_w701cf4, $L_701cf4)
+ASM_VAR(BYTE, g_w701fa0, $L_701fa0)
+ASM_VAR(BYTE, g_w701fac, $L_701fac)
+ASM_VAR(BYTE, g_w701fb8, $L_701fb8)
+ASM_VAR(BYTE, g_w701fc4, $L_701fc4)
+ASM_VAR(BYTE, g_w701fd0, $L_701fd0)
+ASM_VAR(BYTE, g_w701fdc, $L_701fdc)
+ASM_VAR(BYTE, g_w701fe8, $L_701fe8)
+ASM_VAR(BYTE, g_w701ff4, $L_701ff4)
+ASM_VAR(BYTE, g_w7022a0, $L_7022a0)
+ASM_VAR(BYTE, g_w7022ac, $L_7022ac)
+ASM_VAR(BYTE, g_w7022b8, $L_7022b8)
+ASM_VAR(BYTE, g_w7022c4, $L_7022c4)
+ASM_VAR(BYTE, g_w7022d0, $L_7022d0)
+ASM_VAR(BYTE, g_w7022dc, $L_7022dc)
+ASM_VAR(BYTE, g_w7022e8, $L_7022e8)
+ASM_VAR(BYTE, g_w7022f4, $L_7022f4)
+
+struct WeatherColorKey { const char* key; BYTE* to; };
+static const WeatherColorKey s_weatherColors[] = {
+    {"fog_badnight", &g_w6fb3f4},
+    {"fog_badsrise", &g_w6fb400},
+    {"fog_badday", &g_w6fb40c},
+    {"fog_badsset", &g_w6fb418},
+    {"fog_goodnight", &g_w6fb424},
+    {"fog_goodsrise", &g_w6fb430},
+    {"fog_goodday", &g_w6fb43c},
+    {"fog_goodsset", &g_w6fb448},
+    {"sunenv_badnight", &g_w701fa0},
+    {"sunenv_badsrise", &g_w701fac},
+    {"sunenv_badday", &g_w701fb8},
+    {"sunenv_badsset", &g_w701fc4},
+    {"sunenv_goodnight", &g_w701fd0},
+    {"sunenv_goodsrise", &g_w701fdc},
+    {"sunenv_goodday", &g_w701fe8},
+    {"sunenv_goodsset", &g_w701ff4},
+    {"sunsky_badnight", &g_w6f9cc0},
+    {"sunsky_badsrise", &g_w6f9ccc},
+    {"sunsky_badday", &g_w6f9cd8},
+    {"sunsky_badsset", &g_w6f9ce4},
+    {"sunsky_goodnight", &g_w6f9cf0},
+    {"sunsky_goodsrise", &g_w6f9cfc},
+    {"sunsky_goodday", &g_w6f9d08},
+    {"sunsky_goodsset", &g_w6f9d14},
+    {"suncld_badnight", &g_w701ca0},
+    {"suncld_badsrise", &g_w701cac},
+    {"suncld_badday", &g_w701cb8},
+    {"suncld_badsset", &g_w701cc4},
+    {"suncld_goodnight", &g_w701cd0},
+    {"suncld_goodsrise", &g_w701cdc},
+    {"suncld_goodday", &g_w701ce8},
+    {"suncld_goodsset", &g_w701cf4},
+    {"skyamb_badnight", &g_w7022a0},
+    {"skyamb_badsrise", &g_w7022ac},
+    {"skyamb_badday", &g_w7022b8},
+    {"skyamb_badsset", &g_w7022c4},
+    {"skyamb_goodnight", &g_w7022d0},
+    {"skyamb_goodsrise", &g_w7022dc},
+    {"skyamb_goodday", &g_w7022e8},
+    {"skyamb_goodsset", &g_w7022f4},
+    {"envamb_badnight", &g_w6fa450},
+    {"envamb_badsrise", &g_w6fa45c},
+    {"envamb_badday", &g_w6fa468},
+    {"envamb_badsset", &g_w6fa474},
+    {"envamb_goodnight", &g_w6fa480},
+    {"envamb_goodsrise", &g_w6fa48c},
+    {"envamb_goodday", &g_w6fa498},
+    {"envamb_goodsset", &g_w6fa4a4},
+    {"moon_badnight", &g_w6fa150},
+    {"moon_badsrise", &g_w6fa15c},
+    {"moon_badday", &g_w6fa168},
+    {"moon_badsset", &g_w6fa174},
+    {"moon_goodnight", &g_w6fa180},
+    {"moon_goodsrise", &g_w6fa18c},
+    {"moon_goodday", &g_w6fa198},
+    {"moon_goodsset", &g_w6fa1a4},
+};
+struct WeatherDoubleKey { const char* key; DWORD hi; BYTE* to; };
+static const WeatherDoubleKey s_weatherDoubles[] = {
+    {"frpl_badnight", 1072693248u, &g_w6fd75c},
+    {"frpl_badday", 1072693248u, &g_w6fd760},
+    {"frpl_goodnight", 1072693248u, &g_w6fd764},
+    {"frpl_goodday", 1072693248u, &g_w6fd768},
+    {"fogn_badnight", 1077149696u, &g_w6fca58},
+    {"fogn_badday", 1078525952u, &g_w6fca5c},
+    {"fogn_goodnight", 1082081280u, &g_w6fca60},
+    {"fogn_goodday", 1082720256u, &g_w6fca64},
+    {"fogf_badnight", 1079574528u, &g_w6fc9b8},
+    {"fogf_badday", 1081032704u, &g_w6fc9bc},
+    {"fogf_goodnight", 1082720256u, &g_w6fc9c0},
+    {"fogf_goodday", 1083461632u, &g_w6fc9c4},
+};
+
+static bool Weather_On(const char* sect, const char* key, const char* ini)
+{
+    char buf[70];
+    GetPrivateProfileStringA(sect, key, "on", buf, 70, ini);
+    return !strcmp(buf, "on");
+}
+
+extern "C" {
+
+// [FUN_5a7b50] the eight weathers' sections WEATHER1..8 of the ini file: the fog, sky and light colours by time of
+// day, the far plane and fog distances, and whether it rains, shines and thunders
+void __cdecl Weather_LoadSettings(const char* ini)
+{
+    for (int k = 0; k < 8; k++) {
+        char sect[20], buf[70];
+        sprintf(sect, "WEATHER%d", k + 1);
+        for (int i = 0; i < (int)(sizeof(s_weatherColors) / sizeof(s_weatherColors[0])); i++) {
+            GetPrivateProfileStringA(sect, s_weatherColors[i].key, "0 0 0", buf, 70, ini);
+            CallC(FUN_5a88f0, s_weatherColors[i].to + k * 96, buf);
+        }
+        for (int i = 0; i < (int)(sizeof(s_weatherDoubles) / sizeof(s_weatherDoubles[0])); i++) {
+            DWORD bits[2] = {0, s_weatherDoubles[i].hi};
+            double d;
+            CallC(FUN_603cb0, sect, s_weatherDoubles[i].key, *(double*)bits, &d, ini);
+            *(float*)(s_weatherDoubles[i].to + k * 16) = (float)d;
+        }
+        DWORD* f = &g_weatherFlags6fca38 + k;
+        *f = 0;
+        if (Weather_On(sect, "rain", ini))
+            *f |= 1;
+        if (Weather_On(sect, "sun", ini))
+            *f |= 2;
+        if (Weather_On(sect, "thund", ini))
+            *f |= 4;
+    }
+}
+
+}  // extern "C"

@@ -2742,3 +2742,393 @@ BYTE* __fastcall Sch_Construct(BYTE* self, void*, const char* startup, const cha
 }
 
 }  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Calling a closure
+
+extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")
+extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
+extern "C" void FUN_409070(); KING_ALIAS("_FUN_409070", "_Str_Same")
+extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")
+extern "C" void FUN_49c560(); KING_ALIAS("_FUN_49c560", "@SchValue_Assign@12")
+extern "C" void FUN_4a16c0(); KING_ALIAS("_FUN_4a16c0", "@Vec12_At@12")
+extern "C" void FUN_4a27e0(); KING_ALIAS("_FUN_4a27e0", "_SchValue_MakeEnv")
+extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
+extern "C" void FUN_4a7060(); KING_ALIAS("_FUN_4a7060", "@SchNode4a7060_Construct@8")
+extern "C" void FUN_4a7230(); KING_ALIAS("_FUN_4a7230", "@SchListNode_Destroy@8")
+extern "C" void FUN_4a8080(); KING_ALIAS("_FUN_4a8080", "@SchRef_Construct@12")
+extern "C" void FUN_4aa180(); KING_ALIAS("_FUN_4aa180", "@Vec44_Back@8")
+extern "C" void FUN_4aa190(); KING_ALIAS("_FUN_4aa190", "@Vec44_PushBack@12")
+extern "C" void FUN_4aa9f0(); KING_ALIAS("_FUN_4aa9f0", "_Sch_MakeBegin")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void FUN_44ca00(); KING_ALIAS("_FUN_44ca00", "@Handle9_Init@12")
+
+// d = s, keeping d's object when Str_Same(d, s)
+static void Eva_AssignSame(SchValue* d, const SchValue* s)
+{
+    if (d->obj && !(d->flags & SCH_IMMEDIATE) && --F(int, d->obj, 4) == 0
+        && !CallC<char>(FUN_409070, d, s) && d->obj)
+        CallVirt(d->obj, 12, 1);
+    CopyRef(d, s);
+}
+
+static void Eva_CheckObject(const SchValue* v)
+{
+    if (!v->obj)
+        SchError(0);
+    if (v->flags & SCH_IMMEDIATE)
+        SchError(4);
+}
+
+// the arguments of the interpreter's top frame
+static int Eva_ArgCount(BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    return (F(BYTE*, top, -24) - F(BYTE*, top, -28)) / 12;
+}
+
+// env.define(sym, value): both by value
+static void Eva_Define(SchValue* env, BYTE* p, const SchValue* sym, const SchValue* val)
+{
+    SchValue v, s;
+    CopyRef(&v, val);
+    CallThis(FUN_454580, &s, sym);
+    CallThis(FUN_4a3180, CallThis<BYTE*>(FUN_4aa430, env), p, s.obj, s.m_4, s.flags, v.obj, v.m_4, v.flags);
+}
+
+extern "C" {
+
+// [$L_4a77f0] closure call: binds the top frame's arguments to the parameter list (a symbol at its end takes the
+// rest as a list) in a new environment and replaces the frame with one evaluating the body there
+void __fastcall Closure_Apply(BYTE* self, void*, BYTE* p)
+{
+    SchValue env, cur, tmp;
+    CallC(FUN_4a27e0, &env, 0, p);
+    int i = 1;
+    CopyRef(&cur, (SchValue*)(self + 32));
+    while (cur.flags || cur.obj) {
+        BYTE t = (BYTE)cur.flags;
+        if (t == 2) {
+            if (i >= Eva_ArgCount(p))
+                break;
+            SchValue sym;
+            CallThis(FUN_44ca00, &sym, cur.obj + 20);
+            BYTE* arg = CallThis<BYTE*>(FUN_4a16c0, CallThis<BYTE*>(FUN_4aa180, p + 108) + 16, i);
+            Eva_Define(&env, p, &sym, (SchValue*)arg);
+            ReleaseRef(&sym);
+        } else if (t == 9) {
+            SchValue sym, acc;
+            CallThis(FUN_44ca00, &sym, &cur);
+            CallThis(FUN_4bd4d0, &acc);
+            int last = Eva_ArgCount(p) - 1;
+            if (last != i - 1) {
+                int off = last * 12, n = last - (i - 1);
+                do {
+                    SchValue pr;
+                    CallC(FUN_4a28c0, &pr, 0, p);
+                    Eva_CheckObject(&pr);
+                    Eva_AssignSame((SchValue*)(pr.obj + 32), &acc);
+                    CallThis(FUN_40c100, &acc, &pr);
+                    BYTE* e = F(BYTE*, F(BYTE*, p, 112), -28) + off;
+                    Eva_CheckObject(&acc);
+                    Eva_AssignSame((SchValue*)(acc.obj + 20), (SchValue*)e);
+                    ReleaseRef(&pr);
+                    off -= 12;
+                } while (--n);
+            }
+            Eva_Define(&env, p, &sym, &acc);
+            if (i >= Eva_ArgCount(p)) {
+                tmp.obj = 0; tmp.m_4 = 0; tmp.flags = 0;
+                CallThis(FUN_40c100, &cur, &tmp);
+                ReleaseRef(&tmp);
+            } else {
+                CallThis(FUN_40c100, &cur, CallThis<SchValue*>(FUN_4bd4d0, &tmp));
+                ReleaseRef(&tmp);
+                i = Eva_ArgCount(p);
+            }
+            ReleaseRef(&acc);
+            ReleaseRef(&sym);
+            break;
+        } else {
+            CallC(FUN_4a5910, p, 26);
+        }
+        i++;
+        SchValue* next = CallC<SchValue*>(FUN_4090a0, &tmp, &cur);
+        Eva_AssignSame(&cur, next);
+        ReleaseRef(&tmp);
+    }
+    if (i >= Eva_ArgCount(p)) {
+        if (cur.flags || cur.obj)
+            CallC(FUN_4a5910, p, 27);
+    } else if (!cur.flags && !cur.obj)
+        CallC(FUN_4a5910, p, 28);
+
+    CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, &env) + 148, self + 44);
+    BYTE* top = F(BYTE*, p, 112) - 44;
+    F(BYTE*, p, 112) = top;
+    CallVirt(top, 4, 0);
+    BYTE node[44];
+    CallThis(FUN_4aa190, p + 108, CallThis<BYTE*>(FUN_4a7060, node));
+    CallThis(FUN_4a7230, node);
+    CallThis(FUN_49c560, F(BYTE*, p, 112) - 12, &env);
+
+    SchValue nil, rest;
+    CallThis(FUN_4a8080, &nil, 0);
+    bool one = CallC<char>(FUN_409070, CallC<SchValue*>(FUN_4090a0, &rest, self + 20), &nil) != 0;
+    ReleaseRef(&rest);
+    ReleaseRef(&nil);
+    if (one) {
+        CallThis(FUN_40c100, F(BYTE*, p, 112) - 40, CallC<SchValue*>(FUN_407f00, &tmp, self + 20));
+    } else {
+        SchValue b;
+        CallC(FUN_4a28c0, &tmp, 0, p);
+        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, &tmp) + 32, self + 20);
+        CallThis(FUN_40c100, CallThis<BYTE*>(FUN_4aa430, &tmp) + 20, CallC<SchValue*>(FUN_4aa9f0, &b, 0));
+        ReleaseRef(&b);
+        CallThis(FUN_40c100, F(BYTE*, p, 112) - 40, &tmp);
+    }
+    ReleaseRef(&tmp);
+    ReleaseRef(&cur);
+    ReleaseRef(&env);
+}
+
+}  // extern "C"
+// ---------------------------------------------------------------------------
+// define
+
+// pops the top frame and passes v to the frame below
+static void Eva_PopReturn(BYTE* p, SchValue* v)
+{
+    BYTE* top = F(BYTE*, p, 112) - 44;
+    F(BYTE*, p, 112) = top;
+    CallVirt(top, 4, 0);
+    Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)v);
+}
+
+extern "C" {
+
+// [$L_4a9090] define, one step on the top frame: (define (name . params) body...) makes the closure at once;
+// (define name expr) first evaluates expr in a new frame (state 0), then binds its value (state 1)
+void __fastcall Define_Step(void*, void*, BYTE* p)
+{
+    BYTE* frame = F(BYTE*, p, 112) - 44;
+    int state = F(int, frame, 28);
+    if (state == 0) {
+        SchValue form;
+        CopyRef(&form, (SchValue*)(F(BYTE*, frame, 4) + 20));
+        if ((BYTE)form.flags == 2) {
+            SchValue clo, tmp, sym, res;
+            Sch_MakeClosure((DWORD*)&clo, 0, (DWORD)p);
+            Eva_CheckObject(&clo);
+            Eva_AssignSame((SchValue*)(clo.obj + 32), (SchValue*)(form.obj + 32));
+            BYTE* body = (BYTE*)Sch_Deref2nd(0, (int*)(CallThis<BYTE*>(FUN_4aa180, p + 108) + 4)) + 32;
+            SchValue bv;
+            CopyRef(&bv, (SchValue*)body);
+            SchValue* r = (SchValue*)SchValue_Return((DWORD*)&tmp, 0, 0, (DWORD)bv.obj, bv.m_4, bv.flags);
+            Eva_CheckObject(&clo);
+            Eva_AssignSame((SchValue*)(clo.obj + 20), r);
+            ReleaseRef(&tmp);
+            Eva_CheckObject(&clo);
+            CallThis(FUN_40c100, clo.obj + 44, F(BYTE*, p, 112) - 12);
+            CallThis(FUN_44ca00, &sym, form.obj + 20);
+            Eva_Define((SchValue*)(CallThis<BYTE*>(FUN_4aa180, p + 108) + 32), p, &sym, &clo);
+            Sch_MakeUnspecified((DWORD*)&tmp);
+            CopyRef(&res, &tmp);
+            ReleaseRef(&tmp);
+            Eva_PopReturn(p, &res);
+            ReleaseRef(&res);
+            ReleaseRef(&sym);
+            ReleaseRef(&clo);
+        } else {
+            SchValue tmp;
+            Sch4a5c40_Append(p, frame, (const DWORD*)(F(BYTE*, frame, 4) + 20));
+            CallThis(FUN_40c100, frame + 4, CallC<SchValue*>(FUN_4090a0, &tmp, frame + 4));
+            ReleaseRef(&tmp);
+            F(int, frame, 28) = 1;
+            BYTE node[44];
+            CallThis(FUN_4aa190, p + 108, CallThis<BYTE*>(FUN_4a7060, node));
+            CallThis(FUN_4a7230, node);
+            BYTE* prev = F(BYTE*, p, 112) - 88;
+            CallThis(FUN_40c100, F(BYTE*, p, 112) - 40, F(BYTE*, prev, 4) + 20);
+            CallThis(FUN_49c560, F(BYTE*, p, 112) - 12, prev + 32);
+        }
+        ReleaseRef(&form);
+    } else if (state == 1) {
+        BYTE* args = F(BYTE*, frame, 16);
+        SchValue val, sym, tmp, res;
+        CallThis(FUN_454580, &val, args + 24);
+        CallThis(FUN_44ca00, &sym, args + 12);
+        Eva_Define((SchValue*)(CallThis<BYTE*>(FUN_4aa180, p + 108) + 32), p, &sym, &val);
+        Sch_MakeUnspecified((DWORD*)&tmp);
+        CallThis(FUN_454580, &res, &tmp);
+        ReleaseRef(&tmp);
+        Eva_PopReturn(p, &res);
+        ReleaseRef(&res);
+        ReleaseRef(&sym);
+        ReleaseRef(&val);
+    }
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// The interpreter's destructor
+
+ASM_PROC(FUN_4af970)    // vector<44 bytes>: destructor
+extern "C" void FUN_447570(); KING_ALIAS("_FUN_447570", "@StrRefVec_Destroy@8")
+extern "C" void FUN_490fa0(); KING_ALIAS("_FUN_490fa0", "@RingMember_Destruct@8")
+extern "C" void FUN_4b0a80(); KING_ALIAS("_FUN_4b0a80", "@SchInputList_EraseRange@20")
+
+// a field set to the empty value, released without the immediate check
+static void Eva_ClearField(SchValue* f)
+{
+    SchValue nul = {0, 0, 0, 0};
+    if (f->obj && --F(int, f->obj, 4) == 0 && !CallC<char>(FUN_409070, f, &nul) && f->obj)
+        CallVirt(f->obj, 12, 1);
+    f->obj = 0;
+    f->m_4 = 0;
+    f->flags = 0;
+}
+
+extern "C" {
+
+// [$L_4aee50] the interpreter's destructor: clears the ports and environments, the frames and values, deletes
+// the objects of the ring at +16 and the list at +44 (kept alive by a list of references meanwhile)
+void __fastcall Sch_Destruct(BYTE* self, void*)
+{
+    Eva_ClearField((SchValue*)(self + 72));
+    Eva_ClearField((SchValue*)(self + 84));
+    Eva_ClearField((SchValue*)(self + 96));
+    Eva_ClearField((SchValue*)(self + 60));
+    Eva_ClearField((SchValue*)(self + 48));
+    Vec44_Erase((BYTE**)(self + 108), 0, F(BYTE*, self, 108), F(BYTE*, self, 112));
+    Values_Erase((BYTE**)(self + 4224), 0, F(BYTE*, self, 4224), F(BYTE*, self, 4228));
+    BYTE* list[4];
+    SchList_Construct(list, 0, 0);
+    BYTE* ring = self + 24;
+    SchValue tmp;
+    for (BYTE* n = F(BYTE*, self, 16); n != ring; n = F(BYTE*, n, 12)) {
+        CallThis(FUN_4a8080, &tmp, n);
+        SchList_PushBack(list, 0, (int)&tmp);
+        ReleaseRef(&tmp);
+    }
+    BYTE** objs = (BYTE**)(self + 44);
+    BYTE* it;
+    BYTE* junk;
+    for (SchList_Begin(objs, 0, &it); it != *objs; SchListIt_PostInc(&it, 0, &junk, 0))
+        if (F(BYTE*, it, 8)) {
+            CallThis(FUN_4a8080, &tmp, F(BYTE*, it, 8));
+            SchList_PushBack(list, 0, (int)&tmp);
+            ReleaseRef(&tmp);
+        }
+    for (BYTE* n = F(BYTE*, self, 16); n != ring; n = F(BYTE*, n, 12))
+        CallVirt(n, 16);
+    for (SchList_Begin(objs, 0, &it); it != *objs; SchListIt_PostInc(&it, 0, &junk, 0))
+        if (F(BYTE*, it, 8))
+            CallVirt(F(BYTE*, it, 8), 16);
+    BYTE* first;
+    BYTE* out;
+    SchList_Begin(list, 0, &first);
+    CallThis(FUN_4b0a80, list, &out, first, list[0]);
+    SchList_Begin(objs, 0, &first);
+    SchList_EraseRange((BYTE*)objs, 0, &out, first, *objs);
+    if (F(BYTE*, self, 16) != ring)
+        CallC(FUN_4a52e0, 5, 768);
+    SchValueList_Destroy(list, 0);
+    CallThis(FUN_447570, self + 4224);
+    CallThis(FUN_4af970, self + 108);
+    ReleaseRef((SchValue*)(self + 96));
+    ReleaseRef((SchValue*)(self + 84));
+    ReleaseRef((SchValue*)(self + 72));
+    ReleaseRef((SchValue*)(self + 60));
+    ReleaseRef((SchValue*)(self + 48));
+    SchList_Destroy(objs, 0);
+    CallThis(FUN_490fa0, ring);
+    CallThis(FUN_490fa0, self + 4);
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Evaluating the elements of an expression
+
+ASM_PROC(FUN_4a3790)    // environment: look up an identifier (out, id by value, &depth, &index)
+extern "C" void FUN_4a3f10(); KING_ALIAS("_FUN_4a3f10", "@SchScope_Get@24")
+extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
+extern "C" void FUN_4a63a0(); KING_ALIAS("_FUN_4a63a0", "_SchValue_Immediate")
+extern "C" void FUN_4aa320(); KING_ALIAS("_FUN_4aa320", "@SchValue_CopyImmediate@12")
+extern "C" void FUN_4aa3a0(); KING_ALIAS("_FUN_4aa3a0", "@SchIdentifier_From@12")
+ASM_VAR(char, s_unbound6710f8, $L_6710f8)
+
+// pushes a frame evaluating expr in the environment of the frame below
+static void Eva_PushFrame(BYTE* p, SchValue* expr)
+{
+    BYTE node[44];
+    CallThis(FUN_4aa190, p + 108, CallThis<BYTE*>(FUN_4a7060, node));
+    CallThis(FUN_4a7230, node);
+    CallThis(FUN_40c100, F(BYTE*, p, 112) - 40, expr);
+    CallThis(FUN_49c560, F(BYTE*, p, 112) - 12, F(BYTE*, p, 112) - 88 + 32);
+}
+
+extern "C" {
+
+// [FUN_4a5db0] the next element of the top frame's expression: a variable (looked up, a symbol replaced by its
+// resolved position) or a constant is passed to the frame's values; a pair gets a frame of its own. The frame
+// then goes on in state next
+void __cdecl Sch_EvalNext(BYTE* p, int next)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    SchValue e, c, out, tmp;
+    CopyRef(&e, (SchValue*)(top - 40));
+    CopyRef(&c, (SchValue*)(e.obj + 20));
+    BYTE t = (BYTE)c.flags;
+    if (t == 33) {
+        SchValue* env = (SchValue*)(top - 12);
+        int idx = -1;
+        Eva_CheckObject(env);
+        CallThis(FUN_4a3f10, env->obj, &out, c.obj, c.m_4, &idx);
+        if (idx == -1)
+            CallC(FUN_4a5a60, p, 32, &s_unbound6710f8);
+        Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&out);
+        ReleaseRef(&out);
+    } else if (t == 9) {
+        int idx = -1, depth = 0;
+        SchValue id;
+        CallThis(FUN_4aa3a0, &id, Sch_Deref2nd(0, (int*)&c));
+        CallThis(FUN_4a3790, CallThis<BYTE*>(FUN_4aa430, CallThis<BYTE*>(FUN_4aa180, p + 108) + 32), &out,
+                 id.obj, id.m_4, id.flags, &depth, &idx);
+        if (idx == -1) {
+            CallC(FUN_4a5a60, p, 32, F(const char*, c.obj, 12));
+            tmp.obj = 0; tmp.m_4 = 0; tmp.flags = 0;
+            Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&tmp);
+            ReleaseRef(&tmp);
+        } else {
+            Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&out);
+            SchValue imm, cached;
+            CallThis(FUN_4aa320, &cached, CallC<SchValue*>(FUN_4a63a0, &imm, 0, depth, idx));
+            ReleaseRef(&imm);
+            Eva_AssignSame((SchValue*)(F(BYTE*, F(BYTE*, p, 112), -40) + 20), &cached);
+            ReleaseRef(&cached);
+        }
+        ReleaseRef(&out);
+    } else if (t == 2) {
+        BYTE* f4 = F(BYTE*, p, 112) - 40;
+        Eva_AssignSame((SchValue*)f4, CallC<SchValue*>(FUN_4090a0, &tmp, f4));
+        ReleaseRef(&tmp);
+        F(int, F(BYTE*, p, 112), -16) = next;
+        Eva_PushFrame(p, &c);
+        ReleaseRef(&c);
+        ReleaseRef(&e);
+        return;
+    } else {
+        Sch4a5c40_Append(p, F(BYTE*, p, 112) - 44, (const DWORD*)&c);
+    }
+    BYTE* f4 = F(BYTE*, p, 112) - 40;
+    CallThis(FUN_40c100, f4, CallC<SchValue*>(FUN_4090a0, &tmp, f4));
+    ReleaseRef(&tmp);
+    F(int, F(BYTE*, p, 112), -16) = next;
+    ReleaseRef(&c);
+    ReleaseRef(&e);
+}
+
+}  // extern "C"

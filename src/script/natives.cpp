@@ -979,7 +979,7 @@ extern "C" void FUN_4a2310(); KING_ALIAS("_FUN_4a2310", "_SchValue_MakeNumber")
 extern "C" void FUN_4a1900(); KING_ALIAS("_FUN_4a1900", "@SchEmbd4a1900_Construct@16")    // deque<int> constructor
 extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
 extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")
-ASM_PROC(FUN_4b20d0)    // a number parsed from a deque of characters (out, p, deque)
+extern "C" void FUN_4b20d0(); KING_ALIAS("_FUN_4b20d0", "_Sch_ParseNumber")    // a number parsed from a deque of characters (out, p, deque)
 ASM_PROC(FUN_4a1710)    // deque<int> destructor
 extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")           // a pair's car (out, value)
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")           // a pair's cdr (out, value)
@@ -2401,6 +2401,128 @@ SchValue* __cdecl Nat_EqP(SchValue* out, BYTE* p, BYTE** args)
     Nat_Release(&y);
     Nat_Release(&x);
     return out;
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// equal?
+
+extern "C" void FUN_407f60(); KING_ALIAS("_FUN_407f60", "_Str_Member20Checked")
+extern "C" void FUN_407ff0(); KING_ALIAS("_FUN_407ff0", "_Str_Member32Checked")
+extern "C" void FUN_44cab0(); KING_ALIAS("_FUN_44cab0", "@PairHandle_From@12")
+extern "C" void FUN_4a16c0(); KING_ALIAS("_FUN_4a16c0", "@Vec12_At@12")
+
+// a value as the compiler passes it by value: the callee releases it
+struct SchArg {
+    BYTE* obj;
+    int   m_4;
+    DWORD flags;
+};
+
+extern "C" int __cdecl Sch_Equal(SchArg a, SchArg b, int extra);
+
+static int Equal_Elems(SchValue* ha, SchValue* hb, int i, int extra)
+{
+    SchArg ea, eb;
+    CallThis(FUN_454580, &eb, CallThis<BYTE*>(FUN_4a16c0, CallThis<BYTE*>(FUN_4aa430, hb) + 20, i));
+    CallThis(FUN_454580, &ea, CallThis<BYTE*>(FUN_4a16c0, CallThis<BYTE*>(FUN_4aa430, ha) + 20, i));
+    return Sch_Equal(ea, eb, extra);
+}
+
+static int Vec_Len(SchValue* h)
+{
+    BYTE* o = CallThis<BYTE*>(FUN_4aa430, h);
+    return (F(BYTE*, o, 24) - F(BYTE*, o, 20)) / 12;
+}
+
+extern "C" {
+
+// [FUN_4927d0] equal?: identical values, else the same type compared by content (booleans, identifiers ignoring
+// case, strings, characters, numbers, vectors and pairs element by element); nonzero when equal
+int __cdecl Sch_Equal(SchArg a, SchArg b, int extra)
+{
+    SchValue* pa = (SchValue*)&a;
+    SchValue* pb = (SchValue*)&b;
+    if (a.obj == b.obj && a.flags == b.flags && a.m_4 == b.m_4) {
+        Nat_Release(pa);
+        Nat_Release(pb);
+        return -1;
+    }
+    if ((!a.obj && !a.m_4 && !a.flags) || (!b.obj && !b.m_4 && !b.flags) || (BYTE)(a.flags ^ b.flags)) {
+        Nat_Release(pa);
+        Nat_Release(pb);
+        return 0;
+    }
+    SchValue ha, hb;
+    int r = 0;
+    switch ((BYTE)a.flags) {
+    case 7:
+        SchValue_AsBool(&ha, 0, pa);
+        SchValue_AsBool(&hb, 0, pb);
+        r = (ha.obj != 0) == (hb.obj != 0);
+        break;
+    case 9:
+        CallThis(FUN_44ca00, &hb, pa);
+        CallThis(FUN_44ca00, &ha, pb);
+        {
+            const char* sa = F(const char*, CallThis<BYTE*>(FUN_4aa430, &ha), 12);
+            const char* sb = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hb), 12);
+            r = _stricmp(sb, sa) == 0;
+        }
+        break;
+    case 3:
+        CallThis(FUN_455760, &hb, pa);
+        CallThis(FUN_455760, &ha, pb);
+        {
+            const char* sa = F(const char*, CallThis<BYTE*>(FUN_4aa430, &ha), 12);
+            const char* sb = F(const char*, CallThis<BYTE*>(FUN_4aa430, &hb), 12);
+            r = strcmp(sb, sa) == 0;
+        }
+        break;
+    case 8:
+        CallThis(FUN_4921d0, &ha, pa);
+        CallThis(FUN_4921d0, &hb, pb);
+        r = ha.obj == hb.obj;
+        break;
+    case 10:
+        Handle10_Init((void**)&ha, 0, (void**)pa);
+        Handle10_Init((void**)&hb, 0, (void**)pb);
+        if (Vec_Len(&hb) == Vec_Len(&ha)) {
+            r = 1;
+            for (int i = 0; i < Vec_Len(&ha) && r; i++)
+                r = Equal_Elems(&ha, &hb, i, extra);
+        }
+        break;
+    case 2:
+        CallThis(FUN_44cab0, &ha, pa);
+        CallThis(FUN_44cab0, &hb, pb);
+        {
+            SchArg ca, cb;
+            CallC(FUN_407f60, &cb, &hb);
+            CallC(FUN_407f60, &ca, &ha);
+            if (Sch_Equal(ca, cb, extra)) {
+                CallC(FUN_407ff0, &cb, &hb);
+                CallC(FUN_407ff0, &ca, &ha);
+                r = Sch_Equal(ca, cb, extra) != 0;
+            }
+        }
+        break;
+    case 6:
+        CallThis(FUN_4556d0, &ha, pa);
+        CallThis(FUN_4556d0, &hb, pb);
+        r = CallC<BYTE>(FUN_4b0fb0, ha.obj, hb.obj);
+        break;
+    default:
+        Nat_Release(pa);
+        Nat_Release(pb);
+        return 0;
+    }
+    Nat_Release(&hb);
+    Nat_Release(&ha);
+    Nat_Release(pa);
+    Nat_Release(pb);
+    return r;
 }
 
 }  // extern "C"

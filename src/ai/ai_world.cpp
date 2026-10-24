@@ -13106,7 +13106,7 @@ extern "C" BYTE* __cdecl Ai_GetOrientationSmoothed(BYTE* out, BYTE* player, Posi
 // ---------------------------------------------------------------------------
 // updateNavigator(PlayerId player)
 
-ASM_PROC(FUN_4858b0)    // the route between two positions (out hops, side, PositionId32 from, PositionId32 to, double* cost)
+extern "C" void FUN_4858b0(); KING_ALIAS("_FUN_4858b0", "_Road_FindPositionRoute")    // the route between two positions (out hops, side, PositionId32 from, PositionId32 to, double* cost)
 extern "C" BYTE* __cdecl Copy12s(const BYTE* first, const BYTE* last, BYTE* dest);           // ai_containers.cpp
 extern "C" void* __cdecl Stl_UninitCopy12(const void* f, const void* l, void* d);             // road_graph.cpp
 extern "C" void __cdecl Road_OrientHops(HopVec* hops);                                        // route_search.cpp
@@ -20242,7 +20242,7 @@ KING_ALIAS("_Exc_Destroy", "??1exception@@UAE@XZ")            // exception::~exc
 extern "C" void Cxx_Throw();
 KING_ALIAS("_Cxx_Throw", "__CxxThrowException@8")             // _CxxThrowException(object, info)
 ASM_PROC($L_422400)    // creating the players for a network game
-ASM_PROC($L_422f20)    // createPlayersRegular()
+extern "C" void $L_422f20(); KING_ALIAS("_$L_422f20", "_Ai_CreatePlayersRegular")    // createPlayersRegular()
 extern "C" void FUN_42bb90(); KING_ALIAS("_FUN_42bb90", "_Ai_SetAmbushActive")   // setAmbushActive (ambush, on)
 
 // [FUN_448540] bad_alloc(const char* what) (thiscall)
@@ -21859,7 +21859,7 @@ extern "C" void q197_L_4485d0(); KING_ALIAS("_q197_L_4485d0", "@List4485d0_Destr
 extern "C" void q197_L_449130(); KING_ALIAS("_q197_L_449130", "@Vec56b_Destroy@4")
 extern "C" void q197_L_4494c0(); KING_ALIAS("_q197_L_4494c0", "$L_4494c0")
 extern "C" void q197_L_449740(); KING_ALIAS("_q197_L_449740", "$L_449740")
-extern "C" void q197_L_4aee50(); KING_ALIAS("_q197_L_4aee50", "$L_4aee50")
+extern "C" void q197_L_4aee50(); KING_ALIAS("_q197_L_4aee50", "@Sch_Destruct@8")
 extern "C" void q197_L_4af6b0(); KING_ALIAS("_q197_L_4af6b0", "@List16_Destroy@4")
 // [$L_401300] destroys the static object 68bb58 at exit ($L_4aee50)
 extern "C" void __cdecl Static68bb58_Destroy(void) { CallThis(q197_L_4aee50, &g_q197_68bb58); }
@@ -22280,3 +22280,204 @@ extern "C" int __cdecl Static402140_AtExit(void) { return atexit((void(__cdecl*)
 extern "C" void q241_L_402490(); KING_ALIAS("_q241_L_402490", "_Static68a830_Destroy")
 // [$L_402480] registers 402490 at exit
 extern "C" int __cdecl Static402480_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_402490); }
+
+// === createPlayersRegular ($L_422f20)
+
+ASM_VAR(AsmLabel, s_cprName66d914, $L_66d914)       // "createPlayersRegular"
+ASM_VAR(AsmLabel, s_cprNode66d904, $L_66d904)       // the human's start node
+ASM_VAR(AsmLabel, s_cprPosFmt66cc0c, $L_66cc0c)
+ASM_VAR(AsmLabel, s_cpr66cc00, $L_66cc00)
+ASM_VAR(AsmLabel, s_cpr66d8e4, $L_66d8e4)
+ASM_VAR(double, g_cprStartY68b9a8, $L_68b9a8)
+ASM_VAR(double, g_cprStartZ68b9b0, $L_68b9b0)
+ASM_PROC(FUN_46dc50)    // (player)
+extern "C" void FUN_488100(); KING_ALIAS("_FUN_488100", "@Filter1_Set@16")    // Filter1_Set (this, double)
+
+// the position at +40 of q as text in 77e6e0, then error 33 at line
+static void Cpr_BadPosition(BYTE* q, int line)
+{
+    PositionId p = F(PositionId, q, 40);
+    sprintf((char*)g_positionText76, (const char*)s_cprPosFmt66cc0c, p.road, p.t, p.segment, p.object, p.m_24);
+    AiError(33, 100, &g_strAiMainFile, &g_strAiMainId, line, (const char*)s_invalidId, (const char*)s_cpr66cc00,
+            (const char*)g_positionText76);
+}
+
+// error 33 at line when q's position (+40) is on a road but past its objects or the object's segments
+static void Cpr_CheckObject(BYTE* q, int line)
+{
+    PositionId p = F(PositionId, q, 40);
+    if (p.road < 0 || (unsigned)p.road >= (unsigned)(g_roadEdgesEnd - g_roadEdges))
+        return;
+    RoadEdge* e = g_roadEdges[p.road];
+    if (p.object < (int)(e->objectsEnd - e->objects) && p.segment < CallVirt<int>(e->objects[p.object], 24))
+        return;
+    AiError(33, 100, &g_strAiMainFile, &g_strAiMainId, line, (const char*)s_invalidPositionId, &g_aiEmpty, &g_aiEmpty);
+}
+
+// out = a copy of the list handle s (an error unless s is a list)
+static void Cpr_ListCopy(StrRef* out, const StrRef* s)
+{
+    out->ptr = 0;
+    out->len = 0;
+    out->flags = 0;
+    if (!s->ptr)
+        return;
+    if (CallVirt<int>(s->ptr, 0) == 2) {
+        out->ptr = s->ptr;
+        out->flags = s->flags;
+        F(int, out->ptr, 4)++;
+    } else
+        CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(s->ptr, 4, (const char*)s_pair), 0);
+}
+
+// d = the list handle s, dropping d's old list
+static void Cpr_ListAssign(StrRef* d, const StrRef* s)
+{
+    if (d->ptr) {
+        F(int, d->ptr, 4)--;
+        if (F(int, d->ptr, 4) == 0 && !(d->ptr == s->ptr && d->flags == s->flags && d->len == s->len) && d->ptr)
+            CallVirt(d->ptr, 12, 1);
+    }
+    if (!s->ptr) {
+        d->ptr = 0;
+        d->flags = 0;
+        d->len = 0;
+    } else if (CallVirt<int>(s->ptr, 0) == 2) {
+        d->ptr = s->ptr;
+        d->flags = s->flags;
+        F(int, d->ptr, 4)++;
+        d->len = 0;
+    } else
+        CallC(FUN_4a54e0, 2, 1, CallVirt<const char*>(s->ptr, 4, (const char*)s_pair), 0);
+}
+
+extern "C" {
+
+// [$L_422f20] createPlayersRegular(): the human at the start point (68b9a0) when type 1 has room, then for each
+// player type with room (but 8 and 9) new players until the type is full: from the type's list of descriptions
+// (a list of lists) or new ones at random free positions; the positions are checked
+int __cdecl Ai_CreatePlayersRegular()
+{
+    Trace_EnterBuffered((const char*)s_cprName66d914);
+    int node;
+    Node_ByName(&node, (const char*)s_cprNode66d904);
+    int* count = (int*)g_68cca8;
+    int* limit = (int*)g_68cf28;
+    if (count[1] < limit[1]) {
+        BYTE* p = Ai_CreateNewPlayer(1, 0, -1);
+        DWORD id;
+        Player_Register(&id, p);
+        PositionId pos;
+        Ai_GetPositionIdAll(&pos, (const DVec3*)&g_startX68b9a0);
+        RoomInfo ri;
+        ri.m_36 = -1;
+        ri.m_40 = -1;
+        ri.flags = 0;
+        ri.m_8 = 0;
+        ri.m_12 = 0;
+        ri.module = (const char*)g_undefinedModule;
+        ri.room = (const char*)g_undefinedRoom;
+        ri.m_24 = 0;
+        ri.m_28 = 0;
+        Road_GetRoadParameters(pos, &ri);
+        if ((BYTE)ri.flags & 8)
+            pos.m_24 |= 1;
+        F(double, p, 616) = g_startX68b9a0;
+        F(double, p, 624) = g_cprStartY68b9a8;
+        F(double, p, 632) = g_cprStartZ68b9b0;
+        Player_SetPosition(p, 0, &pos);
+        F(DWORD, p, 88) |= 1;
+        if (r_68d31c)
+            CallC(FUN_46dc50, p);
+        Rec_4015a0Both(id);
+    }
+    if (!r_66f62a) {
+        Buf_Append(&g_trace, 0, g_tagMpl, 8);
+        Buf_AppendString(&g_trace, 0, (const char*)s_cprName66d914);
+        return 0;
+    }
+    for (int type = 0; type < 10; type++) {
+        StrRef h;
+        Str_CopyConstruct(&h, 0, (const StrRef*)(*(BYTE**)&g_init68a840 + type * 12));
+        while (count[type] < limit[type] && type != 8 && type != 9) {
+            AI_Step3();
+            BYTE* p;
+            BYTE* q;
+            bool described = false;
+            if ((BYTE)h.flags == 2) {
+                StrRef m;
+                Str_Member20Checked(&m, &h);
+                described = (BYTE)m.flags == 2;
+                Str_Release(&m);
+            }
+            if (described) {
+                StrRef m;
+                Str_Member20Checked(&m, &h);
+                StrRef descr;
+                Cpr_ListCopy(&descr, &m);
+                p = Ai_CreatePlayerDescr(type, descr);
+                Str_Release(&m);
+                DWORD id;
+                q = (BYTE*)*Player_Register(&id, p);
+                if (F(int, q, 92) == 2)
+                    Ai_TruckerNextOrder(q);
+                else
+                    Ai_ArriveAt(q, F(PositionId, q, 40));
+                PositionId at = F(PositionId, q, 40);
+                if (!Position_Valid(&at, 0))
+                    Cpr_BadPosition(q, 8176);
+                Cpr_CheckObject(q, 8176);
+                if (F(int, p, 16) == F(int, p, 20))
+                    AiError(0, 100, &g_strAiMainFile, &g_strAiMainId, 8178, (const char*)s_cpr66d8e4, &g_aiEmpty, &g_aiEmpty);
+            } else {
+                p = Ai_CreateNewPlayer(type, 0, -1);
+                DWORD id;
+                q = (BYTE*)*Player_Register(&id, p);
+                if (type == 1 || g_roadNodesEnd == g_roadNodes) {
+                    PositionId pos;
+                    Player_SetPosition(p, 0, Ai_GetPositionIdAll(&pos, (const DVec3*)&g_startX68b9a0));
+                    F(DWORD, p, 88) |= 1;
+                } else {
+                    PositionId pos;
+                    Road_RandomFreePosition(&pos);
+                    if (g_68d188)
+                        Player_SetPosition(q + 8, 0, &pos);
+                    else
+                        while (F(int, p, 16) == F(int, p, 20)) {
+                            PositionId r;
+                            pos = *Road_RandomFreePosition(&r);
+                            Player_SetPosition(q + 8, 0, &pos);
+                            PositionId target;
+                            Position_InitNode(&target, 0, node);
+                            Player_GoTo(q, target, 1);
+                        }
+                    if (F(int, q, 92) == 2)
+                        Ai_TruckerNextOrder(q);
+                    else
+                        Ai_ArriveAt(q, pos);
+                    PositionId at = F(PositionId, q, 40);
+                    if (!((RoadId_Valid(&at.road, 0) || NodeId_Valid(&at.node, 0)) && at.t >= g_tMin64b688
+                          && !(at.t > g_tMax64b680) && at.segment >= 0 && at.object >= 0))
+                        Cpr_BadPosition(q, 8207);
+                    Cpr_CheckObject(q, 8207);
+                }
+            }
+            if (r_68d31c)
+                CallC(FUN_46dc50, p);
+            if (F(int, p, 84) != 1 && F(int, p, 84) != 2)
+                CallThis(FUN_488100, p + 728, 0.0);
+            Rec_4015a0Both((int)q);
+            if ((BYTE)h.flags == 2) {
+                StrRef next;
+                Str_Member32Checked(&next, &h);
+                Cpr_ListAssign(&h, &next);
+                Str_Release(&next);
+            }
+        }
+        Str_Release(&h);
+    }
+    Trace_Leave((const char*)s_cprName66d914);
+    return 0;
+}
+
+} // extern "C"

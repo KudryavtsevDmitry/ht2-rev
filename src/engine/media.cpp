@@ -99,7 +99,7 @@ static __forceinline R Com(BYTE* com, unsigned off, A... args)
     return (*(R(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
 }
 
-ASM_PROC(FUN_5cfb30)
+extern "C" void FUN_5cfb30(); KING_ALIAS("_FUN_5cfb30", "_Poly_Draw")
 extern "C" void FUN_5d2ac0(); KING_ALIAS("_FUN_5d2ac0", "@Pool_FreeItem@12")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in seconds, returns double
 extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")
@@ -2008,7 +2008,7 @@ extern "C" void __fastcall Media_Destroy(BYTE* s)
 // ---------------------------------------------------------------------------
 // Constructors, destructors and setup (exception frames dropped).
 
-ASM_PROC(FUN_5dc4d0)
+extern "C" void FUN_5dc4d0(); KING_ALIAS("_FUN_5dc4d0", "@MainView_Construct@12")
 extern "C" void FUN_5c2f10(); KING_ALIAS("_FUN_5c2f10", "@Lights5c2f10_Construct@12")
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
 extern "C" void FUN_5e3150(); KING_ALIAS("_FUN_5e3150", "@CGameApp_Construct@16")

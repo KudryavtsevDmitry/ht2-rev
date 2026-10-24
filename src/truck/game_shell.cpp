@@ -6844,3 +6844,348 @@ extern "C" void __cdecl Shell_AddLight(Shell202_Light l, int a, int b)
 extern "C" int __fastcall q238_Fw5d89e0_Destroy(BYTE* s); KING_ALIAS("@q238_Fw5d89e0_Destroy@4", "@Fw5d89e0_Destroy@4")
 // [FUN_519740] forwards to Fw5d89e0_Destroy
 extern "C" int __fastcall Thunk519740(BYTE* s) { return q238_Fw5d89e0_Destroy(s); }
+
+// ---------------------------------------------------------------------------
+// The player selection window
+
+extern "C" void FUN_50bbf0(); KING_ALIAS("_FUN_50bbf0", "_Str_Trim")
+extern "C" void FUN_5134b0(); KING_ALIAS("_FUN_5134b0", "@Settings_Load@8")
+extern "C" void FUN_513600(); KING_ALIAS("_FUN_513600", "@Settings_Save@8")
+extern "C" void FUN_5c0d60(); KING_ALIAS("_FUN_5c0d60", "@List_RemoveName@12")
+extern "C" void FUN_5c1140(); KING_ALIAS("_FUN_5c1140", "@List_AddNamed@12")
+extern "C" void FUN_603c70(); KING_ALIAS("_FUN_603c70", "_Ini_WriteInt")
+extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
+ASM_VAR(char, s_dir671204, $L_671204)               // ".\\"
+ASM_VAR(char, s_sect672998, $L_672998)
+ASM_VAR(char, s_lastp677510, $L_677510)
+ASM_VAR(char, s_logo677508, $L_677508)
+ASM_VAR(char, s_photo677500, $L_677500)
+ASM_VAR(char, s_settings677574, $L_677574)
+ASM_VAR(char, s_ver676958, $L_676958)
+ASM_VAR(char, s_games67683c, $L_67683c)
+ASM_VAR(char, s_noPlayer6775a0, $L_6775a0)
+
+// the name of the list's selected item, 0 if none
+static const char* PlW_Selected(BYTE* self)
+{
+    BYTE* it = F(BYTE*, F(BYTE*, self, 540), 300);
+    return it ? F(const char*, it, 12) : 0;
+}
+
+// leaves the window for the game's main menu (or the screen it came from when +548 is set)
+static void PlW_Leave(BYTE* self, bool check)
+{
+    BYTE* w = self - 64;
+    CallVirt(w, 32);
+    if (F(int, self, 548)) {
+        CallVirt(g_6cec94, 36);
+    } else {
+        F(int, g_6cec80, 372) = 0;
+        if (!check || g_696848 == w)
+            CallVirt(g_6cec80, 36);
+    }
+}
+
+static void PlW_WriteIni(BYTE* self)
+{
+    WritePrivateProfileStringA(&s_sect672998, &s_lastp677510, (const char*)self + 568, g_iniPath);
+    CallC(FUN_603c70, &s_sect672998, &s_logo677508, F(int, self, 552), g_iniPath);
+    CallC(FUN_603c70, &s_sect672998, &s_photo677500, F(int, self, 560), g_iniPath);
+}
+
+static void* PlW_CreateStream(void* stg, const char* name)
+{
+    void* s;
+    ComCall(stg, 12, CallC<const WCHAR*>(FUN_50bc90, name), 0x1011, 0, 0, &s);
+    return s;
+}
+
+extern "C" {
+
+// [$L_51c0a0] the player window's commands: 1 choose or create the player of the edited name, 2 cancel,
+// 125 edit the selected name, 127 delete the selected player, 128..131 next/previous logo and photo
+void __fastcall PlayerWindow_Command(BYTE* self, void*, int cmd)
+{
+    switch (cmd) {
+    case 127: {
+        const char* name = PlW_Selected(self);
+        if (!name)
+            return;
+        char path[64], a[64], b[48];
+        strcpy(a, name);
+        strcpy(b, name);
+        const char* t = CallC<const char*>(FUN_50bbf0, a);
+        strcpy(path, &s_dir671204);
+        strcat(path, t);
+        strcat(path, ".pl1");
+        CallThis(FUN_5c0d60, F(BYTE*, self, 540), name);
+        if (PlW_Selected(self)) {
+            DeleteFileA(path);
+            strcpy((char*)self + 604, PlW_Selected(self));
+            strcpy((char*)self + 568, CallC<const char*>(FUN_50bbf0, self + 604));
+            CallVirt(self - 64, 36);
+        } else {
+            CallThis(FUN_5c1140, F(BYTE*, self, 540), b);
+        }
+        return;
+    }
+    case 128:
+        F(int, self, 552) = (F(int, self, 552) + 1) % 8;
+        return;
+    case 129:
+        F(int, self, 552) = (F(int, self, 552) + 7) % 8;
+        return;
+    case 130:
+        F(int, self, 560) = (F(int, self, 560) + 1) % 51;
+        return;
+    case 131:
+        F(int, self, 560) = (F(int, self, 560) + 50) % 51;
+        return;
+    case 125: {
+        strcpy((char*)self + 604, PlW_Selected(self));
+        const char* t = CallC<const char*>(FUN_50bbf0, self + 604);
+        if (!t)
+            return;
+        strcpy((char*)self + 568, t);
+        CallVirt(self - 64, 36);
+        return;
+    }
+    case 1: {
+        const char* t = CallC<const char*>(FUN_50bbf0, self + 604);
+        if (!t)
+            return;
+        void* stg = CallStd<void*>(FUN_51bfa0, t, 1);
+        ULONG done;
+        int data[2];
+        if (stg) {
+            ComCall(stg, 8);
+            strcpy((char*)self + 604, t);
+            strcpy((char*)self + 568, t);
+            CallThis(FUN_5134b0, g_6cec6c);
+            PlW_Leave(self, true);
+            PlW_WriteIni(self);
+            void* s = Storage_OpenStream(&stg, 2);
+            data[0] = F(int, self, 552);
+            data[1] = F(int, self, 560);
+            ComCall(s, 16, data, 8, &done);
+            ComCall(s, 8);
+            ComCall(stg, 8);
+            F(int, self, 548) = 0;
+            return;
+        }
+        stg = CallStd<void*>(FUN_51bfa0, t, 0);
+        if (!stg)
+            CallC(FUN_5d2e70, &s_noPlayer6775a0, 0);
+        strcpy((char*)self + 568, t);
+        strcpy((char*)self + 604, t);
+        void* s = PlW_CreateStream(stg, &s_settings677574);
+        data[0] = F(int, self, 552);
+        data[1] = F(int, self, 560);
+        ComCall(s, 16, data, 8, &done);
+        ComCall(s, 8);
+        s = PlW_CreateStream(stg, &s_ver676958);
+        data[1] = 4;
+        ComCall(s, 16, &data[1], 4, &done);
+        ComCall(s, 8);
+        void* sub;
+        ComCall(stg, 20, CallC<const WCHAR*>(FUN_50bc90, &s_games67683c), 0x1011, 0, 0, &sub);
+        ComCall(sub, 8);
+        ComCall(stg, 8);
+        CallThis(FUN_513600, g_6cec6c);
+        PlW_Leave(self, true);
+        PlW_WriteIni(self);
+        F(int, self, 548) = 0;
+        return;
+    }
+    case 2: {
+        void* stg = CallStd<void*>(FUN_51bfa0, self + 568, 1);
+        if (stg) {
+            PlW_Leave(self, false);
+            F(int, self, 548) = 0;
+            ComCall(stg, 8);
+        }
+        F(int, self, 552) = F(int, self, 556);
+        F(int, self, 560) = F(int, self, 564);
+        return;
+    }
+    }
+}
+
+}  // extern "C"
+
+// === the network connection dialog ($L_519800)
+
+ASM_VAR(int, g_nd6968f4, $L_6968f4)          // 1: joining a game, 2: hosting one
+ASM_VAR(int, g_nd6968f0, $L_6968f0)
+ASM_VAR(int, g_nd6968f8, $L_6968f8)
+ASM_VAR(int, g_nd696908, $L_696908)
+ASM_VAR(int, g_ndNames, $L_6ce9f0)           // the count of names, then 16 bytes per name (6ce9f4)
+ASM_VAR(AsmLabel, g_ndNameText, $L_6ce9f4)
+ASM_VAR(AsmLabel, g_ndFlags6cea74, $L_6cea74)
+ASM_VAR(BYTE*, g_nd6cecc0, $L_6cecc0)
+ASM_VAR(BYTE*, g_nd6cecc4, $L_6cecc4)
+ASM_VAR(BYTE*, g_nd6cecd8, $L_6cecd8)
+ASM_VAR(BYTE*, g_nd6cec94, $L_6cec94)
+ASM_VAR(BYTE*, g_nd6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_ndFont, $L_6ced28)
+ASM_VAR(AsmLabel, g_ndNet696750, $L_696750)
+ASM_VAR(AsmLabel, g_nd723d50, $L_723d50)
+ASM_VAR(double, g_nd64b5f0, $L_64b5f0)
+ASM_PROC(FUN_5c3c50)    // net: send a message (name, msg)
+ASM_PROC(FUN_5c55b0)    // net: the host's reply (reply, -)
+ASM_PROC(FUN_5c3ac0)    // net: whether the session is open
+ASM_PROC(FUN_5c5740)    // net: host (name, 0, 0)
+ASM_PROC(FUN_5ea1b0)    // text in a width (surface, x, y, width, font, text, align, -)
+
+static const char* Nd_Str(int id)
+{
+    return CallC<const char*>(FUN_5d2e50, id);
+}
+
+static void Nd_Text(BYTE* self, int x, int y, const char* text)
+{
+    CallC(FUN_5ea170, F(BYTE*, self, -52), x, y, g_ndFont, text, 4, 0);
+}
+
+// the text id as a line centered in the dialog's width (+308) at x offset dx
+static void Nd_Centered(BYTE* self, int id, int y, int dx = 160)
+{
+    char buf[64];
+    sprintf(buf, Nd_Str(id));
+    int w = CallThis<int>(FUN_5ea0e0, g_ndFont, buf);
+    CallC(FUN_5ea170, F(BYTE*, self, -52), (F(int, self, 308) - w) / 2 + dx, y, g_ndFont, buf, 4, 0);
+}
+
+static void Nd_Close(BYTE* self)
+{
+    CallVirt(self - 64, 32);
+}
+
+extern "C" {
+
+// [$L_519800] draws the network dialog on surface: mode +312 2 connecting (joining: the host's reply starts the
+// game; else a timeout after +320), 3 waiting for players (the hosts' list), 1/4/5 messages, else the message
+// of state +304
+void __fastcall NetDialog_Draw(BYTE* self, void*, BYTE* surface)
+{
+    CallThis(FUN_5c0020, self, surface);
+    int mode = F(int, self, 312);
+    if (mode == 2) {
+        if (g_nd6968f4 != 1) {
+            double end = F(double, self, 320) + g_nd64b5f0;
+            if (Timer_Now() > end) {
+                Nd_Close(self);
+                CallThis(FUN_519750, g_nd6cecc4, 0);
+                return;
+            }
+            BYTE msg[64];
+            msg[0] = 32;
+            msg[1] = 0;
+            memset(msg + 2, 0, 62);
+            CallThis(FUN_5c3c50, (BYTE*)g_ndNet696750, g_nd6cecd8 + 632, msg);
+            if (g_nd6968f0 == 0) {
+                Nd_Close(self);
+                CallThis(FUN_519750, g_nd6cecc0, 10);
+                return;
+            }
+            Nd_Centered(self, 74, 292);
+            return;
+        }
+        BYTE reply[200];
+        BYTE x[16];
+        int r = CallThis<int>(FUN_5c55b0, (BYTE*)g_ndNet696750, reply, x);
+        if (r == 0) {
+            Nd_Centered(self, 75, 292);
+            return;
+        }
+        if (r == 2) {
+            Nd_Close(self);
+            CallThis(FUN_519750, g_nd6cecc0, 12);
+            return;
+        }
+        F(int, g_nd6cec98, 384) = reply[0];
+        F(short, g_nd6cec98, 388) = reply[1];
+        F(short, g_nd6cec98, 392) = reply[2];
+        F(short, g_nd6cec98, 390) = reply[3];
+        g_nd696908 = reply[4];
+        int n = reply[5];
+        g_ndNames = 0;
+        for (int k = 0; k < n; k++)
+            CallThis(FUN_50c770, &g_ndNames, reply + 10 + k * 20);
+        Nd_Close(self);
+        CallC(FUN_510bc0, 0, 1);
+        return;
+    }
+    if (mode == 3) {
+        if (g_nd6968f4 != 2) {
+            if (CallThis<int>(FUN_5c3ac0, (BYTE*)g_ndNet696750) == 0) {
+                CallThis(FUN_519750, g_nd6cecc0, 11);
+                Nd_Close(self);
+                return;
+            }
+            if (g_nd6968f4 != 2)
+                return;
+            g_ndNames = 0;
+            int i = CallThis<int>(FUN_50c770, &g_ndNames, g_nd6cecd8 + 632);
+            ((int*)(char*)g_ndFlags6cea74)[i] = 1;
+            return;
+        }
+        CallThis(FUN_5c5740, (BYTE*)g_ndNet696750, g_nd6cecd8 + 632, 0, 0);
+        Nd_Text(self, 260, 292, Nd_Str(76));
+        int n = g_ndNames;
+        int cols = (n + 1) / 2;
+        int w = 300 / cols;
+        for (int i = 0; i < g_ndNames; i++)
+            CallC(FUN_5ea1b0, surface, i / 2 * w + 260, i % 2 * 15 + 307, w - 10, g_ndFont,
+                  (char*)g_ndNameText + i * 16, 4, 0);
+        return;
+    }
+    if (mode == 1) {
+        Nd_Text(self, 260, 292, Nd_Str(67));
+        return;
+    }
+    if (mode == 4) {
+        if (memcmp(g_nd6cec94 + g_nd6968f8 * 32 + 552, g_nd723d50, 16) == 0) {
+            Nd_Text(self, 260, 292, Nd_Str(77));
+            Nd_Text(self, 260, 307, Nd_Str(78));
+            Nd_Text(self, 260, 322, Nd_Str(79));
+        } else
+            Nd_Text(self, 260, 292, Nd_Str(80));
+        return;
+    }
+    if (mode == 5) {
+        Nd_Centered(self, 120, 292);
+        Nd_Centered(self, 121, 307);
+        Nd_Centered(self, 122, 322);
+        return;
+    }
+    switch (F(int, self, 304)) {
+    case 0:
+        Nd_Centered(self, 13, 292);
+        break;
+    case 2:
+        Nd_Centered(self, 43, 285, 157);
+        Nd_Centered(self, 44, 300, 157);
+        Nd_Centered(self, 45, 315, 157);
+        break;
+    case 4:
+        Nd_Centered(self, 46, 282, 157);
+        Nd_Centered(self, 47, 297, 157);
+        break;
+    case 9:
+        Nd_Centered(self, 49, 292);
+        Nd_Centered(self, 50, 312);
+        break;
+    case 10:
+        Nd_Centered(self, 96, 292);
+        break;
+    case 11:
+        Nd_Centered(self, 68, 292);
+        break;
+    case 12:
+        Nd_Centered(self, 309, 292);
+        break;
+    }
+}
+
+} // extern "C"
