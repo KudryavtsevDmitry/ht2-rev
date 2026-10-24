@@ -127,7 +127,7 @@ extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" size_t __cdecl fwrite(const void* p, size_t size, size_t n, FILE* f);
 extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);   // scene.cpp
 extern "C" void __cdecl Video_SetPalette(const BYTE* rgb, DWORD first, DWORD count);    // video_mode.cpp
-ASM_PROC(FUN_5be8c0)    // lays out list rows (thiscall on the drop part)
+extern "C" void FUN_5be8c0(); KING_ALIAS("_FUN_5be8c0", "@ScrollBar_Layout@40")    // lays out list rows (thiscall on the drop part)
 ASM_FUNC(List_RowCallback, $L_5c0700)
 extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")    // visible rows of a list
 ASM_PROC(FUN_6303c4)    // ICDecompress
@@ -2580,7 +2580,7 @@ extern "C" int __fastcall Edit_Key(BYTE* s, void*, int key, int type)
 // ---------------------------------------------------------------------------
 // Drawing a list.
 
-ASM_PROC(FUN_5ea1b0)
+extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")
 extern "C" void FUN_5be1d0(); KING_ALIAS("_FUN_5be1d0", "@Ctl_DrawAll@24")
 extern "C" void __cdecl Ctl_DrawFrame(BYTE* dst, const int* r, DWORD flags, int color, int a5, int light, int dark,
                                       int dx, int dy, int fill, BYTE* bmp, int pattern);    // controls.cpp
@@ -3018,6 +3018,176 @@ void __fastcall Video_DrawFrame(BYTE* self, void*, BYTE* surf, int x, int y, int
         }
     }
     (*(UnlockFn*)(*(BYTE**)surf + 128))(surf, 0);
+}
+
+} // extern "C"
+
+// === opening a video file (FUN_5c13a0)
+
+ASM_VAR(AsmLabel, g_avClsid651938, $L_651938)
+ASM_VAR(AsmLabel, g_avIid67f408, $L_67f408)
+ASM_VAR(AsmLabel, s_av67f3f8, $L_67f3f8)
+ASM_VAR(AsmLabel, s_av67f3e4, $L_67f3e4)
+ASM_VAR(int, g_av7208b8, $L_7208b8)
+ASM_VAR(BYTE*, g_av720920, $L_720920)
+ASM_VAR(int, g_av702f54, $L_702f54)
+
+extern "C" void FUN_5c12a0(); KING_ALIAS("_FUN_5c12a0", "@Media_Close@8")
+extern "C" void FUN_5c1990(); KING_ALIAS("_FUN_5c1990", "_AnsiToBstr")    // a BSTR of an ANSI string (text, length)
+ASM_PROC(FUN_6303be)    // ICOpen
+ASM_PROC(FUN_6303b8)    // ICSendMessage
+extern "C" void FUN_5c2e60(); KING_ALIAS("_FUN_5c2e60", "_Media_StartThread")
+extern "C" void FUN_5c2750(); KING_ALIAS("_FUN_5c2750", "_Msavi_Open")
+
+// a COM method (stdcall, this pushed) at vtbl+off of o
+template <class R = HRESULT, class... A>
+static R Av_Com(void* o, int off, A... args)
+{
+    return ((R(__stdcall*)(void*, A...))*(void**)(*(BYTE**)o + off))(o, args...);
+}
+
+// the index records of a stream: count records of 16 bytes, zeroed at +0 and +4
+static BYTE* Av_Records(int count)
+{
+    BYTE* r = (BYTE*)operator new(count * 16);
+    if (r)
+        for (int i = 0; i < count; i++) {
+            F(int, r, i * 16 + 4) = 0;
+            F(int, r, i * 16) = 0;
+        }
+    return r;
+}
+
+extern "C" {
+
+// [FUN_5c13a0] opens the video file path (thiscall): its reader object, the video stream format (+44), the
+// decompressor (+2176) to bits per pixel bits, the frame index (+0), the frame buffers (+2200, +2204), the rate
+// (+2224), the audio stream (+16, index +4) and the playing thread; 0 when done, else an error code or 1
+int __fastcall Video_Open(BYTE* self, void*, const char* path, int bits, int scale, int thread)
+{
+    CallThis(FUN_5c12a0, self);
+    F(int, self, 2240) = scale;
+    BYTE* obj = 0;
+    HRESULT hr = CoCreateInstance(*(const IID*)(char*)g_avClsid651938, 0, 7, *(const IID*)(char*)g_avIid67f408, (void**)&obj);
+    if (hr) {
+        if (obj)
+            Av_Com<ULONG>(obj, 8);
+        return hr;
+    }
+    HANDLE h = CreateFileA(path, 0x80000000, 1, 0, 3, 0, 0);
+    F(HANDLE, self, 36) = h;
+    if (!h) {
+        if (obj)
+            Av_Com<ULONG>(obj, 8);
+        return 1;
+    }
+    void* name = CallC<void*>(FUN_5c1990, path, -1);
+    hr = Av_Com(obj, 28, name);
+    if (hr) {
+        SysFreeString((BSTR)name);
+        if (obj)
+            Av_Com<ULONG>(obj, 8);
+        return hr;
+    }
+    int out = 0;
+    Av_Com(obj, 36, &out);
+    if (out != 1)
+        goto fail;
+    {
+        Av_Com(obj, 52, 0, self + 8);
+        DWORD fileInfo[14];
+        memset(fileInfo, 0, sizeof fileInfo);
+        Av_Com(obj, 84, fileInfo, 56, &out);
+        DWORD info[16];
+        memset(info, 0, sizeof info);
+        Av_Com(obj, 44, 0, info, 64, &out, &out, &out);
+        if (info[2] & 0x10000)
+            CallC(FUN_5d2ba0, (const char*)s_av67f3f8, 0);
+        memset(self + 1108, 0, 40);
+        Av_Com(obj, 68, 0, self + 44, 40, &out);
+        memcpy(self + 1108, self + 44, 40);
+        void* ic = CallStd<void*>(FUN_6303be, 0x63646976, F(DWORD, self, 60), 2);    // 'vidc'
+        F(void*, self, 2176) = ic;
+        if (!ic) {
+            SysFreeString((BSTR)name);
+            if (obj)
+                Av_Com<ULONG>(obj, 8);
+            return 1;
+        }
+        F(WORD, self, 1122) = (WORD)bits;
+        F(int, self, 1124) = 0;
+        F(BYTE*, self, 2172) = self + 1108 + F(int, self, 1108);
+        if (CallStd<int>(FUN_6303b8, ic, 16395, self + 44, self + 1108)) {
+            CallC(FUN_5d2ba0, (const char*)s_av67f3e4, 0);
+            goto fail;
+        }
+        if (CallStd<int>(FUN_6303b8, F(void*, self, 2176), 16396, self + 44, self + 1108))
+            goto fail;
+        int n = F(int, self, 8);
+        F(BYTE*, self, 0) = Av_Records(n);
+        for (int i = 0; i < F(int, self, 8); i++) {
+            int a, b, c;
+            int key = 0;
+            HRESULT r = Av_Com(obj, 88, 0, i, &c, &a, &b, &key);
+            BYTE* rec = F(BYTE*, self, 0) + i * 16;
+            F(int, rec, 0) = a;
+            F(int, rec, 4) = b;
+            F(int, rec, 8) = c;
+            F(BYTE, rec, 12) = (BYTE)key;
+            if (r)
+                break;
+        }
+        F(int, self, 2180) = 0;
+        F(void*, self, 2200) = operator new(F(int, self, 52) * F(int, self, 48) * 4);
+        F(void*, self, 2204) = operator new(F(int, self, 1116) * F(int, self, 1112) * 4);
+        double rate = (double)(__int64)(DWORD)info[6] / (int)info[5];
+        if (bits == 8)
+            g_av7208b8 = 1;
+        F(int, self, 2208) = 1;
+        F(double, self, 2224) = rate;
+        int streams;
+        Av_Com(obj, 40, &streams);
+        if (streams <= 0) {
+            SysFreeString((BSTR)name);
+            if (obj)
+                Av_Com<ULONG>(obj, 8);
+            return 0;
+        }
+        CallC(FUN_5c2e60, g_av720920, thread);
+        F(HANDLE, self, 40) = CreateFileA(path, 0x80000000, 1, 0, 3, 0, 0);
+        DWORD info2[16];
+        Av_Com(obj, 48, 0, info2, 64, &out, &out);
+        Av_Com(obj, 56, 0, self + 12);
+        Av_Com(obj, 72, 0, self + 16, 18, &out);
+        g_av702f54 = 0;
+        CallC(FUN_5c2750, self + 16, (void*)Avi_AudioRead, self);
+        F(double, self, 2232) = (double)(__int64)(DWORD)(F(WORD, self, 30) * F(int, self, 20));
+        int n2 = F(int, self, 12);
+        F(BYTE*, self, 4) = Av_Records(n2);
+        for (int i = 0; i < F(int, self, 12); i++) {
+            int a, b, c;
+            HRESULT r = Av_Com(obj, 64, 0, i, &c, &a, &b);
+            BYTE* rec = F(BYTE*, self, 4) + i * 16;
+            F(int, rec, 0) = a;
+            F(int, rec, 4) = b;
+            F(int, rec, 8) = c;
+            if (r)
+                break;
+        }
+        F(int, self, 2192) = 0;
+        F(int, self, 2196) = 0;
+        F(int, self, 2188) = 0;
+        F(int, self, 2184) = 0;
+        SysFreeString((BSTR)name);
+        if (obj)
+            Av_Com<ULONG>(obj, 8);
+        return 0;
+    }
+fail:
+    SysFreeString((BSTR)name);
+    if (obj)
+        Av_Com<ULONG>(obj, 8);
+    return 1;
 }
 
 } // extern "C"

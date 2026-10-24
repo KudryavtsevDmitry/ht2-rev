@@ -5065,3 +5065,348 @@ BYTE* __fastcall Fx4daf40_Construct(BYTE* self, void*, BYTE* view, int a, int b)
 }
 
 } // extern "C"
+
+// === initializing the effects of a world (FUN_4b9570)
+
+ASM_VAR(int, g_fi6716f4, $L_6716f4)
+ASM_VAR(int, g_fi6949fc, $L_6949fc)            // a 3dfx card (vendor 0x121a, devices 1 and 2)
+ASM_VAR(BYTE*, g_fiDraw72090c, $L_72090c)
+ASM_VAR(BYTE*, g_fiDevice720908, $L_720908)
+ASM_VAR(BYTE*, g_fiWorld696224, $L_696224)
+ASM_VAR(BYTE*, g_fi696200, $L_696200)
+ASM_VAR(BYTE*, g_fi696204, $L_696204)
+ASM_VAR(BYTE*, g_fi6f63d0, $L_6f63d0)
+ASM_VAR(BYTE*, g_fi696254, $L_696254)
+ASM_VAR(BYTE*, g_fi6f6a68, $L_6f6a68)
+ASM_VAR(BYTE*, g_fi69622c, $L_69622c)
+ASM_VAR(BYTE*, g_fi696230, $L_696230)
+ASM_VAR(BYTE*, g_fi6961f8, $L_6961f8)
+ASM_VAR(BYTE*, g_fi696234, $L_696234)
+ASM_VAR(int, g_fi6cec68, $L_6cec68)
+ASM_VAR(int, g_fi6716fc, $L_6716fc)
+ASM_VAR(int, g_fi6716f8, $L_6716f8)
+ASM_VAR(float, g_fi64c13c, $L_64c13c)
+ASM_VAR(float, g_fi64c140, $L_64c140)
+ASM_VAR(float, g_fi64c144, $L_64c144)
+ASM_VAR(float, g_fi64c148, $L_64c148)
+ASM_VAR(float, g_fi696060, $L_696060)
+ASM_VAR(float, g_fi696080, $L_696080)
+ASM_VAR(float, g_fi696044, $L_696044)
+ASM_VAR(float, g_fi64c258, $L_64c258)
+ASM_VAR(int, g_fi696208, $L_696208)
+ASM_VAR(int, g_fi69620c, $L_69620c)
+ASM_VAR(int, g_fi696210, $L_696210)
+ASM_VAR(int, g_fi696214, $L_696214)
+ASM_VAR(AsmLabel, g_fi694998, $L_694998)
+ASM_VAR(AsmLabel, g_fi694a00, $L_694a00)
+ASM_VAR(AsmLabel, g_fi695908, $L_695908)
+ASM_VAR(AsmLabel, g_fi695c58, $L_695c58)
+ASM_VAR(AsmLabel, g_fi695bf0, $L_695bf0)
+ASM_VAR(BYTE*, g_fi696228, $L_696228)
+ASM_VAR(int, g_fi671700, $L_671700)
+ASM_VAR(DWORD, g_fi694830, $L_694830)
+ASM_VAR(DWORD, g_fi64c1c0, $L_64c1c0)
+ASM_VAR(DWORD, g_fi64c1c4, $L_64c1c4)
+ASM_VAR(AsmLabel, g_fiNames71e820, $L_71e820)
+ASM_VAR(AsmLabel, g_fiVtbl64c26c, $L_64c26c)
+ASM_VAR(AsmLabel, g_fiCb4cb310, $L_4cb310)
+ASM_VAR(AsmLabel, g_fiCb4c5b30, $L_4c5b30)
+ASM_VAR(AsmLabel, g_fiCb4cbec0, $L_4cbec0)
+ASM_VAR(AsmLabel, g_fiCb4cbfd0, $L_4cbfd0)
+ASM_VAR(AsmLabel, s_fi672688, $L_672688)
+ASM_VAR(AsmLabel, s_fi66cd44, $L_66cd44)
+ASM_VAR(AsmLabel, s_fi672678, $L_672678)
+ASM_VAR(AsmLabel, s_fi67266c, $L_67266c)
+ASM_VAR(AsmLabel, s_fi6725d0, $L_6725d0)
+ASM_VAR(AsmLabel, s_fi672660, $L_672660)
+ASM_VAR(AsmLabel, s_fi672658, $L_672658)
+ASM_VAR(AsmLabel, s_fi672650, $L_672650)
+ASM_VAR(AsmLabel, s_fi672648, $L_672648)
+ASM_VAR(AsmLabel, s_fi672640, $L_672640)
+ASM_VAR(AsmLabel, s_fi672638, $L_672638)
+ASM_VAR(AsmLabel, s_fi67262c, $L_67262c)
+ASM_VAR(AsmLabel, s_fi67261c, $L_67261c)
+ASM_VAR(AsmLabel, s_fi67260c, $L_67260c)
+ASM_VAR(AsmLabel, s_fi6725f8, $L_6725f8)
+ASM_VAR(AsmLabel, s_fi6725ec, $L_6725ec)
+extern "C" void FUN_5cb990(); KING_ALIAS("_FUN_5cb990", "_Set70ebf4")
+extern "C" void FUN_4b87a0(); KING_ALIAS("_FUN_4b87a0", "_Eff_CreateSounds")
+ASM_PROC(FUN_4b91a0)
+extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
+extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
+extern "C" void FUN_57c290(); KING_ALIAS("_FUN_57c290", "@PoolNode_Construct@16")
+ASM_PROC(FUN_4c8640)
+extern "C" void FUN_593040(); KING_ALIAS("_FUN_593040", "@Body593040_Construct@12")
+extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
+extern "C" void FUN_5c6400(); KING_ALIAS("_FUN_5c6400", "_Effects_InitTrees")
+extern "C" void FUN_5cb9a0(); KING_ALIAS("_FUN_5cb9a0", "_Set70ebe8")
+extern "C" void FUN_4bc690(); KING_ALIAS("_FUN_4bc690", "@Trail_Construct@20")
+extern "C" void FUN_4bc950(); KING_ALIAS("_FUN_4bc950", "@Effect4bc950_Attach@12")
+extern "C" void FUN_4bee30(); KING_ALIAS("_FUN_4bee30", "@Sky_Construct@16")
+ASM_PROC(FUN_4be8d0)
+extern "C" void FUN_4c0e30(); KING_ALIAS("_FUN_4c0e30", "@Effects_Construct@20")
+extern "C" void FUN_4b8c40(); KING_ALIAS("_FUN_4b8c40", "_Fx_LoadSet695bf0")
+extern "C" void FUN_4b8fb0(); KING_ALIAS("_FUN_4b8fb0", "_Fx_LoadVapor")
+extern "C" void FUN_4b8b80(); KING_ALIAS("_FUN_4b8b80", "_Fx_LoadNumbered")
+extern "C" void FUN_4b8f00(); KING_ALIAS("_FUN_4b8f00", "_Fx_LoadSet694a00")
+extern "C" void FUN_4b8ad0(); KING_ALIAS("_FUN_4b8ad0", "_Fx_LoadSet694998")
+extern "C" void FUN_4b8a10(); KING_ALIAS("_FUN_4b8a10", "_Fx_LoadSet69618c")
+extern "C" void FUN_4b8d00(); KING_ALIAS("_FUN_4b8d00", "_Fx_LoadLightMaterials")
+extern "C" void FUN_4b9080(); KING_ALIAS("_FUN_4b9080", "_Fx_LoadShadows")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_4bb390(); KING_ALIAS("_FUN_4bb390", "_Fire_RandomRamps")
+extern "C" void FUN_4c4750(); KING_ALIAS("_FUN_4c4750", "_Fx_Update2")
+extern "C" void FUN_4cc850(); KING_ALIAS("_FUN_4cc850", "_Effect_AttachNode")
+ASM_PROC(FUN_5d2540)
+extern "C" void FUN_5d27c0(); KING_ALIAS("_FUN_5d27c0", "@NameHash_ResolvePending@8")
+
+static BYTE* Fi_Find(const char* name)
+{
+    return Fx_FindByName(name, g_fi696200);
+}
+
+static bool Fi_Between(double t, float lo, float hi)
+{
+    return t > lo && t < hi;
+}
+
+extern "C" {
+
+// [FUN_4b9570] sets up the effects of world w: the card quirks, the effect pools and scene nodes, the trail,
+// the sky, clouds and sun when enabled, the effect sets and their names
+void __cdecl Effects_Init(BYTE* w)
+{
+    g_fi6716f4 = 0;
+    g_fi6949fc = 0;
+    CallC(FUN_5cb990, 1);
+    DWORD id[268];
+    memset(id, 0, sizeof id);
+    BYTE* dd = g_fiDraw72090c;
+    if ((*(HRESULT(__stdcall**)(BYTE*, DWORD*, int))(*(BYTE**)dd + 108))(dd, id, 0) >= 0 && id[258] == 4634
+        && (id[259] == 1 || id[259] == 2))
+        g_fi6949fc = 1;
+    CallC(FUN_4b87a0);
+    CallC(FUN_4b91a0);
+    CallC(FUN_5e48f0, w);
+    g_fiWorld696224 = w;
+    g_fi696200 = CallThis<BYTE*>(FUN_5d9290, w, (const char*)s_fi672688);
+    g_fi696204 = CallThis<BYTE*>(FUN_5d9290, g_fiWorld696224, (const char*)s_fi66cd44);
+    BYTE* p = (BYTE*)operator new(88);
+    g_fi6f63d0 = p ? CallThis<BYTE*>(FUN_57c290, p, g_fiWorld696224, g_fiDevice720908) : 0;
+    p = (BYTE*)operator new(96);
+    g_fi696254 = p ? CallThis<BYTE*>(FUN_4c8640, p, g_fiWorld696224, g_fiDevice720908) : 0;
+    p = (BYTE*)operator new(60);
+    p = p ? CallThis<BYTE*>(FUN_593040, p, (const char*)s_fi672678) : 0;
+    g_fi6f6a68 = p;
+    g_fi69622c = p;
+    p = (BYTE*)operator new(64);
+    if (p) {
+        CallThis(FUN_5f19b0, p, (const char*)s_fi67266c, 5, 1);
+        F(void*, p, 0) = g_fiVtbl64c26c;
+        F(int, p, 56) = 0;
+        F(int, p, 60) = 0;
+    }
+    g_fi696230 = p;
+    BYTE* a = Fi_Find(s_fi6725d0);
+    CallC(FUN_5c6400, Fi_Find(s_fi672660), a);
+    CallC(FUN_5cb9a0, (void*)Eff_New4cb450, (void*)g_fiCb4cb310);
+    p = (BYTE*)operator new(88);
+    if (p)
+        p = CallThis<BYTE*>(FUN_4bc690, p, g_fi6cec68 ? (const char*)s_fi672658 : (const char*)s_fi672650,
+                            g_fiWorld696224, 20);
+    g_fi6961f8 = p;
+    CallThis(FUN_4bc950, p, g_fi696230);
+    if (BYTE* o = F(BYTE*, w, 524)) {
+        CallVirt(o, 20, 0, g_fi696230);
+        CallVirt(F(BYTE*, w, 524), 20, 0, g_fi6f6a68);
+    }
+    double t = F(double, g_fiWorld696224, 2920);
+    g_fi6716fc = Fi_Between(t, g_fi64c13c, g_fi64c140);
+    g_fi6716f8 = Fi_Between(t, g_fi64c144, g_fi64c148);
+    if (g_fi696060 > g_fi64c258) {
+        p = (BYTE*)operator new(52);
+        if (p)
+            Sky_Construct(p, 0, g_fiWorld696224, Fi_Find(s_fi672648));
+    }
+    if (g_fi696080 > g_fi64c258) {
+        p = (BYTE*)operator new(48);
+        if (p)
+            CallThis(FUN_4be8d0, p, g_fiWorld696224, Fi_Find(s_fi672640));
+    }
+    if (g_fi696044 > g_fi64c258) {
+        p = (BYTE*)operator new(72);
+        if (p) {
+            BYTE* f640 = Fi_Find(s_fi672640);
+            p = CallThis<BYTE*>(FUN_4c0e30, p, g_fiWorld696224, Fi_Find(s_fi672638), f640);
+        }
+        g_fi696234 = p;
+    }
+    g_fi696208 = 0;
+    memset(g_fi694998, 0, 100);
+    memset(g_fi694a00, 0, 100);
+    memset(g_fi695908, 0, 100);
+    memset(g_fi695c58, 0, 100);
+    memset(g_fi695bf0, 0, 100);
+    g_fi69620c = 0;
+    g_fi696214 = 0;
+    g_fi696210 = 0;
+    CallC(FUN_4b8c40);
+    CallC(FUN_4b8fb0);
+    CallC(FUN_4b8b80);
+    CallC(FUN_4b8f00);
+    CallC(FUN_4b8ad0);
+    CallC(FUN_4b8a10);
+    CallC(FUN_4b8d00);
+    CallC(FUN_4b9080);
+    BYTE* o = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_fi67262c);
+    BYTE* m = o ? F(BYTE*, o, 56) : 0;
+    g_fi696228 = m;
+    g_fi671700 = m == 0 ? 200 : 100;
+    g_fi694830 = m == (BYTE*)2 ? g_fi64c1c4 : g_fi64c1c0;
+    CallC(FUN_4bb390);
+    CallC(FUN_4c4750, g_fiWorld696224);
+    CallC(FUN_4cc850, g_fi696230);
+    CallThis(FUN_5d2540, (BYTE*)g_fiNames71e820, (const char*)s_fi67261c, (void*)Lights_Collect);
+    CallThis(FUN_5d2540, (BYTE*)g_fiNames71e820, (const char*)s_fi67260c, (void*)g_fiCb4c5b30);
+    CallThis(FUN_5d2540, (BYTE*)g_fiNames71e820, (const char*)s_fi6725f8, (void*)g_fiCb4cbec0);
+    CallThis(FUN_5d2540, (BYTE*)g_fiNames71e820, (const char*)s_fi6725ec, (void*)g_fiCb4cbfd0);
+    CallThis(FUN_5d27c0, (BYTE*)g_fiNames71e820);
+}
+
+} // extern "C"
+
+// === the effects manager (FUN_4c0e30)
+
+ASM_VAR(AsmLabel, g_em64c604, $L_64c604)
+ASM_VAR(AsmLabel, g_em64c5f0, $L_64c5f0)
+ASM_VAR(AsmLabel, g_em64c5d4, $L_64c5d4)
+ASM_VAR(AsmLabel, g_em64c5b8, $L_64c5b8)
+ASM_VAR(AsmLabel, g_em64c59c, $L_64c59c)
+ASM_VAR(AsmLabel, g_em64c57c, $L_64c57c)
+ASM_VAR(int, g_em6f33b0, $L_6f33b0)
+ASM_VAR(AsmLabel, s_em672770, $L_672770)
+ASM_VAR(AsmLabel, s_em67266c, $L_67266c)
+ASM_VAR(AsmLabel, s_em672750, $L_672750)
+extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void FUN_4c16b0(); KING_ALIAS("_FUN_4c16b0", "@Decals4c16b0_Construct@8")
+extern "C" void FUN_4c17d0(); KING_ALIAS("_FUN_4c17d0", "@Decals4c17d0_Construct@8")
+extern "C" void FUN_4c1d40(); KING_ALIAS("_FUN_4c1d40", "@Decals4c1d40_Construct@8")
+extern "C" void FUN_4c2270(); KING_ALIAS("_FUN_4c2270", "@Lights50_Construct@12")
+extern "C" void FUN_4c26f0(); KING_ALIAS("_FUN_4c26f0", "@RendererC_Construct@8")
+extern "C" void FUN_4c2710(); KING_ALIAS("_FUN_4c2710", "@Renderer_Create3@20")
+extern "C" void FUN_4c28e0(); KING_ALIAS("_FUN_4c28e0", "@RendererD_Construct@8")
+extern "C" void FUN_4c2ac0(); KING_ALIAS("_FUN_4c2ac0", "@Sparks_Alloc@8")
+extern "C" void FUN_4c3cc0(); KING_ALIAS("_FUN_4c3cc0", "@Lights50b_Construct@8")
+extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
+extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+
+// the free list of e's +8 entries of 24 bytes (+56 storage, +48 the first free, +52 none used); the entries
+// are constructed when init is set
+static void Em_InitPool(BYTE* e, bool init)
+{
+    int n = F(int, e, 8);
+    BYTE* a = (BYTE*)operator new(n * 24);
+    if (init && a)
+        CallStd(FUN_4011e0, a, 24, n, (void*)Fx_Self);
+    F(BYTE*, e, 56) = a;
+    for (int i = 0; i < F(int, e, 8) - 1; i++)
+        F(BYTE*, F(BYTE*, e, 56) + i * 24, 0) = F(BYTE*, e, 56) + i * 24 + 24;
+    F(BYTE*, F(BYTE*, e, 56) + F(int, e, 8) * 24 - 24, 0) = 0;
+    F(BYTE*, e, 48) = F(BYTE*, e, 56);
+    F(int, e, 52) = 0;
+}
+
+// the nodes a and b drawn by the effects: full alpha, flags 0x40000 and 2
+static void Em_SetNode(BYTE* n)
+{
+    F(float, n, 88) = 1.0f;
+    F(DWORD, n, 32) |= 0x40000;
+    F(DWORD, n, 32) |= 2;
+}
+
+// a new renderer (made by ctor) for the scene object 67266c of owner with node n
+static BYTE* Em_Renderer(void (*ctor)(), BYTE* owner, BYTE* n)
+{
+    BYTE* r = (BYTE*)operator new(80);
+    if (r)
+        r = CallThis<BYTE*>(ctor, r);
+    BYTE* o = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, owner, 524), (const char*)s_em67266c);
+    CallThis(FUN_4c2710, r, o, n, 2000);
+    return r;
+}
+
+extern "C" {
+
+// [FUN_4c0e30] constructor (owner, a, b): an object of kind 98 attached to owner, drawing through nodes a and
+// b, with its four particle pools (+40 decals, +48 lights, +44 the weather lights 6f33b0, +52 sparks) and the
+// two renderers +32, +36; +68 the scene object 672750
+BYTE* __fastcall Effects_Construct(BYTE* s, void*, BYTE* owner, BYTE* a, BYTE* b)
+{
+    CallThis(FUN_5d31e0, s, 98, (const char*)s_em672770);
+    F(void*, s, 0) = g_em64c604;
+    F(BYTE*, s, 64) = owner;
+    CallThis(FUN_5d3570, owner + 2992, s);
+    CallThis(FUN_5d33d0, s, 1);
+    F(BYTE*, s, 56) = a;
+    Em_SetNode(a);
+    F(BYTE*, s, 60) = b;
+    Em_SetNode(b);
+
+    BYTE* e = (BYTE*)operator new(9280);
+    if (e) {
+        Sparks_Construct(e, 0, (int)owner);
+        CallThis(FUN_4c16b0, e + 64);
+        F(void*, e, 64) = g_em64c5f0;
+        CallThis(FUN_4c1d40, e + 4672);
+        F(void*, e, 0) = g_em64c5d4;
+        F(DWORD, e, 60) = 0xff505050;
+    }
+    F(BYTE*, s, 40) = e;
+    Em_InitPool(e, false);
+
+    e = (BYTE*)operator new(672);
+    if (e) {
+        Sparks_Construct(e, 0, (int)owner);
+        CallThis(FUN_4c3cc0, e + 64);
+        F(void*, e, 0) = g_em64c5b8;
+        F(DWORD, e, 60) = 0xff505050;
+    }
+    F(BYTE*, s, 48) = e;
+    Em_InitPool(e, false);
+
+    e = (BYTE*)operator new(72);
+    if (e) {
+        int w = g_em6f33b0;
+        Sparks_Construct(e, 0, (int)owner);
+        F(void*, e, 0) = g_em64c59c;
+        F(int, e, 68) = w;
+        BYTE* l = (BYTE*)operator new(612);
+        F(BYTE*, e, 64) = l ? CallThis<BYTE*>(FUN_4c2270, l, F(int, e, 68)) : 0;
+        F(DWORD, e, 60) = 0xff505050;
+    }
+    F(BYTE*, s, 44) = e;
+    Em_InitPool(e, true);
+
+    e = (BYTE*)operator new(4672);
+    if (e) {
+        Sparks_Construct(e, 0, (int)owner);
+        CallThis(FUN_4c17d0, e + 64);
+        F(void*, e, 0) = g_em64c57c;
+        F(int, e, 60) = -1;
+        F(DWORD, e, 36) = 0xbf800000;
+        F(DWORD, e, 28) = 0x3e428f5c;
+        F(int, e, 32) = 0;
+        F(DWORD, e, 12) = 0x3c23d70a;
+    }
+    F(BYTE*, s, 52) = e;
+    CallThis(FUN_4c2ac0, e);
+
+    F(BYTE*, s, 32) = Em_Renderer(FUN_4c28e0, owner, F(BYTE*, s, 56));
+    F(BYTE*, s, 36) = Em_Renderer(FUN_4c26f0, owner, F(BYTE*, s, 60));
+    F(BYTE*, s, 68) = CallC<BYTE*>(FUN_5ef2b0, F(BYTE*, owner, 524), (const char*)s_em672750);
+    return s;
+}
+
+} // extern "C"

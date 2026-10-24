@@ -440,8 +440,8 @@ int __cdecl Bodies_Pair(BYTE* a, int a1, int a2, BYTE* b, int b1, int b2, int x)
 
 }
 
-ASM_PROC(FUN_57cb70)
-ASM_PROC(FUN_57d060)
+extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
+extern "C" void FUN_57d060(); KING_ALIAS("_FUN_57d060", "@MovingObj_Construct@44")
 extern "C" void FUN_58b4f0(); KING_ALIAS("_FUN_58b4f0", "@TwoVec_Construct@8")
 extern "C" void FUN_58b8c0(); KING_ALIAS("_FUN_58b8c0", "@Body_Reset@16")
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")

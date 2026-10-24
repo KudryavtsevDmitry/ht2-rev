@@ -566,7 +566,7 @@ extern "C" void FUN_5ee470(); KING_ALIAS("_FUN_5ee470", "@Overlay_DrawOn@16")
 extern "C" void FUN_5edfe0(); KING_ALIAS("_FUN_5edfe0", "@Cluster_Clear2@8")
 extern "C" void FUN_5bac90(); KING_ALIAS("_FUN_5bac90", "@Texture_ReleaseSurface@8")
 extern "C" void FUN_5ee020(); KING_ALIAS("_FUN_5ee020", "@Cluster_Set2@8")
-ASM_PROC(FUN_5bae30)
+extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
 extern "C" void FUN_5ee300(); KING_ALIAS("_FUN_5ee300", "@List5ee300_Add@12")
 
 // [$L_5ed9a0] FUN_5eb2c0 of a with self

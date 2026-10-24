@@ -852,3 +852,136 @@ extern "C" void __cdecl Heap32_Adjust(Entry32* first, int hole, int len, Entry32
 extern "C" int __fastcall q238_Blocks487d70_Clear(BYTE* s, void* d); KING_ALIAS("@q238_Blocks487d70_Clear@8", "@Blocks487d70_Clear@8")
 // [$L_487db0] forwards to Blocks487d70_Clear
 extern "C" int __fastcall Thunk487db0(BYTE* s, void* d) { return q238_Blocks487d70_Clear(s, d); }
+
+// === the AI's player messages (FUN_46d7f0)
+
+ASM_VAR(BYTE*, g_pm68b990, $L_68b990)
+ASM_VAR(BYTE, g_pm68d0ec, $L_68d0ec)
+ASM_VAR(BYTE, g_pm66f62a, $L_66f62a)
+ASM_VAR(int, g_pm66f62c, $L_66f62c)
+ASM_VAR(BYTE*, g_pm68d308, $L_68d308)
+ASM_VAR(BYTE*, g_pm68d30c, $L_68d30c)
+ASM_VAR(BYTE*, g_pm68d314, $L_68d314)
+ASM_VAR(BYTE*, g_pm68d318, $L_68d318)
+ASM_VAR(int, g_pm68d188, $L_68d188)
+ASM_VAR(AsmLabel, s_pm68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, s_pm66f72c, $L_66f72c)
+ASM_VAR(AsmLabel, s_pm66f578, $L_66f578)
+ASM_VAR(AsmLabel, s_pm66f750, $L_66f750)
+ASM_VAR(AsmLabel, s_pm66f704, $L_66f704)
+ASM_VAR(AsmLabel, s_pm66f6d4, $L_66f6d4)
+ASM_VAR(AsmLabel, s_pm66f674, $L_66f674)
+ASM_VAR(AsmLabel, s_pm66f65c, $L_66f65c)
+ASM_VAR(AsmLabel, s_pm66f638, $L_66f638)
+ASM_VAR(AsmLabel, s_pm66f630, $L_66f630)
+extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
+extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
+extern "C" void FUN_40ad00(); KING_ALIAS("_FUN_40ad00", "_Ai_FinishRacingPlayer")
+extern "C" void FUN_417770(); KING_ALIAS("_FUN_417770", "_Player_Retire")
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_420000(); KING_ALIAS("_FUN_420000", "_Rec_4015a0Both")
+extern "C" void FUN_422390(); KING_ALIAS("_FUN_422390", "_Player_Register")
+extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
+extern "C" void FUN_4579e0(); KING_ALIAS("_FUN_4579e0", "_Range_CallD")
+extern "C" void FUN_46ea00(); KING_ALIAS("_FUN_46ea00", "@Ordr_First@8")
+extern "C" void FUN_4729e0(); KING_ALIAS("_FUN_4729e0", "@Player_Construct@12")
+ASM_PROC(FUN_4731e0)
+extern "C" void FUN_473420(); KING_ALIAS("_FUN_473420", "_Players_Append")
+extern "C" void FUN_474720(); KING_ALIAS("_FUN_474720", "@Player_Load@12")
+extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
+extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
+
+static void Pm_Report(int level, int line, const char* msg, const void* arg)
+{
+    CallC(FUN_401010, 0, level, (const char*)s_pm66f72c, (const char*)s_pm66f578, line, msg, arg,
+          (const char*)s_pm68d1c0);
+}
+
+// the player list's entry of key (the head when missing)
+static BYTE* Pm_Find(const void* key)
+{
+    void* end;
+    void* begin;
+    CallThis(FUN_4afc20, &g_pm68b990, &end);
+    CallThis(FUN_4afbf0, &g_pm68b990, &begin);
+    BYTE* r;
+    CallC(FUN_4579e0, &r, begin, end, key);
+    return r;
+}
+
+// bit 0x100 of p's +88: whether its +712 differs from 68d318's +8
+static void Pm_SetForeign(BYTE* p)
+{
+    if (F(int, p, 712) != F(int, g_pm68d318, 8))
+        F(DWORD, p, 88) |= 0x100;
+    else
+        F(DWORD, p, 88) &= ~0x100u;
+}
+
+extern "C" {
+
+// [FUN_46d7f0] handles the AI's network messages 991..999 (id, data): 991 a new player loaded from data,
+// 992 a player's state reloaded, 994 the current entry of the 68d308 table chosen; 1 when handled
+int __cdecl Ai_NetMessage(int id, BYTE* data)
+{
+    if (id < 991 || id > 999)
+        return 0;
+    if (!g_pm68d0ec)
+        Pm_Report(1, 103, (const char*)s_pm66f750, s_pm68d1c0);
+    switch (id) {
+    case 994: {
+        if (g_pm66f62a)
+            Pm_Report(1, 110, (const char*)s_pm66f704, s_pm68d1c0);
+        BYTE* d = data;
+        int key = CallThis<int>(FUN_46ea00, &d);
+        BYTE* e = g_pm68d308;
+        while (e != g_pm68d30c && F(int, e, 8) != key)
+            e += 12;
+        if (e == g_pm68d30c)
+            Pm_Report(1, 116, (const char*)s_pm66f6d4, s_pm68d1c0);
+        g_pm68d314 = e;
+        e[0] = 1;
+        break;
+    }
+    case 991: {
+        BYTE* p = CallC<BYTE*>(FUN_473420, s_pm68d1c0);
+        BYTE* cur = data + 4;
+        if (F(int, data, 0) != g_pm66f62c)
+            Pm_Report(100, 130, (const char*)s_pm66f674, s_pm68d1c0);
+        if (Pm_Find(cur) != g_pm68b990)
+            Pm_Report(1, 137, (const char*)s_pm66f65c, cur);
+        CallThis(FUN_474720, p, &cur);
+        Pm_SetForeign(p);
+        int it;
+        CallC(FUN_422390, &it, p);
+        CallC(FUN_420000, it);
+        if (g_pm68d188 == 1 || g_pm68d188 == 2)
+            CallC(FUN_417770, it);
+        break;
+    }
+    case 992: {
+        BYTE* cur1 = data;
+        BYTE* r = Pm_Find(data);
+        if (r == g_pm68b990)
+            Pm_Report(1, 162, (const char*)s_pm66f638, data);
+        int key;
+        CallThis(FUN_426280, &key, r);
+        BYTE player[1000];
+        BYTE* cur2 = data;
+        CallThis(FUN_4729e0, player, (const char*)s_pm66f630);
+        CallThis(FUN_474720, player, &cur2);
+        if (!(F(DWORD, player, 88) & 0x4000) && (F(DWORD, CallC<BYTE*>(FUN_40a9f0, r), 88) & 0x4000))
+            CallC(FUN_40ad00, key);
+        int it;
+        CallThis(FUN_41d300, &it, &r);
+        CallThis(FUN_474720, CallC<BYTE*>(FUN_40a9f0, it), &cur1);
+        CallThis(FUN_41d300, &it, &r);
+        Pm_SetForeign(CallC<BYTE*>(FUN_40a9f0, it));
+        CallThis(FUN_4731e0, player);
+        break;
+    }
+    }
+    return 1;
+}
+
+} // extern "C"

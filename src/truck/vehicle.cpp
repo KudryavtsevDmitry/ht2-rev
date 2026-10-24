@@ -3243,3 +3243,216 @@ BYTE* __fastcall Car_Construct(BYTE* self, void*, int kind, BYTE* s, int net)
 }
 
 } // extern "C"
+
+// === the car's dashboard setup (FUN_532430)
+
+ASM_VAR(AsmLabel, g_cdEmpty68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_cd702650, $L_702650)
+ASM_VAR(AsmLabel, g_cd702640, $L_702640)
+ASM_VAR(BYTE*, g_cdShell6cec6c, $L_6cec6c)
+ASM_VAR(AsmLabel, g_cd6cf428, $L_6cf428)
+ASM_VAR(AsmLabel, g_cd6cf3b0, $L_6cf3b0)
+ASM_VAR(AsmLabel, g_cd6cf4ac, $L_6cf4ac)
+ASM_VAR(AsmLabel, g_cd6cf434, $L_6cf434)
+ASM_VAR(AsmLabel, g_cd6cf4b8, $L_6cf4b8)
+ASM_VAR(int, g_cd6cf3ac, $L_6cf3ac)
+ASM_VAR(int, g_cd6cf3a8, $L_6cf3a8)
+ASM_VAR(int, g_cd6d20e0, $L_6d20e0)
+ASM_VAR(int, g_cd6d20e4, $L_6d20e4)
+ASM_VAR(float, g_cd6d20e8, $L_6d20e8)
+ASM_VAR(AsmLabel, s_cd678acc, $L_678acc)
+ASM_VAR(AsmLabel, s_cd678ac8, $L_678ac8)
+ASM_VAR(AsmLabel, s_cd67305c, $L_67305c)
+ASM_VAR(AsmLabel, s_cd678ab4, $L_678ab4)
+ASM_VAR(AsmLabel, s_cd678aa0, $L_678aa0)
+ASM_VAR(AsmLabel, s_cd678a90, $L_678a90)
+ASM_VAR(AsmLabel, s_cd678a80, $L_678a80)
+ASM_VAR(AsmLabel, s_cd678a70, $L_678a70)
+ASM_VAR(AsmLabel, s_cd678a60, $L_678a60)
+ASM_VAR(AsmLabel, s_cd678a50, $L_678a50)
+ASM_VAR(AsmLabel, s_cd678a40, $L_678a40)
+ASM_VAR(AsmLabel, s_cd678a30, $L_678a30)
+ASM_VAR(AsmLabel, s_cd678a24, $L_678a24)
+ASM_VAR(AsmLabel, s_cd678a14, $L_678a14)
+ASM_VAR(AsmLabel, s_cd678a0c, $L_678a0c)
+extern "C" void FUN_5e8c60(); KING_ALIAS("_FUN_5e8c60", "_Font_LoadFile")
+extern "C" void FUN_532330(); KING_ALIAS("_FUN_532330", "@View_Place@8")
+extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
+
+static BYTE* Cd_Find(const char* fmt, const char* prefix, int i)
+{
+    char name[40];
+    sprintf(name, fmt, prefix, i);
+    return CallC<BYTE*>(FUN_5ef3d0, name);
+}
+
+extern "C" {
+
+// [FUN_532430] sets up the car (thiscall): its matrices, the dashboard pictures by dashboard style (+904
+// numbered, +660.. gauges, +740.. lights), the light direction in vehicle space, the font, the view
+void __fastcall Car_SetupDashboard(BYTE* self, void*)
+{
+    Cr_Identity(self + 1424);
+    Cr_Identity(self + 1568);
+    Cr_Identity(self + 1520);
+    F(int, self, 1616) = 0;
+    memcpy(self + 1620, g_cd702650, 12);
+    F(DWORD, self, 44) = 1232348160;           // 1e6f
+    F(int, self, 1392) = 0;
+    F(int, self, 1060) = 19;
+    char prefix[20];
+    strcpy(prefix, g_cdEmpty68d1c0);
+    if ((F(DWORD, g_cr6cec70, 408) & 15) == 1)
+        strcpy(prefix, s_cd678acc);
+    if ((F(DWORD, g_cr6cec70, 408) & 15) == 2)
+        strcpy(prefix, s_cd678ac8);
+    char name[40];
+    for (int i = 1; i <= 39; i++) {
+        sprintf(name, s_cd67305c);
+        if ((F(DWORD, g_cr6cec70, 408) & 15) == 1)
+            sprintf(name, s_cd678ab4, i);
+        if ((F(DWORD, g_cr6cec70, 408) & 15) == 2)
+            sprintf(name, s_cd678aa0, i);
+        F(BYTE*, self, 900 + i * 4) = Cr_Find(name);
+    }
+    sprintf(name, s_cd67305c);
+    F(int, self, 1396) = 0;
+    F(int, self, 108) = 0;
+    for (int i = 0; i < 10; i++) {
+        F(BYTE*, self, 700 + i * 4) = Cd_Find(s_cd678a90, prefix, i);
+        F(BYTE*, self, 660 + i * 4) = Cd_Find(s_cd678a80, prefix, i);
+        F(BYTE*, self, 856 + i * 4) = Cd_Find(s_cd678a70, prefix, i);
+        F(BYTE*, self, 816 + i * 4) = Cd_Find(s_cd678a60, prefix, i);
+    }
+    F(BYTE*, self, 812) = Cd_Find(s_cd678a50, prefix, 0);
+    for (int i = 0; i < 18; i++)
+        F(BYTE*, self, 740 + i * 4) = Cd_Find(s_cd678a40, prefix, i);
+    F(BYTE*, self, 896) = Cd_Find(s_cd678a30, prefix, 0);
+    F(BYTE*, self, 900) = Cd_Find(s_cd678a24, prefix, 0);
+    F(BYTE*, self, 656) = Cd_Find(s_cd678a14, prefix, 0);
+    F(int, self, 1376) = 0;
+    F(int, self, 1380) = 0;
+    F(int, self, 1400) = F(int, g_cdShell6cec6c, 1352);
+    memcpy(g_cd6cf428, self + 88, 12);
+    memcpy(g_cd6cf3b0, self + 88, 12);
+    const float* d = (const float*)(char*)g_crDir702620;
+    float v[3];
+    for (int k = 0; k < 3; k++)
+        v[k] = (float)((double)d[2] * F(float, self, 76 + k * 4) + (double)d[1] * F(float, self, 64 + k * 4)
+                       + (double)d[0] * F(float, self, 52 + k * 4));
+    memcpy(g_cd6cf4ac, v, 12);
+    memcpy(g_cd6cf434, v, 12);
+    strcpy((char*)g_cd6cf4b8, g_cdEmpty68d1c0);
+    g_cd6cf3ac = 1;
+    g_cd6cf3a8 = 0;
+    if (F(BYTE, self, 1404) & 64)
+        F(BYTE*, self, 40) = CallC<BYTE*>(FUN_5e8c60, (const char*)s_cd678a0c);
+    if (!F(BYTE*, self, 40))
+        F(BYTE*, self, 40) = F(BYTE*, F(BYTE*, self, 32), 2864);
+    CallThis(FUN_532330, self);
+    g_cd6d20e0 = 0;
+    F(int, self, 112) = 1;
+    memcpy(self + 216, g_cd702640, 12);
+    memcpy(self + 204, self + 88, 12);
+    strcpy((char*)(self + 228), F(const char*, F(BYTE*, self, 100), 12));
+    g_cd6d20e4 = 0;
+    g_cd6d20e8 = (float)F(double, F(BYTE*, self, 32), 2968);
+    CallThis(FUN_5d33d0, self, 1);
+}
+
+} // extern "C"
+
+// === the network vehicle constructor (FUN_544920)
+
+ASM_VAR(AsmLabel, g_nvTypes6d20f0, $L_6d20f0)     // 1488 bytes per vehicle type
+ASM_VAR(AsmLabel, g_nvTypes697b30, $L_697b30)     // 1488 bytes per vehicle type
+ASM_VAR(AsmLabel, g_nv6ef1f8, $L_6ef1f8)
+ASM_VAR(AsmLabel, g_nvVtbl64f654, $L_64f654)
+ASM_VAR(AsmLabel, g_nvVtbl64f568, $L_64f568)
+ASM_VAR(AsmLabel, g_nvVtbl64f51c, $L_64f51c)
+ASM_VAR(AsmLabel, g_nvVtbl64f518, $L_64f518)
+extern "C" void FUN_541940(); KING_ALIAS("_FUN_541940", "@Obj541940_Construct@12")
+extern "C" void FUN_58b720(); KING_ALIAS("_FUN_58b720", "@Body58b720_Construct@52")
+extern "C" void FUN_556670(); KING_ALIAS("_FUN_556670", "@Obj556670_Init@12")
+extern "C" void FUN_541980(); KING_ALIAS("_FUN_541980", "@Wheel541980_Construct@8")
+extern "C" void FUN_542440(); KING_ALIAS("_FUN_542440", "@Obj542440_Construct@8")
+extern "C" void FUN_53fa60(); KING_ALIAS("_FUN_53fa60", "@Body53fa60_Construct@8")
+extern "C" void FUN_548e70(); KING_ALIAS("_FUN_548e70", "@Obj548e70_Construct@8")
+extern "C" void FUN_4eb460(); KING_ALIAS("_FUN_4eb460", "@Ramp_Construct@8")
+extern "C" void FUN_549890(); KING_ALIAS("_FUN_549890", "@Obj549890_Construct@8")
+extern "C" void FUN_542740(); KING_ALIAS("_FUN_542740", "_CarType_Class")
+ASM_PROC(FUN_5427a0)
+extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
+
+static void Nv_Identities(BYTE* p, int n)
+{
+    for (int i = 0; i < n; i++)
+        Cr_Identity(p + i * 48);
+}
+
+extern "C" {
+
+// [FUN_544920] constructor of a vehicle of type (view, type, scene object, owner, placement matrix, a6, a7, setup
+// table or 0 for the type's own): the body, its matrices and wheels, ramps and parts, registered in view +7976
+BYTE* __fastcall NetVehicle_Construct(BYTE* self, void*, BYTE* view, int type, int scene, int owner,
+                                      const BYTE* place, int a6, int a7, BYTE* setup)
+{
+    CallThis(FUN_541940, self, (void*)g_nv6ef1f8);
+    BYTE* tab = setup ? setup : F(BYTE*, g_nvTypes6d20f0, type * 1488);
+    const int* t20 = (const int*)(tab + 20);
+    BYTE* t = (BYTE*)g_nvTypes697b30 + type * 1488;
+    CallThis(FUN_58b720, self + 16, view, scene, tab, owner, place, t20[3], 100, F(int, t, 152), F(int, t, 156),
+             a6, a7);
+    CallThis(FUN_556670, self + 9556, type);
+    Nv_Identities(self + 9652, 8);
+    Cr_Identity(self + 10036);
+    CallThis(FUN_541980, self + 10084);
+    CallThis(FUN_542440, self + 10432);
+    memset(self + 10616, 0, 192);
+    F(int, self, 10812) = 0;
+    F(int, self, 10816) = 0;
+    F(int, self, 10820) = 0;
+    memset(self + 11540, 0, 1200);
+    Nv_Identities(self + 12740, 50);
+    Nv_Identities(self + 15140, 50);
+    memset(self + 17540, 0, 600);
+    Cr_Identity(self + 20212);
+    memset(self + 20332, 0, 48);
+    F(int, self, 20548) = 0;
+    F(int, self, 20552) = 0;
+    F(int, self, 20556) = 0;
+    memset(self + 20560, 0, 36);
+    CallThis(FUN_53fa60, self + 20636);
+    CallThis(FUN_548e70, self + 20960);
+    F(int, self, 21040) = 0;
+    F(int, self, 21044) = 0;
+    F(int, self, 21048) = 0;
+    for (int i = 0; i < 8; i++)
+        CallThis(FUN_4eb460, self + 21152 + i * 52);
+    CallThis(FUN_549890, self + 21568);
+    memset(self + 21652, 0, 132);
+    F(int, self, 21876) = 0;
+    F(int, self, 21872) = 0;
+    F(int, self, 20808) = scene;
+    memcpy(self + 20640, place, 48);
+    F(void*, self, 0) = g_nvVtbl64f654;
+    F(void*, self, 16) = g_nvVtbl64f568;
+    F(void*, self, 272) = g_nvVtbl64f51c;
+    F(void*, self, 392) = g_nvVtbl64f518;
+    F(int, self, 10420) = type;
+    F(int, self, 21600) = 0;
+    F(int, self, 21604) = 0;
+    F(int, self, 9548) = CallC<int>(FUN_542740, type);
+    if (setup)
+        F(int, self, 9548) = 5;
+    CallThis(FUN_5427a0, self);
+    F(int, self, 10096) = F(int, self, 384);
+    F(int, self, 384)++;
+    int r = CallThis<int>(FUN_5c3070, view + 7976, F(int, self, 10096), self + 10104, F(int, self, 10092));
+    F(int, self, 3484 + F(int, self, 3520) * 4) = r;
+    F(int, self, 3520)++;
+    F(int, self, 10924) = 0;
+    return self;
+}
+
+} // extern "C"

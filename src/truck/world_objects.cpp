@@ -2158,3 +2158,170 @@ extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 extern "C" void q241_L_594df0(); KING_ALIAS("_q241_L_594df0", "_Static6f68b0_Destroy")
 // [$L_594de0] registers 594df0 at exit
 extern "C" int __cdecl Static594de0_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_594df0); }
+
+// === the world object handlers (FUN_5a37f0)
+
+ASM_VAR(BYTE*, g_wh6f4bd8, $L_6f4bd8)
+ASM_VAR(AsmLabel, g_whSlots6f6a7c, $L_6f6a7c)    // 17 handlers
+extern "C" void FUN_579570(); KING_ALIAS("_FUN_579570", "@FrameTask_Construct@16")
+extern "C" void FUN_579600(); KING_ALIAS("_FUN_579600", "@Mmt_Push100@12")
+extern "C" void FUN_5a1a60(); KING_ALIAS("_FUN_5a1a60", "@WasmObj5a1a60_Construct@8")
+extern "C" void FUN_5a1ca0(); KING_ALIAS("_FUN_5a1ca0", "@WasmObj5a1ca0_Construct@8")
+extern "C" void FUN_5a1e80(); KING_ALIAS("_FUN_5a1e80", "@WasmObj5a1e80_Construct@8")
+extern "C" void FUN_5a20c0(); KING_ALIAS("_FUN_5a20c0", "@WasmObj5a20c0_Construct@8")
+extern "C" void FUN_5a22b0(); KING_ALIAS("_FUN_5a22b0", "@WasmObj5a22b0_Construct@8")
+extern "C" void FUN_5a2490(); KING_ALIAS("_FUN_5a2490", "@WasmObj5a2490_Construct@8")
+extern "C" void FUN_5a2670(); KING_ALIAS("_FUN_5a2670", "@WasmObj5a2670_Construct@8")
+extern "C" void FUN_5a2850(); KING_ALIAS("_FUN_5a2850", "@WasmObj5a2850_Construct@8")
+extern "C" void FUN_5a2ab0(); KING_ALIAS("_FUN_5a2ab0", "@WasmObj5a2ab0_Construct@8")
+extern "C" void FUN_5a2d30(); KING_ALIAS("_FUN_5a2d30", "@WasmObj5a2d30_Construct@8")
+extern "C" void FUN_5a2f00(); KING_ALIAS("_FUN_5a2f00", "@WasmObj5a2f00_Construct@8")
+extern "C" void FUN_5a3140(); KING_ALIAS("_FUN_5a3140", "@WasmObj5a3140_Construct@8")
+extern "C" void FUN_5a3380(); KING_ALIAS("_FUN_5a3380", "@WasmObj5a3380_Construct@8")
+extern "C" void FUN_5a35b0(); KING_ALIAS("_FUN_5a35b0", "@WasmObj5a35b0_Construct@8")
+extern "C" void FUN_5a1880(); KING_ALIAS("_FUN_5a1880", "@WasmObj5a1880_Construct@8")
+extern "C" void FUN_5a1650(); KING_ALIAS("_FUN_5a1650", "@WasmObj5a1650_Construct@8")
+extern "C" void FUN_5a1480(); KING_ALIAS("_FUN_5a1480", "@WasmObj5a1480_Construct@8")
+static void (*const k_whCtors[17])() = {FUN_5a1a60, FUN_5a1ca0, FUN_5a1e80, FUN_5a20c0, FUN_5a22b0, FUN_5a2490, FUN_5a2670, FUN_5a2850, FUN_5a2ab0, FUN_5a2d30, FUN_5a2f00, FUN_5a3140, FUN_5a3380, FUN_5a35b0, FUN_5a1880, FUN_5a1650, FUN_5a1480, };
+
+extern "C" {
+
+// [FUN_5a37f0] creates the frame task (arg, 15) and the 17 world object handlers (6f6a7c..), initializes them
+// (vtbl+0) and adds them to the task, 6f6ab4 first
+void __cdecl WorldHandlers_Create(int arg)
+{
+    BYTE* t = (BYTE*)operator new(436);
+    t = t ? CallThis<BYTE*>(FUN_579570, t, arg, 15) : 0;
+    g_wh6f4bd8 = t;
+    CallVirt(t, 24, 1);
+    BYTE** slot = (BYTE**)(char*)g_whSlots6f6a7c;
+    for (int i = 0; i < 17; i++) {
+        BYTE* p = (BYTE*)operator new(20);
+        slot[i] = p ? CallThis<BYTE*>(k_whCtors[i], p) : 0;
+    }
+    for (int i = 0; i < 17; i++)
+        CallVirt(slot[i], 0);
+    CallThis(FUN_579600, g_wh6f4bd8, slot[14]);
+    for (int i = 0; i < 17; i++)
+        if (i != 14)
+            CallThis(FUN_579600, g_wh6f4bd8, slot[i]);
+}
+
+} // extern "C"
+
+// === placing the scene (FUN_5975e0)
+
+ASM_VAR(AsmLabel, s_ps67e334, $L_67e334)
+ASM_VAR(AsmLabel, s_ps67e324, $L_67e324)
+ASM_VAR(AsmLabel, s_ps67e314, $L_67e314)
+ASM_VAR(AsmLabel, s_ps67e304, $L_67e304)
+ASM_VAR(AsmLabel, s_ps67e2f4, $L_67e2f4)
+ASM_VAR(AsmLabel, s_ps67e2e4, $L_67e2e4)
+ASM_VAR(AsmLabel, s_ps67e2d4, $L_67e2d4)
+ASM_VAR(AsmLabel, s_ps67e2c4, $L_67e2c4)
+ASM_VAR(AsmLabel, s_ps67e2b4, $L_67e2b4)
+ASM_VAR(AsmLabel, s_ps67e2a4, $L_67e2a4)
+ASM_VAR(AsmLabel, s_ps67e294, $L_67e294)
+ASM_VAR(AsmLabel, s_ps67e284, $L_67e284)
+ASM_VAR(AsmLabel, s_ps67e274, $L_67e274)
+ASM_VAR(AsmLabel, s_ps67e264, $L_67e264)
+ASM_VAR(AsmLabel, s_ps67e254, $L_67e254)
+ASM_VAR(AsmLabel, s_ps67e244, $L_67e244)
+ASM_VAR(AsmLabel, s_ps67e234, $L_67e234)
+ASM_VAR(AsmLabel, s_ps67e224, $L_67e224)
+ASM_VAR(AsmLabel, s_ps67e214, $L_67e214)
+ASM_VAR(AsmLabel, s_ps67e204, $L_67e204)
+ASM_VAR(AsmLabel, s_ps67e1f4, $L_67e1f4)
+ASM_VAR(AsmLabel, s_ps67e1e4, $L_67e1e4)
+ASM_VAR(AsmLabel, s_ps67e1d4, $L_67e1d4)
+ASM_VAR(AsmLabel, s_ps67e1c4, $L_67e1c4)
+ASM_VAR(int, g_ps6f6a3c, $L_6f6a3c)
+ASM_VAR(int, g_ps6f6a40, $L_6f6a40)
+ASM_VAR(int, g_ps6f6a1c, $L_6f6a1c)
+ASM_VAR(int, g_ps6f6a14, $L_6f6a14)
+ASM_VAR(int, g_ps6f694c, $L_6f694c)
+ASM_VAR(int, g_ps6f6940, $L_6f6940)
+ASM_VAR(int, g_ps6f6a20, $L_6f6a20)
+ASM_VAR(int, g_ps6f6a10, $L_6f6a10)
+ASM_VAR(int, g_ps6f6950, $L_6f6950)
+ASM_VAR(int, g_ps6f693c, $L_6f693c)
+ASM_VAR(int, g_ps6f6a24, $L_6f6a24)
+ASM_VAR(int, g_ps6f6a18, $L_6f6a18)
+ASM_VAR(int, g_ps6f6954, $L_6f6954)
+ASM_VAR(int, g_ps6f6944, $L_6f6944)
+ASM_VAR(AsmLabel, s_ps67e1b8, $L_67e1b8)
+ASM_VAR(BYTE*, g_ps6cec70, $L_6cec70)
+ASM_VAR(BYTE*, g_ps6f68fc, $L_6f68fc)
+extern "C" void FUN_4e48e2(); KING_ALIAS("_FUN_4e48e2", "_Frame_ApplyChecked")
+extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
+extern "C" void FUN_5d9ef0(); KING_ALIAS("_FUN_5d9ef0", "@Scenes_SetFirst@12")
+extern "C" void FUN_5d9f10(); KING_ALIAS("_FUN_5d9f10", "@Scene_FindSpecial@8")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
+
+static const char* const s_psNames[24] = {
+    (const char*)s_ps67e334,
+    (const char*)s_ps67e324,
+    (const char*)s_ps67e314,
+    (const char*)s_ps67e304,
+    (const char*)s_ps67e2f4,
+    (const char*)s_ps67e2e4,
+    (const char*)s_ps67e2d4,
+    (const char*)s_ps67e2c4,
+    (const char*)s_ps67e2b4,
+    (const char*)s_ps67e2a4,
+    (const char*)s_ps67e294,
+    (const char*)s_ps67e284,
+    (const char*)s_ps67e274,
+    (const char*)s_ps67e264,
+    (const char*)s_ps67e254,
+    (const char*)s_ps67e244,
+    (const char*)s_ps67e234,
+    (const char*)s_ps67e224,
+    (const char*)s_ps67e214,
+    (const char*)s_ps67e204,
+    (const char*)s_ps67e1f4,
+    (const char*)s_ps67e1e4,
+    (const char*)s_ps67e1d4,
+    (const char*)s_ps67e1c4};
+static int* const g_psVars[14] = {&g_ps6f6a3c, &g_ps6f6a40, &g_ps6f6a1c, &g_ps6f6a14, &g_ps6f694c, &g_ps6f6940, &g_ps6f6a20, &g_ps6f6a10, &g_ps6f6950, &g_ps6f693c, &g_ps6f6a24, &g_ps6f6a18, &g_ps6f6954, &g_ps6f6944};
+static const int s_psValues[4][14] = {
+    {468, 50, 7, 6, 156, 50, 5, 7, 51, 153, 4, 3, 25, 72},
+    {572, 50, 8, 8, 210, 60, 7, 9, 63, 190, 6, 4, 30, 90},
+    {680, 50, 10, 10, 280, 80, 9, 12, 81, 243, 8, 6, 38, 114},
+    {1117, 50, 10, 10, 460, 150, 14, 19, 126, 379, 14, 9, 60, 182}};
+
+extern "C" {
+
+// [FUN_5975e0] places scene object s (thiscall: id, matrix m, unused): its frame +20 at m, the camera +120 reset,
+// the scene +112 started from +92's +468; for detail levels 16..64 (6cec70 +408) the three marker objects
+// (+80..+88, another set in game mode 2) and the level's draw limits; 6f68fc the 67e1b8 object
+void __fastcall SceneObj_Place(BYTE* s, void*, int id, const BYTE* m, int)
+{
+    F(int, s, 20) = F(int, s, 16);
+    F(int, s, 112) = F(int, s, 108);
+    BYTE* cam = F(BYTE*, s, 116);
+    F(BYTE*, s, 120) = cam;
+    F(int, s, 104) = 0;
+    F(int, s, 72) = id;
+    memcpy(s + 24, m, 48);
+    F(int, cam, 76) = id;
+    F(float, F(BYTE*, s, 120), 88) = 1.0f;
+    F(float, F(BYTE*, s, 120), 84) = 1.0f;
+    CallC(FUN_4e48e2, F(BYTE*, s, 20), 0, s + 24);
+    CallThis(FUN_5d9ef0, F(BYTE*, s, 112), F(int, F(BYTE*, s, 92), 468));
+    CallThis(FUN_5d9f10, F(BYTE*, s, 112));
+    int level = F(int, g_ps6cec70, 408) & 240;
+    if (level >= 16 && level <= 64 && !(level & 15)) {
+        int k = level / 16 - 1;
+        const char* const* n = s_psNames + k * 6 + (CallC<int>(FUN_568fd0) == 2 ? 0 : 3);
+        F(BYTE*, s, 80) = CallC<BYTE*>(FUN_5ef3d0, n[0]);
+        F(BYTE*, s, 84) = CallC<BYTE*>(FUN_5ef3d0, n[1]);
+        F(BYTE*, s, 88) = CallC<BYTE*>(FUN_5ef3d0, n[2]);
+        for (int i = 0; i < 14; i++)
+            *g_psVars[i] = s_psValues[k][i];
+    }
+    g_ps6f68fc = CallC<BYTE*>(FUN_5ef2b0, 0, (const char*)s_ps67e1b8);
+}
+
+} // extern "C"

@@ -230,3 +230,106 @@ extern "C" void __fastcall Obj580ff0_Place(BYTE* s, void*)
     }
     CallVirt(s, 64, m, c);
 }
+
+// === the moving object base (FUN_57d060)
+
+ASM_VAR(AsmLabel, g_mo650544, $L_650544)
+ASM_VAR(AsmLabel, g_mo6504f8, $L_6504f8)
+ASM_VAR(AsmLabel, g_mo6504f4, $L_6504f4)
+ASM_VAR(AsmLabel, g_mo6f653c, $L_6f653c)
+extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
+extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
+extern "C" void FUN_4bd4e0(); KING_ALIAS("_FUN_4bd4e0", "@Matrix_IdentityThis@8")
+extern "C" void FUN_4e5ba7(); KING_ALIAS("_FUN_4e5ba7", "_Query_HitObject")
+extern "C" void FUN_57ca30(); KING_ALIAS("_FUN_57ca30", "_Id_New")
+extern "C" void FUN_57cb50(); KING_ALIAS("_FUN_57cb50", "@Object57cb50_Construct@12")
+extern "C" void FUN_57cfc0(); KING_ALIAS("_FUN_57cfc0", "@Placement_Init@8")
+ASM_PROC(FUN_57d860)
+extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
+ASM_PROC(FUN_5c6170)
+ASM_PROC(FUN_5c5f60)
+extern "C" void FUN_5c32f0(); KING_ALIAS("_FUN_5c32f0", "@List_Add6@20")
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+
+struct Mo_M48 { DWORD d[12]; };
+
+static void Mo_Zero(BYTE* s, int from, int to)
+{
+    for (int k = from; k <= to; k += 4)
+        F(int, s, k) = 0;
+}
+
+// matrix at s+off: its rows constructed, then the identity
+static void Mo_Matrix(BYTE* s, int off)
+{
+    CallStd(FUN_4011e0, s + off, 12, 4, (void*)FUN_4bd4d0);
+    memcpy(s + off, g_7025f0, 48);
+}
+
+// registers s+off (size n) in world w's table (+7976) under the next id (+368); the entry goes to +3468
+static void Mo_Register(BYTE* s, BYTE* w, int off, int n, int table, void (*add)())
+{
+    int id = F(int, s, 368)++;
+    int e = CallThis<int>(add, w + table, id, s + off, n);
+    F(int, s, 3468 + F(int, s, 3504) * 4) = e;
+    F(int, s, 3504)++;
+}
+
+// the moving object over the scene object base made by base, registered in world table +table through add
+static BYTE* Mo_Construct(void (*base)(), int table, void (*add)(), BYTE* s, BYTE* w, BYTE* a2, int a3,
+                          const BYTE* m, const BYTE* m5, int a6, int a7, int a8, int a9)
+{
+    Mo_M48 mv = *(const Mo_M48*)m;
+    int id = CallC<int>(FUN_57ca30);
+    void* hit = CallC<void*>(FUN_4e5ba7, a2, m5 + 36, m + 36);
+    CallThis(base, s, w, hit, a3, id, a6, a7, mv, a8, a9);
+    CallThis(FUN_57cb50, s + 376, (void*)g_mo6f653c);
+    Mo_Zero(s, 404, 496);
+    for (int off = 500; off <= 740; off += 48)
+        Mo_Matrix(s, off);
+    Mo_Zero(s, 788, 796);
+    Mo_Matrix(s, 816);
+    Mo_Zero(s, 864, 884);
+    CallThis(FUN_5ef5c0, s + 912);
+    Mo_Zero(s, 1120, 1128);
+    Mo_Zero(s, 1164, 1184);
+    CallThis(FUN_5ef5c0, s + 1464);
+    for (int off = 1696; off <= 1936; off += 48)
+        CallThis(FUN_4bd4e0, s + off);
+    for (int off = 1984; off <= 2020; off += 12)
+        CallThis(FUN_4bd4d0, s + off);
+    CallStd(FUN_4011e0, s + 2040, 12, 5, (void*)FUN_4bd4d0);
+    CallStd(FUN_4011e0, s + 2104, 208, 5, (void*)FUN_5ef5c0);
+    Mo_Zero(s, 3148, 3156);
+    CallThis(FUN_4bd4d0, s + 3160);
+    CallThis(FUN_4bd4e0, s + 3172);
+    CallThis(FUN_4bd4e0, s + 3220);
+    CallThis(FUN_57cfc0, s + 3268);
+    F(void*, s, 0) = g_mo650544;
+    F(void*, s, 256) = g_mo6504f8;
+    F(void*, s, 376) = g_mo6504f4;
+    CallThis(FUN_57d860, s, a6, m, m5, a2);
+    Mo_Register(s, w, 416, 24, table, add);
+    Mo_Register(s, w, 900, 4, table, add);
+    return s;
+}
+
+extern "C" {
+
+// [FUN_57d060] constructor (world, a2, a3, matrix m, matrix m5, a6..a9): the scene object base (5c6170) with a
+// new id and the object hit along m5 -> m, its matrices, nodes and vectors, vtables 650544, 6504f8 (+256),
+// 6504f4 (+376), set up by 57d860, and +416 and +900 registered in the world's table +7976
+BYTE* __fastcall MovingObj_Construct(BYTE* s, void*, BYTE* w, BYTE* a2, int a3, const BYTE* m, const BYTE* m5,
+                                     int a6, int a7, int a8, int a9)
+{
+    return Mo_Construct(FUN_5c6170, 7976, FUN_5c3070, s, w, a2, a3, m, m5, a6, a7, a8, a9);
+}
+
+// [FUN_57cb70] the same over the base 5c5f60, registered in the world's list +8300
+BYTE* __fastcall MovingObj_ConstructListed(BYTE* s, void*, BYTE* w, BYTE* a2, int a3, const BYTE* m,
+                                           const BYTE* m5, int a6, int a7, int a8, int a9)
+{
+    return Mo_Construct(FUN_5c5f60, 8300, FUN_5c32f0, s, w, a2, a3, m, m5, a6, a7, a8, a9);
+}
+
+} // extern "C"

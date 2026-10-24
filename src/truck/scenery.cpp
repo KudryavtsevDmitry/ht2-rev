@@ -21,7 +21,7 @@ extern "C" void __cdecl Matrix_Decompose6F(const Matrix* m, float* a, float* b, 
 
 extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16")    // vector<12 bytes>::insert_aux
 extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
-ASM_PROC(FUN_57d060)
+extern "C" void FUN_57d060(); KING_ALIAS("_FUN_57d060", "@MovingObj_Construct@44")
 extern "C" void FUN_52e550(); KING_ALIAS("_FUN_52e550", "@Crowd_Init@12")
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
@@ -36,7 +36,7 @@ extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
 ASM_PROC(FUN_52b0e0)
 ASM_PROC(FUN_5465c0)
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
-ASM_PROC(FUN_57cb70)
+extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
 ASM_PROC(FUN_52dc50)
 ASM_VAR(AsmLabel, g_vtbl64ec88, $L_64ec88)
 ASM_VAR(AsmLabel, g_vtbl64ec3c, $L_64ec3c)
