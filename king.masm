@@ -1554,6 +1554,14 @@ PUBLIC $L_64f340, $L_650310, $L_650318, $L_650320, $L_677a74, $L_67c3f0
 PUBLIC $L_67c3f8, $L_67c3fc, $L_67c400, $L_67c404, $L_67c408, $L_67c40c
 PUBLIC $L_67c410, $L_67c414, $L_67c418, $L_67c41c, $L_67c424, $L_67c42c
 PUBLIC $L_67c430, $L_6ce330, $L_6f33d4, $L_6f33d8, $L_6f33dc, $L_6f33e0
+PUBLIC $L_650114, $L_650118, $L_650164, $L_650250, $L_672bb4, $L_676870
+PUBLIC $L_676880, $L_67b734, $L_67c22c, $L_67c23c, $L_67c24c, $L_67c258
+PUBLIC $L_67c268, $L_67c280, $L_67c298, $L_67c2b0, $L_67c2cc, $L_67c2d8
+PUBLIC $L_67c2e4, $L_67c2e8, $L_67c2f4, $L_67c2fc, $L_67c304, $L_67c310
+PUBLIC $L_67c31c, $L_67c328, $L_67c334, $L_67c340, $L_67c34c, $L_67c358
+PUBLIC $L_67c364, $L_67c370, $L_67c37c, $L_67c384, $L_67c390, $L_67c398
+PUBLIC $L_67c3a8, $L_67c3b8, $L_67f878, $L_696334, $L_696900, $L_6d2258
+PUBLIC $L_6f3418, $L_6f341c, $L_6f34ac, $L_6f34d4
 
 ;===================================
 _TEXT SEGMENT
@@ -617007,6 +617015,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 $L_571f20 PROC
 
             push EBP
@@ -618993,6 +619003,10 @@ $L_573557::
             mov DWORD PTR [EBX+28],EBP
             jmp $L_572f9a
 $L_571f20 ENDP
+ELSE
+EXTERN @Game_StartWorld@8:PROC
+$L_571f20 TEXTEQU <@Game_StartWorld@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

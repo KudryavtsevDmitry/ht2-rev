@@ -2833,3 +2833,567 @@ void __cdecl Hud_DrawOverlays()
 }
 
 }  // extern "C"
+
+// ---------------------------------------------------------------------------
+// Starting the game world and creating its objects (vehicles, effects).
+
+extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
+extern "C" void FUN_41eb70(); KING_ALIAS("_FUN_41eb70", "@Iter_Players@8")
+extern "C" void FUN_42db90(); KING_ALIAS("_FUN_42db90", "_AI_FreeList68b99c")
+extern "C" void FUN_434780(); KING_ALIAS("_FUN_434780", "_Ai_StartGame")
+extern "C" void FUN_437520(); KING_ALIAS("_FUN_437520", "_Ai_GetPositionId")
+extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters")
+extern "C" void FUN_43a780(); KING_ALIAS("_FUN_43a780", "_Ai_GetOrientationF")
+extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
+extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")
+extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")
+extern "C" void FUN_4cd670(); KING_ALIAS("_FUN_4cd670", "@Fx_ObjectInit@44")
+extern "C" void FUN_4d0b10(); KING_ALIAS("_FUN_4d0b10", "@Effect4d0b10_Construct@20")
+extern "C" void FUN_4d2790(); KING_ALIAS("_FUN_4d2790", "@Effect4d2790_Construct@64")
+extern "C" void FUN_4e0660(); KING_ALIAS("_FUN_4e0660", "_Obj_HookHandlers")
+extern "C" void FUN_4e5ba7(); KING_ALIAS("_FUN_4e5ba7", "_Query_HitObject")
+extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
+extern "C" void FUN_51a4a0(); KING_ALIAS("_FUN_51a4a0", "_Shell_ScreenTitle")
+extern "C" void FUN_51a4e0(); KING_ALIAS("_FUN_51a4e0", "_Shell_CarTypeIndex")
+extern "C" void FUN_51bfa0(); KING_ALIAS("_FUN_51bfa0", "_Save_OpenStorage@8")
+extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
+extern "C" void FUN_53fcd0(); KING_ALIAS("_FUN_53fcd0", "@Car_53fcd0@12")
+extern "C" void FUN_543c00(); KING_ALIAS("_FUN_543c00", "@Car_SetView@12")
+extern "C" void FUN_546900(); KING_ALIAS("_FUN_546900", "@Car_ApplySetup@12")
+extern "C" void FUN_571d20(); KING_ALIAS("_FUN_571d20", "_Copter_LoadStreams")
+extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
+extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
+extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+extern "C" void FUN_5c4910(); KING_ALIAS("_FUN_5c4910", "@Media_Clear5c4910@8")
+extern "C" void FUN_5dc2d0(); KING_ALIAS("_FUN_5dc2d0", "@App_SubPath@16")
+extern "C" void FUN_5e50d0(); KING_ALIAS("_FUN_5e50d0", "@Resources_NewRow@12")
+extern "C" void FUN_5e5130(); KING_ALIAS("_FUN_5e5130", "@Resources_Create@16")
+extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")
+extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
+extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
+extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
+extern "C" void FUN_60e0f0(); KING_ALIAS("_FUN_60e0f0", "@MarineTask_Construct@12")
+extern "C" void FUN_6142f0(); KING_ALIAS("_FUN_6142f0", "@TerrainView_Construct@40")
+extern "C" void FUN_6148a0(); KING_ALIAS("_FUN_6148a0", "@Terrain_FreeObjects@8")
+extern "C" int __cdecl fseek(FILE* f, long off, int origin);
+extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
+ASM_PROC(FUN_4d08d0)    // the player's vehicle for an effect (world, effect, player id)
+ASM_PROC(FUN_4ebd00)    // constructs a vehicle (scene object, matrix, type)
+ASM_PROC(FUN_5291a0)
+ASM_PROC(FUN_544920)    // constructs a network vehicle
+ASM_PROC(FUN_5a44c0)    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
+ASM_PROC(FUN_5d2540)    // registers a named callback (name, function)
+
+ASM_VAR(BYTE*, g_ws_wnd, $L_6cec6c)
+ASM_VAR(BYTE*, g_ws_mainView, $L_696ca0)
+ASM_VAR(int, g_ws_6f33ac, $L_6f33ac)
+ASM_VAR(int, g_ws_6f3498, $L_6f3498)
+ASM_VAR(int, g_ws_6f3438, $L_6f3438)
+ASM_VAR(int, g_ws_videoMode, $L_6ced70)
+ASM_VAR(int, g_ws_carTypes, $L_6ce34c)
+ASM_VAR(void*, g_ws_prevCreate, $L_6f3418)     // the create hook replaced by Game_CreateObject
+ASM_VAR(DWORD, g_ws_prevHook2, $L_6f341c)
+ASM_VAR(AsmLabel, g_ws_573e40, $L_573e40)
+ASM_VAR(AsmLabel, g_ws_569550, $L_569550)
+ASM_VAR(AsmLabel, s_ws_iniFile, $L_672998)
+ASM_VAR(char*, g_ws_iniPath, $L_696868)
+ASM_VAR(int, g_ws_696900, $L_696900)
+ASM_VAR(BYTE*, g_ws_696340, $L_696340)
+ASM_VAR(int, g_ws_6f340c, $L_6f340c)
+ASM_VAR(double, g_ws_6f32e8, $L_6f32e8)
+ASM_VAR(double, g_ws_6f32f0, $L_6f32f0)
+ASM_VAR(double, g_ws_6f32f8, $L_6f32f8)
+ASM_VAR(double, g_ws_6f3300, $L_6f3300)
+ASM_VAR(double, g_ws_6f3308, $L_6f3308)
+ASM_VAR(int, g_ws_6f3310, $L_6f3310)
+ASM_VAR(int, g_ws_6f3314, $L_6f3314)
+ASM_VAR(int, g_ws_6f3318, $L_6f3318)
+ASM_VAR(int, g_ws_6f331c, $L_6f331c)
+ASM_VAR(int, g_ws_6f3320, $L_6f3320)
+ASM_VAR(AsmLabel, s_ws_67c310, $L_67c310)
+ASM_VAR(AsmLabel, s_ws_67c304, $L_67c304)
+ASM_VAR(AsmLabel, s_ws_67c2fc, $L_67c2fc)
+ASM_VAR(AsmLabel, s_ws_67c2f4, $L_67c2f4)
+ASM_VAR(BYTE*, g_ws_6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_ws_6cec9c, $L_6cec9c)
+ASM_VAR(double, g_ws_64b5a0, $L_64b5a0)
+ASM_VAR(double, g_ws_64b738, $L_64b738)
+ASM_VAR(double, g_ws_64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ws_64b958, $L_64b958)
+ASM_VAR(AsmLabel, s_ws_roomName, $L_67c2e8)       // "room_tb_000"
+ASM_VAR(AsmLabel, s_ws_tb, $L_67c2e4)             // "tb"
+ASM_VAR(int, g_ws_67b734, $L_67b734)
+ASM_VAR(BYTE*, g_ws_6cec94, $L_6cec94)
+ASM_VAR(AsmLabel, g_ws_6d24bc, $L_6d24bc)
+ASM_VAR(AsmLabel, s_ws_672bb4, $L_672bb4)
+ASM_VAR(AsmLabel, s_ws_67c2d8, $L_67c2d8)
+ASM_VAR(AsmLabel, s_ws_67c2cc, $L_67c2cc)
+ASM_VAR(AsmLabel, s_ws_6729a8, $L_6729a8)
+ASM_VAR(AsmLabel, s_ws_672994, $L_672994)
+ASM_VAR(int, g_ws_696328, $L_696328)
+ASM_VAR(int, g_ws_696334, $L_696334)
+ASM_VAR(AsmLabel, s_ws_66c874, $L_66c874)
+ASM_VAR(BYTE*, g_ws_6cecd8, $L_6cecd8)
+ASM_VAR(AsmLabel, g_ws_saveName, $L_6f2d18)
+ASM_VAR(AsmLabel, s_ws_676848, $L_676848)
+ASM_VAR(AsmLabel, s_ws_67683c, $L_67683c)
+ASM_VAR(AsmLabel, s_ws_67c2b0, $L_67c2b0)
+ASM_VAR(AsmLabel, s_ws_67c298, $L_67c298)
+ASM_VAR(AsmLabel, g_ws_6ce4f8, $L_6ce4f8)
+ASM_VAR(AsmLabel, g_ws_71e820, $L_71e820)
+ASM_VAR(AsmLabel, s_ws_67c280, $L_67c280)
+ASM_VAR(AsmLabel, s_ws_67c268, $L_67c268)
+ASM_VAR(BYTE*, g_ws_marine, $L_6f33b0)
+ASM_VAR(BYTE*, g_ws_terrain, $L_6f33b4)
+ASM_VAR(AsmLabel, s_ws_676880, $L_676880)
+ASM_VAR(AsmLabel, s_ws_676870, $L_676870)
+ASM_VAR(AsmLabel, s_ws_67c258, $L_67c258)
+ASM_VAR(AsmLabel, s_ws_67c23c, $L_67c23c)
+ASM_VAR(AsmLabel, s_ws_67c22c, $L_67c22c)
+ASM_VAR(AsmLabel, s_ws_67c24c, $L_67c24c)
+ASM_VAR(AsmLabel, s_ws_rb, $L_6703e8)
+ASM_VAR(BYTE*, g_ws_device, $L_720908)
+ASM_VAR(int, g_ws_6f34d4, $L_6f34d4)
+ASM_VAR(int, g_ws_created, $L_6f34ac)
+
+ASM_VAR(int, g_ws_noPlayer, $L_68b990)
+ASM_VAR(float, g_ws_702630, $L_702630)
+ASM_VAR(float, g_ws_702634, $L_702634)
+ASM_VAR(float, g_ws_702638, $L_702638)
+ASM_VAR(AsmLabel, s_ws_66d638, $L_66d638)
+ASM_VAR(AsmLabel, s_ws_66d628, $L_66d628)
+ASM_VAR(AsmLabel, s_ws_67c3b8, $L_67c3b8)
+ASM_VAR(AsmLabel, s_ws_67c3a8, $L_67c3a8)
+ASM_VAR(AsmLabel, s_ws_67c398, $L_67c398)
+ASM_VAR(int, g_ws_67f878, $L_67f878)
+ASM_VAR(AsmLabel, g_ws_6d2258, $L_6d2258)
+ASM_VAR(AsmLabel, g_ws_vt650250, $L_650250)
+ASM_VAR(AsmLabel, g_ws_vt650164, $L_650164)
+ASM_VAR(AsmLabel, g_ws_vt650118, $L_650118)
+ASM_VAR(AsmLabel, g_ws_vt650114, $L_650114)
+ASM_VAR(AsmLabel, g_ws_7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_ws_vt6500e4, $L_6500e4)
+ASM_VAR(AsmLabel, g_ws_vt650098, $L_650098)
+ASM_VAR(AsmLabel, g_ws_vt650068, $L_650068)
+ASM_VAR(AsmLabel, g_ws_vt65001c, $L_65001c)
+ASM_VAR(AsmLabel, g_ws_vt64ffec, $L_64ffec)
+ASM_VAR(AsmLabel, g_ws_vt64ffa0, $L_64ffa0)
+ASM_VAR(AsmLabel, g_ws_vt64ff70, $L_64ff70)
+ASM_VAR(AsmLabel, g_ws_vt64ff24, $L_64ff24)
+ASM_VAR(AsmLabel, s_ws_67c390, $L_67c390)
+ASM_VAR(AsmLabel, s_ws_67c384, $L_67c384)
+ASM_VAR(AsmLabel, s_ws_67c37c, $L_67c37c)
+ASM_VAR(AsmLabel, s_ws_67c370, $L_67c370)
+ASM_VAR(AsmLabel, s_ws_67c364, $L_67c364)
+ASM_VAR(AsmLabel, s_ws_67c358, $L_67c358)
+ASM_VAR(AsmLabel, s_ws_67c34c, $L_67c34c)
+ASM_VAR(AsmLabel, s_ws_67c340, $L_67c340)
+ASM_VAR(AsmLabel, s_ws_67c334, $L_67c334)
+ASM_VAR(AsmLabel, s_ws_67c328, $L_67c328)
+ASM_VAR(AsmLabel, s_ws_67c31c, $L_67c31c)
+
+struct WsMat { DWORD d[12]; };      // a matrix passed by value
+struct WsPos { DWORD d[8]; };       // a PositionId passed by value
+
+static inline BYTE* Ws_Find(BYTE* scene, const char* name)
+{
+    return CallC<BYTE*>(FUN_5ef2b0, scene, name);
+}
+
+static inline int Ws_Com(void* com, unsigned off)
+{
+    return (*(int(__stdcall**)(void*))(*(BYTE**)com + off))(com);
+}
+
+extern "C" int __cdecl Game_CreateObject(BYTE* obj, int flags);
+
+// a network vehicle (kind 100 in multiplayer or a remote one, kind 101 in multiplayer)
+static BYTE* Ws_NetVehicle(BYTE* desc, BYTE* scene)
+{
+    BYTE* v = (BYTE*)operator new(21880);
+    if (v) {
+        int d8 = F(int, desc, 8);
+        Matrix m;
+        WsMat placed = *(WsMat*)CallC<Matrix*>(FUN_5aba40, &m, (Matrix*)(g_ws_6d2258 + 344 + F(int, desc, 0) % 1000 * 1488),
+                                               (Matrix*)(desc + 248));
+        WsMat own = F(WsMat, desc, 248);
+        CallThis(FUN_544920, v, g_ws_mainView, F(int, desc, 0) % 1000, scene, &own, &placed, d8, 0, 0);
+        F(void*, v, 0) = g_ws_vt650250;
+        F(void*, v, 16) = g_ws_vt650164;
+        F(void*, v, 272) = g_ws_vt650118;
+        F(void*, v, 392) = g_ws_vt650114;
+    }
+    return v;
+}
+
+static void Ws_NetVehicleSetup(BYTE* v, BYTE* obj, BYTE* desc)
+{
+    F(int, v, 360) = F(int, obj, 4);
+    CallThis(FUN_53fcd0, v, F(int, obj, 4) % 1000);
+    CallThis(FUN_543c00, v, F(int, desc, 0) / 1000);
+    CallVirt(v + 16, 24, 1);
+}
+
+// a scene item of kinds 1-4: size bytes, constructed on the object named at desc+nameOff with the one at desc+objOff
+static BYTE* Ws_Item(unsigned size, BYTE* desc, int nameOff, int objOff)
+{
+    BYTE* p = (BYTE*)operator new(size);
+    if (p) {
+        WsMat ident = *(WsMat*)(BYTE*)g_ws_7025f0;
+        BYTE* s1 = Ws_Find(0, (char*)desc + nameOff);
+        BYTE* s2 = Ws_Find(0, (char*)desc + objOff);
+        CallThis(FUN_5a44c0, p, F(BYTE*, g_ws_wnd, 1356), s2, s1, 100, 1073741824, 0, ident, 1);
+    }
+    return p;
+}
+
+extern "C" {
+
+// [$L_571f20] starts the game world (self = the world): screen memory budget, resource rows, camera settings from
+// the ini file, the player (network: a placed room object; else the AI with the saved game), the marine task,
+// the terrain and its three files, and the replay position
+void __fastcall Game_StartWorld(BYTE* self, void*)
+{
+    g_ws_6f33ac = 0;
+    g_ws_6f3498 = 0;
+    g_ws_6f3438 = 0;
+    F(BYTE*, g_ws_wnd, 1356) = g_ws_mainView;
+    switch (g_ws_videoMode) {
+    case 0: F(int, self, 2704) = 460800; break;
+    case 1: F(int, self, 2704) = 716800; break;
+    case 2: F(int, self, 2704) = 1536000; break;
+    case 3: F(int, self, 2704) = 2048000; break;
+    case 4: F(int, self, 2704) = 0x5dc000; break;
+    }
+    for (int i = 0; i < g_ws_carTypes; i++)
+        CallThis(FUN_5e50d0, self + 704, CallC<int>(FUN_52ea90, i) + 200);
+    BYTE* res = self + 704;
+    CallThis(FUN_5e50d0, res, 300);
+    CallThis(FUN_5e50d0, res, 100);
+    CallThis(FUN_5e50d0, res, 101);
+    CallThis(FUN_5e50d0, res, 1);
+    CallThis(FUN_5e50d0, res, 2);
+    CallThis(FUN_5e50d0, res, 3);
+    CallThis(FUN_5e50d0, res, 4);
+    g_ws_prevCreate = F(void*, self, 2708);
+    F(void*, self, 2708) = (void*)Game_CreateObject;
+    g_ws_prevHook2 = F(DWORD, self, 2712);
+    F(void*, self, 2712) = g_ws_573e40;
+    g_ws_696340 = 0;
+    g_ws_6f340c = g_ws_696900 * 8;
+    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c310, 10.0, &g_ws_6f32e8, g_ws_iniPath);
+    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c304, 0.3, &g_ws_6f3300, g_ws_iniPath);
+    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c2fc, 0.7, &g_ws_6f32f0, g_ws_iniPath);
+    CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c2f4, 0.1, &g_ws_6f3308, g_ws_iniPath);
+    BYTE* w = g_ws_wnd;
+    g_ws_6f32f8 = (F(int, w, 1316) == 0 ? F(short, g_ws_6cec9c, 404) : F(short, g_ws_6cec98, 392)) * g_ws_64b5a0;
+    double farv = (F(int, w, 1316) == 0 ? F(short, g_ws_6cec9c, 402) : F(short, g_ws_6cec98, 390)) * g_ws_64b5a0;
+    g_ws_6f3310 = 0;
+    g_ws_6f3314 = 0;
+    g_ws_6f3318 = 1;
+    g_ws_6f331c = -1;
+    g_ws_6f3320 = 0;
+    g_ws_6f32f0 = g_ws_6f32f8 * g_ws_64b738;
+    g_ws_6f3300 = farv * g_ws_64b6e0 + g_ws_64b958;
+
+    if (F(int, w, 1300) <= 1) {
+        if (F(int, w, 1316) != 0 && F(int, g_ws_6cec98, 384) >= 2) {
+            // network game: the player's room object
+            g_ws_6f340c = g_ws_696900;
+            F(int, g_ws_mainView, 7944) = 1;
+            int n = g_ws_6f340c;
+            int odd = n % 2;
+            unsigned __int64 bits = odd ? 0x3FF9C3FB4D12D84Aull : 0xBFF9C3FB4D12D84Aull;
+            double angle = *(double*)&bits;
+            float pos[3] = {(float)(odd * 40 - 20), (float)(n * 10 - 40), 0};
+            Matrix mt, mr, m;
+            Matrix* t = CallC<Matrix*>(FUN_5abc40, &mt, *(Vec3Bits*)pos);
+            Matrix* r = CallC<Matrix*>(FUN_5ac0c0, &mr, (float)angle);
+            CallC(FUN_5aba40, &m, r, t);
+            strcpy(F(char*, self, 488) + 44, s_ws_roomName);
+            strcpy(F(char*, self, 488) + 12, s_ws_tb);
+            int id = g_ws_6f340c + 100000;
+            g_ws_67b734 = id;
+            int type = CallC<int>(FUN_51a4e0);
+            int b = F(int, g_ws_6cec94, 812);
+            CallThis(FUN_5e5130, g_ws_mainView + 704, id, (char*)s_ws_tb);
+            BYTE* row = CallThis<BYTE*>(FUN_5e5370, g_ws_mainView + 704, id);
+            BYTE* info = ((BYTE**)(g_ws_6d24bc + 12))[b + type * 372];
+            if (info)
+                F(int, row, 16) = F(int, info, 16);
+            else
+                Sys_Fatal(s_ws_672bb4, 0);
+            void* player;
+            CallThis(FUN_41eb70, &player);
+            BYTE obj[300];
+            CallThis(FUN_4cd670, obj, type + b * 1000, g_ws_6f340c, (char*)s_ws_roomName, &m, player, 0, 0, 0, 0);
+            CallThis(FUN_5e52b0, res, id, (char*)s_ws_tb, 300, obj);
+        } else {
+            char buf[32];
+            GetPrivateProfileStringA(s_ws_iniFile, s_ws_67c2d8, s_ws_6729a8, buf, 32, g_ws_iniPath);
+            if (strcmp(buf, s_ws_672994) == 0)
+                g_ws_696328 = 1;
+            GetPrivateProfileStringA(s_ws_iniFile, s_ws_67c2cc, s_ws_6729a8, buf, 32, g_ws_iniPath);
+            if (strcmp(buf, s_ws_672994) == 0)
+                g_ws_696334 = 1;
+            F(int, g_ws_mainView, 7944) = 1;
+            CallC(FUN_42db90);
+            w = g_ws_wnd;
+            int mode = 0;
+            if (F(int, w, 1316) == 1)
+                mode = 3;
+            else if (F(int, w, 1316) == 2)
+                mode = 1;
+            // the start settings: +0 a double, +8 the title, +12 the player name, +16, +20, +24 a byte flag
+            BYTE set[28];
+            F(double, set, 0) = 1.0;
+            F(int, set, 8) = 0;
+            F(void*, set, 12) = s_ws_66c874;
+            F(int, set, 16) = 1;
+            F(int, set, 20) = 0;
+            F(BYTE, set, 24) = 0;
+            F(double, set, 0) = (F(int, w, 1316) == 0 ? F(short, g_ws_6cec9c, 400) : F(short, g_ws_6cec98, 388)) * g_ws_64b5a0;
+            if (F(int, w, 1316) != 0) {
+                F(char*, set, 8) = CallC<char*>(FUN_51a4a0);
+                w = g_ws_wnd;
+            }
+            F(BYTE*, set, 12) = g_ws_6cecd8 + 632;
+            void* saved = 0;
+            void* stg = 0;
+            void* sub = 0;
+            F(BYTE, set, 24) = F(int, w, 1312) != 0;
+            if (g_ws_saveName[0]) {
+                stg = CallStd<void*>(FUN_51bfa0, g_ws_6cecd8 + 632, 1);
+                if (!stg)
+                    Sys_Fatal(s_ws_676848, 0);
+                (*(int(__stdcall**)(void*, wchar_t*, void*, DWORD, void*, DWORD, void**))(*(BYTE**)stg + 24))(
+                    stg, CallC<wchar_t*>(FUN_50bc90, (char*)s_ws_67683c), 0, 16, 0, 0, &sub);
+                if (!sub) {
+                    Ws_Com(stg, 8);
+                    Sys_Fatal(s_ws_67c2b0, 0);
+                }
+                (*(int(__stdcall**)(void*, wchar_t*, void*, DWORD, void*, DWORD, void**))(*(BYTE**)sub + 24))(
+                    sub, CallC<wchar_t*>(FUN_50bc90, (char*)g_ws_saveName), 0, 16, 0, 0, &saved);
+                if (!saved)
+                    Sys_Fatal(s_ws_67c298, 0);
+                CallC(FUN_571d20, saved);
+            }
+            CallC(FUN_434780, saved, mode, set);
+            if (saved)
+                Ws_Com(saved, 8);
+            if (stg)
+                Ws_Com(stg, 8);
+            CallThis(FUN_5291a0, g_ws_6ce4f8);
+        }
+    }
+
+    CallC(FUN_4e0660, self);
+    CallThis(FUN_5d2540, g_ws_71e820, (char*)s_ws_67c280, (void*)Terrain_FollowCamera);
+    CallThis(FUN_5d2540, g_ws_71e820, (char*)s_ws_67c268, (void*)g_ws_569550);
+    BYTE* marine = (BYTE*)operator new(160);
+    g_ws_marine = marine ? CallThis<BYTE*>(FUN_60e0f0, marine, g_ws_mainView) : 0;
+    const char* dir = F(int, g_ws_wnd, 1316) ? s_ws_676870 : s_ws_676880;
+    FILE* files[3];
+    const char* names[3] = {s_ws_67c258, s_ws_67c23c, s_ws_67c22c};
+    for (int k = 0; k < 3; k++) {
+        char* path = CallThis<char*>(FUN_5dc2d0, F(BYTE*, g_ws_wnd, 1356), dir, names[k]);
+        files[k] = fopen(path, s_ws_rb);
+        if (!files[k])
+            Sys_Fatal(path, s_ws_67c24c);
+    }
+    BYTE* old = g_ws_terrain;
+    if (old) {
+        CallThis(FUN_6148a0, old);
+        operator delete(old);
+    }
+    BYTE* t = (BYTE*)operator new(112);
+    if (t) {
+        DWORD v[3] = {1163780096, 3314327552u, 0};      // 3550, -4480, 0
+        t = CallThis<BYTE*>(FUN_6142f0, t, v[0], v[1], v[2], 1161527296, 1161527296, files, 3, g_ws_device);
+    }
+    g_ws_terrain = t;
+    CallThis(FUN_5c4910, self);
+    if (F(int, g_ws_wnd, 1300) > 1) {
+        FILE* f = F(FILE*, self, 7928);
+        F(int, self, 7960) = 0;
+        F(int, self, 7932) = 1;
+        F(int, self, 7964) = 1072693248;
+        F(int, self, 7940) = 0;
+        fseek(f, -8, 2);
+        g_ws_6f34d4 = CallC<int>(FUN_5ab140, F(FILE*, self, 7928));
+        fseek(F(FILE*, self, 7928), 0, 0);
+        CallVirt(self, 216);
+    }
+    g_ws_created = 0;
+}
+
+// $L_5728f0: the world's object creation hook (obj +4 kind*1000+n, +12 world, +24 description, +28 the created
+// object); flags bit 0: create, else only mark the player. The hook it replaced runs first.
+int __cdecl Game_CreateObject(BYTE* obj, int flags)
+{
+    if (g_ws_prevCreate && ((int(__cdecl*)(BYTE*, int))g_ws_prevCreate)(obj, flags))
+        return 1;
+    int kind = F(int, obj, 4) / 1000;
+    if (kind == 100) {
+        BYTE* desc = F(BYTE*, obj, 24);
+        if (!(flags & 1)) {
+            if (F(int, desc, 296) != g_ws_noPlayer) {
+                int id = F(int, desc, 296);
+                int f = CallC<int>(FUN_43f620, id);
+                CallC(FUN_43f690, id, f | 16);
+            }
+            return 1;
+        }
+        if (F(int, g_ws_wnd, 1300) > 1 || F(int, desc, 12) == 2) {
+            BYTE* scene = Ws_Find(0, (char*)desc + 16);
+            BYTE* v = Ws_NetVehicle(desc, scene);
+            Ws_NetVehicleSetup(v, obj, desc);
+            if (F(int, g_ws_wnd, 1300) > 1 && F(int, desc, 12))
+                g_ws_696340 = v;
+            F(BYTE*, obj, 28) = v;
+            g_ws_created++;
+            return 1;
+        }
+        BYTE* scene = Ws_Find(0, (char*)desc + 16);
+        if (F(int, desc, 296) != g_ws_noPlayer) {
+            BYTE pd[200];
+            CallC(FUN_43fc40, F(int, desc, 296), pd);
+            if (F(int, pd, 8) != 1) {
+                WsPos pos;
+                CallC(FUN_437520, &pos, F(int, desc, 296));
+                // the room info: +20 the room object's name
+                BYTE room[44];
+                F(int, room, 0) = 0;
+                F(int, room, 8) = 0;
+                F(int, room, 12) = 0;
+                F(void*, room, 16) = s_ws_66d638;
+                F(void*, room, 20) = s_ws_66d628;
+                F(int, room, 24) = 0;
+                F(int, room, 28) = 0;
+                F(int, room, 36) = -1;
+                F(int, room, 40) = -1;
+                CallC(FUN_438d70, pos, room);
+                BYTE* roomObj = Ws_Find(0, F(char*, room, 20));
+                BYTE orient[64];
+                BYTE* o = CallC<BYTE*>(FUN_43a780, orient, pos);
+                float d[3];
+                d[2] = (float)((double)g_ws_702638 + F(float, o, 44));
+                d[1] = (float)((double)g_ws_702634 + F(float, o, 40));
+                d[0] = (float)((double)g_ws_702630 + F(float, o, 36));
+                o = CallC<BYTE*>(FUN_43a780, orient, pos);
+                void* hit = CallC<void*>(FUN_4e5ba7, roomObj, o + 36, d);
+                hit = CallC<void*>(FUN_4e5ba7, hit, d, desc + 284);
+                if (hit)
+                    scene = (BYTE*)hit;
+            }
+        }
+        if (!scene) {
+            char buf[200];
+            BYTE* world = F(BYTE*, obj, 12);
+            sprintf(buf, s_ws_67c3b8, desc + 16, F(int, world, 4016), F(int, world, 4012), (double)F(float, desc, 284),
+                    (double)F(float, desc, 288));
+            Sys_Fatal(s_ws_67c3a8, buf);
+        }
+        BYTE* fx = (BYTE*)operator new(16584);
+        if (fx) {
+            WsMat m = F(WsMat, desc, 248);
+            int e = F(int, desc, 0) % 1000;
+            fx = CallThis<BYTE*>(FUN_4d2790, fx, e, scene, m);
+        }
+        F(int, fx, 16492) = 1;
+        g_ws_67f878 = F(int, obj, 4);
+        BYTE* v = CallC<BYTE*>(FUN_4d08d0, g_ws_mainView, fx, F(int, desc, 296));
+        int pl = F(int, desc, 296);
+        if (pl != g_ws_noPlayer && F(int, (BYTE*)pl, 84) != F(int, obj, 4))
+            Sys_Fatal(s_ws_67c398, 0);
+        CallThis(FUN_543c00, v, F(int, desc, 0) / 1000);
+        CallThis(FUN_546900, v, desc + 48);
+        CallThis(FUN_53fcd0, v, F(int, obj, 4) % 1000);
+        F(BYTE*, obj, 28) = v;
+        g_ws_created++;
+        return 1;
+    }
+    if (kind == 101) {
+        BYTE* desc = F(BYTE*, obj, 24);
+        if (!(flags & 1))
+            return 0;
+        BYTE* v;
+        if (F(int, g_ws_wnd, 1300) > 1) {
+            BYTE* scene = Ws_Find(0, (char*)desc + 16);
+            v = Ws_NetVehicle(desc, scene);
+            Ws_NetVehicleSetup(v, obj, desc);
+        } else {
+            BYTE* car = (BYTE*)operator new(16424);
+            if (car) {
+                WsMat m = F(WsMat, desc, 248);
+                int e = F(int, desc, 0) % 1000;
+                car = CallThis<BYTE*>(FUN_4ebd00, car, Ws_Find(0, (char*)desc + 16), m, e);
+            }
+            g_ws_67f878 = F(int, obj, 4);
+            v = (BYTE*)operator new(21952);
+            if (v)
+                v = CallThis<BYTE*>(FUN_4d0b10, v, g_ws_mainView, car, g_ws_noPlayer);
+            CallThis(FUN_543c00, v, F(int, desc, 0) / 1000);
+            CallThis(FUN_546900, v, desc + 48);
+            CallThis(FUN_53fcd0, v, F(int, obj, 4) % 1000);
+        }
+        F(BYTE*, obj, 28) = v;
+        return 0;
+    }
+    if (kind == 1 || kind == 2) {
+        BYTE* desc = F(BYTE*, obj, 24);
+        BYTE* p = Ws_Item(416, desc, 44, 12);
+        if (p) {
+            F(void*, p, 0) = kind == 1 ? g_ws_vt6500e4 : g_ws_vt650068;
+            F(void*, p, 256) = kind == 1 ? g_ws_vt650098 : g_ws_vt65001c;
+            F(int, p, 356) = F(int, desc, 0);
+            F(int, p, 408) = F(int, desc, 4);
+            strcpy((char*)p + 376, (char*)desc + 44);
+            if (kind == 1)
+                F(BYTE*, p, 352) = Ws_Find(Ws_Find(0, s_ws_67c384), s_ws_67c390);
+            else
+                F(BYTE*, p, 352) = Ws_Find(Ws_Find(0, s_ws_67c370), s_ws_67c37c);
+            F(int, p, 360) = F(int, desc, 8);
+        }
+        F(int, p, 344) = F(int, obj, 4);
+        F(BYTE*, obj, 28) = p;
+        return 1;
+    }
+    BYTE* p;
+    if (kind == 3) {
+        BYTE* desc = F(BYTE*, obj, 24);
+        p = Ws_Item(416, desc, 40, 8);
+        if (p) {
+            F(void*, p, 0) = g_ws_vt64ffec;
+            F(void*, p, 256) = g_ws_vt64ffa0;
+            F(int, p, 356) = F(int, desc, 0);
+            F(int, p, 408) = 0;
+            strcpy((char*)p + 376, (char*)desc + 40);
+            F(BYTE*, p, 352) = Ws_Find(Ws_Find(0, s_ws_67c358), s_ws_67c364);
+            F(int, p, 360) = F(int, desc, 4);
+        }
+    } else if (kind == 4) {
+        BYTE* desc = F(BYTE*, obj, 24);
+        p = Ws_Item(424, desc, 44, 12);
+        if (p) {
+            F(void*, p, 0) = g_ws_vt64ff70;
+            F(void*, p, 256) = g_ws_vt64ff24;
+            F(int, p, 368) = F(int, desc, 0);
+            F(int, p, 416) = F(int, desc, 4);
+            strcpy((char*)p + 384, (char*)desc + 44);
+            F(BYTE*, p, 352) = Ws_Find(Ws_Find(0, s_ws_67c340), s_ws_67c34c);
+            F(BYTE*, p, 356) = Ws_Find(Ws_Find(0, s_ws_67c340), s_ws_67c334);
+            F(BYTE*, p, 360) = Ws_Find(Ws_Find(0, s_ws_67c340), s_ws_67c328);
+            F(BYTE*, p, 364) = Ws_Find(Ws_Find(0, s_ws_67c340), s_ws_67c31c);
+            F(int, p, 372) = F(int, desc, 8);
+        }
+    } else
+        return 0;
+    CallVirt(p, 24, 1);
+    F(int, p, 344) = F(int, obj, 4);
+    F(BYTE*, obj, 28) = p;
+    return 1;
+}
+
+}  // extern "C"
