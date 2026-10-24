@@ -1564,6 +1564,15 @@ PUBLIC $L_67c3a8, $L_67c3b8, $L_67f878, $L_696334, $L_696900, $L_6d2258
 PUBLIC $L_6f3418, $L_6f341c, $L_6f34ac, $L_6f34d4
 PUBLIC $L_670664, $L_67066c, $L_670678, $L_670680, $L_67068c, $L_670698
 PUBLIC $L_6706a0, $L_6706ac
+PUBLIC $L_66de28, $L_670570, $L_6706b4, $L_6706b8, $L_6706c0, $L_6706cc
+PUBLIC $L_6706d4, $L_6706e0, $L_6706ec, $L_6706f4, $L_6706fc, $L_670708
+PUBLIC $L_670710, $L_670714, $L_670718, $L_67071c, $L_670720, $L_670724
+PUBLIC $L_67072c, $L_670734, $L_67073c, $L_670744, $L_67074c, $L_670754
+PUBLIC $L_670768, $L_670774, $L_670780, $L_67078c, $L_670798, $L_6707a0
+PUBLIC $L_6707b0, $L_6707c0, $L_6707d0, $L_6707e0, $L_6707e8, $L_6707f0
+PUBLIC $L_6707f4, $L_670800, $L_67080c, $L_670814, $L_670824, $L_670834
+PUBLIC $L_67083c, $L_670844, $L_67084c, $L_670854, $L_67085c, $L_670864
+PUBLIC $L_670874
 
 ;===================================
 _TEXT SEGMENT
@@ -271722,6 +271731,8 @@ $L_4954f0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 $L_495920 PROC
 
             push -1
@@ -282905,6 +282916,106 @@ $L_49c1f2::
             add ESP,40
             ret 
 $L_495920 ENDP
+ELSE
+EXTERN _Nat_Times:PROC
+$L_495920 TEXTEQU <_Nat_Times>
+EXTERN _Nat_Divide:PROC
+$L_495d50 TEXTEQU <_Nat_Divide>
+EXTERN _Nat_Quotient:PROC
+$L_496180 TEXTEQU <_Nat_Quotient>
+EXTERN _Nat_Remainder:PROC
+$L_496480 TEXTEQU <_Nat_Remainder>
+EXTERN _Nat_Modulo:PROC
+$L_496780 TEXTEQU <_Nat_Modulo>
+EXTERN _Nat_Numerator:PROC
+$L_496a80 TEXTEQU <_Nat_Numerator>
+EXTERN _Nat_Denominator:PROC
+$L_496c90 TEXTEQU <_Nat_Denominator>
+EXTERN _Nat_Floor:PROC
+$L_496ea0 TEXTEQU <_Nat_Floor>
+EXTERN _Nat_Ceiling:PROC
+$L_4970b0 TEXTEQU <_Nat_Ceiling>
+EXTERN _Nat_Truncate:PROC
+$L_4972c0 TEXTEQU <_Nat_Truncate>
+EXTERN _Nat_Round:PROC
+$L_4974d0 TEXTEQU <_Nat_Round>
+EXTERN _Nat_Exp:PROC
+$L_4976e0 TEXTEQU <_Nat_Exp>
+EXTERN _Nat_Log:PROC
+$L_4978f0 TEXTEQU <_Nat_Log>
+EXTERN _Nat_Sin:PROC
+$L_497b00 TEXTEQU <_Nat_Sin>
+EXTERN _Nat_Cos:PROC
+$L_497d10 TEXTEQU <_Nat_Cos>
+EXTERN _Nat_Tan:PROC
+$L_497f20 TEXTEQU <_Nat_Tan>
+EXTERN _Nat_Asin:PROC
+$L_498130 TEXTEQU <_Nat_Asin>
+EXTERN _Nat_Acos:PROC
+$L_498340 TEXTEQU <_Nat_Acos>
+EXTERN _Nat_Atan:PROC
+$L_498550 TEXTEQU <_Nat_Atan>
+EXTERN _Nat_Atan2:PROC
+$L_498760 TEXTEQU <_Nat_Atan2>
+EXTERN _Nat_Sqrt:PROC
+$L_498a60 TEXTEQU <_Nat_Sqrt>
+EXTERN _Nat_Expt:PROC
+$L_498c70 TEXTEQU <_Nat_Expt>
+EXTERN _Nat_MakeRect:PROC
+$L_498e80 TEXTEQU <_Nat_MakeRect>
+EXTERN _Nat_MakePolar:PROC
+$L_499090 TEXTEQU <_Nat_MakePolar>
+EXTERN _Nat_RealPart:PROC
+$L_4992a0 TEXTEQU <_Nat_RealPart>
+EXTERN _Nat_ImagPart:PROC
+$L_4994b0 TEXTEQU <_Nat_ImagPart>
+EXTERN _Nat_Magnitude:PROC
+$L_4996c0 TEXTEQU <_Nat_Magnitude>
+EXTERN _Nat_Angle:PROC
+$L_4998d0 TEXTEQU <_Nat_Angle>
+EXTERN _Nat_ToInexact:PROC
+$L_499ae0 TEXTEQU <_Nat_ToInexact>
+EXTERN _Nat_ToExact:PROC
+$L_499cf0 TEXTEQU <_Nat_ToExact>
+EXTERN _Nat_NumberToString:PROC
+$L_499f00 TEXTEQU <_Nat_NumberToString>
+EXTERN _Nat_StringToNumber:PROC
+$L_49a150 TEXTEQU <_Nat_StringToNumber>
+EXTERN _Nat_PairP:PROC
+$L_49a400 TEXTEQU <_Nat_PairP>
+EXTERN _Nat_Cons:PROC
+$L_49a520 TEXTEQU <_Nat_Cons>
+EXTERN _Nat_Car:PROC
+$L_49a720 TEXTEQU <_Nat_Car>
+EXTERN _Nat_Cdr:PROC
+$L_49a7c0 TEXTEQU <_Nat_Cdr>
+EXTERN _Nat_SetCar:PROC
+$L_49a860 TEXTEQU <_Nat_SetCar>
+EXTERN _Nat_SetCdr:PROC
+$L_49aab0 TEXTEQU <_Nat_SetCdr>
+EXTERN _Nat_SymbolP:PROC
+$L_49ad00 TEXTEQU <_Nat_SymbolP>
+EXTERN _Nat_SymbolToString:PROC
+$L_49ae20 TEXTEQU <_Nat_SymbolToString>
+EXTERN _Nat_StringToSymbol:PROC
+$L_49b040 TEXTEQU <_Nat_StringToSymbol>
+EXTERN _Nat_CharP:PROC
+$L_49b260 TEXTEQU <_Nat_CharP>
+EXTERN _Nat_CharEq:PROC
+$L_49b380 TEXTEQU <_Nat_CharEq>
+EXTERN _Nat_CharLt:PROC
+$L_49b5a0 TEXTEQU <_Nat_CharLt>
+EXTERN _Nat_CharGt:PROC
+$L_49b7c0 TEXTEQU <_Nat_CharGt>
+EXTERN _Nat_CharLe:PROC
+$L_49b9e0 TEXTEQU <_Nat_CharLe>
+EXTERN _Nat_CharGe:PROC
+$L_49bc00 TEXTEQU <_Nat_CharGe>
+EXTERN _Nat_CharToInteger:PROC
+$L_49be20 TEXTEQU <_Nat_CharToInteger>
+EXTERN _Nat_IntegerToChar:PROC
+$L_49bfe0 TEXTEQU <_Nat_IntegerToChar>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
