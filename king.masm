@@ -1562,6 +1562,8 @@ PUBLIC $L_67c31c, $L_67c328, $L_67c334, $L_67c340, $L_67c34c, $L_67c358
 PUBLIC $L_67c364, $L_67c370, $L_67c37c, $L_67c384, $L_67c390, $L_67c398
 PUBLIC $L_67c3a8, $L_67c3b8, $L_67f878, $L_696334, $L_696900, $L_6d2258
 PUBLIC $L_6f3418, $L_6f341c, $L_6f34ac, $L_6f34d4
+PUBLIC $L_670664, $L_67066c, $L_670678, $L_670680, $L_67068c, $L_670698
+PUBLIC $L_6706a0, $L_6706ac
 
 ;===================================
 _TEXT SEGMENT
@@ -267599,6 +267601,8 @@ $L_4932bd::
             add ESP,40
             ret 
 $L_493120 ENDP
+; src/natives.cpp, nmake ASM_NATIVES=1 assembles the original
+IFDEF ASM_NATIVES
 $L_4932d0 PROC
 
             push -1
@@ -271223,6 +271227,34 @@ $L_4954aa::
             add ESP,60
             ret 
 $L_4932d0 ENDP
+ELSE
+EXTERN _Nat_NumberP:PROC
+$L_4932d0 TEXTEQU <_Nat_NumberP>
+EXTERN _Nat_ComplexP:PROC
+$L_4933f0 TEXTEQU <_Nat_ComplexP>
+EXTERN _Nat_RealP:PROC
+$L_493510 TEXTEQU <_Nat_RealP>
+EXTERN _Nat_RationalP:PROC
+$L_493740 TEXTEQU <_Nat_RationalP>
+EXTERN _Nat_IntegerP:PROC
+$L_493970 TEXTEQU <_Nat_IntegerP>
+EXTERN _Nat_ExactP:PROC
+$L_493ba0 TEXTEQU <_Nat_ExactP>
+EXTERN _Nat_InexactP:PROC
+$L_493dd0 TEXTEQU <_Nat_InexactP>
+EXTERN _Nat_NumEq:PROC
+$L_494000 TEXTEQU <_Nat_NumEq>
+EXTERN _Nat_NumLt:PROC
+$L_494350 TEXTEQU <_Nat_NumLt>
+EXTERN _Nat_NumGt:PROC
+$L_4946a0 TEXTEQU <_Nat_NumGt>
+EXTERN _Nat_NumLe:PROC
+$L_4949f0 TEXTEQU <_Nat_NumLe>
+EXTERN _Nat_NumGe:PROC
+$L_494d40 TEXTEQU <_Nat_NumGe>
+EXTERN _Nat_Plus:PROC
+$L_495090 TEXTEQU <_Nat_Plus>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; engine: src\script\native_values.cpp, nmake ASM_NATIVE_VALUES=1 assembles the original
