@@ -134,7 +134,7 @@ ASM_PROC(FUN_6303c4)    // ICDecompress
 ASM_PROC(FUN_6303b8)    // ICSendMessage
 extern "C" void FUN_5c29d0(); KING_ALIAS("_FUN_5c29d0", "_Media_Start")
 extern "C" void FUN_5c1d40(); KING_ALIAS("_FUN_5c1d40", "@Video_DrawFrame@28")    // draws the video frame
-ASM_PROC(FUN_5c34a0)
+extern "C" void FUN_5c34a0(); KING_ALIAS("_FUN_5c34a0", "@NetValue_Write@12")
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
 extern "C" void FUN_5c49b0(); KING_ALIAS("_FUN_5c49b0", "@Rec_Step@12")    // next record time (forward)
@@ -4222,7 +4222,7 @@ BYTE* __fastcall PointCloud_Construct(BYTE* s, void*, int a, int b, float ox, fl
 
 // === drawing the four axis markers (FUN_5c7dc0)
 
-ASM_PROC(FUN_5c7800)
+extern "C" void FUN_5c7800(); KING_ALIAS("_FUN_5c7800", "_Beam_Draw")
 extern "C" void Ax_Normalized(); KING_ALIAS("_Ax_Normalized", "_Vec3_Normalized")
 ASM_VAR(float, g_ax702620, $L_702620)
 ASM_VAR(float, g_ax702624, $L_702624)
@@ -4258,6 +4258,284 @@ void __cdecl Axes_Draw(int a, int b, int c, int d, int e)
     float ny = -g_ax702644, nz = -g_ax702648;
     Ax_Half(h, (float)(-(double)g_ax702640 + g_ax702620), ny + g_ax702624, nz + g_ax702628);
     CallC(FUN_5c7800, a, b, c, h, d, e);
+}
+
+} // extern "C"
+
+// === a fountain of particle streams (FUN_5cec90)
+
+ASM_VAR(AsmLabel, g_fn651e18, $L_651e18)
+ASM_VAR(double, g_fn64b958, $L_64b958)
+ASM_VAR(double, g_fn64b670, $L_64b670)
+ASM_VAR(double, g_fn64b840, $L_64b840)
+ASM_VAR(double, g_fn64d900, $L_64d900)
+ASM_VAR(double, g_fn64b780, $L_64b780)
+ASM_VAR(double, g_fn64b5b8, $L_64b5b8)
+ASM_VAR(float, g_fn64c354, $L_64c354)
+extern "C" void Fn_Normalized(); KING_ALIAS("_Fn_Normalized", "_Vec3_Normalized")
+extern "C" void Fn_AddAssign(); KING_ALIAS("_Fn_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Fn_RotZ(); KING_ALIAS("_Fn_RotZ", "_Matrix_RotationZ")
+
+extern "C" {
+
+// [FUN_5cec90] constructor: a light (0, 1.0) with this kind's vtable and n particle streams (+24, linked) from
+// position p in direction d at random speeds sqrt((1 + 0..9 * 64b958) * speed * 64b840), turned up to +-pi / 4
+// (or / 2 with wide) about up, lifted to at least 0.1, spread sideways when wide; a texture (b, a) when both are given
+BYTE* __fastcall Fountain_Construct(BYTE* s, void*, int n, float px, float py, float pz, float dx, float dy, float dz,
+    double speed, int a, int b, int wide)
+{
+    Light_Construct(s, 0, 0, 0x3FF00000);
+    F(void*, s, 0) = g_fn651e18;
+    Particles_InitRandom();
+    float sv[3];
+    sv[0] = (float)((double)dz * g_q243_702634 - (double)dy * g_q243_702638);
+    sv[1] = (float)((double)dx * g_q243_702638 - (double)dz * g_q243_702630);
+    sv[2] = (float)((double)dy * g_q243_702630 - (double)dx * g_q243_702634);
+    float nb[3];
+    const float* nside = CallC<const float*>(Fn_Normalized, nb, sv);
+    float side[3] = {nside[0], nside[1], nside[2]};
+    for (int i = 0; i < n; i++) {
+        int r1 = rand() % 10;
+        int m = wide ? 2 : 4;
+        double sp = x87_sqrt((r1 * g_fn64b958 + g_fn64b670) * speed * g_fn64b840);
+        double sp2 = sp + sp;
+        int r2 = rand() % 100 - 50;
+        float ang = (float)(r2 * g_fn64d900 / (m * 100));
+        float mb[12];
+        const float* R = CallC<const float*>(Fn_RotZ, mb, *(DWORD*)&ang);
+        double wx = (double)dz * R[6] + (double)dy * R[3] + (double)dx * R[0] + R[9];
+        float wy = (float)((double)dz * R[7] + (double)dy * R[4] + (double)dx * R[1] + R[10]);
+        float wz = (float)((double)dz * R[8] + (double)dy * R[5] + (double)dx * R[2] + R[11]);
+        float fwx = (float)wx;
+        double q = sp * g_fn64b780;
+        float lift = wz;
+        if (wz < g_fn64b5b8)
+            *(DWORD*)&lift = 0x3DCCCCCD;
+        float k = (float)(q / lift);
+        float pos[3] = {px, py, pz};
+        float vel[3] = {k * fwx, wy * k, k * lift};
+        if (wide) {
+            float jz = (float)(side[2] * speed), jy = (float)(side[1] * speed);
+            double jx = speed * side[0];
+            float kz = jz * g_fn64c354, ky = jy * g_fn64c354, kx = (float)(jx * g_fn64c354);
+            float f = (float)((rand() % 10 - 5) * g_fn64b5b8);
+            float jit[3] = {kx * f, ky * f, kz * f};
+            float t[3];
+            CallThis(Fn_AddAssign, pos, t, jit);
+        }
+        BYTE* st = (BYTE*)operator new(184);
+        if (st)
+            st = Stream_Construct(st, 0, 10, pos[0], pos[1], pos[2], vel[0], vel[1], vel[2], ((int*)&sp2)[0],
+                ((int*)&sp2)[1]);
+        if (a && b)
+            CallVirt(st, 28, b, a, g_67fa60[0], g_67fa60[1]);
+        if (!F(BYTE*, s, 24))
+            F(BYTE*, s, 24) = st;
+        else
+            CallThis(FUN_5d2190, st, F(BYTE*, s, 24));
+    }
+    return s;
+}
+
+} // extern "C"
+
+// === writing a shared value into a network message (FUN_5c34a0)
+
+extern "C" void Nw_ToAngles(); KING_ALIAS("_Nw_ToAngles", "_Matrix_ToAngles")
+extern "C" void Nw_GetWorld(); KING_ALIAS("_Nw_GetWorld", "@Node_GetWorld@12")
+extern "C" void Nw_Write7(); KING_ALIAS("_Nw_Write7", "@Msg_Write7@20")
+extern "C" void Nw_Write42(); KING_ALIAS("_Nw_Write42", "@Msg_Write42@20")
+extern "C" void Nw_Write45(); KING_ALIAS("_Nw_Write45", "@Msg_Write45@16")
+extern "C" void Nw_Write120(); KING_ALIAS("_Nw_Write120", "@Msg_Write120@20")
+ASM_VAR(AsmLabel, g_nw7025f0, $L_7025f0)
+struct Nw_V3 { DWORD d[3]; };
+
+extern "C" {
+
+// [FUN_5c34a0] writes value s (object +20, kind +16, id +12, size +24) into message m: a node's place and angles
+// (kind 1), the object's +56 (0) or first dword (3), its first two (4), the bytes made by +28 (5) or the object's
+// own bytes (6)
+void __fastcall NetValue_Write(BYTE* s, void*, BYTE* m)
+{
+    BYTE* o = F(BYTE*, s, 20);
+    if (!o)
+        return;
+    int id = F(int, s, 12);
+    switch (F(int, s, 16)) {
+    case 1: {
+        float mx[12];
+        memcpy(mx, g_nw7025f0, 48);
+        CallThis(Nw_GetWorld, o, mx);
+        double d[6];
+        Nw_V3 r[4];
+        memcpy(r, mx, 48);
+        CallC(Nw_ToAngles, r[0], r[1], r[2], r[3], &d[0], &d[1], &d[2], &d[5], &d[4], &d[3]);
+        float f[6] = {(float)d[0], (float)d[1], (float)d[2], (float)d[3], (float)d[4], (float)d[5]};
+        CallThis(Nw_Write7, m, id, f, 0);
+        break;
+    }
+    case 0:
+        CallThis(Nw_Write45, m, id, F(int, o, 56));
+        break;
+    case 3:
+        CallThis(Nw_Write45, m, id, F(int, o, 0));
+        break;
+    case 4:
+        CallThis(Nw_Write42, m, id, F(int, o, 0), F(int, o, 4));
+        break;
+    case 5: {
+        BYTE buf[132];
+        CallC((void (*)())F(void*, s, 28), o, buf, F(int, s, 24));
+        CallThis(Nw_Write120, m, id, buf + 12, F(int, s, 24));
+        break;
+    }
+    case 6:
+        CallThis(Nw_Write120, m, id, o, F(int, s, 24));
+        break;
+    }
+}
+
+} // extern "C"
+
+// === a beam drawn as two fans (FUN_5c7800)
+
+ASM_VAR(BYTE*, g_bm720908, $L_720908)
+ASM_VAR(float, g_bm67f93c, $L_67f93c)
+ASM_VAR(DWORD, g_bm67f940, $L_67f940)
+ASM_VAR(DWORD, g_bm67f944, $L_67f944)
+ASM_VAR(DWORD, g_bm67f948, $L_67f948)
+ASM_VAR(float, g_bm64c964, $L_64c964)
+ASM_VAR(float, g_bm64c250, $L_64c250)
+ASM_VAR(float, g_bm64c258, $L_64c258)
+
+struct Bm_Vtx { float x, y, z; DWORD c; float u, v; };
+
+static void Bm_Set(Bm_Vtx& v, float x, float y, float z, DWORD c, float tu, float tv)
+{
+    v.x = x, v.y = y, v.z = z, v.c = c, v.u = tu, v.v = tv;
+}
+
+extern "C" {
+
+// [FUN_5c7800] draws the beam from a to b, as wide as n x (b - a) over len, as two six-vertex fans split at t:
+// colours 67f944 / 67f948 up to t and 67f940 / 67f944 after it, the texture across mirrored with flip
+void __cdecl Beam_Draw(int flip, const float* a, const float* b, const float* n, float len, float t)
+{
+    float u0 = g_bm64c250 / g_bm67f93c;
+    float us = g_bm64c964 - u0;
+    float dx = b[0] - a[0], dy = b[1] - a[1], dz = b[2] - a[2];
+    float hx = (dy * n[2] - dz * n[1]) / len, hy = (dz * n[0] - dx * n[2]) / len, hz = (dx * n[1] - dy * n[0]) / len;
+    float mx = dx * t + a[0], my = dy * t + a[1], mz = dz * t + a[2];
+    float uh = us * g_bm64c258, vt = g_bm64c250 - t;
+    float ex = hx * g_bm64c258, ey = hy * g_bm64c258, ez = hz * g_bm64c258;
+    float ua = flip ? u0 : u0 + us, ub = flip ? u0 + us : u0;
+    DWORD c0 = g_bm67f944, c1 = g_bm67f948;
+    Bm_Vtx v[6];
+    Bm_Set(v[0], mx, my, mz, c0, uh, vt);
+    Bm_Set(v[1], mx - ex, my - ey, mz - ez, c0, ua, vt);
+    Bm_Set(v[2], a[0] - ex, a[1] - ey, a[2] - ez, c1, ua, 1.0f);
+    Bm_Set(v[3], a[0], a[1], a[2], c1, uh, 1.0f);
+    Bm_Set(v[4], ex + a[0], ey + a[1], ez + a[2], c1, ub, 1.0f);
+    Bm_Set(v[5], ex + mx, ey + my, ez + mz, c0, ub, vt);
+    Com(g_bm720908, 100, 6, 322, v, 6, 0);
+    float bx = b[0], by = b[1], bz = b[2];
+    mx = dx * t + a[0], my = dy * t + a[1], mz = dz * t + a[2];
+    c0 = g_bm67f940, c1 = g_bm67f944;
+    Bm_Set(v[0], bx, by, bz, c0, uh, 0);
+    Bm_Set(v[1], bx - ex, by - ey, bz - ez, c0, ua, 0);
+    Bm_Set(v[2], mx - ex, my - ey, mz - ez, c1, ua, vt);
+    Bm_Set(v[3], mx, my, mz, c1, uh, vt);
+    Bm_Set(v[4], ex + mx, ey + my, ez + mz, c1, ub, vt);
+    Bm_Set(v[5], ex + bx, ey + by, ez + bz, c0, ub, 0);
+    Com(g_bm720908, 100, 6, 322, v, 6, 0);
+}
+
+} // extern "C"
+
+// === a shaded quad of a growing plume (FUN_5cbcb0)
+
+ASM_VAR(float, g_pq64c878, $L_64c878)
+ASM_VAR(float, g_pq64c250, $L_64c250)
+ASM_VAR(float, g_pq64c264, $L_64c264)
+ASM_VAR(float, g_pq64c258, $L_64c258)
+ASM_VAR(float, g_pq651704, $L_651704)
+ASM_VAR(float, g_pq64c338, $L_64c338)
+ASM_VAR(float, g_pq64c308, $L_64c308)
+ASM_VAR(float, g_pq64c458, $L_64c458)
+ASM_VAR(float, g_pq67f94c, $L_67f94c)
+ASM_VAR(float, g_pq67f950, $L_67f950)
+ASM_VAR(float, g_pq67f954, $L_67f954)
+
+static float Pq_Clamp(float v)
+{
+    if (v > g_pq64c250)
+        return g_pq64c250;
+    if (v < g_pq64c264)
+        return g_pq64c264;
+    return v;
+}
+
+static float Pq_Shade(float h, float mid)
+{
+    if (h < mid)
+        return h * g_pq651704 / mid + g_pq651704;
+    return (h - mid) * g_pq64c338 / (g_pq64c250 - mid) + g_pq64c308;
+}
+
+static DWORD Pq_Colour(float r, float g, float b)
+{
+    DWORD c = ((DWORD)(int)(r * g_pq64c458) | 0xFFFFFF00u) << 8;
+    c = (c | (DWORD)(int)(g * g_pq64c458)) << 8;
+    return c | (DWORD)(int)(b * g_pq64c458);
+}
+
+extern "C" {
+
+// [FUN_5cbcb0] writes quad idx (below 99) of 24-byte vertices into buf: the corners of s's plume (width +48,
+// grown by t in 0..1) placed by its matrix, shaded by height between base and base + range (brighter below mid)
+// in the colour 67f94c.. over +52; idx + 1, or 0 when it doesn't fit
+int __fastcall Plume_Quad(BYTE* s, void*, BYTE* buf, unsigned idx, float t, float base, float range, float mid)
+{
+    if (idx * 4 >= 396 || !buf || idx >= 100)
+        return 0;
+    if (t > g_pq64c250)
+        t = g_pq64c250;
+    else if (t < g_pq64c264)
+        t = g_pq64c264;
+    float w = F(float, s, 48), z0 = g_pq64c264;
+    float p[4][3] = {{z0 * t, z0 * t, z0 * t}, {w * g_pq64c878 * t, 0 * t, w * g_pq64c258 * t},
+        {z0 * t, 0 * t, w * t}, {w * g_pq64c258 * t, 0 * t, w * g_pq64c258 * t}};
+    const float* M = (const float*)s;
+    float q[4][3];
+    for (int k = 0; k < 4; k++) {
+        float x = p[k][0], y = p[k][1], z = p[k][2];
+        q[k][0] = (float)((double)z * M[6] + (double)y * M[3] + (double)x * M[0] + M[9]);
+        q[k][1] = (float)((double)y * M[4] + (double)z * M[7] + (double)x * M[1] + M[10]);
+        q[k][2] = (float)((double)z * M[8] + (double)y * M[5] + (double)x * M[2] + M[11]);
+    }
+    float c[4][3];
+    for (int k = 0; k < 4; k++) {
+        float f = Pq_Shade(Pq_Clamp((q[k][2] - base) / range), mid);
+        c[k][0] = g_pq67f94c * f + F(float, s, 52);
+        c[k][1] = g_pq67f950 * f + F(float, s, 52);
+        c[k][2] = g_pq67f954 * f + F(float, s, 52);
+    }
+    for (int k = 0; k < 4; k++)
+        for (int j = 0; j < 3; j++) {
+            if (c[k][j] < g_pq64c264)
+                c[k][j] = 0;
+            if (c[k][j] > g_pq64c250)
+                *(DWORD*)&c[k][j] = 0x3F800000;
+        }
+    static const DWORD uv[4][2] = {{0x3F800000, 0}, {0, 0}, {0, 0x3F800000}, {0x3F800000, 0x3F800000}};
+    BYTE* v = buf + idx * 96;
+    for (int k = 0; k < 4; k++, v += 24) {
+        memcpy(v, q[k], 12);
+        F(DWORD, v, 12) = Pq_Colour(c[k][0], c[k][1], c[k][2]);
+        F(DWORD, v, 16) = uv[k][0];
+        F(DWORD, v, 20) = uv[k][1];
+    }
+    return idx + 1;
 }
 
 } // extern "C"

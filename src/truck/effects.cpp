@@ -1105,7 +1105,7 @@ struct Vec3Bits { DWORD x, y, z; };
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")    // a model by name
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")    // network: send (type, data, size)
-ASM_PROC(FUN_593720)
+extern "C" void FUN_593720(); KING_ALIAS("_FUN_593720", "@Sparks_Burst@20")
 extern "C" void FUN_57c490(); KING_ALIAS("_FUN_57c490", "@Shadow_Add@32")
 extern "C" void __fastcall Hits_Remember(BYTE* self, void*, const BYTE* hits, unsigned n);
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
@@ -5109,7 +5109,7 @@ ASM_VAR(DWORD, g_fi64c1c0, $L_64c1c0)
 ASM_VAR(DWORD, g_fi64c1c4, $L_64c1c4)
 ASM_VAR(AsmLabel, g_fiNames71e820, $L_71e820)
 ASM_VAR(AsmLabel, g_fiVtbl64c26c, $L_64c26c)
-ASM_VAR(AsmLabel, g_fiCb4cb310, $L_4cb310)
+extern "C" int __cdecl Ground_Below(BYTE* o, const float* p, float* at, float* n);
 ASM_VAR(AsmLabel, g_fiCb4c5b30, $L_4c5b30)
 ASM_VAR(AsmLabel, g_fiCb4cbec0, $L_4cbec0)
 ASM_VAR(AsmLabel, g_fiCb4cbfd0, $L_4cbfd0)
@@ -5209,7 +5209,7 @@ void __cdecl Effects_Init(BYTE* w)
     g_fi696230 = p;
     BYTE* a = Fi_Find(s_fi6725d0);
     CallC(FUN_5c6400, Fi_Find(s_fi672660), a);
-    CallC(FUN_5cb9a0, (void*)Eff_New4cb450, (void*)g_fiCb4cb310);
+    CallC(FUN_5cb9a0, (void*)Eff_New4cb450, (void*)Ground_Below);
     p = (BYTE*)operator new(88);
     if (p)
         p = CallThis<BYTE*>(FUN_4bc690, p, g_fi6cec68 ? (const char*)s_fi672658 : (const char*)s_fi672650,
@@ -7154,6 +7154,159 @@ int __fastcall FireSource_Step(BYTE* s)
     if (F(float, s, 52) > g_fs64c338)
         return CallVirt<int>(s, 28, 1);
     return CallThis<int>(Fs_Post, s, 1);
+}
+
+} // extern "C"
+
+// === light shafts at a list of points (FUN_4bffb0)
+
+ASM_VAR(float, g_ls702620, $L_702620)
+ASM_VAR(float, g_ls702624, $L_702624)
+ASM_VAR(float, g_ls702628, $L_702628)
+ASM_VAR(float, g_ls702630, $L_702630)
+ASM_VAR(float, g_ls702634, $L_702634)
+ASM_VAR(float, g_ls702638, $L_702638)
+ASM_VAR(float, g_ls64c304, $L_64c304)
+ASM_VAR(float, g_ls64c260, $L_64c260)
+extern "C" void Ls_RotZ(); KING_ALIAS("_Ls_RotZ", "_Matrix_RotationZ")
+
+extern "C" {
+
+// [FUN_4bffb0] adds to renderer r a three-vertex shaft (height +8, colour +96) for every point of s's list (+128)
+// in front of the camera (+136: its position and heading) beyond +64, widened with the distance
+int __fastcall Shafts_Draw(BYTE* s, void*, BYTE* r)
+{
+    BYTE* cam = F(BYTE*, s, 136);
+    float px = (float)F(double, cam, 2904), py = (float)F(double, cam, 2912), pz = (float)F(double, cam, 2920);
+    float ang = (float)F(double, cam, 2928);
+    float mb[12];
+    const float* R = CallC<const float*>(Ls_RotZ, mb, *(DWORD*)&ang);
+    Vec3 f, side, a, b, c, d, e, v1, v2, v3, t1, t2, t3;
+    Vec3_SetThis(&f, 0,
+        (float)((double)g_ls702628 * R[6] + (double)g_ls702624 * R[3] + (double)g_ls702620 * R[0] + R[9]),
+        (float)((double)g_ls702628 * R[7] + (double)g_ls702624 * R[4] + (double)g_ls702620 * R[1] + R[10]),
+        (float)((double)g_ls702628 * R[8] + (double)g_ls702624 * R[5] + (double)g_ls702620 * R[2] + R[11]));
+    Vec3_SetThis(&side, 0, (float)((double)f.z * g_ls702634 - (double)f.y * g_ls702638),
+        (float)((double)f.x * g_ls702638 - (double)f.z * g_ls702630),
+        (float)((double)f.y * g_ls702630 - (double)f.x * g_ls702634));
+    float dist = (float)-((double)py * f.y + (double)pz * f.z + (double)f.x * px);
+    float h = F(float, s, 8);
+    Vec3_SetThis(&a, 0, 0, 0, -h);
+    Vec3_SetThis(&b, 0, 0, 0, -h);
+    Vec3_SetThis(&c, 0, side.x * h, side.y * h, side.z * h);
+    Vec3_SetThis(&d, 0, 0, 0, h);
+    Renderer_ResetCount(r, 0);
+    const DWORD* col = (const DWORD*)(s + 96);
+    for (BYTE* n = F(BYTE*, s, 128); n; n = F(BYTE*, n, 0)) {
+        const Vec3* pt = (const Vec3*)(n + 4);
+        double dd = (double)pt->y * f.y + (double)pt->z * f.z + (double)pt->x * f.x + dist;
+        if (!(dd > F(float, s, 64)))
+            continue;
+        float k = (float)(dd * g_ls64c304 + g_ls64c260);
+        Vec3_SetThis(&e, 0, d.x * k, d.y * k, d.z * k);
+        Vec3_SetThis(&v1, 0, e.x + pt->x, e.y + pt->y, e.z + pt->z);
+        Renderer_AddVertex(r, 0, &v1, col, 0.5f, 0);
+        Vec3_SetThis(&v2, 0, c.x * k, c.y * k, c.z * k);
+        Renderer_AddVertex(r, 0, Vec3_Sum(&t2, Vec3_Sum(&t1, pt, &a), &v2), col, 1.0f, 1.0f);
+        Vec3_Times(&t3, &c, k);
+        Vec3 sb;
+        Vec3_Sum(&sb, pt, &b);
+        Renderer_AddVertex(r, 0, Vec3_Diff(&v3, &sb, &t3), col, 0, 1.0f);
+    }
+    Effect_Zero();
+    return 0;
+}
+
+} // extern "C"
+
+// === sprites facing the camera (a method at $L_4c2c30)
+
+// appends vertex p with colour c and (u, v) to renderer r's vertex array (+76, count +68 up to +64)
+static void Fs_Put(BYTE* r, const Vec3* p, DWORD c, DWORD u, DWORD v)
+{
+    if (F(int, r, 68) == F(int, r, 64))
+        return;
+    BYTE* e = F(BYTE*, r, 76) + F(int, r, 68) * 24;
+    F(Vec3, e, 0) = *p;
+    F(DWORD, e, 12) = c;
+    F(DWORD, e, 16) = u;
+    F(DWORD, e, 20) = v;
+    F(int, r, 68)++;
+}
+
+extern "C" {
+
+// [$L_4c2c30] adds to renderer r a triangle per sprite of s's list (+52: position +4, size +16, distance +20)
+// standing up from its position and facing the camera (+4: its heading), in colour +60; sprites beyond half of +32
+// written directly, nearer ones by Renderer_AddVertexB with other texture corners
+int __fastcall Sprites_Draw(BYTE* s, void*, BYTE* r)
+{
+    BYTE* cam = F(BYTE*, s, 4);
+    float ang = (float)F(double, cam, 2928);
+    float mb[12];
+    const float* R = CallC<const float*>(Ls_RotZ, mb, *(DWORD*)&ang);
+    Vec3 f, side, up, e, v1, g, v2, t1, t2, t3;
+    Vec3_SetThis(&f, 0,
+        (float)((double)g_ls702628 * R[6] + (double)g_ls702624 * R[3] + (double)g_ls702620 * R[0] + R[9]),
+        (float)((double)g_ls702628 * R[7] + (double)g_ls702624 * R[4] + (double)g_ls702620 * R[1] + R[10]),
+        (float)((double)g_ls702628 * R[8] + (double)g_ls702624 * R[5] + (double)g_ls702620 * R[2] + R[11]));
+    Vec3_SetThis(&side, 0, (float)((double)f.z * g_ls702634 - (double)f.y * g_ls702638),
+        (float)((double)f.x * g_ls702638 - (double)f.z * g_ls702630),
+        (float)((double)f.y * g_ls702630 - (double)f.x * g_ls702634));
+    up.x = 0, up.y = 0, up.z = 1.0f;
+    const DWORD* col = (const DWORD*)(s + 60);
+    for (BYTE* n = F(BYTE*, s, 52); n; n = F(BYTE*, n, 0)) {
+        const Vec3* p = (const Vec3*)(n + 4);
+        float k = F(float, n, 16);
+        float h = k * g_64c258;
+        if (F(float, s, 32) * g_64c258 < F(float, n, 20)) {
+            Vec3_SetThis(&e, 0, up.x * k, up.y * k, up.z * k);
+            Vec3_SetThis(&v1, 0, e.x + p->x, e.y + p->y, e.z + p->z);
+            Fs_Put(r, &v1, *col, 0, 0);
+            Vec3_SetThis(&g, 0, side.x * h, side.y * h, side.z * h);
+            Vec3_SetThis(&v2, 0, g.x + p->x, g.y + p->y, g.z + p->z);
+            Fs_Put(r, &v2, *col, 0x3F800000, 0);
+            Vec3_SetThis(&g, 0, side.x * h, side.y * h, side.z * h);
+            Renderer_AddVertexB(r, 0, Vec3_Diff(&t3, p, &g), col, 0, 1.0f);
+        } else {
+            Renderer_AddVertexB(r, 0, Vec3_Sum(&t1, p, Vec3_ScaleBy(&t2, k, &up)), col, 1.0f, 1.0f);
+            Renderer_AddVertexB(r, 0, Vec3_Sum(&t1, p, Vec3_ScaleBy(&t2, h, &side)), col, 1.0f, 0);
+            Renderer_AddVertexB(r, 0, Vec3_Diff(&t1, p, Vec3_ScaleBy(&t3, h, &side)), col, 0, 1.0f);
+        }
+    }
+    Effect_Zero();
+    return 0;
+}
+
+} // extern "C"
+
+// === the ground under a point (a function at $L_4cb310)
+
+extern "C" void Gq_Query(); KING_ALIAS("_Gq_Query", "_Query_4e67d1")
+extern "C" void Gq_Root(); KING_ALIAS("_Gq_Root", "@Node_Root@8")
+ASM_VAR(float, g_gq702630, $L_702630)
+ASM_VAR(float, g_gq702634, $L_702634)
+ASM_VAR(float, g_gq702638, $L_702638)
+ASM_VAR(float, g_gq64c320, $L_64c320)
+
+extern "C" {
+
+// [$L_4cb310] the world surface (under node o's root) crossed by the segment through p along 702630 by 64c320
+// either way: its point to *at and normal to *n, 1; 0 when none
+int __cdecl Ground_Below(BYTE* o, const float* p, float* at, float* n)
+{
+    BYTE* root = CallThis<BYTE*>(Gq_Root, o);
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    double ox = (double)g_gq702630 * g_gq64c320;
+    float oy = g_gq702634 * g_gq64c320, oz = g_gq702638 * g_gq64c320;
+    float a[3] = {(float)(p[0] - ox), p[1] - oy, p[2] - oz};
+    float b[3] = {(float)(ox + p[0]), oy + p[1], oz + p[2]};
+    if (!CallC<int>(Gq_Query, root, b, a, q))
+        return 0;
+    memcpy(at, q + 52, 12);
+    memcpy(n, q + 64, 12);
+    return 1;
 }
 
 } // extern "C"

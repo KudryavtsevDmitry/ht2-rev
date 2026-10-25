@@ -3117,3 +3117,269 @@ int __fastcall Smoke_Step(BYTE* s)
 }
 
 } // extern "C"
+
+// === leaves blown by the wind (methods at $L_59afd0 and $L_59c000)
+
+ASM_VAR(float, g_lw64d4e8, $L_64d4e8)
+ASM_VAR(float, g_lw702620, $L_702620)
+ASM_VAR(float, g_lw702624, $L_702624)
+ASM_VAR(float, g_lw702628, $L_702628)
+ASM_VAR(float, g_lw6f6a54, $L_6f6a54)
+ASM_VAR(float, g_lw6f6a58, $L_6f6a58)
+ASM_VAR(float, g_lw6f6a5c, $L_6f6a5c)
+ASM_VAR(float, g_lw6f6a60, $L_6f6a60)
+ASM_VAR(float, g_lw64c258, $L_64c258)
+ASM_VAR(float, g_lw64c260, $L_64c260)
+ASM_VAR(float, g_lw650c80, $L_650c80)
+ASM_VAR(BYTE*, g_lw7025b8, $L_7025b8)
+extern "C" void Ds_Length_lw(); KING_ALIAS("_Ds_Length_lw", "_Vec3_Length")
+
+// leaf s: dragged to rest (20 when far from its anchor +148), carried by the wind (7025b8 +532 along 702620,
+// by k), moved (+76, +40) and animated; its quad's corners (+72: +8 u, +12 v) turn by the spin +180 times the
+// square of its age (+104 of +100) about 0.5
+static void Leaf_Step(BYTE* s, float k)
+{
+    float* p = (float*)(s + 76);
+    float d[3] = {F(float, s, 148) - p[0], F(float, s, 152) - p[1], F(float, s, 156) - p[2]};
+    if (CallC<double>(Ds_Length_lw, d) > g_lw64d4e8)
+        F(DWORD, s, 172) = 0x41A00000;
+    float* v = (float*)(s + 160);
+    if (F(float, s, 172) != g_ds64c264) {
+        float t[3];
+        const float* n = CallC<const float*>(Ds_Normalized, t, v);
+        float f = F(float, s, 172);
+        double x = -n[0] * (double)f;
+        float y = (float)(-n[1] * (double)f), z = (float)(-n[2] * (double)f);
+        float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+        float dv[3] = {(float)(x * dt), y * dt, z * dt};
+        CallThis(Ds_AddAssign, v, t, dv);
+        if ((double)v[2] * dv[2] + (double)v[1] * dv[1] + (double)v[0] * dv[0] > g_ds64b678) {
+            F(float, s, 172) = 0;
+            memcpy(v, &g_ds702650, 12);
+        }
+    }
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    float nx, ny, nz;
+    if (g_lw7025b8) {
+        double sp = F(float, g_lw7025b8, 532);
+        float wx = (float)(sp * g_lw702620), wy = (float)(sp * g_lw702624);
+        double wz = sp * g_lw702628;
+        float kx = wx * k, ky = wy * k;
+        double kz = wz * k;
+        float vx = kx + v[0], vy = ky + v[1];
+        double vz = kz + v[2];
+        float mx = (float)(vx * dt), my = (float)(vy * dt);
+        nx = mx + p[0], ny = my + p[1], nz = (float)(vz * dt + p[2]);
+    } else {
+        float mx = (float)(dt * v[0]), my = (float)(dt * v[1]);
+        nx = mx + p[0], ny = my + p[1], nz = (float)(dt * v[2] + p[2]);
+    }
+    p[0] = nx, p[1] = ny, p[2] = nz;
+    F(float, s, 40) = nx, F(float, s, 44) = ny, F(float, s, 48) = nz;
+    CallThis(Ds_Animate, s);
+    double t = (F(float, s, 100) - F(float, s, 104)) / (double)F(float, s, 100);
+    if (t < g_ds64b678)
+        t = g_ds64b678;
+    else if (t > g_sm64b670)
+        t = g_sm64b670;
+    double a = F(float, s, 180) * t * t * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 176);
+    F(float, s, 176) = (float)a;
+    float* qu = F(float*, F(BYTE*, s, 72), 8);
+    float* qv = F(float*, F(BYTE*, s, 72), 12);
+    qu[0] = (float)(x87_cos(a + g_lw6f6a58) * F(float, s, 184) + g_lw64c258);
+    qv[0] = (float)(x87_sin((double)g_lw6f6a58 + F(float, s, 176)) * F(float, s, 188) + g_lw64c258);
+    const float* off[3] = {&g_lw6f6a5c, &g_lw6f6a60, &g_lw6f6a54};
+    for (int i = 0; i < 3; i++) {
+        qu[i + 1] = (float)(x87_cos((double)*off[i] + F(float, s, 176)) * F(float, s, 184) + g_lw64c258);
+        qv[i + 1] = (float)(x87_sin((double)*off[i] + F(float, s, 176)) * F(float, s, 188) + g_lw64c258);
+    }
+}
+
+extern "C" {
+
+// [$L_59afd0] Leaf_Step with the wind by 650c80
+void __fastcall LeafA_Step(BYTE* s) { Leaf_Step(s, g_lw650c80); }
+
+// [$L_59c000] Leaf_Step with the wind by 64c260
+void __fastcall LeafB_Step(BYTE* s) { Leaf_Step(s, g_lw64c260); }
+
+} // extern "C"
+
+// === a falling, spinning piece leaving a trail (a method at $L_59f180)
+
+extern "C" int __cdecl rand(void);
+extern "C" void Tr_SetThis(); KING_ALIAS("_Tr_SetThis", "@Vec3_SetThis@20")
+extern "C" void Tr_Length(); KING_ALIAS("_Tr_Length", "_Vec3_Length")
+extern "C" void Tr_Add(); KING_ALIAS("_Tr_Add", "_Vec3_Add")
+extern "C" void Tr_floor(); KING_ALIAS("_Tr_floor", "_floor")
+extern "C" void Tr_EffectNew(); KING_ALIAS("_Tr_EffectNew", "_Effect_New59bb90")
+extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
+ASM_VAR(Vec3, g_tr702620, $L_702620)
+ASM_VAR(Vec3, g_tr702630, $L_702630)
+ASM_VAR(Vec3, g_tr702640, $L_702640)
+ASM_VAR(float, g_tr651180, $L_651180)
+ASM_VAR(float, g_tr6f6a54, $L_6f6a54)
+ASM_VAR(float, g_tr6f6a58, $L_6f6a58)
+ASM_VAR(float, g_tr6f6a5c, $L_6f6a5c)
+ASM_VAR(float, g_tr6f6a60, $L_6f6a60)
+ASM_VAR(float, g_tr64c258, $L_64c258)
+ASM_VAR(float, g_tr650b6c, $L_650b6c)
+ASM_VAR(float, g_tr64c330, $L_64c330)
+ASM_VAR(float, g_tr65117c, $L_65117c)
+ASM_VAR(float, g_tr64c250, $L_64c250)
+ASM_VAR(float, g_tr64c264, $L_64c264)
+ASM_VAR(float, g_tr64c334, $L_64c334)
+ASM_VAR(float, g_tr64c254, $L_64c254)
+
+static void Tr_Set(Vec3* v, float x, float y, float z)
+{
+    CallThis(Tr_SetThis, v, *(DWORD*)&x, *(DWORD*)&y, *(DWORD*)&z);
+}
+
+extern "C" {
+
+// [$L_59f180] one step of piece s: falls (velocity +148 under 651180 gravity, position +76), spins its four
+// texture corners (+72's +8 / +12 by the angle +176, radii +180 / +184); with a trail (+192) puffs every 650b6c
+// along the way since the last spot (+40), smaller with time; frame +72 +36 from +120; done when +84 < +168
+void __fastcall Piece_Step(BYTE* s)
+{
+    float gx = g_tr702630.x * g_tr651180, gy = g_tr702630.y * g_tr651180, gz = g_tr702630.z * g_tr651180;
+    Vec3* pos = (Vec3*)(s + 76);
+    Vec3 prev = *pos;
+    float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+    Vec3* vel = (Vec3*)(s + 148);
+    float dx = gx * dt, dy = gy * dt, dz = gz * dt;
+    vel->x = vel->x - dx, vel->y = vel->y - dy, vel->z = vel->z - dz;
+    double t = F(double, F(BYTE*, s, 88), 2960);
+    float mx = (float)(t * vel->x), my = (float)(t * vel->y);
+    double mz = t * vel->z;
+    pos->x = mx + pos->x, pos->y = my + pos->y, pos->z = (float)(mz + pos->z);
+    F(float, s, 176) = (float)(F(float, s, 172) * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 176));
+    const float corner[4] = {g_tr6f6a58, g_tr6f6a5c, g_tr6f6a60, g_tr6f6a54};
+    for (int k = 0; k < 4; k++) {
+        F(float*, F(BYTE*, s, 72), 8)[k] =
+            (float)(x87_cos((double)corner[k] + F(float, s, 176)) * F(float, s, 180) + g_tr64c258);
+        F(float*, F(BYTE*, s, 72), 12)[k] =
+            (float)(x87_sin((double)corner[k] + F(float, s, 176)) * F(float, s, 184) + g_tr64c258);
+    }
+    if (F(int, s, 192)) {
+        Vec3 dv = {F(float, s, 40) - pos->x, F(float, s, 44) - pos->y, F(float, s, 48) - pos->z};
+        float len = (float)CallC<double>(Tr_Length, &dv);
+        int n = (int)CallC<double>(Tr_floor, (double)len / g_tr650b6c);
+        double f = (g_tr64c330 - F(double, F(BYTE*, s, 88), 2960)) * g_tr65117c;
+        if (f > g_tr64c250)
+            f = g_tr64c250;
+        else if (f < g_tr64c264)
+            f = g_tr64c264;
+        float big = (float)((g_tr64c250 - f) * 2 + f * g_tr64c334);
+        float sx = pos->x - prev.x, sy = pos->y - prev.y, sz = pos->z - prev.z;
+        float kx = sx * g_tr650b6c, ky = sy * g_tr650b6c, kz = sz * g_tr650b6c;
+        float st[3] = {kx / len, ky / len, kz / len};
+        if (n > 0) {
+            int left = n - 1;
+            float last = (float)left;
+            for (int i = 0; i < n; i++, left--) {
+                float r = (float)(rand() * (double)g_tr64c254);
+                Vec3 a, w, off, sum;
+                Tr_Set(&a, r * g_tr702630.x, r * g_tr702630.y, r * g_tr702630.z);
+                float t1 = (float)(rand() * (double)g_tr64c254);
+                double b = rand() * (double)g_tr64c254 - t1;
+                float bx = (float)(b * g_tr702620.x), by = (float)(b * g_tr702620.y), bz = (float)(b * g_tr702620.z);
+                float t2 = (float)(rand() * (double)g_tr64c254);
+                double c = rand() * (double)g_tr64c254 + t2;
+                float cx = (float)(c * g_tr702640.x), cy = (float)(c * g_tr702640.y);
+                double cz = c * g_tr702640.z;
+                float ux = cx + bx, uy = by + cy;
+                Tr_Set(&w, a.x + ux, uy + a.y, (float)(cz + bz + a.z));
+                float fi = (float)i;
+                Tr_Set(&off, st[0] * fi, st[1] * fi, st[2] * fi);
+                float size = (float)(left * (double)big / last + fi * (double)g_tr64c334 / last);
+                CallC(Tr_EffectNew, CallC<Vec3*>(Tr_Add, &sum, &prev, &off), &w, *(DWORD*)&size, 0x40000000);
+            }
+        }
+    }
+    F(Vec3, s, 40) = *pos;
+    F(DWORD, F(BYTE*, s, 72), 36) = *F(DWORD*, s, 120);
+    if (F(float, s, 84) < F(float, s, 168))
+        Pooled_Set4(s, 0);
+}
+
+} // extern "C"
+
+// === a spinning splash facing the camera inside a box (a method at $L_5a0650)
+
+ASM_VAR(BYTE*, g_sp6f6a78, $L_6f6a78)
+extern "C" void Fn_NormalizedW(); KING_ALIAS("_Fn_NormalizedW", "_Vec3_Normalized")
+
+extern "C" {
+
+// [$L_5a0650] draws splash s (context c, renderer r): its box (+128, +132 in table 6f6a78) must exist and hold
+// the four corners of a camera-facing square around the centre +56; the corners' reach (+164 each way) and
+// spinning texture (angle +148, radii +156 / +160) go to the mesh +52; its shade from the box; else the
+// splash is dropped
+int __fastcall Splash_Draw(BYTE* s, void*, DWORD c, BYTE* r)
+{
+    const float corner[4] = {g_tr6f6a58, g_tr6f6a5c, g_tr6f6a60, g_tr6f6a54};
+    float cu[4], sv[4];
+    for (int k = 0; k < 4; k++) {
+        double a = (double)corner[k] + F(float, s, 148);
+        cu[k] = (float)(x87_cos(a) * F(float, s, 156));
+        sv[k] = (float)(x87_sin(a) * F(float, s, 160));
+    }
+    float e = F(float, s, 164), ne = -e;
+    float X[4] = {ne, e, e, ne}, Y[4] = {ne, ne, e, e};
+    BYTE* box = Table124_Find(g_sp6f6a78, 0, F(int, s, 128), F(int, s, 132));
+    if (!box) {
+        Pooled_Set4(s - 20, 0);
+        return 1;
+    }
+    Matrix m, inv;
+    const float* I = (const float*)Matrix_Inverse(&inv,
+        Matrix_Multiply(&m, (const Matrix*)(r + 5216 + F(int, r, 8236) * 48), (const Matrix*)(r + 4208)));
+    float v[3], t[3];
+    v[1] = (float)((double)g_tr702620.z * I[7] + (double)g_tr702620.y * I[4] + (double)g_tr702620.x * I[1]);
+    v[2] = (float)((double)g_tr702620.z * I[8] + (double)g_tr702620.y * I[5] + (double)g_tr702620.x * I[2]);
+    v[0] = (float)((double)g_tr702620.z * I[6] + (double)g_tr702620.y * I[3] + (double)g_tr702620.x * I[0]);
+    const float* fp = CallC<const float*>(Fn_NormalizedW, t, v);
+    float f[3] = {fp[0], fp[1], fp[2]};
+    float sd[3] = {f[1] * g_tr702630.z - f[2] * g_tr702630.y, f[2] * g_tr702630.x - f[0] * g_tr702630.z,
+        f[0] * g_tr702630.y - f[1] * g_tr702630.x};
+    float up[3] = {sd[1] * f[2] - sd[2] * f[1], sd[2] * f[0] - f[2] * sd[0], f[1] * sd[0] - sd[1] * f[0]};
+    const float* cen = (const float*)(s + 56);
+    float out[4];
+    for (int k = 0; k < 4; k++) {
+        float P[3];
+        if (k == 0) {
+            float px = cen[0] - sd[0], py = cen[1] - sd[1], pz = cen[2] - sd[2];
+            P[0] = px - up[0], P[1] = py - up[1], P[2] = pz - up[2];
+        } else {
+            float px = sd[0] + cen[0], py = sd[1] + cen[1], pz = sd[2] + cen[2];
+            if (k == 1)
+                P[0] = px - up[0], P[1] = py - up[1], P[2] = pz - up[2];
+            else
+                P[0] = px + up[0], P[1] = up[1] + py, P[2] = up[2] + pz;
+        }
+        if (!Box_ClipSegment(box, 0, cen, P, &out[k])) {
+            Pooled_Set4(s - 20, 0);
+            return 1;
+        }
+    }
+    F(int, box, 104)++;
+    BYTE* mesh = F(BYTE*, s, 52);
+    BYTE* mt = F(BYTE*, mesh, 36);
+    F(float, mt, 88) = (float)Wasm59f810_Ratio(box, 0, cen);
+    if (F(float, F(BYTE*, F(BYTE*, s, 52), 36), 88) > g_tr64c250)
+        F(DWORD, F(BYTE*, F(BYTE*, s, 52), 36), 88) = 0x3F800000;
+    F(DWORD, F(BYTE*, F(BYTE*, s, 52), 36), 32) |= 32;
+    for (int k = 0; k < 4; k++)
+        F(float*, F(BYTE*, s, 52), 16)[k] = out[k] * X[k];
+    for (int k = 0; k < 4; k++)
+        F(float*, F(BYTE*, s, 52), 20)[k] = out[k] * Y[k];
+    for (int k = 0; k < 4; k++) {
+        F(float*, F(BYTE*, s, 52), 8)[k] = cu[k] + g_tr64c258;
+        F(float*, F(BYTE*, s, 52), 12)[k] = sv[k] + g_tr64c258;
+    }
+    return Effect_Draw(s, 0, c, r);
+}
+
+} // extern "C"

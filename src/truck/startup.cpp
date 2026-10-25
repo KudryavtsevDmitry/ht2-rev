@@ -222,7 +222,7 @@ ASM_VAR(float, g_eng702638, $L_702638)
 ASM_VAR(float, g_ten64c450, $L_64c450)          // 10.0
 ASM_VAR(AsmLabel, g_strOvation, $L_678540)
 
-ASM_PROC(FUN_591c30)
+extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 // Collision routines consume both the world transform and its inverse.

@@ -382,7 +382,7 @@ extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
     F(int, self, 3636) = h;
 }
 
-ASM_PROC(FUN_591c30)
+extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 ASM_VAR(BYTE*, g_effectManager, $L_6f6910)
@@ -705,7 +705,7 @@ extern "C" void __fastcall Part_Release(BYTE* self, void*)
 }
 
 
-ASM_PROC(FUN_52bd20)
+extern "C" void FUN_52bd20(); KING_ALIAS("_FUN_52bd20", "@Scenery_Hit@16")
 ASM_PROC(FUN_52c120)
 ASM_PROC(FUN_590d20)
 extern "C" void FUN_52e1f0(); KING_ALIAS("_FUN_52e1f0", "@Scenery_Call57d580@16")
@@ -1222,3 +1222,89 @@ extern "C" void __fastcall ParkedCar_Destroy(BYTE* s)
     CallThis(FUN_5e52b0, F(BYTE*, s, 36) + 704, key, F(int, F(BYTE*, s, 292), 60), 156, t);
     CallThis(Pc_ItemDestroy, s);
 }
+
+// === a hit denting a scenery object (FUN_52bd20)
+
+ASM_FUNC(Dn_Debris, FUN_4bb4c0)
+extern "C" void Dn_Length(); KING_ALIAS("_Dn_Length", "_Vec3_Length")
+extern "C" void Dn_Normalized(); KING_ALIAS("_Dn_Normalized", "_Vec3_Normalized")
+extern "C" void Dn_MulAssign(); KING_ALIAS("_Dn_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Dn_Advance(); KING_ALIAS("_Dn_Advance", "@Progresses_Advance@24")
+ASM_VAR(float, g_dn64c40c, $L_64c40c)
+ASM_VAR(float, g_dn64c450, $L_64c450)
+ASM_VAR(float, g_dn64ed88, $L_64ed88)
+ASM_VAR(double, g_dn64ed80, $L_64ed80)
+ASM_VAR(double, g_dn64b670, $L_64b670)
+ASM_VAR(float, g_dn64d4e8, $L_64d4e8)
+ASM_VAR(float, g_dn64c320, $L_64c320)
+ASM_VAR(float, g_dn64c250, $L_64c250)
+ASM_VAR(float, g_dn64c264, $L_64c264)
+ASM_VAR(double, g_dn64ed78, $L_64ed78)
+ASM_VAR(double, g_dn64b5b8, $L_64b5b8)
+
+extern "C" {
+
+// [FUN_52bd20] object s (whole, with damage stages +9516 / +9520) hit at p with impulse v: a hit stronger than
+// 64c40c (over the mass +396), not from below, advances the damage stages 1..3 by how much it comes from the
+// side (stage 2 also by the corner) and throws debris (+976) from the dent, more when one finished
+void __fastcall Scenery_Hit(BYTE* s, void*, const float* p, const float* v)
+{
+    if (F(int, s, 372) || !F(int, s, 9520) || !F(int, s, 9516))
+        return;
+    float vc[3] = {v[0], v[1], v[2]};
+    double L = CallC<double>(Dn_Length, vc) / F(float, s, 396);
+    if (L < g_dn64c40c)
+        return;
+    L = L - g_dn64c40c;
+    double y = (L - g_dn64c450) * g_dn64ed88;
+    double g = g_dn64b670 - x87_exp(-(y * y)) * g_dn64ed80;
+    float strength = (float)(g * (L * g_dn64d4e8 / (L + g_dn64c320) + g_dn64c250) * L);
+    float w[3], nb[3];
+    w[0] = (float)((double)F(float, s, 608) * p[1] + (double)F(float, s, 620) * p[2] + (double)F(float, s, 596) * p[0] +
+        F(float, s, 632));
+    w[1] = (float)((double)F(float, s, 600) * p[0] + (double)F(float, s, 612) * p[1] + (double)F(float, s, 624) * p[2] +
+        F(float, s, 636));
+    w[2] = (float)((double)F(float, s, 604) * p[0] + (double)F(float, s, 616) * p[1] + (double)F(float, s, 628) * p[2] +
+        F(float, s, 640));
+    const float* nr = CallC<const float*>(Dn_Normalized, nb, w);
+    float n[3] = {nr[0], nr[1], nr[2]};
+    if (x87_fabs(w[1]) < w[2] && x87_fabs(w[0]) < w[2])
+        return;
+    int cnt = 0, fin = 0;
+    if (n[1] > g_dn64c264) {
+        float k = n[1] * n[1] * strength;
+        for (int i = 1; i <= 3; i++)
+            CallThis(Dn_Advance, s, i, *(DWORD*)&k, &cnt, &fin);
+    }
+    double q = ((double)n[0] + n[1]) * g_dn64ed78;
+    if (q > g_dn64c264) {
+        float k = (float)(q * q * strength);
+        CallThis(Dn_Advance, s, 2, *(DWORD*)&k, &cnt, &fin);
+    }
+    if (!cnt)
+        return;
+    const float* c = (const float*)(s + 428);
+    double X = (double)c[1] * w[2] - (double)c[2] * w[1];
+    double Y = (double)c[2] * w[0] - (double)c[0] * w[2];
+    double Z = (double)c[0] * w[1] - (double)c[1] * w[0];
+    float pos[3], t[3];
+    pos[0] = (float)((float)(Z * F(float, s, 524) + Y * F(float, s, 512) + X * F(float, s, 500)) + F(float, s, 416));
+    pos[1] = (float)((float)(Z * F(float, s, 528) + Y * F(float, s, 516) + X * F(float, s, 504)) + F(float, s, 420));
+    pos[2] = (float)(Y * F(float, s, 520) + Z * F(float, s, 532) + X * F(float, s, 508) + F(float, s, 424));
+    int num = cnt < 2 ? 4 : (cnt >= 3 ? 10 : 7);
+    if (fin)
+        num += num;
+    DWORD speed = 0x3E19999A;
+    float size = (float)CallC<double>(Dn_Length, pos);
+    if (fin) {
+        speed = 0x3E666667;
+        size = (float)((x87_sqrt((double)fin) + g_dn64b670) * size);
+    }
+    CallThis(Dn_MulAssign, pos, t, 0x3F000000u);
+    double lim = size * g_dn64b5b8;
+    if (pos[2] < lim)
+        pos[2] = (float)lim;
+    CallC(Dn_Debris, p, s + 976, pos, *(DWORD*)&size, num, speed, 1);
+}
+
+} // extern "C"
