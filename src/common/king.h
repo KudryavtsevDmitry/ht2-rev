@@ -561,7 +561,7 @@ extern "C" void FUN_578fe0(); KING_ALIAS("_FUN_578fe0", "_Joy_ReadState")    // 
 extern "C" void FUN_5c3990(); KING_ALIAS("_FUN_5c3990", "@Med5c3990_Destroy@4")    // destructor of CKingApp's base class
 extern "C" void __cdecl Loading_Update();       // carat.cpp
 ASM_PROC(FUN_56ce40)
-ASM_PROC(FUN_53b4c0)
+extern "C" void FUN_53b4c0(); KING_ALIAS("_FUN_53b4c0", "@Player_Controls@8")
 
 // Appends a key typed during the pause to the cheat code being typed and
 // checks it against the list of codes [$L_67b760].

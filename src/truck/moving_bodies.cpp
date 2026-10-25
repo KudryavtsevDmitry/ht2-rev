@@ -3100,3 +3100,153 @@ void __fastcall Body_ResetPoints(BYTE* s, void*, DWORD flags)
 }
 
 } // extern "C"
+
+// === a body set on a plane (a method at $L_590810)
+
+extern "C" void Bn_Decompose(); KING_ALIAS("_Bn_Decompose", "_Matrix_Decompose6FArray")
+extern "C" void Bn_FromPose(); KING_ALIAS("_Bn_FromPose", "_Matrix_FromPose")
+extern "C" void Bn_Lookup(); KING_ALIAS("_Bn_Lookup", "_Obj_Lookup4e5b22")
+ASM_VAR(Vec3, g_bnAhead, $L_702620)
+ASM_VAR(double, g_bn64b7a8, $L_64b7a8)
+ASM_VAR(float, g_bn64c300, $L_64c300)
+
+extern "C" {
+
+// [$L_590810] body b (when +5132) put on the plane through p with normal n: moved along n onto it (from p lifted
+// a bit for a fast mode-2 body), turned to lie on it keeping its heading when align, its frame passed on (vtbl+72)
+// and placed in the object found there (or its own +800, after vtbl+28) by vtbl+140
+void __fastcall Body_OntoPlane(BYTE* b, void*, const Vec3* p, const Vec3* n, int align)
+{
+    if (!F(int, b, 5132))
+        return;
+    Vec3 q = *p;
+    if (F(int, b, 3568) == 2 && F(float, b, 532) > g_bn64b7a8)
+    {
+        float ny = (float)(n->y * (double)g_bn64c300), nz = (float)(n->z * (double)g_bn64c300);
+        q.x = (float)(n->x * (double)g_bn64c300 + p->x);
+        q.y = (float)((double)ny + p->y);
+        q.z = (float)((double)nz + p->z);
+    }
+    const float* c = (const float*)(b + 536);
+    float dist = (float)(((double)c[0] - q.x) * n->x + ((double)c[2] - q.z) * n->z +
+                         ((double)c[1] - q.y) * n->y);
+    float ang[6];
+    CallC(Bn_Decompose, b + 500, ang);
+    float dy = (float)(dist * (double)n->y), dz = (float)(dist * (double)n->z);
+    Vec3 r;
+    r.x = (float)((double)c[0] - dist * (double)n->x);
+    r.y = (float)((double)c[1] - dy);
+    r.z = (float)((double)c[2] - dz);
+    Matrix M = F(Matrix, b, 500);
+    if (align)
+    {
+        const float* R = (const float*)(b + 500);
+        const Vec3& A = g_bnAhead;
+        Vec3 f, g, h0, h, e;
+        f.x = (float)((double)A.z * R[6] + (double)A.y * R[3] + (double)A.x * R[0]);
+        f.y = (float)((double)A.z * R[7] + (double)A.y * R[4] + (double)A.x * R[1]);
+        f.z = (float)((double)A.z * R[8] + (double)A.y * R[5] + (double)A.x * R[2]);
+        g.x = (float)((double)f.z * n->y - (double)f.y * n->z);
+        g.y = (float)((double)f.x * n->z - (double)f.z * n->x);
+        g.z = (float)((double)f.y * n->x - (double)f.x * n->y);
+        Vec3_Normalized(&h, Vec3_Cross(&h0, &g, n));
+        Vec3_Cross(&e, &h, n);
+        float a1 = (float)-x87_asin(h.z);
+        double a2 = -x87_asin(e.z);
+        Matrix P;
+        memcpy(&M, CallC<const Matrix*>(Bn_FromPose, &P, (double)r.x, (double)r.y, (double)r.z, (double)ang[3],
+                                         (double)a1, a2), 48);
+    }
+    M.m[9] = r.x;
+    M.m[10] = r.y;
+    M.m[11] = r.z;
+    Matrix I;
+    Matrix_Inverse(&I, &M);
+    BYTE out[48];
+    CallVirt(b, 72, out, &M, &I, n, &q);
+    BYTE* o = CallC<BYTE*>(Bn_Lookup, F(BYTE*, b, 800), b + 536, out + 36, b + 1132);
+    if (!o)
+    {
+        o = F(BYTE*, b, 800);
+        CallVirt(b, 28, 1);
+    }
+    CallVirt(b, 140, o, out);
+}
+
+} // extern "C"
+
+// === the sparks' frame (a method at $L_594400)
+
+extern "C" void Sk_Spawn(); KING_ALIAS("_Sk_Spawn", "@Sparks_Spawn@16")
+extern "C" void Sk_Put(); KING_ALIAS("_Sk_Put", "@FreeList_Put@16")
+extern "C" void Sk_Faders(); KING_ALIAS("_Sk_Faders", "_Faders_Step")
+extern "C" void Sk_Post(); KING_ALIAS("_Sk_Post", "@Queue_PostEvent@12")
+ASM_VAR(Vec3, g_skGravity, $L_6f6638)
+ASM_VAR(float, g_sk6508fc, $L_6508fc)
+ASM_VAR(float, g_sk6508f8, $L_6508f8)
+ASM_VAR(float, g_sk65096c, $L_65096c)
+ASM_VAR(float, g_sk64f338, $L_64f338)
+ASM_VAR(float, g_sk64c624, $L_64c624)
+ASM_VAR(float, g_sk64c258, $L_64c258)
+ASM_VAR(float, g_sk64c964, $L_64c964)
+ASM_VAR(float, g_sk64c264, $L_64c264)
+
+extern "C" {
+
+// [$L_594400] sparks s (list +108, game +96): each spark (born +64) past its life (6508fc for a glowing +120,
+// 6508f8 else) is freed, sometimes bursting into new ones; the rest fly on (start +40, velocity +16 + +52..., as
+// +28 / +4) under gravity 6f6638 and fade (+116); then the faders step
+void __fastcall Sparks_Frame(BYTE* s, void*)
+{
+    BYTE* prev = 0;
+    BYTE* p = F(BYTE*, s, 108);
+    while (p)
+    {
+        float age = (float)(F(double, F(BYTE*, s, 96), 2968) - F(float, p, 64));
+        bool dead = F(int, p, 120) ? age > g_sk6508fc : age > g_sk6508f8;
+        if (dead)
+        {
+            BYTE* q = p;
+            p = F(BYTE*, p, 0);
+            if (!F(int, q, 120) && rand() * (double)g_sk65096c > g_sk64f338)
+                CallThis(Sk_Spawn, s, q, (int)(rand() * (double)g_sk64c624));
+            CallThis(Sk_Put, s, q, prev);
+        }
+        else
+        {
+            const Vec3& G = g_skGravity;
+            double gx = G.x * (double)age;
+            float gy = (float)(G.y * (double)age), gz = (float)(G.z * (double)age);
+            double hx = gx * age;
+            float hy = (float)(gy * (double)age), hz = (float)(gz * (double)age);
+            double ix = hx * g_sk64c258;
+            float iy = (float)(hy * (double)g_sk64c258), iz = (float)(hz * (double)g_sk64c258);
+            double vx = (double)F(float, p, 16) + F(float, p, 40);
+            float vy = (float)((double)F(float, p, 44) + F(float, p, 20));
+            float vz = (float)((double)F(float, p, 48) + F(float, p, 24));
+            double px = vx * age + F(float, p, 52);
+            float wy = (float)(vy * (double)age), wz = (float)(vz * (double)age);
+            float py = (float)((double)wy + F(float, p, 56)), pz = (float)((double)wz + F(float, p, 60));
+            F(float, p, 28) = (float)(px + ix);
+            F(float, p, 32) = (float)((double)iy + py);
+            F(float, p, 36) = (float)((double)iz + pz);
+            F(float, p, 4) = (float)(G.x * (double)age + F(float, p, 40));
+            F(float, p, 8) = (float)(G.y * (double)age + F(float, p, 44));
+            F(float, p, 12) = (float)(G.z * (double)age + F(float, p, 48));
+            float f = (float)(F(float, p, 116) - F(double, F(BYTE*, s, 96), 2960) * g_sk64c964);
+            F(float, p, 116) = f;
+            if (f < g_sk64c264)
+                F(float, p, 116) = 0;
+        }
+        // the next (after a freed spark the original skips one)
+        if (!p)
+            break;
+        prev = p;
+        p = F(BYTE*, p, 0);
+    }
+    float now = (float)F(double, F(BYTE*, s, 96), 2968);
+    CallC(Sk_Faders, now);
+    CallThis(Sk_Post, s, 1);
+}
+
+} // extern "C"

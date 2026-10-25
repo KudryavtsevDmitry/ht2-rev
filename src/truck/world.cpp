@@ -684,7 +684,7 @@ extern "C" void FUN_5e19f0(); KING_ALIAS("_FUN_5e19f0", "_Frame_GetLocal")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 extern "C" void FUN_4e4468(); KING_ALIAS("_FUN_4e4468", "_Clock_Text")    // writes the world state text
 extern "C" void FUN_4e2556(); KING_ALIAS("_FUN_4e2556", "_Dump_Text")    // writes a text to the log
-ASM_PROC(FUN_53f0c0)
+extern "C" void FUN_53f0c0(); KING_ALIAS("_FUN_53f0c0", "_Cars_DumpHistory")
 ASM_VAR(AsmLabel, g_state696e5c, $L_696e5c)
 ASM_VAR(char*, g_fatalText696d20, $L_696d20)
 ASM_VAR(AsmLabel, g_fatalBuf696d24, $L_696d24)
@@ -2022,6 +2022,107 @@ void __cdecl Vec3_Soften(float* v)
         v[1] = r[1];
         v[2] = r[2];
     }
+}
+
+} // extern "C"
+
+// === the cars' histories dumped to the log (FUN_53f0c0)
+
+extern "C" void __fastcall Car_History(BYTE* self, void*, int back, int* a, int* b, void* m1, void* v1, void* m2,
+                                       int* c, char* name, void* v2, void* v3, int* d);
+extern "C" void __cdecl SceneObjs_Dump();
+extern "C" void __cdecl VehLog_Value2(int v);
+ASM_VAR(BYTE*, g_hd696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_hd6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_hd6ef1f8, $L_6ef1f8)                   // the car list
+ASM_VAR(char, g_hd6795e0, $L_6795e0)
+ASM_VAR(char, g_hd6794a4, $L_6794a4)
+ASM_VAR(char, g_hd67948c, $L_67948c)
+ASM_VAR(char, g_hd6795cc, $L_6795cc)
+ASM_VAR(char, g_hd679464, $L_679464)
+ASM_VAR(char, g_hd6795b4, $L_6795b4)
+ASM_VAR(char, g_hd679458, $L_679458)
+ASM_VAR(char, g_hd679440, $L_679440)
+ASM_VAR(char, g_hd679590, $L_679590)
+ASM_VAR(char, g_hd67941c, $L_67941c)
+ASM_VAR(char, g_hd679404, $L_679404)
+ASM_VAR(char, g_hd679578, $L_679578)
+ASM_VAR(char, g_hd679434, $L_679434)
+ASM_VAR(char, g_hd6793e4, $L_6793e4)
+ASM_VAR(char, g_hd679558, $L_679558)
+ASM_VAR(char, g_hd6793a0, $L_6793a0)
+ASM_VAR(char, g_hd679380, $L_679380)
+ASM_VAR(char, g_hd679360, $L_679360)
+ASM_VAR(char, g_hd679340, $L_679340)
+ASM_VAR(char, g_hd679328, $L_679328)
+
+static void Hd_Out(const char* t)
+{
+    VehLog_Value2((int)t);
+}
+
+static void Hd_Vec(const char* fmt, const float* v)
+{
+    char buf[256];
+    sprintf(buf, fmt, (double)v[0], (double)v[1], (double)v[2]);
+    Hd_Out(buf);
+}
+
+// a matrix's rows, the first with its own heading
+static void Hd_Matrix(const float* m, const char* first)
+{
+    Hd_Vec(first, m);
+    for (int r = 1; r < 4; r++)
+        Hd_Vec(&g_hd67948c, m + 3 * r);
+}
+
+extern "C" {
+
+// [FUN_53f0c0] the clock, the camera's frame and the last 50 records of every car's history (frames, speeds,
+// spins, state) written to the warning log, then the scene objects
+void __cdecl Cars_DumpHistory()
+{
+    if (!g_hd696ca0 || !g_hd6d2078)
+        return;
+    Matrix A = g_identity, B = g_identity;
+    float v328[3] = {0, 0, 0}, v316[3] = {0, 0, 0}, v340[3] = {0, 0, 0};
+    char buf[256], name[40];
+    WarnLog_Open();
+    BYTE* g = g_hd696ca0;
+    sprintf(buf, &g_hd6795e0, F(int, g, 2968), F(int, g, 2972), F(int, g, 2992));
+    Hd_Out(buf);
+    A = F(Matrix, g_hd6d2078, 1424);
+    Hd_Matrix(A.m, &g_hd6794a4);
+    static const char* const states[6] = {&g_hd6793e4, &g_hd679558, &g_hd6793a0, &g_hd679380, &g_hd679360,
+                                          &g_hd679340};
+    for (BYTE* c = g_hd6ef1f8 ? g_hd6ef1f8 - 4 : 0; c; c = F(BYTE*, c, 8) ? F(BYTE*, c, 8) - 4 : 0)
+    {
+        sprintf(buf, &g_hd6795cc, F(int, F(BYTE*, c, 336), 12), c);
+        Hd_Out(buf);
+        if (F(int, c, 1220))
+            Hd_Out(&g_hd679464);
+        for (int k = 0; k < 50; k++)
+        {
+            int id, state;
+            float speed, spin;
+            Car_History(c, 0, k, &id, (int*)&speed, &A, v328, &B, &state, name, v316, v340, (int*)&spin);
+            sprintf(buf, &g_hd6795b4, k, id, (double)speed);
+            Hd_Out(buf);
+            sprintf(buf, &g_hd679458, name);
+            Hd_Out(buf);
+            Hd_Matrix(A.m, &g_hd679440);
+            A = B;
+            Hd_Matrix(A.m, &g_hd679590);
+            Hd_Vec(&g_hd67941c, v316);
+            Hd_Vec(&g_hd679404, v340);
+            Hd_Vec(&g_hd679578, v328);
+            sprintf(buf, &g_hd679434, (double)spin);
+            Hd_Out(buf);
+            Hd_Out((unsigned)state <= 5 ? states[state] : &g_hd679328);
+        }
+    }
+    WarnLog_Close();
+    SceneObjs_Dump();
 }
 
 } // extern "C"

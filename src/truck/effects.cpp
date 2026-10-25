@@ -93,7 +93,7 @@ extern "C" void FUN_5d33d0(); KING_ALIAS("_FUN_5d33d0", "@Queue_PostEvent2@12")
 extern "C" void FUN_5a0000(); KING_ALIAS("_FUN_5a0000", "@VehGlowManager_Construct@12")
 extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
-ASM_PROC(FUN_4cf400)
+extern "C" void FUN_4cf400(); KING_ALIAS("_FUN_4cf400", "_Car_StoreState")
 extern "C" void FUN_544df0(); KING_ALIAS("_FUN_544df0", "@Vehicle_Destruct@4")
 extern "C" void FUN_446c80(); KING_ALIAS("_FUN_446c80", "_Player_SetFlag20000")
 ASM_VAR(int, g_6f6a84, $L_6f6a84)
@@ -4051,7 +4051,7 @@ extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
 extern "C" void FUN_4c8030(); KING_ALIAS("_FUN_4c8030", "@RefStack_Empty@8")
 extern "C" void FUN_4c8080(); KING_ALIAS("_FUN_4c8080", "@RefStack_Pop@8")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
-ASM_PROC(FUN_4cf620)
+extern "C" void FUN_4cf620(); KING_ALIAS("_FUN_4cf620", "_Ai_CarFrame")
 ASM_PROC(FUN_4cfe70)
 extern "C" void FUN_556a70(); KING_ALIAS("_FUN_556a70", "@CarBody_Step@4")
 ASM_PROC(FUN_55d5d0)
@@ -9399,6 +9399,1214 @@ void __cdecl Car_DrawForces(BYTE* c, BYTE* r)
         if (++k >= 10)
             break;
     }
+}
+
+} // extern "C"
+
+// === a debug trail of lines (FUN_4d3240)
+
+extern "C" void __fastcall Tl_Line(BYTE* s, void*, Vec3 a, Vec3 b, int color); KING_ALIAS("@Tl_Line@36", "@Render_Line3D@36")
+ASM_VAR(Vec3, g_tlUp, $L_702630)
+
+static Vec3 Tl_Off(const Vec3& p, const Vec3& n, double w, bool plus)
+{
+    Vec3 a, r;
+    a.x = (float)(n.x * w);
+    a.y = (float)(n.y * w);
+    a.z = (float)(n.z * w);
+    r.x = (float)(plus ? (double)p.x + a.x : (double)p.x - a.x);
+    r.y = (float)(plus ? (double)p.y + a.y : (double)p.y - a.y);
+    r.z = (float)(plus ? (double)p.z + a.z : (double)p.z - a.z);
+    return r;
+}
+
+// the line from the last point a to b, stretched by Vec3_Scaled(1)
+static void Tl_Stretch(BYTE* s, const Vec3* a, const Vec3& b, int color)
+{
+    Vec3 d, e, f;
+    Vec3_Add(&f, a, Vec3_Scaled(&e, Vec3_Sub(&d, &b, a), 1.0f));
+    Tl_Line(F(BYTE*, s, 68), 0, *a, f, color);
+}
+
+extern "C" {
+
+// [FUN_4d3240] trail s (renderer +68) goes on to point p heading along d: the centre line from the last point
+// (+8), and with flags bit 1 / 2 the left / right edges at widths w1 and w2 across the heading (+20.. / +44..),
+// unless the trail was just restarted (+0)
+void __fastcall Trail_Add(BYTE* s, void*, Vec3 p, Vec3 d, double w1, double w2, int flags)
+{
+    const Vec3& U = g_tlUp;
+    Vec3 c, n;
+    c.x = (float)((double)d.y * U.z - (double)d.z * U.y);
+    c.y = (float)((double)d.z * U.x - (double)d.x * U.z);
+    c.z = (float)((double)d.x * U.y - (double)d.y * U.x);
+    Vec3_Normalized(&n, &c);
+    Vec3 L1 = {0, 0, 0}, L2 = {0, 0, 0}, R1 = {0, 0, 0}, R2 = {0, 0, 0};
+    if (flags & 1)
+    {
+        L1 = Tl_Off(p, n, w1, true);
+        L2 = Tl_Off(p, n, w2, true);
+    }
+    if (flags & 2)
+    {
+        R1 = Tl_Off(p, n, w1, false);
+        R2 = Tl_Off(p, n, w2, false);
+    }
+    if (F(int, s, 0))
+        F(int, s, 0) = 0;
+    else
+    {
+        Tl_Line(F(BYTE*, s, 68), 0, F(Vec3, s, 8), p, 5);
+        if ((flags & 1) && (F(BYTE, s, 4) & 1))
+        {
+            const Vec3& o = F(Vec3, s, 20);
+            Vec3 t, m;
+            t.x = (float)((double)L1.x - o.x);
+            t.y = (float)((double)L1.y - o.y);
+            t.z = (float)((double)L1.z - o.z);
+            m.x = (float)((double)t.x + o.x);
+            m.y = (float)((double)t.y + o.y);
+            m.z = (float)((double)t.z + o.z);
+            Tl_Line(F(BYTE*, s, 68), 0, o, m, 6);
+            Tl_Stretch(s, &F(Vec3, s, 32), L2, 7);
+        }
+        if ((flags & 2) && (F(BYTE, s, 4) & 2))
+        {
+            Tl_Stretch(s, &F(Vec3, s, 44), R1, 6);
+            Tl_Stretch(s, &F(Vec3, s, 56), R2, 7);
+        }
+    }
+    F(int, s, 4) = flags;
+    F(Vec3, s, 8) = p;
+    if (flags & 1)
+    {
+        F(Vec3, s, 20) = L1;
+        F(Vec3, s, 32) = L2;
+    }
+    if (flags & 2)
+    {
+        F(Vec3, s, 44) = R1;
+        F(Vec3, s, 56) = R2;
+    }
+}
+
+} // extern "C"
+
+// === the rain and spray ahead of the lamps (a method at $L_4c9a10)
+
+ASM_FUNC(Rs_Emit, FUN_4bba00)                           // a particle burst (pos, dir, vel, ..., count, size, ...)
+extern "C" void Rs_Root(); KING_ALIAS("_Rs_Root", "@Window_RootSurface@8")
+extern "C" void Rs_M1(); KING_ALIAS("_Rs_M1", "@SceneObj_Matrix1@12")
+extern "C" void Rs_Post(); KING_ALIAS("_Rs_Post", "@Queue_PostEvent@12")
+ASM_VAR(BYTE*, g_rs6d2078, $L_6d2078)
+ASM_VAR(int, g_rs6f33c0, $L_6f33c0)
+ASM_VAR(BYTE*, g_rsWind, $L_7025b8)
+ASM_VAR(Vec3, g_rsAhead, $L_702620)
+ASM_VAR(Vec3, g_rsUp, $L_702630)
+ASM_VAR(float, g_rs64c458, $L_64c458)
+ASM_VAR(float, g_rs64c320, $L_64c320)
+ASM_VAR(double, g_rs64b7a8, $L_64b7a8)
+ASM_VAR(float, g_rs64c934, $L_64c934)
+ASM_VAR(float, g_rs64c250, $L_64c250)
+ASM_VAR(float, g_rs64c264, $L_64c264)
+ASM_VAR(float, g_rs64c254, $L_64c254)
+ASM_VAR(float, g_rs64c258, $L_64c258)
+ASM_VAR(float, g_rs64c224, $L_64c224)
+ASM_VAR(float, g_rs64c228, $L_64c228)
+ASM_VAR(float, g_rs64c230, $L_64c230)
+ASM_VAR(float, g_rs64c22c, $L_64c22c)
+ASM_VAR(float, g_rs64c334, $L_64c334)
+ASM_VAR(float, g_rs64c234, $L_64c234)
+ASM_VAR(float, g_rs64c930, $L_64c930)
+ASM_VAR(float, g_rs64c76c, $L_64c76c)
+ASM_VAR(float, g_rs64c40c, $L_64c40c)
+ASM_VAR(float, g_rs64c210, $L_64c210)
+ASM_VAR(float, g_rs64c214, $L_64c214)
+ASM_VAR(float, g_rs64c21c, $L_64c21c)
+ASM_VAR(float, g_rs64c218, $L_64c218)
+ASM_VAR(float, g_rs64c304, $L_64c304)
+ASM_VAR(float, g_rs64c92c, $L_64c92c)
+ASM_VAR(float, g_rs64c350, $L_64c350)
+ASM_VAR(float, g_rs64c220, $L_64c220)
+
+static float Rs_Rand()
+{
+    return (float)(rand() * (double)g_rs64c254);
+}
+
+// m (rows +0 / +12 / +24, the position +36) applied to v in the float steps of Vec3_SetThis
+static Vec3 Rs_Mul(const float* m, const Vec3& v)
+{
+    Vec3 r;
+    r.x = (float)((double)v.z * m[6] + (double)v.y * m[3] + (double)v.x * m[0] + m[9]);
+    r.y = (float)((double)v.z * m[7] + (double)v.y * m[4] + (double)v.x * m[1] + m[10]);
+    r.z = (float)((double)v.x * m[2] + (double)v.z * m[8] + (double)v.y * m[5] + m[11]);
+    return r;
+}
+
+static Vec3 Rs_Scale(const Vec3& v, double k)
+{
+    Vec3 r;
+    r.x = (float)(v.x * k);
+    r.y = (float)(v.y * k);
+    r.z = (float)(v.z * k);
+    return r;
+}
+
+static Vec3 Rs_Add(const Vec3& a, const Vec3& b)
+{
+    Vec3 r;
+    r.x = (float)((double)a.x + b.x);
+    r.y = (float)((double)a.y + b.y);
+    r.z = (float)((double)a.z + b.z);
+    return r;
+}
+
+extern "C" {
+
+// [$L_4c9a10] weather s: a random tint of the root surface (+771), then for the player's lit lamp (the first of
+// +10274 on) two bursts in the wedge ahead of it (60 degrees each side of the wind's heading): rain by the wind
+// strength 7025b8 +532 above 64c320 with a calm wave, spray above 64c40c with a strong one
+void __fastcall Weather_LampRain(BYTE* s, void*)
+{
+    BYTE* p = CallThis<BYTE*>(Rs_Root, F(BYTE*, F(BYTE*, s, 32), 12)) + 771;
+    p[0] = (BYTE)(int)(Fx_Scale75() * g_rs64c458);
+    p[1] = (BYTE)(int)(Fx_Scale75() * g_rs64c458);
+    p[2] = (BYTE)(int)(Fx_Scale75() * g_rs64c458);
+    BYTE* pl = g_rs6d2078;
+    if (pl && F(BYTE*, pl, 616) && !g_rs6f33c0)
+    {
+        float w = F(float, g_rsWind, 532);
+        Vec3 D;
+        Vec3_Scaled(&D, &g_rsAhead, w);
+        BYTE* car = F(BYTE*, pl, 616);
+        int k = 0;
+        while (k < 4 && !F(BYTE, car, 10274 + k))
+            k++;
+        if (k != 4)
+        {
+            Matrix M = F(Matrix, car, 708);
+            Matrix T, R;
+            const Vec3& lamp = F(Vec3, car, 10284 + 12 * k);
+            Vec3 a = Rs_Mul(CallThis<const Matrix*>(Rs_M1, car + 16, &T)->m, lamp);
+            Vec3 b = Rs_Mul(M.m, a);
+            const float* Rz = Matrix_RotationZ(&T, (float)F(double, F(BYTE*, s, 32), 2928))->m;
+            Vec3 c = Rs_Mul(Rz, g_rsAhead);
+            if (w > g_rs64c320 && Wave_Value(g_rsWind, 0, 0) < g_rs64b7a8)
+            {
+                // rain
+                float r = (float)(((double)w - g_rs64c320) * g_rs64c934);
+                if (r > g_rs64c250)
+                    r = 1.0f;
+                else if (r < g_rs64c264)
+                    r = 0;
+                if (Rs_Rand() > r * (double)g_rs64c258)
+                {
+                    int cnt = (int)(((double)g_rs64c224 - g_rs64c228) * r + g_rs64c228);
+                    float sz = (float)(((double)g_rs64c230 - g_rs64c22c) * r + g_rs64c22c);
+                    float r1 = Rs_Rand(), r2 = Rs_Rand();
+                    Vec3 u = Rs_Scale(g_rsUp, g_rs64c334);
+                    double rr = rand() * (double)g_rs64c254 + g_rs64c250;
+                    Vec3 V = Rs_Add(Rs_Scale(D, rr), u);
+                    Vec3 P1 = Rs_Add(Rs_Scale(Rs_Mul(Matrix_RotationZ(&T, -1.0471976f)->m, c), g_rs64c234), b);
+                    Vec3 P2 = Rs_Add(Rs_Scale(Rs_Mul(Matrix_RotationZ(&R, 1.0471976f)->m, c), g_rs64c234), b);
+                    Vec3 pos;
+                    Triangle_RandomPoint(&pos, &b, &P2, &P1);
+                    float spread = (float)((rand() * (double)g_rs64c254 - r1) * g_rs64c930);
+                    CallC(Rs_Emit, &pos, &g_rsAhead, &V, (float)(r2 * (double)g_rs64c76c), cnt, sz, spread, 0.86f,
+                          1, 1);
+                }
+            }
+            if (w > g_rs64c40c && Wave_Value(g_rsWind, 0, 0) > g_rs64b7a8)
+            {
+                // spray
+                float r = (float)(((double)w - g_rs64c40c) * g_rs64c258);
+                if (r > g_rs64c250)
+                    r = 1.0f;
+                if (Rs_Rand() > r * (double)g_rs64c258)
+                {
+                    int cnt = (int)(((double)g_rs64c210 - g_rs64c214) * r + g_rs64c214);
+                    float sz = (float)(((double)g_rs64c21c - g_rs64c218) * r + g_rs64c218);
+                    float q1 = Rs_Rand(), q2 = Rs_Rand();
+                    Vec3 u = Rs_Scale(g_rsUp, g_rs64c304);
+                    float q3 = Rs_Rand();
+                    float spread = (float)((rand() * (double)g_rs64c254 - q1) * g_rs64c92c);
+                    Vec3 t1, V, m1, s1, P1, m2, s2, P2, pos;
+                    Vec3_Add(&V, Vec3_Scaled(&t1, &D, (float)(q3 * (double)g_rs64c350 + g_rs64c250)), &u);
+                    Vec3_MulMatrix(&m1, &c, Matrix_RotationZ(&T, -1.0471976f));
+                    Vec3_Add(&P1, &b, Vec3_Scaled(&s1, &m1, g_rs64c220));
+                    Vec3_MulMatrix(&m2, &c, Matrix_RotationZ(&R, 1.0471976f));
+                    Vec3_Add(&P2, &b, Vec3_Scaled(&s2, &m2, g_rs64c220));
+                    Triangle_RandomPoint(&pos, &b, &P2, &P1);
+                    CallC(Rs_Emit, &pos, &g_rsAhead, &V, (float)(q2 * (double)g_rs64c76c), cnt, sz, spread, 0.7f,
+                          1, 0);
+                }
+            }
+        }
+    }
+    CallThis(Rs_Post, s, 1);
+}
+
+} // extern "C"
+
+// === a frame's offset across its road (FUN_4cd770)
+
+struct LrPos { DWORD d[8]; };
+struct LrRoom
+{
+    DWORD flags, m_4;
+    double width;
+    const char* module;
+    const char* room;
+    double m_24;
+    int m_32, m_36, m_40, m_44;
+};
+struct LrMat { float m[12]; };
+extern "C" float* __cdecl Lr_Coords(float* out, LrPos pos); KING_ALIAS("_Lr_Coords", "_Ai_GetCoordinatesPos")
+extern "C" float* __cdecl Lr_Tangent(float* out, LrPos pos); KING_ALIAS("_Lr_Tangent", "_Ai_GetTangent")
+extern "C" void __cdecl Lr_Room(LrPos pos, LrRoom* out); KING_ALIAS("_Lr_Room", "_Road_GetRoadParameters")
+ASM_VAR(Vec3, g_lrUp, $L_702630)
+ASM_VAR(char, g_lr66d638, $L_66d638)
+ASM_VAR(char, g_lr66d628, $L_66d628)
+ASM_VAR(double, g_lr64b678, $L_64b678)
+ASM_VAR(double, g_lr64b6e0, $L_64b6e0)
+ASM_VAR(double, g_lr64b780, $L_64b780)
+
+extern "C" {
+
+// [FUN_4cd770] how far frame m's position lies across the road at AI position pos (its tangent reversed when
+// back), signed by the side; the road's half width, its +24 value scaled and its flags written out
+double __cdecl Road_LateralOffset(LrPos pos, LrMat m, int, int back, double* halfWidth, double* v24, int* flags)
+{
+    float c[3];
+    Lr_Coords(c, pos);
+    Vec3 d;
+    d.x = (float)((double)m.m[9] - c[0]);
+    d.y = (float)((double)m.m[10] - c[1]);
+    d.z = 0;
+    Vec3 tg;
+    Lr_Tangent(&tg.x, pos);
+    if (back)
+    {
+        tg.x = -tg.x;
+        tg.y = -tg.y;
+        tg.z = -tg.z;
+    }
+    tg.z = 0;
+    Vec3 t2;
+    tg = *Vec3_Normalized(&t2, &tg);
+    double proj = (double)tg.y * d.y + (double)tg.x * d.x + (double)tg.z * d.z;
+    float px = (float)(tg.x * proj), py = (float)(tg.y * proj);
+    Vec3 perp;
+    perp.x = (float)((double)d.x - px);
+    perp.y = (float)((double)d.y - py);
+    perp.z = (float)(d.z - tg.z * proj);
+    double lat = Vec3_Length(&perp);
+    double A = (double)tg.y * d.z - (double)d.y * tg.z;
+    double B = (double)d.x * tg.z - (double)tg.x * d.z;
+    double C = (double)d.y * tg.x - (double)tg.y * d.x;
+    if (C * g_lrUp.z + B * g_lrUp.y + A * g_lrUp.x < g_lr64b678)
+        lat = -lat;
+    LrRoom info;
+    info.flags = 0;
+    info.width = 0;
+    info.module = &g_lr66d638;
+    info.room = &g_lr66d628;
+    info.m_24 = 0;
+    info.m_36 = -1;
+    info.m_40 = -1;
+    Lr_Room(pos, &info);
+    *halfWidth = info.width * g_lr64b6e0;
+    *v24 = info.m_24 * g_lr64b780;
+    *flags = info.flags;
+    return lat;
+}
+
+} // extern "C"
+
+// === the road's turn ahead (FUN_4cdc90)
+
+extern "C" LrPos* __cdecl Lr_Advance(LrPos* out, int player, LrPos pos, double* offset, int msg);
+KING_ALIAS("_Lr_Advance", "_Ai_AdvancePlayerPosition")
+ASM_VAR(double, g_lr64b738, $L_64b738)
+ASM_VAR(double, g_lr64b7c0, $L_64b7c0)
+ASM_VAR(double, g_lr64b670, $L_64b670)
+ASM_VAR(double, g_lr64ca48, $L_64ca48)
+ASM_VAR(double, g_lr64ca50, $L_64ca50)
+
+// the road's tangent at pos (reversed when back), flattened and normalised
+static Vec3 Lr_FlatDir(const LrPos& pos, bool back, Vec3* raw)
+{
+    Vec3 t, n;
+    Lr_Tangent(&t.x, pos);
+    if (back)
+    {
+        t.x = -t.x;
+        t.y = -t.y;
+        t.z = -t.z;
+    }
+    *raw = t;
+    t.z = 0;
+    return *Vec3_Normalized(&n, &t);
+}
+
+extern "C" {
+
+// [FUN_4cdc90] the road from AI position pos of player over dist (back: the other way): the turn rate (*turn,
+// its angle by the headings at the start, the middle and the end, signed by the side, per distance), the climb
+// (*slope) and the distance left (*left); flags 1 for a sharp turn, 4 when the end was passed half way
+int __cdecl Road_TurnAhead(LrPos pos, int player, double* turn, double* slope, double* left, double dist, int back)
+{
+    double half = dist * g_lr64b738;
+    double whole = dist;
+    if (back)
+    {
+        dist = -dist;
+        half = -half;
+    }
+    Vec3 t0, t1, t2;
+    Vec3 A = Lr_FlatDir(pos, back != 0, &t0);
+    LrPos p1, p2;
+    Lr_Advance(&p1, player, pos, &half, 0);
+    Vec3 B = Lr_FlatDir(p1, back != 0, &t1);
+    double cAB = (double)B.y * A.y + (double)B.x * A.x + (double)B.z * A.z;
+    Lr_Advance(&p2, player, pos, &dist, 0);
+    dist = x87_fabs(dist);
+    Vec3 C = Lr_FlatDir(p2, back != 0, &t2);
+    double cBC = (double)C.y * B.y + (double)C.x * B.x + (double)C.z * B.z;
+    if (x87_fabs(cAB) * g_lr64b7c0 < x87_fabs(cBC))
+        cAB = cBC * g_lr64b738;
+    if (cAB > g_lr64b670)
+        cAB = 1.0;
+    else if (cAB < g_lr64ca48)
+        cAB = -1.0;
+    double ang = x87_acos(cAB);
+    double X = (double)t1.z * t0.y - (double)t1.y * t0.z;
+    double Y = (double)t1.x * t0.z - (double)t1.z * t0.x;
+    double Z = (double)t1.y * t0.x - (double)t0.y * t1.x;
+    if (Z * g_lrUp.z + Y * g_lrUp.y + X * g_lrUp.x < g_lr64b678)
+        ang = -ang;
+    double k = g_lr64b7c0 / whole;
+    *turn = k * ang;
+    Vec3 n1, n0;
+    Vec3_Normalized(&n1, &t1);
+    Vec3_Normalized(&n0, &t0);
+    *slope = x87_asin((double)n1.z - n0.z) * k;
+    *left = whole - dist;
+    int flags = 0;
+    if (x87_fabs(*turn) > g_lr64ca50)
+        flags = 1;
+    if (dist > whole * g_lr64b6e0)
+        flags |= 4;
+    return flags;
+}
+
+} // extern "C"
+
+// === an AI car's target speed (FUN_4d4700)
+
+extern "C" int __cdecl Ts_Flags(int player); KING_ALIAS("_Ts_Flags", "_Player_Flags")
+extern "C" int** __cdecl Ts_CarId(int** out); KING_ALIAS("_Ts_CarId", "_Player_CarId")
+extern "C" LrPos* __cdecl Ts_PositionId(LrPos* out, int player); KING_ALIAS("_Ts_PositionId", "_Ai_GetPositionId")
+extern "C" int __cdecl Road_TurnAhead(LrPos pos, int player, double* turn, double* slope, double* left, double dist,
+                                      int back);
+ASM_VAR(double, g_ts64b6f0, $L_64b6f0)
+ASM_VAR(double, g_ts64b770, $L_64b770)
+ASM_VAR(double, g_ts64b6b8, $L_64b6b8)
+ASM_VAR(double, g_ts64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ts64b678, $L_64b678)
+ASM_VAR(double, g_ts64b670, $L_64b670)
+ASM_VAR(double, g_ts64b5b8, $L_64b5b8)
+ASM_VAR(double, g_ts64d330, $L_64d330)
+ASM_VAR(double, g_ts64b6d0, $L_64b6d0)
+ASM_VAR(double, g_ts64b898, $L_64b898)
+ASM_VAR(double, g_ts64b698, $L_64b698)
+ASM_VAR(double, g_ts64d328, $L_64d328)
+ASM_VAR(double, g_ts64d320, $L_64d320)
+ASM_VAR(double, g_ts64b938, $L_64b938)
+ASM_VAR(double, g_ts64b958, $L_64b958)
+ASM_VAR(double, g_ts64b780, $L_64b780)
+ASM_VAR(double, g_ts64d318, $L_64d318)
+
+extern "C" {
+
+// [FUN_4d4700] the speed an AI player aims for from speed: capped for flag bits 0x4000 / 0x1000000, scaled to keep
+// up with the player's car (0x80), cut for the road's turn, climb and end ahead, by the lateral speed (v24, v40)
+// and the gap v32, and limited by the room left v60
+double __cdecl Ai_TargetSpeed(BYTE* player, int f12, double speed, double v24, double v32, double v40, int back,
+                              double fallback, double v60)
+{
+    if (!(Ts_Flags((int)player) & 0x4000) && f12 && speed > g_ts64b6f0)
+        speed = 20.0;
+    if (Ts_Flags((int)player) & 0x80)
+    {
+        int* id;
+        BYTE* car = (BYTE*)*Ts_CarId(&id);
+        double x = (F(double, car, 504) - F(double, player, 504)) * g_ts64b770;
+        x = x * x87_fabs(x);
+        if (x < g_ts64b6b8)
+            x = g_ts64b6b8 * g_ts64b6e0;
+        else if (x > g_ts64b6e0)
+            x = g_ts64b6e0;
+        else if (x < g_ts64b678)
+            x *= g_ts64b6e0;
+        x += g_ts64b670;
+        speed *= x;
+        fallback *= x;
+    }
+    int lat = 0;
+    if (x87_fabs(v24) > g_ts64b5b8)
+        lat = 2;
+    if (x87_fabs(v40) > g_ts64d330)
+        lat |= 4;
+    double turn = 0, slope = 0, left = 50.0;
+    LrPos pid;
+    Ts_PositionId(&pid, (int)player);
+    int r = Road_TurnAhead(pid, (int)player, &turn, &slope, &left, speed * g_ts64b6d0, back);
+    if (!r && !(v32 < g_ts64b898) && !lat)
+    {
+        if (!f12)
+            speed = fallback;
+    }
+    else
+    {
+        double st = speed;
+        if (st > g_ts64b6d0)
+        {
+            if (r & 1)
+            {
+                double lim = x87_sqrt(x87_fabs(g_ts64b6d0 / turn));
+                if (lim < g_ts64b698)
+                    lim = 8.0;
+                if (st > lim)
+                    st = lim;
+            }
+            if ((r & 2) && slope < g_ts64d328)
+                st = st / (x87_fabs(slope) * g_ts64d320);
+            if ((r & 4) && left < g_ts64b938)
+                st = st * left * g_ts64b958 + g_ts64b670;
+            if (!(v32 < g_ts64b898))
+            {
+                double t = (v32 - g_ts64b898) * g_ts64b6d0;
+                st = (st - g_ts64b6d0) * t * t + g_ts64b6d0;
+                speed = st;
+                if (st < g_ts64b6d0)
+                    speed = st = g_ts64b6d0;
+            }
+            else
+                speed = st = g_ts64b6d0;
+        }
+        if (lat && st > g_ts64b780)
+            speed = st * g_ts64d318;
+    }
+    if ((Ts_Flags((int)player) & 0x1000000) && speed > g_ts64b6f0)
+        speed = 20.0;
+    if (!(v60 > g_ts64b678))
+        return speed;
+    if (v60 < g_ts64b780)
+        return 0;
+    double lim = x87_sqrt((v60 - g_ts64b780) * g_ts64b780);
+    if (lim < g_ts64b6d0)
+        lim = g_ts64b6d0;
+    return speed > lim ? lim : speed;
+}
+
+} // extern "C"
+
+// === an AI car's throttle and brake (FUN_4d60c0)
+
+extern "C" double __cdecl Ai_TargetSpeed(BYTE* player, int f12, double speed, double v24, double v32, double v40,
+                                         int back, double fallback, double v60);
+extern "C" void Tb_Grip(); KING_ALIAS("_Tb_Grip", "@Wheels_MinGrip@8")
+extern "C" void Tb_Gear(); KING_ALIAS("_Tb_Gear", "@Car_BestGearNow@8")
+ASM_FUNC(Tb_4d2970, FUN_4d2970)
+ASM_VAR(double, g_tb64b5b8, $L_64b5b8)
+ASM_VAR(double, g_tb64b840, $L_64b840)
+ASM_VAR(double, g_tb64b670, $L_64b670)
+ASM_VAR(double, g_tb64c958, $L_64c958)
+ASM_VAR(float, g_tb64c450, $L_64c450)
+ASM_VAR(double, g_tb64d348, $L_64d348)
+ASM_VAR(Vec3, g_tbUp, $L_702630)
+
+extern "C" {
+
+// [FUN_4d60c0] AI car c sets its brake (+10000) or throttle (+9996) toward its target speed from v40 / v48, how
+// upright it stands and its gear: brake by the excess over it (times the grip), throttle by the shortfall (full
+// when nearly stopped with v56 high, a touch when steering hard on its wheels' flags)
+void __fastcall Ai_ThrottleBrake(BYTE* c, void*, int, int, int, int, int, int, int, int, double v40, double v48,
+                                 double v56)
+{
+    double grip = CallThis<double>(Tb_Grip, c);
+    double h = CallThis<double>(Tb_4d2970, c);
+    F(int, c, 10000) = 0;
+    F(int, c, 9996) = 0;
+    Matrix M = F(Matrix, c, 16);
+    const Vec3& U = g_tbUp;
+    double a = (double)U.z * M.m[6] + (double)U.y * M.m[3] + (double)U.x * M.m[0];
+    double b = (double)U.z * M.m[7] + (double)U.y * M.m[4] + (double)U.x * M.m[1];
+    double d = (double)M.m[8] * U.z + (double)M.m[5] * U.y + (double)M.m[2] * U.x;
+    double up = d * U.z + b * U.y + a * U.x;
+    double gear = CallThis<double>(Tb_Gear, c);
+    BYTE* player = (BYTE*)F(int, F(BYTE*, c, 16576), 20636);
+    double tgt = Ai_TargetSpeed(player, F(int, c, 16504), v40, v48, up, F(double, c, 16568), F(int, c, 16500), gear,
+                                F(double, c, 16560));
+    if (tgt < g_tb64b5b8)
+    {
+        F(float, c, 10000) = 1.0f;
+        return;
+    }
+    float sp = F(float, c, 13100);
+    if (sp > tgt)
+    {
+        double x = ((double)sp - tgt) * g_tb64b840;
+        if (x > g_tb64b670)
+            x = g_tb64b670;
+        F(float, c, 10000) = (float)(x * grip);
+        return;
+    }
+    if (!(tgt * g_tb64c958 > sp))
+        return;
+    float thr = (float)((tgt - sp) * g_tb64b840 * h);
+    F(float, c, 9996) = thr;
+    if (sp < g_tb64c450 && v56 > g_tb64d348)
+    {
+        F(float, c, 9996) = 1.0f;
+        return;
+    }
+    if ((F(int, c, 13420) || F(int, c, 13424) || F(int, c, 13428) || F(int, c, 13432)) &&
+        x87_fabs(F(float, c, 10012)) > g_tb64b5b8 && thr > g_tb64b5b8)
+        F(float, c, 9996) = 0.1f;
+}
+
+} // extern "C"
+
+// === a car's state stored in the resources (FUN_4cf400)
+
+extern "C" BYTE* __fastcall Fx_ObjectInit(BYTE* s, void*, int a, int b, const char* name, const Matrix* m, int c,
+                                          const void* data, int d, int e, int f);
+extern "C" void Cs_GetState(); KING_ALIAS("_Cs_GetState", "@Car_GetState@12")
+extern "C" void Cs_Set(); KING_ALIAS("_Cs_Set", "@Resources_SetData@24")
+extern "C" void Cs_Get(); KING_ALIAS("_Cs_Get", "@Resources_Get@12")
+extern "C" void Cs_Room(); KING_ALIAS("_Cs_Room", "_AI_RoomFlags4096")
+extern "C" void Cs_M1(); KING_ALIAS("_Cs_M1", "@SceneObj_Matrix1@12")
+extern "C" void Cs_Get800(); KING_ALIAS("_Cs_Get800", "@SceneObj_Get800@8")
+extern "C" void Cs_Get12(); KING_ALIAS("_Cs_Get12", "@Fx_Get12@8")
+extern "C" void Cs_Get9544(); KING_ALIAS("_Cs_Get9544", "@Fx_Get9544@8")
+extern "C" void Cs_Get10420(); KING_ALIAS("_Cs_Get10420", "@Fx_Get10420@8")
+extern "C" void Cs_Get20396(); KING_ALIAS("_Cs_Get20396", "@Fx_Get20396@8")
+ASM_VAR(int, g_cs68b990, $L_68b990)
+ASM_VAR(BYTE*, g_cs696ca0, $L_696ca0)
+
+extern "C" {
+
+// [FUN_4cf400] car c (with a record +308) stores its state (300 bytes under id +360): a fresh record for a
+// player-less car, else its record updated with the state, the value of vtbl+84 and the player
+void __cdecl Car_StoreState(BYTE* c)
+{
+    if (!F(BYTE*, c, 308))
+        return;
+    BYTE state[196];
+    CallThis(Cs_GetState, c, state);
+    BYTE rec[300];
+    if (F(int, c, 20636) == g_cs68b990)
+    {
+        float v = CallVirt<float>(c, 84);
+        Matrix t;
+        const Matrix* m = CallThis<const Matrix*>(Cs_M1, c + 16, &t);
+        const char* name = CallThis<const char*>(Cs_Get12, CallThis<BYTE*>(Cs_Get800, c + 16));
+        int b = CallThis<int>(Cs_Get9544, c);
+        int hi = CallThis<int>(Cs_Get20396, c);
+        int a = CallThis<int>(Cs_Get10420, c) + hi * 1000;
+        Fx_ObjectInit(rec, 0, a, b, name, m, F(int, c, 20636), state + 8, *(int*)&v, 0, 0);
+        CallThis(Cs_Set, F(BYTE*, c, 52) + 704, F(int, c, 360), F(int, F(BYTE*, c, 308), 60), 300, rec);
+        return;
+    }
+    BYTE* res = CallThis<BYTE*>(Cs_Get, g_cs696ca0 + 704, F(int, c, 360));
+    if (!res)
+        return;
+    CallC(Cs_Room, F(int, c, 20636));
+    memcpy(rec, F(BYTE*, res, 24), 300);
+    memcpy(rec + 48, state, 196);
+    F(float, rec, 244) = CallVirt<float>(c, 84);
+    F(int, rec, 296) = F(int, c, 20636);
+    CallThis(Cs_Set, F(BYTE*, c, 52) + 704, F(int, c, 360), F(int, F(BYTE*, res, 12), 4016), 300, rec);
+}
+
+} // extern "C"
+
+// === an AI car's frame on its road (FUN_4cf620)
+
+extern "C" void As_Zero(); KING_ALIAS("_As_Zero", "_Effect_Zero")
+extern "C" void As_Flags(); KING_ALIAS("_As_Flags", "_Player_Flags")
+extern "C" void As_HasItems(); KING_ALIAS("_As_HasItems", "_Fx_HasItems")
+extern "C" void As_Log(); KING_ALIAS("_As_Log", "_Sys_Log")
+extern "C" void As_M1(); KING_ALIAS("_As_M1", "@SceneObj_Matrix1@12")
+extern "C" void As_AddAssign(); KING_ALIAS("_As_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void As_TooFar(); KING_ALIAS("_As_TooFar", "_Effect_TooFar4cee70")
+extern "C" void As_Park(); KING_ALIAS("_As_Park", "_Fx_ParkVehicle")
+extern "C" void As_Near(); KING_ALIAS("_As_Near", "_Fx_NearTruck")
+extern "C" void As_Launch(); KING_ALIAS("_As_Launch", "_Car_Launch")
+extern "C" void As_PositionId(); KING_ALIAS("_As_PositionId", "_Ai_GetPositionId")
+extern "C" void __cdecl As_Room(LrPos pos, LrRoom* out); KING_ALIAS("_As_Room", "_Road_GetRoadParameters")
+extern "C" void As_Level(); KING_ALIAS("_As_Level", "@Fx_LevelForHeight@16")
+extern "C" BYTE* __cdecl As_Orient(BYTE* out, int player, LrPos pos); KING_ALIAS("_As_Orient", "_Ai_GetOrientationSmoothedF")
+extern "C" void As_Set884(); KING_ALIAS("_As_Set884", "_Player_Set884")
+extern "C" void As_Set976(); KING_ALIAS("_As_Set976", "_Player_Set976")
+extern "C" void As_Root(); KING_ALIAS("_As_Root", "@Node_Root@8")
+extern "C" int __stdcall As_Light(BYTE* node, Vec3 p, void* fn, BYTE* c); KING_ALIAS("_As_Light@24", "_Light_Set@24")
+extern "C" void As_Tables(); KING_ALIAS("_As_Tables", "@Tables2_Set@16")
+void __cdecl Car_WorldEvent(const int* m, BYTE* c);
+ASM_VAR(int, g_as68b990, $L_68b990)
+ASM_VAR(BYTE*, g_as6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_as696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_as6f33ac, $L_6f33ac)
+ASM_VAR(Vec3, g_as702640, $L_702640)
+ASM_VAR(Vec3, g_asEye, $L_702650)
+ASM_VAR(char, g_as6729ac, $L_6729ac)
+ASM_VAR(double, g_as64caa8, $L_64caa8)
+ASM_VAR(double, g_as64caa0, $L_64caa0)
+ASM_VAR(double, g_as64ca98, $L_64ca98)
+ASM_VAR(double, g_as64b780, $L_64b780)
+ASM_VAR(double, g_as64b6e0, $L_64b6e0)
+ASM_VAR(float, g_as64c250, $L_64c250)
+ASM_VAR(float, g_as64ca90, $L_64ca90)
+ASM_VAR(double, g_as64b678, $L_64b678)
+
+// k ^ (t * m) as the original computes it, all on the FPU stack
+static __declspec(noinline) double As_Pow(double k, double t, double m)
+{
+    __asm {
+        fldln2
+        fld k
+        fyl2x
+        fmul t
+        fmul m
+        fldl2e
+        fmulp st(1), st
+        fld st(0)
+        frndint
+        fxch st(1)
+        fsub st, st(1)
+        f2xm1
+        fld1
+        faddp st(1), st
+        fscale
+        fstp st(1)
+    }
+}
+
+extern "C" {
+
+// [FUN_4cf620] AI car c of its player (+20636) with flags *flags: its lamps by the time of day, its frame offset
+// (+21040) checked for parking or launching, then on its road (unless *flags & 1) its smoothed frame (+20640)
+// lifted by its level, its heading (+20688) and the camera (+20712); its light, its stored gear speed (+16560)
+// from an event 29 (+21872) and the player's note of it; 1 (0 when the effect is done)
+int __cdecl Ai_CarFrame(BYTE* c, int* flags)
+{
+    int player = F(int, c, 20636);
+    if (CallC<int>(As_Zero, c, player))
+        return 0;
+    if (player != g_as68b990)
+        *flags = CallC<int>(As_Flags, player);
+    if (F(BYTE*, g_as6d2078, 616) == c)
+        return 1;
+    player = F(int, c, 20636);
+    if (player != g_as68b990 && !(*flags & 4) && !(CallC<int>(As_HasItems, player) & 0xff))
+        CallC(As_Log, &g_as6729ac, F(int, g_as696ca0, 2992));
+    double tod = F(double, g_as6f33ac, 88);
+    if ((tod > g_as64caa8 || tod < g_as64caa0) && !(CallC<int>(As_Flags, F(int, c, 20636)) & 4))
+        F(int, c, 20920) = 1;
+    else
+        F(int, c, 20920) = 0;
+    Matrix M, T;
+    M = *CallThis<const Matrix*>(As_M1, c + 16, &T);
+    const float* o = (const float*)(c + 21040);
+    Vec3 off, tmp;
+    off.x = (float)((double)M.m[0] * o[0] + (double)M.m[6] * o[2] + (double)M.m[3] * o[1]);
+    off.y = (float)((double)M.m[1] * o[0] + (double)M.m[7] * o[2] + (double)M.m[4] * o[1]);
+    off.z = (float)((double)M.m[8] * o[2] + (double)M.m[5] * o[1] + (double)M.m[2] * o[0]);
+    CallThis(As_AddAssign, &M.m[9], &tmp, &off);
+    if (*flags & 1)
+    {
+        if (CallC<int>(As_TooFar, c))
+            CallC(As_Park, c, F(int, c, 20636), flags);
+    }
+    else if (CallC<int>(As_Near, c))
+        CallC(As_Launch, c, F(int, c, 20636), flags, 1);
+    BYTE* cab = F(BYTE*, c, 21600);
+    F(int, cab, 16504) = (*flags & 0x80) ? 0 : 1;
+    if (!(*flags & 1))
+    {
+        LrPos pid;
+        CallC(As_PositionId, &pid, F(int, c, 20636));
+        LrRoom info;
+        info.flags = 0;
+        info.width = 0;
+        info.module = &g_lr66d638;
+        info.room = &g_lr66d628;
+        info.m_24 = 0;
+        info.m_36 = -1;
+        info.m_40 = -1;
+        As_Room(pid, &info);
+        int lvl = CallThis<int>(As_Level, cab, info.width * g_as64b6e0);
+        Matrix O, I, Tr, X;
+        As_Orient((BYTE*)&O, F(int, c, 20636), pid);
+        const float* R = Matrix_Inverse(&I, &O)->m;
+        double hx = (double)R[6] * F(float, c, 20684) + (double)R[3] * F(float, c, 20680) +
+                    (double)R[0] * F(float, c, 20676) + R[9];
+        double f = As_Pow(g_as64ca98, F(double, g_as696ca0, 2960), g_as64b780);
+        double val = (lvl + g_as64b6e0) * F(double, cab, 16552) * (g_as64c250 - f) + hx * f;
+        Vec3 v;
+        v.x = (float)(val * g_as702640.x);
+        v.y = (float)(val * g_as702640.y);
+        v.z = (float)(val * g_as702640.z);
+        memcpy(c + 20640, Matrix_Multiply(&X, Matrix_Translation(&Tr, v), &O), 48);
+        Vec3 tg, tn;
+        Lr_Tangent(&tg.x, pid);
+        Vec3_Normalized(&tn, &tg);
+        F(float, c, 20688) = (float)(tn.x * (double)g_as64ca90);
+        F(float, c, 20692) = (float)(tn.y * (double)g_as64ca90);
+        F(float, c, 20696) = (float)(tn.z * (double)g_as64ca90);
+        F(Vec3, c, 20712) = g_asEye;
+        CallC(As_Set884, F(int, c, 20636), lvl);
+        cab = F(BYTE*, c, 21600);
+    }
+    Matrix P;
+    Vec3 pos = *(const Vec3*)&CallThis<const Matrix*>(As_M1, c + 16, &P)->m[9];
+    As_Light(CallThis<BYTE*>(As_Root, c + 272), pos, (void*)Car_WorldEvent, c);
+    F(double, cab, 16560) = -1.0;
+    BYTE* e = F(BYTE*, c, 21872);
+    if (!F(int, c, 21876) && e && F(int, e, 0) == 29)
+    {
+        float v = *F(float*, e, 12);
+        if (v > g_as64b678 && !F(int, e, 4))
+            F(double, F(BYTE*, c, 21600), 16560) = v;
+        CallThis(As_Tables, c + 21872, 0, 0);
+    }
+    if (!(*flags & 1))
+    {
+        double t = F(double, cab, 16560);
+        CallC(As_Set976, F(int, c, 20636), t > g_as64b678 ? 1 : 0, t);
+    }
+    return 1;
+}
+
+} // extern "C"
+
+
+// === the AI driver's step (a method at $L_4d6510)
+
+extern "C" void __fastcall Ai_ThrottleBrake(BYTE* c, void*, int, int, int, int, int, int, int, int, double v40,
+                                            double v48, double v56);
+extern "C" void Ad_TakeMode(); KING_ALIAS("_Ad_TakeMode", "@Body_TakeMode@8")
+extern "C" void Ad_CopyMatrix(); KING_ALIAS("_Ad_CopyMatrix", "@Fx_CopyMatrix@12")
+extern "C" Vec3* __cdecl Ad_Direction(Vec3* out, LrPos pos, int negate, double* angle); KING_ALIAS("_Ad_Direction", "_Effect_Direction4cda20")
+extern "C" double __cdecl Ad_TurnRate(LrPos pos, double d, int id, int back); KING_ALIAS("_Ad_TurnRate", "_Fx_TurnRate")
+extern "C" void Ad_Swing(); KING_ALIAS("_Ad_Swing", "@Fx_SwingStep@36")
+extern "C" void Ad_Steer(); KING_ALIAS("_Ad_Steer", "@Fx_SteerFromSwing@32")
+extern "C" void Ad_Shown(); KING_ALIAS("_Ad_Shown", "@Car_SetSteerShown@16")
+extern "C" void Ad_Look(); KING_ALIAS("_Ad_Look", "_Ai_LookAhead")
+extern "C" void Ad_Fatal(); KING_ALIAS("_Ad_Fatal", "_Sys_Fatal")
+extern "C" void Ad_Now(); KING_ALIAS("_Ad_Now", "_Tsc_Now")
+extern "C" void Ad_Set884(); KING_ALIAS("_Ad_Set884", "_Player_Set884")
+extern "C" double __cdecl Road_LateralOffset(LrPos pos, LrMat m, int, int back, double* halfWidth, double* v24,
+                                             int* flags);
+ASM_VAR(int, g_ad721768, $L_721768)                     // the trace buffer
+ASM_VAR(char*, g_ad71e814, $L_71e814)
+ASM_VAR(int, g_ad71e818, $L_71e818)
+ASM_VAR(int, g_ad71e810, $L_71e810)
+ASM_VAR(BYTE*, g_ad6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_ad6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_ad6d2078, $L_6d2078)
+ASM_VAR(int, g_ad696328, $L_696328)
+ASM_VAR(int, g_ad6962c0, $L_6962c0)
+ASM_VAR(int, g_ad6962c4, $L_6962c4)
+ASM_VAR(double, g_ad696348, $L_696348)
+ASM_VAR(BYTE, g_ad697db8, $L_697db8)
+ASM_VAR(Vec3, g_adAhead, $L_702620)
+ASM_VAR(Vec3, g_adUp, $L_702630)
+ASM_VAR(char, g_ad672acc, $L_672acc)
+ASM_VAR(char, g_ad672abc, $L_672abc)
+ASM_VAR(char, g_ad672aa8, $L_672aa8)
+ASM_VAR(char, g_ad672a98, $L_672a98)
+ASM_VAR(char, g_ad672a78, $L_672a78)
+ASM_VAR(char, g_ad672a68, $L_672a68)
+ASM_VAR(double, g_ad64b6b8, $L_64b6b8)
+ASM_VAR(double, g_ad64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ad64b678, $L_64b678)
+ASM_VAR(double, g_ad64d0c0, $L_64d0c0)
+ASM_VAR(float, g_ad64c40c, $L_64c40c)
+ASM_VAR(double, g_ad64b6d0, $L_64b6d0)
+ASM_VAR(double, g_ad64b670, $L_64b670)
+ASM_VAR(double, g_ad64ca48, $L_64ca48)
+ASM_VAR(float, g_ad64c320, $L_64c320)
+ASM_VAR(float, g_ad64d350, $L_64d350)
+ASM_VAR(double, g_ad64b698, $L_64b698)
+ASM_VAR(double, g_ad64b7c0, $L_64b7c0)
+
+// a text appended to the trace buffer
+static void Ad_Trace(const char* s)
+{
+    if (!g_ad721768 || !g_ad71e814 || !*s)
+        return;
+    while (g_ad71e818 < g_ad71e810)
+    {
+        g_ad71e814[g_ad71e818] = *s++;
+        g_ad71e818++;
+        if (!*s)
+            break;
+    }
+}
+
+static int Ad_Clock()
+{
+    return (int)CallC<double>(Ad_Now);
+}
+
+static void Ad_Finish(BYTE* s, const char* t)
+{
+    Ad_Trace(t);
+    CallThis(Ad_TakeMode, s);
+    Ad_Trace(&g_ad672aa8);
+}
+
+static void Ad_Show(BYTE* s, double v)
+{
+    CallThis(Ad_Shown, s, v);
+}
+
+// the dot of a with the cross product b x c, all floats
+static Vec3 Ad_Cross(const Vec3& b, const Vec3& c)
+{
+    Vec3 r;
+    r.x = (float)((double)b.y * c.z - (double)b.z * c.y);
+    r.y = (float)((double)b.z * c.x - (double)b.x * c.z);
+    r.z = (float)((double)b.x * c.y - (double)b.y * c.x);
+    return r;
+}
+
+extern "C" {
+
+// [$L_4d6510] AI driver s of car +16576: unless it is the player's own car (only its lateral offset measured) or
+// the player stopped (+4 flag: braking), it reads the road ahead (its position moved on by the speed, the offset
+// across it +16568, the heading, the swing), then by its state +16492 (0 parked, 1 driving, 2 reversing out,
+// 3 turning round, 4 nothing) steers, shows the steering and sets the throttle / brake; the mode taken after
+void __fastcall Ai_DriverStep(BYTE* s, void*)
+{
+    Ad_Trace(&g_ad672acc);
+    LrPos pid = {{(DWORD)-1, (DWORD)-1, 0, 0, 0, 0, 0, (DWORD)-1}};
+    BYTE* car = F(BYTE*, s, 16576);
+    if (!F(int, g_ad6cec6c, 1316) || F(int, g_ad6cec98, 384) != 2)
+        Ts_PositionId(&pid, F(int, car, 20636));
+    if (F(BYTE*, g_ad6d2078, 616) == F(BYTE*, s, 16576) && !g_ad696328)
+    {
+        // the player's own car: its offset only
+        g_ad6962c0 = Ad_Clock();
+        g_ad6962c4 = Ad_Clock();
+        if (F(int, g_ad6cec6c, 1316) && F(int, g_ad6cec98, 384) == 2)
+            g_ad696348 = 10.0;
+        else
+        {
+            double hw, v24;
+            int fl;
+            LrMat m;
+            memcpy(&m, CallThis<const void*>(Ad_CopyMatrix, s, &m), 48);
+            double r = Road_LateralOffset(pid, m, F(int, F(BYTE*, s, 16576), 20636), F(int, s, 16500), &hw, &v24, &fl);
+            g_ad696348 = x87_fabs(r) - (hw + v24);
+        }
+        Ad_Finish(s, &g_ad672abc);
+        return;
+    }
+    g_ad6962c0 = Ad_Clock();
+    if (Ts_Flags(F(int, F(BYTE*, s, 16576), 20636)) & 4)
+    {
+        F(float, s, 10000) = 1.0f;
+        F(int, s, 9996) = 0;
+        F(int, s, 10012) = 0;
+        g_ad6962c4 = Ad_Clock();
+        Ad_Finish(s, &g_ad672a98);
+        return;
+    }
+    car = F(BYTE*, s, 16576);
+    BYTE* pl = F(BYTE*, car, 20636);
+    if (F(int, car, 360) != F(int, pl, 84))
+    {
+        char buf[128];
+        sprintf(buf, &g_ad672a78, F(int, car, 360), F(int, pl, 84));
+        CallC(Ad_Fatal, buf, 0);
+    }
+    double target = 30.0;
+    double grip = CallThis<double>(Tb_Grip, s);
+    double h = CallThis<double>(Tb_4d2970, s);
+    car = F(BYTE*, s, 16576);
+    Vec3 off = F(Vec3, car, 21040);
+    double k = F(float, &g_ad697db8 + 2416 * F(int, car, 10420), 4) * (F(int, s, 16500) ? g_ad64b6b8 : g_ad64b6e0);
+    double kd = k;
+    float ax = (float)(k * g_adAhead.x), ay = (float)(k * g_adAhead.y);
+    Matrix M = F(Matrix, s, 16), T, X;
+    Vec3 tr;
+    tr.x = (float)((double)off.x + ax);
+    tr.y = (float)((double)ay + off.y);
+    tr.z = (float)(k * g_adAhead.z + off.z);
+    LrMat look;
+    memcpy(&look, Matrix_Multiply(&X, Matrix_Translation(&T, tr), &M), 48);
+    LrPos ahead;
+    Lr_Advance(&ahead, F(int, F(BYTE*, s, 16576), 20636), pid, &kd, 0);
+    pid = ahead;
+    double hw, v24;
+    int fl;
+    F(double, s, 16568) =
+        Road_LateralOffset(pid, look, F(int, F(BYTE*, s, 16576), 20636), F(int, s, 16500), &hw, &v24, &fl);
+    double v332;
+    Vec3 dir = *Ad_Direction(&dir, pid, F(int, s, 16500), &v332);
+    int lvl = CallThis<int>(As_Level, s, hw);
+    float lat = (float)F(double, s, 16568);
+    double sw = CallThis<double>(Ad_Swing, s, lvl * 2, hw, v24, fl, *(int*)&lat);
+    if (sw > g_ad64b678 && g_ad64d0c0 > sw && F(int, s, 16504))
+        target = sw;
+    CallC(Ad_Set884, F(int, F(BYTE*, s, 16576), 20636), (int)(F(int, s, 16476) * g_ad64b6e0));
+    double turnRate = Ad_TurnRate(pid, 15.0, F(int, F(BYTE*, s, 16576), 20636), F(int, s, 16500));
+    double oldLat = F(double, s, 16568);
+    Matrix M2 = F(Matrix, s, 16);
+    F(double, s, 16568) = (F(int, s, 16476) + 1) * F(double, s, 16552) * g_ad64b6e0 + F(double, s, 16568);
+    // the car's heading flattened
+    Vec3* fw = (Vec3*)(s + 16464);
+    const Vec3& A = g_adAhead;
+    fw->x = (float)((double)M2.m[3] * A.y + (double)M2.m[6] * A.z + (double)M2.m[0] * A.x);
+    fw->y = (float)((double)M2.m[4] * A.y + (double)M2.m[7] * A.z + (double)M2.m[1] * A.x);
+    fw->z = 0;
+    Vec3 tmp;
+    *fw = *Vec3_Normalized(&tmp, fw);
+    double dot = (double)fw->z * dir.z + (double)fw->y * dir.y + (double)dir.x * fw->x;
+    Vec3 c = Ad_Cross(dir, *fw), n;
+    Vec3_Normalized(&n, &c);
+    if ((double)n.z * g_adUp.z + (double)n.y * g_adUp.y + (double)n.x * g_adUp.x < g_ad64b678)
+    {
+        n.x = -n.x;
+        n.y = -n.y;
+        n.z = -n.z;
+    }
+    int st = F(int, s, 16492);
+    if (dot > g_ad64b678)
+    {
+        if (st == 3)
+        {
+            F(short, s, 10054) = 100;
+            F(int, s, 16492) = 1;
+        }
+    }
+    else if (st == 1)
+    {
+        F(double, s, 16456) = F(double, s, 16568);
+        F(int, s, 16492) = 3;
+    }
+    double X2 = (double)dir.y * fw->z - (double)dir.z * fw->y;
+    double Y2 = (double)dir.z * fw->x - (double)dir.x * fw->z;
+    double Z2 = (double)dir.x * fw->y - (double)dir.y * fw->x;
+    double sa = Z2 * n.z + Y2 * n.y + X2 * n.x;
+    if (!(sa < g_ad64b670))
+        *(unsigned __int64*)&sa = 0x3FEFFF2E48E8A71Eull;
+    else if (!(sa > g_ad64ca48))
+        *(unsigned __int64*)&sa = 0xBFEFFF2E48E8A71Eull;
+    sa = x87_asin(sa);
+    // a stuck car backs out
+    if (F(float, s, 13100) < g_ad64c40c && F(int, s, 16492) != 2 && !(F(BYTE, s, 16496) & 8) &&
+        F(double, s, 16560) < g_ad64b678 && !(CallC<int>(Ad_Look, s, 1) & 8))
+    {
+        if (!F(int, s, 16428))
+        {
+            F(double, s, 16440) = 0;
+            F(int, s, 16428) = 1;
+        }
+        else if (F(double, s, 16440) > g_ad64b6d0)
+        {
+            F(double, s, 16440) = 3.0;
+            F(int, s, 16428) = 0;
+            F(short, s, 10054) = 20;
+            F(int, s, 16492) = 2;
+        }
+        else
+            F(double, s, 16440) = F(double, F(BYTE*, F(BYTE*, s, 16576), 52), 2960) + F(double, s, 16440);
+    }
+    else
+        F(int, s, 16428) = 0;
+    if (Ts_Flags(F(int, F(BYTE*, s, 16576), 20636)) & 0x8000000)
+    {
+        if (x87_fabs(F(double, s, 16568)) < g_ad64b6e0)
+            F(int, s, 16488) |= 4;
+    }
+    else
+        F(int, s, 16488) &= ~4;
+    if (F(int, s, 16488))
+        F(int, s, 16492) = 0;
+    else if (!F(int, s, 16492))
+        F(int, s, 16492) = 1;
+    float sp = F(float, s, 13100);
+    switch (F(int, s, 16492))
+    {
+    case 0:
+        Ad_Show(s, 0);
+        F(int, s, 9996) = 0;
+        F(float, s, 10000) = (float)grip;
+        break;
+    case 3:
+    {
+        // turning round
+        double edge = v24 * g_ad64b6e0 + hw;
+        int v;
+        if (F(int, s, 15320) > 0)
+            v = F(double, s, 16456) > g_ad64b678 ? 1 : -1;
+        else
+            v = F(double, s, 16456) > g_ad64b678 ? -1 : 1;
+        Ad_Show(s, v);
+        double lt = F(double, s, 16568);
+        if (-edge > lt)
+            F(short, s, 10054) = sa > g_ad64b678 ? 100 : 20;
+        else if (lt > edge)
+            F(short, s, 10054) = sa < g_ad64b678 ? 100 : 20;
+        if (F(float, s, 13100) < g_ad64c320)
+        {
+            F(int, s, 10000) = 0;
+            F(float, s, 9996) = (float)h;
+        }
+        else if (F(float, s, 13100) > g_ad64d350)
+        {
+            F(int, s, 9996) = 0;
+            F(float, s, 10000) = (float)grip;
+        }
+        else
+        {
+            F(int, s, 10000) = 0;
+            F(int, s, 9996) = 0;
+        }
+        break;
+    }
+    case 2:
+    {
+        // backing out
+        Ad_Show(s, 0);
+        double a = 1.0;
+        if (F(double, s, 16440) < g_ad64b670)
+            a = F(double, s, 16440);
+        if (a * g_ad64b698 < sp)
+        {
+            F(int, s, 9996) = 0;
+            F(float, s, 10000) = (float)grip;
+        }
+        if (a * g_ad64b7c0 > sp)
+        {
+            F(int, s, 10000) = 0;
+            F(float, s, 9996) = (float)h;
+        }
+        double left = F(double, s, 16440) - F(double, F(BYTE*, F(BYTE*, s, 16576), 52), 2960);
+        F(double, s, 16440) = left;
+        if (left < g_ad64b678 || (CallC<int>(Ad_Look, s, 1) & 8))
+        {
+            F(short, s, 10054) = 100;
+            F(int, s, 16492) = 1;
+        }
+        break;
+    }
+    case 1:
+    {
+        // driving
+        DWORD f = F(DWORD, s, 16496);
+        if ((f & 2) && (f & 8) && !(Ts_Flags(F(int, F(BYTE*, s, 16576), 20636)) & 0x4000))
+            F(double, s, 16560) = 9.0;
+        if (F(double, s, 16552) * g_ad64b6e0 + hw < x87_fabs(oldLat))
+        {
+            int r = CallC<int>(Ad_Look, s, 0);
+            if (r)
+            {
+                if (r & 8)
+                {
+                    Ad_Show(s, 0);
+                    F(float, s, 10000) = 1.0f;
+                    F(int, s, 9996) = 0;
+                }
+                else
+                {
+                    F(int, s, 10000) = 0;
+                    Ad_Show(s, (r & 1) ? -0.3 : 0.3);
+                    if (F(float, s, 13100) > g_ad64c320)
+                        F(float, s, 9996) = 0.3f;
+                    else
+                        F(int, s, 9996) = 0;
+                }
+                break;
+            }
+        }
+        if (F(BYTE, s, 16496) & 8)
+            CallThis(Ad_Steer, s, 0.0, 0.0, 0.0);
+        else
+            CallThis(Ad_Steer, s, turnRate, F(double, s, 16568), sa);
+        Ai_ThrottleBrake(s, 0, pid.d[0], pid.d[1], pid.d[2], pid.d[3], pid.d[4], pid.d[5], pid.d[6], pid.d[7], target,
+                         sa, v332);
+        break;
+    }
+    }
+    g_ad6962c4 = Ad_Clock();
+    Ad_Finish(s, &g_ad672a68);
+}
+
+} // extern "C"
+
+// === the target speed of a car by its id (FUN_4d5c50)
+
+extern "C" void Sg_ResGet(); KING_ALIAS("_Sg_ResGet", "@Resources_Get@12")
+extern "C" void Sg_Gear(); KING_ALIAS("_Sg_Gear", "_Gear_Choose")
+ASM_VAR(BYTE*, g_sg696ca0, $L_696ca0)
+ASM_VAR(int, g_sg68b990, $L_68b990)
+ASM_VAR(double, g_sg64ca48, $L_64ca48)
+ASM_VAR(double, g_sg64d0c0, $L_64d0c0)
+
+extern "C" {
+
+// [FUN_4d5c50] the speed the AI car stored under id should aim for (64ca48 when there is none, 0 for a player with
+// flag 0x8000000): its offset across the road, the gear chosen for it and the target speed from that
+double __cdecl Ai_CarTargetSpeed(int id)
+{
+    BYTE* res = CallThis<BYTE*>(Sg_ResGet, g_sg696ca0 + 704, id);
+    if (!res)
+        return g_sg64ca48;
+    BYTE* car = F(BYTE*, res, 28);
+    if (!car)
+        return g_sg64ca48;
+    BYTE* cab = F(BYTE*, car, 21600);
+    if (!cab)
+        return g_sg64ca48;
+    int player = F(int, car, 20636);
+    if (player == g_sg68b990)
+        return g_sg64ca48;
+    int gflags = 0, mask = 0;
+    double best = -1.0;
+    double len = Vec3_Length(&F(Vec3, car, 20700));
+    double pedal = F(double, cab, 16560);
+    Matrix t;
+    LrMat m;
+    memcpy(&m, CallThis<const Matrix*>(Cs_M1, car + 16, &t), 48);
+    LrPos pid;
+    Ts_PositionId(&pid, player);
+    double hw, v24;
+    int fl;
+    double lat = Road_LateralOffset(pid, m, player, 0, &hw, &v24, &fl);
+    double target = 30.0;
+    if (Ts_Flags(player) & 0x8000000)
+        return 0;
+    int lvl2 = CallThis<int>(As_Level, cab, hw) << 1;
+    double k = F(double, cab, 16552);
+    float latf = (float)lat;
+    CallC<double>(Sg_Gear, car, lvl2, hw, v24, k, fl, pedal, ((int*)&len)[0], ((int*)&len)[1], F(int, cab, 16500),
+                  F(int, cab, 16504), &best, &gflags, &mask, &lvl2, *(int*)&latf);
+    if (!(Ts_Flags(player) & 0x4000))
+    {
+        if (best > g_ad64b678 && best < g_sg64d0c0 && F(int, cab, 16504))
+            target = best;
+        if (gflags & 8)
+            pedal = 9.0;
+    }
+    double v40 = (lvl2 + 1) * k * g_ad64b6e0 + lat;
+    return Ai_TargetSpeed((BYTE*)player, F(int, cab, 16504), target, 0.0, 1.0, v40, 0, 30.0, pedal);
 }
 
 } // extern "C"

@@ -1595,7 +1595,7 @@ extern "C" void FUN_568680(); KING_ALIAS("_FUN_568680", "@Copter_UpdateWarning@8
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
 extern "C" void FUN_568090(); KING_ALIAS("_FUN_568090", "@Copter_Warnings@8")
 extern "C" void FUN_566970(); KING_ALIAS("_FUN_566970", "@Copter_Frame@8")
-ASM_PROC(FUN_567dc0)
+extern "C" void FUN_567dc0(); KING_ALIAS("_FUN_567dc0", "@Copter_FindLanding@8")
 ASM_PROC(FUN_563600)
 extern "C" void FUN_561f30(); KING_ALIAS("_FUN_561f30", "@Copter_FlightStep@8")
 extern "C" void FUN_50c3a0(); KING_ALIAS("_FUN_50c3a0", "_Shell_WriteThumbnail")    // writes the state (stream, 72, 54, 0)
@@ -5985,6 +5985,109 @@ void __fastcall Copter_Warnings(BYTE* s, void*)
     }
     if (mode == -1)
         Cw_GiveUp(s);
+}
+
+} // extern "C"
+
+// === the copter's landing place (FUN_567dc0)
+
+struct CpPos { DWORD d[8]; };
+struct CpRoom
+{
+    DWORD flags, m_4;
+    double width;
+    const char* module;
+    const char* room;
+    double m_24;
+    int m_32, m_36, m_40, m_44;
+};
+extern "C" void Cp_PushRoad(); KING_ALIAS("_Cp_PushRoad", "@Route_PushRoad@16")
+extern "C" void Cp_Make(); KING_ALIAS("_Cp_Make", "_AI_Make449c40")
+extern "C" CpPos* __cdecl Cp_PosIdRV(CpPos* out, int room, float x, float y, float z); KING_ALIAS("_Cp_PosIdRV", "_Ai_GetPositionIdRV")
+extern "C" void __cdecl Cp_Room(CpPos pos, CpRoom* out); KING_ALIAS("_Cp_Room", "_Road_GetRoadParameters")
+extern "C" float* __cdecl Cp_Coords(float* out, CpPos pos); KING_ALIAS("_Cp_Coords", "_Ai_GetCoordinatesPos")
+extern "C" void Cp_Name(); KING_ALIAS("_Cp_Name", "_Name68d0d8")
+extern "C" void Cp_Find(); KING_ALIAS("_Cp_Find", "_Scene_FindObject")
+extern "C" void Cp_SetMatrix(); KING_ALIAS("_Cp_SetMatrix", "@Copter_SetMatrix@16")
+extern "C" void Cp_Set100(); KING_ALIAS("_Cp_Set100", "@Copter_SetVec100@12")
+extern "C" void Cp_Set112(); KING_ALIAS("_Cp_Set112", "@Copter_SetVec112@12")
+ASM_FUNC(Cp_5662f0, FUN_5662f0)
+ASM_VAR(Vec3, g_cpUp, $L_702630)
+ASM_VAR(Vec3, g_cpEye, $L_702650)
+ASM_VAR(char, g_cp66d638, $L_66d638)
+ASM_VAR(char, g_cp66d628, $L_66d628)
+ASM_VAR(float, g_cp64fd4c, $L_64fd4c)
+ASM_VAR(float, g_cp64fd48, $L_64fd48)
+ASM_VAR(float, g_cp64c450, $L_64c450)
+
+static void Cp_Place(BYTE* s, BYTE* obj, const Matrix* m)
+{
+    CallThis(Cp_SetMatrix, s, obj, m);
+    CallThis(Cp_Set100, s, &g_cpEye);
+    CallThis(Cp_Set112, s, &g_cpEye);
+}
+
+static double Cp_Dist2(const Vec3& a, const float* b)
+{
+    float dx = (float)((double)a.x - b[0]), dy = (float)((double)a.y - b[1]);
+    double dz = (double)a.z - b[2];
+    return (double)dx * dx + (double)dy * dy + dz * dz;
+}
+
+extern "C" {
+
+// [FUN_567dc0] copter s (position +36, route +144 started unless +3148) finds the road under it: none sends it
+// state 4; far from it, it is set over the road's point; else, away from its pad (+3256), on the pad object named
+// by +3272
+void __fastcall Copter_FindLanding(BYTE* s, void*)
+{
+    if (!F(int, s, 3148))
+        CallThis(Cp_PushRoad, s + 144, F(int, F(BYTE*, s, 96), 12), s + 36);
+    int room;
+    CallC(Cp_Make, &room, F(int, F(BYTE*, s, 96), 12));
+    if (room == -1)
+    {
+        if (F(int, s, 3236) != 4)
+            CallThis(Cp_5662f0, s, 4);
+        return;
+    }
+    const float* p = (const float*)(s + 36);
+    CpPos pid;
+    Cp_PosIdRV(&pid, room, p[0], p[1], p[2]);
+    if (pid.d[0] == (DWORD)-1)
+    {
+        CallThis(Cp_5662f0, s, 4);
+        return;
+    }
+    CpRoom info;
+    info.flags = 0;
+    info.width = 0;
+    info.module = &g_cp66d638;
+    info.room = &g_cp66d628;
+    info.m_24 = 0;
+    info.m_36 = -1;
+    info.m_40 = -1;
+    Cp_Room(pid, &info);
+    Vec3 c;
+    Cp_Coords(&c.x, pid);
+    if (Cp_Dist2(c, p) > g_cp64fd4c)
+    {
+        Vec3 t;
+        t.x = (float)(g_cpUp.x * (double)g_cp64c450 + c.x);
+        float uy = (float)(g_cpUp.y * (double)g_cp64c450), uz = (float)(g_cpUp.z * (double)g_cp64c450);
+        t.y = (float)((double)uy + c.y);
+        t.z = (float)((double)uz + c.z);
+        Matrix T;
+        Cp_Place(s, F(BYTE*, s, 96), Matrix_Translation(&T, t));
+        return;
+    }
+    if (Cp_Dist2(F(Vec3, s, 3256), p) < g_cp64fd48)
+        return;
+    BYTE* obj = CallC<BYTE*>(Cp_Find, 0, CallC<const char*>(Cp_Name, F(int, s, 3272)));
+    if (!obj)
+        return;
+    Matrix T;
+    Cp_Place(s, obj, Matrix_Translation(&T, F(Vec3, s, 3256)));
 }
 
 } // extern "C"
