@@ -1112,7 +1112,7 @@ extern "C" void Gc_DumpText(); KING_ALIAS("_Gc_DumpText", "_Dump_Text")
 extern "C" void Gc_NormalizeThis(); KING_ALIAS("_Gc_NormalizeThis", "@Vec3_NormalizeThis@8")
 extern "C" void Gc_AddAssign(); KING_ALIAS("_Gc_AddAssign", "@Vec3_AddAssign@16")
 ASM_FUNC(Gc_Contact, FUN_503e30)
-ASM_FUNC(Gc_State, FUN_506210)
+extern "C" void Gc_State(); KING_ALIAS("_Gc_State", "@Body_GroundNormal@12")
 ASM_VAR(int, g_gc696be8, $L_696be8)
 ASM_VAR(AsmLabel, g_gc674a20, $L_674a20)
 ASM_VAR(BYTE, g_gc698166, $L_698166)
@@ -1239,7 +1239,7 @@ int __fastcall Wheels_FindGround(BYTE* s)
 
 // === a wheel on its surface (FUN_502780)
 
-ASM_FUNC(Ws_InPatch, FUN_502270)
+extern "C" void Ws_InPatch(); KING_ALIAS("_Ws_InPatch", "_Patch_SegmentHits")
 extern "C" void Ws_RampValue(); KING_ALIAS("_Ws_RampValue", "@Ramp_Value@8")
 extern "C" void Ws_AddContact(); KING_ALIAS("_Ws_AddContact", "@Engine_AddContact@20")
 extern "C" void Ws_CameraGet(); KING_ALIAS("_Ws_CameraGet", "@Camera_Get@12")
@@ -1538,6 +1538,263 @@ int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w)
         WS(9840) = (float)(g * g_ws64d378 + g_ws64b5b8);
     F(float, s, 15248 + w * 4) = WS(3644);
     return kind;
+}
+
+} // extern "C"
+
+// === a segment against a four-cornered patch (FUN_502270)
+
+extern "C" void Ph_PlaneHitT(); KING_ALIAS("_Ph_PlaneHitT", "_Vec3_PlaneHitT")
+ASM_VAR(double, g_ph64b678, $L_64b678)
+ASM_VAR(float, g_ph64c250, $L_64c250)
+ASM_VAR(double, g_ph64b670, $L_64b670)
+
+extern "C" {
+
+// [FUN_502270] 1 when a or b lies inside the patch p[4] (inside all four edges, whose outward normals are the
+// edges turned a quarter about z) or the segment a-b crosses an edge's plane within that edge
+int __cdecl Patch_SegmentHits(const Vec3* p, const Vec3* a, const Vec3* b)
+{
+    Matrix R;
+    Matrix_RotationZ(&R, 1.5707964f);
+    Vec3 edge[4], nrm[4], hit[4], tmp;
+    float len[4];
+    double t[4];
+    int flag[4];
+    memset(edge, 0, sizeof edge);
+    memset(nrm, 0, sizeof nrm);
+    for (int i = 0; i < 4; i++)
+    {
+        if (i < 2)
+        {
+            edge[i].x = (float)((double)p[i + 1].x - p[i].x);
+            edge[i].y = (float)((double)p[i + 1].y - p[i].y);
+            edge[i].z = (float)((double)p[i + 1].z - p[i].z);
+            double L = Vec3_Length(&edge[i]);
+            len[i] = (float)L;
+            if (L != g_ph64b678)
+                CallThis(Ws_MulAssign, &edge[i], &tmp, (float)(g_ph64c250 / L));
+        }
+        else
+        {
+            len[i] = len[i - 2];
+            edge[i].x = (float)-(double)edge[i - 2].x;
+            edge[i].y = (float)-(double)edge[i - 2].y;
+            edge[i].z = (float)-(double)edge[i - 2].z;
+        }
+    }
+    const float* m = R.m;
+    for (int i = 0; i < 4; i++)
+    {
+        if (i < 2)
+        {
+            const Vec3& e = edge[i];
+            nrm[i].x = (float)((double)m[6] * e.z + (double)m[0] * e.x + (double)m[3] * e.y + m[9]);
+            nrm[i].y = (float)((double)m[7] * e.z + (double)m[1] * e.x + (double)m[4] * e.y + m[10]);
+            nrm[i].z = (float)((double)m[8] * e.z + (double)m[2] * e.x + (double)m[5] * e.y + m[11]);
+        }
+        else
+        {
+            nrm[i].x = (float)-(double)nrm[i - 2].x;
+            nrm[i].y = (float)-(double)nrm[i - 2].y;
+            nrm[i].z = (float)-(double)nrm[i - 2].z;
+        }
+    }
+    for (int k = 0; k < 2; k++)
+    {
+        const Vec3* q = k ? b : a;
+        int in = 1;
+        for (int i = 0; i < 4; i++)
+            in = in && ((double)q->z - p[i].z) * nrm[i].z + ((double)q->y - p[i].y) * nrm[i].y
+                               + ((double)q->x - p[i].x) * nrm[i].x < g_ph64b678;
+        if (in)
+            return 1;
+    }
+    Vec3 d;
+    d.x = (float)((double)b->x - a->x);
+    d.y = (float)((double)b->y - a->y);
+    d.z = (float)((double)b->z - a->z);
+    double L = Vec3_Length(&d);
+    if (L == g_ph64b678)
+        return 0;
+    CallThis(Ws_MulAssign, &d, &tmp, (float)(g_ph64b670 / L));
+    memset(hit, 0, sizeof hit);
+    for (int i = 0; i < 4; i++)
+        hit[i] = *CallC<const Vec3*>(Ph_PlaneHitT, &tmp, &p[i], &nrm[i], a, &d, &t[i]);
+    for (int i = 0; i < 4; i++)
+    {
+        flag[i] = t[i] >= g_ph64b678 && t[i] <= L;
+        if (!flag[i])
+            continue;
+        double pr = ((double)hit[i].x - p[i].x) * edge[i].x + ((double)hit[i].y - p[i].y) * edge[i].y
+                    + ((double)hit[i].z - p[i].z) * edge[i].z;
+        if (pr < g_ph64b678 || pr > len[i])
+            flag[i] = 0;
+    }
+    return flag[0] || flag[1] || flag[2] || flag[3];
+}
+
+} // extern "C"
+
+// === the ground normal under four wheels (FUN_506210)
+
+extern "C" void Gn_AddAssign(); KING_ALIAS("_Gn_AddAssign", "@Vec3_AddAssign@16")
+
+// (v x u) for u = b - a kept unrounded and v = c - a with its x, y rounded, as the code keeps them
+static Vec3 Gn_Normal(const float* a, const float* b, const float* c)
+{
+    double ux = (double)b[0] - a[0], uy = (double)b[1] - a[1], uz = (double)b[2] - a[2];
+    float vx = (float)((double)c[0] - a[0]), vy = (float)((double)c[1] - a[1]);
+    double vz = (double)c[2] - a[2];
+    Vec3 n;
+    n.x = (float)(uz * vy - uy * vz);
+    n.y = (float)(vz * ux - uz * vx);
+    n.z = (float)(uy * vx - (double)vy * ux);
+    return n;
+}
+
+extern "C" {
+
+// [FUN_506210] body s's ground normal +208: the mean of the unit normals of the triangles its four wheels'
+// contacts (+248 + 248 i, touching when the word +272 + 248 i is set) make; +196 when it has not four wheels,
+// sits on +2232, is held (+6585 with need set and +3640 below 1 needed) or, when need is set, no triangle counts
+void __fastcall Body_GroundNormal(BYTE* s, void*, int need)
+{
+    if (F(int, s, 3540) != 4)
+    {
+        F(Vec3, s, 208) = F(Vec3, s, 196);
+        return;
+    }
+    Vec3 n[8], u[8], sum = g_zeroVec, tmp;
+    memset(n, 0, sizeof n);
+    memset(u, 0, sizeof u);
+    int count = 0;
+    if ((s[6585] && (!need || !(F(float, s, 3640) < g_ph64c250))) || F(int, s, 2232))
+    {
+        F(Vec3, s, 208) = F(Vec3, s, 196);
+        return;
+    }
+    const float* P[4];
+    bool t[4];
+    for (int i = 0; i < 4; i++)
+    {
+        P[i] = (const float*)(s + 248 + i * 248);
+        t[i] = F(WORD, s, 272 + i * 248) != 0;
+    }
+    int valid[4];
+    valid[0] = t[0] && t[1] && t[2];
+    if (valid[0])
+        n[0] = Gn_Normal(P[0], P[1], P[2]);
+    valid[1] = t[0] && t[1] && t[3];
+    if (valid[1])
+        n[1] = Gn_Normal(P[1], P[3], P[0]);
+    valid[2] = t[0] && t[2] && t[3];
+    if (valid[2])
+    {
+        float ax = (float)((double)P[0][0] - P[2][0]), ay = (float)((double)P[0][1] - P[2][1]), az = (float)((double)P[0][2] - P[2][2]);
+        float bx = (float)((double)P[3][0] - P[2][0]), by = (float)((double)P[3][1] - P[2][1]), bz = (float)((double)P[3][2] - P[2][2]);
+        n[2].x = (float)((double)by * az - (double)bz * ay);
+        n[2].y = (float)((double)bz * ax - (double)bx * az);
+        n[2].z = (float)((double)bx * ay - (double)by * ax);
+    }
+    valid[3] = t[1] && t[2] && t[3];
+    if (valid[3])
+    {
+        Vec3 c, d;
+        c.x = (float)((double)P[2][0] - P[3][0]);
+        c.y = (float)((double)P[2][1] - P[3][1]);
+        c.z = (float)((double)P[2][2] - P[3][2]);
+        Vec3_Cross(&n[3], Vec3_Sub(&d, (const Vec3*)P[1], (const Vec3*)P[3]), &c);
+    }
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        if (!valid[i])
+            continue;
+        u[i] = *Vec3_Normalized(&tmp, &n[i]);
+        CallThis(Gn_AddAssign, &sum, &tmp, &u[i]);
+        count++;
+    }
+    if (need && !count)
+        F(Vec3, s, 208) = F(Vec3, s, 196);
+    else
+        F(Vec3, s, 208) = *Vec3_Normalized(&tmp, &sum);
+}
+
+} // extern "C"
+
+// === sliding a body's move along what it hits (FUN_506ae0)
+
+extern "C" void Sl_SetThis(); KING_ALIAS("_Sl_SetThis", "@Vec3_SetThis@20")
+ASM_VAR(float, g_sl64c334, $L_64c334)
+
+static Vec3 Sl_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_506ae0] body s's move from +2292 to +52 cast against its world (+6672, kind 6) up to three times, each
+// hit turning the rest of the move along the surface (pushed off it a little more each time): when every cast
+// hits the body stays at +2292 (0); else it ends where the last free move does, +2292 shifted alike, the
+// inverse frames renewed and the hit object (+244) kept (1)
+int __fastcall Body_SlideMove(BYTE* s, void*)
+{
+    BYTE nd[256];
+    CallThis(FUN_5ef5c0, nd);
+    memcpy(nd + 4, &g_identity, 48);
+    Vec3* P = &F(Vec3, s, 52);
+    Vec3* Q = &F(Vec3, s, 2292);
+    Vec3 d = Sl_Set((double)P->x - Q->x, (double)P->y - Q->y, (double)P->z - Q->z);
+    Vec3 p0 = *P, w = d, tmp;
+    F(Vec3, nd, 76) = *P;
+    F(Vec3, nd, 88) = Sl_Set((double)d.x + p0.x, (double)d.y + p0.y, (double)d.z + p0.z);
+    F(int, nd, 116) = 0;
+    F(int, nd, 0) = F(int, s, 6668);
+    int res = 0;
+    for (int i = 0; i < 3; i++)
+    {
+        BYTE* o = F(BYTE*, s, 6672);
+        res = CallVirt<int>(o, 52, 6, nd);
+        if ((res & 2) && !F(BYTE*, nd, 104))
+        {
+            F(int, s, 15444) = 1;
+            F(BYTE*, nd, 104) = o;
+        }
+        if (!(res & 1))
+        {
+            *P = Sl_Set((double)p0.x + w.x, (double)w.y + p0.y, (double)w.z + p0.z);
+            Vec3 e = Sl_Set((double)w.x - d.x, (double)w.y - d.y, (double)w.z - d.z);
+            CallThis(Gn_AddAssign, Q, &tmp, &e);
+            Matrix inv;
+            memcpy(s + 2304, Matrix_Inverse(&inv, (const Matrix*)(s + 16)), 48);
+            memcpy(s + 2352, Matrix_Inverse(&inv, (const Matrix*)(s + 2256)), 48);
+            if (res & 2)
+                F(BYTE*, s, 244) = F(BYTE*, nd, 104);
+            return 1;
+        }
+        const Vec3& n = F(Vec3, nd, 64);
+        double L = Vec3_Length(&w);
+        Vec3 nn = Sl_Set(n.x * L, n.y * L, n.z * L);
+        double k = i;
+        Vec3 m = Sl_Set(nn.x * k, nn.y * k, nn.z * k);
+        Vec3 cc = Sl_Set(m.x * (double)g_sl64c334, m.y * (double)g_sl64c334, m.z * (double)g_sl64c334);
+        Vec3 cr = Sl_Set((double)n.y * w.z - (double)n.z * w.y, (double)n.z * w.x - (double)w.z * n.x,
+                         (double)w.y * n.x - (double)n.y * w.x);
+        Vec3 t, t2;
+        Vec3_Cross(&t, &cr, &n);
+        w = *Vec3_Add(&t2, &t, &cc);
+        F(Vec3, nd, 76) = p0;
+        Vec3_Add(&F(Vec3, nd, 88), &p0, &w);
+    }
+    *P = *Q;
+    Matrix inv;
+    memcpy(s + 2304, Matrix_Inverse(&inv, (const Matrix*)(s + 16)), 48);
+    return 0;
 }
 
 } // extern "C"

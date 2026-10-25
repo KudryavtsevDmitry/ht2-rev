@@ -936,7 +936,7 @@ extern "C" BYTE* __fastcall Sce5fa6d0_DeletingDestructor(BYTE* s, void*, int fla
 // [$L_5fc6c0]
 extern "C" BYTE* __fastcall Sce5fc6c0_DeletingDestructor(BYTE* s, void*, int flags) { return Sce_DeleteAfter(s, flags, FUN_5fcc70); }
 
-ASM_PROC(FUN_5f21e0)
+extern "C" void FUN_5f21e0(); KING_ALIAS("_FUN_5f21e0", "@Slot_CastRay@20")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 ASM_PROC(FUN_5f1db0)
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
@@ -2031,7 +2031,7 @@ extern "C" int __fastcall SceneNode5f4170_Draw(BYTE* s, void*, BYTE* a, BYTE* b)
     return 1;
 }
 
-ASM_PROC(FUN_5fbdf0)
+extern "C" void FUN_5fbdf0(); KING_ALIAS("_FUN_5fbdf0", "@Face_RayHit@16")
 // [$L_5fc2c0] the base test of node s for a and b; when it sets bit 2 the name "<+132>::<+164>" goes to b + 124
 // (and 0 is returned)
 extern "C" int __fastcall SceneNode5fc2c0_Test(BYTE* s, void*, BYTE* a, BYTE* b)
@@ -2161,7 +2161,7 @@ extern "C" int __fastcall SceneNode5f3060_Draw(BYTE* s, void*, void* a1, BYTE* m
     return Sce141_DrawXform(s, 112, a1, m, a3, b);
 }
 
-ASM_PROC(FUN_5f21e0)
+extern "C" void FUN_5f21e0(); KING_ALIAS("_FUN_5f21e0", "@Slot_CastRay@20")
 // the hit test of transform nodes with the world node at +node and the hit value at +copy
 static int Sce141_HitXform(BYTE* s, int node, int copy, int flags, BYTE* rec)
 {
@@ -4129,6 +4129,301 @@ int __fastcall Obj_RayHit(BYTE* s, void*, unsigned flags, BYTE* r)
     memcpy(r + 52, p1, 12);
     memcpy(r + 64, p2, 12);
     return 1;
+}
+
+} // extern "C"
+
+// === a ray against a box face (FUN_5fbdf0)
+
+extern "C" BOOL __cdecl Vec3_NearlyEqual(const void* a, const void* b);
+ASM_VAR(double, g_bf64b678, $L_64b678)
+ASM_VAR(double, g_bf64b670, $L_64b670)
+
+extern "C" {
+
+// [FUN_5fbdf0] face s (normal +48, point +60, half sizes +84..) against ray r (from +76 to +88 through the frame
+// r +4, radius r +0): unless hidden (+108, +40 bit 1), a hit of the line inside the face gives 4 (no owner,
+// r +124 cleared) or the owner's (+128) test | 2 (r +104 the owner); with flag 2 a sphere hit asks the owner
+int __fastcall Face_RayHit(BYTE* s, void*, int flags, BYTE* r)
+{
+    if (F(int, s, 108) || (s[40] & 1))
+        return 0;
+    const float* p = (const float*)(r + 76);
+    const float* q = (const float*)(r + 88);
+    if (Vec3_NearlyEqual(p, q))
+        return 0;
+    const float* M = (const float*)(r + 4);
+    float a[3], b[3];
+    a[0] = (float)((double)M[6] * p[2] + (double)M[3] * p[1] + (double)M[0] * p[0] + M[9]);
+    a[1] = (float)((double)M[7] * p[2] + (double)M[4] * p[1] + (double)M[1] * p[0] + M[10]);
+    a[2] = (float)((double)M[8] * p[2] + (double)M[5] * p[1] + (double)M[2] * p[0] + M[11]);
+    b[0] = (float)((double)M[3] * q[1] + (double)M[6] * q[2] + (double)q[0] * M[0] + M[9]);
+    b[1] = (float)((double)M[4] * q[1] + (double)M[1] * q[0] + (double)M[7] * q[2] + M[10]);
+    b[2] = (float)((double)M[5] * q[1] + (double)M[2] * q[0] + (double)M[8] * q[2] + M[11]);
+    double dx = (double)b[0] - a[0], dy = (double)b[1] - a[1], dz = (double)b[2] - a[2];
+    const float* N = (const float*)(s + 48);
+    double den = dz * F(float, s, 56) + dy * N[1] + dx * N[0];
+    if (den < g_bf64b678 || !(den > g_ps64b748))
+        return 0;
+    double base = (double)F(float, s, 68) * N[2] + (double)F(float, s, 64) * N[1] + (double)F(float, s, 60) * N[0];
+    BYTE* o = F(BYTE*, s, 128);
+    double t = -(((double)N[2] * a[2] + (double)N[1] * a[1] + (double)N[0] * a[0] - base) / den);
+    float h[3];
+    if (t > g_ps651710 && t < g_ps652d00)
+    {
+        float d[3] = {(float)dx, (float)dy, (float)dz};
+        float w[3] = {(float)(d[0] * t), (float)(d[1] * t), (float)(d[2] * t)};
+        h[0] = (float)((double)w[0] + a[0]);
+        h[1] = (float)((double)w[1] + a[1]);
+        h[2] = (float)((double)w[2] + a[2]);
+        if (Near3(h[0], F(float, s, 60), F(float, s, 84)) && Near3(h[1], F(float, s, 64), F(float, s, 88))
+            && Near3(h[2], F(float, s, 68), F(float, s, 92)))
+        {
+            if (!o)
+            {
+                r[124] = 0;
+                return 4;
+            }
+            int res = CallVirt<int>(o, 52, flags, r);
+            if (!(res & 2))
+                F(BYTE*, r, 104) = o;
+            return res | 2;
+        }
+    }
+    if (!o || !(flags & 2))
+        return 0;
+    double num = (double)N[1] * a[1] + (double)N[2] * a[2] + (double)N[0] * a[0] - base + F(float, r, 0);
+    double t2 = -(num / den);
+    if (t2 < g_bf64b678)
+        t2 = 0;
+    else if (t2 > g_bf64b670)
+        return 0;
+    float e[3] = {(float)((double)b[0] - a[0]), (float)((double)b[1] - a[1]), (float)((double)b[2] - a[2])};
+    float f[3] = {(float)(e[0] * t2), (float)(e[1] * t2), (float)(e[2] * t2)};
+    float g[3] = {(float)((double)a[0] + f[0]), (float)((double)a[1] + f[1]), (float)((double)a[2] + f[2])};
+    float rr = F(float, r, 0);
+    for (int k = 0; k < 3; k++)
+        h[k] = (float)((double)g[k] + (float)((double)N[k] * rr));
+    if (Near3(h[0], F(float, s, 60), F(float, s, 84)) && Near3(h[1], F(float, s, 64), F(float, s, 88))
+        && Near3(h[2], F(float, s, 68), F(float, s, 92)))
+        return CallVirt<int>(o, 52, flags, r);
+    return 0;
+}
+
+} // extern "C"
+
+// === a level-of-detail switch (a method at $L_5f9f20)
+
+extern "C" void Ld_RenderLevel(); KING_ALIAS("_Ld_RenderLevel", "@Render_Level@8")
+extern "C" void Ld_PlaneTransform(); KING_ALIAS("_Ld_PlaneTransform", "@Plane_Transform@12")
+extern "C" void Ld_Multiply(); KING_ALIAS("_Ld_Multiply", "_Matrix_Multiply")
+extern "C" void Ld_Length(); KING_ALIAS("_Ld_Length", "_Vec3_Length")
+ASM_VAR(double, g_ld64b670, $L_64b670)
+ASM_VAR(double, g_ld64b5a0, $L_64b5a0)
+ASM_VAR(double, g_ld64b678, $L_64b678)
+ASM_VAR(double, g_ld64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ld64eba0, $L_64eba0)
+ASM_VAR(double, g_ld652d08, $L_652d08)
+
+extern "C" {
+
+// [$L_5f9f20] lod switch s (+52 levels with their distances +80, centre +64 / plane +76, mode +56) drawn in view
+// v: the distance by mode (1 the depth in the view frame, 0 along the view's axis, else to the plane), scaled by
+// the detail setting (v +8456) and, in mode 1, by the screen size, picks the level; with +60 bit 1 the
+// neighbouring level is blended in by the alpha v +8440; 0 when nothing is drawn
+int __fastcall Lod_Draw(BYTE* s, void*, int a, BYTE* v)
+{
+    if (!Scene_TestInfo(s, 0, a, (int)v))
+        return 0;
+    float dist;
+    int mode = F(int, s, 56);
+    const float* c = (const float*)(s + 64);
+    if (mode == 1)
+    {
+        const float* M = (const float*)(v + 2240 + F(int, v, 8224) * 48);
+        dist = (float)((double)M[7] * c[2] + (double)c[1] * M[4] + (double)M[1] * c[0] + M[10]);
+    }
+    else if (mode == 0)
+    {
+        const float* G = (const float*)(v + 5216 + F(int, v, 8236) * 48);
+        double x = (double)G[3] * c[1] + (double)G[6] * c[2] + (double)G[0] * c[0] + G[9];
+        double y = (double)G[4] * c[1] + (double)G[1] * c[0] + (double)G[7] * c[2] + G[10];
+        double z = (double)G[5] * c[1] + (double)G[2] * c[0] + (double)G[8] * c[2] + G[11];
+        dist = (float)(y * F(float, v, 4224) + z * F(float, v, 4236) + x * F(float, v, 4212) + F(float, v, 4248));
+    }
+    else
+    {
+        float pl[4] = {c[0], c[1], c[2], F(float, s, 76)};
+        float m[12];
+        CallC(Ld_Multiply, m, v + 5216 + F(int, v, 8236) * 48, v + 4208);
+        CallThis(Ld_PlaneTransform, pl, m);
+        double L = CallC<double>(Ld_Length, pl);
+        dist = (float)(pl[3] / L);
+    }
+    int n = F(int, s, 52);
+    const float* arr = F(const float*, s, 80);
+    int i;
+    float r;
+    if (F(int, s, 56) == 1)
+    {
+        int k = F(int, v, 8228) * 48;
+        double m = F(float, v, 4256 + k);
+        if (F(float, v, 4272 + k) > m)
+            m = F(float, v, 4272 + k);
+        double q = (double)(100 - F(int, v, 8456)) * F(float, s, 76) * m * g_ld64b5a0;
+        if (!(dist + q > g_ld64b670))
+            return 0;
+        if (dist < g_ld64b5a0)
+        {
+            i = n - 1;
+            r = dist;
+        }
+        else
+        {
+            int half = CallThis<int>(Ld_RenderLevel, v) / 2;
+            r = (float)((double)half * ((q + q) / dist));
+            for (i = n - 1; i >= 0 && !(arr[i] < r); i--)
+                ;
+            if (i < 0)
+                return 0;
+        }
+    }
+    else
+    {
+        r = (float)((double)(100 - F(int, v, 8456)) * dist * g_ld64b5a0);
+        for (i = 0; i < n && !(arr[i] > r); i++)
+            ;
+    }
+    if (i < 0 || i >= n)
+        return 0;
+    if (!(s[60] & 1))
+    {
+        Slots_Call48(s, 0, i, a, (int)v);
+        return 1;
+    }
+    double t = ((double)r - arr[i - 1]) / ((double)arr[i] - arr[i - 1]);
+    BYTE alpha = v[8440];
+    if (t < g_ld64b678)
+        t = 0;
+    else if (t > g_ld64b670)
+        t = 1.0;
+    if (i > 0 && t < g_ld64b6e0)
+    {
+        v[8440] = (BYTE)(int)((g_ld64b670 - (t + t)) * g_ld64eba0);
+        Slots_Call48(s, 0, i - 1, a, (int)v);
+    }
+    v[8440] = 255;
+    Slots_Call48(s, 0, i, a, (int)v);
+    if (i < F(int, s, 52) - 1 && t > g_ld64b6e0)
+    {
+        v[8440] = (BYTE)(int)((t - g_ld64b6e0) * g_ld652d08);
+        Slots_Call48(s, 0, i + 1, a, (int)v);
+    }
+    v[8440] = alpha;
+    return 1;
+}
+
+} // extern "C"
+
+// === casting a ray into one slot's objects (FUN_5f21e0)
+
+extern "C" void Rs_TscNow(); KING_ALIAS("_Rs_TscNow", "_Tsc_Now")
+extern "C" void Rs_Inverse(); KING_ALIAS("_Rs_Inverse", "_Matrix_Inverse")
+extern "C" void Rs_Length(); KING_ALIAS("_Rs_Length", "_Vec3_Length")
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(int, g_rs702e74, $L_702e74)                // ray casts timed
+ASM_VAR(double, g_rs702e78, $L_702e78)             // their time
+ASM_VAR(BYTE, g_rs723a54, $L_723a54)
+ASM_VAR(float, g_rsInv, $L_723a58)                 // the ray frame's inverse (48 bytes)
+
+static void __cdecl Rs_AtexitNop() {}
+
+// the ray's timing closed when its nesting (+204) ends
+static void Rs_EndTiming(BYTE* r)
+{
+    if (--F(int, r, 204))
+        return;
+    F(double, r, 192) = CallC<double>(Rs_TscNow) - F(double, r, 192);
+    g_rs702e74 += F(int, r, 200);
+    g_rs702e78 = g_rs702e78 + F(double, r, 192);
+}
+
+extern "C" {
+
+// [FUN_5f21e0] ray r (208 bytes: frame +4, hit +52, start +76) into the objects of slot i of s (+48, chained by
+// +8), each answering its method 52: the first hit is returned, or with flag 8 the hit nearest the start (or the
+// last of kind 2) is kept in r; the cast is timed (702e74 / 702e78)
+int __fastcall Slot_CastRay(BYTE* s, void*, int i, int flags, BYTE* r)
+{
+    if (i >= F(int, s, 52) || i < 0)
+        return 0;
+    if (!F(int, r, 204))
+    {
+        F(double, r, 192) = CallC<double>(Rs_TscNow);
+        F(int, r, 200) = 0;
+    }
+    F(int, r, 204)++;
+    if (!(flags & 8))
+    {
+        for (BYTE* o = F(BYTE**, s, 48)[i]; o; o = F(BYTE*, o, 8))
+        {
+            int res = CallVirt<int>(o, 52, flags, r);
+            if (res)
+            {
+                Rs_EndTiming(r);
+                return res;
+            }
+        }
+        Rs_EndTiming(r);
+        return 0;
+    }
+    BYTE save[208], best[208];
+    Node_Init(save, 0);
+    Node_Init(best, 0);
+    int bestRes = 0;
+    double bestDist = 1000000.0;
+    memcpy(save, r, 208);
+    memcpy(best, r, 208);
+    for (BYTE* o = F(BYTE**, s, 48)[i]; o; o = F(BYTE*, o, 8))
+    {
+        int res = CallVirt<int>(o, 52, flags, r);
+        if (res & 1)
+        {
+            if (!(g_rs723a54 & 1))
+            {
+                g_rs723a54 |= 1;
+                memset(&g_rsInv, 0, 48);
+                atexit(Rs_AtexitNop);
+            }
+            float tmp[12];
+            memcpy(&g_rsInv, CallC<float*>(Rs_Inverse, tmp, r + 4), 48);
+            const float* M = &g_rsInv;
+            const float* h = (const float*)(r + 52);
+            double hx = (double)M[0] * h[0] + (double)M[6] * h[2] + (double)M[3] * h[1] + M[9];
+            float hy = (float)((double)M[1] * h[0] + (double)M[7] * h[2] + (double)M[4] * h[1] + M[10]);
+            float hz = (float)((double)M[2] * h[0] + (double)M[8] * h[2] + (double)M[5] * h[1] + M[11]);
+            float d[3];
+            d[0] = (float)(F(float, r, 76) - hx);
+            d[1] = (float)((double)F(float, r, 80) - hy);
+            d[2] = (float)((double)F(float, r, 84) - hz);
+            double dist = CallC<double>(Rs_Length, d);
+            if (!(bestRes & 1) || dist < bestDist)
+            {
+                bestDist = dist;
+                memcpy(best, r, 208);
+                bestRes = res;
+            }
+        }
+        if (res & 2)
+        {
+            memcpy(best, r, 208);
+            bestRes = res;
+        }
+        memcpy(r, save, 208);
+    }
+    memcpy(r, best, 208);
+    Rs_EndTiming(r);
+    return bestRes;
 }
 
 } // extern "C"

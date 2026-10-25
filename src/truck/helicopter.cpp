@@ -2895,7 +2895,7 @@ ASM_VAR(int, g_ws_carTypes, $L_6ce34c)
 ASM_VAR(void*, g_ws_prevCreate, $L_6f3418)     // the create hook replaced by Game_CreateObject
 ASM_VAR(DWORD, g_ws_prevHook2, $L_6f341c)
 extern "C" int __cdecl MissionObj_Event(int* e, int a);
-ASM_VAR(AsmLabel, g_ws_569550, $L_569550)
+ASM_VAR(AsmLabel, g_ws_569550, _Terrain_RayCallback)
 ASM_VAR(AsmLabel, s_ws_iniFile, $L_672998)
 ASM_VAR(char*, g_ws_iniPath, $L_696868)
 ASM_VAR(int, g_ws_696900, $L_696900)
@@ -5363,6 +5363,134 @@ void __fastcall Copter_FlightStep(BYTE* s, void*)
     Matrix inv;
     memcpy(s + 48, Matrix_Inverse(&inv, (const Matrix*)s), 48);
     F(int, s, 3540) = 0;
+}
+
+} // extern "C"
+
+// === the helicopter heading for its target (FUN_5665c0)
+
+ASM_FUNC(Ht_ClearAhead, FUN_562c20)
+extern "C" void Ht_NodePos(); KING_ALIAS("_Ht_NodePos", "_Node_Position")
+extern "C" void Ht_MulAssign(); KING_ALIAS("_Ht_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(double, g_ht64b678, $L_64b678)
+ASM_VAR(double, g_ht64b670, $L_64b670)
+ASM_VAR(double, g_ht64b660, $L_64b660)
+ASM_VAR(float, g_ht64c320, $L_64c320)
+ASM_VAR(float, g_ht64c450, $L_64c450)
+ASM_VAR(float, g_ht64c2f8, $L_64c2f8)
+
+static Vec3 Ht_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_5665c0] helicopter s flying to its target +3256: 1 while the way (level, by FUN_562c20 along its side
+// axis) is clear farther than the target; else it starts the approach (flags +3384 .. +3464), its speed factor
+// +3448 by distance and turn rate, the next waypoint (+3468, from the route stack +144 or the target) popped once
+// reached; 0
+int __fastcall Copter_HeadForTarget(BYTE* s, void*)
+{
+    F(int, s, 3148) = 1;
+    Vec3 d, tmp;
+    d.x = (float)((double)F(float, s, 3256) - F(float, s, 36));
+    d.y = (float)((double)F(float, s, 3260) - F(float, s, 40));
+    d.z = 0;
+    float L = (float)Vec3_Length(&d);
+    if (L > g_ht64b678)
+        CallThis(Ht_MulAssign, &d, &tmp, (float)(g_ht64b670 / L));
+    const float* M = (const float*)s;
+    const float* Y = &g_axisY.x;
+    const float* Z = &g_axisZ.x;
+    double fx = (double)Y[2] * M[6] + (double)Y[1] * M[3] + (double)Y[0] * M[0];
+    double fy = (double)Y[2] * M[7] + (double)Y[1] * M[4] + (double)Y[0] * M[1];
+    double fz = (double)Y[2] * M[8] + (double)Y[1] * M[5] + (double)Y[0] * M[2];
+    float cx = (float)(fz * Z[1] - fy * Z[2]);
+    float cy = (float)(fx * Z[2] - fz * Z[0]);
+    double cz = fy * Z[0] - fx * Z[1];
+    Vec3 e = Ht_Set((double)cy * Z[2] - cz * Z[1], cz * Z[0] - (double)cx * Z[2], (double)cx * Z[1] - (double)cy * Z[0]), n;
+    Vec3_Normalized(&n, &e);
+    if (CallThis<double>(Ht_ClearAhead, s, &n) + g_ht64c320 > L)
+        return 1;
+    F(int, s, 3392) = 1;
+    F(int, s, 3440) = 0;
+    F(int, s, 3384) = 1;
+    F(int, s, 3388) = 0;
+    F(int, s, 3436) = 1;
+    F(int, s, 3464) = 1;
+    double t = x87_fabs((double)F(float, s, 108) * F(float, s, 76) + (double)F(float, s, 104) * F(float, s, 64)
+                        + (double)F(float, s, 52) * F(float, s, 100)) + g_hel64b788;
+    F(float, s, 3448) = (float)(g_ht64b660 / t * ((double)L + g_ht64c450) / ((double)L + g_ht64c2f8));
+    short idx = Stack_Below(s + 144, 0);
+    Vec3* P = &F(Vec3, s, 3468);
+    if (idx != -1)
+    {
+        Vec3 q;
+        *P = *CallC<const Vec3*>(Ht_NodePos, &q, (int)idx);
+    }
+    else
+        *P = F(Vec3, s, 3256);
+    Vec3 d2 = Ht_Set((double)P->x - F(float, s, 36), (double)P->y - F(float, s, 40), (double)P->z - F(float, s, 44));
+    if (Vec3_Length(&d2) < g_bc64c32c)
+        Stack_Pop(s + 144, 0);
+    return 0;
+}
+
+} // extern "C"
+
+// === a ray against the terrain (a callback at $L_569550)
+
+extern "C" void Rt_SegmentHits(); KING_ALIAS("_Rt_SegmentHits", "@Terrain_SegmentHits@28")
+extern "C" void Rt_ValueFree(); KING_ALIAS("_Rt_ValueFree", "@Value_Free@4")
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(BYTE, g_rt6f2d10, $L_6f2d10)
+ASM_VAR(DWORD, g_rtHitA, $L_6f2cf8)                // the hit's description {1, 10, 0, buffer}
+ASM_VAR(DWORD, g_rtHitB, $L_6f3150)                // the hit's value {8, ?, terrain}
+
+static void __cdecl Rt_FreeA()
+{
+    if ((&g_rtHitA)[3])
+        operator delete((void*)(&g_rtHitA)[3]);
+}
+
+static void __cdecl Rt_FreeB() { CallThis(Rt_ValueFree, &g_rtHitB); }
+
+extern "C" {
+
+// [$L_569550] ray r (from +76 to +88, kind +0) against the terrain (6f33b4): on a hit its point +52 and normal
+// +64 are set and it takes the terrain's hit records (+100, +108); 1 then
+int __cdecl Terrain_RayCallback(int, BYTE* r)
+{
+    if (!CallThis<int>(Rt_SegmentHits, g_terrain6f33b4, r + 76, r + 88, F(int, r, 0), r + 52, r + 64))
+        return 0;
+    DWORD* A = &g_rtHitA;
+    if (!(g_rt6f2d10 & 1))
+    {
+        A[3] = 0;
+        g_rt6f2d10 |= 1;
+        atexit(Rt_FreeA);
+    }
+    A[0] = 1;
+    A[1] = 10;
+    A[2] = 0;
+    A[3] = 0;
+    F(DWORD*, r, 100) = A;
+    DWORD* B = &g_rtHitB;
+    if (!(g_rt6f2d10 & 2))
+    {
+        B[0] = 0;
+        g_rt6f2d10 |= 2;
+        atexit(Rt_FreeB);
+    }
+    B[0] = 8;
+    B[2] = (DWORD)g_terrain6f33b4;
+    F(DWORD*, r, 108) = B;
+    return 1;
 }
 
 } // extern "C"

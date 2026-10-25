@@ -2321,3 +2321,113 @@ BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
 }
 
 } // extern "C"
+
+// === splitting a grid edge (FUN_609990)
+
+ASM_VAR(float, g_gs64c258, $L_64c258)
+extern "C" void Gs_Midpoint(); KING_ALIAS("_Gs_Midpoint", "_GridNode_Midpoint")
+extern "C" void Gs_PairNext(); KING_ALIAS("_Gs_PairNext", "@Pair_Next@12")
+extern "C" void Gs_RingNext(); KING_ALIAS("_Gs_RingNext", "@Ring_Next@12")
+extern "C" void Gs_AddVertex(); KING_ALIAS("_Gs_AddVertex", "@Grid_AddVertex@12")
+extern "C" void Gs_InsertBefore(); KING_ALIAS("_Gs_InsertBefore", "_Ring_InsertBefore")
+
+extern "C" {
+
+// [FUN_609990] mesh s splits edge e (ends +16 / +24 / +20, level +36, its pair +72, neighbours +60 .. +68): the
+// pair's links are dropped and it is freed, the edge leaves its ring, a vertex at the ends' middle (one level down)
+// gets its transition (104 bytes, in the ring +44), and the two halves (FUN_608530) go to *a and *b, linked to each
+// other and to the edge's neighbours; 1
+int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b)
+{
+    BYTE* vt = F(BYTE*, s, 12);
+    BYTE* A = vt + F(WORD, F(BYTE*, e, 16), 0) * 16;
+    BYTE* B = vt + F(WORD, F(BYTE*, e, 24), 0) * 16;
+    DWORD sx = F(DWORD, B, 8) + F(DWORD, A, 8);
+    int mx = (int)((double)sx * g_gs64c258);
+    DWORD sy = F(DWORD, B, 12) + F(DWORD, A, 12);
+    int my = (int)((double)sy * g_gs64c258);
+    int rec[3] = {F(int, e, 36) + 1, mx, my};
+    BYTE* f = F(BYTE*, e, 72);
+    if (f)
+    {
+        BYTE** p8 = F(BYTE**, f, 8);
+        if (p8[0])
+            F(int, F(BYTE*, p8[0], 12), 72) = 0;
+        if (p8[1])
+            F(int, F(BYTE*, p8[1], 12), 72) = 0;
+        BYTE** p12 = F(BYTE**, f, 12);
+        if (p12)
+        {
+            if (p12[0])
+                F(int, F(BYTE*, p12[0], 12), 72) = 0;
+            if (p12[1])
+                F(int, F(BYTE*, p12[1], 12), 72) = 0;
+        }
+        if (f == F(BYTE*, s, 56))
+            F(int, s, 56) = CallThis<int>(Gs_PairNext, F(BYTE*, s, 32), f);
+        F(short, s, 64)--;
+        p8 = F(BYTE**, f, 8);
+        F(int, F(BYTE*, p8[0], 12), 72) = 0;
+        F(int, F(BYTE*, p8[1], 12), 72) = 0;
+        p12 = F(BYTE**, f, 12);
+        if (p12)
+        {
+            F(int, F(BYTE*, p12[0], 12), 72) = 0;
+            F(int, F(BYTE*, p12[1], 12), 72) = 0;
+        }
+        CallThis(FUN_6136f0, F(BYTE*, s, 32), f);
+        F(void*, f, 108) = g_vtbl652ef4;
+        F(void*, f, 60) = g_vtbl652ef4;
+        F(void*, f, 16) = g_vtbl652ef4;
+        operator delete(f);
+    }
+    if (e == F(BYTE*, s, 52))
+        F(BYTE*, s, 52) = CallThis<BYTE*>(Gs_RingNext, F(BYTE*, s, 36), e);
+    F(short, s, 42)--;
+    CallThis(FUN_60f690, F(BYTE*, s, 36), e);
+    BYTE g1buf[40], g2buf[40], midbuf[40], tbuf[40];
+    void* g1 = CallThis<void*>(Ga_Snapshot, s, g1buf, F(void*, B, 0));
+    void* g2 = CallThis<void*>(Ga_Snapshot, s, g2buf, F(void*, A, 0));
+    void* mid = CallC<void*>(Gs_Midpoint, midbuf, g2, g1);
+    WORD* v = CallThis<WORD*>(Gs_AddVertex, s, rec + 1);
+    BYTE* V = F(BYTE*, s, 12) + *v * 16;
+    BYTE* t = (BYTE*)operator new(104);
+    bool made = false;
+    if (t)
+    {
+        void* tmp = CallThis<void*>(Ga_Snapshot, s, tbuf, v);
+        made = true;
+        t = CallThis<BYTE*>(Ga_TransitionCreate, t, F(int, s, 48), V, mid, tmp, rec[0], s);
+    }
+    if (made)
+        CallThis(FUN_50d190, tbuf);
+    if (!F(BYTE*, s, 44))
+        F(BYTE*, s, 44) = t;
+    else
+        CallC(Gs_InsertBefore, t, F(BYTE*, s, 44));
+    *a = CallThis<BYTE*>(FUN_608530, s, F(int, e, 20), v, F(int, e, 16), F(int, e, 36) + 1);
+    *b = CallThis<BYTE*>(FUN_608530, s, F(int, e, 24), v, F(int, e, 20), F(int, e, 36) + 1);
+    F(BYTE*, *a, 64) = *b;
+    F(BYTE*, *b, 68) = *a;
+    F(BYTE*, *a, 68) = F(BYTE*, e, 60);
+    F(BYTE*, *b, 64) = F(BYTE*, e, 60);
+    F(BYTE*, *a, 60) = F(BYTE*, e, 64);
+    F(BYTE*, *b, 60) = F(BYTE*, e, 68);
+    if (BYTE* n = F(BYTE*, e, 64))
+    {
+        if (F(BYTE*, n, 60) == e)
+            F(BYTE*, n, 60) = *a;
+        else
+            F(BYTE*, n, 68) = *a;
+    }
+    if (BYTE* n = F(BYTE*, e, 68))
+    {
+        if (F(BYTE*, n, 60) == e)
+            F(BYTE*, n, 60) = *b;
+        else
+            F(BYTE*, n, 64) = *b;
+    }
+    return 1;
+}
+
+} // extern "C"

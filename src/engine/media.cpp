@@ -128,7 +128,7 @@ extern "C" size_t __cdecl fwrite(const void* p, size_t size, size_t n, FILE* f);
 extern "C" void __fastcall Node_ApplyMatrix(BYTE* self, void*, const void* m, int mode);   // scene.cpp
 extern "C" void __cdecl Video_SetPalette(const BYTE* rgb, DWORD first, DWORD count);    // video_mode.cpp
 extern "C" void FUN_5be8c0(); KING_ALIAS("_FUN_5be8c0", "@ScrollBar_Layout@40")    // lays out list rows (thiscall on the drop part)
-ASM_FUNC(List_RowCallback, $L_5c0700)
+extern "C" void List_RowCallback(); KING_ALIAS("_List_RowCallback", "_List_KeepSelection")
 extern "C" void FUN_5c06d0(); KING_ALIAS("_FUN_5c06d0", "@List_VisibleRows@4")    // visible rows of a list
 ASM_PROC(FUN_6303c4)    // ICDecompress
 ASM_PROC(FUN_6303b8)    // ICSendMessage
@@ -4691,6 +4691,278 @@ void __cdecl Ribbon_DrawSegment(int flip, Rb_V3 a, Rb_V3 b, Rb_V3 n, float v, fl
     Rb_Put(&q[4], (double)hx + mx2, (double)hy + my2, (double)hz + mz2, c1, ub, tv);
     Rb_Put(&q[5], (double)hx + b.x, (double)hy + b.y, (double)hz + b.z, c3, ub, 0);
     Com(g_rbDevice, 100, 6, 322, q, 6, 0);
+}
+
+} // extern "C"
+
+// === a sun-lit billboard (a method at $L_5cdf90)
+
+ASM_VAR(float, g_sb64c308, $L_64c308)
+ASM_VAR(float, g_sb64c304, $L_64c304)
+ASM_VAR(float, g_sb64c330, $L_64c330)
+ASM_VAR(float, g_sb64c25c, $L_64c25c)
+ASM_VAR(float, g_sb64c458, $L_64c458)
+ASM_VAR(BYTE*, g_sb7025b8, $L_7025b8)
+
+extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b);
+struct Sb_V { float x, y, z; };
+
+static Sb_V Sb_Set(double x, double y, double z)
+{
+    Sb_V v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// k * (s + o) .. as the code keeps it: x and y rounded, z not, then each times 64c308
+static Sb_V Sb_Axis(BYTE* s, int o)
+{
+    double k = F(float, s, 208);
+    float ax = (float)(k * F(float, s, o)), ay = (float)(k * F(float, s, o + 4));
+    double az = k * F(float, s, o + 8);
+    return Sb_Set(ax * (double)g_sb64c308, ay * (double)g_sb64c308, az * g_sb64c308);
+}
+
+extern "C" {
+
+// [$L_5cdf90] object s drawn with its info (+164) of kind 12 as a camera-facing quad (axes +172 / +184 sized
+// by +208, offset +196.., placed at +212 less its info's +0 / +16 shifts) lit by the brightest of the weather's
+// lights (7025b8 +520 .. +528, at most 64c25c) and its +548; then drawn as usual
+int __fastcall Obj_BillboardDraw(BYTE* s, void*, int a, BYTE* v)
+{
+    BYTE* info = F(BYTE*, s, 164);
+    if (F(int, info, 68) != 12)
+        return Obj_DrawTested(s, 0, a, v);
+    const float* sh = F(const float*, info, 72);
+    Sb_V A = Sb_Axis(s, 172), B = Sb_Axis(s, 184);
+    Sb_V cc = Sb_Set(F(float, s, 196) * (double)g_sb64c304, F(float, s, 200) * (double)g_sb64c304,
+                     F(float, s, 204) * (double)g_sb64c304);
+    double f = sh[4];
+    Sb_V D = Sb_Set(f * F(float, s, 184), f * F(float, s, 188), f * F(float, s, 192));
+    Sb_V e = Sb_Set(D.x * (double)g_sb64c330, D.y * (double)g_sb64c330, D.z * (double)g_sb64c330);
+    double g = sh[0];
+    Sb_V G = Sb_Set(g * F(float, s, 172), g * F(float, s, 176), g * F(float, s, 180));
+    Sb_V h = Sb_Set(G.x * (double)g_sb64c330, G.y * (double)g_sb64c330, G.z * (double)g_sb64c330);
+    Sb_V P1 = Sb_Set((double)F(float, s, 212) - h.x, (double)F(float, s, 216) - h.y, (double)F(float, s, 220) - h.z);
+    Sb_V P2 = Sb_Set((double)P1.x - e.x, (double)P1.y - e.y, (double)P1.z - e.z);
+    Sb_V P = Sb_Set((double)P2.x + cc.x, (double)P2.y + cc.y, (double)P2.z + cc.z);
+    BYTE* w = g_sb7025b8;
+    double mx = F(float, w, 524) < F(float, w, 520) ? F(float, w, 520) : F(float, w, 524);
+    if (!(mx <= F(float, w, 528)))
+        mx = F(float, w, 524) < F(float, w, 520) ? F(float, w, 520) : F(float, w, 524);
+    else
+        mx = F(float, w, 528);
+    if (mx > g_sb64c25c)
+        mx = g_sb64c25c;
+    DWORD i1 = (DWORD)(int)(F(float, w, 548) * (double)g_sb64c458);
+    DWORD col = (DWORD)(int)(mx * g_sb64c458);
+    col = (((col << 8 | i1) << 8) | i1) << 8 | i1;
+    Sb_V Q1 = Sb_Set((double)P.x - A.x, (double)P.y - A.y, (double)P.z - A.z);
+    Sb_V V0 = Sb_Set((double)Q1.x + B.x, (double)Q1.y + B.y, (double)Q1.z + B.z);
+    DWORD tmp[6];
+    memcpy(s + 68, Rec24_Set(tmp, 0, (const DWORD*)&V0, col, 0, 0x3f800000), 24);
+    Sb_V V1 = Sb_Set((double)Q1.x - B.x, (double)Q1.y - B.y, (double)Q1.z - B.z);
+    memcpy(s + 92, Rec24_Set(tmp, 0, (const DWORD*)&V1, col, 0, 0), 24);
+    Sb_V R = Sb_Set((double)P.x + A.x, (double)P.y + A.y, (double)P.z + A.z);
+    Sb_V V2 = Sb_Set((double)R.x + B.x, (double)R.y + B.y, (double)R.z + B.z);
+    memcpy(s + 116, Rec24_Set(tmp, 0, (const DWORD*)&V2, col, 0x3f800000, 0x3f800000), 24);
+    Sb_V V3 = Sb_Set((double)R.x - B.x, (double)R.y - B.y, (double)R.z - B.z);
+    memcpy(s + 140, Rec24_Set(tmp, 0, (const DWORD*)&V3, col, 0x3f800000, 0), 24);
+    CallThis(FUN_5b1020, v, F(int, s, 64), 0, 0, 0);
+    Com(g_rbDevice, 80, 136, 1);
+    Com(g_rbDevice, 100, 5, 322, s + 68, 4, 0);
+    return Obj_DrawTested(s, 0, a, v);
+}
+
+} // extern "C"
+
+// === a bent strip along points (FUN_5c6830)
+
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(BYTE, g_bs707f90, $L_707f90)
+
+ASM_VAR(AsmLabel, g_bsVerts, $L_70cf70)            // 24-byte vertices, three per point
+ASM_VAR(AsmLabel, g_bsIdx, $L_70ddb0)              // 16-bit indices
+ASM_VAR(float, g_bs64c264, $L_64c264)
+ASM_VAR(float, g_bs64c250, $L_64c250)
+ASM_VAR(float, g_bs651c80, $L_651c80)
+ASM_VAR(float, g_bs651c7c, $L_651c7c)
+ASM_VAR(float, g_bs651c78, $L_651c78)
+
+extern "C" {
+
+// [FUN_5c6830] draws a strip of three vertices at each of the n + 1 points p (which are moved with it): the
+// offsets grow by (b, c) a step sideways and by the arch sqrt(a^2 - (b^2 + c^2) i^2) upwards, the second vertex
+// w further along x, the third along y; texture u from tv, v down the strip
+void __cdecl Strip_DrawArch(float* p, int n, float w, float a, float b, float c, float tv)
+{
+    if (!(g_bs707f90 & 1))
+    {
+        g_bs707f90 |= 1;
+        atexit((void(__cdecl*)(void))(void*)Med5c6ab0_Nop);
+    }
+    double ox = g_bs64c264, oy = g_bs64c264, oz = g_bs64c264;
+    int i = 0, ni = 0;
+    if (n >= 0)
+    {
+        double t1 = (double)tv + g_bs651c80;
+        float t2 = (float)((double)tv + g_bs651c7c), t3 = (float)((double)tv + g_bs651c78);
+        float nf = (float)n;
+        DWORD col = g_rb67f940;
+        float* vb = (float*)&g_bsVerts;
+        WORD* ib = (WORD*)&g_bsIdx;
+        for (i = 0; i <= n; i++)
+        {
+            float* V = vb + i * 18;
+            float* q = p + i * 3;
+            double di = i;
+            ox += di * b;
+            oy += di * c;
+            if (i > 0)
+                oz += x87_sqrt((double)a * a - ((double)b * b + (double)c * c) * (double)(i * i));
+            double v = g_bs64c250 - di / nf;
+            V[0] = (float)(ox + q[0]);
+            V[1] = (float)(oy + q[1]);
+            V[2] = (float)(oz + q[2]);
+            F(DWORD, V, 12) = col;
+            V[4] = (float)t1;
+            V[5] = (float)v;
+            V[6] = (float)(ox + q[0] + w);
+            V[7] = (float)(oy + q[1]);
+            V[8] = (float)(oz + q[2]);
+            F(DWORD, V, 36) = col;
+            V[10] = t2;
+            V[11] = (float)v;
+            V[12] = (float)(ox + q[0]);
+            V[13] = (float)(oy + q[1] + w);
+            V[14] = (float)(oz + q[2]);
+            F(DWORD, V, 60) = col;
+            V[16] = t3;
+            V[17] = (float)v;
+            q[0] = V[0];
+            q[1] = V[1];
+            q[2] = V[2];
+            if (i > 0)
+            {
+                int d = 3 * i;
+                WORD seq[18] = {(WORD)(d - 3), (WORD)(d - 2), (WORD)(d + 1), (WORD)(d - 3), (WORD)(d + 1), (WORD)d,
+                                (WORD)(d - 1), (WORD)(d - 3), (WORD)d, (WORD)(d - 1), (WORD)d, (WORD)(d + 2),
+                                (WORD)(d - 2), (WORD)(d - 1), (WORD)(d + 2), (WORD)(d - 2), (WORD)(d + 2), (WORD)(d + 1)};
+                memcpy(ib + ni, seq, sizeof seq);
+                ni += 18;
+            }
+            col = g_rb67f940;
+        }
+    }
+    Com(g_rbDevice, 104, 4, 322, (void*)&g_bsVerts, 3 * i, (void*)&g_bsIdx, ni, 0);
+}
+
+} // extern "C"
+
+// === a swinging sign pushed by the camera (FUN_5c82f0)
+
+extern "C" void Sw_Length(); KING_ALIAS("_Sw_Length", "_Vec3_Length")
+ASM_VAR(float, g_sw64c904, $L_64c904)
+ASM_VAR(float, g_sw64c888, $L_64c888)
+ASM_VAR(float, g_sw64c304, $L_64c304)
+ASM_VAR(float, g_sw64c264, $L_64c264)
+
+extern "C" {
+
+// [FUN_5c82f0] object o of kind 12 with a swing state (+72): unless handed to hook h, or near enough (by its
+// size +32) and handed then, its two swing angles (+4, +20) are nudged by the view position v's x and y,
+// clamped to the size, against their springs (+0, +16)
+void __cdecl Sign_Swing(const float* v, BYTE* o, int h)
+{
+    if (!o || F(int, o, 68) != 12 || !F(BYTE*, o, 72))
+        return;
+    if (h && Object_HandToHook(o, h))
+        return;
+    float L = (float)CallC<double>(Sw_Length, v);
+    if (Ratio_Over15000(L, F(float, o, 32)) && Object_HandToHook(o, h))
+        return;
+    float lim = (float)(F(float, o, 32) * (double)g_sw64c904);
+    float* P = F(float*, o, 72);
+    float nlim = (float)-(double)lim;
+    double a = v[0];
+    if (a > lim)
+        a = lim;
+    if (a < nlim)
+        a = nlim;
+    double x1 = (double)lim * P[0] * g_sw64c888 - a * g_sw64c304;
+    float xa = (float)(x1 + a);
+    float delta = (x1 + a) * x1 < g_sw64c264 ? xa : 0;
+    P[1] = (float)((double)delta + P[1]);
+    double b = v[1];
+    if (b > lim)
+        b = lim;
+    if (b < nlim)
+        b = nlim;
+    float y1 = (float)((double)lim * P[4] * g_sw64c888 - (double)delta * g_sw64c304);
+    double by = b + ((double)lim * P[4] * g_sw64c888 - (double)delta * g_sw64c304);
+    if (!(by * y1 < g_sw64c264))
+        by = g_sw64c264;
+    P[5] = (float)(by + P[5]);
+}
+
+} // extern "C"
+
+// === keeping a list's selection on screen (a callback at $L_5c0700)
+
+extern "C" void Ls_VisibleRows(); KING_ALIAS("_Ls_VisibleRows", "@List_VisibleRows@4")
+
+extern "C" {
+
+// [$L_5c0700] list l (when shown, +328): its top row +336 from the scroll +332 down the rows (+296, chained by
+// +8); a selection (+300) scrolled above it moves to the top, one below the visible rows to the last of them
+void __cdecl List_KeepSelection(BYTE* l)
+{
+    if (!F(int, l, 328))
+        return;
+    int n = F(short, l, 332);
+    BYTE* e = F(BYTE*, l, 296);
+    if (n <= 0)
+        F(BYTE*, l, 336) = e;
+    else
+    {
+        BYTE* t = e;
+        while (t && F(BYTE*, t, 8) && n > 0)
+        {
+            t = F(BYTE*, t, 8);
+            n--;
+        }
+        F(BYTE*, l, 336) = t;
+    }
+    BYTE* top = F(BYTE*, l, 336);
+    if (e != top)
+    {
+        int above = 0;
+        BYTE* sel = F(BYTE*, l, 300);
+        do
+        {
+            if (e == sel)
+                above = 1;
+            e = F(BYTE*, e, 8);
+        } while (e != top);
+        if (above)
+            F(BYTE*, l, 300) = top;
+    }
+    int shown = 0, row = 0;
+    if (!e)
+        return;
+    while (row < CallThis<int>(Ls_VisibleRows, l))
+    {
+        if (e == F(BYTE*, l, 300))
+            shown = 1;
+        e = F(BYTE*, e, 8);
+        row++;
+        if (!e)
+            break;
+    }
+    if (!shown && e)
+        F(BYTE*, l, 300) = F(BYTE*, e, 4);
 }
 
 } // extern "C"

@@ -48,7 +48,7 @@ ASM_VAR(AsmLabel, g_vtbl652738, $L_652738)
 ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 extern "C" void FUN_5b6b10(); KING_ALIAS("_FUN_5b6b10", "@Surface_Present@8")
-ASM_PROC(FUN_5d8710)    // window base constructor (a, rect, b)
+extern "C" void FUN_5d8710(); KING_ALIAS("_FUN_5d8710", "@Window_ConstructSub@20")    // window base constructor (a, rect, b)
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" void FUN_5dbf00(); KING_ALIAS("_FUN_5dbf00", "_Probe_Walk")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // time in ms, returns double
@@ -2440,7 +2440,7 @@ extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
 extern "C" void FUN_5da180(); KING_ALIAS("_FUN_5da180", "@Fw_RemakeSurface@24")
 extern "C" void FUN_5ed970(); KING_ALIAS("_FUN_5ed970", "@Renderer_Construct@12")
 extern "C" void FUN_5b6530(); KING_ALIAS("_FUN_5b6530", "@SubSurface_Construct@20")
-ASM_PROC(FUN_5d8710)
+extern "C" void FUN_5d8710(); KING_ALIAS("_FUN_5d8710", "@Window_ConstructSub@20")
 ASM_VAR(AsmLabel, g_fra652280, $L_652280)
 
 // [$L_5e57a0] frees its buffers (+8, +12..+24), then the table at +52
@@ -5553,6 +5553,65 @@ void __fastcall Camera_Follow(BYTE* s, void*, const float* m)
     Cf_Clamp(g_cf7212a8, (double*)(s + 2936), lim);
     Cf_Clamp(g_cf720b58, (double*)(s + 2944), lim);
     memcpy(s + 580, m + 9, 12);
+}
+
+} // extern "C"
+
+// === a window over part of a parent's surface (FUN_5d8710)
+
+extern "C" void Ww_SubSurface(); KING_ALIAS("_Ww_SubSurface", "@SubSurface_Construct@20")
+
+extern "C" {
+
+// [FUN_5d8710] window s (vtable 652168, state 3) on parent p's surface (+12): a 124-byte sub-surface over rectangle
+// r, or over the whole surface (its size, state | 0xf0) when r is empty; flag 0x4000 passed on
+BYTE* __fastcall Window_ConstructSub(BYTE* s, void*, BYTE* p, const int* r, int flags)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = g_fra652168;
+    F(int, s, 52) = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 16) = 3;
+    int rc[4] = {r[0], r[1], r[2], r[3]};
+    if (r[0] == 0 && r[2] == 0 && r[1] == 0)
+    {
+        BYTE* surf = F(BYTE*, p, 12);
+        rc[0] = 0;
+        rc[1] = 0;
+        rc[2] = F(WORD, surf, 0);
+        rc[3] = F(WORD, surf, 2);
+        BYTE* n = (BYTE*)operator new(124);
+        F(BYTE*, s, 12) = n ? CallThis<BYTE*>(Ww_SubSurface, n, F(BYTE*, p, 12), rc, flags & 0x4000) : 0;
+        F(int, s, 16) |= 0xf0;
+    }
+    else
+    {
+        BYTE* n = (BYTE*)operator new(124);
+        F(BYTE*, s, 12) = n ? CallThis<BYTE*>(Ww_SubSurface, n, F(BYTE*, p, 12), rc, flags & 0x4000) : 0;
+    }
+    F(int, s, 24) = 0;
+    F(int, s, 28) = 0;
+    return s;
+}
+
+} // extern "C"
+
+// === queueing an event (a method at $L_5dbe10)
+
+extern "C" {
+
+// [$L_5dbe10] s's ring of 100 events (+56, read +456, write +460) takes v unless full
+void __fastcall EventRing_Push(BYTE* s, void*, int v)
+{
+    int head = F(int, s, 456), tail = F(int, s, 460);
+    if (tail == head - 1)
+        return;
+    if (tail == 99 && head == 0)
+        return;
+    F(int, s, 56 + tail * 4) = v;
+    if (++F(int, s, 460) >= 100)
+        F(int, s, 460) = 0;
 }
 
 } // extern "C"

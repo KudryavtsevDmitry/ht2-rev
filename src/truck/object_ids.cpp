@@ -399,7 +399,7 @@ int __fastcall Item_DrawMarked(BYTE* s, void*, int a, int b)
 
 // === setting an item's spin (FUN_581430)
 
-ASM_PROC(FUN_4e28b0)    // whether a vector is longer than a limit (v, limit)
+extern "C" void FUN_4e28b0(); KING_ALIAS("_FUN_4e28b0", "_Vec3_OutOfBox")    // whether a vector is longer than a limit (v, limit)
 extern "C" void Iw_CheckPoint(); KING_ALIAS("_Iw_CheckPoint", "_World_CheckPoint")
 extern "C" void Iw_MulComponents(); KING_ALIAS("_Iw_MulComponents", "_Vec3_MulComponents")
 extern "C" void Iw_Normalized(); KING_ALIAS("_Iw_Normalized", "_Vec3_Normalized")
@@ -572,6 +572,58 @@ void __fastcall Item_SetVelocity(BYTE* s, void*, const float* v, const char* ctx
     float l = CallC<float>(Iw_Length, o);
     F(float, s, 888) = l;
     F(float, s, 3460) = l;
+}
+
+} // extern "C"
+
+// === an object held on a rail (FUN_57e2e0)
+
+#include "x87.h"
+extern "C" void Rl_FrameTime(); KING_ALIAS("_Rl_FrameTime", "_Game_FrameTime")
+extern "C" void Rl_Cross(); KING_ALIAS("_Rl_Cross", "_Vec3_Cross")
+extern "C" void Rl_Scaled(); KING_ALIAS("_Rl_Scaled", "_Vec3_Scaled")
+extern "C" void Rl_Add(); KING_ALIAS("_Rl_Add", "_Vec3_Add")
+ASM_VAR(double, g_rl64b658, $L_64b658)
+ASM_VAR(char, s_rl67d1b8, $L_67d1b8)
+
+extern "C" {
+
+// [FUN_57e2e0] object o kept on rail r (time +0, start +52, direction +64): its frame (+3172) into out with the
+// position pulled onto the rail line at the step's time, and its velocity (+3300) turned onto the rail
+// (method 144) as the spin about it plus its speed along it times +1424
+void __cdecl Obj_HoldOnRail(BYTE* o, const float* r, float* out)
+{
+    CallC<double>(Rl_FrameTime);
+    double T = r[0] + g_rl64b658;
+    const float* n = r + 16;
+    float F[12];
+    memcpy(F, o + 3172, 48);
+    float cx = (float)((float)(T * n[0]) + (double)r[13]);
+    float cy = (float)((float)(T * n[1]) + (double)r[14]);
+    double cz = T * n[2] + r[15];
+    double dx = (double)F[9] - cx, dy = (double)F[10] - cy, dz = F[11] - cz;
+    float ex = (float)(dz * n[1] - dy * n[2]);
+    float ey = (float)(dx * n[2] - dz * n[0]);
+    double ez = dy * n[0] - dx * n[1];
+    float fx = (float)((double)ey * n[2] - ez * n[1]);
+    float fy = (float)(ez * n[0] - (double)ex * n[2]);
+    double fz = (double)ex * n[1] - (double)ey * n[0];
+    F[9] = (float)((double)fx + cx);
+    F[10] = (float)((double)cy + fy);
+    F[11] = (float)(cz + fz);
+    memcpy(out, F, 48);
+    const float* v = (const float*)(o + 3300);
+    double d = x87_fabs((double)v[2] * n[2] + (double)v[1] * n[1] + (double)v[0] * n[0]);
+    float A[3] = {(float)(d * n[0]), (float)(d * n[1]), (float)(d * n[2])};
+    float W[3];
+    W[2] = (float)((double)v[1] * n[0] - (double)n[1] * v[0]);
+    W[1] = (float)((double)v[0] * n[2] - (double)n[0] * v[2]);
+    W[0] = (float)((double)n[1] * v[2] - (double)v[1] * n[2]);
+    float C1[3], S2[3], R[3];
+    CallC(Rl_Cross, C1, W, n);
+    CallC(Rl_Add, R, C1, CallC<float*>(Rl_Scaled, S2, A, F(float, o, 1424)));
+    CallC(Iw_CheckPoint, R, &s_rl67d1b8, 150.0f);
+    CallVirt(o, 144, R, &s_rl67d1b8);
 }
 
 } // extern "C"

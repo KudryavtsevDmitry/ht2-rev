@@ -682,7 +682,7 @@ extern "C" void FUN_4eb150(); KING_ALIAS("_FUN_4eb150", "@Obj4eb150_Kind@8")
 extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
 extern "C" void FUN_5e19f0(); KING_ALIAS("_FUN_5e19f0", "_Frame_GetLocal")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
-ASM_PROC(FUN_4e4468)    // writes the world state text
+extern "C" void FUN_4e4468(); KING_ALIAS("_FUN_4e4468", "_Clock_Text")    // writes the world state text
 extern "C" void FUN_4e2556(); KING_ALIAS("_FUN_4e2556", "_Dump_Text")    // writes a text to the log
 ASM_PROC(FUN_53f0c0)
 ASM_VAR(AsmLabel, g_state696e5c, $L_696e5c)
@@ -853,7 +853,7 @@ extern "C" BYTE* __cdecl Model_FindPart2(BYTE* obj)
 
 // ---------------------------------------------------------------------------
 ASM_PROC(FUN_4e4f78)    // (a, b, c, &lo, &hi)
-ASM_PROC(FUN_4e28b0)
+extern "C" void FUN_4e28b0(); KING_ALIAS("_FUN_4e28b0", "_Vec3_OutOfBox")
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")
 extern "C" void FUN_4eac5f(); KING_ALIAS("_FUN_4eac5f", "@Arrays_FillLongAgo@8")
@@ -1948,6 +1948,80 @@ double __cdecl Window_Root(float x)
 double __cdecl Window_Cosine(float x)
 {
     return Wl_In(x) ? (Wl_cos(x * g_wl64d938) + g_wl64b670) * g_wl64b6e0 : g_wl64c264;
+}
+
+} // extern "C"
+
+// === the date and time text (FUN_4e4468)
+
+ASM_VAR(AsmLabel, s_dt6739e4, $L_6739e4)          // the month names, 4 bytes each
+ASM_VAR(char, s_dt673a14, $L_673a14)
+
+extern "C" {
+
+// [FUN_4e4468] the local date and time into out: day, month name, year, hours, minutes, seconds
+void __cdecl Clock_Text(char* out)
+{
+    SYSTEMTIME t;
+    GetLocalTime(&t);
+    char month[12];
+    if (t.wMonth >= 1 && t.wMonth <= 12)
+        strcpy(month, (const char*)&s_dt6739e4 + (t.wMonth - 1) * 4);
+    sprintf(out, &s_dt673a14, (int)t.wDay, month, (int)t.wYear, (int)t.wHour, (int)t.wMinute, (int)t.wSecond);
+}
+
+} // extern "C"
+
+// === a vector out of a box (FUN_4e28b0)
+
+extern "C" {
+
+// [FUN_4e28b0] 1 when a component of v lies outside [-lim, lim]
+int __cdecl Vec3_OutOfBox(const float* v, float lim)
+{
+    float a = v[0], b = v[1], c = v[2];
+    double nl = -(double)lim;
+    if (a > lim || b > lim || c > lim || lim < a || lim < b || lim < c)
+        return 1;
+    if (-(double)a > lim || -(double)b > lim || -(double)c > lim)
+        return 1;
+    if (nl > a || nl > b || nl > c)
+        return 1;
+    return 0;
+}
+
+} // extern "C"
+
+// === softening a long vector (FUN_4e794f)
+
+extern "C" void Sv_Scaled(); KING_ALIAS("_Sv_Scaled", "_Vec3_Scaled")
+extern "C" void Sv_DivScalar(); KING_ALIAS("_Sv_DivScalar", "_Vec3_DivScalar")
+extern "C" void Sv_Length(); KING_ALIAS("_Sv_Length", "_Vec3_Length")
+
+extern "C" {
+
+// [FUN_4e794f] v longer than 5 is shortened smoothly: from 5 to 35 to (L - 5) / 2 + 5, beyond to 20
+void __cdecl Vec3_Soften(float* v)
+{
+    float L = (float)CallC<double>(Sv_Length, v);
+    const float hi = 35.0f, lo = 5.0f, half = 0.5f;
+    float mid = (float)(((double)hi - lo) * half + lo);
+    float t[3], u[3];
+    if (L > hi)
+    {
+        const float* r = CallC<const float*>(Sv_Scaled, t, v, (float)(mid / (double)L));
+        v[0] = r[0];
+        v[1] = r[1];
+        v[2] = r[2];
+    }
+    else if (L > lo)
+    {
+        float k = (float)(((double)L - lo) * half + lo);
+        const float* r = CallC<const float*>(Sv_DivScalar, u, CallC<const float*>(Sv_Scaled, t, v, k), L);
+        v[0] = r[0];
+        v[1] = r[1];
+        v[2] = r[2];
+    }
 }
 
 } // extern "C"

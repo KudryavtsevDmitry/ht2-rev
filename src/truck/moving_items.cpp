@@ -190,7 +190,7 @@ extern "C" void __fastcall Slots6_Remove(BYTE* self, void*, int v)
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
 extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
+extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
 extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
 extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
 ASM_PROC(FUN_55f5f0)
@@ -1515,7 +1515,7 @@ extern "C" void Ic_Query1(); KING_ALIAS("_Ic_Query1", "_Query_4e67f9")
 extern "C" void Ic_Neighbour(); KING_ALIAS("_Ic_Neighbour", "_Item_NeighbourContact")
 extern "C" void Ic_Query3(); KING_ALIAS("_Ic_Query3", "_Query_4e6d41")
 extern "C" void Ic_TrackInit(); KING_ALIAS("_Ic_TrackInit", "@Track587c80_Construct@4")
-ASM_PROC(FUN_585150)
+extern "C" void FUN_585150(); KING_ALIAS("_FUN_585150", "_Item_PointContacts")
 ASM_VAR(double, g_ic64b6d8, $L_64b6d8)
 ASM_VAR(double, g_ic64b670, $L_64b670)
 ASM_VAR(float, g_ic64c250, $L_64c250)
@@ -1633,6 +1633,169 @@ int __cdecl Item_BodyContact(BYTE* s, const Matrix* m, float* scale, float* dept
         t = g_ic64c250;
     *scale = (float)(x87_sqrt(t) * *scale);
     return kind;
+}
+
+} // extern "C"
+
+// === an item's contacts with the world's points (FUN_585150)
+
+ASM_FUNC(Ip_PointHit, FUN_584820)
+ASM_FUNC(Ip_SphereHit, FUN_584c70)
+extern "C" void Ip_FrameTime(); KING_ALIAS("_Ip_FrameTime", "_Game_FrameTime")
+extern "C" void Ip_Get800(); KING_ALIAS("_Ip_Get800", "@SceneObj_Get800@8")
+extern "C" void Ip_Matrix1(); KING_ALIAS("_Ip_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Ip_Matrix2(); KING_ALIAS("_Ip_Matrix2", "@SceneObj_Matrix2@12")
+extern "C" void Ip_FrameWorld(); KING_ALIAS("_Ip_FrameWorld", "_Frame_GetWorld")
+extern "C" BYTE** __cdecl Enum_56f3f0(void* obj, int a, int b, int c, int d, int* count);
+extern "C" int __cdecl Enum_56f650(int i, int* a, int* b, double* c, int* d, int* e, int* f);
+ASM_VAR(float, g_ip64c40c, $L_64c40c)
+
+extern "C" {
+
+// [FUN_585150] item s at frame m: the world's point groups (Enum_56f3f0) within its reach (+3436 through m,
+// radius +3272 grown by its speed +3460) are tested point by point (plain points by FUN_584820, spheres by
+// FUN_584c70, in the item's own axes too); a hit on a group with faces sends the item its message. The count
+// of hits, negated when messages answered
+int __cdecl Item_PointContacts(BYTE* s, const float* m, BYTE* w)
+{
+    double dt = CallC<double>(Ip_FrameTime);
+    int count = 0;
+    const float* c = (const float*)(s + 3436);
+    float cen[4];
+    cen[0] = (float)((double)m[6] * c[2] + (double)m[3] * c[1] + (double)c[0] * m[0] + m[9]);
+    cen[1] = (float)((double)m[1] * c[0] + (double)m[7] * c[2] + (double)m[4] * c[1] + m[10]);
+    cen[2] = (float)((double)m[2] * c[0] + (double)m[8] * c[2] + (double)m[5] * c[1] + m[11]);
+    float r = (float)(dt * F(float, s, 3460) + F(float, s, 3272) + g_ip64c40c);
+    cen[3] = r;
+    BYTE** list = Enum_56f3f0(CallThis<void*>(Ip_Get800, s), F(int, cen, 0), F(int, cen, 4), F(int, cen, 8), F(int, cen, 12), &count);
+    if (count <= 0)
+        return 0;
+    float m1[12], m2[12], mm[12], inv[12];
+    CallThis(Ip_Matrix1, s, m1);
+    CallThis(Ip_Matrix2, s, m2);
+    Matrix_Multiply((Matrix*)mm, (const Matrix*)m2, (const Matrix*)m);
+    Matrix_Inverse((Matrix*)inv, (const Matrix*)mm);
+    double r2 = (double)r * r;
+    int total = 0, hits = 0;
+    for (int i = 0; i < count; i++)
+    {
+        int pts, flag, faces, f2, node;
+        double rad;
+        int n = Enum_56f650(i, &pts, &flag, &rad, &faces, &f2, &node);
+        for (int j = 0; j < n; j++)
+        {
+            float W[12];
+            memcpy(W, &g_identity, 48);
+            if (node)
+                CallC(Ip_FrameWorld, node, W);
+            const float* p = (const float*)(pts + j * 12);
+            double y = (double)W[1] * p[0] + (double)W[7] * p[2] + (double)W[4] * p[1] + W[10];
+            double z = (double)W[2] * p[0] + (double)W[8] * p[2] + (double)W[5] * p[1] + W[11];
+            float wp[3];
+            wp[0] = (float)((double)W[0] * p[0] + (double)W[6] * p[2] + (double)W[3] * p[1] + W[9]);
+            wp[1] = (float)y;
+            wp[2] = (float)z;
+            float dx = (float)((double)wp[0] - m1[9]), dy = (float)(y - m1[10]);
+            double dz = z - m1[11];
+            if (!((double)dx * dx + (double)dy * dy + dz * dz + rad * rad <= r2))
+                continue;
+            float l[3];
+            l[0] = (float)((double)inv[3] * y + (double)inv[6] * z + (double)inv[0] * wp[0] + inv[9]);
+            l[1] = (float)((double)inv[1] * wp[0] + (double)inv[4] * y + (double)inv[7] * z + inv[10]);
+            l[2] = (float)((double)inv[2] * wp[0] + (double)inv[5] * y + (double)inv[8] * z + inv[11]);
+            int h = flag ? CallC<int>(Ip_SphereHit, wp, l, (float)rad, w, s, 1) : CallC<int>(Ip_PointHit, wp, l, w, s);
+            if (h && f2)
+            {
+                int fw = F(int, (BYTE*)faces, 0);
+                int a = (short)fw, b = fw >> 16;
+                hits += Item_OnMessage(s, (void*)(INT_PTR)a, a, b, 1, node, (int)list[i],
+                                       (const DWORD*)(w + F(int, w, 2816) * 12 - 12), (BYTE*)faces + 4);
+            }
+            else if (h)
+                SceneObj_SetFlags(s, 0, 4);
+            total += h;
+        }
+    }
+    return hits ? -total : total;
+}
+
+} // extern "C"
+
+// === an item's flight leg ending (a method at $L_584060)
+
+extern "C" void Il_Lookup(); KING_ALIAS("_Il_Lookup", "_Obj_Lookup4e5b22")
+ASM_VAR(float, g_il64f7b0, $L_64f7b0)
+ASM_VAR(float, g_il64c32c, $L_64c32c)
+ASM_VAR(float, g_il64c258, $L_64c258)
+
+extern "C" {
+
+// [$L_584060] item s at the end of a leg: within its time (+1432 up to +1680 + +1684) it looks up the object
+// under it (else stays on +804 and is told 28) and takes its stored frame +1696 and speed; past it, *done is set
+// and it keeps frame +548. Its local speed (+428, the spin +440 through the inverse frame +596 over the
+// inertia +404) is limited, the spin set from it (method 152) and the pushes cleared
+void __fastcall Item_EndLeg(BYTE* s, void*, int* done)
+{
+    const BYTE* src;
+    if (F(int, s, 1432) <= F(int, s, 1684) + F(int, s, 1680))
+    {
+        BYTE* o = CallC<BYTE*>(Il_Lookup, F(BYTE*, s, 804), s + 584, s + 1732, s + 1132);
+        F(BYTE*, s, 800) = o;
+        if (!o)
+        {
+            F(BYTE*, s, 800) = F(BYTE*, s, 804);
+            CallVirt(s, 28, 1);
+        }
+        F(float, s, 888) = (float)Vec3_Length(&F(Vec3, s, 416));
+        src = s + 1696;
+    }
+    else
+    {
+        *done = 1;
+        F(BYTE*, s, 800) = F(BYTE*, s, 804);
+        src = s + 548;
+    }
+    memmove(s + 500, src, 48);
+    Matrix inv;
+    memcpy(s + 596, Matrix_Inverse(&inv, (const Matrix*)(s + 500)), 48);
+    const float* I = (const float*)(s + 596);
+    const float* w = (const float*)(s + 440);
+    Vec3 v, tmp;
+    v.x = (float)((double)I[6] * w[2] + (double)I[3] * w[1] + (double)I[0] * w[0]);
+    v.y = (float)((double)I[1] * w[0] + (double)I[7] * w[2] + (double)I[4] * w[1]);
+    v.z = (float)((double)I[2] * w[0] + (double)I[8] * w[2] + (double)I[5] * w[1]);
+    Vec3* q = &F(Vec3, s, 428);
+    *q = *Vec3_DivComponents(&tmp, &v, &F(Vec3, s, 404));
+    double L = Vec3_Length(q);
+    bool spin = true;
+    if (L > g_il64f7b0)
+    {
+        double k = g_il64c32c / L;
+        q->x = (float)(k * q->x);
+        q->y = (float)(k * q->y);
+        q->z = (float)(k * q->z);
+    }
+    else if (L > g_im64c320)
+    {
+        double m = (L - g_im64c320) * g_il64c258 + g_im64c320;
+        float mx = (float)(m * q->x), my = (float)(m * q->y);
+        double mz = m * q->z;
+        q->x = (float)(mx / L);
+        q->y = (float)(my / L);
+        q->z = (float)(mz / L);
+    }
+    else
+        spin = false;
+    if (spin)
+    {
+        Vec3 t2;
+        F(Vec3, s, 440) = *Vec3_RotateBy(&t2, Vec3_MulComponents(&tmp, q, &F(Vec3, s, 404)), (const Matrix*)(s + 500));
+    }
+    CallVirt(s, 152, s + 440, 0);
+    F(Vec3, s, 476) = g_zeroVec;
+    F(Vec3, s, 488) = g_zeroVec;
+    F(int, s, 1420) = 0;
+    Vehicle_MakeOut(s, 0);
 }
 
 } // extern "C"

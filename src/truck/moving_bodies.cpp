@@ -1108,7 +1108,7 @@ extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
 extern "C" void Movbod_qsort(); KING_ALIAS("_Movbod_qsort", "_qsort")
-ASM_VAR(AsmLabel, g_movbodCmp592fe0, $L_592fe0)
+ASM_VAR(AsmLabel, g_movbodCmp592fe0, _Rec_CompareF4)
 
 // [$L_593100] sorts the children (+48 list) by their depth for b: they are taken off, sorted (+56, 8-byte
 // pairs of node and depth) and linked back in order, then slot 0 is drawn
@@ -1536,7 +1536,7 @@ int __fastcall Body_Collide(BYTE* s, void*, int a, int b, int c, BYTE* k, unsign
 
 // === a body's nearest contact (FUN_58b120)
 
-ASM_PROC(FUN_585150)
+extern "C" void FUN_585150(); KING_ALIAS("_FUN_585150", "_Item_PointContacts")
 extern "C" void Nc_Ground(); KING_ALIAS("_Nc_Ground", "_Movingb_589e70")
 extern "C" void Nc_Neighbours(); KING_ALIAS("_Nc_Neighbours", "_Body_NeighbourContacts")
 extern "C" void Nc_DivAssign(); KING_ALIAS("_Nc_DivAssign", "@Vec3_DivAssign@16")
@@ -2516,6 +2516,160 @@ void __fastcall Body_UpdatePlanes(BYTE* s, void*)
     F(float, s, 5116) = maxY;
     F(float, s, 5120) = minY;
     F(float, s, 5124) = maxZ;
+}
+
+} // extern "C"
+
+// === the body a body's points run into (FUN_58f560)
+
+extern "C" void Ob_SubAssign(); KING_ALIAS("_Ob_SubAssign", "@Vec3_SubAssign@16")
+
+// point p of body s (frame +500) in the world
+static Vec3 Ob_World(BYTE* s, const Vec3& p)
+{
+    const float* M = (const float*)(s + 500);
+    Vec3 w;
+    w.x = (float)((double)p.z * M[6] + (double)p.y * M[3] + (double)p.x * M[0] + M[9]);
+    w.y = (float)((double)p.z * M[7] + (double)p.y * M[4] + (double)p.x * M[1] + M[10]);
+    w.z = (float)((double)p.z * M[8] + (double)p.y * M[5] + (double)p.x * M[2] + M[11]);
+    return w;
+}
+
+static bool Ob_Next(BYTE* s, Vec3* p) { return Points_NextFirst(s, 0, (Vec3Bits*)p) != 0; }
+
+extern "C" {
+
+// [FUN_58f560] the first of body s's six neighbours (+3508, up to an empty slot) that one of its points
+// (Points_NextFirst) falls in: a body (+392 == 2) of kind 3 by its shape, of kind 2 within its sphere
+// (+3436, radius +3272) and then its shape, a sphere (+392 == 1) by the sphere; 0 when none
+BYTE* __fastcall Body_FindOverlap(BYTE* s, void*)
+{
+    Game_FrameTime();
+    for (int i = 0; i < 6; i++)
+    {
+        BYTE* o = F(BYTE*, s, 3508 + i * 4);
+        if (!o)
+            return 0;
+        int type = F(int, o, 392);
+        Vec3 pt = g_zeroVec, c = g_zeroVec, tmp;
+        if (type == 2)
+        {
+            int k = F(int, o, 3976);
+            if (k == 3)
+            {
+                if (!Ob_Next(s, &pt))
+                    continue;
+                bool found = false;
+                do
+                {
+                    if (found)
+                        continue;
+                    Vec3 w = Ob_World(s, pt);
+                    Matrix m;
+                    const float* R = CallThis<const float*>(FUN_57dec0, o, &m);
+                    pt.x = (float)((double)w.z * R[6] + (double)w.y * R[3] + (double)w.x * R[0]);
+                    pt.y = (float)((double)w.z * R[7] + (double)w.y * R[4] + (double)w.x * R[1]);
+                    pt.z = (float)((double)w.z * R[8] + (double)w.y * R[5] + (double)w.x * R[2]);
+                    if (Body_ContainsPoint(o, 0, &pt.x))
+                        found = true;
+                } while (Ob_Next(s, &pt));
+                if (found)
+                    return o;
+            }
+            else if (k == 2)
+            {
+                Matrix m1;
+                const float* R = CallThis<const float*>(FUN_57de90, o, &m1);
+                const float* q = (const float*)(o + 3436);
+                c.x = (float)((double)R[6] * q[2] + (double)R[3] * q[1] + (double)q[0] * R[0] + R[9]);
+                c.y = (float)((double)R[7] * q[2] + (double)R[1] * q[0] + (double)R[4] * q[1] + R[10]);
+                c.z = (float)((double)R[8] * q[2] + (double)R[2] * q[0] + (double)R[5] * q[1] + R[11]);
+                float r2 = (float)((double)F(float, o, 3272) * F(float, o, 3272));
+                if (!Ob_Next(s, &pt))
+                    continue;
+                bool found = false;
+                do
+                {
+                    if (found)
+                        continue;
+                    pt = Ob_World(s, pt);
+                    CallThis(Ob_SubAssign, &pt, &tmp, &c);
+                    if ((double)pt.x * pt.x + (double)pt.y * pt.y + (double)pt.z * pt.z < r2)
+                        found = true;
+                } while (Ob_Next(s, &pt));
+                if (!found)
+                    continue;
+                if (!Ob_Next(s, &pt))
+                    continue;
+                found = false;
+                do
+                {
+                    if (found)
+                        continue;
+                    Vec3 w = Ob_World(s, pt);
+                    Matrix m2;
+                    const Matrix* R2 = CallThis<const Matrix*>(FUN_57dec0, o, &m2);
+                    pt = *Vec3_RotateBy(&tmp, &w, R2);
+                    if (Body_ContainsPoint(o, 0, &pt.x))
+                        found = true;
+                } while (Ob_Next(s, &pt));
+                if (found)
+                    return o;
+            }
+        }
+        else if (type == 1)
+        {
+            Matrix m1;
+            const Matrix* R = CallThis<const Matrix*>(FUN_57de90, o, &m1);
+            c = *Vec3_MulMatrix(&tmp, (const Vec3*)(o + 3436), R);
+            float r2 = (float)((double)F(float, o, 3272) * F(float, o, 3272));
+            if (!Ob_Next(s, &pt))
+                continue;
+            do
+            {
+                pt = *Vec3_MulMatrix(&tmp, &pt, (const Matrix*)(s + 500));
+                CallThis(Ob_SubAssign, &pt, &tmp, &c);
+                if (Vec3_Dot(&pt, &pt) < r2)
+                    return o;
+            } while (Ob_Next(s, &pt));
+        }
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === a list of pointers and its ordering (FUN_592f90 with $L_592fe0)
+
+extern "C" {
+
+// [FUN_592f90] list s (head +4, tail +8) gets a node (12 bytes) holding p at its end
+void __fastcall PtrList_Append(BYTE* s, void*, void* p)
+{
+    BYTE* n = (BYTE*)operator new(12);
+    if (n)
+    {
+        ListNode_Construct(n, 0);
+        F(void*, n, 8) = p;
+    }
+    if (!F(BYTE*, s, 4))
+    {
+        F(BYTE*, s, 8) = n;
+        F(BYTE*, s, 4) = n;
+        return;
+    }
+    ListNode_InsertBefore(F(BYTE*, s, 8), 0, n);
+    F(BYTE*, s, 8) = n;
+}
+
+// ($L_592fe0, inside FUN_592f90) qsort order of 8-byte records by their float +4: 1, -1 or 0
+int __cdecl Rec_CompareF4(const BYTE* a, const BYTE* b)
+{
+    if (F(float, a, 4) > F(float, b, 4))
+        return 1;
+    if (F(float, a, 4) < F(float, b, 4))
+        return -1;
+    return 0;
 }
 
 } // extern "C"

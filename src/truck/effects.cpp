@@ -2585,7 +2585,7 @@ extern "C" void __fastcall Fx_SteerFromSwing(BYTE* s, void*, double a, double b,
 }
 
 extern "C" void FUN_4be2c0(); KING_ALIAS("_FUN_4be2c0", "_Object_HeightAt")    // the distance of a segment to a box-like object
-ASM_PROC(FUN_616850)    // the distance of a segment to the terrain of a type-8 object
+extern "C" void FUN_616850(); KING_ALIAS("_FUN_616850", "@Terrain_HeightAt@16")    // the distance of a segment to the terrain of a type-8 object
 
 static double Fx_SegDist(void* a, void* b, BYTE* o)
 {
@@ -5111,7 +5111,7 @@ ASM_VAR(AsmLabel, g_fiNames71e820, $L_71e820)
 ASM_VAR(AsmLabel, g_fiVtbl64c26c, $L_64c26c)
 extern "C" int __cdecl Ground_Below(BYTE* o, const float* p, float* at, float* n);
 ASM_VAR(AsmLabel, g_fiCb4c5b30, $L_4c5b30)
-ASM_VAR(AsmLabel, g_fiCb4cbec0, $L_4cbec0)
+ASM_VAR(AsmLabel, g_fiCb4cbec0, _Fx_ScrapeSpark)
 ASM_VAR(AsmLabel, g_fiCb4cbfd0, _Fx_ReflectionQuad)
 ASM_VAR(AsmLabel, s_fi672688, $L_672688)
 ASM_VAR(AsmLabel, s_fi66cd44, $L_66cd44)
@@ -7538,7 +7538,7 @@ double __cdecl Gear_Choose(int a0, int g, double v, double win, double k, int sh
 
 // === laying a patch onto the surfaces below (a method at $L_4c8190)
 
-ASM_FUNC(Lp_TerrainHeight, FUN_616850)
+extern "C" void Lp_TerrainHeight(); KING_ALIAS("_Lp_TerrainHeight", "@Terrain_HeightAt@16")
 extern "C" void Lp_Subdivide(); KING_ALIAS("_Lp_Subdivide", "_Tri_Subdivide")
 extern "C" void Lp_PlaneHeight(); KING_ALIAS("_Lp_PlaneHeight", "_Plane_HeightX")
 extern "C" void Lp_TrisHeight(); KING_ALIAS("_Lp_TrisHeight", "_Tris_Height")
@@ -8618,6 +8618,681 @@ void __fastcall Fx_BurstStep(BYTE* s, void*)
         CallVirt(s, 28, 1);
     else
         CallThis(Ex_PostEvent, s, 1);
+}
+
+} // extern "C"
+
+// === a glare facing the camera (a method at $L_4c5060)
+
+ASM_FUNC(Gl_DrawAt, FUN_5b3010)
+extern "C" void Gl_TestInfo(); KING_ALIAS("_Gl_TestInfo", "@Scene_TestInfo@16")
+extern "C" int __fastcall View_SphereClip(BYTE* s, void*, const float* sp);
+ASM_VAR(float, g_gl64c874, $L_64c874)
+ASM_VAR(float, g_gl64c878, $L_64c878)
+ASM_VAR(float, g_gl671704, $L_671704)
+ASM_VAR(float, g_gl671708, $L_671708)
+ASM_VAR(float, g_gl67170c, $L_67170c)
+ASM_VAR(float, g_gl671710, $L_671710)
+ASM_VAR(float, g_gl671714, $L_671714)
+ASM_VAR(float, g_gl671718, $L_671718)
+
+struct Gl_V3 { float x, y, z; };
+
+static double Gl_Clamp01(double t)
+{
+    if (t > g_eff64c250)
+        return g_eff64c250;
+    if (t < g_eff64c264b)
+        return g_eff64c264b;
+    return t;
+}
+
+extern "C" {
+
+// [$L_4c5060] glare s on view v: its quad (object +52: corners +16 / +20, texture +8 / +12) sized by the
+// camera's distance (+80 / +84 between +92 and +88), of kind +68 (0 swirling, 1 leaning with the view), placed
+// between +104 and the camera at +96 .. +100 (+56), drawn faded by distance when seen; 1 when drawn
+int __fastcall Fx_GlareDraw(BYTE* s, void*, int info, BYTE* v)
+{
+    BYTE* w = g_q22_696250;
+    float cam[3] = {(float)F(double, w, 2904), (float)F(double, w, 2912), (float)F(double, w, 2920)};
+    Matrix rz;
+    const float* m = Matrix_RotationZ(&rz, (float)F(double, w, 2928))->m;
+    const float* Y = &g_axisY.x;
+    float fx = (float)((double)Y[2] * m[6] + (double)Y[1] * m[3] + (double)Y[0] * m[0] + m[9]);
+    float fy = (float)((double)Y[2] * m[7] + (double)Y[1] * m[4] + (double)Y[0] * m[1] + m[10]);
+    float fz = (float)((double)Y[2] * m[8] + (double)Y[1] * m[5] + (double)Y[0] * m[2] + m[11]);
+    float* P = (float*)(s + 56);
+    Vec3 d, n;
+    d.x = (float)((double)cam[0] - P[0]);
+    d.y = (float)((double)cam[1] - P[1]);
+    d.z = (float)((double)cam[2] - P[2]);
+    Vec3_Normalized(&n, &d);
+    double c = (double)n.z * fz + (double)n.y * fy + (double)n.x * fx;
+    float sn = (float)x87_sqrt(g_eff64c250 - c * c);
+    double dx = (double)cam[0] - P[0], dy = (double)cam[1] - P[1];
+    if (dy * fx - fy * dx > g_eff64c264b)
+        sn = (float)-(double)sn;
+    double ez = (double)cam[2] - F(float, s, 64), ey = (double)cam[1] - F(float, s, 60), ex = (double)cam[0] - P[0];
+    float d2 = (float)(ex * ex + ey * ey + ez * ez);
+    double tc = Gl_Clamp01(((double)d2 - F(float, s, 84)) / ((double)F(float, s, 80) - F(float, s, 84)));
+    double ang = F(double, w, 2928) * F(float, s, 76) + F(float, s, 72);
+    float c16[4] = {0, 0, 0, 0}, c20[4] = {0, 0, 0, 0}, t8[4] = {0, 0, 0, 0}, t12[4] = {0, 0, 0, 0};
+    int kind = F(int, s, 68);
+    if (kind == 0)
+    {
+        double sz = ((double)F(float, s, 88) - F(float, s, 92)) * tc + F(float, s, 92);
+        float a = (float)(sz * g_gl64c878), b = (float)(sz * g_eff64c258b);
+        c20[0] = c20[1] = c16[0] = c16[3] = a;
+        c20[3] = c20[2] = c16[2] = c16[1] = b;
+        const double base[3] = {g_gl671704, g_gl671710, g_gl671708};
+        for (int k = 0; k < 4; k++)
+        {
+            double ak = k < 3 ? base[k] + ang : ang + g_gl67170c;
+            t8[k] = (float)(x87_cos(ak) * g_gl671714 + g_eff64c258b);
+            t12[k] = (float)(x87_sin(ak) * g_gl671718 + g_eff64c258b);
+        }
+    }
+    else if (kind == 1)
+    {
+        double sz = ((double)F(float, s, 88) - F(float, s, 92)) * tc + F(float, s, 92);
+        DWORD tb[4] = {0x3ee66666, 0x3f0ccccd, 0x3f0ccccd, 0x3ee66666};
+        memcpy(t8, tb, 16);
+        t12[0] = t12[1] = 1.0f;
+        float a = (float)(sz * g_gl64c878);
+        c20[0] = c20[1] = a;
+        float half = (float)(sz * g_eff64c258b);
+        c20[3] = c20[2] = half;
+        c16[1] = (float)(((double)sn + g_gl64c874) * half);
+        c16[0] = (float)((double)half * sn - (double)half * g_gl64c874);
+        c16[3] = (float)-(double)c16[1];
+        c16[2] = (float)-(double)c16[0];
+    }
+    float r = (float)(((double)F(float, s, 100) - F(float, s, 96)) * tc + F(float, s, 96));
+    Vec3 e, u;
+    e.x = (float)((double)cam[0] - F(float, s, 104));
+    e.y = (float)((double)cam[1] - F(float, s, 108));
+    e.z = (float)((double)cam[2] - F(float, s, 112));
+    Vec3_Normalized(&u, &e);
+    float uy = (float)((double)r * u.y), uz = (float)((double)r * u.z);
+    P[0] = (float)((double)r * u.x + F(float, s, 104));
+    P[1] = (float)((double)uy + F(float, s, 108));
+    P[2] = (float)((double)uz + F(float, s, 112));
+    BYTE* o = F(BYTE*, s, 52);
+    for (int k = 0; k < 4; k++)
+    {
+        F(float*, o, 16)[k] = c16[k];
+        F(float*, o, 20)[k] = c20[k];
+        F(float*, o, 8)[k] = t8[k];
+        F(float*, o, 12)[k] = t12[k];
+    }
+    CallVirt(s, 72);
+    if (!View_SphereClip(v, 0, (const float*)(s + 20)) || !CallThis<int>(Gl_TestInfo, s, info, v))
+    {
+        s[40] |= 1;
+        return 0;
+    }
+    double h = (double)F(float, v, 8540) * g_eff64c258b;
+    F(float, F(BYTE*, F(BYTE*, s, 52), 36), 88) = (float)Gl_Clamp01((x87_sqrt(d2) - h) / ((double)F(float, v, 8536) - h));
+    F(DWORD, F(BYTE*, F(BYTE*, s, 52), 36), 32) |= 32;
+    Gl_V3 p = *(const Gl_V3*)P;
+    CallThis(Gl_DrawAt, v, F(BYTE*, s, 52), p);
+    F(DWORD, F(BYTE*, F(BYTE*, s, 52), 36), 32) &= ~32u;
+    s[40] |= 1;
+    return 1;
+}
+
+} // extern "C"
+
+// === a fire's step (a method at $L_4d9f40)
+
+extern "C" void Fr_PostEvent(); KING_ALIAS("_Fr_PostEvent", "@Queue_PostEvent@12")
+ASM_VAR(float, g_fr64d350, $L_64d350)
+ASM_VAR(float, g_fr64c40c, $L_64c40c)
+ASM_VAR(float, g_fr64c48c, $L_64c48c)
+ASM_VAR(float, g_fr64c330, $L_64c330)
+ASM_VAR(float, g_fr64c304, $L_64c304)
+ASM_VAR(float, g_fr64c310, $L_64c310)
+ASM_VAR(float, g_fr64d380, $L_64d380)
+ASM_VAR(float, g_fr64c334, $L_64c334)
+ASM_VAR(float, g_fr64c258, $L_64c258)
+ASM_VAR(float, g_fr64c264, $L_64c264)
+ASM_VAR(float, g_fr695fb0, $L_695fb0)
+ASM_VAR(float, g_fr695328, $L_695328)
+ASM_VAR(float, g_fr695e30, $L_695e30)
+
+extern "C" double __cdecl floor(double);
+
+static double Fr_Rand() { return rand() * (double)g_randScale; }
+
+static double Fr_Clamp(double t)
+{
+    if (t < g_fr64c264)
+        return g_fr64c264;
+    if (t > g_one_f)
+        return g_one_f;
+    return t;
+}
+
+extern "C" {
+
+// [$L_4d9f40] fire s's step: gone when the frame rate is low and the camera close; it burns for +60 (age +64),
+// its wind (+76 .. +84, eased from +88 .. at +72 of +68) blows sparks (+100 set) or smoke (+104) from +36 / +48,
+// and it lights the thrown lamp with flickering colours; it ends with its time
+void __fastcall Fx_FireStep(BYTE* s, void*)
+{
+    BYTE* w = F(BYTE*, s, 32);
+    if ((double)g_one_f / F(double, w, 2960) < g_fr64d350)
+    {
+        float cx = (float)F(double, w, 2904);
+        float cy = (float)F(double, w, 2912), cz = (float)F(double, w, 2920);
+        Vec3 d;
+        d.x = (float)((double)cx - F(float, s, 36));
+        d.y = (float)((double)cy - F(float, s, 40));
+        d.z = (float)((double)cz - F(float, s, 44));
+        if (Vec3_Length(&d) < g_fr64c40c)
+        {
+            CallVirt(s, 28, 1);
+            return;
+        }
+    }
+    double age = F(double, w, 2960) + F(float, s, 64);
+    F(float, s, 64) = (float)age;
+    float t = (float)(((double)F(float, s, 60) - age) / F(float, s, 60));
+    if (t < g_fr64c264)
+        t = 0;
+    else if (t > g_one_f)
+        t = 1.0f;
+    double ph = F(double, w, 2960) + F(float, s, 72);
+    F(float, s, 72) = (float)ph;
+    if (ph > F(float, s, 68))
+    {
+        F(float, s, 72) = 0;
+        F(float, s, 88) = F(float, s, 76);
+        F(float, s, 92) = F(float, s, 80);
+        F(float, s, 96) = F(float, s, 84);
+        float r1 = (float)Fr_Rand();
+        F(float, s, 76) = (float)((Fr_Rand() - r1) * 2);
+        r1 = (float)Fr_Rand();
+        F(float, s, 80) = (float)((Fr_Rand() - r1) * 2);
+        F(float, s, 84) = (float)(rand() * (double)g_fr64c48c + g_one_f);
+    }
+    double u = Fr_Clamp(((double)F(float, s, 68) - F(float, s, 72)) / F(float, s, 68));
+    double iu = g_one_f - u;
+    float A = (float)(iu * F(float, s, 88) + u * F(float, s, 76));
+    float B = (float)(iu * F(float, s, 92) + u * F(float, s, 80));
+    double C = iu * F(float, s, 96) + u * F(float, s, 84);
+    double g = t > g_fr64c330 ? t : g_fr64c330;
+    float yy = (float)(g_axisY.y * (double)B), yz = (float)(g_axisY.z * (double)B);
+    double yx = g_axisY.x * (double)B;
+    float xy = (float)(g_axisX.y * (double)A), xz = (float)(g_axisX.z * (double)A);
+    double xx = g_axisX.x * (double)A;
+    float vx = (float)(xx + F(float, s, 48) + yx);
+    float vy = (float)((double)yy + (float)((double)xy + F(float, s, 52)));
+    float vz = (float)((double)yz + (float)((double)xz + F(float, s, 56)));
+    bool sparks = F(int, s, 100) != 0;
+    double g2 = g + (sparks ? g_fr64c304 : g_fr64c310);
+    Vec3 vel;
+    vel.x = (float)((float)(vx * g2) * C);
+    vel.y = (float)((float)(vy * g2) * C);
+    vel.z = (float)(vz * g2 * C);
+    if (sparks)
+        Fx_SparkOrFlash((int)(s + 36), &vel, 1.0f);
+    else
+        Fx_SpawnPuff((int)(s + 36), (int)&vel, F(float, s, 104));
+    if (!g_696734)
+        Fx_ThrowLamp(s, 0);
+    if (g_696734)
+    {
+        unsigned i = (unsigned)(int)floor(F(float, s, 64) / (double)g_fr64d380) % 31;
+        double k;
+        if (t > g_fr64c258)
+            k = t;
+        else if (t <= g_fr64c334)
+            k = g_fr64c258;
+        else
+            k = (double)t + g_fr64c334;
+        F(float, g_696734, 108) = (float)(k * (&g_fr695fb0)[i]);
+        F(float, g_696734, 112) = (float)(k * (&g_fr695328)[i]);
+        F(float, g_696734, 116) = (float)(k * (&g_fr695e30)[i]);
+    }
+    if (F(float, s, 64) > F(float, s, 60))
+        CallVirt(s, 28, 1);
+    else
+        CallThis(Fr_PostEvent, s, 1);
+}
+
+} // extern "C"
+
+// === drifting smoke sheets (FUN_4c03d0)
+
+ASM_VAR(float, g_ds64c494, $L_64c494)
+ASM_VAR(float, g_ds64c334, $L_64c334)
+ASM_VAR(float, g_ds64c258, $L_64c258)
+ASM_VAR(float, g_ds64c490, $L_64c490)
+ASM_VAR(BYTE*, g_ds7025b8, $L_7025b8)
+
+static Vec3 Ds_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_4c03d0] effect s's puffs (list +128, positions at +4) in front of the camera (farther than +64 along its
+// view) drawn on r as three-vertex sheets (colour +96) drifting with the wind, raised by +8 and widened with
+// distance
+int __fastcall Fx_SmokeSheets(BYTE* s, void*, BYTE* r)
+{
+    BYTE* w = F(BYTE*, s, 136);
+    Matrix rz;
+    const float* R = Matrix_RotationZ(&rz, (float)F(double, w, 2928))->m;
+    const float* Y = &g_axisY.x;
+    const float* Z = &g_axisZ.x;
+    Vec3 fv = Ds_Set((double)Y[2] * R[6] + (double)Y[1] * R[3] + (double)Y[0] * R[0] + R[9],
+                     (double)Y[2] * R[7] + (double)Y[1] * R[4] + (double)Y[0] * R[1] + R[10],
+                     (double)Y[2] * R[8] + (double)Y[1] * R[5] + (double)Y[0] * R[2] + R[11]);
+    float cam[3] = {(float)F(double, w, 2904), (float)F(double, w, 2912), (float)F(double, w, 2920)};
+    Vec3 sd = Ds_Set((double)fv.z * Z[1] - (double)fv.y * Z[2], (double)fv.x * Z[2] - (double)fv.z * Z[0],
+                     (double)fv.y * Z[0] - (double)fv.x * Z[1]);
+    Vec3 wind, tmp;
+    Vec3_Scaled(&wind, &g_axisY, F(float, g_ds7025b8, 532));
+    Vec3 wv = Ds_Set(wind.x * (double)g_ds64c494, wind.y * (double)g_ds64c494, wind.z * (double)g_ds64c494);
+    float plane = (float)-((double)cam[1] * fv.y + (double)cam[2] * fv.z + (double)fv.x * cam[0]);
+    float h = (float)-(double)F(float, s, 8);
+    Vec3 A = Ds_Set((double)wv.x + 0, (double)wv.y + 0, (double)wv.z + h);
+    Vec3 B = A;
+    double k = F(float, s, 8);
+    sd = Ds_Set(k * sd.x, sd.y * k, sd.z * k);
+    Vec3 up = Ds_Set(0, 0, F(float, s, 8));
+    Renderer_ResetCount(r, 0);
+    for (BYTE* e = F(BYTE*, s, 128); e; e = F(BYTE*, e, 0))
+    {
+        const Vec3* p = (const Vec3*)(e + 4);
+        double d = (double)p->y * fv.y + (double)p->z * fv.z + (double)p->x * fv.x + plane;
+        if (!(d > F(float, s, 64)))
+            continue;
+        float t = (float)(d * g_ds64c494 + g_ds64c334);
+        double u = d * g_ds64c258 + g_ds64c490;
+        Vec3 v1 = Ds_Set(up.x * u, up.y * u, up.z * u), q, q2;
+        const DWORD* col = (const DWORD*)(s + 96);
+        Renderer_AddVertex(r, 0, Vec3_Sum(&q, p, &v1), col, 0.5f, 0);
+        Vec3 v2 = Ds_Set((double)sd.x * t, (double)sd.y * t, (double)sd.z * t);
+        Renderer_AddVertex(r, 0, Vec3_Sum(&q2, Vec3_Sum(&q, p, &A), &v2), col, 1.0f, 1.0f);
+        Vec3 tm;
+        Vec3_Times(&tm, &sd, t);
+        Renderer_AddVertex(r, 0, Vec3_Diff(&q2, Vec3_Sum(&q, p, &B), &tm), col, 0, 1.0f);
+    }
+    Effect_Zero();
+    return 0;
+}
+
+} // extern "C"
+
+// === the ground mist's step (a method at $L_4befa0)
+
+extern "C" void Gm_PostEvent(); KING_ALIAS("_Gm_PostEvent", "@Queue_PostEvent@12")
+ASM_VAR(float, g_gm64c338, $L_64c338)
+ASM_VAR(float, g_gm64c488, $L_64c488)
+ASM_VAR(float, g_gm64c484, $L_64c484)
+ASM_VAR(float, g_gm64c458, $L_64c458)
+ASM_VAR(double, g_gm64b7a8, $L_64b7a8)
+ASM_VAR(float, g_gm64c308, $L_64c308)
+ASM_VAR(float, g_gm64c454, $L_64c454)
+ASM_VAR(float, g_gm64c450, $L_64c450)
+ASM_VAR(float, g_gm64c1f0, $L_64c1f0)
+ASM_VAR(float, g_gm64c320, $L_64c320)
+ASM_VAR(float, g_gm64c44c, $L_64c44c)
+ASM_VAR(float, g_gm64c448, $L_64c448)
+ASM_VAR(float, g_gm64c144, $L_64c144)
+ASM_VAR(float, g_gm64c148, $L_64c148)
+ASM_VAR(BYTE*, g_gm7025b8, $L_7025b8)
+
+extern "C" {
+
+// [$L_4befa0] the mist s (shown with +48 and its switch +32 +80 selected): its emitter (+36) placed ahead of the
+// camera by the game's view distance, coloured from the palette (lighter, more saturated), enabled by the wave
+// and the season (6716f8), stepped and drawn with sheets, its particle count (+44, 50 .. 2000) by the frame rate
+void __fastcall Fx_MistStep(BYTE* s, void*)
+{
+    if (!F(int, s, 48))
+    {
+        CallThis(Gm_PostEvent, s, 1);
+        return;
+    }
+    BYTE* sw = F(BYTE*, F(BYTE*, s, 32), 80);
+    if (sw && !CallC<int>(Rn_Selected, sw))
+    {
+        CallThis(Gm_PostEvent, s, 1);
+        return;
+    }
+    BYTE* w = F(BYTE*, s, 44);
+    Matrix rz;
+    const float* R = Matrix_RotationZ(&rz, (float)F(double, w, 2928))->m;
+    const float* Y = &g_axisY.x;
+    float fx = (float)((double)Y[2] * R[6] + (double)Y[1] * R[3] + (double)Y[0] * R[0] + R[9]);
+    float fy = (float)((double)Y[2] * R[7] + (double)Y[1] * R[4] + (double)Y[0] * R[1] + R[10]);
+    float fz = (float)((double)Y[2] * R[8] + (double)Y[1] * R[5] + (double)Y[0] * R[2] + R[11]);
+    Vec3 vv = F(Vec3, F(BYTE*, g_game, 616), 432);
+    double L = Vec3_Length(&vv);
+    float cz = (float)F(double, w, 2920), cy = (float)F(double, w, 2912), cx = (float)F(double, w, 2904);
+    float ky = (float)(fy * (double)g_gm64c338), kz = (float)(fz * (double)g_gm64c338);
+    float px = (float)(fx * (double)g_gm64c338 * L);
+    float py = (float)(ky * L);
+    Vec3 pos;
+    pos.x = (float)((double)px + cx);
+    pos.y = (float)((double)py + cy);
+    pos.z = (float)(L * kz + cz);
+    float wv = (float)Wave_Value(g_gm7025b8, 0, 0.0);
+    BYTE* pal = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, w, 12)) + 48;
+    float r = (float)(pal[0] * (double)g_gm64c488), g = (float)(pal[1] * (double)g_gm64c488), b = (float)(pal[2] * (double)g_gm64c488);
+    float h, l, sat;
+    Color_ToHsl(r, g, b, &h, &l, &sat);
+    sat = (float)(sat * (double)g_64c258);
+    l = (float)(l + (double)g_gm64c484);
+    if (l > g_one_f)
+        l = 1.0f;
+    else if (l < g_eff64c264b)
+        l = 0;
+    Color_FromHsl(h, l, sat, &r, &g, &b);
+    DWORD c = (DWORD)(int)(r * (double)g_gm64c458) | 0xFFFFFF00u;
+    c = (c << 8) | (DWORD)(int)(g * (double)g_gm64c458);
+    c = (c << 8) | (DWORD)(int)(b * (double)g_gm64c458);
+    BYTE* e = F(BYTE*, s, 36);
+    F(DWORD, e, 96) = c;
+    if (wv < g_gm64b7a8)
+        Renderer_SetEnabled(e, 0, 0);
+    else
+    {
+        Renderer_SetEnabled(e, 0, 1);
+        double x = (wv - (double)g_gm64c308) * g_gm64c454;
+        if (x < g_64c258)
+            x = g_64c258;
+        double y = g_one_f - x;
+        F(float, e, 12) = (float)((y * y * g_gm64c450 + g_one_f) * g_gm64c1f0);
+    }
+    double z = F(double, w, 2920);
+    if (z > g_gm64c144 && z < g_gm64c148)
+        g_fi6716f8 = 1;
+    else
+    {
+        g_fi6716f8 = 0;
+        Renderer_SetEnabled(F(BYTE*, s, 36), 0, 0);
+    }
+    float dt = (float)F(double, F(BYTE*, s, 44), 2960);
+    Particles_SetOrigin(F(BYTE*, s, 36), 0, &pos);
+    Fx_EmitterStep(F(BYTE*, s, 36), 0, dt);
+    Fx_SmokeSheets(F(BYTE*, s, 36), 0, F(BYTE*, s, 32));
+    CallThis(Gm_PostEvent, s, 1);
+    double fps = g_one_f / (double)dt;
+    BYTE* em = F(BYTE*, s, 36);
+    if (fps > g_gm64c320)
+        F(int, em, 44) = (int)((fps - g_gm64c320) * g_gm64c44c + g_gm64c448);
+    else
+        F(int, em, 44) = 50;
+    if (F(int, em, 44) < 50)
+        F(int, em, 44) = 50;
+    else if (F(int, em, 44) > 2000)
+        F(int, em, 44) = 2000;
+}
+
+} // extern "C"
+
+// === where an emitter source puts its next particle (a method at $L_4c1280)
+
+extern "C" void Es_GroundHeight(); KING_ALIAS("_Es_GroundHeight", "@Terrain_HeightAt@16")
+ASM_VAR(BYTE*, g_es696224, $L_696224)
+ASM_VAR(float, g_es64c1f8, $L_64c1f8)
+ASM_VAR(float, g_es64c624, $L_64c624)
+ASM_VAR(float, g_es64c264, $L_64c264)
+
+static Vec3 Es_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [$L_4c1280] source i of emitter s (92-byte records at +8: point, normal +12, kind +24, mesh +28 / +32, frame
+// +36, on +84, owner +88): when on, the game's current one and near the camera, a point (*p) and direction (*n)
+// by kind: 0 the point, 5 a random spot of the disc about the normal, 6 a random point of one of the mesh's
+// triangles, 8 a random spot on the ground (straight up); 1 when given
+int __fastcall Fx_SourcePoint(BYTE* s, void*, int i, Vec3* p, Vec3* n)
+{
+    BYTE* E = s + 8 + i * 92;
+    if (!F(int, E, 84) || F(int, E, 88) != F(int, F(BYTE*, g_game, 616), 308))
+        return 0;
+    BYTE* w = g_es696224;
+    double cx = F(double, w, 2904);
+    float cy = (float)F(double, w, 2912), cz = (float)F(double, w, 2920);
+    const float* P = (const float*)E;
+    Vec3 d = Es_Set(P[0] - cx, (double)P[1] - cy, (double)P[2] - cz);
+    if (!(Vec3_Length(&d) < g_es64c1f8))
+        return 0;
+    int kind = F(int, E, 24);
+    const float* N = (const float*)(E + 12);
+    if (kind == 5)
+    {
+        float u = (float)(rand() * (double)g_es64c624);
+        double v = rand() * (double)g_es64c624;
+        double z0 = g_es64c264;
+        float a44 = (float)(z0 - N[2]), a40 = (float)(N[1] - z0), a36 = (float)(N[2] - z0);
+        float zero = 0;
+        Vec3 t1 = Es_Set((double)a36 * v, (double)zero * v, (z0 - N[0]) * v);
+        Vec3 t2 = Es_Set((double)zero * u, (double)a44 * u, (double)a40 * u);
+        Vec3 t3 = Es_Set((double)t2.x + P[0], (double)t2.y + P[1], (double)t2.z + P[2]);
+        *p = Es_Set((double)t3.x + t1.x, (double)t3.y + t1.y, (double)t3.z + t1.z);
+        *n = *(const Vec3*)N;
+    }
+    if (kind == 6)
+    {
+        *n = *(const Vec3*)N;
+        BYTE* T = F(BYTE*, E, 32) + F(int, E, 28) * 48 - 48;
+        if (F(WORD, T, 2) >= 3)
+        {
+            int k = (int)(rand() * (double)(F(WORD, T, 2) - 3) * g_randScale + g_one_f);
+            const float* vs = F(const float*, T, 4);
+            const float* M = (const float*)(E + 36);
+            const float* v = vs + (k + 1) * 3;
+            Vec3 p1 = Es_Set((double)M[6] * v[2] + (double)M[3] * v[1] + (double)v[0] * M[0] + M[9],
+                             (double)M[1] * v[0] + (double)M[7] * v[2] + (double)M[4] * v[1] + M[10],
+                             (double)M[2] * v[0] + (double)M[8] * v[2] + (double)M[5] * v[1] + M[11]);
+            Vec3 p2, p3, r;
+            Vec3_MulMatrix(&p2, (const Vec3*)(vs + k * 3), (const Matrix*)M);
+            Vec3_MulMatrix(&p3, (const Vec3*)vs, (const Matrix*)M);
+            *p = *Triangle_RandomPoint(&r, &p3, &p2, &p1);
+        }
+        else
+            *p = *(const Vec3*)P;
+    }
+    if (kind == 8)
+    {
+        p->x = (float)(rand() * (double)g_es64c624 + P[0]);
+        p->y = (float)(rand() * (double)g_es64c624 + P[1]);
+        p->z = (float)CallThis<double>(Es_GroundHeight, F(BYTE*, E, 32), p->x, p->y);
+        n->x = 0;
+        n->y = 0;
+        n->z = 1.0f;
+    }
+    if (kind == 0)
+    {
+        *p = *(const Vec3*)P;
+        *n = *(const Vec3*)N;
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === the light shafts' step (a method at $L_4bea60)
+
+ASM_VAR(float, g_ls64c460, $L_64c460)
+ASM_VAR(float, g_ls64c45c, $L_64c45c)
+ASM_VAR(float, g_ls64c334, $L_64c334)
+ASM_VAR(float, g_ls64c1ec, $L_64c1ec)
+ASM_VAR(float, g_ls64c13c, $L_64c13c)
+ASM_VAR(float, g_ls64c140, $L_64c140)
+ASM_VAR(int, g_ls6716fc, $L_6716fc)
+
+extern "C" {
+
+// [$L_4bea60] the shafts s: their emitter (+36) placed ahead of the camera by the game's view distance, grey by
+// the weather's brightness (7025b8 +548), enabled by the wave and the season (6716fc), stepped and drawn as
+// shafts, its particle count (+44, 50 .. 2000) by the frame rate
+void __fastcall Fx_ShaftsStep(BYTE* s, void*)
+{
+    BYTE* w = F(BYTE*, s, 40);
+    Matrix rz;
+    const float* R = Matrix_RotationZ(&rz, (float)F(double, w, 2928))->m;
+    const float* Y = &g_axisY.x;
+    float fx = (float)((double)Y[2] * R[6] + (double)Y[1] * R[3] + (double)Y[0] * R[0] + R[9]);
+    float fy = (float)((double)Y[2] * R[7] + (double)Y[1] * R[4] + (double)Y[0] * R[1] + R[10]);
+    float fz = (float)((double)Y[2] * R[8] + (double)Y[1] * R[5] + (double)Y[0] * R[2] + R[11]);
+    Vec3 vv = F(Vec3, F(BYTE*, g_game, 616), 432);
+    double L = Vec3_Length(&vv);
+    w = F(BYTE*, s, 40);
+    float cz = (float)F(double, w, 2920), cy = (float)F(double, w, 2912), cx = (float)F(double, w, 2904);
+    float ky = (float)(fy * (double)g_gm64c338), kz = (float)(fz * (double)g_gm64c338);
+    float px = (float)(fx * (double)g_gm64c338 * L);
+    float py = (float)(ky * L);
+    Vec3 pos;
+    pos.x = (float)((double)px + cx);
+    pos.y = (float)((double)py + cy);
+    pos.z = (float)(L * kz + cz);
+    double wave = Wave_Value(g_gm7025b8, 0, 0.0);
+    float wv = (float)wave;
+    double gv = F(float, g_gm7025b8, 548) * (double)g_ls64c460;
+    if (gv > g_ls64c45c)
+        gv = g_ls64c45c;
+    else if (gv < g_ls64c334)
+        gv = g_ls64c334;
+    DWORD gi = (DWORD)(int)(gv * g_gm64c458);
+    BYTE* e = F(BYTE*, s, 36);
+    F(DWORD, e, 96) = ((((gi | 0xFFFFC000u) << 8) | gi) << 8) | gi;
+    if (wave < g_gm64b7a8)
+        Renderer_SetEnabled(e, 0, 0);
+    else
+    {
+        Renderer_SetEnabled(e, 0, 1);
+        double x = (wv - (double)g_gm64c308) * g_gm64c454;
+        if (x < g_64c258)
+            x = g_64c258;
+        double y = g_one_f - x;
+        F(float, F(BYTE*, s, 36), 12) = (float)((y * y * g_gm64c450 + g_one_f) * g_ls64c1ec);
+    }
+    double z = F(double, F(BYTE*, s, 40), 2920);
+    if (z > g_ls64c13c && z < g_ls64c140)
+        g_ls6716fc = 1;
+    else
+    {
+        g_ls6716fc = 0;
+        Renderer_SetEnabled(F(BYTE*, s, 36), 0, 0);
+    }
+    float dt = (float)F(double, F(BYTE*, s, 40), 2960);
+    Particles_SetOrigin(F(BYTE*, s, 36), 0, &pos);
+    Fx_EmitterStep(F(BYTE*, s, 36), 0, dt);
+    Shafts_Draw(F(BYTE*, s, 36), 0, F(BYTE*, s, 32));
+    CallThis(Gm_PostEvent, s, 1);
+    double fps = g_one_f / (double)dt;
+    BYTE* em = F(BYTE*, s, 36);
+    if (fps > g_gm64c320)
+        F(int, em, 44) = (int)((fps - g_gm64c320) * g_gm64c44c + g_gm64c448);
+    else
+        F(int, em, 44) = 50;
+    if (F(int, em, 44) < 50)
+        F(int, em, 44) = 50;
+    else if (F(int, em, 44) > 2000)
+        F(int, em, 44) = 2000;
+    CallThis(Gm_PostEvent, s, 1);
+}
+
+} // extern "C"
+
+// === sparks from a scraping object (a callback at $L_4cbec0)
+
+extern "C" void Ss_Skid1(); KING_ALIAS("_Ss_Skid1", "_Fx_Skid1")
+ASM_VAR(float, g_ss64c33c, $L_64c33c)
+ASM_VAR(float, g_ss64c978, $L_64c978)
+ASM_VAR(float, g_ss64c974, $L_64c974)
+ASM_VAR(float, g_ss64c260, $L_64c260)
+
+extern "C" {
+
+// [$L_4cbec0] object o (kind 6 at +60, its description +72: point, direction) now and then throws a skid spark
+// from its point along its direction; 1 when of that kind
+int __cdecl Fx_ScrapeSpark(int, int, BYTE* o)
+{
+    BYTE* e = o + 60;
+    if (!e)
+        return 0;
+    if (F(int, e, 8) != 6)
+        return 0;
+    const float* d = F(const float*, e, 12);
+    float P[3] = {d[0], d[1], d[2]};
+    float N[3] = {d[3], d[4], d[5]};
+    if (rand() * (double)g_randScale > g_ss64c33c)
+    {
+        float n2[3] = {(float)(N[0] * (double)g_ss64c978), (float)(N[1] * (double)g_ss64c978), (float)(N[2] * (double)g_ss64c978)};
+        double k = rand() * (double)g_ss64c974 + g_ss64c260;
+        float V[3] = {(float)(n2[0] * k), (float)(n2[1] * k), (float)(n2[2] * k)};
+        CallC(Ss_Skid1, P, V, 1);
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === random spots on a source's square (two methods at $L_4c3cf0 / $L_4c22b0)
+
+extern "C" void Rp_ForwardPoint(); KING_ALIAS("_Rp_ForwardPoint", "@MarineTask_ForwardPoint@12")
+ASM_VAR(float, g_rp64c690, $L_64c690)
+
+extern "C" {
+
+// [$L_4c3cf0] source i of emitter s (12-byte points at +8): a random spot in the square spanned by the x and y
+// axes from it into *p, straight up into *n; 1
+int __fastcall Fx_SquareSpot(BYTE* s, void*, int i, Vec3* p, Vec3* n)
+{
+    *n = g_axisZ;
+    float r1 = (float)(rand() * (double)g_rp64c690);
+    double r2 = rand() * (double)g_rp64c690;
+    const float* b = (const float*)(s + 8 + i * 12);
+    float ax = (float)(g_axisY.x * r2), ay = (float)(g_axisY.y * r2);
+    double az = g_axisY.z * r2;
+    double bx = g_axisX.x * (double)r1;
+    float by = (float)(g_axisX.y * (double)r1), bz = (float)(g_axisX.z * (double)r1);
+    float sy = (float)((double)by + b[1]), sz = (float)((double)bz + b[2]);
+    p->x = (float)(bx + b[0] + ax);
+    p->y = (float)((double)ay + sy);
+    p->z = (float)(az + sz);
+    return 1;
+}
+
+// [$L_4c22b0] the same on the sea: source i of emitter s (points at +12, the sea +8), the spot's height from the
+// sea surface at it
+int __fastcall Fx_SeaSpot(BYTE* s, void*, int i, Vec3* p, Vec3* n)
+{
+    *n = g_axisZ;
+    float r1 = (float)(rand() * (double)g_rp64c690);
+    float r2 = (float)(rand() * (double)g_rp64c690);
+    const float* b = (const float*)(s + 12 + i * 12);
+    float q[3];
+    q[2] = 0;
+    q[0] = (float)((double)r1 + b[0]);
+    q[1] = (float)((double)r2 + b[0]);
+    double h = CallThis<double>(Rp_ForwardPoint, F(BYTE*, s, 8), q);
+    p->x = (float)((double)r1 + b[0]);
+    p->y = (float)((double)r2 + b[1]);
+    p->z = (float)(h + b[2]);
+    return 1;
 }
 
 } // extern "C"
