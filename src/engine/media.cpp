@@ -3629,7 +3629,7 @@ int __cdecl Msavi_OpenSound(HWND w)
 
 // === the four rays of a marker (FUN_5c7110)
 
-ASM_PROC(FUN_5c6ac0)    // draws a ray (a, p, q, d, ...)
+extern "C" void FUN_5c6ac0(); KING_ALIAS("_FUN_5c6ac0", "_Ribbon_DrawSegment")    // draws a ray (a, p, q, d, ...)
 extern "C" void Mk_Normalized(); KING_ALIAS("_Mk_Normalized", "_Vec3_Normalized")
 ASM_VAR(Med243_V3, g_mkAhead, $L_702620)
 ASM_VAR(Med243_V3, g_mkSide, $L_702640)
@@ -4613,6 +4613,84 @@ void __cdecl Plume_Draw(BYTE* r, int mat, const float* pos, int a4, float h, int
     if (mat)
         CallThis(Pl_Material, r, mat, 0, 0, 0);
     Com(g_bm720908, 104, 4, 322, &g_pl708450, q * 4, &g_pl707f9c, q * 6, 0);
+}
+
+} // extern "C"
+
+// === a ribbon segment (FUN_5c6ac0)
+
+ASM_VAR(BYTE*, g_rbDevice, $L_720908)
+ASM_VAR(float, g_rb651708, $L_651708)
+ASM_VAR(float, g_rb64c964, $L_64c964)
+ASM_VAR(float, g_rb64c264, $L_64c264)
+ASM_VAR(float, g_rb64c250, $L_64c250)
+ASM_VAR(float, g_rb64c258, $L_64c258)
+ASM_VAR(float, g_rb67f93c, $L_67f93c)
+ASM_VAR(DWORD, g_rb67f940, $L_67f940)
+ASM_VAR(DWORD, g_rb67f944, $L_67f944)
+ASM_VAR(DWORD, g_rb67f948, $L_67f948)
+
+struct Rb_V3 { float x, y, z; };
+struct Rb_Vert { float x, y, z; DWORD c; float u, v; };
+
+static void Rb_Put(Rb_Vert* r, double x, double y, double z, DWORD c, float u, float v)
+{
+    r->x = (float)x;
+    r->y = (float)y;
+    r->z = (float)z;
+    r->c = c;
+    r->u = u;
+    r->v = v;
+}
+
+extern "C" {
+
+// [FUN_5c6ac0] the ribbon from a to b, as wide as (b - a) x n / w, drawn as two fans of 6 vertices split at
+// the fraction t; v is its texture start (flip swaps the sides' texture)
+void __cdecl Ribbon_DrawSegment(int flip, Rb_V3 a, Rb_V3 b, Rb_V3 n, float v, float w, float t)
+{
+    float c0 = g_rb651708;
+    if (v < g_rb64c264)
+    {
+        c0 = g_rb64c964;
+        v = 0;
+    }
+    double du = (double)g_rb64c250 / g_rb67f93c;
+    v = (float)(du + v);
+    float voff = (float)(c0 - du);
+    float dx = (float)((double)b.x - a.x), dy = (float)((double)b.y - a.y), dz = (float)((double)b.z - a.z);
+    float cx = (float)((double)dy * n.z - (double)dz * n.y);
+    float cy = (float)((double)dz * n.x - (double)n.z * dx);
+    double cz = (double)dx * n.y - (double)dy * n.x;
+    float sx = (float)(cx / w), sy = (float)(cy / w);
+    double sz = cz / w;
+    float tu = (float)(voff * (double)g_rb64c258 + v);
+    float tv = (float)((double)g_rb64c250 - t);
+    float hx = (float)(sx * (double)g_rb64c258), hy = (float)(sy * (double)g_rb64c258), hz = (float)(sz * g_rb64c258);
+    float ua = flip ? v : (float)((double)voff + v);
+    float ub = flip ? (float)((double)voff + v) : v;
+    Rb_Vert q[6];
+    float mx = (float)((double)dx * t + a.x), my = (float)((double)(float)((double)dy * t) + a.y);
+    float mz = (float)((double)(float)((double)dz * t) + a.z);
+    DWORD c1 = g_rb67f944, c2 = g_rb67f948;
+    Rb_Put(&q[0], mx, my, mz, c1, tu, tv);
+    Rb_Put(&q[1], (double)mx - hx, (double)my - hy, (double)mz - hz, c1, ua, tv);
+    Rb_Put(&q[2], (double)a.x - hx, (double)a.y - hy, (double)a.z - hz, c2, ua, 1.0f);
+    Rb_Put(&q[3], a.x, a.y, a.z, c2, tu, 1.0f);
+    Rb_Put(&q[4], (double)hx + a.x, (double)hy + a.y, (double)hz + a.z, c2, ub, 1.0f);
+    Rb_Put(&q[5], (double)hx + mx, (double)hy + my, (double)hz + mz, c1, ub, tv);
+    Com(g_rbDevice, 100, 6, 322, q, 6, 0);
+    DWORD c3 = g_rb67f940;
+    double mx2 = (double)dx * t + a.x;
+    float my2 = (float)((double)(float)((double)dy * t) + a.y);
+    float mz2 = (float)((double)(float)((double)dz * t) + a.z);
+    Rb_Put(&q[0], b.x, b.y, b.z, c3, tu, 0);
+    Rb_Put(&q[1], (double)b.x - hx, (double)b.y - hy, (double)b.z - hz, c3, ua, 0);
+    Rb_Put(&q[2], mx2 - hx, (double)my2 - hy, (double)mz2 - hz, c1, ua, tv);
+    Rb_Put(&q[3], mx2, my2, mz2, c1, tu, tv);
+    Rb_Put(&q[4], (double)hx + mx2, (double)hy + my2, (double)hz + mz2, c1, ub, tv);
+    Rb_Put(&q[5], (double)hx + b.x, (double)hy + b.y, (double)hz + b.z, c3, ub, 0);
+    Com(g_rbDevice, 100, 6, 322, q, 6, 0);
 }
 
 } // extern "C"

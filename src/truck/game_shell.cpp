@@ -10507,3 +10507,157 @@ void __cdecl ObjTypes_Read(const char* path, int edit)
 }
 
 } // extern "C"
+
+// === the map's road pieces (FUN_5291a0)
+
+struct RmPos { DWORD m[8]; };       // road.h's PositionId, by value
+struct RmInfo {                     // the road parameters (Road_GetRoadParameters)
+    DWORD       flags;              // bit 5: not drawn
+    DWORD       m_4;
+    double      width;
+    const char* module;
+    const char* room;
+    DWORD       m_24, m_28, m_32;
+    int         m_36, m_40;
+    DWORD       m_44;
+};
+extern "C" void Rm_FirstId(); KING_ALIAS("_Rm_FirstId", "_Road_FirstId")
+extern "C" void Rm_NextId(); KING_ALIAS("_Rm_NextId", "_Road_NextId")
+extern "C" void Rm_StartOf(); KING_ALIAS("_Rm_StartOf", "_Road_StartOf")
+extern "C" void Rm_Params(); KING_ALIAS("_Rm_Params", "_Road_GetRoadParameters")
+extern "C" void Rm_Advance(); KING_ALIAS("_Rm_Advance", "_Ai_AdvancePositionRoad")
+extern "C" void Rm_Coords(); KING_ALIAS("_Rm_Coords", "_Ai_GetCoordinatesPos")
+extern "C" void Rm_LoadingStep(); KING_ALIAS("_Rm_LoadingStep", "_Loading_Step")
+ASM_VAR(char, s_rm66d638, $L_66d638)
+ASM_VAR(char, s_rm66d628, $L_66d628)
+ASM_VAR(double, g_rm64b670, $L_64b670)
+ASM_VAR(double, g_rm64de08, $L_64de08)
+ASM_VAR(double, g_rm64b5b8, $L_64b5b8)
+
+static RmPos Rm_Start(int id, RmInfo* info)
+{
+    RmPos pos, t;
+    pos = *CallC<RmPos*>(Rm_StartOf, &t, id);
+    info->flags = 0;
+    *(DWORD*)&info->width = 0;
+    *((DWORD*)&info->width + 1) = 0;
+    info->module = &s_rm66d638;
+    info->room = &s_rm66d628;
+    info->m_24 = 0;
+    info->m_28 = 0;
+    info->m_36 = -1;
+    info->m_40 = -1;
+    CallC(Rm_Params, pos, info);
+    return pos;
+}
+
+// pos advanced along its road by *d (what is left in *d)
+static RmPos Rm_Step(RmPos pos, double* d)
+{
+    RmPos t;
+    return *CallC<RmPos*>(Rm_Advance, &t, pos, d, 0);
+}
+
+// the map point of pos (y mirrored)
+static void Rm_Point(const RmPos& pos, double* x, double* y)
+{
+    float v[3];
+    CallC(Rm_Coords, v, pos);
+    v[1] = (float)-(double)v[1];
+    *x = v[0];
+    *y = v[1];
+}
+
+extern "C" {
+
+// [FUN_5291a0] fills map s with its road pieces: the bounds of all roads (+8 .. +32, doubles) walked in steps
+// of 100, then pieces of a twentieth of the map's height each (+0, 40 bytes: from, to, road id, drawn)
+// counted in +4
+void __fastcall Map_BuildRoads(BYTE* s, void*)
+{
+    if (F(void*, s, 0))
+    {
+        operator delete(F(void*, s, 0));
+        F(void*, s, 0) = 0;
+    }
+    F(double, s, 8) = 100000.0;
+    F(double, s, 24) = 100000.0;
+    F(double, s, 16) = -100000.0;
+    F(double, s, 32) = -100000.0;
+    int id;
+    RmInfo info;
+    CallC(Rm_FirstId, &id);
+    while (id != -1)
+    {
+        RmPos pos = Rm_Start(id, &info);
+        double d;
+        do
+        {
+            d = 100.0;
+            pos = Rm_Step(pos, &d);
+            double x, y;
+            Rm_Point(pos, &x, &y);
+            if (x < F(double, s, 8))
+                F(double, s, 8) = x;
+            if (x > F(double, s, 16))
+                F(double, s, 16) = x;
+            if (y < F(double, s, 24))
+                F(double, s, 24) = y;
+            if (y > F(double, s, 32))
+                F(double, s, 32) = y;
+        } while (!(d > g_rm64b670));
+        int t;
+        id = *CallC<int*>(Rm_NextId, &t, id);
+    }
+    for (int i = 0; i < 20; i++)
+        CallC(Rm_LoadingStep);
+    double step = x87_fabs(F(double, s, 32) - F(double, s, 24)) * g_rm64de08;
+    F(int, s, 4) = 0;
+    int t;
+    id = *CallC<int*>(Rm_FirstId, &t);
+    while (id != -1)
+    {
+        RmPos pos = Rm_Start(id, &info);
+        double d;
+        do
+        {
+            d = step;
+            pos = Rm_Step(pos, &d);
+            F(int, s, 4)++;
+        } while (!(d > g_rm64b5b8));
+        id = *CallC<int*>(Rm_NextId, &t, id);
+    }
+    int n = F(int, s, 4);
+    BYTE* arr = (BYTE*)operator new(n * 40);
+    if (arr)
+        for (int i = 0; i < n; i++)
+            F(int, arr, i * 40 + 32) = -1;
+    F(BYTE*, s, 0) = arr;
+    int k = 0;
+    for (int i = 0; i < 20; i++)
+        CallC(Rm_LoadingStep);
+    id = *CallC<int*>(Rm_FirstId, &t);
+    while (id != -1)
+    {
+        RmPos pos = Rm_Start(id, &info);
+        double d = step;
+        for (;;)
+        {
+            BYTE* rec = F(BYTE*, s, 0) + k * 40;
+            Rm_Point(pos, &F(double, rec, 0), &F(double, rec, 8));
+            pos = Rm_Step(pos, &d);
+            Rm_Point(pos, &F(double, rec, 16), &F(double, rec, 24));
+            F(int, rec, 32) = id;
+            F(WORD, rec, 36) = (WORD)(~(info.flags >> 5) & 1);
+            k++;
+            if (k >= F(int, s, 4) || d > g_rm64b5b8)
+                break;
+            d = step;
+        }
+        id = *CallC<int*>(Rm_NextId, &t, id);
+    }
+    for (int i = 0; i < 20; i++)
+        CallC(Rm_LoadingStep);
+}
+
+} // extern "C"

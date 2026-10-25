@@ -1597,7 +1597,7 @@ ASM_PROC(FUN_568090)
 ASM_PROC(FUN_566970)
 ASM_PROC(FUN_567dc0)
 ASM_PROC(FUN_563600)
-ASM_PROC(FUN_561f30)
+extern "C" void FUN_561f30(); KING_ALIAS("_FUN_561f30", "@Copter_FlightStep@8")
 extern "C" void FUN_50c3a0(); KING_ALIAS("_FUN_50c3a0", "_Shell_WriteThumbnail")    // writes the state (stream, 72, 54, 0)
 ASM_VAR(AsmLabel, s_67b2bc, $L_67b2bc)
 ASM_VAR(AsmLabel, s_67b7ec, $L_67b7ec)
@@ -2880,7 +2880,7 @@ extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 ASM_PROC(FUN_4d08d0)    // the player's vehicle for an effect (world, effect, player id)
 ASM_PROC(FUN_4ebd00)    // constructs a vehicle (scene object, matrix, type)
-ASM_PROC(FUN_5291a0)
+extern "C" void FUN_5291a0(); KING_ALIAS("_FUN_5291a0", "@Map_BuildRoads@8")
 extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
 ASM_PROC(FUN_5a44c0)    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
 ASM_PROC(FUN_5d2540)    // registers a named callback (name, function)
@@ -5174,6 +5174,195 @@ void __fastcall Turret_Fire(BYTE* s)
     else
         F(float, s, 3288) = (float)Tf_Now();
     F(int, s, 3284) = 0;
+}
+
+} // extern "C"
+
+// === the helicopter's flight step (FUN_561f30)
+
+extern "C" void Hf_FrameTime(); KING_ALIAS("_Hf_FrameTime", "_Game_FrameTime")
+extern "C" void Hf_Time(); KING_ALIAS("_Hf_Time", "_Game_Time")
+extern "C" void Hf_NormalizeThis(); KING_ALIAS("_Hf_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void Hf_ToAngles(); KING_ALIAS("_Hf_ToAngles", "_Matrix_ToAngles")
+extern "C" void Hf_MulAssign(); KING_ALIAS("_Hf_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Hf_FromPose(); KING_ALIAS("_Hf_FromPose", "_Matrix_FromPose")
+extern "C" void Hf_HitObject(); KING_ALIAS("_Hf_HitObject", "_Query_HitObject")
+ASM_VAR(float, g_hf6f2c3c, $L_6f2c3c)
+ASM_VAR(float, g_hf67b288, $L_67b288)
+ASM_VAR(float, g_hf67b298, $L_67b298)
+ASM_VAR(float, g_hf67b2a0, $L_67b2a0)
+ASM_VAR(float, g_hf67b2a4, $L_67b2a4)
+ASM_VAR(double, g_hf64b840, $L_64b840)
+ASM_VAR(float, g_hf64c264, $L_64c264)
+ASM_VAR(double, g_hf64b660, $L_64b660)
+ASM_VAR(double, g_hf64d338, $L_64d338)
+ASM_VAR(float, g_hf64c450, $L_64c450)
+ASM_VAR(float, g_hf64c2f8, $L_64c2f8)
+ASM_VAR(float, g_hf64c258, $L_64c258)
+ASM_VAR(double, g_hf64b678, $L_64b678)
+ASM_VAR(double, g_hf64b780, $L_64b780)
+ASM_VAR(double, g_hf64b670, $L_64b670)
+ASM_VAR(double, g_hf64b5b8, $L_64b5b8)
+ASM_VAR(double, g_hf64d0c0, $L_64d0c0)
+ASM_VAR(double, g_hf64fcc8, $L_64fcc8)
+ASM_VAR(double, g_hf64f3d8, $L_64f3d8)
+
+static Vec3 Hf_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_561f30] the helicopter s's step: lift and thrust along its forward (+128, +3448 / +3452) and up axes,
+// limited, damped by +3212 .. +3224 (velocity +100, spin +112, turn +120), the rolling frame of its spin and
+// its new pose and frame (+0 / +48) and object (+96)
+void __fastcall Copter_FlightStep(BYTE* s, void*)
+{
+    float dt = (float)CallC<double>(Hf_FrameTime);
+    CallC<double>(Hf_Time);
+    const float* M = (const float*)s;
+    const float* Y = &g_axisY.x;
+    const float* Z = &g_axisZ.x;
+    Vec3 fwd, up, side;
+    fwd.x = (float)((double)Y[0] * M[0] + (double)Y[2] * M[6] + (double)Y[1] * M[3]);
+    fwd.y = (float)((double)Y[0] * M[1] + (double)Y[2] * M[7] + (double)Y[1] * M[4]);
+    fwd.z = 0;
+    up.x = (float)((double)Z[0] * M[0] + (double)Z[2] * M[6] + (double)Z[1] * M[3]);
+    up.y = (float)((double)Z[0] * M[1] + (double)Z[2] * M[7] + (double)Z[1] * M[4]);
+    up.z = (float)((double)Z[2] * M[8] + (double)Z[1] * M[5] + (double)Z[0] * M[2]);
+    CallThis(Hf_NormalizeThis, &fwd);
+    side = Hf_Set((double)fwd.y * Z[2] - (double)Z[1] * fwd.z, (double)Z[0] * fwd.z - (double)fwd.x * Z[2],
+                  (double)fwd.x * Z[1] - (double)fwd.y * Z[0]);
+    F(float, s, 128) = (float)((double)g_hf6f2c3c * F(float, s, 3448));
+    double x, y, z, head, pitch, roll;
+    CallC(Hf_ToAngles, *(const Matrix*)s, &x, &y, &z, &head, &pitch, &roll);
+    pitch = g_hf67b288 + pitch;
+    float pos[3] = {(float)x, (float)y, (float)z};
+    float k = (float)((double)g_hf67b298 * F(float, s, 3452));
+    float bank;
+    pitch = Copter_Tilt(s, 0, dt, (float)pitch, &fwd.x, &bank);
+    double turn = (double)g_hel67b290 * F(float, s, 3444) * dt + F(float, s, 120);
+    float tf = (float)turn;
+    F(float, s, 120) = tf;
+    if (turn > g_hel67b294)
+        F(float, s, 120) = g_hel67b294;
+    else if (tf < -(double)g_hel67b294)
+        F(float, s, 120) = (float)-(double)g_hel67b294;
+    if (F(int, s, 3488))
+    {
+        if ((double)g_hf67b2a0 * g_hf64b840 > x87_fabs(pitch))
+            F(int, s, 3488) = 0;
+        else
+        {
+            double d = (double)F(float, s, 108) * fwd.z + (double)F(float, s, 104) * fwd.y + (double)F(float, s, 100) * fwd.x;
+            int a = F(float, s, 128) > g_hf64c264 ? 1 : 0;
+            int b = d > g_hf64c264 ? 1 : 0;
+            if (a != b)
+            {
+                if (x87_fabs(d) > g_hf64b660)
+                    bank = 0;
+                else
+                    bank = (float)(bank * g_hf64d338);
+            }
+        }
+    }
+    double fx = (double)fwd.x * bank;
+    float fy = (float)((double)fwd.y * bank), fz = (float)((double)bank * fwd.z);
+    double ux = (double)up.x * k;
+    float uy = (float)((double)up.y * k), uz = (float)((double)up.z * k);
+    Vec3 Fv = Hf_Set(ux + fx, (double)fy + uy, (double)fz + uz);
+    double L = Vec3_Length(&Fv);
+    if (L > g_hf64c450)
+    {
+        double nx = Fv.x / L;
+        float ny = (float)(Fv.y / L), nz = (float)(Fv.z / L);
+        Fv = Hf_Set(nx * g_hf64c450, (double)ny * g_hf64c450, (double)nz * g_hf64c450);
+    }
+    Vec3 vel = Hf_Set((double)Fv.x * dt + F(float, s, 100), (double)Fv.y * dt + F(float, s, 104), (double)Fv.z * dt + F(float, s, 108));
+    double L2 = Vec3_Length(&vel);
+    if (L2 > g_hf64c2f8)
+    {
+        Vec3 u = Hf_Set(vel.x / L2, vel.y / L2, vel.z / L2);
+        vel = Hf_Set((double)u.x * g_hf64c2f8, (double)u.y * g_hf64c2f8, (double)u.z * g_hf64c2f8);
+    }
+    Vec3 u = Hf_Set((double)Fv.x * dt, (double)Fv.y * dt, (double)Fv.z * dt);
+    Vec3 w = Hf_Set((double)u.x * dt, (double)u.y * dt, (double)u.z * dt);
+    Vec3 h = Hf_Set((double)w.x * g_hf64c258, (double)w.y * g_hf64c258, (double)w.z * g_hf64c258);
+    Vec3 p = Hf_Set((double)dt * F(float, s, 100), (double)dt * F(float, s, 104), (double)dt * F(float, s, 108));
+    Vec3 q = Hf_Set((double)p.x + h.x, (double)p.y + h.y, (double)p.z + h.z);
+    float npos[3];
+    npos[0] = (float)((double)q.x + pos[0]);
+    npos[1] = (float)((double)q.y + pos[1]);
+    npos[2] = (float)((double)q.z + pos[2]);
+    Vec3 c1 = Hf_Set((double)vel.z * Z[1] - (double)vel.y * Z[2], (double)vel.x * Z[2] - (double)vel.z * Z[0],
+                     (double)vel.y * Z[0] - (double)vel.x * Z[1]);
+    Vec3 c2 = Hf_Set((double)c1.y * Z[2] - (double)c1.z * Z[1], (double)c1.z * Z[0] - (double)c1.x * Z[2],
+                     (double)c1.x * Z[1] - (double)c1.y * Z[0]);
+    Vec3 n;
+    Vec3_Normalized(&n, &c2);
+    Vec3 cr = Hf_Set((double)n.y * fwd.z - (double)n.z * fwd.y, (double)n.z * fwd.x - (double)n.x * fwd.z,
+                     (double)n.x * fwd.y - (double)n.y * fwd.x);
+    double dd = (double)vel.x * fwd.x + (double)vel.y * fwd.y + (double)vel.z * fwd.z;
+    Vec3 along = Hf_Set(dd * fwd.x, (double)fwd.y * dd, dd * fwd.z);
+    double asn = x87_asin(cr.z);
+    float ang = (float)((double)n.x * fwd.x + (double)n.z * fwd.z + (double)n.y * fwd.y > g_hf64b678 ? asn : -asn);
+    float L3 = (float)Vec3_Length(&along);
+    double r = L3 > g_hf64b780 ? g_hf64b670 : L3 * g_hf64b5b8;
+    Matrix rz;
+    Vec3 t1;
+    vel = *Vec3_RotateBy(&t1, &vel, Matrix_RotationZ(&rz, (float)(r * ang)));
+    Vec3 fw2, sd, zv, t2, t3;
+    Vec3_Scaled(&fw2, &fwd, (float)((double)vel.x * fwd.x + (double)vel.y * fwd.y + (double)vel.z * fwd.z));
+    float e = (float)(L3 > g_hf64d0c0 ? g_hf64b670 : L3 * g_hf64fcc8);
+    Vec3_Scaled(&sd, &side, (float)Vec3_Dot(&vel, &side));
+    zv = Hf_Set(0, 0, vel.z);
+    CallThis(Hf_MulAssign, &sd, &t2, F(float, s, 3212));
+    CallThis(Hf_MulAssign, &fw2, &t2, F(float, s, 3216));
+    sd.z = (float)((double)sd.z * F(float, s, 3220));
+    const Vec3* nv = Vec3_Add(&t3, Vec3_Add(&t2, &sd, &fw2), &zv);
+    F(Vec3, s, 100) = *nv;
+    float d3224 = F(float, s, 3224);
+    float s112 = (float)((double)d3224 * F(float, s, 112));
+    F(float, s, 112) = s112;
+    float s116 = (float)((double)F(float, s, 3224) * F(float, s, 116));
+    F(float, s, 116) = s116;
+    if (!F(int, s, 3432))
+        F(float, s, 120) = (float)((double)F(float, s, 3224) * F(float, s, 120));
+    float lo = (float)-(double)g_hf67b2a4;
+    if (lo > roll)
+        roll = lo;
+    if (g_hf67b2a4 < roll)
+        roll = g_hf67b2a4;
+    double yy = roll - (double)e * F(float, s, 3444) * g_hf64f3d8;
+    if ((yy < g_hf67b2a4 && yy > lo) || (yy > g_hf67b2a4 && yy < roll) || (yy < lo && yy > roll))
+        roll = yy;
+    double s3224 = F(float, s, 3224);
+    roll = s3224 * s3224 * roll;
+    F(float, s, 3232) = (float)pitch;
+    pitch = pitch - g_hf67b288;
+    Vec3 spin = Hf_Set(s112, s116, 0), st;
+    float rollAng = (float)Vec3_Length(Vec3_Scaled(&st, &spin, dt));
+    Matrix look, pose, m52, m196, rz2;
+    Matrix_LookAt(&look, g_zeroVec, spin, rollAng);
+    CallC(Hf_FromPose, &pose, 0.0, 0.0, 0.0, head, pitch, roll);
+    Matrix_RotationZ(&rz2, (float)((double)dt * F(float, s, 120)));
+    Matrix_Multiply(&m196, Matrix_Multiply(&m52, &look, &pose), &rz2);
+    m196.m[9] = npos[0];
+    m196.m[10] = npos[1];
+    m196.m[11] = npos[2];
+    BYTE* o = CallC<BYTE*>(Hf_HitObject, F(BYTE*, s, 96), pos, npos);
+    if (!o)
+        o = F(BYTE*, s, 96);
+    F(BYTE*, s, 96) = o;
+    memcpy(s, &m196, 48);
+    Matrix inv;
+    memcpy(s + 48, Matrix_Inverse(&inv, (const Matrix*)s), 48);
+    F(int, s, 3540) = 0;
 }
 
 } // extern "C"

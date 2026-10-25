@@ -975,7 +975,7 @@ extern "C" void __fastcall MarineTask_Frame(BYTE* self, void*, DWORD first, DWOR
 // Marine task deferred bounds and update dispatch.
 extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
-ASM_PROC(FUN_5b4fc0)
+extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
 extern "C" void __fastcall MarineTask_DrawPending(BYTE*,void*,const float*,const float*,BYTE*);
 ASM_VAR(float, g_mt_axisX, $L_702620)
 ASM_VAR(float, g_mt_axisY, $L_702624)

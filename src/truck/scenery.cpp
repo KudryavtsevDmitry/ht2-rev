@@ -707,7 +707,7 @@ extern "C" void __fastcall Part_Release(BYTE* self, void*)
 
 extern "C" void FUN_52bd20(); KING_ALIAS("_FUN_52bd20", "@Scenery_Hit@16")
 ASM_PROC(FUN_52c120)
-ASM_PROC(FUN_590d20)
+extern "C" void FUN_590d20(); KING_ALIAS("_FUN_590d20", "@Item_DrawBody@16")
 extern "C" void FUN_52e1f0(); KING_ALIAS("_FUN_52e1f0", "@Scenery_Call57d580@16")
 extern "C" void FUN_586240(); KING_ALIAS("_FUN_586240", "@Box_ReceiveHit@20")
 extern "C" void FUN_5864d0(); KING_ALIAS("_FUN_5864d0", "@Box_ReceiveHitSet@32")
@@ -1322,7 +1322,7 @@ extern "C" void Pk_LocalChecked(); KING_ALIAS("_Pk_LocalChecked", "_Frame_GetLoc
 extern "C" void Pk_ProbeGround(); KING_ALIAS("_Pk_ProbeGround", "@Body_ProbeGround@12")
 extern "C" void Pk_57e030(); KING_ALIAS("_Pk_57e030", "@SceneObj_57e030@12")
 extern "C" void Pk_MakeOut(); KING_ALIAS("_Pk_MakeOut", "@Vehicle_MakeOut@8")
-ASM_PROC(FUN_58d2b0)
+extern "C" void FUN_58d2b0(); KING_ALIAS("_FUN_58d2b0", "@Body_UpdatePlanes@8")
 
 extern "C" {
 
