@@ -459,7 +459,7 @@ join:
 
 }
 
-ASM_PROC(FUN_608fa0)    // links two branches (stdcall)
+extern "C" void FUN_608fa0(); KING_ALIAS("_FUN_608fa0", "@Grid_NewSplit@16")    // links two branches (stdcall)
 
 extern "C" {
 
@@ -2128,6 +2128,196 @@ void __fastcall Mesh_Clear(BYTE* s)
     F(WORD, s, 42) = 0;
     F(WORD, s, 40) = 0;
     F(int, s, 60) = 0;
+}
+
+} // extern "C"
+
+// === a grid split node and its priority (FUN_608fa0)
+
+extern "C" void Gn_ObjConstruct(); KING_ALIAS("_Gn_ObjConstruct", "@GridObj_Construct@8")
+extern "C" void Gn_ResetVtables(); KING_ALIAS("_Gn_ResetVtables", "@Grid_ResetVtables@8")
+extern "C" void Gn_TGridSet(); KING_ALIAS("_Gn_TGridSet", "@TGrid_Set@24")
+extern "C" void Gn_InWedge(); KING_ALIAS("_Gn_InWedge", "@Point_InWedge@32")
+extern "C" void Gn_NodePriority(); KING_ALIAS("_Gn_NodePriority", "@GridCamera_NodePriority@12")
+extern "C" void Gn_Insert(); KING_ALIAS("_Gn_Insert", "@MarineQueue_InsertWorkItem@12")
+ASM_VAR(float, g_gn64c904, $L_64c904)
+ASM_VAR(float, g_gn64c264, $L_64c264)
+ASM_VAR(float, g_gn652efc, $L_652efc)
+ASM_VAR(float, g_gn64c448, $L_64c448)
+ASM_VAR(float, g_gn64c250, $L_64c250)
+ASM_VAR(float, g_gn64c450, $L_64c450)
+ASM_VAR(float, g_gn652ef8, $L_652ef8)
+ASM_VAR(float, g_gn64c748, $L_64c748)
+ASM_VAR(float, g_gn64c258, $L_64c258)
+ASM_VAR(float, g_gn6503e0, $L_6503e0)
+ASM_VAR(float, g_gn64d7b8, $L_64d7b8)
+
+// edge e checked and turned so that its first vertex's +64 is its second; false when it is incomplete
+static bool Gn_Edge(BYTE* e)
+{
+    BYTE* a = F(BYTE*, e, 0);
+    BYTE* b = F(BYTE*, e, 4);
+    if (F(BYTE*, F(BYTE*, a, 12), 64) != F(BYTE*, b, 12))
+    {
+        F(BYTE*, e, 0) = b;
+        F(BYTE*, e, 4) = a;
+    }
+    return true;
+}
+
+static bool Gn_Valid(BYTE* e)
+{
+    return F(int, e, 8) && F(BYTE*, e, 0) && F(BYTE*, e, 4) && F(int, F(BYTE*, e, 4), 12) && F(int, F(BYTE*, e, 0), 12);
+}
+
+// the map point of grid vertex i (16-byte records of s +12, scaled by s +4)
+static double Gn_X(BYTE* s, int i) { BYTE* p = F(BYTE*, s, 4); return (double)F(DWORD, F(BYTE*, s, 12), i * 16 + 8) * F(float, p, 40152) + F(float, p, 40136); }
+static double Gn_Y(BYTE* s, int i) { BYTE* p = F(BYTE*, s, 4); return (double)F(DWORD, F(BYTE*, s, 12), i * 16 + 12) * F(float, p, 40156) + F(float, p, 40148); }
+
+// the circle (x, y, r) around triangle t's three vertices (word indices at +4, +8, +12)
+static void Gn_Circle(BYTE* s, BYTE* t, float* out, bool second)
+{
+    int i0 = *F(WORD*, t, 4), i1 = *F(WORD*, t, 8), i2 = *F(WORD*, t, 12);
+    double x0 = Gn_X(s, i0), y0 = Gn_Y(s, i0);
+    float x1 = (float)Gn_X(s, i1), y1 = (float)Gn_Y(s, i1), x2 = (float)Gn_X(s, i2), y2 = (float)Gn_Y(s, i2);
+    float cx = (float)(((double)x2 + x1 + x0) * g_gn64c904);
+    float cy = (float)(((double)y2 + y1 + y0) * g_gn64c904);
+    float dy0 = (float)(y0 - cy);
+    double dx0 = x0 - cx;
+    double m = dx0 * dx0 + (double)dy0 * dy0;
+    double dx1 = (double)x1 - cx, dy1 = (double)y1 - cy;
+    float r1 = (float)(second ? dx1 * dx1 + dy1 * dy1 : dy1 * dy1 + dx1 * dx1);
+    if (!(m > r1))
+        m = r1;
+    double dx2 = (double)x2 - cx, dy2 = (double)y2 - cy;
+    float r2 = (float)(dx2 * dx2 + dy2 * dy2);
+    if (!(m > r2))
+        m = r2;
+    out[0] = cx;
+    out[1] = cy;
+    out[2] = (float)x87_sqrt(m);
+}
+
+// the priority of a node at distance d past its circle c from camera cam (at (cx, cy)), by its level +40
+static double Gn_Near(BYTE* node, BYTE* cam, const float* c, float cx, float cy, double d)
+{
+    if (F(DWORD, node, 40) < 8)
+        return g_gn64c450 / (d + g_gn64c250);
+    double p = F(float, node, 36) / d + g_gn64c748;
+    if (d < g_gn652ef8)
+        return p;
+    if (CallThis<int>(Gn_InWedge, c, cx, cy, F(int, cam, 76), F(int, cam, 80), F(int, cam, 84), F(int, cam, 88)))
+        return p;
+    return p * g_gn64c258;
+}
+
+extern "C" {
+
+// [FUN_608fa0] a split node of grid s for edge e1 (and e2): its triangles' circles (+48, +92) and its priority
+// (+104) from the distance to the camera (s +4), queued in s +32 (count +64); 0 when an edge is incomplete
+BYTE* __fastcall Grid_NewSplit(BYTE* s, void*, BYTE* e1, BYTE* e2)
+{
+    BYTE* node = (BYTE*)operator new(156);
+    if (node)
+    {
+        F(BYTE*, node, 4) = node;
+        F(BYTE*, node, 0) = node;
+        CallThis(Gn_ObjConstruct, node + 16);
+        CallThis(Gn_ObjConstruct, node + 60);
+        CallThis(Gn_ObjConstruct, node + 108);
+    }
+    bool ok = F(int, e1, 8) && F(BYTE*, e1, 0) && F(BYTE*, e1, 4) && F(int, F(BYTE*, e1, 4), 12) && F(int, F(BYTE*, e1, 0), 12);
+    if (ok)
+    {
+        F(BYTE*, node, 8) = e1;
+        Gn_Edge(e1);
+        BYTE* a = F(BYTE*, F(BYTE*, e1, 0), 12);
+        BYTE* b = F(BYTE*, F(BYTE*, e1, 4), 12);
+        CallThis(Gn_TGridSet, node + 16, F(int, a, 24), F(int, a, 16), F(int, b, 16), e1);
+        F(int, node, 104) = F(int, node, 32);
+        F(BYTE*, node, 12) = 0;
+        if (e2)
+        {
+            ok = F(int, e2, 8) && F(BYTE*, e2, 0) && F(BYTE*, e2, 4) && F(int, F(BYTE*, e2, 0), 12) && F(int, F(BYTE*, e2, 4), 12);
+            if (ok)
+            {
+                F(BYTE*, node, 12) = e2;
+                Gn_Edge(e2);
+                BYTE* c = F(BYTE*, F(BYTE*, e2, 0), 12);
+                BYTE* d = F(BYTE*, F(BYTE*, e2, 4), 12);
+                CallThis(Gn_TGridSet, node + 60, F(int, d, 16), F(int, d, 24), F(int, c, 24), e2);
+                F(float, node, 104) = !(F(float, node, 76) < F(float, node, 104)) ? F(float, node, 76) : F(float, node, 104);
+            }
+        }
+    }
+    if (!ok)
+    {
+        if (node)
+        {
+            CallThis(Gn_ResetVtables, node);
+            operator delete(node);
+        }
+        return 0;
+    }
+    F(BYTE*, F(BYTE*, F(BYTE*, e1, 0), 12), 72) = node;
+    F(BYTE*, F(BYTE*, F(BYTE*, e1, 4), 12), 72) = node;
+    if (e2)
+    {
+        F(BYTE*, F(BYTE*, F(BYTE*, e2, 0), 12), 72) = node;
+        F(BYTE*, F(BYTE*, F(BYTE*, e2, 4), 12), 72) = node;
+    }
+    Gn_Circle(s, node + 16, (float*)(node + 48), false);
+    BYTE* cam = F(BYTE*, s, 4);
+    double pr;
+    if (F(BYTE*, node, 12))
+    {
+        Gn_Circle(s, node + 60, (float*)(node + 92), true);
+        const float* c = (const float*)(node + 48);
+        float camY = F(float, cam, 8), camX = F(float, cam, 4);
+        double dx = (double)c[0] - camX, dy = (double)c[1] - camY;
+        float d = (float)(x87_sqrt(dx * dx + dy * dy) - c[2]);
+        float p;
+        if (!(d > g_gn64c264))
+            p = 1000.0f;
+        else if (d > g_gn652efc)
+            p = (float)(g_gn6503e0 / (double)d);
+        else if (d < g_gn64c448)
+            p = 1000.0f;
+        else if (!CallThis<int>(Gn_InWedge, c, camX, camY, F(int, cam, 60), F(int, cam, 64), F(int, cam, 68), F(int, cam, 72)))
+            p = (float)(g_gn6503e0 / (double)d);
+        else
+            p = (float)Gn_Near(node, cam, c, F(float, cam, 4), F(float, cam, 8), d);
+        float q = (float)CallThis<double>(Gn_NodePriority, cam, node + 60);
+        pr = p > q ? p : q;
+    }
+    else
+    {
+        const float* c = (const float*)(node + 48);
+        double dx = (double)c[0] - F(float, cam, 4), dy = (double)c[1] - F(float, cam, 8);
+        float d = (float)(x87_sqrt(dx * dx + dy * dy) - c[2]);
+        if (!(d > g_gn64c264) || (!(d > g_gn652efc) && d < g_gn64c448))
+            pr = g_gn64d7b8;
+        else
+        {
+            double p;
+            bool farAway = d > g_gn652efc;
+            if (!farAway)
+            {
+                double ex = (double)c[0] - F(float, cam, 4), ey = (double)c[1] - F(float, cam, 8), nr = -(double)c[2];
+                if (ey * F(float, cam, 60) - ex * F(float, cam, 64) < nr || ey * F(float, cam, 68) - ex * F(float, cam, 72) < nr)
+                    farAway = true;
+            }
+            if (farAway)
+                p = g_gn6503e0 / (double)d;
+            else
+                p = Gn_Near(node, cam, c, F(float, cam, 4), F(float, cam, 8), d);
+            pr = p > g_gn64c264 ? p : g_gn64c264;
+        }
+    }
+    F(float, node, 104) = (float)pr;
+    CallThis(Gn_Insert, F(BYTE*, s, 32), node);
+    F(WORD, s, 64)++;
+    return node;
 }
 
 } // extern "C"

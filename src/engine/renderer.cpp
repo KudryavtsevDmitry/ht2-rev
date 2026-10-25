@@ -5305,3 +5305,142 @@ void __fastcall Poly_Prepare(BYTE* r, void*, BYTE* p)
 }
 
 } // extern "C"
+
+// === a sphere against the view's frustum (FUN_5b4fc0)
+
+#include "vecmath.h"
+
+extern "C" void Fr_DivAssign(); KING_ALIAS("_Fr_DivAssign", "@Vec3_DivAssign@16")
+extern "C" void Fr_RectSet(); KING_ALIAS("_Fr_RectSet", "@Rect_Set@24")
+extern "C" void Fr_ZeroThis(); KING_ALIAS("_Fr_ZeroThis", "@Vec3_ZeroThis@8")
+ASM_VAR(BYTE, g_fr702a90, $L_702a90)                // the static guard
+ASM_VAR(double, g_fr702990, $L_702990)              // sqrt(64b660) * 64b6e0
+ASM_VAR(double, g_fr64b660, $L_64b660)
+ASM_VAR(double, g_fr64b6e0, $L_64b6e0)
+ASM_VAR(double, g_fr64b678, $L_64b678)
+ASM_VAR(float, g_fr64c938, $L_64c938)
+ASM_VAR(double, g_fr64b670, $L_64b670)
+
+// plane p (x, y, z, d) made unit
+static void Fr_Unit(float* p)
+{
+    float L = (float)Vec3_Length((const Vec3*)p);
+    Vec3 t;
+    CallThis(Fr_DivAssign, p, &t, L);
+    p[3] = (float)(p[3] / (double)L);
+}
+
+// how sphere s lies to plane p: -1 outside, 1 cut, 0 inside
+static int Fr_Side(double dist, const float* s)
+{
+    if (dist < -(double)s[3])
+        return -1;
+    return dist < s[3] ? 1 : 0;
+}
+
+static double Fr_DistA(const float* p, const float* s) { return (double)s[0] * p[0] + (double)p[2] * s[2] + (double)s[1] * p[1] + p[3]; }
+
+static Vec3 Fr_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_5b4fc0] which frustum planes of view s (its view matrix +2240 + 48 * +8224) sphere sp (x, y, z, r)
+// cuts: bits 32 far, 1 near, 2, 16, 8 and 4 the sides; 0 when it is outside, 64 when inside, 31 for no radius
+// (also kept at +8272)
+int __fastcall View_SphereClip(BYTE* s, void*, const float* sp)
+{
+    if (!(g_fr702a90 & 1))
+    {
+        g_fr702a90 |= 1;
+        g_fr702990 = x87_sqrt(g_fr64b660) * g_fr64b6e0;
+    }
+    if (sp[3] == g_fr64b678)
+    {
+        F(int, s, 8272) = 31;
+        return 31;
+    }
+    int flags = 0;
+    F(int, s, 8272) = 0;
+    Matrix tm;
+    Matrix_Transposed(&tm, (const Matrix*)(s + 2240 + F(int, s, 8224) * 48));
+    const float* T = tm.m;
+    double nearZ, farZ;
+    if (!g_device)
+    {
+        farZ = F(double, s, 8472) / F(double, s, 8464);
+        nearZ = 1.0;
+    }
+    else
+    {
+        nearZ = F(double, s, 8464);
+        farZ = F(double, s, 8472);
+    }
+    float p[4];
+    *(Vec3*)p = Fr_Set((double)T[3] * g_fr64c938, (double)T[4] * g_fr64c938, (double)T[5] * g_fr64c938);
+    p[3] = (float)(farZ - T[10] * g_fr64b670);
+    Fr_Unit(p);
+    int r = Fr_Side((double)sp[0] * p[0] + (double)p[2] * sp[2] + (double)sp[1] * p[1] + p[3], sp);
+    if (r < 0)
+        return 0;
+    if (r)
+        flags = 32;
+    p[0] = T[3];
+    p[1] = T[4];
+    p[2] = T[5];
+    p[3] = (float)(T[10] - nearZ);
+    Fr_Unit(p);
+    r = Fr_Side((double)sp[0] * p[0] + (double)p[2] * sp[2] + (double)sp[1] * p[1] + p[3], sp);
+    if (r < 0)
+        return 0;
+    if (r)
+        flags |= 1;
+    float c = (float)g_fr702990, cc = c;
+    *(Vec3*)p = Fr_Set((double)c * T[0] + (double)cc * T[3], (double)T[1] * c + (double)cc * T[4], (double)T[2] * c + (double)cc * T[5]);
+    p[3] = (float)((double)T[9] * c + (double)T[10] * cc);
+    Fr_Unit(p);
+    r = Fr_Side(Fr_DistA(p, sp), sp);
+    if (r < 0)
+        return 0;
+    if (r)
+        flags |= 2;
+    c = (float)-g_fr702990;
+    cc = (float)g_fr702990;
+    *(Vec3*)p = Fr_Set((double)c * T[0] + (double)cc * T[3], (double)T[1] * c + (double)cc * T[4], (double)T[2] * c + (double)cc * T[5]);
+    p[3] = (float)((double)T[9] * c + (double)T[10] * cc);
+    Fr_Unit(p);
+    r = Fr_Side(Fr_DistA(p, sp), sp);
+    if (r < 0)
+        return 0;
+    if (r)
+        flags |= 16;
+    c = cc = (float)g_fr702990;
+    *(Vec3*)p = Fr_Set((double)cc * T[6] + (double)c * T[3], (double)cc * T[7] + (double)c * T[4], (double)c * T[8] + (double)c * T[5]);
+    p[3] = (float)((double)T[11] * cc + (double)T[10] * c);
+    Fr_Unit(p);
+    r = Fr_Side(Vec3_Dot((const Vec3*)p, (const Vec3*)sp) + p[3], sp);
+    if (r < 0)
+        return 0;
+    if (r)
+        flags |= 8;
+    Vec3 q = Fr_Set(0, g_fr702990, -g_fr702990), t;
+    float d = (float)Vec3_Dot(&q, (const Vec3*)&T[9]);
+    Vec3 rq = *Vec3_RotateBy(&t, &q, &tm);
+    CallThis(Fr_RectSet, p, *(DWORD*)&rq.x, *(DWORD*)&rq.y, *(DWORD*)&rq.z, *(DWORD*)&d);
+    Fr_Unit(p);
+    r = Fr_Side(Vec3_Dot((const Vec3*)p, (const Vec3*)sp) + p[3], sp);
+    if (r < 0)
+        return 0;
+    if (r)
+        flags |= 4;
+    F(int, s, 8272) = flags;
+    return flags ? flags : 64;
+}
+
+} // extern "C"

@@ -2371,3 +2371,397 @@ void __fastcall Body_PrepareSteps(BYTE* s, void*, int full)
 }
 
 } // extern "C"
+
+// === a body's integration step (FUN_4fadb0)
+
+extern "C" void Bi_AddAssign(); KING_ALIAS("_Bi_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Bi_SetPosition(); KING_ALIAS("_Bi_SetPosition", "@Body_SetPosition@12")
+extern "C" void Bi_SetVelocity(); KING_ALIAS("_Bi_SetVelocity", "@Body_SetVelocity@12")
+extern "C" void Bi_NodeInit(); KING_ALIAS("_Bi_NodeInit", "@Node_Init@8")
+extern "C" void Bi_Query(); KING_ALIAS("_Bi_Query", "_Query_4e5b22")
+extern "C" void Bi_Rebuild(); KING_ALIAS("_Bi_Rebuild", "@Body_Rebuild@4")
+extern "C" void Bi_SaveState(); KING_ALIAS("_Bi_SaveState", "@Body_SaveState@8")
+extern "C" void Bi_SaveVec88(); KING_ALIAS("_Bi_SaveVec88", "@Body_SaveVec88@8")
+ASM_VAR(float, g_bi64c258, $L_64c258)
+
+static void Bi_Add(void* to, const Vec3& v)
+{
+    Vec3 t;
+    CallThis(Bi_AddAssign, to, &t, &v);
+}
+
+extern "C" {
+
+// [FUN_4fadb0] integrates body s over dt: the forces (+10244.., +10304..) and their torques about the
+// points +10184.., the extra forces +10364/+10424, then the momentum (+9012), spin (+9036), the rolling frame
+// +9700 and the frames +8868 / +8964, and the ground under the body
+void __fastcall Body_FrameIntegrate(BYTE* s, void*, float dt)
+{
+    memcpy(s + 8772, &g_identity, 48);
+    memcpy(s + 8820, &g_identity, 48);
+    F(Vec3, s, 9012) = F(Vec3, s, 2568);
+    const float* M = (const float*)(s + 8964);
+    memcpy(s + 8964, s + 2352, 48);
+    memcpy(s + 8868, s + 2256, 48);
+    Vec3 acc = F(Vec3, s, 3156), sum = g_zeroVec;
+    for (int i = 0; i < F(int, s, 10176); i++)
+    {
+        const float* f = (const float*)(s + 10244 + i * 12);
+        const float* g = (const float*)(s + 10304 + i * 12);
+        Vec3 t;
+        t.x = (float)((double)g[0] + f[0]);
+        t.y = (float)((double)g[1] + f[1]);
+        t.z = (float)((double)f[2] + g[2]);
+        Bi_Add(&acc, t);
+        double a = (double)M[6] * f[2] + (double)f[0] * M[0] + (double)f[1] * M[3];
+        double b = (double)M[1] * f[0] + (double)f[2] * M[7] + (double)f[1] * M[4];
+        double c = (double)M[2] * f[0] + (double)f[2] * M[8] + (double)f[1] * M[5];
+        const float* p = (const float*)(s + 10184 + i * 12);
+        float tx = (float)(c * p[1] - b * p[2]);
+        float ty = (float)(a * p[2] - c * p[0]);
+        double tz = b * p[0] - a * p[1];
+        sum.x = (float)((double)sum.x + tx);
+        sum.y = (float)((double)ty + sum.y);
+        sum.z = (float)(tz + sum.z);
+    }
+    for (int i = 0; i < F(int, s, 10180); i++)
+    {
+        const float* h = (const float*)(s + 10364 + i * 12);
+        const float* k = (const float*)(s + 10424 + i * 12);
+        Vec3 t;
+        t.x = (float)((double)h[0] + k[0]);
+        t.y = (float)((double)h[1] + k[1]);
+        t.z = (float)((double)h[2] + k[2]);
+        Bi_Add(&sum, t);
+    }
+    double k = (double)dt / F(float, s, 9792);
+    Vec3 t;
+    t.x = (float)(acc.x * k);
+    t.y = (float)(acc.y * k);
+    t.z = (float)(acc.z * k);
+    Bi_Add(s + 9012, t);
+    {
+        const float* v = (const float*)(s + 76);
+        float* w = (float*)(s + 9036);
+        w[0] = (float)((double)M[6] * v[2] + (double)M[3] * v[1] + (double)v[0] * M[0]);
+        w[1] = (float)((double)M[7] * v[2] + (double)M[1] * v[0] + (double)M[4] * v[1]);
+        w[2] = (float)((double)M[8] * v[2] + (double)M[2] * v[0] + (double)M[5] * v[1]);
+    }
+    t.x = (float)((double)sum.x * dt);
+    t.y = (float)((double)sum.y * dt);
+    t.z = (float)((double)sum.z * dt);
+    Bi_Add(s + 9036, t);
+    Vec3 r;
+    F(Vec3, s, 9048) = *Vec3_DivComponents(&r, (const Vec3*)(s + 9036), (const Vec3*)(s + 8008));
+    {
+        const float* N = (const float*)(s + 8868);
+        const float* w = (const float*)(s + 9036);
+        float* o = (float*)(s + 9024);
+        o[0] = (float)((double)N[6] * w[2] + (double)N[3] * w[1] + (double)w[0] * N[0]);
+        o[1] = (float)((double)N[7] * w[2] + (double)N[1] * w[0] + (double)N[4] * w[1]);
+        o[2] = (float)((double)N[8] * w[2] + (double)N[2] * w[0] + (double)N[5] * w[1]);
+    }
+    Vec3 dd;
+    dd.x = (float)((double)F(float, s, 9060) * g_bi64c258);
+    dd.y = (float)((double)F(float, s, 9064) * g_bi64c258);
+    dd.z = (float)((double)F(float, s, 9068) * g_bi64c258);
+    Vec3 spin;
+    spin.x = (float)((double)F(float, s, 9048) - dd.x);
+    spin.y = (float)((double)F(float, s, 9052) - dd.y);
+    spin.z = (float)((double)F(float, s, 9056) - dd.z);
+    float roll = (float)Vec3_Length(Vec3_Scaled(&r, &spin, dt));
+    Matrix look, tr, m1, m2;
+    memcpy(s + 9700, Matrix_LookAt(&look, g_zeroVec, spin, roll), 48);
+    Matrix_Translation(&tr, *Vec3_Scaled(&r, (const Vec3*)(s + 9012), dt));
+    memcpy(s + 8916, s + 8868, 48);
+    Matrix_Multiply(&m2, Matrix_Multiply(&m1, (const Matrix*)(s + 9700), (const Matrix*)(s + 8916)), &tr);
+    memcpy(s + 8868, &m2, 48);
+    memcpy(s + 8964, Matrix_Inverse(&m2, (const Matrix*)(s + 8868)), 48);
+    F(Vec3, s, 9624) = *Vec3_RotateBy(&r, (const Vec3*)(s + 208), (const Matrix*)(s + 8964));
+    F(Vec3, s, 9036) = *Vec3_RotateBy(&r, (const Vec3*)(s + 9024), (const Matrix*)(s + 8964));
+    F(Vec3, s, 9048) = *Vec3_DivComponents(&r, (const Vec3*)(s + 9036), (const Vec3*)(s + 8008));
+    F(Vec3, s, 9060) = g_zeroVec;
+    CallThis(Bi_SetPosition, s, s + 9012);
+    CallThis(Bi_SetVelocity, s, s + 9024);
+    memcpy(s + 16, s + 8868, 48);
+    BYTE node[208];
+    CallThis(Bi_NodeInit, node);
+    if (CallC<int>(Bi_Query, F(int, s, 6672), s + 2292, s + 52, node))
+        F(int, s, 244) = F(int, node, 104);
+    CallThis(Bi_Rebuild, s);
+    CallThis(Bi_SaveState, s);
+    CallThis(Bi_SaveVec88, s);
+}
+
+} // extern "C"
+
+// === the wheels' total force and torque (FUN_4f38f0)
+
+extern "C" float* __cdecl Vec3_DivScalar(float* out, const float* v, float k);
+ASM_VAR(float, g_wf674404, $L_674404)
+
+static Vec3 Wf_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_4f38f0] the total force *f and torque *t of body s's wheels (+3540) that touch (word +6564 clear):
+// their three forces (+3848, +8436, +8628 per wheel) at the contact points (+6212, lowered by +3944 when
+// +10088 is set), else in the body frame +2304 with the spring forces of +8436 scaled down by 674404 squared
+void __fastcall Wheels_ForceTorque(BYTE* s, void*, Vec3* f, Vec3* t)
+{
+    *f = g_zeroVec;
+    *t = g_zeroVec;
+    const float* R = (const float*)(s + 2304);
+    Vec3 tmp;
+    if (F(int, s, 10088))
+    {
+        for (int i = 0; i < F(int, s, 3540); i++)
+        {
+            Vec3 a = g_zeroVec, b = g_zeroVec, c = g_zeroVec;
+            if (!F(WORD, s, 6564 + i * 2))
+            {
+                c = F(Vec3, s, 8628 + i * 12);
+                a = F(Vec3, s, 3848 + i * 12);
+                b = F(Vec3, s, 8436 + i * 12);
+            }
+            double sx = (double)a.x + c.x;
+            float sy = (float)((double)a.y + c.y), sz = (float)((double)a.z + c.z);
+            Vec3 sum = Wf_Set(b.x + sx, (double)sy + b.y, (double)sz + b.z);
+            CallThis(Bi_AddAssign, f, &tmp, &sum);
+            Vec3 cr, br;
+            Vec3_RotateBy(&cr, &c, (const Matrix*)R);
+            Vec3_RotateBy(&br, &b, (const Matrix*)R);
+            Vec3 ar = Wf_Set((double)a.x * R[0] + (double)a.y * R[3] + (double)a.z * R[6],
+                             (double)a.y * R[4] + (double)a.z * R[7] + (double)a.x * R[1],
+                             (double)a.y * R[5] + (double)a.z * R[8] + (double)a.x * R[2]);
+            double d = F(float, s, 3944 + i * 4);
+            Vec3 dz = Wf_Set(d * g_axisZ.x, d * g_axisZ.y, d * g_axisZ.z);
+            const float* q = (const float*)(s + 6212 + i * 12);
+            Vec3 p = Wf_Set((double)dz.x + q[0], (double)dz.y + q[1], (double)dz.z + q[2]);
+            Vec3 v84 = Wf_Set((double)p.y * cr.z - (double)p.z * cr.y, (double)p.z * cr.x - (double)p.x * cr.z,
+                              (double)p.x * cr.y - (double)p.y * cr.x);
+            Vec3 v120 = Wf_Set((double)p.y * br.z - (double)p.z * br.y, (double)p.z * br.x - (double)p.x * br.z,
+                               (double)p.x * br.y - (double)p.y * br.x);
+            Vec3 v96 = Wf_Set((double)ar.z * p.y - (double)ar.y * p.z, (double)ar.x * p.z - (double)ar.z * p.x,
+                              (double)ar.y * p.x - (double)ar.x * p.y);
+            Vec3 v108 = Wf_Set((double)v84.x + v120.x, (double)v84.y + v120.y, (double)v84.z + v120.z);
+            Vec3 v72 = Wf_Set((double)v108.x + v96.x, (double)v108.y + v96.y, (double)v108.z + v96.z);
+            CallThis(Bi_AddAssign, t, &tmp, &v72);
+        }
+        return;
+    }
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        Vec3 a = g_zeroVec, b = g_zeroVec, c = g_zeroVec;
+        if (!F(WORD, s, 6564 + i * 2))
+        {
+            a = F(Vec3, s, 8628 + i * 12);
+            c = F(Vec3, s, 3848 + i * 12);
+            b = F(Vec3, s, 8436 + i * 12);
+        }
+        Vec3 t1, t2, r1, r2, r3, cr;
+        CallThis(Bi_AddAssign, f, &tmp, Vec3_Add(&t2, Vec3_Add(&t1, &a, &c), &b));
+        a = *Vec3_RotateBy(&r1, &a, (const Matrix*)R);
+        b = *Vec3_RotateBy(&r2, &b, (const Matrix*)R);
+        c = *Vec3_RotateBy(&r3, &c, (const Matrix*)R);
+        CallThis(Bi_AddAssign, t, &tmp, Vec3_Cross(&cr, (const Vec3*)(s + 6212 + i * 12), &a));
+    }
+    Vec3 acc = g_zeroVec;
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        Vec3 v = g_zeroVec, r, cr;
+        if (!F(WORD, s, 6564 + i * 2))
+            v = F(Vec3, s, 8436 + i * 12);
+        v = *Vec3_RotateBy(&r, &v, (const Matrix*)R);
+        CallThis(Bi_AddAssign, &acc, &tmp, Vec3_Cross(&cr, (const Vec3*)(s + 6212 + i * 12), &v));
+    }
+    Vec3 q;
+    Vec3_DivScalar(&q.x, &acc.x, (float)((double)g_wf674404 * g_wf674404));
+    CallThis(Bi_AddAssign, t, &tmp, &q);
+}
+
+} // extern "C"
+
+// === the wheels on a flat ground (FUN_4f1fa0)
+
+extern "C" void Wg_LineProject(); KING_ALIAS("_Wg_LineProject", "_Line_Project")
+ASM_VAR(float, g_wg64c2f8, $L_64c2f8)
+ASM_VAR(double, g_wg64d9b8, $L_64d9b8)
+ASM_VAR(float, g_wg64c264, $L_64c264)
+
+// p through body s's frame (+16, position +52)
+static void Wg_Frame(BYTE* s, double x, double y, double z, float* o, bool second)
+{
+    const float* M = (const float*)(s + 16);
+    o[0] = (float)(z * M[6] + y * M[3] + x * M[0] + M[9]);
+    o[1] = (float)(z * M[7] + y * M[4] + x * M[1] + M[10]);
+    o[2] = (float)(second ? x * M[2] + z * M[8] + y * M[5] + M[11] : z * M[8] + y * M[5] + x * M[2] + M[11]);
+}
+
+extern "C" {
+
+// [FUN_4f1fa0] puts body s's wheels (+3540) on the ground plane through point p with normal n (reset first
+// when reset is set): each wheel's travel line (+7356.., up and down by 64c2f8) meets the plane at its
+// contact (wheel +248 records at +248: point, normal, flags) and its spring length (+3544..) is kept in range
+void __fastcall Wheels_OnPlane(BYTE* s, void*, int reset, const Vec3* p, const Vec3* n)
+{
+    F(Vec3, s, 196) = *n;
+    F(Vec3, s, 208) = *n;
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        BYTE* W = s + 272 + i * 248;
+        WORD* touch = &F(WORD, s, 6564 + i * 2);
+        if (reset)
+        {
+            F(Vec3, s, 3848 + i * 12) = g_zeroVec;
+            F(int, s, 3816 + i * 4) = 0;
+            F(int, s, 3944 + i * 4) = 0;
+            F(DWORD, s, 9872 + i * 4) = 0x3c23d70a;
+            F(float, s, 9840 + i * 4) = 0.5f;
+        }
+        const float* P = (const float*)(s + 7356 + i * 12);
+        double z0 = (double)g_axisZ.x * g_wg64c2f8;
+        float z1 = (float)((double)g_axisZ.y * g_wg64c2f8), z2 = (float)((double)g_axisZ.z * g_wg64c2f8);
+        float t1[3], t2[3];
+        Wg_Frame(s, z0 + P[0], (double)z1 + P[1], (double)z2 + P[2], t1, false);
+        Wg_Frame(s, P[0] - z0, (double)P[1] - z1, (double)P[2] - z2, t2, true);
+        Vec3 dir, u;
+        dir.x = (float)((double)t2[0] - t1[0]);
+        dir.y = (float)((double)t2[1] - t1[1]);
+        dir.z = (float)((double)t2[2] - t1[2]);
+        Vec3_Normalized(&u, &dir);
+        double c = x87_fabs((double)u.y * n->y + (double)n->x * u.x + (double)n->z * u.z);
+        float* spring = &F(float, s, 3544 + i * 4);
+        float limit = F(float, s, 8092 + i * 4);
+        if (c < g_wg64d9b8)
+        {
+            F(WORD, W, 2) = 0;
+            F(WORD, W, 0) = 0;
+            F(Vec3, W, -24) = g_zeroVec;
+            F(Vec3, W, -12) = g_zeroVec;
+            F(int, W, 108) = 0;
+            F(int, W, 216) = 0;
+            memcpy(W + 3848, W - 24, 248);
+            *touch = 1;
+            *spring = limit;
+            F(Vec3, s, 100 + i * 12) = F(Vec3, W, -24);
+            F(Vec3, s, 6116 + i * 12) = F(Vec3, W, -24);
+            continue;
+        }
+        Vec3 hit;
+        F(Vec3, W, -24) = *CallC<const Vec3*>(Wg_LineProject, &hit, p, n, t1, t2);
+        F(WORD, W, 0) = 1;
+        F(Vec3, W, -12) = *n;
+        F(WORD, W, 2) = 0;
+        F(int, W, 108) = 0;
+        F(int, W, 216) = 0;
+        const float* h = (const float*)(W - 24);
+        F(Vec3, s, 100 + i * 12) = *(const Vec3*)h;
+        const float* G = (const float*)(s + 2304);
+        float* g = (float*)(s + 6212 + i * 12);
+        g[0] = (float)((double)G[6] * h[2] + (double)G[3] * h[1] + (double)G[0] * h[0] + G[9]);
+        g[1] = (float)((double)G[7] * h[2] + (double)G[4] * h[1] + (double)G[1] * h[0] + G[10]);
+        g[2] = (float)((double)G[8] * h[2] + (double)G[5] * h[1] + (double)G[2] * h[0] + G[11]);
+        *spring = (float)((double)P[2] - F(float, s, 7028 + i * 4) - g[2]);
+        *touch = 0;
+        if (*spring < g_wg64c264)
+            *spring = 0;
+        if (*spring > F(float, s, 8092 + i * 4))
+        {
+            *spring = F(float, s, 8092 + i * 4);
+            *touch = 1;
+        }
+    }
+}
+
+} // extern "C"
+
+// === the body's frame vectors for a step (FUN_4ef7c0)
+
+extern "C" void Bv_DivScalar(); KING_ALIAS("_Bv_DivScalar", "_Vec3_DivScalar")
+extern "C" void Bv_NormalizeThis(); KING_ALIAS("_Bv_NormalizeThis", "@Vec3_NormalizeThis@8")
+
+static Vec3 Bv_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_4ef7c0] body s's per-step vectors: the turned push +76 (from +88 by +8008 when +9784 is set), the
+// sums cleared, the forward +2604 and its part across the ground normal +208 (+2616), the speed +3520 and
+// the velocity's part across it (+2544, its length +3524, its direction +2556) and its forward part +2592
+void __fastcall Body_StepVectors(BYTE* s, void*)
+{
+    const float* M = (const float*)(s + 16);
+    if (!F(int, s, 9784))
+    {
+        F(Vec3, s, 88) = g_zeroVec;
+        F(Vec3, s, 76) = g_zeroVec;
+    }
+    else
+    {
+        F(float, s, 96) = 0;
+        Vec3 t;
+        const float* p = &Vec3_MulComponents(&t, &F(Vec3, s, 88), &F(Vec3, s, 8008))->x;
+        F(Vec3, s, 76) = Bv_Set((double)M[3] * p[1] + (double)M[6] * p[2] + (double)p[0] * M[0],
+                                (double)M[4] * p[1] + (double)M[7] * p[2] + (double)M[1] * p[0],
+                                (double)M[5] * p[1] + (double)M[8] * p[2] + (double)M[2] * p[0]);
+    }
+    F(Vec3, s, 3132) = F(Vec3, s, 76);
+    F(Vec3, s, 3108) = g_zeroVec;
+    F(Vec3, s, 232) = g_zeroVec;
+    F(Vec3, s, 3428) = g_zeroVec;
+    F(Vec3, s, 3288) = g_zeroVec;
+    F(Vec3, s, 3264) = g_zeroVec;
+    memcpy(s + 2400, &g_identity, 48);
+    const float* Y = &g_axisY.x;
+    Vec3 A = Bv_Set((double)Y[2] * M[6] + (double)Y[1] * M[3] + (double)Y[0] * M[0],
+                    (double)Y[2] * M[7] + (double)Y[1] * M[4] + (double)Y[0] * M[1],
+                    (double)Y[2] * M[8] + (double)Y[1] * M[5] + (double)Y[0] * M[2]);
+    F(Vec3, s, 2604) = A;
+    const float* N = (const float*)(s + 208);
+    double cx = (double)A.z * N[1] - (double)N[2] * A.y;
+    float cy = (float)((double)N[2] * A.x - (double)A.z * N[0]);
+    float cz = (float)((double)A.y * N[0] - (double)A.x * N[1]);
+    float dz = (float)(cx * N[1] - (double)cy * N[0]);
+    float dy = (float)((double)cz * N[0] - cx * N[2]);
+    float dx = (float)((double)cy * N[2] - (double)cz * N[1]);
+    F(Vec3, s, 2616) = Bv_Set(dx, dy, dz);
+    CallThis(Bv_NormalizeThis, s + 2616);
+    const float* V = (const float*)(s + 64);
+    F(float, s, 3520) = (float)Vec3_Length((const Vec3*)V);
+    float ez = (float)((double)N[1] * V[0] - (double)N[0] * V[1]);
+    float ey = (float)((double)N[0] * V[2] - (double)N[2] * V[0]);
+    float ex = (float)((double)V[1] * N[2] - (double)N[1] * V[2]);
+    float fz = (float)((double)ey * N[0] - (double)ex * N[1]);
+    float fy = (float)((double)ex * N[2] - (double)ez * N[0]);
+    float fx = (float)((double)ez * N[1] - (double)ey * N[2]);
+    F(Vec3, s, 2544) = Bv_Set(fx, fy, fz);
+    float L = (float)Vec3_Length(&F(Vec3, s, 2544));
+    F(float, s, 3524) = L;
+    if (L > g_64b5a0)
+    {
+        Vec3 t;
+        F(Vec3, s, 2556) = *CallC<const Vec3*>(Bv_DivScalar, &t, &F(Vec3, s, 2544), L);
+    }
+    else
+        F(Vec3, s, 2556) = F(Vec3, s, 2616);
+    float d = (float)Vec3_Dot(&F(Vec3, s, 2544), &F(Vec3, s, 2616));
+    F(float, s, 3528) = d;
+    Vec3 t;
+    F(Vec3, s, 2592) = *Vec3_Scaled(&t, &F(Vec3, s, 2616), d);
+}
+
+} // extern "C"

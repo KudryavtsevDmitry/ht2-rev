@@ -681,7 +681,7 @@ extern "C" void __fastcall Table124_Add(BYTE* self, void*, int a, int b, const V
 
 // Effect drawing: validate its secondary render base, submit it, and apply
 // the position stored by the effect before completing the draw.
-ASM_PROC(FUN_5b4fc0)
+extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
 ASM_PROC(FUN_5b3010)
 extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*); // engine.cpp
@@ -1482,7 +1482,7 @@ extern "C" void __fastcall WorldObj_SetTarget(BYTE* self, int, void* t)
 ASM_VAR(BYTE*, g_world6d2078, $L_6d2078)
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
 extern "C" void FUN_5a3fd0(); KING_ALIAS("_FUN_5a3fd0", "@Node_Matrix@12")
-ASM_PROC(FUN_59a030)
+extern "C" void FUN_59a030(); KING_ALIAS("_FUN_59a030", "@Cam_ChaseStep@20")
 
 // [FUN_598e70] resets a world object: scene node, position copy, defaults, initial state
 extern "C" void __fastcall WorldObj_Reset(BYTE* self, int)
@@ -3638,6 +3638,177 @@ BYTE* __cdecl Cam_AvoidObjects(BYTE* car, BYTE* obj, const Matrix* m, const Vec3
         F(BYTE*, q, 104) = obj;
     }
     return 0;
+}
+
+} // extern "C"
+
+// === the chase camera's step (FUN_59a030)
+
+extern "C" void Cc_NodeInit(); KING_ALIAS("_Cc_NodeInit", "@Node_Init@8")
+extern "C" void Cc_ActionState(); KING_ALIAS("_Cc_ActionState", "@Controls_ActionState@12")
+extern "C" void Cc_WheelMatrix(); KING_ALIAS("_Cc_WheelMatrix", "@Object_WheelMatrix@16")
+extern "C" void Cc_CarTypePoint(); KING_ALIAS("_Cc_CarTypePoint", "_CarType_Point")
+extern "C" void Cc_Matrix1(); KING_ALIAS("_Cc_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Cc_FromPose(); KING_ALIAS("_Cc_FromPose", "_Matrix_FromPose")
+ASM_VAR(int, g_cc6f6918, $L_6f6918)                 // the camera mode
+ASM_VAR(BYTE*, g_cc6f692c, $L_6f692c)               // the other camera
+ASM_VAR(BYTE*, g_cc6cec6c, $L_6cec6c)
+ASM_VAR(AsmLabel, g_cc6d1db8, $L_6d1db8)            // the controls
+ASM_VAR(double, g_cc64d0f0, $L_64d0f0)
+ASM_VAR(double, g_cc64b748, $L_64b748)
+ASM_VAR(double, g_cc64b780, $L_64b780)
+ASM_VAR(double, g_cc64b918, $L_64b918)
+ASM_VAR(double, g_cc650af0, $L_650af0)
+ASM_VAR(double, g_cc64d900, $L_64d900)
+ASM_VAR(double, g_cc64d908, $L_64d908)
+ASM_VAR(double, g_cc64d910, $L_64d910)
+ASM_VAR(double, g_cc64da00, $L_64da00)
+ASM_VAR(double, g_cc64b670, $L_64b670)
+ASM_VAR(float, g_cc64c264, $L_64c264)
+
+// k to the power t * 64b780, the way the original's inline code works it out
+X87 double Cc_Pow(double k, double t)
+{
+    __asm {
+        fld t
+        fld k
+        fld st(0)
+        fldln2
+        fxch st(1)
+        fyl2x
+        fmul st(0), st(2)
+        fmul g_cc64b780
+        fldl2e
+        fmulp st(1), st(0)
+        fld st(0)
+        frndint
+        fxch st(1)
+        fsub st(0), st(1)
+        f2xm1
+        fld1
+        faddp st(1), st(0)
+        fscale
+        fstp st(1)
+        fstp st(1)
+        fstp st(1)
+    }
+}
+
+extern "C" {
+
+// [FUN_59a030] the chase camera s behind the player's car: zoom (+104, keys 24/25) and turn (+112, keys
+// 26/27), the wheel-like frame blended toward the car by k (smoothed by the frame time), kept out of objects,
+// then looking at the car; its frame in *out, the object it is in
+BYTE* __fastcall Cam_ChaseStep(BYTE* s, void*, BYTE* out, double k)
+{
+    BYTE node[208];
+    CallThis(Cc_NodeInit, node);
+    Matrix m416 = g_identity, m356 = g_identity;
+    if (g_cc6f6918 == 2 && F(int, g_cc6f692c, 328) != 3)
+    {
+        memcpy(out, g_cc6f692c + 268, 48);
+        F(int, s, 160) = 1;
+        return F(BYTE*, g_cc6f692c, 316);
+    }
+    if (F(int, s, 160))
+    {
+        F(int, s, 160) = 0;
+        k = 0;
+    }
+    double t = F(double, F(BYTE*, g_cc6cec6c, 1356), 2960);
+    if (t > g_cc64d0f0)
+        t = g_cc64d0f0;
+    if (k < g_cc64b748)
+        k = g_cc64b748;
+    k = Cc_Pow(k, t);
+    int farZ = 15, nearZ = 8;
+    BYTE* target = 0;
+    BYTE* car = F(BYTE*, g_world6d2078, 616);
+    if (CallVirt<int>(car, 4) == 1)
+    {
+        car = F(BYTE*, g_world6d2078, 616);
+        target = F(BYTE*, car, 21880);
+        if (F(int, car, 21028))
+        {
+            farZ = 25;
+            nearZ = 18;
+        }
+    }
+    if (CallThis<int>(Cc_ActionState, g_cc6d1db8, 24) && F(int, g_world6d2078, 1400))
+    {
+        double v = F(double, g_world696ca0, 2960) * g_cc64b918;
+        if (nearZ + v < F(double, s, 104))
+            F(double, s, 104) = F(double, s, 104) - v;
+    }
+    if (CallThis<int>(Cc_ActionState, g_cc6d1db8, 25) && F(int, g_world6d2078, 1400) && farZ > F(double, s, 104))
+        F(double, s, 104) = F(double, g_world696ca0, 2960) * g_cc64b918 + F(double, s, 104);
+    if (CallThis<int>(Cc_ActionState, g_cc6d1db8, 26))
+        F(double, s, 112) = F(double, s, 112) - F(double, g_world696ca0, 2960) * g_cc650af0;
+    if (CallThis<int>(Cc_ActionState, g_cc6d1db8, 27))
+        F(double, s, 112) = F(double, g_world696ca0, 2960) * g_cc650af0 + F(double, s, 112);
+    while (F(double, s, 112) > g_cc64d900)
+        F(double, s, 112) -= g_cc64d908;
+    while (F(double, s, 112) < g_cc64d910)
+        F(double, s, 112) += g_cc64d908;
+    car = F(BYTE*, g_world6d2078, 616);
+    CallThis(FUN_5a3fd0, car + 16, &m356);
+    Matrix m308;
+    m416 = *CallThis<const Matrix*>(Cc_WheelMatrix, s, &m308, &m356);
+    float ax = (float)(k * F(float, s, 36)), ay = (float)(k * F(float, s, 40));
+    double az = k * F(float, s, 44);
+    double q = g_cc64b670 - k;
+    float px = (float)(m416.m[9] * q), py = (float)(m416.m[10] * q);
+    double pz = q * m416.m[11];
+    m416.m[9] = (float)((double)px + ax);
+    m416.m[10] = (float)((double)ay + py);
+    m416.m[11] = (float)(az + pz);
+    memcpy(s, &m416, 48);
+    float pt[3];
+    const float* cp = CallC<const float*>(Cc_CarTypePoint, pt, F(BYTE*, g_world6d2078, 616), 1);
+    float from[3];
+    from[0] = (float)((double)m356.m[9] + cp[0]);
+    from[1] = (float)((double)m356.m[10] + cp[1]);
+    from[2] = (float)((double)m356.m[11] + cp[2]);
+    car = F(BYTE*, g_world6d2078, 616);
+    F(BYTE*, s, 96) = CallThis<BYTE*>(FUN_5ef640, car + 272);
+    BYTE* skip = target ? target + 16 : 0;
+    car = F(BYTE*, g_world6d2078, 616);
+    BYTE* me = car ? car + 16 : 0;
+    const Matrix* cm = CallThis<const Matrix*>(Cc_Matrix1, car + 16, &m308);
+    F(BYTE*, s, 96) = Cam_AvoidObjects(me, F(BYTE*, s, 96), cm, (const Vec3*)from, (Vec3*)&m416.m[9], skip);
+    Matrix m260;
+    const float* c = CallThis<const float*>(Cc_Matrix1, F(BYTE*, g_world6d2078, 616) + 16, &m260);
+    Vec3 d;
+    d.x = (float)((double)m416.m[9] - c[9]);
+    d.y = (float)((double)m416.m[10] - c[10]);
+    d.z = (float)((double)m416.m[11] - c[11]);
+    float az2 = 0, pol = 0;
+    if (!Vec3_NearlyEqual(&d, &g_zeroVec))
+    {
+        Vec3 nd, n;
+        nd.x = (float)-(double)d.x;
+        nd.y = (float)-(double)d.y;
+        nd.z = (float)-(double)d.z;
+        Vec3_ToAngles(*Vec3_Normalized(&n, &nd), &az2, &pol);
+        double pa = pol - g_cc64da00;
+        double a = az2 - g_cc64da00;
+        if (F(double, s, 120) - a > g_cc64d900)
+            a += g_cc64d908;
+        if (F(double, s, 120) - a < g_cc64d910)
+            a -= g_cc64d908;
+        double qq = g_cc64b670 - k;
+        az2 = (float)(a * qq + k * F(double, s, 120));
+        if (az2 < g_cc64c264)
+            az2 = (float)(az2 + g_cc64d908);
+        if (az2 > g_cc64d908)
+            az2 = (float)(az2 - g_cc64d908);
+        pol = (float)(pa * qq + k * F(double, s, 128));
+        F(double, s, 120) = az2;
+        F(double, s, 128) = pol;
+    }
+    CallC(Cc_FromPose, &m308, (double)m416.m[9], (double)m416.m[10], (double)m416.m[11], (double)az2, (double)pol, 0.0);
+    memcpy(out, &m308, 48);
+    return F(BYTE*, s, 96);
 }
 
 } // extern "C"

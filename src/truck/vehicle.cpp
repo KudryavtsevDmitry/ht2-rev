@@ -1555,7 +1555,7 @@ extern "C" int __fastcall Car_Call555550(BYTE* self, void*, DWORD x)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_556740(); KING_ALIAS("_FUN_556740", "@Obj556740_Stop@8")
-ASM_PROC(FUN_5455d0)
+extern "C" void FUN_5455d0(); KING_ALIAS("_FUN_5455d0", "@Car_AddMass@16")
 extern "C" void FUN_4fc920(); KING_ALIAS("_FUN_4fc920", "@Body_SetMode@12")
 extern "C" void FUN_54e180(); KING_ALIAS("_FUN_54e180", "@Car_Step@12")
 extern "C" void FUN_54ef20(); KING_ALIAS("_FUN_54ef20", "@Car_54ef20@12")
@@ -1993,7 +1993,7 @@ extern "C" void FUN_555a70(); KING_ALIAS("_FUN_555a70", "@Car_ResetControls@12")
 extern "C" void FUN_555ee0(); KING_ALIAS("_FUN_555ee0", "@Car_StepAllLevels@12")
 extern "C" void FUN_557480(); KING_ALIAS("_FUN_557480", "@Car_Forward21600@12")
 extern "C" void FUN_5566e0(); KING_ALIAS("_FUN_5566e0", "@Obj5566e0_Start@20")
-ASM_PROC(FUN_5455d0)
+extern "C" void FUN_5455d0(); KING_ALIAS("_FUN_5455d0", "@Car_AddMass@16")
 ASM_VAR(AsmLabel, g_veh6d20f0, $L_6d20f0)
 
 // [$L_53f720] static initializer: constructs the 80 records of 1488 bytes at 6d20f0
@@ -2802,7 +2802,7 @@ extern "C" void __fastcall CarEffect_End(BYTE* s, void*, int keep)
 
 ASM_PROC(FUN_556780)
 extern "C" void FUN_556890(); KING_ALIAS("_FUN_556890", "@Tanks_Fill@16")
-ASM_PROC(FUN_5455d0)
+extern "C" void FUN_5455d0(); KING_ALIAS("_FUN_5455d0", "@Car_AddMass@16")
 extern "C" void FUN_5569c0(); KING_ALIAS("_FUN_5569c0", "@Obj5569c0_Take@20")
 // sets car s's total load (+9588 + +9604 + +9580) and its centre (the cargo point +9556 weighted by the two
 // loads, over the total) through 5455d0
@@ -4305,7 +4305,7 @@ void __fastcall CarBody_Step(BYTE* s)
 
 // === placing a car body (FUN_545ef0)
 
-ASM_PROC(FUN_58d2b0)
+extern "C" void FUN_58d2b0(); KING_ALIAS("_FUN_58d2b0", "@Body_UpdatePlanes@8")
 ASM_VAR(AsmLabel, g_cpModels, $L_697b30)      // 2416 bytes per car model
 
 // the model of car s
@@ -6561,8 +6561,8 @@ extern "C" void FUN_43f840(); KING_ALIAS("_FUN_43f840", "_Player_Value156")
 extern "C" void FUN_57def0(); KING_ALIAS("_FUN_57def0", "@SceneObj_Get800@8")
 extern "C" void FUN_439580(); KING_ALIAS("_FUN_439580", "_Ai_GetCoordinatesPos")
 extern "C" void FUN_5b73a0(); KING_ALIAS("_FUN_5b73a0", "_Window_DrawLine")
-ASM_PROC(FUN_5b4fc0)
-ASM_PROC(FUN_590d20)
+extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
+extern "C" void FUN_590d20(); KING_ALIAS("_FUN_590d20", "@Item_DrawBody@16")
 ASM_VAR(int, g_cd696be4, $L_696be4)                 // the debug level
 ASM_VAR(float, g_cd674408, $L_674408)
 ASM_VAR(double, g_cd64f4c8, $L_64f4c8)
@@ -7705,6 +7705,298 @@ void __fastcall Car_TakeContacts(BYTE* s, void*, BYTE* out, BYTE* w)
     }
     for (int i = 0; i < 8; i++)
         F(int, s, 21120 + i * 4) = F(int, F(BYTE*, s, 21600), 15580 + i * 20);
+}
+
+} // extern "C"
+
+// === moving the vehicle's centre of mass (FUN_5455d0)
+
+extern "C" void FUN_542280(); KING_ALIAS("_FUN_542280", "@Car_Centre@4")
+extern "C" void FUN_54c820(); KING_ALIAS("_FUN_54c820", "@Car_Place@16")
+extern "C" void FUN_545e20(); KING_ALIAS("_FUN_545e20", "@Car_SendState@4")
+ASM_PROC(FUN_4ee540)
+
+static Vec3 Cm_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_5455d0] adds mass m at point *v to the vehicle (+9552 its mass): the new centre makes the frames
+// +756 / +708, and the type's points, axle planes, wheels and the body are placed again from it
+int __fastcall Car_AddMass(BYTE* s, void*, float m, const Vec3* v)
+{
+    Matrix m192;
+    Matrix_Multiply(&m192, (const Matrix*)(s + 708), (const Matrix*)(s + 516));
+    int idx = F(int, s, 10420);
+    BYTE* B = (BYTE*)g_carTypes697914 - 76 + idx * 2416;
+    BYTE* C = (BYTE*)g_cr6d20f4 + idx * 1488;
+    double w = F(float, s, 9552);
+    float total = (float)(w + m);
+    const float* c = (const float*)(C + 736);
+    float vx = (float)((double)v->x * m), vy = (float)((double)v->y * m), vz = (float)((double)v->z * m);
+    float cx = (float)(c[0] * w), cy = (float)(c[1] * w);
+    double cz = c[2] * w;
+    float sx = (float)((double)cx + vx), sy = (float)((double)vy + cy);
+    double sz = cz + vz;
+    Vec3 ctr = Cm_Set(sx / (double)total, sy / (double)total, sz / total);
+    F(float, s, 412) = total;
+    F(float, s, 3284) = total;
+    CallThis(FUN_542580, s);
+    Matrix t;
+    memcpy(s + 756, Matrix_Translation(&t, ctr), 48);
+    memcpy(s + 708, Matrix_Inverse(&t, (const Matrix*)(s + 756)), 48);
+    const float* R = (const float*)(s + 708);
+    {
+        const float* A = (const float*)(C + 796);
+        F(Vec3, s, 3452) = Cm_Set((double)R[6] * A[2] + (double)R[3] * A[1] + (double)R[0] * A[0] + R[9],
+                                  (double)R[7] * A[2] + (double)R[4] * A[1] + (double)R[1] * A[0] + R[10],
+                                  (double)R[8] * A[2] + (double)R[5] * A[1] + (double)R[2] * A[0] + R[11]);
+    }
+    {
+        const float* p = (const float*)(s + 20356);
+        F(Vec3, s, 20332) = Cm_Set((double)R[6] * p[2] + (double)R[3] * p[1] + (double)p[0] * R[0] + R[9],
+                                   (double)R[7] * p[2] + (double)R[1] * p[0] + (double)R[4] * p[1] + R[10],
+                                   (double)R[8] * p[2] + (double)R[2] * p[0] + (double)R[5] * p[1] + R[11]);
+        p = (const float*)(s + 20368);
+        F(Vec3, s, 20344) = Cm_Set((double)R[6] * p[2] + (double)R[3] * p[1] + (double)R[0] * p[0] + R[9],
+                                   (double)R[7] * p[2] + (double)R[4] * p[1] + (double)R[1] * p[0] + R[10],
+                                   (double)R[8] * p[2] + (double)R[5] * p[1] + (double)R[2] * p[0] + R[11]);
+    }
+    F(Vec3, s, 3464) = F(Vec3, s, F(int, s, 20328) ? 20332 : 20344);
+    for (int j = 0; j < F(int, B, 1300); j++)
+    {
+        const float* q = (const float*)(B + 1304 + j * 12);
+        F(Vec3, s, 3848 + j * 12) = Cm_Set((double)q[2] * R[6] + (double)q[1] * R[3] + (double)q[0] * R[0] + R[9],
+                                           (double)q[1] * R[4] + (double)q[0] * R[1] + (double)q[2] * R[7] + R[10],
+                                           (double)q[1] * R[5] + (double)q[0] * R[2] + (double)q[2] * R[8] + R[11]);
+    }
+    Vec3 r;
+    int n1 = F(int, B, 776);
+    for (int j = 0; j < F(int, (BYTE*)g_carTypes697914 - 76 + F(int, s, 10420) * 2416, 776); j++)
+        F(Vec3, s, 3608 + j * 12) = *Vec3_MulMatrix(&r, (const Vec3*)(B + 784 + j * 12), (const Matrix*)R);
+    for (int j = 0; j < F(int, (BYTE*)g_carTypes697914 - 76 + F(int, s, 10420) * 2416, 780); j++)
+    {
+        n1 = F(int, (BYTE*)g_carTypes697914 - 76 + F(int, s, 10420) * 2416, 776);
+        F(Vec3, s, 3608 + (n1 + j) * 12) = *Vec3_MulMatrix(&r, (const Vec3*)(B + 1024 + j * 12), (const Matrix*)R);
+    }
+    for (int j = 0; j < F(int, s, 10424) - F(int, s, 10428); j++)
+        F(Vec3, s, 10712 + j * 12) = *Vec3_MulMatrix(&r, (const Vec3*)(s + 10616 + j * 12), (const Matrix*)R);
+    CallThis(FUN_58d2b0, s + 16);
+    CallThis(FUN_542280, s);
+    if (F(BYTE*, s, 21600))
+        CallThis(FUN_4ee540, F(BYTE*, s, 21600), total, s + 756, s + 420);
+    Matrix m288;
+    Matrix_Multiply(&m288, (const Matrix*)(s + 756), &m192);
+    float hit[3];
+    BYTE* q = CallC<BYTE*>(FUN_4e5ba7, F(BYTE*, s, 816), s + 552, hit);
+    if (!q)
+    {
+        q = F(BYTE*, s, 816);
+        CallVirt(s + 16, 28, 1);
+    }
+    CallThis(FUN_54c820, s, q, &m288);
+    {
+        Matrix mt, mr, m1, m2;
+        Matrix_Translation(&mt, F(Vec3, B, 300));
+        Matrix_Multiply(&m1, Matrix_RotationX(&mr, F(float, B, 312)), &mt);
+        memcpy(s + 10036, Matrix_Multiply(&m2, &m1, (const Matrix*)R), 48);
+    }
+    if (F(int, s, 388))
+        return F(int, s, 388);
+    return CallThis<int>(FUN_545e20, s);
+}
+
+} // extern "C"
+
+// === a hit on the vehicle (a method at $L_554c20)
+
+extern "C" void Vh_RampValue(); KING_ALIAS("_Vh_RampValue", "@Ramp_Value@8")
+extern "C" void Vh_CabHit(); KING_ALIAS("_Vh_CabHit", "@Cab_Hit@20")
+extern "C" void Vh_Advance(); KING_ALIAS("_Vh_Advance", "@Progresses_Advance@24")
+extern "C" void Vh_MulAssign(); KING_ALIAS("_Vh_MulAssign", "@Vec3_MulAssign@16")
+ASM_PROC(FUN_54f040)
+ASM_PROC(FUN_4bb4c0)
+ASM_VAR(float, g_vh64d4e8, $L_64d4e8)
+ASM_VAR(double, g_vh64b5b8, $L_64b5b8)
+ASM_VAR(double, g_vh64b840, $L_64b840)
+ASM_VAR(float, g_vh64c40c, $L_64c40c)
+ASM_VAR(float, g_vh64f7b0, $L_64f7b0)
+ASM_VAR(float, g_vh64c32c, $L_64c32c)
+ASM_VAR(double, g_vh64d0f0, $L_64d0f0)
+ASM_VAR(float, g_vh64c450, $L_64c450)
+ASM_VAR(float, g_vh64ed88, $L_64ed88)
+ASM_VAR(double, g_vh64ed80, $L_64ed80)
+ASM_VAR(double, g_vh64b670, $L_64b670)
+ASM_VAR(float, g_vh64c320, $L_64c320)
+ASM_VAR(float, g_vh64c250, $L_64c250)
+ASM_VAR(double, g_vh64ed78, $L_64ed78)
+ASM_VAR(double, g_vh64b6e0, $L_64b6e0)
+ASM_VAR(double, g_vh64f7a8, $L_64f7a8)
+ASM_VAR(double, g_vh64f7a0, $L_64f7a0)
+
+// e to the -(y * y), the way the original's inline code works it out
+X87 double Vh_ExpNegSq(double y)
+{
+    __asm {
+        fld y
+        fld st(0)
+        fmul st(0), st(1)
+        fchs
+        fldl2e
+        fmulp st(1), st(0)
+        fld st(0)
+        frndint
+        fxch st(1)
+        fsub st(0), st(1)
+        f2xm1
+        fld1
+        faddp st(1), st(0)
+        fscale
+        fstp st(1)
+        fstp st(1)
+    }
+}
+
+// damage progress k by v (scaled down for +21540 when half), counting in *n and *flag
+static void Vh_Damage(BYTE* s, int k, double q, float strength, bool half, int* n, int* flag)
+{
+    if (!(q > g_vh64c264))
+        return;
+    float e = (float)(q * q * strength);
+    if (half && F(int, s, 21540))
+        e = (float)(e * g_vh64b840);
+    CallThis(Vh_Advance, s, k, e, n, flag);
+}
+
+extern "C" {
+
+// [$L_554c20] a hit on vehicle s (owner at -16) at point p with impulse dir: hit effects, the cab, damage of
+// the 8 kinds of parts by the hit's direction in the body frame, and debris thrown from the point
+void __fastcall Car_Hit(BYTE* s, void*, const Vec3* p, const Vec3* dir)
+{
+    if (!(s[20884] & 128) || F(int, s, 372))
+        return;
+    BYTE* owner = s - 16;
+    CallThis(FUN_54f040, owner);
+    double r = CallThis<double>(Vh_RampValue, s + 21136);
+    Vec3 imp;
+    imp.x = (float)(r * dir->x);
+    imp.y = (float)(r * dir->y);
+    imp.z = (float)(r * dir->z);
+    double L = Vec3_Length(&imp) / F(float, s, 396);
+    float Lf = (float)L;
+    if (L > g_vh64d4e8)
+    {
+        F(float, s, 20604) = (float)F(double, g_6ef1fc, 2968);
+        F(int, s, 20592) = 0;
+    }
+    if (F(int, s, 21584) && L > g_vh64b5b8 && !F(int, s, 1028) && x87_fabs(F(float, s, 984)) < g_vh64b840
+        && !F(int, s, 10792))
+    {
+        F(int, s, 10792) = 1;
+        F(Vec3, s, 10796) = *p;
+    }
+    if (L < g_vh64c40c)
+        return;
+    CallVirt(owner, 180, p, &imp);
+    float k = 1.0f;
+    BYTE* B = (BYTE*)g_carTypes697914 - 76 + F(int, s, 10404) * 2416;
+    if (F(int, B, 2280) == 3)
+        k = F(int, s, 1028) ? 0.1f : 0.3f;
+    if ((F(DWORD, s, 20884) & 0x100) && F(int, s, 892) && !F(int, s, 1028))
+    {
+        if ((double)k * g_vh64f7b0 < Lf || ((double)k * g_vh64c32c < Lf && F(float, s, 532) < g_vh64d0f0))
+            CallThis(FUN_549900, s + 21552, Lf);
+    }
+    double x = (double)Lf - g_vh64c40c;
+    double w = g_vh64b670 - Vh_ExpNegSq((x - g_vh64c450) * g_vh64ed88) * g_vh64ed80;
+    float strength = (float)(((x * g_vh64d4e8) / (x + g_vh64c320) + g_vh64c250) * w * x);
+    Vec3 v, n;
+    v.x = (float)((double)F(float, s, 608) * p->y + (double)F(float, s, 620) * p->z + (double)F(float, s, 596) * p->x + F(float, s, 632));
+    v.y = (float)((double)F(float, s, 600) * p->x + (double)F(float, s, 612) * p->y + (double)F(float, s, 624) * p->z + F(float, s, 636));
+    v.z = (float)((double)F(float, s, 604) * p->x + (double)F(float, s, 616) * p->y + (double)F(float, s, 628) * p->z + F(float, s, 640));
+    Vec3_Normalized(&n, &v);
+    if (F(BYTE*, s, 21584))
+        CallThis(Vh_CabHit, F(BYTE*, s, 21584), &v, &imp, strength);
+    if (x87_fabs(v.y) < v.z && x87_fabs(v.x) < v.z)
+        return;
+    int cnt = 0, flag = 0;
+    if (n.y > g_vh64c264)
+    {
+        float e = (float)((double)n.y * n.y * strength);
+        if (F(int, s, 21540))
+            e = (float)(e * g_vh64b840);
+        CallThis(Vh_Advance, s, 1, e, &cnt, &flag);
+        CallThis(Vh_Advance, s, 2, e, &cnt, &flag);
+        CallThis(Vh_Advance, s, 3, e, &cnt, &flag);
+    }
+    Vh_Damage(s, 2, ((double)n.x + n.y) * g_vh64ed78, strength, true, &cnt, &flag);
+    Vh_Damage(s, 3, n.y * g_vh64ed78 - n.x * g_vh64ed78, strength, true, &cnt, &flag);
+    int before = cnt;
+    if (cnt > 0)
+    {
+        F(int, s, 21616) = 1;
+        F(Vec3, s, 21708) = *p;
+        F(float, s, 21792) = 1.0f;
+    }
+    Vh_Damage(s, 8, -(double)n.y, strength, false, &cnt, &flag);
+    Vh_Damage(s, 6, n.x * g_vh64b6e0 - n.y * g_vh64f7a8, strength, false, &cnt, &flag);
+    Vh_Damage(s, 7, n.y * g_vh64f7a0 - n.x * g_vh64b6e0, strength, false, &cnt, &flag);
+    if (n.x > g_vh64c264)
+        CallThis(Vh_Advance, s, 4, (float)((double)n.x * strength), &cnt, &flag);
+    if (-(double)n.x > g_vh64c264)
+        CallThis(Vh_Advance, s, 5, (float)(-(double)n.x * strength), &cnt, &flag);
+    if (before < cnt)
+    {
+        if (cnt - before == 1)
+        {
+            F(int, s, 21608) = 1;
+            F(Vec3, s, 21684) = *p;
+            F(float, s, 21784) = 1.0f;
+        }
+        else
+        {
+            F(int, s, 21612) = 1;
+            F(Vec3, s, 21696) = *p;
+            F(float, s, 21788) = 1.0f;
+        }
+    }
+    if (!cnt)
+        return;
+    const float* w4 = (const float*)(s + 428);
+    double cx = (double)w4[1] * v.z - (double)w4[2] * v.y;
+    double cy = (double)w4[2] * v.x - (double)w4[0] * v.z;
+    double cz = (double)w4[0] * v.y - (double)w4[1] * v.x;
+    const float* R = (const float*)(s + 500);
+    float wx = (float)(cz * R[6] + cy * R[3] + cx * R[0]);
+    float wy = (float)(cx * R[1] + cz * R[7] + cy * R[4]);
+    double wz = cx * R[2] + cz * R[8] + cy * R[5];
+    Vec3 vel, t;
+    vel.x = (float)((double)wx + F(float, s, 416));
+    vel.y = (float)((double)wy + F(float, s, 420));
+    vel.z = (float)(wz + F(float, s, 424));
+    int kind = cnt < 2 ? 4 : (cnt >= 3 ? 10 : 7);
+    if (flag)
+        kind += kind;
+    float size = 0.15f;
+    float spd = (float)Vec3_Length(&vel);
+    if (flag)
+    {
+        DWORD bits = 0x3e666667;
+        memcpy(&size, &bits, 4);
+        spd = (float)((x87_sqrt(flag) + g_vh64b670) * spd);
+    }
+    CallThis(Vh_MulAssign, &vel, &t, 0.5f);
+    double lim = spd * g_vh64b5b8;
+    if (vel.z < lim)
+        vel.z = (float)lim;
+    CallC(FUN_4bb4c0, p, s + 976, &vel, spd, kind, size, 1);
 }
 
 } // extern "C"

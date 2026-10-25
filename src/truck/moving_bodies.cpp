@@ -1486,7 +1486,7 @@ extern "C" void Bc_Log(); KING_ALIAS("_Bc_Log", "_VehLog_Value2")
 extern "C" void Bc_sprintf(); KING_ALIAS("_Bc_sprintf", "_sprintf")
 extern "C" void Bc_ActivateAll(); KING_ALIAS("_Bc_ActivateAll", "@Points_ActivateAll@8")
 extern "C" void FUN_5843c0(); KING_ALIAS("_FUN_5843c0", "_Item_MoveFraction")    // a body's collision with the ground
-ASM_PROC(FUN_5855a0)    // with another body
+extern "C" void FUN_5855a0(); KING_ALIAS("_FUN_5855a0", "_Item_BodyContact")    // with another body
 extern "C" void FUN_58b120(); KING_ALIAS("_FUN_58b120", "_Body_NearestContact")    // with a moving object
 ASM_VAR(int, g_bc6f6620, $L_6f6620)
 ASM_VAR(AsmLabel, s_bc67dd8c, $L_67dd8c)
@@ -2078,7 +2078,7 @@ extern "C" void Mg_FrameTime(); KING_ALIAS("_Mg_FrameTime", "_Game_FrameTime")
 extern "C" void Mg_PointsNext(); KING_ALIAS("_Mg_PointsNext", "@Points_Next@12")
 extern "C" void Mg_CheckPoint(); KING_ALIAS("_Mg_CheckPoint", "_World_CheckPoint")
 extern "C" void Mg_AddAssign(); KING_ALIAS("_Mg_AddAssign", "@Vec3_AddAssign@16")
-ASM_PROC(FUN_58baa0)
+extern "C" void FUN_58baa0(); KING_ALIAS("_FUN_58baa0", "_Body_Bounce")
 ASM_PROC(FUN_4e7889)
 ASM_VAR(float, g_mg64c264, $L_64c264)
 ASM_VAR(double, g_mg64b6d0, $L_64b6d0)
@@ -2262,6 +2262,260 @@ void __fastcall Body_GroundStep(BYTE* s, void*, float k)
     }
     CallC(Mg_CheckPoint, P, &s_mg67dca0, 150.0f);
     Vec3_Scaled((Vec3*)(s + 3148), P, dt);
+}
+
+} // extern "C"
+
+// === drawing a body, with its debug marks (FUN_590d20)
+
+extern "C" void Bd_DrawMarked(); KING_ALIAS("_Bd_DrawMarked", "@Item_DrawMarked@16")
+extern "C" void Bd_PointsNext(); KING_ALIAS("_Bd_PointsNext", "@Points_Next@12")
+extern "C" void Bd_CameraGet(); KING_ALIAS("_Bd_CameraGet", "@Camera_Get@12")
+extern "C" void Bd_DrawLine(); KING_ALIAS("_Bd_DrawLine", "_Window_DrawLine")
+ASM_VAR(int, g_bd696be4, $L_696be4)
+ASM_VAR(BYTE*, g_bd6ef1fc, $L_6ef1fc)
+ASM_VAR(float, g_bd64c250, $L_64c250)
+ASM_VAR(float, g_bd64c258, $L_64c258)
+ASM_VAR(float, g_bd65081c, $L_65081c)
+ASM_VAR(double, g_bd64b820, $L_64b820)
+
+static BYTE* Bd_Window() { return F(BYTE*, F(BYTE*, g_bd6ef1fc, 464), 1948); }
+
+// a mark of color c at view point v (x, depth y, z) when in front
+static void Bd_Mark(const float* v, int c)
+{
+    if (!(v[1] > g_bd64c250))
+        return;
+    BYTE* w = Bd_Window();
+    int ww = F(WORD, w, 0), wh = F(WORD, w, 2);
+    int sx = (int)(v[0] / (double)v[1] * ww * g_bd64c258 + ww / 2);
+    int sy = (int)(wh / 2 - v[2] / (double)v[1] * wh * g_bd64c258);
+    CallC(Bd_DrawLine, w, sx - 2, sy - 2, sx + 2, sy + 2, c, 0);
+    CallC(Bd_DrawLine, Bd_Window(), sx + 2, sy - 2, sx - 2, sy + 2, c, 0);
+    CallC(Bd_DrawLine, Bd_Window(), sx, sy - 3, sx, sy + 3, 0, 0);
+    CallC(Bd_DrawLine, Bd_Window(), sx - 3, sy, sx + 3, sy, 0, 0);
+}
+
+extern "C" {
+
+// [FUN_590d20] draws body item s (its owner at -256) with (a, ctx); at debug level 2 marks its contact points
+// (mode 3) or a wire sphere around +3180 (mode 2) in the debug view
+int __fastcall Item_DrawBody(BYTE* s, void*, int a, BYTE* ctx)
+{
+    BYTE* owner = s - 256;
+    CallVirt(owner, 232);
+    int ret = CallThis<int>(Bd_DrawMarked, s, a, ctx);
+    if (g_bd696be4 <= 1 || g_bd696be4 != 2)
+        return ret;
+    BYTE* W = F(BYTE*, g_bd6ef1fc, 464);
+    float M[12];
+    memcpy(M, W + 2240 + F(int, W, 8224) * 48, 48);
+    float pt[3] = {0, 0, 0};
+    if (F(int, s, 3720) == 3)
+    {
+        for (int i = CallThis<int>(Bd_PointsNext, owner, pt); i; i = CallThis<int>(Bd_PointsNext, owner, pt))
+        {
+            double a0 = (double)pt[0] * F(float, s, 244) + (double)pt[2] * F(float, s, 268) + (double)pt[1] * F(float, s, 256) + F(float, s, 280);
+            double b0 = (double)pt[2] * F(float, s, 272) + (double)pt[1] * F(float, s, 260) + (double)pt[0] * F(float, s, 248) + F(float, s, 284);
+            double c0 = (double)pt[2] * F(float, s, 276) + (double)pt[1] * F(float, s, 264) + (double)pt[0] * F(float, s, 252) + F(float, s, 288);
+            float v[3];
+            v[2] = (float)(M[2] * a0 + M[8] * c0 + M[5] * b0 + M[11]);
+            v[1] = (float)(M[1] * a0 + M[7] * c0 + M[4] * b0 + M[10]);
+            v[0] = (float)(M[0] * a0 + M[6] * c0 + M[3] * b0 + M[9]);
+            Bd_Mark(v, 5);
+        }
+    }
+    if (F(int, s, 3720) != 2)
+        return ret;
+    BYTE cm[48];
+    const float* cam = CallThis<const float*>(Bd_CameraGet, g_bd6ef1fc, cm);
+    float d[3];
+    d[0] = (float)((double)F(float, s, 280) - cam[9]);
+    d[1] = (float)((double)F(float, s, 284) - cam[10]);
+    d[2] = (float)((double)F(float, s, 288) - cam[11]);
+    int n = (int)(g_bd65081c / Vec3_Length((const Vec3*)d));
+    if (n > 20)
+        n = 20;
+    int color = 4;
+    const float* p = (const float*)(s + 3180);
+    float c0[3];
+    c0[0] = (float)((double)F(float, s, 268) * p[2] + (double)F(float, s, 256) * p[1] + (double)F(float, s, 244) * p[0] + F(float, s, 280));
+    c0[1] = (float)((double)F(float, s, 272) * p[2] + (double)F(float, s, 248) * p[0] + (double)F(float, s, 260) * p[1] + F(float, s, 284));
+    c0[2] = (float)((double)F(float, s, 276) * p[2] + (double)F(float, s, 252) * p[0] + (double)F(float, s, 264) * p[1] + F(float, s, 288));
+    float q[3] = {c0[0], c0[1], c0[2]};
+    for (int j = 0; j < n; j++)
+    {
+        for (int k = 0; k < 2; k++)
+        {
+            if (k || j)
+            {
+                Matrix rm;
+                float ang = (float)(j * g_bd64b820 / n);
+                const float* R = (k ? Matrix_RotationX(&rm, ang) : Matrix_RotationY(&rm, ang))->m;
+                double r = F(float, s, 3016);
+                const float* Z = &g_axisZ.x;
+                double x = (double)Z[2] * R[6] + (double)Z[1] * R[3] + (double)Z[0] * R[0] + R[9];
+                double y = (double)Z[2] * R[7] + (double)Z[1] * R[4] + (double)Z[0] * R[1] + R[10];
+                double z = (double)Z[2] * R[8] + (double)Z[1] * R[5] + (double)Z[0] * R[2] + R[11];
+                float t[3] = {(float)(x * r), (float)(y * r), (float)(z * r)};
+                q[0] = (float)((double)t[0] + c0[0]);
+                q[1] = (float)((double)t[1] + c0[1]);
+                q[2] = (float)((double)t[2] + c0[2]);
+                color = 5;
+            }
+            float v[3];
+            v[2] = (float)((double)M[8] * q[2] + (double)M[2] * q[0] + (double)M[5] * q[1] + M[11]);
+            v[1] = (float)((double)M[7] * q[2] + (double)M[1] * q[0] + (double)M[4] * q[1] + M[10]);
+            v[0] = (float)((double)M[6] * q[2] + (double)M[3] * q[1] + (double)M[0] * q[0] + M[9]);
+            q[0] = v[0];
+            q[1] = v[1];
+            q[2] = v[2];
+            Bd_Mark(v, color);
+        }
+    }
+    return ret;
+}
+
+} // extern "C"
+
+// === a body's bounce off the ground (FUN_58baa0)
+
+ASM_VAR(Vec3, g_gb6f63d8, $L_6f63d8)                // gravity
+ASM_VAR(double, g_gb64b678, $L_64b678)
+
+static Vec3 Gb_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_58baa0] the bounce of a body (frame R, inverse inertia frame Ri, velocity v, spin w, inertia scale k)
+// off ground point g with normal n, for restitution e: the velocity change *dv and spin change *dw, 1; 0 and
+// zeros when the contact point is not moving into the ground
+int __cdecl Body_Bounce(const Matrix* R, const Matrix* Ri, const Vec3* v, const Vec3* w, const Vec3* k, const Vec3* g,
+                        const Vec3* n, float e, float unused, Vec3* dv, Vec3* dw)
+{
+    (void)unused;
+    float dt = (float)F(double, g_bd6ef1fc, 2960);
+    const float* Rm = R->m;
+    Vec3 r = Gb_Set((double)g->x - Rm[9], (double)g->y - Rm[10], (double)g->z - Rm[11]);
+    Vec3 u, c, t, s, wr, cr, vc, gv, vt;
+    Vec3_Normalized(&u, &r);
+    Vec3_Normalized(&t, Vec3_Cross(&c, n, &u));
+    Vec3_Cross(&s, &u, &t);
+    Vec3_RotateBy(&wr, w, R);
+    Vec3_Cross(&cr, &wr, &r);
+    Vec3_Add(&vc, &cr, v);
+    gv = Gb_Set((double)g_gb6f63d8.x * dt, (double)g_gb6f63d8.y * dt, (double)g_gb6f63d8.z * dt);
+    vt = Gb_Set((double)vc.x + gv.x, (double)vc.y + gv.y, (double)vc.z + gv.z);
+    bool ok = (double)t.x * t.x + (double)t.z * t.z + (double)t.y * t.y != g_gb64b678
+              && !((double)vt.y * r.y + (double)vt.z * r.z + (double)vt.x * r.x < g_gb64b678)
+              && !((double)n->z * vt.z + (double)n->y * vt.y + (double)n->x * vt.x > g_mg64c264);
+    if (!ok)
+    {
+        *dv = g_zeroVec;
+        *dw = g_zeroVec;
+        return 0;
+    }
+    Matrix m516 = *R, m468 = *Ri, m672 = g_identity, m624, m324, m240, m192, m144, m420, m372, m96;
+    m516.m[9] = m516.m[10] = m516.m[11] = 0;
+    m468.m[9] = m468.m[10] = m468.m[11] = 0;
+    *(Vec3*)&m672.m[0] = t;
+    *(Vec3*)&m672.m[3] = s;
+    *(Vec3*)&m672.m[6] = u;
+    Matrix_Inverse(&m624, &m672);
+    Matrix_Multiply(&m324, &m516, &m624);
+    Matrix_Inverse(&m240, &m324);
+    Matrix_Multiply(&m192, &m240, Matrix_ScaleColumns(&m144, &g_identity, k));
+    Matrix_Multiply(&m420, &m192, &m324);
+    double rr = ((double)r.x * r.x + (double)r.z * r.z + (double)r.y * r.y) * e;
+    m372 = m420;
+    m372.m[0] = (float)(rr + m420.m[0]);
+    m372.m[4] = (float)(rr + m372.m[4]);
+    Matrix_Inverse(&m96, &m372);
+    Vec3 c564, v540, v552, v696, v576;
+    Vec3_RotateBy(&v540, Vec3_Cross(&c564, &r, &g_gb6f63d8), &m624);
+    v552 = Gb_Set(-((double)v540.x * e), 0, 0);
+    Vec3_RotateBy(&v696, &v552, &m96);
+    Vec3_RotateBy(&v576, &v696, &m672);
+    Vec3_Cross(dv, &r, &v576);
+    Vec3_RotateBy(dw, &v696, &m240);
+    return 1;
+}
+
+} // extern "C"
+
+// === a body's planes and bounds (FUN_58d2b0)
+
+ASM_VAR(float, g_pb650330, $L_650330)
+
+extern "C" {
+
+// [FUN_58d2b0] body s: its +5132 planes (+4548.., 28 bytes: normal, distance) turned by the frame +692 into the
+// world planes +3988.. (normal, distance, the foot point), the lowest distance +5140, and the bounds of its
+// points (+3592.. / +3832..) in +5108 .. +5128
+void __fastcall Body_UpdatePlanes(BYTE* s, void*)
+{
+    int n = F(int, s, 5132);
+    F(float, s, 5140) = n ? 10000.0f : 0;
+    const float* R = (const float*)(s + 692);
+    for (int i = 0; i < n; i++)
+    {
+        const float* N = (const float*)(s + 4548 + i * 28);
+        float* A = (float*)(s + 3988 + i * 28);
+        double nd = -(double)N[3];
+        float px = (float)(nd * N[0]), py = (float)(nd * N[1]);
+        double pz = nd * N[2];
+        float wx = (float)(pz * R[6] + (double)py * R[3] + (double)px * R[0] + R[9]);
+        float wy = (float)(pz * R[7] + (double)py * R[4] + (double)px * R[1] + R[10]);
+        double wz = pz * R[8] + (double)py * R[5] + (double)px * R[2] + R[11];
+        A[0] = (float)((double)R[6] * N[2] + (double)N[1] * R[3] + (double)R[0] * N[0]);
+        A[1] = (float)((double)R[1] * N[0] + (double)R[7] * N[2] + (double)N[1] * R[4]);
+        A[2] = (float)((double)N[1] * R[5] + (double)R[2] * N[0] + (double)N[2] * R[8]);
+        float mx = (float)-(double)wx, my = (float)-(double)wy;
+        double d = (double)A[0] * mx + A[2] * -wz + (double)my * A[1];
+        A[3] = (float)d;
+        double t = -d;
+        if (t < F(float, s, 5140))
+            F(float, s, 5140) = (float)t;
+        double k = -(double)A[3];
+        A[4] = (float)(k * A[0]);
+        A[5] = (float)(k * A[1]);
+        A[6] = (float)(k * A[2]);
+    }
+    float minX = 1000000.0f, maxX = -1000000.0f, maxY = -1000000.0f, minY = 1000000.0f, maxZ = -1000000.0f;
+    double minZ = g_pb650330;
+    for (int pass = 0; pass < 2; pass++)
+    {
+        int cnt = F(int, s, pass ? 3576 : 3572);
+        const float* p = (const float*)(s + (pass ? 3832 : 3592));
+        for (int i = 0; i < cnt; i++, p += 3)
+        {
+            if (maxX < p[0])
+                maxX = p[0];
+            if (minX > p[0])
+                minX = p[0];
+            if (maxY < p[1])
+                maxY = p[1];
+            if (minY > p[1])
+                minY = p[1];
+            if (maxZ < p[2])
+                maxZ = p[2];
+            if (minZ > p[2])
+                minZ = p[2];
+        }
+    }
+    F(float, s, 5128) = (float)minZ;
+    F(float, s, 5108) = minX;
+    F(float, s, 5112) = maxX;
+    F(float, s, 5116) = maxY;
+    F(float, s, 5120) = minY;
+    F(float, s, 5124) = maxZ;
 }
 
 } // extern "C"

@@ -1934,3 +1934,354 @@ BYTE* __fastcall SkyEffect_Construct(BYTE* s, void*, BYTE* o, BYTE* p, Lf_V3 pos
 }
 
 } // extern "C"
+
+// === applying the weather mix to the sky (FUN_5a9540)
+
+extern "C" void Wa_Select(); KING_ALIAS("_Wa_Select", "_Switch_Select")
+ASM_VAR(int, g_wa7025c0, $L_7025c0)                 // no thunder
+ASM_VAR(double, g_wa64d950, $L_64d950)
+ASM_VAR(double, g_wa64b898, $L_64b898)
+ASM_VAR(double, g_wa651690, $L_651690)
+ASM_VAR(double, g_wa651688, $L_651688)
+ASM_VAR(double, g_wa64b6d0, $L_64b6d0)
+ASM_VAR(double, g_wa64f790, $L_64f790)
+ASM_VAR(double, g_wa64b670, $L_64b670)
+ASM_VAR(double, g_wa64b5a0, $L_64b5a0)
+ASM_VAR(double, g_wa64b840, $L_64b840)
+ASM_VAR(double, g_wa651680, $L_651680)
+ASM_VAR(double, g_wa651678, $L_651678)
+ASM_VAR(double, g_wa64d0f0, $L_64d0f0)
+ASM_VAR(double, g_wa651670, $L_651670)
+ASM_VAR(double, g_wa651668, $L_651668)
+ASM_VAR(double, g_wa651660, $L_651660)
+ASM_VAR(float, g_wa64c458, $L_64c458)
+ASM_VAR(float, g_wa64c250, $L_64c250)
+ASM_VAR(AsmLabel, g_wa7022a0, $L_7022a0)
+ASM_VAR(AsmLabel, g_wa6fa450, $L_6fa450)
+ASM_VAR(AsmLabel, g_wa6fc9b8, $L_6fc9b8)
+ASM_VAR(AsmLabel, g_wa6fca58, $L_6fca58)
+ASM_VAR(AsmLabel, g_wa6fd75c, $L_6fd75c)
+ASM_VAR(AsmLabel, g_wa6fb3f4, $L_6fb3f4)
+ASM_VAR(AsmLabel, g_wa701fa0, $L_701fa0)
+ASM_VAR(AsmLabel, g_wa6f9cc0, $L_6f9cc0)
+ASM_VAR(AsmLabel, g_wa701ca0, $L_701ca0)
+ASM_VAR(AsmLabel, g_wa6fa150, $L_6fa150)
+
+// light l (+96 strength, +108 colour, +136 bright) set from the mix of table
+static void Wa_Light(BYTE* s, BYTE* l, BYTE* table, int mode, bool bright)
+{
+    float c[3];
+    Sky_MixColor((float)F(double, s, 32), (float)F(double, s, 72), (float)F(double, s, 64), &c[0], &c[1], &c[2], table, mode);
+    F(float, l, 96) = 1.0f;
+    F(float, l, 108) = c[0];
+    F(float, l, 112) = c[1];
+    F(float, l, 116) = c[2];
+    if (bright)
+        F(int, l, 136) = (double)c[0] + c[1] + c[2] < g_wa64b5a0 ? 0 : 1;
+}
+
+extern "C" {
+
+// [FUN_5a9540] applies weather s's mix (time +32, +64, +72, sun +48, clouds +56, hour +88) to the sky: the
+// thunder and rain switches, the colours of the sky (+520), the lights (+480 .. +516), the sun's direction (+556),
+// the fog from the brightness (+548) and the 16 hour switches (+160, ranges at +224)
+void __fastcall Weather_ApplySky(BYTE* s, void*)
+{
+    BYTE* W = F(BYTE*, F(BYTE*, s, 80), 472);
+    int idx = g_6fb3e8 > g_wa64d950 ? 1 : 0;
+    int fl = (&g_weatherFlags6fca38)[(&g_wea6fb3d8)[idx]];
+    if (!(fl & 1) && F(BYTE*, s, 496))
+        F(DWORD, F(BYTE*, s, 496), 164) &= ~0x12u;
+    BYTE* o = F(BYTE*, s, 504);
+    if (!(F(double, s, 56) < g_wa64b898) && (fl & 4))
+        F(DWORD, o, 72) &= ~1u;
+    else
+        F(DWORD, o, 72) |= 1;
+    g_wa7025c0 = (((int)(signed char)~fl) & 4) >> 2;
+    if (F(double, s, 72) < g_wa651690)
+    {
+        g_wea6fb3dc = (g_wea6fb3d4 + 1) % 4;
+        g_mx6fb3e0 = F(double, s, 72) * g_wa651688;
+    }
+    else
+    {
+        g_mx6fb3e0 = 1.0;
+        g_wea6fb3d4 = g_wea6fb3dc;
+    }
+    float r = 0, g = 0, b = 0;
+    float x = (float)F(double, s, 32), y = (float)F(double, s, 72), t = (float)F(double, s, 64);
+    Sky_MixColor(x, y, t, &r, &g, &b, (BYTE*)g_wa7022a0, 0);
+    Sky_MixColor(x, y, t, &F(float, s, 520), &F(float, s, 524), &F(float, s, 528), (BYTE*)g_wa6fa450, 0);
+    if ((F(BYTE, F(BYTE*, s, 504), 72) & 2) && !((int)(F(double, F(BYTE*, s, 80), 2968) * g_wa64b6d0) % 2))
+    {
+        F(float, s, 520) = r = 0.9f;
+        F(float, s, 524) = g = 1.0f;
+        F(float, s, 528) = b = 1.0f;
+    }
+    F(double, W, 48) = F(float, s, 520);
+    F(double, W, 56) = F(float, s, 524);
+    F(int, W, 72) = 8;
+    F(double, W, 64) = F(float, s, 528);
+    F(double, W, 16) = Weather_MixValue(y, t, (BYTE*)g_wa6fc9b8);
+    F(double, W, 24) = Weather_MixValue(y, t, (BYTE*)g_wa6fca58);
+    F(double, W, 32) = Weather_MixValue(y, t, (BYTE*)g_wa6fd75c) * F(double, W, 16);
+    BYTE* L = F(BYTE*, s, 480);
+    if (L)
+    {
+        F(double, L, 72) = r;
+        F(double, L, 80) = g;
+        F(double, L, 88) = b;
+        F(double, L, 56) = F(double, W, 24) * g_wa64f790;
+        F(double, L, 64) = F(double, W, 16) * g_wa64f790;
+        F(int, L, 96) = 8;
+        double k = F(double, s, 64) + F(double, s, 64);
+        if (k > g_wa64b670)
+            k = g_wa64b670;
+        float c[3];
+        Sky_MixColor(x, y, (float)k, &c[0], &c[1], &c[2], (BYTE*)g_wa6fb3f4, 0);
+        int i = F(int, F(BYTE*, s, 480), 96);
+        BYTE** lst = F(BYTE**, F(BYTE*, F(BYTE*, s, 80), 468), 100);
+        if (i >= 0 && lst && *lst)
+        {
+            (*lst)[24 + i * 3] = (BYTE)(int)((double)c[0] * g_wa64c458);
+            (*lst)[25 + i * 3] = (BYTE)(int)((double)c[1] * g_wa64c458);
+            (*lst)[26 + i * 3] = (BYTE)(int)((double)c[2] * g_wa64c458);
+        }
+    }
+    if (F(BYTE*, s, 512))
+        Wa_Light(s, F(BYTE*, s, 512), (BYTE*)g_wa701fa0, 1, true);
+    if (F(BYTE*, s, 484))
+        Wa_Light(s, F(BYTE*, s, 484), (BYTE*)g_wa6f9cc0, 0, false);
+    if (F(BYTE*, s, 488))
+        Wa_Light(s, F(BYTE*, s, 488), (BYTE*)g_wa701ca0, 0, false);
+    if (F(BYTE*, s, 516))
+        Wa_Light(s, F(BYTE*, s, 516), (BYTE*)g_wa6fa150, 0, true);
+    if (BYTE* P = F(BYTE*, s, 512))
+    {
+        if ((F(DWORD, s, 572) & 64) && (F(DWORD, s, 572) & 0x100))
+            F(int, P, 96) = F(int, s, 540);
+        else
+            F(float, P, 96) = 1.0f;
+    }
+    BYTE* Q = F(BYTE*, s, 500);
+    if (Q)
+    {
+        if (F(double, s, 32) > g_wa64b840 && F(double, s, 56) < g_wa64b840 && !(s[572] & 128))
+            F(DWORD, Q, 120) &= ~128u;
+        else
+            F(DWORD, Q, 120) |= 128;
+        double a44 = F(double, s, 72) * g_wa651680;
+        double a36 = F(double, s, 48) * g_wa651678;
+        Obj5a6860_Set(Q, 0, ((int*)&a44)[0], ((int*)&a44)[1], ((int*)&a36)[0], ((int*)&a36)[1], 0);
+        double c36 = x87_cos(a36);
+        F(float, s, 556) = (float)(x87_cos(a44) * c36);
+        F(float, s, 560) = (float)(x87_sin(a44) * c36);
+        F(float, s, 564) = (float)x87_sin(a36);
+    }
+    F(DWORD, s, 572) &= 0xfffffe3f;
+    if (!(fl & 2))
+    {
+        if (Q)
+            F(DWORD, Q, 120) |= 128;
+        F(DWORD, s, 572) |= 64;
+    }
+    F(int, F(BYTE*, F(BYTE*, s, 80), 472), 76) = F(int, s, 576);
+    BYTE* P = F(BYTE*, s, 512);
+    BYTE* A = F(BYTE*, s, 516);
+    double v = (double)F(float, P, 108) * g_wa64d0f0 + (double)F(float, P, 116) * g_wa651670 + (double)F(float, P, 112) * g_wa651668;
+    v += (double)F(float, A, 108) * g_wa64d0f0 + (double)F(float, A, 116) * g_wa651670 + (double)F(float, A, 112) * g_wa651668;
+    v += (double)F(float, s, 524) * g_wa651668 + (double)F(float, s, 520) * g_wa64d0f0 + (double)F(float, s, 528) * g_wa651670;
+    F(float, s, 548) = (float)v;
+    if (v > g_wa64c250)
+        F(float, s, 548) = 1.0f;
+    double fog = F(float, s, 532);
+    Fog_Set(F(float, s, 548), ((int*)&fog)[0], ((int*)&fog)[1]);
+    for (int i = 0; i < 16; i++)
+    {
+        BYTE* sw = F(BYTE*, s, 160 + i * 4);
+        if (!sw)
+            continue;
+        const double* d = (const double*)(s + 224 + i * 16);
+        double h = F(double, s, 88);
+        int on;
+        if (i < 8)
+        {
+            if (h > d[0] && h < d[1])
+                on = 1;
+            else if (!(d[0] - g_wa651660 < h))
+                on = 0;
+            else
+                on = d[1] - g_wa651660 > h ? 1 : 0;
+        }
+        else
+        {
+            if (h > d[0])
+                on = 1;
+            else
+                on = d[0] - g_wa651660 > h ? 1 : 0;
+        }
+        CallC(Wa_Select, sw, on);
+    }
+}
+
+} // extern "C"
+
+// === the sun's flare (a method at $L_5a6ad0)
+
+extern "C" void Sf_PostEvent(); KING_ALIAS("_Sf_PostEvent", "@Queue_PostEvent@12")
+extern "C" void Sf_GetWorld(); KING_ALIAS("_Sf_GetWorld", "@Node_GetWorld@12")
+extern "C" void Sf_TransformDir(); KING_ALIAS("_Sf_TransformDir", "@Vec3_TransformDir@12")
+extern "C" void Sf_MulAssign(); KING_ALIAS("_Sf_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Sf_FrameApply(); KING_ALIAS("_Sf_FrameApply", "_Frame_Apply")
+ASM_VAR(double, g_sf64d900, $L_64d900)
+ASM_VAR(double, g_sf64d908, $L_64d908)
+ASM_VAR(double, g_sf64d910, $L_64d910)
+ASM_VAR(double, g_sf64b660, $L_64b660)
+ASM_VAR(double, g_sf64b738, $L_64b738)
+ASM_VAR(double, g_sf64b670, $L_64b670)
+ASM_VAR(double, g_sf64da00, $L_64da00)
+ASM_VAR(double, g_sf64b5b8, $L_64b5b8)
+ASM_VAR(float, g_sf64c258, $L_64c258)
+ASM_VAR(double, g_sf64b780, $L_64b780)
+ASM_VAR(double, g_sf651588, $L_651588)
+
+static double Sf_Wrap(double a)
+{
+    while (a > g_sf64d900)
+        a -= g_sf64d908;
+    while (a < g_sf64d910)
+        a += g_sf64d908;
+    return a;
+}
+
+// the strength v kept at +56, at most 1 and to the 32nd power
+static void Sf_Strength(BYTE* s, double v)
+{
+    F(double, s, 56) = v;
+    if (v > g_sf64b670)
+        F(double, s, 56) = 1.0;
+    double x = F(double, s, 56);
+    x = x * x;
+    x = x * x;
+    x = x * x;
+    x = x * x;
+    F(double, s, 56) = x * x;
+}
+
+static float Sf_WrapF(float a)
+{
+    if (a < g_sf64d910)
+        a = (float)(a + g_sf64d908);
+    if (a > g_sf64d900)
+        a = (float)(a - g_sf64d908);
+    return a;
+}
+
+extern "C" {
+
+// [$L_5a6ad0] the sun flare s (direction +40 / +48): hidden with flag 64; else its strength (+56) from how
+// straight the camera (s +32) looks at it, its frame +64 at 50 along the direction, the glow +112 shown inside
+// the view (+120 bit 128 hides it) and the +104 rings (+68..) along the way, or with flag 4 a blinking ring
+void __fastcall Sun_FlareStep(BYTE* s, void*)
+{
+    BYTE* a = F(BYTE*, s, 108);
+    BYTE* b = F(BYTE*, s, 112);
+    if (s[120] & 64)
+    {
+        a[40] |= 1;
+        b[40] |= 1;
+        CallThis(Sf_PostEvent, s, 1);
+        return;
+    }
+    a[40] &= 0xfe;
+    b[40] &= 0xfe;
+    BYTE* cam = F(BYTE*, s, 32);
+    double pitch = F(double, cam, 2936);
+    double d1 = Sf_Wrap(F(double, s, 40) - F(double, cam, 2928));
+    double d2 = Sf_Wrap(F(double, s, 48) - pitch);
+    double v = (x87_cos(d1) + x87_cos(d2) + g_sf64b660) * g_sf64b738;
+    Sf_Strength(s, v);
+    BYTE* viewer = F(BYTE*, cam, 488);
+    Matrix m292 = g_identity, m196, tmp;
+    CallThis(Sf_GetWorld, F(BYTE*, viewer, 80), &m292);
+    m292 = *Matrix_Inverse(&m196, &m292);
+    const float* R = Matrix_RotationX(&m196, (float)F(double, s, 48))->m;
+    const float* Y = &g_axisY.x;
+    float px = (float)((double)Y[2] * R[6] + (double)Y[1] * R[3] + (double)Y[0] * R[0] + R[9]);
+    float py = (float)((double)Y[2] * R[7] + (double)Y[1] * R[4] + (double)Y[0] * R[1] + R[10]);
+    float pz = (float)((double)Y[2] * R[8] + (double)Y[1] * R[5] + (double)Y[0] * R[2] + R[11]);
+    Matrix m148;
+    const float* Z = Matrix_RotationZ(&m148, (float)F(double, s, 40))->m;
+    Vec3 q;
+    q.y = (float)((double)pz * Z[7] + (double)py * Z[4] + (double)px * Z[1] + Z[10]);
+    q.z = (float)((double)pz * Z[8] + (double)py * Z[5] + (double)px * Z[2] + Z[11]);
+    q.x = (float)((double)pz * Z[6] + (double)py * Z[3] + (double)px * Z[0] + Z[9]);
+    CallThis(Sf_TransformDir, &q, &m292);
+    float az, pol;
+    Vec3_ToAngles(q, &az, &pol);
+    az = (float)(az - g_sf64da00);
+    pol = (float)(g_sf64da00 - pol);
+    az = Sf_WrapF(az);
+    pol = Sf_WrapF(pol);
+    Vec3 t3;
+    CallThis(Sf_MulAssign, &q, &t3, 50.0f);
+    Matrix tr, rz, rx, m100, m244;
+    Matrix_Translation(&tr, q);
+    Matrix_RotationZ(&rz, az);
+    Matrix_RotationX(&rx, pol);
+    m292 = *Matrix_Multiply(&m244, Matrix_Multiply(&m100, &rx, &rz), &tr);
+    CallC(Sf_FrameApply, F(BYTE*, s, 64), 0, &m292);
+    if (!(s[120] & 4))
+    {
+        bool hidden = !(q.y >= g_sf64b5b8)
+                      || (double)F(float, viewer, 88) * g_sf64c258 < x87_fabs((double)q.x / q.y)
+                      || (double)F(float, viewer, 84) * g_sf64c258 < x87_fabs((double)q.z / q.y);
+        if (hidden || (s[120] & 128))
+            b[40] |= 1;
+        else
+            b[40] &= 0xfe;
+        CallThis(Sf_TransformDir, &q, &m292);
+        float nx = (float)-(double)q.x, nz = (float)-(double)q.z;
+        q.x = nx;
+        q.y = 0;
+        q.z = nz;
+        int n = F(int, s, 104);
+        BYTE** ring = (BYTE**)(s + 68);
+        for (int k = 1; k < n + 1; k++)
+        {
+            double t = k + 1;
+            float tx = (float)(t * q.x), ty = (float)(t * q.y);
+            double tz = t * q.z;
+            double dn = n;
+            Vec3 o;
+            o.x = (float)(tx / dn);
+            o.y = (float)(ty / dn);
+            o.z = (float)(tz / dn);
+            Matrix mt;
+            CallC(Sf_FrameApply, *ring++, 0, Matrix_Translation(&mt, o));
+            n = F(int, s, 104);
+        }
+    }
+    else
+    {
+        CallC(Wa_Select, b, (int)(F(double, cam, 2968) * g_sf64b780) % F(int, s, 104));
+        Matrix wm, inv;
+        CallThis(Sf_GetWorld, F(BYTE*, s, 64), &wm);
+        const float* I = Matrix_Inverse(&inv, &wm)->m;
+        const float* Zv = &g_axisZ.x;
+        double dx = (double)Zv[2] * I[6] + (double)Zv[1] * I[3] + (double)Zv[0] * I[0];
+        float dy = (float)((double)Zv[2] * I[7] + (double)Zv[1] * I[4] + (double)Zv[0] * I[1]);
+        float dz = (float)((double)Zv[2] * I[8] + (double)Zv[1] * I[5] + (double)Zv[0] * I[2]);
+        float k = (float)(x87_sin(F(double, s, 48)) * g_sf651588);
+        Vec3 o;
+        o.x = (float)(dx * k);
+        o.y = (float)((double)dy * k);
+        o.z = (float)((double)dz * k);
+        Matrix mt;
+        CallC(Sf_FrameApply, F(BYTE*, s, 68), 0, Matrix_Translation(&mt, o));
+    }
+    Sf_Strength(s, v);
+    CallThis(Sf_PostEvent, s, 1);
+}
+
+} // extern "C"

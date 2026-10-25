@@ -405,7 +405,7 @@ extern "C" void __fastcall Movite_5866f0(BYTE* s, void*, BYTE* o, int b)
 // More virtual methods and static initializers.
 
 extern "C" void FUN_5843c0(); KING_ALIAS("_FUN_5843c0", "_Item_MoveFraction")
-ASM_PROC(FUN_5855a0)
+extern "C" void FUN_5855a0(); KING_ALIAS("_FUN_5855a0", "_Item_BodyContact")
 
 // [$L_585d30] by the kind (+392): kind 1 with flag 4 to FUN_5843c0, kind 1 or kind 2 with flag 2 to FUN_5855a0
 extern "C" int __fastcall Movite_585d30(BYTE* s, void*, int a, int b, int c, int d, int e)
@@ -1502,6 +1502,137 @@ int __cdecl Item_MoveFraction(BYTE* o, const BYTE* t, float* scale, float* dist,
         r = g_im64c250;
     *scale = (float)(x87_sqrt(r) * *scale);
     return 1;
+}
+
+} // extern "C"
+
+// === an item's contact with a body (FUN_5855a0)
+
+extern "C" void Ic_Matrix1(); KING_ALIAS("_Ic_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Ic_Get800(); KING_ALIAS("_Ic_Get800", "@SceneObj_Get800@8")
+extern "C" void Ic_HitObject(); KING_ALIAS("_Ic_HitObject", "_Query_HitObject")
+extern "C" void Ic_Query1(); KING_ALIAS("_Ic_Query1", "_Query_4e67f9")
+extern "C" void Ic_Neighbour(); KING_ALIAS("_Ic_Neighbour", "_Item_NeighbourContact")
+extern "C" void Ic_Query3(); KING_ALIAS("_Ic_Query3", "_Query_4e6d41")
+extern "C" void Ic_TrackInit(); KING_ALIAS("_Ic_TrackInit", "@Track587c80_Construct@4")
+ASM_PROC(FUN_585150)
+ASM_VAR(double, g_ic64b6d8, $L_64b6d8)
+ASM_VAR(double, g_ic64b670, $L_64b670)
+ASM_VAR(float, g_ic64c250, $L_64c250)
+
+static Vec3 Ic_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// node q's point +52 moved r along its normal +64, less p
+static Vec3 Ic_Off(const BYTE* q, double r, const Vec3& p)
+{
+    const float* n = (const float*)(q + 64);
+    const float* c = (const float*)(q + 52);
+    Vec3 t = Ic_Set(r * n[0], r * n[1], r * n[2]);
+    Vec3 u = Ic_Set((double)t.x + c[0], (double)t.y + c[1], (double)t.z + c[2]);
+    return Ic_Set((double)u.x - p.x, (double)u.y - p.y, (double)u.z - p.z);
+}
+
+extern "C" {
+
+// [FUN_5855a0] the contact of item s (kind +392 1 or 2, its point +3448) with a body of frame m, through node q:
+// a direct hit (1), a neighbour (2), the rim (3), else the traced track (4, unless flag 64); *depth gets the
+// contact depth and *scale is scaled by the root of the moved share; the kind, or 0
+int __cdecl Item_BodyContact(BYTE* s, const Matrix* m, float* scale, float* depth, BYTE* q, int flags)
+{
+    if (F(int, s, 392) != 2 && F(int, s, 392) != 1)
+        return 0;
+    Matrix mi;
+    CallThis(Ic_Matrix1, s, &mi);
+    const float* p = (const float*)(s + 3448);
+    const float* I = mi.m;
+    const float* M = m->m;
+    Vec3 a = Ic_Set((double)I[0] * p[0] + (double)I[6] * p[2] + (double)I[3] * p[1] + I[9],
+                    (double)I[1] * p[0] + (double)I[7] * p[2] + (double)I[4] * p[1] + I[10],
+                    (double)I[2] * p[0] + (double)I[8] * p[2] + (double)I[5] * p[1] + I[11]);
+    double bz = (double)M[8] * p[2] + (double)M[2] * p[0] + (double)M[5] * p[1] + M[11];
+    Vec3 b = Ic_Set((double)M[6] * p[2] + (double)M[3] * p[1] + (double)p[0] * M[0] + M[9],
+                    (double)M[7] * p[2] + (double)M[1] * p[0] + (double)M[4] * p[1] + M[10], bz);
+    Vec3 d = Ic_Set((double)b.x - a.x, (double)b.y - a.y, bz - a.z);
+    Vec3 v = {0, 0, 0};
+    BYTE* o = CallC<BYTE*>(Ic_HitObject, CallThis<BYTE*>(Ic_Get800, s), &mi.m[9], &a);
+    if (!o)
+    {
+        o = CallThis<BYTE*>(Ic_Get800, s);
+        CallVirt(s, 28, 1);
+    }
+    int kind;
+    if (CallC<int>(Ic_Query1, s, o, F(int, s, 3276), &a, &b, q) & 1)
+    {
+        kind = 1;
+        double k = F(float, s, 3276);
+        const Vec3* n = (const Vec3*)(q + 64);
+        const Vec3* c = (const Vec3*)(q + 52);
+        Vec3 t1, t2, t3;
+        *depth = (float)Vec3_Dot(Vec3_Sub(&t3, Vec3_Add(&t2, c, Vec3_Scaled(&t1, n, (float)k)), &b), n);
+        v = *Vec3_Sub(&t3, Vec3_Add(&t2, c, Vec3_Scaled(&t1, n, (float)k)), &a);
+    }
+    else if (CallC<int>(Ic_Neighbour, s, &a, &b, m, q) & 1)
+    {
+        kind = 2;
+        double r = F(float, s, 3280);
+        Vec3 t = Ic_Off(q, r, b);
+        *depth = (float)((double)F(float, q, 68) * t.y + (double)F(float, q, 72) * t.z + (double)t.x * F(float, q, 64));
+        v = Ic_Off(q, r, a);
+    }
+    else if (CallC<int>(Ic_Query3, s, o, F(int, s, 3284), &a, &b, q) & 1)
+    {
+        kind = 3;
+        double r = F(float, s, 3284);
+        Vec3 t = Ic_Off(q, r, b);
+        *depth = (float)((double)F(float, q, 68) * t.y + (double)F(float, q, 72) * t.z + (double)F(float, q, 64) * t.x);
+        v = Ic_Off(q, r, a);
+    }
+    else
+    {
+        if (flags & 64)
+            return 0;
+        BYTE tr[6400];
+        CallThis(Ic_TrackInit, tr);
+        int r = CallC<int>(FUN_585150, s, m, tr);
+        if (!r)
+            return r;
+        kind = 4;
+        for (int i = 0; i < F(int, tr, 2816); i++)
+        {
+            if (!F(int, tr, 2820 + i * 4))
+                continue;
+            *depth = F(float, tr, 2560 + i * 4);
+            double rr = F(float, s, 3272);
+            const float* n = (const float*)(tr + 768 + i * 12);
+            const float* c = (const float*)(tr + i * 12);
+            Vec3 t = Ic_Set(rr * n[0], rr * n[1], rr * n[2]);
+            Vec3 u = Ic_Set((double)t.x + c[0], (double)t.y + c[1], (double)t.z + c[2]);
+            v = Ic_Set((double)u.x - a.x, (double)u.y - a.y, (double)u.z - a.z);
+            F(int, q, 116) = 0;
+            F(Vec3, q, 52) = *(const Vec3*)c;
+            F(Vec3, q, 64) = *(const Vec3*)n;
+        }
+    }
+    float d2 = (float)Vec3_Dot(&d, &d);
+    double m2x = Vec3_Dot(&v, &v);
+    float m2 = (float)m2x;
+    if (m2x < g_ic64b6d8 || d2 < g_ic64b6d8)
+    {
+        *scale = 0;
+        return kind;
+    }
+    double t = (double)m2 / d2;
+    if (t > g_ic64b670)
+        t = g_ic64c250;
+    *scale = (float)(x87_sqrt(t) * *scale);
+    return kind;
 }
 
 } // extern "C"

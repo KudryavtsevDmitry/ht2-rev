@@ -5112,7 +5112,7 @@ ASM_VAR(AsmLabel, g_fiVtbl64c26c, $L_64c26c)
 extern "C" int __cdecl Ground_Below(BYTE* o, const float* p, float* at, float* n);
 ASM_VAR(AsmLabel, g_fiCb4c5b30, $L_4c5b30)
 ASM_VAR(AsmLabel, g_fiCb4cbec0, $L_4cbec0)
-ASM_VAR(AsmLabel, g_fiCb4cbfd0, $L_4cbfd0)
+ASM_VAR(AsmLabel, g_fiCb4cbfd0, _Fx_ReflectionQuad)
 ASM_VAR(AsmLabel, s_fi672688, $L_672688)
 ASM_VAR(AsmLabel, s_fi66cd44, $L_66cd44)
 ASM_VAR(AsmLabel, s_fi672678, $L_672678)
@@ -8002,6 +8002,622 @@ void __cdecl Fx_CarShadows(BYTE* car, BYTE* sh1, BYTE* sh2, int mode)
         }
         obj = next;
     }
+}
+
+} // extern "C"
+
+// === what lies ahead of an AI car (FUN_4d3880)
+
+extern "C" void Ob_Enum1(); KING_ALIAS("_Ob_Enum1", "_Enum_56f3f0")
+extern "C" void Ob_Enum2(); KING_ALIAS("_Ob_Enum2", "_Enum_56f650")
+extern "C" void Ob_SubAssign(); KING_ALIAS("_Ob_SubAssign", "@Vec3_SubAssign@16")
+extern "C" void Ob_TransformPoint(); KING_ALIAS("_Ob_TransformPoint", "@Vec3_TransformPoint@12")
+extern "C" void Ob_IdentityThis(); KING_ALIAS("_Ob_IdentityThis", "@Matrix_IdentityThis@8")
+ASM_VAR(float, g_ob64c970, $L_64c970)
+ASM_VAR(float, g_ob64d2f8, $L_64d2f8)
+ASM_VAR(float, g_ob64c354, $L_64c354)
+ASM_VAR(double, g_ob64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ob64b660, $L_64b660)
+ASM_VAR(float, g_ob64c40c, $L_64c40c)
+ASM_VAR(float, g_ob64c250, $L_64c250)
+extern "C" void Ob_GetWorld(); KING_ALIAS("_Ob_GetWorld", "@Node_GetWorld@12")
+
+struct ObSphere { float v[4]; };    // center and radius, passed by value
+
+static Vec3 Ob_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// the flag of probe k (0 left, 1 middle, 2 right) hitting at distance L within r
+static void Ob_Hit(int* flags, int k, double L, double r)
+{
+    if (L < g_ob64b660)
+        *flags |= 8;
+    if (!(L < r))
+        return;
+    *flags |= 4;
+    if (k == 0)
+        *flags |= 1;
+    else if (k == 1)
+        *flags |= 16;
+    else
+        *flags |= 2;
+}
+
+extern "C" {
+
+// [FUN_4d3880] what is ahead of AI driver ai's car (+16576) on side (0 or the other): three probes from the
+// bumper corners (+3848 / +3860) and the middle, then the objects in a sphere ahead: flags 1 left, 2 right,
+// 4 in reach, 8 close, 16 middle (reported as right when nothing else is)
+int __cdecl Ai_LookAhead(BYTE* ai, int side)
+{
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    int flags = 0;
+    double h = F(float, ai, 13100);
+    double reach = h * h * g_ob64c970 + g_ob64d2f8;
+    BYTE* car = F(BYTE*, ai, 16576);
+    Matrix m, inv;
+    CallThis(Sh_Matrix1, car + 16, &m);
+    Matrix_Inverse(&inv, &m);
+    BYTE* obj = CallThis<BYTE*>(Sh_Get800, car + 16);
+    Vec3 pts[3];
+    const float* a = (const float*)(car + (side ? 24 : 0) + 3848);
+    const float* b = (const float*)(car + (side ? 24 : 0) + 3860);
+    double k354 = g_ob64c354;
+    pts[0] = Ob_Set(a[0] * k354, a[1] * k354, a[2] * k354);
+    pts[2] = Ob_Set(b[0] * k354, b[1] * k354, b[2] * k354);
+    double sx = (double)pts[2].x + pts[0].x;
+    float sy = (float)((double)pts[0].y + pts[2].y), sz = (float)((double)pts[0].z + pts[2].z);
+    pts[1] = Ob_Set(sx * g_bm64c258, (double)sy * g_bm64c258, (double)sz * g_bm64c258);
+    float r = (float)reach;
+    float sgn = side ? -1.0f : 1.0f;
+    const float* M = m.m;
+    for (int k = 0; k < 3; k++)
+    {
+        memcpy(q + 4, &g_identity, 48);
+        const Vec3& p = pts[k];
+        float x = (float)((double)M[6] * p.z + (double)M[3] * p.y + (double)M[0] * p.x + M[9]);
+        float y = (float)((double)M[7] * p.z + (double)M[4] * p.y + (double)M[1] * p.x + M[10]);
+        float z = (float)((double)M[8] * p.z + (double)M[5] * p.y + (double)M[2] * p.x + M[11]);
+        F(float, q, 76) = x;
+        F(float, q, 80) = y;
+        F(float, q, 84) = z;
+        double t = k - 1;
+        float tx = (float)(t * g_axisX.x), ty = (float)(t * g_axisX.y);
+        double tz = t * g_axisX.z;
+        float hx = (float)((double)tx * g_bm64c258), hy = (float)((double)ty * g_bm64c258);
+        tz *= g_bm64c258;
+        float ux = (float)((double)hx + g_axisY.x), uy = (float)((double)hy + g_axisY.y);
+        tz += g_axisY.z;
+        float dx = (float)((double)ux * r), dy = (float)((double)uy * r);
+        tz *= r;
+        float xr = (float)((double)dx * M[0] + tz * M[6] + (double)dy * M[3]);
+        float yr = (float)((double)M[1] * dx + tz * M[7] + (double)dy * M[4]);
+        float ex = (float)((double)xr * sgn), ey = (float)((double)yr * sgn);
+        double ez = ((double)M[2] * dx + tz * M[8] + (double)dy * M[5]) * sgn;
+        F(Vec3, q, 88) = Ob_Set((double)ex + x, (double)ey + y, ez + z);
+        F(int, q, 116) = 0;
+        F(int, q, 0) = 0;
+        F(BYTE*, q, 104) = obj;
+        F(BYTE*, q, 120) = car ? car + 16 : 0;
+        if (!(CallVirt<int>(obj, 52, 4, q) & 1))
+            continue;
+        BYTE* o = F(BYTE*, q, 116);
+        if (!o)
+        {
+            if (!(F(float, q, 72) < g_ob64b6e0))
+                continue;
+            Vec3 dv = Ob_Set((double)F(float, q, 52) - F(float, q, 76), (double)F(float, q, 56) - F(float, q, 80),
+                             (double)F(float, q, 60) - F(float, q, 84));
+            Ob_Hit(&flags, k, Vec3_Length(&dv), reach);
+            continue;
+        }
+        const float* v = (const float*)(o + 416);
+        Matrix om;
+        const float* W = CallThis<const float*>(Sh_Matrix1, o, &om);
+        Vec3 w = Ob_Set((double)v[2] * W[6] + (double)v[1] * W[3] + (double)v[0] * W[0],
+                        (double)v[0] * W[1] + (double)v[2] * W[7] + (double)v[1] * W[4],
+                        (double)v[0] * W[2] + (double)v[2] * W[8] + (double)v[1] * W[5]);
+        const float* I = inv.m;
+        Vec3 u = Ob_Set((double)I[6] * w.z + (double)I[3] * w.y + (double)I[0] * w.x,
+                        (double)I[7] * w.z + (double)I[4] * w.y + (double)I[1] * w.x,
+                        (double)I[8] * w.z + (double)I[5] * w.y + (double)I[2] * w.x);
+        double hh = F(float, ai, 13100);
+        Vec3 sv = Ob_Set(hh * g_axisY.x, hh * g_axisY.y, hh * g_axisY.z), tmp;
+        CallThis(Ob_SubAssign, &u, &tmp, &sv);
+        if (!(u.y < g_ob64c250))
+            continue;
+        double r2 = (double)u.y * u.y * g_ob64c970 + g_ob64d2f8;
+        Matrix om2;
+        Vec3 hp;
+        Vec3_MulMatrix(&hp, (const Vec3*)(q + 52), CallThis<const Matrix*>(Sh_Matrix1, o, &om2));
+        Vec3 dv = Ob_Set((double)F(float, q, 76) - hp.x, (double)F(float, q, 80) - hp.y, (double)F(float, q, 84) - hp.z);
+        Ob_Hit(&flags, k, Vec3_Length(&dv), r2);
+    }
+    Vec3 c, s;
+    const float* a0 = (const float*)(car + 3848);
+    const float* b0 = (const float*)(car + 3860);
+    Vec3_Add(&s, (const Vec3*)a0, (const Vec3*)b0);
+    c = Ob_Set((double)s.x * g_bm64c258, (double)s.y * g_bm64c258, (double)s.z * g_bm64c258);
+    CallThis(Ob_TransformPoint, &c, &m);
+    ObSphere sp = {{c.x, c.y, c.z, r}};
+    int cnt;
+    CallC(Ob_Enum1, obj, sp, &cnt);
+    for (int i = 0; i < cnt; i++)
+    {
+        float* pp;
+        float d1[4], d2[4], d3[4], d4[4];
+        BYTE* where;
+        if (CallC<int>(Ob_Enum2, i, &pp, d1, d2, d3, d4, &where) < 1)
+            continue;
+        Vec3 pt = *(Vec3*)pp;
+        if (where)
+        {
+            Matrix wm;
+            Vec3 t;
+            CallThis(Ob_IdentityThis, &wm);
+            CallThis(Ob_GetWorld, where, &wm);
+            pt = *Vec3_MulMatrix(&t, &pt, &wm);
+        }
+        CallThis(Ob_TransformPoint, &pt, &inv);
+        if (x87_fabs(pt.x) > g_ob64b660 || pt.y < g_bm64c264 || pt.y > reach)
+            continue;
+        if (pt.y < g_ob64c40c)
+            flags |= 8;
+        if (!(pt.y < reach))
+            continue;
+        flags |= 4;
+        flags |= pt.x > g_bm64c264 ? 2 : 1;
+    }
+    if ((flags & 16) && !(flags & 3))
+        flags = (flags & ~16) | 2;
+    return flags;
+}
+
+} // extern "C"
+
+// === a particle emitter's step (FUN_4bf7a0)
+
+ASM_VAR(float, g_pe64c254, $L_64c254)
+ASM_VAR(float, g_pe64c48c, $L_64c48c)
+
+static Vec3 Pe_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// emitter point a (3 floats) turned by the view's roll (s +136 +2928)
+static Vec3 Pe_Turn(BYTE* s, const float* a, bool second)
+{
+    Matrix rz;
+    const float* R = Matrix_RotationZ(&rz, (float)F(double, F(BYTE*, s, 136), 2928))->m;
+    if (!second)
+        return Pe_Set((double)R[3] * a[1] + (double)R[6] * a[2] + (double)a[0] * R[0] + R[9],
+                      (double)R[4] * a[1] + (double)R[1] * a[0] + (double)R[7] * a[2] + R[10],
+                      (double)R[5] * a[1] + (double)R[2] * a[0] + (double)R[8] * a[2] + R[11]);
+    return Pe_Set((double)R[3] * a[1] + (double)R[6] * a[2] + (double)R[0] * a[0] + R[9],
+                  (double)R[1] * a[0] + (double)R[4] * a[1] + (double)R[7] * a[2] + R[10],
+                  (double)R[2] * a[0] + (double)R[5] * a[1] + (double)R[8] * a[2] + R[11]);
+}
+
+extern "C" {
+
+// [FUN_4bf7a0] steps emitter s over dt: moves its particles (+128, pooled at +124: next, position, velocity,
+// life) and drops those under the ground or dead, then emits new ones every +20 seconds along its move from
+// +100 to +112 (at most +44 alive)
+void __fastcall Fx_EmitterStep(BYTE* s, void*, float dt)
+{
+    F(int, s, 40) = 0;
+    Matrix gm;
+    CallThis(Sh_Matrix1, F(BYTE*, g_game, 616) + 16, &gm);
+    float ground = gm.m[11];
+    BYTE* prev = 0;
+    for (BYTE* p = F(BYTE*, s, 128); p;)
+    {
+        double vx = (double)dt * F(float, p, 16);
+        float vy = (float)((double)dt * F(float, p, 20)), vz = (float)((double)dt * F(float, p, 24));
+        F(float, p, 4) = (float)(vx + F(float, p, 4));
+        F(float, p, 8) = (float)((double)vy + F(float, p, 8));
+        F(float, p, 12) = (float)((double)vz + F(float, p, 12));
+        F(float, p, 28) = (float)(F(float, p, 28) - (double)dt * F(float, s, 16));
+        if ((double)ground - F(float, s, 56) < F(float, p, 12) && F(float, p, 28) > g_bm64c264)
+        {
+            F(float, p, 24) = (float)(F(float, p, 24) - (double)dt * F(float, s, 28));
+            F(int, s, 40)++;
+            prev = p;
+            p = F(BYTE*, p, 0);
+        }
+        else
+        {
+            BYTE* next = F(BYTE*, p, 0);
+            F(BYTE*, p, 0) = F(BYTE*, s, 124);
+            F(BYTE*, s, 124) = p;
+            if (prev)
+                F(BYTE*, prev, 0) = next;
+            if (p == F(BYTE*, s, 128))
+                F(BYTE*, s, 128) = next;
+            p = next;
+        }
+    }
+    if (!F(int, s, 36))
+    {
+        F(Vec3, s, 100) = F(Vec3, s, 112);
+        return;
+    }
+    Vec3 d = Pe_Set((double)F(float, s, 112) - F(float, s, 100), (double)F(float, s, 116) - F(float, s, 104),
+                    (double)F(float, s, 120) - F(float, s, 108));
+    Vec3 up = {0, 0, 1.0f}, v252, t;
+    Vec3_Scaled(&v252, &g_axisY, F(float, g_7025b8, 532));
+    {
+        Matrix rz;
+        const float* R = Matrix_RotationZ(&rz, (float)F(double, F(BYTE*, s, 136), 2928))->m;
+        const float* Y = &g_axisY.x;
+        const float* Z = &g_axisZ.x;
+        double a = (double)Y[2] * R[6] + (double)Y[1] * R[3] + (double)Y[0] * R[0] + R[9];
+        float wy = (float)((double)Y[2] * R[7] + (double)Y[1] * R[4] + (double)Y[0] * R[1] + R[10]);
+        float wz = (float)((double)Y[2] * R[8] + (double)Y[1] * R[5] + (double)Y[0] * R[2] + R[11]);
+        Vec3 c = Pe_Set((double)Z[2] * wy - (double)Z[1] * wz, (double)Z[0] * wz - Z[2] * a, Z[1] * a - (double)Z[0] * wy);
+        Vec3 w = Pe_Set(a, wy, wz), u1, u2;
+        Vec3_DivBy(&u1, &w, (float)x87_sqrt(Vec3_LengthSq(&w)));
+        Vec3_DivBy(&u2, &c, (float)x87_sqrt(Vec3_LengthSq(&c)));
+    }
+    Vec3 e1 = Pe_Turn(s, (const float*)(s + 68), false);
+    Vec3 e2 = Pe_Turn(s, (const float*)(s + 80), true);
+    float rem = dt;
+    if (!(dt > g_bm64c264))
+        return;
+    for (;;)
+    {
+        if (!(rem > F(float, s, 20)))
+        {
+            F(float, s, 20) = (float)(F(float, s, 20) - (double)rem);
+            F(Vec3, s, 100) = F(Vec3, s, 112);
+            return;
+        }
+        double step = F(float, s, 20);
+        Vec3 dd = Pe_Set(d.x * step, d.y * step, d.z * step);
+        Vec3 dv = Pe_Set(dd.x / (double)dt, dd.y / (double)dt, dd.z / (double)dt);
+        F(float, s, 100) = (float)((double)dv.x + F(float, s, 100));
+        F(float, s, 104) = (float)((double)dv.y + F(float, s, 104));
+        F(float, s, 108) = (float)((double)dv.z + F(float, s, 108));
+        rem = (float)((double)rem - F(float, s, 20));
+        F(int, s, 20) = F(int, s, 12);
+        BYTE* p = F(BYTE*, s, 124);
+        if (p && F(int, s, 44) > F(int, s, 40))
+        {
+            double k = F(float, s, 52);
+            Vec3 lift = Pe_Set(up.x * k, up.y * k, up.z * k);
+            F(BYTE*, s, 124) = F(BYTE*, p, 0);
+            Vec3* pos = (Vec3*)(p + 4);
+            *pos = Pe_Set((double)lift.x + F(float, s, 100), (double)lift.y + F(float, s, 104), (double)lift.z + F(float, s, 108));
+            double sp = F(float, s, 92);
+            float r1 = (float)(rand() * ((double)g_ob64c250 - sp) * g_pe64c254 + sp);
+            double r2 = rand() * ((double)g_ob64c250 - sp) * g_pe64c254 + sp;
+            Vec3 a2 = Pe_Set(e2.x * r2, e2.y * r2, e2.z * r2);
+            Vec3 a1 = Pe_Set((double)e1.x * r1, (double)e1.y * r1, (double)e1.z * r1), s1, s2;
+            *pos = *Vec3_Sum(&s2, Vec3_Sum(&s1, pos, &a1), &a2);
+            F(float, p, 28) = 1.0f;
+            double k2 = F(float, s, 32);
+            Vec3 drift = Pe_Set(v252.x * k2, v252.y * k2, v252.z * k2), sc, vs;
+            float rs = (float)((rand() * (double)g_pe64c48c + g_ob64c250) * F(float, s, 24));
+            F(Vec3, p, 16) = *Vec3_Sum(&vs, Vec3_ScaleBy(&sc, rs, &up), &drift);
+            F(BYTE*, p, 0) = F(BYTE*, s, 128);
+            F(BYTE*, s, 128) = p;
+            F(int, s, 40)++;
+        }
+        if (!(rem > g_bm64c264))
+            return;
+    }
+}
+
+} // extern "C"
+
+// === an explosion's step (a method at $L_4dca30)
+
+extern "C" void Ex_PostEvent(); KING_ALIAS("_Ex_PostEvent", "@Queue_PostEvent@12")
+extern "C" void Ex_Spawn(); KING_ALIAS("_Ex_Spawn", "_Fx_SpawnByKind")
+ASM_VAR(float, g_ex64d4c0, $L_64d4c0)
+ASM_VAR(float, g_ex64d550, $L_64d550)
+ASM_VAR(float, g_ex64c350, $L_64c350)
+ASM_VAR(float, g_ex64d3fc, $L_64d3fc)
+ASM_VAR(float, g_ex64c2fc, $L_64c2fc)
+ASM_VAR(float, g_ex64d4bc, $L_64d4bc)
+
+static Vec3 Ex_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+static double Ex_Rand() { return rand() * (double)g_pe64c254; }
+
+extern "C" {
+
+// [$L_4dca30] explosion s's step: it drifts (+44 by +56), and while young (+36 below 6966fc) throws 5 pieces
+// of debris with sparks from its frame (+80), then (below 6966f8) 15 puffs of smoke from +68; it ends at +32
+void __fastcall Fx_ExplosionStep(BYTE* s, void*)
+{
+    BYTE* w = F(BYTE*, s, 40);
+    F(float, s, 36) = (float)(F(double, w, 2960) + F(float, s, 36));
+    double dt = F(double, w, 2960);
+    Vec3 dv = Ex_Set(dt * F(float, s, 56), dt * F(float, s, 60), dt * F(float, s, 64));
+    F(Vec3, s, 44) = Ex_Set((double)dv.x + F(float, s, 44), (double)dv.y + F(float, s, 48), (double)dv.z + F(float, s, 52));
+    F(float, s, 132) = (float)(F(double, F(BYTE*, s, 40), 2960) * F(float, s, 128) + F(float, s, 132));
+    const float* M = (const float*)(s + 80);
+    if (F(float, s, 36) > g_fx6966fc)
+    {
+        float big = F(float, s, 136) > F(float, s, 140) ? F(float, s, 136) : F(float, s, 140);
+        float half = (float)((double)big * g_bm64c258);
+        big = F(float, s, 136) > F(float, s, 140) ? F(float, s, 136) : F(float, s, 140);
+        float spread = (float)((double)big * g_ex64d4c0);
+        for (int n = 5; n; n--)
+        {
+            float a = (float)Ex_Rand();
+            double b = Ex_Rand() - a;
+            Vec3 v60 = Ex_Set(b * g_axisY.x, b * g_axisY.y, b * g_axisY.z);
+            Vec3 up = Ex_Set((double)v60.x * spread, (double)v60.y * spread, (double)v60.z * spread);
+            float a2 = (float)Ex_Rand();
+            double b2 = Ex_Rand() - a2;
+            float sx = (float)(b2 * g_axisX.x), sy = (float)(b2 * g_axisX.y);
+            Vec3 side = Ex_Set((double)sx * spread, (double)sy * spread, b2 * g_axisX.z * spread);
+            Vec3 v120 = Ex_Set((double)side.x + F(float, s, 56), (double)side.y + F(float, s, 60), (double)side.z + F(float, s, 64));
+            Vec3 vel = Ex_Set((double)v120.x + up.x, (double)v120.y + up.y, (double)v120.z + up.z);
+            Matrix rz;
+            const float* R = Matrix_RotationZ(&rz, (float)(rand() * (double)g_ex64d550))->m;
+            const float* X = &g_axisX.x;
+            Vec3 v72 = Ex_Set((double)X[1] * R[3] + (double)X[2] * R[6] + (double)X[0] * R[0] + R[9],
+                              (double)X[1] * R[4] + (double)X[2] * R[7] + (double)X[0] * R[1] + R[10],
+                              (double)X[1] * R[5] + (double)X[2] * R[8] + (double)X[0] * R[2] + R[11]);
+            Vec3 off = Ex_Set((double)v72.x * half, (double)v72.y * half, (double)v72.z * half);
+            Vec3 pos = Ex_Set((double)off.x + F(float, s, 44), (double)off.y + F(float, s, 48), (double)off.z + F(float, s, 52));
+            Vec3 a264, b276;
+            Fx_RaiseSegment(&pos, &vel, &a264, &b276);
+            a264 = Ex_Set((double)a264.z * M[6] + (double)a264.y * M[3] + (double)a264.x * M[0] + M[9],
+                          (double)a264.z * M[7] + (double)a264.y * M[4] + (double)a264.x * M[1] + M[10],
+                          (double)a264.z * M[8] + (double)a264.y * M[5] + (double)a264.x * M[2] + M[11]);
+            b276 = Ex_Set((double)b276.x * M[0] + (double)b276.z * M[6] + (double)b276.y * M[3],
+                          (double)b276.z * M[7] + (double)b276.y * M[4] + (double)b276.x * M[1],
+                          (double)b276.z * M[8] + (double)b276.y * M[5] + (double)b276.x * M[2]);
+            int flag = Ex_Rand() > g_bm64c258 ? 1 : 0;
+            Vec3 sp = Ex_Set((double)b276.x * g_ex64c350, (double)b276.y * g_ex64c350, (double)b276.z * g_ex64c350);
+            float k1 = (float)((double)F(float, s, 140) * g_ex64c2fc), k2 = (float)((double)F(float, s, 140) * g_ex64d3fc);
+            CallC(Ex_Spawn, &a264, &sp, k1, k2, 3.0f, 0.75f, flag);
+            double r = Ex_Rand();
+            if (F(float, s, 36) / ((double)g_fx696368 + g_fx6966fc) < r)
+            {
+                float k3 = (float)((double)F(float, s, 140) * g_ex64c2fc), k4 = (float)((double)F(float, s, 140) * g_ex64d4bc);
+                CallC(Ex_Spawn, &a264, &b276, k3, k4, 3.0f, 0.5f, 2);
+            }
+        }
+    }
+    if (F(float, s, 36) > g_fx6966f8)
+    {
+        for (int n = 15; n; n--)
+        {
+            Vec3 a = F(Vec3, s, 68), t1, t2, t3, t4, b, r1, r2;
+            Matrix rz;
+            Matrix_RotationZ(&rz, (float)(rand() * (double)g_ex64d550));
+            Vec3_Scaled(&t2, Vec3_MulMatrix(&t1, &g_axisX, &rz), 0.5f);
+            b = *Vec3_Add(&t4, Vec3_Scaled(&t3, &g_axisZ, 1.3333334f), &t2);
+            a = *Vec3_MulMatrix(&r1, &a, (const Matrix*)M);
+            b = *Vec3_RotateBy(&r2, &b, (const Matrix*)M);
+            int flag = Ex_Rand() > g_bm64c258 ? 1 : 0;
+            float k = (float)((double)F(float, s, 140) * g_ex64c2fc);
+            CallC(Ex_Spawn, &a, &b, 1.0f, k, 0, 3.0f, flag);
+        }
+    }
+    if (F(float, s, 36) > F(float, s, 32))
+        CallVirt(s, 28, 1);
+    else
+        CallThis(Ex_PostEvent, s, 1);
+}
+
+} // extern "C"
+
+// === a reflection quad facing the view (a callback at $L_4cbfd0)
+
+extern "C" void Rq_Find(); KING_ALIAS("_Rq_Find", "_Table124_Find")
+extern "C" void Rq_Times(); KING_ALIAS("_Rq_Times", "_Vec3_Times")
+extern "C" void Rq_Negate(); KING_ALIAS("_Rq_Negate", "_Vec3_Negate")
+extern "C" void Rq_Set2Vec(); KING_ALIAS("_Rq_Set2Vec", "@Fx_Set2Vec@24")
+extern "C" void Rq_AddReflection(); KING_ALIAS("_Rq_AddReflection", "@Fx_AddReflection@16")
+ASM_VAR(BYTE*, g_rq6961fc, $L_6961fc)               // the reflections
+ASM_VAR(char, s_rq672900, $L_672900)
+ASM_VAR(double, g_rq64b748, $L_64b748)
+ASM_VAR(BYTE*, g_rq6cec6c, $L_6cec6c)
+
+static Vec3 Rq_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+static Vec3 Rq_Mul(const Vec3& v, double k) { return Rq_Set(v.x * k, v.y * k, v.z * k); }
+
+// corner = pos + ((right * a + fwd * b) + up * c), by Vec3_Times / Vec3_Sum
+static const Vec3* Rq_Corner(Vec3* out, const Vec3* pos, const Vec3* right, const Vec3* fwd, const Vec3* up, float a, float b, float c)
+{
+    Vec3 t1, t2, t3, s1, s2;
+    CallC(Rq_Times, &t1, up, c);
+    CallC(Rq_Times, &t2, fwd, b);
+    CallC(Rq_Times, &t3, right, a);
+    Vec3_Sum(&s1, &t3, &t2);
+    Vec3_Sum(&s2, &s1, &t1);
+    return Vec3_Sum(out, &s2, pos);
+}
+
+extern "C" {
+
+// [$L_4cbfd0] a reflection of object obj (kind 22 at +60, its description +72: corner offsets, texture
+// coordinates and the texture +84, found by name +80 when missing) as a quad facing view v; 1 when added
+int __cdecl Fx_ReflectionQuad(int, BYTE* v, BYTE* obj)
+{
+    if (!obj || !v || !g_rq6961fc || F(int, g_rq6cec6c, 1300) == 2)
+        return 0;
+    BYTE* e = obj + 60;
+    if (F(int, e, 8) != 22)
+        return 0;
+    BYTE* d = F(BYTE*, e, 12);
+    int tex = F(int, d, 84);
+    Vec3 pos = F(Vec3, obj, 20);
+    if (!tex)
+    {
+        char name[48];
+        BYTE tmp[48];
+        sprintf(name, &s_rq672900, F(char*, d, 80));
+        tex = CallC<int>(Rq_Find, name, F(int, obj, 36), tmp);
+        if (!tex)
+            return 0;
+        F(int, d, 84) = tex;
+    }
+    Vec3 up = g_axisZ;
+    Matrix m1, vm;
+    Matrix_Inverse(&vm, Matrix_Multiply(&m1, (const Matrix*)(v + 5216 + F(int, v, 8236) * 48), (const Matrix*)(v + 4208)));
+    Vec3 f, fwd, c, side;
+    Vec3_RotateBy(&f, &g_axisY, &vm);
+    Vec3_Normalized(&fwd, &f);
+    c = Rq_Set((double)up.z * fwd.y - (double)up.y * fwd.z, (double)up.x * fwd.z - (double)up.z * fwd.x,
+               (double)up.y * fwd.x - (double)up.x * fwd.y);
+    if (Vec3_Length(&c) < g_rq64b748)
+        side = g_axisX;
+    else
+    {
+        Vec3 t;
+        side = *Vec3_Normalized(&t, &c);
+    }
+    Vec3 right = side;
+    BYTE verts[128];
+    Vec3 neg = Rq_Set(-(double)fwd.x, -(double)fwd.y, -(double)fwd.z);
+    for (int k = 0; k < 2; k++)
+    {
+        const float* o = (const float*)(d + k * 20);
+        Vec3 a = Rq_Mul(up, o[2]), b = Rq_Mul(fwd, o[1]), cc = Rq_Mul(right, o[0]);
+        Vec3 s1 = Rq_Set((double)b.x + cc.x, (double)b.y + cc.y, (double)b.z + cc.z);
+        Vec3 s2 = Rq_Set((double)a.x + s1.x, (double)a.y + s1.y, (double)a.z + s1.z);
+        Vec3 p = k ? Rq_Set((double)s2.x + pos.x, (double)s2.y + pos.y, (double)s2.z + pos.z)
+                   : Rq_Set((double)s2.x + pos.x, (double)pos.y + s2.y, (double)pos.z + s2.z);
+        float* r = (float*)(verts + k * 32);
+        *(Vec3*)r = p;
+        *(Vec3*)(r + 3) = neg;
+        r[6] = F(float, d, 12 + k * 20);
+        r[7] = F(float, d, 16 + k * 20);
+        neg = Rq_Set(-(double)fwd.x, -(double)fwd.y, -(double)fwd.z);
+    }
+    for (int k = 0; k < 2; k++)
+    {
+        const float* o = (const float*)(d + 40 + k * 20);
+        Vec3 n, corner;
+        if (k)
+            CallC(Rq_Negate, &n, &fwd);
+        else
+            n = neg;
+        Rq_Corner(&corner, &pos, &right, &fwd, &up, o[0], o[1], o[2]);
+        BYTE rec[32];
+        memcpy(verts + 64 + k * 32, CallThis<BYTE*>(Rq_Set2Vec, rec, &corner, &n, F(int, o, 12), F(int, o, 16)), 32);
+    }
+    CallThis(Rq_AddReflection, g_rq6961fc, verts, tex);
+    return 1;
+}
+
+} // extern "C"
+
+// === a burst's step (a method at $L_4da7e0)
+
+ASM_VAR(float, g_bs696700, $L_696700)
+ASM_VAR(float, g_bs69672c, $L_69672c)
+ASM_VAR(float, g_bs69637c, $L_69637c)
+ASM_VAR(float, g_bs64d3f4, $L_64d3f4)
+ASM_VAR(float, g_bs64d498, $L_64d498)
+
+extern "C" {
+
+// [$L_4da7e0] burst s's step: it drifts (+44 by +56), and while young (+36 below 696700) throws 15 burning
+// pieces from below its centre, then (below 69637c) 15 puffs of smoke from +68; it ends at +32
+void __fastcall Fx_BurstStep(BYTE* s, void*)
+{
+    BYTE* w = F(BYTE*, s, 40);
+    const float* V = (const float*)(s + 56);
+    F(float, s, 36) = (float)(F(double, w, 2960) + F(float, s, 36));
+    double dt = F(double, w, 2960);
+    Vec3 dv = Ex_Set(dt * V[0], dt * V[1], dt * V[2]);
+    F(Vec3, s, 44) = Ex_Set((double)dv.x + F(float, s, 44), (double)dv.y + F(float, s, 48), (double)dv.z + F(float, s, 52));
+    F(float, s, 84) = (float)(F(double, F(BYTE*, s, 40), 2960) * F(float, s, 80) + F(float, s, 84));
+    if (F(float, s, 36) > g_bs696700)
+    {
+        float big = F(float, s, 88) > F(float, s, 92) ? F(float, s, 88) : F(float, s, 92);
+        float half = (float)((double)big * g_bm64c258);
+        big = F(float, s, 88) > F(float, s, 92) ? F(float, s, 88) : F(float, s, 92);
+        float spread = (float)((double)big * g_ex64d4c0);
+        for (int n = 15; n; n--)
+        {
+            float a = (float)Ex_Rand();
+            double b = Ex_Rand() - a;
+            Vec3 v132 = Ex_Set(b * g_axisY.x, b * g_axisY.y, b * g_axisY.z);
+            Vec3 up = Ex_Set((double)v132.x * spread, (double)v132.y * spread, (double)v132.z * spread);
+            float a2 = (float)Ex_Rand();
+            double b2 = Ex_Rand() - a2;
+            Vec3 v144 = Ex_Set(b2 * g_axisX.x, b2 * g_axisX.y, b2 * g_axisX.z);
+            Vec3 side = Ex_Set((double)v144.x * spread, (double)v144.y * spread, (double)v144.z * spread);
+            Vec3 v96 = Ex_Set((double)side.x + V[0], (double)side.y + V[1], (double)side.z + V[2]);
+            Vec3 vel = Ex_Set((double)v96.x + up.x, (double)v96.y + up.y, (double)v96.z + up.z);
+            Matrix rz;
+            const float* R = Matrix_RotationZ(&rz, (float)(rand() * (double)g_bs64d3f4 * g_bs64d498))->m;
+            const float* X = &g_axisX.x;
+            Vec3 v84 = Ex_Set((double)X[2] * R[6] + (double)X[1] * R[3] + (double)X[0] * R[0] + R[9],
+                              (double)X[2] * R[7] + (double)X[1] * R[4] + (double)X[0] * R[1] + R[10],
+                              (double)X[2] * R[8] + (double)X[1] * R[5] + (double)X[0] * R[2] + R[11]);
+            Vec3 off = Ex_Set((double)v84.x * half, (double)v84.y * half, (double)v84.z * half);
+            double h = F(float, s, 92);
+            Vec3 low = Ex_Set(h * g_axisZ.x, h * g_axisZ.y, h * g_axisZ.z);
+            Vec3 v156 = Ex_Set((double)F(float, s, 44) - low.x, (double)F(float, s, 48) - low.y, (double)F(float, s, 52) - low.z);
+            Vec3 pos = Ex_Set((double)v156.x + off.x, (double)v156.y + off.y, (double)v156.z + off.z);
+            int flag = Ex_Rand() > g_bm64c258 ? 1 : 0;
+            Vec3 sp = Ex_Set((double)vel.x * g_ex64c350, (double)vel.y * g_ex64c350, (double)vel.z * g_ex64c350);
+            float k1 = (float)((double)F(float, s, 92) * g_ex64c2fc), k2 = (float)((double)F(float, s, 92) * g_ex64d3fc);
+            CallC(Ex_Spawn, &pos, &sp, k1, k2, 3.0f, 0.75f, flag);
+            double r = Ex_Rand();
+            if (F(float, s, 36) / ((double)g_bs69672c + g_bs696700) < r)
+            {
+                float k3 = (float)((double)F(float, s, 92) * g_ex64c2fc), k4 = (float)((double)F(float, s, 92) * g_ex64d4bc);
+                CallC(Ex_Spawn, &pos, &vel, k3, k4, 3.0f, 0.5f, 2);
+            }
+        }
+    }
+    if (F(float, s, 36) > g_bs69637c)
+    {
+        for (int n = 15; n; n--)
+        {
+            Vec3 a = F(Vec3, s, 68), t1, u, b;
+            Matrix rz;
+            Matrix_RotationZ(&rz, (float)(rand() * (double)g_bs64d3f4 * g_bs64d498));
+            const Vec3* t = Vec3_MulMatrix(&t1, &g_axisX, &rz);
+            u = Ex_Set((double)t->x * g_bm64c258, (double)t->y * g_bm64c258, (double)t->z * g_bm64c258);
+            Vec3_Add(&b, (const Vec3*)V, &u);
+            int flag = Ex_Rand() > g_bm64c258 ? 1 : 0;
+            float k = (float)((double)F(float, s, 92) * g_ex64c2fc);
+            CallC(Ex_Spawn, &a, &b, 1.0f, k, 0, 3.0f, flag);
+        }
+    }
+    if (F(float, s, 36) > F(float, s, 32))
+        CallVirt(s, 28, 1);
+    else
+        CallThis(Ex_PostEvent, s, 1);
 }
 
 } // extern "C"
