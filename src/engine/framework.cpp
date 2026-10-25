@@ -5886,3 +5886,166 @@ int __fastcall Dbg_OnInput(BYTE* s, void*, const short* ev)
 }
 
 } // extern "C"
+
+// === the camera kept out of the scene's walls (a method at $L_5ded40)
+
+#include "vecmath.h"
+
+extern "C" void Cc_NodeInit(); KING_ALIAS("_Cc_NodeInit", "@Node_Init@8")
+extern "C" void Cc_World(); KING_ALIAS("_Cc_World", "@Node_GetWorld@12")
+extern "C" void Cc_Apply(); KING_ALIAS("_Cc_Apply", "@Node_ApplyMatrix@16")
+extern "C" void Cc_FromPose(); KING_ALIAS("_Cc_FromPose", "_Matrix_FromPose")
+extern "C" void Cc_Point(); KING_ALIAS("_Cc_Point", "@Vec3_TransformPoint@12")
+extern "C" void Cc_Dir(); KING_ALIAS("_Cc_Dir", "@Vec3_TransformDir@12")
+extern "C" void Cc_Transform2(); KING_ALIAS("_Cc_Transform2", "@Matrix_Transform2@12")
+ASM_VAR(Matrix, g_cc7025f0, $L_7025f0)
+ASM_VAR(double, g_cc64d338, $L_64d338)
+ASM_VAR(float, g_cc64c304, $L_64c304)
+
+extern "C" {
+
+// [$L_5ded40] camera c (+616 its node, +488 the scene and its room +76): placed from its pose (+2904.., or from the
+// node with flag 0x40000000), then moved up to 10 times out of what the room's vtbl+52 finds between the old place
+// (+568) and the new (+580): pushed along the wall's normal by +632 * 64c304, or handed to vtbl+156 (the pose
+// restored with +2984 == 1); a room change (bit 2) taken; then the hit given to its object and vtbl+152, and the
+// pose's position read back
+void __fastcall Camera_Collide(BYTE* c, void*)
+{
+    __declspec(align(8)) BYTE A[208], B[208], C[208];
+    CallThis(Cc_NodeInit, A);
+    CallThis(Cc_NodeInit, B);
+    CallThis(Cc_NodeInit, C);
+    Matrix M1 = g_cc7025f0, M2 = g_cc7025f0, M3 = g_cc7025f0;
+    int ticks = 1000;
+    if (!F(BYTE*, c, 488))
+        return;
+    float yaw = (float)F(double, c, 2928), pitch = (float)F(double, c, 2936), roll = (float)F(double, c, 2944);
+    CallVirt(c, 176);
+    CallThis(Cc_World, F(BYTE*, c, 616), &M1);
+    F(Vec3, c, 568) = *(Vec3*)&M1.m[9];
+    if (F(DWORD, c, 3020) & 0x40000000)
+        M3 = M1;
+    else
+    {
+        Matrix t;
+        M3 = *CallC<const Matrix*>(Cc_FromPose, &t, F(double, c, 2904), F(double, c, 2912), F(double, c, 2920),
+                                   F(double, c, 2952) + F(double, c, 2928), F(double, c, 2936), F(double, c, 2944));
+    }
+    CallThis(Cc_Apply, F(BYTE*, c, 616), &M3, 0);
+    F(int, B, 100) = 0;
+    F(int, B, 116) = 0;
+    F(int, B, 120) = 0;
+    DWORD r = 0;
+    int it = 0;
+    if (F(BYTE*, F(BYTE*, c, 488), 76))
+    {
+        for (; it < 10; it++)
+        {
+            CallThis(Cc_World, F(BYTE*, c, 616), &M2);
+            Vec3 p = *(Vec3*)&M2.m[9];
+            F(Vec3, c, 580) = p;
+            memcpy(A + 4, &g_cc7025f0, 48);
+            F(float, A, 0) = (float)F(double, c, 632);
+            F(Vec3, A, 88) = p;
+            F(Vec3, A, 76) = F(Vec3, c, 568);
+            F(int, A, 116) = 0;
+            F(int, A, 120) = 0;
+            F(int, A, 100) = 0;
+            BYTE* room = F(BYTE*, F(BYTE*, c, 488), 76);
+            r = CallVirt<DWORD>(room, 52, F(int, c, 3028) ? 6 : 0, A);
+            Matrix inv;
+            Matrix_Inverse(&inv, (const Matrix*)(A + 4));
+            CallThis(Cc_Point, A + 52, &inv);
+            CallThis(Cc_Dir, A + 64, &inv);
+            if (!F(int, c, 3028) || !(r & 1))
+                break;
+            bool slide = false;
+            if (it)
+            {
+                Vec3 d, n;
+                const Vec3& a = F(Vec3, c, 568);
+                d.x = (float)((double)F(float, c, 580) - a.x);
+                d.y = (float)((double)F(float, c, 584) - a.y);
+                d.z = (float)((double)F(float, c, 588) - a.z);
+                const Vec3* q = Vec3_Normalized(&n, &d);
+                const Vec3& N = F(Vec3, A, 64);
+                double dot = (double)q->z * N.z + (double)q->y * N.y + (double)N.x * q->x;
+                slide = !(x87_fabs(dot) > g_cc64d338);
+            }
+            if (slide)
+            {
+                const Vec3& N = F(Vec3, A, 64);
+                double nz = N.z * (double)g_cc64c304;
+                float ny = (float)(N.y * (double)g_cc64c304);
+                *(Vec3*)&M2.m[9] = *(Vec3*)&M1.m[9];
+                float nx = (float)(N.x * (double)g_cc64c304);
+                float s = (float)F(double, c, 632);
+                Vec3 v;
+                v.z = (float)(nz * s);
+                v.y = (float)(ny * (double)s);
+                v.x = (float)(nx * (double)s);
+                Matrix T;
+                CallThis(Cc_Transform2, &M2, Matrix_Translation(&T, v));
+            }
+            else
+            {
+                memcpy(B, A, 208);
+                CallVirt(c, 156, &M2, &M1, A);
+                if (F(int, c, 2984) == 1)
+                {
+                    F(double, c, 2928) = yaw;
+                    F(double, c, 2944) = roll;
+                    F(double, c, 2936) = pitch;
+                }
+            }
+            CallThis(Cc_Apply, F(BYTE*, c, 616), &M2, 0);
+        }
+        if (it == 10)
+        {
+            *(Vec3*)&M2.m[9] = *(Vec3*)&M1.m[9];
+            CallThis(Cc_Apply, F(BYTE*, c, 616), &M2, 0);
+            r = 0;
+        }
+    }
+    if (r & 2)
+        F(int, F(BYTE*, c, 488), 76) = F(int, A, 104);
+    if (BYTE* o = F(BYTE*, c, 532))
+    {
+        CallVirt(o, 36);
+        CallVirt(F(BYTE*, F(BYTE*, c, 488), 76), 28, F(BYTE*, c, 532));
+    }
+    if (F(BYTE*, B, 116))
+    {
+        memcpy(C, B, 208);
+        F(int*, C, 100) = &ticks;
+        CallVirt(F(BYTE*, C, 116), 32, C);
+    }
+    CallVirt(c, 152, B);
+    CallThis(Cc_World, F(BYTE*, c, 616), &M2);
+    F(double, c, 2904) = M2.m[9];
+    F(double, c, 2912) = M2.m[10];
+    F(double, c, 2920) = M2.m[11];
+    F(Vec3, c, 580) = *(Vec3*)&M2.m[9];
+}
+
+} // extern "C"
+
+// === an empty record (a method at $L_5e6980)
+
+extern "C" {
+
+// [$L_5e6980] record s cleared: +4.. +16 and +32.. +44 (+20.. +28 kept)
+BYTE* __fastcall Rec5e6980_Clear(BYTE* s, void*)
+{
+    F(int, s, 8) = 0;
+    F(int, s, 12) = 0;
+    F(int, s, 16) = 0;
+    F(int, s, 32) = 0;
+    F(int, s, 36) = 0;
+    F(int, s, 40) = 0;
+    F(int, s, 44) = 0;
+    F(int, s, 4) = 0;
+    return s;
+}
+
+} // extern "C"

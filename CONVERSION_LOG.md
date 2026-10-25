@@ -197,3 +197,31 @@ addresses directly ($L_ procs converted earlier). Int_Copy (FUN_41d300) argument
 Skipped: $L_5c8ae0 (argument pushes shared across its seven cases), $L_5fae60 (a vtable thunk $L_5fb500 inside
 it), FUN_558a30 (trailer only, fastcall leftovers), FUN_4e8ae1, FUN_4fca10, FUN_57eae0, FUN_4f8260, FUN_533590
 (run on into the next proc).
+
+Batch 26 plan: more than 44,180 bytes, 83.87% -> about 85.9%, from the 76 procs with EH frames left (82,517
+bytes): exceptions are always fatal here, so the C++ keeps only the normal path (constructor / destructor calls)
+and drops the frame's state writes; FUN_4bba00 (1888), FUN_4cb8d0 (1520), FUN_4cfe70 (2096), FUN_5b3a40 (2176),
+FUN_567440 (1904), FUN_56ffd0 (6832), FUN_529890 (4944), $L_597b00 (4304) and onwards.
+Batch 26 done: 20 procs, 44,240 bytes (2.00%), 83.87% -> 85.87%, all with EH frames (the C keeps the normal path:
+constructors, the destructor calls at each exit). FUN_56ffd0 Game_PlayerMessage (6832: laps, refuelling, repairs,
+presents, orders, speed cameras), FUN_529890 Map_Draw (4944), $L_597b00 Game_FrameKeys (4304: hotkeys, the marine
+task by zone, the network position block, the tide and fog), FUN_5ef830 Scene_ReadNode (3728: the 42 node kinds),
+FUN_607410 Grid_ForceSplit (2896), FUN_5ee580 Overlays_Load (2800: CLUSTER / OVERLAY / ROOM blocks), FUN_5b3a40
+Render_TexPolygon (2176), FUN_4cfe70 Car_HitsAndFrame (2096), FUN_567440 Bullet_Fly (1904), FUN_4bba00 Fx_Burst
+(1888), $L_5ded40 Camera_Collide (1680), FUN_4cb8d0 Car_ScrapeSparks (1520), $L_4db8a0 Wreck_Frame (1472),
+FUN_4bb4c0 Fx_DebrisBurst (1344), FUN_608530 Grid_NewCell (1312), $L_432dd0 Ai_UpdateChasedCars (1136, the
+state.dump trace kept), FUN_4d9460 Blow_Construct (1120), $L_5c4f10 Media_Frame (1024), $L_5ef410
+ListHead_Construct and $L_5e6980 Rec5e6980_Clear (32 each; the C statics that took their labels now take the
+functions).
+Draw_Dispatch (FUN_5b3a00) is now __fastcall: the original passes the renderer through in ECX, which the old
+__stdcall version only kept by luck. Gate_602bd0 likewise became __fastcall Blob_Set(s, 0, 0): its callers pass
+the stream in ECX (Media_Frame first called it with CallC and crashed on exit).
+Fx_Burst's speed factor now multiplies z unrounded (fst keeps it on the FPU), as Fx_DebrisBurst's does.
+Grid_ForceSplit: the stack of cells (7242a0) holds 0 for a missing neighbour, so the second pop happens whatever
+the first gave; skipping it passed 0 to Grid_SplitEdge (exit crash, found from the event log's fault offset).
+Load test: exact, but the same exe now drifts in about 1 of 3 runs (also with all batch-26 procs in asm and with
+the batch-25 exe built from HEAD in a worktree), so any exact run counts. Bisecting with `IF 1` misses callers in
+other C files: integ re-aliases their ASM_PROC to the C name.
+Skipped: FUN_4ebd00, FUN_543e00, FUN_5443e0, FUN_4d8350 (end in a fatal call and run on into the next proc),
+FUN_4ac3d0 (jumps into the tail $L_4ac6b5), the $L_ tails without a prologue ($L_550358, $L_4ed6c8, $L_5280e2 ..);
+left for later: FUN_61a8a0 (4096, the grid's construction), FUN_54ff80, FUN_4d0bc0, FUN_52fa70, FUN_4aa460.

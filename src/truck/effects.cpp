@@ -84,7 +84,7 @@ extern "C" void FUN_579380(); KING_ALIAS("_FUN_579380", "_Pool_Prepare")
 extern "C" void FUN_59bb90(); KING_ALIAS("_FUN_59bb90", "@Effect59bb90_Construct@36")
 extern "C" void FUN_59c420(); KING_ALIAS("_FUN_59c420", "@Effect59c420_Construct@32")
 extern "C" void FUN_59d4a0(); KING_ALIAS("_FUN_59d4a0", "@Effect59d4a0_Construct@28")
-ASM_PROC(FUN_4d9460)
+extern "C" void FUN_4d9460(); KING_ALIAS("_FUN_4d9460", "@Blow_Construct@16")
 extern "C" void FUN_5ef780(); KING_ALIAS("_FUN_5ef780", "@Node_Remove@8")
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
@@ -3463,7 +3463,7 @@ extern "C" int __cdecl Fx_Zero()
 // effect constants.
 
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")    // releases an object (flags)
-ASM_PROC(FUN_4cb8d0)
+extern "C" void FUN_4cb8d0(); KING_ALIAS("_FUN_4cb8d0", "_Car_ScrapeSparks")
 extern "C" void FUN_5fcdb0(); KING_ALIAS("_FUN_5fcdb0", "@Sound_ResetSlot@8")
 extern "C" void FUN_4dd9f0(); KING_ALIAS("_FUN_4dd9f0", "@Obj4dd9f0_Destruct@8")
 extern "C" void FUN_4ce6d0(); KING_ALIAS("_FUN_4ce6d0", "_Car_DrawForces")
@@ -4052,7 +4052,7 @@ extern "C" void FUN_4c8030(); KING_ALIAS("_FUN_4c8030", "@RefStack_Empty@8")
 extern "C" void FUN_4c8080(); KING_ALIAS("_FUN_4c8080", "@RefStack_Pop@8")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
 extern "C" void FUN_4cf620(); KING_ALIAS("_FUN_4cf620", "_Ai_CarFrame")
-ASM_PROC(FUN_4cfe70)
+extern "C" void FUN_4cfe70(); KING_ALIAS("_FUN_4cfe70", "_Car_HitsAndFrame")
 extern "C" void FUN_556a70(); KING_ALIAS("_FUN_556a70", "@CarBody_Step@4")
 ASM_PROC(FUN_55d5d0)
 ASM_VAR(void*, g_eff720908, $L_720908)
@@ -4978,7 +4978,7 @@ extern "C" BYTE* __fastcall FxRec_Init(BYTE* s)
 
 extern "C" void FUN_4ba130(); KING_ALIAS("_FUN_4ba130", "_Fx_Skid1")
 extern "C" void FUN_4ba210(); KING_ALIAS("_FUN_4ba210", "_Fx_Skid2")
-ASM_PROC(FUN_4bb4c0)
+extern "C" void FUN_4bb4c0(); KING_ALIAS("_FUN_4bb4c0", "_Fx_DebrisBurst")
 extern "C" void FUN_4ba660(); KING_ALIAS("_FUN_4ba660", "_Fx_SparksByStrength")
 extern "C" void FUN_4bac90(); KING_ALIAS("_FUN_4bac90", "_Effect_New59c420")
 extern "C" void FUN_4baf90(); KING_ALIAS("_FUN_4baf90", "_Effect_NewVapor")
@@ -9494,7 +9494,7 @@ void __fastcall Trail_Add(BYTE* s, void*, Vec3 p, Vec3 d, double w1, double w2, 
 
 // === the rain and spray ahead of the lamps (a method at $L_4c9a10)
 
-ASM_FUNC(Rs_Emit, FUN_4bba00)                           // a particle burst (pos, dir, vel, ..., count, size, ...)
+extern "C" void Rs_Emit(); KING_ALIAS("_Rs_Emit", "_Fx_Burst")                           // a particle burst (pos, dir, vel, ..., count, size, ...)
 extern "C" void Rs_Root(); KING_ALIAS("_Rs_Root", "@Window_RootSurface@8")
 extern "C" void Rs_M1(); KING_ALIAS("_Rs_M1", "@SceneObj_Matrix1@12")
 extern "C" void Rs_Post(); KING_ALIAS("_Rs_Post", "@Queue_PostEvent@12")
@@ -10607,6 +10607,755 @@ double __cdecl Ai_CarTargetSpeed(int id)
     }
     double v40 = (lvl2 + 1) * k * g_ad64b6e0 + lat;
     return Ai_TargetSpeed((BYTE*)player, F(int, cab, 16504), target, 0.0, 1.0, v40, 0, 30.0, pedal);
+}
+
+} // extern "C"
+
+// === a burst of debris and puffs (FUN_4bba00)
+
+extern "C" void Fb_Pool(); KING_ALIAS("_Fb_Pool", "_Pool_Prepare")
+extern "C" void Fb_Debris(); KING_ALIAS("_Fb_Debris", "@Debris2_Construct@32")
+extern "C" void Fb_Puff(); KING_ALIAS("_Fb_Puff", "@Effect59e9a0_Construct@36")
+extern "C" void Fb_Material(); KING_ALIAS("_Fb_Material", "@MarineTask_GetMaterial@8")
+extern "C" void Fb_AaTr(); KING_ALIAS("_Fb_AaTr", "_Fx_VehicleIsAaTr")
+extern "C" void Fb_DbAc(); KING_ALIAS("_Fb_DbAc", "_Fx_VehicleIsDbAc")
+extern "C" void Fb_MulAssign(); KING_ALIAS("_Fb_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Fb_AddAssign(); KING_ALIAS("_Fb_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(Vec3, g_fbUp, $L_702630)
+ASM_VAR(Vec3, g_fbDown, $L_702640)
+ASM_VAR(float, g_fb64c348, $L_64c348)
+ASM_VAR(float, g_fb64c254, $L_64c254)
+ASM_VAR(float, g_fb64c1d0, $L_64c1d0)
+ASM_VAR(float, g_fb64c250, $L_64c250)
+ASM_VAR(float, g_fb64c350, $L_64c350)
+ASM_VAR(float, g_fb69607c, $L_69607c)
+ASM_VAR(float, g_fb696038, $L_696038)
+ASM_VAR(float, g_fb64c258, $L_64c258)
+ASM_VAR(float, g_fb64c330, $L_64c330)
+ASM_VAR(float, g_fb64c34c, $L_64c34c)
+ASM_VAR(BYTE*, g_fb6f33b0, $L_6f33b0)
+ASM_VAR(BYTE*, g_fb6f6aa4, $L_6f6aa4)
+ASM_VAR(BYTE*, g_fb6f6ab0, $L_6f6ab0)
+ASM_VAR(int, g_fb696224, $L_696224)
+ASM_VAR(int, g_fb69621c, $L_69621c)
+ASM_VAR(int, g_fb696218, $L_696218)
+ASM_VAR(int, g_fb696214, $L_696214)
+ASM_VAR(BYTE, g_fb69618c, $L_69618c)
+ASM_VAR(int, g_fb6949f8, $L_6949f8)
+ASM_VAR(BYTE*, g_fb6d2078, $L_6d2078)
+
+static float Fb_Rand()
+{
+    return (float)(rand() * (double)g_fb64c254);
+}
+
+// a puff from the pool 6f6ab0 at pos, moving with the player's car plus e; 0 when the pool is empty
+static BYTE* Fb_NewPuff(const Vec3* pos, const Vec3& e, float w, int table, int last)
+{
+    BYTE* q = CallC<BYTE*>(Fb_Pool, 212, g_fb6f6ab0);
+    if (!q)
+        return 0;
+    const Vec3& base = F(Vec3, F(BYTE*, g_fb6d2078, 616), 432);
+    Vec3 pv;
+    pv.x = (float)((double)base.x + e.x);
+    pv.y = (float)((double)base.y + e.y);
+    pv.z = (float)((double)base.z + e.z);
+    float wk = (float)(w * (double)g_fb64c34c);
+    return CallThis<BYTE*>(Fb_Puff, q, g_fb696224, pos, &pv, *(int*)&wk, &(&g_fb6949f8)[table], 1, last);
+}
+
+extern "C" {
+
+// [FUN_4bba00] a burst of n bits at pos spreading around dir (speed spd, size size): debris (pool 6f6aa4) with
+// debris on, puffs (pool 6f6ab0) with smoke on, each carrying a28 / a32; with a40 debris and puffs, else only
+// puffs when a36
+void __cdecl Fx_Burst(const Vec3* pos, const Vec3* dir, const Vec3* vel, float spd, unsigned n, float size, int a28,
+                      int a32, int a36, int a40)
+{
+    Vec3 e = {0, 0, 0};
+    const Vec3& R = dir->x > g_fb64c348 || dir->y > g_fb64c348 ? g_fbUp : g_fbDown;
+    Vec3 c, a, t, b0, b;
+    c.x = (float)((double)R.z * dir->y - (double)R.y * dir->z);
+    c.y = (float)((double)R.x * dir->z - (double)R.z * dir->x);
+    c.z = (float)((double)R.y * dir->x - (double)R.x * dir->y);
+    a = *Vec3_Normalized(&t, &c);
+    b0.x = (float)((double)a.z * dir->y - (double)a.y * dir->z);
+    b0.y = (float)((double)a.x * dir->z - (double)a.z * dir->x);
+    b0.z = (float)((double)a.y * dir->x - (double)a.x * dir->y);
+    b = *Vec3_Normalized(&t, &b0);
+    for (unsigned i = 0; i < n; i++)
+    {
+        float r1 = Fb_Rand();
+        float w = (float)((((double)Fb_Rand() - r1) * g_fb64c1d0 + g_fb64c250) * size);
+        double r3 = rand() * (double)g_fb64c254;
+        float bz = (float)(b.z * r3), by = (float)(b.y * r3), bx = (float)(b.x * r3);
+        double r4 = rand() * (double)g_fb64c254;
+        float az = (float)(a.z * r4), ay = (float)(a.y * r4), ax = (float)(a.x * r4);
+        e.x = (float)((double)ax + bx);
+        e.y = (float)((double)ay + by);
+        e.z = (float)((double)az + bz);
+        float r5 = Fb_Rand();
+        float k = (float)((((double)Fb_Rand() - r5) * g_fb64c350 + g_fb64c250) * spd);
+        CallThis(Fb_MulAssign, &e, &t, k);
+        float r6 = Fb_Rand();
+        double md = ((double)Fb_Rand() - r6) * g_fb64c350 + g_fb64c250;
+        float m = (float)md;
+        Vec3 v;
+        v.z = (float)(md * vel->z);
+        v.y = (float)((double)m * vel->y);
+        v.x = (float)((double)m * vel->x);
+        CallThis(Fb_AddAssign, &e, &t, &v);
+        if (a40)
+        {
+            if (!a36)
+                continue;
+            if (g_fb69607c > g_fb64c258 && !CallThis<int>(Fb_Material, g_fb6f33b0) && !CallC<int>(Fb_AaTr) &&
+                !CallC<int>(Fb_DbAc))
+            {
+                BYTE* p = CallC<BYTE*>(Fb_Pool, 204, g_fb6f6aa4);
+                if (p)
+                    p = CallThis<BYTE*>(Fb_Debris, p, g_fb696224, pos, &e, *(int*)&w, &g_fb69618c, g_fb69621c);
+                if (!p)
+                    return;
+                F(int, p, 192) = a28;
+            }
+            if (g_fb696038 > g_fb64c258 && Fb_Rand() > g_fb64c330)
+            {
+                BYTE* q = Fb_NewPuff(pos, e, w, g_fb696218, 1);
+                if (!q)
+                    return;
+                F(int, q, 192) = a28;
+                F(int, q, 200) = a32;
+            }
+        }
+        if (a36 && !a40 && g_fb69607c > g_fb64c258 && Fb_Rand() > g_fb64c330)
+        {
+            BYTE* q = Fb_NewPuff(pos, e, w, g_fb696214, 0);
+            if (!q)
+                return;
+            F(int, q, 192) = a28;
+            F(int, q, 200) = a32;
+        }
+    }
+}
+
+} // extern "C"
+
+// === sparks along a scrape (FUN_4cb8d0)
+
+extern "C" void Sc_Get104(); KING_ALIAS("_Sc_Get104", "@Table124_Get104@16")
+extern "C" void Sc_Add(); KING_ALIAS("_Sc_Add", "@Table124_Add@28")
+extern "C" void Sc_Spark(); KING_ALIAS("_Sc_Spark", "@Spark_Construct@40")
+ASM_VAR(BYTE*, g_sc6f6a78, $L_6f6a78)
+ASM_VAR(BYTE*, g_sc6f6ab8, $L_6f6ab8)
+ASM_VAR(BYTE*, g_sc6d2078, $L_6d2078)
+ASM_VAR(BYTE, g_sc695cd0, $L_695cd0)
+ASM_VAR(BYTE, g_sc695cbc, $L_695cbc)
+ASM_VAR(BYTE, g_sc695ccc, $L_695ccc)
+ASM_VAR(float, g_sc64c328, $L_64c328)
+ASM_VAR(float, g_sc64c970, $L_64c970)
+ASM_VAR(float, g_sc64c264, $L_64c264)
+ASM_VAR(float, g_sc64c96c, $L_64c96c)
+ASM_VAR(float, g_sc64c968, $L_64c968)
+ASM_VAR(float, g_sc64c450, $L_64c450)
+ASM_VAR(float, g_sc64c964, $L_64c964)
+ASM_VAR(float, g_sc64c254, $L_64c254)
+ASM_VAR(float, g_sc64c258, $L_64c258)
+ASM_VAR(float, g_sc64c960, $L_64c960)
+ASM_VAR(double, g_sc64c958, $L_64c958)
+ASM_VAR(float, g_sc64c954, $L_64c954)
+ASM_VAR(float, g_sc64c950, $L_64c950)
+ASM_VAR(float, g_sc64c94c, $L_64c94c)
+ASM_VAR(float, g_sc64c250, $L_64c250)
+
+extern "C" {
+
+// [FUN_4cb8d0] car c scraping at pos along dir (contact key, kind 0-2): the scrape recorded (table 6f6a78) and as
+// many new sparks (pool 6f6ab8) as its count grew by, a wobbling number by the place, thrown along dir and with the
+// car's speed (not for the player's own car seen from the cab)
+int __cdecl Car_ScrapeSparks(BYTE* c, const Vec3* pos, const Vec3* dir, int key, int kind)
+{
+    if (c == F(BYTE*, g_sc6d2078, 616) && !F(int, g_sc6d2078, 1400))
+        return 0;
+    unsigned prev = CallThis<unsigned>(Sc_Get104, g_sc6f6a78, c, key);
+    CallThis(Sc_Add, g_sc6f6a78, c, pos, dir, key, kind);
+    double A = x87_sin(x87_sin(pos->y * (double)g_sc64c328) + pos->x * (double)g_sc64c970);
+    double B = x87_sin(x87_sin(pos->x * (double)g_sc64c328) + pos->y * (double)g_sc64c970);
+    if (!(A > g_sc64c264))
+        A = -A;
+    if (!(B > g_sc64c264))
+        B = -B;
+    int n;
+    if (kind == 0 || kind == 2)
+    {
+        int b = (int)(B * g_sc64c96c);
+        n = (int)(A + A) - b + 5;
+    }
+    else if (kind == 1)
+    {
+        int b = (int)(B * g_sc64c968);
+        n = (int)(A * g_sc64c450) - b + 30;
+    }
+    else
+        return 0;
+    if (n < 0 || prev >= (unsigned)n)
+        return 0;
+    unsigned cnt = n - prev;
+    Vec3 vel = F(Vec3, c, 432);
+    float sp = (float)(Vec3_Length(&vel) * g_sc64c970);
+    if (sp > g_sc64c964)
+        sp = 0.9f;
+    float scale = 0, off = 0;
+    if (kind == 0 || kind == 2)
+    {
+        off = 0.05f;
+        scale = 1.5f;
+    }
+    else if (kind == 1)
+    {
+        off = 0.05f;
+        scale = 3.0f;
+    }
+    const BYTE* tables[3] = {&g_sc695ccc, &g_sc695cbc, &g_sc695cd0};
+    while (cnt--)
+    {
+        double r;
+        if (rand() * (double)g_sc64c254 < g_sc64c258)
+            r = rand() * (double)g_sc64c960;
+        else if (rand() * (double)g_sc64c254 < g_sc64c958)
+            r = rand() * (double)g_sc64c954 + g_sc64c950;
+        else
+            r = rand() * (double)g_sc64c954 + g_sc64c94c;
+        float d = (float)(r * scale + off);
+        BYTE* p = CallC<BYTE*>(Fb_Pool, 188, g_sc6f6ab8);
+        if (!p)
+            continue;
+        Vec3 v, q;
+        v.x = (float)(vel.x * (double)g_sc64c964);
+        v.y = (float)(vel.y * (double)g_sc64c964);
+        v.z = (float)(vel.z * (double)g_sc64c964);
+        float dy = (float)((double)d * dir->y), dx = (float)((double)d * dir->x);
+        q.z = (float)((double)d * dir->z + pos->z);
+        q.y = (float)((double)dy + pos->y);
+        q.x = (float)((double)dx + pos->x);
+        float spread = (float)((double)g_sc64c250 - sp);
+        CallThis(Sc_Spark, p, c, key, &q, &v, *(int*)&spread, 1065353216, tables[kind], 1);
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === the player's car hitting things, and its frame given to the AI (FUN_4cfe70)
+
+extern "C" void Ph_54f000(); KING_ALIAS("_Ph_54f000", "@Car_54f000@16")
+extern "C" void Ph_PlayerData(); KING_ALIAS("_Ph_PlayerData", "_Ai_GetPlayerData")
+extern "C" void Ph_KindFlag(); KING_ALIAS("_Ph_KindFlag", "_Eff_KindFlag")
+extern "C" void Ph_Near(); KING_ALIAS("_Ph_Near", "_Fx_VehicleNear")
+extern "C" void Ph_First(); KING_ALIAS("_Ph_First", "_List68cf6c_First")
+extern "C" void Ph_Next(); KING_ALIAS("_Ph_Next", "_List68cf6c_Next")
+extern "C" void Ph_Field8(); KING_ALIAS("_Ph_Field8", "_Rec_Field8")
+extern "C" void Ph_ForEach(); KING_ALIAS("_Ph_ForEach", "_Array_ForEach@16")
+extern "C" void Ph_InitState(); KING_ALIAS("_Ph_InitState", "@Fx_InitState@8")
+extern "C" void Ph_Present(); KING_ALIAS("_Ph_Present", "_Ai_GetPresentData")
+extern "C" void Ph_Free(); KING_ALIAS("_Ph_Free", "@VecB_FreeStorage@8")
+extern "C" void Ph_CarId(); KING_ALIAS("_Ph_CarId", "_Player_CarId")
+extern "C" void Ph_SetMatrix(); KING_ALIAS("_Ph_SetMatrix", "_Ai_SetPlayerMatrix")
+extern "C" void Ph_SetMatrixRoom(); KING_ALIAS("_Ph_SetMatrixRoom", "_Ai_SetPlayerMatrixInRoom")
+extern "C" void Ph_Get800(); KING_ALIAS("_Ph_Get800", "@SceneObj_Get800@8")
+extern "C" void Ph_M1(); KING_ALIAS("_Ph_M1", "@SceneObj_Matrix1@12")
+extern "C" void Ph_Find(); KING_ALIAS("_Ph_Find", "_Scene_FindObject")
+extern "C" void Ph_HitObject(); KING_ALIAS("_Ph_HitObject", "_Query_HitObject")
+extern "C" void Ph_Make(); KING_ALIAS("_Ph_Make", "_AI_Make449c40")
+extern "C" void Ph_Now(); KING_ALIAS("_Ph_Now", "_Tsc_Now")
+extern "C" void Ph_ZeroThis(); KING_ALIAS("_Ph_ZeroThis", "@Vec3_ZeroThis@8")
+ASM_VAR(BYTE*, g_ph6d2078, $L_6d2078)
+ASM_VAR(int, g_ph6f33c0, $L_6f33c0)
+ASM_VAR(int, g_ph68b990, $L_68b990)
+ASM_VAR(void*, g_ph68cf6c, $L_68cf6c)
+ASM_VAR(BYTE, g_ph7025f0, $L_7025f0)
+ASM_VAR(double, g_ph64b848, $L_64b848)
+ASM_VAR(double, g_ph64b730, $L_64b730)
+ASM_VAR(double, g_ph64b670, $L_64b670)
+ASM_VAR(double, g_ph64b5b8, $L_64b5b8)
+ASM_VAR(double, g_ph64b690, $L_64b690)
+ASM_VAR(double, g_ph64cab8, $L_64cab8)
+ASM_VAR(double, g_ph64b6a0, $L_64b6a0)
+ASM_VAR(double, g_ph64b678, $L_64b678)
+
+// a hit on the player's tally at off (value, flags at off + 8)
+static void Ph_Hit(BYTE* pl, int off, double v, int kind, BYTE* cab, bool stamp)
+{
+    F(double, pl, off) = v + F(double, pl, off);
+    F(int, pl, off + 8) |= CallC<int>(Ph_KindFlag, kind);
+    if (stamp)
+        F(double, cab, 16544) = CallC<double>(Ph_Now);
+}
+
+static bool Ph_IsNear(BYTE* c)
+{
+    Matrix t;
+    const float* m = CallThis<const Matrix*>(Ph_M1, c + 16, &t)->m;
+    return CallC<int>(Ph_Near, m[9], m[10], m[11]) != 0;
+}
+
+static bool Ph_Calm(BYTE* pl)
+{
+    return !(F(double, pl, 208) > g_ph64b678) && !F(BYTE, pl, 200) && !(F(double, pl, 240) > g_ph64b678) &&
+           !(F(double, pl, 248) > g_ph64b678) && !(F(double, pl, 256) > g_ph64b678) && !F(BYTE, pl, 264);
+}
+
+extern "C" {
+
+// [FUN_4cfe70] car c with AI flags *flags: for the player's own car the hits it takes from cars, AI players and
+// bits of road (+208.. on its player, the cab's time +16544) set the damage state +20944 (11/1 hurt, 21 crashed,
+// back to 0 when calm); then a car following its route (*flags & 1) gives its frame (+21040 offset) to the AI, in
+// its room when it has one
+void __cdecl Car_HitsAndFrame(BYTE* c, DWORD* flags)
+{
+    if (c == F(BYTE*, g_ph6d2078, 616))
+    {
+        g_ph6f33c0 = 0;
+        BYTE* cab = F(BYTE*, c, 21600);
+        BYTE* pl = F(BYTE*, c, 20636);
+        if (pl == (BYTE*)g_ph68b990 || (*flags & 0x4000))
+            goto route;
+        BYTE* oc = 0;
+        int kind;
+        float amount;
+        BYTE* other = CallThis<BYTE*>(Ph_54f000, c, &kind, &amount);
+        if (other && F(int, other, 3568) == 2)
+            oc = other - 16;
+        if (kind)
+        {
+            if (oc)
+            {
+                double v = CallVirt<double>(oc, 84) * g_ph64b848 + g_ph64b730;
+                int opl = F(int, oc, 20636);
+                bool done = false;
+                if (opl != g_ph68b990)
+                {
+                    BYTE data[200];
+                    CallC(Ph_PlayerData, opl, data);
+                    int st = F(int, data, 8);
+                    if (st == 6 || st == 5)
+                    {
+                        if (v > g_ph64b670)
+                            Ph_Hit(pl, st == 6 ? 224 : 208, v + v, kind, cab, true);
+                        done = true;
+                    }
+                }
+                if (!done && Ph_IsNear(c) && v > g_ph64b670)
+                    Ph_Hit(pl, 208, v, kind, cab, true);
+            }
+            else if (other && Ph_IsNear(c))
+            {
+                int id = F(int, other, 344) / 1000;
+                double x = 0;
+                bool have = false;
+                if (id == 231)
+                {
+                    void* it;
+                    CallC(Ph_First, &it);
+                    while (it != g_ph68cf6c)
+                    {
+                        int f = CallC<int>(Ph_Field8, it);
+                        if ((f & 64) && !(f & 32) && *F(int*, it, 8) == F(int, other, 344))
+                            break;
+                        void* nx;
+                        it = *CallC<void**>(Ph_Next, &nx, it);
+                    }
+                    if (it == g_ph68cf6c)
+                        goto calm;
+                    __declspec(align(8)) BYTE P[288];
+                    F(int, P, 0) = 0;
+                    CallC(Ph_ForEach, P + 4, 12, 4, Ph_ZeroThis);
+                    memcpy(P + 4, &g_ph7025f0, 48);
+                    memset(P + 52, 0, 12);
+                    F(int, P, 64) = 0;
+                    F(int, P, 68) = 0;
+                    F(int, P, 72) = -1;
+                    F(int, P, 76) = -1;
+                    CallThis(Ph_InitState, P + 80);
+                    F(int, P, 272) = -1;
+                    F(int, P, 276) = -1;
+                    int carId;
+                    CallC(Ph_CarId, &carId);
+                    CallC(Ph_Present, carId, it, P);
+                    x = amount * F(double, P, 200) * g_ph64b5b8;
+                    CallThis(Ph_Free, P + 168);
+                    CallThis(Ph_Free, P + 156);
+                    CallThis(Ph_Free, P + 144);
+                    CallThis(Ph_Free, P + 132);
+                    have = true;
+                }
+                else if (id == 201 || id == 202)
+                {
+                    x = amount * g_ph64b690;
+                    have = true;
+                }
+                if (have && x > g_ph64b670)
+                    Ph_Hit(pl, 208, x, kind, cab, false);
+            }
+        }
+    calm:
+        {
+            double t = F(double, cab, 16544) + g_ph64cab8;
+            if (CallC<double>(Ph_Now) > t)
+            {
+                F(double, pl, 208) = 0;
+                F(int, pl, 216) = 0;
+                F(double, pl, 224) = 0;
+                F(int, pl, 232) = 0;
+            }
+            int& st = F(int, c, 20944);
+            if (st < 30)
+            {
+                if (!(F(double, pl, 208) > g_ph64b6a0))
+                {
+                    if (st < 20 && Ph_Calm(pl))
+                        st = 0;
+                }
+                else if (!st || st >= 20)
+                    st = 11;
+                else if (st > 10 && F(double, pl, 208) > g_ph64b730)
+                    st -= 10;
+            }
+            if (!Ph_Calm(pl) && st < 30)
+            {
+                if (!st || st >= 20)
+                    st = 1;
+                else if (st > 10)
+                    st -= 10;
+            }
+            if (!(F(double, pl, 224) > g_ph64b6a0))
+            {
+                if (st >= 20 && st < 30 && !(F(double, pl, 224) > g_ph64b678) && !F(BYTE, pl, 201))
+                    st = 0;
+            }
+            else if (!st)
+                st = 21;
+            if ((F(double, pl, 224) > g_ph64b678 || F(BYTE, pl, 201)) && !st)
+                st = 21;
+        }
+    }
+route:
+    if (!(*flags & 1))
+        return;
+    int pl = F(int, c, 20636);
+    if (pl == g_ph68b990)
+        return;
+    Vec3 o = F(Vec3, c, 21040);
+    Matrix m1, T, W, m2;
+    const Matrix* M1 = CallThis<const Matrix*>(Ph_M1, c + 16, &m1);
+    Matrix_Multiply(&W, Matrix_Translation(&T, o), M1);
+    BYTE* obj = CallC<BYTE*>(Ph_Find, 0, F(int, CallThis<BYTE*>(Ph_Get800, c + 16), 12));
+    const float* p = &CallThis<const Matrix*>(Ph_M1, c + 16, &m2)->m[9];
+    BYTE* q = CallC<BYTE*>(Ph_HitObject, obj, p, &W.m[9]);
+    int room;
+    CallC(Ph_Make, &room, F(int, q, 12));
+    if (room == -1)
+    {
+        if (F(BYTE*, g_ph6d2078, 616) == c)
+            return;
+        CallC(Ph_SetMatrix, pl, W.m);
+        return;
+    }
+    CallC(Ph_SetMatrixRoom, room, pl, W.m);
+}
+
+} // extern "C"
+
+// === a blow: ten fires and some debris around a point (FUN_4d9460)
+
+extern "C" void Bw_Kind(); KING_ALIAS("_Bw_Kind", "@Object_ConstructKind@16")
+extern "C" void Bw_Attach(); KING_ALIAS("_Bw_Attach", "@Owner_Attach@12")
+extern "C" void Bw_Set(); KING_ALIAS("_Bw_Set", "@Vec3_SetThis@20")
+extern "C" void Bw_Camera(); KING_ALIAS("_Bw_Camera", "@Camera_Get@12")
+extern "C" void Bw_Play(); KING_ALIAS("_Bw_Play", "@Sound4dd920_Play@36")
+ASM_VAR(AsmLabel, g_bw64d404, $L_64d404)
+ASM_VAR(Vec3, g_bwDown, $L_702640)
+ASM_VAR(Vec3, g_bwUp, $L_702630)
+ASM_VAR(float, g_bw64c48c, $L_64c48c)
+ASM_VAR(float, g_bw64c254, $L_64c254)
+ASM_VAR(float, g_bw64d3f4, $L_64d3f4)
+ASM_VAR(float, g_bw64c320, $L_64c320)
+ASM_VAR(float, g_bw64d400, $L_64d400)
+ASM_VAR(float, g_bw64c304, $L_64c304)
+ASM_VAR(float, g_bw64c308, $L_64c308)
+ASM_VAR(float, g_bw64d3fc, $L_64d3fc)
+ASM_VAR(BYTE**, g_bw696720, $L_696720)
+
+static void Bw_Vec(Vec3* v, float x, float y, float z)
+{
+    CallThis(Bw_Set, v, x, y, z);
+}
+
+extern "C" {
+
+// [FUN_4d9460] blow s of scene v at pos ("_Blow", kind 105): ten fires thrown out at random headings around pos
+// (and sometimes debris), the blow sound at the camera, then s given to the scene's owner list (+2992)
+BYTE* __fastcall Blow_Construct(BYTE* s, void*, BYTE* v, const Vec3* pos)
+{
+    CallThis(Bw_Kind, s, 105, "_Blow");
+    Vec3& at = F(Vec3, s, 36);
+    at = *pos;
+    F(void*, s, 0) = &g_bw64d404;
+    Vec3 dir = {0, 0, 0};
+    F(BYTE*, s, 32) = v;
+    for (int i = 0; i < 10; i++)
+    {
+        float r = (float)(rand() * (double)g_bw64c48c);
+        double a = rand() * (double)g_bw64c254;
+        Matrix R;
+        const float* m = Matrix_RotationZ(&R, (float)(g_bw64d3f4 * a + g_bw64d3f4 * a))->m;
+        const Vec3& d = g_bwDown;
+        float hx = (float)((double)d.z * m[6] + (double)d.y * m[3] + (double)d.x * m[0] + m[9]);
+        float hy = (float)((double)d.z * m[7] + (double)d.y * m[4] + (double)d.x * m[1] + m[10]);
+        float hz = (float)((double)d.z * m[8] + (double)d.y * m[5] + (double)d.x * m[2] + m[11]);
+        double uz = g_bwUp.z * (double)g_bw64c320;
+        float uy = (float)(g_bwUp.y * (double)g_bw64c320);
+        float ux = (float)(g_bwUp.x * (double)g_bw64c320);
+        Vec3 t;
+        Bw_Vec(&t, (float)((double)ux + hx), (float)((double)uy + hy), (float)(uz + hz));
+        dir = t;
+        Vec3 off;
+        Bw_Vec(&off, (float)(hx * (double)r), (float)(hy * (double)r), (float)(hz * (double)r));
+        BYTE* f = (BYTE*)operator new(108);
+        if (f)
+        {
+            Vec3 p, q;
+            Bw_Vec(&p, (float)((double)off.x + at.x), (float)((double)off.y + at.y), (float)((double)off.z + at.z));
+            q = p;
+            float size = (float)(rand() * (double)g_bw64d400 + g_bw64c304);
+            f = Fire_Construct(f, 0, F(BYTE*, s, 32), &q, &dir, *(int*)&size);
+        }
+        CallVirt(f, 24, 1);
+        if (rand() * (double)g_bw64c254 > g_bw64c308)
+        {
+            Vec3 b1, b2, b3, n;
+            Bw_Vec(&b1, (float)(off.x * (double)g_bw64c320), (float)(off.y * (double)g_bw64c320),
+                   (float)(off.z * (double)g_bw64c320));
+            Bw_Vec(&b2, (float)((double)b1.x + g_bwUp.x), (float)((double)b1.y + g_bwUp.y),
+                   (float)((double)b1.z + g_bwUp.z));
+            Bw_Vec(&b3, (float)(b2.x * (double)g_bw64d3fc), (float)(b2.y * (double)g_bw64d3fc),
+                   (float)(b2.z * (double)g_bw64d3fc));
+            Vec3 vel = b3;
+            CallC(FUN_4bb4c0, &at, Vec3_Normalized(&n, &dir), &vel, 0x40400000, 2, 0x3E99999A, 1);
+        }
+    }
+    F(int, s, 52) = 0;
+    Matrix cm, inv;
+    Matrix_Inverse(&inv, CallThis<const Matrix*>(Bw_Camera, F(BYTE*, s, 32), &cm));
+    rand();
+    if (g_bw696720)
+    {
+        Vec3 h;
+        Vec3_MulMatrix(&h, &at, &inv);
+        CallThis(Bw_Play, g_bw696720, h.x, h.y, h.z, 0, 0x40490000, 0, 0x3FF00000);
+    }
+    CallThis(FUN_5d3570, F(BYTE*, s, 32) + 2992, s);
+    return s;
+}
+
+} // extern "C"
+
+// === a burst of debris (FUN_4bb4c0)
+
+extern "C" void Db_Write(); KING_ALIAS("_Db_Write", "@Msg_Write120@20")
+extern "C" void Db_Debris(); KING_ALIAS("_Db_Debris", "@Debris_Construct@32")
+ASM_VAR(BYTE*, g_db6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_db696224, $L_696224)
+ASM_VAR(float, g_db696068, $L_696068)
+ASM_VAR(float, g_db64c1d4, $L_64c1d4)
+ASM_VAR(float, g_db64c1d8, $L_64c1d8)
+ASM_VAR(BYTE*, g_db6f6aa0, $L_6f6aa0)
+ASM_VAR(int, g_db696214, $L_696214)
+ASM_VAR(BYTE, g_db695908, $L_695908)
+
+static void Db_Set(Vec3* v, double x, double y, double z)
+{
+    CallThis(Bw_Set, v, (float)x, (float)y, (float)z);
+}
+
+extern "C" {
+
+// [FUN_4bb4c0] n bits of debris (pool 6f6aa0) at pos spreading around dir with speed spd, the car's velocity vel
+// and size size; with net set in a network game the burst is sent on (message 957) first; none with debris off
+void __cdecl Fx_DebrisBurst(const Vec3* pos, const Vec3* dir, const Vec3* vel, float spd, unsigned n, float size,
+                            int net)
+{
+    if (net && (F(int, g_db6cec6c, 1300) == 1 || F(int, g_db6cec6c, 1316)))
+    {
+        BYTE rec[52];
+        rec[0] = 3;
+        F(Vec3, rec, 4) = *pos;
+        F(Vec3, rec, 16) = *dir;
+        F(Vec3, rec, 28) = *vel;
+        F(float, rec, 40) = spd;
+        F(unsigned, rec, 44) = n;
+        F(float, rec, 48) = size;
+        CallThis(Db_Write, g_db696224 + 8336, 957, rec, 52);
+    }
+    if (g_db696068 < g_fb64c258)
+        return;
+    Vec3 e = {0, 0, 0};
+    const Vec3& R = dir->x > g_fb64c348 || dir->y > g_fb64c348 ? g_fbUp : g_fbDown;
+    Vec3 c, t, a, b0, b;
+    Db_Set(&c, (double)R.z * dir->y - (double)R.y * dir->z, (double)R.x * dir->z - (double)R.z * dir->x,
+           (double)R.y * dir->x - (double)R.x * dir->y);
+    Vec3 c2 = c;
+    a = *Vec3_Normalized(&t, &c2);
+    Db_Set(&b0, (double)a.z * dir->y - (double)a.y * dir->z, (double)a.x * dir->z - (double)a.z * dir->x,
+           (double)a.y * dir->x - (double)a.x * dir->y);
+    Vec3 b2 = b0;
+    b = *Vec3_Normalized(&t, &b2);
+    for (; n; n--)
+    {
+        float r1 = Fb_Rand();
+        float w = (float)((((double)Fb_Rand() - r1) * g_fb64c1d0 + g_fb64c250) * size);
+        double r3 = rand() * (double)g_fb64c254;
+        Vec3 bt;
+        Db_Set(&bt, r3 * b.x, b.y * r3, b.z * r3);
+        Vec3 bt2 = bt;
+        double r4 = rand() * (double)g_fb64c254;
+        float az = (float)(a.z * r4), ay = (float)(a.y * r4);
+        double ax = r4 * a.x;
+        Vec3 e2;
+        Db_Set(&e2, bt2.x + ax, (double)bt2.y + ay, (double)bt2.z + az);
+        e = e2;
+        float r5 = Fb_Rand();
+        float k = (float)((((double)Fb_Rand() - r5) * g_db64c1d4 + g_fb64c250) * spd);
+        CallThis(Fb_MulAssign, &e, &t, k);
+        float r7 = Fb_Rand();
+        double md = ((double)Fb_Rand() - r7) * g_db64c1d8 + g_fb64c250;
+        float m = (float)md;
+        Vec3 v;
+        v.z = (float)(md * vel->z);
+        v.y = (float)((double)m * vel->y);
+        v.x = (float)((double)m * vel->x);
+        CallThis(Fb_AddAssign, &e, &t, &v);
+        BYTE* p = CallC<BYTE*>(Fb_Pool, 180, g_db6f6aa0);
+        if (p)
+            CallThis(Db_Debris, p, g_db696224, pos, &e, *(int*)&w, &g_db695908, g_db696214);
+    }
+}
+
+} // extern "C"
+
+// === a wreck burning out (a method at $L_4db8a0)
+
+extern "C" void Wk_M1(); KING_ALIAS("_Wk_M1", "@SceneObj_Matrix1@12")
+extern "C" void Wk_Cloud(); KING_ALIAS("_Wk_Cloud", "@SmokeCloud_Construct@16")
+extern "C" void Wk_Notify(); KING_ALIAS("_Wk_Notify", "@TankNotify_Construct@24")
+ASM_VAR(BYTE*, g_wk696704, $L_696704)
+ASM_VAR(float, g_wk64c624, $L_64c624)
+ASM_VAR(float, g_wk64d4e8, $L_64d4e8)
+
+// point p of car c's body (+16) in the world, then through the car's matrix +708: x stays on the FPU, as the
+// original's chains keep it
+static void Wk_Place(BYTE* c, const float* p, float* q)
+{
+    float Mo[12];
+    memcpy(Mo, c + 16 + 692, 48);
+    Matrix t;
+    const float* m = CallThis<const Matrix*>(Wk_M1, c + 16, &t)->m;
+    double px = (double)m[6] * p[2] + (double)m[3] * p[1] + (double)m[0] * p[0] + m[9];
+    float py = (float)((double)m[7] * p[2] + (double)m[1] * p[0] + (double)m[4] * p[1] + m[10]);
+    float pz = (float)((double)m[8] * p[2] + (double)m[2] * p[0] + (double)m[5] * p[1] + m[11]);
+    double qx = (double)Mo[6] * pz + (double)Mo[3] * py + Mo[0] * px + Mo[9];
+    q[1] = (float)((double)Mo[7] * pz + (double)Mo[4] * py + Mo[1] * px + Mo[10]);
+    q[2] = (float)((double)Mo[8] * pz + (double)Mo[5] * py + Mo[2] * px + Mo[11]);
+    q[0] = (float)qx;
+}
+
+typedef void(__cdecl* WkHook)(const float* at, int, BYTE* car);
+
+// the same for the fires, whose chains add their terms in another order
+static void Wk_PlaceFire(BYTE* c, const float* p, float* q)
+{
+    float Mo[12];
+    memcpy(Mo, c + 16 + 692, 48);
+    Matrix t;
+    const float* m = CallThis<const Matrix*>(Wk_M1, c + 16, &t)->m;
+    double px = (double)m[3] * p[1] + (double)m[6] * p[2] + (double)p[0] * m[0] + m[9];
+    float py = (float)((double)m[4] * p[1] + (double)m[7] * p[2] + (double)m[1] * p[0] + m[10]);
+    float pz = (float)((double)m[5] * p[1] + (double)m[8] * p[2] + (double)m[2] * p[0] + m[11]);
+    double qx = (double)Mo[3] * py + (double)Mo[6] * pz + Mo[0] * px + Mo[9];
+    q[1] = (float)((double)Mo[4] * py + Mo[1] * px + (double)Mo[7] * pz + Mo[10]);
+    q[2] = (float)((double)Mo[5] * py + Mo[2] * px + (double)Mo[8] * pz + Mo[11]);
+    q[0] = (float)qx;
+}
+
+extern "C" {
+
+// [$L_4db8a0] wreck w of car +680 in scene +676: at each of its 14 times (+88..) a smoke cloud at its point
+// (+144.., in the car's frame) with a blast sound (one of two at random), after it the hook +684 told on the third
+// frame; at +656 twelve fires at the points +368.. along +512.. and the notice to the tank with the biggest; at +668
+// gone
+void __fastcall Wreck_Frame(BYTE* w, void*)
+{
+    F(float, w, 672) = (float)(F(double, F(BYTE*, w, 676), 2960) + F(float, w, 672));
+    for (int i = 0; i < 14; i++)
+    {
+        const float* pt = &F(float, w, 144 + 12 * i);
+        if (!(F(float, w, 672) > F(float, w, 88 + 4 * i)))
+            continue;
+        if (F(int, w, 32 + 4 * i))
+        {
+            int& n = F(int, w, 312 + 4 * i);
+            if (n == 3 && F(void*, w, 684))
+                F(WkHook, w, 684)(pt, 0, F(BYTE*, w, 680));
+            n++;
+            continue;
+        }
+        F(int, w, 32 + 4 * i) = 1;
+        float q[3];
+        Wk_Place(F(BYTE*, w, 680), pt, q);
+        BYTE* c = (BYTE*)operator new(96);
+        if (c)
+            c = CallThis<BYTE*>(Wk_Cloud, c, F(BYTE*, w, 676), q);
+        CallVirt(c, 24, 1);
+        Matrix cm, inv;
+        Matrix_Inverse(&inv, CallThis<const Matrix*>(Bw_Camera, F(BYTE*, w, 676), &cm));
+        BYTE* snd = (&g_wk696704)[rand() * (double)g_fb64c254 > g_fb64c258 ? 1 : 0];
+        if (snd)
+        {
+            const float* M = inv.m;
+            double hx = (double)M[6] * q[2] + (double)M[3] * q[1] + (double)q[0] * M[0] + M[9];
+            float hy = (float)((double)M[7] * q[2] + (double)M[4] * q[1] + (double)M[1] * q[0] + M[10]);
+            float hz = (float)((double)M[8] * q[2] + (double)M[5] * q[1] + (double)M[2] * q[0] + M[11]);
+            CallThis(Bw_Play, snd, (float)hx, hy, hz, 0, 0x40490000, 0, 0x3FF00000);
+        }
+    }
+    if (F(float, w, 672) > F(float, w, 656) && F(float, w, 660) == 0)
+    {
+        F(float, w, 660) = 1.0f;
+        float big = 0;
+        for (int j = 0; j < 12; j++)
+        {
+            float s = (float)(rand() * (double)g_wk64c624 + g_wk64d4e8);
+            if (s > big)
+                big = s;
+            BYTE* f = (BYTE*)operator new(108);
+            if (f)
+            {
+                float q[3];
+                Wk_PlaceFire(F(BYTE*, w, 680), &F(float, w, 368 + 12 * j), q);
+                f = Fire_Construct(f, 0, F(BYTE*, w, 676), (const Vec3*)q, &F(Vec3, w, 512 + 12 * j), *(int*)&s);
+            }
+            CallVirt(f, 24, 1);
+        }
+        BYTE* n = (BYTE*)operator new(52);
+        if (n)
+            CallThis(Wk_Notify, n, F(BYTE*, w, 676), F(void*, w, 684), F(BYTE*, w, 680), big);
+    }
+    if (F(float, w, 672) > F(float, w, 668))
+    {
+        CallVirt(w, 28, 1);
+        return;
+    }
+    CallThis(FUN_5d32f0, w, 1);
 }
 
 } // extern "C"

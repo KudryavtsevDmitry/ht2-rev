@@ -4547,3 +4547,454 @@ void __fastcall Mirror_Draw(BYTE* s, void*)
 }
 
 } // extern "C"
+
+// === the game's frame: hotkeys, the sea and the tide, the network position (a method at $L_597b00)
+
+extern "C" void Gf_Key(); KING_ALIAS("_Gf_Key", "@Controls_ActionState@12")
+extern "C" void Gf_FindObj(); KING_ALIAS("_Gf_FindObj", "_Objects_Find")
+extern "C" void Gf_IniDouble(); KING_ALIAS("_Gf_IniDouble", "_Ini_PutDouble")
+extern "C" void Gf_CarId(); KING_ALIAS("_Gf_CarId", "_Player_CarId")
+extern "C" void Gf_InitState(); KING_ALIAS("_Gf_InitState", "@Fx_InitState@8")
+extern "C" void Gf_OrderInfo(); KING_ALIAS("_Gf_OrderInfo", "_Ai_GetPlayerOrderInfo")
+extern "C" void Gf_DropOrders(); KING_ALIAS("_Gf_DropOrders", "_Ai_DropOrdersForfeit")
+extern "C" void Gf_ApplyCargo(); KING_ALIAS("_Gf_ApplyCargo", "_Copter_ApplyCargo")
+extern "C" void Gf_SoundRestart(); KING_ALIAS("_Gf_SoundRestart", "@Sound_Restart@16")
+extern "C" void Gf_Vec1Free(); KING_ALIAS("_Gf_Vec1Free", "@Vec1_Free@8")
+extern "C" void Gf_VecBFree(); KING_ALIAS("_Gf_VecBFree", "@VecB_FreeStorage@8")
+extern "C" void Gf_ScreenSize(); KING_ALIAS("_Gf_ScreenSize", "_Carat_SetScreenSize")
+extern "C" void Gf_CloseMovie(); KING_ALIAS("_Gf_CloseMovie", "_Carat_CloseMovie")
+extern "C" void Gf_OpenMovie(); KING_ALIAS("_Gf_OpenMovie", "_Carat_OpenMovie")
+extern "C" void Gf_Score(); KING_ALIAS("_Gf_Score", "_Score_Build")
+extern "C" void Gf_Ffb(); KING_ALIAS("_Gf_Ffb", "_Joy_ForceFeedback")
+extern "C" void Gf_568f90(); KING_ALIAS("_Gf_568f90", "_Game_568f90")
+extern "C" void Gf_LoadRes(); KING_ALIAS("_Gf_LoadRes", "_Carat_LoadResource103")
+extern "C" void Gf_SaveFind(); KING_ALIAS("_Gf_SaveFind", "_Save_FindRecord103")
+extern "C" void Gf_HeliRun(); KING_ALIAS("_Gf_HeliRun", "_Heli_Run569750")
+extern "C" void Gf_RampValue(); KING_ALIAS("_Gf_RampValue", "@Ramp_Value@8")
+extern "C" void Gf_RampHigh(); KING_ALIAS("_Gf_RampHigh", "@Ramp_High@8")
+extern "C" void Gf_RampSet(); KING_ALIAS("_Gf_RampSet", "@Ramp_SetValue@12")
+extern "C" void Gf_NoticeShow(); KING_ALIAS("_Gf_NoticeShow", "_Notice_Show")
+extern "C" void Gf_NoticeLevel(); KING_ALIAS("_Gf_NoticeLevel", "_Notice_Level")
+extern "C" void Gf_Text(); KING_ALIAS("_Gf_Text", "_Table71e858_Get")
+extern "C" void Gf_PlFirst(); KING_ALIAS("_Gf_PlFirst", "_Players_First")
+extern "C" void Gf_PlNext(); KING_ALIAS("_Gf_PlNext", "_Players_Next")
+extern "C" void Gf_ResGet(); KING_ALIAS("_Gf_ResGet", "@Resources_Get@12")
+extern "C" void Gf_Value136(); KING_ALIAS("_Gf_Value136", "_Player_Value136")
+extern "C" void Gf_Set136(); KING_ALIAS("_Gf_Set136", "_Player_Set136")
+extern "C" void Gf_Board(); KING_ALIAS("_Gf_Board", "_Copter_BoardNearby")
+extern "C" void Gf_555500(); KING_ALIAS("_Gf_555500", "@Car_555500@8")
+extern "C" void Gf_Movie(); KING_ALIAS("_Gf_Movie", "_Movie_Play")
+extern "C" void Gf_Now(); KING_ALIAS("_Gf_Now", "_Tsc_Now")
+extern "C" void Gf_Deactivate(); KING_ALIAS("_Gf_Deactivate", "@MarineTask_Deactivate@12")
+extern "C" void Gf_Activate(); KING_ALIAS("_Gf_Activate", "@MarineTask_Activate@12")
+extern "C" void Gf_Points(); KING_ALIAS("_Gf_Points", "@MarineTask_RequestPoints@16")
+extern "C" void Gf_Pending(); KING_ALIAS("_Gf_Pending", "@MarineTask_SetPendingValue@12")
+extern "C" void Gf_MsgNew(); KING_ALIAS("_Gf_MsgNew", "@DpMessage_Construct@8")
+extern "C" void Gf_MsgWrite(); KING_ALIAS("_Gf_MsgWrite", "@Msg_Write120@20")
+extern "C" void Gf_Record(); KING_ALIAS("_Gf_Record", "@Media_RecordBlock@12")
+extern "C" void Gf_MsgFree(); KING_ALIAS("_Gf_MsgFree", "@MsgBuf_Destroy@8")
+extern "C" void Gf_Pyramid(); KING_ALIAS("_Gf_Pyramid", "_Pyramid_SetSize")
+extern "C" void Gf_Set67fa60(); KING_ALIAS("_Gf_Set67fa60", "_Set67fa60")
+extern "C" void Gf_EffectZero(); KING_ALIAS("_Gf_EffectZero", "_Effect_Zero")
+extern "C" void Gf_WindowShow(); KING_ALIAS("_Gf_WindowShow", "@Window_Show@12")
+extern "C" void Gf_Wave(); KING_ALIAS("_Gf_Wave", "@Wave_Value@16")
+extern "C" void Gf_SoundPlay(); KING_ALIAS("_Gf_SoundPlay", "@Sound_Play@20")
+extern "C" void Gf_M1(); KING_ALIAS("_Gf_M1", "@SceneObj_Matrix1@12")
+extern "C" void Gf_Release(); KING_ALIAS("_Gf_Release", "@ResRef_Release@8")
+extern "C" void Gf_Set6fb3e8(); KING_ALIAS("_Gf_Set6fb3e8", "_Set6fb3e8")
+extern "C" void Gf_Post(); KING_ALIAS("_Gf_Post", "@Queue_PostEvent@12")
+ASM_VAR(BYTE, gf_6d1db8, $L_6d1db8)
+ASM_VAR(BYTE*, gf_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, gf_696ca0, $L_696ca0)
+ASM_VAR(int, gf_6f34d4, $L_6f34d4)
+ASM_VAR(BYTE*, gf_6f6a50, $L_6f6a50)
+ASM_VAR(BYTE*, gf_6d2078, $L_6d2078)
+ASM_VAR(double, gf_67e180, $L_67e180)
+ASM_VAR(int, gf_696868, $L_696868)
+ASM_VAR(int, gf_6f33f4, $L_6f33f4)
+ASM_VAR(BYTE*, gf_6cecbc, $L_6cecbc)
+ASM_VAR(BYTE*, gf_6cecb0, $L_6cecb0)
+ASM_VAR(BYTE*, gf_6cec98, $L_6cec98)
+ASM_VAR(BYTE*, gf_6cecf0, $L_6cecf0)
+ASM_VAR(int, gf_6f6910, $L_6f6910)
+ASM_VAR(int, gf_6f6a44, $L_6f6a44)
+ASM_VAR(int, gf_6f3400, $L_6f3400)
+ASM_VAR(BYTE*, gf_6f690c, $L_6f690c)
+ASM_VAR(void*, gf_68b990, $L_68b990)
+ASM_VAR(double, gf_6f3410, $L_6f3410)
+ASM_VAR(BYTE*, gf_6f34b0, $L_6f34b0)
+ASM_VAR(BYTE*, gf_6f33b0, $L_6f33b0)
+ASM_VAR(BYTE*, gf_6f33ac, $L_6f33ac)
+ASM_VAR(double, gf_6f34c8, $L_6f34c8)
+ASM_VAR(int, gf_675d38, $L_675d38)
+ASM_VAR(BYTE*, gf_6f34a4, $L_6f34a4)
+ASM_VAR(BYTE*, gf_6f34a8, $L_6f34a8)
+ASM_VAR(double, gf_64b678, $L_64b678)
+ASM_VAR(double, gf_64b7c0, $L_64b7c0)
+ASM_VAR(double, gf_64b840, $L_64b840)
+ASM_VAR(double, gf_64b7b8, $L_64b7b8)
+ASM_VAR(double, gf_64b660, $L_64b660)
+ASM_VAR(float, gf_64c264, $L_64c264)
+ASM_VAR(double, gf_64c958, $L_64c958)
+ASM_VAR(double, gf_64b5f0, $L_64b5f0)
+ASM_VAR(double, gf_64e4c8, $L_64e4c8)
+ASM_VAR(double, gf_64b6e0, $L_64b6e0)
+ASM_VAR(double, gf_64ca78, $L_64ca78)
+ASM_VAR(double, gf_64b5a0, $L_64b5a0)
+ASM_VAR(double, gf_650a98, $L_650a98)
+ASM_VAR(float, gf_6509ec, $L_6509ec)
+ASM_VAR(float, gf_6509f0, $L_6509f0)
+ASM_VAR(double, gf_64b670, $L_64b670)
+
+static bool Gf_Pressed(int k)
+{
+    return CallThis<int>(Gf_Key, &gf_6d1db8, k) != 0;
+}
+
+static bool Gf_Single()
+{
+    return F(int, gf_6cec6c, 1300) < 2;
+}
+
+static void Gf_StopModes()
+{
+    F(int, gf_6cec6c, 1284) = 0;
+    F(int, gf_6cec6c, 1288) = 0;
+    F(int, gf_6cec6c, 1296) = 0;
+}
+
+static void Gf_Pause()
+{
+    CallVirt(gf_6cecbc, 32);
+    CallVirt(gf_696ca0, 36);
+}
+
+// the zone code is one of the sea zones bd, be, bf, bg
+static bool Gf_Sea(const char* s)
+{
+    return !strcmp(s, "bd") || !strcmp(s, "be") || !strcmp(s, "bf") || !strcmp(s, "bg");
+}
+
+// the first 124-byte material of zone z named name (z +72 count, +76 array), else keep
+static void Gf_Material(BYTE* z, const char* name, BYTE** out)
+{
+    for (int i = 0; i < F(int, z, 72); i++)
+        if (!strcmp((const char*)(F(BYTE*, z, 76) + i * 124), name))
+        {
+            *out = F(BYTE*, z, 76) + i * 124;
+            return;
+        }
+}
+
+static const char* Gf_ZoneName()
+{
+    BYTE* w = F(BYTE*, gf_696ca0, 488);
+    return F(const char*, F(BYTE*, w ? F(BYTE*, w, 76) : 0, 36), 60);
+}
+
+extern "C" {
+
+// [$L_597b00] game s's frame: the network clock resync (multiplayer), the sea sound, the debug and view hotkeys
+// (24 / 25 the pyramid size, 23 the gearbox, 34 dropping orders, 33 the order key, 44 / 35 / 36 / 37 / 39 the
+// screens and movies, 28 .. 43 the rest), fuel and service notices, refuelling everyone each minute, the marine
+// task by the zone, the player's position block sent in multiplayer, the tide, the sea's sound and the fog by
+// height, and the zone's start music; then the queued events
+void __fastcall Game_FrameKeys(BYTE* s, void*)
+{
+    if (F(int, gf_6cec6c, 1300) > 1)
+    {
+        BYTE* r = gf_696ca0;
+        double& t = F(double, r, 7960);
+        if (t > gf_64b678)
+        {
+            int n = F(int, r, 7940);
+            if (gf_6f34d4 <= n + 4 || (double)gf_6f34d4 < n + t + gf_64b7c0)
+            {
+                t = 0;
+                F(int, gf_696ca0, 3024) = 1;
+            }
+        }
+        r = gf_696ca0;
+        double& t2 = F(double, r, 7960);
+        if (t2 < gf_64b678)
+        {
+            int n = F(int, r, 7940);
+            if ((double)(4 - n) > t2 || n <= 4)
+                t2 = 0;
+        }
+    }
+    if (F(int, s, 16) <= 3)
+        gf_6f6a50 = CallC<BYTE*>(Gf_FindObj, "seaSound");
+    if (Gf_Pressed(24) && !F(int, gf_6d2078, 1400))
+    {
+        gf_67e180 = gf_67e180 - F(double, gf_696ca0, 2960) * gf_64b840;
+        if (gf_67e180 < gf_64b7b8)
+            gf_67e180 = 1.2;
+        CallC(Gf_IniDouble, "EFFECTS", "xpyramid", gf_67e180, gf_696868);
+    }
+    if (Gf_Pressed(25) && !F(int, gf_6d2078, 1400))
+    {
+        gf_67e180 = F(double, gf_696ca0, 2960) * gf_64b840 + gf_67e180;
+        if (gf_67e180 > gf_64b660)
+            gf_67e180 = 2.0;
+        CallC(Gf_IniDouble, "EFFECTS", "xpyramid", gf_67e180, gf_696868);
+    }
+    if (Gf_Pressed(23) && Gf_Pressed(4))
+    {
+        int& g = F(int, F(BYTE*, gf_6d2078, 616), 20920);
+        if (g == 0 || g == 1)
+            g = 2;
+        else if (g == 2)
+            g = 1;
+    }
+    if (Gf_Pressed(23) && !Gf_Pressed(4))
+    {
+        int& g = F(int, F(BYTE*, gf_6d2078, 616), 20920);
+        g = g == 0;
+    }
+    if (Gf_Pressed(34) && Gf_Single())
+    {
+        __declspec(align(8)) BYTE Q[200];
+        CallThis(Gf_InitState, Q);
+        int me;
+        CallC(Gf_CarId, &me);
+        if (!CallC<int>(Gf_OrderInfo, me, 0, Q))
+        {
+            int me2;
+            CallC(Gf_CarId, &me2);
+            CallC(Gf_DropOrders, me2);
+            CallC(Gf_ApplyCargo);
+            CallThis(Gf_SoundRestart, CallC<BYTE*>(Gf_FindObj, "order1Sound"), 0.5f, 0.5f);
+        }
+        CallThis(Gf_Vec1Free, Q + 88);
+        CallThis(Gf_Vec1Free, Q + 76);
+        CallThis(Gf_Vec1Free, Q + 64);
+        CallThis(Gf_VecBFree, Q + 52);
+    }
+    gf_6f33f4 = Gf_Pressed(33) ? 1 : 0;
+    if (Gf_Pressed(44) && !F(int, gf_6cec6c, 1316) && Gf_Single())
+    {
+        Gf_StopModes();
+        if (F(BYTE, gf_6cecbc, 16) & 2)
+        {
+            CallVirt(gf_6cecbc, 32);
+            CallVirt(gf_696ca0, 36);
+            CallC(Gf_ScreenSize);
+        }
+        else if (!(F(BYTE, gf_6cecb0, 16) & 2))
+            CallVirt(gf_6cecbc, 36);
+    }
+    if (Gf_Pressed(35) && Gf_Single() && (!F(int, gf_6cec6c, 1316) || F(int, gf_6cec98, 384) != 2))
+    {
+        int& v = F(int, gf_6cec6c, 1292);
+        if (v == 2)
+            v = 0;
+        else if (v == 1)
+            v = 2;
+        else
+        {
+            v = 1;
+            Gf_StopModes();
+        }
+    }
+    if (Gf_Pressed(36) && (!F(int, gf_6cec6c, 1316) || F(int, gf_6cec98, 384) == 2) && Gf_Single())
+    {
+        if (F(int, gf_6cec6c, 1284))
+        {
+            F(int, gf_6cec6c, 1284) = 0;
+            CallC(Gf_CloseMovie);
+        }
+        else
+        {
+            if (F(int, gf_6cec6c, 1316))
+                CallC(Gf_Score);
+            Gf_Pause();
+            if (!F(int, gf_6cec6c, 1316))
+                CallC(Gf_OpenMovie);
+            F(int, gf_6cec6c, 1284) = 1;
+            F(int, gf_6cec6c, 1288) = 0;
+            F(int, gf_6cec6c, 1296) = 0;
+            CallC(Gf_Ffb, 0);
+        }
+    }
+    if (Gf_Pressed(37) && !F(int, gf_6cec6c, 1316) && Gf_Single())
+    {
+        if (F(int, gf_6cec6c, 1288))
+        {
+            F(int, gf_6cec6c, 1288) = 0;
+            CallC(Gf_CloseMovie);
+        }
+        else
+        {
+            Gf_Pause();
+            CallC(Gf_OpenMovie);
+            CallC(Gf_568f90);
+            CallC(Gf_Ffb, 0);
+        }
+    }
+    if (Gf_Pressed(39) && Gf_Single())
+    {
+        if (F(int, gf_6cec6c, 1296))
+        {
+            F(int, gf_6cec6c, 1296) = 0;
+            CallC(Gf_CloseMovie);
+        }
+        else
+        {
+            Gf_Pause();
+            CallC(Gf_OpenMovie);
+            F(int, gf_6cec6c, 1284) = 0;
+            F(int, gf_6cec6c, 1288) = 0;
+            F(int, gf_6cec6c, 1296) = 1;
+            CallC(Gf_Ffb, 0);
+        }
+    }
+    if (Gf_Pressed(28) && gf_6f6910)
+        gf_6f6a44 ^= 1;
+    if (Gf_Pressed(29) && Gf_Single() && !F(int, gf_6cec6c, 1316))
+        CallC(Gf_LoadRes);
+    if (Gf_Pressed(30) && Gf_Single() && !F(int, gf_6cec6c, 1316))
+        CallC(Gf_SaveFind);
+    Gf_Pressed(32);
+    if (Gf_Pressed(31) && !F(int, gf_6cec6c, 1316) && Gf_Single())
+        CallVirt(gf_6cecf0, 36);
+    int take = 0;
+    if (Gf_Pressed(40) && CallVirt<int>(F(BYTE*, gf_6d2078, 616), 4) == 1)
+    {
+        BYTE* car = F(BYTE*, gf_6d2078, 616);
+        if (!F(int, car, 21880))
+            take = 1;
+        else
+            F(int, car, 21892) = 1;
+    }
+    gf_6f3400 = take;
+    if (Gf_Pressed(43))
+        CallC(Gf_HeliRun);
+    if (Gf_Pressed(41))
+    {
+        BYTE* cab = F(BYTE*, F(BYTE*, gf_6d2078, 616), 21600);
+        if (cab && !(CallThis<double>(Gf_RampValue, cab + 16112) > gf_64c264))
+            CallC(Gf_NoticeShow, 8, CallC<const char*>(Gf_Text, 117), 0, 0);
+    }
+    if (CallC<int>(Gf_NoticeLevel) != 8)
+    {
+        BYTE* car = F(BYTE*, gf_6d2078, 616);
+        if (car && F(BYTE*, car, 21600) && !F(int, F(BYTE*, car, 21600), 15488))
+            CallC(Gf_NoticeShow, 8, CallC<const char*>(Gf_Text, 118), 0, 0);
+    }
+    // everyone else refuelled and repaired once a minute
+    if (gf_6f690c == gf_696ca0 && !((int)F(double, gf_6f690c, 2968) % 60))
+    {
+        void* pl;
+        for (CallC(Gf_PlFirst, &pl); pl != gf_68b990; pl = *CallC<void**>(Gf_PlNext, &pl, pl))
+        {
+            BYTE* rec = CallThis<BYTE*>(Gf_ResGet, gf_6f690c + 704, F(int, pl, 84));
+            if (!rec)
+                continue;
+            BYTE* o = F(BYTE*, rec, 28);
+            if (!o || o == F(BYTE*, gf_6d2078, 616))
+                continue;
+            CallVirt(o, 116);
+            CallVirt(o, 120);
+            float hi = (float)CallThis<double>(Gf_RampHigh, F(BYTE*, o, 21600) + 16112);
+            CallThis(Gf_RampSet, F(BYTE*, o, 21600) + 16112, hi);
+            CallVirt(o, 80, 1.0f);
+            double v = CallC<double>(Gf_Value136, pl);
+            CallC(Gf_Set136, pl, v);
+        }
+    }
+    CallC(Gf_Board);
+    if (BYTE* car = F(BYTE*, gf_6d2078, 616))
+        if (CallThis<double>(Gf_555500, car) > gf_64c958)
+            CallC(Gf_Movie, "\\trirr.bne", 2);
+    if (F(int, gf_6cec6c, 1288) && CallC<double>(Gf_Now) > gf_6f3410 + gf_64b5f0)
+        F(int, gf_6cec6c, 1288) = 0;
+    // the marine task follows the zone
+    BYTE* zone = F(BYTE*, F(BYTE*, F(BYTE*, gf_696ca0, 488), 76), 36);
+    BYTE* prev = gf_6f34b0;
+    if (zone != prev && gf_6f33b0)
+    {
+        if (!Gf_Sea(F(const char*, zone, 60)))
+            CallThis(Gf_Deactivate, gf_6f33b0, prev == 0);
+        else
+        {
+            BYTE* mat = 0;
+            Gf_Material(zone, "mat_sea0", &mat);
+            CallThis(Gf_Points, gf_6f33b0, 1, &mat);
+            Gf_Material(zone, "mat_horizon", &mat);
+            CallThis(Gf_Pending, gf_6f33b0, mat);
+            prev = gf_6f34b0;
+            if (!prev || !Gf_Sea(F(const char*, prev, 60)))
+                CallThis(Gf_Activate, gf_6f33b0, prev == 0);
+        }
+        gf_6f34b0 = zone;
+    }
+    if (F(int, gf_6cec6c, 1300) == 1 || F(int, gf_6cec6c, 1316) == 1)
+    {
+        BYTE msg[48];
+        CallThis(Gf_MsgNew, msg);
+        float d[3];
+        d[0] = (float)F(double, gf_6f33ac, 88);
+        d[1] = (float)(F(double, gf_6f33ac, 104) * gf_64e4c8);
+        F(int, d, 8) = F(int, gf_6f33ac, 544);
+        CallThis(Gf_MsgWrite, msg, 955, d, 12);
+        CallThis(Gf_Record, gf_696ca0, msg);
+        CallThis(Gf_MsgFree, msg);
+    }
+    CallC(Gf_Pyramid, F(int, gf_6cec6c, 1356));
+    CallC(Gf_Set67fa60, (double)F(float, gf_6f33ac, 548));
+    if (F(int, gf_6cec6c, 1344))
+        CallC(Gf_EffectZero);
+    if (F(int, F(BYTE*, gf_696ca0, 472), 76) == -1)
+        CallThis(Gf_WindowShow, gf_696ca0, 8);
+    double sea = (CallThis<double>(Gf_Wave, gf_6f33ac, 0, 0) * gf_64b6e0 + gf_64ca78) * gf_6f34c8;
+    if (gf_6f34c8 > gf_64b5a0 && gf_6f6a50)
+    {
+        float v = (float)sea;
+        CallThis(Gf_SoundPlay, gf_6f6a50, v, v, 10);
+    }
+    gf_6f34c8 = gf_6f34c8 * gf_650a98;
+    if (BYTE* car = F(BYTE*, gf_6d2078, 616))
+    {
+        Matrix t;
+        double z = F(float, CallThis<BYTE*>(Gf_M1, car + 16, &t), 44);
+        float& fog = F(float, gf_6f33ac, 552);
+        if (gf_6509ec > z)
+            fog = 1.0f;
+        else if (gf_6509f0 > z)
+            fog = (float)(gf_64b670 - (z - gf_6509ec) / ((double)gf_6509f0 - gf_6509ec));
+        else
+            fog = 0;
+    }
+    if (gf_675d38 >= 0 && gf_675d38 + 2 == F(int, gf_696ca0, 2992))
+    {
+        BYTE* rr = F(BYTE*, gf_696ca0, 484);
+        if (F(int, rr, 20))
+        {
+            while (!F(int, F(BYTE*, gf_696ca0, 484), 16))
+                Sleep(10);
+            CallThis(Gf_Release, F(BYTE*, gf_696ca0, 484));
+        }
+        gf_675d38 = -1;
+        CallC(Gf_Set6fb3e8, 0, 1.0f);
+        const char* z = Gf_ZoneName();
+        if (strcmp(z, "aa") && strcmp(z, "db"))
+        {
+            if (!strcmp(z, "da") || !strcmp(z, "ab"))
+                CallC(Gf_Set6fb3e8, 7, 0);
+            F(int, gf_6f33ac, 576) = 0;
+            if (gf_6f34a4)
+                CallVirt(gf_6f34a4, 40);
+        }
+        else
+        {
+            F(int, gf_6f33ac, 576) = 1;
+            if (gf_6f34a8)
+                CallVirt(gf_6f34a8, 40);
+            CallC(Gf_Set6fb3e8, strcmp(Gf_ZoneName(), "db") ? 5 : 6, 0);
+        }
+    }
+    CallThis(Gf_Post, s, 1);
+}
+
+} // extern "C"

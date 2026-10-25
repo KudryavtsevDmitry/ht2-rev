@@ -10697,3 +10697,410 @@ double __fastcall DMat_Determinant(const double* s, void*)
 }
 
 } // extern "C"
+
+// === the map screen (FUN_529890)
+
+struct MpPos32 { DWORD d[8]; };
+extern "C" float* __cdecl Mp_CoordPos(float* out, MpPos32 p); KING_ALIAS("_Mp_CoordPos", "_Ai_GetCoordinatesPos")
+extern "C" MpPos32* __cdecl Mp_PositionId(MpPos32* out, void* player); KING_ALIAS("_Mp_PositionId", "_Ai_GetPositionId")
+extern "C" void Mp_M1(); KING_ALIAS("_Mp_M1", "@SceneObj_Matrix1@12")
+extern "C" void Mp_CarId(); KING_ALIAS("_Mp_CarId", "_Player_CarId")
+extern "C" void Mp_Flags(); KING_ALIAS("_Mp_Flags", "_Player_Flags")
+extern "C" void Mp_BeginScene(); KING_ALIAS("_Mp_BeginScene", "_Device_BeginScene")
+extern "C" void Mp_WaitIdle(); KING_ALIAS("_Mp_WaitIdle", "_Device_WaitIdle")
+extern "C" void Mp_First(); KING_ALIAS("_Mp_First", "_List68cf6c_First")
+extern "C" void Mp_Next(); KING_ALIAS("_Mp_Next", "_List68cf6c_Next")
+extern "C" void Mp_Field8(); KING_ALIAS("_Mp_Field8", "_Rec_Field8")
+extern "C" void Mp_ForEach(); KING_ALIAS("_Mp_ForEach", "_Array_ForEach@16")
+extern "C" void Mp_ZeroThis(); KING_ALIAS("_Mp_ZeroThis", "@Vec3_ZeroThis@8")
+extern "C" void Mp_InitState(); KING_ALIAS("_Mp_InitState", "@Fx_InitState@8")
+extern "C" void Mp_Present(); KING_ALIAS("_Mp_Present", "_Ai_GetPresentData")
+extern "C" void Mp_Vec1Free(); KING_ALIAS("_Mp_Vec1Free", "@Vec1_Free@8")
+extern "C" void Mp_VecBFree(); KING_ALIAS("_Mp_VecBFree", "@VecB_FreeStorage@8")
+extern "C" void Mp_OutOfBox(); KING_ALIAS("_Mp_OutOfBox", "_Carat_OutOfBox")
+extern "C" void Mp_Image(); KING_ALIAS("_Mp_Image", "_Gfx_DrawImage")
+extern "C" void Mp_Line(); KING_ALIAS("_Mp_Line", "_Window_DrawLine")
+extern "C" void Mp_Pixel(); KING_ALIAS("_Mp_Pixel", "_Pixel_Pack")
+extern "C" void Mp_Text(); KING_ALIAS("_Mp_Text", "_Text_Draw")
+extern "C" void Mp_Str(); KING_ALIAS("_Mp_Str", "_Table71e858_Get")
+extern "C" void Mp_OrderInfo(); KING_ALIAS("_Mp_OrderInfo", "_Ai_GetPlayerOrderInfo")
+extern "C" void Mp_TownFirst(); KING_ALIAS("_Mp_TownFirst", "_Town_FirstId")
+extern "C" void Mp_TownNext(); KING_ALIAS("_Mp_TownNext", "_Town_NextId")
+extern "C" void Mp_TownPos(); KING_ALIAS("_Mp_TownPos", "_Town_Get440390")
+extern "C" void Mp_TownFlags(); KING_ALIAS("_Mp_TownFlags", "_Town_Flags")
+extern "C" void Mp_TownName(); KING_ALIAS("_Mp_TownName", "_Town_Field12")
+extern "C" void Mp_NameCoords(); KING_ALIAS("_Mp_NameCoords", "_Ai_GetNameCoordinates")
+extern "C" void Mp_ObstFirst(); KING_ALIAS("_Mp_ObstFirst", "_List68cc18_FirstId")
+extern "C" void Mp_ObstNext(); KING_ALIAS("_Mp_ObstNext", "_List68cc18_NextId")
+extern "C" void Mp_Obstacle(); KING_ALIAS("_Mp_Obstacle", "_Ai_GetObstacleInfo")
+extern "C" void Mp_NodeFirst(); KING_ALIAS("_Mp_NodeFirst", "_Node_FirstId")
+extern "C" void Mp_NodeNext(); KING_ALIAS("_Mp_NodeNext", "_Node_NextId")
+extern "C" void Mp_NodePos(); KING_ALIAS("_Mp_NodePos", "_Node_Position")
+extern "C" void Mp_NodeName(); KING_ALIAS("_Mp_NodeName", "_Node_Name")
+extern "C" void Mp_PlFirst(); KING_ALIAS("_Mp_PlFirst", "_Players_First")
+extern "C" void Mp_PlNext(); KING_ALIAS("_Mp_PlNext", "_Players_Next")
+extern "C" void Mp_PlayerData(); KING_ALIAS("_Mp_PlayerData", "_Ai_GetPlayerData")
+extern "C" void Mp_ResGet(); KING_ALIAS("_Mp_ResGet", "@Resources_Get@12")
+extern "C" void Mp_EntryFirst(); KING_ALIAS("_Mp_EntryFirst", "_Player_FirstEntry")
+extern "C" void Mp_EntryNext(); KING_ALIAS("_Mp_EntryNext", "_Player_NextEntry")
+ASM_VAR(BYTE*, mp_6d2078, $L_6d2078)
+ASM_VAR(Vec3, mp_702620, $L_702620)
+ASM_VAR(double, mp_64b670, $L_64b670)
+ASM_VAR(double, mp_64ca48, $L_64ca48)
+ASM_VAR(double, mp_64ebc0, $L_64ebc0)
+ASM_VAR(float, mp_64c264, $L_64c264)
+ASM_VAR(double, mp_64bb90, $L_64bb90)
+ASM_VAR(double, mp_64b6d0, $L_64b6d0)
+ASM_VAR(double, mp_64ebb8, $L_64ebb8)
+ASM_VAR(double, mp_64b6e0, $L_64b6e0)
+ASM_VAR(double, mp_64b7e0, $L_64b7e0)
+ASM_VAR(double, mp_64ebb0, $L_64ebb0)
+ASM_VAR(double, mp_64b918, $L_64b918)
+ASM_VAR(int, mp_6ced94, $L_6ced94)
+ASM_VAR(void*, mp_68cf6c, $L_68cf6c)
+ASM_VAR(void*, mp_68b990, $L_68b990)
+ASM_VAR(BYTE, mp_7025f0, $L_7025f0)
+ASM_VAR(BYTE*, mp_696ca0, $L_696ca0)
+ASM_VAR(BYTE**, mp_68cf00, $L_68cf00)
+ASM_VAR(BYTE*, mp_6cec70, $L_6cec70)
+ASM_VAR(BYTE*, mp_6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, mp_6cecbc, $L_6cecbc)
+ASM_VAR(BYTE*, mp_6ced24, $L_6ced24)
+ASM_VAR(BYTE*, mp_6f3268, $L_6f3268)
+ASM_VAR(BYTE*, mp_6f3378, $L_6f3378)
+ASM_VAR(BYTE*, mp_6f2d08, $L_6f2d08)
+ASM_VAR(BYTE*, mp_6f3380, $L_6f3380)
+ASM_VAR(BYTE*, mp_6f3258, $L_6f3258)
+ASM_VAR(BYTE*, mp_6f2de4, $L_6f2de4)
+ASM_VAR(BYTE*, mp_6f2c50, $L_6f2c50)
+ASM_VAR(BYTE*, mp_6f2d14, $L_6f2d14)
+ASM_VAR(BYTE*, mp_6f337c, $L_6f337c)
+ASM_VAR(BYTE*, mp_6f33a8, $L_6f33a8)
+ASM_VAR(BYTE*, mp_6f3330, $L_6f3330)
+ASM_VAR(BYTE*, mp_6f2df4, $L_6f2df4)
+ASM_VAR(BYTE*, mp_6f2f0c, $L_6f2f0c)
+
+// a map point: world x, y scaled by s and moved by ox / oy (y flipped)
+struct MpView { double s, ox, oy; BYTE* surf; int mode; };
+
+static void Mp_At(const MpView& v, const float* p, int& x, int& y)
+{
+    float py = -p[1];
+    x = (int)(p[0] * v.s + v.ox);
+    y = (int)(py * v.s + v.oy);
+}
+
+static bool Mp_Off(const MpView& v, int x, int y)
+{
+    return v.mode && CallC<int>(Mp_OutOfBox, v.surf, x, y);
+}
+
+static void Mp_Icon(const MpView& v, int x, int y, BYTE* img)
+{
+    CallC(Mp_Image, v.surf, x, y, img, 0);
+}
+
+static int Mp_Me()
+{
+    int id;
+    CallC(Mp_CarId, &id);
+    return id;
+}
+
+static void Mp_Label(const MpView& v, int x, int y, const char* s)
+{
+    CallC(Mp_Text, v.surf, x, y, mp_6ced24, s, 5, 0);
+}
+
+extern "C" {
+
+// [FUN_529890] map m (+0 its 40-byte roads, +4 their count, +8.. the doubles x0, x1, y0, y1) drawn on surface surf,
+// the small one in the corner (mode 0) or the big one (mode 1, with a box and nothing outside it): roads, presents,
+// towns, obstacles, the start, service nodes, town names, players and their entries, the towns of the player's two
+// orders blinking, the car's arrow by its heading and in multiplayer the player's name
+void __fastcall Map_Draw(BYTE* m, void*, BYTE* surf, int mode)
+{
+    if (!F(int, m, 4))
+        return;
+    BYTE* car = F(BYTE*, mp_6d2078, 616);
+    Matrix t;
+    Vec3 cp = F(Vec3, CallThis<BYTE*>(Mp_M1, car + 16, &t), 36);
+    const float* M = CallThis<const Matrix*>(Mp_M1, car + 16, &t)->m;
+    const Vec3& f = mp_702620;
+    float fx = (float)((double)f.z * M[6] + (double)f.y * M[3] + (double)f.x * M[0]);
+    double fy = (double)f.x * M[1] + (double)f.z * M[7] + (double)f.y * M[4];
+    double fz = (double)f.x * M[2] + (double)f.z * M[8] + (double)f.y * M[5];
+    double c = fx * (double)f.x + f.z * fz + f.y * fy;
+    if (c > mp_64b670)
+        c = 1.0;
+    else if (c < mp_64ca48)
+        c = -1.0;
+    int a = (int)(x87_acos(c) * mp_64ebc0);
+    if (fx < mp_64c264)
+        a = 24 - a;
+    int heading = a % 24;
+    cp.y = -cp.y;
+    int w = F(WORD, surf, 0), h = F(WORD, surf, 2);
+    double sx = (w - 80) / (F(double, m, 16) - F(double, m, 8));
+    double sy = (h - 130) / (F(double, m, 32) - F(double, m, 24));
+    if (mode)
+    {
+        sx += sx;
+        sy += sy;
+    }
+    MpView v;
+    v.s = sx > sy ? sy : sx;
+    v.ox = mp_64bb90 - v.s * F(double, m, 8);
+    v.oy = mp_64bb90 - v.s * F(double, m, 24);
+    v.surf = surf;
+    v.mode = mode;
+    CallC(Mp_BeginScene);
+    if (mode)
+    {
+        v.ox = w / 6 - cp.x * v.s;
+        v.oy = h / 2 - cp.y * v.s;
+        int x0 = w / 20, y0 = h / 4, x1 = w / 3 - w / 20, y1 = h - h / 4;
+        CallC(Mp_Line, surf, x0, y0, x1, y0, CallC<DWORD>(Mp_Pixel, 0, 120, 255), 1);
+        CallC(Mp_Line, surf, x1, y0, x1, y1, CallC<DWORD>(Mp_Pixel, 0, 120, 255), 1);
+        CallC(Mp_Line, surf, x1, y1, x0, y1, CallC<DWORD>(Mp_Pixel, 0, 120, 255), 1);
+        CallC(Mp_Line, surf, x0, y1, x0, y0, CallC<DWORD>(Mp_Pixel, 0, 120, 255), 1);
+    }
+    for (int i = 0; i < F(int, m, 4); i++)
+    {
+        BYTE* r = F(BYTE*, m, 0) + i * 40;
+        if (F(short, r, 36) || mp_6ced94)
+            Map_DrawLine((double*)r, 0, surf, v.s, v.s, v.ox, v.oy, mode);
+    }
+    CallC(Mp_WaitIdle);
+    // presents
+    void* it;
+    CallC(Mp_First, &it);
+    while (it != mp_68cf6c)
+    {
+        __declspec(align(8)) BYTE P[288];
+        F(int, P, 0) = 0;
+        CallStd(Mp_ForEach, P + 4, 12, 4, Mp_ZeroThis);
+        memcpy(P + 4, &mp_7025f0, 48);
+        memset(P + 52, 0, 20);
+        F(int, P, 72) = -1;
+        F(int, P, 76) = -1;
+        CallThis(Mp_InitState, P + 80);
+        F(int, P, 272) = -1;
+        F(int, P, 276) = -1;
+        CallC(Mp_Present, mp_68b990, it, P);
+        float py = -F(float, P, 44);
+        float px = F(float, P, 40);
+        int x = (int)(px * v.s + v.ox - mp_64b6d0);
+        int y = (int)(py * v.s + v.oy - mp_64b6d0);
+        if (Mp_Off(v, x, y))
+        {
+            CallThis(Mp_Vec1Free, P + 168);
+            CallThis(Mp_VecBFree, P + 156);
+        }
+        else
+        {
+            int fl = CallC<int>(Mp_Field8, it);
+            if ((fl & 64) && (fl & 32))
+                Mp_Icon(v, x, y, mp_6f3268);
+            else if (fl & 64)
+            {
+                if (mp_6ced94)
+                    Mp_Icon(v, x, y, mp_6f3378);
+            }
+            else if ((fl & 16) && mp_6ced94)
+                Mp_Icon(v, x, y, mp_6f2d08);
+            CallThis(Mp_Vec1Free, P + 168);
+            CallThis(Mp_Vec1Free, P + 156);
+        }
+        CallThis(Mp_VecBFree, P + 144);
+        CallThis(Mp_VecBFree, P + 132);
+        void* nx;
+        it = *CallC<void**>(Mp_Next, &nx, it);
+    }
+    // the towns of the player's orders
+    int order[4] = {-1, -1, -1, -1};
+    __declspec(align(8)) BYTE Q[200];
+    CallThis(Mp_InitState, Q);
+    int orders = 0;
+    while (orders < 2 && !CallC<int>(Mp_OrderInfo, Mp_Me(), orders, Q))
+        order[orders++] = F(int, Q, 48);
+    int per = (int)(mp_64ebb8 / F(double, mp_696ca0, 2960) + mp_64b6e0);
+    if (per < 1)
+        per = 1;
+    int phase = F(int, mp_696ca0, 2992) / per % 6;
+    int blink = phase > 3 ? 6 - phase : phase;
+    int id;
+    for (CallC(Mp_TownFirst, &id); id != -1; id = *CallC<int*>(Mp_TownNext, &id, id))
+    {
+        float p[3];
+        CallC(Mp_TownPos, p, id);
+        int x, y;
+        Mp_At(v, p, x, y);
+        if (Mp_Off(v, x, y))
+            continue;
+        int k = 0;
+        while (k < orders && order[k] != id)
+            k++;
+        if (k < orders)
+            continue;
+        DWORD tf = CallC<DWORD>(Mp_TownFlags, id);
+        if (tf & 1)
+            Mp_Icon(v, x - 5, y - 5, mp_6f3380);
+        else if (tf & 2)
+        {
+            if (mode)
+                Mp_Icon(v, x - 5, y - 5, mp_6f3258);
+        }
+        else
+            Mp_Icon(v, x - 5, y - 5, mp_6f2de4);
+    }
+    // obstacles
+    for (CallC(Mp_ObstFirst, &id); id != -1; id = *CallC<int*>(Mp_ObstNext, &id, id))
+    {
+        BYTE O[16] = {0};
+        CallC(Mp_Obstacle, id, O);
+        if (!O[12])
+            continue;
+        int x, y;
+        Mp_At(v, (float*)O, x, y);
+        if (!Mp_Off(v, x, y))
+            Mp_Icon(v, x - 5, y - 5, mp_6f2c50);
+    }
+    {
+        int x = (int)(v.ox - v.s * mp_64b7e0);
+        int y = (int)(v.s * mp_64ebb0 + v.oy);
+        if (!Mp_Off(v, x, y))
+        {
+            Mp_Icon(v, x - 5, y - 5, mp_6f2d14);
+            Mp_Label(v, x - 20, y - 5, CallC<const char*>(Mp_Str, 88));
+        }
+    }
+    // service nodes
+    for (CallC(Mp_NodeFirst, &id); id != -1; id = *CallC<int*>(Mp_NodeNext, &id, id))
+    {
+        if (!(F(BYTE, mp_68cf00[id], 12) & 8))
+            continue;
+        float p[3];
+        CallC(Mp_NodePos, p, id);
+        int x, y;
+        Mp_At(v, p, x, y);
+        if (Mp_Off(v, x, y))
+            continue;
+        if (!strncmp(CallC<const char*>(Mp_NodeName, id), "mapSto", 6))
+        {
+            if (mode)
+                Mp_Icon(v, x - 5, y - 5, mp_6f337c);
+        }
+        else if (!strncmp(CallC<const char*>(Mp_NodeName, id), "mapPark", 7))
+            Mp_Icon(v, x - 5, y - 5, mp_6f33a8);
+    }
+    // town names
+    for (CallC(Mp_TownFirst, &id); id != -1; id = *CallC<int*>(Mp_TownNext, &id, id))
+    {
+        int res = 3 - ((int)(F(DWORD, mp_6cec70, 408) & 240) - 16) / 16;
+        float p[8];
+        const float* q = CallC<const float*>(Mp_NameCoords, p, id, mode, res);
+        int x, y;
+        Mp_At(v, q, x, y);
+        if (Mp_Off(v, x, y))
+            continue;
+        DWORD tf = CallC<DWORD>(Mp_TownFlags, id);
+        if ((tf & 1) || ((tf & 2) && !mode))
+            continue;
+        Mp_Label(v, x - 20, y - 5, CallC<const char*>(Mp_TownName, id));
+    }
+    // players
+    __declspec(align(8)) BYTE PD[256];
+    void* pl;
+    for (CallC(Mp_PlFirst, &pl); pl != mp_68b990; pl = *CallC<void**>(Mp_PlNext, &pl, pl))
+    {
+        if (!F(int, mp_6cec6c, 1316) && !(CallC<DWORD>(Mp_Flags, pl) & 128))
+            continue;
+        CallC(Mp_PlayerData, pl, PD);
+        if (F(int, PD, 8) == 1 && !(CallC<DWORD>(Mp_Flags, pl) & 0x100))
+            continue;
+        MpPos32 pos;
+        float p[3];
+        Mp_CoordPos(p, *Mp_PositionId(&pos, pl));
+        BYTE* rec = CallThis<BYTE*>(Mp_ResGet, mp_696ca0 + 704, F(int, pl, 84));
+        if (rec && F(BYTE*, rec, 28))
+        {
+            Matrix t2;
+            const Vec3& o = F(Vec3, CallThis<BYTE*>(Mp_M1, F(BYTE*, rec, 28) + 16, &t2), 36);
+            p[0] = o.x;
+            p[1] = o.y;
+            p[2] = o.z;
+        }
+        int x, y;
+        Mp_At(v, p, x, y);
+        if (Mp_Off(v, x, y))
+            continue;
+        if (F(int, PD, 8) == 1)
+        {
+            if (mp_6f3330)
+                Mp_Icon(v, x - 5, y - 5, mp_6f3330);
+            else
+                CallC(Mp_Line, surf, x, y, x + 3, y + 3, 4, 0);
+            Mp_Label(v, x + 15, y, F(const char*, PD, 48));
+        }
+        else if (mp_6f2df4)
+            Mp_Icon(v, x - 5, y - 5, mp_6f2df4);
+        else
+            CallC(Mp_Line, surf, x, y, x + 3, y + 3, 4, 0);
+    }
+    // the player's entries
+    void* e;
+    for (CallC(Mp_EntryFirst, &e, Mp_Me()); e != mp_68b990; CallC(Mp_EntryNext, &e, Mp_Me()))
+    {
+        MpPos32 pos;
+        float p[3];
+        Mp_CoordPos(p, *Mp_PositionId(&pos, e));
+        CallC(Mp_PlayerData, e, PD);
+        int x, y;
+        Mp_At(v, p, x, y);
+        if (Mp_Off(v, x, y) || !mp_6f3330)
+            continue;
+        BYTE* s300 = F(BYTE*, F(BYTE*, mp_6cecbc, 1032), 300);
+        const char* name = s300 ? F(const char*, s300, 12) : 0;
+        if (name && !strcmp(name, F(const char*, PD, 48)) && !((int)(F(double, mp_696ca0, 2968) + F(double, mp_696ca0, 2968)) % 2))
+            continue;
+        Mp_Icon(v, x - 5, y - 5, mp_6f3330);
+    }
+    // the orders' towns blinking
+    for (CallC(Mp_TownFirst, &id); id != -1; id = *CallC<int*>(Mp_TownNext, &id, id))
+    {
+        float p[3];
+        CallC(Mp_TownPos, p, id);
+        int x, y;
+        Mp_At(v, p, x, y);
+        if (Mp_Off(v, x, y))
+            continue;
+        int k = 0;
+        while (k < orders && order[k] != id)
+            k++;
+        if (k >= orders)
+            continue;
+        DWORD tf = CallC<DWORD>(Mp_TownFlags, id);
+        if (tf & 1)
+            Mp_Icon(v, x - 5, y - 5, mp_6f3380);
+        else if (tf & 2)
+            Mp_Icon(v, x - 5, y - 5, (&mp_6f3258)[blink]);
+        else
+            Mp_Icon(v, x - 5, y - 5, (&mp_6f2de4)[blink]);
+    }
+    // the car
+    v.oy = cp.y * v.s + v.oy;
+    v.ox = cp.x * v.s + v.ox;
+    Mp_Icon(v, (int)(v.ox - mp_64b6d0), (int)(v.oy - mp_64b6d0), (&mp_6f2f0c)[phase + heading * 6]);
+    if (F(int, mp_6cec6c, 1316))
+    {
+        CallC(Mp_PlayerData, Mp_Me(), PD);
+        Mp_Label(v, (int)(v.ox + mp_64b918), (int)v.oy, F(const char*, PD, 48));
+    }
+    CallThis(Mp_VecBFree, Q + 88);
+    CallThis(Mp_VecBFree, Q + 76);
+    CallThis(Mp_VecBFree, Q + 64);
+    CallThis(Mp_VecBFree, Q + 52);
+}
+
+} // extern "C"

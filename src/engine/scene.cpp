@@ -1859,17 +1859,17 @@ extern "C" BYTE* __cdecl Sound_CreateFromFile(void* file, int slot, int size, in
 extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4")
 ASM_VAR(AsmLabel, g_q46_722940, $L_722940)
 ASM_VAR(AsmLabel, g_q46_723190, $L_723190)
-ASM_VAR(AsmLabel, g_q46s_5ef410, $L_5ef410)
+extern "C" void g_q46s_5ef410(); KING_ALIAS("_g_q46s_5ef410", "@ListHead_Construct@8")
 ASM_VAR(AsmLabel, g_q46_652a08, $L_652a08)
 // [FUN_5ef4d0] constructs the static 722940
 extern "C" int __cdecl Static722940_Construct(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46s_5ef410, (void*)g_q46_722940);
+    return CallThis<int>(g_q46s_5ef410, (void*)g_q46_722940);
 }
 // [FUN_5ef510] constructs the static 723190
 extern "C" int __cdecl Static723190_Construct(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46s_5ef410, (void*)g_q46_723190);
+    return CallThis<int>(g_q46s_5ef410, (void*)g_q46_723190);
 }
 // [FUN_5f08c0] destructor: the 652a08 vtable, then the base
 extern "C" void __fastcall Sce5f08c0_Destruct(BYTE* s, void*)
@@ -2603,7 +2603,7 @@ extern "C" void FUN_5ab6a0(); KING_ALIAS("_FUN_5ab6a0", "_Vec3_NearlyEqual")
 extern "C" void FUN_5e5720(); KING_ALIAS("_FUN_5e5720", "@Fw_Read5e5720@12")
 extern "C" void Sce_VecCtorEh(); KING_ALIAS("_Sce_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" void FUN_5e69a0(); KING_ALIAS("_FUN_5e69a0", "@Polygon_Read@12")    // reads a 48-byte item (file)
-ASM_VAR(AsmLabel, g_sd5e6980, $L_5e6980)    // its constructor
+extern "C" void g_sd5e6980(); KING_ALIAS("_g_sd5e6980", "@Rec5e6980_Clear@8")    // its constructor
 ASM_VAR(AsmLabel, g_sd5f4b20, $L_5f4b20)    // its destructor
 ASM_VAR(char, s_sd683bcc, $L_683bcc)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
@@ -5050,6 +5050,362 @@ int __fastcall Portal_Draw(BYTE* p, void*, int a, BYTE* r)
     Render_PopState(r, 0);
     g_po723a88 ^= F(DWORD, p, 108);
     return 1;
+}
+
+} // extern "C"
+
+// === reading a scene node record (FUN_5ef830)
+
+extern "C" void Nr_ReadInt(); KING_ALIAS("_Nr_ReadInt", "_File_ReadInt")
+extern "C" void Nr_Node(); KING_ALIAS("_Nr_Node", "@Node_Construct@16")
+extern "C" void Nr_NodeN(); KING_ALIAS("_Nr_NodeN", "@NodeN_Construct@20")
+extern "C" void Nr_Node100(); KING_ALIAS("_Nr_Node100", "@Node5f1530_Construct@12")
+extern "C" void Nr_Group(); KING_ALIAS("_Nr_Group", "@Group_Construct@12")
+extern "C" void Nr_Mesh(); KING_ALIAS("_Nr_Mesh", "@Mesh_ConstructNamed@12")
+extern "C" void Nr_LightInit(); KING_ALIAS("_Nr_LightInit", "@Light_Init@8")
+extern "C" void Nr_Init5e5cb0(); KING_ALIAS("_Nr_Init5e5cb0", "@Obj5e5cb0_Init@8")
+extern "C" void Nr_LightRead(); KING_ALIAS("_Nr_LightRead", "@Light_ReadOld@20")
+extern "C" void Nr_EnvRead(); KING_ALIAS("_Nr_EnvRead", "@SceneNode5f3f30_Read@20")
+extern "C" void Nr_GroupRead(); KING_ALIAS("_Nr_GroupRead", "@SceneNode5fca50_Read@20")
+ASM_FUNC(Nr_AddName, FUN_5d2540)
+ASM_VAR(char, g_nrName, $L_723a04)
+ASM_VAR(AsmLabel, g_nrNames, $L_71e820)
+ASM_VAR(BYTE, g_nr7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, nr_652b38, $L_652b38)
+ASM_VAR(AsmLabel, nr_652aec, $L_652aec)
+ASM_VAR(AsmLabel, nr_652bd0, $L_652bd0)
+ASM_VAR(AsmLabel, nr_652c1c, $L_652c1c)
+ASM_VAR(AsmLabel, nr_64d444, $L_64d444)
+ASM_VAR(AsmLabel, nr_64c26c, $L_64c26c)
+ASM_VAR(AsmLabel, nr_652b84, $L_652b84)
+ASM_VAR(AsmLabel, nr_6515dc, $L_6515dc)
+ASM_VAR(AsmLabel, nr_652aa0, $L_652aa0)
+ASM_VAR(AsmLabel, nr_651ca0, $L_651ca0)
+ASM_VAR(AsmLabel, nr_64c7dc, $L_64c7dc)
+ASM_VAR(AsmLabel, nr_652a54, $L_652a54)
+ASM_VAR(AsmLabel, nr_64d7d0, $L_64d7d0)
+ASM_VAR(AsmLabel, nr_652a08, $L_652a08)
+ASM_VAR(AsmLabel, nr_6529bc, $L_6529bc)
+ASM_VAR(AsmLabel, nr_652970, $L_652970)
+ASM_VAR(AsmLabel, nr_6528d8, $L_6528d8)
+ASM_VAR(AsmLabel, nr_65288c, $L_65288c)
+ASM_VAR(AsmLabel, nr_651590, $L_651590)
+ASM_VAR(AsmLabel, nr_652924, $L_652924)
+ASM_VAR(AsmLabel, nr_650430, $L_650430)
+
+static BYTE* Nr_New(int size)
+{
+    return (BYTE*)operator new(size);
+}
+
+// a NodeN_Construct'ed node of type t (n), its vtable vt and size bytes, the rest left to the caller
+static BYTE* Nr_MakeN(int size, int t, int n, const void* vt)
+{
+    BYTE* o = Nr_New(size);
+    if (!o)
+        return 0;
+    CallThis(Nr_NodeN, o, &g_nrName, t, n);
+    F(const void*, o, 0) = vt;
+    return o;
+}
+
+static BYTE* Nr_Make(int size, int t, const void* vt)
+{
+    BYTE* o = Nr_New(size);
+    if (!o)
+        return 0;
+    CallThis(Nr_Node, o, &g_nrName, t);
+    F(const void*, o, 0) = vt;
+    return o;
+}
+
+static void Nr_Zero(BYTE* o, const int* offs, int n)
+{
+    for (int i = 0; i < n; i++)
+        F(int, o, offs[i]) = 0;
+}
+
+// the camera-like node of type 23 (104 bytes)
+static BYTE* Nr_Env()
+{
+    BYTE* o = Nr_MakeN(104, 23, 1, &nr_652c1c);
+    if (o)
+    {
+        F(double, o, 56) = 100.0;
+        F(double, o, 64) = 1000.0;
+        F(double, o, 72) = 0.3;
+        F(double, o, 80) = -1.0;
+        F(double, o, 88) = -1.0;
+        F(int, o, 96) = 8;
+    }
+    return o;
+}
+
+static BYTE* Nr_Light()
+{
+    BYTE* o = Nr_New(144);
+    if (o)
+    {
+        CallThis(Nr_NodeN, o, &g_nrName, 21, 1);
+        CallThis(Nr_LightInit, o + 56);
+        F(const void*, o, 0) = &nr_64d444;
+        F(int, o, 136) = 1;
+        F(int, o, 140) = 0;
+    }
+    return o;
+}
+
+static BYTE* Nr_Type2(int mark)
+{
+    BYTE* o = Nr_New(120);
+    if (o)
+    {
+        CallThis(Nr_NodeN, o, &g_nrName, 2, 1);
+        CallThis(Nr_Init5e5cb0, o + 72);
+        F(const void*, o, 0) = &nr_652b84;
+        static const int z[] = {56, 112, 116, 68, 108};
+        Nr_Zero(o, z, 5);
+        F(int, o, 108) = mark;
+    }
+    return o;
+}
+
+static BYTE* Nr_Type3(int mark)
+{
+    BYTE* o = Nr_New(116);
+    if (o)
+    {
+        CallThis(Nr_NodeN, o, &g_nrName, 3, 1);
+        CallThis(Nr_Init5e5cb0, o + 68);
+        F(const void*, o, 0) = &nr_6515dc;
+        static const int z[] = {104, 112, 60, 56, 108, 64};
+        Nr_Zero(o, z, 6);
+        F(int, o, 108) = mark;
+    }
+    return o;
+}
+
+static BYTE* Nr_Type8(int v)
+{
+    BYTE* o = Nr_MakeN(68, 8, 2, &nr_652aa0);
+    if (o)
+        F(int, o, 56) = v;
+    return o;
+}
+
+static BYTE* Nr_Type9(int v)
+{
+    BYTE* o = Nr_Make(76, 9, &nr_651ca0);
+    if (o)
+    {
+        F(int, o, 60) = 0;
+        F(int, o, 64) = v;
+    }
+    return o;
+}
+
+// the object's cluster and name, then its own reader read(f, a, b)
+static BYTE* Nr_Finish(BYTE* o, int cluster, void* f, int a, int b, void (*read)())
+{
+    F(int, o, 36) = cluster;
+    if (g_nrName)
+        CallThis(Nr_AddName, &g_nrNames, &g_nrName, o);
+    int ok = read ? CallThis<int>(read, o, f, a, b) : CallVirt<int>(o, 44, f, a, b);
+    return ok ? o : 0;
+}
+
+extern "C" {
+
+// [FUN_5ef830] reads a node record from f (its 32-byte name, then its kind) and makes the node of that kind for
+// cluster c, read by its own reader (vtbl+44, or the camera / lamp / group readers); kinds 0 and 1 are only
+// reported (*kind, *name) and 0 returned, as for unknown kinds
+BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char** name)
+{
+    *kind = -1;
+    fread(&g_nrName, 32, 1, f);
+    unsigned k = CallC<unsigned>(Nr_ReadInt, f);
+    BYTE* o = 0;
+    switch (k)
+    {
+    case 0:
+    case 1:
+        *kind = k;
+        *name = &g_nrName;
+        return 0;
+    case 2:
+        if ((o = Nr_MakeN(72, 7, 3, &nr_652b38)) != 0)
+        {
+            static const int z[] = {56, 60, 64, 68};
+            Nr_Zero(o, z, 4);
+        }
+        break;
+    case 3:
+        o = Nr_MakeN(60, 10, 1, &nr_652aec);
+        break;
+    case 4:
+        if ((o = Nr_MakeN(68, 4, 1, &nr_652bd0)) != 0)
+        {
+            static const int z[] = {56, 60, 64};
+            Nr_Zero(o, z, 3);
+        }
+        break;
+    case 5:
+        if (!strncmp(&g_nrName, "env", 3))
+            return Nr_Finish(Nr_Env(), c, f, a, b, Nr_EnvRead);
+        if (!strncmp(&g_nrName, "lamp", 4))
+            return Nr_Finish(Nr_Light(), c, f, a, b, Nr_LightRead);
+        if ((o = Nr_MakeN(64, 5, 1, &nr_64c26c)) != 0)
+        {
+            F(int, o, 56) = 0;
+            F(int, o, 60) = 0;
+        }
+        break;
+    case 6:
+        o = Nr_Type2(0);
+        break;
+    case 7:
+        o = Nr_Type3(0);
+        break;
+    case 8:
+        if ((o = Nr_New(100)) != 0)
+            o = CallThis<BYTE*>(Nr_Node100, o, &g_nrName);
+        break;
+    case 9:
+    case 22:
+        o = Nr_Type8(5);
+        break;
+    case 10:
+        o = Nr_Type8(1);
+        break;
+    case 11:
+        o = Nr_Type8(3);
+        break;
+    case 12:
+        o = Nr_Type9(5);
+        break;
+    case 13:
+        o = Nr_Type9(0);
+        break;
+    case 14:
+        o = Nr_Type9(1);
+        break;
+    case 15:
+        o = Nr_Type9(2);
+        break;
+    case 16:
+        o = Nr_Type9(3);
+        break;
+    case 17:
+        o = Nr_Type9(4);
+        break;
+    case 18:
+        if ((o = Nr_Make(88, 17, &nr_64c7dc)) != 0)
+        {
+            memset(o + 48, 0, 36);
+            F(int, o, 84) = -1;
+        }
+        break;
+    case 19:
+        if ((o = Nr_New(320)) != 0)
+            o = CallThis<BYTE*>(Nr_Group, o, &g_nrName);
+        break;
+    case 20:
+        o = Nr_Type9(7);
+        break;
+    case 21:
+        if ((o = Nr_MakeN(64, 18, 0, &nr_652a54)) != 0)
+        {
+            F(int, o, 56) = 0;
+            F(int, o, 60) = 0;
+        }
+        break;
+    case 23:
+        o = Nr_Type9(6);
+        break;
+    case 24:
+        if ((o = Nr_MakeN(112, 6, 1, &nr_64d7d0)) != 0)
+            memcpy(o + 64, &g_nr7025f0, 48);
+        break;
+    case 25:
+        if ((o = Nr_Make(108, 16, &nr_652a08)) != 0)
+            memset(o + 80, 0, 28);
+        break;
+    case 26:
+        if ((o = Nr_MakeN(72, 19, 1, &nr_6529bc)) != 0)
+            memset(o + 56, 0, 16);
+        break;
+    case 27:
+        if ((o = Nr_Make(72, 12, &nr_652970)) != 0)
+        {
+            static const int z[] = {56, 60, 64, 48, 52};
+            Nr_Zero(o, z, 5);
+        }
+        break;
+    case 28:
+        if ((o = Nr_New(68)) != 0)
+            o = CallThis<BYTE*>(Nr_Mesh, o, &g_nrName);
+        break;
+    case 29:
+        if ((o = Nr_MakeN(84, 13, 0, &nr_6528d8)) != 0)
+            memset(o + 56, 0, 28);
+        break;
+    case 30:
+        if ((o = Nr_Make(196, 14, &nr_65288c)) != 0)
+        {
+            memset(o + 48, 0, 84);
+            o[132] = 0;
+            o[164] = 0;
+        }
+        break;
+    case 31:
+        if ((o = Nr_Make(96, 20, &nr_651590)) != 0)
+        {
+            static const int z[] = {56, 60, 64, 68, 84, 88, 92, 48, 52, 76, 80};
+            Nr_Zero(o, z, 11);
+        }
+        break;
+    case 33:
+        o = Nr_Light();
+        break;
+    case 34:
+        if ((o = Nr_Make(64, 22, &nr_652924)) != 0)
+        {
+            F(int, o, 48) = 0;
+            F(int, o, 56) = 0;
+            F(int, o, 60) = 0;
+        }
+        break;
+    case 35:
+        if ((o = Nr_New(100)) != 0)
+            o = CallThis<BYTE*>(Nr_Node100, o, &g_nrName);
+        F(short, o, 96) = 1;
+        break;
+    case 36:
+        o = Nr_Type2(1);
+        break;
+    case 37:
+        o = Nr_Type3(1);
+        break;
+    case 39:
+        o = Nr_Env();
+        break;
+    case 40:
+        if ((o = Nr_Make(76, 24, &nr_650430)) != 0)
+        {
+            static const int z[] = {72, 56, 48, 52};
+            Nr_Zero(o, z, 4);
+        }
+        break;
+    case 41:
+        if ((o = Nr_New(320)) != 0)
+            o = CallThis<BYTE*>(Nr_Group, o, &g_nrName);
+        return Nr_Finish(o, c, f, a, b, Nr_GroupRead);
+    default:
+        return 0;
+    }
+    if (!o)
+        return 0;
+    return Nr_Finish(o, c, f, a, b, 0);
 }
 
 } // extern "C"

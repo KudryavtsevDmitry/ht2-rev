@@ -20542,7 +20542,7 @@ extern "C" void $L_429fb0(); KING_ALIAS("_$L_429fb0", "_Task_OrdersExpired")
 extern "C" void $L_42a120(); KING_ALIAS("_$L_42a120", "_Task_PresentOrdersExpired")
 extern "C" void __cdecl Task_DropOldPresents();
 extern "C" void __cdecl Task_DropOldRacePresents();
-ASM_PROC($L_432dd0)
+extern "C" void $L_432dd0(); KING_ALIAS("_$L_432dd0", "_Ai_UpdateChasedCars")
 extern "C" void $L_420040(); KING_ALIAS("_$L_420040", "_Task_TrafficJam")
 extern "C" void __cdecl Task_FarSounds();
 extern "C" void $L_4208b0(); KING_ALIAS("_$L_4208b0", "_Task_ChangeLanes")
@@ -24104,6 +24104,66 @@ BYTE** __cdecl Holders_PartitionByDistance(BYTE** first, BYTE** last, BYTE* pivo
         *last = x;
         first++;
     }
+}
+
+} // extern "C"
+
+// === updateChasedCars() (a task at $L_432dd0)
+
+extern "C" void Uc_Drop(); KING_ALIAS("_Uc_Drop", "_Ai_DropOrdersForfeit")
+ASM_VAR(AsmLabel, s_updateChasedCars, $L_66e0c8)
+ASM_VAR(double, g_uc66c798, $L_66c798)
+
+extern "C" {
+
+// [$L_432dd0] updateChasedCars(): every mafia (type 6) or police (type 5) player chasing another (+960, not one
+// standing still +92 == 1) drives to it, and catching it (closer than 66c798) stops both for 5 s, drops the
+// target's orders and forgets the chase (the mafia's targets cleared, the police's forgotten)
+void __cdecl Ai_UpdateChasedCars()
+{
+    Trace_EnterBuffered(s_updateChasedCars);
+    BYTE* head = g_playersHead;
+    for (BYTE* it = *(BYTE**)head; it != g_playersHead; it = *(BYTE**)it)
+    {
+        if (!CallC<BYTE*>(FUN_40a9f0, it))
+            continue;
+        int type = F(int, CallC<BYTE*>(FUN_40a9f0, it), 84);
+        if (type != 6 && type != 5)
+            continue;
+        BYTE* tgt = F(BYTE*, CallC<BYTE*>(FUN_40a9f0, it), 960);
+        if (tgt == g_playersHead || F(int, tgt, 92) == 1)
+            continue;
+        BYTE sa[24], sb[24];
+        const double* a = (const double*)Player_CopyState(sa, tgt);
+        const double* b = (const double*)Player_CopyState(sb, it);
+        double dist;
+        if (type == 6)
+        {
+            double d[3];                               // as Rec_Set6 stores them
+            d[0] = b[0] - a[0];
+            d[1] = b[1] - a[1];
+            d[2] = b[2] - a[2];
+            dist = x87_sqrt(d[0] * d[0] + d[1] * d[1] + d[2] * d[2]);
+        }
+        else
+        {
+            double x = b[0] - a[0], y = b[1] - a[1], z = b[2] - a[2];
+            dist = x87_sqrt(x * x + y * y + z * z);
+        }
+        if (!(dist < g_uc66c798))
+        {
+            Player_GoTo(it, *(PositionId*)(tgt + 40), 2);
+            continue;
+        }
+        Player_Call477bd0(it, 0, 0x40140000);
+        Player_Call477bd0(tgt, 0, 0x40140000);
+        CallC(Uc_Drop, tgt);
+        if (type == 6)
+            Ai_ClearPlayerFromMafia((int)tgt);
+        else
+            CallC(FUN_427220, tgt);
+    }
+    Trace_Leave(s_updateChasedCars);
 }
 
 } // extern "C"

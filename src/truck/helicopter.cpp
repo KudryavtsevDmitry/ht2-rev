@@ -2408,7 +2408,7 @@ extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s
 
 extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle (surface, rect, color, flags)
 ASM_PROC(FUN_4d2b30)
-ASM_PROC(FUN_529890)
+extern "C" void FUN_529890(); KING_ALIAS("_FUN_529890", "@Map_Draw@16")
 extern "C" void FUN_56bc80(); KING_ALIAS("_FUN_56bc80", "@CopterPanel_Draw@8")
 extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
 extern "C" void FUN_401aa0(); KING_ALIAS("_FUN_401aa0", "@Stl_Lock@8")
@@ -5117,7 +5117,7 @@ int __cdecl MissionObj_Event(int* e, int a)
 // === a turret firing at its target (FUN_567bb0)
 
 extern "C" int __cdecl rand(void);
-ASM_PROC(FUN_567440)
+extern "C" void FUN_567440(); KING_ALIAS("_FUN_567440", "_Bullet_Fly")
 extern "C" void Tf_GameTime(); KING_ALIAS("_Tf_GameTime", "_Game_Time")
 extern "C" void Tf_Matrix1(); KING_ALIAS("_Tf_Matrix1", "@SceneObj_Matrix1@12")
 extern "C" void Tf_Normalized(); KING_ALIAS("_Tf_Normalized", "_Vec3_Normalized")
@@ -6088,6 +6088,818 @@ void __fastcall Copter_FindLanding(BYTE* s, void*)
         return;
     Matrix T;
     Cp_Place(s, obj, Matrix_Translation(&T, F(Vec3, s, 3256)));
+}
+
+} // extern "C"
+
+// === a bullet's flight (FUN_567440)
+
+extern "C" void Sh_Query(); KING_ALIAS("_Sh_Query", "_Query_4e7476")
+extern "C" void Sh_InList(); KING_ALIAS("_Sh_InList", "_Car_InList")
+extern "C" void Sh_InList16(); KING_ALIAS("_Sh_InList16", "_Car_InListFrom16")
+extern "C" void Sh_54efb0(); KING_ALIAS("_Sh_54efb0", "_Veh_54efb0")
+extern "C" void Sh_Ramp(); KING_ALIAS("_Sh_Ramp", "@Ramp_Value@8")
+extern "C" void Sh_555500(); KING_ALIAS("_Sh_555500", "@Car_555500@8")
+extern "C" void Sh_Flasher(); KING_ALIAS("_Sh_Flasher", "@CarEffect_StartFlasher@4")
+extern "C" void Sh_Camera(); KING_ALIAS("_Sh_Camera", "@View_CameraMatrix@12")
+extern "C" void Sh_Play(); KING_ALIAS("_Sh_Play", "_Sound_PlayRange")
+extern "C" void Sh_NodeInit(); KING_ALIAS("_Sh_NodeInit", "@Node_Init@8")
+extern "C" void Sh_M1(); KING_ALIAS("_Sh_M1", "@SceneObj_Matrix1@12")
+extern "C" void Sh_M2(); KING_ALIAS("_Sh_M2", "@SceneObj_Matrix2@12")
+extern "C" void Sh_MulAssign(); KING_ALIAS("_Sh_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Sh_Set(); KING_ALIAS("_Sh_Set", "@Vec3_SetThis@20")
+extern "C" void Sh_AddAssign(); KING_ALIAS("_Sh_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(float, g_sh67b2b0, $L_67b2b0)
+ASM_VAR(double, g_sh64fd30, $L_64fd30)
+ASM_VAR(Vec3, g_shUp, $L_702630)
+ASM_VAR(float, g_sh67b2ac, $L_67b2ac)
+ASM_VAR(float, g_sh64fd2c, $L_64fd2c)
+ASM_VAR(float, g_sh67b2b4, $L_67b2b4)
+ASM_VAR(float, g_sh64fd28, $L_64fd28)
+ASM_VAR(float, g_sh64c254, $L_64c254)
+ASM_VAR(double, g_sh64d338, $L_64d338)
+ASM_VAR(double, g_sh64b840, $L_64b840)
+ASM_VAR(double, g_sh64d0f0, $L_64d0f0)
+ASM_VAR(double, g_sh64b670, $L_64b670)
+ASM_VAR(double, g_sh64d668, $L_64d668)
+ASM_VAR(double, g_sh64b5a0, $L_64b5a0)
+ASM_VAR(AsmLabel, g_shDust, $L_67b604)
+
+extern "C" {
+
+// [FUN_567440] a bullet of object o from `from` to `to` (query mask mask, strength power): a car hit gets a push
+// along the flight (16000 - rand() random, from the car's mass), turned at the hit point, its scrape sound and
+// sometimes its flasher; ground hits a puff of bulletDust; the hit and the shot's sounds play at the camera
+void __cdecl Bullet_Fly(int o, BYTE* from, BYTE* to, int mask, float power)
+{
+    __declspec(align(8)) BYTE node[208];
+    CallThis(Sh_NodeInit, node);
+    int r = CallC<int>(Sh_Query, o, mask, 0, from, to, node);
+    int hit = r & 1;
+    BYTE* c = 0;
+    const Vec3& P = F(Vec3, node, 52);
+    if (hit && F(BYTE*, node, 116) && (c = CallC<BYTE*>(Sh_InList16, F(BYTE*, node, 116))) != 0 &&
+        CallC<BYTE*>(Sh_InList, c))
+    {
+        const Vec3* A = (const Vec3*)from;
+        const Vec3* B = (const Vec3*)to;
+        Vec3 d, n;
+        d.x = (float)((double)B->x - A->x);
+        d.y = (float)((double)B->y - A->y);
+        d.z = (float)((double)B->z - A->z);
+        n = *Vec3_Normalized(&n, &d);
+        double k = (16000 - rand()) * (double)g_sh67b2b0 * g_sh64fd30;
+        float uz = (float)(k * g_shUp.z), uy = (float)(k * g_shUp.y);
+        double s = g_sh67b2ac;
+        float zf = (float)((double)(float)(n.z * s) + uz);
+        float yf = (float)((double)(float)(n.y * s) + uy);
+        double X = n.x * s + k * g_shUp.x;
+        float mass = F(float, c, 3284);
+        double g = x87_sqrt(mass * (double)g_sh64fd2c) * power;
+        Vec3 J;
+        J.z = (float)(zf * g);
+        J.y = (float)(yf * g);
+        double Xg = X * g;
+        J.x = (float)Xg;
+        Vec3 v = F(Vec3, c, 432), nv;
+        nv.z = (float)((double)v.z + (float)(J.z / (double)mass));
+        nv.y = (float)((double)v.y + (float)(J.y / (double)mass));
+        nv.x = (float)((double)v.x + (float)(Xg / mass));
+        BYTE* body = c + 16;
+        Matrix t1;
+        const float* m1 = CallThis<const Matrix*>(Sh_M1, body, &t1)->m;
+        double rz = (double)P.z - m1[11], ry = (double)P.y - m1[10], rx = (double)P.x - m1[9];
+        float tz = (float)(J.y * rx - ry * J.x);
+        float ty = (float)(rz * J.x - J.z * rx);
+        float tx = (float)(J.z * ry - J.y * rz);
+        double ts = g_sh67b2b4;
+        Vec3 T, tmp;
+        T.x = (float)(tx * ts);
+        T.y = (float)(ty * ts);
+        T.z = (float)(tz * ts);
+        CallVirt(body, 144, &nv, 0);
+        Vec3 w0 = F(Vec3, c, 456);
+        CallThis(Sh_AddAssign, &T, &tmp, &w0);
+        CallVirt(body, 152, &T, 0);
+        Vec3 vp = F(Vec3, c, 432);
+        const float* m2 = CallThis<const Matrix*>(Sh_M2, body, &t1)->m;
+        Vec3 L;
+        CallThis(Sh_Set, &L,
+                     (float)((double)P.y * m2[3] + (double)P.z * m2[6] + (double)P.x * m2[0] + m2[9]),
+                     (float)((double)P.y * m2[4] + (double)P.z * m2[7] + (double)P.x * m2[1] + m2[10]),
+                     (float)((double)P.y * m2[5] + (double)P.z * m2[8] + (double)P.x * m2[2] + m2[11]));
+        Vec3 W = F(Vec3, c, 444), wl, rot;
+        CallThis(Sh_Set, &wl, (float)((double)L.z * W.y - (double)W.z * L.y),
+                     (float)((double)W.z * L.x - (double)L.z * W.x), (float)((double)W.x * L.y - (double)W.y * L.x));
+        Vec3 wl2 = wl;
+        const Matrix* M1 = CallThis<const Matrix*>(Sh_M1, body, &t1);
+        CallThis(Sh_AddAssign, &vp, &tmp, Vec3_RotateBy(&rot, &wl2, M1));
+        CallC(Sh_54efb0, &P, &vp);
+        BYTE* ramp = c + 21256;
+        float kr = (float)(CallThis<double>(Sh_Ramp, ramp) * g_sh64fd28);
+        CallThis(Sh_MulAssign, &J, &tmp, kr);
+        CallVirt(body, 164, &P, &J);
+        float rr = (float)(rand() * (double)g_sh64c254);
+        CallThis<double>(Sh_555500, c);
+        double lim = g_sh64b670 - CallThis<double>(Sh_Ramp, ramp) * power * g_sh64d668 / (power + g_sh64d0f0);
+        if (lim < rr)
+            CallThis(Sh_Flasher, c + 21568);
+        F(int, c, 21648) = 1;
+        F(Vec3, c, 21772) = P;
+        F(float, c, 21824) = 1.0f;
+    }
+    Matrix cam;
+    CallThis(Sh_Camera, g_6ef1fc, &cam);
+    float vol = g_ws6cec78 ? (float)(F(short, g_ws6cec78, 386) * g_sh64b5a0) : (float)g_sh64b670;
+    if (hit)
+    {
+        Vec3 h;
+        Vec3_MulMatrix(&h, &P, &cam);
+        CallC(Sh_Play, g_hitgrndSound, 0x40000000, *(int*)&vol, &h);
+        if (!c)
+        {
+            int src = r & 2 ? F(int, node, 104) : o;
+            BYTE* q = (BYTE*)operator new(192);
+            BYTE* e = 0;
+            if (q)
+                e = CallThis<BYTE*>(FUN_5a4f00, q, g_6ef1fc, src, P.x, P.y, P.z, 0, 0x3FC00000, (const char*)g_shDust,
+                                    (const char*)g_str68d1c0, 3, 0x9999999Au, 0x3fb99999);
+            CallVirt(e, 24, 1);
+        }
+    }
+    Vec3 f;
+    Vec3_MulMatrix(&f, (const Vec3*)from, &cam);
+    CallC(Sh_Play, g_shootSound, 0x40400000, *(int*)&vol, &f);
+}
+
+} // extern "C"
+
+// === the game's messages to the player's side (FUN_56ffd0)
+
+extern "C" void Gm_CarId(); KING_ALIAS("_Gm_CarId", "_Player_CarId")
+extern "C" void Gm_Flags(); KING_ALIAS("_Gm_Flags", "_Player_Flags")
+extern "C" void Gm_MarkHuman(); KING_ALIAS("_Gm_MarkHuman", "_AI_MarkHuman")
+extern "C" void Gm_FinishPlayer(); KING_ALIAS("_Gm_FinishPlayer", "_Ai_FinishPlayer")
+extern "C" void Gm_HumanFinished(); KING_ALIAS("_Gm_HumanFinished", "_Ai_HumanFinished")
+extern "C" void Gm_NoticeShow(); KING_ALIAS("_Gm_NoticeShow", "_Notice_Show")
+extern "C" void Gm_NoticeSet(); KING_ALIAS("_Gm_NoticeSet", "@Notice_Set@16")
+extern "C" void Gm_Text(); KING_ALIAS("_Gm_Text", "_Table71e858_Get")
+extern "C" void Gm_RampHigh(); KING_ALIAS("_Gm_RampHigh", "@Ramp_High@8")
+extern "C" void Gm_RampPos(); KING_ALIAS("_Gm_RampPos", "@Ramp_Position@8")
+extern "C" void Gm_RampSet(); KING_ALIAS("_Gm_RampSet", "@Ramp_SetValue@12")
+extern "C" void Gm_Value136(); KING_ALIAS("_Gm_Value136", "_Player_Value136")
+extern "C" void Gm_Set136(); KING_ALIAS("_Gm_Set136", "_Player_Set136")
+extern "C" void Gm_Message(); KING_ALIAS("_Gm_Message", "_Messages_Add569720")
+extern "C" void Gm_MessageAdd(); KING_ALIAS("_Gm_MessageAdd", "_Messages_Add")
+extern "C" void Gm_FindObj(); KING_ALIAS("_Gm_FindObj", "_Objects_Find")
+extern "C" void Gm_SoundRestart(); KING_ALIAS("_Gm_SoundRestart", "@Sound_Restart@16")
+extern "C" void Gm_Cargo(); KING_ALIAS("_Gm_Cargo", "_Driver_CargoFactor")
+extern "C" void Gm_ClearFlags(); KING_ALIAS("_Gm_ClearFlags", "_Player_ClearFlags")
+extern "C" void Gm_53b3c0(); KING_ALIAS("_Gm_53b3c0", "@King_53b3c0@12")
+extern "C" void Gm_M1(); KING_ALIAS("_Gm_M1", "@SceneObj_Matrix1@12")
+extern "C" void Gm_First(); KING_ALIAS("_Gm_First", "_List68cf6c_First")
+extern "C" void Gm_Next(); KING_ALIAS("_Gm_Next", "_List68cf6c_Next")
+extern "C" void Gm_Field8(); KING_ALIAS("_Gm_Field8", "_Rec_Field8")
+extern "C" void Gm_ResGet(); KING_ALIAS("_Gm_ResGet", "@Resources_Get@12")
+extern "C" void Gm_ResAdd(); KING_ALIAS("_Gm_ResAdd", "@Resources_AddRecord@20")
+extern "C" void Gm_ResDelete(); KING_ALIAS("_Gm_ResDelete", "@Resources_Delete@12")
+extern "C" void Gm_Length(); KING_ALIAS("_Gm_Length", "_Vec3_Length")
+extern "C" void Gm_FindTaker(); KING_ALIAS("_Gm_FindTaker", "_Vehicle_FindTaker")
+extern "C" void Gm_LoadPresent(); KING_ALIAS("_Gm_LoadPresent", "_Ai_LoadPresent")
+extern "C" void Gm_ApplyCargo(); KING_ALIAS("_Gm_ApplyCargo", "_Copter_ApplyCargo")
+extern "C" void Gm_568f90(); KING_ALIAS("_Gm_568f90", "_Game_568f90")
+extern "C" void Gm_PickLater(); KING_ALIAS("_Gm_PickLater", "_Ai_PickPresentLater")
+extern "C" void Gm_Log(); KING_ALIAS("_Gm_Log", "_Sys_Log")
+extern "C" void Gm_Fatal(); KING_ALIAS("_Gm_Fatal", "_Sys_Fatal")
+extern "C" void Gm_ForEach(); KING_ALIAS("_Gm_ForEach", "_Array_ForEach@16")
+extern "C" void Gm_ZeroThis(); KING_ALIAS("_Gm_ZeroThis", "@Vec3_ZeroThis@8")
+extern "C" void Gm_InitState(); KING_ALIAS("_Gm_InitState", "@Fx_InitState@8")
+extern "C" void Gm_Present(); KING_ALIAS("_Gm_Present", "_Ai_GetPresentData")
+extern "C" void Gm_Vec1Free(); KING_ALIAS("_Gm_Vec1Free", "@Vec1_Free@8")
+extern "C" void Gm_VecBFree(); KING_ALIAS("_Gm_VecBFree", "@VecB_FreeStorage@8")
+extern "C" void Gm_HasOrder(); KING_ALIAS("_Gm_HasOrder", "_Ai_HasOrderForTown")
+extern "C" void Gm_LoadOrder(); KING_ALIAS("_Gm_LoadOrder", "_Ai_LoadOrder")
+extern "C" void Gm_OrderInfo(); KING_ALIAS("_Gm_OrderInfo", "_Ai_GetOrderInfo")
+extern "C" void Gm_Set6fb3e8(); KING_ALIAS("_Gm_Set6fb3e8", "_Set6fb3e8")
+extern "C" void Gm_Restart(); KING_ALIAS("_Gm_Restart", "@Obj53e490_Restart@8")
+extern "C" void Gm_Near(); KING_ALIAS("_Gm_Near", "_Fx_VehicleNear")
+extern "C" void Gm_GetState(); KING_ALIAS("_Gm_GetState", "_Player_GetState")
+extern "C" void Gm_Send962(); KING_ALIAS("_Gm_Send962", "_Copter_Send962")
+extern "C" void Gm_Fine(); KING_ALIAS("_Gm_Fine", "_Ai_FineForSpeeding")
+ASM_VAR(BYTE*, gm_6f3498, $L_6f3498)
+ASM_VAR(BYTE*, gm_6f33ac, $L_6f33ac)
+ASM_VAR(BYTE*, gm_6f34a4, $L_6f34a4)
+ASM_VAR(BYTE*, gm_6f34a8, $L_6f34a8)
+ASM_VAR(BYTE*, gm_6cec6c, $L_6cec6c)
+ASM_VAR(int, gm_66c6e0, $L_66c6e0)
+ASM_VAR(int, gm_6f33b8, $L_6f33b8)
+ASM_VAR(BYTE*, gm_6cec98, $L_6cec98)
+ASM_VAR(int, gm_6f33bc, $L_6f33bc)
+ASM_VAR(int, gm_6f33f4, $L_6f33f4)
+ASM_VAR(BYTE*, gm_6d2078, $L_6d2078)
+ASM_VAR(BYTE*, gm_6cecac, $L_6cecac)
+ASM_VAR(BYTE*, gm_6cecb0, $L_6cecb0)
+ASM_VAR(BYTE*, gm_6f3430, $L_6f3430)
+ASM_VAR(BYTE*, gm_696848, $L_696848)
+ASM_VAR(DWORD, gm_6f33fc, $L_6f33fc)
+ASM_VAR(void*, gm_68cf6c, $L_68cf6c)
+ASM_VAR(void*, gm_6f2f08, $L_6f2f08)
+ASM_VAR(int, gm_6f3400, $L_6f3400)
+ASM_VAR(BYTE*, gm_6f3434, $L_6f3434)
+ASM_VAR(BYTE*, gm_696ca0, $L_696ca0)
+ASM_VAR(int, gm_6f33c0, $L_6f33c0)
+ASM_VAR(char, gm_68d168, $L_68d168)
+ASM_VAR(double, gm_6f34c8, $L_6f34c8)
+ASM_VAR(BYTE*, gm_696338, $L_696338)
+ASM_VAR(int, gm_6f34d0, $L_6f34d0)
+ASM_VAR(int, gm_6f3488, $L_6f3488)
+ASM_VAR(int, gm_6f348c, $L_6f348c)
+ASM_VAR(int, gm_6f3428, $L_6f3428)
+ASM_VAR(BYTE, gm_7025f0, $L_7025f0)
+ASM_VAR(Vec3, gm_702620, $L_702620)
+ASM_VAR(double, gm_64b6e0, $L_64b6e0)
+ASM_VAR(double, gm_64b6d0, $L_64b6d0)
+ASM_VAR(double, gm_64b670, $L_64b670)
+ASM_VAR(double, gm_64b678, $L_64b678)
+ASM_VAR(float, gm_64c250, $L_64c250)
+ASM_VAR(double, gm_64b5a0, $L_64b5a0)
+ASM_VAR(double, gm_64b848, $L_64b848)
+ASM_VAR(double, gm_64b940, $L_64b940)
+ASM_VAR(double, gm_64b5b8, $L_64b5b8)
+ASM_VAR(double, gm_64d0c0, $L_64d0c0)
+ASM_VAR(float, gm_64c32c, $L_64c32c)
+ASM_VAR(float, gm_64c264, $L_64c264)
+ASM_VAR(float, gm_64c40c, $L_64c40c)
+ASM_VAR(float, gm_64ff20, $L_64ff20)
+ASM_VAR(double, gm_64ff18, $L_64ff18)
+ASM_VAR(double, gm_64d0e0, $L_64d0e0)
+ASM_VAR(double, gm_64d0e8, $L_64d0e8)
+ASM_VAR(float, gm_64c320, $L_64c320)
+ASM_VAR(float, gm_64fd28, $L_64fd28)
+ASM_VAR(double, gm_64b868, $L_64b868)
+
+static int Gm_Me()
+{
+    int id;
+    CallC(Gm_CarId, &id);
+    return id;
+}
+
+static const char* Gm_T(int n)
+{
+    return CallC<const char*>(Gm_Text, n);
+}
+
+static void Gm_Sound(const char* name)
+{
+    CallThis(Gm_SoundRestart, CallC<BYTE*>(Gm_FindObj, name), 0.5f, 0.5f);
+}
+
+static void Gm_Notice(int text)
+{
+    CallThis(Gm_NoticeSet, gm_6f3430, 8, Gm_T(text));
+}
+
+static BYTE* Gm_Car()
+{
+    return F(BYTE*, gm_6d2078, 616);
+}
+
+static Vec3 Gm_Pos(BYTE* o)
+{
+    Matrix t;
+    return F(Vec3, CallThis<BYTE*>(Gm_M1, o, &t), 36);
+}
+
+static float Gm_Dist(BYTE* o, BYTE* c)
+{
+    Vec3 a = Gm_Pos(o), b = Gm_Pos(c), d;
+    d.x = (float)((double)a.x - b.x);
+    d.y = (float)((double)a.y - b.y);
+    d.z = (float)((double)a.z - b.z);
+    return (float)CallC<double>(Gm_Length, &d);
+}
+
+// the car's facing (702620 turned by its frame)
+static Vec3 Gm_Facing(BYTE* car)
+{
+    Matrix t;
+    const float* m = CallThis<const Matrix*>(Gm_M1, car + 16, &t)->m;
+    const Vec3& f = gm_702620;
+    Vec3 r;
+    r.x = (float)((double)f.z * m[6] + (double)f.y * m[3] + (double)f.x * m[0]);
+    r.y = (float)((double)f.z * m[7] + (double)f.y * m[4] + (double)f.x * m[1]);
+    r.z = (float)((double)f.z * m[8] + (double)f.y * m[5] + (double)f.x * m[2]);
+    return r;
+}
+
+// the car has room for an order or present: vtbl+136 above +164 and +140 above +148
+static bool Gm_HasRoom(BYTE* car)
+{
+    float a = (float)CallVirt<double>(car, 164);
+    if (!(CallVirt<double>(car, 136) > a))
+        return false;
+    float b = (float)CallVirt<double>(car, 148);
+    return CallVirt<double>(car, 140) > b;
+}
+
+// the 280-byte present record Ai_GetPresentData fills
+static void Gm_PresentInit(BYTE* P)
+{
+    F(int, P, 0) = 0;
+    CallStd(Gm_ForEach, P + 4, 12, 4, Gm_ZeroThis);
+    memcpy(P + 4, &gm_7025f0, 48);
+    memset(P + 52, 0, 12);
+    F(int, P, 64) = 0;
+    F(int, P, 68) = 0;
+    F(int, P, 72) = -1;
+    F(int, P, 76) = -1;
+    CallThis(Gm_InitState, P + 80);
+    F(int, P, 272) = -1;
+    F(int, P, 276) = -1;
+}
+
+// with 6f33f4 set: who's vtbl+36 when the cab's +13100 is below 64b6e0; else the notice 306 when not shown yet
+static void Gm_Waiting(BYTE* cab, BYTE* who)
+{
+    if (gm_6f33f4)
+    {
+        if (F(float, cab, 13100) < gm_64b6e0)
+        {
+            CallVirt(who, 36);
+            F(int, gm_6f3430, 60) = 0;
+        }
+    }
+    else if (gm_6f3430 && !F(int, gm_6f3430, 60) && gm_696848 != who)
+        Gm_Notice(306);
+}
+
+extern "C" {
+
+// [FUN_56ffd0] message m (+0 id, +4 value, +12 data) for the player's side: laps, refuelling (14 / 21) and repairs
+// (15) paid from the player's money, presents and orders picked up (20, 25 / 17), notices, the copter's sounds,
+// fines for speeding past cameras (30) and the like; 0 when not handled
+int __cdecl Game_PlayerMessage(int* m)
+{
+    int id = m[0];
+    if ((unsigned)id > 3264)
+        return 0;
+    if (id == 3264)
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        gm_6f3428 = 1;
+        return 1;
+    }
+    if ((unsigned)(id - 3) > 27)
+        return 0;
+    BYTE* car;
+    switch (id)
+    {
+    case 3:
+        return 1;
+    case 4:
+        if (gm_6f3498)
+            F(DWORD, gm_6f3498, 164) &= ~0x12u;
+        if (gm_6f33ac && F(int, gm_6f33ac, 500))
+            F(DWORD, gm_6f33ac, 572) |= 128;
+        return 1;
+    case 5:
+        if (gm_6f33ac && F(int, gm_6f33ac, 500))
+            F(DWORD, gm_6f33ac, 572) |= 128;
+        return 1;
+    case 6:
+        F(int, gm_6f33ac, 576) = m[1];
+        if (!m[1])
+        {
+            if (gm_6f34a4)
+                CallVirt(gm_6f34a4, 40);
+        }
+        else if (gm_6f34a8)
+            CallVirt(gm_6f34a8, 40);
+        return 1;
+    case 7:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        if (gm_66c6e0 != 1 || !(CallC<int>(Gm_Flags, Gm_Me()) & 0x4000))
+            return 1;
+        int lap = m[1];
+        if (lap != gm_6f33b8 + 1)
+        {
+            if (lap == 2 && !gm_6f33b8)
+                CallC(Gm_NoticeShow, 6, 0, 0, 0);
+            return 1;
+        }
+        CallC(Gm_MarkHuman, lap);
+        gm_6f33b8 = m[1];
+        int last = 4, laps = 3;
+        if (F(int, gm_6cec6c, 1316) && F(int, gm_6cec98, 384) == 1)
+        {
+            laps = 1;
+            last = 2;
+        }
+        if (gm_6f33b8 != last)
+        {
+            if (gm_6f33b8 > 0)
+                CallC(Gm_NoticeShow, 7, 0, 0, 0);
+            return 1;
+        }
+        if (++gm_6f33bc == laps)
+        {
+            gm_6f33bc = 0;
+            CallC(Gm_FinishPlayer, Gm_Me());
+        }
+        else
+            CallC(Gm_NoticeShow, 3, 0, gm_6f33bc, laps);
+        gm_6f33b8 = -1;
+        return 1;
+    }
+    case 14:
+    case 21:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        BYTE* cab = F(BYTE*, Gm_Car(), 21600);
+        if (!F(int, gm_6cec6c, 1304))
+        {
+            Gm_Waiting(cab, gm_6cecac);
+            return 1;
+        }
+        // refuelling
+        BYTE* ramp = cab + 16112;
+        double hi = CallThis<double>(Gm_RampHigh, ramp);
+        double x = (gm_64c250 - CallThis<double>(Gm_RampPos, ramp)) * hi;
+        if (!(x > gm_64b6d0))
+            return 1;
+        int n = (int)(x + x);
+        double money = CallC<double>(Gm_Value136, Gm_Me());
+        if (!(money > gm_64b670))
+            return 1;
+        double sub = gm_64b678;
+        if (n > money)
+        {
+            sub = x - money * gm_64b6e0;
+            n = (int)money;
+        }
+        CallThis(Gm_RampSet, F(BYTE*, Gm_Car(), 21600) + 16112, (float)(hi - sub));
+        CallC(Gm_Set136, Gm_Me(), money - n);
+        char buf[400];
+        sprintf(buf, Gm_T(11), n);
+        CallC(Gm_Message, buf);
+        Gm_Sound("refuelSound");
+        return 1;
+    }
+    case 15:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        BYTE* cab = F(BYTE*, Gm_Car(), 21600);
+        Gm_Waiting(cab, gm_6cecb0);
+        if (!F(int, gm_6cec6c, 1304))
+            return 1;
+        // repairs
+        gm_6f33fc |= 0x8000;
+        car = Gm_Car();
+        double dmg = CallVirt<double>(car, 84);
+        if (!(dmg > gm_64b5a0))
+            return 1;
+        double money = CallC<double>(Gm_Value136, Gm_Me());
+        int n = (int)(dmg * gm_64b848);
+        CallVirt(car, 116);
+        CallVirt(Gm_Car(), 120);
+        double cargo = 0;
+        if (CallC<int>(Gm_Flags, Gm_Me()) & 0x2000000)
+            cargo = CallC<double>(Gm_Cargo, Gm_Me());
+        double cost = cargo + n;
+        double left;
+        if (money < cost)
+        {
+            n = (int)money;
+            left = dmg - money * gm_64b940;
+        }
+        else
+        {
+            dmg += gm_64b5b8;
+            n = (int)cost;
+            if (CallC<int>(Gm_Flags, Gm_Me()) & 0x2000000)
+            {
+                CallC(Gm_MessageAdd, Gm_T(119));
+                CallC(Gm_ClearFlags, Gm_Me());
+            }
+            left = dmg;
+        }
+        CallThis(Gm_53b3c0, gm_6d2078, (float)left);
+        if (!F(int, gm_6cec6c, 1316))
+        {
+            CallC(Gm_Set136, Gm_Me(), money - n);
+            char buf[400];
+            sprintf(buf, Gm_T(10), n);
+            CallC(Gm_Message, buf);
+        }
+        Gm_Sound("repairSound");
+        return 1;
+    }
+    case 16:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        float h = *(float*)m[3];
+        if (Gm_Pos(Gm_Car() + 16).z < h)
+            gm_6f3428 = 1;
+        return 1;
+    }
+    case 25:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        gm_6f2f08 = gm_68cf6c;
+        car = Gm_Car();
+        if (CallVirt<int>(car, 4) != 1 || F(int, Gm_Car(), 21880))
+            return 1;
+        void* best = gm_68cf6c;
+        double bestd = 1000.0;
+        void* it;
+        CallC(Gm_First, &it);
+        while (it != gm_68cf6c)
+        {
+            if (CallC<int>(Gm_Field8, it) & 32)
+            {
+                BYTE* rec = CallThis<BYTE*>(Gm_ResGet, F(BYTE*, gm_6cec6c, 1356) + 704, *F(int*, it, 8));
+                BYTE* o = F(BYTE*, rec, 28);
+                if (o)
+                {
+                    double d = Gm_Dist(o + 16, Gm_Car() + 16);
+                    if (d < gm_64d0c0 && d < bestd)
+                    {
+                        bestd = d;
+                        best = it;
+                    }
+                }
+            }
+            void* nx;
+            it = *CallC<void**>(Gm_Next, &nx, it);
+        }
+        if (best == gm_68cf6c)
+            return 1;
+        int f = CallC<int>(Gm_Field8, best) & 64;
+        if (f)
+        {
+            F(int, gm_6f3434, 32) = m[0];
+            gm_6f2f08 = best;
+        }
+        if (!gm_6f3400)
+            return 1;
+        gm_6f3400 = 0;
+        if (CallC<int>(Gm_FindTaker, Gm_Car(), 0))
+            return 1;
+        if (f)
+        {
+            double out;
+            CallC(Gm_LoadPresent, Gm_Me(), best, &out);
+            CallC(Gm_ApplyCargo);
+            CallC(Gm_568f90);
+        }
+        CallC(Gm_PickLater, Gm_Me(), best);
+        gm_6f2f08 = gm_68cf6c;
+        return 1;
+    }
+    case 20:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        void* it;
+        CallC(Gm_First, &it);
+        for (;;)
+        {
+            if (it == gm_68cf6c)
+                return 1;
+            int f = CallC<int>(Gm_Field8, it);
+            if ((f & 64) && !(f & 32))
+            {
+                BYTE* rec = CallThis<BYTE*>(Gm_ResGet, F(BYTE*, gm_6cec6c, 1356) + 704, *F(int*, it, 8));
+                if (!rec)
+                    CallC(Gm_Log, "present absent, in my opinion", *F(int*, it, 8));
+                else if (F(BYTE*, rec, 28) && Gm_Dist(F(BYTE*, rec, 28), Gm_Car() + 16) < gm_64c32c)
+                    break;
+            }
+            void* nx;
+            it = *CallC<void**>(Gm_Next, &nx, it);
+        }
+        __declspec(align(8)) BYTE P[288];
+        Gm_PresentInit(P);
+        CallC(Gm_Present, Gm_Me(), it, P);
+        car = Gm_Car();
+        void* next = it;
+        if (gm_6f33f4 && Gm_HasRoom(car))
+        {
+            double out;
+            CallC(Gm_LoadPresent, Gm_Me(), it, &out);
+            CallC(Gm_ApplyCargo);
+            Gm_Sound("orderSound");
+            CallC(Gm_568f90);
+            gm_6f33f4 = 0;
+            BYTE* rec = CallThis<BYTE*>(Gm_ResGet, gm_696ca0 + 704, *F(int*, it, 8));
+            CallC(Gm_PickLater, Gm_Me(), it);
+            if (!rec)
+                CallC(Gm_Fatal, "Incorrect vrPresentId", 0);
+            if (BYTE* o = F(BYTE*, rec, 28))
+            {
+                CallVirt(o, 28, 0);
+                CallThis(Gm_ResAdd, gm_696ca0 + 704, 0, rec, 0);
+                CallThis(Gm_ResDelete, gm_696ca0 + 704, F(int, rec, 4));
+            }
+            next = gm_68cf6c;
+        }
+        else
+        {
+            if (gm_6f3430 && !F(int, gm_6f3430, 60))
+                Gm_Notice(57);
+            F(int, gm_6f3434, 32) = m[0];
+        }
+        gm_6f2f08 = next;
+        CallThis(Gm_Vec1Free, P + 168);
+        CallThis(Gm_Vec1Free, P + 156);
+        CallThis(Gm_Vec1Free, P + 144);
+        CallThis(Gm_VecBFree, P + 132);
+        return 1;
+    }
+    case 17:
+    {
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        int a = m[1];
+        if (a % 100 == 0 && (CallC<int>(Gm_HasOrder, Gm_Me(), a / 100) & 0xFF))
+        {
+            if (CallVirt<double>(Gm_Car(), 164) > gm_64c264)
+            {
+                double k = -10.0, out;
+                CallC(Gm_LoadOrder, Gm_Me(), m[1] / 100, m[1] % 100, &k, &out);
+                CallC(Gm_ApplyCargo);
+                CallC(Gm_568f90);
+            }
+            F(int, gm_6f3434, 32) = m[0];
+            F(int, gm_6f3434, 36) = m[1];
+            return 1;
+        }
+        __declspec(align(8)) BYTE Q[200];
+        CallThis(Gm_InitState, Q);
+        CallC(Gm_OrderInfo, Gm_Me(), m[1] / 100, m[1] % 100, Q);
+        if (F(int, Q, 0) != -1)
+        {
+            car = Gm_Car();
+            if (gm_6f33f4 && Gm_HasRoom(car))
+            {
+                double k = 10.0, out;
+                CallC(Gm_LoadOrder, Gm_Me(), m[1] / 100, m[1] % 100, &k, &out);
+                CallC(Gm_ApplyCargo);
+                Gm_Sound("orderSound");
+                CallC(Gm_568f90);
+                gm_6f33f4 = 0;
+            }
+            if (gm_6f3430 && !F(int, gm_6f3430, 60))
+                Gm_Notice(57);
+            F(int, gm_6f3434, 32) = m[0];
+            F(int, gm_6f3434, 36) = m[1];
+        }
+        CallThis(Gm_Vec1Free, Q + 88);
+        CallThis(Gm_Vec1Free, Q + 76);
+        CallThis(Gm_Vec1Free, Q + 64);
+        CallThis(Gm_VecBFree, Q + 52);
+        return 1;
+    }
+    case 19:
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        if (F(float, F(BYTE*, Gm_Car(), 21600), 13100) > gm_64c40c)
+            return 0;
+        F(int, gm_6f3434, 32) = m[0];
+        F(int, gm_6f3434, 36) = m[1];
+        return 1;
+    case 22:
+        if (gm_6f3498)
+            F(DWORD, gm_6f3498, 164) &= ~0x12u;
+        if (gm_6f33ac)
+        {
+            if (F(int, gm_6f33ac, 500))
+                F(DWORD, gm_6f33ac, 572) |= 128;
+            if (gm_6f33ac)
+                F(DWORD, gm_6f33ac, 572) |= 64;
+        }
+        gm_6f33c0 = 1;
+        return 1;
+    case 23:
+    {
+        const float* p = (const float*)m[3];
+        if (!gm_6f33ac || !p)
+            return 1;
+        Vec3 c = Gm_Pos(Gm_Car() + 16);
+        double d = ((double)c.z * p[2] + (double)c.y * p[1] + (double)c.x * p[0] + p[3]) * gm_64ff20;
+        if (d < gm_64c264)
+            d = gm_64c264;
+        else if (d > gm_64c250)
+            d = gm_64c250;
+        CallC(Gm_Set6fb3e8, m[1] - 1, (float)(gm_64c250 - d));
+        return 1;
+    }
+    case 26:
+        if (F(int, gm_6cec6c, 1300) > 1)
+            return 0;
+        if (!m[1])
+        {
+            if (gm_68d168)
+                CallThis(Gm_Restart, F(BYTE*, gm_6d2078, 1632));
+            return 1;
+        }
+        if (CallC<int>(Gm_Flags, Gm_Me()) & 0x4000)
+            CallC(Gm_HumanFinished);
+        return 1;
+    case 28:
+        gm_6f34c8 = 0.4;
+        return 1;
+    case 29:
+    {
+        int a = m[1];
+        int on = a % 10 == 0 ? F(int, gm_696338, 36) : F(int, gm_696338, 36) ^ 1;
+        int k = a / 10;
+        if (k == 4)
+        {
+            if (!gm_6f34d0)
+            {
+                Vec3 c = Gm_Pos(Gm_Car() + 16);
+                if (CallC<int>(Gm_Near, c.x, c.y, c.z))
+                {
+                    BYTE* pr = (BYTE*)Gm_Me();
+                    F(double, pr, 248) = F(double, pr, 248) + gm_64ff18;
+                }
+            }
+            gm_6f34d0 = 1;
+            return 1;
+        }
+        if (k == 1 || k == 3)
+            on ^= 1;
+        gm_6f34d0 = on ? 1 : 0;
+        return 1;
+    }
+    case 30:
+    {
+        car = Gm_Car();
+        BYTE* cab = F(BYTE*, car, 21600);
+        if (!cab)
+            return 1;
+        const float* p = (const float*)m[3];
+        if (m[1] == -1)
+        {
+            Matrix t;
+            const float* M = CallThis<const Matrix*>(Gm_M1, car + 16, &t)->m;
+            const Vec3& f = gm_702620;
+            double fx = (double)f.z * M[6] + (double)f.y * M[3] + (double)f.x * M[0];
+            double fy = (double)f.z * M[7] + (double)f.y * M[4] + (double)f.x * M[1];
+            double fz = (double)f.z * M[8] + (double)f.y * M[5] + (double)f.x * M[2];
+            if (p[3] * fz + p[2] * fy + p[1] * fx > gm_64b678)
+                F(float, car, 20952) = 0.5f;
+            return 1;
+        }
+        double speed = F(float, cab, 13100);
+        Vec3 fw = Gm_Facing(car);
+        __declspec(align(8)) BYTE st[304];
+        for (int i = 0; i < 19; i++)
+        {
+            F(int, st, i * 16) = 0;
+            F(double, st, i * 16 + 8) = 1.0;
+        }
+        CallC(Gm_GetState, Gm_Me(), st);
+        if (F(int, st, 256))
+            return 1;
+        if (!(p[1] * (double)fw.x + p[3] * (double)fw.z + (double)fw.y * p[2] > gm_64b678))
+            return 1;
+        F(float, Gm_Car(), 20952) = 0.5f;
+        BYTE* rec = CallThis<BYTE*>(Gm_ResGet, gm_696ca0 + 704, m[1]);
+        double lim = speed * gm_64d0e0;
+        if (!(p[0] < lim) || !rec)
+            return 1;
+        BYTE* o = F(BYTE*, rec, 28);
+        if (!o || (F(BYTE, o, 296) & 1) || F(int, o, 408))
+            return 1;
+        F(int, o, 408) = 1;
+        F(int, o, 368) = F(int, gm_696ca0, 2968);
+        F(int, o, 372) = F(int, gm_696ca0, 2972);
+        CallC(Gm_Send962, F(int, o, 344), 0);
+        CallC(Gm_Send962, F(int, o, 344), F(int, o, 408));
+        gm_6f3488 = (int)p[0] - 5;
+        gm_6f348c = (int)lim;
+        int k = 1;
+        double over = (double)p[0] - gm_64c320;
+        if ((over + gm_64fd28) * gm_64d0e8 < speed)
+            k = 3;
+        else if ((over + gm_64c32c) * gm_64d0e8 < speed)
+            k = 2;
+        CallC(Gm_Fine, Gm_Me(), k * gm_64b868);
+        return 1;
+    }
+    default:
+        return 0;
+    }
 }
 
 } // extern "C"
