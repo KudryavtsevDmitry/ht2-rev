@@ -2775,3 +2775,101 @@ BYTE* __fastcall VPoly_Evaluate(const BYTE* p, void*, BYTE* out, BYTE* x)
 }
 
 } // extern "C"
+
+// === the nearest point of a road stretch (FUN_48c710)
+
+ASM_VAR(double, g_rn64b670, $L_64b670)
+
+static DVec3 Rn_Lerp(const DVec3& a, const DVec3& b, double t)
+{
+    DVec3 d = {b.x - a.x, b.y - a.y, b.z - a.z};
+    DVec3 e = {d.x * t, d.y * t, d.z * t};
+    DVec3 r = {a.x + e.x, a.y + e.y, a.z + e.z};
+    return r;
+}
+
+static double Rn_Len2(const DVec3& v)
+{
+    return v.y * v.y + v.z * v.z + v.x * v.x;
+}
+
+extern "C" {
+
+// [FUN_48c710] road s (bounding centre +0, radius +24, points +32, 24 bytes each) checked for a point closer to p
+// than *best (squared) on the stretch from segment i0 at t0 to segment i1 at t1: the distance, segment and its
+// fraction written out; whether one was found
+int __fastcall Road_NearestOn(BYTE* s, void*, const DVec3* p, double* best, double* tOut, int* idxOut, double t0,
+                              int i0, double t1, int i1)
+{
+    DVec3 c = F(DVec3, s, 0);
+    DVec3_SubAssign(&c, 0, p);
+    if (!(F(double, s, 24) + *best >= x87_sqrt(c.y * c.y + c.z * c.z + c.x * c.x)))
+        return 0;
+    if (i1 < i0 || (i1 == i0 && t1 < t0))
+        return Road_NearestOn(s, 0, p, best, tOut, idxOut, t1, i1, t0, i0);
+    const DVec3* pts = F(const DVec3*, s, 32);
+    DVec3 start = Rn_Lerp(pts[i0], pts[i0 + 1], t0);
+    DVec3 v = {p->x - start.x, p->y - start.y, p->z - start.z};
+    double a = Rn_Len2(v);
+    int found = 0;
+    for (int k = i0; k <= i1; k++)
+    {
+        DVec3 next = k != i1 ? pts[k + 1] : Rn_Lerp(pts[i1], pts[i1 + 1], t1);
+        DVec3 w = {p->x - next.x, p->y - next.y, p->z - next.z};
+        double b = w.x * w.x + w.y * w.y + w.z * w.z;
+        DVec3 cur = k == i0 ? Rn_Lerp(pts[i0], pts[i0 + 1], t0) : pts[k];
+        DVec3 seg = {next.x - cur.x, next.y - cur.y, next.z - cur.z};
+        double L2 = Rn_Len2(seg);
+        if (!(L2 + a > b))
+        {
+            // the start is the closest
+            if (*best > a)
+            {
+                *best = a;
+                *idxOut = k;
+                found = 1;
+                *tOut = 0;
+            }
+        }
+        else if (!(L2 + b > a))
+        {
+            // the end is
+            if (*best > b)
+            {
+                found = 1;
+                *best = b;
+                *idxOut = k;
+                *tOut = 1.0;
+            }
+        }
+        else
+        {
+            double dot = seg.z * v.z + seg.y * v.y + seg.x * v.x;
+            double q = dot * dot / L2;
+            double d2 = a - q;
+            if (d2 < *best)
+            {
+                *best = d2;
+                *idxOut = k;
+                found = 1;
+                *tOut = x87_sqrt(q / L2);
+            }
+        }
+        v = w;
+        a = b;
+    }
+    int idx = *idxOut;
+    if (idx == i0)
+    {
+        if (idx == i1)
+            *tOut = (t1 - t0) * *tOut + t0;
+        else
+            *tOut = (g_rn64b670 - t0) * *tOut + t0;
+        return found;
+    }
+    if (idx == i1)
+        *tOut = t1 * *tOut;
+    return found;
+}
+
+} // extern "C"

@@ -4345,3 +4345,205 @@ void __fastcall TvCamera_StartMode(BYTE* s, void*, int m)
 }
 
 } // extern "C"
+
+// === the mirror view (a method at $L_595290)
+
+extern "C" void __fastcall Mv_SetMode(BYTE* cam, void*, int mode, Matrix m); KING_ALIAS("@Mv_SetMode@60", "@TvCamera_SetMode@60")
+extern "C" void Mv_GetWorld(); KING_ALIAS("_Mv_GetWorld", "@Node_GetWorld@12")
+extern "C" void Mv_Car5480e0(); KING_ALIAS("_Mv_Car5480e0", "@Car_5480e0@8")
+extern "C" void Mv_Show(); KING_ALIAS("_Mv_Show", "@Window_Show@12")
+extern "C" void Mv_Render(); KING_ALIAS("_Mv_Render", "@View_RenderFrame@4")
+extern "C" void Mv_ClearRows(); KING_ALIAS("_Mv_ClearRows", "@Surface_ClearRows@8")
+extern "C" void Mv_SubAssign(); KING_ALIAS("_Mv_SubAssign", "@Vec3_SubAssign@16")
+extern "C" void Mv_TransformPoint(); KING_ALIAS("_Mv_TransformPoint", "@Vec3_TransformPoint@12")
+extern "C" Matrix* __cdecl Mv_Scale(Matrix* out, Vec3 s); KING_ALIAS("_Mv_Scale", "_Matrix_Scale")
+ASM_VAR(BYTE*, g_mv6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_mv696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_mv6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_mv69684c, $L_69684c)
+ASM_VAR(BYTE*, g_mv696cac, $L_696cac)
+ASM_VAR(int, g_mv6f6a44, $L_6f6a44)                 // the front mirror is on
+ASM_VAR(int, g_mv67e178, $L_67e178)                 // the side mirrors are on
+ASM_VAR(int, g_mv6ce330, $L_6ce330)
+ASM_VAR(int, g_mv6ce334, $L_6ce334)
+ASM_VAR(BYTE*, g_mvCam, $L_6f692c)
+ASM_VAR(int, g_mvX, $L_6f6a2c)                      // the mirror's screen rectangle
+ASM_VAR(int, g_mvY, $L_6f6a30)
+ASM_VAR(int, g_mvW, $L_6f6a34)
+ASM_VAR(int, g_mvH, $L_6f6a38)
+ASM_VAR(int, g_mv6f6900, $L_6f6900)
+ASM_VAR(int, g_mv6f6904, $L_6f6904)
+ASM_VAR(int, g_mv6f6908, $L_6f6908)
+ASM_VAR(int, g_mv6f693c, $L_6f693c)
+ASM_VAR(int, g_mv6f6940, $L_6f6940)
+ASM_VAR(int, g_mv6f6944, $L_6f6944)
+ASM_VAR(int, g_mv6f694c, $L_6f694c)
+ASM_VAR(int, g_mv6f6950, $L_6f6950)
+ASM_VAR(int, g_mv6f6954, $L_6f6954)
+ASM_VAR(int, g_mv6f6a10, $L_6f6a10)
+ASM_VAR(int, g_mv6f6a14, $L_6f6a14)
+ASM_VAR(int, g_mv6f6a18, $L_6f6a18)
+ASM_VAR(int, g_mv6f6a1c, $L_6f6a1c)
+ASM_VAR(int, g_mv6f6a20, $L_6f6a20)
+ASM_VAR(int, g_mv6f6a24, $L_6f6a24)
+ASM_VAR(int, g_mv6f6a3c, $L_6f6a3c)
+ASM_VAR(int, g_mv6f6a40, $L_6f6a40)
+ASM_VAR(int, g_mv6f6918, $L_6f6918)
+ASM_VAR(BYTE*, g_mv6f68fc, $L_6f68fc)
+ASM_VAR(DWORD, g_mv702e8c, $L_702e8c)
+ASM_VAR(float, g_mv64c258, $L_64c258)
+ASM_VAR(float, g_mv64c264, $L_64c264)
+ASM_VAR(double, g_mv64b5b8, $L_64b5b8)
+
+static void Mv_CarDraw(BYTE* pl, bool special)
+{
+    BYTE* car = F(BYTE*, pl, 616);
+    CallThis((void (*)())F(void**, car, 0)[special ? 26 : 25], car);
+}
+
+extern "C" {
+
+// [$L_595290] mirror view s (with the cab view off and mirrors set in 696ca0 +16): the main view's settings copied
+// (+472), the camera put at the cab's mirror point (the car type's points 0 / 2, or their middle for some trucks)
+// looking back, then for a side mirror its place found by projecting that point onto the screen; the scene drawn
+// into the mirror's rectangle and its frame image over it
+void __fastcall Mirror_Draw(BYTE* s, void*)
+{
+    BYTE* pl = g_mv6d2078;
+    if (!pl || !F(BYTE*, pl, 616) || F(int, pl, 1400) || !(g_mv696ca0[16] & 2))
+        return;
+    BYTE* mv = F(BYTE*, F(BYTE*, g_mv6cec6c, 1356), 472);
+    BYTE* my = F(BYTE*, s, 472);
+    static const int fields[] = {16, 20, 24, 28, 48, 52, 56, 60, 64, 68, 76};
+    for (int k = 0; k < 11; k++)
+        F(int, my, fields[k]) = F(int, mv, fields[k]);
+    int W = CallThis<int>((void (*)())F(void**, g_mv69684c, 0)[5], g_mv69684c);
+    int H = CallThis<int>((void (*)())F(void**, g_mv69684c, 0)[6], g_mv69684c);
+    Matrix M = g_identity;
+    CallThis(Mv_GetWorld, F(BYTE*, g_mv696cac, 80), &M);
+    Vec3 off;
+    off.x = off.y = off.z = 0;
+    int special = 0;
+    pl = g_mv6d2078;
+    float dx = (float)((double)F(float, pl, 556) - F(float, pl, 604));
+    float dy = (float)((double)F(float, pl, 560) - F(float, pl, 608));
+    float dz = (float)((double)F(float, pl, 564) - F(float, pl, 612));
+    const float* Y = &g_axisY.x;
+    double side = (double)M.m[6] * Y[2] + (double)M.m[3] * Y[1] + (double)M.m[0] * Y[0];
+    int x0, y0, image;
+    Matrix T, R, X;
+    Vec3 pos;
+    BYTE* car = F(BYTE*, pl, 616);
+    if (g_mv6f6a44 && x87_fabs(side) < g_mv64b5b8)
+    {
+        // the front mirror
+        if (g_mv67e178)
+            return;
+        BYTE* body = F(BYTE*, car, 21600);
+        Vec3 a, b;
+        if (body && F(int, body, 2252) >= g_mv6ce330 && F(int, body, 2252) < g_mv6ce334)
+        {
+            special = 1;
+            Vec3 pa = *CallC<Vec3*>(Tm_CarPoint, &a, car, 0);
+            Vec3 pb = *CallC<Vec3*>(Tm_CarPoint, &b, F(BYTE*, g_mv6d2078, 616), 2);
+            double sx = (double)pb.x + pa.x;
+            float sy = (float)((double)pa.y + pb.y), sz = (float)((double)pa.z + pb.z);
+            off.x = (float)(sx * g_mv64c258);
+            off.y = (float)((double)sy * g_mv64c258);
+            off.z = (float)((double)sz * g_mv64c258);
+        }
+        else
+            off = *CallC<Vec3*>(Tm_CarPoint, &a, car, 0);
+        pos.x = (float)((double)dx + off.x);
+        pos.y = (float)((double)dy + off.y);
+        pos.z = (float)((double)dz + off.z);
+        g_mvX = g_mv6f6a1c;
+        g_mvY = g_mv6f6a14;
+        g_mvW = g_mv6f694c;
+        g_mvH = g_mv6f6940;
+        image = g_mv6f6908;
+        Matrix_Translation(&T, pos);
+        Matrix_Multiply(&X, Matrix_RotationZ(&R, 3.1415925f), &T);
+        Mv_SetMode(g_mvCam, 0, 0, X);
+        x0 = g_mv6f6a3c;
+        y0 = g_mv6f6a40;
+    }
+    else
+    {
+        // a side mirror
+        if (!g_mv67e178)
+            return;
+        bool left = side < g_mv64c264;
+        Vec3 a;
+        off = *CallC<Vec3*>(Tm_CarPoint, &a, car, left ? 0 : 2);
+        pos.x = (float)((double)dx + off.x);
+        pos.y = (float)((double)dy + off.y);
+        pos.z = (float)((double)dz + off.z);
+        g_mvX = (left ? g_mv6f6a20 : g_mv6f6a24);
+        g_mvY = (left ? g_mv6f6a10 : g_mv6f6a18);
+        g_mvW = (left ? g_mv6f6950 : g_mv6f6954);
+        g_mvH = (left ? g_mv6f693c : g_mv6f6944);
+        image = (left ? g_mv6f6900 : g_mv6f6904);
+        Matrix_Translation(&T, pos);
+        Matrix_Multiply(&X, Matrix_RotationZ(&R, 3.1415925f), &T);
+        Mv_SetMode(g_mvCam, 0, 0, X);
+        // its place on the screen: the point seen through the view
+        Vec3 tmp;
+        CallThis(Mv_SubAssign, &off, &tmp, g_mv6d2078 + 604);
+        Vec3 sc;
+        sc.x = 1.0f;
+        sc.y = 1.0f;
+        sc.z = 1.3333334f;
+        Matrix S, V, I;
+        Matrix_Multiply(&V, &M, Mv_Scale(&S, sc));
+        CallThis(Mv_TransformPoint, &off, Matrix_Inverse(&I, &V));
+        if (!(off.y > g_mv64b5b8))
+            return;
+        int hx = W / 2;
+        double fx = (double)hx * off.x / off.y + hx;
+        x0 = (int)(fx - g_mvW / 2);
+        y0 = (int)((double)(H / 2) - (double)hx * off.z / off.y - g_mvH / 2);
+        if (x0 < 0 || x0 + g_mvW >= W - 1)
+            return;
+    }
+    BYTE* v = F(BYTE*, s, 488);
+    F(int, v, 100) = 1;
+    F(float, v, 88) = 1.0f;
+    F(float, v, 84) = (float)(g_mvH * (double)F(float, v, 88) / g_mvW);
+    if (g_mv6f6918 == 1)
+    {
+        int x = g_mvX + x0, y = y0 + g_mvY;
+        int x2 = x + g_mvW, y2 = y + g_mvH;
+        if (x <= 0 || x2 >= W - 1 || y <= 0 || y2 >= H - 1)
+            return;
+        RECT r = {x, y, x2, y2};
+        CallThis((void (*)())F(void**, s, 0)[11], s, r);
+        if (g_mv702e8c & 0x4000)
+            CallThis(Mv_ClearRows, F(BYTE*, s, 12));
+    }
+    int drawn = 0;
+    car = F(BYTE*, g_mv6d2078, 616);
+    if (car)
+    {
+        drawn = CallThis<int>(Mv_Car5480e0, car);
+        Mv_CarDraw(g_mv6d2078, special != 0);
+    }
+    if (g_mv6f6918)
+    {
+        if (F(int, F(BYTE*, s, 472), 76) == -1)
+            CallThis(Mv_Show, s, 8);
+        int keep = g_mv6f68fc ? (g_mv6f68fc[40] & 1) : special;
+        BYTE* main = F(BYTE*, F(BYTE*, g_mv6cec6c, 1356), 464);
+        F(int, F(BYTE*, s, 464), 8488) = F(int, main, 8488);
+        F(int, F(BYTE*, s, 464), 8492) = F(int, main, 8492);
+        CallThis(Mv_Render, s);
+        if (g_mv6f68fc)
+            g_mv6f68fc[40] |= (BYTE)keep;
+    }
+    else
+        CallThis(Mv_Show, s, 1);
+    Gfx_DrawImage((CSurface*)F(BYTE*, g_mv69684c, 12), x0, y0, (void*)image, 0);
+    Mv_CarDraw(g_mv6d2078, drawn != 0);
+}
+
+} // extern "C"

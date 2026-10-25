@@ -502,3 +502,1234 @@ extern "C" int __cdecl Grid72c108_Init(void)
 }
 // [$L_61ba00] sets the base vtable 6533a8
 extern "C" void __fastcall TGridBase_SetVtbl(BYTE* s) { F(void*, s, 0) = g_tgr6533a8; }
+
+// === gzip's inflate (FUN_62ee00 .. FUN_630020, inflate.c of gzip 1.2.4)
+
+#include <stdlib.h>
+
+ASM_PROC(FUN_62b8e0)                                // fill_inbuf(eof_ok)
+ASM_PROC(FUN_62b9e0)                                // flush_window()
+ASM_VAR(unsigned, g_gzInptr, $L_736684)
+ASM_VAR(unsigned, g_gzInsize, $L_736680)
+ASM_VAR(BYTE, g_gzInbuf, $L_72e634)
+ASM_VAR(BYTE, g_gzSlide, $L_75ae90)                 // the 32 KB window
+ASM_VAR(unsigned, g_gzOutcnt, $L_736688)            // also the window position wp
+ASM_VAR(DWORD, g_gzBb, $L_77e3f4)                   // the bit buffer
+ASM_VAR(unsigned, g_gzBk, $L_77e3f8)                // and its bit count
+ASM_VAR(unsigned, g_gzHufts, $L_77e3fc)
+ASM_VAR(WORD, g_gzMaskBits, $L_68a6f4)
+ASM_VAR(unsigned, g_gzBorder, $L_68a5b0)            // the bit length code order
+ASM_VAR(WORD, g_gzCplens, $L_68a5fc)
+ASM_VAR(WORD, g_gzCplext, $L_68a63c)
+ASM_VAR(WORD, g_gzCpdist, $L_68a67c)
+ASM_VAR(WORD, g_gzCpdext, $L_68a6b8)
+ASM_VAR(int, g_gzLbits, $L_68a718)
+ASM_VAR(int, g_gzDbits, $L_68a71c)
+ASM_VAR(AsmLabel, g_gzStderr, $L_686380)
+ASM_VAR(char, g_gz68a73c, $L_68a73c)                // " incomplete literal tree\n"
+ASM_VAR(char, g_gz68a720, $L_68a720)                // " incomplete distance tree\n"
+extern "C" int __cdecl Gz_fprintf(void* f, const char* fmt, ...); KING_ALIAS("_Gz_fprintf", "_fprintf")
+
+struct GzHuft
+{
+    BYTE e;                                         // extra bits or operation
+    BYTE b;                                         // bits in this code or subcode
+    WORD pad;
+    union
+    {
+        WORD n;                                     // literal, length base or distance base
+        GzHuft* t;                                  // the next table
+    } v;
+};
+
+#define GZ_WSIZE 0x8000
+#define GZ_NEXTBYTE() (g_gzInptr < g_gzInsize ? (unsigned)(&g_gzInbuf)[g_gzInptr++] : (unsigned)(BYTE)CallC<int>(FUN_62b8e0, 0))
+#define GZ_NEEDBITS(n)                       \
+    while (k < (unsigned)(n))                \
+    {                                        \
+        b |= (DWORD)GZ_NEXTBYTE() << k;      \
+        k += 8;                              \
+    }
+#define GZ_DUMPBITS(n) \
+    {                  \
+        b >>= (n);     \
+        k -= (n);      \
+    }
+#define GZ_MASK(n) ((&g_gzMaskBits)[n])
+
+static void Gz_FlushOutput(unsigned w)
+{
+    g_gzOutcnt = w;
+    CallC(FUN_62b9e0);
+}
+
+extern "C" {
+
+// [FUN_62f2a0] huft_free: the tables linked from t (each block's link sits before it); 0
+int __cdecl Gz_HuftFree(GzHuft* t)
+{
+    GzHuft* p = t;
+    while (p)
+    {
+        GzHuft* q = (--p)->v.t;
+        free(p);
+        p = q;
+    }
+    return 0;
+}
+
+// [FUN_62ee00] huft_build: decoding tables for the n code lengths b (values below s are literals, the rest
+// bases d with extra bits e) into *t, lookup bits in *m; 0, 1 incomplete, 2 bad lengths, 3 out of memory
+int __cdecl Gz_HuftBuild(unsigned* b, unsigned n, unsigned s, WORD* d, WORD* e, GzHuft** t, int* m)
+{
+    unsigned a, c[17], f, i, j, *p, v[288], x[17], *xp, z;
+    int g, h, k, l, w, y;
+    GzHuft *q, r, *u[16];
+    memset(c, 0, sizeof c);
+    p = b;
+    i = n;
+    do
+    {
+        c[*p]++;
+        p++;
+    } while (--i);
+    if (c[0] == n)
+    {
+        *t = 0;
+        *m = 0;
+        return 0;
+    }
+    l = *m;
+    for (j = 1; j <= 16; j++)
+        if (c[j])
+            break;
+    k = j;
+    if ((unsigned)l < j)
+        l = j;
+    for (i = 16; i; i--)
+        if (c[i])
+            break;
+    g = i;
+    if ((unsigned)l > i)
+        l = i;
+    *m = l;
+    for (y = 1 << j; j < i; j++, y <<= 1)
+        if ((y -= c[j]) < 0)
+            return 2;
+    if ((y -= c[i]) < 0)
+        return 2;
+    c[i] += y;
+    x[1] = j = 0;
+    p = c + 1;
+    xp = x + 2;
+    while (--i)
+        *xp++ = (j += *p++);
+    p = b;
+    i = 0;
+    do
+    {
+        if ((j = *p++) != 0)
+            v[x[j]++] = i;
+    } while (++i < n);
+    x[0] = i = 0;
+    p = v;
+    h = -1;
+    w = -l;
+    u[0] = 0;
+    q = 0;
+    z = 0;
+    for (; k <= g; k++)
+    {
+        a = c[k];
+        while (a--)
+        {
+            while (k > w + l)
+            {
+                h++;
+                w += l;
+                z = (z = g - w) > (unsigned)l ? l : z;
+                if ((f = 1 << (j = k - w)) > a + 1)
+                {
+                    f -= a + 1;
+                    xp = c + k;
+                    while (++j < z)
+                    {
+                        if ((f <<= 1) <= *++xp)
+                            break;
+                        f -= *xp;
+                    }
+                }
+                z = 1 << j;
+                if ((q = (GzHuft*)malloc((z + 1) * sizeof(GzHuft))) == 0)
+                {
+                    if (h)
+                        Gz_HuftFree(u[0]);
+                    return 3;
+                }
+                g_gzHufts += z + 1;
+                *t = q + 1;
+                *(t = &(q->v.t)) = 0;
+                u[h] = ++q;
+                if (h)
+                {
+                    x[h] = i;
+                    r.b = (BYTE)l;
+                    r.e = (BYTE)(16 + j);
+                    r.v.t = q;
+                    j = i >> (w - l);
+                    u[h - 1][j] = r;
+                }
+            }
+            r.b = (BYTE)(k - w);
+            if (p >= v + n)
+                r.e = 99;
+            else if (*p < s)
+            {
+                r.e = (BYTE)(*p < 256 ? 16 : 15);
+                r.v.n = (WORD)*p;
+                p++;
+            }
+            else
+            {
+                r.e = (BYTE)e[*p - s];
+                r.v.n = d[*p++ - s];
+            }
+            f = 1 << (k - w);
+            for (j = i >> w; j < z; j += f)
+                q[j] = r;
+            for (j = 1 << (k - 1); i & j; j >>= 1)
+                i ^= j;
+            i ^= j;
+            while ((i & ((1 << w) - 1)) != x[h])
+            {
+                h--;
+                w -= l;
+            }
+        }
+    }
+    return y != 0 && g != 1;
+}
+
+// [FUN_62f2d0] inflate_codes: the literals and matches of a block through the tables tl / td into the window;
+// 0 at the end of the block, 1 on a bad code
+int __cdecl Gz_InflateCodes(GzHuft* tl, GzHuft* td, int bl, int bd)
+{
+    unsigned e, n, d, w, ml, md, k;
+    GzHuft* t;
+    DWORD b;
+    b = g_gzBb;
+    k = g_gzBk;
+    w = g_gzOutcnt;
+    ml = GZ_MASK(bl);
+    md = GZ_MASK(bd);
+    for (;;)
+    {
+        GZ_NEEDBITS(bl)
+        if ((e = (t = tl + ((unsigned)b & ml))->e) > 16)
+            do
+            {
+                if (e == 99)
+                    return 1;
+                GZ_DUMPBITS(t->b)
+                e -= 16;
+                GZ_NEEDBITS(e)
+            } while ((e = (t = t->v.t + ((unsigned)b & GZ_MASK(e)))->e) > 16);
+        GZ_DUMPBITS(t->b)
+        if (e == 16)
+        {
+            (&g_gzSlide)[w++] = (BYTE)t->v.n;
+            if (w == GZ_WSIZE)
+            {
+                Gz_FlushOutput(w);
+                w = 0;
+            }
+        }
+        else
+        {
+            if (e == 15)
+                break;
+            GZ_NEEDBITS(e)
+            n = t->v.n + ((unsigned)b & GZ_MASK(e));
+            GZ_DUMPBITS(e)
+            GZ_NEEDBITS(bd)
+            if ((e = (t = td + ((unsigned)b & md))->e) > 16)
+                do
+                {
+                    if (e == 99)
+                        return 1;
+                    GZ_DUMPBITS(t->b)
+                    e -= 16;
+                    GZ_NEEDBITS(e)
+                } while ((e = (t = t->v.t + ((unsigned)b & GZ_MASK(e)))->e) > 16);
+            GZ_DUMPBITS(t->b)
+            GZ_NEEDBITS(e)
+            d = w - t->v.n - ((unsigned)b & GZ_MASK(e));
+            GZ_DUMPBITS(e)
+            do
+            {
+                n -= (e = (e = GZ_WSIZE - ((d &= GZ_WSIZE - 1) > w ? d : w)) > n ? n : e);
+                if (w - d >= e)
+                {
+                    memcpy(&g_gzSlide + w, &g_gzSlide + d, e);
+                    w += e;
+                    d += e;
+                }
+                else
+                    do
+                    {
+                        (&g_gzSlide)[w++] = (&g_gzSlide)[d++];
+                    } while (--e);
+                if (w == GZ_WSIZE)
+                {
+                    Gz_FlushOutput(w);
+                    w = 0;
+                }
+            } while (n);
+        }
+    }
+    g_gzOutcnt = w;
+    g_gzBb = b;
+    g_gzBk = k;
+    return 0;
+}
+
+// [$L_62f6c0] inflate_stored: a stored block copied to the window; 1 when its length check fails
+int __cdecl Gz_InflateStored()
+{
+    unsigned n, w, k;
+    DWORD b;
+    b = g_gzBb;
+    k = g_gzBk;
+    w = g_gzOutcnt;
+    n = k & 7;
+    GZ_DUMPBITS(n)
+    GZ_NEEDBITS(16)
+    n = (unsigned)b & 0xffff;
+    GZ_DUMPBITS(16)
+    GZ_NEEDBITS(16)
+    if (n != (unsigned)(~b & 0xffff))
+        return 1;
+    GZ_DUMPBITS(16)
+    while (n--)
+    {
+        GZ_NEEDBITS(8)
+        (&g_gzSlide)[w++] = (BYTE)b;
+        if (w == GZ_WSIZE)
+        {
+            Gz_FlushOutput(w);
+            w = 0;
+        }
+        GZ_DUMPBITS(8)
+    }
+    g_gzOutcnt = w;
+    g_gzBb = b;
+    g_gzBk = k;
+    return 0;
+}
+
+// [$L_62f840] inflate_fixed: a block with the fixed Huffman codes
+int __cdecl Gz_InflateFixed()
+{
+    int i, bl, bd;
+    GzHuft *tl, *td;
+    unsigned l[288];
+    for (i = 0; i < 144; i++)
+        l[i] = 8;
+    for (; i < 256; i++)
+        l[i] = 9;
+    for (; i < 280; i++)
+        l[i] = 7;
+    for (; i < 288; i++)
+        l[i] = 8;
+    bl = 7;
+    if ((i = Gz_HuftBuild(l, 288, 257, &g_gzCplens, &g_gzCplext, &tl, &bl)) != 0)
+        return i;
+    for (i = 0; i < 30; i++)
+        l[i] = 5;
+    bd = 5;
+    if ((i = Gz_HuftBuild(l, 30, 0, &g_gzCpdist, &g_gzCpdext, &td, &bd)) > 1)
+    {
+        Gz_HuftFree(tl);
+        return i;
+    }
+    if (Gz_InflateCodes(tl, td, bl, bd))
+        return 1;
+    Gz_HuftFree(tl);
+    Gz_HuftFree(td);
+    return 0;
+}
+
+// [$L_62f980] inflate_dynamic: a block with its own Huffman codes
+int __cdecl Gz_InflateDynamic()
+{
+    int i, bl, bd;
+    unsigned j, l, m, n, nb, nl, nd, k;
+    GzHuft *tl, *td;
+    unsigned ll[286 + 30];
+    DWORD b;
+    b = g_gzBb;
+    k = g_gzBk;
+    GZ_NEEDBITS(5)
+    nl = 257 + ((unsigned)b & 0x1f);
+    GZ_DUMPBITS(5)
+    GZ_NEEDBITS(5)
+    nd = 1 + ((unsigned)b & 0x1f);
+    GZ_DUMPBITS(5)
+    GZ_NEEDBITS(4)
+    nb = 4 + ((unsigned)b & 0xf);
+    GZ_DUMPBITS(4)
+    if (nl > 286 || nd > 30)
+        return 1;
+    for (j = 0; j < nb; j++)
+    {
+        GZ_NEEDBITS(3)
+        ll[(&g_gzBorder)[j]] = (unsigned)b & 7;
+        GZ_DUMPBITS(3)
+    }
+    for (; j < 19; j++)
+        ll[(&g_gzBorder)[j]] = 0;
+    bl = 7;
+    if ((i = Gz_HuftBuild(ll, 19, 19, 0, 0, &tl, &bl)) != 0)
+    {
+        if (i == 1)
+            Gz_HuftFree(tl);
+        return i;
+    }
+    n = nl + nd;
+    m = GZ_MASK(bl);
+    i = l = 0;
+    while ((unsigned)i < n)
+    {
+        GZ_NEEDBITS(bl)
+        j = (td = tl + ((unsigned)b & m))->b;
+        GZ_DUMPBITS(j)
+        j = td->v.n;
+        if (j < 16)
+            ll[i++] = l = j;
+        else if (j == 16)
+        {
+            GZ_NEEDBITS(2)
+            j = 3 + ((unsigned)b & 3);
+            GZ_DUMPBITS(2)
+            if ((unsigned)i + j > n)
+                return 1;
+            while (j--)
+                ll[i++] = l;
+        }
+        else if (j == 17)
+        {
+            GZ_NEEDBITS(3)
+            j = 3 + ((unsigned)b & 7);
+            GZ_DUMPBITS(3)
+            if ((unsigned)i + j > n)
+                return 1;
+            while (j--)
+                ll[i++] = 0;
+            l = 0;
+        }
+        else
+        {
+            GZ_NEEDBITS(7)
+            j = 11 + ((unsigned)b & 0x7f);
+            GZ_DUMPBITS(7)
+            if ((unsigned)i + j > n)
+                return 1;
+            while (j--)
+                ll[i++] = 0;
+            l = 0;
+        }
+    }
+    Gz_HuftFree(tl);
+    g_gzBb = b;
+    g_gzBk = k;
+    bl = g_gzLbits;
+    if ((i = Gz_HuftBuild(ll, nl, 257, &g_gzCplens, &g_gzCplext, &tl, &bl)) != 0)
+    {
+        if (i == 1)
+        {
+            Gz_fprintf(&g_gzStderr, &g_gz68a73c);
+            Gz_HuftFree(tl);
+        }
+        return i;
+    }
+    bd = g_gzDbits;
+    if ((i = Gz_HuftBuild(ll + nl, nd, 0, &g_gzCpdist, &g_gzCpdext, &td, &bd)) != 0)
+    {
+        if (i == 1)
+        {
+            Gz_fprintf(&g_gzStderr, &g_gz68a720);
+            Gz_HuftFree(td);
+        }
+        Gz_HuftFree(tl);
+        return i;
+    }
+    if (Gz_InflateCodes(tl, td, bl, bd))
+        return 1;
+    Gz_HuftFree(tl);
+    Gz_HuftFree(td);
+    return 0;
+}
+
+// [FUN_62ff30] inflate_block: the next block (*e set on the last one) by its kind
+int __cdecl Gz_InflateBlock(int* e)
+{
+    unsigned t, k;
+    DWORD b;
+    b = g_gzBb;
+    k = g_gzBk;
+    GZ_NEEDBITS(1)
+    *e = (int)b & 1;
+    GZ_DUMPBITS(1)
+    GZ_NEEDBITS(2)
+    t = (unsigned)b & 3;
+    GZ_DUMPBITS(2)
+    g_gzBb = b;
+    g_gzBk = k;
+    if (t == 2)
+        return Gz_InflateDynamic();
+    if (t == 0)
+        return Gz_InflateStored();
+    if (t == 1)
+        return Gz_InflateFixed();
+    return 2;
+}
+
+// [FUN_630020] inflate: a whole deflated stream, the unused input bytes given back; 0 or an error
+int __cdecl Gz_Inflate()
+{
+    int e, r;
+    unsigned h;
+    g_gzOutcnt = 0;
+    g_gzBk = 0;
+    g_gzBb = 0;
+    h = 0;
+    do
+    {
+        g_gzHufts = 0;
+        if ((r = Gz_InflateBlock(&e)) != 0)
+            return r;
+        if (g_gzHufts > h)
+            h = g_gzHufts;
+    } while (!e);
+    while (g_gzBk >= 8)
+    {
+        g_gzBk -= 8;
+        g_gzInptr--;
+    }
+    CallC(FUN_62b9e0);
+    return 0;
+}
+
+} // extern "C"
+
+// === gzip's trees.c and bits.c, and longest_match / fill_window of deflate.c (gzip 1.2.4)
+
+ASM_PROC(FUN_62b9a0)                                // flush_outbuf()
+ASM_VAR(AsmLabel, g_gzFileRead, $L_62b770)          // file_read(buf, size)
+
+struct GzCt
+{
+    WORD fc;                                        // frequency or code
+    WORD dl;                                        // father node or length
+};
+struct GzDesc
+{
+    GzCt* dyn_tree;
+    GzCt* static_tree;
+    int* extra_bits;
+    int extra_base;
+    int elems;
+    int max_length;
+    int max_code;
+};
+
+ASM_VAR(GzCt, g_gzDynL, $L_77d08c)                  // [286 + 286 + 1]
+ASM_VAR(GzCt, g_gzDynD, $L_77e2f0)                  // [2 * 30 + 1]
+ASM_VAR(GzCt, g_gzStaticL, $L_77cae8)               // [288]
+ASM_VAR(GzCt, g_gzStaticD, $L_77cf6c)               // [30]
+ASM_VAR(GzCt, g_gzBlTree, $L_77cfec)                // [2 * 19 + 1]
+ASM_VAR(WORD, g_gzBlCount, $L_77b504)               // [16]
+ASM_VAR(int, g_gzHeap, $L_77d9f8)                   // [573]
+ASM_VAR(int, g_gzHeapLen, $L_77b4fc)
+ASM_VAR(int, g_gzHeapMax, $L_77b500)
+ASM_VAR(BYTE, g_gzDepth, $L_77c8a8)
+ASM_VAR(BYTE, g_gzLengthCode, $L_77b528)            // [256]
+ASM_VAR(BYTE, g_gzDistCode, $L_77c6a0)              // [512]
+ASM_VAR(int, g_gzBaseLength, $L_77c628)             // [29]
+ASM_VAR(int, g_gzBaseDist, $L_77d980)               // [30]
+ASM_VAR(WORD, g_gzDBuf, $L_76afd0)
+ASM_VAR(BYTE, g_gzFlagBuf, $L_77b628)
+ASM_VAR(unsigned, g_gzLastLit, $L_77cfe4)
+ASM_VAR(unsigned, g_gzLastDist, $L_77cf68)
+ASM_VAR(unsigned, g_gzLastFlags, $L_77d088)
+ASM_VAR(BYTE, g_gzFlags, $L_77b525)
+ASM_VAR(BYTE, g_gzFlagBit, $L_77b524)
+ASM_VAR(DWORD, g_gzOptLen, $L_77c8a4)
+ASM_VAR(DWORD, g_gzStaticLen, $L_77c8a0)
+ASM_VAR(DWORD, g_gzCompressedLen, $L_77c69c)
+ASM_VAR(DWORD, g_gzInputLen, $L_77b4f8)
+ASM_VAR(WORD*, g_gzFileType, $L_77e2ec)
+ASM_VAR(int*, g_gzFileMethod, $L_77cfe8)
+ASM_VAR(int, g_gzLevel, $L_6897d8)
+ASM_VAR(unsigned, g_gzStrstart, $L_77b4cc)
+ASM_VAR(long, g_gzBlockStart, $L_77b4f0)
+ASM_VAR(int, g_gzExtraLbits, $L_68a408)             // [29]
+ASM_VAR(int, g_gzExtraDbits, $L_68a47c)             // [30]
+ASM_VAR(BYTE, g_gzBlOrder, $L_68a59c)               // [19]
+ASM_VAR(GzDesc, g_gzLDesc, $L_68a540)
+ASM_VAR(GzDesc, g_gzDDesc, $L_68a560)
+ASM_VAR(GzDesc, g_gzBlDesc, $L_68a580)
+ASM_VAR(WORD, g_gzBiBuf, $L_77e3e4)
+ASM_VAR(int, g_gzBiValid, $L_77e3e8)
+ASM_VAR(BYTE, g_gzOutbuf, $L_73668c)                // [16384]
+ASM_VAR(int, g_gzZfile, $L_77e3ec)
+ASM_VAR(void*, g_gzReadBuf, $L_77e3f0)
+ASM_VAR(unsigned, g_gzMaxChain, $L_77b4e0)
+ASM_VAR(unsigned, g_gzPrevLength, $L_77b4c8)
+ASM_VAR(unsigned, g_gzGoodMatch, $L_77b4e8)
+ASM_VAR(unsigned, g_gzMatchStart, $L_77b4ec)
+ASM_VAR(int, g_gzNiceMatch, $L_77b4dc)
+ASM_VAR(WORD, g_gzPrev, $L_73ae90)                  // [32768]
+ASM_VAR(WORD, g_gzHead, $L_74ae90)                  // [32768]
+ASM_VAR(DWORD, g_gzWindowSize, $L_68a3a0)
+ASM_VAR(unsigned, g_gzLookahead, $L_77b4f4)
+ASM_VAR(int, g_gzEofile, $L_77b4d8)
+
+#define GZ_OUTBUFSIZ 16384
+#define GZ_HEAP_SIZE 573
+#define GZ_SMALLER(tree, n, m) \
+    ((tree)[n].fc < (tree)[m].fc || ((tree)[n].fc == (tree)[m].fc && (&g_gzDepth)[n] <= (&g_gzDepth)[m]))
+
+static void Gz_PutByte(unsigned c)
+{
+    (&g_gzOutbuf)[g_gzOutcnt++] = (BYTE)c;
+    if (g_gzOutcnt == GZ_OUTBUFSIZ)
+        CallC(FUN_62b9a0);
+}
+
+static void Gz_PutShort(unsigned w)
+{
+    if (g_gzOutcnt < GZ_OUTBUFSIZ - 2)
+    {
+        (&g_gzOutbuf)[g_gzOutcnt++] = (BYTE)(w & 0xff);
+        (&g_gzOutbuf)[g_gzOutcnt++] = (BYTE)((WORD)w >> 8);
+    }
+    else
+    {
+        Gz_PutByte((BYTE)(w & 0xff));
+        Gz_PutByte((BYTE)((WORD)w >> 8));
+    }
+}
+
+extern "C" {
+
+// [FUN_62ebf0] bi_reverse: the low len bits of code reversed
+unsigned __cdecl Gz_BiReverse(unsigned code, int len)
+{
+    unsigned res = 0;
+    do
+    {
+        res |= code & 1;
+        code >>= 1, res <<= 1;
+    } while (--len > 0);
+    return res >> 1;
+}
+
+// [FUN_62eb10] send_bits: value's length bits into the bit buffer
+void __cdecl Gz_SendBits(int value, int length)
+{
+    if (g_gzBiValid > 16 - length)
+    {
+        g_gzBiBuf |= (WORD)(value << g_gzBiValid);
+        Gz_PutShort(g_gzBiBuf);
+        g_gzBiBuf = (WORD)((WORD)value >> (16 - g_gzBiValid));
+        g_gzBiValid += length - 16;
+    }
+    else
+    {
+        g_gzBiBuf |= (WORD)(value << g_gzBiValid);
+        g_gzBiValid += length;
+    }
+}
+
+// [FUN_62eae0] bi_init: writing to zipfile through file_read
+void __cdecl Gz_BiInit(int zipfile)
+{
+    g_gzReadBuf = (void*)&g_gzFileRead;
+    g_gzZfile = zipfile;
+    g_gzBiBuf = 0;
+    g_gzBiValid = 0;
+}
+
+// [FUN_62ec10] bi_windup: the bit buffer flushed to a byte boundary
+void __cdecl Gz_BiWindup()
+{
+    if (g_gzBiValid > 8)
+        Gz_PutShort(g_gzBiBuf);
+    else if (g_gzBiValid > 0)
+        Gz_PutByte(g_gzBiBuf);
+    g_gzBiBuf = 0;
+    g_gzBiValid = 0;
+}
+
+// [FUN_62ece0] copy_block: a stored block, with its length header if asked
+void __cdecl Gz_CopyBlock(const char* buf, unsigned len, int header)
+{
+    Gz_BiWindup();
+    if (header)
+    {
+        Gz_PutShort((WORD)len);
+        Gz_PutShort((WORD)~len);
+    }
+    while (len--)
+        Gz_PutByte(*buf++);
+}
+
+// [FUN_62ddd0] init_block: a new block's statistics
+void __cdecl Gz_InitBlock()
+{
+    int n;
+    for (n = 0; n < 286; n++)
+        (&g_gzDynL)[n].fc = 0;
+    for (n = 0; n < 30; n++)
+        (&g_gzDynD)[n].fc = 0;
+    for (n = 0; n < 19; n++)
+        (&g_gzBlTree)[n].fc = 0;
+    (&g_gzDynL)[256].fc = 1;
+    g_gzStaticLen = g_gzOptLen = 0;
+    g_gzLastFlags = g_gzLastDist = g_gzLastLit = 0;
+    g_gzFlags = 0;
+    g_gzFlagBit = 1;
+}
+
+// [FUN_62de40] gen_codes: the codes of tree from the bit length counts
+void __cdecl Gz_GenCodes(GzCt* tree, int max_code)
+{
+    WORD next_code[16];
+    WORD code = 0;
+    for (int bits = 1; bits <= 15; bits++)
+        next_code[bits] = code = (WORD)((code + (&g_gzBlCount)[bits - 1]) << 1);
+    for (int n = 0; n <= max_code; n++)
+    {
+        int len = tree[n].dl;
+        if (len == 0)
+            continue;
+        tree[n].fc = (WORD)Gz_BiReverse(next_code[len]++, len);
+    }
+}
+
+// [FUN_62e1d0] pqdownheap: the heap restored from node k down
+void __cdecl Gz_PqDownHeap(GzCt* tree, int k)
+{
+    int* heap = &g_gzHeap;
+    int v = heap[k];
+    int j = k << 1;
+    while (j <= g_gzHeapLen)
+    {
+        if (j < g_gzHeapLen && GZ_SMALLER(tree, heap[j + 1], heap[j]))
+            j++;
+        if (GZ_SMALLER(tree, v, heap[j]))
+            break;
+        heap[k] = heap[j];
+        k = j;
+        j <<= 1;
+    }
+    heap[k] = v;
+}
+
+// [FUN_62e270] gen_bitlen: the optimal bit lengths of a tree, limited to max_length
+void __cdecl Gz_GenBitlen(GzDesc* desc)
+{
+    GzCt* tree = desc->dyn_tree;
+    int* extra = desc->extra_bits;
+    int base = desc->extra_base;
+    int max_code = desc->max_code;
+    int max_length = desc->max_length;
+    GzCt* stree = desc->static_tree;
+    int* heap = &g_gzHeap;
+    WORD* bl_count = &g_gzBlCount;
+    int h, n, m, bits, xbits, overflow = 0;
+    WORD f;
+    for (bits = 0; bits <= 15; bits++)
+        bl_count[bits] = 0;
+    tree[heap[g_gzHeapMax]].dl = 0;
+    for (h = g_gzHeapMax + 1; h < GZ_HEAP_SIZE; h++)
+    {
+        n = heap[h];
+        bits = tree[tree[n].dl].dl + 1;
+        if (bits > max_length)
+            bits = max_length, overflow++;
+        tree[n].dl = (WORD)bits;
+        if (n > max_code)
+            continue;
+        bl_count[bits]++;
+        xbits = 0;
+        if (n >= base)
+            xbits = extra[n - base];
+        f = tree[n].fc;
+        g_gzOptLen += (DWORD)f * (bits + xbits);
+        if (stree)
+            g_gzStaticLen += (DWORD)f * (stree[n].dl + xbits);
+    }
+    if (overflow == 0)
+        return;
+    do
+    {
+        bits = max_length - 1;
+        while (bl_count[bits] == 0)
+            bits--;
+        bl_count[bits]--;
+        bl_count[bits + 1] += 2;
+        bl_count[max_length]--;
+        overflow -= 2;
+    } while (overflow > 0);
+    for (bits = max_length; bits != 0; bits--)
+    {
+        n = bl_count[bits];
+        while (n != 0)
+        {
+            m = heap[--h];
+            if (m > max_code)
+                continue;
+            if (tree[m].dl != (unsigned)bits)
+            {
+                g_gzOptLen += ((long)bits - (long)tree[m].dl) * (long)tree[m].fc;
+                tree[m].dl = (WORD)bits;
+            }
+            n--;
+        }
+    }
+}
+
+// [FUN_62e000] build_tree: a Huffman tree for desc, its lengths and codes
+void __cdecl Gz_BuildTree(GzDesc* desc)
+{
+    GzCt* tree = desc->dyn_tree;
+    GzCt* stree = desc->static_tree;
+    int elems = desc->elems;
+    int* heap = &g_gzHeap;
+    BYTE* depth = &g_gzDepth;
+    int n, m, max_code = -1, node = elems;
+    g_gzHeapLen = 0, g_gzHeapMax = GZ_HEAP_SIZE;
+    for (n = 0; n < elems; n++)
+    {
+        if (tree[n].fc != 0)
+        {
+            heap[++g_gzHeapLen] = max_code = n;
+            depth[n] = 0;
+        }
+        else
+            tree[n].dl = 0;
+    }
+    while (g_gzHeapLen < 2)
+    {
+        int nw = heap[++g_gzHeapLen] = (max_code < 2 ? ++max_code : 0);
+        tree[nw].fc = 1;
+        depth[nw] = 0;
+        g_gzOptLen--;
+        if (stree)
+            g_gzStaticLen -= stree[nw].dl;
+    }
+    desc->max_code = max_code;
+    for (n = g_gzHeapLen / 2; n >= 1; n--)
+        Gz_PqDownHeap(tree, n);
+    do
+    {
+        n = heap[1];
+        heap[1] = heap[g_gzHeapLen--];
+        Gz_PqDownHeap(tree, 1);
+        m = heap[1];
+        heap[--g_gzHeapMax] = n;
+        heap[--g_gzHeapMax] = m;
+        tree[node].fc = (WORD)(tree[n].fc + tree[m].fc);
+        depth[node] = (BYTE)((depth[n] >= depth[m] ? depth[n] : depth[m]) + 1);
+        tree[n].dl = tree[m].dl = (WORD)node;
+        heap[1] = node++;
+        Gz_PqDownHeap(tree, 1);
+    } while (g_gzHeapLen >= 2);
+    heap[--g_gzHeapMax] = heap[1];
+    Gz_GenBitlen(desc);
+    Gz_GenCodes(tree, max_code);
+}
+
+// [FUN_62e4d0] scan_tree: the run lengths of tree's code lengths counted into bl_tree
+void __cdecl Gz_ScanTree(GzCt* tree, int max_code)
+{
+    GzCt* bl = &g_gzBlTree;
+    int n, prevlen = -1, curlen, nextlen = tree[0].dl, count = 0, max_count = 7, min_count = 4;
+    if (nextlen == 0)
+        max_count = 138, min_count = 3;
+    tree[max_code + 1].dl = (WORD)0xffff;
+    for (n = 0; n <= max_code; n++)
+    {
+        curlen = nextlen;
+        nextlen = tree[n + 1].dl;
+        if (++count < max_count && curlen == nextlen)
+            continue;
+        else if (count < min_count)
+            bl[curlen].fc += (WORD)count;
+        else if (curlen != 0)
+        {
+            if (curlen != prevlen)
+                bl[curlen].fc++;
+            bl[16].fc++;
+        }
+        else if (count <= 10)
+            bl[17].fc++;
+        else
+            bl[18].fc++;
+        count = 0;
+        prevlen = curlen;
+        if (nextlen == 0)
+            max_count = 138, min_count = 3;
+        else if (curlen == nextlen)
+            max_count = 6, min_count = 3;
+        else
+            max_count = 7, min_count = 4;
+    }
+}
+
+static void Gz_SendCode(int c, const GzCt* tree)
+{
+    Gz_SendBits(tree[c].fc, tree[c].dl);
+}
+
+// [FUN_62e640] send_tree: tree's code lengths sent in their run length form
+void __cdecl Gz_SendTree(GzCt* tree, int max_code)
+{
+    GzCt* bl = &g_gzBlTree;
+    int n, prevlen = -1, curlen, nextlen = tree[0].dl, count = 0, max_count = 7, min_count = 4;
+    if (nextlen == 0)
+        max_count = 138, min_count = 3;
+    for (n = 0; n <= max_code; n++)
+    {
+        curlen = nextlen;
+        nextlen = tree[n + 1].dl;
+        if (++count < max_count && curlen == nextlen)
+            continue;
+        else if (count < min_count)
+        {
+            do
+            {
+                Gz_SendCode(curlen, bl);
+            } while (--count != 0);
+        }
+        else if (curlen != 0)
+        {
+            if (curlen != prevlen)
+            {
+                Gz_SendCode(curlen, bl);
+                count--;
+            }
+            Gz_SendCode(16, bl);
+            Gz_SendBits(count - 3, 2);
+        }
+        else if (count <= 10)
+        {
+            Gz_SendCode(17, bl);
+            Gz_SendBits(count - 3, 3);
+        }
+        else
+        {
+            Gz_SendCode(18, bl);
+            Gz_SendBits(count - 11, 7);
+        }
+        count = 0;
+        prevlen = curlen;
+        if (nextlen == 0)
+            max_count = 138, min_count = 3;
+        else if (curlen == nextlen)
+            max_count = 6, min_count = 3;
+        else
+            max_count = 7, min_count = 4;
+    }
+}
+
+// [FUN_62e470] build_bl_tree: the bit length tree; the last of its codes to send
+int __cdecl Gz_BuildBlTree()
+{
+    int max_blindex;
+    Gz_ScanTree(&g_gzDynL, g_gzLDesc.max_code);
+    Gz_ScanTree(&g_gzDynD, g_gzDDesc.max_code);
+    Gz_BuildTree(&g_gzBlDesc);
+    for (max_blindex = 18; max_blindex >= 3; max_blindex--)
+        if ((&g_gzBlTree)[(&g_gzBlOrder)[max_blindex]].dl != 0)
+            break;
+    g_gzOptLen += 3 * (max_blindex + 1) + 5 + 5 + 4;
+    return max_blindex;
+}
+
+// [FUN_62e5c0] send_all_trees: the dynamic trees' header
+void __cdecl Gz_SendAllTrees(int lcodes, int dcodes, int blcodes)
+{
+    Gz_SendBits(lcodes - 257, 5);
+    Gz_SendBits(dcodes - 1, 5);
+    Gz_SendBits(blcodes - 4, 4);
+    for (int rank = 0; rank < blcodes; rank++)
+        Gz_SendBits((&g_gzBlTree)[(&g_gzBlOrder)[rank]].dl, 3);
+    Gz_SendTree(&g_gzDynL, lcodes - 1);
+    Gz_SendTree(&g_gzDynD, dcodes - 1);
+}
+
+// [FUN_62e910] compress_block: the block's literals and matches through the trees
+void __cdecl Gz_CompressBlock(GzCt* ltree, GzCt* dtree)
+{
+    unsigned dist, lx = 0, dx = 0, fx = 0, code;
+    int lc, extra;
+    BYTE flag = 0;
+    if (g_gzLastLit != 0)
+        do
+        {
+            if ((lx & 7) == 0)
+                flag = (&g_gzFlagBuf)[fx++];
+            lc = (&g_gzInbuf)[lx++];
+            if ((flag & 1) == 0)
+                Gz_SendCode(lc, ltree);
+            else
+            {
+                code = (&g_gzLengthCode)[lc];
+                Gz_SendCode(code + 256 + 1, ltree);
+                extra = (&g_gzExtraLbits)[code];
+                if (extra != 0)
+                {
+                    lc -= (&g_gzBaseLength)[code];
+                    Gz_SendBits(lc, extra);
+                }
+                dist = (&g_gzDBuf)[dx++];
+                code = dist < 256 ? (&g_gzDistCode)[dist] : (&g_gzDistCode)[256 + (dist >> 7)];
+                Gz_SendCode(code, dtree);
+                extra = (&g_gzExtraDbits)[code];
+                if (extra != 0)
+                {
+                    dist -= (&g_gzBaseDist)[code];
+                    Gz_SendBits(dist, extra);
+                }
+            }
+            flag >>= 1;
+        } while (lx < g_gzLastLit);
+    Gz_SendCode(256, ltree);
+}
+
+// [FUN_62ea70] set_file_type: binary or ascii by the literal counts
+void __cdecl Gz_SetFileType()
+{
+    int n = 0;
+    unsigned ascii_freq = 0, bin_freq = 0;
+    while (n < 7)
+        bin_freq += (&g_gzDynL)[n++].fc;
+    while (n < 128)
+        ascii_freq += (&g_gzDynL)[n++].fc;
+    while (n < 256)
+        bin_freq += (&g_gzDynL)[n++].fc;
+    *g_gzFileType = bin_freq > (ascii_freq >> 2) ? 0 : 1;
+}
+
+// [FUN_62deb0] flush_block: the block written stored, with the fixed or with its own trees, whichever is
+// shortest; the compressed length so far
+DWORD __cdecl Gz_FlushBlock(const char* buf, DWORD stored_len, int eof)
+{
+    DWORD opt_lenb, static_lenb;
+    (&g_gzFlagBuf)[g_gzLastFlags] = g_gzFlags;
+    if (*g_gzFileType == (WORD)0xffff)
+        Gz_SetFileType();
+    Gz_BuildTree(&g_gzLDesc);
+    Gz_BuildTree(&g_gzDDesc);
+    int max_blindex = Gz_BuildBlTree();
+    opt_lenb = (g_gzOptLen + 3 + 7) >> 3;
+    static_lenb = (g_gzStaticLen + 3 + 7) >> 3;
+    g_gzInputLen += stored_len;
+    if (static_lenb <= opt_lenb)
+        opt_lenb = static_lenb;
+    if (stored_len + 4 <= opt_lenb && buf != 0)
+    {
+        Gz_SendBits((0 << 1) + eof, 3);
+        g_gzCompressedLen = (g_gzCompressedLen + 3 + 7) & ~7L;
+        g_gzCompressedLen += (stored_len + 4) << 3;
+        Gz_CopyBlock(buf, (unsigned)stored_len, 1);
+    }
+    else if (static_lenb == opt_lenb)
+    {
+        Gz_SendBits((1 << 1) + eof, 3);
+        Gz_CompressBlock(&g_gzStaticL, &g_gzStaticD);
+        g_gzCompressedLen += 3 + g_gzStaticLen;
+    }
+    else
+    {
+        Gz_SendBits((2 << 1) + eof, 3);
+        Gz_SendAllTrees(g_gzLDesc.max_code + 1, g_gzDDesc.max_code + 1, max_blindex + 1);
+        Gz_CompressBlock(&g_gzDynL, &g_gzDynD);
+        g_gzCompressedLen += 3 + g_gzOptLen;
+    }
+    Gz_InitBlock();
+    if (eof)
+    {
+        Gz_BiWindup();
+        g_gzCompressedLen += 7;
+    }
+    return g_gzCompressedLen >> 3;
+}
+
+// [FUN_62e7b0] ct_tally: a literal (dist 0) or a match recorded; whether the block should be flushed now
+int __cdecl Gz_CtTally(int dist, int lc)
+{
+    (&g_gzInbuf)[g_gzLastLit++] = (BYTE)lc;
+    if (dist == 0)
+        (&g_gzDynL)[lc].fc++;
+    else
+    {
+        dist--;
+        (&g_gzDynL)[(&g_gzLengthCode)[lc] + 256 + 1].fc++;
+        (&g_gzDynD)[dist < 256 ? (&g_gzDistCode)[dist] : (&g_gzDistCode)[256 + (dist >> 7)]].fc++;
+        (&g_gzDBuf)[g_gzLastDist++] = (WORD)dist;
+        g_gzFlags |= g_gzFlagBit;
+    }
+    g_gzFlagBit <<= 1;
+    if ((g_gzLastLit & 7) == 0)
+    {
+        (&g_gzFlagBuf)[g_gzLastFlags++] = g_gzFlags;
+        g_gzFlags = 0, g_gzFlagBit = 1;
+    }
+    if (g_gzLevel > 2 && (g_gzLastLit & 0xfff) == 0)
+    {
+        DWORD out_length = (DWORD)g_gzLastLit * 8L;
+        DWORD in_length = (DWORD)g_gzStrstart - g_gzBlockStart;
+        for (int dcode = 0; dcode < 30; dcode++)
+            out_length += (DWORD)(&g_gzDynD)[dcode].fc * (5L + (&g_gzExtraDbits)[dcode]);
+        out_length >>= 3;
+        if (g_gzLastDist < g_gzLastLit / 2 && out_length < in_length / 2)
+            return 1;
+    }
+    return g_gzLastLit == 0x8000 - 1 || g_gzLastDist == 0x8000;
+}
+
+// [FUN_62dba0] ct_init: the static trees and code tables set up once; attr gets the file type
+void __cdecl Gz_CtInit(WORD* attr, int* methodp)
+{
+    int n, bits, length, code, dist;
+    g_gzFileType = attr;
+    g_gzFileMethod = methodp;
+    g_gzCompressedLen = g_gzInputLen = 0L;
+    if ((&g_gzStaticD)[0].dl != 0)
+        return;
+    length = 0;
+    for (code = 0; code < 28; code++)
+    {
+        (&g_gzBaseLength)[code] = length;
+        for (n = 0; n < (1 << (&g_gzExtraLbits)[code]); n++)
+            (&g_gzLengthCode)[length++] = (BYTE)code;
+    }
+    (&g_gzLengthCode)[length - 1] = (BYTE)code;
+    dist = 0;
+    for (code = 0; code < 16; code++)
+    {
+        (&g_gzBaseDist)[code] = dist;
+        for (n = 0; n < (1 << (&g_gzExtraDbits)[code]); n++)
+            (&g_gzDistCode)[dist++] = (BYTE)code;
+    }
+    dist >>= 7;
+    for (; code < 30; code++)
+    {
+        (&g_gzBaseDist)[code] = dist << 7;
+        for (n = 0; n < (1 << ((&g_gzExtraDbits)[code] - 7)); n++)
+            (&g_gzDistCode)[256 + dist++] = (BYTE)code;
+    }
+    for (bits = 0; bits <= 15; bits++)
+        (&g_gzBlCount)[bits] = 0;
+    GzCt* sl = &g_gzStaticL;
+    n = 0;
+    while (n <= 143)
+        sl[n++].dl = 8, (&g_gzBlCount)[8]++;
+    while (n <= 255)
+        sl[n++].dl = 9, (&g_gzBlCount)[9]++;
+    while (n <= 279)
+        sl[n++].dl = 7, (&g_gzBlCount)[7]++;
+    while (n <= 287)
+        sl[n++].dl = 8, (&g_gzBlCount)[8]++;
+    Gz_GenCodes(sl, 286 + 1);
+    for (n = 0; n < 30; n++)
+    {
+        (&g_gzStaticD)[n].dl = 5;
+        (&g_gzStaticD)[n].fc = (WORD)Gz_BiReverse(n, 5);
+    }
+    Gz_InitBlock();
+}
+
+// [FUN_62d400] longest_match: the longest match at strstart along the hash chain from cur_match (its start in
+// match_start)
+int __cdecl Gz_LongestMatch(unsigned cur_match)
+{
+    BYTE* window = &g_gzSlide;
+    unsigned chain_length = g_gzMaxChain;
+    BYTE* scan = window + g_gzStrstart;
+    BYTE* match;
+    int len;
+    int best_len = g_gzPrevLength;
+    unsigned limit = g_gzStrstart > 32506 ? g_gzStrstart - 32506 : 0;
+    BYTE* strend = window + g_gzStrstart + 258;
+    BYTE scan_end1 = scan[best_len - 1];
+    BYTE scan_end = scan[best_len];
+    if (g_gzPrevLength >= g_gzGoodMatch)
+        chain_length >>= 2;
+    do
+    {
+        match = window + cur_match;
+        if (match[best_len] != scan_end || match[best_len - 1] != scan_end1 || *match != *scan || *++match != scan[1])
+            continue;
+        scan += 2, match++;
+        do
+        {
+        } while (*++scan == *++match && *++scan == *++match && *++scan == *++match && *++scan == *++match
+                 && *++scan == *++match && *++scan == *++match && *++scan == *++match && *++scan == *++match
+                 && scan < strend);
+        len = 258 - (int)(strend - scan);
+        scan = strend - 258;
+        if (len > best_len)
+        {
+            g_gzMatchStart = cur_match;
+            best_len = len;
+            if (len >= g_gzNiceMatch)
+                break;
+            scan_end1 = scan[best_len - 1];
+            scan_end = scan[best_len];
+        }
+    } while ((cur_match = (&g_gzPrev)[cur_match & 0x7fff]) > limit && --chain_length != 0);
+    return best_len;
+}
+
+// [FUN_62d550] fill_window: more input read into the window, sliding it by 32 KB when needed
+void __cdecl Gz_FillWindow()
+{
+    unsigned n, m;
+    unsigned more = (unsigned)(g_gzWindowSize - (DWORD)g_gzLookahead - (DWORD)g_gzStrstart);
+    BYTE* window = &g_gzSlide;
+    if (more == (unsigned)-1)
+        more--;
+    else if (g_gzStrstart >= 0x8000 + 32506)
+    {
+        memcpy(window, window + 0x8000, 0x8000);
+        g_gzMatchStart -= 0x8000;
+        g_gzStrstart -= 0x8000;
+        g_gzBlockStart -= 0x8000L;
+        for (n = 0; n < 0x8000; n++)
+        {
+            m = (&g_gzHead)[n];
+            (&g_gzHead)[n] = (WORD)(m >= 0x8000 ? m - 0x8000 : 0);
+        }
+        for (n = 0; n < 0x8000; n++)
+        {
+            m = (&g_gzPrev)[n];
+            (&g_gzPrev)[n] = (WORD)(m >= 0x8000 ? m - 0x8000 : 0);
+        }
+        more += 0x8000;
+    }
+    if (!g_gzEofile)
+    {
+        n = ((unsigned(__cdecl*)(char*, unsigned))g_gzReadBuf)((char*)window + g_gzStrstart + g_gzLookahead, more);
+        if (n == 0 || n == (unsigned)-1)
+            g_gzEofile = 1;
+        else
+            g_gzLookahead += n;
+    }
+}
+
+} // extern "C"

@@ -9371,7 +9371,7 @@ extern "C" void __cdecl Dd_Text(int surf, int x, int y, int color, const char* s
 KING_ALIAS("_Dd_Text", "_Text_Draw")
 extern "C" void __cdecl Dd_Frame(int surf, int* rect, int mode, Dd_Style st);
 KING_ALIAS("_Dd_Frame", "_Ctl_DrawFrame")
-ASM_PROC(FUN_53e7a0)
+extern "C" void FUN_53e7a0(); KING_ALIAS("_FUN_53e7a0", "_Cars_DumpToLog")
 ASM_PROC(FUN_53d8c0)
 ASM_VAR(int, g_dd696c64, $L_696c64)
 ASM_VAR(BYTE*, g_dd6d2078, $L_6d2078)
@@ -9513,6 +9513,1198 @@ void __fastcall Dash_DrawOverlays(BYTE* s, void*)
     }
     if (s[1404] & 32)
         Dd_Lines(s, surf, color, W, txt, 40);
+}
+
+} // extern "C"
+
+// === the vehicle's sounds and force feedback (FUN_538370)
+
+extern "C" void __cdecl Vn_Play388(void* s, float v); KING_ALIAS("_Vn_Play388", "_Sound_Play388")
+extern "C" void __cdecl Vn_Play3_388(void* s, float v); KING_ALIAS("_Vn_Play3_388", "_Sound_Play3_388")
+extern "C" void __cdecl Vn_Play3_388Pos(void* s, float v, float w); KING_ALIAS("_Vn_Play3_388Pos", "_Sound_Play3_388Pos")
+extern "C" void __cdecl Vn_Start388(void* s, float a, float v, const void* p); KING_ALIAS("_Vn_Start388", "_Sound_Start388")
+extern "C" void __cdecl Vn_Start388Pos(void* s, float a, float v, float w, const void* p);
+KING_ALIAS("_Vn_Start388Pos", "_Sound_Start388Pos")
+extern "C" void __cdecl Vn_Loop388(void* s, float a, float v, const void* p); KING_ALIAS("_Vn_Loop388", "_Sound_Loop388")
+extern "C" void __cdecl Vn_Play390If(void* s, DWORD a, DWORD b, const void* p); KING_ALIAS("_Vn_Play390If", "_Sound_Play390If")
+extern "C" void __cdecl Vn_Play3_386(void* s, float v); KING_ALIAS("_Vn_Play3_386", "_Sound_Play3_386")
+extern "C" void __cdecl Vn_Start386(void* s, float a, float v, const void* p); KING_ALIAS("_Vn_Start386", "_Sound_Start386")
+extern "C" void __cdecl Vn_Loop386(void* s, DWORD a, DWORD v, const void* p); KING_ALIAS("_Vn_Loop386", "_Sound_Loop386")
+extern "C" void __cdecl Vn_PlayRange3(void* s, float a, float v, const void* p); KING_ALIAS("_Vn_PlayRange3", "_Sound_PlayRange3")
+extern "C" void Vn_Switch(); KING_ALIAS("_Vn_Switch", "_Switch_Select")
+extern "C" void Vn_Log(); KING_ALIAS("_Vn_Log", "_VehLog_Value")
+extern "C" void Vn_FilterValue(); KING_ALIAS("_Vn_FilterValue", "@Filter_Value@4")
+extern "C" void Vn_ActionState(); KING_ALIAS("_Vn_ActionState", "@Controls_ActionState@12")
+extern "C" void Vn_SoundPlay(); KING_ALIAS("_Vn_SoundPlay", "@Sound_Play@20")
+extern "C" void Vn_Decompose(); KING_ALIAS("_Vn_Decompose", "_Matrix_Decompose6F")
+extern "C" void Vn_MulAssign(); KING_ALIAS("_Vn_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Vn_AddAssign(); KING_ALIAS("_Vn_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Vn_NormalizeThis(); KING_ALIAS("_Vn_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void __fastcall JoyEffect_Stop(BYTE* self, void*);
+extern "C" int __fastcall JoyEffect_GetParameters(BYTE* self, void*, DWORD* params, int flags);
+extern "C" int __fastcall JoyEffect_GetStatus(BYTE* self, void*, int* status);
+extern "C" void __fastcall JoyEffect_SetGain(BYTE* self, void*, float v);
+extern "C" void __fastcall JoyEffect_SetMagnitude(BYTE* self, void*, float v);
+extern "C" void __fastcall FfEffect_SetPeriodic(DWORD* fx, void*, float a, float b, float c);
+extern "C" void __fastcall FfEffect_SetCondition(DWORD* fx, void*, float a, float b);
+extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b);
+extern "C" int __cdecl Joy_SendCommand(int command);
+extern "C" Matrix* __fastcall SceneObj_Matrix548(BYTE* self, void*, Matrix* out);
+extern "C" Matrix* __fastcall SceneObj_Matrix644(BYTE* self, void*, Matrix* out);
+extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);
+ASM_PROC(FUN_4eacce)
+ASM_VAR(BYTE*, g_vn696ca0, $L_696ca0)
+ASM_VAR(int, g_vn696c74, $L_696c74)                 // the force feedback log
+ASM_VAR(int, g_vn696ca4, $L_696ca4)
+ASM_VAR(BYTE*, g_vn696cf0, $L_696cf0)               // the force effects
+ASM_VAR(BYTE*, g_vn696cf4, $L_696cf4)
+ASM_VAR(BYTE*, g_vn696cf8, $L_696cf8)
+ASM_VAR(BYTE*, g_vn696cfc, $L_696cfc)
+ASM_VAR(BYTE*, g_vn696d00, $L_696d00)
+ASM_VAR(BYTE*, g_vn696d04, $L_696d04)
+ASM_VAR(void*, g_vn6d1d44, $L_6d1d44)               // the sounds
+ASM_VAR(void*, g_vn6d1d10, $L_6d1d10)
+ASM_VAR(void*, g_vn6d1d4c, $L_6d1d4c)
+ASM_VAR(void*, g_vn6d1d50, $L_6d1d50)
+ASM_VAR(void*, g_vn6d1d28, $L_6d1d28)
+ASM_VAR(void*, g_vn6d1d1c, $L_6d1d1c)
+ASM_VAR(void*, g_vn6d1d48, $L_6d1d48)
+ASM_VAR(void*, g_vn6d1cf4, $L_6d1cf4)
+ASM_VAR(void*, g_vn6d1cf8, $L_6d1cf8)
+ASM_VAR(void*, g_vn6d1d00, $L_6d1d00)
+ASM_VAR(void*, g_vn6d1d04, $L_6d1d04)
+ASM_VAR(void*, g_vn6d1d08, $L_6d1d08)
+ASM_VAR(void*, g_vn6d1d0c, $L_6d1d0c)
+ASM_VAR(void*, g_vn6d1cd0, $L_6d1cd0)
+ASM_VAR(void*, g_vn6d1d20, $L_6d1d20)
+ASM_VAR(void*, g_vn6d1d80, $L_6d1d80)
+ASM_VAR(void*, g_vn6d1d40, $L_6d1d40)
+ASM_VAR(void*, g_vn6d1d3c, $L_6d1d3c)
+ASM_VAR(void*, g_vn6d1d54, $L_6d1d54)               // [3]
+ASM_VAR(DWORD, g_vn6d1d84, $L_6d1d84)               // [11]
+ASM_VAR(int, g_vn6d20e0, $L_6d20e0)
+ASM_VAR(float, g_vn6d1db4, $L_6d1db4)
+ASM_VAR(signed char, g_vn6d1db0, $L_6d1db0)
+ASM_VAR(float, g_vn6d20d8, $L_6d20d8)
+ASM_VAR(float, g_vn678780, $L_678780)
+ASM_VAR(float, g_vn678788, $L_678788)
+ASM_VAR(AsmLabel, g_vn6d1db8, $L_6d1db8)
+ASM_VAR(AsmLabel, g_vn697b30, $L_697b30)
+ASM_VAR(char, g_vn6791e4, $L_6791e4)
+ASM_VAR(char, g_vn6791d4, $L_6791d4)
+ASM_VAR(char, g_vn6791c0, $L_6791c0)
+ASM_VAR(char, g_vn6791ac, $L_6791ac)
+ASM_VAR(char, g_vn679198, $L_679198)
+ASM_VAR(char, g_vn679184, $L_679184)
+ASM_VAR(char, g_vn679170, $L_679170)
+ASM_VAR(char, g_vn679160, $L_679160)
+ASM_VAR(char, g_vn679138, $L_679138)
+ASM_VAR(char, g_vn679124, $L_679124)
+ASM_VAR(char, g_vn67910c, $L_67910c)
+ASM_VAR(char, g_vn6790f4, $L_6790f4)
+ASM_VAR(char, g_vn6790e0, $L_6790e0)
+ASM_VAR(char, g_vn6790c8, $L_6790c8)
+ASM_VAR(char, g_vn6790b0, $L_6790b0)
+ASM_VAR(char, g_vn679098, $L_679098)
+ASM_VAR(char, g_vn67907c, $L_67907c)
+ASM_VAR(char, g_vn679064, $L_679064)
+ASM_VAR(char, g_vn679050, $L_679050)
+ASM_VAR(char, g_vn67903c, $L_67903c)
+ASM_VAR(char, g_vn679028, $L_679028)
+ASM_VAR(char, g_vn679018, $L_679018)
+ASM_VAR(char, g_vn678ffc, $L_678ffc)
+ASM_VAR(char, g_vn678fe0, $L_678fe0)
+ASM_VAR(char, g_vn678fcc, $L_678fcc)
+ASM_VAR(char, g_vn678fb8, $L_678fb8)
+ASM_VAR(char, g_vn678fa4, $L_678fa4)
+ASM_VAR(char, g_vn678f8c, $L_678f8c)
+ASM_VAR(char, g_vn678f70, $L_678f70)
+ASM_VAR(char, g_vn678f58, $L_678f58)
+ASM_VAR(float, g_vn64c264, $L_64c264)
+ASM_VAR(float, g_vn64c250, $L_64c250)
+ASM_VAR(float, g_vn64f3fc, $L_64f3fc)
+ASM_VAR(float, g_vn64c320, $L_64c320)
+ASM_VAR(float, g_vn64c40c, $L_64c40c)
+ASM_VAR(float, g_vn64c2fc, $L_64c2fc)
+ASM_VAR(float, g_vn67440c, $L_67440c)
+ASM_VAR(float, g_vn64c25c, $L_64c25c)
+ASM_VAR(float, g_vn64f3f8, $L_64f3f8)
+ASM_VAR(float, g_vn64c450, $L_64c450)
+ASM_VAR(float, g_vn64c938, $L_64c938)
+ASM_VAR(float, g_vn64c254, $L_64c254)
+ASM_VAR(float, g_vn64d2f8, $L_64d2f8)
+ASM_VAR(float, g_vn64d4e8, $L_64d4e8)
+ASM_VAR(float, g_vn64d490, $L_64d490)
+ASM_VAR(float, g_vn64f3e0, $L_64f3e0)
+ASM_VAR(double, g_vn64f370, $L_64f370)
+ASM_VAR(double, g_vn64b8e8, $L_64b8e8)
+ASM_VAR(double, g_vn64b658, $L_64b658)
+ASM_VAR(double, g_vn64b6e0, $L_64b6e0)
+ASM_VAR(double, g_vn64ca78, $L_64ca78)
+ASM_VAR(double, g_vn64b840, $L_64b840)
+ASM_VAR(double, g_vn64b898, $L_64b898)
+ASM_VAR(double, g_vn64b5b8, $L_64b5b8)
+ASM_VAR(double, g_vn64d0f0, $L_64d0f0)
+ASM_VAR(double, g_vn64b7a8, $L_64b7a8)
+ASM_VAR(double, g_vn64f3f0, $L_64f3f0)
+ASM_VAR(double, g_vn64b670, $L_64b670)
+ASM_VAR(double, g_vn64d338, $L_64d338)
+ASM_VAR(double, g_vn64b838, $L_64b838)
+ASM_VAR(double, g_vn64d668, $L_64d668)
+ASM_VAR(double, g_vn64ca48, $L_64ca48)
+ASM_VAR(double, g_vn64b6f0, $L_64b6f0)
+ASM_VAR(double, g_vn64b780, $L_64b780)
+ASM_VAR(double, g_vn64b938, $L_64b938)
+ASM_VAR(double, g_vn64b5a0, $L_64b5a0)
+ASM_VAR(double, g_vn64b958, $L_64b958)
+ASM_VAR(double, g_vn64b738, $L_64b738)
+ASM_VAR(double, g_vn64b918, $L_64b918)
+ASM_VAR(double, g_vn64b668, $L_64b668)
+ASM_VAR(double, g_vn64d378, $L_64d378)
+ASM_VAR(double, g_vn64b6d8, $L_64b6d8)
+ASM_VAR(double, g_vn64b930, $L_64b930)
+ASM_VAR(double, g_vn64f3e8, $L_64f3e8)
+ASM_VAR(double, g_vn64d988, $L_64d988)
+
+// point p (+0 / +4 / +8) in the listener's frame (s +1472)
+static Vec3 Vn_Ear(BYTE* s, const float* p)
+{
+    const float* L = (const float*)(s + 1472);
+    Vec3 r;
+    r.x = (float)((double)L[3] * p[1] + (double)L[6] * p[2] + (double)p[0] * L[0] + L[9]);
+    r.y = (float)((double)L[1] * p[0] + (double)L[4] * p[1] + (double)L[7] * p[2] + L[10]);
+    r.z = (float)((double)L[2] * p[0] + (double)L[5] * p[1] + (double)L[8] * p[2] + L[11]);
+    return r;
+}
+
+// a sound by the cab view (+1400): looped at Q with range a, else played once
+static void Vn_Sound(BYTE* s, void* snd, float a, float v, const Vec3* Q)
+{
+    if (F(int, s, 1400))
+        Vn_Loop388(snd, a, v, Q);
+    else
+        Vn_Play388(snd, v);
+}
+
+static void Vn_LogText(const char* t)
+{
+    CallC(Vn_Log, t);
+}
+
+// (v x w) x w
+static Vec3 Vn_Twice(const Vec3& v, const float* w)
+{
+    double c1 = (double)v.z * w[1] - (double)v.y * w[2];
+    double c2 = (double)v.x * w[2] - (double)v.z * w[0];
+    double c3 = (double)v.y * w[0] - (double)v.x * w[1];
+    Vec3 r;
+    r.x = (float)(c2 * w[2] - c3 * w[1]);
+    r.y = (float)(c3 * w[0] - c1 * w[2]);
+    r.z = (float)(c1 * w[1] - c2 * w[0]);
+    return r;
+}
+
+// the speed at a wheel at r: the spin B across r turned by M, plus the speed A
+static Vec3 Vn_WheelSpeed(const Vec3& B, const float* r, const float* M, const Vec3& A)
+{
+    double c1 = (double)B.z * r[1] - (double)B.y * r[2];
+    double c2 = (double)B.x * r[2] - (double)B.z * r[0];
+    double c3 = (double)B.y * r[0] - (double)B.x * r[1];
+    Vec3 v;
+    v.x = (float)((double)(float)(c3 * M[6] + c2 * M[3] + M[0] * c1) + A.x);
+    v.y = (float)((double)A.y + (float)(M[1] * c1 + c3 * M[7] + c2 * M[4]));
+    v.z = (float)(c1 * M[2] + c3 * M[8] + c2 * M[5] + A.z);
+    return v;
+}
+
+static float Vn_Clamp1(float v)
+{
+    if (v > g_vn64b670)
+        v = 1.0f;
+    if (v < g_vn64ca48)
+        v = -1.0f;
+    return v;
+}
+
+// an effect's status line for the log
+static void Vn_LogStatus(BYTE* e, const char* fmt)
+{
+    char buf[256];
+    int st = 0;
+    JoyEffect_GetStatus(e, 0, &st);
+    sprintf(buf, fmt, st, F(int, e, 0));
+    Vn_LogText(buf);
+}
+
+extern "C" {
+
+// [FUN_538370] vehicle s's sounds (+616 car, ear frame +1472, cab view +1400): the indicator click and lamps
+// (+440 / +444), the horn, brakes and gear sounds (car +20960.. readings), a nearby car's engine and two others
+// mixed by distance, the engine start and stop, the motor rumble by load (+21012), the wind; then the steering
+// wheel's force feedback (effects 696cf0..696d04: centring, damping, the road kick from the front wheels, the
+// slope, sand and ice shakes, hits) with its log, collision bangs (+21608.., +21652 points), the skid squeal
+// (+15512), the air brake hiss (+116)
+void __fastcall Vehicle_Sounds(BYTE* s, void*, int, int)
+{
+    char buf[256];
+    BYTE* car = F(BYTE*, s, 616);
+    if (!car)
+        return;
+    // the indicator
+    if (F(int, car, 21504))
+    {
+        CallC(Vn_Switch, F(int, s, 440), 1);
+        car = F(BYTE*, s, 616);
+        float v = F(float, car, 20952);
+        if (v > g_vn64c264)
+        {
+            double x = v;
+            if (x < g_vn64c264)
+                x = g_vn64c264;
+            else if (!(x <= g_vn64c250))
+                x = g_vn64c250;
+            int n = 1 - (int)(x * g_vn64f3fc);
+            if (n > 3)
+                n = 3;
+            else if (n < 1)
+                n = 1;
+            int now = F(int, g_vn696ca0, 2992);
+            if (now >= F(int, s, 448) + F(int, s, 452))
+            {
+                F(int, s, 448) = now;
+                float k = (float)(g_vn64c250 / (x * g_vn64c320 + g_vn64c40c));
+                F(int, s, 452) = (int)(k / Game_FrameTime());
+            }
+            float vol = F(int, s, 1400) ? 0.5f : 1.0f;
+            int p = F(int, s, 452);
+            int half = p / 2 + F(int, s, 448);
+            bool on = (p & 1) ? now <= half : now < half;
+            if (on)
+            {
+                Vn_Play3_386(g_vn6d1d44, vol);
+                CallC(Vn_Switch, F(int, s, 444), n);
+            }
+            else
+                CallC(Vn_Switch, F(int, s, 444), 0);
+        }
+        else
+            CallC(Vn_Switch, F(int, s, 444), 0);
+    }
+    else
+        CallC(Vn_Switch, F(int, s, 440), 0);
+    car = F(BYTE*, s, 616);
+    F(int, car, 20952) = 0;
+    DWORD L[20];
+    memcpy(L, car + 20960, 80);
+    // the car's sound point in the ear's frame
+    const float* C = (const float*)(car + 3352);
+    double dx = (double)g_axisY.x - g_axisZ.x, dy = (double)g_axisY.y - g_axisZ.y, dz = (double)g_axisY.z - g_axisZ.z;
+    float P[3];
+    P[0] = (float)(dz * C[6] + dy * C[3] + dx * C[0] + C[9]);
+    P[1] = (float)(dz * C[7] + dy * C[4] + dx * C[1] + C[10]);
+    double pz = dz * C[8] + dy * C[5] + dx * C[2] + C[11];
+    const float* E = (const float*)(s + 1472);
+    Vec3 Q;
+    Q.x = (float)(pz * E[6] + (double)P[1] * E[3] + (double)P[0] * E[0] + E[9]);
+    Q.y = (float)((double)P[0] * E[1] + pz * E[7] + (double)P[1] * E[4] + E[10]);
+    Q.z = (float)((double)P[0] * E[2] + pz * E[8] + (double)P[1] * E[5] + E[11]);
+    Vec3 R;
+    {
+        const float* t = (const float*)(car + 3388);
+        R.y = (float)((double)E[4] * t[1] + (double)E[1] * t[0] + (double)E[7] * t[2] + E[10]);
+        R.z = (float)((double)E[5] * t[1] + (double)E[2] * t[0] + (double)E[8] * t[2] + E[11]);
+        R.x = (float)((double)E[3] * t[1] + (double)E[6] * t[2] + (double)t[0] * E[0] + E[9]);
+    }
+    float dt = (float)F(double, F(BYTE*, s, 32), 2960);
+    float rate = (float)(g_vn64c250 / dt);
+    if (L[10])
+    {
+        if (!g_vn6d20e0)
+        {
+            Vn_Sound(s, g_vn6d1d10, 5.0f, F(int, car, 21024) ? 0.3f : 0.5f, &Q);
+            g_vn6d20e0 = 1;
+        }
+    }
+    else
+        g_vn6d20e0 = 0;
+    if (L[12])
+        Vn_Sound(s, g_vn6d1d4c, 5.0f, 1.0f, &Q);
+    if (L[11])
+        Vn_Sound(s, g_vn6d1d50, 5.0f, 2.0f, &Q);
+
+    // other cars close by: one parked (state 5), two moving, mixed by distance and mass
+    BYTE* A = 0;
+    BYTE* B1 = 0;
+    BYTE* B2 = 0;
+    for (int k = 0; k < 6; k++)
+    {
+        BYTE* o = F(BYTE*, F(BYTE*, s, 616), 3524 + 4 * k);
+        bool ok = o && F(int, o, 392) == 2 && F(int, o, 3568) == 2;
+        if (!A && ok && F(int, o - 16, 9548) == 5)
+            A = o - 16;
+        if (!B1)
+        {
+            if (ok && F(int, o, 9532) != 3 && F(int, o, 9532) != 4 && A != o - 16)
+                B1 = o - 16;
+        }
+        else if (ok && F(int, o - 16, 9548) != 3 && F(int, o - 16, 9548) != 4 && A != o - 16)
+        {
+            B2 = o - 16;
+            break;
+        }
+    }
+    if (A)
+    {
+        Vec3 p = Vn_Ear(s, (const float*)(A + 3388));
+        Vn_Start386(g_vn6d1d28, 5.0f, 2.0f, &p);
+    }
+    if (B1)
+    {
+        Vec3 p1 = Vn_Ear(s, (const float*)(B1 + 3388));
+        double w = g_vn64c264;
+        int m = F(int, B1, 9548);
+        if (m == 0 || m == 1 || m == 2)
+            w = g_vn64f370 / ((double)p1.x * p1.x + (double)p1.y * p1.y + (double)p1.z * p1.z) * F(float, B1, 3284) * g_vn64b8e8;
+        if (B2 && (F(int, B2, 9548) == 0 || F(int, B2, 9548) == 1))
+        {
+            Vec3 p2 = Vn_Ear(s, (const float*)(B2 + 3388));
+            float w2 = (float)(g_vn64f370 / ((double)p2.x * p2.x + (double)p2.y * p2.y + (double)p2.z * p2.z) * F(float, B2, 3284) * g_vn64b8e8);
+            double sx = (double)p1.x * w + (double)p2.x * w2;
+            float sy = (float)((double)(float)((double)p2.y * w2) + (float)((double)p1.y * w));
+            float sz = (float)((double)(float)((double)p2.z * w2) + (float)((double)p1.z * w));
+            w = w + w2;
+            p1.x = (float)(sx / w);
+            p1.y = (float)(sy / w);
+            p1.z = (float)(sz / w);
+        }
+        if (w > g_vn64b658)
+            Vn_Start386(g_vn6d1d1c, 5.0f, 1.0f, &p1);
+    }
+
+    // starting and stopping the engine
+    car = F(BYTE*, s, 616);
+    if (F(int, car, 21012) == 1 && F(int, s, 16) > 1)
+    {
+        double now = F(double, g_vn696ca0, 2968);
+        if (F(float, car, 20988) == g_vn64c264)
+        {
+            void* snd = g_vn6d1d48;
+            if (snd && (double)g_vn6d1db4 + g_vn64c2fc < now)
+            {
+                Vn_Sound(s, snd, 6.0f, 1.0f, &Q);
+                g_vn6d1db4 = (float)F(double, g_vn696ca0, 2968);
+            }
+        }
+        else if ((double)g_vn6d1db4 + g_vn64c2fc < now)
+        {
+            Vn_Sound(s, g_vn6d1cf4, 6.0f, 1.0f, &Q);
+            g_vn6d1db4 = (float)F(double, g_vn696ca0, 2968);
+        }
+        g_vn6d1db0 = 0;
+    }
+    // the motor by load
+    int m = F(int, car, 21012);
+    if (m == 2 || m == 3)
+    {
+        float k808 = 1.0f, k804 = 1.0f;
+        if (m == 3)
+        {
+            k808 = 0;
+            signed char c = g_vn6d1db0;
+            g_vn6d1db0 = c + 1;
+            float vol = 0.4f;
+            k804 = (float)(c * (double)dt / g_vn67440c);
+            if (k804 < g_vn64b6e0)
+            {
+                vol = (float)((double)k804 * g_vn64c25c);
+                k808 = (float)((g_vn64b6e0 - k804) * 2);
+            }
+            if (F(int, s, 1400))
+                Vn_Start388(g_vn6d1cf8, 6.0f, vol, &Q);
+            else
+                Vn_Play3_388(g_vn6d1cf8, vol);
+        }
+        car = F(BYTE*, s, 616);
+        if (F(int, car, 21012) == 2 || k804 < g_vn64b6e0)
+        {
+            float ld, rpm, x788, x536, a792, a772;
+            memcpy(&ld, &L[2], 4);
+            float l4, l6;
+            memcpy(&l4, &L[4], 4);
+            memcpy(&l6, &L[6], 4);
+            k804 = (float)(ld / (double)l4);
+            rpm = (float)((double)l6 + k804);
+            double a = ((double)l6 * g_vn64ca78 + g_vn64b840) * k808;
+            x788 = (float)(k804 * g_vn64b840 + g_vn64b898);
+            x536 = (float)(k804 * g_vn64b898 + g_vn64b840);
+            double b = x87_sqrt(k804) * k808 * g_vn64b5b8;
+            if (b > g_vn64c250)
+                b = g_vn64c250;
+            if (rpm > g_vn64c250)
+                rpm = 1.0f;
+            float rest = (float)(g_vn64c250 - rpm);
+            a792 = (float)(b * rpm + rest * a);
+            a772 = (float)((double)x536 * rpm + (double)rest * x788);
+            bool heavy = F(float, car, 3284) > g_vn64f3f8;
+            if (F(int, s, 1400))
+                Vn_Start388Pos(heavy ? g_vn6d1d00 : g_vn6d1d08, 10.0f, a792, a772, &Q);
+            else
+                Vn_Play3_388Pos(heavy ? g_vn6d1d00 : g_vn6d1d08, a792, a772);
+            double r = x87_sqrt(rpm);
+            a772 = (float)(((double)l6 * g_vn64d0f0 + g_vn64b7a8) * r * k808 * g_vn64b6e0);
+            a792 = (float)(r * k804 * g_vn64b898 + g_vn64b840);
+            heavy = F(float, F(BYTE*, s, 616), 3284) > g_vn64f3f8;
+            if (F(int, s, 1400))
+                Vn_Start388Pos(heavy ? g_vn6d1d04 : g_vn6d1d0c, 10.0f, a772, a792, &Q);
+            else
+                Vn_Play3_388Pos(heavy ? g_vn6d1d04 : g_vn6d1d0c, a772, a792);
+        }
+    }
+    // the wind
+    car = F(BYTE*, s, 616);
+    if (F(float, car, 21036) != g_vn64c264)
+        Vn_Play390If(g_vn6d1cd0, L[19], L[18], &R);
+
+    BYTE* body = F(BYTE*, car, 21600);
+    if (!body)
+        return;
+    int ff = F(short, body, 9990) == 1;
+    if (g_vn696c74)
+        ff = 1;
+    int log = g_vn696c74;
+    // the wheel's effects on or off with the body's ground contact
+    if (F(int, body, 13380) && F(int, body, 13384))
+    {
+        if (F(int, s, 112) == 1)
+        {
+            if (g_vn696cf4)
+                JoyEffect_Stop(g_vn696cf4, 0);
+            if (g_vn696c74)
+                Vn_LogText(&g_vn6791e4);
+            BYTE** fx[5] = {&g_vn696cf8, &g_vn696cfc, &g_vn696d00, &g_vn696cf0, &g_vn696d04};
+            const char* names[5] = {&g_vn6791d4, &g_vn6791c0, &g_vn6791ac, &g_vn679198, &g_vn679184};
+            for (int k = 0; k < 5; k++)
+            {
+                if (*fx[k])
+                    JoyEffect_Stop(*fx[k], 0);
+                if (g_vn696c74)
+                {
+                    sprintf(buf, names[k]);
+                    Vn_LogText(buf);
+                }
+            }
+            Joy_SendCommand(4);
+            F(int, s, 112) = 0;
+        }
+    }
+    else if (!F(int, s, 112))
+    {
+        Joy_SendCommand(8);
+        F(int, s, 112) = 1;
+    }
+    if (g_vn696ca4 && F(int, s, 112))
+    {
+        double sum = g_vn64c264;
+        for (int k = 0; k < 2; k++)
+            sum += F(float, body, 15280 + 4 * k);
+        float avg = (float)(sum * g_vn64b6e0);
+        if (ff)
+        {
+            // 1: the centring spring
+            if (g_vn696cf4)
+            {
+                float v = (float)(F(float, body, 13104) * (double)avg * g_vn64b5b8);
+                if (v > avg)
+                    v = avg;
+                if (v > g_vn64c250)
+                    v = 1.0f;
+                int gr = F(int, body, 15560);
+                float dir = 0;
+                if (gr > 0)
+                    dir = 0.2f;
+                if (gr < 0)
+                    dir = -0.2f;
+                if (gr == F(int, body, 15564))
+                    dir = 0.5f;
+                if (gr == -F(int, body, 15564))
+                    dir = -0.5f;
+                if (v > g_vn64f3f0)
+                {
+                    FfEffect_SetCondition((DWORD*)g_vn696cf4, 0, v, dir);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn679170, (double)v, (double)dir);
+                        Vn_LogText(buf);
+                    }
+                }
+                else
+                {
+                    JoyEffect_Stop(g_vn696cf4, 0);
+                    if (g_vn696c74)
+                        Vn_LogText(&g_vn6791e4);
+                }
+            }
+            // 2: the damping
+            if (g_vn696cf8)
+            {
+                float v = (float)(((double)g_vn64c450 - F(float, body, 13104)) * avg * g_vn64b5b8);
+                if (v > avg)
+                    v = avg;
+                if (v > g_vn64b670)
+                    v = 1.0f;
+                if (v > g_vn64d338)
+                {
+                    JoyEffect_SetGain(g_vn696cf8, 0, v);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn679160, (double)v);
+                        Vn_LogText(buf);
+                    }
+                }
+                else
+                {
+                    JoyEffect_Stop(g_vn696cf8, 0);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn6791d4);
+                        Vn_LogText(buf);
+                    }
+                }
+            }
+            // 3: the road's kick through the front wheels
+            if (g_vn696cfc)
+            {
+                BYTE* co = F(BYTE*, s, 616) + 16;
+                Matrix m1, rz, X, M, N, MN, T;
+                Matrix_Multiply(&X, Matrix_RotationZ(&rz, F(float, body, 13196)), SceneObj_Matrix1(co, 0, &m1));
+                const float* Y = &g_axisY.x;
+                Vec3 u;
+                u.x = (float)((double)Y[1] * X.m[3] + (double)Y[2] * X.m[6] + (double)Y[0] * X.m[0]);
+                u.y = (float)((double)Y[1] * X.m[4] + (double)Y[2] * X.m[7] + (double)Y[0] * X.m[1]);
+                u.z = (float)((double)Y[1] * X.m[5] + (double)Y[2] * X.m[8] + (double)Y[0] * X.m[2]);
+                Vec3 v = u;
+                if (F(short, body, 11112))
+                    u = Vn_Twice(u, (const float*)(body + 11100));
+                if (F(short, body, 11360))
+                    v = Vn_Twice(v, (const float*)(body + 11348));
+                CallThis(Vn_NormalizeThis, &u);
+                CallThis(Vn_NormalizeThis, &v);
+                SceneObj_Matrix1(co, 0, &M);
+                Vec3 Av = {0, 0, 0}, Bv = {0, 0, 0};
+                Matrix_Multiply(&MN, &M, SceneObj_Matrix644(co, 0, &N));
+                CallC(Vn_Decompose, &MN, &Av.x, &Av.y, &Av.z, &Bv.z, &Bv.x, &Bv.y);
+                const Matrix* Tm = SceneObj_Matrix548(co, 0, &T);
+                float ddx = (float)((double)M.m[9] - Tm->m[9]);
+                float ddy = (float)((double)M.m[10] - Tm->m[10]);
+                float ddz = (float)((double)M.m[11] - Tm->m[11]);
+                Av.x = (float)((double)ddx * rate);
+                Av.y = (float)((double)ddy * rate);
+                Av.z = (float)((double)ddz * rate);
+                Bv.x = -Bv.x;
+                Vec3 tmp;
+                CallThis(Vn_MulAssign, &Bv, &tmp, rate);
+                BYTE* model = (BYTE*)&g_vn697b30 + F(int, body, 2252) * 2416;
+                float t796;
+                if (F(short, body, 11112) && !F(int, body, 13380))
+                {
+                    Vec3 V = Vn_WheelSpeed(Bv, (const float*)(body + 10976), M.m, Av);
+                    Vec3 F1 = Vn_Twice(V, (const float*)(body + 11100));
+                    double ls = Vec3_Length(&F1) * x87_sin(F(float, body, 13196));
+                    double k1 = (double)F(float, body, 13128) * 2 / F(float, model, 36);
+                    t796 = (float)(k1 * ls);
+                }
+                else
+                    t796 = 0;
+                double x;
+                if (F(short, body, 11360) && !F(int, body, 13380))
+                {
+                    Vec3 V = Vn_WheelSpeed(Bv, (const float*)(body + 10988), M.m, Av);
+                    Vec3 F2 = Vn_Twice(V, (const float*)(body + 11348));
+                    double ls = Vec3_Length(&F2) * x87_sin(F(float, body, 13200));
+                    t796 = (float)((double)F(float, body, 13132) * 2 / F(float, model, 40) * t796);
+                    x = ls + t796;
+                }
+                else
+                    x = (double)g_vn64c264 + t796;
+                DWORD fl = F(DWORD, F(BYTE*, s, 616), 3480);
+                if (!fl || (fl & 32))
+                    x *= g_vn64d668;
+                else
+                    x = x / (x87_fabs(x) + g_vn64b838);
+                float f800 = (float)(x * avg);
+                if (f800 > avg)
+                    f800 = avg;
+                if (f800 > g_vn64b670)
+                    f800 = 1.0f;
+                if (f800 < -(double)avg)
+                    f800 = -avg;
+                if (f800 < g_vn64ca48)
+                    f800 = -1.0f;
+                // the steering wheel's own spring through the dash filter (+344)
+                int st = F(int, body, 15368);
+                float stf = st ? (float)st : 0.0f;
+                DWORD stb;
+                memcpy(&stb, &stf, 4);
+                CallThis(FUN_4eacce, s + 344, stb, &g_vn679138);
+                double r = CallThis<double>(Vn_FilterValue, s + 344);
+                if (r > g_vn64c250)
+                    r = g_vn64c250;
+                else if (r < g_vn64c938)
+                    r = g_vn64c938;
+                f800 = (float)(r + f800);
+                // the ice and sand shakes
+                float shake = 0;
+                int n = 0;
+                for (int k = 0; k < 2; k++)
+                {
+                    BYTE* W = body + 11220 + 248 * k;
+                    BYTE* gr = F(BYTE*, W, 0);
+                    if (F(short, W, -108) && gr && F(int, gr, 0) == 1 && F(int, gr, 4) == 1 && !F(int, body, 13380 + 4 * k))
+                        n++;
+                }
+                if (n)
+                {
+                    double tt = F(double, F(BYTE*, s, 32), 2960);
+                    for (int k = 0; k < 4; k++)
+                        F(float, s, 120 + 4 * k) = (float)(tt * F(float, body, 13100) + F(float, s, 120 + 4 * k));
+                    double q = x87_sqrt(x87_sqrt((double)F(float, body, 13100) + g_vn64c250));
+                    F(float, s, 152) = (float)(q * g_vn64d2f8);
+                    F(float, s, 168) = (float)q;
+                    F(float, s, 156) = (float)(q * g_vn64c320);
+                    F(float, s, 172) = (float)(q * g_vn64d4e8);
+                    F(float, s, 160) = (float)(q * g_vn64b6f0);
+                    F(float, s, 176) = (float)(q * g_vn64b780);
+                    F(float, s, 164) = (float)(q * g_vn64b938);
+                    F(float, s, 180) = (float)(q * g_vn64b780);
+                    for (int k = 0; k < 2; k++)
+                    {
+                        BYTE* e = s + 120 + 4 * k;
+                        if (!(F(float, e, 0) > F(float, e, 16)))
+                            continue;
+                        F(float, e, 0) = 0;
+                        double r1 = (rand() * (double)g_vn64c254 + g_vn64b670) * g_vn64b6e0;
+                        if (F(float, body, 13100) > g_vn64b5a0)
+                            r1 = r1 / (F(float, body, 13100) * g_vn64b5b8);
+                        else
+                            r1 = g_vn64c450;
+                        F(float, e, 16) = (float)(r1 * F(float, e, 32) + F(float, e, 48));
+                        double r2 = rand() * (double)g_vn64c254 - g_vn64b6e0;
+                        r2 = r2 > g_vn64c264 ? r2 + g_vn64b670 : r2 - g_vn64b670;
+                        shake = (float)(r2 * F(float, e, 64) + shake);
+                    }
+                }
+                f800 = Vn_Clamp1((float)((double)shake + f800));
+                if (x87_fabs((double)f800) > g_vn64b958)
+                {
+                    JoyEffect_SetMagnitude(g_vn696cfc, 0, f800);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn679124, (double)f800);
+                        Vn_LogText(buf);
+                    }
+                }
+                else
+                {
+                    JoyEffect_Stop(g_vn696cfc, 0);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn6791c0);
+                        Vn_LogText(buf);
+                    }
+                }
+            }
+            // 4: the gear's pull
+            if (BYTE* e4 = g_vn696d00)
+            {
+                int gr = F(int, body, 15560);
+                float v = 0;
+                if (gr)
+                {
+                    v = (float)(gr / (double)(F(int, body, 15564) - 1) * F(float, body, 13104) * g_vn64b5b8);
+                    if (v > g_vn64b6e0)
+                        v = 0.5f;
+                }
+                if (v > g_vn64d338)
+                {
+                    JoyEffect_SetMagnitude(e4, 0, v);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn67910c, (double)v);
+                        Vn_LogText(buf);
+                    }
+                }
+                else
+                {
+                    JoyEffect_Stop(e4, 0);
+                    if (g_vn696c74)
+                    {
+                        sprintf(buf, &g_vn6791ac);
+                        Vn_LogText(buf);
+                    }
+                }
+            }
+        }
+    }
+    // the rough ground rumble (effect 5 and its sound)
+    int started = 0;
+    if (!F(int, body, 13124) && !F(int, body, 13412))
+    {
+        double sum = g_vn64c264;
+        int n = 0;
+        for (int k = 0; k < 4; k++)
+        {
+            BYTE* W = body + 11220 + 248 * k;
+            BYTE* gr = F(BYTE*, W, 0);
+            if (F(short, W, -108) && gr && F(int, gr, 0) == 1 && (F(int, gr, 4) == 6 || F(int, gr, 4) == 2))
+            {
+                sum += g_vn64b738;
+                n++;
+            }
+        }
+        if (n && F(float, body, 13100) > g_vn64c250 && !F(int, body, 13380) && !F(int, body, 13384))
+        {
+            float vol = (float)(x87_sqrt(((double)F(float, body, 13100) - g_vn64c250) * g_vn64d490) * sum);
+            if (vol > g_vn64c250)
+                vol = 1.0f;
+            Vn_Start386(g_vn6d1d20, 5.0f, vol, &R);
+            if (!ff)
+                goto bangs;
+            if (g_vn696ca4 && F(int, s, 112) && g_vn696cf0)
+            {
+                double a = x87_fabs((double)F(float, body, 13100));
+                float per = (float)(a * g_vn64b918 / (a + g_vn64b918));
+                int d = F(int, body, 13380) ? -1 : (F(int, body, 13384) != 0);
+                float f808 = (float)d;
+                float mag = 0.2f;
+                double now = F(double, F(BYTE*, s, 32), 2968);
+                double x;
+                if (g_vn64b6e0 / per < now - F(float, s, 48))
+                {
+                    F(float, s, 48) = (float)F(double, F(BYTE*, s, 32), 2968);
+                    float r;
+                    do
+                    {
+                        r = (float)((rand() * (double)g_vn64c254 * g_vn64b668 + g_vn64b6e0) * per);
+                    } while (g_vn678788 * g_vn64ca78 > x87_fabs((double)r - g_vn678788));
+                    x = r;
+                    g_vn678788 = r;
+                }
+                else
+                    x = g_vn678788;
+                for (int k = 0; k < 2; k++)
+                {
+                    BYTE* W = body + 11220 + 248 * k;
+                    BYTE* gr = F(BYTE*, W, 0);
+                    if (!F(short, W, -108) || !gr || F(int, gr, 0) != 1)
+                        continue;
+                    if (F(int, gr, 4) == 6)
+                    {
+                        mag = (float)(vol * g_vn64ca78);
+                        x *= g_vn64d378;
+                    }
+                    else if (F(int, gr, 4) == 2)
+                        mag = (float)(vol * g_vn64b6e0);
+                }
+                float f800 = (float)x;
+                FfEffect_SetPeriodic((DWORD*)g_vn696cf0, 0, mag, f808, f800);
+                if (g_vn696c74)
+                {
+                    sprintf(buf, &g_vn6790f4, (double)mag, (double)f808, (double)f800);
+                    Vn_LogText(buf);
+                }
+                started = 1;
+            }
+        }
+    }
+    if (ff && !started && g_vn696cf0 && g_vn696ca4 && F(int, s, 112))
+    {
+        JoyEffect_Stop(g_vn696cf0, 0);
+        if (g_vn696c74)
+        {
+            sprintf(buf, &g_vn679198);
+            Vn_LogText(buf);
+        }
+    }
+bangs:
+    // the horn
+    if (CallThis<int>(Vn_ActionState, &g_vn6d1db8, 21) && !F(int, body, 13124))
+    {
+        void* snd = (void*)Car_543bb0(F(BYTE*, s, 616), 0);
+        if (F(int, s, 1400))
+        {
+            if (snd)
+                Vn_PlayRange3(snd, 15.0f, 1.0f, &R);
+        }
+        else if (snd)
+            CallThis(Vn_SoundPlay, snd, 1.0f, 0.5f, 0);
+    }
+    // the hits: fresh ones kick the wheel (effect 6)
+    int any = 0;
+    started = 0;
+    for (int i = 0; i < 11; i++)
+    {
+        BYTE* c = F(BYTE*, s, 616);
+        if (F(int, c, 21608 + 4 * i) && Game_Time() - F(float, c, 21828 + 4 * i) < g_vn64b6e0)
+            F(int, c, 21608 + 4 * i) = 0;
+        any = F(int, F(BYTE*, s, 616), 21608 + 4 * i) || any;
+    }
+    if (g_vn696ca4 && F(int, s, 112) && ff && g_vn696d04 && any)
+    {
+        Vec3 acc = g_zeroVec;
+        float mag = 0;
+        for (int j = 0; j < 11; j++)
+        {
+            BYTE* c = F(BYTE*, s, 616);
+            if (!F(int, c, 21608 + 4 * j))
+                continue;
+            mag = F(float, c, 21784 + 4 * j);
+            const float* p = (const float*)(c + 21652 + 12 * j);
+            double px = (double)F(float, c, 3412) * p[1] + (double)F(float, c, 3424) * p[2] + (double)p[0] * F(float, c, 3400) + F(float, c, 3436);
+            float py = (float)((double)F(float, c, 3404) * p[0] + (double)F(float, c, 3416) * p[1] + (double)F(float, c, 3428) * p[2] + F(float, c, 3440));
+            float pz = (float)((double)F(float, c, 3408) * p[0] + (double)F(float, c, 3420) * p[1] + (double)F(float, c, 3432) * p[2] + F(float, c, 3444));
+            Vec3 d, tmp;
+            d.x = (float)(mag * px);
+            d.y = (float)((double)py * mag);
+            d.z = (float)((double)pz * mag);
+            CallThis(Vn_AddAssign, &acc, &tmp, &d);
+        }
+        if (mag > g_vn64b5b8)
+        {
+            if (mag > g_vn64c250)
+                mag = 1.0f;
+            if (acc.x > g_vn64c264)
+                mag = -mag;
+            float dur = (float)(x87_fabs(mag * g_vn64b840) + g_vn64b5b8);
+            FfEffect_Restart((DWORD*)g_vn696d04, 0, mag, dur);
+            started = 1;
+            if (g_vn696c74)
+            {
+                sprintf(buf, &g_vn6790e0, (double)mag, (double)dur);
+                Vn_LogText(buf);
+            }
+        }
+    }
+    if (F(int, s, 112) && g_vn696c74 && !started)
+    {
+        sprintf(buf, &g_vn679184);
+        Vn_LogText(buf);
+    }
+    if (g_vn696c74)
+    {
+        // the effects' states for the log
+        if (g_vn696cf4)
+            Vn_LogStatus(g_vn696cf4, &g_vn6790c8);
+        if (g_vn696cf8)
+            Vn_LogStatus(g_vn696cf8, &g_vn6790b0);
+        if (g_vn696cfc)
+            Vn_LogStatus(g_vn696cfc, &g_vn679098);
+        if (g_vn696d00)
+            Vn_LogStatus(g_vn696d00, &g_vn67907c);
+        if (BYTE* e = g_vn696d04)
+        {
+            Vn_LogStatus(e, &g_vn679064);
+            DWORD P[14], env[5], axes[32], dirs[32], per[4];
+            memset(P, 0, sizeof P);
+            memset(env, 0, sizeof env);
+            env[0] = 20;
+            P[0] = 56;
+            P[1] = 18;
+            P[7] = 32;
+            P[8] = (DWORD)axes;
+            P[9] = (DWORD)dirs;
+            P[10] = (DWORD)env;
+            P[11] = 16;
+            P[12] = (DWORD)per;
+            JoyEffect_GetParameters(g_vn696d04, 0, P, 999);
+            sprintf(buf, &g_vn679050, P[1], P[1]);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn67903c, (int)P[2] * g_vn64b6d8);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn679028, (int)P[3] * g_vn64b6d8);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn679018, (int)P[4] * g_vn64b930);
+            Vn_LogText(buf);
+            if (P[10])
+                sprintf(buf, &g_vn678ffc, (int)env[1] * g_vn64b930, (int)env[2] * g_vn64b6d8, (int)env[3] * g_vn64b930,
+                        (int)env[4] * g_vn64b6d8);
+            else
+                sprintf(buf, &g_vn678fe0, -1, -1, -1, -1);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn678fcc, (double)P[13] * g_vn64b6d8);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn678fb8, P[7]);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn678fa4, *(int*)P[8]);
+            Vn_LogText(buf);
+            sprintf(buf, &g_vn678f8c, *(int*)P[9]);
+            Vn_LogText(buf);
+            if (P[11] == 16 && P[12])
+                sprintf(buf, &g_vn678f70, (int)per[0] * g_vn64b930, (int)per[3] * g_vn64b6d8, (int)per[2] * g_vn64f3e8,
+                        (int)per[1] * g_vn64b930);
+            else
+                sprintf(buf, &g_vn678f58);
+            Vn_LogText(buf);
+        }
+    }
+    // the tyres' squeal
+    car = F(BYTE*, s, 616);
+    Vec3 Rp;
+    {
+        const float* t = (const float*)(car + 3388);
+        Rp.z = (float)((double)E[2] * t[0] + (double)E[8] * t[2] + (double)E[5] * t[1] + E[11]);
+        Rp.x = (float)((double)E[6] * t[2] + (double)E[3] * t[1] + (double)E[0] * t[0] + E[9]);
+        Rp.y = (float)((double)E[1] * t[0] + (double)E[7] * t[2] + (double)E[4] * t[1] + E[10]);
+    }
+    if (car)
+    {
+        BYTE* b = F(BYTE*, car, 21600);
+        if (b && F(int, b, 15512))
+        {
+            double a = x87_fabs((double)F(float, b, 13100));
+            if (a > g_vn64b6e0)
+            {
+                float pitch = (float)(a * g_vn64d988 / (a + g_vn64c320) + g_vn64ca78);
+                double v = a / (a + g_vn64d2f8);
+                float vol = (float)v;
+                int cnt = 0;
+                int n = F(int, b, 13120);
+                for (int c = 0; c < n && c < 2; c++)
+                    if (F(int, b, 13380 + 4 * c))
+                        cnt++;
+                if (cnt == 2)
+                {
+                    v *= g_vn64b668;
+                    vol = (float)v;
+                }
+                if (v > g_vn64c250)
+                    vol = 1.0f;
+                if (cnt)
+                    Vn_Start388Pos(g_vn6d1d80, 3.0f, vol, pitch, &Rp);
+            }
+        }
+    }
+    // the bangs
+    for (int i = 0; i < 11; i++)
+    {
+        BYTE* c = F(BYTE*, s, 616);
+        if (!F(int, c, 21608 + 4 * i))
+            continue;
+        F(int, c, 21608 + 4 * i) = 0;
+        c = F(BYTE*, s, 616);
+        Vec3 p = Vn_Ear(s, (const float*)(c + 21652 + 12 * i));
+        int v = i;
+        if (i == 0)
+        {
+            if (rand() % 2 == 0)
+                v = 2;
+            else if (rand() % 2 == 0)
+                v = 1;
+        }
+        c = F(BYTE*, s, 616);
+        Vn_Loop386((&g_vn6d1d54)[v], (&g_vn6d1d84)[i], F(DWORD, c, 21784 + 4 * i), &p);
+    }
+    // the air brake
+    car = F(BYTE*, s, 616);
+    if (!(F(float, car, 3284) > g_vn64f3e0))
+        return;
+    int on = F(float, body, 15312) > g_vn64b5b8 || F(int, body, 15440) ? 1 : 0;
+    if (F(int, s, 116) != on)
+    {
+        Vn_Sound(s, on ? g_vn6d1d40 : g_vn6d1d3c, 5.0f, 1.0f, &Q);
+        F(int, s, 116) = on;
+        return;
+    }
+    if (!on && F(float, body, 13096) < g_vn64b5b8)
+    {
+        if ((double)g_vn678780 + g_vn6d20d8 < F(double, F(BYTE*, s, 32), 2968))
+            Vn_Sound(s, g_vn6d1d40, 5.0f, 1.0f, &Q);
+        g_vn6d20d8 = (float)F(double, F(BYTE*, s, 32), 2968);
+    }
+    F(int, s, 116) = on;
+}
+
+} // extern "C"
+
+// === hitching a trailer (FUN_55f5f0)
+
+extern "C" void At_HitchCheck(); KING_ALIAS("_At_HitchCheck", "_Trailer_HitchCheck")
+extern "C" void At_Attach1(); KING_ALIAS("_At_Attach1", "@Vehicle_Attach55ec70@12")
+extern "C" void At_Attach2(); KING_ALIAS("_At_Attach2", "@Vehicle_AttachCar@12")
+extern "C" void At_Get800(); KING_ALIAS("_At_Get800", "@SceneObj_Get800@8")
+extern "C" void At_Set54c880(); KING_ALIAS("_At_Set54c880", "@Car_Set54c880@16")
+extern "C" void At_SetMode(); KING_ALIAS("_At_SetMode", "@Body_SetMode@12")
+extern "C" void At_HitObject(); KING_ALIAS("_At_HitObject", "_Query_HitObject")
+extern "C" Matrix* __cdecl At_FromPose(Matrix* out, double a, double b, double c, double yaw, double pitch, int e, int f);
+KING_ALIAS("_At_FromPose", "_Matrix_FromPose")
+ASM_VAR(double, g_at64b7a8, $L_64b7a8)
+
+extern "C" {
+
+// [FUN_55f5f0] truck s takes trailer t (unless Trailer_HitchCheck refuses: 0): linked both ways, a trailer lying
+// over set upright by its angles, with put the trailer's frame moved so the hitch points (the model records'
+// +156 and +168) meet (its object found again by a ray), both bodies in mode 3 sharing the controls (+9988, +9990);
+// 1
+int __cdecl Truck_HitchTrailer(BYTE* s, BYTE* t, int put)
+{
+    if (CallC<int>(At_HitchCheck, s, t))
+        return 0;
+    CallThis(At_Attach1, t, s);
+    CallThis(At_Attach2, s, t);
+    BYTE* rs = (BYTE*)&g_hc697f9c + F(int, s, 10420) * 2416;
+    BYTE* rt = (BYTE*)&g_hc697f9c + F(int, t, 10420) * 2416;
+    Vec3 H1 = Hc_Through(&F(float, s, 708), (const float*)(rs + 156));
+    float r204 = F(float, rs, 204);
+    float q[3];
+    q[0] = (float)((double)(float)(g_axisY.x * (double)r204) + F(float, rt, 168));
+    q[1] = (float)((double)(float)(g_axisY.y * (double)r204) + F(float, rt, 172));
+    q[2] = (float)(g_axisY.z * (double)r204 + F(float, rt, 176));
+    Vec3 H2 = Hc_Through(&F(float, t, 708), q);
+    Matrix A, B, tmp;
+    SceneObj_Matrix1(s + 16, 0, &A);
+    SceneObj_Matrix1(t + 16, 0, &B);
+    if (B.m[8] < g_at64b7a8)
+    {
+        const float* Y = &g_axisY.x;
+        float ux = (float)((double)Y[1] * B.m[3] + (double)Y[2] * B.m[6] + (double)Y[0] * B.m[0]);
+        float uy = (float)((double)Y[1] * B.m[4] + (double)Y[2] * B.m[7] + (double)Y[0] * B.m[1]);
+        float pitch = (float)x87_asin((double)B.m[5]);
+        double a[6];
+        Hc_ToAngles(B, &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
+        B = *At_FromPose(&tmp, a[0], a[1], a[2], -x87_atan2(ux, uy), pitch, 0, 0);
+        CallThis(At_Set54c880, t, CallThis<BYTE*>(At_Get800, t + 16), &B);
+    }
+    if (put)
+    {
+        Vec3 p1, p2, d;
+        Vec3_MulMatrix(&p1, &H1, &A);
+        Vec3_MulMatrix(&p2, &H2, &B);
+        d.x = (float)((double)p1.x - p2.x);
+        d.y = (float)((double)p1.y - p2.y);
+        d.z = (float)((double)p1.z - p2.z);
+        Matrix T, N;
+        Matrix_Multiply(&N, &B, Matrix_Translation(&T, d));
+        BYTE* o = t + 16;
+        BYTE* hit = CallC<BYTE*>(At_HitObject, CallThis<BYTE*>(At_Get800, o), &B.m[9], &N.m[9]);
+        if (!hit)
+        {
+            hit = CallThis<BYTE*>(At_Get800, o);
+            CallThis((void (*)())F(void**, o, 0)[7], o, 1);
+        }
+        CallThis(At_Set54c880, t, hit, &N);
+        CallThis((void (*)())F(void**, o, 0)[37], o, &g_zeroVec, 0);
+        CallThis((void (*)())F(void**, o, 0)[36], o, &g_zeroVec, 0);
+    }
+    CallThis(At_SetMode, F(BYTE*, s, 21600), 3);
+    CallThis(At_SetMode, F(BYTE*, t, 21600), 3);
+    F(short, F(BYTE*, t, 21600), 9988) = F(short, F(BYTE*, s, 21600), 9988);
+    F(short, F(BYTE*, t, 21600), 9990) = F(short, F(BYTE*, s, 21600), 9990);
+    return 1;
+}
+
+} // extern "C"
+
+// === the cars dumped to the warning log (FUN_53e7a0)
+
+extern "C" void Cd_Open(); KING_ALIAS("_Cd_Open", "_WarnLog_Open")
+extern "C" void Cd_Close(); KING_ALIAS("_Cd_Close", "_WarnLog_Close")
+extern "C" void Cd_Log(); KING_ALIAS("_Cd_Log", "_VehLog_Value2")
+extern "C" void Cd_Get800(); KING_ALIAS("_Cd_Get800", "@SceneObj_Get800@8")
+extern "C" void Cd_Matrix2(); KING_ALIAS("_Cd_Matrix2", "@SceneObj_Matrix2@12")
+ASM_VAR(BYTE*, g_cd6ef1f8, $L_6ef1f8)               // the car list
+ASM_VAR(BYTE*, g_cd6d2078, $L_6d2078)
+ASM_VAR(char, g_cd6794e8, $L_6794e8)
+ASM_VAR(char, g_cd6794c8, $L_6794c8)
+ASM_VAR(char, g_cd6794a4, $L_6794a4)
+ASM_VAR(char, g_cd67948c, $L_67948c)
+ASM_VAR(char, g_cd67946c, $L_67946c)
+ASM_VAR(char, g_cd679464, $L_679464)
+ASM_VAR(char, g_cd679458, $L_679458)
+ASM_VAR(char, g_cd679440, $L_679440)
+ASM_VAR(char, g_cd679434, $L_679434)
+ASM_VAR(char, g_cd67941c, $L_67941c)
+ASM_VAR(char, g_cd679404, $L_679404)
+ASM_VAR(char, g_cd6793e4, $L_6793e4)
+ASM_VAR(char, g_cd6793c0, $L_6793c0)
+ASM_VAR(char, g_cd6793a0, $L_6793a0)
+ASM_VAR(char, g_cd679380, $L_679380)
+ASM_VAR(char, g_cd679360, $L_679360)
+ASM_VAR(char, g_cd679340, $L_679340)
+ASM_VAR(char, g_cd679328, $L_679328)
+ASM_VAR(char, g_cd67930c, $L_67930c)
+ASM_VAR(char, g_cd6792f8, $L_6792f8)
+
+static void Cd_Text(const char* t)
+{
+    CallC(Cd_Log, t);
+}
+
+// the matrix's four rows, the first with its own heading
+static void Cd_Matrix(const float* m, const char* first)
+{
+    char buf[256];
+    sprintf(buf, first, (double)m[0], (double)m[1], (double)m[2]);
+    Cd_Text(buf);
+    for (int r = 1; r < 4; r++)
+    {
+        sprintf(buf, &g_cd67948c, (double)m[3 * r], (double)m[3 * r + 1], (double)m[3 * r + 2]);
+        Cd_Text(buf);
+    }
+}
+
+extern "C" {
+
+// [FUN_53e7a0] the clock, the camera's frame (player +1424) and every car's name, frame, speed along its heading,
+// velocity, spin, state (+10924) and position (+20676) written to the warning log
+void __cdecl Cars_DumpToLog()
+{
+    if (!g_dd696ca0 || !g_cd6d2078)
+        return;
+    char buf[256];
+    CallC(Cd_Open);
+    Cd_Text(&g_cd6794e8);
+    BYTE* g = g_dd696ca0;
+    sprintf(buf, &g_cd6794c8, F(double, g, 2968), F(int, g, 2992), F(double, g, 2960));
+    Cd_Text(buf);
+    Matrix cam = F(Matrix, g_cd6d2078, 1424);
+    Cd_Matrix(cam.m, &g_cd6794a4);
+    int n = 0;
+    for (BYTE* c = g_cd6ef1f8 ? g_cd6ef1f8 - 4 : 0; c; n++)
+    {
+        sprintf(buf, &g_cd67946c, F(int, F(BYTE*, c, 336), 12), c, F(int, c, 32));
+        Cd_Text(buf);
+        if (F(int, c, 1220))
+            Cd_Text(&g_cd679464);
+        sprintf(buf, &g_cd679458, F(int, CallThis<BYTE*>(Cd_Get800, c + 16), 12));
+        Cd_Text(buf);
+        Matrix m;
+        SceneObj_Matrix1(c + 16, 0, &m);
+        Cd_Matrix(m.m, &g_cd679440);
+        Vec3 v = F(Vec3, c, 432);
+        Matrix m2;
+        const float* H = CallThis<const Matrix*>(Cd_Matrix2, c + 16, &m2)->m;
+        sprintf(buf, &g_cd679434, (double)v.x * H[1] + (double)v.y * H[4] + (double)v.z * H[7]);
+        Cd_Text(buf);
+        sprintf(buf, &g_cd67941c, (double)v.x, (double)v.y, (double)v.z);
+        Cd_Text(buf);
+        Vec3 w = F(Vec3, c, 444);
+        sprintf(buf, &g_cd679404, (double)w.x, (double)w.y, (double)w.z);
+        Cd_Text(buf);
+        static const char* const states[6] = {&g_cd6793e4, 0, &g_cd6793a0, &g_cd679380, &g_cd679360, &g_cd679340};
+        unsigned st = F(unsigned, c, 10924);
+        if (st == 1)
+        {
+            sprintf(buf, &g_cd6793c0, F(int, F(BYTE*, c, 21600), 9784));
+            Cd_Text(buf);
+        }
+        else
+            Cd_Text(st <= 5 ? states[st] : &g_cd679328);
+        sprintf(buf, &g_cd67930c, (double)F(float, c, 20676), (double)F(float, c, 20680), (double)F(float, c, 20684));
+        Cd_Text(buf);
+        c = F(BYTE*, c, 8) ? F(BYTE*, c, 8) - 4 : 0;
+    }
+    sprintf(buf, &g_cd6792f8, n);
+    Cd_Text(buf);
+    CallC(Cd_Close);
 }
 
 } // extern "C"

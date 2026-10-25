@@ -117,7 +117,7 @@ $L_4c3df0 (Light_Set drift); FUN_48d100 (by-value double vectors); FUN_5fedbc (s
 
 Batch 22 plan: more than 44,180 bytes from the remaining larger float procs ($L_58d770, FUN_5b3010, FUN_579aa0, FUN_52c120, ...) with hand-mapped stack offsets where norm drifts.
 
-Batch 22 done: 13 procs, 44,528 bytes (2.02%), 75.81% -> 77.83%. $L_58d770 Body_SettleOnPlane (2176), FUN_5b3010
+Batch 22 done: 12 procs, 44,528 bytes (2.02%), 75.81% -> 77.83%. $L_58d770 Body_SettleOnPlane (2176), FUN_5b3010
 Sprite_DrawStrip (2432), FUN_579aa0 Decal_BuildOnObjects (6192), FUN_52c120 ParkedCar_DrawShadow (4656), $L_54a380
 Vehicle_FrameStep (9040, the vehicle's per-frame step), FUN_505530 Car_PlaceOnGround (3296), FUN_55b6f0 Hitch_Align
 (5440), FUN_589640 Item_SweepPoints (2096), FUN_503e30 Wheel_FindGround (2816), FUN_566970 Copter_Frame (2768),
@@ -129,3 +129,26 @@ nothing in it fills (kept uninitialized as in the original).
 Skipped: FUN_4ff800, FUN_58a020 (run past ENDP into other procs); FUN_538370 (11,712, sounds and force feedback,
 too long for the remainder); FUN_558f20 (9840, hitch solver); $L_4c5b30 (shared tail with different pushes);
 FUN_59f870 (reuses argument slots as temporaries).
+
+Batch 23 plan: more than 44,180 bytes, 77.83% -> about 79.85%: FUN_538370 (11,712, vehicle sounds and force feedback),
+FUN_558f20 (9840, hitch solver), FUN_569ab0 (3920), FUN_4fca10 (4416), $L_534443 (4183), FUN_533590 (3763), and
+smaller ones ($L_54d840, FUN_5b2950, FUN_568090, FUN_53f0c0) as needed; offsets from norm2.py.
+
+Batch 23 done: 42 procs, 44,272 bytes (2.00%), 77.83% -> 79.83%. FUN_538370 Vehicle_Sounds (11,712: the vehicle's
+sounds and the steering wheel's force feedback with its log), FUN_503500 Wheel_RollDrag (1184), FUN_55f5f0
+Truck_HitchTrailer (1152), gzip 1.2.4's inflate.c (8 procs, 4784: huft_build / huft_free / inflate_codes / stored /
+fixed / dynamic / block / inflate), $L_5a9dc0 Weather_Frame (1648), FUN_568090 Copter_Warnings (1520), $L_58e290
+Body_ResetPoints (1376), FUN_5ccb20 Sparks_AlongPolygon (3856), FUN_619c20 Terrain_PlacePlants (2848), FUN_4ce6d0
+Car_DrawForces (1792), FUN_5b2950 Mesh_Draw (1712), FUN_53e7a0 Cars_DumpToLog (1344), FUN_48c710 Road_NearestOn
+(1792), $L_595290 Mirror_Draw (2256) and gzip's trees.c, bits.c, longest_match and fill_window (21 procs, 5296).
+Drive and load tests pass (one drive ended at room_ap_048 without moving, two reruns normal).
+Particles_StartAt (media.cpp) now returns FUN_5cc680's result: its asm callers chain it as the next emitter.
+The C wrapper Terrain_Call617180 is declared stdcall but FUN_617180 takes ECX; Terrain_PlacePlants calls
+FUN_617180 directly as thiscall (the wrapper is unchanged).
+norm2.py now also counts `sub ESP,n` (n <= 64) as pushed bytes and gives jump-table case labels the depth at the
+`jmp D[...]`; it still misses callee pops after a label reached by jmp with pushes (FUN_619c20 +20, $L_595290 +12,
+FUN_5b2950 +12: mapped by hand).
+Skipped: FUN_558f20 (9840, iterative hitch solver, only with a trailer), $L_4d1360, FUN_4d4a90, FUN_569ab0,
+FUN_468d60, $L_420ed0 (AI handles and by-value road positions), FUN_4ff800, FUN_58a020, FUN_576d70, FUN_5e5cd0
+(entangled or nested procs), FUN_6217b6 (the CRT's printf engine), FUN_59f870 (argument slots as temporaries) and
+the many $L_ tails without a prologue.

@@ -1593,7 +1593,7 @@ extern "C" BYTE* __fastcall CopterScreen_Construct(BYTE* self, int, BYTE* game)
 extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
 extern "C" void FUN_568680(); KING_ALIAS("_FUN_568680", "@Copter_UpdateWarning@8")
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
-ASM_PROC(FUN_568090)
+extern "C" void FUN_568090(); KING_ALIAS("_FUN_568090", "@Copter_Warnings@8")
 extern "C" void FUN_566970(); KING_ALIAS("_FUN_566970", "@Copter_Frame@8")
 ASM_PROC(FUN_567dc0)
 ASM_PROC(FUN_563600)
@@ -5770,6 +5770,221 @@ void __fastcall Copter_Frame(BYTE* s, void*)
         else
             F(int, s, 3240) = 0;
     }
+}
+
+} // extern "C"
+
+// === the helicopter's warnings to its target (FUN_568090)
+
+extern "C" void Cw_State20944(); KING_ALIAS("_Cw_State20944", "_Car_State20944")
+extern "C" void Cw_Chase6(); KING_ALIAS("_Cw_Chase6", "@Copter_Chase6@12")
+extern "C" void Cw_Chase10(); KING_ALIAS("_Cw_Chase10", "@Copter_Chase10@12")
+extern "C" void Cw_Chase7(); KING_ALIAS("_Cw_Chase7", "@Copter_Chase7@12")
+extern "C" void Cw_Radio(); KING_ALIAS("_Cw_Radio", "_Copter_RadioCommand")
+extern "C" void Cw_Matrix2(); KING_ALIAS("_Cw_Matrix2", "@SceneObj_Matrix2@12")
+extern "C" void Cw_Car555500(); KING_ALIAS("_Cw_Car555500", "@Car_555500@8")
+ASM_VAR(BYTE*, g_cw6d2078, $L_6d2078)               // the player
+ASM_VAR(BYTE*, g_cw6ef1fc, $L_6ef1fc)               // the game (its clock +2968)
+ASM_VAR(float, g_cw64c448, $L_64c448)
+ASM_VAR(float, g_cw64c450, $L_64c450)
+ASM_VAR(float, g_cw64c32c, $L_64c32c)
+ASM_VAR(float, g_cw64d2f8, $L_64d2f8)
+ASM_VAR(float, g_cw64d4e8, $L_64d4e8)
+ASM_VAR(double, g_cw64d0f0, $L_64d0f0)
+ASM_VAR(double, g_cw64b670, $L_64b670)
+ASM_VAR(double, g_cw64da58, $L_64da58)
+
+// the target's warning count +20944 up one, said over the radio as w when it is the player's car
+static void Cw_Warn(BYTE* s, int radio, int w)
+{
+    if (radio && F(BYTE*, s, 3248) == F(BYTE*, g_cw6d2078, 616))
+        CallC(Cw_Radio, w);
+    F(int, F(BYTE*, s, 3248), 20944)++;
+}
+
+static void Cw_GiveUp(BYTE* s)
+{
+    int st = F(int, s, 3236);
+    if (st == 6 || st == 10 || st == 7)
+        CallThis(FUN_5662f0, s, 11);
+}
+
+extern "C" {
+
+// [FUN_568090] helicopter s on target car +3248: the warning stage +3344 (since +3348) from the car's count
+// +20944 (warnings, tens for its state), radio calls when it is the player, the chase by stage (6, 10, 7: follow,
+// hover, block) and giving up (state 11) when it got away, stopped or is gone
+void __fastcall Copter_Warnings(BYTE* s, void*)
+{
+    BYTE* car = F(BYTE*, s, 3248);
+    if (!car || !CallC<int>(Cw_State20944, car))
+    {
+        F(int, s, 3344) = 0;
+        Cw_GiveUp(s);
+        return;
+    }
+    int mode = 0;
+    if (Copter_TargetState(s, 0))
+        F(int, s, 3344) = 0;
+    else
+    {
+        if (F(int, s, 3344) == 0)
+            F(int, s, 3344) = 1;
+        if (F(int, s, 3344) == 1)
+            F(float, s, 3348) = (float)Game_Time();
+        BYTE* c = F(BYTE*, s, 3248);
+        int r = F(int, c, 20944) % 10;
+        int e = F(int, s, 3344);
+        switch (r)
+        {
+        case 0:
+            F(int, s, 3344) = 0;
+            break;
+        case 1:
+            if (e > 2 && e != 6)
+                F(int, s, 3344) = 1;
+            break;
+        case 2:
+            if (e > 3 && e != 6)
+                F(int, s, 3344) = 1;
+            if (F(int, s, 3344) == 2)
+            {
+                if (F(int, c, 20944) < 10)
+                    F(float, s, 3348) = (float)Game_Time();
+                F(int, s, 3344) = 3;
+            }
+            break;
+        case 3:
+            if (e > 4 && e != 6)
+                F(int, s, 3344) = 3;
+            e = F(int, s, 3344);
+            if (e < 4 && e > 1)
+            {
+                F(float, s, 3348) = (float)Game_Time();
+                F(int, s, 3344) = 4;
+            }
+            break;
+        case 4:
+            if (e < 5 && e > 1)
+                F(int, s, 3344) = 5;
+            break;
+        }
+        switch (F(int, s, 3344))
+        {
+        case 1:
+            mode = 0;
+            if (!Copter_TargetState(s, 0))
+                F(int, s, 3344) = 2;
+            break;
+        case 2:
+        {
+            mode = 1;
+            Matrix m;
+            const float* M = SceneObj_Matrix1(F(BYTE*, s, 3248) + 16, 0, &m)->m;
+            Vec3 d;
+            d.x = (float)((double)M[9] - F(float, s, 36));
+            d.y = (float)((double)M[10] - F(float, s, 40));
+            d.z = (float)((double)M[11] - F(float, s, 44));
+            if (Vec3_Length(&d) < g_cw64c448 && r < 2)
+                Cw_Warn(s, 1, 0);
+            break;
+        }
+        case 3:
+            mode = 1;
+            if (Game_Time() - F(float, s, 3348) > g_cw64c450 && F(int, F(BYTE*, s, 3248), 20944) < 10)
+                Cw_Warn(s, 1, 1);
+            break;
+        case 4:
+            if (Game_Time() - F(float, s, 3348) > g_cw64c32c)
+                Cw_Warn(s, 0, 0);
+            break;
+        case 5:
+            mode = 2;
+            break;
+        case 6:
+            mode = 3;
+            break;
+        }
+    }
+    BYTE* c = F(BYTE*, s, 3248);
+    if (F(int, c, 20944) < 30 && F(int, s, 3344) > 2)
+    {
+        Vec3 v = F(Vec3, c, 432);
+        if (Vec3_Length(&v) < g_cw64d0f0 && !Copter_TargetState(s, 0))
+        {
+            // the target stopped: still close in front of the player and lately warned, else let it go
+            Matrix m2;
+            BYTE* pc = F(BYTE*, g_cw6d2078, 616);
+            const float* M = CallThis<const Matrix*>(Cw_Matrix2, pc + 16, &m2)->m;
+            double px = F(float, s, 36), py = F(float, s, 40), pz = F(float, s, 44);
+            Vec3 p;
+            p.y = (float)(M[4] * py + M[7] * pz + M[1] * px + M[10]);
+            p.z = (float)(M[5] * py + M[8] * pz + M[2] * px + M[11]);
+            p.x = (float)(M[3] * py + M[6] * pz + M[0] * px + M[9]);
+            double len = Vec3_Length(&F(Vec3, s, 100));
+            bool lost = false;
+            if (p.y > x87_fabs((double)p.x) && p.y > g_cw64c32c && len < g_cw64d2f8)
+                lost = true;
+            else if (Vec3_Length(&p) < g_cw64d4e8 || F(double, g_cw6ef1fc, 2968) - F(float, s, 3352) > g_cw64b670)
+                lost = true;
+            if (!lost)
+            {
+                F(int, s, 3344) = 6;
+                mode = 3;
+            }
+            else
+            {
+                F(int, s, 3344) = 0;
+                if (F(BYTE*, s, 3248) == F(BYTE*, g_cw6d2078, 616))
+                    CallC(Cw_Radio, 2);
+                F(int, F(BYTE*, s, 3248), 20944) = 0;
+                F(int, s, 3248) = 0;
+                F(int, s, 3252) = 0;
+                F(int, s, 3352) = 0;
+                mode = -1;
+            }
+        }
+        else
+        {
+            int r = F(int, F(BYTE*, s, 3248), 20944) % 10;
+            if (r == 2)
+                F(int, s, 3344) = 3;
+            else if (r == 3)
+                F(int, s, 3344) = 4;
+            else if (r == 4)
+                F(int, s, 3344) = 5;
+            F(float, s, 3352) = (float)F(double, g_cw6ef1fc, 2968);
+        }
+    }
+    c = F(BYTE*, s, 3248);
+    if (c && F(int, c, 20944) > 30 && F(int, c, 20944) < 40 && CallThis<double>(Cw_Car555500, c) > g_cw64da58)
+    {
+        F(int, F(BYTE*, s, 3248), 20944) = 0;
+        F(int, s, 3248) = 0;
+        F(int, s, 3252) = 0;
+        Cw_GiveUp(s);
+        return;
+    }
+    if (mode == 3)
+    {
+        if (F(int, s, 3236) != 7)
+            CallThis(Cw_Chase7, s, F(BYTE*, s, 3248));
+        return;
+    }
+    if (mode == 2)
+    {
+        if (F(int, s, 3236) != 10)
+            CallThis(Cw_Chase10, s, F(BYTE*, s, 3248));
+        return;
+    }
+    if (mode == 1)
+    {
+        if (F(int, s, 3236) != 6)
+            CallThis(Cw_Chase6, s, F(BYTE*, s, 3248));
+        return;
+    }
+    if (mode == -1)
+        Cw_GiveUp(s);
 }
 
 } // extern "C"
