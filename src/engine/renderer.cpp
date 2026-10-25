@@ -2868,7 +2868,7 @@ ASM_VAR(AsmLabel, s_tu67f280, $L_67f280)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 extern "C" void FUN_5e6bc0(); KING_ALIAS("_FUN_5e6bc0", "@Mmio_ReadAt@16")
 extern "C" void FUN_5e6bb0(); KING_ALIAS("_FUN_5e6bb0", "@Mmio_Reset2@8")
-ASM_PROC(FUN_5bb260)
+extern "C" void FUN_5bb260(); KING_ALIAS("_FUN_5bb260", "@Texture_LoadRows@44")
 extern "C" void FUN_5d3af0(); KING_ALIAS("_FUN_5d3af0", "_Video_Get720898")
 extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
@@ -6020,6 +6020,90 @@ int __fastcall Render_PortalView(BYTE* r, void*, const float* q, int mirror)
     F(int, r, 1960) = bw;
     F(int, r, 1956) += by;
     return Rp_Record(r);
+}
+
+} // extern "C"
+
+// === a texture's rows loaded (FUN_5bb260)
+
+extern "C" void Tx_Fade(); KING_ALIAS("_Tx_Fade", "_Pixels4444_Fade")
+extern "C" void Tx_Read(); KING_ALIAS("_Tx_Read", "@Mmio_Read@20")
+ASM_VAR(int, g_tx7208c4, $L_7208c4)
+ASM_VAR(float, g_tx65177c, $L_65177c)
+ASM_VAR(float, g_tx651778, $L_651778)
+ASM_VAR(float, g_tx651774, $L_651774)
+ASM_VAR(float, g_tx651770, $L_651770)
+ASM_VAR(double, g_tx64d900, $L_64d900)
+ASM_VAR(float, g_tx64d3fc, $L_64d3fc)
+ASM_VAR(float, g_tx64dab0, $L_64dab0)
+ASM_VAR(float, g_tx64ca90, $L_64ca90)
+ASM_VAR(float, g_tx64c32c, $L_64c32c)
+ASM_VAR(double, g_tx64b780, $L_64b780)
+
+extern "C" {
+
+// [FUN_5bb260] texture s (format +64, row bytes per pixel +24, file +80 at +32) fills rows rows of w pixels at dst
+// (pitch dpitch) from src (pitch spitch; an offset in the file when fromFile), faded by k; a format-8 texture in
+// the water mode 7208c4 is instead drawn as two bytes per pixel of waves at time k
+void __fastcall Texture_LoadRows(BYTE* s, void*, BYTE* dst, int dpitch, BYTE* src, int spitch, int rows, int w,
+                                 double k, int fromFile)
+{
+    int fmt = F(int, s, 64);
+    int mode = fmt == 2 ? 1 : fmt == 8 ? 2 : 0;
+    if (mode == 2 && g_tx7208c4)
+    {
+        if (rows <= 0)
+            return;
+        float rf = (float)rows;
+        double base = k;
+        for (int r = 0; r < rows; r++, dst += dpitch)
+        {
+            float v = (float)(r / (double)rf + base);
+            if (w <= 0)
+                continue;
+            float wf = (float)w;
+            double a = v * (double)g_tx65177c * g_tx64d900;
+            double b = v * (double)g_tx651778 * g_tx64d900;
+            double sb = x87_sin(b), sa = x87_sin(a), cb = x87_cos(b), ca = x87_cos(a);
+            BYTE* p = dst;
+            for (int c = 0; c < w; c++)
+            {
+                double u = c / (double)wf + base;
+                float t28 = (float)(u * g_tx651774 * g_tx64d900);
+                float uv = (float)(u + v);
+                float t32 = (float)(uv * (double)g_tx64d3fc * g_tx64d900);
+                float vu = (float)((double)v - u);
+                float tp = (float)(vu * (double)g_tx651770 * g_tx64d900);
+                double U1 = u * g_tx64dab0 * g_tx64d900;
+                double U2 = uv * (double)g_tx64ca90 * g_tx64d900;
+                double U3 = vu * (double)g_tx64c32c * g_tx64d900;
+                double s1 = x87_cos(U3) + x87_sin(U2) + x87_cos(U1) + x87_cos(tp) + x87_sin(t32) + x87_cos(t28) + sa + sb;
+                p[0] = (BYTE)(int)(s1 * g_tx64b780);
+                double s2 = x87_cos(U2) + x87_sin(U3) + x87_sin(U1) + x87_sin(tp) + x87_cos(t32) + x87_sin(t28) + ca + cb;
+                p[1] = (BYTE)(int)(s2 * g_tx64b780);
+                p += 2;
+            }
+        }
+        return;
+    }
+    int row = F(WORD, s, 24) * w;
+    if (dpitch == spitch && dpitch == row)
+    {
+        if (!fromFile)
+            memcpy(dst, src, dpitch * rows);
+        else
+            CallThis(Tx_Read, F(BYTE*, s, 80), F(int, s, 32) + (int)src, dst, spitch * rows);
+        CallC(Tx_Fade, dst, rows * w, k, mode);
+        return;
+    }
+    for (int r = 0; r < rows; r++, dst += dpitch, src += spitch)
+    {
+        if (!fromFile)
+            memcpy(dst, src, F(WORD, s, 24) * w);
+        else
+            CallThis(Tx_Read, F(BYTE*, s, 80), F(int, s, 32) + (int)src, dst, F(WORD, s, 24) * w);
+        CallC(Tx_Fade, dst, w, k, mode);
+    }
 }
 
 } // extern "C"

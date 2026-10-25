@@ -19664,7 +19664,7 @@ ASM_VAR(double, g_64b6d0, $L_64b6d0)
 ASM_VAR(double, g_64b6c8, $L_64b6c8)
 ASM_VAR(double, g_64b6c0, $L_64b6c0)
 ASM_VAR(double, g_64b6b8, $L_64b6b8)
-ASM_PROC(FUN_4d5c50)    // a vehicle's set speed (vehicle) returns double
+extern "C" void FUN_4d5c50(); KING_ALIAS("_FUN_4d5c50", "_Ai_CarTargetSpeed")    // a vehicle's set speed (vehicle) returns double
 extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730")    // (vehicle) returns double
 extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")    // (vehicle) returns int
 extern "C" void FUN_4881b0(); KING_ALIAS("_FUN_4881b0", "@Filter2_Update@16")    // a speed filter step (thiscall: double) returns double
@@ -21197,8 +21197,8 @@ extern "C" char* __cdecl Ai_FormatReport(int a1, int a2, int a3, int a4, int a5,
 // ---------------------------------------------------------------------------
 // Small virtual methods of the AI's world objects and route holders.
 
-ASM_PROC(FUN_48ce40)
-ASM_PROC(FUN_48d100)
+extern "C" void FUN_48ce40(); KING_ALIAS("_FUN_48ce40", "@Polyline_Nearest@24")
+extern "C" void FUN_48d100(); KING_ALIAS("_FUN_48d100", "@Polyline_Advance@24")
 extern "C" void FUN_48d530(); KING_ALIAS("_FUN_48d530", "@Path_StepIndex@24")
 extern "C" void FUN_48c710(); KING_ALIAS("_FUN_48c710", "@Road_NearestOn@48")
 extern "C" void FUN_48d710(); KING_ALIAS("_FUN_48d710", "@Points_Distance@32")
@@ -22840,7 +22840,7 @@ void __cdecl Nodes_SortByDistance(int* first, int* last, Ns_Pt pt)
 // === introsort of market iterators by distance (FUN_45fdd0)
 
 extern "C" void FUN_460110(); KING_ALIAS("_FUN_460110", "@Point_Farther@16")
-ASM_PROC(FUN_46add0)
+extern "C" void FUN_46add0(); KING_ALIAS("_FUN_46add0", "_Holders_SortHeapByDistance")
 extern "C" void FUN_46c240(); KING_ALIAS("_FUN_46c240", "_Far_MakeHeap56")
 extern "C" void FUN_46cf00(); KING_ALIAS("_FUN_46cf00", "_Swap32")
 
@@ -23805,6 +23805,304 @@ void __cdecl IntroSort_By504(void** first, void** last, int, int depth, DWORD pr
         void** cut = Sort_PartitionBy504(first, last, pv);
         IntroSort_By504(cut, last, 0, depth, pred);
         last = cut;
+    }
+}
+
+} // extern "C"
+
+// === moving a distance along a polyline (FUN_48d100)
+
+ASM_VAR(double, g_pl64b670, $L_64b670)                  // 1
+
+// the point at fraction t of segment i of points P (24 bytes each), as DVec3_Times / DVec3_Add make it
+static void Pl_At(const double* P, int i, double t, double* out)
+{
+    const double* a = P + 3 * (i + 1);
+    const double* b = P + 3 * i;
+    double u = g_pl64b670 - t;
+    double ax = a[0] * t, ay = a[1] * t, az = a[2] * t;
+    double bx = b[0] * u, by = b[1] * u, bz = b[2] * u;
+    out[0] = bx + ax;
+    out[1] = by + ay;
+    out[2] = bz + az;
+}
+
+extern "C" {
+
+// [FUN_48d100] polyline s (points +32..+36, 24 bytes each) at segment *idx, fraction *t, moved on by *dist (back
+// when negative): whole segments used up move the index (the rest left in *dist, 1 at the end of the line), else
+// the fraction advanced and *dist cleared, 0
+int __fastcall Polyline_Advance(BYTE* s, void*, double* t, double* dist, int, int* idx)
+{
+    const double* P = F(const double*, s, 32);
+    int n = (int)((F(BYTE*, s, 36) - F(BYTE*, s, 32)) / 24);
+    if (*dist > 0)
+    {
+        while ((unsigned)*idx < (unsigned)(n - 1))
+        {
+            int i = *idx;
+            double cur[3];
+            Pl_At(P, i, *t, cur);
+            const double* a = P + 3 * (i + 1);
+            double dx = a[0] - cur[0], dy = a[1] - cur[1], dz = a[2] - cur[2];
+            double len = x87_sqrt(dy * dy + dz * dz + dx * dx);
+            if (!(len < *dist))
+            {
+                const double* b = P + 3 * i;
+                double sx = a[0] - b[0], sy = a[1] - b[1], sz = a[2] - b[2];
+                *t += *dist / x87_sqrt(sy * sy + sz * sz + sx * sx);
+                *dist = 0;
+                if (*t > g_pl64b670)
+                    *t = 1.0;
+                return 0;
+            }
+            *dist -= len;
+            if ((unsigned)*idx >= (unsigned)(n - 2))
+            {
+                *t = 1.0;
+                return 1;
+            }
+            (*idx)++;
+            *t = 0;
+        }
+        return 1;
+    }
+    if (!(*dist < 0))
+        return 1;
+    while (*idx >= 0)
+    {
+        int i = *idx;
+        double cur[3];
+        Pl_At(P, i, *t, cur);
+        const double* b = P + 3 * i;
+        double dx = b[0] - cur[0], dy = b[1] - cur[1], dz = b[2] - cur[2];
+        double len = x87_sqrt(dx * dx + dy * dy + dz * dz);
+        if (!(len < -*dist))
+        {
+            const double* a = P + 3 * (i + 1);
+            double sx = a[0] - b[0], sy = a[1] - b[1], sz = a[2] - b[2];
+            *t += *dist / x87_sqrt(sx * sx + sy * sy + sz * sz);
+            *dist = 0;
+            if (*t < 0)
+                *t = 0;
+            return 0;
+        }
+        *dist += len;
+        if (!*idx)
+        {
+            *t = 0;
+            return 1;
+        }
+        (*idx)--;
+        *t = 1.0;
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === the nearest point of a whole polyline (FUN_48ce40)
+
+extern "C" {
+
+// [FUN_48ce40] polyline s (bounding centre +0, radius +24, points +32..+36, 24 bytes each) checked for a point
+// closer to p than *best (squared): the distance, segment and its fraction written out; whether one was found
+int __fastcall Polyline_Nearest(BYTE* s, void*, const double* p, double* best, double* tOut, int* idxOut)
+{
+    double cx = F(double, s, 0) - p[0], cy = F(double, s, 8) - p[1], cz = F(double, s, 16) - p[2];
+    if (F(double, s, 24) + *best < x87_sqrt(cy * cy + cz * cz + cx * cx))
+        return 0;
+    const double* P = F(const double*, s, 32);
+    int n = (int)((F(BYTE*, s, 36) - F(BYTE*, s, 32)) / 24);
+    double vx = p[0] - P[0], vy = p[1] - P[1], vz = p[2] - P[2];
+    double a = vy * vy + vz * vz + vx * vx;
+    int found = 0;
+    for (unsigned i = 0; i < (unsigned)(n - 1); i++)
+    {
+        const double* q = P + 3 * (i + 1);
+        const double* r = P + 3 * i;
+        double wx = p[0] - q[0], wy = p[1] - q[1], wz = p[2] - q[2];
+        double b = wy * wy + wz * wz + wx * wx;
+        double dx = q[0] - r[0], dy = q[1] - r[1], dz = q[2] - r[2];
+        double L2 = dy * dy + dz * dz + dx * dx;
+        if (!(b < L2 + a))
+        {
+            // the start is the closest
+            if (*best > a)
+            {
+                *best = a;
+                *idxOut = i;
+                found = 1;
+                *tOut = 0;
+            }
+        }
+        else if (!(L2 + b > a))
+        {
+            // the end is
+            if (b < *best)
+            {
+                found = 1;
+                *best = b;
+                *idxOut = i;
+                *tOut = 1.0;
+            }
+        }
+        else
+        {
+            double dot = dz * vz + dy * vy + dx * vx;
+            double sq = dot * dot / L2;
+            double d2 = a - sq;
+            if (d2 < *best)
+            {
+                *best = d2;
+                found = 1;
+                *idxOut = i;
+                *tOut = x87_sqrt(sq / L2);
+            }
+        }
+        vx = wx;
+        vy = wy;
+        vz = wz;
+        a = b;
+    }
+    return found;
+}
+
+} // extern "C"
+
+// === the middle one of three road positions by distance (FUN_4644f0)
+
+// |p - x's point| as written out by component (Rec_Set6, then the root)
+static double Md_Near(BYTE** x, const DVec3& p)
+{
+    DVec3 t;
+    const DVec3* r = Road_PointOf(&t, *(PositionId*)(*x + 40));
+    double dx = p.x - r->x, dy = p.y - r->y, dz = p.z - r->z;
+    return x87_sqrt(dy * dy + dz * dz + dx * dx);
+}
+
+extern "C" DVec3* __cdecl DVec3_Sub(DVec3* out, const DVec3* a, const DVec3* b);
+
+// |p - x's point| by DVec3_Sub and DVec3_Length
+static double Md_Far(BYTE** x, const DVec3& p)
+{
+    DVec3 t, d;
+    return DVec3_Length(DVec3_Sub(&d, &p, Road_PointOf(&t, *(PositionId*)(*x + 40))));
+}
+
+extern "C" {
+
+// [FUN_4644f0] of the three holders a, b, c (their road position at *x + 40) the one whose point lies in the
+// middle by distance from p
+BYTE** __cdecl Road_MiddleOfThree(BYTE** a, BYTE** b, BYTE** c, DVec3 p)
+{
+    double dA = Md_Near(a, p);
+    if (Md_Far(b, p) > dA)
+    {
+        double dB = Md_Near(b, p);
+        if (Md_Far(c, p) > dB)
+            return b;
+        return Md_Far(c, p) > Md_Far(a, p) ? c : a;
+    }
+    if (!(Md_Far(c, p) > Md_Far(a, p)))
+    {
+        double dB = Md_Far(b, p);
+        return Md_Far(c, p) > dB ? c : b;
+    }
+    return a;
+}
+
+} // extern "C"
+
+// === holders sorted by their distance from a point (FUN_46add0)
+
+// the distance of e's point (*e + 56) from p, by component (Rec_Set6) then the root
+static double Sd_Dist(BYTE** e, const DVec3& p, bool yFirst)
+{
+    const double* q = (const double*)(*e + 56);
+    double x = q[0] - p.x, y = q[1] - p.y, z = q[2] - p.z;
+    return yFirst ? x87_sqrt(y * y + z * z + x * x) : x87_sqrt(x * x + y * y + z * z);
+}
+
+extern "C" {
+
+// [FUN_46add0] the heap [first, last) of holders sorted (sort_heap, the larger distance from pt first popped)
+void __cdecl Holders_SortHeapByDistance(BYTE*** first, BYTE*** last, DVec3 pt)
+{
+    while (last - first > 1)
+    {
+        BYTE** val = last[-1];
+        int len = (int)(last - first) - 1;
+        last--;
+        *last = *first;
+        int hole = 0, child = 2;
+        while (child < len)
+        {
+            if (Sd_Dist(first[child], pt, false) < Sd_Dist(first[child - 1], pt, true))
+                child--;
+            first[hole] = first[child];
+            hole = child;
+            child = 2 * child + 2;
+        }
+        if (child == len)
+        {
+            first[hole] = first[child - 1];
+            hole = child - 1;
+        }
+        DVec3 q = pt;
+        for (int parent = (hole - 1) / 2; hole > 0; parent = (hole - 1) / 2)
+        {
+            DVec3 d;
+            double dp = Sd_Dist(first[parent], q, false);
+            if (!(DVec3_Length(DVec3_Sub(&d, (const DVec3*)(*val + 56), &q)) > dp))
+                break;
+            first[hole] = first[parent];
+            hole = parent;
+        }
+        first[hole] = val;
+    }
+}
+
+} // extern "C"
+
+// === holders partitioned by distance (FUN_464880)
+
+// the distance of road position (o + 40) from p, by component then the root
+static double Hp_Dist(BYTE* o, const DVec3& p, bool yFirst)
+{
+    DVec3 t;
+    const DVec3* r = Road_PointOf(&t, *(PositionId*)(o + 40));
+    double x = p.x - r->x, y = p.y - r->y, z = p.z - r->z;
+    return yFirst ? x87_sqrt(y * y + z * z + x * x) : x87_sqrt(x * x + y * y + z * z);
+}
+
+extern "C" {
+
+// [FUN_464880] the unguarded partition of [first, last) around pivot by the distance of their road positions from
+// pt: the start of the farther part
+BYTE** __cdecl Holders_PartitionByDistance(BYTE** first, BYTE** last, BYTE* pivot, DVec3 pt)
+{
+    for (;;)
+    {
+        while (Hp_Dist(*first, pt, true) < Hp_Dist(pivot, pt, false))
+            first++;
+        double dp;
+        do
+        {
+            last--;
+            dp = Hp_Dist(pivot, pt, false);
+            DVec3 t;
+            const DVec3* r = Road_PointOf(&t, *(PositionId*)(*last + 40));
+            DVec3 d = {pt.x - r->x, pt.y - r->y, pt.z - r->z};
+            if (!(DVec3_Length(&d) > dp))
+                break;
+        } while (true);
+        if (!(first < last))
+            return first;
+        BYTE* x = *first;
+        *first = *last;
+        *last = x;
+        first++;
     }
 }
 

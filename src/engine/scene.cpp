@@ -4995,3 +4995,61 @@ void __fastcall Mesh_TexCoords(BYTE* r, void*, BYTE* m, int n, BYTE* mat, ScVec3
 }
 
 } // extern "C"
+
+// === drawing through a portal (a method at $L_5fb820)
+
+extern "C" int __fastcall Scene_TestInfo(BYTE* self, void*, int, int);
+extern "C" int __fastcall View_SphereClip(BYTE* s, void*, const float* sp);
+extern "C" void __fastcall Render_PopState(BYTE* self, void*);
+extern "C" int __fastcall Render_PortalView(BYTE* r, void*, const float* q, int mirror);
+ASM_VAR(DWORD, g_po723a88, $L_723a88)
+ASM_VAR(double, g_po64b678, $L_64b678)
+
+extern "C" {
+
+// [$L_5fb820] portal p (quad +60, normal +48, sphere +112, mirror +108, the room behind +128) drawn into renderer
+// r: when it passes the tests, is seen from its front and gives a view, the room behind is drawn through it (with
+// the renderer's light group and colours kept); 0 only when the tests fail or nothing is behind
+int __fastcall Portal_Draw(BYTE* p, void*, int a, BYTE* r)
+{
+    if (!Scene_TestInfo(p, 0, a, (int)r))
+        return 0;
+    if (!F(BYTE*, p, 128))
+        return 0;
+    if (!View_SphereClip(r, 0, (const float*)(p + 112)))
+        return 1;
+    const float* c = (const float*)Render_Material(r, 0);
+    double dx = (double)F(float, p, 60) - c[0], dy = (double)F(float, p, 64) - c[1], dz = (double)F(float, p, 68) - c[2];
+    if (!(dz * F(float, p, 56) + dy * F(float, p, 52) + dx * F(float, p, 48) > g_po64b678))
+        return 1;
+    if (!Render_PortalView(r, 0, (const float*)(p + 60), F(int, p, 108)))
+        return 1;
+    g_po723a88 ^= F(DWORD, p, 108);
+    BYTE* q = F(BYTE*, p, 128);
+    if (!q && F(int, p, 108))
+    {
+        BYTE* root = Node_Root(p, 0);
+        CallVirt(root, 48, a, r);
+    }
+    else
+    {
+        if (F(int, q, 36) != F(int, p, 36))
+            CallVirt(r, 8, F(int, q, 36));
+        int keep = F(int, r, 8632);
+        F(int, r, 8632) = 0;
+        double c1 = F(float, r, 8672), c2 = F(float, r, 8676), c3 = F(float, r, 8680), c4 = F(float, r, 8684);
+        CallVirt(F(BYTE*, p, 128), 48, a, r);
+        F(int, r, 8632) = keep;
+        F(float, r, 8672) = (float)c1;
+        F(float, r, 8676) = (float)c2;
+        F(float, r, 8680) = (float)c3;
+        F(float, r, 8684) = (float)c4;
+        if (F(int, F(BYTE*, p, 128), 36) != F(int, p, 36))
+            CallVirt(r, 8, F(int, p, 36));
+    }
+    Render_PopState(r, 0);
+    g_po723a88 ^= F(DWORD, p, 108);
+    return 1;
+}
+
+} // extern "C"

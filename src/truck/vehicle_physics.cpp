@@ -3110,3 +3110,115 @@ void __fastcall Body_SetMass(BYTE* s, void*, float m, const Matrix* f, const Vec
 }
 
 } // extern "C"
+
+// === placing a car on the ground under a frame (FUN_4f17a0)
+
+extern "C" void Bp_SaveAll(); KING_ALIAS("_Bp_SaveAll", "@Body_SaveAll@8")
+extern "C" void Bp_Terms(); KING_ALIAS("_Bp_Terms", "@Body_FrameTerms@4")
+extern "C" void Bp_Rebuild(); KING_ALIAS("_Bp_Rebuild", "@Body_Rebuild@4")
+extern "C" void Bp_Place(); KING_ALIAS("_Bp_Place", "@Body_PlaceReset@16")
+extern "C" void Bp_OnPlane(); KING_ALIAS("_Bp_OnPlane", "@Wheels_OnPlane@20")
+extern "C" void Bp_Step(); KING_ALIAS("_Bp_Step", "@Body_Step@12")
+extern "C" void Bp_Ground(); KING_ALIAS("_Bp_Ground", "@Car_PlaceOnGround@12")
+extern "C" void Bp_Query(); KING_ALIAS("_Bp_Query", "_Query_4e6621")
+extern "C" void Bp_HitObject(); KING_ALIAS("_Bp_HitObject", "_Query_HitObject")
+extern "C" void Bp_NodeInit(); KING_ALIAS("_Bp_NodeInit", "@Node_Init@8")
+extern "C" void Bp_ToAngles(); KING_ALIAS("_Bp_ToAngles", "_Matrix_ToAngles")
+extern "C" void Bp_FromPose(); KING_ALIAS("_Bp_FromPose", "_Matrix_FromPose")
+ASM_FUNC(Bp_4fca10, FUN_4fca10)
+ASM_VAR(Vec3, g_bpUp, $L_702630)
+ASM_VAR(Vec3, g_bpEye, $L_702650)
+ASM_VAR(float, g_bp674414, $L_674414)
+
+struct BpMat { Vec3 r0, r1, r2, t; };
+
+extern "C" {
+
+// [FUN_4f17a0] car body b put at frame m (on object o): the ground probed under m's position from heights 2, 9 and
+// 28 above and below; where found the body is set on it facing m's heading with its wheels on the plane and its
+// frame re-placed on the object found there, else at m with the wheels on a level plane; then rebuilt and stepped
+void __fastcall Body_PlaceAtFrame(BYTE* b, void*, int o, const Matrix* m, int)
+{
+    CallThis(Bp_SaveAll, b);
+    F(Vec3, b, 3216) = g_bpEye;
+    F(Vec3, b, 3288) = g_bpEye;
+    F(Vec3, b, 3228) = g_bpEye;
+    F(Vec3, b, 3300) = g_bpEye;
+    const Vec3& U = g_bpUp;
+    int hit = 0;
+    __declspec(align(8)) BYTE node[208];
+    for (int k = 1; k <= 3 && !hit; k++)
+    {
+        double h = k * k * k + 1;
+        Vec3 top, bot;
+        float ux = (float)(h * U.x), uy = (float)(h * U.y);
+        top.x = (float)((double)ux + m->m[9]);
+        top.y = (float)((double)uy + m->m[10]);
+        top.z = (float)(h * U.z + m->m[11]);
+        float dx = (float)(h * U.x), dy = (float)(h * U.y);
+        bot.x = (float)((double)m->m[9] - dx);
+        bot.y = (float)((double)m->m[10] - dy);
+        bot.z = (float)((double)m->m[11] - h * U.z);
+        CallThis(Bp_NodeInit, node);
+        hit = CallC<int>(Bp_Query, F(int, b, 10708), o, &top, &bot, node);
+    }
+    if (hit)
+    {
+        Vec3 P = F(Vec3, node, 52), N = F(Vec3, node, 64);
+        Matrix M = *m, I, L, X;
+        Matrix_Inverse(&I, m);
+        double lift = (double)F(float, b, 7024) - F(float, b, 7364) + (double)g_bp674414 * F(float, b, 8092);
+        float nx = (float)(N.x * lift), ny = (float)(N.y * lift);
+        Vec3 Q;
+        Q.x = (float)((double)nx + P.x);
+        Q.y = (float)((double)ny + P.y);
+        Q.z = (float)(N.z * lift + P.z);
+        const float* R = I.m;
+        double ax = (double)R[3] * N.y + (double)R[6] * N.z + (double)R[0] * N.x;
+        double ay = (double)R[4] * N.y + (double)R[7] * N.z + (double)R[1] * N.x;
+        double az = (double)R[5] * N.y + (double)R[8] * N.z + (double)R[2] * N.x;
+        Vec3 d;
+        d.x = (float)(az * U.y - ay * U.z);
+        d.y = (float)(ax * U.z - az * U.x);
+        d.z = (float)(ay * U.x - ax * U.y);
+        float len = (float)Vec3_Length(&d);
+        Matrix_LookAt(&L, g_bpEye, d, len);
+        M = *Matrix_Multiply(&X, &L, m);
+        M.m[9] = Q.x;
+        M.m[10] = Q.y;
+        M.m[11] = Q.z;
+        CallThis(Bp_Place, b, o, &M);
+        CallThis(Bp_Terms, b);
+        CallThis(Bp_OnPlane, b, 1, &P, &N);
+        CallThis(Bp_Ground, b, b + 16);
+        int cnt = F(int, b, 3540);
+        F(BYTE, b, 6586) = 0;
+        if (F(int, b, 10104) == 2)
+            cnt--;
+        for (int i = 0; i < cnt; i++)
+            F(BYTE, b, 6586) = (F(BYTE, b, 6586) || F(short, b, 6564 + 2 * i)) ? 1 : 0;
+        CallThis(Bp_4fca10, b, &L);
+        int obj = CallC<int>(Bp_HitObject, F(int, b, 244), b + 52, &L.m[9]);
+        CallThis(Bp_Place, b, obj, &L);
+    }
+    else
+    {
+        CallThis(Bp_Place, b, o, m);
+        double lift = (double)g_bp674414 * F(float, b, 8092) + F(float, b, 7024) - F(float, b, 7364);
+        Vec3 v, d;
+        v.x = (float)(lift * U.x);
+        v.y = (float)(lift * U.y);
+        v.z = (float)(lift * U.z);
+        Vec3_Sub(&d, &F(Vec3, b, 52), &v);
+        CallThis(Bp_OnPlane, b, 1, &d, &g_bpUp);
+    }
+    CallThis(Bp_Terms, b);
+    CallThis(Bp_Rebuild, b);
+    double a[6];
+    CallC(Bp_ToAngles, *(BpMat*)(b + 16), &a[0], &a[1], &a[2], &a[3], &a[4], &a[5]);
+    Matrix Y;
+    memcpy(b + 16, CallC<const Matrix*>(Bp_FromPose, &Y, a[0], a[1], a[2], a[3], a[4], a[5]), 48);
+    CallThis(Bp_Step, b, a);
+}
+
+} // extern "C"

@@ -645,7 +645,7 @@ extern "C" {
 size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 int __cdecl fseek(FILE* f, long off, int origin);
 }
-ASM_PROC(FUN_50b620)    // DMat4: determinant
+extern "C" void FUN_50b620(); KING_ALIAS("_FUN_50b620", "@DMat_Determinant@8")    // DMat4: determinant
 extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
 extern "C" void FUN_5b81c0(); KING_ALIAS("_FUN_5b81c0", "_Image_DrawPart")    // draws a part of an image (surface, image, rect, a, y)
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
@@ -10658,6 +10658,42 @@ void __fastcall Map_BuildRoads(BYTE* s, void*)
     }
     for (int i = 0; i < 20; i++)
         CallC(Rm_LoadingStep);
+}
+
+} // extern "C"
+
+// === a 4x4 determinant (FUN_50b620)
+
+extern "C" void Dt_Cofactor(); KING_ALIAS("_Dt_Cofactor", "@Matrix_Cofactor@16")
+extern "C" double __cdecl Sign(int x);
+ASM_VAR(float, g_dtIdentity, $L_7025f0)
+
+extern "C" {
+
+// [FUN_50b620] the determinant of the 4x4 double matrix s (rows of 32 bytes): row 0 expanded along the minors of
+// rows 1-3, each as a float 3x3 by its cofactors
+double __fastcall DMat_Determinant(const double* s, void*)
+{
+    double sum = 0;
+    for (int k = 0; k < 4; k++)
+    {
+        float m[12];
+        memcpy(m, &g_dtIdentity, 48);
+        for (int r = 0; r < 3; r++)
+        {
+            const double* row = s + 4 * (r + 1);
+            int c = 0;
+            for (int j = 0; j < 4; j++)
+                if (j != k)
+                    m[3 * r + c++] = (float)row[j];
+        }
+        double c0 = CallThis<double>(Dt_Cofactor, m, 0, 0);
+        double c1 = CallThis<double>(Dt_Cofactor, m, 0, 1);
+        double c2 = CallThis<double>(Dt_Cofactor, m, 0, 2);
+        double det = m[2] * c2 + m[1] * c1 + m[0] * c0;
+        sum = Sign(k) * s[k] * det + sum;
+    }
+    return sum;
 }
 
 } // extern "C"

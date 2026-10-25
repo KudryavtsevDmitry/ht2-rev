@@ -157,7 +157,7 @@ Batch 24 plan: more than 44,180 bytes, 79.83% -> about 81.85%: FUN_617180 (9824,
 (8368), $L_536360 (8208), FUN_552940 (7472), FUN_53b4c0 (7040), FUN_588090 (4896), swapping any that turn out
 entangled; offsets from norm2.py.
 
-Batch 24 done: 11 procs, 44,464 bytes (2.01%), 79.83% -> 81.84%. FUN_617180 Patch_AddPlant (9824: a plant's
+Batch 24 done: 10 procs, 44,464 bytes (2.01%), 79.83% -> 81.84%. FUN_617180 Patch_AddPlant (9824: a plant's
 quads by type and grid parity), FUN_5f6820 Shape_SweepHit (8368: a point swept against a sphere, cylinder, plane,
 polygon list or wall chain), FUN_552940 Car_LampShadows (7472: the lamps' shadow nodes and their glows, decals and
 lights), FUN_588090 Item_KnockOver (4896), FUN_5e05c0 Dbg_OnInput (2800: the debug window's mouse look, zoom,
@@ -171,3 +171,29 @@ clashes with its own declarations.
 Skipped: FUN_5ca8e0 (FUN_5ca660 calls the label $L_5cb970 inside it), FUN_53b4c0 and FUN_54f040 (AI road
 positions by value), FUN_4fca10 (runs on into $L_4fe18e), FUN_4e8ae1 (runs on into $L_4e964c); $L_536360 not
 reached.
+
+Batch 25 plan: more than 44,180 bytes, 81.84% -> about 83.85%: $L_536360 (8208), FUN_57eae0 (7534), $L_5c8ae0
+(7040), FUN_4f8260 (4649), $L_4d6510 (4016), FUN_533590 (3763) and smaller ones as needed; offsets from norm3.py.
+
+Batch 25 done: 27 procs, 44,816 bytes (2.03%), 81.84% -> 83.87%. $L_536360 Player_Frame (8208: the player's
+frame: zoom, free camera, view, light, AI position, logs), FUN_53b4c0 Player_Controls (7040: pedals, steering,
+gears and the debug keys), $L_4d6510 Ai_DriverStep (4016), FUN_54f040 Car_GiveWay (3904), $L_4c9a10
+Weather_LampRain (2528), FUN_53f0c0 Cars_DumpHistory (1632), FUN_4d3240 Trail_Add (1600), FUN_4f17a0
+Body_PlaceAtFrame (1584), FUN_4cf620 Ai_CarFrame (1520), FUN_4cdc90 Road_TurnAhead (1088), FUN_48d100
+Polyline_Advance (1072), FUN_4644f0 Road_MiddleOfThree, $L_590810 Body_OntoPlane, FUN_4d4700 Ai_TargetSpeed (912
+each), FUN_5bb260 Texture_LoadRows (816), FUN_4d5c50 Ai_CarTargetSpeed (768), FUN_567dc0 Copter_FindLanding (720),
+FUN_48ce40 Polyline_Nearest (704), FUN_4cd770 Road_LateralOffset (688), FUN_4d60c0 Ai_ThrottleBrake (640),
+FUN_46add0 Holders_SortHeapByDistance, $L_594400 Sparks_Frame (592 each), FUN_464880
+Holders_PartitionByDistance (544), FUN_50b620 DMat_Determinant (496), FUN_4cf400 Car_StoreState (480),
+$L_5fb820 Portal_Draw (448), FUN_549e60 Lamp_Flash (400).
+The load test position is exact (507.330231,940.087585). The drive test varies a lot today: the committed batch 23
+and 24 builds also fall through the ground at room_ap_048 in some runs.
+Load-test drifts found and fixed: Body_OntoPlane's lookup point is the vtbl+72 matrix's position (out + 36), not
+a buffer of its own; Ai_CarFrame computes k^(dt*m) with fyl2x/f2xm1 kept on the FPU (one asm helper, As_Pow);
+Car_GiveWay reads the RoomInfo's +32 that Road_GetRoadParameters leaves unwritten on one branch (now 0).
+Bisecting: replace a proc's `IFDEF ASM_<GROUP>` in king.masm with `IF 1` to run its asm body alone.
+framework.cpp / vehicle.cpp / effects.cpp now take Water_Draw's, Game_TruckMessage's and Car_WorldEvent's
+addresses directly ($L_ procs converted earlier). Int_Copy (FUN_41d300) arguments are plain ints passed by value.
+Skipped: $L_5c8ae0 (argument pushes shared across its seven cases), $L_5fae60 (a vtable thunk $L_5fb500 inside
+it), FUN_558a30 (trailer only, fastcall leftovers), FUN_4e8ae1, FUN_4fca10, FUN_57eae0, FUN_4f8260, FUN_533590
+(run on into the next proc).

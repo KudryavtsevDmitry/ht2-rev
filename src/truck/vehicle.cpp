@@ -6941,7 +6941,7 @@ extern "C" void FUN_4baf90(); KING_ALIAS("_FUN_4baf90", "_Effect_NewVapor")
 extern "C" void FUN_549bf0(); KING_ALIAS("_FUN_549bf0", "@Obj549bf0_Get@8")
 extern "C" void FUN_549ff0(); KING_ALIAS("_FUN_549ff0", "@CarEffect_Curve@16")
 extern "C" void FUN_5ab710(); KING_ALIAS("_FUN_5ab710", "@Vec3_AddAssign@16")
-ASM_PROC(FUN_549e60)
+extern "C" void FUN_549e60(); KING_ALIAS("_FUN_549e60", "@Lamp_Flash@12")
 ASM_VAR(double, g_fx64b678, $L_64b678)
 ASM_VAR(double, g_fx64b670, $L_64b670)
 ASM_VAR(double, g_fx64b780, $L_64b780)
@@ -7820,7 +7820,7 @@ extern "C" void Vh_RampValue(); KING_ALIAS("_Vh_RampValue", "@Ramp_Value@8")
 extern "C" void Vh_CabHit(); KING_ALIAS("_Vh_CabHit", "@Cab_Hit@20")
 extern "C" void Vh_Advance(); KING_ALIAS("_Vh_Advance", "@Progresses_Advance@24")
 extern "C" void Vh_MulAssign(); KING_ALIAS("_Vh_MulAssign", "@Vec3_MulAssign@16")
-ASM_PROC(FUN_54f040)
+extern "C" void FUN_54f040(); KING_ALIAS("_FUN_54f040", "@Car_GiveWay@8")
 ASM_PROC(FUN_4bb4c0)
 ASM_VAR(float, g_vh64d4e8, $L_64d4e8)
 ASM_VAR(double, g_vh64b5b8, $L_64b5b8)
@@ -11224,3 +11224,1680 @@ int __fastcall Car_HandleEvent(BYTE* s, void*, const int* ev)
 }
 
 } // extern "C"
+
+// === the player's frame (a method at $L_536360)
+
+struct PvPos { DWORD d[8]; };                           // an AI position, passed by value
+struct PvRoom
+{
+    DWORD flags, m_4;
+    double width;
+    const char* module;
+    const char* room;
+    DWORD m_24, m_28, m_32;
+    int m_36, m_40;
+    DWORD m_44;
+};
+struct PvRect { int l, t, r, b; };
+struct PvMat { Vec3 r0, r1, r2, t; };
+
+extern "C" void Pv_InList(); KING_ALIAS("_Pv_InList", "_Car_InList")
+extern "C" void Pv_PostEvent(); KING_ALIAS("_Pv_PostEvent", "@Queue_PostEvent@12")
+extern "C" void Pv_Action(); KING_ALIAS("_Pv_Action", "@Controls_ActionState@12")
+extern "C" void Pv_SetCursor(); KING_ALIAS("_Pv_SetCursor", "_Input_SetCursorPos")
+extern "C" void Pv_ObjReset(); KING_ALIAS("_Pv_ObjReset", "@WorldObj_Reset@8")
+extern "C" void Pv_PlayVolume(); KING_ALIAS("_Pv_PlayVolume", "_Sound_PlayVolume")
+extern "C" void Pv_MousePos(); KING_ALIAS("_Pv_MousePos", "@CGameApp_SetMousePos@16")
+extern "C" void Pv_Chase(); KING_ALIAS("_Pv_Chase", "@Cam_ChaseStep@20")
+extern "C" void Pv_ApplyChecked(); KING_ALIAS("_Pv_ApplyChecked", "_Frame_ApplyChecked")
+extern "C" void Pv_Car556650(); KING_ALIAS("_Pv_Car556650", "@Car_556650@8")
+extern "C" void Pv_ViewMatrix(); KING_ALIAS("_Pv_ViewMatrix", "@Car_ViewMatrix@12")
+extern "C" void Pv_M324(); KING_ALIAS("_Pv_M324", "@SceneObj_Matrix324@12")
+extern "C" void Pv_M1(); KING_ALIAS("_Pv_M1", "@SceneObj_Matrix1@12")
+extern "C" void Pv_M2(); KING_ALIAS("_Pv_M2", "@SceneObj_Matrix2@12")
+extern "C" void Pv_Get800(); KING_ALIAS("_Pv_Get800", "@SceneObj_Get800@8")
+extern "C" void __cdecl Pv_ToAngles(PvMat m, double* a, double* b, double* c, double* d, double* e, double* f);
+KING_ALIAS("_Pv_ToAngles", "_Matrix_ToAngles")
+extern "C" void Pv_FromPose(); KING_ALIAS("_Pv_FromPose", "_Matrix_FromPose")
+extern "C" void Pv_Filter(); KING_ALIAS("_Pv_Filter", "@Filter_Value@4")
+extern "C" void Pv_AddAssign(); KING_ALIAS("_Pv_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Pv_MulAssign(); KING_ALIAS("_Pv_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Pv_HitObject(); KING_ALIAS("_Pv_HitObject", "_Query_HitObject")
+extern "C" void Pv_Sway(); KING_ALIAS("_Pv_Sway", "@Cab_ViewSway@8")
+extern "C" void Pv_SetCamera(); KING_ALIAS("_Pv_SetCamera", "@View_SetCamera@16")
+extern "C" int __stdcall Pv_Light(BYTE* node, Vec3 p, void* fn, int a); KING_ALIAS("_Pv_Light@24", "_Light_Set@24")
+extern "C" void Pv_PositionId(); KING_ALIAS("_Pv_PositionId", "_Ai_GetPositionId")
+extern "C" void __cdecl Pv_RoomInfo(PvPos pos, PvRoom* out); KING_ALIAS("_Pv_RoomInfo", "_Road_GetRoadParameters")
+extern "C" float* __cdecl Pv_Coords(float* out, PvPos pos); KING_ALIAS("_Pv_Coords", "_Ai_GetCoordinatesPos")
+extern "C" void Pv_Gravity(); KING_ALIAS("_Pv_Gravity", "@Cab_FeltGravity@4")
+extern "C" void Pv_Dash(); KING_ALIAS("_Pv_Dash", "@Dash_Prepare@16")
+extern "C" void Pv_CabView(); KING_ALIAS("_Pv_CabView", "@CabView_Update@4")
+extern "C" void Pv_Sparks(); KING_ALIAS("_Pv_Sparks", "_Car_SparkBurst")
+extern "C" void Pv_Sounds(); KING_ALIAS("_Pv_Sounds", "@Vehicle_Sounds@16")
+extern "C" void Pv_Log(); KING_ALIAS("_Pv_Log", "_VehLog_Value")
+extern "C" void Pv_Flush(); KING_ALIAS("_Pv_Flush", "_WarnLog_Flush")
+ASM_FUNC(Pv_533590, FUN_533590)
+ASM_FUNC(Pv_535a70, FUN_535a70)
+ASM_FUNC(Pv_SetText, FUN_4eacce)                        // a dashboard text line (value, name)
+ASM_FUNC(Pv_4de990, FUN_4de990)
+extern "C" void __cdecl Game_TruckMessage(int* m);
+ASM_VAR(BYTE, g_pvControls, $L_6d1db8)
+ASM_VAR(BYTE*, g_pv6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_pv6cec68, $L_6cec68)
+ASM_VAR(BYTE*, g_pv6cec74, $L_6cec74)
+ASM_VAR(int, g_pv696850, $L_696850)                     // the screen size
+ASM_VAR(int, g_pv696854, $L_696854)
+ASM_VAR(float, g_pv696d10, $L_696d10)
+ASM_VAR(int, g_pv696d14, $L_696d14)
+ASM_VAR(BYTE, g_pv6f6968, $L_6f6968)
+ASM_VAR(void*, g_pv6d1cfc, $L_6d1cfc)
+ASM_VAR(BYTE*, g_pv696cb0, $L_696cb0)
+ASM_VAR(int, g_pv672d7c, $L_672d7c)
+ASM_VAR(BYTE*, g_pv6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_pv696cb8, $L_696cb8)
+ASM_VAR(char, g_pv696cbc, $L_696cbc)
+ASM_VAR(Vec3, g_pv696740, $L_696740)
+ASM_VAR(Matrix, g_pv6969d0, $L_6969d0)
+ASM_VAR(Matrix, g_pv696b98, $L_696b98)
+ASM_VAR(Matrix, g_pv6969a0, $L_6969a0)
+ASM_VAR(int, g_pv68b990, $L_68b990)
+ASM_VAR(Vec3, g_pvAhead, $L_702620)
+ASM_VAR(Vec3, g_pvUp, $L_702630)
+ASM_VAR(Vec3, g_pv702640, $L_702640)
+ASM_VAR(Vec3, g_pvEye, $L_702650)
+ASM_VAR(float, g_pv6d1830, $L_6d1830)                   // a 3x3 rotation
+ASM_VAR(int, g_pv696c70, $L_696c70)                     // the logging switches
+ASM_VAR(int, g_pv696c74, $L_696c74)
+ASM_VAR(int, g_pv672d80, $L_672d80)
+ASM_VAR(DWORD, g_pv696c90, $L_696c90)
+ASM_VAR(DWORD, g_pv696c94, $L_696c94)
+ASM_VAR(int, g_pv6f661c, $L_6f661c)
+ASM_VAR(DWORD, g_pv6f65e0, $L_6f65e0)
+ASM_VAR(DWORD, g_pv6f65e4, $L_6f65e4)
+ASM_VAR(int, g_pv6ef2c0, $L_6ef2c0)
+ASM_VAR(int, g_pv6ef218, $L_6ef218)
+ASM_VAR(double, g_pv6ef2b8, $L_6ef2b8)
+ASM_VAR(double, g_pv6ef210, $L_6ef210)
+ASM_VAR(DWORD, g_pv6f65b8, $L_6f65b8)
+ASM_VAR(DWORD, g_pv6f65bc, $L_6f65bc)
+ASM_VAR(DWORD, g_pv6ef230, $L_6ef230)
+ASM_VAR(DWORD, g_pv6ef234, $L_6ef234)
+ASM_VAR(int, g_pv6ef238, $L_6ef238)
+ASM_VAR(DWORD, g_pv6ef240, $L_6ef240)
+ASM_VAR(DWORD, g_pv6ef244, $L_6ef244)
+ASM_VAR(int, g_pv6ef248, $L_6ef248)
+ASM_VAR(DWORD, g_pv697658, $L_697658)
+ASM_VAR(DWORD, g_pv69765c, $L_69765c)
+ASM_VAR(int, g_pv697660, $L_697660)
+ASM_VAR(char, g_pv66d638, $L_66d638)
+ASM_VAR(char, g_pv66d628, $L_66d628)
+ASM_VAR(double, g_pv64f3d8, $L_64f3d8)
+ASM_VAR(double, g_pv64b5a0, $L_64b5a0)
+ASM_VAR(float, g_pv64c968, $L_64c968)
+ASM_VAR(double, g_pv64d378, $L_64d378)
+ASM_VAR(float, g_pv64f3cc, $L_64f3cc)
+ASM_VAR(float, g_pv64f3c8, $L_64f3c8)
+ASM_VAR(double, g_pv64b8f8, $L_64b8f8)
+ASM_VAR(float, g_pv64c250, $L_64c250)
+ASM_VAR(double, g_pv64b668, $L_64b668)
+ASM_VAR(double, g_pv64d318, $L_64d318)
+ASM_VAR(double, g_pv64b6e0, $L_64b6e0)
+ASM_VAR(double, g_pv64d0f0, $L_64d0f0)
+ASM_VAR(float, g_pv678784, $L_678784)
+ASM_VAR(float, g_pv64d990, $L_64d990)
+ASM_VAR(double, g_pv64f3c0, $L_64f3c0)
+ASM_VAR(double, g_pv64b730, $L_64b730)
+ASM_VAR(float, g_pv64c41c, $L_64c41c)
+ASM_VAR(float, g_pv64f3bc, $L_64f3bc)
+ASM_VAR(char, g_pv678f40, $L_678f40)
+ASM_VAR(char, g_pv678f28, $L_678f28)
+ASM_VAR(char, g_pv678f10, $L_678f10)
+ASM_VAR(char, g_pv678ef8, $L_678ef8)
+ASM_VAR(char, g_pv678eec, $L_678eec)
+ASM_VAR(char, g_pv678ee0, $L_678ee0)
+ASM_VAR(char, g_pv678ed4, $L_678ed4)
+ASM_VAR(char, g_pv678ec8, $L_678ec8)
+ASM_VAR(char, g_pv678ea4, $L_678ea4)
+ASM_VAR(char, g_pv678e9c, $L_678e9c)
+ASM_VAR(char, g_pv678e5c, $L_678e5c)
+ASM_VAR(char, g_pv678e50, $L_678e50)
+ASM_VAR(char, g_pv678e3c, $L_678e3c)
+ASM_VAR(char, g_pv678e2c, $L_678e2c)
+ASM_VAR(char, g_pv678e14, $L_678e14)
+ASM_VAR(char, g_pv678e08, $L_678e08)
+ASM_VAR(char, g_pv678df4, $L_678df4)
+ASM_VAR(char, g_pv678de4, $L_678de4)
+ASM_VAR(char, g_pv678dd4, $L_678dd4)
+ASM_VAR(char, g_pv678db4, $L_678db4)
+ASM_VAR(char, g_pv678da0, $L_678da0)
+ASM_VAR(char, g_pv678d80, $L_678d80)
+ASM_VAR(char, g_pv678d68, $L_678d68)
+ASM_VAR(char, g_pv678d50, $L_678d50)
+ASM_VAR(char, g_pv678d20, $L_678d20)
+ASM_VAR(char, g_pv678cfc, $L_678cfc)
+ASM_VAR(char, g_pv678cec, $L_678cec)
+ASM_VAR(char, g_pv678cd0, $L_678cd0)
+ASM_VAR(char, g_pv678cb0, $L_678cb0)
+ASM_VAR(char, g_pv678c9c, $L_678c9c)
+ASM_VAR(char, g_pv678c84, $L_678c84)
+ASM_VAR(char, g_pv678c74, $L_678c74)
+ASM_VAR(char, g_pv678c5c, $L_678c5c)
+ASM_VAR(char, g_pv678c44, $L_678c44)
+ASM_VAR(char, g_pv678c28, $L_678c28)
+ASM_VAR(char, g_pv678c0c, $L_678c0c)
+ASM_VAR(char, g_pv678bec, $L_678bec)
+ASM_VAR(char, g_pv678bcc, $L_678bcc)
+ASM_VAR(char, g_pv678bac, $L_678bac)
+ASM_VAR(char, g_pv678b90, $L_678b90)
+
+static int Pv_Act(int i)
+{
+    return CallThis<int>(Pv_Action, &g_pvControls, i);
+}
+
+static void Pv_Centre()
+{
+    CallC(Pv_SetCursor, g_pv696850 / 2, g_pv696854 / 2);
+}
+
+static void Pv_Out(const char* t)
+{
+    CallC(Pv_Log, t);
+}
+
+static const Matrix* Pv_Mat1(BYTE* car, Matrix* out)
+{
+    return CallThis<const Matrix*>(Pv_M1, car + 16, out);
+}
+
+static PvMat Pv_AsMat(const Matrix& m)
+{
+    return *(const PvMat*)&m;
+}
+
+extern "C" {
+
+// [$L_536360] player s's frame: the car (+616) checked, the view zoom (+1396 by actions 26 / 27) and the free camera
+// (+1400, action 20) handled, the cab's dials and the time-out of a stopped cab; then the camera: chasing in the
+// free mode (with the view's frame and size), else the car's view with its sway and turning look, the light at
+// the camera, the AI position of the car recorded (+204 / +216 / +228) when near its road; then the cab's
+// gravity, the dashboard, the sparks, the sounds, and the debug logs
+void __fastcall Player_Frame(BYTE* s, void*)
+{
+    BYTE* car = CallC<BYTE*>(Pv_InList, F(BYTE*, s, 616));
+    F(BYTE*, s, 616) = car;
+    if (!car)
+    {
+        CallThis(Pv_PostEvent, s, 1);
+        return;
+    }
+    float ft = (float)F(double, F(BYTE*, s, 32), 2960);
+    int lag = Game_FrameTime() < g_pv64f3d8 ? 1 : 0;
+    if (!F(int, s, 1400))
+    {
+        // the zoom steps
+        if (!F(int, s, 1396))
+            F(int, s, 108) = F(int, s, 16);
+        if ((Pv_Act(26) || Pv_Act(27)) && F(int, g_pv6cec6c, 1300) <= 1)
+            Pv_Centre();
+        if (Pv_Act(26))
+        {
+            int v = F(int, s, 1396);
+            if (v < 0)
+                F(int, s, 1396) = 0;
+            else if (!v || F(int, s, 16) - F(int, s, 108) > lag)
+            {
+                F(int, s, 108) = F(int, s, 16);
+                F(int, s, 1396) = v + 1;
+            }
+        }
+        else if (Pv_Act(27))
+        {
+            int v = F(int, s, 1396);
+            if (v > 0)
+                F(int, s, 1396) = 0;
+            else if (!v || F(int, s, 16) - F(int, s, 108) > lag)
+            {
+                F(int, s, 108) = F(int, s, 16);
+                F(int, s, 1396) = v - 1;
+            }
+        }
+        else
+        {
+            int v = F(int, s, 1396);
+            F(int, s, 1396) = v == 2 ? 1 : v != -2 ? 0 : -1;
+        }
+        if (F(int, s, 1396) > 2)
+            F(int, s, 1396) = 2;
+        if (F(int, s, 1396) < -2)
+            F(int, s, 1396) = -2;
+    }
+    else
+    {
+        g_pv696d10 = 0;
+        g_pv696d14 = 0;
+        F(int, s, 1396) = 0;
+    }
+    // the free camera's switch
+    if ((F(BYTE, s, 1404) & 2) && Pv_Act(20) == 1)
+    {
+        if (!F(int, s, 1400))
+        {
+            F(int, s, 1400) = 1;
+            if (F(int, g_pv6cec6c, 1300) <= 1)
+                Pv_Centre();
+            CallThis(Pv_ObjReset, &g_pv6f6968);
+        }
+        else
+        {
+            F(int, s, 1400) = 0;
+            g_pv696d14 = 1;
+            if (F(int, g_pv6cec6c, 1300) <= 1)
+                Pv_Centre();
+        }
+        F(int, g_pv6cec6c, 1352) = F(int, s, 1400);
+    }
+    // the cab's dials and its time-out
+    car = F(BYTE*, s, 616);
+    if (car && F(BYTE*, car, 21600))
+    {
+        BYTE* c = F(BYTE*, car, 21600);
+        F(float, c, 10020) = (float)(F(short, g_pv6cec74, 388) * g_pv64b5a0);
+        c = F(BYTE*, F(BYTE*, s, 616), 21600);
+        F(float, c, 10024) = (float)(F(short, g_pv6cec74, 390) * g_pv64b5a0);
+        F(float, F(BYTE*, F(BYTE*, s, 616), 21600), 10084) = 0.3f;
+        c = F(BYTE*, F(BYTE*, s, 616), 21600);
+        if (!F(int, c, 13124) && F(int, s, 1400) == 2)
+        {
+            F(int, s, 1400) = 0;
+            F(int, g_pv6cec6c, 1352) = 0;
+        }
+        c = F(BYTE*, F(BYTE*, s, 616), 21600);
+        if (F(int, c, 13124))
+        {
+            if (Game_Time() < F(float, s, 44))
+            {
+                F(float, s, 44) = (float)Game_Time();
+                if (F(BYTE, s, 1404) & 16)
+                    CallC(Pv_PlayVolume, g_pv6d1cfc, 0.3f);
+            }
+            int left = 1 - (int)((Game_Time() - F(float, s, 44)) * g_pv64c968);
+            F(int, s, 1392) = left;
+            if (left > 100000 || left < 0)
+            {
+                F(int, s, 1392) = 0;
+                CallThis(Pv_533590, s, 1);
+                BYTE* app = F(BYTE*, s, 36);
+                CallThis(Pv_MousePos, app, F(int, app, 256) / 2, F(int, app, 260) / 2);
+            }
+        }
+        else
+        {
+            F(float, s, 44) = 1000000.0f;
+            F(int, s, 1392) = 0;
+        }
+    }
+    if (F(BYTE*, s, 616))
+    {
+        g_pv696d10 = (float)Camera_ViewAngle();
+        car = F(BYTE*, s, 616);
+        Vec3 vel = F(Vec3, car, 3316);
+        Matrix* cam = (Matrix*)(s + 1424);
+        BYTE* node;
+        Matrix A, B, C;
+        if (F(int, s, 1400))
+        {
+            // the free camera
+            Vec3 old = F(Vec3, s, 1460);
+            node = CallThis<BYTE*>(Pv_Chase, &g_pv6f6968, cam, 0.85);
+            double dx = (double)F(float, s, 1460) - old.x;
+            float dy = (float)((double)F(float, s, 1464) - old.y);
+            float dz = (float)((double)F(float, s, 1468) - old.z);
+            vel.x = (float)(dx / ft);
+            vel.y = (float)(dy / (double)ft);
+            vel.z = (float)(dz / (double)ft);
+            car = F(BYTE*, s, 616);
+            CallVirt(car, 100);
+            memcpy(s + 1520, &g_identity, 48);
+            F(int, s, 1616) = 0;
+            F(Vec3, s, 1620) = g_pvEye;
+            memcpy(s + 1568, &g_identity, 48);
+            BYTE* app = F(BYTE*, s, 36);
+            int w = F(int, app, 256), h = F(int, app, 260);
+            PvRect rc = {0, g_pv672d7c, w, h};
+            CallVirt(F(BYTE*, s, 32), 44, rc);
+            BYTE* X = F(BYTE*, g_pv696cb0, 4860);
+            if (X)
+            {
+                double a = h * g_pv64d378 / w;
+                X[40] &= ~1;
+                float af = (float)a;
+                float sc = w < 640 ? (float)(w * (double)g_pv64f3cc) : 1.0f;
+                double ux = g_pvUp.x * (double)af;
+                float uy = (float)(g_pvUp.y * (double)af), uz = (float)(g_pvUp.z * (double)af);
+                float ny = -g_pv702640.y, nz = -g_pv702640.z;
+                double tx = -(double)g_pv702640.x - ux;
+                float ty = (float)((double)ny - uy), tz = (float)((double)nz - uz);
+                Vec3 T;
+                T.x = (float)(tx * g_pv64f3c8);
+                T.y = (float)(ty * (double)g_pv64f3c8);
+                T.z = (float)(tz * (double)g_pv64f3c8);
+                if (sc < g_pv64b8f8 || sc < g_pv64c250)
+                {
+                    if (sc < g_pv64b8f8)
+                        *(DWORD*)&sc = 1059648963;
+                    Vec3 t;
+                    CallThis(Pv_MulAssign, &T, &t, sc);
+                    T.y = (float)((sc - (double)g_pv64c250) * g_pv64b668);
+                }
+                Matrix_Multiply(&B, Matrix_Translation(&A, T), cam);
+                CallC(Pv_ApplyChecked, F(BYTE*, g_pv696cb0, 4872), 0, &B);
+            }
+            CallThis(Pv_SetText, s + 376, 0.0f, &g_pv678f40);
+            CallThis(Pv_SetText, s + 408, 0.0f, &g_pv678f28);
+        }
+        else
+        {
+            // the car's view
+            CallVirt(car, 104);
+            CallThis<float>(Pv_Car556650, F(BYTE*, s, 616));
+            CallThis(Pv_535a70, s);
+            memcpy(s + 1568, CallC<const Matrix*>(Pv_4de990, &A, 0), 48);
+            CallThis(Pv_ViewMatrix, s, &B);
+            Matrix V;
+            CallThis(Pv_M324, F(BYTE*, s, 616) + 16, &V);
+            *cam = *Matrix_Multiply(&A, &B, (const Matrix*)(s + 520));
+            float cosA = (float)x87_fabs(x87_cos(g_pv696d10));
+            if (F(DWORD, g_pv6d2078, 1404) & 0x100)
+            {
+                // the turning look
+                double p[6];
+                Pv_ToAngles(Pv_AsMat(V), &p[0], &p[1], &p[2], &p[3], &p[4], &p[5]);
+                CallThis(Pv_SetText, s + 376, (float)(p[5] * g_pv64d318), &g_pv678f10);
+                CallThis(Pv_SetText, s + 408, (float)(p[4] * g_pv64d318), &g_pv678ef8);
+                float b = (float)(p[4] - CallThis<float>(Pv_Filter, s + 408) * (double)cosA);
+                double c = ((double)cosA + g_pv64c250) * p[5] * g_pv64b6e0;
+                double c2 = c - CallThis<float>(Pv_Filter, s + 376) * (double)cosA * g_pv64b6e0;
+                memcpy(&V, CallC<const Matrix*>(Pv_FromPose, &C, p[0], p[1], p[2], p[3], (double)b, c2), 48);
+            }
+            // the car's spin added to its speed
+            const float* Q = (const float*)(s + 1460);
+            const float* W = (const float*)(F(BYTE*, s, 616) + 3328);
+            double v0 = (double)Q[2] * W[1] - (double)W[2] * Q[1];
+            double v1 = (double)W[2] * Q[0] - (double)Q[2] * W[0];
+            double v2 = (double)W[0] * Q[1] - (double)Q[0] * W[1];
+            Vec3 r, t;
+            r.x = (float)(v2 * V.m[6] + v1 * V.m[3] + V.m[0] * v0);
+            r.y = (float)(v2 * V.m[7] + v1 * V.m[4] + v0 * V.m[1]);
+            r.z = (float)(v2 * V.m[8] + v1 * V.m[5] + v0 * V.m[2]);
+            CallThis(Pv_AddAssign, &vel, &t, &r);
+            *cam = *Matrix_Multiply(&C, cam, &V);
+            car = F(BYTE*, s, 616);
+            node = CallC<BYTE*>(Pv_HitObject, CallThis<BYTE*>(Pv_Get800, car + 16), &Pv_Mat1(car, &C)->m[9], s + 1460);
+            if (!node)
+                node = CallThis<BYTE*>(Pv_Get800, F(BYTE*, s, 616) + 16);
+            BYTE* X = F(BYTE*, g_pv696cb0, 4860);
+            if (X)
+                X[40] |= 1;
+            CallThis(Pv_Sway, g_pv696cb0);
+        }
+        CallThis(Pv_SetCamera, F(BYTE*, s, 32), node, cam);
+        memcpy(s + 1472, Matrix_Inverse(&A, cam), 48);
+        BYTE* was = g_pv696cb8;
+        g_pv696b98 = g_pv6969d0;
+        g_pv6969d0 = *cam;
+        g_pv6969a0 = *(Matrix*)(s + 1472);
+        if (was != node)
+            sprintf(&g_pv696cbc, F(char*, node, 12));
+        g_pv696cb8 = node;
+        g_pv696740 = vel;
+        // the light at the camera
+        const float* M = (const float*)(s + 520);
+        double ux = -g_pvUp.x, uy = -g_pvUp.y, uz = -g_pvUp.z;
+        Vec3 L;
+        L.x = (float)(uz * M[6] + uy * M[3] + ux * M[0] + M[9]);
+        L.y = (float)(ux * M[1] + uz * M[7] + uy * M[4] + M[10]);
+        L.z = (float)(ux * M[2] + uz * M[8] + uy * M[5] + M[11]);
+        car = F(BYTE*, s, 616);
+        const float* Wm = CallThis<const Matrix*>(Pv_M324, car + 16, &A)->m;
+        Vec3 Lw;
+        Lw.x = (float)((double)L.z * Wm[6] + (double)L.y * Wm[3] + (double)L.x * Wm[0] + Wm[9]);
+        Lw.y = (float)((double)L.x * Wm[1] + (double)L.z * Wm[7] + (double)L.y * Wm[4] + Wm[10]);
+        Lw.z = (float)((double)L.x * Wm[2] + (double)L.z * Wm[8] + (double)L.y * Wm[5] + Wm[11]);
+        CallC(Pv_HitObject, CallThis<BYTE*>(Pv_Get800, car + 16), &Pv_Mat1(car, &A)->m[9], &Lw);
+        Pv_Light(CallThis<BYTE*>(Pv_Get800, F(BYTE*, s, 616) + 16), Lw, (void*)Game_TruckMessage, 0);
+        Pv_Light(F(BYTE*, F(BYTE*, s, 32), 528), Lw, (void*)Game_TruckMessage, 0);
+        // the car's AI position, when near its road
+        car = F(BYTE*, s, 616);
+        BYTE* cab = F(BYTE*, car, 21600);
+        if (cab && !F(int, cab, 13124) && F(int, car, 20636) != g_pv68b990)
+        {
+            PvPos pid;
+            CallC(Pv_PositionId, &pid, F(int, car, 20636));
+            PvRoom info;
+            info.flags = 0;
+            info.width = 0;
+            info.module = &g_pv66d638;
+            info.room = &g_pv66d628;
+            info.m_24 = 0;
+            info.m_28 = 0;
+            info.m_36 = -1;
+            info.m_40 = -1;
+            if (pid.d[0] != (DWORD)-1)
+            {
+                Pv_RoomInfo(pid, &info);
+                float pos[3];
+                Pv_Coords(pos, pid);
+                const float* m1 = Pv_Mat1(F(BYTE*, s, 616), &A)->m;
+                Vec3 d;
+                d.x = (float)((double)pos[0] - m1[9]);
+                d.y = (float)((double)pos[1] - m1[10]);
+                d.z = (float)((double)pos[2] - m1[11]);
+                double len = Vec3_Length(&d);
+                car = F(BYTE*, s, 616);
+                if (F(float, F(BYTE*, car, 21600), 13100) * g_pv64d0f0 > len - info.width)
+                {
+                    m1 = Pv_Mat1(car, &A)->m;
+                    const Vec3& a = g_pvAhead;
+                    F(float, s, 216) = (float)((double)a.z * m1[6] + (double)a.y * m1[3] + (double)a.x * m1[0]);
+                    F(float, s, 220) = (float)((double)a.x * m1[1] + (double)a.z * m1[7] + (double)a.y * m1[4]);
+                    F(float, s, 224) = (float)((double)a.x * m1[2] + (double)a.z * m1[8] + (double)a.y * m1[5]);
+                    F(Vec3, s, 204) = *(const Vec3*)&Pv_Mat1(F(BYTE*, s, 616), &A)->m[9];
+                    strcpy((char*)(s + 228), F(char*, CallThis<BYTE*>(Pv_Get800, F(BYTE*, s, 616) + 16), 12));
+                }
+            }
+        }
+    }
+    // the cab, the dashboard, the sparks and the sounds
+    CallThis(Pv_Gravity, s);
+    int snd = 0;
+    if (F(BYTE*, s, 616))
+    {
+        if (g_pv6cec68)
+            CallThis(Pv_Dash, s, 0, 0);
+        else
+            CallThis(Pv_CabView, s);
+        if (F(BYTE*, s, 616) && !(Game_Time() < F(float, s, 468)))
+        {
+            float until = (float)((double)g_pv678784 + F(float, s, 468));
+            if (!(Game_Time() > until))
+                CallC(Pv_Sparks, F(BYTE*, s, 616), s + 456);
+        }
+    }
+    BYTE sndBuf[244];
+    if (F(BYTE, s, 1404) & 16)
+        CallThis(Pv_Sounds, s, sndBuf, &snd);
+    // the debug logs
+    car = F(BYTE*, s, 616);
+    Matrix M1;
+    double ang[6];
+    Pv_ToAngles(Pv_AsMat(*Pv_Mat1(car, &M1)), &ang[0], &ang[1], &ang[2], &ang[3], &ang[4], &ang[5]);
+    float k0 = (float)(g_pvUp.x * (double)g_pv64d990);
+    float k1 = (float)(g_pvUp.y * (double)g_pv64d990);
+    float k2 = (float)(g_pvUp.z * (double)g_pv64d990);
+    Vec3 V;
+    V.x = k0;
+    V.y = k1;
+    V.z = k2;
+    car = F(BYTE*, s, 616);
+    if (!F(int, s, 1400) && car && F(BYTE*, car, 21600))
+    {
+        Vec3 a = F(Vec3, car, 468), b = F(Vec3, car, 432);
+        double dx = (double)b.x - a.x;
+        float dy = (float)((double)b.y - a.y), dz = (float)((double)b.z - a.z);
+        float vy = (float)(dy / (double)ft), vz = (float)(dz / (double)ft);
+        Vec3 p;
+        p.x = (float)(dx / ft + k0);
+        p.y = (float)((double)k1 + vy);
+        p.z = (float)((double)k2 + vz);
+        const float* m2 = CallThis<const Matrix*>(Pv_M2, car + 16, &M1)->m;
+        V.x = (float)((double)p.z * m2[6] + (double)p.y * m2[3] + (double)p.x * m2[0]);
+        V.y = (float)((double)p.x * m2[1] + (double)p.z * m2[7] + (double)p.y * m2[4]);
+        V.z = (float)((double)p.x * m2[2] + (double)p.z * m2[8] + (double)p.y * m2[5]);
+        car = F(BYTE*, s, 616);
+        BYTE* c = F(BYTE*, car, 21600);
+        if (!F(int, c, 13124) && !F(int, car, 3480))
+        {
+            // relative to the cab's mounting
+            const float* M5 = (const float*)(s + 520);
+            const Vec3& E = g_pvEye;
+            double ex = (double)E.z * M5[6] + (double)E.y * M5[3] + (double)E.x * M5[0] + M5[9];
+            double ey = (double)E.x * M5[1] + (double)E.z * M5[7] + (double)E.y * M5[4] + M5[10];
+            double ez = (double)E.x * M5[2] + (double)E.z * M5[8] + (double)E.y * M5[5] + M5[11];
+            Vec3 k = F(Vec3, c, 10868);
+            const float* N = (const float*)(car + 708);
+            float fx = (float)(N[0] * ex + N[6] * ez + N[3] * ey + N[9]);
+            float fy = (float)(N[7] * ez + N[4] * ey + ex * N[1] + N[10]);
+            double fz = N[8] * ez + N[5] * ey + ex * N[2] + N[11];
+            float gx = (float)((double)k.y * fz - (double)k.z * fy);
+            double gy = (double)fx * k.z - (double)k.x * fz;
+            double gz = (double)k.x * fy - (double)fx * k.y;
+            float hx = (float)(gy * k.z - gz * k.y);
+            float hy = (float)((double)k.x * gz - (double)gx * k.z);
+            double hz = (double)gx * k.y - (double)k.x * gy;
+            float ny = -F(float, c, 13232), nz = -F(float, c, 13236);
+            V.x = (float)(-(double)F(float, c, 13228) - hx);
+            V.y = (float)((double)ny - hy);
+            V.z = (float)((double)nz - hz);
+        }
+    }
+    double a3 = ang[3] * g_pv64f3c0, a4 = ang[4] * g_pv64f3c0, a5 = ang[5] * g_pv64f3c0;
+    ang[3] = a3;
+    ang[4] = a4;
+    ang[5] = a5;
+    double pose[6];
+    pose[3] = a5;
+    pose[4] = -a4;
+    pose[5] = a3;
+    const float* R = &g_pv6d1830;
+    pose[0] = (double)V.z * R[6] + (double)V.y * R[3] + (double)R[0] * V.x;
+    float ry = (float)((double)V.z * R[7] + (double)V.y * R[4] + (double)V.x * R[1]);
+    float rz = (float)((double)V.z * R[8] + (double)V.y * R[5] + (double)V.x * R[2]);
+    pose[1] = ry;
+    pose[2] = rz;
+    BYTE* g = F(BYTE*, s, 32);
+    char buf[256];
+    if (g_pv696c70 || g_pv696c74)
+    {
+        sprintf(buf, &g_pv678eec, F(double, g, 2968));
+        Pv_Out(buf);
+        g = F(BYTE*, s, 32);
+        if (F(BYTE, g, 2992) & 1)
+        {
+            sprintf(buf, &g_pv678ee0, 0.0);
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678ed4, F(double, F(BYTE*, s, 32), 2960));
+        }
+        else
+        {
+            sprintf(buf, &g_pv678ee0, F(double, g, 2960));
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678ed4, 0.0);
+        }
+        Pv_Out(buf);
+    }
+    if (g_pv672d80)
+    {
+        g = F(BYTE*, s, 32);
+        sprintf(buf, &g_pv678eec, F(double, g, 2968));
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678ec8, g_pv696c90, g_pv696c94);
+        Pv_Out(buf);
+        g = F(BYTE*, s, 32);
+        if (F(BYTE, g, 2992) & 1)
+        {
+            sprintf(buf, &g_pv678ee0, 0.0);
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678ed4, F(double, F(BYTE*, s, 32), 2960) * g_pv64b730);
+        }
+        else
+        {
+            sprintf(buf, &g_pv678ee0, F(double, g, 2960) * g_pv64b730);
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678ed4, 0.0);
+        }
+        Pv_Out(buf);
+    }
+    bool more = false;
+    if (g_pv696c70)
+    {
+        car = F(BYTE*, s, 616);
+        strcpy(buf, F(int, car, 3480) ? &g_pv678ea4 : &g_pv678e9c);
+        Pv_Out(buf);
+        BYTE* c = F(BYTE*, F(BYTE*, s, 616), 21600);
+        DWORD any = 0;
+        for (int i = 0; i < F(int, c, 13120); i++)
+            any |= F(DWORD, c, 15336 + 4 * i);
+        if (any)
+            sprintf(buf, &g_pv678e5c, F(int, c, 15336), F(int, c, 15340), F(int, c, 15344), F(int, c, 15348),
+                    F(int, c, 15352), F(int, c, 15356), F(int, c, 15360), F(int, c, 15364));
+        else
+            strcpy(buf, &g_pv678e50);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678e3c, (double)F(float, F(BYTE*, F(BYTE*, s, 616), 21600), 10012));
+        Pv_Out(buf);
+        more = g_pv696c70 != 0;
+    }
+    if (more || g_pv696c74)
+    {
+        car = F(BYTE*, s, 616);
+        const float* m2 = CallThis<const Matrix*>(Pv_M2, car + 16, &M1)->m;
+        const float* v = (const float*)(F(BYTE*, s, 616) + 3316);
+        sprintf(buf, &g_pv678e2c, (double)v[2] * m2[7] + (double)v[1] * m2[4] + (double)m2[1] * v[0]);
+        Pv_Out(buf);
+        BYTE* c = F(BYTE*, F(BYTE*, s, 616), 21600);
+        sprintf(buf, &g_pv678e14, F(int, c, 13380), F(int, c, 13384), F(int, c, 13388), F(int, c, 13392));
+        Pv_Out(buf);
+        if (g_pv696c70)
+        {
+            car = F(BYTE*, s, 616);
+            m2 = CallThis<const Matrix*>(Pv_M2, car + 16, &M1)->m;
+            car = F(BYTE*, s, 616);
+            const float* u = (const float*)(car + 3316);
+            float lx = (float)((double)m2[3] * u[1] + (double)m2[6] * u[2] + (double)m2[0] * u[0]);
+            float ly = (float)((double)m2[1] * u[0] + (double)m2[4] * u[1] + (double)m2[7] * u[2]);
+            float lz = (float)((double)m2[2] * u[0] + (double)m2[5] * u[1] + (double)m2[8] * u[2]);
+            Vec3 w = F(Vec3, car, 444);
+            double wx = w.x * (double)g_pv64c41c;
+            float wy = (float)(w.y * (double)g_pv64c41c), wz = (float)(w.z * (double)g_pv64c41c);
+            float sx = (float)(wx * g_pv64f3bc), sy = (float)(wy * (double)g_pv64f3bc),
+                  sz = (float)(wz * (double)g_pv64f3bc);
+            c = F(BYTE*, car, 21600);
+            sprintf(buf, &g_pv678e08, F(int, c, 15320));
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678df4, (double)F(float, F(BYTE*, F(BYTE*, s, 616), 21600), 15416));
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678de4, (double)F(float, F(BYTE*, F(BYTE*, s, 616), 21600), 15312));
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678dd4, (double)F(float, F(BYTE*, F(BYTE*, s, 616), 21600), 15420));
+            Pv_Out(buf);
+            c = F(BYTE*, F(BYTE*, s, 616), 21600);
+            sprintf(buf, &g_pv678db4, (double)F(float, c, 13128), (double)F(float, c, 13132),
+                    (double)F(float, c, 13136), (double)F(float, c, 13140));
+            Pv_Out(buf);
+            c = F(BYTE*, F(BYTE*, s, 616), 21600);
+            sprintf(buf, &g_pv678da0, F(int, c, 13420), F(int, c, 13424), F(int, c, 13428), F(int, c, 13432));
+            Pv_Out(buf);
+            c = F(BYTE*, F(BYTE*, s, 616), 21600);
+            sprintf(buf, &g_pv678d80, (double)F(float, c, 13228), (double)F(float, c, 13232),
+                    (double)F(float, c, 13236));
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678d68, (double)lx, (double)ly, (double)lz);
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678d50, (double)sx, (double)sy, (double)sz);
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678d20, pose[0], pose[1], pose[2], pose[3], pose[4], pose[5]);
+            Pv_Out(buf);
+            Pv_Out(F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 13124) ? &g_pv678cfc : &g_pv678cec);
+            Matrix a, b, d;
+            double z = Pv_Mat1(F(BYTE*, s, 616), &a)->m[11];
+            double y = Pv_Mat1(F(BYTE*, s, 616), &b)->m[10];
+            double x = Pv_Mat1(F(BYTE*, s, 616), &d)->m[9];
+            sprintf(buf, &g_pv678cd0, x, y, z);
+            Pv_Out(buf);
+            sprintf(buf, &g_pv678cb0, ang[3], ang[4], ang[5]);
+            Pv_Out(buf);
+        }
+    }
+    if (g_pv672d80)
+    {
+        sprintf(buf, &g_pv678c9c, g_pv6f661c);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678c84, g_pv6f65e0, g_pv6f65e4);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678c74, g_pv6ef2c0 + g_pv6ef218);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678c5c, g_pv6ef2b8 + g_pv6ef210);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678c44, g_pv6f65b8, g_pv6f65bc);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678c28, g_pv6ef230, g_pv6ef234);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678c0c, g_pv6ef238);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678bec, g_pv6ef240, g_pv6ef244);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678bcc, g_pv6ef248);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678bac, g_pv697658, g_pv69765c);
+        Pv_Out(buf);
+        sprintf(buf, &g_pv678b90, g_pv697660);
+        Pv_Out(buf);
+    }
+    CallThis(Pv_PostEvent, s, 1);
+    if (g_pv696c70 || g_pv672d80 || g_pv696c74)
+        CallC(Pv_Flush);
+}
+
+} // extern "C"
+
+// === a lamp's flash (FUN_549e60)
+
+extern "C" void Lf_Start(); KING_ALIAS("_Lf_Start", "_Effect_Start4d9460")
+extern "C" void Lf_Lower(); KING_ALIAS("_Lf_Lower", "@Vehicle_LowerStep@12")
+extern "C" void Lf_M1(); KING_ALIAS("_Lf_M1", "@SceneObj_Matrix1@12")
+ASM_VAR(BYTE, g_lf697f9c, $L_697f9c)
+ASM_VAR(BYTE*, g_lf6cec6c, $L_6cec6c)
+
+extern "C" {
+
+// [FUN_549e60] effect s at time t (newer than +0): the car's (+24) lamp point (type +60) in the world gets a flash,
+// and the car steps lower in a single player game
+void __fastcall Lamp_Flash(int* s, void*, int t)
+{
+    if (s[0] >= t)
+        return;
+    s[0] = t;
+    BYTE* car = (BYTE*)s[6];
+    const float* L = (const float*)(&g_lf697f9c + 2416 * F(int, car, 10420) + 60);
+    Matrix M = F(Matrix, car, 708);
+    const float* m = M.m;
+    Vec3 w;
+    w.x = (float)((double)m[6] * L[2] + (double)m[3] * L[1] + (double)m[0] * L[0] + m[9]);
+    w.y = (float)((double)m[7] * L[2] + (double)m[4] * L[1] + (double)m[1] * L[0] + m[10]);
+    w.z = (float)((double)m[8] * L[2] + (double)m[5] * L[1] + (double)m[2] * L[0] + m[11]);
+    Matrix T;
+    const float* n = CallThis<const Matrix*>(Lf_M1, car + 16, &T)->m;
+    Vec3 v;
+    v.x = (float)((double)w.z * n[6] + (double)w.y * n[3] + (double)w.x * n[0] + n[9]);
+    v.y = (float)((double)w.z * n[7] + (double)w.y * n[4] + (double)w.x * n[1] + n[10]);
+    v.z = (float)((double)w.z * n[8] + (double)w.y * n[5] + (double)w.x * n[2] + n[11]);
+    CallC(Lf_Start, &v, 1);
+    if (F(int, g_lf6cec6c, 1300) <= 1 && !F(int, g_lf6cec6c, 1316))
+        CallThis(Lf_Lower, (BYTE*)s[6], -0.4f);
+}
+
+} // extern "C"
+
+// === the player's controls and debug keys (FUN_53b4c0)
+
+extern "C" void Pc_InList(); KING_ALIAS("_Pc_InList", "_Car_InList")
+extern "C" void Pc_Grip(); KING_ALIAS("_Pc_Grip", "@Wheels_MinGrip@8")
+extern "C" void Pc_Axis(); KING_ALIAS("_Pc_Axis", "@Controls_Axis@12")
+extern "C" void Pc_Action(); KING_ALIAS("_Pc_Action", "@Controls_ActionState@12")
+extern "C" void Pc_Act530100(); KING_ALIAS("_Pc_Act530100", "@Controls_530100@12")
+extern "C" void Pc_Filter(); KING_ALIAS("_Pc_Filter", "@Filter_Value@4")
+extern "C" void Pc_RampPos(); KING_ALIAS("_Pc_RampPos", "@Ramp_Position@8")
+extern "C" void Pc_RampSet(); KING_ALIAS("_Pc_RampSet", "@Ramp_SetPosition@12")
+extern "C" void Pc_M1(); KING_ALIAS("_Pc_M1", "@SceneObj_Matrix1@12")
+extern "C" void Pc_Get800(); KING_ALIAS("_Pc_Get800", "@SceneObj_Get800@8")
+extern "C" void Pc_Make(); KING_ALIAS("_Pc_Make", "_AI_Make449c40")
+extern "C" void Pc_PosIdRV(); KING_ALIAS("_Pc_PosIdRV", "_Ai_GetPositionIdRV")
+extern "C" float* __cdecl Pc_Coords(float* out, PvPos pos); KING_ALIAS("_Pc_Coords", "_Ai_GetCoordinatesPos")
+extern "C" void Pc_53b3c0(); KING_ALIAS("_Pc_53b3c0", "@King_53b3c0@12")
+extern "C" void Pc_5498b0(); KING_ALIAS("_Pc_5498b0", "@Obj5498b0_Init@12")
+extern "C" void Pc_Toggle(); KING_ALIAS("_Pc_Toggle", "@Body_ToggleMode@8")
+extern "C" void Pc_Probe(); KING_ALIAS("_Pc_Probe", "@Body_ProbeGround@12")
+extern "C" void Pc_AddAssign(); KING_ALIAS("_Pc_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Pc_54c880(); KING_ALIAS("_Pc_54c880", "@Car_Set54c880@16")
+extern "C" void Pc_Chase6(); KING_ALIAS("_Pc_Chase6", "@Copter_Chase6@12")
+extern "C" void Pc_Chase10(); KING_ALIAS("_Pc_Chase10", "@Copter_Chase10@12")
+extern "C" void Pc_Flasher(); KING_ALIAS("_Pc_Flasher", "@CarEffect_StartFlasher@4")
+extern "C" void Pc_NewEffect(); KING_ALIAS("_Pc_NewEffect", "_Effect_New4daf40")
+extern "C" void Pc_557000(); KING_ALIAS("_Pc_557000", "@Car_557000@8")
+extern "C" void Pc_Working(); KING_ALIAS("_Pc_Working", "@Car_WorkingOrder@4")
+extern "C" void Pc_GameTime(); KING_ALIAS("_Pc_GameTime", "_Game_Time")
+extern "C" void __cdecl Cars_DumpHistory();
+ASM_FUNC(Pc_533590, FUN_533590)
+ASM_FUNC(Pc_5662f0, FUN_5662f0)
+ASM_FUNC(Pc_SetText, FUN_4eacce)
+ASM_VAR(AsmLabel, g_pcFlashFn, $L_549580)
+ASM_VAR(BYTE, g_pcControls, $L_6d1db8)
+ASM_VAR(int, g_pc6cec68, $L_6cec68)
+typedef int(__cdecl* PcReadInt)();
+typedef float(__cdecl* PcReadFloat)();
+ASM_VAR(PcReadInt, g_pcIn79c, $L_67879c)               // the input readers
+ASM_VAR(PcReadInt, g_pcIn7a0, $L_6787a0)
+ASM_VAR(PcReadInt, g_pcIn7a4, $L_6787a4)
+ASM_VAR(PcReadInt, g_pcIn7a8, $L_6787a8)
+ASM_VAR(PcReadInt, g_pcIn7ac, $L_6787ac)
+ASM_VAR(PcReadInt, g_pcIn7b0, $L_6787b0)
+ASM_VAR(PcReadFloat, g_pcIn7b8, $L_6787b8)
+ASM_VAR(int, g_pc6d2068, $L_6d2068)
+ASM_VAR(int, g_pc6d206c, $L_6d206c)
+ASM_VAR(int, g_pc6d2084, $L_6d2084)
+ASM_VAR(int, g_pc6d2088, $L_6d2088)
+ASM_VAR(int, g_pc6d208c, $L_6d208c)
+ASM_VAR(int, g_pc6d2090, $L_6d2090)
+ASM_VAR(int, g_pc6d2094, $L_6d2094)
+ASM_VAR(int, g_pc6d2098, $L_6d2098)
+ASM_VAR(int, g_pc6d209c, $L_6d209c)
+ASM_VAR(BYTE, g_pcKey1958, $L_6d1958)                  // the debug keys
+ASM_VAR(BYTE, g_pcKey1968, $L_6d1968)
+ASM_VAR(BYTE, g_pcKey196a, $L_6d196a)
+ASM_VAR(BYTE, g_pcKey19a8, $L_6d19a8)
+ASM_VAR(BYTE, g_pcKey19aa, $L_6d19aa)
+ASM_VAR(BYTE, g_pcKey19ac, $L_6d19ac)
+ASM_VAR(BYTE, g_pcKey19ae, $L_6d19ae)
+ASM_VAR(BYTE, g_pcKey19b0, $L_6d19b0)
+ASM_VAR(BYTE, g_pcKey19b2, $L_6d19b2)
+ASM_VAR(BYTE, g_pcKey19b4, $L_6d19b4)
+ASM_VAR(BYTE, g_pcKey19b6, $L_6d19b6)
+ASM_VAR(BYTE, g_pcKey19b8, $L_6d19b8)
+ASM_VAR(BYTE, g_pcKey19ba, $L_6d19ba)
+ASM_VAR(BYTE, g_pcKey19d2, $L_6d19d2)
+ASM_VAR(BYTE, g_pcKey19d4, $L_6d19d4)
+ASM_VAR(BYTE, g_pcKey19d6, $L_6d19d6)
+ASM_VAR(BYTE, g_pcKey19da, $L_6d19da)
+ASM_VAR(BYTE, g_pcKey19dc, $L_6d19dc)
+ASM_VAR(BYTE, g_pcKey19de, $L_6d19de)
+ASM_VAR(BYTE, g_pcKey19e8, $L_6d19e8)
+ASM_VAR(BYTE, g_pcKey19ec, $L_6d19ec)
+ASM_VAR(BYTE, g_pcKey19f6, $L_6d19f6)
+ASM_VAR(BYTE, g_pcKey1abe, $L_6d1abe)
+ASM_VAR(BYTE, g_pcKey1ac2, $L_6d1ac2)
+ASM_VAR(int, g_pc696be4, $L_696be4)
+ASM_VAR(int, g_pc696be8, $L_696be8)
+ASM_VAR(int, g_pc696bec, $L_696bec)
+ASM_VAR(int, g_pc696c64, $L_696c64)
+ASM_VAR(int, g_pc696334, $L_696334)
+ASM_VAR(int, g_pc6796b0, $L_6796b0)
+ASM_VAR(int, g_pc68b990, $L_68b990)
+ASM_VAR(BYTE*, g_pc6d2078, $L_6d2078)
+ASM_VAR(Vec3, g_pcAhead, $L_702620)
+ASM_VAR(Vec3, g_pcUp, $L_702630)
+ASM_VAR(Vec3, g_pcDown, $L_702640)
+ASM_VAR(Vec3, g_pcEye, $L_702650)
+ASM_VAR(char, g_pc679204, $L_679204)
+ASM_VAR(char, g_pc6791f4, $L_6791f4)
+ASM_VAR(double, g_pc64b6e0, $L_64b6e0)
+ASM_VAR(float, g_pc64c250, $L_64c250)
+ASM_VAR(float, g_pc64c264, $L_64c264)
+ASM_VAR(double, g_pc64b788, $L_64b788)
+ASM_VAR(double, g_pc64b5b8, $L_64b5b8)
+ASM_VAR(float, g_pc64c258, $L_64c258)
+ASM_VAR(float, g_pc64c300, $L_64c300)
+ASM_VAR(float, g_pc64c33c, $L_64c33c)
+ASM_VAR(float, g_pc64c304, $L_64c304)
+ASM_VAR(float, g_pc64f40c, $L_64f40c)
+ASM_VAR(float, g_pc64f408, $L_64f408)
+ASM_VAR(float, g_pc64c968, $L_64c968)
+ASM_VAR(float, g_pc64c664, $L_64c664)
+ASM_VAR(float, g_pc64f31c, $L_64f31c)
+ASM_VAR(float, g_pc64c450, $L_64c450)
+ASM_VAR(float, g_pc64d4e8, $L_64d4e8)
+ASM_VAR(float, g_pc64c320, $L_64c320)
+ASM_VAR(float, g_pc64f404, $L_64f404)
+ASM_VAR(float, g_pc64f400, $L_64f400)
+ASM_VAR(float, g_pc64c448, $L_64c448)
+ASM_VAR(float, g_pc64d2f8, $L_64d2f8)
+ASM_VAR(float, g_pc64c408, $L_64c408)
+ASM_VAR(float, g_pc64c748, $L_64c748)
+ASM_VAR(double, g_pc64b678, $L_64b678)
+
+static int Pc_Act(int i)
+{
+    return CallThis<int>(Pc_Action, &g_pcControls, i);
+}
+
+// the car's frame (rows +3352.. as columns) applied to v, plus the velocity +3316
+static Vec3 Pc_Push(BYTE* car, double vx, double vy, double vz)
+{
+    Vec3 X;
+    X.x = (float)((float)(vz * F(float, car, 3376) + vy * F(float, car, 3364) + vx * F(float, car, 3352)) +
+                  (double)F(float, car, 3316));
+    X.y = (float)((float)(vz * F(float, car, 3380) + vy * F(float, car, 3368) + vx * F(float, car, 3356)) +
+                  (double)F(float, car, 3320));
+    X.z = (float)(vz * F(float, car, 3384) + vy * F(float, car, 3372) + vx * F(float, car, 3360) + F(float, car, 3324));
+    return X;
+}
+
+// a debug nudge: the ramp +16112 of the cab stepped back, the car's flip time and direction set, then pushed by v
+static bool Pc_Flip(BYTE* s, BYTE* car, const Vec3& dir, double vx, double vy, double vz)
+{
+    BYTE* ramp = F(BYTE*, car, 21600) + 16112;
+    if (!(CallThis<double>(Pc_RampPos, ramp) > g_pc64c264) && !g_pc6d2098)
+        return false;
+    float p = (float)(CallThis<double>(Pc_RampPos, F(BYTE*, F(BYTE*, s, 616), 21600) + 16112) - g_pc64b5b8);
+    CallThis(Pc_RampSet, F(BYTE*, F(BYTE*, s, 616), 21600) + 16112, p);
+    F(Vec3, s, 456) = dir;
+    F(float, s, 468) = (float)CallC<double>(Pc_GameTime);
+    BYTE* c = F(BYTE*, s, 616);
+    Vec3 X = Pc_Push(c, vx, vy, vz);
+    CallVirt(c + 16, 144, &X, 0);
+    return true;
+}
+
+// whether the car may be flipped at its position: by the player's own height or the road under an AI car
+static bool Pc_FlipAllowed(BYTE* car, float d, bool above, float lim)
+{
+    Matrix t;
+    const float* m = CallThis<const Matrix*>(Pc_M1, car + 16, &t)->m;
+    float px = m[9], py = m[10], pz = m[11];
+    if (g_pc6d2098)
+        return true;
+    bool ok = above ? d > lim : d < lim;
+    if (F(int, car, 20636) == g_pc68b990)
+        return ok && pz < g_pc64c450;
+    int room;
+    CallC(Pc_Make, &room, F(int, CallThis<BYTE*>(Pc_Get800, car + 16), 12));
+    if (room == -1)
+        return false;
+    PvPos pid;
+    CallC(Pc_PosIdRV, &pid, room, px, py, pz);
+    if (pid.d[0] == (DWORD)-1 && pid.d[1] == (DWORD)-1 && *(double*)&pid.d[2] == g_pc64b678 && !pid.d[4] &&
+        !pid.d[5] && !pid.d[6])
+        return false;
+    float c[3];
+    Pc_Coords(c, pid);
+    if (!(above ? d > g_pc64f404 : d < g_pc64d4e8))
+        return false;
+    return (double)pz - c[2] < g_pc64c320;
+}
+
+// a nudge along the car's frame from its +3328 point
+static void Pc_Nudge(BYTE* car, const Vec3& v, double k, bool plus)
+{
+    float ky = (float)(v.y * (double)k), kz = (float)(v.z * (double)k);
+    double kx = v.x * (double)k;
+    Vec3 X;
+    if (plus)
+    {
+        X.x = (float)(kx + F(float, car, 3328));
+        X.y = (float)((double)ky + F(float, car, 3332));
+        X.z = (float)((double)kz + F(float, car, 3336));
+    }
+    else
+    {
+        X.x = (float)((double)F(float, car, 3328) - kx);
+        X.y = (float)((double)F(float, car, 3332) - ky);
+        X.z = (float)((double)F(float, car, 3336) - kz);
+    }
+    CallVirt(car + 16, 148, &X, 0);
+}
+
+static void Pc_Reset(BYTE* s, Matrix* m)
+{
+    BYTE* car = F(BYTE*, s, 616);
+    CallVirt(car, 76, CallThis<BYTE*>(Pc_Get800, car + 16), m, 0);
+    car = F(BYTE*, s, 616);
+    if (F(BYTE*, car, 21600) && CallVirt<int>(car, 4) != 1)
+        CallThis(Pc_54c880, F(BYTE*, s, 616), CallThis<int>(Pc_Get800, F(BYTE*, s, 616) + 16), (int)m);
+    CallVirt(F(BYTE*, s, 616), 92, &g_pcEye);
+    CallVirt(F(BYTE*, s, 616), 96, &g_pcEye);
+}
+
+extern "C" {
+
+// [FUN_53b4c0] player s's controls (+616 car, its cab +21600): the pedals (+9996 throttle, +10000 brake, filtered
+// +280), the steering (+10012, filtered +312, eased by a curve), the buttons, the gear choice (+10054) and the
+// horn; then the debug keys: flips, nudges and resets of the car, the camera modes, the copter's orders, the
+// logs, the flasher; finally the car's working order
+void __fastcall Player_Controls(BYTE* s, void*)
+{
+    if (F(BYTE*, s, 616))
+        F(BYTE*, s, 616) = CallC<BYTE*>(Pc_InList, F(BYTE*, s, 616));
+    BYTE* car = F(BYTE*, s, 616);
+    if (!car)
+        return;
+    BYTE* cab = F(BYTE*, car, 21600);
+    if (!cab)
+        return;
+    F(int, cab, 10076) = g_pc6cec68;
+    if (!F(int, s, 16))
+        return;
+    CallThis<double>(Pc_Grip, F(BYTE*, F(BYTE*, s, 616), 21600));
+    F(int, cab, 10000) = 0;
+    F(int, cab, 9996) = 0;
+    int a = g_pcIn79c();
+    int b = g_pcIn7a0();
+    int c = g_pcIn7a4();
+    F(short, cab, 10004) = (short)a;
+    if (c && F(short, F(BYTE*, F(BYTE*, s, 616), 21600), 10004))
+        F(short, cab, 10004) = 2;
+    F(short, cab, 10006) = (short)b;
+    if (c && b)
+        F(short, cab, 10006) = 2;
+    // the pedals
+    if (g_pc6d2068)
+    {
+        float gas = (float)CallThis<double>(Pc_Axis, &g_pcControls, 2);
+        float brk = (float)CallThis<double>(Pc_Axis, &g_pcControls, 1);
+        CallThis(Pc_SetText, s + 280, gas, &g_pc679204);
+        F(float, cab, 9996) = (float)((CallThis<float>(Pc_Filter, s + 280) + (double)g_pc64c250) * g_pc64b6e0);
+        F(float, cab, 10000) = (float)(((double)brk + g_pc64c250) * g_pc64b6e0);
+    }
+    else
+    {
+        float gas = (float)CallThis<double>(Pc_Axis, &g_pcControls, 2);
+        CallThis(Pc_SetText, s + 280, gas, &g_pc679204);
+        double v = CallThis<float>(Pc_Filter, s + 280);
+        if (!(v < g_pc64c264))
+        {
+            F(float, cab, 9996) = (float)v;
+            F(int, cab, 10000) = 0;
+        }
+        else
+        {
+            F(int, cab, 9996) = 0;
+            F(float, cab, 10000) = (float)-(v * v * v);
+        }
+    }
+    if (!F(BYTE, cab, 9984))
+    {
+        F(short, cab, 10006) = 1;
+        F(float, cab, 10000) = 1.0f;
+    }
+    F(BYTE, cab, 9985) = (BYTE)g_pcIn7b0();
+    // the steering, eased
+    float x = g_pcIn7b8();
+    CallThis(Pc_SetText, s + 312, x, &g_pc6791f4);
+    double fv = CallThis<float>(Pc_Filter, s + 312);
+    double t = x87_sqrt(x87_fabs(x - fv)) * g_pc64b788 + g_pc64b5b8;
+    if (t > g_pc64c250)
+        t = g_pc64c250;
+    double m = ((double)g_pc64c250 - t) * fv + t * x;
+    float mf = (float)m;
+    float am = (float)x87_fabs(m);
+    double ca, cb, cc, add = 0;
+    if (fv < g_pc64c258)
+    {
+        ca = g_pc64c300;
+        cb = g_pc64c33c;
+        cc = g_pc64c304;
+    }
+    else
+    {
+        ca = g_pc64f40c;
+        cb = g_pc64f408;
+        cc = g_pc64c968;
+        add = 2.0f;
+    }
+    double r = ((ca * am + cb) * am + cc) * am + (float)add;
+    if (!(mf > g_pc64c264))
+        r = -r;
+    F(float, cab, 10012) = (float)r;
+    F(BYTE, cab, 9986) = (BYTE)g_pcIn7a8();
+    F(BYTE, cab, 9987) = (BYTE)g_pcIn7ac();
+    // the gear
+    if (F(BYTE, cab, 9984) == 2)
+    {
+        BYTE* cb2 = F(BYTE*, F(BYTE*, s, 616), 21600);
+        if (F(int, cb2, 7188))
+        {
+            int up, dn;
+            if (g_pc6d206c == 1)
+            {
+                up = Pc_Act(10);
+                dn = Pc_Act(11);
+            }
+            else
+            {
+                up = Pc_Act(5);
+                dn = Pc_Act(6);
+            }
+            if (Pc_Act(7))
+                dn = 2;
+            short g;
+            if (up)
+                g = dn ? 21 : 100;
+            else if (dn)
+                g = 20;
+            else if (Pc_Act(17))
+                g = 21;
+            else
+                g = g_pc6d206c == 1 ? 21 : 0;
+            F(short, cab, 10054) = g;
+        }
+        else
+        {
+            int up = Pc_Act(5);
+            int dn = Pc_Act(6);
+            if (Pc_Act(7))
+                dn = 2;
+            if (up)
+            {
+                if (dn)
+                    F(short, cab, 10054) = 21;
+                else
+                    F(short, cab, 10054) = up == 2 ? 22 : 1;
+            }
+            else if (dn)
+                F(short, cab, 10054) = dn == 2 ? 20 : -1;
+            else if (Pc_Act(17))
+                F(short, cab, 10054) = 21;
+            else
+            {
+                int i = 0, n = F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 15324) - 1;
+                for (; i < n; i++)
+                    if (Pc_Act(i + 8))
+                    {
+                        F(short, cab, 10054) = (short)(i + 22);
+                        break;
+                    }
+                if (i == F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 15324) - 1)
+                {
+                    if (Pc_Act(7))
+                        F(short, cab, 10054) = 20;
+                    else if (CallThis<int>(Pc_Act530100, &g_pcControls,
+                                           F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 7188)))
+                        F(short, cab, 10054) = 21;
+                    else
+                        F(short, cab, 10054) = 0;
+                }
+            }
+        }
+    }
+    if (Pc_Act(41))
+    {
+        BYTE* cb2 = F(BYTE*, F(BYTE*, s, 616), 21600);
+        F(int, cb2, 10108) = F(int, cb2, 15488) == 2 ? -1 : 1;
+    }
+    F(short, F(BYTE*, F(BYTE*, s, 616), 21600), 10010) = (short)Pc_Act(22);
+    F(BYTE*, s, 624) = CallC<BYTE*>(Pc_InList, F(BYTE*, s, 624));
+    // the debug flips
+    if (g_pc6d2088 || g_pc6d2098 || g_pc6d2084)
+    {
+        if (g_pcKey19aa && g_pcKey196a)
+        {
+            g_pcKey19aa = 0;
+            BYTE* c2 = F(BYTE*, s, 616);
+            double d = (double)F(float, c2, 3428) * F(float, c2, 3324) + (double)F(float, c2, 3320) * F(float, c2, 3416) +
+                       (double)F(float, c2, 3404) * F(float, c2, 3316);
+            if (d < g_pc64c664)
+            {
+                Vec3 dir = {-g_pcAhead.x, -g_pcAhead.y, -g_pcAhead.z};
+                Pc_Flip(s, c2, dir, g_pcAhead.x * (double)g_pc64c450, g_pcAhead.y * (double)g_pc64c450,
+                        g_pcAhead.z * (double)g_pc64c450);
+            }
+        }
+        if (g_pcKey19ac && g_pcKey196a)
+        {
+            g_pcKey19ac = 0;
+            BYTE* c2 = F(BYTE*, s, 616);
+            double d = (double)F(float, c2, 3324) * F(float, c2, 3428) + (double)F(float, c2, 3320) * F(float, c2, 3416) +
+                       (double)F(float, c2, 3404) * F(float, c2, 3316);
+            if (d > g_pc64f31c)
+            {
+                float ny = -g_pcAhead.y, nz = -g_pcAhead.z;
+                Pc_Flip(s, c2, g_pcAhead, -(double)g_pcAhead.x * g_pc64c450, ny * (double)g_pc64c450,
+                        nz * (double)g_pc64c450);
+            }
+        }
+        for (int k = 0; k < 2; k++)
+        {
+            BYTE& key = k == 0 ? g_pcKey19ae : g_pcKey19b0;
+            if (!key || !g_pcKey196a)
+                continue;
+            key = 0;
+            BYTE* c2 = F(BYTE*, s, 616);
+            float d = (float)((double)F(float, c2, 3324) * F(float, c2, 3432) +
+                              (double)F(float, c2, 3320) * F(float, c2, 3420) +
+                              (double)F(float, c2, 3408) * F(float, c2, 3316));
+            if (!Pc_FlipAllowed(c2, d, k == 1, k == 0 ? g_pc64d4e8 : g_pc64f404))
+                continue;
+            if (k == 0)
+            {
+                Vec3 dir = {-g_pcUp.x, -g_pcUp.y, -g_pcUp.z};
+                double ax = g_pcAhead.x * (double)g_pc64c304;
+                float ay = (float)(g_pcAhead.y * (double)g_pc64c304), az = (float)(g_pcAhead.z * (double)g_pc64c304);
+                double vx = ax + g_pcUp.x;
+                float vy = (float)((double)g_pcUp.y + ay), vz = (float)((double)g_pcUp.z + az);
+                Pc_Flip(s, c2, dir, vx * g_pc64c450, vy * (double)g_pc64c450, vz * (double)g_pc64c450);
+            }
+            else
+                Pc_Flip(s, c2, g_pcUp, g_pcUp.x * (double)g_pc64c968, g_pcUp.y * (double)g_pc64c968,
+                        g_pcUp.z * (double)g_pc64c968);
+        }
+    }
+    if ((g_pc6d208c || g_pc6d2098 || g_pc6d2084) && g_pcKey19b2 && g_pcKey196a)
+    {
+        g_pcKey19b2 = 0;
+        CallThis(Pc_533590, s, 1);
+    }
+    if ((g_pc6d2090 || g_pc6d2098 || g_pc6d2084) && g_pcKey1958)
+    {
+        CallThis(Pc_53b3c0, s, 1065353216);
+        BYTE* c2 = F(BYTE*, s, 616);
+        CallThis(Pc_5498b0, c2 + 21568, c2);
+        CallThis(Pc_RampSet, F(BYTE*, s, 616) + 21360, 1.0f);
+    }
+    if (g_pc6d2094)
+    {
+        F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 10080) = 0;
+        CallThis(Pc_RampSet, F(BYTE*, F(BYTE*, s, 616), 21600) + 16112, 1.0f);
+    }
+    // the camera modes
+    if (g_pc696be8 && g_pcKey1ac2 && g_pcKey1968)
+        g_pc696be8 = g_pc696be8 % 2 + 1;
+    if (g_pc696bec && g_pcKey1ac2 && g_pcKey196a)
+        g_pc696bec = g_pc696bec % 2 + 1;
+    if (g_pc696be4 && g_pcKey1abe && g_pcKey196a)
+        g_pc696be4 = g_pc696be4 % 3 + 1;
+    if (g_pc6d2098 || g_pc6d2084)
+    {
+        if (g_pcKey19b4 && g_pcKey196a)
+        {
+            g_pcKey19b4 = 0;
+            BYTE* c2 = F(BYTE*, s, 616);
+            double d = (double)F(float, c2, 3324) * F(float, c2, 3424) + (double)F(float, c2, 3320) * F(float, c2, 3412) +
+                       (double)F(float, c2, 3316) * F(float, c2, 3400);
+            if (d > g_pc64f400)
+            {
+                float ny = -g_pcDown.y, nz = -g_pcDown.z;
+                Vec3 X = Pc_Push(c2, -(double)g_pcDown.x * g_pc64c450, ny * (double)g_pc64c450, nz * (double)g_pc64c450);
+                CallVirt(c2 + 16, 144, &X, 0);
+            }
+        }
+        if (g_pcKey19b6 && g_pcKey196a)
+        {
+            g_pcKey19b6 = 0;
+            BYTE* c2 = F(BYTE*, s, 616);
+            double d = (double)F(float, c2, 3324) * F(float, c2, 3424) + (double)F(float, c2, 3320) * F(float, c2, 3412) +
+                       (double)F(float, c2, 3316) * F(float, c2, 3400);
+            if (d < g_pc64c448)
+            {
+                Vec3 X = Pc_Push(c2, g_pcDown.x * (double)g_pc64c450, g_pcDown.y * (double)g_pc64c450,
+                                 g_pcDown.z * (double)g_pc64c450);
+                CallVirt(c2 + 16, 144, &X, 0);
+            }
+        }
+        if (g_pcKey19d4)
+            CallThis(Pc_RampSet, F(BYTE*, F(BYTE*, s, 616), 21600) + 16112, 1.0f);
+        if (g_pcKey1abe && !g_pc696be4 && g_pcKey196a)
+            g_pc696be4 = 2;
+        if (g_pcKey1ac2)
+        {
+            if (!g_pc696be8 && g_pcKey1968 && !g_pcKey196a)
+                g_pc696be8 = 2;
+            if (!g_pc696bec && g_pcKey196a && !g_pcKey1968)
+                g_pc696bec = 2;
+        }
+        BYTE* c2 = F(BYTE*, s, 616);
+        if (g_pcKey19d2)
+        {
+            if (g_pcKey196a)
+                Pc_Nudge(F(BYTE*, s, 616), g_pcAhead, g_pc64d2f8, true);
+            if (g_pcKey19d2 && g_pcKey1968)
+                Pc_Nudge(F(BYTE*, s, 616), g_pcAhead, g_pc64d2f8, false);
+        }
+        if (g_pcKey19ec)
+        {
+            if (g_pcKey196a)
+                Pc_Nudge(F(BYTE*, s, 616), g_pcUp, g_pc64c408, true);
+            if (g_pcKey19ec && g_pcKey1968)
+                Pc_Nudge(F(BYTE*, s, 616), g_pcUp, g_pc64c408, false);
+        }
+        if (g_pcKey19f6)
+        {
+            Vec3 d2;
+            d2.x = (float)((double)g_pcDown.x + g_pcDown.x);
+            d2.y = (float)((double)g_pcDown.y + g_pcDown.y);
+            d2.z = (float)((double)g_pcDown.z + g_pcDown.z);
+            if (g_pcKey196a)
+                Pc_Nudge(F(BYTE*, s, 616), d2, 1.0, true);
+            if (g_pcKey19f6 && g_pcKey1968)
+                Pc_Nudge(F(BYTE*, s, 616), d2, 1.0, false);
+        }
+        (void)c2;
+    }
+    if (!g_pc6d209c)
+        return;
+    g_pc6d2098 = 1;
+    if (g_pcKey19d6 && g_pcKey196a)
+    {
+        g_pc696c64 = !g_pc696c64;
+        g_pc696334 = g_pc696c64;
+    }
+    if (g_pcKey19e8 && g_pcKey196a)
+        Cars_DumpHistory();
+    if (g_pcKey19dc && g_pcKey196a)
+        g_pc6796b0 |= 1;
+    if (g_pcKey19de && g_pcKey196a)
+        g_pc6796b0 &= ~1;
+    if (g_pcKey19a8 && g_pcKey196a)
+        CallThis(Pc_Toggle, F(BYTE*, F(BYTE*, s, 616), 21600));
+    if (g_pcKey19b8 && g_pcKey196a)
+    {
+        // set the car upright where it is
+        g_pcKey19b8 = 0;
+        F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 13124) = 1;
+        CallThis(Pc_Probe, F(BYTE*, s, 616) + 16, 0);
+        Matrix m;
+        CallThis(Pc_M1, F(BYTE*, s, 616) + 16, &m);
+        Vec3 v, tmp;
+        v.x = (float)(g_pcUp.x * (double)g_pc64c748);
+        v.y = (float)(g_pcUp.y * (double)g_pc64c748);
+        v.z = (float)(g_pcUp.z * (double)g_pc64c748);
+        CallThis(Pc_AddAssign, &m.m[9], &tmp, &v);
+        Pc_Reset(s, &m);
+    }
+    if (g_pcKey19ba && g_pcKey196a)
+    {
+        // and turned over
+        g_pcKey19ba = 0;
+        F(int, F(BYTE*, F(BYTE*, s, 616), 21600), 13124) = 1;
+        Matrix m1, R, m;
+        CallThis(Pc_M1, F(BYTE*, s, 616) + 16, &m1);
+        Matrix_Multiply(&m, Matrix_RotationX(&R, -1.5707964f), &m1);
+        Pc_Reset(s, &m);
+    }
+    BYTE* p624 = F(BYTE*, s, 624);
+    if (p624 && F(BYTE*, p624, 21604))
+    {
+        BYTE* cp = F(BYTE*, p624, 21604);
+        if (g_pcKey19b6)
+            CallThis(Pc_5662f0, cp, 3);
+        if (g_pcKey19b8 && F(int, F(BYTE*, F(BYTE*, s, 624), 21604), 3236) != 6)
+            CallThis(Pc_Chase6, F(BYTE*, F(BYTE*, s, 624), 21604), F(BYTE*, s, 616));
+        if (g_pcKey19ba && F(int, F(BYTE*, F(BYTE*, s, 624), 21604), 3236) != 10)
+            CallThis(Pc_Chase10, F(BYTE*, F(BYTE*, s, 624), 21604), F(BYTE*, s, 616));
+    }
+    if (g_pcKey19da && g_pcKey196a)
+    {
+        if (CallVirt<int>(F(BYTE*, s, 616), 4) == 1)
+        {
+            BYTE* tr = F(BYTE*, F(BYTE*, g_pc6d2078, 616), 21880);
+            CallThis(Pc_Flasher, tr ? tr + 21568 : F(BYTE*, s, 616) + 21568);
+        }
+        else
+            CallC(Pc_NewEffect, F(BYTE*, s, 616), (void*)g_pcFlashFn);
+    }
+    CallThis<float>(Pc_557000, F(BYTE*, s, 616));
+    CallThis<double>(Pc_Working, F(BYTE*, s, 616));
+}
+
+} // extern "C"
+
+// === a car giving way to the one ahead (FUN_54f040)
+
+struct GwRoom
+{
+    DWORD flags, m_4;
+    double width;
+    const char* module;
+    const char* room;
+    double m_24;
+    int m_32, m_36, m_40, m_44;
+};
+extern "C" void Gw_Moving(); KING_ALIAS("_Gw_Moving", "_Moving_Of")
+extern "C" void Gw_From16(); KING_ALIAS("_Gw_From16", "_Car_InListFrom16")
+extern "C" void Gw_53f7b0(); KING_ALIAS("_Gw_53f7b0", "_Car_53f7b0")
+extern "C" void Gw_ObjAt(); KING_ALIAS("_Gw_ObjAt", "_Room_ObjectAt")
+extern "C" void Gw_IsPlace(); KING_ALIAS("_Gw_IsPlace", "_Road_IsPlace")
+extern "C" PvPos* __cdecl Gw_Right(PvPos* out, PvPos pos); KING_ALIAS("_Gw_Right", "_Ai_GetRightDirectionOf")
+extern "C" void __cdecl Gw_Room(PvPos pos, GwRoom* out); KING_ALIAS("_Gw_Room", "_Road_GetRoadParameters")
+extern "C" float* __cdecl Gw_Coords(float* out, PvPos pos); KING_ALIAS("_Gw_Coords", "_Ai_GetCoordinatesPos")
+extern "C" float* __cdecl Gw_Tangent(float* out, PvPos pos); KING_ALIAS("_Gw_Tangent", "_Ai_GetTangent")
+extern "C" void Gw_NextPoint(); KING_ALIAS("_Gw_NextPoint", "@Points_NextActive@12")
+extern "C" void Gw_M548(); KING_ALIAS("_Gw_M548", "@SceneObj_Matrix548@12")
+extern "C" void Gw_M1(); KING_ALIAS("_Gw_M1", "@SceneObj_Matrix1@12")
+extern "C" void Gw_5893d0(); KING_ALIAS("_Gw_5893d0", "_Body_5893d0")
+ASM_VAR(BYTE*, g_gw6ef1fc, $L_6ef1fc)
+ASM_VAR(BYTE*, g_gw6cec6c, $L_6cec6c)
+ASM_VAR(BYTE**, g_gw68cf38, $L_68cf38)
+ASM_VAR(Vec3, g_gwAhead, $L_702620)
+ASM_VAR(Vec3, g_gwUp, $L_702630)
+ASM_VAR(Vec3, g_gwEye, $L_702650)
+ASM_VAR(char, g_gw66d638, $L_66d638)
+ASM_VAR(char, g_gw66d628, $L_66d628)
+ASM_VAR(float, g_gw64c2f8, $L_64c2f8)
+ASM_VAR(float, g_gw64c40c, $L_64c40c)
+ASM_VAR(double, g_gw64b678, $L_64b678)
+ASM_VAR(double, g_gw64b6e0, $L_64b6e0)
+ASM_VAR(float, g_gw6796b8, $L_6796b8)
+ASM_VAR(float, g_gw6796b4, $L_6796b4)
+ASM_VAR(float, g_gw64c250, $L_64c250)
+ASM_VAR(float, g_gw64c264, $L_64c264)
+ASM_VAR(double, g_gw64b668, $L_64b668)
+ASM_VAR(double, g_gw64b898, $L_64b898)
+ASM_VAR(double, g_gw64b6a8, $L_64b6a8)
+ASM_VAR(double, g_gw64d0f0, $L_64d0f0)
+ASM_VAR(float, g_gw64d7b8, $L_64d7b8)
+ASM_VAR(float, g_gw64c320, $L_64c320)
+ASM_VAR(float, g_gw64d2f8, $L_64d2f8)
+ASM_VAR(double, g_gw64f770, $L_64f770)
+ASM_VAR(float, g_gw64c904, $L_64c904)
+ASM_VAR(float, g_gw64c450, $L_64c450)
+
+static void Gw_RoomInit(GwRoom* r)
+{
+    r->flags = 0;
+    r->width = 0;
+    r->module = &g_gw66d638;
+    r->room = &g_gw66d628;
+    r->m_24 = 0;
+    r->m_32 = 0;                                    // read but not always written: the original sees stack
+    r->m_36 = -1;                                   // leftovers here
+    r->m_40 = -1;
+}
+
+// the state of a car w.r.t. the one ahead, written to s and the result
+static BYTE* Gw_Finish(BYTE* s, BYTE* mov, const Vec3& mv, BYTE* other, int st)
+{
+    Vec3 d;
+    d.x = (float)((double)F(float, mov, 416) - mv.x);
+    d.y = (float)((double)F(float, mov, 420) - mv.y);
+    d.z = (float)((double)F(float, mov, 424) - mv.z);
+    double L = Vec3_Length(&d);
+    if (L < g_gw64d2f8)
+        return other ? other + 16 : 0;
+    float L2 = (float)x87_sqrt((L - g_gw64d2f8) * F(float, mov, 3268) * g_gw64f770);
+    if (st)
+        F(int, s, 20604) = 0;
+    else
+    {
+        F(int, s, 20604) = 1;
+        F(float, s, 20616) = (float)(Vec3_Length(&F(Vec3, s, 432)) * g_gw64c904 + g_gw64c450);
+    }
+    F(float, s, 20612) = (float)F(double, g_gw6ef1fc, 2968);
+    F(int, s, 20596) = st;
+    F(int, s, 20600) = st;
+    F(float, s, 20628) = L2;
+    if (other)
+    {
+        F(int, s, 20632) = CallC<int>(Gw_5893d0, F(int, s, 1044));
+        return other + 16;
+    }
+    F(int, s, 20632) = 0;
+    return 0;
+}
+
+extern "C" {
+
+// [FUN_54f040] car s (its moving body from +1044) checks the car in front on the same road: with both on their
+// lanes and close, whether it must stop, give way or keep its distance (1-6 into +20596 / +20600, 0 to go), the
+// time to recheck (+20612, +20616) and the gap (+20628); the car ahead (its +16) or 0
+BYTE* __fastcall Car_GiveWay(BYTE* s, void*)
+{
+    F(int, s, 20600) = 0;
+    double now = F(double, g_gw6ef1fc, 2968);
+    if (F(int, s, 20604) || F(float, s, 20616) < now - F(float, s, 20612))
+    {
+        F(int, s, 20596) = 0;
+        F(int, s, 20628) = 0;
+        F(int, s, 20632) = 0;
+    }
+    int ahead6 = 0, keep = 0;
+    if (!F(int, s, 1220) || !F(int, s, 912) || F(int, g_gw6cec6c, 1300) > 1 || F(int, s, 388))
+        return 0;
+    BYTE* mov = CallC<BYTE*>(Gw_Moving, F(BYTE*, s, 1044));
+    if (!mov)
+        return 0;
+    if (F(int, s, 20604) && F(float, s, 20616) > F(double, g_gw6ef1fc, 2968) - F(float, s, 20612))
+        return 0;
+    F(int, s, 20604) = 0;
+    F(float, s, 20616) = 10.0f;
+    const float* R = (const float*)(s + 564);
+    const Vec3& A = g_gwAhead;
+    Vec3 fwd;
+    fwd.x = (float)((double)A.z * R[6] + (double)A.y * R[3] + (double)A.x * R[0]);
+    fwd.y = (float)((double)A.z * R[7] + (double)A.y * R[4] + (double)A.x * R[1]);
+    fwd.z = (float)((double)A.z * R[8] + (double)A.y * R[5] + (double)A.x * R[2]);
+    Vec3 mv = F(Vec3, mov, 452);
+    float spd = (float)Vec3_Length(&mv);
+    Matrix M548;
+    CallThis(Gw_M548, mov, &M548);
+    Vec3 d;
+    d.x = (float)((double)F(float, mov, 416) - mv.x);
+    d.y = (float)((double)F(float, mov, 420) - mv.y);
+    d.z = (float)((double)F(float, mov, 424) - mv.z);
+    double len = Vec3_Length(&d);
+    if (len > g_gw64c2f8 || len < g_gw64c40c)
+        return 0;
+    const float* sv = (const float*)(s + 468);
+    double dd = ((double)sv[2] - mv.z) * ((double)mv.z + sv[2]) + ((double)sv[1] - mv.y) * ((double)mv.y + sv[1]) +
+                ((double)sv[0] - mv.x) * ((double)mv.x + sv[0]);
+    if (dd > g_gw64b678)
+        ahead6 = 6;
+    BYTE* other = CallC<BYTE*>(Gw_From16, F(BYTE*, s, 1044));
+    int st = 0;
+    for (;;)
+    {
+        if (!other)
+            break;
+        PvPos p1 = {{(DWORD)-1, (DWORD)-1, 0, 0, 0, 0, 0, (DWORD)-1}};
+        PvPos p2 = {{(DWORD)-1, (DWORD)-1, 0, 0, 0, 0, 0, (DWORD)-1}};
+        void* obj = 0;
+        CallC(Gw_ObjAt, F(int, F(BYTE*, s, 820), 12), s + 600, &obj, &p1, 0);
+        if (!obj)
+            break;
+        CallC(Gw_ObjAt, F(int, F(BYTE*, other, 820), 12), &M548.m[9], &obj, &p2, 0);
+        if (!obj)
+            break;
+        PvPos t;
+        p1 = *Gw_Right(&t, p1);
+        p2 = *Gw_Right(&t, p2);
+        GwRoom r1, r2;
+        Gw_RoomInit(&r1);
+        Gw_RoomInit(&r2);
+        Gw_Room(p1, &r1);
+        Gw_Room(p2, &r2);
+        int wide = r1.m_32 > 1;
+        float half0 = (float)(r1.width * g_gw64b6e0);
+        Vec3 c, tg, tn;
+        Gw_Coords(&c.x, p1);
+        Gw_Tangent(&tg.x, p1);
+        Vec3_Normalized(&tn, &tg);
+        Vec3 nr, n;
+        nr.x = (float)((double)tn.y * g_gwUp.z - (double)tn.z * g_gwUp.y);
+        nr.y = (float)((double)tn.z * g_gwUp.x - (double)tn.x * g_gwUp.z);
+        nr.z = (float)((double)tn.x * g_gwUp.y - (double)tn.y * g_gwUp.x);
+        Vec3_Normalized(&n, &nr);
+        Vec3 r;
+        r.x = (float)((double)c.x - F(float, s, 600));
+        r.y = (float)((double)c.y - F(float, s, 604));
+        r.z = (float)((double)c.z - F(float, s, 608));
+        float c2[3];
+        Gw_Coords(c2, p2);
+        Vec3 tg2, tn2;
+        Gw_Tangent(&tg2.x, p2);
+        Vec3_Normalized(&tn2, &tg2);
+        if ((double)tn.x * fwd.x + (double)tn.z * fwd.z + (double)tn.y * fwd.y < g_gw64b678)
+        {
+            n.x = -n.x;
+            n.y = -n.y;
+            n.z = -n.z;
+        }
+        int place = CallC<int>(Gw_IsPlace, &p1);
+        double X = (double)r.y * g_gwUp.z - (double)r.z * g_gwUp.y;
+        double Y = (double)r.z * g_gwUp.x - (double)r.x * g_gwUp.z;
+        double Z = (double)r.x * g_gwUp.y - (double)r.y * g_gwUp.x;
+        Vec3 w = tn;
+        if (Z * tn.z + Y * tn.y + X * tn.x < g_gw64b678)
+        {
+            w.x = -tn.x;
+            w.y = -tn.y;
+            w.z = -tn.z;
+        }
+        // the car's points against the lane
+        float half = (float)((double)half0 + g_gw6796b8);
+        float lo = (float)((double)half + g_gw64c250), hi = -lo;
+        int found = 0;
+        Vec3 pt = {0, 0, 0};
+        BYTE* body = s + 16;
+        int more;
+        do
+        {
+            more = CallThis<int>(Gw_NextPoint, body, &pt);
+            if (found)
+                break;
+            if (!more)
+                pt = g_gwEye;
+            const float* M = (const float*)(s + 564);
+            double qx = (double)pt.z * M[6] + (double)pt.y * M[3] + (double)pt.x * M[0] + M[9];
+            float qy = (float)((double)pt.z * M[7] + (double)pt.y * M[4] + (double)pt.x * M[1] + M[10]);
+            double v = ((double)c.y - qy) * n.y + ((double)c.x - qx) * n.x;
+            if (v < lo)
+                lo = (float)v;
+            if (v > hi)
+                hi = (float)v;
+            if (!place)
+            {
+                if (v > -(double)half && v < half)
+                    found = 1;
+            }
+            else if (v < g_gw6796b8 && v > -(double)half)
+                found = 1;
+        } while (more);
+        // both on the same lane of one road
+        BYTE* L1 = g_gw68cf38[p1.d[0]];
+        BYTE* L2 = g_gw68cf38[p2.d[0]];
+        short a1 = F(short, F(BYTE*, L1, 112), 16), b1 = F(short, F(BYTE*, L1, 116), 16);
+        short a2 = F(short, F(BYTE*, L2, 112), 16), b2 = F(short, F(BYTE*, L2, 116), 16);
+        int same = (a1 == a2 && b1 == b2) || (a1 == b2 && b1 == a2);
+        if ((r1.flags & 48) || (r2.flags & 48))
+            same = 0;
+        if (!found || !same)
+            break;
+        Vec3 v = fwd;
+        float sp = (float)Vec3_Length(&F(Vec3, s, 468));
+        float lr = (float)Vec3_Length(&r);
+        if (sp > g_gw64c264)
+        {
+            v.x = (float)(F(float, s, 468) / (double)sp);
+            v.y = (float)(F(float, s, 472) / (double)sp);
+            v.z = (float)(F(float, s, 476) / (double)sp);
+        }
+        double dw = (double)w.x * fwd.x + (double)w.z * fwd.z + (double)w.y * fwd.y;
+        int fwdOk = dw > g_gw64b678;
+        int fwdStrong = dw > g_gw64b898;
+        int velOk = (double)v.y * w.y + (double)v.z * w.z + (double)v.x * w.x > g_gw64b898;
+        int backward = (double)v.z * fwd.z + (double)v.y * fwd.y + (double)v.x * fwd.x < g_gw64b6a8;
+        if (sp > g_gw64c250)
+        {
+            if (!fwdOk && lr > g_gw64b668 && !wide)
+                return Gw_Finish(s, mov, mv, other, 1);
+            if (backward)
+                return Gw_Finish(s, mov, mv, other, 3);
+            if (!fwdStrong || !velOk)
+                return Gw_Finish(s, mov, mv, other, 2);
+            if (!wide && hi > g_gw64d0f0 && lo < g_gw64c264)
+                return Gw_Finish(s, mov, mv, other, 5);
+            break;
+        }
+        if (!fwdOk || !fwdStrong)
+            return Gw_Finish(s, mov, mv, other, 4);
+        int n2 = (int)(((double)half0 - lr) / g_gw6796b4) + 1;
+        if (n2 <= 1)
+        {
+            st = 0;
+            goto check6;
+        }
+        {
+            int i = 0;
+            for (; i < 6; i++)
+            {
+                BYTE* o = F(BYTE*, s, 3524 + 4 * i);
+                if (!o)
+                    break;
+                BYTE* c3 = CallC<BYTE*>(Gw_53f7b0, o);
+                Matrix t2;
+                const float* pm = &CallThis<const Matrix*>(Gw_M1, o, &t2)->m[9];
+                Vec3 pos = {pm[0], pm[1], pm[2]};
+                Vec3 d3;
+                d3.x = (float)((double)F(float, s, 552) - pos.x);
+                d3.y = (float)((double)F(float, s, 556) - pos.y);
+                d3.z = (float)((double)F(float, s, 560) - pos.z);
+                if (c3 == s || !(F(float, s, 3548 + 4 * i) < g_gw64d7b8))
+                    continue;
+                double lx = (double)pos.y * F(float, s, 672) + (double)pos.z * F(float, s, 684) +
+                            (double)pos.x * F(float, s, 660) + F(float, s, 696);
+                double ly = (double)pos.y * F(float, s, 676) + (double)pos.z * F(float, s, 688) +
+                            (double)pos.x * F(float, s, 664) + F(float, s, 700);
+                if (!(x87_fabs(lx) < ly))
+                    continue;
+                const float* ov = (const float*)(o + 452);
+                if ((double)d3.z * ov[2] + (double)d3.y * ov[1] + (double)ov[0] * d3.x > g_gw64b678)
+                    break;
+            }
+            if (i < 6 && F(BYTE*, s, 3524 + 4 * i))
+                keep = 0;
+            else
+                return Gw_Finish(s, mov, mv, other, 4);
+        }
+        break;
+    }
+    st = keep;
+check6:
+    if (ahead6 == 6)
+    {
+        if (!(spd > g_gw64c320) ||
+            !((double)mv.x * fwd.x + (double)mv.z * fwd.z + (double)mv.y * fwd.y < g_gw64b678))
+            st = 6;
+    }
+    return Gw_Finish(s, mov, mv, other, st);
+}
+
+} // extern "C"
+
