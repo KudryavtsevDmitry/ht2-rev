@@ -114,3 +114,18 @@ interleaved pushes); FUN_5bb260 (uninitialized format code); FUN_4cdc90, FUN_4cd
 FUN_4ac3d0, FUN_4b54b0, FUN_600e60, FUN_5586f0, FUN_471780, FUN_477b60, FUN_4d0bc0 (AI / STL by-value copies); FUN_52fa70,
 FUN_507df0 (inlined iostreams with SEH); FUN_5c55b0, FUN_5c3ac0, FUN_605310, FUN_602320 (network / sound with SEH or throws);
 $L_4c3df0 (Light_Set drift); FUN_48d100 (by-value double vectors); FUN_5fedbc (stores the caller's ECX); FUN_579aa0 (too long).
+
+Batch 22 plan: more than 44,180 bytes from the remaining larger float procs ($L_58d770, FUN_5b3010, FUN_579aa0, FUN_52c120, ...) with hand-mapped stack offsets where norm drifts.
+
+Batch 22 done: 13 procs, 44,528 bytes (2.02%), 75.81% -> 77.83%. $L_58d770 Body_SettleOnPlane (2176), FUN_5b3010
+Sprite_DrawStrip (2432), FUN_579aa0 Decal_BuildOnObjects (6192), FUN_52c120 ParkedCar_DrawShadow (4656), $L_54a380
+Vehicle_FrameStep (9040, the vehicle's per-frame step), FUN_505530 Car_PlaceOnGround (3296), FUN_55b6f0 Hitch_Align
+(5440), FUN_589640 Item_SweepPoints (2096), FUN_503e30 Wheel_FindGround (2816), FUN_566970 Copter_Frame (2768),
+FUN_595eb0 TvCamera_StartMode (1472), FUN_53d9d0 Dash_DrawOverlays (2144). Drive and load tests pass (one drive run
+ended at room_ap_048, two reruns normal).
+norm.py counts ASM callees (no @N) as caller-cleaned, so offsets drift by their ret N after calls such as FUN_5662f0
+and FUN_503e30; a copy reading each callee's ret N from king.masm fixed it. FUN_53d9d0 draws five text buffers that
+nothing in it fills (kept uninitialized as in the original).
+Skipped: FUN_4ff800, FUN_58a020 (run past ENDP into other procs); FUN_538370 (11,712, sounds and force feedback,
+too long for the remainder); FUN_558f20 (9840, hitch solver); $L_4c5b30 (shared tail with different pushes);
+FUN_59f870 (reuses argument slots as temporaries).

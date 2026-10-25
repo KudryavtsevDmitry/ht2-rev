@@ -1523,7 +1523,7 @@ extern "C" int __fastcall Sce_5fcba0(BYTE* s, void*, int a, BYTE* b)
 // Larger scene node methods: loaders of tables, bounds, visitors, planes.
 
 extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
-ASM_PROC(FUN_5b3010)
+extern "C" void FUN_5b3010(); KING_ALIAS("_FUN_5b3010", "@Sprite_DrawStrip@24")
 ASM_VAR(float, g_sce64c258, $L_64c258)
 ASM_VAR(double, g_sce64b678, $L_64b678)
 ASM_VAR(BYTE*, g_sce723a94, $L_723a94)

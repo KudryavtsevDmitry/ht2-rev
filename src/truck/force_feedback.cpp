@@ -788,7 +788,7 @@ extern "C" int __cdecl Joy_Init(HWND wnd, int range)
     return g_joyDevice ? 0 : 0x80004005;
 }
 
-ASM_PROC(FUN_579aa0)    // a shadow's set-up
+extern "C" void FUN_579aa0(); KING_ALIAS("_FUN_579aa0", "@Decal_BuildOnObjects@32")    // a shadow's set-up
 ASM_VAR(BYTE*, g_game57c490, $L_6d2078)
 
 // [FUN_57c490] a new shadow at a point, its detail (32, 16 or 4 steps) by the distance to the camera (at least minLevel)
@@ -1856,6 +1856,387 @@ int __fastcall Decal_Build(BYTE* s, void*, BYTE* arr, unsigned n, const float* c
             else
                 z = CallThis<float>(Dg_TerrainHeight, g_dg6f33b4, F(DWORD, rec, 0), F(DWORD, rec, 4));
             F(float, rec, 8) = (float)(z + g_dg64c304);
+        }
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === a ground decal over objects and meshes (FUN_579aa0)
+
+extern "C" double __fastcall Terrain_HeightAt(BYTE** s, void*, float x, float y);
+extern "C" void Dm_TrisHeight(); KING_ALIAS("_Dm_TrisHeight", "_Tris_Height")
+extern "C" void Dm_PlaneHeightX(); KING_ALIAS("_Dm_PlaneHeightX", "_Plane_HeightX")
+extern "C" void Dm_MulMatrix(); KING_ALIAS("_Dm_MulMatrix", "_Vec3_MulMatrix")
+extern "C" void Dm_Inverse(); KING_ALIAS("_Dm_Inverse", "_Matrix_Inverse")
+ASM_VAR(double, g_dm64b788, $L_64b788)
+ASM_VAR(float, g_dm64c334, $L_64c334)
+ASM_VAR(float, g_dm6503d4, $L_6503d4)
+ASM_VAR(float, g_dm64d6a8, $L_64d6a8)
+ASM_VAR(float, g_dm6503d0, $L_6503d0)              // "no height"
+ASM_VAR(int, g_dm6f63c8, $L_6f63c8)
+ASM_VAR(AsmLabel, g_dmTris, $L_6f5d78)              // triangle x coordinates (3 per triangle, 40 at most)
+ASM_VAR(AsmLabel, g_dmTris2, $L_6f5f58)             // their y coordinates
+ASM_VAR(AsmLabel, g_dmPlanes, $L_6f5cd8)            // their planes
+ASM_VAR(AsmLabel, g_dmMats, $L_6f5414)              // their objects' inverse frames
+ASM_VAR(AsmLabel, g_dmObjs, $L_6f54b8)              // 40 52-byte records: object, inverse frame
+
+// |a.z - b.z| over the length of a - b, summed as the code does
+static double Dm_Lean(const float* a, const float* b)
+{
+    double dx = (double)a[0] - b[0], dy = (double)a[1] - b[1], dz = (double)a[2] - b[2];
+    float dzf = (float)dz;
+    double l = x87_sqrt(dx * dx + (double)dzf * dzf + dy * dy);
+    return x87_fabs(dz) / l;
+}
+
+// (x, y, 0) made a unit vector through Vec3_SetThis
+static void Dm_Unit(float* out, double x, double y)
+{
+    float v[3] = {(float)x, (float)y, 0};
+    double l = x87_sqrt(CallC<double>(Dg_LengthSq, v));
+    out[0] = (float)(v[0] / l);
+    out[1] = (float)(v[1] / l);
+    out[2] = (float)(v[2] / l);
+}
+
+// the height of a vertex from the objects, plus 64c304
+static float Dm_ObjHeight(float x, float y, BYTE* arr, unsigned n)
+{
+    return (float)(CallC<double>(Dg_RecordsHeight, x, y, arr, n) + g_dg64c304);
+}
+
+extern "C" {
+
+// [FUN_579aa0] decal s (owner +6920) over ground quad c (4 corners) resting on objects arr[0..n) (208 bytes, all at
+// about the corners' mean height): built like Decal_Build as 6 by rows vertices, each set on the triangles of the
+// mesh objects among them (kind 6, gathered at 6f5d78..), on the terrain object (kind 8), on a plane (kind 5), with
+// the gaps of each column filled by interpolation or by the objects; 0 for no or too many objects
+int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const float* c, unsigned rows, float k, int owner)
+{
+    if (!n || n >= 40)
+        return 0;
+    F(int, s, 6924) = 0;
+    F(int, s, 6920) = owner;
+    float avg = (float)(((double)c[5] + c[8] + c[11] + c[2]) * g_dm64c334);
+    for (unsigned i = 0; i < n; i++)
+        if (x87_fabs((double)F(float, arr + i * 208, 60) - avg) > g_dm64b788)
+            return 0;
+    float P0[3] = {c[0], c[1], 0}, P1[3] = {c[3], c[4], 0}, P2[3] = {c[6], c[7], 0}, P3[3] = {c[9], c[10], 0};
+    float Ax = (float)((double)P2[0] - P0[0]), Ay = (float)((double)P2[1] - P0[1]);
+    float Bx = (float)((double)P1[0] - P0[0]), By = (float)((double)P1[1] - P0[1]);
+    float dA[3], dB[3];
+    Dm_Unit(dA, Ax, Ay);
+    Dm_Unit(dB, Bx, By);
+    float nx = (float)((double)dA[2] * dB[1] - (double)dA[1] * dB[2]);
+    float ny = (float)((double)dA[0] * dB[2] - (double)dB[0] * dA[2]);
+    float nz = (float)((double)dB[0] * dA[1] - (double)dA[0] * dB[1]);
+    float Nz = (float)-(double)nz;
+    (void)nx;
+    (void)ny;
+    float ang = (float)x87_acos(Nz);
+    int flip = Nz > g_dg6503e0 ? 1 : 0;
+    // the objects, each once, with the inverse of their frames
+    BYTE* objs = (BYTE*)&g_dmObjs;
+    unsigned uniq = 0;
+    BYTE* terrain = 0;
+    int planeKind = 0;
+    BYTE* plane = 0;
+    for (unsigned i = 0; i < n; i++)
+    {
+        BYTE* rec = arr + i * 208;
+        BYTE* P = F(BYTE*, rec, 108);
+        unsigned j = 0;
+        for (; j < uniq; j++)
+        {
+            BYTE* e = F(BYTE*, objs + j * 52, 0);
+            if (F(BYTE*, e, 108) == P && F(int, e, 112) == F(int, rec, 112))
+                break;
+        }
+        if (j != uniq)
+            continue;
+        if (P)
+        {
+            if (F(int, P, 0) == 8)
+                terrain = F(BYTE*, P, 8);
+            if (F(int, P, 0) == 5)
+            {
+                planeKind = 1;
+                plane = F(BYTE*, P, 8);
+            }
+        }
+        F(BYTE*, objs + uniq * 52, 0) = rec;
+        float inv[12];
+        memcpy(objs + uniq * 52 + 4, CallC<float*>(Dm_Inverse, inv, rec + 4), 48);
+        uniq++;
+    }
+    int e1 = c[2] > c[8], e2 = c[2] < c[8];
+    if (flip)
+        e1 = !e1, e2 = !e2;
+    double r1 = Dm_Lean(c, c + 6);
+    float k172 = e1 ? (float)(r1 * k) : 0, k176 = e2 ? (float)(r1 * k) : 0;
+    int f1 = c[8] <= c[11], f2 = !(c[8] < c[11]);
+    if (flip)
+        f1 = !f1, f2 = !f2;
+    double r2 = Dm_Lean(c + 6, c + 9);
+    float k180 = f2 ? (float)(r2 * k) : 0, k184 = f1 ? (float)(r2 * k) : 0;
+    float E1[3] = {Bx, By, 0}, E2[3] = {Ax, Ay, 0};
+    double l1 = x87_sqrt((double)Bx * Bx + (double)By * By);
+    float l2 = (float)x87_sqrt((double)Ax * Ax + (double)Ay * Ay);
+    if (l1 < g_dg64c250)
+    {
+        Dm_Unit(E1, Ay, -(double)Ax);
+        if (flip)
+            for (int t = 0; t < 3; t++)
+                E1[t] = (float)-(double)E1[t];
+    }
+    else
+        for (int t = 0; t < 3; t++)
+            E1[t] = (float)(E1[t] / l1);
+    if (l2 < g_dg64c250)
+    {
+        Dm_Unit(E2, (double)E1[1] - g_dg64c264, (double)g_dg64c264 - E1[0]);
+        if (flip)
+            for (int t = 0; t < 3; t++)
+                E2[t] = (float)-(double)E2[t];
+    }
+    else
+        for (int t = 0; t < 3; t++)
+            E2[t] = (float)(E2[t] / (double)l2);
+    // the corners moved in
+    float t1x = (float)((double)E1[0] * k180), t1y = (float)((double)k180 * E1[1]), t1z = (float)((double)k180 * E1[2]);
+    double ux = (double)E2[0] * k172;
+    float uy = (float)((double)k172 * E2[1]), uz = (float)((double)k172 * E2[2]);
+    float Q0[3];
+    Q0[0] = (float)(((double)P0[0] - ux) - t1x);
+    Q0[1] = (float)((double)(float)((double)P0[1] - uy) - t1y);
+    Q0[2] = (float)((double)(float)-(double)uz - t1z);
+    float t2x = (float)((double)E1[0] * k184), t2y = (float)((double)k184 * E1[1]), t2z = (float)((double)k184 * E1[2]);
+    float Q1[3];
+    Q1[0] = (float)(((double)P1[0] - ux) + t2x);
+    Q1[1] = (float)((double)(float)((double)P1[1] - uy) + t2y);
+    Q1[2] = (float)((double)(float)-(double)uz + t2z);
+    double vx = (double)E2[0] * k176;
+    float vy = (float)((double)k176 * E2[1]), vz = (float)((double)k176 * E2[2]);
+    float Q2[3];
+    Q2[0] = (float)((double)P2[0] + vx - t1x);
+    Q2[1] = (float)((double)(float)((double)vy + P2[1]) - t1y);
+    Q2[2] = (float)((double)vz - t1z);
+    float Q3[3];
+    Q3[0] = (float)(vx + P3[0] + t2x);
+    Q3[1] = (float)((double)(float)((double)P3[1] + vy) + t2y);
+    Q3[2] = (float)((double)vz + t2z);
+    E1[0] = (float)((double)Q1[0] - Q0[0]);
+    E1[1] = (float)((double)Q1[1] - Q0[1]);
+    E1[2] = (float)((double)Q1[2] - Q0[2]);
+    E2[0] = (float)((double)Q2[0] - Q0[0]);
+    E2[1] = (float)((double)Q2[1] - Q0[1]);
+    E2[2] = (float)((double)Q2[2] - Q0[2]);
+    if (ang < g_dg6503d8)
+    {
+        // sharp corners: in a little more
+        double ax = (double)E2[0] * g_dm64d6a8;
+        float ay = (float)((double)E2[1] * g_dm64d6a8), az = (float)((double)E2[2] * g_dm64d6a8);
+        double bx = (double)E1[0] * g_dm6503d4;
+        float by = (float)((double)E1[1] * g_dm6503d4), bz = (float)((double)E1[2] * g_dm6503d4);
+        float bxf = (float)bx;
+        Q0[0] = (float)(((double)Q0[0] - bx) - ax);
+        Q0[1] = (float)((double)(float)((double)Q0[1] - by) - ay);
+        Q0[2] = (float)((double)(float)((double)Q0[2] - bz) - az);
+        float s1x = (float)((double)bxf + Q1[0]), s1y = (float)((double)by + Q1[1]);
+        double s1z = (double)bz + Q1[2];
+        Q1[0] = (float)((double)s1x - ax);
+        Q1[1] = (float)((double)s1y - ay);
+        Q1[2] = (float)(s1z - az);
+        float a2[3] = {(float)((double)E2[0] * g_dm64d6a8), (float)((double)E2[1] * g_dm64d6a8), (float)((double)E2[2] * g_dm64d6a8)};
+        float b2[3] = {(float)((double)E1[0] * g_dm6503d4), (float)((double)E1[1] * g_dm6503d4), (float)((double)E1[2] * g_dm6503d4)};
+        float tt[3] = {(float)((double)Q2[0] - b2[0]), (float)((double)Q2[1] - b2[1]), (float)((double)Q2[2] - b2[2])};
+        Q2[0] = (float)((double)a2[0] + tt[0]);
+        Q2[1] = (float)((double)a2[1] + tt[1]);
+        Q2[2] = (float)((double)a2[2] + tt[2]);
+        E1[0] = (float)((double)Q1[0] - Q0[0]);
+        E1[1] = (float)((double)Q1[1] - Q0[1]);
+        E1[2] = (float)((double)Q1[2] - Q0[2]);
+        E2[0] = (float)((double)Q2[0] - Q0[0]);
+        E2[1] = (float)((double)Q2[1] - Q0[1]);
+        E2[2] = (float)((double)Q2[2] - Q0[2]);
+    }
+    float L1 = (float)x87_sqrt(CallC<double>(Dg_LengthSq, E1));
+    double L2 = x87_sqrt(CallC<double>(Dg_LengthSq, E2));
+    F(int, s, 6916) = rows * 6;
+    F(int, s, 6912) = rows * 30 - 30;
+    for (int t = 0; t < 3; t++)
+        E1[t] = (float)(E1[t] / (double)L1);
+    for (int t = 0; t < 3; t++)
+        E2[t] = (float)(E2[t] / L2);
+    float across = (float)(L1 * (double)g_dg64c908);
+    float last = (float)(__int64)(rows - 1);
+    float step = (float)(L2 / last);
+    for (unsigned i = 0; i < rows; i++)
+    {
+        float fi = (float)(__int64)i;
+        float u = (float)(fi / (double)last);
+        for (unsigned j = 0; j < 6; j++)
+        {
+            float m1[3] = {(float)((double)E2[0] * step), (float)((double)step * E2[1]), (float)((double)step * E2[2])};
+            float m2[3] = {(float)((double)m1[0] * fi), (float)((double)fi * m1[1]), (float)((double)fi * m1[2])};
+            float m3[3] = {(float)((double)E1[0] * across), (float)((double)across * E1[1]), (float)((double)across * E1[2])};
+            float fj = (float)(__int64)j;
+            float m4[3] = {(float)((double)m3[0] * fj), (float)((double)fj * m3[1]), (float)((double)fj * m3[2])};
+            float s1[3] = {(float)((double)m4[0] + Q0[0]), (float)((double)m4[1] + Q0[1]), (float)((double)Q0[2] + m4[2])};
+            float* V = (float*)(s + (i * 6 + j) * 32);
+            V[0] = (float)((double)m2[0] + s1[0]);
+            V[1] = (float)((double)m2[1] + s1[1]);
+            V[2] = (float)((double)m2[2] + s1[2]);
+            V[3] = 0;
+            V[4] = 0;
+            V[5] = 1.0f;
+            V[6] = (float)((double)fj * g_dg64c908);
+            V[7] = u;
+        }
+    }
+    // the triangles of the mesh objects
+    unsigned tris = 0;
+    g_dm6f63c8 = 0;
+    for (unsigned j = 0; j < uniq && tris < 40; j++)
+    {
+        BYTE* rec = F(BYTE*, objs + j * 52, 0);
+        BYTE* P = F(BYTE*, rec, 108);
+        if (!P || F(int, P, 0) != 6)
+            continue;
+        BYTE* T = F(BYTE*, P, 8) + F(int, rec, 112) * 48 - 48;
+        unsigned cnt = F(WORD, T, 2);
+        if (cnt < 3 || cnt - 1 <= 1)
+            continue;
+        const float* inv = (const float*)(objs + j * 52 + 4);
+        BYTE* verts = F(BYTE*, T, 4);
+        for (unsigned q = 1; q < cnt - 1 && tris * 12 < 480; q++)
+        {
+            Vec3 v0, v1, v2;
+            CallC(Dm_MulMatrix, &v0, verts, inv);
+            CallC(Dm_MulMatrix, &v1, verts + q * 12, inv);
+            CallC(Dm_MulMatrix, &v2, verts + q * 12 + 12, inv);
+            float* X = (float*)&g_dmTris + tris * 3;
+            float* Y = (float*)&g_dmTris2 + tris * 3;
+            X[0] = v0.x;
+            X[1] = v1.x;
+            X[2] = v2.x;
+            Y[0] = v0.y;
+            Y[1] = v1.y;
+            Y[2] = v2.y;
+            ((BYTE**)&g_dmPlanes)[tris] = T + 32;
+            ((const float**)&g_dmMats)[tris] = inv;
+            tris++;
+        }
+    }
+    // each vertex's height
+    unsigned nv = rows * 6;
+    if (!nv)
+        return 1;
+    int missing = 0;
+    for (unsigned v = 0; v < nv; v++)
+    {
+        float* V = (float*)(s + v * 32);
+        float h;
+        if (CallC<int>(Dm_TrisHeight, &h, V[0], V[1], &g_dmTris, &g_dmTris2, &g_dmPlanes, &g_dmMats, tris))
+            V[2] = (float)((double)h + g_dg64c304);
+        else if (terrain)
+            V[2] = (float)(Terrain_HeightAt((BYTE**)terrain, 0, V[0], V[1]) + g_dg64c304);
+        else if (planeKind)
+        {
+            V[2] = (float)(CallC<double>(Dm_PlaneHeightX, V[0], V[1], plane) + g_dg64c304);
+            if (V[2] == g_dm6503d0)
+                missing = 1;
+        }
+        else
+        {
+            V[2] = g_dm6503d0;
+            missing = 1;
+        }
+    }
+    if (!missing)
+        return 1;
+    // the gaps of each column filled in
+    for (unsigned col = 0; col < 6; col++)
+    {
+        float* colz = (float*)(s + col * 32 + 8);
+        for (unsigned i = 0; i < rows; i++)
+        {
+            if (colz[i * 48] != g_dm6503d0)
+                continue;
+            unsigned e = i;
+            while (e < rows && colz[e * 48] == g_dm6503d0)
+                e++;
+            if ((e == rows && i <= 1) || (i == 0 && e == rows - 1))
+            {
+                for (unsigned r = 0; r < rows; r++)
+                    colz[r * 48] = Dm_ObjHeight(colz[r * 48 - 2], colz[r * 48 - 1], arr, n);
+                i = rows;
+                continue;
+            }
+            unsigned from, to;
+            float zf, zt;
+            if (e == rows)
+            {
+                // a gap to the end: carried on from the last two (or three) rows before it
+                from = i - 1;
+                to = rows - 1;
+                float zb = colz[(i - 2) * 48];
+                float za = colz[(i - 1) * 48];
+                if (zb == g_dm6503d0)
+                    zb = Dm_ObjHeight(colz[(i - 2) * 48 - 2], colz[(i - 2) * 48 - 1], arr, n);
+                if (from > 1)
+                {
+                    double zc = colz[(i - 3) * 48];
+                    if (colz[(i - 3) * 48] == g_dm6503d0)
+                        zc = CallC<double>(Dg_RecordsHeight, colz[(i - 3) * 48 - 2], colz[(i - 3) * 48 - 1], arr, n) + g_dg64c304;
+                    if (x87_fabs((double)za - zb) > x87_fabs(zc - zb))
+                    {
+                        za = zb;
+                        zb = (float)zc;
+                    }
+                }
+                zf = za;
+                zt = (float)(((double)za - zb) * (double)(int)(to - from) + za);
+            }
+            else if (i == 0)
+            {
+                // a gap from the start: carried back from the first two (or three) rows after it
+                from = 0;
+                to = e;
+                float za = colz[e * 48];
+                float zb = colz[(e + 1) * 48];
+                if (zb == g_dm6503d0)
+                    zb = Dm_ObjHeight(colz[(e + 1) * 48 - 2], colz[(e + 1) * 48 - 1], arr, n);
+                if (e < rows - 1)
+                {
+                    double zc = colz[(e + 2) * 48];
+                    if (colz[(e + 2) * 48] == g_dm6503d0)
+                        zc = CallC<double>(Dg_RecordsHeight, colz[(e + 2) * 48 - 2], colz[(e + 2) * 48 - 1], arr, n) + g_dg64c304;
+                    if (x87_fabs((double)za - zb) > x87_fabs(zc - zb))
+                    {
+                        za = zb;
+                        zb = (float)zc;
+                    }
+                }
+                zt = za;
+                zf = (float)(((double)za - zb) * (double)(int)e + za);
+            }
+            else
+            {
+                from = i - 1;
+                to = e;
+                zf = colz[from * 48];
+                zt = colz[to * 48];
+            }
+            if (from >= to)
+                return 0;
+            double span = (double)(__int64)(to - from);
+            double d = (double)zt - zf;
+            for (unsigned r = from; r <= to; r++)
+                colz[r * 48] = (float)((double)(__int64)(r - from) / span * d + zf);
+            i = to;
         }
     }
     return 1;

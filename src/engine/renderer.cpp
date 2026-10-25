@@ -5504,3 +5504,196 @@ void __fastcall Clip_EdgeVertex(BYTE* s, void*, int flags, int* out, int i, int 
 }
 
 } // extern "C"
+
+// === a camera-facing strip of quads at a point (FUN_5b3010)
+
+extern "C" void Sp_Dispatch(); KING_ALIAS("_Sp_Dispatch", "_Draw_Dispatch@20")
+extern "C" void Sp_TransformPoint(); KING_ALIAS("_Sp_TransformPoint", "@Vec3_TransformPoint@12")
+extern "C" void Sp_AddAssign(); KING_ALIAS("_Sp_AddAssign", "@Vec3_AddAssign@16")
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(BYTE, g_sp702a08, $L_702a08)
+ASM_VAR(AsmLabel, g_spVerts, $L_702a98)            // 32-byte vertices
+ASM_VAR(int, g_sp723a88, $L_723a88)
+ASM_VAR(float, g_sp64c250, $L_64c250)
+
+static Vec3 Sp_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+static void __cdecl Sp_AtexitNop() { Ren5b3990_Nop(0); }
+
+extern "C" {
+
+// [FUN_5b3010] renderer s draws object o's strip (+4 count, offsets along up +20 and side +16, along the view +24,
+// texture +8 / +12 with flag 2, material +36 or +32) at point p turned to face the camera (flag 0x100 keeps it
+// upright): through the device as a fan of 32-byte vertices tinted by the palette or alpha, else into the clipper
+// (+1224..) and drawn by Draw_Dispatch
+void __fastcall Sprite_DrawStrip(BYTE* s, void*, BYTE* o, float px, float py, float pz)
+{
+    Vec3 side = g_zeroVec, fwd = g_zeroVec, tmp;
+    if (!F(BYTE*, s, 1948) || !Window_RootSurface(F(BYTE*, s, 1948), 0))
+        return;
+    BYTE* mat = F(BYTE*, o, 36) ? F(BYTE*, o, 36) : F(BYTE*, s, 8260) + F(short, o, 32) * 124;
+    float alpha = 1.0f;
+    if (mat[32] & 32)
+        alpha = (float)((double)g_sp64c250 - F(float, mat, 88));
+    if (!(g_sp702a08 & 1))
+    {
+        g_sp702a08 |= 1;
+        atexit(Sp_AtexitNop);
+    }
+    Vec3 up;
+    if (g_device)
+    {
+        const float* Fv = (const float*)(s + 2240 + F(int, s, 8224) * 48);
+        double depth = (double)pz * Fv[7] + (double)px * Fv[1] + (double)py * Fv[4] + Fv[10];
+        if (!(depth > g_sp64c250) || !(depth < F(double, s, 8472)))
+            return;
+        up = g_axisZ;
+        Matrix m1, inv;
+        Matrix_Inverse(&inv, Matrix_Multiply(&m1, (const Matrix*)(s + 5216 + F(int, s, 8236) * 48), (const Matrix*)(s + 4208)));
+        const float* I = inv.m;
+        const float* Y = &g_axisY.x;
+        Vec3 f = Sp_Set((double)Y[2] * I[6] + (double)Y[1] * I[3] + (double)Y[0] * I[0],
+                        (double)Y[2] * I[7] + (double)Y[1] * I[4] + (double)Y[0] * I[1],
+                        (double)Y[2] * I[8] + (double)Y[1] * I[5] + (double)Y[0] * I[2]);
+        fwd = *Vec3_Normalized(&tmp, &f);
+        Vec3 c = Sp_Set((double)fwd.y * up.z - (double)fwd.z * up.y, (double)fwd.z * up.x - (double)fwd.x * up.z,
+                        (double)fwd.x * up.y - (double)fwd.y * up.x);
+        if (Vec3_Length(&c) < g_cp64b748)
+            side = g_axisX;
+        else
+            side = *Vec3_Normalized(&tmp, &c);
+        if (o[1] & 1)
+        {
+            Vec3 u = Sp_Set((double)side.y * fwd.z - (double)fwd.y * side.z, (double)fwd.x * side.z - (double)fwd.z * side.x,
+                            (double)fwd.y * side.x - (double)side.y * fwd.x);
+            up = *Vec3_Normalized(&tmp, &u);
+        }
+    }
+    else
+    {
+        float pt[3] = {px, py, pz};
+        CallThis(Sp_TransformPoint, pt, s + 2240 + F(int, s, 8224) * 48);
+        px = pt[0];
+        py = pt[1];
+        pz = pt[2];
+        if (!(py > g_sp64c250) || !(py < F(double, s, 8472)))
+            return;
+        const float* Z = &g_axisZ.x;
+        up = Sp_Set((double)Z[2] * F(float, s, 4232) + (double)Z[1] * F(float, s, 4220) + (double)Z[0] * F(float, s, 4208),
+                    (double)Z[2] * F(float, s, 4236) + (double)Z[1] * F(float, s, 4224) + (double)Z[0] * F(float, s, 4212),
+                    (double)Z[2] * F(float, s, 4240) + (double)Z[1] * F(float, s, 4228) + (double)Z[0] * F(float, s, 4216));
+        const float* Y = &g_axisY.x;
+        Vec3 c = Sp_Set((double)up.z * Y[1] - (double)up.y * Y[2], (double)up.x * Y[2] - (double)up.z * Y[0],
+                        (double)up.y * Y[0] - (double)up.x * Y[1]);
+        side = *Vec3_Normalized(&tmp, &c);
+    }
+    const BYTE* pal = (const BYTE*)Window_RootSurface(F(BYTE*, s, 1948), 0) + 24 + 3 * F(int, mat, 40);
+    int n = F(WORD, o, 4);
+    int i = 0, count = 0;
+    BYTE* vb = (BYTE*)&g_spVerts;
+    for (; i < n; i++)
+    {
+        if (g_device)
+        {
+            float b = F(float*, o, 20)[i];
+            float ax = (float)(b * (double)up.x), ay = (float)(b * (double)up.y);
+            double az = b * (double)up.z;
+            float c2 = F(float*, o, 16)[i];
+            float bx = (float)(c2 * (double)side.x), by = (float)((double)side.y * c2);
+            double bz = c2 * (double)side.z;
+            float qx = (float)((double)bx + px), qy = (float)((double)by + py);
+            double qz = bz + pz;
+            Vec3 v = Sp_Set((double)qx + ax, (double)ay + qy, az + qz);
+            if (F(float*, o, 24))
+            {
+                float c3 = F(float*, o, 24)[i];
+                Vec3 w = Sp_Set(c3 * (double)fwd.x, (double)fwd.y * c3, (double)fwd.z * c3);
+                CallThis(Sp_AddAssign, &v, &tmp, &w);
+            }
+            BYTE* V = vb + i * 32;
+            F(Vec3, V, 0) = v;
+            if (o[0] & 2)
+            {
+                F(float, V, 24) = F(float*, o, 8)[i];
+                F(float, V, 28) = F(float*, o, 12)[i];
+            }
+            DWORD color;
+            if (F(DWORD, mat, 32) & 1)
+            {
+                if (F(DWORD, mat, 32) & 0x1000)
+                {
+                    DWORD r = (DWORD)(int)(pal[0] * g_mt651758 * g_q161_64eba0);
+                    DWORD a = (DWORD)(int)(alpha * (double)g_255f);
+                    color = r | (a << 8);
+                    color = (color << 8) | (DWORD)(int)(pal[1] * g_mt651758 * g_q161_64eba0);
+                    color = (color << 8) | (DWORD)(int)(pal[2] * g_mt651758 * g_q161_64eba0);
+                }
+                else
+                    color = ((DWORD)(int)(alpha * (double)g_255f) << 24) | 0xffffff;
+            }
+            else
+            {
+                const BYTE* p2 = (const BYTE*)Window_RootSurface(F(BYTE*, s, 1948), 0) + 24 + 3 * F(int, mat, 40);
+                DWORD c0 = p2[0], c1 = p2[1], c2b = p2[2];
+                color = (c2b * 255) | ((c1 * 255) << 8) | ((0u - c0) << 16) | 0xff000000;
+            }
+            F(DWORD, V, 16) = color;
+            F(DWORD, V, 20) = 0xff000000;
+            count = i + 1;
+        }
+        else
+        {
+            int k = g_sp723a88 ? n - i - 1 : i;
+            float a = F(float*, o, 20)[i], b = F(float*, o, 16)[i];
+            const float* sc = (const float*)(s + 4256 + F(int, s, 8228) * 48);
+            float* cv = (float*)(s + 1224 + k * 12);
+            cv[0] = (float)(((double)up.x * a + (double)side.x * b) * sc[0] + px);
+            cv[1] = (float)((double)up.y * a + py);
+            cv[2] = (float)(((double)up.z * a + (double)side.z * b) * sc[8] + pz);
+            if (o[0] & 2)
+            {
+                F(float, s, 1488 + k * 4) = F(float*, o, 8)[i];
+                F(float, s, 1576 + k * 4) = F(float*, o, 12)[i];
+            }
+            F(int, s, 1756 + k * 4) = k;
+            count = k;
+        }
+    }
+    F(int, s, 1932) = i;
+    if (g_720904)
+    {
+        if (!Window_RootSurface(F(BYTE*, s, 1948), 0))
+            return;
+        CallThis(FUN_5b1020, s, mat, 0, 0, 0);
+        Com(g_device, 100, 6, 482, vb, count, 0);
+        return;
+    }
+    DWORD flags = 0;
+    if ((F(DWORD, mat, 32) & 1) && F(int, F(BYTE*, mat, 76), 8))
+        flags = 35;
+    if (flags & 32)
+    {
+        BYTE* t = F(BYTE*, mat, 76);
+        if (t[52] & 16)
+        {
+            flags |= 0x100;
+            float val = (float)(F(WORD, t, 20) * (double)F(float, s, 1752) / ((double)py * F(float, o, 28)));
+            DWORD vbits;
+            memcpy(&vbits, &val, 4);
+            CallThis(Sp_Dispatch, s, mat, flags, 0, vbits, t);
+            return;
+        }
+        CallThis(Sp_Dispatch, s, mat, flags, 0, 0, t);
+        return;
+    }
+    CallThis(Sp_Dispatch, s, mat, flags, 0, 0, 0);
+}
+
+} // extern "C"

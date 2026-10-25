@@ -1594,7 +1594,7 @@ extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
 extern "C" void FUN_568680(); KING_ALIAS("_FUN_568680", "@Copter_UpdateWarning@8")
 extern "C" void FUN_50bc90(); KING_ALIAS("_FUN_50bc90", "_Str_ToWide")
 ASM_PROC(FUN_568090)
-ASM_PROC(FUN_566970)
+extern "C" void FUN_566970(); KING_ALIAS("_FUN_566970", "@Copter_Frame@8")
 ASM_PROC(FUN_567dc0)
 ASM_PROC(FUN_563600)
 extern "C" void FUN_561f30(); KING_ALIAS("_FUN_561f30", "@Copter_FlightStep@8")
@@ -5491,6 +5491,285 @@ int __cdecl Terrain_RayCallback(int, BYTE* r)
     B[2] = (DWORD)g_terrain6f33b4;
     F(DWORD*, r, 108) = B;
     return 1;
+}
+
+} // extern "C"
+
+// === the helicopter's frame by its state (FUN_566970)
+
+extern "C" void Cs_HeadFor(); KING_ALIAS("_Cs_HeadFor", "@Copter_HeadForTarget@8")
+extern "C" void Cs_InList(); KING_ALIAS("_Cs_InList", "_Car_InList")
+extern "C" void Cs_MulAssign(); KING_ALIAS("_Cs_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(double, g_cs2_64b6e0, $L_64b6e0)
+ASM_VAR(double, g_cs2_64b918, $L_64b918)
+ASM_VAR(float, g_cs2_64d2f8, $L_64d2f8)
+ASM_VAR(float, g_cs2_64c258, $L_64c258)
+ASM_VAR(float, g_cs2_64c350, $L_64c350)
+ASM_VAR(double, g_cs2_64b678, $L_64b678)
+ASM_VAR(double, g_cs2_64b670, $L_64b670)
+ASM_VAR(double, g_cs2_64d318, $L_64d318)
+ASM_VAR(double, g_cs2_64b5b8, $L_64b5b8)
+ASM_VAR(double, g_cs2_64b6d0, $L_64b6d0)
+ASM_VAR(double, g_cs2_64ed90, $L_64ed90)
+ASM_VAR(double, g_cs2_64f760, $L_64f760)
+ASM_VAR(double, g_cs2_64d0f0, $L_64d0f0)
+ASM_VAR(float, g_cs2_64c450, $L_64c450)
+ASM_VAR(double, g_cs2_64b838, $L_64b838)
+ASM_VAR(double, g_cs2_64b720, $L_64b720)
+ASM_VAR(double, g_cs2_64b780, $L_64b780)
+ASM_VAR(float, g_cs2_64c96c, $L_64c96c)
+
+static void Cs_ClearSteer(BYTE* s)
+{
+    F(int, s, 3436) = 0;
+    F(int, s, 3440) = 0;
+    F(int, s, 3432) = 0;
+    F(int, s, 3452) = 0;
+    F(int, s, 3448) = 0;
+    F(int, s, 3444) = 0;
+}
+
+// the point off frame m by v
+static Vec3 Cs_Through(const Matrix* m, const float* v)
+{
+    const float* M = m->m;
+    Vec3 r;
+    r.x = (float)((double)v[2] * M[6] + (double)v[1] * M[3] + (double)v[0] * M[0] + M[9]);
+    r.y = (float)((double)v[2] * M[7] + (double)v[1] * M[4] + (double)v[0] * M[1] + M[10]);
+    r.z = (float)((double)v[2] * M[8] + (double)v[1] * M[5] + (double)v[0] * M[2] + M[11]);
+    return r;
+}
+
+// the steering of a lean (+3448) toward side q, -1 / 1 into +3436
+static void Cs_Lean(BYTE* s, double q, double k)
+{
+    float v = (float)(q * k / (x87_fabs(q) + g_cs2_64b780));
+    F(int, s, 3388) = 0;
+    F(float, s, 3448) = v;
+    F(int, s, 3436) = v < g_cs2_64b678 ? -1 : 1;
+}
+
+extern "C" {
+
+// [FUN_566970] helicopter s's frame: its target car (+3248, its trailer +3252) checked, the controls (+3384..)
+// reset, then by state (+3236): 1, 2 hovering with the axes and throttle settling; 3 climbing; 4 and 11 heading for
+// the target; 5 the aim point +3468 at the target; 6, 7, 10 following it (+3256 area, radius +3268) by lean and
+// speed (+3436, +3448, sub-state +3244), giving up outside; a pending state (+3240) after 6 / 10
+void __fastcall Copter_Frame(BYTE* s, void*)
+{
+    F(int, s, 3148) = 0;
+    BYTE* t = F(BYTE*, s, 3248);
+    if (t)
+    {
+        t = CallC<BYTE*>(Cs_InList, t);
+        F(BYTE*, s, 3248) = t;
+        if (t && CallThis<int>((void (*)())F(void**, t, 0)[1], t) == 1)
+            F(int, s, 3252) = F(int, F(BYTE*, s, 3248), 21880);
+        else
+            F(int, s, 3252) = 0;
+    }
+    if (!F(BYTE*, s, 3248))
+    {
+        int st = F(int, s, 3236);
+        if (st == 6 || st == 5 || st == 7)
+            CallThis(FUN_5662f0, s, 3);
+    }
+    F(int, s, 3392) = 1;
+    F(int, s, 3388) = 1;
+    F(int, s, 3384) = 1;
+    Cs_ClearSteer(s);
+    switch (F(int, s, 3236))
+    {
+    case 4:
+        if (CallThis<int>(Cs_HeadFor, s))
+            CallThis(FUN_5662f0, s, 3);
+        Copter_566550(s, 0);
+        break;
+    case 11:
+        if (CallThis<int>(Cs_HeadFor, s))
+            Copter_ClimbState(s);
+        Copter_566550(s, 0);
+        break;
+    case 3:
+        Copter_ClimbState(s);
+        Copter_566550(s, 0);
+        break;
+    case 5:
+        Cs_ClearSteer(s);
+        t = F(BYTE*, s, 3248);
+        if (t)
+        {
+            F(int, s, 3464) = 1;
+            Matrix m;
+            F(Vec3, s, 3468) = F(Vec3, SceneObj_Matrix1(t + 16, 0, &m), 36);
+        }
+        break;
+    case 6:
+    case 7:
+    case 10:
+    {
+        float dx = (float)((double)F(float, s, 3256) - F(float, s, 36));
+        float dy = (float)((double)F(float, s, 3260) - F(float, s, 40));
+        float r = F(float, s, 3268);
+        if ((double)r * r < (double)dx * dx + (double)dy * dy)
+        {
+            F(int, s, 3248) = 0;
+            F(int, s, 3252) = 0;
+            CallThis(FUN_5662f0, s, 11);
+            break;
+        }
+        float q = (float)((double)F(float, s, 108) * F(float, s, 76) + (double)F(float, s, 104) * F(float, s, 64)
+                          + (double)F(float, s, 52) * F(float, s, 100));
+        t = F(BYTE*, s, 3248);
+        Vec3 tv = F(Vec3, t, 432);
+        float spd = (float)Vec3_Length(&tv);
+        Cs_ClearSteer(s);
+        t = F(BYTE*, s, 3248);
+        if (!t)
+            break;
+        F(int, s, 3464) = 1;
+        tv = F(Vec3, t, 432);
+        double spd2 = Vec3_Length(&tv);
+        float k = 30.0f;
+        if (F(int, s, 3236) == 10)
+            k = (float)((spd2 + g_cs2_64b6e0) * g_cs2_64b918 / (spd2 + g_cs2_64d2f8));
+        float off[3], off2[3], lead[3];
+        off[0] = (float)((double)g_axisY.x * k);
+        off[1] = (float)((double)g_axisY.y * k);
+        off[2] = (float)((double)g_axisY.z * k);
+        t = F(BYTE*, s, 3248);
+        const Vec3& tv3 = F(Vec3, t, 432);
+        lead[0] = (float)((double)tv3.x * g_cs2_64c258);
+        lead[1] = (float)((double)tv3.y * g_cs2_64c258);
+        lead[2] = (float)((double)tv3.z * g_cs2_64c258);
+        Matrix m1, m2;
+        Vec3 P1 = Cs_Through(SceneObj_Matrix1(t + 16, 0, &m1), off);
+        for (int j = 0; j < 3; j++)
+            off2[j] = (float)((double)off[j] * g_cs2_64c350);
+        const Matrix* M2 = SceneObj_Matrix1(F(BYTE*, s, 3248) + 16, 0, &m2);
+        const float* N = M2->m;
+        Vec3& aim = F(Vec3, s, 3468);
+        aim.x = (float)((double)off2[2] * N[6] + (double)off2[1] * N[3] + (double)off2[0] * N[0] + N[9] + lead[0]);
+        aim.y = (float)((double)lead[1] + (float)((double)off2[2] * N[7] + (double)off2[1] * N[4] + (double)off2[0] * N[1] + N[10]));
+        aim.z = (float)((double)lead[2] + (float)((double)off2[2] * N[8] + (double)off2[1] * N[5] + (double)off2[0] * N[2] + N[11]));
+        Vec3 e;
+        e.x = (float)((double)P1.x - F(float, s, 36));
+        e.y = (float)((double)P1.y - F(float, s, 40));
+        e.z = 0;
+        float dist = (float)Vec3_Length(&e);
+        if (dist > g_cs2_64b678)
+        {
+            Vec3 tmp;
+            CallThis(Cs_MulAssign, &e, &tmp, (float)(g_cs2_64b670 / dist));
+        }
+        int ts = Copter_TargetState(s, 0);
+        if (ts)
+        {
+            F(int, s, 3240) = F(int, s, 3236);
+            if (ts == -1)
+            {
+                F(int, s, 3240) = 0;
+                CallThis(FUN_5662f0, s, 4);
+            }
+            else if (ts == 1)
+                CallThis(FUN_5662f0, s, 4);
+            else if (ts == 2)
+                CallThis(FUN_5662f0, s, 3);
+            break;
+        }
+        int st = F(int, s, 3236);
+        F(int, s, 3388) = 0;
+        if (st == 10)
+        {
+            double sp = spd < g_cs2_64b670 ? g_cs2_64b670 : (double)spd;
+            float turn = (float)(x87_fabs((double)q) / sp * g_cs2_64d318);
+            float sk = (float)((spd + g_cs2_64b5b8) / (spd + g_cs2_64b6d0));
+            double dd = dist < g_cs2_64b670 ? g_cs2_64b670 : (double)dist;
+            float nearK = (float)(g_cs2_64ed90 / dd);
+            Matrix m3;
+            const float* T = SceneObj_Matrix1(F(BYTE*, s, 3248) + 16, 0, &m3)->m;
+            double x1 = (double)F(float, s, 60) * T[10] + (double)F(float, s, 72) * T[11] + (double)F(float, s, 48) * T[9] + F(float, s, 84);
+            float x2 = (float)((double)F(float, s, 64) * T[10] + (double)F(float, s, 76) * T[11] + (double)F(float, s, 52) * T[9] + F(float, s, 88));
+            x1 = x87_fabs(x1);
+            if (x1 < x2 * g_cs2_64b6e0)
+                F(int, s, 3284) = 1;
+            if (x1 > x2 * g_cs2_64f760)
+                F(int, s, 3284) = 0;
+            int sub = F(int, s, 3244);
+            if (sub == 0)
+            {
+                F(int, s, 3436) = 1;
+                F(float, s, 3448) = (float)(g_cs2_64b670 / ((double)nearK + turn + g_cs2_64d0f0) * sk * sk);
+                if (dist > g_cs2_64c450)
+                    break;
+                F(int, s, 3244) = 1;
+                sub = 1;
+            }
+            if (sub == 1)
+            {
+                t = F(BYTE*, s, 3248);
+                Vec3 tp = F(Vec3, t, 432);
+                Matrix m4;
+                const Matrix* M4 = SceneObj_Matrix1(t + 16, 0, &m4);
+                aim.x = (float)((double)tp.x + M4->m[9]);
+                aim.y = (float)((double)tp.y + M4->m[10]);
+                aim.z = (float)((double)tp.z + M4->m[11]);
+                F(int, s, 3436) = 1;
+                F(float, s, 3448) = (float)((double)sk * sk * sk * g_cs2_64b838);
+                if (dist > k)
+                    F(int, s, 3244) = 0;
+            }
+        }
+        else if (st == 6)
+        {
+            if (dist < g_cs2_64b918)
+                Cs_Lean(s, q, g_cs2_64b720);
+            else
+            {
+                double sp = spd < g_cs2_64b5b8 ? g_cs2_64b5b8 : (double)spd;
+                double a = x87_fabs((double)q) / sp * g_cs2_64d318;
+                double dd = dist < g_cs2_64b670 ? g_cs2_64b670 : (double)dist;
+                F(int, s, 3436) = 1;
+                F(float, s, 3448) = (float)(g_cs2_64d318 / (g_cs2_64ed90 / dd + a + g_cs2_64d0f0));
+            }
+        }
+        else
+        {
+            if (dist < g_cs2_64b918)
+                Cs_Lean(s, q, g_cs2_64c96c);
+            else
+            {
+                double dd = dist < g_cs2_64b670 ? g_cs2_64b670 : (double)dist;
+                F(int, s, 3436) = 1;
+                F(float, s, 3448) = (float)(g_cs2_64b5b8 / (g_cs2_64b918 / dd + g_cs2_64d0f0));
+            }
+        }
+        break;
+    }
+    case 1:
+    case 2:
+        Copter_UpdateAxes((DWORD*)(s + 3372), 0);
+        if (F(int, s, 3440) > 0 || F(int, s, 3460) > 20)
+        {
+            double x = Game_FrameTime() * F(int, s, 3440);
+            F(int, s, 3460) = (int)((x / (Game_FrameTime() + g_cs2_64b670) + g_cs2_64b670) * F(int, s, 3460));
+        }
+        F(int, s, 3440) = 0;
+        F(int, s, 3452) = 0;
+        break;
+    }
+    int p = F(int, s, 3240);
+    if (p == 10 || p == 6)
+    {
+        int st = F(int, s, 3236);
+        if (st == 4 || st == 3)
+        {
+            if (!Copter_TargetState(s, 0))
+                CallThis(FUN_5662f0, s, F(int, s, 3240));
+        }
+        else
+            F(int, s, 3240) = 0;
+    }
 }
 
 } // extern "C"
