@@ -2088,6 +2088,20 @@ PUBLIC $L_77c69c, $L_77c6a0, $L_77c8a0, $L_77c8a4, $L_77c8a8, $L_77cae8
 PUBLIC $L_77cf68, $L_77cf6c, $L_77cfe4, $L_77cfe8, $L_77cfec, $L_77d088
 PUBLIC $L_77d08c, $L_77d980, $L_77d9f8, $L_77e2ec, $L_77e2f0, $L_77e3e4
 PUBLIC $L_77e3e8, $L_77e3ec, $L_77e3f0
+PUBLIC $L_650628, $L_650630, $L_650638, $L_65063c, $L_67d9e8, $L_67d9f8
+PUBLIC $L_67da04, $L_67da10, $L_67da1c, $L_67da28, $L_67da2c
+PUBLIC $L_64f798, $L_6796e0, $L_6796e4, $L_6796e8, $L_67a3a8, $L_696bbc
+PUBLIC $L_698008, $L_698020
+PUBLIC $L_64dd78, $L_64f3c0, $L_652550, $L_682f58, $L_682f64, $L_682f78
+PUBLIC $L_682f84, $L_682f94, $L_682fa0, $L_682fb4, $L_682fc4, $L_682fd4
+PUBLIC $L_682fe4, $L_683004, $L_68301c, $L_683030, $L_683044, $L_683058
+PUBLIC $L_68306c, $L_683084, $L_68309c, $L_6830b0, $L_6830c4, $L_6830c8
+PUBLIC $L_6830d8, $L_6830dc, $L_720e10, $L_7212bc, $L_72175c
+PUBLIC $L_64e4c8, $L_6516e0, $L_6516e8, $L_6516f0, $L_6516f8, $L_651730
+PUBLIC $L_651738, $L_651740, $L_67efd4, $L_67f010, $L_702a40, $L_702da0
+PUBLIC $L_64cab0, $L_67e8d0, $L_67e8d8, $L_6fa750, $L_6fb6f8, $L_6fcad8
+PUBLIC $L_6fd758, $L_7009e0, $L_7025d4, $L_7025d8
+PUBLIC $L_64f768, $L_67a2e8, $L_67a2f0, $L_67a318, $L_67a35c
 
 ;===================================
 _TEXT SEGMENT
@@ -566361,6 +566375,8 @@ EXTERN _Obj_Call72:PROC
 $L_54d830 TEXTEQU <_Obj_Call72>
 ENDIF
           BYTE 090H
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 $L_54d840 PROC
 
             push EBP
@@ -567141,6 +567157,10 @@ $L_54e154           BYTE ($L_54e13c-$L_54e13c)/4
           BYTE ($L_54e150-$L_54e13c)/4
           BYTE ($L_54e148-$L_54e13c)/4
           BYTE ($L_54e14c-$L_54e13c)/4
+ELSE
+EXTERN @Car_HandleEvent@12:PROC
+$L_54d840 TEXTEQU <@Car_HandleEvent@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -572765,6 +572785,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_552940 PROC
 
             push EBP
@@ -574875,6 +574897,10 @@ $L_55465c           DWORD $L_553604
           DWORD $L_55385e
           DWORD $L_553a9b
           DWORD $L_553ffc
+ELSE
+EXTERN @Car_LampShadows@8:PROC
+FUN_552940 TEXTEQU <@Car_LampShadows@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -653461,6 +653487,8 @@ EXTERN @Item_OnMessage@36:PROC
 FUN_587e20 TEXTEQU <@Item_OnMessage@36>
 ENDIF
 ALIGN 16
+; src/moving_items.cpp, nmake ASM_MOVING_ITEMS=1 assembles the original
+IFDEF ASM_MOVING_ITEMS
 FUN_588090 PROC
 
             sub ESP,1188
@@ -654962,6 +654990,10 @@ $L_58938c           DWORD $L_5880b3
           DWORD $L_5880b3
           DWORD $L_5880b3
           DWORD $L_5880b3
+ELSE
+EXTERN @Item_KnockOver@8:PROC
+FUN_588090 TEXTEQU <@Item_KnockOver@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -707040,6 +707072,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5aa750 PROC
 
             push EBP
@@ -707621,6 +707655,10 @@ $L_5aad0a::
             pop EBP
             ret 
 $L_5aa750 ENDP
+ELSE
+EXTERN _Water_Draw:PROC
+$L_5aa750 TEXTEQU <_Water_Draw>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -715565,6 +715603,8 @@ $L_5af9d0::
           BYTE 090H
 FUN_5af3e0 ENDP
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5af9e0 PROC
 
             push EBP
@@ -716209,6 +716249,10 @@ $L_5b0110::
 
             ret 
 FUN_5af9e0 ENDP
+ELSE
+EXTERN @Mesh_TexCoords@32:PROC
+FUN_5af9e0 TEXTEQU <@Mesh_TexCoords@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -724674,6 +724718,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b5710 PROC
 
             sub ESP,384
@@ -725525,6 +725571,10 @@ $L_5b6100::
             add ESP,384
             ret 8
 FUN_5b5710 ENDP
+ELSE
+EXTERN @Render_PortalView@16:PROC
+FUN_5b5710 TEXTEQU <@Render_PortalView@16>
+ENDIF
           BYTE 090H
 ALIGN 16
 ; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
@@ -804303,6 +804353,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/framework.cpp, nmake ASM_FRAMEWORK=1 assembles the original
+IFDEF ASM_FRAMEWORK
 FUN_5e05c0 PROC
 
             push EBP
@@ -805568,6 +805620,10 @@ $L_5e103c           BYTE ($L_5e1004-$L_5e1004)/4
           BYTE ($L_5e102c-$L_5e1004)/4
           BYTE ($L_5e1030-$L_5e1004)/4
           BYTE ($L_5e1034-$L_5e1004)/4
+ELSE
+EXTERN @Dbg_OnInput@12:PROC
+FUN_5e05c0 TEXTEQU <@Dbg_OnInput@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -847574,6 +847630,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/scene.cpp, nmake ASM_SCENE=1 assembles the original
+IFDEF ASM_SCENE
 FUN_5f6820 PROC
 
             sub ESP,828
@@ -850417,6 +850475,10 @@ $L_5f88a4           DWORD $L_5f686e
           DWORD $L_5f86b5
           DWORD $L_5f68f3
           DWORD $L_5f69ac
+ELSE
+EXTERN @Shape_SweepHit@24:PROC
+FUN_5f6820 TEXTEQU <@Shape_SweepHit@24>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -909110,6 +909172,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_615da0 PROC
 
             sub ESP,36
@@ -909875,6 +909939,10 @@ $L_616504::
             add ESP,36
             ret 4
 FUN_615da0 ENDP
+ELSE
+EXTERN @Grid_HeightAt@12:PROC
+FUN_615da0 TEXTEQU <@Grid_HeightAt@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -911196,6 +911264,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_617180 PROC
 
             sub ESP,2436
@@ -914224,6 +914294,10 @@ $L_6197b8           DWORD $L_617255
           DWORD $L_618abd
           DWORD $L_61902b
           DWORD $L_6193d8
+ELSE
+EXTERN @Patch_AddPlant@28:PROC
+FUN_617180 TEXTEQU <@Patch_AddPlant@28>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

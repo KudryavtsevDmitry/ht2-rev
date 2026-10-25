@@ -2098,7 +2098,7 @@ extern "C" void FUN_5e4810(); KING_ALIAS("_FUN_5e4810", "@NamedTable_Destroy@8")
 ASM_PROC(FUN_5daa30)
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
 extern "C" void FUN_5dbe60(); KING_ALIAS("_FUN_5dbe60", "@Messages_Take@8")
-ASM_PROC(FUN_5e05c0)
+extern "C" void FUN_5e05c0(); KING_ALIAS("_FUN_5e05c0", "@Dbg_OnInput@12")
 extern "C" void FUN_5d3ca0(); KING_ALIAS("_FUN_5d3ca0", "_Video_CreatePalette")
 ASM_VAR(AsmLabel, s_fw651ee8, $L_651ee8)
 ASM_VAR(AsmLabel, s_fw652130, $L_652130)
@@ -4749,7 +4749,7 @@ void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* te
 
 extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o);  // weather.cpp
 ASM_VAR(AsmLabel, g_rp5c8ae0, $L_5c8ae0)
-ASM_VAR(AsmLabel, g_rp5aa750, $L_5aa750)
+extern "C" int __cdecl Water_Draw(void*, BYTE* r);
 ASM_VAR(AsmLabel, s_rp682f14, $L_682f14)
 ASM_VAR(AsmLabel, s_rp682f00, $L_682f00)
 ASM_VAR(AsmLabel, s_rp682ef0, $L_682ef0)
@@ -4782,7 +4782,7 @@ void __fastcall World_SetupPasses(BYTE* w)
 {
     CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f14, (void*)Weather_LogPos);
     CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f00, (void*)g_rp5c8ae0);
-    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682ef0, (void*)g_rp5aa750);
+    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682ef0, (void*)Water_Draw);
     CallThis(FUN_5d27c0, (BYTE*)g_objectNames);
     static const int base[] = {400, 0, 20, 30, 10};
     for (int k : base)
@@ -5612,6 +5612,277 @@ void __fastcall EventRing_Push(BYTE* s, void*, int v)
     F(int, s, 56 + tail * 4) = v;
     if (++F(int, s, 460) >= 100)
         F(int, s, 460) = 0;
+}
+
+} // extern "C"
+
+// === the debug window's input (FUN_5e05c0)
+
+extern "C" int __cdecl _mkdir(const char*);
+extern "C" void __cdecl Sys_Log(const char* text, int value);
+ASM_VAR(BYTE*, g_di721750, $L_721750)
+ASM_VAR(int, g_di721758, $L_721758)                     // the screenshot number
+ASM_VAR(int, g_di72175c, $L_72175c)                     // the camera dump number
+ASM_VAR(int, g_di721760, $L_721760)
+ASM_VAR(int, g_di721764, $L_721764)
+ASM_VAR(float, g_di721744, $L_721744)
+ASM_VAR(float, g_di721210, $L_721210)
+ASM_VAR(float, g_di72174c, $L_72174c)
+ASM_VAR(float, g_di721748, $L_721748)
+ASM_VAR(int, g_di72006c, $L_72006c)
+ASM_VAR(int, g_di720070, $L_720070)
+ASM_VAR(int, g_di720074, $L_720074)
+ASM_VAR(int, g_di720078, $L_720078)
+ASM_VAR(int, g_di72007c, $L_72007c)
+ASM_VAR(int, g_di702e90, $L_702e90)
+ASM_VAR(int, g_di702e9c, $L_702e9c)
+ASM_VAR(int, g_di720720, $L_720720)
+ASM_VAR(char, g_diText, $L_7212bc)                      // the stats text
+ASM_VAR(char, g_diLine, $L_720e10)
+ASM_VAR(double, g_di64b5a0, $L_64b5a0)
+ASM_VAR(double, g_di64d0f0, $L_64d0f0)
+ASM_VAR(double, g_di64dd78, $L_64dd78)
+ASM_VAR(double, g_di64d338, $L_64d338)
+ASM_VAR(double, g_di64d378, $L_64d378)
+ASM_VAR(double, g_di652550, $L_652550)
+ASM_VAR(double, g_di64b730, $L_64b730)
+ASM_VAR(double, g_di64f3c0, $L_64f3c0)
+ASM_VAR(char, g_di6830dc, $L_6830dc)
+ASM_VAR(char, g_di6830d8, $L_6830d8)
+ASM_VAR(char, g_di6830c8, $L_6830c8)
+ASM_VAR(char, g_di6703e4, $L_6703e4)
+ASM_VAR(char, g_di67fb80, $L_67fb80)
+ASM_VAR(char, g_di682f34, $L_682f34)
+ASM_VAR(char, g_di6830c4, $L_6830c4)
+ASM_VAR(char, g_di682f24, $L_682f24)
+ASM_VAR(char, g_di6830b0, $L_6830b0)
+ASM_VAR(char, g_di68309c, $L_68309c)
+ASM_VAR(char, g_di683084, $L_683084)
+ASM_VAR(char, g_di68306c, $L_68306c)
+ASM_VAR(char, g_di683058, $L_683058)
+ASM_VAR(char, g_di683044, $L_683044)
+ASM_VAR(char, g_di683030, $L_683030)
+ASM_VAR(char, g_di68301c, $L_68301c)
+ASM_VAR(char, g_di683004, $L_683004)
+ASM_VAR(char, g_di682fe4, $L_682fe4)
+ASM_VAR(char, g_di682fd4, $L_682fd4)
+ASM_VAR(char, g_di682fc4, $L_682fc4)
+ASM_VAR(char, g_di682fb4, $L_682fb4)
+ASM_VAR(char, g_di682fa0, $L_682fa0)
+ASM_VAR(char, g_di682f94, $L_682f94)
+ASM_VAR(char, g_di682f84, $L_682f84)
+ASM_VAR(char, g_di682f78, $L_682f78)
+ASM_VAR(char, g_di682f64, $L_682f64)
+ASM_VAR(char, g_di682f58, $L_682f58)
+
+// the next line of the stats text
+static void Di_Add()
+{
+    strcat(&g_diText, &g_diLine);
+}
+
+// the mouse's offset from a 40 pixel dead zone around the middle of size n (window size w), 0 inside it
+static int Di_Off(int p, int half, int w, int* side)
+{
+    *side = 0;
+    if (p < half - 40)
+    {
+        *side = -1;
+        return w / 2 - p - 40;
+    }
+    if (p > half + 40)
+    {
+        *side = 1;
+        return p - w / 2 - 40;
+    }
+    return 0;
+}
+
+extern "C" {
+
+// [FUN_5e05c0] debug window s's event ev: buttons 513 / 514 and 516 / 517 set and clear bits 1 and 2 of +2988,
+// 519 cycles the mouse mode (+2984); mouse moves (512) turn the view (+2872 / +2880) by the offset from the middle
+// (mode 1) or past a dead zone; keys: 8 toggles bit 8, 32 sets bit 4, 27 / 71 / 103 call +2856, 107 / 109 zoom,
+// 113-115 set the mouse mode, 116 saves a screenshot, 117 shows the stats, 118 / 120 toggle flags, 119 dumps the
+// camera
+int __fastcall Dbg_OnInput(BYTE* s, void*, const short* ev)
+{
+    int t = ev[0];
+    switch (t)
+    {
+    case 513:
+        return F(int, s, 2988) |= 1;
+    case 514:
+        return F(int, s, 2988) &= ~1;
+    case 516:
+        return F(int, s, 2988) |= 2;
+    case 517:
+        return F(int, s, 2988) &= ~2;
+    case 519:
+    {
+        int v = F(int, s, 2984) + 1;
+        F(int, s, 2984) = v % 3;
+        return v / 3;
+    }
+    case 512:
+    {
+        int x = ev[1], y = ev[2];
+        BYTE* sf = F(BYTE*, s, 12);
+        if (F(int, s, 2984) == 1)
+        {
+            int dx = (int)(F(WORD, sf, 0) >> 1) - x;
+            F(double, s, 2872) = dx * g_di64b5a0 * g_di64d0f0;
+            int dy = y - (int)(F(WORD, sf, 2) >> 1);
+            F(double, s, 2880) = dy * g_di64d338;
+            return (int)sf;
+        }
+        int side, half = F(WORD, sf, 0) >> 1;
+        int dx = side = 0;
+        if (x < half - 40 || x > half + 40)
+            dx = Di_Off(x, half, CallVirt<int>(s, 20), &side);
+        if (side < 0)
+            F(double, s, 2872) = dx * g_di64b5a0 * g_di64d0f0;
+        else if (side > 0)
+            F(double, s, 2872) = dx * g_di64b5a0 * g_di64dd78;
+        else
+            F(double, s, 2872) = 0;
+        half = F(WORD, sf, 2) >> 1;
+        int dy = 0;
+        side = 0;
+        if (y < half - 40 || y > half + 40)
+            dy = Di_Off(y, half, CallVirt<int>(s, 24), &side);
+        if (side < 0)
+            F(double, s, 2880) = dy * g_di64d338;
+        else if (side > 0)
+            F(double, s, 2880) = -(dy * g_di64d338);
+        else
+            F(double, s, 2880) = 0;
+        return half;
+    }
+    case 256:
+        break;
+    default:
+        return t - (t > 514 ? 519 : 513);
+    }
+    int k = ev[3];
+    switch (k)
+    {
+    case 8:
+        F(int, s, 2988) ^= 8;
+        break;
+    case 27:
+    case 71:
+    case 103:
+        if (F(BYTE*, s, 2856))
+            return CallVirt<int>(F(BYTE*, s, 2856), 36);
+        break;
+    case 32:
+        return F(int, s, 2988) |= 4;
+    case 107:
+    case 109:
+    {
+        BYTE* v = F(BYTE*, s, 488);
+        double z = k == 107 ? g_di64d378 : g_di652550;
+        F(float, v, 88) = (float)(F(float, v, 88) * z);
+        F(float, v, 84) = (float)(F(float, v, 84) * z);
+        return (int)v;
+    }
+    case 113:
+    case 114:
+    case 115:
+        F(int, s, 2984) = k - 113;
+        break;
+    case 116:
+    {
+        // a screenshot
+        Clock_Start(s, 0);
+        if (g_di721758 < 9999)
+        {
+            char dir[64], path[96];
+            sprintf(dir, &g_di6830d8, &g_di6830dc);
+            _mkdir(&g_di6830dc);
+            sprintf(path, &g_di6830c8, dir, g_di721758);
+            FILE* f = fopen(path, &g_di6703e4);
+            Tga_Write(F(BYTE*, s, 12), f);
+            fclose(f);
+            g_di721758++;
+        }
+        Clock_Stop(s, 0);
+        return 0;
+    }
+    case 117:
+    {
+        // the stats
+        sprintf(&g_diText, &g_di6830b0, F(double, s, 2976) * g_di64b730);
+        sprintf(&g_diLine, &g_di68309c, F(double, s, 496));
+        Di_Add();
+        sprintf(&g_diLine, &g_di683084, F(double, s, 504));
+        Di_Add();
+        sprintf(&g_diLine, &g_di68306c, F(double, s, 512));
+        Di_Add();
+        sprintf(&g_diLine, &g_di683058, (double)g_di721744);
+        Di_Add();
+        sprintf(&g_diLine, &g_di683044, (double)g_di721210);
+        Di_Add();
+        sprintf(&g_diLine, &g_di683030, (double)g_di72174c);
+        Di_Add();
+        sprintf(&g_diLine, &g_di68301c, (double)g_di721748);
+        Di_Add();
+        sprintf(&g_diLine, &g_di683004, F(double, s, 624));
+        Di_Add();
+        sprintf(&g_diLine, &g_di682fe4, g_di72006c, g_di720070, g_di720074);
+        Di_Add();
+        sprintf(&g_diLine, &g_di682fd4, g_di720078);
+        Di_Add();
+        sprintf(&g_diLine, &g_di682fc4, g_di702e90);
+        Di_Add();
+        sprintf(&g_diLine, &g_di682fb4, g_di72007c);
+        Di_Add();
+        sprintf(&g_diLine, &g_di682fa0, F(int, s, 2904), F(int, s, 2908), F(int, s, 2912), F(int, s, 2916),
+                F(int, s, 2920), F(int, s, 2924));
+        Di_Add();
+        sprintf(&g_diLine, &g_di682f94, F(double, s, 2928) * g_di64f3c0);
+        Di_Add();
+        sprintf(&g_diLine, &g_di682f84, g_di720720);
+        Di_Add();
+        BYTE* o = F(BYTE*, s, 488);
+        if (o)
+            o = F(BYTE*, o, 76);
+        sprintf(&g_diLine, &g_di682f78, F(int, o, 12));
+        Di_Add();
+        sprintf(&g_diLine, &g_di682f64, g_di702e9c);
+        Di_Add();
+        int fl = F(int, g_di721750, 268);
+        if (fl & 0x400)
+        {
+            Sys_Log(&g_diText, fl);
+            return 0;
+        }
+        return MessageBoxA(0, &g_diText, &g_di682f58, 0);
+    }
+    case 118:
+        g_di721760 ^= 1;
+        break;
+    case 119:
+    {
+        // the camera's matrix
+        Clock_Start(s, 0);
+        FILE* f = fopen(&g_di682f34, &g_di67fb80);
+        fprintf(f, &g_di6830c4, g_di72175c);
+        float m[12];
+        Camera_Get(s, 0, m);
+        for (int r = 0; r < 4; r++)
+            fprintf(f, &g_di682f24, (double)m[3 * r], (double)m[3 * r + 1], (double)m[3 * r + 2]);
+        fclose(f);
+        g_di72175c++;
+        Clock_Stop(s, 0);
+        return 0;
+    }
+    case 120:
+        g_di721764 ^= 1;
+        break;
+    }
+    return k - 8;
 }
 
 } // extern "C"

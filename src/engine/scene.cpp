@@ -833,7 +833,7 @@ extern "C" int __fastcall Node_Remove(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
 extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
-ASM_PROC(FUN_5af9e0)
+extern "C" void FUN_5af9e0(); KING_ALIAS("_FUN_5af9e0", "@Mesh_TexCoords@32")
 extern "C" void FUN_5b1950(); KING_ALIAS("_FUN_5b1950", "@Rn_DrawStrided@24")
 extern "C" void FUN_5b1df0(); KING_ALIAS("_FUN_5b1df0", "@Rn_DrawIndexedStrided@24")
 ASM_VAR(DWORD, g_sc702e8c, $L_702e8c)
@@ -4094,7 +4094,7 @@ int __cdecl Wall_SweepHit(int flags, const float* a, const float* b, float* from
 
 // === testing a ray against an object's shape (a method at $L_5f93d0)
 
-ASM_FUNC(Rs_ShapeHit, FUN_5f6820)
+extern "C" void Rs_ShapeHit(); KING_ALIAS("_Rs_ShapeHit", "@Shape_SweepHit@24")
 
 // out = ray r's frame (+4 rotation, +40 position) applied to point p
 static void Rs_Place(const BYTE* r, const float* p, float* out)
@@ -4424,6 +4424,574 @@ int __fastcall Slot_CastRay(BYTE* s, void*, int i, int flags, BYTE* r)
     memcpy(r, best, 208);
     Rs_EndTiming(r);
     return bestRes;
+}
+
+} // extern "C"
+
+// === a point's sweep against a shape (FUN_5f6820)
+
+struct ShV { float x, y, z; };
+extern "C" ShV* __cdecl Swp_Normalized(ShV*, const ShV*); KING_ALIAS("_Swp_Normalized", "_Vec3_Normalized")
+extern "C" double __cdecl Swp_Length(const ShV*); KING_ALIAS("_Swp_Length", "_Vec3_Length")
+extern "C" double __cdecl Swp_DotV(const ShV*, const ShV*); KING_ALIAS("_Swp_DotV", "_Vec3_Dot")
+extern "C" ShV* __cdecl Swp_Negated(ShV*, const ShV*); KING_ALIAS("_Swp_Negated", "_Vec3_Negated")
+extern "C" ShV* __cdecl Swp_SubV(ShV*, const ShV*, const ShV*); KING_ALIAS("_Swp_SubV", "_Vec3_Sub")
+extern "C" ShV* __cdecl Swp_AddV(ShV*, const ShV*, const ShV*); KING_ALIAS("_Swp_AddV", "_Vec3_Add")
+extern "C" ShV* __cdecl Swp_Scaled(ShV*, const ShV*, float); KING_ALIAS("_Swp_Scaled", "_Vec3_Scaled")
+extern "C" ShV* __fastcall Swp_SubAssign(ShV*, void*, ShV*, const ShV*); KING_ALIAS("@Swp_SubAssign@16", "@Vec3_SubAssign@16")
+ASM_VAR(float, g_sh64c264, $L_64c264)                 // 0
+ASM_VAR(double, g_sh64b748, $L_64b748)
+ASM_VAR(float, g_sh64c408, $L_64c408)
+ASM_VAR(double, g_sh64b6e0, $L_64b6e0)
+ASM_VAR(double, g_sh64b678, $L_64b678)                // 0
+ASM_VAR(double, g_sh64b930, $L_64b930)
+ASM_VAR(double, g_sh64b5a0, $L_64b5a0)
+ASM_VAR(float, g_sh64c250, $L_64c250)
+
+// the float steps of Vec3_SetThis
+static ShV Sh_Sub(const ShV& a, const ShV& b)
+{
+    ShV r;
+    r.x = (float)((double)a.x - b.x);
+    r.y = (float)((double)a.y - b.y);
+    r.z = (float)((double)a.z - b.z);
+    return r;
+}
+
+static ShV Sh_Add(const ShV& a, const ShV& b)
+{
+    ShV r;
+    r.x = (float)((double)a.x + b.x);
+    r.y = (float)((double)a.y + b.y);
+    r.z = (float)((double)a.z + b.z);
+    return r;
+}
+
+static ShV Sh_Mul(const ShV& a, double k)
+{
+    ShV r;
+    r.x = (float)(a.x * k);
+    r.y = (float)(a.y * k);
+    r.z = (float)(a.z * k);
+    return r;
+}
+
+static ShV Sh_Norm(const ShV& v)
+{
+    ShV r;
+    return *Swp_Normalized(&r, &v);
+}
+
+static double Sh_Len(const ShV& v)
+{
+    return Swp_Length(&v);
+}
+
+static double Sh_Dot(const ShV& a, const ShV& b)
+{
+    return (double)a.y * b.y + (double)a.z * b.z + (double)a.x * b.x;
+}
+
+// p moved back off the surface along normal n by the margin
+static void Sh_Back(ShV* p, const ShV& n, float m)
+{
+    ShV t = Sh_Mul(n, m), r;
+    Swp_SubAssign(p, 0, &r, &t);
+}
+
+extern "C" {
+
+// [FUN_5f6820] point p swept towards n against shape s (+0 type, +4 count, +8 data) with margin r when flags has
+// bit 2: on a hit p is put at the contact (backed off by the margin) and n becomes the surface normal, nonzero
+// (the part's number + 1 for the polygon and wall lists); types: 0 point, 1 / 2 outside / inside a sphere, 3 / 4
+// outside / inside a cylinder (base, axis, radius, height), 5 a plane, 6 polygons, 7 a chain of walls
+int __fastcall Shape_SweepHit(BYTE* s, void*, int flags, ShV* p, ShV* n, float r)
+{
+    const float* D = F(const float*, s, 8);
+    float m = (flags & 2) ? r : g_sh64c264;
+    switch (F(int, s, 0))
+    {
+    case 0:
+        *n = Sh_Norm(Sh_Sub(*p, *n));
+        return 1;
+    case 1:
+    {
+        const ShV& C = *(const ShV*)D;
+        float R = (float)((double)m + D[3]);
+        if (Vec3_NearlyEqual(n, p))
+        {
+            if (!(Sh_Len(Sh_Sub(*n, C)) < R + g_sh64b748))
+                return 0;
+            *p = *n;
+            *n = Sh_Norm(Sh_Sub(*p, C));
+            return 1;
+        }
+        ShV dir = Sh_Norm(Sh_Sub(*n, *p));
+        double vx = (double)p->x - C.x, vy = (double)p->y - C.y, vz = (double)p->z - C.z;
+        float b = (float)((vx * dir.x + vz * dir.z + vy * dir.y) * 2);
+        float c = (float)(vx * vx + vy * vy + vz * vz - (double)R * R);
+        double bb = (double)b * b, ac = c * (double)g_sh64c408;
+        if (bb < ac)
+            return 0;
+        float t = (float)((-(double)b - x87_sqrt(bb - ac)) * g_sh64b6e0);
+        if (t < g_sh64c264 || Sh_Len(Sh_Sub(*n, *p)) < t)
+            return 0;
+        *p = Sh_Add(Sh_Mul(dir, t), *p);
+        *n = Sh_Norm(Sh_Sub(*p, C));
+        Sh_Back(p, *n, m);
+        return 1;
+    }
+    case 2:
+    {
+        const ShV& C = *(const ShV*)D;
+        float R = (float)((double)D[3] - m);
+        double lim = R - g_sh64b748;
+        if (Sh_Len(Sh_Sub(*n, C)) < lim)
+            return 0;
+        if (Vec3_NearlyEqual(n, p))
+        {
+            if (!(Sh_Len(Sh_Sub(*n, C)) > lim))
+                return 0;
+            *p = *n;
+            *n = Sh_Norm(Sh_Sub(*p, C));
+            return 1;
+        }
+        ShV dir = Sh_Norm(Sh_Sub(*n, *p));
+        ShV v = Sh_Sub(*p, C);
+        float b = (float)(((double)v.z * dir.z + (double)v.y * dir.y + (double)dir.x * v.x) * 2);
+        double c = Sh_Dot(v, v) - (double)R * R;
+        float bb = (float)((double)b * b);
+        double ac = c * g_sh64c408;
+        if (bb < ac)
+            return 0;
+        float t = (float)((x87_sqrt(bb - ac) - b) * g_sh64b6e0);
+        if (t < g_sh64c264 || Sh_Len(Sh_Sub(*n, *p)) < t)
+            return 0;
+        *p = Sh_Add(*p, Sh_Mul(dir, t));
+        ShV u = Sh_Norm(Sh_Sub(*p, C));
+        n->x = -u.x;
+        n->y = -u.y;
+        n->z = -u.z;
+        Sh_Back(p, *n, m);
+        return 1;
+    }
+    case 3:
+    {
+        const ShV& C = *(const ShV*)D;
+        const ShV& A = *(const ShV*)(D + 3);
+        float R = (float)((double)m + D[6]);
+        float H = (float)((double)m + D[7]);
+        ShV dir = Sh_Norm(Sh_Sub(*n, *p));
+        double ad = Sh_Dot(A, dir);
+        float a = (float)(Sh_Dot(dir, dir) - ad * ad);
+        ShV v = Sh_Sub(*p, C);
+        double av = Sh_Dot(A, v);
+        float b = (float)(Sh_Dot(v, dir) * 2 - av * ad * 2);
+        float c = (float)(Sh_Dot(v, v) - av * av - (double)R * R);
+        double bb = (double)b * b, ac = (double)a * c * g_sh64c408;
+        if (!(bb > ac))
+            return 0;
+        float t = (float)((-(double)b - x87_sqrt(bb - ac)) / ((double)a + a));
+        ShV q = Sh_Add(Sh_Mul(dir, t), *p);
+        float h = (float)Sh_Dot(A, Sh_Sub(q, C));
+        if (H > x87_fabs(h) && t > g_sh64c264 && Sh_Len(Sh_Sub(*n, *p)) > t)
+        {
+            // the side
+            ShV P = Sh_Add(Sh_Mul(A, h), C);
+            *n = Sh_Norm(Sh_Sub(q, P));
+            *p = q;
+            Sh_Back(p, *n, m);
+            return 1;
+        }
+        // the caps
+        ShV d = Sh_Sub(*n, *p);
+        if (x87_fabs(Swp_DotV(&d, &A)) < g_sh64b930)
+            return 0;
+        ShV na;
+        float negAC = (float)Swp_DotV(Swp_Negated(&na, &A), &C);
+        double pa = Swp_DotV(p, &A);
+        float t1 = (float)-((pa + ((double)negAC - H)) / Swp_DotV(&dir, &A));
+        double t2 = ((Swp_DotV(&A, &C) - H) - Swp_DotV(p, &A)) / Swp_DotV(&dir, &A);
+        ShV N;
+        float tt;
+        if (t1 < g_sh64c264)
+        {
+            if (t2 < g_sh64c264)
+                return 0;
+            tt = (float)t2;
+            Swp_Negated(&N, &A);
+        }
+        else if (t2 > g_sh64c264 && !(t2 < t1))
+        {
+            tt = (float)t2;
+            Swp_Negated(&N, &A);
+        }
+        else
+        {
+            tt = t1;
+            N = A;
+        }
+        ShV w;
+        if (Swp_Length(Swp_SubV(&w, n, p)) < tt)
+            return 0;
+        ShV sc, q2;
+        Swp_AddV(&q2, p, Swp_Scaled(&sc, &dir, tt));
+        ShV e;
+        float hh = (float)Swp_DotV(Swp_SubV(&e, &q2, &C), &A);
+        ShV ah, f, g;
+        Swp_Scaled(&ah, &A, hh);
+        if (Swp_Length(Swp_SubV(&g, Swp_SubV(&f, &q2, &ah), &C)) > R)
+            return 0;
+        *n = N;
+        *p = q2;
+        Sh_Back(p, *n, m);
+        return 1;
+    }
+    case 4:
+    {
+        const ShV& C = *(const ShV*)D;
+        const ShV& A = *(const ShV*)(D + 3);
+        float R = (float)((double)D[6] - m);
+        float H = (float)((double)D[7] - m);
+        float h0 = (float)Sh_Dot(A, Sh_Sub(*p, C));
+        if (h0 > H)
+            return 0;
+        float h1 = (float)Sh_Dot(A, Sh_Sub(*n, C));
+        float dh = (float)((double)h1 - h0);
+        if (x87_fabs(dh) > g_sh64b748)
+        {
+            // through the top or the bottom
+            for (int k = 0; k < 2; k++)
+            {
+                float lim = k == 0 ? H : -H;
+                if (k == 0 ? !(h1 > H) : !(h1 < lim))
+                    continue;
+                ShV e = Sh_Mul(Sh_Sub(*n, *p), (double)lim - h0);
+                ShV f;
+                f.x = (float)(e.x / (double)dh);
+                f.y = (float)(e.y / (double)dh);
+                f.z = (float)(e.z / (double)dh);
+                ShV q = Sh_Add(f, *p);
+                ShV ah = Sh_Mul(A, h0);
+                if (!(Sh_Len(Sh_Sub(Sh_Sub(q, C), ah)) < R))
+                    continue;
+                if (k == 0)
+                {
+                    n->x = -A.x;
+                    n->y = -A.y;
+                    n->z = -A.z;
+                }
+                else
+                    *n = A;
+                *p = Sh_Sub(q, Sh_Mul(*n, m));
+                return 1;
+            }
+        }
+        // the side, from within
+        if (!(Sh_Len(Sh_Sub(Sh_Sub(*n, C), Sh_Mul(A, h1))) > R))
+            return 0;
+        ShV dir = Sh_Norm(Sh_Sub(*n, *p));
+        double ad = Sh_Dot(A, dir);
+        float a = (float)(Sh_Dot(dir, dir) - ad * ad);
+        if (x87_fabs(a) < g_sh64b748)
+            return 0;
+        ShV v = Sh_Sub(*p, C);
+        double av = Sh_Dot(A, v);
+        float b = (float)(Sh_Dot(v, dir) * 2 - av * ad * 2);
+        float c = (float)(Sh_Dot(v, v) - av * av - (double)R * R);
+        double bb = (double)b * b, ac = (double)a * c * g_sh64c408;
+        if (bb < ac)
+            return 0;
+        float t = (float)((x87_sqrt(bb - ac) - b) / ((double)a + a));
+        if (t < g_sh64c264 || Sh_Len(Sh_Sub(*n, *p)) < t)
+            return 0;
+        *p = Sh_Add(Sh_Mul(dir, t), *p);
+        ShV v2 = Sh_Sub(*p, C);
+        ShV u = Sh_Sub(v2, Sh_Mul(A, Sh_Dot(A, v2)));
+        ShV un = Sh_Norm(u);
+        n->x = -un.x;
+        n->y = -un.y;
+        n->z = -un.z;
+        Sh_Back(p, *n, m);
+        return 1;
+    }
+    case 5:
+    {
+        const ShV& N = *(const ShV*)D;
+        ShV d;
+        if (Swp_DotV(Swp_SubV(&d, n, p), &N) > g_sh64b678)
+            return 0;
+        float t;
+        if (x87_fabs(Swp_DotV(Swp_SubV(&d, n, p), &N)) < g_sh64b930)
+        {
+            if (x87_fabs(Swp_DotV(n, &N) + D[3]) > g_sh64b5a0)
+                return 0;
+            t = 0.5f;
+        }
+        else
+        {
+            double k = Swp_DotV(p, &N) + ((double)D[3] - m);
+            t = (float)-(k / Swp_DotV(Swp_SubV(&d, n, p), &N));
+            if (t <= g_sh64c264 || !(t < g_sh64c250))
+                return 0;
+        }
+        ShV sc, q;
+        Swp_AddV(&q, p, Swp_Scaled(&sc, Swp_SubV(&d, n, p), t));
+        *p = q;
+        *n = N;
+        ShV nm;
+        Swp_Scaled(&nm, n, m);
+        Swp_SubAssign(p, 0, &sc, &nm);
+        return 1;
+    }
+    case 6:
+    {
+        int cnt = F(int, s, 4);
+        for (int i = 0; i < cnt; i++)
+            if (Poly_SweepHit(flags, F(BYTE*, s, 8) + 48 * i, &p->x, &n->x, r))
+                return i + 1;
+        if (flags & 2)
+            for (int i = 0; i < F(int, s, 4); i++)
+                if (Poly_SweepEdges(flags, F(BYTE*, s, 8) + 48 * i, &p->x, &n->x, r))
+                    return i + 1;
+        return 0;
+    }
+    case 7:
+        for (int i = 0; i < F(int, s, 4) - 1; i++)
+        {
+            const float* w = F(const float*, s, 8) + 3 * i;
+            if (Wall_SweepHit(flags, w, w + 3, &p->x, &n->x, r))
+                return i + 1;
+        }
+        return 0;
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === a mesh's texture coordinates for its material (FUN_5af9e0)
+
+extern "C" void Tc_Frame(); KING_ALIAS("_Tc_Frame", "@Render_CurrentFrame@8")
+extern "C" void Tc_Transform(); KING_ALIAS("_Tc_Transform", "@Vec3_TransformPoint@12")
+extern "C" void Tc_Normalized(); KING_ALIAS("_Tc_Normalized", "_Vec3_Normalized")
+extern "C" void Tc_Fatal(); KING_ALIAS("_Tc_Fatal", "_Sys_Fatal")
+ASM_VAR(BYTE, g_tc702a40, $L_702a40)
+ASM_VAR(float, g_tc702da0, $L_702da0)                   // a static identity matrix
+ASM_VAR(float, g_tcIdentity, $L_7025f0)
+ASM_VAR(float, g_tcUp, $L_702630)
+ASM_VAR(int, g_tc7208c4, $L_7208c4)
+ASM_VAR(double, g_tc651740, $L_651740)
+ASM_VAR(double, g_tc64b748, $L_64b748)
+ASM_VAR(float, g_tc64c250, $L_64c250)                   // 1
+ASM_VAR(float, g_tc64c938, $L_64c938)                   // -1
+ASM_VAR(float, g_tc64c258, $L_64c258)
+ASM_VAR(float, g_tc64c264, $L_64c264)
+ASM_VAR(double, g_tc64b6e0, $L_64b6e0)
+ASM_VAR(double, g_tc651730, $L_651730)
+ASM_VAR(double, g_tc64d908, $L_64d908)
+ASM_VAR(double, g_tc64e4c8, $L_64e4c8)
+ASM_VAR(float, g_tc64d490, $L_64d490)
+ASM_VAR(float, g_tc64c334, $L_64c334)
+ASM_VAR(double, g_tc64d318, $L_64d318)
+ASM_VAR(double, g_tc6516f8, $L_6516f8)
+ASM_VAR(double, g_tc6516f0, $L_6516f0)
+ASM_VAR(double, g_tc6516e8, $L_6516e8)
+ASM_VAR(double, g_tc6516e0, $L_6516e0)
+ASM_VAR(double, g_tc651738, $L_651738)
+ASM_VAR(double, g_tc64b5a0, $L_64b5a0)
+ASM_VAR(char, g_tc67f010, $L_67f010)
+ASM_VAR(char, g_tc67efd4, $L_67efd4)
+
+struct TcV { float x, y, z; };
+
+static float Tc_Clamp1(float v)
+{
+    if (v < g_tc64c938)
+        return -1.0f;
+    if (v > g_tc64c250)
+        return 1.0f;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_5af9e0] renderer r sets the texture coordinates of mesh m's n vertices (channel +48) for material mat and
+// those chained after it (+44): scrolled (+4: +80 / +84 by the time +8488), turned about +112 / +116 (+8: rate
+// +108; 0x100000 at a fixed rate and wobbled by the position), or mapped from the view (0x800, by kind +64:
+// sphere, two polar kinds, flat; 3 in the frame's space); written to the mesh's coordinates (+16, +24 or +28)
+void __fastcall Mesh_TexCoords(BYTE* r, void*, BYTE* m, int n, BYTE* mat, ScVec3 p)
+{
+    for (;;)
+    {
+        if (!(g_tc702a40 & 1))
+        {
+            g_tc702a40 |= 1;
+            memcpy(&g_tc702da0, &g_tcIdentity, 48);
+        }
+        float offU = 0, offV = 0, sn = 0, cs = 1.0f;
+        DWORD fl = F(DWORD, mat, 32);
+        int ch = F(int, mat, 48);
+        if ((fl & 4) || (fl & 8) || (fl & 0x800))
+        {
+            double t = F(double, r, 8488);
+            if (fl & 8)
+            {
+                double a = F(float, mat, 108) * t;
+                sn = (float)x87_sin(a);
+                cs = (float)x87_cos(a);
+            }
+            if (fl & 4)
+            {
+                offU = (float)(F(float, mat, 80) * t);
+                offV = (float)(F(float, mat, 84) * t);
+            }
+            if (fl & 0x100000)
+            {
+                double a = t * g_tc651740;
+                sn = (float)x87_sin(a);
+                cs = (float)x87_cos(a);
+            }
+            BYTE* V = F(BYTE*, r, 8252);
+            for (int i = 0; i < n; i++)
+            {
+                double u, v;
+                BYTE* vx = V + 28 * i;
+                if (F(BYTE*, m, 20))
+                {
+                    if (F(BYTE, m, 12) < ch)
+                        CallC(Tc_Fatal, &g_tc67f010, mat);
+                    const float* uv = F(const float*, m, 20) + 2 * ((F(BYTE, m, 12) + 1) * i + ch);
+                    u = uv[0];
+                    v = uv[1];
+                }
+                else if (!ch)
+                {
+                    v = F(float, vx, 16);
+                    u = F(float, vx, 12);
+                }
+                else
+                {
+                    if (F(int, vx, 24) < ch)
+                    {
+                        char buf[128];
+                        sprintf(buf, &g_tc67efd4, mat);
+                        CallC(Tc_Fatal, buf, 0);
+                    }
+                    const float* uv = F(const float*, vx, 20) + 2 * (ch - 1);
+                    u = uv[0];
+                    v = uv[1];
+                }
+                fl = F(DWORD, mat, 32);
+                if (fl & 4)
+                {
+                    u += offU;
+                    v = offV + v;
+                }
+                if (fl & 8)
+                {
+                    float vf = (float)v;
+                    double du = u - F(float, mat, 112);
+                    v = (v - F(float, mat, 116)) * cs - sn * du + F(float, mat, 116);
+                    u = ((double)vf - F(float, mat, 116)) * sn + cs * du + F(float, mat, 112);
+                }
+                if (fl & 0x800)
+                {
+                    // from the view
+                    TcV P = F(TcV, vx, 0);
+                    TcV U = *(const TcV*)&g_tcUp;
+                    int kind = F(int, mat, 64);
+                    if (kind == 3)
+                        CallThis(Tc_Transform, &P, r + 2240 + 48 * F(int, r, 8224));
+                    else
+                    {
+                        const float* e = CallThis<const float*>(Tc_Frame, r);
+                        TcV d, nv;
+                        d.x = (float)((double)e[0] - P.x);
+                        d.y = (float)((double)e[1] - P.y);
+                        d.z = (float)((double)e[2] - P.z);
+                        nv = *CallC<TcV*>(Tc_Normalized, &nv, &d);
+                        float dot = (float)((double)U.y * nv.y + (double)U.z * nv.z + (double)U.x * nv.x);
+                        P.x = (float)((double)U.x * 2 * dot - nv.x);
+                        float ry = (float)((float)((double)U.y * 2) * (double)dot);
+                        float rz = (float)((float)((double)U.z * 2) * (double)dot);
+                        P.y = (float)((double)ry - nv.y);
+                        P.z = (float)((double)rz - nv.z);
+                        if (x87_fabs(P.z) < g_tc64b748)
+                            P.z = 1e-5f;
+                        else
+                            P.z = Tc_Clamp1(P.z);
+                        P.x = Tc_Clamp1(P.x);
+                    }
+                    switch (kind)
+                    {
+                    case 0:
+                    {
+                        if (P.z < g_tc64b748)
+                            P.z = 1e-5f;
+                        double q = x87_fabs(P.z);
+                        u = F(float, mat, 96) * P.x * g_tc64b6e0 / q + g_tc64b6e0;
+                        v = F(float, mat, 100) * P.y * g_tc64b6e0 / q + g_tc64b6e0;
+                        break;
+                    }
+                    case 1:
+                    case 2:
+                    {
+                        if (kind == 1)
+                            v = x87_acos(P.z) * g_tc651730;
+                        else
+                            v = g_tc64c250 - P.z * g_tc64c258;
+                        double a = x87_acos(P.x);
+                        if (P.y < g_tc64c264)
+                            a = g_tc64d908 - a;
+                        u = a * g_tc64e4c8;
+                        break;
+                    }
+                    case 3:
+                        u = P.x * g_tc64d490 + g_tc64b6e0;
+                        v = g_tc64d318 - P.z * g_tc64c334;
+                        break;
+                    }
+                }
+                if (F(DWORD, mat, 32) & 0x100000)
+                {
+                    // the wobble
+                    TcV q = F(TcV, vx, 0);
+                    float a = (float)(x87_sin(q.x * g_tc6516f8) + x87_cos(q.y * g_tc6516f0));
+                    double b = x87_cos(((double)q.y + q.x) * g_tc6516e8) + x87_sin(((double)q.x - q.y) * g_tc6516e0);
+                    float bf = (float)b;
+                    double k = (F(DWORD, mat, 32) & 0x800) ? g_tc651738 : g_tc64b5a0;
+                    double dv = (b * cs - (double)a * sn) * k;
+                    double du = ((double)a * cs + (double)bf * sn) * k;
+                    u += du;
+                    v = dv + v;
+                }
+                int idx = F(BYTE, m, 12) * i + ch;
+                if (!F(BYTE*, m, 28) && !F(BYTE*, m, 24))
+                {
+                    F(float, F(BYTE*, m, 16), 8 * idx) = (float)u;
+                    F(float, F(BYTE*, m, 16), 8 * idx + 4) = (float)v;
+                }
+                else if (ch > 0)
+                {
+                    F(float, F(BYTE*, m, 16), 8 * idx - 8) = (float)u;
+                    F(float, F(BYTE*, m, 16), 8 * idx - 4) = (float)v;
+                }
+                else
+                {
+                    BYTE* o = F(BYTE*, m, 28) ? F(BYTE*, m, 28) : F(BYTE*, m, 24);
+                    F(float, o, 32 * i + 28) = (float)v;
+                    F(float, o, 32 * i + 24) = (float)u;
+                }
+            }
+        }
+        int next = F(int, mat, 44);
+        if (next < 0)
+            return;
+        if ((F(DWORD, mat, 32) & 0x80000) && !g_tc7208c4)
+            F(DWORD, F(BYTE*, r, 8260) + 124 * next, 32) |= 0x100000;
+        mat = F(BYTE*, r, 8260) + 124 * F(int, mat, 44);
+    }
 }
 
 } // extern "C"

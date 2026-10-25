@@ -5849,3 +5849,177 @@ void __fastcall Mesh_Draw(BYTE* s, void*, BYTE* o)
 }
 
 } // extern "C"
+
+// === a portal's view (FUN_5b5710)
+
+extern "C" void __fastcall Rp_Transform(Matrix* s, void*, const Matrix* by); KING_ALIAS("@Rp_Transform@12", "@Matrix_Transform2@12")
+ASM_VAR(double, g_rp64b5b8, $L_64b5b8)
+ASM_VAR(float, g_rp64c250, $L_64c250)                   // 1
+ASM_VAR(float, g_rp64c938, $L_64c938)                   // -1
+ASM_VAR(float, g_rp64c258, $L_64c258)                   // 0.5
+ASM_VAR(float, g_rp64c40c, $L_64c40c)                   // 2
+ASM_VAR(float, g_rp64c878, $L_64c878)                   // -0.5
+
+// the view rectangle +1952..+1964 recorded at slot +8232 (+1968 / +2048 / +2128 / +2208), which is then used
+static int Rp_Record(BYTE* r)
+{
+    int k = F(int, r, 8232);
+    F(int, r, 1968 + 4 * k) = F(int, r, 1952);
+    F(int, r, 2048 + 4 * k) = F(int, r, 1956);
+    F(int, r, 2128 + 4 * k) = F(int, r, 1960);
+    F(int, r, 2208 + 4 * k) = F(int, r, 1964);
+    F(int, r, 8232) = k + 1;
+    return 1;
+}
+
+extern "C" {
+
+// [FUN_5b5710] renderer r looks through the portal quad q (four points) and, for a mirror, reflected in its
+// plane: the corners put in view space (+1224) and clipped to the view (ids +1756, count +1932); none left, or
+// their screen box outside it, gives 0; else a new view matrix (+4304 stack, +8228) and frame (+5216, +8236)
+// pushed and the view rectangle narrowed to the box, 1; a corner behind the eye keeps the whole view
+int __fastcall Render_PortalView(BYTE* r, void*, const float* q, int mirror)
+{
+    Matrix A = g_identity, B = g_identity;
+    const float* M = (const float*)(r + 2240 + 48 * F(int, r, 8224));
+    for (int i = 0; i < 4; i++)
+    {
+        const float* p = q + 3 * i;
+        float* o = (float*)(r + 1224 + 12 * i);
+        o[0] = (float)((double)p[2] * M[6] + (double)p[1] * M[3] + (double)p[0] * M[0] + M[9]);
+        o[1] = (float)((double)M[7] * p[2] + (double)M[1] * p[0] + (double)M[4] * p[1] + M[10]);
+        o[2] = (float)((double)M[8] * p[2] + (double)M[2] * p[0] + (double)M[5] * p[1] + M[11]);
+        F(int, r, 1488 + 4 * i) = 0;
+        F(int, r, 1576 + 4 * i) = 0;
+        F(int, r, 1664 + 4 * i) = 0;
+        F(int, r, 1756 + 4 * i) = i;
+    }
+    if (mirror)
+    {
+        // the reflection: into the plane's frame
+        double a = (double)q[6] - q[3], b = (double)q[7] - q[4], c = (double)q[8] - q[5];
+        float d0 = (float)((double)q[0] - q[3]), d1 = (float)((double)q[1] - q[4]);
+        double d2 = (double)q[2] - q[5];
+        Vec3 n;
+        n.x = (float)(c * d1 - b * d2);
+        n.y = (float)(d2 * a - c * d0);
+        n.z = (float)(b * d0 - d1 * a);
+        float az, po;
+        Vec3_ToAngles(n, &az, &po);
+        Vec3 t;
+        t.x = -q[0];
+        t.y = -q[1];
+        t.z = -q[2];
+        Matrix RX, RZ, Tr, X;
+        Matrix_RotationX(&RX, -po);
+        Matrix_RotationZ(&RZ, -az);
+        Matrix_Multiply(&X, Matrix_Translation(&Tr, t), &RZ);
+        Matrix_Multiply(&B, &X, &RX);
+    }
+    F(int, r, 1932) = 4;
+    int* ids = (int*)(r + 1756);
+    int* tmp = (int*)(r + 1844);
+    int n = Rn_ClipIds(r, 0, 0, 4, tmp, ids, 4);
+    n = Rn_ClipIds(r, 0, 0, n, ids, tmp, 16);
+    n = Rn_ClipIds(r, 0, 0, n, tmp, ids, 8);
+    n = Rn_ClipIds(r, 0, 0, n, ids, tmp, 2);
+    if (!n)
+        return 0;
+    F(int, r, 1932) = n;
+    float x0 = 1.0f, x1 = -1.0f, y0 = 1.0f, y1 = -1.0f;
+    for (int i = 0; i < n; i++)
+    {
+        const float* v = (const float*)(r + 1224 + 12 * ids[i]);
+        if (v[1] < g_rp64b5b8)
+        {
+            // behind the eye: the whole view
+            int k = F(int, r, 8228);
+            memcpy(r + 4304 + 48 * k, r + 4256 + 48 * k, 48);
+            F(int, r, 8228) = k + 1;
+            Render_PushMatrix(r, 0, (const BYTE*)&g_identity, 1);
+            return Rp_Record(r);
+        }
+        double x = v[0] / (double)v[1];
+        float y = (float)(v[2] / (double)v[1]);
+        if (x0 > x)
+            x0 = (float)x;
+        if (x1 < x)
+            x1 = (float)x;
+        if (y0 > y)
+            y0 = y;
+        if (y1 < y)
+            y1 = y;
+    }
+    if (!(x0 <= g_rp64c250) || !(y0 <= g_rp64c250) || x1 < g_rp64c938 || y1 < g_rp64c938)
+        return 0;
+    if (x0 < g_rp64c938)
+        x0 = -1.0f;
+    if (x1 > g_rp64c250)
+        x1 = 1.0f;
+    if (y0 < g_rp64c938)
+        y0 = -1.0f;
+    if (y1 > g_rp64c250)
+        y1 = 1.0f;
+    if (!(x0 < x1) || !(y0 < y1))
+        return 0;
+    // the box's view: centred and scaled to fill it
+    double cx = ((double)x1 + x0) * g_rp64c258;
+    float cy = (float)(((double)y1 + y0) * g_rp64c258);
+    Matrix P;
+    memset(&P, 0, sizeof(P));
+    P.m[0] = 1.0f;
+    P.m[3] = (float)-cx;
+    P.m[4] = 1.0f;
+    P.m[5] = -cy;
+    P.m[8] = 1.0f;
+    A = P;
+    float w = (float)((double)x1 - x0);
+    float h = (float)((double)y1 - y0);
+    Vec3 sc;
+    sc.x = (float)(g_rp64c40c / (double)w);
+    sc.y = 1.0f;
+    sc.z = (float)(g_rp64c40c / (double)h);
+    Matrix S;
+    Rp_Transform(&A, 0, Matrix_Scale(&S, sc));
+    if (F(int, r, 8228) >= 18 || F(int, r, 8224) >= 18 || F(int, r, 8236) >= 18)
+        return 0;
+    int k = F(int, r, 8228);
+    Matrix V;
+    Matrix_Multiply(&V, (const Matrix*)(r + 4256 + 48 * k), &A);
+    memcpy(r + 4304 + 48 * k, &V, 48);
+    F(int, r, 8228) = k + 1;
+    const Matrix* fr = (const Matrix*)(r + 5216 + 48 * F(int, r, 8236));
+    if (mirror)
+    {
+        Matrix F2, I, X, Y, Z;
+        memset(&F2, 0, sizeof(F2));
+        F2.m[0] = -1.0f;
+        F2.m[4] = 1.0f;
+        F2.m[8] = 1.0f;
+        Matrix_Inverse(&I, &B);
+        Matrix_Multiply(&X, &B, &F2);
+        Matrix_Multiply(&Y, &X, &I);
+        B = Y;
+        Render_PushMatrix(r, 0, (const BYTE*)Matrix_Multiply(&Z, fr, &B), 0);
+    }
+    else
+        Render_PushMatrix(r, 0, (const BYTE*)fr, 0);
+    // the view rectangle narrowed to the box
+    int W = F(int, r, 1960), H = F(int, r, 1964);
+    int bx = (int)(((double)x0 + g_rp64c250) * W);
+    float Hf = (float)H;
+    int by = (int)(((double)g_rp64c250 - y1) * Hf);
+    int bw = 32768 - (int)((double)W * w * g_rp64c878);
+    int bh = 32768 - (int)((double)Hf * h * g_rp64c878);
+    if (bx + bw * 2 > 2 * W)
+        bw = W - (bx >> 1);
+    if (by + bh * 2 > 2 * H)
+        bh = H - (by >> 1);
+    F(int, r, 1964) = bh;
+    F(int, r, 1952) += bx;
+    F(int, r, 1960) = bw;
+    F(int, r, 1956) += by;
+    return Rp_Record(r);
+}
+
+} // extern "C"

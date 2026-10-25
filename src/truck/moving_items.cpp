@@ -768,7 +768,7 @@ extern "C" void FUN_5ab6a0(); KING_ALIAS("_FUN_5ab6a0", "_Vec3_NearlyEqual")
 extern "C" void FUN_57c9a0(); KING_ALIAS("_FUN_57c9a0", "_Id_Same")
 extern "C" void FUN_4e5a45(); KING_ALIAS("_FUN_4e5a45", "_Query_4e5a45")
 extern "C" void __fastcall Value_Free(int* s);                  // scene.cpp
-ASM_PROC(FUN_5f6820)    // a shape value: hit test (kind, from, to, x)
+extern "C" void FUN_5f6820(); KING_ALIAS("_FUN_5f6820", "@Shape_SweepHit@24")    // a shape value: hit test (kind, from, to, x)
 
 static double Ic_Abs(double x) { return x < 0 ? -x : x; }
 
@@ -1796,6 +1796,285 @@ void __fastcall Item_EndLeg(BYTE* s, void*, int* done)
     F(Vec3, s, 488) = g_zeroVec;
     F(int, s, 1420) = 0;
     Vehicle_MakeOut(s, 0);
+}
+
+} // extern "C"
+
+// === an item knocked over (FUN_588090)
+
+extern "C" void Mk_HitObject(); KING_ALIAS("_Mk_HitObject", "_Query_HitObject")
+extern "C" void Mk_Query(); KING_ALIAS("_Mk_Query", "_Query_4e6749")
+extern "C" void Mk_SignSwing(); KING_ALIAS("_Mk_SignSwing", "_Sign_Swing")
+extern "C" void Mk_Decompose(); KING_ALIAS("_Mk_Decompose", "_Matrix_Decompose6FArray")
+extern "C" void Mk_FrameWorld(); KING_ALIAS("_Mk_FrameWorld", "_Frame_GetWorld")
+extern "C" void Mk_FrameLocal(); KING_ALIAS("_Mk_FrameLocal", "_Frame_GetLocal")
+extern "C" void Mk_FrameApply(); KING_ALIAS("_Mk_FrameApply", "_Frame_Apply")
+extern "C" void Mk_Select(); KING_ALIAS("_Mk_Select", "_Switch_Select")
+extern "C" void Mk_Find(); KING_ALIAS("_Mk_Find", "_Scene_FindObject")
+extern "C" void Mk_VehObject(); KING_ALIAS("_Mk_VehObject", "_Vehicle_Object")
+extern "C" void Mk_Fatal(); KING_ALIAS("_Mk_Fatal", "_World_Fatal")
+ASM_FUNC(Mk_580a00, FUN_580a00)
+extern "C" void __fastcall Movite_SendNamed(BYTE* s, void*, const char* name, const DWORD* mat);
+ASM_VAR(Vec3, g_mkUp, $L_702630)
+ASM_VAR(Vec3, g_mkEye, $L_702650)
+ASM_VAR(float, g_mk64f3e0, $L_64f3e0)
+ASM_VAR(float, g_mk64c258, $L_64c258)
+ASM_VAR(float, g_mk64c408, $L_64c408)
+ASM_VAR(float, g_mk64c450, $L_64c450)
+ASM_VAR(double, g_mk64c958, $L_64c958)
+ASM_VAR(float, g_mk65063c, $L_65063c)
+ASM_VAR(float, g_mk650638, $L_650638)
+ASM_VAR(double, g_mk650630, $L_650630)
+ASM_VAR(double, g_mk64b678, $L_64b678)
+ASM_VAR(float, g_mk64c250, $L_64c250)
+ASM_VAR(double, g_mk650628, $L_650628)
+ASM_VAR(char, g_mk67da2c, $L_67da2c)
+ASM_VAR(char, g_mk67da28, $L_67da28)
+ASM_VAR(char, g_mk67da1c, $L_67da1c)
+ASM_VAR(char, g_mk67da10, $L_67da10)
+ASM_VAR(char, g_mk67da04, $L_67da04)
+ASM_VAR(char, g_mk67d9f8, $L_67d9f8)
+ASM_VAR(char, g_mk67d9e8, $L_67d9e8)
+
+// the cross product a x b in the float steps of Vec3_SetThis
+static Vec3 Mk_Cross(const Vec3& a, const Vec3& b)
+{
+    Vec3 r;
+    r.x = (float)((double)a.y * b.z - (double)a.z * b.y);
+    r.y = (float)((double)a.z * b.x - (double)a.x * b.z);
+    r.z = (float)((double)a.x * b.y - (double)a.y * b.x);
+    return r;
+}
+
+static Vec3 Mk_Norm(const Vec3& v)
+{
+    Vec3 r;
+    return *Vec3_Normalized(&r, &v);
+}
+
+// the switch under the scene object named by node o's name (+44, +12) after its "xx" prefix
+static BYTE* Mk_Prefixed(BYTE* o)
+{
+    BYTE* nd = F(BYTE*, o, 44);
+    if (!nd || !F(char*, nd, 12) || strncmp(F(char*, nd, 12), &g_mk67da28, 2))
+        return 0;
+    char t[128], u[128];
+    strcpy(t, F(char*, nd, 12));
+    if ((int)strlen(t) <= 2)
+        return 0;
+    strcpy(u, t + 2);
+    return CallC<BYTE*>(Mk_Find, 0, u);
+}
+
+extern "C" {
+
+// [FUN_588090] item s hit (+1208: 1, 4-6 knocked over, 2 swung): the frame +1216 of object +1212 tilted away from the
+// hit point (+1220) by the speed there (spin +440 and velocity +416, scale +396) as a share of the type's limit
+// (+1416 keeps the largest), along the ground found under it; types 5 / 6 also mark the car (+1232) or the named
+// objects and switch their models; when it falls over the object is flagged (+40) and messages with the share of
+// the push sent; the new frame applied and sent as messages; whether it fell
+int __fastcall Item_KnockOver(BYTE* s, void*)
+{
+    int type = F(int, s, 1208);
+    if (type == 2)
+    {
+        Vec3 p0 = F(Vec3, s, 416);
+        CallC(Mk_580a00, s, s + 964, s + 976);
+        Vec3 d, v;
+        Vec3_Scaled(&v, Vec3_Sub(&d, &p0, &F(Vec3, s, 416)), F(float, s, 396));
+        CallC(Mk_SignSwing, &v, F(BYTE*, s, 1212), 0);
+        return 0;
+    }
+    if (type != 1 && type != 4 && type != 5 && type != 6)
+        return 0;
+    BYTE* o = F(BYTE*, s, 1212);
+    BYTE* fr = F(BYTE*, s, 1216);
+    if (!fr)
+        return 0;
+    // the hit point's speed
+    Vec3 P = F(Vec3, s, 1220);
+    const float* T = (const float*)(s + 3220);
+    Vec3 w;
+    w.x = (float)((double)P.z * T[6] + (double)P.y * T[3] + (double)P.x * T[0] + T[9]);
+    w.y = (float)((double)P.x * T[1] + (double)P.z * T[7] + (double)P.y * T[4] + T[10]);
+    w.z = (float)((double)P.x * T[2] + (double)P.z * T[8] + (double)P.y * T[5] + T[11]);
+    const float* sp = (const float*)(s + 440);
+    Vec3 om;
+    om.x = (float)((double)T[3] * sp[1] + (double)T[6] * sp[2] + (double)sp[0] * T[0]);
+    om.y = (float)((double)T[4] * sp[1] + (double)T[1] * sp[0] + (double)T[7] * sp[2]);
+    om.z = (float)((double)T[5] * sp[1] + (double)T[2] * sp[0] + (double)T[8] * sp[2]);
+    Vec3 qv;
+    const Vec3* q = Vec3_DivComponents(&qv, &om, &F(Vec3, s, 404));
+    double c0 = (double)w.z * q->y - (double)w.y * q->z;
+    double c1 = (double)w.x * q->z - (double)w.z * q->x;
+    double c2 = (double)w.y * q->x - (double)w.x * q->y;
+    const float* R = (const float*)(s + 500);
+    float vx = (float)(c2 * R[6] + c1 * R[3] + c0 * R[0]);
+    float vy = (float)(c2 * R[7] + c1 * R[4] + c0 * R[1]);
+    double vz = c2 * R[8] + c1 * R[5] + c0 * R[2];
+    float k = F(float, s, 396);
+    Vec3 mv;
+    mv.x = (float)((float)((double)vx + F(float, s, 416)) * (double)k);
+    mv.y = (float)((float)((double)vy + F(float, s, 420)) * (double)k);
+    mv.z = (float)((vz + F(float, s, 424)) * k);
+    double spd0 = Vec3_Length(&mv);
+    float spd = (float)spd0;
+    float lim = (type == 5 || type == 6) ? 40000.0f : 20000.0f;
+    double cl = spd0 > lim ? lim : spd0;
+    if (!F(int, s, 1412))
+        F(int, s, 1412) = type;
+    if ((double)lim * F(float, s, 1416) < cl)
+        F(float, s, 1416) = (float)(cl / lim);
+    if (spd0 < g_mk64f3e0)
+        return 0;
+    Matrix A = g_identity, B = g_identity, C = g_identity;
+    CallC(Mk_FrameLocal, fr, &A);
+    BYTE* par = F(BYTE*, fr, 44);
+    if (!par)
+    {
+        char buf[200];
+        sprintf(buf, &g_mk67da2c, F(int, fr, 12), F(int, o, 12));
+        CallC(Mk_Fatal, buf);
+    }
+    if (type == 5)
+    {
+        BYTE* car = CallC<BYTE*>(Mk_VehObject, F(int, s, 1232));
+        if (car)
+            car[296] |= 1;
+    }
+    if (type == 6)
+    {
+        char n1[168], n2[40];
+        const char* nm = (const char*)(s + 1232);
+        strcpy(n1, nm);
+        strcpy(n2, nm + strlen(nm) + 1);
+        BYTE* x = CallC<BYTE*>(Mk_Find, 0, n1);
+        if (x)
+            F(int, x, 136) = 0;
+        x = CallC<BYTE*>(Mk_Find, 0, n2);
+        if (x)
+            x[40] |= 1;
+    }
+    if (type == 5 || type == 6)
+    {
+        BYTE* x = Mk_Prefixed(o);
+        if (x)
+        {
+            BYTE* sel = CallC<BYTE*>(Mk_Find, x, type == 5 ? &g_mk67da1c : &g_mk67da10);
+            CallC(Mk_Select, sel, 1);
+        }
+    }
+    CallC(Mk_FrameWorld, par, &B);
+    Matrix AB;
+    C = *Matrix_Multiply(&AB, &A, &B);
+    C.m[9] = g_mkEye.x;
+    C.m[10] = g_mkEye.y;
+    C.m[11] = g_mkEye.z;
+    // the push's direction n, the up U and the way it falls d
+    Vec3 n;
+    n.x = (float)(mv.x / (double)spd);
+    n.y = (float)(mv.y / (double)spd);
+    n.z = (float)(mv.z / (double)spd);
+    Vec3 U = g_mkUp;
+    double a = (double)n.z * U.y - (double)n.y * U.z;
+    double b = (double)U.z * n.x - (double)n.z * U.x;
+    double c = (double)n.y * U.x - (double)U.y * n.x;
+    Vec3 e;
+    e.x = (float)(b * U.z - c * U.y);
+    e.y = (float)(c * U.x - U.z * a);
+    e.z = (float)(U.y * a - b * U.x);
+    Vec3 d = Mk_Norm(e);
+    void* qh = CallC<void*>(Mk_HitObject, F(BYTE*, s, 800), s + 536, s + 964);
+    double tx = ((double)d.x - g_mkUp.x) * g_mk64c450;
+    float ty = (float)((float)((double)d.y - g_mkUp.y) * (double)g_mk64c450);
+    float tz = (float)((float)((double)d.z - g_mkUp.z) * (double)g_mk64c450);
+    double a0 = (double)B.m[9] + (float)(g_mkUp.x * (double)g_mk64c408);
+    float a1 = (float)((double)B.m[10] + (float)(g_mkUp.y * (double)g_mk64c408));
+    float a2 = (float)((double)(float)(g_mkUp.z * (double)g_mk64c408) + B.m[11]);
+    Vec3 from, to, hit;
+    to.x = (float)(a0 + tx);
+    to.y = (float)((double)ty + a1);
+    to.z = (float)((double)tz + a2);
+    from.x = (float)a0;
+    from.y = a1;
+    from.z = a2;
+    hit.x = hit.y = hit.z = 0;
+    if (!(CallC<int>(Mk_Query, qh, &from, &to, &hit, &U) & 1))
+    {
+        hit.x = (float)((double)B.m[9] + d.x);
+        hit.y = (float)((double)B.m[10] + d.y);
+        hit.z = (float)((double)d.z + B.m[11]);
+    }
+    else
+    {
+        // the ground's slope sets the up
+        Vec3 r;
+        r.x = (float)((double)hit.x - B.m[9]);
+        r.y = (float)((double)hit.y - B.m[10]);
+        r.z = (float)((double)hit.z - B.m[11]);
+        U = Mk_Norm(Mk_Cross(Mk_Cross(r, U), r));
+    }
+    d = Mk_Norm(Mk_Cross(Mk_Cross(U, n), U));
+    if (C.m[8] < g_mk64c258)
+        return 0;
+    Matrix I;
+    Matrix_Inverse(&I, &C);
+    Vec3 R3 = {C.m[6], C.m[7], C.m[8]};
+    Vec3 gn = Mk_Norm(Mk_Cross(R3, d));
+    Vec3 h;
+    h.x = (float)((double)I.m[0] * gn.x + (double)I.m[6] * gn.z + (double)I.m[3] * gn.y);
+    h.y = (float)((double)I.m[1] * gn.x + (double)I.m[7] * gn.z + (double)I.m[4] * gn.y);
+    h.z = (float)((double)I.m[2] * gn.x + (double)I.m[8] * gn.z + (double)I.m[5] * gn.y);
+    double ang = x87_acos((double)d.x * R3.x + (double)d.y * R3.y + (double)d.z * R3.z) * g_mk64c958;
+    double lk = (double)lim - g_mk64f3e0;
+    float roll = (float)(((double)spd - g_mk64f3e0) * g_mk65063c / lk);
+    float push = (float)(lk * ang * g_mk650638);
+    if (roll > ang)
+        roll = (float)ang;
+    Matrix L, M1, M2;
+    Matrix_Multiply(&M1, Matrix_LookAt(&L, g_mkEye, h, roll), &A);
+    Matrix_Multiply(&M2, &M1, &B);
+    int fell = 0;
+    bool over = (double)U.x * M2.m[6] + (double)U.y * M2.m[7] + (double)U.z * M2.m[8] < g_mk64c258 ||
+                roll > g_mk650630 ||
+                ((double)d.x * M2.m[6] + (double)d.y * M2.m[7] + (double)d.z * M2.m[8] < g_mk64b678 &&
+                 (double)d.x * C.m[6] + (double)d.y * C.m[7] + (double)d.z * C.m[8] > g_mk64b678) ||
+                M2.m[8] < g_mk64c258;
+    if (over)
+    {
+        o[40] |= 1;
+        if (spd > push)
+        {
+            double f = g_mk64c250 - push / (double)spd;
+            float fr2 = (float)f;
+            Vec3 vv;
+            vv.x = (float)(f * F(float, s, 416));
+            vv.y = (float)(f * F(float, s, 420));
+            vv.z = (float)(f * F(float, s, 424));
+            CallThis((void (*)())F(void**, s, 0)[36], s, &vv, &g_mk67da04);
+            Vec3 sv;
+            CallThis((void (*)())F(void**, s, 0)[37], s, Vec3_Scaled(&sv, &F(Vec3, s, 428), fr2), &g_mk67d9f8);
+            fell = 1;
+        }
+        float yaw = (float)-x87_atan2(mv.x, mv.y);
+        float dec[6];
+        CallC(Mk_Decompose, &B, dec);
+        Vec3 Bz = {B.m[6], B.m[7], B.m[8]};
+        float ang2 = (float)(x87_acos(Vec3_Dot(&d, &Bz)) * g_mk650628);
+        Matrix L2, Rz, X;
+        Matrix_LookAt(&L2, g_mkEye, h, ang2);
+        M1 = *Matrix_Multiply(&X, Matrix_RotationZ(&Rz, (float)((double)yaw - dec[3])), &L2);
+        if (type == 4)
+        {
+            BYTE* x = Mk_Prefixed(o);
+            if (x)
+                CallC(Mk_Select, CallC<BYTE*>(Mk_Find, x, &g_mk67d9e8), 0);
+        }
+    }
+    CallC(Mk_FrameApply, fr, 0, &M1);
+    Movite_SendNamed(s, 0, F(const char*, fr, 12), (const DWORD*)&A);
+    Movite_SendNamed(s, 0, F(const char*, fr, 12), (const DWORD*)&M1);
+    return fell;
 }
 
 } // extern "C"

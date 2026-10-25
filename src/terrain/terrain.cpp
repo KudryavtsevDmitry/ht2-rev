@@ -422,7 +422,7 @@ extern "C" int __fastcall Tile_ReadHeights(BYTE* self,void*,FILE* f)
 struct Vec3T { float x,y,z; };
 extern "C" void FUN_614960(); KING_ALIAS("_FUN_614960", "@TerrainView_Move@20")
 extern "C" void FUN_614f70(); KING_ALIAS("_FUN_614f70", "@TerrainView_Place@20")
-ASM_PROC(FUN_617180)
+extern "C" void FUN_617180(); KING_ALIAS("_FUN_617180", "@Patch_AddPlant@28")
 
 // [FUN_614f00] FUN_614960 on copies of three vectors
 extern "C" int __stdcall Terrain_Call614960(const Vec3T* a,const Vec3T* b,const Vec3T* c)
@@ -938,7 +938,7 @@ void __fastcall TerrainView_Place(BYTE* s, void*, const float* pos, const float*
 
 // === a moving sphere against the ground (FUN_6157a0)
 
-ASM_FUNC(Tg_Height, FUN_615da0)
+extern "C" void Tg_Height(); KING_ALIAS("_Tg_Height", "@Grid_HeightAt@12")
 extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
 extern "C" void Tg_LengthSq(); KING_ALIAS("_Tg_LengthSq", "_Vec3_LengthSq")
 extern "C" void Tg_DivBy(); KING_ALIAS("_Tg_DivBy", "_Vec3_DivBy")
@@ -1420,6 +1420,305 @@ void __fastcall Terrain_PlacePlants(BYTE* s, void*, BYTE** l)
         }
     for (int k = 1; k < 5; k++)
         CallThis(Tg_Nop, l[k]);
+}
+
+} // extern "C"
+
+// === a plant's quads into a patch list (FUN_617180)
+
+extern "C" Vec3* __cdecl Vec3_Sum(Vec3*, const Vec3*, const Vec3*);
+extern "C" Vec3* __cdecl Vec3_Diff(Vec3*, const Vec3*, const Vec3*);
+extern "C" Vec3* __cdecl Vec3_Times(Vec3*, const Vec3*, float);
+extern "C" Vec3* __cdecl Pp_ScaleBy(Vec3*, float, const Vec3*); KING_ALIAS("_Pp_ScaleBy", "_Vec3_ScaleBy")
+extern "C" double __cdecl Fx_Scale75();
+extern "C" void Pp_Error(); KING_ALIAS("_Pp_Error", "_Grd_ReportError")
+ASM_VAR(float, g_pp64c458, $L_64c458)
+ASM_VAR(float, g_pp64c334, $L_64c334)
+ASM_VAR(char, g_pp6724f8, $L_6724f8)
+ASM_VAR(char, g_pp685dd0, $L_685dd0)
+ASM_VAR(char, g_pp6724b0, $L_6724b0)
+
+// the float steps of Vec3_SetThis
+static Vec3 Pp_Scale(const Vec3& a, double k)
+{
+    Vec3 r;
+    r.x = (float)(a.x * k);
+    r.y = (float)(a.y * k);
+    r.z = (float)(a.z * k);
+    return r;
+}
+
+static Vec3 Pp_Add(const Vec3& a, const Vec3& b)
+{
+    Vec3 r;
+    r.x = (float)((double)a.x + b.x);
+    r.y = (float)((double)a.y + b.y);
+    r.z = (float)((double)a.z + b.z);
+    return r;
+}
+
+static Vec3 Pp_Sub(const Vec3& a, const Vec3& b)
+{
+    Vec3 r;
+    r.x = (float)((double)a.x - b.x);
+    r.y = (float)((double)a.y - b.y);
+    r.z = (float)((double)a.z - b.z);
+    return r;
+}
+
+struct Pp_Ctx
+{
+    BYTE* s;
+    Vec3 pos, side, up;
+    float k;
+    DWORD color;
+};
+
+static void Pp_Put(Pp_Ctx& c, const Vec3& v, float u, float w)
+{
+    Decals_Add(c.s, 0, (const DWORD*)&v, &c.color, u, w);
+}
+
+// the corner forms of the SetThis cases
+static Vec3 Pp_Low(Pp_Ctx& c, const Vec3& d) { return Pp_Sub(c.pos, d); }
+static Vec3 Pp_Left(Pp_Ctx& c) { return Pp_Add(Pp_Scale(Pp_Sub(c.up, c.side), c.k), c.pos); }
+static Vec3 Pp_Right(Pp_Ctx& c) { return Pp_Add(Pp_Scale(Pp_Add(c.up, c.side), c.k), c.pos); }
+static Vec3 Pp_Far(Pp_Ctx& c) { return Pp_Add(Pp_Scale(c.side, c.k), c.pos); }
+
+// the helper forms (Vec3_Times / Diff / ScaleBy / Sum), up doubled by u2
+static Vec3 Pp_HLow(Pp_Ctx& c)
+{
+    Vec3 t, r;
+    return *Vec3_Diff(&r, &c.pos, Vec3_Times(&t, &c.side, c.k));
+}
+
+static Vec3 Pp_HFar(Pp_Ctx& c)
+{
+    Vec3 t, r;
+    return *Vec3_Sum(&r, &c.pos, Vec3_Times(&t, &c.side, c.k));
+}
+
+static Vec3 Pp_HEdge(Pp_Ctx& c, bool plus, bool doubled)
+{
+    Vec3 u2, e, f, r;
+    const Vec3* up = &c.up;
+    if (doubled)
+        up = Pp_ScaleBy(&u2, 2.0f, &c.up);
+    if (plus)
+        Vec3_Sum(&e, up, &c.side);
+    else
+        Vec3_Diff(&e, up, &c.side);
+    return *Vec3_Sum(&r, &c.pos, Pp_ScaleBy(&f, c.k, &e));
+}
+
+extern "C" {
+
+// [FUN_617180] patch list s gets a plant of type t (0-8) at pos facing along side, size k, brightness b: two or
+// four triangles (corners and texture coordinates by type, mirrored by the grid parity of the point), tinted by
+// three random shades
+void __fastcall Patch_AddPlant(BYTE* s, void*, const Vec3* pos, const Vec3* side, float k, float b, int t)
+{
+    Pp_Ctx c;
+    c.s = s;
+    c.side = *side;
+    c.up.x = 0;
+    c.up.y = 0;
+    c.up.z = 1.0f;
+    c.pos = *pos;
+    c.k = k;
+    float a1 = (float)Fx_Scale75();
+    float a2 = (float)Fx_Scale75();
+    int a3 = (int)(Fx_Scale75() * g_pp64c458);
+    DWORD col = (DWORD)(int)(b * (double)g_pp64c458);
+    col = (col << 8) | (DWORD)(int)(a1 * (double)g_pp64c458);
+    col = (col << 8) | (DWORD)(int)(a2 * (double)g_pp64c458);
+    c.color = (col << 8) | (DWORD)a3;
+    bool odd = (((unsigned)(int)((double)pos->y + pos->x) >> 3) & 1) != 0;
+    switch (t)
+    {
+    case 0:
+    case 1:
+    {
+        Vec3 U = Pp_Scale(c.up, g_pp64c334);
+        float w0 = t == 0 ? 0.0f : 1.0f;
+        Pp_Put(c, Pp_Low(c, U), w0, w0);
+        if (odd)
+        {
+            Pp_Put(c, Pp_Left(c), 1.0f, 0);
+            Pp_Put(c, Pp_Right(c), 0, 1.0f);
+        }
+        else
+        {
+            Pp_Put(c, Pp_Left(c), 0, 1.0f);
+            Pp_Put(c, Pp_Right(c), 1.0f, 0);
+        }
+        return;
+    }
+    case 2:
+    case 3:
+    case 4:
+    case 5:
+    {
+        // two triangles on a quad standing on the point (5: half height texture)
+        float h = t == 5 ? 0.5f : 1.0f;
+        Vec3 D = Pp_Scale(c.side, c.k);
+        if (odd)
+        {
+            Pp_Put(c, Pp_Low(c, D), 0, 1.0f);
+            Pp_Put(c, Pp_Left(c), 0, 0);
+            Pp_Put(c, Pp_Right(c), h, 0);
+            Pp_Put(c, Pp_Low(c, Pp_Scale(c.side, c.k)), 0, 1.0f);
+            Pp_Put(c, Pp_Right(c), h, 0);
+            Pp_Put(c, Pp_Far(c), h, 1.0f);
+        }
+        else
+        {
+            Pp_Put(c, Pp_Low(c, D), h, 1.0f);
+            Pp_Put(c, Pp_Left(c), h, 0);
+            Pp_Put(c, Pp_Right(c), 0, 0);
+            Pp_Put(c, Pp_Low(c, Pp_Scale(c.side, c.k)), h, 1.0f);
+            Pp_Put(c, Pp_Right(c), 0, 0);
+            Pp_Put(c, Pp_Far(c), 0, 1.0f);
+        }
+        return;
+    }
+    case 6:
+        if (odd)
+        {
+            Pp_Put(c, Pp_Low(c, Pp_Scale(c.side, c.k)), 0.5f, 1.0f);
+            Pp_Put(c, Pp_Left(c), 0.5f, 0);
+            Pp_Put(c, Pp_Right(c), 1.0f, 0);
+            Pp_Put(c, Pp_Low(c, Pp_Scale(c.side, c.k)), 0.5f, 1.0f);
+            Pp_Put(c, Pp_Right(c), 1.0f, 0);
+            Pp_Put(c, Pp_HFar(c), 1.0f, 1.0f);
+        }
+        else
+        {
+            Pp_Put(c, Pp_HLow(c), 1.0f, 1.0f);
+            Pp_Put(c, Pp_HEdge(c, false, false), 1.0f, 0);
+            Pp_Put(c, Pp_HEdge(c, true, false), 0.5f, 0);
+            Pp_Put(c, Pp_HLow(c), 1.0f, 1.0f);
+            Pp_Put(c, Pp_HEdge(c, true, false), 0.5f, 0);
+            Pp_Put(c, Pp_HFar(c), 0.5f, 1.0f);
+        }
+        return;
+    case 7:
+    case 8:
+    {
+        // tall plants: twice the height, the texture's band by type and parity
+        float lo = t == 7 ? 0.5f : 0.0f, hi = t == 7 ? 0.95f : 0.45f;
+        float a = odd ? lo : hi, z = odd ? hi : lo;
+        Pp_Put(c, Pp_HLow(c), a, 1.0f);
+        Pp_Put(c, Pp_HEdge(c, false, true), a, 0);
+        Pp_Put(c, Pp_HEdge(c, true, true), z, 0);
+        Pp_Put(c, Pp_HLow(c), a, 1.0f);
+        Pp_Put(c, Pp_HEdge(c, true, true), z, 0);
+        Pp_Put(c, Pp_HFar(c), z, 1.0f);
+        return;
+    }
+    default:
+        CallC(Pp_Error, 2289444626u, &g_pp6724b0, &g_pp685dd0, 721, &g_pp6724f8);
+        return;
+    }
+}
+
+} // extern "C"
+
+// === the grid's height at a point (FUN_615da0)
+
+#include <math.h>
+
+extern "C" BYTE* __fastcall Gh_Table(BYTE** s, void*, DWORD x, DWORD y); KING_ALIAS("@Gh_Table@16", "@Tiles_Table@16")
+extern "C" float __fastcall Gh_Height(BYTE* s, void*, DWORD x, DWORD y); KING_ALIAS("@Gh_Height@16", "@Tile_Height@16")
+ASM_VAR(float, g_gh653240, $L_653240)                   // the cell sizes
+ASM_VAR(float, g_gh653244, $L_653244)
+ASM_VAR(float, g_gh64c250, $L_64c250)                   // 1
+ASM_VAR(float, g_gh64c264, $L_64c264)                   // 0
+ASM_VAR(float, g_gh6532f8, $L_6532f8)                   // off the grid
+
+// the height of grid point (x, y) of tile set t
+static float Gh_At(BYTE** t, DWORD x, DWORD y)
+{
+    return Gh_Height(Gh_Table(t, 0, x, y), 0, x, y);
+}
+
+extern "C" {
+
+// [FUN_615da0] grid s's height at p (x / y within +40136..+40140 / +40148..+40144, cell sizes +40152 / +40156,
+// tiles +40192): on a cell's edge between its two corners, else on the cell's triangle (split one way or the
+// other by the cell's checker parity); 6532f8 off the grid
+double __fastcall Grid_HeightAt(BYTE* s, void*, const float* p)
+{
+    if (!(p[0] < F(float, s, 40140)) || !(p[0] > F(float, s, 40136)) || !(p[1] < F(float, s, 40144)) ||
+        !(p[1] > F(float, s, 40148)))
+        return g_gh6532f8;
+    float gx = (float)(((double)p[0] - F(float, s, 40136)) / F(float, s, 40152));
+    float gy = (float)(((double)p[1] - F(float, s, 40148)) / F(float, s, 40156));
+    DWORD X0 = (DWORD)(int)(floor(gx / (double)g_gh653240) * g_gh653240);
+    DWORD Y0 = (DWORD)(int)(floor(gy / (double)g_gh653244) * g_gh653244);
+    DWORD X1 = (DWORD)(int)(ceil(gx / (double)g_gh653240) * g_gh653240);
+    DWORD Y1 = (DWORD)(int)(ceil(gy / (double)g_gh653244) * g_gh653244);
+    double fu0 = (gx - (double)X0) / g_gh653240;
+    float fu = (float)fu0;
+    float fv = (float)((gy - (double)Y0) / g_gh653244);
+    // the triangle: across the cell's diagonal by the parity, 3 the one past it
+    int cross = ((X0 ^ Y0) & 4) != 0;
+    int tri;
+    if (cross)
+        tri = fu0 < (double)g_gh64c250 - fv ? 2 : 3;
+    else
+        tri = fu0 < fv ? 3 : 2;
+    BYTE** T = F(BYTE**, s, 40192);
+    if (fv == g_gh64c264 || fv == g_gh64c250)
+    {
+        // on a row of points
+        DWORD y = fv == g_gh64c264 ? Y0 : Y1;
+        float h0 = Gh_At(T, X0, y);
+        float h1 = Gh_At(T, X1, y);
+        return ((double)h1 - h0) * fu + h0;
+    }
+    float hA, hB, hC;
+    double w;
+    double e;
+    if (!cross)
+    {
+        hA = Gh_At(T, X0, Y0);
+        hB = Gh_At(T, X1, Y1);
+        if (tri == 3)
+        {
+            hC = Gh_At(T, X0, Y1);
+            w = fu / (double)fv;
+            e = ((double)hC - hA) * fv + hA;
+        }
+        else
+        {
+            hC = Gh_At(T, X1, Y0);
+            w = ((double)fu - fv) / ((double)g_gh64c250 - fv);
+            e = ((double)hB - hC) * fv + hC;
+        }
+    }
+    else
+    {
+        hA = Gh_At(T, X1, Y0);
+        hB = Gh_At(T, X0, Y1);
+        if (tri == 3)
+        {
+            hC = Gh_At(T, X1, Y1);
+            w = ((double)fv + fu - g_gh64c250) / fv;
+            e = ((double)hC - hA) * fv + hA;
+        }
+        else
+        {
+            hC = Gh_At(T, X0, Y0);
+            w = fu / ((double)g_gh64c250 - fv);
+            e = ((double)hB - hC) * fv + hC;
+        }
+    }
+    float ww = (float)w;
+    float m = (float)(((double)hB - hA) * fv + hA);
+    if ((tri == 2 && cross) || (!cross && tri == 3))
+        return e + ((double)m - e) * ww;
+    return m + (e - m) * ww;
 }
 
 } // extern "C"

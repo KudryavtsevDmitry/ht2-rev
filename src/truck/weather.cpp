@@ -2473,3 +2473,179 @@ void __fastcall Weather_Frame(BYTE* s, void*)
 }
 
 } // extern "C"
+
+// === the water surface (a draw callback at $L_5aa750)
+
+extern "C" BYTE* __fastcall Render_Material(BYTE* self, void*);
+extern "C" double __cdecl Tsc_Now();
+extern "C" void Ws_Select(); KING_ALIAS("_Ws_Select", "@Material_Select@24")
+ASM_VAR(BYTE, g_ws6fd758, $L_6fd758)
+ASM_VAR(float, g_wsPos, $L_7009e0)                      // the strip's points, normals and both texture coordinates
+ASM_VAR(float, g_wsNormal, $L_6fb6f8)
+ASM_VAR(float, g_wsUv0, $L_6fa750)
+ASM_VAR(float, g_wsUv1, $L_6fcad8)
+ASM_VAR(BYTE*, g_wsSurface, $L_7025d4)
+ASM_VAR(int, g_ws7025d8, $L_7025d8)
+ASM_VAR(BYTE*, g_ws7025b8, $L_7025b8)
+ASM_VAR(BYTE*, g_wsDevice, $L_720908)
+ASM_VAR(Vec3, g_wsAhead, $L_702620)
+ASM_VAR(Vec3, g_wsUp, $L_702630)
+ASM_VAR(double, g_ws64b748, $L_64b748)
+ASM_VAR(float, g_ws64cab0, $L_64cab0)
+ASM_VAR(float, g_ws64c258, $L_64c258)
+ASM_VAR(float, g_ws64ed88, $L_64ed88)
+ASM_VAR(double, g_ws64b5b8, $L_64b5b8)
+ASM_VAR(double, g_ws64b780, $L_64b780)
+ASM_VAR(float, g_ws64c908, $L_64c908)
+ASM_VAR(double, g_ws64b670, $L_64b670)
+ASM_VAR(double, g_ws67e8d8, $L_67e8d8)
+ASM_VAR(double, g_ws67e8d0, $L_67e8d0)
+ASM_VAR(double, g_ws64b678, $L_64b678)
+ASM_VAR(double, g_ws64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ws64b7a8, $L_64b7a8)
+ASM_VAR(double, g_ws64b7b8, $L_64b7b8)
+ASM_VAR(float, g_ws64f720, $L_64f720)
+
+struct WsStream { void* data; int stride; };
+
+extern "C" {
+
+// [$L_5aa750] draws the water surface 7025d4 around the camera of renderer r: 25 strips of 52 points stepping
+// away from the camera along its heading, each point at the surface's height with its normal, texture coordinates
+// on the world grid and projected from the camera's height; the surface's wave level (+96, +64 / +72 / +80)
+// follows the wind 7025b8 (+532) smoothed in 67e8d0
+int __cdecl Water_Draw(void*, BYTE* r)
+{
+    if (!(g_ws6fd758 & 1))
+    {
+        g_ws6fd758 |= 1;
+        memset(&g_wsPos, 0, 4800);
+    }
+    if (!(g_ws6fd758 & 2))
+    {
+        g_ws6fd758 |= 2;
+        memset(&g_wsNormal, 0, 4800);
+    }
+    if (!g_wsSurface)
+        return 0;
+    WsStream desc[12];
+    memset(desc, 0, sizeof(desc));
+    desc[0].data = &g_wsPos;
+    desc[0].stride = 12;
+    desc[1].data = &g_wsNormal;
+    desc[1].stride = 12;
+    desc[4].data = &g_wsUv0;
+    desc[4].stride = 8;
+    desc[5].data = &g_wsUv1;
+    desc[5].stride = 8;
+    Vec3 C = *(const Vec3*)Render_Material(r, 0);
+    double h0 = C.z;
+    if (C.z < g_ws64b748)
+        h0 = 1e-5;
+    // the heading flattened, the side across it and the steps
+    Matrix I;
+    const float* M = Matrix_Inverse(&I, (const Matrix*)(r + 4208))->m;
+    Vec3 d0, d;
+    d0.x = (float)((double)g_wsAhead.z * M[6] + (double)g_wsAhead.y * M[3] + (double)g_wsAhead.x * M[0]);
+    d0.y = (float)((double)g_wsAhead.z * M[7] + (double)g_wsAhead.y * M[4] + (double)g_wsAhead.x * M[1]);
+    d0.z = 0;
+    d = *Vec3_Normalized(&d, &d0);
+    const Vec3& U = g_wsUp;
+    double sx = (double)d.y * U.z - (double)U.y * d.z;
+    float sy = (float)((double)U.x * d.z - (double)d.x * U.z);
+    float sz = (float)((double)d.x * U.y - (double)d.y * U.x);
+    double s1x = sx * g_ws64cab0;
+    float s1y = (float)(sy * (double)g_ws64cab0), s1z = (float)(sz * (double)g_ws64cab0);
+    double s2x = s1x * g_ws64c258;
+    float s2y = (float)(s1y * (double)g_ws64c258), s2z = (float)(s1z * (double)g_ws64c258);
+    Vec3 step;
+    step.x = (float)(s2x * g_ws64ed88);
+    step.y = (float)(s2y * (double)g_ws64ed88);
+    step.z = (float)(s2z * (double)g_ws64ed88);
+    double fx = d.x * (double)g_ws64cab0;
+    float fy = (float)(d.y * (double)g_ws64cab0), fz = (float)(d.z * (double)g_ws64cab0);
+    Vec3 D;
+    D.x = (float)(fx * g_ws64ed88);
+    D.y = (float)(fy * (double)g_ws64ed88);
+    D.z = (float)(fz * (double)g_ws64ed88);
+    double gridX = (int)(C.x * g_ws64b5b8) * g_ws64b780;
+    double gridY = (int)(C.y * g_ws64b5b8) * g_ws64b780;
+    g_ws7025d8 = (g_ws7025d8 + 1) % 16;
+    BYTE* w = g_wsSurface;
+    if (g_ws7025b8)
+    {
+        // the waves follow the wind
+        double v = (g_ws64b670 - g_ws67e8d8) * (F(float, g_ws7025b8, 532) * (double)g_ws64c908) +
+                   g_ws67e8d8 * g_ws67e8d0;
+        g_ws67e8d0 = v;
+        F(double, w, 96) = v * F(double, w, 88);
+        if (F(double, w, 96) < g_ws64b678)
+            F(double, w, 96) = 0;
+        F(double, w, 64) = F(double, w, 96) * g_ws64b6e0;
+        F(double, w, 72) = F(double, w, 64) * g_ws64b7a8;
+        F(double, w, 80) = F(double, w, 64) * g_ws64b7b8;
+    }
+    CallThis(Ws_Select, r, F(BYTE*, g_wsSurface, 104), 1, 0, 0);
+    void** vt = *(void***)g_wsDevice;
+    ((long(__stdcall*)(BYTE*, int, int))vt[20])(g_wsDevice, 136, 1);
+    double rx = step.x * (double)g_ws64f720;
+    float ry = (float)(step.y * (double)g_ws64f720), rz = (float)(step.z * (double)g_ws64f720);
+    Vec3 rs;
+    rs.x = (float)(rx * g_ws64c258);
+    rs.y = (float)(ry * (double)g_ws64c258);
+    rs.z = (float)(rz * (double)g_ws64c258);
+    double spent = 0;
+    for (int row = 24; row >= 0; row--)
+    {
+        float bx = (float)(row * (double)D.x), by = (float)(D.y * (double)row);
+        double bz = row * (double)D.z;
+        float ox = (float)((double)bx + C.x), oy = (float)((double)by + C.y);
+        Vec3 P;
+        P.x = (float)((double)ox - rs.x);
+        P.y = (float)((double)oy - rs.y);
+        P.z = (float)(bz - rs.z);
+        double t0 = Tsc_Now();
+        float N[3] = {0, 0, 0};
+        float* pos = &g_wsPos;
+        float* nrm = &g_wsNormal;
+        float* uv0 = &g_wsUv0;
+        float* uv1 = &g_wsUv1;
+        for (int k = 0; k < 26; k++)
+        {
+            // the near point, then the far one a step D on
+            Vec3 Q;
+            double qx = (double)P.x - D.x;
+            Q.x = (float)qx;
+            Q.y = (float)((double)P.y - D.y);
+            Q.z = (float)((double)P.z - D.z);
+            for (int e = 0; e < 2; e++)
+            {
+                double x = e ? qx : P.x;
+                double y = e ? Q.y : P.y;
+                pos[0] = (float)x;
+                pos[1] = (float)y;
+                pos[2] = (float)Surface_HeightNormal(w, 0, (float)x, (float)y, 0, N);
+                nrm[0] = N[0];
+                nrm[1] = N[1];
+                nrm[2] = N[2];
+                uv0[0] = (float)((x - gridX) * g_ws64b5b8);
+                uv0[1] = (float)((y - gridY) * g_ws64b5b8);
+                uv1[0] = (float)((x - C.x) * g_ws64b6e0 / h0 + g_ws64b6e0);
+                uv1[1] = (float)((y - C.y) * g_ws64b6e0 / h0 + g_ws64b6e0);
+                pos += 3;
+                nrm += 3;
+                uv0 += 2;
+                uv1 += 2;
+            }
+            float ny = (float)((double)Q.y + D.y), nz = (float)((double)Q.z + D.z);
+            P.x = (float)((double)Q.x + D.x + step.x);
+            P.y = (float)((double)step.y + ny);
+            P.z = (float)((double)step.z + nz);
+        }
+        spent = Tsc_Now() - t0 + spent;
+        ((long(__stdcall*)(BYTE*, int, int, void*, int, int))vt[29])(g_wsDevice, 5, 530, desc, 52, 0);
+    }
+    return 1;
+}
+
+} // extern "C"
