@@ -624,7 +624,7 @@ extern "C" BYTE* __fastcall Obj576c00_DeletingDestructor(BYTE* self, void*, int 
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
-ASM_PROC(FUN_561800)
+extern "C" void FUN_561800(); KING_ALIAS("_FUN_561800", "@Copter_Init0@16")
 extern "C" void FUN_4e4750(); KING_ALIAS("_FUN_4e4750", "_Scene_FindOrFail")    // a child of the object by name (object, name, flags)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")    // show or hide an object (object, show)
 ASM_VAR(BYTE*, g_truck, $L_6f33ac)              // +88: the hour (double)
@@ -2407,7 +2407,7 @@ extern "C" int __fastcall Thunk56f110(BYTE* s) { return q238_Med5cf370_Destroy(s
 // scores, the player's status panel).
 
 extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")    // fills a rectangle (surface, rect, color, flags)
-ASM_PROC(FUN_4d2b30)
+extern "C" void FUN_4d2b30(); KING_ALIAS("_FUN_4d2b30", "_Ai_DebugOverlay")
 extern "C" void FUN_529890(); KING_ALIAS("_FUN_529890", "@Map_Draw@16")
 extern "C" void FUN_56bc80(); KING_ALIAS("_FUN_56bc80", "@CopterPanel_Draw@8")
 extern "C" void FUN_5b86c0(); KING_ALIAS("_FUN_5b86c0", "_Bitmap_Draw")
@@ -2883,7 +2883,7 @@ ASM_PROC(FUN_4ebd00)    // constructs a vehicle (scene object, matrix, type)
 extern "C" void FUN_5291a0(); KING_ALIAS("_FUN_5291a0", "@Map_BuildRoads@8")
 extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
 ASM_PROC(FUN_5a44c0)    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
-ASM_PROC(FUN_5d2540)    // registers a named callback (name, function)
+extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // registers a named callback (name, function)
 
 ASM_VAR(BYTE*, g_ws_wnd, $L_6cec6c)
 ASM_VAR(BYTE*, g_ws_mainView, $L_696ca0)
@@ -3547,7 +3547,7 @@ static char* const k_csHud[8][2] = {
 extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
 extern "C" void FUN_4d8ae0(); KING_ALIAS("_FUN_4d8ae0", "_Vehicle_Release")
 extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")
-ASM_PROC(FUN_531cc0)
+extern "C" void FUN_531cc0(); KING_ALIAS("_FUN_531cc0", "@Viewer_AttachVehicle@12")
 extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
 extern "C" void FUN_56f6d0(); KING_ALIAS("_FUN_56f6d0", "_Copter_ApplyCargo")
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
@@ -4438,7 +4438,7 @@ extern "C" void FUN_476bc0(); KING_ALIAS("_FUN_476bc0", "_Player_Hire")
 extern "C" void FUN_4d90c0(); KING_ALIAS("_FUN_4d90c0", "_Fx_PlaceObjects")
 extern "C" void FUN_4e5ea8(); KING_ALIAS("_FUN_4e5ea8", "_World_ClearHits")
 extern "C" void FUN_4ebaa0(); KING_ALIAS("_FUN_4ebaa0", "@Engine_SetKeys@16")
-ASM_PROC(FUN_531cc0)
+extern "C" void FUN_531cc0(); KING_ALIAS("_FUN_531cc0", "@Viewer_AttachVehicle@12")
 extern "C" void FUN_541960(); KING_ALIAS("_FUN_541960", "@Obj541960_Self@8")
 extern "C" void FUN_541970(); KING_ALIAS("_FUN_541970", "@Obj541970_First@8")
 extern "C" void FUN_55f4e0(); KING_ALIAS("_FUN_55f4e0", "_Vehicle_FindTaker")
@@ -4916,7 +4916,7 @@ void __cdecl Copter_ApplyCargo()
 
 // === going to a room (FUN_56f910)
 
-ASM_PROC(FUN_531cc0)    // the game takes object x as the player's
+extern "C" void FUN_531cc0(); KING_ALIAS("_FUN_531cc0", "@Viewer_AttachVehicle@12")    // the game takes object x as the player's
 extern "C" void Gr_Attach(); KING_ALIAS("_Gr_Attach", "@WorldObj_Attach@12")
 extern "C" void Gr_ScenesFind(); KING_ALIAS("_Gr_ScenesFind", "@Scenes_Find@12")
 extern "C" void Gr_LoadRoom(); KING_ALIAS("_Gr_LoadRoom", "@Fw_LoadRoom@16")
@@ -6900,6 +6900,449 @@ int __cdecl Game_PlayerMessage(int* m)
     default:
         return 0;
     }
+}
+
+} // extern "C"
+
+// === the dashboard (FUN_569ab0)
+
+extern "C" void Hd_Text(); KING_ALIAS("_Hd_Text", "_Text_Draw")
+extern "C" void Hd_Str(); KING_ALIAS("_Hd_Str", "_Table71e858_Get")
+extern "C" void Hd_Width(); KING_ALIAS("_Hd_Width", "@Font_TextWidth@12")
+extern "C" void Hd_Bitmap(); KING_ALIAS("_Hd_Bitmap", "_Bitmap_Draw")
+extern "C" void Hd_Image(); KING_ALIAS("_Hd_Image", "_Gfx_DrawImage")
+extern "C" void Hd_DrawText(); KING_ALIAS("_Hd_DrawText", "_Font_DrawText")
+extern "C" void Hd_PlayerData(); KING_ALIAS("_Hd_PlayerData", "_Ai_GetPlayerData")
+extern "C" void Hd_Flags(); KING_ALIAS("_Hd_Flags", "_Player_Flags")
+extern "C" void Hd_M1(); KING_ALIAS("_Hd_M1", "@SceneObj_Matrix1@12")
+extern "C" void Hd_Normalize(); KING_ALIAS("_Hd_Normalize", "@Vec3_NormalizeThis@8")
+extern "C" void Hd_Sound(); KING_ALIAS("_Hd_Sound", "@Sound_Play@20")
+ASM_VAR(BYTE*, g_hd69684c, $L_69684c)
+ASM_VAR(BYTE*, g_hd696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_hd696848, $L_696848)
+ASM_VAR(BYTE*, g_hd6cecac, $L_6cecac)
+ASM_VAR(BYTE*, g_hd6cecb0, $L_6cecb0)
+ASM_VAR(BYTE*, g_hd6cecb4, $L_6cecb4)
+ASM_VAR(int, g_hdBlink, $L_6f3440)
+ASM_VAR(int, g_hdBeep, $L_6f343c)
+ASM_VAR(BYTE*, g_hd6d2078, $L_6d2078)
+ASM_VAR(int, g_hd696c54, $L_696c54)
+ASM_VAR(int, g_hdPos, $L_67b72c)
+ASM_VAR(int, g_hdOf, $L_6f3444)
+ASM_VAR(int, g_hdCount, $L_6f3458)
+ASM_VAR(double, g_hdTime, $L_6f3460)
+ASM_VAR(double, g_hdBest, $L_6f3468)
+ASM_VAR(int, g_hdSpeed, $L_6f3448)
+ASM_VAR(int, g_hd6f3328, $L_6f3328)
+ASM_VAR(int, g_hdGear, $L_6f344c)
+ASM_VAR(int, g_hdAuto, $L_6f3450)
+ASM_VAR(int, g_hdRpm, $L_6f3454)
+ASM_VAR(int, g_hdSignal, $L_6f345c)
+ASM_VAR(int, g_hd68b990, $L_68b990)
+ASM_VAR(int, g_hd6ce330, $L_6ce330)
+ASM_VAR(int, g_hd6ce334, $L_6ce334)
+ASM_VAR(BYTE*, g_hd6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_hd6cec6c, $L_6cec6c)
+ASM_VAR(double, g_hd696348, $L_696348)
+ASM_VAR(int, g_hdLap, $L_6f33b8)
+ASM_VAR(Vec3, g_hdZero, $L_702650)
+ASM_VAR(double, g_hd64b658, $L_64b658)
+ASM_VAR(double, g_hd64b670, $L_64b670)
+ASM_VAR(double, g_hd64d0e0, $L_64d0e0)
+ASM_VAR(float, g_hd64fe30, $L_64fe30)
+ASM_VAR(double, g_hd64b678, $L_64b678)
+ASM_VAR(double, g_hd64fe28, $L_64fe28)
+ASM_VAR(double, g_hd64b958, $L_64b958)
+ASM_VAR(float, g_hd64c250, $L_64c250)
+ASM_VAR(double, g_hd64fe20, $L_64fe20)
+ASM_VAR(double, g_hd64ca80, $L_64ca80)
+ASM_VAR(double, g_hd64b6a0, $L_64b6a0)
+ASM_VAR(double, g_hd64b7f8, $L_64b7f8)
+ASM_VAR(double, g_hd64d338, $L_64d338)
+ASM_VAR(double, g_hd64b6e0, $L_64b6e0)
+ASM_VAR(float, g_hd64fe1c, $L_64fe1c)
+ASM_VAR(float, g_hd64fe18, $L_64fe18)
+ASM_VAR(float, g_hd64fe14, $L_64fe14)
+ASM_VAR(float, g_hd64fe10, $L_64fe10)
+ASM_VAR(float, g_hd64c450, $L_64c450)
+ASM_VAR(float, g_hd64c264, $L_64c264)
+ASM_VAR(double, g_hd64b6f8, $L_64b6f8)
+ASM_VAR(double, g_hd64fe08, $L_64fe08)
+ASM_VAR(double, g_hd64fe00, $L_64fe00)
+ASM_VAR(double, g_hd64fdf8, $L_64fdf8)
+
+static BYTE* g_hdSurf;
+
+static void Hd_Draw(int x, int y, BYTE* font, const char* s)
+{
+    CallC(Hd_Text, g_hdSurf, x, y, font, s, 0, 0);
+}
+
+static const char* Hd_T(int n)
+{
+    return CallC<const char*>(Hd_Str, n);
+}
+
+// digits moved up to the dashboard font's lit digits
+static void Hd_Lit(char* s)
+{
+    for (; *s; s++)
+        *s += 16;
+}
+
+static int Hd_W(BYTE* font, const char* s)
+{
+    return CallThis<int>(Hd_Width, font, s);
+}
+
+extern "C" {
+
+// [FUN_569ab0] dashboard d (fonts +1288 / +1292, frames +1276) on the screen surface: refreshed every so many frames
+// (blinking 6f3440 on), the race position, laps and times, the speed (km/h or mph), the gear, the revs, the lights,
+// damage and temperature, then either the turn signal or, in the network race, the arrow to the next checkpoint;
+// a beep when something blinks, and the message line (+556, its scroll +1196) in its frame
+void __fastcall Dash_Draw(BYTE* d, void*)
+{
+    BYTE* scr = g_hd69684c;
+    CallVirt(F(BYTE*, d, 40), 20);
+    int W = CallVirt<int>(scr, 20);
+    int bx = 170, by = 50, x0 = -10, bgx = -479;
+    if (W > 1204)
+    {
+        bx = 1161;
+        by = 11;
+        bgx = 0;
+        x0 = 469;
+    }
+    else if (W > 800)
+    {
+        bx = 682;
+        by = 11;
+        bgx = -479;
+    }
+    else if (W > 640)
+    {
+        bx = 250;
+        by = 50;
+        x0 = 70;
+        bgx = -399;
+    }
+    g_hdSurf = F(BYTE*, scr, 12);
+    int frame = ++F(int, d, 1276);
+    BYTE* r = g_hd696ca0;
+    double t = F(double, r, 2968) / (F(int, r, 2992) + 1);
+    if (t < g_hd64b658)
+        t = g_hd64b658;
+    int period = (int)(g_hd64b670 / t);
+    if (g_hd696848 == g_hd6cecb0 || g_hd696848 == g_hd6cecac || g_hd696848 == g_hd6cecb4)
+        period = 1;
+    int rem = frame % period;
+    char buf[100];
+    bool skip = false;
+    if (rem == 0)
+        g_hdBlink ^= 1;
+    else if (rem != 1 && frame >= 10)
+        skip = true;
+    BYTE* f1 = 0;
+    BYTE* f2 = 0;
+    if (!skip)
+    {
+        g_hdBeep = 0;
+        CallC(Hd_Bitmap, g_hdSurf, bgx, 0, F(BYTE*, d, 1256));
+        BYTE* car = F(BYTE*, g_hd6d2078, 616);
+        if (!car)
+            return;
+        int mph = g_hd696c54 == 0;
+        f1 = F(BYTE*, d, 1288);
+        f2 = F(BYTE*, d, 1292);
+        if (F(int, d, 1276) % period == 0 || F(int, d, 1276) < 10)
+        {
+            int* plp = &F(int, car, 20636);
+            if (*plp != g_hd68b990)
+            {
+                BYTE pd[256];
+                CallC(Hd_PlayerData, *plp, pd);
+                if (pd[136])
+                {
+                    g_hdPos = F(int, (BYTE*)*plp, 528) + 1;
+                    g_hdOf = F(int, (BYTE*)*plp, 524) + 1;
+                }
+                else
+                    g_hdPos = -1;
+                int n = (F(int, (BYTE*)*plp, 148) - F(int, (BYTE*)*plp, 144)) >> 3;
+                g_hdTime = F(double, pd, 120);
+                g_hdCount = n;
+                if (n > 0)
+                    g_hdBest = F(double, pd, 64);
+            }
+            double div = mph ? 1.6 : 1.0;
+            Vec3 v = F(Vec3, car, 432);
+            g_hdSpeed = (int)(Vec3_Length(&v) * g_hd64d0e0 / div);
+            g_hd6f3328 = F(int, car, 21020);
+            g_hdGear = F(int, car, 20996);
+            g_hdAuto = F(int, car, 21024);
+            g_hdRpm = (int)(F(float, car, 20968) * (double)g_hd64fe30);
+            g_hdSignal = F(int, (BYTE*)*plp, 660);
+        }
+        if (F(int, car, 20636) != g_hd68b990)
+        {
+            if (g_hdPos >= 0)
+            {
+                Hd_Draw(x0 + 26, 23, f1, Hd_T(89));
+                sprintf(buf, "%d", g_hdPos);
+                Hd_Lit(buf);
+                Hd_Draw(x0 + 26, 43, f2, buf);
+                const char* of = Hd_T(95);
+                Hd_Draw(x0 - Hd_W(f1, Hd_T(95)) / 2 + 50, 38, f1, of);
+                sprintf(buf, "%d", g_hdOf);
+                Hd_Lit(buf);
+                Hd_Draw(x0 + 63, 43, f2, buf);
+            }
+            Hd_Draw(x0 + 85, 23, f1, Hd_T(90));
+            int s = (int)g_hdTime;
+            sprintf(buf, "%02d:%02d", s / 60, s % 60);
+            Hd_Lit(buf);
+            Hd_Draw(x0 + 85, 43, f2, buf);
+            if (g_hdCount > 0)
+            {
+                Hd_Draw(x0 + 154, 23, f1, Hd_T(101));
+                sprintf(buf, "%d", g_hdCount);
+                Hd_Draw(x0 + 210, 23, f1, buf);
+                int b = (int)g_hdBest;
+                sprintf(buf, "%02d:%02d", b / 60, b % 60);
+                Hd_Lit(buf);
+                Hd_Draw(x0 + 158, 43, f2, buf);
+            }
+        }
+        sprintf(buf, "%d", g_hdSpeed);
+        Hd_Draw(x0 - Hd_W(f2, buf) + 287, 38, f2, buf);
+        Hd_Draw(x0 + 291, 40, f1, mph ? "MpH" : Hd_T(93));
+        if (F(int, car, 21600) && g_hd6f3328 && g_hdBlink)
+            Hd_Draw(x0 + 315, 40, f2, "[\\");
+        int g = g_hdGear;
+        int gc = g > 1 ? g + 47 : (g ? 78 : 82);
+        sprintf(buf, g_hdAuto ? Hd_T(91) : Hd_T(92), gc);
+        Hd_Draw(x0 + 361 + (g_hdAuto ? 15 : 0), 23, f1, buf);
+        sprintf(buf, "%d", g_hdRpm);
+        Hd_Lit(buf);
+        Hd_Draw(x0 - Hd_W(f2, buf) + 386, 43, f2, buf);
+        Hd_Draw(x0 + 386, 40, f1, Hd_T(94));
+        int lights = F(int, d, 1268);
+        const char* ls;
+        if (!lights)
+            ls = "KL";
+        else if (lights == 1)
+            ls = "MN";
+        else
+        {
+            g_hdBeep = 1;
+            ls = g_hdBlink ? "KL" : "MN";
+        }
+        Hd_Draw(x0 + 458, 40, f2, ls);
+        double dmg = F(float, car, 20988);
+        int n = 0;
+        if (dmg > g_hd64b678)
+        {
+            n = 2 - (int)(dmg * g_hd64fe28);
+            if (n > 9)
+                n = 9;
+        }
+        sprintf(buf, "?%c", n + 80);
+        if (n > 3 || g_hdBlink)
+            Hd_Draw(x0 + 512, 40, f2, buf);
+        if (dmg < g_hd64b958)
+            g_hdBeep = 1;
+        int m = (int)((g_hd64c250 - (double)F(float, car, 20992)) * g_hd64fe20);
+        if (m < 0)
+            m = 0;
+        else if (m > 9)
+            m = 9;
+        BYTE* cab = F(BYTE*, car, 21600);
+        if (cab && F(int, cab, 2252) >= g_hd6ce330 && F(int, cab, 2252) < g_hd6ce334)
+            sprintf(buf, "%c%c", 95, m + 80);
+        else
+            sprintf(buf, "O%c", m + 80);
+        if (m > 3 || g_hdBlink)
+            Hd_Draw(x0 + 553, 40, f2, buf);
+        int ax = x0 + 608;
+        int pl = F(int, car, 20636);
+        if (pl != g_hd68b990 && (CallC<DWORD>(Hd_Flags, pl) & 0x2000))
+        {
+            if (!(F(int, g_hd6cec98, 384) == 2 && F(int, g_hd6cec6c, 1316)))
+            {
+                double st = g_hd696348;
+                if (st > g_hd64ca80 && st < g_hd64b6a0)
+                    g_hdBeep = 1;
+                bool on = !(st > g_hd64b6a0);
+                if (on && st > g_hd64b7f8)
+                    on = ((int)(((st - g_hd64b7f8) * g_hd64d338 + g_hd64b6e0) * F(double, g_hd696ca0, 2968)) % 2) != 0;
+                if (on)
+                {
+                    static const char* const arrows[4] = {"<", "]", ";", "="};
+                    if ((unsigned)(g_hdSignal - 1) <= 3)
+                        Hd_Draw(ax, 40, f2, arrows[g_hdSignal - 1]);
+                }
+            }
+        }
+        else if (F(int, g_hd6cec6c, 1316) && F(int, g_hd6cec98, 384) == 1)
+        {
+            Matrix M;
+            CallThis(Hd_M1, F(BYTE*, g_hd6d2078, 616) + 16, &M);
+            Vec3 dv;
+            if (g_hdLap == 0 || g_hdLap == 1)
+            {
+                float tx = g_hdLap == 0 ? g_hd64fe1c : g_hd64fe14, ty = g_hdLap == 0 ? g_hd64fe18 : g_hd64fe10;
+                dv.x = (float)((double)tx - M.m[9]);
+                dv.y = (float)((double)ty - M.m[10]);
+                dv.z = (float)((double)M.m[11] - M.m[11]);
+            }
+            else
+                dv = g_hdZero;
+            if (Vec3_Length(&dv) > g_hd64c450)
+            {
+                CallThis(Hd_Normalize, &dv);
+                Matrix inv;
+                const float* q = Matrix_Inverse(&inv, &M)->m;
+                float lx = (float)((double)dv.z * q[6] + (double)dv.y * q[3] + (double)dv.x * q[0]);
+                double ly = (double)dv.z * q[7] + (double)dv.y * q[4] + (double)dv.x * q[1];
+                const char* a;
+                if (ly > g_hd64c264)
+                    a = lx > g_hd64b6f8 ? "de" : lx > g_hd64fe08 ? "bc" : lx > g_hd64fe00 ? "`a" : lx > g_hd64fdf8 ? "no" : "lm";
+                else
+                    a = lx > g_hd64b6f8 ? "de" : lx > g_hd64fe08 ? "fg" : lx > g_hd64fe00 ? "hi" : lx > g_hd64fdf8 ? "jk" : "lm";
+                Hd_Draw(ax, 40, f2, a);
+            }
+        }
+    }
+    f1 = F(BYTE*, d, 1288);
+    if (g_hdBeep)
+        CallThis(Hd_Sound, F(BYTE*, d, 1284), 0.6f, 0.6f, 0);
+    Hd_Draw(20, 20, f1, " ");
+    int sc = F(int, d, 1196);
+    if (sc == 1)
+    {
+        if (!F(int, d, 1216))
+            return;
+        CallC(Hd_Image, g_hdSurf, bx, by, F(BYTE*, d, 1264), -1);
+        CallC(Hd_DrawText, g_hdSurf, bx + 34, by + 23, 247, f1, d + 556, 0, 0);
+        return;
+    }
+    CallC(Hd_Image, g_hdSurf, bx, by, F(BYTE*, d, 1264), -1);
+    sc = F(int, d, 1196);
+    if (sc > 1 && sc < 20 && ((sc / 2) & 1))
+        CallC(Hd_Image, g_hdSurf, bx + 5, by + 6, F(BYTE*, d, 1260), -1);
+    sc = F(int, d, 1196);
+    if (sc == 1)
+        return;
+    char line[160];
+    int i = 0;
+    for (; i < sc - 1; i++)
+    {
+        char c = F(char, d, 556 + i);
+        line[i] = c;
+        if (!c)
+        {
+            if (sc < 1000)
+                F(int, d, 1196) = 1000;
+            break;
+        }
+    }
+    line[i] = 0;
+    int w = Hd_W(f1, line);
+    int off = 0;
+    if (w > 247)
+        off = (w - 247) / F(int, f1, 24) + 1;
+    Hd_Draw(bx + 34, by + 23, f1, line + off);
+}
+
+} // extern "C"
+
+// === the helicopter's first initialization (FUN_561800 with its tails up to $L_561a7c)
+
+extern "C" void Hi_Base(); KING_ALIAS("_Hi_Base", "@Copter561530_Init@8")
+extern "C" void Hi_Room(); KING_ALIAS("_Hi_Room", "_AI_Make449c40")
+extern "C" void Hi_RotX(); KING_ALIAS("_Hi_RotX", "_Matrix_RotationX")
+extern "C" void Hi_Fatal(); KING_ALIAS("_Hi_Fatal", "_World_Fatal")
+extern "C" void Hi_Log(); KING_ALIAS("_Hi_Log", "_Sys_Log")
+extern "C" void Hi_Find(); KING_ALIAS("_Hi_Find", "_Scene_FindObject")
+extern "C" void Hi_Stack(); KING_ALIAS("_Hi_Stack", "@Stack_Init@16")
+struct HiPos { int d[8]; };
+extern "C" int __cdecl Hi_PosRV(HiPos* out, int room, Vec3 p); KING_ALIAS("_Hi_PosRV", "_Ai_GetPositionIdRV")
+extern "C" int __cdecl Hi_PosV(HiPos* out, Vec3 p); KING_ALIAS("_Hi_PosV", "_Ai_GetPositionIdV")
+extern "C" int __cdecl Hi_RoadParams(HiPos pos, BYTE* info); KING_ALIAS("_Hi_RoadParams", "_Road_GetRoadParameters")
+ASM_VAR(Vec3, g_hiZero, $L_702650)
+ASM_VAR(Vec3, g_hiUp, $L_702630)
+ASM_VAR(Vec3, g_hiAhead, $L_702620)
+ASM_VAR(char, g_hiNoRoom, $L_67b34c)
+ASM_VAR(char, g_hiNoRoad, $L_67b2dc)
+ASM_VAR(BYTE**, g_hiRoads, $L_68cf38)
+
+static int Hi_RoomOf(BYTE* a)
+{
+    int r[8];
+    CallC(Hi_Room, r, F(void*, a, 12));
+    return r[0];
+}
+
+extern "C" {
+
+// [FUN_561800..$L_561a7c] helicopter s in room a with frame m: the base, its frame (+0) and inverse (+48), the
+// axes, the nose (+3316, the ahead axis tilted down), the room's position on the road (a fatal error when the room or
+// the road is unknown); off the road a scene object of the road's room is required, else +3548 is set; on the road
+// the stack (+144) of the road's ends
+void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
+{
+    CallThis(Hi_Base, s);
+    F(BYTE*, s, 96) = a;
+    F(Vec3, s, 3256) = F(Vec3, m, 36);
+    F(int, s, 3272) = Hi_RoomOf(a);
+    memcpy(s, m, 48);
+    Matrix t;
+    memcpy(s + 48, Matrix_Inverse(&t, (const Matrix*)s), 48);
+    F(Vec3, s, 3504) = g_hiZero;
+    F(Vec3, s, 3516) = g_hiUp;
+    F(Vec3, s, 3528) = g_hiAhead;
+    DWORD ab = 3192459227u;
+    const float* R = CallC<const Matrix*>(Hi_RotX, &t, *(float*)&ab)->m;
+    const Vec3& v = g_hiAhead;
+    Vec3 n;
+    n.x = (float)((double)v.z * R[6] + (double)v.y * R[3] + (double)v.x * R[0]);
+    n.y = (float)((double)v.z * R[7] + (double)v.y * R[4] + (double)v.x * R[1]);
+    n.z = (float)((double)v.z * R[8] + (double)v.y * R[5] + (double)v.x * R[2]);
+    F(Vec3, s, 3316) = n;
+    F(int, s, 3236) = 1;
+    F(int, s, 3148) = 0;
+    F(BYTE*, s, 3356) = F(BYTE*, s, 96);
+    F(Vec3, s, 3360) = F(Vec3, s, 3256);
+    int room = Hi_RoomOf(F(BYTE*, s, 96));
+    if (room == -1)
+        CallC(Hi_Fatal, &g_hiNoRoom);
+    HiPos pos;
+    Hi_PosRV(&pos, room, F(Vec3, s, 36));
+    if (pos.d[0] == -1)
+    {
+        char buf[256];
+        sprintf(buf, &g_hiNoRoad, F(const char*, F(BYTE*, s, 96), 12), (double)F(float, s, 36),
+                (double)F(float, s, 40), (double)F(float, s, 44));
+        Hi_PosV(&pos, F(Vec3, s, 36));
+        if (pos.d[0] == -1)
+            CallC(Hi_Fatal, buf);
+        CallC(Hi_Log, buf, 0);
+        BYTE info[48];
+        memset(info, 0, sizeof info);
+        F(const char*, info, 16) = "UNDEFINED_MODULE";
+        F(const char*, info, 20) = "UNDEFINED_ROOM";
+        F(int, info, 36) = -1;
+        F(int, info, 40) = -1;
+        Hi_RoadParams(pos, info);
+        if (!CallC<BYTE*>(Hi_Find, 0, F(const char*, info, 20)))
+        {
+            F(int, s, 3548) = 1;
+            return;
+        }
+    }
+    BYTE* e = g_hiRoads[pos.d[0]];
+    CallThis(Hi_Stack, s + 144, (int)F(short, F(BYTE*, e, 112), 16), (int)F(short, F(BYTE*, e, 116), 16));
 }
 
 } // extern "C"

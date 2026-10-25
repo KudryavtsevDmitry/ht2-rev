@@ -6,6 +6,7 @@
 // original procedures again.
 
 #include "king.h"
+#include "vecmath.h"
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
@@ -244,7 +245,7 @@ extern "C" void FUN_4e5ba7(); KING_ALIAS("_FUN_4e5ba7", "_Query_HitObject")
 extern "C" void FUN_57ca30(); KING_ALIAS("_FUN_57ca30", "_Id_New")
 extern "C" void FUN_57cb50(); KING_ALIAS("_FUN_57cb50", "@Object57cb50_Construct@12")
 extern "C" void FUN_57cfc0(); KING_ALIAS("_FUN_57cfc0", "@Placement_Init@8")
-ASM_PROC(FUN_57d860)
+extern "C" void FUN_57d860(); KING_ALIAS("_FUN_57d860", "@MovingItem_Init0@24")
 extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
 ASM_PROC(FUN_5c6170)
 ASM_PROC(FUN_5c5f60)
@@ -624,6 +625,114 @@ void __cdecl Obj_HoldOnRail(BYTE* o, const float* r, float* out)
     CallC(Rl_Add, R, C1, CallC<float*>(Rl_Scaled, S2, A, F(float, o, 1424)));
     CallC(Iw_CheckPoint, R, &s_rl67d1b8, 150.0f);
     CallVirt(o, 144, R, &s_rl67d1b8);
+}
+
+} // extern "C"
+
+// === a moving item's first initialization (FUN_57d860 with its tail $L_57d87f)
+
+extern "C" void Mi_Fatal(); KING_ALIAS("_Mi_Fatal", "_World_Fatal")
+extern "C" void Mi_Time(); KING_ALIAS("_Mi_Time", "_Game_Time")
+extern "C" void Mi_InitState(); KING_ALIAS("_Mi_InitState", "@SceneObj_InitState@24")
+extern "C" void Mi_57e030(); KING_ALIAS("_Mi_57e030", "@SceneObj_57e030@12")
+ASM_FUNC(Mi_Frame, FUN_58e7f0)
+ASM_VAR(int, g_mi67d10c, $L_67d10c)
+ASM_VAR(int, g_mi696be0, $L_696be0)
+ASM_VAR(Vec3, g_miZero, $L_702650)
+ASM_VAR(Vec3, g_miAhead, $L_702630)
+ASM_VAR(Vec3, g_mi6f63d8, $L_6f63d8)
+ASM_VAR(float, g_mi64d7b8, $L_64d7b8)
+
+static double Mi_Now()
+{
+    return CallC<double>(Mi_Time);
+}
+
+// the point ahead of s's frame origin (+536) by 64d7b8
+static Vec3 Mi_Ahead(BYTE* s)
+{
+    double k = g_mi64d7b8;
+    float y = (float)(g_miAhead.y * k), z = (float)(g_miAhead.z * k);
+    Vec3 r;
+    r.x = (float)(g_miAhead.x * k + F(float, s, 536));
+    r.y = (float)((double)y + F(float, s, 540));
+    r.z = (float)((double)z + F(float, s, 544));
+    return r;
+}
+
+extern "C" {
+
+// [FUN_57d860..$L_57d87f] moving item s at scale `scale`, frame m5 (+500) under parent frame m, owner a: its
+// priority, clocks and state, the scale's start state, the frames relative to the parent (+596 / +692 / +740), the
+// points ahead (+1164 / +1176), the frame nodes for both frames, the placement, cleared tables and limits (1e7)
+void __fastcall MovingItem_Init0(BYTE* s, void*, float scale, const Matrix* m, const Matrix* m5, int a)
+{
+    if (g_mi67d10c >= 400)
+        CallC(Mi_Fatal, "Moving_Priority>=BEGIN_PRIOR");
+    F(int, s, 1188) = F(int, s, 368);
+    F(int, s, 3556) = 0;
+    F(int, s, 1196) = 4;
+    F(float, s, 808) = (float)Mi_Now();
+    F(short, s, 814) = 0;
+    F(short, s, 812) = 0;
+    F(float, s, 3560) = (float)Mi_Now();
+    F(float, s, 400) = scale;
+    F(int, s, 1420) = 0;
+    F(int, s, 1424) = g_mi696be0;
+    F(float, s, 1428) = 0.5f;
+    F(int, s, 892) = 0;
+    F(int, s, 896) = 0;
+    F(float, s, 904) = (float)(Mi_Now() - g_mi64d7b8);
+    F(Vec3, s, 3436) = g_miZero;
+    F(Vec3, s, 3448) = g_miZero;
+    F(int, s, 392) = 0;
+    Vec3 sc = {F(float, s, 400), F(float, s, 400), F(float, s, 400)};
+    CallThis(Mi_InitState, s, 1.0f, sc);
+    F(int, s, 800) = a;
+    memcpy(s + 500, m5, 48);
+    Matrix t, u;
+    memcpy(s + 596, Matrix_Inverse(&t, (const Matrix*)(s + 500)), 48);
+    memcpy(s + 692, Matrix_Multiply(&t, m, (const Matrix*)(s + 596)), 48);
+    memcpy(s + 740, Matrix_Multiply(&t, (const Matrix*)(s + 500), Matrix_Inverse(&u, m)), 48);
+    memcpy(s + 3172, s + 500, 48);
+    F(Vec3, s, 1164) = Mi_Ahead(s);
+    F(Vec3, s, 1176) = Mi_Ahead(s);
+    float out[3] = {0, (float)(g_miAhead.y * g_mi64d7b8), (float)(g_miAhead.z * g_mi64d7b8)};
+    CallVirt(s, 220, out);
+    F(Vec3, s, 416) = g_miZero;
+    F(Vec3, s, 428) = g_miZero;
+    F(Vec3, s, 440) = g_miZero;
+    F(Vec3, s, 464) = g_miZero;
+    memcpy(s + 816, s + 500, 48);
+    F(Vec3, s, 864) = F(Vec3, s, 416);
+    F(Vec3, s, 876) = F(Vec3, s, 428);
+    CallThis(Mi_Frame, s, m5, "_MovingItem::init0 #1", 0);
+    CallThis(Mi_Frame, s, m, "_MovingItem::init0 #2", 0);
+    CallVirt(s, 52);
+    CallThis(Mi_57e030, s, s + 3268);
+    F(Vec3, s, 788) = g_mi6f63d8;
+    F(BYTE, s, 1132) = 0;
+    memset(s + 3468, 0, 36);
+    F(int, s, 3504) = 0;
+    F(int, s, 1192) = 0;
+    F(int, s, 1200) = 0;
+    F(Vec3, s, 3148) = g_miZero;
+    F(Vec3, s, 3160) = g_miZero;
+    F(int, s, 1204) = 0;
+    F(int, s, 1208) = 0;
+    F(int, s, 1412) = 0;
+    F(int, s, 1416) = 0;
+    memset(s + 1212, 0, 200);
+    for (int k = 0; k < 6; k++)
+    {
+        F(int, s, 3508 + 4 * k) = 0;
+        F(DWORD, s, 3532 + 4 * k) = 0x4B189680;
+    }
+    F(Vec3, s, 476) = g_miZero;
+    F(Vec3, s, 488) = g_miZero;
+    F(int, s, 1440) = 0;
+    F(float, s, 3144) = (float)(Mi_Now() - g_mi64d7b8);
+    CallVirt(s, 76);
 }
 
 } // extern "C"

@@ -450,7 +450,7 @@ typedef char TerrainLabel[1];
 ASM_VAR(TerrainLabel, g_vtbl652f3c, $L_652f3c)
 ASM_VAR(const float, k_zero6142f0, $L_64c264)
 ASM_VAR(const float, k_0_025, $L_6532e8)
-ASM_PROC(FUN_61a8a0)
+extern "C" void FUN_61a8a0(); KING_ALIAS("_FUN_61a8a0", "@TGridMesh_Build@20")
 
 // [FUN_6142f0] constructs a terrain view: its position, the new 116-byte detail object, the grid (FUN_61a8a0) and the view constants
 extern "C" BYTE* __fastcall TerrainView_Construct(BYTE* s, void*, int x, int y, int z, int a3, int a4, int a5, int a6, int a7)
@@ -1719,6 +1719,337 @@ double __fastcall Grid_HeightAt(BYTE* s, void*, const float* p)
     if ((tri == 2 && cross) || (!cross && tri == 3))
         return e + ((double)m - e) * ww;
     return m + (e - m) * ww;
+}
+
+} // extern "C"
+
+// === building the terrain grid (FUN_61a8a0)
+
+#include <stdlib.h>
+
+extern "C" void Tb_Set(); KING_ALIAS("_Tb_Set", "@Vec3_SetThis@20")
+extern "C" void Tb_Level32(); KING_ALIAS("_Tb_Level32", "_Grid_Level32")
+extern "C" void Tb_TaskAlloc(); KING_ALIAS("_Tb_TaskAlloc", "@GridTask_Alloc@16")
+extern "C" void Tb_Reset(); KING_ALIAS("_Tb_Reset", "@Grid_Reset@16")
+extern "C" void Tb_MakeNode(); KING_ALIAS("_Tb_MakeNode", "@TGrid_MakeNode@16")
+extern "C" void Tb_NodeInit(); KING_ALIAS("_Tb_NodeInit", "@TNode_Init@16")
+extern "C" void Tb_ObjInit(); KING_ALIAS("_Tb_ObjInit", "@GridObj_Construct@8")
+extern "C" void Tb_Sample(); KING_ALIAS("_Tb_Sample", "@Terrain_Sample@16")
+extern "C" void Tb_Height(); KING_ALIAS("_Tb_Height", "@TGrid_Height@12")
+extern "C" void Tb_Priority(); KING_ALIAS("_Tb_Priority", "@TGridCamera_NodePriority@12")
+extern "C" void Tb_Insert(); KING_ALIAS("_Tb_Insert", "@MarineQueue_InsertDeferredNode@12")
+extern "C" void Tb_NewCell(); KING_ALIAS("_Tb_NewCell", "@Grid_NewCell@24")
+extern "C" void Tb_SetTris(); KING_ALIAS("_Tb_SetTris", "@TerrainCell_SetTriangles@16")
+extern "C" void Tb_RemoveCell(); KING_ALIAS("_Tb_RemoveCell", "@Grid_RemoveCell@12")
+extern "C" void Tb_Follow(); KING_ALIAS("_Tb_Follow", "@TGrid_FollowCamera@20")
+extern "C" void Tb_Reprio(); KING_ALIAS("_Tb_Reprio", "@GridMesh_Reprioritise@8")
+extern "C" void Tb_Error(); KING_ALIAS("_Tb_Error", "_Grd_ReportError")
+ASM_VAR(AsmLabel, g_tb6533a8, $L_6533a8)
+ASM_VAR(AsmLabel, g_tb65338c, $L_65338c)
+ASM_VAR(AsmLabel, g_tb652f00, $L_652f00)
+ASM_VAR(float, g_tb64dac8, $L_64dac8)
+ASM_VAR(float, g_tb64c258, $L_64c258)
+ASM_VAR(float, g_tb64c264, $L_64c264)
+ASM_VAR(float, g_tb64c904, $L_64c904)
+
+static void Tb_Fail(int line)
+{
+    CallC(Tb_Error, 0x88750014 - (line == 41 ? 0 : 3), " File = %s, Line = #%ld, Date = %s ",
+          "C:\\Nek\\VRAPPLVS\\terrain\\tgreed.cpp", line, "Jan 16 2003");
+}
+
+// a new cell (76 bytes) over vertices a, b, c at level 0, its fields as Grid_NewCell sets them; 0 when out of memory
+static BYTE* Tb_Cell(WORD* a, WORD* b, WORD* c)
+{
+    BYTE* n = (BYTE*)operator new(76);
+    if (!n)
+        return 0;
+    F(BYTE*, n, 4) = n + 4;
+    F(BYTE*, n, 8) = n + 4;
+    CallThis(Tb_ObjInit, n + 12);
+    F(void*, n, 0) = &g_tb652f00;
+    F(int, n, 68) = 0;
+    F(int, n, 64) = 0;
+    F(int, n, 60) = 0;
+    F(int, n, 72) = 0;
+    F(int, n, 56) = 0;
+    F(WORD*, n, 16) = a;
+    F(WORD*, n, 20) = b;
+    F(WORD*, n, 24) = c;
+    F(int, n, 36) = 0;
+    return n;
+}
+
+static float Tb_Height(BYTE* G, const void* xy)
+{
+    return (float)CallThis<double>(Tb_Height, G, xy);
+}
+
+// the height error (+32), the camera priority (+28) and the queue for cell n of mesh s
+static void Tb_Finish(BYTE* s, BYTE* n, double ha, const DWORD* c, const DWORD* mid)
+{
+    BYTE* G = F(BYTE*, s, 4);
+    float avg = (float)(((double)Tb_Height(G, c) + ha) * g_tb64c258);
+    double d = (double)avg - Tb_Height(G, mid);
+    if (d < g_tb64c264)
+        d = -d;
+    F(float, n, 32) = (float)d;
+    F(WORD, s, 42)++;
+    F(float, n, 28) = (float)CallThis<double>(Tb_Priority, F(BYTE*, s, 4), n + 12);
+    CallThis(Tb_Insert, F(BYTE*, s, 36), n);
+}
+
+// the larger of r and the float of x*x + y*y
+static double Tb_Max(double r, double x, double y)
+{
+    float q = (float)(x * x + y * y);
+    return r > q ? r : q;
+}
+
+// the first inline cell kind (a = the square's corner): all six coordinates rounded, the centre's x kept on the FPU,
+// the a corner's height sampled from the terrain
+static void Tb_CellA(BYTE* s, BYTE* n)
+{
+    BYTE* V = F(BYTE*, s, 12);
+    BYTE* va = V + *F(WORD*, n, 16) * 16;
+    BYTE* vb = V + *F(WORD*, n, 20) * 16;
+    BYTE* vc = V + *F(WORD*, n, 24) * 16;
+    DWORD mid[2];
+    mid[0] = (int)((__int64)(unsigned)(F(int, va, 8) + F(int, vc, 8)) * (double)g_tb64c258);
+    mid[1] = (int)((__int64)(unsigned)(F(int, vc, 12) + F(int, va, 12)) * (double)g_tb64c258);
+    BYTE* G = F(BYTE*, s, 4);
+    double sx = F(float, G, 40152), ox = F(float, G, 40136), sy = F(float, G, 40156), oy = F(float, G, 40148);
+    float ax = (float)((__int64)(unsigned)F(int, va, 8) * sx + ox);
+    float ay = (float)((__int64)(unsigned)F(int, va, 12) * sy + oy);
+    float bx = (float)((__int64)(unsigned)F(int, vb, 8) * sx + ox);
+    float by = (float)((__int64)(unsigned)F(int, vb, 12) * sy + oy);
+    float cx = (float)((__int64)(unsigned)F(int, vc, 8) * sx + ox);
+    float cy = (float)((__int64)(unsigned)F(int, vc, 12) * sy + oy);
+    double mx = ((double)cx + bx + ax) * g_tb64c904;
+    float my = (float)(((double)cy + by + ay) * g_tb64c904);
+    double e = (double)ay - my, d = ax - mx;
+    double r = d * d + e * e;
+    r = Tb_Max(r, (double)bx - mx, (double)by - my);
+    r = Tb_Max(r, (double)cx - mx, (double)cy - my);
+    F(float, n, 44) = (float)mx;
+    F(float, n, 48) = my;
+    F(float, n, 52) = (float)x87_sqrt(r);
+    float ha = (float)CallThis<double>(Tb_Sample, F(BYTE*, G, 40192), F(DWORD, va, 8), F(DWORD, va, 12));
+    Tb_Finish(s, n, ha, (const DWORD*)(vc + 8), mid);
+}
+
+// the second inline kind: the a corner's x and y kept on the FPU, the centre rounded
+static void Tb_CellB(BYTE* s, BYTE* n)
+{
+    BYTE* V = F(BYTE*, s, 12);
+    BYTE* va = V + *F(WORD*, n, 16) * 16;
+    BYTE* vb = V + *F(WORD*, n, 20) * 16;
+    BYTE* vc = V + *F(WORD*, n, 24) * 16;
+    DWORD mid[2];
+    mid[1] = (int)((__int64)(unsigned)(F(int, va, 12) + F(int, vc, 12)) * (double)g_tb64c258);
+    mid[0] = (int)((__int64)(unsigned)(F(int, vc, 8) + F(int, va, 8)) * (double)g_tb64c258);
+    BYTE* G = F(BYTE*, s, 4);
+    double sx = F(float, G, 40152), ox = F(float, G, 40136), sy = F(float, G, 40156), oy = F(float, G, 40148);
+    double ax = (__int64)(unsigned)F(int, va, 8) * sx + ox;
+    double ay = (__int64)(unsigned)F(int, va, 12) * sy + oy;
+    float bx = (float)((__int64)(unsigned)F(int, vb, 8) * sx + ox);
+    float by = (float)((__int64)(unsigned)F(int, vb, 12) * sy + oy);
+    float cx = (float)((__int64)(unsigned)F(int, vc, 8) * sx + ox);
+    float cy = (float)((__int64)(unsigned)F(int, vc, 12) * sy + oy);
+    float mx = (float)(((double)cx + bx + ax) * g_tb64c904);
+    float my = (float)(((double)cy + by + ay) * g_tb64c904);
+    float e = (float)(ay - my);
+    double d = ax - mx;
+    double r = d * d + (double)e * e;
+    r = Tb_Max(r, (double)bx - mx, (double)by - my);
+    r = Tb_Max(r, (double)cx - mx, (double)cy - my);
+    float t[3];
+    CallThis(Tb_Set, t, mx, my, (float)x87_sqrt(r));
+    memcpy(n + 44, t, 12);
+    float ha = Tb_Height(G, va + 8);
+    Tb_Finish(s, n, ha, (const DWORD*)(vc + 8), mid);
+}
+
+extern "C" {
+
+// [FUN_61a8a0] mesh s's terrain grid over size sx * sy at pos: the grid object (40204 bytes: its scale and bounds,
+// the view constants) and its task lists; a node per grid point (256 units apart) and two cells per square, made
+// inline on odd squares and by Grid_NewCell on even ones, linked to their neighbours (+60 base, +64 / +68 sides),
+// paired into the squares' records (+8) and the four corner cells removed; then the links checked, the camera
+// followed and the mesh reprioritised; 0 when out of memory
+int __fastcall TGridMesh_Build(BYTE* s, void*, const float* pos, float sizeX, float sizeY)
+{
+    unsigned nx = (int)(sizeX * (double)g_tb64dac8);
+    unsigned ny = (int)(sizeY * (double)g_tb64dac8);
+    unsigned cells = ny * nx;
+    unsigned verts = (ny + 1) * (nx + 1);
+    BYTE* G = (BYTE*)operator new(40204);
+    if (G)
+    {
+        F(void*, G, 0) = &g_tb6533a8;
+        F(int, G, 48) = 0;
+        F(int, G, 44) = 0;
+        F(int, G, 40) = 0;
+        float z[3];
+        CallThis(Tb_Set, z, 0.0f, 0.0f, 0.0f);
+        memcpy(G + 4, z, 12);
+        CallThis(Tb_Set, z, 0.0f, 0.0f, 0.0f);
+        memcpy(G + 16, z, 12);
+        CallThis(Tb_Set, z, 0.0f, 0.0f, 0.0f);
+        memcpy(G + 28, z, 12);
+        F(void*, G, 0) = &g_tb65338c;
+        F(int, G, 40196) = F(int, s, 108);
+        F(int, G, 40200) = F(int, s, 112);
+        F(int, G, 104) = 0;
+        F(int, G, 100) = 0;
+        F(int, G, 40192) = 0;
+        F(int, G, 40116) = 1;
+    }
+    float sx = (float)(sizeX / (double)(__int64)(nx << 8));
+    F(float, G, 40120) = sizeX;
+    F(float, G, 40124) = sizeY;
+    F(float, G, 40128) = pos[0];
+    F(float, G, 40132) = pos[1];
+    F(float, G, 40152) = sx;
+    double sy = sizeY / (double)(__int64)(ny << 8);
+    double hx = sizeX * (double)g_tb64c258;
+    F(float, G, 40136) = (float)(F(float, G, 40128) - hx);
+    F(float, G, 40140) = (float)(hx + F(float, G, 40128));
+    double hy = sizeY * (double)g_tb64c258;
+    F(float, G, 40144) = (float)(hy + F(float, G, 40132));
+    F(float, G, 40148) = (float)(F(float, G, 40132) - hy);
+    F(float, G, 40156) = (float)sy;
+    F(float, G, 40160) = (float)(sx * (double)g_tb64c258);
+    F(float, G, 40164) = 0;
+    F(float, G, 40168) = 0;
+    float v[3];
+    CallThis(Tb_Set, v, 0.0f, (float)(sy * g_tb64c258), 0.0f);
+    memcpy(G + 40172, v, 12);
+    F(float, G, 52) = 24.0f;
+    F(float, G, 56) = 24.0f;
+    CallVirt(G, 8, nx << 8, ny << 8);
+    F(BYTE*, s, 4) = G;
+    CallThis(Tb_TaskAlloc, s, CallC<int>(Tb_Level32), cells);
+    CallThis(Tb_Reset, s, CallC<int>(Tb_Level32), cells);
+    for (unsigned i = 0; i < cells; i++)
+    {
+        BYTE* e = (BYTE*)operator new(20);
+        if (e)
+        {
+            F(int, e, 8) = 0;
+            F(int, e, 4) = 0;
+            F(int, e, 0) = 0;
+            F(int, e, 12) = 0;
+        }
+        F(BYTE**, s, 8)[i] = e;
+        if (!e)
+            return 0;
+    }
+    WORD** vx = (WORD**)malloc(verts * 4);
+    BYTE** tris = (BYTE**)malloc(cells * 2 * 4);
+    if (!vx || !tris)
+        Tb_Fail(41);
+    for (unsigned i = 0; i <= nx; i++)
+        for (unsigned j = 0; j <= ny; j++)
+        {
+            DWORD pt[2] = {i << 8, j << 8};
+            BYTE node[40];
+            BYTE* r = CallThis<BYTE*>(Tb_MakeNode, F(BYTE*, s, 4), node, pt);
+            memcpy(F(BYTE*, s, 16) + F(WORD, s, 40) * 40, r, 40);
+            WORD k = F(WORD, s, 40);
+            vx[j * (nx + 1) + i] = CallThis<WORD*>(Tb_NodeInit, F(BYTE*, s, 12) + k * 16, pt, k);
+            F(WORD, s, 40)++;
+        }
+#define VX(a, b) vx[(b) * (nx + 1) + (a)]
+    unsigned k = 0;
+    for (unsigned i = 1; i <= nx; i++)
+        for (unsigned j = 1; j <= ny; j++, k += 2)
+        {
+            if ((i ^ j) & 1)
+            {
+                BYTE* c1 = Tb_Cell(VX(i, j), VX(i, j - 1), VX(i - 1, j - 1));
+                if (c1)
+                    Tb_CellA(s, c1);
+                tris[k] = c1;
+                BYTE* c2 = Tb_Cell(VX(i - 1, j - 1), VX(i - 1, j), VX(i, j));
+                if (c2)
+                    Tb_CellB(s, c2);
+                tris[k + 1] = c2;
+            }
+            else
+            {
+                tris[k] = CallThis<BYTE*>(Tb_NewCell, s, VX(i, j - 1), VX(i - 1, j - 1), VX(i - 1, j), 0);
+                tris[k + 1] = CallThis<BYTE*>(Tb_NewCell, s, VX(i - 1, j), VX(i, j), VX(i, j - 1), 0);
+            }
+        }
+#undef VX
+    k = 0;
+    for (unsigned i = 1; i <= nx; i++)
+        for (unsigned j = 1; j <= ny; j++, k += 2)
+        {
+            BYTE* t1 = tris[k];
+            BYTE* t2 = tris[k + 1];
+            if ((i ^ j) & 1)
+            {
+                F(BYTE*, t1, 64) = i == nx ? 0 : tris[k + 2 * ny];
+                F(BYTE*, t1, 60) = t2;
+                F(BYTE*, t1, 68) = j == 1 ? 0 : tris[k - 1];
+                F(BYTE*, t2, 64) = i == 1 ? 0 : tris[k + 1 - 2 * ny];
+                F(BYTE*, t2, 60) = t1;
+                F(BYTE*, t2, 68) = j == ny ? 0 : tris[k + 2];
+            }
+            else
+            {
+                F(BYTE*, t1, 64) = j == 1 ? 0 : tris[k - 1];
+                F(BYTE*, t1, 60) = t2;
+                F(BYTE*, t1, 68) = i == 1 ? 0 : tris[k - 2 * ny];
+                F(BYTE*, t2, 64) = j == ny ? 0 : tris[k + 2];
+                F(BYTE*, t2, 60) = t1;
+                F(BYTE*, t2, 68) = i == nx ? 0 : tris[k + 2 * ny + 1];
+            }
+        }
+    for (unsigned m = 0; m < (k + 1) >> 1; m++)
+        CallThis(Tb_SetTris, F(BYTE**, s, 8)[m], tris[2 * m], tris[2 * m + 1]);
+    BYTE** sq = F(BYTE**, s, 8);
+    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, sq[0], 0), 12));
+    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[0], 4), 12));
+    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[8], 0), 12));
+    CallThis(Tb_RemoveCell, s, F(BYTE*, F(BYTE*, F(BYTE**, s, 8)[8], 4), 12));
+    // the links checked along the queue's two lists
+    BYTE* q = F(BYTE*, s, 36);
+    BYTE* c = F(BYTE*, q, 0);
+    if (!c)
+        c = F(BYTE*, q, 4);
+    while (c)
+    {
+        if (F(BYTE*, c, 64) && F(BYTE*, F(BYTE*, c, 64), 68) != c)
+            Tb_Fail(132);
+        if (F(BYTE*, c, 68) && F(BYTE*, F(BYTE*, c, 68), 64) != c)
+            Tb_Fail(136);
+        if (!F(BYTE*, c, 60) || F(BYTE*, F(BYTE*, c, 60), 60) != c)
+            Tb_Fail(140);
+        q = F(BYTE*, s, 36);
+        BYTE* l0 = F(BYTE*, q, 0);
+        if (l0 && F(BYTE*, l0, 8) == c + 4)
+        {
+            c = F(BYTE*, q, 4);
+            continue;
+        }
+        BYTE* l1 = F(BYTE*, q, 4);
+        if (l1 && F(BYTE*, l1, 8) == c + 4)
+            break;
+        c = F(BYTE*, c, 4);
+        if (!c)
+            break;
+        c -= 4;
+    }
+    CallThis(Tb_Follow, F(BYTE*, s, 4), s + 68, s + 80, s + 92);
+    F(int, s, 28) = 1;
+    F(int, s, 24) = 1;
+    CallThis(Tb_Reprio, s);
+    free(vx);
+    free(tris);
+    return 1;
 }
 
 } // extern "C"

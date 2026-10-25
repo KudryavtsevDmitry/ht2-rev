@@ -21,7 +21,7 @@ extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 extern "C" int __cdecl Carat_Read7ad0(int a, int b, int* values, int c, int d, int n);
 KING_ALIAS("_Carat_Read7ad0", "FUN_507ad0")
 extern "C" int __cdecl Carat_Read7df0(int a, int b, int* values, int c, int d, int n);
-KING_ALIAS("_Carat_Read7df0", "FUN_507df0")
+KING_ALIAS("_Carat_Read7df0", "_Ini_ReadInts")
 extern "C" BYTE* __cdecl Carat_Window(int a, int b);
 KING_ALIAS("_Carat_Window", "_Shell_ButtonA")
 extern "C" int __cdecl Carat_LoadFont(const char* name);
@@ -1516,7 +1516,7 @@ extern "C" void __fastcall Settings_Load(BYTE* self, int)
 }
 
 extern "C" void FUN_476930(); KING_ALIAS("_FUN_476930", "_Player_GetState")    // a player's state: 19 records {value, -, double} (id, records)
-ASM_PROC(FUN_4eb4a0)    // sets a vehicle setting (value)
+extern "C" void FUN_4eb4a0(); KING_ALIAS("_FUN_4eb4a0", "@Switch3_Set@12")    // sets a vehicle setting (value)
 ASM_VAR(int, g_noVehicle68b990s, $L_68b990)
 
 // [FUN_520000] applies a player's 19 vehicle settings to the vehicle
@@ -1702,7 +1702,7 @@ extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
 extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
 extern "C" void FUN_4d90c0(); KING_ALIAS("_FUN_4d90c0", "_Fx_PlaceObjects")
 extern "C" void FUN_4833a0(); KING_ALIAS("_FUN_4833a0", "_AI_SaveToStorage")    // writes the save into a storage
-ASM_PROC(FUN_51d6d0)    // writes the screenshot (storage, a)
+extern "C" void FUN_51d6d0(); KING_ALIAS("_FUN_51d6d0", "_Save_WriteGame")    // writes the screenshot (storage, a)
 ASM_VAR(AsmLabel, s_671204, $L_671204)
 ASM_VAR(AsmLabel, s_677588, $L_677588)
 ASM_VAR(AsmLabel, s_676848, $L_676848)
@@ -9756,7 +9756,7 @@ extern "C" int __cdecl Ini_GetFloat(const char* section, const char* key, double
 extern "C" int __cdecl Ini_ReadInt(const char* section, const char* key, int def, int* out, const char* file);
 extern "C" int __cdecl Ini_ReadShort(const char* section, const char* key, short def, short* out, const char* file);
 extern "C" int __cdecl Setup_Fatal(const char* msg);
-ASM_FUNC(Ct_ReadFlags, FUN_507df0)
+extern "C" void Ct_ReadFlags(); KING_ALIAS("_Ct_ReadFlags", "_Ini_ReadInts")
 extern "C" void Ct_stat(); KING_ALIAS("_Ct_stat", "__stat")
 extern "C" void Ct_RotZ(); KING_ALIAS("_Ct_RotZ", "_Matrix_RotationZ")
 extern "C" void Ct_Inverse(); KING_ALIAS("_Ct_Inverse", "_Matrix_Inverse")
@@ -11101,6 +11101,310 @@ void __fastcall Map_Draw(BYTE* m, void*, BYTE* surf, int mode)
     CallThis(Mp_VecBFree, Q + 76);
     CallThis(Mp_VecBFree, Q + 64);
     CallThis(Mp_VecBFree, Q + 52);
+}
+
+} // extern "C"
+
+// === the garage handing the player another vehicle (a method at $L_527240 with its tail $L_52773b)
+
+extern "C" void Gv_CarId(); KING_ALIAS("_Gv_CarId", "_Player_CarId")
+extern "C" void Gv_First(); KING_ALIAS("_Gv_First", "_Player_FirstEntry")
+extern "C" void Gv_Next(); KING_ALIAS("_Gv_Next", "_Player_NextEntry")
+extern "C" void Gv_Data(); KING_ALIAS("_Gv_Data", "_Ai_GetPlayerData")
+extern "C" void Gv_GiveBack(); KING_ALIAS("_Gv_GiveBack", "_Player_GiveBackCargo")
+extern "C" void Gv_RemoveName(); KING_ALIAS("_Gv_RemoveName", "@List_RemoveName@12")
+extern "C" void Gv_Release(); KING_ALIAS("_Gv_Release", "@ResRef_Release@8")
+extern "C" void Gv_ResGet(); KING_ALIAS("_Gv_ResGet", "@Resources_Get@12")
+extern "C" void Gv_Place(); KING_ALIAS("_Gv_Place", "_Fx_PlaceObjects")
+extern "C" void Gv_ClearHits(); KING_ALIAS("_Gv_ClearHits", "_World_ClearHits")
+extern "C" void Gv_Swap(); KING_ALIAS("_Gv_Swap", "_Player_SwapVehicles")
+extern "C" void Gv_Send(); KING_ALIAS("_Gv_Send", "_Net_SendObjectMessage")
+extern "C" void Gv_Keys(); KING_ALIAS("_Gv_Keys", "@Engine_SetKeys@16")
+extern "C" void Gv_Get212(); KING_ALIAS("_Gv_Get212", "_Obj6f3498_Get212")
+extern "C" void Gv_Detach(); KING_ALIAS("_Gv_Detach", "@Player_DetachCar@8")
+extern "C" void Gv_Flags(); KING_ALIAS("_Gv_Flags", "_Player_Flags")
+extern "C" void Gv_Launch(); KING_ALIAS("_Gv_Launch", "_Car_Launch")
+extern "C" void Gv_Scene(); KING_ALIAS("_Gv_Scene", "@Scenes_Find@12")
+extern "C" void Gv_PosId(); KING_ALIAS("_Gv_PosId", "_Ai_GetPositionId")
+extern "C" void Gv_LoadRoom(); KING_ALIAS("_Gv_LoadRoom", "@Fw_LoadRoom@16")
+extern "C" void Gv_Self(); KING_ALIAS("_Gv_Self", "@Obj541960_Self@8")
+extern "C" void Gv_VRelease(); KING_ALIAS("_Gv_VRelease", "_Vehicle_Release")
+extern "C" void Gv_VLoad(); KING_ALIAS("_Gv_VLoad", "_Vehicle_LoadResource")
+extern "C" void Gv_SysFatal(); KING_ALIAS("_Gv_SysFatal", "_Sys_Fatal")
+extern "C" void Gv_Attach(); KING_ALIAS("_Gv_Attach", "@WorldObj_Attach@12")
+extern "C" void Gv_Cargo(); KING_ALIAS("_Gv_Cargo", "_Copter_ApplyCargo")
+extern "C" void Gv_MsgClear(); KING_ALIAS("_Gv_MsgClear", "_Messages_Clear1276")
+extern "C" void Gv_Screen(); KING_ALIAS("_Gv_Screen", "_Carat_SetScreenSize")
+extern "C" void Gv_Ffb(); KING_ALIAS("_Gv_Ffb", "_Joy_ForceFeedback")
+extern "C" void Gv_SetVehicle(); KING_ALIAS("_Gv_SetVehicle", "@Viewer_AttachVehicle@12")
+struct GvPos { int d[8]; };
+extern "C" int __cdecl Gv_RoadParams(GvPos pos, BYTE* info); KING_ALIAS("_Gv_RoadParams", "_Road_GetRoadParameters")
+ASM_VAR(int, g_gv68b990, $L_68b990)
+ASM_VAR(BYTE*, g_gv696ca0, $L_696ca0)
+ASM_VAR(int, g_gv675d38, $L_675d38)
+ASM_VAR(BYTE*, g_gv6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_gv6f34b0, $L_6f34b0)
+ASM_VAR(BYTE*, g_gv6ef1f8, $L_6ef1f8)
+ASM_VAR(BYTE, g_gv6f68b0, $L_6f68b0)
+ASM_VAR(BYTE*, g_gv6ce4f4, $L_6ce4f4)
+
+static int Gv_Me()
+{
+    int id;
+    CallC(Gv_CarId, &id);
+    return id;
+}
+
+extern "C" {
+
+// [$L_527240..$L_52773b] garage list g (its vtable at -64, the list +968) on message 185 (take) / 186 (give
+// back) for the player's entry named as the selection: giving back returns the cargo and drops the name; taking
+// swaps the player's vehicle for the entry's one (resources +704, the scene loaded and the vehicle resource made
+// when it has no object yet), sends it on, resets the cab keys, attaches the new vehicle and refreshes the screen
+void __fastcall Garage_Message(BYTE* g, void*, int msg)
+{
+    BYTE* sel = F(BYTE*, F(BYTE*, g, 968), 300);
+    const char* name = sel ? F(const char*, sel, 12) : 0;
+    int found = g_gv68b990;
+    int e;
+    CallC(Gv_First, &e, Gv_Me());
+    while (e != g_gv68b990)
+    {
+        BYTE pd[192];
+        CallC(Gv_Data, e, pd);
+        if (!strcmp(F(const char*, pd, 48), name))
+        {
+            found = e;
+            break;
+        }
+        CallC(Gv_Next, &e, Gv_Me());
+    }
+    if (found == g_gv68b990)
+        return;
+    if (msg == 186)
+    {
+        CallC(Gv_GiveBack, Gv_Me(), found, 0);
+        CallThis(Gv_RemoveName, F(BYTE*, g, 968), name);
+        return;
+    }
+    if (msg != 185)
+        return;
+    BYTE* rr = F(BYTE*, g_gv696ca0, 484);
+    if (F(int, rr, 20))
+    {
+        while (!F(int, F(BYTE*, g_gv696ca0, 484), 16))
+            Sleep(10);
+        CallThis(Gv_Release, F(BYTE*, g_gv696ca0, 484));
+    }
+    g_gv675d38 = F(int, g_gv696ca0, 2992);
+    BYTE* car = F(BYTE*, g_gv6d2078, 616);
+    int me = Gv_Me();
+    BYTE pd[256];
+    CallC(Gv_Data, found, pd);
+    if (found == g_gv68b990)
+        return;
+    BYTE* rec = CallThis<BYTE*>(Gv_ResGet, g_gv696ca0 + 704, F(int, pd, 36));
+    BYTE* rec2 = CallThis<BYTE*>(Gv_ResGet, g_gv696ca0 + 704, F(int, car, 360));
+    CallC(Gv_Place);
+    CallC(Gv_ClearHits);
+    if (CallC<int>(Gv_Swap, me, found, 1))
+        return;
+    BYTE* obj = F(BYTE*, rec, 24);
+    const DWORD* m = (const DWORD*)(obj + 248);
+    CallC(Gv_Send, F(int, rec, 4), F(int, rec2, 4), F(const char*, F(BYTE*, rec, 12), 4016), obj + 16, m[0], m[1],
+          m[2], m[3], m[4], m[5], m[6], m[7], m[8], m[9], m[10], m[11]);
+    CallThis(Gv_Keys, F(BYTE*, car, 21600) + 9984, 1, 1);
+    F(short, F(BYTE*, car, 21600), 10054) = 100;
+    F(short, F(BYTE*, car, 21600), 10048) = 0;
+    F(int, F(BYTE*, car, 21600), 10080) = 0;
+    F(short, F(BYTE*, car, 21600), 10008) = 0;
+    F(int, car, 20636) = found;
+    CallC(Gv_Get212);
+    int keep = F(int, car, 20920);
+    CallThis(Gv_Detach, g_gv6d2078);
+    F(int, F(BYTE*, rec, 24), 296) = me;
+    F(int, F(BYTE*, rec2, 24), 296) = found;
+    F(BYTE, rec, 8) |= 1;
+    F(BYTE, rec2, 8) &= ~1;
+    BYTE* v = 0;
+    if (F(BYTE*, rec, 28))
+    {
+        v = F(BYTE*, rec, 28);
+        F(short, F(BYTE*, v, 21600), 10048) = 1;
+        F(int, F(BYTE*, v, 21600), 10080) = 1;
+        F(int, v, 20636) = me;
+        int fl = CallC<int>(Gv_Flags, me);
+        CallC(Gv_Launch, v, me, &fl, 1);
+        const char* n2 = F(const char*, F(BYTE*, rec2, 12), 4016);
+        if (strcmp(F(const char*, F(BYTE*, rec, 12), 4016), n2))
+            g_gv6f34b0 = CallThis<BYTE*>(Gv_Scene, g_gv696ca0, n2);
+    }
+    else
+    {
+        GvPos pos;
+        CallC(Gv_PosId, &pos, me);
+        BYTE info[48];
+        memset(info, 0, sizeof info);
+        F(const char*, info, 16) = "UNDEFINED_MODULE";
+        F(const char*, info, 20) = "UNDEFINED_ROOM";
+        F(int, info, 36) = -1;
+        F(int, info, 40) = -1;
+        Gv_RoadParams(pos, info);
+        CallThis(Gv_LoadRoom, g_gv696ca0, F(const char*, info, 16), F(const char*, info, 20));
+        if (!F(BYTE*, rec, 28))
+        {
+            while ((unsigned)F(int, g_gv696ca0, 2704) < (unsigned)F(int, rec, 16))
+            {
+                BYTE* o = CallThis<BYTE*>(Gv_Self, g_gv6ef1f8 ? g_gv6ef1f8 - 4 : 0);
+                if (!o)
+                    break;
+                CallC(Gv_VRelease, F(int, o, 360));
+            }
+            CallC(Gv_VLoad, F(int, rec, 4));
+            if (!F(BYTE*, rec, 28))
+            {
+                char buf[128];
+                sprintf(buf, " %s/%s", F(const char*, info, 16), F(const char*, F(BYTE*, rec, 12), 4016));
+                CallC(Gv_SysFatal, "Vehicle after change plases not found", buf);
+            }
+        }
+        v = F(BYTE*, rec, 28);
+        g_gv6f34b0 = 0;
+    }
+    CallThis(Gv_SetVehicle, g_gv6d2078, v);
+    CallThis(Gv_Attach, &g_gv6f68b0, v);
+    F(int, v, 20920) = keep;
+    CallC(Gv_Cargo);
+    CallVirt(g - 64, 32);
+    CallVirt(g_gv696ca0, 36);
+    if (g_gv6ce4f4)
+        CallVirt(g_gv6ce4f4, 0, 1);
+    g_gv6ce4f4 = 0;
+    F(DWORD, g_gv696ca0, 16) |= 3;
+    CallC(Gv_MsgClear);
+    CallC(Gv_Screen);
+    CallC(Gv_Ffb, 1);
+}
+
+} // extern "C"
+
+// === a saved game's streams written (FUN_51d6d0 with its tails up to $L_51d8c0)
+
+extern "C" void Sv_Wide(); KING_ALIAS("_Sv_Wide", "_Str_ToWide")
+extern "C" void Sv_Fatal(); KING_ALIAS("_Sv_Fatal", "_Sys_Fatal")
+extern "C" void Sv_Get212(); KING_ALIAS("_Sv_Get212", "_Obj6f3498_Get212")
+extern "C" void Sv_ResSave(); KING_ALIAS("_Sv_ResSave", "@Resources_Save@12")
+extern "C" void Sv_Thumb(); KING_ALIAS("_Sv_Thumb", "_Shell_WriteThumbnail")
+ASM_VAR(char, g_svTime, $L_677738)
+ASM_VAR(char, g_svTimeErr, $L_67770c)
+ASM_VAR(char, g_svState, $L_677704)
+ASM_VAR(char, g_svStateErr, $L_6776d8)
+ASM_VAR(char, g_svRes, $L_6776d4)
+ASM_VAR(char, g_svResErr, $L_6776ac)
+ASM_VAR(char, g_svThumb, $L_6772a0)
+ASM_VAR(char, g_svThumbErr, $L_677684)
+ASM_VAR(BYTE*, g_sv6f33ac, $L_6f33ac)
+ASM_VAR(int, g_sv6f33b8, $L_6f33b8)
+ASM_VAR(int, g_sv6f33bc, $L_6f33bc)
+ASM_VAR(BYTE*, g_sv6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_sv6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_sv696ca0, $L_696ca0)
+ASM_VAR(double, g_sv64e4c8, $L_64e4c8)
+
+// storage st's new stream named name (vtable +12, create | write), fatal err when it fails
+static BYTE* Sv_Stream(BYTE* st, const char* name, const char* err)
+{
+    BYTE* s = 0;
+    void* w = CallC<void*>(Sv_Wide, name);
+    CallVirt(st, 12, w, 4113, 0, 0, &s);
+    if (!s)
+        CallC(Sv_Fatal, err, 0);
+    return s;
+}
+
+static void Sv_Write(BYTE* s, const void* p, int n)
+{
+    int done;
+    CallVirt(s, 16, p, n, &done);
+}
+
+extern "C" {
+
+// [FUN_51d6d0..$L_51d8c0] the game saved into storage st: the clock (time, day scaled, speed), the state (version
+// 6, the cab's, the car's +20920, the object, two values and the mode), the resources and the thumbnail from shot
+void __cdecl Save_WriteGame(BYTE* st, int shot)
+{
+    BYTE* s = Sv_Stream(st, &g_svTime, &g_svTimeErr);
+    double t[3];
+    t[0] = F(double, g_sv6f33ac, 88);
+    t[1] = F(double, g_sv6f33ac, 104) * g_sv64e4c8;
+    t[2] = F(float, g_sv6f33ac, 544);
+    Sv_Write(s, t, 24);
+    CallVirt(s, 8);
+    s = Sv_Stream(st, &g_svState, &g_svStateErr);
+    int v[6] = {6};
+    Sv_Write(s, v, 4);
+    BYTE* car = F(BYTE*, g_sv6d2078, 616);
+    BYTE* cab = F(BYTE*, car, 21600);
+    v[0] = cab && F(int, cab, 15440) ? 1 : 0;
+    v[1] = F(int, car, 20920);
+    v[2] = CallC<int>(Sv_Get212);
+    v[3] = g_sv6f33b8;
+    v[4] = g_sv6f33bc;
+    v[5] = F(int, g_sv6cec6c, 1304);
+    Sv_Write(s, v, 24);
+    CallVirt(s, 8);
+    s = Sv_Stream(st, &g_svRes, &g_svResErr);
+    CallThis(Sv_ResSave, g_sv696ca0 + 704, s);
+    CallVirt(s, 8);
+    s = Sv_Stream(st, &g_svThumb, &g_svThumbErr);
+    CallC(Sv_Thumb, s, 72, 54, shot);
+    CallVirt(s, 8);
+}
+
+} // extern "C"
+
+// === n integers read from one ini key (FUN_507df0)
+
+extern "C" void Ir_New(); KING_ALIAS("_Ir_New", "??0istrstream@@QAE@PAD@Z")
+extern "C" void Ir_Free(); KING_ALIAS("_Ir_Free", "??1istrstream@@UAE@XZ")
+extern "C" void Ir_FreeIos(); KING_ALIAS("_Ir_FreeIos", "??1ios@@UAE@XZ")
+extern "C" int __cdecl Stream_ReadWord(BYTE* is, char* buf);
+extern "C" long __cdecl strtol(const char* s, char** end, int base);
+ASM_VAR(char, g_irNone, $L_6729a8)
+ASM_VAR(char, g_irBadFmt, $L_674b28)
+
+extern "C" {
+
+// [FUN_507df0] out (n values, from defs) read from key of section sec in ini as numbers (the rest of the line from
+// a word starting with '#' ignored; fatal on a word that is not a number); 1 when the key was there
+int __cdecl Ini_ReadInts(const char* sec, const char* key, const int* defs, int* out, const char* ini, int n)
+{
+    char line[100];
+    GetPrivateProfileStringA(sec, key, &g_irNone, line, 100, ini);
+    int has = strcmp(line, &g_irNone) != 0;
+    __declspec(align(8)) BYTE is[96];
+    CallThis(Ir_New, is, line, 1);
+    for (int k = 0; k < n; k++)
+    {
+        out[k] = defs[k];
+        if (!has)
+            continue;
+        char word[96];
+        if (!Stream_ReadWord(is, word) || word[0] == '#')
+            continue;
+        char* end = 0;
+        out[k] = strtol(word, &end, 0);
+        if (*end)
+        {
+            char msg[108];
+            sprintf(msg, &g_irBadFmt, ini, sec, key, word);
+            Setup_Fatal(msg);
+        }
+    }
+    CallThis(Ir_Free, is + 12);
+    CallThis(Ir_FreeIos, is + 12);
+    return has;
 }
 
 } // extern "C"

@@ -225,3 +225,33 @@ other C files: integ re-aliases their ASM_PROC to the C name.
 Skipped: FUN_4ebd00, FUN_543e00, FUN_5443e0, FUN_4d8350 (end in a fatal call and run on into the next proc),
 FUN_4ac3d0 (jumps into the tail $L_4ac6b5), the $L_ tails without a prologue ($L_550358, $L_4ed6c8, $L_5280e2 ..);
 left for later: FUN_61a8a0 (4096, the grid's construction), FUN_54ff80, FUN_4d0bc0, FUN_52fa70, FUN_4aa460.
+
+Batch 27 plan: more than 44,180 bytes, 85.87% -> about 87.9%, from the 183 unconverted procs that end cleanly
+(98,818 bytes), the ones skipped before: FUN_61a8a0 (4096), $L_4c5b30 (7456), $L_4d1360 (4496), FUN_569ab0 (3920),
+FUN_4d4a90 (3376), FUN_5e5cd0 (2128), $L_420ed0 (1984), FUN_4d2b30 (1808), FUN_59f870 (1712), FUN_5af3e0 (1536),
+FUN_576d70 (1472), $L_4279d0, FUN_5a6420, FUN_468d60, FUN_5c7410 and smaller, raw listing checked where norm3.py
+drifts.
+
+Batch 27 done: 44,384 bytes, 85.87% -> 87.88%. FUN_61a8a0 TGridMesh_Build (4096), FUN_569ab0 Dash_Draw (3920),
+$L_527240..$L_52773b Garage_Message (1424), FUN_5301a0..$L_530751 Controls_ReadDefFile (2720), FUN_4d2b30
+Ai_DebugOverlay (1808), FUN_59f870 Cone_SetPlanes (1712), FUN_531cc0..$L_531ce8 Viewer_AttachVehicle (1632),
+FUN_5af3e0 Render_LayerUVs (1536), FUN_543e00..$L_5442a4 Vehicle_Construct (1504), FUN_5443e0..$L_544834
+Vehicle_ConstructCopter (1344), $L_4279d0 Ai_FillStartGrid (1296), FUN_57d860..$L_57d87f MovingItem_Init0 (1296),
+FUN_584c70..$L_584eb2 Item_SphereContact (1248), FUN_55d140..$L_55d59d Tractor_Move (1168), FUN_584820..$L_584a52
+Item_PointContact (1104), FUN_468d60 Holders_MedianByDistance (1088), FUN_5c7410 Strip_Draw (992),
+FUN_4dde70..$L_4de0e7 CabView_Setup (960), $L_4c3df0 Ring50_DropPoint (912), $L_5451c0..$L_545367 Copter_LoadHook
+(912), $L_55de40 Truck_PlaceWithTrailer (864), FUN_561800..$L_561a7c Copter_Init0 (848), FUN_596b30 PathCam_Frame
+(800), $L_549580 Car_FlasherKick (784), FUN_4e21c0 Trash_CreateGuest (768), FUN_5491f0 Car_ResetSane (720),
+FUN_5f1db0 Scene_ReadChildren (720), $L_52ebc0 TrashBox_LoadHook (688), FUN_4e1f10 Trash_CreateHost (688),
+FUN_52fa70 Ini_ReadSections (592, the old ifstream getline loop as fread, a last line cut by the end of the file
+dropped as before), FUN_51d6d0 Save_WriteGame (544), FUN_507df0 Ini_ReadInts (432, the istrstream kept, its
+destructors at +12 as in the asm), FUN_5ea690 Cluster_ConstructEmpty (416), FUN_571c20 Semitrailer_Create (256),
+FUN_4be8d0 Snow_Construct (368), FUN_5e4f60 Resources_AddTable (368), $L_5ee070 Cluster_Attach (352),
+FUN_5d2540 / FUN_5d2650 NameHash_Add / _AddList (272, 208), FUN_5c4d30 Node_ReadHistory (240), FUN_501630
+Cab_ReadSettings (224), FUN_4eb4a0 Switch3_Set (224), $L_5c5ea0 Node_NetName (192), $L_5d9a20 Room_QueueDelete
+(144). Also fixed TGrid_MakeNode (terrain_grid.cpp): it read its point from the uninitialized out buffer instead of
+the second argument. Skipped: $L_4d76b0 (the AI player-entry handler, many unconverted callees), FUN_562c20
+(x87 loop returning in ST0), FUN_558a30 (126 x87), FUN_5db710 / $L_5f1720 / $L_571d60 (jump outside their range),
+FUN_45a7d0 / FUN_4b54b0 / FUN_600e60 (Rec60 by value, STL deque and vector internals). Load test exact
+(507.330231,940.087585, the stalled run) with exit code 0; three drifting runs in a row before the last ones were
+noise (exact again next run).

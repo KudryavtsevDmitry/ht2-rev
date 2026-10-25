@@ -38,7 +38,7 @@ extern "C" void FUN_5adc80(); KING_ALIAS("_FUN_5adc80", "@Render_SetFog@28")
 extern "C" void FUN_5addf0(); KING_ALIAS("_FUN_5addf0", "@Render_SetAmbient@32")
 extern "C" void FUN_5eb4b0(); KING_ALIAS("_FUN_5eb4b0", "@CamNode_Apply@12")
 extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
-ASM_PROC(FUN_5d2650)    // name hash: add (name, value pointer)
+extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")    // name hash: add (name, value pointer)
 extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
 ASM_VAR(int, g_720904, $L_720904)
 ASM_VAR(BYTE*, g_device, $L_720908)
@@ -1183,7 +1183,7 @@ extern "C" void Clu_VecCtorEh(); KING_ALIAS("_Clu_VecCtorEh", "??_L@YGXPAXIHP6EX
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 typedef void (*Cr_Progress)();
 extern "C" void FUN_5ef830(); KING_ALIAS("_FUN_5ef830", "_Scene_ReadNode")    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
-ASM_PROC(FUN_5d2540)    // name hash: adds (name, object)
+extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // name hash: adds (name, object)
 ASM_VAR(int, g_cr72006c, $L_72006c)
 ASM_VAR(unsigned, g_cr723988, $L_723988)
 ASM_VAR(AsmLabel, g_cr64d7bc, $L_64d7bc)
@@ -1498,7 +1498,7 @@ extern "C" void Ol_AddB(); KING_ALIAS("_Ol_AddB", "@Cluster_AddB@12")
 extern "C" void Ol_AddC(); KING_ALIAS("_Ol_AddC", "@Cluster_AddC@12")
 extern "C" void Ol_Texture(); KING_ALIAS("_Ol_Texture", "@Texture_Construct@16")
 extern "C" void Ol_Alloc(); KING_ALIAS("_Ol_Alloc", "@Overlays_Alloc@12")
-ASM_FUNC(Ol_AddName, FUN_5d2540)
+extern "C" void Ol_AddName(); KING_ALIAS("_Ol_AddName", "@NameHash_Add@16")
 ASM_VAR(char, g_olLine, $L_722970)
 ASM_VAR(BYTE*, g_olImages, $L_7229c0)
 ASM_VAR(BYTE*, g_olImagesEnd, $L_72318c)
@@ -1777,6 +1777,126 @@ BYTE* __fastcall ListHead_Construct(BYTE* s, void*)
     F(void*, s, 0) = &g_lh65282c;
     F(int, s, 12) = 0;
     return s;
+}
+
+} // extern "C"
+
+// === names added to a name hash: by bucket (FUN_5d2540 with its tail $L_5d25fd) or to its one list (FUN_5d2650
+//     with its tail $L_5d26cb)
+
+extern "C" void Nh_Alloc(); KING_ALIAS("_Nh_Alloc", "_Pool71e830_Alloc")
+extern "C" void Nh_New(); KING_ALIAS("_Nh_New", "@Cor5d28a0_Construct@12")
+extern "C" void Nh_Fatal(); KING_ALIAS("_Nh_Fatal", "_Sys_Fatal")
+extern "C" void Nh_Hash(); KING_ALIAS("_Nh_Hash", "@Hash_Name@12")
+extern "C" void Nh_Link(); KING_ALIAS("_Nh_Link", "@Node_Link@12")
+ASM_VAR(char, g_nhSkip, $L_67fb1c)
+ASM_VAR(char, g_nhNoHeap, $L_67fae0)
+
+// a name entry (24 bytes from the name heap) of name with value v in hash h, 0 when name is blank
+static BYTE* Nh_Entry(BYTE* h, const char* name, void* v)
+{
+    const char* c = name;
+    while (*c == ' ')
+        c++;
+    if (!*c)
+        return 0;
+    BYTE* e = CallC<BYTE*>(Nh_Alloc, 24);
+    if (e)
+        e = CallThis<BYTE*>(Nh_New, e, name);
+    if (!e)
+        CallC(Nh_Fatal, &g_nhNoHeap, 0);
+    F(void*, e, 16) = v;
+    F(int, e, 20) = F(int, h, 12);
+    return e;
+}
+
+static void Nh_Put(BYTE** slot, BYTE* e)
+{
+    if (!*slot)
+        *slot = e;
+    else
+        CallThis(Nh_Link, e, *slot);
+}
+
+extern "C" {
+
+// [FUN_5d2540..$L_5d25fd] hash h gets name (not empty, blank or the skipped name) with value v in its bucket
+void __fastcall NameHash_Add(BYTE* h, void*, const char* name, void* v)
+{
+    if (!name || !*name || !strcmp(name, &g_nhSkip))
+        return;
+    if (BYTE* e = Nh_Entry(h, name, v))
+        Nh_Put(F(BYTE**, h, 8) + CallThis<int>(Nh_Hash, h, name), e);
+}
+
+// [FUN_5d2650..$L_5d26cb] hash h gets name (not blank) with value v in its one list (+0)
+void __fastcall NameHash_AddList(BYTE* h, void*, const char* name, void* v)
+{
+    if (!name)
+        return;
+    if (BYTE* e = Nh_Entry(h, name, v))
+        Nh_Put((BYTE**)h, e);
+}
+
+} // extern "C"
+
+// === an empty cluster made with room for its parts (FUN_5ea690 with its tail $L_5ea6ea)
+
+extern "C" void Ce_Fatal(); KING_ALIAS("_Ce_Fatal", "_Sys_Fatal")
+extern "C" void Ce_Sounds(); KING_ALIAS("_Ce_Sounds", "_Sound_AllocBuffers")
+ASM_VAR(AsmLabel, g_ce65274c, $L_65274c)
+
+extern "C" {
+
+// [FUN_5ea690..$L_5ea6ea] cluster c with pal palettes (+96 / +100, at least 1), items (+72 / +76, constructed),
+// images (+80 / +84), masks (+88 / +92), sounds (+104 / +108, their buffers made) and nodes (+112 / +116)
+BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int images, int masks, int sounds,
+                                        int bufs, int nodes)
+{
+    F(int, c, 4) = 0;
+    F(int, c, 8) = 0;
+    F(void*, c, 0) = &g_ce65274c;
+    F(int, c, 56) = 0;
+    F(int, c, 148) = 0;
+    F(int, c, 152) = 0;
+    F(int, c, 36) = 0;
+    F(int, c, 52) = 0;
+    if (!pal)
+        CallC(Ce_Fatal, "Palettes may be 1 or more!", 0);
+    F(int, c, 104) = sounds;
+    F(int, c, 88) = masks;
+    F(int, c, 112) = nodes;
+    for (int off = 12; off <= 32; off += 4)
+        F(int, c, off) = 0;
+    F(int, c, 60) = 0;
+    F(int, c, 132) = 0;
+    F(int, c, 72) = items;
+    F(int, c, 80) = images;
+    F(int, c, 96) = pal;
+    F(int, c, 64) = 0;
+    F(int, c, 68) = 0;
+    F(int, c, 124) = 0;
+    F(int, c, 128) = 0;
+    BYTE* a = (BYTE*)operator new(items * 124 + 4);
+    BYTE* it = 0;
+    if (a)
+    {
+        F(int, a, 0) = items;
+        it = a + 4;
+        CallStd(Clu_VecCtorEh, it, 124, items, (void*)Clu5ea830_Construct, (void*)FUN_50d190);
+    }
+    F(BYTE*, c, 76) = it;
+    F(void*, c, 84) = operator new(images * 4);
+    F(void*, c, 92) = operator new(masks * 4);
+    F(void*, c, 100) = operator new(pal * 4);
+    F(void*, c, 108) = operator new(sounds * 4);
+    F(void*, c, 116) = operator new(nodes * 4);
+    CallC(Ce_Sounds, bufs);
+    F(int, c, 120) = 0;
+    F(int, c, 140) = 0;
+    F(int, c, 136) = 0;
+    memset(c + 156, 0, 24);
+    return c;
 }
 
 } // extern "C"
