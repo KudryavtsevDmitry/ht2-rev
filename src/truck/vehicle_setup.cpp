@@ -1111,7 +1111,7 @@ extern "C" int __cdecl sprintf(char*, const char*, ...);
 extern "C" void Gc_DumpText(); KING_ALIAS("_Gc_DumpText", "_Dump_Text")
 extern "C" void Gc_NormalizeThis(); KING_ALIAS("_Gc_NormalizeThis", "@Vec3_NormalizeThis@8")
 extern "C" void Gc_AddAssign(); KING_ALIAS("_Gc_AddAssign", "@Vec3_AddAssign@16")
-ASM_FUNC(Gc_Contact, FUN_503e30)
+extern "C" void Gc_Contact(); KING_ALIAS("_Gc_Contact", "@Wheel_FindGround@24")
 extern "C" void Gc_State(); KING_ALIAS("_Gc_State", "@Body_GroundNormal@12")
 ASM_VAR(int, g_gc696be8, $L_696be8)
 ASM_VAR(AsmLabel, g_gc674a20, $L_674a20)
@@ -1795,6 +1795,498 @@ int __fastcall Body_SlideMove(BYTE* s, void*)
     Matrix inv;
     memcpy(s + 2304, Matrix_Inverse(&inv, (const Matrix*)(s + 16)), 48);
     return 0;
+}
+
+} // extern "C"
+
+// === placing the wheels on the ground for a new frame (FUN_505530)
+
+extern "C" void Gp_PlaneHit(); KING_ALIAS("_Gp_PlaneHit", "_Vec3_PlaneHit")
+extern "C" void Gp_MulAssign(); KING_ALIAS("_Gp_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(float, g_gp64d980, $L_64d980)
+ASM_VAR(double, g_gp64b678, $L_64b678)
+ASM_VAR(double, g_gp64d6b8, $L_64d6b8)
+ASM_VAR(double, g_gp64b670, $L_64b670)
+ASM_VAR(int, g_gp6ce33c, $L_6ce33c)
+ASM_VAR(int, g_gp6ce340, $L_6ce340)
+
+// wheel i's hub +100 taken from its contact record (+248 + 248 i) and turned into the body (+6212 by the inverse I),
+// its spring length (+3608 and +3544) from the hub height +7364
+static void Gp_TakeHub(BYTE* s, int i, const float* I)
+{
+    Vec3 v = F(Vec3, s, 248 + 248 * i);
+    F(Vec3, s, 100 + 12 * i) = v;
+    Vec3& b = F(Vec3, s, 6212 + 12 * i);
+    b.x = (float)((double)I[0] * v.x + (double)I[6] * v.z + (double)I[3] * v.y + I[9]);
+    b.y = (float)((double)I[7] * v.z + (double)I[4] * v.y + (double)I[1] * v.x + I[10]);
+    b.z = (float)((double)I[8] * v.z + (double)I[5] * v.y + (double)I[2] * v.x + I[11]);
+    float h = (float)((double)F(float, s, 7364 + 12 * i) - F(float, s, 7028 + 4 * i) - F(float, s, 6220 + 12 * i));
+    F(float, s, 3608 + 4 * i) = h;
+    F(float, s, 3544 + 4 * i) = h;
+}
+
+extern "C" {
+
+// [FUN_505530] car s set on the ground in frame M: each wheel's hub (+7356) turned by M, the two lowest (or with
+// +3528 >= 0 the two highest) asked for contacts (FUN_503e30) and the others copied from the nearest touching wheel
+// and its plane, then the springs, the mean ground normal +196 and point +8724, the axle flags and the ground state;
+// returns M
+const Matrix* __fastcall Car_PlaceOnGround(BYTE* s, void*, const Matrix* Mx)
+{
+    Matrix Iv;
+    Matrix_Inverse(&Iv, Mx);
+    const float* M = Mx->m;
+    const float* I = Iv.m;
+    F(Vec3, s, 196) = g_zeroVec;
+    F(Vec3, s, 8724) = g_zeroVec;
+    F(int, s, 9904) = 0;
+    int cnt = 0;
+    Vec3 P[8];
+    for (int k = 0; k < 8; k++)
+        P[k].x = P[k].y = P[k].z = 0;
+    int n = F(int, s, 3540);
+    for (int i = 0; i < n; i++)
+    {
+        F(Vec3, s, 3848 + 12 * i) = g_zeroVec;
+        F(int, s, 3816 + 4 * i) = 0;
+        F(float, s, 9872 + 4 * i) = 0.01f;
+        F(float, s, 9840 + 4 * i) = 0.5f;
+        const Vec3& v = F(Vec3, s, 7356 + 12 * i);
+        P[i].x = (float)((double)v.x * M[0] + (double)v.y * M[3] + (double)v.z * M[6] + M[9]);
+        P[i].y = (float)((double)M[1] * v.x + (double)v.z * M[7] + (double)v.y * M[4] + M[10]);
+        P[i].z = (float)((double)M[8] * v.z + (double)M[5] * v.y + (double)v.x * M[2] + M[11]);
+    }
+    // the two extreme hubs by height
+    int Fl[8] = {0}, R[8] = {0};
+    int lo1 = 0, lo2 = 0, hi1 = 0, hi2 = 0;
+    float min1 = 100.0f, min2 = 100.0f, max1 = -100.0f;
+    double max2 = g_gp64d980;
+    n = F(int, s, 3540);
+    for (int i = 0; i < n; i++)
+    {
+        float y = F(float, s, 7360 + 12 * i);
+        if (!(y > min2))
+        {
+            if (!(y > min1))
+            {
+                min2 = min1;
+                lo2 = lo1;
+                min1 = y;
+                lo1 = i;
+            }
+            else
+            {
+                min2 = y;
+                lo2 = i;
+            }
+        }
+        if (!(max2 > y))
+        {
+            if (y < max1)
+            {
+                max2 = y;
+                hi2 = i;
+            }
+            else
+            {
+                max2 = max1;
+                hi2 = hi1;
+                max1 = y;
+                hi1 = i;
+            }
+        }
+    }
+    if (n > 0)
+    {
+        if (F(float, s, 3528) < g_gc64c264)
+            Fl[lo1] = Fl[lo2] = 1;
+        else
+            Fl[hi1] = Fl[hi2] = 1;
+    }
+    for (int i = 0; i < F(int, s, 3540); i++)
+        if (Fl[i])
+            R[i] = CallThis<int>(Gc_Contact, s, 0, &P[i], 0, i);
+    const float* Z = &g_axisZ.x;
+    Vec3 up;
+    up.x = (float)((double)Z[2] * M[6] + (double)Z[0] * M[0] + (double)Z[1] * M[3]);
+    up.y = (float)((double)Z[0] * M[1] + (double)Z[2] * M[7] + (double)Z[1] * M[4]);
+    up.z = (float)((double)Z[2] * M[8] + (double)Z[1] * M[5] + (double)Z[0] * M[2]);
+    // the others from the nearest touching wheel
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        if (Fl[i])
+            continue;
+        float best = 1000.0f;
+        int bi = -1;
+        n = F(int, s, 3540);
+        for (int j = 0; j < n; j++)
+        {
+            if (!Fl[j] || !F(short, s, 272 + 248 * j))
+                continue;
+            float dx = (float)((double)F(float, s, 7356 + 12 * j) - F(float, s, 7356 + 12 * i));
+            float dy = (float)((double)F(float, s, 7360 + 12 * j) - F(float, s, 7360 + 12 * i));
+            double dz = (double)F(float, s, 7364 + 12 * j) - F(float, s, 7364 + 12 * i);
+            double dd = (double)dx * dx + (double)dy * dy + dz * dz;
+            if (dd < best)
+            {
+                best = (float)dd;
+                bi = j;
+            }
+        }
+        if (bi < 0)
+            continue;
+        memcpy(s + 13584 + 208 * i, s + 13584 + 208 * bi, 208);
+        memcpy(s + 248 + 248 * i, s + 248 + 248 * bi, 248);
+        Vec3 h;
+        F(Vec3, s, 248 + 248 * i) = *CallC<Vec3*>(Gp_PlaneHit, &h, s + 248 + 248 * bi, s + 260 + 248 * bi, &P[i], &up);
+        R[i] = R[bi];
+    }
+    // the springs
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        short* touch = (short*)(s + 6564) + i;
+        BYTE* rec = s + 248 + 248 * i;
+        int c = (!Fl[i] && R[i]) ? 0 : 1;
+        bool fresh = false;
+        if ((Fl[i] && R[i] == 1) || (!c && R[i] == 1))
+        {
+            Gp_TakeHub(s, i, I);
+            float h = F(float, s, 3608 + 4 * i);
+            if (!(h >= g_gp64b678 && h <= F(float, s, 8092 + 4 * i)) && !c)
+                fresh = true;
+        }
+        else if (!c)
+            fresh = true;
+        if (fresh)
+        {
+            R[i] = CallThis<int>(Gc_Contact, s, 0, &P[i], 0, i);
+            if (R[i])
+                Gp_TakeHub(s, i, I);
+        }
+        if (R[i])
+        {
+            Vec3 t;
+            CallThis(Gc_AddAssign, s + 196, &t, rec + 12);
+            F(float, s, 9904) = (float)((double)F(float, s, 9840 + 4 * i) + F(float, s, 9904));
+            CallThis(Gc_AddAssign, s + 8724, &t, s + 100 + 12 * i);
+            cnt++;
+            if (!(F(float, s, 3544 + 4 * i) <= F(float, s, 8092 + 4 * i)))
+            {
+                F(float, s, 3544 + 4 * i) = F(float, s, 8092 + 4 * i);
+                *touch = 1;
+            }
+            else
+            {
+                if (F(float, s, 3544 + 4 * i) < g_gc64c264)
+                    F(float, s, 3544 + 4 * i) = 0;
+                F(float, s, 3360 + 4 * i) = (float)(x87_fabs((double)F(float, rec, 20))
+                                                    * (F(float, s, 9792) / (double)F(int, s, 3540)) * g_gp64d6b8);
+                *touch = 0;
+            }
+        }
+        else
+        {
+            double k = g_gc64d7b8;
+            double zx = Z[0] * k, zy = Z[1] * k, zz = Z[2] * k;
+            float wx = (float)(zx * M[0] + zy * M[3] + zz * M[6]);
+            float wy = (float)(zx * M[1] + zz * M[7] + zy * M[4]);
+            double wz = zz * M[8] + zy * M[5] + zx * M[2];
+            Vec3& hub = F(Vec3, s, 100 + 12 * i);
+            hub.x = (float)((double)P[i].x - wx);
+            hub.y = (float)((double)P[i].y - wy);
+            hub.z = (float)(P[i].z - wz);
+            float ky = (float)(Z[1] * k), kz = (float)(Z[2] * k);
+            Vec3& b = F(Vec3, s, 6212 + 12 * i);
+            b.x = (float)(F(float, s, 7356 + 12 * i) - Z[0] * k);
+            b.y = (float)((double)F(float, s, 7360 + 12 * i) - ky);
+            b.z = (float)((double)F(float, s, 7364 + 12 * i) - kz);
+            F(float, s, 3608 + 4 * i) = 1000.0f;
+            F(float, s, 3544 + 4 * i) = F(float, s, 8092 + 4 * i);
+            F(float, s, 3360 + 4 * i) = 0;
+            *touch = 1;
+        }
+    }
+    // the longest of the first four springs
+    float* a = F(float, s, 3616) < F(float, s, 3620) ? &F(float, s, 3620) : &F(float, s, 3616);
+    float* b = F(float, s, 3608) < F(float, s, 3612) ? &F(float, s, 3612) : &F(float, s, 3608);
+    F(float, s, 3640) = *b < *a ? *a : *b;
+    if (cnt)
+    {
+        CallThis(Gc_NormalizeThis, s + 196);
+        double q = g_gp64b670 / cnt;
+        float f = (float)q;
+        F(float, s, 9904) = (float)(q * F(float, s, 9904));
+        Vec3 t;
+        CallThis(Gp_MulAssign, s + 8724, &t, f);
+    }
+    else
+    {
+        F(Vec3, s, 196) = g_axisZ;
+        F(Vec3, s, 8724) = g_zeroVec;
+    }
+    F(int, s, 2240) = Car_AxleFlat(s, 0, 1);
+    F(int, s, 2248) = Car_AxleFlat(s, 0, 3);
+    F(int, s, 2232) = F(int, s, 2236) && F(int, s, 2240) && F(int, s, 2244) && F(int, s, 2248) ? 1 : 0;
+    n = F(int, s, 3540);
+    short* W = (short*)(s + 6564);
+    if (n == 3 && F(int, s, 2252) >= g_gp6ce33c && F(int, s, 2252) < g_gp6ce340)
+    {
+        s[6583] = W[0] && W[1];
+        s[6581] = s[6568];
+        s[6582] = W[0] && W[2];
+        s[6584] = W[1] && W[2];
+    }
+    else
+    {
+        s[6583] = W[2] && W[3];
+        s[6581] = W[0] && W[1];
+        s[6582] = W[0] && W[2];
+        s[6584] = W[1] && W[3];
+    }
+    s[6580] = 1;
+    s[6586] = 0;
+    for (int k = 0; k < n; k++)
+    {
+        s[6580] = s[6580] && W[k];
+        s[6586] = s[6586] || W[k];
+    }
+    s[6585] = s[6581] || s[6582] || s[6583] || s[6584];
+    CallThis(Gc_State, s, 0);
+    return Mx;
+}
+
+} // extern "C"
+
+// === a wheel's ground contact (FUN_503e30)
+
+extern "C" void Wg_RayTest(); KING_ALIAS("_Wg_RayTest", "@Vehicle_RayTest@16")
+extern "C" void Wg_WheelContact(); KING_ALIAS("_Wg_WheelContact", "@Car_WheelContact@12")
+extern "C" void Wg_Parts1(); KING_ALIAS("_Wg_Parts1", "_Query_Parts1")
+extern "C" void Wg_Parts2(); KING_ALIAS("_Wg_Parts2", "_Query_Parts2")
+extern "C" void Wg_LineProject(); KING_ALIAS("_Wg_LineProject", "_Line_Project")
+extern "C" void Wg_Surface(); KING_ALIAS("_Wg_Surface", "@Wheel_Surface@16")
+extern "C" void Wg_SubAssign(); KING_ALIAS("_Wg_SubAssign", "@Vec3_SubAssign@16")
+ASM_PROC(FUN_503500)
+extern "C" void Wg_NodeInit(); KING_ALIAS("_Wg_NodeInit", "@Node_Init@8")
+ASM_VAR(int, g_wg697660, $L_697660)                 // the contact count
+ASM_VAR(double, g_wg697658, $L_697658)              // and its time
+ASM_VAR(AsmLabel, g_wg697678, $L_697678)
+ASM_VAR(AsmLabel, g_wg697914, $L_697914)
+ASM_VAR(char, g_wg674a14, $L_674a14)
+ASM_VAR(char, g_wg674a08, $L_674a08)
+ASM_VAR(char, g_wg674a00, $L_674a00)
+ASM_VAR(char, g_wg6749f4, $L_6749f4)
+ASM_VAR(float, g_wg64c258, $L_64c258)
+ASM_VAR(double, g_wg64b670, $L_64b670)
+ASM_VAR(double, g_wg64b678, $L_64b678)
+
+// k times the car's side axis (+16 rows) for the wheel offsets
+static Vec3 Wg_Side(BYTE* s, double k)
+{
+    float kx = (float)(k * g_axisX.x), ky = (float)(k * g_axisX.y);
+    double kz = k * g_axisX.z;
+    Vec3 v;
+    v.x = (float)(kz * F(float, s, 40) + (double)ky * F(float, s, 28) + (double)kx * F(float, s, 16));
+    v.y = (float)((double)kx * F(float, s, 20) + kz * F(float, s, 44) + (double)ky * F(float, s, 32));
+    v.z = (float)((double)kx * F(float, s, 24) + kz * F(float, s, 48) + (double)ky * F(float, s, 36));
+    return v;
+}
+
+static int Wg_Done(double t0, int count, int r)
+{
+    g_wg697660 += count;
+    g_wg697658 = Timer_Now() - t0 + g_wg697658;
+    return r;
+}
+
+extern "C" {
+
+// [FUN_503e30] car s's wheel i at hub p on object obj (none: found by Vehicle_RayTest): up to three rays along the
+// car's down axis, longer each time (+3520 speed, +7028 + 4 i spring), through the object's parts or the car's own
+// test, into the wheel's record (+248 + 248 i: point, normal +12, object +240, touching +24 / +26, node +32) and
+// with keep 0 its offset point, surface and node copy (+13584 + 208 i); without a hit the old contact projected on
+// the line; 1 touching, 0 not, 2 no object
+int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* obj, int i)
+{
+    Vec3 P = *p;
+    BYTE nd[208];
+    CallThis(Wg_NodeInit, nd);
+    BYTE* rec = s + 248 * (i + 1);
+    double t0 = Timer_Now();
+    const float* Z = &g_axisZ.x;
+    Vec3 D;
+    D.x = (float)((double)Z[2] * F(float, s, 40) + (double)Z[1] * F(float, s, 28) + (double)Z[0] * F(float, s, 16));
+    D.y = (float)((double)Z[2] * F(float, s, 44) + (double)Z[1] * F(float, s, 32) + (double)Z[0] * F(float, s, 20));
+    D.z = (float)((double)Z[2] * F(float, s, 48) + (double)Z[1] * F(float, s, 36) + (double)Z[0] * F(float, s, 24));
+    Vec3 U;
+    U.x = (float)((double)P.x + Z[0]);
+    U.y = (float)((double)P.y + Z[1]);
+    U.z = (float)((double)P.z + Z[2]);
+    if (!obj && !CallThis<int>(Wg_RayTest, s, &U, &obj))
+    {
+        F(int, rec, 240) = 0;
+        F(short, rec, 24) = 0;
+        F(Vec3, rec, 0) = P;
+        F(int, rec, 132) = 0;
+        F(short, rec, 26) = 0;
+        F(Vec3, rec, 12) = P;
+        return Wg_Done(t0, 1, 2);
+    }
+    if (F(int, s, 15444))
+        return Wg_Done(t0, 1, 0);
+    int it = 1, r;
+    for (;;)
+    {
+        F(Matrix, nd, 4) = g_identity;
+        double dt = Game_FrameTime();
+        float L = (float)((dt * x87_sqrt(F(float, s, 3520)) + F(float, s, 7028 + 4 * i)) * (it * it) + g_wg64b670);
+        F(int, nd, 116) = 0;
+        F(int, nd, 0) = 0;
+        double dx = (double)D.x * L;
+        float dy = (float)((double)D.y * L), dz = (float)((double)D.z * L);
+        F(float, nd, 76) = (float)(dx + P.x);
+        F(float, nd, 80) = (float)((double)dy + P.y);
+        F(float, nd, 84) = (float)((double)dz + P.z);
+        F(float, nd, 88) = (float)(P.x - dx);
+        F(float, nd, 92) = (float)((double)P.y - dy);
+        F(float, nd, 96) = (float)((double)P.z - dz);
+        F(int, nd, 120) = F(int, s, 10708);
+        F(BYTE*, nd, 104) = F(int, s, 10076) ? obj : 0;
+        if (F(int, s, 7156 + 4 * i))
+        {
+            if (F(short, s, 9992))
+            {
+                char buf[256];
+                r = CallC<int>(Wg_Parts2, obj, 4, nd);
+                int hit = r & 1;
+                if (hit)
+                {
+                    if (g_gc696be8 > 1)
+                    {
+                        sprintf(buf, &g_wg674a14, i);
+                        CallC(Gc_DumpText, buf);
+                    }
+                }
+                else
+                {
+                    r = CallC<int>(Wg_Parts1, obj, 4, nd);
+                    hit = r & 1;
+                    if (hit)
+                    {
+                        if (g_gc696be8 > 1)
+                        {
+                            sprintf(buf, &g_wg674a08, i);
+                            CallC(Gc_DumpText, buf);
+                        }
+                        if (!F(void*, nd, 100))
+                            F(void*, nd, 100) = &g_wg697678;
+                    }
+                }
+                if (hit && g_gc696be8 > 1)
+                {
+                    BYTE* m = F(BYTE*, nd, 100);
+                    if (m)
+                    {
+                        sprintf(buf, &g_wg674a00, F(int, m, 0), F(int, m, 4));
+                        CallC(Gc_DumpText, buf);
+                    }
+                    sprintf(buf, &g_wg6749f4, (double)F(float, nd, 52), (double)F(float, nd, 56), (double)F(float, nd, 60));
+                    CallC(Gc_DumpText, buf);
+                }
+            }
+            else
+                r = CallThis<int>((void (*)())F(void**, obj, 0)[13], obj, 4, nd);
+        }
+        else
+            r = CallThis<int>(Wg_WheelContact, s, nd);
+        if ((r & 1) == 1)
+            break;
+        if (++it > 3)
+        {
+            // no hit: keep the old contact when it still lies under the wheel
+            if (F(short, rec, 24) && !F(short, rec, 26))
+            {
+                Vec3 up, dn, q;
+                up.x = (float)((double)D.x + P.x);
+                up.y = (float)((double)P.y + D.y);
+                up.z = (float)((double)P.z + D.z);
+                dn.x = (float)((double)P.x - D.x);
+                dn.y = (float)((double)P.y - D.y);
+                dn.z = (float)((double)P.z - D.z);
+                Vec3 Q = *CallC<Vec3*>(Wg_LineProject, &q, rec, rec + 12, &up, &dn);
+                Vec3 e;
+                e.x = (float)((double)P.x - Q.x);
+                e.y = (float)((double)P.y - Q.y);
+                e.z = (float)((double)P.z - Q.z);
+                double len = Vec3_Length(&e);
+                const float* n = (const float*)(rec + 12);
+                if ((double)n[2] * e.z + (double)n[1] * e.y + (double)n[0] * e.x > g_wg64b678
+                    && (double)n[2] * D.z + (double)n[1] * D.y + (double)n[0] * D.x > g_wg64b678
+                    && len < (double)F(float, s, 8092 + 4 * i) + F(float, s, 7028 + 4 * i))
+                {
+                    F(BYTE*, rec, 240) = obj;
+                    F(Vec3, rec, 0) = Q;
+                    F(short, rec, 24) = 1;
+                    F(short, rec, 26) = 1;
+                    return Wg_Done(t0, it - 1, 1);
+                }
+                F(int, rec, 240) = 0;
+            }
+            else
+            {
+                F(int, rec, 240) = 0;
+                F(Vec3, rec, 0).x = F(Vec3, rec, 0).y = F(Vec3, rec, 0).z = 0;
+                F(Vec3, rec, 12) = g_zeroVec;
+            }
+            F(short, rec, 24) = 0;
+            F(short, rec, 26) = 0;
+            F(int, rec, 132) = 0;
+            return Wg_Done(t0, it - 1, 0);
+        }
+    }
+    // a hit
+    if (!F(short, rec, 24) && !F(short, rec, 26))
+    {
+        F(short, rec, 26) = 1;
+        return Wg_Done(t0, 0, 0);
+    }
+    F(BYTE*, rec, 240) = obj;
+    memcpy(rec + 32, nd, 208);
+    F(Vec3, rec, 0) = F(Vec3, nd, 52);
+    F(short, rec, 24) = 1;
+    F(short, rec, 26) = 0;
+    F(Vec3, rec, 12) = F(Vec3, nd, 64);
+    if (!keep)
+    {
+        BYTE* model = (BYTE*)&g_wg697914 + F(int, s, 2252) * 2416;
+        Vec3 tmp, v;
+        Vec3* hp = &F(Vec3, nd, 52);
+        switch (i)
+        {
+        case 0:
+            v = Wg_Side(s, (double)F(float, model, 12) * g_wg64c258);
+            CallThis(Gc_AddAssign, hp, &tmp, &v);
+            break;
+        case 1:
+            v = Wg_Side(s, (double)F(float, model, 12) * g_wg64c258);
+            CallThis(Wg_SubAssign, hp, &tmp, &v);
+            break;
+        case 2:
+        case 4:
+            v = Wg_Side(s, (double)F(float, model, 16) * g_wg64c258);
+            CallThis(Gc_AddAssign, hp, &tmp, &v);
+            break;
+        case 3:
+        case 5:
+            v = Wg_Side(s, (double)F(float, model, 16) * g_wg64c258);
+            CallThis(Wg_SubAssign, hp, &tmp, &v);
+            break;
+        }
+        int surf = CallThis<int>(Wg_Surface, s, nd, i);
+        CallThis(FUN_503500, s, nd, i, surf);
+    }
+    memcpy(s + 13584 + 208 * i, nd, 208);
+    return Wg_Done(t0, it, 1);
 }
 
 } // extern "C"

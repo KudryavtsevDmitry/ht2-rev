@@ -11,7 +11,7 @@
 
 typedef char AsmLabel[1];
 
-ASM_PROC(FUN_589640)
+extern "C" void FUN_589640(); KING_ALIAS("_FUN_589640", "_Item_PointContacts")
 extern "C" void FUN_592cc0(); KING_ALIAS("_FUN_592cc0", "_Mb_Fatal")    // fatal error with a message
 
 ASM_VAR(AsmLabel, g_vtbl65089c, $L_65089c)
@@ -2670,6 +2670,337 @@ int __cdecl Rec_CompareF4(const BYTE* a, const BYTE* b)
     if (F(float, a, 4) < F(float, b, 4))
         return -1;
     return 0;
+}
+
+} // extern "C"
+
+// === settling a body's frame onto a plane (a method at $L_58d770)
+
+extern "C" void St_AddAssign(); KING_ALIAS("_St_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(double, g_st64b5a0, $L_64b5a0)
+ASM_VAR(double, g_st650808, $L_650808)
+ASM_VAR(double, g_st64b658, $L_64b658)
+
+static Vec3 St_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [$L_58d770] body s's frame f set down on the plane through p with normal n (axis turned by r) into out: lifted
+// clear of the plane by its planes' depths (+3988.., lowest +5140); nearly flat it is just raised to its lowest
+// point (Points_Next), else tilted up to four times about its lowest point towards the plane
+void __fastcall Body_SettleOnPlane(BYTE* s, void*, float* out, const float* f, const Matrix* r, const Vec3* n, const Vec3* p)
+{
+    g_bp6f6568++;
+    float M[6][12];
+    for (int k = 0; k < 6; k++)
+        memcpy(M[k], &g_identity, 48);
+    memcpy(M[0], f, 48);
+    const float* N = &n->x;
+    const float* P = &p->x;
+    double dx = (double)M[0][9] - P[0], dy = (double)M[0][10] - P[1], dz = (double)M[0][11] - P[2];
+    float d0 = (float)(dx * N[0] + dy * N[1] + dz * N[2]);
+    float minDot = 1.0f;
+    float low = F(float, s, 5140);
+    for (int i = 0; i < F(int, s, 5132); i++)
+    {
+        const float* A = (const float*)(s + 3988 + i * 28);
+        double x = (double)f[6] * A[2] + (double)A[1] * f[3] + (double)f[0] * A[0];
+        double y = (double)A[1] * f[4] + (double)f[1] * A[0] + (double)A[2] * f[7];
+        double z = (double)f[2] * A[0] + (double)A[1] * f[5] + (double)A[2] * f[8];
+        double dot = x * N[0] + y * N[1] + z * N[2];
+        if (dot < minDot)
+        {
+            minDot = (float)dot;
+            low = (float)-(double)A[3];
+        }
+    }
+    if ((double)low + g_st64b5a0 > d0)
+    {
+        double k = ((double)d0 - low) - g_st64b5a0;
+        float kx = (float)(k * N[0]), ky = (float)(k * N[1]);
+        double kz = k * N[2];
+        Vec3 np = St_Set((double)M[0][9] - kx, (double)M[0][10] - ky, M[0][11] - kz);
+        M[0][9] = np.x;
+        M[0][10] = np.y;
+        M[0][11] = np.z;
+        Vec3 q = St_Set((double)np.x - P[0], (double)np.y - P[1], (double)np.z - P[2]);
+        d0 = (float)((double)q.y * N[1] + (double)N[2] * q.z + (double)q.x * N[0]);
+    }
+    Vec3Bits pt;
+    float* ptf = (float*)&pt;
+    float dists[48];
+    float best = 100.0f;
+    Vec3 tmp;
+    if (!(minDot <= g_st650808))
+    {
+        ptf[0] = ptf[1] = ptf[2] = 0;
+        int j = 0;
+        const float* m = M[0];
+        while (Points_Next(s, 0, &pt))
+        {
+            Vec3 w = St_Set((double)m[0] * ptf[0] + (double)m[6] * ptf[2] + (double)m[3] * ptf[1] + m[9],
+                            (double)m[1] * ptf[0] + (double)m[7] * ptf[2] + (double)m[4] * ptf[1] + m[10],
+                            (double)m[2] * ptf[0] + (double)m[8] * ptf[2] + (double)m[5] * ptf[1] + m[11]);
+            Vec3 v = St_Set((double)w.x - P[0], (double)w.y - P[1], (double)w.z - P[2]);
+            double d = (double)v.y * N[1] + (double)N[2] * v.z + (double)v.x * N[0];
+            if (j < 48)
+                dists[j] = (float)d;
+            j++;
+            if (d < best)
+                best = (float)d;
+        }
+        if (best <= g_st64b5a0)
+        {
+            double k = g_st64b5a0 - best;
+            Vec3 up = St_Set(k * N[0], k * N[1], k * N[2]);
+            CallThis(St_AddAssign, &M[0][9], &tmp, &up);
+        }
+        memcpy(out, M[0], 48);
+        return;
+    }
+    int k = 0;
+    Vec3 nn = *n;
+    for (;;)
+    {
+        const float* m = M[k];
+        Vec3 bestW = g_zeroVec, bestPt = g_zeroVec;
+        best = 100.0f;
+        int j = 0;
+        while (Points_Next(s, 0, &pt))
+        {
+            Vec3 w = St_Set((double)ptf[2] * m[6] + (double)ptf[1] * m[3] + (double)ptf[0] * m[0] + m[9],
+                            (double)ptf[0] * m[1] + (double)ptf[2] * m[7] + (double)ptf[1] * m[4] + m[10],
+                            (double)ptf[2] * m[8] + (double)ptf[0] * m[2] + (double)ptf[1] * m[5] + m[11]);
+            Vec3 v = St_Set((double)w.x - P[0], (double)w.y - P[1], (double)w.z - P[2]);
+            double d = (double)v.y * N[1] + (double)N[2] * v.z + (double)v.x * N[0];
+            if (j < 48)
+                dists[j] = (float)d;
+            j++;
+            if (d < best)
+            {
+                bestW = w;
+                bestPt.x = ptf[0];
+                bestPt.y = ptf[1];
+                bestPt.z = ptf[2];
+                best = (float)d;
+            }
+        }
+        if (best > g_st64b658 || k == 3)
+            break;
+        double r2 = (double)d0 * d0;
+        float bp2 = (float)((double)bestPt.y * bestPt.y + (double)bestPt.z * bestPt.z + (double)bestPt.x * bestPt.x);
+        float side = r2 > bp2 ? 1.0f : (float)x87_sqrt(bp2 - r2);
+        Vec3 mpos = St_Set(m[9], m[10], m[11]);
+        ptf[0] = mpos.x;
+        ptf[1] = mpos.y;
+        ptf[2] = mpos.z;
+        Vec3 e = St_Set((double)bestW.x - mpos.x, (double)bestW.y - mpos.y, (double)bestW.z - mpos.z);
+        Vec3 a, axis, b, c1, c2, c3, sum, c4, c5;
+        Vec3_Normalized(&axis, Vec3_Cross(&a, &e, &nn));
+        Vec3_Cross(&b, &nn, &axis);
+        Vec3_Scaled(&c1, &b, side);
+        Vec3_Scaled(&c2, &nn, d0);
+        Vec3_Sub(&c3, &mpos, &c2);
+        Vec3_Add(&sum, &c3, &c1);
+        Vec3_Sub(&c4, &sum, &mpos);
+        Vec3_Cross(&c5, &e, &c4);
+        double dot = Vec3_Dot(&axis, &c5);
+        float ang = (float)x87_asin(dot / bp2);
+        Vec3 ra;
+        Matrix look, prod;
+        Vec3_RotateBy(&ra, &axis, r);
+        Matrix_LookAt(&look, g_zeroVec, ra, ang);
+        Matrix_Multiply(&prod, &look, (const Matrix*)M[k]);
+        memcpy(M[k + 1], &prod, 48);
+        k++;
+        if (k >= 4)
+            break;
+    }
+    if (best < g_st64b658)
+    {
+        Vec3 up;
+        Vec3_Scaled(&up, n, (float)(g_st64b5a0 - best));
+        CallThis(St_AddAssign, &M[3][9], &tmp, &up);
+        memcpy(out, M[3], 48);
+    }
+    else
+        memcpy(out, M[k], 48);
+}
+
+} // extern "C"
+
+// === an item's points against the scene (FUN_589640)
+
+extern "C" void Pb_NodeInit(); KING_ALIAS("_Pb_NodeInit", "@Node_Init@8")
+extern "C" void Pb_Get800(); KING_ALIAS("_Pb_Get800", "@SceneObj_Get800@8")
+extern "C" void Pb_Matrix1(); KING_ALIAS("_Pb_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Pb_PointsNext(); KING_ALIAS("_Pb_PointsNext", "@Points_Next@12")
+extern "C" void Pb_PointsFirst(); KING_ALIAS("_Pb_PointsFirst", "@Points_NextFirst@12")
+extern "C" void Pb_HitObject(); KING_ALIAS("_Pb_HitObject", "_Query_HitObject")
+extern "C" void Pb_Query1(); KING_ALIAS("_Pb_Query1", "_Query_4e67d1")
+extern "C" void Pb_Query2(); KING_ALIAS("_Pb_Query2", "_Query_4e6ac4")
+extern "C" void Pb_MulAssign(); KING_ALIAS("_Pb_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(float, g_pb64c258, $L_64c258)
+ASM_VAR(double, g_pb64b678, $L_64b678)
+ASM_VAR(double, g_pb6506b0, $L_6506b0)
+ASM_VAR(double, g_pb64b670, $L_64b670)
+ASM_VAR(float, g_pb64c250, $L_64c250)
+
+static Vec3 Pb_Through(const float* M, const Vec3& p)
+{
+    Vec3 r;
+    r.x = (float)((double)M[6] * p.z + (double)M[3] * p.y + (double)M[0] * p.x + M[9]);
+    r.y = (float)((double)M[7] * p.z + (double)M[4] * p.y + (double)M[1] * p.x + M[10]);
+    r.z = (float)((double)M[8] * p.z + (double)M[5] * p.y + (double)M[2] * p.x + M[11]);
+    return r;
+}
+
+// (p - item +5152) along the item's plane normal +5164
+static double Pb_Side(BYTE* it, const Vec3& p)
+{
+    double x = (double)p.x - F(float, it, 5152), y = (double)p.y - F(float, it, 5156), z = (double)p.z - F(float, it, 5160);
+    return z * F(float, it, 5172) + y * F(float, it, 5168) + x * F(float, it, 5164);
+}
+
+static Vec3 Pb_Diff(const float* a, const Vec3& b)
+{
+    Vec3 r;
+    r.x = (float)((double)a[0] - b.x);
+    r.y = (float)((double)a[1] - b.y);
+    r.z = (float)((double)a[2] - b.z);
+    return r;
+}
+
+extern "C" {
+
+// [FUN_589640] each point of item it (flag 512: from the first, its own frame; else frame M from the hit object)
+// swept against the scene (Query_4e67d1, else with flag 16 when off the item's plane and flag 32 ahead of its
+// face, Query_4e6ac4) into the contact list out (+2816 count, at most 63: points, normals +768, hits +2820,
+// shares +2048, kinds +1536, depths +2560, point indexes +3076) and the item's own records (+5144 + 208 i);
+// the number of hits
+int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
+{
+    BYTE nd[208];
+    CallThis(Pb_NodeInit, nd);
+    BYTE* obj = CallThis<BYTE*>(Pb_Get800, it);
+    Vec3 pt;
+    pt.x = pt.y = pt.z = 0;
+    Matrix Wm;
+    CallThis(Pb_Matrix1, it, &Wm);
+    const float* W = Wm.m;
+    const float* M = Mx->m;
+    int hits = 0;
+    for (;;)
+    {
+        int i = (flags & 512) ? CallThis<int>(Pb_PointsFirst, it, &pt) : CallThis<int>(Pb_PointsNext, it, &pt);
+        if (!i)
+            return hits;
+        Vec3 a, b;
+        BYTE* hit;
+        if (flags & 512)
+        {
+            a.x = W[9];
+            a.y = W[10];
+            a.z = W[11];
+            b = Pb_Through(W, pt);
+            hit = obj;
+        }
+        else
+        {
+            a = Pb_Through(W, pt);
+            b = Pb_Through(M, pt);
+            hit = CallC<BYTE*>(Pb_HitObject, obj, &Wm.m[9], &a);
+        }
+        if (!hit)
+        {
+            hit = obj;
+            CallThis((void (*)())F(void**, it, 0)[7], it, 1);
+        }
+        int r = CallC<int>(Pb_Query1, hit, &a, &b, nd);
+        if (!r)
+        {
+            bool skip = false;
+            if (flags & 16)
+            {
+                double d1 = Pb_Side(it, a);
+                float d2 = (float)Pb_Side(it, b);
+                int two = F(int, it, 5188);
+                if (two)
+                {
+                    d1 = x87_fabs(d1);
+                    d2 = (float)x87_fabs((double)d2);
+                }
+                double lim = (double)F(float, it, 5144) - g_pb64c258;
+                if (d1 < lim && d2 < lim)
+                {
+                    if (two)
+                        skip = d1 > g_pb64b678 && d2 > g_pb64b678;
+                    else
+                        skip = d1 > g_pb64c258 && d2 > g_pb64c258;
+                }
+                if (!skip && (flags & 32))
+                {
+                    const float* u = (const float*)(it + 5164);
+                    const float* v = (const float*)(it + 5176);
+                    Vec3 c, tmp;
+                    c.x = (float)((double)v[1] * u[2] - (double)v[2] * u[1]);
+                    c.y = (float)((double)v[2] * u[0] - (double)u[2] * v[0]);
+                    c.z = (float)((double)u[1] * v[0] - (double)v[1] * u[0]);
+                    if ((double)c.z * g_axisZ.z + (double)c.y * g_axisZ.y + (double)c.x * g_axisZ.x < g_pb64b678)
+                        CallThis(Pb_MulAssign, &c, &tmp, -1.0f);
+                    double x = (double)b.x - F(float, it, 5152), y = (double)b.y - F(float, it, 5156);
+                    double z = (double)b.z - F(float, it, 5160);
+                    if (x * c.x + z * c.z + y * c.y > F(float, it, 5148))
+                        skip = true;
+                }
+            }
+            if (!skip)
+                r = CallC<int>(Pb_Query2, hit, &a, &b, nd);
+        }
+        int k = F(int, out, 2816);
+        if (k >= 63)
+        {
+            while (CallThis<int>(Pb_PointsNext, it, &pt))
+                ;
+            return hits;
+        }
+        F(int, out, 2820 + 4 * k) = r & 1;
+        F(float, out, 2048 + 4 * k) = 1.0f;
+        if (!F(int, out, 2820 + 4 * k))
+            continue;
+        F(float, out, 2048 + 4 * k) = 0;
+        hits++;
+        F(Vec3, out, 12 * k) = F(Vec3, nd, 52);
+        F(Vec3, out, 12 * (k + 64)) = F(Vec3, nd, 64);
+        F(int, out, 3076 + 4 * k) = i - 1;
+        DWORD f = F(DWORD, it, 5188 + 4 * i) | 1;
+        F(DWORD, it, 5188 + 4 * i) = f;
+        F(DWORD, it, 5268 + 4 * i) = f;
+        memcpy(it + 5144 + 208 * i, nd, 208);
+        F(int, out, 1536 + 4 * k) = F(int, nd, 116);
+        Vec3 t1 = Pb_Diff((const float*)(nd + 88), a);
+        Vec3 t2 = Pb_Diff((const float*)(nd + 52), a);
+        Vec3 t3 = Pb_Diff((const float*)(nd + 52), b);
+        const Vec3& n = F(Vec3, nd, 64);
+        F(float, out, 2560 + 4 * k) = (float)((double)t3.z * n.z + (double)t3.y * n.y + (double)t3.x * n.x);
+        float dd = (float)Vec3_Dot(&t1, &t1);
+        double ee = Vec3_Dot(&t2, &t2);
+        if (!(dd < g_pb6506b0))
+        {
+            double q = ee / dd;
+            if (q > g_pb64b670)
+                q = g_pb64c250;
+            F(float, out, 2048 + 4 * F(int, out, 2816)) = (float)x87_sqrt(q);
+        }
+        F(int, out, 2816)++;
+    }
 }
 
 } // extern "C"

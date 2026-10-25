@@ -8624,7 +8624,7 @@ void __fastcall Fx_BurstStep(BYTE* s, void*)
 
 // === a glare facing the camera (a method at $L_4c5060)
 
-ASM_FUNC(Gl_DrawAt, FUN_5b3010)
+extern "C" void Gl_DrawAt(); KING_ALIAS("_Gl_DrawAt", "@Sprite_DrawStrip@24")
 extern "C" void Gl_TestInfo(); KING_ALIAS("_Gl_TestInfo", "@Scene_TestInfo@16")
 extern "C" int __fastcall View_SphereClip(BYTE* s, void*, const float* sp);
 ASM_VAR(float, g_gl64c874, $L_64c874)

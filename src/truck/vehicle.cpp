@@ -8436,3 +8436,1083 @@ int __fastcall Limit_Share(BYTE* s, void*, float* a, float* b)
 }
 
 } // extern "C"
+
+// === the vehicle's frame step (a method at $L_54a380)
+
+
+extern "C" void Vs_AddAssign(); KING_ALIAS("_Vs_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Vs_SubAssign(); KING_ALIAS("_Vs_SubAssign", "@Vec3_SubAssign@16")
+extern "C" void Vs_NormalizeThis(); KING_ALIAS("_Vs_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void Vs_ContactMode(); KING_ALIAS("_Vs_ContactMode", "@Body_SetContactMode@12")
+extern "C" void Vs_CopterUpdate(); KING_ALIAS("_Vs_CopterUpdate", "@Copter_UpdateAll@8")
+extern "C" void Vs_CheckPoint(); KING_ALIAS("_Vs_CheckPoint", "_World_CheckPoint")
+extern "C" void Vs_ItemFly(); KING_ALIAS("_Vs_ItemFly", "@MovingItem_Fly@4")
+extern "C" void Vs_Upright(); KING_ALIAS("_Vs_Upright", "@Body_CheckUpright@8")
+extern "C" void Vs_GroundStep(); KING_ALIAS("_Vs_GroundStep", "@Body_GroundStep@12")
+extern "C" void Vs_SetPosition(); KING_ALIAS("_Vs_SetPosition", "@Body_SetPosition@12")
+extern "C" void Vs_SetVelocity(); KING_ALIAS("_Vs_SetVelocity", "@Body_SetVelocity@12")
+extern "C" void Vs_GetVec9012(); KING_ALIAS("_Vs_GetVec9012", "@Body_GetVec9012@12")
+extern "C" void Vs_PlayerFlags(); KING_ALIAS("_Vs_PlayerFlags", "_Player_Flags")
+extern "C" void Vs_AddContact(); KING_ALIAS("_Vs_AddContact", "@Engine_AddContact@20")
+extern "C" void Vs_FollowLeader(); KING_ALIAS("_Vs_FollowLeader", "@Car_FollowLeader@4")
+extern "C" void Vs_TakeContacts(); KING_ALIAS("_Vs_TakeContacts", "@Car_TakeContacts@16")
+extern "C" void Vs_RampPosition(); KING_ALIAS("_Vs_RampPosition", "@Ramp_Position@8")
+extern "C" void Vs_Car555500(); KING_ALIAS("_Vs_Car555500", "@Car_555500@8")
+extern "C" void Vs_OutOfBox(); KING_ALIAS("_Vs_OutOfBox", "_Vec3_OutOfBox")
+extern "C" void Vs_Decompose(); KING_ALIAS("_Vs_Decompose", "_Matrix_Decompose6F")
+extern "C" void __cdecl Vs_Gauge(Vec3 pos, Vec3 v, double t, int alt); KING_ALIAS("_Vs_Gauge", "_Gauge_Create")
+extern "C" void __cdecl Vs_Sound(Vec3 pos, Vec3 dir, double len, int flags); KING_ALIAS("_Vs_Sound", "_Sound_56ef60")
+extern "C" void __cdecl Vs_Burst(Vec3 p, Vec3 v, Vec3 w, int flags, float size); KING_ALIAS("_Vs_Burst", "_Fx_CrashBurst")
+ASM_PROC(FUN_5491f0)
+ASM_VAR(AsmLabel, g_vs67a28c, $L_67a28c)
+ASM_VAR(AsmLabel, g_vs67a280, $L_67a280)
+ASM_VAR(AsmLabel, g_vs67a264, $L_67a264)
+ASM_VAR(AsmLabel, g_vs67a258, $L_67a258)
+ASM_VAR(AsmLabel, g_vs67a24c, $L_67a24c)
+ASM_VAR(AsmLabel, g_vs67a240, $L_67a240)
+ASM_VAR(AsmLabel, g_vs67a224, $L_67a224)
+ASM_VAR(AsmLabel, g_vs67a208, $L_67a208)
+ASM_VAR(char, g_vs67a1d8, $L_67a1d8)
+ASM_VAR(char, g_vs67a1a4, $L_67a1a4)
+ASM_VAR(char, g_vs67a170, $L_67a170)
+ASM_VAR(AsmLabel, g_vs69809c, $L_69809c)
+ASM_VAR(AsmLabel, g_vs6979b4, $L_6979b4)
+ASM_VAR(AsmLabel, g_vs6d219c, $L_6d219c)
+ASM_VAR(int, g_vs6ce388, $L_6ce388)
+ASM_VAR(float, g_vs64c264, $L_64c264)
+ASM_VAR(float, g_vs64c258, $L_64c258)
+ASM_VAR(float, g_vs64c938, $L_64c938)
+ASM_VAR(float, g_vs64c250, $L_64c250)
+ASM_VAR(float, g_vs64f75c, $L_64f75c)
+ASM_VAR(float, g_vs64f758, $L_64f758)
+ASM_VAR(float, g_vs64c308, $L_64c308)
+ASM_VAR(float, g_vs64c25c, $L_64c25c)
+ASM_VAR(float, g_vs64f754, $L_64f754)
+ASM_VAR(float, g_vs64c338, $L_64c338)
+ASM_VAR(float, g_vs674408, $L_674408)
+ASM_VAR(float, g_vs64f750, $L_64f750)
+ASM_VAR(float, g_vs64c458, $L_64c458)
+ASM_VAR(double, g_vs64be98, $L_64be98)
+ASM_VAR(double, g_vs64d318, $L_64d318)
+ASM_VAR(double, g_vs64b678, $L_64b678)
+ASM_VAR(double, g_vs64b668, $L_64b668)
+ASM_VAR(double, g_vs64b5b8, $L_64b5b8)
+ASM_VAR(double, g_vs64b6e0, $L_64b6e0)
+ASM_VAR(double, g_vs64d0f0, $L_64d0f0)
+ASM_VAR(double, g_vs64f3d8, $L_64f3d8)
+ASM_VAR(double, g_vs64b840, $L_64b840)
+ASM_VAR(double, g_vs64b788, $L_64b788)
+ASM_VAR(double, g_vs64b838, $L_64b838)
+ASM_VAR(double, g_vs64b5a0, $L_64b5a0)
+ASM_VAR(double, g_vs64b658, $L_64b658)
+ASM_VAR(double, g_vs64b6a0, $L_64b6a0)
+ASM_VAR(double, g_vs64f748, $L_64f748)
+ASM_VAR(double, g_vs64f4c8, $L_64f4c8)
+ASM_VAR(double, g_vs64eba8, $L_64eba8)
+
+// t turned back by the 3x3 part of m: x = m0 tx + m3 ty + m6 tz ...
+static Vec3 Vs_Back(const float* m, const Vec3& t)
+{
+    Vec3 r;
+    r.x = (float)((double)m[6] * t.z + (double)m[3] * t.y + (double)m[0] * t.x);
+    r.y = (float)((double)m[1] * t.x + (double)m[7] * t.z + (double)m[4] * t.y);
+    r.z = (float)((double)m[8] * t.z + (double)m[2] * t.x + (double)m[5] * t.y);
+    return r;
+}
+
+// the frame velocity +440 from the spin +428 scaled by +404, through the 3x3 at m
+static void Vs_SpinToFrame(BYTE* s, const float* m)
+{
+    Vec3 t;
+    Vec3_MulComponents(&t, &F(Vec3, s, 428), &F(Vec3, s, 404));
+    F(Vec3, s, 440) = Vs_Back(m, t);
+}
+
+static void Vs_Speed(BYTE* s)
+{
+    float v = (float)Vec3_Length(&F(Vec3, s, 416));
+    F(float, s, 20948) = v;
+    F(float, s, 10244) = v;
+}
+
+static Vec3 Vs_Scaled(const Vec3& v, float k)
+{
+    Vec3 r;
+    r.x = (float)((double)k * v.x);
+    r.y = (float)((double)k * v.y);
+    r.z = (float)((double)k * v.z);
+    return r;
+}
+
+// the frame m from the moving frame +548: turned by the spin +428 over dt and moved by dt times +416
+static void Vs_Integrate(BYTE* s, float dt, Matrix* m)
+{
+    Matrix tr, rot, m1, m2;
+    Matrix_Translation(&tr, Vs_Scaled(F(Vec3, s, 416), dt));
+    float len = (float)(Vec3_Length(&F(Vec3, s, 428)) * dt);
+    Matrix_LookAt(&rot, g_zeroVec, F(Vec3, s, 428), len);
+    Matrix_Multiply(&m1, &rot, &F(Matrix, s, 548));
+    *m = *Matrix_Multiply(&m2, &m1, &tr);
+}
+
+extern "C" {
+
+// [$L_54a380] vehicle s's frame step by its mode (+10908): 0 a free flying frame, 5 riding the helicopter
+// (+21588), 2 and 3 the network frames (+20624..), 1 and 4 the physics body (+21584) with its readings copied out
+// (speeds, gears, wheels, the steering share +21016 / +21020 from the wheels on ice or sand); then the cab frame
+// angles (+3160..), the frame records +3300.., the wheel smoke gauges, the wheels' scrape sounds and bursts, and the
+// gauge needles (+10164.., +9636 frames)
+void __fastcall Vehicle_FrameStep(BYTE* s, void*)
+{
+    F(DWORD, s, 10148) &= ~2u;
+    float dt = (float)Game_FrameTime();
+    F(int, s, 10258) = 0;
+    Matrix Mw = F(Matrix, s, 548);
+    F(DWORD, s, 1196) |= 8;
+    int mode = F(int, s, 10908);
+    BYTE* B = F(BYTE*, s, 21584);
+    const float* W = Mw.m;
+    bool step = false;                              // went through the contact mode
+    int ok = 0;
+    if (mode == 0)
+    {
+        Vec3 tmp, d = Vs_Scaled(F(Vec3, s, 788), dt);
+        CallThis(Vs_AddAssign, s + 416, &tmp, &d);
+        CallThis(Vs_ContactMode, s, 0);
+        Vs_Integrate(s, dt, &Mw);
+        F(int, s, 20836) = 0;
+        Vs_Speed(s);
+    }
+    else if (mode == 5)
+    {
+        BYTE* c = F(BYTE*, s, 21588);
+        if (c)
+        {
+            CallThis(Vs_CopterUpdate, c);
+            c = F(BYTE*, s, 21588);
+            F(int, s, 20792) = F(int, c, 96);
+            memcpy(s + 20624, F(BYTE*, s, 21588), 48);
+            CallC(Vs_CheckPoint, s + 20660, &g_vs67a28c, 10000.0f);
+            Mw = F(Matrix, s, 20624);
+            F(Vec3, s, 20672) = F(Vec3, F(BYTE*, s, 21588), 100);
+            F(Vec3, s, 20696) = F(Vec3, F(BYTE*, s, 21588), 112);
+            F(Vec3, s, 416) = F(Vec3, s, 20672);
+            F(Vec3, s, 428) = F(Vec3, s, 20696);
+            Vs_SpinToFrame(s, W);
+        }
+    }
+    else if (mode == 2)
+    {
+        int n = F(int, s, 10408);
+        double sum = g_vs64c264;
+        for (int k = 0; k < n; k++)
+            sum += F(float, s, 10568 + 4 * k) * (double)g_vs64c258;
+        for (int k = 0; k < F(int, s, 10408); k++)
+            F(float, s, 20724 + 4 * k) = (float)(sum / F(int, s, 10408));
+        CallC(Vs_CheckPoint, s + 20660, &g_vs67a280, 10000.0f);
+        double nx = -(double)F(float, s, 21024), ny = -(double)F(float, s, 21028), nz = -(double)F(float, s, 21032);
+        const float* A = (const float*)(s + 20624);
+        Mw = F(Matrix, s, 20624);
+        Mw.m[9] = (float)(nz * A[6] + ny * A[3] + nx * A[0] + A[9]);
+        Mw.m[10] = (float)(nz * A[7] + ny * A[4] + nx * A[1] + A[10]);
+        Mw.m[11] = (float)(nz * A[8] + ny * A[5] + nx * A[2] + A[11]);
+        CallC(Vs_CheckPoint, s + 20672, &g_vs67a264, 150.0f);
+        F(Vec3, s, 416) = F(Vec3, s, 20672);
+        F(Vec3, s, 428) = F(Vec3, s, 20696);
+        Vs_SpinToFrame(s, W);
+        CallThis(Vs_ContactMode, s, 1);
+        F(int, s, 20836) = 0;
+        Vs_Speed(s);
+    }
+    else if (mode == 3)
+    {
+        CallC(Vs_CheckPoint, s + 20660, &g_vs67a258, 10000.0f);
+        Mw = F(Matrix, s, 20624);
+        CallThis(Vs_ContactMode, s, 1);
+        F(int, s, 20836) = 0;
+        Vs_Speed(s);
+    }
+    else if (mode == 1 || mode == 4)
+    {
+        if (!B)
+        {
+            CallThis(Vs_ItemFly, s);
+            CallThis(Vs_ContactMode, s, 1);
+            return;
+        }
+        step = true;
+        F(int, s, 21020) = 0;
+        F(int, s, 10396) = 0;
+        F(int, s, 21016) = 0;
+        F(int, s, 10392) = 0;
+        if (F(int, B, 13124) && !CallThis<int>(Vs_Upright, B))
+        {
+            // the body lies over: the frame runs on its own
+            if (mode == 1)
+            {
+                CallThis(Vs_GroundStep, s, 0);
+                if (F(int, s, 896))
+                {
+                    const float* Y = &g_axisY.x;
+                    double a = (double)Y[2] * F(float, s, 524) + (double)Y[1] * F(float, s, 512) + (double)Y[0] * F(float, s, 500);
+                    double b = (double)Y[2] * F(float, s, 528) + (double)Y[1] * F(float, s, 516) + (double)Y[0] * F(float, s, 504);
+                    float c = (float)((double)Y[2] * F(float, s, 532) + (double)Y[1] * F(float, s, 520) + (double)Y[0] * F(float, s, 508));
+                    double dot = (double)F(float, s, 976) * a + ((double)F(float, s, 984) * c + (double)F(float, s, 980) * b);
+                    if (x87_fabs(dot) > g_vs64be98)
+                    {
+                        double d = x87_fabs((double)c) - g_vs64be98;
+                        float px = (float)(d * g_axisX.x), py = (float)(d * g_axisX.y);
+                        double pz = d * g_axisX.z;
+                        Vec3 off;
+                        off.x = (float)((double)px + px);
+                        off.y = (float)((double)py + py);
+                        off.z = (float)(pz + pz);
+                        if (c > g_vs64c264)
+                        {
+                            off.x = -off.x;
+                            off.y = -off.y;
+                            off.z = -off.z;
+                        }
+                        const float* R = (const float*)(s + 596);
+                        const Vec3& v = F(Vec3, s, 440);
+                        Vec3 w, t, tmp;
+                        w.x = (float)((double)R[6] * v.z + (double)R[3] * v.y + (double)v.x * R[0]);
+                        w.y = (float)((double)R[7] * v.z + (double)R[4] * v.y + (double)R[1] * v.x);
+                        w.z = (float)((double)R[8] * v.z + (double)R[5] * v.y + (double)R[2] * v.x);
+                        F(Vec3, s, 428) = *Vec3_DivComponents(&t, &w, &F(Vec3, s, 404));
+                        CallThis(Vs_AddAssign, s + 428, &tmp, &off);
+                        Vs_SpinToFrame(s, (const float*)(s + 500));
+                    }
+                }
+                Vs_Integrate(s, dt, &Mw);
+                Matrix inv;
+                Matrix_Inverse(&inv, &Mw);
+                F(int, s, 20836) = 0;
+                CallThis(Vs_SetPosition, F(BYTE*, s, 21584), s + 416);
+                CallThis(Vs_SetVelocity, F(BYTE*, s, 21584), s + 440);
+                Vs_Speed(s);
+            }
+            else
+            {
+                CallC(Vs_CheckPoint, s + 20660, &g_vs67a24c, 10000.0f);
+                Mw = F(Matrix, s, 20624);
+                Vec3 t;
+                float v = (float)Vec3_Length(CallThis<Vec3*>(Vs_GetVec9012, F(BYTE*, s, 21584), &t));
+                F(float, s, 20948) = v;
+                F(float, s, 10244) = v;
+            }
+            B = F(BYTE*, s, 21584);
+            ok = 0;
+            F(float, s, 20952) = F(float, s, 10248) = F(float, B, 15420);
+            F(int, s, 20956) = F(int, B, 15424);
+            F(int, s, 20984) = 0;
+        }
+        else
+        {
+            F(DWORD, s, 1196) &= ~8u;
+            F(int, B, 10064) = F(int, s, 21436);
+            F(int, B, 10068) = F(int, s, 21436);
+            F(int, B, 10060) = F(int, s, 21436);
+            F(int, B, 10116) = (CallC<int>(Vs_PlayerFlags, F(int, s, 20620)) & 0x2000000) ? 1 : 0;
+            if (F(int, s, 20920))
+            {
+                if (F(short, B, 10048) == 0)
+                {
+                    if (F(int, B, 15448) && F(int, B, 9784) == 1)
+                    {
+                        Vec3 p, pt;
+                        p.x = (float)(F(float, B, 15452) / (double)dt);
+                        p.y = (float)(F(float, B, 15456) / (double)dt);
+                        p.z = (float)(F(float, B, 15460) / (double)dt);
+                        const float* R = (const float*)(s + 596);
+                        const float* v = (const float*)(B + 15464);
+                        pt.x = (float)((double)R[6] * v[2] + (double)R[3] * v[1] + (double)R[0] * v[0] + R[9]);
+                        pt.y = (float)((double)R[7] * v[2] + (double)R[4] * v[1] + (double)R[1] * v[0] + R[10]);
+                        pt.z = (float)((double)R[8] * v[2] + (double)R[5] * v[1] + (double)R[2] * v[0] + R[11]);
+                        CallThis(Vs_AddContact, B + 9984, &pt, &p, &g_zeroVec);
+                    }
+                    CallThis(Vs_FollowLeader, s - 16);
+                }
+                BYTE* body = F(BYTE*, s, 21584);
+                CallThis((void (*)())F(void**, body, 0)[0], body);
+            }
+            B = F(BYTE*, s, 21584);
+            CallThis(Vs_TakeContacts, s - 16, s + 20620, B + 10736);
+            F(Vec3, s, 416) = F(Vec3, s, 20672);
+            F(Vec3, s, 428) = F(Vec3, s, 20696);
+            F(Vec3, s, 788) = F(Vec3, s, 20708);
+            CallC(Vs_CheckPoint, s + 20660, &g_vs67a240, 10000.0f);
+            Mw = F(Matrix, s, 20624);
+            Vs_SpinToFrame(s, W);
+            Vec3 d;
+            d.x = (float)((double)F(float, s, 20660) - F(float, s, 536));
+            d.y = (float)((double)F(float, s, 20664) - F(float, s, 540));
+            d.z = (float)((double)F(float, s, 20668) - F(float, s, 544));
+            if (Vec3_Length(&d) < g_vs64b5b8)
+                Mw = F(Matrix, s, 20624);
+            if (F(float, s, 20680) < g_vs64c938)
+                F(Vec3, s, 416) = F(Vec3, s, 20672);
+            for (int k = 0; k < F(int, s, 10412); k++)
+            {
+                BYTE* wb = F(BYTE*, s, 21584) + k * 248;
+                if (F(short, wb, 11112))
+                {
+                    F(Vec3, s, 1176) = F(Vec3, wb, 11100);
+                    F(Vec3, s, 1164) = F(Vec3, F(BYTE*, s, 21584) + k * 248, 11088);
+                }
+            }
+            // contacts stay on only after a calm second, upright, and away from the car in front
+            ok = 1;
+            if (F(int, s, 896) || Game_Time() - F(float, s, 904) < g_vs64c250 || W[8] < g_vs64d318)
+                ok = 0;
+            else if (BYTE* o = F(BYTE*, s, 3508))
+            {
+                float dpx = (float)((double)F(float, s, 416) - F(float, o, 3300));
+                float dpy = (float)((double)F(float, s, 420) - F(float, o, 3304));
+                float dpz = (float)((double)F(float, s, 424) - F(float, o, 3308));
+                float dvx = (float)((double)F(float, s, 536) - F(float, o, 3372));
+                float dvy = (float)((double)F(float, s, 540) - F(float, o, 3376));
+                float dvz = (float)((double)F(float, s, 544) - F(float, o, 3380));
+                double r = (double)F(float, o, 3272) + F(float, s, 40);
+                if ((double)dpz * dvz + (double)dpy * dvy + (double)dvx * dpx < g_vs64b678)
+                    r += x87_sqrt((double)dpx * dpx + (double)dpy * dpy + (double)dpz * dpz) * dt;
+                if (r * r * g_vs64b668 > F(float, s, 3532))
+                    ok = 0;
+            }
+            B = F(BYTE*, s, 21584);
+            F(float, s, 20948) = F(float, s, 10244) = F(float, B, 13104);
+            F(float, s, 20952) = F(float, s, 10248) = F(float, B, 15420);
+            F(int, s, 20956) = F(int, B, 15424);
+            F(int, s, 20960) = F(int, B, 15428);
+            F(float, s, 20964) = F(float, s, 10240) = (float)F(double, B, 13112);
+            int g = F(int, B, 15320);
+            F(int, s, 20980) = g;
+            s[10256] = (BYTE)g;
+            F(float, s, 20968) = F(float, s, 10252) = F(float, B, 15416);
+            F(float, s, 20972) = F(float, s, 10364) = (float)CallThis<double>(Vs_RampPosition, F(BYTE*, s, 21584) + 16112);
+            F(float, s, 20976) = F(float, s, 10400) = (float)CallThis<double>(Vs_Car555500, s - 16);
+            B = F(BYTE*, s, 21584);
+            F(int, s, 20992) = F(int, s, 10372) = F(int, B, 15492);
+            F(int, s, 20988) = F(int, s, 10368) = F(int, B, 15496);
+            F(int, s, 20996) = F(int, s, 10376) = F(int, B, 15488);
+            F(int, s, 21008) = F(int, s, 10380) = F(int, B, 7188);
+            F(int, s, 21000) = F(int, s, 10384) = F(int, B, 15504);
+            F(int, s, 21004) = F(int, s, 10388) = F(int, B, 15440);
+            int x = F(int, B, 15412);
+            F(int, s, 20984) = x;
+            if (x)
+                F(DWORD, s, 10148) |= 2;
+            // the wheels on slippery ground (left / right kinds) share the steering
+            int Ak[8] = {0}, Bk[8] = {0};
+            float Cf[8];
+            int anyL = 0, anyR = 0;
+            int cnt = F(int, (BYTE*)&g_vs69809c + F(int, B, 2252) * 2416, 44);
+            if (cnt > 0)
+            {
+                for (int k = 0; k < cnt; k++)
+                {
+                    BYTE* P = B + 13380 + 4 * k;
+                    BYTE* Wh = B + 11220 + 248 * k;
+                    int e = F(int, P, 0);
+                    BYTE* gr = F(BYTE*, Wh, 0);
+                    bool base = !e && F(short, Wh, -108) != 0 && gr && F(int, gr, 0) == 1;
+                    int a = base && F(int, P, 40) ? 1 : 0;
+                    int b = base && F(int, P, 72) ? 1 : 0;
+                    Ak[k] = a;
+                    Bk[k] = b;
+                    anyL = anyL || a;
+                    anyR = anyR || b;
+                }
+                if ((anyL && F(float, B, 13100) > g_vs64b6e0) || anyR)
+                {
+                    double sum = g_vs64c264;
+                    for (int c = 0; c < cnt; c++)
+                    {
+                        double v = x87_fabs((double)F(float, B, 13196 + 4 * c));
+                        Cf[c] = v > g_vs64f75c ? 1.0f : (float)(v * g_vs64f758);
+                        sum += (double)Ak[c] * Cf[c] * g_vs64d0f0;
+                    }
+                    float fs = (float)sum;
+                    double t = Ramp_54a330(F(float, B, 13104)) * fs;
+                    double p = (double)Ak[1] * Ak[0] * g_vs64f3d8 + Ak[3] * g_vs64b840 + Ak[2] * g_vs64d0f0;
+                    t = t + p * g_vs64b788 + (double)(Bk[3] + Bk[2] + Bk[1] + Bk[0]) * g_vs64b838 + fs;
+                    float total = (float)t;
+                    double val = g_vs64c250;
+                    int sl = 0, sr = 0;
+                    for (int c = 0; c < cnt; c++)
+                    {
+                        if (Ak[c])
+                        {
+                            int kind = F(int, F(BYTE*, B, 11220 + 248 * c), 4);
+                            Ak[c] = kind == 1 || kind == 5 ? 1 : kind == 2 || kind == 6 ? -1 : 0;
+                        }
+                        sr += Bk[c];
+                        sl += Ak[c];
+                    }
+                    if (sl || sr)
+                    {
+                        if (sl < 0)
+                            val = g_vs64c308;
+                        double xv = total * g_vs64d0f0;
+                        if (xv > g_vs64c250)
+                            xv = g_vs64c250;
+                        F(float, s, 21020) = F(float, s, 10396) = (float)xv;
+                        F(float, s, 21016) = F(float, s, 10392) = (float)val;
+                    }
+                }
+            }
+        }
+    }
+    if (step)
+        CallThis(Vs_ContactMode, s, ok);
+
+    // the frame's records
+    Matrix Mi = g_identity;
+    B = F(BYTE*, s, 21584);
+    if (F(int, s, 20836) && B)
+    {
+        F(int, s, 804) = F(int, B, 6672);
+        F(Matrix, s, 548) = F(Matrix, F(BYTE*, s, 21584), 2256);
+        F(Matrix, s, 644) = F(Matrix, F(BYTE*, s, 21584), 2352);
+        CallC(Vs_CheckPoint, s + 20672, &g_vs67a224, 150.0f);
+        F(Vec3, s, 416) = F(Vec3, s, 20672);
+        F(Vec3, s, 3148) = Vs_Scaled(F(Vec3, s, 416), dt);
+        for (int k = 0; k < F(int, s, 10412); k++)
+        {
+            BYTE* b = F(BYTE*, s, 21584);
+            if (!F(int, b, 15336 + 4 * k))
+                continue;
+            const float* c = (const float*)(b + 13252 + 12 * k);
+            const float* A = (const float*)(s + 20624);
+            Vec3 pt, v;
+            pt.y = (float)((double)A[1] * c[0] + (double)A[7] * c[2] + (double)A[4] * c[1] + A[10]);
+            pt.z = (float)((double)A[2] * c[0] + (double)A[8] * c[2] + (double)A[5] * c[1] + A[11]);
+            pt.x = (float)((double)A[6] * c[2] + (double)A[3] * c[1] + (double)A[0] * c[0] + A[9]);
+            const float* Z = &g_axisZ.x;
+            double ux = (double)Z[2] * A[6] + (double)Z[1] * A[3] + (double)Z[0] * A[0];
+            float uy = (float)((double)Z[0] * A[1] + (double)Z[2] * A[7] + (double)Z[1] * A[4]);
+            float uz = (float)((double)Z[0] * A[2] + (double)Z[2] * A[8] + (double)Z[1] * A[5]);
+            float f = (float)F(int, b, 15336 + 4 * k);
+            v.x = (float)(ux * f);
+            v.y = (float)((double)f * uy);
+            v.z = (float)((double)f * uz);
+            CallThis((void (*)())F(void**, s, 0)[41], s, &pt, &v);
+        }
+    }
+    else if (F(int, s, 896))
+    {
+        if (mode != 5 && mode != 1)
+            F(Vec3, s, 416) = F(Vec3, s, 20672);
+        CallC(Vs_CheckPoint, s + 416, &g_vs67a208, 100.0f);
+        F(Vec3, s, 3148) = Vs_Scaled(F(Vec3, s, 416), dt);
+    }
+    else
+    {
+        F(float, s, 3148) = (float)((double)W[9] - F(float, s, 584));
+        F(float, s, 3152) = (float)((double)W[10] - F(float, s, 588));
+        F(float, s, 3156) = (float)((double)W[11] - F(float, s, 592));
+        mode = F(int, s, 10908);
+        if (mode != 2 && mode != 5 && CallC<int>(Vs_OutOfBox, s + 416, 150.0f))
+            CallC(FUN_5491f0, s - 16);
+    }
+
+    // the cab's angles
+    Matrix mm;
+    Mi = *Matrix_Multiply(&mm, &Mw, &F(Matrix, s, 644));
+    Mi.m[9] = g_zeroVec.x;
+    Mi.m[10] = g_zeroVec.y;
+    Mi.m[11] = g_zeroVec.z;
+    float a432 = 0, a428 = 0, a424 = 0;
+    CallC(Vs_Decompose, &Mi, &a432, &a428, &a424, s + 3168, s + 3160, s + 3164);
+    F(float, s, 3160) = -F(float, s, 3160);
+    double ap = x87_fabs((double)F(float, s, 3164));
+    if (ap < g_vs64b5a0)
+        F(float, s, 3164) = (float)((ap + g_vs64b658) * F(float, s, 3164) * g_vs64b6a0);
+    F(Vec3, s, 3300) = F(Vec3, s, 416);
+    F(Vec3, s, 3312) = F(Vec3, s, 428);
+    F(Vec3, s, 3324) = F(Vec3, s, 440);
+
+    // the wheels' smoke gauges on ice and sand
+    B = F(BYTE*, s, 21584);
+    if (B && F(int, s, 10908) == 1 && !F(int, B, 13124) && (s[20884] & 4) && g_vs6ce388)
+    {
+        for (int k = 0; k < F(int, s, 10412); k++)
+        {
+            BYTE* G = s + 10840 + 4 * k;
+            int off = 248 * k;
+            BYTE* w;
+            if (!F(int, G, 10008) || F(int, s, 10908) != 1 || !(w = F(BYTE*, F(BYTE*, s, 21584), off + 11220))
+                || F(int, w, 0) != 1 || (F(int, w, 4) != 2 && F(int, w, 4) != 6))
+            {
+                F(int, G, 0) = -1;
+                continue;
+            }
+            BYTE* b = F(BYTE*, s, 21584);
+            Matrix m = F(Matrix, s, 500), t1, t2;
+            Vec3 pos = F(Vec3, b, off + 11088);
+            if (off < 496)
+                m = *Matrix_Multiply(&t2, Matrix_RotationZ(&t1, F(float, b, 13160)), &m);
+            w = F(BYTE*, F(BYTE*, s, 21584), off + 11220);
+            if (F(int, w, 4) != F(int, G, 0) && F(int, G, 0) != -1)
+                F(int, G, 0) = -1;
+            if (F(int, G, 0) == -1)
+            {
+                F(float, G, -32) = (float)Game_Time();
+                F(int, G, 0) = F(int, F(BYTE*, F(BYTE*, s, 21584), off + 11220), 4);
+            }
+            double t = Game_Time() - F(float, G, -32);
+            t = t > g_vs64c25c ? (double)g_vs64c250 : x87_sqrt(t * g_vs64f754);
+            float span = (float)(t + t + g_vs64b840);
+            if (F(int, G, 10008) != -1)
+                m = *Matrix_Multiply(&t2, Matrix_RotationZ(&t1, 3.14159274f), &m);
+            const float* Zv = &g_axisZ.x;
+            double zx = (double)Zv[0] * g_vs64c338;
+            float zy = (float)((double)Zv[1] * g_vs64c338);
+            float zz = (float)((double)Zv[2] * g_vs64c338);
+            const float* Y = &g_axisY.x;
+            const float* M = m.m;
+            double yx = (double)M[0] * Y[0] + (double)M[6] * Y[2] + (double)M[3] * Y[1];
+            float yy = (float)((double)M[7] * Y[2] + (double)M[4] * Y[1] + (double)M[1] * Y[0]);
+            float yz = (float)((double)M[8] * Y[2] + (double)M[5] * Y[1] + (double)M[2] * Y[0]);
+            Vec3 v;
+            v.x = (float)(yx + zx);
+            v.y = (float)((double)zy + yy);
+            v.z = (float)((double)zz + yz);
+            Vs_Gauge(pos, v, span, F(int, G, 0) != 2);
+        }
+    }
+
+    // the scrape of wheels off the ground
+    B = F(BYTE*, s, 21584);
+    if (B && F(int, B, 9784) == 3 && !F(int, B, 13124))
+    {
+        const float* X = &g_axisX.x;
+        const float* M = (const float*)(B + 10736);
+        Vec3 vx;
+        float a = (float)((double)X[1] * M[4] + (double)X[2] * M[7] + (double)X[0] * M[1]);
+        vx.z = (float)((double)X[1] * M[5] + (double)X[2] * M[8] + (double)X[0] * M[2]);
+        vx.x = (float)((double)X[1] * M[3] + (double)X[2] * M[6] + (double)X[0] * M[0]);
+        vx.y = a;
+        for (int k = 0; k < F(int, s, 10412); k++)
+        {
+            B = F(BYTE*, s, 21584);
+            if (!F(short, B, 248 * k + 11112) || F(int, B, 13380 + 4 * k))
+                continue;
+            Vec3 dir = g_axisZ, tmp;
+            const float* u = (const float*)(B + 10868);
+            const float* r = (const float*)(B + 10976 + 12 * k);
+            double c1 = (double)u[1] * r[2] - (double)u[2] * r[1];
+            double c2 = (double)r[0] * u[2] - (double)u[0] * r[2];
+            double c3 = (double)u[0] * r[1] - (double)r[0] * u[1];
+            Vec3 p;
+            p.x = (float)((float)(c3 * M[6] + c2 * M[3] + c1 * M[0]) + (double)F(float, B, 10832));
+            p.y = (float)((float)(c1 * M[1] + c3 * M[7] + c2 * M[4]) + (double)F(float, B, 10836));
+            p.z = (float)(c1 * M[2] + c3 * M[8] + c2 * M[5] + F(float, B, 10840));
+            float len = (float)Vec3_Length(&p);
+            if (F(float, B, 10976 + 12 * k) < g_vs64c264)
+                CallThis(Vs_SubAssign, &dir, &tmp, &vx);
+            else
+                CallThis(Vs_AddAssign, &dir, &tmp, &vx);
+            CallThis(Vs_NormalizeThis, &dir);
+            B = F(BYTE*, s, 21584);
+            if (!F(short, B, 248 * k + 11112))
+                continue;
+            int fl = F(int, s, 1204) ? 2 : 0;
+            BYTE* g = F(BYTE*, B, 13684 + 208 * k);
+            if (g && F(int, g, 0) == 1)
+            {
+                int kind = F(int, g, 4);
+                if (kind == 4 || kind == 7 || kind == 9)
+                    fl |= 1;
+            }
+            Vs_Sound(F(Vec3, B, 248 * k + 11088), dir, len, fl);
+            B = F(BYTE*, s, 21584);
+            Vs_Burst(F(Vec3, B, 248 * k + 11088), F(Vec3, s, 416), dir, fl, F(float, B, 13492));
+        }
+    }
+
+    // the gauge needles
+    s[10164] = (BYTE)(int)(F(float, s, 20720) / g_vs674408 * g_vs64f750);
+    F(float, s, 20944) = (float)(F(float, s, 20720) / g_vs674408);
+    char buf[128];
+    for (int j = 0; j < F(int, s, 10408); j++)
+    {
+        BYTE* e = s + 10568 + 4 * j;
+        s[10165 + j] = (BYTE)(int)(F(float, e, 10156) / F(float, e, 0) * g_vs64c458);
+        int nn = F(int, s, 10412);
+        const char* name = F(const char*, F(BYTE*, s, 320), 12);
+        if (j < nn)
+        {
+            F(int, e, -392) = F(int, e, 10188);
+            sprintf(buf, &g_vs67a1d8, name, j);
+            CallC<double>(FUN_4e41d9, F(int, e, -392), buf);
+        }
+        else if (j - 2 >= 0 && j - 2 < nn)
+        {
+            F(float, e, -392) = (float)(F(float, e, 10180) + g_vs64f748);
+            sprintf(buf, &g_vs67a1a4, name, j - 2);
+            CallC<double>(FUN_4e41d9, F(int, e, 10180), buf);
+        }
+        else if (j - 4 >= 0 && j - 4 < nn)
+        {
+            F(float, e, -392) = (float)(F(float, e, 10172) - g_vs64f748);
+            sprintf(buf, &g_vs67a170, name, j);
+            CallC<double>(FUN_4e41d9, F(int, e, 10172), buf);
+        }
+        else
+            F(int, e, -392) = 0;
+    }
+    for (int i = 0; i < F(int, s, 10408); i++)
+    {
+        BYTE* M = s + 9636 + 48 * i;
+        Matrix t1, t2, t3;
+        F(Matrix, M, 0) = *Matrix_RotationX(&t1, F(float, s, 10176 + 4 * i));
+        int model = F(int, s, 10404);
+        if (F(int, (BYTE*)&g_vs6979b4 + model * 2416, 4 * i))
+        {
+            float ang = (float)((signed char)s[10164] * (double)g_vs674408 * g_vs64f4c8);
+            F(Matrix, M, 0) = *Matrix_Multiply(&t3, (const Matrix*)M, Matrix_RotationZ(&t2, ang));
+        }
+        F(Vec3, M, 36) = F(Vec3, (BYTE*)&g_vs6d219c + (F(int, s, 10404) * 31 + i) * 48, 136);
+        F(float, M, 44) = (float)(F(float, M, 44) - (double)s[10165 + i] * F(float, s, 10568 + 4 * i) * g_vs64eba8);
+    }
+}
+
+} // extern "C"
+
+// === keeping the truck and trailer together at the hitch (FUN_55b6f0)
+
+extern "C" void __cdecl Hc_ToAngles(Matrix m, double* a, double* b, double* c, double* d, double* e, double* f);
+KING_ALIAS("_Hc_ToAngles", "_Matrix_ToAngles")
+extern "C" void Hc_NormalizeThis(); KING_ALIAS("_Hc_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void Hc_GetVec9012(); KING_ALIAS("_Hc_GetVec9012", "@Body_GetVec9012@12")
+extern "C" void Hc_GetVec9024(); KING_ALIAS("_Hc_GetVec9024", "@Body_GetVec9024@12")
+extern "C" void Hc_GetVec9048(); KING_ALIAS("_Hc_GetVec9048", "@Body_GetVec9048@12")
+extern "C" void __fastcall Hc_SetVec9012(BYTE* body, void*, Vec3 v); KING_ALIAS("@Hc_SetVec9012@20", "@Body_SetVec9012@20")
+extern "C" void __fastcall Hc_SetSpin(BYTE* body, void*, Vec3 v); KING_ALIAS("@Hc_SetSpin@20", "@Body_SetSpinScaled@20")
+ASM_VAR(char, g_hc67a534, $L_67a534)
+ASM_VAR(char, g_hc67a51c, $L_67a51c)
+ASM_VAR(char, g_hc67a504, $L_67a504)
+ASM_VAR(char, g_hc67a4ec, $L_67a4ec)
+ASM_VAR(char, g_hc67a4d4, $L_67a4d4)
+ASM_VAR(char, g_hc67a4bc, $L_67a4bc)
+ASM_VAR(BYTE, g_hc6ef2a8, $L_6ef2a8)
+ASM_VAR(float, g_hc6ef2ac, $L_6ef2ac)
+ASM_VAR(float, g_hc6ef2b0, $L_6ef2b0)
+ASM_VAR(float, g_hc6ef2cc, $L_6ef2cc)
+ASM_VAR(int, g_hc6ef2d0, $L_6ef2d0)
+ASM_VAR(float, g_hc67a4b0, $L_67a4b0)
+ASM_VAR(float, g_hc67a4b4, $L_67a4b4)
+ASM_VAR(float, g_hc67a4b8, $L_67a4b8)
+ASM_VAR(float, g_hc64c264, $L_64c264)
+ASM_VAR(float, g_hc64c250, $L_64c250)
+ASM_VAR(float, g_hc64daf4, $L_64daf4)
+ASM_VAR(double, g_hc64b810, $L_64b810)
+ASM_VAR(double, g_hc64fa48, $L_64fa48)
+ASM_VAR(double, g_hc64b670, $L_64b670)
+ASM_VAR(double, g_hc64d378, $L_64d378)
+ASM_VAR(double, g_hc64b6e0, $L_64b6e0)
+ASM_VAR(double, g_hc64b720, $L_64b720)
+ASM_VAR(double, g_hc64b668, $L_64b668)
+ASM_VAR(double, g_hc64b788, $L_64b788)
+ASM_VAR(AsmLabel, g_hc697f9c, $L_697f9c)
+ASM_VAR(AsmLabel, g_hc697db8, $L_697db8)
+
+// the relative angles of frame a seen from b, each through the debug value hook (FUN_4e41d9) with its name
+static void Hc_Angles(const Matrix* a, const Matrix* b, double* r, const char* n0, const char* n1, const char* n2)
+{
+    Matrix ib, m;
+    Matrix_Inverse(&ib, b);
+    Matrix_Multiply(&m, a, &ib);
+    m.m[9] = g_zeroVec.x;
+    m.m[10] = g_zeroVec.y;
+    m.m[11] = g_zeroVec.z;
+    double x0, x1, x2;
+    Hc_ToAngles(m, &x0, &x1, &x2, &r[0], &r[1], &r[2]);
+    r[0] = CallC<double>(FUN_4e41d9, (float)r[0], n0);
+    r[1] = CallC<double>(FUN_4e41d9, (float)r[1], n1);
+    r[2] = CallC<double>(FUN_4e41d9, (float)r[2], n2);
+}
+
+// v turned by the 3x3 part of m as a column: x = m0 vx + m3 vy + m6 vz ...
+static Vec3 Hc_Col(const float* m, const Vec3& v)
+{
+    Vec3 r;
+    r.x = (float)((double)m[0] * v.x + (double)m[6] * v.z + (double)m[3] * v.y);
+    r.y = (float)((double)m[1] * v.x + (double)m[7] * v.z + (double)m[4] * v.y);
+    r.z = (float)((double)m[2] * v.x + (double)m[8] * v.z + (double)m[5] * v.y);
+    return r;
+}
+
+static Vec3 Hc_Through(const float* M, const float* v)
+{
+    Vec3 r;
+    r.x = (float)((double)M[6] * v[2] + (double)M[3] * v[1] + (double)M[0] * v[0] + M[9]);
+    r.y = (float)((double)M[1] * v[0] + (double)M[7] * v[2] + (double)M[4] * v[1] + M[10]);
+    r.z = (float)((double)M[2] * v[0] + (double)M[8] * v[2] + (double)M[5] * v[1] + M[11]);
+    return r;
+}
+
+static Vec3 Hc_Lin(const Vec3& a, double k, const Vec3& b, double l)
+{
+    Vec3 r;
+    r.x = (float)(a.x * k + b.x * l);
+    r.y = (float)(a.y * k + b.y * l);
+    r.z = (float)(a.z * k + b.z * l);
+    return r;
+}
+
+static Vec3 Hc_Mul(const Vec3& a, double k)
+{
+    Vec3 r;
+    r.x = (float)(a.x * k);
+    r.y = (float)(a.y * k);
+    r.z = (float)(a.z * k);
+    return r;
+}
+
+extern "C" {
+
+// [FUN_55b6f0] truck s and its trailer (+21880) with new frames M1 / M2: 1 when they bend too far apart; 0 when
+// they are almost straight; else both frames turned about the hitch (each model's +156 / +168 points of the 697f9c
+// records) by mass shares (+3284), the hitch's velocities and spins shared out (+21600 bodies) and, with 6ef2d0, the
+// trailer's yaw (+3) limited; then 0
+int __fastcall Hitch_Align(BYTE* s, void*, Matrix* M1, Matrix* M2)
+{
+    BYTE* o = F(BYTE*, s, 21880);
+    double A[3], B[3];
+    Hc_Angles(M2, M1, A, &g_hc67a534, &g_hc67a51c, &g_hc67a504);
+    BYTE fl = g_hc6ef2a8;
+    if (!(fl & 1))
+    {
+        fl |= 1;
+        g_hc6ef2a8 = fl;
+        g_hc6ef2ac = (float)x87_fabs(x87_sin(g_hc67a4b0));
+    }
+    if (!(fl & 2))
+    {
+        fl |= 2;
+        g_hc6ef2a8 = fl;
+        g_hc6ef2b0 = (float)x87_fabs(x87_cos(g_hc67a4b0));
+    }
+    double a1 = x87_fabs(A[0]);
+    if (a1 > g_hc64b810 || x87_fabs(A[1]) > g_hc64fa48)
+        return 1;
+    double a3 = x87_fabs(A[2]);
+    if (a3 > g_hc64fa48)
+        return 1;
+    if (g_hc67a4b0 > a1 && a3 < g_hc67a4b4)
+        return 0;
+    Hc_Angles(M1, M2, B, &g_hc67a4ec, &g_hc67a4d4, &g_hc67a4bc);
+    double b1 = x87_fabs(B[0]);
+    if (b1 > g_hc64b810 || x87_fabs(B[1]) > g_hc64fa48)
+        return 1;
+    double b3 = x87_fabs(B[2]);
+    if (b3 > g_hc64fa48)
+        return 1;
+    if (b1 < g_hc67a4b0 && b3 < g_hc67a4b4)
+        return 0;
+
+    Matrix iM1, iM2, tmp;
+    Matrix_Inverse(&iM1, M1);
+    Matrix_Inverse(&iM2, M2);
+    Matrix L1 = g_identity, L2 = g_identity, Ry = g_identity;
+    BYTE* rs = (BYTE*)&g_hc697f9c + F(int, s, 10420) * 2416;
+    BYTE* ro = (BYTE*)&g_hc697f9c + F(int, o, 10420) * 2416;
+    Vec3 H1 = Hc_Through(&F(float, s, 708), (const float*)(rs + 156));
+    float r204 = F(float, rs, 204);
+    float q[3];
+    q[0] = (float)((double)(float)(r204 * (double)g_axisY.x) + F(float, ro, 168));
+    q[1] = (float)((double)(float)(r204 * (double)g_axisY.y) + F(float, ro, 172));
+    q[2] = (float)(r204 * (double)g_axisY.z + F(float, ro, 176));
+    Vec3 H2 = Hc_Through(&F(float, o, 708), q);
+    float ms = F(float, s, 3284), mo = F(float, o, 3284);
+    double totd = (double)mo + ms;
+    float tot = (float)totd;
+    float inv = (float)(g_hc64b670 / totd);
+    float d = (float)(((double)ms * A[0] - (double)mo * B[0]) * inv);
+    if (b1 > g_hc67a4b0 && g_hc67a4b0 < x87_fabs((double)d))
+    {
+        double k = d > g_hc64c264 ? (double)g_hc67a4b0 : -(double)g_hc67a4b0;
+        d = (float)(d - k);
+        // the mean hitch axis
+        const float* P = M1->m;
+        const float* Q = M2->m;
+        const float* Z = &g_axisZ.x;
+        double e1x = (double)Z[2] * P[6] + (double)Z[1] * P[3] + (double)Z[0] * P[0];
+        float e1y = (float)((double)Z[2] * P[7] + (double)Z[1] * P[4] + (double)Z[0] * P[1]);
+        float e1z = (float)((double)Z[2] * P[8] + (double)Z[1] * P[5] + (double)Z[0] * P[2]);
+        double e2x = (double)Z[2] * Q[6] + (double)Z[1] * Q[3] + (double)Z[0] * Q[0];
+        float e2y = (float)((double)Z[2] * Q[7] + (double)Z[1] * Q[4] + (double)Z[0] * Q[1]);
+        float e2z = (float)((double)Z[2] * Q[8] + (double)Z[1] * Q[5] + (double)Z[0] * Q[2]);
+        float t1 = (float)(e2x * mo), t2 = (float)(e2y * (double)mo), t3 = (float)(e2z * (double)mo);
+        double sx = e1x * ms + t1;
+        float sy = (float)((double)t2 + (float)(e1y * (double)ms));
+        float sz = (float)((double)t3 + (float)(e1z * (double)ms));
+        Vec3 N;
+        N.x = (float)(sx * inv);
+        N.y = (float)((double)sy * inv);
+        N.z = (float)((double)sz * inv);
+        CallThis(Hc_NormalizeThis, &N);
+        const Vec3& Ps = F(Vec3, s, 3304);
+        const Vec3& Po = F(Vec3, o, 3304);
+        Vec3 V;
+        V.x = (float)((double)Po.x + Ps.x);
+        V.y = (float)((double)Po.y + Ps.y);
+        V.z = (float)((double)Po.z + Ps.z);
+        Vec3 a = Hc_Col(iM1.m, N), b = Hc_Col(iM2.m, N);
+        float d2 = (float)((double)d * inv);
+        Matrix_LookAt(&tmp, H1, a, (float)((double)d2 * mo * g_hc64d378));
+        L1 = tmp;
+        Matrix_LookAt(&tmp, H2, b, (float)(-((double)d2 * ms) * g_hc64d378));
+        L2 = tmp;
+        // the shared inertia about the hitch
+        BYTE* is = (BYTE*)&g_hc697db8 + F(int, s, 10420) * 2416;
+        BYTE* io = (BYTE*)&g_hc697db8 + F(int, o, 10420) * 2416;
+        double u = ((double)F(float, is, 0) + F(float, io, 0)) * ((double)g_hc6ef2ac + g_hc64c250) * g_hc64b6e0;
+        double v = ((double)F(float, is, 4) + F(float, io, 4)) * ((double)g_hc6ef2b0 + g_hc64c250) * g_hc64b6e0;
+        V.z = (float)((v * v + u * u) * tot * g_hc64daf4 * g_hc67a4b8);
+        // the velocities: the common one plus each one's normal part and its damped side part
+        BYTE* sb = F(BYTE*, s, 21600);
+        BYTE* ob = F(BYTE*, o, 21600);
+        Vec3 vs, vo;
+        CallThis(Hc_GetVec9012, sb, &vs);
+        CallThis(Hc_GetVec9012, ob, &vo);
+        Vec3 po = Hc_Mul(vo, mo), ps = Hc_Mul(vs, ms), sum, Vavg;
+        sum.x = (float)((double)ps.x + po.x);
+        sum.y = (float)((double)ps.y + po.y);
+        sum.z = (float)((double)ps.z + po.z);
+        Vavg = Hc_Mul(sum, inv);
+        Vec3 dvs = Hc_Lin(vs, 1.0, Vavg, -1.0), dvo = Hc_Lin(vo, 1.0, Vavg, -1.0);
+        double k1 = (double)dvs.x * N.x + (double)dvs.z * N.z + (double)dvs.y * N.y;
+        Vec3 ns = Hc_Mul(N, k1), ts = Hc_Lin(dvs, 1.0, ns, -1.0);
+        double k2 = (double)dvo.x * N.x + (double)dvo.z * N.z + (double)dvo.y * N.y;
+        Vec3 no = Hc_Mul(N, k2), to = Hc_Lin(dvo, 1.0, no, -1.0);
+        // the spins
+        Vec3 ws, wo, W, Ls, Lo, c, q1, q2;
+        CallThis(Hc_GetVec9024, sb, &ws);
+        CallThis(Hc_GetVec9024, ob, &wo);
+        W = Hc_Lin(wo, 1.0, ws, 1.0);
+        CallThis(Hc_GetVec9048, sb, &Ls);
+        CallThis(Hc_GetVec9048, ob, &Lo);
+        c = Hc_Col(iM1.m, W);
+        Vec3_DivComponents(&q1, &c, &V);
+        c = Hc_Col(iM2.m, W);
+        Vec3_DivComponents(&q2, &c, &V);
+        Vec3 rs1 = Hc_Lin(Ls, 1.0, q1, -1.0), ro1 = Hc_Lin(Lo, 1.0, q2, -1.0);
+        double k3 = (double)rs1.x * a.x + (double)a.y * rs1.y + (double)rs1.z * a.z;
+        Vec3 ra = Hc_Mul(a, k3), rt = Hc_Lin(rs1, 1.0, ra, -1.0);
+        Vec3 bp, bo, t, n1, n2, n3, n4, out;
+        Vec3_Scaled(&bp, &b, (float)Vec3_Dot(&ro1, &b));
+        Vec3_Sub(&bo, &ro1, &bp);
+        float K = g_hc6ef2cc;
+        Vec3_Sub(&n1, &ns, Vec3_Scaled(&t, &ts, K));
+        Vec3_Sub(&n2, &no, Vec3_Scaled(&t, &to, K));
+        Vec3_Sub(&n3, &rt, Vec3_Scaled(&t, &ra, K));
+        Vec3_Sub(&n4, &bo, Vec3_Scaled(&t, &bp, K));
+        Hc_SetVec9012(F(BYTE*, s, 21600), 0, *Vec3_Add(&out, &n1, &Vavg));
+        Hc_SetVec9012(F(BYTE*, o, 21600), 0, *Vec3_Add(&out, &n2, &Vavg));
+        Hc_SetSpin(F(BYTE*, s, 21600), 0, *Vec3_Add(&out, &n3, &q1));
+        Hc_SetSpin(F(BYTE*, o, 21600), 0, *Vec3_Add(&out, &n4, &q2));
+    }
+    if (g_hc6ef2d0)
+    {
+        // the trailer's yaw
+        float a = (float)((A[2] - B[2]) * g_hc64b6e0);
+        Vec3 w;
+        CallThis(Hc_GetVec9048, F(BYTE*, o, 21600), &w);
+        double h = (double)g_hc67a4b4 * g_hc64b6e0;
+        float hf = (float)h;
+        double aa = x87_fabs((double)a);
+        if (g_hc67a4b4 < aa)
+        {
+            float ang = (float)(-(double)a * g_hc64b6e0);
+            Ry = *Matrix_RotationY(&tmp, ang);
+            if ((double)w.y * ang < g_hc64c264)
+            {
+                w.y = (float)(w.y * g_hc64b720);
+                Hc_SetSpin(F(BYTE*, o, 21600), 0, w);
+            }
+        }
+        else if (aa > h)
+        {
+            float ang = (float)((aa - hf) * -(double)a / ((double)g_hc67a4b4 - hf));
+            Ry = *Matrix_RotationY(&tmp, ang);
+        }
+        if ((double)w.y * a > g_hc64c264)
+        {
+            float f = (float)(g_hc64b670 - aa * g_hc64b668 / g_hc67a4b4);
+            if (f < g_hc64c264)
+                f = 0;
+            w.y = (float)(Game_FrameTime() * f * w.y * g_hc64b788);
+            Hc_SetSpin(F(BYTE*, o, 21600), 0, w);
+        }
+    }
+    Matrix t1, r1, r2;
+    Matrix I = g_identity;
+    Matrix_Multiply(&t1, &I, &L1);
+    Matrix_Multiply(&r1, &t1, M1);
+    Matrix_Multiply(&t1, &Ry, &L2);
+    Matrix_Multiply(&r2, &t1, M2);
+    *M1 = r1;
+    *M2 = r2;
+    return 0;
+}
+
+} // extern "C"
+
+// === the dashboard's overlays (FUN_53d9d0)
+
+struct Dd_Style
+{
+    DWORD d[9];
+};
+extern "C" void __cdecl Dd_Text(int surf, int x, int y, int color, const char* s, int a, int b);
+KING_ALIAS("_Dd_Text", "_Text_Draw")
+extern "C" void __cdecl Dd_Frame(int surf, int* rect, int mode, Dd_Style st);
+KING_ALIAS("_Dd_Frame", "_Ctl_DrawFrame")
+ASM_PROC(FUN_53e7a0)
+ASM_PROC(FUN_53d8c0)
+ASM_VAR(int, g_dd696c64, $L_696c64)
+ASM_VAR(BYTE*, g_dd6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_dd696ca0, $L_696ca0)
+ASM_VAR(int, g_dd696bec, $L_696bec)
+ASM_VAR(int, g_dd696be8, $L_696be8)
+ASM_VAR(int, g_dd6cec68, $L_6cec68)
+ASM_VAR(int, g_dd696c34, $L_696c34)
+ASM_VAR(char, g_dd6792ac, $L_6792ac)
+ASM_VAR(char, g_dd67929c, $L_67929c)
+ASM_VAR(char, g_dd679288, $L_679288)
+ASM_VAR(char, g_dd679278, $L_679278)
+ASM_VAR(char, g_dd67925c, $L_67925c)
+ASM_VAR(char, g_dd679250, $L_679250)
+ASM_VAR(char, g_dd67924c, $L_67924c)
+ASM_VAR(char, g_dd679234, $L_679234)
+ASM_VAR(char, g_dd679214, $L_679214)
+
+static Dd_Style Dd_Plain()
+{
+    Dd_Style st;
+    memset(&st, 0, sizeof st);
+    float h = 0.5f;
+    memcpy(&st.d[6], &h, 4);
+    return st;
+}
+
+static void Dd_Rect(int surf, int l, int t, int r, int b, int mode, const Dd_Style& st)
+{
+    int R[4] = {l, t, r, b};
+    Dd_Frame(surf, R, mode, st);
+}
+
+// the five debug lines (never written here) at the panel's corner +1376 / +1380 from row y0, each with a shadow
+static void Dd_Lines(BYTE* s, int surf, int color, int W, char (*txt)[52], int y0)
+{
+    static const int order[5] = {3, 4, 0, 1, 2};
+    for (int k = 0; k < 5; k++)
+    {
+        int y = F(int, s, 1380) + y0 + 10 * k;
+        Dd_Text(surf, F(int, s, 1376) + W - 90, y + 1, color, txt[order[k]], 0, 0);
+        Dd_Text(surf, F(int, s, 1376) + W - 91, y, color, txt[order[k]], 6, 0);
+    }
+}
+
+extern "C" {
+
+// [FUN_53d9d0] dashboard s's overlays: the road sign text of the car (Car_54efd0, 696c64), the debug lines
+// (696bec / 696be8), then without 6cec68 the frames around the view (+1400 cab view: above and below the window
+// +32, flag 128 the gauges; else flag 8 the dash image of mode +1396 and the frames around it) and with flag 32
+// the debug lines (+1404 flags)
+void __fastcall Dash_DrawOverlays(BYTE* s, void*)
+{
+    char buf[256];
+    char txt[5][52];
+    if (g_dd696c64)
+    {
+        int k;
+        float v;
+        if (Car_54efd0(F(BYTE*, g_dd6d2078, 616), 0, &k, (int*)&v) && k)
+        {
+            int color = F(int, g_dd696ca0, 2864);
+            buf[0] = 0;
+            static const char* const names[6] = {&g_dd6792ac, &g_dd67929c, &g_dd679288, &g_dd679278, &g_dd67925c, &g_dd679250};
+            if (k >= 1 && k <= 6)
+                strcpy(buf, names[k - 1]);
+            sprintf(buf + strlen(buf), &g_dd67924c, (double)v);
+            Dd_Text(F(int, g_dd696ca0, 12), 120, 120, color, buf, 4, 0);
+        }
+    }
+    if (g_dd696bec > 1)
+    {
+        CallC(FUN_53e7a0);
+        sprintf(buf, &g_dd679234);
+        Dd_Text(F(int, g_dd696ca0, 12), 120, 140, F(int, g_dd696ca0, 2864), buf, 5, 0);
+    }
+    if (g_dd696be8 > 1)
+    {
+        sprintf(buf, &g_dd679214);
+        Dd_Text(F(int, g_dd696ca0, 12), 120, 160, F(int, g_dd696ca0, 2864), buf, 5, 0);
+    }
+    if (g_dd6cec68)
+        return;
+    Dd_Style st = Dd_Plain();
+    int color = F(int, s, 40);
+    int R[4];
+    CallThis(FUN_5d85f0, F(BYTE*, s, 32), R);
+    BYTE* w = F(BYTE*, s, 36);
+    int W = F(int, w, 256), H = F(int, w, 260);
+    int surf = F(int, F(BYTE*, w, 252), 12);
+    if (W >= 640)
+        color = F(int, F(BYTE*, s, 32), 2864);
+    BYTE fl = s[1404];
+    if (F(int, s, 1400))
+    {
+        if (fl & 32)
+            Dd_Lines(s, surf, color, W, txt, 50);
+        Dd_Rect(surf, 0, 0, W, R[1] - 1, 2, st);
+        Dd_Rect(surf, 0, R[3] + 1, W, H, 2, st);
+        if (s[1404] & 128)
+        {
+            st = Dd_Plain();
+            Dd_Rect(surf, 2, H - 52, 128, H - 7, 1, st);
+            Dash_Prepare(s, 0, 5, H - 45);
+        }
+        return;
+    }
+    if (fl & 8)
+    {
+        st = Dd_Plain();
+        int x, y;
+        CallThis(FUN_53d8c0, s, F(int, s, 1396), &x, &y);
+        if (W == 800 && H == 600)
+            y += 50;
+        int mode = F(int, s, 1396);
+        CSurface* sf = (CSurface*)surf;
+        switch (mode)
+        {
+        case 0:
+            Gfx_DrawImage(sf, x, y, F(void*, s, 628), 0);
+            if (s[1404] & 128)
+                Dash_Prepare(s, 0, x + 172, y + 356);
+            Gfx_DrawImage(sf, x + 115, y + 325, F(void*, s, 904 + 4 * F(int, s, 1060)), 0);
+            break;
+        case 1:
+        case 2:
+            Gfx_DrawImage(sf, x, y, F(void*, s, 628 + 4 * mode), 0);
+            break;
+        case -1:
+        case -2:
+            Gfx_DrawImage(sf, x, y, F(void*, s, 640 - 4 * mode), 0);
+            break;
+        }
+        if (y > 0)
+            Dd_Rect(surf, 0, 0, W, y, 2, st);
+        y += (&g_dd696c34)[F(int, s, 1396)];
+        if (y < H)
+            Dd_Rect(surf, 0, y, W, H, 2, st);
+    }
+    if (s[1404] & 32)
+        Dd_Lines(s, surf, color, W, txt, 40);
+}
+
+} // extern "C"

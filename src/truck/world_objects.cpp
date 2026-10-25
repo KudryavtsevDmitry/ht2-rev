@@ -683,7 +683,7 @@ extern "C" void __fastcall Table124_Add(BYTE* self, void*, int a, int b, const V
 // the position stored by the effect before completing the draw.
 extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
-ASM_PROC(FUN_5b3010)
+extern "C" void FUN_5b3010(); KING_ALIAS("_FUN_5b3010", "@Sprite_DrawStrip@24")
 extern "C" void __fastcall SceneTexture_Advance(BYTE* self, void*); // engine.cpp
 ASM_VAR(float, g_effectOne, $L_64c250)
 ASM_VAR(float, g_effectFadeScale, $L_64c33c)
@@ -2098,7 +2098,7 @@ extern "C" BYTE* __fastcall Rec598db0_Construct(BYTE* s)
 // Placing a world object's model.
 
 extern "C" void FUN_596470(); KING_ALIAS("_FUN_596470", "@TvCamera_SetMode@60")
-ASM_PROC(FUN_595eb0)
+extern "C" void FUN_595eb0(); KING_ALIAS("_FUN_595eb0", "@TvCamera_StartMode@12")
 extern "C" void FUN_594e00(); KING_ALIAS("_FUN_594e00", "_CarType_Point")
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
 extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
@@ -4220,6 +4220,128 @@ void __fastcall ReplayCam_NextShot(BYTE* s, void*)
     unsigned shot = F(unsigned, s, 328);
     if (shot <= 5)
         CallThis(FUN_595eb0, s, next[shot]);
+}
+
+} // extern "C"
+
+// === the TV camera's mode (FUN_595eb0)
+
+extern "C" void Tm_NodeRoot(); KING_ALIAS("_Tm_NodeRoot", "@Node_Root@8")
+extern "C" void Tm_NodeMatrix(); KING_ALIAS("_Tm_NodeMatrix", "@Node_Matrix@12")
+extern "C" void Tm_Circle(); KING_ALIAS("_Tm_Circle", "@TvCamera_Circle@12")
+extern "C" void Tm_EffectStart(); KING_ALIAS("_Tm_EffectStart", "@SceneEffect_Start@16")
+extern "C" void Tm_CarPoint(); KING_ALIAS("_Tm_CarPoint", "_CarType_Point")
+extern "C" int __cdecl Tm_TraceRay(int kind, BYTE* obj, BYTE* root, Vec3 from, Vec3* to);
+KING_ALIAS("_Tm_TraceRay", "_Object_TraceRay")
+ASM_VAR(BYTE*, g_tm6f6910, $L_6f6910)              // the camera's car
+ASM_VAR(float, g_tm64c304, $L_64c304)
+ASM_VAR(float, g_tm650a90, $L_650a90)
+ASM_VAR(float, g_tm64c32c, $L_64c32c)
+ASM_VAR(float, g_tm650a8c, $L_650a8c)
+ASM_VAR(float, g_tm64c408, $L_64c408)
+ASM_VAR(double, g_tm64c958, $L_64c958)
+ASM_VAR(double, g_tm64b670, $L_64b670)
+ASM_VAR(double, g_tm64b660, $L_64b660)
+
+static Vec3 Tm_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// a / b of two axes scaled
+static Vec3 Tm_Two(const Vec3& a, float ka, const Vec3& b, float kb)
+{
+    double ax = (double)a.x * ka;
+    float ay = (float)((double)a.y * ka), az = (float)((double)a.z * ka);
+    double bx = (double)b.x * kb;
+    float by = (float)((double)b.y * kb), bz = (float)((double)b.z * kb);
+    return Tm_Set(ax + bx, (double)ay + by, (double)az + bz);
+}
+
+// modes 3 and 4: straight above the car, its frame +32 and +128, the turn +240.. cleared and +256 from +116
+static void Tm_Above(BYTE* s)
+{
+    Matrix t, m;
+    Matrix_Translation(&t, Tm_Set((double)g_axisZ.x * g_tm64c408, (double)g_axisZ.y * g_tm64c408, (double)g_axisZ.z * g_tm64c408));
+    const Matrix* r = Matrix_Multiply(&m, &t, &F(Matrix, s, 80));
+    F(Matrix, s, 32) = *r;
+    F(Matrix, s, 128) = *r;
+    F(int, s, 248) = 0;
+    F(int, s, 240) = 0;
+    F(int, s, 252) = 0;
+    F(int, s, 244) = 0;
+    F(Vec3, s, 256) = F(Vec3, s, 116);
+}
+
+extern "C" {
+
+// [FUN_595eb0] TV camera s set to mode m (+328) on the camera's car (6f6910): its frame +32 (and +128 / +176 /
+// +268) relative to the car's frame (+80): 0 behind, 1 at the car type's point, 2 circling, 3 / 4 above, 5 low
+// in front and turned; then its point +68 traced from +116 and its effect started
+void __fastcall TvCamera_StartMode(BYTE* s, void*, int m)
+{
+    BYTE* g = g_tm6f6910;
+    if (!g)
+        return;
+    F(int, s, 328) = m;
+    BYTE* root = CallThis<BYTE*>(Tm_NodeRoot, g_tm6f6910 + 272);
+    Vec3 P;
+    P.x = P.y = P.z = 0;
+    CallThis(Tm_NodeMatrix, g_tm6f6910 + 16, s + 80);
+    Matrix t, t2, r1, r2, r3, m1, m2;
+    switch (m)
+    {
+    case 0:
+    {
+        Vec3 a = Tm_Two(g_axisY, g_tm64c304, g_axisX, g_tm650a90);
+        Matrix_Translation(&t, Tm_Set((double)a.x + g_axisZ.x, (double)a.y + g_axisZ.y, (double)a.z + g_axisZ.z));
+        F(Matrix, s, 128) = t;
+        F(Matrix, s, 32) = *Matrix_Multiply(&m1, &F(Matrix, s, 128), &F(Matrix, s, 80));
+        break;
+    }
+    case 1:
+    {
+        Vec3 q;
+        P = *CallC<Vec3*>(Tm_CarPoint, &q, g_tm6f6910, -1);
+        F(Matrix, s, 128) = *Matrix_Translation(&t, Tm_Set(P.x + g_tm64c958, P.y + g_tm64b670, P.z));
+        F(Matrix, s, 176) = *Matrix_Translation(&t2, Tm_Set(P.x - g_tm64c958, P.y - g_tm64b660, P.z + g_tm64b660));
+        F(Matrix, s, 32) = *Matrix_Multiply(&m1, &F(Matrix, s, 176), &F(Matrix, s, 80));
+        break;
+    }
+    case 2:
+    {
+        const Matrix* c = CallThis<const Matrix*>(Tm_Circle, s, &m2);
+        F(Matrix, s, 268) = *c;
+        F(Matrix, s, 32) = *c;
+        break;
+    }
+    case 5:
+    {
+        Vec3 b = Tm_Two(g_axisZ, g_tm650a8c, g_axisY, g_tm64c32c);
+        Matrix_Translation(&t, b);
+        Matrix_RotationZ(&r1, 3.1415925f);
+        Matrix_RotationX(&r2, 0.39269906f);
+        Matrix_Multiply(&m1, &r2, &r1);
+        Matrix_Multiply(&m2, &m1, &t);
+        const Matrix* r = Matrix_Multiply(&r3, &m2, &F(Matrix, s, 80));
+        F(Matrix, s, 128) = *r;
+        F(Matrix, s, 32) = *r;
+        break;
+    }
+    case 3:
+    case 4:
+        Tm_Above(s);
+        break;
+    }
+    P = F(Vec3, s, 68);
+    BYTE* obj = g_tm6f6910 ? g_tm6f6910 + 16 : 0;
+    int r = Tm_TraceRay(4, obj, root, F(Vec3, s, 116), &P);
+    F(Vec3, s, 68) = P;
+    CallThis(Tm_EffectStart, s, r, s + 32);
 }
 
 } // extern "C"

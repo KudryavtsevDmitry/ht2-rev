@@ -706,7 +706,7 @@ extern "C" void __fastcall Part_Release(BYTE* self, void*)
 
 
 extern "C" void FUN_52bd20(); KING_ALIAS("_FUN_52bd20", "@Scenery_Hit@16")
-ASM_PROC(FUN_52c120)
+extern "C" void FUN_52c120(); KING_ALIAS("_FUN_52c120", "@ParkedCar_DrawShadow@16")
 extern "C" void FUN_590d20(); KING_ALIAS("_FUN_590d20", "@Item_DrawBody@16")
 extern "C" void FUN_52e1f0(); KING_ALIAS("_FUN_52e1f0", "@Scenery_Call57d580@16")
 extern "C" void FUN_586240(); KING_ALIAS("_FUN_586240", "@Box_ReceiveHit@20")
@@ -1388,6 +1388,213 @@ void __fastcall Parked_Setup(BYTE* s, void*, int idx, int m)
     CallVirt(s, 52);
     CallThis(Pk_57e030, s, s + 3268);
     CallThis(Pk_MakeOut, s);
+}
+
+} // extern "C"
+
+// === a parked car's draw and shadow (FUN_52c120)
+
+extern "C" void Ps_PointsNext(); KING_ALIAS("_Ps_PointsNext", "@Points_Next@12")
+extern "C" void Ps_ZeroThis(); KING_ALIAS("_Ps_ZeroThis", "@Vec3_ZeroThis@8")
+extern "C" void Ps_NodeInit(); KING_ALIAS("_Ps_NodeInit", "@Node_Init@8")
+extern "C" void Ps_HitObject(); KING_ALIAS("_Ps_HitObject", "_Query_HitObject")
+extern "C" void Ps_Query(); KING_ALIAS("_Ps_Query", "_Query_4e6578")
+extern "C" void Ps_Shadow(); KING_ALIAS("_Ps_Shadow", "_Fx_Shadow")
+ASM_VAR(float, g_ps6969f4, $L_6969f4)               // the camera
+ASM_VAR(float, g_ps6969f8, $L_6969f8)
+ASM_VAR(float, g_ps6969fc, $L_6969fc)
+ASM_VAR(float, g_ps64d7b8, $L_64d7b8)
+ASM_VAR(double, g_ps64b7a8, $L_64b7a8)
+ASM_VAR(double, g_ps64ed98, $L_64ed98)
+ASM_VAR(double, g_ps64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ps64ed90, $L_64ed90)
+
+static Vec3 Ps_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// a corner of the lying-flat box: (xv, yv) across, the middle height turned in as (xm, ym, zm)
+static Vec3 Ps_CornerXY(const float* M, double xv, double yv, float xm, float ym, double zm)
+{
+    return Ps_Set((double)M[3] * yv + (double)M[0] * xv + M[9] + xm, (double)M[4] * yv + (double)M[1] * xv + M[10] + ym,
+                  (double)M[5] * yv + (double)M[2] * xv + M[11] + zm);
+}
+
+// a corner of the box on its side: (xv, zv) with the middle depth turned in
+static Vec3 Ps_CornerXZ(const float* M, double xv, double zv, float xm, float ym, double zm)
+{
+    return Ps_Set((double)M[6] * zv + (double)M[0] * xv + M[9] + xm, (double)M[7] * zv + (double)M[1] * xv + M[10] + ym,
+                  (double)M[8] * zv + (double)M[2] * xv + M[11] + zm);
+}
+
+// the same with the middle depth mid summed as the other code does
+static Vec3 Ps_CornerXZm(const float* M, double xv, double zv, float mid)
+{
+    return Ps_Set((double)M[6] * zv + (double)M[0] * xv + (double)M[3] * mid + M[9],
+                  (double)M[1] * xv + (double)M[4] * mid + (double)M[7] * zv + M[10],
+                  (double)M[2] * xv + (double)M[5] * mid + (double)M[8] * zv + M[11]);
+}
+
+static Vec3 Ps_Through(const float* M, float x, float y, float z)
+{
+    Vec3 p, r;
+    p.x = x;
+    p.y = y;
+    p.z = z;
+    return *Vec3_MulMatrix(&r, &p, (const Matrix*)M);
+}
+
+extern "C" {
+
+// [FUN_52c120] parked car s drawn (Item_DrawBody a, b) and, near the camera, its shadow: the model's (+9288,
+// 6c6b68 + 876 i) box corners turned by its frame (+436 times +244) for the side it lies on (+276, +260, +256), the
+// ground under it from its contact points (+4888 + 208 i records of its owner s - 256) or a ray down; the draw's result
+void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
+{
+    void* r = CallThis<void*>(FUN_590d20, s, a, b);
+    float dx = (float)((double)g_ps6969f4 - F(float, s, 280));
+    float dy = (float)((double)g_ps6969f8 - F(float, s, 284));
+    double dz = (double)g_ps6969fc - F(float, s, 288);
+    if (!((double)dx * dx + (double)dy * dy + dz * dz <= g_ps64d7b8))
+        return r;
+    BYTE nodes[20][208];
+    for (int k = 0; k < 20; k++)
+    {
+        CallThis(Ps_NodeInit, nodes[k]);
+        F(Vec3, nodes[k], 52) = g_zeroVec;
+        F(Vec3, nodes[k], 64) = g_axisZ;
+        F(int, nodes[k], 108) = 0;
+        F(int, nodes[k], 100) = 0;
+    }
+    Vec3 C[4];
+    for (int k = 0; k < 4; k++)
+        C[k] = g_zeroVec;
+    int count = 0, mark = 0;
+    Matrix Mm;
+    Matrix_Multiply(&Mm, (const Matrix*)(s + 436), (const Matrix*)(s + 244));
+    const float* M = Mm.m;
+    BYTE* R = (BYTE*)g_carModelNames + F(int, s, 9288) * 876;
+    float R456 = F(float, R, 456), R460 = F(float, R, 460), R464 = F(float, R, 464);
+    float R468 = F(float, R, 468), R472 = F(float, R, 472), R476 = F(float, R, 476);
+    int kind = F(int, R, 872);
+    if (F(float, s, 276) > g_ps64b7a8 || F(float, s, 276) < g_ps64ed98)
+    {
+        double mid = ((double)R464 + R476) * g_ps64b6e0;
+        float xm = (float)((double)M[6] * mid), ym = (float)((double)M[7] * mid);
+        double zm = (double)M[8] * mid;
+        Vec3 c0 = Ps_CornerXY(M, R468, R460, xm, ym, zm), c1 = Ps_CornerXY(M, R456, R460, xm, ym, zm);
+        Vec3 c2 = Ps_CornerXY(M, R468, R472, xm, ym, zm), c3 = Ps_CornerXY(M, R456, R472, xm, ym, zm);
+        if (F(float, s, 276) > g_ps64b7a8)
+        {
+            C[0] = c0;
+            C[1] = c1;
+            C[2] = c2;
+            C[3] = c3;
+        }
+        else
+        {
+            C[3] = c0;
+            C[2] = c1;
+            C[1] = c2;
+            C[0] = c3;
+        }
+        if (kind == 3)
+            mark = 1;
+    }
+    else if (F(float, s, 260) < g_ps64ed98)
+    {
+        double mid = ((double)R472 + R460) * g_ps64b6e0;
+        float xm = (float)((double)M[3] * mid), ym = (float)((double)M[4] * mid);
+        double zm = (double)M[5] * mid;
+        C[0] = Ps_CornerXZ(M, R456, R476, xm, ym, zm);
+        C[1] = Ps_CornerXZ(M, R468, R476, xm, ym, zm);
+        C[2] = Ps_CornerXZ(M, R456, R464, xm, ym, zm);
+        C[3] = Ps_CornerXZ(M, R468, R464, xm, ym, zm);
+        if (kind == 2)
+            mark = 2;
+    }
+    else if (F(float, s, 260) > g_ps64b7a8)
+    {
+        float mid = (float)(((double)R472 + R460) * g_ps64b6e0);
+        C[3] = Ps_CornerXZm(M, R468, R476, mid);
+        C[2] = Ps_CornerXZm(M, R456, R476, mid);
+        C[1] = Ps_CornerXZm(M, R468, R464, mid);
+        C[0] = Ps_CornerXZm(M, R456, R464, mid);
+        if (kind == 2)
+            mark = 2;
+    }
+    else if (F(float, s, 256) > g_ps64b7a8)
+    {
+        float mid = (float)(((double)R456 + R468) * g_ps64b6e0);
+        C[0] = Ps_Set((double)M[6] * R464 + (double)M[3] * R460 + (double)M[0] * mid + M[9],
+                      (double)M[1] * mid + (double)M[7] * R464 + (double)M[4] * R460 + M[10],
+                      (double)M[2] * mid + (double)M[8] * R464 + (double)M[5] * R460 + M[11]);
+        C[1] = Ps_Through(M, mid, R460, R476);
+        C[2] = Ps_Through(M, mid, R472, R464);
+        C[3] = Ps_Through(M, mid, R472, R476);
+        if (kind == 1)
+            mark = 1;
+    }
+    else
+    {
+        float mid = (float)(((double)R456 + R468) * g_ps64b6e0);
+        C[3] = Ps_Through(M, mid, R460, R464);
+        C[2] = Ps_Through(M, mid, R460, R476);
+        C[1] = Ps_Through(M, mid, R472, R464);
+        C[0] = Ps_Through(M, mid, R472, R476);
+        if (kind == 1)
+            mark = 1;
+    }
+    // the ground: the owner's contacts near the points, or a ray down
+    Vec3Bits pt;
+    CallThis(Ps_ZeroThis, &pt);
+    BYTE* owner = s - 256;
+    int i = CallThis<int>(Ps_PointsNext, owner, &pt);
+    bool rayDown = true;
+    if (i)
+    {
+        while (i)
+        {
+            Vec3 w, d;
+            Vec3_MulMatrix(&w, (const Vec3*)&pt, (const Matrix*)(s + 244));
+            BYTE* rec = s + i * 208;
+            Vec3_Sub(&d, &F(Vec3, rec, 4940), &w);
+            if (!F(int, rec, 5004) && Vec3_Dot(&d, &d) < g_ps64ed90 && count < 20)
+            {
+                memcpy(nodes[count], rec + 4888, 208);
+                count++;
+            }
+            i = CallThis<int>(Ps_PointsNext, owner, &pt);
+        }
+        rayDown = count == 0;
+    }
+    if (rayDown)
+    {
+        Vec3 a1, b1, base, c1, up, c2, down;
+        Vec3_Scaled(&a1, &g_axisZ, F(float, s, 480));
+        Vec3_Sub(&b1, &F(Vec3, s, 472), &a1);
+        Vec3_MulMatrix(&base, &b1, (const Matrix*)(s + 244));
+        Vec3_Scaled(&c1, &g_axisZ, 10.0f);
+        Vec3_Add(&up, &base, &c1);
+        Vec3_Scaled(&c2, &g_axisZ, 10.0f);
+        Vec3_Sub(&down, &base, &c2);
+        BYTE nd[208];
+        CallThis(Ps_NodeInit, nd);
+        BYTE* hit = CallC<BYTE*>(Ps_HitObject, F(BYTE*, s, 544), s + 280, &up);
+        int q = CallC<int>(Ps_Query, owner, hit, &up, &down, nd);
+        if ((q & 1) && !F(int, nd, 116))
+        {
+            memcpy(nodes[0], nd, 208);
+            count = 1;
+        }
+    }
+    CallC(Ps_Shadow, nodes, count, C, F(int, R, 452), mark ? 1 : 0);
+    return r;
 }
 
 } // extern "C"
