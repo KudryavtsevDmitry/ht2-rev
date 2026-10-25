@@ -2510,7 +2510,7 @@ extern "C" void __cdecl Race_Start(int a, int b, int c, int d)
 // Small methods and static helpers: guarded static construction, releases, frees.
 
 extern "C" void FUN_5319f0(); KING_ALIAS("_FUN_5319f0", "@Player_DetachCar@8")
-ASM_PROC(FUN_552940)
+extern "C" void FUN_552940(); KING_ALIAS("_FUN_552940", "@Car_LampShadows@8")
 ASM_VAR(BYTE*, g_q49_6d2078, $L_6d2078)
 // [$L_531aa0] detaches the car of the player 6d2078 unless keep
 extern "C" void __cdecl Player_DetachCarUnless(int keep)
@@ -4251,7 +4251,7 @@ void __fastcall Cab_Update(BYTE* s)
 // === a car's step (FUN_556a70)
 
 extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
-ASM_PROC(FUN_552940)
+extern "C" void FUN_552940(); KING_ALIAS("_FUN_552940", "@Car_LampShadows@8")
 extern "C" void FUN_556c60(); KING_ALIAS("_FUN_556c60", "@Car_CanSleep@4")    // whether the car is driven locally
 extern "C" void FUN_580dd0(); KING_ALIAS("_FUN_580dd0", "@Item_Rest@4")    // the moving body's step
 extern "C" void FUN_58f560(); KING_ALIAS("_FUN_58f560", "@Body_FindOverlap@8")
@@ -10705,6 +10705,522 @@ void __cdecl Cars_DumpToLog()
     sprintf(buf, &g_cd6792f8, n);
     Cd_Text(buf);
     CallC(Cd_Close);
+}
+
+} // extern "C"
+
+// === the car's light shadows and lamps (FUN_552940)
+
+extern "C" void Lt_NodeInit(); KING_ALIAS("_Lt_NodeInit", "@Node_Init@8")
+extern "C" void Lt_Shadow(); KING_ALIAS("_Lt_Shadow", "_Fx_Shadow")
+extern "C" void Lt_Sound(); KING_ALIAS("_Lt_Sound", "_Fx_PlaySound")
+extern "C" void Lt_ListLight(); KING_ALIAS("_Lt_ListLight", "_EffectList_AddLight")
+extern "C" void Lt_Decal(); KING_ALIAS("_Lt_Decal", "_Fx_AddDecal")
+extern "C" void Lt_Light(); KING_ALIAS("_Lt_Light", "_Fx_AddLight")
+extern "C" void Lt_HitObject(); KING_ALIAS("_Lt_HitObject", "_Query_HitObject")
+extern "C" void Lt_Query(); KING_ALIAS("_Lt_Query", "_Query_4e6578")
+extern "C" void Lt_Fatal(); KING_ALIAS("_Lt_Fatal", "_World_Fatal")
+ASM_VAR(BYTE*, g_lt6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, g_lt6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_lt6f33ac, $L_6f33ac)
+ASM_VAR(int, g_lt6f33c0, $L_6f33c0)
+ASM_VAR(Vec3, g_ltAhead, $L_702620)
+ASM_VAR(Vec3, g_ltUp, $L_702630)
+ASM_VAR(Vec3, g_ltEye, $L_702650)
+ASM_VAR(Vec3, g_ltCam, $L_6969f4)
+ASM_VAR(Vec3, g_lt696bbc, $L_696bbc)
+ASM_VAR(BYTE, g_lt697db8, $L_697db8)                   // the car types' tables, 2416 bytes each
+ASM_VAR(BYTE, g_lt697f9c, $L_697f9c)
+ASM_VAR(BYTE, g_lt69818e, $L_69818e)
+ASM_VAR(BYTE, g_lt698008, $L_698008)
+ASM_VAR(BYTE, g_lt698020, $L_698020)
+ASM_VAR(double, g_lt64b6e0, $L_64b6e0)
+ASM_VAR(float, g_lt64d7b8, $L_64d7b8)
+ASM_VAR(float, g_lt64c264, $L_64c264)
+ASM_VAR(float, g_lt64c450, $L_64c450)
+ASM_VAR(float, g_lt64c320, $L_64c320)
+ASM_VAR(float, g_lt64f798, $L_64f798)
+ASM_VAR(double, g_lt64b840, $L_64b840)
+ASM_VAR(float, g_lt6796e0, $L_6796e0)                   // the distances for the lamp glow, its decal and its light
+ASM_VAR(float, g_lt6796e4, $L_6796e4)
+ASM_VAR(float, g_lt6796e8, $L_6796e8)
+ASM_VAR(double, g_lt64b668, $L_64b668)
+ASM_VAR(double, g_lt64d300, $L_64d300)
+ASM_VAR(double, g_lt64d0f0, $L_64d0f0)
+ASM_VAR(float, g_lt6796bc, $L_6796bc)
+ASM_VAR(double, g_lt64b678, $L_64b678)
+ASM_VAR(char, g_lt67a3a8, $L_67a3a8)
+
+struct LtD { double x, y, z; };
+
+// matrix m (rows at +0, +12, +24, the position at +36) applied to v, with or without the position
+static LtD Lt_Mul(const BYTE* m, double x, double y, double z, bool pos)
+{
+    const float* M = (const float*)m;
+    LtD r;
+    r.x = z * M[6] + y * M[3] + x * M[0] + (pos ? M[9] : 0);
+    r.y = z * M[7] + y * M[4] + x * M[1] + (pos ? M[10] : 0);
+    r.z = z * M[8] + y * M[5] + x * M[2] + (pos ? M[11] : 0);
+    return r;
+}
+
+static Vec3 Lt_F(const LtD& d)
+{
+    Vec3 r;
+    r.x = (float)d.x;
+    r.y = (float)d.y;
+    r.z = (float)d.z;
+    return r;
+}
+
+static Vec3 Lt_MulV(const BYTE* m, const Vec3& v, bool pos)
+{
+    return Lt_F(Lt_Mul(m, v.x, v.y, v.z, pos));
+}
+
+// whether the camera is in front of point p (world, from the car's frame) along dir
+static bool Lt_Facing(BYTE* s, const Vec3& p, const Vec3& dir)
+{
+    Vec3 w = Lt_MulV(s + 516, p, true);
+    Vec3 v;
+    v.x = (float)((double)g_ltCam.x - w.x);
+    v.y = (float)((double)g_ltCam.y - w.y);
+    v.z = (float)((double)g_ltCam.z - w.z);
+    return (double)v.z * dir.z + (double)v.y * dir.y + (double)v.x * dir.x > g_lt64b678;
+}
+
+static void Lt_Copy(BYTE* to, const BYTE* from)
+{
+    memcpy(to, from, 208);
+}
+
+extern "C" {
+
+// [FUN_552940] car s (unless +9616) casts its lamps' shadows: from the four points +3848 onto up to eight shadow
+// nodes, which are the lamps' (+10284 / +10332 by mask +10273) when the car is seen from outside with them on, or
+// the lamp records of its cab (+21600) or the ground under it for a player's car; then in the dark or the fog and
+// near the camera each of the four lamps (+10274 on) gets its glows, decals and lights where the camera is in front
+// of it, flickering by a phase per lamp (+20456) moved by the speed (+432)
+void __fastcall Car_LampShadows(BYTE* s, void*)
+{
+    if (F(int, s, 9616))
+        return;
+    __declspec(align(8)) BYTE nodes[8][208];
+    for (int i = 0; i < 8; i++)
+        CallThis(Lt_NodeInit, nodes[i]);
+    Vec3 pts[4];
+    memset(pts, 0, sizeof(pts));
+    for (int i = 0; i < 8; i++)
+    {
+        F(Vec3, nodes[i], 52) = g_ltEye;
+        F(Vec3, nodes[i], 64) = g_ltUp;
+        F(int, nodes[i], 108) = 0;
+        F(int, nodes[i], 100) = 0;
+    }
+    for (int i = 0; i < 4; i++)
+        pts[i] = Lt_MulV(s + 516, F(Vec3, s, 3848 + 12 * i), true);
+    BYTE* tbl = &g_lt697db8 + 2416 * F(int, s, 10420);
+    BYTE* g = g_lt6cec6c;
+    BYTE* car = F(BYTE*, s, 21600);
+    int cnt = 0;
+    if (F(int, s, 388) && (F(int, g, 1300) > 1 || F(int, g, 1316) == 1 || F(int, g, 1316) == 2))
+    {
+        // the lamps cast from their own points
+        if ((F(BYTE, s, 20900) & 8) && F(int, s, 9548) != 5 && F(float, s, 548) > g_lt64b6e0)
+        {
+            int mask = F(BYTE, s, 10273);
+            for (int i = 0; i < 4; i++)
+            {
+                if (!(mask & (1 << i)))
+                    continue;
+                const float* p = (const float*)(s + 10284 + 12 * i);
+                LtD a = Lt_Mul(s + 708, p[0], p[1], p[2], true);
+                F(Vec3, nodes[i], 52) = Lt_F(Lt_Mul(s + 516, a.x, a.y, a.z, true));
+                const float* q = p + 12;
+                LtD b = Lt_Mul(s + 708, q[0], q[1], q[2], false);
+                F(Vec3, nodes[i], 64) = Lt_F(Lt_Mul(s + 516, b.x, b.y, b.z, false));
+                cnt++;
+            }
+            CallC(Lt_Sound, nodes, cnt, pts, F(int, tbl, 8), 0);
+        }
+    }
+    else if (F(int, s, 10924) == 1 && car && (F(BYTE, s, 20900) & 8))
+    {
+        BYTE* pl = g_lt6d2078;
+        Vec3 dv;
+        dv.x = (float)((double)F(float, pl, 1460) - F(float, s, 552));
+        dv.y = (float)((double)F(float, pl, 1464) - F(float, s, 556));
+        dv.z = (float)((double)F(float, pl, 1468) - F(float, s, 560));
+        if (!F(int, car, 13124) && !(F(float, s, 548) < g_lt64b6e0))
+        {
+            // the cab's lamp records
+            if (F(int, car, 9784) == 3 &&
+                !((double)dv.x * dv.x + (double)dv.y * dv.y + (double)dv.z * dv.z > g_lt64d7b8))
+            {
+                for (int k = 0; k < F(int, car, 13120); k++)
+                {
+                    BYTE* r = car + 11112 + 248 * k;
+                    if (F(WORD, r, 0) && !F(WORD, r, 2))
+                        Lt_Copy(nodes[cnt++], r + 8);
+                }
+            }
+            else
+            {
+                int first = F(float, car, 13104) < g_lt64c264 ? 2 : 0;
+                for (int k = first; k < first + 2; k++)
+                {
+                    BYTE* r = car + 11112 + 248 * k;
+                    if (first && F(int, car, 13120) < k + 1)
+                        continue;
+                    if (F(WORD, r, 0) && !F(WORD, r, 2))
+                        Lt_Copy(nodes[cnt++], r + 8);
+                }
+            }
+        }
+        else
+        {
+            // the ground under the car
+            double z0 = F(float, s, 752);
+            float ux = (float)(g_ltUp.x * z0), uy = (float)(g_ltUp.y * z0);
+            float lx = (float)((double)F(float, s, 744) - ux), ly = (float)((double)F(float, s, 748) - uy);
+            double lz = z0 - g_ltUp.z * z0;
+            LtD P = Lt_Mul(s + 516, lx, ly, lz, true);
+            float px = (float)P.x, py = (float)P.y;
+            Vec3 top, bot;
+            top.x = (float)(g_ltUp.x * (double)g_lt64c450 + px);
+            top.y = (float)((double)(float)(g_ltUp.y * (double)g_lt64c450) + py);
+            top.z = (float)((double)(float)(g_ltUp.z * (double)g_lt64c450) + P.z);
+            bot.x = (float)((double)px - g_ltUp.x * (double)g_lt64c320);
+            bot.y = (float)((double)py - (float)(g_ltUp.y * (double)g_lt64c320));
+            bot.z = (float)(P.z - (float)(g_ltUp.z * (double)g_lt64c320));
+            __declspec(align(8)) BYTE tmp[208];
+            CallThis(Lt_NodeInit, tmp);
+            void* qh = CallC<void*>(Lt_HitObject, F(BYTE*, s, 816), s + 552, &top);
+            if ((CallC<int>(Lt_Query, s ? s + 16 : 0, qh, &top, &bot, tmp) & 1) && !F(int, tmp, 116))
+            {
+                Lt_Copy(nodes[0], tmp);
+                cnt = 1;
+            }
+        }
+        CallC(Lt_Shadow, nodes, cnt, pts, F(int, tbl, 8), 0);
+    }
+    // the lamps, in the dark or the fog
+    BYTE* w = g_lt6f33ac;
+    double tod = F(double, w, 88);
+    int dark = tod > g_lt64f798 || tod < g_lt64c320;
+    int fog = F(float, w, 536) > g_lt64b840;
+    Vec3 dc;
+    dc.x = (float)((double)g_ltCam.x - F(float, s, 552));
+    dc.y = (float)((double)g_ltCam.y - F(float, s, 556));
+    dc.z = (float)((double)g_ltCam.z - F(float, s, 560));
+    double dist0 = Vec3_Length(&dc);
+    float dist = (float)dist0;
+    float mx = g_lt6796e0 > g_lt6796e4 ? g_lt6796e0 : g_lt6796e4;
+    if (!(mx > g_lt6796e8))
+        mx = g_lt6796e8;
+    if (!(dist0 < mx) || (!fog && !dark) || g_lt6f33c0)
+        return;
+    __declspec(align(8)) BYTE tmp[208], def[208];
+    CallThis(Lt_NodeInit, tmp);
+    CallThis(Lt_NodeInit, def);
+    const BYTE* R = s + 516;
+    Vec3 dir = Lt_MulV(R, g_ltAhead, false);
+    memcpy(tmp + 4, &g_identity, 48);
+    F(int, tmp, 104) = 0;
+    F(int, tmp, 108) = 0;
+    F(int, tmp, 116) = 0;
+    F(int, tmp, 100) = 0;
+    F(Vec3, tmp, 52) = g_ltEye;
+    F(Vec3, tmp, 64) = g_ltEye;
+    Lt_Copy(def, tmp);
+    BYTE* ed = F(BYTE*, s, 9536);
+    BYTE* T1 = &g_lt697f9c + 2416 * F(int, s, 10420);
+    BYTE* T2 = &g_lt69818e + 2416 * F(int, s, 10420);
+    for (int j = 0; j < 4; j++)
+    {
+        BYTE* node;
+        if (!F(BYTE, s, 10274 + j))
+        {
+            Lt_Copy(tmp, def);
+            node = F(BYTE*, s, 816);
+        }
+        else
+        {
+            if (car)
+                Lt_Copy(tmp, car + 11120 + 248 * F(int, s, 20400 + 4 * j));
+            else
+            {
+                F(Vec3, tmp, 52) = F(Vec3, s, 10284 + 12 * j);
+                F(Vec3, tmp, 64) = F(Vec3, s, 10332 + 12 * j);
+            }
+            if (car)
+                node = F(BYTE*, car, 11328 + 248 * F(int, s, 20400 + 4 * j));
+            else
+                node = CallC<BYTE*>(Lt_HitObject, F(BYTE*, s, 816), s + 552, tmp + 52);
+        }
+        if (!node)
+            CallC(Lt_Fatal, &g_lt67a3a8);
+        Vec3 pos[3];
+        int flag[3];
+        DWORD param[3];
+        memset(pos, 0, sizeof(pos));
+        int n = 0;
+        const BYTE* M1 = s + 708;
+        switch (j)
+        {
+        case 0:
+        case 1:
+        {
+            // the headlamps
+            Vec3 d = F(Vec3, T2, 38);
+            if (j == 1)
+                d.x = -d.x;
+            dir = Lt_MulV(R, d, false);
+            if (F(int, ed, j == 0 ? 64 : 44) || !F(int, s, 20920))
+                break;
+            pos[0] = Lt_MulV(M1, F(Vec3, T1, j == 0 ? 72 : 84), true);
+            if (!Lt_Facing(s, pos[0], dir))
+                break;
+            flag[0] = 1;
+            param[0] = F(DWORD, T2, 62);
+            n = 1;
+            break;
+        }
+        case 2:
+        case 3:
+        {
+            // the rear lamps: brake (+20860) and reversing (+20856) or tail (+20916)
+            Vec3 d = F(Vec3, T2, 50);
+            if (j == 2)
+                d.x = -d.x;
+            dir = Lt_MulV(R, d, false);
+            if (F(int, ed, j == 2 ? 144 : 124))
+                break;
+            Vec3 a;
+            if (j == 2)
+                a = Lt_MulV(M1, F(Vec3, T1, 120), true);
+            else
+                Vec3_MulMatrix(&a, (const Vec3*)(&g_lt698020 + 2416 * F(int, s, 10420)), (const Matrix*)M1);
+            pos[0] = a;
+            if (!Lt_Facing(s, a, dir))
+                break;
+            if (F(int, s, 20860))
+            {
+                pos[0] = a;
+                flag[0] = 2;
+                param[0] = F(DWORD, T2, 70);
+                n = 1;
+            }
+            if (F(int, s, 20856) || F(int, s, 20916))
+            {
+                if (j == 2)
+                    pos[n] = Lt_MulV(M1, F(Vec3, T1, 96), true);
+                else
+                    Vec3_MulMatrix(&pos[n], (const Vec3*)(&g_lt698008 + 2416 * F(int, s, 10420)), (const Matrix*)M1);
+                flag[n] = 0;
+                if (F(int, s, 20856))
+                {
+                    float k = (float)(F(float, T2, 66) * g_lt64b668);
+                    param[n] = *(DWORD*)&k;
+                }
+                else
+                    param[n] = F(DWORD, T2, 66);
+                n++;
+            }
+            break;
+        }
+        }
+        for (int i = 0; i < n; i++)
+        {
+            Vec3 pw, q, t, u;
+            pw = *Vec3_MulMatrix(&t, &pos[i], (const Matrix*)(s + 564));
+            q = *Vec3_MulMatrix(&t, &pos[i], (const Matrix*)R);
+            Vec3 A = *Vec3_Scaled(&u, Vec3_Add(&t, &pw, &g_lt696bbc), 0.5f);
+            Vec3 B = *Vec3_Scaled(&u, Vec3_Add(&t, &q, &g_ltCam), 0.5f);
+            const Vec3* c = car ? (const Vec3*)(car + 11072) : &g_ltUp;
+            Vec3 e, f, h, nv;
+            Vec3_Cross(&f, c, Vec3_Sub(&e, &q, &g_ltCam));
+            Vec3_Cross(&h, &f, c);
+            nv = *Vec3_Normalized(&u, &h);
+            float dd = (float)Vec3_Dot(Vec3_Sub(&t, &A, &B), &nv);
+            double* ph = &F(double, s, 20456 + 8 * j);
+            if (i == 0)
+            {
+                double v = (g_lt64d300 / (x87_sqrt(Vec3_Dot(&F(Vec3, s, 432), &F(Vec3, s, 432))) + g_lt64c320) +
+                            g_lt64d0f0) * dd + *ph;
+                *ph = v;
+                *ph = x87_fmod(v, g_lt6796bc);
+            }
+            if (fog && dist < g_lt6796e0)
+                CallC(Lt_ListLight, &q, (float)*ph, param[i], &dir, flag[i], node, tmp);
+            if (dist < g_lt6796e4)
+                CallC(Lt_Decal, &q, &dir, param[i], tmp, flag[i]);
+            if (dist < g_lt6796e8)
+                CallC(Lt_Light, s, &q, &dir, i + 10 * j, flag[i]);
+        }
+    }
+}
+
+} // extern "C"
+
+// === the car's events (a method at $L_54d840)
+
+extern "C" int __cdecl Screen_5692e0(int id);
+extern "C" int __cdecl Screen_56f210(int id);
+extern "C" void Ce_LengthSq(); KING_ALIAS("_Ce_LengthSq", "_Vec3_LengthSq4e298b")
+extern "C" Vec3* __fastcall Ce_MulAssign(Vec3* s, void*, Vec3* ret, float k); KING_ALIAS("@Ce_MulAssign@16", "@Vec3_MulAssign@16")
+extern "C" void Ce_Get(); KING_ALIAS("_Ce_Get", "@Obj549bf0_Get@8")
+extern "C" void Ce_Start(); KING_ALIAS("_Ce_Start", "@CarEffect_Start@12")
+extern "C" void Ce_Fatal(); KING_ALIAS("_Ce_Fatal", "_World_Fatal")
+ASM_VAR(Vec3, g_ceDir, $L_702640)
+ASM_VAR(BYTE, g_ce697f9c, $L_697f9c)
+ASM_VAR(float, g_ce64d9d8, $L_64d9d8)
+ASM_VAR(float, g_ce64c938, $L_64c938)
+ASM_VAR(float, g_ce64c490, $L_64c490)
+ASM_VAR(float, g_ce64f768, $L_64f768)
+ASM_VAR(double, g_ce64b5b8, $L_64b5b8)
+ASM_VAR(double, g_ce64b5a0, $L_64b5a0)
+ASM_VAR(double, g_ce64b668, $L_64b668)
+ASM_VAR(float, g_ce64c2f8, $L_64c2f8)
+ASM_VAR(float, g_ce64c258, $L_64c258)
+ASM_VAR(char, g_ce67a35c, $L_67a35c)
+ASM_VAR(char, g_ce67a318, $L_67a318)
+ASM_VAR(char, g_ce67a2f0, $L_67a2f0)
+ASM_VAR(char, g_ce67a2e8, $L_67a2e8)
+
+// m applied to v (rows +0 / +12 / +24, the position +36) in the float steps of Vec3_SetThis
+static Vec3 Ce_Mul(const float* m, double x, double y, double z)
+{
+    Vec3 r;
+    r.x = (float)(z * m[6] + y * m[3] + x * m[0] + m[9]);
+    r.y = (float)(x * m[1] + z * m[7] + y * m[4] + m[10]);
+    r.z = (float)(x * m[2] + z * m[8] + y * m[5] + m[11]);
+    return r;
+}
+
+static Vec3 Ce_Half(const Vec3& v)
+{
+    Vec3 r;
+    r.x = (float)(v.x * (double)g_ce64c258);
+    r.y = (float)(v.y * (double)g_ce64c258);
+    r.z = (float)(v.z * (double)g_ce64c258);
+    return r;
+}
+
+extern "C" {
+
+// [$L_54d840] car s's event ev: 4 sets +20320 and the value +5164, 9 sets +20324, 12 clears +20316 or sets +4000,
+// 31 records a cab rope (two points and a width, up to four in the cab +21600 at +10496), 32 starts the effect
+// +21568 when the lamp (the type's +60) is near the point the screen gives; 1 when handled
+int __fastcall Car_HandleEvent(BYTE* s, void*, const int* ev)
+{
+    if (!ev)
+        return 0;
+    switch (ev[0])
+    {
+    case 4:
+        F(int, s, 20320) = 1;
+        F(float, s, 5164) = (float)(ev[1] * g_ce64b5b8);
+        return 1;
+    case 9:
+        F(int, s, 20324) = 1;
+        return 1;
+    case 12:
+        if (!ev[1])
+            F(int, s, 20316) = 0;
+        else
+            F(int, s, 4000) = 1;
+        return 1;
+    case 31:
+    {
+        BYTE* car = F(BYTE*, s, 21600);
+        if (!car || !Screen_5692e0(ev[1]) || ev[2] * 4 != 28)
+            return 1;
+        int k = F(int, car, 10704);
+        if (k >= 4 || k < 0)
+        {
+            char buf[152];
+            sprintf(buf, &g_ce67a35c, ev[0], k + 1);
+            CallC(Ce_Fatal, buf);
+        }
+        const float* data = (const float*)ev[3];
+        Vec3 a = *(const Vec3*)data, b = *(const Vec3*)(data + 3);
+        Vec3 d;
+        d.x = (float)((double)b.x - a.x);
+        d.y = (float)((double)b.y - a.y);
+        d.z = (float)((double)b.z - a.z);
+        float len = (float)Vec3_Length(&d);
+        float r = data[6];
+        if (r < g_ce64b5a0 || r > g_ce64b668 || len > g_ce64c2f8 || len < g_ce64b5b8)
+        {
+            char name[100], vals[148], msg[100];
+            sprintf(name, &g_ce67a318, ev[0]);
+            sprintf(vals, &g_ce67a2f0, (double)a.x, (double)a.y, (double)a.z, (double)b.x, (double)b.y, (double)b.z,
+                    (double)r);
+            sprintf(msg, &g_ce67a2e8, name, vals);
+            CallC(Ce_Fatal, msg);
+        }
+        car = F(BYTE*, s, 21600);
+        k = F(int, car, 10704);
+        F(float, car, 10688 + 4 * k) = r;
+        Vec3 t;
+        Ce_MulAssign(&d, 0, &t, (float)(1.0 / len));
+        Matrix Rz;
+        const float* R = Matrix_RotationZ(&Rz, 1.5707964f)->m;
+        Vec3 e = Ce_Mul(R, d.x, d.y, d.z);
+        Vec3 h = Ce_Half(e);
+        BYTE* rec = car + 10496 + 48 * k;
+        F(float, rec, 0) = (float)((double)a.x - h.x);
+        F(float, rec, 4) = (float)((double)a.y - h.y);
+        F(float, rec, 8) = (float)((double)a.z - h.z);
+        Vec3 h2 = Ce_Half(e), o, sc;
+        F(Vec3, rec, 12) = *Vec3_Add(&o, &a, &h2);
+        F(Vec3, rec, 24) = *Vec3_Add(&o, &b, Vec3_Scaled(&sc, &e, 0.5f));
+        F(Vec3, rec, 36) = *Vec3_Sub(&o, &b, Vec3_Scaled(&sc, &e, 0.5f));
+        F(int, car, 10704)++;
+        return 1;
+    }
+    case 32:
+    {
+        int mask = Screen_56f210(ev[1]);
+        int which = (mask & 3) == 1 ? 0 : -1;
+        if ((mask & 12) == 1)
+            which = 1;
+        if ((mask & 48) == 1)
+            which = 2;
+        else if (which == -1)
+            return 0;
+        Matrix M = g_identity;
+        Vec3 P;
+        P.x = P.y = P.z = 0;
+        if (which >= 0)
+        {
+            float k = which == 0 ? g_ce64d9d8 : which == 1 ? g_ce64c938 : g_ce64c490;
+            P = Ce_Mul(M.m, g_ceDir.x * (double)k, g_ceDir.y * (double)k, g_ceDir.z * (double)k);
+        }
+        const float* L = (const float*)(&g_ce697f9c + 2416 * F(int, s, 10420) + 60);
+        Vec3 W = Ce_Mul((const float*)(s + 516), L[0], L[1], L[2]);
+        Vec3 d;
+        d.x = (float)((double)W.x - P.x);
+        d.y = (float)((double)W.y - P.y);
+        d.z = (float)((double)W.z - P.z);
+        if (!(CallC<double>(Ce_LengthSq, &d) < g_ce64f768))
+            return 0;
+        BYTE* fx = s + 21568;
+        int st = CallThis<int>(Ce_Get, fx);
+        if (st == 1)
+            return 0;
+        st = CallThis<int>(Ce_Get, fx);
+        if (st == 2)
+            return 0;
+        st = CallThis<int>(Ce_Get, fx);
+        if (st == 3)
+            return 0;
+        CallThis(Ce_Start, fx, 0);
+        return 0;
+    }
+    }
+    return 0;
 }
 
 } // extern "C"

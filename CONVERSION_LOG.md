@@ -152,3 +152,22 @@ Skipped: FUN_558f20 (9840, iterative hitch solver, only with a trailer), $L_4d13
 FUN_468d60, $L_420ed0 (AI handles and by-value road positions), FUN_4ff800, FUN_58a020, FUN_576d70, FUN_5e5cd0
 (entangled or nested procs), FUN_6217b6 (the CRT's printf engine), FUN_59f870 (argument slots as temporaries) and
 the many $L_ tails without a prologue.
+
+Batch 24 plan: more than 44,180 bytes, 79.83% -> about 81.85%: FUN_617180 (9824, terrain plant patches), FUN_5f6820
+(8368), $L_536360 (8208), FUN_552940 (7472), FUN_53b4c0 (7040), FUN_588090 (4896), swapping any that turn out
+entangled; offsets from norm2.py.
+
+Batch 24 done: 11 procs, 44,464 bytes (2.01%), 79.83% -> 81.84%. FUN_617180 Patch_AddPlant (9824: a plant's
+quads by type and grid parity), FUN_5f6820 Shape_SweepHit (8368: a point swept against a sphere, cylinder, plane,
+polygon list or wall chain), FUN_552940 Car_LampShadows (7472: the lamps' shadow nodes and their glows, decals and
+lights), FUN_588090 Item_KnockOver (4896), FUN_5e05c0 Dbg_OnInput (2800: the debug window's mouse look, zoom,
+screenshots and stats box), FUN_615da0 Grid_HeightAt (1920), FUN_5b5710 Render_PortalView (2576), FUN_5af9e0
+Mesh_TexCoords (1856), $L_5aa750 Water_Draw (2384) and $L_54d840 Car_HandleEvent (2368).
+Drive and load tests pass (one drive ended at room_ap_048 without moving, the rerun normal).
+norm3.py (norm2.py with the callees' own stack pops) gave the offsets.
+framework.cpp now takes Water_Draw's address directly: its ASM_VAR label of $L_5aa750 no longer links once the
+label is converted. scene.cpp's new code uses local vector aliases (Swp_*) because including vecmath.h there
+clashes with its own declarations.
+Skipped: FUN_5ca8e0 (FUN_5ca660 calls the label $L_5cb970 inside it), FUN_53b4c0 and FUN_54f040 (AI road
+positions by value), FUN_4fca10 (runs on into $L_4fe18e), FUN_4e8ae1 (runs on into $L_4e964c); $L_536360 not
+reached.
