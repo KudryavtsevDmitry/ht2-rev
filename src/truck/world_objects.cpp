@@ -2426,7 +2426,7 @@ extern "C" void FUN_5968c0(); KING_ALIAS("_FUN_5968c0", "@TvCamera_Follow@12")
 ASM_PROC(FUN_596b30)
 extern "C" void FUN_596e50(); KING_ALIAS("_FUN_596e50", "@Object_AimMatrix@16")
 extern "C" void FUN_598d30(); KING_ALIAS("_FUN_598d30", "@Wasm_598d30@16")
-ASM_PROC(FUN_599210)
+extern "C" void FUN_599210(); KING_ALIAS("_FUN_599210", "_Cam_AvoidObjects")
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
 
 extern "C" {
@@ -3380,6 +3380,264 @@ int __fastcall Splash_Draw(BYTE* s, void*, DWORD c, BYTE* r)
         F(float*, F(BYTE*, s, 52), 12)[k] = sv[k] + g_tr64c258;
     }
     return Effect_Draw(s, 0, c, r);
+}
+
+} // extern "C"
+
+// === keeping the camera out of objects (FUN_599210)
+
+extern "C" void Cv_NodeInit(); KING_ALIAS("_Cv_NodeInit", "@Node_Init@8")
+extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
+ASM_VAR(BYTE, g_cv6f6948, $L_6f6948)                // the static guards
+ASM_VAR(AsmLabel, g_cv6f6838, $L_6f6838)            // 10 points tried
+ASM_VAR(Vec3, g_cv6f6958, $L_6f6958)                // the last free point
+ASM_VAR(int, g_cv67e188, $L_67e188)
+ASM_VAR(int, g_cv67e18c, $L_67e18c)
+ASM_VAR(float, g_cv6509f4, $L_6509f4)
+ASM_VAR(float, g_cv64c264, $L_64c264)
+ASM_VAR(double, g_cv64b670, $L_64b670)
+ASM_VAR(double, g_cv64ca48, $L_64ca48)
+ASM_VAR(double, g_cv650ae8, $L_650ae8)
+ASM_VAR(double, g_cv64da00, $L_64da00)
+ASM_VAR(double, g_cv64d900, $L_64d900)
+ASM_VAR(double, g_cv64b678, $L_64b678)
+ASM_VAR(double, g_cv650ae0, $L_650ae0)
+ASM_VAR(double, g_cv64b700, $L_64b700)
+ASM_VAR(double, g_cv650ad8, $L_650ad8)
+ASM_VAR(double, g_cv650ad0, $L_650ad0)
+ASM_VAR(double, g_cv64d348, $L_64d348)
+ASM_VAR(double, g_cv64d908, $L_64d908)
+ASM_VAR(double, g_cv64d910, $L_64d910)
+
+static Vec3* Cv_Table() { return (Vec3*)(BYTE*)g_cv6f6838; }
+
+static Vec3 Cv_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// q's hit (+52) pushed out along its normal (+64, scaled by +0 and 6509f4)
+static Vec3 Cv_Pushed(const BYTE* q)
+{
+    double k = g_cv6509f4, s = F(float, q, 0);
+    Vec3 t = Cv_Set(F(float, q, 64) * s, F(float, q, 68) * s, F(float, q, 72) * s);
+    t = Cv_Set(t.x * k, t.y * k, t.z * k);
+    return Cv_Set((double)t.x + F(float, q, 52), (double)t.y + F(float, q, 56), (double)t.z + F(float, q, 60));
+}
+
+// p through the inverse of q's frame (+4) into q's point +88
+static void Cv_Back(BYTE* q, const Vec3& p)
+{
+    Matrix inv;
+    const float* I = Matrix_Inverse(&inv, (const Matrix*)(q + 4))->m;
+    F(Vec3, q, 88) = Cv_Set((double)p.z * I[6] + (double)p.y * I[3] + (double)p.x * I[0] + I[9],
+                            (double)p.z * I[7] + (double)p.y * I[4] + (double)p.x * I[1] + I[10],
+                            (double)p.z * I[8] + (double)p.y * I[5] + (double)p.x * I[2] + I[11]);
+}
+
+extern "C" {
+
+// [FUN_599210] moves the camera point to (*to, from the frame m of point *from) out of the objects near car
+// (starting with object obj, skipping skip): steps along the hit normals, else tries 10 turns around the
+// point and takes the free one nearest to the start; the object the point ends in
+BYTE* __cdecl Cam_AvoidObjects(BYTE* car, BYTE* obj, const Matrix* m, const Vec3* from, Vec3* to, BYTE* skip)
+{
+    BYTE q[208];
+    CallThis(Cv_NodeInit, q);
+    memcpy(q + 4, &g_identity, 48);
+    F(Vec3, q, 76) = *(const Vec3*)&m->m[9];
+    F(Vec3, q, 88) = *from;
+    F(int, q, 116) = 0;
+    F(float, q, 0) = 0.3f;
+    F(BYTE*, q, 104) = obj;
+    for (int i = 0; i < 10; i++)
+    {
+        if (!(Car_AskNear((int*)obj, q, car, skip) & 1))
+            break;
+        if (i == 9)
+        {
+            F(Vec3, q, 88) = F(Vec3, q, 76);
+            F(BYTE*, q, 104) = obj;
+            break;
+        }
+        double k = g_cv6509f4, s = F(float, q, 0);
+        double a = F(float, q, 64) * s;
+        float b = (float)(F(float, q, 68) * s), c = (float)(F(float, q, 72) * s);
+        Vec3 P;
+        P.x = (float)(F(float, q, 52) + a * k);
+        P.y = (float)((double)(float)(b * k) + F(float, q, 56));
+        P.z = (float)((double)(float)(c * k) + F(float, q, 60));
+        Matrix inv;
+        const float* I = Matrix_Inverse(&inv, (const Matrix*)(q + 4))->m;
+        F(Vec3, q, 88) = Cv_Set((double)P.z * I[6] + (double)P.y * I[3] + (double)P.x * I[0] + I[9],
+                                (double)P.x * I[1] + (double)P.z * I[7] + (double)P.y * I[4] + I[10],
+                                (double)P.x * I[2] + (double)P.z * I[8] + (double)P.y * I[5] + I[11]);
+        F(BYTE*, q, 104) = obj;
+    }
+    if (skip)
+        F(BYTE*, q, 120) = skip;
+    F(Vec3, q, 76) = F(Vec3, q, 88);
+    BYTE* cur = F(BYTE*, q, 104);
+    Matrix mi;
+    const float* I = Matrix_Inverse(&mi, m)->m;
+    double dx = (double)to->x - from->x, dy = (double)to->y - from->y, dz = (double)to->z - from->z;
+    Vec3 l = Cv_Set(I[0] * dx + dz * I[6] + dy * I[3], I[1] * dx + dz * I[7] + dy * I[4], 0);
+    double lz = I[2] * dx + dz * I[8] + dy * I[5];
+    double len = Vec3_Length(&l);
+    Vec3 nl = Cv_Set(-(double)l.x, -(double)l.y, -0.0), n;
+    Vec3_Normalized(&n, &nl);
+    double c = (double)n.z * g_axisY.z + (double)n.y * g_axisY.y + (double)n.x * g_axisY.x;
+    if (c > g_cv64b670)
+        c = 1.0;
+    else if (c < g_cv64ca48)
+        c = -1.0;
+    double ang = x87_acos(c);
+    if (l.x < g_cv64c264)
+        ang = -ang;
+    if (!(g_cv6f6948 & 1))
+    {
+        g_cv6f6948 |= 1;
+        for (int i = 0; i < 10; i++)
+            Cv_Table()[i] = Cv_Set(0, 0, 0);
+        atexit((void(__cdecl*)(void))(void*)&WObj59a020_Nop);
+    }
+    if (!(g_cv6f6948 & 2))
+    {
+        g_cv6f6948 |= 2;
+        g_cv6f6958 = Cv_Set(0, 0, 0);
+        atexit((void(__cdecl*)(void))(void*)&WObj59a010_Nop);
+    }
+    double tilt = 0;
+    float ny = (float)-len, nz = (float)lz;
+    int tried = 0;
+    for (int e = 0; e < 10; e++)
+    {
+        memcpy(q + 4, &g_identity, 48);
+        Matrix rx, rz;
+        const float* X = Matrix_RotationX(&rx, (float)tilt)->m;
+        float ux = (float)((double)nz * X[6] + (double)ny * X[3] + X[9]);
+        float uy = (float)((double)nz * X[7] + (double)ny * X[4] + X[10]);
+        float uz = (float)((double)nz * X[8] + (double)ny * X[5] + X[11]);
+        const float* Z = Matrix_RotationZ(&rz, (float)ang)->m;
+        double wx = (double)uz * Z[6] + (double)uy * Z[3] + (double)ux * Z[0] + Z[9];
+        double wy = (double)ux * Z[1] + (double)uz * Z[7] + (double)uy * Z[4] + Z[10];
+        double wz = (double)ux * Z[2] + (double)uz * Z[8] + (double)uy * Z[5] + Z[11];
+        const float* E = m->m;
+        float ex = (float)(wz * E[6] + wy * E[3] + wx * E[0]);
+        float ey = (float)(wz * E[7] + wy * E[4] + wx * E[1]);
+        double ez = wz * E[8] + wy * E[5] + wx * E[2];
+        obj = cur;
+        F(float, q, 88) = (float)((double)ex + F(float, q, 76));
+        F(float, q, 92) = (float)((double)F(float, q, 80) + ey);
+        F(float, q, 96) = (float)(F(float, q, 84) + ez);
+        if (!(Car_AskNear((int*)obj, q, car, skip) & 1))
+        {
+            if (!tried)
+            {
+                *to = F(Vec3, q, 88);
+                return F(BYTE*, q, 104);
+            }
+            F(Vec3, q, 76) = F(Vec3, q, 88);
+            obj = F(BYTE*, q, 104);
+            F(Vec3, q, 88) = g_cv6f6958;
+            for (int i = 0; i < 10; i++)
+            {
+                if (!(Car_AskNear((int*)obj, q, car, skip) & 1))
+                {
+                    *to = F(Vec3, q, 88);
+                    return F(BYTE*, q, 104);
+                }
+                if (i == 9)
+                {
+                    *to = F(Vec3, q, 76);
+                    return obj;
+                }
+                Vec3 h, t;
+                Matrix inv;
+                Matrix_Inverse(&inv, (const Matrix*)(q + 4));
+                double kk = g_cv6509f4, s = F(float, q, 0);
+                Vec3 v = Cv_Set(F(float, q, 64) * s, F(float, q, 68) * s, F(float, q, 72) * s);
+                v = Cv_Set(v.x * kk, v.y * kk, v.z * kk);
+                F(Vec3, q, 88) = *Vec3_MulMatrix(&t, Vec3_Add(&h, (const Vec3*)(q + 52), &v), &inv);
+                F(BYTE*, q, 104) = obj;
+            }
+        }
+        g_cv6f6958 = F(Vec3, q, 88);
+        Matrix inv;
+        const float* J = Matrix_Inverse(&inv, (const Matrix*)(q + 4))->m;
+        Vec3* ent = &Cv_Table()[e];
+        const float* h = (const float*)(q + 52);
+        *ent = Cv_Set((double)J[0] * h[0] + (double)J[3] * h[1] + (double)J[6] * h[2] + J[9],
+                      (double)J[1] * h[0] + (double)J[4] * h[1] + (double)J[7] * h[2] + J[10],
+                      (double)J[2] * h[0] + (double)J[5] * h[1] + (double)J[8] * h[2] + J[11]);
+        if (e == 9)
+        {
+            Vec3 d0 = Cv_Set((double)F(float, q, 76) - Cv_Table()[0].x, (double)F(float, q, 80) - Cv_Table()[0].y,
+                             (double)F(float, q, 84) - Cv_Table()[0].z);
+            double best = Vec3_Length(&d0);
+            int bi = 0;
+            for (int k = 1; k < 10; k++)
+            {
+                Vec3 dk = Cv_Set((double)F(float, q, 76) - Cv_Table()[k].x, (double)F(float, q, 80) - Cv_Table()[k].y,
+                                 (double)F(float, q, 84) - Cv_Table()[k].z);
+                double dist = Vec3_Length(&dk);
+                if (dist < best)
+                {
+                    best = dist;
+                    bi = k;
+                }
+            }
+            F(BYTE*, q, 104) = obj;
+            F(Vec3, q, 88) = Cv_Table()[bi];
+            for (int i = 0; i < 10; i++)
+            {
+                if (!(Car_AskNear((int*)obj, q, car, skip) & 1))
+                {
+                    *to = F(Vec3, q, 88);
+                    return F(BYTE*, q, 104);
+                }
+                if (i == 9)
+                {
+                    *to = F(Vec3, q, 76);
+                    return obj;
+                }
+                Cv_Back(q, Cv_Pushed(q));
+                F(BYTE*, q, 104) = obj;
+            }
+            *to = F(Vec3, q, 88);
+            return obj;
+        }
+        Vec3 nn;
+        n = *Vec3_RotateBy(&nn, (const Vec3*)(q + 64), &inv);
+        int turn;
+        if (x87_fabs(ang) < g_cv650ae8 || x87_fabs(ang - g_cv64da00) < g_cv650ae8 || x87_fabs(ang - g_cv64d900) < g_cv650ae8
+            || x87_fabs(ang + g_cv64d900) < g_cv650ae8 || x87_fabs(ang + g_cv64da00) < g_cv650ae8)
+            turn = g_cv67e18c;
+        else if (ang < g_cv64b678 && ang > g_cv650ae0)
+            turn = 1;
+        else if (!(ang > g_cv64da00))
+            turn = 0;
+        else
+            turn = ang < g_cv64d900 ? 1 : 0;
+        g_cv67e188 = g_cv67e18c = turn;
+        if (n.z > g_cv64b700)
+            tilt -= g_cv650ad8;
+        else if (n.z < g_cv650ad0)
+            tilt += g_cv650ad8;
+        else
+            ang = turn ? ang + g_cv64d348 : ang - g_cv64d348;
+        if (ang > g_cv64d900)
+            ang -= g_cv64d908;
+        if (ang < g_cv64d910)
+            ang += g_cv64d908;
+        tried++;
+        F(BYTE*, q, 104) = obj;
+    }
+    return 0;
 }
 
 } // extern "C"

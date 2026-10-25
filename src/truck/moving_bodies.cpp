@@ -2071,3 +2071,197 @@ int __fastcall Sparks_DrawLines(BYTE* s, void*, int a, BYTE* r)
 }
 
 } // extern "C"
+
+// === a moving body's step against the ground (FUN_58c1e0)
+
+extern "C" void Mg_FrameTime(); KING_ALIAS("_Mg_FrameTime", "_Game_FrameTime")
+extern "C" void Mg_PointsNext(); KING_ALIAS("_Mg_PointsNext", "@Points_Next@12")
+extern "C" void Mg_CheckPoint(); KING_ALIAS("_Mg_CheckPoint", "_World_CheckPoint")
+extern "C" void Mg_AddAssign(); KING_ALIAS("_Mg_AddAssign", "@Vec3_AddAssign@16")
+ASM_PROC(FUN_58baa0)
+ASM_PROC(FUN_4e7889)
+ASM_VAR(float, g_mg64c264, $L_64c264)
+ASM_VAR(double, g_mg64b6d0, $L_64b6d0)
+ASM_VAR(double, g_mg64d0f0, $L_64d0f0)
+ASM_VAR(float, g_mg64c258, $L_64c258)
+ASM_VAR(double, g_mg64b7c0, $L_64b7c0)
+ASM_VAR(float, g_mg64c334, $L_64c334)
+ASM_VAR(float, g_mg64c904, $L_64c904)
+ASM_VAR(float, g_mg64d494, $L_64d494)
+ASM_VAR(double, g_mg64b678, $L_64b678)
+ASM_VAR(float, g_mg64c878, $L_64c878)
+ASM_VAR(float, g_mg64c250, $L_64c250)
+ASM_VAR(float, g_mg64d4e8, $L_64d4e8)
+ASM_VAR(float, g_mg64c2f8, $L_64c2f8)
+ASM_VAR(char, s_mg67dcf4, $L_67dcf4)
+ASM_VAR(char, s_mg67dcd8, $L_67dcd8)
+ASM_VAR(char, s_mg67dcbc, $L_67dcbc)
+ASM_VAR(char, s_mg67dca0, $L_67dca0)
+
+static Vec3 Mg_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// sorts h into the four smallest distances d; its place, or -1
+static int Mg_Insert(float* d, double h)
+{
+    if (!(h < d[3]))
+        return -1;
+    int k = 0;
+    while (!(h < d[k]))
+        k++;
+    for (int j = 3; j > k; j--)
+        d[j] = d[j - 1];
+    d[k] = (float)h;
+    return k;
+}
+
+// the step of position p by velocity s+788 over dt
+static void Mg_Move(BYTE* s, Vec3* p, float dt)
+{
+    Vec3* v = (Vec3*)(s + 476);
+    *v = Mg_Set((double)dt * F(float, s, 788), (double)dt * F(float, s, 792), (double)dt * F(float, s, 796));
+    *p = Mg_Set((double)p->x + v->x, (double)p->y + v->y, (double)p->z + v->z);
+}
+
+extern "C" {
+
+// [FUN_58c1e0] moves body s (position +416, velocity +788, frame +500, ground points from +5196) over the frame:
+// near the ground the four nearest contacts decide a solved bounce (58baa0), else it falls by the root of
+// its height (4e7889, mixed by k), with impulses when it moved too far; +3148 gets the step
+void __fastcall Body_GroundStep(BYTE* s, void*, float k)
+{
+    float dt = (float)CallC<double>(Mg_FrameTime);
+    Vec3* P = (Vec3*)(s + 416);
+    float d[4] = {100.0f, 100.0f, 100.0f, 100.0f};
+    Vec3 prev = *P;
+    Vec3 tmp;
+    const float* R = (const float*)(s + 500);
+    if ((double)dt * F(float, s, 796) + P->z < g_mg64c264)
+    {
+        Vec3 pt = {0, 0, 0}, best = {0, 0, 0}, bestN = {0, 0, 0};
+        for (int i = CallThis<int>(Mg_PointsNext, s, &pt); i; i = CallThis<int>(Mg_PointsNext, s, &pt))
+        {
+            double x = (double)pt.z * R[6] + (double)pt.y * R[3] + (double)pt.x * R[0] + R[9];
+            float y = (float)((double)pt.x * R[1] + (double)pt.y * R[4] + (double)pt.z * R[7] + R[10]);
+            float z = (float)((double)pt.z * R[8] + (double)pt.x * R[2] + (double)pt.y * R[5] + R[11]);
+            BYTE* rec = s + i * 208;
+            const float* G = (const float*)(rec + 5196);
+            double d0 = G[0] - x;
+            float d1 = (float)((double)G[1] - y);
+            double d2 = (double)G[2] - z;
+            if (!((double)d1 * d1 + (double)d2 * d2 + d0 * d0 < g_mg64b6d0))
+                continue;
+            const float* N = (const float*)(rec + 5208);
+            double h = (x - G[0]) * N[0] + (((double)y - G[1]) * N[1] + ((double)z - G[2]) * N[2]);
+            if (Mg_Insert(d, h) == 0)
+            {
+                best = *(const Vec3*)G;
+                bestN = *(const Vec3*)N;
+            }
+        }
+        float d0 = d[0];
+        if (d[0] < g_mg64d0f0)
+        {
+            Vec3 a = {0, 0, 0}, b = {0, 0, 0};
+            if (CallC<int>(FUN_58baa0, s + 500, s + 596, P, s + 428, s + 404, &best, &bestN, F(int, s, 396), 1.0f, &a, &b))
+            {
+                F(Vec3, s, 488) = Mg_Set((double)b.x * dt, (double)b.y * dt, (double)b.z * dt);
+                F(Vec3, s, 476) = Mg_Set((double)a.x * dt, (double)a.y * dt, (double)a.z * dt);
+                CallThis(Mg_AddAssign, P, &tmp, s + 476);
+                CallThis(Mg_AddAssign, s + 428, &tmp, s + 488);
+                Vec3 m;
+                Vec3_MulComponents(&m, (const Vec3*)(s + 428), (const Vec3*)(s + 404));
+                F(Vec3, s, 440) = Mg_Set((double)R[3] * m.y + (double)R[6] * m.z + (double)m.x * R[0],
+                                         (double)R[4] * m.y + (double)R[1] * m.x + (double)R[7] * m.z,
+                                         (double)R[5] * m.y + (double)R[2] * m.x + (double)R[8] * m.z);
+                F(Vec3, s, 3148) = Mg_Set((double)dt * P->x, (double)dt * P->y, (double)dt * P->z);
+                const float* w = (const float*)(s + 428);
+                F(Vec3, s, 3160) = Mg_Set((double)dt * w[0], (double)dt * w[1], (double)dt * w[2]);
+                return;
+            }
+        }
+        for (int i = 0; i < 4; i++)
+            d[i] = 100.0f;
+        int n = F(int, s, 5132);
+        for (int j = 0; j < n; j++)
+        {
+            const float* q = (const float*)(s + 4004 + j * 28);
+            double x = (double)R[0] * q[0] + (double)R[6] * q[2] + (double)R[3] * q[1] + R[9];
+            float y = (float)((double)R[1] * q[0] + (double)q[2] * R[7] + (double)R[4] * q[1] + R[10]);
+            float z = (float)((double)q[1] * R[5] + (double)R[2] * q[0] + (double)q[2] * R[8] + R[11]);
+            double h = (x - F(float, s, 964)) * F(float, s, 976) + ((double)y - F(float, s, 968)) * F(float, s, 980)
+                       + ((double)z - F(float, s, 972)) * F(float, s, 984);
+            Mg_Insert(d, h);
+        }
+        double t = x87_fabs((double)dt * F(float, s, 796) * dt * g_mg64c258) * g_mg64b7c0;
+        double hh;
+        if (t < d[0])
+            hh = ((double)d[0] * g_mg64c258 - d0) * g_mg64c334;
+        else
+            hh = ((double)d[0] * g_mg64c904 - d0) * g_mg64d494;
+        hh += d0;
+        Vec3 np = *P;
+        const float* N = (const float*)(s + 976);
+        if (hh < g_mg64c264 && (double)P->z * N[2] + (double)P->y * N[1] + (double)P->x * N[0] < g_mg64b678)
+        {
+            double c1 = (double)P->z * N[1] - (double)N[2] * P->y;
+            float c2 = (float)((double)N[2] * P->x - (double)N[0] * P->z);
+            float c3 = (float)((double)N[0] * P->y - (double)P->x * N[1]);
+            np = Mg_Set((double)c2 * N[2] - (double)c3 * N[1], (double)c3 * N[0] - c1 * N[2], c1 * N[1] - (double)c2 * N[0]);
+            CallC(Mg_CheckPoint, &np, &s_mg67dcf4, 150.0f);
+            *P = np;
+            F(Vec3, s, 3148) = Mg_Set((double)dt * P->x, (double)dt * P->y, (double)dt * P->z);
+            return;
+        }
+        float t1, t2;
+        if (CallC<int>(FUN_4e7889, (float)((double)F(float, s, 796) * g_mg64c878), (float)-(double)F(float, s, 424),
+                       (float)-hh, &t1, &t2))
+        {
+            float r;
+            const char* tag;
+            if (t1 < t2)
+            {
+                r = t2;
+                tag = &s_mg67dcbc;
+            }
+            else
+            {
+                r = t1;
+                tag = &s_mg67dcd8;
+            }
+            if (dt < x87_fabs(r))
+                r = (float)((r > g_mg64c264 ? 1 : -1) * (double)dt);
+            double f = ((double)g_mg64c250 - k) * r + (double)dt * k;
+            Vec3* v = (Vec3*)(s + 476);
+            *v = Mg_Set(f * F(float, s, 788), f * F(float, s, 792), f * F(float, s, 796));
+            np = Mg_Set((double)v->x + P->x, (double)P->y + v->y, (double)P->z + v->z);
+            CallC(Mg_CheckPoint, &np, tag, 150.0f);
+            *P = np;
+        }
+        else
+            Mg_Move(s, P, dt);
+    }
+    else
+        Mg_Move(s, P, dt);
+    Vec3 delta = Mg_Set((double)P->x - prev.x, (double)P->y - prev.y, (double)P->z - prev.z);
+    float L1 = (float)Vec3_Length(P);
+    if ((double)dt * g_mg64d4e8 < Vec3_Length(&delta) || L1 > g_mg64c2f8)
+    {
+        Vec3 h;
+        CallVirt(s, 144, Vec3_Scaled(&h, P, 0.5f), 0);
+        CallVirt(s, 152, Vec3_Scaled(&h, (const Vec3*)(s + 440), 0.5f), 0);
+        Vec3_Length(P);
+        CallVirt(s, 144, Vec3_Scaled(&h, P, 0.5f), 0);
+        CallVirt(s, 152, Vec3_Scaled(&h, (const Vec3*)(s + 440), 0.5f), 0);
+    }
+    CallC(Mg_CheckPoint, P, &s_mg67dca0, 150.0f);
+    Vec3_Scaled((Vec3*)(s + 3148), P, dt);
+}
+
+} // extern "C"
