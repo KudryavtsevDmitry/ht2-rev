@@ -1278,3 +1278,54 @@ int __fastcall Cluster_ReadFile(BYTE* c, void*, FILE* f)
 }
 
 } // extern "C"
+
+// === a scrolling backdrop strip (FUN_5ead50)
+
+extern "C" void Bd_DrawPart(); KING_ALIAS("_Bd_DrawPart", "_Image_DrawPart")
+extern "C" void Bd_FillRect(); KING_ALIAS("_Bd_FillRect", "_Surface_FillRect")
+extern "C" void Bd_Pixel(); KING_ALIAS("_Bd_Pixel", "@Texture_Pixel@16")
+
+extern "C" {
+
+// [FUN_5ead50] draws w columns of the wrapping texture t from column off at (x, bottom - height) of dst, then
+// fills above it with top (0: t's top-left pixel) and below bottom with bot (0: its bottom-left pixel); a
+// negative colour fills nothing
+void __cdecl Backdrop_Draw(BYTE* dst, BYTE* t, int off, int w, int x, int bottom, int top, int bot)
+{
+    int tw = F(WORD, t, 20);
+    int th = F(WORD, t, 22);
+    int r = off % tw;
+    int y = bottom - th;
+    int rc[4] = {r, 0, 0, th};
+    if (r < 0) {
+        rc[0] = tw + r;
+        rc[2] = tw - 1;
+        if (tw - 1 - rc[0] > w)
+            rc[2] = rc[0] + w - 1;
+        CallC(Bd_DrawPart, dst, t, rc, x, y);
+        rc[0] = 0;
+        rc[2] = r + w - 1;
+        CallC(Bd_DrawPart, dst, t, rc, x - r, y);
+    } else if (r + w > tw) {
+        rc[2] = tw - 1;
+        CallC(Bd_DrawPart, dst, t, rc, x, y);
+        rc[0] = 0;
+        rc[2] = r - tw + w - 1;
+        CallC(Bd_DrawPart, dst, t, rc, tw - r + x, y);
+    } else {
+        rc[2] = r + w - 1;
+        CallC(Bd_DrawPart, dst, t, rc, x, y);
+    }
+    if (top >= 0 && y - 1 >= 0) {
+        int c = top ? top : CallThis<int>(Bd_Pixel, t, 0, 0);
+        int f[4] = {x, 0, x + w - 1, y - 1};
+        CallC(Bd_FillRect, dst, f, c, 1);
+    }
+    if (bot >= 0 && bottom < (int)F(WORD, dst, 2)) {
+        int c = bot ? bot : CallThis<int>(Bd_Pixel, t, 0, th - 1);
+        int f[4] = {x, bottom, x + w - 1, F(WORD, dst, 2)};
+        CallC(Bd_FillRect, dst, f, c, 1);
+    }
+}
+
+} // extern "C"

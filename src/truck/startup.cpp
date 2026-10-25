@@ -1141,3 +1141,57 @@ void __fastcall WorldView_Draw(BYTE* s)
 }
 
 } // extern "C"
+
+// === a vector over a number, the force feedback effects (FUN_4e10d0, 4e1120, 4e1150)
+
+extern "C" void Fe_ClearEffects(); KING_ALIAS("_Fe_ClearEffects", "_Joy_ClearEffects")
+extern "C" void Fe_Periodic(); KING_ALIAS("_Fe_Periodic", "@FfPeriodic_Construct@4")
+extern "C" void Fe_Condition(); KING_ALIAS("_Fe_Condition", "@FfCondition_Construct@12")
+extern "C" void Fe_Damper(); KING_ALIAS("_Fe_Damper", "@FfDamper_Construct@4")
+extern "C" void Fe_Constant(); KING_ALIAS("_Fe_Constant", "@FfConstant_Construct@12")
+ASM_PROC(FUN_577ab0)    // a ramp force effect (duration)
+
+// a force effect of size bytes from constructor ctor (with arg when it takes one)
+static int Fe_New(int size, void (*ctor)(), int arg, bool hasArg)
+{
+    BYTE* o = (BYTE*)operator new(size);
+    if (!o)
+        return 0;
+    return hasArg ? CallThis<int>(ctor, o, arg) : CallThis<int>(ctor, o);
+}
+
+extern "C" {
+
+// [FUN_4e10d0] *out = v / k
+float* __cdecl Vec3_DivScalar(float* out, const float* v, float k)
+{
+    float x = (float)(v[0] / (double)k), y = (float)(v[1] / (double)k), z = (float)(v[2] / (double)k);
+    out[0] = x;
+    out[1] = y;
+    out[2] = z;
+    return out;
+}
+
+// (the entry 4e1120) clears the joystick's effects and forgets the six of the game (696cf0)
+void __cdecl Ff_Forget()
+{
+    CallC(Fe_ClearEffects);
+    for (int i = 0; i < 6; i++)
+        g_696cf0[i] = 0;
+}
+
+// (the entry 4e1150) with a force feedback stick creates the game's six effects: periodic, condition (9000),
+// damper, two ramps and a constant force (10000)
+void __cdecl Ff_Create(int on)
+{
+    if (!on)
+        return;
+    g_696cf0[0] = Fe_New(16, Fe_Periodic, 0, false);
+    g_696cf0[1] = Fe_New(40, Fe_Condition, 9000, true);
+    g_696cf0[2] = Fe_New(12, Fe_Damper, 0, false);
+    g_696cf0[3] = Fe_New(12, FUN_577ab0, 10000, true);
+    g_696cf0[4] = Fe_New(12, FUN_577ab0, 10000, true);
+    g_696cf0[5] = Fe_New(12, Fe_Constant, 10000, true);
+}
+
+} // extern "C"

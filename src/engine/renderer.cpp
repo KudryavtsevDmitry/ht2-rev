@@ -42,14 +42,14 @@ ASM_VAR(float, g_fogB, $L_67f0e4)
 ASM_VAR(double, g_eps001, $L_64b658)
 ASM_VAR(double, g_one64b670, $L_64b670)
 ASM_PROC(FUN_5b2950)
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5b0810(); KING_ALIAS("_FUN_5b0810", "@Material_SetStages@20")
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
 ASM_PROC(FUN_5feace)    // fills words
 extern "C" void FUN_5b6770(); KING_ALIAS("_FUN_5b6770", "@Surface_Create@24")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5b81c0(); KING_ALIAS("_FUN_5b81c0", "_Image_DrawPart")    // blits a bitmap (dst, bitmap, rect, x, y)
-ASM_PROC(FUN_5d3d30)    // sets palette entries
+extern "C" void FUN_5d3d30(); KING_ALIAS("_FUN_5d3d30", "_Video_SetPaletteRgb")    // sets palette entries
 extern "C" void FUN_5baa70(); KING_ALIAS("_FUN_5baa70", "_TexPool_Return")
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")    // checksum (data, size)
 
@@ -1593,7 +1593,7 @@ extern "C" void __fastcall Texture_Destruct(BYTE* self, void*)
 extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
 extern "C" void FUN_5b61f0(); KING_ALIAS("_FUN_5b61f0", "_Words_Fill")
 extern "C" void FUN_5e7ed0(); KING_ALIAS("_FUN_5e7ed0", "_Data_Read5e8160")
-ASM_PROC(FUN_5e8160)
+extern "C" void FUN_5e8160(); KING_ALIAS("_FUN_5e8160", "_Tga_Read")
 extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
 extern "C" void FUN_5bb660(); KING_ALIAS("_FUN_5bb660", "@Texture_Upload@24")
 extern "C" void FUN_5d7740(); KING_ALIAS("_FUN_5d7740", "_Com_Release")
@@ -3430,7 +3430,7 @@ ASM_VAR(AsmLabel, s_tc67f150, $L_67f150)
 ASM_VAR(AsmLabel, s_tc67f140, $L_67f140)
 ASM_VAR(AsmLabel, s_tc67f128, $L_67f128)
 ASM_VAR(AsmLabel, s_tc67f124, $L_67f124)
-ASM_PROC(FUN_5ba8d0)
+extern "C" void FUN_5ba8d0(); KING_ALIAS("_FUN_5ba8d0", "_TexPool_Get")
 extern "C" void FUN_5d2e70(); KING_ALIAS("_FUN_5d2e70", "_Sys_Fatal")
 extern "C" void FUN_5d3af0(); KING_ALIAS("_FUN_5d3af0", "_Video_Get720898")
 
@@ -4454,6 +4454,270 @@ void __fastcall Fade_BuildTables(BYTE* s, void*, int k, int c)
             }
         }
     }
+}
+
+} // extern "C"
+
+// === joining two paths (FUN_5bcff0)
+
+extern "C" void Pt_Length(); KING_ALIAS("_Pt_Length", "_Vec3_Length")
+
+// whether points a and b (3 floats) are less than 1 apart
+static bool Pt_Near(const float* a, const float* b)
+{
+    float d[3] = {(float)((double)a[0] - b[0]), (float)((double)a[1] - b[1]), (float)((double)a[2] - b[2])};
+    return CallC<double>(Pt_Length, d) < g_q161_64c250;
+}
+
+// adds path q to the start (+64, count +56) or end (+104, count +60) list of p
+static void Pt_Add(BYTE* p, bool end, BYTE* q)
+{
+    int k = end ? 60 : 56;
+    F(BYTE*, p, (end ? 104 : 64) + F(int, p, k) * 4) = q;
+    F(int, p, k)++;
+}
+
+extern "C" {
+
+// [FUN_5bcff0] joins paths s and o where an end of one (frames +8, count +4) meets an end of the other
+void __fastcall Path_Join(BYTE* s, void*, BYTE* o)
+{
+    const float* a = (const float*)(F(BYTE*, s, 8) + 36);
+    const float* al = (const float*)(F(BYTE*, s, 8) + F(int, s, 4) * 48 - 12);
+    BYTE of[48], ol[48];
+    memcpy(of, F(BYTE*, o, 8), 48);
+    memcpy(ol, F(BYTE*, o, 8) + F(int, o, 4) * 48 - 48, 48);
+    const float* bf = (const float*)(of + 36);
+    const float* bl = (const float*)(ol + 36);
+    if (Pt_Near(a, bf)) {
+        Pt_Add(s, false, o);
+        Pt_Add(o, false, s);
+    } else if (Pt_Near(a, bl)) {
+        Pt_Add(s, false, o);
+        Pt_Add(o, true, s);
+    } else if (Pt_Near(al, bl)) {
+        Pt_Add(s, true, o);
+        Pt_Add(o, true, s);
+    } else if (Pt_Near(al, bf)) {
+        Pt_Add(s, true, o);
+        Pt_Add(o, false, s);
+    }
+}
+
+} // extern "C"
+
+// === the darkening tables (FUN_5b9e30)
+
+extern "C" {
+
+// [FUN_5b9e30] builds k tables of palette s darkening each colour (palette entry, or 15-bit value for format 2 at
+// +808) by 1 - i / k, as the nearest palette index or a packed pixel; s+16 the tables, s+20 their checksums
+void __fastcall Dark_BuildTables(BYTE* s, void*, int k)
+{
+    int entries;
+    if (F(int, s, 808) == 1)
+        entries = 256;
+    else if (F(int, s, 808) == 2)
+        entries = 32768;
+    else
+        return;
+    F(int, s, 804) = k;
+    F(void*, s, 16) = operator new(k * 4);
+    F(void*, s, 20) = operator new(k * 2);
+    if (k <= 0)
+        return;
+    float kf = (float)k;
+    for (int i = 0; i < k; i++) {
+        F(BYTE**, s, 16)[i] = (BYTE*)operator new(entries * F(int, s, 808));
+        int sum = CallC<int>(FUN_4cef50, F(BYTE**, s, 16)[i], entries * F(int, s, 808));
+        float f = (float)(g_q161_64c250 - i / (double)kf);
+        F(WORD*, s, 20)[i] = (WORD)sum;
+        for (int e = 0; e < entries; e++) {
+            const BYTE* pe = s + 24 + e * 3;
+            if (F(int, s, 808) == 1) {
+                int r = (int)(pe[0] * (double)f), g = (int)(pe[1] * (double)f), b = (int)(pe[2] * (double)f);
+                F(BYTE**, s, 16)[i][e] = Palette_Nearest(s, 0, (BYTE)r, (BYTE)g, (BYTE)b);
+            } else if (F(int, s, 808) == 2) {
+                int b = (int)(((e & 31) << 3) * (double)f);
+                int g = (int)(((e >> 2) & 248) * (double)f);
+                int r = (int)(((e >> 7) & 248) * (double)f);
+                ((WORD*)F(BYTE**, s, 16)[i])[e] = (WORD)Pixel_Pack(r, g, b);
+            }
+        }
+    }
+}
+
+} // extern "C"
+
+// === taking a texture surface (FUN_5ba8d0)
+
+extern "C" void Tp_VecCtorEh(); KING_ALIAS("_Tp_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" BYTE* __fastcall Ren5baa20_Init(BYTE* s);
+ASM_VAR(BYTE*, g_tp72090c, $L_72090c)
+
+extern "C" {
+
+// [FUN_5ba8d0] *out = a surface for description d: with the pool on (702e98, created at the first use: 6 sets of
+// 188 bytes) the last of a set of its size and format (+8, +12, +88..+100) unless d asks for 0x400000; else a new
+// one (702ea0 counting up); 0 or the error of the creation
+int __cdecl TexPool_Get(BYTE* d, void** out)
+{
+    if (g_q147_702e98) {
+        BYTE* pool = g_q147_702ea8;
+        if (!pool) {
+            pool = (BYTE*)operator new(1132);
+            if (pool) {
+                CallStd(Tp_VecCtorEh, pool, 188, 6, (void*)Ren5baa20_Init, (void*)Holder5baa30_ReleaseAll);
+                F(int, pool, 1128) = 0;
+            }
+            g_q147_702ea8 = pool;
+        }
+        void* s = 0;
+        if (!(F(DWORD, d, 104) & 0x400000))
+            for (int i = 0; i < F(int, pool, 1128); i++) {
+                BYTE* e = pool + i * 188;
+                if (F(int, d, 8) == F(int, e, 8) && F(int, d, 12) == F(int, e, 12) && F(int, d, 88) == F(int, e, 88) &&
+                    F(int, d, 92) == F(int, e, 92) && F(int, d, 96) == F(int, e, 96) && F(int, d, 100) == F(int, e, 100)) {
+                    if (int n = F(int, e, 184)) {
+                        F(int, e, 184) = n - 1;
+                        s = F(void*, e, 124 + (n - 1) * 4);
+                    }
+                    break;
+                }
+            }
+        *out = s;
+        if (s)
+            return 0;
+    }
+    g_q147_702ea0++;
+    return Com(g_tp72090c, 24, d, out, 0);
+}
+
+} // extern "C"
+
+// === selecting a material for drawing (FUN_5b1020)
+
+ASM_VAR(float, g_mt64c250, $L_64c250)
+ASM_VAR(float, g_mt64c488, $L_64c488)
+ASM_VAR(double, g_mt64da58, $L_64da58)
+ASM_VAR(double, g_mt651758, $L_651758)
+ASM_VAR(int, g_mt67ef8c, $L_67ef8c)
+ASM_VAR(int, g_mt67ef90, $L_67ef90)
+ASM_VAR(int, g_mt7208bc, $L_7208bc)
+extern "C" void Mt_RootSurface(); KING_ALIAS("_Mt_RootSurface", "@Window_RootSurface@8")
+
+extern "C" {
+
+// [FUN_5b1020] makes material m (records of 124 bytes at +8260, followed by +52 for up to depth n more steps)
+// current for lighting mode lit (0: none) and colour mode c (0: its palette colour (+40) when bit 12, else
+// white; 1..3: red, green, blue): the D3D material (diffuse colour with the alpha from the transparency +88 and
+// the fade +8440, specular +92, power +36), the stages, the second texture stage for the environment map (+8632,
+// flag +8656), alpha blending, the colour key and fog; nothing when it is the current one (702e6c, 67ef8c)
+void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int n)
+{
+    if (F(int, self, 8664))
+        return;
+    if (F(int, self, 8668))
+        return;
+    for (; F(int, self, 8276) > n && F(int, m, 52) >= 0; n++)
+        m = F(BYTE*, self, 8260) + F(int, m, 52) * 124;
+    if ((BYTE*)g_702e6c == m && lit == g_mt67ef8c)
+        return;
+    if (!CallThis<BYTE*>(Mt_RootSurface, F(BYTE*, self, 1948)))
+        return;
+    BYTE* rgb = CallThis<BYTE*>(Mt_RootSurface, F(BYTE*, self, 1948)) + (F(int, m, 40) + 8) * 3;
+    if (!g_720904)
+        return;
+    float mat[17] = {};
+    int keep = 1;
+    DWORD flags = F(DWORD, m, 32);
+    BYTE* prev = (BYTE*)g_702e6c;
+    double a = ((double)g_mt64c250 - F(float, m, 88)) * (int)F(BYTE, self, 8440) * g_mt64c488;
+    if (a > g_mt64da58)
+        a = g_one64b670;
+    float r = 0, g = 0, b = 0, al = 0;
+    if (flags & 1) {
+        if (prev && F(DWORD, prev, 32) == flags && F(int, prev, 36) == F(int, m, 36) && lit == g_mt67ef8c && !(flags & 0x1000))
+            keep = 0;
+        if (c == 0 && (flags & 0x1000) || c < 0 || c > 3) {
+            if (c == 0) {
+                r = (float)(rgb[0] * g_mt651758);
+                g = (float)(rgb[1] * g_mt651758);
+                b = (float)(rgb[2] * g_mt651758);
+                al = (float)a;
+            }
+        } else {
+            r = (c == 0 || c == 1) ? 1.0f : 0.0f;
+            g = (c == 0 || c == 2) ? 1.0f : 0.0f;
+            b = (c == 0 || c == 3) ? 1.0f : 0.0f;
+            al = (float)a;
+        }
+    } else {
+        r = (float)(rgb[0] * g_mt651758);
+        g = (float)(rgb[1] * g_mt651758);
+        b = (float)(rgb[2] * g_mt651758);
+        al = (float)a;
+    }
+    float spec = F(float, m, 92);
+    BYTE* stages = CallThis<BYTE*>(FUN_5b0810, self, m, prev, 0);
+    int apply = 1;
+    if (stages == (BYTE*)g_mt67ef90)
+        apply = keep;
+    g_mt67ef90 = (int)stages;
+    BYTE* env = F(BYTE*, self, 8632);
+    if (lit && (g_702e8c & 16) && g_mt7208bc && !(F(DWORD, m, 32) & 2)
+        && (F(int, m, 44) == -1 || (F(DWORD, m, 32) & 0x20000)) && env) {
+        F(int, self, 8656) = 1;
+        Com(g_device, 140, 1, F(int, env, 76));
+        Mt_Stage(1, 11, 1);
+        BYTE* tex = F(BYTE*, env, 72);
+        if (Com(tex, 96) == (int)0x887601C2)
+            Image_Prepare(env, 0, F(int, self, 8640), F(int, self, 8644));
+        Mt_Stage(1, 2, 2);
+        Mt_Stage(1, 3, 1);
+        Mt_Stage(1, 1, 4);
+        Mt_Stage(1, 5, 2);
+        Mt_Stage(1, 4, 2);
+        Mt_Stage(1, 16, 2);
+        Mt_Stage(1, 17, 2);
+        Mt_Stage(1, 12, 3);
+        Com(g_device, 140, 2, 0);
+        Mt_Stage(2, 4, 1);
+        Mt_Stage(2, 1, 1);
+    } else
+        F(int, self, 8656) = 0;
+    if (apply) {
+        Com(g_device, 80, 27, (!(F(DWORD, m, 32) & 32) && F(BYTE, self, 8440) == 255 && !stages) ? 0 : 1);
+        mat[0] = r, mat[1] = g, mat[2] = b, mat[3] = al;
+        mat[8] = mat[9] = mat[10] = spec;
+        mat[16] = (float)F(int, m, 36);
+        if (lit) {
+            mat[4] = r, mat[5] = g, mat[6] = b, mat[7] = al;
+            Com(g_device, 80, 148, 0);
+            Com(g_device, 80, 145, 0);
+        } else {
+            mat[4] = mat[5] = spec;
+            Com(g_device, 80, 148, 1);
+            Com(g_device, 80, 145, 1);
+        }
+        Com(g_device, 64, mat);
+        if (g_702e8c & 4)
+            Com(g_device, 80, 28, (F(DWORD, m, 32) & 0x100) ? 0 : 1);
+        if (g_702e8c & 0x4000) {
+            DWORD f = F(DWORD, m, 32);
+            if (f & 128) {
+                Com(g_device, 80, 7, 0);
+                Com(g_device, 80, 14, 0);
+                Com(g_device, 80, 23, 8);
+            } else {
+                Com(g_device, 80, 7, 1);
+                Com(g_device, 80, 14, (f & 0x40000) ? 0 : 1);
+                Com(g_device, 80, 23, 4);
+            }
+        }
+    }
+    g_702e6c = (int)m;
+    g_mt67ef8c = lit;
 }
 
 } // extern "C"

@@ -94,7 +94,7 @@ extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
 extern "C" void FUN_479aa0(); KING_ALIAS("_FUN_479aa0", "_NamedRecs_Load")
 extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")
 ASM_PROC(FUN_471ec0)
-ASM_PROC(FUN_472110)
+extern "C" void FUN_472110(); KING_ALIAS("_FUN_472110", "_KeyedList_Refill")
 extern "C" void FUN_478980(); KING_ALIAS("_FUN_478980", "@List1000_Erase@16")
 ASM_VAR(BYTE**, g_68cf38, $L_68cf38)
 ASM_VAR(DWORD, g_tagCGLT, $L_66f9d0)
@@ -1624,7 +1624,7 @@ extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
 extern "C" void FUN_41f3d0(); KING_ALIAS("_FUN_41f3d0", "@Rec41f3d0_Destroy@8")
 extern "C" void FUN_4487a0(); KING_ALIAS("_FUN_4487a0", "@Vec16b_Construct@20")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
-ASM_PROC(FUN_472410)    // loads a 48-byte record (cursor)
+extern "C" void FUN_472410(); KING_ALIAS("_FUN_472410", "@DriverRec_Load@12")    // loads a 48-byte record (cursor)
 extern "C" void FUN_478a00(); KING_ALIAS("_FUN_478a00", "@Vec40_Clear@8")
 extern "C" void FUN_47ac30(); KING_ALIAS("_FUN_47ac30", "@Vec40_Reserve@12")
 extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
@@ -2263,7 +2263,7 @@ extern "C" void FUN_476a30(); KING_ALIAS("_FUN_476a30", "_Player_AllocLogo")
 extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")
 extern "C" void FUN_4773d0(); KING_ALIAS("_FUN_4773d0", "_Player_Call477350")
 extern "C" void FUN_4773e0(); KING_ALIAS("_FUN_4773e0", "_Player_PopTime")
-ASM_PROC(FUN_479520)
+extern "C" void FUN_479520(); KING_ALIAS("_FUN_479520", "@KeyedVecs_InsertAux@16")
 extern "C" void FUN_47be20(); KING_ALIAS("_FUN_47be20", "_Find16_ByKey")
 extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
@@ -2431,6 +2431,99 @@ int __cdecl Player_GiveBackCargo(BYTE* a, BYTE* b, int flags)
     if (F(BYTE*, a, 160) == F(BYTE*, a, 164))
         Player_ReleaseLogo(a);
     return 0;
+}
+
+} // extern "C"
+
+// === refilling the keyed list from the ids (FUN_472110)
+
+extern "C" void Kl_Copy(); KING_ALIAS("_Kl_Copy", "_Rec16_Copy")
+extern "C" void Kl_VecCharCopy(); KING_ALIAS("_Kl_VecCharCopy", "@VecChar_Copy@12")
+ASM_VAR(int, g_kl68d164, $L_68d164)
+ASM_VAR(int*, g_kl68a980, $L_68a980)
+ASM_VAR(int*, g_kl68a984, $L_68a984)
+
+extern "C" {
+
+// [FUN_472110] vector v of {key, vector<char>} (+12 the stamp 68d164) emptied and refilled with an empty entry for
+// each id of the list 68a980..68a984
+void __cdecl KeyedList_Refill(BYTE** v)
+{
+    F(int, v, 12) = g_kl68d164;
+    BYTE* end = v[1];
+    BYTE* p = CallC<BYTE*>(Kl_Copy, end, end, v[0], v[0], 0);
+    for (BYTE* e = p; e != v[1]; e += 16)
+        CallThis(FUN_461ae0, e, 0);
+    v[1] -= ((end - v[0]) >> 4) << 4;
+    for (int* id = g_kl68a980; id != g_kl68a984; id++) {
+        DWORD r[4] = {(DWORD)*id, 0, 0, 0};
+        if (v[1] != v[2]) {
+            if (BYTE* e = v[1]) {
+                F(DWORD, e, 0) = r[0];
+                CallThis(Kl_VecCharCopy, e + 4, r + 1);
+            }
+            v[1] += 16;
+        } else
+            CallThis(FUN_479520, v, v[1], r);
+        if (int n = (int)(r[3] - r[1]))
+            CallC(FUN_44b4a0, r[1], n);
+    }
+}
+
+} // extern "C"
+
+// === loading a driver's record (FUN_472410)
+
+extern "C" void Dl_RecLoad(); KING_ALIAS("_Dl_RecLoad", "@Rec471b10_Load@12")
+extern "C" void Dl_OrdersLoad(); KING_ALIAS("_Dl_OrdersLoad", "_Orders_Load")
+extern "C" void Dl_AllocCopy(); KING_ALIAS("_Dl_AllocCopy", "_Alloc16_Copy@12")
+extern "C" void Dl_Insert(); KING_ALIAS("_Dl_Insert", "@Vec16_Insert47bae0@16")
+extern "C" void Dl_Copy16(); KING_ALIAS("_Dl_Copy16", "_Copy16")
+
+// the next dword of the stream at *pp
+static DWORD Dl_Next(DWORD** pp)
+{
+    DWORD v = **pp;
+    (*pp)++;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_472410] loads record s from the stream *pp: +4 (twice), +0, the count n and n 16-byte entries (+16: each
+// {0, ?, 1.0} read by Rec471b10_Load), the orders (+28) and +40
+void __fastcall DriverRec_Load(BYTE* s, void*, DWORD** pp)
+{
+    F(DWORD, s, 4) = **pp;
+    (*pp)++;
+    F(DWORD, s, 4) = Dl_Next(pp);
+    F(DWORD, s, 0) = Dl_Next(pp);
+    unsigned n = Dl_Next(pp);
+    BYTE** v = (BYTE**)(s + 16);
+    BYTE* end = v[1];
+    CallC(Dl_Copy16, end, end, v[0]);    // the entries need no destruction
+    v[1] -= ((end - v[0]) >> 4) << 4;
+    if ((unsigned)((v[2] - v[0]) >> 4) < n) {
+        int size = (int)(v[1] - v[0]) >> 4;
+        BYTE* b = CallThis<BYTE*>(Dl_AllocCopy, v, n, v[0], v[1]);
+        if (int c = (int)((v[2] - v[0]) >> 4))
+            CallC(FUN_44b4a0, v[0], c << 4);
+        v[0] = b;
+        v[1] = b + size * 16;
+        v[2] = b + n * 16;
+    }
+    for (unsigned i = 0; i < n; i++) {
+        DWORD r[4] = {0, 0, 0, 0x3FF00000};
+        CallThis(Dl_RecLoad, r, pp);
+        if (v[1] != v[2]) {
+            if (v[1])
+                memcpy(v[1], r, 16);
+            v[1] += 16;
+        } else
+            CallThis(Dl_Insert, v, v[1], r);
+    }
+    CallC(Dl_OrdersLoad, pp, s + 28);
+    F(DWORD, s, 40) = Dl_Next(pp);
 }
 
 } // extern "C"

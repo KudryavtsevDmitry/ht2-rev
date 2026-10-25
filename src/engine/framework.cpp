@@ -42,7 +42,7 @@ extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx);
 extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx);
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
 extern "C" void FUN_5e43e0(); KING_ALIAS("_FUN_5e43e0", "@Loader_Construct@12")
-ASM_PROC(FUN_5dd0d0)
+extern "C" void FUN_5dd0d0(); KING_ALIAS("_FUN_5dd0d0", "@MainFrame_Construct@4")
 ASM_VAR(AsmLabel, g_vtbl652168, $L_652168)
 ASM_VAR(AsmLabel, g_vtbl652738, $L_652738)
 ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
@@ -1731,7 +1731,7 @@ extern "C" void __cdecl Fw_Nop() {}
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5e94d0(); KING_ALIAS("_FUN_5e94d0", "_Mask_ReadHeader")
-ASM_PROC(FUN_5e8160)
+extern "C" void FUN_5e8160(); KING_ALIAS("_FUN_5e8160", "_Tga_Read")
 
 // [FUN_5e9420] reads a whole data file into a through 5e94d0 (a, file, size, 0)
 extern "C" void* __cdecl Data_Read5e94d0(void* a, const char* name)
@@ -2736,7 +2736,7 @@ extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c,
 
 extern "C" void FUN_5ba710(); KING_ALIAS("_FUN_5ba710", "@Texture_Construct@12")
 extern "C" void FUN_5e7930(); KING_ALIAS("_FUN_5e7930", "_Tga_ReadHeader")
-ASM_PROC(FUN_5e8160)
+extern "C" void FUN_5e8160(); KING_ALIAS("_FUN_5e8160", "_Tga_Read")
 ASM_VAR(int, g_q26_720904, $L_720904)
 ASM_VAR(int, g_q26_7218bc, $L_7218bc)
 
@@ -4181,7 +4181,7 @@ extern "C" void FUN_5b9740(); KING_ALIAS("_FUN_5b9740", "@Textures_FreeAll@8")
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 extern "C" void FUN_5b9850(); KING_ALIAS("_FUN_5b9850", "@Fog_BuildTables@16")    // palette: builds the opacity tables (a, b)
 extern "C" void FUN_5b9b60(); KING_ALIAS("_FUN_5b9b60", "@Fade_BuildTables@16")    // palette: builds the fog tables (a, b)
-ASM_PROC(FUN_5b9e30)    // palette: builds the intensity tables (a)
+extern "C" void FUN_5b9e30(); KING_ALIAS("_FUN_5b9e30", "@Dark_BuildTables@12")    // palette: builds the intensity tables (a)
 ASM_VAR(char, s_PLM683424, $L_683424)
 ASM_VAR(char, s_PALT68341c, $L_68341c)
 ASM_VAR(char, s_OPAC683414, $L_683414)
@@ -4996,6 +4996,369 @@ void __cdecl Matrix_ToAngles(Pg_V3 r0, Pg_V3 r1, Pg_V3 r2, Pg_V3 t, double* x, d
         if (v.z < g_fw64c264)
             *roll = g_fw64d900 - r;
     }
+}
+
+} // extern "C"
+
+// === the main frame window (FUN_5dd0d0)
+
+extern "C" void Mf_FrameCtor(); KING_ALIAS("_Mf_FrameCtor", "??0CFrameWnd@@QAE@XZ")
+extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z")
+extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
+extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "?LoadStringA@CString@@QAEHI@Z")
+extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "??1CString@@QAE@XZ")
+extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ")
+extern "C" void Mf_FrameExtra(); KING_ALIAS("_Mf_FrameExtra", "_Wnd_FrameExtra")
+ASM_VAR(AsmLabel, g_mfVtbl6523e4, $L_6523e4)
+ASM_VAR(const char*, g_mfEmptyString, $L_685fc0)
+ASM_VAR(AsmLabel, g_mfRectDefault, $L_72db68)
+ASM_VAR(AsmLabel, g_mfWndTop, $L_72da58)
+
+extern "C" {
+
+// [FUN_5dd0d0] constructor of the main frame window: full screen (a visible popup) with app flag +268 bit 10, else
+// a window titled by string 130 with icon 130 sized for the picture (+256 x +260 scaled) plus its frame (unless
+// +292 bit 1), shown or hidden as before
+BYTE* __fastcall MainFrame_Construct(BYTE* s)
+{
+    CallThis(Mf_FrameCtor, s);
+    F(void*, s, 0) = (BYTE*)g_mfVtbl6523e4;
+    BYTE* app = g_fw721750;
+    if (F(DWORD, app, 268) & 0x400) {
+        CallThis(Mf_FrameCreate, s, (const char*)0, (const char*)0, 0x90000000u, (BYTE*)g_mfRectDefault, 0, 0, 0, 0);
+        int h = CallC<int>(FUN_5d3f80) * F(int, g_fw721750, 260);
+        int w = CallC<int>(FUN_5d3f70) * F(int, g_fw721750, 256);
+        CallThis(Mf_SetWindowPos, s, (BYTE*)g_mfWndTop, 0, 0, w, h, 64);
+        SetCursor(0);
+        return s;
+    }
+    const char* title = g_mfEmptyString;
+    CallThis(Mf_LoadString, &title, 130);
+    CallThis(Mf_FrameCreate, s, (const char*)0, title, 0xCF0000u, (BYTE*)g_mfRectDefault, 0, 0, 0, 0);
+    BYTE* ms = CallStd<BYTE*>(Mf_ModuleState);
+    SetClassLongA(F(HWND, s, 28), -14, (LONG)LoadIconA(F(HINSTANCE, ms, 12), MAKEINTRESOURCEA(130)));
+    int w = CallC<int>(FUN_5d3f70) * F(int, g_fw721750, 256);
+    int h = CallC<int>(FUN_5d3f80) * F(int, g_fw721750, 260);
+    if (!(F(BYTE, g_fw721750, 292) & 2)) {
+        int e2 = CallC<int>(Mf_FrameExtra, 2);
+        w = CallC<int>(Mf_FrameExtra, 1) + w + e2;
+        int e4 = CallC<int>(Mf_FrameExtra, 4);
+        h = CallC<int>(Mf_FrameExtra, 3) + h + e4;
+    }
+    DWORD f = F(DWORD, g_fw721750, 292);
+    F(DWORD, g_fw721750, 292) = f & ~1u;
+    CallThis(Mf_SetWindowPos, s, (BYTE*)g_mfWndTop, 0, 0, w, h, 128);
+    F(DWORD, g_fw721750, 292) |= f & 1;
+    CallThis(Mf_StringDtor, &title);
+    return s;
+}
+
+} // extern "C"
+
+// === a world frame (5e1750)
+
+extern "C" void __fastcall Queue_Tick(BYTE* self, void*);
+extern "C" void __cdecl Device_BeginScene();
+extern "C" void __cdecl Device_WaitIdle();
+extern "C" void __fastcall Surface_ClearRows(BYTE* self, void*);
+extern "C" void __cdecl Device_ProbeMultitexture(BYTE* a, BYTE* b);
+extern "C" void __cdecl Sound_Frame();
+ASM_VAR(double, g_wf71f808, $L_71f808)
+ASM_VAR(double, g_wf71f7f8, $L_71f7f8)
+ASM_VAR(double, g_wf720020, $L_720020)
+ASM_VAR(double, g_wf71f810, $L_71f810)
+ASM_VAR(double, g_wf64b658, $L_64b658)
+
+extern "C" {
+
+// [$L_5e1750] a frame of world s: the frame counters cleared (and the pending time +560 taken), the screen cleared
+// and the scene begun; on the first frame the room's view surface set and the multitexture probed with its first
+// two lit materials; the world's tasks run; the counters kept (times 64b658) at +496.., then the sound frame
+// (with sounds, app +344) or a pending room change (+3024, vtbl+140) unless a load is under way
+void __fastcall World_Frame(BYTE* s)
+{
+    g_wf71f808 = 0;
+    g_wf71f7f8 = 0;
+    g_wf720020 = 0;
+    g_wf71f810 = 0;
+    F(int, s, 624) = 0;
+    F(int, s, 628) = 0;
+    F(int, s, 3036) = 0;
+    if (F(int, s, 552)) {
+        F(double, s, 2968) = F(double, s, 560);
+        F(int, s, 552) = 0;
+    }
+    Surface_ClearRows(F(BYTE*, s, 12), 0);
+    Device_BeginScene();
+    if (!F(int, s, 2992)) {
+        BYTE* room = F(BYTE*, s, 468);
+        CallThis(FUN_5b64e0, F(BYTE*, s, 12), F(BYTE**, room, 100)[F(int, room, 140)]);
+        CallC(FUN_5e48f0);
+        room = F(BYTE*, s, 468);
+        BYTE* m2[2] = {0, 0};
+        int k = 0;
+        BYTE* m = F(BYTE*, room, 76);
+        for (int i = 0; i < F(int, room, 72); i++, m += 124) {
+            BYTE* t = F(BYTE*, m, 76);
+            if (!(F(BYTE, m, 32) & 1) || !t || !(F(BYTE, t, 52) & 1))
+                continue;
+            if (!k) {
+                m2[0] = m2[1] = m;
+                k = 1;
+            } else {
+                m2[1] = m;
+                if (F(int, t, 64) == 16)
+                    break;
+            }
+        }
+        Device_ProbeMultitexture(m2[0], m2[1]);
+        Window_Show(s, 0, 0);
+    }
+    Queue_Tick(s + 2992, 0);
+    Device_WaitIdle();
+    F(double, s, 496) = g_wf71f808 * g_wf64b658;
+    F(double, s, 504) = g_wf71f7f8 * g_wf64b658;
+    F(double, s, 512) = g_wf720020 * g_wf64b658;
+    F(double, s, 624) = g_wf71f810 * g_wf64b658;
+    if (F(int, s, 3036)) {
+        if (F(int, g_fw721750, 344))
+            Sound_Frame();
+        return;
+    }
+    if (F(int, s, 3024) && (!F(BYTE*, s, 484) || !F(int, F(BYTE*, s, 484), 20))) {
+        CallVirt(s, 140);
+        F(int, s, 3024) = 0;
+    }
+}
+
+} // extern "C"
+
+// === reading a TGA image with level chunks (FUN_5e8160)
+
+extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
+extern "C" void Tga_VideoFlags(); KING_ALIAS("_Tga_VideoFlags", "_Video_Get720898")
+ASM_VAR(char, s_tgaLoff, $L_683484)    // "LOFF"
+ASM_VAR(char, s_tgaLvls, $L_68347c)    // "LVLS"
+ASM_VAR(char, s_tgaLvlh, $L_6834a4)    // "LVLH"
+ASM_VAR(char, s_tgaLevl, $L_68349c)    // "LEVL"
+ASM_VAR(char, s_tgaLvmp, $L_683458)    // "LVMP"
+
+// the next four bytes of f
+static void Tga_Tag(FILE* f, char* tag)
+{
+    for (int i = 0; i < 4; i++)
+        tag[i] = (char)fgetc(f);
+}
+
+static int Tga_Int(FILE* f) { return CallC<int>(FUN_5ab140, f); }
+static unsigned Tga_Short(FILE* f) { return CallC<unsigned>(FUN_5ab0f0, f); }
+
+// palette entry c (bytes +24, +25, +26 of the palette record) as a 16-bit pixel: 565 or 555
+static WORD Tga_PalPixel(BYTE* img, int c, bool w565)
+{
+    BYTE* p = F(BYTE*, img, 16) + c * 3 + 24;
+    if (w565)
+        return (WORD)(((((p[0] & 0xF8) << 5) | (p[1] & 0xFC)) << 3) | (p[2] >> 3));
+    return (WORD)(((((p[0] & 0xF8) << 5) | (p[1] & 0xF8)) << 2) | (p[2] >> 3));
+}
+
+extern "C" {
+
+// [FUN_5e8160] reads the TGA image at offset off of f into img (pixels +8, levels +12, palette +16, bytes per
+// pixel +24, flags +52, format +64): an image id holding a "LOFF" chunk points to "LVLS" mip levels or an
+// "LVMP" level block (flag 16); then the colour-mapped (type 1) or true-colour (type 2) pixels, converted to the
+// image's depth (flag 1); 0 on failure (7218bc = 3 for an unsupported depth)
+int __cdecl Tga_Read(BYTE* img, FILE* f, long off)
+{
+    fseek(f, off, 0);
+    int idLen = fgetc(f);
+    int cmapType = fgetc(f);
+    int type = fgetc(f);
+    unsigned cmapFirst = Tga_Short(f);
+    unsigned cmapLen = Tga_Short(f);
+    int cmapBits = fgetc(f);
+    Tga_Short(f);
+    Tga_Short(f);
+    unsigned width = Tga_Short(f);
+    unsigned height = Tga_Short(f);
+    int bpp = fgetc(f);
+    int desc = fgetc(f);
+    long hdrEnd = ftell(f);
+    WORD& depth = F(WORD, img, 24);
+    DWORD& flags = F(DWORD, img, 52);
+    int t32 = 0;    // a stack slot shared with the 16-bit conversion's stale components
+    char tag[4];
+    if (idLen > 0) {
+        flags &= ~16;
+        Tga_Tag(f, tag);
+        if (!strncmp(tag, &s_tgaLoff, 4)) {
+            if (Tga_Int(f) != 4)
+                return 0;
+            fseek(f, Tga_Int(f) + off, 0);
+            Tga_Tag(f, tag);
+            if (!strncmp(tag, &s_tgaLvls, 4)) {
+                int size = Tga_Int(f);
+                long end = size + ftell(f);
+                int levels = -1;
+                while (end > ftell(f)) {
+                    Tga_Tag(f, tag);
+                    int len = Tga_Int(f);
+                    long pos = ftell(f);
+                    if (!strncmp(tag, &s_tgaLvlh, 4)) {
+                        Tga_Int(f);
+                        levels = Tga_Int(f);
+                    } else if (!strncmp(tag, &s_tgaLevl, 4)) {
+                        if (levels == -1)
+                            return 0;
+                        if (!Texture_ReadChunks(F(BYTE*, img, 12), f, depth, len, F(BYTE*, img, 16) + 24, bpp / 8))
+                            return 0;
+                    }
+                    fseek(f, ((len + 3) & ~3) + pos, 0);
+                }
+                flags |= 16;
+            } else if (!strncmp(tag, &s_tgaLvmp, 4)) {
+                flags |= 16;
+                int size = Tga_Int(f);
+                Tga_Int(f);
+                int side = Tga_Int(f);
+                Tga_Int(f);
+                int c = t32 = Tga_Int(f);
+                if (depth == c)
+                    fread(F(void*, img, 12), size - 16, 1, f);
+                else {
+                    int n = 0;
+                    for (; side > 0; side >>= 1)
+                        n += side * side;
+                    for (int i = 0; i < n; i++) {
+                        if (depth == 2) {
+                            if (c != 1)
+                                return 0;
+                            int ci = fgetc(f);
+                            if (ci < (int)cmapFirst || ci > (int)(cmapLen + cmapFirst - 1))
+                                return 0;
+                            F(WORD*, img, 12)[i] = Tga_PalPixel(img, ci, false);
+                        } else if (depth == 4) {
+                            if (c != 1)
+                                return 0;
+                            int ci = fgetc(f);
+                            BYTE* p = F(BYTE*, img, 16) + ci * 3;
+                            BYTE* o = F(BYTE*, img, 12) + i * 4;
+                            o[0] = p[26];
+                            o[1] = p[25];
+                            o[2] = p[24];
+                            o[3] = 0;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    fseek(f, hdrEnd + idLen, 0);
+    if (cmapType) {
+        if (cmapBits != 24)
+            return 0;
+        fseek(f, cmapLen * 3, 1);
+    }
+    bool down = (desc & 32) != 0;
+    if (type == 1) {
+        if (depth == 1) {
+            for (unsigned y = 0; y < height; y++)
+                fread(F(BYTE*, img, 8) + (down ? y : height - y - 1) * width, width, 1, f);
+        } else if (depth == 2) {
+            F(int, img, 64) = (CallC<BYTE>(Tga_VideoFlags) & 4) ? 3 : 2;
+            for (unsigned y = 0; y < height; y++)
+                for (unsigned x = 0; x < width; x++) {
+                    unsigned ci = fgetc(f);
+                    if (ci < cmapFirst || ci > cmapLen + cmapFirst - 1)
+                        return 0;
+                    unsigned i = (down ? y : height - y - 1) * width + x;
+                    ((WORD*)F(BYTE*, img, 8))[i] = Tga_PalPixel(img, ci, F(int, img, 64) == 2);
+                }
+        } else if (depth == 3 || depth == 4) {
+            for (unsigned y = 0; y < height; y++)
+                for (unsigned x = 0; x < width; x++) {
+                    unsigned ci = fgetc(f);
+                    if (ci < cmapFirst || ci > cmapLen + cmapFirst - 1)
+                        return 0;
+                    unsigned i = (down ? y : height - y - 1) * width + x;
+                    BYTE* p = F(BYTE*, img, 16) + ci * 3;
+                    BYTE* o = F(BYTE*, img, 8) + depth * i;
+                    o[0] = p[26];
+                    o[1] = p[25];
+                    o[2] = p[24];
+                    if (depth == 4)
+                        F(BYTE*, img, 8)[i * 4 + 3] = 255;
+                }
+        } else
+            return 0;
+    } else if (type == 2) {
+        if (bpp == 32) {
+            if (depth != 4) {
+                g_7218bc = 3;
+                return 0;
+            }
+            for (unsigned y = 0; y < height; y++)
+                for (unsigned x = 0; x < width; x++) {
+                    unsigned i = (down ? y : height - y - 1) * width + x;
+                    for (int k = 0; k < 4; k++)
+                        F(BYTE*, img, 8)[depth * i + k] = (BYTE)getc(f);
+                }
+        } else if (bpp == 24) {
+            if (depth != 3 && depth != 4) {
+                g_7218bc = 3;
+                return 0;
+            }
+            for (unsigned y = 0; y < height; y++)
+                for (unsigned x = 0; x < width; x++) {
+                    unsigned i = (down ? y : height - y - 1) * width + x;
+                    F(BYTE*, img, 8)[depth * i + 2] = (BYTE)getc(f);
+                    F(BYTE*, img, 8)[depth * i + 1] = (BYTE)getc(f);
+                    F(BYTE*, img, 8)[depth * i] = (BYTE)getc(f);
+                    if (depth == 4)
+                        F(BYTE*, img, 8)[i * 4 + 3] = 0;
+                }
+        } else if (bpp == 16) {
+            if (depth == 2) {
+                for (unsigned y = 0; y < height; y++)
+                    for (unsigned x = 0; x < width; x++) {
+                        WORD v = (WORD)Tga_Short(f);
+                        ((WORD*)F(BYTE*, img, 8))[(down ? y : height - y - 1) * width + x] = v;
+                    }
+            } else if (depth == 3 || depth == 4) {
+                // the components persist across pixels as in the original (an unknown format keeps the last)
+                unsigned b = 0, g = cmapLen, r = t32, a = type;
+                for (unsigned y = 0; y < height; y++)
+                    for (unsigned x = 0; x < width; x++) {
+                        unsigned i = (down ? y : height - y - 1) * width + x;
+                        unsigned v = Tga_Short(f);
+                        switch (F(int, img, 64)) {
+                        case 2:
+                            b = (v & 31) << 3, g = (v >> 3) & 252, r = (v >> 8) & 248;
+                            break;
+                        case 3:
+                            b = (v & 31) << 3, g = (v >> 2) & 248, r = (v >> 7) & 248;
+                            break;
+                        case 5:
+                            b = (v & 15) << 4, g = v & 240, r = (v >> 4) & 240, a = (v >> 8) & 240;
+                            break;
+                        }
+                        F(BYTE*, img, 8)[depth * i + 2] = (BYTE)b;
+                        F(BYTE*, img, 8)[depth * i + 1] = (BYTE)g;
+                        F(BYTE*, img, 8)[depth * i] = (BYTE)r;
+                        if (depth == 4)
+                            F(BYTE*, img, 8)[i * 4 + 3] = (BYTE)a;
+                    }
+                F(int, img, 64) = depth == 4 ? 7 : 6;
+            } else {
+                g_7218bc = 3;
+                return 0;
+            }
+        } else
+            return 0;
+    } else
+        return 0;
+    flags |= 1;
+    return 1;
 }
 
 } // extern "C"

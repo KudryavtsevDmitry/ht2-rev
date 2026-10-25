@@ -1957,12 +1957,12 @@ void __fastcall Notify4dc860_Destroy(BYTE* self, void*)
 
 }
 
-ASM_PROC(FUN_55eaa0)
+extern "C" void FUN_55eaa0(); KING_ALIAS("_FUN_55eaa0", "@Truck55eaa0_Construct@24")
 ASM_PROC(FUN_543e00)
 extern "C" void FUN_4cf260(); KING_ALIAS("_FUN_4cf260", "_Fx_AttachVehicle")
 extern "C" void FUN_556110(); KING_ALIAS("_FUN_556110", "@Car_ApplyTypeVec@8")
 ASM_PROC(FUN_5586f0)
-ASM_PROC(FUN_5fd870)    // sound: play (position by value, ...)
+extern "C" void FUN_5fd870(); KING_ALIAS("_FUN_5fd870", "@Sound_UpdateAt@36")    // sound: play (position by value, ...)
 extern "C" void FUN_4dd9c0(); KING_ALIAS("_FUN_4dd9c0", "@CopySound_Construct@12")
 ASM_VAR(char, g_vtbl64cbfc, $L_64cbfc)
 ASM_VAR(char, g_vtbl64cb10, $L_64cb10)
@@ -2666,7 +2666,7 @@ extern "C" void __cdecl Fx_SparkBurst(const Vec3* at, const Vec3* v, int send)
 
 ASM_PROC(FUN_4d57c0)    // the effect's swing step
 extern "C" BYTE* __fastcall Car_543bb0(BYTE* self, void*);
-ASM_PROC(FUN_5fd5f0)    // a sound at a point (point, distance, volume, flags)
+extern "C" void FUN_5fd5f0(); KING_ALIAS("_FUN_5fd5f0", "@Sound_PlayAt@40")    // a sound at a point (point, distance, volume, flags)
 
 // the number of swing steps over a1 + a2 (kept out of line, see Fx_SwingStep)
 static __declspec(noinline) int Fx_SwingSteps(double a1, double a2, double period)
@@ -4046,7 +4046,7 @@ extern "C" int __fastcall Eff_4bd760(BYTE* s, void*, int a, int b)
 // vehicle work.
 
 extern "C" void FUN_4c0d80(); KING_ALIAS("_FUN_4c0d80", "@EffectMat_Init@16")
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
 extern "C" void FUN_4c8030(); KING_ALIAS("_FUN_4c8030", "@RefStack_Empty@8")
 extern "C" void FUN_4c8080(); KING_ALIAS("_FUN_4c8080", "@RefStack_Pop@8")
@@ -6566,6 +6566,67 @@ double __cdecl Object_HeightAt(float x, float y, BYTE* o)
             return -(((double)pl[0] * x + (double)pl[1] * y + pl[3]) / pl[2]);
     }
     return g_oh64c1e0;
+}
+
+} // extern "C"
+
+// === the rain and snow effects' step (4c41c0)
+
+extern "C" void Rn_Selected(); KING_ALIAS("_Rn_Selected", "_Switch_Selected")
+extern "C" void Rn_Wave(); KING_ALIAS("_Rn_Wave", "@Wave_Value@16")
+extern "C" void Rn_GetMaterial(); KING_ALIAS("_Rn_GetMaterial", "@MarineTask_GetMaterial@8")
+ASM_VAR(double, g_rn64b7a8, $L_64b7a8)
+ASM_VAR(float, g_rn64c1f4, $L_64c1f4)
+ASM_VAR(float, g_rn64c76c, $L_64c76c)
+
+// all four of s's effects (+40..+52) switched on or off
+static void Rn_SwitchAll(BYTE* s, int on, int last)
+{
+    for (int o = 40; o <= last; o += 4)
+        CallVirt(F(BYTE*, s, o), 24, on);
+}
+
+extern "C" {
+
+// [$L_4c41c0] step of the precipitation effects s (while switch +68 is on): drops (+40), the two splash kinds (+44,
+// +48: the one by whether +44's task has a material) and snow (+52) on with the weather's wet (7025b8 above 64b7a8)
+// and the season (6716f8 rain, 6716fc snow), sized by 64c1f4; each steps (vtbl+0 the step of +64) and draws into the
+// renderers +32 and +36 unless paused (6f33c0)
+int __fastcall Precip_Step(BYTE* s)
+{
+    if (!F(int, s, 68) || CallC<int>(Rn_Selected, F(int, s, 68))) {
+        if (CallThis<double>(Rn_Wave, g_fx7025b8, 0.0) < g_rn64b7a8)
+            Rn_SwitchAll(s, 0, 52);
+        else {
+            F(float, F(BYTE*, s, 40), 12) = (float)(g_rn64c1f4 * (double)g_rn64c76c);
+            F(float, F(BYTE*, s, 44), 12) = (float)(g_rn64c1f4 * (double)g_eff64c350);
+            F(float, F(BYTE*, s, 48), 12) = (float)(g_rn64c1f4 * (double)g_eff64c350);
+            Rn_SwitchAll(s, 1, 52);
+        }
+        if (!g_fi6716fc)
+            CallVirt(F(BYTE*, s, 52), 24, 0);
+        if (!g_fi6716f8)
+            Rn_SwitchAll(s, 0, 48);
+        if (!g_fx6f33c0)
+            CallVirt(F(BYTE*, s, 40), 0, (float)F(double, F(BYTE*, s, 64), 2960));
+        BYTE* sp = CallThis<int>(Rn_GetMaterial, F(BYTE*, F(BYTE*, s, 44), 68)) ? F(BYTE*, s, 44) : F(BYTE*, s, 48);
+        if (!g_fx6f33c0)
+            CallVirt(sp, 0, (float)F(double, F(BYTE*, s, 64), 2960));
+        Renderer_ResetCount(F(BYTE*, s, 32), 0);
+        if (!g_fx6f33c0)
+            CallVirt(F(BYTE*, s, 40), 20, F(BYTE*, s, 32));
+        sp = CallThis<int>(Rn_GetMaterial, F(BYTE*, F(BYTE*, s, 44), 68)) ? F(BYTE*, s, 44) : F(BYTE*, s, 48);
+        if (!g_fx6f33c0)
+            CallVirt(sp, 20, F(BYTE*, s, 32));
+        Effect_Zero();
+        if (!g_fx6f33c0)
+            CallVirt(F(BYTE*, s, 52), 0, (float)F(double, F(BYTE*, s, 64), 2960));
+        Renderer_ResetCount(F(BYTE*, s, 36), 0);
+        if (!g_fx6f33c0)
+            CallVirt(F(BYTE*, s, 52), 28, F(BYTE*, s, 36));
+        Effect_Zero();
+    }
+    return CallThis<int>(FUN_5d32f0, s, 1);
 }
 
 } // extern "C"

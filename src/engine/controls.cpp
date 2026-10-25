@@ -469,7 +469,7 @@ extern "C" void __cdecl Ctl_SetOrigin(int a, int b, int c)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5bcfe0(); KING_ALIAS("_FUN_5bcfe0", "@Ctl_Owner@8")
-ASM_PROC(FUN_5bcff0)
+extern "C" void FUN_5bcff0(); KING_ALIAS("_FUN_5bcff0", "@Path_Join@12")
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")
 
 // [FUN_5bd260] adds a control to the chain *this: 5bcff0 with every member, then links it after the last
@@ -1516,3 +1516,53 @@ int __fastcall TextField_Draw(BYTE* s, void*, BYTE* dst, int x, int y, int focus
 }
 
 } // extern "C"
+
+// [FUN_5bdf80] lays the children (+288) out in columns of equal cells (the largest child's size): n < 0 puts -n
+// in a column, else n columns; gaps gx and gy (< 0: -(cell + g)), starting at the margin +60; then relayout
+extern "C" void __fastcall Panel_GridLayout(BYTE* s, void*, int n, int gx, int gy)
+{
+    if (F(DWORD, s, 32) & 0x300)
+        F(int, s, 60) = 1;
+    int count = 0;
+    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c))
+        count++;
+    if (n < 0)
+        n = -n;
+    else
+        n = count / n + (count % n != 0);
+    int w = 0, h = 0;
+    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(FUN_5d3080, c)) {
+        if (w < F(int, c, 52) - F(int, c, 44))
+            w = F(int, c, 52) - F(int, c, 44);
+        if (h < F(int, c, 56) - F(int, c, 48))
+            h = F(int, c, 56) - F(int, c, 48);
+    }
+    if (gx < 0)
+        gx = -(w + gx);
+    if (gy < 0)
+        gy = -(h + gy);
+    BYTE* c = F(BYTE*, s, 288);
+    int x = F(int, s, 60);
+    int i = 0;
+    while (c) {
+        int y = F(int, s, 60);
+        while (i < count) {
+            F(int, c, 52) = w;
+            F(int, c, 56) = h;
+            F(int, c, 44) += x;
+            F(int, c, 52) = w + x;
+            F(int, c, 48) += y;
+            F(int, c, 56) = h + y;
+            i++;
+            y += h + gy;
+            if (i % n == 0)
+                break;
+            c = CallThis<BYTE*>(FUN_5d3080, c);
+        }
+        if (!c || !CallThis<BYTE*>(FUN_5d3080, c))
+            break;
+        x += w + gx;
+        c = CallThis<BYTE*>(FUN_5d3080, c);
+    }
+    CallThis(FUN_5bdc80, s);
+}

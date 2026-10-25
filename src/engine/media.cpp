@@ -33,7 +33,7 @@ ASM_VAR(BYTE*, g_70ebe4, $L_70ebe4)
 ASM_VAR(int, g_707f94, $L_707f94)
 ASM_VAR(int, g_707f98, $L_707f98)
 ASM_VAR(WORD, g_quadIndex, $L_707f9c)
-ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
+extern "C" void FUN_5c2800(); KING_ALIAS("_FUN_5c2800", "_Msavi_CreateStreamingBuffer")    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
@@ -1762,7 +1762,7 @@ extern "C" void __fastcall Med_Write5d21e0(BYTE* s, void*, void* f)
 
 extern "C" void FUN_5cba00(); KING_ALIAS("_FUN_5cba00", "@Branch_Construct@16")
 extern "C" void FUN_5f36d0(); KING_ALIAS("_FUN_5f36d0", "@Obj_DrawTested@16")
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5cf3f0(); KING_ALIAS("_FUN_5cf3f0", "@Obj_Notify104@8")
 extern "C" void FUN_5c0c00(); KING_ALIAS("_FUN_5c0c00", "@List_IndexOf300@8")
 extern "C" void FUN_5c0c20(); KING_ALIAS("_FUN_5c0c20", "@List_Select@12")
@@ -3726,3 +3726,398 @@ int __fastcall Shadow_Attach(BYTE* s, void*, BYTE* n, BYTE* mat, const float* p,
 }
 
 } // extern "C"
+
+// === reading the light schedule (5c4130)
+
+extern "C" void Ls_NextToken(); KING_ALIAS("_Ls_NextToken", "_NextToken")
+extern "C" void Ls_LightUpdate(); KING_ALIAS("_Ls_LightUpdate", "@Light_Update@20")
+extern "C" char* __cdecl fgets(char*, int, FILE*);
+ASM_VAR(AsmLabel, s_lsMode, $L_673398)       // "r"
+ASM_VAR(AsmLabel, s_lsSpace, $L_67f8a8)      // "SPACE"
+ASM_VAR(AsmLabel, s_lsSwitch, $L_67f8a0)     // "SWITCH"
+ASM_VAR(AsmLabel, s_lsSend, $L_67f898)       // "SEND"
+
+extern "C" {
+
+// [$L_5c4130] after the light update (a, b, c) of s, reads its schedule file (+7924): lines "time SPACE|SWITCH
+// object [SEND]" add the object's timed entry to the table +7976 (the camera's object also sets +3020 bit 30) or,
+// with SEND, to the list +8300
+void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
+{
+    CallThis(Ls_LightUpdate, s, a, b, c);
+    const char* name = F(const char*, s, 7924);
+    if (!name)
+        return;
+    FILE* f = fopen(name, (const char*)s_lsMode);
+    if (!f)
+        return;
+    int obj = a;
+    while (!(F(BYTE, f, 12) & 16)) {
+        char line[64];
+        fgets(line, 60, f);
+        char* ctx = line;
+        char* t = CallC<char*>(Ls_NextToken, &ctx);
+        if (!t)
+            continue;
+        int n = atoi(t);
+        t = CallC<char*>(Ls_NextToken, &ctx);
+        int kind;
+        if (!strcmp(t, (const char*)s_lsSpace))
+            kind = 1;
+        else if (!strcmp(t, (const char*)s_lsSwitch))
+            kind = 0;
+        else
+            continue;
+        t = CallC<char*>(Ls_NextToken, &ctx);
+        if (!t)
+            continue;
+        obj = CallC<int>(FUN_5ef2b0, 0, t);
+        t = CallC<char*>(Ls_NextToken, &ctx);
+        if (!t) {
+            if (F(int, F(BYTE*, F(BYTE*, s, 468), 120), 80) == obj)
+                F(DWORD, s, 3020) |= 0x40000000;
+            Table_Add(s + 7976, 0, n, kind, obj);
+        } else if (!strcmp(t, (const char*)s_lsSend))
+            List_Add(s + 8300, 0, n, kind, obj);
+    }
+    fclose(f);
+}
+
+} // extern "C"
+
+// === the chat receive loop (FUN_5c5740)
+
+extern "C" void Cr_StreamConstruct(); KING_ALIAS("_Cr_StreamConstruct", "@Stream_Construct@8")
+extern "C" void Cr_StreamEnd(); KING_ALIAS("_Cr_StreamEnd", "_Gate_602bd0")
+extern "C" void Cr_TscNow(); KING_ALIAS("_Cr_TscNow", "_Tsc_Now")
+extern "C" void Cr_Receive(); KING_ALIAS("_Cr_Receive", "_Net_Receive")
+extern "C" void Cr_MsgSet(); KING_ALIAS("_Cr_MsgSet", "@DpMessage_Set@16")
+extern "C" void Cr_Set24(); KING_ALIAS("_Cr_Set24", "@Gate_Set24@8")
+ASM_PROC(FUN_6031e0)    // the next field tag of a message (out)
+ASM_PROC(FUN_603300)    // whether a message is read to its end
+extern "C" void Cr_ReadBlob(); KING_ALIAS("_Cr_ReadBlob", "@Stream_ReadBlob@20")
+extern "C" void Cr_ReadInt(); KING_ALIAS("_Cr_ReadInt", "@Stream_ReadInt@16")
+extern "C" void Cr_Write45(); KING_ALIAS("_Cr_Write45", "@Msg_Write45@16")
+
+extern "C" {
+
+// [FUN_5c5740] while the session is open (+416) reads the waiting network messages (kind 4: its sender to +408):
+// chat texts (field 120, id 902) go to Media_SendChat (with a), pings (field 45, id 902) are answered (901)
+void __fastcall Chat_Receive(BYTE* s, void*, int a, int, int)
+{
+    BYTE msg[32], st[16];
+    CallThis(FUN_602be0, msg);
+    CallThis(Cr_StreamConstruct, st);
+    F(int, st, 12) = 0;
+    CallC<double>(Cr_TscNow);
+    while (F(int, s, 416)) {
+        if (CallC<int>(Cr_Receive, st))
+            break;
+        if (F(int, st, 0) != 4)
+            continue;
+        F(int, s, 408) = F(int, st, 12);
+        CallThis(Cr_MsgSet, msg, F(BYTE*, st, 4), F(int, st, 8));
+        if (CallThis<int>(Cr_Set24, msg))
+            continue;
+        for (;;) {
+            int tag;
+            if (CallThis<int>(FUN_6031e0, msg, &tag))
+                break;
+            DWORD id;
+            if (tag == 120) {
+                char buf[256];
+                DWORD len;
+                if (!CallThis<int>(Cr_ReadBlob, msg, &id, buf, &len) && id == 902)
+                    Media_SendChat(s, 0, (int)buf, (const char*)a);
+            } else if (tag == 45) {
+                DWORD v;
+                if (!CallThis<int>(Cr_ReadInt, msg, &id, &v) && id == 902) {
+                    BYTE m2[32];
+                    CallThis(FUN_602be0, m2);
+                    CallThis(Cr_Write45, m2, 901, 0);
+                    CallC(FUN_6021d0, F(int, s, 408), F(BYTE*, m2, 4), F(BYTE*, m2, 8) - F(BYTE*, m2, 4));
+                    CallThis(FUN_602e80, m2);
+                }
+            }
+            if (CallThis<int>(FUN_603300, msg))
+                break;
+        }
+    }
+    CallThis(Cr_StreamEnd, st);
+    CallThis(FUN_602e80, msg);
+}
+
+} // extern "C"
+
+// === the streaming sound buffer (FUN_5c2800)
+
+ASM_VAR(HANDLE, g_msaviEvent, $L_702f58)
+ASM_VAR(HANDLE, g_msaviStopEvent, $L_702f5c)
+ASM_VAR(AsmLabel, g_iidNotify, $L_655290)
+ASM_VAR(AsmLabel, s_msaviSbNoFormat, $L_67f6b4)
+ASM_VAR(AsmLabel, s_msaviCreate, $L_67f5f0)
+ASM_VAR(AsmLabel, s_msaviSbNoBuffer, $L_67f688)
+ASM_VAR(AsmLabel, s_msaviNoNotify, $L_67f638)
+ASM_VAR(AsmLabel, s_msaviNoPositions, $L_67f60c)
+
+extern "C" {
+
+// [FUN_5c2800] creates the msavi streaming buffer: two halves of a second of the format (702fa8) each signalling
+// 702f58 at its end, 702f5c when stopped; 0 or the error
+int __cdecl Msavi_CreateStreamingBuffer()
+{
+    BYTE* fmt = g_msaviFormat;
+    if (!fmt) {
+        CallC(FUN_5d2ba0, (const char*)s_msaviSbNoFormat, 0);
+        return (int)0x80004005;
+    }
+    BYTE* ds = g_msavi702f98;
+    if (!ds || !g_msaviEvent || !g_msaviStopEvent) {
+        if (!ds)
+            CallC(FUN_5d2ba0, (const char*)s_msaviCreate, 0);
+        if (!g_msaviEvent)
+            CallC(FUN_5d2ba0, (const char*)s_msaviCreate, 1);
+        if (!g_msaviStopEvent)
+            CallC(FUN_5d2ba0, (const char*)s_msaviCreate, 2);
+        return (int)0x80004005;
+    }
+    unsigned align = F(WORD, fmt, 12);
+    unsigned n = (F(DWORD, fmt, 4) * align * 2) >> 1;
+    g_msaviPlayed = 0;
+    g_msaviLastPos = 0;
+    g_msaviBlock = n - n % align;
+    g_msaviBufSize = g_msaviBlock * 2;
+    DWORD desc[9];
+    memset(desc, 0, sizeof desc);
+    desc[0] = 36;
+    desc[1] = 0x10100;
+    desc[2] = g_msaviBufSize;
+    desc[4] = (DWORD)fmt;
+    int hr = Com(ds, 12, desc, &g_msaviBuffer, 0);
+    if (hr < 0) {
+        CallC(FUN_5d2ba0, (const char*)s_msaviSbNoBuffer, hr);
+        return hr;
+    }
+    hr = Com(g_msaviBuffer, 0, (BYTE*)g_iidNotify, &g_msavi702fa4);
+    if (hr < 0) {
+        g_msavi702fa4 = 0;
+        CallC(FUN_5d2ba0, (const char*)s_msaviNoNotify, hr);
+        return hr;
+    }
+    DWORD* pos = g_msavi702f78;
+    pos[0] = g_msaviBlock - 1;
+    pos[1] = (DWORD)g_msaviEvent;
+    pos[2] = g_msaviBlock * 2 - 1;
+    pos[3] = (DWORD)g_msaviEvent;
+    pos[4] = 0xFFFFFFFF;
+    pos[5] = (DWORD)g_msaviStopEvent;
+    hr = Com(g_msavi702fa4, 12, 3, pos);
+    if (hr < 0) {
+        CallC(FUN_5d2ba0, (const char*)s_msaviNoPositions, hr);
+        return hr;
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === textured span fill (FUN_5cf480)
+
+ASM_VAR(BYTE*, g_q57_71e7ec, $L_71e7ec)
+ASM_VAR(int, g_q57_71e7f8, $L_71e7f8)
+ASM_VAR(int, g_q57_71e7e8, $L_71e7e8)
+ASM_VAR(int, g_q57_71e7b0, $L_71e7b0)
+extern "C" void Sp_FogColor(); KING_ALIAS("_Sp_FogColor", "@Palette_FogColor@12")
+
+// [FUN_5cf480] fills the spans of the rows 71e7dc..71e7d8 like Span_FillRows, with u (+8 of the edges) stepped
+// along the span and c; with mode bit 2 the fog colour (71e7b0) follows u; the second buffer (71e7e8, 71e7f8
+// a row) gets 2 bytes a pixel
+extern "C" void __cdecl Span_FillRowsU(int mode, int c)
+{
+    CallC(FUN_5fedbc, mode | 2, 1);
+    int y = g_q56_71e7dc;
+    int row = y * g_q56_71e7bc;
+    int row2 = g_q57_71e7f8 * y * 2;
+    if (y > g_q56_71e7d8)
+        return;
+    int* e = &g_q56_70f3f0 + y * 6;
+    for (;;) {
+        int l = e[0];
+        int r = e[7800];
+        int z = e[5];
+        int x = l >> 20;
+        int xr = r >> 20;
+        int dw = (r - l) >> 16;
+        int frac = (l >> 16) & 15;
+        if (frac) {
+            frac = 16 - frac;
+            x++;
+        }
+        if (x <= xr) {
+            int du = 0, dz = 0;
+            if (dw >= 16) {
+                du = ((e[7802] - e[2]) << 6) / dw;
+                dz = (e[7805] - z) / (xr - x + 1);
+            }
+            int u = ((du * frac) >> 6) + e[2];
+            if (mode & 4)
+                g_q57_71e7b0 = CallThis<int>(Sp_FogColor, g_q57_71e7ec, u);
+            CallC(FUN_5fef04, g_q56_71e7c4 + g_q56_70f3d8 * x + row, xr - x + 1, z, dz, c, u, du >> 2,
+                g_q57_71e7e8 + row2 + x * 2);
+        }
+        y++;
+        e += 6;
+        row += g_q56_71e7bc;
+        row2 += g_q57_71e7f8 * 2;
+        if (y > g_q56_71e7d8)
+            break;
+    }
+}
+
+// === affine span fill into a rotated surface (FUN_5cf920)
+
+ASM_PROC(FUN_5feb87)
+ASM_PROC(FUN_5fee7c)
+ASM_VAR(int, g_q58_702e90, $L_702e90)
+ASM_VAR(int, g_q58_72007c, $L_72007c)
+ASM_VAR(DWORD, g_q58_702e8c, $L_702e8c)
+
+// [FUN_5cf920] like Span_FillRowsAffine with each row's own gradients, the rows written as columns (from the
+// right: (x + 1) * pitch - bpp - y); mode | 2
+extern "C" void __cdecl Span_FillRowsRotated(int unused, int mode)
+{
+    CallC(FUN_5feb87, mode | 2, (g_q58_702e8c >> 14) & 1);
+    for (int y = g_q56_71e7dc; y <= g_q56_71e7d8; y++) {
+        int* e = &g_q56_70f3f0 + y * 6;
+        int u = e[3], v = e[4];
+        int xr = e[7800] >> 20;
+        int x = e[0] >> 20;
+        int dw = (e[7800] - e[0]) >> 16;
+        int du = 0, dv = 0;
+        if (dw) {
+            du = ((e[7803] - u) << 4) / dw;
+            dv = ((e[7804] - v) << 4) / dw;
+        }
+        int frac = (e[0] >> 16) & 15;
+        if (frac) {
+            frac = 16 - frac;
+            x++;
+        }
+        if (x > xr)
+            continue;
+        g_q58_702e90 += xr - x + 1;
+        int dst = (x + 1) * g_q56_71e7bc - g_q56_70f3d8 - y;
+        u += (frac * du) >> 4;
+        v += (frac * dv) >> 4;
+        if (mode & 4)
+            g_q57_71e7b0 = CallThis<int>(Sp_FogColor, g_q57_71e7ec, e[2]);
+        CallC(FUN_5fee7c, g_q56_71e7c4 + dst, xr - x + 1, u, v, du, dv, e[2], 0, g_q57_71e7e8);
+        g_q58_72007c++;
+    }
+}
+
+// [FUN_5cf6f0] draws the span x..xr in pieces of 2^k pixels, perspective-correct at the piece ends: u and v run
+// from (u0, v0) to (u1, v1) along the span, divided by w (w, dw; q, dq the numerators) at each piece end; the
+// fog colour (71e7b0) follows f with mode bit 2; dst (+71e7c4) and buf (2 bytes a pixel) advance by the piece
+extern "C" void __cdecl Span_DrawPerspective(int x, int xr, int k, int u1, int v1, int u0, int v0, int dw, int dq,
+    int w, int q, int dst, int mode, int buf, int g, int dg)
+{
+    int u = u0, v = v0;
+    int step = 1 << k;
+    int su = (u1 - u0) >> 10, sv = (v1 - v0) >> 10;
+    int ddw = 0, ddq = 0, ddg = 0;
+    if (x + step < xr) {
+        ddw = dw << (k - 2);
+        ddq = dq << (k - 2);
+        ddg = dg << k;
+    }
+    int f = w;
+    int g0 = g;
+    int fog = mode & 4;
+    dw >>= 2;
+    for (int cur = x; cur <= xr;) {
+        int n, du, dv, un = 0;
+        if (cur + step >= xr) {
+            n = xr - cur + 1;
+            du = (u1 - u) / n;
+            dv = (v1 - v) / n;
+        } else {
+            n = step;
+            q += ddq;
+            w += ddw;
+            g += ddg;
+            int t = (q << 6) / (w >> 6);
+            un = ((t * su) >> 2) + u0;
+            du = (un - u) >> k;
+            mode = ((t * sv) >> 2) + v0;
+            dv = (mode - v) >> k;
+        }
+        if (fog)
+            g_q57_71e7b0 = CallThis<int>(Sp_FogColor, g_q57_71e7ec, f);
+        CallC(FUN_5fee7c, g_q56_71e7c4 + dst, n, u, v, du, dv, f, dw, buf, g0, dg);
+        g_q58_72007c++;
+        g0 = g;
+        dst += g_q56_70f3d8 * n;
+        f = w;
+        cur += n;
+        buf += n * 2;
+        v = mode;
+        u = un;
+    }
+}
+
+// === handing an object to the 70ebf0 hook (FUN_5c8930)
+
+extern "C" void FUN_5ed660(); KING_ALIAS("_FUN_5ed660", "@Room_AddNode@12")
+ASM_VAR(int, g_q59_702650, $L_702650)
+ASM_VAR(int, g_q59_702654, $L_702654)
+ASM_VAR(int, g_q59_702658, $L_702658)
+extern "C" void Ho_NodeRoot(); KING_ALIAS("_Ho_NodeRoot", "@Node_Root@8")
+
+// [FUN_5c8930] when object o's attachment (+60) is a kind 12 record and the hook 70ebf0 is set: unlinks o (vtbl+36)
+// and relinks it under its +36 at the position 702650 (its old one as a translation matrix), and calls the hook
+// (root, matrix, o, the attachment's bits 8..11, the record's +40, 0, a); on success the old record (and its
+// object +44) is deleted and the attachment marked (+4 = 1), else the record is restored and the root told
+// (vtbl+20 (0, o))
+extern "C" int __cdecl Object_HandToHook(BYTE* o, int a)
+{
+    BYTE* at = o + 60;
+    if (F(int, at, 8) != 12 || !g_70ebf0)
+        return 0;
+    BYTE* old = F(BYTE*, at, 12);
+    DWORD keep[2] = {F(DWORD, old, 32), F(DWORD, old, 36)};
+    int k40 = F(int, old, 40);
+    int* pos = (int*)(o + 20);
+    Med243_V3 v = {F(float, pos, 0), F(float, pos, 4), F(float, pos, 8)};
+    BYTE m[48];
+    CallC(FUN_5abc40, m, v);
+    int bits = (F(DWORD, at, 0) >> 8) & 15;
+    BYTE* root = CallThis<BYTE*>(Ho_NodeRoot, o);
+    BYTE* parent = F(BYTE*, o, 36);
+    CallVirt(o, 36);
+    pos[0] = g_q59_702650;
+    pos[1] = g_q59_702654;
+    pos[2] = g_q59_702658;
+    CallThis(FUN_5ed660, parent, o);
+    F(int, at, 8) = 2;
+    DWORD* n = (DWORD*)operator new(8);
+    F(DWORD*, at, 12) = n;
+    n[0] = keep[0];
+    n[1] = keep[1];
+    if (CallC<int>((void (*)())g_70ebf0, root, m, o, bits, k40, 0, a)) {
+        if (BYTE* x = F(BYTE*, old, 44)) {
+            CallVirt(x, 36);
+            if (BYTE* y = F(BYTE*, old, 44))
+                CallVirt(y, 0, 1);
+            F(int, old, 44) = 0;
+        }
+        operator delete(old);
+        F(int, at, 4) = 1;
+        return 1;
+    }
+    operator delete(F(void*, at, 12));
+    F(BYTE*, at, 12) = old;
+    F(int, at, 8) = 12;
+    CallVirt(root, 20, 0, o);
+    return 0;
+}

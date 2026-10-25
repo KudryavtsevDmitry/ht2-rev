@@ -542,7 +542,7 @@ void __fastcall IntDeque_Construct(int* self, void*, unsigned n)
 
 }
 
-ASM_PROC(FUN_4b66f0)
+extern "C" void FUN_4b66f0(); KING_ALIAS("_FUN_4b66f0", "@SchVector_Construct@28")
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")    // script type error (code, level, got, expected)
 
 extern "C" {
@@ -2994,3 +2994,48 @@ void __fastcall Deque_Destroy(BYTE* d)
 }
 
 } // extern "C"
+
+// === the reverse native (4a0af0)
+
+ASM_VAR(AsmLabel, s_nReverse, $L_6709fc)
+
+extern "C" {
+
+// [$L_4a0af0] reverse
+SchValue* __cdecl Nat_Reverse(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491c00, p, &v, args, (const char*)s_nReverse))
+        Nat_Zero3(out);
+    else {
+        SchValue c, r;
+        CopyRef(&c, &v);
+        Sch_Reverse((DWORD*)&r, p, (DWORD)c.obj, (DWORD)c.m_4, c.flags);
+        CopyRef(out, &r);
+        SchValue_Release(&r);
+    }
+    SchValue_Release(&v);
+    return out;
+}
+
+} // extern "C"
+
+ASM_VAR(char, s_nEqualQ, $L_67065c)    // "equal?"
+// [$L_493120] equal?: Sch_Equal of the two arguments as a boolean; an empty value on an argument error
+extern "C" SchValue* __cdecl Nat_EqualQ(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue x = {0, 0, 0, 0}, y = {0, 0, 0, 0};
+    if (CallC<int>(FUN_491aa0, p, &x, &y, args, &s_nEqualQ)) {
+        out->obj = 0;
+        out->m_4 = 0;
+        out->flags = 0;
+    } else {
+        SchArg a, b;
+        CallThis(FUN_454580, &b, &y);
+        CallThis(FUN_454580, &a, &x);
+        Nat_Bool(out, Sch_Equal(a, b, (int)p));
+    }
+    Nat_Release(&y);
+    Nat_Release(&x);
+    return out;
+}

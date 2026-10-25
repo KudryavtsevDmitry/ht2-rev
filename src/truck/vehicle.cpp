@@ -1560,7 +1560,7 @@ extern "C" void FUN_4fc920(); KING_ALIAS("_FUN_4fc920", "@Body_SetMode@12")
 ASM_PROC(FUN_54e180)
 extern "C" void FUN_54ef20(); KING_ALIAS("_FUN_54ef20", "@Car_54ef20@12")
 ASM_PROC(FUN_54ff80)
-ASM_PROC(FUN_581430)
+extern "C" void FUN_581430(); KING_ALIAS("_FUN_581430", "@Item_SetSpin@16")
 extern "C" void FUN_5816d0(); KING_ALIAS("_FUN_5816d0", "@MovingItem_SetSpin@16")
 extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
 extern "C" void FUN_561d50(); KING_ALIAS("_FUN_561d50", "@Copter_SetVec112@12")
@@ -4013,7 +4013,7 @@ ASM_VAR(int, g_cp6f4b80, $L_6f4b80)
 extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
 extern "C" void FUN_578100(); KING_ALIAS("_FUN_578100", "_Joy_SetAutoCenter")
 extern "C" void FUN_578d50(); KING_ALIAS("_FUN_578d50", "_FF_578d50")
-ASM_PROC(FUN_577fc0)
+extern "C" void FUN_577fc0(); KING_ALIAS("_FUN_577fc0", "_Joy_Acquire")
 
 static void Cp_Mark(BYTE* key)
 {
@@ -4533,3 +4533,185 @@ double __fastcall Car_WorkingOrder(BYTE* s)
 }
 
 } // extern "C"
+
+// === listing the control presets (FUN_530d40)
+
+extern "C" void Cl_strnicmp(); KING_ALIAS("_Cl_strnicmp", "__strnicmp")
+extern "C" void Cl_sprintf(); KING_ALIAS("_Cl_sprintf", "_sprintf")
+ASM_VAR(const char*, g_cl678740, $L_678740)
+ASM_VAR(int, g_cl6d2074, $L_6d2074)
+ASM_VAR(int, g_cl6f4b90, $L_6f4b90)
+ASM_VAR(AsmLabel, g_clDevices, $L_6f3528)      // 568 bytes each
+ASM_VAR(char, g_cl6d1b94, $L_6d1b94)
+ASM_VAR(char, g_cl6d1b58, $L_6d1b58)
+ASM_VAR(char, g_cl6d1b5a, $L_6d1b5a)
+ASM_VAR(char, g_cl6d1b4e, $L_6d1b4e)
+ASM_VAR(char, g_cl6d1b50, $L_6d1b50)
+ASM_VAR(char, g_cl6d1b8e, $L_6d1b8e)
+ASM_VAR(char, g_cl6d1b90, $L_6d1b90)
+ASM_VAR(char, g_cl6d1b92, $L_6d1b92)
+
+extern "C" {
+
+// [FUN_530d40] builds the presets (from 1) of the 6f4b90 input devices: each from its saved node (by its name +308
+// and ids +40..+46) and named after it with its device index (+260); the first device named like 678740 also
+// gets a second, default preset (678744, default keys at +480)
+void __cdecl Controls_ListPresets()
+{
+    g_cp6d207c = 1;
+    g_cl6d2074 = (int)strlen(g_cl678740);
+    for (int i = 0, k = 1; i < g_cl6f4b90; i++, k++, g_cp6d207c++) {
+        BYTE* d = (BYTE*)g_clDevices + i * 568;
+        const char* name = (const char*)d + 308;
+        BYTE* found = 0;
+        Node530c40_Find((const BYTE*)name, F(int, d, 0), F(WORD, d, 40), F(WORD, d, 42), F(WORD, d, 44), F(WORD, d, 46),
+                        &found);
+        BYTE* p = (BYTE*)g_cp6cf4d8 + g_cp6d207c * 696;
+        if (found) {
+            memcpy(p, found + 36, 696);
+            strcpy((char*)p, name);
+        }
+        F(int, p, 260) = i;
+        if (CallC<int>(Cl_strnicmp, name, g_cl678740, g_cl6d2074))
+            continue;
+        CallC(Cl_sprintf, p, name);
+        if (g_cp6d207c == k) {
+            i--;
+            k--;
+            continue;
+        }
+        strcpy((char*)p, g_cp678744);
+        char* keys[8] = {&g_cl6d1b94, &g_cl6d1b58, &g_cl6d1b5a, &g_cl6d1b4e,
+                         &g_cl6d1b50, &g_cl6d1b8e, &g_cl6d1b90, &g_cl6d1b92};
+        memcpy(p + 480, keys, 32);
+    }
+}
+
+} // extern "C"
+
+// === the room object of a point (FUN_533340)
+
+extern "C" void* __cdecl AI_Make449c40(void* out, void* x);
+extern "C" int* __cdecl Ai_GetPositionIdV(int* out, float x, float y, float z);
+extern "C" int* __cdecl Ai_GetPositionIdRV(int* out, int room, float x, float y, float z);
+ASM_VAR(double, g_ro64b678, $L_64b678)
+
+// whether position p is nowhere (no road, no node, t 0, no object)
+static bool Ro_IsNull(const Position* p)
+{
+    const int* m = (const int*)p;
+    return m[0] == -1 && m[1] == -1 && *(const double*)(m + 2) == g_ro64b678 && !m[4] && !m[5] && !m[6];
+}
+
+// *obj = the room object of position p (its room's name in r); whether one was found
+static bool Ro_Find(const Position* p, RoomInfo* r, void** obj)
+{
+    Road_RoomInfo(*p, r);
+    *obj = CallC<void*>(FUN_5ef2b0, 0, r->room);
+    return *obj != 0;
+}
+
+extern "C" {
+
+// [FUN_533340] the room object (*obj) at point v: by its position on room id's roads (*pos), else, when anywhere
+// is allowed, by its nearest position; 1 or 2 when found that way, else 0
+int __cdecl Room_ObjectAt(void* id, const float* v, void** obj, Position* pos, int anywhere)
+{
+    *obj = 0;
+    int res = 0;
+    RoomInfo ri = {0};
+    ri.module = (const char*)g_undefinedModule;
+    ri.room = (const char*)g_undefinedRoom;
+    ri.m_36 = -1;
+    ri.m_40 = -1;
+    void* r = id;
+    AI_Make449c40(&r, id);
+    if ((int)r != -1) {
+        int t[8];
+        memcpy(pos, Ai_GetPositionIdRV(t, (int)r, v[0], v[1], v[2]), 32);
+        if (!Ro_IsNull(pos) && Ro_Find(pos, &ri, obj))
+            res = 1;
+    }
+    if (!*obj && anywhere) {
+        int t[8];
+        memcpy(pos, Ai_GetPositionIdV(t, v[0], v[1], v[2]), 32);
+        if (!Ro_IsNull(pos) && Ro_Find(pos, &ri, obj))
+            return 2;
+    }
+    return res;
+}
+
+} // extern "C"
+
+// === placing a car and its trailer (FUN_55b590)
+
+extern "C" void Ct_HitObject(); KING_ALIAS("_Ct_HitObject", "_Query_HitObject")
+extern "C" void Ct_SetOrientation(); KING_ALIAS("_Ct_SetOrientation", "@Body_SetOrientation@16")
+extern "C" void Ct_SetInMode(); KING_ALIAS("_Ct_SetInMode", "@Car_SetInMode@12")
+
+// car c placed by frame m on ground g (asleep in a replay: mode 4, the frame kept at +20640)
+static void Ct_Place(BYTE* c, int g, const BYTE* m)
+{
+    if (F(int, F(BYTE*, c, 21600), 13124)) {
+        CallThis(Ct_SetInMode, c, 4);
+        memcpy(c + 20640, m, 48);
+    } else {
+        CallThis(Ct_SetInMode, c, 1);
+        CallThis(Ct_SetOrientation, F(BYTE*, c, 21600), g, m);
+    }
+}
+
+extern "C" {
+
+// [FUN_55b590] places car s at frame a and its trailer (+21880) at frame b, each on the ground found on the way from
+// its present position (else its present ground, the body woken)
+void __fastcall Car_PlaceWithTrailer(BYTE* s, void*, const BYTE* a, const BYTE* b)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    BYTE m[48];
+    memcpy(m, F(BYTE*, s, 21600) + 16, 48);
+    int g1 = CallC<int>(Ct_HitObject, F(int, F(BYTE*, s, 21600), 244), m + 36, a + 36);
+    memcpy(m, F(BYTE*, t, 21600) + 16, 48);
+    int g2 = CallC<int>(Ct_HitObject, F(int, F(BYTE*, t, 21600), 244), m + 36, b + 36);
+    if (!g2) {
+        g2 = F(int, F(BYTE*, t, 21600), 244);
+        CallVirt(t + 16, 28, 1);
+    }
+    if (!g1) {
+        g1 = F(int, F(BYTE*, s, 21600), 244);
+        CallVirt(s + 16, 28, 1);
+    }
+    Ct_Place(s, g1, a);
+    Ct_Place(t, g2, b);
+}
+
+} // extern "C"
+
+// === the 55eaa0 truck's constructor
+
+extern "C" void Tc_Base(); KING_ALIAS("_Tc_Base", "_FUN_543e00")
+extern "C" void Tc_IntCopy(); KING_ALIAS("_Tc_IntCopy", "@Int_Copy@12")
+extern "C" void Tc_SetAuto(); KING_ALIAS("_Tc_SetAuto", "@Car_SetAuto@12")
+
+// [FUN_55eaa0] constructor (a1, a2, a3 copied, a4): the vehicle base, the 15 dwords at +21888 cleared, this
+// truck's vtables, no trailer (+21880), +20936 = 1; the cab (+21600) put on manual, started, +10006 = 1 and
+// +10000 = 1.0; the type's vector applied
+extern "C" BYTE* __fastcall Truck55eaa0_Construct(BYTE* s, void*, int a1, int a2, int a3, int a4)
+{
+    DWORD copy;
+    CallThis(Tc_IntCopy, &copy, &a3);
+    CallThis(Tc_Base, s, a1, a2, copy, a4);
+    memset(s + 21888, 0, 60);
+    F(void*, s, 0) = g_veh64fb8c;
+    F(void*, s, 16) = g_veh64faa0;
+    F(void*, s, 272) = g_veh64fa54;
+    F(void*, s, 392) = g_veh64fa50;
+    F(int, s, 21880) = 0;
+    F(int, s, 20936) = 1;
+    CallThis(Tc_SetAuto, F(BYTE*, s, 21600), 0);
+    CallThis(FUN_4ff790, F(BYTE*, s, 21600));
+    F(WORD, F(BYTE*, s, 21600), 10006) = 1;
+    F(DWORD, F(BYTE*, s, 21600), 10000) = 0x3F800000;
+    CallThis(FUN_556110, s);
+    return s;
+}

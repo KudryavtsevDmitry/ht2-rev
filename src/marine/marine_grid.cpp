@@ -34,7 +34,7 @@ extern "C" void FUN_60bb20(); KING_ALIAS("_FUN_60bb20", "_Tables_InitAll")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")
 extern "C" void FUN_605810(); KING_ALIAS("_FUN_605810", "@Stack_Top@8")
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_605900(); KING_ALIAS("_FUN_605900", "_GridMesh_Refine")
 extern "C" void FUN_6064c0(); KING_ALIAS("_FUN_6064c0", "@GridMesh_CreateEdge@16")
 extern "C" BYTE* __fastcall MarineParticlePool_Construct(BYTE*,void*,DWORD,DWORD,DWORD,DWORD);

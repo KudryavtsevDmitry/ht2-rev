@@ -1097,7 +1097,7 @@ extern "C" BYTE* __fastcall MarineTask_Construct(BYTE* self, void*, BYTE* world)
 }
 
 // Marine pending-state quad rendering and camera field of view.
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 ASM_VAR(float, g_mq_zero, $L_64c264)
 ASM_VAR(float, g_mq_one, $L_64c250)
 ASM_VAR(float, g_mq_half, $L_64c258)

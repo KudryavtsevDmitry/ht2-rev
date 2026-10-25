@@ -396,3 +396,106 @@ int __fastcall Item_DrawMarked(BYTE* s, void*, int a, int b)
 }
 
 } // extern "C"
+
+// === setting an item's spin (FUN_581430)
+
+ASM_PROC(FUN_4e28b0)    // whether a vector is longer than a limit (v, limit)
+extern "C" void Iw_CheckPoint(); KING_ALIAS("_Iw_CheckPoint", "_World_CheckPoint")
+extern "C" void Iw_MulComponents(); KING_ALIAS("_Iw_MulComponents", "_Vec3_MulComponents")
+extern "C" void Iw_Normalized(); KING_ALIAS("_Iw_Normalized", "_Vec3_Normalized")
+extern "C" void Iw_sprintf(); KING_ALIAS("_Iw_sprintf", "_sprintf")
+ASM_VAR(BYTE*, g_iw6d2078, $L_6d2078)
+ASM_VAR(float, g_iw6969f4, $L_6969f4)
+ASM_VAR(float, g_iw6969f8, $L_6969f8)
+ASM_VAR(float, g_iw6969fc, $L_6969fc)
+ASM_VAR(float, g_iw64c450, $L_64c450)
+ASM_VAR(AsmLabel, s_iwInfoWorld, $L_67d528)
+ASM_VAR(AsmLabel, s_iwInfo, $L_67d4f4)
+ASM_VAR(AsmLabel, s_iwSetW, $L_67d578)
+ASM_VAR(AsmLabel, s_iwNewline, $L_66c4e4)
+ASM_VAR(AsmLabel, s_iw696cbc, $L_696cbc)
+ASM_VAR(AsmLabel, s_iwEmpty, $L_68d1c0)
+
+extern "C" {
+
+// [FUN_581430] sets item s's spin (+428) to w: one longer than 10 is reported (with the item, its mass, room and
+// position, the context ctx) and capped at 10 unless it is wild (over 10000: checked); then its world spin (+440,
+// scaled by +404 and turned by +500) and both kept at +3312/+3324
+void __fastcall Item_SetSpin(BYTE* s, void*, const float* w, const char* ctx)
+{
+    float* o = (float*)(s + 428);
+    if (!CallC<int>(FUN_4e28b0, w, 10.0f))
+        memcpy(o, w, 12);
+    else {
+        char msg[300], buf[488];
+        const char* name = F(const char*, F(BYTE*, F(BYTE*, s, 32), 64), 12);
+        const char* room = F(const char*, F(BYTE*, s, 800), 12);
+        if (g_iw6d2078)
+            CallC(Iw_sprintf, msg, (const char*)s_iwInfoWorld, name, (double)F(float, s, 396), room,
+                  (double)F(float, s, 536), (double)F(float, s, 540), (double)F(float, s, 544), (const char*)s_iw696cbc,
+                  (double)g_iw6969f4, (double)g_iw6969f8, (double)g_iw6969fc);
+        else
+            CallC(Iw_sprintf, msg, (const char*)s_iwInfo, name, (double)F(float, s, 396), room,
+                  (double)F(float, s, 536), (double)F(float, s, 540), (double)F(float, s, 544));
+        const char* a = ctx ? ctx : (const char*)s_iwEmpty;
+        const char* b = ctx ? (const char*)s_iwNewline : (const char*)s_iwEmpty;
+        CallC(Iw_sprintf, buf, (const char*)s_iwSetW, a, b, msg);
+        if (CallC<int>(FUN_4e28b0, w, 10000.0f))
+            CallC(Iw_CheckPoint, w, buf, 10000.0f);
+        else {
+            float nb[3];
+            const float* n = CallC<const float*>(Iw_Normalized, nb, w);
+            o[0] = (float)(n[0] * (double)g_iw64c450);
+            o[1] = (float)(n[1] * (double)g_iw64c450);
+            o[2] = (float)(n[2] * (double)g_iw64c450);
+        }
+    }
+    float tb[3];
+    const float* t = CallC<const float*>(Iw_MulComponents, tb, o, s + 404);
+    const float* m = (const float*)(s + 500);
+    float x = (float)((double)m[6] * t[2] + (double)m[3] * t[1] + (double)m[0] * t[0]);
+    float y = (float)((double)m[7] * t[2] + (double)m[4] * t[1] + (double)m[1] * t[0]);
+    float z = (float)((double)m[8] * t[2] + (double)m[5] * t[1] + (double)m[2] * t[0]);
+    F(float, s, 440) = x;
+    F(float, s, 444) = y;
+    F(float, s, 448) = z;
+    memcpy(s + 3312, o, 12);
+    memcpy(s + 3324, s + 440, 12);
+}
+
+} // extern "C"
+
+// === placing an item by a frame (581060)
+
+extern "C" void Sf_ToAngles(); KING_ALIAS("_Sf_ToAngles", "_Matrix_ToAngles")
+extern "C" void Sf_FromPose(); KING_ALIAS("_Sf_FromPose", "_Matrix_FromPose")
+extern "C" void Sf_Inverse(); KING_ALIAS("_Sf_Inverse", "_Matrix_Inverse")
+extern "C" void Sf_DivComponents(); KING_ALIAS("_Sf_DivComponents", "_Vec3_DivComponents")
+struct Sf_Mat { DWORD m[12]; };
+
+extern "C" {
+
+// [$L_581060] places item s in room r with frame m: the frame rebuilt from its position and angles (+500), its
+// inverse (+596), the spin in the item's axes (+428, from +440 by the inertia +404); all kept at +3336.. (+3432 room)
+void __fastcall Item_SetFrame(BYTE* s, void*, int r, const Sf_Mat* m)
+{
+    F(int, s, 800) = r;
+    memcpy(s + 500, m, 48);
+    double d[6];
+    CallC(Sf_ToAngles, *m, d, d + 1, d + 2, d + 3, d + 4, d + 5);
+    BYTE pm[48], inv[48];
+    memcpy(s + 500, CallC<BYTE*>(Sf_FromPose, pm, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
+    memcpy(s + 596, CallC<BYTE*>(Sf_Inverse, inv, s + 500), 48);
+    const float* iv = (const float*)(s + 596);
+    const float* w = (const float*)(s + 440);
+    float t[3], o[3];
+    t[0] = (float)((double)iv[6] * w[2] + (double)iv[3] * w[1] + (double)iv[0] * w[0]);
+    t[1] = (float)((double)iv[7] * w[2] + (double)iv[4] * w[1] + (double)iv[1] * w[0]);
+    t[2] = (float)((double)iv[8] * w[2] + (double)iv[5] * w[1] + (double)iv[2] * w[0]);
+    memcpy(s + 428, CallC<float*>(Sf_DivComponents, o, t, s + 404), 12);
+    F(int, s, 3432) = F(int, s, 800);
+    memcpy(s + 3336, s + 500, 48);
+    memcpy(s + 3384, s + 596, 48);
+}
+
+} // extern "C"

@@ -54,7 +54,7 @@ extern "C" void FUN_5b6210(); KING_ALIAS("_FUN_5b6210", "_Pixel_Pack")
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")    // a text of the resources
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")    // draws a text
 extern "C" void FUN_440dd0(); KING_ALIAS("_FUN_440dd0", "@Rec440dd0_FreeVectors@8")
-ASM_FUNC(Copter_EnumCallback, $L_56f450)
+extern "C" int __cdecl Enum_SharpCallback(BYTE* n);
 
 ASM_VAR(int, g_noCar, $L_68b990)                // the id of no vehicle
 ASM_VAR(BYTE*, g_6cec70, $L_6cec70)
@@ -567,7 +567,7 @@ extern "C" BYTE** __cdecl Enum_56f3f0(void* obj, int a, int b, int c, int d, int
     g_6f3250 = c;
     g_6f3254 = d;
     g_6f34c0 = 0;
-    CallVirt(obj, 32, (void*)Copter_EnumCallback, 0);
+    CallVirt(obj, 32, (void*)Enum_SharpCallback, 0);
     *count = g_6f34c0;
     return g_6f2e58;
 }
@@ -2380,7 +2380,7 @@ extern "C" void __cdecl Copter_RadioCommand(int c)
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 ASM_VAR(char, g_q237_6f2d98, $L_6f2d98)
 extern "C" void q237_FUN_56bac0(); KING_ALIAS("_q237_FUN_56bac0", "_CopterState_Init")
-extern "C" void q237_L_56bb30(); KING_ALIAS("_q237_L_56bb30", "$L_56bb30")
+extern "C" void q237_L_56bb30(); KING_ALIAS("_q237_L_56bb30", "@Vec_FreeStorage56bb30@4")
 // [$L_56bb20] destroys the static object 6f2d98 at exit ($L_56bb30)
 extern "C" void __cdecl Static6f2d98_Destroy(void) { CallThis(q237_L_56bb30, &g_q237_6f2d98); }
 // [$L_56bb10] registers the teardown at exit
@@ -4301,7 +4301,7 @@ extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
 ASM_PROC(FUN_5a4f00)
 extern "C" void FUN_5a3fd0(); KING_ALIAS("_FUN_5a3fd0", "@Node_Matrix@12")
 extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
-ASM_PROC(FUN_56f910)
+extern "C" void FUN_56f910(); KING_ALIAS("_FUN_56f910", "_Game_GoToRoom")
 
 // the world resource of id
 static BYTE* Nm_Resource(int id)
@@ -4913,3 +4913,143 @@ void __cdecl Copter_ApplyCargo()
 }
 
 } // extern "C"
+
+// === going to a room (FUN_56f910)
+
+ASM_PROC(FUN_531cc0)    // the game takes object x as the player's
+extern "C" void Gr_Attach(); KING_ALIAS("_Gr_Attach", "@WorldObj_Attach@12")
+extern "C" void Gr_ScenesFind(); KING_ALIAS("_Gr_ScenesFind", "@Scenes_Find@12")
+extern "C" void Gr_LoadRoom(); KING_ALIAS("_Gr_LoadRoom", "@Fw_LoadRoom@16")
+extern "C" void Gr_ResRelease(); KING_ALIAS("_Gr_ResRelease", "@ResRef_Release@8")
+ASM_VAR(BYTE*, g_gr6d2078, $L_6d2078)
+ASM_VAR(int, g_gr6f34b0, $L_6f34b0)
+ASM_VAR(AsmLabel, g_gr6f68b0, $L_6f68b0)
+ASM_VAR(int, g_gr675d3c, $L_675d3c)
+ASM_VAR(int, g_gr675d38, $L_675d38)
+struct Gr_Mat { DWORD m[12]; };
+
+extern "C" {
+
+// [FUN_56f910] goes to object id in room (scene, area): an object already loaded becomes the player's (with the
+// scene to come back to when the player's scene differs); else (after the pending load +484 ends) the world
+// (696ca0) loads the room, the object to take (675d3c) and frame f (+652) kept
+void __cdecl Game_GoToRoom(int id, int, const char* scene, const char* area, Gr_Mat f)
+{
+    g_gr6f34b0 = 0;
+    if (scene && !*scene)
+        scene = 0;
+    if (area && !*area)
+        area = 0;
+    BYTE* res = CallThis<BYTE*>(FUN_5e5370, g_696ca0 + 704, id);
+    if (res && F(int, res, 28)) {
+        BYTE* pl = F(BYTE*, g_gr6d2078, 616);
+        if (!pl)
+            return;
+        if (scene) {
+            BYTE* o = F(BYTE*, pl, 308);
+            if (strcmp(scene, F(const char*, o, 60)))
+                g_gr6f34b0 = CallThis<int>(Gr_ScenesFind, g_696ca0, F(const char*, o, 60));
+        }
+        int x = F(int, res, 28);
+        CallThis(FUN_531cc0, g_gr6d2078, x);
+        CallThis(Gr_Attach, (BYTE*)g_gr6f68b0, x);
+        return;
+    }
+    BYTE* w = g_696ca0;
+    if (F(int, F(BYTE*, w, 484), 20)) {
+        while (!F(int, F(BYTE*, g_696ca0, 484), 16))
+            Sleep(10);
+        CallThis(Gr_ResRelease, F(BYTE*, g_696ca0, 484));
+        w = g_696ca0;
+    }
+    g_gr675d3c = id;
+    g_gr675d38 = F(int, w, 2992);
+    memcpy(w + 652, &f, 48);
+    strcpy(F(char*, g_696ca0, 488) + 44, area);
+    strcpy(F(char*, g_696ca0, 488) + 12, scene);
+    CallThis(Gr_Attach, (BYTE*)g_gr6f68b0, 0);
+    CallThis(Gr_LoadRoom, g_696ca0, scene, area);
+}
+
+} // extern "C"
+
+// === collecting the sharp corners near a point (56f450)
+
+extern "C" void Ec_GetWorld(); KING_ALIAS("_Ec_GetWorld", "@Node_GetWorld@12")
+ASM_VAR(BYTE*, g_ec6f34c4, $L_6f34c4)
+ASM_VAR(AsmLabel, s_ecSharp, $L_67c18c)       // "sharp"
+ASM_VAR(AsmLabel, g_ec7025f0, $L_7025f0)
+
+extern "C" {
+
+// [$L_56f450] scene walk of Enum_56f3f0: a "sharp" sphere (kind 9, shape 7) within its radius plus 6f3254 of the
+// point 6f3248 is added (at most 30) with its frame's node (the parent's, kind 4, or the item being walked 6f34c4);
+// an item (kind 17, not hidden) is walked through with itself as 6f34c4; a switch (18) answers its selection
+int __cdecl Enum_SharpCallback(BYTE* n)
+{
+    if ((F(BYTE, n, 40) & 1) || g_6f34c0 >= 30)
+        return -1;
+    if (F(int, n, 16) == 9 && F(char*, n, 12) && !strncmp(F(char*, n, 12), (const char*)s_ecSharp, 5) &&
+        F(int, n, 64) == 7) {
+        float m[12];
+        memcpy(m, (BYTE*)g_ec7025f0, 48);
+        BYTE* fr = 0;
+        BYTE* p = F(BYTE*, n, 44);
+        if (F(int, p, 16) == 4) {
+            if ((fr = F(BYTE*, p, 60)) != 0)
+                CallThis(Ec_GetWorld, fr, m);
+        } else if (g_ec6f34c4) {
+            fr = g_ec6f34c4;
+            CallThis(Ec_GetWorld, fr, m);
+        }
+        double r = *F(float*, n, 60);
+        const float* c = F(const float*, n, 72);
+        double wx = (double)m[0] * c[0] + (double)m[6] * c[2] + (double)m[3] * c[1] + m[9];
+        float wy = (float)((double)m[1] * c[0] + (double)m[7] * c[2] + (double)m[4] * c[1] + m[10]);
+        float wz = (float)((double)m[2] * c[0] + (double)m[8] * c[2] + (double)m[5] * c[1] + m[11]);
+        float d[3] = {(float)(wx - *(float*)&g_6f3248), (float)((double)wy - *(float*)&g_6f324c),
+                      (float)((double)wz - *(float*)&g_6f3250)};
+        double l = CallC<double>(FUN_5ab4d0, d);
+        if (!(l > *(float*)&g_6f3254 + r)) {
+            g_6f2e58[g_6f34c0] = n;
+            g_6f326c[g_6f34c0] = (int)fr;
+            g_6f34c0++;
+        }
+        return -1;
+    }
+    if (F(int, n, 16) == 17) {
+        if (F(BYTE, n, 40) & 8)
+            return -1;
+        g_ec6f34c4 = F(BYTE*, n, 68);
+        CallVirt(F(BYTE*, n, 64), 32, (void*)Enum_SharpCallback, 0);
+        g_ec6f34c4 = 0;
+        return -1;
+    }
+    if (F(int, n, 16) == 18) {
+        int i = F(BYTE*, n, 60) ? F(int, F(BYTE*, n, 60), 56) : F(int, n, 56);
+        if (i >= CallVirt<int>(n, 60))
+            i = CallVirt<int>(n, 60) - 1;
+        return i;
+    }
+    return -1;
+}
+
+} // extern "C"
+
+// [$L_56bb30] frees the storage of a vector (begin +0, capacity end +8)
+extern "C" void __fastcall Vec_FreeStorage56bb30(BYTE** v)
+{
+    if (int n = (int)(v[2] - v[0]))
+        CallC(FUN_44b4a0, v[0], n);
+}
+
+extern "C" void Rr_FreeVectors(); KING_ALIAS("_Rr_FreeVectors", "@Rec440dd0_FreeVectors@8")
+// [$L_56cbc0] frees the vector of 192-byte route records at +20 (each with its vectors)
+extern "C" void __fastcall Routes_Free(BYTE* s)
+{
+    BYTE** v = (BYTE**)(s + 20);
+    for (BYTE* e = v[0]; e != v[1]; e += 192)
+        CallThis(Rr_FreeVectors, e);
+    if (int n = (int)(v[2] - v[0]) / 192)
+        CallC(FUN_44b4a0, v[0], n * 192);
+}
