@@ -2664,7 +2664,7 @@ extern "C" void __cdecl Fx_SparkBurst(const Vec3* at, const Vec3* v, int send)
     }
 }
 
-ASM_PROC(FUN_4d57c0)    // the effect's swing step
+extern "C" void FUN_4d57c0(); KING_ALIAS("_FUN_4d57c0", "_Gear_Choose")    // the effect's swing step
 extern "C" BYTE* __fastcall Car_543bb0(BYTE* self, void*);
 extern "C" void FUN_5fd5f0(); KING_ALIAS("_FUN_5fd5f0", "@Sound_PlayAt@40")    // a sound at a point (point, distance, volume, flags)
 
@@ -4510,7 +4510,7 @@ extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
 extern "C" void FUN_4eab58(); KING_ALIAS("_FUN_4eab58", "@History_Construct@24")
 #include <string.h>
 ASM_VAR(AsmLabel, g_q20_7025f0, $L_7025f0)
-ASM_VAR(AsmLabel, g_q20_4eaa41, $L_4eaa41)
+extern "C" double __cdecl Window_Ramp(float x);
 ASM_VAR(AsmLabel, g_q20_64d5ec, $L_64d5ec)
 ASM_VAR(BYTE*, g_q20_696ca0, $L_696ca0)
 ASM_VAR(BYTE*, g_q20_696cac, $L_696cac)
@@ -4525,7 +4525,7 @@ extern "C" BYTE* __fastcall View3D_Construct(BYTE* s, void*, int a, int, int, in
         CallStd(FUN_4011e0, s + 560 + k * 48, 12, 4, FUN_4bd4d0);
         memcpy(s + 560 + k * 48, g_q20_7025f0, 48);
     }
-    void* L = g_q20_4eaa41;
+    void* L = (void*)Window_Ramp;
     CallThis(FUN_4eab58, s + 4724, L, 0x3e99999a, 0, 0);
     CallThis(FUN_4eab58, s + 4756, L, 0x3f800000, L, 0);
     CallThis(FUN_4eab58, s + 4788, L, 0x3f000000, L, 0);
@@ -7306,6 +7306,347 @@ int __cdecl Ground_Below(BYTE* o, const float* p, float* at, float* n)
         return 0;
     memcpy(at, q + 52, 12);
     memcpy(n, q + 64, 12);
+    return 1;
+}
+
+} // extern "C"
+
+// === a hit spot somewhere ahead in the view (a method at $L_4c18b0)
+
+extern "C" void Hv_MulMatrix(); KING_ALIAS("_Hv_MulMatrix", "_Vec3_MulMatrix")
+extern "C" void Hv_RandomPoint(); KING_ALIAS("_Hv_RandomPoint", "_Triangle_RandomPoint")
+extern "C" void Hv_HitRec(); KING_ALIAS("_Hv_HitRec", "@HitRec_Construct@12")
+extern "C" void Hv_Add(); KING_ALIAS("_Hv_Add", "_Vec3_Add")
+extern "C" void Hv_Lookup(); KING_ALIAS("_Hv_Lookup", "_Obj_Lookup4e5b22")
+extern "C" void Hv_Query(); KING_ALIAS("_Hv_Query", "_Query_4e67d1")
+extern "C" void Hv_Length(); KING_ALIAS("_Hv_Length", "_Vec3_Length")
+extern "C" void Hv_MulAssign(); KING_ALIAS("_Hv_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Hv_RotZ(); KING_ALIAS("_Hv_RotZ", "_Matrix_RotationZ")
+extern "C" void Hv_HAngle(); KING_ALIAS("_Hv_HAngle", "@MarineCamera_HorizontalAngle@8")
+extern "C" int __cdecl rand(void);
+ASM_VAR(BYTE*, g_hv696224, $L_696224)
+ASM_VAR(BYTE*, g_hv6d2078, $L_6d2078)
+ASM_VAR(Vec3, g_hv702620, $L_702620)
+ASM_VAR(Vec3, g_hv702630, $L_702630)
+ASM_VAR(float, g_hv64c258, $L_64c258)
+ASM_VAR(float, g_hv64c304, $L_64c304)
+ASM_VAR(float, g_hv64c2fc, $L_64c2fc)
+ASM_VAR(float, g_hv64c254, $L_64c254)
+ASM_VAR(float, g_hv64c448, $L_64c448)
+ASM_VAR(float, g_hv64c664, $L_64c664)
+
+// the forward axis turned by angle a about up into out
+static Vec3* Hv_Turn(Vec3* out, const Vec3* v, float a)
+{
+    BYTE m[48];
+    return CallC<Vec3*>(Hv_MulMatrix, out, v, CallC<void*>(Hv_RotZ, m, *(DWORD*)&a));
+}
+
+// picks a random spot in the camera's view (a triangle reaching further the faster the player's car goes),
+// finds the object there (context's +488 +76 world) and the surface under it (only of the kinds 1, 5, 8, 9, 10
+// with kinds), and records the hit in s's ring of 50 92-byte slots (count +4)
+static void Hv_Pick(BYTE* s, BYTE* ctx, bool kinds)
+{
+    BYTE* cam = g_hv696224;
+    Vec3 B = {0, 0, 0}, H = {0, 0, 0}, L, R, t;
+    float half = (float)(CallThis<double>(Hv_HAngle, F(BYTE*, cam, 488)) * g_hv64c258);
+    Hv_Turn(&L, &g_hv702620, half);
+    Hv_Turn(&R, &g_hv702620, -half);
+    L = *Hv_Turn(&t, &L, (float)F(double, g_hv696224, 2928));
+    R = *Hv_Turn(&t, &R, (float)F(double, g_hv696224, 2928));
+    Vec3 v = F(Vec3, F(BYTE*, g_hv6d2078, 616), 432);
+    float speed = (float)(CallC<double>(Hv_Length, &v) * g_hv64c304 + g_hv64c2fc);
+    double r1 = rand() * (double)g_hv64c254;
+    float c = (float)x87_cos(half);
+    float k = speed / c;
+    float l1 = (float)(r1 * g_hv64c448 / c + k);
+    CallThis(Hv_MulAssign, &L, &t, *(DWORD*)&l1);
+    float l2 = (float)(rand() * (double)g_hv64c254 * g_hv64c448 / c + k);
+    CallThis(Hv_MulAssign, &R, &t, *(DWORD*)&l2);
+    B.x = (float)F(double, g_hv696224, 2904), B.y = (float)F(double, g_hv696224, 2912),
+    B.z = (float)F(double, g_hv696224, 2920);
+    Vec3 a1, a2, rp;
+    Vec3* p1 = CallC<Vec3*>(Hv_Add, &a1, &B, &R);
+    Vec3* p2 = CallC<Vec3*>(Hv_Add, &a2, &B, &L);
+    H = *CallC<Vec3*>(Hv_RandomPoint, &rp, &B, p2, p1);
+    char miss = 0;
+    BYTE* w = F(BYTE*, ctx, 488);
+    if (w)
+        w = F(BYTE*, w, 76);
+    BYTE* o = CallC<BYTE*>(Hv_Lookup, w, &B, &H, &miss);
+    if (miss)
+        return;
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    float ux = g_hv702630.x * g_hv64c664, uy = g_hv702630.y * g_hv64c664, uz = g_hv702630.z * g_hv64c664;
+    Vec3 lo = {H.x - ux, H.y - uy, H.z - uz};
+    Vec3 hi = {ux + H.x, uy + H.y, uz + H.z};
+    if (!CallC<int>(Hv_Query, o, &hi, &lo, q))
+        return;
+    if (kinds) {
+        const int* m = F(const int*, q, 100);
+        if (!m || m[0] != 1)
+            return;
+        if (m[1] != 1 && m[1] != 5 && m[1] != 8 && m[1] != 9 && m[1] != 10)
+            return;
+    }
+    unsigned slot = F(unsigned, s, 4) % 50;
+    BYTE* rec = s + slot * 92;
+    BYTE hr[128];
+    memcpy(rec + 8, CallThis<BYTE*>(Hv_HitRec, hr, q), 92);
+    BYTE* next = s + (slot + 1) * 92;
+    if (!F(BYTE*, next, 0))
+        F(BYTE*, next, 0) = o;
+    if (!F(int, rec, 96))
+        F(int, rec, 96) = F(int, F(BYTE*, next, 0), 36);
+    F(int, s, 4)++;
+}
+
+extern "C" void Hv_GetMaterial(); KING_ALIAS("_Hv_GetMaterial", "@MarineTask_GetMaterial@8")
+extern "C" void Hv_ForwardPoint(); KING_ALIAS("_Hv_ForwardPoint", "@MarineTask_ForwardPointCopy@12")
+
+extern "C" {
+
+// [$L_4c2380] with marine task s+8 active: a random spot in the camera's view (as for hit spots) put on the
+// task's ground and recorded in s's ring of 50 points (+12, count +4)
+void __fastcall SplashSpot_Pick(BYTE* s, void*, int unused)
+{
+    if (!CallThis<int>(Hv_GetMaterial, F(BYTE*, s, 8)))
+        return;
+    BYTE* cam = g_hv696224;
+    Vec3 B = {0, 0, 0}, H = {0, 0, 0}, L, R, t;
+    float half = (float)(CallThis<double>(Hv_HAngle, F(BYTE*, cam, 488)) * g_hv64c258);
+    BYTE mb[48];
+    const float* M = CallC<const float*>(Hv_RotZ, mb, *(DWORD*)&half);
+    const Vec3& f = g_hv702620;
+    Vec3_SetThis(&L, 0, (float)((double)f.z * M[6] + (double)f.y * M[3] + (double)f.x * M[0] + M[9]),
+        (float)((double)f.z * M[7] + (double)f.y * M[4] + (double)f.x * M[1] + M[10]),
+        (float)((double)f.z * M[8] + (double)f.y * M[5] + (double)f.x * M[2] + M[11]));
+    Hv_Turn(&R, &g_hv702620, -half);
+    L = *Hv_Turn(&t, &L, (float)F(double, g_hv696224, 2928));
+    R = *Hv_Turn(&t, &R, (float)F(double, g_hv696224, 2928));
+    Vec3 v = F(Vec3, F(BYTE*, g_hv6d2078, 616), 432);
+    float speed = (float)(CallC<double>(Hv_Length, &v) * g_hv64c304 + g_hv64c2fc);
+    double r1 = rand() * (double)g_hv64c254;
+    float c = (float)x87_cos(half);
+    float k = speed / c;
+    float l1 = (float)(r1 * g_hv64c448 / c + k);
+    CallThis(Hv_MulAssign, &L, &t, *(DWORD*)&l1);
+    float l2 = (float)(rand() * (double)g_hv64c254 * g_hv64c448 / c + k);
+    CallThis(Hv_MulAssign, &R, &t, *(DWORD*)&l2);
+    B.x = (float)F(double, g_hv696224, 2904), B.y = (float)F(double, g_hv696224, 2912),
+    B.z = (float)F(double, g_hv696224, 2920);
+    Vec3 a1, a2, rp;
+    Vec3* p1 = CallC<Vec3*>(Hv_Add, &a1, &B, &R);
+    Vec3* p2 = CallC<Vec3*>(Hv_Add, &a2, &B, &L);
+    H = *CallC<Vec3*>(Hv_RandomPoint, &rp, &B, p2, p1);
+    unsigned slot = F(unsigned, s, 4) % 50;
+    CallThis(Hv_ForwardPoint, F(BYTE*, s, 8), &H);
+    F(Vec3, s, 12 + slot * 12) = H;
+    F(int, s, 4)++;
+}
+
+// [$L_4c18b0] a hit spot anywhere in the view
+void __fastcall HitSpot_Pick(BYTE* s, void*, BYTE* ctx) { Hv_Pick(s, ctx, false); }
+
+// [$L_4c1e20] a hit spot on surfaces of the kinds 1, 5, 8, 9, 10
+void __fastcall HitSpot_PickKind(BYTE* s, void*, BYTE* ctx) { Hv_Pick(s, ctx, true); }
+
+} // extern "C"
+
+// === choosing the next gear (FUN_4d57c0)
+
+ASM_FUNC(Gs_Mask, FUN_4d4a90)
+ASM_VAR(double, g_gs64b6d0, $L_64b6d0)
+ASM_VAR(double, g_gs64b6e0, $L_64b6e0)
+ASM_VAR(double, g_gs64b678, $L_64b678)
+
+// whether gear slot n (two bits at n, wrapping like a shift does) is free in mask m
+static bool Gs_Free(unsigned m, int n)
+{
+    return !(m & (3u << (n & 31)));
+}
+
+extern "C" {
+
+// [FUN_4d57c0] the gear to take after gear g at speed v (window +a, gear step k): the mask of blocked gears
+// from FUN_4d4a90 goes to *mask; when shifting is on (*flags bit 2) a free lower gear first, then a higher one
+// whose speed v reaches, then with the pedal off (pedal below 0, no shift flags 12) lower ones and higher ones
+// within the window; none: *flags bit 8; the gear to *out; the cost from FUN_4d4a90 (1000 by default)
+double __cdecl Gear_Choose(int a0, int g, double v, double win, double k, int shift, double pedal, int a52, int a56,
+    int a60, int a64, double* d, unsigned* flags, unsigned* mask, int* out, int a84)
+{
+    *flags &= ~8u;
+    double res = 1000.0;
+    *d = -1.5;
+    unsigned m = CallC<unsigned>(Gs_Mask, a0, a52, a56, a60, a64, ((DWORD*)&v)[0], ((DWORD*)&v)[1], ((DWORD*)&k)[0],
+        ((DWORD*)&k)[1], d, &res, a84);
+    *mask = m;
+    unsigned f = *flags;
+    if (!(f & 2) && !Gs_Free(m, g + 4))
+        *flags = f | 2;
+    f = *flags;
+    if (!(f & 2)) {
+        *out = g;
+        return res;
+    }
+    m = *mask;
+    if (Gs_Free(m, g + 4)) {
+        *flags = f & ~2u;
+        *out = g;
+        return res;
+    }
+    if ((a64 && *d > g_gs64b6d0) || (f & 16)) {
+        *flags = f | 8;
+        return res;
+    }
+    for (int i = 1; i <= 4; i++)
+        if (g > i - 1 && Gs_Free(m, g + 4 - i)) {
+            *out = g - i;
+            return res;
+        }
+    double step[4];
+    for (int i = 0; i < 4; i++)
+        step[i] = (g + 3 + i) * k * g_gs64b6e0;
+    if (!(step[0] > v) && Gs_Free(m, g + 5)) {
+        *out = g + 1;
+        return res;
+    }
+    for (int i = 1; i < 4; i++)
+        if (step[i] < v && Gs_Free(m, g + 5 + i)) {
+            *out = g + 1 + i;
+            return res;
+        }
+    if (!(shift & 12)) {
+        for (int i = 1; i <= 4; i++)
+            if (Gs_Free(m, g + 4 - i) && pedal < g_gs64b678) {
+                *out = g - i;
+                return res;
+            }
+    }
+    double lim = v + win;
+    for (int i = 0; i < 4; i++)
+        if (step[i] < lim && Gs_Free(m, g + 5 + i) && pedal < g_gs64b678) {
+            *out = g + 1 + i;
+            return res;
+        }
+    *flags = f | 8;
+    return res;
+}
+
+} // extern "C"
+
+// === laying a patch onto the surfaces below (a method at $L_4c8190)
+
+ASM_FUNC(Lp_TerrainHeight, FUN_616850)
+extern "C" void Lp_Subdivide(); KING_ALIAS("_Lp_Subdivide", "_Tri_Subdivide")
+extern "C" void Lp_PlaneHeight(); KING_ALIAS("_Lp_PlaneHeight", "_Plane_HeightX")
+extern "C" void Lp_TrisHeight(); KING_ALIAS("_Lp_TrisHeight", "_Tris_Height")
+extern "C" void Lp_RecordsHeight(); KING_ALIAS("_Lp_RecordsHeight", "_Records_Height")
+extern "C" void Lp_Inverse(); KING_ALIAS("_Lp_Inverse", "_Matrix_Inverse")
+ASM_VAR(BYTE, g_lp694b08, $L_694b08)    // 40 records of 52 bytes: the object, its inverse frame
+ASM_VAR(BYTE*, g_lp694a64, $L_694a64)   // per triangle: its frame
+ASM_VAR(BYTE*, g_lp6953a8, $L_6953a8)   // per triangle: its plane
+ASM_VAR(float, g_lp695548, $L_695548)   // per triangle: the x of its corners
+ASM_VAR(float, g_lp695728, $L_695728)   // per triangle: the y of its corners
+ASM_VAR(float, g_lp64c304, $L_64c304)
+ASM_VAR(float, g_lp64c1fc, $L_64c1fc)
+
+extern "C" {
+
+// [$L_4c8190] lays patch s (points +4 of 32 bytes, count +2216) made from triangle tri onto the n objects arr
+// (208 bytes each, below 40) when they are all of surface kinds 1, 5, 8, 9: their polygon faces' triangles in
+// their own frames give the heights, else a terrain (kind 8) or a plane (kind 5) under them, else the objects'
+// own heights; each point lifted by 64c304; 0 when an object doesn't qualify
+int __fastcall Patch_Lay(BYTE* s, void*, BYTE* arr, unsigned n, BYTE* tri, int a4)
+{
+    if (!n || n >= 40)
+        return 0;
+    unsigned cnt = 0;
+    BYTE* terrain = 0;
+    int flat = 0;
+    BYTE* plane = 0;
+    BYTE* recs = &g_lp694b08;
+    for (unsigned i = 0; i < n; i++) {
+        BYTE* o = arr + 100 + i * 208;
+        unsigned j = 0;
+        if (cnt)
+            for (; j < cnt; j++) {
+                BYTE* ob = F(BYTE*, recs + j * 52, 0);
+                if (F(int, ob, 108) == F(int, o, 8) && F(int, ob, 112) == F(int, o, 12))
+                    break;
+            }
+        if (j != cnt)
+            continue;
+        const int* m = F(const int*, o, 0);
+        if (!m || m[0] != 1)
+            return 0;
+        if (m[1] != 1 && m[1] != 5 && m[1] != 8 && m[1] != 9)
+            return 0;
+        const int* t = F(const int*, o, 8);
+        if (t) {
+            if (t[0] == 8)
+                terrain = (BYTE*)t[2];
+            if (t[0] == 5) {
+                flat = 1;
+                plane = (BYTE*)t[2];
+            }
+        }
+        BYTE* rec = recs + cnt * 52;
+        F(BYTE*, rec, 0) = o - 100;
+        BYTE inv[48];
+        memcpy(rec + 4, CallC<void*>(Lp_Inverse, inv, o - 96), 48);
+        cnt++;
+    }
+    CallC(Lp_Subdivide, s + 4, s + 2216, s + 2084, s + 2212, tri, tri + 32, tri + 64, a4);
+    unsigned k = 0;
+    for (unsigned j = 0; j < cnt && k < 40; j++) {
+        BYTE* rec = recs + j * 52;
+        BYTE* ob = F(BYTE*, rec, 0);
+        const int* t = F(const int*, ob, 108);
+        if (!t || t[0] != 6)
+            continue;
+        BYTE* poly = (BYTE*)t[2] + F(int, ob, 112) * 48 - 48;
+        if (F(WORD, poly, 2) < 3)
+            continue;
+        const float* M = (const float*)(rec + 4);
+        for (unsigned e = 1; e < (unsigned)F(WORD, poly, 2) - 1 && k < 40; e++, k++) {
+            const float* v = F(const float*, poly, 4);
+            const float* v1 = v + e * 3;
+            const float* v2 = v1 + 3;
+            float x0 = (float)((double)M[6] * v[2] + (double)M[0] * v[0] + (double)v[1] * M[3] + M[9]);
+            float y0 = (float)((double)v[1] * M[4] + (double)M[7] * v[2] + (double)M[1] * v[0] + M[10]);
+            float x1 = (float)((double)v1[2] * M[6] + (double)v1[0] * M[0] + (double)v1[1] * M[3] + M[9]);
+            float y1 = (float)((double)v1[2] * M[7] + (double)v1[0] * M[1] + (double)v1[1] * M[4] + M[10]);
+            float x2 = (float)((double)v2[2] * M[6] + (double)M[0] * v2[0] + (double)v2[1] * M[3] + M[9]);
+            float y2 = (float)((double)v2[2] * M[7] + (double)v2[1] * M[4] + (double)M[1] * v2[0] + M[10]);
+            (&g_lp694a64)[k] = (BYTE*)M;
+            float* X = &g_lp695548 + k * 3;
+            float* Y = &g_lp695728 + k * 3;
+            X[0] = x0, X[1] = x1, X[2] = x2;
+            Y[0] = y0, Y[1] = y1, Y[2] = y2;
+            (&g_lp6953a8)[k] = poly + 32;
+        }
+    }
+    for (unsigned i = 0; i < F(unsigned, s, 2216); i++) {
+        float* p = (float*)(s + 4 + i * 32);
+        float h;
+        double z;
+        if (CallC<int>(Lp_TrisHeight, &h, *(DWORD*)&p[0], *(DWORD*)&p[1], &g_lp695548, &g_lp695728, &g_lp6953a8,
+                &g_lp694a64, k))
+            z = h;
+        else if (terrain)
+            z = CallThis<float>(Lp_TerrainHeight, terrain, *(DWORD*)&p[0], *(DWORD*)&p[1]);
+        else {
+            if (flat) {
+                p[2] = (float)(CallC<double>(Lp_PlaneHeight, *(DWORD*)&p[0], *(DWORD*)&p[1], plane) + g_lp64c304);
+                if (p[2] != g_lp64c1fc)
+                    continue;
+            }
+            z = CallC<double>(Lp_RecordsHeight, *(DWORD*)&p[0], *(DWORD*)&p[1], arr, n);
+        }
+        p[2] = (float)(z + g_lp64c304);
+    }
     return 1;
 }
 

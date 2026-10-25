@@ -1981,3 +1981,93 @@ int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, c
 }
 
 } // extern "C"
+
+// === sparks drawn as lines (a method at $L_594650)
+
+extern "C" void Sl_Normalized(); KING_ALIAS("_Sl_Normalized", "_Vec3_Normalized")
+extern "C" void Sl_Length(); KING_ALIAS("_Sl_Length", "_Vec3_Length")
+extern "C" void Sl_MulAssign(); KING_ALIAS("_Sl_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Sl_Material(); KING_ALIAS("_Sl_Material", "@Material_Select@24")
+extern "C" void Sl_DrawTested(); KING_ALIAS("_Sl_DrawTested", "@Obj_DrawTested@16")
+ASM_VAR(BYTE*, g_sl720908, $L_720908)
+ASM_VAR(float, g_sl64c334, $L_64c334)
+ASM_VAR(float, g_sl64c250, $L_64c250)
+ASM_VAR(float, g_sl64c25c, $L_64c25c)
+ASM_VAR(float, g_sl64f754, $L_64f754)
+ASM_VAR(float, g_sl64fa40, $L_64fa40)
+ASM_VAR(float, g_sl650970, $L_650970)
+ASM_VAR(float, g_sl64c458, $L_64c458)
+
+template <class R = int, class... A>
+static R Sl_Com(BYTE* com, unsigned off, A... args)
+{
+    return (*(R(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
+}
+
+// spark p's colour at life t (1 at birth): from +68 toward +84 in the first quarter, then toward +100
+static void Sl_Colour(const BYTE* p, float t, float* c)
+{
+    float f;
+    int a, b;
+    if (t < g_sl64c25c) {
+        f = t * g_sl64f754;
+        a = 68, b = 84;
+    } else {
+        f = (t - g_sl64c25c) * g_sl64fa40;
+        a = 84, b = 100;
+    }
+    for (int i = 0; i < 4; i++)
+        c[i] = (F(float, p, b + i * 4) - F(float, p, a + i * 4)) * f + F(float, p, a + i * 4);
+}
+
+static DWORD Sl_Pack(const float* c)
+{
+    int v = (int)(c[0] * g_sl64c458) << 8;
+    v = (v | (int)(c[1] * g_sl64c458)) << 8;
+    v = (v | (int)(c[2] * g_sl64c458)) << 8;
+    return (DWORD)(v | (int)(c[3] * g_sl64c458));
+}
+
+extern "C" {
+
+// [$L_594650] draws spark pool s (list +76, vertex buffer +80, material +84) when visible: each spark a line
+// from its position (+28) back along its velocity (+4, scaled by -0.04 and at most 64c334 long), coloured by its
+// age (+116) at both ends; 1 when drawn, 0 when not visible
+int __fastcall Sparks_DrawLines(BYTE* s, void*, int a, BYTE* r)
+{
+    if (!CallThis<int>(Sl_DrawTested, s, a, r))
+        return 0;
+    int n = 0;
+    unsigned off = 0;
+    for (BYTE* p = F(BYTE*, s, 76); p; p = F(BYTE*, p, 0)) {
+        float pos[3] = {F(float, p, 28), F(float, p, 32), F(float, p, 36)};
+        float v[3] = {F(float, p, 4), F(float, p, 8), F(float, p, 12)}, t[3];
+        CallThis(Sl_MulAssign, v, t, 0xBD23D70Au);
+        if (CallC<double>(Sl_Length, v) > g_sl64c334) {
+            const float* nv = CallC<const float*>(Sl_Normalized, t, v);
+            v[0] = nv[0] * g_sl64c334, v[1] = nv[1] * g_sl64c334, v[2] = nv[2] * g_sl64c334;
+        }
+        float c1[4], c2[4];
+        Sl_Colour(p, g_sl64c250 - F(float, p, 116), c1);
+        Sl_Colour(p, g_sl64c250 - (F(float, p, 116) - g_sl650970), c2);
+        BYTE* e = F(BYTE*, s, 80) + off;
+        memcpy(e, pos, 12);
+        F(DWORD, e, 12) = Sl_Pack(c1);
+        F(float, e, 16) = v[0] + pos[0];
+        F(float, e, 20) = v[1] + pos[1];
+        F(float, e, 24) = v[2] + pos[2];
+        F(DWORD, e, 28) = Sl_Pack(c2);
+        n += 2;
+        off += 32;
+        if (off >= 131040)
+            break;
+    }
+    if (n) {
+        CallThis(Sl_Material, r, F(int, s, 84), 0, 0, 0);
+        Sl_Com(g_sl720908, 80, 136, 1);
+        Sl_Com(g_sl720908, 100, 2, 66, F(BYTE*, s, 80), n, 0);
+    }
+    return 1;
+}
+
+} // extern "C"

@@ -2493,7 +2493,7 @@ extern "C" void __cdecl World_ResetAll(void)
 extern "C" void FUN_57ca00(); KING_ALIAS("_FUN_57ca00", "_Race_SetMode")
 ASM_PROC(FUN_4e24e8)
 extern "C" void FUN_4de290(); KING_ALIAS("_FUN_4de290", "@Cab_Setup@12")
-ASM_PROC(FUN_53fdb0)
+extern "C" void FUN_53fdb0(); KING_ALIAS("_FUN_53fdb0", "_CarTypes_FindParts")
 ASM_VAR(int, g_q48_6ef1fc, $L_6ef1fc)
 // [FUN_53fcf0] starts a race (a, b, mode c, d): the mode, the race globals, 6ef1fc = a, the world 696cb0 for a,
 // then 53fdb0
@@ -3106,9 +3106,9 @@ extern "C" int __fastcall Thunk557450(BYTE* s) { return q238_Car_SetFlag9616(s);
 ASM_VAR(AsmLabel, s_cr67899c, $L_67899c)
 ASM_VAR(AsmLabel, g_crIdentity7025f0, $L_7025f0)  // a 4x3 identity matrix
 ASM_VAR(AsmLabel, g_crVtbl64f2f0, $L_64f2f0)
-ASM_VAR(AsmLabel, g_crHist4eaa41, $L_4eaa41)
-ASM_VAR(AsmLabel, g_crHist4eaa77, $L_4eaa77)
-ASM_VAR(AsmLabel, g_crHist4eaab0, $L_4eaab0)
+extern "C" double __cdecl Window_Ramp(float x);
+extern "C" double __cdecl Window_Parabola(float x);
+extern "C" double __cdecl Window_Root(float x);
 ASM_VAR(AsmLabel, g_cr6969d0, $L_6969d0)
 ASM_VAR(AsmLabel, g_cr696b98, $L_696b98)
 ASM_VAR(AsmLabel, g_cr6969a0, $L_6969a0)
@@ -3164,11 +3164,11 @@ BYTE* __fastcall Car_Construct(BYTE* self, void*, int kind, BYTE* s, int net)
     Cr_Identity(self + 52);
     for (int k = 204; k <= 224; k += 4)
         F(int, self, k) = 0;
-    CallThis(FUN_4eab58, self + 280, (void*)g_crHist4eaa41, 1.0f, 0, 0);
-    CallThis(FUN_4eab58, self + 312, (void*)g_crHist4eaa77, 0.2f, 0, 0);
-    CallThis(FUN_4eab58, self + 344, (void*)g_crHist4eaab0, 1.0f, 0, 0);
-    CallThis(FUN_4eab58, self + 376, (void*)g_crHist4eaa41, 0.3f, 0, 0);
-    CallThis(FUN_4eab58, self + 408, (void*)g_crHist4eaa41, 0.3f, 0, 0);
+    CallThis(FUN_4eab58, self + 280, (void*)Window_Ramp, 1.0f, 0, 0);
+    CallThis(FUN_4eab58, self + 312, (void*)Window_Parabola, 0.2f, 0, 0);
+    CallThis(FUN_4eab58, self + 344, (void*)Window_Root, 1.0f, 0, 0);
+    CallThis(FUN_4eab58, self + 376, (void*)Window_Ramp, 0.3f, 0, 0);
+    CallThis(FUN_4eab58, self + 408, (void*)Window_Ramp, 0.3f, 0, 0);
     F(int, self, 456) = 0;
     F(int, self, 460) = 0;
     F(int, self, 464) = 0;
@@ -5600,6 +5600,624 @@ float __cdecl Camera_ViewAngle()
         d = -step;
     g_fv696d10 = (float)(d + g_fv696d10);
     return g_fv696d10;
+}
+
+} // extern "C"
+
+// === dumping the scene objects to the log (FUN_53ece0)
+
+extern "C" int __cdecl sprintf(char*, const char*, ...);
+extern "C" void Do_WarnOpen(); KING_ALIAS("_Do_WarnOpen", "_WarnLog_Open")
+extern "C" void Do_WarnClose(); KING_ALIAS("_Do_WarnClose", "_WarnLog_Close")
+extern "C" void Do_Log(); KING_ALIAS("_Do_Log", "_VehLog_Value2")
+extern "C" void Do_Matrix1(); KING_ALIAS("_Do_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Do_Matrix2(); KING_ALIAS("_Do_Matrix2", "@SceneObj_Matrix2@12")
+extern "C" void Do_Get800(); KING_ALIAS("_Do_Get800", "@SceneObj_Get800@8")
+extern "C" void Do_Matrix548(); KING_ALIAS("_Do_Matrix548", "@SceneObj_Matrix548@12")
+ASM_VAR(BYTE*, g_do6f653c, $L_6f653c)
+ASM_VAR(BYTE*, g_do6d2078, $L_6d2078)
+ASM_VAR(char, s_do67953c, $L_67953c)
+ASM_VAR(char, s_do679458, $L_679458)
+ASM_VAR(char, s_do679440, $L_679440)
+ASM_VAR(char, s_do67948c, $L_67948c)
+ASM_VAR(char, s_do679524, $L_679524)
+ASM_VAR(char, s_do679434, $L_679434)
+ASM_VAR(char, s_do67941c, $L_67941c)
+ASM_VAR(char, s_do679404, $L_679404)
+
+// logs the three floats at v with format fmt
+static void Do_Three(char* buf, const char* fmt, const float* v)
+{
+    sprintf(buf, fmt, (double)v[0], (double)v[1], (double)v[2]);
+    CallC(Do_Log, buf);
+}
+
+// logs the 4x3 matrix m: its first row with fmt, the others with 67948c
+static void Do_Matrix(char* buf, const char* fmt, const float* m)
+{
+    Do_Three(buf, fmt, m);
+    Do_Three(buf, &s_do67948c, m + 3);
+    Do_Three(buf, &s_do67948c, m + 6);
+    Do_Three(buf, &s_do67948c, m + 9);
+}
+
+extern "C" {
+
+// [FUN_53ece0] writes every scene object of the list 6f653c to the log: its name, state, two frames, its
+// speed along its frame and its velocity and spin
+void __cdecl SceneObjs_Dump()
+{
+    if (!g_696ca0 || !g_do6d2078)
+        return;
+    CallC(Do_WarnOpen);
+    char buf[300];
+    for (BYTE* n = g_do6f653c; n && n - 4; n = F(BYTE*, n - 4, 8)) {
+        BYTE* p = n - 4;
+        BYTE* o = p - 376;
+        sprintf(buf, &s_do67953c, F(int, F(BYTE*, p, -56), 12), o, F(int, p, -360));
+        CallC(Do_Log, buf);
+        sprintf(buf, &s_do679458, F(int, CallThis<BYTE*>(Do_Get800, o), 12));
+        CallC(Do_Log, buf);
+        float t[12], m[12];
+        memcpy(m, CallThis<float*>(Do_Matrix1, o, t), 48);
+        Do_Matrix(buf, &s_do679440, m);
+        memcpy(m, CallThis<float*>(Do_Matrix548, o, t), 48);
+        Do_Matrix(buf, &s_do679524, m);
+        float v[3] = {F(float, o, 416), F(float, o, 420), F(float, o, 424)};
+        const float* M2 = CallThis<float*>(Do_Matrix2, o, t);
+        sprintf(buf, &s_do679434, (double)v[0] * M2[1] + (double)v[1] * M2[4] + (double)v[2] * M2[7]);
+        CallC(Do_Log, buf);
+        Do_Three(buf, &s_do67941c, v);
+        float w[3] = {F(float, o, 428), F(float, o, 432), F(float, o, 436)};
+        Do_Three(buf, &s_do679404, w);
+    }
+    CallC(Do_WarnClose);
+}
+
+} // extern "C"
+
+// === finding the car types' parts in the scene (FUN_53fdb0)
+
+extern "C" int __cdecl sprintf(char*, const char*, ...);
+extern "C" char* __cdecl strerror(int);
+extern "C" void __cdecl Car_CopyTypeNames();
+extern "C" void Cp_SaveTypes(); KING_ALIAS("_Cp_SaveTypes", "_CarTypes_Read")
+extern "C" void Cp_LoadTypes(); KING_ALIAS("_Cp_LoadTypes", "_ObjTypes_Read")
+extern "C" void Cp_FindOrFail(); KING_ALIAS("_Cp_FindOrFail", "_Scene_FindOrFail")
+extern "C" void Cp_LocalChecked(); KING_ALIAS("_Cp_LocalChecked", "_Frame_GetLocalChecked")
+extern "C" void Cp_Translation(); KING_ALIAS("_Cp_Translation", "_Matrix_Translation")
+extern "C" void Cp_Inverse(); KING_ALIAS("_Cp_Inverse", "_Matrix_Inverse")
+extern "C" void Cp_Local(); KING_ALIAS("_Cp_Local", "_Frame_GetLocal")
+extern "C" void Cp_Find(); KING_ALIAS("_Cp_Find", "_Scene_FindObject")
+extern "C" void Cp_ObjFind(); KING_ALIAS("_Cp_ObjFind", "_Objects_Find")
+ASM_VAR(int, g_cp697860, $L_697860)    // set: no type editor library
+ASM_VAR(int, g_cp6ce32c, $L_6ce32c)    // the number of car types
+ASM_VAR(int, g_cp6ce338, $L_6ce338)    // the default car type
+ASM_VAR(int, g_cp6cec68, $L_6cec68)    // fill missing types from the default
+ASM_VAR(BYTE, g_cp697868, $L_697868)   // the car types, 2416 bytes each
+ASM_VAR(BYTE, g_cp6d20f0, $L_6d20f0)   // the cars' scene parts, 1488 bytes each
+ASM_VAR(BYTE, g_cp698aea, $L_698aea)
+ASM_VAR(BYTE, g_cp6989e0, $L_6989e0)
+ASM_VAR(BYTE, g_cp698a00, $L_698a00)
+ASM_VAR(BYTE, g_cp698a0c, $L_698a0c)
+ASM_VAR(BYTE, g_cp698a1c, $L_698a1c)
+ASM_VAR(BYTE, g_cp696bc8, $L_696bc8)
+ASM_VAR(float, g_cp702630, $L_702630)
+ASM_VAR(float, g_cp702634, $L_702634)
+ASM_VAR(float, g_cp702638, $L_702638)
+ASM_VAR(float, g_cp702640, $L_702640)
+ASM_VAR(float, g_cp702644, $L_702644)
+ASM_VAR(float, g_cp702648, $L_702648)
+ASM_VAR(BYTE, g_cp702650, $L_702650)
+ASM_VAR(BYTE, g_cp7025f0, $L_7025f0)
+ASM_VAR(float, g_cp64c264, $L_64c264)
+ASM_VAR(float, g_cp64c258, $L_64c258)
+ASM_VAR(double, g_cp64ca78, $L_64ca78)
+ASM_VAR(double, g_cp64b5b8, $L_64b5b8)
+ASM_VAR(BYTE*, g_cp6ef208, $L_6ef208)
+ASM_VAR(BYTE*, g_cp6ef204, $L_6ef204)
+ASM_VAR(int, g_cp6ef1f0, $L_6ef1f0)
+ASM_VAR(BYTE*, g_cp6ef254, $L_6ef254)
+ASM_VAR(char, s_cp67531c, $L_67531c)
+ASM_VAR(char, s_cp675308, $L_675308)
+ASM_VAR(char, s_cp6752f8, $L_6752f8)
+ASM_VAR(char, s_cp6752d0, $L_6752d0)
+ASM_VAR(char, s_cp679c28, $L_679c28)
+ASM_VAR(char, s_cp679c18, $L_679c18)
+ASM_VAR(char, s_cp679be4, $L_679be4)
+ASM_VAR(char, s_cp679bd0, $L_679bd0)
+ASM_VAR(char, s_cp679b84, $L_679b84)
+ASM_VAR(char, s_cp674da0, $L_674da0)
+ASM_VAR(char, s_cp679b78, $L_679b78)
+ASM_VAR(char, s_cp679b40, $L_679b40)
+ASM_VAR(char, s_cp679b08, $L_679b08)
+ASM_VAR(char, s_cp679ac4, $L_679ac4)
+ASM_VAR(char, s_cp679a80, $L_679a80)
+ASM_VAR(char, s_cp679a3c, $L_679a3c)
+ASM_VAR(char, s_cp679a2c, $L_679a2c)
+ASM_VAR(char, s_cp679a20, $L_679a20)
+ASM_VAR(char, s_cp679a18, $L_679a18)
+ASM_VAR(char, s_cp679a10, $L_679a10)
+ASM_VAR(char, s_cp679a04, $L_679a04)
+ASM_VAR(char, s_cp6799f4, $L_6799f4)
+ASM_VAR(char, s_cp6799e4, $L_6799e4)
+ASM_VAR(char, s_cp6799d4, $L_6799d4)
+ASM_VAR(char, s_cp6799c8, $L_6799c8)
+ASM_VAR(char, s_cp6799b8, $L_6799b8)
+ASM_VAR(char, s_cp6799ac, $L_6799ac)
+ASM_VAR(char, s_cp6799a0, $L_6799a0)
+ASM_VAR(char, s_cp679994, $L_679994)
+ASM_VAR(char, s_cp679988, $L_679988)
+ASM_VAR(char, s_cp679978, $L_679978)
+ASM_VAR(char, s_cp679968, $L_679968)
+ASM_VAR(char, s_cp678460, $L_678460)
+ASM_VAR(char, s_cp678450, $L_678450)
+ASM_VAR(char, s_cp67995c, $L_67995c)
+ASM_VAR(char, s_cp679948, $L_679948)
+ASM_VAR(char, s_cp679940, $L_679940)
+ASM_VAR(char, s_cp679938, $L_679938)
+ASM_VAR(char, s_cp679930, $L_679930)
+ASM_VAR(char, s_cp679928, $L_679928)
+ASM_VAR(char, s_cp679920, $L_679920)
+ASM_VAR(char, s_cp679914, $L_679914)
+ASM_VAR(char, s_cp679908, $L_679908)
+ASM_VAR(char, s_cp672e38, $L_672e38)
+ASM_VAR(char, s_cp6798e4, $L_6798e4)
+ASM_VAR(char, s_cp6798d4, $L_6798d4)
+ASM_VAR(char, s_cp6798c4, $L_6798c4)
+ASM_VAR(char, s_cp6798b0, $L_6798b0)
+ASM_VAR(char, s_cp678474, $L_678474)
+ASM_VAR(char, s_cp678468, $L_678468)
+ASM_VAR(char, s_cp672a18, $L_672a18)
+ASM_VAR(char, s_cp672a24, $L_672a24)
+ASM_VAR(char, s_cp6798a4, $L_6798a4)
+ASM_VAR(char, s_cp679894, $L_679894)
+ASM_VAR(char, s_cp679884, $L_679884)
+ASM_VAR(char, s_cp679874, $L_679874)
+ASM_VAR(char, s_cp679864, $L_679864)
+ASM_VAR(char, s_cp67985c, $L_67985c)
+ASM_VAR(char, s_cp679850, $L_679850)
+ASM_VAR(char, s_cp679844, $L_679844)
+ASM_VAR(char, s_cp679838, $L_679838)
+ASM_VAR(char, s_cp67982c, $L_67982c)
+ASM_VAR(char, s_cp679820, $L_679820)
+ASM_VAR(char, s_cp679814, $L_679814)
+ASM_VAR(char, s_cp679800, $L_679800)
+ASM_VAR(char, s_cp6797c0, $L_6797c0)
+ASM_VAR(char, s_cp672f78, $L_672f78)
+ASM_VAR(char, s_cp6797b4, $L_6797b4)
+ASM_VAR(char, s_cp6797a8, $L_6797a8)
+ASM_VAR(char, s_cp67979c, $L_67979c)
+ASM_VAR(char, s_cp679790, $L_679790)
+ASM_VAR(char, s_cp679784, $L_679784)
+ASM_VAR(char, s_cp6731ec, $L_6731ec)
+ASM_VAR(char, s_cp673298, $L_673298)
+ASM_VAR(char, s_cp673288, $L_673288)
+ASM_VAR(char, s_cp679774, $L_679774)
+ASM_VAR(char, s_cp679768, $L_679768)
+ASM_VAR(char, s_cp67975c, $L_67975c)
+ASM_VAR(char, s_cp679748, $L_679748)
+ASM_VAR(char, s_cp679734, $L_679734)
+ASM_VAR(char, s_cp679720, $L_679720)
+ASM_VAR(char, s_cp679718, $L_679718)
+ASM_VAR(char, s_cp679710, $L_679710)
+ASM_VAR(char, s_cp679708, $L_679708)
+ASM_VAR(char, s_cp679700, $L_679700)
+ASM_VAR(char, s_cp6796f8, $L_6796f8)
+ASM_VAR(char, s_cp6796f0, $L_6796f0)
+
+static BYTE* Cp_F(BYTE* parent, const char* name)
+{
+    return CallC<BYTE*>(Cp_Find, parent, name);
+}
+
+static void Cp_GetLocal(BYTE* o, void* m)
+{
+    CallC(Cp_Local, o, m);
+}
+
+// part name of the car into *slot, its frame into m (identity when missing)
+static void Cp_Part(BYTE* C, int slot, int frame, char* buf, const char* fmt, const char* name)
+{
+    sprintf(buf, fmt, name);
+    BYTE* o = Cp_F(0, buf);
+    F(BYTE*, C, slot) = o;
+    if (o)
+        Cp_GetLocal(o, C + frame);
+    else
+        memcpy(C + frame, &g_cp7025f0, 48);
+}
+
+// the place of point object fmt (name, k) into *slot and its position into pos (zero when missing)
+static void Cp_Point(BYTE* C, int slot, BYTE* pos, char* buf, const char* fmt, const char* name, int k, float* m)
+{
+    sprintf(buf, fmt, name, k);
+    BYTE* o = Cp_F(0, buf);
+    F(BYTE*, C, slot) = o;
+    if (o) {
+        Cp_GetLocal(o, m);
+        memcpy(pos, m + 9, 12);
+    } else
+        memcpy(pos, &g_cp702650, 12);
+}
+
+static void Cp_Fail(const char* text)
+{
+    World_Fatal(text);
+}
+
+extern "C" {
+
+// [FUN_53fdb0] for every car type finds its parts in the scene: the body, the wheels (up to 8; their frames give
+// the wheel positions and the height range of the body), lights, doors, mirrors, cameras, exhausts and more,
+// checks the type's heights against the wheels (fatal when wrong), and, with the type editor library loaded,
+// writes the wheel points to the type's ini; then the world's shared parts
+void __cdecl CarTypes_FindParts()
+{
+    BYTE* lib = 0;
+    typedef void (__cdecl* EditFn)(BYTE*, int, const char*, const char*);
+    EditFn edit = 0;
+    if (!g_cp697860) {
+        lib = (BYTE*)LoadLibraryA(&s_cp67531c);
+        if (!lib)
+            Cp_Fail(&s_cp675308);
+        else {
+            edit = (EditFn)GetProcAddress((HMODULE)lib, &s_cp6752f8);
+            if (!edit)
+                Cp_Fail(&s_cp6752d0);
+        }
+    }
+    char buf[300], name[164], err1[200], err2[200], key[100], val[100], key2[100], err3[300], err4[300];
+    char name3[100], pname[100], pname2[100], pname3[100];
+    float tmp[12], m[12];
+    for (int i = 0; i < g_cp6ce32c; i++) {
+        BYTE* T = &g_cp697868 + i * 2416;
+        BYTE* C = &g_cp6d20f0 + i * 1488;
+        const char* tname = (const char*)(T + 2302);
+        strcpy(name, tname);
+        const char* sname = (const char*)(T + 2342);
+        BYTE* body = Cp_F(0, sname);
+        F(BYTE*, C, 0) = body;
+        if (!body) {
+            sprintf(buf, &s_cp679c28, i + 1, sname);
+            Cp_Fail(buf);
+            continue;
+        }
+        int& total = F(int, T, 2148);
+        int& count = F(int, T, 2144);
+        int kind = F(int, T, 2372);
+        total = 0;
+        count = 0;
+        float lo = 100.0f, hi = -100.0f;
+        bool bad = false;
+        for (char j = 0; j < 8; j++) {
+            sprintf(buf, &s_cp679c18, name, (int)j);
+            BYTE* o = Cp_F(0, buf);
+            F(BYTE*, C, 4 + j * 4) = o;
+            if (o && total == count) {
+                Cp_GetLocal(o, C + 272 + j * 48);
+                float v = (float)(int)F(float, C, 312 + j * 48);
+                if (lo > v)
+                    lo = v;
+                if (hi < v)
+                    hi = v;
+                count++;
+            } else {
+                if (j < 2 && F(int, T, 2372) == 3) {
+                    sprintf(err1, &s_cp679be4, buf);
+                    Cp_Fail(err1);
+                }
+                int k = F(int, T, 2372);
+                if (j < 4 && (k == 4 || k == 2 || k == 1 || k == 0)) {
+                    sprintf(err2, &s_cp679be4, buf);
+                    Cp_Fail(err2);
+                }
+                sprintf(buf, &s_cp679bd0, name, (int)j);
+                o = Cp_F(0, buf);
+                F(BYTE*, C, 4 + j * 4) = o;
+                if (!o)
+                    break;
+                Cp_GetLocal(o, C + 272 + j * 48);
+            }
+            total++;
+        }
+        if (F(float, T, 276) == g_cp64c264) {
+            sprintf(buf, &s_cp679b84, sname);
+            Cp_Fail(buf);
+            continue;
+        }
+        const float sx = g_cp702640, sy = g_cp702644, sz = g_cp702648;
+        if (F(int, T, 860)) {
+            memcpy(C + 704, T, 48);
+            memcpy(C + 752, CallC<void*>(Cp_Inverse, tmp, C + 704), 48);
+            if (!F(int, T, 712)) {
+                for (char j = 0; j < total; j++) {
+                    float off[3];
+                    if (j == 0) {
+                        float w = F(float, T, 184);
+                        off[0] = -sx * w, off[1] = w * -sy, off[2] = w * -sz;
+                    } else if (j == 1) {
+                        float w = F(float, T, 184);
+                        off[0] = w * sx, off[1] = w * sy, off[2] = w * sz;
+                    } else if (j & 1) {
+                        float w = F(float, T, 188);
+                        off[0] = w * sx, off[1] = w * sy, off[2] = w * sz;
+                    } else {
+                        float w = F(float, T, 188);
+                        off[0] = w * -sx, off[1] = w * -sy, off[2] = w * -sz;
+                    }
+                    const float* t = (const float*)(C + 308 + j * 48);
+                    float p[3] = {off[0] + t[0], off[1] + t[1], off[2] + t[2]};
+                    BYTE* dst = j < count ? T + 424 + j * 12 : T + 520 + (j - count) * 12;
+                    memcpy(dst, p, 12);
+                }
+                if (count < 8) {
+                    memcpy(T + 424 + count * 12, T + 2012, 12);
+                    F(float, T, 432 + count * 12) = (float)(F(float, T, 432) - g_cp64ca78);
+                }
+            }
+        } else {
+            float w = F(float, T, 184);
+            float ax = sx * w, ay = sy * w;
+            double az = (double)w * sz;
+            const float* P = (const float*)(T + 424);
+            float hx = ax * g_cp64c258, hy = ay * g_cp64c258;
+            float qx = F(float, C, 308) - hx, qy = F(float, C, 312) - hy;
+            double qz = F(float, C, 316) - az * g_cp64c258;
+            float rx = qx - P[0], ry = qy - P[1], rz = (float)(qz - P[2]);
+            memcpy(C + 704, CallC<void*>(Cp_Translation, tmp, *(DWORD*)&rx, *(DWORD*)&ry, *(DWORD*)&rz), 48);
+            memcpy(C + 752, CallC<void*>(Cp_Inverse, m, C + 704), 48);
+        }
+        if (edit) {
+            const char* ini = (const char*)(T + 2212);
+            const char* sec = (const char*)(T + 2272);
+            SetFileAttributesA(ini, FILE_ATTRIBUTE_NORMAL);
+            int k = 0;
+            for (char j = 0; j < count; j++) {
+                if (j >= 2 && j < count - 2)
+                    continue;
+                float h = F(float, T, 100);
+                const float* P = (const float*)(T + 424 + j * 12);
+                float* d = (float*)(T + 880 + F(int, T, 872) * 12);
+                d[0] = P[0] - g_cp702630 * h, d[1] = P[1] - g_cp702634 * h;
+                d[2] = (float)(P[2] - (double)h * g_cp702638);
+                sprintf(key, &s_cp674da0, k);
+                sprintf(val, &s_cp679b78, (double)d[0], (double)d[1], (double)d[2]);
+                k++;
+                if (!WritePrivateProfileStringA(sec, key, val, ini)) {
+                    sprintf(err3, &s_cp679b40, ini, sec, strerror(GetLastError()));
+                    Cp_Fail(err3);
+                }
+                F(int, T, 872)++;
+            }
+            for (; k < 8; k++) {
+                sprintf(key2, &s_cp674da0, k);
+                if (!WritePrivateProfileStringA(sec, key2, 0, ini)) {
+                    sprintf(err4, &s_cp679b08, sec, ini, strerror(GetLastError()));
+                    Cp_Fail(err4);
+                }
+            }
+            edit(T + 880, F(int, T, 872), ini, sec);
+        }
+        float d = (float)((hi - lo) * g_cp64b5b8);
+        float a = F(float, T, 40), b = F(float, T, 292);
+        float lo2 = d + lo, hi2 = hi - d;
+        if (kind != 3) {
+            bool msgB = false, msgA = false;
+            if (a < lo2)
+                msgA = true;
+            else if (a > hi2 || b < lo || b > hi) {
+                if (a > hi2 || kind == 1 || kind == 4) {
+                    if (a > hi2)
+                        msgA = true;
+                    else
+                        msgB = true;
+                }
+            }
+            if (msgA || msgB) {
+                if (msgA)
+                    sprintf(buf, &s_cp679a80, name, (double)a, (double)hi2, (double)lo2);
+                else
+                    sprintf(buf, &s_cp679ac4, name, (double)b, (double)hi, (double)lo);
+                Cp_Fail(buf);
+            }
+        }
+        if (F(int, T, 2372) == 3) {
+            float c = F(float, T, 2016);
+            if (a < lo2 || a > c) {
+                sprintf(buf, &s_cp679a80, name, (double)a, (double)c, (double)lo);
+                Cp_Fail(buf);
+            } else if (b < lo || b > c) {
+                sprintf(buf, &s_cp679a3c, name, (double)b, (double)c, (double)lo);
+                Cp_Fail(buf);
+            }
+        }
+        memcpy(C + 800, T + 848, 12);
+        kind = F(int, T, 2372);
+        F(int, C, 40) = 0;
+        BYTE* o = 0;
+        if (kind != 3 && kind != 4) {
+            sprintf(buf, &s_cp679a2c, tname);
+            o = CallC<BYTE*>(Cp_FindOrFail, 0, buf, 0);
+        }
+        F(BYTE*, C, 36) = o;
+        if (o)
+            Cp_GetLocal(o, C + 656);
+        else
+            memcpy(C + 656, &g_cp7025f0, 48);
+        F(int, C, 140) = 0, F(int, C, 172) = 0, F(int, C, 204) = 0, F(int, C, 208) = 0, F(int, C, 212) = 0;
+        F(int, C, 144) = 0, F(int, C, 176) = 0, F(int, C, 216) = 0, F(int, C, 220) = 0, F(int, C, 224) = 0;
+        kind = F(int, T, 2372);
+        if (kind != 3 && kind != 4) {
+            sprintf(buf, &s_cp679a20, name);
+            BYTE* p = CallC<BYTE*>(Cp_FindOrFail, 0, buf, 0);
+            F(BYTE*, C, 148) = Cp_F(p, &s_cp679a18);
+            F(BYTE*, C, 152) = Cp_F(p, &s_cp679a10);
+        }
+        sprintf(buf, &s_cp679a04, name);
+        BYTE* p = Cp_F(0, buf);
+        F(BYTE*, C, 44) = p ? Cp_F(p, &s_cp6799f4) : 0;
+        F(BYTE*, C, 60) = p ? Cp_F(p, &s_cp6799e4) : 0;
+        F(BYTE*, C, 180) = p ? Cp_F(p, &s_cp6799d4) : 0;
+        F(BYTE*, C, 188) = p ? Cp_F(p, &s_cp6799c8) : 0;
+        F(BYTE*, C, 192) = p ? Cp_F(p, &s_cp6799b8) : 0;
+        F(BYTE*, C, 228) = p ? Cp_F(p, &s_cp6799ac) : 0;
+        F(BYTE*, C, 236) = p ? Cp_F(p, &s_cp6799a0) : 0;
+        F(BYTE*, C, 240) = p ? Cp_F(p, &s_cp679994) : 0;
+        sprintf(buf, &s_cp679988, name);
+        p = Cp_F(0, buf);
+        F(BYTE*, C, 48) = p ? Cp_F(p, &s_cp679978) : 0;
+        F(BYTE*, C, 64) = p ? Cp_F(p, &s_cp679968) : 0;
+        F(BYTE*, C, 184) = p ? Cp_F(p, &s_cp6799d4) : 0;
+        F(BYTE*, C, 196) = p ? Cp_F(p, &s_cp6799c8) : 0;
+        F(BYTE*, C, 200) = p ? Cp_F(p, &s_cp6799b8) : 0;
+        F(BYTE*, C, 232) = p ? Cp_F(p, &s_cp6799ac) : 0;
+        F(BYTE*, C, 244) = p ? Cp_F(p, &s_cp6799a0) : 0;
+        F(BYTE*, C, 248) = p ? Cp_F(p, &s_cp679994) : 0;
+        memcpy(m, &g_cp7025f0, 48);
+        sprintf(buf, &s_cp678460, name);
+        BYTE* g = CallC<BYTE*>(Cp_FindOrFail, 0, buf, name);
+        F(BYTE*, C, 68) = g;
+        F(BYTE*, C, 72) = CallC<BYTE*>(Cp_FindOrFail, g, &s_cp678450, name);
+        for (char j = 0; j < total; j++) {
+            sprintf(buf, &s_cp67995c, name, (int)j);
+            sprintf(pname, &s_cp679948, (int)j);
+            F(int, C, 76 + j * 4) = 0;
+            F(BYTE*, C, 108 + j * 4) = CallC<BYTE*>(Cp_FindOrFail, 0, pname, name);
+        }
+        static const char* const lamps[4] = {&s_cp679940, &s_cp679938, &s_cp679930, &s_cp679928};
+        for (int k = 0; k < 4; k++) {
+            strcpy(buf, lamps[k]);
+            F(BYTE*, C, 156 + k * 4) = Cp_F(0, buf);
+        }
+        F(BYTE*, C, 260) = Cp_F(F(BYTE*, C, 0), &s_cp679920);
+        F(BYTE*, C, 252) = Cp_F(F(BYTE*, C, 0), &s_cp679914);
+        F(BYTE*, C, 256) = Cp_F(F(BYTE*, C, 0), &s_cp679908);
+        char* name2 = (char*)(T + 2322);
+        sprintf(buf, &s_cp672e38, name2);
+        kind = F(int, T, 2372);
+        if (kind != 3 && kind != 4) {
+            BYTE* sh = Cp_F(0, buf);
+            F(BYTE*, C, 812) = sh;
+            if (!sh) {
+                strcpy(name2, (const char*)(&g_cp698aea + g_cp6ce338 * 2416));
+                sprintf(name3, &s_cp672e38, name2);
+                sh = Cp_F(0, name3);
+                F(BYTE*, C, 812) = sh;
+                if (g_cp6cec68) {
+                    if (!sh) {
+                        sprintf(buf, &s_cp6798e4, name3);
+                        Cp_Fail(buf);
+                    }
+                    if (g_cp6cec68) {
+                        int base = g_cp6ce338 * 2416;
+                        memcpy(T + 2100, &g_cp698a0c + base, 16);
+                        memcpy(T + 2056, &g_cp6989e0 + base, 20);
+                        for (int q = 0; q < 3; q++) {
+                            F(int, T, 2076 + q * 4) = F(int, &g_cp698a00 + base, -12 + q * 4);
+                            F(int, T, 2088 + q * 4) = F(int, &g_cp698a00 + base, q * 4);
+                        }
+                        memcpy(T + 2116, &g_cp698a1c + base, 28);
+                    }
+                }
+            }
+            sprintf(buf, &s_cp6798d4, name2);
+            F(BYTE*, C, 816) = Cp_F(0, buf);
+            sprintf(buf, &s_cp6798c4, name2);
+            F(BYTE*, C, 820) = Cp_F(0, buf);
+            sprintf(buf, &s_cp6798b0, name2);
+            F(BYTE*, C, 824) = Cp_F(0, buf);
+            static const int frames[3] = {828, 876, 924};
+            for (int q = 0; q < 3; q++) {
+                BYTE* f = F(BYTE*, C, 816 + q * 4);
+                if (f) {
+                    CallC(Cp_LocalChecked, f, C + frames[q]);
+                    F(int, C, 972 + q * 4) = 1;
+                } else {
+                    memcpy(C + frames[q], &g_cp7025f0, 48);
+                    F(int, C, 972 + q * 4) = 0;
+                }
+            }
+        }
+        sprintf(buf, &s_cp678474, tname);
+        F(BYTE*, C, 984) = CallC<BYTE*>(Cp_ObjFind, buf);
+        F(int, C, 1008) = 0;
+        if (!F(BYTE*, C, 984)) {
+            for (int k = 1; k <= 6; k++) {
+                sprintf(buf, &s_cp678468, tname, k);
+                F(BYTE*, C, 984 + (k - 1) * 4) = CallC<BYTE*>(Cp_ObjFind, buf);
+                F(int, C, 1008 + (k - 1) * 4) = 0;
+            }
+        } else
+            for (int k = 0; k < 5; k++) {
+                F(int, C, 988 + k * 4) = 0;
+                F(int, C, 1012 + k * 4) = 0;
+            }
+        F(BYTE*, C, 1064) = Cp_F(F(BYTE*, C, 0), &s_cp672a18);
+        F(BYTE*, C, 1068) = Cp_F(F(BYTE*, C, 0), &s_cp672a24);
+        F(BYTE*, C, 264) = Cp_F(F(BYTE*, C, 0), &s_cp6798a4);
+        for (int q = 0; q < 3; q++) {
+            Cp_Point(C, 1032 + q * 4, C + 1076 + q * 12, pname2, &s_cp679894, tname, q + 1, m);
+            Cp_Point(C, 1044 + q * 4, C + 1112 + q * 12, pname3, &s_cp679884, tname, q + 1, m);
+        }
+        sprintf(buf, &s_cp679874, tname);
+        BYTE* e = Cp_F(0, buf);
+        F(BYTE*, C, 1056) = e;
+        if (e) {
+            Cp_GetLocal(e, m);
+            memcpy(C + 1148, m + 9, 12);
+        } else
+            memcpy(C + 1148, &g_cp702650, 12);
+        sprintf(buf, &s_cp679864, tname);
+        e = Cp_F(0, buf);
+        F(BYTE*, C, 1060) = e;
+        if (e) {
+            Cp_GetLocal(e, m);
+            memcpy(C + 1160, m + 9, 12);
+        } else
+            memcpy(C + 1160, &g_cp702650, 12);
+        F(BYTE*, C, 1072) = Cp_F(0, &s_cp67985c);
+        Cp_Part(C, 1172, 1196, buf, &s_cp679850, tname);
+        Cp_Part(C, 1176, 1244, buf, &s_cp679844, tname);
+        sprintf(buf, &s_cp679850, tname);
+        Cp_Part(C, 1180, 1292, buf, &s_cp679838, tname);
+        Cp_Part(C, 1184, 1340, buf, &s_cp67982c, tname);
+        Cp_Part(C, 1188, 1388, buf, &s_cp679820, tname);
+        Cp_Part(C, 1192, 1436, buf, &s_cp679814, tname);
+        F(BYTE*, C, 1484) = Cp_F(F(BYTE*, C, 0), &s_cp679800);
+    }
+    if (lib)
+        FreeLibrary((HMODULE)lib);
+    if (!g_cp697860) {
+        Sleep(12000);
+        CallC(Cp_SaveTypes, &g_cp696bc8, 1);
+        Car_CopyTypeNames();
+        CallC(Cp_LoadTypes, &g_cp696bc8, 0);
+        Cp_Fail(&s_cp6797c0);
+    }
+    g_cp6ef208 = Cp_F(0, &s_cp672f78);
+    g_cp6ef204 = CallC<BYTE*>(Cp_ObjFind, &s_cp6797b4);
+    g_cp6ef1f0 = 0;
+    BYTE** w = &g_cp6ef254;
+    w[0] = Cp_F(0, &s_cp6797a8);
+    w[1] = Cp_F(0, &s_cp67979c);
+    w[2] = Cp_F(0, &s_cp679790);
+    w[3] = CallC<BYTE*>(Cp_ObjFind, &s_cp679784);
+    w[4] = CallC<BYTE*>(Cp_ObjFind, &s_cp6731ec);
+    w[5] = CallC<BYTE*>(Cp_ObjFind, &s_cp673298);
+    w[6] = CallC<BYTE*>(Cp_ObjFind, &s_cp673288);
+    w[7] = CallC<BYTE*>(Cp_ObjFind, &s_cp679774);
+    w[8] = Cp_F(0, &s_cp679768);
+    w[9] = Cp_F(0, &s_cp67975c);
+    w[10] = CallC<BYTE*>(Cp_ObjFind, &s_cp679748);
+    w[11] = CallC<BYTE*>(Cp_ObjFind, &s_cp679734);
+    w[12] = CallC<BYTE*>(Cp_ObjFind, &s_cp679720);
+    w[13] = Cp_F(0, &s_cp679718);
+    w[14] = Cp_F(0, &s_cp679710);
+    w[17] = Cp_F(0, &s_cp679708);
+    w[18] = Cp_F(0, &s_cp679700);
+    w[15] = Cp_F(0, &s_cp6796f8);
+    w[16] = Cp_F(0, &s_cp6796f0);
 }
 
 } // extern "C"

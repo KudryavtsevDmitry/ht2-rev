@@ -824,7 +824,7 @@ extern "C" void __fastcall Shadow_Add(BYTE* s, void*, int a0, int a1, const floa
 
 extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")
 extern "C" void FUN_579890(); KING_ALIAS("_FUN_579890", "@ShadowStack_Push@8")
-ASM_PROC(FUN_57b2d0)
+extern "C" void FUN_57b2d0(); KING_ALIAS("_FUN_57b2d0", "@Decal_Build@32")
 extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
 ASM_VAR(int, g_6f4bb4, $L_6f4bb4)
 ASM_VAR(int, g_6f4bb8, $L_6f4bb8)
@@ -1630,6 +1630,199 @@ int __cdecl Point_InTriangleXY(float x, float y, const float* xs, const float* y
     Vec3_Diff(&pc, &p, &c);
     Vec3_Cross2(&r, &pc, &ac);
     return z1 <= g_ff64c3f0 && z2 <= g_ff64c3f0 && r.z <= g_ff64c3f0;
+}
+
+} // extern "C"
+
+// === a ground decal's vertex grid (FUN_57b2d0)
+
+struct Dg_V { float x, y, z; };
+extern "C" void Dg_SetThis(); KING_ALIAS("_Dg_SetThis", "@Vec3_SetThis@20")
+extern "C" void Dg_LengthSq(); KING_ALIAS("_Dg_LengthSq", "_Vec3_LengthSq")
+extern "C" void Dg_DivBy(); KING_ALIAS("_Dg_DivBy", "_Vec3_DivBy")
+extern "C" void Dg_ScaleBy(); KING_ALIAS("_Dg_ScaleBy", "_Vec3_ScaleBy")
+extern "C" void Dg_Diff(); KING_ALIAS("_Dg_Diff", "_Vec3_Diff")
+extern "C" void Dg_Sum(); KING_ALIAS("_Dg_Sum", "_Vec3_Sum")
+extern "C" void Dg_Times(); KING_ALIAS("_Dg_Times", "_Vec3_Times")
+extern "C" void Dg_DivideBy(); KING_ALIAS("_Dg_DivideBy", "@Vec3_DivideBy@12")
+extern "C" void Dg_Set2Vec(); KING_ALIAS("_Dg_Set2Vec", "@Fx_Set2Vec@24")
+extern "C" void Dg_RecordsHeight(); KING_ALIAS("_Dg_RecordsHeight", "_Records_Height")
+ASM_FUNC(Dg_TerrainHeight, FUN_616850)
+ASM_VAR(BYTE*, g_dg6cec98, $L_6cec98)
+ASM_VAR(BYTE*, g_dg6f33b4, $L_6f33b4)
+ASM_VAR(float, g_dg6503e0, $L_6503e0)
+ASM_VAR(double, g_dg6503d8, $L_6503d8)
+ASM_VAR(float, g_dg64c250, $L_64c250)
+ASM_VAR(float, g_dg64c264, $L_64c264)
+ASM_VAR(float, g_dg64c908, $L_64c908)
+ASM_VAR(float, g_dg64c304, $L_64c304)
+
+static void Dg_Set(Dg_V* v, float x, float y, float z)
+{
+    CallThis(Dg_SetThis, v, *(DWORD*)&x, *(DWORD*)&y, *(DWORD*)&z);
+}
+
+static float Dg_Len(const Dg_V* v)
+{
+    return (float)x87_sqrt(CallC<double>(Dg_LengthSq, v));
+}
+
+static Dg_V* Dg_Scale(Dg_V* out, float k, const Dg_V* v)
+{
+    return CallC<Dg_V*>(Dg_ScaleBy, out, *(DWORD*)&k, v);
+}
+
+// how much edge a..b (heights az, bz) leans toward the decal: the height difference over the edge length
+static float Dg_Lean(const float* a, const float* b)
+{
+    float dz = a[2] - b[2];
+    Dg_V d;
+    Dg_Set(&d, a[0] - b[0], a[1] - b[1], dz);
+    return (float)(x87_fabs(dz) / x87_sqrt(CallC<double>(Dg_LengthSq, &d)));
+}
+
+// e made a unit vector, or (when shorter than 1) the unit vector across o, turned by flip
+static void Dg_Unit(Dg_V* e, float len, const Dg_V* o, int flip)
+{
+    if (len < g_dg64c250) {
+        float z = g_dg64c264;
+        Dg_V v, u;
+        v.x = o->y - z, v.y = z - o->x, v.z = 0;
+        float l = Dg_Len(&v);
+        CallC(Dg_DivBy, &u, &v, *(DWORD*)&l);
+        if (flip) {
+            Dg_V n;
+            Dg_Set(&n, -u.x, -u.y, -u.z);
+            *e = n;
+        } else
+            *e = u;
+    } else
+        e->x = e->x / len, e->y = e->y / len, e->z = e->z / len;
+}
+
+extern "C" {
+
+// [FUN_57b2d0] makes decal d (owner +6920) over the ground quad c (4 corners) as a grid of 6 by rows 32-byte
+// vertices (counts +6912 / +6916): the corners are moved in by how steeply the edges lean (times k) and, at sharp
+// corners, by a little more; each vertex sits on the objects arr[0..n) (or the terrain) slightly above them;
+// 0 for no objects or no owner
+int __fastcall Decal_Build(BYTE* s, void*, BYTE* arr, unsigned n, const float* c, unsigned rows, float k, int owner)
+{
+    if (!n || n > 15 || !owner)
+        return 0;
+    F(int, s, 6920) = owner;
+    F(int, s, 6924) = 1;
+    Dg_V P0 = {c[0], c[1], 0}, P1 = {c[3], c[4], 0}, P2 = {c[6], c[7], 0}, P3 = {c[9], c[10], 0};
+    const float* c0 = c;
+    const float* c2 = c + 6;
+    const float* c3 = c + 9;
+    Dg_V A, B, dA, dB, N, t;
+    Dg_Set(&A, P2.x - P0.x, P2.y - P0.y, 0);
+    float la = Dg_Len(&A);
+    CallC(Dg_DivBy, &dA, &A, *(DWORD*)&la);
+    Dg_Set(&B, P1.x - P0.x, P1.y - P0.y, P1.z - P0.z);
+    float lb = Dg_Len(&B);
+    CallC(Dg_DivBy, &dB, &B, *(DWORD*)&lb);
+    float nx = dA.z * dB.y - dA.y * dB.z, ny = dA.x * dB.z - dB.x * dA.z, nz = dB.x * dA.y - dA.x * dB.y;
+    Dg_Set(&N, -nx, -ny, -nz);
+    float ang = (float)x87_acos(N.z);
+    int flip = N.z > g_dg6503e0 ? 1 : 0;
+    int e1 = c0[2] > c2[2], e2 = c0[2] < c2[2];
+    if (flip)
+        e1 = !e1, e2 = !e2;
+    float r1 = Dg_Lean(c0, c2);
+    float k172 = e1 ? r1 * k : 0, k176 = e2 ? r1 * k : 0;
+    int f1 = c2[2] <= c3[2], f2 = !(c2[2] < c3[2]);
+    if (flip)
+        f1 = !f1, f2 = !f2;
+    float r2 = Dg_Lean(c2, c3);
+    float k180 = f2 ? r2 * k : 0, k184 = f1 ? r2 * k : 0;
+    Dg_V E1, E2;
+    Dg_Set(&E1, P1.x - P0.x, P1.y - P0.y, P1.z - P0.z);
+    Dg_Set(&E2, P2.x - P0.x, P2.y - P0.y, P2.z - P0.z);
+    float l1 = Dg_Len(&E1), l2 = Dg_Len(&E2);
+    Dg_Unit(&E1, l1, &E2, flip);
+    Dg_Unit(&E2, l2, &E1, flip);
+    Dg_V a, b, v, w;
+    Dg_Set(&a, E1.x * k180, E1.y * k180, E1.z * k180);
+    Dg_Set(&b, E2.x * k172, E2.y * k172, E2.z * k172);
+    Dg_Set(&v, P0.x - b.x, P0.y - b.y, P0.z - b.z);
+    Dg_Set(&w, v.x - a.x, v.y - a.y, v.z - a.z);
+    P0 = w;
+    Dg_Set(&a, E1.x * k184, E1.y * k184, E1.z * k184);
+    Dg_Set(&b, E2.x * k172, E2.y * k172, E2.z * k172);
+    Dg_Set(&v, P1.x - b.x, P1.y - b.y, P1.z - b.z);
+    Dg_Set(&w, a.x + v.x, a.y + v.y, a.z + v.z);
+    P1 = w;
+    Dg_Set(&v, E1.x * k180, E1.y * k180, E1.z * k180);
+    Dg_Set(&b, E2.x * k176, E2.y * k176, E2.z * k176);
+    Dg_Set(&a, b.x + P2.x, b.y + P2.y, b.z + P2.z);
+    Dg_Set(&w, a.x - v.x, a.y - v.y, a.z - v.z);
+    P2 = w;
+    Dg_Set(&a, E1.x * k184, E1.y * k184, E1.z * k184);
+    Dg_Set(&b, E2.x * k176, E2.y * k176, E2.z * k176);
+    Dg_Set(&v, b.x + P3.x, b.y + P3.y, b.z + P3.z);
+    Dg_Set(&w, a.x + v.x, a.y + v.y, a.z + v.z);
+    P3 = w;
+    Dg_Set(&t, P1.x - P0.x, P1.y - P0.y, P1.z - P0.z);
+    E1 = t;
+    Dg_Set(&t, P2.x - P0.x, P2.y - P0.y, P2.z - P0.z);
+    E2 = t;
+    if (ang < g_dg6503d8) {
+        Dg_V t1, t2, r, q;
+        const float s6 = 0.06f, s12 = 0.12f;
+        Dg_Scale(&t1, s6, &E2);
+        Dg_Scale(&t2, s12, &E1);
+        P0 = *CallC<Dg_V*>(Dg_Diff, &q, CallC<Dg_V*>(Dg_Diff, &r, &P0, &t2), &t1);
+        Dg_Scale(&t1, s6, &E2);
+        Dg_Scale(&t2, s12, &E1);
+        P1 = *CallC<Dg_V*>(Dg_Diff, &q, CallC<Dg_V*>(Dg_Sum, &r, &P1, &t2), &t1);
+        Dg_Scale(&t1, s6, &E2);
+        Dg_Scale(&t2, s12, &E1);
+        P2 = *CallC<Dg_V*>(Dg_Sum, &q, CallC<Dg_V*>(Dg_Diff, &r, &P2, &t2), &t1);
+        Dg_Scale(&t1, s6, &E2);
+        Dg_Scale(&t2, s12, &E1);
+        P3 = *CallC<Dg_V*>(Dg_Sum, &q, CallC<Dg_V*>(Dg_Sum, &r, &P3, &t2), &t1);
+        E1 = *CallC<Dg_V*>(Dg_Diff, &t1, &P1, &P0);
+        E2 = *CallC<Dg_V*>(Dg_Diff, &t1, &P2, &P0);
+    }
+    l1 = Dg_Len(&E1);
+    l2 = Dg_Len(&E2);
+    CallThis(Dg_DivideBy, &E1, *(DWORD*)&l1);
+    CallThis(Dg_DivideBy, &E2, *(DWORD*)&l2);
+    float across = l1 * g_dg64c908;
+    float last = (float)(__int64)(rows - 1);
+    F(int, s, 6916) = rows * 6;
+    F(int, s, 6912) = rows * 30 - 30;
+    float step = l2 / last;
+    if (!rows)
+        return 1;
+    BYTE* rec = s;
+    for (unsigned i = 0; i < rows; i++) {
+        float fi = (float)(__int64)i;
+        float u = fi / last;
+        for (unsigned j = 0; j < 6; j++, rec += 32) {
+            float fj = (float)(__int64)j;
+            float vv = fj * g_dg64c908;
+            Dg_V up, m1, m2, m3, m4, s1, pos;
+            Dg_Set(&up, 0, 0, 1.0f);
+            CallC<Dg_V*>(Dg_Times, &m1, &E2, *(DWORD*)&step);
+            CallC<Dg_V*>(Dg_Times, &m2, &m1, *(DWORD*)&fi);
+            CallC<Dg_V*>(Dg_Times, &m3, &E1, *(DWORD*)&across);
+            CallC<Dg_V*>(Dg_Times, &m4, &m3, *(DWORD*)&fj);
+            CallC(Dg_Sum, &s1, &P0, &m4);
+            CallC(Dg_Sum, &pos, &s1, &m2);
+            BYTE tmp[32];
+            memcpy(rec, CallThis<BYTE*>(Dg_Set2Vec, tmp, &pos, &up, *(DWORD*)&vv, *(DWORD*)&u), 32);
+            double z;
+            if (F(int, g_dg6cec98, 384) != 1)
+                z = CallC<double>(Dg_RecordsHeight, F(DWORD, rec, 0), F(DWORD, rec, 4), arr, n);
+            else
+                z = CallThis<float>(Dg_TerrainHeight, g_dg6f33b4, F(DWORD, rec, 0), F(DWORD, rec, 4));
+            F(float, rec, 8) = (float)(z + g_dg64c304);
+        }
+    }
+    return 1;
 }
 
 } // extern "C"

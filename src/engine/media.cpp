@@ -4539,3 +4539,80 @@ int __fastcall Plume_Quad(BYTE* s, void*, BYTE* buf, unsigned idx, float t, floa
 }
 
 } // extern "C"
+
+// === drawing a plume (FUN_5c6580)
+
+ASM_FUNC(Pl_Update, FUN_5ccb20)
+extern "C" void Pl_Length(); KING_ALIAS("_Pl_Length", "_Vec3_Length")
+extern "C" void Pl_Count(); KING_ALIAS("_Pl_Count", "@Media_Get4@8")
+extern "C" void Pl_RenderMaterial(); KING_ALIAS("_Pl_RenderMaterial", "@Render_Material@8")
+extern "C" void Pl_Material(); KING_ALIAS("_Pl_Material", "@Material_Select@24")
+extern "C" void Pl_floor(); KING_ALIAS("_Pl_floor", "_floor")
+ASM_VAR(BYTE*, g_pl70ebe4, $L_70ebe4)
+ASM_VAR(BYTE, g_pl708450, $L_708450)    // the vertex buffer
+ASM_VAR(WORD, g_pl707f9c, $L_707f9c)    // the quad indices
+ASM_VAR(float, g_pl64c268, $L_64c268)
+ASM_VAR(float, g_pl64c334, $L_64c334)
+ASM_VAR(float, g_pl64c328, $L_64c328)
+ASM_VAR(float, g_pl64c664, $L_64c664)
+ASM_VAR(float, g_pl651c74, $L_651c74)
+ASM_VAR(float, g_pl64d2f8, $L_64d2f8)
+
+extern "C" {
+
+// [FUN_5c6580] updates the plume (FUN_5ccb20 with pos, a4..a7, a9) and draws its segments as quads: unless a9
+// it fades out with the distance from the camera (nothing when far); a ring of 20 quads per 30 segments for the
+// first n * 64c328 rings, then the rest from the far end, while the fade reaches them; with material mat
+void __cdecl Plume_Draw(BYTE* r, int mat, const float* pos, int a4, float h, int a6, int a7, float mid, int a9)
+{
+    CallThis(Pl_Update, g_pl70ebe4, pos, a4, *(DWORD*)&h, a6, a7, a9);
+    int n = CallThis<int>(Pl_Count, g_pl70ebe4);
+    float fade = 1.0f;
+    if (!a9) {
+        const float* c = CallThis<const float*>(Pl_RenderMaterial, r);
+        float d[3] = {c[0] - pos[0], c[1] - pos[1], c[2] - pos[2]};
+        double len = CallC<double>(Pl_Length, d) * g_pl64c268;
+        if (len > g_pq64c250)
+            return;
+        len = len - g_pl64c334;
+        if (len < g_pq64c264)
+            len = g_pq64c264;
+        fade = (float)(g_pq64c250 - len);
+    }
+    float nf = (float)n;
+    int k = (int)CallC<double>(Pl_floor, (double)nf * g_pl64c328);
+    int q = 0;
+    float span = h * g_pl64d2f8;
+    if (k > 0) {
+        int seg = 0;
+        for (int ring = k; ring; ring--, seg += 30) {
+            for (int j = 20; j > 0; j--) {
+                double v = (g_pl64c664 - j) * (double)g_pl651c74;
+                if (!(fade > v))
+                    break;
+                float t = (float)((fade - v) * g_pl64c664);
+                BYTE* quad = F(BYTE*, g_pl70ebe4, 0) + (j + seg) * 56;
+                q = Plume_Quad(quad, 0, &g_pl708450, q, t, pos[2], span, mid);
+            }
+        }
+    }
+    int lim = k * 20;
+    if (n > lim) {
+        float kk = k * g_pl64c664;
+        BYTE* quad = F(BYTE*, g_pl70ebe4, 0) + n * 56;
+        for (int j = n; j > lim; j--, quad -= 56) {
+            double v = (nf - (j - kk)) * (double)g_pl651c74;
+            if (!(fade > v))
+                break;
+            float t = (float)((fade - v) * g_pl64c664);
+            q = Plume_Quad(quad, 0, &g_pl708450, q, t, pos[2], span, mid);
+        }
+    }
+    if (!q)
+        return;
+    if (mat)
+        CallThis(Pl_Material, r, mat, 0, 0, 0);
+    Com(g_bm720908, 104, 4, 322, &g_pl708450, q * 4, &g_pl707f9c, q * 6, 0);
+}
+
+} // extern "C"

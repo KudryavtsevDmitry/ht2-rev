@@ -1620,3 +1620,334 @@ float __fastcall Filter_Value(BYTE* s)
 }
 
 } // extern "C"
+
+// === vehicle log writers ($L_4e9e97; only the first has a label, the others are unreferenced in the game)
+
+ASM_VAR(char, s_vl674138, $L_674138)
+ASM_VAR(char, s_vl67413c, $L_67413c)
+ASM_VAR(char, s_vl674144, $L_674144)
+ASM_VAR(char, s_vl67414c, $L_67414c)
+ASM_VAR(char, s_vl674154, $L_674154)
+ASM_VAR(char, s_vl67415c, $L_67415c)
+ASM_VAR(char, s_vl674168, $L_674168)
+ASM_VAR(char, s_vl674178, $L_674178)
+ASM_VAR(char, s_vl674180, $L_674180)
+ASM_VAR(char, s_vl67418c, $L_67418c)
+ASM_VAR(char, s_vl674198, $L_674198)
+ASM_VAR(char, s_vl6741a4, $L_6741a4)
+ASM_VAR(char, s_vl6741b0, $L_6741b0)
+ASM_VAR(char, s_vl6741bc, $L_6741bc)
+ASM_VAR(char, s_vl6741c8, $L_6741c8)
+ASM_VAR(char, s_vl6741d4, $L_6741d4)
+
+// the three floats at v with format fmt to log i
+static void Vl_Three(int i, const char* fmt, const float* v)
+{
+    fprintf(g_vehLogs[i], fmt, (double)v[0], (double)v[1], (double)v[2]);
+}
+
+// the rows of the 4x3 matrix m with the four formats
+static void Vl_Rows(int i, const char* f0, const char* f1, const char* f2, const char* f3, const float* m)
+{
+    Vl_Three(i, f0, m);
+    Vl_Three(i, f1, m + 3);
+    Vl_Three(i, f2, m + 6);
+    Vl_Three(i, f3, m + 9);
+}
+
+extern "C" {
+
+// [$L_4e9e97] writes the number v to vehicle log i when it is open
+void __cdecl VehLog_Int(int i, int v)
+{
+    if (VehLog_Open(i))
+        fprintf(g_vehLogs[i], &s_vl674138, v);
+}
+
+// the rest of the same block, never called
+void __cdecl VehLog_Int2(int i, int v)
+{
+    if (VehLog_Open(i))
+        fprintf(g_vehLogs[i], &s_vl67413c, v);
+}
+
+void __cdecl VehLog_Pair(int i, int a, int b)
+{
+    if (VehLog_Open(i))
+        fprintf(g_vehLogs[i], &s_vl674144, a, b);
+}
+
+void __cdecl VehLog_Float(int i, float f)
+{
+    if (VehLog_Open(i))
+        fprintf(g_vehLogs[i], &s_vl67414c, (double)f);
+}
+
+void __cdecl VehLog_NamedFloat(int i, int a, float f)
+{
+    if (VehLog_Open(i))
+        fprintf(g_vehLogs[i], &s_vl674154, a, (double)f);
+}
+
+void __cdecl VehLog_Vector(int i, const float* v)
+{
+    if (VehLog_Open(i))
+        Vl_Three(i, &s_vl67415c, v);
+}
+
+void __cdecl VehLog_NamedVector(int i, int a, const float* v)
+{
+    if (VehLog_Open(i))
+        fprintf(g_vehLogs[i], &s_vl674168, a, (double)v[0], (double)v[1], (double)v[2]);
+}
+
+void __cdecl VehLog_NamedMatrix(int i, int a, const float* m)
+{
+    if (!VehLog_Open(i))
+        return;
+    fprintf(g_vehLogs[i], &s_vl674178, a);
+    Vl_Rows(i, &s_vl674180, &s_vl67418c, &s_vl674198, &s_vl6741a4, m);
+}
+
+void __cdecl VehLog_Matrix(int i, const float* m)
+{
+    if (VehLog_Open(i))
+        Vl_Rows(i, &s_vl6741b0, &s_vl6741bc, &s_vl6741c8, &s_vl6741d4, m);
+}
+
+} // extern "C"
+
+// === warning log writers, the debug socket and filter windows ($L_4ea365; the writers and the socket are
+// unreferenced in the game, the windows at $L_4eaa41.. are used by the filters)
+
+ASM_FUNC(Ws_closesocket, FUN_6300b0)
+ASM_FUNC(Ws_connect, FUN_6300b6)
+ASM_FUNC(Ws_htons, FUN_6300bc)
+ASM_FUNC(Ws_inet_addr, FUN_6300c2)
+ASM_FUNC(Ws_socket, FUN_6300c8)
+ASM_FUNC(Ws_WSAGetLastError, FUN_6300ce)
+ASM_FUNC(Ws_WSAStartup, FUN_6300d4)
+ASM_FUNC(Ws_send, FUN_6300da)
+extern "C" int __cdecl wsprintfA(char*, const char*, ...);
+extern "C" void Wl_DumpText(); KING_ALIAS("_Wl_DumpText", "_Dump_Text")
+ASM_VAR(char, s_wl6741f0, $L_6741f0)
+ASM_VAR(char, s_wl6741f8, $L_6741f8)
+ASM_VAR(char, s_wl674200, $L_674200)
+ASM_VAR(char, s_wl67420c, $L_67420c)
+ASM_VAR(char, s_wl674214, $L_674214)
+ASM_VAR(char, s_wl67421c, $L_67421c)
+ASM_VAR(char, s_wl674224, $L_674224)
+ASM_VAR(char, s_wl674230, $L_674230)
+ASM_VAR(char, s_wl674240, $L_674240)
+ASM_VAR(char, s_wl674248, $L_674248)
+ASM_VAR(char, s_wl674254, $L_674254)
+ASM_VAR(char, s_wl674260, $L_674260)
+ASM_VAR(char, s_wl67426c, $L_67426c)
+ASM_VAR(char, s_wl674278, $L_674278)
+ASM_VAR(char, s_wl674284, $L_674284)
+ASM_VAR(char, s_wl674290, $L_674290)
+ASM_VAR(char, s_wl67429c, $L_67429c)
+ASM_VAR(char, s_wl6742a8, $L_6742a8)
+ASM_VAR(char, s_wl6742c4, $L_6742c4)
+ASM_VAR(char, s_wl6742dc, $L_6742dc)
+ASM_VAR(char, s_wl6742ec, $L_6742ec)
+ASM_VAR(char, s_wl674308, $L_674308)
+ASM_VAR(WORD, g_wl696e48, $L_696e48)    // a sockaddr_in: family, port +2, address +4
+ASM_VAR(int, g_wl696e58, $L_696e58)     // the socket
+ASM_VAR(double, g_wl64b658, $L_64b658)
+ASM_VAR(float, g_wl64c938, $L_64c938)
+ASM_VAR(float, g_wl64c264, $L_64c264)
+ASM_VAR(float, g_wl64c250, $L_64c250)
+ASM_VAR(double, g_wl64b670, $L_64b670)
+ASM_VAR(double, g_wl64d938, $L_64d938)
+ASM_VAR(double, g_wl64b6e0, $L_64b6e0)
+extern "C" double __cdecl Wl_sqrt(double); KING_ALIAS("_Wl_sqrt", "_sqrt")
+extern "C" double __cdecl Wl_fabs(double); KING_ALIAS("_Wl_fabs", "_fabs")
+extern "C" double __cdecl Wl_cos(double); KING_ALIAS("_Wl_cos", "_cos")
+
+// whether the warning log takes a line now (locking it when that is asked for)
+static bool Wl_Begin()
+{
+    if (g_wd6974d4)
+        CallC(FUN_4e9ce4);
+    return g_wd6974d0 && g_wd6975a8;
+}
+
+static void Wl_End()
+{
+    if (g_wd6974d4)
+        CallC(FUN_4e9d90);
+}
+
+static void Wl_Three(const char* fmt, const float* v)
+{
+    fprintf(g_wd6975a8, fmt, (double)v[0], (double)v[1], (double)v[2]);
+}
+
+static void Wl_Rows(const char* f0, const char* f1, const char* f2, const char* f3, const float* m)
+{
+    Wl_Three(f0, m);
+    Wl_Three(f1, m + 3);
+    Wl_Three(f2, m + 6);
+    Wl_Three(f3, m + 9);
+}
+
+// whether x lies in the filter window (64c938, 64b658]
+static bool Wl_In(float x)
+{
+    return !(x > g_wl64b658) && x > g_wl64c938;
+}
+
+extern "C" {
+
+// [$L_4ea365] writes two numbers to the warning log
+void __cdecl WarnLog_Pair(int a, int b)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl6741f0, a, b);
+    Wl_End();
+}
+
+void __cdecl WarnLog_Int(int a)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl6741f8, a);
+    Wl_End();
+}
+
+void __cdecl WarnLog_Pair2(int a, int b)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl674200, a, b);
+    Wl_End();
+}
+
+void __cdecl WarnLog_Float(float f)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl67420c, (double)f);
+    Wl_End();
+}
+
+void __cdecl WarnLog_NamedFloat(int a, float f)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl674214, a, (double)f);
+    Wl_End();
+}
+
+void __cdecl WarnLog_Triple(int a, int b, int c)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl67421c, a, b, c);
+    Wl_End();
+}
+
+void __cdecl WarnLog_Vector(const float* v)
+{
+    if (!Wl_Begin())
+        return;
+    Wl_Three(&s_wl674224, v);
+    Wl_End();
+}
+
+void __cdecl WarnLog_NamedVector(int a, const float* v)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl674230, a, (double)v[0], (double)v[1], (double)v[2]);
+    Wl_End();
+}
+
+void __cdecl WarnLog_NamedMatrix(int a, const float* m)
+{
+    if (!Wl_Begin())
+        return;
+    fprintf(g_wd6975a8, &s_wl674240, a);
+    Wl_Rows(&s_wl674248, &s_wl674254, &s_wl674260, &s_wl67426c, m);
+    Wl_End();
+}
+
+void __cdecl WarnLog_Matrix(const float* m)
+{
+    if (!Wl_Begin())
+        return;
+    Wl_Rows(&s_wl674278, &s_wl674284, &s_wl674290, &s_wl67429c, m);
+    Wl_End();
+}
+
+// opens the debug socket to 6742dc port 5000: 0, or -1 with the error formatted (and shown when connecting fails)
+int __cdecl DebugSocket_Open()
+{
+    BYTE data[400];
+    char text[300];
+    if (CallStd<int>(Ws_WSAStartup, 257, data)) {
+        wsprintfA(text, &s_wl6742a8, CallStd<int>(Ws_WSAGetLastError));
+        return -1;
+    }
+    g_wl696e58 = CallStd<int>(Ws_socket, 2, 1, 0);
+    if (g_wl696e58 == -1) {
+        wsprintfA(text, &s_wl6742c4, CallStd<int>(Ws_WSAGetLastError));
+        return -1;
+    }
+    (&g_wl696e48)[0] = 2;
+    *(int*)(&g_wl696e48 + 2) = CallStd<int>(Ws_inet_addr, &s_wl6742dc);
+    (&g_wl696e48)[1] = CallStd<WORD>(Ws_htons, 5000);
+    if (CallStd<int>(Ws_connect, g_wl696e58, &g_wl696e48, 16) >= 0)
+        return 0;
+    int e = CallStd<int>(Ws_WSAGetLastError);
+    wsprintfA(text, &s_wl6742ec, e, e);
+    CallStd(Ws_closesocket, g_wl696e58);
+    CallC(Wl_DumpText, text);
+    return -1;
+}
+
+// sends the string s (with its terminator) on the debug socket: 0, or -1 with the error shown
+int __cdecl DebugSocket_Send(int unused, const char* s)
+{
+    char text[400];
+    int n = (int)strlen(s) + 1;
+    if (CallStd<int>(Ws_send, g_wl696e58, s, n, 0))
+        return 0;
+    wsprintfA(text, &s_wl674308, CallStd<int>(Ws_WSAGetLastError));
+    CallC(Wl_DumpText, text);
+    return -1;
+}
+
+// filter windows over (64c938, 64b658]: a box
+double __cdecl Window_Box(float x)
+{
+    return Wl_In(x) ? g_wl64c250 : g_wl64c264;
+}
+
+// ($L_4eaa41) a ramp 1 + x
+double __cdecl Window_Ramp(float x)
+{
+    return Wl_In(x) ? (double)g_wl64c250 + x : g_wl64c264;
+}
+
+// ($L_4eaa77) 1 - x * x
+double __cdecl Window_Parabola(float x)
+{
+    return Wl_In(x) ? g_wl64c250 - (double)x * x : g_wl64c264;
+}
+
+// ($L_4eaab0) 1 - sqrt |x|
+double __cdecl Window_Root(float x)
+{
+    return Wl_In(x) ? g_wl64b670 - Wl_sqrt(Wl_fabs(x)) : g_wl64c264;
+}
+
+// ($L_4eab02) (cos(x * 64d938) + 1) / 2
+double __cdecl Window_Cosine(float x)
+{
+    return Wl_In(x) ? (Wl_cos(x * g_wl64d938) + g_wl64b670) * g_wl64b6e0 : g_wl64c264;
+}
+
+} // extern "C"
