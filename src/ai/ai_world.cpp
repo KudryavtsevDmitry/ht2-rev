@@ -21200,7 +21200,7 @@ extern "C" char* __cdecl Ai_FormatReport(int a1, int a2, int a3, int a4, int a5,
 ASM_PROC(FUN_48ce40)
 ASM_PROC(FUN_48d100)
 extern "C" void FUN_48d530(); KING_ALIAS("_FUN_48d530", "@Path_StepIndex@24")
-ASM_PROC(FUN_48c710)
+extern "C" void FUN_48c710(); KING_ALIAS("_FUN_48c710", "@Road_NearestOn@48")
 extern "C" void FUN_48d710(); KING_ALIAS("_FUN_48d710", "@Points_Distance@32")
 extern "C" void FUN_458940(); KING_ALIAS("_FUN_458940", "@Rec458940_Destroy@8")
 ASM_PROC(FUN_462b30)

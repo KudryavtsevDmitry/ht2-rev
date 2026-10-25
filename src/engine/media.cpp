@@ -2886,7 +2886,7 @@ ASM_VAR(float, g_q243_64c330, $L_64c330)
 struct Med243_V3 { float x, y, z; };
 // [FUN_5cca60] starts particle source s for p at (x, y, z) moved by half of 702630: the translation matrix of that
 // point, p's rate (+32) from t over the source's count (+32), the source's length (+12) from t
-extern "C" void __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, float y, float z, int, int, float t)
+extern "C" BYTE* __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, float y, float z, int, int, float t)
 {
     double hx = g_q243_702630 * g_q168_64c258;
     float hy = (float)(g_q243_702634 * g_q168_64c258);
@@ -2896,7 +2896,7 @@ extern "C" void __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, f
     CallC(FUN_5abc40, m, v);
     F(float, p, 32) = (float)(t * g_q243_64c748 / (F(int, s, 32) + 1));
     F(float, s, 12) = (float)(t * g_q243_64c330);
-    CallThis(FUN_5cc680, s, 0, m, p);
+    return CallThis<BYTE*>(FUN_5cc680, s, 0, m, p);
 }
 
 extern "C" void FUN_5ce6e0(); KING_ALIAS("_FUN_5ce6e0", "@PointCloud_Construct@56")
@@ -4542,7 +4542,7 @@ int __fastcall Plume_Quad(BYTE* s, void*, BYTE* buf, unsigned idx, float t, floa
 
 // === drawing a plume (FUN_5c6580)
 
-ASM_FUNC(Pl_Update, FUN_5ccb20)
+extern "C" void Pl_Update(); KING_ALIAS("_Pl_Update", "@Sparks_AlongPolygon@32")
 extern "C" void Pl_Length(); KING_ALIAS("_Pl_Length", "_Vec3_Length")
 extern "C" void Pl_Count(); KING_ALIAS("_Pl_Count", "@Media_Get4@8")
 extern "C" void Pl_RenderMaterial(); KING_ALIAS("_Pl_RenderMaterial", "@Render_Material@8")
@@ -4963,6 +4963,152 @@ void __cdecl List_KeepSelection(BYTE* l)
     }
     if (!shown && e)
         F(BYTE*, l, 300) = F(BYTE*, e, 4);
+}
+
+} // extern "C"
+
+// === sparks along a polygon's edges (FUN_5ccb20)
+#include "vecmath.h"
+
+ASM_VAR(float, g_pa64c948, $L_64c948)
+ASM_VAR(float, g_pa64c260, $L_64c260)
+ASM_VAR(float, g_pa64c940, $L_64c940)
+ASM_VAR(float, g_pa64c338, $L_64c338)
+ASM_VAR(float, g_pa64c258, $L_64c258)
+ASM_VAR(float, g_pa64c304, $L_64c304)
+ASM_VAR(float, g_pa64c25c, $L_64c25c)
+ASM_VAR(float, g_pa651700, $L_651700)
+ASM_VAR(AsmLabel, g_paK, $L_651d28)                 // the length factors 651d28 .. 651d60
+
+// the factor at 651d28 + 4 k
+static float Pq_K(int k)
+{
+    return ((const float*)&g_paK)[k];
+}
+
+// a + (b - a) k with the first difference kept wide (the inline form)
+static Vec3 Pq_Lerp(const float* a, const float* b, float k)
+{
+    double dx = (double)b[0] - a[0];
+    float dy = (float)((double)b[1] - a[1]), dz = (float)((double)b[2] - a[2]);
+    double hx = dx * k;
+    float hy = (float)((double)dy * k), hz = (float)((double)dz * k);
+    Vec3 r;
+    r.x = (float)(hx + a[0]);
+    r.y = (float)((double)hy + a[1]);
+    r.z = (float)((double)hz + a[2]);
+    return r;
+}
+
+// a + (b - a) k through float steps (the Vec3_SetThis form)
+static Vec3 Pq_LerpF(const float* a, const float* b, float k)
+{
+    Vec3 r;
+    for (int i = 0; i < 3; i++)
+    {
+        float d = (float)((double)b[i] - a[i]);
+        float v = (float)((double)d * k);
+        (&r.x)[i] = (float)((double)v + a[i]);
+    }
+    return r;
+}
+
+// a + (b - a) k with the difference rounded only after scaling
+static Vec3 Pq_LerpS(const float* a, const float* b, float k)
+{
+    Vec3 r;
+    for (int i = 0; i < 3; i++)
+    {
+        float v = (float)(((double)b[i] - a[i]) * k);
+        (&r.x)[i] = (float)((double)v + a[i]);
+    }
+    return r;
+}
+
+// a + (b - a) k through Vec3_Sub / Vec3_Scaled / Vec3_Add
+static Vec3 Pq_LerpV(const float* a, const float* b, float k)
+{
+    Vec3 d, e, r;
+    Vec3_Sub(&d, (const Vec3*)b, (const Vec3*)a);
+    Vec3_Scaled(&e, &d, k);
+    return *Vec3_Add(&r, (const Vec3*)a, &e);
+}
+
+static BYTE* Pq_Start(BYTE* s, BYTE* prev, const Vec3& pos, float c, float b, float a)
+{
+    DWORD cb, bb;
+    memcpy(&cb, &c, 4);
+    memcpy(&bb, &b, 4);
+    return Particles_StartAt(s, 0, prev, pos.x, pos.y, pos.z, cb, bb, a);
+}
+
+extern "C" {
+
+// [FUN_5ccb20] particle source s started along polygon p (4 corners) with texture corners uv: five emitters
+// chained from the last one (+36) at points on the edges, sized len over k by fixed factors; kind (0-6) picks the
+// edge points, the flag the second set
+void __fastcall Sparks_AlongPolygon(BYTE* s, void*, const float* p, const float* uv, float len, int kind, float k,
+                                    int flag)
+{
+    BYTE* e = F(BYTE*, s, 36);
+    F(float, s, 40) = (float)(Timer_Now() * g_pa64c948);
+    F(int, s, 32) = 4;
+    F(int, s, 4) = 0;
+    if (kind < 0 || kind > 6)
+        return;
+    bool square = kind == 3 || kind == 4 || kind == 6;
+    const float *p0 = p, *p1 = p + 3, *p2 = p + 6, *p3 = p + 9;
+    float u0 = uv[0], u1 = uv[1], u2 = uv[2], u3 = uv[3];
+    float c338 = g_pa64c338;
+    float two = (float)(((double)len + len) / k);
+    if (!flag && !square)
+    {
+        e = Pq_Start(s, e, Pq_Lerp(p2, p3, g_pa64c260), (float)((double)u1 + Pq_K(14)), (float)((double)u0 * c338),
+                     (float)(len * (double)g_pa64c25c / k));
+        e = Pq_Start(s, e, Pq_Lerp(p1, p2, g_pa64c940), (float)((double)u0 + Pq_K(12)), (float)((double)u1 * c338),
+                     (float)(len * (double)Pq_K(13) / k));
+        e = Pq_Start(s, e, Pq_LerpS(p1, p2, c338), (float)((double)u3 + Pq_K(10)), (float)((double)u2 * c338),
+                     (float)(len * (double)Pq_K(11) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p0, p1, g_pa651700), (float)((double)u2 + Pq_K(8)), (float)((double)u3 * c338),
+                     (float)(len * (double)Pq_K(9) / k));
+        Pq_Start(s, e, Pq_LerpF(p0, p1, g_pa64c304), (float)((double)u1 + Pq_K(6)), (float)((double)u0 * c338),
+                 (float)(len * (double)Pq_K(7) / k));
+    }
+    else if (!flag)
+    {
+        e = Pq_Start(s, e, Pq_LerpF(p2, p3, 0), (float)((double)u1 + Pq_K(14)), (float)((double)u0 * c338),
+                     (float)(len * (double)Pq_K(11) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p1, p2, g_pa64c258), (float)((double)u0 + Pq_K(12)), (float)((double)u1 * c338),
+                     (float)(len * (double)Pq_K(5) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p1, p2, 0), (float)((double)u3 + Pq_K(10)), (float)((double)u2 * c338),
+                     (float)(len * (double)Pq_K(7) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p0, p1, g_pa64c258), (float)((double)u2 + Pq_K(8)), (float)((double)u3 * c338), two);
+        Pq_Start(s, e, Pq_LerpF(p0, p1, 0), (float)((double)u1 + Pq_K(6)), (float)((double)u0 * c338), two);
+    }
+    else if (!square)
+    {
+        e = Pq_Start(s, e, Pq_LerpF(p2, p3, g_pa64c260), (float)((double)u1 + Pq_K(14)), (float)((double)u0 * c338),
+                     (float)(len * (double)Pq_K(4) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p1, p2, g_pa64c940), (float)((double)u0 + Pq_K(12)), (float)((double)u1 * c338),
+                     (float)(len * (double)Pq_K(3) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p1, p2, c338), (float)((double)u3 + Pq_K(10)), (float)((double)u2 * c338),
+                     (float)(len * (double)Pq_K(2) / k));
+        e = Pq_Start(s, e, Pq_LerpF(p0, p1, g_pa651700), (float)((double)u2 + Pq_K(8)), (float)((double)u3 * c338),
+                     (float)(len * (double)Pq_K(1) / k));
+        Pq_Start(s, e, Pq_LerpV(p0, p1, 0.1f), (float)((double)u1 + Pq_K(6)), (float)((double)u0 * c338),
+                 (float)(len * (double)Pq_K(0) / k));
+    }
+    else
+    {
+        e = Pq_Start(s, e, Pq_LerpV(p2, p3, 0), (float)((double)u1 + Pq_K(14)), (float)((double)u0 * c338),
+                     (float)(len * (double)Pq_K(11) / k));
+        e = Pq_Start(s, e, Pq_LerpV(p1, p2, 0.5f), (float)((double)u0 + Pq_K(12)), (float)((double)u1 * c338),
+                     (float)(len * (double)Pq_K(5) / k));
+        e = Pq_Start(s, e, Pq_LerpV(p1, p2, 0), (float)((double)u3 + Pq_K(10)), (float)((double)u2 * c338),
+                     (float)(len * (double)Pq_K(7) / k));
+        e = Pq_Start(s, e, Pq_LerpV(p0, p1, 0.5f), (float)((double)u2 + Pq_K(8)), (float)((double)u3 * c338), two);
+        Pq_Start(s, e, Pq_LerpV(p0, p1, 0), (float)((double)u1 + Pq_K(6)), (float)((double)u0 * c338), two);
+    }
 }
 
 } // extern "C"

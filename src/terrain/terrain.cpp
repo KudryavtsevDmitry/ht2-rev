@@ -258,7 +258,7 @@ void __fastcall Terrain619ae0_Destroy(BYTE* self, void*)
 }
 
 extern "C" void FUN_60c2b0(); KING_ALIAS("_FUN_60c2b0", "@GridMesh_Frame@8")
-ASM_PROC(FUN_619c20)
+extern "C" void FUN_619c20(); KING_ALIAS("_FUN_619c20", "@Terrain_PlacePlants@12")
 extern "C" void FUN_619850(); KING_ALIAS("_FUN_619850", "@TerrainPart_Draw@12")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // reports an error code with file, line and date
 extern "C" void FUN_617100(); KING_ALIAS("_FUN_617100", "@Decals_Reset16@8")
@@ -1205,6 +1205,221 @@ double __fastcall Terrain_HeightAt(BYTE** s, void*, float x, float y)
     if ((tri == 2 && diag == 1) || (diag == 0 && tri == 3))
         return ((double)p - r) * wf + r;
     return (r - p) * wf + p;
+}
+
+} // extern "C"
+
+// === the grass and trees around the camera (FUN_619c20)
+
+ASM_VAR(float, g_tg6532b8, $L_6532b8)
+ASM_VAR(float, g_tg6532bc, $L_6532bc)
+ASM_VAR(float, g_tg6532c0, $L_6532c0)
+ASM_VAR(float, g_tg6532c4, $L_6532c4)
+ASM_VAR(float, g_tg6532c8, $L_6532c8)
+ASM_VAR(float, g_tg653354, $L_653354)
+ASM_VAR(float, g_tg64c334, $L_64c334)
+ASM_VAR(float, g_tg64c258, $L_64c258)
+ASM_VAR(float, g_tg64c260, $L_64c260)
+ASM_VAR(float, g_tg64c310, $L_64c310)
+ASM_VAR(float, g_tg64c350, $L_64c350)
+ASM_VAR(float, g_tg64c324, $L_64c324)
+ASM_VAR(float, g_tg728838, $L_728838)               // the sea level
+ASM_VAR(float, g_tg728808, $L_728808)               // the tree line
+ASM_VAR(AsmLabel, g_tgSizes, $L_685d70)             // the plant sizes 685d70 .. 685d84
+ASM_VAR(double, g_tg64b938, $L_64b938)
+extern "C" void Tg_AddAssign(); KING_ALIAS("_Tg_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Tg_Nop(); KING_ALIAS("_Tg_Nop", "_Fw_Nop")
+
+static float Tg_Size(int k)
+{
+    return ((const float*)&g_tgSizes)[k];
+}
+
+// the grid cell under the point forward of the camera by k
+static void Tg_Cell(BYTE* s, const float* fwd, float k, float cx, float cy, int ox, int& ix, int& iy)
+{
+    BYTE* T = F(BYTE*, s, 0);
+    double a = (double)fwd[0] * k;
+    float b = (float)((double)fwd[1] * k);
+    double gx = a * g_tg64c334 + cx;
+    float gy = (float)((double)(float)((double)b * g_tg64c334) + cy);
+    ix = (int)CallC<double>(Tn_floor, gx / F(float, T, 56 + ox));
+    iy = (int)CallC<double>(Tn_floor, (double)gy / F(float, T, 60 + ox));
+}
+
+// a lattice point (ix, iy) jittered by its noise into pos; false when the lattice has nothing there
+static bool Tg_Point(BYTE* s, int ix, int iy, int ox, float kx, float ky, float* pos, float* noise, float* scale, int* kind)
+{
+    if (!Noise_Lattice2(ix, iy, noise, (DWORD*)scale, (DWORD*)kind))
+        return false;
+    BYTE* T = F(BYTE*, s, 0);
+    pos[0] = (float)(ix * (double)F(float, T, 56 + ox) - (double)kx * g_tg64c258);
+    pos[1] = (float)(iy * (double)F(float, T, 60 + ox) - (double)ky * g_tg64c258);
+    pos[2] = 0;
+    float cell = F(float, T, 56 + ox);
+    Vec3 off, tmp;
+    off.x = (float)(noise[0] * (double)g_tg653354 * cell);
+    off.y = (float)((double)(float)(noise[1] * (double)g_tg653354) * cell);
+    off.z = (float)((double)(float)(noise[2] * (double)g_tg653354) * cell);
+    CallThis(Tg_AddAssign, pos, &tmp, &off);
+    return true;
+}
+
+// a plant of type t and size k into the patch list l (FUN_617180 on copies of the point and the side)
+static void Tg_Plant(BYTE* l, const float* pos, const float* side, float k, int t)
+{
+    float a[3] = {pos[0], pos[1], pos[2]}, b[3] = {side[0], side[1], side[2]};
+    float one = 1.0f;
+    DWORD kb, ob;
+    memcpy(&kb, &k, 4);
+    memcpy(&ob, &one, 4);
+    CallThis(FUN_617180, l, a, b, kb, ob, t);
+}
+
+extern "C" {
+
+// [FUN_619c20] terrain s's plants around the camera (s +4): the grass lattice (cells +56 / +60, counts +48 / +52)
+// below the snow line 6532c8 into patch list l[0], then the trees' lattice (+72 / +76, +64 / +68) above it by the
+// noise kind and height into l[1..4], the near ones also made solid tree objects (s +8.., at most 10)
+void __fastcall Terrain_PlacePlants(BYTE* s, void*, BYTE** l)
+{
+    BYTE* g = F(BYTE*, s, 4);
+    float cx = (float)F(double, g, 2904), cy = (float)F(double, g, 2912);
+    Matrix R;
+    const float* M = Matrix_RotationZ(&R, (float)F(double, g, 2928))->m;
+    const float* Y = &g_axisY.x;
+    float fwd[2];
+    fwd[0] = (float)((double)Y[2] * M[6] + (double)Y[1] * M[3] + (double)Y[0] * M[0] + M[9]);
+    fwd[1] = (float)((double)Y[2] * M[7] + (double)Y[1] * M[4] + (double)Y[0] * M[1] + M[10]);
+    int ix0, iy0;
+    Tg_Cell(s, fwd, g_tg6532b8, cx, cy, 0, ix0, iy0);
+    float pos[3] = {0, 0, 0}, noise[3] = {0, 0, 0}, scale = 1.0f;
+    int kind = 0;
+    M = Matrix_RotationZ(&R, (float)F(double, F(BYTE*, s, 4), 2928))->m;
+    float f3[3];
+    f3[0] = (float)((double)Y[2] * M[6] + (double)Y[1] * M[3] + (double)Y[0] * M[0] + M[9]);
+    f3[1] = (float)((double)Y[2] * M[7] + (double)Y[1] * M[4] + (double)Y[0] * M[1] + M[10]);
+    f3[2] = (float)((double)Y[2] * M[8] + (double)Y[1] * M[5] + (double)Y[0] * M[2] + M[11]);
+    const float* Z = &g_axisZ.x;
+    float side[3];
+    side[0] = (float)((double)f3[2] * Z[1] - (double)f3[1] * Z[2]);
+    side[1] = (float)((double)f3[0] * Z[2] - (double)f3[2] * Z[0]);
+    side[2] = (float)((double)f3[1] * Z[0] - (double)f3[0] * Z[1]);
+    Terrain_Reset8(l[0], 0);
+    BYTE* T = F(BYTE*, s, 0);
+    for (int i = 0, ix = ix0; i < F(int, F(BYTE*, s, 0), 48); i++, ix++)
+        for (int j = 0, iy = iy0; j < F(int, F(BYTE*, s, 0), 52); j++, iy++)
+        {
+            if (!Tg_Point(s, ix, iy, 0, g_tg6532b8, g_tg6532bc, pos, noise, &scale, &kind))
+                continue;
+            if (!Terrain_InView(F(BYTE*, s, 0), 0, pos))
+                continue;
+            float h = (float)Terrain_HeightAt((BYTE**)F(BYTE*, s, 0), 0, pos[0], pos[1]);
+            pos[2] = h;
+            if (!(h < g_tg6532c8))
+                continue;
+            double kx = (double)f3[0] * g_tg64c258;
+            float ky = (float)((double)f3[1] * g_tg64c258), kz = (float)((double)f3[2] * g_tg64c258);
+            pos[0] = (float)(pos[0] - kx);
+            pos[1] = (float)((double)pos[1] - ky);
+            pos[2] = (float)((double)h - kz);
+            Tg_Plant(l[0], pos, side, (float)((double)Tg_Size(0) * scale), kind & 1);
+        }
+    CallThis(Tg_Nop, l[0]);
+    for (int k = 1; k < 5; k++)
+        Terrain_Reset8(l[k], 0);
+    Tg_Cell(s, fwd, g_tg6532c0, cx, cy, 16, ix0, iy0);
+    for (unsigned k = 0; k < F(unsigned, s, 48); k++)
+    {
+        if (!F(BYTE*, s, 8 + 4 * k))
+            Terrain6199a0_CreateTrees(s, 0);
+        F(BYTE*, s, 8 + 4 * k)[40] |= 1;
+    }
+    F(int, s, 48) = 0;
+    T = F(BYTE*, s, 0);
+    for (int i = 0, ix = ix0; i < F(int, F(BYTE*, s, 0), 64); i++, ix++)
+        for (int j = 0, iy = iy0; j < F(int, F(BYTE*, s, 0), 68); j++, iy++)
+        {
+            if (!Tg_Point(s, ix, iy, 16, g_tg6532c0, g_tg6532c4, pos, noise, &scale, &kind))
+                continue;
+            if (!Terrain_InView(F(BYTE*, s, 0), 0, pos))
+                continue;
+            float h = (float)Terrain_HeightAt((BYTE**)F(BYTE*, s, 0), 0, pos[0], pos[1]);
+            pos[2] = h;
+            if (!(h > g_tg6532c8))
+                continue;
+            Vec3 n;
+            Terrain_NormalAt((BYTE**)F(BYTE*, s, 0), 0, pos[0], pos[1], &n);
+            BYTE* list;
+            float size;
+            int type;
+            if (n.x < g_tg64c260 && n.y < g_tg64c260)
+            {
+                double kx = (double)f3[0] * g_tg64c310;
+                float ky = (float)((double)f3[1] * g_tg64c310), kz = (float)((double)f3[2] * g_tg64c310);
+                pos[0] = (float)(pos[0] - kx);
+                pos[1] = (float)((double)pos[1] - ky);
+                pos[2] = (float)((double)h - kz);
+                if (!(pos[2] > g_tg728838))
+                    continue;
+                if (pos[2] > g_tg728808)
+                {
+                    if ((unsigned)kind > 3)
+                        continue;
+                    static const int lists[4] = {4, 1, 2, 3}, sizes[4] = {4, 1, 2, 3}, types[4] = {5, 2, 3, 4};
+                    list = l[lists[kind]];
+                    size = (float)((double)Tg_Size(sizes[kind]) * scale);
+                    type = types[kind];
+                }
+                else if (kind & 1)
+                {
+                    list = l[4];
+                    size = (float)((double)Tg_Size(4) * scale);
+                    type = 5;
+                }
+                else
+                {
+                    list = l[4];
+                    size = (float)((double)Tg_Size(5) * scale);
+                    type = 6;
+                }
+            }
+            else
+            {
+                if (!(h > g_tg728838))
+                    continue;
+                list = l[2];
+                size = (float)((double)Tg_Size(2) * scale);
+                type = 3;
+            }
+            Tg_Plant(list, pos, side, size, type);
+            // a tree close to the camera becomes solid
+            if (!(x87_fabs((double)cx - pos[0]) < g_tg64b938) || !(x87_fabs((double)cy - pos[1]) < g_tg64b938))
+                continue;
+            int t = F(int, s, 48);
+            if (t == 10 || !F(BYTE*, s, 8 + 4 * t))
+                continue;
+            if (!F(int, F(BYTE*, s, 8 + 4 * t), 44))
+                RoomObjects_Attach(s, 0);
+            BYTE* o = F(BYTE*, s, 8 + 4 * F(int, s, 48));
+            o[40] &= 0xfe;
+            F(int, o, 52) = 50;
+            F(float, F(BYTE*, o, 60), 0) = 10.0f;
+            float* q = F(float*, o, 72);
+            double ax = (double)Z[0] * g_tg64c350;
+            float ay = (float)((double)Z[1] * g_tg64c350), az = (float)((double)Z[2] * g_tg64c350);
+            q[0] = (float)(ax + pos[0]);
+            q[1] = (float)((double)ay + pos[1]);
+            q[2] = (float)((double)az + pos[2]);
+            double bx = (double)Z[0] * g_tg64c324;
+            float by = (float)((double)Z[1] * g_tg64c324), bz = (float)((double)Z[2] * g_tg64c324);
+            q[3] = (float)(bx + pos[0]);
+            q[4] = (float)((double)by + pos[1]);
+            q[5] = (float)((double)bz + pos[2]);
+            F(int, s, 48)++;
+        }
+    for (int k = 1; k < 5; k++)
+        CallThis(Tg_Nop, l[k]);
 }
 
 } // extern "C"

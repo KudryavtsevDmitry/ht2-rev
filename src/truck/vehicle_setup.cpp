@@ -2066,7 +2066,7 @@ extern "C" void Wg_Parts2(); KING_ALIAS("_Wg_Parts2", "_Query_Parts2")
 extern "C" void Wg_LineProject(); KING_ALIAS("_Wg_LineProject", "_Line_Project")
 extern "C" void Wg_Surface(); KING_ALIAS("_Wg_Surface", "@Wheel_Surface@16")
 extern "C" void Wg_SubAssign(); KING_ALIAS("_Wg_SubAssign", "@Vec3_SubAssign@16")
-ASM_PROC(FUN_503500)
+extern "C" void FUN_503500(); KING_ALIAS("_FUN_503500", "@Wheel_RollDrag@20")
 extern "C" void Wg_NodeInit(); KING_ALIAS("_Wg_NodeInit", "@Node_Init@8")
 ASM_VAR(int, g_wg697660, $L_697660)                 // the contact count
 ASM_VAR(double, g_wg697658, $L_697658)              // and its time
@@ -2287,6 +2287,162 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
     }
     memcpy(s + 13584 + 208 * i, nd, 208);
     return Wg_Done(t0, it, 1);
+}
+
+} // extern "C"
+
+// === a wheel's rolling drag by its ground (FUN_503500)
+
+extern "C" void Wr_Rolling(); KING_ALIAS("_Wr_Rolling", "_Car_RollingFactor")
+ASM_VAR(float, g_wr64c450, $L_64c450)
+ASM_VAR(float, g_wr64c32c, $L_64c32c)
+ASM_VAR(float, g_wr64c320, $L_64c320)
+ASM_VAR(float, g_wr64c908, $L_64c908)
+ASM_VAR(float, g_wr64dab0, $L_64dab0)
+ASM_VAR(double, g_wr64b5a0, $L_64b5a0)
+ASM_VAR(double, g_wr64b6e0, $L_64b6e0)
+ASM_VAR(double, g_wr64b890, $L_64b890)
+ASM_VAR(float, g_wr674444, $L_674444)
+ASM_VAR(float, g_wr64c258, $L_64c258)
+
+// the drag d taken over a frame: below the limit k as is, above it scaled down by (k / x)^2
+static double Wr_Limit(BYTE* s, float d, float k, bool bias)
+{
+    double x = Game_FrameTime() * d * g_wr64dab0 / F(float, s, 9792);
+    if (bias)
+        x += g_wr64b5a0;
+    if (k > x)
+        return d;
+    double q = k / x;
+    return q * q * d;
+}
+
+extern "C" {
+
+// [FUN_503500] car s's wheel i on ground node nd (surface kind, else the node material's +4): its drag +3816 + 4 i
+// by the kind (tyre load +9872, grip +3360, spin +6532, limit +6500) and the drag vector +3848 + 12 i along +6404,
+// less the push of a rut (+15580 + 20 i)
+void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
+{
+    F(int, s, 3816 + 4 * i) = 0;
+    Vec3& acc = F(Vec3, s, 3848 + 12 * i);
+    acc = g_zeroVec;
+    BYTE* m = F(BYTE*, nd, 100);
+    if (!m)
+        return;
+    float k = F(float, s, 6500 + 4 * i);
+    if (!(k <= g_wr64c450))
+        k = 10.0f;
+    if (!kind)
+        kind = F(int, m, 4);
+    bool rut = F(short, s, 6564 + 2 * i) != 0;
+    float t = F(float, s, 6532 + 4 * i), load = F(float, s, 9872 + 4 * i), grip = F(float, s, 3360 + 4 * i);
+    double r;
+    bool set = true;
+    switch (kind)
+    {
+    case 1:
+    case 8:
+        if (rut)
+        {
+            set = false;
+            break;
+        }
+        r = CallC<double>(Wr_Rolling, t, load) * grip;
+        break;
+    case 2:
+    case 6:
+    case 10:
+    case 11:
+    {
+        if (rut)
+        {
+            set = false;
+            break;
+        }
+        float c = kind == 2 ? g_wr64c450 : g_wr64c32c;
+        float d = (float)(t / ((double)t + c) * load * grip);
+        r = Wr_Limit(s, d, k, true);
+        break;
+    }
+    case 3:
+    {
+        if (rut)
+        {
+            set = false;
+            break;
+        }
+        float d = (float)((double)load * grip * ((double)k + g_wr64c320) * g_wr64c908);
+        r = Wr_Limit(s, d, k, false);
+        break;
+    }
+    case 4:
+    case 7:
+    case 9:
+    {
+        double rr = g_gc64c264;
+        if (!rut)
+        {
+            double q = t / ((double)t + g_wr64c32c) * load;
+            float d = (float)(q <= F(float, s, 9840 + 4 * i) ? q * grip : (double)grip * F(float, s, 9840 + 4 * i));
+            rr = Wr_Limit(s, d, k, true);
+        }
+        double h = g_wr64c258;
+        BYTE* mm = F(BYTE*, nd, 100);
+        if ((unsigned)(F(int, mm, 8) << 2) > 8 && F(BYTE*, mm, 12))
+            h = ((double)F(float, F(BYTE*, mm, 12), 8) - F(float, nd, 60)) * g_wr64b6e0;
+        double v = (double)t * t / ((double)t + g_wr64c32c) * F(float, s, 13492);
+        F(float, s, 3816 + 4 * i) = (float)-(h * v * g_wr64b890 + rr);
+        set = false;
+        break;
+    }
+    case 13:
+        if (rut)
+        {
+            set = false;
+            break;
+        }
+        if (!F(int, s, 9920 + 4 * i) && F(int, s, 15580 + 20 * i) != F(int, s, 15584 + 20 * i))
+        {
+            F(int, s, 15492) = 1;
+            F(int, s, 9920 + 4 * i) = 1;
+            F(float, s, 9952 + 4 * i) = (float)(Game_Time() - (double)g_wr674444 * F(float, s, 15592 + 20 * i));
+        }
+        r = x87_sqrt(k) * ((double)load * grip);
+        break;
+    case 12:
+        if (rut)
+        {
+            set = false;
+            break;
+        }
+        r = x87_sqrt(k) * ((double)load * grip);
+        break;
+    default:
+        set = false;
+        break;
+    }
+    if (set)
+        F(float, s, 3816 + 4 * i) = (float)-r;
+    const Vec3& dir = F(Vec3, s, 6404 + 12 * i);
+    double f = F(float, s, 3816 + 4 * i);
+    Vec3 d, tmp;
+    d.x = (float)(f * dir.x);
+    d.y = (float)(f * dir.y);
+    d.z = (float)(f * dir.z);
+    tmp = d;
+    CallThis(Gc_AddAssign, &acc, &d, &tmp);
+    int n = F(int, s, 15580 + 20 * i);
+    if (n && F(float, s, 7028 + 4 * i) > g_gc64c264)
+    {
+        double g = (double)grip * F(float, s, 6532 + 4 * i) * g_wr64c320 / ((double)F(float, s, 6532 + 4 * i) + g_wr64c320)
+                   * ((double)n / F(int, s, 15584 + 20 * i));
+        d.x = (float)(g * dir.x);
+        d.y = (float)(g * dir.y);
+        d.z = (float)(g * dir.z);
+        tmp = d;
+        CallThis(Wg_SubAssign, &acc, &d, &tmp);
+    }
 }
 
 } // extern "C"

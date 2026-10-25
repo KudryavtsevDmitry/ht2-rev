@@ -2050,6 +2050,44 @@ PUBLIC $L_6749f4, $L_674a00, $L_674a08, $L_674a14
 PUBLIC $L_650a8c, $L_650a90
 PUBLIC $L_679214, $L_679234, $L_67924c, $L_679250, $L_67925c, $L_679278
 PUBLIC $L_679288, $L_67929c, $L_6792ac, $L_696c34
+PUBLIC $L_64b8e8, $L_64d490, $L_64f3e0, $L_64f3e8, $L_64f3f0, $L_64f3fc
+PUBLIC $L_67440c, $L_678780, $L_678788, $L_678f58, $L_678f70, $L_678f8c
+PUBLIC $L_678fa4, $L_678fb8, $L_678fcc, $L_678fe0, $L_678ffc, $L_679018
+PUBLIC $L_679028, $L_67903c, $L_679050, $L_679064, $L_67907c, $L_679098
+PUBLIC $L_6790b0, $L_6790c8, $L_6790e0, $L_6790f4, $L_67910c, $L_679124
+PUBLIC $L_679138, $L_679160, $L_679170, $L_679184, $L_679198, $L_6791ac
+PUBLIC $L_6791c0, $L_6791d4, $L_6791e4, $L_696cf4, $L_696cf8, $L_696cfc
+PUBLIC $L_696d00, $L_696d04, $L_6d1cf4, $L_6d1cf8, $L_6d1d00, $L_6d1d04
+PUBLIC $L_6d1d08, $L_6d1d0c, $L_6d1d10, $L_6d1d1c, $L_6d1d20, $L_6d1d28
+PUBLIC $L_6d1d3c, $L_6d1d40, $L_6d1d44, $L_6d1d48, $L_6d1d4c, $L_6d1d50
+PUBLIC $L_6d1d54, $L_6d1d80, $L_6d1d84, $L_6d20d8
+PUBLIC $L_64dab0, $L_674444
+PUBLIC $L_68a5b0, $L_68a5fc, $L_68a63c, $L_68a67c, $L_68a6b8, $L_68a6f4
+PUBLIC $L_68a718, $L_68a71c, $L_68a720, $L_68a73c, $L_72e634, $L_736680
+PUBLIC $L_736684, $L_736688, $L_75ae90, $L_77e3f4, $L_77e3f8, $L_77e3fc
+PUBLIC $L_64caa0, $L_651698, $L_6516a0, $L_6516a8, $L_6516b0, $L_6516b8
+PUBLIC $L_6516c0, $L_6516c8, $L_6516d0, $L_6516d8, $L_67ef1c, $L_67ef2c
+PUBLIC $L_67ef40, $L_7025c4
+PUBLIC $L_67dda8
+PUBLIC $L_651700, $L_651d28
+PUBLIC $L_64c324, $L_6532b8, $L_6532bc, $L_6532c0, $L_6532c4, $L_653354
+PUBLIC $L_685d70
+PUBLIC $L_672980, $L_6729a0
+PUBLIC $L_702a80, $L_702dd0
+PUBLIC $L_6792f8, $L_67930c, $L_679328, $L_679340, $L_679360, $L_679380
+PUBLIC $L_6793a0, $L_6793c0, $L_6793e4, $L_679464, $L_67946c, $L_6794a4
+PUBLIC $L_6794c8, $L_6794e8
+PUBLIC $L_6f6900, $L_6f6904, $L_6f6908, $L_6f6a2c, $L_6f6a30, $L_6f6a34
+PUBLIC $L_6f6a38, $L_6f6a44
+PUBLIC $L_6897d8, $L_68a3a0, $L_68a408, $L_68a47c, $L_68a540, $L_68a560
+PUBLIC $L_68a580, $L_68a59c, $L_73668c, $L_73ae90, $L_74ae90, $L_76afd0
+PUBLIC $L_77b4c8, $L_77b4cc, $L_77b4d8, $L_77b4dc, $L_77b4e0, $L_77b4e8
+PUBLIC $L_77b4ec, $L_77b4f0, $L_77b4f4, $L_77b4f8, $L_77b4fc, $L_77b500
+PUBLIC $L_77b504, $L_77b524, $L_77b525, $L_77b528, $L_77b628, $L_77c628
+PUBLIC $L_77c69c, $L_77c6a0, $L_77c8a0, $L_77c8a4, $L_77c8a8, $L_77cae8
+PUBLIC $L_77cf68, $L_77cf6c, $L_77cfe4, $L_77cfe8, $L_77cfec, $L_77d088
+PUBLIC $L_77d08c, $L_77d980, $L_77d9f8, $L_77e2ec, $L_77e2f0, $L_77e3e4
+PUBLIC $L_77e3e8, $L_77e3ec, $L_77e3f0
 
 ;===================================
 _TEXT SEGMENT
@@ -256516,6 +256554,8 @@ FUN_48c620 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48c710 PROC
 
             push EBP
@@ -257109,6 +257149,10 @@ $L_48cdf6::
             pop EBP
             ret 40
 FUN_48c710 ENDP
+ELSE
+EXTERN @Road_NearestOn@48:PROC
+FUN_48c710 TEXTEQU <@Road_NearestOn@48>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -374673,6 +374717,8 @@ EXTERN @Eff4ce6c0_FreeBlock@8:PROC
 $L_4ce6c0 TEXTEQU <@Eff4ce6c0_FreeBlock@8>
 ENDIF
 ALIGN 16
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 FUN_4ce6d0 PROC
 
             mov EAX,DWORD PTR [$L_672980]
@@ -375253,6 +375299,10 @@ $L_4cedba::
             add ESP,280
             ret 
 FUN_4ce6d0 ENDP
+ELSE
+EXTERN _Car_DrawForces:PROC
+FUN_4ce6d0 TEXTEQU <_Car_DrawForces>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -453410,6 +453460,8 @@ EXTERN @Wheel_Surface@16:PROC
 FUN_502780 TEXTEQU <@Wheel_Surface@16>
 ENDIF
 ALIGN 16
+; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
+IFDEF ASM_VEHICLE_SETUP
 FUN_503500 PROC
 
             sub ESP,24
@@ -453760,6 +453812,10 @@ $L_50396c           DWORD $L_50358d
           DWORD $L_503614
           DWORD $L_503837
           DWORD $L_5037d8
+ELSE
+EXTERN @Wheel_RollDrag@20:PROC
+FUN_503500 TEXTEQU <@Wheel_RollDrag@20>
+ENDIF
 ALIGN 16
 ; src/vehicle_setup.cpp, nmake ASM_VEHICLE_SETUP=1 assembles the original
 IFDEF ASM_VEHICLE_SETUP
@@ -535791,6 +535847,8 @@ $L_536360 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_538370 PROC
 
             push EBP
@@ -539467,6 +539525,10 @@ $L_53b121::
             pop EBP
             ret 8
 FUN_538370 ENDP
+ELSE
+EXTERN @Vehicle_Sounds@16:PROC
+FUN_538370 TEXTEQU <@Vehicle_Sounds@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -544530,6 +544592,8 @@ EXTERN @StartLights_Update@4:PROC
 $L_53e510 TEXTEQU <@StartLights_Update@4>
 ENDIF
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_53e7a0 PROC
 
             push EBP
@@ -545004,6 +545068,10 @@ $L_53ecbc           DWORD $L_53ebd1
           DWORD $L_53ec0a
           DWORD $L_53ec11
           DWORD $L_53ec18
+ELSE
+EXTERN _Cars_DumpToLog:PROC
+FUN_53e7a0 TEXTEQU <_Cars_DumpToLog>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -590841,6 +590909,8 @@ FUN_55f4e0 TEXTEQU <_Vehicle_FindTaker>
 ENDIF
           BYTE 090H
 ALIGN 16
+; src/vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
+IFDEF ASM_VEHICLE
 FUN_55f5f0 PROC
 
             push EBP
@@ -591202,6 +591272,10 @@ $L_55fa07::
             pop EBP
             ret 
 FUN_55f5f0 ENDP
+ELSE
+EXTERN _Truck_HitchTrailer:PROC
+FUN_55f5f0 TEXTEQU <_Truck_HitchTrailer>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -603762,6 +603836,8 @@ FUN_567dc0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
+IFDEF ASM_HELICOPTER
 FUN_568090 PROC
 
             sub ESP,76
@@ -604320,6 +604396,10 @@ $L_568664           DWORD $L_5681fe
           DWORD $L_568311
           DWORD $L_56832b
           DWORD $L_568332
+ELSE
+EXTERN @Copter_Warnings@8:PROC
+FUN_568090 TEXTEQU <@Copter_Warnings@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -661822,6 +661902,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/moving_bodies.cpp, nmake ASM_MOVING_BODIES=1 assembles the original
+IFDEF ASM_MOVING_BODIES
 $L_58e290 PROC
 
             sub ESP,128
@@ -662215,6 +662297,10 @@ $L_58e7dc           DWORD $L_58e2d3
           DWORD $L_58e5b4
           DWORD $L_58e3fe
           DWORD $L_58e68a
+ELSE
+EXTERN @Body_ResetPoints@12:PROC
+$L_58e290 TEXTEQU <@Body_ResetPoints@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -672960,6 +673046,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
+IFDEF ASM_WORLD_OBJECTS
 $L_595290 PROC
 
             push EBP
@@ -673663,6 +673751,10 @@ $L_595b4c::
 
             nop
 $L_595290 ENDP
+ELSE
+EXTERN @Mirror_Draw@8:PROC
+$L_595290 TEXTEQU <@Mirror_Draw@8>
+ENDIF
 ALIGN 16
 ; wasm: src\truck\world_objects.cpp, nmake ASM_WORLD_OBJECTS=1 assembles the original
 IFDEF ASM_WORLD_OBJECTS
@@ -706056,6 +706148,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5a9dc0 PROC
 
             push EBP
@@ -706637,6 +706731,10 @@ $L_5aa410           DWORD $L_5a9f24
           DWORD $L_5aa036
           DWORD $L_5aa06b
           DWORD $L_5aa0a0
+ELSE
+EXTERN @Weather_Frame@8:PROC
+$L_5a9dc0 TEXTEQU <@Weather_Frame@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -720365,6 +720463,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/renderer.cpp, nmake ASM_RENDERER=1 assembles the original
+IFDEF ASM_RENDERER
 FUN_5b2950 PROC
 
             mov AL,BYTE PTR [$L_702dd0]
@@ -720953,6 +721053,10 @@ $L_5b2feb::
             add ESP,124
             ret 4
 FUN_5b2950 ENDP
+ELSE
+EXTERN @Mesh_Draw@12:PROC
+FUN_5b2950 TEXTEQU <@Mesh_Draw@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -766282,6 +766386,8 @@ EXTERN @Particles_StartAt@36:PROC
 FUN_5cca60 TEXTEQU <@Particles_StartAt@36>
 ENDIF
 ALIGN 16
+; src/media.cpp, nmake ASM_MEDIA=1 assembles the original
+IFDEF ASM_MEDIA
 FUN_5ccb20 PROC
 
             sub ESP,260
@@ -767552,6 +767658,10 @@ $L_5cda10           DWORD $L_5cd335
           DWORD $L_5cd73c
           DWORD $L_5cd335
           DWORD $L_5cd73c
+ELSE
+EXTERN @Sparks_AlongPolygon@32:PROC
+FUN_5ccb20 TEXTEQU <@Sparks_AlongPolygon@32>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -914703,6 +914813,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain.cpp, nmake ASM_TERRAIN=1 assembles the original
+IFDEF ASM_TERRAIN
 FUN_619c20 PROC
 
             sub ESP,280
@@ -915511,6 +915623,10 @@ $L_61a72c           DWORD $L_61a3fb
           DWORD $L_61a425
           DWORD $L_61a44f
           DWORD $L_61a476
+ELSE
+EXTERN @Terrain_PlacePlants@12:PROC
+FUN_619c20 TEXTEQU <@Terrain_PlacePlants@12>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -954923,6 +955039,8 @@ $L_62d3e6::
             nop
 $L_62d2fa ENDP
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62d400 PROC
 
             sub ESP,12
@@ -955075,7 +955193,13 @@ $L_62d546::
             add ESP,12
             ret 
 FUN_62d400 ENDP
+ELSE
+EXTERN _Gz_LongestMatch:PROC
+FUN_62d400 TEXTEQU <_Gz_LongestMatch>
+ENDIF
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62d550 PROC
 
             mov EDX,DWORD PTR [$L_68a3a0]
@@ -955188,6 +955312,10 @@ $L_62d64a::
             pop EBX
             ret 
 FUN_62d550 ENDP
+ELSE
+EXTERN _Gz_FillWindow:PROC
+FUN_62d550 TEXTEQU <_Gz_FillWindow>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -955713,6 +955841,8 @@ FUN_62d960 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62dba0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -955942,10 +956072,16 @@ $L_62ddcc::
 
             ret 
 FUN_62dba0 ENDP
+ELSE
+EXTERN _Gz_CtInit:PROC
+FUN_62dba0 TEXTEQU <_Gz_CtInit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ddd0 PROC
 
             mov EAX,OFFSET $L_77d08c
@@ -955984,10 +956120,16 @@ $L_62ddfb::
             mov BYTE PTR [$L_77b524],AL
             ret 
 FUN_62ddd0 ENDP
+ELSE
+EXTERN _Gz_InitBlock:PROC
+FUN_62ddd0 TEXTEQU <_Gz_InitBlock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62de40 PROC
 
             sub ESP,32
@@ -956043,6 +956185,10 @@ $L_62dea4::
             add ESP,32
             ret 
 FUN_62de40 ENDP
+ELSE
+EXTERN _Gz_GenCodes:PROC
+FUN_62de40 TEXTEQU <_Gz_GenCodes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -956052,6 +956198,8 @@ FUN_62de40 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62deb0 PROC
 
             mov EAX,DWORD PTR [$L_77d088]
@@ -956185,6 +956333,10 @@ $L_62dff1::
             shr EAX,3
             ret 
 FUN_62deb0 ENDP
+ELSE
+EXTERN _Gz_FlushBlock:PROC
+FUN_62deb0 TEXTEQU <_Gz_FlushBlock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -956192,6 +956344,8 @@ FUN_62deb0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e000 PROC
 
             push ECX
@@ -956369,12 +956523,18 @@ $L_62e15f::
             pop ECX
             ret 
 FUN_62e000 ENDP
+ELSE
+EXTERN _Gz_BuildTree:PROC
+FUN_62e000 TEXTEQU <_Gz_BuildTree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e1d0 PROC
 
             mov ECX,DWORD PTR [$L_77b4fc]
@@ -956444,7 +956604,13 @@ $L_62e264::
             pop EBX
             ret 
 FUN_62e1d0 ENDP
+ELSE
+EXTERN _Gz_PqDownHeap:PROC
+FUN_62e1d0 TEXTEQU <_Gz_PqDownHeap>
+ENDIF
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e270 PROC
 
             sub ESP,24
@@ -956642,9 +956808,15 @@ $L_62e466::
             add ESP,24
             ret 
 FUN_62e270 ENDP
+ELSE
+EXTERN _Gz_GenBitlen:PROC
+FUN_62e270 TEXTEQU <_Gz_GenBitlen>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e470 PROC
 
             mov EAX,DWORD PTR [$L_68a558]
@@ -956680,7 +956852,13 @@ $L_62e4bc::
             mov DWORD PTR [$L_77c8a4],ECX
             ret 
 FUN_62e470 ENDP
+ELSE
+EXTERN _Gz_BuildBlTree:PROC
+FUN_62e470 TEXTEQU <_Gz_BuildBlTree>
+ENDIF
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e4d0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -956791,6 +956969,10 @@ $L_62e5b2::
             pop EBX
             ret 
 FUN_62e4d0 ENDP
+ELSE
+EXTERN _Gz_ScanTree:PROC
+FUN_62e4d0 TEXTEQU <_Gz_ScanTree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -956801,6 +956983,8 @@ FUN_62e4d0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e5c0 PROC
 
             push EBX
@@ -956861,9 +957045,15 @@ $L_62e61f::
             pop EBX
             ret 
 FUN_62e5c0 ENDP
+ELSE
+EXTERN _Gz_SendAllTrees:PROC
+FUN_62e5c0 TEXTEQU <_Gz_SendAllTrees>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e640 PROC
 
             mov EDX,DWORD PTR [ESP+4]
@@ -957026,6 +957216,10 @@ $L_62e7a2::
             pop EBX
             ret 
 FUN_62e640 ENDP
+ELSE
+EXTERN _Gz_SendTree:PROC
+FUN_62e640 TEXTEQU <_Gz_SendTree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -957036,6 +957230,8 @@ FUN_62e640 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e7b0 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -957155,6 +957351,10 @@ $L_62e8f9::
             pop EBX
             ret 
 FUN_62e7b0 ENDP
+ELSE
+EXTERN _Gz_CtTally:PROC
+FUN_62e7b0 TEXTEQU <_Gz_CtTally>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -957171,6 +957371,8 @@ FUN_62e7b0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62e910 PROC
 
             sub ESP,8
@@ -957310,6 +957512,10 @@ $L_62ea44::
             add ESP,8
             ret 
 FUN_62e910 ENDP
+ELSE
+EXTERN _Gz_CompressBlock:PROC
+FUN_62e910 TEXTEQU <_Gz_CompressBlock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -957321,6 +957527,8 @@ FUN_62e910 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ea70 PROC
 
             xor EDX,EDX
@@ -957372,12 +957580,18 @@ $L_62eac8::
             mov WORD PTR [ECX],AX
             ret 
 FUN_62ea70 ENDP
+ELSE
+EXTERN _Gz_SetFileType:PROC
+FUN_62ea70 TEXTEQU <_Gz_SetFileType>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62eae0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -957388,6 +957602,10 @@ FUN_62eae0 PROC
             mov DWORD PTR [$L_77e3e8],EAX
             ret 
 FUN_62eae0 ENDP
+ELSE
+EXTERN _Gz_BiInit:PROC
+FUN_62eae0 TEXTEQU <_Gz_BiInit>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -957404,6 +957622,8 @@ FUN_62eae0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62eb10 PROC
 
             push EBP
@@ -957483,6 +957703,10 @@ $L_62ebcf::
             or WORD PTR [$L_77e3e4],DX
             ret 
 FUN_62eb10 ENDP
+ELSE
+EXTERN _Gz_SendBits:PROC
+FUN_62eb10 TEXTEQU <_Gz_SendBits>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -957491,6 +957715,8 @@ FUN_62eb10 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ebf0 PROC
 
             mov EDX,DWORD PTR [ESP+8]
@@ -957512,8 +957738,14 @@ $L_62ebfb::
             pop ESI
             ret 
 FUN_62ebf0 ENDP
+ELSE
+EXTERN _Gz_BiReverse:PROC
+FUN_62ebf0 TEXTEQU <_Gz_BiReverse>
+ENDIF
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ec10 PROC
 
             mov EAX,DWORD PTR [$L_77e3e8]
@@ -957593,7 +957825,13 @@ $L_62ecbf::
             nop
             nop
 FUN_62ec10 ENDP
+ELSE
+EXTERN _Gz_BiWindup:PROC
+FUN_62ec10 TEXTEQU <_Gz_BiWindup>
+ENDIF
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ece0 PROC
 
             push EBX
@@ -957718,6 +957956,10 @@ $L_62edf0::
             pop EBX
             ret 
 FUN_62ece0 ENDP
+ELSE
+EXTERN _Gz_CopyBlock:PROC
+FUN_62ece0 TEXTEQU <_Gz_CopyBlock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -957733,6 +957975,8 @@ FUN_62ece0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ee00 PROC
 
             sub ESP,1412
@@ -958213,6 +958457,10 @@ $L_62f287::
             add ESP,1412
             ret 
 FUN_62ee00 ENDP
+ELSE
+EXTERN _Gz_HuftBuild:PROC
+FUN_62ee00 TEXTEQU <_Gz_HuftBuild>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -958223,6 +958471,8 @@ FUN_62ee00 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62f2a0 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -958249,6 +958499,10 @@ $L_62f2c0::
             xor EAX,EAX
             ret 
 FUN_62f2a0 ENDP
+ELSE
+EXTERN _Gz_HuftFree:PROC
+FUN_62f2a0 TEXTEQU <_Gz_HuftFree>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -958263,6 +958517,8 @@ FUN_62f2a0 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62f2d0 PROC
 
             sub ESP,20
@@ -958690,6 +958946,10 @@ $L_62f6a7::
             add ESP,20
             ret 
 FUN_62f2d0 ENDP
+ELSE
+EXTERN _Gz_InflateCodes:PROC
+FUN_62f2d0 TEXTEQU <_Gz_InflateCodes>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -958702,6 +958962,8 @@ FUN_62f2d0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_62f6c0 PROC
 
             push ECX
@@ -958866,6 +959128,10 @@ $L_62f816::
             pop ECX
             ret 
 $L_62f6c0 ENDP
+ELSE
+EXTERN _Gz_InflateStored:PROC
+$L_62f6c0 TEXTEQU <_Gz_InflateStored>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -958879,6 +959145,8 @@ $L_62f6c0 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_62f840 PROC
 
             sub ESP,1168
@@ -958999,6 +959267,10 @@ $L_62f968::
             add ESP,1168
             ret 
 $L_62f840 ENDP
+ELSE
+EXTERN _Gz_InflateFixed:PROC
+$L_62f840 TEXTEQU <_Gz_InflateFixed>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -959014,6 +959286,8 @@ $L_62f840 ENDP
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 $L_62f980 PROC
 
             sub ESP,1304
@@ -959632,10 +959906,16 @@ $L_62ff1d::
             add ESP,1304
             ret 
 $L_62f980 ENDP
+ELSE
+EXTERN _Gz_InflateDynamic:PROC
+$L_62f980 TEXTEQU <_Gz_InflateDynamic>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_62ff30 PROC
 
             push ESI
@@ -959741,6 +960021,10 @@ $L_630010::
             mov EAX,2
             ret 
 FUN_62ff30 ENDP
+ELSE
+EXTERN _Gz_InflateBlock:PROC
+FUN_62ff30 TEXTEQU <_Gz_InflateBlock>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -959752,6 +960036,8 @@ FUN_62ff30 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/terrain_grid.cpp, nmake ASM_TERRAIN_GRID=1 assembles the original
+IFDEF ASM_TERRAIN_GRID
 FUN_630020 PROC
 
             push ECX
@@ -959825,6 +960111,10 @@ $L_6300ac::
             pop ECX
             ret 
 FUN_630020 ENDP
+ELSE
+EXTERN _Gz_Inflate:PROC
+FUN_630020 TEXTEQU <_Gz_Inflate>
+ENDIF
 ALIGN 16
 FUN_6300b0 PROC
 

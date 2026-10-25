@@ -305,7 +305,7 @@ extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
 extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
 extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
-ASM_PROC(FUN_55f5f0)
+extern "C" void FUN_55f5f0(); KING_ALIAS("_FUN_55f5f0", "_Truck_HitchTrailer")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a model by name
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
 extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
@@ -2282,6 +2282,194 @@ void __fastcall Sun_FlareStep(BYTE* s, void*)
     }
     Sf_Strength(s, v);
     CallThis(Sf_PostEvent, s, 1);
+}
+
+} // extern "C"
+
+// === the weather's frame (a method at $L_5a9dc0)
+
+extern "C" void Wf_Switch(); KING_ALIAS("_Wf_Switch", "_Switch_Select")
+extern "C" void Wf_FrameApply(); KING_ALIAS("_Wf_FrameApply", "_Frame_Apply")
+extern "C" void Wf_SoundPlay(); KING_ALIAS("_Wf_SoundPlay", "@Sound_Play@20")
+ASM_VAR(int, g_wf721768, $L_721768)                 // the trace is on
+ASM_VAR(BYTE*, g_wfTraceData, $L_71e814)
+ASM_VAR(int, g_wfTraceSize, $L_71e810)
+ASM_VAR(int, g_wfTracePos, $L_71e818)
+ASM_VAR(char, g_wf67ef40, $L_67ef40)
+ASM_VAR(char, g_wf67ef2c, $L_67ef2c)
+ASM_VAR(char, g_wf67ef1c, $L_67ef1c)
+ASM_VAR(int, g_wfPhase, $L_7025c4)                  // the demo cycle's step
+ASM_VAR(int, g_wf7025c0, $L_7025c0)
+ASM_VAR(double, g_wf6fb3e8, $L_6fb3e8)              // the loudness cap
+ASM_VAR(double, g_wf64b660, $L_64b660)
+ASM_VAR(double, g_wf64b678, $L_64b678)
+ASM_VAR(double, g_wf6516d8, $L_6516d8)
+ASM_VAR(double, g_wf6516d0, $L_6516d0)
+ASM_VAR(double, g_wf64d908, $L_64d908)
+ASM_VAR(double, g_wf64da00, $L_64da00)
+ASM_VAR(double, g_wf64b6e0, $L_64b6e0)
+ASM_VAR(double, g_wf6516c8, $L_6516c8)
+ASM_VAR(double, g_wf6516c0, $L_6516c0)
+ASM_VAR(double, g_wf6516b8, $L_6516b8)
+ASM_VAR(double, g_wf6516b0, $L_6516b0)
+ASM_VAR(double, g_wf64b7a8, $L_64b7a8)
+ASM_VAR(double, g_wf6516a8, $L_6516a8)
+ASM_VAR(double, g_wf6516a0, $L_6516a0)
+ASM_VAR(float, g_wf64caa0, $L_64caa0)
+ASM_VAR(float, g_wf64d2f8, $L_64d2f8)
+ASM_VAR(double, g_wf64b840, $L_64b840)
+ASM_VAR(double, g_wf651698, $L_651698)
+ASM_VAR(double, g_wf64b738, $L_64b738)
+ASM_VAR(double, g_wf64b5b8, $L_64b5b8)
+
+static void Wf_Trace(const char* p)
+{
+    if (!g_wf721768 || !g_wfTraceData || !*p)
+        return;
+    while (g_wfTracePos < g_wfTraceSize)
+    {
+        g_wfTraceData[g_wfTracePos] = *p++;
+        g_wfTracePos++;
+        if (!*p)
+            break;
+    }
+}
+
+// the clock +88 (or the sun +104 / the moon +120) moved on by the frame time over the length +96 (+112)
+static double Wf_Step(BYTE* s, double full, int len)
+{
+    return F(double, F(BYTE*, s, 80), 2960) * full / (F(double, s, len) * g_wf6516c8);
+}
+
+static void Wf_Wrap(BYTE* s, int off, double full)
+{
+    while (F(double, s, off) > full)
+        F(double, s, off) -= full;
+}
+
+extern "C" {
+
+// [$L_5a9dc0] weather s's frame: the day phase +72 / +48 from the clock +88, the darkness +56 / +64, the sky and
+// daylight, then the clock and the sun and moon angles (+104 / +120) running (+568: the demo cycle 7025c4 through
+// set times of day), the star dome turned (+144), the lamp level +532 by the dark, the night sounds (+492, +508,
+// crickets +152)
+void __fastcall Weather_Frame(BYTE* s, void*)
+{
+    double t = F(double, s, 88) - g_wf64b660;
+    F(double, s, 72) = t;
+    if (t < g_wf64b678)
+        F(double, s, 72) = t + g_wf6516d8;
+    double x = F(double, s, 72) * g_wf6516d0;
+    F(double, s, 72) = x;
+    F(double, s, 48) = x87_sin(x * g_wf64d908 - g_wf64da00) + g_wf64b6e0;
+    double v = Wave_Value(s, 0, 0.0);
+    F(double, s, 56) = v;
+    double w = (v - g_wf64b6e0) * 2;
+    F(double, s, 64) = w;
+    if (w < g_wf64b678)
+        F(double, s, 64) = 0;
+    F(double, s, 32) = F(double, s, 48);
+    Weather_ApplySky(s, 0);
+    Wf_Trace(&g_wf67ef40);
+    Weather_Daylight(s);
+    Wf_Trace(&g_wf67ef2c);
+    CallThis(FUN_5e48f0, s);
+    if (F(int, s, 568))
+    {
+        static const double hours[4] = {2.0, 6.0, 16.0, 26.0};
+        switch (g_wfPhase)
+        {
+        case 0:
+        case 1:
+        case 2:
+        {
+            static const DWORD sun[3] = {0, 1073291771, 1074340347};      // 0, pi / 2, pi
+            F(DWORD, s, 104) = g_wfPhase ? 1293080650 : 0;
+            F(DWORD, s, 108) = sun[g_wfPhase];
+            F(double, s, 88) = Wf_Step(s, g_wf6516d8, 96) + F(double, s, 88);
+            if (F(double, s, 88) > g_wf6516d8)
+            {
+                g_wfPhase++;
+                if (g_wfPhase == 3)
+                    F(double, s, 104) = 0;
+            }
+            break;
+        }
+        case 3:
+        case 4:
+        case 5:
+        case 6:
+            F(double, s, 88) = hours[g_wfPhase - 3];
+            F(double, s, 104) = Wf_Step(s, g_wf64d908, 112) + F(double, s, 104);
+            if (F(double, s, 104) > g_wf64d908)
+            {
+                if (g_wfPhase == 6)
+                {
+                    g_wfPhase = 0;
+                    F(double, s, 88) = 0;
+                }
+                else
+                    g_wfPhase++;
+            }
+            break;
+        }
+    }
+    else if (!(F(DWORD, s, 572) & 0x10000))
+    {
+        F(double, s, 88) = Wf_Step(s, g_wf6516d8, 96) + F(double, s, 88);
+        double d = F(double, s, 112) * g_wf6516c8;
+        double dt = F(double, F(BYTE*, s, 80), 2960);
+        F(double, s, 104) = dt * g_wf64d908 / d + F(double, s, 104);
+        F(double, s, 120) = dt * g_wf64d908 / d * g_wf6516c0 + F(double, s, 120);
+    }
+    Wf_Wrap(s, 104, g_wf64d908);
+    Wf_Wrap(s, 120, g_wf64d908);
+    Wf_Wrap(s, 88, g_wf6516d8);
+    if (F(int, s, 144))
+    {
+        Matrix r;
+        CallC(Wf_FrameApply, F(int, s, 144), 0, Matrix_RotationY(&r, (float)(F(double, s, 56) * g_wf6516b8 - g_wf6516b0)));
+    }
+    // the lamps by the dark, flickering every third half second
+    double dark = F(double, s, 56);
+    int third = (int)(F(double, F(BYTE*, s, 80), 2968) * g_wf64b6e0) % 3 == 0;
+    if (dark > g_wf64b7a8)
+    {
+        F(float, s, 532) = 2.0f;
+        if (third)
+            F(float, s, 532) = 4.0f;
+    }
+    else if (dark > g_wf6516a8 || dark > g_wf64b840)
+    {
+        double lv = dark > g_wf6516a8 ? g_wf64caa0 - (dark - g_wf6516a8) * g_wf6516a0 : (dark - g_wf64b840) * g_wf651698;
+        F(float, s, 532) = (float)lv;
+        if (third)
+            F(float, s, 532) = (float)(lv * g_wf64d2f8);
+    }
+    else
+        F(float, s, 532) = 0;
+    Wf_Trace(&g_wf67ef1c);
+    // the night's sounds
+    double vol = F(double, s, 56) * g_wf64b738;
+    vol = vol < g_wf64b5b8 ? g_wf64b678 : (vol - g_wf64b5b8) * 2;
+    if (g_wf7025c0 && vol > g_wf6fb3e8)
+        vol = g_wf6fb3e8;
+    if (BYTE* snd = F(BYTE*, s, 492))
+        CallThis(Wf_SoundPlay, snd, (float)vol, (float)vol, 0);
+    if (F(double, s, 56) > g_wf64b7a8)
+    {
+        CallC(Wf_Switch, F(int, s, 152), 1);
+        if (BYTE* snd2 = F(BYTE*, s, 508))
+        {
+            double v2 = (F(double, s, 56) - g_wf64b7a8) * F(float, s, 552);
+            if (g_wf7025c0 && v2 > g_wf6fb3e8)
+                v2 = g_wf6fb3e8;
+            CallThis(Wf_SoundPlay, snd2, (float)v2, (float)v2, 0);
+        }
+    }
+    else if (F(int, s, 152))
+        CallC(Wf_Switch, F(int, s, 152), 0);
+    CallThis(FUN_5d32f0, s, 1);
 }
 
 } // extern "C"

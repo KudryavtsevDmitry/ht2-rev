@@ -41,7 +41,7 @@ ASM_VAR(float, g_fogA, $L_67f0e0)
 ASM_VAR(float, g_fogB, $L_67f0e4)
 ASM_VAR(double, g_eps001, $L_64b658)
 ASM_VAR(double, g_one64b670, $L_64b670)
-ASM_PROC(FUN_5b2950)
+extern "C" void FUN_5b2950(); KING_ALIAS("_FUN_5b2950", "@Mesh_Draw@12")
 extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5b0810(); KING_ALIAS("_FUN_5b0810", "@Material_SetStages@20")
 extern "C" void FUN_5ae8a0(); KING_ALIAS("_FUN_5ae8a0", "@Clip_Pop@8")
@@ -5694,6 +5694,158 @@ void __fastcall Sprite_DrawStrip(BYTE* s, void*, BYTE* o, float px, float py, fl
         return;
     }
     CallThis(Sp_Dispatch, s, mat, flags, 0, 0, 0);
+}
+
+} // extern "C"
+
+// === an object's lit mesh (FUN_5b2950)
+
+extern "C" void Rm_Nop1(); KING_ALIAS("_Rm_Nop1", "@Fw_Nop1@12")
+extern "C" void Rm_Dispatch(); KING_ALIAS("_Rm_Dispatch", "_Draw_Dispatch@20")
+ASM_VAR(BYTE, g_rm702dd0, $L_702dd0)
+ASM_VAR(AsmLabel, g_rm702a80, $L_702a80)
+ASM_VAR(float, g_rm64c458, $L_64c458)
+ASM_VAR(double, g_rm64eba0, $L_64eba0)
+ASM_VAR(double, g_rm64b678, $L_64b678)
+
+static void __cdecl Rm_AtexitNop() { Ren5b3000_Nop(0); }
+
+// V's 3x3 part times v (x = v0 V0 + v1 V3 + v2 V6 ...)
+static void Rm_Turn(const float* V, const float* v, float* out)
+{
+    out[0] = (float)((double)V[0] * v[0] + (double)V[6] * v[2] + (double)V[3] * v[1]);
+    out[1] = (float)((double)V[7] * v[2] + (double)V[4] * v[1] + (double)V[1] * v[0]);
+    out[2] = (float)((double)V[8] * v[2] + (double)V[5] * v[1] + (double)V[2] * v[0]);
+}
+
+static void Rm_Point(const float* V, const float* v, float* out)
+{
+    out[0] = (float)((double)V[6] * v[2] + (double)V[3] * v[1] + (double)V[0] * v[0] + V[9]);
+    out[1] = (float)((double)V[7] * v[2] + (double)V[4] * v[1] + (double)V[1] * v[0] + V[10]);
+    out[2] = (float)((double)V[8] * v[2] + (double)V[5] * v[1] + (double)V[2] * v[0] + V[11]);
+}
+
+extern "C" {
+
+// [FUN_5b2950] renderer s draws mesh object o (flags +0: 1 lit, 4 two-sided, 16 per-vertex, 128 a strip; count +4,
+// indexes +8, normals +24, colours +20, centre +32 / radius +44, material +48): straight from its vertex buffers
+// (+76 lit / +80) in device mode 1, else its vertices into the clipper with their light (+1664 ..) and drawn
+void __fastcall Mesh_Draw(BYTE* s, void*, BYTE* o)
+{
+    if (!(g_rm702dd0 & 1))
+    {
+        g_rm702dd0 |= 1;
+        memset(&g_rm702a80, 0, 16);
+        atexit(Rm_AtexitNop);
+    }
+    BYTE* mat = F(BYTE*, s, 8260) + F(short, o, 48) * 124;
+    bool lit = (o[0] & 1) && (g_702e8c & 64);
+    if (F(int, s, 8620) == 1)
+    {
+        if (!Window_RootSurface(F(BYTE*, s, 1948), 0))
+            return;
+        Window_RootSurface(F(BYTE*, s, 1948), 0);
+        Render_Entry(s, 0, F(short, o, 48), lit ? 1 : 0, 0);
+        if (o[0] & 4)
+            Com(g_device, 80, 22, 3);
+        int type = (o[0] & 128) ? 5 : 6;
+        Com(g_device, 80, 136, F(int, s, 8272) ? 1 : 0);
+        void* vb = F(void*, o, lit ? 76 : 80);
+        if (vb)
+            Com(g_device, 100, type, lit ? 274 : 482, vb, (int)F(WORD, o, 4), 0);
+        if (o[0] & 4)
+            Com(g_device, 80, 22, 2);
+        if (o[0] & 128)
+        {
+            F(int, s, 8352) += F(WORD, o, 4) - 2;
+            F(int, s, 8384)++;
+        }
+        return;
+    }
+    if (F(int, s, 8620) == 2)
+    {
+        if (!Window_RootSurface(F(BYTE*, s, 1948), 0))
+            return;
+        Render_Entry(s, 0, F(short, o, 48), lit ? 1 : 0, 0);
+    }
+    Matrix V = F(Matrix, s, 5216 + F(int, s, 8236) * 48);
+    const float* C = (const float*)(s + 3236 + F(int, s, 8224) * 48);
+    double depth = (double)F(float, o, 40) * C[2] + (double)F(float, o, 36) * C[1] + (double)F(float, o, 32) * C[0] + F(float, o, 44);
+    if (depth < g_rm64b678)
+        return;
+    int fog = 0, flg = 0;
+    if (Window_RootSurface(F(BYTE*, s, 1948), 0))
+    {
+        WORD w = F(WORD, o, 0);
+        if (w & 16)
+        {
+            fog = 0;
+            flg = 128;
+        }
+        else if (lit)
+        {
+            double L;
+            if (F(int, s, 8240) && F(int, s, 8448) == 2)
+            {
+                L = g_rm64b678;
+                flg = 128;
+            }
+            else if (F(int, s, 8240) && F(int, s, 8448) == 1)
+            {
+                float p[3];
+                Rm_Turn(V.m, (const float*)(o + 32), p);
+                L = Lights_AtPoint(s, 0, (int)p, F(double, s, 8512));
+            }
+            else
+                L = F(double, s, 8512);
+            fog = (int)(g_rm64eba0 - L * g_rm64eba0);
+            if (fog < 0)
+                fog = 0;
+            else if (fog > 255)
+                fog = 255;
+        }
+        else
+            fog = (int)(g_rm64c458 - F(float, o, 28) * (double)g_rm64c458);
+    }
+    int n = F(WORD, o, 4);
+    int i = 0;
+    for (; i < n; i++)
+    {
+        const float* v = (const float*)(F(BYTE*, s, 8252) + F(WORD*, o, 8)[i] * 28);
+        CallThis(Rm_Nop1, s, v);
+        if (Window_RootSurface(F(BYTE*, s, 1948), 0))
+        {
+            WORD w = F(WORD, o, 0);
+            float* light = &F(float, s, 1664 + 4 * i);
+            if (w & 16)
+            {
+                if ((w & 1) && (g_702e8c & 64))
+                {
+                    if (F(int, s, 8240) < 1)
+                        *light = (float)F(double, s, 8512);
+                    else
+                    {
+                        float nrm[3], pos[3];
+                        Rm_Turn(V.m, (const float*)(F(BYTE*, o, 24) + 12 * i), nrm);
+                        Rm_Point(V.m, v, pos);
+                        *light = (float)Lights_At(s, 0, (int)pos, (int)nrm, F(double, s, 8512));
+                    }
+                }
+                else
+                    F(int, s, 1664 + 4 * i) = F(int*, o, 20)[i];
+            }
+            else if (F(int, s, 8448) == 2 && (w & 1) && (g_702e8c & 64))
+            {
+                float p[3], pos[3];
+                Rm_Turn(V.m, (const float*)(o + 32), p);
+                Rm_Point(V.m, v, pos);
+                *light = (float)Lights_At(s, 0, (int)pos, (int)p, F(double, s, 8512));
+            }
+        }
+        F(int, s, 1756 + 4 * i) = i;
+    }
+    F(int, s, 1932) = i;
+    CallThis(Rm_Dispatch, s, mat, flg, fog, 0, 0);
 }
 
 } // extern "C"

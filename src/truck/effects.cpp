@@ -3466,7 +3466,7 @@ extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")  
 ASM_PROC(FUN_4cb8d0)
 extern "C" void FUN_5fcdb0(); KING_ALIAS("_FUN_5fcdb0", "@Sound_ResetSlot@8")
 extern "C" void FUN_4dd9f0(); KING_ALIAS("_FUN_4dd9f0", "@Obj4dd9f0_Destruct@8")
-ASM_PROC(FUN_4ce6d0)
+extern "C" void FUN_4ce6d0(); KING_ALIAS("_FUN_4ce6d0", "_Car_DrawForces")
 extern "C" void FUN_547030(); KING_ALIAS("_FUN_547030", "@Car_Draw@16")
 extern "C" void FUN_5f0870(); KING_ALIAS("_FUN_5f0870", "@Thunk5f0870@4")
 extern "C" void FUN_4dc410(); KING_ALIAS("_FUN_4dc410", "@SmokeBurst_Destroy@4")
@@ -9293,6 +9293,112 @@ int __fastcall Fx_SeaSpot(BYTE* s, void*, int i, Vec3* p, Vec3* n)
     p->y = (float)((double)r2 + b[1]);
     p->z = (float)(h + b[2]);
     return 1;
+}
+
+} // extern "C"
+
+// === the car's debug force lines (FUN_4ce6d0)
+
+extern "C" void Df_Line(); KING_ALIAS("_Df_Line", "@Render_Line3D@36")
+extern "C" void Df_SetThis(); KING_ALIAS("_Df_SetThis", "@Vec3_SetThis@20")
+extern "C" void Df_AddAssign(); KING_ALIAS("_Df_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(int, g_df672980, $L_672980)                 // the switch read: -1 not yet
+ASM_VAR(const char*, g_df696868, $L_696868)         // the ini file
+ASM_VAR(char, g_df672998, $L_672998)
+ASM_VAR(char, g_df6729a0, $L_6729a0)
+ASM_VAR(char, g_df6729a8, $L_6729a8)
+ASM_VAR(char, g_df672994, $L_672994)
+ASM_VAR(float, g_df64c308, $L_64c308)
+ASM_VAR(float, g_df64c338, $L_64c338)
+ASM_VAR(double, g_df64b678, $L_64b678)
+
+static void Df_Draw(BYTE* r, const Vec3& a, const Vec3& b, int color)
+{
+    CallThis(Df_Line, r, a.x, a.y, a.z, b.x, b.y, b.z, color);
+}
+
+static Vec3 Df_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_4ce6d0] with the ini switch on, car c's forces drawn by renderer r as lines from its position: the engine's
+// pull (+9996) up, the brakes' (+10000) down, then the gear marks (+16496 flag 8 or turning +16560: one up mark;
+// else the gears 2.. up to +16480 + 4 stacked, set ones +16484 bright, the current +16476 with a tick, gear 4 with
+// the axes)
+void __cdecl Car_DrawForces(BYTE* c, BYTE* r)
+{
+    if (g_df672980 == -1)
+    {
+        char buf[50];
+        GetPrivateProfileStringA(&g_df672998, &g_df6729a0, &g_df6729a8, buf, 50, g_df696868);
+        if (strcmp(buf, &g_df672994))
+        {
+            g_df672980 = 0;
+            return;
+        }
+        g_df672980 = 1;
+    }
+    else if (!g_df672980)
+        return;
+    BYTE* b = F(BYTE*, c, 21600);
+    Matrix m;
+    SceneObj_Matrix1(c + 16, 0, &m);
+    Vec3 base;
+    base.x = m.m[9];
+    base.y = m.m[10];
+    base.z = m.m[11];
+    const Vec3& X = g_axisX;
+    const Vec3& Z = g_axisZ;
+    // the pull
+    float f = F(float, b, 9996);
+    float ux = (float)((double)f * Z.x), uy = (float)((double)f * Z.y);
+    float tx = (float)((double)base.x + ux), ty = (float)((double)base.y + uy);
+    float tz = (float)((double)base.z + f * (double)Z.z);
+    Df_Draw(r, Df_Set((double)base.x + X.x, (double)base.y + X.y, (double)base.z + X.z),
+            Df_Set((double)tx + X.x, (double)ty + X.y, (double)tz + X.z), 5);
+    // the brakes
+    f = F(float, b, 10000);
+    float dx = (float)((double)f * Z.x), dy = (float)((double)f * Z.y);
+    Vec3 p = Df_Set((double)base.x - dx, (double)base.y - dy, (double)base.z - f * (double)Z.z);
+    Df_Draw(r, Df_Set((double)base.x + X.x, (double)base.y + X.y, (double)base.z + X.z),
+            Df_Set((double)p.x + X.x, (double)p.y + X.y, (double)p.z + X.z), 7);
+    if ((b[16496] & 8) || F(double, b, 16560) > g_df64b678)
+    {
+        Vec3 up = Df_Set((double)Z.x + Z.x, (double)Z.y + Z.y, (double)Z.z + Z.z);
+        Df_Draw(r, base, Df_Set((double)up.x + base.x, (double)up.y + base.y, (double)up.z + base.z),
+                (b[16496] & 8) ? 7 : 5);
+        return;
+    }
+    for (int k = 2; k < F(int, b, 16480) + 4;)
+    {
+        Vec3 v = Df_Set((double)Z.x * g_df64c308, (double)Z.y * g_df64c308, (double)Z.z * g_df64c308);
+        Vec3 t = Df_Set((double)v.x + base.x, (double)v.y + base.y, (double)v.z + base.z);
+        Df_Draw(r, base, t, (F(int, b, 16484) & (1 << k)) ? 5 : 6);
+        if (F(int, b, 16476) + 4 == k)
+        {
+            Vec3 w = Df_Set((double)Z.x * g_df64c338, (double)Z.y * g_df64c338, (double)Z.z * g_df64c338), sum;
+            Df_Draw(r, t, *Vec3_Add(&sum, &t, &w), 7);
+        }
+        if (k == 4)
+        {
+            Vec3 a, e;
+            Vec3_Scaled(&a, &g_axisX, 0.5f);
+            Df_Draw(r, base, *Vec3_Add(&e, &base, &a), 4);
+            Vec3_Scaled(&a, &g_axisY, 0.5f);
+            Df_Draw(r, base, *Vec3_Add(&e, &base, &a), 4);
+        }
+        Vec3 tmp;
+        CallThis(Df_AddAssign, &base, &tmp, &g_axisZ);
+        if (++k >= 10)
+            break;
+    }
 }
 
 } // extern "C"

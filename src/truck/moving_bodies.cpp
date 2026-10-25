@@ -3004,3 +3004,99 @@ int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
 }
 
 } // extern "C"
+
+// === a body's points reset onto its plane (a method at $L_58e290)
+
+extern "C" void Bp_ActivateAll(); KING_ALIAS("_Bp_ActivateAll", "@Points_ActivateAll@8")
+ASM_PROC(FUN_58e7f0)
+ASM_VAR(char, g_bp67dda8, $L_67dda8)
+ASM_VAR(double, g_bp64b5a0, $L_64b5a0)
+ASM_VAR(double, g_bp64b898, $L_64b898)
+ASM_VAR(double, g_bp6506c0, $L_6506c0)
+ASM_VAR(double, g_bp64b670, $L_64b670)
+
+// the body's height over its plane (point +1516, normal +1528) at +1996
+static double Bp_Height(BYTE* s)
+{
+    double x = (double)F(float, s, 1996) - F(float, s, 1516);
+    double y = (double)F(float, s, 2000) - F(float, s, 1520);
+    double z = (double)F(float, s, 2004) - F(float, s, 1524);
+    return z * F(float, s, 1536) + y * F(float, s, 1532) + x * F(float, s, 1528);
+}
+
+// the lift +1732: the base +2008 moved k along v
+static void Bp_Lift(BYTE* s, const float* v, double k)
+{
+    Vec3& L = F(Vec3, s, 1732);
+    L.x = (float)((double)(float)(k * v[0]) + F(float, s, 2008));
+    L.y = (float)((double)(float)(k * v[1]) + F(float, s, 2012));
+    L.z = (float)(k * v[2] + F(float, s, 2016));
+}
+
+// lifted when it sinks below its rest height h
+static void Bp_LiftBelow(BYTE* s, double d, float h)
+{
+    if (!((double)h + g_bp64b5a0 > d))
+        return;
+    Bp_Lift(s, (const float*)(s + 1528), (double)h - d + g_bp64b5a0);
+}
+
+extern "C" {
+
+// [$L_58e290] body s with points (+1432) set again with flags (6: onto its plane by its kind +1672: 1 a box,
+// whose frame +1696 is solved again; 3 a wheel, its lift scaled on a slope; 2 and 4 by +3284), its contact
+// records cleared and refilled (FUN_58e7f0) and the kind found again (vtable 17)
+void __fastcall Body_ResetPoints(BYTE* s, void*, DWORD flags)
+{
+    if (F(int, s, 1432) > 0)
+    {
+        CallThis(Bp_ActivateAll, s);
+        if (flags & 6)
+        {
+            switch (F(int, s, 1672))
+            {
+            case 1:
+            {
+                Bp_LiftBelow(s, Bp_Height(s), F(float, s, 3276));
+                Matrix inv, out;
+                F(Matrix, s, 1744) = *Matrix_Inverse(&inv, &F(Matrix, s, 1696));
+                const Matrix* r = CallThis<const Matrix*>((void (*)())F(void**, s, 0)[18], s, &out, s + 1696, s + 1744,
+                                                          s + 1528, s + 1516);
+                F(Matrix, s, 1696) = *r;
+                break;
+            }
+            case 3:
+            {
+                double d = Bp_Height(s);
+                float nz = F(float, s, 1536);
+                if (x87_fabs((double)nz) > g_bp64b898)
+                    Bp_LiftBelow(s, (float)d, F(float, s, 3280));
+                else
+                {
+                    float h = (float)(F(float, s, 3280) / x87_sqrt(g_bp64b670 - (double)nz * nz * g_bp6506c0));
+                    Vec3 src, v;
+                    src.x = F(float, s, 1528);
+                    src.y = F(float, s, 1532);
+                    src.z = 0;
+                    Vec3_Normalized(&v, &src);
+                    Bp_Lift(s, &v.x, (double)h - (float)d + g_bp64b5a0);
+                }
+                break;
+            }
+            case 2:
+            case 4:
+                Bp_LiftBelow(s, Bp_Height(s), F(float, s, 3284));
+                break;
+            }
+        }
+    }
+    memset(s + 5192, 0, 80);
+    F(float, s, 1456) = 1.0f;
+    F(int, s, 1692) = 0;
+    F(int, s, 1208) = 0;
+    memset(s + 1212, 0, 200);
+    CallThis(FUN_58e7f0, s, s + 1696, &g_bp67dda8, F(int, s, 1432));
+    F(int, s, 1672) = CallThis<int>((void (*)())F(void**, s, 0)[17], s, s + 1696, s + 1456, s + 1460, s + 1464, flags);
+}
+
+} // extern "C"
