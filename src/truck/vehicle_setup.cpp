@@ -317,7 +317,7 @@ extern "C" double __fastcall Car_MinWearFactor(BYTE* car, void*)
 }
 
 ASM_PROC(FUN_4eacce)    // filter: feed (value, name)
-ASM_PROC(FUN_4eaf98)    // filter: output
+extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
 ASM_VAR(char, g_strFilterEngineTach, $L_674850)
 
 // [FUN_4ff210] the tachometer target from the driven wheels' slip, filtered into +7300
@@ -491,7 +491,7 @@ extern "C" void FUN_4ff3e0(); KING_ALIAS("_FUN_4ff3e0", "@Car_EngineBrakeTorque@
 extern "C" void FUN_501480(); KING_ALIAS("_FUN_501480", "@Car_GetSettings@12")
 extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
 ASM_PROC(FUN_4eacce)    // filter: feed (value, name)
-ASM_PROC(FUN_4eaf98)    // filter: output
+extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
 ASM_VAR(AsmLabel, s_674914, $L_674914)
 ASM_VAR(AsmLabel, s_674870, $L_674870)
 
@@ -924,6 +924,315 @@ int __fastcall Control_Move(BYTE* s, void*, int k, float* amount, float speed)
         F(float, e, 12) = (float)(last / (double)F(int, e, 4));
     }
     return 0;
+}
+
+} // extern "C"
+
+// === a body in water (FUN_504930)
+
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+ASM_VAR(float, g_bw674414, $L_674414)
+ASM_VAR(float, g_bw702630, $L_702630)
+ASM_VAR(float, g_bw702634, $L_702634)
+ASM_VAR(float, g_bw702638, $L_702638)
+ASM_VAR(float, g_bw64c258, $L_64c258)
+ASM_VAR(float, g_bw64c264, $L_64c264)
+ASM_VAR(float, g_bw64c250, $L_64c250)
+ASM_VAR(float, g_bw64d990, $L_64d990)
+ASM_VAR(double, g_bw64b898, $L_64b898)
+ASM_VAR(double, g_bw64b670, $L_64b670)
+ASM_VAR(double, g_bw64b788, $L_64b788)
+
+extern "C" {
+
+// [FUN_504930] body s in water: with a contact on water (kinds 4 and 7 among the +380 contacts) and its centre
+// (+7356/+7380 mid, lowered along gravity by +7024 + 674414 * +8092) under the surface (frame row +24, +60):
+// buoyancy against gravity (by 64d990, less by the depth half +15432) into +3392 and +13072 (+15436 set; deep
+// cabs +13124), and the spin and velocity damped by it into +3216 and +3288; else the plain lift and no damping
+void __fastcall Body_InWater(BYTE* s)
+{
+    int n = F(int, s, 3540), i = 0;
+    for (; i < n; i++) {
+        const int* c = F(const int*, s, 380 + i * 248);
+        if (c && c[0] == 1 && (c[1] == 7 || c[1] == 4))
+            break;
+    }
+    double h = g_bw674414 * (double)F(float, s, 8092) + F(float, s, 7024);
+    float gx = (float)(g_bw702630 * h), gy = (float)(g_bw702634 * h);
+    double gz = h * g_bw702638;
+    double cx = (double)F(float, s, 7380) + F(float, s, 7356);
+    float cy = F(float, s, 7360) + F(float, s, 7384), cz = F(float, s, 7364) + F(float, s, 7388);
+    float hy = cy * g_bw64c258, hz = cz * g_bw64c258;
+    float dx = (float)(cx * g_bw64c258 - gx), dy = hy - gy;
+    double dz = hz - gz;
+    float depth = (float)(dz * F(float, s, 48) + (double)dy * F(float, s, 36) + (double)dx * F(float, s, 24)
+        + F(float, s, 60));
+    Vec3 u, v, w;
+    Vec3_SetThis(&u, 0, -g_bw702630, -g_bw702634, -g_bw702638);
+    Vec3_SetThis(&v, 0, u.x * g_bw64d990, u.y * g_bw64d990, u.z * g_bw64d990);
+    if (i < n && depth < g_bw64c264) {
+        float a = (float)x87_fabs(depth);
+        float b = a * g_bw64c258;
+        if (b < g_bw64c264)
+            b = 0;
+        else if (b > g_bw64c250)
+            b = 1.0f;
+        double f = g_bw64b670 - b * g_bw64b898;
+        Vec3_SetThis(&w, 0, (float)(v.x * f), (float)(v.y * f), (float)(v.z * f));
+        F(Vec3, s, 3392) = w;
+        F(int, s, 15436) = 1;
+        F(Vec3, s, 13072) = w;
+        F(float, s, 15432) = a;
+        if (F(WORD, s, 10048) == 1 && a > g_bw64b788)
+            F(int, s, 13124) = 1;
+        Vec3 t;
+        F(Vec3, s, 3216) = *Vec3_Scaled(&t, (const Vec3*)(s + 64), (float)-(F(float, s, 3520) * (double)F(float, s, 3320) * b));
+        F(Vec3, s, 3288) = *Vec3_Scaled(&t, (const Vec3*)(s + 88), (float)-(b * (double)F(float, s, 3324)));
+        return;
+    }
+    F(int, s, 15432) = 0;
+    F(Vec3, s, 3392) = v;
+    F(int, s, 15436) = 0;
+    F(Vec3, s, 13072) = v;
+    float z = g_bw64c264;
+    Vec3_SetThis(&w, 0, z * F(float, s, 64), z * F(float, s, 68), z * F(float, s, 72));
+    F(Vec3, s, 3216) = w;
+    Vec3_SetThis(&w, 0, z * F(float, s, 88), z * F(float, s, 92), z * F(float, s, 96));
+    F(Vec3, s, 3288) = w;
+}
+
+} // extern "C"
+
+// === a hit shaking the cab (FUN_501010)
+
+extern "C" int __cdecl rand(void);
+extern "C" void Ch_Normalized(); KING_ALIAS("_Ch_Normalized", "_Vec3_Normalized")
+extern "C" void Ch_RampDown(); KING_ALIAS("_Ch_RampDown", "@Ramp_Down@12")
+ASM_VAR(float, g_ch64c40c, $L_64c40c)
+ASM_VAR(float, g_ch64c250, $L_64c250)
+ASM_VAR(float, g_ch64c264, $L_64c264)
+ASM_VAR(float, g_ch64c408, $L_64c408)
+ASM_VAR(float, g_ch64c320, $L_64c320)
+ASM_VAR(float, g_ch64da74, $L_64da74)
+ASM_VAR(float, g_ch64da70, $L_64da70)
+ASM_VAR(float, g_ch702630, $L_702630)
+ASM_VAR(float, g_ch702634, $L_702634)
+ASM_VAR(float, g_ch702638, $L_702638)
+ASM_VAR(double, g_ch64b6d0, $L_64b6d0)
+ASM_VAR(double, g_ch64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ch64da68, $L_64da68)
+ASM_VAR(double, g_ch64da60, $L_64da60)
+ASM_VAR(double, g_ch64d310, $L_64d310)
+
+extern "C" {
+
+// [FUN_501010] cab s (with +10058) hit at p (normal n) with force f above 64c40c, unless p lies below both its
+// sides: the wheels near the hit get their ramps advanced (by the force over the distance and the upward part of
+// n) and, on a car (+10048) when hard enough at random, a setting changed; a mostly sideways hit raises the
+// shake level (+15532, steps +15520 of +15524 with the 16060 ramp at 2 and 3), a mostly upward one less so; the
+// cab sway +15552 and its count +15540 of +15544 follow
+void __fastcall Cab_Hit(BYTE* s, void*, const float* p, const float* n, float f)
+{
+    if (!F(WORD, s, 10058) || f < g_ch64c40c)
+        return;
+    if (x87_fabs(p[1]) < p[2] && x87_fabs(p[0]) < p[2])
+        return;
+    f = f - g_ch64c250;
+    float ax = (float)x87_fabs(p[0]);
+    const float* M = (const float*)(s + 16);
+    float u[3];
+    u[0] = (float)((double)g_ch702638 * M[6] + (double)g_ch702634 * M[3] + (double)g_ch702630 * M[0]);
+    u[1] = (float)((double)g_ch702638 * M[7] + (double)g_ch702634 * M[4] + (double)g_ch702630 * M[1]);
+    u[2] = (float)((double)g_ch702638 * M[8] + (double)g_ch702634 * M[5] + (double)g_ch702630 * M[2]);
+    float t[3];
+    const float* nn = CallC<const float*>(Ch_Normalized, t, n);
+    float c = (float)((double)nn[2] * u[2] + (double)nn[1] * u[1] + (double)nn[0] * u[0]);
+    if (c < g_ch64c264)
+        c = 0;
+    const BYTE* ty = (const BYTE*)&g_carTypeNames + F(int, s, 2252) * 2416;
+    for (int i = 0; i < F(int, ty, 44); i++, ty = (const BYTE*)&g_carTypeNames + F(int, s, 2252) * 2416) {
+        const float* w = (const float*)(s + 7356 + i * 12);
+        double dx = (double)w[0] - p[0];
+        float fdx = (float)dx, dy = w[1] - p[1], dz = w[2] - p[2];
+        float d2 = (float)((double)dz * dz + (double)dy * dy + dx * fdx);
+        if (!(d2 < g_ch64b6d0))
+            continue;
+        float a = (float)(f * g_ch64b6e0 / (d2 + g_ch64b6e0) * c);
+        Wheel_AdvanceRamps(s + 15520, i, a);
+        if (!F(WORD, s, 10048) || !(d2 < g_ch64c408) || !(p[2] < g_ch64c264) || !(f > g_ch64c320))
+            continue;
+        int r = rand();
+        if (!(g_ch64da70 - f * (double)g_ch64da74 < r))
+            continue;
+        if (!F(int, s, 15560))
+            Car_SetSettingRaw((Car*)s, 0, 2, rand() <= 16000 ? -1 : 1);
+        else
+            Car_StepSetting((Car*)s, 0, 2);
+    }
+    if (ax < p[1] * g_ch64da68) {
+        float t2 = (float)(f * (double)F(float, s, 15536) + F(float, s, 15532));
+        int cur = F(int, s, 15520), max = F(int, s, 15524);
+        int top = cur < max ? cur + 1 : max;
+        double frac = (double)top / max;
+        double v = t2 > frac ? frac * g_ch64da60 : t2;
+        if (v > g_ch64c250)
+            v = g_ch64c250;
+        F(float, s, 15532) = (float)v;
+        int g = (int)(max * v);
+        if (cur != g) {
+            if (g == 2)
+                CallThis(Ch_RampDown, s + 16060, 0x3F000000u);
+            else if (g == 3)
+                CallThis(Ch_RampDown, s + 16060, 0x3F4CCCCDu);
+        }
+        F(int, s, 15520) = g;
+        F(float, s, 15552) = (float)(t2 * (double)F(float, s, 15556) + F(float, s, 15552));
+        if (F(float, s, 15552) > g_ch64c250)
+            F(DWORD, s, 15552) = 0x3F800000;
+    } else if (ax < p[1] * g_ch64d310) {
+        double h = f * g_ch64b6e0;
+        F(float, s, 15532) = (float)(h * F(float, s, 15536) + F(float, s, 15532));
+        if (F(float, s, 15532) > g_ch64c250)
+            F(DWORD, s, 15532) = 0x3F800000;
+        F(int, s, 15520) = (int)(F(int, s, 15524) * (double)F(float, s, 15532));
+        F(float, s, 15552) = (float)(h * (h * F(float, s, 15556)) + F(float, s, 15552));
+        if (F(float, s, 15552) > g_ch64c250)
+            F(DWORD, s, 15552) = 0x3F800000;
+    } else
+        return;
+    F(int, s, 15540) = (int)(F(int, s, 15544) * (double)F(float, s, 15552));
+}
+
+} // extern "C"
+
+// === the wheels' ground contacts (FUN_504d30)
+
+extern "C" int __cdecl sprintf(char*, const char*, ...);
+extern "C" void Gc_DumpText(); KING_ALIAS("_Gc_DumpText", "_Dump_Text")
+extern "C" void Gc_NormalizeThis(); KING_ALIAS("_Gc_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void Gc_AddAssign(); KING_ALIAS("_Gc_AddAssign", "@Vec3_AddAssign@16")
+ASM_FUNC(Gc_Contact, FUN_503e30)
+ASM_FUNC(Gc_State, FUN_506210)
+ASM_VAR(int, g_gc696be8, $L_696be8)
+ASM_VAR(AsmLabel, g_gc674a20, $L_674a20)
+ASM_VAR(BYTE, g_gc698166, $L_698166)
+ASM_VAR(BYTE, g_gc702650, $L_702650)
+ASM_VAR(float, g_gc702630, $L_702630)
+ASM_VAR(float, g_gc702634, $L_702634)
+ASM_VAR(float, g_gc702638, $L_702638)
+ASM_VAR(float, g_gc64d7b8, $L_64d7b8)
+ASM_VAR(float, g_gc64c264, $L_64c264)
+ASM_VAR(double, g_gc64b658, $L_64b658)
+ASM_VAR(double, g_gc64dab8, $L_64dab8)
+
+extern "C" {
+
+// [FUN_504d30] finds each wheel's ground contact (FUN_503e30 at its hub +7356 lowered by the suspension length
+// +7028, in body space): on the ground (+6564 zero) its contact point +100, world contact +6212 and the
+// compression +3608 / +3544 (clamped to +8092, the wheel lifted when beyond), the mean ground normal +196 and
+// grip +9904; in the air the wheel hangs at full length; then the axle flags +6580.. and the body's state; 0 when
+// the body is replaced (+15444)
+int __fastcall Wheels_FindGround(BYTE* s)
+{
+    memcpy(s + 196, &g_gc702650, 12);
+    F(float, s, 9904) = 0;
+    int count = 0;
+    if (g_gc696be8 > 1) {
+        char buf[100];
+        sprintf(buf, (const char*)g_gc674a20, &g_gc698166 + F(int, s, 2252) * 2416, (double)F(float, s, 52),
+            (double)F(float, s, 56), (double)F(float, s, 60), F(int, s, 3540));
+        CallC(Gc_DumpText, buf);
+    }
+    for (int i = 0; i < F(int, s, 3540); i++) {
+        memcpy(s + 3848 + i * 12, &g_gc702650, 12);
+        float h = F(float, s, 7028 + i * 4);
+        float rx = F(float, s, 7356 + i * 12) - g_gc702630 * h, ry = F(float, s, 7360 + i * 12) - g_gc702634 * h;
+        double rz = F(float, s, 7364 + i * 12) - (double)h * g_gc702638;
+        float pos[3];
+        pos[0] = (float)(rz * F(float, s, 40) + (double)ry * F(float, s, 28) + (double)rx * F(float, s, 16) + F(float, s, 52));
+        pos[1] = (float)(rz * F(float, s, 44) + (double)ry * F(float, s, 32) + (double)rx * F(float, s, 20) + F(float, s, 56));
+        pos[2] = (float)(rz * F(float, s, 48) + (double)ry * F(float, s, 36) + (double)rx * F(float, s, 24) + F(float, s, 60));
+        int r = CallThis<int>(Gc_Contact, s, 0, pos, 0, i);
+        if (F(int, s, 15444))
+            return 0;
+        WORD* w = (WORD*)(s + 6564 + i * 2);
+        float* c = (float*)(s + 100 + i * 12);
+        float* wc = (float*)(s + 6212 + i * 12);
+        if (r == 1) {
+            float k = F(float, s, 3644 + i * 4);
+            const float* nb = (const float*)(s + 248 + i * 248);
+            c[0] = k * nb[3] + nb[0], c[1] = k * nb[4] + nb[1], c[2] = k * nb[5] + nb[2];
+            float t[3];
+            CallThis(Gc_AddAssign, s + 196, t, nb + 3);
+            F(float, s, 9904) = F(float, s, 9904) + F(float, s, 9840 + i * 4);
+            count++;
+            float x = c[0], y = c[1], z = c[2];
+            wc[0] = (float)((double)F(float, s, 2328) * z + (double)F(float, s, 2316) * y + (double)F(float, s, 2304) * x +
+                F(float, s, 2340));
+            wc[1] = (float)((double)F(float, s, 2332) * z + (double)F(float, s, 2320) * y + (double)F(float, s, 2308) * x +
+                F(float, s, 2344));
+            wc[2] = (float)((double)F(float, s, 2336) * z + (double)F(float, s, 2324) * y + (double)F(float, s, 2312) * x +
+                F(float, s, 2348));
+            float d = F(float, s, 7364 + i * 12) - h - wc[2];
+            F(float, s, 3608 + i * 4) = d;
+            F(float, s, 3544 + i * 4) = d;
+            if (d > F(float, s, 8092 + i * 4)) {
+                F(float, s, 3544 + i * 4) = F(float, s, 8092 + i * 4);
+                *w = 1;
+                continue;
+            }
+            if (d < g_gc64c264)
+                F(float, s, 3544 + i * 4) = 0;
+            if (F(float, s, 3360 + i * 4) < g_gc64b658 && !*w)
+                F(float, s, 3360 + i * 4) = (float)(x87_fabs(nb[5]) * F(float, s, 9792) * g_gc64dab8);
+            *w = 0;
+        } else {
+            float ox = g_gc702630 * g_gc64d7b8, oy = g_gc702634 * g_gc64d7b8, oz = g_gc702638 * g_gc64d7b8;
+            double ax = (double)oz * F(float, s, 40) + (double)oy * F(float, s, 28) + (double)ox * F(float, s, 16);
+            double ay = (double)ox * F(float, s, 20) + (double)oz * F(float, s, 44) + (double)oy * F(float, s, 32);
+            double az = (double)ox * F(float, s, 24) + (double)oz * F(float, s, 48) + (double)oy * F(float, s, 36);
+            c[0] = (float)(pos[0] - (float)ax), c[1] = (float)(pos[1] - (float)ay), c[2] = (float)(pos[2] - az);
+            wc[0] = F(float, s, 7356 + i * 12) - ox, wc[1] = F(float, s, 7360 + i * 12) - oy;
+            wc[2] = F(float, s, 7364 + i * 12) - oz;
+            F(DWORD, s, 3608 + i * 4) = 0x447A0000;
+            F(DWORD, s, 3544 + i * 4) = F(DWORD, s, 8092 + i * 4);
+            *w = 1;
+            F(float, s, 3360 + i * 4) = 0;
+        }
+    }
+    float m1 = F(float, s, 3616) < F(float, s, 3620) ? F(float, s, 3620) : F(float, s, 3616);
+    float m2 = F(float, s, 3608) < F(float, s, 3612) ? F(float, s, 3612) : F(float, s, 3608);
+    F(float, s, 3640) = m2 < m1 ? m1 : m2;
+    if (count) {
+        CallThis(Gc_NormalizeThis, s + 196);
+        F(float, s, 9904) = F(float, s, 9904) / count;
+    } else {
+        F(float, s, 196) = g_gc702630, F(float, s, 200) = g_gc702634, F(float, s, 204) = g_gc702638;
+    }
+    Body_InWater(s);
+    Car_FindParts((Car*)s, 0);
+    int n = F(int, s, 3540);
+    const WORD* w = (const WORD*)(s + 6564);
+    if (n == 6) {
+        F(BYTE, s, 6583) = w[2] && w[3] && w[4] && w[5];
+        F(BYTE, s, 6581) = w[0] && w[1];
+        F(BYTE, s, 6582) = w[0] && w[2] && w[4];
+        F(BYTE, s, 6584) = w[1] && w[3] && w[5];
+    } else {
+        F(BYTE, s, 6583) = w[2] && w[3];
+        F(BYTE, s, 6581) = w[0] && w[1];
+        F(BYTE, s, 6582) = w[0] && w[2];
+        F(BYTE, s, 6584) = w[1] && w[3];
+    }
+    F(BYTE, s, 6580) = 1;
+    F(BYTE, s, 6585) = F(BYTE, s, 6581) || F(BYTE, s, 6582) || F(BYTE, s, 6583) || F(BYTE, s, 6584);
+    F(BYTE, s, 6586) = 0;
+    for (int i = 0; i < n; i++) {
+        F(BYTE, s, 6586) = F(BYTE, s, 6586) || w[i];
+        F(BYTE, s, 6580) = F(BYTE, s, 6580) && w[i];
+    }
+    CallThis(Gc_State, s, 1);
+    return (int)(s + 6564 + n * 2);
 }
 
 } // extern "C"

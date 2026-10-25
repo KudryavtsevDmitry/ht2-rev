@@ -414,9 +414,9 @@ void __fastcall Body593040_Destroy(BYTE* self, void*)
 
 }
 
-ASM_PROC(FUN_591c30)
+extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_592350(); KING_ALIAS("_FUN_592350", "_Bodies_Touch")
-ASM_PROC(FUN_5924d0)
+extern "C" void FUN_5924d0(); KING_ALIAS("_FUN_5924d0", "_Bodies_TouchTest")
 
 extern "C" {
 
@@ -1672,6 +1672,312 @@ void __fastcall Body_FindNeighbours(BYTE* s)
         nb[i] = o;
         dist[i] = (float)d2;
     }
+}
+
+} // extern "C"
+
+// === whether two bodies touch (FUN_5924d0)
+
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+extern "C" void Bt_MulMatrix(); KING_ALIAS("_Bt_MulMatrix", "_Vec3_MulMatrix")
+extern "C" void Bt_Sub(); KING_ALIAS("_Bt_Sub", "_Vec3_Sub")
+extern "C" void Bt_Dot(); KING_ALIAS("_Bt_Dot", "_Vec3_Dot")
+extern "C" void Bt_PointsFirst(); KING_ALIAS("_Bt_PointsFirst", "@Points_NextFirst@12")
+extern "C" void Bt_RecordsNext(); KING_ALIAS("_Bt_RecordsNext", "@Records_Next@12")
+
+extern "C" {
+
+// [FUN_5924d0] whether body a (frame ma, its planes in frame pa) touches body b (frame mb): no when their
+// bounding spheres (+3272 about the centres +3436) miss; *out = -a's inner radius (+3280) when the inner spheres
+// overlap; else when one of a's points lies within b's inner radius of b's centre, or b's centre lies behind
+// all of a's face planes by at most that radius
+int __cdecl Bodies_TouchTest(BYTE* a, const float* ma, const float* pa, BYTE* b, const float* mb, int unused, float* out)
+{
+    *out = 0;
+    const float* cb = (const float*)(b + 3436);
+    float bx = (float)((double)mb[0] * cb[0] + (double)cb[1] * mb[3] + (double)cb[2] * mb[6] + mb[9]);
+    float by = (float)((double)cb[2] * mb[7] + (double)mb[1] * cb[0] + (double)cb[1] * mb[4] + mb[10]);
+    float bz = (float)((double)mb[8] * cb[2] + (double)mb[5] * cb[1] + (double)cb[0] * mb[2] + mb[11]);
+    const float* ca = (const float*)(a + 3436);
+    Vec3 c1, d;
+    Vec3_SetThis(&c1, 0, (float)((double)ma[6] * ca[2] + (double)ma[3] * ca[1] + (double)ma[0] * ca[0] + ma[9]),
+        (float)((double)ma[7] * ca[2] + (double)ma[1] * ca[0] + (double)ma[4] * ca[1] + ma[10]),
+        (float)((double)ma[8] * ca[2] + (double)ma[2] * ca[0] + (double)ma[5] * ca[1] + ma[11]));
+    Vec3_SetThis(&d, 0, c1.x - bx, c1.y - by, c1.z - bz);
+    double dsq = (double)d.x * d.x + (double)d.y * d.y + (double)d.z * d.z;
+    double r = (double)F(float, a, 3272) + F(float, b, 3272);
+    if (dsq > r * r)
+        return 0;
+    double ri = (double)F(float, b, 3280) + F(float, a, 3280);
+    if (dsq < ri * ri) {
+        *out = -F(float, a, 3280);
+        return 1;
+    }
+    Vec3 q;
+    Vec3_SetThis(&q, 0, (float)((double)mb[3] * cb[1] + (double)cb[0] * mb[0] + (double)mb[6] * cb[2] + mb[9]),
+        (float)((double)mb[7] * cb[2] + (double)mb[4] * cb[1] + (double)cb[0] * mb[1] + mb[10]),
+        (float)((double)mb[8] * cb[2] + (double)mb[5] * cb[1] + (double)mb[2] * cb[0] + mb[11]));
+    float rr = F(float, b, 3280);
+    float rr2 = rr * rr;
+    Vec3 pt = {0, 0, 0}, w, e, t;
+    int hit = 0;
+    if (CallThis<int>(Bt_PointsFirst, a, &pt)) {
+        do {
+            w = *CallC<Vec3*>(Bt_MulMatrix, &t, &pt, ma);
+            Vec3_SetThis(&e, 0, w.x - q.x, w.y - q.y, w.z - q.z);
+            if (CallC<double>(Bt_Dot, &e, &e) < rr2)
+                hit = 1;
+        } while (CallThis<int>(Bt_PointsFirst, a, &pt));
+        if (hit)
+            return hit;
+    }
+    BYTE rec[28];
+    CallThis(FUN_58b4f0, rec);
+    Vec3 w2 = *CallC<Vec3*>(Bt_MulMatrix, &t, &q, pa);
+    int all = 1;
+    while (CallThis<int>(Bt_RecordsNext, a, rec)) {
+        Vec3 df;
+        CallC(Bt_Sub, &df, &w2, rec + 16);
+        if (rr < CallC<double>(Bt_Dot, &df, rec))
+            all = 0;
+    }
+    if (all)
+        hit = 1;
+    return hit;
+}
+
+} // extern "C"
+
+// === a burst of sparks off a surface (FUN_593720)
+
+extern "C" void Sb_Normalized(); KING_ALIAS("_Sb_Normalized", "_Vec3_Normalized")
+ASM_VAR(Vec3, g_sb702630, $L_702630)
+ASM_VAR(Vec3, g_sb702650, $L_702650)
+extern "C" void __cdecl Fader_Start(int a0, int a1, float strength, int a3, int a4);
+ASM_VAR(float, g_sb64c264, $L_64c264)
+ASM_VAR(float, g_sb64c250, $L_64c250)
+ASM_VAR(float, g_sb64c938, $L_64c938)
+ASM_VAR(float, g_sb64c260, $L_64c260)
+ASM_VAR(float, g_sb64c408, $L_64c408)
+ASM_VAR(float, g_sb64ed88, $L_64ed88)
+ASM_VAR(float, g_sb64c25c, $L_64c25c)
+ASM_VAR(float, g_sb64c350, $L_64c350)
+ASM_VAR(float, g_sb64c268, $L_64c268)
+ASM_VAR(double, g_sb64b670, $L_64b670)
+ASM_VAR(int, g_sb6508f4, $L_6508f4)
+
+// x, or +-1 (64c250 / 64c938) when it is too small
+static float Sb_Away(float x)
+{
+    if (x87_fabs(x) < g_sb64b670)
+        return x > g_sb64c264 ? g_sb64c250 : g_sb64c938;
+    return x;
+}
+
+// fills spark p moving at v from pos
+static void Sb_Fill(BYTE* s, BYTE* p, const float* v, const float* pos)
+{
+    memcpy(p + 40, v, 12);
+    memcpy(p + 4, v, 12);
+    memcpy(p + 16, &g_sb702650, 12);
+    memcpy(p + 52, pos, 12);
+    memcpy(p + 28, pos, 12);
+    F(int, p, 120) = 0;
+    F(float, p, 64) = (float)F(double, F(BYTE*, s, 96), 2968);
+    if (rand() * (double)g_sp65096c < g_sp64c448) {
+        memcpy(p + 68, (BYTE*)g_spColA0, 16);
+        memcpy(p + 84, (BYTE*)g_spColA1, 16);
+        memcpy(p + 100, (BYTE*)g_spColA2, 16);
+    } else {
+        memcpy(p + 68, (BYTE*)g_spColB0, 16);
+        memcpy(p + 84, (BYTE*)g_spColB1, 16);
+        memcpy(p + 100, (BYTE*)g_spColB2, 16);
+    }
+    F(float, p, 116) = 1.0f;
+}
+
+extern "C" {
+
+// [FUN_593720] n sparks of pool s from pos off a surface of normal nm: half of n fly in random world directions,
+// a quarter of n leave along the normal (up to 1.5 times) spread across it; then a fading light at pos
+void __fastcall Sparks_Burst(BYTE* s, void*, const float* pos, const float* nm, int n)
+{
+    if (!F(int, s, 104))
+        return;
+    float a[3], t[3];
+    if (nm[0] == g_sb64c264 && nm[1] == g_sb64c264) {
+        a[0] = g_sp702640.z * nm[1] - g_sp702640.y * nm[2];
+        a[1] = g_sp702640.x * nm[2] - g_sp702640.z * nm[0];
+        a[2] = g_sp702640.y * nm[0] - g_sp702640.x * nm[1];
+    } else {
+        a[0] = g_sb702630.z * nm[1] - g_sb702630.y * nm[2];
+        a[1] = g_sb702630.x * nm[2] - g_sb702630.z * nm[0];
+        a[2] = g_sb702630.y * nm[0] - g_sb702630.x * nm[1];
+    }
+    const float* r = CallC<const float*>(Sb_Normalized, t, a);
+    float u[3] = {r[0], r[1], r[2]};
+    float b[3] = {u[2] * nm[1] - u[1] * nm[2], u[0] * nm[2] - u[2] * nm[0], u[1] * nm[0] - u[0] * nm[1]}, t2[3];
+    r = CallC<const float*>(Sb_Normalized, t2, b);
+    float v[3] = {r[0], r[1], r[2]};
+    float nn[3] = {nm[0], nm[1], nm[2]};
+    float cnt = (float)(__int64)n;
+    float half = cnt * g_sb64c260;
+    for (int i = 0; (float)(__int64)i < half; i++) {
+        BYTE* p = CallThis<BYTE*>(FUN_5940d0, s);
+        if (!p)
+            break;
+        float x1 = (float)(Sp_Rand() * g_sb64c408);
+        float x2 = (float)(Sp_Rand() * g_sb64c408);
+        float x3 = (float)(Sp_Rand() * g_sb64c408);
+        float s1 = Sb_Away(x1), s2 = Sb_Away(Sb_Away(x2));
+        float A[3] = {g_sb702630.x * x3, g_sb702630.y * x3, g_sb702630.z * x3};
+        float B[3] = {g_sp702620.x * s2, g_sp702620.y * s2, g_sp702620.z * s2};
+        float C[3] = {g_sp702640.x * s1, g_sp702640.y * s1};
+        double cz = (double)g_sp702640.z * s1;
+        float sx = C[0] + B[0], sy = B[1] + C[1];
+        double sz = cz + B[2];
+        float vel[3] = {sx + A[0], A[1] + sy, (float)(A[2] + sz)};
+        Sb_Fill(s, p, vel, pos);
+    }
+    float spread = cnt * g_sb64ed88 + g_sb64c250;
+    float lim = cnt * g_sb64c25c;
+    for (int i = 0; (float)(__int64)i < lim; i++) {
+        BYTE* p = CallThis<BYTE*>(FUN_5940d0, s);
+        if (!p)
+            break;
+        float x1 = (float)(Sp_Rand() * spread);
+        float x2 = (float)(Sp_Rand() * spread);
+        float sp = (float)(rand() * (double)g_sp64c254 + g_sb64c250);
+        float s1 = Sb_Away(x1), s2 = Sb_Away(x2);
+        if (sp > g_sb64c350)
+            *(DWORD*)&sp = 0x3FC00000;
+        float A[3] = {nn[0] * sp, nn[1] * sp, nn[2] * sp};
+        float B[3] = {v[0] * s2, v[1] * s2, v[2] * s2};
+        float C[2] = {u[0] * s1, u[1] * s1};
+        double cz = (double)u[2] * s1;
+        float sx = C[0] + B[0], sy = B[1] + C[1];
+        double sz = cz + B[2];
+        float vel[3] = {sx + A[0], A[1] + sy, (float)(A[2] + sz)};
+        Sb_Fill(s, p, vel, pos);
+    }
+    Fader_Start(F(int, s, 96), (int)pos, cnt * g_sb64c268, g_sb6508f4, 0x3DA3D70A);
+}
+
+} // extern "C"
+
+// === how deep two bodies overlap (FUN_591c30)
+
+ASM_VAR(float, g_bd64c264, $L_64c264)
+
+// one pass over the planes of body o against point q: clears *inside when q lies in front of one; with points
+// the deepest front distance goes to *best, behind ones raise *out; without (the centre) *out rises to the
+// distance less radius r
+static void Bd_Planes(BYTE* o, BYTE* rec, const Vec3* q, int points, float r, float* out, float* best, int* inside)
+{
+    while (CallThis<int>(Bt_RecordsNext, o, rec)) {
+        Vec3 df;
+        CallC(Bt_Sub, &df, q, rec + 16);
+        float d = (float)CallC<double>(Bt_Dot, &df, rec);
+        if (!points) {
+            if (d > g_bd64c264)
+                *inside = 0;
+            else if (*out < d)
+                *out = d - r;
+        } else if (d > g_bd64c264) {
+            *inside = 0;
+            if (*best < d)
+                *best = d;
+        } else if (*out < d)
+            *out = d;
+    }
+}
+
+extern "C" {
+
+// [FUN_591c30] whether body a (frame ma, plane frame pa) and body b (mb, pb) overlap: no when their bounding
+// spheres miss; *out = -a's inner radius and yes when the inner spheres meet; else yes when one of a's points
+// (or its centre) lies behind all of b's planes, or one of b's (or its centre) behind all of a's, *out then the
+// depth; otherwise *out = the nearest separation
+int __cdecl Bodies_Overlap(BYTE* a, const float* ma, const float* pa, BYTE* b, const float* mb, const float* pb,
+    float* out)
+{
+    *out = 0;
+    const float* ca = (const float*)(a + 3436);
+    const float* cb = (const float*)(b + 3436);
+    float A[3], B[3];
+    A[0] = (float)((double)ma[0] * ca[0] + (double)ca[1] * ma[3] + (double)ca[2] * ma[6] + ma[9]);
+    A[1] = (float)((double)ca[2] * ma[7] + (double)ca[1] * ma[4] + (double)ma[1] * ca[0] + ma[10]);
+    A[2] = (float)((double)ma[8] * ca[2] + (double)ma[5] * ca[1] + (double)ca[0] * ma[2] + ma[11]);
+    B[0] = (float)((double)mb[6] * cb[2] + (double)mb[3] * cb[1] + (double)mb[0] * cb[0] + mb[9]);
+    B[1] = (float)((double)mb[7] * cb[2] + (double)mb[1] * cb[0] + (double)mb[4] * cb[1] + mb[10]);
+    B[2] = (float)((double)mb[8] * cb[2] + (double)mb[2] * cb[0] + (double)mb[5] * cb[1] + mb[11]);
+    float dx = A[0] - B[0], dy = A[1] - B[1];
+    double dz = (double)A[2] - B[2];
+    double dsq = dz * dz + (double)dx * dx + (double)dy * dy;
+    float R = F(float, a, 3272) + F(float, b, 3272);
+    if (dsq > (double)R * R)
+        return 0;
+    double ri = (double)F(float, a, 3280) + F(float, b, 3280);
+    *out = -F(float, a, 3280);
+    if (dsq < ri * ri)
+        return 1;
+    Vec3 pt = {0, 0, 0}, q = {0, 0, 0}, t;
+    BYTE rec[28];
+    CallThis(FUN_58b4f0, rec);
+    int found = 0, more = 1, step = 1;
+    for (;;) {
+        if (step) {
+            step = CallThis<int>(Bt_PointsFirst, a, &pt);
+            double wx = (double)pt.x * ma[0] + (double)pt.z * ma[6] + (double)pt.y * ma[3] + ma[9];
+            double wy = (double)pt.x * ma[1] + (double)pt.z * ma[7] + (double)pt.y * ma[4] + ma[10];
+            double wz = (double)pt.z * ma[8] + (double)pt.y * ma[5] + (double)pt.x * ma[2] + ma[11];
+            Vec3_SetThis(&q, 0, (float)(wz * pb[6] + wy * pb[3] + wx * pb[0] + pb[9]),
+                (float)(wz * pb[7] + wy * pb[4] + wx * pb[1] + pb[10]),
+                (float)(wz * pb[8] + wy * pb[5] + wx * pb[2] + pb[11]));
+        } else {
+            more = 0;
+            Vec3_SetThis(&q, 0, (float)((double)A[2] * pb[6] + (double)A[1] * pb[3] + (double)A[0] * pb[0] + pb[9]),
+                (float)((double)A[2] * pb[7] + (double)A[1] * pb[4] + (double)A[0] * pb[1] + pb[10]),
+                (float)((double)A[2] * pb[8] + (double)A[1] * pb[5] + (double)A[0] * pb[2] + pb[11]));
+        }
+        int inside = 1;
+        float best = 0;
+        Bd_Planes(b, rec, &q, more, F(float, a, 3280), out, &best, &inside);
+        if (more && best < R)
+            R = best;
+        if (inside)
+            found = 1;
+        if (!more)
+            break;
+    }
+    if (found)
+        return found;
+    *out = -F(float, b, 3280);
+    more = 1, step = 1;
+    for (;;) {
+        Vec3 w;
+        if (step) {
+            step = CallThis<int>(Bt_PointsFirst, b, &pt);
+            Vec3* m = CallC<Vec3*>(Bt_MulMatrix, &t, &pt, mb);
+            w = *CallC<Vec3*>(Bt_MulMatrix, &q, m, pa);
+        } else {
+            more = 0;
+            w = *CallC<Vec3*>(Bt_MulMatrix, (Vec3*)A, (const Vec3*)B, pa);
+        }
+        q = w;
+        int inside = 1;
+        float best = 0;
+        Bd_Planes(a, rec, &q, more, F(float, b, 3280), out, &best, &inside);
+        if (more && best < R)
+            R = best;
+        if (inside)
+            found = 1;
+        if (!more)
+            break;
+    }
+    if (!found)
+        *out = R;
+    return found;
 }
 
 } // extern "C"

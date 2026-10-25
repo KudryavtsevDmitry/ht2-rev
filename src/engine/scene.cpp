@@ -3683,3 +3683,250 @@ int __fastcall Portal_Pass(BYTE* s, void*, int a, int b, BYTE* m, BYTE* r)
 }
 
 } // extern "C"
+
+// === the music thread's run method ($L_5ff250)
+
+extern "C" void Mt_Poll(); KING_ALIAS("_Mt_Poll", "@Music_Poll@8")
+extern "C" void Mt_StopGraph(); KING_ALIAS("_Mt_StopGraph", "@Music_StopGraph@8")
+extern "C" void Mt_SetVolume(); KING_ALIAS("_Mt_SetVolume", "@Music_SetVolume@16")
+extern "C" void Mt_Construct(); KING_ALIAS("_Mt_Construct", "@Music_Construct@8")
+extern "C" void Mt_Shutdown(); KING_ALIAS("_Mt_Shutdown", "_Gate_ShutdownCom")
+ASM_VAR(BYTE*, g_mt723d28, $L_723d28)
+ASM_VAR(BYTE*, g_mt723d2c, $L_723d2c)
+ASM_VAR(double, g_mt683c58, $L_683c58)
+
+extern "C" {
+
+// [$L_5ff250] the music loop of player s: -1 without files (723d28..), -5 when the player (+20) can't be made;
+// until stopped (+8 bit 0) it polls the graph (finished or idle: the next file), sleeps 400 ms and applies a
+// changed volume (683c58, kept at +24); then the graph is stopped and freed; 0
+int __fastcall Music_Thread(BYTE* s)
+{
+    if (g_mt723d28 == g_mt723d2c)
+        return -1;
+    BYTE* m = (BYTE*)operator new(20);
+    if (m)
+        m = CallThis<BYTE*>(Mt_Construct, m);
+    F(BYTE*, s, 20) = m;
+    if (!m)
+        return -5;
+    while (!(F(BYTE, s, 8) & 1)) {
+        int r = CallThis<int>(Mt_Poll, F(BYTE*, s, 20));
+        if (r == 1 || r == 0)
+            Music_PickNext(s);
+        Sleep(400);
+        EnterCriticalSection(&g_sc723b40);
+        if (F(double, s, 24) != g_mt683c58) {
+            F(double, s, 24) = g_mt683c58;
+            LeaveCriticalSection(&g_sc723b40);
+            CallThis(Mt_SetVolume, F(BYTE*, s, 20), F(DWORD, s, 24), F(DWORD, s, 28));
+        } else
+            LeaveCriticalSection(&g_sc723b40);
+    }
+    CallThis(Mt_StopGraph, F(BYTE*, s, 20));
+    if (BYTE* g = F(BYTE*, s, 20)) {
+        CallThis(Mt_Shutdown, g);
+        operator delete(g);
+    }
+    F(BYTE*, s, 20) = 0;
+    return 0;
+}
+
+} // extern "C"
+
+// === a moving point or sphere against a polygon (FUN_5f5370)
+
+struct PsV { float x, y, z; };
+extern "C" void Ps_Cross(); KING_ALIAS("_Ps_Cross", "_Vec3_Cross")
+extern "C" void Ps_SubAssign(); KING_ALIAS("_Ps_SubAssign", "@Vec3_SubAssign@16")
+ASM_VAR(double, g_ps64b748, $L_64b748)
+ASM_VAR(double, g_ps651710, $L_651710)
+ASM_VAR(double, g_ps64b678, $L_64b678)
+ASM_VAR(double, g_ps64b930, $L_64b930)
+ASM_VAR(double, g_ps652d00, $L_652d00)
+ASM_VAR(float, g_ps64c264, $L_64c264)
+ASM_VAR(float, g_ps64c250, $L_64c250)
+ASM_VAR(float, g_ps64c258, $L_64c258)
+
+extern "C" {
+
+// [FUN_5f5370] whether the move from *from to *to crosses polygon p (count +2, vertices +4, centre +8, radius
+// +24, plane +32 / +44) from its front: a sphere of radius r with flag 2, else a point within the radius of the
+// centre; the hit point goes to *from and the plane normal to *to, 1; else 0
+int __cdecl Poly_SweepHit(int flags, BYTE* p, float* from, float* to, float r)
+{
+    float vx = to[0] - from[0], vy = to[1] - from[1], vz = to[2] - from[2];
+    const float* n = (const float*)(p + 32);
+    float nx = n[0], ny = n[1], nz = n[2];
+    float d = F(float, p, 44);
+    if ((double)vz * nz + (double)vy * ny + (double)vx * nx > g_ps64b748)
+        return 0;
+    double df = (double)from[2] * nz + (double)from[1] * ny + (double)from[0] * nx;
+    int cnt = F(WORD, p, 2);
+    const float* vt = F(const float*, p, 4);
+    float P[3];
+    if (flags & 2) {
+        if (d + df < g_ps651710)
+            return 0;
+        if ((double)to[0] * nx + (double)nz * to[2] + (double)ny * to[1] + d - r > g_ps64b748)
+            return 0;
+        double vn = (double)vz * nz + (double)vy * ny + (double)vx * nx;
+        if (x87_fabs(vn) < g_ps64b748)
+            vn = vn > g_ps64c264 ? g_ps64b748 : g_ps651710;
+        float t = (float)-(((double)d - r + df) / vn);
+        if (t < g_ps64c264 || t > g_ps64c250)
+            return 0;
+        P[0] = vx * t + from[0], P[1] = vy * t + from[1], P[2] = vz * t + from[2];
+        float nr[3] = {nx * r, ny * r, nz * r}, tmp[3];
+        CallThis(Ps_SubAssign, P, tmp, nr);
+        const float* l = vt + (cnt - 1) * 3;
+        float lx = l[0] - P[0], ly = l[1] - P[1], lz = l[2] - P[2];
+        float ax = vt[0] - P[0], ay = vt[1] - P[1], az = vt[2] - P[2];
+        float cx = ly * az - lz * ay, cy = lz * ax - az * lx, cz = ay * lx - ly * ax;
+        int i = 1;
+        for (; i < cnt; i++) {
+            const float* b = vt + i * 3;
+            float bx = b[0] - P[0], by = b[1] - P[1], bz = b[2] - P[2];
+            double x = (double)bz * ay - (double)by * az, y = (double)az * bx - (double)bz * ax,
+                z = (double)by * ax - (double)ay * bx;
+            if (z * cz + y * cy + x * cx < g_ps64b678)
+                break;
+            ax = bx, ay = by, az = bz;
+        }
+        if (i != cnt)
+            return 0;
+    } else {
+        if (df + d < g_ps651710)
+            return 0;
+        if ((double)nx * to[0] + (double)nz * to[2] + (double)ny * to[1] + d > g_ps64b748)
+            return 0;
+        double vn = (double)vz * nz + (double)vy * ny + (double)vx * nx;
+        double t;
+        if (x87_fabs(vn) < g_ps64b930)
+            t = g_ps64c258;
+        else
+            t = -((double)nz * from[2] + (double)ny * from[1] + (double)nx * from[0] + d) / vn;
+        if (t > g_ps652d00 || t < g_ps651710)
+            return 0;
+        P[0] = (float)(vx * t + from[0]), P[1] = (float)(vy * t + from[1]), P[2] = (float)(vz * t + from[2]);
+        double ex = (double)P[0] - F(float, p, 8), ey = (double)P[1] - F(float, p, 12),
+            ez = (double)P[2] - F(float, p, 16);
+        if (F(double, p, 24) < x87_sqrt(ex * ex + ey * ey + ez * ez))
+            return 0;
+        float fx = vt[0] - P[0], fy = vt[1] - P[1], fz = vt[2] - P[2];
+        const float* l = vt + (cnt - 1) * 3;
+        float lx = l[0] - P[0], ly = l[1] - P[1], lz = l[2] - P[2];
+        float cx = fz * ly - fy * lz, cy = lz * fx - fz * lx, cz = fy * lx - ly * fx;
+        for (int i = 1; i < F(WORD, p, 2); i++) {
+            const float* b = F(const float*, p, 4) + i * 3;
+            PsV e1 = {b[0] - P[0], b[1] - P[1], b[2] - P[2]}, e0 = {b[-3] - P[0], b[-2] - P[1], b[-1] - P[2]}, ct;
+            PsV c = *CallC<PsV*>(Ps_Cross, &ct, &e0, &e1);
+            if ((double)cx * c.x + (double)cz * c.z + (double)cy * c.y < g_ps651710)
+                return 0;
+        }
+    }
+    from[0] = P[0], from[1] = P[1], from[2] = P[2];
+    to[0] = nx, to[1] = ny, to[2] = nz;
+    return 1;
+}
+
+} // extern "C"
+
+// === a moving sphere against a polygon's edges and corners (FUN_5f4b30)
+
+extern "C" void Pe_Normalized(); KING_ALIAS("_Pe_Normalized", "_Vec3_Normalized")
+extern "C" void Pe_Length(); KING_ALIAS("_Pe_Length", "_Vec3_Length")
+extern "C" void Pe_Dot(); KING_ALIAS("_Pe_Dot", "_Vec3_Dot")
+extern "C" void Pe_Sub(); KING_ALIAS("_Pe_Sub", "_Vec3_Sub")
+extern "C" void Pe_Add(); KING_ALIAS("_Pe_Add", "_Vec3_Add")
+extern "C" void Pe_Scaled(); KING_ALIAS("_Pe_Scaled", "_Vec3_Scaled")
+ASM_VAR(double, g_pe64b7c0, $L_64b7c0)
+ASM_VAR(double, g_pe64b6e0, $L_64b6e0)
+
+extern "C" {
+
+// [FUN_5f4b30] whether a sphere of radius r moving from *from to *to (toward polygon p's front) first touches one
+// of p's edges (the nearest root of the swept cylinder) or else one of its corners: the sphere's centre goes to
+// *from (backed off along the contact normal by r) and that normal to *to, 1; else 0
+int __cdecl Poly_SweepEdges(int flags, BYTE* p, float* from, float* to, float r)
+{
+    float vx = to[0] - from[0], vy = to[1] - from[1], vz = to[2] - from[2];
+    const float* n = (const float*)(p + 32);
+    if ((double)vz * n[2] + (double)vy * n[1] + (double)vx * n[0] > g_ps64b748)
+        return 0;
+    float d = F(float, p, 44);
+    if ((double)n[2] * from[2] + (double)n[1] * from[1] + (double)from[0] * n[0] + d < g_ps651710)
+        return 0;
+    if ((double)to[0] * n[0] + (double)to[2] * n[2] + (double)to[1] * n[1] + d - r > g_ps64b748)
+        return 0;
+    double R = r;
+    PsV v = {vx, vy, vz};
+    double len = CallC<double>(Pe_Length, &v);
+    PsV v2 = {to[0] - from[0], to[1] - from[1], to[2] - from[2]}, t1;
+    PsV dir = *CallC<PsV*>(Pe_Normalized, &t1, &v2);
+    int cnt = F(WORD, p, 2);
+    const PsV* vt = F(const PsV*, p, 4);
+    double r2 = R * R;
+    PsV m, q, k;
+    for (int i = 0; i < cnt; i++) {
+        int j = i + 1 < cnt ? i + 1 : 0;
+        PsV e = {vt[j].x - vt[i].x, vt[j].y - vt[i].y, vt[j].z - vt[i].z};
+        PsV ed = *CallC<PsV*>(Pe_Normalized, &t1, &e);
+        double dd = (double)ed.x * dir.x + (double)ed.z * dir.z + (double)ed.y * dir.y;
+        double a = (double)dir.x * dir.x + (double)dir.y * dir.y + (double)dir.z * dir.z - dd * dd;
+        float wx = from[0] - vt[i].x, wy = from[1] - vt[i].y, wz = from[2] - vt[i].z;
+        double we = (double)wx * ed.x + (double)wz * ed.z + (double)wy * ed.y;
+        double b = ((double)wx * dir.x + (double)wz * dir.z + (double)wy * dir.y) * 2 - we * dd * 2;
+        double c = (double)wy * wy + (double)wz * wz + (double)wx * wx - we * we - r2;
+        double b2 = b * b, ac = c * a * g_pe64b7c0;
+        if (!(b2 > ac))
+            continue;
+        double sq = x87_sqrt(b2 - ac), a2 = a + a;
+        double t = (-b - sq) / a2, tb = (sq - b) / a2;
+        if (tb < t)
+            t = tb;
+        if (t < g_ps64b678 || t > len)
+            continue;
+        float ft = (float)t;
+        PsV hp = {dir.x * ft + from[0], dir.y * ft + from[1], dir.z * ft + from[2]};
+        PsV rel = {hp.x - vt[i].x, hp.y - vt[i].y, hp.z - vt[i].z};
+        float proj = (float)((double)rel.x * ed.x + (double)rel.z * ed.z + (double)rel.y * ed.y);
+        if (proj < g_ps64c264)
+            continue;
+        PsV el = {vt[j].x - vt[i].x, vt[j].y - vt[i].y, vt[j].z - vt[i].z};
+        if (CallC<double>(Pe_Length, &el) < proj)
+            continue;
+        from[0] = hp.x, from[1] = hp.y, from[2] = hp.z;
+        PsV ft2 = {ed.x * proj, ed.y * proj, ed.z * proj};
+        PsV off = {hp.x - ft2.x, hp.y - ft2.y, hp.z - ft2.z};
+        PsV nn = *CallC<PsV*>(Pe_Normalized, &m, &off);
+        to[0] = nn.x, to[1] = nn.y, to[2] = nn.z;
+        PsV br = {r * to[0], r * to[1], r * to[2]};
+        CallThis(Ps_SubAssign, from, &m, &br);
+        return 1;
+    }
+    if (!cnt)
+        return 0;
+    for (int i = 0; i < cnt; i++) {
+        const PsV* c0 = F(const PsV*, p, 4) + i;
+        PsV w = {from[0] - c0->x, from[1] - c0->y, from[2] - c0->z};
+        double b = ((double)w.z * dir.z + (double)w.y * dir.y + (double)w.x * dir.x) * 2;
+        PsV w2 = {from[0] - c0->x, from[1] - c0->y, from[2] - c0->z};
+        double c = CallC<double>(Pe_Dot, CallC<PsV*>(Pe_Sub, &m, from, c0), &w2) - r2;
+        double b2 = b * b, c4 = c * g_pe64b7c0;
+        if (b2 < c4)
+            continue;
+        float t = (float)((-b - x87_sqrt(b2 - c4)) * g_pe64b6e0);
+        if (t < g_ps64c264 || !(t <= len))
+            continue;
+        PsV hp = *CallC<PsV*>(Pe_Add, &q, from, CallC<PsV*>(Pe_Scaled, &m, &dir, *(DWORD*)&t));
+        from[0] = hp.x, from[1] = hp.y, from[2] = hp.z;
+        PsV nn = *CallC<PsV*>(Pe_Normalized, &q, CallC<PsV*>(Pe_Sub, &m, from, F(const PsV*, p, 4) + i));
+        to[0] = nn.x, to[1] = nn.y, to[2] = nn.z;
+        CallThis(Ps_SubAssign, from, &q, CallC<PsV*>(Pe_Scaled, &m, to, *(DWORD*)&r));
+        return 1;
+    }
+    return 0;
+}
+
+} // extern "C"

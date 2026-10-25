@@ -5356,3 +5356,250 @@ void __fastcall CarEffect_StartFlasher(BYTE* f)
 }
 
 } // extern "C"
+
+// === damage events of a car body (FUN_54d0b0)
+
+extern "C" void Dh_DivComponents(); KING_ALIAS("_Dh_DivComponents", "_Vec3_DivComponents")
+extern "C" void Dh_MovingOf(); KING_ALIAS("_Dh_MovingOf", "_Moving_Of")
+ASM_VAR(float, g_dh64c320, $L_64c320)
+ASM_VAR(float, g_dh64c970, $L_64c970)
+ASM_VAR(float, g_dh64c250, $L_64c250)
+ASM_VAR(float, g_dh64c264, $L_64c264)
+ASM_VAR(float, g_dh64c450, $L_64c450)
+ASM_VAR(double, g_dh64b5a0, $L_64b5a0)
+ASM_VAR(double, g_dh64d338, $L_64d338)
+ASM_VAR(double, g_dh64b670, $L_64b670)
+ASM_VAR(double, g_dh64b840, $L_64b840)
+
+static void Dh_Copy(BYTE* d, const BYTE* v)
+{
+    memcpy(d, v, 12);
+}
+
+extern "C" {
+
+// [FUN_54d0b0] for car s with a live body (+21600 at state 1): a hit (+908) of strength m from the change of its
+// velocity (+432 against +468) and spin (+444 against the torque +480 over inertia +420) sets a hit slot at the
+// contact +980 (front 0, its sides 1 and 2 by the contact's place, a scrape 3 when the contact moves along the
+// normal +992 less than +904); the damage of the body's parts (+15336, over +412) slot 7; the hit mode +1428
+// (1, 4, 5, 6) slot 8 or 9 with strength +1432; any of them sends the lamps
+void __fastcall Car_HitEvents(BYTE* s)
+{
+    BYTE* body = F(BYTE*, s, 21600);
+    if (!body || F(int, body, 13484) != 1)
+        return;
+    int any = 0;
+    if (F(int, s, 908)) {
+        float q[3], w[3];
+        q[0] = (float)((double)F(float, s, 672) * F(float, s, 484) + (double)F(float, s, 684) * F(float, s, 488) +
+            (double)F(float, s, 660) * F(float, s, 480));
+        q[1] = (float)((double)F(float, s, 676) * F(float, s, 484) + (double)F(float, s, 688) * F(float, s, 488) +
+            (double)F(float, s, 664) * F(float, s, 480));
+        q[2] = (float)((double)F(float, s, 680) * F(float, s, 484) + (double)F(float, s, 692) * F(float, s, 488) +
+            (double)F(float, s, 668) * F(float, s, 480));
+        any = 1;
+        CallC(Dh_DivComponents, w, q, s + 420);
+        float r1[3] = {F(float, s, 432) - F(float, s, 468), F(float, s, 436) - F(float, s, 472),
+            F(float, s, 440) - F(float, s, 476)};
+        float r2[3] = {F(float, s, 444) - w[0], F(float, s, 448) - w[1], F(float, s, 452) - w[2]};
+        float l1 = (float)CallC<double>(FUN_5ab4d0, r1);
+        float m = (float)((CallC<double>(FUN_5ab4d0, r2) * g_dh64c320 + l1) * g_dh64c970);
+        double mm;
+        if (CallC<int>(Dh_MovingOf, F(int, s, 1044)))
+            mm = m < g_dh64c250 ? x87_sqrt(x87_sqrt((double)m + m)) : m;
+        else
+            mm = m - g_dh64b5a0;
+        if (mm < g_dh64d338)
+            return;
+        const float* c = (const float*)(s + 980);
+        float px = (float)((double)F(float, s, 636) * c[2] + (double)F(float, s, 624) * c[1] +
+            (double)c[0] * F(float, s, 612) + F(float, s, 648));
+        float py = (float)((double)F(float, s, 616) * c[0] + (double)F(float, s, 640) * c[2] +
+            (double)F(float, s, 628) * c[1] + F(float, s, 652));
+        double pz = (double)F(float, s, 620) * c[0] + (double)F(float, s, 644) * c[2] + (double)F(float, s, 632) * c[1] +
+            F(float, s, 656);
+        float cx = (float)(pz * F(float, s, 448) - (double)py * F(float, s, 452));
+        double cy = (double)px * F(float, s, 452) - pz * F(float, s, 444);
+        float cz = (float)((double)py * F(float, s, 444) - (double)px * F(float, s, 448));
+        float vx = cx + F(float, s, 432);
+        double vy = cy + F(float, s, 436), vz = (double)cz + F(float, s, 440);
+        float v[3];
+        v[0] = (float)(vz * F(float, s, 540) + vy * F(float, s, 528) + (double)vx * F(float, s, 516));
+        v[1] = (float)(vz * F(float, s, 544) + vy * F(float, s, 532) + (double)vx * F(float, s, 520));
+        v[2] = (float)(vz * F(float, s, 548) + vy * F(float, s, 536) + (double)vx * F(float, s, 524));
+        if (mm > g_dh64b670)
+            mm = g_dh64c250;
+        double dn = (double)F(float, s, 1000) * v[2] + (double)F(float, s, 996) * v[1] + (double)F(float, s, 992) * v[0];
+        if (F(float, s, 904) * g_dh64b840 > x87_fabs(dn)) {
+            F(int, s, 21620) = 1;
+            F(DWORD, s, 21796) = 0x3F800000;
+            Dh_Copy(s + 21688, s + 980);
+        }
+        double ax = x87_fabs(px);
+        if (py > ax && l1 < g_dh64c320) {
+            F(float, s, 21784) = (float)mm;
+            Dh_Copy(s + 21652, s + 980);
+            F(int, s, 21608) = 1;
+        } else if (-ax > py) {
+            F(float, s, 21792) = (float)mm;
+            Dh_Copy(s + 21676, s + 980);
+            F(int, s, 21616) = 1;
+        } else {
+            F(float, s, 21788) = (float)mm;
+            Dh_Copy(s + 21664, s + 980);
+            F(int, s, 21612) = 1;
+        }
+    }
+    body = F(BYTE*, s, 21600);
+    if (body && !F(int, body, 13124)) {
+        int n = F(int, s, 10428), hit = 0;
+        double acc = g_dh64c264;
+        any = 1;
+        if (n > 0) {
+            double k = (double)F(float, s, 412) * g_dh64c450;
+            for (int j = 0; j < n; j++) {
+                int d = F(int, body, 15336 + j * 4);
+                if (d > 0)
+                    hit = 1;
+                acc = d / k + acc;
+            }
+            if (hit) {
+                if (acc > g_dh64c250)
+                    acc = g_dh64c250;
+                F(float, s, 21812) = (float)acc;
+                F(int, s, 21636) = 1;
+                Dh_Copy(s + 21736, s + 552);
+            }
+        }
+    }
+    int mode = F(int, s, 1428);
+    if (mode == 1 || mode == 4 || mode == 5 || mode == 6) {
+        int k = mode == 5 || mode == 6 ? 9 : 8;
+        F(int, s, 21608 + k * 4) = 1;
+        if (F(float, s, 1432) > g_dh64c250)
+            F(DWORD, s, 21784 + k * 4) = 0x3F800000;
+        else
+            F(DWORD, s, 21784 + k * 4) = F(DWORD, s, 1432);
+        Dh_Copy(s + 21652 + k * 12, s + 980);
+        Car_SendLamps(s);
+    } else if (any)
+        Car_SendLamps(s);
+}
+
+} // extern "C"
+
+// === the camera's eased view angle (FUN_4de550)
+
+ASM_FUNC(Fv_AddSample, FUN_4eacce)
+extern "C" void Fv_FilterValue(); KING_ALIAS("_Fv_FilterValue", "@Filter_Value@4")
+ASM_VAR(float, g_fv696d10, $L_696d10)
+ASM_VAR(int, g_fv696d14, $L_696d14)
+ASM_VAR(float, g_fv6d1b98, $L_6d1b98)
+ASM_VAR(int, g_fv696c60, $L_696c60)
+ASM_VAR(float, g_fv672d88, $L_672d88)
+ASM_VAR(AsmLabel, s_fv672ed4, $L_672ed4)
+ASM_VAR(float, g_fv64c264, $L_64c264)
+ASM_VAR(float, g_fv64c250, $L_64c250)
+ASM_VAR(float, g_fv64d67c, $L_64d67c)
+ASM_VAR(float, g_fv64d678, $L_64d678)
+ASM_VAR(float, g_fv64d674, $L_64d674)
+ASM_VAR(float, g_fv64d670, $L_64d670)
+ASM_VAR(float, g_fv64d664, $L_64d664)
+ASM_VAR(float, g_fv64d660, $L_64d660)
+ASM_VAR(double, g_fv64b828, $L_64b828)
+ASM_VAR(double, g_fv64b6e0, $L_64b6e0)
+ASM_VAR(double, g_fv64b670, $L_64b670)
+ASM_VAR(double, g_fv64b5a0, $L_64b5a0)
+ASM_VAR(double, g_fv64d668, $L_64d668)
+
+// an ease from 0 to 1 over x in 0..1: (sin((x - 0.5) * pi) + 1) / 2
+static double Fv_Ease(double x)
+{
+    return (x87_sin((x - g_fv64b6e0) * g_fv64b828) + g_fv64b670) * g_fv64b6e0;
+}
+
+extern "C" {
+
+// [FUN_4de550] eases the view angle 696d10 toward its target by the camera settings (696cb0: angles +5124 /
+// +5136 / +5148 for zooming in, normal and out, eased over the switch times +5104 / +5116 / +5120) by the zoom
+// direction (+1396 of the game), plus the player's body roll (filtered, when 696c60), within the in / out
+// angles and by at most twice the frame's step; 0 without a game
+float __cdecl Camera_ViewAngle()
+{
+    BYTE* gm = g_game;
+    if (!gm)
+        return g_fv64c264;
+    float T = (float)Game_Time();
+    BYTE* c = (BYTE*)g_696cb0;
+    float x = (T - F(float, c, 5104)) * g_fv64d67c;
+    float step = (float)(F(double, g_696ca0, 2960) * g_fv64b828);
+    double k = g_fv64c250;
+    if (x < g_fv64c250)
+        k = Fv_Ease(x);
+    if (g_fv696d14 && x87_fabs(g_fv6d1b98) < g_fv64b5a0)
+        g_fv696d14 = 0;
+    float target;
+    int dir = F(int, gm, 1396);
+    if (dir < 0) {
+        target = (float)(((double)F(float, c, 5124) - F(float, c, 5136)) * k + F(float, c, 5136)) * g_fv672d88;
+        double lim = step * g_fv64b6e0 + g_fv696d10;
+        if (target < lim)
+            target = (float)lim;
+    } else if (dir > 0) {
+        target = (float)(((double)F(float, c, 5148) - F(float, c, 5136)) * k + F(float, c, 5136)) * g_fv672d88;
+        double lim = g_fv696d10 - step * g_fv64b6e0;
+        if (!(target <= lim))
+            target = (float)lim;
+    } else {
+        double a1 = F(float, c, 5108) * g_fv64d67c;
+        if (a1 > g_fv64c250)
+            a1 = g_fv64c250;
+        double a2 = F(float, c, 5112) * g_fv64d67c;
+        if (a2 > g_fv64c250)
+            a2 = g_fv64c250;
+        float u = (float)((T - F(float, c, 5120)) * g_fv64d678 + (g_fv64c250 - a1));
+        float w = (float)((T - F(float, c, 5116)) * g_fv64d678 + (g_fv64c250 - a2));
+        if (w > g_fv64c250 && u > g_fv64c250)
+            target = F(float, c, 5136) * g_fv672d88;
+        else if (u < g_fv64c250)
+            target = g_fv672d88 * (float)((F(float, c, 5136) - F(float, c, 5148)) * Fv_Ease(u) + F(float, c, 5148));
+        else
+            target = g_fv672d88 * (float)((F(float, c, 5136) - F(float, c, 5124)) * Fv_Ease(w) + F(float, c, 5124));
+    }
+    BYTE* body;
+    if (gm && F(BYTE*, gm, 616) && (body = F(BYTE*, F(BYTE*, gm, 616), 21600)) && g_fv696c60) {
+        double v = -F(float, body, 13160);
+        float r;
+        if (v > g_fv64d674)
+            r = (float)(v - g_fv64d674);
+        else if (v < g_fv64d670)
+            r = (float)(v + g_fv64d674);
+        else
+            r = 0;
+        CallThis(Fv_AddSample, c + 4828, *(DWORD*)&r, s_fv672ed4);
+        double f = CallThis<float>(Fv_FilterValue, (BYTE*)g_696cb0 + 4828) *
+            (double)F(float, F(BYTE*, F(BYTE*, g_game, 616), 21600), 13104) * g_fv64d668;
+        if (f > g_fv64d664)
+            f = g_fv64d664;
+        else if (f < g_fv64d660)
+            f = g_fv64d660;
+        target = (float)(f + target);
+        c = (BYTE*)g_696cb0;
+    }
+    double hi = g_fv672d88 * F(float, c, 5124);
+    if (target > hi)
+        target = (float)hi;
+    double lo = g_fv672d88 * F(float, c, 5148);
+    if (target < lo)
+        target = (float)lo;
+    double d = target - g_fv696d10;
+    step = step + step;
+    if (d > step)
+        d = step;
+    else if (d < -step)
+        d = -step;
+    g_fv696d10 = (float)(d + g_fv696d10);
+    return g_fv696d10;
+}
+
+} // extern "C"

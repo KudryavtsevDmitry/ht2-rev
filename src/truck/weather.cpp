@@ -332,7 +332,7 @@ ASM_VAR(float, g_eng702638, $L_702638)
 ASM_VAR(float, g_ten64c450, $L_64c450)          // 10.0
 ASM_VAR(AsmLabel, g_strOvation, $L_678540)
 
-ASM_PROC(FUN_591c30)
+extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 ASM_VAR(BYTE*, g_effectManager, $L_6f6910)
@@ -1774,7 +1774,7 @@ void __fastcall Layer_Follow(BYTE* s, void*, const float* a, float* b, const BYT
 
 // === a lightning flash's constructor (FUN_5a50f0)
 
-ASM_PROC(FUN_5a4880)
+extern "C" void FUN_5a4880(); KING_ALIAS("_FUN_5a4880", "@SkyEffect_Construct@68")
 extern "C" void Lf_Find(); KING_ALIAS("_Lf_Find", "_Objects_Find")
 ASM_VAR(AsmLabel, g_lf6514b4, $L_6514b4)
 ASM_VAR(AsmLabel, g_lf651468, $L_651468)
@@ -1803,6 +1803,133 @@ BYTE* __fastcall Lightning_Construct(BYTE* s, void*, int a, int b, Lf_V3 p, doub
     F(int, s, 180) = 0;
     F(DWORD, s, 184) = 0x9999999A;
     F(DWORD, s, 188) = 0x3FE99999;
+    return s;
+}
+
+} // extern "C"
+
+// === a sky effect's base constructor (FUN_5a4880)
+
+extern "C" void Sb_MeshConstruct(); KING_ALIAS("_Sb_MeshConstruct", "@Mesh_Construct@8")
+extern "C" void Sb_Set48(); KING_ALIAS("_Sb_Set48", "@Node_Set48@16")
+extern "C" void Sb_MoveTo(); KING_ALIAS("_Sb_MoveTo", "@Chain_MoveTo@8")
+extern "C" void Sb_VecCtor(); KING_ALIAS("_Sb_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void Sb_RecInit(); KING_ALIAS("_Sb_RecInit", "@FxRec_Init@4")
+extern "C" void Sb_RecFree(); KING_ALIAS("_Sb_RecFree", "@FxRec_Free@4")
+ASM_VAR(char, s_sb67e938, $L_67e938)
+ASM_VAR(double, g_sb64b670, $L_64b670)
+ASM_VAR(double, g_sb64b668, $L_64b668)
+ASM_VAR(double, g_sb651388, $L_651388)
+ASM_VAR(float, g_sb64c258, $L_64c258)
+
+static float* Sb_Quad(float a, float b, float c, float d)
+{
+    float* q = (float*)operator new(16);
+    q[0] = a, q[1] = b, q[2] = c, q[3] = d;
+    return q;
+}
+
+extern "C" {
+
+// [FUN_5a4880] constructor of a sky effect (kind k, owner o at +100, parent p +104): a mesh (+32) ring of n
+// 40-byte strips of width w around position pos (+88) and height h (scaled by 64b668 when n > 1), textured by
+// u steps 1/su (+152) and v 1/sv (+160) with the model of name; +108 a, +112 su, +116 sv, +124 n, +128/+136 f1/f2;
+// attached under p (vtbl+20 when p is the owner's +524, else vtbl+28) and to the owner (+2992)
+BYTE* __fastcall SkyEffect_Construct(BYTE* s, void*, BYTE* o, BYTE* p, Lf_V3 pos, float w, float h,
+    const char* name, int a, int su, int sv, float f1, float f2, int k, int n)
+{
+    CallThis(FUN_5d31e0, s, k, &s_sb67e938);
+    BYTE* m = s + 32;
+    CallThis(Sb_MeshConstruct, m);
+    F(double, s, 128) = f1;
+    F(double, s, 136) = f2;
+    F(void*, m, 0) = g_wea6513b0;
+    F(BYTE*, s, 100) = o;
+    F(BYTE*, s, 104) = p;
+    F(void*, s, 0) = g_wea651390;
+    F(int, s, 172) = 0;
+    F(int, s, 108) = a;
+    F(int, s, 112) = su;
+    F(int, s, 116) = sv;
+    F(int, s, 124) = n;
+    F(double, s, 152) = g_sb64b670 / su;
+    F(double, s, 160) = g_sb64b670 / sv;
+    if (n > 1)
+        h = (float)(h * g_sb64b668);
+    float half = w * g_sb64c258;
+    float step = (float)(g_q176_64d900 / n);
+    BYTE* items = 0;
+    if (int* raw = (int*)operator new(n * 40 + 4)) {
+        raw[0] = n;
+        items = (BYTE*)(raw + 1);
+        CallStd(Sb_VecCtor, items, 40, n, Sb_RecInit, Sb_RecFree);
+    }
+    memcpy(s + 88, &pos, 12);
+    F(int, s, 168) = CallC<int>(FUN_5ef3d0, name);
+    for (int i = 0; i < n; i++) {
+        BYTE* it = items + i * 40;
+        F(WORD, it, 0) = 2;
+        F(WORD, it, 4) = 4;
+        double i1 = i + 1;
+        float* p8 = (float*)operator new(16);
+        F(float*, it, 8) = p8;
+        p8[0] = (float)(i * (F(double, s, 152) / F(int, s, 124)));
+        p8[1] = (float)(i1 * (F(double, s, 152) / F(int, s, 124)));
+        p8[3] = (float)(i * (F(double, s, 152) / F(int, s, 124)));
+        p8[2] = (float)(F(double, s, 152) / F(int, s, 124) * i1);
+        F(float*, it, 12) = Sb_Quad((float)F(double, s, 160), (float)F(double, s, 160), 0, 0);
+        float* p16 = (float*)operator new(16);
+        F(float*, it, 16) = p16;
+        float a0 = i * step;
+        float a1;
+        if (F(int, s, 124) > 1) {
+            double nh = -half;
+            p16[0] = (float)(x87_cos(a0) * nh);
+            a1 = (float)((i + 1) * (double)step);
+            p16[1] = (float)(x87_cos(a1) * nh);
+            p16[2] = (float)(p16[1] * g_sb64b668);
+            p16[3] = (float)(p16[0] * g_sb64b668);
+            float* p24 = (float*)operator new(16);
+            F(float*, it, 24) = p24;
+            p24[0] = (float)(x87_sin(a0) * half * g_sb651388);
+            p24[1] = (float)(x87_sin(a1) * half * g_sb651388);
+            p24[2] = (float)(p24[1] * g_sb64b668);
+            p24[3] = (float)(p24[0] * g_sb64b668);
+        } else {
+            float nh = -half;
+            p16[0] = (float)(x87_cos(a0) * nh);
+            a1 = (float)((i + 1) * (double)step);
+            p16[1] = (float)(x87_cos(a1) * nh);
+            p16[2] = p16[1];
+            p16[3] = p16[0];
+            float* p24 = (float*)operator new(16);
+            F(float*, it, 24) = p24;
+            p24[0] = (float)(x87_sin(a0) * nh);
+            p24[1] = (float)(x87_sin(a1) * nh);
+            p24[2] = p24[1];
+            p24[3] = p24[0];
+        }
+        float* p20 = (float*)operator new(16);
+        F(float*, it, 20) = p20;
+        p20[0] = 0;
+        p20[1] = 0;
+        p20[2] = h;
+        p20[3] = h;
+        F(WORD, it, 34) = 4095;
+        F(int, it, 36) = F(int, s, 168);
+    }
+    CallThis(Sb_Set48, m, items, F(int, s, 124));
+    CallThis(Sb_MoveTo, m);
+    BYTE* par = F(BYTE*, s, 104);
+    if (par == F(BYTE*, o, 524))
+        CallVirt(par, 20, 0, s ? m : 0);
+    else
+        CallVirt(par, 28, s ? m : 0);
+    CallThis(FUN_5d3570, F(BYTE*, s, 100) + 2992, s);
+    F(BYTE, s, 72) |= 1;
+    F(int, s, 144) = 0;
+    F(int, s, 148) = 0;
+    F(int, s, 120) = 0;
     return s;
 }
 

@@ -1586,3 +1586,37 @@ int __cdecl Frame_Report(char* out, int n, const char* name, const float* m, con
 }
 
 } // extern "C"
+
+// === a filtered value of timed samples (debug build, FUN_4eaf98)
+
+ASM_VAR(float, g_fv64c938, $L_64c938)
+ASM_VAR(double, g_fv64b658, $L_64b658)
+ASM_VAR(float, g_fv64c250, $L_64c250)
+
+extern "C" {
+
+// [FUN_4eaf98] the weighted mean of filter s's samples (count +28, times +8, values +12) by the window +20 of their
+// age before now (scaled by +4, within 64c938..64b658), blended toward +16 by the optional +24; 0 without samples
+float __fastcall Filter_Value(BYTE* s)
+{
+    float acc = 0, wsum = 0, b = 1.0f;
+    int cnt = 0;
+    typedef double (__cdecl* Fn)(float);
+    for (int i = 0; i < F(int, s, 28); i++) {
+        float now = (float)F(double, g_6974c4, 2968);
+        float x = (F(float*, s, 8)[i] - now) * F(float, s, 4);
+        if (!(x > g_fv64c938) || x > g_fv64b658)
+            continue;
+        float w = (float)F(Fn, s, 20)(x);
+        if (F(Fn, s, 24)) {
+            b = (float)F(Fn, s, 24)(x);
+            acc = (float)((((double)g_fv64c250 - b) * F(float, s, 16) + (double)b * F(float*, s, 12)[i]) * w + acc);
+        } else
+            acc = w * F(float*, s, 12)[i] + acc;
+        wsum = wsum + w;
+        cnt++;
+    }
+    return cnt ? acc / wsum : 0;
+}
+
+} // extern "C"

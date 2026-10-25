@@ -248,7 +248,7 @@ extern "C" BYTE* __fastcall SceneObj_SaveState(BYTE* self, void*)
     return self;
 }
 
-ASM_PROC(FUN_591c30)
+extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
 ASM_VAR(BYTE*, g_effectManager, $L_6f6910)

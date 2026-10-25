@@ -494,7 +494,7 @@ extern "C" BYTE* __fastcall TerrainView_Construct(BYTE* s, void*, int x, int y, 
 }
 
 #include "vecmath.h"
-ASM_PROC(FUN_6157a0)    // a segment test against the terrain
+extern "C" void FUN_6157a0(); KING_ALIAS("_FUN_6157a0", "@Ground_SweepSphere@28")    // a segment test against the terrain
 
 // [FUN_616520] tests the segment a-b against the terrain in 5 m pieces; 1 at the first hit
 extern "C" int __fastcall Terrain_SegmentHits(BYTE* s, void*, const float* a, const float* b, int c, int d, int e)
@@ -932,6 +932,95 @@ void __fastcall TerrainView_Place(BYTE* s, void*, const float* pos, const float*
     }
     CallThis(FUN_60c6b0, F(BYTE*, s, 0));
     CallThis(FUN_60cb10, F(BYTE*, s, 0));
+}
+
+} // extern "C"
+
+// === a moving sphere against the ground (FUN_6157a0)
+
+ASM_FUNC(Tg_Height, FUN_615da0)
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+extern "C" void Tg_LengthSq(); KING_ALIAS("_Tg_LengthSq", "_Vec3_LengthSq")
+extern "C" void Tg_DivBy(); KING_ALIAS("_Tg_DivBy", "_Vec3_DivBy")
+extern "C" void Tg_Scaled(); KING_ALIAS("_Tg_Scaled", "_Vec3_Scaled")
+extern "C" void Tg_Sub(); KING_ALIAS("_Tg_Sub", "_Vec3_Sub")
+ASM_VAR(float, g_tg728810, $L_728810)
+ASM_VAR(float, g_tg728814, $L_728814)
+ASM_VAR(float, g_tg728818, $L_728818)
+ASM_VAR(float, g_tg728820, $L_728820)
+ASM_VAR(float, g_tg728824, $L_728824)
+ASM_VAR(float, g_tg728828, $L_728828)
+ASM_VAR(float, g_tg64c258, $L_64c258)
+ASM_VAR(float, g_tg64c250, $L_64c250)
+ASM_VAR(float, g_tg64c264, $L_64c264)
+ASM_VAR(double, g_tg653300, $L_653300)
+ASM_VAR(double, g_tg64b930, $L_64b930)
+
+static float Tg_At(BYTE* s, const Vec3* p)
+{
+    return CallThis<float>(Tg_Height, F(BYTE*, F(BYTE*, s, 0), 4), p);
+}
+
+extern "C" {
+
+// [FUN_6157a0] whether a sphere of radius r moving from a to b meets the ground plane fitted through the heights
+// at the move's middle and four points around it (728810 / 728820 either way): the touching point to *at
+// (moved back along the normal by r) and the plane normal to *n, 1; 0 when it doesn't reach it or starts behind
+int __fastcall Ground_SweepSphere(BYTE* s, void*, const float* a, const float* b, float r, Vec3* at, Vec3* n)
+{
+    Vec3 A = {a[0], a[1], a[2]}, B = {b[0], b[1], b[2]}, sum, M;
+    Vec3_SetThis(&sum, 0, B.x + A.x, B.y + A.y, B.z + A.z);
+    Vec3_SetThis(&M, 0, sum.x * g_tg64c258, sum.y * g_tg64c258, sum.z * g_tg64c258);
+    float ha = Tg_At(s, &A);
+    float hb = Tg_At(s, &B);
+    M.z = (hb + ha) * g_tg64c258;
+    Vec3 p1, p2, p3, p4;
+    Vec3_SetThis(&p1, 0, M.x - g_tg728820, M.y - g_tg728824, M.z - g_tg728828);
+    Vec3_SetThis(&p2, 0, g_tg728810 + M.x, M.y + g_tg728814, g_tg728818 + M.z);
+    Vec3_SetThis(&p3, 0, g_tg728820 + M.x, M.y + g_tg728824, g_tg728828 + M.z);
+    Vec3_SetThis(&p4, 0, M.x - g_tg728810, M.y - g_tg728814, M.z - g_tg728818);
+    p1.z = Tg_At(s, &p1);
+    p2.z = Tg_At(s, &p2);
+    p3.z = Tg_At(s, &p3);
+    p4.z = Tg_At(s, &p4);
+    Vec3 e1, e2;
+    Vec3_SetThis(&e1, 0, p1.x - p3.x, p1.y - p3.y, p1.z - p3.z);
+    Vec3_SetThis(&e2, 0, p2.x - p4.x, p2.y - p4.y, p2.z - p4.z);
+    Vec3 nr = {e1.z * e2.y - e1.y * e2.z, e1.x * e2.z - e2.x * e1.z, e2.x * e1.y - e1.x * e2.y}, nn;
+    float len = (float)x87_sqrt(CallC<double>(Tg_LengthSq, &nr));
+    CallC(Tg_DivBy, &nn, &nr, *(DWORD*)&len);
+    double d = -((double)M.y * nn.y + (double)M.x * nn.x + (double)nn.z * M.z);
+    float da = (float)((double)nn.x * A.x + (double)nn.y * A.y + (double)nn.z * A.z + d);
+    float db = (float)((double)B.z * nn.z + (double)B.y * nn.y + (double)B.x * nn.x + d);
+    if (da < g_tg653300)
+        return 0;
+    double re = r + g_tg64b930;
+    Vec3 t1, t2;
+    if (!(x87_fabs(da) > re)) {
+        *at = A;
+        *n = nn;
+        Vec3_SetThis(&t1, 0, r * n->x, r * n->y, r * n->z);
+        Vec3_SetThis(&t2, 0, at->x - t1.x, at->y - t1.y, at->z - t1.z);
+        *at = t2;
+        return 1;
+    }
+    if (!(da > re) || !(r - g_tg64b930 > db))
+        return 0;
+    float t = (da - r) / (da - db);
+    if (t > g_tg64c250)
+        t = 1.0f;
+    else if (t < g_tg64c264)
+        t = 0;
+    Vec3 bt, at2, w;
+    Vec3_SetThis(&bt, 0, B.x * t, B.y * t, B.z * t);
+    Vec3_Sum(&w, Vec3_Times(&at2, &A, g_tg64c250 - t), &bt);
+    Vec3_SetThis(&t1, 0, w.x, w.y, w.z);
+    *at = t1;
+    Vec3_SetThis(&t1, 0, nn.x, nn.y, nn.z);
+    *n = t1;
+    CallC(Tg_Sub, &at2, at, CallC<Vec3*>(Tg_Scaled, &t1, n, *(DWORD*)&r));
+    *at = at2;
+    return 1;
 }
 
 } // extern "C"
