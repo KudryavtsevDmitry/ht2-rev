@@ -3380,7 +3380,7 @@ int __cdecl Path_FindJoins(BYTE* g)
 
 // === stereo sounds at a point (FUN_5fd5f0, FUN_5fd870)
 
-ASM_PROC(FUN_5fdaf0)    // updates a sound's two channel volumes
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")    // updates a sound's two channel volumes
 extern "C" void Ss_RotZ(); KING_ALIAS("_Ss_RotZ", "_Matrix_RotationZ")
 ASM_VAR(double, g_ss64b6d0, $L_64b6d0)
 ASM_VAR(double, g_ss64b670, $L_64b670)
@@ -3563,6 +3563,123 @@ int __fastcall Music_PickNext(BYTE* s)
     Music_Run(F(BYTE*, s, 20), 0, 0);
     Music_SetVolume(F(BYTE*, s, 20), 0, F(double, s, 24));
     return 0;
+}
+
+} // extern "C"
+
+// === reading a mesh's faces (a load method at $L_5f08d0)
+
+extern "C" void Mr_VecCtor(); KING_ALIAS("_Mr_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void Mr_FaceCtor(); KING_ALIAS("_Mr_FaceCtor", "@Obj5e5760_Construct@4")
+extern "C" void Mr_FaceDtor(); KING_ALIAS("_Mr_FaceDtor", "@Fw5e57a0_Destroy@4")
+extern "C" void Mr_FaceRead(); KING_ALIAS("_Mr_FaceRead", "@Face_Read@20")
+ASM_VAR(int, g_mr720904, $L_720904)
+
+extern "C" {
+
+// [$L_5f08d0] reads mesh s from f (pts, normals for its faces): the bounds plane (+20), with +96 set the kind (+96,
+// 1 becomes 2 without 702e8c bit 6) and +98, the face count (+52), pts (+48); kind 3 with the device keeps only the
+// triangles' indices (+92, +60 = 3 per face), else the 88-byte faces (+56); 0 when a face fails
+int __fastcall Mesh_Read(BYTE* s, void*, FILE* f, BYTE* pts, BYTE* normals)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    if (F(WORD, s, 96)) {
+        F(WORD, s, 96) = (WORD)CallC<int>(FUN_5ab140, f);
+        if (F(WORD, s, 96) == 1 && !(g_sc702e8c & 64))
+            F(WORD, s, 96) = 2;
+        F(WORD, s, 98) = (WORD)CallC<int>(FUN_5ab140, f);
+    }
+    int n = CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 52) = (WORD)n;
+    F(BYTE*, s, 48) = pts;
+    if (F(WORD, s, 96) == 3 && g_mr720904) {
+        F(int, s, 56) = 0;
+        F(WORD, s, 60) = (WORD)(n * 3);
+        WORD* ix = (WORD*)operator new(F(WORD, s, 60) * 2);
+        F(WORD*, s, 92) = ix;
+        for (int i = 0; i < F(WORD, s, 60);) {
+            WORD buf[10];
+            fread(buf, 1, 20, f);
+            fread(buf, 1, 12, f);
+            ix[i++] = buf[0];
+            ix[i++] = buf[2];
+            ix[i++] = buf[4];
+        }
+        return 1;
+    }
+    unsigned c = (WORD)n;
+    BYTE* faces = 0;
+    if (int* p = (int*)operator new(c * 88 + 4)) {
+        p[0] = c;
+        faces = (BYTE*)(p + 1);
+        CallStd(Mr_VecCtor, faces, 88, c, Mr_FaceCtor, Mr_FaceDtor);
+    }
+    F(BYTE*, s, 56) = faces;
+    for (int i = 0; i < F(WORD, s, 52); i++)
+        if (!CallThis<int>(Mr_FaceRead, F(BYTE*, s, 56) + i * 88, f, pts, normals))
+            return 0;
+    return 1;
+}
+
+} // extern "C"
+
+// [FUN_5fdaf0] restarts sound s (when sound is on and its sample is loaded) at volume vol and pitch pitch, looping
+// (+16): a playing channel is stopped and freed first, then a new one started
+extern "C" void __fastcall Sound_Restart(BYTE* s, void*, float vol, float pitch)
+{
+    if (!g_q182_723b28 || !(F(BYTE, g_q182_723b34[F(int, s, 28)], 24) & 1))
+        return;
+    float v = Sce182_Unit(vol), p = Sce182_Unit(pitch);
+    if (F(int, s, 20)) {
+        int c = F(int, s, 24);
+        Channel_Stop(c);
+        if (c >= 0)
+            g_channels[c] = 0;
+        F(int, s, 24) = -1;
+        F(int, s, 20) = 0;
+    }
+    int ch = CallC<int>(FUN_5fd580, s);
+    if (ch == -1)
+        return;
+    F(int, s, 24) = ch;
+    F(int, s, 20) = 1;
+    F(int, s, 16) = 1;
+    CallC(FUN_604f20, F(int, s, 28), ch, (float)(v * g_q182_64da58), (float)(p * g_q182_64da58), 1000, 0);
+}
+
+// === a portal's pass-through (a method at $L_5fbc90)
+
+extern "C" void Pp_Flag0Clear(); KING_ALIAS("_Pp_Flag0Clear", "@Obj_Flag0Clear@24")
+extern "C" void Pp_Inverse(); KING_ALIAS("_Pp_Inverse", "_Matrix_Inverse")
+extern "C" void Pp_Length(); KING_ALIAS("_Pp_Length", "_Vec3_Length")
+ASM_VAR(double, g_pp64b748, $L_64b748)
+ASM_VAR(float, g_pp64d7b8, $L_64d7b8)
+
+extern "C" {
+
+// [$L_5fbc90] portal s with a target (+128) passes the draw (a, b, frame m, renderer r) on when it is shown
+// (Obj_Flag0Clear, no +108): facing the eye (normal +48, centre +60) within 64d7b8, the target is drawn once per
+// frame (+68 against r+8452) by vtbl+56; 1 unless it was hidden or already drawn
+int __fastcall Portal_Pass(BYTE* s, void*, int a, int b, BYTE* m, BYTE* r)
+{
+    if (!F(BYTE*, s, 128))
+        return 0;
+    if (!CallThis<int>(Pp_Flag0Clear, s, a, b, m, r))
+        return 0;
+    if (F(int, s, 108))
+        return 0;
+    float t[12];
+    const float* inv = CallC<const float*>(Pp_Inverse, t, m);
+    float d[3] = {F(float, s, 60) - inv[9], F(float, s, 64) - inv[10], F(float, s, 68) - inv[11]};
+    if ((double)F(float, s, 56) * d[2] + (double)F(float, s, 52) * d[1] + (double)F(float, s, 48) * d[0] > g_pp64b748
+        && CallC<double>(Pp_Length, d) < g_pp64d7b8) {
+        BYTE* o = F(BYTE*, s, 128);
+        if (F(int, o, 68) == F(int, r, 8452))
+            return 0;
+        F(int, o, 68) = F(int, r, 8452);
+        CallVirt(F(BYTE*, s, 128), 56, a, b, m, r);
+    }
+    return 1;
 }
 
 } // extern "C"

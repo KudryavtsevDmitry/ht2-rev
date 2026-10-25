@@ -448,8 +448,8 @@ extern "C" void __fastcall Body_SetMode(BYTE* self, void*, int mode)
 // ---------------------------------------------------------------------------
 // medium-sized functions of the unit
 
-ASM_PROC(FUN_4f0800)
-ASM_PROC(FUN_4f0530)
+extern "C" void FUN_4f0800(); KING_ALIAS("_FUN_4f0800", "@Body_FrameTerms@4")
+extern "C" void FUN_4f0530(); KING_ALIAS("_FUN_4f0530", "@Body_SpinAxis@4")
 extern "C" void FUN_4f09f0(); KING_ALIAS("_FUN_4f09f0", "@Body_KeepFrame@12")
 
 static inline void Copy3i(BYTE* to, const BYTE* from)
@@ -554,7 +554,7 @@ extern "C" void __fastcall Body_Step(BYTE* self, void*, short* in)
     F(int, self, 13512) = F(int, self, 7196) == 0;
 }
 
-ASM_PROC(FUN_4f0fc0)
+extern "C" void FUN_4f0fc0(); KING_ALIAS("_FUN_4f0fc0", "@Body_PlaceAt@16")
 ASM_VAR(float, g_quarterPi674408, $L_674408)
 ASM_VAR(double, g_64b6e0, $L_64b6e0)            // 0.5
 ASM_VAR(double, g_64b840, $L_64b840)            // 0.2
@@ -837,7 +837,7 @@ extern "C" void __cdecl Tables_Clear697608()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // checks a vector (v, name, limit)
-ASM_PROC(FUN_4f0530)
+extern "C" void FUN_4f0530(); KING_ALIAS("_FUN_4f0530", "@Body_SpinAxis@4")
 extern "C" void FUN_4f0720(); KING_ALIAS("_FUN_4f0720", "@Body_SaveState@8")
 ASM_PROC(FUN_4fef20)
 ASM_VAR(AsmLabel, s_vp6746e4, $L_6746e4)
@@ -1324,6 +1324,227 @@ void __fastcall Body_KeepFrame(BYTE* s, void*, const BYTE* d)
     for (int i = 0; i < F(int, s, 3540); i++)
         F(int, s, 15508) |= (F(int, s, 15580 + i * 20) != 0) << i;
     F(int, s, 15512) = F(int, s, 15560);
+}
+
+} // extern "C"
+
+// [FUN_4f0fc0] places body s at matrix m (+16, its inverse +2304) with owner a (+244): the velocity +76 in body
+// axes over the inertia +8008 into +88; each contact point (+6212, count +3540) placed (+100), its velocity
+// (+3848) and flags (+3816, +3944) cleared, +9872 = 0.01 and +9840 = 0.5
+extern "C" void __fastcall Body_PlaceAt(BYTE* s, void*, int a, const Matrix* m)
+{
+    F(Matrix, s, 16) = *m;
+    Matrix t;
+    F(Matrix, s, 2304) = *Matrix_Inverse(&t, (const Matrix*)(s + 16));
+    const float* iv = (const float*)(s + 2304);
+    const float* v = (const float*)(s + 76);
+    Vec3 l, r;
+    l.x = (float)((double)iv[6] * v[2] + (double)iv[3] * v[1] + (double)v[0] * iv[0]);
+    l.y = (float)((double)iv[7] * v[2] + (double)iv[1] * v[0] + (double)iv[4] * v[1]);
+    l.z = (float)((double)iv[8] * v[2] + (double)iv[2] * v[0] + (double)iv[5] * v[1]);
+    F(Vec3, s, 88) = *Vec3_DivComponents(&r, &l, (const Vec3*)(s + 8008));
+    F(int, s, 244) = a;
+    const float* M = (const float*)(s + 16);
+    for (int i = 0; i < F(int, s, 3540); i++) {
+        const float* q = (const float*)(s + 6212 + i * 12);
+        float* w = (float*)(s + 100 + i * 12);
+        float x = (float)((double)q[1] * M[3] + (double)q[2] * M[6] + (double)q[0] * M[0] + M[9]);
+        float y = (float)((double)q[1] * M[4] + (double)M[1] * q[0] + (double)q[2] * M[7] + M[10]);
+        float z = (float)((double)q[2] * M[8] + (double)q[1] * M[5] + (double)q[0] * M[2] + M[11]);
+        w[0] = x, w[1] = y, w[2] = z;
+        memcpy(s + 3848 + i * 12, (BYTE*)g_q98_702650, 12);
+        F(int, s, 3816 + i * 4) = 0;
+        F(int, s, 3944 + i * 4) = 0;
+        F(DWORD, s, 9872 + i * 4) = 0x3C23D70A;
+        F(DWORD, s, 9840 + i * 4) = 0x3F000000;
+    }
+}
+
+// === a body's tilt from its slope (FUN_4f01b0)
+
+extern "C" void Bt_RotZ(); KING_ALIAS("_Bt_RotZ", "_Matrix_RotationZ")
+ASM_VAR(double, g_bt64b658, $L_64b658)
+ASM_VAR(double, g_bt64b730, $L_64b730)
+ASM_VAR(float, g_bt64c250, $L_64c250)
+
+extern "C" {
+
+// [FUN_4f01b0] body s's lean from its two slope angles (+6692, +6688): the gravity components along its axes
+// (+6308 by +2724, +6332 by +2748) over cos(+6692) (or by 64b730 when that is tiny) into +3532 and +3536, the
+// smaller one k scaling the offset +2616 turned by +6692 into +220 and, with sin(+6688) / +8032, the vector +208
+// taken into the body's axes (+2304) into +232
+void __fastcall Body_SlopeLean(BYTE* s)
+{
+    float ang = F(float, s, 6692);
+    float c1 = (float)x87_cos(ang);
+    double c2 = x87_cos(F(float, s, 6688));
+    double a = (double)F(float, s, 6316) * F(float, s, 2732) + (double)F(float, s, 6312) * F(float, s, 2728)
+        + (double)F(float, s, 6308) * F(float, s, 2724);
+    double p = a * c2;
+    float b = (float)((double)F(float, s, 6340) * F(float, s, 2756) + (double)F(float, s, 6336) * F(float, s, 2752)
+        + (double)F(float, s, 6332) * F(float, s, 2748));
+    float q;
+    if (c1 > g_bt64b658) {
+        double inv = g_bt64c250 / c1;
+        c1 = (float)inv;
+        p *= inv;
+        q = (float)(c1 * (double)b);
+    } else {
+        p *= g_bt64b730;
+        q = (float)(b * g_bt64b730);
+    }
+    float k = x87_fabs((double)q) > x87_fabs(p) ? (float)p : q;
+    F(float, s, 3532) = (float)p;
+    F(float, s, 3536) = q;
+    float m[12];
+    const float* R = CallC<const float*>(Bt_RotZ, m, *(DWORD*)&ang);
+    const float* v = (const float*)(s + 2616);
+    double wx = (double)R[6] * v[2] + (double)R[3] * v[1] + (double)v[0] * R[0] + R[9];
+    float wy = (float)((double)R[1] * v[0] + (double)R[7] * v[2] + (double)R[4] * v[1] + R[10]);
+    float wz = (float)((double)R[2] * v[0] + (double)R[8] * v[2] + (double)R[5] * v[1] + R[11]);
+    F(float, s, 220) = (float)(wx * k);
+    F(float, s, 224) = wy * k;
+    F(float, s, 228) = wz * k;
+    double f = x87_sin(F(float, s, 6688)) * (k / F(float, s, 8032));
+    float ux = (float)(f * F(float, s, 208)), uy = (float)(f * F(float, s, 212));
+    double uz = f * F(float, s, 216);
+    const float* M = (const float*)(s + 2304);
+    float rx = (float)(uz * M[6] + (double)uy * M[3] + (double)ux * M[0]);
+    float ry = (float)(uz * M[7] + (double)uy * M[4] + (double)ux * M[1]);
+    float rz = (float)(uz * M[8] + (double)uy * M[5] + (double)ux * M[2]);
+    F(float, s, 232) = rx;
+    F(float, s, 236) = ry;
+    F(float, s, 240) = rz;
+}
+
+} // extern "C"
+
+// === a body's spin axis terms (FUN_4f0530)
+
+extern "C" void Sa_Length(); KING_ALIAS("_Sa_Length", "_Vec3_Length")
+ASM_VAR(double, g_sa64b6d0, $L_64b6d0)
+
+extern "C" {
+
+// [FUN_4f0530] body s's spin (+64): a spin rate (+3520) jumping by more than 64b6d0 or below 1 clears +3216 and
+// +3288; d = a x (w x a) for the axis a (+208) into +2544 with its length +3524, its part along +2616 (+3528,
+// scaled +2592) and its direction +2556 (d itself when tiny)
+void __fastcall Body_SpinAxis(BYTE* s)
+{
+    const float* w = (const float*)(s + 64);
+    double l = CallC<double>(Sa_Length, w);
+    if (x87_fabs(F(float, s, 3520) - l) > g_sa64b6d0 || l < g_bt64c250) {
+        memcpy(s + 3216, (BYTE*)g_q98_702650, 12);
+        memcpy(s + 3288, (BYTE*)g_q98_702650, 12);
+    }
+    F(float, s, 3520) = (float)l;
+    const float* a = (const float*)(s + 208);
+    double c1 = (double)w[1] * a[2] - (double)w[2] * a[1];
+    double c2 = (double)a[0] * w[2] - (double)a[2] * w[0];
+    double c3 = (double)a[1] * w[0] - (double)a[0] * w[1];
+    float* d = (float*)(s + 2544);
+    d[0] = (float)(c3 * a[1] - c2 * a[2]);
+    d[1] = (float)(c1 * a[2] - c3 * a[0]);
+    d[2] = (float)(c2 * a[0] - c1 * a[1]);
+    double l2 = CallC<double>(Sa_Length, d);
+    F(float, s, 3524) = (float)l2;
+    const float* r = (const float*)(s + 2616);
+    double p = (double)d[2] * r[2] + (double)d[1] * r[1] + (double)d[0] * r[0];
+    F(float, s, 3528) = (float)p;
+    float* o = (float*)(s + 2592);
+    o[0] = (float)(p * r[0]);
+    o[1] = (float)(p * r[1]);
+    o[2] = (float)(p * r[2]);
+    float* n = (float*)(s + 2556);
+    if (l2 > g_bt64b658) {
+        n[0] = (float)(d[0] / l2);
+        n[1] = (float)(d[1] / l2);
+        n[2] = (float)(d[2] / l2);
+    } else
+        memcpy(n, d, 12);
+}
+
+} // extern "C"
+
+// === a body's frame terms (FUN_4f0800)
+
+extern "C" void Bf_NormalizeThis(); KING_ALIAS("_Bf_NormalizeThis", "@Vec3_NormalizeThis@8")
+ASM_VAR(float, g_bf702620, $L_702620)
+ASM_VAR(float, g_bf702624, $L_702624)
+ASM_VAR(float, g_bf702628, $L_702628)
+
+extern "C" {
+
+// [FUN_4f0800] body s's frame-dependent terms: the inverse frame (+2304), the velocity in body axes over the inertia
+// (+88), the forward axis (+2604, 702620 turned by the frame) and the unit side axis (axis +208 x forward) x axis
+// (+2616)
+void __fastcall Body_FrameTerms(BYTE* s)
+{
+    Matrix t;
+    F(Matrix, s, 2304) = *Matrix_Inverse(&t, (const Matrix*)(s + 16));
+    const float* iv = (const float*)(s + 2304);
+    const float* v = (const float*)(s + 76);
+    Vec3 l, r;
+    l.x = (float)((double)iv[3] * v[1] + (double)iv[6] * v[2] + (double)v[0] * iv[0]);
+    l.y = (float)((double)iv[4] * v[1] + (double)iv[1] * v[0] + (double)iv[7] * v[2]);
+    l.z = (float)((double)iv[5] * v[1] + (double)iv[2] * v[0] + (double)iv[8] * v[2]);
+    F(Vec3, s, 88) = *Vec3_DivComponents(&r, &l, (const Vec3*)(s + 8008));
+    const float* R = (const float*)(s + 16);
+    float* f = (float*)(s + 2604);
+    f[0] = (float)((double)g_bf702628 * R[6] + (double)g_bf702624 * R[3] + (double)g_bf702620 * R[0]);
+    f[1] = (float)((double)g_bf702628 * R[7] + (double)g_bf702624 * R[4] + (double)g_bf702620 * R[1]);
+    f[2] = (float)((double)g_bf702628 * R[8] + (double)g_bf702624 * R[5] + (double)g_bf702620 * R[2]);
+    const float* a = (const float*)(s + 208);
+    double c1 = (double)a[1] * f[2] - (double)a[2] * f[1];
+    double c2 = (double)f[0] * a[2] - (double)f[2] * a[0];
+    double c3 = (double)f[1] * a[0] - (double)f[0] * a[1];
+    float* o = (float*)(s + 2616);
+    o[0] = (float)(c2 * a[2] - c3 * a[1]);
+    o[1] = (float)(c3 * a[0] - c1 * a[2]);
+    o[2] = (float)(c1 * a[1] - c2 * a[0]);
+    CallThis(Bf_NormalizeThis, o);
+}
+
+} // extern "C"
+
+// === placing a body and resetting its contacts (FUN_4f0df0)
+
+ASM_PROC(FUN_4ef480)
+ASM_VAR(float, g_bp64c450, $L_64c450)
+
+extern "C" {
+
+// [FUN_4f0df0] Body_PlaceAt plus FUN_4ef480 before the contacts, whose loads +3360 restart from their rest values
+// (+9808 by +9792 and 64c450)
+void __fastcall Body_PlaceReset(BYTE* s, void*, int a, const Matrix* m)
+{
+    F(Matrix, s, 16) = *m;
+    Matrix t;
+    F(Matrix, s, 2304) = *Matrix_Inverse(&t, (const Matrix*)(s + 16));
+    const float* iv = (const float*)(s + 2304);
+    const float* v = (const float*)(s + 76);
+    Vec3 l, r;
+    l.x = (float)((double)iv[6] * v[2] + (double)iv[3] * v[1] + (double)v[0] * iv[0]);
+    l.y = (float)((double)iv[7] * v[2] + (double)iv[1] * v[0] + (double)iv[4] * v[1]);
+    l.z = (float)((double)iv[8] * v[2] + (double)iv[2] * v[0] + (double)iv[5] * v[1]);
+    F(Vec3, s, 88) = *Vec3_DivComponents(&r, &l, (const Vec3*)(s + 8008));
+    F(int, s, 244) = a;
+    CallThis(FUN_4ef480, s);
+    const float* M = (const float*)(s + 16);
+    for (int i = 0; i < F(int, s, 3540); i++) {
+        const float* q = (const float*)(s + 6212 + i * 12);
+        float* w = (float*)(s + 100 + i * 12);
+        float x = (float)((double)M[6] * q[2] + (double)M[0] * q[0] + (double)q[1] * M[3] + M[9]);
+        float y = (float)((double)M[1] * q[0] + (double)M[7] * q[2] + (double)q[1] * M[4] + M[10]);
+        float z = (float)((double)q[1] * M[5] + (double)M[2] * q[0] + (double)q[2] * M[8] + M[11]);
+        w[0] = x, w[1] = y, w[2] = z;
+        memcpy(s + 3848 + i * 12, (BYTE*)g_q98_702650, 12);
+        F(int, s, 3816 + i * 4) = 0;
+        F(DWORD, s, 9872 + i * 4) = 0x3C23D70A;
+        F(DWORD, s, 9840 + i * 4) = 0x3F000000;
+        F(int, s, 3944 + i * 4) = 0;
+        F(float, s, 3360 + i * 4) = (float)((double)F(float, s, 9808 + i * 4) * F(float, s, 9792) * g_bp64c450);
+    }
 }
 
 } // extern "C"

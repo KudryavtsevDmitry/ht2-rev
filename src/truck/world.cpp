@@ -19,7 +19,7 @@ extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*);    // carphys.cpp
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
 extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
-ASM_PROC(FUN_5fdaf0)    // sound: play (volume, pitch)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")    // sound: play (volume, pitch)
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")    // query: constructor
 extern "C" void FUN_4e5698(); KING_ALIAS("_FUN_4e5698", "_Obj_TransformVecs")    // query: finish a hit
 
@@ -854,7 +854,7 @@ extern "C" BYTE* __cdecl Model_FindPart2(BYTE* obj)
 // ---------------------------------------------------------------------------
 ASM_PROC(FUN_4e4f78)    // (a, b, c, &lo, &hi)
 ASM_PROC(FUN_4e28b0)
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")
 extern "C" void FUN_4eac5f(); KING_ALIAS("_FUN_4eac5f", "@Arrays_FillLongAgo@8")
 extern "C" void FUN_4bde00(); KING_ALIAS("_FUN_4bde00", "_Vec3_Sub")
@@ -1298,6 +1298,291 @@ int __cdecl World_Query6(int skip, void* w, int a, const Vec3Bits* p, const Vec3
 {
     Wq_Fill(q, p, d, a, skip);
     return World_4e634f() & 1 ? 1 : 0;
+}
+
+} // extern "C"
+
+// === the start position check report (debug build, unreferenced)
+
+extern "C" void Cp_Next(); KING_ALIAS("_Cp_Next", "@Obj4eb170_Get8@8")
+extern "C" void Cp_Get128(); KING_ALIAS("_Cp_Get128", "@Obj_Get128@8")
+extern "C" void Cp_Point(); KING_ALIAS("_Cp_Point", "@Body_Point@16")
+ASM_VAR(char, s_cp673708, $L_673708)
+ASM_VAR(char, s_cp673730, $L_673730)
+ASM_VAR(char, s_cp673734, $L_673734)
+ASM_VAR(char, s_cp673738, $L_673738)
+ASM_VAR(char, s_cp673788, $L_673788)
+ASM_VAR(char, s_cp6737a0, $L_6737a0)
+ASM_VAR(double, g_cp64b748, $L_64b748)
+
+static const char* Cp_Name(void* o) { return CallThis<const char*>(FUN_4cf5e0, o); }
+
+static Vec3 Cp_Corner(void* door, int k)
+{
+    Vec3 p;
+    CallThis(Cp_Point, door, &p, k);
+    return p;
+}
+
+extern "C" {
+
+// [$L_4e29a6] checks the position of hit h (+36) in room o along d (40 up and down): when either probe leaves
+// the room, writes a report (title, the position, the room left, the door between the two rooms with its corners)
+// to out (size n) and returns its length when the position is more than 64b748 off the door's plane, else 0
+int __cdecl World_CheckPosition(BYTE* o, BYTE* h, const Vec3* d, const char* title, char* out, int n)
+{
+    int len = 0;
+    Vec3 pos = F(Vec3, h, 36), t;
+    Vec3 up, dn;
+    up = *Vec3_Add(&up, Vec3_Scaled(&t, d, 40.0f), &pos);
+    dn = *Vec3_Add(&dn, Vec3_Scaled(&t, d, -40.0f), &pos);
+    void* ha = Query_HitObject(o, (const Vec3Bits*)&up, (const Vec3Bits*)&pos);
+    void* hb = Query_HitObject(o, (const Vec3Bits*)&dn, (const Vec3Bits*)&pos);
+    BYTE* door = 0;
+    if (ha == o && hb == o)
+        return len;
+    char s256[200], s456[200], s656[220], s860[200];
+    sprintf(s256, &s_cp673708, Cp_Name(o), (double)pos.x, (double)pos.y, (double)pos.z);
+    if (ha != o)
+        sprintf(s456, &s_cp673730, Cp_Name(ha));
+    else
+        sprintf(s456, &s_cp673734, Cp_Name(hb));
+    for (int i = 0; i < CallVirt<int>(o, 60); i++)
+        for (BYTE* e = CallVirt<BYTE*>(o, 64, i); e; e = CallThis<BYTE*>(Cp_Next, e)) {
+            if (CallThis<int>(FUN_4eb150, e) != 14)
+                continue;
+            BYTE* g = CallThis<BYTE*>(Cp_Get128, e);
+            if (!g)
+                continue;
+            if (CallThis<int>(FUN_4eb150, g) == 15 && (g == ha || g == hb))
+                door = e;
+        }
+    s656[0] = 0;
+    float dist = 0;
+    if (door) {
+        Vec3 c1 = Cp_Corner(door, 1), c0 = Cp_Corner(door, 0);
+        sprintf(s656, &s_cp673738, Cp_Name(o), Cp_Name(CallThis<BYTE*>(Cp_Get128, door)), (double)c0.x, (double)c0.y,
+            (double)c0.z, (double)c1.x, (double)c1.y, (double)c1.z);
+        Vec3 a = Cp_Corner(door, 0), b = Cp_Corner(door, 1), c = Cp_Corner(door, 2);
+        a.z = pos.z;
+        b.z = pos.z;
+        Vec3 ca, ab, x, nrm, hit;
+        Vec3_Sub(&ca, &c, &a);
+        Vec3_Sub(&ab, &a, &b);
+        Vec3_Normalized(&nrm, Vec3_Cross(&x, &ab, &ca));
+        Vec3_PlaneHit(&hit.x, &a.x, &nrm.x, &pos.x, (float*)d);
+        dist = (float)Vec3_Length(Vec3_Sub(&t, &hit, &pos));
+    }
+    const char* fmt = &s_cp673788;
+    sprintf(s860, &s_cp6737a0);
+    len = (int)(strlen(fmt) + strlen(title) + strlen(s256) + strlen(s860) + strlen(Cp_Name(o)) + strlen(s456)
+        + strlen(s656));
+    char* buf = (char*)operator new(len + 15);
+    sprintf(buf, fmt, title, s256, s860, Cp_Name(o), s456, s656);
+    if (len >= n) {
+        strncpy(out, buf, n - 1);
+        out[n - 1] = 0;
+    } else
+        strcpy(out, buf);
+    operator delete(buf);
+    if (dist > g_cp64b748)
+        return len;
+    return 0;
+}
+
+} // extern "C"
+
+// === the stack trace log (debug build, unreferenced)
+
+extern "C" int __cdecl printf(const char* f, ...);
+extern "C" int __cdecl fprintf(FILE* f, const char* fmt, ...);
+ASM_VAR(char, s_st67383c, $L_67383c)
+ASM_VAR(char, s_st673854, $L_673854)
+ASM_VAR(char, s_st673858, $L_673858)
+ASM_VAR(char, s_st673864, $L_673864)
+ASM_VAR(char, s_st673870, $L_673870)
+ASM_VAR(char, s_st673878, $L_673878)
+ASM_VAR(char, s_st673890, $L_673890)
+ASM_VAR(char, s_st6738ac, $L_6738ac)
+ASM_VAR(char, s_st6738c4, $L_6738c4)
+ASM_VAR(char, s_st6738d8, $L_6738d8)
+ASM_VAR(char, s_st673900, $L_673900)
+ASM_VAR(char, s_st67391c, $L_67391c)
+ASM_VAR(char, s_st673950, $L_673950)
+ASM_VAR(char, s_st673970, $L_673970)
+ASM_VAR(char, s_st673994, $L_673994)
+ASM_VAR(char, s_st6739a8, $L_6739a8)
+
+static void St_Say(FILE* f, const char* s)
+{
+    if (f)
+        fprintf(f, s);
+}
+
+extern "C" {
+
+// [$L_4e3cff] writes the call stack (up to 100 frames, walked through EBP) to a log file, with the message msg,
+// the game times and, between frames, the stack words; it stops at the code of the map's modules
+// (6974d8..6974e4) or at a bad frame; the map symbols are read first when missing
+void __cdecl World_LogStack(const char* msg)
+{
+    BYTE ctx[716];
+    memset(ctx, 0, 716);
+    F(DWORD, ctx, 0) = 0x10007;
+    DWORD* start = &g_mapStart6974d8;
+    DWORD* end = &g_mapEnd6974e4;
+    for (int i = 0; i < 3; i++)
+        if (!start[i]) {
+            for (int j = 0; j < 3; j++)
+                start[j] = 0;
+            World_ReadMapSymbols();
+            break;
+        }
+    for (int i = 0; i < 3; i++)
+        if (!start[i])
+            return;
+    if (!GetThreadContext(GetCurrentThread(), (CONTEXT*)ctx)) {
+        printf(&s_st67383c);
+        return;
+    }
+    DWORD& ebp = F(DWORD, ctx, 180);
+    DWORD& eip = F(DWORD, ctx, 184);
+    DWORD lastEip = eip, lastEbp = ebp;
+    FILE* f = fopen(&s_st673858, &s_st673854);
+    if (f) {
+        fprintf(f, &s_st673864);
+        if (msg)
+            fprintf(f, &s_st673870, msg);
+        fprintf(f, &s_st673878, (double)g_6974bc);
+        if (g_6974c4) {
+            fprintf(f, &s_st673890, F(DWORD, g_6974c4, 2968), F(DWORD, g_6974c4, 2972));
+            fprintf(f, &s_st6738ac, Game_FrameTime());
+        }
+    }
+    for (int k = 0; k < 100; k++) {
+        if (f) {
+            fprintf(f, &s_st6738c4, eip - g_mapBase6735d4, ebp);
+            fflush(f);
+        }
+        int i = 0;
+        for (; i < 3; i++)
+            if (start[i] && eip >= start[i] && eip < end[i]) {
+                St_Say(f, &s_st6738d8);
+                break;
+            }
+        if (i != 3)
+            break;
+        if (ebp & 3) {
+            St_Say(f, &s_st673900);
+            break;
+        }
+        if (k && ebp <= lastEbp) {
+            St_Say(f, &s_st67391c);
+            break;
+        }
+        if (ebp > 0x800000) {
+            St_Say(f, &s_st673950);
+            break;
+        }
+        if (ebp < F(DWORD, ctx, 196)) {
+            St_Say(f, &s_st673970);
+            break;
+        }
+        if (start[0] && f && k && lastEbp <= ebp && (int)(lastEbp - ebp) >> 2 < 4096)
+            for (DWORD p = lastEbp; p <= ebp; p += 4) {
+                fprintf(f, &s_st673994, p, *(DWORD*)p, (double)*(float*)p);
+                fflush(f);
+            }
+        lastEip = eip;
+        lastEbp = ebp;
+        SIZE_T got = 8;
+        DWORD frame[2];
+        if (!ReadProcessMemory(GetCurrentProcess(), (void*)ebp, frame, 8, &got))
+            break;
+        eip = frame[1];
+        ebp = frame[0];
+        if (eip == 1) {
+            St_Say(f, &s_st6739a8);
+            break;
+        }
+    }
+    if (f)
+        fclose(f);
+}
+
+} // extern "C"
+
+// === a sound panned by its direction (debug build, unreferenced)
+
+extern "C" void Sp_Restart(); KING_ALIAS("_Sp_Restart", "@Sound_Restart@16")
+ASM_VAR(double, g_sp64d940, $L_64d940)
+ASM_VAR(double, g_sp64d938, $L_64d938)
+ASM_VAR(double, g_sp64d930, $L_64d930)
+ASM_VAR(double, g_sp64d928, $L_64d928)
+ASM_VAR(double, g_sp64d900, $L_64d900)
+ASM_VAR(double, g_sp64b670, $L_64b670)
+ASM_VAR(double, g_sp64b660, $L_64b660)
+ASM_VAR(double, g_sp64b6e0, $L_64b6e0)
+ASM_VAR(float, g_sp64c40c, $L_64c40c)
+ASM_VAR(float, g_sp64c250, $L_64c250)
+ASM_VAR(float, g_sp64c264, $L_64c264)
+
+static float Sp_Unit(float v)
+{
+    if (v < g_sp64c264)
+        v = 0;
+    if (v > g_sp64c250)
+        v = 1.0f;
+    return v;
+}
+
+extern "C" {
+
+// [$L_4e4c0e] plays sound s at volume vol from direction d: the angle folded to the front and mapped to 0..1
+// (curved), the left and right volumes from it; a negative mode restarts the sound looping
+void __cdecl Sound_PlayPanned(BYTE* s, float vol, const float* d, int mode)
+{
+    if (!s)
+        return;
+    float a = (float)-x87_atan2(d[0], d[1]);
+    if (a > g_sp64d940)
+        a = (float)(g_sp64d938 - a);
+    else if (a < g_sp64d930)
+        a = (float)(g_sp64d928 - a);
+    a = (float)((a / g_sp64d900 + g_sp64b670) / g_sp64b660);
+    if (a > g_sp64b6e0)
+        a = (float)(x87_sqrt((a - g_sp64b6e0) * 2) * g_sp64b6e0 + g_sp64b6e0);
+    else
+        a = g_sp64c40c * a * a;
+    float l = Sp_Unit(vol * a);
+    float r = Sp_Unit((g_sp64c250 - a) * vol);
+    if (mode < 0)
+        CallThis(Sp_Restart, s, *(DWORD*)&l, *(DWORD*)&r);
+    else
+        CallThis(FUN_5fd430, s, *(DWORD*)&l, *(DWORD*)&r, mode);
+}
+
+} // extern "C"
+
+// === a frame report (debug build, FUN_4e7a19)
+
+ASM_VAR(char, s_fr673d98, $L_673d98)
+
+extern "C" {
+
+// [FUN_4e7a19] formats name, frame m and the vectors a and b; more than n characters gives n, else 0 (the text
+// is not stored: the original copies out onto itself)
+int __cdecl Frame_Report(char* out, int n, const char* name, const float* m, const float* a, const float* b)
+{
+    char buf[1000];
+    sprintf(buf, &s_fr673d98, name, (double)m[0], (double)m[1], (double)m[2], (double)m[3], (double)m[4],
+        (double)m[5], (double)m[6], (double)m[7], (double)m[8], (double)m[9], (double)m[10], (double)m[11],
+        (double)a[0], (double)a[1], (double)a[2], (double)b[0], (double)b[1], (double)b[2]);
+    int len = (int)strlen(buf);
+    if (len > n)
+        return n;
+    memmove(out, out, strlen(out) + 1);
+    return 0;
 }
 
 } // extern "C"

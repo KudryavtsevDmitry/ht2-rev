@@ -2970,3 +2970,150 @@ int __fastcall Leaf_Step(BYTE* s)
 }
 
 } // extern "C"
+
+// === a drifting sprite's step (a method at $L_59c510)
+
+extern "C" void Ds_Normalized(); KING_ALIAS("_Ds_Normalized", "_Vec3_Normalized")
+extern "C" void Ds_AddAssign(); KING_ALIAS("_Ds_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Ds_Animate(); KING_ALIAS("_Ds_Animate", "@Effect_AnimateQuad@8")
+ASM_VAR(float, g_ds64c264, $L_64c264)
+ASM_VAR(double, g_ds64b678, $L_64b678)
+ASM_VAR(DWORD, g_ds702650, $L_702650)
+
+extern "C" {
+
+// [$L_59c510] steps sprite s: its velocity (+160) slowed by the drag +172 over the frame time (+88 -> +2960),
+// stopping (drag 0) once it would reverse; a sprite at rest in x and y rises at 0.5; it moves by its velocity
+// (+76, also +40) and animates (its result)
+int __fastcall Sprite_Drift(BYTE* s)
+{
+    float* v = (float*)(s + 160);
+    if (F(float, s, 172) != g_ds64c264) {
+        float t[3];
+        const float* n = CallC<const float*>(Ds_Normalized, t, v);
+        float f = F(float, s, 172);
+        double x = -n[0] * (double)f;
+        float y = (float)(-n[1] * (double)f), z = (float)(-n[2] * (double)f);
+        float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+        float d[3] = {(float)(x * dt), y * dt, z * dt};
+        CallThis(Ds_AddAssign, v, t, d);
+        if ((double)v[2] * d[2] + (double)v[1] * d[1] + (double)v[0] * d[0] > g_ds64b678) {
+            F(float, s, 172) = 0;
+            memcpy(v, &g_ds702650, 12);
+        }
+    }
+    if (F(float, s, 160) == g_ds64c264 && F(float, s, 164) == g_ds64c264)
+        F(DWORD, s, 168) = 0x3F000000;
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    float dx = (float)(dt * F(float, s, 160)), dy = (float)(dt * F(float, s, 164));
+    double dz = dt * F(float, s, 168);
+    float x = dx + F(float, s, 76), y = dy + F(float, s, 80);
+    float z = (float)(dz + F(float, s, 84));
+    F(float, s, 76) = x, F(float, s, 80) = y, F(float, s, 84) = z;
+    F(float, s, 40) = x, F(float, s, 44) = y, F(float, s, 48) = z;
+    return CallThis<int>(Ds_Animate, s);
+}
+
+} // extern "C"
+
+// === drawing with a tinted palette colour (a method at $L_59d010)
+
+extern "C" void __cdecl Color_FromHsl(float h, float l, float s, float* r, float* g, float* b);
+extern "C" void __cdecl Color_ToHsl(float r, float g, float b, float* h, float* l, float* s);
+extern "C" void Td_RootSurface(); KING_ALIAS("_Td_RootSurface", "@Window_RootSurface@8")
+ASM_VAR(float, g_td64c488, $L_64c488)
+ASM_VAR(float, g_td64c258, $L_64c258)
+ASM_VAR(float, g_td64d4c0, $L_64d4c0)
+ASM_VAR(float, g_td64c250, $L_64c250)
+ASM_VAR(float, g_td64c264, $L_64c264)
+ASM_VAR(float, g_td64c458, $L_64c458)
+
+extern "C" {
+
+// [$L_59d010] draws effect s (Effect_Draw a, b) with its material (+100 [+88]) at 0.8 in colour 251, which becomes
+// palette colour 8 with half the saturation and the lightness raised by 64d4c0; the material flag 0x1000 meanwhile;
+// Effect_Draw's result
+int __fastcall Effect_DrawTinted251(BYTE* s, void*, int a, int b)
+{
+    BYTE* m = F(BYTE**, s, 100)[F(int, s, 88)];
+    F(DWORD, m, 88) = 0x3F4CCCCD;
+    F(int, F(BYTE**, s, 100)[F(int, s, 88)], 40) = 251;
+    BYTE* pal = CallThis<BYTE*>(Td_RootSurface, F(BYTE*, g_696224, 12));
+    float r = pal[48] * g_td64c488, g = pal[49] * g_td64c488, bl = pal[50] * g_td64c488;
+    float h, l, sat;
+    Color_ToHsl(r, g, bl, &h, &l, &sat);
+    sat = sat * g_td64c258;
+    l = l + g_td64d4c0;
+    if (l > g_td64c250)
+        l = 1.0f;
+    else if (l < g_td64c264)
+        l = 0;
+    Color_FromHsl(h, l, sat, &r, &g, &bl);
+    pal[777] = (BYTE)(int)(r * g_td64c458);
+    pal[778] = (BYTE)(int)(g * g_td64c458);
+    pal[779] = (BYTE)(int)(bl * g_td64c458);
+    F(DWORD, F(BYTE**, s, 100)[F(int, s, 88)], 32) |= 0x1000;
+    int res = CallThis<int>(FUN_59a9a0, s, a, b);
+    F(DWORD, F(BYTE**, s, 100)[F(int, s, 88)], 32) &= ~0x1000u;
+    return res;
+}
+
+} // extern "C"
+
+// === a smoke puff's step (a method at $L_59d590)
+
+extern "C" int __cdecl rand(void);
+extern "C" void Sm_Advance(); KING_ALIAS("_Sm_Advance", "@SceneTexture_Advance@8")
+ASM_VAR(float, g_sm64c254, $L_64c254)
+ASM_VAR(float, g_sm64c334, $L_64c334)
+ASM_VAR(double, g_sm64b6b8, $L_64b6b8)
+ASM_VAR(double, g_sm64b670, $L_64b670)
+ASM_VAR(double, g_ds64b6e0_sm, $L_64b6e0)
+
+// a random drift in -64c334..64c334 (two random numbers' difference)
+static float Sm_Drift()
+{
+    float a = rand() * g_sm64c254;
+    return (float)((rand() * g_sm64c254 - a) * g_sm64c334);
+}
+
+extern "C" {
+
+// [$L_59d590] steps smoke puff s: rising at 1 from frame 14 (+108), drifting at random from frame 11 (once, +176);
+// it moves (+76, +40) and grows from +136 to +132 with the square of its age (+104 of +100) in its quad (+72: +16
+// and +20); then its texture advances (the result)
+int __fastcall Smoke_Step(BYTE* s)
+{
+    int f = F(int, s, 108);
+    if (f >= 14)
+        F(DWORD, s, 168) = 0x3F800000;
+    if (f > 10 && !F(int, s, 176)) {
+        F(float, s, 160) = Sm_Drift();
+        F(float, s, 164) = Sm_Drift();
+        F(int, s, 176) = 1;
+    }
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    float dx = (float)(dt * F(float, s, 160)), dy = (float)(dt * F(float, s, 164));
+    double dz = dt * F(float, s, 168);
+    float x = dx + F(float, s, 76), y = dy + F(float, s, 80);
+    float z = (float)(dz + F(float, s, 84));
+    F(float, s, 76) = x, F(float, s, 80) = y, F(float, s, 84) = z;
+    F(float, s, 40) = x, F(float, s, 44) = y, F(float, s, 48) = z;
+    double t = (F(float, s, 100) - F(float, s, 104)) / (double)F(float, s, 100);
+    if (t < g_ds64b678)
+        t = g_ds64b678;
+    else if (t > g_sm64b670)
+        t = g_sm64b670;
+    t *= t;
+    double size = F(float, s, 136) * (g_sm64b670 - t) + F(float, s, 132) * t;
+    float w = (float)(size * g_sm64b6b8);
+    float h = (float)(size * g_ds64b6e0_sm);
+    BYTE* q = F(BYTE*, s, 72);
+    float* a = F(float*, q, 16);
+    float* b = F(float*, q, 20);
+    a[0] = w, a[1] = h, a[2] = h, a[3] = w;
+    b[0] = w, b[1] = w, b[2] = h, b[3] = h;
+    return CallThis<int>(Sm_Advance, s);
+}
+
+} // extern "C"

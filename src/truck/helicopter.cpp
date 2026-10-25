@@ -1100,7 +1100,7 @@ void __cdecl Mine_Explode(int id)
 
 extern "C" double __cdecl Game_Time();
 extern "C" void __cdecl Switch_Select(int sw, int state);
-ASM_PROC(FUN_567bb0)
+extern "C" void FUN_567bb0(); KING_ALIAS("_FUN_567bb0", "@Turret_Fire@4")
 
 // [FUN_568680] the helicopter's blinking warning lights: the state by the time since the last change
 extern "C" void __fastcall Copter_UpdateWarning(BYTE* s, void*)
@@ -2329,7 +2329,7 @@ extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
 extern "C" void FUN_5d2e50(); KING_ALIAS("_FUN_5d2e50", "_Table71e858_Get")
 extern "C" void FUN_5699b0(); KING_ALIAS("_FUN_5699b0", "@Messages_AddText@12")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_430a80(); KING_ALIAS("_FUN_430a80", "_Ai_CleanBeforeLaw")
 extern "C" void FUN_530020(); KING_ALIAS("_FUN_530020", "@Words295_Reset@8")
 extern "C" void FUN_5279e0(); KING_ALIAS("_FUN_5279e0", "_Movie_Play")
@@ -2894,7 +2894,7 @@ ASM_VAR(int, g_ws_videoMode, $L_6ced70)
 ASM_VAR(int, g_ws_carTypes, $L_6ce34c)
 ASM_VAR(void*, g_ws_prevCreate, $L_6f3418)     // the create hook replaced by Game_CreateObject
 ASM_VAR(DWORD, g_ws_prevHook2, $L_6f341c)
-ASM_VAR(AsmLabel, g_ws_573e40, $L_573e40)
+extern "C" int __cdecl MissionObj_Event(int* e, int a);
 ASM_VAR(AsmLabel, g_ws_569550, $L_569550)
 ASM_VAR(AsmLabel, s_ws_iniFile, $L_672998)
 ASM_VAR(char*, g_ws_iniPath, $L_696868)
@@ -3079,7 +3079,7 @@ void __fastcall Game_StartWorld(BYTE* self, void*)
     g_ws_prevCreate = F(void*, self, 2708);
     F(void*, self, 2708) = (void*)Game_CreateObject;
     g_ws_prevHook2 = F(DWORD, self, 2712);
-    F(void*, self, 2712) = g_ws_573e40;
+    F(void*, self, 2712) = (void*)MissionObj_Event;
     g_ws_696340 = 0;
     g_ws_6f340c = g_ws_696900 * 8;
     CallC(FUN_603cb0, (char*)s_ws_iniFile, (char*)s_ws_67c310, 10.0, &g_ws_6f32e8, g_ws_iniPath);
@@ -3972,7 +3972,7 @@ ASM_VAR(AsmLabel, s_nt67b9f0, $L_67b9f0)
 ASM_VAR(AsmLabel, s_nt6731dc, $L_6731dc)
 extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")    // an image with a transparent color (surface, x, y, image, key)
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
@@ -5053,3 +5053,127 @@ extern "C" void __fastcall Routes_Free(BYTE* s)
     if (int n = (int)(v[2] - v[0]) / 192)
         CallC(FUN_44b4a0, v[0], n * 192);
 }
+
+// === a mission object's events (a handler at $L_573e40)
+
+extern "C" void Mo_SetFlags(); KING_ALIAS("_Mo_SetFlags", "_Player_SetFlags")
+ASM_VAR(void*, g_mo6f341c, $L_6f341c)
+ASM_VAR(int, g_mo6f34ac, $L_6f34ac)
+
+// clears the bits of player id's flags
+static void Mo_Clear(int id, DWORD bits)
+{
+    CallC(Mo_SetFlags, id, CallC<DWORD>(FUN_43f620, id) & ~bits);
+}
+
+extern "C" {
+
+// [$L_573e40] handles event e (after the hook 6f341c, which may take it) for its object (+28): code 100 deletes it
+// (counted in 6f34ac; a player's car outside a network game drops flag 1) or without one drops flag 16 of the
+// owner's (+24) player; 101 and 1..4 delete it; 1 when handled
+int __cdecl MissionObj_Event(int* e, int a)
+{
+    if (g_mo6f341c && CallC<int>((void (*)())g_mo6f341c, e, a))
+        return 1;
+    int code = e[1] / 1000;
+    BYTE* o = (BYTE*)e[7];
+    switch (code) {
+    case 100:
+        if (o) {
+            if (!(F(int, g_6cec6c, 1300) >= 2 || (F(int, g_6cec6c, 1316) && F(int, g_6cec98, 384) >= 2))) {
+                int id = F(int, o, 20636);
+                if (id != g_noCar)
+                    Mo_Clear(id, 1);
+            }
+            if (o)
+                CallVirt(o, 0, 1);
+            g_mo6f34ac--;
+            e[7] = 0;
+        } else {
+            int id = F(int, (BYTE*)e[6], 296);
+            if (id != g_noCar)
+                Mo_Clear(id, 16);
+        }
+        return 1;
+    case 101:
+        if (o) {
+            CallVirt(o, 0, 1);
+            e[7] = 0;
+        }
+        return 1;
+    case 1:
+    case 2:
+    case 3:
+    case 4:
+        if (o)
+            CallVirt(o, 0, 1);
+        return 1;
+    }
+    return 0;
+}
+
+} // extern "C"
+
+// === a turret firing at its target (FUN_567bb0)
+
+extern "C" int __cdecl rand(void);
+ASM_PROC(FUN_567440)
+extern "C" void Tf_GameTime(); KING_ALIAS("_Tf_GameTime", "_Game_Time")
+extern "C" void Tf_Matrix1(); KING_ALIAS("_Tf_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Tf_Normalized(); KING_ALIAS("_Tf_Normalized", "_Vec3_Normalized")
+ASM_VAR(double, g_tf64fd40, $L_64fd40)
+ASM_VAR(double, g_tf64fd38, $L_64fd38)
+ASM_VAR(double, g_tf64b670, $L_64b670)
+
+static double Tf_Now() { return CallC<double>(Tf_GameTime); }
+
+extern "C" {
+
+// [FUN_567bb0] turret s fires (+3284 while busy) at its target (+3248) when both reload times (+3288, +3292) are
+// past 64fd40: the target's position in s's frame (+48 inverse rows), x scattered at random, gives the aim, whose
+// direction scaled by twice |y| and turned into the world (+0 rows, +36 the muzzle) is the shot (FUN_567440 from
+// +96, +3480, 2.0); the older reload time restarts
+void __fastcall Turret_Fire(BYTE* s)
+{
+    F(int, s, 3284) = 1;
+    if (Tf_Now() - F(float, s, 3288) < g_tf64fd40 || Tf_Now() - F(float, s, 3292) < g_tf64fd40)
+        return;
+    BYTE* t = F(BYTE*, s, 3248);
+    if (!t) {
+        F(float, s, 3288) = (float)Tf_Now();
+        F(float, s, 3292) = (float)Tf_Now();
+        F(int, s, 3284) = 0;
+        return;
+    }
+    BYTE m[48];
+    const float* P = (const float*)(CallThis<BYTE*>(Tf_Matrix1, t + 16, m) + 36);
+    double lx = (double)F(float, s, 52) * P[0] + (double)F(float, s, 76) * P[2] + (double)F(float, s, 64) * P[1]
+        + F(float, s, 88);
+    float L[3];
+    L[2] = (float)((double)F(float, s, 56) * P[0] + (double)F(float, s, 80) * P[2] + (double)F(float, s, 68) * P[1]
+        + F(float, s, 92));
+    L[0] = (float)((double)F(float, s, 72) * P[2] + (double)F(float, s, 60) * P[1] + (double)P[0] * F(float, s, 48)
+        + F(float, s, 84));
+    L[1] = (float)lx;
+    L[0] = (float)((rand() * g_tf64fd38 + g_tf64b670) * L[0] * g_64b840);
+    float nb[3];
+    const float* n = CallC<const float*>(Tf_Normalized, nb, L);
+    double ay = x87_fabs(L[1]);
+    float ax = (float)(n[0] * ay), am = (float)(n[1] * ay);
+    double az = n[2] * ay;
+    float q[3] = {F(float, s, 36), F(float, s, 40), F(float, s, 44)};
+    float bx = ax + ax, by = am + am;
+    double bz = az + az;
+    float d[3];
+    d[0] = (float)(bz * F(float, s, 24) + (double)by * F(float, s, 12) + (double)bx * F(float, s, 0) + F(float, s, 36));
+    d[1] = (float)(bz * F(float, s, 28) + (double)by * F(float, s, 16) + (double)bx * F(float, s, 4) + F(float, s, 40));
+    d[2] = (float)(bz * F(float, s, 32) + (double)by * F(float, s, 20) + (double)bx * F(float, s, 8) + F(float, s, 44));
+    CallC(FUN_567440, F(int, s, 96), q, d, F(int, s, 3480), 0x40000000u);
+    if (F(float, s, 3288) > F(float, s, 3292))
+        F(float, s, 3292) = (float)Tf_Now();
+    else
+        F(float, s, 3288) = (float)Tf_Now();
+    F(int, s, 3284) = 0;
+}
+
+} // extern "C"

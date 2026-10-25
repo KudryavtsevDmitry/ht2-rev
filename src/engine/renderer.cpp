@@ -31,7 +31,7 @@ ASM_VAR(int, g_720904, $L_720904)
 ASM_PROC(FUN_5b3a40)
 ASM_PROC(FUN_5b42c0)
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
-ASM_PROC(FUN_5ad780)
+extern "C" void FUN_5ad780(); KING_ALIAS("_FUN_5ad780", "@Light_StrengthAt@24")
 extern "C" void FUN_5ad970(); KING_ALIAS("_FUN_5ad970", "@Light_FogAt@20")
 extern "C" void __fastcall Holder5baa30_ReleaseAll(BYTE* s, void*);
 ASM_VAR(double, g_500ms, $L_64b860)
@@ -2158,7 +2158,7 @@ extern "C" void __fastcall Surface_Prepare(BYTE* s)
 // ---------------------------------------------------------------------------
 // Horizontal lines.
 
-ASM_PROC(FUN_5b73a0)
+extern "C" void FUN_5b73a0(); KING_ALIAS("_FUN_5b73a0", "_Window_DrawLine")
 ASM_PROC(FUN_5fe9b3)
 ASM_PROC(FUN_5fea6c)
 ASM_PROC(FUN_5feb12)
@@ -4718,6 +4718,323 @@ void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int 
     }
     g_702e6c = (int)m;
     g_mt67ef8c = lit;
+}
+
+} // extern "C"
+
+// === drawing a line (FUN_5b73a0)
+
+ASM_PROC(FUN_5b7af0)
+ASM_VAR(float, g_ln64c250, $L_64c250)
+ASM_VAR(double, g_ln64eba8, $L_64eba8)
+ASM_VAR(double, g_ln64eba0, $L_64eba0)
+
+// a colour component scaled to the device's range
+static int Ln_Comp(int c)
+{
+    return (int)(c * g_ln64eba8 * g_ln64eba0);
+}
+
+extern "C" {
+
+// [FUN_5b73a0] draws the line (x0, y0)-(x1, y1) on window w in colour c (a palette index unless rgb): with
+// the 3D device (+116 == 1) a D3D line, translucent by +88 in mode +80 == 2; else clipped by FUN_5b7af0 and
+// stepped into the pixels
+void __cdecl Window_DrawLine(BYTE* w, int x0, int y0, int x1, int y1, DWORD c, int rgb)
+{
+    BYTE* root = (BYTE*)Window_RootSurface(w, 0);
+    if (F(int, w, 116) == 1) {
+        if (!root)
+            return;
+        DWORD rc[4];
+        int ox = Window_GetRect(w, 0, rc)[0];
+        int oy = Window_GetRect(w, 0, rc)[1];
+        DWORD col;
+        int r, g, b;
+        if (!rgb) {
+            BYTE* pal = (BYTE*)Window_RootSurface(w, 0);
+            if (!pal)
+                return;
+            pal += (c + 8) * 3;
+            r = pal[0], g = pal[1], b = pal[2];
+        } else {
+            r = Pixel_Red(c) & 255;
+            g = Pixel_Green(c) & 255;
+            b = Pixel_Blue(c) & 255;
+        }
+        int blend = F(int, w, 80) == 2;
+        DWORD a = blend ? (DWORD)(int)((g_ln64c250 - F(float, w, 88)) * g_255f) : 0xFFFFFFFF;
+        col = (((a << 8 | Ln_Comp(r)) << 8 | Ln_Comp(g)) << 8) | Ln_Comp(b);
+        Com(g_device, 80, 27, blend);
+        float v[16] = {};
+        v[0] = (float)(x0 + ox);
+        v[1] = (float)(y0 + oy);
+        F(DWORD, v, 8) = 953267991;
+        v[3] = 1.0f;
+        F(DWORD, v, 16) = col;
+        F(DWORD, v, 20) = 0xFF000000;
+        v[8] = (float)(x1 + ox);
+        v[9] = (float)(y1 + oy);
+        F(DWORD, v, 40) = 953267991;
+        v[11] = 1.0f;
+        F(DWORD, v, 48) = col;
+        F(DWORD, v, 52) = 0xFF000000;
+        Com(g_device, 140, 0, 0);
+        Com(g_device, 148, 0, 1, 1);
+        Com(g_device, 148, 0, 4, 1);
+        Com(g_device, 100, 2, 452, v, 2, 0);
+        Com(g_device, 80, 27, 0);
+        return;
+    }
+    if (!rgb && F(WORD, w, 4) != 1) {
+        if (!root)
+            return;
+        c = Palette_Color(root, 0, c);
+    }
+    if (CallC<int>(FUN_5b7af0, 0, 0, &x0, &y0, &x1, &y1) || CallC<int>(FUN_5b7af0, 1, 0, &x0, &y0, &x1, &y1)
+        || CallC<int>(FUN_5b7af0, 2, F(WORD, w, 0) - 1, &x0, &y0, &x1, &y1)
+        || CallC<int>(FUN_5b7af0, 3, F(WORD, w, 2) - 1, &x0, &y0, &x1, &y1))
+        return;
+    if (x0 > x1) {
+        int t = x0;
+        x0 = x1, x1 = t;
+        t = y0;
+        y0 = y1, y1 = t;
+    }
+    int dy = y1 - y0 < 0 ? y0 - y1 : y1 - y0;
+    int dx = x1 - x0;
+    int bpp = F(WORD, w, 4), pitch = F(WORD, w, 6);
+    int e0 = dx - dy, step, sx, sy, sdiag, pmin, pdiag;
+    if (y1 > y0) {
+        if (dy < dx)
+            step = -dy, sx = 1, sy = 0, sdiag = 1, pmin = bpp;
+        else
+            step = dx, sx = 0, sy = 1, sdiag = 1, pmin = pitch;
+        pdiag = pitch + bpp;
+    } else {
+        if (dy < dx)
+            step = -dy, sx = 1, sy = 0, sdiag = -1, pmin = bpp;
+        else
+            step = dx, sx = 0, sy = -1, sdiag = -1, pmin = -pitch;
+        pdiag = bpp - pitch;
+    }
+    BYTE* p = F(BYTE*, w, 24 + F(int, w, 16) * 4) + pitch * y0 + bpp * x0;
+    int x = x0, y = y0;
+    if (x > x1)
+        return;
+    int e1 = e0, e2 = step;
+    do {
+        if ((y - y0 < 0 ? y0 - y : y - y0) > dy)
+            return;
+        if (bpp == 1)
+            *p = (BYTE)c;
+        else if (bpp == 2)
+            *(WORD*)p = (WORD)c;
+        else if (bpp == 4)
+            *(DWORD*)p = c;
+        if ((e2 < 0 ? -e2 : e2) < (e1 < 0 ? -e1 : e1)) {
+            e1 += step;
+            x += sx;
+            e2 += step;
+            y += sy;
+            p += pmin;
+        } else {
+            e1 += e0;
+            e2 += e0;
+            x++;
+            y += sdiag;
+            p += pdiag;
+        }
+    } while (x <= x1);
+}
+
+} // extern "C"
+
+// === the direction of a path at a point (FUN_5bc860)
+
+struct Pd_V3 { float x, y, z; };
+extern "C" void Pd_Normalized(); KING_ALIAS("_Pd_Normalized", "_Vec3_Normalized")
+extern "C" void Pd_Length(); KING_ALIAS("_Pd_Length", "_Vec3_Length")
+ASM_VAR(Pd_V3, g_pd702650, $L_702650)
+
+static Pd_V3 Pd_Diff(const BYTE* a, const BYTE* b)
+{
+    Pd_V3 d = {F(float, a, 36) - F(float, b, 36), F(float, a, 40) - F(float, b, 40), F(float, a, 44) - F(float, b, 44)};
+    return d;
+}
+
+extern "C" {
+
+// [FUN_5bc860] the direction of path s (frames of 48 bytes at +8, last index +4) at frame matrix m near frame *k:
+// the segment k..k+1 blended into the next one (k+1..k+2, or the first segment of the path linked to s's key +40
+// among the +104 links, count +60) by how far m's position lies along it; zero outside the path
+Pd_V3* __fastcall Path_DirectionAt(BYTE* s, void*, Pd_V3* out, const BYTE* m, const int* k)
+{
+    int i = *k;
+    if (i + 2 > F(int, s, 4) || i < 0) {
+        *out = g_pd702650;
+        return out;
+    }
+    BYTE* fr = F(BYTE*, s, 8);
+    const BYTE* a = fr + i * 48;
+    Pd_V3 d1 = Pd_Diff(fr + (i + 1) * 48, a);
+    Pd_V3 d2;
+    if (i + 3 > F(int, s, 4)) {
+        int n = F(int, s, 60), j = 0;
+        for (; j < n; j++)
+            if (F(int, F(BYTE*, s, 104 + j * 4), 40) == F(int, s, 40))
+                break;
+        if (j == n || !F(BYTE*, s, 104 + j * 4)) {
+            CallC(Pd_Normalized, out, &d1);
+            return out;
+        }
+        BYTE* lf = F(BYTE*, F(BYTE*, s, 104 + j * 4), 8);
+        d2 = Pd_Diff(lf + 48, lf);
+    } else
+        d2 = Pd_Diff(fr + (i + 2) * 48, fr + (i + 1) * 48);
+    Pd_V3 v = {F(float, m, 36) - F(float, a, 36), F(float, m, 40) - F(float, a, 40), F(float, m, 44) - F(float, a, 44)};
+    Pd_V3 t1, t2, t3;
+    const Pd_V3* n1 = CallC<const Pd_V3*>(Pd_Normalized, &t1, &d1);
+    double proj = (double)n1->z * v.z + (double)n1->y * v.y + (double)v.x * n1->x;
+    double t = proj / CallC<double>(Pd_Length, &d1);
+    if (t < g_q146_64b678)
+        t = 0;
+    else if (t > g_one64b670)
+        t = 1.0;
+    float w = (float)(g_one64b670 - t);
+    const Pd_V3* a1 = CallC<const Pd_V3*>(Pd_Normalized, &t2, &d1);
+    float ax = w * a1->x, ay = w * a1->y, az = w * a1->z;
+    const Pd_V3* b1 = CallC<const Pd_V3*>(Pd_Normalized, &t3, &d2);
+    float bx = (float)(t * b1->x), by = (float)(t * b1->y);
+    Pd_V3 sum = {bx + ax, ay + by, (float)(az + t * b1->z)};
+    CallC(Pd_Normalized, out, &sum);
+    return out;
+}
+
+} // extern "C"
+
+// === the side distance of a point from a path (FUN_5bc430)
+
+extern "C" void Pd_SetThis(); KING_ALIAS("_Pd_SetThis", "@Vec3_SetThis@20")
+extern "C" void Pd_Sub(); KING_ALIAS("_Pd_Sub", "_Vec3_Sub")
+extern "C" void Pd_Cross(); KING_ALIAS("_Pd_Cross", "_Vec3_Cross")
+ASM_VAR(float, g_pd702630, $L_702630)
+ASM_VAR(float, g_pd702634, $L_702634)
+ASM_VAR(float, g_pd702638, $L_702638)
+
+// the length of (x, y) made by Vec3_SetThis
+static double Pd_FlatLength(float x, float y, float z)
+{
+    Pd_V3 v;
+    CallThis(Pd_SetThis, &v, *(DWORD*)&x, *(DWORD*)&y, *(DWORD*)&z);
+    v.z = 0;
+    return CallC<double>(Pd_Length, &v);
+}
+
+extern "C" {
+
+// [FUN_5bc430] the flat distance of frame m's position from segment *k of path s, signed by the side (up 702630);
+// *out the nearest point; past either end the end is used and *k becomes -1 - *k; 0 and *k = -1 outside the path
+double __fastcall Path_SideDistance(BYTE* s, void*, const BYTE* m, int* k, Pd_V3* out)
+{
+    Pd_V3 p = {F(float, m, 36), F(float, m, 40), F(float, m, 44)};
+    int i = *k;
+    if (i >= F(int, s, 4) - 1 || i < 0) {
+        *k = -1;
+        return g_q146_64b678;
+    }
+    const BYTE* fr = F(BYTE*, s, 8);
+    Pd_V3 a = {F(float, fr + i * 48, 36), F(float, fr + i * 48, 40), F(float, fr + i * 48, 44)};
+    Pd_V3 b = {F(float, fr + (i + 1) * 48, 36), F(float, fr + (i + 1) * 48, 40), F(float, fr + (i + 1) * 48, 44)};
+    Pd_V3 d = {b.x - a.x, b.y - a.y, b.z - a.z};
+    double len = CallC<double>(Pd_Length, &d);
+    Pd_V3 u = {(float)(d.x / len), (float)(d.y / len), (float)(d.z / len)};
+    double wx = (double)p.x - a.x, wy = (double)p.y - a.y, wz = (double)p.z - a.z;
+    float fwx = (float)wx, fwy = (float)wy, fwz = (float)wz;
+    double t = wz * u.z + wy * u.y + wx * u.x;
+    float tx = (float)(u.x * t), ty = (float)(u.y * t);
+    Pd_V3 q = {tx + a.x, ty + a.y, (float)(t * u.z + a.z)};
+    double dist;
+    if (t < g_q146_64b678) {
+        if (out)
+            *out = a;
+        dist = Pd_FlatLength(fwx, fwy, fwz);
+        *k = -1 - *k;
+    } else if (t > len) {
+        if (out)
+            *out = b;
+        dist = Pd_FlatLength(p.x - b.x, p.y - b.y, p.z - b.z);
+        *k = -1 - *k;
+    } else {
+        if (out)
+            *out = q;
+        dist = Pd_FlatLength(p.x - q.x, p.y - q.y, p.z - q.z);
+    }
+    Pd_V3 e;
+    float ex = p.x - a.x, ey = p.y - a.y, ez = p.z - a.z;
+    CallThis(Pd_SetThis, &e, *(DWORD*)&ex, *(DWORD*)&ey, *(DWORD*)&ez);
+    Pd_V3 c;
+    CallC(Pd_Cross, &c, CallC<Pd_V3*>(Pd_Sub, &p, &b, &a), &e);
+    if ((double)c.z * g_pd702638 + (double)c.y * g_pd702634 + (double)c.x * g_pd702630 < g_q146_64b678)
+        return -dist;
+    return dist;
+}
+
+} // extern "C"
+
+// === a light's strength at a point (FUN_5ad780)
+
+extern "C" void Ls_DivAssign(); KING_ALIAS("_Ls_DivAssign", "@Vec3_DivAssign@16")
+ASM_VAR(float, g_ls64c264, $L_64c264)
+ASM_VAR(double, g_ls64b6e0, $L_64b6e0)
+
+// the direction from p to the light (normalized in d) and the attenuation 1 / (1 + k len^2)
+static double Ls_Toward(const BYTE* l, const float* p, float* d)
+{
+    float t[3];
+    d[0] = F(float, l, 4) - p[0];
+    d[1] = F(float, l, 8) - p[1];
+    d[2] = F(float, l, 12) - p[2];
+    float len = CallC<float>(Pd_Length, d);
+    CallThis(Ls_DivAssign, d, t, *(DWORD*)&len);
+    return g_one64b670 / (len * (double)F(float, l, 36) * len + g_one64b670);
+}
+
+extern "C" {
+
+// [FUN_5ad780] light l's strength at point p with normal n, raised from the ambient level amb: directional (kind 1)
+// by the normal's facing, point (2) by distance, spot (3) also by the angle off its axis (+16) within the cone
+// (+44, fading over +48)
+double __fastcall Light_StrengthAt(BYTE* l, void*, const float* p, const float* n, double amb)
+{
+    double v;
+    float d[3];
+    switch (F(int, l, 0)) {
+    case 3: {
+        float att = (float)Ls_Toward(l, p, d);
+        double c = (double)F(float, l, 24) * -d[2] + (double)F(float, l, 20) * -d[1] + (double)F(float, l, 16) * -d[0];
+        float ang = (float)x87_acos(c);
+        float lim = F(float, l, 44) + F(float, l, 48);
+        if (ang > lim)
+            v = g_ls64c264;
+        else if (ang > F(float, l, 44))
+            v = (lim - ang) * (double)att / F(float, l, 48);
+        else
+            v = att;
+        break;
+    }
+    case 2:
+        v = Ls_Toward(l, p, d);
+        break;
+    case 1:
+        v = (-n[2] * (double)F(float, l, 24) + -n[1] * (double)F(float, l, 20) + -n[0] * (double)F(float, l, 16)
+            + g_one64b670) * g_ls64b6e0;
+        break;
+    default:
+        v = *(const float*)&n;    // as in the original: the argument slot read as a float
+        break;
+    }
+    return v * (g_one64b670 - amb) + amb;
 }
 
 } // extern "C"

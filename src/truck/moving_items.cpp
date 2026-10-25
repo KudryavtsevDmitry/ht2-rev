@@ -35,7 +35,7 @@ ASM_PROC(FUN_4e4d82)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
-ASM_PROC(FUN_581ea0)
+extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
 extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
 extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
@@ -404,7 +404,7 @@ extern "C" void __fastcall Movite_5866f0(BYTE* s, void*, BYTE* o, int b)
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
-ASM_PROC(FUN_5843c0)
+extern "C" void FUN_5843c0(); KING_ALIAS("_FUN_5843c0", "_Item_MoveFraction")
 ASM_PROC(FUN_5855a0)
 
 // [$L_585d30] by the kind (+392): kind 1 with flag 4 to FUN_5843c0, kind 1 or kind 2 with flag 2 to FUN_5855a0
@@ -1309,6 +1309,199 @@ void __fastcall Box_ReceiveHitSet(BYTE* s, void*, const BYTE* c, int id, float d
     CallVirt(s, 80, dt, 1);
     CallVirt(s, 160, s + 912);
     F(float, s, 3144) = (float)CallC<double>(FUN_4e27a5);
+}
+
+} // extern "C"
+
+// === an item's points below a plane (FUN_581ea0)
+
+extern "C" void Pb_PointsNext(); KING_ALIAS("_Pb_PointsNext", "@Points_Next@12")
+ASM_VAR(double, g_pb64b658, $L_64b658)
+
+extern "C" {
+
+// [FUN_581ea0] the number of the item's points (iterator it, up to 20, placed by matrix m) whose distance from the
+// plane (point p, normal n) is below 64b658: *lowest the smallest distance (from 1); per point the flag (below)
+// and the distance when those arrays are given; the unused entries get 0 and 1.0
+int __cdecl Points_BelowPlane(BYTE* it, const float* m, const float* p, const float* n, float* lowest, int* flags,
+    float* dist)
+{
+    float pts[20][3], w[20][3];
+    memset(pts, 0, sizeof pts);
+    memset(w, 0, sizeof w);
+    *(DWORD*)lowest = 0x3F800000;
+    int count = 0, hits = 0;
+    while (CallThis<int>(Pb_PointsNext, it, pts[count])) {
+        const float* q = pts[count];
+        float* o = w[count];
+        o[0] = (float)((double)q[1] * m[3] + (double)q[0] * m[0] + (double)q[2] * m[6] + m[9]);
+        o[1] = (float)((double)q[2] * m[7] + (double)q[1] * m[4] + (double)q[0] * m[1] + m[10]);
+        o[2] = (float)((double)m[8] * q[2] + (double)q[0] * m[2] + (double)m[5] * q[1] + m[11]);
+        if (flags)
+            flags[count] = 0;
+        double d = ((double)o[0] - p[0]) * n[0] + ((double)o[2] - p[2]) * n[2] + ((double)o[1] - p[1]) * n[1];
+        if (dist)
+            dist[count] = (float)d;
+        if (d < *lowest)
+            *lowest = (float)d;
+        if (d < g_pb64b658) {
+            if (d < *lowest)
+                *lowest = (float)d;
+            hits++;
+            if (flags)
+                flags[count] = 1;
+            if (dist)
+                dist[count] = (float)d;
+        }
+        count++;
+    }
+    for (int i = count; i < 20; i++) {
+        if (flags)
+            flags[i] = 0;
+        if (dist)
+            *(DWORD*)&dist[i] = 0x3F800000;
+    }
+    return hits;
+}
+
+} // extern "C"
+
+// === an item's nearest neighbours (a method at $L_587ac0)
+
+extern "C" void Ni_Matrix1(); KING_ALIAS("_Ni_Matrix1", "@SceneObj_Matrix1@12")
+ASM_VAR(BYTE*, g_ni6f653c, $L_6f653c)
+
+extern "C" {
+
+// [$L_587ac0] the six bodies (of the list 6f653c, other than s) whose centres (+3436 placed) lie nearest to item
+// s's position (+536): +3508 the bodies, +3532 their squared distances (100000 when free), nearest first
+void __fastcall Item_FindNeighbours(BYTE* s)
+{
+    BYTE* node = g_ni6f653c ? g_ni6f653c - 4 : 0;
+    const float* pos = (const float*)(s + 536);
+    float px = pos[0], py = pos[1], pz = pos[2];
+    BYTE** nb = (BYTE**)(s + 3508);
+    float* dist = (float*)(s + 3532);
+    for (int k = 0; k < 6; k++) {
+        nb[k] = 0;
+        *(DWORD*)&dist[k] = 0x47C35000;
+    }
+    for (; node; node = F(BYTE*, node, 8) ? F(BYTE*, node, 8) - 4 : 0) {
+        BYTE* o = node - 376;
+        if (o == s)
+            continue;
+        BYTE m[48];
+        const float* M = CallThis<const float*>(Ni_Matrix1, o, m);
+        const float* c = (const float*)(o + 3436);
+        double wx = (double)M[3] * c[1] + (double)M[6] * c[2] + (double)c[0] * M[0] + M[9];
+        float wy = (float)((double)M[4] * c[1] + (double)M[7] * c[2] + (double)M[1] * c[0] + M[10]);
+        float wz = (float)((double)M[5] * c[1] + (double)M[8] * c[2] + (double)M[2] * c[0] + M[11]);
+        float dx = (float)(wx - px);
+        float dy = (float)(wy - py);
+        double dz = (double)wz - pz;
+        double d2 = (double)dx * dx + (double)dy * dy + dz * dz;
+        int i = 0;
+        for (; i < 6; i++)
+            if (!nb[i] || d2 < dist[i])
+                break;
+        if (i == 6)
+            continue;
+        for (int j = 5; j > i; j--) {
+            nb[j] = nb[j - 1];
+            dist[j] = dist[j - 1];
+        }
+        nb[i] = o;
+        dist[i] = (float)d2;
+    }
+}
+
+} // extern "C"
+
+// === an item coming to rest (FUN_580dd0)
+
+extern "C" void Ir_Log(); KING_ALIAS("_Ir_Log", "_VehLog_Value")
+ASM_VAR(int, g_ir696c6c, $L_696c6c)
+ASM_VAR(char, s_ir67d4b0, $L_67d4b0)
+ASM_VAR(char, s_ir67d138, $L_67d138)
+ASM_VAR(char, s_ir67d11c, $L_67d11c)
+
+extern "C" {
+
+// [FUN_580dd0] item s comes to rest: when asleep (+1192) and resting (+892) it only drops +1200 (an item without
+// an owner +372 is told vtbl+204); else (+814 the frame number when unowned) its velocity (+476) and spin (+488)
+// are cleared, it is stopped (vtbl+76), +1192 = 0, +1200 = 1 and event 1 is posted; with the log (696c6c) its
+// node's frame and its position are logged
+void __fastcall Item_Rest(BYTE* s)
+{
+    if (F(int, s, 1192) && F(int, s, 892)) {
+        F(int, s, 1200) = 0;
+        if (!F(int, s, 372))
+            CallVirt(s, 204);
+        return;
+    }
+    if (!F(int, s, 372))
+        F(WORD, s, 814) = (WORD)F(int, g_movite6ef1fc, 2992);
+    F(Vec3, s, 476) = g_mi702650;
+    F(Vec3, s, 488) = g_mi702650;
+    F(int, s, 892) = 0;
+    CallVirt(s, 76);
+    F(int, s, 1192) = 0;
+    F(int, s, 1200) = 1;
+    CallThis(FUN_5d32f0, s, 1);
+    if (!g_ir696c6c)
+        return;
+    float m[12];
+    memcpy(m, g_q108_7025f0, 48);
+    CallThis(FUN_5f25a0, F(BYTE*, F(BYTE*, s, 32), 68), m);
+    CallC(Ir_Log, &s_ir67d4b0);
+    char buf[100];
+    const char* name = F(const char*, F(BYTE*, s, 320), 12);
+    sprintf(buf, &s_ir67d138, name, (double)m[9], (double)m[10], (double)m[11]);
+    CallC(Ir_Log, buf);
+    sprintf(buf, &s_ir67d11c, name, (double)F(float, s, 536), (double)F(float, s, 540), (double)F(float, s, 544));
+    CallC(Ir_Log, buf);
+}
+
+} // extern "C"
+
+// === how far an item may move toward a frame (FUN_5843c0)
+
+extern "C" void Im_Query(); KING_ALIAS("_Im_Query", "_Query_4e6578")
+extern "C" void Im_Get800(); KING_ALIAS("_Im_Get800", "@SceneObj_Get800@8")
+ASM_VAR(double, g_im64b6d8, $L_64b6d8)
+ASM_VAR(float, g_im64c250, $L_64c250)
+ASM_VAR(double, g_one_64b670_im, $L_64b670)
+
+extern "C" {
+
+// [FUN_5843c0] tests item o's move from its position to frame t's (+36) against the world: no hit gives 0; else
+// *dist the target's height over the hit plane (h +52, normal +64) and *scale shrunk by the square root of the free
+// part of the move (1 when the hit is beyond it; 0 and the result 2 when either length is tiny)
+int __cdecl Item_MoveFraction(BYTE* o, const BYTE* t, float* scale, float* dist, BYTE* h)
+{
+    BYTE* w = CallThis<BYTE*>(Im_Get800, o);
+    BYTE m[48];
+    CallThis(FUN_57de90, o, m);
+    float p[3] = {F(float, m, 36), F(float, m, 40), F(float, m, 44)};
+    float q[3] = {F(float, t, 36), F(float, t, 40), F(float, t, 44)};
+    if (!(CallC<BYTE>(Im_Query, o, w, p, q, h) & 1))
+        return 0;
+    float dx = q[0] - p[0], dy = q[1] - p[1];
+    double dz = (double)q[2] - p[2];
+    float ax = F(float, h, 52) - p[0], ay = F(float, h, 56) - p[1], az = F(float, h, 60) - p[2];
+    *dist = (float)(((double)F(float, h, 60) - q[2]) * F(float, h, 72) + ((double)F(float, h, 56) - q[1]) * F(float, h, 68)
+        + ((double)F(float, h, 52) - q[0]) * F(float, h, 64));
+    float l1 = (float)((double)dx * dx + (double)dy * dy + dz * dz);
+    float l2 = (float)((double)ax * ax + (double)ay * ay + (double)az * az);
+    if (l2 < g_im64b6d8 || l1 < g_im64b6d8) {
+        *scale = 0;
+        return 2;
+    }
+    double r = l2 / l1;
+    if (r > g_one_64b670_im)
+        r = g_im64c250;
+    *scale = (float)(x87_sqrt(r) * *scale);
+    return 1;
 }
 
 } // extern "C"

@@ -554,7 +554,7 @@ inline void King_LeaveGame() { CallC(FUN_511820); }
 
 ASM_PROC(FUN_5764f0)    // King_CheatKey
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // Sound_Find
-ASM_PROC(FUN_5fdaf0)    // Sound::Play
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")    // Sound::Play
 extern "C" void FUN_5bd710(); KING_ALIAS("_FUN_5bd710", "_Ctl_DrawFrame")    // Gfx_DrawBox
 extern "C" void FUN_530050(); KING_ALIAS("_FUN_530050", "@Words295_ClearEmpty@8")    // Controls::Update
 extern "C" void FUN_578fe0(); KING_ALIAS("_FUN_578fe0", "_Joy_ReadState")    // Joy_Read

@@ -93,7 +93,7 @@ extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 extern "C" void FUN_490c70(); KING_ALIAS("_FUN_490c70", "_Save_BlockEnd")
 extern "C" void FUN_479aa0(); KING_ALIAS("_FUN_479aa0", "_NamedRecs_Load")
 extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")
-ASM_PROC(FUN_471ec0)
+extern "C" void FUN_471ec0(); KING_ALIAS("_FUN_471ec0", "_Drivers_ListCarrying")
 extern "C" void FUN_472110(); KING_ALIAS("_FUN_472110", "_KeyedList_Refill")
 extern "C" void FUN_478980(); KING_ALIAS("_FUN_478980", "@List1000_Erase@16")
 ASM_VAR(BYTE**, g_68cf38, $L_68cf38)
@@ -1214,7 +1214,7 @@ BYTE* __cdecl Players_Append(int kind)
 
 }
 
-ASM_PROC(FUN_4872f0)    // re-plans a player's route to a position (player, position by value)
+extern "C" void FUN_4872f0(); KING_ALIAS("_FUN_4872f0", "_Player_Replan")    // re-plans a player's route to a position (player, position by value)
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, 0)
 extern "C" const char* __cdecl Rec_Name8(BYTE* p);
 
@@ -2524,6 +2524,80 @@ void __fastcall DriverRec_Load(BYTE* s, void*, DWORD** pp)
     }
     CallC(Dl_OrdersLoad, pp, s + 28);
     F(DWORD, s, 40) = Dl_Next(pp);
+}
+
+} // extern "C"
+
+// === listing the drivers who carry a player's order (FUN_471ec0)
+
+extern "C" void Ld_IntCopy(); KING_ALIAS("_Ld_IntCopy", "@Int_Copy@12")
+extern "C" void Ld_IntSet(); KING_ALIAS("_Ld_IntSet", "@Int_Set@12")
+extern "C" void Ld_Leave(); KING_ALIAS("_Ld_Leave", "_Player_Leave")
+extern "C" void Ld_MarkListed(); KING_ALIAS("_Ld_MarkListed", "_Player_MarkListed")
+extern "C" void Ld_OrderCopy(); KING_ALIAS("_Ld_OrderCopy", "@Order144_CopyConstruct@12")
+extern "C" void Ld_MsgFree(); KING_ALIAS("_Ld_MsgFree", "_MsgBuf_FreeThunk")
+extern "C" void Ld_Free(); KING_ALIAS("_Ld_Free", "_AI_Free")
+
+// erases entry e of the 16-byte vector v, destroying the last one with done
+static void Ld_Erase(BYTE** v, BYTE* e, void (*done)(BYTE*))
+{
+    if (e + 16 != v[1])
+        CallC(Kl_Copy, e + 16, v[1], e, 0, 0);
+    v[1] -= 16;
+    done(v[1]);
+}
+
+static void Ld_Destroy(BYTE* e) { CallThis(FUN_461ae0, e, 0); }
+static void Ld_FreeVec(BYTE* e) { CallThis(FUN_404420, e + 4); }
+
+extern "C" {
+
+// [FUN_471ec0] every listed player leaves the list; then v keeps the entries (player records, 16 bytes) of the
+// drivers still carrying the order of player p's driver (counting them in v+12, stored to 68d164), dropping the
+// others, and marks them listed
+void __cdecl Drivers_ListCarrying(BYTE** v, int p)
+{
+    int head = g_q112_68b990;
+    for (int it = *(int*)head; it != g_q112_68b990; it = *(int*)it) {
+        if (!CallC<int>(FUN_40a9f0, it))
+            continue;
+        int copy, slot;
+        CallThis(Ld_IntCopy, &copy, &it);
+        CallThis(Ld_IntSet, &slot, copy);
+        CallC(Ld_Leave, slot);
+    }
+    BYTE* d = CallC<BYTE*>(FUN_477880, p);
+    if (!d)
+        return;
+    BYTE ord[144];
+    CallThis(Ld_OrderCopy, ord, d);
+    for (BYTE* e = v[0]; e != v[1];) {
+        BYTE* q = F(BYTE*, e, 0);
+        if (F(int, q, 88) == 0x12345678) {
+            int* g = CallC<int*>(FUN_4777b0, q + 8);
+            if (g && (g = CallC<int*>(FUN_4777b0, F(BYTE*, e, 0) + 8), g[0] == F(int, ord, 0) && g[3] == F(int, ord, 12))) {
+                e += 16;
+                continue;
+            }
+            F(int, v, 12)++;
+            Ld_Erase(v, e, Ld_FreeVec);
+        } else
+            Ld_Erase(v, e, Ld_Destroy);
+        e = v[0];
+    }
+    for (BYTE* e = v[0]; e != v[1]; e += 16)
+        CallC(Ld_MarkListed, F(int, e, 0));
+    g_kl68d164 = F(int, v, 12);
+    BYTE* b = F(BYTE*, ord, 120);
+    for (BYTE* e = b; e != F(BYTE*, ord, 124); e += 16)
+        CallC(Ld_MsgFree, e);
+    if (int n = (F(BYTE*, ord, 128) - b) >> 4) {
+        unsigned bytes = n << 4;
+        if (bytes > 128)
+            CallC(Ld_Free, b, bytes);
+        else
+            CallC(FUN_44b4a0, b, bytes);
+    }
 }
 
 } // extern "C"

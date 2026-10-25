@@ -1661,14 +1661,14 @@ extern "C" void __fastcall Car_Set54c880(BYTE* self, void*, int a, int b)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
-ASM_PROC(FUN_5812a0)
+extern "C" void FUN_5812a0(); KING_ALIAS("_FUN_5812a0", "@Item_SetVelocity@16")
 extern "C" void FUN_561d70(); KING_ALIAS("_FUN_561d70", "@Copter_SetVec100@12")
 extern "C" void FUN_4f1dd0(); KING_ALIAS("_FUN_4f1dd0", "@Body_SetPosition@12")
 extern "C" void FUN_4dde10(); KING_ALIAS("_FUN_4dde10", "@Cab_Release@8")
 extern "C" void FUN_53f750(); KING_ALIAS("_FUN_53f750", "_Car_InList")
 extern "C" void FUN_4e9d90(); KING_ALIAS("_FUN_4e9d90", "_WarnLog_Close")
 extern "C" void FUN_4e9d36(); KING_ALIAS("_FUN_4e9d36", "_VehLogs_Close")
-ASM_PROC(FUN_4f0fc0)
+extern "C" void FUN_4f0fc0(); KING_ALIAS("_FUN_4f0fc0", "@Body_PlaceAt@16")
 ASM_VAR(AsmLabel, g_vh69809c, $L_69809c)          // car types, 2416 bytes each
 ASM_VAR(BYTE*, g_vh696cb0, $L_696cb0)
 ASM_VAR(int, g_vh696cb8, $L_696cb8)
@@ -2084,7 +2084,7 @@ extern "C" void FUN_4eeaf0(); KING_ALIAS("_FUN_4eeaf0", "@Body_SetLoad@12")
 extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
 extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
 ASM_PROC(FUN_4f1240)
-ASM_PROC(FUN_4f0fc0)
+extern "C" void FUN_4f0fc0(); KING_ALIAS("_FUN_4f0fc0", "@Body_PlaceAt@16")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
 ASM_VAR(AsmLabel, g_veh702630, $L_702630)
@@ -2801,7 +2801,7 @@ extern "C" void __fastcall CarEffect_End(BYTE* s, void*, int keep)
 // Loading cargo onto a car.
 
 ASM_PROC(FUN_556780)
-ASM_PROC(FUN_556890)
+extern "C" void FUN_556890(); KING_ALIAS("_FUN_556890", "@Tanks_Fill@16")
 ASM_PROC(FUN_5455d0)
 extern "C" void FUN_5569c0(); KING_ALIAS("_FUN_5569c0", "@Obj5569c0_Take@20")
 // sets car s's total load (+9588 + +9604 + +9580) and its centre (the cargo point +9556 weighted by the two
@@ -2923,7 +2923,7 @@ extern "C" float __fastcall Car_HoldValue2(BYTE* s)
 
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
 extern "C" void FUN_4e623e(); KING_ALIAS("_FUN_4e623e", "_Query_Parts1")
-ASM_PROC(FUN_57e140)
+extern "C" void FUN_57e140(); KING_ALIAS("_FUN_57e140", "@Object_QueryShape@12")
 // [$L_54c6d0] the car's world query (kind 6) into the 208-byte record out: a query from the car's position +584
 // and direction +536 against its body (+804), through the parts list when the model (+21584) has one (+9992) or the
 // body's method 52 otherwise (on a new contact the car's method 28 is told); without a model, 57e140
@@ -4252,8 +4252,8 @@ void __fastcall Cab_Update(BYTE* s)
 
 extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
 ASM_PROC(FUN_552940)
-ASM_PROC(FUN_556c60)    // whether the car is driven locally
-ASM_PROC(FUN_580dd0)    // the moving body's step
+extern "C" void FUN_556c60(); KING_ALIAS("_FUN_556c60", "@Car_CanSleep@4")    // whether the car is driven locally
+extern "C" void FUN_580dd0(); KING_ALIAS("_FUN_580dd0", "@Item_Rest@4")    // the moving body's step
 ASM_PROC(FUN_58f560)
 ASM_VAR(float, g_cs64da74, $L_64da74)
 
@@ -4715,3 +4715,644 @@ extern "C" BYTE* __fastcall Truck55eaa0_Construct(BYTE* s, void*, int a1, int a2
     CallThis(FUN_556110, s);
     return s;
 }
+
+// === the game's input messages and cheat codes (FUN_532950)
+
+ASM_PROC(FUN_4e4468)
+extern "C" void Ck_SetCursor(); KING_ALIAS("_Ck_SetCursor", "_Input_SetCursorPos")
+ASM_VAR(AsmLabel, g_ck6d1948, $L_6d1948)    // key states, 2 bytes each (down, held)
+ASM_VAR(BYTE*, g_ck6d1ed8, $L_6d1ed8)
+ASM_VAR(BYTE*, g_ck6d1f94, $L_6d1f94)
+ASM_VAR(int, g_ck6d20e4, $L_6d20e4)
+ASM_VAR(float, g_ck6d20e8, $L_6d20e8)
+ASM_VAR(AsmLabel, g_ck678764, $L_678764)    // the codes: typed forwards (else backwards)
+ASM_VAR(AsmLabel, g_ck6d2084, $L_6d2084)    // active
+ASM_VAR(AsmLabel, g_ck6d20bc, $L_6d20bc)    // text
+ASM_VAR(AsmLabel, g_ck6d20a0, $L_6d20a0)    // progress
+ASM_VAR(AsmLabel, g_ck678748, $L_678748)    // length
+ASM_VAR(int, g_ck6d1ba0, $L_6d1ba0)
+ASM_VAR(int, g_ck6d1bac, $L_6d1bac)
+ASM_VAR(int, g_ck696850, $L_696850)
+ASM_VAR(int, g_ck696854, $L_696854)
+ASM_VAR(float, g_ck6d1b9c, $L_6d1b9c)
+ASM_VAR(float, g_ck6d1ba8, $L_6d1ba8)
+ASM_VAR(float, g_ck6d1b98, $L_6d1b98)
+ASM_VAR(float, g_ck6d1ba4, $L_6d1ba4)
+ASM_VAR(BYTE, g_ck6d1b48, $L_6d1b48)
+ASM_VAR(BYTE, g_ck6d1b4c, $L_6d1b4c)
+ASM_VAR(BYTE*, g_ck6cec6c, $L_6cec6c)
+ASM_VAR(float, g_ck64c250, $L_64c250)
+ASM_VAR(float, g_ck64c938, $L_64c938)
+ASM_VAR(double, g_ck64b6e0, $L_64b6e0)
+ASM_VAR(char, s_ck678b00, $L_678b00)
+ASM_VAR(char, s_ck672ec8, $L_672ec8)    // ".\truck.ini"
+ASM_VAR(char, s_ck67305c, $L_67305c)    // "$"
+ASM_VAR(char, s_ck678af8, $L_678af8)    // "source"
+ASM_VAR(char, s_ck6733c4, $L_6733c4)    // "INSTALL"
+ASM_VAR(char, s_ck678ae4, $L_678ae4)
+ASM_VAR(char, s_ck678adc, $L_678adc)
+ASM_VAR(char, s_ck678ad0, $L_678ad0)
+
+// a mouse coordinate as -1..1 (the axis scale, flipped when set), clamped to [64c938, 64c250]
+static float Ck_Axis(int v, int size, float scale, int flip)
+{
+    double a = ((double)v / size - g_ck64b6e0) * scale;
+    a += a;
+    if (flip)
+        a = -a;
+    if (a > g_ck64c250)
+        return g_ck64c250;
+    if (a < g_ck64c938)
+        return g_ck64c938;
+    return (float)a;
+}
+
+// recentres the cursor unless the game runs windowed (+1300 > 1)
+static void Ck_Recentre()
+{
+    if (F(int, g_ck6cec6c, 1300) <= 1)
+        CallC(Ck_SetCursor, g_ck696850 / 2, g_ck696854 / 2);
+}
+
+extern "C" {
+
+// [FUN_532950] handles input message m (+0 the kind, +2/+4 the mouse, +6 the key) for the game s: key states
+// (6d1948), the debug position text on the two position keys, the seven cheat codes (the sixth only on a
+// developer install), the mouse axes (6d1b98, 6d1ba4) and buttons (6d1b48, 6d1b4c)
+void __fastcall Game_Input(BYTE* s, void*, const short* m)
+{
+    BYTE* keys = (BYTE*)g_ck6d1948;
+    switch (m[0]) {
+    case 256: {
+        int c = m[3];
+        if (c == 81)
+            CallC(FUN_5e48f0);
+        BYTE* k = keys + c * 2;
+        k[0] = 1;
+        BYTE* car = F(BYTE*, s, 616);
+        if (car && F(BYTE*, car, 21600) && (k == g_ck6d1ed8 || k == g_ck6d1f94)) {
+            BYTE* w = F(BYTE*, s, 32);
+            char where[100], text[100];
+            g_ck6d20e4 = F(int, w, 2992);
+            g_ck6d20e8 = (float)F(double, w, 2968);
+            CallC(FUN_4e4468, where);
+            w = F(BYTE*, s, 32);
+            sprintf(text, &s_ck678b00, F(int, w, 2992), F(double, w, 2968), where);
+        }
+        int* fwd = (int*)g_ck678764;
+        int* act = (int*)g_ck6d2084;
+        const char** str = (const char**)g_ck6d20bc;
+        int* prog = (int*)g_ck6d20a0;
+        int* len = (int*)g_ck678748;
+        for (int i = 0; i < 7; i++) {
+            bool hit = false;
+            if (!act[i] && str[i])
+                hit = fwd[i] ? str[i][prog[i]] == c : str[i][len[i] - prog[i] - 1] == c;
+            if (!hit) {
+                prog[i] = 0;
+                continue;
+            }
+            if (++prog[i] != len[i])
+                continue;
+            if (i == 5) {
+                char buf[100];
+                GetPrivateProfileStringA(&s_ck6733c4, &s_ck678af8, &s_ck67305c, buf, 100, &s_ck672ec8);
+                if (_strnicmp(buf, &s_ck678ae4, 19) && _strnicmp(buf, &s_ck678adc, 7)
+                    && _strnicmp(buf, &s_ck678ad0, 11))
+                    continue;
+            }
+            act[i] = 1;
+        }
+        break;
+    }
+    case 257:
+        if (keys[m[3] * 2 + 1])
+            keys[m[3] * 2] = 0;
+        break;
+    case 512:
+        g_ck6d1b98 = Ck_Axis(m[1], g_ck696850, g_ck6d1b9c, g_ck6d1ba0);
+        g_ck6d1ba4 = Ck_Axis(m[2], g_ck696854, g_ck6d1ba8, g_ck6d1bac);
+        break;
+    case 513:
+        g_ck6d1b48 = 1;
+        Ck_Recentre();
+        break;
+    case 514:
+        g_ck6d1b48 = 0;
+        break;
+    case 516:
+        g_ck6d1b4c = 1;
+        Ck_Recentre();
+        break;
+    case 517:
+        g_ck6d1b4c = 0;
+        break;
+    }
+}
+
+} // extern "C"
+
+// === a car's centre (FUN_542280)
+
+extern "C" void Cc_PointsNext(); KING_ALIAS("_Cc_PointsNext", "@Points_Next@12")
+ASM_VAR(AsmLabel, g_cc6978c8, $L_6978c8)
+
+// [FUN_542280] the centre of car s (+21040): x and y halfway across its body points' extent (from 0), z the
+// height of its frame (+716.. by the type's column) less the mean half wheel size (+10584, count +10424, also
+// stored per wheel at +20740) and the type's offset
+extern "C" void __fastcall Car_Centre(BYTE* s)
+{
+    float lo[2] = {0, 0}, hi[2] = {0, 0};
+    float p[3] = {0, 0, 0};
+    while (CallThis<int>(Cc_PointsNext, s + 16, p))
+        for (int k = 0; k < 2; k++) {
+            if (p[k] < lo[k])
+                lo[k] = p[k];
+            if (p[k] > hi[k])
+                hi[k] = p[k];
+        }
+    double cx = ((double)lo[0] + hi[0]) * g_vh64c258;
+    float cy = (float)(((double)lo[1] + hi[1]) * g_vh64c258);
+    int n = F(int, s, 10424);
+    double sum = g_vh64c264;
+    for (int i = 0; i < n; i++)
+        sum += F(float, s, 10584 + i * 4) * (double)g_vh64c258;
+    for (int i = 0; i < F(int, s, 10424); i++)
+        F(float, s, 20740 + i * 4) = (float)(sum / F(int, s, 10424));
+    unsigned t = F(unsigned, s, 10420) * 2416;
+    const BYTE* ty = (const BYTE*)g_carTypes697914 + t;
+    double z = F(float, s, 740) * (double)F(float, ty, 260) + F(float, ty, 256) * (double)F(float, s, 728)
+        + F(float, s, 716) * (double)F(float, ty, 252) + F(float, s, 752);
+    double h = sum / F(int, s, 10424) + F(float, (const BYTE*)g_cc6978c8 + t, 4);
+    F(float, s, 21040) = (float)cx;
+    F(float, s, 21044) = cy;
+    F(float, s, 21048) = (float)-(h - z);
+}
+
+// === whether a car can fall asleep (FUN_556c60)
+
+extern "C" void Cs_LenSq(); KING_ALIAS("_Cs_LenSq", "_Vec3_LengthSq4e298b")
+extern "C" void Cs_Len(); KING_ALIAS("_Cs_Len", "_Vec3_Length")
+ASM_VAR(double, g_cs64b658, $L_64b658)
+ASM_VAR(double, g_cs64f7b8, $L_64f7b8)
+
+// the squared length of a - b (three floats each)
+static double Cs_DiffSq(const BYTE* s, int a, int b)
+{
+    float d[3] = {F(float, s, a) - F(float, s, b), F(float, s, a + 4) - F(float, s, b + 4), F(float, s, a + 8) - F(float, s, b + 8)};
+    return CallC<double>(Cs_LenSq, d);
+}
+
+extern "C" {
+
+// [FUN_556c60] whether car s may sleep: not held (+1220); its cab (+21600) idle (speed +9996 at most 64b5a0, no
+// +13416) with the same controls as stored (+20528..); its frame, position, velocity and spin nearly unchanged since
+// they were stored (+20548.., +20560.., +20572.., +20584..) and slow; no awake neighbour (+3524) about to reach it
+int __fastcall Car_CanSleep(BYTE* s)
+{
+    if (F(int, s, 1220))
+        return 0;
+    if (BYTE* c = F(BYTE*, s, 21600)) {
+        if (F(float, c, 9996) > g_sl64b5a0 || F(int, c, 13416))
+            return 0;
+        if (F(float, s, 20528) != F(float, c, 9996) || F(float, s, 20532) != F(float, c, 10012)
+            || F(float, s, 20536) != F(float, c, 10000) || F(int, s, 20540) != F(short, c, 10004)
+            || F(int, s, 20544) != F(short, c, 10006))
+            return 0;
+    }
+    if (Cs_DiffSq(s, 20548, 20676) > g_cs64b658 || Cs_DiffSq(s, 20560, 552) > g_cs64b658
+        || Cs_DiffSq(s, 20572, 432) > g_sl64b5a0 || Cs_DiffSq(s, 20584, 444) > g_cs64f7b8
+        || CallC<double>(Cs_LenSq, s + 432) > g_sl64b5a0)
+        return 0;
+    for (int i = 0; i < 6; i++) {
+        BYTE* o = F(BYTE*, s, 3524 + i * 4);
+        if (!o || !F(int, o, 1204))
+            continue;
+        float rp[3] = {F(float, o, 3372) - F(float, s, 552), F(float, o, 3376) - F(float, s, 556),
+            F(float, o, 3380) - F(float, s, 560)};
+        float dt = (float)F(double, g_6ef1fc, 2960);
+        double vx = (double)F(float, o, 3300) - F(float, s, 432);
+        float vy = F(float, o, 3304) - F(float, s, 436), vz = F(float, o, 3308) - F(float, s, 440);
+        float rv[3] = {(float)(vx * dt), vy * dt, vz * dt};
+        float a = CallC<float>(Cs_Len, rp);
+        if (CallC<double>(Cs_Len, rv) + F(float, o, 3272) + F(float, s, 3288) > a)
+            return 0;
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === the cab view's needle and sway (FUN_5354d0)
+
+extern "C" int __cdecl rand(void);
+extern "C" void Cv_556650(); KING_ALIAS("_Cv_556650", "@Car_556650@8")
+ASM_VAR(float, g_cv64f380, $L_64f380)
+ASM_VAR(double, g_cv64b6d0, $L_64b6d0)
+ASM_VAR(double, g_cv64f378, $L_64f378)
+ASM_VAR(double, g_cv64f370, $L_64f370)
+ASM_VAR(double, g_cv64b6f0, $L_64b6f0)
+ASM_VAR(double, g_cv64ed90, $L_64ed90)
+ASM_VAR(double, g_cv64f368, $L_64f368)
+ASM_VAR(double, g_cv64f360, $L_64f360)
+ASM_VAR(double, g_cv64f358, $L_64f358)
+ASM_VAR(double, g_cv64f350, $L_64f350)
+ASM_VAR(double, g_cv64f348, $L_64f348)
+ASM_VAR(double, g_cv64f340, $L_64f340)
+ASM_VAR(float, g_cv64c2f8, $L_64c2f8)
+ASM_VAR(float, g_cv64d980, $L_64d980)
+ASM_VAR(float, g_cv64f338, $L_64f338)
+ASM_VAR(float, g_cv64c664, $L_64c664)
+ASM_VAR(float, g_cv64c32c, $L_64c32c)
+ASM_VAR(double, g_cv64f330, $L_64f330)
+ASM_VAR(double, g_cv64f328, $L_64f328)
+ASM_VAR(double, g_cv64f320, $L_64f320)
+ASM_VAR(float, g_cv64f31c, $L_64f31c)
+ASM_VAR(float, g_cv64f318, $L_64f318)
+ASM_VAR(float, g_cv64c258, $L_64c258)
+ASM_VAR(double, g_cv64b670, $L_64b670)
+ASM_VAR(Vec3, g_cv702650, $L_702650)
+
+static int Cv_Clamp(int v, int lim)
+{
+    if (v < -lim)
+        v = -lim;
+    if (v > lim)
+        v = lim;
+    return v;
+}
+
+extern "C" {
+
+// [FUN_5354d0] the cab view s: the speedometer needle frame (+1060, 0..38) from the car's speed (+20960, finer
+// steps near zero), then (unless +1400 sets the view band instead) the view sway (+1376, +1380) following the cab's
+// tilt (+13228, the speed +556650) at a rate limited by the frame time, shaken by the cab's four vibrations, kept
+// within +1384/+1388, and the lean (+1368, +1372) by +1396
+void __fastcall CabView_Update(BYTE* s)
+{
+    Vec3 v = g_cv702650;
+    int shake = 0;
+    BYTE* car = F(BYTE*, s, 616);
+    if (car) {
+        int r = (int)(F(float, car, 20960) * g_cv64f380);
+        int sg = r < 0 ? -1 : 1;
+        double a = x87_fabs((double)r);
+        int n;
+        if (!(a > g_cv64b6d0))
+            n = r + 19;
+        else if (!(a > g_cv64f378))
+            n = (r - 5 * sg) / 2 + 5 * sg + 19;
+        else if (!(a > g_cv64f370))
+            n = 10 * sg + 19;
+        else if (!(a > g_cv64b6f0))
+            n = 11 * sg + 19;
+        else if (!(a > g_cv64ed90))
+            n = 12 * sg + 19;
+        else if (!(a > g_cv64f368))
+            n = 13 * sg + 19;
+        else if (!(a > g_cv64f360))
+            n = 14 * sg + 19;
+        else if (!(a > g_cv64f358))
+            n = 15 * sg + 19;
+        else if (!(a > g_cv64f350))
+            n = 16 * sg + 19;
+        else if (!(a > g_cv64f348))
+            n = 17 * sg + 19;
+        else if (!(a > g_cv64f340))
+            n = 18 * sg + 19;
+        else
+            n = 19 * sg + 19;
+        F(int, s, 1060) = n;
+        if (BYTE* cab = F(BYTE*, car, 21600)) {
+            v = F(Vec3, cab, 13228);
+            for (int i = 0; i < 4; i++)
+                shake = (int)(F(float, cab, 15248 + i * 4) * g_cv64c2f8 + shake);
+        }
+    }
+    if (F(int, s, 1060) < 0)
+        F(int, s, 1060) = 0;
+    if (F(int, s, 1060) >= 39)
+        F(int, s, 1060) = 38;
+    if (F(int, s, 1400)) {
+        int h = g_ck696854, w = g_ck696850;
+        int half = h / 2;
+        int top = half - 190, bottom = half + 160;
+        if (top < g_minTop672d7c)
+            top = g_minTop672d7c;
+        if (bottom > h)
+            bottom = h;
+        int rc[4] = {0, top, w, bottom};
+        struct Rc16 { int r[4]; } band;
+        memcpy(&band, rc, 16);
+        CallVirt(F(BYTE*, s, 32), 44, band);
+        return;
+    }
+    float dt = (float)Game_FrameTime();
+    double az = x87_fabs(v.z);
+    float ty = 0;
+    int tx = 0;
+    if (az > g_sl64b5a0) {
+        tx = (int)(v.x / v.z * g_cv64d980);
+        ty = (float)(v.y / v.z * g_cv64f338);
+    }
+    double f = CallThis<float>(Cv_556650, F(BYTE*, s, 616)) * (double)g_cv64c664 + ty;
+    int cy = F(int, s, 1380);
+    int ny;
+    if (x87_fabs((double)cy) > x87_fabs(f))
+        ny = (int)((cy + f) * g_cv64c258);
+    else
+        ny = (int)f;
+    int lim = (int)(dt * g_cv64c32c);
+    int dx = Cv_Clamp(tx - F(int, s, 1376), lim);
+    int dy = Cv_Clamp(ny - cy, lim);
+    F(int, s, 1376) += dx;
+    F(int, s, 1380) = cy + dy;
+    int w = g_ck696850, h = g_ck696854;
+    if (shake) {
+        double k = shake;
+        F(int, s, 1376) = (int)((g_cv64b670 - rand() * g_cv64f330) * w * k * g_cv64f328 + F(int, s, 1376));
+        F(int, s, 1380) = (int)((g_cv64b670 - rand() * g_cv64f330) * h * k * g_cv64f320 + F(int, s, 1380));
+    }
+    F(int, s, 1376) = Cv_Clamp(F(int, s, 1376), F(int, s, 1384));
+    F(int, s, 1380) = Cv_Clamp(F(int, s, 1380), F(int, s, 1388));
+    int lx = tx, ly = ny;
+    int d = F(int, s, 1396);
+    if (d < 0) {
+        lx = ly = 0;
+        if (az > g_sl64b5a0) {
+            BYTE* cab = F(BYTE*, F(BYTE*, s, 616), 21600);
+            lx = (int)(F(float, cab, 13232) / v.z * g_cv64c664);
+            ly = (int)(F(float, cab, 13228) / v.z * g_cv64f338);
+        }
+    } else if (d > 0) {
+        lx = ly = 0;
+        if (az > g_sl64b5a0) {
+            BYTE* cab = F(BYTE*, F(BYTE*, s, 616), 21600);
+            lx = (int)(F(float, cab, 13232) / v.z * g_cv64f31c);
+            ly = (int)(F(float, cab, 13228) / v.z * g_cv64f318);
+        }
+    }
+    View_Place(s, 0);
+    F(int, s, 1368) = Cv_Clamp(lx, F(int, s, 1384));
+    F(int, s, 1372) = ly;
+    if (ly < -F(int, s, 1388))
+        F(int, s, 1372) = -F(int, s, 1388);
+    if (F(int, s, 1372) > F(int, s, 1388))
+        F(int, s, 1372) = F(int, s, 1388);
+}
+
+} // extern "C"
+
+// === sparks from a car's exhausts (FUN_536100)
+
+extern "C" void Sx_Multiply(); KING_ALIAS("_Sx_Multiply", "_Matrix_Multiply")
+extern "C" void Sx_Burst(); KING_ALIAS("_Sx_Burst", "_Fx_SparkBurst")
+ASM_VAR(AsmLabel, g_sx697f9c, $L_697f9c)
+ASM_VAR(float, g_sx64c450, $L_64c450)
+ASM_VAR(double, g_sx64b780, $L_64b780)
+
+// point p (three floats) placed by matrix w
+static void Sx_Place(float* o, const float* w, const float* p)
+{
+    o[0] = (float)((double)w[6] * p[2] + (double)w[3] * p[1] + (double)w[0] * p[0] + w[9]);
+    o[1] = (float)((double)w[7] * p[2] + (double)w[4] * p[1] + (double)w[1] * p[0] + w[10]);
+    o[2] = (float)((double)w[2] * p[0] + (double)w[8] * p[2] + (double)w[5] * p[1] + w[11]);
+}
+
+extern "C" {
+
+// [FUN_536100] sprays sparks with velocity v (scaled by 64c450, turned by the car's frame +3352, plus its velocity
+// +3316) from car c's type exhaust points (type +12, and +36 when its z is below 64b780 in size)
+void __cdecl Car_SparkBurst(BYTE* c, const float* v)
+{
+    if (!c)
+        return;
+    float m[12], w[12];
+    memcpy(m, c + 708, 48);
+    const float* n = (const float*)(c + 3352);
+    CallC(Sx_Multiply, w, m, n);
+    double vx = v[0] * (double)g_sx64c450, vy = v[1] * (double)g_sx64c450, vz = v[2] * (double)g_sx64c450;
+    float qx = (float)(vz * n[6] + vy * n[3] + vx * n[0]);
+    float qy = (float)(vz * n[7] + vy * n[4] + vx * n[1]);
+    double qz = vz * n[8] + vy * n[5] + vx * n[2];
+    float vel[3] = {qx + F(float, c, 3316), qy + F(float, c, 3320), (float)(qz + F(float, c, 3324))};
+    const BYTE* ty = (const BYTE*)g_sx697f9c + F(int, c, 10420) * 2416;
+    float pos[3];
+    Sx_Place(pos, w, (const float*)(ty + 12));
+    CallC(Sx_Burst, pos, vel, 1);
+    if (!(x87_fabs(F(float, ty, 44)) < g_sx64b780))
+        return;
+    Sx_Place(pos, w, (const float*)(ty + 36));
+    CallC(Sx_Burst, pos, vel, 1);
+}
+
+} // extern "C"
+
+// === filling two tanks (FUN_556890)
+
+ASM_VAR(float, g_tk64c264, $L_64c264)
+ASM_VAR(float, g_tk64c250, $L_64c250)
+
+extern "C" {
+
+// [FUN_556890] pours *a into tank 1 (level +36 of +20) and *b into tank 2 (+24 of +16; first the buffer +32 is
+// settled against it, by +28): both as far as the fuller tank allows, the rest left in *a and *b; returns which
+// tank filled up (1, 2) or 0
+int __fastcall Tanks_Fill(BYTE* e, void*, float* a, float* b)
+{
+    if (!(*a > g_tk64c264) || !(*b > g_tk64c264))
+        return 0;
+    if (*b > F(float, e, 28)) {
+        F(float, e, 24) = F(float, e, 24) + F(float, e, 32);
+        *b = *b - F(float, e, 32);
+        F(float, e, 32) = 0;
+    } else {
+        F(float, e, 32) = F(float, e, 32) - *b;
+        F(float, e, 24) = F(float, e, 24) + *b;
+        *b = 0;
+    }
+    float r1 = (F(float, e, 20) - F(float, e, 36)) / *a;
+    float r2 = (F(float, e, 16) - F(float, e, 24)) / *b;
+    double t = g_tk64c250;
+    int full = 0;
+    if (r1 < g_tk64c250 || r2 < g_tk64c250) {
+        if (r1 < r2)
+            t = r1, full = 1;
+        else
+            t = r2, full = 2;
+    }
+    F(float, e, 36) = (float)(t * *a + F(float, e, 36));
+    F(float, e, 24) = (float)(t * *b + F(float, e, 24));
+    if (F(float, e, 36) > F(float, e, 20))
+        F(float, e, 36) = F(float, e, 20);
+    if (F(float, e, 24) > F(float, e, 16))
+        F(float, e, 24) = F(float, e, 16);
+    F(int, e, 40) = 0;
+    *a = (float)(*a - t * *a);
+    *b = (float)(*b - t * *b);
+    return full;
+}
+
+} // extern "C"
+
+// === the felt gravity in the cab (FUN_53b180)
+
+extern "C" void Fg_Matrix2(); KING_ALIAS("_Fg_Matrix2", "@SceneObj_Matrix2@12")
+extern "C" void Fg_NormalizeThis(); KING_ALIAS("_Fg_NormalizeThis", "@Vec3_NormalizeThis@8")
+extern "C" void Fg_Normalized(); KING_ALIAS("_Fg_Normalized", "_Vec3_Normalized")
+ASM_VAR(float, g_fg702630, $L_702630)
+ASM_VAR(float, g_fg702634, $L_702634)
+ASM_VAR(float, g_fg702638, $L_702638)
+ASM_VAR(float, g_fg678790, $L_678790)
+ASM_VAR(float, g_fg678794, $L_678794)
+ASM_VAR(float, g_fg678798, $L_678798)
+ASM_VAR(float, g_fg64d998, $L_64d998)
+
+extern "C" {
+
+// [FUN_53b180] the down direction felt in the cab (678790): from the cab's tilt (+13228, when +13124) negated
+// back, else gravity (702630) with x and y flipped (the car's acceleration is worked out but, as in the original,
+// not used); gravity itself without a car or cab
+void __fastcall Cab_FeltGravity(BYTE* s)
+{
+    float x = g_fg702630, y = g_fg702634, z = g_fg702638;
+    BYTE* car = F(BYTE*, s, 616);
+    if (!car || !F(BYTE*, car, 21600)) {
+        g_fg678798 = z;
+        g_fg678794 = y;
+        g_fg678790 = x;
+        return;
+    }
+    BYTE* cab = F(BYTE*, car, 21600);
+    if (F(int, cab, 13124)) {
+        float t[3];
+        const float* n = CallC<const float*>(Fg_Normalized, t, cab + 13228);
+        x = -n[0];
+        y = -n[1];
+        z = -n[2];
+    } else {
+        double dt = Game_FrameTime();
+        float dx = F(float, car, 432) - F(float, car, 468), dy = F(float, car, 436) - F(float, car, 472);
+        float dz = F(float, car, 440) - F(float, car, 476);
+        float ax = (float)(dx / dt), ay = (float)(dy / dt);
+        double az = dz / dt;
+        double gx = (double)g_fg702630 * g_fg64d998;
+        float gy = g_fg702634 * g_fg64d998, gz = g_fg702638 * g_fg64d998;
+        float d[3] = {(float)(ax - gx), ay - gy, (float)(az - gz)};
+        BYTE m[48];
+        const float* M = CallThis<const float*>(Fg_Matrix2, car + 16, m);
+        float e[3];
+        e[0] = (float)((double)d[2] * M[6] + (double)d[1] * M[3] + (double)d[0] * M[0]);
+        e[1] = (float)((double)d[2] * M[7] + (double)d[1] * M[4] + (double)d[0] * M[1]);
+        e[2] = (float)((double)d[2] * M[8] + (double)d[1] * M[5] + (double)d[0] * M[2]);
+        CallThis(Fg_NormalizeThis, e);
+    }
+    g_fg678798 = z;
+    g_fg678790 = -x;
+    g_fg678794 = -y;
+}
+
+} // extern "C"
+
+// === a car's flasher light (FUN_549c00)
+
+extern "C" void Fl_Update(); KING_ALIAS("_Fl_Update", "@Flasher_Update@16")
+extern "C" void Fl_Release(); KING_ALIAS("_Fl_Release", "@Flasher_Release@8")
+ASM_VAR(float, g_fl6796c4, $L_6796c4)
+ASM_VAR(float, g_fl64c320, $L_64c320)
+
+// m * p plus m's translation
+static void Fl_Place(float* o, const float* m, const float* p)
+{
+    o[0] = (float)((double)m[6] * p[2] + (double)m[3] * p[1] + (double)m[0] * p[0] + m[9]);
+    o[1] = (float)((double)m[7] * p[2] + (double)m[4] * p[1] + (double)m[1] * p[0] + m[10]);
+    o[2] = (float)((double)m[8] * p[2] + (double)m[5] * p[1] + (double)m[2] * p[0] + m[11]);
+}
+
+extern "C" {
+
+// [FUN_549c00] steps flasher f of car +24 (state record +20: state +12, elapsed +8): while on (1, 2) its light
+// (+16, state 2) follows the car's type light point (+60), and after 6796c4 it goes out (3, the time +12, the light
+// released); state 4 ends after 64c320; the elapsed time since the state's start (+4, +8, +12)
+void __fastcall Flasher_StepLight(BYTE* f)
+{
+    float el = 0;
+    BYTE* r = F(BYTE*, f, 20);
+    if (F(int, r, 12) != 1 && F(int, r, 12) != 2)
+        F(int, f, 0) = 0;
+    else {
+        el = (float)(GameTime() - F(float, f, 4));
+        if (F(int, F(BYTE*, f, 20), 12) == 2 && F(BYTE*, f, 16)) {
+            BYTE* car = F(BYTE*, f, 24);
+            float m[12];
+            memcpy(m, car + 708, 48);
+            const float* p = (const float*)((BYTE*)g_697f9c + F(int, car, 10420) * 2416 + 60);
+            float w[3], q[3];
+            Fl_Place(w, m, p);
+            const float* M = CallThis<const float*>(FUN_57de90, car + 16, m);
+            Fl_Place(q, M, w);
+            CallThis(Fl_Update, F(BYTE*, f, 16), q, 0xBF800000u);
+        }
+        if (el > g_fl6796c4) {
+            F(int, F(BYTE*, f, 20), 12) = 3;
+            F(float, f, 12) = (float)GameTime();
+            if (BYTE* l = F(BYTE*, f, 16)) {
+                CallThis(Fl_Release, l);
+                operator delete(l);
+            }
+            F(BYTE*, f, 16) = 0;
+        }
+    }
+    if (F(int, F(BYTE*, f, 20), 12) == 4) {
+        el = (float)(GameTime() - F(float, f, 8));
+        if (el > g_fl64c320)
+            F(int, F(BYTE*, f, 20), 12) = 0;
+    }
+    int st = F(int, F(BYTE*, f, 20), 12);
+    if (st == 1 || st == 2)
+        el = (float)(GameTime() - F(float, f, 4));
+    if (F(int, F(BYTE*, f, 20), 12) == 4)
+        el = (float)(GameTime() - F(float, f, 8));
+    if (F(int, F(BYTE*, f, 20), 12) == 3)
+        el = (float)(GameTime() - F(float, f, 12));
+    F(float, F(BYTE*, f, 20), 8) = el;
+}
+
+} // extern "C"
+
+// === starting a flasher light (FUN_549960)
+
+ASM_PROC(FUN_54a120)
+ASM_VAR(float, g_fl64f740, $L_64f740)
+ASM_VAR(float, g_fl64c250, $L_64c250)
+
+extern "C" {
+
+// [FUN_549960] starts flasher effect f (state 0 to 2, +28 = 1, its start +4; a car of type kind 3 gets the 549580
+// effect): a new light (+16) at the car's type light point, as bright as sqrt(+3284 * 64f740) up to 1
+void __fastcall CarEffect_StartFlasher(BYTE* f)
+{
+    if (F(int, F(BYTE*, f, 20), 12))
+        return;
+    BYTE* car = F(BYTE*, f, 24);
+    if (F(int, (BYTE*)g_q129_6981b0, 34 + F(int, car, 10420) * 2416) == 3)
+        CallC(FUN_4ba060, car, $L_549580);
+    F(DWORD, f, 28) = 0x3F800000;
+    F(int, F(BYTE*, f, 20), 12) = 2;
+    F(float, f, 4) = (float)GameTime();
+    car = F(BYTE*, f, 24);
+    const float* p = (const float*)((BYTE*)g_697f9c + F(int, car, 10420) * 2416 + 60);
+    float m[12];
+    memcpy(m, car + 708, 48);
+    float w[3], q[3];
+    Fl_Place(w, m, p);
+    const float* M = CallThis<const float*>(FUN_57de90, car + 16, m);
+    Fl_Place(q, M, w);
+    float k = (float)x87_sqrt(F(float, F(BYTE*, f, 24), 3284) * (double)g_fl64f740);
+    if (k > g_fl64c250)
+        k = 1.0f;
+    BYTE* l = (BYTE*)operator new(16);
+    F(BYTE*, f, 16) = l ? CallThis<BYTE*>(FUN_54a120, l, q, *(DWORD*)&k) : 0;
+}
+
+} // extern "C"

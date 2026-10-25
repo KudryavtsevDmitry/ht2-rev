@@ -15,7 +15,7 @@
 extern "C" void __cdecl List_FreeNode(void* node, int size);   // aimain.cpp
 extern "C" int __cdecl _stricmp(const char* a, const char* b);
 extern "C" void __cdecl Sort_LinearInsert12(BYTE* first, BYTE* last, int, void* cmp);
-KING_ALIAS("_Sort_LinearInsert12", "FUN_467820")
+KING_ALIAS("_Sort_LinearInsert12", "_Names_LinearInsert")
 extern "C" void __cdecl Sort_UnguardedInsertion12(BYTE* first, BYTE* last, int, void* cmp);
 KING_ALIAS("_Sort_UnguardedInsertion12", "_Names_InsertionSortRest")
 extern "C" void FUN_45b570(); KING_ALIAS("_FUN_45b570", "@Vec1592_InsertAux@16")    // vector<1592 bytes>::insert_aux
@@ -2751,3 +2751,46 @@ void __cdecl Near_FinalInsertion(BYTE** first, BYTE** last, DVec3 pt)
 }
 
 } // extern "C"
+
+extern "C" void Ni_Alloc(); KING_ALIAS("_Ni_Alloc", "_Stl_Allocate")
+// [FUN_467820] the linear insertion of name *last (a 12-byte char vector, compared ignoring case) into the sorted
+// [first, last): before the first one it shifts the range up and becomes the first, else the unguarded insert
+extern "C" void __cdecl Names_LinearInsert(BYTE* first, BYTE* last, int, int cmp)
+{
+    char** l = (char**)last;
+    unsigned n = l[1] - l[0];
+    char* v[3] = {0, 0, 0};
+    if (n)
+        v[0] = CallC<char*>(Ni_Alloc, n);
+    v[2] = v[0] + n;
+    memmove(v[0], l[0], l[1] - l[0]);
+    v[1] = v[0] + (l[1] - l[0]);
+    char** f = (char**)first;
+    if (_stricmp(v[0], f[0]) < 0) {
+        for (BYTE* d = last; d != first; d -= 12)
+            CallThis(FUN_44c160, d, d - 12);
+        unsigned m = v[1] - v[0];
+        if (m > (unsigned)(f[2] - f[0])) {
+            char* p = CallThis<char*>(FUN_458cf0, f, m, v[0], v[1]);
+            if (f[2] - f[0])
+                CallC(FUN_44b4a0, f[0], f[2] - f[0]);
+            f[0] = p;
+            f[2] = p + m;
+            f[1] = p + m;
+        } else if ((unsigned)(f[1] - f[0]) >= m) {
+            memmove(f[0], v[0], m);
+            f[1] = f[0] + m;
+        } else {
+            unsigned have = f[1] - f[0];
+            memmove(f[0], v[0], have);
+            Copy1((BYTE*)v[0] + (f[1] - f[0]), (BYTE*)v[1], (BYTE*)f[1]);
+            f[1] = f[0] + m;
+        }
+    } else {
+        Name12 c;
+        CallThis(FUN_44dd90, &c, v);
+        CallC(FUN_469850, last, c, cmp);
+    }
+    if (v[2] - v[0])
+        CallC(FUN_44b4a0, v[0], v[2] - v[0]);
+}

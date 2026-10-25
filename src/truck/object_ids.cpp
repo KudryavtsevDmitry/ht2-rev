@@ -340,7 +340,7 @@ extern "C" void Sh_Log(); KING_ALIAS("_Sh_Log", "_VehLog_Value")
 extern "C" void Sh_GetLocal(); KING_ALIAS("_Sh_GetLocal", "@Node_GetLocal@12")
 extern "C" void Sh_Draw(); KING_ALIAS("_Sh_Draw", "@SceneNode5f98c0_Draw@16")
 extern "C" void Sh_sprintf(); KING_ALIAS("_Sh_sprintf", "_sprintf")
-ASM_PROC(FUN_5b73a0)    // draws a line on a surface (x0, y0, x1, y1, colour, -)
+extern "C" void FUN_5b73a0(); KING_ALIAS("_FUN_5b73a0", "_Window_DrawLine")    // draws a line on a surface (x0, y0, x1, y1, colour, -)
 ASM_VAR(int, g_sh696c6c, $L_696c6c)
 ASM_VAR(int, g_sh696be4, $L_696be4)
 ASM_VAR(BYTE*, g_sh6ef1fc, $L_6ef1fc)
@@ -496,6 +496,82 @@ void __fastcall Item_SetFrame(BYTE* s, void*, int r, const Sf_Mat* m)
     F(int, s, 3432) = F(int, s, 800);
     memcpy(s + 3336, s + 500, 48);
     memcpy(s + 3384, s + 596, 48);
+}
+
+} // extern "C"
+
+// === querying an object's shape (FUN_57e140)
+
+extern "C" void Qs_Inverse(); KING_ALIAS("_Qs_Inverse", "_Matrix_Inverse")
+ASM_VAR(AsmLabel, g_qs7025f0, $L_7025f0)
+
+extern "C" {
+
+// [FUN_57e140] fills hit record h for object o (+400, the ray +584/+536, identity frame +4) and asks o's shape
+// (+804, vtbl+52 (6, h)); a result with bit 1 and no object hit (+104) wakes o (vtbl+28 (1)), with bit 0 the hit
+// point (+52) and normal (+64) are taken into the frame's space; the result
+int __fastcall Object_QueryShape(BYTE* o, void*, BYTE* h)
+{
+    memcpy(h + 4, g_qs7025f0, 48);
+    memcpy(h + 76, o + 584, 12);
+    memcpy(h + 88, o + 536, 12);
+    F(BYTE*, h, 120) = o;
+    F(int, h, 116) = 0;
+    F(int, h, 100) = 0;
+    F(int, h, 0) = F(int, o, 400);
+    int r = CallVirt<int>(F(BYTE*, o, 804), 52, 6, h);
+    if ((r & 2) && !F(int, h, 104))
+        CallVirt(o, 28, 1);
+    if (r & 1) {
+        float m[12];
+        CallC(Qs_Inverse, m, h + 4);
+        float* p = (float*)(h + 52);
+        float x = (float)((double)m[6] * p[2] + (double)m[3] * p[1] + (double)m[0] * p[0] + m[9]);
+        float y = (float)((double)m[7] * p[2] + (double)m[4] * p[1] + (double)m[1] * p[0] + m[10]);
+        float z = (float)((double)m[8] * p[2] + (double)m[5] * p[1] + (double)m[2] * p[0] + m[11]);
+        p[0] = x, p[1] = y, p[2] = z;
+        float* n = (float*)(h + 64);
+        x = (float)((double)m[0] * n[0] + (double)m[6] * n[2] + (double)m[3] * n[1]);
+        y = (float)((double)m[1] * n[0] + (double)m[7] * n[2] + (double)m[4] * n[1]);
+        z = (float)((double)m[2] * n[0] + (double)m[8] * n[2] + (double)m[5] * n[1]);
+        n[0] = x, n[1] = y, n[2] = z;
+    }
+    return r;
+}
+
+} // extern "C"
+
+// === setting an item's velocity (FUN_5812a0)
+
+ASM_VAR(AsmLabel, s_iwSetV, $L_67d4d8)
+extern "C" void Iw_Length(); KING_ALIAS("_Iw_Length", "_Vec3_Length")
+
+extern "C" {
+
+// [FUN_5812a0] sets item s's velocity (+416, kept at +3300) to v, checked against 150 (reported with the item's
+// details and the context ctx); its speed at +888 and +3460
+void __fastcall Item_SetVelocity(BYTE* s, void*, const float* v, const char* ctx)
+{
+    float* o = (float*)(s + 416);
+    memcpy(o, v, 12);
+    char msg[300], buf[488];
+    const char* name = F(const char*, F(BYTE*, F(BYTE*, s, 32), 64), 12);
+    const char* room = F(const char*, F(BYTE*, s, 800), 12);
+    if (g_iw6d2078)
+        CallC(Iw_sprintf, msg, (const char*)s_iwInfoWorld, name, (double)F(float, s, 396), room,
+              (double)F(float, s, 536), (double)F(float, s, 540), (double)F(float, s, 544), (const char*)s_iw696cbc,
+              (double)g_iw6969f4, (double)g_iw6969f8, (double)g_iw6969fc);
+    else
+        CallC(Iw_sprintf, msg, (const char*)s_iwInfo, name, (double)F(float, s, 396), room,
+              (double)F(float, s, 536), (double)F(float, s, 540), (double)F(float, s, 544));
+    const char* a = ctx ? ctx : (const char*)s_iwEmpty;
+    const char* b = ctx ? (const char*)s_iwNewline : (const char*)s_iwEmpty;
+    CallC(Iw_sprintf, buf, (const char*)s_iwSetV, a, b, msg);
+    CallC(Iw_CheckPoint, o, buf, 150.0f);
+    memcpy(s + 3300, o, 12);
+    float l = CallC<float>(Iw_Length, o);
+    F(float, s, 888) = l;
+    F(float, s, 3460) = l;
 }
 
 } // extern "C"

@@ -1485,9 +1485,9 @@ extern "C" void Bc_WarnClose(); KING_ALIAS("_Bc_WarnClose", "_WarnLog_Close")
 extern "C" void Bc_Log(); KING_ALIAS("_Bc_Log", "_VehLog_Value2")
 extern "C" void Bc_sprintf(); KING_ALIAS("_Bc_sprintf", "_sprintf")
 extern "C" void Bc_ActivateAll(); KING_ALIAS("_Bc_ActivateAll", "@Points_ActivateAll@8")
-ASM_PROC(FUN_5843c0)    // a body's collision with the ground
+extern "C" void FUN_5843c0(); KING_ALIAS("_FUN_5843c0", "_Item_MoveFraction")    // a body's collision with the ground
 ASM_PROC(FUN_5855a0)    // with another body
-ASM_PROC(FUN_58b120)    // with a moving object
+extern "C" void FUN_58b120(); KING_ALIAS("_FUN_58b120", "_Body_NearestContact")    // with a moving object
 ASM_VAR(int, g_bc6f6620, $L_6f6620)
 ASM_VAR(AsmLabel, s_bc67dd8c, $L_67dd8c)
 ASM_VAR(AsmLabel, s_bc67dd70, $L_67dd70)
@@ -1530,6 +1530,148 @@ int __fastcall Body_Collide(BYTE* s, void*, int a, int b, int c, BYTE* k, unsign
     if (r)
         CallThis(Bc_ActivateAll, s);
     return r;
+}
+
+} // extern "C"
+
+// === a body's nearest contact (FUN_58b120)
+
+ASM_PROC(FUN_585150)
+extern "C" void Nc_Ground(); KING_ALIAS("_Nc_Ground", "_Movingb_589e70")
+extern "C" void Nc_Neighbours(); KING_ALIAS("_Nc_Neighbours", "_Body_NeighbourContacts")
+extern "C" void Nc_DivAssign(); KING_ALIAS("_Nc_DivAssign", "@Vec3_DivAssign@16")
+extern "C" void Nc_AddAssign(); KING_ALIAS("_Nc_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(float, g_nc64c2f8, $L_64c2f8)
+ASM_VAR(double, g_nc6506c0, $L_6506c0)
+ASM_VAR(double, g_nc64d918, $L_64d918)
+
+extern "C" {
+
+// [FUN_58b120] collects the contacts of body b (with the ground (a), its neighbours (n), the others (o)) and
+// returns the nearest: *scale *= its distance, *value its +2560 value, out its point (+52; without neighbour
+// contacts the distance-weighted mean of the contacts facing the same way) and normal (+64), +100, +116 and
+// for a contact without an object its 48-byte frame (+4); the result flags: the surface's bits 1/2 (as
+// 0x4000000/0x2000000, unless b+3588), 0x8000000 without an object, 3 ground, 8 neighbours, 4 others; 0 for none
+int __cdecl Body_NearestContact(BYTE* b, BYTE* m, float* scale, float* value, BYTE* out, int a6)
+{
+    BYTE t[6404];
+    CallThis(FUN_587c80, t);
+    F(int, t, 2816) = 0;
+    int ground = CallC<int>(Nc_Ground, b, m, t, a6);
+    int nb = CallC<int>(Nc_Neighbours, b, m, t);
+    int other = CallC<int>(FUN_585150, b, m, t);
+    if (!ground && !nb && !other)
+        return 0;
+    int n = F(int, t, 2816);
+    int best = 0;
+    float bestValue = 0;
+    float nearest = g_nc64c2f8;
+    float* dist = (float*)(t + 2048);
+    int* flag = (int*)(t + 2820);
+    Vec3* pts = (Vec3*)t;
+    Vec3* nrm = (Vec3*)(t + 768);
+    for (int i = 0; i < n; i++)
+        if (flag[i] && nearest > dist[i]) {
+            best = i;
+            nearest = dist[i];
+            bestValue = F(float, t, 2560 + i * 4);
+        }
+    Vec3 p = pts[best], nb0 = nrm[best];
+    *scale = dist[best] * *scale;
+    Vec3 acc = g_gravity702650, tmp;
+    float wsum = 0;
+    if (!nb) {
+        for (int j = n - 1; j >= 0; j--) {
+            if (!flag[j])
+                continue;
+            if (!((double)nrm[j].z * nb0.z + (double)nrm[j].x * nb0.x + (double)nrm[j].y * nb0.y > g_nc6506c0))
+                continue;
+            float w = (float)(g_nc64d918 - dist[j]);
+            Vec3 v = {(pts[j].x - p.x) * w, (pts[j].y - p.y) * w, (pts[j].z - p.z) * w};
+            CallThis(Nc_AddAssign, &acc, &tmp, &v);
+            wsum = (float)(g_nc64d918 - dist[j] + wsum);
+        }
+        CallThis(Nc_DivAssign, &acc, &tmp, *(DWORD*)&wsum);
+        CallThis(Nc_AddAssign, &acc, &tmp, &p);
+        F(Vec3, out, 52) = acc;
+        F(Vec3, out, 64) = *CallC<Vec3*>(FUN_5ab400, &tmp, &nb0);
+    } else {
+        F(Vec3, out, 52) = pts[best];
+        F(Vec3, out, 64) = nrm[best];
+    }
+    F(int, out, 100) = F(int, t, 1792 + best * 4);
+    F(int, out, 116) = F(int, t, 1536 + best * 4);
+    if (flag[best] == -1)
+        memcpy(out + 4, t + 3332 + best * 48, 48);
+    *value = bestValue;
+    int r = 0;
+    if (!F(int, b, 3588)) {
+        DWORD s = F(DWORD, b, 3896 + F(int, t, 3076 + best * 4) * 4);
+        if (s & 1)
+            r = 0x4000000;
+        if (s & 2)
+            r |= 0x2000000;
+    }
+    if (flag[best] == -1)
+        r |= 0x8000000;
+    if (ground)
+        r |= 3;
+    if (nb)
+        r |= 8;
+    if (other)
+        r |= 4;
+    return r;
+}
+
+} // extern "C"
+
+// === a body's nearest neighbours (a method at $L_5914c0)
+
+extern "C" void Nn_Matrix1(); KING_ALIAS("_Nn_Matrix1", "@SceneObj_Matrix1@12")
+ASM_VAR(BYTE*, g_nn6f653c, $L_6f653c)
+
+extern "C" {
+
+// [$L_5914c0] the six bodies (of the list 6f653c, other than s and its +9512) whose centres (+3436 placed) lie
+// nearest to s's position (+536): +3508 the bodies, +3532 their squared distances (100000 when free), nearest first
+void __fastcall Body_FindNeighbours(BYTE* s)
+{
+    BYTE* node = g_nn6f653c ? g_nn6f653c - 4 : 0;
+    const float* pos = (const float*)(s + 536);
+    float px = pos[0], py = pos[1], pz = pos[2];
+    BYTE** nb = (BYTE**)(s + 3508);
+    float* dist = (float*)(s + 3532);
+    for (int k = 0; k < 6; k++) {
+        nb[k] = 0;
+        *(DWORD*)&dist[k] = 0x47C35000;
+    }
+    for (; node; node = F(BYTE*, node, 8) ? F(BYTE*, node, 8) - 4 : 0) {
+        BYTE* o = node - 376;
+        if (o == s || o == F(BYTE*, s, 9512))
+            continue;
+        BYTE m[48];
+        const float* M = CallThis<const float*>(Nn_Matrix1, o, m);
+        const float* c = (const float*)(o + 3436);
+        double wx = (double)M[3] * c[1] + (double)M[6] * c[2] + (double)c[0] * M[0] + M[9];
+        float wy = (float)((double)M[4] * c[1] + (double)M[7] * c[2] + (double)M[1] * c[0] + M[10]);
+        float wz = (float)((double)M[5] * c[1] + (double)M[8] * c[2] + (double)M[2] * c[0] + M[11]);
+        float dx = (float)(wx - px);
+        float dy = (float)(wy - py);
+        double dz = (double)wz - pz;
+        double d2 = (double)dx * dx + (double)dy * dy + dz * dz;
+        int i = 0;
+        for (; i < 6; i++)
+            if (!nb[i] || d2 < dist[i])
+                break;
+        if (i == 6)
+            continue;
+        for (int j = 5; j > i; j--) {
+            nb[j] = nb[j - 1];
+            dist[j] = dist[j - 1];
+        }
+        nb[i] = o;
+        dist[i] = (float)d2;
+    }
 }
 
 } // extern "C"
