@@ -400,7 +400,7 @@ extern "C" void __fastcall Tgr_Draw(BYTE* s, void*, void* dev, BYTE* b)
 // ---------------------------------------------------------------------------
 // Grid setup (exception frame dropped).
 
-ASM_PROC(FUN_613b50)
+extern "C" void FUN_613b50(); KING_ALIAS("_FUN_613b50", "@Terrain_ReadTiles@16")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" void Tgr_VecCtor(); KING_ALIAS("_Tgr_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" BYTE* __fastcall Cell61bee0_Construct(BYTE* s);

@@ -1570,7 +1570,7 @@ extern "C" void FUN_5d0990(); KING_ALIAS("_FUN_5d0990", "_Span_EdgeUVP")    // e
 extern "C" void FUN_5d1030(); KING_ALIAS("_FUN_5d1030", "_Span_EdgeUVPersp")    // edge with texture
 extern "C" void FUN_5d1740(); KING_ALIAS("_FUN_5d1740", "_Span_FillRowsUV")    // textured rows (texture, mode, step, level)
 extern "C" void FUN_5d18d0(); KING_ALIAS("_FUN_5d18d0", "_Span_FillRowsUVZ")    // textured shaded rows (texture, mode, step)
-ASM_PROC(FUN_5d1a80)    // textured rows with z (texture, mode)
+extern "C" void FUN_5d1a80(); KING_ALIAS("_FUN_5d1a80", "_Spans_Fill")    // textured rows with z (texture, mode)
 extern "C" void FUN_5d1c50(); KING_ALIAS("_FUN_5d1c50", "_Span_FillRowsAffine")    // textured rows, perspective (texture, mode)
 extern "C" void FUN_5d1e50(); KING_ALIAS("_FUN_5d1e50", "_Span_FillRowsAffineFast")    // textured rows, perspective, transparent (texture, mode)
 ASM_VAR(int, g_spanFogColor71e7b0, $L_71e7b0)
@@ -2116,3 +2116,69 @@ extern "C" void __cdecl Span_FillRowsAffine(int unused, int mode) { Span_Affine(
 
 // [FUN_5d1e50] Span_FillRowsAffine without the subpixel correction
 extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode) { Span_Affine(mode, false); }
+
+// === filling a polygon's spans (FUN_5d1a80)
+
+ASM_FUNC(Sf_Setup, FUN_5feb87)
+ASM_FUNC(Sf_Span, FUN_5fee7c)
+extern "C" void Sf_FogColor(); KING_ALIAS("_Sf_FogColor", "@Palette_FogColor@12")
+ASM_VAR(int, g_sf71e7dc, $L_71e7dc)    // the first row
+ASM_VAR(int, g_sf71e7d8, $L_71e7d8)    // the last row
+ASM_VAR(int, g_sf71e7bc, $L_71e7bc)    // the colour buffer's pitch
+ASM_VAR(int, g_sf71e7f8, $L_71e7f8)    // the depth buffer's pitch (in words)
+ASM_VAR(int, g_sf70f3d8, $L_70f3d8)    // bytes per pixel
+ASM_VAR(int, g_sf702e90, $L_702e90)    // pixels filled
+ASM_VAR(int, g_sf72007c, $L_72007c)    // spans filled
+ASM_VAR(int, g_sf71e7c4, $L_71e7c4)    // the colour buffer
+ASM_VAR(int, g_sf71e7e8, $L_71e7e8)    // the depth buffer
+ASM_VAR(BYTE*, g_sf71e7ec, $L_71e7ec)  // the palette
+ASM_VAR(int, g_sf71e7b0, $L_71e7b0)    // the fog colour
+ASM_VAR(unsigned, g_sf702e8c, $L_702e8c)
+ASM_VAR(BYTE, g_sf70f400, $L_70f400)   // the left edges, 24 bytes a row (x at -16, shade -8, u -4, v 0)
+
+extern "C" {
+
+// [FUN_5d1a80] fills the polygon's rows (71e7dc..71e7d8) between its left and right edges (16.16 fixed point,
+// 31184 bytes apart) with FUN_5fee7c, stepping the texture coordinates across the span; with flag 4 the fog
+// colour follows each row's shade
+void __cdecl Spans_Fill(int unused, int flags)
+{
+    int off = g_sf71e7dc * g_sf71e7bc;
+    int zoff = g_sf71e7f8 * g_sf71e7dc * 2;
+    CallC(Sf_Setup, flags, (g_sf702e8c >> 14) & 1);
+    int y = g_sf71e7dc;
+    if (y > g_sf71e7d8)
+        return;
+    BYTE* e = &g_sf70f400 + y * 24;
+    for (; y <= g_sf71e7d8; y++, e += 24, off += g_sf71e7bc, zoff += g_sf71e7f8 * 2) {
+        int xr = F(int, e, 31184), xl = F(int, e, -16);
+        int u = F(int, e, -4), v = F(int, e, 0);
+        int last = xr >> 20, first = xl >> 20;
+        int w = (xr - xl) >> 16;
+        int du, dv;
+        if (!w)
+            du = dv = 0;
+        else {
+            du = ((F(int, e, 31196) - u) << 4) / w;
+            dv = ((F(int, e, 31200) - v) << 4) / w;
+        }
+        int frac = (xl >> 16) & 15;
+        if (frac) {
+            frac = 16 - frac;
+            first++;
+        }
+        if (first > last)
+            continue;
+        int at = g_sf70f3d8 * first + off;
+        g_sf702e90 = g_sf702e90 + (last - first) + 1;
+        u += (frac * du) >> 4;
+        v += (frac * dv) >> 4;
+        if (flags & 4)
+            g_sf71e7b0 = CallThis<int>(Sf_FogColor, g_sf71e7ec, F(int, e, -8));
+        CallC(Sf_Span, g_sf71e7c4 + at, last - first + 1, u, v, du, dv, F(int, e, -8), 0,
+            g_sf71e7e8 + zoff + first * 2);
+        g_sf72007c++;
+    }
+}
+
+} // extern "C"

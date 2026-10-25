@@ -1024,3 +1024,94 @@ int __fastcall Ground_SweepSphere(BYTE* s, void*, const float* a, const float* b
 }
 
 } // extern "C"
+
+// === reading three terrain tiles and their normals (FUN_613b50)
+
+extern "C" void Tn_TileHeight(); KING_ALIAS("_Tn_TileHeight", "@Tile_Height@16")
+extern "C" int __cdecl rand(void);
+ASM_VAR(AsmLabel, s_tn6724b0, $L_6724b0)
+ASM_VAR(AsmLabel, s_tn685ce4, $L_685ce4)
+ASM_VAR(AsmLabel, s_tn6724f8, $L_6724f8)
+ASM_VAR(float, g_tn653234, $L_653234)
+ASM_VAR(float, g_tn64c250, $L_64c250)
+ASM_VAR(float, g_tn64d690, $L_64d690)
+ASM_VAR(float, g_tn64c304, $L_64c304)
+ASM_VAR(float, g_tn64c254, $L_64c254)
+ASM_VAR(float, g_tn64c258, $L_64c258)
+
+// the height of grid point (i, j) through the tile table of terrain s
+static float Tn_HeightAt(BYTE* s, int i, int j)
+{
+    BYTE* t = CallThis<BYTE*>(FUN_608ab0, s, i, j);
+    return F(float, t, (((unsigned)i % 257) * 257 + (unsigned)j % 257) * 16);
+}
+
+static float Tn_TileH(BYTE* s, int i, int j)
+{
+    return CallThis<float>(Tn_TileHeight, CallThis<BYTE*>(FUN_608ab0, s, i, j), i, j);
+}
+
+static int Tn_Fail(int line)
+{
+    CallC(FUN_60aad0, 2289444626u, s_tn6724b0, s_tn685ce4, line, s_tn6724f8);
+    return 0;
+}
+
+extern "C" {
+
+// [FUN_613b50] reads the heights of terrain s's three tiles from the files f[0..2] (n must be 3) and gives every
+// point of the 771 x 771 grid the normal of its neighbours' slopes (+4 of its 16-byte entry); nearly level
+// ones get a small random tilt; 0 on a failure (reported)
+int __fastcall Terrain_ReadTiles(BYTE* s, void*, FILE** f, int n)
+{
+    if (n != 3)
+        return Tn_Fail(59);
+    if (!Tile_ReadHeights(F(BYTE*, s, 0), 0, f[0]))
+        return Tn_Fail(64);
+    if (!Tile_ReadHeights(F(BYTE*, s, 4), 0, f[1]))
+        return Tn_Fail(69);
+    if (!Tile_ReadHeights(F(BYTE*, s, 8), 0, f[2]))
+        return Tn_Fail(74);
+    for (int i = 0; i < 771; i++) {
+        float fi = (float)i;
+        float xm = (fi - g_tn64c250) * g_tn653234, xp = (fi + g_tn64c250) * g_tn653234, x = fi * g_tn653234;
+        for (int j = 0; j < 771; j++) {
+            float fj = (float)j;
+            float y = fj * g_tn653234, yp = (fj + g_tn64c250) * g_tn653234, ym = (fj - g_tn64c250) * g_tn653234;
+            Vec3 A, B, t;
+            if (j) {
+                float h0 = Tn_HeightAt(s, i, j - 1);
+                float h1 = Tn_HeightAt(s, i, j + 1);
+                A.x = x - x, A.y = yp - ym, A.z = h1 - h0;
+            } else {
+                float h0 = Tn_HeightAt(s, i, 0);
+                float h1 = Tn_HeightAt(s, i, 1);
+                Vec3_SetThis(&A, 0, x - x, yp - ym, h1 - h0);
+            }
+            if (i) {
+                float hn = Tn_HeightAt(s, i + 1, j);
+                Vec3_SetThis(&B, 0, xm - xp, y - y, Tn_TileH(s, i - 1, j) - hn);
+            } else {
+                float h1 = Tn_TileH(s, 1, j);
+                Vec3_SetThis(&B, 0, xm - xp, y - y, Tn_TileH(s, 0, j) - h1);
+            }
+            Vec3 N = {B.z * A.y - B.y * A.z, B.x * A.z - A.x * B.z, A.x * B.y - B.x * A.y};
+            float len = (float)x87_sqrt(CallC<double>(Tg_LengthSq, &N));
+            Vec3 nn = *CallC<Vec3*>(Tg_DivBy, &t, &N, *(DWORD*)&len);
+            if (nn.x > g_tn64d690 && nn.x < g_tn64c304 && nn.y > g_tn64d690 && nn.y < g_tn64c304) {
+                float r1 = (float)(rand() * (double)g_tn64c254);
+                nn.x = (float)((rand() * (double)g_tn64c254 - r1) * g_tn64c258);
+                float r2 = (float)(rand() * (double)g_tn64c254);
+                nn.y = (float)((rand() * (double)g_tn64c254 - r2) * g_tn64c258);
+                double l = x87_sqrt(CallC<double>(Tg_LengthSq, &nn));
+                Vec3_SetThis(&t, 0, (float)(nn.x / l), (float)(nn.y / l), (float)(nn.z / l));
+                nn = t;
+            }
+            BYTE* tile = CallThis<BYTE*>(FUN_608ab0, s, i, j);
+            F(Vec3, tile, (((unsigned)i % 257) * 257 + (unsigned)j % 257) * 16 + 4) = nn;
+        }
+    }
+    return 1;
+}
+
+} // extern "C"

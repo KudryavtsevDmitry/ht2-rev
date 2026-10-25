@@ -3710,7 +3710,7 @@ extern "C" void __fastcall View_DrawObject(BYTE* s)
     g_q132_721210 = (float)(CallC<double>(FUN_6037e0) - t0);
 }
 
-ASM_PROC(FUN_5eaf40)
+extern "C" void FUN_5eaf40(); KING_ALIAS("_FUN_5eaf40", "@Backdrop_Place@32")
 extern "C" void FUN_5e19b0(); KING_ALIAS("_FUN_5e19b0", "_Frame_Apply")
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")

@@ -1395,3 +1395,89 @@ void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r)
 }
 
 } // extern "C"
+
+// === a backdrop around the view (FUN_5eaf40)
+
+#include "x87.h"
+
+ASM_VAR(float, g_bp64c258, $L_64c258)
+ASM_VAR(float, g_bp64c264, $L_64c264)
+ASM_VAR(double, g_bp64d908, $L_64d908)
+ASM_VAR(double, g_bp64b658, $L_64b658)
+ASM_VAR(double, g_bp64b7c0, $L_64b7c0)
+
+extern "C" {
+
+// [FUN_5eaf40] draws backdrop picture bd+76 of set s (pictures +92, count +88) on r's surface for camera cam
+// (fields of view +84 / +88) turned by angle a: centred at the height a * 'scale' below the middle plus bd+80,
+// in columns of width w from the middle outwards, each step one line higher or lower by the tilt t (none when
+// level); the clip rows are bd+84 / +88
+void __fastcall Backdrop_Place(BYTE* s, void*, BYTE* cam, float a, float scale, float t, BYTE* r, BYTE* bd)
+{
+    int idx = F(int, bd, 76);
+    BYTE** pics = F(BYTE**, s, 92);
+    if (!pics || idx < 0 || idx >= F(int, s, 88))
+        return;
+    BYTE* pic = pics[idx];
+    if (!pic)
+        return;
+    BYTE* surf = F(BYTE*, r, 1948);
+    int W = F(WORD, surf, 0), H = F(WORD, surf, 2);
+    double av = x87_atan2(F(float, cam, 88) * g_bp64c258, 1.0);
+    double hs = H * (double)scale;
+    double ah = x87_atan2(F(float, cam, 84) * g_bp64c258, 1.0);
+    float y = (float)(hs / (ah + ah) + H / 2 + F(int, bd, 80));
+    double ang = -a;
+    if (ang < g_bp64c264)
+        ang = ang + g_bp64d908;
+    int x = (int)(W * ang / (av + av));
+    int rem = x % (int)F(WORD, pic, 20);
+    double frem = rem;
+    int half = W / 2, w, col;
+    if (x87_fabs(t) < g_bp64b658) {
+        w = half;
+        col = half;
+    } else {
+        w = (int)(3 * W / (x87_sin(t) / x87_cos(t) * H * g_bp64b7c0));
+        if (w < 4 && w >= 0)
+            w = 4;
+        else if (w > -4 && w <= 0)
+            w = -4;
+        if (w > half)
+            w = half;
+        if (w < -half)
+            w = -half;
+        col = half;
+    }
+    int dir;
+    if (w > 0)
+        dir = 1;
+    else {
+        dir = -1;
+        w = -w;
+    }
+    if (w >= col)
+        dir = 0;
+    int off0 = (int)frem;
+    int yi = (int)y;
+    if (col < W) {
+        int off = off0 - half + col;
+        for (int c = col; c < W; c += w, off += w, yi += dir)
+            Backdrop_Draw(surf, pic, off, w, c, yi, F(int, bd, 84), F(int, bd, 88));
+    }
+    yi = (int)(y - dir);
+    int c = half - w;
+    int n = c + w;
+    if (n <= 0)
+        return;
+    int off = off0 - half + c;
+    do {
+        Backdrop_Draw(surf, pic, off, w, c, yi, F(int, bd, 84), F(int, bd, 88));
+        n -= w;
+        c -= w;
+        off -= w;
+        yi -= dir;
+    } while (n > 0);
+}
+
+} // extern "C"

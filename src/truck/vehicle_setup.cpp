@@ -1236,3 +1236,308 @@ int __fastcall Wheels_FindGround(BYTE* s)
 }
 
 } // extern "C"
+
+// === a wheel on its surface (FUN_502780)
+
+ASM_FUNC(Ws_InPatch, FUN_502270)
+extern "C" void Ws_RampValue(); KING_ALIAS("_Ws_RampValue", "@Ramp_Value@8")
+extern "C" void Ws_AddContact(); KING_ALIAS("_Ws_AddContact", "@Engine_AddContact@20")
+extern "C" void Ws_CameraGet(); KING_ALIAS("_Ws_CameraGet", "@Camera_Get@12")
+extern "C" void Ws_Length(); KING_ALIAS("_Ws_Length", "_Vec3_Length")
+extern "C" void Ws_MulAssign(); KING_ALIAS("_Ws_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(int, g_ws69784c, $L_69784c)
+ASM_VAR(BYTE*, g_ws6ef1fc, $L_6ef1fc)
+ASM_VAR(float, g_ws6976c0, $L_6976c0)
+ASM_VAR(float, g_ws697688, $L_697688)
+ASM_VAR(float, g_ws6976f8, $L_6976f8)
+ASM_VAR(float, g_ws696bdc, $L_696bdc)
+ASM_VAR(BYTE, g_ws702650, $L_702650)
+ASM_VAR(float, g_ws64c450, $L_64c450)
+ASM_VAR(float, g_ws64c254, $L_64c254)
+ASM_VAR(float, g_ws64c250, $L_64c250)
+ASM_VAR(float, g_ws64c40c, $L_64c40c)
+ASM_VAR(float, g_ws64c304, $L_64c304)
+ASM_VAR(float, g_ws64d690, $L_64d690)
+ASM_VAR(float, g_ws64c260, $L_64c260)
+ASM_VAR(float, g_ws64c968, $L_64c968)
+ASM_VAR(float, g_ws64c338, $L_64c338)
+ASM_VAR(float, g_ws64c320, $L_64c320)
+ASM_VAR(float, g_ws64daac, $L_64daac)
+ASM_VAR(float, g_ws64daa8, $L_64daa8)
+ASM_VAR(float, g_ws64da94, $L_64da94)
+ASM_VAR(float, g_ws64da90, $L_64da90)
+ASM_VAR(float, g_ws64da7c, $L_64da7c)
+ASM_VAR(float, g_ws64da78, $L_64da78)
+ASM_VAR(double, g_ws64b5b8, $L_64b5b8)
+ASM_VAR(double, g_ws64b918, $L_64b918)
+ASM_VAR(double, g_ws64d318, $L_64d318)
+ASM_VAR(double, g_ws64daa0, $L_64daa0)
+ASM_VAR(double, g_ws64da98, $L_64da98)
+ASM_VAR(double, g_ws64d338, $L_64d338)
+ASM_VAR(double, g_ws64d668, $L_64d668)
+ASM_VAR(double, g_ws64b840, $L_64b840)
+ASM_VAR(double, g_ws64c958, $L_64c958)
+ASM_VAR(double, g_ws64b5a0, $L_64b5a0)
+ASM_VAR(double, g_ws64da88, $L_64da88)
+ASM_VAR(double, g_ws64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ws64da80, $L_64da80)
+ASM_VAR(double, g_ws64b668, $L_64b668)
+ASM_VAR(double, g_ws64d0f0, $L_64d0f0)
+ASM_VAR(double, g_ws64d378, $L_64d378)
+
+#define WS(off) F(float, s, (off) + w * 4)
+
+// whether wheel w slips (spinning over lim on slip +slip, or locked by +6612) while on the ground
+static bool Ws_Slips(BYTE* s, int w, int slip, double lim)
+{
+    bool spin = (F(BYTE, s, 6596 + w) && x87_fabs(WS(slip)) > lim) || F(int, s, 6612 + w * 4);
+    return spin && !F(WORD, s, 6564 + w * 2);
+}
+
+// the surface's grip and roughness (+9840 / +9872) from its parameters: the first two of mat+12 with 8 bytes
+static void Ws_Params(BYTE* s, int w, const int* mat)
+{
+    if (mat[2] * 4 == 8) {
+        F(int, s, 9840 + w * 4) = ((const int*)mat[3])[0];
+        F(int, s, 9872 + w * 4) = ((const int*)mat[3])[1];
+    }
+}
+
+// the wheel's shake speed (+3676) pulled back by the travel speed v over m and kicked at random by a (times
+// the travel's root when root), limited to lim; the shake (+3644) follows within the given bounds
+static void Ws_Shake(BYTE* s, int w, float v, float m, float lim, double a, bool root, float dt, DWORD hi,
+    float hiLim, DWORD lo, float loLim)
+{
+    float q = (float)(x87_fabs(v) / m);
+    WS(3676) = (g_ws64c250 - q) * WS(3676);
+    double r = rand() * (double)g_ws64c254;
+    double t = r - ((double)v + m) / ((double)m + m);
+    t = t * a * ((root ? x87_sqrt(q) : q) * g_ws64c958 + g_ws64b5b8);
+    WS(3676) = (float)(t + WS(3676));
+    if (WS(3676) > lim)
+        WS(3676) = lim;
+    if (-lim > WS(3676))
+        WS(3676) = -lim;
+    WS(3644) = dt * WS(3676) + WS(3644);
+    if (WS(3644) > hiLim)
+        F(DWORD, s, 3644 + w * 4) = hi;
+    if (WS(3644) < loLim)
+        F(DWORD, s, 3644 + w * 4) = lo;
+}
+
+extern "C" {
+
+// [FUN_502780] wheel w of body s on contact c (its material c+100: kind +4, parameters +8 / +12): the
+// surface's grip and roughness, gravel thrown at the camera (kind 8), the slip marks (+13520) and the wheel's
+// shake by the surface kind; the kind (13 inside a patch +10496), 0 without a material
+int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w)
+{
+    float lim = 10.0f;
+    float v = WS(3644);
+    memcpy(s + 3848 + w * 12, &g_ws702650, 12);
+    F(int, s, 3816 + w * 4) = 0;
+    F(int, s, 3944 + w * 4) = 0;
+    F(int, s, 13520 + w * 4) = 0;
+    if (!F(int, c, 100))
+        return 0;
+    float k = WS(6500);
+    if (k > g_ws64c450)
+        k = 10.0f;
+    float dt = (float)Game_FrameTime();
+    float a = (float)x87_fabs(WS(6780));
+    F(DWORD, s, 9872 + w * 4) = 0x3C23D70A;
+    F(DWORD, s, 9840 + w * 4) = 0x3F000000;
+    float b = (float)x87_fabs(WS(6748));
+    if (g_ws69784c == 1)
+        F(DWORD, s, 9840 + w * 4) = 0x3E99999A;
+    const int* mat = F(const int*, c, 100);
+    int kind = mat[1];
+    if (F(WORD, s, 4144 + w * 248)) {
+        float P[3], Q[3];
+        memcpy(P, s + 4120 + w * 248, 12);
+        memcpy(Q, c + 52, 12);
+        for (int j = 0; j < F(int, s, 10704); j++)
+            if (CallC<int>(Ws_InPatch, s + 10496 + j * 48, P, Q))
+                kind = 13;
+    }
+    mat = F(const int*, c, 100);
+    if (mat[0] == 1) {
+        if (kind > 0 && kind <= 13) {
+            int m4 = mat[1];
+            WS(9872) = b * (&g_ws6976c0)[m4] + a * (&g_ws697688)[m4];
+            WS(9840) = (&g_ws6976f8)[m4 + 14 * (g_ws69784c + F(int, s, 16204) * 2)];
+        }
+        int sk = F(const int*, c, 100)[1];
+        bool shared = false;
+        switch (sk) {
+        case 8:
+            shared = true;
+            if (F(WORD, s, 6564 + w * 2))
+                break;
+            if (!F(WORD, s, 10048)) {
+                BYTE tmp[48];
+                const float* cam = CallThis<const float*>(Ws_CameraGet, g_ws6ef1fc, tmp);
+                float d[3] = {cam[9] - F(float, s, 52), cam[10] - F(float, s, 56), cam[11] - F(float, s, 60)};
+                double p = g_ws64b918 / (CallC<double>(Ws_Length, d) + g_ws64b5b8);
+                if (!(rand() * (double)g_ws64c254 > p))
+                    break;
+            }
+            {
+                F(int, s, 15448) = 1;
+                float* e = (float*)(s + 15452);
+                float* at = (float*)(s + 15464);
+                e[0] = F(float, c, 64) * g_ws64daac, e[1] = F(float, c, 68) * g_ws64daac,
+                e[2] = F(float, c, 72) * g_ws64daac;
+                memcpy(at, c + 52, 12);
+                const int* m2 = F(const int*, c, 100);
+                if (m2[2] * 4 >= 4)
+                    F(int, s, 15448) = ((const int*)m2[3])[0];
+                if (m2[2] * 4 >= 8) {
+                    float g = ((const float*)m2[3])[1];
+                    e[0] = g * F(float, c, 64), e[1] = g * F(float, c, 68), e[2] = g * F(float, c, 72);
+                }
+                float t[3];
+                float f = F(float, s, 9792) * g_ws64daa8;
+                CallThis(Ws_MulAssign, e, t, *(DWORD*)&f);
+                float ed[3] = {e[0] / dt, e[1] / dt, e[2] / dt};
+                float q[3];
+                q[0] = (float)((double)F(float, s, 2316) * at[1] + (double)F(float, s, 2328) * at[2] +
+                    (double)at[0] * F(float, s, 2304) + F(float, s, 2340));
+                q[1] = (float)((double)F(float, s, 2320) * at[1] + (double)F(float, s, 2308) * at[0] +
+                    (double)F(float, s, 2332) * at[2] + F(float, s, 2344));
+                q[2] = (float)((double)F(float, s, 2324) * at[1] + (double)F(float, s, 2312) * at[0] +
+                    (double)F(float, s, 2336) * at[2] + F(float, s, 2348));
+                CallThis(Ws_AddContact, s + 9984, q, ed, &g_ws702650);
+            }
+            break;
+        case 1:
+        case 5:
+            shared = true;
+            break;
+        case 2: {
+            if (CallThis<float>(Ws_RampValue, s + 16164) == g_ws64c40c)
+                WS(9872) = (float)(WS(9872) * g_ws64da88);
+            Ws_Params(s, w, F(const int*, c, 100));
+            if (F(WORD, s, 6564 + w * 2))
+                break;
+            if (F(WORD, s, 10048) && Ws_Slips(s, w, 6704, g_ws64daa0))
+                F(int, s, 13520 + w * 4) = 1;
+            if (F(WORD, s, 10048) && Ws_Slips(s, w, 6704, g_ws64daa0))
+                F(int, s, 13520 + w * 4) = 2;
+            float m;
+            int gm = F(int, s, 10092);
+            if (gm == 2)
+                lim = (float)(k * g_ws64d338), m = (float)(WS(8092) * g_ws64d338);
+            else if (gm == 1)
+                lim = (float)(k * g_ws64b5b8), m = (float)(WS(8092) * g_ws64b840);
+            else
+                lim = (float)(k * g_ws64b6e0), m = (float)(WS(8092) * g_ws64b6e0);
+            double kick = g_ws64b5b8 / (dt + g_ws64b5a0) * k * 2 / (k + g_ws64c450);
+            Ws_Shake(s, w, v, m, lim, kick, true, dt, 0x3DCCCCCD, g_ws64c304, 0xBDCCCCCD, g_ws64d690);
+            break;
+        }
+        case 6:
+        case 10:
+        case 11: {
+            Ws_Params(s, w, F(const int*, c, 100));
+            if (F(WORD, s, 6564 + w * 2))
+                break;
+            float q = (float)(x87_fabs(v) * g_ws64da80);
+            WS(3676) = (g_ws64c250 - q) * WS(3676);
+            double r = rand() * (double)g_ws64c254;
+            double t = (r - ((double)v + g_ws64c260) * g_ws64da7c) * (k / ((double)k + g_ws64c450));
+            t = t * (x87_sqrt(q) * g_ws64c958 + g_ws64b5b8);
+            WS(3676) = (float)(t + WS(3676));
+            if (WS(3676) > g_ws64c450)
+                F(DWORD, s, 3676 + w * 4) = 0x41200000;
+            if (WS(3676) < g_ws64c968)
+                F(DWORD, s, 3676 + w * 4) = 0xC1200000;
+            WS(3644) = dt * WS(3676) + WS(3644);
+            if (WS(3644) > g_ws64c338)
+                F(DWORD, s, 3644 + w * 4) = 0x3E99999A;
+            if (WS(3644) < g_ws64da78)
+                F(DWORD, s, 3644 + w * 4) = 0xBE99999A;
+            break;
+        }
+        case 3:
+            Ws_Params(s, w, F(const int*, c, 100));
+            if (F(WORD, s, 6564 + w * 2))
+                break;
+            if (F(WORD, s, 10048) && Ws_Slips(s, w, 6748, g_ws64b840))
+                F(int, s, 13520 + w * 4) = 1;
+            if (F(WORD, s, 10048) && Ws_Slips(s, w, 6748, g_ws64b840))
+                F(int, s, 13520 + w * 4) = 2;
+            break;
+        case 4:
+        case 7:
+        case 9: {
+            if (F(WORD, s, 6564 + w * 2))
+                break;
+            Ws_Params(s, w, F(const int*, c, 100));
+            float m;
+            if (F(const int*, c, 100)[1] == 9)
+                m = 0.05f, lim = 2.0f;
+            else
+                *(DWORD*)&m = 0x3E99999A;
+            double kick = (double)k * g_ws64c320 / ((double)k + g_ws64c450);
+            float q = (float)(x87_fabs(v) / m);
+            WS(3676) = (g_ws64c250 - q) * WS(3676);
+            double r = rand() * (double)g_ws64c254;
+            double t = (r - ((double)v + m) / ((double)m + m)) * kick * (q * g_ws64c958 + g_ws64b5b8);
+            WS(3676) = (float)(t + WS(3676));
+            if (WS(3676) > lim)
+                WS(3676) = lim;
+            if (-lim > WS(3676))
+                WS(3676) = -lim;
+            WS(3644) = dt * WS(3676) + WS(3644);
+            if (WS(3644) > m)
+                WS(3644) = m;
+            if (-m > WS(3644))
+                WS(3644) = -m;
+            break;
+        }
+        }
+        if (shared) {
+            const int* m2 = F(const int*, c, 100);
+            int n = m2[2] * 4;
+            if (n >= 8) {
+                const int* p = 0;
+                if (m2[1] == 8) {
+                    if (n == 16)
+                        p = (const int*)m2[3] + 2;
+                } else
+                    p = (const int*)m2[3];
+                if (p) {
+                    F(int, s, 9840 + w * 4) = p[0];
+                    F(int, s, 9872 + w * 4) = p[1];
+                    if (g_ws69784c == 1)
+                        WS(9840) = (float)(WS(9840) * g_ws64d318);
+                }
+            }
+            if (F(WORD, s, 10048) && Ws_Slips(s, w, 6704, g_ws64daa0))
+                F(int, s, 13520 + w * 4) = 2;
+            float m;
+            int gm = F(int, s, 10092);
+            if (gm == 2)
+                lim = (float)(k * g_ws64da98), m = (float)(WS(8092) * g_ws64d338);
+            else if (gm == 1)
+                lim = (float)(k * g_ws64d668), m = (float)(WS(8092) * g_ws64b5b8);
+            else
+                lim = k, m = (float)(WS(8092) * g_ws64b840);
+            double kick = g_ws64b5b8 / (dt + g_ws64b5a0) * k / (k + g_ws64c450);
+            Ws_Shake(s, w, v, m, lim, kick, true, dt, 0x3CA3D70A, g_ws64da94, 0xBCA3D70A, g_ws64da90);
+        }
+    }
+    double g = CallThis<float>(Ws_RampValue, s + 16164) * (double)WS(9840) * g_ws696bdc;
+    WS(9840) = (float)g;
+    int gm = F(int, s, 10092);
+    int mk = F(const int*, c, 100)[1];
+    if (gm == 2 && (mk == 1 || mk == 5))
+        WS(9840) = (float)(g * g_ws64b668 + g_ws64d0f0);
+    else if (gm)
+        WS(9840) = (float)(g * g_ws64d378 + g_ws64b5b8);
+    F(float, s, 15248 + w * 4) = WS(3644);
+    return kind;
+}
+
+} // extern "C"

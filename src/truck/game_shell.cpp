@@ -9739,3 +9739,771 @@ int __cdecl Surface_Copy16(BYTE* dst, BYTE* src, DWORD flags)
 }
 
 } // extern "C"
+
+// === reading the car types (FUN_508300)
+
+extern "C" size_t __cdecl fwrite(const void*, size_t, size_t, FILE*);
+
+extern "C" int __cdecl sprintf(char*, const char*, ...);
+extern "C" {
+float __cdecl Car_CruiseGear(int type, float load, int* gear, float* rpm, float* throttle);
+double __cdecl Car_TopSpeedRatio(int type, float load, int* gear, float* rpm, float* speed, float* inverse);
+double __cdecl Car_CruiseRatio(int type, float load, int* gear, float* rpm, float* speed, float* inverse,
+                               float* throttle);
+}
+extern "C" int __cdecl _stricmp(const char*, const char*);
+extern "C" int __cdecl Ini_GetFloat(const char* section, const char* key, double def, float* out, const char* file);
+extern "C" int __cdecl Ini_ReadInt(const char* section, const char* key, int def, int* out, const char* file);
+extern "C" int __cdecl Ini_ReadShort(const char* section, const char* key, short def, short* out, const char* file);
+extern "C" int __cdecl Setup_Fatal(const char* msg);
+ASM_FUNC(Ct_ReadFlags, FUN_507df0)
+extern "C" void Ct_stat(); KING_ALIAS("_Ct_stat", "__stat")
+extern "C" void Ct_RotZ(); KING_ALIAS("_Ct_RotZ", "_Matrix_RotationZ")
+extern "C" void Ct_Inverse(); KING_ALIAS("_Ct_Inverse", "_Matrix_Inverse")
+extern "C" void Ct_Length(); KING_ALIAS("_Ct_Length", "_Vec3_Length")
+extern "C" void Ct_NormalizeThis(); KING_ALIAS("_Ct_NormalizeThis", "@Vec3_NormalizeThis@8")
+ASM_VAR(char*, g_ct674ae0, $L_674ae0)   // the car types cache file
+ASM_VAR(float, g_ct674ae4, $L_674ae4)
+ASM_VAR(float, g_ct674ae8, $L_674ae8)
+ASM_VAR(int, g_ct6ce32c, $L_6ce32c)     // the number of car types, then the first of each group
+ASM_VAR(int, g_ct6ce330, $L_6ce330)
+ASM_VAR(int, g_ct6ce334, $L_6ce334)
+ASM_VAR(int, g_ct6ce338, $L_6ce338)
+ASM_VAR(int, g_ct6ce33c, $L_6ce33c)
+ASM_VAR(int, g_ct6ce340, $L_6ce340)
+ASM_VAR(int, g_ct6ce344, $L_6ce344)
+ASM_VAR(int, g_ct6ce348, $L_6ce348)
+ASM_VAR(BYTE, g_ct697868, $L_697868)    // the car types, 80 of 2416 bytes
+ASM_VAR(float, g_ct702620, $L_702620)
+ASM_VAR(float, g_ct702624, $L_702624)
+ASM_VAR(float, g_ct702628, $L_702628)
+ASM_VAR(float, g_ct702630, $L_702630)
+ASM_VAR(float, g_ct702634, $L_702634)
+ASM_VAR(float, g_ct702638, $L_702638)
+ASM_VAR(float, g_ct702640, $L_702640)
+ASM_VAR(float, g_ct702644, $L_702644)
+ASM_VAR(float, g_ct702648, $L_702648)
+ASM_VAR(BYTE, g_ct702650, $L_702650)
+ASM_VAR(BYTE, g_ct7025f0, $L_7025f0)
+ASM_VAR(float, g_ct64c420, $L_64c420)
+ASM_VAR(float, g_ct64daf0, $L_64daf0)
+ASM_VAR(double, g_ct64dae8, $L_64dae8)
+ASM_VAR(float, g_ct64c904, $L_64c904)
+ASM_VAR(double, g_ct64b840, $L_64b840)
+ASM_VAR(float, g_ct64dac8, $L_64dac8)
+ASM_VAR(float, g_ct64d7b8, $L_64d7b8)
+ASM_VAR(float, g_ct64c258, $L_64c258)
+ASM_VAR(double, g_ct64dae0, $L_64dae0)
+ASM_VAR(float, g_ct64c264, $L_64c264)
+ASM_VAR(float, g_ct64c250, $L_64c250)
+ASM_VAR(float, g_ct64c338, $L_64c338)
+ASM_VAR(float, g_ct64c32c, $L_64c32c)
+ASM_VAR(float, g_ct64dad8, $L_64dad8)
+ASM_VAR(double, g_ct64d0e8, $L_64d0e8)
+ASM_VAR(double, g_ct64b670, $L_64b670)
+ASM_VAR(char, s_ct671518, $L_671518)
+ASM_VAR(char, s_ct675194, $L_675194)
+ASM_VAR(char, s_ct675174, $L_675174)
+ASM_VAR(char, s_ct67517c, $L_67517c)
+ASM_VAR(char, s_ct675184, $L_675184)
+ASM_VAR(char, s_ct675150, $L_675150)
+ASM_VAR(char, s_ct675148, $L_675148)
+ASM_VAR(char, s_ct675140, $L_675140)
+ASM_VAR(char, s_ct675128, $L_675128)
+ASM_VAR(char, s_ct675120, $L_675120)
+ASM_VAR(char, s_ct675114, $L_675114)
+ASM_VAR(char, s_ct675104, $L_675104)
+ASM_VAR(char, s_ct6750f8, $L_6750f8)
+ASM_VAR(char, s_ct6750ec, $L_6750ec)
+ASM_VAR(char, s_ct6750ac, $L_6750ac)
+ASM_VAR(char, s_ct675088, $L_675088)
+ASM_VAR(char, s_ct675080, $L_675080)
+ASM_VAR(char, s_ct67301c, $L_67301c)
+ASM_VAR(char, s_ct675078, $L_675078)
+ASM_VAR(char, s_ct675068, $L_675068)
+ASM_VAR(char, s_ct67505c, $L_67505c)
+ASM_VAR(char, s_ct675054, $L_675054)
+ASM_VAR(char, s_ct67504c, $L_67504c)
+ASM_VAR(char, s_ct675034, $L_675034)
+ASM_VAR(char, s_ct67501c, $L_67501c)
+ASM_VAR(char, s_ct67500c, $L_67500c)
+ASM_VAR(char, s_ct674ff8, $L_674ff8)
+ASM_VAR(char, s_ct674fe0, $L_674fe0)
+ASM_VAR(char, s_ct674fcc, $L_674fcc)
+ASM_VAR(char, s_ct674fbc, $L_674fbc)
+ASM_VAR(char, s_ct674fa8, $L_674fa8)
+ASM_VAR(char, s_ct674f94, $L_674f94)
+ASM_VAR(char, s_ct674f8c, $L_674f8c)
+ASM_VAR(char, s_ct674f78, $L_674f78)
+ASM_VAR(char, s_ct674f6c, $L_674f6c)
+ASM_VAR(char, s_ct674f5c, $L_674f5c)
+ASM_VAR(char, s_ct674f58, $L_674f58)
+ASM_VAR(char, s_ct674f4c, $L_674f4c)
+ASM_VAR(char, s_ct674f48, $L_674f48)
+ASM_VAR(char, s_ct674f44, $L_674f44)
+ASM_VAR(char, s_ct674f40, $L_674f40)
+ASM_VAR(char, s_ct674f3c, $L_674f3c)
+ASM_VAR(char, s_ct674f38, $L_674f38)
+ASM_VAR(char, s_ct674f0c, $L_674f0c)
+ASM_VAR(char, s_ct674f00, $L_674f00)
+ASM_VAR(char, s_ct674efc, $L_674efc)
+ASM_VAR(char, s_ct674ef8, $L_674ef8)
+ASM_VAR(char, s_ct674ee0, $L_674ee0)
+ASM_VAR(char, s_ct674ec8, $L_674ec8)
+ASM_VAR(char, s_ct674eb8, $L_674eb8)
+ASM_VAR(char, s_ct674ea0, $L_674ea0)
+ASM_VAR(char, s_ct674e90, $L_674e90)
+ASM_VAR(char, s_ct674e80, $L_674e80)
+ASM_VAR(char, s_ct674e54, $L_674e54)
+ASM_VAR(char, s_ct674e44, $L_674e44)
+ASM_VAR(char, s_ct674e34, $L_674e34)
+ASM_VAR(char, s_ct674e28, $L_674e28)
+ASM_VAR(char, s_ct674e20, $L_674e20)
+ASM_VAR(char, s_ct674e14, $L_674e14)
+ASM_VAR(char, s_ct674e08, $L_674e08)
+ASM_VAR(char, s_ct674dfc, $L_674dfc)
+ASM_VAR(char, s_ct674df0, $L_674df0)
+ASM_VAR(char, s_ct674de8, $L_674de8)
+ASM_VAR(char, s_ct674de0, $L_674de0)
+ASM_VAR(char, s_ct674dd0, $L_674dd0)
+ASM_VAR(char, s_ct674dc0, $L_674dc0)
+ASM_VAR(char, s_ct674db0, $L_674db0)
+ASM_VAR(char, s_ct674da0, $L_674da0)
+ASM_VAR(char, s_ct674d84, $L_674d84)
+ASM_VAR(char, s_ct674d78, $L_674d78)
+ASM_VAR(char, s_ct674d6c, $L_674d6c)
+ASM_VAR(char, s_ct674d54, $L_674d54)
+ASM_VAR(char, s_ct674d48, $L_674d48)
+ASM_VAR(char, s_ct674d34, $L_674d34)
+ASM_VAR(char, s_ct674d20, $L_674d20)
+ASM_VAR(char, s_ct674d0c, $L_674d0c)
+ASM_VAR(char, s_ct674cfc, $L_674cfc)
+ASM_VAR(char, s_ct674cec, $L_674cec)
+ASM_VAR(char, s_ct674cdc, $L_674cdc)
+ASM_VAR(char, s_ct674ccc, $L_674ccc)
+ASM_VAR(char, s_ct674cc0, $L_674cc0)
+ASM_VAR(char, s_ct674cb8, $L_674cb8)
+ASM_VAR(char, s_ct674cb0, $L_674cb0)
+ASM_VAR(char, s_ct674ca4, $L_674ca4)
+ASM_VAR(char, s_ct674c9c, $L_674c9c)
+ASM_VAR(char, s_ct674c90, $L_674c90)
+ASM_VAR(char, s_ct674c88, $L_674c88)
+ASM_VAR(char, s_ct674c80, $L_674c80)
+ASM_VAR(char, s_ct674c74, $L_674c74)
+ASM_VAR(char, s_ct674c3c, $L_674c3c)
+ASM_VAR(char, s_ct674c30, $L_674c30)
+ASM_VAR(char, s_ct674c20, $L_674c20)
+ASM_VAR(char, s_ct674c14, $L_674c14)
+ASM_VAR(char, s_ct674c08, $L_674c08)
+ASM_VAR(char, s_ct674bfc, $L_674bfc)
+ASM_VAR(char, s_ct674bf0, $L_674bf0)
+ASM_VAR(char, s_ct674be4, $L_674be4)
+ASM_VAR(char, s_ct674bd4, $L_674bd4)
+ASM_VAR(char, s_ct674bc0, $L_674bc0)
+ASM_VAR(char, s_ct674bb4, $L_674bb4)
+ASM_VAR(char, s_ct674ba8, $L_674ba8)
+ASM_VAR(char, s_ct674b98, $L_674b98)
+ASM_VAR(char, s_ct6729a8, $L_6729a8)
+ASM_VAR(char, s_ct674b8c, $L_674b8c)
+ASM_VAR(char, s_ct6703e4, $L_6703e4)
+ASM_VAR(char, s_ct674b64, $L_674b64)
+ASM_VAR(char, s_ct674b4c, $L_674b4c)
+
+#define CT_F(off) ((float*)(T + (off)))
+
+static int Ct_Read3(const char* sec, const char* key, const void* def, BYTE* out, const char* ini)
+{
+    return Carat_Read3((int)sec, (int)key, (int)def, (int)out, (int)ini);
+}
+
+// out = vector (x, y, z)
+static void Ct_Vec(float* v, DWORD x, DWORD y, DWORD z)
+{
+    ((DWORD*)v)[0] = x, ((DWORD*)v)[1] = y, ((DWORD*)v)[2] = z;
+}
+
+// v -= up * k
+static void Ct_Lower(float* v, float k)
+{
+    float ux = g_ct702630 * k, uy = g_ct702634 * k, uz = g_ct702638 * k;
+    v[0] = v[0] - ux, v[1] = v[1] - uy, v[2] = v[2] - uz;
+}
+
+// the place p (forward f turned about up by a, plus the turn's translation)
+static void Ct_Turned(float* out, const float* f, float a)
+{
+    float m[12];
+    const float* M = CallC<const float*>(Ct_RotZ, m, *(DWORD*)&a);
+    out[0] = (float)((double)f[2] * M[6] + (double)f[1] * M[3] + (double)f[0] * M[0] + M[9]);
+    out[1] = (float)((double)f[2] * M[7] + (double)f[1] * M[4] + (double)f[0] * M[1] + M[10]);
+    out[2] = (float)((double)f[2] * M[8] + (double)f[1] * M[5] + (double)f[0] * M[2] + M[11]);
+}
+
+extern "C" {
+
+// [FUN_508300] reads the car types from ini file path: the groups of type sections (5 kinds, their first
+// indices 6ce334..6ce344) and for each type its engine, gears, wheels, body points, hit boxes, cameras, lights
+// and names; then writes them with the file times to the cache 674ae0
+void __cdecl CarTypes_Read(const char* path, int unused)
+{
+    char buf[200], section[260], key[200], key2[200], sec[32], ini[32], err[300];
+    FILE* f = fopen(path, &s_ct671518);
+    if (!f) {
+        sprintf(buf, &s_ct675194, g_ct674ae0, path);
+        Setup_Fatal(buf);
+    }
+    fclose(f);
+    GetPrivateProfileStringA(&s_ct675174, &s_ct67517c, &s_ct675184, buf, 70, path);
+    if (strcmp(buf, &s_ct675184))
+        sprintf(buf, &s_ct675150, path);
+    strcpy(section, &s_ct675148);
+    g_ct6ce32c = 0;
+    int count = 0, group = 0, n = 1;
+    BYTE* T = &g_ct697868;
+    for (;;) {
+        sprintf(key, &s_ct675140, n);
+        GetPrivateProfileStringA(section, key, &s_ct675128, buf, 30, path);
+        if (!strcmp(buf, &s_ct675128)) {
+            n = 0;
+            group++;
+            static int* const firsts[5] = {&g_ct6ce334, &g_ct6ce338, &g_ct6ce33c, &g_ct6ce340, &g_ct6ce344};
+            static const char* const sections[5] = {&s_ct675120, &s_ct675114, &s_ct675104, &s_ct6750f8,
+                &s_ct6750ec};
+            if (group > 5)
+                break;
+            *firsts[group - 1] = count;
+            strcpy(section, sections[group - 1]);
+        } else {
+            if (T + 2372 >= (BYTE*)&g_ct697868 + 80 * 2416 + 2372) {
+                sprintf(err, &s_ct675088, &s_ct6750ac, 80, count + 1);
+                Setup_Fatal(err);
+            }
+            if ((unsigned)group <= 5)
+                F(int, T, 2372) = group;
+            strcpy((char*)T + 2242, buf);
+            strcpy((char*)T + 2272, buf);
+            sprintf(key2, &s_ct675080, n);
+            GetPrivateProfileStringA(section, key2, path, buf, 30, path);
+            sprintf((char*)T + 2212, &s_ct67301c, buf);
+            count++;
+            T += 2416;
+        }
+        n++;
+        if (T + 2372 > (BYTE*)&g_ct697868 + 80 * 2416 + 2372)
+            break;
+    }
+    g_ct6ce32c = count;
+    g_ct6ce348 = count;
+    for (int i = 0; i < g_ct6ce32c; i++) {
+        T = &g_ct697868 + i * 2416;
+        strcpy(sec, (const char*)T + 2272);
+        strcpy(ini, (const char*)T + 2212);
+        Ini_GetFloat(sec, &s_ct675078, 1000.0, CT_F(96), ini);
+        Ini_GetFloat(sec, &s_ct675068, 500.0, CT_F(192), ini);
+        Ini_GetFloat(sec, &s_ct67505c, 6000.0, CT_F(200), ini);
+        Ini_GetFloat(sec, &s_ct675054, 0.3, CT_F(100), ini);
+        Ini_GetFloat(sec, &s_ct67504c, 0.3, CT_F(104), ini);
+        Ini_GetFloat(sec, &s_ct675034, 0.2, CT_F(184), ini);
+        Ini_GetFloat(sec, &s_ct67501c, 0.4, CT_F(188), ini);
+        Ini_GetFloat(sec, &s_ct67500c, 0.3, CT_F(172), ini);
+        Ini_GetFloat(sec, &s_ct674ff8, 0.3, CT_F(176), ini);
+        Ini_GetFloat(sec, &s_ct674fe0, 0.8, CT_F(180), ini);
+        Ini_GetFloat(sec, &s_ct674fcc, 1200.0, CT_F(268), ini);
+        *CT_F(268) = *CT_F(268) * g_ct64c420;
+        Ini_GetFloat(sec, &s_ct674fbc, 5.0, CT_F(204), ini);
+        Ini_GetFloat(sec, &s_ct674fa8, -4.0, CT_F(208), ini);
+        F(int, T, 212) = 0;
+        F(int, T, 144) = 1;
+        for (int g = 2; g < 15; g++) {
+            float* r = CT_F(216 + (g - 2) * 4);
+            sprintf(buf, &s_ct674f94, g - 1);
+            Ini_GetFloat(sec, buf, -100.0, r, ini);
+            if (*r < g_ct64daf0) {
+                *r = (float)(r[-1] * g_ct64dae8);
+                if (F(int, T, 144) == 1)
+                    F(int, T, 144) = g > 11 ? 11 : g;
+            }
+        }
+        Ini_GetFloat(sec, &s_ct674f8c, *CT_F(192) * g_ct64c904, CT_F(108), ini);
+        Ini_GetFloat(sec, &s_ct674f78, g_ct674ae4, CT_F(112), ini);
+        *CT_F(196) = (float)(*CT_F(192) * g_ct64b840 / (*CT_F(268) + *CT_F(268)));
+        *CT_F(128) = Car_CruiseGear(i, *CT_F(96), &F(int, T, 144), CT_F(136), CT_F(140));
+        float* top = CT_F(168);
+        F(DWORD, T, 168) = 0x42480000;
+        Ini_GetFloat(sec, &s_ct674f6c, 50.0, top, ini);
+        float* mass = CT_F(160);
+        *mass = *CT_F(96) * g_ct64dac8;
+        Ini_GetFloat(sec, &s_ct674f5c, (double)g_ct674ae8 * *mass, mass, ini);
+        *mass = *mass / g_ct674ae8;
+        double tq = (double)*mass * *top;
+        *CT_F(108) = (float)tq;
+        Ini_GetFloat(sec, &s_ct674f8c, tq, CT_F(108), ini);
+        *CT_F(112) = (float)((double)*CT_F(140) * *CT_F(108) /
+            ((double)*mass * *CT_F(128) * g_ct64dac8 / (*CT_F(136) / *CT_F(268))));
+        *CT_F(156) = (float)Car_TopSpeedRatio(i, *CT_F(96), &F(int, T, 148), CT_F(132), CT_F(124), CT_F(164));
+        *mass = (float)Car_CruiseRatio(i, *CT_F(96), &F(int, T, 152), CT_F(136), CT_F(128), top, CT_F(140));
+        *CT_F(120) = *CT_F(164) * g_ct64d7b8 / *CT_F(124);
+        *CT_F(116) = *top * g_ct64d7b8 / *CT_F(128);
+        float v[3];
+        v[0] = g_ct702630 * g_ct64c258, v[1] = g_ct702634 * g_ct64c258, v[2] = g_ct702638 * g_ct64c258;
+        Ct_Read3(sec, &s_ct674f58, v, T + 396, ini);
+        Ini_GetFloat(sec, &s_ct674f4c, -0.125, CT_F(408), ini);
+        *CT_F(408) = (float)(*CT_F(408) * g_ct64dae0);
+        Ct_Vec(v, 0x43FA0000, 0x43480000, 0x43FA0000);
+        Ct_Read3(sec, &s_ct674f48, v, T + 412, ini);
+        F(int, T, 712) = 1;
+        static const DWORD corners[4][3] = {{0xBF19999A, 0x3F800000, 0xBE4CCCCD}, {0x3F19999A, 0x3F800000, 0xBE4CCCCD},
+            {0xBF19999A, 0xBF800000, 0xBE4CCCCD}, {0x3F19999A, 0xBF800000, 0xBE4CCCCD}};
+        static const char* const ckeys[4] = {&s_ct674f44, &s_ct674f40, &s_ct674f3c, &s_ct674f38};
+        int got = 0, all = 1;
+        for (int k = 0; k < 4; k++) {
+            Ct_Vec(v, corners[k][0], corners[k][1], corners[k][2]);
+            int r = Ct_Read3(sec, ckeys[k], v, T + 424 + k * 12, ini);
+            got += r;
+            all = all && r ? 1 : 0;
+            F(int, T, 712) = all;
+        }
+        if (got && !all) {
+            sprintf(buf, &s_ct674f0c, ini, sec, got);
+            Setup_Fatal(buf);
+        }
+        Carat_ReadFill((int)sec, (int)&s_ct674f00, 0x3E99999A, (int)(T + 748), (int)ini, 8);
+        memset(T + 716, 0, 32);
+        Carat_ReadFill((int)sec, (int)&s_ct674efc, 0x46435000, (int)(T + 780), (int)ini, 8);
+        Carat_ReadFill((int)sec, (int)&s_ct674ef8, 0x3F800000, (int)(T + 812), (int)ini, 8);
+        Ini_GetFloat(sec, &s_ct674ee0, 0.5, CT_F(864), ini);
+        if (*CT_F(864) < g_ct64c264 || *CT_F(864) > g_ct64c250)
+            F(DWORD, T, 864) = 0x3E4CCCCD;
+        Ini_GetFloat(sec, &s_ct674ec8, 0.5, CT_F(868), ini);
+        if (*CT_F(868) < g_ct64c264 || *CT_F(868) > g_ct64c250)
+            F(DWORD, T, 868) = 0x3F000000;
+        Carat_ReadFill2((int)sec, (int)&s_ct674eb8, 1, (int)(T + 300), (int)ini, 8);
+        Carat_ReadFill2((int)sec, (int)&s_ct674ea0, 1, (int)(T + 364), (int)ini, 8);
+        int flags[8] = {1, 1, 0, 0, 0, 0, 0, 0};
+        CallC(Ct_ReadFlags, sec, &s_ct674e90, flags, T + 332, ini, 8);
+        memcpy(T, &g_ct7025f0, 48);
+        F(int, T, 860) = Ct_Read3(sec, &s_ct674e80, &g_ct702650, T + 36, ini);
+        float inv[12];
+        memcpy(T + 48, CallC<void*>(Ct_Inverse, inv, T), 48);
+        if (!F(int, T, 860)) {
+            sprintf(buf, &s_ct674e54, ini, sec);
+            Setup_Fatal(buf);
+        }
+        Ct_Read3(sec, &s_ct674e44, &g_ct702650, T + 848, ini);
+        Ini_GetFloat(sec, &s_ct674e34, 1.0, CT_F(844), ini);
+        Ini_ReadInt(sec, &s_ct674e28, 150, &F(int, T, 1988), ini);
+        Ini_ReadInt(sec, &s_ct674e20, 10000, &F(int, T, 1992), ini);
+        Ini_ReadShort(sec, &s_ct674e14, 1, &F(short, T, 1996), ini);
+        Ct_Vec(v, 0, 0xC0000000, 0);
+        Ct_Read3(sec, &s_ct674e08, v, T + 2000, ini);
+        Ct_Lower(CT_F(2000), g_ct64c338);
+        Ct_Vec(v, 0, 0x40000000, 0xBF800000);
+        Ct_Read3(sec, &s_ct674dfc, v, T + 2012, ini);
+        Ct_Lower(CT_F(2012), g_ct64c338);
+        Ini_GetFloat(sec, &s_ct674df0, 0.0, CT_F(2048), ini);
+        Ct_Vec(v, 0, 0xC0400000, 0);
+        Ct_Read3(sec, &s_ct674de8, v, T + 2024, ini);
+        Ct_Vec(v, 0, 0x40000000, 0);
+        Ct_Read3(sec, &s_ct674de0, v, T + 2036, ini);
+        Ini_GetFloat(sec, &s_ct674dd0, 2.0, CT_F(2052), ini);
+        F(int, T, 1396) = 0;
+        for (int k = 0; k < 4; k++) {
+            sprintf(buf, &s_ct674dc0, k + 1);
+            if (!Ct_Read3(sec, buf, &g_ct702650, T + 1400 + F(int, T, 1396) * 12, ini))
+                break;
+            F(int, T, 1396)++;
+        }
+        F(int, T, 872) = 0;
+        for (int k = 0; k < 20; k++) {
+            sprintf(buf, &s_ct674db0, k + 1);
+            if (!Ct_Read3(sec, buf, &g_ct702650, T + 880 + F(int, T, 872) * 12, ini))
+                break;
+            F(int, T, 872)++;
+        }
+        F(int, T, 876) = 0;
+        for (int k = 0; k < 20; k++) {
+            sprintf(buf, &s_ct674da0, k);
+            if (!Ct_Read3(sec, buf, &g_ct702650, T + 1120 + F(int, T, 876) * 12, ini))
+                break;
+            F(int, T, 876)++;
+        }
+        float lo[3], hi[3];
+        ((DWORD*)lo)[0] = ((DWORD*)lo)[1] = ((DWORD*)lo)[2] = 0x461C4000;
+        ((DWORD*)hi)[0] = ((DWORD*)hi)[1] = ((DWORD*)hi)[2] = 0xC61C4000;
+        F(int, T, 1772) = 0;
+        for (int k = 0; k < F(int, T, 872); k++) {
+            const float* p = CT_F(880 + k * 12);
+            for (int c = 0; c < 3; c++) {
+                if (p[c] < lo[c])
+                    lo[c] = p[c];
+                if (p[c] > hi[c])
+                    hi[c] = p[c];
+            }
+            float d[3] = {p[0] - *CT_F(848), p[1] - *CT_F(852), p[2] - *CT_F(856)};
+            float l = (float)CallC<double>(Ct_Length, d);
+            if (l > *CT_F(1772))
+                *CT_F(1772) = l;
+        }
+        float* ext = CT_F(1360);
+        ext[0] = hi[0] - lo[0], ext[1] = hi[1] - lo[1], ext[2] = hi[2] - lo[2];
+        memcpy(T + 1372, hi, 12);
+        memcpy(T + 1384, lo, 12);
+        if (i >= g_ct6ce330 && i < g_ct6ce334) {
+            Ini_GetFloat(sec, &s_ct674d84, 400.0, CT_F(272), ini);
+            memcpy(T + 288, T + 36, 12);
+            *CT_F(276) = *CT_F(96) * g_ct64dac8;
+            Ini_GetFloat(sec, &s_ct674d78, *CT_F(1368) * g_ct64c904, CT_F(280), ini);
+            Ini_GetFloat(sec, &s_ct674d6c, *CT_F(1364) * *CT_F(1360) * g_ct64c904, CT_F(284), ini);
+        } else {
+            Ini_GetFloat(sec, &s_ct674d84, 6000.0, CT_F(272), ini);
+            Ct_Read3(sec, &s_ct674d54, &g_ct702650, T + 288, ini);
+            Ini_GetFloat(sec, &s_ct674d48, 1000.0, CT_F(276), ini);
+            Ini_GetFloat(sec, &s_ct674d78, 2.0, CT_F(280), ini);
+            Ini_GetFloat(sec, &s_ct674d6c, 10.0, CT_F(284), ini);
+        }
+        F(int, T, 1768) = 0;
+        F(int, T, 1776) = F(int, T, 1772);
+        for (int k = 0; k < 20; k++) {
+            sprintf(buf, &s_ct674d34, k);
+            float* pl = CT_F(1448 + k * 16);
+            if (!Carat_ReadFill((int)sec, (int)buf, 0x3F800000, (int)pl, (int)ini, 4))
+                break;
+            float w = -pl[3];
+            float d[3] = {pl[0] * w - *CT_F(848), pl[1] * w - *CT_F(852), pl[2] * w - *CT_F(856)};
+            float l = (float)CallC<double>(Ct_Length, d);
+            if (l < *CT_F(1776))
+                *CT_F(1776) = l;
+            F(int, T, 1768)++;
+        }
+        F(int, T, 1840) = 0;
+        for (int k = 0; k < 5; k++) {
+            sprintf(buf, &s_ct674d20, k + 1);
+            if (!Ct_Read3(sec, buf, &g_ct702650, T + 1780 + F(int, T, 1840) * 12, ini))
+                break;
+            F(int, T, 1840)++;
+        }
+        Ct_Read3(sec, &s_ct674d0c, &g_ct702650, T + 1844, ini);
+        v[0] = g_ct702630 * g_ct64c32c, v[1] = g_ct702634 * g_ct64c32c, v[2] = g_ct702638 * g_ct64c32c;
+        Ct_Read3(sec, &s_ct674cfc, v, T + 1856, ini);
+        v[0] = -g_ct702640, v[1] = -g_ct702644, v[2] = -g_ct702648;
+        Ct_Read3(sec, &s_ct674cec, v, T + 1868, ini);
+        v[0] = g_ct702630 * g_ct64c32c, v[1] = g_ct702634 * g_ct64c32c, v[2] = g_ct702638 * g_ct64c32c;
+        Ct_Read3(sec, &s_ct674cdc, v, T + 1880, ini);
+        Ct_Read3(sec, &s_ct674ccc, T + 1868, T + 1892, ini);
+        CallThis(Ct_NormalizeThis, T + 1868);
+        CallThis(Ct_NormalizeThis, T + 1892);
+        Ct_Read3(sec, &s_ct674cc0, &g_ct702650, T + 1904, ini);
+        Ct_Read3(sec, &s_ct674cb8, &g_ct702650, T + 1916, ini);
+        Ct_Read3(sec, &s_ct674cb0, &g_ct702650, T + 1928, ini);
+        Ct_Read3(sec, &s_ct674ca4, &g_ct702650, T + 1940, ini);
+        Ct_Read3(sec, &s_ct674c9c, &g_ct702650, T + 1964, ini);
+        Ct_Read3(sec, &s_ct674c90, &g_ct702650, T + 1952, ini);
+        Ct_Read3(sec, &s_ct674c88, &g_ct702650, T + 1976, ini);
+        char* tname = (char*)T + 2302;
+        GetPrivateProfileStringA(sec, &s_ct674c80, &s_ct675128, tname, 29, ini);
+        if (!strcmp(tname, &s_ct675128)) {
+            GetPrivateProfileStringA(sec, &s_ct674c74, &s_ct675128, tname, 29, ini);
+            sprintf(buf, &s_ct674c3c, sec, ini);
+            Setup_Fatal(buf);
+        }
+        strcpy((char*)T + 2342, tname);
+        GetPrivateProfileStringA(sec, &s_ct674c30, tname, (char*)T + 2322, 29, ini);
+        F(int, T, 2148) = 0;
+        F(int, T, 2144) = 0;
+        GetPrivateProfileStringA(sec, &s_ct674c20, &s_ct675128, (char*)T + 2152, 29, ini);
+        float a[7];
+        a[0] = 50.0f, a[1] = 240.0f;
+        Carat_ReadCopy((int)sec, (int)&s_ct674c14, (const int*)a, (int)a, (int)ini, 2);
+        *CT_F(2064) = a[0] * g_ct64dad8;
+        *CT_F(2068) = (float)(a[1] * g_ct64dae0);
+        a[0] = 100.0f, a[1] = 240.0f;
+        Carat_ReadCopy((int)sec, (int)&s_ct674c08, (const int*)a, (int)a, (int)ini, 2);
+        *CT_F(2056) = (float)(a[0] * g_ct64d0e8);
+        *CT_F(2060) = (float)(a[1] * g_ct64dae0);
+        a[0] = 1.0f, a[1] = 90.0f;
+        Carat_ReadCopy((int)sec, (int)&s_ct674bfc, (const int*)a, (int)a, (int)ini, 2);
+        *CT_F(2072) = (float)(g_ct64b670 / a[0] * a[1] * g_ct64dae0);
+        a[0] = 1.75f, a[1] = 2.0f, a[2] = 5.0f;
+        Carat_ReadCopy((int)sec, (int)&s_ct674bf0, (const int*)a, (int)(T + 2076), (int)ini, 3);
+        a[0] = 1.75f, a[1] = 0.5f, a[2] = 5.0f;
+        Carat_ReadCopy((int)sec, (int)&s_ct674be4, (const int*)a, (int)(T + 2088), (int)ini, 3);
+        static const DWORD tail4[4] = {0x3FAB851F, 0x3F8E147B, 0x3FF33333, 0xBF1C28F6};
+        memcpy(a, tail4, 16);
+        Carat_ReadCopy((int)sec, (int)&s_ct674bd4, (const int*)a, (int)a, (int)ini, 4);
+        memcpy(T + 2100, a, 16);
+        static const float seven[7] = {70.0f, 20.0f, 10.0f, 0.0f, -10.0f, -20.0f, -70.0f};
+        memcpy(a, seven, 28);
+        Carat_ReadCopy((int)sec, (int)&s_ct674bc0, (const int*)a, (int)(T + 2116), (int)ini, 7);
+        a[0] = 0, a[1] = 0;
+        Carat_ReadCopy((int)sec, (int)&s_ct674bb4, (const int*)a, (int)a, (int)ini, 2);
+        float fwd[3] = {g_ct702620, g_ct702624, g_ct702628};
+        Ct_Turned(CT_F(2380), fwd, (float)(a[0] * g_ct64dae0));
+        float back[3] = {-g_ct702620, -g_ct702624, -g_ct702628};
+        Ct_Turned(CT_F(2392), back, (float)(a[1] * g_ct64dae0));
+        a[0] = 0.3f, a[1] = 0.2f, a[2] = 0.2f;
+        ((DWORD*)a)[0] = 0x3E99999A, ((DWORD*)a)[1] = 0x3E4CCCCD, ((DWORD*)a)[2] = 0x3E4CCCCD;
+        Carat_ReadCopy((int)sec, (int)&s_ct674ba8, (const int*)a, (int)a, (int)ini, 3);
+        memcpy(T + 2404, a, 12);
+        int kind = F(int, T, 2372);
+        if (kind == 3 || kind == 4) {
+            GetPrivateProfileStringA(sec, &s_ct674b98, &s_ct6729a8, buf, 30, ini);
+            if (!_stricmp(buf, &s_ct674b8c))
+                F(int, T, 2376) = 2;
+            else if (!_stricmp(buf, &s_ct674f8c))
+                F(int, T, 2376) = 3;
+            else
+                F(int, T, 2376) = 1;
+        } else
+            F(int, T, 2376) = 0;
+    }
+    FILE* c = fopen(g_ct674ae0, &s_ct6703e4);
+    if (!c)
+        return;
+    int len = (int)strlen(path) + 1;
+    if (len > 199)
+        len = 199;
+    fwrite(&len, 4, 1, c);
+    fwrite(path, 1, len, c);
+    BYTE st[64];    // the game's (old CRT) struct _stat: the modification time at +28
+    if (CallC<int>(Ct_stat, path, st) == -1)
+        Setup_Fatal(&s_ct674b64);
+    fwrite(st + 28, 4, 1, c);
+    int sz = 2416;
+    fwrite(&sz, 4, 1, c);
+    fwrite(&g_ct6ce32c, 4, 1, c);
+    fwrite(&g_ct6ce330, 4, 1, c);
+    fwrite(&g_ct6ce334, 4, 1, c);
+    fwrite(&g_ct6ce338, 4, 1, c);
+    fwrite(&g_ct6ce33c, 4, 1, c);
+    fwrite(&g_ct6ce340, 4, 1, c);
+    fwrite(&g_ct6ce344, 4, 1, c);
+    fwrite(&g_ct6ce348, 4, 1, c);
+    for (int i = 0; i < 80; i++)
+        fwrite(&g_ct697868 + i * 2416, 1, 2416, c);
+    for (int i = 0; i < g_ct6ce32c; i++) {
+        const char* f2 = (const char*)(&g_ct697868 + i * 2416 + 2212);
+        if (CallC<int>(Ct_stat, f2, st) == -1) {
+            sprintf(buf, &s_ct674b4c, f2);
+            Setup_Fatal(buf);
+        }
+        fwrite(st + 28, 4, 1, c);
+    }
+    fclose(c);
+}
+
+} // extern "C"
+
+// === reading the movable object types (FUN_50a740)
+
+extern "C" int __cdecl Ot_Fatal(const char* msg); KING_ALIAS("_Ot_Fatal", "_Setup_Fatal")
+extern "C" void Ot_stat(); KING_ALIAS("_Ot_stat", "__stat")
+ASM_VAR(int, g_ot6ce34c, $L_6ce34c)     // the number of object types, then the first of each group
+ASM_VAR(BYTE, g_ot6c6b68, $L_6c6b68)    // the object types, 35 of 876 bytes
+ASM_VAR(float, g_ot64daf4, $L_64daf4)
+ASM_VAR(char, s_ot675328, $L_675328)
+ASM_VAR(char, s_ot6752c4, $L_6752c4)
+ASM_VAR(char, s_ot675290, $L_675290)
+ASM_VAR(char, s_ot67527c, $L_67527c)
+ASM_VAR(char, s_ot66ce44, $L_66ce44)
+ASM_VAR(char, s_ot67526c, $L_67526c)
+ASM_VAR(char, s_ot675238, $L_675238)
+ASM_VAR(char, s_ot6751e8, $L_6751e8)
+ASM_VAR(char, s_ot6751d8, $L_6751d8)
+ASM_VAR(char, s_ot6751c8, $L_6751c8)
+ASM_VAR(char, s_ot6751c4, $L_6751c4)
+ASM_VAR(char, s_ot6751c0, $L_6751c0)
+ASM_VAR(char, s_ot6751bc, $L_6751bc)
+ASM_VAR(char, s_ot6751b8, $L_6751b8)
+ASM_VAR(char, s_ot67531c, $L_67531c)
+ASM_VAR(char, s_ot675308, $L_675308)
+ASM_VAR(char, s_ot6752f8, $L_6752f8)
+ASM_VAR(char, s_ot6752d0, $L_6752d0)
+
+#define OT_F(off) ((float*)(R + (off)))
+
+extern "C" {
+
+// [FUN_50a740] reads up to 35 movable object types (876 bytes each, 6c6b68) from ini file path, by groups
+// (section numbers from 0, 30, 40, 50, 60, 80, 90, 100; the first type of each in 6ce354..6ce368): name, mass,
+// frame, centre, inertia from the bounding box of the body points, collision points and planes, and kind;
+// with edit the type editor library sees each one; then the table is appended to the cache 674ae0
+void __cdecl ObjTypes_Read(const char* path, int edit)
+{
+    char err[300], buf[300], key[100];
+    BYTE st[64];
+    if (CallC<int>(Ot_stat, path, st) == -1) {
+        sprintf(err, &s_ot675328, path);
+        Ot_Fatal(err);
+    }
+    int n = 1, group = 0;
+    int* firsts = &g_ct6ce348 + 2;   // 6ce350..6ce368: the first type of each group
+    for (int k = 0; k < 7; k++)
+        firsts[k] = 0;
+    typedef void (__cdecl* EditFn)(BYTE*, int, const char*, const char*);
+    EditFn fn = 0;
+    HMODULE lib = 0;
+    if (edit) {
+        lib = LoadLibraryA(&s_ot67531c);
+        if (!lib)
+            Ot_Fatal(&s_ot675308);
+        else {
+            fn = (EditFn)GetProcAddress(lib, &s_ot6752f8);
+            if (!fn)
+                Ot_Fatal(&s_ot6752d0);
+        }
+    }
+    SetFileAttributesA(path, FILE_ATTRIBUTE_NORMAL);
+    g_ot6ce34c = 0;
+    static const int bases[8] = {0, 30, 40, 50, 60, 80, 90, 100};
+    for (;;) {
+        BYTE R[876];
+        memset(R + 72, 0, 48);
+        memcpy(R + 72, &g_ct7025f0, 48);
+        memset(R + 120, 0, 48);
+        memcpy(R + 120, &g_ct7025f0, 48);
+        memset(R + 168, 0, 24);
+        memset(R + 204, 0, 240);
+        memset(R + 444, 0, 24);
+        memset(R + 468, 0, 12);
+        memset(R + 488, 0, 48);
+        for (int k = 0; k < 20; k++)
+            memset(R + 536 + k * 16, 0, 12);
+        int num = n + ((unsigned)group <= 7 ? bases[group] : 0);
+        char* sec = buf;
+        sprintf(sec, &s_ot6752c4, num);
+        if ((unsigned)group <= 5)
+            for (int k = group; k < 6; k++)
+                firsts[1 + k] = g_ot6ce34c;
+        Ini_GetFloat(sec, &s_ct675078, -1000.0, OT_F(192), path);
+        if (*OT_F(192) < g_ct64c264) {
+            if (n == 1)
+                break;
+            n = 1;
+            group++;
+        } else {
+            if (g_ot6ce34c == 35) {
+                sprintf(err, &s_ot675290, sec, 35);
+                Ot_Fatal(err);
+            }
+            sprintf((char*)R + 35, &s_ot67527c, num);
+            char name[300];
+            GetPrivateProfileStringA(sec, &s_ot66ce44, &s_ct6729a8, name, 20, path);
+            if (!strcmp(name, &s_ct6729a8)) {
+                sprintf((char*)R, &s_ot67526c, num);
+                if (group) {
+                    sprintf(err, &s_ot675238, path, sec);
+                    Ot_Fatal(err);
+                }
+            } else
+                strcpy((char*)R, name);
+            n++;
+            memcpy(R + 72, &g_ct7025f0, 48);
+            Ct_Read3(sec, &s_ct674e80, &g_ct702650, R + 108, path);
+            float inv[12];
+            memcpy(R + 120, CallC<void*>(Ct_Inverse, inv, R + 72), 48);
+            Ct_Read3(sec, &s_ct674e44, &g_ct702650, R + 180, path);
+            Ini_GetFloat(sec, &s_ct674e34, 1.0, OT_F(196), path);
+            float v[3];
+            Ct_Vec(v, 0x43FA0000, 0x43480000, 0x43FA0000);
+            Ct_Read3(sec, &s_ct674f48, v, R + 168, path);
+            int& cnt = F(int, R, 480);
+            cnt = 0;
+            for (int k = 0; k < 20; k++) {
+                sprintf(key, &s_ct674db0, k + 1);
+                if (!Ct_Read3(sec, key, &g_ct702650, R + 204 + cnt * 12, path))
+                    break;
+                cnt++;
+            }
+            float& radius = *OT_F(860);
+            radius = 0;
+            if (group != 3) {
+                float lo[3], hi[3];
+                ((DWORD*)lo)[0] = ((DWORD*)lo)[1] = ((DWORD*)lo)[2] = 0x461C4000;
+                ((DWORD*)hi)[0] = ((DWORD*)hi)[1] = ((DWORD*)hi)[2] = 0xC61C4000;
+                for (int k = 0; k < cnt; k++) {
+                    const float* p = OT_F(204 + k * 12);
+                    for (int c = 0; c < 3; c++) {
+                        if (p[c] < lo[c])
+                            lo[c] = p[c];
+                        if (p[c] > hi[c])
+                            hi[c] = p[c];
+                    }
+                    float d[3] = {p[0] - *OT_F(180), p[1] - *OT_F(184), p[2] - *OT_F(188)};
+                    float l = (float)CallC<double>(Ct_Length, d);
+                    if (l > radius)
+                        radius = l;
+                }
+                float dx = hi[0] - lo[0], dy = hi[1] - lo[1], dz = hi[2] - lo[2];
+                float* box = OT_F(444);
+                box[0] = dx, box[1] = dy, box[2] = dz;
+                box[3] = hi[0], box[4] = hi[1], box[5] = hi[2];
+                box[6] = lo[0], box[7] = lo[1], box[8] = lo[2];
+                F(int, R, 484) = 4;
+                float* q = OT_F(488);
+                q[0] = lo[0], q[1] = hi[1], q[2] = 0;
+                q[3] = hi[0], q[4] = hi[1], q[5] = 0;
+                q[6] = lo[0], q[7] = lo[1], q[8] = 0;
+                q[9] = hi[0], q[10] = lo[1], q[11] = 0;
+                if (dx < g_ct64c250 || dy < g_ct64c250 || dz < g_ct64c250) {
+                    sprintf(err, &s_ot6751e8, sec, (double)dx, (double)dy, (double)dz);
+                    Ot_Fatal(err);
+                }
+                float y2 = dy * dy, x2 = dx * dx, z2 = dz * dz;
+                *OT_F(168) = (y2 + z2) * *OT_F(192) * g_ot64daf4;
+                *OT_F(172) = (x2 + z2) * *OT_F(192) * g_ot64daf4;
+                *OT_F(176) = (x2 + y2) * *OT_F(192) * g_ot64daf4;
+            }
+            if (fn)
+                fn(R + 204, cnt, path, sec);
+            F(int, R, 856) = 0;
+            *OT_F(864) = radius;
+            for (int k = 0; k < 20; k++) {
+                sprintf(key, &s_ct674d34, k);
+                float* pl = OT_F(536 + k * 16);
+                if (!Carat_ReadFill((int)sec, (int)key, 0x3F800000, (int)pl, (int)path, 4))
+                    break;
+                float w = -pl[3];
+                float d[3] = {pl[0] * w - *OT_F(180), pl[1] * w - *OT_F(184), pl[2] * w - *OT_F(188)};
+                float l = (float)CallC<double>(Ct_Length, d);
+                if (l < *OT_F(864))
+                    *OT_F(864) = l;
+                F(int, R, 856)++;
+            }
+            Ini_GetFloat(sec, &s_ct674ee0, 0.5, OT_F(200), path);
+            if (*OT_F(200) < g_ct64c264 || *OT_F(200) > g_ct64c250)
+                F(DWORD, R, 200) = 0x3E4CCCCD;
+            F(int, R, 868) = GetPrivateProfileIntA(sec, &s_ot6751d8, 0, path);
+            char kind[300];
+            GetPrivateProfileStringA(sec, &s_ot6751c8, &s_ct6729a8, kind, 30, path);
+            F(int, R, 872) = 0;
+            if (!_stricmp(kind, &s_ot6751c4))
+                F(int, R, 872) = 1;
+            else if (!_stricmp(kind, &s_ot6751c0))
+                F(int, R, 872) = 2;
+            else if (!_stricmp(kind, &s_ot6751bc))
+                F(int, R, 872) = 3;
+            memcpy(&g_ot6c6b68 + g_ot6ce34c * 876, R, 876);
+            g_ot6ce34c++;
+            if (g_ot6ce34c > 35)
+                break;
+            continue;
+        }
+        if (g_ot6ce34c > 35)
+            break;
+    }
+    if (lib)
+        FreeLibrary(lib);
+    FILE* c = fopen(g_ct674ae0, &s_ot6751b8);
+    if (!c)
+        return;
+    int sz = 876;
+    fwrite(&sz, 4, 1, c);
+    fwrite(&g_ot6ce34c, 4, 1, c);
+    fwrite(firsts, 4, 1, c);
+    for (int k = 1; k < 7; k++)
+        fwrite(firsts + k, 4, 1, c);
+    fwrite(&g_ot6c6b68, 876, 35, c);
+    fclose(c);
+}
+
+} // extern "C"

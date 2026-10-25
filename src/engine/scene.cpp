@@ -3930,3 +3930,205 @@ int __cdecl Poly_SweepEdges(int flags, BYTE* p, float* from, float* to, float r)
 }
 
 } // extern "C"
+
+// === a moving point or sphere against a wall segment (FUN_5f5a80)
+
+extern "C" void Wl2_Normalized(); KING_ALIAS("_Wl2_Normalized", "_Vec3_Normalized")
+extern "C" void Wl2_Length(); KING_ALIAS("_Wl2_Length", "_Vec3_Length")
+extern "C" void Wl2_Dot(); KING_ALIAS("_Wl2_Dot", "_Vec3_Dot")
+extern "C" void Wl2_Sub(); KING_ALIAS("_Wl2_Sub", "_Vec3_Sub")
+extern "C" void Wl2_Add(); KING_ALIAS("_Wl2_Add", "_Vec3_Add")
+extern "C" void Wl2_Scaled(); KING_ALIAS("_Wl2_Scaled", "_Vec3_Scaled")
+extern "C" void Wl2_Negated(); KING_ALIAS("_Wl2_Negated", "_Vec3_Negated")
+extern "C" void Wl2_Intersect(); KING_ALIAS("_Wl2_Intersect", "@Plane_Intersect@36")
+ASM_VAR(float, g_wl2702630, $L_702630)
+ASM_VAR(float, g_wl2702634, $L_702634)
+ASM_VAR(float, g_wl2702638, $L_702638)
+ASM_VAR(float, g_wl264c250, $L_64c250)
+
+static double Wl2_Len(const PsV* v)
+{
+    return CallC<double>(Wl2_Length, v);
+}
+
+static double Wl2_DotOf(const PsV* a, const PsV* b)
+{
+    return CallC<double>(Wl2_Dot, a, b);
+}
+
+// the distance between a and b
+static double Wl2_Dist(const PsV* a, const PsV* b)
+{
+    PsV t;
+    return Wl2_Len(CallC<PsV*>(Wl2_Sub, &t, a, b));
+}
+
+// where segment f..t crosses plane pl (normal, distance) into *out; whether it does
+static int Wl2_Cross(const float* pl, const PsV& f, const PsV& t, PsV* out)
+{
+    return CallThis<int>(Wl2_Intersect, pl, out, f, t);
+}
+
+extern "C" {
+
+// [FUN_5f5a80] whether the move from *from to *to (on the ground plane) meets the vertical wall a..b from its
+// front: as a point, or (flag 2) as a sphere of radius r also against the wall's ends; the touching point goes
+// to *from (its height interpolated) and the wall normal to *to, 1; else 0
+int __cdecl Wall_SweepHit(int flags, const float* a, const float* b, float* from, float* to, float r)
+{
+    PsV F = {from[0], from[1], from[2]}, T = {to[0], to[1], to[2]}, A = {a[0], a[1], a[2]}, B = {b[0], b[1], b[2]};
+    PsV N = {0, 0, 0}, C = {0, 0, 0}, t1, t2, e, n0, m;
+    e.x = A.x - B.x, e.y = A.y - B.y, e.z = A.z - B.z;
+    n0.x = e.y * g_wl2702638 - e.z * g_wl2702634;
+    n0.y = e.z * g_wl2702630 - e.x * g_wl2702638;
+    n0.z = e.x * g_wl2702634 - e.y * g_wl2702630;
+    N = *CallC<PsV*>(Wl2_Normalized, &t1, &n0);
+    float plane[4] = {0, 0, 0, 0};
+    m.x = -N.x, m.y = -N.y, m.z = -N.z;
+    float d0 = (float)((double)m.x * A.x + (double)m.z * A.z + (double)m.y * A.y);
+    F.z = 0, T.z = 0, A.z = 0, B.z = 0;
+    PsV v = {T.x - F.x, T.y - F.y, 0};
+    if ((double)v.x * N.x + (double)v.z * N.z + (double)v.y * N.y > g_ps64b748)
+        return 0;
+    if ((double)N.x * F.x + (double)N.z * F.z + (double)F.y * N.y + d0 < g_ps651710)
+        return 0;
+    float t;
+    if (flags & 2) {
+        d0 = d0 - r;
+        if ((double)N.x * T.x + (double)N.z * T.z + (double)T.y * N.y + d0 > g_ps64b748)
+            return 0;
+        v.x = T.x - F.x, v.y = T.y - F.y, v.z = T.z - F.z;
+        if (x87_fabs((double)v.x * N.x + (double)v.z * N.z + (double)v.y * N.y) < g_ps64b930) {
+            double x = (double)N.x * T.x + (double)N.z * T.z + (double)T.y * N.y + d0 + r;
+            PsV q = {(float)(N.x * x), (float)(N.y * x), (float)(N.z * x)};
+            C.x = T.x - q.x, C.y = T.y - q.y, C.z = T.z - q.z;
+            t = 1.0f;
+        } else {
+            double num = (double)N.x * F.x + (double)N.z * F.z + (double)F.y * N.y + d0;
+            t = (float)-(num / ((double)v.x * N.x + (double)v.z * N.z + (double)v.y * N.y));
+            if (!(t < g_wl264c250))
+                return 0;
+            PsV w = {T.x - F.x, T.y - F.y, T.z - F.z};
+            PsV p = {w.x * t, w.y * t, w.z * t};
+            PsV P = {p.x + F.x, p.y + F.y, p.z + F.z};
+            PsV nr = {N.x * r, N.y * r, N.z * r};
+            C.x = P.x - nr.x, C.y = P.y - nr.y, C.z = P.z - nr.z;
+        }
+        PsV seg = {B.x - A.x, B.y - A.y, B.z - A.z};
+        float L = (float)(Wl2_Len(&seg) + r);
+        PsV ca = {C.x - A.x, C.y - A.y, C.z - A.z};
+        if (Wl2_Len(&ca) < L) {
+            PsV cb = {C.x - B.x, C.y - B.y, C.z - B.z};
+            if (Wl2_Len(&cb) < L) {
+                float z = (to[2] - from[2]) * t + from[2];
+                to[0] = N.x, to[1] = N.y, to[2] = N.z;
+                from[0] = C.x, from[1] = C.y, from[2] = z;
+                return 1;
+            }
+        }
+        PsV fw = {F.x - T.x, F.y - T.y, F.z - T.z};
+        const PsV& dir = *CallC<PsV*>(Wl2_Normalized, &t1, &fw);
+        plane[0] = dir.x, plane[1] = dir.y, plane[2] = dir.z;
+        m.x = -dir.x, m.y = -dir.y, m.z = -dir.z;
+        plane[3] = (float)((double)m.z * A.z + (double)m.y * A.y + (double)m.x * A.x);
+        if (Wl2_Cross(plane, F, T, &C)) {
+            PsV q = {C.x - A.x, C.y - A.y, C.z - A.z};
+            if (Wl2_Len(&q) < r) {
+                PsV u = {C.x - F.x, C.y - F.y, C.z - F.z};
+                PsV w = {F.x - T.x, F.y - T.y, F.z - T.z};
+                float lu = (float)Wl2_Len(&u);
+                if (Wl2_Len(&w) > lu) {
+                    PsV x = {C.x - T.x, C.y - T.y, C.z - T.z};
+                    float lx = (float)Wl2_Len(&x);
+                    if (Wl2_Dist(&F, &T) > lx &&
+                        (double)N.x * T.x + (double)N.z * T.z + (double)T.y * N.y + d0 + r > g_ps64b678) {
+                        to[0] = N.x, to[1] = N.y, to[2] = N.z;
+                        from[0] = A.x, from[1] = A.y, from[2] = A.z;
+                        return 1;
+                    }
+                }
+            }
+        }
+        PsV nd = *CallC<PsV*>(Wl2_Negated, &t2, plane);
+        plane[3] = (float)Wl2_DotOf(&nd, &B);
+        if (!Wl2_Cross(plane, F, T, &C))
+            return 0;
+        if (!(Wl2_Dist(&C, &B) < r))
+            return 0;
+        float l1 = (float)Wl2_Dist(&C, &F);
+        if (!(Wl2_Dist(&F, &T) > l1))
+            return 0;
+        l1 = (float)Wl2_Dist(&C, &T);
+        if (!(Wl2_Dist(&F, &T) > l1))
+            return 0;
+        if (!(Wl2_DotOf(&N, &T) + d0 + r > g_ps64b678))
+            return 0;
+        to[0] = N.x, to[1] = N.y, to[2] = N.z;
+        from[0] = B.x, from[1] = B.y, from[2] = B.z;
+        return 1;
+    }
+    if (Wl2_DotOf(&T, &N) + d0 > g_ps64b748)
+        return 0;
+    PsV tf;
+    if (x87_fabs(Wl2_DotOf(CallC<PsV*>(Wl2_Sub, &tf, &T, &F), &N)) < g_ps64b930)
+        *(DWORD*)&t = 0x3F000000;
+    else {
+        double num = Wl2_DotOf(&F, &N) + d0;
+        t = (float)-(num / Wl2_DotOf(CallC<PsV*>(Wl2_Sub, &tf, &T, &F), &N));
+    }
+    if (t < g_ps651710 || t > g_ps652d00)
+        return 0;
+    PsV sc, cc;
+    CallC(Wl2_Scaled, &sc, CallC<PsV*>(Wl2_Sub, &tf, &T, &F), *(DWORD*)&t);
+    C = *CallC<PsV*>(Wl2_Add, &cc, &F, &sc);
+    double L = Wl2_Dist(&B, &A) + g_ps64b748;
+    if (Wl2_Dist(&C, &A) > L || Wl2_Dist(&C, &B) > L)
+        return 0;
+    float z = (to[2] - from[2]) * t + from[2];
+    from[0] = C.x, from[1] = C.y, from[2] = z;
+    to[0] = N.x, to[1] = N.y, to[2] = N.z;
+    return 1;
+}
+
+} // extern "C"
+
+// === testing a ray against an object's shape (a method at $L_5f93d0)
+
+ASM_FUNC(Rs_ShapeHit, FUN_5f6820)
+
+// out = ray r's frame (+4 rotation, +40 position) applied to point p
+static void Rs_Place(const BYTE* r, const float* p, float* out)
+{
+    const float* m = (const float*)(r + 4);
+    out[0] = (float)((double)m[6] * p[2] + (double)m[3] * p[1] + (double)p[0] * m[0] + m[9]);
+    out[1] = (float)((double)m[7] * p[2] + (double)m[1] * p[0] + (double)m[4] * p[1] + m[10]);
+    out[2] = (float)((double)m[8] * p[2] + (double)m[2] * p[0] + (double)m[5] * p[1] + m[11]);
+}
+
+extern "C" {
+
+// [$L_5f93d0] tests ray r (points +76 / +88 in its frame) against object s's shape (+64) for flags with bits 1
+// and 4, unless s is off (+40 bit 1): a hit records the shape (+108), the object (+100 = s + 48), the result
+// (+112) and the ray's ends (+52 / +64), 1; else 0
+int __fastcall Obj_RayHit(BYTE* s, void*, unsigned flags, BYTE* r)
+{
+    if ((F(BYTE, s, 40) & 1) || !(flags & 1) || !(flags & 4))
+        return 0;
+    BYTE* shape = s + 64;
+    float p1[3], p2[3];
+    Rs_Place(r, (const float*)(r + 76), p1);
+    Rs_Place(r, (const float*)(r + 88), p2);
+    if (F(int, shape, 0) == 6)
+        F(int, r, 200) += F(int, s, 68);
+    int h = CallThis<int>(Rs_ShapeHit, shape, flags, p1, p2, F(int, r, 0));
+    if (!h)
+        return 0;
+    F(BYTE*, r, 108) = shape;
+    F(BYTE*, r, 100) = s + 48;
+    F(int, r, 112) = h;
+    memcpy(r + 52, p1, 12);
+    memcpy(r + 64, p2, 12);
+    return 1;
+}
+
+} // extern "C"
