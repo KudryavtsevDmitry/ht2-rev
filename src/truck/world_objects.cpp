@@ -2421,7 +2421,7 @@ ASM_VAR(float, g_tu64c450, $L_64c450)
 ASM_VAR(float, g_tu64d4e8, $L_64d4e8)
 ASM_VAR(float, g_tu64d350, $L_64d350)
 ASM_VAR(AsmLabel, g_tu6f68b0, $L_6f68b0)
-ASM_PROC(FUN_595d20)
+extern "C" void FUN_595d20(); KING_ALIAS("_FUN_595d20", "@ReplayCam_NextShot@8")
 extern "C" void FUN_5968c0(); KING_ALIAS("_FUN_5968c0", "@TvCamera_Follow@12")
 ASM_PROC(FUN_596b30)
 extern "C" void FUN_596e50(); KING_ALIAS("_FUN_596e50", "@Object_AimMatrix@16")
@@ -3809,6 +3809,417 @@ BYTE* __fastcall Cam_ChaseStep(BYTE* s, void*, BYTE* out, double k)
     CallC(Cc_FromPose, &m308, (double)m416.m[9], (double)m416.m[10], (double)m416.m[11], (double)az2, (double)pol, 0.0);
     memcpy(out, &m308, 48);
     return F(BYTE*, s, 96);
+}
+
+} // extern "C"
+
+// === a drifting puff's step (a method at $L_59eac0)
+
+ASM_VAR(float, g_dr64c904, $L_64c904)
+ASM_VAR(float, g_dr64c878, $L_64c878)
+
+static Vec3 Dr_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+extern "C" {
+
+// [$L_59eac0] puff s's step: its velocity +160 pushed sideways by +172 (+176, the brake, ends once it would
+// speed it up), held below the wind speed (7025b8 +532), moves its place (+40 / +76, not below the height
+// from its age +100 / +104), and its size (+132 .. +144) and swirling texture corners (+72) follow its age
+void __fastcall Puff_DriftStep(BYTE* s, void*)
+{
+    float* V = (float*)(s + 160);
+    const float* Z = &g_axisZ.x;
+    Vec3 c = Dr_Set((double)Z[2] * V[1] - (double)Z[1] * V[2], (double)Z[0] * V[2] - (double)Z[2] * V[0],
+                    (double)Z[1] * V[0] - (double)Z[0] * V[1]);
+    Vec3 side, tmp;
+    Vec3_Normalized(&side, &c);
+    Vec3 acc = g_zeroVec;
+    if (F(float, s, 176) != g_st64c264)
+    {
+        Vec3 h = Dr_Set(V[0], V[1], 0), hn;
+        Vec3_Normalized(&hn, &h);
+        float k = F(float, s, 176);
+        float ny = (float)-(double)hn.y, nz = (float)-(double)hn.z;
+        double bx = -(double)hn.x * k;
+        float by = (float)((double)ny * k), bz = (float)((double)nz * k);
+        float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+        double d = (double)V[2] * ((double)bz * dt) + (double)V[1] * ((double)by * dt) + (double)V[0] * (bx * dt);
+        if (d > g_effectZero)
+            F(float, s, 176) = 0;
+    }
+    double f = F(float, s, 172);
+    float sx = (float)(side.x * f), sy = (float)(side.y * f);
+    double sz = side.z * f;
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    float px = (float)(sx * dt), py = (float)(sy * dt);
+    double pz = sz * dt;
+    float ty = (float)((double)acc.y + V[1]), tz = (float)((double)acc.z + V[2]);
+    V[0] = (float)((double)acc.x + V[0] + px);
+    V[1] = (float)((double)py + ty);
+    V[2] = (float)(pz + tz);
+    float speed = (float)Vec3_Length((const Vec3*)V);
+    float m = F(float, g_rp7025b8, 532);
+    Vec3 mv = Dr_Set(m * (double)g_axisY.x, m * (double)g_axisY.y, m * (double)g_axisY.z);
+    double r = speed / Vec3_Length(&mv);
+    if (r > g_effectOne)
+    {
+        double k = speed / r;
+        V[0] = (float)(k * V[0]);
+        V[1] = (float)(k * V[1]);
+        V[2] = (float)(k * V[2]);
+    }
+    dt = F(double, F(BYTE*, s, 88), 2960);
+    float mx = (float)(dt * V[0]), my = (float)(dt * V[1]);
+    double mz = dt * V[2];
+    float nx = (float)((double)mx + F(float, s, 76)), ny2 = (float)((double)my + F(float, s, 80));
+    float nz2 = (float)(mz + F(float, s, 84));
+    F(float, s, 40) = nx;
+    F(float, s, 76) = nx;
+    F(float, s, 80) = ny2;
+    F(float, s, 44) = ny2;
+    F(float, s, 84) = nz2;
+    F(float, s, 48) = nz2;
+    float t = (float)(((double)F(float, s, 100) - F(float, s, 104)) / F(float, s, 100));
+    if (t < g_st64c264)
+        t = 0;
+    else if (t > g_effectOne)
+        t = 1.0f;
+    double u = (double)g_effectOne - t;
+    float w = (float)(u * F(float, s, 136) + (double)t * F(float, s, 132));
+    double h = u * F(float, s, 144) + (double)t * F(float, s, 140);
+    double zz = h * g_dr64c904 + F(float, s, 156);
+    F(float, s, 84) = (float)(zz > F(float, s, 84) ? zz : F(float, s, 84));
+    float* q16 = F(float*, F(BYTE*, s, 72), 16);
+    q16[0] = q16[3] = (float)(w * (double)g_dr64c878);
+    q16[1] = q16[2] = (float)(w * (double)g_64c258);
+    float* q20 = F(float*, F(BYTE*, s, 72), 20);
+    q20[0] = q20[1] = (float)(h * g_dr64c878);
+    q20[2] = q20[3] = (float)(h * g_64c258);
+    SceneTexture_Advance(s, 0);
+    double a = (double)t * F(float, s, 184) * t * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 180);
+    F(float, s, 180) = (float)a;
+    const float base[4] = {g_worobj6f6a58, g_worobj6f6a5c, g_worobj6f6a60, g_worobj6f6a54};
+    for (int k = 0; k < 4; k++)
+    {
+        double ang = k ? (double)base[k] + F(float, s, 180) : a + g_worobj6f6a58;
+        F(float*, F(BYTE*, s, 72), 8)[k] = (float)(x87_cos(ang) * F(float, s, 188) + g_64c258);
+        F(float*, F(BYTE*, s, 72), 12)[k] =
+            (float)(x87_sin((double)base[k] + F(float, s, 180)) * F(float, s, 192) + g_64c258);
+    }
+}
+
+} // extern "C"
+
+// === a circling puff's step (a method at $L_59e490)
+
+extern "C" void Dr_AddAssign(); KING_ALIAS("_Dr_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(float, g_dr64c494, $L_64c494)
+ASM_VAR(float, g_dr64c334, $L_64c334)
+
+extern "C" {
+
+// [$L_59e490] puff s's step: braked by +188 (stopping it dead once the brake would turn it back), it moves by
+// its velocity +160 and circles about it (radius from the speed, angle +196 turning at +192), not below the
+// height +156 + 64c334; its texture corners (+72) swirl at +172 (angle +176)
+void __fastcall Puff_CircleStep(BYTE* s, void*)
+{
+    float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+    float* V = (float*)(s + 160);
+    Vec3 tmp;
+    if (F(float, s, 188) != g_st64c264)
+    {
+        Vec3 n;
+        Vec3_Normalized(&n, (const Vec3*)V);
+        float k = F(float, s, 188);
+        float ny = (float)-(double)n.y, nz = (float)-(double)n.z;
+        double bx = -(double)n.x * k;
+        float by = (float)((double)ny * k), bz = (float)((double)nz * k);
+        Vec3 d = Dr_Set(bx * dt, (double)by * dt, (double)bz * dt);
+        CallThis(Dr_AddAssign, V, &tmp, &d);
+        if ((double)V[2] * d.z + (double)V[1] * d.y + (double)d.x * V[0] > g_effectZero)
+        {
+            F(float, s, 188) = 0;
+            *(Vec3*)V = g_zeroVec;
+            F(int, s, 100) = 0;
+        }
+    }
+    const float* Z = &g_axisZ.x;
+    Vec3 c = Dr_Set((double)Z[2] * V[1] - (double)Z[1] * V[2], (double)Z[0] * V[2] - (double)Z[2] * V[0],
+                    (double)Z[1] * V[0] - (double)Z[0] * V[1]);
+    Vec3 side;
+    Vec3_Normalized(&side, &c);
+    double L = Vec3_Length((const Vec3*)V) * g_dr64c494;
+    float ang = (float)((double)dt * F(float, s, 192) + F(float, s, 196));
+    F(float, s, 196) = ang;
+    float zy = (float)(Z[1] * L), zz = (float)(Z[2] * L);
+    float sn = (float)x87_sin(ang);
+    Vec3 up = Dr_Set(Z[0] * L * sn, (double)zy * sn, (double)zz * sn);
+    float sx = (float)(side.x * L), sy = (float)(side.y * L);
+    double szl = side.z * L;
+    double cs = x87_cos(ang);
+    float ox = (float)(sx * cs), oy = (float)(sy * cs);
+    double oz = szl * cs;
+    float my = (float)(dt * (double)V[1]), mz = (float)(dt * (double)V[2]);
+    float px = (float)(dt * (double)V[0] + F(float, s, 76));
+    float py = (float)((double)my + F(float, s, 80));
+    double pz = (double)mz + F(float, s, 84);
+    Vec3 p = Dr_Set((double)px + ox, (double)oy + py, oz + pz);
+    Vec3_Add((Vec3*)(s + 76), &p, &up);
+    double zmin = (double)F(float, s, 156) + g_dr64c334;
+    F(float, s, 84) = (float)(zmin > F(float, s, 84) ? zmin : F(float, s, 84));
+    F(Vec3, s, 40) = F(Vec3, s, 76);
+    double a = F(float, s, 172) * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 176);
+    F(float, s, 176) = (float)a;
+    const float base[4] = {g_worobj6f6a58, g_worobj6f6a5c, g_worobj6f6a60, g_worobj6f6a54};
+    for (int k = 0; k < 4; k++)
+    {
+        double an = k ? (double)base[k] + F(float, s, 176) : a + g_worobj6f6a58;
+        F(float*, F(BYTE*, s, 72), 8)[k] = (float)(x87_cos(an) * F(float, s, 180) + g_64c258);
+        F(float*, F(BYTE*, s, 72), 12)[k] =
+            (float)(x87_sin((double)base[k] + F(float, s, 176)) * F(float, s, 184) + g_64c258);
+    }
+    SceneTexture_Advance(s, 0);
+}
+
+} // extern "C"
+
+// === a glow facing the camera (a method at $L_5a0ff0)
+
+extern "C" void Gw_PooledSet4(); KING_ALIAS("_Gw_PooledSet4", "@Pooled_Set4@8")
+ASM_VAR(float, g_gw64c96c, $L_64c96c)
+ASM_VAR(float, g_gw64c874, $L_64c874)
+ASM_VAR(float, g_gw64c250, $L_64c250)
+
+extern "C" {
+
+// [$L_5a0ff0] glow s on view v: its quad (object +52: corners +16 / +20, texture +8 / +12) of kind +128
+// (0 swirling at +148 / +152 with texture scale +160 / +164, 1 turning with the camera's view of it), sized
+// +156, faded by the camera's distance to +136; drawn by Effect_DrawFade
+int __fastcall Fx_GlowDraw(BYTE* s, void*, DWORD info, BYTE* v)
+{
+    BYTE* w = g_696224;
+    float cam[3] = {(float)F(double, w, 2904), (float)F(double, w, 2912), (float)F(double, w, 2920)};
+    Matrix rz;
+    const float* m = Matrix_RotationZ(&rz, (float)F(double, w, 2928))->m;
+    const float* Y = &g_axisY.x;
+    float fx = (float)((double)Y[2] * m[6] + (double)Y[1] * m[3] + (double)Y[0] * m[0] + m[9]);
+    float fy = (float)((double)Y[2] * m[7] + (double)Y[1] * m[4] + (double)Y[0] * m[1] + m[10]);
+    float fz = (float)((double)Y[2] * m[8] + (double)Y[1] * m[5] + (double)Y[0] * m[2] + m[11]);
+    Vec3 d, n;
+    d.x = (float)((double)cam[0] - F(float, s, 56));
+    d.y = (float)((double)cam[1] - F(float, s, 60));
+    d.z = (float)((double)cam[2] - F(float, s, 64));
+    Vec3_Normalized(&n, &d);
+    float ac = (float)x87_acos((double)n.z * fz + (double)n.y * fy + (double)n.x * fx);
+    float ang = (float)(F(double, w, 2928) * F(float, s, 148) + F(float, s, 152));
+    float c16[4] = {0, 0, 0, 0}, c20[4] = {0, 0, 0, 0}, t8[4] = {0, 0, 0, 0}, t12[4] = {0, 0, 0, 0};
+    float r = F(float, s, 156);
+    int kind = F(int, s, 128);
+    if (kind == 1)
+    {
+        float hs = (float)(r * (double)g_gw64c96c);
+        DWORD tb[4] = {0x3ee66666, 0x3f0ccccd, 0x3f0ccccd, 0x3ee66666};
+        memcpy(t8, tb, 16);
+        t12[0] = t12[1] = 1.0f;
+        c20[0] = c20[1] = hs;
+        c20[3] = c20[2] = (float)((double)r + r);
+        double a = (double)ang + ac;
+        ang = (float)a;
+        c16[1] = (float)((a + g_gw64c874) * r);
+        c16[0] = (float)((double)ang * r - (double)r * g_gw64c874);
+        c16[3] = (float)-(double)c16[1];
+        c16[2] = (float)-(double)c16[0];
+    }
+    else if (kind == 0)
+    {
+        c20[1] = c20[0] = c16[0] = c16[3] = (float)-(double)r;
+        c20[3] = c20[2] = c16[2] = c16[1] = r;
+        const float base[4] = {g_worobj6f6a58, g_worobj6f6a5c, g_worobj6f6a60, g_worobj6f6a54};
+        for (int k = 0; k < 4; k++)
+        {
+            double ak = (double)base[k] + ang;
+            t8[k] = (float)(x87_cos(ak) * F(float, s, 160) + g_64c258);
+            t12[k] = (float)(x87_sin(ak) * F(float, s, 164) + g_64c258);
+        }
+    }
+    BYTE* o = F(BYTE*, s, 52);
+    for (int k = 0; k < 4; k++)
+    {
+        F(float*, F(BYTE*, s, 52), 16)[k] = c16[k];
+        F(float*, F(BYTE*, s, 52), 20)[k] = c20[k];
+    }
+    for (int k = 0; k < 4; k++)
+    {
+        F(float*, F(BYTE*, s, 52), 8)[k] = t8[k];
+        F(float*, F(BYTE*, s, 52), 12)[k] = t12[k];
+    }
+    Vec3 e;
+    e.x = (float)((double)cam[0] - F(float, s, 136));
+    e.y = (float)((double)cam[1] - F(float, s, 140));
+    e.z = (float)((double)cam[2] - F(float, s, 144));
+    double L = Vec3_Length(&e);
+    double h = (double)F(float, v, 8540) * g_64c258;
+    double t = (L - h) / ((double)F(float, v, 8536) - h);
+    if (t > g_gw64c250)
+        t = g_gw64c250;
+    else if (t < g_st64c264)
+        t = g_st64c264;
+    F(float, F(BYTE*, o, 36), 88) = (float)t;
+    int res = Effect_DrawFade(s, 0, info, v);
+    CallThis(Gw_PooledSet4, s - 20);
+    return res;
+}
+
+} // extern "C"
+
+// === a blown puff's step (a method at $L_59b670)
+
+ASM_VAR(float, g_bp64c748, $L_64c748)
+
+extern "C" {
+
+// [$L_59b670] puff s's step (only animated without +124): braked by +172 (set to 20 once it is farther than
+// 64d4e8 from +148, ended when it would turn back), its spin +192 turned about its velocity +160 by +204 a
+// second and grown by +208 moves it (+76 / +40) with its velocity and the wind; its texture swirls (+180)
+void __fastcall Puff_BlowStep(BYTE* s, void*)
+{
+    if (!F(int, s, 124))
+    {
+        Effect_AnimateQuad(s, 0);
+        return;
+    }
+    float* P = (float*)(s + 76);
+    Vec3 d;
+    d.x = (float)((double)F(float, s, 148) - P[0]);
+    d.y = (float)((double)F(float, s, 152) - P[1]);
+    d.z = (float)((double)F(float, s, 156) - P[2]);
+    if (Vec3_Length(&d) > g_tu64d4e8)
+        F(float, s, 172) = 20.0f;
+    float* V = (float*)(s + 160);
+    Vec3 tmp;
+    if (F(float, s, 172) != g_st64c264)
+    {
+        Vec3 n;
+        Vec3_Normalized(&n, (const Vec3*)V);
+        float k = F(float, s, 172);
+        float ny = (float)-(double)n.y, nz = (float)-(double)n.z;
+        double bx = -(double)n.x * k;
+        float by = (float)((double)ny * k), bz = (float)((double)nz * k);
+        float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+        Vec3 b = Dr_Set(bx * dt, (double)by * dt, (double)bz * dt);
+        CallThis(Dr_AddAssign, V, &tmp, &b);
+        if ((double)V[2] * b.z + (double)V[1] * b.y + (double)V[0] * b.x > g_effectZero)
+        {
+            F(float, s, 172) = 0;
+            *(Vec3*)V = g_zeroVec;
+        }
+    }
+    float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+    Rp_V3 v = *(const Rp_V3*)V;
+    BYTE m[48];
+    CallC(Rp_LookAt, m, *(const Rp_V3*)(BYTE*)g_ws702650, v, (float)((double)dt * F(float, s, 204)));
+    BYTE* sp = s + 192;
+    CallThis(Rp_TransformPoint, sp, m);
+    CallThis(Rp_MulAssign, sp, &tmp, (float)((double)dt * F(float, s, 208) + g_effectOne));
+    CallThis(Ws_AddAssign, P, &tmp, sp);
+    if (BYTE* w = g_rp7025b8)
+    {
+        double wind = F(float, w, 532);
+        const Vec3& a = g_rp702620;
+        float w0 = (float)(wind * a.x), w1 = (float)(wind * a.y);
+        double w2 = wind * a.z;
+        float h0 = (float)(w0 * (double)g_bp64c748), h1 = (float)(w1 * (double)g_bp64c748);
+        double h2 = w2 * g_bp64c748;
+        float k0 = (float)((double)h0 + V[0]), k1 = (float)((double)h1 + V[1]);
+        double k2 = h2 + V[2];
+        float m0 = (float)(k0 * (double)dt), m1 = (float)(k1 * (double)dt);
+        double m2 = k2 * dt;
+        P[0] = (float)((double)m0 + P[0]);
+        P[1] = (float)((double)m1 + P[1]);
+        P[2] = (float)(m2 + P[2]);
+    }
+    else
+    {
+        double a0 = (double)dt * V[0];
+        float a1 = (float)((double)dt * V[1]), a2 = (float)((double)dt * V[2]);
+        P[0] = (float)(a0 + P[0]);
+        P[1] = (float)((double)a1 + P[1]);
+        P[2] = (float)((double)a2 + P[2]);
+    }
+    F(Vec3, s, 40) = *(const Vec3*)P;
+    Effect_AnimateQuad(s, 0);
+    double f = ((double)F(float, s, 100) - F(float, s, 104)) / F(float, s, 100);
+    if (f < g_effectZero)
+        f = g_effectZero;
+    else if (f > g_effectDoubleOne)
+        f = g_effectDoubleOne;
+    double a = F(float, s, 180) * f * f * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 176);
+    F(float, s, 176) = (float)a;
+    const float base[4] = {g_worobj6f6a58, g_worobj6f6a5c, g_worobj6f6a60, g_worobj6f6a54};
+    for (int k = 0; k < 4; k++)
+    {
+        double an = k ? (double)base[k] + F(float, s, 176) : a + g_worobj6f6a58;
+        F(float*, F(BYTE*, s, 72), 8)[k] = (float)(x87_cos(an) * F(float, s, 184) + g_64c258);
+        F(float*, F(BYTE*, s, 72), 12)[k] =
+            (float)(x87_sin((double)base[k] + F(float, s, 176)) * F(float, s, 188) + g_64c258);
+    }
+}
+
+} // extern "C"
+
+// === the replay camera picking its next shot (FUN_595d20)
+
+ASM_VAR(int, g_rc6f6a48, $L_6f6a48)
+ASM_VAR(AsmLabel, g_rcPoints, $L_6f67e0)          // camera points (z), 12 bytes each
+ASM_VAR(AsmLabel, g_rcFrames, $L_6f66b8)          // their 48-byte frames
+ASM_VAR(AsmLabel, g_rcNames, $L_6f6820)           // their object names
+ASM_VAR(float, g_rc64c32c, $L_64c32c)
+
+extern "C" {
+
+// [FUN_595d20] replay camera s (with 6f6914 on): in mode 1 and not yet at a fixed point, coming near one of the
+// 6f6a48 points makes it shot 5 there (frame +128 / +32, its effect started); else when a next shot is asked
+// (+324) it moves on from its shot +328 (FUN_595eb0)
+void __fastcall ReplayCam_NextShot(BYTE* s, void*)
+{
+    int mode = g_6f6914;
+    if (!mode)
+        return;
+    if (F(int, s, 328) != 5 && mode == 1)
+    {
+        for (int i = 0; i < g_rc6f6a48; i++)
+        {
+            const float* p = (const float*)((BYTE*)&g_rcPoints - 8 + i * 12);
+            Vec3 d;
+            d.x = (float)((double)F(float, s, 116) - p[0]);
+            d.y = (float)((double)F(float, s, 120) - p[1]);
+            d.z = (float)((double)F(float, s, 124) - p[2]);
+            if (Vec3_Length(&d) < g_rc64c32c)
+            {
+                F(int, s, 328) = 5;
+                const BYTE* rec = (const BYTE*)&g_rcFrames + i * 48;
+                memcpy(s + 128, rec, 48);
+                memcpy(s + 32, rec, 48);
+                BYTE* o = CallC<BYTE*>(FUN_5ef2b0, 0, ((const char**)&g_rcNames)[i]);
+                CallThis(FUN_596850, s, o, s + 32);
+                return;
+            }
+        }
+    }
+    if (!F(int, s, 324))
+        return;
+    F(int, s, 324) = 0;
+    static const int next[6] = {2, 4, 1, 0, 3, 1};
+    unsigned shot = F(unsigned, s, 328);
+    if (shot <= 5)
+        CallThis(FUN_595eb0, s, next[shot]);
 }
 
 } // extern "C"

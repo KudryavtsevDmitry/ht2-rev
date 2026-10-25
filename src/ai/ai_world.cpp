@@ -8656,7 +8656,7 @@ extern "C" BYTE* __cdecl Ai_ReadAmbush(void* reader, StrRef h)
 extern "C" void FUN_43bf10(); KING_ALIAS("_FUN_43bf10", "_Ai_AdvancePlayerPosition")    // a player's next position (out, player, PositionId32, double*, int)
 extern "C" void FUN_4376a0(); KING_ALIAS("_FUN_4376a0", "_Ai_GetNoncontradictoryPosition")    // a player's position (out, player)
 extern "C" void FUN_456ea0(); KING_ALIAS("_FUN_456ea0", "@Entry32Vec_InsertAux@16")    // vector<32-byte entry>::insert_aux (thiscall pos, x)
-ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
+extern "C" void FUN_45e2a0(); KING_ALIAS("_FUN_45e2a0", "_IntroSort_ByKey")    // introsort loop of entries (first, last, 0, depth, cmp)
 extern "C" void FUN_45e370(); KING_ALIAS("_FUN_45e370", "_Entries32_FinalSort")    // final insertion sort of entries (first, last, cmp)
 extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")    // loads a vehicle (id)
 extern "C" int __cdecl Vehicle_Exists(int id);
@@ -15755,7 +15755,7 @@ extern "C" int* __cdecl Ai_FindParkingPlace(int* market, int* place, const int* 
 
 extern "C" void FUN_4660b0(); KING_ALIAS("_FUN_4660b0", "_Sort_MedianBy504")    // median of three (a, b, c, cmp) -> pointer
 extern "C" void FUN_466160(); KING_ALIAS("_FUN_466160", "_Sort_PartitionBy504")    // unguarded partition (first, last, pivot, cmp)
-ASM_PROC(FUN_45f8d0)    // introsort loop (first, last, 0, depth, cmp)
+extern "C" void FUN_45f8d0(); KING_ALIAS("_FUN_45f8d0", "_IntroSort_By504")    // introsort loop (first, last, 0, depth, cmp)
 ASM_PROC(FUN_465fd0)    // partial sort (first, middle, last, cmp)
 extern "C" void FUN_45f990(); KING_ALIAS("_FUN_45f990", "_Ptrs504_FinalSort")    // final insertion sort (first, last, cmp)
 
@@ -22764,7 +22764,7 @@ void __cdecl Ai_HireTask()
 
 // === sorting nodes by distance to a point (FUN_45f2c0)
 
-ASM_PROC(FUN_45f650)
+extern "C" void FUN_45f650(); KING_ALIAS("_FUN_45f650", "@Far_Compare@16")
 extern "C" void FUN_465d20(); KING_ALIAS("_FUN_465d20", "_CopyBackwardDwords2")
 extern "C" void FUN_465e80(); KING_ALIAS("_FUN_465e80", "_Nodes_IntroSortLoop")
 ASM_PROC(FUN_468d60)
@@ -23625,6 +23625,187 @@ void __cdecl Ptrs504_FinalSort(BYTE** first, BYTE** last, int cmp)
     Fp_InsertionSort(first, first + 16, cmp);
     for (BYTE** i = first + 16; i != last; i++)
         Fp_Unguarded(i, i, cmp);
+}
+
+} // extern "C"
+
+// === a rope iterator's leaf cache (FUN_46b140)
+
+extern "C" {
+
+// [FUN_46b140] rope iterator it (position +0, root +4) finds the leaf holding its position: the path down the
+// concatenations (last four nodes kept at +24.., index +40, turns +44), the leaf start +8, and the buffer +12 /
+// +16 / +20 into the leaf's characters or, for function leaves, up to 15 characters fetched into +45
+void __cdecl Rope_SetCache(BYTE* it)
+{
+    DWORD pos = F(DWORD, it, 0);
+    BYTE* node = F(BYTE*, it, 4);
+    if (!(pos < F(DWORD, node, 0)))
+    {
+        F(int, it, 16) = 0;
+        return;
+    }
+    if (F(BYTE*, node, 16))
+    {
+        BYTE* cs = F(BYTE*, node, 16);
+        F(BYTE*, it, 12) = cs;
+        F(BYTE*, it, 20) = cs + F(DWORD, node, 0);
+        F(BYTE*, it, 24) = node;
+        F(BYTE*, it, 16) = cs + pos;
+        F(int, it, 40) = 0;
+        F(int, it, 8) = 0;
+        return;
+    }
+    BYTE* path[48];
+    int depth = -1;
+    BYTE dirns = 0;
+    DWORD start = 0;
+    for (;;)
+    {
+        path[++depth] = node;
+        int tag = (signed char)node[8];
+        if (tag == 1)
+        {
+            dirns <<= 1;
+            BYTE* left = F(BYTE*, node, 20);
+            DWORD end = start + F(DWORD, left, 0);
+            if (pos >= end)
+            {
+                dirns |= 1;
+                node = F(BYTE*, node, 24);
+                start = end;
+            }
+            else
+                node = left;
+        }
+        else if ((unsigned)tag <= 3)
+            break;
+    }
+    F(DWORD, it, 8) = start;
+    int k = depth - 3;
+    if (k < 0)
+        k = 0;
+    int last = -1;
+    if (k <= depth)
+    {
+        for (int j = k; j <= depth; j++)
+            F(BYTE*, it, 24 + (j - k) * 4) = path[j];
+        last = depth - k;
+    }
+    F(int, it, 40) = last;
+    it[44] = dirns;
+    BYTE* leaf = F(BYTE*, it, 24 + last * 4);
+    DWORD lp = F(DWORD, it, 8);
+    pos = F(DWORD, it, 0);
+    int tag = (signed char)leaf[8];
+    if (tag == 0)
+    {
+        BYTE* data = F(BYTE*, leaf, 20);
+        F(BYTE*, it, 12) = data;
+        F(BYTE*, it, 16) = data + (pos - lp);
+        F(BYTE*, it, 20) = data + F(DWORD, leaf, 0);
+        return;
+    }
+    if (tag <= 1 || tag > 3)
+        return;
+    DWORD leafEnd = F(DWORD, leaf, 0) + lp;
+    BYTE* fn = F(BYTE*, leaf, 20);
+    DWORD len = 15, from = lp;
+    if (!(lp + 15 > pos))
+    {
+        from = pos - 3;
+        if (from + 15 > leafEnd)
+            from = leafEnd - 15;
+    }
+    if (from + 15 > leafEnd)
+        len = leafEnd - from;
+    BYTE* buf = it + 45;
+    CallVirt(fn, 4, from - lp, len, buf);
+    F(BYTE*, it, 12) = buf;
+    F(BYTE*, it, 16) = buf + (pos - from);
+    F(BYTE*, it, 20) = buf + len;
+}
+
+} // extern "C"
+
+// === which of two objects is farther from a point (FUN_45f650)
+
+extern "C" {
+
+// [FUN_45f650] comparator at point s (three doubles): 1 when object b's road position (+40) is farther from it
+// than object a's
+int __fastcall Far_Compare(const double* s, void*, BYTE** a, BYTE** b)
+{
+    DVec3 pa, pb;
+    Road_PointOf(&pa, *(PositionId*)(*a + 40));
+    double ax = s[0] - pa.x, ay = s[1] - pa.y, az = s[2] - pa.z;
+    Road_PointOf(&pb, *(PositionId*)(*b + 40));
+    double bx = s[0] - pb.x, by = s[1] - pb.y, bz = s[2] - pb.z;
+    double la = x87_sqrt(ay * ay + az * az + ax * ax);
+    double lb = x87_sqrt(by * by + bz * bz + bx * bx);
+    return lb > la;
+}
+
+} // extern "C"
+
+// === two introsort loops (FUN_45e2a0 / FUN_45f8d0)
+
+struct Is_E32 { DWORD w[2]; double key; DWORD w4[4]; };
+extern "C" Is_E32* __cdecl Sort_MedianByKey(Is_E32* a, Is_E32* b, Is_E32* c);
+extern "C" Is_E32* __cdecl Sort_PartitionByKey(Is_E32* first, Is_E32* last, Is_E32 pivot);
+extern "C" void** __cdecl Sort_MedianBy504(void** a, void** b, void** c);
+extern "C" void** __cdecl Sort_PartitionBy504(void** first, void** last, void* pivot);
+extern "C" void __cdecl MakeHeap32(BYTE* first, BYTE* last, DWORD pred);
+extern "C" void __cdecl PopHeapLast32(BYTE* first, BYTE* last, int unused, DWORD pred);
+extern "C" void __cdecl MakeHeap4(DWORD* first, DWORD* last, DWORD pred);
+extern "C" void __cdecl PopHeapLast4(DWORD* first, DWORD* last, DWORD pred);
+
+extern "C" {
+
+// [FUN_45e2a0] introsort of 32-byte records by their key (+8) down to runs of 16, heapsort when the depth is used up
+void __cdecl IntroSort_ByKey(Is_E32* first, Is_E32* last, int, int depth, DWORD pred)
+{
+    while ((((BYTE*)last - (BYTE*)first) & ~31) > 512)
+    {
+        if (!depth)
+        {
+            MakeHeap32((BYTE*)first, (BYTE*)last, pred);
+            for (BYTE* e = (BYTE*)last; ((e - (BYTE*)first) & ~31) > 32; e -= 32)
+                PopHeapLast32((BYTE*)first, e, 0, pred);
+            return;
+        }
+        depth--;
+        int n = (int)(last - first);
+        Is_E32* m = Sort_MedianByKey(first, first + n / 2, last - 1);
+        Is_E32 pv;
+        Rec_Copy8Skip1((int*)&pv, 0, (const int*)m);
+        Is_E32* cut = Sort_PartitionByKey(first, last, pv);
+        IntroSort_ByKey(cut, last, 0, depth, pred);
+        last = cut;
+    }
+}
+
+// [FUN_45f8d0] the same for pointers by their objects' +504
+void __cdecl IntroSort_By504(void** first, void** last, int, int depth, DWORD pred)
+{
+    while ((((BYTE*)last - (BYTE*)first) & ~3) > 64)
+    {
+        if (!depth)
+        {
+            MakeHeap4((DWORD*)first, (DWORD*)last, pred);
+            for (BYTE* e = (BYTE*)last; ((e - (BYTE*)first) & ~3) > 4; e -= 4)
+                PopHeapLast4((DWORD*)first, (DWORD*)e, pred);
+            return;
+        }
+        depth--;
+        int n = (int)(last - first);
+        void** m = Sort_MedianBy504(first, first + n / 2, last - 1);
+        void* pv;
+        Int_Copy((int*)&pv, 0, (const int*)m);
+        void** cut = Sort_PartitionBy504(first, last, pv);
+        IntroSort_By504(cut, last, 0, depth, pred);
+        last = cut;
+    }
 }
 
 } // extern "C"

@@ -192,7 +192,7 @@ extern "C" void __fastcall Node_Position(BYTE* self, void*, Vec3Bits* out)
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // (vector, name, scale as float)
 extern "C" void FUN_4ee900(); KING_ALIAS("_FUN_4ee900", "@Car_CountType@8")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
-ASM_PROC(FUN_55f000)    // whether a vehicle can take another (vehicle, other)
+extern "C" void FUN_55f000(); KING_ALIAS("_FUN_55f000", "_Trailer_HitchCheck")    // whether a vehicle can take another (vehicle, other)
 extern "C" void FUN_4f1180(); KING_ALIAS("_FUN_4f1180", "@Body_SetUpright@4")
 extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
 ASM_PROC(FUN_55f5f0)
@@ -1149,7 +1149,7 @@ extern "C" void Fe_Periodic(); KING_ALIAS("_Fe_Periodic", "@FfPeriodic_Construct
 extern "C" void Fe_Condition(); KING_ALIAS("_Fe_Condition", "@FfCondition_Construct@12")
 extern "C" void Fe_Damper(); KING_ALIAS("_Fe_Damper", "@FfDamper_Construct@4")
 extern "C" void Fe_Constant(); KING_ALIAS("_Fe_Constant", "@FfConstant_Construct@12")
-ASM_PROC(FUN_577ab0)    // a ramp force effect (duration)
+extern "C" void FUN_577ab0(); KING_ALIAS("_FUN_577ab0", "@FfForce_Construct@12")    // a ramp force effect (duration)
 
 // a force effect of size bytes from constructor ctor (with arg when it takes one)
 static int Fe_New(int size, void (*ctor)(), int arg, bool hasArg)
@@ -1192,6 +1192,26 @@ void __cdecl Ff_Create(int on)
     g_696cf0[3] = Fe_New(12, FUN_577ab0, 10000, true);
     g_696cf0[4] = Fe_New(12, FUN_577ab0, 10000, true);
     g_696cf0[5] = Fe_New(12, Fe_Constant, 10000, true);
+}
+
+} // extern "C"
+
+// === a static frame's initializer ($L_4df8e0)
+
+ASM_VAR(AsmLabel, g_si696a00, $L_696a00)
+
+extern "C" {
+
+// [$L_4df8e0] the frame at 696a00: identity, +252 cleared, +256 = 15, +260 = 10
+BYTE* __cdecl Init_696a00()
+{
+    BYTE* m = (BYTE*)g_si696a00;
+    memset(m, 0, 48);
+    memcpy(m, &g_identity, 48);
+    F(int, m, 252) = 0;
+    F(float, m, 256) = 15.0f;
+    F(float, m, 260) = 10.0f;
+    return m;
 }
 
 } // extern "C"

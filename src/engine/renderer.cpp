@@ -1674,7 +1674,7 @@ extern "C" int __fastcall Image_Prepare(BYTE* self, void*, int a, int b)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5aeb10(); KING_ALIAS("_FUN_5aeb10", "_Clip_Inside@8")
-ASM_PROC(FUN_5aebc0)
+extern "C" void FUN_5aebc0(); KING_ALIAS("_FUN_5aebc0", "@Clip_EdgeVertex@28")
 
 // [FUN_5aeed0] walks a polygon's n vertex ids, writing to out the ids with an outcode (5aeb10) and the crossings (5aebc0) where it changes; returns the count
 extern "C" int __fastcall Rn_ClipIds(BYTE* self, void*, int a1, int n, int* out, int* ids, int a5)
@@ -5441,6 +5441,66 @@ int __fastcall View_SphereClip(BYTE* s, void*, const float* sp)
         flags |= 4;
     F(int, s, 8272) = flags;
     return flags ? flags : 64;
+}
+
+} // extern "C"
+
+// === a clipped edge's new vertex (FUN_5aebc0)
+
+ASM_VAR(double, g_ce64b670, $L_64b670)
+
+extern "C" {
+
+// [FUN_5aebc0] clipper s: a new vertex (index +1932, given back in *out) where the edge from vertex i to j
+// (+1224, 12 bytes each) crosses clip plane p (1 far, 2 / 16 the sides, 4 / 8 above and below; others keep
+// the start's y as the fraction), with its texture coordinates (+1488 / +1576, flag 32) and shade (+1664,
+// flag 128) blended alike
+void __fastcall Clip_EdgeVertex(BYTE* s, void*, int flags, int* out, int i, int j, int p)
+{
+    *out = F(int, s, 1932);
+    const float* A = (const float*)(s + 1224 + i * 12);
+    const float* B = (const float*)(s + 1224 + j * 12);
+    float ax = A[0], ay = A[1], az = A[2];
+    float dx = (float)((double)B[0] - ax), dy = (float)((double)B[1] - ay), dz = (float)((double)B[2] - az);
+    double t;
+    switch (p)
+    {
+    case 1:
+        t = (g_ce64b670 - ay) / dy;
+        break;
+    case 2:
+        t = -(((double)ay + ax) / ((double)dy + dx));
+        break;
+    case 4:
+        t = -(((double)ay - az) / ((double)dy - dz));
+        break;
+    case 8:
+        t = -(((double)az + ay) / ((double)dz + dy));
+        break;
+    case 16:
+        t = -(((double)ay - ax) / ((double)dy - dx));
+        break;
+    default:
+        t = ay;
+        break;
+    }
+    float* V = (float*)(s + 1224 + F(int, s, 1932) * 12);
+    V[0] = (float)(t * dx + ax);
+    V[1] = (float)(t * dy + ay);
+    V[2] = (float)(t * dz + az);
+    if (flags & 32)
+    {
+        float* u = (float*)(s + 1488);
+        u[F(int, s, 1932)] = (float)(((double)u[j] - u[i]) * t + u[i]);
+        float* v = (float*)(s + 1576);
+        v[F(int, s, 1932)] = (float)(((double)v[j] - v[i]) * t + v[i]);
+    }
+    if (flags & 128)
+    {
+        float* c = (float*)(s + 1664);
+        c[F(int, s, 1932)] = (float)(((double)c[j] - c[i]) * t + c[i]);
+    }
+    F(int, s, 1932)++;
 }
 
 } // extern "C"

@@ -2456,7 +2456,7 @@ extern "C" void __cdecl Names_IntroSort(BYTE* first, BYTE* last, int, int depth,
 // Comparing a character range with a rope range; the rope iterators are passed by value (60 bytes: +0 position,
 // +4 root, +16 the current character in the cached leaf, +20 the leaf's end).
 
-ASM_PROC(FUN_46b140)    // caches the leaf of a rope iterator
+extern "C" void FUN_46b140(); KING_ALIAS("_FUN_46b140", "_Rope_SetCache")    // caches the leaf of a rope iterator
 extern "C" void FUN_46c4a0(); KING_ALIAS("_FUN_46c4a0", "_Rope_SetCacheForIncr")    // moves a rope iterator into the next leaf
 struct RopeIt60 { int pos, root, d2, d3; char* cur; char* end; int d6[9]; };
 static char Aicon232_Char(RopeIt60* a)

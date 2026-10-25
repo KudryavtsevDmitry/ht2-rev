@@ -1046,7 +1046,7 @@ extern "C" void __cdecl Ff_InitRecords(void)
 // ---------------------------------------------------------------------------
 // Force feedback effects: a DIEFFECT (56 bytes) for one axis, created on the joystick device.
 
-ASM_PROC(FUN_592f90)
+extern "C" void FUN_592f90(); KING_ALIAS("_FUN_592f90", "@PtrList_Append@12")
 extern "C" void $L_578fb0(); KING_ALIAS("_$L_578fb0", "_Ff_GetRect@8")
 ASM_VAR(AsmLabel, s_q210_67c6f8, $L_67c6f8)
 ASM_VAR(AsmLabel, s_q210_67c60c, $L_67c60c)
@@ -1110,6 +1110,42 @@ extern "C" DWORD* __fastcall FfPeriodic_Construct(DWORD* s)
     CallThis(FUN_592f90, g_joyEffects, s);
     s[2] = d[2];
     s[3] = periodic[3];
+    return s;
+}
+ASM_VAR(AsmLabel, s_ff67c8f0, $L_67c8f0)
+ASM_VAR(AsmLabel, s_ff67c8b0, $L_67c8b0)
+ASM_VAR(AsmLabel, s_ff67c880, $L_67c880)
+ASM_VAR(AsmLabel, g_ff6553b0, $L_6553b0)
+// [FUN_577ab0] a constant force effect of magnitude (and gain) a (+8)
+extern "C" DWORD* __fastcall FfForce_Construct(DWORD* s, void*, int a)
+{
+    s[0] = 0;
+    s[1] = 0;
+    if (!g_joyDevice || !g_joyForceFeedback)
+        return s;
+    if (!Ff210_Enum(1, (const char*)s_ff67c8f0, (const char*)s_ff67c8b0, s))
+        return s;
+    DWORD d[14] = {0};
+    int mag = a;
+    DWORD axis = 0;
+    int dir = 1;
+    s[2] = a;
+    d[0] = 56;
+    d[1] = 18;
+    d[2] = 1000000;
+    d[3] = 0;
+    d[4] = a;
+    d[5] = (DWORD)-1;
+    d[6] = 0;
+    d[7] = 1;
+    d[8] = (DWORD)&axis;
+    d[9] = (DWORD)&dir;
+    d[10] = 0;
+    d[11] = 4;
+    d[12] = (DWORD)&mag;
+    if (!Ff210_Create(s, g_ff6553b0, d, (const char*)s_ff67c880))
+        return s;
+    CallThis(FUN_592f90, g_joyEffects, s);
     return s;
 }
 // [FUN_577630] a condition effect of coefficient c (+4..+36 the DICONDITION, +8 the gain)
@@ -1647,7 +1683,7 @@ extern "C" void Dg_Times(); KING_ALIAS("_Dg_Times", "_Vec3_Times")
 extern "C" void Dg_DivideBy(); KING_ALIAS("_Dg_DivideBy", "@Vec3_DivideBy@12")
 extern "C" void Dg_Set2Vec(); KING_ALIAS("_Dg_Set2Vec", "@Fx_Set2Vec@24")
 extern "C" void Dg_RecordsHeight(); KING_ALIAS("_Dg_RecordsHeight", "_Records_Height")
-ASM_FUNC(Dg_TerrainHeight, FUN_616850)
+extern "C" void Dg_TerrainHeight(); KING_ALIAS("_Dg_TerrainHeight", "@Terrain_HeightAt@16")
 ASM_VAR(BYTE*, g_dg6cec98, $L_6cec98)
 ASM_VAR(BYTE*, g_dg6f33b4, $L_6f33b4)
 ASM_VAR(float, g_dg6503e0, $L_6503e0)

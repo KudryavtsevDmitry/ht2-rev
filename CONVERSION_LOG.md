@@ -87,3 +87,30 @@ FUN_561f30 Copter_FlightStep (3312), FUN_58d2b0 Body_UpdatePlanes, FUN_4f1fa0 Wh
 FUN_5c6ac0 Ribbon_DrawSegment, FUN_4ef7c0 Body_StepVectors. Skipped: FUN_4e8ae1, FUN_58a020 (split, code past ENDP),
 $L_4ecbc2, $L_58738c (fragments), FUN_5b5710, FUN_5b2950, FUN_4ce6d0, FUN_4d2b30, FUN_48c710, FUN_59f870, $L_5aa750,
 FUN_5a6420 (stack drift around by-value / zero-arg indirect calls, or debug-only), $L_420ed0 (AI by-value Int_Copy).
+
+Batch 21 plan: more than 44,180 bytes from the remaining 1.0-1.6 KB x87 procs with few calls (FUN_506210, FUN_502270, $L_59eac0, $L_59e490, $L_5a0ff0, FUN_58f560, $L_4c5060, ...), one per piece, screened for jumps outside the proc and stack drift.
+
+Batch 21 done: 56 procs, 44,264 bytes = 2.00%; 73.81% -> 75.81%. FUN_502270 Patch_SegmentHits, FUN_506210 Body_GroundNormal,
+$L_59eac0 Puff_DriftStep, $L_59e490 Puff_CircleStep, $L_4c5060 Fx_GlareDraw, $L_5a0ff0 Fx_GlowDraw, FUN_58f560 Body_FindOverlap,
+FUN_5fbdf0 Face_RayHit, FUN_55f000 Trailer_HitchCheck, $L_4d9f40 Fx_FireStep, $L_59b670 Puff_BlowStep, FUN_54cb90 Car_LookAtSign,
+FUN_4f1240 Body_PutDown, FUN_55cc30 Car_HitchImpulse, FUN_506ae0 Body_SlideMove, FUN_585150 Item_PointContacts,
+FUN_4f2670 Wheels_StepFrames (2288), FUN_4c03d0 Fx_SmokeSheets, $L_4befa0 Fx_MistStep, $L_4c1280 Fx_SourcePoint,
+FUN_616850 Terrain_HeightAt, $L_4bea60 Fx_ShaftsStep, FUN_5665c0 Copter_HeadForTarget, $L_5f9f20 Lod_Draw,
+$L_5cdf90 Obj_BillboardDraw, FUN_4decc0 Cab_ViewSway, FUN_5aebc0 Clip_EdgeVertex, FUN_5c6830 Strip_DrawArch,
+FUN_57e2e0 Obj_HoldOnRail, FUN_4ef480 Wheels_LoadShares, FUN_5c82f0 Sign_Swing, FUN_595d20 ReplayCam_NextShot,
+$L_584060 Item_EndLeg, FUN_4e4468 Clock_Text, FUN_46b140 Rope_SetCache, FUN_5f21e0 Slot_CastRay, FUN_556780 Limit_Share,
+$L_4cbec0 Fx_ScrapeSpark, $L_4c3cf0 Fx_SquareSpot, $L_4c22b0 Fx_SeaSpot, FUN_4e28b0 Vec3_OutOfBox, FUN_45f650 Far_Compare,
+FUN_5bdc80 Control_FitSize, $L_569550 Terrain_RayCallback, FUN_4e794f Vec3_Soften, $L_5c0700 List_KeepSelection,
+FUN_45e2a0 IntroSort_ByKey, FUN_45f8d0 IntroSort_By504, FUN_4ee540 Body_SetMass, FUN_609990 Grid_SplitEdge,
+FUN_577ab0 FfForce_Construct, FUN_592f90 PtrList_Append (with its comparator $L_592fe0 Rec_CompareF4), $L_4df8e0 Init_696a00,
+FUN_5d8710 Window_ConstructSub, FUN_48eda0 VPoly_Evaluate, $L_5dbe10 EventRing_Push.
+Switch-default paths reading uninitialized locals ($L_4c5060, $L_5a0ff0) now leave zeros. Callbacks used as data were rebound
+(g_fiCb4cbec0, g_ws_569550, g_movbodCmp592fe0); atexit stubs inside converted procs got C equivalents; stale PUBLIC lines for
+$L_5c0700 / $L_592fe0 / $L_6f67d8 removed.
+Skipped: $L_5aa750, $L_549580, FUN_558a30, FUN_4d3240, FUN_615da0, FUN_4f17a0 (stack offsets shifted by callee-popped or by-value
+calls, not mappable with confidence); FUN_4fdc80, FUN_4f5820 (fall through past ENDP); $L_4f3620, $L_5a6050, $L_5ca70c (fragments);
+FUN_5af9e0, FUN_5af3e0, $L_5fae60 (jump tables with x87 values across branches or code past the table); $L_4c9a10 (10-argument
+interleaved pushes); FUN_5bb260 (uninitialized format code); FUN_4cdc90, FUN_4cd770, FUN_567dc0, FUN_465fd0, $L_526bc0, FUN_45bab0,
+FUN_4ac3d0, FUN_4b54b0, FUN_600e60, FUN_5586f0, FUN_471780, FUN_477b60, FUN_4d0bc0 (AI / STL by-value copies); FUN_52fa70,
+FUN_507df0 (inlined iostreams with SEH); FUN_5c55b0, FUN_5c3ac0, FUN_605310, FUN_602320 (network / sound with SEH or throws);
+$L_4c3df0 (Light_Set drift); FUN_48d100 (by-value double vectors); FUN_5fedbc (stores the caller's ECX); FUN_579aa0 (too long).

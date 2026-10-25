@@ -1115,3 +1115,96 @@ int __fastcall Terrain_ReadTiles(BYTE* s, void*, FILE** f, int n)
 }
 
 } // extern "C"
+
+// === the terrain height at a point (FUN_616850)
+
+ASM_VAR(float, g_th6532f8, $L_6532f8)
+
+static float Th_Sample(BYTE* t, int x, int y) { return Terrain_Sample((BYTE**)t, 0, x, y); }
+
+extern "C" {
+
+// [FUN_616850] the terrain height at (x, y) of view s's grid (+0 +4: bounds +40136.., cell +40152.., tiles
+// +40192): the triangle of the grid cell holding it (split along one diagonal or the other by the cell's
+// parity) interpolated; 6532f8 outside
+double __fastcall Terrain_HeightAt(BYTE** s, void*, float x, float y)
+{
+    BYTE* g = F(BYTE*, *s, 4);
+    if (!(x < F(float, g, 40140) && x > F(float, g, 40136) && y < F(float, g, 40144) && y > F(float, g, 40148)))
+        return g_th6532f8;
+    float u = (float)(((double)x - F(float, g, 40136)) / F(float, g, 40152));
+    float v = (float)(((double)y - F(float, g, 40148)) / F(float, g, 40156));
+    int x0 = (int)(CallC<double>(Tn_floor, (double)(u / (double)g_tn653240)) * g_tn653240);
+    int y0 = (int)(CallC<double>(Tn_floor, (double)(v / (double)g_tn653244)) * g_tn653244);
+    int x1 = (int)(CallC<double>(Tn_ceil, (double)(u / (double)g_tn653240)) * g_tn653240);
+    int y1 = (int)(CallC<double>(Tn_ceil, (double)(v / (double)g_tn653244)) * g_tn653244);
+    double fud = (u - (double)(__int64)x0) / g_tn653240;
+    float fu = (float)fud;
+    float fv = (float)((v - (double)(__int64)y0) / g_tn653244);
+    int diag, tri;
+    if (((y0 & 4) != 0) != ((x0 & 4) != 0))
+    {
+        diag = 1;
+        tri = fud < (double)g_tn64c250 - fv ? 2 : 3;
+    }
+    else
+    {
+        diag = 0;
+        tri = fud < fv ? 3 : 2;
+    }
+    BYTE* t = F(BYTE*, g, 40192);
+    if (fv == 0)
+    {
+        float h0 = (float)CallThis<double>(Tn_TileHeight, CallThis<BYTE*>(FUN_608ab0, t, x0, y0), x0, y0);
+        return ((double)Th_Sample(t, x1, y0) - h0) * fu + h0;
+    }
+    if (fv == g_tn64c250)
+    {
+        float h0 = Th_Sample(t, x0, y1);
+        return ((double)Th_Sample(t, x1, y1) - h0) * fu + h0;
+    }
+    float a, b, q;
+    double X, w;
+    if (diag == 0)
+    {
+        a = Th_Sample(t, x0, y0);
+        b = Th_Sample(t, x1, y1);
+        if (tri == 3)
+        {
+            q = a;
+            X = Th_Sample(t, x0, y1);
+            w = (double)fu / fv;
+        }
+        else
+        {
+            q = Th_Sample(t, x1, y0);
+            X = b;
+            w = ((double)fu - fv) / ((double)g_tn64c250 - fv);
+        }
+    }
+    else
+    {
+        a = Th_Sample(t, x1, y0);
+        b = Th_Sample(t, x0, y1);
+        if (tri == 3)
+        {
+            q = a;
+            X = Th_Sample(t, x1, y1);
+            w = ((double)fv + fu - g_tn64c250) / fv;
+        }
+        else
+        {
+            q = Th_Sample(t, x0, y0);
+            X = b;
+            w = fu / ((double)g_tn64c250 - fv);
+        }
+    }
+    float wf = (float)w;
+    float p = (float)(((double)b - a) * fv + a);
+    double r = (X - q) * fv + q;
+    if ((tri == 2 && diag == 1) || (diag == 0 && tri == 3))
+        return ((double)p - r) * wf + r;
+    return (r - p) * wf + p;
+}
+
+} // extern "C"

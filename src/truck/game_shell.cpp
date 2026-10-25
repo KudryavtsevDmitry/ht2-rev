@@ -61,7 +61,7 @@ extern "C" void FUN_568fd0(); KING_ALIAS("_FUN_568fd0", "_Game_568fd0")
 extern "C" void FUN_5bf820(); KING_ALIAS("_FUN_5bf820", "@Button_ConstructId@20")
 extern "C" void FUN_5bf750(); KING_ALIAS("_FUN_5bf750", "@Button_Construct@16")
 extern "C" void FUN_603c70(); KING_ALIAS("_FUN_603c70", "_Ini_WriteInt")
-ASM_PROC(FUN_5d8710)
+extern "C" void FUN_5d8710(); KING_ALIAS("_FUN_5d8710", "@Window_ConstructSub@20")
 extern "C" void FUN_5c1260(); KING_ALIAS("_FUN_5c1260", "@Avi_Init@8")
 extern "C" void FUN_5c1b10(); KING_ALIAS("_FUN_5c1b10", "@Media_Close@8")
 extern "C" void FUN_5d8850(); KING_ALIAS("_FUN_5d8850", "@Window_Destroy@4")
@@ -3084,7 +3084,7 @@ extern "C" BYTE* __fastcall ShellArrows_Construct(BYTE* s, void*, int parent)
 // ---------------------------------------------------------------------------
 // Shell screen below its parent with two buttons (exception frame dropped).
 
-ASM_PROC(FUN_5bdc80)
+extern "C" void FUN_5bdc80(); KING_ALIAS("_FUN_5bdc80", "@Control_FitSize@8")
 ASM_VAR(DWORD, g_q29_6ce3fc, $L_6ce3fc)
 ASM_VAR(AsmLabel, g_q29_6ce3e0, $L_6ce3e0)
 ASM_VAR(AsmLabel, g_q29_64e848, $L_64e848)
@@ -8083,7 +8083,7 @@ extern "C" void FUN_50f300(); KING_ALIAS("_FUN_50f300", "_Shell_SkinScrollBar")
 extern "C" void FUN_5bdd70(); KING_ALIAS("_FUN_5bdd70", "@Ctl_AutoSize@8")
 extern "C" void FUN_50e830(); KING_ALIAS("_FUN_50e830", "_Shell_MakeTexButton")
 extern "C" void FUN_50efb0(); KING_ALIAS("_FUN_50efb0", "_Shell_MakeMaskSlider")
-ASM_PROC(FUN_5bdc80)
+extern "C" void FUN_5bdc80(); KING_ALIAS("_FUN_5bdc80", "@Control_FitSize@8")
 
 static void Vw_Styles(BYTE* c, void* s0, void* s1, void* s2, void* s3)
 {

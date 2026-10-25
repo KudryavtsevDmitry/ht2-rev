@@ -2394,7 +2394,7 @@ void __fastcall Vec4_InsertAux48a000(BYTE** v, void*, BYTE* pos, const BYTE* x) 
 
 // === reversing a curve (FUN_48e190)
 
-ASM_PROC(FUN_48eda0)    // vector polynomial composed with another (out, inner)
+extern "C" void FUN_48eda0(); KING_ALIAS("_FUN_48eda0", "@VPoly_Evaluate@16")    // vector polynomial composed with another (out, inner)
 ASM_PROC(FUN_48dbb0)    // a curve record from a vector polynomial (src)
 extern "C" void FUN_461680(); KING_ALIAS("_FUN_461680", "_Construct24")
 extern "C" BYTE* __fastcall Rec1588_Copy(BYTE* s, void*, const BYTE* src);    // ai_containers.cpp
@@ -2751,3 +2751,27 @@ extern "C" int __fastcall Curve_NearestTo(VecPoly* s, void*, const DVec3* p, dou
     Poly_DistanceSq(&q, s, p);
     return Poly_FindMin(&q, best, at, lo, hi, 3);
 }
+
+// === evaluating a polynomial of vectors (FUN_48eda0)
+
+extern "C" {
+
+// [FUN_48eda0] polynomial p (24-byte coefficients, count +576) at x by Horner's rule into out (580 bytes)
+BYTE* __fastcall VPoly_Evaluate(const BYTE* p, void*, BYTE* out, BYTE* x)
+{
+    BYTE acc[580], term[580], prod[580], sum[580];
+    memcpy(acc, p, 24);
+    F(int, acc, 576) = 1;
+    unsigned n = (unsigned)(F(int, p, 576) * 24 / 24);
+    for (unsigned k = 1; k < n; k++)
+    {
+        memcpy(term, p + 24 * k, 24);
+        F(int, term, 576) = 1;
+        BYTE* m = VPoly_Multiply(acc, 0, prod, x);
+        memcpy(acc, VPoly_Add(m, 0, sum, term), 580);
+    }
+    memcpy(out, acc, 580);
+    return out;
+}
+
+} // extern "C"

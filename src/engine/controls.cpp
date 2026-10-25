@@ -18,7 +18,7 @@ typedef char AsmLabel[1];
 
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 extern "C" void FUN_5bc430(); KING_ALIAS("_FUN_5bc430", "@Path_SideDistance@20")    // distance of a point to segment i, returns double
-ASM_PROC(FUN_5bdc80)    // relayout
+extern "C" void FUN_5bdc80(); KING_ALIAS("_FUN_5bdc80", "@Control_FitSize@8")    // relayout
 extern "C" void FUN_5bd5e0(); KING_ALIAS("_FUN_5bd5e0", "@Control_Construct@16")    // base control constructor (a, flags)
 
 ASM_VAR(int, g_702f24, $L_702f24)
@@ -1566,3 +1566,64 @@ extern "C" void __fastcall Panel_GridLayout(BYTE* s, void*, int n, int gx, int g
     }
     CallThis(FUN_5bdc80, s);
 }
+
+// === a control's size from its contents (FUN_5bdc80)
+
+extern "C" void Cs_TextWidth(); KING_ALIAS("_Cs_TextWidth", "@Font_TextWidth@12")
+extern "C" void Cs_NodeNext(); KING_ALIAS("_Cs_NodeNext", "@Node_Next@8")
+
+extern "C" {
+
+// [FUN_5bdc80] control s's size (+52, +56) from its image (+96, flags 16 / 36), icon (+100, flags 72) or text (+12
+// in font +16), at least its margins (+44, +48 cleared) and its children's (+288..); flags 0x300 mark it (+60)
+void __fastcall Control_FitSize(BYTE* s, void*)
+{
+    int w = 0, h = 0;
+    F(int, s, 48) = 0;
+    F(int, s, 44) = 0;
+    DWORD flags = F(DWORD, s, 32);
+    BYTE* img = 0;
+    if (flags & 16)
+        img = F(BYTE*, s, 96);
+    else if (flags & 36)
+        img = F(BYTE*, s, 96);
+    else if (flags & 72)
+    {
+        BYTE* ic = F(BYTE*, s, 100);
+        if (ic)
+        {
+            F(int, s, 52) = F(WORD, ic, 4) - 1;
+            F(int, s, 56) = F(WORD, ic, 6) - 1;
+        }
+    }
+    else
+    {
+        int tw = CallThis<int>(Cs_TextWidth, F(BYTE*, s, 16), F(int, s, 12));
+        F(int, s, 52) = tw + F(int, s, 44) + 4;
+        F(int, s, 56) = F(int, F(BYTE*, s, 16), 20) + F(int, s, 48) + 4;
+    }
+    if (img)
+    {
+        F(int, s, 52) = F(WORD, img, 20) - 1;
+        F(int, s, 56) = F(WORD, img, 22) - 1;
+    }
+    if (F(int, s, 52) < F(int, s, 44))
+        F(int, s, 52) = F(int, s, 44);
+    if (F(int, s, 56) < F(int, s, 48))
+        F(int, s, 56) = F(int, s, 48);
+    for (BYTE* c = F(BYTE*, s, 288); c; c = CallThis<BYTE*>(Cs_NodeNext, c))
+    {
+        if (w < F(int, c, 52))
+            w = F(int, c, 52);
+        if (h < F(int, c, 56))
+            h = F(int, c, 56);
+    }
+    if (w > F(int, s, 52))
+        F(int, s, 52) = w;
+    if (h > F(int, s, 56))
+        F(int, s, 56) = h;
+    if (F(DWORD, s, 32) & 0x300)
+        F(int, s, 60) = 1;
+}
+
+} // extern "C"

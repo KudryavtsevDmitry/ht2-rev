@@ -1190,7 +1190,7 @@ extern "C" int __cdecl Wheels_Mean(BYTE* wheels, int n, Vec3* pos, Vec3* nrm)
     return 1;
 }
 
-ASM_PROC(FUN_4e28b0)
+extern "C" void FUN_4e28b0(); KING_ALIAS("_FUN_4e28b0", "_Vec3_OutOfBox")
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")
 extern "C" void FUN_4fc930(); KING_ALIAS("_FUN_4fc930", "@Body4fc930_SetMode@28")
 ASM_PROC(FUN_541ad0)
@@ -1566,7 +1566,7 @@ extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@1
 extern "C" void FUN_561d50(); KING_ALIAS("_FUN_561d50", "@Copter_SetVec112@12")
 extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
 extern "C" void FUN_4f1e20(); KING_ALIAS("_FUN_4f1e20", "@Body_SetVelocity@12")
-ASM_PROC(FUN_4f1240)
+extern "C" void FUN_4f1240(); KING_ALIAS("_FUN_4f1240", "@Body_PutDown@20")
 ASM_VAR(Vec3, g_vhZero702650, $L_702650)
 
 // [FUN_530050] clears the low byte of each of the 295 words whose high byte is 0
@@ -2083,7 +2083,7 @@ ASM_PROC(FUN_4eec80)
 extern "C" void FUN_4eeaf0(); KING_ALIAS("_FUN_4eeaf0", "@Body_SetLoad@12")
 extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
 extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
-ASM_PROC(FUN_4f1240)
+extern "C" void FUN_4f1240(); KING_ALIAS("_FUN_4f1240", "@Body_PutDown@20")
 extern "C" void FUN_4f0fc0(); KING_ALIAS("_FUN_4f0fc0", "@Body_PlaceAt@16")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
@@ -2607,7 +2607,7 @@ extern "C" int __fastcall Car_HasInput(BYTE* s)
 extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
 extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
 extern "C" void FUN_589490(); KING_ALIAS("_FUN_589490", "@BodyLevel_Step@16")
-ASM_PROC(FUN_4f1240)
+extern "C" void FUN_4f1240(); KING_ALIAS("_FUN_4f1240", "@Body_PutDown@20")
 ASM_VAR(float, g_q112_64c250, $L_64c250)
 struct Veh112_M { DWORD v[12]; };
 // [FUN_54c820] places car s at a with matrix m: its scene object (+16), the helicopter part (+21604) and the
@@ -2800,7 +2800,7 @@ extern "C" void __fastcall CarEffect_End(BYTE* s, void*, int keep)
 // ---------------------------------------------------------------------------
 // Loading cargo onto a car.
 
-ASM_PROC(FUN_556780)
+extern "C" void FUN_556780(); KING_ALIAS("_FUN_556780", "@Limit_Share@16")
 extern "C" void FUN_556890(); KING_ALIAS("_FUN_556890", "@Tanks_Fill@16")
 extern "C" void FUN_5455d0(); KING_ALIAS("_FUN_5455d0", "@Car_AddMass@16")
 extern "C" void FUN_5569c0(); KING_ALIAS("_FUN_5569c0", "@Obj5569c0_Take@20")
@@ -4254,7 +4254,7 @@ extern "C" void FUN_556a40(); KING_ALIAS("_FUN_556a40", "@Car_ApplyFound@8")
 ASM_PROC(FUN_552940)
 extern "C" void FUN_556c60(); KING_ALIAS("_FUN_556c60", "@Car_CanSleep@4")    // whether the car is driven locally
 extern "C" void FUN_580dd0(); KING_ALIAS("_FUN_580dd0", "@Item_Rest@4")    // the moving body's step
-ASM_PROC(FUN_58f560)
+extern "C" void FUN_58f560(); KING_ALIAS("_FUN_58f560", "@Body_FindOverlap@8")
 ASM_VAR(float, g_cs64da74, $L_64da74)
 
 extern "C" {
@@ -4718,7 +4718,7 @@ extern "C" BYTE* __fastcall Truck55eaa0_Construct(BYTE* s, void*, int a1, int a2
 
 // === the game's input messages and cheat codes (FUN_532950)
 
-ASM_PROC(FUN_4e4468)
+extern "C" void FUN_4e4468(); KING_ALIAS("_FUN_4e4468", "_Clock_Text")
 extern "C" void Ck_SetCursor(); KING_ALIAS("_Ck_SetCursor", "_Input_SetCursorPos")
 ASM_VAR(AsmLabel, g_ck6d1948, $L_6d1948)    // key states, 2 bytes each (down, held)
 ASM_VAR(BYTE*, g_ck6d1ed8, $L_6d1ed8)
@@ -7714,7 +7714,7 @@ void __fastcall Car_TakeContacts(BYTE* s, void*, BYTE* out, BYTE* w)
 extern "C" void FUN_542280(); KING_ALIAS("_FUN_542280", "@Car_Centre@4")
 extern "C" void FUN_54c820(); KING_ALIAS("_FUN_54c820", "@Car_Place@16")
 extern "C" void FUN_545e20(); KING_ALIAS("_FUN_545e20", "@Car_SendState@4")
-ASM_PROC(FUN_4ee540)
+extern "C" void FUN_4ee540(); KING_ALIAS("_FUN_4ee540", "@Body_SetMass@20")
 
 static Vec3 Cm_Set(double x, double y, double z)
 {
@@ -7997,6 +7997,442 @@ void __fastcall Car_Hit(BYTE* s, void*, const Vec3* p, const Vec3* dir)
     if (vel.z < lim)
         vel.z = (float)lim;
     CallC(FUN_4bb4c0, p, s + 976, &vel, spd, kind, size, 1);
+}
+
+} // extern "C"
+
+// === whether a trailer can be hitched (FUN_55f000)
+
+// p through the 12-float frame M (with its position)
+static Vec3 Th_Frame(const float* M, const float* p)
+{
+    Vec3 v;
+    v.z = (float)((double)p[2] * M[8] + (double)p[1] * M[5] + (double)p[0] * M[2] + M[11]);
+    v.y = (float)((double)p[2] * M[7] + (double)p[1] * M[4] + (double)p[0] * M[1] + M[10]);
+    v.x = (float)((double)p[2] * M[6] + (double)p[1] * M[3] + (double)p[0] * M[0] + M[9]);
+    return v;
+}
+
+extern "C" {
+
+// [FUN_55f000] 0 when trailer t can be hitched to car c, else why not: 1 one missing, 2 not a car and a trailer,
+// 3 either without +21600, 4 c already towing (+21880), 5 the hitch points (types +156 / +168, the trailer's
+// raised by the car type's +204) too far apart, 6 their heights over the ground (+21048) too different,
+// 7 facing too differently
+int __cdecl Trailer_HitchCheck(BYTE* c, BYTE* t)
+{
+    if (!t || !c)
+        return 1;
+    if (CallVirt<int>(c, 4) != 1 || CallVirt<int>(t, 4) != 2)
+        return 2;
+    if (!F(int, t, 21600) || !F(int, c, 21600))
+        return 3;
+    if (F(int, c, 21880))
+        return 4;
+    BYTE* tc = (BYTE*)g_697f9c + F(int, c, 10420) * 2416;
+    BYTE* tt = (BYTE*)g_697f9c + F(int, t, 10420) * 2416;
+    Matrix m;
+    float M[12];
+    memcpy(M, c + 708, 48);
+    Vec3 p = Th_Frame(M, (const float*)(tc + 156));
+    Vec3 ha = Th_Frame(CallThis<const float*>(FUN_57de90, c + 16, &m), &p.x);
+    memcpy(M, t + 708, 48);
+    float k = F(float, tc, 204);
+    Vec3 v;
+    v.z = (float)((double)k * g_axisY.z);
+    v.y = (float)((double)k * g_axisY.y);
+    v.x = (float)((double)k * g_axisY.x);
+    const float* o = (const float*)(tt + 168);
+    Vec3 cc;
+    cc.z = (float)((double)v.z + o[2]);
+    cc.y = (float)((double)v.y + o[1]);
+    cc.x = (float)((double)v.x + o[0]);
+    Vec3 q = Th_Frame(M, &cc.x);
+    Vec3 hb = Th_Frame(CallThis<const float*>(FUN_57de90, t + 16, &m), &q.x);
+    Vec3 d;
+    Vec3_Sub(&d, &ha, &hb);
+    if (Vec3_Dot(&d, &d) > g_cr64c2f8)
+        return 5;
+    Vec3 r;
+    float z1 = (float)((double)Vec3_MulMatrix(&r, (const Vec3*)(tt + 168), (const Matrix*)(t + 708))->z - F(float, t, 21048));
+    double z2 = (double)Vec3_MulMatrix(&r, (const Vec3*)(tc + 156), (const Matrix*)(c + 708))->z - F(float, c, 21048);
+    if (x87_fabs(z1 - z2) > g_wo64d0f0)
+        return 6;
+    Vec3 fa, fb;
+    Vec3_RotateBy(&fa, &g_axisY, CallThis<const Matrix*>(FUN_57de90, c + 16, &m));
+    Vec3_RotateBy(&fb, &g_axisY, CallThis<const Matrix*>(FUN_57de90, t + 16, &m));
+    if (Vec3_Dot(&fa, &fb) < g_lw64b840)
+        return 7;
+    return 0;
+}
+
+} // extern "C"
+
+// === the lamp the car looks at (FUN_54cb90)
+
+extern "C" void Lk_TransformVecs(); KING_ALIAS("_Lk_TransformVecs", "_Obj_TransformVecs")
+extern "C" void Lk_Negated(); KING_ALIAS("_Lk_Negated", "_Vec3_Negated")
+extern "C" void Lk_AddAssign(); KING_ALIAS("_Lk_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Lk_SubAssign(); KING_ALIAS("_Lk_SubAssign", "@Vec3_SubAssign@16")
+ASM_VAR(double, g_lk64f760, $L_64f760)
+ASM_VAR(double, g_lk64b678, $L_64b678)
+ASM_VAR(char, s_lk67a2d8, $L_67a2d8)
+ASM_VAR(char, s_lk67a2cc, $L_67a2cc)
+
+extern "C" {
+
+// [FUN_54cb90] car s's ray (from its point +3464 in both frames, +564 and +516, along its forward) into the world
+// +10920 (kind 7); a hit object (of kind 77 when +10924 is 1) has its two switches named after it turned on, the
+// second showing which side (1 .. 4 by the hit normal) the car looks at
+void __fastcall Car_LookAtSign(BYTE* s, void*)
+{
+    if (!F(BYTE*, s, 10920))
+        return;
+    BYTE nd[256];
+    CallThis(FUN_5ef5c0, nd);
+    const float* p = (const float*)(s + 3464);
+    memcpy(nd + 4, &g_identity, 48);
+    float* from = (float*)(nd + 76);
+    from[0] = (float)((double)F(float, s, 576) * p[1] + (double)F(float, s, 588) * p[2] + (double)p[0] * F(float, s, 564) + F(float, s, 600));
+    from[1] = (float)((double)F(float, s, 568) * p[0] + (double)F(float, s, 580) * p[1] + (double)F(float, s, 592) * p[2] + F(float, s, 604));
+    from[2] = (float)((double)F(float, s, 572) * p[0] + (double)F(float, s, 584) * p[1] + (double)F(float, s, 596) * p[2] + F(float, s, 608));
+    const float* Y = &g_axisY.x;
+    Vec3 u, q, w, tmp;
+    u.x = (float)((double)Y[2] * F(float, s, 540) + (double)Y[1] * F(float, s, 528) + (double)Y[0] * F(float, s, 516));
+    u.y = (float)((double)Y[2] * F(float, s, 544) + (double)Y[1] * F(float, s, 532) + (double)Y[0] * F(float, s, 520));
+    u.z = (float)((double)Y[2] * F(float, s, 548) + (double)Y[1] * F(float, s, 536) + (double)Y[0] * F(float, s, 524));
+    q.z = (float)((double)F(float, s, 548) * p[2] + (double)F(float, s, 536) * p[1] + (double)F(float, s, 524) * p[0] + F(float, s, 560));
+    q.y = (float)((double)F(float, s, 544) * p[2] + (double)F(float, s, 532) * p[1] + (double)F(float, s, 520) * p[0] + F(float, s, 556));
+    q.x = (float)((double)F(float, s, 540) * p[2] + (double)F(float, s, 528) * p[1] + (double)p[0] * F(float, s, 516) + F(float, s, 552));
+    CallThis(Lk_AddAssign, nd + 88, &tmp, &q);
+    w.x = (float)((double)F(float, s, 552) - F(float, s, 600));
+    w.y = (float)((double)F(float, s, 556) - F(float, s, 604));
+    w.z = (float)((double)F(float, s, 560) - F(float, s, 608));
+    if ((double)w.z * u.z + (double)w.y * u.y + (double)w.x * u.x > g_lk64b678)
+        CallThis(Lk_AddAssign, nd + 88, &tmp, &u);
+    else
+        CallThis(Lk_SubAssign, nd + 88, &tmp, &u);
+    F(int, nd, 0) = F(int, s, 3300);
+    F(int, nd, 116) = 0;
+    F(int, nd, 100) = 0;
+    int res = CallVirt<int>(F(BYTE*, s, 10920), 52, 7, nd);
+    CallC(Lk_TransformVecs, nd);
+    int* h = F(int*, nd, 100);
+    if (!(res & 1) || !h)
+        return;
+    if (F(int, s, 10924) == 1 && h[0] != 77)
+        return;
+    char b1[32], b2[32];
+    sprintf(b1, &s_lk67a2d8, h[1]);
+    sprintf(b2, &s_lk67a2cc, h[1]);
+    BYTE* a = CallC<BYTE*>(FUN_5ef2b0, 0, b1);
+    BYTE* b = CallC<BYTE*>(FUN_5ef2b0, 0, b2);
+    if (!a)
+        return;
+    CallC(FUN_4e480c, a, 1);
+    if (!b)
+        return;
+    Vec3 n;
+    n.x = (float)-(double)F(float, nd, 64);
+    n.y = (float)-(double)F(float, nd, 68);
+    n.z = (float)-(double)F(float, nd, 72);
+    if (Vec3_Dot(&n, &g_axisY) > g_lk64f760)
+        CallC(FUN_4e480c, b, 1);
+    else if (Vec3_Dot(&n, &g_axisX) > g_lk64f760)
+        CallC(FUN_4e480c, b, 2);
+    else if (Vec3_Dot(&n, CallC<const Vec3*>(Lk_Negated, &tmp, &g_axisY)) > g_lk64f760)
+        CallC(FUN_4e480c, b, 3);
+    else if (Vec3_Dot(&n, CallC<const Vec3*>(Lk_Negated, &tmp, &g_axisX)) > g_lk64f760)
+        CallC(FUN_4e480c, b, 4);
+}
+
+} // extern "C"
+
+// === the hitch's impulse between car and trailer (FUN_55cc30)
+
+extern "C" void Hj_SetThis(); KING_ALIAS("_Hj_SetThis", "@Vec3_SetThis@20")
+extern "C" void Hj_ZeroThis(); KING_ALIAS("_Hj_ZeroThis", "@Vec3_ZeroThis@8")
+typedef void(__cdecl* Hj_Solver)(int, int, void*, void*, void*, void*, void*, void*, void*, void*, void*, void*,
+                                 void*, void*, void*, void*, void*, void*);
+ASM_VAR(Hj_Solver, g_hj67a4ac, $L_67a4ac)
+
+extern "C" {
+
+// [FUN_55cc30] when car s has a pending hitch event (+21888) with its trailer +21880: both hitch points (car
+// type +156, trailer type +168 raised by the car type's +204) in body axes, the bodies' frames, masses, velocities
+// and spins go to the hitch solver 67a4ac, whose impulses and turns go to both bodies (+16 methods 144 / 152)
+void __fastcall Car_HitchImpulse(BYTE* s, void*)
+{
+    if (!F(int, s, 21888))
+        return;
+    BYTE* t = F(BYTE*, s, 21880);
+    if (!t)
+        return;
+    F(int, s, 21888) = 0;
+    int mt = F(int, t, 3284);
+    F(int, t, 21884) = 0;
+    int mc = F(int, s, 3284);
+    float A1[12], B1[12], A2[12], B2[12], R[12];
+    memcpy(A1, s + 1808, 48);
+    memcpy(B1, t + 1808, 48);
+    memcpy(A2, s + 1856, 48);
+    memcpy(B2, t + 1856, 48);
+    Vec3 va = F(Vec3, s, 3304), vb = F(Vec3, t, 3304);
+    memcpy(R, s + 708, 48);
+    BYTE* tc = (BYTE*)g_697f9c + F(int, s, 10420) * 2416;
+    BYTE* tt = (BYTE*)g_697f9c + F(int, t, 10420) * 2416;
+    const float* h = (const float*)(tc + 156);
+    float P[3];
+    P[0] = (float)((double)R[0] * h[0] + (double)R[6] * h[2] + (double)R[3] * h[1] + R[9]);
+    P[1] = (float)((double)R[1] * h[0] + (double)R[7] * h[2] + (double)R[4] * h[1] + R[10]);
+    P[2] = (float)((double)R[2] * h[0] + (double)R[8] * h[2] + (double)R[5] * h[1] + R[11]);
+    double k = F(float, tc, 204);
+    memcpy(R, t + 708, 48);
+    float ky = (float)(k * g_axisY.y);
+    float cx = (float)((double)(float)(k * g_axisY.x) + F(float, tt, 168));
+    float cy = (float)((double)ky + F(float, tt, 172));
+    double cz = k * g_axisY.z + F(float, tt, 176);
+    Vec3 Qt, Pl, Ql, wa, wb, tmp;
+    Qt.z = (float)(cz * R[8] + (double)cy * R[5] + (double)R[2] * cx + R[11]);
+    Qt.y = (float)(cz * R[7] + (double)cy * R[4] + (double)R[1] * cx + R[10]);
+    Qt.x = (float)(cz * R[6] + (double)cy * R[3] + (double)R[0] * cx + R[9]);
+    Pl.z = (float)((double)A1[8] * P[2] + (double)A1[5] * P[1] + (double)A1[2] * P[0]);
+    Pl.y = (float)((double)A1[7] * P[2] + (double)A1[4] * P[1] + (double)A1[1] * P[0]);
+    Pl.x = (float)((double)A1[6] * P[2] + (double)A1[3] * P[1] + (double)A1[0] * P[0]);
+    Vec3_RotateBy(&Ql, &Qt, (const Matrix*)B1);
+    Vec3 ga = F(Vec3, s, 21896), gb = F(Vec3, t, 21888);
+    Vec3_RotateBy(&wa, Vec3_MulComponents(&tmp, &F(Vec3, s, 21908), &va), (const Matrix*)A1);
+    Vec3_RotateBy(&wb, Vec3_MulComponents(&tmp, &F(Vec3, t, 21900), &vb), (const Matrix*)B1);
+    Vec3 o1 = g_zeroVec, o3 = g_zeroVec, o2, o4;
+    CallThis(Hj_ZeroThis, &o2);
+    CallThis(Hj_ZeroThis, &o4);
+    g_hj67a4ac(mc, mt, &Pl, &Ql, &ga, &gb, &wa, &wb, A1, B1, A2, B2, &va, &vb, &o1, &o3, &o2, &o4);
+    CallVirt(s + 16, 144, &o1, 0);
+    CallVirt(s + 16, 152, &o2, 0);
+    CallVirt(t + 16, 144, &o3, 0);
+    CallVirt(t + 16, 152, &o4, 0);
+}
+
+} // extern "C"
+
+// === the cab view's sway with the road (FUN_4decc0)
+
+extern "C" void Cw_GameTime(); KING_ALIAS("_Cw_GameTime", "_Game_Time")
+extern "C" void Cw_FrameApply(); KING_ALIAS("_Cw_FrameApply", "_Frame_ApplyChecked")
+ASM_VAR(BYTE*, g_cw6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_cw696cac, $L_696cac)
+ASM_VAR(float, g_cw696d10, $L_696d10)
+ASM_VAR(char, s_cw672eec, $L_672eec)
+ASM_VAR(char, s_cw672edc, $L_672edc)
+ASM_VAR(double, g_cw64d688, $L_64d688)
+ASM_VAR(double, g_cw64d6b8, $L_64d6b8)
+ASM_VAR(double, g_cw64d6b0, $L_64d6b0)
+ASM_VAR(float, g_cw64c260, $L_64c260)
+ASM_VAR(float, g_cw64d6ac, $L_64d6ac)
+ASM_VAR(float, g_cw64d6a8, $L_64d6a8)
+ASM_VAR(double, g_cw64b898, $L_64b898)
+ASM_VAR(float, g_cw64c264, $L_64c264)
+ASM_VAR(double, g_cw64b6a8, $L_64b6a8)
+ASM_VAR(double, g_cw64b6e0, $L_64b6e0)
+ASM_VAR(double, g_cw64b6b8, $L_64b6b8)
+ASM_VAR(float, g_cw64d6a4, $L_64d6a4)
+ASM_VAR(float, g_cw64d6a0, $L_64d6a0)
+ASM_VAR(double, g_cw64d698, $L_64d698)
+ASM_VAR(float, g_cw64d670, $L_64d670)
+ASM_VAR(float, g_cw64c408, $L_64c408)
+ASM_VAR(float, g_cw64d694, $L_64d694)
+ASM_VAR(float, g_cw64c304, $L_64c304)
+ASM_VAR(float, g_cw64d690, $L_64d690)
+
+static float Cw_Bits(DWORD b)
+{
+    float f;
+    memcpy(&f, &b, 4);
+    return f;
+}
+
+extern "C" {
+
+// [FUN_4decc0] cab view s in the game (6cec68): its seat frame (+560 + 48 * +4720, turned with the cab's tilt
+// +21600 +10720) and the camera (FUN_4de990) swayed by the cab's bounce and roll through the filters +4756,
+// +4788 and, with option 0x100, leaned and shifted by the car's pitch and roll (+3360, +3372) through +4724;
+// then applied to the camera node (696cac +80) and the seat (+556). Also the look-back times (+5104 ..)
+void __fastcall Cab_ViewSway(BYTE* s, void*)
+{
+    BYTE* g = g_cw6d2078;
+    if (!g_q234_6cec68 || !g || !F(BYTE*, g, 616) || F(int, g, 1400))
+        return;
+    if (F(BYTE*, s, 544))
+        F(BYTE*, s, 544)[40] &= 0xfe;
+    float M[12];
+    memcpy(M, s + 560 + F(int, s, 4720) * 48, 48);
+    BYTE* car = F(BYTE*, g, 616);
+    if (F(BYTE*, car, 21600))
+    {
+        Matrix rz, r;
+        Matrix_RotationZ(&rz, (float)(F(float, F(BYTE*, car, 21600), 10720) * g_cw64d688));
+        memcpy(M, Matrix_Multiply(&r, &rz, (const Matrix*)M), 48);
+    }
+    int look = F(int, g, 1396);
+    if (look < 0)
+    {
+        F(float, s, 5116) = (float)CallC<double>(Cw_GameTime);
+        F(float, s, 5112) = (float)(CallC<double>(Cw_GameTime) - F(float, s, 5104));
+    }
+    else if (look > 0)
+    {
+        F(float, s, 5120) = (float)CallC<double>(Cw_GameTime);
+        F(float, s, 5108) = (float)(CallC<double>(Cw_GameTime) - F(float, s, 5104));
+    }
+    else
+        F(float, s, 5104) = (float)CallC<double>(Cw_GameTime);
+    float C[12];
+    CallC(FUN_4de990, C, 1);
+    g = g_cw6d2078;
+    car = F(BYTE*, g, 616);
+    BYTE* tr = F(BYTE*, car, 21600);
+    if (tr)
+    {
+        Vec3 P = F(Vec3, tr, 13228);
+        const float* R = (const float*)(car + 708);
+        double L = Vec3_Length(&F(Vec3, tr, 10868));
+        const float* d = (const float*)(g + 556);
+        float a = (float)((double)R[1] * d[0] + (double)R[7] * d[2] + (double)R[4] * d[1] + R[10]);
+        float b = (float)((double)R[2] * d[0] + (double)R[8] * d[2] + (double)R[5] * d[1] + R[11]);
+        float aL = (float)(a * L);
+        double x = ((L * b + P.z) + g_cw64d6b8) * g_cw64d6b0;
+        float xf = (float)(x * x87_fabs(x));
+        if (xf > g_cw64c260)
+            xf = Cw_Bits(0x3e4ccccd);
+        else if (xf < g_cw64d6ac)
+            xf = Cw_Bits(0xbe4ccccd);
+        CallThis(FUN_4eacce, s + 4756, xf, &s_cw672eec);
+        double f1 = CallThis<double>(Fv_FilterValue, s + 4756);
+        C[11] = (float)(C[11] + f1);
+        double y = ((double)aL + P.y) * g_cw64d6a8 * g_cw64b898;
+        float yf = (float)(y * x87_fabs(y));
+        if (yf < g_cw64d6ac)
+            yf = Cw_Bits(0xbe4ccccd);
+        else if (yf > g_cw64c260)
+            yf = Cw_Bits(0x3e4ccccd);
+        CallThis(FUN_4eacce, s + 4788, yf, &s_cw672eec);
+        double f2 = CallThis<double>(Fv_FilterValue, s + 4788);
+        if (f2 > g_cw64c260)
+            f2 = g_cw64c260;
+        else if (f2 < g_cw64d6ac)
+            f2 = g_cw64d6ac;
+        C[10] = (float)(C[10] + f2);
+        g = g_cw6d2078;
+    }
+    if (F(DWORD, g, 1404) & 0x100)
+    {
+        float c = (float)x87_fabs(x87_cos(g_cw696d10));
+        BYTE* cr = F(BYTE*, g, 616);
+        float v = F(float, cr, 3360);
+        double k;
+        if (v > g_cw64c264)
+            k = v > g_cw64b898 ? (double)v : 0.8;
+        else
+            k = v >= g_cw64b6a8 ? -(double)v : -0.8;
+        float p1 = (float)(x87_asin(v) * c * k * g_cw64b898);
+        float v2 = F(float, cr, 3372);
+        double k2;
+        if (v2 > g_cw64c264)
+            k2 = v2 > g_cw64b6e0 ? (double)v2 : 0.5;
+        else
+            k2 = v2 >= g_cw64b6b8 ? -(double)v2 : 0.5;
+        float p2 = (float)-(x87_asin(v2) * c * k2);
+        if (p1 > g_cw64d6a4)
+            p1 = Cw_Bits(1048971922);
+        else if (p1 < g_cw64d6a0)
+            p1 = Cw_Bits(3196455570u);
+        if (p2 > g_cw64d698)
+            p2 = Cw_Bits(1034147594);
+        else if (p2 < g_cw64d670)
+            p2 = Cw_Bits(3188066962u);
+        CallThis(FUN_4eacce, s + 4724, p1, &s_cw672edc);
+        double f3d = CallThis<double>(Fv_FilterValue, s + 4724);
+        float f3 = (float)f3d;
+        float tx = (float)(f3d * g_cw64c408);
+        float ty = (float)(p2 * (double)g_cw64d694);
+        float tz = (float)(((double)p2 * p2 + (double)f3 * f3) * g_cw64d694);
+        if (tx > g_cw64c304)
+            tx = Cw_Bits(0x3dcccccd);
+        else if (tx < g_cw64d690)
+            tx = Cw_Bits(0xbdcccccd);
+        if (tz > g_cw64c304)
+            tz = Cw_Bits(0x3dcccccd);
+        else if (tz < g_cw64d690)
+            tz = Cw_Bits(0xbdcccccd);
+        Vec3 t;
+        t.x = tx;
+        t.y = ty;
+        t.z = tz;
+        Matrix T, RY, RX, m1, m2, m3;
+        Matrix_Translation(&T, t);
+        Matrix_RotationY(&RY, f3);
+        Matrix_RotationX(&RX, p2);
+        Matrix_Multiply(&m3, Matrix_Multiply(&m2, Matrix_Multiply(&m1, &RX, &RY), (const Matrix*)C), &T);
+        memcpy(C, &m3, 48);
+    }
+    CallC(Cw_FrameApply, F(BYTE*, g_cw696cac, 80), 0, C);
+    CallC(Cw_FrameApply, F(BYTE*, s, 556), 0, M);
+}
+
+} // extern "C"
+
+// === sharing out two demands by their limits (FUN_556780)
+
+ASM_VAR(float, g_sd64c264, $L_64c264)
+ASM_VAR(float, g_sd64c250, $L_64c250)
+
+extern "C" {
+
+// [FUN_556780] limiter s (+16, +20 the two limits, +28 the second's floor) takes what it can of demands *a and *b
+// in one ratio: the taken parts (+36, +24, the floor topped up by +32) leave them; 0 when either is empty, else
+// 1 / 2 by which limit bound it (0 neither)
+int __fastcall Limit_Share(BYTE* s, void*, float* a, float* b)
+{
+    if (!(*a > g_sd64c264) || !(*b > g_sd64c264))
+    {
+        F(int, s, 36) = 0;
+        F(int, s, 24) = 0;
+        F(float, s, 32) = F(float, s, 28);
+        return 0;
+    }
+    double bv = *b;
+    F(int, s, 32) = 0;
+    if (bv < F(float, s, 28))
+        F(float, s, 32) = (float)((double)F(float, s, 28) - bv);
+    double B = bv + F(float, s, 32);
+    float r1 = (float)(F(float, s, 20) / (double)*a);
+    float r2 = (float)(F(float, s, 16) / B);
+    double k = g_sd64c250;
+    int which = 0;
+    if (r1 < g_sd64c250 || r2 < g_sd64c250)
+    {
+        if (r1 < r2)
+        {
+            k = r1;
+            which = 1;
+        }
+        else
+        {
+            k = r2;
+            which = 2;
+        }
+    }
+    F(float, s, 36) = (float)(k * *a);
+    double t = k * B - F(float, s, 32);
+    F(float, s, 24) = (float)t;
+    if (F(float, s, 36) > F(float, s, 20))
+        F(float, s, 36) = F(float, s, 20);
+    if (t > F(float, s, 16))
+        F(float, s, 24) = F(float, s, 16);
+    *a = (float)((double)*a - F(float, s, 36));
+    *b = (float)((double)*b - F(float, s, 24));
+    F(int, s, 40) = 0;
+    return which;
 }
 
 } // extern "C"
