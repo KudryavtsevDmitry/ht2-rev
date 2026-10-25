@@ -373,3 +373,49 @@ extern "C" int __stdcall D3d_ChooseDevice(const char*, const char*, const BYTE* 
     g_q155_7208cc = F(DWORD, dd, 180) >> 13 & 1;
     return 0;
 }
+
+// === setting the palette from RGB triples (FUN_5d3d30)
+
+extern "C" {
+
+// [FUN_5d3d30] sets palette entries from the RGB triples rgb: in full screen (mode 2) entries first..end-1 of the
+// DirectDraw palette, in a window (mode 1, after unlocking the back surface) a GDI palette of count entries from
+// first, selected and realized in the window's DC
+void __cdecl Video_SetPaletteRgb(const BYTE* rgb, DWORD first, DWORD n)
+{
+    if (g_ddMode == 2) {
+        BYTE entries[1200];
+        for (DWORD i = first; i < n; i++) {
+            entries[i * 4] = rgb[i * 3];
+            entries[i * 4 + 1] = rgb[i * 3 + 1];
+            entries[i * 4 + 2] = rgb[i * 3 + 2];
+            entries[i * 4 + 3] = 4;
+        }
+        if (g_waitVsync) {
+            Com(g_directDraw, 128, 0);
+            g_waitVsync = 0;
+        }
+        if (g_ddPalette)
+            Com(g_ddPalette, 24, 0, first, n, entries);
+        return;
+    }
+    if (g_ddMode == 1 && g_waitVsync) {
+        Com(g_directDraw, 128, 0);
+        g_waitVsync = 0;
+    }
+    BYTE* lp = g_logPalette;
+    F(WORD, lp, 2) = 256;
+    for (DWORD i = first; i < first + n; i++) {
+        BYTE* e = g_logPalette + 4 + i * 4;
+        e[0] = rgb[i * 3];
+        e[1] = rgb[i * 3 + 1];
+        e[2] = rgb[i * 3 + 2];
+        e[3] = 4;
+    }
+    g_palette = CreatePalette((const LOGPALETTE*)g_logPalette);
+    g_oldPalette = SelectPalette(g_paletteDc, g_palette, 0);
+    DeleteObject(g_oldPalette);
+    RealizePalette(g_paletteDc);
+}
+
+} // extern "C"

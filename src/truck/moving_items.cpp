@@ -1179,3 +1179,136 @@ Vec3* __fastcall Item_GroundNormal(BYTE* s, void*, Vec3* out)
 }
 
 } // extern "C"
+
+// === a box receiving a hit (FUN_586240)
+
+extern "C" void Rh_AddAssign(); KING_ALIAS("_Rh_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(double, g_rh64b840, $L_64b840)
+ASM_VAR(double, g_rh64b6e0, $L_64b6e0)
+ASM_VAR(double, g_rh64d338, $L_64d338)
+ASM_VAR(Vec3, g_rh702630, $L_702630)
+ASM_VAR(AsmLabel, s_rhHit1, $L_67d80c)
+
+extern "C" {
+
+// [FUN_586240] box s hit at contact c (+52 the point, +64 the normal) by object id over time dt: the first hit wakes
+// it (+1200; vtbl+208) with a hop up by its speed (at most 64b6e0); then the hit (+892 bit 1, time +904, point
+// +964, normal +976, by +1028), the impulse of its speed change (+416 against +452, times its mass +396) at the
+// point (vtbl+164), the speeds over dt kept (+3148, +3160; vtbl+80) and the hit time +3144 (vtbl+160 +912)
+void __fastcall Box_ReceiveHit(BYTE* s, void*, const BYTE* c, int id, float dt)
+{
+    if (!F(int, s, 1200)) {
+        CallThis(FUN_5d32f0, s, 1);
+        F(int, s, 1200) = 1;
+        CallVirt(s, 208);
+        float* v = (float*)(s + 416);
+        double l = Vec3_Length((const Vec3*)v) * g_rh64b840;
+        if (l > g_rh64b6e0)
+            l = g_rh64b6e0;
+        l += g_rh64d338;
+        const Vec3& u = g_rh702630;
+        float b[3] = {(float)(u.x * l), (float)(u.y * l), (float)(u.z * l)};
+        float t[3];
+        CallThis(Rh_AddAssign, v, t, b);
+        CallVirt(s, 144, v, (const char*)s_rhHit1);
+    }
+    DWORD f = F(DWORD, s, 892) | 2;
+    F(int, s, 1192) = 0;
+    F(DWORD, s, 892) = f;
+    F(DWORD, s, 896) = f;
+    F(float, s, 904) = (float)CallC<double>(FUN_4e27a5);
+    memcpy(s + 964, c + 52, 12);
+    F(float, s, 976) = -F(float, c, 64);
+    F(float, s, 980) = -F(float, c, 68);
+    F(float, s, 984) = -F(float, c, 72);
+    F(int, s, 1028) = CallC<int>(FUN_57c9a0, id);
+    float m = F(float, s, 396);
+    double dx = (double)F(float, s, 416) - F(float, s, 452);
+    float dy = (float)((double)F(float, s, 420) - F(float, s, 456));
+    float dz = (float)((double)F(float, s, 424) - F(float, s, 460));
+    float imp[3] = {(float)(dx * (double)m), (float)(dy * (double)m), (float)(dz * (double)m)};
+    CallVirt(s, 164, c + 52, imp);
+    for (int i = 0; i < 3; i++) {
+        F(float, s, 3148 + i * 4) = (float)(dt * (double)F(float, s, 416 + i * 4));
+        F(float, s, 3160 + i * 4) = (float)(dt * (double)F(float, s, 428 + i * 4));
+    }
+    CallVirt(s, 80, dt, 1);
+    F(float, s, 3144) = (float)CallC<double>(FUN_4e27a5);
+    CallVirt(s, 160, s + 912);
+}
+
+} // extern "C"
+
+// === an item's frame after a step (5825a0)
+
+extern "C" void Pf_MatMul(); KING_ALIAS("_Pf_MatMul", "_Matrix_Multiply")
+extern "C" void Pf_Translation(); KING_ALIAS("_Pf_Translation", "_Matrix_Translation")
+extern "C" void Pf_LookAt(); KING_ALIAS("_Pf_LookAt", "_Matrix_LookAt")
+ASM_VAR(AsmLabel, s_pf67d5d8, $L_67d5d8)
+struct Pf_V3 { float x, y, z; };
+
+extern "C" {
+
+// [$L_5825a0] item s's frame after a step of t (+1456): its frame (+1792 in flight, +548 else) turned about its spin
+// (+3160) by its spin rate (+1444) and moved by its speed (+3148), to +1696 with its inverse at +1744; checked
+void __fastcall Item_StepFrame(BYTE* s, void*, float t)
+{
+    F(float, s, 1456) = t;
+    Pf_V3 tr = {(float)(t * (double)F(float, s, 3148)), (float)(t * (double)F(float, s, 3152)),
+                (float)(t * (double)F(float, s, 3156))};
+    float mt[12], mr[12], m1[12], m2[12], inv[12];
+    float* T = CallC<float*>(Pf_Translation, mt, tr);
+    float ang = (float)((double)F(float, s, 1444) * F(float, s, 1456));
+    float* R = CallC<float*>(Pf_LookAt, mr, *(const Pf_V3*)(BYTE*)g_q108_702650, *(const Pf_V3*)(s + 3160), ang);
+    BYTE* base = F(int, s, 1676) ? s + 1792 : s + 548;
+    float* m = CallC<float*>(Pf_MatMul, m2, CallC<float*>(Pf_MatMul, m1, R, base), T);
+    memcpy(s + 1696, m, 48);
+    memcpy(s + 1744, CallC<float*>(FUN_5ac2e0, inv, s + 1696), 48);
+    CallC(FUN_4e2821, s + 1732, (const char*)s_pf67d5d8, 10000.0f);
+}
+
+} // extern "C"
+
+// === a box hit with new speeds (FUN_5864d0)
+
+ASM_VAR(AsmLabel, s_rhHit2a, $L_67d844)
+ASM_VAR(AsmLabel, s_rhHit2b, $L_67d828)
+
+extern "C" {
+
+// [FUN_5864d0] box s hit at contact c by object id over dt, taking speed v (a hop up by its length added when the hit
+// wakes it) and spin w; the hit kept as in Box_ReceiveHit
+void __fastcall Box_ReceiveHitSet(BYTE* s, void*, const BYTE* c, int id, float dt, int, const float* v, const float* w)
+{
+    float nv[3];
+    memcpy(nv, v, 12);
+    if (!F(int, s, 1200)) {
+        CallThis(FUN_5d32f0, s, 1);
+        F(int, s, 1200) = 1;
+        CallVirt(s, 208);
+        double l = Vec3_Length((const Vec3*)v) * g_rh64b840 + g_rh64d338;
+        const Vec3& u = g_rh702630;
+        float b[3] = {(float)(u.x * l), (float)(u.y * l), (float)(u.z * l)};
+        float t[3];
+        CallThis(Rh_AddAssign, nv, t, b);
+    }
+    F(int, s, 1192) = 0;
+    F(DWORD, s, 892) |= 2;
+    F(float, s, 904) = (float)CallC<double>(FUN_4e27a5);
+    memcpy(s + 964, c + 52, 12);
+    F(float, s, 976) = -F(float, c, 64);
+    F(float, s, 980) = -F(float, c, 68);
+    F(float, s, 984) = -F(float, c, 72);
+    F(int, s, 1028) = CallC<int>(FUN_57c9a0, id);
+    CallVirt(s, 144, nv, (const char*)s_rhHit2a);
+    CallVirt(s, 148, w, (const char*)s_rhHit2b);
+    for (int i = 0; i < 3; i++)
+        F(float, s, 3148 + i * 4) = (float)(dt * (double)F(float, s, 416 + i * 4));
+    for (int i = 0; i < 3; i++)
+        F(float, s, 3160 + i * 4) = (float)(dt * (double)F(float, s, 428 + i * 4));
+    CallVirt(s, 80, dt, 1);
+    CallVirt(s, 160, s + 912);
+    F(float, s, 3144) = (float)CallC<double>(FUN_4e27a5);
+}
+
+} // extern "C"

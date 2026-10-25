@@ -709,8 +709,8 @@ ASM_PROC(FUN_52bd20)
 ASM_PROC(FUN_52c120)
 ASM_PROC(FUN_590d20)
 extern "C" void FUN_52e1f0(); KING_ALIAS("_FUN_52e1f0", "@Scenery_Call57d580@16")
-ASM_PROC(FUN_586240)
-ASM_PROC(FUN_5864d0)
+extern "C" void FUN_586240(); KING_ALIAS("_FUN_586240", "@Box_ReceiveHit@20")
+extern "C" void FUN_5864d0(); KING_ALIAS("_FUN_5864d0", "@Box_ReceiveHitSet@32")
 extern "C" void FUN_585fd0(); KING_ALIAS("_FUN_585fd0", "@Cars_ApplyUpdate@12")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
@@ -912,7 +912,7 @@ extern "C" BYTE* __fastcall Dtor52d3e0_DeletingDestructor(BYTE* s, void*, int fl
     return s;
 }
 
-ASM_PROC(FUN_52dec0)
+extern "C" void FUN_52dec0(); KING_ALIAS("_FUN_52dec0", "@ParkedCar_Destroy@4")
 // [$L_52da10]
 extern "C" BYTE* __fastcall Dtor52da10_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -935,7 +935,7 @@ extern "C" BYTE* __fastcall Dtor52e2e0_DeletingDestructor(BYTE* s, void*, int fl
 // ---------------------------------------------------------------------------
 // Small static setup and teardown procs, destructors and thunks.
 
-ASM_PROC(FUN_52dec0)
+extern "C" void FUN_52dec0(); KING_ALIAS("_FUN_52dec0", "@ParkedCar_Destroy@4")
 ASM_VAR(AsmLabel, g_q47_64f198, $L_64f198)
 ASM_VAR(AsmLabel, g_q47_64f14c, $L_64f14c)
 ASM_VAR(AsmLabel, g_q47_64f148, $L_64f148)
@@ -1193,3 +1193,32 @@ void __fastcall Car_SetModel(BYTE* c, void*, int i, int b)
 }
 
 } // extern "C"
+
+// === a parked car's destructor (FUN_52dec0)
+
+extern "C" void Pc_ItemDestroy(); KING_ALIAS("_Pc_ItemDestroy", "@MovingItem_Destroy@4")
+
+// [FUN_52dec0] destructor: a parked car (vtables 64f068, 64f01c at +256, 64f018 at +376) saves its 156-byte state
+// in the world's record (key cell +3568 / slot +3572), then the moving item is destroyed
+extern "C" void __fastcall ParkedCar_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = g_vtbl64f068;
+    F(void*, s, 256) = g_vtbl64f01c;
+    F(void*, s, 376) = g_vtbl64f018;
+    const char* n1 = F(const char*, F(BYTE*, s, 320), 12);
+    const char* n2 = F(const char*, CallThis<BYTE*>(FUN_57def0, s), 12);
+    BYTE t[156];
+    memset(t, 0, sizeof t);
+    F(int, t, 0) = CallC<int>(FUN_52ea90, F(int, s, 3568));
+    F(int, t, 4) = F(int, s, 3572);
+    memcpy(t + 20, s + 416, 24);
+    memcpy(t + 44, s + 500, 48);
+    strncpy((char*)t + 92, n2, 31);
+    strncpy((char*)t + 124, n1, 31);
+    F(int, t, 8) = F(int, s, 372);
+    F(int, t, 12) = F(int, s, 1200);
+    F(int, t, 16) = 0;
+    int key = F(int, s, 3572) + (CallC<int>(FUN_52ea90, F(int, s, 3568)) + 200) * 1000;
+    CallThis(FUN_5e52b0, F(BYTE*, s, 36) + 704, key, F(int, F(BYTE*, s, 292), 60), 156, t);
+    CallThis(Pc_ItemDestroy, s);
+}

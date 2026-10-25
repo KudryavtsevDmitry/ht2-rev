@@ -53,7 +53,7 @@ extern "C" void FUN_604ed0(); KING_ALIAS("_FUN_604ed0", "_Snd_Free")
 extern "C" void FUN_5e98c0(); KING_ALIAS("_FUN_5e98c0", "_Data_Read5e99c0")
 extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
 extern "C" void Mixer_Close(); KING_ALIAS("_Mixer_Close", "_Mixer_ShutdownOnce")
-ASM_FUNC(Scene_EachCallback, $L_5fc780)
+extern "C" void Scene_EachCallback(); KING_ALIAS("_Scene_EachCallback", "_Path_FindJoins")
 
 ASM_VAR(Dwords, g_7025f0, $L_7025f0)            // the identity 3x4 matrix
 ASM_VAR(int, g_720908, $L_720908)
@@ -832,7 +832,7 @@ extern "C" int __fastcall Node_Remove(BYTE* self, void*)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5f2080(); KING_ALIAS("_FUN_5f2080", "@Slots_Call48@20")
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 ASM_PROC(FUN_5af9e0)
 extern "C" void FUN_5b1950(); KING_ALIAS("_FUN_5b1950", "@Rn_DrawStrided@24")
 extern "C" void FUN_5b1df0(); KING_ALIAS("_FUN_5b1df0", "@Rn_DrawIndexedStrided@24")
@@ -2454,7 +2454,7 @@ extern "C" int __cdecl Static723d38_Init(void)
 }
 
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
-ASM_PROC(FUN_5ff5e0)
+extern "C" void FUN_5ff5e0(); KING_ALIAS("_FUN_5ff5e0", "_Music_FindFiles")
 extern "C" __declspec(dllimport) DWORD __stdcall timeGetTime(void);
 ASM_VAR(AsmLabel, s_q194_68321c, $L_68321c)
 ASM_VAR(AsmLabel, s_q194_683c70, $L_683c70)
@@ -3208,6 +3208,360 @@ int __fastcall Volume_Contains(DWORD* s, void*, const float* p)
     case 5:
         return (double)g[2] * p[2] + (double)g[1] * p[1] + (double)p[0] * g[0] + g[3] > g_sce64b678;
     }
+    return 0;
+}
+
+} // extern "C"
+
+// === finding the music files (FUN_5ff5e0)
+
+extern "C" void Mf_Allocate(); KING_ALIAS("_Mf_Allocate", "_Stl_Allocate")
+extern "C" void Mf_PoolFree(); KING_ALIAS("_Mf_PoolFree", "_Ai_PoolFree")
+extern "C" void Mf_Copy1(); KING_ALIAS("_Mf_Copy1", "_Copy1")
+extern "C" void Mf_InsertRange(); KING_ALIAS("_Mf_InsertRange", "@CharVec_InsertRange44c220@20")
+extern "C" void Mf_Reserve(); KING_ALIAS("_Mf_Reserve", "@Vec1_Reserve@16")
+extern "C" void Mf_FilterConstruct(); KING_ALIAS("_Mf_FilterConstruct", "@Filter1_Construct@8")
+extern "C" void Mf_FilterSetLength(); KING_ALIAS("_Mf_FilterSetLength", "@Filter1_SetLength@12")
+extern "C" void Mf_MusicConstruct(); KING_ALIAS("_Mf_MusicConstruct", "_Music_Construct")
+extern "C" void Mf_InsertAux(); KING_ALIAS("_Mf_InsertAux", "@Vec56_InsertAux@16")
+
+struct Mf_Vec { BYTE* begin; BYTE* end; BYTE* cap; };
+
+// a copy of the music directory (723d38) with the string s (and its 0) appended
+static void Mf_Path(Mf_Vec* v, const char* s)
+{
+    Mf_Vec* dir = (Mf_Vec*)(BYTE*)g_q47_723d38;
+    int n = (int)(dir->end - dir->begin);
+    BYTE* p = n ? CallC<BYTE*>(Mf_Allocate, n) : 0;
+    v->begin = v->end = p;
+    v->cap = p + n;
+    v->end = CallC<BYTE*>(Mf_Copy1, dir->begin, dir->end, p);
+    CallThis(Mf_InsertRange, v, v->end, s, s + strlen(s) + 1);
+}
+
+// frees the storage of v
+static void Mf_Free(Mf_Vec* v)
+{
+    if (int n = (int)(v->cap - v->begin))
+        CallC(Mf_PoolFree, v->begin, n);
+}
+
+extern "C" {
+
+// [FUN_5ff5e0] adds a music record (its path, a 4-step filter, 0.1 and 0) for each file matching pattern in the
+// music directory to the list 723d28
+void __cdecl Music_FindFiles(const char* pattern)
+{
+    Mf_Vec path;
+    Mf_Path(&path, pattern);
+    WIN32_FIND_DATAA fd;
+    HANDLE h = FindFirstFileA((const char*)path.begin, &fd);
+    if (h != INVALID_HANDLE_VALUE) {
+        char fill = 0;
+        do {
+            Mf_Vec name;
+            Mf_Path(&name, fd.cFileName);
+            BYTE rec[56];
+            CallThis(Mf_Reserve, rec, (int)(name.end - name.begin), &fill);
+            F(BYTE*, rec, 4) = CallC<BYTE*>(Mf_Copy1, name.begin, name.end, F(BYTE*, rec, 0));
+            CallThis(Mf_FilterConstruct, rec + 16);
+            F(double, rec, 40) = 0.1;
+            F(double, rec, 48) = 0;
+            CallThis(Mf_FilterSetLength, rec + 16, 4);
+            Mf_Vec* list = (Mf_Vec*)(BYTE*)g_q47_723d28;
+            if (list->end != list->cap) {
+                CallC(Mf_MusicConstruct, list->end, rec);
+                list->end += 56;
+            } else
+                CallThis(Mf_InsertAux, list, list->end, rec);
+            Mf_Free((Mf_Vec*)rec);
+            Mf_Free(&name);
+        } while (FindNextFileA(h, &fd));
+        FindClose(h);
+    }
+    Mf_Free(&path);
+}
+
+} // extern "C"
+
+// === an item crossing a portal (5fb9e0)
+
+// a piece of item o for the other side of a plane, kind 17 (vtable 64c7dc)
+static BYTE* Pc_NewPiece(BYTE* o)
+{
+    BYTE* n = (BYTE*)operator new(88);
+    if (n) {
+        CallThis(FUN_5ef6d0, n, (void*)&g_q195_68d1c0, 17);
+        F(int, n, 48) = F(int, n, 52) = F(int, n, 56) = F(int, n, 60) = 0;
+        F(void*, n, 0) = (BYTE*)g_vtbl64c7dc;
+        F(BYTE*, n, 64) = o;
+        F(int, n, 68) = F(int, n, 72) = F(int, n, 76) = F(int, n, 80) = 0;
+        F(int, n, 84) = -1;
+        F(int, n, 36) = F(int, o, 36);
+    }
+    return n;
+}
+
+extern "C" {
+
+// [$L_5fb9e0] a plain item o (kind 17, no piece yet) whose bounding sphere crosses portal s's plane (+48, through
+// +60) close to its opening (+84.. the reach) gets a piece for the room behind (+128 vtbl+28), each clipped by
+// the plane facing its side (unless 702e8c bit 14); 0
+int __fastcall Portal_SplitItem(BYTE* s, void*, BYTE* o)
+{
+    if (!F(BYTE*, s, 128) || (g_sc702e8c & 0x4000) || F(int, o, 16) != 17 || F(int, o, 80) || F(int, o, 76))
+        return 0;
+    float sp[4];
+    memcpy(sp, o + 20, 16);
+    CallVirt(o, 40, sp);
+    const float* n = (const float*)(s + 48);
+    const float* p = (const float*)(s + 60);
+    double d0 = (-(double)p[1] * n[1] + -(double)p[2] * n[2]) + -(double)p[0] * n[0];
+    double dist = (double)n[2] * sp[2] + (double)n[1] * sp[1] + (double)n[0] * sp[0] + d0;
+    if (sp[3] < (dist < 0 ? -dist : dist))
+        return 0;
+    float qz = (float)(dist * n[2]), qy = (float)(dist * n[1]);
+    double qx = dist * n[0];
+    float pz = (float)((double)sp[2] - qz), py = (float)((double)sp[1] - qy), px = (float)(sp[0] - qx);
+    if (!Near3(px, p[0], F(float, s, 84)) || !Near3(py, p[1], F(float, s, 88)) || !Near3(pz, p[2], F(float, s, 92)))
+        return 0;
+    BYTE* c = Pc_NewPiece(o);
+    F(BYTE, c, 40) |= F(BYTE, o, 40) & 1;
+    memcpy(c + 20, sp, 16);
+    F(int, c, 80) = 1;
+    float front[4] = {n[0], n[1], n[2], (float)d0};
+    CallThis(FUN_5cda50, c + 48, front);
+    float back[4] = {-n[0], -n[1], -n[2], (float)-d0};
+    CallThis(FUN_5cda50, o + 48, back);
+    F(BYTE*, o, 76) = c;
+    CallVirt(F(BYTE*, s, 128), 28, c);
+    return 0;
+}
+
+} // extern "C"
+
+// === finding the paths that join one (5fc780)
+
+// whether the positions (+36 of two frames) are less than 1 apart
+static bool Pj_Near(const BYTE* a, const BYTE* b)
+{
+    float d[3] = {(float)((double)F(float, a, 36) - F(float, b, 36)), (float)((double)F(float, a, 40) - F(float, b, 40)),
+                  (float)((double)F(float, a, 44) - F(float, b, 44))};
+    return CallC<double>(FUN_5ab4d0, d) < g_q182_64c250;
+}
+
+extern "C" {
+
+// [$L_5fc780] for path group node g (kind 14, its paths +128 +64): the paths with an end at path 723aa0's first
+// frame join it at its start (+64, count +56), those with an end at its last frame at its end (+104, count +60); -1
+int __cdecl Path_FindJoins(BYTE* g)
+{
+    if (F(int, g, 16) != 14 || !F(BYTE*, g, 128) || !F(BYTE*, F(BYTE*, g, 128), 64))
+        return -1;
+    for (BYTE* p = *F(BYTE**, F(BYTE*, g, 128), 64); p; p = Ctl_Owner(p, 0)) {
+        BYTE* c = g_723aa0;
+        BYTE first[48], last[48], pf[48], pl[48];
+        memcpy(first, F(BYTE*, c, 8), 48);
+        memcpy(last, F(BYTE*, c, 8) + F(int, c, 4) * 48 - 48, 48);
+        memcpy(pf, F(BYTE*, p, 8), 48);
+        memcpy(pl, F(BYTE*, p, 8) + F(int, p, 4) * 48 - 48, 48);
+        if (Pj_Near(first, pf) || Pj_Near(first, pl)) {
+            F(BYTE*, g_723aa0, 64 + F(int, g_723aa0, 56) * 4) = p;
+            F(int, g_723aa0, 56)++;
+        } else if (Pj_Near(last, pl) || Pj_Near(last, pf)) {
+            F(BYTE*, g_723aa0, 104 + F(int, g_723aa0, 60) * 4) = p;
+            F(int, g_723aa0, 60)++;
+        }
+    }
+    return -1;
+}
+
+} // extern "C"
+
+// === stereo sounds at a point (FUN_5fd5f0, FUN_5fd870)
+
+ASM_PROC(FUN_5fdaf0)    // updates a sound's two channel volumes
+extern "C" void Ss_RotZ(); KING_ALIAS("_Ss_RotZ", "_Matrix_RotationZ")
+ASM_VAR(double, g_ss64b6d0, $L_64b6d0)
+ASM_VAR(double, g_ss64b670, $L_64b670)
+ASM_VAR(double, g_ss64b678, $L_64b678)
+ASM_VAR(double, g_ss652d60, $L_652d60)
+ASM_VAR(double, g_ss651690, $L_651690)
+ASM_VAR(float, g_ss702640, $L_702640)
+struct Ss_V3 { float x, y, z; };
+
+// v moved by matrix m
+static Ss_V3 Ss_Move(const float* m, const float* v)
+{
+    Ss_V3 r;
+    r.x = (float)((double)v[2] * m[6] + (double)v[1] * m[3] + (double)v[0] * m[0] + m[9]);
+    r.y = (float)((double)v[2] * m[7] + (double)v[1] * m[4] + (double)v[0] * m[1] + m[10]);
+    r.z = (float)((double)v[2] * m[8] + (double)v[1] * m[5] + (double)v[0] * m[2] + m[11]);
+    return r;
+}
+
+static double Ss_Clamp(double x)
+{
+    if (x < g_ss64b678)
+        return 0;
+    if (x > g_ss64b670)
+        return 1.0;
+    return x;
+}
+
+// the gains of the left and right ears (the side 702640 turned by -+pi/8) for a sound at p within range; 0 out of it
+static bool Ss_Gains(Ss_V3 p, double range, double* l, double* r)
+{
+    double d = CallC<double>(FUN_5ab4d0, &p);
+    if (!(d < range * g_ss64b6d0))
+        return false;
+    float m[12];
+    const float* side = &g_ss702640;
+    Ss_V3 rt = Ss_Move(CallC<float*>(Ss_RotZ, m, 0.392699093f), side);
+    float neg[3] = {-side[0], -side[1], -side[2]};
+    Ss_V3 lt = Ss_Move(CallC<float*>(Ss_RotZ, m, -0.392699093f), neg);
+    Ss_V3 u;
+    CallC(FUN_5ab400, &u, &p);
+    double gl = ((double)u.z * lt.z + (double)u.y * lt.y + (double)lt.x * u.x + g_ss64b670) * g_ss652d60 + g_ss651690;
+    double gr = ((double)u.z * rt.z + (double)u.y * rt.y + (double)u.x * rt.x + g_ss64b670) * g_ss652d60 + g_ss651690;
+    if (range < g_ss64b670)
+        range = g_ss64b670;
+    double att = d / range + g_ss64b670;
+    *l = Ss_Clamp(gl / att);
+    *r = Ss_Clamp(gr / att);
+    return true;
+}
+
+extern "C" {
+
+// [FUN_5fd5f0] plays sound s at p (from the listener) within range at volume vol, panned between the ears (a3 to
+// Sound_Play)
+void __fastcall Sound_PlayAt(BYTE* s, void*, Ss_V3 p, double range, double vol, int a3)
+{
+    double l, r;
+    if (Ss_Gains(p, range, &l, &r))
+        Sound_Play(s, 0, (float)(l * vol), (float)(r * vol), a3);
+}
+
+// [FUN_5fd870] the same for the channel volumes of a playing sound (5fdaf0)
+void __fastcall Sound_UpdateAt(BYTE* s, void*, Ss_V3 p, double range, double vol)
+{
+    double l, r;
+    if (Ss_Gains(p, range, &l, &r))
+        CallThis(FUN_5fdaf0, s, (float)(l * vol), (float)(r * vol));
+}
+
+} // extern "C"
+
+// === drawing children far to near (5fb550)
+
+extern "C" BYTE* __fastcall Render_Material(BYTE* self, void*);    // renderer.cpp
+ASM_VAR(double, g_fn64b748, $L_64b748)
+
+// the distance from the camera c of node n's centre (vtbl+40) in renderer r's frame
+static double Fn_Dist(BYTE* n, BYTE* r, const float* c)
+{
+    float p[3];
+    int on = (int)CallVirt<BYTE*>(n, 40, p);
+    Node_TransformByFrame(p, on, r);
+    float d[3] = {(float)((double)c[0] - p[0]), (float)((double)c[1] - p[1]), (float)((double)c[2] - p[2])};
+    return CallC<double>(FUN_5ab4d0, d);
+}
+
+extern "C" {
+
+// [$L_5fb550] draws node s's children (+48, next +8) with (a, r) after sorting them nearest the camera first (swaps
+// until none is needed, at most 10000 passes); 0 when the test fails
+int __fastcall Node_DrawSorted(BYTE* s, void*, int a, BYTE* r)
+{
+    if (!CallThis<int>(FUN_5ef800, s, a, r))
+        return 0;
+    float c[3];
+    memcpy(c, Render_Material(r, 0), 12);
+    BYTE* n = *F(BYTE**, s, 48);
+    if (!n)
+        return 1;
+    for (int pass = 0;; pass++) {
+        bool swapped = false;
+        float dp = (float)Fn_Dist(n, r, c);
+        for (BYTE* m = F(BYTE*, n, 8); m; m = F(BYTE*, n, 8)) {
+            double dm = Fn_Dist(m, r, c);
+            if (dp - g_fn64b748 > dm) {
+                Node_Remove(n, 0);
+                F(int, n, 44) = F(int, m, 44);
+                CallThis(FUN_5d2190, n, m);
+                F(int, n, 36) = F(int, m, 36);
+                swapped = true;
+            } else {
+                dp = (float)dm;
+                n = m;
+            }
+        }
+        if (pass > 10000 || !swapped)
+            break;
+        n = *F(BYTE**, s, 48);
+        if (!n)
+            return 1;
+    }
+    CallThis(FUN_5f2080, s, 0, a, r);
+    return 1;
+}
+
+} // extern "C"
+
+// === choosing the next music track (FUN_5ff3b0)
+
+extern "C" void Mt_FilterUpdate(); KING_ALIAS("_Mt_FilterUpdate", "@Filter1_Update@16")
+extern "C" int __fastcall Music_Run(BYTE* self, void*, int unused);       // sound_gate.cpp
+extern "C" int __fastcall Music_SetVolume(BYTE* self, void*, double v);
+extern "C" int __fastcall Music_Open(BYTE* self, void*, const char* path);
+ASM_VAR(double, g_mt64b678, $L_64b678)
+ASM_VAR(double, g_mt64b6d8, $L_64b6d8)
+
+extern "C" {
+
+// [FUN_5ff3b0] player s picks the next track of the music list (723d28, 56-byte records: +0 the path, +16 the
+// recent-play filter, +40 the weight, +48 the filter's value) at random by weight; every filter is fed (1 for the
+// pick, 0 else) and the weights become how long ago each played; then the pick is opened and played on s's music
+// (+20) at its volume (+24); 0
+int __fastcall Music_PickNext(BYTE* s)
+{
+    Mf_Vec* list = (Mf_Vec*)(BYTE*)g_q47_723d28;
+    BYTE* b = list->begin;
+    BYTE* e = list->end;
+    double total = g_mt64b678;
+    for (BYTE* r = b; r != e; r += 56)
+        total += F(double, r, 40);
+    DWORD* t = (DWORD*)g_sce723b58;
+    g_sce723c34 = (g_sce723c34 + 1) % 55;
+    g_sce723c38 = (g_sce723c38 + 1) % 55;
+    t[g_sce723c34] -= t[g_sce723c38];
+    double x = (double)(__int64)(t[g_sce723c34] % 1000000) * total * g_mt64b6d8;
+    double acc = g_mt64b678;
+    BYTE* pick = e;
+    for (BYTE* r = b; r != e; r += 56) {
+        if (!(x < acc) && !(acc + F(double, r, 40) < x)) {
+            pick = r;
+            break;
+        }
+        acc += F(double, r, 40);
+    }
+    for (BYTE* r = b; r != pick; r += 56)
+        F(double, r, 48) = CallThis<double>(Mt_FilterUpdate, r + 16, 0.0);
+    F(double, pick, 48) = CallThis<double>(Mt_FilterUpdate, pick + 16, 1.0);
+    for (BYTE* r = pick + 56; r != list->end; r += 56)
+        F(double, r, 48) = CallThis<double>(Mt_FilterUpdate, r + 16, 0.0);
+    for (BYTE* r = list->begin; r != list->end; r += 56)
+        F(double, r, 48) = F(double, r, 48) * F(double, r, 48);
+    double mx = g_mt64b678;
+    for (BYTE* r = list->begin; r != list->end; r += 56)
+        if (mx < F(double, r, 48))
+            mx = F(double, r, 48);
+    for (BYTE* r = list->begin; r != list->end; r += 56)
+        F(double, r, 40) = (mx - F(double, r, 48)) / mx;
+    Music_Open(F(BYTE*, s, 20), 0, F(const char*, pick, 0));
+    Music_Run(F(BYTE*, s, 20), 0, 0);
+    Music_SetVolume(F(BYTE*, s, 20), 0, F(double, s, 24));
     return 0;
 }
 

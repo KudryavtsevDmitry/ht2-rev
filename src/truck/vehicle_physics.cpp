@@ -450,7 +450,7 @@ extern "C" void __fastcall Body_SetMode(BYTE* self, void*, int mode)
 
 ASM_PROC(FUN_4f0800)
 ASM_PROC(FUN_4f0530)
-ASM_PROC(FUN_4f09f0)
+extern "C" void FUN_4f09f0(); KING_ALIAS("_FUN_4f09f0", "@Body_KeepFrame@12")
 
 static inline void Copy3i(BYTE* to, const BYTE* from)
 {
@@ -1226,6 +1226,104 @@ void __fastcall Body_PhysicsFrame(BYTE* s)
     }
     F(int, s, 10176) = 0;
     F(int, s, 10180) = 0;
+}
+
+} // extern "C"
+
+// === integrating a body's momentum (FUN_4fab20)
+
+extern "C" void Bi_RotateBy(); KING_ALIAS("_Bi_RotateBy", "_Vec3_RotateBy")
+extern "C" void Bi_DivComponents(); KING_ALIAS("_Bi_DivComponents", "_Vec3_DivComponents")
+extern "C" void Bi_Length(); KING_ALIAS("_Bi_Length", "_Vec3_Length")
+extern "C" void Bi_AddAssign(); KING_ALIAS("_Bi_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(double, g_bi64b6d0, $L_64b6d0)
+
+extern "C" {
+
+// [FUN_4fab20] body s takes force f and torque t for its steps (+9512, +9508): its momentum (+9012; the part across
+// the axis +208 kept at +3524, dropped while small on the ground unless +6586), its angular momentum (+9036), the
+// angular speed (+9048, its change +9060, by the inertia +8008) and the momentum turned into the body (+9024, +8868)
+void __fastcall Body_Integrate(BYTE* s, void*, const float* f, const float* t)
+{
+    double dt = F(float, s, 9512);
+    float a[3] = {(float)(dt * f[0]), (float)(dt * f[1]), (float)(dt * f[2])};
+    float* v = (float*)(s + 9012);
+    float tmp[3];
+    CallThis(Bi_AddAssign, v, tmp, a);
+    const float* n = (const float*)(s + 208);
+    double c0 = (double)n[1] * v[2] - (double)n[2] * v[1];
+    double c1 = (double)n[2] * v[0] - (double)v[2] * n[0];
+    double c2 = (double)v[1] * n[0] - (double)n[1] * v[0];
+    float w[3] = {(float)(c1 * n[2] - c2 * n[1]), (float)(c2 * n[0] - c0 * n[2]), (float)(c0 * n[1] - c1 * n[0])};
+    double l = CallC<double>(Bi_Length, w);
+    F(float, s, 3524) = (float)l;
+    if (F(float, s, 9500) * g_bi64b6d0 > l && F(int, s, 6844) && !F(BYTE, s, 6586)) {
+        double d = (double)v[2] * n[2] + (double)v[1] * n[1] + (double)n[0] * v[0];
+        float x = (float)(d * n[0]), y = (float)(d * n[1]);
+        v[0] = x;
+        v[1] = y;
+        v[2] = (float)(d * n[2]);
+    }
+    double dr = F(float, s, 9508);
+    float b[3] = {(float)(dr * t[0]), (float)(dr * t[1]), (float)(dr * t[2])};
+    float m[3], tmp2[3], om[3], r[3];
+    CallC(FUN_4e30f4, m, b, s + 8008);
+    float* lm = (float*)(s + 9036);
+    CallThis(Bi_AddAssign, lm, tmp2, m);
+    CallC(Bi_DivComponents, om, lm, s + 8008);
+    F(float, s, 9060) = (float)((double)om[0] - F(float, s, 9048));
+    F(float, s, 9064) = (float)((double)om[1] - F(float, s, 9052));
+    F(float, s, 9068) = (float)((double)om[2] - F(float, s, 9056));
+    memcpy(s + 9048, om, 12);
+    memcpy(s + 9024, CallC<float*>(Bi_RotateBy, r, lm, s + 8868), 12);
+}
+
+} // extern "C"
+
+// === a body's saved state (FUN_4f09f0)
+
+ASM_VAR(AsmLabel, g_bs697f9c, $L_697f9c)       // 2416 bytes per car model
+
+extern "C" {
+
+// [FUN_4f09f0] body s keeps its state for the next frame: its frames (+16, +2304 to +10736, +10784), ground
+// (+11084), position d (+24.. doubles to +13084), its spin turned by its frame (+13228), its points (+100, +7356 to
+// +10880, +10976), the engine values (+15312..), the throttle capped at the model's (+220) and the wheel mask
+void __fastcall Body_KeepFrame(BYTE* s, void*, const BYTE* d)
+{
+    memcpy(s + 10736, s + 16, 48);
+    memcpy(s + 10784, s + 2304, 48);
+    const float* m = (const float*)(s + 2304);
+    F(int, s, 11084) = F(int, s, 244);
+    F(float, s, 13084) = (float)F(double, d, 24);
+    F(float, s, 13088) = (float)F(double, d, 32);
+    F(float, s, 13092) = (float)F(double, d, 40);
+    const float* v = (const float*)(s + 3416);
+    float x = (float)((double)m[3] * v[1] + (double)m[6] * v[2] + (double)v[0] * m[0]);
+    float y = (float)((double)m[4] * v[1] + (double)m[1] * v[0] + (double)m[7] * v[2]);
+    float z = (float)((double)m[5] * v[1] + (double)m[2] * v[0] + (double)m[8] * v[2]);
+    F(float, s, 13228) = x;
+    F(float, s, 13232) = y;
+    F(float, s, 13236) = z;
+    for (int i = 0; i < F(int, s, 3540); i++) {
+        memcpy(s + 10880 + i * 12, s + 100 + i * 12, 12);
+        memcpy(s + 10976 + i * 12, s + 7356 + i * 12, 12);
+    }
+    F(int, s, 15416) = F(int, s, 10712);
+    F(int, s, 15312) = F(int, s, 10716);
+    F(int, s, 15320) = F(int, s, 7196);
+    F(int, s, 15420) = F(int, s, 7300);
+    F(float, s, 15424) = F(float, s, 7300);
+    const float* lim = (const float*)((BYTE*)g_bs697f9c + F(int, s, 2252) * 2416 + 220);
+    if (F(float, s, 7300) > *lim)
+        F(float, s, 15424) = *lim;
+    F(int, s, 15428) = F(int, s, 7304);
+    F(int, s, 15488) = F(int, s, 6948);
+    F(int, s, 15504) = F(int, s, 15540);
+    F(int, s, 15508) = 0;
+    for (int i = 0; i < F(int, s, 3540); i++)
+        F(int, s, 15508) |= (F(int, s, 15580 + i * 20) != 0) << i;
+    F(int, s, 15512) = F(int, s, 15560);
 }
 
 } // extern "C"

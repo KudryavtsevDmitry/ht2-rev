@@ -4305,7 +4305,7 @@ extern "C" BYTE* __fastcall ShellJoin518d20_Construct(BYTE* s, void*, int parent
 // ---------------------------------------------------------------------------
 // Controls screen (exception frame dropped).
 
-ASM_PROC(FUN_5bdf80)
+extern "C" void FUN_5bdf80(); KING_ALIAS("_FUN_5bdf80", "@Panel_GridLayout@20")
 ASM_VAR(int, g_q42_6d207c, $L_6d207c)
 ASM_VAR(AsmLabel, g_q42_64de50, $L_64de50)
 ASM_VAR(AsmLabel, g_q42_64de10, $L_64de10)
@@ -7034,7 +7034,7 @@ ASM_VAR(double, g_nd64b5f0, $L_64b5f0)
 extern "C" void FUN_5c3c50(); KING_ALIAS("_FUN_5c3c50", "@Music_WaitNetwork@16")    // net: send a message (name, msg)
 ASM_PROC(FUN_5c55b0)    // net: the host's reply (reply, -)
 ASM_PROC(FUN_5c3ac0)    // net: whether the session is open
-ASM_PROC(FUN_5c5740)    // net: host (name, 0, 0)
+extern "C" void FUN_5c5740(); KING_ALIAS("_FUN_5c5740", "@Chat_Receive@20")    // net: host (name, 0, 0)
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // text in a width (surface, x, y, width, font, text, align, -)
 
 static const char* Nd_Str(int id)

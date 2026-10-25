@@ -368,7 +368,7 @@ extern "C" void __fastcall Tgr_AddTriangle(BYTE* s, void*, unsigned a, unsigned 
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 
 // a method of the Direct3D device d (vtable slot at byte offset off)

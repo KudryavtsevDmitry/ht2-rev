@@ -1369,3 +1369,48 @@ int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int
 }
 
 } // extern "C"
+
+// === inserting a DirectPlay record (FUN_6027b0)
+
+ASM_PROC(FUN_602ad0)    // uninitialized copy of records (first, last, dest, -)
+
+extern "C" {
+
+// [FUN_6027b0] vector<32-byte DirectPlay record> s: inserts a copy of x before pos, growing it to twice its size
+void __fastcall DpRecords_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
+{
+    if (s[1] != s[2]) {
+        BYTE* end = s[1];
+        if (end)
+            DpRecord_Copy(end, 0, end - 32);
+        s[1] += 32;
+        BYTE tmp[32];
+        DpRecord_Copy(tmp, 0, x);
+        BYTE* src = s[1] - 64;
+        BYTE* dst = s[1] - 32;
+        for (int n = (int)(src - pos) >> 5; n > 0; n--) {
+            src -= 32;
+            dst -= 32;
+            DpRecord_Assign(dst, 0, src);
+        }
+        DpRecord_Assign(pos, 0, tmp);
+        CallThis(FUN_601470, tmp);
+        return;
+    }
+    unsigned n = (unsigned)(s[1] - s[0]) >> 5;
+    unsigned cap = n ? n * 2 : 1;
+    BYTE* buf = cap ? CallC<BYTE*>(FUN_44b740, cap * 32) : 0;
+    BYTE* p = CallC<BYTE*>(FUN_602ad0, s[0], pos, buf, pos);
+    if (p)
+        DpRecord_Copy(p, 0, x);
+    BYTE* q = CallC<BYTE*>(FUN_602ad0, pos, s[1], p + 32, p);
+    for (BYTE* e = s[0]; e != s[1]; e += 32)
+        CallThis(FUN_601470, e);
+    if (unsigned bytes = (unsigned)(s[2] - s[0]) >> 5 << 5)
+        CallC(FUN_44b4a0, s[0], bytes);
+    s[0] = buf;
+    s[1] = q;
+    s[2] = buf + cap * 32;
+}
+
+} // extern "C"

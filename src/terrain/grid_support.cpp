@@ -1711,7 +1711,7 @@ void __cdecl GridMesh_RemoveEdge(BYTE* e, BYTE* m)
 // === removing an edge from the grid tree (FUN_609de0)
 
 extern "C" void FUN_60a1c0(); KING_ALIAS("_FUN_60a1c0", "@Grid_MergeCells@20")
-ASM_PROC(FUN_60a460)    // merges the four cells around an inner edge (a0, a1, b0, b1, &out a, &out b)
+extern "C" void FUN_60a460(); KING_ALIAS("_FUN_60a460", "@Grid_MergeFourCells@32")    // merges the four cells around an inner edge (a0, a1, b0, b1, &out a, &out b)
 ASM_VAR(AsmLabel, s_gt684a44, $L_684a44)
 
 // deletes the two branches of pair p and makes cell its node
@@ -1946,6 +1946,118 @@ void __fastcall Grid_RefreshPriorities(BYTE* s)
             CallThis(FUN_6135f0, l, c, pf);
         F(BYTE*, s, 56) = next ? next : Gp_Head(F(BYTE**, s, 32));
     }
+}
+
+} // extern "C"
+
+// === adding a grid point with its transition (FUN_608b40)
+
+extern "C" void Ga_MakeNode(); KING_ALIAS("_Ga_MakeNode", "@TGrid_MakeNode@16")
+extern "C" void Ga_Snapshot(); KING_ALIAS("_Ga_Snapshot", "@MarineGeometry_Snapshot@16")
+extern "C" void Ga_TransitionCreate(); KING_ALIAS("_Ga_TransitionCreate", "@MarineTransition_Create@32")
+
+extern "C" {
+
+// [FUN_608b40] adds point xy to mesh s: its 40-byte node (from the terrain +4) at +16, its entry (+12: the 2-byte
+// index, xy) and a transition (104 bytes: a, b) linked into the ring +44; the index
+WORD* __fastcall Grid_AddPoint(BYTE* s, void*, const DWORD* xy, int a, int b)
+{
+    BYTE node[40];
+    BYTE* n = CallThis<BYTE*>(Ga_MakeNode, F(BYTE*, s, 4), node, xy);
+    memcpy(F(BYTE*, s, 16) + F(WORD, s, 40) * 40, n, 40);
+    WORD k = F(WORD, s, 40);
+    BYTE* e = F(BYTE*, s, 12) + k * 16;
+    WORD* p = (WORD*)operator new(2);
+    if (p)
+        *p = k;
+    F(WORD*, e, 0) = p;
+    F(DWORD, e, 8) = xy[0];
+    F(DWORD, e, 12) = xy[1];
+    F(int, e, 4) = 0;
+    F(WORD, s, 40)++;
+    e = F(BYTE*, s, 12) + *p * 16;
+    BYTE* t = (BYTE*)operator new(104);
+    if (t) {
+        BYTE snap[40];
+        int sn = CallThis<int>(Ga_Snapshot, s, snap, p);
+        t = CallThis<BYTE*>(Ga_TransitionCreate, t, F(int, s, 48), e, a, sn, b, s);
+    }
+    BYTE* r = F(BYTE*, s, 44);
+    if (!r)
+        F(BYTE*, s, 44) = t;
+    else {
+        F(BYTE*, t, 0) = r;
+        F(BYTE*, t, 4) = F(BYTE*, r, 4);
+        F(BYTE*, F(BYTE*, r, 4), 0) = t;
+        F(BYTE*, r, 4) = t;
+    }
+    return p;
+}
+
+} // extern "C"
+
+// === merging four cells into two (FUN_60a460)
+
+// removes cell a from the mesh's ring list (+36, count +42), moving the cursor (+52) past it
+static void Gc_Unlink(BYTE* self, BYTE* a)
+{
+    if (a == F(BYTE*, self, 52))
+        F(BYTE*, self, 52) = Ring_Next(F(BYTE**, self, 36), a);
+    F(WORD, self, 42)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 36), a);
+}
+
+// repoints the neighbour link of x that names from to to (+60, +68, else +64)
+static void Gc_Relink(BYTE* x, BYTE* from, BYTE* to)
+{
+    if (!x)
+        return;
+    if (F(BYTE*, x, 60) == from)
+        F(BYTE*, x, 60) = to;
+    else if (F(BYTE*, x, 68) == from)
+        F(BYTE*, x, 68) = to;
+    else
+        F(BYTE*, x, 64) = to;
+}
+
+extern "C" {
+
+// [FUN_60a460] replaces the cells a, b (sharing the point a+20) and c, d by two new ones *n1 (a's corner to b's) and
+// *n2 (c's to d's), facing each other; the shared point is removed
+void __fastcall Grid_MergeFourCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c, BYTE* d, BYTE** n1, BYTE** n2)
+{
+    Gc_Unlink(self, a);
+    Gc_Unlink(self, b);
+    Gc_Unlink(self, c);
+    Gc_Unlink(self, d);
+    BYTE* x = CallThis<BYTE*>(FUN_608530, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    BYTE* y = CallThis<BYTE*>(FUN_608530, self, F(int, c, 24), F(int, c, 16), F(int, d, 16), F(int, a, 36) - 1);
+    Gc_Relink(F(BYTE*, a, 60), a, x);
+    Gc_Relink(F(BYTE*, b, 60), b, x);
+    Gc_Relink(F(BYTE*, c, 60), c, y);
+    Gc_Relink(F(BYTE*, d, 60), d, y);
+    F(BYTE*, x, 60) = y;
+    F(BYTE*, x, 68) = F(BYTE*, b, 60);
+    F(BYTE*, x, 64) = F(BYTE*, a, 60);
+    F(BYTE*, y, 64) = F(BYTE*, c, 60);
+    F(BYTE*, y, 68) = F(BYTE*, d, 60);
+    F(BYTE*, y, 60) = x;
+    BYTE* t = F(BYTE*, a, 20);
+    WORD k = F(WORD, t, 0);
+    F(WORD, self, 40)--;
+    Grid_RemovePoint(self, k);
+    if (t)
+        operator delete(t);
+    *n1 = x;
+    *n2 = y;
+    if (b)
+        CallVirt(b, 0, 1);
+    if (c)
+        CallVirt(c, 0, 1);
+    if (d)
+        CallVirt(d, 0, 1);
+    if (a)
+        CallVirt(a, 0, 1);
 }
 
 } // extern "C"

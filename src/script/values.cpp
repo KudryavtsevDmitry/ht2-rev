@@ -1104,7 +1104,7 @@ static void Val_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
 extern "C" void __cdecl ValInit_4b53e0() { Val_RngInit((DWORD*)g_valRng694748, &g_valRng694820, &g_valRng694824, &g_valRng694828); }
 
 extern "C" void FUN_4b2b60(); KING_ALIAS("_FUN_4b2b60", "@Reader_Fill@12")
-ASM_PROC(FUN_4b2ca0)
+extern "C" void FUN_4b2ca0(); KING_ALIAS("_FUN_4b2ca0", "_Reader_SkipBlanks")
 extern "C" void FUN_4b2e90(); KING_ALIAS("_FUN_4b2e90", "_Reader_ListTail")
 // [FUN_4b3240] reads the next item of reader r into out: drops the current character (the deque at +8: cur, first
 // +12, last +16, node +20; +68 the position), refills, then 4b2ca0 and 4b2e90
@@ -1489,7 +1489,7 @@ extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 extern "C" void FUN_4a5420(); KING_ALIAS("_FUN_4a5420", "_Sch_TypeError")
 extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
 extern "C" void FUN_4b6b90(); KING_ALIAS("_FUN_4b6b90", "_Sch_WriteListTail")    // writes the rest of a list (out, the tail, port, context)
-ASM_PROC(FUN_4b6e20)    // writes a number (handle by value, port)
+extern "C" void FUN_4b6e20(); KING_ALIAS("_FUN_4b6e20", "_Sch_WriteNumber")    // writes a number (handle by value, port)
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 ASM_VAR(AsmLabel, s_prEmpty, $L_66d4e4)          // "()"
 ASM_VAR(AsmLabel, s_prDot, $L_6715bc)            // " . "
@@ -2150,7 +2150,7 @@ BYTE* __cdecl Reader_Char(BYTE* out, int a, BYTE* r)
 
 // === reading a real number (FUN_4b1d40)
 
-ASM_PROC(FUN_4b1b90)    // an integer in radix from the deque (out, radix, deque)
+extern "C" void FUN_4b1b90(); KING_ALIAS("_FUN_4b1b90", "_Deque_ReadDigits")    // an integer in radix from the deque (out, radix, deque)
 extern "C" void FUN_490db0(); KING_ALIAS("_FUN_490db0", "@Rational_Reduce@8")
 
 // drops the current character of the reader's deque d
@@ -2429,6 +2429,184 @@ BYTE* __cdecl Port_ReadDatum(BYTE* out, int a, DWORD p0, DWORD p1, DWORD p2)
     CallC(FUN_4a29a0, x, y);
     CallThis(FUN_4abec0, rd);
     Pr_ReleaseInline((BYTE*)p);
+    return out;
+}
+
+} // extern "C"
+
+// === another deque destructor (4b5f70)
+
+extern "C" void __fastcall Deque_Destroy(BYTE* d);    // natives.cpp
+
+// [$L_4b5f70] the same destructor as Deque_Destroy (another instance)
+extern "C" void __fastcall Deque_Destroy2(BYTE* d) { Deque_Destroy(d); }
+
+// === skipping blanks and comments (FUN_4b2ca0)
+
+// the character at reader r's position (+8)
+static int Sk_Peek(BYTE* r)
+{
+    PtrDequeIt t = *(PtrDequeIt*)(r + 8);
+    return *(int*)SchDequeIt_Advance(&t, 0, 0)->cur;
+}
+
+extern "C" {
+
+// [FUN_4b2ca0] moves reader r past blanks and ';' comments (to the end of the line; stops at the end of input)
+void __cdecl Reader_SkipBlanks(int, BYTE* r)
+{
+    PtrDequeIt* it = (PtrDequeIt*)(r + 8);
+    for (;;) {
+        CallThis(FUN_4b2b60, r, 1);
+        if (Sch_IsSpaceChar(Sk_Peek(r))) {
+            CallThis(FUN_4b2b60, r, 1);
+            if ((BYTE*)it->cur != F(BYTE*, r, 16) - 4) {
+                it->cur = (void**)((BYTE*)it->cur + 4);
+                F(int, r, 68)++;
+            } else {
+                SchDeque_NextBlock(r, 0);
+                F(int, r, 68)++;
+            }
+            continue;
+        }
+        if (Sk_Peek(r) != ';') {
+            Sk_Peek(r);
+            return;
+        }
+        if (Sk_Peek(r) == '\n')
+            continue;
+        for (;;) {
+            CallThis(FUN_4b2b60, r, 1);
+            if ((BYTE*)it->cur != F(BYTE*, r, 16) - 4)
+                it->cur = (void**)((BYTE*)it->cur + 4);
+            else {
+                CallC(FUN_44b4a0, F(void*, r, 12), 512);
+                SchDequeIt_SetNode(it, 0, (void***)(F(BYTE*, r, 20) + 4));
+                it->cur = F(void**, r, 12);
+            }
+            F(int, r, 68)++;
+            CallThis(FUN_4b2b60, r, 1);
+            if (Sk_Peek(r) == -1)
+                return;
+            if (Sk_Peek(r) == '\n')
+                break;
+        }
+    }
+}
+
+} // extern "C"
+
+// === a vector value and writing a number (FUN_4b66f0, FUN_4b6e20)
+
+extern "C" void Vv_Allocate(); KING_ALIAS("_Vv_Allocate", "_Stl_Allocate")
+extern "C" void Vv_NumberWrite(); KING_ALIAS("_Vv_NumberWrite", "@Number_Write@12")
+extern "C" void Vv_PortWriteString(); KING_ALIAS("_Vv_PortWriteString", "_Port_WriteString")
+
+extern "C" {
+
+// [FUN_4b66f0] constructor (owner, n, v by value) of a vector value of n copies of v (vtable 64c128), linked into
+// the owner's list
+BYTE* __fastcall SchVector_Construct(BYTE* s, void*, BYTE* owner, unsigned n, DWORD v0, DWORD v1, DWORD v2)
+{
+    DWORD v[3] = {v0, v1, v2};
+    LinkIntoOwner(s, owner);
+    BYTE* p = n ? CallC<BYTE*>(Vv_Allocate, n * 12) : 0;
+    F(BYTE*, s, 20) = p;
+    F(BYTE*, s, 24) = p;
+    F(BYTE*, s, 28) = p + n * 12;
+    F(BYTE*, s, 24) = SchValues_Fill(p, n, (const BYTE*)v);
+    F(void*, s, 0) = g_vtbl64c128;
+    Pr_ReleaseInline((BYTE*)v);
+    return s;
+}
+
+// [FUN_4b6e20] writes number value n (by value) on port p in its written form
+void __cdecl Sch_WriteNumber(DWORD n0, DWORD n1, DWORD n2, const DWORD* pv)
+{
+    BYTE* o = (BYTE*)n0;
+    if (!o)
+        CallC(FUN_4a52e0, 0, 1);
+    if (n2 & 0x10000)
+        CallC(FUN_4a52e0, 4, 1);
+    BYTE* str[3] = {0, 0, 0};
+    CallThis(Vv_NumberWrite, o, str);
+    DWORD c[3];
+    CopyRef((BYTE*)c, (const BYTE*)pv);
+    CallC(Vv_PortWriteString, Sch_At(str, 0, 0), c[0], c[1], c[2]);
+    if (int len = (int)(str[2] - str[0]))
+        CallC(FUN_44b4a0, str[0], len);
+    if (!(n2 & 0x10000) && o && --F(int, o, 4) == 0)
+        CallVirt(o, 12, 1);
+}
+
+} // extern "C"
+
+// [$L_4b4ee0] destructor of the reader built by Item4b4e10_Construct: its buffer (+52), its value (+40), its deque
+extern "C" void __fastcall Item4b4e10_Destroy(BYTE* s)
+{
+    if (int n = (int)(F(BYTE*, s, 60) - F(BYTE*, s, 52)))
+        CallC(FUN_44b4a0, F(BYTE*, s, 52), n);
+    Pr_ReleaseInline(s + 40);
+    Deque_Destroy(s);
+}
+
+// === reading digits from a character deque (FUN_4b1b90)
+
+extern "C" void Rd_Copy16(); KING_ALIAS("_Rd_Copy16", "@Sch_Copy16@12")
+extern "C" void Rd_Advance(); KING_ALIAS("_Rd_Advance", "@SchDequeIt_Advance@12")
+extern "C" void Rd_AddSigned(); KING_ALIAS("_Rd_AddSigned", "_Int_AddSigned")
+extern "C" void Rd_Mul(); KING_ALIAS("_Rd_Mul", "_Int_Mul")
+ASM_VAR(char, s_rd671400, $L_671400)
+
+// a big integer freed unless it is a small one (+2 == 0)
+static void Rd_Free(WORD* n)
+{
+    if (n && n[1])
+        operator delete(n);
+}
+
+extern "C" {
+
+// [FUN_4b1b90] reads the digits in radix r from the front of the character deque q (4-byte characters,
+// 512-byte blocks; the front iterator at +8), consuming them, into *out; 'A'..'F' count from 0 as in the
+// original; a digit not below r is a type error
+DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q)
+{
+    WORD* acc = CallC<WORD*>(FUN_48ade0, 0, 0);
+    DWORD* it = (DWORD*)(q + 8);
+    for (;;) {
+        DWORD t1[4], t2[4];
+        CallThis(Rd_Copy16, t1, it);
+        CallThis(Rd_Copy16, t2, CallThis<DWORD*>(Rd_Advance, t1, 0));
+        char c = (char)toupper(*(int*)t2[0]);
+        int d;
+        if (c >= 'A' && c <= 'F')
+            d = c - 'A';
+        else if (c >= '0' && c <= '9')
+            d = c - '0';
+        else
+            break;
+        if (d >= r)
+            CallC(FUN_4a5420, 20, 768, &s_rd671400);
+        WORD* m = CallC<WORD*>(FUN_48ade0, 0, r);
+        acc = CallC<WORD*>(Rd_Mul, acc, m, acc);
+        Rd_Free(m);
+        WORD* a = CallC<WORD*>(FUN_48ade0, 0, d);
+        acc = CallC<WORD*>(Rd_AddSigned, acc, 0, a, 0, acc);
+        Rd_Free(a);
+        if (it[0] != F(DWORD, q, 16) - 4)
+            it[0] += 4;
+        else {
+            CallC(FUN_44b4a0, F(void*, q, 12), 512);
+            DWORD* node = (DWORD*)(F(DWORD, q, 20) + 4);
+            it[3] = (DWORD)node;
+            it[1] = *node;
+            it[2] = *node + 512;
+            it[0] = F(DWORD, q, 12);
+        }
+    }
+    *out = CallC<DWORD>(FUN_48acd0, 0, acc);
+    Rd_Free(acc);
     return out;
 }
 

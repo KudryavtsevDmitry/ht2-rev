@@ -1477,3 +1477,59 @@ void __fastcall Sparks_Spawn(BYTE* s, void*, const BYTE* src, unsigned n)
 }
 
 } // extern "C"
+
+// === a body's collision by kind (58dff0)
+
+extern "C" void Bc_WarnOpen(); KING_ALIAS("_Bc_WarnOpen", "_WarnLog_Open")
+extern "C" void Bc_WarnClose(); KING_ALIAS("_Bc_WarnClose", "_WarnLog_Close")
+extern "C" void Bc_Log(); KING_ALIAS("_Bc_Log", "_VehLog_Value2")
+extern "C" void Bc_sprintf(); KING_ALIAS("_Bc_sprintf", "_sprintf")
+extern "C" void Bc_ActivateAll(); KING_ALIAS("_Bc_ActivateAll", "@Points_ActivateAll@8")
+ASM_PROC(FUN_5843c0)    // a body's collision with the ground
+ASM_PROC(FUN_5855a0)    // with another body
+ASM_PROC(FUN_58b120)    // with a moving object
+ASM_VAR(int, g_bc6f6620, $L_6f6620)
+ASM_VAR(AsmLabel, s_bc67dd8c, $L_67dd8c)
+ASM_VAR(AsmLabel, s_bc67dd70, $L_67dd70)
+ASM_VAR(AsmLabel, s_bc67dd54, $L_67dd54)
+ASM_VAR(AsmLabel, s_bc67dd38, $L_67dd38)
+ASM_VAR(AsmLabel, s_bc67dd1c, $L_67dd1c)
+ASM_VAR(AsmLabel, s_bc67dd10, $L_67dd10)
+
+// "fmt" with the three floats at p
+static void Bc_Fmt3(char* buf, const void* fmt, const float* p)
+{
+    CallC(Bc_sprintf, buf, (const char*)fmt, (double)p[0], (double)p[1], (double)p[2]);
+}
+
+extern "C" {
+
+// [$L_58dff0] collision of body s with (a, b, c) at contact k by kind flags (bit 2 the ground: a hit is logged with
+// 6f6620 unless the contact is known +116; bit 1 another body; else a moving object, which then wakes all points)
+int __fastcall Body_Collide(BYTE* s, void*, int a, int b, int c, BYTE* k, unsigned flags)
+{
+    if (flags & 4) {
+        int r = CallC<int>(FUN_5843c0, s, a, b, c, k);
+        if (g_bc6f6620 && (r & 1) && !F(int, k, 116)) {
+            char b1[100], b2[100], b3[100], b4[100], b5[100], b6[490];
+            CallC(Bc_sprintf, b1, (const char*)s_bc67dd8c, F(const char*, F(BYTE*, s, 800), 12));
+            Bc_Fmt3(b2, s_bc67dd70, (const float*)(s + 584));
+            Bc_Fmt3(b3, s_bc67dd54, (const float*)(s + 536));
+            Bc_Fmt3(b4, s_bc67dd38, (const float*)(k + 52));
+            Bc_Fmt3(b5, s_bc67dd1c, (const float*)(k + 64));
+            CallC(Bc_sprintf, b6, (const char*)s_bc67dd10, b1, b2, b3, b4, b5);
+            CallC(Bc_WarnOpen);
+            CallC(Bc_Log, b6);
+            CallC(Bc_WarnClose);
+        }
+        return r;
+    }
+    if (flags & 2)
+        return CallC<int>(FUN_5855a0, s, a, b, c, k, flags);
+    int r = CallC<int>(FUN_58b120, s, a, b, c, k, flags);
+    if (r)
+        CallThis(Bc_ActivateAll, s);
+    return r;
+}
+
+} // extern "C"

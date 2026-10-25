@@ -47,7 +47,7 @@ extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 ASM_PROC(FUN_4897b0)    // list: a new node
 ASM_PROC(FUN_491750)
-ASM_PROC(FUN_488450)
+extern "C" void FUN_488450(); KING_ALIAS("_FUN_488450", "@RoadSet_Destroy@4")
 extern "C" void FUN_489900(); KING_ALIAS("_FUN_489900", "@Vec24_InsertAux@16")    // vector<24 bytes>::insert_aux
 extern "C" void FUN_48f730(); KING_ALIAS("_FUN_48f730", "@Vec580_InsertAux@16")    // vector<580 bytes>::insert_aux
 
@@ -1542,7 +1542,7 @@ extern "C" int __fastcall LoadBlock_Skip(BYTE* s)
 // [$L_4913f0] sets the base vtable 64bee4
 extern "C" void __fastcall Run4913f0_SetVtbl(BYTE* s) { F(void*, s, 0) = &g_q199_64bee4; }
 
-ASM_PROC(FUN_488450)
+extern "C" void FUN_488450(); KING_ALIAS("_FUN_488450", "@RoadSet_Destroy@4")
 // [$L_489600] destroys a list of 48-byte nodes (each value at +8 destroyed by 488450), then the head
 extern "C" void __fastcall List48_Destroy(BYTE** s)
 {
@@ -2591,3 +2591,93 @@ BYTE* __cdecl Spline_Pieces(BYTE* out, const double* x, const DVec3* c, int n, i
 }
 
 } // extern "C"
+
+// === destroying a road set (FUN_488450)
+
+extern "C" void Rs_Vec1Free(); KING_ALIAS("_Rs_Vec1Free", "@Vec1_Free@8")
+extern "C" void Rs_Vec8Free(); KING_ALIAS("_Rs_Vec8Free", "@Vec8_FreeStorage@8")
+extern "C" void Rs_Vec24Free(); KING_ALIAS("_Rs_Vec24Free", "@Vec24_FreeStorage@8")
+
+// frees the storage of a vector (begin +0, capacity end +8)
+static void Rs_Free(BYTE** v)
+{
+    if (int n = (int)(v[2] - v[0]))
+        CallC(FUN_44b4a0, v[0], n);
+}
+
+extern "C" {
+
+// [FUN_488450] destructor: the records of the pointer vector at +12 (each with vectors at +16, +28, +40) and the
+// byte vectors of the one at +24 deleted, then the storage of both and of the vector at +0 freed
+void __fastcall RoadSet_Destroy(BYTE** s)
+{
+    for (BYTE** p = (BYTE**)s[3]; p != (BYTE**)s[4]; p++)
+        if (BYTE* r = *p) {
+            CallThis(Rs_Vec1Free, r + 40);
+            CallThis(Rs_Vec8Free, r + 28);
+            CallThis(Rs_Vec24Free, r + 16);
+            operator delete(r);
+        }
+    for (BYTE** p = (BYTE**)s[6]; p != (BYTE**)s[7]; p++)
+        if (BYTE* r = *p) {
+            Rs_Free((BYTE**)r);
+            operator delete(r);
+        }
+    if (int n = (int)(s[8] - s[6]) >> 2)
+        CallC(FUN_44b4a0, s[6], n << 2);
+    if (int n = (int)(s[5] - s[3]) >> 2)
+        CallC(FUN_44b4a0, s[3], n << 2);
+    Rs_Free(s);
+}
+
+} // extern "C"
+
+// === destroying a road set index (FUN_4886e0)
+
+extern "C" void Ri_RecDelete(); KING_ALIAS("_Ri_RecDelete", "@Rec488450_DeletingDestructor@12")
+
+extern "C" {
+
+// [FUN_4886e0] destructor: the 44-byte nodes of the list at +24 (their records +8 destroyed) and its head freed,
+// then the storage of the vectors at +12 and +0
+void __fastcall RoadIndex_Destroy(BYTE** s)
+{
+    BYTE* head = s[6];
+    for (BYTE* n = *(BYTE**)head; n != s[6];) {
+        BYTE* next = *(BYTE**)n;
+        CallThis(Ri_RecDelete, n + 8, 0);
+        CallC(FUN_44b4a0, n, 44);
+        n = next;
+    }
+    F(BYTE*, s[6], 0) = s[6];
+    F(BYTE*, s[6], 4) = s[6];
+    CallC(FUN_44b4a0, s[6], 44);
+    Rs_Free(s + 3);
+    Rs_Free(s);
+}
+
+} // extern "C"
+
+// [$L_4911e0] clears a closure record: the handle at +20 released, +32 assigned an empty value (kept when the
+// same), the environment at +44 assigned an empty one
+extern "C" void __fastcall Closure_Clear(BYTE* self)
+{
+    Value_Release((DWORD*)(self + 20));
+    F(int, self, 24) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 28) = 0;
+    StrRef empty = {0, 0, 0};
+    StrRef* d = (StrRef*)(self + 32);
+    if (d->ptr && !(d->flags & 0x10000)) {
+        F(int, d->ptr, 4)--;
+        if (F(int, d->ptr, 4) == 0 && !(d->ptr == empty.ptr && d->flags == empty.flags && d->len == empty.len) && d->ptr)
+            CallVirt(d->ptr, 12, 1);
+    }
+    d->len = 0;
+    d->ptr = 0;
+    d->flags = 0;
+    Value_Release((DWORD*)&empty);
+    StrRef env = {0, 0, 0};
+    Str_AssignEnvironment((StrRef*)(self + 44), 0, &env);
+    Value_Release((DWORD*)&env);
+}

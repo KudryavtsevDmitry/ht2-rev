@@ -2256,7 +2256,7 @@ ASM_VAR(AsmLabel, s_rn6709d4, $L_6709d4)
 extern "C" SchValue* __cdecl Nat_Eqv(SchValue*, BYTE*, BYTE**);  // natives.cpp
 ASM_VAR(AsmLabel, s_rn670640, $L_670640)
 ASM_VAR(AsmLabel, s_rn670658, $L_670658)
-ASM_VAR(AsmLabel, g_rf493120, $L_493120)
+extern "C" void Nat_EqualQ();
 ASM_VAR(AsmLabel, s_rn67065c, $L_67065c)
 extern "C" void Nat_NumberP();
 ASM_VAR(AsmLabel, s_rn670664, $L_670664)
@@ -2448,7 +2448,7 @@ extern "C" void Nat_SetValues();
 ASM_VAR(AsmLabel, s_rn671210, $L_671210)
 extern "C" void Nat_StringAppend();
 ASM_VAR(AsmLabel, s_rn6709ec, $L_6709ec)
-ASM_VAR(AsmLabel, g_rf4a0af0, $L_4a0af0)
+extern "C" void Nat_Reverse();
 ASM_VAR(AsmLabel, s_rn6709fc, $L_6709fc)
 ASM_VAR(AsmLabel, s_rn670a04, $L_670a04)
 ASM_VAR(AsmLabel, s_rn670a08, $L_670a08)
@@ -2470,7 +2470,7 @@ static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_MacroExpand, s_rn6709d4},
     {(void*)Nat_Eqv, s_rn670640},
     {(void*)Nat_EqP, s_rn670658},
-    {(void*)g_rf493120, s_rn67065c},
+    {(void*)Nat_EqualQ, s_rn67065c},
     {(void*)Nat_NumberP, s_rn670664},
     {(void*)Nat_ComplexP, s_rn67066c},
     {(void*)Nat_RealP, s_rn670678},
@@ -2566,7 +2566,7 @@ static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_Write, s_rn6709cc},
     {(void*)Nat_SetValues, s_rn671210},
     {(void*)Nat_StringAppend, s_rn6709ec},
-    {(void*)g_rf4a0af0, s_rn6709fc},
+    {(void*)Nat_Reverse, s_rn6709fc},
     {(void*)Nat_Not, s_rn670a04},
     {(void*)Nat_NullP, s_rn670a08},
     {(void*)Nat_List, s_rn671208},
@@ -2974,7 +2974,7 @@ void __fastcall Define_Step(void*, void*, BYTE* p)
 // ---------------------------------------------------------------------------
 // The interpreter's destructor
 
-ASM_PROC(FUN_4af970)    // vector<44 bytes>: destructor
+extern "C" void FUN_4af970(); KING_ALIAS("_FUN_4af970", "@Vec44_Destroy@4")    // vector<44 bytes>: destructor
 extern "C" void FUN_447570(); KING_ALIAS("_FUN_447570", "@StrRefVec_Destroy@8")
 extern "C" void FUN_490fa0(); KING_ALIAS("_FUN_490fa0", "@RingMember_Destruct@8")
 extern "C" void FUN_4b0a80(); KING_ALIAS("_FUN_4b0a80", "@SchInputList_EraseRange@20")
@@ -3931,3 +3931,57 @@ void __cdecl Sch_DumpFrame(BYTE* s, BYTE* e, DWORD p0, DWORD p1, DWORD p2)
 }
 
 } // extern "C"
+
+// === clearing an environment (4a41a0)
+
+extern "C" void Ce_MapDestroy(); KING_ALIAS("_Ce_MapDestroy", "@SchMap_Destroy@8")
+
+extern "C" {
+
+// [$L_4a41a0] environment s cleared: its name map (+144) deleted and its values (+132..+136) released and dropped
+void __fastcall Env_Clear(BYTE* s)
+{
+    if (BYTE* m = F(BYTE*, s, 144)) {
+        CallThis(Ce_MapDestroy, m);
+        operator delete(m);
+    }
+    F(BYTE*, s, 144) = 0;
+    BYTE* b = F(BYTE*, s, 132);
+    for (BYTE* p = b; p != F(BYTE*, s, 136); p += 12)
+        CallThis(FUN_4a36c0, p);
+    F(BYTE*, s, 136) = b;
+}
+
+} // extern "C"
+
+// [FUN_4af970] destructor of a vector of 44-byte objects: each destroyed (vtbl+4 (0)), the storage freed
+extern "C" void __fastcall Vec44_Destroy(BYTE** v)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 44)
+        CallVirt(e, 4, 0);
+    if (int n = (int)(v[2] - v[0]) / 44)
+        CallC(FUN_44b4a0, v[0], n * 44);
+}
+
+// [$L_4a7360] clears a script list node (like SchListNode_Destroy, keeping it): the handle at +4, the values at
+// +16 and the handle at +32 (assigned an empty value)
+extern "C" void __fastcall SchListNode_Clear(BYTE* self)
+{
+    SchHandle_Release((void**)(self + 4), 0);
+    F(int, self, 8) = 0;
+    F(int, self, 4) = 0;
+    F(int, self, 12) = 0;
+    BYTE* b = F(BYTE*, self, 16);
+    BYTE* e = F(BYTE*, self, 20);
+    for (BYTE* p = Values_Copy(e, e, b); p != F(BYTE*, self, 20); p += 12)
+        SchHandle_Release((void**)p, 0);
+    F(BYTE*, self, 20) -= (e - b) / 12 * 12;
+    SchValue empty = {};
+    SchValue* d = (SchValue*)(self + 32);
+    if (d->obj && --F(int, d->obj, 4) == 0 && !CallC<char>(FUN_409070, d, &empty) && d->obj)
+        CallVirt(d->obj, 12, 1);
+    d->obj = 0;
+    d->flags = 0;
+    d->m_4 = 0;
+    SchHandle_Release((void**)&empty, 0);
+}

@@ -32,7 +32,7 @@ ASM_VAR(AsmLabel, g_vtbl650430, $L_650430)
 ASM_VAR(AsmLabel, g_vtbl6503e4, $L_6503e4)
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")    // assertion failed (level, format, expression, file, line, date)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 ASM_PROC(FUN_57c5f0)
 
 typedef void (__cdecl* LogFn)(const char* text);
@@ -1545,6 +1545,64 @@ int __cdecl Joy_ReadState(DWORD* st, int dump)
         }
         return r >= 0 ? 0 : r;
     }
+}
+
+} // extern "C"
+
+// === acquiring the joystick (FUN_577fc0)
+
+ASM_VAR(AsmLabel, s_acqStart, $L_67cb00)
+ASM_VAR(AsmLabel, s_acqAcquire, $L_67cad8)
+ASM_VAR(AsmLabel, s_acqUnacquire, $L_67cab0)
+ASM_VAR(AsmLabel, s_acqCallback2, $L_67ca88)
+ASM_VAR(AsmLabel, s_acqResult, $L_67ca60)
+ASM_VAR(AsmLabel, s_acqNotInit, $L_67ca48)
+ASM_VAR(AsmLabel, s_acqOtherApp, $L_67ca2c)
+ASM_VAR(AsmLabel, s_acqInvalid, $L_67ca14)
+ASM_VAR(AsmLabel, s_acqFalse, $L_67ca00)
+ASM_VAR(AsmLabel, s_acqOk, $L_67c9f4)
+extern "C" void Acq_sprintf(); KING_ALIAS("_Acq_sprintf", "_sprintf")
+typedef void(__cdecl* AcqCallback)(int on);
+
+extern "C" {
+
+// [FUN_577fc0] acquires (on) or unacquires the joystick (6f4b88) between the callbacks 6f4ba4 and 6f4ba8, logging
+// the result; the result, 1 without a joystick
+int __cdecl Joy_Acquire(int on)
+{
+    BYTE* dev = (BYTE*)g_joyDevice;
+    if (!dev)
+        return 1;
+    if (g_6f4ba4) {
+        Joy_Log((const char*)s_acqStart);
+        ((AcqCallback)g_6f4ba4)(on);
+    }
+    int hr;
+    if (on) {
+        Joy_Log((const char*)s_acqAcquire);
+        hr = ComCall577(g_joyDevice, 28);
+    } else {
+        Joy_Log((const char*)s_acqUnacquire);
+        hr = ComCall577(g_joyDevice, 32);
+    }
+    if (g_6f4ba8) {
+        Joy_Log((const char*)s_acqCallback2);
+        ((AcqCallback)g_6f4ba8)(on);
+    }
+    char buf[100];
+    CallC(Acq_sprintf, buf, (const char*)s_acqResult, hr);
+    const char* name = 0;
+    switch ((unsigned)hr) {
+    case 0x80070015: name = (const char*)s_acqNotInit; break;
+    case 0x80070005: name = (const char*)s_acqOtherApp; break;
+    case 0x80070057: name = (const char*)s_acqInvalid; break;
+    case 0: name = (const char*)s_acqOk; break;
+    case 1: name = (const char*)s_acqFalse; break;
+    }
+    if (name)
+        strcat(buf, name);
+    Joy_Log(buf);
+    return hr;
 }
 
 } // extern "C"

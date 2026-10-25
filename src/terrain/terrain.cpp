@@ -309,7 +309,7 @@ void __fastcall Terrain616770_SetCorners(BYTE** self, void*, BYTE** c, int n)
 
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
-ASM_PROC(FUN_5b1020)
+extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // named object: constructor (name, kind)
 ASM_VAR(BYTE*, g_696224, $L_696224)
 ASM_VAR(BYTE*, g_d3dDevice720908, $L_720908)

@@ -7372,12 +7372,12 @@ extern "C" BYTE** __fastcall PlayerList_Construct(BYTE** self, void*, int)
 extern "C" void FUN_4afbf0(); KING_ALIAS("_FUN_4afbf0", "@SchList_Begin@12")
 extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
 extern "C" void FUN_45e520(); KING_ALIAS("_FUN_45e520", "_Player_RandomTradePartner2")    // find in the players (out, first, last, a, b)
-ASM_PROC(FUN_45e710)
+extern "C" void FUN_45e710(); KING_ALIAS("_FUN_45e710", "_Player_RandomTradePartner4")
 extern "C" void FUN_45e8f0(); KING_ALIAS("_FUN_45e8f0", "_Player_RandomPartner")    // the same with a pair and a third value
 extern "C" void FUN_45eba0(); KING_ALIAS("_FUN_45eba0", "_Player_RandomTradePartner")
-ASM_PROC(FUN_45ed90)
+extern "C" void FUN_45ed90(); KING_ALIAS("_FUN_45ed90", "_Player_RandomTradePartner3")
 extern "C" void FUN_45b8b0(); KING_ALIAS("_FUN_45b8b0", "_Nodes_RandomOther")    // find in the road nodes (first, last, a, b, c)
-ASM_PROC(FUN_45cdc0)
+extern "C" void FUN_45cdc0(); KING_ALIAS("_FUN_45cdc0", "_Pick_RandomRoad")
 
 // the player list iterator found by a search over the whole list; the end when nothing matches
 template <class... A>
@@ -9720,7 +9720,7 @@ extern "C" void FUN_45b3d0(); KING_ALIAS("_FUN_45b3d0", "_Names_IntroSort")    /
 extern "C" void FUN_45b4e0(); KING_ALIAS("_FUN_45b4e0", "_Sort_FinalInsertion12")
 ASM_PROC(FUN_488620)    // a way file parser's constructor
 extern "C" void FUN_4895b0(); KING_ALIAS("_FUN_4895b0", "@Rt_ReadFile@12")    // parses a way file (name)
-ASM_PROC(FUN_4886e0)    // the parser's destructor
+extern "C" void FUN_4886e0(); KING_ALIAS("_FUN_4886e0", "@RoadIndex_Destroy@4")    // the parser's destructor
 extern "C" void FUN_488350(); KING_ALIAS("_FUN_488350", "_Crc_File")
 extern "C" void FUN_4054a0(); KING_ALIAS("_FUN_4054a0", "_Registry52_Get")
 extern "C" void FUN_4055c0(); KING_ALIAS("_FUN_4055c0", "_Registry24_Get")
@@ -21857,8 +21857,8 @@ extern "C" void q197_L_402b70(); KING_ALIAS("_q197_L_402b70", "_AiStatic68d008_I
 extern "C" void q197_L_402bc0(); KING_ALIAS("_q197_L_402bc0", "_AiStatic68cf10_Init")
 extern "C" void q197_L_4485d0(); KING_ALIAS("_q197_L_4485d0", "@List4485d0_Destroy@8")
 extern "C" void q197_L_449130(); KING_ALIAS("_q197_L_449130", "@Vec56b_Destroy@4")
-extern "C" void q197_L_4494c0(); KING_ALIAS("_q197_L_4494c0", "$L_4494c0")
-extern "C" void q197_L_449740(); KING_ALIAS("_q197_L_449740", "$L_449740")
+extern "C" void q197_L_4494c0(); KING_ALIAS("_q197_L_4494c0", "@VecVec4_Destroy@4")
+extern "C" void q197_L_449740(); KING_ALIAS("_q197_L_449740", "@List12_Destroy@4")
 extern "C" void q197_L_4aee50(); KING_ALIAS("_q197_L_4aee50", "@Sch_Destruct@8")
 extern "C" void q197_L_4af6b0(); KING_ALIAS("_q197_L_4af6b0", "@List16_Destroy@4")
 // [$L_401300] destroys the static object 68bb58 at exit ($L_4aee50)
@@ -22766,7 +22766,7 @@ void __cdecl Ai_HireTask()
 
 ASM_PROC(FUN_45f650)
 extern "C" void FUN_465d20(); KING_ALIAS("_FUN_465d20", "_CopyBackwardDwords2")
-ASM_PROC(FUN_465e80)
+extern "C" void FUN_465e80(); KING_ALIAS("_FUN_465e80", "_Nodes_IntroSortLoop")
 ASM_PROC(FUN_468d60)
 ASM_PROC(FUN_4691a0)
 ASM_PROC(FUN_46ab50)
@@ -23339,6 +23339,202 @@ void __cdecl Markets_FinalInsertion(int* first, int* last, Ns_Pt pt)
             *d = v;
         }
     }
+}
+
+} // extern "C"
+
+// === the vector of curve records' destructor (458f20)
+
+extern "C" {
+
+// [$L_458f20] destructor of a vector<1592-byte curve record> (their parts need no destruction): its storage freed
+void __fastcall Vec1592_Destroy(BYTE** v)
+{
+    if (int n = (int)(v[2] - v[0]) / 1592)
+        Ai_PoolFree(v[0], n * 1592);
+}
+
+} // extern "C"
+
+// === random trade partners, partners allowed (FUN_45ed90, FUN_45e710)
+
+// a random node of [first, last) passing pair and trade (and the vehicle and flag checks), not me; last when none
+static BYTE** Rp_Pick(BYTE** out, BYTE* first, BYTE* last, BYTE* me, DWORD* rng, void (*pair)(), void (*trade)())
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE* n = first; n != last; n = F(BYTE*, n, 0)) {
+        BYTE* p = n + 8;
+        if (F(BYTE*, p, 96) == me || !CallC<char>(pair, me + 8, p) || !CallC<char>(trade, p))
+            continue;
+        int veh = F(int, p, 76);
+        if (veh != -1 && CallC<int>(FUN_4d8a40, veh))
+            continue;
+        if (F(BYTE, p, 88) & 1)
+            continue;
+        if (v[1] != v[2]) {
+            CallC(FUN_4611c0, v[1], &n);
+            v[1] += 4;
+        } else
+            CallThis(FUN_45dde0, v, v[1], &n);
+    }
+    *out = PickRandom(v, last, rng);
+    return out;
+}
+
+extern "C" {
+
+// [FUN_45ed90] Player_RandomTradePartner allowing the present partner
+BYTE** __cdecl Player_RandomTradePartner3(BYTE** out, BYTE* first, BYTE* last, BYTE* me, DWORD* rng)
+{
+    return Rp_Pick(out, first, last, me, rng, FUN_425d40, FUN_425b40);
+}
+
+// [FUN_45e710] Player_RandomTradePartner2 allowing the present partner
+BYTE** __cdecl Player_RandomTradePartner4(BYTE** out, BYTE* first, BYTE* last, BYTE* me, DWORD* rng)
+{
+    return Rp_Pick(out, first, last, me, rng, FUN_425c60, FUN_425bb0);
+}
+
+} // extern "C"
+
+// === the introsort loop of node references by distance (FUN_465e80)
+
+extern "C" void Is_MakeHeap(); KING_ALIAS("_Is_MakeHeap", "_MakeHeap4B")
+extern "C" void Is_PopHeap(); KING_ALIAS("_Is_PopHeap", "_PopHeapLast4P")
+
+extern "C" {
+
+// [FUN_465e80] introsort loop of node references [first, last) by distance to pt: median-of-three partitions,
+// recursing on the right part, heap sort when depth runs out
+void __cdecl Nodes_IntroSortLoop(int* first, int* last, int, int depth, Ns_Pt pt)
+{
+    while (last - first > 16) {
+        if (!depth) {
+            CallC(Is_MakeHeap, first, last, pt, 0, 0);
+            for (; last - first > 1; last--)
+                CallC(Is_PopHeap, first, last, pt);
+            return;
+        }
+        depth--;
+        int* mid = first + (int)(last - first) / 2;
+        int pivot = Ns_Copy(CallC<int*>(FUN_468d60, first, mid, last - 1, pt));
+        int* cut = CallC<int*>(FUN_4691a0, first, last, pivot, pt);
+        Nodes_IntroSortLoop(cut, last, 0, depth, pt);
+        last = cut;
+    }
+}
+
+} // extern "C"
+
+// === two container destructors (449300, 449740)
+
+extern "C" {
+
+// [$L_449300] destructor of a vector of script values (12 bytes): each released, the storage freed
+void __fastcall SchValues_Destroy(BYTE** v)
+{
+    for (BYTE* p = v[0]; p != v[1]; p += 12)
+        CallThis(FUN_4a36c0, p);
+    if (int n = (int)(v[2] - v[0]) / 12)
+        Ai_PoolFree(v[0], n * 12);
+}
+
+// [$L_449740] destructor of a list (head +0) of 64-byte nodes holding a vector of 12-byte records (+44): the
+// vectors' storage and the nodes freed, then the head
+void __fastcall List12_Destroy(BYTE** s)
+{
+    for (BYTE* n = *(BYTE**)s[0]; n != s[0];) {
+        BYTE* next = *(BYTE**)n;
+        BYTE** v = (BYTE**)(n + 44);
+        Stl_Free12(v[0], (unsigned)((v[2] - v[0]) / 12));
+        Ai_PoolFree(n, 64);
+        n = next;
+    }
+    F(BYTE*, s[0], 0) = s[0];
+    F(BYTE*, s[0], 4) = s[0];
+    Ai_PoolFree(s[0], 64);
+}
+
+} // extern "C"
+
+// === more vector destructors (447750, 448130, 448f30, 4494c0)
+
+extern "C" void Vd_VecBFree(); KING_ALIAS("_Vd_VecBFree", "@VecB_FreeStorage@8")
+extern "C" void Vd_Vec24Destroy(); KING_ALIAS("_Vd_Vec24Destroy", "@Vec24_Destroy@8")
+extern "C" void Vd_Vec1Free(); KING_ALIAS("_Vd_Vec1Free", "@Vec1_Free@8")
+extern "C" void Vd_Vec4Free(); KING_ALIAS("_Vd_Vec4Free", "@Vec4_Free@8")
+
+// the storage of a vector of size-byte records freed
+static void Vd_Storage(BYTE** v, int size)
+{
+    if (int n = (int)(v[2] - v[0]) / size)
+        Ai_PoolFree(v[0], n * size);
+}
+
+extern "C" {
+
+// [$L_447750] destructor of a vector of 104-byte records (a value at +0, a vector at +88)
+void __fastcall Vec104_Destroy(BYTE** v)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 104) {
+        CallThis(Vd_VecBFree, e + 88);
+        CallThis(FUN_4a36c0, e);
+    }
+    Vd_Storage(v, 104);
+}
+
+// [$L_448130] destructor of a vector of 24-byte records (a value at +0, a vector at +12)
+void __fastcall Vec24Rec_Destroy(BYTE** v)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 24) {
+        CallThis(Vd_Vec24Destroy, e + 12);
+        CallThis(FUN_4a36c0, e);
+    }
+    Vd_Storage(v, 24);
+}
+
+// [$L_448f30] destructor of a vector of byte vectors
+void __fastcall VecVec1_Destroy(BYTE** v)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 12)
+        CallThis(Vd_Vec1Free, e);
+    Vd_Storage(v, 12);
+}
+
+// [$L_4494c0] destructor of a vector of dword vectors
+void __fastcall VecVec4_Destroy(BYTE** v)
+{
+    for (BYTE* e = v[0]; e != v[1]; e += 12)
+        CallThis(Vd_Vec4Free, e);
+    Vd_Storage(v, 12);
+}
+
+} // extern "C"
+
+// === a random road of a kind (FUN_45cdc0)
+
+extern "C" void FUN_464230(); KING_ALIAS("_FUN_464230", "@Vec4b_InsertH@16")
+
+extern "C" {
+
+// [FUN_45cdc0] a random element of [first, last) (objects, flags +12) that player p may use: not closed (bit 3);
+// for a truck (+92 == 2) of bit 1 with mask bit 0, else of bit 0; for others of bit 6; last when none (numbers from rng)
+BYTE** __cdecl Pick_RandomRoad(BYTE** first, BYTE** last, unsigned mask, DWORD* p, DWORD* rng)
+{
+    DWORD v[3] = {0, 0, 0};
+    for (BYTE** it = first; it != last; it++) {
+        DWORD f = F(DWORD, *it, 12);
+        if (f & 8)
+            continue;
+        bool ok;
+        if (p[23] == 2)
+            ok = (mask & 1) ? (f & 2) != 0 : (f & 1) != 0;
+        else
+            ok = (f & 64) != 0;
+        if (ok)
+            PtrVec_Push(v, FUN_464230, (BYTE*)it);
+    }
+    return (BYTE**)PickRandom(v, (BYTE*)last, rng);
 }
 
 } // extern "C"

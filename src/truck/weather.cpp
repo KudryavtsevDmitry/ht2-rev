@@ -559,7 +559,7 @@ extern "C" void __cdecl WeaInit_5ab230()
 // More virtual methods.
 
 ASM_PROC(FUN_5fdaf0)
-ASM_PROC(FUN_5a4ca0)
+extern "C" void FUN_5a4ca0(); KING_ALIAS("_FUN_5a4ca0", "@SheetAnim_Step@4")
 ASM_VAR(AsmLabel, g_wea6fd7dc, $L_6fd7dc)
 
 // the color entry 48 of the room's palette (+100 of +468 of the weather's world +100)
@@ -603,7 +603,7 @@ extern "C" void __fastcall Wea_Lightning(BYTE* s)
 
 extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
-ASM_PROC(FUN_5fd870)
+extern "C" void FUN_5fd870(); KING_ALIAS("_FUN_5fd870", "@Sound_UpdateAt@36")
 
 // [$L_5a5000] the rain sound (+176) is placed at the point (+88..+96) seen from the camera
 extern "C" void __fastcall Wea_RainSound(BYTE* s)
@@ -1607,6 +1607,129 @@ double __cdecl Weather_MixValue(float a, float b, const BYTE* table)
     double x = MV(lo);
     return Mv_Lerp(x, MV(lo + 1), v);
 #undef MV
+}
+
+} // extern "C"
+
+// === the daylight of the weather (FUN_5a89a0)
+
+extern "C" void Dl_Wave(); KING_ALIAS("_Dl_Wave", "@Wave_Value@16")
+extern "C" void Dl_RootSurface(); KING_ALIAS("_Dl_RootSurface", "@Window_RootSurface@8")
+extern "C" void Dl_ImagePrepare(); KING_ALIAS("_Dl_ImagePrepare", "@Image_Prepare@16")
+ASM_VAR(double, g_dl64b678, $L_64b678)
+ASM_VAR(double, g_dl64da00, $L_64da00)
+ASM_VAR(double, g_dl651540, $L_651540)
+ASM_VAR(double, g_dl651298, $L_651298)
+ASM_VAR(double, g_dl64b7a8, $L_64b7a8)
+ASM_VAR(double, g_dl651658, $L_651658)
+ASM_VAR(float, g_dl64c250, $L_64c250)
+ASM_VAR(double, g_dl64b840, $L_64b840)
+ASM_VAR(double, g_dl64b5b8, $L_64b5b8)
+ASM_VAR(double, g_dl64c958, $L_64c958)
+ASM_VAR(float, g_dl64d2f8, $L_64d2f8)
+ASM_VAR(double, g_dl64b670, $L_64b670)
+ASM_VAR(double, g_dl64b7d8, $L_64b7d8)
+ASM_VAR(double, g_dl64eba0, $L_64eba0)
+ASM_VAR(int, g_dl7208cc, $L_7208cc)
+ASM_VAR(int, g_dl7208d4, $L_7208d4)
+ASM_VAR(int, g_dl7025bc, $L_7025bc)
+ASM_VAR(AsmLabel, s_dlRoadMat, $L_67bb30)      // "mat_refl_road"
+
+extern "C" {
+
+// [FUN_5a89a0] weather s's daylight (+536, the square root of its wave at the time +104 less 64da00): in the
+// world's (+80) every fourth frame, unless it shows a still view (+484 +20), the road reflection materials of each
+// room (+468, next +8) follow it and the screen's tint (root surface +36..+38)
+void __fastcall Weather_Daylight(BYTE* s)
+{
+    double t = g_dl64b678;
+    if (F(double, s, 104) > g_dl64da00)
+        t = F(double, s, 104) < g_dl651540 ? F(double, s, 104) - g_dl64da00 : g_dl651298;
+    double v = (CallThis<double>(Dl_Wave, s, -t) - g_dl64b7a8) * g_dl651658;
+    F(float, s, 536) = (float)v;
+    if (v < g_dl64b678)
+        F(float, s, 536) = 0;
+    if (F(float, s, 536) > g_dl64c250)
+        F(float, s, 536) = 1.0f;
+    F(float, s, 536) = (float)x87_sqrt(F(float, s, 536));
+    BYTE* w = F(BYTE*, s, 80);
+    if (F(int, w, 2992) % 4 != 1)
+        return;
+    if (F(BYTE*, w, 484) && F(int, F(BYTE*, w, 484), 20))
+        return;
+    for (BYTE* r = F(BYTE*, w, 468); r; r = F(BYTE*, r, 8)) {
+        for (int c = 0; c < 6; c++)
+            if (int id = F(int, r, 156 + c * 4))
+                F(int, F(BYTE*, r, 76), id * 124 + 40) = 4;
+        CallC(FUN_5ef3d0, (const char*)s_dlRoadMat);
+        for (int j = 0; j < F(int, r, 72); j++) {
+            BYTE* m = F(BYTE*, r, 76) + j * 124;
+            if (strcmp((const char*)m, (const char*)s_dlRoadMat) || !m || !F(BYTE*, m, 76))
+                continue;
+            if (g_dl7208cc && g_dl7208d4) {
+                F(float, m, 104) = (float)(F(float, s, 536) * g_dl64b840);
+                continue;
+            }
+            float d = F(float, s, 536);
+            if ((d > g_dl64b5b8 && d < g_dl64c958) || g_dl7025bc < 30)
+                CallThis(Dl_ImagePrepare, F(BYTE*, m, 76), -(double)F(float, s, 536));
+        }
+    }
+    if (BYTE* surf = CallThis<BYTE*>(Dl_RootSurface, F(BYTE*, F(BYTE*, s, 80), 12))) {
+        double g = F(float, s, 536) * (double)g_dl64d2f8;
+        if (g > g_dl64b670)
+            g = g_dl64b670;
+        BYTE b = (BYTE)(int)((g_dl64b670 - g * g_dl64b7d8) * g_dl64eba0);
+        F(BYTE, surf, 36) = b;
+        F(BYTE, surf, 37) = b;
+        F(BYTE, surf, 38) = b;
+    }
+}
+
+} // extern "C"
+
+// === an animated sprite sheet (FUN_5a4ca0)
+
+ASM_VAR(double, g_ss2_64b678, $L_64b678)
+extern "C" void Sa_PostEvent(); KING_ALIAS("_Sa_PostEvent", "@Queue_PostEvent@12")
+
+extern "C" {
+
+// [FUN_5a4ca0] step of sheet animation s: its frame (+120: the time +144 over the frame time +128, of +108 frames,
+// held at the last with +172 bit 0, else wrapped) picked from the sheet of +112 columns; its +124 quads (+84, 40
+// bytes, u +8, v +12) share the cell (+152 x +160) side by side; it ends after +136 seconds when that is set
+int __fastcall SheetAnim_Step(BYTE* s)
+{
+    if (!F(int, s, 16)) {
+        F(BYTE, s, 72) &= ~1;
+        F(double, s, 144) = 0;
+    }
+    int f = (int)(F(double, s, 144) / F(double, s, 128));
+    if (F(BYTE, s, 172) & 1)
+        F(int, s, 120) = f < F(int, s, 108) ? f : F(int, s, 108) - 1;
+    else
+        F(int, s, 120) = f % F(int, s, 108);
+    f = F(int, s, 120);
+    int row = f / F(int, s, 112), col = f % F(int, s, 112);
+    double w = F(double, s, 152), h = F(double, s, 160);
+    for (int i = 0; i < F(int, s, 124); i++) {
+        int n = F(int, s, 124);
+        BYTE* q = F(BYTE*, s, 84) + i * 40;
+        float* u = F(float*, q, 8);
+        u[0] = (float)(i * w / n + col * w);
+        u[1] = (float)((i + 1) * w / F(int, s, 124) + col * w);
+        u[3] = (float)(i * w / F(int, s, 124) + col * w);
+        u[2] = (float)((i + 1) * w / F(int, s, 124) + col * w);
+        float* v = F(float*, q, 12);
+        v[0] = (float)((row + 1) * h);
+        v[1] = (float)((row + 1) * h);
+        v[2] = (float)(row * h);
+        v[3] = (float)(row * h);
+    }
+    if (F(double, s, 136) > g_ss2_64b678 && F(double, s, 144) > F(double, s, 136))
+        return CallVirt<int>(s, 28, 1);
+    F(double, s, 144) = F(double, F(BYTE*, s, 100), 2960) + F(double, s, 144);
+    return CallThis<int>(Sa_PostEvent, s, 1);
 }
 
 } // extern "C"

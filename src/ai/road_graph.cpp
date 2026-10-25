@@ -216,7 +216,7 @@ extern "C" void FUN_477600(); KING_ALIAS("_FUN_477600", "_PlayerRef_Resolve")
 extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
 extern "C" void FUN_479050(); KING_ALIAS("_FUN_479050", "@Vec40_Insert479050@16")
 extern "C" void FUN_47c360(); KING_ALIAS("_FUN_47c360", "_Rec47c360_Construct")
-ASM_PROC(FUN_479520)
+extern "C" void FUN_479520(); KING_ALIAS("_FUN_479520", "@KeyedVecs_InsertAux@16")
 extern "C" void FUN_479760(); KING_ALIAS("_FUN_479760", "@Vec8_Insert479760@16")
 extern "C" void FUN_47a230(); KING_ALIAS("_FUN_47a230", "@PlayerRec_Copy@12")
 extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")
@@ -1902,6 +1902,52 @@ void __cdecl NamedRecs_Load(BYTE** cur, BYTE** v)
         if (int bytes = (int)(name[2] - name[0]))
             CallC(FUN_44b4a0, name[0], bytes);
     }
+}
+
+} // extern "C"
+
+// === inserting a keyed byte vector (FUN_479520)
+
+ASM_PROC(FUN_47d360)    // uninitialized copy of keyed vectors (first, last, dest, -)
+extern "C" BYTE* __cdecl Rec16m_CopyBack(const BYTE* f, const BYTE* l, BYTE* d);   // ai_containers.cpp
+extern "C" void __fastcall Vec1_Free(BYTE** v, int);                                // ai_world.cpp
+extern "C" BYTE** __fastcall VecChar_Copy(BYTE** self, int, BYTE* const* src);
+extern "C" void __fastcall VecB_FreeStorage(BYTE** v, int);
+extern "C" BYTE** __fastcall PodVec_Assign(BYTE** self, void*, BYTE* const* src);
+
+extern "C" {
+
+// [FUN_479520] vector<{int, vector<char>}> s: inserts a copy of x before pos, growing it to twice its size
+void __fastcall KeyedVecs_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
+{
+    if (s[1] != s[2]) {
+        BYTE* end = s[1];
+        if (end)
+            Rec47a140_Copy(end, 0, end - 16);
+        s[1] += 16;
+        int key = F(int, x, 0);
+        BYTE* v[3];
+        VecChar_Copy(v, 0, (BYTE* const*)(x + 4));
+        Rec16m_CopyBack(pos, s[1] - 32, s[1] - 16);
+        F(int, pos, 0) = key;
+        PodVec_Assign((BYTE**)(pos + 4), 0, v);
+        Vec1_Free(v, 0);
+        return;
+    }
+    unsigned n = (unsigned)(s[1] - s[0]) >> 4;
+    unsigned cap = n ? n * 2 : 1;
+    BYTE* buf = cap ? CallC<BYTE*>(FUN_44b740, cap * 16) : 0;
+    BYTE* p = CallC<BYTE*>(FUN_47d360, s[0], pos, buf, pos);
+    if (p)
+        Rec47a140_Copy(p, 0, x);
+    BYTE* q = CallC<BYTE*>(FUN_47d360, pos, s[1], p + 16, p);
+    for (BYTE* e = s[0]; e != s[1]; e += 16)
+        VecB_FreeStorage((BYTE**)(e + 4), 0);
+    if (unsigned bytes = (unsigned)(s[2] - s[0]) >> 4 << 4)
+        CallC(FUN_44b4a0, s[0], bytes);
+    s[0] = buf;
+    s[1] = q;
+    s[2] = buf + cap * 16;
 }
 
 } // extern "C"

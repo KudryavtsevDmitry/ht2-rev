@@ -14,7 +14,7 @@ extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
 
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
-ASM_PROC(FUN_5d79d0)
+extern "C" void FUN_5d79d0(); KING_ALIAS("_FUN_5d79d0", "_Dd_CopySprite")
 extern "C" void FUN_5d8260(); KING_ALIAS("_FUN_5d8260", "_Dd_Release")
 extern "C" void FUN_5d75a0(); KING_ALIAS("_FUN_5d75a0", "_Dd_CreateDevices")
 
@@ -1186,6 +1186,51 @@ BYTE* __cdecl Dd_SurfaceFromPixels(unsigned w, unsigned h, const BYTE* src)
     }
     Com(s, 128, 0);
     return s;
+}
+
+} // extern "C"
+
+// === copying a sprite to the back surface (FUN_5d79d0)
+
+ASM_VAR(int, g_bs7208b8, $L_7208b8)
+
+extern "C" {
+
+// [FUN_5d79d0] copies the w x h block at (sx, sy) of surface src to (dx, dy) of the back surface (7208fc), keyed by
+// the source colour (a fast blit for video memory, a SRCCOPY blit else), unlocking it first (7208a8 its locked
+// bits) and locking it again after (unless windowed, 7208f0, or 7208b8)
+void __cdecl Dd_CopySprite(int sx, int sy, int dx, int dy, int w, int h, BYTE* src)
+{
+    if (g_waitVsync) {
+        if (!Com(g_directDraw, 128, 0))
+            g_waitVsync = 0;
+        else if (g_waitVsync)
+            return;
+    }
+    DWORD caps[4];
+    Com(src, 56, caps);
+    RECT r = {sx, sy, sx + w, sy + h};
+    int hr;
+    if (caps[0] & 0x10000000)
+        hr = Com(g_directDraw, 28, dx, dy, src, &r, 16);
+    else {
+        DWORD fx[25];
+        memset(fx, 0, sizeof fx);
+        RECT d = {dx, dy, dx + w, dy + h};
+        fx[0] = 100;
+        fx[2] = 0xCC0020;
+        hr = Com(g_directDraw, 20, &d, src, &r, 0x1020000, fx);
+    }
+    if (hr)
+        CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, hr, 0), 0);
+    if (g_ddWindowed || g_bs7208b8)
+        return;
+    DWORD sd[31];
+    memset(sd, 0, sizeof sd);
+    sd[0] = 124;
+    sd[1] = 8387054;
+    if (!Com(g_directDraw, 100, (void*)0, sd, 1, 0))
+        g_waitVsync = (int)sd[9];
 }
 
 } // extern "C"

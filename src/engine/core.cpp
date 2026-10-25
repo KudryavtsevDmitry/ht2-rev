@@ -18,7 +18,7 @@ extern "C" int __cdecl rand();
 extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")    // unlink from its list
 extern "C" void FUN_5d2190(); KING_ALIAS("_FUN_5d2190", "@Node_Link@12")    // link into list (thiscall node, list)
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
-ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
+extern "C" void FUN_5c2800(); KING_ALIAS("_FUN_5c2800", "_Msavi_CreateStreamingBuffer")    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")
@@ -1564,15 +1564,15 @@ extern "C" void FUN_5d0790(); KING_ALIAS("_FUN_5d0790", "_Span_EdgeDV")
 extern "C" void FUN_5d0e40(); KING_ALIAS("_FUN_5d0e40", "_Span_EdgeUV")
 extern "C" void FUN_5d1430(); KING_ALIAS("_FUN_5d1430", "_Poly_Fill")
 extern "C" void FUN_5d15f0(); KING_ALIAS("_FUN_5d15f0", "_Poly_FillZ")
-ASM_PROC(FUN_5cf480)    // shaded rows with z (fog, colour)
-ASM_PROC(FUN_5cf920)    // textured rows, rotated (texture, mode)
+extern "C" void FUN_5cf480(); KING_ALIAS("_FUN_5cf480", "_Span_FillRowsU")    // shaded rows with z (fog, colour)
+extern "C" void FUN_5cf920(); KING_ALIAS("_FUN_5cf920", "_Span_FillRowsRotated")    // textured rows, rotated (texture, mode)
 extern "C" void FUN_5d0990(); KING_ALIAS("_FUN_5d0990", "_Span_EdgeUVP")    // edge with texture and shade
 extern "C" void FUN_5d1030(); KING_ALIAS("_FUN_5d1030", "_Span_EdgeUVPersp")    // edge with texture
-ASM_PROC(FUN_5d1740)    // textured rows (texture, mode, step, level)
-ASM_PROC(FUN_5d18d0)    // textured shaded rows (texture, mode, step)
+extern "C" void FUN_5d1740(); KING_ALIAS("_FUN_5d1740", "_Span_FillRowsUV")    // textured rows (texture, mode, step, level)
+extern "C" void FUN_5d18d0(); KING_ALIAS("_FUN_5d18d0", "_Span_FillRowsUVZ")    // textured shaded rows (texture, mode, step)
 ASM_PROC(FUN_5d1a80)    // textured rows with z (texture, mode)
-ASM_PROC(FUN_5d1c50)    // textured rows, perspective (texture, mode)
-ASM_PROC(FUN_5d1e50)    // textured rows, perspective, transparent (texture, mode)
+extern "C" void FUN_5d1c50(); KING_ALIAS("_FUN_5d1c50", "_Span_FillRowsAffine")    // textured rows, perspective (texture, mode)
+extern "C" void FUN_5d1e50(); KING_ALIAS("_FUN_5d1e50", "_Span_FillRowsAffineFast")    // textured rows, perspective, transparent (texture, mode)
 ASM_VAR(int, g_spanFogColor71e7b0, $L_71e7b0)
 ASM_VAR(int, g_spanWidth71e7b4, $L_71e7b4)
 ASM_VAR(int, g_spanHeight71e7b8, $L_71e7b8)
@@ -1987,3 +1987,132 @@ void __cdecl Messages_Load()
 }
 
 } // extern "C"
+
+// === textured span fill with u and v (FUN_5d1740)
+
+extern "C" void FUN_5cf6f0(); KING_ALIAS("_FUN_5cf6f0", "_Span_DrawPerspective")
+ASM_PROC(FUN_5feb87)
+ASM_VAR(int, g_q223_702e90, $L_702e90)
+extern "C" void Sp_ShadeRow(); KING_ALIAS("_Sp_ShadeRow", "@Palette_ShadeRow@12")
+
+// [FUN_5d1740] fills the spans of the rows 71e7dc..71e7d8 with u and v (+8.. +16 of the edges) by FUN_5cf6f0,
+// counting the pixels (702e90); a shade above 50 with 702e8c bit 6 sets the fog colour (71e7b0) and mode bit 2
+extern "C" void __cdecl Span_FillRowsUV(int unused, int mode, int a3, int shade)
+{
+    int y = g_q134_71e7dc;
+    int row = y * g_span71e7bc;
+    int row2 = g_span71e7f8 * y * 2;
+    int alt = (g_poly702e8c >> 14) & 1;
+    if (shade > 50 && (g_poly702e8c & 64)) {
+        g_spanFogColor71e7b0 = CallThis<int>(Sp_ShadeRow, g_spanSurface71e7ec, shade);
+        CallC(FUN_5feb87, mode | 4, alt);
+    } else
+        CallC(FUN_5feb87, mode, alt);
+    for (y = g_q134_71e7dc; y <= g_q134_71e7d8; y++) {
+        int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24);
+        int dw = (e[7800] - e[0]) >> 16;
+        int x = e[0] >> 20;
+        int xr = e[7800] >> 20;
+        int dv = 0, du = 0;
+        if (dw >= 16) {
+            du = (e[7802] << 6) / dw;
+            dv = ((e[7802] - e[2]) << 6) / dw;
+        }
+        if (e[0] & 0xF0000)
+            x++;
+        if (x <= xr) {
+            g_q223_702e90 += xr - x + 1;
+            CallC(FUN_5cf6f0, x, xr, a3, e[7803], e[7804], e[3], e[4], dv, du, e[2], 0, g_spanBpp70f3d8 * x + row,
+                mode, g_span71e7e8 + x * 2 + row2, 0, 0);
+        }
+        row2 += g_span71e7f8 * 2;
+        row += g_span71e7bc;
+    }
+}
+
+// === span fill with u, v and z (FUN_5d18d0)
+
+// [FUN_5d18d0] like Span_FillRowsUV with z stepped too (the z buffer: 71e7e8, 71e7b4 a row), mode | 2; the
+// subpixel test reuses the previous row's fraction (mode on the first row) as in the original
+extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3)
+{
+    int y = g_q134_71e7dc;
+    int row = y * g_span71e7bc;
+    int row2 = g_spanWidth71e7b4 * y * 2;
+    CallC(FUN_5feb87, mode | 2, (g_poly702e8c >> 14) & 1);
+    int f = mode;
+    for (y = g_q134_71e7dc; y <= g_q134_71e7d8; y++, row += g_span71e7bc, row2 += g_spanWidth71e7b4 * 2) {
+        int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24);
+        int l = e[0];
+        int x = l >> 20;
+        int xr = e[7800] >> 20;
+        int dw = (e[7800] - l) >> 16;
+        int z = e[5];
+        if (f) {
+            f = 16 - f;
+            x++;
+        }
+        if (x > xr)
+            continue;
+        int du = 0, dv = 0, dz = 0;
+        if (dw >= 16) {
+            du = (e[7802] << 6) / dw;
+            dv = ((e[7802] - e[2]) << 6) / dw;
+            dz = (e[7805] - z) / (xr - x + 1);
+        }
+        f = (l >> 16) & 15;
+        g_q223_702e90 += xr - x + 1;
+        CallC(FUN_5cf6f0, x, xr, a3, e[7803], e[7804], e[3], e[4], dv, du, e[2], 0, g_spanBpp70f3d8 * x + row, mode,
+            g_span71e7e8 + x * 2 + row2, z, dz);
+    }
+}
+
+// === affine textured span fill (FUN_5d1c50)
+
+ASM_PROC(FUN_5fee7c)
+ASM_VAR(int, g_q223_72007c, $L_72007c)
+
+// fills the spans of the rows 71e7dc..71e7d8 with u and v (+12, +16 of the edges) stepped by the
+// constant gradients of the middle row, counting pixels (702e90) and spans (72007c); mode bit 2 sets the fog
+// colour (71e7b0) from each row's +8
+static void Span_Affine(int mode, bool subpixel)
+{
+    int y = g_q134_71e7dc;
+    int row = y * g_span71e7bc;
+    int row2 = g_span71e7f8 * y * 2;
+    CallC(FUN_5feb87, mode, (g_poly702e8c >> 14) & 1);
+    int* m = (int*)((BYTE*)g_q134_70f3f0 + (g_q134_71e7dc + g_q134_71e7d8) / 2 * 24);
+    int dw = (m[7800] - m[0]) >> 16;
+    int du = 0, dv = 0;
+    if (dw) {
+        du = ((m[7803] - m[3]) << 4) / dw;
+        dv = ((m[7804] - m[4]) << 4) / dw;
+    }
+    for (y = g_q134_71e7dc; y <= g_q134_71e7d8; y++, row += g_span71e7bc, row2 += g_span71e7f8 * 2) {
+        int* e = (int*)((BYTE*)g_q134_70f3f0 + y * 24);
+        int u = e[3], v = e[4];
+        int xr = e[7800] >> 20;
+        int x = e[0] >> 20;
+        int frac = subpixel ? (e[0] >> 16) & 15 : 0;
+        if (frac) {
+            frac = 16 - frac;
+            x++;
+        }
+        if (x > xr)
+            continue;
+        g_q223_702e90 += xr - x + 1;
+        u += (frac * du) >> 4;
+        v += (frac * dv) >> 4;
+        if (mode & 4)
+            g_spanFogColor71e7b0 = CallThis<int>(FUN_5ba170, g_spanSurface71e7ec, e[2]);
+        CallC(FUN_5fee7c, g_spanBits71e7c4 + g_spanBpp70f3d8 * x + row, xr - x + 1, u, v, du, dv, e[2], 0,
+            g_span71e7e8 + row2 + x * 2);
+        g_q223_72007c++;
+    }
+}
+
+// [FUN_5d1c50] the affine span fill with subpixel correction
+extern "C" void __cdecl Span_FillRowsAffine(int unused, int mode) { Span_Affine(mode, true); }
+
+// [FUN_5d1e50] Span_FillRowsAffine without the subpixel correction
+extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode) { Span_Affine(mode, false); }

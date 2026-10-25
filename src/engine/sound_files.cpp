@@ -24,7 +24,7 @@ extern "C" void FUN_603e60(); KING_ALIAS("_FUN_603e60", "@Thread_Start@8")
 ASM_VAR(BYTE*, g_musicBegin, $L_723d28)
 ASM_VAR(BYTE*, g_musicEnd, $L_723d2c)
 ASM_VAR(AsmLabel, g_vtbl652dc0, $L_652dc0)
-ASM_PROC(FUN_5c2800)    // msavi: create the sound buffer
+extern "C" void FUN_5c2800(); KING_ALIAS("_FUN_5c2800", "_Msavi_CreateStreamingBuffer")    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
 extern "C" void FUN_602510(); KING_ALIAS("_FUN_602510", "_Dp_SetPlayerName")

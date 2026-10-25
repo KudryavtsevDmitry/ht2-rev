@@ -2856,3 +2856,117 @@ int __fastcall SmokePuff_Step(BYTE* s)
 }
 
 } // extern "C"
+
+// === a falling spinning flake (59e050)
+
+// quad s's texture corners on the circle of radii +r1/+r2 at angle a (the first corner at the unrounded a)
+static void Fl_TurnQuad(BYTE* s, double a, int ang, int r1, int r2)
+{
+    BYTE* q = F(BYTE*, s, 72);
+    F(float*, q, 8)[0] = (float)(x87_cos(a + g_worobj6f6a58) * F(float, s, r1) + g_64c258);
+    const float base[4] = {g_worobj6f6a58, g_worobj6f6a5c, g_worobj6f6a60, g_worobj6f6a54};
+    for (int k = 0; k < 4; k++) {
+        if (k)
+            F(float*, F(BYTE*, s, 72), 8)[k] =
+                (float)(x87_cos((double)base[k] + F(float, s, ang)) * F(float, s, r1) + g_64c258);
+        F(float*, F(BYTE*, s, 72), 12)[k] =
+            (float)(x87_sin((double)base[k] + F(float, s, ang)) * F(float, s, r2) + g_64c258);
+    }
+}
+
+extern "C" {
+
+// [$L_59e050] step of a falling flake s: its position (+76, +40) moved by its speed (+148) and the fall +176 along
+// 702630 over the step, the speed then the fall added; its texture turned (+164) by +160 a second
+int __fastcall Flake_Step(BYTE* s)
+{
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    double g = F(float, s, 176);
+    const Vec3& u = g_axis702630w;
+    float a0 = (float)(u.x * g), a1 = (float)(u.y * g);
+    double gz = g * u.z;
+    float ax = (float)(a0 * dt), ay = (float)(a1 * dt);
+    double az = gz * dt;
+    float bx = (float)(ax * dt), by = (float)(ay * dt);
+    double bz = az * dt;
+    float* v = (float*)(s + 148);
+    float* p = (float*)(s + 76);
+    double vx = dt * v[0];
+    float vy = (float)(dt * v[1]), vz = (float)(dt * v[2]);
+    double px = vx + p[0];
+    float py = (float)((double)vy + p[1]), pz = (float)((double)vz + p[2]);
+    p[0] = (float)(px + bx);
+    p[1] = (float)((double)by + py);
+    p[2] = (float)(bz + pz);
+    g = F(float, s, 176);
+    float c0 = (float)(u.x * g), c1 = (float)(u.y * g);
+    double cz = g * u.z;
+    float acc[3] = {(float)(c0 * dt), (float)(c1 * dt), (float)(cz * dt)};
+    float t[3];
+    CallThis(Ws_AddAssign, v, t, acc);
+    memcpy(s + 40, p, 12);
+    double ang = F(float, s, 160) * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 164);
+    F(float, s, 164) = (float)ang;
+    Fl_TurnQuad(s, ang, 164, 168, 172);
+    return CallThis<int>(FUN_59aa10, s);
+}
+
+} // extern "C"
+
+// === a drifting leaf (59bc50)
+
+ASM_VAR(float, g_lf650c80, $L_650c80)
+
+// slows speed v by +172 until it turns (then it stops); dt the step
+static void Lf_Slow(BYTE* s, float* v)
+{
+    if (F(float, s, 172) == 0)
+        return;
+    float nb[3];
+    const float* n = CallC<const float*>(Ws_Normalized, nb, v);
+    double k = F(float, s, 172);
+    double ax = -n[0] * k;
+    float ay = (float)(-n[1] * k), az = (float)(-n[2] * k);
+    float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+    float a[3] = {(float)(ax * dt), (float)(ay * (double)dt), (float)(az * (double)dt)};
+    float t[3];
+    CallThis(Ws_AddAssign, v, t, a);
+    if ((double)v[2] * a[2] + (double)v[1] * a[1] + (double)v[0] * a[0] > g_effectZero) {
+        F(int, s, 172) = 0;
+        memcpy(v, (BYTE*)g_ws702650, 12);
+    }
+}
+
+extern "C" {
+
+// [$L_59bc50] step of a drifting leaf s: its speed (+160) slowed as a swirl's, its position (+76, +40) moved by it and
+// by the wind (7025b8 +532 along 702620, scaled by 650c80); then its quad animated
+int __fastcall Leaf_Step(BYTE* s)
+{
+    float* v = (float*)(s + 160);
+    Lf_Slow(s, v);
+    float* p = (float*)(s + 76);
+    if (BYTE* w = g_rp7025b8) {
+        double wind = F(float, w, 532);
+        const Vec3& a = g_rp702620;
+        Vec3 wv;
+        wv.Set((float)(wind * a.x), (float)(wind * a.y), (float)(wind * a.z));
+        double hx = wv.x * (double)g_lf650c80;
+        float hy = (float)(wv.y * (double)g_lf650c80), hz = (float)(wv.z * (double)g_lf650c80);
+        double sx = hx + v[0];
+        float sy = (float)((double)hy + v[1]), sz = (float)((double)hz + v[2]);
+        float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+        Vec3 r;
+        r.Set((float)(sx * dt + p[0]), (float)(sy * (double)dt + p[1]), (float)(sz * (double)dt + p[2]));
+        memcpy(p, &r, 12);
+    } else {
+        double dt = F(double, F(BYTE*, s, 88), 2960);
+        Vec3 d, r;
+        d.Set((float)(dt * v[0]), (float)(dt * v[1]), (float)(dt * v[2]));
+        memcpy(p, Vec3_Add(&r, (const Vec3*)p, &d), 12);
+    }
+    memcpy(s + 40, p, 12);
+    return CallThis<int>(FUN_59ac90, s);
+}
+
+} // extern "C"
