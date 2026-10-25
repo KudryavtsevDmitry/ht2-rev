@@ -1225,7 +1225,7 @@ extern "C" void __fastcall ParkedCar_Destroy(BYTE* s)
 
 // === a hit denting a scenery object (FUN_52bd20)
 
-ASM_FUNC(Dn_Debris, FUN_4bb4c0)
+extern "C" void Dn_Debris(); KING_ALIAS("_Dn_Debris", "_Fx_DebrisBurst")
 extern "C" void Dn_Length(); KING_ALIAS("_Dn_Length", "_Vec3_Length")
 extern "C" void Dn_Normalized(); KING_ALIAS("_Dn_Normalized", "_Vec3_Normalized")
 extern "C" void Dn_MulAssign(); KING_ALIAS("_Dn_MulAssign", "@Vec3_MulAssign@16")

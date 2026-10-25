@@ -28,7 +28,7 @@ extern "C" void FUN_5d4490(); KING_ALIAS("_FUN_5d4490", "_Dd_Present")
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 ASM_VAR(int, g_transformSerial, $L_67ef88)
 ASM_VAR(int, g_720904, $L_720904)
-ASM_PROC(FUN_5b3a40)
+extern "C" void FUN_5b3a40(); KING_ALIAS("_FUN_5b3a40", "@Render_TexPolygon@28")
 extern "C" void FUN_5b42c0(); KING_ALIAS("_FUN_5b42c0", "@Render_Polygon@20")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
 extern "C" void FUN_5ad780(); KING_ALIAS("_FUN_5ad780", "@Light_StrengthAt@24")
@@ -879,14 +879,17 @@ static double Lights_Sum(BYTE* self, void (*fn)(), int a, int b, bool two)
     return sum;
 }
 
+extern "C" int __fastcall Render_TexPolygon(BYTE* r, void*, BYTE* t, DWORD flags, int b, float dist, int);
+
 extern "C" {
 
 // [FUN_5b3a00] draws with the 5-argument path when flag 32 is set
-int __stdcall Draw_Dispatch(int a, DWORD flags, int b, int c, int d)
+int __fastcall Draw_Dispatch(BYTE* r, void*, int a, DWORD flags, int b, int c, int d)
 {
     if (flags & 32)
-        return CallStd<int>(FUN_5b3a40, a, flags, b, c, d);
-    return CallStd<int>(FUN_5b42c0, a, flags, b);
+        return Render_TexPolygon(r, 0, (BYTE*)a, flags, b, *(float*)&c, d);
+    CallThis(FUN_5b42c0, r, a, flags, b);
+    return 0;
 }
 
 // [FUN_5bac70] destroys the six 188-byte records
@@ -5507,7 +5510,7 @@ void __fastcall Clip_EdgeVertex(BYTE* s, void*, int flags, int* out, int i, int 
 
 // === a camera-facing strip of quads at a point (FUN_5b3010)
 
-extern "C" void Sp_Dispatch(); KING_ALIAS("_Sp_Dispatch", "_Draw_Dispatch@20")
+extern "C" void Sp_Dispatch(); KING_ALIAS("_Sp_Dispatch", "@Draw_Dispatch@28")
 extern "C" void Sp_TransformPoint(); KING_ALIAS("_Sp_TransformPoint", "@Vec3_TransformPoint@12")
 extern "C" void Sp_AddAssign(); KING_ALIAS("_Sp_AddAssign", "@Vec3_AddAssign@16")
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
@@ -5701,7 +5704,7 @@ void __fastcall Sprite_DrawStrip(BYTE* s, void*, BYTE* o, float px, float py, fl
 // === an object's lit mesh (FUN_5b2950)
 
 extern "C" void Rm_Nop1(); KING_ALIAS("_Rm_Nop1", "@Fw_Nop1@12")
-extern "C" void Rm_Dispatch(); KING_ALIAS("_Rm_Dispatch", "_Draw_Dispatch@20")
+extern "C" void Rm_Dispatch(); KING_ALIAS("_Rm_Dispatch", "@Draw_Dispatch@28")
 ASM_VAR(BYTE, g_rm702dd0, $L_702dd0)
 ASM_VAR(AsmLabel, g_rm702a80, $L_702a80)
 ASM_VAR(float, g_rm64c458, $L_64c458)
@@ -6104,6 +6107,168 @@ void __fastcall Texture_LoadRows(BYTE* s, void*, BYTE* dst, int dpitch, BYTE* sr
             CallThis(Tx_Read, F(BYTE*, s, 80), F(int, s, 32) + (int)src, dst, F(WORD, s, 24) * w);
         CallC(Tx_Fade, dst, w, k, mode);
     }
+}
+
+} // extern "C"
+
+// === drawing a clipped textured polygon (FUN_5b3a40)
+
+extern "C" void Rt_Blit(); KING_ALIAS("_Rt_Blit", "_Blit_WithAlpha")
+ASM_VAR(float, g_rt64da74, $L_64da74)
+ASM_VAR(double, g_rt64b678, $L_64b678)
+ASM_VAR(float, g_rt64c258, $L_64c258)
+ASM_VAR(float, g_rt64c458, $L_64c458)
+
+extern "C" {
+
+// [FUN_5b3a40] draws the polygon of renderer r's current vertices with texture parameters t (its texture +76
+// unless flag 0x1000), flags, b and the distance factor dist: clipped as Render_Polygon does; with the device
+// (+8620 == 2) as a D3D fan of TL vertices (+712) with u / v, else u / v moved to their smallest whole values, a
+// mip level picked by the nearest depth (flag 0x100; a one-texel level drawn flat in its colour) and the screen
+// vertices (+20, 44 bytes) drawn by Blit_WithAlpha
+int __fastcall Render_TexPolygon(BYTE* r, void*, BYTE* t, DWORD flags, int b, float dist, int)
+{
+    BYTE P[124];
+    memset(P, 0, sizeof P);
+    F(int, P, 44) = -1;
+    F(int, P, 52) = -1;
+    F(float, P, 96) = 1.0f;
+    F(float, P, 100) = 1.0f;
+    P[120] = 238;
+    int buf = 0;
+    int n = F(int, r, 1932);
+    DWORD clip = F(DWORD, r, 8272);
+    if (clip) {
+        static const DWORD bits[5] = {1, 4, 16, 8, 2};
+        for (int k = 0; k < 5; k++)
+            if (clip & bits[k]) {
+                n = Rn_ClipIds(r, 0, flags, n, (int*)(r + 1756 + (buf ^ 1) * 88), (int*)(r + 1756 + buf * 88), bits[k]);
+                buf ^= 1;
+            }
+    }
+    n = CallVirt<int>(r, 12, flags, n, &buf);
+    if (!n)
+        return 0;
+    const int* ids = (const int*)(r + 1756 + buf * 88);
+    if (F(int, r, 8620) == 2) {
+        Window_RootSurface(F(BYTE*, r, 1948), 0);
+        double k = g_one64b670 / (F(double, r, 8472) - F(double, r, 8464));
+        float* o = (float*)(r + 712);
+        int lit = flags & 128;
+        for (int j = 0; j < n; j++, o += 8) {
+            int id = ids[j];
+            const float* v = (const float*)(r + 1224 + id * 12);
+            double w = g_one64b670 / v[1];
+            double yw = w * v[2];
+            o[0] = (float)((w * v[0] + g_one64b670) * F(int, r, 8556) + F(int, r, 8548));
+            o[1] = (float)((g_one64b670 - yw) * F(int, r, 8560) + F(int, r, 8552));
+            o[2] = (float)((v[1] - F(double, r, 8464)) * k);
+            o[3] = (float)w;
+            if (lit) {
+                DWORD c = (DWORD)(int)(F(float, r, 1664 + id * 4) * (double)g_rt64c458);
+                F(DWORD, o, 16) = (((c | 0xFFFFFF00) << 8 | c) << 8) | c;
+            } else
+                F(DWORD, o, 16) = 0xFFFFFFFF;
+            F(DWORD, o, 20) = 0xFF000000;
+            F(float, o, 24) = F(float, r, 1488 + id * 4);
+            F(float, o, 28) = F(float, r, 1576 + id * 4);
+        }
+        Com(g_device, 100, 6, 3, r + 712, n, 0);
+        return 0;
+    }
+    float zmin = 100000.0f, umin = 10000.0f, zmax = 0;
+    double vmin = g_rt64da74;
+    for (int j = 0; j < n; j++) {
+        int id = ids[j];
+        float z = F(float, r, 1228 + id * 12);
+        if (z < zmin)
+            zmin = z;
+        if (z > zmax)
+            zmax = z;
+        if (F(float, r, 1488 + id * 4) < umin)
+            umin = F(float, r, 1488 + id * 4);
+        if (!(vmin > F(float, r, 1576 + id * 4)))
+            continue;
+        vmin = F(float, r, 1576 + id * 4);
+    }
+    umin = (float)(int)umin;
+    float vmin2 = (float)(int)vmin;
+    BYTE* tex = flags & 0x1000 ? t : F(BYTE*, t, 76);
+    BYTE* par = t;
+    int level = 0;
+    if (flags & 0x100) {
+        double lv;
+        double q = (double)zmin * zmin * dist;
+        if (q < g_rp64c250)
+            lv = g_rt64b678;
+        else if (!(q < (double)F(WORD, tex, 20)))
+            lv = F(WORD, tex, 26);
+        else {
+            lv = g_rt64b678;
+            while (q > g_rp64c250) {
+                lv += g_one64b670;
+                q *= g_rt64c258;
+            }
+            lv = lv - (g_rp64c250 - q);
+        }
+        double m = F(double, r, 8528);
+        level = (int)(lv * (lv * m + lv * m + (g_one64b670 - m)));
+        if (level > F(WORD, tex, 26))
+            level = F(WORD, tex, 26);
+    }
+    int mw = Texture_MipWidth(tex, 0, level);
+    if (mw <= 1) {
+        Window_CopyParams(P, 0, t);
+        BYTE* px = Texture_MipPixels(tex, 0, F(WORD, tex, 26));
+        F(int, P, 40) = F(WORD, tex, 24) == 1 ? *px : *(WORD*)px;
+        par = P;
+        F(int, P, 32) = F(int, t, 32);
+        flags &= ~32u;
+    }
+    if (mw >= 128)
+        mw--;
+    if (g_702e8c & 4) {
+        if (zmin > F(float, r, 8536))
+            return 0;
+        if (zmax > F(float, r, 8540))
+            flags |= 64;
+    }
+    for (int j = 0; j < n; j++) {
+        int id = ids[j];
+        F(float, r, 1488 + id * 4) = (float)((double)F(float, r, 1488 + id * 4) - umin);
+        F(float, r, 1576 + id * 4) = (float)((double)F(float, r, 1576 + id * 4) - vmin2);
+    }
+    double xlo = -1.0, xhi = 1.0;
+    float scale = (float)(mw << 16);
+    int shade = flags & 128;
+    for (int j = 0; j < n; j++) {
+        BYTE* s = r + 20 + j * 44;
+        int id = ids[j];
+        const float* v = (const float*)(r + 1224 + id * 12);
+        double w = g_one64b670 / v[1];
+        float xw = (float)(w * v[0]);
+        if (xw < xlo)
+            xlo = xw;
+        if (xw > xhi)
+            xhi = xw;
+        double yw = w * v[2];
+        int hw = F(int, r, 1960);
+        F(int, s, 0) = ((int)(hw * (double)xw) + F(int, r, 1952) + hw + 2048) & ~4095;
+        int hh = F(int, r, 1964);
+        F(int, s, 4) = (F(int, r, 1956) - (int)(hh * yw) + hh + 2048) & ~4095;
+        F(int, s, 8) = (int)((double)g_rp64c250 / v[1] * g_rp651760);
+        if (shade && Window_RootSurface(F(BYTE*, r, 1948), 0)) {
+            int lv = F(int, (BYTE*)Window_RootSurface(F(BYTE*, r, 1948), 0), 804) - 2;
+            F(int, s, 28) = (int)(lv * (g_rp64c250 - F(float, r, 1664 + id * 4)) + g_rp64c250) << 20;
+        }
+        F(int, s, 12) = (int)(scale * (double)F(float, r, 1488 + id * 4));
+        F(int, s, 16) = (int)(scale * (double)F(float, r, 1576 + id * 4));
+    }
+    if (flags & 32) {
+        if ((int)((int)((xhi - xlo) * F(int, r, 1960)) & 0xFFF00000) < 0x1800000)
+            flags |= 16;
+    }
+    return CallC<int>(Rt_Blit, flags, F(int, r, 1948), n, r + 8, par, b, level);
 }
 
 } // extern "C"

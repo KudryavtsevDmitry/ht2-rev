@@ -3195,7 +3195,7 @@ fail:
 // === waiting for the network music (FUN_5c3c50)
 
 extern "C" void FUN_602bc0(); KING_ALIAS("_FUN_602bc0", "@Stream_Construct@8")
-extern "C" void FUN_602bd0(); KING_ALIAS("_FUN_602bd0", "_Gate_602bd0")
+extern "C" void FUN_602bd0(); KING_ALIAS("_FUN_602bd0", "@Gate_602bd0@8")
 extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
 extern "C" void FUN_601c10(); KING_ALIAS("_FUN_601c10", "_Providers_Call601c70")
@@ -3788,7 +3788,7 @@ void __fastcall Lights_ReadSchedule(BYTE* s, void*, int a, int b, int c)
 // === the chat receive loop (FUN_5c5740)
 
 extern "C" void Cr_StreamConstruct(); KING_ALIAS("_Cr_StreamConstruct", "@Stream_Construct@8")
-extern "C" void Cr_StreamEnd(); KING_ALIAS("_Cr_StreamEnd", "_Gate_602bd0")
+extern "C" void Cr_StreamEnd(); KING_ALIAS("_Cr_StreamEnd", "@Gate_602bd0@8")
 extern "C" void Cr_TscNow(); KING_ALIAS("_Cr_TscNow", "_Tsc_Now")
 extern "C" void Cr_Receive(); KING_ALIAS("_Cr_Receive", "_Net_Receive")
 extern "C" void Cr_MsgSet(); KING_ALIAS("_Cr_MsgSet", "@DpMessage_Set@16")
@@ -5109,6 +5109,129 @@ void __fastcall Sparks_AlongPolygon(BYTE* s, void*, const float* p, const float*
         e = Pq_Start(s, e, Pq_LerpV(p0, p1, 0.5f), (float)((double)u2 + Pq_K(8)), (float)((double)u3 * c338), two);
         Pq_Start(s, e, Pq_LerpV(p0, p1, 0), (float)((double)u1 + Pq_K(6)), (float)((double)u0 * c338), two);
     }
+}
+
+} // extern "C"
+
+// === the media frame: recording, network messages, replay position (a method at $L_5c4f10)
+
+extern "C" void Mf_MsgNew(); KING_ALIAS("_Mf_MsgNew", "@DpMessage_Construct@8")
+extern "C" void Mf_MsgFree(); KING_ALIAS("_Mf_MsgFree", "@MsgBuf_Destroy@8")
+extern "C" void Mf_MsgSet(); KING_ALIAS("_Mf_MsgSet", "@DpMessage_Set@16")
+extern "C" void Mf_StreamNew(); KING_ALIAS("_Mf_StreamNew", "@Stream_Construct@8")
+extern "C" void Mf_StreamFree(); KING_ALIAS("_Mf_StreamFree", "@Gate_602bd0@8")
+extern "C" void Mf_Set24(); KING_ALIAS("_Mf_Set24", "@Gate_Set24@8")
+extern "C" void Mf_Now(); KING_ALIAS("_Mf_Now", "_Tsc_Now")
+extern "C" void Mf_Flush(); KING_ALIAS("_Mf_Flush", "@Net_FlushFrame@8")
+extern "C" void Mf_WriteInt(); KING_ALIAS("_Mf_WriteInt", "_File_WriteInt")
+extern "C" void Mf_Record(); KING_ALIAS("_Mf_Record", "@Media_RecordBlock@12")
+extern "C" void Mf_Receive(); KING_ALIAS("_Mf_Receive", "_Net_Receive")
+extern "C" void Mf_Seek(); KING_ALIAS("_Mf_Seek", "@Rec_SeekTime@16")
+extern "C" void Mf_Header(); KING_ALIAS("_Mf_Header", "@Rec_ReadHeader@16")
+ASM_FUNC(Mf_Next, FUN_603300)
+ASM_VAR(BYTE*, g_mf707f6c, $L_707f6c)
+ASM_VAR(double, g_mf64b730, $L_64b730)
+ASM_VAR(double, g_mf64b678, $L_64b678)
+ASM_VAR(double, g_mf64b748, $L_64b748)
+
+extern "C" {
+
+// [$L_5c4f10] media m's frame (with +7944 on): the network frame flushed and, recording (+7936 to file +7928), a
+// frame mark (-16, the frame number +7940, the time); the queued blocks (+3920.., count +7920) recorded and freed;
+// network messages received and handled by vtbl+220 (and recorded, type -1); in replay (+7932) the position +7968
+// moved on by speed +7960 with the record's fraction, or stepped to the next / previous one when paused (+7952)
+void __fastcall Media_Frame(BYTE* m, void*)
+{
+    BYTE msg[40], g[24];
+    CallThis(Mf_MsgNew, msg);
+    CallThis(Mf_StreamNew, g);
+    F(int, g, 12) = 0;
+    F(double, g, 16) = CallC<double>(Mf_Now);
+    if (F(int, m, 7944))
+    {
+        if (F(int, g_mf707f6c, 416) || F(int, m, 7936))
+        {
+            CallThis(Mf_Flush, m + 8300);
+            FILE* fp = F(FILE*, m, 7928);
+            if (F(int, m, 7936) && fp)
+            {
+                CallC(Mf_WriteInt, -16, fp);
+                CallC(Mf_WriteInt, 8, F(FILE*, m, 7928));
+                CallC(Mf_WriteInt, ++F(int, m, 7940), F(FILE*, m, 7928));
+                CallC(Mf_WriteInt, (int)(F(double, m, 2968) * g_mf64b730), F(FILE*, m, 7928));
+                CallC(Mf_WriteInt, 8, F(FILE*, m, 7928));
+            }
+        }
+        while (F(int, m, 7920) > 0)
+        {
+            int n = F(int, m, 7920);
+            CallThis(Mf_Record, m, F(BYTE*, m, 3916 + n * 4));
+            n = --F(int, m, 7920);
+            if (BYTE* b = F(BYTE*, m, 3920 + n * 4))
+            {
+                CallThis(Mf_MsgFree, b);
+                operator delete(b);
+            }
+        }
+        if (F(int, g_mf707f6c, 416) && !CallC<int>(Mf_Receive, g))
+        {
+            do
+            {
+                F(int, g_mf707f6c, 408) = F(int, g, 12);
+                if (F(int, g, 0) == 4)
+                {
+                    CallThis(Mf_MsgSet, msg, F(int, g, 4), F(int, g, 8));
+                    if (!CallThis<int>(Mf_Set24, msg))
+                        do
+                            CallVirt(m, 220, msg, 0, 0);
+                        while (!CallThis<int>(Mf_Next, msg));
+                    FILE* fp = F(FILE*, m, 7928);
+                    if (F(int, m, 7936) && fp)
+                    {
+                        CallC(Mf_WriteInt, -1, fp);
+                        int len = F(int, msg, 8) - F(int, msg, 4);
+                        CallC(Mf_WriteInt, len, F(FILE*, m, 7928));
+                        fwrite(F(void*, msg, 4), F(int, msg, 8) - F(int, msg, 4), 1, F(FILE*, m, 7928));
+                        CallC(Mf_WriteInt, F(int, msg, 8) - F(int, msg, 4), F(FILE*, m, 7928));
+                    }
+                    if (!F(int, m, 7944))
+                        break;
+                }
+            } while (!CallC<int>(Mf_Receive, g));
+        }
+        if (F(int, m, 7932) && F(int, m, 7928))
+        {
+            double& pos = F(double, m, 7968);
+            if (pos == g_mf64b678)
+                CallThis(Mf_Header, m, 0, 0);
+            int next;
+            if (x87_fabs(F(double, m, 7960)) < g_mf64b748 && F(int, m, 7952))
+            {
+                int at = CallThis<int>(Mf_Seek, m, (int)pos, &next);
+                CallThis(Mf_Header, m, 0, 0);
+                pos = F(int, m, 7952) > 0 ? (double)(next + 1) : (double)(at - 1);
+            }
+            else
+            {
+                int at = CallThis<int>(Mf_Seek, m, (int)pos, &next);
+                CallThis(Mf_Header, m, 0, 0);
+                float k;
+                if (at > next || (double)at > pos)
+                    k = 0;
+                else if ((double)next < pos)
+                    k = 1.0f;
+                else if (next == at)
+                    k = 0;
+                else
+                    k = (float)((pos - at) / (next - at));
+                CallThis(Mf_Header, m, 1, *(int*)&k);
+                pos = F(double, m, 2960) * F(double, m, 7960) * g_mf64b730 + pos;
+            }
+            F(int, m, 7952) = 0;
+        }
+    }
+    CallThis(Mf_StreamFree, g);                                   // FUN_602b60 takes the stream in ECX
+    CallThis(Mf_MsgFree, msg);
 }
 
 } // extern "C"

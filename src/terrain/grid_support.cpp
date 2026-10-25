@@ -687,7 +687,7 @@ void __fastcall Grid_RemoveCell(BYTE* self, void*, BYTE* s)
 
 }
 
-ASM_PROC(FUN_608530)    // grid: new cell (4 arguments)
+extern "C" void FUN_608530(); KING_ALIAS("_FUN_608530", "@Grid_NewCell@24")    // grid: new cell (4 arguments)
 extern "C" void FUN_60a440(); KING_ALIAS("_FUN_60a440", "_Ring_Unlink")    // ring list: unlink
 extern "C" void FUN_60f1b0(); KING_ALIAS("_FUN_60f1b0", "@MarineTask_ClearRegistration@8")
 extern "C" void FUN_60cd90(); KING_ALIAS("_FUN_60cd90", "@MarineVertex_Delete@12")    // grid point: deleting destructor (flag)
@@ -2428,6 +2428,130 @@ int __fastcall Grid_SplitEdge(BYTE* s, void*, BYTE* e, BYTE** a, BYTE** b)
             F(BYTE*, n, 64) = *b;
     }
     return 1;
+}
+
+} // extern "C"
+
+// === a new grid cell (FUN_608530)
+
+extern "C" void Gc_ObjInit(); KING_ALIAS("_Gc_ObjInit", "@GridObj_Construct@8")
+extern "C" void Gc_Tiles(); KING_ALIAS("_Gc_Tiles", "@Tiles_Table@16")
+extern "C" void Gc_Deepest(); KING_ALIAS("_Gc_Deepest", "_Grid_DeepestLevel")
+extern "C" void Gc_InWedge(); KING_ALIAS("_Gc_InWedge", "@Point_InWedge@32")
+extern "C" void Gc_Insert(); KING_ALIAS("_Gc_Insert", "@MarineQueue_InsertDeferredNode@12")
+ASM_VAR(AsmLabel, g_gc652f00, $L_652f00)
+ASM_VAR(float, g_gc64c258, $L_64c258)
+ASM_VAR(float, g_gc64c904, $L_64c904)
+ASM_VAR(float, g_gc64c264, $L_64c264)
+ASM_VAR(float, g_gc652efc, $L_652efc)
+ASM_VAR(float, g_gc64c448, $L_64c448)
+ASM_VAR(float, g_gc64d7b8, $L_64d7b8)
+ASM_VAR(float, g_gc64c250, $L_64c250)
+ASM_VAR(float, g_gc64c450, $L_64c450)
+ASM_VAR(float, g_gc652ef8, $L_652ef8)
+
+// the height at grid vertex (x, y) from its tile table
+static float Gc_Height(BYTE* g, unsigned x, unsigned y)
+{
+    BYTE* t = CallThis<BYTE*>(Gc_Tiles, F(BYTE*, g, 40192), x, y);
+    return F(float, t, ((x % 257) * 257 + y % 257) * 16);
+}
+
+extern "C" {
+
+// [FUN_608530] grid s's new cell (76 bytes) over the vertices a, b, c (+12 table: +8 x, +12 y) at level: its centre
+// and radius (+44, +52), the height error of the a-c edge's middle (+32) and its priority by the camera (+28: 0
+// past the deepest level, out of reach or outside the view wedge); then queued in +36
+BYTE* __fastcall Grid_NewCell(BYTE* s, void*, WORD* a, WORD* b, WORD* c, unsigned level)
+{
+    BYTE* n = (BYTE*)operator new(76);
+    if (!n)
+        return 0;
+    F(BYTE*, n, 4) = n + 4;
+    F(BYTE*, n, 8) = n + 4;
+    CallThis(Gc_ObjInit, n + 12);
+    F(void*, n, 0) = &g_gc652f00;
+    F(int, n, 68) = 0;
+    F(int, n, 64) = 0;
+    F(int, n, 60) = 0;
+    F(int, n, 72) = 0;
+    F(int, n, 56) = 0;
+    F(WORD*, n, 16) = a;
+    F(WORD*, n, 20) = b;
+    F(WORD*, n, 24) = c;
+    F(unsigned, n, 36) = level;
+    BYTE* V = F(BYTE*, s, 12);
+    BYTE* va = V + *a * 16;
+    BYTE* vc = V + *c * 16;
+    BYTE* vb = V + *b * 16;
+    int mx = (int)((__int64)(unsigned)(F(int, va, 8) + F(int, vc, 8)) * (double)g_gc64c258);
+    int my = (int)((__int64)(unsigned)(F(int, va, 12) + F(int, vc, 12)) * (double)g_gc64c258);
+    BYTE* G = F(BYTE*, s, 4);
+    double sx = F(float, G, 40152), ox = F(float, G, 40136), sy = F(float, G, 40156), oy = F(float, G, 40148);
+    double ax = F(int, va, 8) * sx + ox;
+    double ay = F(int, va, 12) * sy + oy;
+    float bx = (float)(F(int, vb, 8) * sx + ox);
+    float by = (float)(F(int, vb, 12) * sy + oy);
+    float cx = (float)(F(int, vc, 8) * sx + ox);
+    float cy = (float)(F(int, vc, 12) * sy + oy);
+    float mx2 = (float)(((double)cx + bx + ax) * g_gc64c904);
+    float my2 = (float)(((double)cy + by + ay) * g_gc64c904);
+    float day = (float)(ay - my2);
+    double dax = ax - mx2;
+    double r = dax * dax + (double)day * day;
+    double dbx = (double)bx - mx2, dby = (double)by - my2;
+    float rb = (float)(dbx * dbx + dby * dby);
+    if (!(r > rb))
+        r = rb;
+    double dcx = (double)cx - mx2, dcy = (double)cy - my2;
+    float rc = (float)(dcx * dcx + dcy * dcy);
+    if (!(r > rc))
+        r = rc;
+    F(float, n, 44) = mx2;
+    F(float, n, 48) = my2;
+    F(float, n, 52) = (float)x87_sqrt(r);
+    float h = (float)(((double)Gc_Height(F(BYTE*, s, 4), F(int, vc, 8), F(int, vc, 12)) +
+                       Gc_Height(F(BYTE*, s, 4), F(int, va, 8), F(int, va, 12))) * g_gc64c258);
+    double d = (double)h - Gc_Height(F(BYTE*, s, 4), mx, my);
+    if (d < g_gc64c264)
+        d = -d;
+    F(float, n, 32) = (float)d;
+    BYTE* g = F(BYTE*, s, 4);
+    F(WORD, s, 42)++;
+    float pri = 0;
+    if (F(unsigned, n, 36) < CallThis<unsigned>(Gc_Deepest, g))
+    {
+        float cxn = F(float, n, 44), cyn = F(float, n, 48), rad = F(float, n, 52);
+        double ddy = (double)cyn - F(float, g, 8), ddx = (double)cxn - F(float, g, 4);
+        double ed = x87_sqrt(ddx * ddx + ddy * ddy) - rad;
+        float e = (float)ed;
+        if (!(ed > g_gc64c264) || (!(e > g_gc652efc) && e < g_gc64c448))
+            pri = g_gc64d7b8;
+        else if (!(e > g_gc652efc))
+        {
+            float camx = F(float, g, 4), camy = F(float, g, 8);
+            double vx = (double)cxn - camx, vy = (double)cyn - camy, nr = -rad;
+            if (!(vy * F(float, g, 60) - vx * F(float, g, 64) < nr) && !(vy * F(float, g, 68) - vx * F(float, g, 72) < nr))
+            {
+                if (F(unsigned, n, 36) < 8)
+                    pri = (float)(g_gc64c450 / (e + (double)g_gc64c250));
+                else if (e < g_gc652ef8)
+                    pri = (float)(F(float, n, 32) / (double)e);
+                else
+                {
+                    float ctr[3] = {cxn, cyn, rad};
+                    if (CallThis<int>(Gc_InWedge, ctr, camx, camy, F(float, g, 76), F(float, g, 80), F(float, g, 84),
+                                      F(float, g, 88)))
+                        pri = (float)(F(float, n, 32) / (double)e);
+                    else
+                        pri = (float)(F(float, n, 32) * (double)g_gc64c258 / e);
+                }
+            }
+        }
+    }
+    F(float, n, 28) = pri;
+    CallThis(Gc_Insert, F(BYTE*, s, 36), n);
+    return n;
 }
 
 } // extern "C"

@@ -2997,7 +2997,7 @@ extern "C" BYTE* __fastcall Car_ViewMatrix(BYTE* s, void*, BYTE* out)
     return out;
 }
 
-ASM_PROC(FUN_56ffd0)
+extern "C" void FUN_56ffd0(); KING_ALIAS("_FUN_56ffd0", "_Game_PlayerMessage")
 extern "C" void FUN_43f620(); KING_ALIAS("_FUN_43f620", "_Player_Flags")
 extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
@@ -7821,7 +7821,7 @@ extern "C" void Vh_CabHit(); KING_ALIAS("_Vh_CabHit", "@Cab_Hit@20")
 extern "C" void Vh_Advance(); KING_ALIAS("_Vh_Advance", "@Progresses_Advance@24")
 extern "C" void Vh_MulAssign(); KING_ALIAS("_Vh_MulAssign", "@Vec3_MulAssign@16")
 extern "C" void FUN_54f040(); KING_ALIAS("_FUN_54f040", "@Car_GiveWay@8")
-ASM_PROC(FUN_4bb4c0)
+extern "C" void FUN_4bb4c0(); KING_ALIAS("_FUN_4bb4c0", "_Fx_DebrisBurst")
 ASM_VAR(float, g_vh64d4e8, $L_64d4e8)
 ASM_VAR(double, g_vh64b5b8, $L_64b5b8)
 ASM_VAR(double, g_vh64b840, $L_64b840)

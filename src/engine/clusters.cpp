@@ -839,11 +839,11 @@ extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2,
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
 ASM_VAR(AsmLabel, g_q46_723978, $L_723978)
-ASM_VAR(AsmLabel, g_q46_5ef410, $L_5ef410)
+extern "C" void g_q46_5ef410(); KING_ALIAS("_g_q46_5ef410", "@ListHead_Construct@8")
 // [FUN_5ef400] constructs the static 723978
 extern "C" int __cdecl Static723978_Construct(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_5ef410, (void*)g_q46_723978);
+    return CallThis<int>(g_q46_5ef410, (void*)g_q46_723978);
 }
 
 // ---------------------------------------------------------------------------
@@ -1182,7 +1182,7 @@ extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" void Clu_VecCtorEh(); KING_ALIAS("_Clu_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 typedef void (*Cr_Progress)();
-ASM_PROC(FUN_5ef830)    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
+extern "C" void FUN_5ef830(); KING_ALIAS("_FUN_5ef830", "_Scene_ReadNode")    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
 ASM_PROC(FUN_5d2540)    // name hash: adds (name, object)
 ASM_VAR(int, g_cr72006c, $L_72006c)
 ASM_VAR(unsigned, g_cr723988, $L_723988)
@@ -1478,6 +1478,305 @@ void __fastcall Backdrop_Place(BYTE* s, void*, BYTE* cam, float a, float scale, 
         off -= w;
         yi -= dir;
     } while (n > 0);
+}
+
+} // extern "C"
+
+// === reading the overlay description file (FUN_5ee580)
+
+extern "C" void Ol_Token(); KING_ALIAS("_Ol_Token", "_NextToken")
+extern "C" void Ol_Line(); KING_ALIAS("_Ol_Line", "_FileList_ReadLine")
+extern "C" void Ol_Fatal(); KING_ALIAS("_Ol_Fatal", "_Sys_Fatal")
+extern "C" void Ol_Find(); KING_ALIAS("_Ol_Find", "_Objects_Find")
+extern "C" void Ol_FindScene(); KING_ALIAS("_Ol_FindScene", "_Scene_FindObject")
+extern "C" void Ol_SoundOn(); KING_ALIAS("_Ol_SoundOn", "_Sound_IsOn")
+extern "C" void Ol_Lookup(); KING_ALIAS("_Ol_Lookup", "@Hash_Lookup@16")
+extern "C" void Ol_Link(); KING_ALIAS("_Ol_Link", "@Node_Link@12")
+extern "C" void Ol_Set(); KING_ALIAS("_Ol_Set", "@ClusterSet_Construct@28")
+extern "C" void Ol_AddA(); KING_ALIAS("_Ol_AddA", "@Cluster_AddA@12")
+extern "C" void Ol_AddB(); KING_ALIAS("_Ol_AddB", "@Cluster_AddB@12")
+extern "C" void Ol_AddC(); KING_ALIAS("_Ol_AddC", "@Cluster_AddC@12")
+extern "C" void Ol_Texture(); KING_ALIAS("_Ol_Texture", "@Texture_Construct@16")
+extern "C" void Ol_Alloc(); KING_ALIAS("_Ol_Alloc", "@Overlays_Alloc@12")
+ASM_FUNC(Ol_AddName, FUN_5d2540)
+ASM_VAR(char, g_olLine, $L_722970)
+ASM_VAR(BYTE*, g_olImages, $L_7229c0)
+ASM_VAR(BYTE*, g_olImagesEnd, $L_72318c)
+ASM_VAR(BYTE*, g_olMasks, $L_7231a4)
+ASM_VAR(BYTE*, g_olMasksEnd, $L_723974)
+ASM_VAR(BYTE*, g_olSounds, $L_7218d4)
+ASM_VAR(BYTE*, g_olSoundsEnd, $L_7220a4)
+ASM_VAR(BYTE*, g_olClusters, $L_72211c)
+ASM_VAR(BYTE*, g_olClustersEnd, $L_7228ec)
+ASM_VAR(AsmLabel, g_olNames, $L_71e820)
+ASM_VAR(AsmLabel, g_ol652818, $L_652818)
+
+// sprintf into the line buffer, then the fatal error
+static void Ol_Error(const char* fmt, const void* a = 0, const void* b = 0)
+{
+    sprintf(&g_olLine, fmt, a, b);
+    CallC(Ol_Fatal, &g_olLine, 0);
+}
+
+static char* Ol_Copy(const char* s)
+{
+    char* p = (char*)operator new(strlen(s) + 1);
+    strcpy(p, s);
+    return p;
+}
+
+// a cluster named tok into *slot (the hash of names), not yet used by another overlay
+static void Ol_Cluster(const char* tok, BYTE** slot)
+{
+    if (slot >= &g_olClustersEnd)
+        Ol_Error("Too many clasters in overlay.");
+    CallThis(Ol_Lookup, &g_olNames, tok, slot);
+    if (!*slot)
+        Ol_Error("Not found %s cluster.", tok);
+    if (F(int, *slot, 40))
+        Ol_Error("Twice using cluster %s.", tok);
+}
+
+static void Ol_Append(BYTE** head, BYTE* o)
+{
+    if (!*head)
+        *head = o;
+    else
+        CallThis(Ol_Link, o, *head);
+}
+
+extern "C" {
+
+// [FUN_5ee580] the overlay system s read from file path (o the overlay object at +12): CLUSTER blocks (images,
+// masks, sounds and the clusters they overlay) made into cluster sets (+4 list, named), OVERLAY blocks into
+// textures (+0 list when unnamed) and ROOM blocks into room descriptions (+8 list, the room's +56); then the
+// buffers for size
+BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int size)
+{
+    F(BYTE*, s, 12) = o;
+    F(int, s, 0) = 0;
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(int, s, 16) = -1;
+    if (!path)
+        return s;
+    FILE* f = fopen(path, "r");
+    if (!f)
+        return s;
+    for (fgets(&g_olLine, 70, f); !(F(BYTE, f, 12) & 16); fgets(&g_olLine, 70, f))
+    {
+        char* p = &g_olLine;
+        char* tok = CallC<char*>(Ol_Token, &p);
+        if (!tok)
+            continue;
+        if (!strcmp(tok, "CLUSTER"))
+        {
+            int clusters = 0, sounds = 0, masks = 0, images = 0;
+            tok = CallC<char*>(Ol_Token, &p);
+            if (!tok)
+                CallC(Ol_Fatal, "Cluster have not name.", 0);
+            char* nm = Ol_Copy(tok);
+            BYTE** cl = &g_olClusters;
+            BYTE** snd = &g_olSounds;
+            BYTE** msk = &g_olMasks;
+            BYTE** img = &g_olImages - 1;
+            int k;
+            while ((k = CallC<int>(Ol_Line, f, &tok)) != 0)
+            {
+                switch (k)
+                {
+                case 1:
+                    if (img >= &g_olImagesEnd)
+                        Ol_Error("Too many images in cluster %s.", nm);
+                    *++img = CallC<BYTE*>(Ol_Find, tok);
+                    images++;
+                    if (!*img)
+                        Ol_Error("Not found %s image in cluster %s.", tok, nm);
+                    if (!(F(BYTE, *img, 52) & 4))
+                        Ol_Error("Image %s in cluster %s has not \"noload\".", tok, nm);
+                    break;
+                case 2:
+                    if (msk >= &g_olMasksEnd)
+                        Ol_Error("Too many masks in cluster %s.", nm);
+                    *msk = CallC<BYTE*>(Ol_Find, tok);
+                    masks++;
+                    if (!*msk++)
+                        Ol_Error("Not found %s mask in cluster %s.", tok, nm);
+                    break;
+                case 3:
+                    if (!CallC<int>(Ol_SoundOn))
+                        break;
+                    if (snd >= &g_olSoundsEnd)
+                        Ol_Error("Too many sounds in cluster %s.", nm);
+                    *snd = CallC<BYTE*>(Ol_Find, tok);
+                    sounds++;
+                    if (!*snd++)
+                        Ol_Error("Not found %s sound in cluster %s.", tok, nm);
+                    break;
+                case 5:
+                    break;
+                case 6:
+                    Ol_Cluster(tok, cl);
+                    clusters++;
+                    cl++;
+                    break;
+                default:
+                    Ol_Error("Unrecognize error in cluster %s.", nm);
+                    break;
+                }
+            }
+            BYTE* c = (BYTE*)operator new(80);
+            if (c)
+                c = CallThis<BYTE*>(Ol_Set, c, images, masks, sounds, clusters, o);
+            F(char*, c, 36) = nm;
+            for (int i = 0; i < images; i++)
+                CallThis(Ol_AddA, c, (&g_olImages)[i]);
+            for (int i = 0; i < masks; i++)
+                CallThis(Ol_AddB, c, (&g_olMasks)[i]);
+            for (int i = 0; i < sounds; i++)
+                CallThis(Ol_AddC, c, (&g_olSounds)[i]);
+            for (int i = 0; i < clusters; i++)
+                if (!CallVirt<int>(c, 20, (&g_olClusters)[i]))
+                    Ol_Error("Error in using %d overlay in cluster %s.", (const void*)(INT_PTR)i, nm);
+            Ol_Append(&F(BYTE*, s, 4), c);
+            CallThis(Ol_AddName, &g_olNames, nm, c);
+        }
+        else if (!strcmp(tok, "OVERLAY"))
+        {
+            int clusters = 0;
+            tok = CallC<char*>(Ol_Token, &p);
+            if (!tok)
+                tok = (char*)"";
+            char* nm = Ol_Copy(tok);
+            BYTE** cl = &g_olClusters;
+            int k;
+            while ((k = CallC<int>(Ol_Line, f, &tok)) != 0)
+            {
+                if (k == 5)
+                    continue;
+                if (k == 6)
+                {
+                    Ol_Cluster(tok, cl);
+                    clusters++;
+                    cl++;
+                }
+                else
+                    Ol_Error("Unrecognize error in overlay %s.", nm);
+            }
+            BYTE* t = (BYTE*)operator new(56);
+            if (t)
+                t = CallThis<BYTE*>(Ol_Texture, t, clusters, o);
+            F(char*, t, 36) = nm;
+            for (int i = 0; i < clusters; i++)
+                if (!CallVirt<int>(t, 20, (&g_olClusters)[i]))
+                    Ol_Error("Error in using cluster in overlay %s.", nm);
+            if (!strcmp(nm, ""))
+                Ol_Append(&F(BYTE*, s, 0), t);
+            else
+                CallThis(Ol_AddName, &g_olNames, nm, t);
+        }
+        else if (!strcmp(tok, "ROOM"))
+        {
+            DWORD pals = 0;
+            tok = CallC<char*>(Ol_Token, &p);
+            if (!tok)
+                CallC(Ol_Fatal, "Room have not name.", 0);
+            char* nm = Ol_Copy(tok);
+            BYTE* room = CallC<BYTE*>(Ol_FindScene, 0, tok);
+            if (!room)
+            {
+                char buf[64];
+                sprintf(buf, "Not found room %s.", tok);
+                CallC(Ol_Fatal, buf, 0);
+            }
+            BYTE* cluster = 0;
+            BYTE* ov = F(BYTE*, s, 12);
+            BYTE* image = F(int, ov, 88) > 0 ? *F(BYTE**, ov, 92) : 0;
+            int k;
+            while ((k = CallC<int>(Ol_Line, f, &tok)) != 0)
+            {
+                switch (k)
+                {
+                case 5:
+                    break;
+                case 1:
+                    image = CallC<BYTE*>(Ol_Find, tok);
+                    if (!image && strcmp(tok, "null.txr"))
+                        Ol_Error("Not found %s image", tok);
+                    break;
+                case 6:
+                    CallThis(Ol_Lookup, &g_olNames, tok, &cluster);
+                    if (!cluster)
+                        Ol_Error("Not found cluster %s.", tok);
+                    break;
+                case 7:
+                {
+                    BYTE* pal;
+                    CallThis(Ol_Lookup, &g_olNames, tok, &pal);
+                    if (!pal)
+                        Ol_Error("Not found Palette %s.", tok);
+                    BYTE* q = F(BYTE*, s, 12);
+                    int i = 0;
+                    while (i < F(int, q, 96) && pal != F(BYTE**, q, 100)[i])
+                        i++;
+                    pals |= 1u << i;
+                    break;
+                }
+                default:
+                    Ol_Error("Unrecognize error in ROOM OVL DESCRIPTION %s.", nm);
+                    break;
+                }
+            }
+            operator delete(nm);
+            BYTE* q = F(BYTE*, s, 12);
+            int n = F(int, q, 88), idx;
+            if (!n)
+                idx = -2;
+            else
+            {
+                idx = 0;
+                while (idx < n && image != F(BYTE**, q, 92)[idx])
+                    idx++;
+                if (idx >= n)
+                    idx = -1;
+            }
+            BYTE* r = (BYTE*)operator new(28);
+            if (r)
+            {
+                F(BYTE*, r, 12) = room;
+                F(int, r, 4) = 0;
+                F(int, r, 8) = 0;
+                F(void*, r, 0) = &g_ol652818;
+                F(DWORD, r, 16) = pals;
+                F(BYTE*, r, 20) = cluster;
+                F(int, r, 24) = idx;
+            }
+            F(BYTE*, room, 56) = r;
+            Ol_Append(&F(BYTE*, s, 8), r);
+        }
+    }
+    if (!CallThis<int>(Ol_Alloc, s, size))
+        CallC(Ol_Fatal, "Not enough memory for Overlay System.", 0);
+    fclose(f);
+    return s;
+}
+
+} // extern "C"
+
+// === a list head (a method at $L_5ef410)
+
+ASM_VAR(AsmLabel, g_lh65282c, $L_65282c)
+
+extern "C" {
+
+// [$L_5ef410] list head s: empty (+4, +8, +12) with the vtable 65282c
+BYTE* __fastcall ListHead_Construct(BYTE* s, void*)
+{
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(void*, s, 0) = &g_lh65282c;
+    F(int, s, 12) = 0;
+    return s;
 }
 
 } // extern "C"

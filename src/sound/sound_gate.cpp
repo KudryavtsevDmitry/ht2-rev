@@ -765,10 +765,10 @@ extern "C" int __cdecl Gate_600b50(int a)
     return CallC<int>(FUN_600660, a);
 }
 
-// [FUN_602bd0] FUN_602b60(0, 0)
-extern "C" int __cdecl Gate_602bd0()
+// [FUN_602bd0] empties blob s: Blob_Set(s, 0, 0)
+extern "C" void __fastcall Gate_602bd0(BYTE* s, int)
 {
-    return CallStd<int>(FUN_602b60, 0, 0);
+    Blob_Set(s, 0, 0, 0);
 }
 
 // [FUN_6032f0] sets +24 to 8, returns 0
