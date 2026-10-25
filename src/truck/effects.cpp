@@ -1958,7 +1958,7 @@ void __fastcall Notify4dc860_Destroy(BYTE* self, void*)
 }
 
 extern "C" void FUN_55eaa0(); KING_ALIAS("_FUN_55eaa0", "@Truck55eaa0_Construct@24")
-ASM_PROC(FUN_543e00)
+extern "C" void FUN_543e00(); KING_ALIAS("_FUN_543e00", "@Vehicle_Construct@24")
 extern "C" void FUN_4cf260(); KING_ALIAS("_FUN_4cf260", "_Fx_AttachVehicle")
 extern "C" void FUN_556110(); KING_ALIAS("_FUN_556110", "@Car_ApplyTypeVec@8")
 ASM_PROC(FUN_5586f0)
@@ -5143,7 +5143,7 @@ extern "C" void FUN_5cb9a0(); KING_ALIAS("_FUN_5cb9a0", "_Set70ebe8")
 extern "C" void FUN_4bc690(); KING_ALIAS("_FUN_4bc690", "@Trail_Construct@20")
 extern "C" void FUN_4bc950(); KING_ALIAS("_FUN_4bc950", "@Effect4bc950_Attach@12")
 extern "C" void FUN_4bee30(); KING_ALIAS("_FUN_4bee30", "@Sky_Construct@16")
-ASM_PROC(FUN_4be8d0)
+extern "C" void FUN_4be8d0(); KING_ALIAS("_FUN_4be8d0", "@Snow_Construct@16")
 extern "C" void FUN_4c0e30(); KING_ALIAS("_FUN_4c0e30", "@Effects_Construct@20")
 extern "C" void FUN_4b8c40(); KING_ALIAS("_FUN_4b8c40", "_Fx_LoadSet695bf0")
 extern "C" void FUN_4b8fb0(); KING_ALIAS("_FUN_4b8fb0", "_Fx_LoadVapor")
@@ -5157,7 +5157,7 @@ extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 extern "C" void FUN_4bb390(); KING_ALIAS("_FUN_4bb390", "_Fire_RandomRamps")
 extern "C" void FUN_4c4750(); KING_ALIAS("_FUN_4c4750", "_Fx_Update2")
 extern "C" void FUN_4cc850(); KING_ALIAS("_FUN_4cc850", "_Effect_AttachNode")
-ASM_PROC(FUN_5d2540)
+extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")
 extern "C" void FUN_5d27c0(); KING_ALIAS("_FUN_5d27c0", "@NameHash_ResolvePending@8")
 
 static BYTE* Fi_Find(const char* name)
@@ -5427,7 +5427,7 @@ extern "C" void FUN_43fbd0(); KING_ALIAS("_FUN_43fbd0", "_Rec_SetField0")
 extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")
 extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
 extern "C" void FUN_571a80(); KING_ALIAS("_FUN_571a80", "_Net_CreateCarObject")
-ASM_PROC(FUN_571c20)
+extern "C" void FUN_571c20(); KING_ALIAS("_FUN_571c20", "_Semitrailer_Create")
 extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
 extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")
 extern "C" void FUN_5e5210(); KING_ALIAS("_FUN_5e5210", "@Resources_Delete@12")
@@ -5581,7 +5581,7 @@ extern "C" void FUN_4b91a0(); KING_ALIAS("_FUN_4b91a0", "_Effects_FromSettings")
 extern "C" void FUN_4bc690(); KING_ALIAS("_FUN_4bc690", "@Trail_Construct@20")
 extern "C" void FUN_4bc950(); KING_ALIAS("_FUN_4bc950", "@Effect4bc950_Attach@12")
 extern "C" void FUN_4bcbe0(); KING_ALIAS("_FUN_4bcbe0", "@LightPool_Free@8")
-ASM_PROC(FUN_4be8d0)
+extern "C" void FUN_4be8d0(); KING_ALIAS("_FUN_4be8d0", "@Snow_Construct@16")
 extern "C" void FUN_4bee30(); KING_ALIAS("_FUN_4bee30", "@Sky_Construct@16")
 extern "C" void FUN_4c4770(); KING_ALIAS("_FUN_4c4770", "_Eff_ResetSmokeAndGlows")
 extern "C" void FUN_4c9970(); KING_ALIAS("_FUN_4c9970", "@Effect4c9970_Construct@16")
@@ -11356,6 +11356,405 @@ void __fastcall Wreck_Frame(BYTE* w, void*)
         return;
     }
     CallThis(FUN_5d32f0, w, 1);
+}
+
+} // extern "C"
+
+// === a random point ahead of the camera onto the ground below it (a method at $L_4c3df0)
+
+extern "C" void Sp_HAngle(); KING_ALIAS("_Sp_HAngle", "@MarineCamera_HorizontalAngle@8")
+extern "C" void Sp_Lookup(); KING_ALIAS("_Sp_Lookup", "_Obj_Lookup4e5b22")
+extern "C" void Sp_Visit(); KING_ALIAS("_Sp_Visit", "_Ring50_AddPoint")
+extern "C" void Sp_Set(); KING_ALIAS("_Sp_Set", "@Vec3_SetThis@20")
+extern "C" void Sp_Light(); KING_ALIAS("_Sp_Light", "_Light_Set@24")
+ASM_VAR(BYTE*, g_sp696224, $L_696224)
+ASM_VAR(BYTE*, g_sp6d2078, $L_6d2078)
+ASM_VAR(Vec3, g_spAhead, $L_702620)
+ASM_VAR(Vec3, g_spUp, $L_702630)
+ASM_VAR(float, g_sp64c258, $L_64c258)
+ASM_VAR(float, g_sp64c304, $L_64c304)
+ASM_VAR(float, g_sp64c2fc, $L_64c2fc)
+ASM_VAR(float, g_sp64c254, $L_64c254)
+ASM_VAR(float, g_sp64c448, $L_64c448)
+ASM_VAR(float, g_sp64c664, $L_64c664)
+
+extern "C" {
+
+// [$L_4c3df0] ring s gets a point in the camera's view wedge (half its horizontal angle each side, reaching further
+// with the player's speed), dropped onto the scene's room (+488 +76) below it: the room's polygons visited with
+// Ring50_AddPoint unless the drop is blocked
+void __fastcall Ring50_DropPoint(BYTE* s, void*, BYTE* scene)
+{
+    Vec3 A = {0, 0, 0}, P = {0, 0, 0};
+    BYTE* cam = g_sp696224;
+    float ah = (float)(CallThis<double>(Sp_HAngle, F(BYTE*, cam, 488)) * g_sp64c258);
+    Matrix R;
+    Vec3 L, L2, t;
+    Vec3_MulMatrix(&L, &g_spAhead, Matrix_RotationZ(&R, ah));
+    Vec3_MulMatrix(&L2, &g_spAhead, Matrix_RotationZ(&R, -ah));
+    L = *Vec3_MulMatrix(&t, &L, Matrix_RotationZ(&R, (float)F(double, g_sp696224, 2928)));
+    L2 = *Vec3_MulMatrix(&t, &L2, Matrix_RotationZ(&R, (float)F(double, g_sp696224, 2928)));
+    Vec3 vel = F(Vec3, F(BYTE*, g_sp6d2078, 616), 432);
+    float reach = (float)(Vec3_Length(&vel) * g_sp64c304 + g_sp64c2fc);
+    double r1 = rand() * (double)g_sp64c254;
+    float c = (float)x87_cos(ah);
+    float base = (float)(reach / (double)c);
+    float k1 = (float)(r1 * g_sp64c448 / c + base);
+    CallThis(Fb_MulAssign, &L, &t, k1);
+    float k2 = (float)(rand() * (double)g_sp64c254 * g_sp64c448 / c + base);
+    CallThis(Fb_MulAssign, &L2, &t, k2);
+    BYTE* g = g_sp696224;
+    Vec3 cp;
+    cp.x = (float)F(double, g, 2904);
+    cp.y = (float)F(double, g, 2912);
+    cp.z = (float)F(double, g, 2920);
+    A = cp;
+    Vec3 p0;
+    CallThis(Sp_Set, &p0, (float)((double)L2.x + cp.x), (float)((double)L2.y + cp.y), (float)((double)L2.z + cp.z));
+    Vec3 p1 = p0, q, r;
+    P = *Triangle_RandomPoint(&r, &A, Vec3_Add(&q, &A, &L), &p1);
+    BYTE* room = F(BYTE*, scene, 488);
+    if (room)
+        room = F(BYTE*, room, 76);
+    char blocked = 0;
+    CallC(Sp_Lookup, room, &A, &P, &blocked);
+    if (blocked)
+        return;
+    double ux = g_spUp.x * (double)g_sp64c664;
+    float uy = (float)(g_spUp.y * (double)g_sp64c664);
+    float uz = (float)(g_spUp.z * (double)g_sp64c664);
+    struct { BYTE* ring; Vec3 at; } ctx;
+    ctx.ring = s;
+    ctx.at.x = (float)(P.x - ux);
+    ctx.at.y = (float)((double)P.y - uy);
+    ctx.at.z = (float)((double)P.z - uz);
+    CallStd(Sp_Light, room, ctx.at.x, ctx.at.y, ctx.at.z, Sp_Visit, &ctx);
+}
+
+} // extern "C"
+
+// === the AI debug overlay: numbers, bars, the aim cross and the road trails (FUN_4d2b30)
+
+struct DbPos { int road, node; double t; int segment, object, m_24, m_28; };
+extern "C" int __cdecl Db_RoadParams(DbPos pos, BYTE* info); KING_ALIAS("_Db_RoadParams", "_Road_GetRoadParameters")
+extern "C" float* __cdecl Db_Coords(float* out, DbPos pos); KING_ALIAS("_Db_Coords", "_Ai_GetCoordinatesPos")
+extern "C" float* __cdecl Db_Tangent(float* out, DbPos pos); KING_ALIAS("_Db_Tangent", "_Ai_GetTangent")
+extern "C" void Db_Text(); KING_ALIAS("_Db_Text", "_Text_Draw")
+extern "C" void Db_Line(); KING_ALIAS("_Db_Line", "_Window_DrawLine")
+extern "C" void Db_CamApply(); KING_ALIAS("_Db_CamApply", "@CamNode_Apply@12")
+extern "C" void Db_RoadFirst(); KING_ALIAS("_Db_RoadFirst", "_Road_FirstId")
+extern "C" void Db_RoadNext(); KING_ALIAS("_Db_RoadNext", "_Road_NextId")
+extern "C" void Db_Get800(); KING_ALIAS("_Db_Get800", "@SceneObj_Get800@8")
+ASM_VAR(int, g_db696334, $L_696334)
+ASM_VAR(double, g_db6962d0, $L_6962d0)
+ASM_VAR(double, g_db6962d8, $L_6962d8)
+ASM_VAR(double, g_db696300, $L_696300)
+ASM_VAR(double, g_db696308, $L_696308)
+ASM_VAR(int, g_db696310, $L_696310)
+ASM_VAR(Vec3, g_db696314, $L_696314)
+ASM_VAR(double, g_db6962e0, $L_6962e0)
+ASM_VAR(double, g_db6962e8, $L_6962e8)
+ASM_VAR(double, g_db6962f0, $L_6962f0)
+ASM_VAR(double, g_db6962f8, $L_6962f8)
+ASM_VAR(BYTE*, g_db6962bc, $L_6962bc)
+ASM_VAR(BYTE, g_dbTrail, $L_696278)
+ASM_VAR(BYTE*, g_db6ced24, $L_6ced24)
+ASM_VAR(BYTE*, g_db696ca0, $L_696ca0)
+ASM_VAR(BYTE**, g_db68cf38, $L_68cf38)
+ASM_VAR(BYTE*, g_db6d2078, $L_6d2078)
+ASM_VAR(double, g_db64b678, $L_64b678)
+ASM_VAR(double, g_db64b6a0, $L_64b6a0)
+ASM_VAR(double, g_db64b6e0, $L_64b6e0)
+ASM_VAR(double, g_db64b780, $L_64b780)
+ASM_VAR(float, g_db64c250, $L_64c250)
+
+// a horizontal bar of value v on row y from the middle x0 (5 when positive, else 7)
+static void Db_Bar(BYTE* surf, int x0, int y, double base, double v)
+{
+    int c = v > g_db64b678 ? 5 : 7;
+    CallC(Db_Line, surf, x0, y, (int)(base - v * g_db64b6a0), y, c, 0);
+}
+
+// a trail point at pos with the road's tangent (reversed for one-way roads backwards) and its widths
+static void Db_TrailPoint(const DbPos& pos, const BYTE* info, int mode, int color)
+{
+    float a[3], t[3], nb[3];
+    Vec3 A, N;
+    Db_Coords(a, pos);
+    const float* n = (const float*)Vec3_Normalized((Vec3*)nb, (const Vec3*)Db_Tangent(t, pos));
+    memcpy(&A, a, 12);
+    memcpy(&N, n, 12);
+    if (mode == 1)
+    {
+        Vec3 r;
+        CallThis(Bw_Set, &r, -N.x, -N.y, -N.z);
+        N = r;
+    }
+    double w1 = F(double, info, 8) * g_db64b6e0;
+    double w2 = F(double, info, 24) * g_db64b780 + w1;
+    Trail_Add(&g_dbTrail, 0, A, N, w1, w2, color);
+}
+
+extern "C" {
+
+// [FUN_4d2b30] with the AI debug view on (696334): three numbers and five bars of the AI's state at the top of
+// surface surf, a cross where the AI's target (696314) falls in the camera's view, and trails along the roads of the
+// player's room (one-way roads one way: 1 / 3)
+void __cdecl Ai_DebugOverlay(WORD* surf)
+{
+    if (!g_db696334)
+        return;
+    double dt = g_db6962d0 - g_db6962d8;
+    int x0 = surf[0] >> 1;
+    char buf[100];
+    sprintf(buf, "%d %d %d", (int)g_db696300, (int)g_db696308, g_db696310);
+    CallC(Db_Text, surf, x0, 90, g_db6ced24, buf, 5, 0);
+    double base = x0;
+    CallC(Db_Line, surf, x0, 100, (int)(dt * g_db64b6a0 + base), 100, dt > g_db64b678 ? 5 : 7, 0);
+    Db_Bar((BYTE*)surf, x0, 120, base, g_db6962e0);
+    Db_Bar((BYTE*)surf, x0, 130, base, g_db6962e8);
+    Db_Bar((BYTE*)surf, x0, 140, base, g_db6962f0);
+    Db_Bar((BYTE*)surf, x0, 150, base, g_db6962f8);
+    BYTE* r = g_db696ca0;
+    BYTE* cam = F(BYTE*, r, 464);
+    WORD* s2 = F(WORD*, r, 12);
+    CallThis(Db_CamApply, F(BYTE*, r, 488), cam);
+    Vec3 P;
+    CallThis(Bw_Set, &P, 0.0f, 0.0f, 0.0f);
+    Vec3 t;
+    P = *Vec3_MulMatrix(&t, &g_db696314, (const Matrix*)(cam + 2240 + F(int, cam, 8224) * 48));
+    int h2 = s2[1] >> 1;
+    if (P.y > g_db64c250)
+    {
+        int x = (int)(((double)P.x / P.y + g_db64c250) * (s2[0] >> 1));
+        int y = (int)(h2 - (double)P.z / P.y * h2);
+        CallC(Db_Line, s2, x - 5, y, x + 5, y, 6, 0);
+        CallC(Db_Line, s2, x, y - 5, x, y + 5, 6, 0);
+    }
+    r = g_db696ca0;
+    g_db6962bc = F(BYTE*, r, 464);
+    CallThis(Db_CamApply, F(BYTE*, r, 488), F(BYTE*, r, 464));
+    int id;
+    for (CallC(Db_RoadFirst, &id); id != -1; id = *CallC<int*>(Db_RoadNext, &id, id))
+    {
+        for (int k = 0; k < (F(BYTE*, g_db68cf38[id], 124) - F(BYTE*, g_db68cf38[id], 120)) >> 2; k++)
+        {
+            DbPos pos = {id, -1, 0.0, 0, k, 0, -1};
+            BYTE info[48];
+            memset(info, 0, sizeof info);
+            F(const char*, info, 16) = "UNDEFINED_MODULE";
+            F(const char*, info, 20) = "UNDEFINED_ROOM";
+            F(int, info, 36) = -1;
+            F(int, info, 40) = -1;
+            Db_RoadParams(pos, info);
+            BYTE* pl = CallThis<BYTE*>(Db_Get800, F(BYTE*, g_db6d2078, 616) + 16);
+            if (strcmp(F(const char*, info, 20), F(const char*, pl, 12)))
+                continue;
+            *(int*)&g_dbTrail = 1;
+            int fl = info[0];
+            int mode = fl & 8 ? 1 : (((~fl & 0xFF) & 4) | 8) >> 2;
+            int color = mode == 3 ? 3 : 1;
+            for (;;)
+            {
+                Db_TrailPoint(pos, info, mode, color);
+                BYTE* e = F(BYTE**, g_db68cf38[id], 120)[k];
+                if (CallVirt<int>(e, 20, &pos.t, 619849680, 1068079849, &pos.segment))
+                    break;
+            }
+            Db_TrailPoint(pos, info, mode, color);
+        }
+    }
+}
+
+} // extern "C"
+
+// === the cab view set up for a car (FUN_4dde70 with its tail $L_4de0e7)
+
+extern "C" void Cv_Find(); KING_ALIAS("_Cv_Find", "_Scene_FindObject")
+extern "C" void Cv_Node(); KING_ALIAS("_Cv_Node", "@Node_Construct@16")
+extern "C" void Cv_Local(); KING_ALIAS("_Cv_Local", "_Frame_GetLocalChecked")
+extern "C" void Cv_Fatal(); KING_ALIAS("_Cv_Fatal", "_World_Fatal")
+extern "C" void Cv_SetState(); KING_ALIAS("_Cv_SetState", "@Cab_SetState@12")
+extern "C" void Cv_Fill(); KING_ALIAS("_Cv_Fill", "@Arrays_Fill@16")
+extern "C" void Cv_Time(); KING_ALIAS("_Cv_Time", "_Game_Time")
+ASM_VAR(int, g_cv6cec68, $L_6cec68)
+ASM_VAR(char, g_cvNames, $L_69817a)
+ASM_VAR(char, g_cvNames2, $L_698aea)
+ASM_VAR(int, g_cv6ce338, $L_6ce338)
+ASM_VAR(AsmLabel, g_cv64c7dc, $L_64c7dc)
+ASM_VAR(BYTE*, g_cv696cac, $L_696cac)
+ASM_VAR(BYTE, g_cvSpecs, $L_697f9c)
+ASM_VAR(BYTE, g_cvSpecs2, $L_69809c)
+ASM_VAR(BYTE*, g_cv696cb4, $L_696cb4)
+ASM_VAR(BYTE*, g_cv69684c, $L_69684c)
+ASM_VAR(int, g_cv672d7c, $L_672d7c)
+
+static BYTE* Cv_FindFmt(char* buf, const char* fmt, const char* name)
+{
+    sprintf(buf, fmt, name);
+    return CallC<BYTE*>(Cv_Find, 0, buf);
+}
+
+static void Cv_FillNow(BYTE* a)
+{
+    float t = (float)CallC<double>(Cv_Time);
+    CallThis(Cv_Fill, a, t, 0);
+}
+
+extern "C" {
+
+// [FUN_4dde70..$L_4de0e7] cab view s for car c (with 6cec68 set): the type's cab objects "<type>Cab" (else the
+// default type's), its node, "<type>CabSpace" and "<type>RuleSpace" (its local frame kept per type), a fatal error
+// when one is missing; then the view's node in 696cac, the tilt angle and the seven view values of the type, the
+// state from the car's +20396, three ramps restarted, DamageFCKey and the view rectangle
+void __fastcall CabView_Setup(BYTE* s, void*, BYTE* c)
+{
+    if (!g_cv6cec68)
+    {
+        return;
+    }
+    int type = F(int, c, 10420);
+    F(int, s, 4720) = type;
+    char name[100], cab[100], space[100], rule[100], msg[256];
+    strcpy(name, &g_cvNames + type * 2416);
+    F(BYTE*, s, 544) = Cv_FindFmt(cab, "%sCab", name);
+    if (!F(BYTE*, s, 544))
+    {
+        strcpy(name, &g_cvNames2 + g_cv6ce338 * 2416);
+        F(BYTE*, s, 544) = Cv_FindFmt(cab, "%sCab", name);
+    }
+    BYTE* n = (BYTE*)operator new(88);
+    if (n)
+    {
+        BYTE* o = F(BYTE*, s, 544);
+        CallThis(Cv_Node, n, "callCabNode", 17);
+        memset(n + 48, 0, 16);
+        F(void*, n, 0) = &g_cv64c7dc;
+        F(BYTE*, n, 64) = o;
+        memset(n + 68, 0, 16);
+        F(int, n, 84) = -1;
+        F(int, n, 36) = F(int, o, 36);
+    }
+    F(BYTE*, s, 548) = n;
+    F(BYTE*, s, 552) = Cv_FindFmt(space, "%sCabSpace", name);
+    F(BYTE*, s, 556) = Cv_FindFmt(rule, "%sRuleSpace", name);
+    if (F(BYTE*, s, 556) && !F(int, s, 4400 + 4 * F(int, s, 4720)))
+    {
+        CallC(Cv_Local, F(BYTE*, s, 556), s + 560 + F(int, s, 4720) * 48);
+        F(int, s, 4400 + 4 * F(int, s, 4720)) = 1;
+    }
+    if (!F(BYTE*, s, 544) || !F(BYTE*, s, 552) || !F(BYTE*, s, 556))
+    {
+        sprintf(msg, " %s==%08X \n %s==%08X \n %s==%08X", cab, F(int, s, 544), space, F(int, s, 552), rule,
+                F(int, s, 556));
+        CallC(Cv_Fatal, msg);
+    }
+    F(BYTE*, g_cv696cac, 76) = F(BYTE*, s, 548);
+    const BYTE* sp = &g_cvSpecs + F(int, s, 4720) * 2416;
+    F(float, s, 5080) = (float)-x87_atan2((double)F(float, sp, 236) / F(float, sp, 240), 1.0);
+    for (int k = 0; k < 7; k++)
+        F(int, s, 5124 + 4 * k) = F(int, &g_cvSpecs2 + F(int, s, 4720) * 2416, 16 + 4 * k);
+    F(int, s, 4824) = -1;
+    CallThis(Cv_SetState, s, F(int, c, 20396) + 1);
+    F(DWORD, s, 16) |= 3;
+    Cv_FillNow(s + 4724);
+    Cv_FillNow(s + 4756);
+    Cv_FillNow(s + 4788);
+    g_cv696cb4 = CallC<BYTE*>(Cv_Find, 0, "DamageFCKey");
+    int w = CallVirt<int>(g_cv69684c, 20);
+    int h = CallVirt<int>(g_cv69684c, 24);
+    CallVirt(s, 44, 0, g_cv672d7c, w, h);
+    CallThis(Cv_Fill, s + 4828, 0, 0);
+}
+
+} // extern "C"
+
+// === a semitrailer's world object made (FUN_571c20 with its tail $L_571cbc)
+
+extern "C" void St_FreeId(); KING_ALIAS("_St_FreeId", "_Objects_FreeId")
+extern "C" void St_Create(); KING_ALIAS("_St_Create", "@Resources_Create@16")
+extern "C" void St_Get(); KING_ALIAS("_St_Get", "@Resources_Get@12")
+extern "C" void St_SetData(); KING_ALIAS("_St_SetData", "@Resources_SetData@24")
+extern "C" void St_Fatal(); KING_ALIAS("_St_Fatal", "_Sys_Fatal")
+extern "C" void St_Players(); KING_ALIAS("_St_Players", "@Iter_Players@8")
+ASM_VAR(BYTE, g_st6d24bc, $L_6d24bc)
+
+struct St_M48 { DWORD d[12]; };
+
+extern "C" {
+
+// [FUN_571c20..$L_571cbc] world w's semitrailer object (a free id from 101000, kind) named name at frame m for
+// cluster num (num / 1000 at the +num % 1000 table of 6d24bc); its 300 bytes of data set; the id
+int __cdecl Semitrailer_Create(BYTE* w, int kind, const char* name, St_M48 m, int num)
+{
+    int id = 101000;
+    CallC(St_FreeId, &id);
+    BYTE* res = w + 704;
+    CallThis(St_Create, res, id, kind);
+    BYTE* rec = CallThis<BYTE*>(St_Get, res, id);
+    BYTE* cl = ((BYTE**)(&g_st6d24bc + 12))[num / 1000 + num % 1000 * 372];
+    if (!cl)
+        CallC(St_Fatal, "Not found cluster for semitrailer", 0);
+    F(int, rec, 16) = F(int, cl, 16);
+    void* players;
+    CallThis(St_Players, &players);
+    BYTE data[300];
+    Fx_ObjectInit(data, 0, num, id % 1000, name, (const Matrix*)&m, (int)players, 0, 0, 0, 0);
+    CallThis(St_SetData, res, id, kind, 300, data);
+    return id;
+}
+
+} // extern "C"
+
+// === the snow effect made (FUN_4be8d0 with its tail $L_4be938)
+
+extern "C" void Sw_Object(); KING_ALIAS("_Sw_Object", "@Object_ConstructKind@16")
+extern "C" void Sw_Attach(); KING_ALIAS("_Sw_Attach", "@Owner_Attach@12")
+extern "C" void Sw_Post(); KING_ALIAS("_Sw_Post", "@Queue_PostEvent2@12")
+extern "C" void Sw_Fatal(); KING_ALIAS("_Sw_Fatal", "_Sys_Fatal")
+extern "C" void Sw_Particles(); KING_ALIAS("_Sw_Particles", "@Particles_Construct@12")
+extern "C" void Sw_Alloc(); KING_ALIAS("_Sw_Alloc", "@Particles_Alloc@12")
+extern "C" void Sw_Renderer(); KING_ALIAS("_Sw_Renderer", "@RendererA_Construct@8")
+extern "C" void Sw_Create(); KING_ALIAS("_Sw_Create", "@Renderer_Create@24")
+extern "C" void Sw_Find(); KING_ALIAS("_Sw_Find", "_Scene_FindObject")
+ASM_VAR(AsmLabel, g_sw64c428, $L_64c428)
+ASM_VAR(DWORD, g_sw64c1ec, $L_64c1ec)
+
+extern "C" {
+
+// [FUN_4be8d0..$L_4be938] snow s ("CSnow", kind 98) of world w with material m: posted, its particles (+36:
+// falling 7 from -7 at 0.05, 30 wide) and renderer (+32, 2000 after the scene's "afterThis")
+BYTE* __fastcall Snow_Construct(BYTE* s, void*, BYTE* w, BYTE* m)
+{
+    CallThis(Sw_Object, s, 98, "CSnow");
+    F(void*, s, 0) = &g_sw64c428;
+    F(BYTE*, s, 40) = w;
+    CallThis(Sw_Attach, w + 2992, s);
+    CallThis(Sw_Post, s, 1);
+    if (!m)
+        CallC(Sw_Fatal, "Snow material not found.", 0);
+    F(DWORD, m, 32) |= 0x40002;
+    F(float, m, 88) = 1.0f;
+    BYTE* p = (BYTE*)operator new(140);
+    if (p)
+        p = CallThis<BYTE*>(Sw_Particles, p, w);
+    F(BYTE*, s, 36) = p;
+    CallThis(Sw_Alloc, p, -1);
+    p = F(BYTE*, s, 36);
+    F(DWORD, p, 12) = g_sw64c1ec;
+    F(DWORD, F(BYTE*, s, 36), 24) = 0xC0E00000;
+    F(int, F(BYTE*, s, 36), 28) = 0;
+    F(DWORD, F(BYTE*, s, 36), 8) = 0x3D4CCCCD;
+    F(DWORD, F(BYTE*, s, 36), 60) = 0x41F00000;
+    F(DWORD, F(BYTE*, s, 36), 52) = 0x40E00000;
+    BYTE* r = (BYTE*)operator new(80);
+    if (r)
+        r = CallThis<BYTE*>(Sw_Renderer, r);
+    F(BYTE*, s, 32) = r;
+    BYTE* after = CallC<BYTE*>(Sw_Find, F(BYTE*, w, 524), "afterThis");
+    CallThis(Sw_Create, F(BYTE*, s, 32), after, m, 2000, 0);
+    F(int, s, 44) = 1;
+    return s;
 }
 
 } // extern "C"

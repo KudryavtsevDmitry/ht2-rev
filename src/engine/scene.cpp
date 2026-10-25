@@ -938,7 +938,7 @@ extern "C" BYTE* __fastcall Sce5fc6c0_DeletingDestructor(BYTE* s, void*, int fla
 
 extern "C" void FUN_5f21e0(); KING_ALIAS("_FUN_5f21e0", "@Slot_CastRay@20")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
-ASM_PROC(FUN_5f1db0)
+extern "C" void FUN_5f1db0(); KING_ALIAS("_FUN_5f1db0", "@Scene_ReadChildren@28")
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
 extern "C" void FUN_5f8bf0(); KING_ALIAS("_FUN_5f8bf0", "@Shape_ReadData@12")
 extern "C" void FUN_5ef800(); KING_ALIAS("_FUN_5ef800", "@Scene_TestInfo@16")
@@ -1064,7 +1064,7 @@ extern "C" void FUN_5ef820(); KING_ALIAS("_FUN_5ef820", "@Obj_Flag0Clear@24")
 extern "C" void FUN_5f2100(); KING_ALIAS("_FUN_5f2100", "@Slots_Call56@28")
 extern "C" void FUN_5b4cd0(); KING_ALIAS("_FUN_5b4cd0", "@Draw_ListItem@32")
 extern "C" void FUN_5aba10(); KING_ALIAS("_FUN_5aba10", "@Matrix_Read@12")
-ASM_PROC(FUN_5d2650)
+extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")
 extern "C" void FUN_5ab190(); KING_ALIAS("_FUN_5ab190", "_File_ReadFloat")
 extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
 extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
@@ -1951,10 +1951,10 @@ extern "C" void __fastcall Value_Free(int* s)
 // ---------------------------------------------------------------------------
 // Reading scene nodes.
 
-ASM_PROC(FUN_5f1db0)
+extern "C" void FUN_5f1db0(); KING_ALIAS("_FUN_5f1db0", "@Scene_ReadChildren@28")
 extern "C" void FUN_5ae580(); KING_ALIAS("_FUN_5ae580", "@Render_PushMatrix@16")
 extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
-ASM_PROC(FUN_5d2650)
+extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")
 extern "C" void FUN_5ac7f0(); KING_ALIAS("_FUN_5ac7f0", "@Plane_Read@12")
 extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
@@ -5067,7 +5067,7 @@ extern "C" void Nr_Init5e5cb0(); KING_ALIAS("_Nr_Init5e5cb0", "@Obj5e5cb0_Init@8
 extern "C" void Nr_LightRead(); KING_ALIAS("_Nr_LightRead", "@Light_ReadOld@20")
 extern "C" void Nr_EnvRead(); KING_ALIAS("_Nr_EnvRead", "@SceneNode5f3f30_Read@20")
 extern "C" void Nr_GroupRead(); KING_ALIAS("_Nr_GroupRead", "@SceneNode5fca50_Read@20")
-ASM_FUNC(Nr_AddName, FUN_5d2540)
+extern "C" void Nr_AddName(); KING_ALIAS("_Nr_AddName", "@NameHash_Add@16")
 ASM_VAR(char, g_nrName, $L_723a04)
 ASM_VAR(AsmLabel, g_nrNames, $L_71e820)
 ASM_VAR(BYTE, g_nr7025f0, $L_7025f0)
@@ -5406,6 +5406,116 @@ BYTE* __cdecl Scene_ReadNode(FILE* f, int c, int* kind, int a, int b, const char
     if (!o)
         return 0;
     return Nr_Finish(o, c, f, a, b, 0);
+}
+
+} // extern "C"
+
+// === a node's children read from the scene file (FUN_5f1db0 with its tail $L_5f1f1d)
+
+extern "C" void Ch_ReadInt(); KING_ALIAS("_Ch_ReadInt", "_File_ReadInt")
+extern "C" void Ch_ReadNode(); KING_ALIAS("_Ch_ReadNode", "_Scene_ReadNode")
+extern "C" void Ch_Root(); KING_ALIAS("_Ch_Root", "@Node_Root@8")
+extern "C" void Ch_Fatal(); KING_ALIAS("_Ch_Fatal", "_Sys_Fatal")
+extern "C" void Ch_Path(); KING_ALIAS("_Ch_Path", "@Path_Construct@32")
+extern "C" void Ch_AddControl(); KING_ALIAS("_Ch_AddControl", "@Chain_AddControl@12")
+extern "C" void Ch_Link(); KING_ALIAS("_Ch_Link", "@Node_Link@12")
+ASM_VAR(float, g_ch64c450, $L_64c450)
+
+// a "way..." node of kind 9 / 7 made a path control of the root room (kind 15)
+static void Ch_AddWay(BYTE* s, BYTE* node)
+{
+    BYTE* root = CallThis<BYTE*>(Ch_Root, s);
+    if (F(int, root, 16) != 15)
+    {
+        char buf[100];
+        sprintf(buf, "Road(%s) must be placed in room", F(const char*, node, 12));
+        CallC(Ch_Fatal, buf, 0);
+    }
+    BYTE* list = F(BYTE*, root, 64);
+    if (!list)
+    {
+        list = (BYTE*)operator new(4);
+        if (list)
+            F(int, list, 0) = 0;
+        F(BYTE*, root, 64) = list;
+    }
+    BYTE* p = (BYTE*)operator new(144);
+    if (p)
+    {
+        double w = F(int, node, 56) ? *F(float*, node, 60) : g_ch64c450;
+        p = CallThis<BYTE*>(Ch_Path, p, F(int, node, 68), F(int, node, 72), F(int, node, 48), F(int, node, 52), w);
+    }
+    CallThis(Ch_AddControl, list, p);
+    CallVirt(node, 0, 1);
+}
+
+extern "C" {
+
+// [FUN_5f1db0..$L_5f1f1d] node s's n child slots (+48, resized) read from file: per slot nodes (333 ... 555, r
+// counting the records left) until 444; way nodes become path controls, empty kind 2 ones are dropped, the first
+// fills the slot (vtable +20) and the next are linked after it; 1 when all the slots and records were read
+int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b, int c)
+{
+    if (n != F(int, s, 52))
+    {
+        F(int, s, 52) = n;
+        operator delete(F(void*, s, 48));
+        F(int*, s, 48) = (int*)operator new(F(int, s, 52) * 4);
+        for (int k = 0; k < F(int, s, 52); k++)
+            F(int*, s, 48)[k] = 0;
+    }
+    int i = 0;
+    for (; i < F(int, s, 52); i++)
+    {
+        BYTE* prev = 0;
+        if (F(int, s, 16) == 7 && i == 1)
+            continue;
+        for (;;)
+        {
+            if (!r && i == F(int, s, 52) - 1)
+                break;
+            int k = CallC<int>(Ch_ReadInt, file);
+            if (k != 333)
+            {
+                if (k == 444)
+                    break;
+                return 0;
+            }
+            int tmp;
+            BYTE* node = CallC<BYTE*>(Ch_ReadNode, file, F(int, s, 36), &tmp, b, c, 0);
+            if (!node)
+                return 0;
+            const char* name = F(const char*, node, 12);
+            if (F(int, node, 16) == 9 && name && !strncmp(name, "way", 3) && F(int, node, 64) == 7)
+            {
+                r--;
+                if (CallC<int>(Ch_ReadInt, file) != 555)
+                    return 0;
+                Ch_AddWay(s, node);
+                continue;
+            }
+            r--;
+            if (CallC<int>(Ch_ReadInt, file) != 555)
+                return 0;
+            if (F(int, node, 16) == 2 && !*F(int*, node, 48))
+            {
+                CallVirt(node, 0, 1);
+                continue;
+            }
+            if (!prev)
+                CallVirt(s, 20, i, node);
+            else
+            {
+                F(int, node, 44) = F(int, prev, 44);
+                CallThis(Ch_Link, node, prev);
+                F(int, node, 36) = F(int, prev, 36);
+            }
+            prev = node;
+        }
+    }
+    if (i != F(int, s, 52))
+        return 0;
+    return r == 0;
 }
 
 } // extern "C"

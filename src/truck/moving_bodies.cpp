@@ -1301,7 +1301,7 @@ extern "C" int __fastcall Thunk592ed0(BYTE* s, void* d)
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
 extern "C" void FUN_57c9a0(); KING_ALIAS("_FUN_57c9a0", "_Id_Same")
-ASM_PROC(FUN_584c70)    // sphere contacts (centre, other centre, radius, contacts, body, sign)
+extern "C" void FUN_584c70(); KING_ALIAS("_FUN_584c70", "_Item_SphereContact")    // sphere contacts (centre, other centre, radius, contacts, body, sign)
 ASM_PROC(FUN_58a020)    // box contacts (body, matrix, contacts, other, sign)
 ASM_VAR(AsmLabel, g_bc7025f0, $L_7025f0)
 

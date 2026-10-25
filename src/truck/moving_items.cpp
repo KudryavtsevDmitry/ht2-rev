@@ -1639,8 +1639,8 @@ int __cdecl Item_BodyContact(BYTE* s, const Matrix* m, float* scale, float* dept
 
 // === an item's contacts with the world's points (FUN_585150)
 
-ASM_FUNC(Ip_PointHit, FUN_584820)
-ASM_FUNC(Ip_SphereHit, FUN_584c70)
+extern "C" void Ip_PointHit(); KING_ALIAS("_Ip_PointHit", "_Item_PointContact")
+extern "C" void Ip_SphereHit(); KING_ALIAS("_Ip_SphereHit", "_Item_SphereContact")
 extern "C" void Ip_FrameTime(); KING_ALIAS("_Ip_FrameTime", "_Game_FrameTime")
 extern "C" void Ip_Get800(); KING_ALIAS("_Ip_Get800", "@SceneObj_Get800@8")
 extern "C" void Ip_Matrix1(); KING_ALIAS("_Ip_Matrix1", "@SceneObj_Matrix1@12")
@@ -2075,6 +2075,201 @@ int __fastcall Item_KnockOver(BYTE* s, void*)
     Movite_SendNamed(s, 0, F(const char*, fr, 12), (const DWORD*)&A);
     Movite_SendNamed(s, 0, F(const char*, fr, 12), (const DWORD*)&M1);
     return fell;
+}
+
+} // extern "C"
+
+// === a sharp point's contact with an item (FUN_584820 with its tail $L_584a52)
+
+extern "C" void Sh2_NodeInit(); KING_ALIAS("_Sh2_NodeInit", "@Node_Init@8")
+extern "C" void Sh2_M1(); KING_ALIAS("_Sh2_M1", "@SceneObj_Matrix1@12")
+extern "C" void Sh2_Sweep(); KING_ALIAS("_Sh2_Sweep", "@Shape_SweepHit@24")
+extern "C" void Sh2_Free(); KING_ALIAS("_Sh2_Free", "@Value_Free@4")
+extern "C" void Sh2_Query(); KING_ALIAS("_Sh2_Query", "_Query_4e570f")
+extern "C" void Sh2_Fatal(); KING_ALIAS("_Sh2_Fatal", "_World_Fatal")
+ASM_VAR(double, g_sh2_64b748, $L_64b748)
+ASM_VAR(double, g_sh2_64b670, $L_64b670)
+ASM_VAR(float, g_sh2_64c250, $L_64c250)
+
+// the contact array of c (+2816 its count): hit point (+0), the negated normal (+768), the depth along the
+// normal (+2560), the fraction of the way (+2048, the root of the squared lengths) and the flags (+2820, +1536)
+static int Sh2_Record(BYTE* c, int hit, const float* from, const float* to, const BYTE* node)
+{
+    int n = F(int, c, 2816);
+    F(int, c, 2820 + 4 * n) = hit & 1;
+    F(float, c, 2048 + 4 * n) = 1.0f;
+    if (!F(int, c, 2820 + 4 * F(int, c, 2816)))
+        return 0;
+    n = F(int, c, 2816);
+    F(int, c, 2048 + 4 * n) = 0;
+    const float* h = &F(float, node, 52);
+    const float* nr = &F(float, node, 64);
+    const float* e = &F(float, node, 88);
+    memcpy(c + 12 * n, h, 12);
+    float neg[3] = {-nr[0], -nr[1], -nr[2]};
+    memcpy(c + 12 * (n + 64), neg, 12);
+    F(int, c, 1536 + 4 * n) = 0;
+    float ex = (float)((double)e[0] - from[0]), ey = (float)((double)e[1] - from[1]);
+    double ez = (double)e[2] - from[2];
+    float hx = (float)((double)h[0] - from[0]), hy = (float)((double)h[1] - from[1]), hz = (float)((double)h[2] - from[2]);
+    double dx = (double)h[0] - to[0], dy = (double)h[1] - to[1], dz = (double)h[2] - to[2];
+    F(float, c, 2560 + 4 * n) = (float)(dy * nr[1] + dz * nr[2] + dx * nr[0]);
+    float l1 = (float)((double)ex * ex + (double)ey * ey + ez * ez);
+    float l2 = (float)((double)hx * hx + (double)hy * hy + (double)hz * hz);
+    if (!(l2 > l1) && !(l1 < g_sh2_64b748))
+    {
+        double r = (double)l2 / l1;
+        if (r > g_sh2_64b670)
+            r = g_sh2_64c250;
+        F(float, c, 2048 + 4 * F(int, c, 2816)) = (float)x87_sqrt(r);
+    }
+    F(int, c, 2816)++;
+    return 1;
+}
+
+extern "C" {
+
+// [FUN_584820..$L_584a52] the point moving from `from` to `to` against item b: a plain item's point (+3448 in its
+// frame, radius +3284) swept by Shape_SweepHit, a body or a kind-3 item (+392, +3976) through the scene query; the
+// result recorded in contacts c (at most 63)
+int __cdecl Item_PointContact(const float* from, const float* to, BYTE* c, BYTE* b)
+{
+    __declspec(align(8)) BYTE node[208];
+    CallThis(Sh2_NodeInit, node);
+    int hit;
+    int kind = F(int, b, 392);
+    if (kind != 1 && !(kind == 2 && F(int, b, 3976) == 3))
+    {
+        float* o = (float*)operator new(16);
+        if (o)
+        {
+            o[0] = 0;
+            o[1] = 0;
+            o[2] = 0;
+            o[3] = 0;
+        }
+        Matrix t;
+        const float* m = CallThis<const Matrix*>(Sh2_M1, b, &t)->m;
+        const float* p = &F(float, b, 3448);
+        double x = (double)m[3] * p[1] + (double)m[6] * p[2] + (double)p[0] * m[0] + m[9];
+        float y = (float)((double)m[4] * p[1] + (double)m[1] * p[0] + (double)m[7] * p[2] + m[10]);
+        float z = (float)((double)m[5] * p[1] + (double)m[2] * p[0] + (double)m[8] * p[2] + m[11]);
+        o[0] = (float)x;
+        o[1] = y;
+        o[2] = z;
+        F(int, o, 12) = F(int, b, 3284);
+        int val[3] = {1, 0, (int)o};
+        float f[3] = {from[0], from[1], from[2]};
+        float g[3] = {to[0], to[1], to[2]};
+        hit = CallThis<int>(Sh2_Sweep, val, 0, f, g, 0) ? 1 : 0;
+        memcpy(node + 52, f, 12);
+        memcpy(node + 64, g, 12);
+        F(int, node, 116) = 0;
+        CallThis(Sh2_Free, val);
+    }
+    else
+        hit = CallC<int>(Sh2_Query, b ? b + 256 : 0, from, to, node);
+    if (F(int, c, 2816) >= 63)
+        CallC(Sh2_Fatal, "try_SharpPoint_col_Node_arr(): arr.cnt>=ARRCNT-1");
+    return Sh2_Record(c, hit, from, to, node);
+}
+
+} // extern "C"
+
+// === a sharp sphere's contact with an item (FUN_584c70 with its tail $L_584eb2)
+
+extern "C" void Sh2_Query2(); KING_ALIAS("_Sh2_Query2", "_Query_4e774a")
+
+// the sphere's contact: as Sh2_Record, the point pushed out along the normal by the radius, the flag times sign and
+// the fraction negated when the contact lies behind
+static int Sh2_RecordSphere(BYTE* c, int hit, int sign, float rad, const float* from, const float* to,
+                            const BYTE* node)
+{
+    int n = F(int, c, 2816);
+    F(int, c, 2820 + 4 * n) = (hit & 1) * sign;
+    F(float, c, 2048 + 4 * n) = 1.0f;
+    if (!F(int, c, 2820 + 4 * F(int, c, 2816)))
+        return 0;
+    n = F(int, c, 2816);
+    F(int, c, 2048 + 4 * n) = 0;
+    const float* h = &F(float, node, 52);
+    const float* nr = &F(float, node, 64);
+    const float* e = &F(float, node, 88);
+    memcpy(c + 12 * n, h, 12);
+    float neg[3] = {-nr[0], -nr[1], -nr[2]};
+    memcpy(c + 12 * (n + 64), neg, 12);
+    F(int, c, 1536 + 4 * n) = 0;
+    double sx = (double)nr[0] * rad;
+    float sy = (float)((double)nr[1] * rad), sz = (float)((double)nr[2] * rad);
+    float q[3];
+    q[0] = (float)(h[0] + sx);
+    q[1] = (float)((double)sy + h[1]);
+    q[2] = (float)((double)sz + h[2]);
+    float ex = (float)((double)e[0] - from[0]), ey = (float)((double)e[1] - from[1]);
+    double ez = (double)e[2] - from[2];
+    float hx = (float)((double)q[0] - from[0]), hy = (float)((double)q[1] - from[1]), hz = (float)((double)q[2] - from[2]);
+    double dx = (double)q[0] - to[0], dy = (double)q[1] - to[1], dz = (double)q[2] - to[2];
+    F(float, c, 2560 + 4 * F(int, c, 2816)) = (float)(dy * nr[1] + dz * nr[2] + dx * nr[0]);
+    float l1 = (float)((double)ex * ex + (double)ey * ey + ez * ez);
+    float l2 = (float)((double)hx * hx + (double)hy * hy + (double)hz * hz);
+    if (!(l2 > l1) && !(l1 < g_sh2_64b748))
+    {
+        double r = (double)l2 / l1;
+        if (r > g_sh2_64b670)
+            r = g_sh2_64c250;
+        int k = F(int, c, 2816);
+        F(float, c, 2048 + 4 * k) = (float)x87_sqrt(r);
+        if (F(float, c, 2560 + 4 * k) < 0.0f)
+            F(float, c, 2048 + 4 * k) = -F(float, c, 2048 + 4 * k);
+    }
+    F(int, c, 2816)++;
+    return 1;
+}
+
+extern "C" {
+
+// [FUN_584c70..$L_584eb2] the sphere of radius rad moving from `from` to `to` against item b, as
+// Item_PointContact, recorded in contacts c with sign
+int __cdecl Item_SphereContact(const float* from, const float* to, float rad, BYTE* c, BYTE* b, int sign)
+{
+    __declspec(align(8)) BYTE node[208];
+    CallThis(Sh2_NodeInit, node);
+    int hit;
+    int kind = F(int, b, 392);
+    if (kind != 1 && !(kind == 2 && F(int, b, 3976) == 3))
+    {
+        float* o = (float*)operator new(16);
+        if (o)
+        {
+            o[0] = 0;
+            o[1] = 0;
+            o[2] = 0;
+            o[3] = 0;
+        }
+        Matrix t;
+        const float* m = CallThis<const Matrix*>(Sh2_M1, b, &t)->m;
+        const float* p = &F(float, b, 3448);
+        double x = (double)m[3] * p[1] + (double)m[6] * p[2] + (double)m[0] * p[0] + m[9];
+        float y = (float)((double)m[4] * p[1] + (double)m[7] * p[2] + (double)m[1] * p[0] + m[10]);
+        float z = (float)((double)m[5] * p[1] + (double)m[8] * p[2] + (double)m[2] * p[0] + m[11]);
+        o[0] = (float)x;
+        o[1] = y;
+        o[2] = z;
+        F(int, o, 12) = F(int, b, 3284);
+        int val[3] = {1, 0, (int)o};
+        float f[3] = {from[0], from[1], from[2]};
+        float g[3] = {to[0], to[1], to[2]};
+        hit = CallThis<int>(Sh2_Sweep, val, 2, f, g, rad) ? 1 : 0;
+        memcpy(node + 52, f, 12);
+        memcpy(node + 64, g, 12);
+        F(int, node, 116) = 0;
+        CallThis(Sh2_Free, val);
+    }
+    else
+        hit = CallC<int>(Sh2_Query2, b ? b + 256 : 0, rad, from, to, node);
+    if (F(int, c, 2816) >= 63)
+        CallC(Sh2_Fatal, "try_SharpSphere_col_Node_arr(): arr.cnt>=ARRCNT-1");
+    return Sh2_RecordSphere(c, hit, sign, rad, from, to, node);
 }
 
 } // extern "C"

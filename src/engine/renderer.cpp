@@ -5160,7 +5160,7 @@ void __fastcall Render_Polygon(BYTE* r, void*, BYTE* m, DWORD flags, int level)
 
 // === preparing a polygon for drawing (FUN_5b22f0)
 
-ASM_FUNC(Pp_Setup, FUN_5af3e0)
+extern "C" void Pp_Setup(); KING_ALIAS("_Pp_Setup", "@Render_LayerUVs@16")
 extern "C" void Pp_PlaneTransform(); KING_ALIAS("_Pp_PlaneTransform", "@Plane_Transform@12")
 extern "C" void Pp_Nop1(); KING_ALIAS("_Pp_Nop1", "@Fw_Nop1@12")
 extern "C" void Pp_Normalized(); KING_ALIAS("_Pp_Normalized", "_Vec3_Normalized")
@@ -6269,6 +6269,202 @@ int __fastcall Render_TexPolygon(BYTE* r, void*, BYTE* t, DWORD flags, int b, fl
             flags |= 16;
     }
     return CallC<int>(Rt_Blit, flags, F(int, r, 1948), n, r + 8, par, b, level);
+}
+
+} // extern "C"
+
+// === the texture coordinates of a mesh's layers (FUN_5af3e0)
+
+extern "C" void Lu_Fatal(); KING_ALIAS("_Lu_Fatal", "_Sys_Fatal")
+extern "C" void Lu_Point(); KING_ALIAS("_Lu_Point", "@Vec3_TransformPoint@12")
+extern "C" void Lu_Frame(); KING_ALIAS("_Lu_Frame", "@Render_CurrentFrame@8")
+ASM_VAR(BYTE, g_lu702a78, $L_702a78)
+ASM_VAR(BYTE, g_lu702dd8, $L_702dd8)
+ASM_VAR(BYTE, g_lu7025f0, $L_7025f0)
+ASM_VAR(Vec3, g_luUp, $L_702630)
+ASM_VAR(AsmLabel, g_lu67efa8, $L_67efa8)
+ASM_VAR(double, g_lu64b658, $L_64b658)
+ASM_VAR(float, g_lu64c250, $L_64c250)
+ASM_VAR(float, g_lu64c938, $L_64c938)
+ASM_VAR(double, g_lu64b748, $L_64b748)
+ASM_VAR(double, g_lu64b6e0, $L_64b6e0)
+ASM_VAR(double, g_lu651730, $L_651730)
+ASM_VAR(float, g_lu64c258, $L_64c258)
+ASM_VAR(float, g_lu64c264, $L_64c264)
+ASM_VAR(double, g_lu64d908, $L_64d908)
+ASM_VAR(double, g_lu64e4c8, $L_64e4c8)
+ASM_VAR(float, g_lu64d490, $L_64d490)
+ASM_VAR(float, g_lu64c334, $L_64c334)
+ASM_VAR(double, g_lu64d318, $L_64d318)
+
+static void __cdecl Lu_AtExit()
+{
+}
+
+extern "C" {
+
+// [FUN_5af3e0] renderer r's texture coordinates for mesh m's vertices on layer l and the layers chained from it
+// (+44 into r +8260): from channel +48 (the mesh's own +12 / +16, or the vertex records' +12 / +16 and +20 table),
+// scrolled (flag 4, +80 / +84 by the clock +8488), turned about +112 / +116 (flag 8, +108) or environment-mapped
+// (flag 0x800, kind +64: planar, spherical, half-spherical or flat; from the camera or, kind 3, the view matrix),
+// into the mesh's channel table +68 or its vertices (+80, else +76)
+void __fastcall Render_LayerUVs(BYTE* r, void*, BYTE* m, BYTE* l)
+{
+    for (;;)
+    {
+        if (!(g_lu702a78 & 1))
+        {
+            g_lu702a78 |= 1;
+            memset(&g_lu702dd8, 0, 48);
+            memcpy(&g_lu702dd8, &g_lu7025f0, 48);
+            atexit(Lu_AtExit);
+        }
+        float du = 0, dv = 0, sn = 0, cs = 1.0f;
+        int ch = F(int, l, 48);
+        DWORD f = F(DWORD, l, 32);
+        if ((f & 4) || (f & 8) || (f & 0x800))
+        {
+            if (f & 8)
+            {
+                double a = F(float, l, 108) * F(double, r, 8488);
+                sn = (float)x87_sin(a);
+                cs = (float)x87_cos(a);
+            }
+            else if (f & 4)
+            {
+                double u0 = F(float, l, 80) * F(double, r, 8488);
+                float v0 = (float)(F(float, l, 84) * F(double, r, 8488));
+                du = (float)(u0 - (int)u0);
+                dv = (float)((double)v0 - (int)v0);
+            }
+            for (int i = 0; i < F(WORD, m, 4); i++)
+            {
+                double u, v;
+                if (F(BYTE, m, 0) & 2)
+                {
+                    int idx = F(WORD, m, 6) * i + ch;
+                    v = F(float*, m, 16)[idx];
+                    u = F(float*, m, 12)[idx];
+                }
+                else
+                {
+                    BYTE* rec = F(BYTE*, r, 8252) + F(WORD*, m, 8)[i] * 28;
+                    if (!ch)
+                    {
+                        v = F(float, rec, 16);
+                        u = F(float, rec, 12);
+                    }
+                    else
+                    {
+                        if (!F(float*, rec, 20))
+                            CallC(Lu_Fatal, (const char*)&g_lu67efa8, l);
+                        rec = F(BYTE*, r, 8252) + F(WORD*, m, 8)[i] * 28;
+                        const float* t = F(float*, rec, 20) + (ch - 1) * 2;
+                        u = t[0];
+                        v = t[1];
+                    }
+                }
+                double u0 = u;
+                f = F(DWORD, l, 32);
+                if (f & 4)
+                {
+                    u = u + du;
+                    v = dv + v;
+                }
+                else if (f & 8)
+                {
+                    float vf = (float)v;
+                    double cx = F(float, l, 112), cy = F(float, l, 116);
+                    double ux = u - cx;
+                    v = (v - cy) * cs - sn * ux + cy;
+                    u = (vf - cy) * sn + cs * ux + cx;
+                }
+                else if (f & 0x800)
+                {
+                    BYTE* vr = F(BYTE*, r, 8252) + F(WORD*, m, 8)[i] * 28;
+                    float P[3] = {F(float, vr, 0), F(float, vr, 4), F(float, vr, 8)};
+                    Vec3 U = g_luUp;
+                    if (F(int, l, 64) == 3)
+                        CallThis(Lu_Point, P, r + 2240 + F(int, r, 8224) * 48);
+                    else
+                    {
+                        const float* c = CallThis<const float*>(Lu_Frame, r);
+                        Vec3 d, nb;
+                        d.x = (float)((double)c[0] - P[0]);
+                        d.y = (float)((double)c[1] - P[1]);
+                        d.z = (float)((double)c[2] - P[2]);
+                        const Vec3* n = Vec3_Normalized(&nb, &d);
+                        P[0] = n->x;
+                        P[1] = n->y;
+                        P[2] = n->z;
+                        double ux2 = (double)U.x + U.x;
+                        float uy2 = (float)((double)U.y + U.y), uz2 = (float)((double)U.z + U.z);
+                        float dd = (float)((double)U.y * P[1] + (double)U.z * P[2] + (double)U.x * P[0]);
+                        double rx = ux2 * dd;
+                        float ry = (float)((double)uy2 * dd), rz = (float)((double)uz2 * dd);
+                        P[0] = (float)(rx - P[0]);
+                        P[1] = (float)((double)ry - P[1]);
+                        P[2] = (float)((double)rz - P[2]);
+                        if (x87_fabs(P[2]) < g_lu64b658)
+                            *(DWORD*)&P[2] = 0x3A83126F;
+                        else if (P[2] > g_lu64c250)
+                            P[2] = 1.0f;
+                        else if (P[2] < g_lu64c938)
+                            P[2] = -1.0f;
+                        if (P[0] < g_lu64c938)
+                            P[0] = -1.0f;
+                        else if (P[0] > g_lu64c250)
+                            P[0] = 1.0f;
+                    }
+                    switch (F(int, l, 64))
+                    {
+                    case 0:
+                    {
+                        if (P[2] < g_lu64b748)
+                            *(DWORD*)&P[2] = 0x3727C5AC;
+                        double w = x87_fabs(P[2]);
+                        u = F(float, l, 96) * (double)P[0] * g_lu64b6e0 / w + g_lu64b6e0;
+                        v = F(float, l, 100) * (double)P[1] * g_lu64b6e0 / w + g_lu64b6e0;
+                        break;
+                    }
+                    case 1:
+                    case 2:
+                        if (F(int, l, 64) == 1)
+                            v = x87_acos(P[2]) * g_lu651730;
+                        else
+                            v = g_lu64c250 - P[2] * (double)g_lu64c258;
+                        u = x87_acos(P[0]);
+                        if (P[1] < g_lu64c264)
+                            u = g_lu64d908 - u;
+                        u *= g_lu64e4c8;
+                        break;
+                    case 3:
+                        u = P[0] * (double)g_lu64d490 + g_lu64b6e0;
+                        v = g_lu64d318 - P[2] * (double)g_lu64c334;
+                        break;
+                    default:
+                        u = u0;
+                        break;
+                    }
+                }
+                if (ch > 0)
+                {
+                    int idx = F(BYTE, m, 64) * i + ch;
+                    F(float*, m, 68)[idx * 2 - 2] = (float)u;
+                    F(float*, m, 68)[idx * 2 - 1] = (float)v;
+                }
+                else
+                {
+                    BYTE* vb = F(BYTE*, m, 80) ? F(BYTE*, m, 80) : F(BYTE*, m, 76);
+                    F(float, vb, i * 32 + 28) = (float)v;
+                    F(float, vb, i * 32 + 24) = (float)u;
+                }
+            }
+        }
+        if (F(int, l, 44) < 0)
+            return;
+        l = F(BYTE*, r, 8260) + F(int, l, 44) * 124;
+    }
 }
 
 } // extern "C"

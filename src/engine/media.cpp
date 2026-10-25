@@ -139,7 +139,7 @@ extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
 extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
 extern "C" void FUN_5c49b0(); KING_ALIAS("_FUN_5c49b0", "@Rec_Step@12")    // next record time (forward)
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
-ASM_PROC(FUN_5c4d30)
+extern "C" void FUN_5c4d30(); KING_ALIAS("_FUN_5c4d30", "@Node_ReadHistory@16")
 ASM_VAR(DWORD, g_msaviBlock, $L_702f74)
 ASM_VAR(AsmLabel, s_aviReadError, $L_67f418)
 ASM_VAR(AsmLabel, s_msaviProgressFailed, $L_67f79c)
@@ -3476,7 +3476,7 @@ void __fastcall Tree_Grow(BYTE* s, void*, int depth, const BYTE* m, BYTE* b)
 // === creating a network object (FUN_5c5c30)
 
 ASM_VAR(int, g_no67f878, $L_67f878)
-ASM_VAR(AsmLabel, g_no5c5ea0, $L_5c5ea0)    // its message handler
+extern "C" char* __cdecl Node_NetName(BYTE* o, char* dst);    // its message handler
 extern "C" char* __cdecl strncpy(char* d, const char* s, size_t n);
 
 extern "C" {
@@ -3508,7 +3508,7 @@ void __fastcall NetObject_Create(BYTE* s, void*, BYTE* m, BYTE* o, BYTE* c, DWOR
     F(BYTE*, s, 352) = List_Add(m + 8300, 0, k, 1, F(int, s, 324));
     k = F(int, s, 368);
     F(int, s, 368) = k + 1;
-    F(BYTE*, s, 356) = List_Add5(m + 8300, 0, k, (int)s, (int)(void*)g_no5c5ea0, 20);
+    F(BYTE*, s, 356) = List_Add5(m + 8300, 0, k, (int)s, (int)(void*)Node_NetName, 20);
     BYTE msg[32];
     CallThis(FUN_602be0, msg);
     BYTE d[256];
@@ -5232,6 +5232,165 @@ void __fastcall Media_Frame(BYTE* m, void*)
     }
     CallThis(Mf_StreamFree, g);                                   // FUN_602b60 takes the stream in ECX
     CallThis(Mf_MsgFree, msg);
+}
+
+} // extern "C"
+
+// === a strip of quads along a curling chain (FUN_5c7410)
+
+extern "C" void Rb_AtExit(); KING_ALIAS("_Rb_AtExit", "@Med5c77f0_Nop@4")
+ASM_VAR(BYTE, g_rbOnce, $L_70dcc4)
+ASM_VAR(WORD, g_rbIdx, $L_70dcc8)
+ASM_VAR(float, g_rbVtx, $L_70e298)
+ASM_VAR(DWORD, g_rbColor, $L_67f940)
+ASM_VAR(BYTE*, g_rbDevice, $L_720908)
+ASM_VAR(float, g_rb64c264, $L_64c264)
+ASM_VAR(float, g_rb651c80, $L_651c80)
+ASM_VAR(float, g_rb651c7c, $L_651c7c)
+ASM_VAR(float, g_rb651c78, $L_651c78)
+ASM_VAR(float, g_rb64c904, $L_64c904)
+
+static void Rb_Vertex(float* v, double x, double y, double z, double u, float w)
+{
+    v[0] = (float)x;
+    v[1] = (float)y;
+    v[2] = (float)z;
+    *(DWORD*)&v[3] = g_rbColor;
+    v[4] = (float)u;
+    v[5] = w;
+}
+
+extern "C" {
+
+// [FUN_5c7410] n + 1 steps of a strip from p[0] with width w: step i moves by i * (dx, dy) and, after the first, up
+// by sqrt(r^2 - (dx^2 + dy^2) i^2); three vertices a step (u from u0 + 651c80 / 7c / 78), the steps' positions
+// written back to p, a closing vertex, drawn as a D3D indexed triangle list (TL vertices 70e298, indices 70dcc8)
+void __cdecl Strip_Draw(float* p, int n, float w, float r, float dx, float dy, float u0)
+{
+    if (!(g_rbOnce & 1))
+    {
+        g_rbOnce |= 1;
+        atexit((void(__cdecl*)())Rb_AtExit);
+    }
+    double X = g_rb64c264, Y = g_rb64c264, Z = g_rb64c264;
+    float uc = g_rb64c264;
+    int i = 0;
+    int k = 0;
+    float* v = &g_rbVtx;
+    WORD* idx = &g_rbIdx;
+    if (n >= 0)
+    {
+        double ua = (double)u0 + g_rb651c80;
+        double ub = (double)u0 + g_rb651c7c;
+        uc = (float)((double)u0 + g_rb651c78);
+        for (; i <= n; i++, v += 18)
+        {
+            double fi = i;
+            X += fi * dx;
+            Y += fi * dy;
+            if (i > 0)
+            {
+                double q = ((double)dx * dx + (double)dy * dy) * (i * i);
+                Z += x87_sqrt((double)r * r - q);
+            }
+            float par = (float)(i % 2);
+            Rb_Vertex(v, X + p[0], Y + p[1], Z + p[2], ua, par);
+            Rb_Vertex(v + 6, X + p[0] + w, Y + p[1], Z + p[2], ub, par);
+            Rb_Vertex(v + 12, X + p[0], Y + p[1] + w, Z + p[2], uc, par);
+            float* o = p + 3 * i;
+            o[0] = v[0];
+            o[1] = v[1];
+            o[2] = v[2];
+            if (i > 0)
+            {
+                int c = 3 * i;
+                static const signed char d[18] = {-3, -2, 1, -3, 1, 0, -1, -3, 0, -1, 0, 2, -2, -1, 2, -2, 2, 1};
+                for (int j = 0; j < 18; j++)
+                    idx[k++] = (WORD)(c + d[j]);
+            }
+        }
+        uc = (float)Y;
+    }
+    else
+        uc = (float)g_rb64c264;
+    // the closing vertex at step i (= n + 1)
+    float fi = (float)i;
+    float hw = (float)(w * (double)g_rb64c904);
+    float* t = &g_rbVtx + i * 18;
+    t[0] = (float)((double)fi * dx + X + hw + p[0]);
+    t[1] = (float)((double)fi * dy + uc + p[1] + hw);
+    double q = ((double)dx * dx + (double)dy * dy) * (i * i);
+    t[2] = (float)(x87_sqrt((double)r * r - q) + Z + p[2]);
+    *(DWORD*)&t[3] = g_rbColor;
+    *(DWORD*)&t[4] = 0x3F7AE148;
+    t[5] = (float)(i % 2);
+    int c = 3 * i;
+    static const signed char e[9] = {-3, 0, -1, -2, 0, -3, -1, 0, -2};
+    for (int j = 0; j < 9; j++)
+        idx[k++] = (WORD)(c + e[j]);
+    float* o = p + 3 * i;
+    o[0] = t[0];
+    o[1] = t[1];
+    o[2] = t[2];
+    Com(g_rbDevice, 104, 4, 322, &g_rbVtx, 3 * i + 1, &g_rbIdx, k, 0);
+}
+
+} // extern "C"
+
+// === a node's animation history read back (FUN_5c4d30 with its tail $L_5c4d76) and its net name ($L_5c5ea0
+//     with its tail $L_5c5f18)
+
+extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
+extern "C" void Ah_ReadInt(); KING_ALIAS("_Ah_ReadInt", "_File_ReadInt")
+extern "C" void Ah_Fatal(); KING_ALIAS("_Ah_Fatal", "_Sys_Fatal")
+extern "C" void Ah_MsgNew(); KING_ALIAS("_Ah_MsgNew", "@DpMessage_Construct@8")
+extern "C" void Ah_MsgSet(); KING_ALIAS("_Ah_MsgSet", "@DpMessage_Set@16")
+extern "C" void Ah_MsgAtEnd(); KING_ALIAS("_Ah_MsgAtEnd", "@Gate_Set24@8")
+extern "C" void Ah_MsgFree(); KING_ALIAS("_Ah_MsgFree", "@MsgBuf_Destroy@8")
+extern "C" void Ah_Root(); KING_ALIAS("_Ah_Root", "@Node_Root@8")
+ASM_FUNC(Ah_MsgDone, FUN_603300)
+ASM_VAR(char, g_ahNetFmt, $L_67f920)
+ASM_VAR(char, g_ahNetLong, $L_67f8f0)
+
+extern "C" {
+
+// [FUN_5c4d30..$L_5c4d76] node s's history block (its size, at most 1000000, the bytes and an end mark) from its
+// file (+7928) replayed as messages through s's vtable +220 with a, b
+void __fastcall Node_ReadHistory(BYTE* s, void*, int a, int b)
+{
+    FILE* f = F(FILE*, s, 7928);
+    int n = CallC<int>(Ah_ReadInt, f);
+    if (n < 0 || n > 1000000)
+        CallC(Ah_Fatal, "Animation history by frame has too long size", 0);
+    BYTE* buf = (BYTE*)operator new(n);
+    fread(buf, n, 1, F(FILE*, s, 7928));
+    CallC(Ah_ReadInt, F(FILE*, s, 7928));
+    __declspec(align(8)) BYTE msg[32];
+    CallThis(Ah_MsgNew, msg);
+    CallThis(Ah_MsgSet, msg, buf, n);
+    if (!CallThis<int>(Ah_MsgAtEnd, msg))
+        do
+            CallVirt(s, 220, msg, a, b);
+        while (!CallThis<int>(Ah_MsgDone, msg));
+    operator delete(buf);
+    CallThis(Ah_MsgFree, msg);
+}
+
+// [$L_5c5ea0..$L_5c5f18] the name of object o (its node +256) for the net in dst: the root's module and room
+// names, each ended by 0, at most 20 bytes (fatal else)
+char* __cdecl Node_NetName(BYTE* o, char* dst)
+{
+    BYTE* n = o ? o + 256 : 0;
+    const char* mod = F(const char*, CallThis<BYTE*>(Ah_Root, n), 12);
+    const char* room = F(const char*, F(BYTE*, CallThis<BYTE*>(Ah_Root, n), 36), 60);
+    if (strlen(room) + strlen(mod) + 2 > 20)
+    {
+        char buf[32];
+        sprintf(buf, &g_ahNetFmt, mod, room, F(int, o, 344));
+        CallC(Ah_Fatal, &g_ahNetLong, buf);
+    }
+    strncpy(dst, mod, strlen(mod) + 1);
+    return strncpy(dst + strlen(mod) + 1, room, strlen(room) + 1);
 }
 
 } // extern "C"

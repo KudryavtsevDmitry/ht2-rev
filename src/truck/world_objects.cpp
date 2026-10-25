@@ -549,7 +549,7 @@ extern "C" BYTE* __fastcall Spark59bed0_Construct(BYTE* self, void*, int a, cons
     return Spark_Init(self, g_vtbl650d80, g_vtbl650d34, p, q, 0x40400000);
 }
 
-ASM_PROC(FUN_59f870)
+extern "C" void FUN_59f870(); KING_ALIAS("_FUN_59f870", "@Cone_SetPlanes@36")
 ASM_VAR(float, g_64c330, $L_64c330)             // 0.75
 ASM_VAR(float, g_64c408, $L_64c408)             // 4
 ASM_VAR(float, g_64c258, $L_64c258)             // 0.5
@@ -2423,7 +2423,7 @@ ASM_VAR(float, g_tu64d350, $L_64d350)
 ASM_VAR(AsmLabel, g_tu6f68b0, $L_6f68b0)
 extern "C" void FUN_595d20(); KING_ALIAS("_FUN_595d20", "@ReplayCam_NextShot@8")
 extern "C" void FUN_5968c0(); KING_ALIAS("_FUN_5968c0", "@TvCamera_Follow@12")
-ASM_PROC(FUN_596b30)
+extern "C" void FUN_596b30(); KING_ALIAS("_FUN_596b30", "@PathCam_Frame@12")
 extern "C" void FUN_596e50(); KING_ALIAS("_FUN_596e50", "@Object_AimMatrix@16")
 extern "C" void FUN_598d30(); KING_ALIAS("_FUN_598d30", "@Wasm_598d30@16")
 extern "C" void FUN_599210(); KING_ALIAS("_FUN_599210", "_Cam_AvoidObjects")
@@ -4995,6 +4995,190 @@ void __fastcall Game_FrameKeys(BYTE* s, void*)
         }
     }
     CallThis(Gf_Post, s, 1);
+}
+
+} // extern "C"
+
+// === the path camera's frame (FUN_596b30)
+
+extern "C" void Pf_Nearest(); KING_ALIAS("_Pf_Nearest", "@Ctl_FindNearest@32")
+extern "C" void Pf_Dir(); KING_ALIAS("_Pf_Dir", "@Path_DirectionAt@20")
+extern "C" void Pf_Normalize(); KING_ALIAS("_Pf_Normalize", "@Vec3_NormalizeThis@8")
+extern "C" void Pf_Transform2(); KING_ALIAS("_Pf_Transform2", "@Matrix_Transform2@12")
+extern "C" void Pf_NodeInit(); KING_ALIAS("_Pf_NodeInit", "@Node_Init@8")
+ASM_VAR(int, g_pf6f6918, $L_6f6918)
+ASM_VAR(BYTE, g_pf7025f0, $L_7025f0)
+ASM_VAR(Vec3, g_pfUp, $L_702630)
+ASM_VAR(float, g_pf64c968, $L_64c968)
+ASM_VAR(float, g_pf64c490, $L_64c490)
+ASM_VAR(float, g_pf64c32c, $L_64c32c)
+ASM_VAR(float, g_pf64c2fc, $L_64c2fc)
+ASM_VAR(float, g_pf64c40c, $L_64c40c)
+
+static void Pf_Shift(BYTE* m, const Vec3& d, float k)
+{
+    Vec3 v;
+    v.x = (float)(d.x * (double)k);
+    v.y = (float)(d.y * (double)k);
+    v.z = (float)(d.z * (double)k);
+    Matrix T;
+    CallThis(Pf_Transform2, m, Matrix_Translation(&T, v));
+}
+
+extern "C" {
+
+// [FUN_596b30] path camera c's frame into out: with no path (+316 +64) its own frame +32 (and +324 set unless
+// 6f6918 is 2); else the frame +80 at the path's nearest point, moved along the path's level heading for modes 3 / 4
+// (+328), and stood on the ground found below it by the scene's vtbl+52 (above it by 64c2fc / 64c40c), else at the
+// height of +32
+BYTE* __fastcall PathCam_Frame(BYTE* c, void*, BYTE* out)
+{
+    Vec3 d = {0, 0, 0};
+    BYTE* path = F(BYTE*, F(BYTE*, c, 316), 64);
+    BYTE* src = c + 32;
+    if (path)
+    {
+        BYTE tmp[24];
+        int idx;
+        BYTE* n = CallThis<BYTE*>(Pf_Nearest, path, c + 80, tmp, &idx, 0, 65535, 0);
+        if (n)
+        {
+            if (idx < 0)
+                idx = -1 - idx;
+            BYTE dir[12];
+            const Vec3* r = CallThis<const Vec3*>(Pf_Dir, n, dir, c + 80, &idx);
+            d = *r;
+            d.z = 0;
+            CallThis(Pf_Normalize, &d);
+            BYTE* m = c + 128;
+            memcpy(m, c + 80, 48);
+            if (F(int, c, 328) == 3)
+                Pf_Shift(m, d, g_pf64c968);
+            if (F(int, c, 328) == 4)
+                Pf_Shift(m, d, g_pf64c490);
+            __declspec(align(8)) BYTE node[208];
+            CallThis(Pf_NodeInit, node);
+            double ux = g_pfUp.x * (double)g_pf64c32c;
+            float uy = (float)(g_pfUp.y * (double)g_pf64c32c);
+            float uz = (float)(g_pfUp.z * (double)g_pf64c32c);
+            memcpy(node + 4, &g_pf7025f0, 48);
+            F(int, node, 116) = 0;
+            F(int, node, 0) = 0;
+            F(float, node, 76) = (float)(ux + F(float, c, 164));
+            F(float, node, 80) = (float)((double)uy + F(float, c, 168));
+            F(float, node, 84) = (float)((double)uz + F(float, c, 172));
+            F(float, node, 88) = (float)(F(float, c, 164) - ux);
+            F(float, node, 92) = (float)((double)F(float, c, 168) - uy);
+            F(float, node, 96) = (float)((double)F(float, c, 172) - uz);
+            if (CallVirt<int>(F(BYTE*, c, 316), 52, 4, node) & 1)
+                F(float, c, 172) = (float)((double)F(float, node, 60) +
+                                           (F(int, c, 328) == 3 ? g_pf64c2fc : g_pf64c40c));
+            else
+                F(int, c, 172) = F(int, c, 76);
+            src = m;
+            memcpy(out, src, 48);
+            return out;
+        }
+    }
+    if (path || g_pf6f6918 != 2)
+        F(int, c, 324) = 1;
+    memcpy(out, src, 48);
+    return out;
+}
+
+} // extern "C"
+
+// === a light cone's six planes (FUN_59f870)
+
+extern "C" void Lc_Set(); KING_ALIAS("_Lc_Set", "@Vec3_SetThis@20")
+extern "C" void Lc_Negated(); KING_ALIAS("_Lc_Negated", "_Vec3_Negated")
+ASM_VAR(Vec3, g_lcUp, $L_702630)
+ASM_VAR(Vec3, g_lcDown, $L_702640)
+ASM_VAR(Vec3, g_lcEye, $L_702650)
+ASM_VAR(float, g_lc64c338, $L_64c338)
+ASM_VAR(float, g_lc64c334, $L_64c334)
+ASM_VAR(float, g_lc651184, $L_651184)
+
+static Vec3 Lc_Vec(double x, double y, double z)
+{
+    Vec3 v;
+    CallThis(Lc_Set, &v, (float)x, (float)y, (float)z);
+    return v;
+}
+
+// plane at o through base whose normal is v turned by the look-at frame (dir, roll)
+static void Lc_Plane(BYTE* o, const Vec3& base, const Vec3& v, const Vec3& dir, float roll)
+{
+    Matrix L;
+    Vec3 r;
+    Vec3_RotateBy(&r, &v, Matrix_LookAt(&L, g_lcEye, dir, roll));
+    Plane_ThroughPoint(&r.x, &base.x, o);
+}
+
+extern "C" {
+
+// [FUN_59f870] cone o (kind +0 = a, +4 = b, mode +120) at pos along d: its apex moved back along d (by 64c338 for
+// mode 1, else 64c334), its spreads (+112 / +116 and the side angles) by mode, and the planes +8 .. +88: the four
+// sides through the apex and the near / far caps along d
+void __fastcall Cone_SetPlanes(BYTE* o, void*, int a, const Vec3* pos, float dx, float dy, float dz, int b, int mode)
+{
+    F(int, o, 0) = a;
+    F(int, o, 120) = mode;
+    F(int, o, 4) = b;
+    Vec3 base = {0, 0, 0};
+    float k1 = 0, k2 = 0;
+    if (mode == 1)
+    {
+        Vec3 t = Lc_Vec(dx * (double)g_lc64c338, dy * (double)g_lc64c338, dz * (double)g_lc64c338);
+        base = Lc_Vec((double)pos->x - t.x, (double)pos->y - t.y, (double)pos->z - t.z);
+        F(float, o, 112) = 0.05f;
+        F(DWORD, o, 116) = 0x40533333;
+        *(DWORD*)&k1 = 0x3E71C71C;
+        *(DWORD*)&k2 = 0x3E71C71C;
+    }
+    else if (mode == 0 || mode == 2)
+    {
+        Vec3 t = Lc_Vec(dx * (double)g_lc64c334, dy * (double)g_lc64c334, dz * (double)g_lc64c334);
+        base = Lc_Vec((double)pos->x - t.x, (double)pos->y - t.y, (double)pos->z - t.z);
+        F(float, o, 112) = 0.05f;
+        F(float, o, 116) = 1.5f;
+        *(DWORD*)&k1 = 0x3F4CCCCD;
+        *(DWORD*)&k2 = 0x3F4CCCCD;
+    }
+    const Vec3& U = g_lcUp;
+    Vec3 c = Lc_Vec((double)dz * U.y - (double)dy * U.z, (double)dx * U.z - (double)dz * U.x,
+                    (double)dy * U.x - (double)dx * U.y);
+    Vec3 R;
+    if (Vec3_Length(&c) < g_lc651184)
+        R = g_lcDown;
+    else
+    {
+        Vec3 t;
+        R = *Vec3_Normalized(&t, &c);
+    }
+    Vec3 u = Lc_Vec((double)R.y * dz - (double)R.z * dy, (double)R.z * dx - (double)dz * R.x,
+                    (double)dy * R.x - (double)R.y * dx);
+    Vec3 nb;
+    const Vec3* n = Vec3_Normalized(&nb, &u);
+    Vec3 D = Lc_Vec(-n->x, -n->y, -n->z);
+    Vec3 E = Lc_Vec(-D.x, -D.y, -D.z);
+    Matrix L;
+    const float* m = Matrix_LookAt(&L, g_lcEye, R, k2)->m;
+    Vec3 v = Lc_Vec((double)E.z * m[6] + (double)E.y * m[3] + (double)E.x * m[0],
+                    (double)E.z * m[7] + (double)E.y * m[4] + (double)E.x * m[1],
+                    (double)E.z * m[8] + (double)E.y * m[5] + (double)E.x * m[2]);
+    Plane_ThroughPoint(&v.x, &base.x, o + 8);
+    Vec3 nR = Lc_Vec(-R.x, -R.y, -R.z);
+    Lc_Plane(o + 24, base, D, nR, k2);
+    Lc_Plane(o + 40, base, R, D, k1);
+    Vec3 n2 = Lc_Vec(-D.x, -D.y, -D.z);
+    Vec3 mR = Lc_Vec(-R.x, -R.y, -R.z);
+    Lc_Plane(o + 56, base, mR, n2, k1);
+    Vec3 dir = {dx, dy, dz}, s, p, neg;
+    Vec3_Add(&p, pos, Vec3_Scaled(&s, &dir, F(float, o, 112)));
+    Plane_ThroughPoint(&CallC<Vec3*>(Lc_Negated, &neg, &dir)->x, &p.x, o + 72);
+    Vec3_Add(&p, pos, Vec3_Scaled(&s, &dir, F(float, o, 116)));
+    Plane_ThroughPoint(&dir.x, &p.x, o + 88);
 }
 
 } // extern "C"

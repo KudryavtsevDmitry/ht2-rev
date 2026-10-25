@@ -20536,7 +20536,7 @@ extern "C" void $L_41ed50(); KING_ALIAS("_$L_41ed50", "_Task_PlacePresents")
 ASM_PROC($L_420ed0)
 extern "C" void $L_422370(); KING_ALIAS("_$L_422370", "_Task_Waiting")
 extern "C" void $L_42b3a0(); KING_ALIAS("_$L_42b3a0", "_AI_SwitchToRandom")
-ASM_PROC($L_4279d0)
+extern "C" void $L_4279d0(); KING_ALIAS("_$L_4279d0", "_Ai_FillStartGrid")
 extern "C" void $L_429930(); KING_ALIAS("_$L_429930", "_Ai_HireTask")
 extern "C" void $L_429fb0(); KING_ALIAS("_$L_429fb0", "_Task_OrdersExpired")
 extern "C" void $L_42a120(); KING_ALIAS("_$L_42a120", "_Task_PresentOrdersExpired")
@@ -22767,7 +22767,7 @@ void __cdecl Ai_HireTask()
 extern "C" void FUN_45f650(); KING_ALIAS("_FUN_45f650", "@Far_Compare@16")
 extern "C" void FUN_465d20(); KING_ALIAS("_FUN_465d20", "_CopyBackwardDwords2")
 extern "C" void FUN_465e80(); KING_ALIAS("_FUN_465e80", "_Nodes_IntroSortLoop")
-ASM_PROC(FUN_468d60)
+extern "C" void FUN_468d60(); KING_ALIAS("_FUN_468d60", "_Holders_MedianByDistance")
 ASM_PROC(FUN_4691a0)
 ASM_PROC(FUN_46ab50)
 extern "C" void FUN_46c010(); KING_ALIAS("_FUN_46c010", "_Near_LinearInsert")
@@ -24164,6 +24164,185 @@ void __cdecl Ai_UpdateChasedCars()
             CallC(FUN_427220, tgt);
     }
     Trace_Leave(s_updateChasedCars);
+}
+
+} // extern "C"
+
+// === filling the start grid (a task at $L_4279d0)
+
+ASM_VAR(double, g_sg66c6d8, $L_66c6d8)
+ASM_VAR(double, g_sg66c6f8, $L_66c6f8)
+ASM_VAR(double, g_sg68d170, $L_68d170)
+ASM_VAR(double, g_sg64b690, $L_64b690)
+ASM_VAR(double, g_sg64b760, $L_64b760)
+ASM_VAR(double, g_sg64b5b8, $L_64b5b8)
+ASM_VAR(double, g_sg64b808, $L_64b808)
+ASM_VAR(double, g_sg64b800, $L_64b800)
+ASM_VAR(double, g_sg64b7f8, $L_64b7f8)
+ASM_VAR(BYTE**, g_sgNodes, $L_68cf00)
+extern "C" void Sg_Find2(); KING_ALIAS("_Sg_Find2", "_Players_Find457360")
+extern "C" void Sg_Cost(); KING_ALIAS("_Sg_Cost", "_Road_PositionCostBest")
+
+static void Sg_Clear(BYTE* b)
+{
+    memset(b, 0, 24);
+}
+
+extern "C" {
+
+// [$L_4279d0] the start: once the wait (state 2) has run its time the waiting ends; state 3 goes back to 0 after
+// 64b690; in state 0, with the camera near the race's first start node, every waiting player found gets the next
+// start slot ("start%d_%d"), is placed there heading for check_point1 and marked ready (+100 = 5, +96 | 0x4000);
+// a full grid (66c6d0) starts the countdown (state 2) and announces the race's length
+void __cdecl Ai_FillStartGrid()
+{
+    if (g_66c6e0 == 2 && AI_Now() - g_sg66c6d8 > g_sg66c6f8)
+    {
+        AI_EndWaiting();
+        return;
+    }
+    if (g_66c6e0 == 3 && AI_Now() - g_sg68d170 > g_sg64b690)
+    {
+        g_66c6e0 = 0;
+        AI_SetStartKey(1);
+    }
+    if (g_66c6e0)
+        return;
+    int first;
+    Player_FromId(&first);
+    if (first == (int)g_playersHead)
+        return;
+    char name[100];
+    sprintf(name, "start%d_%d", g_66c6e4, 3);
+    int node;
+    Node_ByName(&node, name);
+    const double* np = (const double*)(g_sgNodes[node] + 48);
+    double d[3];
+    d[0] = g_68bab0.x - np[0];
+    d[1] = g_68bab0.y - np[1];
+    d[2] = g_68bab0.z - np[2];
+    if (x87_sqrt(d[1] * d[1] + d[2] * d[2] + d[0] * d[0]) < g_sg64b760)
+        return;
+    BYTE buf[24];
+    Sg_Clear(buf);
+    if (!AI_FewWaiting())
+        return;
+    Sg_Clear(buf);
+    if (!AI_FewWaiting())
+        return;
+    do
+    {
+        int p;
+        Players_Find4572f0(&p, first, (int)&g_rng68b9c8);
+        if (p == (int)g_playersHead)
+        {
+            CallC(Sg_Find2, &p, first, &g_rng68b9c8);
+            if (p == (int)g_playersHead)
+                return;
+        }
+        BYTE* pl = (BYTE*)p;
+        Player_ClearOrderLists(pl + 8);
+        Player_Retire(pl);
+        int n = (int)(g_vec68cf64 - g_vec68cf60);
+        F(int, pl, 728) = n - 1;
+        char slot[100];
+        sprintf(slot, "start%d_%d", g_66c6e4, n);
+        int cp, sn;
+        Node_ByName(&cp, "check_point1");
+        Node_ByName(&sn, slot);
+        PositionId at = {-1, sn, 0.0, 0, 0, 0, -1};
+        Player_Place(pl, at);
+        PositionId to;
+        Position_InitNode(&to, 0, cp);
+        Player_GoTo(pl, to, 1);
+        F(int, pl, 100) = 5;
+        F(DWORD, pl, 96) |= 0x4000;
+        Player_Call477c30(pl);
+        Player_UpdateFlags(pl);
+        if ((unsigned)(g_vec68cf64 - g_vec68cf60) >= g_66c6d0)
+        {
+            g_66c6e0 = 2;
+            g_68d168 = 1;
+            g_sg66c6d8 = AI_Now();
+            int q;
+            Player_FromId(&q);
+            if (q != (int)g_playersHead)
+            {
+                PositionId from = *(PositionId*)((BYTE*)q + 40);
+                int xn;
+                Node_ByName(&xn, slot);
+                double cost = 0;
+                PositionId dest;
+                Position_InitNode(&dest, 0, xn);
+                CallC(Sg_Cost, 0, from, dest, &cost);
+                double t = cost * g_sg64b5b8;
+                if (t > g_sg64b808)
+                    t = g_sg64b808;
+                int mins = (int)(t * g_sg64b800);
+                g_sg66c6f8 = mins * g_sg64b7f8;
+                char msg[64];
+                sprintf(msg, Message_Text("RACES_TO_TAKE_PLACE_IN"), g_sg66c6f8 * g_sg64b800);
+                Messages_Add(msg);
+            }
+        }
+        Sg_Clear(buf);
+    } while (AI_FewWaiting());
+}
+
+} // extern "C"
+
+// === the median of three road positions by distance (FUN_468d60)
+
+// the point of handle h's position (+40) and its offset from pt, as Rec_Set6 / DVec3_Sub store it
+static DVec3 Md_Offset(int h, const DVec3& pt)
+{
+    DVec3 p;
+    Road_PointOf(&p, *(PositionId*)((BYTE*)h + 40));
+    DVec3 d;
+    d.x = pt.x - p.x;
+    d.y = pt.y - p.y;
+    d.z = pt.z - p.z;
+    return d;
+}
+
+// the four ways the original measures it (the sums run in different orders)
+static double Md_ZYX(int h, const DVec3& pt)
+{
+    DVec3 d = Md_Offset(h, pt);
+    return x87_sqrt(d.z * d.z + d.y * d.y + d.x * d.x);
+}
+
+static double Md_XYZ(int h, const DVec3& pt)
+{
+    DVec3 d = Md_Offset(h, pt);
+    return x87_sqrt(d.x * d.x + d.y * d.y + d.z * d.z);
+}
+
+static double Md_Len(int h, const DVec3& pt)
+{
+    DVec3 d = Md_Offset(h, pt);
+    return DVec3_Length(&d);
+}
+
+extern "C" {
+
+// [FUN_468d60] of the handles *a, *b, *c the one whose road position lies at the middle distance from pt
+int* __cdecl Holders_MedianByDistance(int* a, int* b, int* c, DVec3 pt)
+{
+    double da = Md_ZYX(*a, pt);
+    if (Md_Len(*b, pt) > da)
+    {
+        double db = Md_ZYX(*b, pt);
+        if (Md_Len(*c, pt) > db)
+            return b;
+        double da2 = Md_Len(*a, pt);
+        return Md_Len(*c, pt) > da2 ? c : a;
+    }
+    double da2 = Md_Len(*a, pt);
+    if (Md_Len(*c, pt) > da2)
+        return a;
+    double db = Md_XYZ(*b, pt);
+    return Md_Len(*c, pt) > db ? c : b;
 }
 
 } // extern "C"

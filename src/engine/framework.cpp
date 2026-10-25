@@ -984,7 +984,7 @@ extern "C" void FUN_5e4ec0(); KING_ALIAS("_FUN_5e4ec0", "@Resources_Find@12")
 extern "C" void FUN_5e4660(); KING_ALIAS("_FUN_5e4660", "@Resource_Construct@16")
 extern "C" void FUN_5dc230(); KING_ALIAS("_FUN_5dc230", "@App_Path@12")    // (this, a) -> b
 ASM_PROC(FUN_5dae90)    // (this, b, c, d)
-ASM_PROC(FUN_5e4f60)    // resources: load table (this, name)
+extern "C" void FUN_5e4f60(); KING_ALIAS("_FUN_5e4f60", "@Resources_AddTable@12")    // resources: load table (this, name)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 ASM_VAR(AsmLabel, g_objectNames, $L_71e820)
@@ -1379,7 +1379,7 @@ extern "C" int __cdecl Image_LoadAny(BYTE* img, int a2, char* path)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
-ASM_PROC($L_5d9a20)     // room object callback: queue the objects to delete
+extern "C" int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx);     // room object callback: queue the objects to delete
 ASM_VAR(BOOL, g_fwTaskDump, $L_721768)
 ASM_VAR(BYTE*, g_fwTraceData, $L_71e814)
 ASM_VAR(int, g_fwTracePos, $L_71e818)
@@ -1417,7 +1417,7 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
     if (cur)
     {
         BYTE* old = F(BYTE*, cur, 36);
-        CallThis(FUN_5ead00, old, $L_5d9a20, ctx);
+        CallThis(FUN_5ead00, old, (void*)Room_QueueDelete, ctx);
         BYTE** items = (BYTE**)(ctx + 24);
         int& tail = F(int, ctx, 428);
         while (F(int, ctx, 424) != tail)
@@ -4756,7 +4756,7 @@ ASM_VAR(AsmLabel, s_rp682ef0, $L_682ef0)
 ASM_VAR(AsmLabel, s_rp682ee0, $L_682ee0)
 ASM_VAR(AsmLabel, g_rp652518, $L_652518)
 ASM_VAR(DWORD, g_rp702e8c, $L_702e8c)
-ASM_PROC(FUN_5d2540)
+extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 
@@ -6046,6 +6046,140 @@ BYTE* __fastcall Rec5e6980_Clear(BYTE* s, void*)
     F(int, s, 44) = 0;
     F(int, s, 4) = 0;
     return s;
+}
+
+} // extern "C"
+
+// === a cluster's images, masks, sounds and items attached to one memory block ($L_5ee070 with its tails up to
+//     $L_5ee1c3, a vtable entry)
+
+extern "C" void Ca_TexSet(); KING_ALIAS("_Ca_TexSet", "@Texture_SetPixels@20")
+extern "C" void Ca_TexSize(); KING_ALIAS("_Ca_TexSize", "@Texture_Size@8")
+extern "C" void Ca_BmpSet(); KING_ALIAS("_Ca_BmpSet", "@Bitmap_SetPixels@16")
+extern "C" void Ca_BmpBytes(); KING_ALIAS("_Ca_BmpBytes", "@Bitmap_Bytes@8")
+extern "C" void Ca_WavSet(); KING_ALIAS("_Ca_WavSet", "@SoundFile_SetBuffer@12")
+extern "C" void Ca_Fatal(); KING_ALIAS("_Ca_Fatal", "_Sys_Fatal")
+
+static void Ca_Twice(const char* fmt, int k, const BYTE* s)
+{
+    char buf[84];
+    sprintf(buf, fmt, k, F(const char*, s, 36));
+    CallC(Ca_Fatal, buf, 0);
+}
+
+extern "C" {
+
+// [$L_5ee070..$L_5ee1c3] cluster s (named +36) attached at p: its images (+44 / +68), masks (+52 / +72), sounds
+// (+60 / +76) and items (+24 / +32, vtable +24) given their data one after another (all at p when p is 0); fatal
+// when one already has data or the data passes the cluster's size (+16)
+void __fastcall Cluster_Attach(BYTE* s, void*, BYTE* p)
+{
+    BYTE* at = p;
+    for (int k = 0; k < F(int, s, 44); k++)
+    {
+        BYTE* t = F(BYTE**, s, 68)[k];
+        if (!CallThis<int>(Ca_TexSet, t, at, 0, 0))
+            Ca_Twice("Twice mapped image.Image %d in cluster %s.", k, s);
+        if (p)
+            at += CallThis<int>(Ca_TexSize, F(BYTE**, s, 68)[k]);
+    }
+    for (int k = 0; k < F(int, s, 52); k++)
+    {
+        if (!CallThis<int>(Ca_BmpSet, F(BYTE**, s, 72)[k], at, 0))
+            Ca_Twice("Twice mapped mask.Mask %d in cluster %s.", k, s);
+        if (p)
+            at += CallThis<int>(Ca_BmpBytes, F(BYTE**, s, 72)[k]);
+    }
+    for (int k = 0; k < F(int, s, 60); k++)
+    {
+        if (!CallThis<int>(Ca_WavSet, F(BYTE**, s, 76)[k], at))
+            Ca_Twice("Twice mapped wav.Wav %d in cluster %s.", k, s);
+        if (p)
+            at += F(int, F(BYTE**, s, 76)[k], 4);
+    }
+    for (int k = 0; k < F(int, s, 24); k++)
+    {
+        CallVirt(F(BYTE**, s, 32)[k], 24, at);
+        if (p)
+            at += F(int, F(BYTE**, s, 32)[k], 16);
+    }
+    if ((DWORD)at > (DWORD)(F(int, s, 16) + (int)p))
+        CallC(Ca_Fatal, "Incorrect attach.", 0);
+}
+
+} // extern "C"
+
+// === a resource table added by its two-letter name (FUN_5e4f60 with its tail $L_5e4fa1)
+
+extern "C" void Rt_Fatal(); KING_ALIAS("_Rt_Fatal", "_Sys_Fatal")
+extern "C" void Rt_Table(); KING_ALIAS("_Rt_Table", "@NamedTable_Construct@12")
+extern "C" void Rt_Link(); KING_ALIAS("_Rt_Link", "@Node_Link@12")
+ASM_VAR(char, g_rtBadName, $L_68331c)
+
+extern "C" {
+
+// [FUN_5e4f60..$L_5e4fa1] resources s get a table named name (two letters, fatal else) in bucket (+1600) by the
+// sum of its letters mod 100, linked after the bucket's last one unless the name is already there; 1
+int __fastcall Resources_AddTable(BYTE* s, void*, const char* name)
+{
+    if (!name || strlen(name) != 2)
+        CallC(Rt_Fatal, &g_rtBadName, name);
+    if (!name)
+        return 0;
+    int sum = 0;
+    for (const unsigned char* c = (const unsigned char*)name; *c; c++)
+        sum += *c;
+    int h = sum % 100;
+    BYTE* t = (BYTE*)operator new(4020);
+    if (t)
+        t = CallThis<BYTE*>(Rt_Table, t, name);
+    BYTE*& head = F(BYTE*, s, 1600 + 4 * h);
+    if (!head)
+    {
+        head = t;
+        return 1;
+    }
+    BYTE* e = head;
+    while (strcmp(name, F(const char*, e, 4016)) && F(BYTE*, e, 8))
+        e = F(BYTE*, e, 8);
+    if (!strcmp(name, F(const char*, e, 4016)))
+    {
+        if (t)
+            CallVirt(t, 0, 1);
+    }
+    else
+        CallThis(Rt_Link, t, e);
+    return 1;
+}
+
+} // extern "C"
+
+// === a room's objects queued for deleting ($L_5d9a20 with its tail $L_5d9aa1, a node walk's callback)
+
+extern "C" void Rq_Load(); KING_ALIAS("_Rq_Load", "@Resources_Load@12")
+extern "C" void Rq_Link(); KING_ALIAS("_Rq_Link", "@Fw_LinkRoom@12")
+extern "C" void Rq_Unlink(); KING_ALIAS("_Rq_Unlink", "@Node_Unlink@8")
+extern "C" void Rq_Fatal(); KING_ALIAS("_Rq_Fatal", "_Sys_Fatal")
+
+extern "C" {
+
+// [$L_5d9a20..$L_5d9aa1] node of kind 14 with flag 2 and a module (+128): its room (module +36) loaded into the
+// framework's resources (ctx +20, vtable +112), relinked, unlinked and queued in ctx's ring of 100 (+24, +424 the
+// end, +428 the start; fatal when full); -1 to go on
+int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx)
+{
+    if (F(int, node, 16) != 14 || !(F(BYTE, node, 40) & 2) || !F(BYTE*, node, 128))
+        return -1;
+    BYTE* room = F(BYTE*, F(BYTE*, node, 128), 36);
+    if (BYTE* r = CallVirt<BYTE*>(F(BYTE*, ctx, 20), 112))
+        CallThis(Rq_Load, r, F(int, room, 60));
+    CallThis(Rq_Link, F(BYTE*, ctx, 20), room);
+    CallThis(Rq_Unlink, room);
+    F(BYTE*, ctx, 24 + 4 * F(int, ctx, 424)) = room;
+    F(int, ctx, 424) = (F(int, ctx, 424) + 1) % 100;
+    if (F(int, ctx, 424) == F(int, ctx, 428))
+        CallC(Rq_Fatal, "DL Module to delete too many", 0);
+    return -1;
 }
 
 } // extern "C"

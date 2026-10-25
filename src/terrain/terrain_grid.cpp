@@ -182,10 +182,10 @@ static BYTE* TGrid_TableAt(BYTE* self, DWORD x, DWORD y)
     return t[0];
 }
 
-// [FUN_608c70] turns a grid point {x, y} in place into its node: world x/y, height, normal, the scaled offsets
-extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, void*)
+// [FUN_608c70] the node p of grid point xy {x, y}: world x/y, height, normal, the scaled offsets
+extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, const DWORD* xy)
 {
-    DWORD X = ((DWORD*)p)[0], Y = ((DWORD*)p)[1];
+    DWORD X = xy[0], Y = xy[1];
     double fx = (double)(__int64)X;
     float xf = (float)fx;
     double x1 = fx - F(float, self, 40184);

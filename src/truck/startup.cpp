@@ -667,9 +667,9 @@ extern "C" void __cdecl Startup_FindCd()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_568b10(); KING_ALIAS("_FUN_568b10", "_Helicopters_Init")
-ASM_PROC($L_5451c0)
+extern "C" int __cdecl Copter_LoadHook(BYTE* rec, int flags);
 extern "C" int __cdecl Item_OnEvent(BYTE* it, int e);    // vehicle.cpp
-ASM_PROC($L_52ebc0)
+extern "C" int __cdecl TrashBox_LoadHook(BYTE* rec, int flags);
 extern "C" void $L_52ee70(); KING_ALIAS("_$L_52ee70", "_Cars_Deliver")
 ASM_VAR(int, g_su67b2b8, $L_67b2b8)
 ASM_VAR(void*, g_su6ef24c, $L_6ef24c)
@@ -683,13 +683,13 @@ extern "C" void __cdecl Obj_HookHandlers(BYTE* o)
 {
     g_su67b2b8 = 0;
     g_su6ef24c = F(void*, o, 2708);
-    F(void*, o, 2708) = (void*)$L_5451c0;
+    F(void*, o, 2708) = (void*)Copter_LoadHook;
     g_su6ef250 = F(void*, o, 2712);
     F(void*, o, 2712) = (void*)Item_OnEvent;
     if (!F(int, g_su6cec6c, 1316) && F(int, g_su6cec6c, 1300) <= 1)
         CallC(FUN_568b10, o);
     g_su6cf3a0 = F(void*, o, 2708);
-    F(void*, o, 2708) = (void*)$L_52ebc0;
+    F(void*, o, 2708) = (void*)TrashBox_LoadHook;
     g_su6cf3a4 = F(void*, o, 2712);
     F(void*, o, 2712) = (void*)$L_52ee70;
 }
@@ -1212,6 +1212,287 @@ BYTE* __cdecl Init_696a00()
     F(float, m, 256) = 15.0f;
     F(float, m, 260) = 10.0f;
     return m;
+}
+
+} // extern "C"
+
+// === loading the helicopters ($L_5451c0 with its tail $L_545367) and the trash boxes ($L_52ebc0 with $L_52ee5e)
+//     from the world's object records: the hooks in front of the handlers saved in 6ef24c / 6cf3a0
+
+extern "C" void Ld_Find(); KING_ALIAS("_Ld_Find", "_Scene_FindObject")
+extern "C" void Ld_Length(); KING_ALIAS("_Ld_Length", "_Vec3_Length")
+extern "C" void Ld_Fatal(); KING_ALIAS("_Ld_Fatal", "_World_Fatal")
+extern "C" void Ld_Copter(); KING_ALIAS("_Ld_Copter", "@Copter_Construct@20")
+extern "C" void Ld_Nop(); KING_ALIAS("_Ld_Nop", "_Fw_Nop")
+extern "C" void Ld_VehCopter(); KING_ALIAS("_Ld_VehCopter", "@Vehicle_ConstructCopter@28")
+extern "C" void Ld_NetVeh(); KING_ALIAS("_Ld_NetVeh", "@NetVehicle_Construct@40")
+extern "C" void Ld_Reset(); KING_ALIAS("_Ld_Reset", "@Copter5615f0_Reset@8")
+extern "C" void Ld_Vec100(); KING_ALIAS("_Ld_Vec100", "@Copter_SetVec100@12")
+extern "C" void Ld_Vec112(); KING_ALIAS("_Ld_Vec112", "@Copter_SetVec112@12")
+extern "C" void Ld_Clear(); KING_ALIAS("_Ld_Clear", "@Copter561390_Clear@8")
+extern "C" void Ld_Command(); KING_ALIAS("_Ld_Command", "@Copter_Command@16")
+extern "C" void Ld_CarType(); KING_ALIAS("_Ld_CarType", "_CarType_FromNumber")
+extern "C" BYTE* __cdecl Trash_CreateGuest(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int number, int num, int extra, int local);
+extern "C" BYTE* __cdecl Trash_CreateHost(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int number, int num, int local);
+ASM_VAR(int, g_ld67f878, $L_67f878)
+ASM_VAR(BYTE*, g_ld6ef1fc, $L_6ef1fc)
+ASM_VAR(int, g_ld6ef208, $L_6ef208)
+ASM_VAR(int, g_ld6ce34c, $L_6ce34c)
+ASM_VAR(float, g_ld64d7b8, $L_64d7b8)
+ASM_VAR(float, g_ld64c2f8, $L_64c2f8)
+ASM_VAR(char, g_ldRoomFmt, $L_678604)
+ASM_VAR(char, g_ldObjFmt, $L_678620)
+ASM_VAR(char, g_ldVwFmt, $L_6785a4)
+ASM_VAR(char, g_ldTypeFmt, $L_6785d4)
+ASM_VAR(char, g_ldCopterFmt, $L_679f78)
+ASM_VAR(char, g_ldTrashFmt, $L_678588)
+
+// the record's speed (+20) and spin (+32) within their limits
+static bool Ld_Still(const BYTE* c)
+{
+    return !(CallC<double>(Ld_Length, c + 20) > g_ld64d7b8) && !(CallC<double>(Ld_Length, c + 32) > g_ld64c2f8);
+}
+
+static void Ld_VwText(char* buf, const BYTE* c)
+{
+    sprintf(buf, &g_ldVwFmt, (double)F(float, c, 20), (double)F(float, c, 24), (double)F(float, c, 28),
+            (double)F(float, c, 32), (double)F(float, c, 36), (double)F(float, c, 40));
+}
+
+extern "C" {
+
+// [$L_5451c0..$L_545367] object record rec (number +4, data +24) of kind 3 / 0: a helicopter in the scene object
+// named at +96, still; with flags & 1 built: a local copter and its vehicle (or a network vehicle for data +12),
+// numbered, made visible, its speed, spin, command (+4, +8) set, stored at rec +28
+int __cdecl Copter_LoadHook(BYTE* rec, int flags)
+{
+    typedef int(__cdecl * Hook)(BYTE*, int);
+    if (g_su6ef24c)
+        if (int r = ((Hook)g_su6ef24c)(rec, flags))
+            return r;
+    int id = F(int, rec, 4);
+    int num = id % 1000;
+    if (id / 100000 != 3 || id % 100000 / 1000)
+        return 0;
+    if (!(flags & 1))
+        return 1;
+    BYTE c[160];
+    memcpy(c, F(BYTE*, rec, 24), 160);
+    BYTE* obj = CallC<BYTE*>(Ld_Find, 0, c + 96);
+    if (!obj || !Ld_Still(c))
+    {
+        char room[100], vw[200], msg[500];
+        sprintf(room, &g_ldRoomFmt, c + 96, obj);
+        Ld_VwText(vw, c);
+        sprintf(msg, &g_ldCopterFmt, room, vw);
+        CallC(Ld_Fatal, msg);
+    }
+    g_ld67f878 = F(int, rec, 4);
+    BYTE* cp = 0;
+    BYTE* v;
+    if (!F(int, c, 12))
+    {
+        BYTE* o = (BYTE*)operator new(3552);
+        if (o)
+            cp = CallThis<BYTE*>(Ld_Copter, o, obj, c + 44, F(int, c, 92));
+        if (F(int, cp, 3548))
+        {
+            if (cp)
+            {
+                CallC(Ld_Nop, cp);
+                operator delete(cp);
+            }
+            return 1;
+        }
+        BYTE* m = (BYTE*)operator new(21880);
+        v = m ? CallThis<BYTE*>(Ld_VehCopter, m, g_ld6ef1fc, cp, g_ld6ef208, F(int, c, 0), 0) : 0;
+    }
+    else
+    {
+        BYTE* m = (BYTE*)operator new(21880);
+        v = m ? CallThis<BYTE*>(Ld_NetVeh, m, g_ld6ef1fc, F(int, c, 0), obj, c + 44, c + 44, F(int, c, 16), 0,
+                                g_ld6ef208)
+              : 0;
+    }
+    if (!v)
+        return 1;
+    F(int, v, 20948) = num;
+    F(int, v, 360) = F(int, rec, 4);
+    CallVirt(v + 16, 24, 1);
+    if (!F(int, c, 12))
+    {
+        CallThis(Ld_Reset, cp);
+        CallThis(Ld_Vec100, cp, c + 20);
+        CallThis(Ld_Vec112, cp, c + 32);
+        CallThis(Ld_Clear, cp + 3372);
+        CallThis(Ld_Command, cp, F(int, c, 4), F(int, c, 8));
+    }
+    F(BYTE*, rec, 28) = v;
+    return 1;
+}
+
+// [$L_52ebc0..$L_52ee5e] object record rec of kind 2: a trash box of the car type numbered at data +0 between the
+// scene objects named at +92 and +124, still; with flags & 1 built (moving for data +8), numbered, its speed and spin
+// set, made visible for data +12, stored at rec +28
+int __cdecl TrashBox_LoadHook(BYTE* rec, int flags)
+{
+    typedef int(__cdecl * Hook)(BYTE*, int);
+    if (g_su6cf3a0)
+        if (int r = ((Hook)g_su6cf3a0)(rec, flags))
+            return r;
+    int id = F(int, rec, 4);
+    if (id / 100000 != 2)
+        return 0;
+    BYTE c[156];
+    memcpy(c, F(BYTE*, rec, 24), 156);
+    int num = id % 1000;
+    int type = CallC<int>(Ld_CarType, F(int, c, 0));
+    BYTE* o1 = CallC<BYTE*>(Ld_Find, 0, c + 92);
+    BYTE* o2 = CallC<BYTE*>(Ld_Find, 0, c + 124);
+    if (!o1 || !o2 || type < 0 || type >= g_ld6ce34c || !Ld_Still(c))
+    {
+        char obj[100], room[100], tp[100], vw[100], msg[500];
+        sprintf(obj, &g_ldObjFmt, c + 124, o2);
+        sprintf(room, &g_ldRoomFmt, c + 92, o1);
+        sprintf(tp, &g_ldTypeFmt, 2, type, num, g_ld6ce34c + 1);
+        Ld_VwText(vw, c);
+        sprintf(msg, &g_ldTrashFmt, obj, room, tp, vw);
+        CallC(Ld_Fatal, msg);
+    }
+    if (!(flags & 1))
+        return 1;
+    g_ld67f878 = F(int, rec, 4);
+    BYTE* v;
+    if (F(int, c, 8))
+        v = Trash_CreateGuest(g_ld6ef1fc, o1, o2, c + 44, F(int, c, 0), num, F(int, c, 16), 0);
+    else
+        v = Trash_CreateHost(g_ld6ef1fc, o1, o2, c + 44, F(int, c, 0), num, 0);
+    F(int, v, 344) = F(int, rec, 4);
+    CallVirt(v, 144, c + 20, 0);
+    CallVirt(v, 148, c + 32, 0);
+    if (F(int, c, 12))
+        CallVirt(v, 24, 1);
+    F(BYTE*, rec, 28) = v;
+    return 1;
+}
+
+} // extern "C"
+
+// === the trash boxes made: a host's (FUN_4e1f10 with its tails up to $L_4e21a2) and a guest's (FUN_4e21c0 with
+//     its tails up to $L_4e249e), a car, a bus or a truck by the type's range
+
+extern "C" void Tb_CarH(); KING_ALIAS("_Tb_CarH", "@Car52b5f0_Construct@28")
+extern "C" void Tb_CarHN(); KING_ALIAS("_Tb_CarHN", "@Car52b7c0_Construct@36")
+extern "C" void Tb_TruckH(); KING_ALIAS("_Tb_TruckH", "@Truck52d350_Construct@28")
+extern "C" void Tb_TruckHN(); KING_ALIAS("_Tb_TruckHN", "@Truck52d490_Construct@36")
+extern "C" void Tb_BusH(); KING_ALIAS("_Tb_BusH", "@Bus52e3c0_Construct@32")
+extern "C" void Tb_BusHN(); KING_ALIAS("_Tb_BusHN", "@Bus52e220_Construct@40")
+extern "C" void Tb_CarG(); KING_ALIAS("_Tb_CarG", "@Car52b6f0_Construct@32")
+extern "C" void Tb_CarGN(); KING_ALIAS("_Tb_CarGN", "@Car52b8a0_Construct@40")
+extern "C" void Tb_TruckG(); KING_ALIAS("_Tb_TruckG", "@Truck52d400_Construct@32")
+extern "C" void Tb_TruckGN(); KING_ALIAS("_Tb_TruckGN", "@Truck52d530_Construct@40")
+extern "C" void Tb_BusG(); KING_ALIAS("_Tb_BusG", "@Bus52e470_Construct@36")
+extern "C" void Tb_BusGN(); KING_ALIAS("_Tb_BusGN", "@Bus52e300_Construct@44")
+ASM_PROC($L_576670)
+ASM_VAR(int, g_tb6ce350, $L_6ce350)
+ASM_VAR(int, g_tb6ce35c, $L_6ce35c)
+ASM_VAR(int, g_tb6ce360, $L_6ce360)
+ASM_VAR(int, g_tb6ce364, $L_6ce364)
+ASM_VAR(char, g_tbHost1, $L_6734ac)
+ASM_VAR(char, g_tbHost2, $L_67346c)
+ASM_VAR(char, g_tbGuest1, $L_673534)
+ASM_VAR(char, g_tbGuest2, $L_6734f4)
+
+// the car type of number, a fatal error (fmt) when out of range
+static int Tb_Type(int number, const BYTE* o2, const char* fmt)
+{
+    int type = CallC<int>(Ld_CarType, number);
+    if (type < 0 || type >= g_ld6ce34c)
+    {
+        char buf[200];
+        sprintf(buf, fmt, number, type, F(const char*, o2, 12));
+        CallC(Ld_Fatal, buf);
+    }
+    return type;
+}
+
+// 0 car, 1 bus, 2 truck, -1 none
+static int Tb_Kind(int type)
+{
+    if (type >= g_tb6ce350 && type < g_tb6ce35c)
+        return 0;
+    if (type == g_tb6ce35c)
+        return 1;
+    if (type >= g_tb6ce360 && type < g_tb6ce364)
+        return 2;
+    return -1;
+}
+
+static BYTE* Tb_Check(BYTE* v, int type, int num, const BYTE* o2, const char* fmt)
+{
+    if (!v)
+    {
+        char buf[200];
+        sprintf(buf, fmt, type, num, F(const char*, o2, 12));
+        CallC(Ld_Fatal, buf);
+    }
+    return v;
+}
+
+extern "C" {
+
+// [FUN_4e1f10..$L_4e21a2] a host's trash box of car number `number` between scene objects o1 / o2 at pos in world w
+BYTE* __cdecl Trash_CreateHost(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int number, int num, int local)
+{
+    int type = Tb_Type(number, o2, &g_tbHost1);
+    int kind = Tb_Kind(type);
+    BYTE* v = 0;
+    if (kind >= 0)
+    {
+        BYTE* m = (BYTE*)operator new(kind == 1 ? 3656 : 9552);
+        if (m)
+        {
+            if (local == 1)
+            {
+                if (kind == 1)
+                    v = CallThis<BYTE*>(Tb_BusH, m, w, o2, type, num, 1, (void*)$L_576670);
+                else
+                    v = CallThis<BYTE*>(kind ? Tb_TruckH : Tb_CarH, m, w, o2, type, num, 1);
+            }
+            else if (kind == 1)
+                v = CallThis<BYTE*>(Tb_BusHN, m, w, o1, o2, pos, type, num, 0, (void*)$L_576670);
+            else
+                v = CallThis<BYTE*>(kind ? Tb_TruckHN : Tb_CarHN, m, w, o1, o2, pos, type, num, 0);
+        }
+    }
+    return Tb_Check(v, type, num, o2, &g_tbHost2);
+}
+
+// [FUN_4e21c0..$L_4e249e] a guest's trash box, as Trash_CreateHost with the extra value; local only 0 or 1
+BYTE* __cdecl Trash_CreateGuest(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int number, int num, int extra, int local)
+{
+    int type = Tb_Type(number, o2, &g_tbGuest1);
+    int kind = (local == 0 || local == 1) ? Tb_Kind(type) : -1;
+    BYTE* v = 0;
+    if (kind >= 0)
+    {
+        BYTE* m = (BYTE*)operator new(kind == 1 ? 3656 : 9552);
+        if (m)
+        {
+            if (local == 1)
+            {
+                if (kind == 1)
+                    v = CallThis<BYTE*>(Tb_BusG, m, w, o2, type, num, extra, 1, (void*)$L_576670);
+                else
+                    v = CallThis<BYTE*>(kind ? Tb_TruckG : Tb_CarG, m, w, o2, type, num, extra, 1);
+            }
+            else if (kind == 1)
+                v = CallThis<BYTE*>(Tb_BusGN, m, w, o1, o2, pos, type, num, extra, 0, (void*)$L_576670);
+            else
+                v = CallThis<BYTE*>(kind ? Tb_TruckGN : Tb_CarGN, m, w, o1, o2, pos, type, num, extra, 0);
+        }
+    }
+    return Tb_Check(v, type, num, o2, &g_tbGuest2);
 }
 
 } // extern "C"
