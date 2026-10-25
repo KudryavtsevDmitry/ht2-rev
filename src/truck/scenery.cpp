@@ -33,7 +33,7 @@ ASM_VAR(BYTE*, g_6ef1fc, $L_6ef1fc)
 extern "C" void FUN_58b5b0(); KING_ALIAS("_FUN_58b5b0", "@Body58b5b0_Construct@52")
 extern "C" void FUN_58b720(); KING_ALIAS("_FUN_58b720", "@Body58b720_Construct@52")
 extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
-ASM_PROC(FUN_52b0e0)
+extern "C" void FUN_52b0e0(); KING_ALIAS("_FUN_52b0e0", "@Parked_Setup@16")
 extern "C" void FUN_5465c0(); KING_ALIAS("_FUN_5465c0", "_Vehicle_MakeDamageKeys")
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
@@ -1305,6 +1305,89 @@ void __fastcall Scenery_Hit(BYTE* s, void*, const float* p, const float* v)
     if (pos[2] < lim)
         pos[2] = (float)lim;
     CallC(Dn_Debris, p, s + 976, pos, *(DWORD*)&size, num, speed, 1);
+}
+
+} // extern "C"
+
+// === setting up a parked car from its model (FUN_52b0e0)
+
+extern "C" void Pk_FlagsSet(); KING_ALIAS("_Pk_FlagsSet", "@Flags1196_Set@12")
+extern "C" void Pk_FlagsClear(); KING_ALIAS("_Pk_FlagsClear", "@Flags1196_Clear@12")
+extern "C" void Pk_MoveMode(); KING_ALIAS("_Pk_MoveMode", "@Body_SetMoveMode@12")
+extern "C" void Pk_PointsAdd(); KING_ALIAS("_Pk_PointsAdd", "@Points_Add@20")
+extern "C" void Pk_Plane(); KING_ALIAS("_Pk_Plane", "@Plane_SetWithPoint@12")
+extern "C" void Pk_Records(); KING_ALIAS("_Pk_Records", "@Records_58d290@8")
+extern "C" void Pk_NodeRoot(); KING_ALIAS("_Pk_NodeRoot", "@Node_Root@8")
+extern "C" void Pk_LocalChecked(); KING_ALIAS("_Pk_LocalChecked", "_Frame_GetLocalChecked")
+extern "C" void Pk_ProbeGround(); KING_ALIAS("_Pk_ProbeGround", "@Body_ProbeGround@12")
+extern "C" void Pk_57e030(); KING_ALIAS("_Pk_57e030", "@SceneObj_57e030@12")
+extern "C" void Pk_MakeOut(); KING_ALIAS("_Pk_MakeOut", "@Vehicle_MakeOut@8")
+ASM_PROC(FUN_58d2b0)
+
+extern "C" {
+
+// [FUN_52b0e0] sets parked car s up as model idx (the 876-byte records of 6c6b68) in mode m: flags and move
+// mode, its center, body points of both kinds, planes, frames from its node, and a probe of the ground
+void __fastcall Parked_Setup(BYTE* s, void*, int idx, int m)
+{
+    F(int, s, 9548) = m;
+    F(int, s, 9540) = F(int, s, 1188);
+    F(int, s, 3568) = 1;
+    CallThis(Pk_FlagsSet, s, 2);
+    CallThis(Pk_FlagsClear, s, 1);
+    CallThis(Pk_MoveMode, s, 3);
+    F(int, s, 9544) = idx;
+    BYTE* T = (BYTE*)g_carModelNames + idx * 876;
+    const float* R = (const float*)(s + 692);
+    F(int, s, 396) = F(int, T, 192);
+    {
+        const float* t = (const float*)(T + 180);
+        float* o = (float*)(s + 3436);
+        o[0] = (float)((double)R[3] * t[1] + (double)R[6] * t[2] + (double)t[0] * R[0] + R[9]);
+        o[1] = (float)((double)R[4] * t[1] + (double)R[1] * t[0] + (double)R[7] * t[2] + R[10]);
+        o[2] = (float)((double)R[5] * t[1] + (double)R[2] * t[0] + (double)R[8] * t[2] + R[11]);
+    }
+    F(int, s, 400) = F(int, T, 196);
+    F(Vec3, s, 404) = F(Vec3, T, 168);
+    F(Vec3, s, 3288) = F(Vec3, T, 168);
+    float pt[3];
+    for (int i = 0; i < F(int, (BYTE*)g_carModelNames + F(int, s, 9544) * 876, 480); i++)
+    {
+        const float* q = (const float*)(T + 204 + i * 12);
+        double y = (double)q[1] * R[4] + (double)R[1] * q[0] + (double)R[7] * q[2] + R[10];
+        pt[2] = (float)((double)q[1] * R[5] + (double)R[8] * q[2] + (double)R[2] * q[0] + R[11]);
+        pt[0] = (float)((double)q[1] * R[3] + (double)R[0] * q[0] + (double)q[2] * R[6] + R[9]);
+        pt[1] = (float)y;
+        CallThis(Pk_PointsAdd, s, 0, pt, 0);
+    }
+    for (int i = 0; i < F(int, (BYTE*)g_carModelNames + F(int, s, 9544) * 876, 484); i++)
+    {
+        const float* q = (const float*)((BYTE*)g_carModelNames + F(int, s, 9544) * 876 + 488 + i * 12);
+        double y = (double)R[4] * q[1] + (double)q[0] * R[1] + (double)R[7] * q[2] + R[10];
+        pt[2] = (float)((double)q[1] * R[5] + (double)R[8] * q[2] + (double)q[0] * R[2] + R[11]);
+        pt[0] = (float)((double)q[2] * R[6] + (double)R[0] * q[0] + (double)R[3] * q[1] + R[9]);
+        pt[1] = (float)y;
+        CallThis(Pk_PointsAdd, s, 1, pt, 0);
+    }
+    int np = 0;
+    for (; np < F(int, (BYTE*)g_carModelNames + F(int, s, 9544) * 876, 856); np++)
+        CallThis(Pk_Plane, s + 4548 + np * 28, (BYTE*)g_carModelNames + F(int, s, 9544) * 876 + 536 + np * 16);
+    CallThis(Pk_Records, s);
+    F(int, s, 5132) = np;
+    CallThis(FUN_58d2b0, s);
+    F(int, s, 3588) = 0;
+    F(BYTE*, s, 800) = CallThis<BYTE*>(Pk_NodeRoot, s + 256);
+    Matrix local = g_identity, mt;
+    CallC(Pk_LocalChecked, F(BYTE*, s, 324), &local);
+    memcpy(s + 500, Matrix_Multiply(&mt, (const Matrix*)(s + 740), &local), 48);
+    memcpy(s + 596, Matrix_Inverse(&mt, (const Matrix*)(s + 500)), 48);
+    CallThis(Pk_ProbeGround, s, 1);
+    F(Vec3, s, 416) = g_zeroVec;
+    F(Vec3, s, 428) = g_zeroVec;
+    F(Vec3, s, 440) = g_zeroVec;
+    CallVirt(s, 52);
+    CallThis(Pk_57e030, s, s + 3268);
+    CallThis(Pk_MakeOut, s);
 }
 
 } // extern "C"

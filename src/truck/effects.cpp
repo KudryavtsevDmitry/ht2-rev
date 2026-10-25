@@ -3467,7 +3467,7 @@ ASM_PROC(FUN_4cb8d0)
 extern "C" void FUN_5fcdb0(); KING_ALIAS("_FUN_5fcdb0", "@Sound_ResetSlot@8")
 extern "C" void FUN_4dd9f0(); KING_ALIAS("_FUN_4dd9f0", "@Obj4dd9f0_Destruct@8")
 ASM_PROC(FUN_4ce6d0)
-ASM_PROC(FUN_547030)
+extern "C" void FUN_547030(); KING_ALIAS("_FUN_547030", "@Car_Draw@16")
 extern "C" void FUN_5f0870(); KING_ALIAS("_FUN_5f0870", "@Thunk5f0870@4")
 extern "C" void FUN_4dc410(); KING_ALIAS("_FUN_4dc410", "@SmokeBurst_Destroy@4")
 extern "C" void FUN_4ddd50(); KING_ALIAS("_FUN_4ddd50", "@Eff4ddd50_Destroy@4")
@@ -3854,7 +3854,7 @@ extern "C" int __fastcall Eff_4c3840(BYTE* s, void*, BYTE* p, float k)
 // ---------------------------------------------------------------------------
 // More virtual methods of the effects: emitters, drawing, particle sources.
 
-ASM_PROC(FUN_4c8af0)
+extern "C" void FUN_4c8af0(); KING_ALIAS("_FUN_4c8af0", "_Fx_Beam")
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 extern "C" void FUN_5f98c0(); KING_ALIAS("_FUN_5f98c0", "@SceneNode5f98c0_Draw@16")
 extern "C" void FUN_5ae580(); KING_ALIAS("_FUN_5ae580", "@Render_PushMatrix@16")
@@ -7648,6 +7648,360 @@ int __fastcall Patch_Lay(BYTE* s, void*, BYTE* arr, unsigned n, BYTE* tri, int a
         p[2] = (float)(z + g_lp64c304);
     }
     return 1;
+}
+
+} // extern "C"
+
+// === a beam of light from a point to the camera's side (FUN_4c8af0)
+
+extern "C" void FUN_4c9930(); KING_ALIAS("_FUN_4c9930", "@Fx_Set8@32")
+extern "C" void FUN_4c89d0(); KING_ALIAS("_FUN_4c89d0", "@Fx_SpawnAt@20")
+extern "C" void FUN_4e67d1(); KING_ALIAS("_FUN_4e67d1", "_Query_4e67d1")
+extern "C" void FUN_4e6ac4(); KING_ALIAS("_FUN_4e6ac4", "_Query_4e6ac4")
+extern "C" void FUN_4e5bf5(); KING_ALIAS("_FUN_4e5bf5", "_Obj_Lookup4e5b22")
+extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
+ASM_VAR(float, g_bm696064, $L_696064)               // the effects' detail
+ASM_VAR(BYTE*, g_bm696254, $L_696254)
+ASM_VAR(float, g_bm64c258, $L_64c258)
+ASM_VAR(float, g_bm64c304, $L_64c304)
+ASM_VAR(float, g_bm64c200, $L_64c200)
+ASM_VAR(float, g_bm64c264, $L_64c264)
+ASM_VAR(float, g_bm64c664, $L_64c664)
+ASM_VAR(float, g_bm64c204, $L_64c204)
+ASM_VAR(float, g_bm64c208, $L_64c208)
+ASM_VAR(float, g_bm64c20c, $L_64c20c)
+ASM_VAR(float, g_bm64c908, $L_64c908)
+ASM_VAR(float, g_bm64c904, $L_64c904)
+ASM_VAR(float, g_bm64c250, $L_64c250)
+ASM_VAR(float, g_bm64c458, $L_64c458)
+
+static Vec3 Bm_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+static Vec3 Bm_Up() { return Bm_Set((double)g_axisZ.x * g_bm64c664, (double)g_axisZ.y * g_bm64c664, (double)g_axisZ.z * g_bm64c664); }
+
+// a vertex record {pos, color, a, b, c, d} made by Fx_Set8
+static void Bm_Vertex(BYTE* rec, const Vec3* pos, DWORD color, float a, float b, float c, float d)
+{
+    BYTE r[32];
+    memcpy(rec, CallThis<BYTE*>(FUN_4c9930, r, pos, &color, a, b, c, d), 32);
+}
+
+extern "C" {
+
+// [FUN_4c8af0] a beam (width w, length scale len, frame i of the texture) from point p along dir, turned
+// toward the camera, cut at the walls of object obj (its ground node, or below p), and drawn as two
+// triangles of 696254
+int __cdecl Fx_Beam(const Vec3* p, float len, float w, const Vec3* dir, int frame, int obj, const BYTE* node)
+{
+    if (!obj || g_bm696064 < g_bm64c258)
+        return 0;
+    float hw = (float)((double)w * g_bm64c258);
+    BYTE* view = g_view;
+    Vec3 cam = Bm_Set(F(double, view, 2904), F(double, view, 2912), F(double, view, 2920));
+    Vec3 d = Bm_Set((double)cam.x - p->x, (double)cam.y - p->y, (double)cam.z - p->z), n, side, across;
+    Vec3_Normalized(&n, &d);
+    Vec3_Cross(&side, &n, &g_axisZ);
+    Vec3_Cross(&across, dir, &g_axisZ);
+    float dot = (float)((double)dir->x * n.x + (double)n.z * dir->z + (double)n.y * dir->y);
+    if (!(dot > g_bm64c304))
+        return 0;
+    Matrix rz;
+    const float* r = Matrix_RotationZ(&rz, (float)F(double, view, 2928))->m;
+    double ra = (double)g_axisY.z * r[6] + (double)g_axisY.y * r[3] + (double)g_axisY.x * r[0] + r[9];
+    float rb = (float)((double)g_axisY.z * r[7] + (double)g_axisY.y * r[4] + (double)g_axisY.x * r[1] + r[10]);
+    Vec3 flat = Bm_Set(dir->x, dir->y, 0), view2 = Bm_Set(ra, rb, 0), u, t, v988;
+    Vec3_Normalized(&u, &flat);
+    Vec3_Normalized(&t, &view2);
+    v988 = Bm_Set((double)t.y * u.z - (double)u.y * t.z, (double)u.x * t.z - (double)t.x * u.z, (double)u.y * t.x - (double)u.x * t.y);
+    float bright = (float)((double)dot * F(float, g_truck, 536));
+    Vec3 back = Bm_Set((double)p->x - cam.x, (double)p->y - cam.y, (double)p->z - cam.z);
+    float L = (float)(Vec3_Length(&back) * g_bm64c258);
+    if (L > g_bm64c200)
+        L = g_bm64c200;
+    Vec3 q = Bm_Set((double)n.x * L, (double)n.y * L, (double)n.z * L);
+    q = Bm_Set((double)q.x + p->x, (double)q.y + p->y, (double)q.z + p->z);
+    Vec3 p2 = *p;
+    if (node && F(float, node, 60) == g_bm64c264 && F(float, node, 52) == g_bm64c264 && F(float, node, 56) == g_bm64c264)
+        node = 0;
+    BYTE n880[208], n672[208], n464[208];
+    CallThis(FUN_5ef5c0, n880);
+    CallThis(FUN_5ef5c0, n672);
+    if (!node)
+    {
+        Vec3 up = Bm_Up();
+        Vec3 lo = Bm_Set((double)p->x - up.x, (double)p->y - up.y, (double)p->z - up.z);
+        up = Bm_Up();
+        Vec3 hi = Bm_Set((double)up.x + p->x, (double)up.y + p->y, (double)up.z + p->z);
+        if (!CallC<int>(FUN_4e67d1, obj, &hi, &lo, n880))
+            return 0;
+    }
+    else
+        memcpy(n880, node, 208);
+    char stop = 0;
+    int o2 = CallC<int>(FUN_4e5bf5, obj, &p2, &q, &stop);
+    if (stop)
+        return 0;
+    {
+        Vec3 up = Bm_Up();
+        Vec3 lo = Bm_Set((double)q.x - up.x, (double)q.y - up.y, (double)q.z - up.z);
+        up = Bm_Up();
+        Vec3 hi = Bm_Set((double)up.x + q.x, (double)up.y + q.y, (double)up.z + q.z);
+        if (!CallC<int>(FUN_4e67d1, o2, &hi, &lo, n672))
+            return 0;
+    }
+    Vec3 a = *p, b = F(Vec3, n672, 52);
+    CallThis(FUN_5ef5c0, n464);
+    if (CallC<int>(FUN_4e6ac4, o2, &a, &b, n464))
+        return 0;
+    if (o2 != obj && CallC<int>(FUN_4e6ac4, obj, &a, &b, n464))
+        return 0;
+    q.z = F(float, n672, 60);
+    p2.z = F(float, n880, 60);
+    double k = (double)g_bm64c204 * hw / dot;
+    float w2 = (float)((double)g_bm64c208 * hw);
+    float tilt = (float)-((double)v988.z * hw);
+    if (g_eff7208d0)
+    {
+        k *= g_bm64c20c;
+        w2 = (float)((double)w2 * g_bm64c20c);
+    }
+    float l1 = (float)((double)len * g_bm64c908);
+    float l2 = (float)(((double)L + len) * g_bm64c908);
+    double fi = frame;
+    float u1 = (float)(fi * g_bm64c904);
+    float u2 = (float)((fi + g_bm64c250) * g_bm64c904);
+    Vec3 s = Bm_Set(across.x * k, across.y * k, across.z * k);
+    Vec3 v1 = Bm_Set((double)p2.x - s.x, (double)p2.y - s.y, (double)p2.z - s.z);
+    Vec3 v2 = Bm_Set((double)s.x + p2.x, (double)s.y + p2.y, (double)s.z + p2.z);
+    Vec3 nl = Bm_Set((double)n.x * L, (double)n.y * L, (double)n.z * L);
+    Vec3 cw = Bm_Set((double)side.x * w2, (double)side.y * w2, (double)side.z * w2);
+    Vec3 m3 = Bm_Set((double)p2.x - cw.x, (double)p2.y - cw.y, (double)p2.z - cw.z);
+    Vec3 v3 = Bm_Set((double)m3.x + nl.x, (double)m3.y + nl.y, (double)m3.z + nl.z);
+    DWORD color = ((DWORD)(int)((double)bright * g_bm64c458) << 24) | 0xffffff;
+    BYTE tri[96];
+    float lt1 = (float)((double)l1 - tilt), lt2 = (float)((double)l1 + tilt);
+    F(Vec3, tri, 0) = v1;
+    F(DWORD, tri, 12) = color;
+    F(float, tri, 16) = u1;
+    F(float, tri, 20) = 0;
+    F(float, tri, 24) = 0;
+    F(float, tri, 28) = lt1;
+    F(Vec3, tri, 32) = v2;
+    F(DWORD, tri, 44) = color;
+    F(float, tri, 48) = u2;
+    F(float, tri, 52) = 0;
+    F(float, tri, 56) = 1.0f;
+    F(float, tri, 60) = lt2;
+    Bm_Vertex(tri + 64, &v3, color, u1, 1.0f, 0, l2);
+    CallThis(FUN_4c89d0, g_bm696254, n880, 2, tri);
+    Vec3 t1, t2, t3, w1, w3, v4, v5, v6;
+    v4 = *Vec3_Add(&t1, &p2, &s);
+    Vec3_Scaled(&t1, &n, L);
+    v5 = *Vec3_Add(&t3, Vec3_Add(&t2, &p2, Vec3_Scaled(&w1, &side, w2)), &t1);
+    Vec3_Scaled(&t1, &n, L);
+    v6 = *Vec3_Add(&t3, Vec3_Sub(&t2, &p2, Vec3_Scaled(&w3, &side, w2)), &t1);
+    Bm_Vertex(tri, &v4, color, u2, 0, 1.0f, lt2);
+    Bm_Vertex(tri + 32, &v5, color, u2, 1.0f, 1.0f, l2);
+    Bm_Vertex(tri + 64, &v6, color, u1, 1.0f, 0, l2);
+    CallThis(FUN_4c89d0, g_bm696254, n880, 2, tri);
+    return 0;
+}
+
+} // extern "C"
+
+// === a vehicle's shadows (FUN_4ca7e0)
+
+#include "x87.h"
+X87 double Sh_tan(double x) { __asm { fld x } __asm { fptan } __asm { fstp st(0) } }
+
+extern "C" void Sh_Get800(); KING_ALIAS("_Sh_Get800", "@SceneObj_Get800@8")
+extern "C" void Sh_Matrix1(); KING_ALIAS("_Sh_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Sh_Matrix2(); KING_ALIAS("_Sh_Matrix2", "@SceneObj_Matrix2@12")
+extern "C" void Sh_BoxCenter(); KING_ALIAS("_Sh_BoxCenter", "_Fx_BoxCenter")
+extern "C" void Sh_Find(); KING_ALIAS("_Sh_Find", "_Fx_Find")
+extern "C" void Sh_Visibility(); KING_ALIAS("_Sh_Visibility", "_Sphere_Visibility")
+extern "C" void Sh_Negated(); KING_ALIAS("_Sh_Negated", "_Vec3_Negated")
+extern "C" void Sh_Get70ebf8(); KING_ALIAS("_Sh_Get70ebf8", "_Get70ebf8")
+extern "C" void Sh_Add(); KING_ALIAS("_Sh_Add", "@Shadows_Add@12")
+extern "C" void Fs_Log(); KING_ALIAS("_Fs_Log", "_Sys_Log")
+ASM_VAR(BYTE*, g_sh6d2078, $L_6d2078)
+ASM_VAR(float, g_sh696040, $L_696040)               // the shadows' detail
+ASM_VAR(char, g_sh695eb0, $L_695eb0)
+ASM_VAR(char, s_sh6728e8, $L_6728e8)
+ASM_VAR(float, g_sh64c93c, $L_64c93c)
+ASM_VAR(float, g_sh64c420, $L_64c420)
+ASM_VAR(float, g_sh64c328, $L_64c328)
+ASM_VAR(float, g_sh64c32c, $L_64c32c)
+
+static Vec3 Sh_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+static Vec3 Sh_Up() { return Sh_Set((double)g_axisZ.x * g_bm64c664, (double)g_axisZ.y * g_bm64c664, (double)g_axisZ.z * g_bm64c664); }
+
+// the point b of car c's frame, unrounded
+static void Sh_Place(BYTE* c, const Vec3& b, double* o)
+{
+    BYTE t[48];
+    const float* M = CallThis<const float*>(Sh_Matrix1, c + 16, t);
+    o[0] = (double)b.z * M[6] + (double)b.y * M[3] + (double)b.x * M[0] + M[9];
+    o[1] = (double)b.z * M[7] + (double)b.y * M[4] + (double)b.x * M[1] + M[10];
+    o[2] = (double)b.z * M[8] + (double)b.y * M[5] + (double)b.x * M[2] + M[11];
+}
+
+extern "C" {
+
+// [FUN_4ca7e0] casts car's shadows sh1 / sh2 (mode 1: one, 2: both) down from its box center onto what lies
+// below, through 70ebf8's shadow list
+void __cdecl Fx_CarShadows(BYTE* car, BYTE* sh1, BYTE* sh2, int mode)
+{
+    if (!car)
+        return;
+    if (sh1)
+        sh1[40] |= 1;
+    else if (!sh2)
+        return;
+    if (sh2)
+        sh2[40] |= 1;
+    if (car == F(BYTE*, g_sh6d2078, 616))
+    {
+        if (sh1)
+            F(int, sh1, 128) = 150;
+        if (sh2)
+            F(int, sh1, 128) = 140;
+    }
+    else
+    {
+        if (g_sh696040 < g_bm64c258)
+            return;
+        if (sh1)
+            F(int, sh1, 128) = 140;
+        if (sh2)
+            F(int, sh1, 128) = 130;
+    }
+    switch (mode)
+    {
+    case 0:
+        return;
+    case 1:
+        if (sh1)
+            sh1[40] &= 0xfe;
+        break;
+    case 2:
+        if (sh1)
+            sh1[40] &= 0xfe;
+        if (sh2)
+            sh2[40] &= 0xfe;
+        else
+            mode = 1;
+        break;
+    default:
+        sprintf(&g_sh695eb0, &s_sh6728e8, mode);
+        CallC(Fs_Log, &g_sh695eb0, 0);
+        return;
+    }
+    unsigned n = (mode != 1) + 1;
+    double a = mode == 1 ? g_sh64c93c : g_bm64c664;
+    float ang = (float)(x87_atan2(a * g_sh64c420, 1.0) * 2);
+    double sp = x87_atan2(a * g_sh64c328, 1.0) * 2 - ang;
+    float spread = (float)sp;
+    double hv = (sp + ang) * g_bm64c258;
+    float radius = (float)(Sh_tan(hv) * g_bm64c664);
+    BYTE* obj = CallThis<BYTE*>(Sh_Get800, car + 16);
+    BYTE node[208];
+    CallThis(FUN_5ef5c0, node);
+    Vec3 off = Sh_Set((double)g_axisY.x * g_sh64c32c, (double)g_axisY.y * g_sh64c32c, (double)g_axisY.z * g_sh64c32c);
+    Vec3 bc;
+    const Vec3* c = CallC<const Vec3*>(Sh_BoxCenter, &bc, car);
+    Vec3 base = Sh_Set((double)off.x + c->x, (double)off.y + c->y, (double)off.z + c->z);
+    Vec3 up = Sh_Up();
+    double p[3];
+    Sh_Place(car, base, p);
+    Vec3 top = Sh_Set(p[0] + up.x, (double)up.y + (float)p[1], (double)up.z + (float)p[2]);
+    BYTE t[48];
+    const float* M = CallThis<const float*>(Sh_Matrix1, car + 16, t);
+    const Vec3& z0 = g_zeroVec;
+    Vec3 at;
+    at.y = (float)((double)z0.z * M[7] + (double)z0.y * M[4] + (double)z0.x * M[1] + M[10]);
+    at.z = (float)((double)z0.z * M[8] + (double)z0.y * M[5] + (double)z0.x * M[2] + M[11]);
+    at.x = (float)((double)z0.z * M[6] + (double)z0.y * M[3] + (double)z0.x * M[0] + M[9]);
+    obj = CallC<BYTE*>(Sh_Find, obj, &at, &top);
+    Vec3 hit = {0, 0, 0}, nrm = {0, 0, 0};
+    BYTE* shs[2] = {sh1, sh2};
+    for (unsigned i = 0; i < n; i++)
+    {
+        BYTE* sh = shs[i];
+        F(float, sh, 104) = spread;
+        F(float, sh, 100) = ang;
+        F(int, sh, 136) = 1;
+        F(int, sh, 140) = 1;
+        F(int, sh, 56) = 3;
+        F(float, sh, 84) = 1.0f;
+        F(int, sh, 88) = 0;
+        F(DWORD, sh, 92) = 982622900;
+        F(float, sh, 108) = 1.0f;
+        F(float, sh, 112) = 1.0f;
+        F(float, sh, 116) = 1.0f;
+        up = Sh_Up();
+        Sh_Place(car, base, p);
+        Vec3 lo = Sh_Set(p[0] - up.x, p[1] - up.y, p[2] - up.z);
+        Vec3 up2 = Sh_Up();
+        Sh_Place(car, base, p);
+        Vec3 w = Sh_Set(p[0], p[1], p[2]);
+        Vec3 hi = Sh_Set((double)up2.x + w.x, (double)up2.y + w.y, (double)up2.z + w.z);
+        if (CallC<int>(FUN_4e67d1, obj, &hi, &lo, node))
+        {
+            hit = F(Vec3, node, 52);
+            nrm = F(Vec3, node, 64);
+        }
+        else
+        {
+            nrm = g_axisZ;
+            Sh_Place(car, base, p);
+            hit = Sh_Set(p[0], p[1], p[2]);
+        }
+        Vec3 dy = Sh_Set((double)g_axisY.x * radius, (double)g_axisY.y * radius, (double)g_axisY.z * radius);
+        base = Sh_Set((double)dy.x + base.x, (double)dy.y + base.y, (double)dy.z + base.z);
+        Vec3 u3 = Sh_Up(), r;
+        BYTE t2[48];
+        Vec3_MulMatrix(&r, &base, CallThis<const Matrix*>(Sh_Matrix1, car + 16, t2));
+        Vec3 farp = Sh_Set((double)u3.x + r.x, (double)u3.y + r.y, (double)u3.z + r.z);
+        BYTE* next = CallC<BYTE*>(Sh_Find, obj, &hit, &farp);
+        float sphere[4] = {hit.x, hit.y, hit.z, radius};
+        float vis = (float)CallC<double>(Sh_Visibility, sphere);
+        if (!(vis > g_bm64c264))
+            sh[40] |= 1;
+        else
+        {
+            Matrix m592 = *(const Matrix*)(car + 756), m544;
+            BYTE t3[48], t4[48];
+            const Matrix* M2 = CallThis<const Matrix*>(Sh_Matrix2, car + 16, t3);
+            Vec3 a1, a2, a3, a4;
+            Vec3_MulMatrix(&a4, Vec3_MulMatrix(&a3, Vec3_Add(&a2, &hit, Vec3_Scaled(&a1, &nrm, 30.0f)), M2), &m592);
+            F(Vec3, sh, 60) = a4;
+            m544 = *(const Matrix*)(car + 756);
+            const Matrix* M3 = CallThis<const Matrix*>(Sh_Matrix2, car + 16, t4);
+            Vec3 b1, b2, b3;
+            Vec3_RotateBy(&b3, Vec3_RotateBy(&b2, CallC<const Vec3*>(Sh_Negated, &b1, &nrm), M3), &m544);
+            F(Vec3, sh, 72) = b3;
+            F(float, sh, 96) = vis;
+            if (CallC<BYTE*>(Sh_Get70ebf8))
+                CallThis(Sh_Add, CallC<BYTE*>(Sh_Get70ebf8), sphere);
+        }
+        obj = next;
+    }
 }
 
 } // extern "C"

@@ -2071,3 +2071,303 @@ int __fastcall Wheel_SegmentContact(BYTE* s, void*, Wc_V* at, Wc_V* n, const flo
 }
 
 } // extern "C"
+
+// === limiting a body's velocity and spin changes (FUN_4f4110)
+
+extern "C" void Vl_ResetMotion(); KING_ALIAS("_Vl_ResetMotion", "@Body_ResetMotion@8")
+extern "C" void Vl_MulAssign(); KING_ALIAS("_Vl_MulAssign", "@Vec3_MulAssign@16")
+ASM_VAR(double, g_vl64b678, $L_64b678)
+ASM_VAR(double, g_vl64b5b8, $L_64b5b8)
+ASM_VAR(float, g_vl64c250, $L_64c250)
+ASM_VAR(double, g_vl64b658, $L_64b658)
+ASM_VAR(double, g_vl64b738, $L_64b738)
+ASM_VAR(float, g_vl64d9d8, $L_64d9d8)
+ASM_VAR(double, g_vl64d9d0, $L_64d9d0)
+ASM_VAR(double, g_vl64ca48, $L_64ca48)
+ASM_VAR(double, g_vl64b670, $L_64b670)
+
+static Vec3 Vl_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+static Vec3 Vl_Mul(const Vec3& a, double k) { return Vl_Set(a.x * k, a.y * k, a.z * k); }
+
+static Vec3 Vl_Sum(const Vec3& a, const Vec3& b) { return Vl_Set((double)a.x + b.x, (double)a.y + b.y, (double)a.z + b.z); }
+
+// v *= a / (a - b)
+static void Vl_Cut(Vec3* v, double a, double b)
+{
+    Vec3 t;
+    CallThis(Vl_MulAssign, v, &t, (float)(a / (a - b)));
+}
+
+extern "C" {
+
+// [FUN_4f4110] limits the velocity change *dv and spin change *dw of body s (mass +9792) for impulse e, spin
+// q and step k: split along the contact normal frames, the parts that would turn the motion back are cut
+void __fastcall Body_LimitChange(BYTE* s, void*, Vec3* dv, Vec3* dw, Vec3* e, const Vec3* q, float k)
+{
+    if (!s[6580])
+    {
+        bool done = false;
+        if ((double)e->x * e->x + (double)e->y * e->y + (double)e->z * e->z == g_vl64b678)
+        {
+            double m = F(float, s, 9792);
+            double v2 = (double)F(float, s, 3236) * F(float, s, 3236) + (double)F(float, s, 3232) * F(float, s, 3232)
+                        + (double)F(float, s, 3228) * F(float, s, 3228);
+            if (m * m * g_vl64b5b8 > v2)
+            {
+                *dv = g_zeroVec;
+                CallThis(Vl_ResetMotion, s);
+                *e = g_zeroVec;
+                done = true;
+            }
+        }
+        if (!done)
+        {
+            float inv = (float)(g_vl64c250 / F(float, s, 9792));
+            Vec3 n, u, t, c, c2;
+            Vec3_Normalized(&n, (const Vec3*)(s + 220));
+            Vec3_Cross(&c, (const Vec3*)(s + 208), &n);
+            Vec3_Normalized(&u, &c);
+            Vec3_Cross(&t, &u, &n);
+            const float* V = (const float*)(s + 64);
+            double d = (double)V[1] * n.y + (double)V[2] * n.z + (double)V[0] * n.x;
+            Vec3 v72 = Vl_Set(d * n.x, d * n.y, d * n.z);
+            d = (double)V[2] * u.z + (double)V[1] * u.y + (double)u.x * V[0];
+            Vec3 v108 = Vl_Set(d * u.x, d * u.y, d * u.z);
+            d = (double)V[1] * t.y + (double)V[2] * t.z + (double)V[0] * t.x;
+            Vec3 v96 = Vl_Set(d * t.x, d * t.y, d * t.z);
+            d = (double)n.z * dv->z + (double)n.y * dv->y + (double)dv->x * n.x;
+            Vec3 v144 = Vl_Set(d * n.x, d * n.y, d * n.z);
+            d = (double)u.z * dv->z + (double)u.y * dv->y + (double)dv->x * u.x;
+            Vec3 v84 = Vl_Set(d * u.x, d * u.y, d * u.z);
+            d = (double)dv->x * t.x + (double)t.y * dv->y + (double)t.z * dv->z;
+            Vec3 v132 = Vl_Set(d * t.x, d * t.y, d * t.z);
+            double kk = (double)inv * k;
+            float kf = (float)kk;
+            Vec3 v60 = Vl_Sum(v72, Vl_Mul(v144, kk));
+            Vec3 v120 = Vl_Sum(v108, Vl_Mul(v84, kf));
+            Vec3 v208 = Vl_Sum(v96, Vl_Mul(v132, kf));
+            if ((double)v60.y * v72.y + (double)v60.z * v72.z + (double)v60.x * v72.x < g_vl64b678)
+                Vl_Cut(&v144, (double)v72.y * n.y + (double)v72.z * n.z + (double)v72.x * n.x,
+                       (double)v60.y * n.y + (double)v60.z * n.z + (double)v60.x * n.x);
+            if ((double)v120.x * v108.x + (double)v120.y * v108.y + (double)v120.z * v108.z < g_vl64b678)
+                Vl_Cut(&v84, (double)v108.z * u.z + (double)v108.y * u.y + (double)v108.x * u.x,
+                       (double)v120.z * u.z + (double)v120.y * u.y + (double)v120.x * u.x);
+            if ((double)v208.x * v96.x + (double)v208.y * v96.y + (double)v208.z * v96.z < g_vl64b678)
+                Vl_Cut(&v132, (double)v96.x * t.x + (double)v96.y * t.y + (double)v96.z * t.z,
+                       (double)v208.x * t.x + (double)v208.y * t.y + (double)v208.z * t.z);
+            *dv = Vl_Sum(Vl_Sum(v84, v144), v132);
+        }
+    }
+    if (s[6580])
+        return;
+    const float* M = (const float*)(s + 2304);
+    Vec3 v84 = Vl_Set((double)M[3] * q->y + (double)M[6] * q->z + (double)M[0] * q->x,
+                      (double)M[4] * q->y + (double)M[7] * q->z + (double)M[1] * q->x,
+                      (double)M[5] * q->y + (double)M[8] * q->z + (double)M[2] * q->x);
+    Vec3 a = F(Vec3, s, 232);
+    if (Vec3_Length((const Vec3*)(s + 232)) < g_vl64b658)
+        a = g_axisZ;
+    Vec3 w, n, u, t, c;
+    Vec3_MulComponents(&w, &a, (const Vec3*)(s + 8008));
+    Vec3_Normalized(&n, &w);
+    Vec3_Cross(&c, &g_axisY, &n);
+    Vec3_Normalized(&u, &c);
+    Vec3_Cross(&t, &n, &u);
+    Vec3 v120, v96, v108, v144, v168, v72, v156, v48, v24, v36;
+    Vec3_Scaled(&v120, &n, (float)Vec3_Dot(&n, &v84));
+    Vec3_Scaled(&v96, &u, (float)Vec3_Dot(&u, &v84));
+    Vec3_Scaled(&v108, &t, (float)Vec3_Dot(&t, &v84));
+    Vec3_Scaled(&v144, &n, (float)Vec3_Dot(dw, &n));
+    Vec3_Scaled(&v168, &u, (float)Vec3_Dot(dw, &u));
+    Vec3_Scaled(&v72, &t, (float)Vec3_Dot(dw, &t));
+    Vec3_Add(&v48, &v120, Vec3_Scaled(&v156, &v144, k));
+    Vec3_Add(&v24, &v108, Vec3_Scaled(&v156, &v72, k));
+    Vec3_Add(&v36, &v96, Vec3_Scaled(&v156, &v168, k));
+    float d1 = (float)Vec3_Dot(&v120, &v120);
+    double d2 = Vec3_Dot(&v120, &v48);
+    if (-(double)d1 * g_vl64b738 > d2 && d2 > (double)d1 * g_vl64d9d8)
+    {
+        double r = x87_fabs(F(float, s, 6736)) * F(float, s, 3524) > g_vl64b5b8 ? g_vl64d9d0 / k : g_vl64ca48 / k;
+        Vec3_Scaled(&v144, &v120, (float)r);
+    }
+    if (Vec3_Dot(e, e) < g_vl64b670)
+    {
+        if (Vec3_Dot(&v36, &v96) < g_vl64b678)
+        {
+            float a1 = (float)Vec3_Dot(&u, &v96);
+            Vl_Cut(&v168, a1, Vec3_Dot(&u, &v36));
+        }
+        if (Vec3_Dot(&v24, &v108) < g_vl64b678)
+        {
+            float a1 = (float)Vec3_Dot(&t, &v108);
+            Vl_Cut(&v72, a1, Vec3_Dot(&t, &v24));
+        }
+    }
+    Vec3 r1, r2;
+    *dw = *Vec3_Add(&r2, Vec3_Add(&r1, &v144, &v168), &v72);
+}
+
+} // extern "C"
+
+// === a body's setup before its steps of the frame (FUN_4f7380)
+
+extern "C" void Vp_floor(); KING_ALIAS("_Vp_floor", "_floor")
+extern "C" void Vp_FrameTime(); KING_ALIAS("_Vp_FrameTime", "_Game_FrameTime")
+extern "C" void Vp_DivAssign(); KING_ALIAS("_Vp_DivAssign", "@Vec3_DivAssign@16")
+ASM_VAR(double, g_vp64d9f8, $L_64d9f8)
+ASM_VAR(double, g_vp64b670, $L_64b670)
+ASM_VAR(float, g_vp64da10, $L_64da10)
+ASM_VAR(double, g_vp64b6a0, $L_64b6a0)
+ASM_VAR(double, g_vp64b5b8, $L_64b5b8)
+ASM_VAR(double, g_vp64b930, $L_64b930)
+ASM_VAR(double, g_vp64b678, $L_64b678)
+ASM_VAR(double, g_vp64da08, $L_64da08)
+ASM_VAR(float, g_vp64c264, $L_64c264)
+ASM_VAR(double, g_vp64b780, $L_64b780)
+
+static Vec3 Vp_Set(double x, double y, double z)
+{
+    Vec3 v;
+    v.x = (float)x;
+    v.y = (float)y;
+    v.z = (float)z;
+    return v;
+}
+
+// (a x b) x a, with the products in the original's order
+static Vec3 Vp_DoubleCross(const float* a, const float* b)
+{
+    double c1 = (double)a[1] * b[2] - (double)b[1] * a[2];
+    double c2 = (double)b[0] * a[2] - (double)a[0] * b[2];
+    double c3 = (double)b[1] * a[0] - (double)a[1] * b[0];
+    return Vp_Set(c2 * a[2] - c3 * a[1], c3 * a[0] - c1 * a[2], c1 * a[1] - c2 * a[0]);
+}
+
+static int Vp_Steps(double t, double rate) { return (int)(CallC<double>(Vp_floor, t * rate) + g_vp64b670); }
+
+extern "C" {
+
+// [FUN_4f7380] prepares body s for the frame's steps: its frames (+8772 .. +8964), contact points of the
+// wheels (+9304, +9404), the number and length of the steps (+9520, +9508), the spin limits, and the drag
+// force (+9748) and torque (+9760) toward the target +10484; a single step unless full
+void __fastcall Body_PrepareSteps(BYTE* s, void*, int full)
+{
+    Matrix m;
+    memcpy(s + 8772, Matrix_Translation(&m, F(Vec3, s, 6116)), 48);
+    const float* E = (const float*)(s + 8820);
+    memcpy(s + 8820, Matrix_Inverse(&m, (const Matrix*)(s + 8772)), 48);
+    memcpy(s + 8868, Matrix_Multiply(&m, (const Matrix*)(s + 2256), (const Matrix*)E), 48);
+    memcpy(s + 8916, Matrix_Multiply(&m, (const Matrix*)(s + 2256), (const Matrix*)E), 48);
+    memcpy(s + 8964, Matrix_Inverse(&m, (const Matrix*)(s + 8868)), 48);
+    Vec3* V = (Vec3*)(s + 9012);
+    *V = F(Vec3, s, 2568);
+    F(Vec3, s, 9024) = F(Vec3, s, 3132);
+    Vec3 t;
+    Vec3_RotateBy((Vec3*)(s + 9036), (const Vec3*)(s + 3132), (const Matrix*)(s + 8964));
+    F(Vec3, s, 9048) = *Vec3_DivComponents(&t, (const Vec3*)(s + 9036), (const Vec3*)(s + 8008));
+    F(Vec3, s, 9096) = g_zeroVec;
+    F(Vec3, s, 9120) = g_zeroVec;
+    F(Vec3, s, 9132) = g_zeroVec;
+    F(Vec3, s, 9108) = F(Vec3, s, 3180);
+    F(Vec3, s, 9168) = F(Vec3, s, 3264);
+    F(Vec3, s, 9180) = g_zeroVec;
+    F(Vec3, s, 9192) = g_zeroVec;
+    for (int i = 0; i < F(int, s, 3540); i++)
+        F(int, s, 9244 + i * 4) = F(int, s, 3576 + i * 4);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        const float* p = (const float*)(s + 100 + i * 12);
+        F(Vec3, s, 9404 + i * 12) = Vp_Set((double)E[6] * p[2] + (double)E[3] * p[1] + (double)E[0] * p[0] + E[9],
+                                           (double)E[7] * p[2] + (double)E[4] * p[1] + (double)E[1] * p[0] + E[10],
+                                           (double)E[8] * p[2] + (double)E[5] * p[1] + (double)E[2] * p[0] + E[11]);
+        const float* q = (const float*)(s + 6116 + i * 12);
+        F(Vec3, s, 9308 + i * 12) = Vp_Set((double)E[0] * q[0] + (double)q[2] * E[6] + (double)q[1] * E[3] + E[9],
+                                           (double)q[2] * E[7] + (double)q[1] * E[4] + (double)E[1] * q[0] + E[10],
+                                           (double)E[2] * q[0] + (double)q[2] * E[8] + (double)q[1] * E[5] + E[11]);
+    }
+    double dt = CallC<double>(Vp_FrameTime);
+    F(float, s, 9500) = (float)dt;
+    F(int, s, 9520) = Vp_Steps(dt, g_vp64d9f8);
+    if ((F(WORD, s, 10048) && F(float, s, 9792) < g_vp64da10) || F(int, s, 10092))
+        F(int, s, 9520) = Vp_Steps(F(float, s, 9500), g_vp64b6a0);
+    double n = F(int, s, 9520);
+    F(float, s, 9516) = (float)n;
+    F(float, s, 9508) = F(float, s, 9512) = (float)(F(float, s, 9500) / n);
+    if (!full)
+    {
+        float t0 = F(float, s, 9500);
+        int w = F(int, s, 3540);
+        F(int, s, 9520) = 1;
+        F(float, s, 9512) = t0;
+        if (w == 4 && ((F(WORD, s, 6564) && F(WORD, s, 6568)) || (F(WORD, s, 6566) && F(WORD, s, 6570))))
+            F(float, s, 9508) = t0;
+        if (w == 2 && (F(WORD, s, 6564) || F(WORD, s, 6566)))
+            F(float, s, 9508) = t0;
+    }
+    F(int, s, 9504) = 0;
+    if (F(float, s, 3524) < g_vp64b5b8 && F(int, s, 6844))
+    {
+        Vec3 c = Vp_DoubleCross((const float*)(s + 208), &V->x);
+        F(float, s, 3524) = (float)Vec3_Length(&c);
+        F(float, s, 9240) = (float)Vec3_Length(V);
+    }
+    Vec3_RotateBy((Vec3*)(s + 9624), (const Vec3*)(s + 208), (const Matrix*)(s + 8964));
+    {
+        const float* A = (const float*)(s + 196);
+        const float* Z = &g_axisZ.x;
+        double c1 = (double)Z[2] * A[1] - (double)Z[1] * A[2];
+        double c2 = (double)Z[0] * A[2] - (double)Z[2] * A[0];
+        double c3 = (double)Z[1] * A[0] - (double)Z[0] * A[1];
+        F(Vec3, s, 9636) = Vp_Set(c2 * A[2] - c3 * A[1], c3 * A[0] - c1 * A[2], c1 * A[1] - c2 * A[0]);
+    }
+    Vec3* dir = (Vec3*)(s + 9648);
+    *dir = g_zeroVec;
+    F(Vec3, s, 9684) = F(Vec3, s, 3156);
+    double L = Vec3_Length((const Vec3*)(s + 9636));
+    F(float, s, 9696) = (float)L;
+    if (L > g_vp64b930)
+    {
+        const float* a = (const float*)(s + 9636);
+        *dir = Vp_Set(a[0] / L, a[1] / L, a[2] / L);
+    }
+    memcpy(s + 9700, &g_identity, 48);
+    int off = 0;
+    for (int i = 0; i < F(int, s, 3540); i++)
+        if (off || !F(WORD, s, 6564 + i * 2))
+            off = 1;
+    double f0 = off ? (double)F(float, s, 9796) * F(float, s, 3524) * g_vp64da08 : g_vp64b678;
+    float f = (float)f0;
+    if (f0 > g_vp64b670)
+        f = 1.0f;
+    Vec3 d = Vp_Set((double)F(float, s, 10484) - F(float, s, 64), (double)F(float, s, 10488) - F(float, s, 68),
+                    (double)F(float, s, 10492) - F(float, s, 72));
+    Vec3 dn = d;
+    float len = (float)Vec3_Length(&d);
+    if (len != g_vp64c264)
+        CallThis(Vp_DivAssign, &dn, &t, len);
+    float side = (float)x87_fabs((double)F(float, s, 2624) * dn.z + (double)F(float, s, 2620) * dn.y + (double)F(float, s, 2616) * dn.x);
+    const float* M = (const float*)(s + 8868);
+    double gx = -(double)g_axisZ.x, gy = -(double)g_axisZ.y, gz = -(double)g_axisZ.z;
+    float wx = (float)(gz * M[6] + gy * M[3] + gx * M[0]);
+    float wy = (float)(gz * M[7] + gy * M[4] + gx * M[1]);
+    double wz = gz * M[8] + gy * M[5] + gx * M[2];
+    double k = (double)f * F(float, s, 9792) * g_vp64b780;
+    Vec3 grav = Vp_Set(wx * k, wy * k, wz * k);
+    Vec3 v100 = Vp_Set((double)d.x * len, (double)d.y * len, (double)d.z * len);
+    double g = ((double)g_vp64b670 - side) * F(float, s, 9804) + (double)side * F(float, s, 9800);
+    Vec3 drag = Vp_Set(v100.x * g, v100.y * g, v100.z * g);
+    F(Vec3, s, 9748) = Vp_Set((double)drag.x + grav.x, (double)drag.y + grav.y, (double)drag.z + grav.z);
+    Vec3 r;
+    Vec3_Cross((Vec3*)(s + 9760), (const Vec3*)(s + 9908), Vec3_RotateBy(&r, &drag, (const Matrix*)(s + 8964)));
+    F(int, s, 9524) = 1;
+}
+
+} // extern "C"
