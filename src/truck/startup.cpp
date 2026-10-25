@@ -1078,7 +1078,7 @@ void __fastcall VehicleSounds_Find(BYTE* s)
 extern "C" void FUN_4e298b(); KING_ALIAS("_FUN_4e298b", "_Vec3_LengthSq4e298b")
 extern "C" void FUN_5dffc0(); KING_ALIAS("_FUN_5dffc0", "@View_DrawObject@4")
 ASM_PROC(FUN_53d9d0)    // the dashboard text overlay
-ASM_PROC(FUN_586830)    // a moving object's per-frame step
+extern "C" void FUN_586830(); KING_ALIAS("_FUN_586830", "@Item_AfterEvents@4")    // a moving object's per-frame step
 ASM_VAR(float, g_wv6969f4, $L_6969f4)
 ASM_VAR(float, g_wv6969f8, $L_6969f8)
 ASM_VAR(float, g_wv6969fc, $L_6969fc)

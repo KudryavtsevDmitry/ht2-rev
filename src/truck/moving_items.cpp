@@ -933,3 +933,249 @@ void __fastcall Item_SendContact(BYTE* s, void*, BYTE* b, const BYTE* c, float k
 }
 
 } // extern "C"
+
+// === starting an item's flight (582140)
+
+extern "C" void Mi_Length(); KING_ALIAS("_Mi_Length", "_Vec3_Length")
+ASM_VAR(int, g_mi67d110, $L_67d110)
+ASM_VAR(int, g_mi6f6540, $L_6f6540)
+ASM_VAR(double, g_mi6f65c0, $L_6f65c0)
+ASM_VAR(double, g_mi6f65b8, $L_6f65b8)
+ASM_VAR(double, g_mi64b6e0, $L_64b6e0)
+ASM_VAR(double, g_mi64d0f0, $L_64d0f0)
+
+extern "C" {
+
+// [$L_582140] starts item s flying (flags: bit 0 thrown): its speed (+3160) and time, the detail level (+1680, at
+// most 1..3 when the frame time is long against 6f65c0 and 6f65b8), its frames (+548, +644) as the start of the
+// trail, the trail points cleared; *done = 1, or 0 when it already flies
+int __fastcall Item_StartFlight(BYTE* s, void*, int flags, int* done)
+{
+    *done = 0;
+    if (F(int, s, 1420))
+        return 0;
+    if (flags & 1)
+        F(int, s, 1420) = 1;
+    F(int, s, 1440) = 1;
+    F(int, s, 1436) = flags;
+    F(float, s, 1444) = (float)CallC<double>(Mi_Length, s + 3160);
+    float t = (float)CallC<double>(FUN_4e2749);
+    F(float, s, 1456) = 1.0f;
+    F(float, s, 1448) = t;
+    F(float, s, 1452) = t;
+    F(int, s, 1460) = 0;
+    F(int, s, 1672) = 0;
+    F(int, s, 1680) = g_mi67d110;
+    F(int, s, 1688) = 0;
+    F(int, s, 1684) = g_mi6f6540;
+    F(int, s, 1676) = 0;
+    F(int, s, 1692) = 0;
+    if (F(int, s, 1420)) {
+        F(int, s, 1680) = F(int, s, 372) ? -1 : 0;
+        F(int, s, 1684) = 1;
+    }
+    double h = t * g_mi64b6e0, h2 = t * g_mi64d0f0;
+    int cap = 0;
+    if (g_mi6f65c0 > h || g_mi6f65b8 > h)
+        cap = F(int, s, 1204) ? 2 : 1;
+    else if (g_mi6f65c0 > h2 || g_mi6f65b8 > h2)
+        cap = F(int, s, 1204) ? 3 : 2;
+    if (cap && F(int, s, 1680) > cap)
+        F(int, s, 1680) = cap;
+    for (int k = 0; k < 3; k++) {
+        memcpy(s + 1696 + k * 96, s + 548, 48);
+        memcpy(s + 1744 + k * 96, s + 644, 48);
+    }
+    F(int, s, 2032) = F(int, s, 804);
+    F(int, s, 2036) = F(int, s, 804);
+    memcpy(s + 1984, (BYTE*)g_q108_702650, 12);
+    memcpy(s + 2020, (BYTE*)g_q108_702650, 12);
+    F(int, s, 1432) = 0;
+    *done = 1;
+    F(int, s, 1412) = 0;
+    F(int, s, 1416) = 0;
+    for (int i = 0; i < 5; i++) {
+        memcpy(s + 2040 + i * 12, (BYTE*)g_q108_702650, 12);
+        memcpy(s + 2156 + i * 208, (BYTE*)g_q108_702650, 12);
+        memcpy(s + 2168 + i * 208, (BYTE*)g_q108_702650, 12);
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === after the scene events (FUN_586830)
+
+extern "C" void FUN_4ea27e(); KING_ALIAS("_FUN_4ea27e", "_VehLog_Value")
+extern "C" void Ra_MatMul(); KING_ALIAS("_Ra_MatMul", "_Matrix_Multiply")
+extern "C" void Ra_sprintf(); KING_ALIAS("_Ra_sprintf", "_sprintf")
+ASM_VAR(int, g_ra696c6c, $L_696c6c)
+ASM_VAR(BYTE*, g_ra6ef1fc, $L_6ef1fc)
+ASM_VAR(double, g_ra64b930, $L_64b930)
+ASM_VAR(AsmLabel, s_raEvents1, $L_67d888)
+ASM_VAR(AsmLabel, s_raEvents2, $L_67d860)
+
+// logs "name_what x y z"
+static void Ra_Log3(const char* fmt, const char* name, double x, double y, double z)
+{
+    char buf[96];
+    CallC(Ra_sprintf, buf, fmt, name, x, y, z);
+    CallC(FUN_4ea27e, buf);
+}
+
+extern "C" {
+
+// [FUN_586830] after the scene events, item s (when placed, +372) takes its scene node's frame (+32 +68): when its
+// set (+812/+814) changed or it moved away from +536 the frame is kept as the slave frame (+816, time +808, the
+// speeds +416/+428 to +864/+876); the speeds go back to the object (vtbl+144/+148); a pending stop (+892/+896)
+// runs vtbl+60 (with logging when 696c6c)
+void __fastcall Item_AfterEvents(BYTE* s)
+{
+    if (!F(int, s, 372))
+        return;
+    float m[12];
+    for (int i = 0; i < 4; i++)
+        m[i * 3] = m[i * 3 + 1] = m[i * 3 + 2] = 0;
+    memcpy(m, (BYTE*)g_q108_7025f0, 48);
+    CallThis(FUN_5f25a0, F(void*, F(BYTE*, s, 32), 68), m);
+    const char* name = F(const char*, F(BYTE*, s, 320), 12);
+    if (g_ra696c6c) {
+        char buf[96];
+        CallC(FUN_4ea27e, "run_after_SRMIEvents");
+        CallC(Ra_sprintf, buf, " %s_time %6.3f", name, F(double, g_ra6ef1fc, 2968));
+        CallC(FUN_4ea27e, buf);
+        Ra_Log3(" %s_M0 %6.3f %6.3f %6.3f ", name, m[9], m[10], m[11]);
+    }
+    float w[12];
+    CallC(Ra_MatMul, w, s + 740, m);
+    float dx = (float)((double)w[9] - F(float, s, 536)), dy = (float)((double)w[10] - F(float, s, 540));
+    double dz = (double)w[11] - F(float, s, 544);
+    WORD set = F(WORD, s, 814);
+    if (F(WORD, s, 812) != set || (double)dy * dy + (double)dx * dx + dz * dz > g_ra64b930) {
+        F(WORD, s, 812) = set;
+        memcpy(s + 816, m, 48);
+        F(float, s, 808) = (float)F(double, g_ra6ef1fc, 2968);
+        memcpy(s + 864, s + 416, 12);
+        memcpy(s + 876, s + 428, 12);
+    }
+    if (g_ra696c6c) {
+        char buf[96];
+        CallC(Ra_sprintf, buf, " %s_UpdTime %6.3f", F(const char*, F(BYTE*, s, 320), 12), (double)F(float, s, 808));
+        CallC(FUN_4ea27e, buf);
+        Ra_Log3(" %s_slaveM %6.3f %6.3f %6.3f", F(const char*, F(BYTE*, s, 320), 12), F(float, s, 852),
+                F(float, s, 856), F(float, s, 860));
+        Ra_Log3(" %s_M %6.3f %6.3f %6.3f", F(const char*, F(BYTE*, s, 320), 12), F(float, s, 536), F(float, s, 540),
+                F(float, s, 544));
+    }
+    CallVirt(s, 144, s + 416, (const char*)s_raEvents1);
+    CallVirt(s, 148, s + 428, (const char*)s_raEvents2);
+    if (F(int, s, 892) || F(int, s, 896)) {
+        F(int, s, 3556) = 1;
+        CallVirt(s, 60);
+        F(int, s, 892) = 0;
+    }
+}
+
+} // extern "C"
+
+// === an item's speeds for its flight (583d40)
+
+ASM_VAR(double, g_fs64d338, $L_64d338)
+ASM_VAR(float, g_fs64c748, $L_64c748)
+
+extern "C" {
+
+// [$L_583d40] item s's flight speeds: its spin (+3160, the turn +428 times the step +1452 or +1448) and its length
+// (+1444); thrown (+1436 bit 7) against a surface (+892, normal +976) its speed (+3148) is turned along it when
+// it goes into it (plus 64c748 of its length along the normal), else it is the move +416 times the step
+void __fastcall Item_FlightSpeeds(BYTE* s)
+{
+    float t = F(int, s, 1676) ? F(float, s, 1452) : F(float, s, 1448);
+    float* w = (float*)(s + 3160);
+    w[0] = (float)(t * (double)F(float, s, 428));
+    w[1] = (float)(t * (double)F(float, s, 432));
+    w[2] = (float)(t * (double)F(float, s, 436));
+    F(float, s, 1444) = (float)Vec3_Length((const Vec3*)w);
+    Vec3* v = (Vec3*)(s + 3148);
+    if ((F(BYTE, s, 1436) & 128) && F(int, s, 892)) {
+        double l = Vec3_Length(v);
+        const float* n = (const float*)(s + 976);
+        double dn = (double)v->z * n[2] + (double)v->y * n[1] + (double)v->x * n[0];
+        if (!(l * g_fs64d338 > dn))
+            return;
+        double a = l * n[0];
+        float b = (float)(l * n[1]), c = (float)(l * n[2]);
+        float q[3] = {(float)(a * g_fs64c748), (float)(b * (double)g_fs64c748), (float)(c * (double)g_fs64c748)};
+        Vec3 w1, w2, r;
+        w1.Set((float)((double)v->z * n[1] - (double)n[2] * v->y), (float)((double)n[2] * v->x - (double)v->z * n[0]),
+               (float)((double)n[0] * v->y - (double)v->x * n[1]));
+        w2.Set((float)((double)w1.y * n[2] - (double)w1.z * n[1]), (float)((double)w1.z * n[0] - (double)w1.x * n[2]),
+               (float)((double)w1.x * n[1] - (double)w1.y * n[0]));
+        r.Set((float)((double)w2.x + q[0]), (float)((double)w2.y + q[1]), (float)((double)w2.z + q[2]));
+        *v = r;
+        return;
+    }
+    Vec3 m;
+    m.Set((float)(t * (double)F(float, s, 416)), (float)(t * (double)F(float, s, 420)), (float)(t * (double)F(float, s, 424)));
+    *v = m;
+}
+
+} // extern "C"
+
+// === the ground normal under an item (FUN_582960)
+
+extern "C" void FUN_4e7261(); KING_ALIAS("_FUN_4e7261", "_Query_4e7261")
+ASM_VAR(Vec3, g_gn702630, $L_702630)
+ASM_VAR(double, g_gn64b668, $L_64b668)
+ASM_VAR(float, g_gn64c2f8, $L_64c2f8)
+
+extern "C" {
+
+// [FUN_582960] *out = the ground normal under item s (+536), kept with its point (+1176, +1164) until the item moves
+// away by its size (+400): probed down from the item by the size times 10, else from above to below by 64c2f8
+Vec3* __fastcall Item_GroundNormal(BYTE* s, void*, Vec3* out)
+{
+    Vec3* hp = (Vec3*)(s + 1164);
+    Vec3* np = (Vec3*)(s + 1176);
+    const Vec3* p = (const Vec3*)(s + 536);
+    double dx = (double)hp->x - p->x, dy = (double)hp->y - p->y;
+    double dz = (double)hp->z - p->z;
+    float fdx = (float)dx, fdy = (float)dy;
+    if (F(float, s, 400) * g_gn64b668 > (double)fdx * fdx + (double)fdy * fdy + dz * dz) {
+        *out = *np;
+        return out;
+    }
+    const Vec3& u = g_gn702630;
+    double r = F(float, s, 400);
+    float ux = (float)(u.x * r), uy = (float)(u.y * r);
+    double uz = r * u.z;
+    Vec3 h = {0, 0, 0}, n = {0, 0, 0};
+    float a = (float)(ux * (double)g_ten64c450), b = (float)(uy * (double)g_ten64c450);
+    double c = uz * g_ten64c450;
+    Vec3 from;
+    from.x = (float)((double)p->x - a);
+    from.y = (float)((double)p->y - b);
+    from.z = (float)((double)p->z - c);
+    if (CallC<int>(FUN_4e7261, F(int, s, 800), 0, 0, p, &from, &h, &n) & 1) {
+        *hp = h;
+        *np = n;
+        *out = n;
+        return out;
+    }
+    double vx = u.x * (double)g_gn64c2f8;
+    float vy = (float)(u.y * (double)g_gn64c2f8), vz = (float)(u.z * (double)g_gn64c2f8);
+    Vec3 below, v, to;
+    below.x = (float)((double)p->x - vx);
+    below.y = (float)((double)p->y - vy);
+    below.z = (float)((double)p->z - vz);
+    v.x = (float)vx, v.y = vy, v.z = vz;
+    Vec3_Add(&to, p, &v);
+    if (CallC<int>(FUN_4e7261, F(int, s, 800), 0, 0, &to, &below, &h, &n) & 1) {
+        *np = n;
+        *hp = h;
+    }
+    *out = *np;
+    return out;
+}
+
+} // extern "C"

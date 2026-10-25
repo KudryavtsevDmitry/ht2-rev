@@ -128,7 +128,7 @@ extern "C" void FUN_5ef660(); KING_ALIAS("_FUN_5ef660", "@Sce5ef660_Destroy@4") 
 extern "C" void FUN_4bf510(); KING_ALIAS("_FUN_4bf510", "@Fx_CameraPair@8")    // particles: reset
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")    // named object: constructor
 extern "C" void FUN_4c09d0(); KING_ALIAS("_FUN_4c09d0", "@Effect4c09d0_Destroy@8")    // CRenderer::~CRenderer
-ASM_PROC(FUN_4ccf30)
+extern "C" void FUN_4ccf30(); KING_ALIAS("_FUN_4ccf30", "@Lights_Choose@12")
 extern "C" BYTE* __fastcall SceneObj_Matrix1(void* self, void*, void* out);   // engine.cpp: its world matrix
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // vehicles: by id
 extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")    // vehicle: release
@@ -1417,7 +1417,7 @@ extern "C" int __fastcall Light_Switch(BYTE* self, void*, int on, int keep)
     return LightEnable(F(int, self, 116), 0);
 }
 
-ASM_PROC(FUN_4ccf30)
+extern "C" void FUN_4ccf30(); KING_ALIAS("_FUN_4ccf30", "@Lights_Choose@12")
 ASM_VAR(ErrText, g_errText695d30, $L_695d30)
 
 extern "C" int __cdecl Glow_Add2(int a, const Vec3Bits* p, float b, float r1, float r2, int c, int d, int e,
@@ -2584,7 +2584,7 @@ extern "C" void __fastcall Fx_SteerFromSwing(BYTE* s, void*, double a, double b,
     Car_SetSteerShown(s, 0, (p - w) - cc);
 }
 
-ASM_PROC(FUN_4be2c0)    // the distance of a segment to a box-like object
+extern "C" void FUN_4be2c0(); KING_ALIAS("_FUN_4be2c0", "_Object_HeightAt")    // the distance of a segment to a box-like object
 ASM_PROC(FUN_616850)    // the distance of a segment to the terrain of a type-8 object
 
 static double Fx_SegDist(void* a, void* b, BYTE* o)
@@ -3469,7 +3469,7 @@ extern "C" void FUN_4dd9f0(); KING_ALIAS("_FUN_4dd9f0", "@Obj4dd9f0_Destruct@8")
 ASM_PROC(FUN_4ce6d0)
 ASM_PROC(FUN_547030)
 extern "C" void FUN_5f0870(); KING_ALIAS("_FUN_5f0870", "@Thunk5f0870@4")
-ASM_PROC(FUN_4dc410)
+extern "C" void FUN_4dc410(); KING_ALIAS("_FUN_4dc410", "@SmokeBurst_Destroy@4")
 extern "C" void FUN_4ddd50(); KING_ALIAS("_FUN_4ddd50", "@Eff4ddd50_Destroy@4")
 ASM_VAR(float, g_fx696700, $L_696700)
 ASM_VAR(float, g_fx69637c, $L_69637c)
@@ -3768,7 +3768,7 @@ extern "C" void __cdecl EffInit_4d2a70() { g_eff696280 = 0x0; g_eff696284 = 0x0;
 extern "C" void __cdecl EffInit_4da4b0() { g_eff696370 = (float)((double)g_eff672c48 * g_eff64c308); }
 
 extern "C" void FUN_4dde10(); KING_ALIAS("_FUN_4dde10", "@Cab_Release@8")
-ASM_PROC(FUN_4cb560)
+extern "C" void FUN_4cb560(); KING_ALIAS("_FUN_4cb560", "_Dust_Puffs")
 extern "C" void FUN_546b60(); KING_ALIAS("_FUN_546b60", "@CarPart_Draw@24")
 extern "C" void FUN_60f000(); KING_ALIAS("_FUN_60f000", "@MarineTask_ForwardPoint@12")
 ASM_VAR(AsmLabel, g_eff695978, $L_695978)
@@ -4384,7 +4384,7 @@ extern "C" void __fastcall Eff4ddd50_Destroy(BYTE* s)
 // Network messages and small constructors (exception frames dropped).
 
 extern "C" void FUN_5cdc10(); KING_ALIAS("_FUN_5cdc10", "@TreeShadow_Construct@8")
-ASM_PROC(FUN_5cdcd0)
+extern "C" void FUN_5cdcd0(); KING_ALIAS("_FUN_5cdcd0", "@Shadow_Attach@24")
 
 // [$L_4cb450] a new 224-byte object (FUN_5cdc10) set up by FUN_5cdcd0 (a, b, c, d); 0 when that fails
 extern "C" BYTE* __cdecl Eff_New4cb450(int a, int b, int c, int d)
@@ -5592,7 +5592,7 @@ extern "C" void FUN_59daf0(); KING_ALIAS("_FUN_59daf0", "_DustColor_Create")
 extern "C" void FUN_5d3110(); KING_ALIAS("_FUN_5d3110", "@Object_Construct@12")
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_6144f0(); KING_ALIAS("_FUN_6144f0", "@Terrain_SetDetail@16")
-ASM_PROC(FUN_614570)
+extern "C" void FUN_614570(); KING_ALIAS("_FUN_614570", "@Terrain_CreateDecals@12")
 extern "C" void FUN_5a37f0(); KING_ALIAS("_FUN_5a37f0", "_WorldHandlers_Create")
 
 // the effect texture of name in the scene 696200
@@ -5992,6 +5992,580 @@ BYTE* __fastcall Reflection_Construct(BYTE* s, void*, BYTE* scene, int a)
     F(DWORD, third, 32) |= 64;
     F(DWORD, F(BYTE*, s, 84), 32) = (F(DWORD, F(BYTE*, s, 84), 32) & ~0x80u) | 0x40000;
     return s;
+}
+
+} // extern "C"
+
+// === the smoke burst (FUN_4dc070)
+
+ASM_VAR(AsmLabel, s_fx672c90, $L_672c90)
+ASM_VAR(AsmLabel, g_vtbl64d50c, $L_64d50c)
+ASM_VAR(float, g_sb702628, $L_702628)
+ASM_VAR(float, g_sb702648, $L_702648)
+ASM_VAR(float, g_sb64c408, $L_64c408)
+ASM_VAR(float, g_sb64d498, $L_64d498)
+ASM_VAR(float, g_sb64c40c, $L_64c40c)
+
+// a random number in [-1, 1) scaled: the first rand subtracted from the second
+static double Sb_RandDiff()
+{
+    float r1 = (float)(rand() * (double)g_eff64c254);
+    int r2 = rand();
+    return r2 * (double)g_eff64c254 - r1;
+}
+
+extern "C" {
+
+// [FUN_4dc070] constructor (owner, frame m, position p) of a smoke burst: five puffs from p spread sideways
+// (along 702620 and 702640) and up (along 702630), turned by m and placed through it
+BYTE* __fastcall SmokeBurst_Construct(BYTE* s, void*, BYTE* owner, const Matrix* m, const Vec3* p)
+{
+    CallThis(FUN_5d3110, s, (const char*)s_fx672c90);
+    for (int i = 44; i < 80; i += 4)
+        F(int, s, i) = 0;
+    for (int i = 0; i < 4; i++)
+        CallThis(FUN_4bd4d0, s + 80 + i * 12);
+    memcpy(s + 80, g_7025f0, 48);
+    F(void*, s, 0) = (BYTE*)g_vtbl64d50c;
+    F(BYTE*, s, 40) = owner;
+    F(int, s, 36) = 0;
+    F(float, s, 32) = g_fx672c4c;
+    memcpy(s + 44, p, 12);
+    memcpy(s + 68, p, 12);
+    F(float, s, 136) = 4.0f;
+    F(float, s, 140) = 0.5f;
+    F(int, s, 132) = 0;
+    const Vec3& up = g_axis702630e;
+    F(float, s, 56) = up.x + up.x;
+    F(float, s, 60) = up.y + up.y;
+    F(float, s, 128) = 0.8f;
+    F(float, s, 64) = up.z + up.z;
+    memcpy(s + 80, m, 48);
+    for (int k = 0; k < 5; k++) {
+        double a = Sb_RandDiff();
+        float a0 = (float)(g_ahead702620.x * a), a1 = (float)(g_ahead702620.y * a);
+        Vec3 p1;
+        p1.Set((float)(a0 * (double)g_sb64c408), (float)(a1 * (double)g_sb64c408),
+               (float)(a * g_sb702628 * g_sb64c408));
+        double b = Sb_RandDiff();
+        float b0 = (float)(g_up702640.x * b), b1 = (float)(g_up702640.y * b);
+        Vec3 p2;
+        p2.Set((float)(b0 * (double)g_sb64c408), (float)(b1 * (double)g_sb64c408),
+               (float)(b * g_sb702648 * g_sb64c408));
+        double c = rand() * (double)g_sb64d498 + g_sb64c40c;
+        float c0 = (float)(c * up.x), c1 = (float)(c * up.y);
+        Vec3 p3;
+        p3.Set((float)((double)p2.x + c0), (float)((double)c1 + p2.y), (float)(c * up.z + p2.z));
+        Vec3 t;
+        t.Set((float)((double)p3.x + p1.x), (float)((double)p3.y + p1.y), (float)((double)p3.z + p1.z));
+        Vec3 r, w;
+        Vec3* rv = Vec3_RotateBy(&r, &t, (const Matrix*)(s + 80));
+        Fx_SmokePuffs((int)Vec3_MulMatrix(&w, (const Vec3*)(s + 68), (const Matrix*)(s + 80)), (int)rv);
+    }
+    CallThis(FUN_5d3570, F(BYTE*, s, 40) + 2992, s);
+    return s;
+}
+
+} // extern "C"
+
+// === the smoke burst's end (FUN_4dc410)
+
+static int Sb_Bits(float f) { return *(int*)&f; }
+ASM_VAR(float, g_sb64d52c, $L_64d52c)
+ASM_VAR(float, g_sb64c404, $L_64c404)
+ASM_VAR(float, g_sb64c690, $L_64c690)
+ASM_VAR(float, g_sb64c664, $L_64c664)
+
+extern "C" {
+
+// [FUN_4dc410] destructor of the smoke burst: outside replays two fires of random sizes start at its position (one
+// lifted along 702630 through its frame +80) and a BenzoNotify of the larger size
+void __fastcall SmokeBurst_Destroy(BYTE* s)
+{
+    F(void*, s, 0) = (BYTE*)g_vtbl64d50c;
+    if (F(int, g_6cec6c, 1300) != 2) {
+        const float* m = (const float*)(s + 80);
+        const Vec3& up = g_axis702630e;
+        float h1 = (float)(rand() * (double)g_sb64d52c + g_sb64c404);
+        BYTE* f1 = (BYTE*)operator new(108);
+        if (f1) {
+            double z = (double)up.z * g_sb64c408;
+            float y = (float)(up.y * (double)g_sb64c408), x = (float)(up.x * (double)g_sb64c408);
+            Vec3 v;
+            v.x = (float)((double)y * m[3] + z * m[6] + (double)x * m[0]);
+            v.y = (float)((double)x * m[1] + (double)y * m[4] + z * m[7]);
+            v.z = (float)((double)x * m[2] + (double)y * m[5] + z * m[8]);
+            double a = (double)F(float, s, 76) - up.z, b = (double)F(float, s, 72) - up.y,
+                   c = (double)F(float, s, 68) - up.x;
+            Vec3 w;
+            w.Set((float)(b * m[3] + a * m[6] + c * m[0] + m[9]), (float)(c * m[1] + b * m[4] + a * m[7] + m[10]),
+                  (float)(c * m[2] + b * m[5] + a * m[8] + m[11]));
+            f1 = Fire_Construct(f1, 0, F(BYTE*, s, 40), &w, &v, Sb_Bits(h1));
+        }
+        F(int, f1, 100) = 1;
+        F(float, f1, 104) = 0.7f;
+        CallVirt(f1, 24, 1);
+        float h2 = (float)(rand() * (double)g_sb64c690 + g_sb64c664);
+        BYTE* f2 = (BYTE*)operator new(108);
+        if (f2) {
+            Vec3 u, v, t, w;
+            u.Set((float)(up.x * (double)g_sb64c408), (float)(up.y * (double)g_sb64c408),
+                  (float)(up.z * (double)g_sb64c408));
+            v.Set((float)((double)u.y * m[3] + (double)u.z * m[6] + (double)u.x * m[0]),
+                  (float)((double)u.x * m[1] + (double)u.y * m[4] + (double)u.z * m[7]),
+                  (float)((double)u.x * m[2] + (double)u.y * m[5] + (double)u.z * m[8]));
+            Vec3* p = Vec3_MulMatrix(&w, Vec3_Sub(&t, (const Vec3*)(s + 68), &up), (const Matrix*)m);
+            f2 = Fire_Construct(f2, 0, F(BYTE*, s, 40), p, &v, Sb_Bits(h2));
+        }
+        CallVirt(f2, 24, 1);
+        F(float, f2, 104) = 0.7f;
+        if (BYTE* n = (BYTE*)operator new(56))
+            BenzoNotify_Construct(n, 0, F(BYTE*, s, 40), F(int, s, 152), F(int, s, 144), F(int, s, 148),
+                                  Sb_Bits(h1 < h2 ? h2 : h1));
+    }
+    CallThis(FUN_5d3290, s);
+}
+
+} // extern "C"
+
+// === the dust puffs facing the camera (FUN_4cb560)
+
+extern "C" void FUN_5a0ca0(); KING_ALIAS("_FUN_5a0ca0", "@DustPuff_Construct@28")    // a dust puff's constructor
+ASM_VAR(BYTE*, g_dp6f6abc, $L_6f6abc)
+ASM_VAR(AsmLabel, g_dp695cc0, $L_695cc0)
+ASM_VAR(AsmLabel, g_dp695cc4, $L_695cc4)
+ASM_VAR(AsmLabel, g_dp695cc8, $L_695cc8)
+ASM_VAR(double, g_dp64b678, $L_64b678)
+ASM_VAR(float, g_dp64c238, $L_64c238)
+ASM_VAR(float, g_dp64c23c, $L_64c23c)
+ASM_VAR(float, g_dp64c948, $L_64c948)
+ASM_VAR(float, g_dp64c944, $L_64c944)
+ASM_VAR(float, g_dp64c940, $L_64c940)
+ASM_VAR(float, g_dp64c408, $L_64c408)
+
+// two dust puffs of kind k at p of size sz (flags 0 then 1, the second with 0 and the first with e)
+static void Dp_Pair(const float* p, float sz, const void* k, int e)
+{
+    if (BYTE* o = CallC<BYTE*>(FUN_579380, 188, g_dp6f6abc))
+        CallThis(FUN_5a0ca0, o, p, sz, 0, k, e);
+    if (BYTE* o = CallC<BYTE*>(FUN_579380, 188, g_dp6f6abc))
+        CallThis(FUN_5a0ca0, o, p, sz, 1, k, 0);
+}
+
+extern "C" {
+
+// [FUN_4cb560] dust of kind (0..2) at p moving along dir with size sz on surface q (+52..+60, all zero for none):
+// the size blends from double to the height above q with the distance from the camera, scales by how much dir
+// faces the camera; no puffs when it faces away
+void __cdecl Dust_Puffs(const float* p, const float* dir, float sz, const float* q, int kind)
+{
+    BYTE* cam = g_view;
+    float cx = (float)F(double, cam, 2904), cy = (float)F(double, cam, 2912);
+    float d[3];
+    d[2] = (float)(F(double, cam, 2920) - p[2]);
+    d[1] = (float)((double)cy - p[1]);
+    d[0] = (float)((double)cx - p[0]);
+    double len = Vec3_Length((const Vec3*)d);
+    double two = (double)sz + sz;
+    double v;
+    if ((q[13] != g_dp64b678 || q[14] != g_eff64c264b || q[15] != g_eff64c264b) && q) {
+        double t = (double)p[2] - q[15];
+        if (t < 0)
+            t = -t;
+        float h = (float)(sz * (double)g_dp64c408);
+        v = t > h ? h : t;
+    } else
+        v = sz * (double)g_dp64c408;
+    double f = (len - g_dp64c238) / ((double)g_dp64c23c - g_dp64c238);
+    if (f > g_eff64c250)
+        f = g_eff64c250;
+    else if (f < g_eff64c264b)
+        f = g_eff64c264b;
+    float w = (float)((g_eff64c250 - f) * two + f * v);
+    float c = (float)(((double)dir[2] * d[2] + (double)dir[1] * d[1] + (double)dir[0] * d[0]) / len);
+    if (c < g_dp64c948)
+        return;
+    double k = c < g_eff64c74c ? c * (double)g_dp64c944 : g_eff64c250;
+    float w2 = (float)(k * w * g_dp64c940);
+    float big = (float)(w2 * (double)g_eff64c350);
+    if (kind == 0)
+        Dp_Pair(p, big, (BYTE*)g_dp695cc8, 1);
+    else if (kind == 1)
+        Dp_Pair(p, w2, (BYTE*)g_dp695cc0, 1);
+    else if (kind == 2)
+        Dp_Pair(p, big, (BYTE*)g_dp695cc4, 2);
+}
+
+} // extern "C"
+
+// === drawing rain streaks (4c3480)
+
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+ASM_VAR(float, g_rs64c460, $L_64c460)
+ASM_VAR(float, g_rs64c45c, $L_64c45c)
+ASM_VAR(float, g_rs64c750, $L_64c750)
+ASM_VAR(float, g_rs64c458, $L_64c458)
+
+extern "C" {
+
+// [$L_4c3480] draws the streaks of effect s (list +52: +4 position, +16 length, +20 alpha) into renderer r as a
+// triangle each: the top point, then the bottom corners across the view (the camera's heading turned about z,
+// crossed with up) at u 0.5 and 1; the grey (7025b8 +548, clamped) kept at +60; 0
+int __fastcall Rain_DrawStreaks(BYTE* s, void*, BYTE* r)
+{
+    float m[12];
+    float* rz = CallC<float*>(FUN_5ac0c0, m, (float)F(double, F(BYTE*, s, 4), 2928));
+    const Vec3& a = g_ahead702620;
+    const Vec3& u = g_axis702630e;
+    Vec3 h, q;
+    h.Set((float)((double)a.z * rz[6] + (double)a.y * rz[3] + (double)a.x * rz[0] + rz[9]),
+          (float)((double)a.z * rz[7] + (double)a.y * rz[4] + (double)a.x * rz[1] + rz[10]),
+          (float)((double)a.z * rz[8] + (double)a.y * rz[5] + (double)a.x * rz[2] + rz[11]));
+    q.Set((float)((double)u.y * h.z - (double)u.z * h.y), (float)((double)u.z * h.x - (double)u.x * h.z),
+          (float)((double)u.x * h.y - (double)u.y * h.x));
+    float half[3] = {(float)(q.x * (double)g_64c258), (float)(q.y * (double)g_64c258),
+                     (float)(q.z * (double)g_64c258)};
+    double g = F(float, g_7025b8, 548) * (double)g_rs64c460;
+    if (g > g_rs64c45c)
+        g = g_rs64c45c;
+    else if (g < g_eff64c334)
+        g = g_eff64c334;
+    int b = (int)(g * g_rs64c458);
+    F(DWORD, s, 60) = ((((DWORD)b | 0xFFFFFF00) << 8 | b) << 8) | b;
+    for (BYTE* p = F(BYTE*, s, 52); p; p = F(BYTE*, p, 0)) {
+        DWORD col = (DWORD)(int)(F(float, p, 20) * (double)g_rs64c750) << 24 | (F(DWORD, s, 60) & 0xFFFFFF);
+        float len = F(float, p, 16);
+        const Vec3* pos = (const Vec3*)(p + 4);
+        Vec3 v, t;
+        v.Set(0, 0, len);
+        t.Set((float)((double)v.x + pos->x), (float)((double)v.y + pos->y), (float)((double)v.z + pos->z));
+        if (F(int, r, 68) != F(int, r, 64)) {
+            BYTE* e = F(BYTE*, r, 76) + F(int, r, 68) * 24;
+            memcpy(e, &t, 12);
+            F(int, e, 16) = 0;
+            F(int, e, 20) = 0;
+            F(DWORD, e, 12) = col;
+            F(int, r, 68)++;
+        }
+        Vec3 w1, w, w2, x;
+        w1.Set((float)(len * (double)half[0]), (float)(len * (double)half[1]), (float)(len * (double)half[2]));
+        w.Set((float)((double)w1.x + pos->x), (float)((double)w1.y + pos->y), (float)((double)w1.z + pos->z));
+        Renderer_AddVertexUV(r, 0, &w, &col, 0.5f, 1.0f);
+        w2.Set((float)(len * (double)half[0]), (float)(len * (double)half[1]), (float)(len * (double)half[2]));
+        Renderer_AddVertexUV(r, 0, Vec3_Diff(&x, pos, &w2), &col, 1.0f, 0);
+    }
+    Effect_Zero();
+    return 0;
+}
+
+} // extern "C"
+
+// === choosing the lights (FUN_4ccf30)
+
+extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
+extern "C" void Cl_qsort(); KING_ALIAS("_Cl_qsort", "_qsort")
+ASM_VAR(float, g_cl64c320, $L_64c320)
+ASM_VAR(float, g_cl64c9d4, $L_64c9d4)
+ASM_VAR(float, g_cl64c9d0, $L_64c9d0)
+ASM_VAR(float, g_cl64c9cc, $L_64c9cc)
+ASM_VAR(float, g_cl64c338, $L_64c338)
+ASM_VAR(float, g_cl64c450, $L_64c450)
+ASM_VAR(float, g_cl64c34c, $L_64c34c)
+ASM_VAR(float, g_cl64c9c8, $L_64c9c8)
+
+// the brightness of colour c (three floats)
+static double Cl_Lum(const BYTE* c)
+{
+    return ((double)F(float, c, 8) * g_cl64c9d0 + (double)F(float, c, 4) * g_cl64c9cc +
+            (double)F(float, c, 0) * g_cl64c338) * g_cl64c450;
+}
+
+extern "C" {
+
+// [FUN_4ccf30] lights of set s (+0 the most, +4 count, +12 the 120-byte lights) for world w: each rated (+108) by
+// its kind, its colours and its fade level, a spot also by its distance from the camera in x and y (w+8472 the
+// range); the best s+0 are switched on (s+8 their count), the rest off; the last failure
+int __fastcall Lights_Choose(DWORD* s, void*, BYTE* w)
+{
+    if (!s[1]) {
+        s[2] = 0;
+        return 0;
+    }
+    for (DWORD i = 0; i < s[1]; i++) {
+        BYTE* r = (BYTE*)s[3] + i * 120;
+        int kind = F(int, r, 0);
+        double base = kind == 2 ? g_cl64c320 : kind == 3 ? g_cl64c9d4 : g_eff64c264b;
+        double pri = base + Cl_Lum(r + 4) + Cl_Lum(r + 20) + Cl_Lum(r + 36);
+        if (kind == 3) {
+            float pf = (float)pri;
+            BYTE m[48];
+            for (int k = 0; k < 4; k++)
+                CallThis(FUN_4bd4d0, m + k * 12);
+            memcpy(m, g_7025f0, 48);
+            CallThis(FUN_5f25c0, F(BYTE*, F(BYTE*, g_view, 488), 80), m);
+            Vec3 v, c;
+            v.Set((float)((double)F(float, m, 36) - F(float, r, 52)), (float)((double)F(float, m, 40) - F(float, r, 56)),
+                  0);
+            c = v;
+            double len = Vec3_Length(&c);
+            pri = (g_one_f - len / F(double, w, 8472)) * g_cl64c34c + pf;
+        }
+        F(float, r, 108) = (float)(F(int, F(BYTE*, r, 104), 72) * (double)g_cl64c9c8 + pri);
+    }
+    CallC(Cl_qsort, (void*)s[3], s[1], 120, (void*)Cmp4cce30_Desc);
+    s[2] = s[0] < s[1] ? s[0] : s[1];
+    int hr = 0;
+    for (DWORD i = 0; i < s[2]; i++) {
+        int e = Light_Switch((BYTE*)s[3] + i * 120, 0, 1, 0);
+        if (e < 0)
+            hr = e;
+    }
+    for (DWORD i = s[2]; i < s[1]; i++) {
+        int e = Light_Switch((BYTE*)s[3] + i * 120, 0, 0, 0);
+        if (e < 0)
+            hr = e;
+    }
+    return hr;
+}
+
+} // extern "C"
+
+// === how much a sphere shows in the view (FUN_4ca4e0)
+
+ASM_VAR(Vec3, g_sv702650, $L_702650)
+ASM_VAR(float, g_sv671720, $L_671720)
+ASM_VAR(float, g_sv671724, $L_671724)
+ASM_VAR(float, g_sv671728, $L_671728)
+ASM_VAR(float, g_sv67171c, $L_67171c)
+ASM_VAR(float, g_sv64c938, $L_64c938)
+
+// 1 - t clamped to 0..1
+static double Sv_Fade(double t)
+{
+    if (t > g_one_f)
+        t = g_one_f;
+    else if (t < g_eff64c264b)
+        t = g_eff64c264b;
+    return g_one_f - t;
+}
+
+extern "C" {
+
+// [FUN_4ca4e0] how much sphere p (+12 the radius) shows from the camera (the game's frame +1424): 1 when the camera is
+// inside it, 64c938 when it lies outside the view cone or the depth range (671724, 67171c), else fading with its
+// depth (in front by its near side from 671720 to 67171c, behind by its far side up to 671724)
+double __cdecl Sphere_Visibility(const float* p)
+{
+    const float* m = (const float*)(g_game + 1424);
+    const Vec3& a = g_ahead702620;
+    const Vec3& z = g_sv702650;
+    float f[3];
+    f[0] = (float)((double)a.z * m[6] + (double)a.y * m[3] + (double)a.x * m[0]);
+    f[1] = (float)((double)a.z * m[7] + (double)a.y * m[4] + (double)a.x * m[1]);
+    f[2] = (float)((double)a.z * m[8] + (double)a.y * m[5] + (double)a.x * m[2]);
+    double ox = (double)z.z * m[6] + (double)z.y * m[3] + (double)z.x * m[0] + m[9];
+    float oy = (float)((double)z.z * m[7] + (double)z.y * m[4] + (double)z.x * m[1] + m[10]);
+    float oz = (float)((double)z.z * m[8] + (double)z.y * m[5] + (double)z.x * m[2] + m[11]);
+    Vec3 d;
+    d.x = (float)(p[0] - ox);
+    d.y = (float)((double)p[1] - oy);
+    d.z = (float)((double)p[2] - oz);
+    float len = (float)Vec3_Length(&d);
+    if (!(len > g_one_f))
+        return g_one_f;
+    float along = (float)((double)d.z * f[2] + (double)d.y * f[1] + (double)d.x * f[0]);
+    float fr = (float)((double)along + p[3]);
+    if (fr < g_sv671724)
+        return g_sv64c938;
+    float nr = (float)((double)along - p[3]);
+    if (nr > g_sv67171c)
+        return g_sv64c938;
+    float inv = (float)(g_one_f / (double)len);
+    float s = (float)(inv * (double)p[3]);
+    if (!(s < g_one_f))
+        return g_one_f;
+    double c = x87_cos(x87_asin(s) + g_sv671728);
+    double k = along * (double)inv;
+    if (!(along > g_eff64c264b))
+        k = -k;
+    if (!(k > c))
+        return g_sv64c938;
+    if (!(along > g_eff64c264b))
+        return Sv_Fade(fr / (double)g_sv671724);
+    return Sv_Fade(((double)nr - g_sv671720) / ((double)g_sv67171c - g_sv671720));
+}
+
+} // extern "C"
+
+// === a series of three explosions (4dd610)
+
+extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
+extern "C" void Xs_Inverse(); KING_ALIAS("_Xs_Inverse", "_Matrix_Inverse")
+ASM_VAR(AsmLabel, g_xsSounds, $L_696704)
+typedef int(__cdecl* Xs_Callback)(int id, int what, int ctx);
+
+extern "C" {
+
+// [$L_4dd610] step of explosion series s: at each of its three times (+32..) a smoke burst at its point (+56..,
+// in frame +132) unless the callback (+180, ctx +184) refuses (2), with one of two bangs (696704 +8/+12) heard
+// from the camera; once a point has gone off its callback hears 0 three steps later; past +120 it ends
+int __fastcall Explosions_Step(BYTE* s)
+{
+    F(float, s, 124) = (float)(F(double, F(BYTE*, s, 128), 2960) + F(float, s, 124));
+    for (int k = 0; k < 3; k++) {
+        if (!(F(float, s, 124) > F(float, s, 32 + k * 4)))
+            continue;
+        const float* p = (const float*)(s + 56 + k * 12);
+        int id = F(int, s, 92 + k * 4);
+        if (F(int, s, 44 + k * 4)) {
+            if (F(int, s, 104 + k * 4) == 3 && F(Xs_Callback, s, 180))
+                F(Xs_Callback, s, 180)(id, 0, F(int, s, 184));
+            F(int, s, 104 + k * 4)++;
+            continue;
+        }
+        F(int, s, 44 + k * 4) = 1;
+        Xs_Callback cb = F(Xs_Callback, s, 180);
+        if (!cb || cb(id, 2, F(int, s, 184)))
+            continue;
+        BYTE* b = (BYTE*)operator new(156);
+        if (b)
+            b = SmokeBurst_Construct(b, 0, F(BYTE*, s, 128), (const Matrix*)(s + 132), (const Vec3*)p);
+        F(int, b, 144) = F(int, s, 180);
+        F(int, b, 148) = F(int, s, 184);
+        F(int, b, 152) = F(int, s, 92 + k * 4);
+        CallVirt(b, 24, 1);
+        BYTE cam[48];
+        float inv[12];
+        CallC(Xs_Inverse, inv, CallThis<BYTE*>(FUN_5dbcc0, F(BYTE*, s, 128), cam));
+        const float* m = (const float*)(s + 132);
+        float w[3];
+        w[0] = (float)((double)m[3] * p[1] + (double)m[6] * p[2] + (double)m[0] * p[0] + m[9]);
+        w[1] = (float)((double)m[4] * p[1] + (double)m[7] * p[2] + (double)m[1] * p[0] + m[10]);
+        w[2] = (float)((double)m[5] * p[1] + (double)m[8] * p[2] + (double)m[2] * p[0] + m[11]);
+        int idx = rand() * (double)g_eff64c254 > g_64c258 ? 2 : 3;
+        BYTE** snd = ((BYTE***)(BYTE*)g_xsSounds)[idx];
+        if (!snd)
+            continue;
+        float l[3];
+        l[0] = (float)((double)inv[6] * w[2] + (double)inv[3] * w[1] + (double)inv[0] * w[0] + inv[9]);
+        l[1] = (float)((double)inv[7] * w[2] + (double)inv[4] * w[1] + (double)inv[1] * w[0] + inv[10]);
+        l[2] = (float)((double)inv[8] * w[2] + (double)inv[5] * w[1] + (double)inv[2] * w[0] + inv[11]);
+        double near_ = 50.0, gain = 1.0;
+        Sound4dd920_Play(snd, 0, F(int, l, 0), F(int, l, 4), F(int, l, 8), ((int*)&near_)[0], ((int*)&near_)[1],
+                         ((int*)&gain)[0], ((int*)&gain)[1]);
+    }
+    if (F(float, s, 124) > F(float, s, 120))
+        return CallVirt<int>(s, 28, 1);
+    return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+} // extern "C"
+
+// === the smoke cloud (FUN_4da4e0)
+
+ASM_VAR(AsmLabel, s_fx672c6c, $L_672c6c)
+ASM_VAR(float, g_sc672c48, $L_672c48)
+
+extern "C" {
+
+// [FUN_4da4e0] constructor (owner, position p) of a smoke cloud: twenty puffs from p spread sideways (along
+// 702620 and 702640) and up (along 702630)
+BYTE* __fastcall SmokeCloud_Construct(BYTE* s, void*, BYTE* owner, const Vec3* p)
+{
+    CallThis(FUN_5d3110, s, (const char*)s_fx672c6c);
+    for (int i = 44; i < 80; i += 4)
+        F(int, s, i) = 0;
+    F(void*, s, 0) = &vt_64d49c;
+    F(BYTE*, s, 40) = owner;
+    F(int, s, 36) = 0;
+    F(float, s, 32) = g_sc672c48;
+    memcpy(s + 44, p, 12);
+    memcpy(s + 68, p, 12);
+    F(float, s, 88) = 4.0f;
+    F(float, s, 92) = 0.5f;
+    F(int, s, 84) = 0;
+    const Vec3& up = g_axis702630e;
+    F(float, s, 56) = up.x + up.x;
+    F(float, s, 60) = up.y + up.y;
+    F(float, s, 80) = 0.8f;
+    F(float, s, 64) = up.z + up.z;
+    for (int k = 0; k < 20; k++) {
+        double a = Sb_RandDiff();
+        float a0 = (float)(g_ahead702620.x * a), a1 = (float)(g_ahead702620.y * a);
+        float p1[3] = {(float)(a0 * (double)g_sb64c408), (float)(a1 * (double)g_sb64c408),
+                       (float)(a * g_sb702628 * g_sb64c408)};
+        double b = Sb_RandDiff();
+        float b0 = (float)(g_up702640.x * b), b1 = (float)(g_up702640.y * b);
+        float p2[3] = {(float)(b0 * (double)g_sb64c408), (float)(b1 * (double)g_sb64c408),
+                       (float)(b * g_sb702648 * g_sb64c408)};
+        double c = rand() * (double)g_sb64d498 + g_sb64c40c;
+        float c0 = (float)(c * up.x), c1 = (float)(c * up.y);
+        float t0 = (float)((double)c0 + p2[0]), t1 = (float)((double)p2[1] + c1);
+        double t2 = c * up.z + p2[2];
+        Vec3 v, w;
+        v.Set((float)((double)t0 + p1[0]), (float)((double)p1[1] + t1), (float)(p1[2] + t2));
+        w = v;
+        Fx_SmokePuffs((int)(s + 68), (int)&w);
+    }
+    CallThis(FUN_5d3570, F(BYTE*, s, 40) + 2992, s);
+    return s;
+}
+
+} // extern "C"
+
+// === the height of a terrain object under a point (FUN_4be2c0)
+
+ASM_PROC(FUN_4be0e0)    // whether (x, y) lies in a triangle (x, y, nine floats)
+extern "C" void FUN_5ab7c0(); KING_ALIAS("_FUN_5ab7c0", "_Plane_Transformed")
+extern "C" void FUN_5ab8f0(); KING_ALIAS("_FUN_5ab8f0", "@Plane_Transform@12")
+ASM_VAR(double, g_oh64c3f8, $L_64c3f8)
+ASM_VAR(float, g_oh64c1e0, $L_64c1e0)
+
+extern "C" {
+
+// [FUN_4be2c0] the height at (x, y) of terrain object o (frame +36): of its plane (kind 5, +32) or of the triangle of
+// its last polygon (kind 6, +28 polygons of 48 bytes at +32: +2 the count, +4 the points, +32 the plane) under the
+// point, when the plane is not steep; else 64c1e0
+double __cdecl Object_HeightAt(float x, float y, BYTE* o)
+{
+    const float* m = (const float*)(o + 36);
+    if (F(int, o, 24) == 5) {
+        float pl[4];
+        memcpy(pl, F(BYTE*, o, 32), 16);
+        CallThis(FUN_5ab8f0, pl, m);
+        double c = pl[2] < 0 ? -(double)pl[2] : pl[2];
+        if (c > g_oh64c3f8)
+            return -(((double)pl[0] * x + (double)pl[1] * y + pl[3]) / pl[2]);
+    }
+    if (F(int, o, 24) != 6)
+        return g_oh64c1e0;
+    BYTE* poly = F(BYTE*, o, 32) + F(int, o, 28) * 48 - 48;
+    unsigned n = F(WORD, poly, 2);
+    if (n < 3)
+        return g_oh64c1e0;
+    for (unsigned k = 1; k < n - 1; k++) {
+        const float* v = F(const float*, poly, 4);
+        float t[9];
+        t[0] = (float)((double)m[3] * v[1] + (double)m[6] * v[2] + (double)m[0] * v[0] + m[9]);
+        t[1] = (float)((double)m[4] * v[1] + (double)m[1] * v[0] + (double)m[7] * v[2] + m[10]);
+        t[2] = (float)((double)m[5] * v[1] + (double)m[2] * v[0] + (double)m[8] * v[2] + m[11]);
+        const float* b = F(const float*, poly, 4) + k * 3;
+        t[3] = (float)((double)m[6] * b[2] + (double)m[3] * b[1] + (double)m[0] * b[0] + m[9]);
+        t[4] = (float)((double)m[7] * b[2] + (double)m[4] * b[1] + (double)m[1] * b[0] + m[10]);
+        t[5] = (float)((double)m[8] * b[2] + (double)m[5] * b[1] + (double)m[2] * b[0] + m[11]);
+        const float* c = F(const float*, poly, 4) + k * 3 + 3;
+        t[6] = (float)((double)m[6] * c[2] + (double)m[3] * c[1] + (double)c[0] * m[0] + m[9]);
+        t[7] = (float)((double)m[7] * c[2] + (double)m[1] * c[0] + (double)m[4] * c[1] + m[10]);
+        t[8] = (float)((double)m[8] * c[2] + (double)m[2] * c[0] + (double)m[5] * c[1] + m[11]);
+        if (!CallC<int>(FUN_4be0e0, x, y, t))
+            continue;
+        float pl[4];
+        CallC(FUN_5ab7c0, pl, poly + 32, m);
+        double cz = pl[2] < 0 ? -(double)pl[2] : pl[2];
+        if (cz > g_oh64c3f8)
+            return -(((double)pl[0] * x + (double)pl[1] * y + pl[3]) / pl[2]);
+    }
+    return g_oh64c1e0;
 }
 
 } // extern "C"

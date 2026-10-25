@@ -12,7 +12,7 @@
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
-ASM_PROC(FUN_506750)    // vehicle: part by index
+extern "C" void FUN_506750(); KING_ALIAS("_FUN_506750", "@Car_AxleFlat@12")    // vehicle: part by index
 
 ASM_VAR(int, g_697678, $L_697678)
 ASM_VAR(int, g_69767c, $L_69767c)
@@ -801,6 +801,129 @@ void __cdecl CarModels_Construct()
         CallThis(FUN_4bd4d0, m + 2380);
         CallThis(FUN_4bd4d0, m + 2392);
     }
+}
+
+} // extern "C"
+
+// === whether an axle stands flat (FUN_506750)
+
+ASM_VAR(double, g_ax64dac0, $L_64dac0)
+ASM_VAR(float, g_ax6749f0, $L_6749f0)
+
+extern "C" {
+
+// [FUN_506750] whether wheel pair k (0: wheels 0-2, 1: 0-1, 2: 1-3, 3: 2-3; wheel i at +248 + 248i, its contact
+// +24, ground normal +12) of car s touches ground of nearly the same slope and height (within 6749f0 times
+// +8036 + 4k); 1 for cars of fewer than four wheels
+int __fastcall Car_AxleFlat(BYTE* s, void*, unsigned k)
+{
+    if (F(int, s, 3540) < 4)
+        return 1;
+    if (k > 3)
+        return 0;
+    static const int pa[4] = {0, 0, 1, 2}, pb[4] = {2, 1, 3, 3};
+    const BYTE* a = s + 248 + pa[k] * 248;
+    const BYTE* b = s + 248 + pb[k] * 248;
+    if (!F(WORD, a, 24) || !F(WORD, b, 24))
+        return 0;
+    const float* na = (const float*)(a + 12);
+    const float* nb = (const float*)(b + 12);
+    double dot = k == 3 ? (double)na[2] * nb[2] + (double)na[1] * nb[1] + (double)nb[0] * na[0]
+                        : (double)na[2] * nb[2] + (double)na[1] * nb[1] + (double)na[0] * nb[0];
+    if (!(dot > g_ax64dac0))
+        return 0;
+    const float* pa3 = (const float*)a;
+    const float* pb3 = (const float*)b;
+    const float* n = k == 0 ? nb : na;
+    double dx = (double)pa3[0] - pb3[0], dy = (double)pa3[1] - pb3[1], dz = (double)pa3[2] - pb3[2];
+    double e = dz * n[2] + dy * n[1] + dx * n[0];
+    if (e < 0)
+        e = -e;
+    return g_ax6749f0 * (double)F(float, s, 8036 + k * 4) > e;
+}
+
+} // extern "C"
+
+// === moving a control along its range (FUN_501b90)
+
+ASM_VAR(float, g_cm64c264, $L_64c264)
+ASM_VAR(float, g_cm64c250, $L_64c250)
+ASM_VAR(float, g_cm64c938, $L_64c938)
+ASM_VAR(double, g_cm64b670, $L_64b670)
+
+extern "C" {
+
+// [FUN_501b90] moves control k (of 27: at +15520 + 20k its step, +4 the steps, +12 the value -1..1) of car s by
+// *amount at speed: a positive amount brings it back towards 0, a negative one out towards the end; what it
+// uses is taken from *amount; 1 when it is all used (for the gears 3..10 the last step but one is the limit)
+int __fastcall Control_Move(BYTE* s, void*, int k, float* amount, float speed)
+{
+    if (*amount == g_cm64c264 || k < 0 || k >= 27)
+        return 0;
+    BYTE* e = s + 15520 + k * 20;
+    if (speed == g_cm64c264) {
+        F(int, e, 12) = 0;
+        F(int, e, 0) = 0;
+        return 1;
+    }
+    double lim = speed * (double)F(float, e, 12);
+    float limf = (float)lim;
+    if (*amount > g_cm64c264) {
+        double al = lim < 0 ? -lim : lim;
+        if (!(al > *amount)) {
+            *amount = (float)(*amount - al);
+            F(int, e, 12) = 0;
+            F(int, e, 0) = 0;
+            return 0;
+        }
+        double q = *amount / (double)speed;
+        if (limf > g_cm64c264) {
+            F(float, e, 12) = (float)(F(float, e, 12) - q);
+            if (F(float, e, 12) < g_cm64c264)
+                F(int, e, 12) = 0;
+        } else {
+            F(float, e, 12) = (float)(q + F(float, e, 12));
+            if (F(float, e, 12) > g_cm64c264)
+                F(int, e, 12) = 0;
+        }
+        F(int, e, 0) = (int)(F(int, e, 4) * (double)F(float, e, 12));
+        *amount = 0;
+        return 1;
+    }
+    double v = F(float, e, 12);
+    double room = (g_cm64b670 - (v < 0 ? -v : v)) * speed;
+    double aa = *amount < 0 ? -(double)*amount : *amount;
+    if (aa < room) {
+        double q = *amount / (double)speed;
+        if (!(lim < g_cm64c264)) {
+            F(float, e, 12) = (float)(F(float, e, 12) - q);
+            if (F(float, e, 12) > g_cm64c250)
+                F(float, e, 12) = 1.0f;
+        } else {
+            F(float, e, 12) = (float)(q + F(float, e, 12));
+            if (F(float, e, 12) < g_cm64c938)
+                F(float, e, 12) = -1.0f;
+        }
+        int p = (int)(F(int, e, 4) * (double)F(float, e, 12));
+        F(int, e, 0) = p;
+        if (k >= 3 && k < 11 && p >= F(int, e, 4) - 2) {
+            int last = F(int, e, 4) - 2;
+            F(int, e, 0) = last;
+            F(float, e, 12) = (float)(last / (double)F(int, e, 4));
+            return 1;
+        }
+        *amount = 0;
+        return 1;
+    }
+    *amount = (float)((room < 0 ? -room : room) + *amount);
+    F(int, e, 0) = F(int, e, 4);
+    F(float, e, 12) = lim > g_cm64c264 ? 1.0f : -1.0f;
+    if (k >= 3 && k < 11 && F(int, e, 0) == F(int, e, 4) - 2) {
+        int last = F(int, e, 4) - 2;
+        F(int, e, 0) = last;
+        F(float, e, 12) = (float)(last / (double)F(int, e, 4));
+    }
+    return 0;
 }
 
 } // extern "C"

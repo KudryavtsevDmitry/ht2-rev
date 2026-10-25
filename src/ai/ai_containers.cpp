@@ -2703,3 +2703,51 @@ BYTE** __cdecl Nodes_RandomOther(BYTE** first, BYTE** last, int idx, BYTE* playe
 }
 
 } // extern "C"
+
+// === the final insertion sort by road distance (FUN_45bbc0)
+
+ASM_PROC(FUN_469c70)    // unguarded linear insert by road distance (last, value, point)
+
+// the distance of obj's road position from pt
+static double RdDist(BYTE* obj, const DVec3* pt)
+{
+    DVec3 a = PosOf(obj), d;
+    return DVec3_Length(DVec3_Sub(&d, pt, &a));
+}
+
+extern "C" {
+
+// [FUN_45bbc0] the insertion sort ending std::sort of objects [first, last) by the distance of their road
+// positions (+40) from pt, nearest first
+void __cdecl Near_FinalInsertion(BYTE** first, BYTE** last, DVec3 pt)
+{
+    if (last - first > 16) {
+        BYTE** mid = first + 16;
+        for (BYTE** i = first + 1; i != mid; i++) {
+            BYTE* v = *i;
+            double dv = RdDist(v, &pt);
+            if (RdDist(*first, &pt) > dv) {
+                CopyBackwardDwords((const DWORD*)first, (const DWORD*)i, (DWORD*)(i + 1));
+                *first = v;
+            } else
+                CallC(FUN_469c70, i, v, pt);
+        }
+        for (BYTE** i = mid; i != last; i++)
+            CallC(FUN_469c70, i, *i, pt);
+        return;
+    }
+    if (first == last)
+        return;
+    for (BYTE** i = first + 1; i != last; i++) {
+        BYTE* v = *i;
+        double dv = RdDist(v, &pt);
+        if (RdDist(*first, &pt) > dv) {
+            for (BYTE** p = i; p != first; p--)
+                *p = p[-1];
+            *first = v;
+        } else
+            CallC(FUN_469c70, i, v, pt);
+    }
+}
+
+} // extern "C"

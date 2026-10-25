@@ -1522,7 +1522,7 @@ extern "C" long __fastcall Rn_DrawIndexedStrided(BYTE* self, void*, BYTE* mat, i
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_5af000)
+extern "C" void FUN_5af000(); KING_ALIAS("_FUN_5af000", "@Clip_ByPlane@24")
 extern "C" void FUN_5e9480(); KING_ALIAS("_FUN_5e9480", "_Data_Read5e9690")
 extern "C" void FUN_5e9690(); KING_ALIAS("_FUN_5e9690", "_Mask_ReadPixels")
 extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
@@ -4210,6 +4210,250 @@ void __fastcall Render_Sprite(BYTE* s, void*, int mode, int align, float x, floa
         return;
     CallC(FUN_5b8980, F(BYTE*, s, 1948), px, py, img, scale);
     g_720078++;
+}
+
+} // extern "C"
+
+// === clipping a polygon by a plane (FUN_5af000)
+
+ASM_VAR(double, g_cp64b748, $L_64b748)
+ASM_VAR(double, g_cp651710, $L_651710)
+
+// the vertex i of the clipper s
+static const float* Cp_V(BYTE* s, int i) { return (const float*)(s + 1224 + i * 12); }
+
+// the signed distance of v from plane p
+static double Cp_Dist(const float* v, const float* p)
+{
+    return (double)v[2] * p[2] + (double)v[1] * p[1] + (double)p[0] * v[0] + p[3];
+}
+
+// where the edge from vertex c to vertex a crosses plane p, between 0 and 1
+static double Cp_Cross(BYTE* s, int a, int c, const float* p)
+{
+    const float* va = Cp_V(s, a);
+    const float* vc = Cp_V(s, c);
+    double d = ((double)va[0] - vc[0]) * p[0] + ((double)va[1] - vc[1]) * p[1] + ((double)va[2] - vc[2]) * p[2];
+    if ((d < 0 ? -d : d) < g_cp64b748)
+        d = d > g_q146_64b678 ? g_cp64b748 : g_cp651710;
+    double t = -(((double)vc[2] * p[2] + (double)vc[1] * p[1] + (double)vc[0] * p[0] + p[3]) / d);
+    if (t < g_q146_64b678)
+        t = 0;
+    else if (t > g_one64b670)
+        t = 1.0;
+    return t;
+}
+
+extern "C" {
+
+// [FUN_5af000] clips the n-vertex polygon in index list *which (of the two at +1756, 88 bytes each) by plane p into
+// the other, adding the crossings (Clip_Interpolate with flags) and flipping *which; the new count
+int __fastcall Clip_ByPlane(BYTE* s, void*, int flags, int n, int* which, const float* p)
+{
+    int* in = (int*)(s + 1756 + *which * 88);
+    int* out = (int*)(s + 1756 + (*which ^ 1) * 88);
+    if (!n)
+        return 0;
+    int first = in[0];
+    bool firstIn = Cp_Dist(Cp_V(s, first), p) >= 0, prevIn = firstIn, curIn = firstIn;
+    int count = 0, prev = 0, cur = first;
+    for (int k = 0; k < n; k++) {
+        curIn = Cp_Dist(Cp_V(s, cur), p) >= 0;
+        if (curIn != prevIn) {
+            Clip_Interpolate(s, 0, flags, out++, cur, prev, Cp_Cross(s, prev, cur, p));
+            count++;
+        }
+        if (curIn) {
+            *out++ = in[k];
+            count++;
+        }
+        prev = in[k];
+        cur = in[k + 1];
+        prevIn = curIn;
+    }
+    if (firstIn != curIn) {
+        Clip_Interpolate(s, 0, flags, out, first, prev, Cp_Cross(s, prev, first, p));
+        count++;
+    }
+    *which ^= 1;
+    return count;
+}
+
+} // extern "C"
+
+// === pushing a light (FUN_5ad180)
+
+struct Rl_Light {                  // D3DLIGHT7
+    int   type;
+    float diffuse[4], specular[4], ambient[4], pos[3], dir[3];
+    float range, falloff, att0, att1, att2, theta, phi;
+};
+extern "C" void __cdecl Shell_AddLight(Rl_Light l, BYTE* r, const BYTE* light);
+ASM_VAR(double, g_rl64b7c0, $L_64b7c0)
+
+extern "C" {
+
+// [FUN_5ad180] pushes light l (+0 kind, +4 position, +16 direction, +28.. attenuation, +40 intensity, +44/+48 cone,
+// +52 colour) of up to 20 into renderer s, in the current frame (+5216, +8236): with a device it goes to the shell
+// as a D3D light (kind 1 directional, 2 point, 3 spot), then is kept at +6224 and as the last at +7824
+void __fastcall Renderer_PushLight(BYTE* s, void*, const BYTE* l)
+{
+    if (F(int, s, 8240) >= 20)
+        return;
+    const float* m = (const float*)(s + 5216 + F(int, s, 8236) * 48);
+    const float* lp = (const float*)(l + 4);
+    const float* ld = (const float*)(l + 16);
+    float p[3], d[3];
+    p[0] = (float)((double)m[6] * lp[2] + (double)m[3] * lp[1] + (double)m[0] * lp[0] + m[9]);
+    p[1] = (float)((double)m[7] * lp[2] + (double)m[4] * lp[1] + (double)m[1] * lp[0] + m[10]);
+    p[2] = (float)((double)m[8] * lp[2] + (double)m[5] * lp[1] + (double)m[2] * lp[0] + m[11]);
+    d[0] = (float)((double)m[3] * ld[1] + (double)m[6] * ld[2] + (double)ld[0] * m[0]);
+    d[1] = (float)((double)m[4] * ld[1] + (double)m[1] * ld[0] + (double)m[7] * ld[2]);
+    d[2] = (float)((double)m[5] * ld[1] + (double)m[2] * ld[0] + (double)m[8] * ld[2]);
+    if (g_q150_720908) {
+        Rl_Light x;
+        memset(&x, 0, sizeof x);
+        float k = F(float, l, 40);
+        float c[3] = {(float)(F(float, l, 52) * (double)k), (float)(F(float, l, 56) * (double)k),
+                      (float)(F(float, l, 60) * (double)k)};
+        for (int i = 0; i < 3; i++)
+            x.diffuse[i] = x.specular[i] = c[i];
+        x.diffuse[3] = x.specular[3] = 1.0f;
+        x.ambient[3] = 1.0f;
+        memcpy(x.pos, p, 12);
+        memcpy(x.dir, d, 12);
+        x.att0 = F(float, l, 28);
+        x.theta = F(float, l, 44);
+        x.att1 = F(float, l, 32);
+        x.att2 = F(float, l, 36);
+        x.phi = (float)((double)F(float, l, 48) + F(float, l, 44));
+        x.falloff = 1.0f;
+        switch (F(int, l, 0)) {
+        case 1:
+            x.type = 3;
+            x.range = 10000.0f;
+            break;
+        case 2:
+            x.type = 1;
+            x.range = (float)(g_rl64b7c0 / x87_sqrt(F(float, l, 36)));
+            break;
+        case 3:
+            x.type = 2;
+            x.range = (float)(g_rl64b7c0 / x87_sqrt(F(float, l, 36)));
+            break;
+        }
+        Shell_AddLight(x, s, l);
+    }
+    int n = F(int, s, 8240);
+    Light_Copy((DWORD*)(s + 6224 + n * 80), 0, (const DWORD*)l);
+    Light_Copy((DWORD*)(s + 7824), 0, (const DWORD*)l);
+    n = F(int, s, 8240);
+    memcpy(s + 6228 + n * 80, p, 12);
+    memcpy(s + 7828, p, 12);
+    memcpy(s + (n + 78) * 80, d, 12);
+    memcpy(s + 7840, d, 12);
+    F(int, s, 8240) = n + 1;
+}
+
+} // extern "C"
+
+// === the fog blend tables (FUN_5b9850)
+
+extern "C" {
+
+// [FUN_5b9850] builds k fog tables of palette s for its n fog colours (+24 + 3c, +792): table i blends each colour
+// (palette entry, or 15-bit value for format 2 at +808) with each fog colour by (i + 1) / (k + 1), as the nearest
+// palette index or a packed pixel; s+0 the tables, s+4 their checksums
+void __fastcall Fog_BuildTables(BYTE* s, void*, int k, int n)
+{
+    F(int, s, 792) = n;
+    int entries;
+    if (F(int, s, 808) == 1)
+        entries = 256;
+    else if (F(int, s, 808) == 2)
+        entries = 32768;
+    else
+        return;
+    F(int, s, 796) = k;
+    F(void*, s, 0) = operator new(k * 4);
+    F(void*, s, 4) = operator new(k * 2);
+    if (k <= 0)
+        return;
+    float kf = (float)(k + 1);
+    for (int i = 0; i < k; i++) {
+        BYTE* t = (BYTE*)operator new(F(int, s, 808) * entries * F(int, s, 792));
+        F(BYTE**, s, 0)[i] = t;
+        F(WORD*, s, 4)[i] =
+            (WORD)CallC<int>(FUN_4cef50, F(BYTE**, s, 0)[i], F(int, s, 808) * entries * F(int, s, 792));
+        float f = (float)((i + 1) / (double)kf);
+        float g = (float)(g_q161_64c250 - (double)f);
+        for (int e = 0; e < entries; e++) {
+            const BYTE* pe = s + 24 + e * 3;
+            for (int c = 0; c < F(int, s, 792); c++) {
+                const BYTE* fc = s + 24 + c * 3;
+                if (F(int, s, 808) == 1) {
+                    int r = (int)(pe[0] * (double)g + fc[0] * (double)f);
+                    int gg = (int)(pe[1] * (double)g + fc[1] * (double)f);
+                    int b = (int)(pe[2] * (double)g + fc[2] * (double)f);
+                    F(BYTE**, s, 0)[i][c * 256 + e] = Palette_Nearest(s, 0, (BYTE)r, (BYTE)gg, (BYTE)b);
+                } else if (F(int, s, 808) == 2) {
+                    int r = (int)(((e >> 7) & 248) * (double)g + fc[0] * (double)f);
+                    int gg = (int)(((e >> 2) & 248) * (double)g + fc[1] * (double)f);
+                    int b = (int)(((e & 31) << 3) * (double)g + fc[2] * (double)f);
+                    ((WORD*)F(BYTE**, s, 0)[i])[e + c * 32768] = (WORD)Pixel_Pack((BYTE)r, (BYTE)gg, (BYTE)b);
+                }
+            }
+        }
+    }
+}
+
+} // extern "C"
+
+// === the tables towards one colour (FUN_5b9b60)
+
+extern "C" {
+
+// [FUN_5b9b60] builds k tables of palette s towards its colour c (+24 + 3c): table i blends each colour (palette
+// entry, or 15-bit value for format 2 at +808) with it by i / k; s+8 the tables, s+12 their checksums
+void __fastcall Fade_BuildTables(BYTE* s, void*, int k, int c)
+{
+    int entries;
+    if (F(int, s, 808) == 1)
+        entries = 256;
+    else if (F(int, s, 808) == 2)
+        entries = 32768;
+    else
+        return;
+    F(int, s, 800) = k;
+    F(int, s, 812) = c;
+    F(void*, s, 8) = operator new(k * 4);
+    F(void*, s, 12) = operator new(k * 2);
+    if (k <= 0)
+        return;
+    float kf = (float)k;
+    const BYTE* fc = s + 24 + c * 3;
+    for (int i = 0; i < k; i++) {
+        BYTE* t = (BYTE*)operator new(entries * F(int, s, 808));
+        F(BYTE**, s, 8)[i] = t;
+        int sum = CallC<int>(FUN_4cef50, F(BYTE**, s, 8)[i], entries * F(int, s, 808));
+        float f = (float)(i / (double)kf);
+        F(WORD*, s, 12)[i] = (WORD)sum;
+        float g = (float)(g_q161_64c250 - (double)f);
+        for (int e = 0; e < entries; e++) {
+            const BYTE* pe = s + 24 + e * 3;
+            if (F(int, s, 808) == 1) {
+                int r = (int)(fc[0] * (double)f + pe[0] * (double)g);
+                int gg = (int)(fc[1] * (double)f + pe[1] * (double)g);
+                int b = (int)(pe[2] * (double)g + fc[2] * (double)f);
+                F(BYTE**, s, 8)[i][e] = Palette_Nearest(s, 0, (BYTE)r, (BYTE)gg, (BYTE)b);
+            } else if (F(int, s, 808) == 2) {
+                int r = (int)(fc[0] * (double)f + ((e >> 7) & 248) * (double)g);
+                int gg = (int)(((e >> 2) & 248) * (double)g + fc[1] * (double)f);
+                int b = (int)(((e & 31) << 3) * (double)g + fc[2] * (double)f);
+                ((WORD*)F(BYTE**, s, 8)[i])[e] = (WORD)Pixel_Pack((BYTE)r, (BYTE)gg, (BYTE)b);
+            }
+        }
+    }
 }
 
 } // extern "C"

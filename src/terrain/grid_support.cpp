@@ -1614,7 +1614,7 @@ void __cdecl GridMesh_Refine(BYTE* e, BYTE* mesh)
 // === removing an edge from the grid mesh (FUN_606760)
 
 extern "C" void __fastcall GridBranch_Destruct(BYTE* self, void*);     // grid_topology.cpp
-ASM_PROC(FUN_606d50)    // merges the four triangles around an inner edge (a0, a1, b0, b1, &out a, &out b)
+extern "C" void FUN_606d50(); KING_ALIAS("_FUN_606d50", "@Grid_MergeFour@32")    // merges the four triangles around an inner edge (a0, a1, b0, b1, &out a, &out b)
 
 // deletes the two branches of pair p and makes node its triangle
 static void Gr_ResetPair(BYTE** p, BYTE* node)
@@ -1794,6 +1794,158 @@ void __cdecl GridTree_RemoveEdge(BYTE* e, BYTE* g)
     }
     if (r1)
         Grd_JoinBranches(r1);
+}
+
+} // extern "C"
+
+// === merging four triangles into two (FUN_606d50)
+
+// removes triangle a from the mesh's ring list, moving the cursor (+40) past it
+static void Gm_Unlink(BYTE* self, BYTE* a)
+{
+    if (a == F(BYTE*, self, 40))
+        F(BYTE*, self, 40) = Ring_Next(F(BYTE**, self, 32), a);
+    F(WORD, self, 38)--;
+    CallThis(FUN_60f690, F(BYTE*, self, 32), a);
+}
+
+extern "C" {
+
+// [FUN_606d50] replaces the triangles a, b (sharing the point a+20) and c, d by two new ones *n1 (a's corner to
+// b's) and *n2 (c's to d's), facing each other; the shared point is dropped
+void __fastcall Grid_MergeFour(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c, BYTE* d, BYTE** n1, BYTE** n2)
+{
+    Gm_Unlink(self, a);
+    Gm_Unlink(self, b);
+    Gm_Unlink(self, c);
+    Gm_Unlink(self, d);
+    BYTE* x = CallThis<BYTE*>(FUN_606330, self, F(int, a, 24), F(int, a, 16), F(int, b, 16), F(int, a, 36) - 1);
+    BYTE* y = CallThis<BYTE*>(FUN_606330, self, F(int, c, 24), F(int, c, 16), F(int, d, 16), F(int, a, 36) - 1);
+    Relink3(F(BYTE*, a, 44), a, x);
+    Relink3(F(BYTE*, b, 44), b, x);
+    Relink3(F(BYTE*, c, 44), c, y);
+    Relink3(F(BYTE*, d, 44), d, y);
+    F(BYTE*, x, 44) = y;
+    F(BYTE*, x, 52) = F(BYTE*, b, 44);
+    F(BYTE*, x, 48) = F(BYTE*, a, 44);
+    F(BYTE*, y, 48) = F(BYTE*, c, 44);
+    F(BYTE*, y, 52) = F(BYTE*, d, 44);
+    F(BYTE*, y, 44) = x;
+    BYTE* t = F(BYTE*, a, 20);
+    WORD k = F(WORD, t, 8);
+    F(WORD, self, 36)--;
+    WORD last = F(WORD, self, 36);
+    BYTE** arr = F(BYTE**, self, 12);
+    if (k != last) {
+        arr[k] = arr[last];
+        F(WORD, F(BYTE**, self, 12)[k], 8) = k;
+    }
+    F(BYTE**, self, 12)[F(WORD, self, 36)] = 0;
+    if (t)
+        operator delete(t);
+    *n1 = x;
+    *n2 = y;
+    if (a)
+        CallVirt(a, 0, 1);
+    if (b)
+        CallVirt(b, 0, 1);
+    if (c)
+        CallVirt(c, 0, 1);
+    if (d)
+        CallVirt(d, 0, 1);
+}
+
+} // extern "C"
+
+// === refreshing the grid's work priorities (FUN_60be40)
+
+extern "C" void FUN_6072b0(); KING_ALIAS("_FUN_6072b0", "_Grid_DeepestLevel")
+extern "C" void FUN_608460(); KING_ALIAS("_FUN_608460", "@Point_InWedge@32")
+extern "C" void FUN_6097d0(); KING_ALIAS("_FUN_6097d0", "@GridCamera_NodePriority@12")
+extern "C" void FUN_60c120(); KING_ALIAS("_FUN_60c120", "@Circle_Outside@16")
+extern "C" void FUN_613310(); KING_ALIAS("_FUN_613310", "@MarineQueue_SetDeferredPriority@16")
+extern "C" void FUN_6135f0(); KING_ALIAS("_FUN_6135f0", "@MarineQueue_SetWorkPriority@16")
+ASM_VAR(float, g_gp652efc, $L_652efc)
+ASM_VAR(float, g_gp652ef8, $L_652ef8)
+ASM_VAR(float, g_gp64c448, $L_64c448)
+ASM_VAR(float, g_gp64c450, $L_64c450)
+
+// the first item of ring list l
+static BYTE* Gp_Head(BYTE** l) { return l[0] ? l[0] : l[1]; }
+
+// the item after x in the work ring list l (linked at +0, 0 at the end)
+static BYTE* Gp_WorkNext(BYTE** l, BYTE* x)
+{
+    if (l[0] && x == F(BYTE*, l[0], 4))
+        return l[1];
+    if (l[1] && x == F(BYTE*, l[1], 4))
+        return 0;
+    return F(BYTE*, x, 0);
+}
+
+extern "C" {
+
+// [FUN_60be40] mesh s refreshes the priorities of 400 split candidates (+36 ring, cursor +52: by how far and
+// where they lie from the camera +4, 1000 when it is inside) and of 200 work items (+32 ring, cursor +56: by the
+// camera's priority of their nodes +16 and +60)
+void __fastcall Grid_RefreshPriorities(BYTE* s)
+{
+    if (F(BYTE*, s, 52) || (F(BYTE*, s, 52) = Gp_Head(F(BYTE**, s, 36))) != 0)
+        for (int k = 0; k < 400; k++) {
+            BYTE* c = F(BYTE*, s, 52);
+            BYTE* n = c + 12;
+            BYTE* cam = F(BYTE*, s, 4);
+            float pri = 0;
+            if ((unsigned)F(int, n, 24) < (unsigned)CallThis<int>(FUN_6072b0, cam)) {
+                float ctr[3];
+                memcpy(ctr, n + 32, 12);
+                float d = (float)CallThis<double>(FUN_60c120, ctr, F(int, cam, 4), F(int, cam, 8));
+                if (!(d > g_gp652efc)) {
+                    if (d < g_gp64c448)
+                        pri = 1000.0f;
+                    else if (CallThis<int>(FUN_608460, ctr, F(int, cam, 4), F(int, cam, 8), F(int, cam, 60),
+                                           F(int, cam, 64), F(int, cam, 68), F(int, cam, 72))) {
+                        if ((unsigned)F(int, n, 24) < 8)
+                            pri = (float)(g_gp64c450 / ((double)d + g_q47_64c250));
+                        else if (d < g_gp652ef8 ||
+                                 CallThis<int>(FUN_608460, ctr, F(int, cam, 4), F(int, cam, 8), F(int, cam, 76),
+                                               F(int, cam, 80), F(int, cam, 84), F(int, cam, 88)))
+                            pri = (float)(F(float, n, 20) / (double)d);
+                        else
+                            pri = (float)(F(float, n, 20) * (double)g_gsp64c258 / d);
+                    }
+                }
+            }
+            BYTE** l = F(BYTE**, s, 36);
+            c = F(BYTE*, s, 52);
+            BYTE* next = Ring_Next(l, c);
+            if (F(float, c, 28) != pri)
+                CallThis(FUN_613310, l, c, pri);
+            F(BYTE*, s, 52) = next ? next : Gp_Head(F(BYTE**, s, 36));
+        }
+    if (!F(BYTE*, s, 56) && !(F(BYTE*, s, 56) = Gp_Head(F(BYTE**, s, 32))))
+        return;
+    for (int k = 0; k < 200; k++) {
+        BYTE* c = F(BYTE*, s, 56);
+        BYTE* cam = F(BYTE*, s, 4);
+        double pri;
+        if (F(int, c, 12)) {
+            float p1 = (float)CallThis<double>(FUN_6097d0, cam, c + 16);
+            double p2 = c + 60 ? CallThis<double>(FUN_6097d0, cam, c + 60) : 0.0;
+            pri = p1 > p2 ? p1 : p2;
+        } else {
+            pri = CallThis<double>(FUN_6097d0, F(BYTE*, s, 4), c + 16);
+            if (!(pri > g_q47_64c264))
+                pri = g_q47_64c264;
+        }
+        float pf = (float)pri;
+        BYTE** l = F(BYTE**, s, 32);
+        c = F(BYTE*, s, 56);
+        BYTE* next = Gp_WorkNext(l, c);
+        if (F(float, c, 104) != pri)
+            CallThis(FUN_6135f0, l, c, pf);
+        F(BYTE*, s, 56) = next ? next : Gp_Head(F(BYTE**, s, 32));
+    }
 }
 
 } // extern "C"

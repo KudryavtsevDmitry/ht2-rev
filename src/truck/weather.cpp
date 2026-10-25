@@ -369,7 +369,7 @@ extern "C" void __fastcall Pooled_Set4(BYTE* self, void*);
 extern "C" void FUN_5e1ad0(); KING_ALIAS("_FUN_5e1ad0", "_Node_ParentRoot")
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
 extern "C" void FUN_5a3f50(); KING_ALIAS("_FUN_5a3f50", "@Light5a3f50_Attach@12")    // (this, node)
-ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
+extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")    // decomposes a matrix (by value) into six doubles
 ASM_VAR(AsmLabel, s_67e8f0, $L_67e8f0)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 struct Weather_Mat48 { DWORD d[12]; };
@@ -1520,6 +1520,93 @@ void __fastcall Lightning_Update(BYTE* s)
     if (F(double, s, 48) + g_lt64b670 < F(double, F(BYTE*, s, 32), 2968))
         F(DWORD, s, 72) &= ~2u;
     CallThis(FUN_5d32f0, s, 1);
+}
+
+} // extern "C"
+
+// === the sky colour of the weather mix (FUN_5a8e90)
+
+ASM_VAR(double, g_mx6fb3e0, $L_6fb3e0)
+ASM_VAR(double, g_mx64b5a0, $L_64b5a0)
+ASM_VAR(double, g_mx64da58, $L_64da58)
+
+extern "C" {
+
+// [FUN_5a8e90] the sky colour (Sky_Color of x, y, t, mode) of the weather mix: the four weathers 6fb3d0..6fb3dc
+// (96-byte entries of table) blended by u (6fb3e0, d0 to d8) and v (6fb3e8, d0 to d4), each taken whole near 0 or 1
+void __cdecl Sky_MixColor(float x, float y, float t, float* r, float* g, float* b, BYTE* table, int mode)
+{
+    const int idx[4] = {(int)g_wea6fb3d0, (int)g_wea6fb3d4, (int)g_wea6fb3d8, (int)g_wea6fb3dc};
+    double u = g_mx6fb3e0, v = g_6fb3e8;
+    int ku = u < g_mx64b5a0 ? 0 : u < g_mx64da58 ? 1 : 2, kv = v < g_mx64b5a0 ? 0 : v < g_mx64da58 ? 1 : 2;
+    float c[3], c2[3], c3[3];
+    // row: d0/d8 (v low) or d4/dc (v high), blended by u into out
+    struct Row {
+        static void Get(float x, float y, float t, const int* idx, int lo, int hi, int ku, float u, float* out,
+                        float* tmp, BYTE* table, int mode)
+        {
+            if (ku != 2)
+                Sky_Color(x, y, t, out, table + idx[lo] * 96, mode);
+            if (ku == 1) {
+                Sky_Color(x, y, t, tmp, table + idx[hi] * 96, mode);
+                Color_Lerp(tmp, out, u, out);
+            } else if (ku == 2)
+                Sky_Color(x, y, t, out, table + idx[hi] * 96, mode);
+        }
+    };
+    if (kv != 2)
+        Row::Get(x, y, t, idx, 0, 2, ku, (float)u, c, c2, table, mode);
+    if (kv == 1) {
+        Row::Get(x, y, t, idx, 1, 3, ku, (float)u, c2, c3, table, mode);
+        Color_Lerp(c2, c, (float)v, c);
+    } else if (kv == 2)
+        Row::Get(x, y, t, idx, 1, 3, ku, (float)u, c, c2, table, mode);
+    *r = c[0];
+    *g = c[1];
+    *b = c[2];
+}
+
+} // extern "C"
+
+// === a value of the weather mix (FUN_5a9240)
+
+ASM_VAR(double, g_mv64b670, $L_64b670)
+
+// (1 - t) * a (as float) + t * b
+static double Mv_Lerp(double a, double b, double t)
+{
+    float af = (float)a;
+    return (g_mv64b670 - t) * af + b * t;
+}
+
+extern "C" {
+
+// [FUN_5a9240] the value (Blend4 of a, b) of the weather mix: the four weathers' 16-byte entries of table blended
+// as in Sky_MixColor
+double __cdecl Weather_MixValue(float a, float b, const BYTE* table)
+{
+    const int idx[4] = {(int)g_wea6fb3d0, (int)g_wea6fb3d4, (int)g_wea6fb3d8, (int)g_wea6fb3dc};
+    double u = g_mx6fb3e0, v = g_6fb3e8;
+    int ku = u < g_mx64b5a0 ? 0 : u < g_mx64da58 ? 1 : 2, kv = v < g_mx64b5a0 ? 0 : v < g_mx64da58 ? 1 : 2;
+#define MV(i) Blend4(a, b, (const float*)(table + idx[i] * 16))
+    int lo = kv == 2 ? 1 : 0, hi = kv == 2 ? 3 : 2;    // a row along u (d0 to d8, or d4 to dc)
+    if (kv != 1) {
+        if (ku != 1)
+            return MV(ku == 0 ? lo : hi);
+        double x = MV(lo);
+        return Mv_Lerp(x, MV(hi), u);
+    }
+    if (ku == 1) {
+        double x0 = MV(0);
+        float r0 = (float)Mv_Lerp(x0, MV(2), u);
+        double x1 = MV(1);
+        double r1 = Mv_Lerp(x1, MV(3), u);
+        return r1 * v + (g_mv64b670 - v) * r0;
+    }
+    lo = ku == 0 ? 0 : 2;                               // along v (d0 to d4, or d8 to dc)
+    double x = MV(lo);
+    return Mv_Lerp(x, MV(lo + 1), v);
+#undef MV
 }
 
 } // extern "C"

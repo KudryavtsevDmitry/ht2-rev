@@ -1011,7 +1011,7 @@ extern "C" void __cdecl MovbodInit_593370() { g_movbod6f6698 = 0x3f800000; g_mov
 
 extern "C" void FUN_5f1cc0(); KING_ALIAS("_FUN_5f1cc0", "@Buckets_Push@16")
 extern "C" void FUN_581ba0(); KING_ALIAS("_FUN_581ba0", "@Item_Apply84@16")
-ASM_PROC(FUN_582960)
+extern "C" void FUN_582960(); KING_ALIAS("_FUN_582960", "@Item_GroundNormal@12")
 extern "C" void FUN_585da0(); KING_ALIAS("_FUN_585da0", "@Item_SendContact@20")
 extern "C" void FUN_592e70(); KING_ALIAS("_FUN_592e70", "@ListNode_CutNext@8")
 extern "C" void FUN_592e90(); KING_ALIAS("_FUN_592e90", "@ListNode_592e90@12")
@@ -1405,6 +1405,75 @@ int __fastcall Body_Place(BYTE* s, void*, int a, DWORD* flags)
     }
     CallThis(FUN_57e070, s);
     return 0;
+}
+
+} // extern "C"
+
+// === spawning sparks (FUN_5940f0)
+
+extern "C" void FUN_5940d0(); KING_ALIAS("_FUN_5940d0", "@FreeList_Take@8")
+extern "C" int __cdecl rand(void);
+ASM_VAR(Vec3, g_sp702620, $L_702620)
+ASM_VAR(Vec3, g_sp702640, $L_702640)
+ASM_VAR(float, g_sp64c254, $L_64c254)
+ASM_VAR(float, g_sp65096c, $L_65096c)
+ASM_VAR(float, g_sp64c448, $L_64c448)
+ASM_VAR(AsmLabel, g_spColA0, $L_6f6668)
+ASM_VAR(AsmLabel, g_spColA1, $L_6f6688)
+ASM_VAR(AsmLabel, g_spColA2, $L_6f6678)
+ASM_VAR(AsmLabel, g_spColB0, $L_6f6698)
+ASM_VAR(AsmLabel, g_spColB1, $L_6f6658)
+ASM_VAR(AsmLabel, g_spColB2, $L_6f6648)
+
+// a random number in [-1, 1): the first rand subtracted from the second
+static double Sp_Rand()
+{
+    float a = (float)(rand() * (double)g_sp64c254);
+    return rand() * (double)g_sp64c254 - a;
+}
+
+extern "C" {
+
+// [FUN_5940f0] takes n sparks of pool s at source src (+16 position, +28 speed): each moved by a random offset
+// (along 702640, 702620 and up), stamped with the time (s+96 +2968) and one of two colour sets (16 bytes each)
+void __fastcall Sparks_Spawn(BYTE* s, void*, const BYTE* src, unsigned n)
+{
+    if (!F(int, s, 104))
+        return;
+    for (unsigned i = 0; i < n; i++) {
+        BYTE* p = CallThis<BYTE*>(FUN_5940d0, s);
+        if (!p)
+            return;
+        float a = (float)Sp_Rand();
+        float b = (float)Sp_Rand();
+        double c = Sp_Rand();
+        const Vec3& u = g_axis702630;
+        float cu0 = (float)(u.x * c), cu1 = (float)(u.y * c);
+        double cz = c * u.z;
+        double fa0 = g_sp702620.x * (double)b;
+        float fa1 = (float)(g_sp702620.y * (double)b), fa2 = (float)(g_sp702620.z * (double)b);
+        double fb0 = g_sp702640.x * (double)a;
+        float fb1 = (float)(g_sp702640.y * (double)a), fb2 = (float)(g_sp702640.z * (double)a);
+        float s1 = (float)((double)fa1 + fb1), s2 = (float)((double)fa2 + fb2);
+        float v[3] = {(float)(fa0 + fb0 + cu0), (float)((double)cu1 + s1), (float)(cz + s2)};
+        memcpy(p + 40, v, 12);
+        memcpy(p + 4, v, 12);
+        memcpy(p + 16, src + 16, 12);
+        memcpy(p + 52, src + 28, 12);
+        memcpy(p + 28, src + 28, 12);
+        F(int, p, 120) = 1;
+        F(float, p, 64) = (float)F(double, F(BYTE*, s, 96), 2968);
+        if (rand() * (double)g_sp65096c < g_sp64c448) {
+            memcpy(p + 68, (BYTE*)g_spColA0, 16);
+            memcpy(p + 84, (BYTE*)g_spColA1, 16);
+            memcpy(p + 100, (BYTE*)g_spColA2, 16);
+        } else {
+            memcpy(p + 68, (BYTE*)g_spColB0, 16);
+            memcpy(p + 84, (BYTE*)g_spColB1, 16);
+            memcpy(p + 100, (BYTE*)g_spColB2, 16);
+        }
+        F(float, p, 116) = 1.0f;
+    }
 }
 
 } // extern "C"
