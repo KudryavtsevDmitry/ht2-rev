@@ -8657,7 +8657,7 @@ extern "C" void FUN_43bf10(); KING_ALIAS("_FUN_43bf10", "_Ai_AdvancePlayerPositi
 extern "C" void FUN_4376a0(); KING_ALIAS("_FUN_4376a0", "_Ai_GetNoncontradictoryPosition")    // a player's position (out, player)
 extern "C" void FUN_456ea0(); KING_ALIAS("_FUN_456ea0", "@Entry32Vec_InsertAux@16")    // vector<32-byte entry>::insert_aux (thiscall pos, x)
 ASM_PROC(FUN_45e2a0)    // introsort loop of entries (first, last, 0, depth, cmp)
-ASM_PROC(FUN_45e370)    // final insertion sort of entries (first, last, cmp)
+extern "C" void FUN_45e370(); KING_ALIAS("_FUN_45e370", "_Entries32_FinalSort")    // final insertion sort of entries (first, last, cmp)
 extern "C" void FUN_4d8b20(); KING_ALIAS("_FUN_4d8b20", "_Vehicle_LoadResource")    // loads a vehicle (id)
 extern "C" int __cdecl Vehicle_Exists(int id);
 extern "C" int __cdecl Vehicle_Flag4012(int id);
@@ -15757,7 +15757,7 @@ extern "C" void FUN_4660b0(); KING_ALIAS("_FUN_4660b0", "_Sort_MedianBy504")    
 extern "C" void FUN_466160(); KING_ALIAS("_FUN_466160", "_Sort_PartitionBy504")    // unguarded partition (first, last, pivot, cmp)
 ASM_PROC(FUN_45f8d0)    // introsort loop (first, last, 0, depth, cmp)
 ASM_PROC(FUN_465fd0)    // partial sort (first, middle, last, cmp)
-ASM_PROC(FUN_45f990)    // final insertion sort (first, last, cmp)
+extern "C" void FUN_45f990(); KING_ALIAS("_FUN_45f990", "_Ptrs504_FinalSort")    // final insertion sort (first, last, cmp)
 
 // [FUN_431420] a sorted copy of the players at 68a980; the last one (the head when there are none)
 extern "C" void** __cdecl Ai_LastOfSorted(void** out)
@@ -23535,6 +23535,96 @@ BYTE** __cdecl Pick_RandomRoad(BYTE** first, BYTE** last, unsigned mask, DWORD* 
             PtrVec_Push(v, FUN_464230, (BYTE*)it);
     }
     return (BYTE**)PickRandom(v, (BYTE*)last, rng);
+}
+
+} // extern "C"
+
+// === the final insertion sort of 32-byte entries by their key, largest first (FUN_45e370)
+
+struct Fi_E32 { DWORD w[2]; double key; DWORD w4[4]; };
+extern "C" void Fi_CopyBack(); KING_ALIAS("_Fi_CopyBack", "_CopyBackward32s")
+extern "C" void Fi_Insert(); KING_ALIAS("_Fi_Insert", "_Sort_UnguardedInsertByKey")
+
+// the unguarded insertion of a copy of e (word 1 skipped, as the entries' copy does)
+static void Fi_Unguarded(Fi_E32* at, const Fi_E32* e)
+{
+    Fi_E32 c;
+    CallThis(FUN_458a40, &c, e);
+    CallC(Fi_Insert, at, c);
+}
+
+// the insertion sort of [first, last)
+static void Fi_InsertionSort(Fi_E32* first, Fi_E32* last)
+{
+    if (first == last)
+        return;
+    for (Fi_E32* i = first + 1; i != last; i++) {
+        Fi_E32 v = *i;
+        if (v.key > first->key) {
+            CallC(Fi_CopyBack, first, i, i + 1, 0, 0);
+            *first = v;
+        } else
+            Fi_Unguarded(i, &v);
+    }
+}
+
+extern "C" {
+
+// [FUN_45e370] std::__final_insertion_sort of the 32-byte entries [first, last) by the double at +8, descending
+void __cdecl Entries32_FinalSort(Fi_E32* first, Fi_E32* last)
+{
+    if ((int)(((BYTE*)last - (BYTE*)first) & ~31) <= 512) {
+        Fi_InsertionSort(first, last);
+        return;
+    }
+    Fi_InsertionSort(first, first + 16);
+    for (Fi_E32* i = first + 16; i != last; i++)
+        Fi_Unguarded(i, i);
+}
+
+} // extern "C"
+
+// === the final insertion sort of pointers by +504 (FUN_45f990)
+
+extern "C" void Fp_IntCopy(); KING_ALIAS("_Fp_IntCopy", "@Int_Copy@12")
+extern "C" void Fp_CopyBack(); KING_ALIAS("_Fp_CopyBack", "_CopyBackwardDwords")
+extern "C" void Fp_Insert(); KING_ALIAS("_Fp_Insert", "_Sort_UnguardedInsertBy504")
+
+static void Fp_Unguarded(BYTE** at, BYTE* const* v, int cmp)
+{
+    BYTE* c;
+    CallThis(Fp_IntCopy, &c, v);
+    CallC(Fp_Insert, at, c, cmp);
+}
+
+// the insertion sort of [first, last): an element whose +504 differs from the first's goes to the front
+static void Fp_InsertionSort(BYTE** first, BYTE** last, int cmp)
+{
+    if (first == last)
+        return;
+    for (BYTE** i = first + 1; i != last; i++) {
+        BYTE* v = *i;
+        if (!x87_eq(F(double, v, 504) - F(double, *first, 504), 0.0)) {
+            CallC(Fp_CopyBack, first, i, i + 1, 0, 0);
+            *first = v;
+        } else
+            Fp_Unguarded(i, &v, cmp);
+    }
+}
+
+extern "C" {
+
+// [FUN_45f990] std::__final_insertion_sort of the pointers [first, last) by the double at +504 (the comparison
+// is "differs", as Sort_UnguardedInsertBy504)
+void __cdecl Ptrs504_FinalSort(BYTE** first, BYTE** last, int cmp)
+{
+    if ((int)(((BYTE*)last - (BYTE*)first) & ~3) <= 64) {
+        Fp_InsertionSort(first, last, cmp);
+        return;
+    }
+    Fp_InsertionSort(first, first + 16, cmp);
+    for (BYTE** i = first + 16; i != last; i++)
+        Fp_Unguarded(i, i, cmp);
 }
 
 } // extern "C"

@@ -2899,7 +2899,7 @@ extern "C" void __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, f
     CallThis(FUN_5cc680, s, 0, m, p);
 }
 
-ASM_PROC(FUN_5ce6e0)
+extern "C" void FUN_5ce6e0(); KING_ALIAS("_FUN_5ce6e0", "@PointCloud_Construct@56")
 ASM_VAR(double, g_q244_651e10, $L_651e10)
 ASM_VAR(AsmLabel, g_q244_70ebfc, $L_70ebfc)
 ASM_VAR(AsmLabel, g_q244_70ef1c, $L_70ef1c)
@@ -4121,3 +4121,143 @@ extern "C" int __cdecl Object_HandToHook(BYTE* o, int a)
     CallVirt(root, 20, 0, o);
     return 0;
 }
+
+// === a debug line node (FUN_5c85a0)
+
+extern "C" void Ln_NodeConstruct(); KING_ALIAS("_Ln_NodeConstruct", "@Node_Construct@16")
+ASM_VAR(AsmLabel, g_ln651ca0, $L_651ca0)
+ASM_VAR(char, s_ln67f980, $L_67f980)
+ASM_VAR(float, g_ln702634, $L_702634)
+ASM_VAR(float, g_ln702638, $L_702638)
+
+// p + 702630 * k
+static void Ln_Point(float* out, const float* p, float k)
+{
+    double x = (double)g_q243_702630 * k;
+    float y = g_ln702634 * k, z = g_ln702638 * k;
+    out[0] = (float)(x + p[0]);
+    out[1] = y + p[1];
+    out[2] = z + p[2];
+}
+
+extern "C" {
+
+// [FUN_5c85a0] a new 76-byte line node under owner o's root: a 12-byte header (5.0, 2, 2, o) at +60, two points
+// at +72 (p moved along 702630 by 64c330 and 64c350), +52 = 50, +56 = 3, +68 = 2; shown (bit 0 of +40 cleared)
+BYTE* __cdecl LineNode_Create(BYTE* o, const float* p)
+{
+    BYTE* n = (BYTE*)operator new(76);
+    if (n) {
+        CallThis(Ln_NodeConstruct, n, &s_ln67f980, 9);
+        F(int, n, 60) = 0;
+        F(int, n, 64) = 7;
+        F(void*, n, 0) = g_ln651ca0;
+    }
+    F(int, n, 48) = 0;
+    F(int, n, 52) = 50;
+    F(int, n, 56) = 3;
+    BYTE* h = (BYTE*)operator new(12);
+    F(BYTE*, n, 60) = h;
+    F(DWORD, h, 0) = 0x40A00000;
+    F(WORD, F(BYTE*, n, 60), 4) = 2;
+    F(WORD, F(BYTE*, n, 60), 6) = 2;
+    F(BYTE*, F(BYTE*, n, 60), 8) = o;
+    F(int, n, 68) = 2;
+    float* pts = (float*)operator new(24);
+    if (pts)
+        memset(pts, 0, 24);
+    F(float*, n, 72) = pts;
+    Ln_Point(pts, p, g_q243_64c330);
+    Ln_Point(F(float*, n, 72) + 3, p, g_q188_64c350);
+    CallVirt(CallThis<BYTE*>(Ho_NodeRoot, o), 20, 0, n);
+    F(BYTE, n, 40) &= ~1;
+    return n;
+}
+
+} // extern "C"
+
+// === a point cloud's constructor (FUN_5ce6e0)
+
+ASM_VAR(AsmLabel, g_pc651dcc, $L_651dcc)
+
+extern "C" {
+
+// [FUN_5ce6e0] constructor: +16 a, +20 b, the origin (+24) o, n indices (+36, copied to +40) and n points (+56:
+// the coordinate arrays xs, ys, zs scaled by k (+48) about the origin); the vertex description at +60 (points,
+// stride 12, the indices twice with stride 4)
+BYTE* __fastcall PointCloud_Construct(BYTE* s, void*, int a, int b, float ox, float oy, float oz, int n,
+    const int* idx, const float* xs, const float* ys, const float* zs, double k)
+{
+    F(int, s, 16) = a;
+    F(int, s, 4) = 0;
+    F(int, s, 8) = 0;
+    F(int, s, 20) = b;
+    F(float, s, 24) = ox;
+    F(float, s, 28) = oy;
+    F(float, s, 32) = oz;
+    F(void*, s, 0) = g_pc651dcc;
+    F(int, s, 36) = n;
+    F(int*, s, 40) = (int*)operator new(n * 4 + 4);
+    for (int i = 0; i < F(int, s, 36); i++)
+        F(int*, s, 40)[i] = idx[i];
+    F(double, s, 48) = k;
+    F(float*, s, 56) = (float*)operator new(F(int, s, 36) * 12 + 4);
+    for (int i = 0; i < F(int, s, 36); i++) {
+        float* p = F(float*, s, 56) + i * 3;
+        p[0] = (float)(xs[i] * F(double, s, 48) + F(float, s, 24));
+        p[1] = (float)(ys[i] * F(double, s, 48) + F(float, s, 28));
+        p[2] = (float)(zs[i] * F(double, s, 48) + F(float, s, 32));
+    }
+    memset(s + 60, 0, 96);
+    F(float*, s, 60) = F(float*, s, 56);
+    F(int*, s, 76) = F(int*, s, 40);
+    F(int*, s, 84) = F(int*, s, 40);
+    F(int, s, 64) = 12;
+    F(int, s, 80) = 4;
+    F(int, s, 88) = 4;
+    return s;
+}
+
+} // extern "C"
+
+// === drawing the four axis markers (FUN_5c7dc0)
+
+ASM_PROC(FUN_5c7800)
+extern "C" void Ax_Normalized(); KING_ALIAS("_Ax_Normalized", "_Vec3_Normalized")
+ASM_VAR(float, g_ax702620, $L_702620)
+ASM_VAR(float, g_ax702624, $L_702624)
+ASM_VAR(float, g_ax702628, $L_702628)
+ASM_VAR(float, g_ax702640, $L_702640)
+ASM_VAR(float, g_ax702644, $L_702644)
+ASM_VAR(float, g_ax702648, $L_702648)
+ASM_VAR(float, g_ax64c258, $L_64c258)
+
+// the half unit vector along (ux, uy, uz)
+static void Ax_Half(float* o, float ux, float uy, float uz)
+{
+    float v[3] = {ux, uy, uz}, t[3];
+    const float* n = CallC<const float*>(Ax_Normalized, t, v);
+    o[0] = n[0] * g_ax64c258;
+    o[1] = n[1] * g_ax64c258;
+    o[2] = n[2] * g_ax64c258;
+}
+
+extern "C" {
+
+// [FUN_5c7dc0] draws the markers (FUN_5c7800) of the forward (702620) and up (702640) axes scaled by 64c330 and the
+// two half diagonals between them
+void __cdecl Axes_Draw(int a, int b, int c, int d, int e)
+{
+    float v[3] = {g_ax702620 * g_q243_64c330, g_ax702624 * g_q243_64c330, g_ax702628 * g_q243_64c330};
+    CallC(FUN_5c7800, a, b, c, v, d, e);
+    float u[3] = {g_ax702640 * g_q243_64c330, g_ax702644 * g_q243_64c330, g_ax702648 * g_q243_64c330};
+    CallC(FUN_5c7800, a, b, c, u, d, e);
+    float h[3];
+    Ax_Half(h, g_ax702640 + g_ax702620, g_ax702644 + g_ax702624, g_ax702648 + g_ax702628);
+    CallC(FUN_5c7800, a, b, c, h, d, e);
+    float ny = -g_ax702644, nz = -g_ax702648;
+    Ax_Half(h, (float)(-(double)g_ax702640 + g_ax702620), ny + g_ax702624, nz + g_ax702628);
+    CallC(FUN_5c7800, a, b, c, h, d, e);
+}
+
+} // extern "C"

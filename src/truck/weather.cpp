@@ -35,7 +35,7 @@ ASM_PROC(FUN_4e4d82)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
-ASM_PROC(FUN_581ea0)
+extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
 extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
 extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
@@ -558,7 +558,7 @@ extern "C" void __cdecl WeaInit_5ab230()
 // ---------------------------------------------------------------------------
 // More virtual methods.
 
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_5a4ca0(); KING_ALIAS("_FUN_5a4ca0", "@SheetAnim_Step@4")
 ASM_VAR(AsmLabel, g_wea6fd7dc, $L_6fd7dc)
 
@@ -1481,7 +1481,7 @@ BYTE* __fastcall Render_Construct(BYTE* s, void*, BYTE* a)
 
 // === spawning lightning ($L_5a5400)
 
-ASM_PROC(FUN_5a50f0)    // a lightning flash: constructor (world, scene, x, y, z, height, a, b)
+extern "C" void FUN_5a50f0(); KING_ALIAS("_FUN_5a50f0", "@Lightning_Construct@44")    // a lightning flash: constructor (world, scene, x, y, z, height, a, b)
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
 ASM_VAR(float, g_lt64c32c, $L_64c32c)
 ASM_VAR(float, g_lt64d0c8, $L_64d0c8)
@@ -1730,6 +1730,80 @@ int __fastcall SheetAnim_Step(BYTE* s)
         return CallVirt<int>(s, 28, 1);
     F(double, s, 144) = F(double, F(BYTE*, s, 100), 2960) + F(double, s, 144);
     return CallThis<int>(Sa_PostEvent, s, 1);
+}
+
+} // extern "C"
+
+// === a cloud layer following the camera (a method at $L_5a4370)
+
+extern "C" void Cl_SetMatrix(); KING_ALIAS("_Cl_SetMatrix", "@Node_SetMatrix@12")
+extern "C" void Cl_Transform2(); KING_ALIAS("_Cl_Transform2", "@Matrix_Transform2@12")
+extern "C" void Cl_Translation(); KING_ALIAS("_Cl_Translation", "_Matrix_Translation")
+ASM_VAR(double, g_cl64b5b8, $L_64b5b8)
+ASM_VAR(float, g_cl64c304, $L_64c304)
+struct Cl_V3 { float x, y, z; };
+
+extern "C" {
+
+// [$L_5a4370] places layer s along direction d (+64 of o) from frame a: frame b shifted by its distance from a
+// along d (or by 64c304 times s's height +40 when that is small), then set as s's matrix
+void __fastcall Layer_Follow(BYTE* s, void*, const float* a, float* b, const BYTE* o)
+{
+    const float* d = (const float*)(o + 64);
+    double dist = ((double)b[11] - a[11]) * d[2] + ((double)b[10] - a[10]) * d[1] + ((double)b[9] - a[9]) * d[0];
+    Cl_V3 v;
+    if (x87_fabs(dist) > g_cl64b5b8) {
+        double t = x87_fabs(dist);
+        v.x = (float)(t * d[0]);
+        v.y = (float)(t * d[1]);
+        v.z = (float)(t * d[2]);
+    } else {
+        float h = F(float, s, 40);
+        double x = d[0] * (double)g_cl64c304;
+        float y = d[1] * g_cl64c304, z = d[2] * g_cl64c304;
+        v.x = (float)(x * h);
+        v.y = y * h;
+        v.z = z * h;
+    }
+    float m[12];
+    CallThis(Cl_Transform2, b, CallC<float*>(Cl_Translation, m, v));
+    CallThis(Cl_SetMatrix, s, b);
+}
+
+} // extern "C"
+
+// === a lightning flash's constructor (FUN_5a50f0)
+
+ASM_PROC(FUN_5a4880)
+extern "C" void Lf_Find(); KING_ALIAS("_Lf_Find", "_Objects_Find")
+ASM_VAR(AsmLabel, g_lf6514b4, $L_6514b4)
+ASM_VAR(AsmLabel, g_lf651468, $L_651468)
+ASM_VAR(double, g_lf64b7c0, $L_64b7c0)
+struct Lf_V3 { DWORD x, y, z; };
+
+extern "C" {
+
+// [FUN_5a50f0] constructor: the sky effect base (FUN_5a4880: a, b, position p, size k and k * 64b7c0, c, 7, 8, 1,
+// 0.1, 0.7, 100, 1) with this kind's vtables; the material named name in the scene's list (+100 -> +468: +72
+// count, +76 the 124-byte records) gets flag 0x100; +176 the object sound, +180 0 and +184 0.8
+BYTE* __fastcall Lightning_Construct(BYTE* s, void*, int a, int b, Lf_V3 p, double k, const char* name, const char* sound)
+{
+    float k1 = (float)k, k2 = (float)(k * g_lf64b7c0);
+    CallThis(FUN_5a4880, s, a, b, p, *(DWORD*)&k1, *(DWORD*)&k2, name, 7, 8, 1, 0x3DCCCCCDu, 0x3F333333u, 100, 1);
+    F(void*, s, 0) = g_lf6514b4;
+    F(void*, s, 32) = g_lf651468;
+    BYTE* t = F(BYTE*, F(BYTE*, s, 100), 468);
+    int n = F(int, t, 72), i = 0;
+    for (BYTE* r = F(BYTE*, t, 76); i < n; i++, r += 124)
+        if (!strcmp(name, (const char*)r))
+            break;
+    if (i < n)
+        F(DWORD, F(BYTE*, t, 76) + i * 124, 32) |= 0x100;
+    F(int, s, 176) = CallC<int>(Lf_Find, sound);
+    F(int, s, 180) = 0;
+    F(DWORD, s, 184) = 0x9999999A;
+    F(DWORD, s, 188) = 0x3FE99999;
+    return s;
 }
 
 } // extern "C"

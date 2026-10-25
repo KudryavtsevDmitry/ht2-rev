@@ -33,7 +33,7 @@ ASM_VAR(AsmLabel, g_vtbl6503e4, $L_6503e4)
 extern "C" void FUN_60aa60(); KING_ALIAS("_FUN_60aa60", "_Grd_Message")    // assertion failed (level, format, expression, file, line, date)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error (code, format, file, line, date)
 extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
-ASM_PROC(FUN_57c5f0)
+extern "C" void FUN_57c5f0(); KING_ALIAS("_FUN_57c5f0", "_Point_InTriangleXY")
 
 typedef void (__cdecl* LogFn)(const char* text);
 ASM_VAR(int, g_6f4ba4, $L_6f4ba4)
@@ -1603,6 +1603,33 @@ int __cdecl Joy_Acquire(int on)
         strcat(buf, name);
     Joy_Log(buf);
     return hr;
+}
+
+} // extern "C"
+
+// === a point in a triangle given as coordinate arrays (FUN_57c5f0)
+
+ASM_VAR(float, g_ff64c3f0, $L_64c3f0)
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+extern "C" Vec3* __cdecl Vec3_Diff(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" Vec3* __cdecl Vec3_Cross2(Vec3* out, const Vec3* a, const Vec3* b);
+
+extern "C" {
+
+// [FUN_57c5f0] Point_InTriangle with the corners' x in xs and y in ys
+int __cdecl Point_InTriangleXY(float x, float y, const float* xs, const float* ys)
+{
+    float ax = xs[0], ay = ys[0], bx = xs[1], by = ys[1], cx = xs[2], cy = ys[2];
+    float z1 = (float)(((double)by - ay) * ((double)x - ax) - ((double)y - ay) * ((double)bx - ax));
+    float ex = (float)((double)cx - bx), ey = (float)((double)cy - by);
+    Vec3 d;
+    Vec3_SetThis(&d, 0, (float)((double)x - bx), (float)((double)y - by), 0.0f);
+    float z2 = (float)((double)d.x * ey - (double)d.y * ex);
+    Vec3 a = {ax, ay, 0}, c = {cx, cy, 0}, p = {x, y, 0}, ac, pc, r;
+    Vec3_Diff(&ac, &a, &c);
+    Vec3_Diff(&pc, &p, &c);
+    Vec3_Cross2(&r, &pc, &ac);
+    return z1 <= g_ff64c3f0 && z2 <= g_ff64c3f0 && r.z <= g_ff64c3f0;
 }
 
 } // extern "C"

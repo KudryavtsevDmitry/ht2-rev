@@ -2681,3 +2681,73 @@ extern "C" void __fastcall Closure_Clear(BYTE* self)
     Str_AssignEnvironment((StrRef*)(self + 44), 0, &env);
     Value_Release((DWORD*)&env);
 }
+
+// [FUN_48e700] the minimum of p on [lo, hi] from n samples, each refined by three Newton steps on p' (kept when
+// inside the range): lowers *best (at *at) and returns 1 when it found a lower value
+extern "C" int __cdecl Poly_FindMin(const Poly* p, double* best, double* at, double lo, double hi, int n)
+{
+    Poly d1, d2;
+    Poly_Derivative(p, 0, &d1);
+    Poly_Derivative(&d1, 0, &d2);
+    int found = 0;
+    if (n <= 0)
+        return 0;
+    double span = hi - lo, steps = n - 1;
+    for (int i = 0; i < n; i++) {
+        double x = i * span / steps + lo;
+        double v = p->Eval(x);
+        if (v < *best) {
+            *best = v;
+            *at = x;
+            found = 1;
+        }
+        for (int k = 0; k < 3; k++) {
+            double s = d1.Eval(x);
+            x -= s / d2.Eval(x);
+            v = p->Eval(x);
+            if (v < *best && !(x > hi) && !(x < lo)) {
+                *best = v;
+                *at = x;
+                found = 1;
+            }
+        }
+    }
+    return found;
+}
+
+// [FUN_48e470] out = |v - c|^2 as a polynomial: v - c squared term by term (VPoly_Multiply) and each term's
+// components summed
+extern "C" void __cdecl Poly_DistanceSq(Poly* out, VecPoly* v, const DVec3* c)
+{
+    DVec3 n = {-c->x, -c->y, -c->z};
+    VecPoly k;
+    k.count = 0;
+    k.c[0] = n;
+    k.count++;
+    VecPoly d, t;
+    VPoly_Add((BYTE*)v, 0, (BYTE*)&d, (BYTE*)&k);
+    memcpy(&d, VPoly_Multiply((BYTE*)&d, 0, (BYTE*)&t, (BYTE*)&d), 580);
+    Poly_Erase(out, 0, out->c, out->c + out->count);
+    for (unsigned i = 0; i < d.count; i++) {
+        double s = d.c[i].z + d.c[i].y + d.c[i].x;
+        Poly_Append(out, 0, &s);
+    }
+}
+
+// [FUN_48de40] the nearest approach of curve s (a vector polynomial, its bounding sphere +584 / +608) to point p on
+// [lo, hi] (swapped when reversed): skipped (0) when the sphere is farther than *best, else Poly_FindMin of the
+// squared distance from three samples
+extern "C" int __fastcall Curve_NearestTo(VecPoly* s, void*, const DVec3* p, double* best, double* at, double lo,
+    double hi)
+{
+    const DVec3* c = (const DVec3*)((BYTE*)s + 584);
+    double dx = c->x - p->x, dy = c->y - p->y, dz = c->z - p->z;
+    double dist = x87_sqrt(dx * dx + dy * dy + dz * dz);
+    if (dist > F(double, s, 608) + *best)
+        return 0;
+    if (lo > hi)
+        return Curve_NearestTo(s, 0, p, best, at, hi, lo);
+    Poly q;
+    Poly_DistanceSq(&q, s, p);
+    return Poly_FindMin(&q, best, at, lo, hi, 3);
+}

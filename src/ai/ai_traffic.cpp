@@ -23,7 +23,7 @@ extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
 extern "C" void FUN_46c190(); KING_ALIAS("_FUN_46c190", "_Heap504_Adjust")
 ASM_PROC(FUN_46ad50)
 extern "C" void FUN_46cc00(); KING_ALIAS("_FUN_46cc00", "_Mult46cc00")
-ASM_PROC(FUN_4870e0)
+extern "C" void FUN_4870e0(); KING_ALIAS("_FUN_4870e0", "_Player_ReplanToNode")
 extern "C" void FUN_529880(); KING_ALIAS("_FUN_529880", "_Carat_MarkKey")
 extern "C" void FUN_447ef0(); KING_ALIAS("_FUN_447ef0", "@Vec12_FreeStorage@8")
 extern "C" double __cdecl Players_NearestTo(const int* const* node, const BYTE** list);   // aimain.cpp
@@ -1304,3 +1304,67 @@ void __cdecl Net_ListMachines()
 }
 
 } // extern "C"
+
+// === re-planning a player's route (FUN_4872f0)
+
+struct Rp_Pos { int road, node; double t; int segment, object, m_24, m_28; };
+extern "C" void Rp_Valid(); KING_ALIAS("_Rp_Valid", "@Position_Valid@8")
+extern "C" void Rp_Error(); KING_ALIAS("_Rp_Error", "_Ai_Report")
+ASM_VAR(BYTE**, g_rp68cf38, $L_68cf38)
+ASM_VAR(BYTE**, g_rp68cf3c, $L_68cf3c)
+ASM_VAR(char, g_rp68d1c0, $L_68d1c0)
+extern "C" void Rp_FindRoute(); KING_ALIAS("_Rp_FindRoute", "_Road_FindPositionRoute")
+extern "C" void Rp_SetHops(); KING_ALIAS("_Rp_SetHops", "@Player_SetHops@12")
+extern "C" void Rp_PointOf(); KING_ALIAS("_Rp_PointOf", "_Road_PointOf")
+extern "C" void Rp_SetPosition(); KING_ALIAS("_Rp_SetPosition", "_Ai_SetPlayerPosition")
+ASM_VAR(char, g_rp77e6e0, $L_77e6e0)
+ASM_VAR(char, s_rp66cc0c, $L_66cc0c)    // "(%d %g %d %d %x)"
+ASM_VAR(char, s_rp66cc00, $L_66cc00)
+ASM_VAR(char, s_rp66cbf4, $L_66cbf4)
+ASM_VAR(char, s_rp66cbe0, $L_66cbe0)
+
+extern "C" {
+
+// [FUN_4872f0] gives player p the route from its position (+40) to target (reporting an invalid target or one
+// whose segment its road lacks, line 876), then places it at its position's point
+void __cdecl Player_Replan(BYTE* p, Rp_Pos target)
+{
+    Rp_Pos copy = target;
+    if (!CallThis<int>(Rp_Valid, &copy)) {
+        sprintf(&g_rp77e6e0, &s_rp66cc0c, target.road, target.t, target.segment, target.object, target.m_24);
+        CallC(Rp_Error, 33, 100, (const char*)s_rw6701e0, (const char*)s_rw6700c8, 876, &s_rp66cbf4, &s_rp66cc00, &g_rp77e6e0);
+    }
+    if (target.road >= 0 && (unsigned)target.road < (unsigned)(g_rp68cf3c - g_rp68cf38)) {
+        BYTE* e = g_rp68cf38[target.road];
+        BYTE** objs = F(BYTE**, e, 120);
+        if (!(target.object < F(BYTE**, e, 124) - objs && target.segment < CallVirt<int>(objs[target.object], 24)))
+            CallC(Rp_Error, 33, 100, (const char*)s_rw6701e0, (const char*)s_rw6700c8, 876, &s_rp66cbe0, &g_rp68d1c0,
+                &g_rp68d1c0);
+    }
+    BYTE* route[3];
+    int tmp[3] = {0, 0, 0};
+    Rp_Pos from = *(Rp_Pos*)(p + 40);
+    CallThis(Rp_SetHops, p + 8, CallC<BYTE*>(Rp_FindRoute, route, 0, from, target, tmp));
+    if (int n = (int)(route[2] - route[0]) / 12)
+        CallC(FUN_44b4a0, route[0], n * 12);
+    BYTE pt[24];
+    BYTE* q = CallC<BYTE*>(Rp_PointOf, pt, *(Rp_Pos*)(p + 40));
+    CallC(Rp_SetPosition, p, q);
+}
+
+} // extern "C"
+
+// [FUN_4870e0] gives player p the route from its position (+40) to node n (a3 passed on to the search), then
+// places it at its position's point
+extern "C" void __cdecl Player_ReplanToNode(BYTE* p, int n, int a3)
+{
+    Rp_Pos target = {-1, n, 0.0, 0, 0, 0, -1};
+    BYTE* route[3];
+    Rp_Pos from = *(Rp_Pos*)(p + 40);
+    CallThis(Rp_SetHops, p + 8, CallC<BYTE*>(Rp_FindRoute, route, 0, from, target, a3));
+    if (int k = (int)(route[2] - route[0]) / 12)
+        CallC(FUN_44b4a0, route[0], k * 12);
+    BYTE pt[24];
+    BYTE* q = CallC<BYTE*>(Rp_PointOf, pt, *(Rp_Pos*)(p + 40));
+    CallC(Rp_SetPosition, p, q);
+}

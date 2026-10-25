@@ -2299,7 +2299,7 @@ extern "C" void __fastcall Shell_51b5a0(BYTE* s)
 extern "C" void FUN_569710(); KING_ALIAS("_FUN_569710", "_Messages_Clear1276")
 extern "C" void FUN_50bd60(); KING_ALIAS("_FUN_50bd60", "_Carat_SetScreenSize")
 extern "C" void FUN_50bd30(); KING_ALIAS("_FUN_50bd30", "_Carat_UpdateScreenSize")
-ASM_PROC(FUN_532950)
+extern "C" void FUN_532950(); KING_ALIAS("_FUN_532950", "@Game_Input@12")
 extern "C" void FUN_5ea0e0(); KING_ALIAS("_FUN_5ea0e0", "@Font_TextWidth@12")
 extern "C" void FUN_5ea170(); KING_ALIAS("_FUN_5ea170", "_Text_Draw")
 extern "C" void FUN_50bfe0(); KING_ALIAS("_FUN_50bfe0", "_Carat_HasMovie")
@@ -2518,7 +2518,7 @@ extern "C" void FUN_5d8b90(); KING_ALIAS("_FUN_5d8b90", "@Wnd5d8b90_Notify@8")
 extern "C" void FUN_568f60(); KING_ALIAS("_FUN_568f60", "_Player_CarId")
 extern "C" void FUN_43f760(); KING_ALIAS("_FUN_43f760", "_Player_Value136")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_5fcd40(); KING_ALIAS("_FUN_5fcd40", "_Sound_SetVolume")
 extern "C" void FUN_5ffc30(); KING_ALIAS("_FUN_5ffc30", "_Set683c58")
 extern "C" void FUN_5ffa30(); KING_ALIAS("_FUN_5ffa30", "_Music_Start")
@@ -5425,7 +5425,7 @@ extern "C" void __cdecl Game_Leave(void)
 // ---------------------------------------------------------------------------
 // A line on the map.
 
-ASM_PROC(FUN_5b73a0)
+extern "C" void FUN_5b73a0(); KING_ALIAS("_FUN_5b73a0", "_Window_DrawLine")
 extern "C" void FUN_5b6210(); KING_ALIAS("_FUN_5b6210", "_Pixel_Pack")
 // [FUN_5290d0] draws the line of box s (doubles x0, y0, x1, y1) scaled by sx, sy and moved by dx, dy on surface
 // d in green; with clip set nothing is drawn when an end lies outside d
@@ -7356,7 +7356,7 @@ ASM_VAR(double, g_vdBlink64b770, $L_64b770)
 ASM_VAR(AsmLabel, s_vd66c8cc, $L_66c8cc)
 ASM_VAR(AsmLabel, s_vd66d9c4, $L_66d9c4)
 extern "C" void FUN_5b8980(); KING_ALIAS("_FUN_5b8980", "_Gfx_DrawImage")
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_523210(); KING_ALIAS("_FUN_523210", "_Carat_TypeName")
@@ -7536,7 +7536,7 @@ extern "C" void FUN_520000(); KING_ALIAS("_FUN_520000", "_Car_ApplyPlayerSetting
 extern "C" void FUN_53b3c0(); KING_ALIAS("_FUN_53b3c0", "@King_53b3c0@12")
 extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 
 // per refill button 0..6: the vehicle's virtual refill (amount*)
 static const short k_sbRefill[7] = {28, 12, 24, 20, 8, 32, 16};
@@ -8239,7 +8239,7 @@ ASM_VAR(AsmLabel, s_do67804c, $L_67804c)
 ASM_VAR(AsmLabel, s_do678040, $L_678040)
 ASM_VAR(AsmLabel, g_doOffers675c50, $L_675c50)  // 4 offers per dealer type: an id, -1 for none
 extern "C" void FUN_4315f0(); KING_ALIAS("_FUN_4315f0", "_Ai_QueryBribeSum")
-ASM_PROC(FUN_50bda0)
+extern "C" void FUN_50bda0(); KING_ALIAS("_FUN_50bda0", "_Surface_Copy16")
 
 // the player picture name prefix of player id
 static const char* Do_Prefix(int id)
@@ -8655,7 +8655,7 @@ extern "C" void FUN_4771e0(); KING_ALIAS("_FUN_4771e0", "_Player_FirstEntry")
 extern "C" void FUN_4771a0(); KING_ALIAS("_FUN_4771a0", "_Player_NextEntry")
 extern "C" void FUN_569740(); KING_ALIAS("_FUN_569740", "_Messages_Get1288")
 extern "C" void FUN_5b6f90(); KING_ALIAS("_FUN_5b6f90", "_Surface_FillRect")
-ASM_PROC(FUN_50bda0)
+extern "C" void FUN_50bda0(); KING_ALIAS("_FUN_50bda0", "_Surface_Copy16")
 
 static int Ve_Car()
 {
@@ -8979,7 +8979,7 @@ extern "C" void FUN_4315f0(); KING_ALIAS("_FUN_4315f0", "_Ai_QueryBribeSum")
 extern "C" void FUN_432560(); KING_ALIAS("_FUN_432560", "_Ai_OfferBribe")
 extern "C" void FUN_433b60(); KING_ALIAS("_FUN_433b60", "_Ai_OrderVehicle")
 extern "C" void FUN_5bdb50(); KING_ALIAS("_FUN_5bdb50", "@Ctl_FindId@12")
-ASM_PROC(FUN_5fdaf0)
+extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 
 static int Bd_Copy(const void* it)
 {
@@ -9451,6 +9451,291 @@ void __fastcall LeaveDialog_Command(BYTE* s, void*, int cmd)
         if (F(int, g_6cec6c, 1344) && F(short, g_6cec78, 384) > 5)
             CallC(FUN_5ffa30);
     }
+}
+
+} // extern "C"
+
+// === the filling station screen (a draw method at $L_520700)
+
+extern "C" double __cdecl AI_BaseFactor(float x, float y, float z);
+extern "C" double __cdecl Player_Value136(BYTE* id);
+extern "C" void __cdecl Player_Set136(BYTE* id, DWORD lo, DWORD hi);
+extern "C" int __cdecl Messages_Get1292();
+extern "C" int __fastcall List_DrawAt(BYTE* self, void*, int a);
+extern "C" int __fastcall Font_TextWidth(BYTE* self, void*, const char* s);
+extern "C" void __cdecl Text_Draw(int a, int b, int c, BYTE* font, const char* s, int d, int e);
+extern "C" void Fs_Matrix1(); KING_ALIAS("_Fs_Matrix1", "@SceneObj_Matrix1@12")
+extern "C" void Fs_SetValue(); KING_ALIAS("_Fs_SetValue", "@Ramp_SetValue@12")
+extern "C" void Fs_FillRect(); KING_ALIAS("_Fs_FillRect", "_Surface_FillRect")
+ASM_VAR(int, g_fs6ced14, $L_6ced14)
+ASM_VAR(int, g_fs6ced18, $L_6ced18)
+ASM_VAR(BYTE*, g_fs6ced24, $L_6ced24)
+ASM_VAR(BYTE*, g_fs6d2078, $L_6d2078)
+ASM_VAR(BYTE*, g_fs696ca0, $L_696ca0)
+ASM_VAR(double, g_fs64e778, $L_64e778)
+ASM_VAR(double, g_fs64b780, $L_64b780)
+ASM_VAR(double, g_fs64b6a0, $L_64b6a0)
+ASM_VAR(double, g_fs64b730, $L_64b730)
+ASM_VAR(double, g_fs64b5a0, $L_64b5a0)
+ASM_VAR(double, g_fs64b678, $L_64b678)
+ASM_VAR(char, s_fs677a0c, $L_677a0c)
+ASM_VAR(char, s_fs677a08, $L_677a08)
+ASM_VAR(char, s_fs677a00, $L_677a00)
+ASM_VAR(char, s_fs6779f8, $L_6779f8)
+ASM_VAR(char, s_fs66efdc, $L_66efdc)
+ASM_VAR(char, s_fs66c8cc, $L_66c8cc)
+ASM_VAR(char, s_fs6779f0, $L_6779f0)
+
+// v as "int.frac" (677a0c) in the game font's upper half, right-aligned at x = 176 on row y
+static void Fs_Amount(BYTE* surf, BYTE* font, double v, int y)
+{
+    char buf[16];
+    int i = (int)v;
+    sprintf(buf, &s_fs677a0c, i, (int)((v - i) * g_fs64b780));
+    for (char* p = buf; *p; p++)
+        *p += (char)128;
+    int w = Font_TextWidth(font, 0, buf);
+    Text_Draw((int)surf, g_fs6ced14 + 176 - w, g_fs6ced18 + y, font, buf, 0, 0);
+}
+
+static void Fs_Text(BYTE* surf, int x, int y, const char* s)
+{
+    Text_Draw((int)surf, g_fs6ced14 + x, g_fs6ced18 + y, g_fs6ced24, s, 0, 0);
+}
+
+extern "C" {
+
+// [$L_520700] draws the filling station (s is the panel inside its object at -64): the fill bar, the price at the
+// player's position, the amounts and the money; while filling (+304 left) moves fuel at the frame time's rate
+// into +328, and when done fills the cab's tank (+16112), charges the player and closes the panel
+void __fastcall Station_Draw(BYTE* s, void*, int a)
+{
+    BYTE* font = (BYTE*)Messages_Get1292();
+    BYTE* surf = F(BYTE*, s, -52);
+    int rc[4];
+    rc[0] = g_fs6ced14 + 40;
+    rc[2] = (int)((F(double, s, 328) + F(double, s, 312)) * g_fs64e778 / F(double, s, 320) + rc[0]);
+    rc[1] = g_fs6ced18 + 645;
+    rc[3] = rc[1] + 9;
+    List_DrawAt(s, 0, a);
+    CallC(Fs_FillRect, surf, rc, 5, 0);
+    BYTE m[48];
+    Vec3 pos = F(Vec3, CallThis<BYTE*>(Fs_Matrix1, F(BYTE*, g_fs6d2078, 616) + 16, m), 36);
+    Fs_Amount(surf, font, AI_BaseFactor(pos.x, pos.y, pos.z) * F(double, s, 328), 493);
+    Fs_Amount(surf, font, F(double, s, 328), 543);
+    Fs_Amount(surf, font, AI_BaseFactor(pos.x, pos.y, pos.z), 593);
+    Fs_Text(surf, 39, 675, &s_fs677a08);
+    char buf[32];
+    int n = (int)F(double, s, 320);
+    if (n < 10)
+        sprintf(buf, &s_fs677a00, n);
+    else if (F(double, s, 320) < g_fs64b6a0)
+        sprintf(buf, &s_fs6779f8, n);
+    else if (F(double, s, 320) < g_fs64b730)
+        sprintf(buf, &s_fs66efdc, n);
+    else
+        sprintf(buf, &s_fs66c8cc, n);
+    Fs_Text(surf, 135, 675, buf);
+    double v = F(short, s, 336) * F(double, s, 320) * g_fs64b5a0 - F(double, s, 312);
+    if (v > g_fs64b678) {
+        sprintf(buf, &s_fs6779f0, v);
+        Fs_Text(surf, 75, 724, buf);
+        sprintf(buf, &s_fs6779f0, AI_BaseFactor(pos.x, pos.y, pos.z) * v);
+        Fs_Text(surf, 155, 724, buf);
+    }
+    if (!(F(double, s, 304) > g_fs64b678))
+        return;
+    double dt = F(double, g_fs696ca0, 2960) * g_fs64b780;
+    F(double, s, 304) -= dt;
+    F(double, s, 328) += dt;
+    if (F(double, s, 304) > g_fs64b678)
+        return;
+    F(double, s, 328) += F(double, s, 304);
+    BYTE* cab = F(BYTE*, F(BYTE*, g_fs6d2078, 616), 21600);
+    float full = (float)(F(double, s, 328) + F(double, s, 312));
+    CallThis(Fs_SetValue, cab + 16112, *(DWORD*)&full);
+    int id;
+    double money = Player_Value136((BYTE*)*Player_CarId(&id));
+    double left = money - AI_BaseFactor(pos.x, pos.y, pos.z) * F(double, s, 328);
+    Player_Set136((BYTE*)*Player_CarId(&id), ((DWORD*)&left)[0], ((DWORD*)&left)[1]);
+    CallVirt(s - 64, 32);
+    CallVirt(g_fs696ca0, 36);
+    F(BYTE, F(BYTE*, F(BYTE*, g_fs6d2078, 616), 21600), 9984) = 2;
+    CallC(FUN_4e12b0, 1);
+}
+
+} // extern "C"
+
+// === the input settings screen: capture and drawing (a draw method at $L_514d10)
+
+ASM_VAR(double, g_in64b7a8, $L_64b7a8)
+ASM_VAR(double, g_in64de98, $L_64de98)
+ASM_VAR(double, g_in64d988, $L_64d988)
+ASM_VAR(double, g_in64b678, $L_64b678)
+ASM_VAR(double, g_in64b860, $L_64b860)
+ASM_VAR(double, g_in6ced78, $L_6ced78)
+ASM_VAR(int, g_in6ced74, $L_6ced74)
+ASM_VAR(char, s_in676ca8, $L_676ca8)
+extern "C" void In_Next(); KING_ALIAS("_In_Next", "@Node_Next@8")
+
+extern "C" {
+
+// [$L_514d10] the input screen's panel (s, inside the screen at -64): while capturing (+1216) binds newly pressed
+// joystick buttons (259 + i), hat directions (291 + i) and an axis pushed from rest (300/301 + 4 * axis, +2 for
+// a release; +440 then resnaps the rest values +368 from the current +304); then draws the list with each
+// control's two keys (the one being bound blinking) and the device name
+void __fastcall Input_Draw(BYTE* s, void*, int a)
+{
+    if (F(int, s, 1216)) {
+        int found = -1;
+        const BYTE* rec = (const BYTE*)g_6d1bb0;
+        for (int k = 0; k < 8; k++, rec += 12) {
+            double v = F(float, rec, 0);
+            F(double, s, 304 + k * 8) = F(int, rec, 8) ? -v : v;
+        }
+        F(unsigned, s, 432) = 0;
+        F(unsigned, s, 444) = 0;
+        const BYTE* b = (const BYTE*)g_q71_6d1b4e;
+        for (int i = 0; i < 12; i++)
+            F(unsigned, s, 432) |= b[i * 2] ? 1u << i : 0;
+        b = (const BYTE*)g_q71_6d1b8e;
+        for (int i = 0; i < 4; i++)
+            F(unsigned, s, 444) |= b[i * 2] ? 1u << i : 0;
+        for (int i = 0; i < 12; i++) {
+            unsigned bit = 1u << i;
+            if ((F(unsigned, s, 432) & bit) && !(F(unsigned, s, 436) & bit))
+                found = Keys_Bind(s - 64, 0, i + 259);
+        }
+        for (int i = 0; i < 4; i++) {
+            unsigned bit = 1u << i;
+            if ((F(unsigned, s, 444) & bit) && !(F(unsigned, s, 448) & bit))
+                found = Keys_Bind(s - 64, 0, i + 291);
+        }
+        double best = F(double, s, 304) - F(double, s, 368);
+        int axis = 0;
+        for (int k = 1; k < 8; k++) {
+            double d = F(double, s, 304 + k * 8) - F(double, s, 368 + k * 8);
+            if (x87_fabs(best) < x87_fabs(d)) {
+                best = d;
+                axis = k;
+            }
+        }
+        double rest = x87_fabs(F(double, s, 368 + axis * 8));
+        if (rest < g_in64b7a8 && x87_fabs(best) > g_in64de98) {
+            found = Keys_Bind(s - 64, 0, (best > g_in64b678 ? 300 : 301) + axis * 4);
+            F(int, s, 440) = 1;
+        } else if (rest > g_in64b7a8 && x87_fabs(best) > g_in64d988) {
+            found = Keys_Bind(s - 64, 0, (best > g_in64b678 ? 300 : 301) + axis * 4 + 2);
+            F(int, s, 440) = 1;
+        }
+        if (found >= 0)
+            F(int, s, 452) = found;
+        F(unsigned, s, 436) = F(unsigned, s, 432);
+        F(unsigned, s, 448) = F(unsigned, s, 444);
+        if (F(int, s, 440)) {
+            memcpy(s + 368, s + 304, 64);
+            F(int, s, 440) = 0;
+        }
+    }
+    List_DrawAt(s, 0, a);
+    BYTE* o = F(BYTE*, s, 460);
+    int x0 = F(int, o, 44) + 200;
+    int y0 = F(int, o, 48) + 153;
+    BYTE* node = F(BYTE*, o, 288);
+    int h = F(int, node, 56) - F(int, node, 48);
+    BYTE* first = F(BYTE*, F(BYTE*, s, -8), 288);
+    int lx = F(int, first, 44);
+    int ly = F(int, first, 48);
+    double t = CallC<double>(FUN_6037e0);
+    if (t > g_in6ced78 + g_in64b860) {
+        g_in6ced78 = t;
+        g_in6ced74 ^= 1;
+    }
+    BYTE* surf = F(BYTE*, s, -52);
+    const char** names = (const char**)g_keyNames675470;
+    for (int i = 0; node; i++, node = CallThis<BYTE*>(In_Next, node)) {
+        int key = F(int, node, 28) - 1000;
+        if (F(int, s, 452) == key && g_in6ced74)
+            continue;
+        int k1 = F(int, s, 464 + key * 4);
+        if (k1 < 0)
+            continue;
+        int y = y0 + i % 11 * 20 + ly + h;
+        int x = lx + i / 11 * 180;
+        Text_Draw((int)surf, x + x0 + 107, y, (BYTE*)g_fontMenu, names[k1], 4, 0);
+        int k2 = F(int, s, 652 + key * 4);
+        if (k2 >= 0)
+            Text_Draw((int)surf, x + x0 + 145, y, (BYTE*)g_fontMenu, names[k2], 4, 0);
+    }
+    char buf[32];
+    if (strlen(&s_stream6d1db8) > 29) {
+        strncpy(buf, &s_stream6d1db8, 27);
+        strcpy(buf + 27, &s_in676ca8);
+    } else
+        strcpy(buf, &s_stream6d1db8);
+    buf[28] = 0;
+    int w = Font_TextWidth((BYTE*)g_fontLarge, 0, buf);
+    Text_Draw((int)surf, 299 + (204 - w) / 2, 178, (BYTE*)g_fontLarge, buf, 4, 0);
+}
+
+} // extern "C"
+
+// === copying a 16-bit surface (FUN_50bda0)
+
+// a COM method: stdcall with the object first
+template <class R = void, class... A>
+static R Sc_Com(BYTE* o, unsigned off, A... args)
+{
+    return CallStd<R>(*(void (**)())(*(BYTE**)o + off), o, args...);
+}
+
+extern "C" {
+
+// [FUN_50bda0] copies the 16-bit DirectDraw surface src into dst: flags bit 0 flips vertically, bit 1 mirrors,
+// bits 2/3/4 take every 2nd/3rd/4th pixel and row (rows past src's end stop the copy); the Lock result
+int __cdecl Surface_Copy16(BYTE* dst, BYTE* src, DWORD flags)
+{
+    int step = 1;
+    if (flags & 4)
+        step = 2;
+    else if (flags & 8)
+        step = 3;
+    else if (flags & 16)
+        step = 4;
+    DWORD desc[31] = {};
+    desc[0] = 124;
+    desc[1] = 8387054;
+    int hr = Sc_Com<int>(src, 100, 0, desc, 17, 0);
+    if (hr)
+        return hr;
+    int srcH = desc[2], srcW = desc[3], srcPitch = desc[4];
+    BYTE* srcBits = (BYTE*)desc[9];
+    hr = Sc_Com<int>(dst, 100, 0, desc, 33, 0);
+    if (!hr) {
+        int dstH = desc[2], dstW = desc[3], dstPitch = desc[4];
+        BYTE* d = (BYTE*)desc[9];
+        int rowStep = srcPitch * step;
+        BYTE* flip = srcBits + (srcH - 1) * srcPitch;
+        BYTE* s = srcBits;
+        for (int r = 0, sr = 0; r < dstH && sr < srcH; r++, sr += step, flip -= rowStep, s += rowStep, d += dstPitch) {
+            BYTE* p = (flags & 1) ? flip : s;
+            if (!(flags & ~1u)) {
+                memcpy(d, p, (srcW > dstW ? dstW : srcW) * 2);
+                continue;
+            }
+            int mirror = flags & 2;
+            if (mirror)
+                p += srcW * 2 - 2;
+            WORD* o = (WORD*)d;
+            for (int i = 0, k = 0; i < dstW && k < srcW; i++, k += step) {
+                *o++ = *(WORD*)p;
+                p += mirror ? -step * 2 : step * 2;
+            }
+        }
+        Sc_Com(dst, 128, 0);
+    }
+    Sc_Com(src, 128, 0);
+    return hr;
 }
 
 } // extern "C"

@@ -3588,7 +3588,7 @@ extern "C" void __fastcall World_Reset(BYTE* s)
 // Rendering a frame; camera angles.
 
 extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
-ASM_PROC(FUN_5df3d0)
+extern "C" void FUN_5df3d0(); KING_ALIAS("_FUN_5df3d0", "@Camera_Follow@12")
 extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
 extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
 extern "C" void FUN_5aea50(); KING_ALIAS("_FUN_5aea50", "@Render_EndFrame@8")
@@ -5359,6 +5359,200 @@ int __cdecl Tga_Read(BYTE* img, FILE* f, long off)
         return 0;
     flags |= 1;
     return 1;
+}
+
+} // extern "C"
+
+// === reading a face (FUN_5e58b0)
+
+extern "C" int __cdecl atexit(void (__cdecl* f)());
+ASM_VAR(BYTE, g_fc7217b4, $L_7217b4)
+ASM_VAR(float, g_fc7217a8, $L_7217a8)
+ASM_VAR(float, g_fc7217ac, $L_7217ac)
+ASM_VAR(float, g_fc7217b0, $L_7217b0)
+ASM_VAR(int, g_fc72006c, $L_72006c)
+ASM_VAR(double, g_fc64b670, $L_64b670)
+ASM_VAR(double, g_fc64b6e0, $L_64b6e0)
+ASM_VAR(DWORD, g_fc702e8c, $L_702e8c)
+extern "C" void Fc_RotX(); KING_ALIAS("_Fc_RotX", "_Matrix_RotationX")
+
+static void __cdecl Fc_Nop() {}
+
+extern "C" {
+
+// [FUN_5e58b0] reads face s from file f with the model's points (28 bytes each) and normals (12): the flags (+0,
+// stored ^ 1; +6 the texture layers), +28, +50, +48, the vertex count (+4) and its number (+2, from 72006c); per
+// vertex its point index (+8), with flag 2 the layers' u and v (+12, +16), with flag 16 a normal (flag 1, flag
+// 32 read, else the point's; kept as vectors +24 with 702e8c bit 6, else as light +20 from the fixed light
+// direction 7217a8) or a read light (flag 32); then the plane of the first three points (+32); 1
+int __fastcall Face_Read(BYTE* s, void*, void* f, BYTE* pts, BYTE* normals)
+{
+    Pg_V3 nrm = {0, 0, 0};
+    if (!(g_fc7217b4 & 1)) {
+        g_fc7217b4 |= 1;
+        BYTE mx[48], mz[48];
+        const float* a = CallC<const float*>(Fc_RotX, mx, 0x3F48F5DA);
+        float v[3] = {a[9] + a[3], a[10] + a[4], a[11] + a[5]};
+        const float* m = CallC<const float*>(Fw_RotZ, mz, 0x3F060A92);
+        float y = v[2] * m[7] + v[1] * m[4] + v[0] * m[1] + m[10];
+        g_fc7217b0 = v[2] * m[8] + v[1] * m[5] + v[0] * m[2] + m[11];
+        g_fc7217a8 = v[2] * m[6] + v[1] * m[3] + v[0] * m[0] + m[9];
+        g_fc7217ac = y;
+        atexit(Fc_Nop);
+    }
+    DWORD fl = CallC<DWORD>(FUN_5ab140, f) ^ 1;
+    F(WORD, s, 0) = (WORD)fl;
+    F(WORD, s, 6) = (BYTE)(fl >> 8);
+    F(float, s, 28) = CallC<float>(FUN_5ab190, f);
+    F(WORD, s, 50) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 48) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 4) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 2) = (WORD)g_fc72006c;
+    g_fc72006c++;
+    unsigned n = F(WORD, s, 4);
+    F(void*, s, 8) = operator new(n * 2);
+    if (F(BYTE, s, 0) & 2) {
+        F(WORD, s, 6)++;
+        F(void*, s, 12) = operator new(F(WORD, s, 6) * F(WORD, s, 4) * 4);
+        F(void*, s, 16) = operator new(F(WORD, s, 6) * F(WORD, s, 4) * 4);
+    }
+    WORD w = F(WORD, s, 0);
+    if (w & 16) {
+        if ((w & 1) && (g_fc702e8c & 64)) {
+            Pg_V3* p = (Pg_V3*)operator new(n * 12);
+            if (p)
+                memset(p, 0, n * 12);
+            F(Pg_V3*, s, 24) = p;
+        } else
+            F(void*, s, 20) = operator new(F(WORD, s, 4) * 4);
+    }
+    for (int i = 0; i < F(WORD, s, 4); i++) {
+        F(WORD*, s, 8)[i] = (WORD)CallC<int>(FUN_5ab140, f);
+        if (F(BYTE, s, 0) & 2)
+            for (int j = 0; j < F(WORD, s, 6); j++) {
+                // as in the original: the layers' values land at i + 2 j
+                F(float*, s, 12)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
+                F(float*, s, 16)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
+            }
+        w = F(WORD, s, 0);
+        if (!(w & 16))
+            continue;
+        if (w & 1) {
+            if (w & 32)
+                CallThis(FUN_5ab790, &nrm, f);
+            else
+                nrm = *(const Pg_V3*)(normals + F(WORD*, s, 8)[i] * 12);
+            if (g_fc702e8c & 64)
+                F(Pg_V3*, s, 24)[i] = nrm;
+            else
+                F(float*, s, 20)[i] = (float)((nrm.z * g_fc7217b0 + nrm.y * g_fc7217ac + g_fc7217a8 * nrm.x
+                    + g_fc64b670) * g_fc64b6e0);
+        } else if (w & 32)
+            F(float*, s, 20)[i] = CallC<float>(FUN_5ab190, f);
+    }
+    const WORD* ix = F(const WORD*, s, 8);
+    BYTE pl[16];
+    CallThis(FUN_5cda50, s + 32, CallThis<BYTE*>(FUN_5ac6d0, pl, *(const Pg_V3*)(pts + ix[0] * 28),
+        *(const Pg_V3*)(pts + ix[1] * 28), *(const Pg_V3*)(pts + ix[2] * 28)));
+    return 1;
+}
+
+} // extern "C"
+
+// === reading a flat face (FUN_5e6650)
+
+extern "C" {
+
+// [FUN_5e6650] reads flat face s from f: the flags (+0, +6 the layers), 4 skipped bytes, +34, +32, the vertex count
+// (+4) and number (+2, from 72006c); per vertex x and y (+16, +20) and with flag 2 the layers' u and v (+8, +12, at
+// i + 2 j as in the original); with flag 2 the texture scale +28 = |xy edge 0-1| / |uv edge 0-1|; 1
+int __fastcall FlatFace_Read(BYTE* s, void*, FILE* f)
+{
+    DWORD fl = CallC<DWORD>(FUN_5ab140, f);
+    F(WORD, s, 0) = (WORD)fl;
+    F(WORD, s, 6) = (BYTE)(fl >> 8);
+    DWORD skip;
+    fread(&skip, 4, 1, f);
+    F(WORD, s, 34) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 32) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 4) = (WORD)CallC<int>(FUN_5ab140, f);
+    F(WORD, s, 2) = (WORD)g_fc72006c;
+    g_fc72006c++;
+    F(void*, s, 16) = operator new(F(WORD, s, 4) * 4);
+    F(void*, s, 20) = operator new(F(WORD, s, 4) * 4);
+    if (F(BYTE, s, 0) & 2) {
+        F(WORD, s, 6)++;
+        F(void*, s, 8) = operator new(F(WORD, s, 6) * F(WORD, s, 4) * 4);
+        F(void*, s, 12) = operator new(F(WORD, s, 6) * F(WORD, s, 4) * 4);
+    }
+    for (int i = 0; i < F(WORD, s, 4); i++) {
+        F(float*, s, 16)[i] = CallC<float>(FUN_5ab190, f);
+        F(float*, s, 20)[i] = CallC<float>(FUN_5ab190, f);
+        if (F(BYTE, s, 0) & 2)
+            for (int j = 0; j < F(WORD, s, 6); j++) {
+                F(float*, s, 8)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
+                F(float*, s, 12)[i + 2 * j] = CallC<float>(FUN_5ab190, f);
+            }
+    }
+    if (F(BYTE, s, 0) & 2) {
+        const float* u = F(float*, s, 8);
+        const float* v = F(float*, s, 12);
+        double du = (double)u[1] - u[0], dv = (double)v[1] - v[0];
+        double l1 = x87_sqrt(dv * dv + du * du);
+        F(float, s, 28) = (float)l1;
+        const float* x = F(float*, s, 16);
+        const float* y = F(float*, s, 20);
+        double dy = (double)y[1] - y[0], dx = (double)x[1] - x[0];
+        F(float, s, 28) = (float)(x87_sqrt(dx * dx + dy * dy) / l1);
+    }
+    return 1;
+}
+
+} // extern "C"
+
+// === a camera following a frame with lag (FUN_5df3d0)
+
+ASM_VAR(double, g_cf720c80, $L_720c80)
+ASM_VAR(double, g_cf7212a8, $L_7212a8)
+ASM_VAR(double, g_cf720b58, $L_720b58)
+ASM_VAR(double, g_cf64d900, $L_64d900)
+ASM_VAR(double, g_cf64d908, $L_64d908)
+ASM_VAR(double, g_cf64d910, $L_64d910)
+ASM_VAR(double, g_cf682a20, $L_682a20)
+
+// keeps *lag within lim of a
+static void Cf_Clamp(double a, double* lag, double lim)
+{
+    if (a - *lag > lim)
+        *lag = a - lim;
+    if (-lim > a - *lag)
+        *lag = lim + a;
+}
+
+extern "C" {
+
+// [FUN_5df3d0] camera s follows frame m: its position (+2904..), the frame's angles (720c80, 7212a8, 720b58) and
+// the lagging angles +2928 (the heading difference wrapped), +2936 and +2944 kept within 682a20 of them; +580 the
+// frame's translation
+void __fastcall Camera_Follow(BYTE* s, void*, const float* m)
+{
+    Pg_V3 r[4];
+    memcpy(r, m, 48);
+    CallC(FUN_5de950, r[0], r[1], r[2], r[3], (double*)(s + 2904), (double*)(s + 2912), (double*)(s + 2920),
+        &g_cf720c80, &g_cf7212a8, &g_cf720b58);
+    double lim = g_cf682a20;
+    double d = g_cf720c80 - F(double, s, 2928);
+    if (d > g_cf64d900)
+        d -= g_cf64d908;
+    if (d < g_cf64d910)
+        d += g_cf64d908;
+    if (d > lim)
+        F(double, s, 2928) = g_cf720c80 - lim;
+    if (d < -lim)
+        F(double, s, 2928) = lim + g_cf720c80;
+    Cf_Clamp(g_cf7212a8, (double*)(s + 2936), lim);
+    Cf_Clamp(g_cf720b58, (double*)(s + 2944), lim);
+    memcpy(s + 580, m + 9, 12);
 }
 
 } // extern "C"

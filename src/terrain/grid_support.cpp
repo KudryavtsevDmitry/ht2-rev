@@ -856,7 +856,7 @@ void __fastcall Grid_RemoveUnusedPoints(BYTE* self, void*)
 
 extern "C" void FUN_6063f0(); KING_ALIAS("_FUN_6063f0", "@GridTriangle_Destruct@8")
 extern "C" void FUN_608aa0(); KING_ALIAS("_FUN_608aa0", "@GridObj_SetVtables@8")
-ASM_PROC(FUN_60bbb0)
+extern "C" void FUN_60bbb0(); KING_ALIAS("_FUN_60bbb0", "@Mesh_Clear@4")
 
 static BYTE* Gsp_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -2058,6 +2058,76 @@ void __fastcall Grid_MergeFourCells(BYTE* self, void*, BYTE* a, BYTE* b, BYTE* c
         CallVirt(d, 0, 1);
     if (a)
         CallVirt(a, 0, 1);
+}
+
+} // extern "C"
+
+// === emptying a mesh (FUN_60bbb0)
+
+ASM_VAR(AsmLabel, g_ms652f3c, $L_652f3c)
+extern "C" void __cdecl free(void* p);
+
+extern "C" {
+
+// [FUN_60bbb0] destructor body of mesh s: every edge of the ring +32 removed and deleted, every cell of the ring
+// +36 unlinked and deleted (vtbl+0), the buffer +12 freed, the point slots +8 (count +60) unhooked from their
+// parents (reporting a broken link) and deleted with their subtrees; the counts cleared
+void __fastcall Mesh_Clear(BYTE* s)
+{
+    F(void*, s, 0) = g_ms652f3c;
+    for (;;) {
+        BYTE** q = F(BYTE**, s, 32);
+        if (!q[0] && !q[1])
+            break;
+        BYTE* e = q[0] ? q[0] : q[1];
+        Grid_RemoveEdge(s, 0, e);
+        if (e) {
+            Grid_ResetVtables(e, 0);
+            operator delete(e);
+        }
+    }
+    for (;;) {
+        BYTE** r = F(BYTE**, s, 36);
+        if (!r[0] && !r[1])
+            break;
+        BYTE* c = r[0] ? r[0] : r[1];
+        Gc_Unlink(s, c);
+        if (c)
+            CallVirt(c, 0, 1);
+    }
+    if (F(void*, s, 12)) {
+        free(F(void*, s, 12));
+        F(void*, s, 12) = 0;
+    }
+    if (BYTE** slots = F(BYTE**, s, 8)) {
+        for (unsigned i = 0; i < F(unsigned, s, 60); i++) {
+            BYTE* n = F(BYTE**, s, 8)[i];
+            if (!n)
+                continue;
+            if (BYTE* p = F(BYTE*, n, 8)) {
+                if (F(BYTE*, p, 0) == n)
+                    F(BYTE*, p, 0) = 0;
+                else if (F(BYTE*, p, 4) == n)
+                    F(BYTE*, p, 4) = 0;
+                else
+                    CallC(FUN_60aad0, 0x88760112, (const char*)s_fileLine, (const char*)s_btrFile, 35,
+                        (const char*)s_buildDate);
+            }
+            if (F(BYTE*, n, 0))
+                Btr_Delete(F(BYTE*, n, 0), 0, 1);
+            if (F(BYTE*, n, 4))
+                Btr_Delete(F(BYTE*, n, 4), 0, 1);
+            operator delete(n);
+            F(BYTE**, s, 8)[i] = 0;
+        }
+        if (F(void*, s, 8)) {
+            operator delete(F(void*, s, 8));
+            F(void*, s, 8) = 0;
+        }
+    }
+    F(WORD, s, 42) = 0;
+    F(WORD, s, 40) = 0;
+    F(int, s, 60) = 0;
 }
 
 } // extern "C"

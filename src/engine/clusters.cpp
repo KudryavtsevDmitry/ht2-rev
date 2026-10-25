@@ -36,7 +36,7 @@ extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
 extern "C" void FUN_5adc80(); KING_ALIAS("_FUN_5adc80", "@Render_SetFog@28")
 extern "C" void FUN_5addf0(); KING_ALIAS("_FUN_5addf0", "@Render_SetAmbient@32")
-ASM_PROC(FUN_5eb4b0)
+extern "C" void FUN_5eb4b0(); KING_ALIAS("_FUN_5eb4b0", "@CamNode_Apply@12")
 extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
 ASM_PROC(FUN_5d2650)    // name hash: add (name, value pointer)
 extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
@@ -1326,6 +1326,72 @@ void __cdecl Backdrop_Draw(BYTE* dst, BYTE* t, int off, int w, int x, int bottom
         int f[4] = {x, bottom, x + w - 1, F(WORD, dst, 2)};
         CallC(Bd_FillRect, dst, f, c, 1);
     }
+}
+
+} // extern "C"
+
+// === pointing the renderer through a camera node (FUN_5eb4b0)
+
+extern "C" void Cn_World(); KING_ALIAS("_Cn_World", "@Node_GetWorld@12")
+extern "C" void Cn_Inverse(); KING_ALIAS("_Cn_Inverse", "_Matrix_Inverse")
+extern "C" void Cn_RotZ(); KING_ALIAS("_Cn_RotZ", "_Matrix_RotationZ")
+extern "C" void Cn_Translation(); KING_ALIAS("_Cn_Translation", "_Matrix_Translation")
+extern "C" void Cn_Multiply(); KING_ALIAS("_Cn_Multiply", "_Matrix_Multiply")
+extern "C" void Cn_Transform2(); KING_ALIAS("_Cn_Transform2", "@Matrix_Transform2@12")
+extern "C" void Cn_Scale(); KING_ALIAS("_Cn_Scale", "_Matrix_Scale")
+extern "C" void Cn_SetCamera(); KING_ALIAS("_Cn_SetCamera", "@Render_SetCamera@16")
+extern "C" void Cn_GetRect(); KING_ALIAS("_Cn_GetRect", "@Window_GetRect@12")
+ASM_VAR(AsmLabel, g_cn7025f0, $L_7025f0)
+ASM_VAR(DWORD, g_cn702e8c, $L_702e8c)
+ASM_VAR(double, g_cn64b6e0, $L_64b6e0)
+ASM_VAR(double, g_cn64b670, $L_64b670)
+ASM_VAR(double, g_cn64b660, $L_64b660)
+struct Cn_V3 { float x, y, z; };
+
+extern "C" {
+
+// [FUN_5eb4b0] sets renderer r's camera from camera c: the inverse of its node's (+80) world matrix (with 702e8c
+// bit 8 turned by r's eye angle +8504 and shifted by half its eye distance +8496, mirrored for the other eye
+// +8460), and the projection scale from the field of view (+88, +84) and the window's part on screen (mirrored
+// with +100)
+void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r)
+{
+    float m[12];
+    memcpy(m, g_cn7025f0, 48);
+    CallThis(Cn_World, F(BYTE*, c, 80), m);
+    float t[12];
+    memcpy(m, CallC<float*>(Cn_Inverse, t, m), 48);
+    if (g_cn702e8c & 0x100) {
+        double half = F(double, r, 8496) * g_cn64b6e0;
+        double turn = F(double, r, 8504);
+        float angle, shift;
+        if (F(int, r, 8460)) {
+            angle = (float)turn;
+            shift = (float)half;
+        } else {
+            angle = (float)-turn;
+            shift = (float)-half;
+        }
+        float rz[12], tr[12], pr[12];
+        float* rot = CallC<float*>(Cn_RotZ, rz, *(DWORD*)&angle);
+        Cn_V3 v = {shift, 0, 0};
+        float* mv = CallC<float*>(Cn_Translation, tr, v);
+        CallThis(Cn_Transform2, m, CallC<float*>(Cn_Multiply, pr, mv, rot));
+    }
+    int rc[4];
+    CallThis(Cn_GetRect, F(BYTE*, r, 1948), rc);
+    double sx = 1.0, sy = g_cn64b670;
+    if (rc[0] < 0)
+        sx = (double)rc[2] / (rc[2] - rc[0]);
+    if (rc[1] < 0)
+        sy = (double)rc[3] / (rc[3] - rc[1]);
+    int s = F(int, c, 100) ? -2 : 2;
+    Cn_V3 k;
+    k.x = (float)(s / (F(float, c, 88) * sx));
+    k.y = 1.0f;
+    k.z = (float)(g_cn64b660 / (sy * F(float, c, 84)));
+    float sc[12];
+    CallThis(Cn_SetCamera, r, m, CallC<float*>(Cn_Scale, sc, k));
 }
 
 } // extern "C"

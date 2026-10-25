@@ -3000,7 +3000,7 @@ extern "C" void __cdecl Fx_CrashBurst(Vec3 p, Vec3 v, Vec3 w, int flags, float s
 
 extern "C" void FUN_43fc40(); KING_ALIAS("_FUN_43fc40", "_Ai_GetPlayerData")    // a vehicle's info by id (id, out)
 extern "C" void FUN_43f690(); KING_ALIAS("_FUN_43f690", "_Player_SetFlags")    // sets a vehicle's flags (id, flags)
-ASM_PROC(FUN_4cf080)
+extern "C" void FUN_4cf080(); KING_ALIAS("_FUN_4cf080", "_Car_Launch")
 extern "C" void __fastcall Car_SetInMode(BYTE* car, void*, int mode);
 extern "C" void __fastcall Flags1196_Clear(BYTE* self, void*, int bits);
 extern "C" void FUN_58f290(); KING_ALIAS("_FUN_58f290", "@Body_SetMoveMode@12")
@@ -5131,7 +5131,7 @@ ASM_VAR(AsmLabel, s_fi6725f8, $L_6725f8)
 ASM_VAR(AsmLabel, s_fi6725ec, $L_6725ec)
 extern "C" void FUN_5cb990(); KING_ALIAS("_FUN_5cb990", "_Set70ebf4")
 extern "C" void FUN_4b87a0(); KING_ALIAS("_FUN_4b87a0", "_Eff_CreateSounds")
-ASM_PROC(FUN_4b91a0)
+extern "C" void FUN_4b91a0(); KING_ALIAS("_FUN_4b91a0", "_Effects_FromSettings")
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_57c290(); KING_ALIAS("_FUN_57c290", "@PoolNode_Construct@16")
@@ -5577,7 +5577,7 @@ ASM_VAR(AsmLabel, s_ew672650, $L_672650)
 extern "C" void FUN_4b86c0(); KING_ALIAS("_FUN_4b86c0", "_Fx_SetPaletteColors")
 extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
 extern "C" void FUN_4b87a0(); KING_ALIAS("_FUN_4b87a0", "_Eff_CreateSounds")
-ASM_PROC(FUN_4b91a0)
+extern "C" void FUN_4b91a0(); KING_ALIAS("_FUN_4b91a0", "_Effects_FromSettings")
 extern "C" void FUN_4bc690(); KING_ALIAS("_FUN_4bc690", "@Trail_Construct@20")
 extern "C" void FUN_4bc950(); KING_ALIAS("_FUN_4bc950", "@Effect4bc950_Attach@12")
 extern "C" void FUN_4bcbe0(); KING_ALIAS("_FUN_4bcbe0", "@LightPool_Free@8")
@@ -5847,7 +5847,7 @@ void __cdecl Fx_PlaceObjects()
 
 // === subdividing a triangle (FUN_4c7d90)
 
-ASM_PROC(FUN_4c7850)    // one subdivision into 4 (vertices, &count, indices, &count, a, b, c, base)
+extern "C" void FUN_4c7850(); KING_ALIAS("_FUN_4c7850", "_Triangle_Split4")    // one subdivision into 4 (vertices, &count, indices, &count, a, b, c, base)
 
 extern "C" {
 
@@ -6515,7 +6515,7 @@ BYTE* __fastcall SmokeCloud_Construct(BYTE* s, void*, BYTE* owner, const Vec3* p
 
 // === the height of a terrain object under a point (FUN_4be2c0)
 
-ASM_PROC(FUN_4be0e0)    // whether (x, y) lies in a triangle (x, y, nine floats)
+extern "C" void FUN_4be0e0(); KING_ALIAS("_FUN_4be0e0", "_Point_InTriangle")    // whether (x, y) lies in a triangle (x, y, nine floats)
 extern "C" void FUN_5ab7c0(); KING_ALIAS("_FUN_5ab7c0", "_Plane_Transformed")
 extern "C" void FUN_5ab8f0(); KING_ALIAS("_FUN_5ab8f0", "@Plane_Transform@12")
 ASM_VAR(double, g_oh64c3f8, $L_64c3f8)
@@ -6627,6 +6627,533 @@ int __fastcall Precip_Step(BYTE* s)
         Effect_Zero();
     }
     return CallThis<int>(FUN_5d32f0, s, 1);
+}
+
+} // extern "C"
+
+// === trails: following a wheel's track (FUN_4bcd00)
+
+extern "C" void FUN_4bd850(); KING_ALIAS("_FUN_4bd850", "@Trail_Emit@16")
+ASM_VAR(float, g_tr64c1e8, $L_64c1e8)
+ASM_VAR(float, g_tr695c54, $L_695c54)
+ASM_VAR(char, s_tr67270c, $L_67270c)
+extern "C" void Tr_NodeConstruct(); KING_ALIAS("_Tr_NodeConstruct", "@Node_Construct@16")
+extern "C" void Tr_Self(); KING_ALIAS("_Tr_Self", "@Fx_Self@8")
+
+// a trail record (240 bytes): dir +0, the previous dir +12, the points +24 and +36, their times +48 and +52 and
+// hits +56 and +148
+static double Tr_Dot(BYTE* r)
+{
+    return (double)F(float, r, 20) * F(float, r, 8) + (double)F(float, r, 16) * F(float, r, 4)
+        + (double)F(float, r, 12) * F(float, r, 0);
+}
+
+// the direction p1 - p0 normalized into out
+static void Tr_Direction(BYTE* r, BYTE* out)
+{
+    Vec3 d = {F(float, r, 36) - F(float, r, 24), F(float, r, 40) - F(float, r, 28), F(float, r, 44) - F(float, r, 32)};
+    Vec3 t;
+    F(Vec3, out, 0) = *Vec3_Normalized(&t, &d);
+}
+
+extern "C" {
+
+// [FUN_4bcd00] trail i follows the hit h (its point +52) at time t: a trail not updated within the limit
+// (+16 -> +2992) restarts (making the frame node of slot +84 % 10 with two 1201-entry buffers when missing);
+// state 0 takes the first point, 1 the second, 2 shifts the newest point in; segments turning more than the
+// angle 695c54 restart the trail, others are drawn by FUN_4bd850 (i, a4)
+void __fastcall Trail_Follow(BYTE* self, void*, BYTE* h, float t, int i, int a4)
+{
+    if (i > F(int, self, 20) || i < 0)
+        return;
+    int lim = F(int, F(BYTE*, self, 16), 2992);
+    int* state = F(int*, self, 0);
+    if (F(int*, self, 4)[i] + 1 < lim) {
+        state[i] = 0;
+        unsigned slot = F(unsigned, self, 84) % 10;
+        if (!F(BYTE*, self, 40 + slot * 4)) {
+            BYTE* n = (BYTE*)operator new(96);
+            if (n) {
+                BYTE* list = F(BYTE*, self, 36);
+                CallThis(Tr_NodeConstruct, n, &s_tr67270c, 24);
+                F(int, n, 72) = 0;
+                F(int, n, 56) = 0;
+                F(int, n, 48) = 0;
+                F(int, n, 52) = 0;
+                F(void*, n, 0) = g_vtbl64c3a4;
+                CallVirt(list, 20, 0, n);
+                F(BYTE, n, 40) &= ~1;
+                memset(n + 20, 0, 12);
+                F(int, n, 32) = 0;
+                for (int k = 0; k < 2; k++) {
+                    BYTE* b = (BYTE*)operator new(38432);
+                    if (b)
+                        CallStd(FUN_4011e0, b, 32, 1201, Tr_Self);
+                    F(BYTE*, n, 76 + k * 4) = b;
+                    F(int, n, 88 + k * 4) = 0;
+                }
+            }
+            F(BYTE*, self, 40 + slot * 4) = n;
+        }
+    }
+    BYTE* r = F(BYTE*, self, 8) + i * 240;
+    switch (state[i]) {
+    case 0: {
+        state[i] = 1;
+        F(Vec3Bits, r, 24) = F(Vec3Bits, h, 52);
+        BYTE hit[92];
+        memset(hit, 0, 24);
+        CallStd(FUN_4011e0, hit + 36, 12, 4, FUN_4bd4d0);
+        memcpy(hit + 36, g_7025f0, 48);
+        if (h)
+            Hit_Fill(hit, h);
+        memcpy(r + 56, hit, 92);
+        F(float, r, 48) = t;
+        break;
+    }
+    case 1: {
+        Vec3 d = {F(float, r, 24) - F(float, h, 52), F(float, r, 28) - F(float, h, 56), F(float, r, 32) - F(float, h, 60)};
+        if (Vec3_Length(&d) < g_tr64c1e8)
+            break;
+        F(Vec3Bits, r, 36) = F(Vec3Bits, h, 52);
+        Tr_Direction(r, r);
+        F(Vec3Bits, r, 12) = F(Vec3Bits, r, 0);
+        BYTE hit[92];
+        HitRec_Construct(hit, 0, h);
+        memcpy(r + 148, hit, 92);
+        F(float, r, 52) = t;
+        if (g_tr695c54 > Tr_Dot(r))
+            state[i] = 0;
+        else {
+            CallThis(FUN_4bd850, self, i, a4);
+            state[i] = 2;
+        }
+        break;
+    }
+    case 2: {
+        F(Vec3Bits, r, 24) = F(Vec3Bits, h, 52);
+        if (Vec3_Length((const Vec3*)(r + 24)) < g_tr64c1e8)
+            break;
+        F(Vec3Bits, r, 24) = F(Vec3Bits, r, 36);
+        F(Vec3Bits, r, 0) = F(Vec3Bits, r, 12);
+        memcpy(r + 56, r + 148, 92);
+        F(float, r, 48) = F(float, r, 52);
+        F(Vec3Bits, r, 36) = F(Vec3Bits, h, 52);
+        Tr_Direction(r, r + 12);
+        BYTE hit[92];
+        HitRec_Construct(hit, 0, h);
+        memcpy(r + 148, hit, 92);
+        F(float, r, 52) = t;
+        if (g_tr695c54 > Tr_Dot(r))
+            state[i] = 0;
+        else
+            CallThis(FUN_4bd850, self, i, a4);
+        break;
+    }
+    }
+    F(int*, self, 4)[i] = lim;
+}
+
+} // extern "C"
+
+// === trails: emitting a segment (FUN_4bd850)
+
+ASM_VAR(float, g_tr64c1e0, $L_64c1e0)
+ASM_VAR(float, g_tr64c1dc, $L_64c1dc)
+
+static void Tr_Vertex(BYTE* out, const Vec3* p, const Vec3* n, float u, float v)
+{
+    Fx_Set2Vec(out, 0, p, n, *(int*)&u, *(int*)&v);
+}
+
+extern "C" {
+
+// [FUN_4bd850] emits the quad of trail i's last segment into buffer k of the frame node (slot +84 % 10): the
+// corners are the points +-half the widths (times * 64c258) across the hit normals, lifted to the ground
+// (the hits' heights when nothing is under them) plus 64c1dc; u across, v along the length over the time
+void __fastcall Trail_Emit(BYTE* self, void*, int i, int k)
+{
+    BYTE* r = F(BYTE*, self, 8) + i * 240;
+    Vec3 c[4];
+    for (int j = 0; j < 4; j++)
+        Vec3_ZeroThis(&c[j], 0);
+    const Vec3* p0 = (const Vec3*)(r + 24);
+    const Vec3* p1 = (const Vec3*)(r + 36);
+    Vec3 side0, side1, t, s;
+    side0.x = F(float, r, 72) * F(float, r, 8) - F(float, r, 76) * F(float, r, 4);
+    side0.y = F(float, r, 0) * F(float, r, 76) - F(float, r, 68) * F(float, r, 8);
+    side0.z = F(float, r, 68) * F(float, r, 4) - F(float, r, 0) * F(float, r, 72);
+    Vec3_Cross(&side1, (const Vec3*)(r + 160), (const Vec3*)(r + 12));
+    float len = (float)(Vec3_Length(Vec3_Sub(&t, p1, p0)) / F(float, r, 52));
+    float w0 = F(float, r, 48) * g_64c258;
+    float w1 = F(float, r, 52) * g_64c258;
+    c[0] = *Vec3_Sub(&s, p0, Vec3_Scaled(&t, &side0, w0));
+    c[1] = *Vec3_Add(&t, p0, Vec3_Scaled(&s, &side0, w0));
+    c[2] = *Vec3_Sub(&t, p1, Vec3_Scaled(&s, &side1, w1));
+    c[3] = *Vec3_Add(&t, p1, Vec3_Scaled(&s, &side1, w1));
+    Vec3 up = {0.0f, 0.0f, 1.0f};
+    BYTE v[4][32];
+    Tr_Vertex(v[0], &c[0], &up, 0.0f, 0.0f);
+    Tr_Vertex(v[1], &c[1], &up, 1.0f, 0.0f);
+    Tr_Vertex(v[2], &c[2], &up, 0.0f, len);
+    Tr_Vertex(v[3], &c[3], &up, 1.0f, len);
+    for (int j = 0; j < 4; j++)
+        F(float, v[j], 8) = (float)Fx_SegmentDistance(F(void*, v[j], 0), F(void*, v[j], 4), r + 148, r + 56);
+    for (int j = 0; j < 2; j++)
+        if (F(float, v[j], 8) == g_tr64c1e0)
+            F(float, v[j], 8) = F(float, r, 64);
+    for (int j = 2; j < 4; j++)
+        if (F(float, v[j], 8) == g_tr64c1e0)
+            F(float, v[j], 8) = (F(float, r, 156) + F(float, r, 64)) * g_64c258;
+    for (int j = 0; j < 4; j++)
+        F(float, v[j], 8) = g_tr64c1dc + F(float, v[j], 8);
+    BYTE* n = F(BYTE*, self, 40 + F(unsigned, self, 84) % 10 * 4);
+    BYTE* b = F(BYTE*, n, 76 + k * 4);
+    unsigned at = F(unsigned, n, 88 + k * 4) % 1200;
+    static const int order[6] = {1, 3, 2, 2, 1, 0};
+    for (int j = 0; j < 6; j++)
+        memcpy(b + (at + j) * 32, v[order[j]], 32);
+    F(int, n, 88 + k * 4) += 6;
+}
+
+} // extern "C"
+
+ASM_VAR(float, g_tri64c3f0, $L_64c3f0)
+extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
+// [FUN_4be0e0] whether (x, y) lies inside triangle t (three points of 12 bytes, x and y used): the three edge
+// cross products at most 64c3f0
+extern "C" int __cdecl Point_InTriangle(float x, float y, const float* t)
+{
+    float ax = t[0], ay = t[1], bx = t[3], by = t[4], cx = t[6], cy = t[7];
+    float z1 = (float)(((double)by - ay) * ((double)x - ax) - ((double)y - ay) * ((double)bx - ax));
+    float ex = (float)((double)cx - bx), ey = (float)((double)cy - by);
+    Vec3 d;
+    Vec3_SetThis(&d, 0, (float)((double)x - bx), (float)((double)y - by), 0.0f);
+    float z2 = (float)((double)d.x * ey - (double)d.y * ex);
+    Vec3 a = {ax, ay, 0}, c = {cx, cy, 0}, p = {x, y, 0}, ac, pc, r;
+    Vec3_Diff(&ac, &a, &c);
+    Vec3_Diff(&pc, &p, &c);
+    Vec3_Cross2(&r, &pc, &ac);
+    return z1 <= g_tri64c3f0 && z2 <= g_tri64c3f0 && r.z <= g_tri64c3f0;
+}
+
+// === splitting a triangle in four (FUN_4c7850)
+
+// the midpoint of the 32-byte vertices p and q (floats halved, the colour +12 per channel)
+static void Ts_Mid(float* out, const float* p, const float* q)
+{
+    for (int k = 0; k < 8; k++) {
+        if (k == 3) {
+            DWORD a = ((const DWORD*)p)[3], b = ((const DWORD*)q)[3], c = 0;
+            for (int sh = 24; sh >= 0; sh -= 8)
+                c = c << 8 | (WORD)(int)((__int64)(((a >> sh) & 255) + ((b >> sh) & 255)) * g_64c258);
+            ((DWORD*)out)[3] = c;
+        } else
+            out[k] = (p[k] + q[k]) * g_64c258;
+    }
+}
+
+extern "C" {
+
+// [FUN_4c7850] splits triangle a, b, c into four: the six vertices (the corners and the midpoints ab, bc, ca) at
+// verts[base..], twelve indices from idx + 2 * base; *nv = 6, *ni = 12
+void __cdecl Triangle_Split4(BYTE* verts, int* nv, WORD* idx, int* ni, const float* a, const float* b,
+    const float* c, int base)
+{
+    float ab[8], bc[8], ca[8];
+    Ts_Mid(ab, a, b);
+    Ts_Mid(bc, b, c);
+    Ts_Mid(ca, a, c);
+    float* v = (float*)(verts + base * 32);
+    memcpy(v, a, 32);
+    memcpy(v + 8, b, 32);
+    memcpy(v + 16, c, 32);
+    memcpy(v + 24, ab, 32);
+    memcpy(v + 32, bc, 32);
+    memcpy(v + 40, ca, 32);
+    static const int tri[12] = {0, 3, 5, 3, 1, 4, 4, 2, 5, 5, 3, 4};
+    WORD* o = idx + base * 2;
+    for (int i = 0; i < 12; i++)
+        o[i] = (WORD)(base + tri[i]);
+    *nv = 6;
+    *ni = 12;
+}
+
+} // extern "C"
+
+// === a car's world events (a handler at $L_4ce300)
+
+extern "C" int __cdecl Player_GetState(BYTE* player, void* dest);
+extern "C" void Ce_CarId(); KING_ALIAS("_Ce_CarId", "_Player_CarId")
+extern "C" void Ce_Matrix1(); KING_ALIAS("_Ce_Matrix1", "@SceneObj_Matrix1@12")
+ASM_VAR(BYTE*, g_ce696338, $L_696338)
+ASM_VAR(float, g_ce64c250, $L_64c250)
+ASM_VAR(float, g_ce64c264, $L_64c264)
+ASM_VAR(double, g_ce64b678, $L_64b678)
+
+extern "C" {
+
+// [$L_4ce300] handles world event m for car c: 3264 runs Effect_Call446c80; 16 does when the car is below the
+// level *m+12 (one lower for a player in state +296); 29 (with the traffic lights 696338, not for a parked kind 5
+// car with +21924) records the light state seen (from the light's phase +36, flipped by the event's code m+4) and
+// its side of the plane m+12 (+100 or the distance signed by the heading) in the car's new record +21872, the
+// old one moving to +21876
+void __cdecl Car_WorldEvent(const int* m, BYTE* c)
+{
+    if (m[0] == 3264) {
+        Effect_Call446c80(c);
+        return;
+    }
+    if (m[0] == 16) {
+        float lim = *(const float*)m[3];
+        DWORD st[76];
+        for (int i = 0; i < 19; i++) {
+            st[i * 4] = 0;
+            st[i * 4 + 2] = 0;
+            st[i * 4 + 3] = 0x3FF00000;
+        }
+        int id;
+        CallC(Ce_CarId, &id);
+        Player_GetState((BYTE*)id, st);
+        if (st[74])
+            lim -= g_ce64c250;
+        BYTE t[48];
+        if (F(float, CallThis<BYTE*>(Ce_Matrix1, c + 16, t), 44) < lim)
+            Effect_Call446c80(c);
+        return;
+    }
+    if (m[0] != 29 || !g_ce696338)
+        return;
+    BYTE info[192];
+    CallC(FUN_43fc40, F(int, c, 20636), info);
+    if (F(int, info, 16) == 5 && F(int, c, 21924))
+        return;
+    int k = m[1];
+    int flag = k % 10 ? F(int, g_ce696338, 36) ^ 1 : F(int, g_ce696338, 36);
+    switch (k / 10) {
+    case 1:
+    case 3:
+        flag ^= 1;
+        break;
+    case 4:
+        flag = 1;
+        break;
+    }
+    float* p = (float*)operator new(4);
+    float side = 100.0f;
+    if (const float* pl = (const float*)m[3]) {
+        BYTE t[48];
+        const float* pos = (const float*)(CallThis<BYTE*>(Ce_Matrix1, c + 16, t) + 36);
+        float x = pos[0], y = pos[1], z = pos[2];
+        side = (float)((double)z * pl[2] + (double)y * pl[1] + (double)x * pl[0] + pl[3]);
+        bool ahead = false;
+        if (side < g_ce64c264) {
+            BYTE t2[48];
+            const float* M = (const float*)CallThis<BYTE*>(Ce_Matrix1, c + 16, t2);
+            const Vec3& v = g_ahead702620;
+            double a = (double)v.z * M[6] + (double)v.y * M[3] + (double)v.x * M[0];
+            double b = (double)v.z * M[7] + (double)v.y * M[4] + (double)v.x * M[1];
+            double cc = (double)v.z * M[8] + (double)v.y * M[5] + (double)v.x * M[2];
+            ahead = a * pl[0] + b * pl[1] + cc * pl[2] > g_ce64b678;
+        }
+        side = ahead ? (float)x87_fabs(side) : (float)-x87_fabs(side);
+    }
+    p[0] = side;
+    if (BYTE* old = F(BYTE*, c, 21876)) {
+        if (F(void*, old, 12))
+            operator delete(F(void*, old, 12));
+        operator delete(old);
+    }
+    F(BYTE*, c, 21876) = F(BYTE*, c, 21872);
+    BYTE* r = (BYTE*)operator new(16);
+    if (r) {
+        F(int, r, 0) = m[0];
+        F(int, r, 4) = flag;
+        F(int, r, 8) = 1;
+        float* q = (float*)operator new(4);
+        F(float*, r, 12) = q;
+        memcpy(q, p, F(int, r, 8) * 4);
+    }
+    F(BYTE*, c, 21872) = r;
+    if (p)
+        operator delete(p);
+}
+
+} // extern "C"
+
+// === launching a car along its road (FUN_4cf080)
+
+extern "C" void Lc_Get800(); KING_ALIAS("_Lc_Get800", "@SceneObj_Get800@8")
+extern "C" void Lc_SetInMode(); KING_ALIAS("_Lc_SetInMode", "@Car_SetInMode@12")
+extern "C" void Lc_Mode3976(); KING_ALIAS("_Lc_Mode3976", "@Mode3976_Set@12")
+ASM_VAR(double, g_lc64ca88, $L_64ca88)
+ASM_VAR(Vec3, g_lc702650, $L_702650)
+
+extern "C" {
+
+// [FUN_4cf080] sends car c off at its speed (+20964; with a player p its traffic speed, capped to 25 above
+// 64ca88) along its road's direction at p's position (forward without one), marking p (flag 1 into *flags when
+// asked); the body (+16) gets the velocity and no spin, the car mode 1 and the body mode 3
+void __cdecl Car_Launch(BYTE* c, int p, int* flags, int mark)
+{
+    BYTE* b = c + 16;
+    BYTE t[48];
+    CallThis(FUN_57de90, b, t);
+    CallThis(Lc_Get800, b);
+    Vec3 dir = g_ahead702620;
+    double speed = F(double, c, 20964);
+    if (p != g_noVehicle68b990) {
+        BYTE info[192];
+        CallC(FUN_43fc40, p, info);
+        speed = F(double, info, 160);
+        Bytes32 pos;
+        CallC(FUN_437520, &pos, p);
+        Bytes32 tan;
+        dir = *CallC<Vec3*>(FUN_439320, &tan, pos);
+        if (mark) {
+            *flags |= 1;
+            CallC(FUN_43f690, p, *flags);
+        }
+    }
+    if (speed > g_lc64ca88)
+        speed = 25.0;
+    Vec3 n;
+    const Vec3* u = Vec3_Normalized(&n, &dir);
+    Vec3 v;
+    v.x = (float)(speed * u->x);
+    v.y = (float)(speed * u->y);
+    v.z = (float)(speed * u->z);
+    CallVirt(b, 144, &v, 0);
+    CallVirt(b, 148, &g_lc702650, 0);
+    CallThis(Lc_SetInMode, c, 1);
+    CallThis(Lc_Mode3976, b, 3);
+}
+
+} // extern "C"
+
+// === the effect switches from two settings (FUN_4b91a0)
+
+ASM_VAR(float, g_wq696030, $L_696030)
+ASM_VAR(float, g_wq696034, $L_696034)
+ASM_VAR(float, g_wq696038, $L_696038)
+ASM_VAR(float, g_wq69603c, $L_69603c)
+ASM_VAR(float, g_wq696040, $L_696040)
+ASM_VAR(float, g_wq696044, $L_696044)
+ASM_VAR(float, g_wq696048, $L_696048)
+ASM_VAR(float, g_wq69604c, $L_69604c)
+ASM_VAR(float, g_wq696050, $L_696050)
+ASM_VAR(float, g_wq696054, $L_696054)
+ASM_VAR(float, g_wq696058, $L_696058)
+ASM_VAR(float, g_wq69605c, $L_69605c)
+ASM_VAR(float, g_wq696060, $L_696060)
+ASM_VAR(float, g_wq696064, $L_696064)
+ASM_VAR(float, g_wq696068, $L_696068)
+ASM_VAR(float, g_wq69606c, $L_69606c)
+ASM_VAR(float, g_wq696070, $L_696070)
+ASM_VAR(float, g_wq696074, $L_696074)
+ASM_VAR(float, g_wq696078, $L_696078)
+ASM_VAR(float, g_wq69607c, $L_69607c)
+ASM_VAR(float, g_wq696080, $L_696080)
+ASM_VAR(float, g_wq696084, $L_696084)
+ASM_VAR(float, g_wq696088, $L_696088)
+ASM_VAR(float, g_wk64c258, $L_64c258)
+ASM_VAR(float, g_wk64c25c, $L_64c25c)
+ASM_VAR(float, g_wk64c260, $L_64c260)
+ASM_VAR(float, g_wk64c264, $L_64c264)
+ASM_VAR(BYTE*, g_wq6cec70, $L_6cec70)
+ASM_VAR(float, g_wk64c268, $L_64c268)
+
+static float Wq_Flag(bool on)
+{
+    DWORD v = on ? 0x3F800000 : 0;
+    return *(float*)&v;
+}
+
+extern "C" {
+
+// [FUN_4b91a0] the effect switches 696030.. from the two settings +420 and +422 of 6cec70 (scaled by 64c268): each
+// on (1.0) when both lie above its thresholds; some take the scaled values
+void __cdecl Effects_FromSettings()
+{
+    double a = F(short, g_wq6cec70, 420) * (double)g_wk64c268;
+    double b = F(short, g_wq6cec70, 422) * (double)g_wk64c268;
+    g_wq696030 = Wq_Flag(a > g_wk64c264 && b > g_wk64c264);
+    g_wq69604c = Wq_Flag(a > g_wk64c264 && b > g_wk64c264);
+    g_wq696068 = Wq_Flag(a > g_wk64c264 && b > g_wk64c264);
+    g_wq69607c = Wq_Flag(a > g_wk64c260 && b > g_wk64c25c);
+    g_wq696038 = Wq_Flag(a > g_wk64c260 && b > g_wk64c25c);
+    g_wq696048 = (float)a;
+    g_wq696034 = Wq_Flag(a > g_wk64c264 && b > g_wk64c260);
+    g_wq696054 = Wq_Flag(a > g_wk64c264 && b > g_wk64c260);
+    g_wq69603c = Wq_Flag(a > g_wk64c260 && b > g_wk64c25c);
+    g_wq69606c = (float)b;
+    g_wq696088 = Wq_Flag(a > g_wk64c260 && b > g_wk64c258);
+    g_wq696050 = Wq_Flag(a > g_wk64c260 && b > g_wk64c25c);
+    g_wq696084 = Wq_Flag(a > g_wk64c260 && b > g_wk64c258);
+    g_wq696060 = Wq_Flag(a > g_wk64c258 && b > g_wk64c258);
+    g_wq696080 = Wq_Flag(a > g_wk64c258 && b > g_wk64c258);
+    g_wq696044 = Wq_Flag(a > g_wk64c258 && b > g_wk64c260);
+    g_wq696064 = Wq_Flag(a > g_wk64c258 && b > g_wk64c258);
+    g_wq696070 = Wq_Flag(a > g_wk64c260 && b > g_wk64c260);
+    g_wq696040 = Wq_Flag(a > g_wk64c258 && b > g_wk64c258);
+    g_wq696074 = (float)a;
+    g_wq69605c = (float)a;
+    g_wq696078 = (float)a;
+    *(DWORD*)&g_wq696058 = 0x3F800000;
+}
+
+} // extern "C"
+
+// === a fire source's step (a method at $L_4d98c0)
+
+extern "C" int __cdecl rand(void);
+extern "C" void Fs_RotZ(); KING_ALIAS("_Fs_RotZ", "_Matrix_RotationZ")
+extern "C" void Fs_Fire(); KING_ALIAS("_Fs_Fire", "@Fire_Construct@24")
+extern "C" void Fs_Post(); KING_ALIAS("_Fs_Post", "@Queue_PostEvent@12")
+ASM_VAR(float, g_fs64c48c, $L_64c48c)
+ASM_VAR(float, g_fs64c254, $L_64c254)
+ASM_VAR(float, g_fs64d3f4, $L_64d3f4)
+ASM_VAR(float, g_fs702640, $L_702640)
+ASM_VAR(float, g_fs702644, $L_702644)
+ASM_VAR(float, g_fs702648, $L_702648)
+ASM_VAR(float, g_fs702630, $L_702630)
+ASM_VAR(float, g_fs702634, $L_702634)
+ASM_VAR(float, g_fs702638, $L_702638)
+ASM_VAR(float, g_fs64c320, $L_64c320)
+ASM_VAR(float, g_fs64d400, $L_64d400)
+ASM_VAR(float, g_fs64c304, $L_64c304)
+ASM_VAR(float, g_fs64c338, $L_64c338)
+
+extern "C" {
+
+// [$L_4d98c0] fire source s (+52 its age) throws a flame (108 bytes) in a random direction around 702640 at a
+// random spread from its position (+36), moving up (702630 by 64c320), living 64c304 plus a random part; after
+// 64c338 the source ends (vtbl+28 (1)), else it is queued again
+int __fastcall FireSource_Step(BYTE* s)
+{
+    F(float, s, 52) = (float)(F(double, F(BYTE*, s, 32), 2960) + F(float, s, 52));
+    float r1 = rand() * g_fs64c48c;
+    double r = rand() * g_fs64c254;
+    float ang = (float)(g_fs64d3f4 * r * 2);
+    float m[12];
+    const float* R = CallC<const float*>(Fs_RotZ, m, *(DWORD*)&ang);
+    double dx = (double)g_fs702648 * R[6] + (double)g_fs702644 * R[3] + (double)g_fs702640 * R[0] + R[9];
+    double dy = (double)g_fs702648 * R[7] + (double)g_fs702644 * R[4] + (double)g_fs702640 * R[1] + R[10];
+    double dz = (double)g_fs702648 * R[8] + (double)g_fs702644 * R[5] + (double)g_fs702640 * R[2] + R[11];
+    double uz = (double)g_fs702638 * g_fs64c320;
+    float uy = g_fs702634 * g_fs64c320, ux = g_fs702630 * g_fs64c320;
+    float v[3] = {(float)(ux + dx), (float)(uy + dy), (float)(uz + dz)};
+    float ox = (float)(dx * r1), oy = (float)(dy * r1), oz = (float)(dz * r1);
+    BYTE* f = (BYTE*)operator new(108);
+    if (f) {
+        float p[3] = {ox + F(float, s, 36), oy + F(float, s, 40), oz + F(float, s, 44)};
+        float life = (float)(rand() * g_fs64d400 + g_fs64c304);
+        f = CallThis<BYTE*>(Fs_Fire, f, F(BYTE*, s, 32), p, v, *(DWORD*)&life);
+    }
+    CallVirt(f, 24, 1);
+    if (F(float, s, 52) > g_fs64c338)
+        return CallVirt<int>(s, 28, 1);
+    return CallThis<int>(Fs_Post, s, 1);
 }
 
 } // extern "C"
