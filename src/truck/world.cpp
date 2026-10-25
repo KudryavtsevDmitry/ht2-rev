@@ -14,7 +14,7 @@
 typedef char AsmLabel[1];
 extern "C" int __cdecl fflush(FILE* f);
 
-ASM_PROC(FUN_5de950)    // decomposes a matrix (by value) into six doubles
+extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")    // decomposes a matrix (by value) into six doubles
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" int __fastcall Obj4eb150_Kind(BYTE* self, void*);    // carphys.cpp
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")    // set a switch
@@ -1239,3 +1239,65 @@ void __cdecl World_ReadMapSymbols()
 }
 
 }  // extern "C"
+
+// === four unused hit queries (4e6e6a)
+// The world's query runner here (World_4e634f) always answers 0, so they only fill their query.
+
+ASM_VAR(AsmLabel, g_wq7025f0, $L_7025f0)
+
+// query q of kind 0 from p along d: the identity frame, owner a, skip b
+static void Wq_Fill(BYTE* q, const Vec3Bits* p, const Vec3Bits* d, int a, int skip)
+{
+    memcpy(q + 4, (BYTE*)g_wq7025f0, 48);
+    memcpy(q + 76, p, 12);
+    memcpy(q + 88, d, 12);
+    F(int, q, 0) = a;
+    F(int, q, 120) = skip;
+    F(int, q, 116) = 0;
+    F(int, q, 104) = 0;
+}
+
+extern "C" {
+
+// [$L_4e6e6a] the hit point and normal (+52, +64 of the query) of a kind 4 query of world w from p along d; 0 none
+int __cdecl World_HitPoint(void* w, const Vec3Bits* p, const Vec3Bits* d, Vec3Bits* at, Vec3Bits* n)
+{
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    Wq_Fill(q, p, d, 0, 0);
+    if (!(World_4e634f() & 1))
+        return 0;
+    memcpy(at, q + 52, 12);
+    memcpy(n, q + 64, 12);
+    return 1;
+}
+
+// (after it) a kind 4 query q of world w skipping skip; its answer
+int __cdecl World_Query4(int skip, void* w, int, const Vec3Bits* p, const Vec3Bits* d, BYTE* q)
+{
+    Wq_Fill(q, p, d, 0, skip);
+    int r = World_4e634f();
+    return r & 1 ? r : 0;
+}
+
+// (after it) World_HitPoint for a kind 6 query owned by a
+int __cdecl World_HitPoint6(void* w, int a, const Vec3Bits* p, const Vec3Bits* d, Vec3Bits* at, Vec3Bits* n)
+{
+    BYTE q[208];
+    CallThis(FUN_5ef5c0, q);
+    Wq_Fill(q, p, d, a, 0);
+    if (!(World_4e634f() & 1))
+        return 0;
+    memcpy(at, q + 52, 12);
+    memcpy(n, q + 64, 12);
+    return 1;
+}
+
+// (after it) a kind 6 query q of world w owned by a, skipping skip; 1 on a hit
+int __cdecl World_Query6(int skip, void* w, int a, const Vec3Bits* p, const Vec3Bits* d, BYTE* q)
+{
+    Wq_Fill(q, p, d, a, skip);
+    return World_4e634f() & 1 ? 1 : 0;
+}
+
+} // extern "C"

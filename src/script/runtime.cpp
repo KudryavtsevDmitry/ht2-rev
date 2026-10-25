@@ -23,7 +23,7 @@ extern "C" double __cdecl Int_ToDouble(const void* n);
 extern "C" void* __cdecl Int_FromInt(int v, int a);
 KING_ALIAS("_Int_FromInt", "_BigInt_FromInt")
 extern "C" void __cdecl Poly_48d8f0(void* out, void* a, int b, int n, int c);
-KING_ALIAS("_Poly_48d8f0", "FUN_48d8f0")
+KING_ALIAS("_Poly_48d8f0", "_Spline_Pieces")
 extern "C" void __cdecl AI_Error4a54e0(int code, int a, const char* name);
 KING_ALIAS("_AI_Error4a54e0", "_Sch_Error")
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
@@ -2493,6 +2493,100 @@ Poly* __fastcall Poly_Add(const Poly* s, void*, Poly* out, const Poly* b)
         p->c[p->count++] = x + y;
     }
     memcpy(out, r, 196);
+    return out;
+}
+
+} // extern "C"
+
+// === the B-spline basis (FUN_48fa90)
+
+extern "C" {
+
+// [FUN_48fa90] out = the basis vector polynomial of knot k over the knots x[i..i+n] by the Cox-de Boor recursion:
+// (t - x[i]) / (x[i+n-1] - x[i]) times the basis over x[i..] plus (x[i+n] - t) / (x[i+n] - x[i+1]) times the one
+// over x[i+1..], each of degree one less; for one knot (1, 1, 1) when it is k, else 0
+VecPoly* __cdecl VPoly_Basis(VecPoly* out, const double* x, int i, int n, int k)
+{
+    if (n == 1) {
+        out->count = 0;
+        if (i == k) {
+            DVec3 one = {1.0, 1.0, 1.0};
+            VecPoly_Append(out, 0, &one);
+        }
+        return out;
+    }
+    VecPoly a, b, z1, z2, l1, l2;
+    BYTE q1[580], m1[580], q2[580], m2[580];
+    VPoly_Basis(&a, x, i, n - 1, k);
+    VPoly_Basis(&b, x, i + 1, n - 1, k);
+    BYTE* right;
+    if (b.count) {
+        double d = x[i + n] - x[i + 1];
+        DVec3 dd = {d, d, d}, c, m;
+        DVec3_Fill(&c, 0, x[i + n]);
+        DVec3_Fill(&m, 0, -1.0);
+        VecPoly_Line(&l1, 0, m, c);
+        right = VPoly_Multiply(VPoly_Divide((BYTE*)&l1, 0, q1, &dd.x), 0, m1, (BYTE*)&b);
+    } else {
+        z1.count = 0;
+        right = (BYTE*)&z1;
+    }
+    BYTE* left;
+    if (a.count) {
+        double d = x[i + n - 1] - x[i];
+        DVec3 dd = {d, d, d}, c, p;
+        DVec3_Fill(&c, 0, -x[i]);
+        DVec3_Fill(&p, 0, 1.0);
+        VecPoly_Line(&l2, 0, p, c);
+        left = VPoly_Multiply(VPoly_Divide((BYTE*)&l2, 0, q2, &dd.x), 0, m2, (BYTE*)&a);
+    } else {
+        z2.count = 0;
+        left = (BYTE*)&z2;
+    }
+    VPoly_Add(left, 0, (BYTE*)out, right);
+    return out;
+}
+
+} // extern "C"
+
+// === a B-spline as polynomial pieces (FUN_48d8f0)
+
+ASM_PROC(FUN_48f5d0)    // vector<580-byte record> copy constructor (src)
+extern "C" void __fastcall Vec580_Destroy(BYTE** v, void*);    // ai_world.cpp
+
+extern "C" {
+
+// [FUN_48d8f0] out = the pieces of the closed B-spline of degree deg over knots x (doubles) and the n control points
+// c (DVec3): for each non-empty knot span i the sum of the basis polynomials times their points, taken over
+// [x[i], x[i+1]] as 0..1
+BYTE* __cdecl Spline_Pieces(BYTE* out, const double* x, const DVec3* c, int n, int deg)
+{
+    Vec v = {0, 0, 0};
+    int m = n - deg - 1;
+    for (int i = deg; i < m; i++) {
+        if (x[i] == x[i + 1])
+            continue;
+        BYTE acc[580];
+        F(int, acc, 576) = 0;
+        for (int j = 0; j < deg + 1; j++) {
+            int k = j - deg + i;
+            DVec3 p = c[(k + m) % m];
+            VecPoly b;
+            VPoly_Basis(&b, x, k, deg + 1, i);
+            BYTE sc[580], sum[580];
+            VPoly_Scale((BYTE*)&b, 0, sc, &p.x);
+            memcpy(acc, VPoly_Add(acc, 0, sum, sc), 580);
+        }
+        double a = x[i], h = x[i + 1] - x[i];
+        DVec3 base = {a, a, a}, len = {h, h, h};
+        VecPoly line;
+        VecPoly_Line(&line, 0, len, base);
+        BYTE comp[580];
+        memcpy(acc, CallThis<BYTE*>(FUN_48eda0, acc, comp, &line), 580);
+        Vec580_PushBack(&v, 0, acc);
+    }
+    CallThis(FUN_48f5d0, out, &v);
+    Vec580_Destroy((BYTE**)&v, 0);
     return out;
 }
 

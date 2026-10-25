@@ -333,3 +333,66 @@ BYTE* __fastcall MovingObj_ConstructListed(BYTE* s, void*, BYTE* w, BYTE* a2, in
 }
 
 } // extern "C"
+
+// === drawing an item and its marker (FUN_57d580)
+
+extern "C" void Sh_Log(); KING_ALIAS("_Sh_Log", "_VehLog_Value")
+extern "C" void Sh_GetLocal(); KING_ALIAS("_Sh_GetLocal", "@Node_GetLocal@12")
+extern "C" void Sh_Draw(); KING_ALIAS("_Sh_Draw", "@SceneNode5f98c0_Draw@16")
+extern "C" void Sh_sprintf(); KING_ALIAS("_Sh_sprintf", "_sprintf")
+ASM_PROC(FUN_5b73a0)    // draws a line on a surface (x0, y0, x1, y1, colour, -)
+ASM_VAR(int, g_sh696c6c, $L_696c6c)
+ASM_VAR(int, g_sh696be4, $L_696be4)
+ASM_VAR(BYTE*, g_sh6ef1fc, $L_6ef1fc)
+ASM_VAR(float, g_sh64c250, $L_64c250)
+ASM_VAR(float, g_sh64c258, $L_64c258)
+
+// logs " name_what x y z"
+static void Sh_Log3(const char* fmt, const char* name, double x, double y, double z)
+{
+    char buf[96];
+    CallC(Sh_sprintf, buf, fmt, name, x, y, z);
+    CallC(Sh_Log, buf);
+}
+
+extern "C" {
+
+// [FUN_57d580] draws scene node s (its item at -224) with (a, b); with the debug level 696be4 above 1 a cross marks
+// its point (+280) on the screen through the current camera, logging both frames when 696c6c
+int __fastcall Item_DrawMarked(BYTE* s, void*, int a, int b)
+{
+    float m[12];
+    if (g_sh696c6c) {
+        for (int i = 0; i < 4; i++)
+            CallThis(FUN_4bd4d0, m + i * 3);
+        memcpy(m, g_7025f0, 48);
+        CallThis(Sh_GetLocal, F(BYTE*, F(BYTE*, s, -224), 68), m);
+        CallC(Sh_Log, "Show");
+        const char* name = F(const char*, F(BYTE*, s, 64), 12);
+        Sh_Log3(" %s_M0 %6.3f %6.3f %6.3f ", name, m[9], m[10], m[11]);
+        Sh_Log3(" %s_M %6.3f %6.3f %6.3f ", F(const char*, F(BYTE*, s, 64), 12), F(float, s, 280), F(float, s, 284),
+                F(float, s, 288));
+    }
+    int r = CallThis<int>(Sh_Draw, s, a, b);
+    if (g_sh696be4 <= 1)
+        return r;
+    BYTE* w = F(BYTE*, g_sh6ef1fc, 464);
+    memcpy(m, w + 2240 + F(int, w, 8224) * 48, 48);
+    const float* p = (const float*)(s + 280);
+    double px = (double)m[0] * p[0] + (double)m[6] * p[2] + (double)m[3] * p[1] + m[9];
+    float py = (float)((double)m[1] * p[0] + (double)m[7] * p[2] + (double)m[4] * p[1] + m[10]);
+    float pz = (float)((double)m[2] * p[0] + (double)m[8] * p[2] + (double)m[5] * p[1] + m[11]);
+    if (py < g_sh64c250)
+        return r;
+    BYTE* surf = F(BYTE*, w, 1948);
+    int sw = F(WORD, surf, 0), sh = F(WORD, surf, 2);
+    int x = (int)(px / py * sw * g_sh64c258 + sw / 2);
+    int y = (int)(sh / 2 - pz / (double)py * sh * g_sh64c258);
+    CallC(FUN_5b73a0, surf, x, y - 4, x, y + 4, 0, 0);
+    CallC(FUN_5b73a0, F(BYTE*, F(BYTE*, g_sh6ef1fc, 464), 1948), x - 4, y, x + 4, y, 0, 0);
+    CallC(FUN_5b73a0, F(BYTE*, F(BYTE*, g_sh6ef1fc, 464), 1948), x - 3, y - 3, x + 3, y + 3, 4, 0);
+    CallC(FUN_5b73a0, F(BYTE*, F(BYTE*, g_sh6ef1fc, 464), 1948), x + 3, y - 3, x - 3, y + 3, 4, 0);
+    return r;
+}
+
+} // extern "C"

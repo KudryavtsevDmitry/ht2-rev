@@ -3587,7 +3587,7 @@ extern "C" void __fastcall World_Reset(BYTE* s)
 // ---------------------------------------------------------------------------
 // Rendering a frame; camera angles.
 
-ASM_PROC(FUN_5de950)
+extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
 ASM_PROC(FUN_5df3d0)
 extern "C" void FUN_5b6ed0(); KING_ALIAS("_FUN_5b6ed0", "@Surface_ClearRows@8")
 extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
@@ -4179,8 +4179,8 @@ extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
 extern "C" void FUN_5b9740(); KING_ALIAS("_FUN_5b9740", "@Textures_FreeAll@8")
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
-ASM_PROC(FUN_5b9850)    // palette: builds the opacity tables (a, b)
-ASM_PROC(FUN_5b9b60)    // palette: builds the fog tables (a, b)
+extern "C" void FUN_5b9850(); KING_ALIAS("_FUN_5b9850", "@Fog_BuildTables@16")    // palette: builds the opacity tables (a, b)
+extern "C" void FUN_5b9b60(); KING_ALIAS("_FUN_5b9b60", "@Fade_BuildTables@16")    // palette: builds the fog tables (a, b)
 ASM_PROC(FUN_5b9e30)    // palette: builds the intensity tables (a)
 ASM_VAR(char, s_PLM683424, $L_683424)
 ASM_VAR(char, s_PALT68341c, $L_68341c)
@@ -4805,7 +4805,7 @@ ASM_VAR(void*, g_pw7212b0, $L_7212b0)
 ASM_VAR(void*, g_pw7216bc, $L_7216bc)
 extern "C" void FUN_5ab950(); KING_ALIAS("_FUN_5ab950", "@Vec3_TransformPoint@12")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
-ASM_PROC(FUN_5f88d0)
+extern "C" void FUN_5f88d0(); KING_ALIAS("_FUN_5f88d0", "@Volume_Contains@12")
 extern "C" void __cdecl Probe_Walk(BYTE* n);
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
 
@@ -4926,6 +4926,76 @@ int __fastcall Polygon_Read(BYTE* s, void*, void* f)
             F(double, s, 24) = l;
     }
     return 1;
+}
+
+} // extern "C"
+
+// === a frame as a position and angles (FUN_5de950)
+
+extern "C" void FUN_5ab500(); KING_ALIAS("_FUN_5ab500", "_Vec3_ToAngles")
+extern "C" void Fw_RotZ(); KING_ALIAS("_Fw_RotZ", "_Matrix_RotationZ")
+extern "C" void Fw_SetThis(); KING_ALIAS("_Fw_SetThis", "@Vec3_SetThis@20")
+ASM_VAR(Pg_V3, g_fwAhead, $L_702620)
+ASM_VAR(Pg_V3, g_fwUp, $L_702630)
+ASM_VAR(double, g_fw64da00, $L_64da00)
+ASM_VAR(double, g_fw64b6e0, $L_64b6e0)
+ASM_VAR(double, g_fw64d900, $L_64d900)
+ASM_VAR(float, g_fw64c264, $L_64c264)
+
+// v turned by the rotation part of m (12 floats)
+static Pg_V3 Fw_Rotate(const float* m, const Pg_V3& v)
+{
+    Pg_V3 r;
+    r.x = (float)((double)m[6] * v.z + (double)m[3] * v.y + (double)v.x * m[0]);
+    r.y = (float)((double)m[7] * v.z + (double)m[4] * v.y + (double)m[1] * v.x);
+    r.z = (float)((double)m[8] * v.z + (double)m[5] * v.y + (double)m[2] * v.x);
+    return r;
+}
+
+// v moved by matrix r (12 floats)
+static void Fw_Move(Pg_V3* o, const float* r, const Pg_V3& v)
+{
+    o->x = (float)((double)v.z * r[6] + (double)v.y * r[3] + (double)v.x * r[0] + r[9]);
+    o->y = (float)((double)v.z * r[7] + (double)v.y * r[4] + (double)v.x * r[1] + r[10]);
+    o->z = (float)((double)v.z * r[8] + (double)v.y * r[5] + (double)v.x * r[2] + r[11]);
+}
+
+extern "C" {
+
+// [FUN_5de950] frame m (by value) as its position (x, y, z) and its angles: heading and pitch of where it looks
+// (each less 64da00) and the roll of its up turned back by them
+void __cdecl Matrix_ToAngles(Pg_V3 r0, Pg_V3 r1, Pg_V3 r2, Pg_V3 t, double* x, double* y, double* z, double* head,
+                             double* pitch, double* roll)
+{
+    float m[12];
+    memcpy(m, &r0, 12), memcpy(m + 3, &r1, 12), memcpy(m + 6, &r2, 12), memcpy(m + 9, &t, 12);
+    *x = m[9];
+    *y = m[10];
+    *z = m[11];
+    float az, po;
+    CallC(FUN_5ab500, Fw_Rotate(m, g_fwAhead), &az, &po);
+    *pitch = po - g_fw64da00;
+    double h = az - g_fw64da00;
+    *head = h;
+    Pg_V3 u = Fw_Rotate(m, g_fwUp);
+    float a[12], b[12];
+    Pg_V3 w, v;
+    Fw_Move(&w, CallC<float*>(Fw_RotZ, a, (float)-h), u);
+    const float* rx = CallC<float*>(FUN_5abee0, b, (float)*pitch);
+    Pg_V3 t2;
+    Fw_Move(&t2, rx, w);
+    CallThis(Fw_SetThis, &v, t2.x, t2.y, t2.z);
+    if (v.z < g_fw64b6e0) {
+        double r = x87_acos(v.z);
+        *roll = r;
+        if (v.x < g_fw64c264)
+            *roll = -r;
+    } else {
+        double r = x87_asin(v.x);
+        *roll = r;
+        if (v.z < g_fw64c264)
+            *roll = g_fw64d900 - r;
+    }
 }
 
 } // extern "C"

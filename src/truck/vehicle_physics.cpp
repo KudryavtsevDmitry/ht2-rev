@@ -984,7 +984,7 @@ extern "C" int __fastcall Car_RandomStep(BYTE* s, void*, int k)
 // ---------------------------------------------------------------------------
 // Re-orthogonalising a body's matrix.
 
-ASM_PROC(FUN_5de950)
+extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" void FUN_4f0050(); KING_ALIAS("_FUN_4f0050", "@Body_CheckUpright@8")
 struct Vp101_Mat { DWORD v[12]; };
@@ -1161,6 +1161,71 @@ BYTE* __fastcall Engine_Construct(BYTE* e)
     F(int, e, 720) = 0;
     CallThis(FUN_4eba10, e);
     return e;
+}
+
+} // extern "C"
+
+// === a body's physics frame (FUN_4f6860)
+
+extern "C" void FUN_4e5b22(); KING_ALIAS("_FUN_4e5b22", "_Query_4e5b22")
+extern "C" void FUN_4eb6e0(); KING_ALIAS("_FUN_4eb6e0", "@Ramp_Down@12")
+extern "C" void FUN_4f0000(); KING_ALIAS("_FUN_4f0000", "@Body_IsTipped@8")
+extern "C" void FUN_4f0ce0(); KING_ALIAS("_FUN_4f0ce0", "@Body_UpdateContacts@8")
+extern "C" void FUN_4f6b70(); KING_ALIAS("_FUN_4f6b70", "@Body_Step@12")
+extern "C" void Bf_Length(); KING_ALIAS("_Bf_Length", "_Vec3_Length")
+
+extern "C" {
+
+// [FUN_4f6860] a physics frame of body s: its matrix (+16) rebuilt from its position and angles, the ground
+// under it (+244, from the query of +2292 to +52), the sideways travel since then counted (+3808, ramping +16164
+// down) unless +6580, then contacts and the step; tipped over it keeps its wheel state (+3544 from +8092) and asks
+// to be set upright (+13124), else the contact lists (+10176/+10180) are cleared
+void __fastcall Body_PhysicsFrame(BYTE* s)
+{
+    double d[6];
+    BYTE m[48];
+    Vp101_Split(s, d);
+    memcpy(s + 16, CallC<BYTE*>(FUN_5da950, m, d[0], d[1], d[2], d[3], d[4], d[5]), 48);
+    BYTE node[192];
+    CallThis(FUN_5ef5c0, node);
+    const float* p = (const float*)(s + 52);
+    const float* q = (const float*)(s + 2292);
+    if (CallC<int>(FUN_4e5b22, F(int, s, 6672), q, p, node))
+        F(int, s, 244) = F(int, node, 104);
+    if (!F(BYTE, s, 6580)) {
+        double dx = (double)p[0] - q[0], dy = (double)p[1] - q[1], dz = (double)p[2] - q[2];
+        const float* n = (const float*)(s + 208);
+        float cx = (float)(dz * n[1] - dy * n[2]);
+        float cy = (float)(dx * n[2] - dz * n[0]);
+        double cz = dy * n[0] - dx * n[1];
+        float e[3];
+        e[0] = (float)((double)cy * n[2] - cz * n[1]);
+        e[1] = (float)(cz * n[0] - (double)cx * n[2]);
+        e[2] = (float)((double)cx * n[1] - (double)cy * n[0]);
+        double len = CallC<double>(Bf_Length, e);
+        float lf = (float)len;
+        F(double, s, 3808) = len + F(double, s, 3808);
+        CallThis(FUN_4eb6e0, s + 16164, lf);
+    }
+    CallThis(FUN_4f0ce0, s);
+    CallThis(FUN_4f6b70, s, d);
+    if (CallThis<int>(FUN_4f0000, s)) {
+        for (int i = 0; i < F(int, s, 3540); i++)
+            F(int, s, 3544 + i * 4) = F(int, s, 8092 + i * 4);
+        F(int, s, 13124) = 1;
+        return;
+    }
+    CallThis(FUN_5e48f0, s);
+    for (int i = 0; i < F(int, s, 10176); i++) {
+        memcpy(s + 10244 + i * 12, (BYTE*)g_q98_702650, 12);
+        memcpy(s + 10304 + i * 12, (BYTE*)g_q98_702650, 12);
+    }
+    for (int i = 0; i < F(int, s, 10180); i++) {
+        memcpy(s + 10364 + i * 12, (BYTE*)g_q98_702650, 12);
+        memcpy(s + 10424 + i * 12, (BYTE*)g_q98_702650, 12);
+    }
+    F(int, s, 10176) = 0;
+    F(int, s, 10180) = 0;
 }
 
 } // extern "C"

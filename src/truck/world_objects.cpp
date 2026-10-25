@@ -2582,3 +2582,277 @@ BYTE* __fastcall MotionTexture_Construct(BYTE* s, void*, int a, BYTE* b, DWORD x
 }
 
 } // extern "C"
+
+// === the sky tinted draw (59c830)
+
+extern "C" void FUN_4be5e0(); KING_ALIAS("_FUN_4be5e0", "_Color_ToHsl")
+extern "C" void FUN_4be7f0(); KING_ALIAS("_FUN_4be7f0", "_Color_FromHsl")
+ASM_VAR(float, g_st64c488, $L_64c488)
+ASM_VAR(float, g_st64d4c0, $L_64d4c0)
+ASM_VAR(float, g_st650e34, $L_650e34)
+ASM_VAR(float, g_st650e30, $L_650e30)
+ASM_VAR(float, g_st64c304, $L_64c304)
+ASM_VAR(float, g_st64c264, $L_64c264)
+
+// the colour of hue h, saturation sat and lightness l into the three bytes at d
+static void St_Hsl(BYTE* d, float h, float sat, float l)
+{
+    float r, g, b;
+    CallC(FUN_4be7f0, h, sat, l, &r, &g, &b);
+    d[0] = (BYTE)(int)((double)r * g_worobj64c458);
+    d[1] = (BYTE)(int)((double)g * g_worobj64c458);
+    d[2] = (BYTE)(int)((double)b * g_worobj64c458);
+}
+
+extern "C" {
+
+// [$L_59c830] draws effect s with its current frame (+100[+88]) lit: the screen's colour (root surface +48..+50)
+// at half its lightness and a little more saturation becomes the colours at +777 and +759, then three more of
+// rising saturation at +762, +765, +768
+int __fastcall Sky_DrawTinted(BYTE* s, void*, int a, int b)
+{
+    BYTE* cur = F(BYTE**, s, 100)[F(int, s, 88)];
+    F(float, cur, 88) = 0.76f;
+    F(int, F(BYTE**, s, 100)[F(int, s, 88)], 40) = 251;
+    BYTE* w = CallThis<BYTE*>(FUN_5b6700, F(BYTE*, g_696224, 12));
+    float r = (float)(F(BYTE, w, 48) * (double)g_st64c488);
+    float g = (float)(F(BYTE, w, 49) * (double)g_st64c488);
+    float bl = (float)(F(BYTE, w, 50) * (double)g_st64c488);
+    float h, sat, l;
+    CallC(FUN_4be5e0, r, g, bl, &h, &sat, &l);
+    l = (float)(l * (double)g_64c258);
+    sat = (float)((double)sat + g_st64d4c0);
+    if (sat > g_effectOne)
+        sat = 1.0f;
+    else if (sat < g_st64c264)
+        sat = 0;
+    St_Hsl(w + 777, h, sat, l);
+    St_Hsl(w + 759, h, sat, l);
+    float v = (float)(sat * (double)g_st650e34);
+    if (v > g_effectOne)
+        v = 1.0f;
+    St_Hsl(w + 762, h, v, l);
+    v = (float)(sat * (double)g_st650e30);
+    if (v > g_effectOne)
+        v = 1.0f;
+    St_Hsl(w + 765, h, v, l);
+    v = (float)((double)sat - sat * (double)g_st64c304);
+    if (v > g_effectOne)
+        v = 1.0f;
+    St_Hsl(w + 768, h, v, l);
+    F(DWORD, F(BYTE**, s, 100)[F(int, s, 88)], 32) |= 0x1000;
+    int res = CallThis<int>(FUN_59a9a0, s, a, b);
+    F(DWORD, F(BYTE**, s, 100)[F(int, s, 88)], 32) &= ~0x1000u;
+    return res;
+}
+
+} // extern "C"
+
+// === the dust puff (FUN_5a0ca0)
+
+ASM_VAR(AsmLabel, g_vtbl65124c, $L_65124c)
+ASM_VAR(AsmLabel, g_vtbl651200, $L_651200)
+
+extern "C" {
+
+// [FUN_5a0ca0] constructor (p, size, second, kind, near) of a dust puff of the effect pool: at p (+156), pulled
+// towards the camera (+76) by 64c304 (near 0), 64c260 (near 1) or 64c338 (near 2), fading by +168/+172
+BYTE* __fastcall DustPuff_Construct(BYTE* s, void*, const float* p, int size, int second, int kind, int near_)
+{
+    Effect_Construct(s, 0, (int)g_696224, (const Vec3Bits*)p, 0x3f800000, 0x3f800000, kind, F(DWORD, s, 112),
+                     0x40c00000, 0x40c00000, 100);
+    float* q = (float*)(s + 156);
+    F(void*, s, 0) = (BYTE*)g_vtbl65124c;
+    F(void*, s, 20) = (BYTE*)g_vtbl651200;
+    F(int, s, 148) = second;
+    memcpy(q, p, 12);
+    F(int, s, 176) = size;
+    F(int, s, 152) = near_;
+    if (!second) {
+        F(float, s, 172) = 0;
+        F(float, s, 168) = 1.0f;
+    } else {
+        F(float, s, 172) = 0.5f;
+        F(float, s, 168) = 0.1f;
+    }
+    F(float, s, 184) = 0.71f;
+    F(float, s, 180) = 0.71f;
+    BYTE* cam = g_696224;
+    double cx = F(double, cam, 2904);
+    float cy = (float)F(double, cam, 2912), cz = (float)F(double, cam, 2920);
+    float* o = (float*)(s + 76);
+    if (near_ == 2) {
+        Vec3 d, nb, v, w;
+        d.Set((float)(cx - q[0]), (float)((double)cy - q[1]), (float)((double)cz - q[2]));
+        const Vec3* n = Vec3_Normalized(&nb, &d);
+        v.Set((float)(n->x * (double)g_64c338), (float)(n->y * (double)g_64c338), (float)(n->z * (double)g_64c338));
+        w.Set((float)((double)v.x + q[0]), (float)((double)v.y + q[1]), (float)((double)v.z + q[2]));
+        memcpy(o, &w, 12);
+    } else if (near_ == 1 || near_ == 0) {
+        double k = near_ ? g_effectFadeBase : g_st64c304;
+        Vec3 d, nb;
+        d.x = (float)(cx - q[0]);
+        d.y = (float)((double)cy - q[1]);
+        d.z = (float)((double)cz - q[2]);
+        const Vec3* n = Vec3_Normalized(&nb, &d);
+        double x = n->x * k;
+        float y = (float)(n->y * k), z = (float)(n->z * k);
+        o[0] = (float)(x + q[0]);
+        o[1] = (float)((double)y + q[1]);
+        o[2] = (float)((double)z + q[2]);
+    }
+    return s;
+}
+
+} // extern "C"
+
+// === the drifting swirl (59cba0)
+
+extern "C" void FUN_59ac90(); KING_ALIAS("_FUN_59ac90", "@Effect_AnimateQuad@8")
+extern "C" void Ws_Normalized(); KING_ALIAS("_Ws_Normalized", "_Vec3_Normalized")
+extern "C" void Ws_AddAssign(); KING_ALIAS("_Ws_AddAssign", "@Vec3_AddAssign@16")
+ASM_VAR(AsmLabel, g_ws702650, $L_702650)
+
+// the texture coordinates of corner k of quad s (+72: u at +8, v at +12) on the circle at angle a
+static void Ws_Corner(BYTE* s, int k, double a)
+{
+    F(float*, F(BYTE*, s, 72), 8)[k] = (float)(x87_cos(a) * F(float, s, 184) + g_64c258);
+}
+
+extern "C" {
+
+// [$L_59cba0] step of a drifting swirl s (unless plain, +124): its speed (+160) slowed by +172 until it turns, its
+// position (+76, +40) moved by it, then its quad animated and its texture turned (+176) by +180 times the square of
+// the life left (+100, +104), the corners on a circle of radii +184/+188 at the angles 6f6a58..
+int __fastcall Swirl_Step(BYTE* s)
+{
+    if (!F(int, s, 124))
+        return CallThis<int>(FUN_59ac90, s);
+    float* v = (float*)(s + 160);
+    if (F(float, s, 172) != 0) {
+        float nb[3];
+        const float* n = CallC<const float*>(Ws_Normalized, nb, v);
+        double k = F(float, s, 172);
+        double ax = -n[0] * k;
+        float ay = (float)(-n[1] * k), az = (float)(-n[2] * k);
+        float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+        float a[3] = {(float)(ax * dt), (float)(ay * (double)dt), (float)(az * (double)dt)};
+        float t[3];
+        CallThis(Ws_AddAssign, v, t, a);
+        if ((double)v[2] * a[2] + (double)v[1] * a[1] + (double)v[0] * a[0] > g_effectZero) {
+            F(int, s, 172) = 0;
+            memcpy(v, (BYTE*)g_ws702650, 12);
+        }
+    }
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    float tx = (float)(dt * v[0]), ty = (float)(dt * v[1]);
+    double tz = dt * v[2];
+    F(float, s, 76) = (float)((double)tx + F(float, s, 76));
+    F(float, s, 80) = (float)((double)ty + F(float, s, 80));
+    F(float, s, 84) = (float)(tz + F(float, s, 84));
+    memcpy(s + 40, s + 76, 12);
+    CallThis(FUN_59ac90, s);
+    double f = ((double)F(float, s, 100) - F(float, s, 104)) / F(float, s, 100);
+    if (f < g_effectZero)
+        f = g_effectZero;
+    else if (f > g_effectDoubleOne)
+        f = g_effectDoubleOne;
+    double ang = F(float, s, 180) * f * f * F(double, F(BYTE*, s, 88), 2960) + F(float, s, 176);
+    F(float, s, 176) = (float)ang;
+    BYTE* q = F(BYTE*, s, 72);
+    F(float*, q, 8)[0] = (float)(x87_cos(ang + g_worobj6f6a58) * F(float, s, 184) + g_64c258);
+    const float base[4] = {g_worobj6f6a58, g_worobj6f6a5c, g_worobj6f6a60, g_worobj6f6a54};
+    for (int k = 0; k < 4; k++) {
+        if (k)
+            Ws_Corner(s, k, (double)base[k] + F(float, s, 176));
+        F(float*, F(BYTE*, s, 72), 12)[k] =
+            (float)(x87_sin((double)base[k] + F(float, s, 176)) * F(float, s, 188) + g_64c258);
+    }
+    return (int)F(BYTE*, s, 72);
+}
+
+} // extern "C"
+
+// [$L_59d1a0] the same step for the other swirl class
+extern "C" int __fastcall Swirl_Step2(BYTE* s) { return Swirl_Step(s); }
+
+// === the rising smoke puff (59dbc0)
+
+extern "C" void FUN_59aa10(); KING_ALIAS("_FUN_59aa10", "@SceneTexture_Advance@8")
+extern "C" void Rp_MulAssign(); KING_ALIAS("_Rp_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Rp_TransformPoint(); KING_ALIAS("_Rp_TransformPoint", "@Vec3_TransformPoint@12")
+extern "C" void Rp_LookAt(); KING_ALIAS("_Rp_LookAt", "_Matrix_LookAt")
+ASM_VAR(BYTE*, g_rp7025b8, $L_7025b8)
+ASM_VAR(float, g_rp64c904, $L_64c904)
+ASM_VAR(float, g_rp64c330, $L_64c330)
+ASM_VAR(float, g_rp64c264, $L_64c264)
+struct Rp_V3 { float x, y, z; };
+ASM_VAR(Vec3, g_rp702620, $L_702620)
+
+extern "C" {
+
+// [$L_59dbc0] step of a rising smoke puff s: its spin (+172) turned about its rise (+160) by +184 a second and
+// grown by +188, added to its position (+76) with the rise (and the wind 7025b8 +532 along 702620); its size
+// (+132..+144) blends with its life (+100 from 6f6a70, +104), its height kept within its size around +156; then the
+// texture advances
+int __fastcall SmokePuff_Step(BYTE* s)
+{
+    F(int, s, 100) = g_6f6a70;
+    float dt = (float)F(double, F(BYTE*, s, 88), 2960);
+    Rp_V3 v = *(const Rp_V3*)(s + 160);
+    BYTE m[48];
+    CallC(Rp_LookAt, m, *(const Rp_V3*)(BYTE*)g_ws702650, v, (float)(dt * (double)F(float, s, 184)));
+    BYTE* sp = s + 172;
+    CallThis(Rp_TransformPoint, sp, m);
+    float t[3];
+    CallThis(Rp_MulAssign, sp, t, (float)(dt * (double)F(float, s, 188) + g_effectOne));
+    CallThis(Ws_AddAssign, s + 76, t, sp);
+    float* p = (float*)(s + 76);
+    const float* r = (const float*)(s + 160);
+    if (BYTE* w = g_rp7025b8) {
+        double wind = F(float, w, 532);
+        const Vec3& a = g_rp702620;
+        float w0 = (float)(a.x * wind), w1 = (float)(a.y * wind);
+        double w2 = wind * a.z;
+        float h0 = (float)(w0 * (double)g_effectFadeBase), h1 = (float)(w1 * (double)g_effectFadeBase);
+        double h2 = w2 * g_effectFadeBase;
+        float k0 = (float)((double)h0 + r[0]), k1 = (float)((double)h1 + r[1]);
+        double k2 = h2 + r[2];
+        float m0 = (float)(k0 * (double)dt), m1 = (float)(k1 * (double)dt);
+        double m2 = k2 * dt;
+        p[0] = (float)((double)m0 + p[0]);
+        p[1] = (float)((double)m1 + p[1]);
+        p[2] = (float)(m2 + p[2]);
+    } else {
+        double a0 = (double)dt * r[0];
+        float a1 = (float)((double)dt * r[1]), a2 = (float)((double)dt * r[2]);
+        p[0] = (float)(a0 + p[0]);
+        p[1] = (float)((double)a1 + p[1]);
+        p[2] = (float)((double)a2 + p[2]);
+    }
+    double f = ((double)F(float, s, 100) - F(float, s, 104)) / F(float, s, 100);
+    if (f < g_rp64c264)
+        f = g_rp64c264;
+    else if (f > g_effectOne)
+        f = g_effectOne;
+    double g = g_effectOne - f;
+    float sz = (float)(g * F(float, s, 136) + f * F(float, s, 132));
+    double h = g * F(float, s, 144) + f * F(float, s, 140);
+    double lo = h * g_rp64c904 + F(float, s, 156);
+    float hi = (float)(h * g_rp64c330 + F(float, s, 156));
+    double z = lo > F(float, s, 84) ? lo : F(float, s, 84);
+    if (z > hi)
+        z = hi;
+    F(float, s, 84) = (float)z;
+    BYTE* q = F(BYTE*, s, 72);
+    float* a = F(float*, q, 16);
+    a[0] = a[3] = (float)(sz * (double)g_mt64c878);
+    a[1] = a[2] = (float)(sz * (double)g_64c258);
+    float* b = F(float*, F(BYTE*, s, 72), 20);
+    b[0] = b[1] = (float)(h * g_mt64c878);
+    b[2] = b[3] = (float)(h * g_64c258);
+    memcpy(s + 40, s + 76, 12);
+    return CallThis<int>(FUN_59aa10, s);
+}
+
+} // extern "C"

@@ -27,7 +27,7 @@ extern "C" void __cdecl Channel_Stop(int id);                                   
 extern "C" void __cdecl Channel_SetFrequency(int id, int f);                        // directsound.cpp
 extern "C" int __cdecl Mixer_Load(int idx, int a, int b);                           // directsound.cpp
 
-ASM_PROC(FUN_5f2a40)
+extern "C" void FUN_5f2a40(); KING_ALIAS("_FUN_5f2a40", "_VertexDesc_Build")
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // base node constructor (name, kind)
 extern "C" void FUN_5e5840(); KING_ALIAS("_FUN_5e5840", "@Rec5e5840_Free@8")
 extern "C" void FUN_5f1a70(); KING_ALIAS("_FUN_5f1a70", "@Node5f1a70_Destroy@4")
@@ -1069,8 +1069,8 @@ extern "C" void FUN_5ab190(); KING_ALIAS("_FUN_5ab190", "_File_ReadFloat")
 extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
 extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
 extern "C" void FUN_5ae560(); KING_ALIAS("_FUN_5ae560", "@Render_CurrentFrame@8")
-ASM_PROC(FUN_5f88d0)
-ASM_PROC(FUN_5ad180)
+extern "C" void FUN_5f88d0(); KING_ALIAS("_FUN_5f88d0", "@Volume_Contains@12")
+extern "C" void FUN_5ad180(); KING_ALIAS("_FUN_5ad180", "@Renderer_PushLight@12")
 extern "C" void FUN_5adc20(); KING_ALIAS("_FUN_5adc20", "@Render_PopLight@12")
 extern "C" void FUN_5e6520(); KING_ALIAS("_FUN_5e6520", "@Poly_BoundingSphere@16")
 extern "C" void FUN_5e5580(); KING_ALIAS("_FUN_5e5580", "@Sphere_Merge@12")
@@ -2827,6 +2827,388 @@ int __fastcall AnimNode1_Load(BYTE* s, void*, void* f, int, int)
             F(float, F(BYTE*, s, 64), i * 12) = (float)CallC<double>(FUN_5ab190, f);
     }
     return Sce_LoadTail(s, (int)f, 1, F(int, s, 60), F(int, s, 64));
+}
+
+} // extern "C"
+
+// === building a vertex buffer description (FUN_5f2a40)
+
+extern "C" void FUN_5abee0(); KING_ALIAS("_FUN_5abee0", "_Matrix_RotationX")
+extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
+ASM_VAR(BYTE, g_vb723a4c, $L_723a4c)
+ASM_VAR(float, g_vbLightX, $L_7239f8)
+ASM_VAR(float, g_vbLightY, $L_7239fc)
+ASM_VAR(float, g_vbLightZ, $L_723a00)
+ASM_VAR(BYTE*, g_vb720904, $L_720904)
+ASM_VAR(AsmLabel, g_vb723a9c, $L_723a9c)
+ASM_VAR(double, g_vb64b670, $L_64b670)
+ASM_VAR(double, g_vb64b6e0, $L_64b6e0)
+ASM_VAR(float, g_vb64c458, $L_64c458)
+
+extern "C" {
+
+// [FUN_5f2a40] fills the strided description s of n vertices v (12 bytes) of format *fmt with the texture
+// coordinates of the n 28-byte records r (r+12, r+16, then r+20 the further pairs, r+24 their count); hdr
+// = {0, fmt, n, v}. Format 1 packs the colours, format 2 (unless 702e8c bit 6) becomes 3, the vertices shaded
+// by the fixed light (rotated once by pi/4 about x and pi/6 about z)
+void __cdecl VertexDesc_Build(BYTE* s, int* fmt, int* hdr, int n, BYTE* r, float* v)
+{
+    if (!(g_vb723a4c & 1)) {
+        g_vb723a4c |= 1;
+        float a[12], b[12];
+        float* m = CallC<float*>(FUN_5abee0, a, 0.785398185f);
+        float t[3] = {(float)((double)m[9] + m[3]), (float)((double)m[10] + m[4]), (float)((double)m[11] + m[5])};
+        float* z = CallC<float*>(FUN_5ac0c0, b, 0.523598790f);
+        g_vbLightZ = (float)((double)t[2] * z[8] + (double)t[1] * z[5] + (double)t[0] * z[2] + z[11]);
+        g_vbLightX = (float)((double)t[2] * z[6] + (double)t[1] * z[3] + (double)t[0] * z[0] + z[9]);
+        g_vbLightY = (float)((double)t[2] * z[7] + (double)t[1] * z[4] + (double)t[0] * z[1] + z[10]);
+        // (the original registers an empty atexit handler here)
+    }
+    hdr[0] = 0;
+    hdr[1] = *fmt;
+    hdr[3] = (int)v;
+    hdr[2] = n;
+    if (!g_vb720904 || !*fmt || !n)
+        return;
+    F(WORD, s, 0) = (WORD)n;
+    BYTE k = F(BYTE, r, 24) + 1;
+    F(BYTE, s, 12) = k;
+    if (k)
+        F(void*, s, 16) = operator new(k * n * 8);
+    BYTE* d = (BYTE*)operator new(96);
+    F(BYTE*, s, 4) = d;
+    memset(d, 0, 96);
+    F(void*, d, 24) = (BYTE*)g_vb723a9c;
+    F(void*, d, 16) = F(void*, d, 24);
+    for (int i = 0; i < n; i++) {
+        float* p = v + i * 3;
+        BYTE* q = r + i * 28;
+        if (*fmt == 1) {
+            DWORD c = ((DWORD)(int)((double)p[0] * g_vb64c458) | 0xFFFFFF00) << 8;
+            c = (c | (int)((double)p[1] * g_vb64c458)) << 8;
+            F(DWORD, p, 0) = c | (int)((double)p[2] * g_vb64c458);
+        } else if (*fmt == 2 && !(g_sc702e8c & 64)) {
+            float l = (float)(((double)p[1] * g_vbLightY + (double)p[2] * g_vbLightZ + (double)g_vbLightX * p[0] +
+                               g_vb64b670) * g_vb64b6e0);
+            p[2] = l;
+            p[1] = l;
+            p[0] = l;
+            *fmt = 3;
+            hdr[1] = 3;
+        }
+        DWORD* uv = F(DWORD*, s, 16);
+        uv[F(BYTE, s, 12) * i * 2] = F(DWORD, q, 12);
+        uv[F(BYTE, s, 12) * i * 2 + 1] = F(DWORD, q, 16);
+        for (int j = 0; j < F(BYTE, s, 12) - 1; j++) {
+            DWORD* e = F(DWORD*, s, 16) + (F(BYTE, s, 12) * i + j) * 2;
+            e[2] = F(DWORD*, q, 20)[j * 2];
+            e[3] = F(DWORD*, q, 20)[j * 2 + 1];
+        }
+    }
+    d = F(BYTE*, s, 4);
+    F(BYTE*, d, 0) = r;
+    F(int, F(BYTE*, s, 4), 4) = 28;
+    F(int, s, 8) = 2;
+    for (int c = 0; c < F(BYTE, s, 12); c++) {
+        F(BYTE*, F(BYTE*, s, 4), 32 + c * 8) = F(BYTE*, s, 16) + c * 8;
+        F(int, F(BYTE*, s, 4), 36 + c * 8) = F(BYTE, s, 12) * 8;
+    }
+    if (*fmt == 2) {
+        F(int, s, 8) |= 16;
+        F(float*, F(BYTE*, s, 4), 8) = v;
+        F(int, F(BYTE*, s, 4), 12) = 12;
+    } else {
+        F(int, s, 8) |= 64;
+        F(float*, F(BYTE*, s, 4), 16) = v;
+        F(int, F(BYTE*, s, 4), 20) = 12;
+    }
+}
+
+} // extern "C"
+
+// === reading a portal (5fc360)
+
+extern "C" void FUN_5ab400(); KING_ALIAS("_FUN_5ab400", "_Vec3_Normalized")
+ASM_VAR(AsmLabel, s_sce683c00, $L_683c00)
+ASM_VAR(double, g_po64b5b8, $L_64b5b8)
+ASM_VAR(float, g_po64c264, $L_64c264)
+
+extern "C" {
+
+// [$L_5fc360] reads portal s from file f: its plane (+112), its target name (32 bytes; "room:node" splits into +132
+// and +164 and sets +40 bit 1, else it is looked up into +128 and a name starting like 683c00 sets +108) and two
+// corners a, b: the four corners at +60 (a, then across, b, back) and the normal at +48; a level portal (a, b at
+// the same height) spans x and y, else a wall from a's height to b's
+int __fastcall Portal_Read(BYTE* s, void*, void* f, int, int)
+{
+    float a[3] = {0, 0, 0}, b[3] = {0, 0, 0};
+    CallThis(FUN_5ac7f0, s + 112, f);
+    char buf[32];
+    CallC(Sce_fread, buf, 32, 1, f);
+    int i = 0;
+    for (char c = buf[0]; c && c != ':'; c = buf[++i])
+        ;
+    F(int, s, 128) = 0;
+    if (!buf[i]) {
+        if (F(char*, s, 12) && !CallC<int>(Sce_strncmp, F(char*, s, 12), (char*)s_sce683c00, 6))
+            F(int, s, 108) = 1;
+        CallThis(FUN_5d2650, g_sce71e820, buf, s + 128);
+    } else {
+        F(BYTE, s, 40) |= 2;
+        buf[i] = 0;
+        strcpy((char*)s + 132, buf);
+        strcpy((char*)s + 164, buf + i + 1);
+    }
+    CallThis(FUN_5ab790, a, f);
+    CallThis(FUN_5ab790, b, f);
+    float c1[3], c3[3], n[3];
+    if (fabs((double)a[2] - b[2]) < g_po64b5b8) {
+        double t0 = (double)b[0] - b[0], t1 = (double)b[1] - a[1], t2 = (double)b[2] - b[2];
+        float t3 = (float)((double)a[0] - b[0]);
+        double t4 = (double)a[2] - b[2];
+        n[0] = (float)(t2 * 0.0 - t1 * t4);
+        n[1] = (float)(t4 * t0 - t2 * t3);
+        n[2] = (float)(t1 * t3 - 0.0 * t0);
+        c1[0] = b[0], c1[1] = a[1], c1[2] = b[2];
+        c3[0] = a[0], c3[1] = b[1], c3[2] = b[2];
+    } else {
+        double u0 = (double)b[0] - b[0], u1 = (double)b[1] - b[1], u2 = (double)b[2] - a[2];
+        float u3 = (float)((double)a[0] - b[0]), u4 = (float)((double)a[1] - b[1]);
+        double z = g_po64c264;
+        n[0] = (float)(u2 * u4 - u1 * z);
+        n[1] = (float)(z * u0 - u2 * u3);
+        n[2] = (float)(u1 * u3 - u4 * u0);
+        c1[0] = b[0], c1[1] = b[1], c1[2] = a[2];
+        c3[0] = a[0], c3[1] = a[1], c3[2] = b[2];
+    }
+    float nn[3];
+    memcpy(s + 48, CallC<float*>(FUN_5ab400, nn, n), 12);
+    memcpy(s + 60, a, 12);
+    memcpy(s + 72, c1, 12);
+    memcpy(s + 84, b, 12);
+    memcpy(s + 96, c3, 12);
+    return 1;
+}
+
+} // extern "C"
+
+// === sorting an item into a split node (5f4530)
+
+extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")
+ASM_VAR(AsmLabel, g_vtbl64c7dc, $L_64c7dc)
+
+// the plane p at a point v: (p.n . v) + p.d
+static double Bsp_At(const float* p, const float* v)
+{
+    return (double)p[2] * v[2] + (double)p[1] * v[1] + (double)p[0] * v[0] + p[3];
+}
+
+// offers o to the children of side k of s (+48[k], next +8; vtbl+28), else s's own vtbl+20 (k, o)
+static void Bsp_Give(BYTE* s, int k, BYTE* o)
+{
+    for (BYTE* c = F(BYTE**, s, 48)[k]; c; c = F(BYTE*, c, 8))
+        if (CallVirt<int>(c, 28, o))
+            return;
+    CallVirt(s, 20, k, o);
+}
+
+extern "C" {
+
+// [$L_5f4530] sorts item o into the side of split node s's plane (+56) its bounding sphere (+20) lies on (0 in
+// front, 2 behind); a plain item (kind 17, no piece yet) crossing it (unless 702e8c bit 14) gets a piece (+76) for
+// the other side, each clipped by the plane (+48) facing its side
+int __fastcall Bsp_SortItem(BYTE* s, void*, BYTE* o)
+{
+    float c[3] = {0, 0, 0};
+    CallVirt(o, 40, c);
+    const float* p = (const float*)(s + 56);
+    float sp[4];
+    memcpy(sp, o + 20, 16);
+    int side, other = 0;
+    if ((double)F(float, s, 64) * c[2] + (double)F(float, s, 60) * c[1] + (double)p[0] * c[0] + p[3] - sp[3] >
+        g_sce64b678)
+        side = 0;
+    else if ((double)p[2] * c[2] + (double)p[1] * c[1] + (double)p[0] * c[0] + sp[3] + p[3] < g_sce64b678)
+        side = 2;
+    else if (g_sc702e8c & 0x4000)
+        side = 0;
+    else {
+        if (Bsp_At(p, c) > g_sce64b678)
+            side = 0, other = 2;
+        else
+            side = 2, other = 0;
+        if (F(int, o, 16) == 17 && !F(int, o, 80) && !F(int, o, 76)) {
+            CallVirt(o, 40, sp);
+            double e = Bsp_At(p, sp);
+            if (e < 0)
+                e = -e;
+            if (sp[3] > e) {
+                BYTE* n = (BYTE*)operator new(88);
+                if (n) {
+                    CallThis(FUN_5ef6d0, n, (void*)&g_q195_68d1c0, 17);
+                    F(int, n, 48) = F(int, n, 52) = F(int, n, 56) = F(int, n, 60) = 0;
+                    F(void*, n, 0) = (BYTE*)g_vtbl64c7dc;
+                    F(BYTE*, n, 64) = o;
+                    F(int, n, 68) = F(int, n, 72) = F(int, n, 76) = F(int, n, 80) = 0;
+                    F(int, n, 84) = -1;
+                    F(int, n, 36) = F(int, o, 36);
+                }
+                F(BYTE, n, 40) |= F(BYTE, o, 40) & 1;
+                memcpy(n + 20, sp, 16);
+                F(int, n, 80) = 1;
+                float neg[4] = {-p[0], -p[1], -p[2], -p[3]};
+                if (other == 2) {
+                    CallThis(FUN_5cda50, n + 48, neg);
+                    CallThis(FUN_5cda50, o + 48, p);
+                } else {
+                    CallThis(FUN_5cda50, n + 48, p);
+                    CallThis(FUN_5cda50, o + 48, neg);
+                }
+                F(BYTE*, o, 76) = n;
+                Bsp_Give(s, other, n);
+            }
+        }
+    }
+    Bsp_Give(s, side, o);
+    return 1;
+}
+
+} // extern "C"
+
+// === reading lights (5f3a60, 5f3bc0)
+
+ASM_VAR(double, g_lr64d900, $L_64d900)
+ASM_VAR(float, g_lrUp, $L_702630)
+
+extern "C" {
+
+// [$L_5f3a60] reads light node s from file f: its plane (+20), +136, the on flag (+140), the kind (0..3 to +56;
+// directional +128 = 210, spot 130), position (+60), direction (+72), colour and attenuation (+84..+96), the cone
+// (+100 at most pi, +104 so the two make at most 64d900) and +108..+116; then the node's part (a, b)
+int __fastcall Light_Read(BYTE* s, void*, int f, int a, int b)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    F(int, s, 136) = CallC<int>(FUN_5ab140, f);
+    F(int, s, 140) = CallC<int>(FUN_5ab140, f) ? 1 : 0;
+    switch (CallC<int>(FUN_5ab140, f)) {
+    case 0:
+        F(int, s, 56) = 0;
+        break;
+    case 1:
+        F(int, s, 56) = 1;
+        F(int, s, 128) = 210;
+        break;
+    case 2:
+        F(int, s, 56) = 2;
+        break;
+    case 3:
+        F(int, s, 56) = 3;
+        F(int, s, 128) = 130;
+        break;
+    }
+    CallThis(FUN_5ab790, s + 60, f);
+    CallThis(FUN_5ab790, s + 72, f);
+    for (int o = 84; o <= 96; o += 4)
+        F(float, s, o) = (float)CallC<double>(FUN_5ab190, f);
+    double c = CallC<double>(FUN_5ab190, f);
+    F(float, s, 100) = (float)c;
+    if (c > g_lr64d900)
+        F(DWORD, s, 100) = 0x40490FDA;
+    c = CallC<double>(FUN_5ab190, f);
+    F(float, s, 104) = (float)c;
+    if (c + F(float, s, 100) > g_lr64d900)
+        F(float, s, 104) = (float)(g_lr64d900 - F(float, s, 100));
+    for (int o = 108; o <= 116; o += 4)
+        F(float, s, o) = (float)CallC<double>(FUN_5ab190, f);
+    return Sce_LoadTail(s, f, 1, a, b);
+}
+
+// (the entry 5f3bc0 inside it) reads the older light node: its plane (+20, its normal also the position +60), the kind by name
+// ("direction"/"direct" 1, "position" 2, "spot" 3, else 0), shining down; full colour, cone pi/4, attenuation
+// 1 / (+32)^2 unless directional; then the node's part (a, b)
+int __fastcall Light_ReadOld(BYTE* s, void*, int f, int a, int b)
+{
+    CallThis(FUN_5ac7f0, s + 20, f);
+    char name[32];
+    CallC(Sce_fread, name, 32, 1, f);
+    if (!strcmp(name, "direction") || !strcmp(name, "direct"))
+        F(int, s, 56) = 1;
+    else if (!strcmp(name, "position"))
+        F(int, s, 56) = 2;
+    else if (!strcmp(name, "spot"))
+        F(int, s, 56) = 3;
+    else
+        F(int, s, 56) = 0;
+    memcpy(s + 60, s + 20, 12);
+    const float* u = &g_lrUp;
+    F(float, s, 72) = -u[0];
+    F(float, s, 76) = -u[1];
+    F(DWORD, s, 100) = 0x3F490FDA;
+    F(float, s, 84) = 1.0f;
+    F(float, s, 80) = -u[2];
+    F(int, s, 88) = 0;
+    if (F(int, s, 56) == 1)
+        F(int, s, 92) = 0;
+    else {
+        double r = F(float, s, 32);
+        F(float, s, 92) = (float)(g_q182_64c250 / (r * r));
+    }
+    return Sce_LoadTail(s, f, 1, a, b);
+}
+
+} // extern "C"
+
+// === whether a point is in a volume (FUN_5f88d0)
+
+// p less the shape's point (+0), as floats
+static void Vt_Rel(float* v, const float* p, const float* g)
+{
+    v[0] = (float)((double)p[0] - g[0]);
+    v[1] = (float)((double)p[1] - g[1]);
+    v[2] = (float)((double)p[2] - g[2]);
+}
+
+extern "C" {
+
+// [FUN_5f88d0] whether point p is in volume s (kind +0, shape +8): 0 everywhere, 1 inside or 2 outside a sphere
+// (+12 the radius), 3 inside or 4 outside a cylinder (+12 the axis, +24 the radius, +28 the half length), 5 in
+// front of a plane; else never
+int __fastcall Volume_Contains(DWORD* s, void*, const float* p)
+{
+    const float* g = (const float*)s[2];
+    float v[3];
+    switch (s[0]) {
+    case 0:
+        return 1;
+    case 1:
+    case 2: {
+        Vt_Rel(v, p, g);
+        double d = CallC<double>(FUN_5ab4d0, v);
+        return s[0] == 1 ? !(d > g[3]) : d > g[3];
+    }
+    case 3:
+    case 4: {
+        Vt_Rel(v, p, g);
+        double t = (double)g[5] * v[2] + (double)g[4] * v[1] + (double)g[3] * v[0];
+        double at = t < 0 ? -t : t;
+        if (g[7] < at)
+            return s[0] == 4;
+        float w[3];
+        if (s[0] == 3) {
+            float py = (float)(t * g[4]), pz = (float)(t * g[5]);
+            w[0] = (float)(v[0] - t * g[3]);
+            w[1] = (float)((double)v[1] - py);
+            w[2] = (float)((double)v[2] - pz);
+            return !(CallC<double>(FUN_5ab4d0, w) > g[6]);
+        }
+        float q[3] = {(float)(t * g[3]), (float)(t * g[4]), (float)(t * g[5])};
+        Vt_Rel(w, v, q);
+        return CallC<double>(FUN_5ab4d0, w) > g[6];
+    }
+    case 5:
+        return (double)g[2] * p[2] + (double)g[1] * p[1] + (double)p[0] * g[0] + g[3] > g_sce64b678;
+    }
+    return 0;
 }
 
 } // extern "C"

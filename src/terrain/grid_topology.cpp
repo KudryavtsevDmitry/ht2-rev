@@ -270,7 +270,7 @@ extern "C" double __fastcall GridCamera_NodePriority(BYTE* s,void*,BYTE* node)
 }
 
 #include <mmsystem.h>
-ASM_PROC(FUN_60be40)
+extern "C" void FUN_60be40(); KING_ALIAS("_FUN_60be40", "@Grid_RefreshPriorities@4")
 extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD now);
 extern "C" void __fastcall MarineTask_ClearRegistration(BYTE* self, void*);
 extern "C" void __fastcall MarineTask_SetFirstBounds(BYTE* self, void*, float a, float b);
@@ -436,3 +436,18 @@ extern "C" int __cdecl Grid725d28_Init(void)
     Grid_Reset725d28();
     return Grid725d28_AtExit();
 }
+
+// === the priority of an edge (FUN_608180)
+
+extern "C" {
+
+// [FUN_608180] the larger refinement priority (GridCamera_NodePriority, the first's rounded to float) of node a and
+// node b (if any) for camera s
+double __fastcall GridCamera_PairPriority(BYTE* s, void*, BYTE* a, BYTE* b)
+{
+    float pa = (float)GridCamera_NodePriority(s, 0, a);
+    double pb = b ? GridCamera_NodePriority(s, 0, b) : 0.0;
+    return pa > pb ? pa : pb;
+}
+
+} // extern "C"

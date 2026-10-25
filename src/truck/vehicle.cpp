@@ -1197,7 +1197,7 @@ ASM_PROC(FUN_541ad0)
 ASM_PROC(FUN_551970)
 ASM_PROC(FUN_586df0)
 ASM_PROC(FUN_546240)
-ASM_PROC(FUN_501b90)
+extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void __fastcall Body_ClearMode(BYTE* self, void*);              // carphys.cpp
 extern "C" void __fastcall Progress_SetStep(BYTE* self, void*, int step);  // movingb.cpp
 ASM_VAR(AsmLabel, g_strSetVehinMode, $L_67a2b0)  // "_Vehicle::set_vehin_mode#2"
@@ -1466,7 +1466,7 @@ extern "C" void FUN_530070(); KING_ALIAS("_FUN_530070", "@Controls_ActionState@1
 extern "C" void FUN_5300b0(); KING_ALIAS("_FUN_5300b0", "@Controls_Axis@12")
 extern "C" void FUN_589490(); KING_ALIAS("_FUN_589490", "@BodyLevel_Step@16")
 ASM_PROC(FUN_5427a0)
-ASM_PROC(FUN_501b90)
+extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void FUN_555550(); KING_ALIAS("_FUN_555550", "@Vehicle_LowerStep@12")
 ASM_VAR(AsmLabel, g_carTypes697914, $L_697914)
 ASM_VAR(AsmLabel, g_controls6d1db8, $L_6d1db8)
@@ -1659,7 +1659,7 @@ extern "C" void __fastcall Car_Set54c880(BYTE* self, void*, int a, int b)
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_501b90)
+extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void FUN_4eb6a0(); KING_ALIAS("_FUN_4eb6a0", "@Ramp_SetPosition@12")
 ASM_PROC(FUN_5812a0)
 extern "C" void FUN_561d70(); KING_ALIAS("_FUN_561d70", "@Copter_SetVec100@12")
@@ -2185,7 +2185,7 @@ extern "C" int __fastcall Car_546ad0(BYTE* s, void*, int a, int b)
 
 extern "C" void FUN_43f840(); KING_ALIAS("_FUN_43f840", "_Player_Value156")
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
-ASM_PROC(FUN_501b90)
+extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void FUN_501e30(); KING_ALIAS("_FUN_501e30", "@Wheel_StepLevel@20")
 ASM_VAR(int, g_veh68b990, $L_68b990)
 ASM_VAR(AsmLabel, g_veh6d2510, $L_6d2510)
@@ -2567,7 +2567,7 @@ extern "C" int __cdecl Item_OnEvent(BYTE* it, int e)
 // ---------------------------------------------------------------------------
 // Car messages.
 
-ASM_PROC(FUN_545ef0)
+extern "C" void FUN_545ef0(); KING_ALIAS("_FUN_545ef0", "@Car_PlaceByRecord@12")
 extern "C" void FUN_546300(); KING_ALIAS("_FUN_546300", "@Car_Restore546300@12")
 extern "C" void FUN_546480(); KING_ALIAS("_FUN_546480", "@Car_Restore546480@12")
 extern "C" void FUN_545d90(); KING_ALIAS("_FUN_545d90", "@Car_Command@12")
@@ -2960,7 +2960,7 @@ extern "C" int __fastcall Car_Query(BYTE* s, void*, BYTE* out)
 }
 
 ASM_PROC(FUN_4de990)
-ASM_PROC(FUN_5de950)
+extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
 extern "C" void FUN_5d85f0(); KING_ALIAS("_FUN_5d85f0", "@Win_GetRect@12")
@@ -3052,7 +3052,7 @@ extern "C" void __cdecl Game_TruckMessage(int* m)
     }
 }
 
-ASM_PROC(FUN_557090)
+extern "C" void FUN_557090(); KING_ALIAS("_FUN_557090", "@Car_WorkingOrder@4")
 ASM_PROC(FUN_4ca7e0)
 extern "C" void FUN_5f9d20(); KING_ALIAS("_FUN_5f9d20", "@SceneNode5f9d20_Draw@24")
 ASM_VAR(AsmLabel, g_q236_6d217c, $L_6d217c)
@@ -3684,7 +3684,7 @@ ASM_VAR(double, g_lw64b840, $L_64b840)
 ASM_VAR(AsmLabel, g_lw69809c, $L_69809c)
 extern "C" void FUN_4eb6e0(); KING_ALIAS("_FUN_4eb6e0", "@Ramp_Down@12")
 extern "C" void FUN_4eb720(); KING_ALIAS("_FUN_4eb720", "@Ramp_FromTop@12")
-ASM_PROC(FUN_501b90)
+extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void FUN_5494c0(); KING_ALIAS("_FUN_5494c0", "@CarEffect_End@12")
 extern "C" void FUN_549bf0(); KING_ALIAS("_FUN_549bf0", "@Obj549bf0_Get@8")
 extern "C" void FUN_555500(); KING_ALIAS("_FUN_555500", "@Car_555500@8")
@@ -3776,7 +3776,7 @@ ASM_VAR(float, g_db64f418, $L_64f418)
 extern "C" void FUN_4eb690(); KING_ALIAS("_FUN_4eb690", "@Ramp_Position@8")
 extern "C" void FUN_4ff5b0(); KING_ALIAS("_FUN_4ff5b0", "@Car_TopSpeed@12")
 extern "C" void FUN_53d040(); KING_ALIAS("_FUN_53d040", "@Dash_Draw@44")
-ASM_PROC(FUN_53d1f0)
+extern "C" void FUN_53d1f0(); KING_ALIAS("_FUN_53d1f0", "@Car_SetGauges@52")
 extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
 
 extern "C" {
@@ -4299,6 +4299,237 @@ void __fastcall CarBody_Step(BYTE* s)
         F(int, s, 10564) = 0;
     }
     Vehicle_RecordHistory(car);
+}
+
+} // extern "C"
+
+// === placing a car body (FUN_545ef0)
+
+ASM_PROC(FUN_58d2b0)
+ASM_VAR(AsmLabel, g_cpModels, $L_697b30)      // 2416 bytes per car model
+
+// the model of car s
+static BYTE* Cp_Model(BYTE* s) { return (BYTE*)g_cpModels + F(int, s, 10420) * 2416; }
+
+extern "C" {
+
+// [FUN_545ef0] places car s by record r (+0 an id to +412 and +3284, +4 the position to +420 and +3304, +16 the
+// frame to +708, its inverse to +756) and moves the model's wheel points (+684 count, +688), body points (+160,
+// +168) and extra points (+164, +408, after the body ones) into the world (+3848, +3608)
+void __fastcall Car_PlaceByRecord(BYTE* s, void*, const BYTE* r)
+{
+    F(int, s, 412) = F(int, r, 0);
+    memcpy(s + 420, r + 4, 12);
+    const float* m = (const float*)(s + 708);
+    memcpy(s + 708, r + 16, 48);
+    BYTE inv[48];
+    memcpy(s + 756, CallC<BYTE*>(FUN_5ac2e0, inv, m), 48);
+    F(int, s, 3284) = F(int, s, 412);
+    memcpy(s + 3304, s + 420, 12);
+    for (int i = 0; i < F(int, Cp_Model(s), 684); i++) {
+        const float* p = (const float*)(Cp_Model(s) + 688 + i * 12);
+        float* o = (float*)(s + 3848 + i * 12);
+        float x = (float)((double)p[2] * m[6] + (double)p[0] * m[0] + (double)p[1] * m[3] + m[9]);
+        float y = (float)((double)p[2] * m[7] + (double)p[1] * m[4] + (double)m[1] * p[0] + m[10]);
+        float z = (float)((double)p[2] * m[8] + (double)m[2] * p[0] + (double)p[1] * m[5] + m[11]);
+        o[0] = x, o[1] = y, o[2] = z;
+    }
+    for (int i = 0; i < F(int, Cp_Model(s), 160); i++) {
+        const float* p = (const float*)(Cp_Model(s) + 168 + i * 12);
+        float* o = (float*)(s + 3608 + i * 12);
+        float x = (float)((double)m[0] * p[0] + (double)p[1] * m[3] + (double)p[2] * m[6] + m[9]);
+        float y = (float)((double)p[2] * m[7] + (double)p[1] * m[4] + (double)m[1] * p[0] + m[10]);
+        float z = (float)((double)m[8] * p[2] + (double)m[5] * p[1] + (double)m[2] * p[0] + m[11]);
+        o[0] = x, o[1] = y, o[2] = z;
+    }
+    for (int j = 0; j < F(int, Cp_Model(s), 164); j++) {
+        const float* p = (const float*)(Cp_Model(s) + 408 + j * 12);
+        float x = (float)((double)p[2] * m[6] + (double)p[1] * m[3] + (double)p[0] * m[0] + m[9]);
+        float y = (float)((double)p[0] * m[1] + (double)p[2] * m[7] + (double)p[1] * m[4] + m[10]);
+        float z = (float)((double)p[2] * m[8] + (double)p[1] * m[5] + (double)p[0] * m[2] + m[11]);
+        float* o = (float*)(s + 3608 + (F(int, Cp_Model(s), 160) + j) * 12);
+        o[0] = x, o[1] = y, o[2] = z;
+    }
+    CallThis(FUN_58d2b0, s + 16);
+}
+
+} // extern "C"
+
+// === the cab gauges (FUN_53d1f0)
+
+extern "C" void FUN_4e48a2(); KING_ALIAS("_FUN_4e48a2", "_Switch_SetChecked")
+extern "C" void FUN_4e48e2(); KING_ALIAS("_FUN_4e48e2", "_Frame_ApplyChecked")
+extern "C" void Cg_MatMul(); KING_ALIAS("_Cg_MatMul", "_Matrix_Multiply")
+extern "C" void Cg_RotY(); KING_ALIAS("_Cg_RotY", "_Matrix_RotationY")
+ASM_VAR(float, g_cg64c250, $L_64c250)
+
+// frame f (if any) set to a turn by angle a about y of the rest frame base
+static void Cg_Turn(int f, float a, const BYTE* base)
+{
+    if (!f)
+        return;
+    float r[12], o[12];
+    CallC(Cg_MatMul, o, CallC<float*>(Cg_RotY, r, a), base);
+    CallC(FUN_4e48e2, f, 0, o);
+}
+
+extern "C" {
+
+// [FUN_53d1f0] sets car s's gauges: speed a3, revs a5 and a9 turn the needles; outside the cab (+1400) those of s
+// (+1064.., scaled by +1260..+1276, the first two at most full), inside those of the cab 696cb0 (+4876.., scaled by
+// +5068..), with its lamps (a6, not a7, a8, a10) and the five switches a4[0..4]
+void __fastcall Car_SetGauges(BYTE* s, void*, int a1, int a2, float a3, const int* a4, float a5, int a6, int a7,
+                              int a8, float a9, int a10, int a11)
+{
+    if (!F(int, s, 1400)) {
+        float sp = (float)((a3 < 0 ? -(double)a3 : (double)a3) / F(float, s, 1268));
+        double rv = a5 / (double)F(float, s, 1260);
+        float t = (float)(a9 * (double)F(float, s, 1276));
+        if (sp > g_cg64c250)
+            sp = 1.0f;
+        if (rv > g_cg64c250)
+            rv = g_cg64c250;
+        sp = (float)(sp * (double)F(float, s, 1272));
+        float r = (float)(rv * F(float, s, 1264));
+        if (F(int, s, 1064)) {
+            float o[12], m[12];
+            CallC(Cg_MatMul, m, CallC<float*>(Cg_RotY, o, r), s + 1116);
+            CallC(FUN_4e48e2, F(int, s, 1064), 0, m);
+        }
+        Cg_Turn(F(int, s, 1068), sp, s + 1164);
+        Cg_Turn(F(int, s, 1072), t, s + 1212);
+        return;
+    }
+    BYTE* c = (BYTE*)g_vh696cb0;
+    if (!F(int, c, 4860))
+        return;
+    float sp = (float)((a3 < 0 ? -(double)a3 : (double)a3) * F(float, c, 5076));
+    float r = (float)(a5 * (double)F(float, c, 5068));
+    float t = (float)(a9 * (double)F(float, c, 5072));
+    Cg_Turn(F(int, c, 4876), r, c + 4924);
+    Cg_Turn(F(int, c, 4880), sp, c + 4972);
+    Cg_Turn(F(int, c, 4884), t, c + 5020);
+    c = (BYTE*)g_vh696cb0;
+    if (int w = F(int, c, 4888))
+        CallC(FUN_4e48a2, w, a6);
+    if (int w = F(int, (BYTE*)g_vh696cb0, 4892))
+        CallC(FUN_4e48a2, w, a7 == 0);
+    if (int w = F(int, (BYTE*)g_vh696cb0, 4896))
+        CallC(FUN_4e48a2, w, a8);
+    if (int w = F(int, (BYTE*)g_vh696cb0, 4900))
+        CallC(FUN_4e48a2, w, a10);
+    for (int off = 4920, i = 0; off > 4900; off -= 4, i++)
+        if (int w = F(int, (BYTE*)g_vh696cb0, off))
+            CallC(FUN_4e480c, w, a4[i]);
+}
+
+} // extern "C"
+
+// === following the leader (FUN_548ec0)
+
+extern "C" void FUN_4fc9b0(); KING_ALIAS("_FUN_4fc9b0", "@Body_SetControlMode@28")
+extern "C" void FUN_57dec0(); KING_ALIAS("_FUN_57dec0", "@SceneObj_Matrix2@12")
+ASM_VAR(float, g_fl64f730, $L_64f730)
+ASM_VAR(double, g_fl64f738, $L_64f738)
+ASM_VAR(double, g_fl64b668, $L_64b668)
+ASM_VAR(double, g_fl64b678, $L_64b678)
+ASM_VAR(BYTE, g_fl6796b0, $L_6796b0)
+
+extern "C" {
+
+// [FUN_548ec0] car s behind its leader (+3524): its body (+21600) drives itself (mode 3) when close behind it
+// (or, in the cab, the body has a contact) or the race is on (+15448), else mode 1; it stops (+3992 = 3) when it
+// catches up with a leader without a driver (+1204), or one that is driven when close
+void __fastcall Car_FollowLeader(BYTE* s)
+{
+    BYTE* l = F(BYTE*, s, 3524);
+    BYTE* c = F(BYTE*, s, 21600);
+    if (!l) {
+        CallThis(FUN_4fc9b0, c, 1, F(int, s, 816), s + 516, s + 432, s + 444);
+        return;
+    }
+    BYTE tmp[48];
+    const float* m = CallThis<const float*>(FUN_57dec0, l, tmp);
+    const float* p = (const float*)(s + 552);
+    float qx = (float)((double)m[3] * p[1] + (double)m[6] * p[2] + (double)m[0] * p[0] + m[9]);
+    float qy = (float)((double)m[4] * p[1] + (double)m[7] * p[2] + (double)m[1] * p[0] + m[10]);
+    double qz = (double)m[5] * p[1] + (double)m[8] * p[2] + (double)m[2] * p[0] + m[11];
+    float d2 = (float)((double)qx * qx + qx * (double)qx + (double)qy * qy);
+    int hit = 0;
+    if (F(int, c, 9784) == 3 && (double)qy * qy + (double)qx * qx + qz * qz < g_fl64f738)
+        for (int i = 0; i < F(int, c, 13120); i++) {
+            BYTE* e = c + 13452 + i * 4;
+            if (hit || F(int, e, -32) && !F(int, e, 0) || F(int, e, -72))
+                hit = 1;
+        }
+    int mode = 1;
+    if (F(BYTE*, s, 3524) && F(int, F(BYTE*, s, 3524), 1204) && d2 < g_fl64f730 || hit || F(int, c, 15448))
+        mode = 3;
+    CallThis(FUN_4fc9b0, c, mode, F(int, s, 816), s + 516, s + 432, s + 444);
+    l = F(BYTE*, s, 3524);
+    bool stop;
+    if (F(int, l, 1204))
+        stop = d2 < g_fl64f730;
+    else {
+        float t = (float)((double)F(float, l, 3272) + F(float, s, 3288));
+        const float* q = (const float*)(s + 432);
+        float d[3] = {(float)((double)q[0] - F(float, l, 3300)), (float)((double)q[1] - F(float, l, 3304)),
+                      (float)((double)q[2] - F(float, l, 3308))};
+        float e[3] = {(float)((double)p[0] - F(float, l, 3372)), (float)((double)p[1] - F(float, l, 3376)),
+                      (float)((double)p[2] - F(float, l, 3380))};
+        double r = t;
+        if ((double)d[2] * e[2] + (double)d[1] * e[1] + (double)e[0] * d[0] < g_fl64b678)
+            r = CallC<double>(FUN_5ab4d0, d) * F(double, g_6ef1fc, 2960) + t;
+        stop = r * r * g_fl64b668 > (double)e[0] * e[0] + (double)e[1] * e[1] + (double)e[2] * e[2];
+    }
+    if (stop && !(g_fl6796b0 & 4) && F(int, s, 3992) != 3 && !CallThis<int>(FUN_58f560, s + 16))
+        F(int, s, 3992) = 3;
+}
+
+} // extern "C"
+
+// === the car's working order (FUN_557090)
+
+ASM_VAR(double, g_wo64b6e0, $L_64b6e0)
+ASM_VAR(double, g_wo64b5b8, $L_64b5b8)
+ASM_VAR(double, g_wo64d318, $L_64d318)
+ASM_VAR(double, g_wo64d0f0, $L_64d0f0)
+ASM_VAR(double, g_wo64b670, $L_64b670)
+ASM_VAR(float, g_wo64c250, $L_64c250)
+ASM_VAR(float, g_wo64c264, $L_64c264)
+
+extern "C" {
+
+// [FUN_557090] how well car s works, 0..1: the least of its fuel (+20608, double the level +548 when below a half),
+// 0 while being repaired (+21568), each of the nine damages of its record (+9536: damage / limit pairs, weighted)
+// and their combined product
+double __fastcall Car_WorkingOrder(BYTE* s)
+{
+    float x = (float)F(int, s, 20608);
+    if (F(float, s, 548) < g_wo64b6e0)
+        x = F(float, s, 548) < g_wo64c264 ? 0 : (float)((double)F(float, s, 548) + F(float, s, 548));
+    float y = 1.0f;
+    if (CallThis<int>(FUN_549bf0, s + 21568))
+        y = 0;
+    float m = y < x ? y : x;
+    const BYTE* c = F(BYTE*, s, 9536);
+    static const double* const k[9] = {&g_wo64b5b8, &g_wo64b6e0, &g_wo64b6e0, &g_wo64b6e0, &g_wo64d318,
+                                       &g_wo64d318, &g_wo64d0f0, &g_wo64d0f0, &g_wo64d0f0};
+    float p = 0;
+    for (int j = 0; j < 9; j++) {
+        double r = (double)F(int, c, 4 + j * 20) / F(int, c, 8 + j * 20);
+        if (r < 0)
+            r = -r;
+        float q = (float)(g_wo64b670 - r * *k[j]);
+        if (q < m)
+            m = q;
+        p = j ? (float)(((double)q + g_wo64c250) * p * g_wo64b6e0) : (float)(((double)q + g_wo64c250) * g_wo64b6e0);
+    }
+    if (p < m)
+        m = p;
+    if (m < g_wo64c264)
+        m = g_wo64c264;
+    return m;
 }
 
 } // extern "C"

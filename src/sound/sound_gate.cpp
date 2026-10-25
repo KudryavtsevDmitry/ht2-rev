@@ -29,7 +29,7 @@ ASM_PROC(FUN_602320)
 extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")
 typedef void (*VFn)();
 extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
-ASM_PROC(FUN_601c70)
+extern "C" void FUN_601c70(); KING_ALIAS("_FUN_601c70", "_Dp_Connect")
 extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
@@ -1180,6 +1180,191 @@ int __cdecl Net_Receive(BYTE* m)
         break;
     }
     operator delete(buf);
+    return 0;
+}
+
+} // extern "C"
+
+// === the lobby address (FUN_601890)
+
+ASM_VAR(AsmLabel, g_dpaidSP, $L_6552e0)        // DPAID_ServiceProvider
+ASM_VAR(AsmLabel, g_dpaidA, $L_6552d0)
+ASM_VAR(AsmLabel, g_dpaidB, $L_6552c0)
+ASM_VAR(AsmLabel, g_dpaidC, $L_6552b0)
+ASM_VAR(AsmLabel, g_dpaidPort, $L_6552a0)
+ASM_VAR(AsmLabel, s_lobbyDefault, $L_6842c8)
+ASM_VAR(AsmLabel, g_lobby723ec0, $L_723ec0)
+ASM_VAR(AsmLabel, g_lobbyPort, $L_724050)
+
+struct Gate_Elem {
+    BYTE  guid[16];
+    DWORD size;
+    void* data;
+};
+
+// one address element of type g for the string str
+static void Gate_StrElem(Gate_Elem* e, const void* g, const char* str)
+{
+    memcpy(e->guid, g, 16);
+    e->size = lstrlenA(str) + 1;
+    e->data = (void*)str;
+}
+
+extern "C" {
+
+// [FUN_601890] with lobby l builds the compound address of service provider sp from the address types it takes
+// (the name, the two strings and the port; the default name when there is none and def): *out and *size the
+// GlobalAlloc'ed address; 0 or the error
+HRESULT __cdecl Gate_BuildAddress(BYTE* l, const BYTE* sp, void** out, DWORD* size, char def)
+{
+    DWORD types[41];
+    memset(types, 0, sizeof types);
+    HRESULT hr = CallVirt<HRESULT>(l, 24, (void*)Gate_AddRecord, sp, types, 0);
+    if (hr < 0)
+        return hr;
+    Gate_Elem e[11];
+    memcpy(e[0].guid, (BYTE*)g_dpaidSP, 16);
+    e[0].size = 16;
+    e[0].data = (void*)sp;
+    DWORD n = 1, port;
+    for (DWORD i = 0; i < types[0]; i++) {
+        const BYTE* g = (const BYTE*)(types + 1 + i * 4);
+        Gate_Elem* d = e + n;
+        if (!memcmp(g, (BYTE*)g_dpaidA, 16)) {
+            if (lstrlenA((char*)g_playerName) > 0)
+                Gate_StrElem(d, (BYTE*)g_dpaidA, (char*)g_playerName);
+            else if (def)
+                Gate_StrElem(d, (BYTE*)g_dpaidA, (char*)s_lobbyDefault);
+            else
+                continue;
+        } else if (!memcmp(g, (BYTE*)g_dpaidB, 16))
+            Gate_StrElem(d, (BYTE*)g_dpaidB, (char*)g_lobby723ec0);
+        else if (!memcmp(g, (BYTE*)g_dpaidC, 16))
+            Gate_StrElem(d, (BYTE*)g_dpaidC, (char*)g_playerName2);
+        else if (!memcmp(g, (BYTE*)g_dpaidPort, 16)) {
+            port = atoi((char*)g_lobbyPort);
+            if (!(WORD)port)
+                continue;
+            memcpy(d->guid, (BYTE*)g_dpaidPort, 16);
+            d->size = 2;
+            d->data = &port;
+        } else
+            continue;
+        n++;
+    }
+    DWORD sz;
+    hr = CallVirt<HRESULT>(l, 56, e, n, (void*)0, &sz);
+    if (hr != (HRESULT)0x8877001E)
+        return hr;
+    void* buf = GlobalLock(GlobalAlloc(66, sz));
+    if (!buf)
+        return (HRESULT)0x8007000E;
+    hr = CallVirt<HRESULT>(l, 56, e, n, buf, &sz);
+    if (hr >= 0) {
+        *out = buf;
+        *size = sz;
+        return 0;
+    }
+    GlobalUnlock(GlobalHandle(buf));
+    GlobalFree(GlobalHandle(buf));
+    return hr;
+}
+
+} // extern "C"
+
+// === connecting to a session (FUN_601c70)
+
+ASM_VAR(BYTE, g_dpHosting, $L_723dd8)
+ASM_VAR(AsmLabel, g_clsidLobby, $L_6552f0)
+ASM_VAR(AsmLabel, g_iidLobby, $L_655300)
+ASM_VAR(AsmLabel, s_dpNoPlayer, $L_6842d0)
+extern "C" void $L_601800(); KING_ALIAS("_$L_601800", "_Gate_Enum601800@16")    // the session enumeration callback
+
+#define DP_CALL(o, off, ...) CallStd<int>(F(VFn, F(BYTE*, (o), 0), (off)), (o), __VA_ARGS__)
+#define DP_CALL0(o, off) CallStd<int>(F(VFn, F(BYTE*, (o), 0), (off)), (o))
+
+// closes and releases the DirectPlay object
+static void Dp_Drop()
+{
+    DP_CALL0(g_directPlay, 16);
+    DP_CALL0(g_directPlay, 8);
+    g_directPlay = 0;
+}
+
+extern "C" {
+
+// [FUN_601c70] connects through service provider sp (a GUID by value) and hosts (host: up to max players, session
+// name) or joins the session found; 0, 1 when there is none to join, 3 when it fails to connect, -1 when no player
+int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int max, int name)
+{
+    char h = host != 0;
+    g_dpHosting = h;
+    CallC(FUN_6016f0);
+    DWORD sp[4] = {sp0, sp1, sp2, sp3};
+    BYTE* e = g_providersBegin;
+    while (e != g_providersEnd && memcmp(e, sp, 16))
+        e += 32;
+    if (e == g_providersEnd)
+        return 3;
+    Dp_Create();
+    BYTE* lobby = 0;
+    CoCreateInstance(*(const CLSID*)(BYTE*)g_clsidLobby, 0, 1, *(const IID*)(BYTE*)g_iidLobby, (void**)&lobby);
+    void* addr = 0;
+    DWORD size = 0;
+    Gate_BuildAddress(lobby, (const BYTE*)&sp0, &addr, &size, h);
+    DP_CALL0(lobby, 8);
+    int hr = DP_CALL(g_directPlay, 152, addr, 0);
+    if (hr == (int)0x88770005) {
+        Dp_Drop();
+        Dp_Create();
+        hr = DP_CALL(g_directPlay, 152, addr, 0);
+    }
+    GlobalUnlock(GlobalHandle(addr));
+    GlobalFree(GlobalHandle(addr));
+    if (hr < 0) {
+        Dp_Drop();
+        return 3;
+    }
+    DWORD desc[20];
+    memset(desc, 0, sizeof desc);
+    desc[0] = 80;
+    memcpy(desc + 2, (BYTE*)g_683ca0, 16);
+    memcpy(desc + 6, (BYTE*)g_683ca0, 16);
+    if (host) {
+        desc[1] = 8260;
+        desc[10] = max;
+        desc[12] = name;
+        do
+            hr = DP_CALL(g_directPlay, 96, desc, 130);
+        while (hr == (int)0x8877015E);
+        if (hr < 0) {
+            Dp_Drop();
+            return 3;
+        }
+    } else {
+        g_q51_723df4 = 0;
+        do
+            hr = DP_CALL(g_directPlay, 52, desc, 0, (void*)$L_601800, 0, 129);
+        while (hr == (int)0x8877015E);
+        if (hr < 0) {
+            Dp_Drop();
+            return 3;
+        }
+        if (!g_q51_723df4) {
+            Dp_Drop();
+            return 1;
+        }
+    }
+    hr = DP_CALL(g_directPlay, 24, &g_dpPlayer, 0, 0, 0, 0, 0);
+    g_723d88 = 0;
+    if (hr < 0) {
+        Dp_Drop();
+        int text = CallC<int>(FUN_600b50, hr, (void*)g_68d1c0);
+        CallC(FUN_401010, 1, 100, (const char*)s_d1gateFile, (const char*)s_d1gateId, 1038, (const char*)s_dpNoPlayer,
+              text, (void*)g_68d1c0);
+        return -1;
+    }
+    g_723d88 = g_dpPlayer;
     return 0;
 }
 

@@ -14741,7 +14741,7 @@ extern "C" void __fastcall DwordVec_InsertFill(DWORD** self, void*, DWORD* pos, 
 
 ASM_VAR(AsmLabel, s_callHelpers, $L_66cc40)
 ASM_PROC(FUN_45bab0)    // introsort loop (first, last, 0, depth, point24 by value): by distance to a point
-ASM_PROC(FUN_45bbc0)    // final insertion sort (first, last, point24 by value)
+extern "C" void FUN_45bbc0(); KING_ALIAS("_FUN_45bbc0", "_Near_FinalInsertion")    // final insertion sort (first, last, point24 by value)
 
 // [FUN_40a690] collects the free players in mode 5, sorts them by distance to the player's position and sends the
 // closest (at most two) there
@@ -20454,7 +20454,7 @@ ASM_VAR(double, g_64b8f8, $L_64b8f8)
 ASM_VAR(double, g_64b8f0, $L_64b8f0)
 extern "C" void FUN_41b8a0(); KING_ALIAS("_FUN_41b8a0", "_Vehicle_Costs")    // a vehicle's price parts (vehicle, out, double*)
 extern "C" void FUN_45fdd0(); KING_ALIAS("_FUN_45fdd0", "_Markets_IntroSort")    // introsort of market iterators by distance (first, last, -, depth, point)
-ASM_PROC(FUN_4601c0)    // the final insertion sort (first, last, point)
+extern "C" void FUN_4601c0(); KING_ALIAS("_FUN_4601c0", "_Markets_FinalInsertion")    // the final insertion sort (first, last, point)
 extern "C" void FUN_433240(); KING_ALIAS("_FUN_433240", "_AI_BaseDistance")    // a price factor at a point (point by value) returns double
 
 // [FUN_433660] fills a vehicle order (r) for a model from a dealer: 3 when the dealer can't sell (a kind-6 one
@@ -23274,6 +23274,71 @@ BYTE** __cdecl Player_RandomTradePartner2(BYTE** out, BYTE* first, BYTE* last, B
     }
     *out = PickRandom(v, last, rng);
     return out;
+}
+
+} // extern "C"
+
+// === the final insertion sort of market iterators by distance (FUN_4601c0)
+
+extern "C" void FUN_46b020(); KING_ALIAS("_FUN_46b020", "_Sort_UnguardedInsertByDistance")
+extern "C" void FUN_463b50(); KING_ALIAS("_FUN_463b50", "_CopyBackwardDwords")
+
+// the distance of market iterator e's position (+56) from pt
+static double Mk_Dist(int e, const Ns_Pt* pt)
+{
+    double d[3];
+    return CallC<double>(FUN_4577f0, CallC<double*>(FUN_45bea0, d, *(BYTE**)e + 56, pt));
+}
+
+extern "C" {
+
+// [FUN_4601c0] the insertion sort ending std::sort of market iterators [first, last) by distance to pt
+void __cdecl Markets_FinalInsertion(int* first, int* last, Ns_Pt pt)
+{
+    if (last - first > 16) {
+        int* mid = first + 16;
+        for (int* i = first + 1; i != mid; i++) {
+            int v = *i;
+            double dv = Mk_Dist(v, &pt);
+            if (Mk_Dist(*first, &pt) > dv) {
+                for (int* p = i; p != first; p--)
+                    *p = p[-1];
+                *first = v;
+            } else
+                CallC(FUN_46b020, i, v, pt);
+        }
+        for (int* i = mid; i != last; i++) {
+            int v = *i;
+            int* d = i;
+            for (int* n = i - 1;; n--) {
+                double dv = Mk_Dist(v, &pt);
+                if (!(Mk_Dist(*n, &pt) > dv))
+                    break;
+                *d = *n;
+                d = n;
+            }
+            *d = v;
+        }
+        return;
+    }
+    if (first == last)
+        return;
+    for (int* i = first + 1; i != last; i++) {
+        int v = *i;
+        double dv = Mk_Dist(v, &pt);
+        if (Mk_Dist(*first, &pt) > dv) {
+            CallC(FUN_463b50, first, i, i + 1, 0, 0);
+            *first = v;
+        } else {
+            Ns_Pt cmp = pt;
+            int* d = i;
+            for (int* n = i - 1; Fs_Less(&cmp, v, *n); n--) {
+                *d = *n;
+                d = n;
+            }
+            *d = v;
+        }
+    }
 }
 
 } // extern "C"

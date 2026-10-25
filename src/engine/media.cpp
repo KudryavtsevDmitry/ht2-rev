@@ -3626,3 +3626,103 @@ int __cdecl Msavi_OpenSound(HWND w)
 }
 
 } // extern "C"
+
+// === the four rays of a marker (FUN_5c7110)
+
+ASM_PROC(FUN_5c6ac0)    // draws a ray (a, p, q, d, ...)
+extern "C" void Mk_Normalized(); KING_ALIAS("_Mk_Normalized", "_Vec3_Normalized")
+ASM_VAR(Med243_V3, g_mkAhead, $L_702620)
+ASM_VAR(Med243_V3, g_mkSide, $L_702640)
+
+extern "C" {
+
+// [FUN_5c7110] draws the four rays of marker a from p to q (each with c, d, e): ahead and sideways (702620,
+// 702640 scaled by 64c330), and the two diagonals between them at half length
+void __cdecl Marker_DrawRays(int a, Med243_V3 p, Med243_V3 q, int c, int d, int e)
+{
+    const Med243_V3& f = g_mkAhead;
+    const Med243_V3& sd = g_mkSide;
+    double k = g_q168_64c330;
+    Med243_V3 v = {(float)(f.x * k), (float)(f.y * k), (float)(f.z * k)};
+    CallC(FUN_5c6ac0, a, p, q, v, c, d, e);
+    Med243_V3 w = {(float)(sd.x * k), (float)(sd.y * k), (float)(sd.z * k)};
+    CallC(FUN_5c6ac0, a, p, q, w, c, d, e);
+    Med243_V3 t = {(float)((double)sd.x + f.x), (float)((double)sd.y + f.y), (float)((double)sd.z + f.z)}, n;
+    const Med243_V3* u = CallC<const Med243_V3*>(Mk_Normalized, &n, &t);
+    Med243_V3 h = {(float)(u->x * (double)g_q168_64c258), (float)(u->y * (double)g_q168_64c258),
+                   (float)(u->z * (double)g_q168_64c258)};
+    CallC(FUN_5c6ac0, a, p, q, h, c, d, e);
+    float nx = -sd.x, ny = -sd.y, nz = -sd.z;
+    Med243_V3 t2 = {(float)((double)nx + f.x), (float)((double)ny + f.y), (float)((double)nz + f.z)};
+    u = CallC<const Med243_V3*>(Mk_Normalized, &n, &t2);
+    Med243_V3 h2 = {(float)(u->x * (double)g_q168_64c258), (float)(u->y * (double)g_q168_64c258),
+                    (float)(u->z * (double)g_q168_64c258)};
+    CallC(FUN_5c6ac0, a, p, q, h2, c, d, e);
+}
+
+} // extern "C"
+
+// === attaching a shadow to a node (FUN_5cdcd0)
+
+extern "C" void Sh2_sprintf(); KING_ALIAS("_Sh2_sprintf", "_sprintf")
+ASM_VAR(AsmLabel, g_shBuf1, $L_70d8b8)
+ASM_VAR(AsmLabel, g_shBuf2, $L_70de98)
+ASM_VAR(AsmLabel, s_shUnknown, $L_67fa54)
+ASM_VAR(AsmLabel, s_shNoMat, $L_67fa18)
+ASM_VAR(AsmLabel, s_shNoNode, $L_67f9b8)
+typedef int(__cdecl* Sh2_Ground)(int tree, const float* p, float* normal, float* dir);
+
+// logs fmt with the module of node n and its point (+20) into buf
+static void Sh2_Report(char* buf, const char* fmt, BYTE* n)
+{
+    const char* name = F(const char*, F(BYTE*, n, 36), 60);
+    if (!name)
+        name = (const char*)s_shUnknown;
+    const float* p = (const float*)(n + 20);
+    CallC(Sh2_sprintf, buf, fmt, name, (double)p[0], (double)p[1], (double)p[2]);
+    CallC(FUN_5d2ba0, buf, 0);
+}
+
+extern "C" {
+
+// [FUN_5cdcd0] puts shadow s on node n (its tree +44) under material mat at p with size a: placed through the ground
+// callback 70ebec (normal +212, direction +196, then the axes +172 and +184 across it); 1, or 0 with a report
+int __fastcall Shadow_Attach(BYTE* s, void*, BYTE* n, BYTE* mat, const float* p, int a)
+{
+    if (!n)
+        return 0;
+    if (!F(BYTE*, n, 44)) {
+        Sh2_Report((char*)(BYTE*)g_shBuf2, (const char*)s_shNoNode, n);
+        return 0;
+    }
+    if (!mat) {
+        Sh2_Report((char*)(BYTE*)g_shBuf1, (const char*)s_shNoMat, n);
+        return 0;
+    }
+    CallVirt(F(BYTE*, n, 44), 20, 0, s);
+    F(BYTE*, s, 164) = n;
+    F(int, s, 208) = a;
+    F(BYTE*, s, 64) = mat;
+    memcpy(s + 20, p, 12);
+    F(int, s, 32) = a;
+    Sh2_Ground fn = (Sh2_Ground)g_70ebec;
+    if (!fn)
+        return 0;
+    float* d = (float*)(s + 196);
+    if (!fn(F(int, n, 44), p, (float*)(s + 212), d))
+        return 0;
+    const Med243_V3& f = g_mkAhead;
+    float* x = (float*)(s + 172);
+    x[0] = (float)((double)f.z * d[1] - (double)f.y * d[2]);
+    x[1] = (float)((double)f.x * d[2] - (double)f.z * d[0]);
+    x[2] = (float)((double)f.y * d[0] - (double)f.x * d[1]);
+    float* y = (float*)(s + 184);
+    float y0 = (float)((double)d[1] * x[2] - (double)d[2] * x[1]);
+    float y1 = (float)((double)d[2] * x[0] - (double)d[0] * x[2]);
+    float y2 = (float)((double)d[0] * x[1] - (double)d[1] * x[0]);
+    y[0] = y0, y[1] = y1, y[2] = y2;
+    F(BYTE, s, 40) &= ~1;
+    return 1;
+}
+
+} // extern "C"

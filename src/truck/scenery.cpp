@@ -671,7 +671,7 @@ void __fastcall Car_SendNamed(BYTE* self, void*, const BYTE* c, int b, const cha
 }
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_57d580)
+extern "C" void FUN_57d580(); KING_ALIAS("_FUN_57d580", "@Item_DrawMarked@16")
 
 // [FUN_52e1f0] 57d580(a, b) on this
 extern "C" int __fastcall Scenery_Call57d580(void* self, void*, int a, int b)

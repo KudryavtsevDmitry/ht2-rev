@@ -14,7 +14,7 @@ typedef char AsmLabel[1];
 typedef int Ints[1];
 typedef DWORD Dwords[1];
 
-ASM_PROC(FUN_616ca0)    // seeds the noise tables
+extern "C" void FUN_616ca0(); KING_ALIAS("_FUN_616ca0", "_Noise_Seed")    // seeds the noise tables
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // the scene object with this name (0, name)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report
 
@@ -420,8 +420,8 @@ extern "C" int __fastcall Tile_ReadHeights(BYTE* self,void*,FILE* f)
 }
 
 struct Vec3T { float x,y,z; };
-ASM_PROC(FUN_614960)
-ASM_PROC(FUN_614f70)
+extern "C" void FUN_614960(); KING_ALIAS("_FUN_614960", "@TerrainView_Move@20")
+extern "C" void FUN_614f70(); KING_ALIAS("_FUN_614f70", "@TerrainView_Place@20")
 ASM_PROC(FUN_617180)
 
 // [FUN_614f00] FUN_614960 on copies of three vectors
@@ -665,3 +665,273 @@ ASM_VAR(double, g_ter6532e0, $L_6532e0)
 extern "C" void __cdecl TerInit_6142c0() { g_ter72880c = (float)-((double)*(float*)&g_ter72c080 * g_ter6532e0); }
 // [$L_614260]
 extern "C" void __cdecl TerInit_614260() { g_ter728834 = (float)x87_cos((double)g_ter6532d0 * g_ter6532d8); }
+
+
+// === the terrain view update (FUN_614960)
+
+extern "C" void FUN_614ce0(); KING_ALIAS("_FUN_614ce0", "@TGrid_FollowCamera@20")
+extern "C" void FUN_60cae0(); KING_ALIAS("_FUN_60cae0", "@Grid_DrainQueue@8")
+extern "C" void FUN_60c6b0(); KING_ALIAS("_FUN_60c6b0", "@GridMesh_Reprioritise@8")
+ASM_VAR(float, g_tv6532cc, $L_6532cc)
+ASM_VAR(float, g_tv64f3f8, $L_64f3f8)
+ASM_VAR(float, g_tv64da10, $L_64da10)
+ASM_VAR(float, g_tv653138, $L_653138)
+ASM_VAR(float, g_tv6532f4, $L_6532f4)
+
+extern "C" {
+
+// [FUN_614960] view s moves to pos looking along dir with up: a small move that keeps the angle refocuses the
+// grid (s+0) at once; otherwise the grid's queue is drained and it refocuses (looking along +x or -y near the two
+// fixed points of the aa map) and is reprioritised; the position (+4) and the unit direction (+16) are kept
+float* __fastcall TerrainView_Move(BYTE* s, void*, const float* pos, const float* dir, const float* up)
+{
+    double dx = (double)pos[0] - F(float, s, 4), dy = (double)pos[1] - F(float, s, 8),
+           dz = (double)pos[2] - F(float, s, 12);
+    double dl = x87_sqrt((double)dir[0] * dir[0] + (double)dir[1] * dir[1] + (double)dir[2] * dir[2]);
+    float c = (float)(((double)F(float, s, 24) * dir[2] + (double)F(float, s, 20) * dir[1] +
+                       (double)F(float, s, 16) * dir[0]) / dl);
+    double l = x87_sqrt(dz * dz + dy * dy + dx * dx);
+    BYTE* m = F(BYTE*, s, 0);
+    const float* look = dir;
+    static const float px[3] = {1.0f, 0, 0}, ny[3] = {0, -1.0f, 0};
+    bool quick = l < g_tv6532cc && (c > g_ter728834 || -(double)g_ter728834 > c);
+    if (!quick) {
+        CallThis(FUN_60cae0, m);
+        if (!F(int, g_6cec6c, 1316)) {
+            double x1 = (double)pos[0] - g_tv64da10, y1 = (double)pos[1] + g_tv64f3f8;
+            double d1 = x87_sqrt(x1 * x1 + y1 * y1);
+            double x2 = (double)pos[0] - g_tv6532f4, y2 = (double)pos[1] + g_tv653138;
+            double d2 = x87_sqrt(x2 * x2 + y2 * y2);
+            if (d2 < g_ter64c450)
+                look = px;
+            else if (d1 < g_ter64c450)
+                look = ny;
+        }
+    }
+    memcpy(m + 68, pos, 12);
+    memcpy(m + 80, look, 12);
+    memcpy(m + 92, up, 12);
+    CallThis(FUN_614ce0, F(BYTE*, m, 4), m + 68, m + 80, m + 92);
+    F(int, m, 28) = 1;
+    F(int, m, 24) = 1;
+    if (quick) {
+        F(int, F(BYTE*, s, 0), 24) = 1;
+        F(int, F(BYTE*, s, 0), 28) = 1;
+    } else
+        CallThis(FUN_60c6b0, F(BYTE*, s, 0));
+    memcpy(s + 4, pos, 12);
+    float* u = (float*)(s + 16);
+    double n = x87_sqrt((double)dir[0] * dir[0] + (double)dir[1] * dir[1] + (double)dir[2] * dir[2]);
+    u[0] = (float)(dir[0] / n);
+    u[1] = (float)(dir[1] / n);
+    u[2] = (float)(dir[2] / n);
+    return u;
+}
+
+} // extern "C"
+
+// === the terrain's decal sets (FUN_614570)
+
+ASM_VAR(AsmLabel, s_dcAa, $L_676838)            // "aa"
+ASM_VAR(AsmLabel, s_dcTr, $L_676834)            // "tr"
+ASM_VAR(AsmLabel, s_dcKust, $L_685da4)
+ASM_VAR(AsmLabel, s_dcTree23, $L_685d9c)
+ASM_VAR(AsmLabel, s_dcTree45, $L_685d94)
+ASM_VAR(AsmLabel, s_dcAa2, $L_685d90)
+ASM_VAR(AsmLabel, s_dcAa3, $L_685d8c)
+
+// a decal set of n named name in directory dir
+static BYTE* Dc_New(int owner, int n, const void* name, const void* dir)
+{
+    BYTE* d = (BYTE*)operator new(32);
+    return d ? Decals_Construct(d, 0, owner, n, (int)name, (int)dir) : 0;
+}
+
+extern "C" {
+
+// [FUN_614570] terrain s's room objects (+80) and, once, its decal sets for owner a: bushes (+84, as many as the
+// cells +48 x +52), trees 2-3 and 4-5 and the two aa sets (+88..+100, cells +64 x +68), from the aa or tr map
+void __fastcall Terrain_CreateDecals(BYTE* s, void*, int a)
+{
+    if (!F(BYTE*, s, 80)) {
+        BYTE* o = (BYTE*)operator new(52);
+        F(BYTE*, s, 80) = o ? RoomObjects_Construct(o, 0, a, (int)s) : 0;
+    }
+    if (F(int, s, 84) || F(int, s, 88) || F(int, s, 92) || F(int, s, 96) || F(int, s, 100))
+        return;
+    const void* dir = F(int, g_6cec6c, 1316) ? (BYTE*)s_dcTr : (BYTE*)s_dcAa;
+    F(BYTE*, s, 84) = Dc_New(a, F(int, s, 48) * F(int, s, 52), (BYTE*)s_dcKust, dir);
+    F(BYTE*, s, 88) = Dc_New(a, F(int, s, 64) * F(int, s, 68), (BYTE*)s_dcTree23, dir);
+    F(BYTE*, s, 92) = Dc_New(a, F(int, s, 64) * F(int, s, 68), (BYTE*)s_dcTree45, dir);
+    F(BYTE*, s, 96) = Dc_New(a, F(int, s, 64) * F(int, s, 68), (BYTE*)s_dcAa2, dir);
+    F(BYTE*, s, 100) = Dc_New(a, F(int, s, 64) * F(int, s, 68), (BYTE*)s_dcAa3, dir);
+}
+
+} // extern "C"
+
+// === the terrain normal at a point (FUN_615350)
+
+extern "C" void FUN_608ab0(); KING_ALIAS("_FUN_608ab0", "@Tiles_Table@16")
+extern "C" void FUN_608ea0(); KING_ALIAS("_FUN_608ea0", "@Tile_Normal@20")
+extern "C" void Tn_floor(); KING_ALIAS("_Tn_floor", "_floor")
+extern "C" void Tn_ceil(); KING_ALIAS("_Tn_ceil", "_ceil")
+extern "C" Vec3* __cdecl Vec3_Diff(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" Vec3* __cdecl Vec3_Sum(Vec3* out, const Vec3* a, const Vec3* b);
+extern "C" Vec3* __cdecl Vec3_Times(Vec3* out, const Vec3* v, float s);
+ASM_VAR(float, g_tn653240, $L_653240)
+ASM_VAR(float, g_tn653244, $L_653244)
+
+// the normal of grid point (i, j)
+static Vec3 Tn_At(BYTE* tiles, int i, int j)
+{
+    Vec3 n;
+    CallThis(FUN_608ea0, CallThis<BYTE*>(FUN_608ab0, tiles, i, j), i, j, &n);
+    return n;
+}
+
+extern "C" {
+
+// [FUN_615350] *out = the terrain normal at (x, y) of view s's grid (+0 +4: its bounds +40136.., cell +40152..,
+// tiles +40192), blended from the four grid points around it; straight up outside
+Vec3* __fastcall Terrain_NormalAt(BYTE** s, void*, float x, float y, Vec3* out)
+{
+    BYTE* g = F(BYTE*, *s, 4);
+    if (!(x < F(float, g, 40140) && x > F(float, g, 40136) && y < F(float, g, 40144) && y > F(float, g, 40148))) {
+        out->x = 0;
+        out->y = 0;
+        out->z = 1.0f;
+        return out;
+    }
+    float u = (float)(((double)x - F(float, g, 40136)) / F(float, g, 40152));
+    float v = (float)(((double)y - F(float, g, 40148)) / F(float, g, 40156));
+    int i0 = (int)(CallC<double>(Tn_floor, (double)(u / (double)g_tn653240)) * g_tn653240);
+    int j0 = (int)(CallC<double>(Tn_floor, (double)(v / (double)g_tn653244)) * g_tn653244);
+    int i1 = (int)(CallC<double>(Tn_ceil, (double)(u / (double)g_tn653240)) * g_tn653240);
+    int j1 = (int)(CallC<double>(Tn_ceil, (double)(v / (double)g_tn653244)) * g_tn653244);
+    float fu = (float)((u - (double)(__int64)i0) / g_tn653240);
+    float fv = (float)((v - (double)(__int64)j0) / g_tn653244);
+    BYTE* t = F(BYTE*, g, 40192);
+    Vec3 n00 = Tn_At(t, i0, j0), n10 = Tn_At(t, i1, j0), n01 = Tn_At(t, i0, j1), n11 = Tn_At(t, i1, j1);
+    Vec3 a, b, c, d, e, f, h, r;
+    a.Set((float)((double)n10.x - n00.x), (float)((double)n10.y - n00.y), (float)((double)n10.z - n00.z));
+    b.Set((float)(a.x * (double)fu), (float)(a.y * (double)fu), (float)(a.z * (double)fu));
+    c.Set((float)((double)b.x + n00.x), (float)((double)b.y + n00.y), (float)((double)b.z + n00.z));
+    Vec3_Sum(&f, &n01, Vec3_Times(&e, Vec3_Diff(&d, &n11, &n01), fu));
+    Vec3_Sum(&r, &c, Vec3_Times(&h, Vec3_Diff(&d, &f, &c), fv));
+    *out = r;
+    return out;
+}
+
+} // extern "C"
+
+// === seeding the noise tables (FUN_616ca0)
+
+extern "C" int __cdecl rand(void);
+extern "C" void __cdecl srand(unsigned);
+ASM_VAR(float, g_ns64c254, $L_64c254)
+ASM_VAR(float, g_ns64c340, $L_64c340)
+ASM_VAR(float, g_ns64c334, $L_64c334)
+ASM_VAR(float, g_ns64c264, $L_64c264)
+ASM_VAR(float, g_ns64c258, $L_64c258)
+ASM_VAR(float, g_ns64c250, $L_64c250)
+ASM_VAR(DWORD, g_ns729448, $L_729448)
+ASM_VAR(DWORD, g_ns728c40, $L_728c40)
+
+// a random number in [0, 1)
+static double Ns_Rand() { return rand() * (double)g_ns64c254; }
+
+extern "C" {
+
+// [FUN_616ca0] seeds the noise tables from seed: 256 random unit gradients (729850), signs (72b870), kinds 0..3
+// (729044) and scales (72883c), a shuffled permutation (72b068), each table repeated after its 256 entries
+void __cdecl Noise_Seed(unsigned seed)
+{
+    srand(seed);
+    float* grad = (float*)g_noiseGrad;
+    for (int i = 0; i < 256; i++) {
+        double z, l2;
+        float x, y;
+        do {
+            float r1 = (float)Ns_Rand(), r2 = (float)Ns_Rand(), r3 = (float)Ns_Rand(), r4 = (float)Ns_Rand();
+            double r5 = Ns_Rand();
+            x = (float)(r4 - r5);
+            y = (float)((double)r2 - r3);
+            z = Ns_Rand() - r1;
+            l2 = z * z + (double)x * x + (double)y * y;
+        } while (l2 > g_ns64c250);
+        double l = x87_sqrt(l2);
+        grad[i * 3] = (float)(x / l);
+        grad[i * 3 + 1] = (float)(y / l);
+        grad[i * 3 + 2] = (float)(z / l);
+        g_noiseC[i] = Ns_Rand() > g_ns64c264 ? 1 : 0;
+        if (Ns_Rand() > g_ns64c258)
+            g_noiseA[i] = Ns_Rand() > g_ns64c258 ? 0 : 1;
+        else
+            g_noiseA[i] = Ns_Rand() > g_ns64c258 ? 2 : 3;
+        ((float*)g_noiseB)[i] = (float)(rand() * (double)g_ns64c340 + g_ns64c334);
+    }
+    for (int j = 0; j < 256; j++)
+        g_perm[j] = j;
+    for (int* p = g_perm + 256; p > g_perm; p -= 2) {
+        int t = *p;
+        int k = rand() % 256;
+        *p = g_perm[k];
+        g_perm[k] = t;
+    }
+    for (int i = 0; i < 256; i++) {
+        g_perm[256 + i] = g_perm[i];
+        memcpy(grad + (256 + i) * 3, grad + i * 3, 12);
+        g_noiseC[256 + i] = g_noiseC[i];
+        g_ns729448 = g_noiseA[i];
+        g_ns728c40 = g_noiseB[i];
+    }
+}
+
+} // extern "C"
+
+// === placing the terrain view (FUN_614f70)
+
+extern "C" void FUN_60cb10(); KING_ALIAS("_FUN_60cb10", "@Grid_RemoveUnusedPoints@8")
+
+// grid m refocused at pos looking along look with up
+static void Tp_Focus(BYTE* m, const float* pos, const float* look, const float* up)
+{
+    memcpy(m + 68, pos, 12);
+    memcpy(m + 80, look, 12);
+    memcpy(m + 92, up, 12);
+    CallThis(FUN_614ce0, F(BYTE*, m, 4), m + 68, m + 80, m + 92);
+    F(int, m, 28) = 1;
+    F(int, m, 24) = 1;
+}
+
+extern "C" {
+
+// [FUN_614f70] places view s's grid at pos: inside its bounds (+28, +32, size +40, +44) it looks along dir, else
+// towards the nearer of the two fixed points of the map (+x, -y, or both when as near); then the grid is
+// reprioritised and its unused points dropped
+void __fastcall TerrainView_Place(BYTE* s, void*, const float* pos, const float* dir, const float* up)
+{
+    CallThis(FUN_60cae0, F(BYTE*, s, 0));
+    double h = F(float, s, 40) * (double)g_ns64c258;
+    float hf = (float)h;
+    if (!(h + F(float, s, 28) < pos[0]) && !((double)F(float, s, 28) - hf > pos[0]) &&
+        !(F(float, s, 44) * (double)g_ns64c258 + F(float, s, 32) < pos[1]) && !((double)F(float, s, 32) - hf > pos[1]))
+        Tp_Focus(F(BYTE*, s, 0), pos, dir, up);
+    else {
+        double ay = (double)pos[1] + g_tv653138, ax = (double)pos[0] - g_tv6532f4;
+        float da = (float)x87_sqrt(ay * ay + ax * ax);
+        double bx = (double)pos[0] - g_tv64da10, by = (double)pos[1] + g_tv64f3f8;
+        float db = (float)x87_sqrt(bx * bx + by * by);
+        static const float px[3] = {1.0f, 0, 0}, ny[3] = {0, -1.0f, 0}, both[3] = {1.0f, -1.0f, 0};
+        if (da < db)
+            Tp_Focus(F(BYTE*, s, 0), pos, px, up);
+        if (da > db)
+            Tp_Focus(F(BYTE*, s, 0), pos, ny, up);
+        if (da == db)
+            Tp_Focus(F(BYTE*, s, 0), pos, both, up);
+    }
+    CallThis(FUN_60c6b0, F(BYTE*, s, 0));
+    CallThis(FUN_60cb10, F(BYTE*, s, 0));
+}
+
+} // extern "C"
