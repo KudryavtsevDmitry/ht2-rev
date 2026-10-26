@@ -26,7 +26,7 @@ extern "C" void FUN_44c710(); KING_ALIAS("_FUN_44c710", "@StrRefVec_InsertAux@16
 extern "C" void FUN_4a1f10(); KING_ALIAS("_FUN_4a1f10", "@IntDeque_Construct@12")
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
-ASM_PROC(FUN_5dbbb0)
+extern "C" void FUN_5dbbb0(); KING_ALIAS("_FUN_5dbbb0", "@Fw_ResetRenderer@24")
 extern "C" void FUN_5c3800(); KING_ALIAS("_FUN_5c3800", "@SoundSystem_Construct@16")
 extern "C" void FUN_52e740(); KING_ALIAS("_FUN_52e740", "@Scenery_StartEvent@20")
 extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
@@ -271,7 +271,7 @@ ASM_VAR(float, g_positionResetThreshold, $L_650624)
 ASM_VAR(AsmLabel, g_setPosition1, $L_67d4cc)
 ASM_VAR(AsmLabel, g_setPosition2, $L_67d4c0)
 ASM_VAR(AsmLabel, g_setPlace, $L_67d4b4)
-ASM_PROC(FUN_58e7f0)
+extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
 ASM_VAR(short, g_sceneCommandCode, $L_67d10a)
 ASM_VAR(BYTE*, g_sceneCommandList, $L_6f653c)
@@ -1393,7 +1393,7 @@ extern "C" void Tb_TruckG(); KING_ALIAS("_Tb_TruckG", "@Truck52d400_Construct@32
 extern "C" void Tb_TruckGN(); KING_ALIAS("_Tb_TruckGN", "@Truck52d530_Construct@40")
 extern "C" void Tb_BusG(); KING_ALIAS("_Tb_BusG", "@Bus52e470_Construct@36")
 extern "C" void Tb_BusGN(); KING_ALIAS("_Tb_BusGN", "@Bus52e300_Construct@44")
-ASM_PROC($L_576670)
+extern "C" void __cdecl Bus_OnFare(void* bus, double amount);
 ASM_VAR(int, g_tb6ce350, $L_6ce350)
 ASM_VAR(int, g_tb6ce35c, $L_6ce35c)
 ASM_VAR(int, g_tb6ce360, $L_6ce360)
@@ -1455,12 +1455,12 @@ BYTE* __cdecl Trash_CreateHost(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int numbe
             if (local == 1)
             {
                 if (kind == 1)
-                    v = CallThis<BYTE*>(Tb_BusH, m, w, o2, type, num, 1, (void*)$L_576670);
+                    v = CallThis<BYTE*>(Tb_BusH, m, w, o2, type, num, 1, (void*)Bus_OnFare);
                 else
                     v = CallThis<BYTE*>(kind ? Tb_TruckH : Tb_CarH, m, w, o2, type, num, 1);
             }
             else if (kind == 1)
-                v = CallThis<BYTE*>(Tb_BusHN, m, w, o1, o2, pos, type, num, 0, (void*)$L_576670);
+                v = CallThis<BYTE*>(Tb_BusHN, m, w, o1, o2, pos, type, num, 0, (void*)Bus_OnFare);
             else
                 v = CallThis<BYTE*>(kind ? Tb_TruckHN : Tb_CarHN, m, w, o1, o2, pos, type, num, 0);
         }
@@ -1482,17 +1482,324 @@ BYTE* __cdecl Trash_CreateGuest(BYTE* w, BYTE* o1, BYTE* o2, BYTE* pos, int numb
             if (local == 1)
             {
                 if (kind == 1)
-                    v = CallThis<BYTE*>(Tb_BusG, m, w, o2, type, num, extra, 1, (void*)$L_576670);
+                    v = CallThis<BYTE*>(Tb_BusG, m, w, o2, type, num, extra, 1, (void*)Bus_OnFare);
                 else
                     v = CallThis<BYTE*>(kind ? Tb_TruckG : Tb_CarG, m, w, o2, type, num, extra, 1);
             }
             else if (kind == 1)
-                v = CallThis<BYTE*>(Tb_BusGN, m, w, o1, o2, pos, type, num, extra, 0, (void*)$L_576670);
+                v = CallThis<BYTE*>(Tb_BusGN, m, w, o1, o2, pos, type, num, extra, 0, (void*)Bus_OnFare);
             else
                 v = CallThis<BYTE*>(kind ? Tb_TruckGN : Tb_CarGN, m, w, o1, o2, pos, type, num, extra, 0);
         }
     }
     return Tb_Check(v, type, num, o2, &g_tbGuest2);
+}
+
+} // extern "C"
+
+// === the application's start ($L_4e19b0 with its tails up to $L_4e1d07, a vtable entry)
+
+extern "C" void Ai_FindCd(); KING_ALIAS("_Ai_FindCd", "_Startup_FindCd")
+extern "C" void Ai_MapSymbols(); KING_ALIAS("_Ai_MapSymbols", "_World_ReadMapSymbols")
+extern "C" void Ai_Controls(); KING_ALIAS("_Ai_Controls", "_Controls_ReadDefFile")
+extern "C" void Ai_Fatal(); KING_ALIAS("_Ai_Fatal", "_World_Fatal")
+extern "C" void Ai_Options(); KING_ALIAS("_Ai_Options", "_Startup_ReadOptions")
+extern "C" void Ai_Joy(); KING_ALIAS("_Ai_Joy", "_Joy_Init")
+extern "C" void Ai_Presets(); KING_ALIAS("_Ai_Presets", "_Controls_ListPresets")
+extern "C" void Ai_Preset(); KING_ALIAS("_Ai_Preset", "_Controls_SelectPreset")
+extern "C" void Ai_FfHooks(); KING_ALIAS("_Ai_FfHooks", "_Mmt_Set6f4ba4")
+extern "C" void Ai_FfForget(); KING_ALIAS("_Ai_FfForget", "_Ff_Forget")
+extern "C" void Ai_FfCreate(); KING_ALIAS("_Ai_FfCreate", "_Ff_Create")
+extern "C" void Ai_Dump(); KING_ALIAS("_Ai_Dump", "_Dump_Text")
+extern "C" void Ai_Wnd(); KING_ALIAS("_Ai_Wnd", "@Wnd4e01d0_Construct@12")
+extern "C" void Ai_AddActive(); KING_ALIAS("_Ai_AddActive", "@Windows_AddActive@12")
+extern "C" void Ai_Add(); KING_ALIAS("_Ai_Add", "@Windows_Add@12")
+extern "C" void Ai_Add2(); KING_ALIAS("_Ai_Add2", "@Windows_Add2@12")
+extern "C" void Ai_WasmCreate(); KING_ALIAS("_Ai_WasmCreate", "@Wasm597410_Create@8")
+extern "C" void Ai_Wasm598d80(); KING_ALIAS("_Ai_Wasm598d80", "@Wasm_598d80@8")
+extern "C" void Ai_NodeN(); KING_ALIAS("_Ai_NodeN", "@NodeN_Construct@20")
+extern "C" void Ai_View3D(); KING_ALIAS("_Ai_View3D", "@View3D_Construct@24")
+extern "C" void Ai_Music(); KING_ALIAS("_Ai_Music", "_Obj6968ac_Clear")
+extern "C" void Ai_Cluster(); KING_ALIAS("_Ai_Cluster", "@Cluster_Construct@8")
+extern "C" void Ai_ObjFind(); KING_ALIAS("_Ai_ObjFind", "_Objects_Find")
+extern "C" void Ai_Surface(); KING_ALIAS("_Ai_Surface", "@Window_SetSurface@12")
+ASM_FUNC(Ai_World, FUN_4e24e8)
+ASM_FUNC(Ai_ClusterLoad, FUN_5ec0f0)
+ASM_FUNC(Ai_Menu, FUN_527f30)
+extern "C" int __cdecl _stricmp(const char* a, const char* b);
+ASM_VAR(char, g_aiNewLines, $L_673414)
+ASM_VAR(char, g_aiDot, $L_671204)
+ASM_VAR(int, g_ai696c74, $L_696c74)
+ASM_VAR(void*, g_ai6f4bac, $L_6f4bac)
+ASM_VAR(int, g_ai696c58, $L_696c58)
+ASM_VAR(int, g_ai696ca4, $L_696ca4)
+ASM_VAR(BYTE*, g_ai696ca0, $L_696ca0)
+ASM_VAR(BYTE, g_ai696750, $L_696750)
+ASM_VAR(BYTE, g_ai6f68b0, $L_6f68b0)
+ASM_VAR(BYTE, g_ai68d1c0, $L_68d1c0)
+ASM_VAR(AsmLabel, g_ai7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_ai64d7d0, $L_64d7d0)
+ASM_VAR(AsmLabel, g_ai64d7bc, $L_64d7bc)
+ASM_VAR(BYTE*, g_ai696ca8, $L_696ca8)
+ASM_VAR(BYTE*, g_ai696cac, $L_696cac)
+ASM_VAR(BYTE*, g_ai696cb0, $L_696cb0)
+ASM_VAR(int, g_ai696d1c, $L_696d1c)
+struct AiRect { int d[4]; };
+ASM_VAR(AiRect, g_ai720938, $L_720938)
+
+extern "C" {
+
+// [$L_4e19b0..$L_4e1d07] application a started (argc, argv; "/VAS" refused): the mutex, the CD, the map symbols,
+// the controls and options, the window (480 lines high at most, centered), the joystick and force feedback,
+// the world, the scene objects, the 3D view, the music, load.res and screen2.txr, the menu
+void __fastcall App_Start(BYTE* a, void*, int argc, char** argv)
+{
+    CreateMutexA(0, 1, "kotr_app_mutex");
+    CallC(Ai_FindCd);
+    CallC(Ai_MapSymbols);
+    CallC(Ai_Controls);
+    if (argc >= 2 && !_stricmp(argv[1], "/VAS"))
+        CallC(Ai_Fatal, &g_aiNewLines);
+    CallC(Ai_Options);
+    int h = F(int, a, 260), w = F(int, a, 256);
+    int top = 90, bottom = 390;
+    if (h < 480)
+    {
+        top = (480 - h) / 2;
+        bottom = top + 300;
+        if (top < 0)
+            top = 0;
+        if (bottom > h)
+            bottom = h;
+    }
+    if (g_ai696c74)
+        g_ai6f4bac = (void*)Ai_Dump;
+    g_ai696ca4 = CallC<int>(Ai_Joy, F(int, a, 388), g_ai696c58 * 100, 0) == 0;
+    CallC(Ai_Presets);
+    CallC(Ai_Preset, 0);
+    CallC(Ai_FfHooks, (void*)Ai_FfForget, (void*)Ai_FfCreate);
+    int rect[4] = {0, top, w, bottom};
+    BYTE* p = (BYTE*)operator new(9408);
+    if (p)
+        p = CallThis<BYTE*>(Ai_Wnd, p, rect);
+    g_ai696ca0 = p;
+    CallThis(Ai_AddActive, a, p);
+    CallC(Ai_World, g_ai696ca0, &g_ai696750, F(int, a, 388));
+    F(DWORD, a, 292) |= 8;
+    CallVirt(g_ai696ca0, 32);
+    CallThis(Ai_WasmCreate, &g_ai6f68b0);
+    CallThis(Ai_Wasm598d80, &g_ai6f68b0);
+    BYTE* n = (BYTE*)operator new(112);
+    if (n)
+    {
+        CallThis(Ai_NodeN, n, &g_ai68d1c0, 6, 1);
+        memset(n + 64, 0, 48);
+        memcpy(n + 64, &g_ai7025f0, 48);
+        F(void*, n, 0) = &g_ai64d7d0;
+        F(int, n, 56) = 0;
+        F(int, n, 60) = 0;
+    }
+    g_ai696ca8 = n;
+    BYTE* o = (BYTE*)operator new(104);
+    if (o)
+    {
+        F(int, o, 4) = 0;
+        F(BYTE*, o, 80) = g_ai696ca8;
+        F(int, o, 8) = 0;
+        F(void*, o, 0) = &g_ai64d7bc;
+        F(int, o, 76) = 0;
+        F(float, o, 88) = 1.0f;
+        F(float, o, 84) = 1.0f;
+        F(int, o, 96) = 0;
+        F(int, o, 92) = 0;
+        F(BYTE, o, 44) = 0;
+        F(BYTE, o, 12) = 0;
+        F(int, o, 100) = 0;
+    }
+    g_ai696cac = o;
+    BYTE* v = (BYTE*)operator new(5152);
+    if (v)
+        v = CallThis<BYTE*>(Ai_View3D, v, g_ai720938);
+    g_ai696cb0 = v;
+    CallThis(Ai_Add, a, v);
+    CallVirt(g_ai696cb0, 32);
+    CallC(Ai_Music, "truck.mid");
+    BYTE* c = (BYTE*)operator new(180);
+    if (c)
+        c = CallThis<BYTE*>(Ai_Cluster, c);
+    F(BYTE*, g_ai696ca0, 9396) = c;
+    FILE* f = fopen("load.res", "rb");
+    if (!f)
+        CallC(Ai_Fatal, "LOAD.RES not found");
+    CallThis(Ai_ClusterLoad, F(BYTE*, g_ai696ca0, 9396), &g_aiDot, f, 2, 0);
+    g_ai696d1c = CallC<int>(Ai_ObjFind, "screen2.txr");
+    CallThis(Ai_Surface, F(BYTE*, F(BYTE*, a, 252), 12), F(int, F(BYTE*, F(BYTE*, g_ai696ca0, 9396), 100), 0));
+    BYTE* m = (BYTE*)operator new(424);
+    if (m)
+        m = CallThis<BYTE*>(Ai_Menu, m, F(BYTE*, a, 252));
+    CallThis(Ai_Add2, a, m);
+    F(DWORD, a, 292) |= 3;
+}
+
+} // extern "C"
+
+// === a host's tree box made ($L_52ef80 with its tail $L_52efbd, a table entry)
+
+extern "C" void Tr_Fatal(); KING_ALIAS("_Tr_Fatal", "_World_Fatal")
+extern "C" void Tr_Car(); KING_ALIAS("_Tr_Car", "@Car52d650_Construct@48")
+extern "C" void Tr_Query(); KING_ALIAS("_Tr_Query", "_Query_4e6749")
+extern "C" void Tr_Length(); KING_ALIAS("_Tr_Length", "_Vec3_Length")
+extern "C" void Tr_Norm(); KING_ALIAS("_Tr_Norm", "_Vec3_Normalized")
+extern "C" void Tr_Set(); KING_ALIAS("_Tr_Set", "@Vec3_SetThis@20")
+extern "C" void Tr_Scaled(); KING_ALIAS("_Tr_Scaled", "_Vec3_Scaled")
+extern "C" void Tr_M2(); KING_ALIAS("_Tr_M2", "@SceneObj_Matrix2@12")
+extern "C" void Tr_RotBy(); KING_ALIAS("_Tr_RotBy", "_Vec3_RotateBy")
+ASM_VAR(Vec3, g_trUp, $L_702630)
+ASM_VAR(int, g_tr6ce364, $L_6ce364)
+ASM_VAR(float, g_tr64c968, $L_64c968)
+ASM_VAR(float, g_tr64c450, $L_64c450)
+ASM_VAR(float, g_tr64d7b8, $L_64d7b8)
+ASM_VAR(float, g_tr64c264, $L_64c264)
+ASM_VAR(float, g_tr64c260, $L_64c260)
+
+// p + U * k, the components after x rounded on the way
+static Vec3 Tr_Above(const float* p, float k)
+{
+    float y = (float)((double)g_trUp.y * k), z = (float)((double)g_trUp.z * k);
+    Vec3 r = {(float)((double)g_trUp.x * k + p[0]), (float)((double)y + p[1]), (float)((double)z + p[2])};
+    return r;
+}
+
+static Vec3 Tr_SetV(double x, double y, double z)
+{
+    Vec3 r;
+    CallThis(Tr_Set, &r, (float)x, (float)y, (float)z);
+    return r;
+}
+
+extern "C" {
+
+// [$L_52ef80..$L_52efbd] tree box (a car of the last type) in room room at frame m; 0 for guests (g); its ground
+// below (normal d); the first wheel with ground contact under 64d7b8 and a speed gets a push across the slope
+// (speed +144, spin +148); the two old objects o1, o2 are freed
+BYTE* __cdecl TreeBox_CreateHost(BYTE* tb, const float* m, BYTE* room, int a4, BYTE* o1, BYTE* o2, int g)
+{
+    if (!room || !tb)
+        CallC(Tr_Fatal, "createHostTreeBox(): treebox==NULL||room==NULL");
+    if (g)
+        return 0;
+    BYTE* v = (BYTE*)operator new(9600);
+    if (v)
+        v = CallThis<BYTE*>(Tr_Car, v, g_ld6ef1fc, tb, room, m, g_tr6ce364, 0, 0, 0, 1.0f, 0);
+    CallVirt(v, 24, 1);
+    Vec3 to = Tr_Above(m + 9, g_tr64c968);
+    Vec3 P = {m[9], m[10], m[11]};
+    Vec3 d = g_trUp;
+    Vec3 from = Tr_Above(m + 9, g_tr64c450);
+    CallC(Tr_Query, tb, &from, &to, &P, &d);
+    int i = 0;
+    for (; i < 6; i++)
+        if (F(int, v, 3508 + 4 * i) && F(float, v, 3532 + 4 * i) < g_tr64d7b8)
+            break;
+    if (i < 6)
+    {
+        Vec3 V = F(Vec3, F(BYTE*, v, 3508 + 4 * i), 452);
+        double lv = CallC<double>(Tr_Length, &V);
+        float len = (float)lv;
+        if (lv > g_tr64c264)
+        {
+            double c0 = (double)V.z * d.y - (double)d.z * V.y;
+            double c1 = (double)d.z * V.x - (double)V.z * d.x;
+            double c2 = (double)V.y * d.x - (double)d.y * V.x;
+            Vec3 E = {(float)(c1 * d.z - c2 * d.y), (float)(c2 * d.x - d.z * c0), (float)(d.y * c0 - c1 * d.x)};
+            Vec3 N;
+            CallC(Tr_Norm, &N, &E);
+            Vec3 G = Tr_SetV((double)g_trUp.x * g_tr64c260, (double)g_trUp.y * g_tr64c260, (double)g_trUp.z * g_tr64c260);
+            Vec3 H = Tr_SetV((double)G.x + N.x, (double)G.y + N.y, (double)G.z + N.z);
+            Vec3 Hn;
+            const float* hn = &CallC<const Vec3*>(Tr_Norm, &Hn, &H)->x;
+            Vec3 K = Tr_SetV((double)len * hn[0], (double)len * hn[1], (double)len * hn[2]);
+            Vec3 L = Tr_SetV((double)K.x * g_tr64c260, (double)K.y * g_tr64c260, (double)K.z * g_tr64c260);
+            Vec3 M = Tr_SetV((double)N.y * d.z - (double)N.z * d.y, (double)N.z * d.x - (double)d.z * N.x,
+                             (double)d.y * N.x - (double)N.y * d.x);
+            Vec3 s1, W;
+            const Vec3* r1 = CallC<const Vec3*>(Tr_Scaled, &s1, &M, len);
+            CallC(Tr_Scaled, &W, r1, 0.01f);
+            Matrix t;
+            const Matrix* M2 = CallThis<const Matrix*>(Tr_M2, v, &t);
+            Vec3 RW;
+            CallC(Tr_RotBy, &RW, &W, M2);
+            CallVirt(v, 144, &L, 0);
+            CallVirt(v, 148, &RW, 0);
+        }
+    }
+    if (o1)
+    {
+        CallVirt(o1, 36);
+        CallVirt(o1, 0, 1);
+    }
+    if (o2)
+    {
+        CallVirt(o2, 36);
+        CallVirt(o2, 0, 1);
+    }
+    return v;
+}
+
+} // extern "C"
+
+// === a bus's fare earned ($L_576670, the buses' callback)
+
+extern "C" void Bf_Mode(); KING_ALIAS("_Bf_Mode", "@Shell_SetMode@12")
+extern "C" void Bf_MsgNew(); KING_ALIAS("_Bf_MsgNew", "@DpMessage_Construct@8")
+extern "C" void Bf_Write(); KING_ALIAS("_Bf_Write", "@Msg_Write120@20")
+extern "C" void Bf_Send(); KING_ALIAS("_Bf_Send", "_Dp_Send")
+extern "C" void Bf_MsgFree(); KING_ALIAS("_Bf_MsgFree", "@MsgBuf_Destroy@8")
+extern "C" void Bf_Text(); KING_ALIAS("_Bf_Text", "_Table71e858_Get")
+extern "C" void Bf_Message(); KING_ALIAS("_Bf_Message", "_Messages_Add")
+ASM_VAR(int, g_bf696900, $L_696900)
+ASM_VAR(double, g_bfMoney, $L_6f3338)
+ASM_VAR(double, g_bf64b730, $L_64b730)
+ASM_VAR(BYTE*, g_bf6ceca8, $L_6ceca8)
+
+static void Bf_SendMsg(int code, const BYTE* buf, int n)
+{
+    __declspec(align(8)) BYTE msg[32];
+    CallThis(Bf_MsgNew, msg);
+    CallThis(Bf_Write, msg, code, buf, n);
+    BYTE* p = F(BYTE*, msg, 4);
+    CallC(Bf_Send, p, (int)(F(BYTE*, msg, 8) - p));
+    CallThis(Bf_MsgFree, msg);
+}
+
+extern "C" {
+
+// [$L_576670] the local player's money (6f3338 by player) grows by amount: reaching 64b730 ends the game (mode 3,
+// messages 953 with the sum and 952), else the earned message and 953
+void __cdecl Bus_OnFare(void*, double amount)
+{
+    int pl = g_bf696900;
+    double* m = &g_bfMoney + pl;
+    *m += amount;
+    BYTE buf[8];
+    if (!(*m < g_bf64b730))
+    {
+        CallThis(Bf_Mode, g_bf6ceca8, 3);
+        buf[0] = (BYTE)pl;
+        int t = (int)*m;
+        memcpy(buf + 1, &t, 4);
+        Bf_SendMsg(953, buf, 5);
+        buf[0] = 3;
+        Bf_SendMsg(952, buf, 3);
+        return;
+    }
+    char text[68];
+    sprintf(text, CallC<const char*>(Bf_Text, 86), (int)*m);
+    CallC(Bf_Message, text);
+    buf[0] = (BYTE)pl;
+    int t = (int)*m;
+    memcpy(buf + 1, &t, 4);
+    Bf_SendMsg(953, buf, 5);
 }
 
 } // extern "C"

@@ -1361,7 +1361,7 @@ extern "C" int __fastcall Car_SetLights(BYTE* self, void*, float* level)
 // attaches the vehicle to a car: the car's engine faces against the vector at
 // 702630
 
-ASM_PROC(FUN_4eec80)    // engine: the angle of a direction (&vec)
+extern "C" void FUN_4eec80(); KING_ALIAS("_FUN_4eec80", "@Trailer_SaddleLoad@12")    // engine: the angle of a direction (&vec)
 extern "C" void __fastcall Engine_4eead0(BYTE* self, void*, int a);   // carphys.cpp
 
 extern "C" void __fastcall Vehicle_AttachCar(BYTE* self, void*, BYTE* car)
@@ -2079,7 +2079,7 @@ extern "C" int __fastcall Car_556150(BYTE* s, void*, int a, int b, int c)
 // The trailer's hitch: after a trailer method the cab is pulled back along
 // the hitch direction.
 
-ASM_PROC(FUN_4eec80)
+extern "C" void FUN_4eec80(); KING_ALIAS("_FUN_4eec80", "@Trailer_SaddleLoad@12")
 extern "C" void FUN_4eeaf0(); KING_ALIAS("_FUN_4eeaf0", "@Body_SetLoad@12")
 extern "C" void FUN_581230(); KING_ALIAS("_FUN_581230", "@SceneObj_SetPosition@16")
 extern "C" void FUN_561d10(); KING_ALIAS("_FUN_561d10", "@Copter_SetMatrix@16")
@@ -5322,7 +5322,7 @@ void __fastcall Flasher_StepLight(BYTE* f)
 
 // === starting a flasher light (FUN_549960)
 
-ASM_PROC(FUN_54a120)
+extern "C" void FUN_54a120(); KING_ALIAS("_FUN_54a120", "@Flasher_Construct@16")
 ASM_VAR(float, g_fl64f740, $L_64f740)
 ASM_VAR(float, g_fl64c250, $L_64c250)
 
@@ -6235,7 +6235,7 @@ extern "C" void FUN_542450(); KING_ALIAS("_FUN_542450", "@Mass_Shares@12")
 extern "C" void FUN_5465c0(); KING_ALIAS("_FUN_5465c0", "_Vehicle_MakeDamageKeys")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")
-ASM_PROC(FUN_542580)
+extern "C" void FUN_542580(); KING_ALIAS("_FUN_542580", "@Car_SetInertia@8")
 ASM_VAR(AsmLabel, g_cr6d20f4, $L_6d20f4)            // per car type, 1488 bytes each
 ASM_VAR(int, g_cr6ef1f0, $L_6ef1f0)
 ASM_VAR(BYTE*, g_cr6ef204, $L_6ef204)
@@ -13900,6 +13900,264 @@ void __fastcall Switch3_Set(BYTE* s, void*, int g)
     }
     }
     F(int, s, 40) = g;
+}
+
+} // extern "C"
+
+// === the car's moments of inertia (FUN_542580 with its tail $L_542637)
+
+extern "C" void In_Fatal(); KING_ALIAS("_In_Fatal", "_World_Fatal")
+extern "C" void In_Hold(); KING_ALIAS("_In_Hold", "@Car_HoldValue@4")
+extern "C" void In_Hold2(); KING_ALIAS("_In_Hold2", "@Car_HoldValue2@4")
+extern "C" void In_Load(); KING_ALIAS("_In_Load", "@Car_HoldLoad@4")
+extern "C" void In_5565d0(); KING_ALIAS("_In_5565d0", "@Car_5565d0@4")
+ASM_VAR(BYTE, g_inSpecs, $L_697db8)
+ASM_VAR(float, g_in64c258, $L_64c258)
+ASM_VAR(float, g_in64d2f8, $L_64d2f8)
+ASM_VAR(float, g_in64f50c, $L_64f50c)
+ASM_VAR(float, g_in64c250, $L_64c250)
+ASM_VAR(float, g_in64c264, $L_64c264)
+ASM_VAR(float, g_in64daf4, $L_64daf4)
+ASM_VAR(int, g_in6ce33c, $L_6ce33c)
+ASM_VAR(int, g_in6ce340, $L_6ce340)
+ASM_VAR(char, g_inBadSize, $L_679e7c)
+
+extern "C" {
+
+// [FUN_542580..$L_542637] car s's inertia (+420 and +3304) from its type's size (length, width scaled and doubled
+// for narrow, light or effect cars, height, all at least 1), its mass (+412) and the cargo's share
+void __fastcall Car_SetInertia(BYTE* s, void*)
+{
+    int t = F(int, s, 10420);
+    const float* spec = (const float*)(&g_inSpecs + t * 2416);
+    float a = spec[0];
+    float c = spec[2];
+    float b = (float)((double)spec[1] * g_in64c258);
+    if (b < g_in64d2f8 || F(float, s, 412) < g_in64f50c || (t >= g_in6ce33c && t < g_in6ce340))
+        b = (float)((double)b + b);
+    if (a < g_in64c250 || b < g_in64c250 || c < g_in64c250)
+        CallC(In_Fatal, &g_inBadSize);
+    double hv = CallThis<double>(In_Hold, s);
+    float h = (float)hv;
+    double f;
+    if (!(hv > g_in64c264))
+        f = g_in64c250;
+    else
+    {
+        float h2 = (float)CallThis<double>(In_Hold2, s);
+        float L = (float)CallThis<double>(In_Load, s);
+        double x = CallThis<double>(In_5565d0, s);
+        if (h2 > h)
+            h2 = h;
+        f = (double)h2 / h * L / x * ((double)c - g_in64c250) + g_in64c250;
+    }
+    double f2 = f * f;
+    double b2 = (double)b * b, a2 = (double)a * a;
+    float fb2 = (float)b2, fa2 = (float)a2;
+    double m = F(float, s, 412);
+    float I1 = (float)((b2 + f2) * m * g_in64daf4);
+    float I2 = (float)((a2 + f2) * m * g_in64daf4);
+    float I3 = (float)(((double)fa2 + fb2) * m * g_in64daf4);
+    F(float, s, 420) = I1;
+    F(float, s, 424) = I2;
+    F(float, s, 428) = I3;
+    F(float, s, 3304) = I1;
+    F(float, s, 3308) = I2;
+    F(float, s, 3312) = I3;
+}
+
+} // extern "C"
+
+// === a semitrailer's load on the saddle (FUN_4eec80 with its tails up to $L_4ef1f7)
+
+extern "C" void Sl_Norm(); KING_ALIAS("_Sl_Norm", "_Vec3_Normalized")
+extern "C" void Sl_Fatal(); KING_ALIAS("_Sl_Fatal", "_World_Fatal")
+ASM_VAR(BYTE, g_slSpecs, $L_697f9c)
+ASM_VAR(float, g_sl64d990, $L_64d990)
+ASM_VAR(double, g_sl64b670, $L_64b670)
+ASM_VAR(double, g_sl64d6b8, $L_64d6b8)
+ASM_VAR(char, g_slBadWheels, $L_674648)
+
+extern "C" {
+
+// [FUN_4eec80..$L_4ef1f7] the share of semitrailer body s's weight (+9792) on the saddle along dir, by its axles
+// (+3540: 3 or 5 wheel sets; +7360, +7384, +7408 their places) and the hitch point (the type's +168 through the
+// body's frame +10128); any other count is fatal (the general case after it in the asm is never reached)
+double __fastcall Trailer_SaddleLoad(BYTE* s, void*, const float* dir)
+{
+    float n[3];
+    CallC(Sl_Norm, n, dir);
+    const float* h = (const float*)(&g_slSpecs + 168 + F(int, s, 2252) * 2416);
+    float hy = (float)((double)F(float, s, 10132) * h[0] + (double)F(float, s, 10144) * h[1]
+                       + (double)F(float, s, 10156) * h[2] + F(float, s, 10168));
+    int k = F(int, s, 3540);
+    if (k == 3)
+    {
+        double r = F(float, s, 7360);
+        return r * F(float, s, 9792) * g_sl64d990 / (r - hy);
+    }
+    if (k == 5)
+    {
+        double a = (double)F(float, s, 7360) + F(float, s, 7384);
+        double b = (double)F(float, s, 7408) + F(float, s, 7408);
+        return g_sl64b670 / (a - b) * a * F(float, s, 9792) * g_sl64d6b8;
+    }
+    char buf[200];
+    sprintf(buf, &g_slBadWheels, k - 1, " but not 1 or 3");
+    CallC(Sl_Fatal, buf);
+    return 0;
+}
+
+} // extern "C"
+
+// === the semitrailer brought to the tractor's hitch (FUN_558a30)
+
+extern "C" void Hp_Length(); KING_ALIAS("_Hp_Length", "_Vec3_Length")
+extern "C" void Hp_SetPos(); KING_ALIAS("_Hp_SetPos", "@Body_SetPosition@12")
+extern "C" void Hp_SetV88(); KING_ALIAS("_Hp_SetV88", "@Body_SetVec88@12")
+extern "C" void Hp_Align(); KING_ALIAS("_Hp_Align", "@Hitch_Align@16")
+extern "C" void Hp_Set(); KING_ALIAS("_Hp_Set", "@Vec3_SetThis@20")
+extern "C" void Hp_MulM(); KING_ALIAS("_Hp_MulM", "_Vec3_MulMatrix")
+extern "C" void Hp_Norm(); KING_ALIAS("_Hp_Norm", "_Vec3_Normalized")
+extern "C" void Hp_RotBy(); KING_ALIAS("_Hp_RotBy", "_Vec3_RotateBy")
+extern "C" void Hp_Cross(); KING_ALIAS("_Hp_Cross", "_Vec3_Cross")
+extern "C" void Hp_Div(); KING_ALIAS("_Hp_Div", "_Vec3_DivScalar")
+extern "C" void Hp_LookAt(); KING_ALIAS("_Hp_LookAt", "_Matrix_LookAt")
+extern "C" void Hp_Add(); KING_ALIAS("_Hp_Add", "@Vec3_AddAssign@16")
+extern "C" void Hp_Get800(); KING_ALIAS("_Hp_Get800", "@SceneObj_Get800@8")
+extern "C" void Hp_Hit(); KING_ALIAS("_Hp_Hit", "_Query_HitObject")
+extern "C" void Hp_Place(); KING_ALIAS("_Hp_Place", "@Body_PlaceAtFrame@20")
+ASM_VAR(BYTE, g_hpSpecs, $L_697f9c)
+ASM_VAR(Vec3, g_hpSide, $L_702620)
+ASM_VAR(Vec3, g_hpZero, $L_702650)
+
+// p through the frame m (rows of 3, the place +9), summed x87 style: m[6] z + m[3] y + m[0] x + m[9]
+static Vec3 Hp_Frame(const float* m, const float* p)
+{
+    return {(float)((double)m[6] * p[2] + (double)m[3] * p[1] + (double)m[0] * p[0] + m[9]),
+            (float)((double)m[7] * p[2] + (double)m[4] * p[1] + (double)m[1] * p[0] + m[10]),
+            (float)((double)m[8] * p[2] + (double)m[5] * p[1] + (double)m[2] * p[0] + m[11])};
+}
+
+static Vec3 Hp_SetV(double x, double y, double z)
+{
+    Vec3 r;
+    CallThis(Hp_Set, &r, (float)x, (float)y, (float)z);
+    return r;
+}
+
+extern "C" {
+
+// [FUN_558a30] tractor s and its semitrailer t (+21880): the hitch points of both (the tractor type's +156, the
+// trailer type's +168 and its +204 ahead), t's body (+21600) placed at s's body's position, turned about the axis
+// between the two hitch directions by their angle and moved so the hitches meet, in the object hit there; 0
+int __fastcall Tractor_PlaceTrailer(BYTE* s, void*)
+{
+    BYTE* t = F(BYTE*, s, 21880);
+    float M[12];
+    memcpy(M, s + 708, 48);
+    const float* sp = (const float*)(&g_hpSpecs + F(int, s, 10420) * 2416);
+    const float* h = sp + 39;
+    Vec3 P1;
+    P1.x = (float)((double)M[0] * h[0] + (double)M[6] * h[2] + (double)M[3] * h[1] + M[9]);
+    P1.y = (float)((double)M[1] * h[0] + (double)M[7] * h[2] + (double)M[4] * h[1] + M[10]);
+    P1.z = (float)((double)M[2] * h[0] + (double)M[8] * h[2] + (double)M[5] * h[1] + M[11]);
+    memcpy(M, t + 708, 48);
+    double L = sp[51];
+    float lx = (float)(L * g_hpSide.x), ly = (float)(L * g_hpSide.y);
+    const float* k = (const float*)(&g_hpSpecs + 168 + F(int, t, 10420) * 2416);
+    float qx = (float)((double)lx + k[0]), qy = (float)((double)ly + k[1]);
+    double qz = L * g_hpSide.z + k[2];
+    Vec3 P2;
+    P2.x = (float)(qz * M[6] + (double)qy * M[3] + (double)M[0] * qx + M[9]);
+    P2.y = (float)(qz * M[7] + (double)qy * M[4] + (double)M[1] * qx + M[10]);
+    P2.z = (float)(qz * M[8] + (double)qy * M[5] + (double)M[2] * qx + M[11]);
+    float len = (float)CallC<double>(Hp_Length, &P2);
+    BYTE* cab = F(BYTE*, s, 21600);
+    BYTE* tcab = F(BYTE*, t, 21600);
+    F(DWORD, cab, 10124) = F(DWORD, t, 3284);
+    CallVirt(F(BYTE*, s, 21600), 0);
+    CallThis(Hp_SetPos, F(BYTE*, t, 21600), F(BYTE*, s, 21600) + 10832);
+    CallThis(Hp_SetV88, F(BYTE*, t, 21600), F(BYTE*, s, 21600) + 10868);
+    Matrix M3, M4;
+    memcpy(&M3, F(BYTE*, s, 21600) + 10736, 48);
+    memcpy(&M4, F(BYTE*, t, 21600) + 10736, 48);
+    CallThis(Hp_Align, s, &M3, &M4);
+    tcab = F(BYTE*, t, 21600);
+    float p1[3] = {P1.x, P1.y, P1.z};
+    Vec3 V = Hp_Frame(M3.m, p1);
+    V = Hp_SetV(V.x, V.y, V.z);
+    Vec3 R, N1, N2, E, Wn, C, axis;
+    CallC(Hp_MulM, &R, &V, tcab + 10784);
+    CallC(Hp_Norm, &N1, &R);
+    Vec3 W = Hp_SetV((double)len * N1.x, (double)len * N1.y, (double)len * N1.z);
+    Vec3 Wc = W;
+    CallC(Hp_Norm, &N2, &P2);
+    Vec3 D = Hp_SetV((double)R.x - W.x, (double)R.y - W.y, (double)R.z - W.z);
+    CallC(Hp_RotBy, &E, &D, F(BYTE*, t, 21600) + 10736);
+    CallC(Hp_Norm, &Wn, &Wc);
+    CallC(Hp_Cross, &C, &N2, &Wn);
+    float cl = (float)CallC<double>(Hp_Length, &C);
+    CallC(Hp_Div, &axis, &C, cl);
+    float ang = (float)x87_asin(cl);
+    Matrix rot, N;
+    CallC(Hp_LookAt, &rot, g_hpZero, axis, ang);
+    memcpy(&M4, Matrix_Multiply(&N, &rot, (const Matrix*)(F(BYTE*, t, 21600) + 10736)), 48);
+    Vec3 ret;
+    CallThis(Hp_Add, (Vec3*)&M4.m[9], &ret, &E);
+    CallThis(Hp_Get800, s + 16);
+    BYTE* o = CallThis<BYTE*>(Hp_Get800, t + 16);
+    int hit = CallC<int>(Hp_Hit, o, t + 3388, &M4.m[9]);
+    CallThis(Hp_Place, F(BYTE*, t, 21600), hit, &M4, (int)&P2);
+    return 0;
+}
+
+} // extern "C"
+
+// === a car's flasher made (FUN_54a120)
+
+extern "C" void Fl_NodeN(); KING_ALIAS("_Fl_NodeN", "@NodeN_Construct@20")
+extern "C" void Fl_Light(); KING_ALIAS("_Fl_Light", "@Light_Init@8")
+extern "C" void Fl_SetPos(); KING_ALIAS("_Fl_SetPos", "@Flasher_SetPos@12")
+extern "C" void Fl_Step(); KING_ALIAS("_Fl_Step", "@Flasher_Step@12")
+ASM_VAR(BYTE*, g_fl6ef1fc, $L_6ef1fc)
+ASM_VAR(AsmLabel, g_fl64d444, $L_64d444)
+ASM_VAR(char, g_flName, $L_67a164)
+
+extern "C" {
+
+// [FUN_54a120] flasher s at pos with period k: the start time (+8), its light node (+0, kind 21: on, 1.0 /
+// 0.94 / 0.75 colored, range 1, 0.08) added to the world's lights, placed and stepped
+BYTE* __fastcall Flasher_Construct(BYTE* s, void*, const float* pos, float k)
+{
+    F(float, s, 8) = (float)F(double, g_fl6ef1fc, 2968);
+    F(int, s, 12) = 0;
+    F(float, s, 4) = k;
+    BYTE* n = (BYTE*)operator new(144);
+    if (n)
+    {
+        CallThis(Fl_NodeN, n, &g_flName, 21, 1);
+        CallThis(Fl_Light, n + 56);
+        F(void*, n, 0) = &g_fl64d444;
+        F(int, n, 136) = 1;
+        F(int, n, 140) = 0;
+    }
+    F(BYTE*, s, 0) = n;
+    F(int, n, 136) = 1;
+    BYTE* l = F(BYTE*, s, 0);
+    F(int, l, 140) = 1;
+    F(int, l, 56) = 2;
+    F(DWORD, l, 108) = 0x3F800000;
+    F(DWORD, l, 112) = 1064366313;
+    F(DWORD, l, 116) = 1061076670;
+    F(DWORD, l, 84) = 0x3F800000;
+    F(int, l, 88) = 0;
+    F(DWORD, l, 92) = 1034147594;
+    if (BYTE* r = F(BYTE*, g_fl6ef1fc, 528))
+        CallVirt(r, 20, 0, F(BYTE*, s, 0));
+    CallThis(Fl_SetPos, s, pos);
+    CallThis(Fl_Step, s, *(int*)&k);
+    return s;
 }
 
 } // extern "C"

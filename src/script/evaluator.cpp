@@ -2386,7 +2386,7 @@ extern "C" void Nat_IntegerToChar();
 ASM_VAR(AsmLabel, s_rn670874, $L_670874)
 extern "C" SchValue* __cdecl Nat_MakeString(SchValue*, BYTE*, BYTE**);  // natives.cpp
 ASM_VAR(AsmLabel, s_rn670884, $L_670884)
-ASM_VAR(AsmLabel, g_rf49c610, $L_49c610)
+extern "C" SchValue* __cdecl Nat_IsString(SchValue* out, BYTE* p, BYTE** args);
 ASM_VAR(AsmLabel, s_rn670890, $L_670890)
 extern "C" void Nat_StringLength();
 ASM_VAR(AsmLabel, s_rn670898, $L_670898)
@@ -2535,7 +2535,7 @@ static const SchNativeReg k_schNatives[] = {
     {(void*)Nat_CharToInteger, s_rn670864},
     {(void*)Nat_IntegerToChar, s_rn670874},
     {(void*)Nat_MakeString, s_rn670884},
-    {(void*)g_rf49c610, s_rn670890},
+    {(void*)Nat_IsString, s_rn670890},
     {(void*)Nat_StringLength, s_rn670898},
     {(void*)Nat_StringRef, s_rn6708a8},
     {(void*)Nat_StringSet, s_rn6708b4},
@@ -3985,3 +3985,102 @@ extern "C" void __fastcall SchListNode_Clear(BYTE* self)
     d->m_4 = 0;
     SchHandle_Release((void**)&empty, 0);
 }
+
+// ---------------------------------------------------------------------------
+// a native procedure applied ($L_4a80b0, a vtable entry)
+
+extern "C" {
+
+// [$L_4a80b0] native procedure f (its function +24) called with the top frame's arguments (the frame at +112 less
+// 28); the top frame popped and the result passed to the frame below
+void __fastcall Native_Apply(BYTE* f, void*, BYTE* p)
+{
+    typedef SchValue* (__cdecl * Fn)(SchValue*, BYTE*, BYTE*);
+    SchValue t;
+    SchValue* r = ((Fn)F(void*, f, 24))(&t, p, F(BYTE*, p, 112) - 28);
+    SchValue v = {0, 0, 0, 0};
+    if (r->flags & SCH_IMMEDIATE)
+    {
+        v.flags = r->flags;
+        v.obj = r->obj;
+        v.m_4 = r->m_4;
+    }
+    else if (r->obj)
+    {
+        v.obj = r->obj;
+        v.flags = r->flags;
+        F(int, v.obj, 4)++;
+    }
+    ReleaseRef(r);
+    Eva_PopReturn(p, &v);
+    ReleaseRef(&v);
+}
+
+}  // extern "C"
+
+// ---------------------------------------------------------------------------
+// string? ($L_49c610) and a begin-like frame's step ($L_4a85d0)
+
+extern "C" int __cdecl Sch_SecondArg(BYTE* p, SchValue* out, BYTE** args, int where);
+extern "C" DWORD* __cdecl SchValue_Make10007(DWORD* out, int unused, DWORD v);
+extern "C" int __cdecl Sch_Deref2nd(void*, int* p);
+void __fastcall Sch4a70b0_Reset(BYTE* self, void*, BYTE* h0, int h1, DWORD h2);
+void __cdecl Sch_EvalNext(BYTE* p, int next);
+
+extern "C" {
+
+// [$L_49c610] (string? x): #t when the argument's type (its flags' low byte) is 3; a cleared value when the
+// argument is missing
+SchValue* __cdecl Nat_IsString(SchValue* out, BYTE* p, BYTE** args)
+{
+    SchValue v = {0, 0, 0, 0};
+    if (Sch_SecondArg(p, &v, args, (int)s_rn670890))
+    {
+        out->obj = 0;
+        out->m_4 = 0;
+        out->flags = 0;
+    }
+    else
+        SchValue_Make10007((DWORD*)out, 0, (BYTE)v.flags == 3);
+    ReleaseRef(&v);
+    return out;
+}
+
+// [$L_4a85d0] interpreter p's top frame (+112, 44 bytes) with nothing left (-40, -36, -32 clear) popped; with a
+// pending form (-40) that has more to do (+40 or +32) the next step; else the frame's result is the value of the
+// last element of the context stack (+108)
+void __fastcall Frame_StepSequence(BYTE* f, void*, BYTE* p)
+{
+    BYTE* top = F(BYTE*, p, 112);
+    if (!F(int, top, -40) && !F(int, top, -32) && !F(int, top, -36))
+    {
+        F(BYTE*, p, 112) = top - 44;
+        CallVirt(top - 44, 4, 0);
+        return;
+    }
+    BYTE* e = F(BYTE*, top, -40);
+    if (F(int, e, 40) || F(int, e, 32))
+    {
+        Sch_EvalNext(p, 0);
+        return;
+    }
+    BYTE* back = Vec44_Back(p + 108, 0);
+    BYTE* s = (BYTE*)Sch_Deref2nd(0, (int*)(back + 4)) + 20;
+    SchValue v = {0, 0, 0, 0};
+    DWORD fl = F(DWORD, s, 8);
+    if (fl & SCH_IMMEDIATE)
+    {
+        v.flags = fl;
+        v.obj = F(BYTE*, s, 0);
+        v.m_4 = F(int, s, 4);
+    }
+    else if (F(BYTE*, s, 0))
+    {
+        v.obj = F(BYTE*, s, 0);
+        v.flags = fl;
+        F(int, v.obj, 4)++;
+    }
+    Sch4a70b0_Reset(Vec44_Back(p + 108, 0), 0, v.obj, v.m_4, v.flags);
+}
+
+}  // extern "C"

@@ -16,7 +16,7 @@ typedef char AsmLabel[1];
 
 ASM_PROC(FUN_6047d0)
 ASM_VAR(AsmLabel, g_vtbl652e20, $L_652e20)
-ASM_PROC(FUN_604b40)
+extern "C" void FUN_604b40(); KING_ALIAS("_FUN_604b40", "_Ds_Open")
 extern "C" void FUN_604410(); KING_ALIAS("_FUN_604410", "@Wave_Open@16")    // play a table entry (a, b)
 extern "C" void FUN_6041b0(); KING_ALIAS("_FUN_6041b0", "_Play_Stop")    // stop sound id
 
@@ -1077,3 +1077,54 @@ extern "C" void __cdecl Streams_StopId(int id)
         Mixer_Unlock();
     }
 }
+
+// === DirectSound opened with its primary buffer playing (FUN_604b40)
+
+extern "C" void Do_Release(); KING_ALIAS("_Do_Release", "_Mixer_ReleaseBuffers")
+extern "C" void Do_Primary(); KING_ALIAS("_Do_Primary", "_Ds_CreatePrimary")
+ASM_VAR(BYTE*, g_do724190, $L_724190)
+ASM_VAR(int, g_do7241a4, $L_7241a4)
+ASM_VAR(int, g_do72416c, $L_72416c)
+ASM_VAR(DWORD, g_do6843f0, $L_6843f0)
+ASM_VAR(DWORD, g_do6843f4, $L_6843f4)
+
+// the asm throws int 4 and its own catch (int e) (the funclet $L_604c4e) releases the buffers, deletes the
+// play lock and returns e
+static int Do_Fail()
+{
+    CallC(Do_Release);
+    DeleteCriticalSection(&g_playLock);
+    return 4;
+}
+
+extern "C" {
+
+// [FUN_604b40] DirectSound (through DirectSoundCreate at 7241a0) and its primary buffer (724194, the format
+// 6843f0 halved, again for mono): set to play looping; 0; 4 when anything fails (see Do_Fail)
+int __cdecl Ds_Open()
+{
+    typedef int(__stdcall * Create)(void*, BYTE**, void*);
+    if (!g_7241a0)
+        return Do_Fail();
+    if (!g_do724190 && ((Create)g_7241a0)(0, &g_do724190, 0))
+    {
+        g_do724190 = 0;
+        return Do_Fail();
+    }
+    if (!CallC<int>(Do_Primary, g_do724190, &g_dsPrimary, &g_do6843f0, g_do7241a4))
+    {
+        Com(g_do724190, 8);
+        g_do724190 = 0;
+        return Do_Fail();
+    }
+    g_do6843f0 >>= 1;
+    g_do6843f4 = g_do6843f0;
+    if (g_do72416c == 1)
+        g_do6843f4 >>= 1;
+    Com(g_dsPrimary, 52, 0);
+    Com(g_dsPrimary, 48, 0, 0, 1);
+    return 0;
+}
+
+} // extern "C"
+

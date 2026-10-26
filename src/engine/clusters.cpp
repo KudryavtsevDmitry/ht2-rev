@@ -1900,3 +1900,171 @@ BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int 
 }
 
 } // extern "C"
+
+// === a mesh's draw flags (FUN_5e5cd0) and its vertex buffer (the second entry $L_5e5eb0 inside FUN_5e5cd0)
+
+ASM_VAR(BYTE, g_mp7217b8, $L_7217b8)
+ASM_VAR(DWORD, g_mp702e8c, $L_702e8c)
+ASM_VAR(int, g_mp720904, $L_720904)
+ASM_VAR(double, g_mp64eba8, $L_64eba8)
+ASM_VAR(float, g_mp64c458, $L_64c458)
+ASM_VAR(float, g_mp64c250, $L_64c250)
+ASM_VAR(double, g_mp64b670, $L_64b670)
+
+// a color of r, g, b scaled by k and alpha f, as ARGB bytes
+static DWORD Mp_Color(const float* c, float k, double f)
+{
+    int r = (int)((double)c[0] * k * g_mp64c458);
+    int a = (int)(f * g_mp64c458);
+    int g = (int)((double)c[1] * k * g_mp64c458);
+    int b = (int)((double)c[2] * k * g_mp64c458);
+    return (DWORD)(((((r | a << 8) << 8) | g) << 8) | b);
+}
+
+extern "C" {
+
+// [FUN_5e5cd0] draw record s (+8 the flags) for node idx of nodes (124 bytes each): the depth of its chain of
+// flagged parents (+32 bit 0, the parent +44, its level +48) in bits 8..11; with vertices (+24, else +28) a
+// 96-byte stream description (+4) of positions, normals and the +12 texture sets (+16)
+int __fastcall MeshDraw_SetFlags(BYTE* s, void*, BYTE* nodes, int idx)
+{
+    BYTE* n = nodes ? nodes + idx * 124 : 0;
+    int depth = 0;
+    F(int, s, 8) = 0;
+    while (n && (F(BYTE, n, 32) & 1))
+    {
+        if (F(int, n, 48) + 1 > depth)
+            depth = F(int, n, 48) + 1;
+        int p = F(int, n, 44);
+        if (p < 0)
+            break;
+        n = nodes + p * 124;
+    }
+    if (F(BYTE*, s, 24) || F(BYTE*, s, 28))
+    {
+        BYTE* d = (BYTE*)operator new(96);
+        memset(d, 0, 96);
+        F(BYTE*, s, 4) = d;
+        F(void*, d, 24) = &g_mp7217b8;
+        F(void*, d, 16) = F(void*, d, 24);
+        if (BYTE* v = F(BYTE*, s, 24))
+        {
+            F(BYTE*, d, 0) = v;
+            F(int, d, 4) = 32;
+            F(BYTE*, d, 8) = v + 12;
+            F(int, d, 12) = 32;
+            F(BYTE*, d, 32) = v + 24;
+            F(int, d, 36) = 32;
+            F(DWORD, s, 8) |= 18;
+        }
+        else
+        {
+            BYTE* w = F(BYTE*, s, 28);
+            F(BYTE*, d, 0) = w;
+            F(int, d, 4) = 32;
+            F(BYTE*, d, 16) = w + 16;
+            F(int, d, 20) = 32;
+            F(BYTE*, d, 32) = w + 24;
+            F(int, d, 36) = 32;
+            F(DWORD, s, 8) |= 66;
+        }
+        for (int k = 0; k < F(BYTE, s, 12); k++)
+        {
+            BYTE* d2 = F(BYTE*, s, 4);
+            F(BYTE*, d2, 40 + 8 * k) = F(BYTE*, s, 16) + 8 * k;
+            F(int, d2, 44 + 8 * k) = F(BYTE, s, 12) * 8;
+        }
+    }
+    if (depth < 1 || depth > 8)
+        return depth - 1;
+    F(DWORD, s, 8) |= depth << 8;
+    return F(int, s, 8);
+}
+
+// (the entry $L_5e5eb0 inside FUN_5e5cd0; its TEXTEQU added by hand) mesh s (+0 flags, +4 its vertex count,
+// +6 texture sets, +8 vertex indices into verts (28 bytes: position, uv, the uv sets +20), +12 / +16 own uvs,
+// +20 own intensities, +24 own normals, +28 intensity, +32 normal, +48 its node) with the scene available:
+// 32-byte vertices lit (+80, colored by the node's color in colors and its transparency) or unlit with normals
+// (+76, for flag 1 under 702e8c bit 6), the uv sets (+68, +64 their count); then its draw flags (+52)
+int __fastcall Mesh_BuildVertices(BYTE* s, void*, BYTE* verts, BYTE* nodes, const BYTE* colors, int)
+{
+    BYTE* node = nodes + F(short, s, 48) * 124;
+    const BYTE* cb = colors + 3 * (F(int, node, 40) + 8);
+    float col[3];
+    if (F(BYTE, node, 32) & 1)
+        col[0] = col[1] = col[2] = 1.0f;
+    else
+        for (int k = 0; k < 3; k++)
+            col[k] = (float)(cb[k] * g_mp64eba8);
+    if (!g_mp720904)
+        return 0;
+    bool unlit = (F(BYTE, s, 0) & 1) && (g_mp702e8c & 64);
+    unsigned nv = F(WORD, s, 4);
+    if (unlit)
+        F(void*, s, 76) = operator new(nv * 32);
+    else
+        F(void*, s, 80) = operator new(nv * 32);
+    if (F(WORD, s, 6) > 1)
+    {
+        F(BYTE, s, 64) = (BYTE)(F(BYTE, s, 6) - 1);
+        F(void*, s, 68) = operator new(F(BYTE, s, 64) * F(WORD, s, 4) * 8);
+    }
+    else if (F(int, verts, 24) > 0)
+    {
+        F(BYTE, s, 64) = (BYTE)F(int, verts, 24);
+        F(void*, s, 68) = operator new(F(BYTE, s, 64) * F(WORD, s, 4) * 8);
+    }
+    for (unsigned i = 0; i < F(WORD, s, 4); i++)
+    {
+        BYTE* out = (unlit ? F(BYTE*, s, 76) : F(BYTE*, s, 80)) + 32 * i;
+        const DWORD* V = (const DWORD*)(verts + F(WORD*, s, 8)[i] * 28);
+        F(DWORD, out, 0) = V[0];
+        F(DWORD, out, 4) = V[1];
+        F(DWORD, out, 8) = V[2];
+        if (F(BYTE, s, 0) & 2)
+        {
+            F(DWORD, out, 24) = F(DWORD*, s, 12)[i];
+            F(DWORD, out, 28) = F(DWORD*, s, 16)[i];
+        }
+        else
+        {
+            F(DWORD, out, 24) = V[3];
+            F(DWORD, out, 28) = V[4];
+        }
+        unsigned sets = F(BYTE, s, 64);
+        for (unsigned c = 0; c < sets; c++)
+        {
+            DWORD* uv = F(DWORD*, s, 68) + 2 * (sets * i + c);
+            if (F(BYTE, s, 0) & 2)
+            {
+                unsigned j = F(WORD, s, 6) * i + c;
+                uv[0] = F(DWORD*, s, 12)[j];
+                uv[1] = F(DWORD*, s, 16)[j];
+            }
+            else
+            {
+                const DWORD* t = (const DWORD*)V[5];
+                uv[0] = t[c * 2];
+                uv[1] = t[c * 2 + 1];
+            }
+        }
+        if (unlit)
+        {
+            const DWORD* nr = F(BYTE, s, 0) & 16 ? F(DWORD*, s, 24) + 3 * i : &F(DWORD, s, 32);
+            F(DWORD, out, 12) = nr[0];
+            F(DWORD, out, 16) = nr[1];
+            F(DWORD, out, 20) = nr[2];
+            continue;
+        }
+        double f = g_mp64c250;
+        if (F(BYTE, node, 32) & 32)
+            f = g_mp64b670 - F(float, node, 88);
+        float k = (F(BYTE, s, 0) & 16) && (F(BYTE, s, 0) & 32) ? F(float*, s, 20)[i] : F(float, s, 28);
+        F(DWORD, out, 16) = Mp_Color(col, k, f);
+        F(int, out, 20) = 0;
+    }
+    F(WORD, s, 52) = F(WORD, s, 4);
+    return MeshDraw_SetFlags(s + 52, 0, nodes, F(short, s, 48));
+}
+
+} // extern "C"

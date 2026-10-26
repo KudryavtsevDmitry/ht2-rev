@@ -248,7 +248,7 @@ extern "C" void FUN_57cfc0(); KING_ALIAS("_FUN_57cfc0", "@Placement_Init@8")
 extern "C" void FUN_57d860(); KING_ALIAS("_FUN_57d860", "@MovingItem_Init0@24")
 extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
 ASM_PROC(FUN_5c6170)
-ASM_PROC(FUN_5c5f60)
+extern "C" void FUN_5c5f60(); KING_ALIAS("_FUN_5c5f60", "@NetMoving_Construct@88")
 extern "C" void FUN_5c32f0(); KING_ALIAS("_FUN_5c32f0", "@List_Add6@20")
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
 
@@ -635,7 +635,7 @@ extern "C" void Mi_Fatal(); KING_ALIAS("_Mi_Fatal", "_World_Fatal")
 extern "C" void Mi_Time(); KING_ALIAS("_Mi_Time", "_Game_Time")
 extern "C" void Mi_InitState(); KING_ALIAS("_Mi_InitState", "@SceneObj_InitState@24")
 extern "C" void Mi_57e030(); KING_ALIAS("_Mi_57e030", "@SceneObj_57e030@12")
-ASM_FUNC(Mi_Frame, FUN_58e7f0)
+extern "C" void Mi_Frame(); KING_ALIAS("_Mi_Frame", "@MovingItem_CheckFrame@20")
 ASM_VAR(int, g_mi67d10c, $L_67d10c)
 ASM_VAR(int, g_mi696be0, $L_696be0)
 ASM_VAR(Vec3, g_miZero, $L_702650)
@@ -733,6 +733,160 @@ void __fastcall MovingItem_Init0(BYTE* s, void*, float scale, const Matrix* m, c
     F(int, s, 1440) = 0;
     F(float, s, 3144) = (float)(Mi_Now() - g_mi64d7b8);
     CallVirt(s, 76);
+}
+
+} // extern "C"
+
+// === a moving item's frame checked against its own frames (FUN_58e7f0 with its tails up to $L_58f1cd)
+
+extern "C" void Ck_Local(); KING_ALIAS("_Ck_Local", "@Node_GetLocal@12")
+extern "C" void Ck_LogOpen(); KING_ALIAS("_Ck_LogOpen", "_WarnLog_Open")
+extern "C" void Ck_LogClose(); KING_ALIAS("_Ck_LogClose", "_WarnLog_Close")
+extern "C" void Ck_Clock(); KING_ALIAS("_Ck_Clock", "_Clock_Text")
+extern "C" void Ck_Log(); KING_ALIAS("_Ck_Log", "_VehLog_Value2")
+extern "C" void Ck_Out(); KING_ALIAS("_Ck_Out", "_Vec3_OutOfBox")
+extern "C" void Ck_Fatal(); KING_ALIAS("_Ck_Fatal", "_World_Fatal")
+ASM_VAR(Vec3, g_ckDown, $L_702640)
+ASM_VAR(Vec3, g_ckSide, $L_702620)
+ASM_VAR(Vec3, g_ckViewer, $L_6969f4)
+ASM_VAR(double, g_ckHi, $L_64d918)
+ASM_VAR(double, g_ckLo, $L_64da58)
+ASM_VAR(char, g_ckHead, $L_67debc)
+ASM_VAR(char, g_ckViewerFmt, $L_67de9c)
+ASM_VAR(char, g_ckTestM, $L_67de80)
+ASM_VAR(char, g_ckRow, $L_67de6c)
+ASM_VAR(char, g_ckMPos, $L_67de50)
+ASM_VAR(char, g_ckPlace, $L_67de2c)
+ASM_VAR(char, g_ckWhile, $L_67de10)
+ASM_VAR(char, g_ckFarHead, $L_67dde8)
+ASM_VAR(char, g_ckOldPos, $L_67dd70)
+ASM_VAR(char, g_ckFarM, $L_67ddcc)
+ASM_VAR(char, g_ckSix, $L_67ddbc)
+
+static void Ck_Row(char* buf, const char* fmt, const float* v)
+{
+    sprintf(buf, fmt, (double)v[0], (double)v[1], (double)v[2]);
+}
+
+static void Ck_LogRow(const char* fmt, const float* v)
+{
+    char buf[500];
+    Ck_Row(buf, fmt, v);
+    CallC(Ck_Log, buf);
+}
+
+// a * the 3x3 part of m (rows of 3 floats; dot of a with column k)
+static Vec3 Ck_Mul(const Vec3& a, const float* m)
+{
+    Vec3 r;
+    r.x = (float)((double)a.z * m[6] + (double)a.y * m[3] + (double)a.x * m[0]);
+    r.y = (float)((double)a.z * m[7] + (double)a.y * m[4] + (double)a.x * m[1]);
+    r.z = (float)((double)a.z * m[8] + (double)a.y * m[5] + (double)a.x * m[2]);
+    return r;
+}
+
+static bool Ck_Unit(double l)
+{
+    return !(l > g_ckHi) && !(l < g_ckLo);
+}
+
+extern "C" {
+
+// [FUN_58e7f0..$L_58f1cd] moving item s's frame m (while doing `what`, with a code) checked: each axis turned by
+// m, by s's frames +500 and +548 and by its node's local frame keeps unit length, and m's place is within 15000;
+// else everything logged and a fatal error
+void __fastcall MovingItem_CheckFrame(BYTE* s, void*, const float* m, const char* what, int code)
+{
+    float L[12];
+    memcpy(L, g_7025f0, 48);
+    CallThis(Ck_Local, F(BYTE*, F(BYTE*, s, 32), 68), L);
+    const float* P = &F(float, s, 500);
+    const float* Q = &F(float, s, 548);
+    const char* room = F(const char*, F(BYTE*, F(BYTE*, s, 32), 64), 12);
+    const char* owner = F(const char*, F(BYTE*, s, 800), 12);
+    for (int c = 0; c < 3; c++)
+    {
+        Vec3 a = c == 0 ? g_ckDown : c == 1 ? g_ckSide : g_miAhead;
+        double A = (double)a.x * m[0] + (double)a.z * m[6] + (double)a.y * m[3];
+        double B = (double)a.x * m[1] + (double)a.z * m[7] + (double)a.y * m[4];
+        double C = (double)a.x * m[2] + (double)a.z * m[8] + (double)a.y * m[5];
+        Vec3 v1;
+        v1.x = (float)((double)a.x * Q[0] + (double)a.z * Q[6] + (double)a.y * Q[3]);
+        v1.y = (float)((double)a.z * Q[7] + (double)a.y * Q[4] + (double)a.x * Q[1]);
+        v1.z = (float)((double)a.x * Q[2] + (double)a.z * Q[8] + (double)a.y * Q[5]);
+        Vec3 v2 = Ck_Mul(a, P);
+        Vec3 v3 = Ck_Mul(a, L);
+        double lm = A * A + B * B + C * C;
+        float l1 = (float)((double)v1.x * v1.x + (double)v1.y * v1.y + (double)v1.z * v1.z);
+        float l2 = (float)((double)v2.z * v2.z + (double)v2.x * v2.x + (double)v2.y * v2.y);
+        float l3 = (float)((double)v3.y * v3.y + (double)v3.z * v3.z + (double)v3.x * v3.x);
+        if (Ck_Unit(lm) && Ck_Unit(l1) && Ck_Unit(l2) && Ck_Unit(l3))
+            continue;
+        CallC(Ck_LogOpen);
+        char clock[100], buf[500];
+        CallC(Ck_Clock, clock);
+        sprintf(buf, &g_ckHead, clock, code, code, what, room, owner);
+        CallC(Ck_Log, buf);
+        Ck_LogRow(&g_ckViewerFmt, &g_ckViewer.x);
+        Ck_LogRow(&g_ckTestM, m + 9);
+        Ck_LogRow(&g_ckRow, m);
+        Ck_LogRow(&g_ckRow, m + 3);
+        Ck_LogRow(&g_ckRow, m + 6);
+        Ck_LogRow(&g_ckMPos, P + 9);
+        Ck_LogRow(&g_ckRow, P);
+        Ck_LogRow(&g_ckRow, P + 3);
+        Ck_LogRow(&g_ckRow, P + 6);
+        Ck_LogRow(&g_ckPlace, L + 9);
+        Ck_LogRow(&g_ckRow, L);
+        Ck_LogRow(&g_ckRow, L + 3);
+        Ck_LogRow(&g_ckRow, L + 6);
+        CallC(Ck_LogClose);
+        sprintf(buf, &g_ckWhile, what);
+        CallC(Ck_Fatal, buf);
+    }
+    if (CallC<int>(Ck_Out, m + 9, 15000.0f))
+    {
+        char head[100], old[100], pos[100], r0[100], r1[100], r2[100], buf[500];
+        sprintf(head, &g_ckFarHead, code, code, what, room, owner);
+        Ck_Row(old, &g_ckOldPos, &F(float, s, 584));
+        Ck_Row(pos, &g_ckFarM, m + 9);
+        Ck_Row(r0, &g_ckRow, m);
+        Ck_Row(r1, &g_ckRow, m + 3);
+        Ck_Row(r2, &g_ckRow, m + 6);
+        sprintf(buf, &g_ckSix, head, old, pos, r0, r1, r2);
+        CallC(Ck_Fatal, buf);
+    }
+}
+
+} // extern "C"
+
+// === a net moving object's base made (FUN_5c5f60)
+
+extern "C" void Nm_Base(); KING_ALIAS("_Nm_Base", "@NetObject_Create@88")
+extern "C" void Nm_Root(); KING_ALIAS("_Nm_Root", "@Node_Root@8")
+extern "C" void Nm_World(); KING_ALIAS("_Nm_World", "@Node_GetWorld@12")
+ASM_FUNC(Nm_Object, FUN_5a44c0)
+ASM_VAR(AsmLabel, g_nm651c34, $L_651c34)
+ASM_VAR(AsmLabel, g_nm651be8, $L_651be8)
+
+extern "C" {
+
+// [FUN_5c5f60] object s: its scene object base (5a44c0) with a .. f, frame m and own, vtables 651c34 / 651be8
+// (+256); for own == 1 its world frame (from the node +324) and its root (b) instead; then its net object
+// (kind 903 for own == 1, else 900)
+BYTE* __fastcall NetMoving_Construct(BYTE* s, void*, int a, int b, int c, int d, int e, int f, Mo_M48 m, int g,
+                                     int own)
+{
+    CallThis(Nm_Object, s, a, b, c, d, e, f, m, own);
+    F(void*, s, 0) = &g_nm651c34;
+    F(void*, s, 256) = &g_nm651be8;
+    if (own == 1)
+    {
+        b = CallThis<int>(Nm_Root, s + 256);
+        CallThis(Nm_World, F(BYTE*, s, 324), &m);
+    }
+    CallThis(Nm_Base, s, a, b, c, d, e, f, m, g, own == 1 ? 903 : 900);
+    return s;
 }
 
 } // extern "C"

@@ -255,3 +255,28 @@ the second argument. Skipped: $L_4d76b0 (the AI player-entry handler, many uncon
 FUN_45a7d0 / FUN_4b54b0 / FUN_600e60 (Rec60 by value, STL deque and vector internals). Load test exact
 (507.330231,940.087585, the stalled run) with exit code 0; three drifting runs in a row before the last ones were
 noise (exact again next run).
+
+Batch 28 done: 44,276 bytes (87.88% -> about 89.9%). $L_4d1360 Cop_Step (4,496, the police car's chase, warnings,
+fines and shots; its largest proc), FUN_58a020..$L_58a9fe Box_PointContacts (3576), FUN_4d4a90 Car_GearBlockMask
+(3376), $L_4c5b30 LampGlows_Draw (7456), FUN_58e7f0..$L_58f1cd MovingItem_CheckFrame (2544), FUN_5e5cd0 MeshDraw_SetFlags
++ $L_5e5eb0 Mesh_BuildVertices (2128), FUN_4eec80..$L_4ef1f7 Trailer_SaddleLoad (1424, dead code after the fatal
+not carried), $L_56e060..$L_56e54f AnmObj_OnLoad (1344), $L_52ef80 TreeBox_CreateHost (1328), FUN_558a30
+Tractor_PlaceTrailer (1264), $L_4e19b0..$L_4e1d07 App_Start (992), FUN_5917f0..$L_59199f Body_PointContact (846),
+FUN_4d0bc0 ParkedCar_Destroy (624), FUN_5daa30 Fw_MakeCluster (608), FUN_4d08d0 Fx_MakePlayerVehicle (576),
+FUN_4691a0 Records_PartitionNear (576), FUN_48a7c0 Rational_ToDouble (528), FUN_46ab50 Records_PartialSortNear
+(512), $L_454ca0 Road_NearestCurve (480), $L_5da410 Wnd_Resize (480), FUN_542580 Car_SetInertia (448), $L_576670
+Bus_OnFare (448), FUN_507ad0 Ini_ReadFloats (432), FUN_469a20 Rec1592_Swap (416), FUN_459c50 RopeConcat_Destroy
+(416), FUN_48dbb0 Curve_Construct (416), FUN_5c3ac0 Net_CheckSession (400), FUN_459e90 RopeSubstr_Destroy +
+$L_459ff0 RopeFn_ResetVtbl (368), Rec4d0760_FreeVectors (368), FUN_4709b0 RoadNode_Construct (304), FUN_573d10
+Vehicle573d10_Destroy (304), $L_5fac60 Sprite_Draw (320), $L_5a0510 Effect_DriftStep (320), FUN_48f5d0 /
+FUN_490820 / FUN_48a580 Vec580 / Vec24 / VecDw_CopyConstruct (288, 272, 256), $L_4a80b0 Native_Apply (288),
+$L_49c610 Nat_IsString (288), FUN_54a120 Flasher_Construct (288), FUN_5dbbb0 Fw_ResetRenderer (272), $L_4a85d0
+Frame_StepSequence (272), FUN_6000c0 Rec56_CopyConstruct (272), FUN_604b40 Ds_Open (270), FUN_4592b0 Hash_NewNode
+(256), Task491590_Destruct (256), FUN_48e600 VPoly_SquaredDerivative (256), FUN_5c5f60 NetMoving_Construct (256).
+Ds_Open's int throws are caught by its own catch (int) funclet ($L_604c4e: buffers released, the play lock
+deleted, the code returned); the C version does that directly. FUN_605310 Sound_PlayBuffer was converted and
+reverted: its catch(...) also catches the access violation of locking a null buffer on every exit, which C
+can't do without __try (no _except_handler3 in this build). Also fixed Save_WriteGame (batch 27): its COM calls
+went through the __thiscall CallVirt and now use the stdcall Sv_Com. A coverage run showed many of these are not
+reached by the load test (trailers, copters, police, script natives, garage, net, body contacts). Load test exact
+(507.330231,940.087585) with exit code 0.

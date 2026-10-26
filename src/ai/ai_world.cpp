@@ -2964,7 +2964,7 @@ extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVecto
 extern "C" void FUN_44fac0(); KING_ALIAS("_FUN_44fac0", "@NameHash_Resize@12")    // hash table: grow for n entries
 extern "C" void FUN_44f2c0(); KING_ALIAS("_FUN_44f2c0", "_Rope_CharAt")
 ASM_PROC(FUN_45a7d0)    // compare two strings
-ASM_PROC(FUN_4592b0)    // hash table: a new node for a key
+extern "C" void FUN_4592b0(); KING_ALIAS("_FUN_4592b0", "@Hash_NewNode@12")    // hash table: a new node for a key
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector of 24-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_46c490(); KING_ALIAS("_FUN_46c490", "_Rec_DestroyThunk46c490")    // destroy a 24-byte record
 extern "C" void FUN_466c50(); KING_ALIAS("_FUN_466c50", "_Rec24b_Copy")    // copy 24-byte records (first, last, dest, -, 0)
@@ -5721,7 +5721,7 @@ extern "C" double __cdecl Ai_GetPlayerCapital(BYTE* p)
 ASM_VAR(BYTE*, g_anchors68cf58, $L_68cf58)
 ASM_VAR(BYTE**, g_roadNodesCap68cf08, $L_68cf08)
 ASM_VAR(char, s_anode, $L_66c920)                    // "anode"
-ASM_PROC(FUN_4709b0)    // a road node's constructor (name)
+extern "C" void FUN_4709b0(); KING_ALIAS("_FUN_4709b0", "@RoadNode_Construct@12")    // a road node's constructor (name)
 extern "C" void FUN_405c00(); KING_ALIAS("_FUN_405c00", "_Ai_BuildEdgesFrom")
 extern "C" void __cdecl Construct4(DWORD* d, const DWORD* s);
 extern "C" void FUN_44cbf0(); KING_ALIAS("_FUN_44cbf0", "@Vec4b_InsertI@16")
@@ -7271,7 +7271,7 @@ extern "C" void* __cdecl Stl_Allocate(unsigned bytes)
     return r;
 }
 
-ASM_PROC(FUN_459e90)    // a substring rope node's destructor
+extern "C" void FUN_459e90(); KING_ALIAS("_FUN_459e90", "@RopeSubstr_Destroy@8")    // a substring rope node's destructor
 extern "C" unsigned __cdecl Str_Rounded(unsigned n);              // a rope leaf's allocated size
 extern "C" void __cdecl Str_FreeRounded(void* p, unsigned size);   // frees a rope leaf's characters
 
@@ -9726,7 +9726,7 @@ extern "C" void FUN_4054a0(); KING_ALIAS("_FUN_4054a0", "_Registry52_Get")
 extern "C" void FUN_4055c0(); KING_ALIAS("_FUN_4055c0", "_Registry24_Get")
 extern "C" void FUN_4904e0(); KING_ALIAS("_FUN_4904e0", "_BLine_FromPoints")    // a B-line from points (out, points)
 extern "C" void FUN_48e8e0(); KING_ALIAS("_FUN_48e8e0", "@Rec_Make48d8f0@12")
-ASM_PROC(FUN_48dbb0)    // a B-line piece from a 580-byte item (thiscall item)
+extern "C" void FUN_48dbb0(); KING_ALIAS("_FUN_48dbb0", "@Curve_Construct@12")    // a B-line piece from a 580-byte item (thiscall item)
 extern "C" void FUN_459110(); KING_ALIAS("_FUN_459110", "@Vec1592_PushBack@12")
 extern "C" void FUN_46c960(); KING_ALIAS("_FUN_46c960", "@Mult46c960_DeletingDestructor@12")
 extern "C" void FUN_44a530(); KING_ALIAS("_FUN_44a530", "@Vec8_Free@8")
@@ -21426,7 +21426,7 @@ extern "C" void __cdecl AiworInit_428120()
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
-ASM_PROC(FUN_469a20)
+extern "C" void FUN_469a20(); KING_ALIAS("_FUN_469a20", "_Rec1592_Swap")
 extern "C" void FUN_48e190(); KING_ALIAS("_FUN_48e190", "@Curve_Reverse@4")
 ASM_VAR(AsmLabel, g_aiworRng68ccc8, $L_68ccc8)
 ASM_VAR(DWORD, g_aiworRng68cda0, $L_68cda0)
@@ -22768,8 +22768,8 @@ extern "C" void FUN_45f650(); KING_ALIAS("_FUN_45f650", "@Far_Compare@16")
 extern "C" void FUN_465d20(); KING_ALIAS("_FUN_465d20", "_CopyBackwardDwords2")
 extern "C" void FUN_465e80(); KING_ALIAS("_FUN_465e80", "_Nodes_IntroSortLoop")
 extern "C" void FUN_468d60(); KING_ALIAS("_FUN_468d60", "_Holders_MedianByDistance")
-ASM_PROC(FUN_4691a0)
-ASM_PROC(FUN_46ab50)
+extern "C" void FUN_4691a0(); KING_ALIAS("_FUN_4691a0", "_Records_PartitionNear")
+extern "C" void FUN_46ab50(); KING_ALIAS("_FUN_46ab50", "_Records_PartialSortNear")
 extern "C" void FUN_46c010(); KING_ALIAS("_FUN_46c010", "_Near_LinearInsert")
 
 struct Ns_Pt { DWORD d[6]; };
@@ -24343,6 +24343,324 @@ int* __cdecl Holders_MedianByDistance(int* a, int* b, int* c, DVec3 pt)
         return a;
     double db = Md_XYZ(*b, pt);
     return Md_Len(*c, pt) > db ? c : b;
+}
+
+} // extern "C"
+
+// === two 1592-byte order records swapped (FUN_469a20)
+
+// the record's parts: all but the padding at +580 and +1588
+static void Sw1592_Copy(BYTE* d, const BYTE* s)
+{
+    memcpy(d, s, 580);
+    memcpy(d + 584, s + 584, 1588 - 584);
+}
+
+extern "C" {
+
+// [FUN_469a20] records a and b exchanged part by part (std::swap; the copy's element destructors do nothing)
+void __cdecl Rec1592_Swap(BYTE* a, BYTE* b, int)
+{
+    BYTE t[1592];
+    memcpy(t, a, 1592);
+    Sw1592_Copy(a, b);
+    Sw1592_Copy(b, t);
+}
+
+} // extern "C"
+
+// === the nearest records to a point brought to the front (FUN_46ab50, std::partial_sort)
+
+extern "C" void __cdecl Far_AdjustHeap2(BYTE** first, int hole, int len, BYTE* value, double x, double y, double z);
+struct Ps_Pt { double x, y, z; };
+extern "C" void Ps_Pop(); KING_ALIAS("_Ps_Pop", "_PopHeap4")
+
+// the distance of record r's road point from p
+static double Ps_Dist(const BYTE* r, const DVec3* p)
+{
+    DVec3 q, d;
+    Road_PointOf(&q, F(PositionId, r, 40));
+    DVec3_Sub(&d, p, &q);
+    return DVec3_Length(&d);
+}
+
+extern "C" {
+
+// [FUN_46ab50] records first .. last (pointers) sorted so first .. middle hold the nearest to p, by the
+// distance of their road points (+40): a heap of the first part, each later nearer one swapped in, the heap sorted
+void __cdecl Records_PartialSortNear(BYTE** first, BYTE** middle, BYTE** last, int, Ps_Pt p)
+{
+    int n = (int)(middle - first);
+    if (n >= 2)
+        for (int parent = (n - 2) / 2;; parent--)
+        {
+            Far_AdjustHeap2(first, parent, n, first[parent], p.x, p.y, p.z);
+            if (!parent)
+                break;
+        }
+    DVec3 pt = {p.x, p.y, p.z};
+    for (BYTE** i = middle; i < last; i++)
+    {
+        BYTE* a = *first;
+        BYTE* b = *i;
+        DVec3 q;
+        Road_PointOf(&q, F(PositionId, b, 40));
+        double dx = p.x - q.x, dy = p.y - q.y, dz = p.z - q.z;
+        double db = x87_sqrt(dx * dx + dy * dy + dz * dz);
+        if (Ps_Dist(a, &pt) > db)
+            CallC(Ps_Pop, first, middle, i, *i, p, 0);
+    }
+    for (BYTE** e = middle; e - first > 1;)
+    {
+        e--;
+        CallC(Ps_Pop, first, e, e, *e, p, 0);
+    }
+}
+
+} // extern "C"
+
+// === records split around a pivot by their distance from a point (FUN_4691a0, std::__unguarded_partition)
+
+// the distance of record r's road point from p, summed inline as the asm does
+static double Ps_DistInline(const BYTE* r, const Ps_Pt& p)
+{
+    DVec3 q;
+    Road_PointOf(&q, F(PositionId, r, 40));
+    double dx = p.x - q.x, dy = p.y - q.y, dz = p.z - q.z;
+    return x87_sqrt(dx * dx + dy * dy + dz * dz);
+}
+
+extern "C" {
+
+// [FUN_4691a0] first .. last partitioned around pivot: the records nearer to p than the pivot before the others;
+// where the second part starts
+BYTE** __cdecl Records_PartitionNear(BYTE** first, BYTE** last, BYTE* pivot, Ps_Pt p)
+{
+    DVec3 pt = {p.x, p.y, p.z};
+    for (;;)
+    {
+        for (;;)
+        {
+            double da = Ps_DistInline(*first, p);
+            if (!(Ps_Dist(pivot, &pt) > da))
+                break;
+            first++;
+        }
+        for (;;)
+        {
+            last--;
+            double dp = Ps_DistInline(pivot, p);
+            double dl = Ps_DistInline(*last, p);
+            if (!(dp < dl))
+                break;
+        }
+        if (first >= last)
+            return first;
+        BYTE* t = *first;
+        *first = *last;
+        *last = t;
+        first++;
+    }
+}
+
+} // extern "C"
+
+// === the nearest point of a road's curves to a point ($L_454ca0, a vtable entry)
+
+extern "C" void Cn_Nearest(); KING_ALIAS("_Cn_Nearest", "@Curve_NearestTo@36")
+ASM_FUNC(Cn_Inside, FUN_48dd50)
+
+extern "C" {
+
+// [$L_454ca0] road s's curves (1592 bytes each from +56) between (i0, t0) and (i1, t1), taken in order (else
+// through vtable +8 swapped): whether one holds a point nearest to (a, b, c) and where (*out, the last such curve)
+int __fastcall Road_NearestCurve(BYTE* s, void*, int a, int b, int c, int* out, double t0, int i0, double t1, int i1)
+{
+    if (i1 < i0 || (i1 == i0 && t1 < t0))
+        return CallVirt<int>(s, 8, a, b, c, out, t1, i1, t0, i0);
+    BYTE* segs = F(BYTE*, s, 56);
+    if (i1 == i0)
+    {
+        if (!CallThis<int>(Cn_Nearest, segs + i0 * 1592, a, b, c, t0, t1))
+            return 0;
+        *out = i0;
+        return 1;
+    }
+    int found = 0;
+    if (CallThis<int>(Cn_Nearest, segs + i0 * 1592, a, b, c, t0, 1.0))
+    {
+        found = 1;
+        *out = i0;
+    }
+    for (int i = i0 + 1; i < i1; i++)
+        if (CallThis<int>(Cn_Inside, F(BYTE*, s, 56) + i * 1592, a, b, c))
+        {
+            found = 1;
+            *out = i;
+        }
+    if (CallThis<int>(Cn_Nearest, F(BYTE*, s, 56) + i1 * 1592, a, b, c, 0.0, t1))
+    {
+        found = 1;
+        *out = i1;
+    }
+    return found;
+}
+
+} // extern "C"
+
+// === rope node destructors: a concatenation's (FUN_459c50) and a substring function's (FUN_459e90, with the
+//     function base's vtable reset at its inner entry $L_459ff0)
+
+extern "C" void Rd_FreeData(); KING_ALIAS("_Rd_FreeData", "@Str_FreeData@8")
+extern "C" void Rd_Fn(); KING_ALIAS("_Rd_Fn", "@Buf459df0_Destruct@8")
+ASM_VAR(AsmLabel, g_rd64b5b0, $L_64b5b0)
+ASM_VAR(AsmLabel, g_rd64b5a8, $L_64b5a8)
+
+extern "C" void __fastcall RopeSubstr_Destroy(BYTE* p, void*);
+extern "C" void __fastcall RopeConcat_Destroy(BYTE* n, void*);
+
+// child c of a concatenation dropped; freed at its last reference
+static void Rd_Drop(BYTE* c)
+{
+    if (InterlockedDecrement((LONG*)(c + 4)))
+        return;
+    switch ((signed char)F(BYTE, c, 8))
+    {
+    case 0:
+        if (F(void*, c, 20) != F(void*, c, 16))
+            CallThis(Rd_FreeData, c);
+        Str_FreeRounded(F(void*, c, 20), F(int, c, 0));
+        Ai_PoolFree(c, 24);
+        break;
+    case 1:
+        RopeConcat_Destroy(c, 0);
+        Ai_PoolFree(c, 28);
+        break;
+    case 2:
+    {
+        BYTE* p = c ? c - 4 : 0;
+        RopeSubstr_Destroy(p, 0);
+        Ai_PoolFree(p, 40);
+        break;
+    }
+    case 3:
+        CallThis(Rd_FreeData, c);
+        if (F(BYTE, c, 24) && F(BYTE*, c, 20))
+            CallVirt(F(BYTE*, c, 20), 0, 1);
+        Ai_PoolFree(c, 28);
+        break;
+    }
+}
+
+extern "C" {
+
+// [FUN_459c50] concatenation n: its C string, then both children dropped
+void __fastcall RopeConcat_Destroy(BYTE* n, void*)
+{
+    Rope_FreeCString(n);
+    Rd_Drop(F(BYTE*, n, 20));
+    Rd_Drop(F(BYTE*, n, 24));
+}
+
+// [FUN_459e90] substring function p (40 bytes, the rope function node at +4): its base rope (+32) dropped, then
+// the node's C string and, when it owns it, its function
+void __fastcall RopeSubstr_Destroy(BYTE* p, void*)
+{
+    F(void*, p, 0) = &g_rd64b5b0;
+    BYTE* b = F(BYTE*, p, 32);
+    if (!InterlockedDecrement((LONG*)(b + 4)))
+        switch ((signed char)F(BYTE, b, 8))
+        {
+        case 0:
+            if (F(void*, b, 20) != F(void*, b, 16))
+                CallThis(Rd_FreeData, b);
+            Str_FreeRounded(F(void*, b, 20), F(int, b, 0));
+            Ai_PoolFree(b, 24);
+            break;
+        case 1:
+            CallThis(Rd_FreeData, b);
+            Rope_Unref(F(BYTE*, b, 20), 0);
+            Rope_Unref(F(BYTE*, b, 24), 0);
+            Ai_PoolFree(b, 28);
+            break;
+        case 2:
+        {
+            BYTE* q = b ? b - 4 : 0;
+            RopeSubstr_Destroy(q, 0);
+            Ai_PoolFree(q, 40);
+            break;
+        }
+        case 3:
+            CallThis(Rd_Fn, b);
+            Ai_PoolFree(b, 28);
+            break;
+        }
+    F(void*, p, 0) = &g_rd64b5a8;
+    BYTE* r = p ? p + 4 : 0;
+    Rope_FreeCString(r);
+    if (F(BYTE, r, 24) && F(BYTE*, r, 20))
+        CallVirt(F(BYTE*, r, 20), 0, 1);
+}
+
+// (the entry $L_459ff0 inside FUN_459e90, reached by jumps from unwind code) p's vtable set to the function
+// base's
+void __fastcall RopeFn_ResetVtbl(BYTE* p, void*)
+{
+    F(void*, p, 0) = &g_rd64b5a8;
+}
+
+} // extern "C"
+
+// === a road node made (FUN_4709b0)
+
+extern "C" void Rn_Name(); KING_ALIAS("_Rn_Name", "@CharVec_Construct@12")
+extern "C" void Rn_Vec(); KING_ALIAS("_Rn_Vec", "@Vec_Construct@12")
+extern "C" void Rn_VecCtorEh(); KING_ALIAS("_Rn_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" void Rn_VecFree(); KING_ALIAS("_Rn_VecFree", "@Vec4_FreeStorage@8")
+
+// (the entry $L_470ad0 inside FUN_4709b0) an empty vector, the constructor for the two at +20
+static BYTE* __fastcall Rn_EmptyVec(BYTE* v, void*)
+{
+    char alloc;
+    return CallThis<BYTE*>(Rn_Vec, v, &alloc);
+}
+
+extern "C" {
+
+// [FUN_4709b0] road node s named name: two empty vectors (+20), three frames of doubles (+48, +80, +112; their
+// scales 1 at +72, +104, +136), four -1 links (+168), the rest cleared
+BYTE* __fastcall RoadNode_Construct(BYTE* s, void*, const char* name)
+{
+    CallThis(Rn_Name, s, name);
+    F(int, s, 12) = 0;
+    CallStd(Rn_VecCtorEh, s + 20, 12, 2, (void*)Rn_EmptyVec, (void*)Rn_VecFree);
+    memset(s + 48, 0, 156);
+    F(DWORD, s, 76) = 0x3FF00000;
+    F(DWORD, s, 108) = 0x3FF00000;
+    F(DWORD, s, 140) = 0x3FF00000;
+    for (int k = 0; k < 4; k++)
+        F(int, s, 168 + 4 * k) = -1;
+    return s;
+}
+
+} // extern "C"
+
+// === a hash table's node for a key (FUN_4592b0)
+
+extern "C" {
+
+// [FUN_4592b0] a 16-byte node from the STL allocator: no next (+0), key (+4: a counted pointer, its count +4
+// raised, and a second word)
+void** __fastcall Hash_NewNode(void*, void*, const DWORD* key)
+{
+    void** n = (void**)Stl_Allocate(16);
+    n[0] = 0;
+    DWORD* k = (DWORD*)(n + 1);
+    k[0] = key[0];
+    if (key[0])
+        InterlockedIncrement((LONG*)(key[0] + 4));
+    k[1] = key[1];
+    return n;
 }
 
 } // extern "C"

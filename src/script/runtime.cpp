@@ -1109,7 +1109,7 @@ extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8
 extern "C" void FUN_491090(); KING_ALIAS("_FUN_491090", "@Ring491090_Destruct@8")
 extern "C" void FUN_491100(); KING_ALIAS("_FUN_491100", "@Rec491100_Destroy@8")
 extern "C" void FUN_4914c0(); KING_ALIAS("_FUN_4914c0", "@Run4914c0_Destroy@4")
-ASM_PROC(FUN_491590)
+extern "C" void FUN_491590(); KING_ALIAS("_FUN_491590", "@Task491590_Destruct@8")
 ASM_VAR(AsmLabel, g_run64bee4, $L_64bee4)
 ASM_VAR(AsmLabel, g_run6705ec, $L_6705ec)
 ASM_VAR(AsmLabel, g_run6705f4, $L_6705f4)
@@ -2049,7 +2049,7 @@ extern "C" void FUN_44c470(); KING_ALIAS("_FUN_44c470", "@Vec8_Insert44c470@16")
 extern "C" void FUN_458e00(); KING_ALIAS("_FUN_458e00", "_Vec8b_AllocCopy@12")
 extern "C" void FUN_4608f0(); KING_ALIAS("_FUN_4608f0", "_Construct8")
 extern "C" void FUN_48e8c0(); KING_ALIAS("_FUN_48e8c0", "@Rec_Init48e8c0@12")
-ASM_PROC(FUN_490820)
+extern "C" void FUN_490820(); KING_ALIAS("_FUN_490820", "@Vec24_CopyConstruct@12")
 extern "C" void FUN_490930(); KING_ALIAS("_FUN_490930", "@Vec8_Copy@12")
 
 // push_back of d to the vector of doubles v
@@ -2395,7 +2395,7 @@ void __fastcall Vec4_InsertAux48a000(BYTE** v, void*, BYTE* pos, const BYTE* x) 
 // === reversing a curve (FUN_48e190)
 
 extern "C" void FUN_48eda0(); KING_ALIAS("_FUN_48eda0", "@VPoly_Evaluate@16")    // vector polynomial composed with another (out, inner)
-ASM_PROC(FUN_48dbb0)    // a curve record from a vector polynomial (src)
+extern "C" void FUN_48dbb0(); KING_ALIAS("_FUN_48dbb0", "@Curve_Construct@12")    // a curve record from a vector polynomial (src)
 extern "C" void FUN_461680(); KING_ALIAS("_FUN_461680", "_Construct24")
 extern "C" BYTE* __fastcall Rec1588_Copy(BYTE* s, void*, const BYTE* src);    // ai_containers.cpp
 
@@ -2551,7 +2551,7 @@ VecPoly* __cdecl VPoly_Basis(VecPoly* out, const double* x, int i, int n, int k)
 
 // === a B-spline as polynomial pieces (FUN_48d8f0)
 
-ASM_PROC(FUN_48f5d0)    // vector<580-byte record> copy constructor (src)
+extern "C" void FUN_48f5d0(); KING_ALIAS("_FUN_48f5d0", "@Vec580_CopyConstruct@12")    // vector<580-byte record> copy constructor (src)
 extern "C" void __fastcall Vec580_Destroy(BYTE** v, void*);    // ai_world.cpp
 
 extern "C" {
@@ -2870,6 +2870,168 @@ int __fastcall Road_NearestOn(BYTE* s, void*, const DVec3* p, double* best, doub
     if (idx == i1)
         *tOut = t1 * *tOut;
     return found;
+}
+
+} // extern "C"
+
+// === a vector of 24-byte values copied (FUN_490820)
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+
+extern "C" {
+
+// [FUN_490820] vector s made a copy of src (begin, end, capacity end): its storage from the STL allocator, the
+// values copied in
+BYTE** __fastcall Vec24_CopyConstruct(BYTE** s, void*, BYTE* const* src)
+{
+    int n = (int)(src[1] - src[0]) / 24;
+    s[0] = s[1] = s[2] = 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 24) : 0;
+    s[0] = p;
+    s[1] = p;
+    s[2] = p + n * 24;
+    s[1] = UninitCopy24s(src[0], src[1], p);
+    return s;
+}
+
+} // extern "C"
+
+// === a vector of 580-byte values copied (FUN_48f5d0)
+
+extern "C" void Vc_Copy580(); KING_ALIAS("_Vc_Copy580", "_UninitCopy580s")
+
+extern "C" {
+
+// [FUN_48f5d0] vector s made a copy of src, as Vec24_CopyConstruct with 580-byte values
+BYTE** __fastcall Vec580_CopyConstruct(BYTE** s, void*, BYTE* const* src)
+{
+    int n = (int)(src[1] - src[0]) / 580;
+    s[0] = s[1] = s[2] = 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 580) : 0;
+    s[0] = p;
+    s[1] = p;
+    s[2] = p + n * 580;
+    s[1] = CallC<BYTE*>(Vc_Copy580, src[0], src[1], p, n);
+    return s;
+}
+
+} // extern "C"
+
+// === the squared derivative's coefficient sums of a polynomial (FUN_48e600)
+
+extern "C" BYTE* __fastcall VPoly_Derivative(BYTE* s, void*, BYTE* out);
+extern "C" BYTE* __fastcall VPoly_Multiply(BYTE* s, void*, BYTE* out, BYTE* b);
+
+extern "C" {
+
+// [FUN_48e600] list s (doubles, its count +192) made the sums of the three coefficients of each term (24 bytes,
+// their count +576) of p's derivative squared
+void __cdecl VPoly_SquaredDerivative(BYTE* s, BYTE* p)
+{
+    __declspec(align(8)) BYTE d[580], t[580];
+    VPoly_Derivative(p, 0, d);
+    memcpy(d, VPoly_Multiply(d, 0, t, d), 580);
+    F(int, s, 192) = 0;
+    int n = F(int, d, 576);
+    for (int i = 0; i < n; i++)
+    {
+        const double* c = (const double*)(d + 24 * i);
+        F(double, s, 8 * F(int, s, 192)) = c[2] + c[0] + c[1];
+        F(int, s, 192)++;
+    }
+}
+
+} // extern "C"
+
+// === a vector of dwords copied (FUN_48a580) and a task's destructor (FUN_491590)
+
+extern "C" void Vc_CopyDw(); KING_ALIAS("_Vc_CopyDw", "_UninitCopyDwords")
+extern "C" void Tk_Queue(); KING_ALIAS("_Tk_Queue", "_Tasks_Queue")
+extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
+ASM_VAR(AsmLabel, g_tk64bf24, $L_64bf24)
+ASM_VAR(AsmLabel, g_tk64bf38, $L_64bf38)
+ASM_VAR(AsmLabel, g_tk64bee4, $L_64bee4)
+
+extern "C" {
+
+// [FUN_48a580] vector s made a copy of src, as Vec24_CopyConstruct with dwords
+BYTE** __fastcall VecDw_CopyConstruct(BYTE** s, void*, BYTE* const* src)
+{
+    int n = (int)(src[1] - src[0]) >> 2;
+    s[0] = s[1] = s[2] = 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n * 4) : 0;
+    s[0] = p;
+    s[1] = p;
+    s[2] = p + n * 4;
+    s[1] = CallC<BYTE*>(Vc_CopyDw, src[0], src[1], p, n);
+    return s;
+}
+
+// [FUN_491590] task s destroyed: its 44-byte entries (+20, vtable +4) and their storage, then handed to the task
+// queue (+12, +16)
+void __fastcall Task491590_Destruct(BYTE* s, void*)
+{
+    F(void*, s, 0) = &g_tk64bf24;
+    BYTE* b = F(BYTE*, s, 20);
+    BYTE* e = F(BYTE*, s, 24);
+    for (BYTE* p = b; p != e; p += 44)
+        CallVirt(p, 4, 0);
+    b = F(BYTE*, s, 20);
+    if (int n = (int)(F(BYTE*, s, 28) - b) / 44)
+        Ai_PoolFree(b, n * 44);
+    F(void*, s, 0) = &g_tk64bf38;
+    CallC(Tk_Queue, F(int, s, 12), F(int, s, 16));
+    F(void*, s, 0) = &g_tk64bee4;
+}
+
+} // extern "C"
+
+// === a road curve made from a polynomial (FUN_48dbb0)
+
+extern "C" void Cc_Fit(); KING_ALIAS("_Cc_Fit", "_Poly_ChebyshevFit")
+extern "C" void Cc_Integral(); KING_ALIAS("_Cc_Integral", "@Poly_Integral@12")
+extern "C" void Cc_Eval(); KING_ALIAS("_Cc_Eval", "@VecPoly_Eval@16")
+extern "C" void Cc_Push(); KING_ALIAS("_Cc_Push", "@Vec24_PushBackK@12")
+extern "C" void Cc_Sphere(); KING_ALIAS("_Cc_Sphere", "_Points_BoundingSphere")
+extern "C" void Cc_Assign(); KING_ALIAS("_Cc_Assign", "@DVec3_Assign@12")
+extern "C" void Cc_Free(); KING_ALIAS("_Cc_Free", "@Vec24_FreeStorage@8")
+extern "C" void Cc_VecNew(); KING_ALIAS("_Cc_VecNew", "@Vec_Construct@12")
+ASM_VAR(double, g_cc64b5a0, $L_64b5a0)
+
+extern "C" {
+
+// [FUN_48dbb0] curve s (1592 bytes) of polynomial p: p (+0), its derivative (+616), the squared derivative's
+// sums (+1196), their Chebyshev fit over 0 .. 1 integrated (the arc length, +1392), and the bounding sphere of
+// 100 points along it (+584, its radius +608)
+BYTE* __fastcall Curve_Construct(BYTE* s, void*, const BYTE* p)
+{
+    memcpy(s, p, 580);
+    F(int, s, 608) = 0;
+    F(int, s, 612) = 0;
+    F(int, s, 616 + 576) = 0;
+    F(int, s, 1388) = 0;
+    F(int, s, 1584) = 0;
+    __declspec(align(8)) BYTE d[580], fit[196], in[196];
+    memcpy(s + 616, VPoly_Derivative((BYTE*)p, 0, d), 580);
+    VPoly_SquaredDerivative(s + 1196, s);
+    BYTE* f = CallC<BYTE*>(Cc_Fit, fit, 0.0, 1.0, 8, s + 1196);
+    memcpy(s + 1392, CallThis<BYTE*>(Cc_Integral, f, in), 196);
+    BYTE* v[3];
+    char alloc;
+    CallThis(Cc_VecNew, v, &alloc);
+    for (int i = 0; i < 100; i++)
+    {
+        double t = i * g_cc64b5a0;
+        double pt[3];
+        CallThis(Cc_Push, v, CallThis<double*>(Cc_Eval, s, pt, &t));
+    }
+    double sp[4];
+    const double* r = CallC<const double*>(Cc_Sphere, sp, v);
+    CallThis(Cc_Assign, s + 584, r);
+    F(int, s, 608) = ((const int*)r)[6];
+    F(int, s, 612) = ((const int*)r)[7];
+    CallThis(Cc_Free, v);
+    return s;
 }
 
 } // extern "C"

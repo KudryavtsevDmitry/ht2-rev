@@ -799,7 +799,7 @@ extern "C" void __fastcall Body_SetContactMode(BYTE* s, void*, int mode)
     F(int, s, 3588) = mode;
 }
 
-ASM_PROC(FUN_5917f0)    // a contact of a point with the body (point, -, contact, -)
+extern "C" void FUN_5917f0(); KING_ALIAS("_FUN_5917f0", "_Body_PointContact")    // a contact of a point with the body (point, -, contact, -)
 extern "C" Vec3* __cdecl Line_Project(Vec3* out, const Vec3* p, const Vec3* n, const Vec3* a, const Vec3* b);
 
 // [FUN_591b50] a contact of the segment a-b: at a when b goes into the plane, or at b projected onto the plane
@@ -1302,7 +1302,7 @@ extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
 extern "C" void FUN_57c9a0(); KING_ALIAS("_FUN_57c9a0", "_Id_Same")
 extern "C" void FUN_584c70(); KING_ALIAS("_FUN_584c70", "_Item_SphereContact")    // sphere contacts (centre, other centre, radius, contacts, body, sign)
-ASM_PROC(FUN_58a020)    // box contacts (body, matrix, contacts, other, sign)
+extern "C" void FUN_58a020(); KING_ALIAS("_FUN_58a020", "_Box_PointContacts")    // box contacts (body, matrix, contacts, other, sign)
 ASM_VAR(AsmLabel, g_bc7025f0, $L_7025f0)
 
 static double Bc_Abs(double x) { return x < 0 ? -x : x; }
@@ -3008,7 +3008,7 @@ int __cdecl Item_SweepPoints(BYTE* it, const Matrix* Mx, BYTE* out, DWORD flags)
 // === a body's points reset onto its plane (a method at $L_58e290)
 
 extern "C" void Bp_ActivateAll(); KING_ALIAS("_Bp_ActivateAll", "@Points_ActivateAll@8")
-ASM_PROC(FUN_58e7f0)
+extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 ASM_VAR(char, g_bp67dda8, $L_67dda8)
 ASM_VAR(double, g_bp64b5a0, $L_64b5a0)
 ASM_VAR(double, g_bp64b898, $L_64b898)
@@ -3247,6 +3247,265 @@ void __fastcall Sparks_Frame(BYTE* s, void*)
     float now = (float)F(double, F(BYTE*, s, 96), 2968);
     CallC(Sk_Faders, now);
     CallThis(Sk_Post, s, 1);
+}
+
+} // extern "C"
+
+// === a point's contact with a moving body's planes (FUN_5917f0 with its tail $L_59199f)
+
+extern "C" void Pc_Fatal(); KING_ALIAS("_Pc_Fatal", "_World_Fatal")
+extern "C" void Pc_RotBy(); KING_ALIAS("_Pc_RotBy", "_Vec3_RotateBy")
+extern "C" float* __cdecl Vec3_RejectFrom(float* out, float* a, float* b, float* c);
+
+extern "C" {
+
+// [FUN_5917f0..$L_59199f] point p (world) against body b's planes (records of normal +0, point +16) within depth
+// r: 0 when it is outside one by more than r; else the deepest plane: the contact (+52 the point on the plane, +64
+// the normal, both back in the world, +4 b's frame, +116 b) filled; 1
+int __cdecl Body_PointContact(const float* p, BYTE* b, BYTE* contact, float r)
+{
+    Record28 rec;
+    TwoVec_Construct((BYTE*)&rec, 0);
+    float M[12];
+    CallThis(FUN_57dec0, b, M);
+    float q[3];
+    q[0] = (float)((double)M[0] * p[0] + (double)M[6] * p[2] + (double)M[3] * p[1] + M[9]);
+    q[1] = (float)((double)M[1] * p[0] + (double)M[7] * p[2] + (double)M[4] * p[1] + M[10]);
+    q[2] = (float)((double)M[2] * p[0] + (double)M[8] * p[2] + (double)M[5] * p[1] + M[11]);
+    float best_pt[3] = {0, 0, 0};
+    float best = -F(float, b, 3280);
+    int idx = 0;
+    const float* n = (const float*)rec.m;
+    int k = Records_Next(b, 0, &rec);
+    if (k)
+    {
+        do
+        {
+            double d = ((double)q[2] - n[6]) * n[2] + ((double)q[1] - n[5]) * n[1] + ((double)q[0] - n[4]) * n[0];
+            if (d > r)
+                best = 0;
+            else if (best < d)
+            {
+                idx = k - 1;
+                best = (float)d;
+                memcpy(best_pt, q, 12);
+            }
+            k = Records_Next(b, 0, &rec);
+        } while (k);
+        if (*(DWORD*)&best == 0)
+            return 0;
+    }
+    if (!Records_Get(b, 0, &rec, idx))
+        CallC(Pc_Fatal, "checkPMBintersection:: mb->get_col_plane(num) == 0");
+    float ty = (float)((double)n[1] * r), tz = (float)((double)n[2] * r);
+    float S[3];
+    S[0] = (float)((double)n[0] * r + n[4]);
+    S[1] = (float)((double)ty + n[5]);
+    S[2] = (float)((double)tz + n[6]);
+    float nn[3] = {n[0], n[1], n[2]};
+    float t[3];
+    const float* o = Vec3_RejectFrom(t, S, nn, best_pt);
+    float* c52 = &F(float, contact, 52);
+    float* c64 = &F(float, contact, 64);
+    memcpy(c52, o, 12);
+    memcpy(c64, nn, 12);
+    float W[12];
+    CallThis(FUN_57de90, b, W);
+    Vec3 w;
+    Vec3_SetThis(&w, 0, (float)((double)W[0] * c52[0] + (double)W[6] * c52[2] + (double)W[3] * c52[1] + W[9]),
+                 (float)((double)W[1] * c52[0] + (double)W[7] * c52[2] + (double)W[4] * c52[1] + W[10]),
+                 (float)((double)W[2] * c52[0] + (double)W[8] * c52[2] + (double)W[5] * c52[1] + W[11]));
+    F(Vec3, contact, 52) = w;
+    Vec3 rot;
+    memcpy(c64, CallC<const float*>(Pc_RotBy, &rot, c64, W), 12);
+    F(BYTE*, contact, 116) = b;
+    F(int, contact, 100) = 0;
+    F(int, contact, 108) = 0;
+    memcpy(contact + 4, M, 48);
+    return 1;
+}
+
+} // extern "C"
+
+// === a moving box's points against another body (FUN_58a020 with its tail $L_58a9fe)
+
+extern "C" void Bx_Get800(); KING_ALIAS("_Bx_Get800", "@SceneObj_Get800@8")
+extern "C" void Bx_Query(); KING_ALIAS("_Bx_Query", "_Query_4e52fc")
+extern "C" void Bx_Out(); KING_ALIAS("_Bx_Out", "_Vec3_OutOfBox")
+extern "C" void Bx_Fatal(); KING_ALIAS("_Bx_Fatal", "_World_Fatal")
+ASM_VAR(double, g_bx6506b8, $L_6506b8)
+ASM_VAR(double, g_bx64b670, $L_64b670)
+ASM_VAR(double, g_bx64b5a0, $L_64b5a0)
+ASM_VAR(float, g_bx64c250, $L_64c250)
+ASM_VAR(float, g_bx64c264, $L_64c264)
+ASM_VAR(char, g_bxColFmt, $L_67dc70)
+ASM_VAR(char, g_bx1Fmt, $L_67dbe8)
+ASM_VAR(char, g_bx2Fmt, $L_67db24)
+ASM_VAR(char, g_bxAllFmt, $L_67db08)
+
+// p through frame m (rows of 3, the place +9) as the asm sums it: m[6] z + m[3] y + m[0] x + m[9] ...
+static void Bx_Frame(const float* m, const float* p, float* out)
+{
+    out[0] = (float)((double)m[6] * p[2] + (double)m[3] * p[1] + (double)m[0] * p[0] + m[9]);
+    out[1] = (float)((double)m[7] * p[2] + (double)m[4] * p[1] + (double)m[1] * p[0] + m[10]);
+    out[2] = (float)((double)m[8] * p[2] + (double)m[5] * p[1] + (double)m[2] * p[0] + m[11]);
+}
+
+// a body's state for the dump: its name, speed, spin, inertia and frame
+static void Bx_Dump(char* buf, const char* fmt, BYTE* o, const float* v, const float* w, const float* M,
+                    const float* extra)
+{
+    double i88 = F(float, o, 3288);
+    const float* q = &F(float, o, 3296);
+    const char* name = F(const char*, F(BYTE*, o, 320), 12);
+    if (extra)
+        sprintf(buf, fmt, name, (double)v[0], (double)v[1], (double)v[2], (double)w[0], (double)w[1], (double)w[2], i88,
+                i88, (double)q[0], (double)q[1], (double)q[2], (double)q[3], (double)q[4], (double)q[5], (double)q[6],
+                (double)M[0], (double)M[1], (double)M[2], (double)M[3], (double)M[4], (double)M[5], (double)M[6],
+                (double)M[7], (double)M[8], (double)M[9], (double)M[10], (double)M[11], (double)extra[0],
+                (double)extra[1], (double)extra[2], (double)extra[3], (double)extra[4], (double)extra[5],
+                (double)extra[6], (double)extra[7], (double)extra[8], (double)extra[9], (double)extra[10],
+                (double)extra[11]);
+    else
+        sprintf(buf, fmt, name, (double)v[0], (double)v[1], (double)v[2], (double)w[0], (double)w[1], (double)w[2], i88,
+                i88, (double)q[0], (double)q[1], (double)q[2], (double)q[3], (double)q[4], (double)q[5], (double)q[6],
+                (double)M[0], (double)M[1], (double)M[2], (double)M[3], (double)M[4], (double)M[5], (double)M[6],
+                (double)M[7], (double)M[8], (double)M[9], (double)M[10], (double)M[11]);
+}
+
+extern "C" {
+
+// [FUN_58a020..$L_58a9fe] box b (frame m) against body o: each of b's points moving from its place by b's frame
+// to its place by m, tried against o's shape in o's own frame (+692 times its frame; kind 2 also its planes),
+// recorded in contacts c (at most 63) with sign: the world point and normal (times sign), the ids, b's point
+// flags and node for sign > 0, the depth and the fraction along the move; fatal on a contact far out; the count
+int __cdecl Box_PointContacts(BYTE* b, const Matrix* m, BYTE* c, BYTE* o, int sign)
+{
+    __declspec(align(8)) BYTE node[208];
+    CallThis(FUN_5ef5c0, node);
+    float Wb[12], Mi[12];
+    CallThis(FUN_57de90, b, Wb);
+    Matrix_Inverse((Matrix*)Mi, m);
+    CallThis(Bx_Get800, b);
+    float pt[3] = {0, 0, 0};
+    int count = 0;
+    int r = Points_Next(b, 0, (Vec3Bits*)pt);
+    if (!r)
+        return 0;
+    const float* mm = m->m;
+    while (r)
+    {
+        if (F(int, c, 2816) >= 63)
+        {
+            while (Points_Next(b, 0, (Vec3Bits*)pt))
+                ;
+            return count;
+        }
+        float p[3], q[3];
+        Bx_Frame(Wb, pt, p);
+        q[0] = (float)((double)pt[2] * mm[6] + (double)pt[1] * mm[3] + (double)pt[0] * mm[0] + mm[9]);
+        q[1] = (float)((double)pt[0] * mm[1] + (double)pt[2] * mm[7] + (double)pt[1] * mm[4] + mm[10]);
+        q[2] = (float)((double)pt[0] * mm[2] + (double)pt[2] * mm[8] + (double)pt[1] * mm[5] + mm[11]);
+        int flag = 0;
+        int id = 0;
+        if (F(int, o, 392) != 2 || Body_SegmentNearBox(o, 0, p, q))
+        {
+            float A[12], M1o[12], C[12], Ci[12];
+            memcpy(A, o + 692, 48);
+            CallThis(FUN_57de90, o, M1o);
+            Matrix_Multiply((Matrix*)C, (const Matrix*)A, (const Matrix*)M1o);
+            Matrix_Inverse((Matrix*)Ci, (const Matrix*)C);
+            float lp[3], lq[3];
+            Bx_Frame(Ci, p, lp);
+            Bx_Frame(Ci, q, lq);
+            int res = CallC<int>(Bx_Query, F(void*, o, 320), lp, lq, node);
+            flag = res;
+            int hit = res & 1;
+            if (hit)
+            {
+                const float* np = &F(float, node, 52);
+                const float* nn = &F(float, node, 64);
+                float Wp[3], Wn[3];
+                Bx_Frame(C, np, Wp);
+                Wn[0] = (float)((double)C[3] * nn[1] + (double)C[6] * nn[2] + (double)C[0] * nn[0]);
+                Wn[1] = (float)((double)C[1] * nn[0] + (double)C[4] * nn[1] + (double)C[7] * nn[2]);
+                Wn[2] = (float)((double)C[2] * nn[0] + (double)C[5] * nn[1] + (double)C[8] * nn[2]);
+                if (CallC<int>(Bx_Out, Wp, 10000.0f) || CallC<int>(Bx_Out, nn, 2.0f))
+                {
+                    float M1b[12], M1o2[12];
+                    CallThis(FUN_57de90, b, M1b);
+                    CallThis(FUN_57de90, o, M1o2);
+                    char col[1000], d1[1000], d2[2000], all[3000];
+                    sprintf(col, &g_bxColFmt, (double)Wp[0], (double)Wp[1], (double)Wp[2], (double)nn[0],
+                            (double)nn[1], (double)nn[2], (double)F(float, b, 3268), (double)F(float, o, 3268));
+                    Bx_Dump(d1, &g_bx1Fmt, b, &F(float, b, 416), &F(float, b, 428), M1b, 0);
+                    Bx_Dump(d2, &g_bx2Fmt, o, &F(float, o, 416), &F(float, o, 428), M1o2, C);
+                    sprintf(all, &g_bxAllFmt, col, d1, d2);
+                    CallC(Bx_Fatal, all);
+                }
+                memcpy(node + 52, Wp, 12);
+                memcpy(node + 64, Wn, 12);
+                id = CallC<int>(FUN_57c9a0, sign > 0 ? o : b);
+                F(int, node, 116) = id;
+            }
+            else if (F(int, o, 392) == 2 && Body_SegmentContact((const Vec3*)p, (const Vec3*)q, (int)o, node,
+                                                                  0x3C23D70A))
+                flag = 1;
+        }
+        int n = F(int, c, 2816);
+        F(int, c, 2820 + 4 * n) = (flag & 1) * sign;
+        F(float, c, 2048 + 4 * n) = 1.0f;
+        F(float, c, 2304 + 4 * n) = 1.0f;
+        if (F(int, c, 2820 + 4 * n))
+        {
+            count++;
+            F(int, c, 2048 + 4 * n) = 0;
+            F(int, c, 2304 + 4 * n) = 0;
+            double sg = sign;
+            const float* np = &F(float, node, 52);
+            const float* nn = &F(float, node, 64);
+            memcpy(c + 12 * n, np, 12);
+            float sn[3] = {(float)(sg * nn[0]), (float)(sg * nn[1]), (float)(sg * nn[2])};
+            memcpy(c + 12 * (n + 64), sn, 12);
+            if (sign > 0)
+            {
+                F(int, c, 1536 + 4 * n) = F(int, node, 116);
+                DWORD fl = F(DWORD, b, 5188 + 4 * r) | 2;
+                F(DWORD, b, 5188 + 4 * r) = fl;
+                F(DWORD, b, 5268 + 4 * r) = fl;
+                memcpy(b + 5144 + r * 208, node, 208);
+            }
+            else
+                F(int, c, 1536 + 4 * n) = CallC<int>(FUN_57c9a0, b);
+            F(int, c, 3076 + 4 * n) = r - 1;
+            const float* e = &F(float, node, 88);
+            double ax = (double)e[0] - p[0], ay = (double)e[1] - p[1], az = (double)e[2] - p[2];
+            float h[3] = {(float)((double)np[0] - p[0]), (float)((double)np[1] - p[1]), (float)((double)np[2] - p[2])};
+            double gx = (double)np[0] - q[0], gy = (double)np[1] - q[1];
+            float gz = (float)((double)np[2] - q[2]);
+            double dot = (double)gz * nn[2] + gy * nn[1];
+            dot = gx * nn[0] + dot;
+            F(float, c, 2560 + 4 * n) = (float)dot;
+            float la = (float)(ax * ax + ay * ay + az * az);
+            double lh = (double)h[0] * h[0] + (double)h[1] * h[1] + (double)h[2] * h[2];
+            if (!(la < g_bx6506b8))
+            {
+                double rr = lh / la;
+                if (rr > g_bx64b670)
+                    rr = g_bx64c250;
+                F(float, c, 2048 + 4 * n) = (float)x87_sqrt(rr);
+                F(float, c, 2304 + 4 * n) = F(float, c, 2048 + 4 * n);
+                double t = x87_sqrt(lh) - g_bx64b5a0;
+                if (t > g_bx64c264)
+                    F(float, c, 2048 + 4 * n) = (float)(t / x87_sqrt(la));
+                else
+                    F(int, c, 2048 + 4 * n) = 0;
+            }
+            F(int, c, 2816)++;
+        }
+        r = Points_Next(b, 0, (Vec3Bits*)pt);
+    }
+    return count;
 }
 
 } // extern "C"
