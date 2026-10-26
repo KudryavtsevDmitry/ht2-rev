@@ -1904,7 +1904,7 @@ ASM_VAR(AsmLabel, g_frameWndVtbl, $L_654184)
 ASM_VAR(char, g_settingsSection, $L_653490)
 ASM_VAR(char, g_previewPagesEntry, $L_653480)
 ASM_PROC(FUN_6371de)                           // _AfxIsComboBoxControl
-ASM_PROC(FUN_639958)                           // AfxOleSetUserCtrl
+extern "C" void FUN_639958(); KING_ALIAS("_FUN_639958", "_Afx_OleSetUserCtrl@4")                           // AfxOleSetUserCtrl
 ASM_PROC(FUN_638fc2)                           // CFrameWnd::OnUpdateFrameTitle part
 ASM_PROC(FUN_6377ac)                           // CWinApp::WriteProfileInt
 ASM_PROC(FUN_63b4a6)                           // a CNoTrackObject's destructor
@@ -3381,4 +3381,676 @@ extern "C" int __stdcall Afx_MessageBoxId(UINT id, UINT type, UINT help) {
     int r = Afx_MessageBoxText(s, type, help);
     String_Destruct(&s);
     return r;
+}
+
+// ---------------------------------------------------------------------------
+// CWnd::OnCommand, AfxRegisterWndClass, CFrameWnd's modal state, help mode
+// and view creation. CFrameWnd: +72 m_hAccelTable, +80 m_bHelpMode,
+// +104 m_pNotifyHook, +140 m_nIDHelp, +144 m_nIDTracking, +160 m_cModalStack,
+// +164 m_phWndDisable; CWnd +36 m_nFlags.
+
+ASM_VAR(RECT, g_rectDefault, $L_72db68)         // CFrameWnd::rectDefault
+ASM_VAR(UINT, g_msgMouseWheel, $L_72db60)
+ASM_VAR(AsmLabel, g_mouseWheelMsgName, $L_654170)   // "MSWHEEL_ROLLMSG"
+ASM_VAR(AsmLabel, g_frameMap653d00, $L_653d00)
+ASM_VAR(AsmLabel, g_testCmdUIVtbl, $L_653be0)
+ASM_VAR(HCURSOR, g_hcurHelp, $L_72e0bc)
+ASM_VAR(AsmLabel, g_wndFrameOrViewClass, $L_653a3c)
+ASM_VAR(AsmLabel, g_classNameShortFmt, $L_653bd0)  // "Afx:%x:%x"
+ASM_VAR(AsmLabel, g_classNameFmt, $L_653bbc)       // "Afx:%x:%x:%x:%x:%x"
+ASM_PROC(FUN_63569a)                            // CWnd::ReflectLastMsg
+
+// [$L_637821] static initializer of CFrameWnd::rectDefault
+extern "C" void __cdecl FrameWnd_InitRectDefault() {
+    g_rectDefault.right = 0;
+    g_rectDefault.bottom = 0;
+    g_rectDefault.left = CW_USEDEFAULT;
+    g_rectDefault.top = CW_USEDEFAULT;
+}
+
+// [$L_637844] static initializer: the mouse wheel message of Windows 95 and
+// NT 3.x
+extern "C" void __cdecl Afx_InitMouseWheelMsg() {
+    if (((GetVersion() & 0x80000000) && (WORD)GetVersion() == 4)
+        || (!(GetVersion() & 0x80000000) && (WORD)GetVersion() == 3))
+        g_msgMouseWheel = RegisterWindowMessageA(g_mouseWheelMsgName);
+    else
+        g_msgMouseWheel = 0;
+}
+
+// [$L_63788e] CFrameWnd map getter ($L_653d00)
+extern "C" void* __fastcall FrameWnd_GetMap653d00(BYTE* self) { return g_frameMap653d00; }
+
+// [$L_637956] CFrameWnd's deleting destructor
+extern "C" BYTE* __fastcall FrameWnd_DeletingDestruct(BYTE* self, void*, int flags) {
+    FrameWnd_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_635117] CTestCmdUI::CTestCmdUI
+extern "C" BYTE* __fastcall TestCmdUI_Construct(BYTE* self) {
+    CmdUI_Construct(self);
+    F(void*, self, 0) = g_testCmdUIVtbl;
+    F(BOOL, self, 40) = TRUE;                                      // m_bEnabled
+    return self;
+}
+
+// [$L_635130] CTestCmdUI::Enable
+extern "C" void __fastcall TestCmdUI_Enable(BYTE* self, void*, BOOL on) {
+    F(BOOL, self, 24) = TRUE;
+    F(BOOL, self, 40) = on;
+}
+
+// [$L_635141] CTestCmdUI::SetCheck/SetRadio/SetText: nothing
+extern "C" void __fastcall TestCmdUI_Ignore(BYTE* self, void*, int) {}
+
+// [FUN_635144] CWnd::OnCommand
+extern "C" BOOL __fastcall Wnd_OnCommand(BYTE* self, void*, WPARAM w, LPARAM l) {
+    UINT id = LOWORD(w);
+    int code = HIWORD(w);
+    if (!l) {
+        if (!id) return FALSE;
+        BYTE state[44];
+        TestCmdUI_Construct(state);
+        F(UINT, state, 4) = id;
+        CallVirt(self, 12, id, -1, (void*)state, (void*)0);       // OnCmdMsg(CN_UPDATE_COMMAND_UI)
+        if (!F(BOOL, state, 40)) return TRUE;
+        code = 0;
+    } else {
+        if (F(HWND, Afx_GetThreadState(), 184) == HWND_OF(self)) return TRUE;  // m_hLockoutNotifyWindow
+        if (CallStd<BOOL>(FUN_63569a, (HWND)l, (LRESULT*)0)) return TRUE;
+        if (!id) return FALSE;
+    }
+    return CallVirt<BOOL>(self, 12, id, code, (void*)0, (void*)0);
+}
+
+// [FUN_63493f] AfxRegisterWndClass: "Afx:..." class names, registered once
+extern "C" const char* __stdcall Afx_RegisterWndClass(UINT style, HCURSOR cursor, HBRUSH brush, HICON icon) {
+    char* name = (char*)Afx_GetThreadState() + 88;                 // m_szTempClassName
+    HINSTANCE inst = F(HINSTANCE, Afx_GetModuleState(), 8);
+    if (!cursor && !brush && !icon) wsprintfA(name, g_classNameShortFmt, inst, style);
+    else wsprintfA(name, g_classNameFmt, inst, style, cursor, brush, icon);
+    WNDCLASSA wc;
+    if (!GetClassInfoA(inst, name, &wc)) {
+        wc.style = style;
+        wc.lpfnWndProc = DefWindowProcA;
+        wc.cbClsExtra = wc.cbWndExtra = 0;
+        wc.lpszMenuName = 0;
+        wc.hIcon = icon;
+        wc.hInstance = inst;
+        wc.hCursor = cursor;
+        wc.hbrBackground = brush;
+        wc.lpszClassName = name;
+        if (!Afx_RegisterClass(&wc)) CallC(FUN_6371c5);           // AfxThrowResourceException
+    }
+    return name;
+}
+
+// [FUN_63611b] CFrameWnd::IsTracking: a menu item's prompt is shown
+extern "C" BOOL __fastcall FrameWnd_IsTracking(BYTE* self) {
+    UINT id = F(UINT, self, 144);
+    return id && id != 57346 && id != 57345;                       // AFX_IDS_HELPMODEMESSAGE, AFX_IDS_IDLEMESSAGE
+}
+
+// [FUN_637a3a] CFrameWnd::LoadAccelTable
+extern "C" BOOL __fastcall FrameWnd_LoadAccelTable(BYTE* self, void*, const char* name) {
+    F(HACCEL, self, 72) = LoadAcceleratorsA(F(HINSTANCE, Afx_GetModuleState(), 12), name);
+    return F(HACCEL, self, 72) != 0;
+}
+
+// [$L_637b07] CFrameWnd handler: Default, then tells the notify hook
+// (vtbl+108)
+extern "C" void __fastcall FrameWnd_DefaultThenHook108(BYTE* self, void*, int a) {
+    Wnd_Default(self);
+    BYTE* hook = F(BYTE*, self, 104);
+    if (hook) CallVirt(hook, 108, a);
+}
+
+// [$L_637b23] CFrameWnd handler: the notify hook's answer (vtbl+112), else
+// Default
+extern "C" LRESULT __fastcall FrameWnd_HookOrDefault112(BYTE* self) {
+    BYTE* hook = F(BYTE*, self, 104);
+    if (hook && CallVirt<BOOL>(hook, 112)) return TRUE;
+    return Wnd_Default(self);
+}
+
+// [$L_637b44] CFrameWnd::ExitHelpMode
+extern "C" void __fastcall FrameWnd_ExitHelpMode(BYTE* self) {
+    if (!F(BOOL, self, 80)) return;
+    MSG msg;
+    if (!PeekMessageA(&msg, HWND_OF(self), 871, 871, PM_REMOVE | PM_NOYIELD))   // WM_EXITHELPMODE
+        PostMessageA(HWND_OF(self), 871, 0, 0);
+    if (GetCapture() == HWND_OF(self)) ReleaseCapture();
+    BYTE* frame = Wnd_GetTopLevelFrame(self);
+    F(BOOL, self, 80) = FALSE;
+    F(BOOL, frame, 80) = FALSE;
+    PostMessageA(HWND_OF(self), 874, 0, 0);                        // WM_IDLEUPDATECMDUI
+}
+
+// [FUN_637baf] CFrameWnd::OnSetCursor: the help cursor in help mode
+extern "C" BOOL __fastcall FrameWnd_OnSetCursor(BYTE* self, void*, BYTE* wnd, UINT hit, UINT msg) {
+    if (F(BOOL, Wnd_GetTopLevelFrame(self), 80)) {
+        SetCursor(g_hcurHelp);
+        return TRUE;
+    }
+    return (BOOL)Wnd_Default(self);
+}
+
+// [$L_637bd9] CFrameWnd::OnCommandHelp
+extern "C" LRESULT __fastcall FrameWnd_OnCommandHelp(BYTE* self, void*, WPARAM w, LPARAM context) {
+    if (!context) {
+        if (FrameWnd_IsTracking(self)) context = F(UINT, self, 144) + 0x10000;    // HID_BASE_COMMAND
+        else context = F(UINT, self, 140) + 0x20000;                              // HID_BASE_RESOURCE
+        if (!context) return FALSE;
+    }
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app) CallVirt(app, 152, (DWORD)context, HELP_CONTEXT);    // WinHelp
+    return TRUE;
+}
+
+// [$L_637c31] CFrameWnd::OnHelpHitTest
+extern "C" LRESULT __fastcall FrameWnd_OnHelpHitTest(BYTE* self, void*, WPARAM, LPARAM) {
+    return F(UINT, self, 140) ? F(UINT, self, 140) + 0x20000 : 0;
+}
+
+// [$L_637c47] CFrameWnd::OnCommand: commands in help mode show their help
+extern "C" BOOL __fastcall FrameWnd_OnCommand(BYTE* self, void*, WPARAM w, LPARAM l) {
+    UINT id = LOWORD(w);
+    if (F(BOOL, Wnd_GetTopLevelFrame(self), 80) && !l && id != 57670 && id != 57671 && id != 57669) {
+        if (!SendMessageA(HWND_OF(self), 869, 0, id + 0x10000))   // WM_COMMANDHELP
+            SendMessageA(HWND_OF(self), WM_COMMAND, 57671, 0);     // ID_DEFAULT_HELP
+        return TRUE;
+    }
+    return Wnd_OnCommand(self, 0, w, l);
+}
+
+// windows of this application below the desktop that BeginModalState
+// disables: enabled, permanent, descendants of parent and not refusing
+// (WM_DISABLEMODAL)
+static BOOL ModalCandidate(HWND h, BYTE* parent) {
+    return IsWindowEnabled(h) && Wnd_FromHandlePermanent(h) && Afx_IsDescendant(HWND_OF(parent), h)
+        && !SendMessageA(h, 876, 0, 0);
+}
+
+// [$L_637cde] CFrameWnd::BeginModalState
+extern "C" void __fastcall FrameWnd_BeginModalState(BYTE* self) {
+    if ((UINT)++F(int, self, 160) > 1) return;
+    BYTE* parent = Wnd_GetTopLevelParent(self);
+    int n = 0;
+    HWND h = GetWindow(GetDesktopWindow(), GW_CHILD);
+    if (!h) return;
+    for (; h; h = GetWindow(h, GW_HWNDNEXT))
+        if (ModalCandidate(h, parent)) n++;
+    if (!n) return;
+    HWND* list = (HWND*)operator new(n * 4 + 4);
+    F(HWND*, self, 164) = list;
+    n = 0;
+    for (h = GetWindow(GetDesktopWindow(), GW_CHILD); h; h = GetWindow(h, GW_HWNDNEXT)) {
+        if (ModalCandidate(h, parent)) {
+            EnableWindow(h, FALSE);
+            F(HWND*, self, 164)[n++] = h;
+        }
+    }
+    F(HWND*, self, 164)[n] = 0;
+}
+
+// [$L_637dfa] CFrameWnd::EndModalState
+extern "C" void __fastcall FrameWnd_EndModalState(BYTE* self) {
+    if (!F(int, self, 160)) return;
+    if (--F(UINT, self, 160) > 0) return;
+    HWND* list = F(HWND*, self, 164);
+    if (!list) return;
+    for (int i = 0; F(HWND*, self, 164)[i]; i++)
+        if (IsWindow(F(HWND*, self, 164)[i])) EnableWindow(F(HWND*, self, 164)[i], TRUE);
+    operator delete(F(HWND*, self, 164));
+    F(HWND*, self, 164) = 0;
+}
+
+// [FUN_637e69] CFrameWnd::ShowOwnedWindows: hides or shows again the
+// top level windows owned by this one
+extern "C" void __fastcall FrameWnd_ShowOwnedWindows(BYTE* self, void*, BOOL show) {
+    for (HWND h = GetWindow(GetDesktopWindow(), GW_CHILD); h; h = GetWindow(h, GW_HWNDNEXT)) {
+        BYTE* w = Wnd_FromHandlePermanent(h);
+        if (!w || HWND_OF(self) == h || !Afx_IsDescendant(HWND_OF(self), h)) continue;
+        DWORD style = GetWindowLongA(h, GWL_STYLE);
+        if (!show) {
+            if ((style & (WS_VISIBLE | WS_DISABLED)) == WS_VISIBLE) {
+                ShowWindow(h, SW_HIDE);
+                F(DWORD, w, 36) |= 2;                              // WF_TEMPHIDE
+            }
+        } else if (!(style & (WS_VISIBLE | WS_DISABLED)) && (F(DWORD, w, 36) & 2)) {
+            ShowWindow(h, SW_SHOWNOACTIVATE);
+            F(DWORD, w, 36) &= ~2;
+        }
+    }
+}
+
+// [$L_637f01] CFrameWnd::OnEnable
+extern "C" void __fastcall FrameWnd_OnEnable(BYTE* self, void*, BOOL enable) {
+    if (enable && (F(DWORD, self, 36) & 4)) {                      // WF_STAYDISABLED
+        Wnd_EnableWindow(self, 0, FALSE);
+        SetFocus(0);
+        return;
+    }
+    if (Wnd_FromHandle(GetParent(HWND_OF(self)))) return;
+    if (!enable) {
+        if (!F(int, self, 160)) {
+            F(DWORD, self, 36) |= 0x80;                            // WF_MODALDISABLE
+            CallVirt(self, 136);                                   // BeginModalState
+        }
+    } else {
+        if (F(DWORD, self, 36) & 0x80) {
+            F(DWORD, self, 36) &= ~0x80;
+            CallVirt(self, 140);                                   // EndModalState
+            HWND h = HWND_OF(self);
+            if (GetActiveWindow() == h) SendMessageA(h, WM_ACTIVATE, WA_ACTIVE, 0);
+        }
+        if (F(DWORD, self, 36) & 32)                               // WF_STAYACTIVE
+            SendMessageA(HWND_OF(self), WM_NCACTIVATE, TRUE, 0);
+    }
+    Wnd_NotifyFloatingWindows(self, 0, enable ? 16 : 32);          // FS_ENABLE / FS_DISABLE
+}
+
+// [$L_638061] CFrameWnd::PreCreateWindow
+extern "C" BOOL __fastcall FrameWnd_PreCreateWindow(BYTE* self, void*, CREATESTRUCTA* cs) {
+    if (!cs->lpszClass) {
+        Afx_EndDeferRegisterClass(8);                              // AFX_WNDFRAMEORVIEW_REG
+        cs->lpszClass = g_wndFrameOrViewClass;
+    }
+    if (g_afxWin4) {
+        if (cs->style & 0x8000) cs->style |= 0x4000;               // FWS_ADDTOTITLE -> FWS_PREFIXTITLE
+        cs->dwExStyle |= WS_EX_CLIENTEDGE;
+    }
+    return TRUE;
+}
+
+// [FUN_63813d] CFrameWnd::CreateView(pContext, nID)
+extern "C" BYTE* __fastcall FrameWnd_CreateView(BYTE* self, void*, BYTE** context, UINT id) {
+    BYTE* view = (BYTE*)RuntimeClass_CreateObject(context[0]);    // m_pNewViewClass
+    if (!view) return 0;
+    RECT r = { 0, 0, 0, 0 };
+    if (!CallVirt<BOOL>(view, 84, (const char*)0, (const char*)0, (DWORD)0x50800000, &r, self, id, context))
+        return 0;                                                  // Create(AFX_WS_DEFAULT_VIEW)
+    if (g_afxWin4 && (Wnd_GetExStyle(view) & WS_EX_CLIENTEDGE))
+        Wnd_ModifyStyleEx(self, 0, WS_EX_CLIENTEDGE, 0, SWP_FRAMECHANGED);
+    return view;
+}
+
+// [$L_6381b5] CFrameWnd::OnCreateClient
+extern "C" BOOL __fastcall FrameWnd_OnCreateClient(BYTE* self, void*, CREATESTRUCTA* cs, BYTE** context) {
+    if (context && context[0] && !FrameWnd_CreateView(self, 0, context, 59648))   // AFX_IDW_PANE_FIRST
+        return FALSE;
+    return TRUE;
+}
+
+// [$L_6381d7] CFrameWnd::OnCreate (message map entry)
+extern "C" int __fastcall FrameWnd_OnCreateMsg(BYTE* self, void*, CREATESTRUCTA* cs) {
+    return FrameWnd_OnCreate(self, 0, cs, cs->lpCreateParams);
+}
+
+// [FUN_638235] CFrameWnd::GetIconWndClass(dwDefaultStyle, nIDResource): the
+// frame's window class with the resource's icon
+extern "C" const char* __fastcall FrameWnd_GetIconWndClass(BYTE* self, void*, DWORD style, UINT id) {
+    HICON icon = LoadIconA(F(HINSTANCE, Afx_GetModuleState(), 12), MAKEINTRESOURCEA((WORD)id));
+    if (!icon) return 0;
+    CREATESTRUCTA cs;
+    memset(&cs, 0, sizeof cs);
+    cs.style = style;
+    CallVirt(self, 92, &cs);                                       // PreCreateWindow
+    if (!cs.lpszClass) return 0;
+    WNDCLASSA wc;
+    if (!GetClassInfoA(F(HINSTANCE, Afx_GetModuleState(), 8), cs.lpszClass, &wc) || wc.hIcon == icon) return 0;
+    return Afx_RegisterWndClass(wc.style, wc.hCursor, wc.hbrBackground, icon);
+}
+
+// ---------------------------------------------------------------------------
+// CWnd's system change handlers; CFrameWnd's activation, menus, DDE and
+// session end. CFrameWnd +60 m_bAutoMenuEnable, +68 m_hMenuDefault,
+// +152 m_pViewActive; CWinApp +176 m_atomApp, +178 m_atomSystemTopic.
+
+#include <shellapi.h>
+typedef void (WINAPI* VoidFn)();
+ASM_PROC(FUN_6332c8)                            // CCmdTarget::OnCmdMsg
+ASM_PROC(FUN_638fd9)                            // CFrameWnd::DestroyDockBars
+ASM_PROC(FUN_6327b7)                            // CWinApp::DevModeChange
+ASM_PROC(FUN_63566d)                            // CWnd::SendChildNotifyLastMsg
+ASM_PROC(FUN_6317b8)                            // UnpackDDElParam
+ASM_PROC(FUN_6317b2)                            // ReuseDDElParam
+ASM_VAR(AsmLabel, g_afxData, $L_72e078)
+ASM_VAR(int, g_gotScrollLines, $L_72c16c)
+
+extern "C" BYTE* __fastcall FrameWnd_Get152(BYTE* self);
+#define GetActiveView FrameWnd_Get152
+
+// [FUN_639958] AfxOleSetUserCtrl
+extern "C" void __stdcall Afx_OleSetUserCtrl(BOOL userCtrl) { F(BOOL, Afx_GetModuleState(), 48) = userCtrl; }
+
+// [FUN_6358ae] CWnd::OnActivateTopLevel: tool tips go with deactivation
+extern "C" LRESULT __fastcall Wnd_OnActivateTopLevel(BYTE* self, void*, WPARAM w, LPARAM l) {
+    if (LOWORD(w) == WA_INACTIVE && !(F(BYTE, Afx_GetThreadState(), 223) & 64)) Afx_CancelToolTips(TRUE);
+    return 0;
+}
+
+// [$L_6358d0] CWnd::OnSysColorChange
+extern "C" void __fastcall Wnd_OnSysColorChange(BYTE* self) {
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app && F(BYTE*, app, 28) == self) AuxData_UpdateSysColors((BYTE*)g_afxData);
+    if (!F(BYTE, Afx_GetModuleState(), 20) && Afx_GetThread() && F(BYTE*, Afx_GetThread(), 28) == self) {
+        BYTE* ctl = (BYTE*)ProcessLocal_GetData(&g_ctl3dState, 0, (void* (__stdcall*)())$L_639de0);
+        if (F(void*, ctl, 28)) F(VoidFn, ctl, 28)();      // Ctl3dColorChange
+    }
+    if (!(Wnd_GetStyle(self) & WS_CHILD))
+        Wnd_SendMessageToDescendants(HWND_OF(self), WM_SYSCOLORCHANGE, 0, 0, TRUE, TRUE);
+    Wnd_Default(self);
+}
+
+// [FUN_635a4f] CWnd::OnDisplayChange
+extern "C" LRESULT __fastcall Wnd_OnDisplayChange(BYTE* self, void*, WPARAM, LPARAM) {
+    if (CallC<BYTE*>(FUN_61c4c1) == self) AuxData_UpdateSysMetrics((BYTE*)g_afxData);
+    if (!(Wnd_GetStyle(self) & WS_CHILD)) {
+        MSG* m = Afx_GetCurrentMessage();
+        Wnd_SendMessageToDescendants(HWND_OF(self), m->message, m->wParam, m->lParam, TRUE, TRUE);
+    }
+    return Wnd_Default(self);
+}
+
+// [$L_63594d] CWnd::OnSettingChange
+extern "C" void __fastcall Wnd_OnSettingChange(BYTE* self, void*, UINT, const char*) {
+    if (!F(BYTE, Afx_GetModuleState(), 20)) {
+        BYTE* ctl = (BYTE*)ProcessLocal_GetData(&g_ctl3dState, 0, (void* (__stdcall*)())$L_639de0);
+        if (Afx_GetThread() && F(BYTE*, Afx_GetThread(), 28) == self && F(void*, ctl, 36))
+            F(VoidFn, ctl, 36)();                        // Ctl3dWinIniChange
+    }
+    g_gotScrollLines = 0;
+    Wnd_OnDisplayChange(self, 0, 0, 0);
+}
+
+// [$L_6359a0] CWnd::OnDevModeChange
+extern "C" void __fastcall Wnd_OnDevModeChange(BYTE* self, void*, char* device) {
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app && F(BYTE*, app, 28) == self) CallThis(FUN_6327b7, app, device);
+    if (!(Wnd_GetStyle(self) & WS_CHILD)) {
+        MSG* m = Afx_GetCurrentMessage();
+        Wnd_SendMessageToDescendants(HWND_OF(self), m->message, m->wParam, m->lParam, TRUE, TRUE);
+    }
+}
+
+// [$L_6359eb] CWnd::OnHelpInfo: F1 without modifiers sends ID_HELP to the
+// main window
+extern "C" BOOL __fastcall Wnd_OnHelpInfo(BYTE* self, void*, HELPINFO*) {
+    BYTE* main;
+    if (!(Wnd_GetStyle(self) & WS_CHILD) && (main = CallC<BYTE*>(FUN_61c4c1)) != 0
+        && GetKeyState(VK_SHIFT) >= 0 && GetKeyState(VK_CONTROL) >= 0 && GetKeyState(VK_MENU) >= 0) {
+        SendMessageA(HWND_OF(main), WM_COMMAND, 57670, 0);         // ID_HELP
+        return TRUE;
+    }
+    return (BOOL)Wnd_Default(self);
+}
+
+// [$L_635a98] reflects the message to the window at lParam+4
+extern "C" LRESULT __fastcall Wnd_ReflectToStruct4(BYTE* self, void*, WPARAM, LPARAM l) {
+    LRESULT r = l;
+    if (CallStd<BOOL>(FUN_63569a, F(HWND, l, 4), &r)) return r;
+    return Wnd_Default(self);
+}
+
+// [$L_635ac2] CWnd::OnHScroll/OnVScroll: to the scroll bar control first
+extern "C" void __fastcall Wnd_OnScroll(BYTE* self, void*, UINT, UINT, BYTE* bar) {
+    if (bar && CallThis<BOOL>(FUN_63566d, bar, (LRESULT*)0)) return;
+    Wnd_Default(self);
+}
+
+// [FUN_635ae3] CWnd::OnEnterIdle: dispatches WM_ENTERIDLE posted meanwhile
+extern "C" void __fastcall Wnd_OnEnterIdle(BYTE* self, void*, UINT, BYTE*) {
+    MSG msg;
+    while (PeekMessageA(&msg, 0, WM_ENTERIDLE, WM_ENTERIDLE, PM_REMOVE)) DispatchMessageA(&msg);
+    Wnd_Default(self);
+}
+
+// [$L_635b2d] CWnd::OnCtlColor: the control's own colours first
+extern "C" HBRUSH __fastcall Wnd_OnCtlColor(BYTE* self, void*, BYTE* dc, BYTE* wnd, UINT) {
+    LRESULT r = (LRESULT)wnd;
+    if (CallThis<BOOL>(FUN_63566d, wnd, &r)) return (HBRUSH)r;
+    return (HBRUSH)Wnd_Default(self);
+}
+
+// [$L_638382] CFrameWnd::OnUpdateFrameMenu
+extern "C" void __fastcall FrameWnd_OnUpdateFrameMenu(BYTE* self, void*, HMENU alt) {
+    if (!alt) {
+        BYTE* doc = CallVirt<BYTE*>(self, 188);                    // GetActiveDocument
+        if (!doc || (alt = CallVirt<HMENU>(doc, 164)) == 0)        // GetDefaultMenu
+            alt = F(HMENU, self, 68);
+    }
+    SetMenu(HWND_OF(self), alt);
+}
+
+// [$L_6384af] CFrameWnd::OnDestroy
+extern "C" void __fastcall FrameWnd_OnDestroy(BYTE* self) {
+    CallThis(FUN_638fd9, self);
+    HMENU def = F(HMENU, self, 68);
+    if (def && GetMenu(HWND_OF(self)) != def) SetMenu(HWND_OF(self), def);
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app && F(BYTE*, app, 28) == self) WinHelpA(HWND_OF(self), 0, HELP_QUIT, 0);
+    Wnd_OnDestroy(self);
+}
+
+// [$L_638502] CFrameWnd::OnCmdMsg: the active view, the frame, then the
+// application; the frame is the routing frame meanwhile
+extern "C" BOOL __fastcall FrameWnd_OnCmdMsg(BYTE* self, void*, UINT id, int code, void* extra, void* info) {
+    BYTE* ts = Afx_GetThreadState();
+    BYTE* old = F(BYTE*, ts, 196);
+    F(BYTE*, ts, 196) = self;
+    BOOL r = TRUE;
+    BYTE* view = GetActiveView(self);
+    if (!(view && CallVirt<BOOL>(view, 12, id, code, extra, info))
+        && !CallThis<BOOL>(FUN_6332c8, self, id, code, extra, info)) {
+        BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+        r = app && CallVirt<BOOL>(app, 12, id, code, extra, info);
+    }
+    F(BYTE*, ts, 196) = old;
+    return r;
+}
+
+// [$L_6385aa] CFrameWnd: WM_HSCROLL to the active view
+extern "C" void __fastcall FrameWnd_HScrollToView(BYTE* self, void*, UINT, UINT, BYTE*) {
+    BYTE* view = GetActiveView(self);
+    if (!view) return;
+    MSG* m = Afx_GetCurrentMessage();
+    SendMessageA(HWND_OF(view), WM_HSCROLL, m->wParam, m->lParam);
+}
+
+// [$L_6385d3] CFrameWnd: WM_VSCROLL to the active view
+extern "C" void __fastcall FrameWnd_VScrollToView(BYTE* self, void*, UINT, UINT, BYTE*) {
+    BYTE* view = GetActiveView(self);
+    if (!view) return;
+    MSG* m = Afx_GetCurrentMessage();
+    SendMessageA(HWND_OF(view), WM_VSCROLL, m->wParam, m->lParam);
+}
+
+// [$L_6385fc] CFrameWnd::OnActivateTopLevel
+extern "C" LRESULT __fastcall FrameWnd_OnActivateTopLevel(BYTE* self, void*, WPARAM w, LPARAM l) {
+    Wnd_OnActivateTopLevel(self, 0, w, l);
+    CallVirt(self, 240);                                           // ExitHelpMode
+    BYTE* hook = F(BYTE*, self, 104);
+    if (hook) CallVirt(hook, 88, (BOOL)(LOWORD(w) && !HIWORD(w)));  // OnActivate
+    if (F(BYTE*, Afx_GetThread(), 28) == self) {
+        BYTE* view = GetActiveView(self);
+        if (!view) view = GetActiveView(CallVirt<BYTE*>(self, 192));   // GetActiveFrame
+        if (view) CallVirt(view, 228, FALSE, view, view);          // OnActivateView
+    }
+    PostMessageA(HWND_OF(self), 874, 0, 0);                        // WM_IDLEUPDATECMDUI
+    return 0;
+}
+
+// [$L_63868a] CFrameWnd::OnActivate
+extern "C" void __fastcall FrameWnd_OnActivate(BYTE* self, void*, UINT state, BYTE* other, BOOL minimized) {
+    Wnd_Default(self);
+    BYTE* top = (Wnd_GetStyle(self) & WS_CHILD) ? self : Wnd_GetTopLevelFrame(self);
+    BYTE* active = state ? self : other;
+    BOOL stay = top == active
+        || (top == Wnd_GetTopLevelFrame(active) && SendMessageA(HWND_OF(active), 877, 64, 0));   // WM_FLOATSTATUS, FS_SYNCACTIVE
+    F(DWORD, top, 36) &= ~32;
+    if (stay) F(DWORD, top, 36) |= 32;                             // WF_STAYACTIVE
+    Wnd_NotifyFloatingWindows(self, 0, stay ? 4 : 8);              // FS_ACTIVATE / FS_DEACTIVATE
+    BYTE* view = GetActiveView(self);
+    if (!view && (view = GetActiveView(CallVirt<BYTE*>(self, 192))) == 0) return;
+    if (state && !minimized) CallVirt(view, 228, TRUE, view, view); // OnActivateView
+    CallVirt(view, 232, state, self);                              // OnActivateFrame
+}
+
+// [$L_63875e] CFrameWnd::OnNcActivate
+extern "C" BOOL __fastcall FrameWnd_OnNcActivate(BYTE* self, void*, BOOL active) {
+    if (F(DWORD, self, 36) & 32) active = TRUE;
+    if (!Wnd_IsWindowEnabled(self)) active = FALSE;
+    return CallVirt<BOOL>(self, 160, (UINT)WM_NCACTIVATE, (WPARAM)active, (LPARAM)0);   // DefWindowProc
+}
+
+// [FUN_638795] CFrameWnd::OnSysCommand: system commands show their help in
+// help mode
+extern "C" void __fastcall FrameWnd_OnSysCommand(BYTE* self, void*, UINT id, LPARAM l) {
+    BYTE* frame = Wnd_GetTopLevelFrame(self);
+    id &= 0xFFF0;
+    if (F(BOOL, frame, 80)) {
+        switch (id) {
+        case SC_SIZE: case SC_MOVE: case SC_MINIMIZE: case SC_MAXIMIZE: case SC_NEXTWINDOW:
+        case SC_PREVWINDOW: case SC_CLOSE: case SC_RESTORE: case SC_TASKLIST:
+            if (!SendMessageA(HWND_OF(self), 869, 0, ((id - 0xF000) >> 4) + 0x1EF00))   // WM_COMMANDHELP
+                SendMessageA(HWND_OF(self), WM_COMMAND, 57671, 0);                      // ID_DEFAULT_HELP
+            return;
+        }
+    }
+    Wnd_Default(self);
+}
+
+// [$L_63882a] CFrameWnd::OnDropFiles: opens each dropped file
+extern "C" void __fastcall FrameWnd_OnDropFiles(BYTE* self, void*, HDROP drop) {
+    Wnd_FromHandle(SetActiveWindow(HWND_OF(self)));
+    UINT n = DragQueryFileA(drop, (UINT)-1, 0, 0);
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    for (UINT i = 0; i < n; i++) {
+        char name[260];
+        DragQueryFileA(drop, i, name, 260);
+        CallVirt(app, 124, name);                                  // OpenDocumentFile
+    }
+    DragFinish(drop);
+}
+
+// [$L_63889c] CFrameWnd::OnQueryEndSession
+extern "C" BOOL __fastcall FrameWnd_OnQueryEndSession(BYTE* self) {
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app && F(BYTE*, app, 28) == self) return CallVirt<BOOL>(app, 136);   // SaveAllModified
+    return TRUE;
+}
+
+// [$L_6388c1] CFrameWnd::OnEndSession
+extern "C" void __fastcall FrameWnd_OnEndSession(BYTE* self, void*, BOOL ending) {
+    if (!ending) return;
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (!app || F(BYTE*, app, 28) != self) return;
+    Afx_OleSetUserCtrl(TRUE);
+    WinApp_CloseAllDocuments(app, 0, TRUE);
+    CallVirt(app, 104);                                            // ExitInstance
+}
+
+// [$L_6388f9] CFrameWnd::OnDDEInitiate: answers for the application's
+// system topic
+extern "C" LRESULT __fastcall FrameWnd_OnDDEInitiate(BYTE* self, void*, WPARAM w, LPARAM l) {
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app && LOWORD(l) && HIWORD(l) && LOWORD(l) == F(WORD, app, 176) && HIWORD(l) == F(WORD, app, 178)) {
+        char name[264];
+        GlobalGetAtomNameA(F(ATOM, app, 176), name, 259);
+        GlobalAddAtomA(name);
+        GlobalGetAtomNameA(F(ATOM, app, 178), name, 259);
+        GlobalAddAtomA(name);
+        SendMessageA((HWND)w, 996, (WPARAM)HWND_OF(self), MAKELPARAM(F(WORD, app, 176), F(WORD, app, 178)));   // WM_DDE_ACK
+    }
+    return 0;
+}
+
+// [$L_6389bc] CFrameWnd::OnDDEExecute: acknowledges, then hands the command
+// to the application while the frame is enabled
+extern "C" LRESULT __fastcall FrameWnd_OnDDEExecute(BYTE* self, void*, WPARAM w, LPARAM l) {
+    UINT unused;
+    HGLOBAL data;
+    CallStd(FUN_6317b8, (UINT)1000, l, &unused, (UINT*)&data);    // WM_DDE_EXECUTE
+    char command[520];
+    lstrcpynA(command, (const char*)GlobalLock(data), 520);
+    GlobalUnlock(data);
+    PostMessageA((HWND)w, 996, (WPARAM)HWND_OF(self),
+                 CallStd<LPARAM>(FUN_6317b2, l, (UINT)1000, (UINT)996, (UINT)0x8000, (UINT)(UINT_PTR)data));
+    if (Wnd_IsWindowEnabled(self))
+        CallVirt(F(BYTE*, Afx_GetModuleState(), 4), 148, command);   // OnDDECommand
+    return 0;
+}
+
+// [$L_638a57] CFrameWnd::OnDDETerminate
+extern "C" LRESULT __fastcall FrameWnd_OnDDETerminate(BYTE* self, void*, WPARAM w, LPARAM l) {
+    PostMessageA((HWND)w, 993, (WPARAM)HWND_OF(self), l);         // WM_DDE_TERMINATE
+    return 0;
+}
+
+// [$L_638a79] CFrameWnd::OnSetFocus: to the active view
+extern "C" void __fastcall FrameWnd_OnSetFocus(BYTE* self, void*, BYTE* old) {
+    if (F(BYTE*, self, 152)) Wnd_SetFocus(F(BYTE*, self, 152));
+    else Wnd_Default(self);
+}
+
+// [$L_638b9f] CFrameWnd handler: tells the notify hook (vtbl+120), then Default
+extern "C" void __fastcall FrameWnd_HookThenDefault120(BYTE* self, void*, int a) {
+    if (F(BYTE*, self, 104)) CallVirt(F(BYTE*, self, 104), 120, a);
+    Wnd_Default(self);
+}
+
+// [$L_638bbd] CFrameWnd::OnInitMenuPopup: updates the popup's items through
+// CCmdUI
+extern "C" void __fastcall FrameWnd_OnInitMenuPopup(BYTE* self, void*, BYTE* menu, UINT index, BOOL sysMenu) {
+    Afx_CancelModes(HWND_OF(self));
+    if (sysMenu) return;
+    BYTE* hook = F(BYTE*, self, 104);
+    if (hook && CallVirt<BOOL>(hook, 116, menu, index, FALSE)) return;   // OnInitMenuPopup
+    BYTE state[40];
+    CmdUI_Construct(state);
+    F(BYTE*, state, 12) = menu;                                    // m_pMenu
+    HMENU h = F(HMENU, menu, 4);
+    if (F(HMENU, Afx_GetThreadState(), 84) == h) {                 // m_hTrackingMenu
+        F(BYTE*, state, 36) = menu;                                // m_pParentMenu
+    } else if (GetMenu(HWND_OF(self))) {
+        BYTE* parent = Wnd_GetTopLevelParent(self);
+        HMENU pm;
+        if (parent && (pm = GetMenu(HWND_OF(parent))) != 0) {
+            int n = GetMenuItemCount(pm);
+            for (int i = 0; i < n; i++)
+                if (GetSubMenu(pm, i) == F(HMENU, menu, 4)) {
+                    F(BYTE*, state, 36) = Menu_FromHandle(pm);
+                    break;
+                }
+        }
+    }
+    F(UINT, state, 32) = GetMenuItemCount(F(HMENU, menu, 4));     // m_nIndexMax
+    for (F(UINT, state, 8) = 0; F(UINT, state, 8) < F(UINT, state, 32); F(UINT, state, 8)++) {
+        UINT id = GetMenuItemID(F(HMENU, menu, 4), F(UINT, state, 8));
+        F(UINT, state, 4) = id;
+        if (!id) continue;
+        if (id == (UINT)-1) {
+            BYTE* sub = Menu_FromHandle(GetSubMenu(F(HMENU, menu, 4), F(UINT, state, 8)));
+            F(BYTE*, state, 16) = sub;                             // m_pSubMenu
+            if (!sub) continue;
+            id = GetMenuItemID(F(HMENU, sub, 4), 0);
+            F(UINT, state, 4) = id;
+            if (!id || id == (UINT)-1) continue;
+            CmdUI_DoUpdate(state, 0, self, FALSE);
+        } else {
+            F(BYTE*, state, 16) = 0;
+            CmdUI_DoUpdate(state, 0, self, F(BOOL, self, 60) && id < 0xF000);
+        }
+        UINT count = GetMenuItemCount(F(HMENU, menu, 4));
+        if (count < F(UINT, state, 32)) {
+            F(UINT, state, 8) += count - F(UINT, state, 32);
+            while (F(UINT, state, 8) < count
+                   && GetMenuItemID(F(HMENU, menu, 4), F(UINT, state, 8)) == F(UINT, state, 4))
+                F(UINT, state, 8)++;
+        }
+        F(UINT, state, 32) = count;
+    }
 }
