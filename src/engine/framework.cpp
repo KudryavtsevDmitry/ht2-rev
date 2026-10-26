@@ -8135,3 +8135,32 @@ void __fastcall App_UpdateCamera(BYTE* s, void*)
 } // extern "C"
 
 #undef SD
+
+// [$L_5fa510] reads a flat face set (virtual, thiscall with three stack
+// arguments, only the file used): the plane (+20), a point (+56), then the
+// count (+48) and that many 40-byte faces (+52, new[] with a count prefix)
+extern "C" void Fw_PlaneRead(); KING_ALIAS("_Fw_PlaneRead", "@Plane_Read@12")
+extern "C" void Fw_Vec3Read(); KING_ALIAS("_Fw_Vec3Read", "@Vec3_Read@12")
+extern "C" void Fw_VecCtorEh(); KING_ALIAS("_Fw_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
+extern "C" int __cdecl File_ReadInt(FILE* f);
+extern "C" BYTE* __fastcall FxRec_Init(BYTE* s);
+extern "C" void __fastcall FxRec_Free(BYTE* s);
+int __fastcall FlatFace_Read(BYTE* s, void*, FILE* f);
+extern "C" int __fastcall FaceSet_Read(BYTE* self, void*, FILE* file, int, int)
+{
+    CallThis(Fw_PlaneRead, self + 20, file);
+    CallThis(Fw_Vec3Read, self + 56, file);
+    int n = File_ReadInt(file);
+    F(int, self, 48) = n;
+    int* p = (int*)operator new(n * 40 + 4);
+    BYTE* faces = 0;
+    if (p) {
+        *p = n;
+        faces = (BYTE*)(p + 1);
+        CallStd(Fw_VecCtorEh, faces, 40, n, (void*)FxRec_Init, (void*)FxRec_Free);
+    }
+    F(BYTE*, self, 52) = faces;
+    for (int i = 0; i < F(int, self, 48); i++)
+        FlatFace_Read(F(BYTE*, self, 52) + i * 40, 0, file);
+    return 1;
+}

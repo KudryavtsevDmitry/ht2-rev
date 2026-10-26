@@ -2065,3 +2065,7 @@ int __fastcall Mesh_BuildVertices(BYTE* s, void*, BYTE* verts, BYTE* nodes, cons
 }
 
 } // extern "C"
+
+// [$L_5ef3f0] static initializer: construct the object at 723978, register its destructor
+extern "C" int __cdecl Static5ef4a0_AtExit(void);
+extern "C" int __cdecl Clu_Init5ef3f0() { Static723978_Construct(); return Static5ef4a0_AtExit(); }

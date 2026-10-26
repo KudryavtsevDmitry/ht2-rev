@@ -804,7 +804,7 @@ extern "C" void __fastcall King_4e0560(BYTE* s)
 extern "C" void FUN_4bac00(); KING_ALIAS("_FUN_4bac00", "_Effects_Shutdown")
 extern "C" void FUN_5e0180(); KING_ALIAS("_FUN_5e0180", "@Fw_Clear5e0180@8")
 extern "C" void FUN_56eea0(); KING_ALIAS("_FUN_56eea0", "_World_FreeAll")
-ASM_PROC(FUN_53fd30)
+ASM_FUNC(FUN_53fd30, _Startup_Call53fd30)
 extern "C" void FUN_5c5910(); KING_ALIAS("_FUN_5c5910", "@Media_ObjectMessage@20")
 extern "C" void FUN_56d0f0(); KING_ALIAS("_FUN_56d0f0", "_CopterNet_Handle")
 extern "C" void FUN_586d90(); KING_ALIAS("_FUN_586d90", "_SceneObj_DispatchCommand")
@@ -2479,3 +2479,7 @@ void __fastcall MovieScreen_Frame(BYTE* s, void*)
 }
 
 } // extern "C"
+
+// [FUN_53fd30] calls virtual slot 17 of the object at 696cb0
+KING_VAR(BYTE*, su_696cb0, 696cb0)
+extern "C" void __cdecl Startup_Call53fd30() { CallVirt(su_696cb0, 68); }

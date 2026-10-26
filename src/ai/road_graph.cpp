@@ -1905,7 +1905,7 @@ void __cdecl NamedRecs_Load(BYTE** cur, BYTE** v)
 
 // === inserting a keyed byte vector (FUN_479520)
 
-ASM_PROC(FUN_47d360)    // uninitialized copy of keyed vectors (first, last, dest, -)
+ASM_FUNC(FUN_47d360, _Rec16_UninitCopy)    // uninitialized copy of keyed vectors (first, last, dest, -)
 extern "C" BYTE* __cdecl Rec16m_CopyBack(const BYTE* f, const BYTE* l, BYTE* d);   // ai_containers.cpp
 extern "C" void __fastcall Vec1_Free(BYTE** v, int);                                // ai_world.cpp
 extern "C" BYTE** __fastcall VecChar_Copy(BYTE** self, int, BYTE* const* src);
@@ -1977,3 +1977,23 @@ BYTE* __cdecl Orders144_UninitCopyB(const BYTE* first, const BYTE* last, BYTE* d
 }
 
 } // extern "C"
+
+// [FUN_47d360] uninitialized copy of 16-byte records {int, vector<char>}
+// from [first, last) to dest; returns the end of the copies
+extern "C" BYTE* __cdecl Rec16_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*)
+{
+    for (; first != last; first += 16, dest += 16) {
+        if (!dest)
+            continue;
+        F(int, dest, 0) = F(int, first, 0);
+        BYTE* b = F(BYTE*, first, 4);
+        unsigned n = (unsigned)(F(BYTE*, first, 8) - b);
+        BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
+        F(BYTE*, dest, 4) = p;
+        F(BYTE*, dest, 8) = p;
+        F(BYTE*, dest, 12) = p + n;
+        memmove(p, b, F(BYTE*, first, 8) - b);
+        F(BYTE*, dest, 8) = p + (F(BYTE*, first, 8) - b);
+    }
+    return dest;
+}

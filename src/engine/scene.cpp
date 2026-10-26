@@ -1926,7 +1926,7 @@ extern "C" void __cdecl Slots723aa8_Destroy(int i)
 // Freeing a typed value.
 
 extern "C" void Sce108_VecDtor(); KING_ALIAS("_Sce108_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
-ASM_PROC($L_5f4b20)
+ASM_FUNC($L_5f4b20, @Sce_FreeBuf4@4)
 // [FUN_5f4a90] frees the data (+8) of value s by its type (+0): 1-5 and 7 a plain block, 6 an array of 48-byte
 // records (count before it) each freeing its +4
 extern "C" void __fastcall Value_Free(int* s)
@@ -2600,7 +2600,7 @@ extern "C" void FUN_5e5720(); KING_ALIAS("_FUN_5e5720", "@Fw_Read5e5720@12")
 extern "C" void Sce_VecCtorEh(); KING_ALIAS("_Sce_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" void FUN_5e69a0(); KING_ALIAS("_FUN_5e69a0", "@Polygon_Read@12")    // reads a 48-byte item (file)
 extern "C" void g_sd5e6980(); KING_ALIAS("_g_sd5e6980", "@Rec5e6980_Clear@8")    // its constructor
-ASM_VAR(AsmLabel, g_sd5f4b20, $L_5f4b20)    // its destructor
+ASM_VAR(AsmLabel, g_sd5f4b20, @Sce_FreeBuf4@4)    // its destructor
 KING_VAR(char, s_sd683bcc, 683bcc)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
@@ -5881,3 +5881,9 @@ parts:
 }
 
 }
+
+// [$L_5ef4c0] static initializer: construct the object at 722940, register its destructor
+extern "C" int __cdecl Sce_Init5ef4c0() { Static722940_Construct(); return Static722940_AtExit(); }
+
+// [$L_5f4b20] element destructor of a 48-byte record: frees its buffer at +4
+extern "C" void __fastcall Sce_FreeBuf4(BYTE* s) { operator delete(F(void*, s, 4)); }

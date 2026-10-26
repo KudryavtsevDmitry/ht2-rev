@@ -4950,6 +4950,37 @@ extern "C" int __cdecl Cmp4cce30_Desc(const BYTE* a, const BYTE* b)
 extern "C" int __fastcall q198_Dtor4d25d0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor4d25d0_DeletingDestructor@12", "@Dtor4d25d0_DeletingDestructor@12")
 // [$L_4d9370] forwards to Dtor4d25d0_DeletingDestructor for the object 16 bytes before
 extern "C" int __fastcall Thunk4d9370(BYTE* s, void* d, int a0) { return q198_Dtor4d25d0_DeletingDestructor(s - 16, d, a0); }
+// [$L_4d9380] forwards to Dtor4d25d0_DeletingDestructor for the object 272 bytes before
+extern "C" BYTE* __fastcall Thunk4d9380(BYTE* s, void* d, int a0) { return Dtor4d25d0_DeletingDestructor(s - 272, d, a0); }
+// [$L_4d9390] forwards to Dtor4d25d0_DeletingDestructor for the object 392 bytes before
+extern "C" BYTE* __fastcall Thunk4d9390(BYTE* s, void* d, int a0) { return Dtor4d25d0_DeletingDestructor(s - 392, d, a0); }
+// [$L_4d93a0] forwards to Dtor4d0ba0_DeletingDestructor for the object 16 bytes before
+extern "C" BYTE* __fastcall Thunk4d93a0(BYTE* s, void* d, int a0) { return Dtor4d0ba0_DeletingDestructor(s - 16, d, a0); }
+// [$L_4d93b0] forwards to Dtor4d0ba0_DeletingDestructor for the object 272 bytes before
+extern "C" BYTE* __fastcall Thunk4d93b0(BYTE* s, void* d, int a0) { return Dtor4d0ba0_DeletingDestructor(s - 272, d, a0); }
+// [$L_4d93c0] forwards to Dtor4d0ba0_DeletingDestructor for the object 392 bytes before
+extern "C" BYTE* __fastcall Thunk4d93c0(BYTE* s, void* d, int a0) { return Dtor4d0ba0_DeletingDestructor(s - 392, d, a0); }
+// [$L_4d93d0] forwards to Dtor4d12d0_DeletingDestructor for the object 16 bytes before
+extern "C" BYTE* __fastcall Thunk4d93d0(BYTE* s, void* d, int a0) { return Dtor4d12d0_DeletingDestructor(s - 16, d, a0); }
+// [$L_4d93e0] forwards to Dtor4d12d0_DeletingDestructor for the object 272 bytes before
+extern "C" BYTE* __fastcall Thunk4d93e0(BYTE* s, void* d, int a0) { return Dtor4d12d0_DeletingDestructor(s - 272, d, a0); }
+// [$L_4d93f0] forwards to Dtor4d12d0_DeletingDestructor for the object 392 bytes before
+extern "C" BYTE* __fastcall Thunk4d93f0(BYTE* s, void* d, int a0) { return Dtor4d12d0_DeletingDestructor(s - 392, d, a0); }
+// [$L_4d9400] forwards to Dtor4d0ed0_DeletingDestructor for the object 16 bytes before
+extern "C" BYTE* __fastcall Thunk4d9400(BYTE* s, void* d, int a0) { return Dtor4d0ed0_DeletingDestructor(s - 16, d, a0); }
+// [$L_4d9410] forwards to Dtor4d0ed0_DeletingDestructor for the object 272 bytes before
+extern "C" BYTE* __fastcall Thunk4d9410(BYTE* s, void* d, int a0) { return Dtor4d0ed0_DeletingDestructor(s - 272, d, a0); }
+// [$L_4d9420] forwards to Dtor4d0ed0_DeletingDestructor for the object 392 bytes before
+extern "C" BYTE* __fastcall Thunk4d9420(BYTE* s, void* d, int a0) { return Dtor4d0ed0_DeletingDestructor(s - 392, d, a0); }
+// [$L_4d9430] static initializer: 37 records of 24 bytes at 69638c start with -1
+KING_VAR(BYTE, fx_69638c, 69638c)
+extern "C" void __cdecl Fx_Init4d9430()
+{
+    for (int i = 0; i < 37; i++)
+        *(int*)(&fx_69638c + i * 24) = -1;
+}
+// [$L_4d8320] an empty handler
+extern "C" void __cdecl Fx_Nop4d8320() {}
 
 // [$L_4c47f0] frees the five buffers +8..+24 of a 40-byte effect record
 extern "C" void __fastcall FxRec_Free(BYTE* s)
@@ -9914,7 +9945,7 @@ extern "C" double __cdecl Ai_TargetSpeed(BYTE* player, int f12, double speed, do
                                          int back, double fallback, double v60);
 extern "C" void Tb_Grip(); KING_ALIAS("_Tb_Grip", "@Wheels_MinGrip@8")
 extern "C" void Tb_Gear(); KING_ALIAS("_Tb_Gear", "@Car_BestGearNow@8")
-ASM_FUNC(Tb_4d2970, FUN_4d2970)
+ASM_FUNC(Tb_4d2970, @Car_SlipRatio@8)
 KING_VAR(double, g_tb64b5b8, 64b5b8)
 KING_VAR(double, g_tb64b840, 64b840)
 KING_VAR(double, g_tb64b670, 64b670)

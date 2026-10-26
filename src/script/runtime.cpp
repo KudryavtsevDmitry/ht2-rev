@@ -33,7 +33,7 @@ KING_VAR(AsmLabel, s_divByZero, 67055c)
 extern "C" void FUN_470950(); KING_ALIAS("_FUN_470950", "@CharVec_Assign@12")
 extern "C" void FUN_48ae10(); KING_ALIAS("_FUN_48ae10", "_BigInt_FromUnsigned")
 extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
-ASM_PROC(FUN_491420)
+ASM_FUNC(FUN_491420, _NodePool_Get)
 extern "C" void FUN_48c260(); KING_ALIAS("_FUN_48c260", "_BigInt_Gcd")
 KING_VAR(AsmLabel, s_bigint, 670408)
 KING_VAR(AsmLabel, s_bigintTooLarge, 670410)
@@ -43,7 +43,7 @@ KING_VAR(AsmLabel, g_vtbl64bf24, 64bf24)
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last) (another instance)
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_4897b0(); KING_ALIAS("_FUN_4897b0", "@List_NewNode@12")    // list: a new node
-ASM_PROC(FUN_491750)
+ASM_FUNC(FUN_491750, @List16_NewNode@12)
 extern "C" void FUN_488450(); KING_ALIAS("_FUN_488450", "@RoadSet_Destroy@4")
 extern "C" void FUN_489900(); KING_ALIAS("_FUN_489900", "@Vec24_InsertAux@16")    // vector<24 bytes>::insert_aux
 extern "C" void FUN_48f730(); KING_ALIAS("_FUN_48f730", "@Vec580_InsertAux@16")    // vector<580 bytes>::insert_aux
@@ -3102,6 +3102,55 @@ BYTE* __fastcall List_NewNode(void* list, void*, BYTE* src)
     return node;
 }
 
+}
+
+// [FUN_491750] a new 16-byte list node (free list at 68d1c8, refilled 20 at a
+// time) holding the dword *src
+KING_VAR(BYTE*, rt_free16_68d1c8, 68d1c8)
+extern "C" BYTE* __fastcall List16_NewNode(void* list, void*, const DWORD* src)
+{
+    CallThis(Rt32_Lock, &rt32_lock68d204);
+    BYTE* node = rt_free16_68d1c8;
+    if (!node) {
+        int n = 20;
+        node = CallC<BYTE*>(Rt32_ChunkAlloc, 16, &n);
+        if (n != 1) {
+            BYTE* p = node + 16;
+            rt_free16_68d1c8 = p;
+            for (int i = 1; i != n - 1; i++, p += 16)
+                *(BYTE**)p = p + 16;
+            *(BYTE**)p = 0;
+        }
+    } else {
+        rt_free16_68d1c8 = *(BYTE**)node;
+    }
+    rt32_lock68d204 = 0;
+    if (node + 8)
+        F(DWORD, node, 8) = *src;
+    return node;
+}
+
+// [FUN_491420] a node for value in pool: reuse a released one (the count at
+// +4220, the nodes from +124) or append a new one to the list at +44
+extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
+extern "C" BYTE** __cdecl NodePool_Get(BYTE** out, BYTE* pool, DWORD value)
+{
+    BYTE* node;
+    int free = F(int, pool, 4220);
+    if (free == 0) {
+        BYTE** list = (BYTE**)(pool + 44);
+        BYTE* end;
+        BYTE* tmp;
+        SchList_End(list, 0, &end);
+        List491_Insert(list, 0, &tmp, (BYTE**)end, &value);
+        node = ((BYTE**)*list)[1];
+    } else {
+        F(int, pool, 4220) = --free;
+        node = F(BYTE*, pool, 124 + free * 4);
+        F(DWORD, node, 8) = value;
+    }
+    *out = node;
+    return out;
 }
 
 // ---------------------------------------------------------------------------

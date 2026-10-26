@@ -2453,7 +2453,7 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
 
 // === a car's clutch, gear choice and drive force for the frame (FUN_4ff800, running on through $L_5006aa)
 
-ASM_PROC(FUN_4ff660)
+ASM_FUNC(FUN_4ff660, @Car_SlipRatio@8)
 extern "C" void Gb_Speed(); KING_ALIAS("_Gb_Speed", "@Car_WheelSpeed@12")
 extern "C" void Gb_Tach(); KING_ALIAS("_Gb_Tach", "@Car_UpdateTach@12")
 extern "C" void Gb_TorqueAt(); KING_ALIAS("_Gb_TorqueAt", "@Car_TorqueAt@12")
@@ -2920,3 +2920,35 @@ shared:
 }
 
 } // extern "C"
+
+// [FUN_4ff660] [$L_4ff68f] the drive slip ratio: 0 in mode 1 or below the
+// minimum speed (+7300); else from the engine torque, the engine brake
+// torque, both as wheel forces, and the drive force; clamped
+KING_VAR(float, vs_64c250, 64c250)
+KING_VAR(float, vs_64c264, 64c264)
+KING_VAR(double, vs_64c958, 64c958)
+KING_VAR(float, vs_64da38, 64da38)
+#include <math.h>
+extern "C" double __fastcall Car_SlipRatio(BYTE* s, void*)
+{
+    if (F(int, s, 7196) == 1 || F(float, s, 7300) < vs_64c250)
+        return vs_64c250;
+    float a = (float)Car_TorqueNow(s, 0);
+    float b = (float)Car_EngineBrakeTorque(s, 0, F(float, s, 7300));
+    a = (float)Car_WheelForceNow((Car*)s, 0, a);
+    b = (float)Car_WheelForceNow((Car*)s, 0, b);
+    float d = (float)Car_DriveForce((Car*)s, 0);
+    if (fabs(a) < d || d == vs_64c264)
+        return vs_64c250;
+    double r;
+    if (F(int, s, 7196) == 0)
+        r = (fabs(b) + d) / fabs(a - b);
+    else
+        r = (d - b) / (a - b);
+    r *= vs_64c958;
+    if (r > vs_64c958)
+        return vs_64da38;
+    if (r < vs_64c264)
+        return vs_64c264;
+    return r;
+}
