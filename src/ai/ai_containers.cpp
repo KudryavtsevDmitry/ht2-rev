@@ -2552,7 +2552,7 @@ extern "C" void __cdecl Names_InsertionSortRest(BYTE* first, BYTE* last, int, in
 
 KING_VAR(AsmLabel, g_rf64b984, 64b984)
 extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")
-ASM_PROC(FUN_462f30)
+ASM_FUNC(FUN_462f30, _Rope_Concat)
 
 static const unsigned* Rf_MinLen() { return (const unsigned*)(BYTE*)g_rf64b984; }
 

@@ -21350,7 +21350,7 @@ extern "C" void FUN_48d530(); KING_ALIAS("_FUN_48d530", "@Path_StepIndex@24")
 extern "C" void FUN_48c710(); KING_ALIAS("_FUN_48c710", "@Road_NearestOn@48")
 extern "C" void FUN_48d710(); KING_ALIAS("_FUN_48d710", "@Points_Distance@32")
 extern "C" void FUN_458940(); KING_ALIAS("_FUN_458940", "@Rec458940_Destroy@8")
-ASM_PROC(FUN_462b30)
+extern "C" void FUN_462b30(); KING_ALIAS("_FUN_462b30", "??1exception@@UAE@XZ")    // exception::~exception
 
 // [$L_401d80]
 extern "C" void __cdecl Ai_Nothing401d80() {}
@@ -24953,7 +24953,7 @@ extern "C" void __fastcall Stl_LengthError(void*)
 // [FUN_45a5e0] rope::_S_tree_concat (left, right): a new concatenation node
 // (28 bytes: size, references 1, tag 1, depth = the deeper child + 1),
 // rebalanced (462850) when deeper than 20 and short (< 1000) or deeper than 45
-extern "C" void Rp_Balance(); KING_ALIAS("_Rp_Balance", "FUN_462850")
+extern "C" BYTE* __cdecl Rope_Balance(BYTE* r);
 extern "C" BYTE* __cdecl Rope_TreeConcat(BYTE* left, BYTE* right)
 {
     BYTE* n = (BYTE*)Stl_Allocate(28);
@@ -24971,7 +24971,7 @@ extern "C" BYTE* __cdecl Rope_TreeConcat(BYTE* left, BYTE* right)
     unsigned d = F(BYTE, n, 13);
     if (d <= 20 || (F(unsigned, n, 0) >= 1000 && d <= 45))
         return n;
-    BYTE* b = CallC<BYTE*>(Rp_Balance, n);
+    BYTE* b = Rope_Balance(n);
     Rope_Unref(n, 0);
     return b;
 }
@@ -25003,4 +25003,67 @@ extern "C" BYTE* __cdecl Rope_ConcatCharIter(BYTE* r, const char* s, unsigned le
     BYTE* nr = SchString_FromChars(s, len);
     InterlockedIncrement((LONG*)(r + 4));
     return Rope_TreeConcat(r, nr);
+}
+
+// [FUN_462f30] rope::_S_concat (left, right): a leaf right joins a short leaf
+// left (or the short right leaf of a concatenation) in place of a new node
+extern "C" BYTE* __cdecl Rope_Concat(BYTE* l, BYTE* r)
+{
+    if (!l) {
+        if (r)
+            InterlockedIncrement((LONG*)(r + 4));
+        return r;
+    }
+    if (!r) {
+        InterlockedIncrement((LONG*)(l + 4));
+        return l;
+    }
+    if (!F(BYTE, r, 8)) {
+        BYTE tag = F(BYTE, l, 8);
+        if (tag == 0 && F(unsigned, l, 0) + F(unsigned, r, 0) <= 23)
+            return SchString_Concat(l, F(const char*, r, 20), F(unsigned, r, 0));
+        if (tag == 1) {
+            BYTE* lr = F(BYTE*, l, 24);
+            if (!F(BYTE, lr, 8) && F(unsigned, lr, 0) + F(unsigned, r, 0) <= 23) {
+                BYTE* ll = F(BYTE*, l, 20);
+                BYTE* nr = SchString_Concat(lr, F(const char*, r, 20), F(unsigned, r, 0));
+                InterlockedIncrement((LONG*)(ll + 4));
+                return Rope_TreeConcat(ll, nr);
+            }
+        }
+    }
+    InterlockedIncrement((LONG*)(l + 4));
+    InterlockedIncrement((LONG*)(r + 4));
+    return Rope_TreeConcat(l, r);
+}
+
+// [FUN_462850] rope::_S_balance (r): the leaves go into a forest of 46 slots
+// by length, which is joined back from the shortest; deeper than 45 is the
+// "rope too long" error (thrown by the original, fatal here)
+extern "C" void __cdecl Rope_AddLeafToForest(BYTE* r, BYTE** forest);
+extern "C" void __cdecl Tree_EraseRight(BYTE* node, void* x);
+KING_VAR(AsmLabel, aw_s66f534, 66f534)
+extern "C" BYTE* __cdecl Rope_Balance(BYTE* r)
+{
+    BYTE* forest[46] = {0};
+    if (F(BYTE, r, 12)) {
+        Rope_AddLeafToForest(r, forest);
+    } else {
+        Tree_EraseRight(F(BYTE*, r, 20), forest);
+        Tree_EraseRight(F(BYTE*, r, 24), forest);
+    }
+    BYTE* result = 0;
+    for (int i = 0; i <= 45; i++) {
+        if (!forest[i])
+            continue;
+        BYTE* old = result;
+        result = Rope_Concat(forest[i], result);
+        Rope_Unref(forest[i], 0);
+        forest[i] = 0;
+        if (old)
+            Rope_Unref(old, 0);
+    }
+    if (F(BYTE, result, 13) > 45)
+        Sys_Fatal(aw_s66f534, 0);
+    return result;
 }
