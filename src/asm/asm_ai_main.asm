@@ -55,8 +55,6 @@ EXTERN _Task_RandomHits:PROC
 EXTERN _Task_TrafficJam:PROC
 EXTERN _Task_Waiting:PROC
 EXTERN __CxxThrowException@8:PROC
-EXTERN __imp__InterlockedExchange@8:PROC
-EXTERN __imp__Sleep@4:PROC
 EXTERN _atexit:PROC
 EXTERN _free:PROC
 
@@ -68,8 +66,7 @@ PUBLIC $L_434fc2, $L_435036, $L_435038, $L_4350ac, $L_4350ae, $L_43511d, $L_4351
 PUBLIC $L_435196, $L_435204, $L_435206, $L_435271, $L_435273, $L_4352e2, $L_4352e4, $L_435353
 PUBLIC $L_435355, $L_4353c4, $L_4353c6, $L_435435, $L_435437, $L_4354ae, $L_4354b0, $L_435523
 PUBLIC $L_435525, $L_435598, $L_43559a, $L_435609, $L_43560b, $L_435633, $L_440000, $L_443a41
-PUBLIC $L_443a51, $L_443a82, $L_443aa9, $L_44bbd3, $L_44bc14, $L_44bc34, $L_44bc64, $L_44bc69
-PUBLIC $L_44bc7e, $L_44bc8a, $L_44bca7, $L_44bcb7, $L_44bccd, $L_44bcd6
+PUBLIC $L_443a51, $L_443a82, $L_443aa9
 
 _TEXT SEGMENT
 $L_4013e0 PROC
@@ -723,17 +720,6 @@ ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ALIGN 16
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-$L_41d32b PROC
-
-            fld QWORD PTR [(_KingRdata+1656)]
-            ret 4
-$L_41d32b ENDP
-ALIGN 16
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
@@ -2099,181 +2085,6 @@ ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
 ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-$L_44b46a PROC
-
-            mov ECX,OFFSET (_KingBss+10724)
-            call @Stl_Lock@8
-
-            mov EDX,DWORD PTR [(_KingBss+10688)]
-            mov EAX,DWORD PTR [EBP-20]
-            mov DWORD PTR [EAX],EDX
-            mov DWORD PTR [(_KingBss+10688)],EAX
-            mov DWORD PTR [(_KingBss+10724)],0
-            push 0
-            push 0
-            call __CxxThrowException@8
-
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-$L_44b46a ENDP
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-ALIGN 16
-$L_44bbad PROC
-
-            mov EAX,DWORD PTR [EBP+8]
-            test EAX,EAX
-            je $L_44bccd
-
-            shl EAX,2
-            cmp EAX,128
-            jbe $L_44bbd3
-
-            mov EDX,DWORD PTR [EBP-24]
-            push EDX
-            call _free
-
-            add ESP,4
-            jmp $L_44bccd
-$L_44bbd3::
-
-            add EAX,7
-            push 1
-            shr EAX,3
-            push OFFSET (_KingBss+10724)
-            lea EAX,DWORD PTR [EAX*4+(_KingBss+10656)]
-            mov DWORD PTR [EBP+16],EAX
-            call DWORD PTR __imp__InterlockedExchange@8
-
-            test EAX,EAX
-            je $L_44bcb7
-
-            mov EDI,DWORD PTR [(_KingData+2108)]
-            mov EAX,DWORD PTR [(_KingBss+10728)]
-            mov DWORD PTR [EBP+8],17
-            xor ESI,ESI
-            test EDI,EDI
-            jbe $L_44bc69
-
-            mov EBX,EAX
-            shr EBX,1
-$L_44bc14::
-
-            cmp ESI,EBX
-            jb $L_44bc34
-
-            mov EAX,DWORD PTR [(_KingBss+10724)]
-            test EAX,EAX
-            jne $L_44bc34
-
-            push 1
-            push OFFSET (_KingBss+10724)
-            call DWORD PTR __imp__InterlockedExchange@8
-
-            test EAX,EAX
-            je $L_44bca7
-
-            jmp $L_44bc64
-$L_44bc34::
-
-            mov ECX,DWORD PTR [EBP+8]
-            mov EDX,DWORD PTR [EBP+8]
-            imul ECX,EDX
-            mov DWORD PTR [EBP+8],ECX
-            mov EAX,DWORD PTR [EBP+8]
-            mov ECX,DWORD PTR [EBP+8]
-            imul EAX,ECX
-            mov DWORD PTR [EBP+8],EAX
-            mov EDX,DWORD PTR [EBP+8]
-            mov EAX,DWORD PTR [EBP+8]
-            imul EDX,EAX
-            mov DWORD PTR [EBP+8],EDX
-            mov ECX,DWORD PTR [EBP+8]
-            mov EDX,DWORD PTR [EBP+8]
-            imul ECX,EDX
-            mov DWORD PTR [EBP+8],ECX
-$L_44bc64::
-
-            inc ESI
-            cmp ESI,EDI
-            jb $L_44bc14
-$L_44bc69::
-
-            mov EBX,DWORD PTR __imp__Sleep@4
-            mov DWORD PTR [(_KingData+2108)],30
-            mov EDI,6
-$L_44bc7e::
-
-            cmp EDI,27
-            mov ESI,EDI
-            jle $L_44bc8a
-
-            mov ESI,27
-$L_44bc8a::
-
-            push 1
-            push OFFSET (_KingBss+10724)
-            call DWORD PTR __imp__InterlockedExchange@8
-
-            test EAX,EAX
-            je $L_44bcb7
-
-            cmp ESI,20
-            jg $L_44bcd6
-
-            push 0
-            call EBX
-
-            inc EDI
-            jmp $L_44bc7e
-$L_44bca7::
-
-            mov DWORD PTR [(_KingBss+10728)],ESI
-            mov DWORD PTR [(_KingData+2108)],1000
-$L_44bcb7::
-
-            mov ECX,DWORD PTR [EBP+16]
-            mov EDX,DWORD PTR [ECX]
-            mov EAX,DWORD PTR [EBP-24]
-            mov DWORD PTR [EAX],EDX
-            mov DWORD PTR [ECX],EAX
-            mov DWORD PTR [(_KingBss+10724)],0
-$L_44bccd::
-
-            push 0
-            push 0
-            call __CxxThrowException@8
-$L_44bcd6::
-
-            lea ECX,DWORD PTR [ESI-20]
-            mov EAX,1
-            shl EAX,CL
-            push EAX
-            call EBX
-
-            inc EDI
-            jmp $L_44bc7e
-$L_44bbad ENDP
 ALIGN 16
 ALIGN 16
 ALIGN 16

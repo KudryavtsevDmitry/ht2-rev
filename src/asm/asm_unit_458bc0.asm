@@ -2,7 +2,6 @@
 INCLUDE king.inc
 
 EXTERN @Stl_LengthError@4:NEAR
-EXTERN _Rec24_UninitCopy:NEAR
 EXTERN $L_63f8a0:NEAR
 EXTERN $L_63f8b0:NEAR
 EXTERN $L_63fe18:NEAR
@@ -34,13 +33,10 @@ EXTERN _SchString_FromChars:PROC
 EXTERN _Stl_Allocate:PROC
 EXTERN _Str_FreeRounded:PROC
 EXTERN _Tree_EraseRight:PROC
-EXTERN _UninitFill4s:PROC
 EXTERN __CxxThrowException@8:PROC
 EXTERN __imp__InterlockedDecrement@4:PROC
 EXTERN __imp__InterlockedIncrement@4:PROC
 EXTERN _free:PROC
-EXTERN _malloc:PROC
-EXTERN _memmove:NEAR
 EXTERN _strncpy:NEAR
 
 PUBLIC $L_45a2e7, $L_45a2fa, $L_45a30d, $L_45a340, $L_45a38e, $L_45a395, $L_45a3c5, $L_45a3ef
@@ -49,15 +45,14 @@ PUBLIC $L_45a4e9, $L_45a530, $L_45a57f, $L_45a58f, $L_45a598, $L_45a5a4, $L_45a5
 PUBLIC $L_45a625, $L_45a65c, $L_45a65e, $L_45a680, $L_45a6b9, $L_45a6ca, $L_45a6f7, $L_45a72c
 PUBLIC $L_45a751, $L_45a758, $L_45a76a, $L_45a7c0, $L_45a7fb, $L_45a813, $L_45a848, $L_45a8a4
 PUBLIC $L_45a900
-PUBLIC $L_462395, $L_4623c0, $L_4623d9, $L_4628a1
+PUBLIC $L_4628a1
 PUBLIC $L_4628c4, $L_4628c9, $L_46290d, $L_462938, $L_46293b, $L_46293e, $L_462995, $L_4629ab
-PUBLIC $L_4629b6, $L_462a44, $L_462a5f, $L_462d8f, $L_462e30, $L_462e66
+PUBLIC $L_4629b6, $L_462a44, $L_462a5f, $L_462e30, $L_462e66
 PUBLIC $L_462e83, $L_462e9c, $L_462eb2, $L_462ecf, $L_462ee5, $L_462ef9, $L_462f06, $L_462f1b
 PUBLIC $L_462f20, $L_462f69, $L_462f7c, $L_462fa0, $L_462fe5, $L_463035, $L_46306c, $L_463088
 PUBLIC $L_4630e2, $L_4630f3, $L_46310c, $L_463127, $L_463142, $L_463146, $L_463152, $L_46315b
 PUBLIC $L_463191, $L_4631a2, $L_4631bb, $L_4631d6, $L_4631f1, $L_4631f5, $L_463220, $L_463222
-PUBLIC $L_463229, $L_463232, $L_46323c, $L_46324c, $L_4644af, $L_4644d9, $L_46622f, $L_466271
-PUBLIC $L_4662a5
+PUBLIC $L_463229, $L_463232, $L_46323c, $L_46324c
 
 _TEXT SEGMENT
 FUN_45a2b0 PROC
@@ -898,59 +893,6 @@ $L_46231e PROC
             nop
 $L_46231e ENDP
 ALIGN 16
-$L_462395::
-
-            mov EAX,DWORD PTR [ESI+4]
-            cmp EAX,EDI
-            jle $L_4623c0
-
-            lea ECX,DWORD PTR [EAX*4]
-            push ECX
-            call _malloc
-
-            add ESP,4
-            cmp EAX,EDI
-            mov DWORD PTR [ESI+8],EAX
-            jne $L_4623c0
-
-            mov EAX,DWORD PTR [ESI+4]
-            cdq 
-            sub EAX,EDX
-            sar EAX,1
-            mov DWORD PTR [ESI+4],EAX
-            jmp $L_462395
-$L_4623c0::
-
-            mov EAX,DWORD PTR [ESI+4]
-            cmp EAX,EDI
-            jle $L_4623d9
-
-            mov EDX,DWORD PTR [EBP+12]
-            mov ECX,DWORD PTR [ESI+8]
-            push EDX
-            push EBX
-            push EAX
-            push ECX
-            call _UninitFill4s
-
-            add ESP,16
-$L_4623d9::
-
-            mov ECX,DWORD PTR [EBP-12]
-            mov EAX,ESI
-            pop EDI
-            pop ESI
-            mov DWORD PTR FS:[0],ECX
-            pop EBX
-            mov ESP,EBP
-            pop EBP
-            ret 8
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
 FUN_462850 PROC
 
             push EBP
@@ -1204,33 +1146,6 @@ FUN_462b30 PROC
             nop
 FUN_462b30 ENDP
 ALIGN 16
-$L_462d00 PROC
-
-            push 0
-            push 0
-            call __CxxThrowException@8
-
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-$L_462d00 ENDP
-ALIGN 16
-ALIGN 16
-$L_462d8f::
-
-            push ESI
-            call _Stl_Allocate
-
-            add ESP,4
-            add ESI,EAX
-            mov DWORD PTR [ESP+16],EAX
-            mov DWORD PTR [ESP+20],EAX
-            mov DWORD PTR [ESP+24],ESI
-            jmp @Stl_LengthError@4
 $L_462e2c PROC
 
             pop EDI
@@ -1809,156 +1724,5 @@ ALIGN 16
 ; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
 ALIGN 16
 ALIGN 16
-$L_464490 PROC
-
-            mov EAX,DWORD PTR [EBP-24]
-            test EAX,EAX
-            je $L_4644d9
-
-            shl EAX,2
-            cmp EAX,128
-            jbe $L_4644af
-
-            mov EDX,DWORD PTR [EBP-20]
-            push EDX
-            call _free
-
-            add ESP,4
-            jmp $L_4644d9
-$L_4644af::
-
-            add EAX,7
-            mov ECX,OFFSET (_KingBss+10724)
-            shr EAX,3
-            lea ESI,DWORD PTR [EAX*4+(_KingBss+10656)]
-            call @Stl_Lock@8
-
-            mov ECX,DWORD PTR [ESI]
-            mov EAX,DWORD PTR [EBP-20]
-            mov DWORD PTR [EAX],ECX
-            mov DWORD PTR [ESI],EAX
-            mov DWORD PTR [(_KingBss+10724)],0
-$L_4644d9::
-
-            push 0
-            push 0
-            call __CxxThrowException@8
-
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-$L_464490 ENDP
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-; AI STL instances: src\ai\ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
-ALIGN 16
-$L_46622f::
-
-            cmp EBX,DWORD PTR [EBP+12]
-            je _Rec24_UninitCopy
-
-            mov DWORD PTR [EBP-24],ESI
-            cmp ESI,EDI
-            mov BYTE PTR [EBP-4],1
-            je $L_4662a5
-
-            mov EAX,DWORD PTR [EBX]
-            mov DWORD PTR [ESI],EAX
-            mov ECX,DWORD PTR [EBX+4]
-            mov DWORD PTR [ESI+4],ECX
-            mov EAX,DWORD PTR [EBX+12]
-            mov ECX,DWORD PTR [EBX+8]
-            mov DWORD PTR [ESI+8],EDI
-            sub EAX,ECX
-            mov DWORD PTR [ESI+12],EDI
-            mov DWORD PTR [EBP+8],EAX
-            mov DWORD PTR [ESI+16],EDI
-            je $L_466271
-
-            push EAX
-            call _Stl_Allocate
-
-            mov EDI,EAX
-            mov EAX,DWORD PTR [EBP+8]
-            add ESP,4
-$L_466271::
-
-            lea EDX,DWORD PTR [EDI+EAX*1]
-            mov DWORD PTR [ESI+8],EDI
-            mov DWORD PTR [ESI+12],EDI
-            mov DWORD PTR [ESI+16],EDX
-            mov ECX,DWORD PTR [EBX+12]
-            mov EAX,DWORD PTR [EBX+8]
-            mov DWORD PTR [EBP-20],ECX
-            sub ECX,EAX
-            push ECX
-            push EAX
-            push EDI
-            mov DWORD PTR [EBP+8],EAX
-            call _memmove
-
-            mov ECX,DWORD PTR [EBP+8]
-            mov EAX,DWORD PTR [EBP-20]
-            sub EDI,ECX
-            add ESP,12
-            add EDI,EAX
-            mov DWORD PTR [ESI+12],EDI
-            xor EDI,EDI
-$L_4662a5::
-
-            add EBX,24
-            add ESI,24
-            mov BYTE PTR [EBP-4],0
-            mov DWORD PTR [EBP-20],ESI
-            jmp $L_46622f
 _TEXT ENDS
 END
