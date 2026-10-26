@@ -784,9 +784,9 @@ int __fastcall Nearest_Farther(const BYTE** s, void*, void* const* a, void* cons
 
 extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector<16-byte record>: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
-ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // copy-construct 16-byte records (first, last, dest, -)
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector<24-byte record>: allocate and copy (n, first, last)
-ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // a 24-byte record's destructor
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<double>::operator=
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")    // vector<char>: allocate and copy (n, first, last)
@@ -2857,7 +2857,7 @@ BYTE* __cdecl OrderInfos_UninitCopy(const BYTE* first, const BYTE* last, BYTE* d
 extern "C" void Uc33_Allocate(); KING_ALIAS("_Uc33_Allocate", "_Stl_Allocate")
 extern "C" void Uc33_Reserve1(); KING_ALIAS("_Uc33_Reserve1", "@Vec1_Reserve@16")
 extern "C" void Uc33_Copy1(); KING_ALIAS("_Uc33_Copy1", "_Copy1")
-ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte items (first, last, dest, -)
+ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // uninitialized copy of 24-byte items (first, last, dest, -)
 
 // the shared head (object +0 with its count at +4, value +4, flags +8; flag 0x10000 means a plain value)
 static void Uc33_CopyHead(BYTE* d, const BYTE* s)
@@ -2966,7 +2966,7 @@ struct Is33_Pt { DWORD d[6]; };    // the point (3 doubles), passed by value
 extern "C" void Is33_Middle(); KING_ALIAS("_Is33_Middle", "_Road_MiddleOfThree")
 extern "C" void Is33_Partition(); KING_ALIAS("_Is33_Partition", "_Holders_PartitionByDistance")
 extern "C" void Is33_MakeHeap(); KING_ALIAS("_Is33_MakeHeap", "_MakeHeap4A")
-ASM_PROC(FUN_469bc0)    // sort_heap by distance (first, last, point)
+ASM_FUNC(FUN_469bc0, _Holders_SortHeap469bc0)    // sort_heap by distance (first, last, point)
 
 extern "C" {
 
@@ -3020,4 +3020,70 @@ BYTE* __cdecl Recs56_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest,
     return dest;
 }
 
+}
+
+// Uninitialized copies (exceptions are fatal here, so the original's
+// unwinding of a partial copy is left out)
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+static void Ac_CopyCharVec(BYTE* d, const BYTE* s)     // vector<char> at d from s (begin, end, capacity)
+{
+    BYTE* b = F(BYTE*, s, 0);
+    unsigned n = (unsigned)(F(BYTE*, s, 4) - b);
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
+    F(BYTE*, d, 0) = p;
+    F(BYTE*, d, 4) = p;
+    F(BYTE*, d, 8) = p + n;
+    memmove(p, b, F(BYTE*, s, 4) - b);
+    F(BYTE*, d, 4) = p + (F(BYTE*, s, 4) - b);
+}
+
+// [FUN_466200] [FUN_466d50] 24-byte records {int, int, vector<char>} from [first, last) to dest
+extern "C" BYTE* __cdecl Rec24_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*)
+{
+    for (; first != last; first += 24, dest += 24)
+        if (dest) {
+            F(int, dest, 0) = F(int, first, 0);
+            F(int, dest, 4) = F(int, first, 4);
+            Ac_CopyCharVec(dest + 8, first + 8);
+        }
+    return dest;
+}
+
+// [FUN_467320] vector<char>s from [first, last) to dest
+extern "C" BYTE* __cdecl CharVec_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*)
+{
+    for (; first != last; first += 12, dest += 12)
+        if (dest)
+            Ac_CopyCharVec(dest, first);
+    return dest;
+}
+
+// [FUN_466440] n copies of the vector<int> v at dest
+extern "C" BYTE* __cdecl IntVec_UninitFillN(BYTE* dest, unsigned n, const BYTE* v, int)
+{
+    for (; n; n--, dest += 12)
+        if (dest) {
+            int* b = F(int*, v, 0);
+            unsigned k = (unsigned)(F(int*, v, 4) - b);
+            int* p = k ? (int*)Stl_Allocate(k * 4) : 0;
+            F(int*, dest, 0) = p;
+            F(int*, dest, 4) = p;
+            F(int*, dest, 8) = p + k;
+            memmove(p, F(int*, v, 0), (F(int*, v, 4) - F(int*, v, 0)) * 4);
+            F(int*, dest, 4) = p + (F(int*, v, 4) - F(int*, v, 0));
+        }
+    return dest;
+}
+
+// [FUN_469bc0] [FUN_469c20] sort_heap of holders by distance to the point pt
+// (pop_heap until one is left)
+extern "C" void __cdecl Holders_SortHeap469bc0(BYTE** first, BYTE** last, Is33_Pt pt)
+{
+    const double* p = (const double*)pt.d;
+    while (((BYTE*)last - (BYTE*)first & ~3) > 4) {
+        last--;
+        BYTE* v = *last;
+        *last = *first;
+        Far_AdjustHeap(first, 0, (int)(last - first), v, p[0], p[1], p[2]);
+    }
 }
