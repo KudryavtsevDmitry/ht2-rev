@@ -379,3 +379,11 @@ AfxFindMessageEntry, WindowProc, AfxCallWndProc, AfxWndProc), the CBT creation h
 subclass, SendMessageToDescendants, WalkPreTranslateTree, and CWinThread's PumpMessage, PreTranslateMessage,
 DispatchThreadMessageEx, IsIdleMessage, OnIdle, GetMainWnd and Delete. OnWndMsg's jump table moved inside
 its PROC so that it is wrapped with it. Drive test passes.
+
+MFC part 4 (48 procs): CPlex, CPtrList and CMapPtrToPtr (constructors, hash table, associations, lookup,
+operator[], RemoveKey, GetNextAssoc), AfxSetNewHandler, CHandleMap (constructor, FromHandle, DeleteTemp) with
+afxMapHDC/afxMapHGDIOBJ and CDC::FromHandle, CRuntimeClass::CreateObject, CString's destructor and FreeData,
+CDC's constructor and destructor, CGdiObject::Detach/DeleteObject, AfxDeleteObject, AfxCancelModes, the
+CFrameWnd destructor, RemoveFrameWnd, PreTranslateMessage, OnClose, PostNcDestroy and idle updates, and
+CWinApp's OnIdle, ExitInstance, SaveStdProfileSettings, HideApplication, SaveAllModified, CloseAllDocuments.
+The C++ of parts 2 and 3 now calls these directly. Drive test passes.

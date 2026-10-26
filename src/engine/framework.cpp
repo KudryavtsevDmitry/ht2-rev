@@ -2345,8 +2345,8 @@ extern "C" void __fastcall Fw_OnSize(BYTE*, void*, int type, int cx, int cy)
 // ---------------------------------------------------------------------------
 // Destructors (their exception frames dropped: exceptions are always fatal).
 
-extern "C" void Fw_GdiDelete(); KING_ALIAS("_Fw_GdiDelete", "?DeleteObject@CGdiObject@@QAEHXZ")
-extern "C" void Fw_FrameWndDtor(); KING_ALIAS("_Fw_FrameWndDtor", "??1CFrameWnd@@UAE@XZ")
+extern "C" void Fw_GdiDelete(); KING_ALIAS("_Fw_GdiDelete", "@GdiObject_DeleteObject@4")
+extern "C" void Fw_FrameWndDtor(); KING_ALIAS("_Fw_FrameWndDtor", "@FrameWnd_Destruct@4")
 extern "C" void FUN_5bda90(); KING_ALIAS("_FUN_5bda90", "@ConGroup_Destroy@4")
 ASM_VAR(AsmLabel, g_fra654420, $L_654420)
 ASM_VAR(AsmLabel, g_fra652238, $L_652238)
@@ -5006,7 +5006,7 @@ extern "C" void Mf_FrameCtor(); KING_ALIAS("_Mf_FrameCtor", "??0CFrameWnd@@QAE@X
 extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z")
 extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "@Wnd_SetWindowPos@32")
 extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "?LoadStringA@CString@@QAEHI@Z")
-extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "??1CString@@QAE@XZ")
+extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "@String_Destruct@4")
 extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "_Afx_GetModuleState@0")
 extern "C" void Mf_FrameExtra(); KING_ALIAS("_Mf_FrameExtra", "_Wnd_FrameExtra")
 ASM_VAR(AsmLabel, g_mfVtbl6523e4, $L_6523e4)
@@ -6368,8 +6368,8 @@ void __fastcall Fw_ResetRenderer(BYTE* s, void*, int a, int b, int c, int d)
 
 // === a window's bitmap blitted onto a DC ($L_5e27c0, a vtable entry)
 
-extern "C" void Cd_New(); KING_ALIAS("_Cd_New", "??0CDC@@QAE@XZ")
-extern "C" void Cd_Free(); KING_ALIAS("_Cd_Free", "??1CDC@@UAE@XZ")
+extern "C" void Cd_New(); KING_ALIAS("_Cd_New", "@Cdc_Construct@4")
+extern "C" void Cd_Free(); KING_ALIAS("_Cd_Free", "@Cdc_Destruct@4")
 extern "C" void Cd_Attach(); KING_ALIAS("_Cd_Attach", "?Attach@CDC@@QAEHPAUHDC__@@@Z")
 extern "C" void Cd_Select(); KING_ALIAS("_Cd_Select", "?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z")
 extern "C" void Cd_MapMode(); KING_ALIAS("_Cd_MapMode", "?SetMapMode@CDC@@UAEHH@Z")

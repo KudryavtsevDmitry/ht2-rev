@@ -342,7 +342,7 @@ static_assert(sizeof(CWinApp) == 192, "CWinApp size");
 // virtual in MFC: ?OnIdle@CWinApp@@UAEHJ@Z).
 KING_ALIAS("?Construct@CWinApp@@QAEXPBD@Z", "@WinApp_Construct@12")
 KING_ALIAS("?Destruct@CWinApp@@QAEXXZ", "@WinApp_Destruct@4")
-KING_ALIAS("?OnIdle@CWinApp@@QAEHJ@Z", "?OnIdle@CWinApp@@UAEHJ@Z")
+KING_ALIAS("?OnIdle@CWinApp@@QAEHJ@Z", "@WinApp_OnIdle@12")
 
 enum {
     APP_BORDIN        = 0x02,   // [ENV] bordin = on
