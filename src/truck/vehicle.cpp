@@ -15890,3 +15890,140 @@ extern "C" void __fastcall Vehicle_OnHit(BYTE* self, void*, int, const float* im
     if (F(int, self, 20636) != g_veh68b990)
         Ai_HitPlayer(F(int, self, 20636), Ramp_Value(self + 21204, 0) * k, 0);
 }
+
+extern "C" BYTE* __fastcall Vh_D52ac00(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac00@12", "@Dtor514790_DeletingDestructor@12")
+// [$L_52ac00] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac00(BYTE* s, void* d, int f) { return Vh_D52ac00(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac10(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac10@12", "@Dtor5117e0_DeletingDestructor@12")
+// [$L_52ac10] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac10(BYTE* s, void* d, int f) { return Vh_D52ac10(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac20(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac20@12", "@Dtor520560_DeletingDestructor@12")
+// [$L_52ac20] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac20(BYTE* s, void* d, int f) { return Vh_D52ac20(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac30(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac30@12", "@Dtor5213f0_DeletingDestructor@12")
+// [$L_52ac30] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac30(BYTE* s, void* d, int f) { return Vh_D52ac30(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac40(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac40@12", "@Dtor517a20_DeletingDestructor@12")
+// [$L_52ac40] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac40(BYTE* s, void* d, int f) { return Vh_D52ac40(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac50(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac50@12", "@Dtor5244f0_DeletingDestructor@12")
+// [$L_52ac50] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac50(BYTE* s, void* d, int f) { return Vh_D52ac50(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac60(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac60@12", "@Dtor51dfe0_DeletingDestructor@12")
+// [$L_52ac60] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac60(BYTE* s, void* d, int f) { return Vh_D52ac60(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac70(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac70@12", "@Dtor51e710_DeletingDestructor@12")
+// [$L_52ac70] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac70(BYTE* s, void* d, int f) { return Vh_D52ac70(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac80(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac80@12", "@Dtor525e00_DeletingDestructor@12")
+// [$L_52ac80] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac80(BYTE* s, void* d, int f) { return Vh_D52ac80(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52ac90(BYTE*, void*, int); KING_ALIAS("@Vh_D52ac90@12", "@Dtor51ec80_DeletingDestructor@12")
+// [$L_52ac90] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52ac90(BYTE* s, void* d, int f) { return Vh_D52ac90(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52aca0(BYTE*, void*, int); KING_ALIAS("@Vh_D52aca0@12", "@Dtor526b80_DeletingDestructor@12")
+// [$L_52aca0] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52aca0(BYTE* s, void* d, int f) { return Vh_D52aca0(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52acb0(BYTE*, void*, int); KING_ALIAS("@Vh_D52acb0@12", "@Dtor50ff70_DeletingDestructor@12")
+// [$L_52acb0] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52acb0(BYTE* s, void* d, int f) { return Vh_D52acb0(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52acc0(BYTE*, void*, int); KING_ALIAS("@Vh_D52acc0@12", "@Dtor527d00_DeletingDestructor@12")
+// [$L_52acc0] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52acc0(BYTE* s, void* d, int f) { return Vh_D52acc0(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52acd0(BYTE*, void*, int); KING_ALIAS("@Vh_D52acd0@12", "@Dtor51f340_DeletingDestructor@12")
+// [$L_52acd0] the deleting destructor reached through the base 64 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52acd0(BYTE* s, void* d, int f) { return Vh_D52acd0(s - 64, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f4c0(BYTE*, void*, int); KING_ALIAS("@Vh_D52f4c0@12", "@Dtor52b6d0_DeletingDestructor@12")
+// [$L_52f4c0] the deleting destructor reached through the base 376 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f4c0(BYTE* s, void* d, int f) { return Vh_D52f4c0(s - 376, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f4d0(BYTE*, void*, int); KING_ALIAS("@Vh_D52f4d0@12", "@Dtor52da10_DeletingDestructor@12")
+// [$L_52f4d0] the deleting destructor reached through the base 256 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f4d0(BYTE* s, void* d, int f) { return Vh_D52f4d0(s - 256, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f4e0(BYTE*, void*, int); KING_ALIAS("@Vh_D52f4e0@12", "@Dtor52da10_DeletingDestructor@12")
+// [$L_52f4e0] the deleting destructor reached through the base 376 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f4e0(BYTE* s, void* d, int f) { return Vh_D52f4e0(s - 376, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f4f0(BYTE*, void*, int); KING_ALIAS("@Vh_D52f4f0@12", "@Dtor52d3e0_DeletingDestructor@12")
+// [$L_52f4f0] the deleting destructor reached through the base 256 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f4f0(BYTE* s, void* d, int f) { return Vh_D52f4f0(s - 256, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f500(BYTE*, void*, int); KING_ALIAS("@Vh_D52f500@12", "@Dtor52d3e0_DeletingDestructor@12")
+// [$L_52f500] the deleting destructor reached through the base 376 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f500(BYTE* s, void* d, int f) { return Vh_D52f500(s - 376, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f510(BYTE*, void*, int); KING_ALIAS("@Vh_D52f510@12", "@Dtor52e2e0_DeletingDestructor@12")
+// [$L_52f510] the deleting destructor reached through the base 256 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f510(BYTE* s, void* d, int f) { return Vh_D52f510(s - 256, d, f); }
+extern "C" BYTE* __fastcall Vh_D52f520(BYTE*, void*, int); KING_ALIAS("@Vh_D52f520@12", "@Dtor52e2e0_DeletingDestructor@12")
+// [$L_52f520] the deleting destructor reached through the base 376 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk52f520(BYTE* s, void* d, int f) { return Vh_D52f520(s - 376, d, f); }
+
+// [$L_52ace0] static initializer: clears the 35 pair lists (44 bytes each) at 6ced98
+extern "C" void Vh_Pairs5Clear(); KING_ALIAS("_Vh_Pairs5Clear", "@Pairs5_Clear@8")
+KING_VAR(BYTE, vh_6ced98, 6ced98)
+extern "C" void __cdecl Vh_Init52ace0()
+{
+    for (int i = 0; i < 35; i++)
+        CallThis(Vh_Pairs5Clear, &vh_6ced98 + i * 44);
+}
+
+// [$L_52b590] [$L_52e920] message handlers of two vehicle parts: the scene
+// object's handling first; then a message must be for this object (+1188),
+// type 13 with subtype 1 selects a part (+9528), type 10 goes to 52e8c0
+extern "C" void Vh_SceneOnMessage(); KING_ALIAS("_Vh_SceneOnMessage", "@SceneObj_OnMessage@12")
+extern "C" void Vh_CarPartSelect(); KING_ALIAS("_Vh_CarPartSelect", "@CarPart_Select@12")
+extern "C" void Vh_Vehicles52e8c0(); KING_ALIAS("_Vh_Vehicles52e8c0", "@Vehicles_52e8c0@12")
+KING_VAR(AsmLabel, vh_s6784a0, 6784a0)
+KING_VAR(AsmLabel, vh_s678550, 678550)
+extern "C" void __cdecl World_Fatal(const char* msg);
+extern "C" int __fastcall Vh_OnMessage52b590(BYTE* self, void*, const int* m)
+{
+    if (CallThis<int>(Vh_SceneOnMessage, self, m))
+        return 1;
+    if (m[0] != F(int, self, 1188))
+        World_Fatal(vh_s6784a0);
+    if (m[1] != 13)
+        return 0;
+    if (m[2] == 1)
+        CallThis(Vh_CarPartSelect, self + 9528, m[3]);
+    return 1;
+}
+extern "C" int __fastcall Vh_OnMessage52e920(BYTE* self, void*, const int* m)
+{
+    if (CallThis<int>(Vh_SceneOnMessage, self, m))
+        return 1;
+    if (m[0] != F(int, self, 1188))
+        World_Fatal(vh_s678550);
+    if (m[1] != 10)
+        return 0;
+    CallThis(Vh_Vehicles52e8c0, self, m + 2);
+    return 1;
+}
+
+// [$L_52f530] static initializer: seeds the subtractive random generator
+// (Knuth's ran3: 55 values at 6d1860, indices 0 and 31)
+KING_VAR(DWORD, vh_6d1860, 6d1860)
+KING_VAR(int, vh_6d193c, 6d193c)
+KING_VAR(int, vh_6d1940, 6d1940)
+extern "C" void __cdecl Vh_Init52f530()
+{
+    DWORD* ma = &vh_6d1860;
+    for (int i = 0; i < 55; i++)
+        ma[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    ma[54] = mj;
+    for (unsigned s = 0; s < 1134; s += 21) {
+        unsigned i = s % 55;
+        mj -= mk;
+        ma[i] = mk;
+        mk = mj;
+        mj = ma[i];
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned i = 0; i < 55; i++)
+            ma[i] -= ma[(i + 31) % 55];
+    vh_6d193c = 0;
+    vh_6d1940 = 31;
+}
+
+// [$L_52f680] static initializer: constructs the object at 6d1948
+extern "C" void Vh_Scy52fce0Construct(); KING_ALIAS("_Vh_Scy52fce0Construct", "@Scy52fce0_Construct@8")
+KING_VAR(BYTE, vh_6d1948, 6d1948)
+extern "C" void __cdecl Vh_Init52f680() { CallThis(Vh_Scy52fce0Construct, &vh_6d1948); }
