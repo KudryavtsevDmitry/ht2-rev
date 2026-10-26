@@ -704,7 +704,7 @@ int __fastcall Music_Open(BYTE* self, void*, const char* path)
 }
 
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")    // vector<char> constructor
-ASM_PROC(FUN_600e60)    // appends bytes to a vector<char> (vector, data, size)
+extern "C" void FUN_600e60(); KING_ALIAS("_FUN_600e60", "_Net_FillSendBuffer")    // appends bytes to a vector<char> (vector, data, size)
 extern "C" void Gate_SendBufferDtor(); KING_ALIAS("_Gate_SendBufferDtor", "_Static723d98_Destroy")
 extern "C" int __cdecl atexit(void (__cdecl* fn)());
 ASM_VAR(BYTE, g_sendBufInit, $L_723d8c)
@@ -1603,3 +1603,59 @@ int __fastcall Msg_SkipRecord(BYTE* s, void*)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: the network send buffer
+
+extern "C" void Ng32_CopyBytes(); KING_ALIAS("_Ng32_CopyBytes", "_CopyBytes")
+extern "C" void Ng32_Clone(); KING_ALIAS("_Ng32_Clone", "_Bytes_Clone@12")
+extern "C" void Ng32_PoolFree(); KING_ALIAS("_Ng32_PoolFree", "_Ai_PoolFree")
+extern "C" void Ng32_Insert(); KING_ALIAS("_Ng32_Insert", "@CharVec_InsertRange@20")
+ASM_PROC(FUN_62ab60)    // packs script value v with handler h
+ASM_VAR(BYTE, ng32_pack723de4, $L_723de4)
+ASM_VAR(char, ng32_tag683cb0, $L_683cb0)
+ASM_VAR(char, ng32_tagEnd683cb4, $L_683cb4)
+
+// empties v and makes sure it holds 2048 bytes
+static void Ng32_Reset(BYTE** v)
+{
+    BYTE* end = v[1];
+    BYTE* begin = v[0];
+    v[1] = v[1] + (begin - end);
+    if ((unsigned)(v[2] - v[0]) < 2048) {
+        BYTE* b = v[0];
+        int n = (int)(v[1] - b);
+        BYTE* nb = CallStd<BYTE*>(Ng32_Clone, 2048u, b, v[1]);
+        if (v[2] - v[0])
+            CallC(Ng32_PoolFree, v[0], (unsigned)(v[2] - v[0]));
+        v[0] = nb;
+        v[1] = nb + n;
+        v[2] = nb + 2048;
+    }
+}
+
+extern "C" {
+
+// [FUN_600e60] puts the bytes (data, size) into the send buffer v: with packing on (723de4), the packed script
+// value of them behind the 4-byte tag, kept when it is smaller than the bytes; else the bytes themselves
+void __cdecl Net_FillSendBuffer(BYTE** v, const BYTE* data, int size)
+{
+    if (ng32_pack723de4) {
+        CallC(Ng32_CopyBytes, v[1], v[1], v[0], size, 0);
+        Ng32_Reset(v);
+        void* r = CallC<void*>(FUN_62aaa0, data, size);
+        BYTE* h = (BYTE*)operator new(12);
+        void* hv = h ? DpHandler_Construct(h, 0, (int)v) : 0;
+        CallC(FUN_62ab60, r, hv);
+        CallC(FUN_62a950, &r);
+        CallC(FUN_62a950, &hv);
+        CallThis(Ng32_Insert, v, v[0], (const char*)&ng32_tag683cb0, (const char*)&ng32_tagEnd683cb4);
+        unsigned len = (unsigned)(v[1] - v[0]);
+        if ((double)(__int64)len / size < 1.0)
+            return;
+    }
+    Ng32_Reset(v);
+    CallThis(Ng32_Insert, v, v[1], data, data + size);
+}
+
+}

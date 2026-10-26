@@ -4748,7 +4748,7 @@ void __cdecl Font_DrawText(BYTE* s, int x, int y, int w, BYTE* f, const BYTE* te
 // === the framework's handlers and render passes (FUN_5de0a0)
 
 extern "C" int __cdecl Weather_LogPos(void*, const BYTE* r, const BYTE* o);  // weather.cpp
-ASM_VAR(AsmLabel, g_rp5c8ae0, $L_5c8ae0)
+extern "C" int __cdecl TreeGen_Draw(void* a0, BYTE* ctx, BYTE* o);  // media.cpp
 extern "C" int __cdecl Water_Draw(void*, BYTE* r);
 ASM_VAR(AsmLabel, s_rp682f14, $L_682f14)
 ASM_VAR(AsmLabel, s_rp682f00, $L_682f00)
@@ -4781,7 +4781,7 @@ extern "C" {
 void __fastcall World_SetupPasses(BYTE* w)
 {
     CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f14, (void*)Weather_LogPos);
-    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f00, (void*)g_rp5c8ae0);
+    CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682f00, (void*)TreeGen_Draw);
     CallThis(FUN_5d2540, (BYTE*)g_objectNames, (const char*)s_rp682ef0, (void*)Water_Draw);
     CallThis(FUN_5d27c0, (BYTE*)g_objectNames);
     static const int base[] = {400, 0, 20, 30, 10};

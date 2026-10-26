@@ -45,7 +45,7 @@ ASM_VAR(AsmLabel, g_vtbl64bf38, $L_64bf38)
 ASM_VAR(AsmLabel, g_vtbl64bf24, $L_64bf24)
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last) (another instance)
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
-ASM_PROC(FUN_4897b0)    // list: a new node
+extern "C" void FUN_4897b0(); KING_ALIAS("_FUN_4897b0", "@List_NewNode@12")    // list: a new node
 ASM_PROC(FUN_491750)
 extern "C" void FUN_488450(); KING_ALIAS("_FUN_488450", "@RoadSet_Destroy@4")
 extern "C" void FUN_489900(); KING_ALIAS("_FUN_489900", "@Vec24_InsertAux@16")    // vector<24 bytes>::insert_aux
@@ -3035,3 +3035,75 @@ BYTE* __fastcall Curve_Construct(BYTE* s, void*, const BYTE* p)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: polylines and list nodes
+
+extern "C" void Rt32_Allocate(); KING_ALIAS("_Rt32_Allocate", "_Stl_Allocate")
+extern "C" void Rt32_Copy24s(); KING_ALIAS("_Rt32_Copy24s", "_UninitCopy24s")
+extern "C" void Rt32_Sphere(); KING_ALIAS("_Rt32_Sphere", "_Points_BoundingSphere")
+extern "C" void Rt32_Lock(); KING_ALIAS("_Rt32_Lock", "@Stl_Lock@8")
+extern "C" void Rt32_ChunkAlloc(); KING_ALIAS("_Rt32_ChunkAlloc", "_Stl_ChunkAlloc")
+extern "C" void Rt32_CharCopy(); KING_ALIAS("_Rt32_CharCopy", "@VecChar_Copy@12")
+extern "C" void Rt32_Reserve4(); KING_ALIAS("_Rt32_Reserve4", "@Vec4_Reserve@16")
+extern "C" void Rt32_CopyDwords(); KING_ALIAS("_Rt32_CopyDwords", "_UninitCopyDwords")
+extern "C" void Rt32_DwCopy(); KING_ALIAS("_Rt32_DwCopy", "@VecDw_CopyConstruct@12")
+ASM_VAR(int, rt32_lock68d204, $L_68d204)
+ASM_VAR(BYTE*, rt32_free48_68d1d8, $L_68d1d8)
+
+extern "C" {
+
+// [FUN_48c620] a polyline from the points pts (a vector of 24-byte points): +32 a copy of them, +0 their
+// bounding sphere (centre and radius, 32 bytes)
+BYTE* __fastcall Polyline_Construct(BYTE* self, void*, BYTE** pts)
+{
+    F(int, self, 24) = 0;
+    F(int, self, 28) = 0;
+    int n = (int)(pts[1] - pts[0]) / 24;
+    BYTE** v = (BYTE**)(self + 32);
+    v[0] = 0;
+    v[1] = 0;
+    v[2] = 0;
+    BYTE* p = n ? CallC<BYTE*>(Rt32_Allocate, n * 24) : 0;
+    v[0] = p;
+    v[1] = p;
+    v[2] = p + n * 24;
+    v[1] = CallC<BYTE*>(Rt32_Copy24s, pts[0], pts[1], p, pts);
+    BYTE tmp[32];
+    const BYTE* s = CallC<BYTE*>(Rt32_Sphere, tmp, self + 32);
+    memcpy(self, s, 32);
+    return self;
+}
+
+// [FUN_4897b0] a new list node (48 bytes from the allocator's free list, refilled 20 at a time) holding a copy
+// of value src: its char vector, dword vector (+12) and second dword vector (+24)
+BYTE* __fastcall List_NewNode(void* list, void*, BYTE* src)
+{
+    CallThis(Rt32_Lock, &rt32_lock68d204);
+    BYTE* node = rt32_free48_68d1d8;
+    if (!node) {
+        int n = 20;
+        node = CallC<BYTE*>(Rt32_ChunkAlloc, 48, &n);
+        if (n != 1) {
+            BYTE* p = node + 48;
+            rt32_free48_68d1d8 = p;
+            for (int i = 1; i != n - 1; i++, p += 48)
+                *(BYTE**)p = p + 48;
+            *(BYTE**)p = 0;
+        }
+    } else {
+        rt32_free48_68d1d8 = *(BYTE**)node;
+    }
+    rt32_lock68d204 = 0;
+    BYTE* v = node + 8;
+    if (v) {
+        CallThis(Rt32_CharCopy, v, src);
+        BYTE alloc;
+        CallThis(Rt32_Reserve4, v + 12, (int)(F(BYTE*, src, 16) - F(BYTE*, src, 12)) >> 2, &alloc);
+        F(BYTE*, v, 16) = CallC<BYTE*>(Rt32_CopyDwords, F(BYTE*, src, 12), F(BYTE*, src, 16), F(BYTE*, v, 12), src);
+        CallThis(Rt32_DwCopy, v + 24, src + 24);
+    }
+    return node;
+}
+
+}
