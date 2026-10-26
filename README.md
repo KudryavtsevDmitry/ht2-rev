@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), version `v 8.0 30.01.03`.
 
-`king.masm` is the whole program as MASM source and assembles back into a working `king.exe`. Functions are rewritten in C++ (`src/`) one by one and linked in place of their assembly, so the game runs at every step. About 97% of the game code (by size) is C++ now. The statically linked MFC 4.2 is being replaced by own code with the same layouts (`src/engine/mfc.cpp`): 269 of its 954 procs so far. See `CONVERSION_LOG.md`.
+`king.masm` is the whole program as MASM source and assembles back into a working `king.exe`. Functions are rewritten in C++ (`src/`) one by one and linked in place of their assembly, so the game runs at every step. About 97% of the game code (by size) is C++ now. The statically linked MFC 4.2 is replaced by own code with the same layouts (`src/engine/mfc.cpp`; only two throw helpers and `_AfxThreadEntry` are still assembly), and the game runs on the modern static C runtime instead of its 1999 one (see below). See `CONVERSION_LOG.md`.
 
 The game is not included: building needs your own original `king.exe` (for resources), running needs an installed game.
 
@@ -31,7 +31,7 @@ nmake ASM_MAIN_LOOP=1                  # original assembly for one source file
 nmake clean
 ```
 
-Every `src` file has a switch `ASM_<FILE NAME>`; run `nmake clean` before changing switches. `ASM=1` is byte-identical to the original apart from timestamps.
+Every `src` file has a switch `ASM_<FILE NAME>`, and `ASM_CRT=1` switches back to the game's own C runtime; run `nmake clean` before changing switches. `ASM=1` is byte-identical to the original apart from timestamps.
 
 ## Running
 
