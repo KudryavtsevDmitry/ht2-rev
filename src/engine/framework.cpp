@@ -56,7 +56,7 @@ extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5e4900(); KING_ALIAS("_FUN_5e4900", "@ResTable_Charge@12")
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // draws text
 extern "C" void* __stdcall AfxGetThread_();
-KING_ALIAS("_AfxGetThread_@0", "?AfxGetThread@@YGPAVCWinThread@@XZ")
+KING_ALIAS("_AfxGetThread_@0", "_Afx_GetThread@0")
 
 ASM_VAR(AsmLabel, g_vtbl652238, $L_652238)
 ASM_VAR(AsmLabel, g_vtbl654420, $L_654420)
@@ -1146,7 +1146,7 @@ extern "C" void FUN_5e44a0(); KING_ALIAS("_FUN_5e44a0", "@ResRef_Release@8")
 extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")
-extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
+extern "C" void Afx_BeginThread(); KING_ALIAS("_Afx_BeginThread", "_Afx_BeginThread@24")
 extern "C" unsigned __cdecl Fw_LoaderThread(BYTE* p);
 extern "C" void FUN_5e4e00(); KING_ALIAS("_FUN_5e4e00", "@Resources_FreeTables@8")
 extern "C" void FUN_5baa70(); KING_ALIAS("_FUN_5baa70", "_TexPool_Return")
@@ -2812,7 +2812,7 @@ extern "C" void __cdecl Loader_OnMessage(int* m, BYTE* l)
 // ---------------------------------------------------------------------------
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
-extern "C" void Mfc_AfxGetThread(); KING_ALIAS("_Mfc_AfxGetThread", "?AfxGetThread@@YGPAVCWinThread@@XZ")
+extern "C" void Mfc_AfxGetThread(); KING_ALIAS("_Mfc_AfxGetThread", "_Afx_GetThread@0")
 extern "C" void Mfc_WndDefault(); KING_ALIAS("_Mfc_WndDefault", "?Default@CWnd@@IAEJXZ")
 ASM_VAR(void*, g_q51_72177c, $L_72177c)
 ASM_VAR(int, g_q51_721778, $L_721778)
@@ -2860,7 +2860,7 @@ extern "C" void FUN_5f33e0(); KING_ALIAS("_FUN_5f33e0", "@Node_Call5f2a40b@12")
 extern "C" void FUN_5f2dd0(); KING_ALIAS("_FUN_5f2dd0", "@Node_Call5f2a40a@12")
 extern "C" void FUN_5fa910(); KING_ALIAS("_FUN_5fa910", "@Mesh_BuildVertices@12")
 extern "C" void FUN_5f0b10(); KING_ALIAS("_FUN_5f0b10", "@Mesh_PrepareDraw@12")
-extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "?AfxEndThread@@YGXIH@Z")
+extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "_Afx_EndThread@8")
 extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec);
 ASM_VAR(HDC, g_q53_72091c, $L_72091c)
 // [$L_5d9300] switching the current room (+468) to r: walks r with the 5d9370 visitor and a zeroed 432-byte
@@ -5007,7 +5007,7 @@ extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "?Create@CFrameW
 extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
 extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "?LoadStringA@CString@@QAEHI@Z")
 extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "??1CString@@QAE@XZ")
-extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ")
+extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "_Afx_GetModuleState@0")
 extern "C" void Mf_FrameExtra(); KING_ALIAS("_Mf_FrameExtra", "_Wnd_FrameExtra")
 ASM_VAR(AsmLabel, g_mfVtbl6523e4, $L_6523e4)
 ASM_VAR(const char*, g_mfEmptyString, $L_685fc0)
@@ -7714,8 +7714,8 @@ void __fastcall App_SetupVideo(BYTE* s, void*)
 // === the app's start (InitInstance, FUN_5e29b0 with its tail $L_5e2cb0)
 
 extern "C" void Ia_GdiAttach(); KING_ALIAS("_Ia_GdiAttach", "?Attach@CGdiObject@@QAEHPAX@Z")
-extern "C" void Ia_DialogBkColor(); KING_ALIAS("_Ia_DialogBkColor", "?SetDialogBkColor@CWinApp@@IAEXKK@Z")
-extern "C" void Ia_Enable3d(); KING_ALIAS("_Ia_Enable3d", "?Enable3dControls@CWinApp@@IAEHXZ")
+extern "C" void Ia_DialogBkColor(); KING_ALIAS("_Ia_DialogBkColor", "FUN_63a7bb")
+extern "C" void Ia_Enable3d(); KING_ALIAS("_Ia_Enable3d", "FUN_63a662")
 extern "C" BYTE* __fastcall Ia_BitmapCtor(BYTE* self, void*); KING_ALIAS("@Ia_BitmapCtor@8", "@Obj654420_Construct@8")
 extern "C" void __cdecl Ia_MemoryTouch(int n); KING_ALIAS("_Ia_MemoryTouch", "_Memory_Touch")
 extern "C" const char* __cdecl Ia_DataPath(const char* path); KING_ALIAS("_Ia_DataPath", "_DataPath_Set")

@@ -363,3 +363,11 @@ CProcessLocalObject), AfxLockGlobals and the critical sections, CNoTrackObject n
 AfxGetThreadState and AfxGetModuleThreadState (23 procs). Drive tests pass (one of three ended at
 Z 22.36, the reruns at 20.91/20.92), load test exact. The Makefile's CFLAGS had the same include
 directories repeated about 40 times; reduced to one.
+
+MFC part 2: the module and thread states (their creators and constructors, AfxGetModuleState, AfxGetThread),
+CCmdTarget/CWinThread/CWinApp constructors and destructors, AfxWinMain, AfxWinInit, AfxWinTerm,
+CWinApp::SetCurrentHandles, AfxInitThread, AfxBeginThread/CWinThread::CreateThread/AfxEndThread/AfxTermThread,
+AfxLockTempMaps/AfxUnlockTempMaps, AfxPostQuitMessage, AfxOleGetUserCtrl, AfxGlobalFree (31 procs). Named
+library procs are renamed in king.masm to their FUN_ address (old name kept in the PROC comment) so that the
+usual wrapping works. Kept in asm: _AfxThreadEntry (try/catch), the state destructors (exit only). Drive test
+passes; the load test drifted (941.9..943.4, the part 1 build was exact) and is no longer used.

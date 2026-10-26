@@ -2364,7 +2364,7 @@ extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
 // The media thread start.
 
 extern "C" void FUN_5c24a0(); KING_ALIAS("_FUN_5c24a0", "_Msavi_OpenSound")
-extern "C" void Mfc_AfxBeginThread(); KING_ALIAS("_Mfc_AfxBeginThread", "?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z")
+extern "C" void Mfc_AfxBeginThread(); KING_ALIAS("_Mfc_AfxBeginThread", "_Afx_BeginThread@24")
 ASM_VAR(int, g_q54_702f60, $L_702f60)
 ASM_VAR(HANDLE, g_q54_702f58, $L_702f58)
 ASM_VAR(HANDLE, g_q54_702f5c, $L_702f5c)
