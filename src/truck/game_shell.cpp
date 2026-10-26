@@ -11781,3 +11781,159 @@ extern "C" void __fastcall Gs_ScreenCommand(BYTE* self, void*, int cmd)
         Shell_StartGame(&gs_6f2d18, 0);
     }
 }
+
+extern "C" void Mr_List_DrawAt(); KING_ALIAS("_Mr_List_DrawAt", "@List_DrawAt@12")
+extern "C" void Mr_CarList_Draw(); KING_ALIAS("_Mr_CarList_Draw", "_CarList_Draw")
+extern "C" void Mr_Stream_Construct(); KING_ALIAS("_Mr_Stream_Construct", "@Stream_Construct@8")
+extern "C" void Mr_Tsc_Now(); KING_ALIAS("_Mr_Tsc_Now", "_Tsc_Now")
+extern "C" void Mr_Bitmap_Draw(); KING_ALIAS("_Mr_Bitmap_Draw", "_Bitmap_Draw")
+extern "C" void Mr_Table71e858_Get(); KING_ALIAS("_Mr_Table71e858_Get", "_Table71e858_Get")
+extern "C" void Mr_Font_TextWidth(); KING_ALIAS("_Mr_Font_TextWidth", "@Font_TextWidth@12")
+extern "C" void Mr_Text_Draw(); KING_ALIAS("_Mr_Text_Draw", "_Text_Draw")
+extern "C" void Mr_Scores_Draw(); KING_ALIAS("_Mr_Scores_Draw", "_Scores_Draw")
+extern "C" void Mr_Net_Receive(); KING_ALIAS("_Mr_Net_Receive", "_Net_Receive")
+extern "C" void Mr_DpMessage_Construct(); KING_ALIAS("_Mr_DpMessage_Construct", "@DpMessage_Construct@8")
+extern "C" void Mr_DpMessage_Set(); KING_ALIAS("_Mr_DpMessage_Set", "@DpMessage_Set@16")
+extern "C" void Mr_Gate_Set24(); KING_ALIAS("_Mr_Gate_Set24", "@Gate_Set24@8")
+extern "C" void Mr_Msg_NextType(); KING_ALIAS("_Mr_Msg_NextType", "@Msg_NextType@12")
+extern "C" void Mr_Stream_ReadBlob(); KING_ALIAS("_Mr_Stream_ReadBlob", "@Stream_ReadBlob@20")
+extern "C" void Mr_Msg_SkipRecord(); KING_ALIAS("_Mr_Msg_SkipRecord", "@Msg_SkipRecord@8")
+extern "C" void Mr_Window_Show(); KING_ALIAS("_Mr_Window_Show", "@Window_Show@12")
+extern "C" void Mr_Shell_LeaveRace(); KING_ALIAS("_Mr_Shell_LeaveRace", "_Shell_LeaveRace")
+extern "C" void Mr_Shell_ShowWithMusic(); KING_ALIAS("_Mr_Shell_ShowWithMusic", "@Shell_ShowWithMusic@12")
+extern "C" void Mr_MsgBuf_Destroy(); KING_ALIAS("_Mr_MsgBuf_Destroy", "@MsgBuf_Destroy@8")
+extern "C" void Mr_Gate_602bd0(); KING_ALIAS("_Mr_Gate_602bd0", "@Gate_602bd0@8")
+KING_VAR(BYTE*, mr_6cec98, 6cec98)
+KING_VAR(BYTE*, mr_6ced24, 6ced24)          // the font
+KING_VAR(BYTE*, mr_696ca0, 696ca0)
+KING_VAR(int, mr_6f3428, 6f3428)
+KING_VAR(BYTE*, mr_6cecc0, 6cecc0)
+KING_VAR(int, mr_67b75c, 67b75c)
+KING_VAR(double, mr_64d0d0, 64d0d0)
+KING_VAR(double, mr_64d0d8, 64d0d8)
+KING_VAR(double, mr_64b848, 64b848)
+
+// the "next race" message (954) restarts the race screen, "leave" (952)
+// ends the race; returns 1 after a leave
+static int Mr_ReadMessages(BYTE* self, BYTE* msg)
+{
+    int type, id, len;
+    char buf[264];
+    while (!CallThis<int>(Mr_Msg_NextType, msg, &type)) {
+        if (type == 120 && !CallThis<int>(Mr_Stream_ReadBlob, msg, &id, buf, &len)) {
+            if (id == 954) {
+                CallVirt(mr_696ca0, 36);
+                CallVirt(self - 64, 32);
+                F(int, mr_696ca0, 3024) = 1;
+            } else if (id == 952) {
+                CallVirt(self - 64, 32);
+                mr_6f3428 = 0;
+                CallC(Mr_Shell_LeaveRace);
+                return 1;
+            }
+        }
+        if (CallThis<int>(Mr_Msg_SkipRecord, msg))
+            break;
+    }
+    return 0;
+}
+
+static void Mr_Footer(BYTE* target)
+{
+    const char* text = CallC<const char*>(Mr_Table71e858_Get, 74);
+    int w = CallThis<int>(Mr_Font_TextWidth, mr_6ced24, text);
+    int x = ((int)F(WORD, target, 0) - w) / 2;
+    CallC(Mr_Text_Draw, target, x, (int)F(WORD, target, 2) - 30, mr_6ced24, text, 5, 0);
+}
+
+// [$L_51f760] [$L_51fce1] the network race results screen's draw (thiscall
+// at +64 of the window, the target): before the results the car list; on
+// the first page the background and, after a while, the next page; on the
+// scores page the scores, and the server waits for the clients' messages
+// (954 next race, 952 leave) until a timeout
+extern "C" void __fastcall Shell_ResultsDraw(BYTE* self, void*, BYTE* target)
+{
+    BYTE* bg = F(BYTE*, self, -52);
+    int dx = ((int)F(WORD, F(BYTE*, self, 304), 20) - (int)F(WORD, bg, 0)) / 2;
+    int dy = ((int)F(WORD, F(BYTE*, self, 304), 22) - (int)F(WORD, bg, 2)) / 2;
+    int mode = F(int, self, 340);
+    if ((mode <= 2 || mode == 5) && !F(int, gs_6cec6c, 1316)) {
+        CallThis(Mr_List_DrawAt, self, target);
+        mode = F(int, self, 340);
+        if (mode == 1 || mode == 2 || mode == 5)
+            CallC(Mr_CarList_Draw, target, 622 - dx, 440 - dy, 3);
+        return;
+    }
+    DWORD net[4];
+    CallThis(Mr_Stream_Construct, net);
+    net[3] = 0;
+    CallC<double>(Mr_Tsc_Now);
+    if (F(int, self, 340) == 0) {
+        CallC(Mr_Bitmap_Draw, F(BYTE*, self, -52), -dx, -dy, F(BYTE*, self, 304));
+        double t = F(double, self, 344) + mr_64d0d0;
+        if (CallC<double>(Mr_Tsc_Now) > t)
+            CallVirt(self, 60, 163);
+        Mr_Footer(target);
+    } else if (mr_67b75c != 2) {
+        BYTE* bmp;
+        if (F(int, mr_6cec98, 384) < 2)
+            bmp = mr_67b75c == 1 ? F(BYTE*, self, 316) : F(BYTE*, self, 320);
+        else
+            bmp = mr_67b75c == 1 ? F(BYTE*, self, 324) : F(BYTE*, self, 328);
+        CallC(Mr_Bitmap_Draw, F(BYTE*, self, -52), -dx, -dy, bmp);
+        CallC(Mr_Scores_Draw, target, 622 - dx, 470 - dy);
+        Mr_Footer(target);
+        if (F(int, gs_6cec6c, 1316) == 1) {
+            while (!CallC<int>(Mr_Net_Receive, net))
+                ;
+            double t = F(double, self, 344) + mr_64d0d0;
+            if (CallC<double>(Mr_Tsc_Now) > t)
+                CallVirt(self, 60, F(int, self, 340) == 3 ? 168 : 163);
+        } else {
+            BYTE msg[28];
+            CallThis(Mr_DpMessage_Construct, msg);
+            if (!CallC<int>(Mr_Net_Receive, net)) {
+                do {
+                    if (net[0] != 4)
+                        continue;
+                    CallThis(Mr_DpMessage_Set, msg, net[1], net[2]);
+                    if (!CallThis<int>(Mr_Gate_Set24, msg) && Mr_ReadMessages(self, msg))
+                        break;
+                    double t = F(double, self, 344) + mr_64d0d8;
+                    if (CallC<double>(Mr_Tsc_Now) > t) {
+                        CallVirt(self - 64, 32);
+                        mr_6f3428 = 0;
+                        CallC(Mr_Shell_LeaveRace);
+                        break;
+                    }
+                } while (!CallC<int>(Mr_Net_Receive, net));
+            }
+            CallThis(Mr_MsgBuf_Destroy, msg);
+        }
+    } else {
+        CallThis(Mr_Window_Show, self - 64, 0);
+        if (F(int, gs_6cec6c, 1316) == 1) {
+            while (!CallC<int>(Mr_Net_Receive, net))
+                ;
+            double t = F(double, self, 344) + mr_64b848;
+            if (CallC<double>(Mr_Tsc_Now) > t)
+                CallVirt(self, 60, F(int, self, 340) == 3 ? 168 : 163);
+        } else {
+            BYTE msg[28];
+            CallThis(Mr_DpMessage_Construct, msg);
+            if (!CallC<int>(Mr_Net_Receive, net)) {
+                do {
+                    if (net[0] != 4)
+                        continue;
+                    CallThis(Mr_DpMessage_Set, msg, net[1], net[2]);
+                    if (!CallThis<int>(Mr_Gate_Set24, msg) && Mr_ReadMessages(self, msg)) {
+                        CallThis(Mr_Shell_ShowWithMusic, mr_6cecc0, 12);
+                        break;
+                    }
+                } while (!CallC<int>(Mr_Net_Receive, net));
+            }
+            CallThis(Mr_MsgBuf_Destroy, msg);
+        }
+    }
+    CallThis(Mr_Gate_602bd0, net);
+}
