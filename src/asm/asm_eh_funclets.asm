@@ -2,22 +2,16 @@
 INCLUDE king.inc
 
 EXTERN @Eh_EmptyDtor@4:NEAR
-EXTERN $L_462e30:NEAR
-EXTERN @AiVec_FreeStorage@8:PROC
-EXTERN @Buf459df0_Destruct@8:PROC
 EXTERN @Gate_602bd0@8:PROC
 EXTERN @List16_Destroy@4:PROC
 EXTERN @MsgBuf_Destroy@8:PROC
-EXTERN @RopeFn_ResetVtbl@8:PROC
 EXTERN @SchHandle_Release@8:PROC
-EXTERN @VecBytes_FreeStorage@4:PROC
 EXTERN @Wnd_Destruct@4:PROC
 EXTERN _KingRdata:BYTE
 EXTERN _Stl_Unlock:PROC
 EXTERN ___CxxFrameHandler:PROC
 
 PUBLIC $L_63b648, $L_63b64f
-PUBLIC $L_63fe00, $L_63fe78, $L_63fe7f, $L_63fe87
 PUBLIC $L_643ef0, $L_643f00, $L_643f10, $L_643f20
 PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8
 PUBLIC $L_64a298, $L_64a2a0
@@ -86,77 +80,6 @@ $L_63b678 ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
-$L_63fdd0 PROC
-
-            mov EAX,OFFSET (_KingRdata+70600)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_63fe00::
-
-            lea ECX,DWORD PTR [EBP-32]
-            jmp $L_462e30
-$L_63fdd0 ENDP
-$L_63fe08 PROC
-
-            lea ECX,DWORD PTR [EBP-28]
-            jmp @AiVec_FreeStorage@8
-$L_63fe08 ENDP
-$L_63fe10 PROC
-
-            lea ECX,DWORD PTR [EBP-28]
-            jmp @VecBytes_FreeStorage@4
-$L_63fe10 ENDP
-$L_63fe18 PROC
-
-            mov EAX,OFFSET (_KingRdata+71000)
-            jmp ___CxxFrameHandler
-$L_63fe18 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-$L_63fe60 PROC
-
-            cmp DWORD PTR [EBP+12],0
-            je $L_63fe78
-
-            mov EAX,DWORD PTR [EBP+12]
-            add EAX,4
-            mov DWORD PTR [EBP-20],EAX
-            jmp $L_63fe7f
-$L_63fe78::
-
-            mov DWORD PTR [EBP-20],0
-$L_63fe7f::
-
-            mov ECX,DWORD PTR [EBP-20]
-            jmp @Buf459df0_Destruct@8
-$L_63fe60 ENDP
-$L_63fe87::
-            mov ECX,DWORD PTR [EBP+12]
-            jmp @RopeFn_ResetVtbl@8
-$L_63fe8f PROC
-
-            mov EAX,OFFSET (_KingRdata+71248)
-            jmp ___CxxFrameHandler
-$L_63fe8f ENDP
 $L_6436b0 PROC
 
             mov ECX,DWORD PTR [EBP+8]

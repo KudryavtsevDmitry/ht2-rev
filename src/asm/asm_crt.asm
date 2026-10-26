@@ -1011,14 +1011,6 @@ $L_61de1c::
             pop EDX
             ret 
 FUN_61dd8d ENDP
-??0exception@@QAE@XZ PROC ;FUN_61e0a0 exception::exception()
-
-            mov EAX,ECX
-            and DWORD PTR [EAX+4],0
-            and DWORD PTR [EAX+8],0
-            mov DWORD PTR [EAX],OFFSET (_KingRdata+38760)
-            ret 
-??0exception@@QAE@XZ ENDP
 $L_61e0b1 PROC
 
             push ESI

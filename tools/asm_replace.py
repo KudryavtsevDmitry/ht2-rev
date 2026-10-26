@@ -97,7 +97,8 @@ for p in sorted(asm_dir.glob('asm_*.asm')):
             continue
         head.append(line)
     have = {re.match(r'^EXTERN ([^:\s]+):', l)[1] for l in head if l.startswith('EXTERN ')}
-    new = sorted(c for c in set(pairs.values()) if c in used and c not in have)
+    defined = {m[1] for l in body if (m := labdef.match(l))}
+    new = sorted(c for c in set(pairs.values()) if c in used and c not in have and c not in defined)
     if new:
         k = next((i for i, l in enumerate(head) if l.startswith('EXTERN ')), 3)
         head[k:k] = [f'EXTERN {c}:NEAR' for c in new]
