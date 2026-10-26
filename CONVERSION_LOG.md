@@ -477,3 +477,11 @@ assemble as before (ASM=1 output unchanged). In the default build their 7,201 la
 (int 3), so a missed reference stops at a breakpoint. Reachability (scratchpad dead.py): from everything the C++
 names, through code, data objects (vtables, EH tables, jump tables) and fall-through between procedures. 162 dead
 procedures inside existing IF blocks were left. king.exe: 2,774,528 -> 2,672,128 bytes. Drive test passes.
+
+C++ owns the program, step 1a (_BSS): the whole original _BSS (0x68a820..0x77fb04, 2,770 labels, 1,004,260
+bytes) is `KingBss` in the new src/engine/data.cpp. king.masm points every BSS label at it
+(`$L_x TEXTEQU <(_KingBss+offset)>`, in parentheses so label differences still work), so the layout and the
+assembly's offset arithmetic are unchanged. In src/, 4,557 `ASM_VAR` of BSS labels became
+`KING_BSS(type, name, address)` (a reference into KingBss; 25 duplicate declarations inside one translation unit
+were dropped). The original labels stay under `IFDEF ASM_DATA`, which `nmake ASM=1` sets (same object as before).
+Done by tools/own_bss.py. Drive test passes (Z 20.91, room_ap_018).

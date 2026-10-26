@@ -87,16 +87,16 @@ struct PositionId {
     int    m_28;                    // -1
 };
 
-ASM_VAR(RoadNode**, g_roadNodes, $L_68cf00)
-ASM_VAR(RoadNode**, g_roadNodesEnd, $L_68cf04)
-ASM_VAR(RoadEdge**, g_roadEdges, $L_68cf38)
-ASM_VAR(RoadEdge**, g_roadEdgesEnd, $L_68cf3c)
+KING_BSS(RoadNode**, g_roadNodes, 0x68cf00)
+KING_BSS(RoadNode**, g_roadNodesEnd, 0x68cf04)
+KING_BSS(RoadEdge**, g_roadEdges, 0x68cf38)
+KING_BSS(RoadEdge**, g_roadEdgesEnd, 0x68cf3c)
 typedef double NodeCosts[1];
-ASM_VAR(NodeCosts, g_nodeCosts, $L_68d8c0)    // a double per node
-ASM_VAR(char, g_aiEmpty, $L_68d1c0)
+KING_BSS(NodeCosts, g_nodeCosts, 0x68d8c0)    // a double per node
+KING_BSS(char, g_aiEmpty, 0x68d1c0)
 typedef void* FreeLists[17];
-ASM_VAR(FreeLists, g_stlFreeLists, $L_68d1c0)  // the STL node allocator, by 8 bytes
-ASM_VAR(volatile LONG, g_stlLock, $L_68d204)
+KING_BSS(FreeLists, g_stlFreeLists, 0x68d1c0)  // the STL node allocator, by 8 bytes
+KING_BSS(volatile LONG, g_stlLock, 0x68d204)
 extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);   // aimain.cpp: the allocator lock
 
 extern "C" PositionId* __cdecl Road_EdgeStart(PositionId* out, RoadEdge* e);

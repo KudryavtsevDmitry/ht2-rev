@@ -8,8 +8,8 @@
 #include "road.h"
 
 typedef char AiText[1];
-ASM_VAR(AiText, g_idText, $L_77e460)           // "(%d)" of an invalid id
-ASM_VAR(AiText, g_positionText, $L_77e6e0)     // an invalid PositionId
+KING_BSS(AiText, g_idText, 0x77e460)           // "(%d)" of an invalid id
+KING_BSS(AiText, g_positionText, 0x77e6e0)     // an invalid PositionId
 
 static const char s_roadId[] = "$Id: ai_road.cpp 2000/8/29 17:19:18";
 static const char s_roadFile[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\Ai_road.cpp";
@@ -222,9 +222,9 @@ extern "C" void FUN_47a230(); KING_ALIAS("_FUN_47a230", "@PlayerRec_Copy@12")
 extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")
 extern "C" void FUN_47c070(); KING_ALIAS("_FUN_47c070", "_AiList_FindActive")
 extern "C" void FUN_47b530(); KING_ALIAS("_FUN_47b530", "_Alloc8_Copy@12")
-ASM_VAR(BYTE*, g_68cf6c, $L_68cf6c)
-ASM_VAR(BYTE**, g_68a970, $L_68a970)
-ASM_VAR(BYTE**, g_68a974, $L_68a974)
+KING_BSS(BYTE*, g_68cf6c, 0x68cf6c)
+KING_BSS(BYTE**, g_68a970, 0x68a970)
+KING_BSS(BYTE**, g_68a974, 0x68a974)
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")
@@ -272,9 +272,9 @@ extern "C" AiListNode** __fastcall AiList_Insert(void* list, void*, AiListNode**
 
 // the STL's subtractive random generator of the AI
 typedef unsigned RngTable[55];
-ASM_VAR(RngTable, g_rngTable, $L_68b9c8)
-ASM_VAR(unsigned, g_rngIndex1, $L_68baa4)
-ASM_VAR(unsigned, g_rngIndex2, $L_68baa8)
+KING_BSS(RngTable, g_rngTable, 0x68b9c8)
+KING_BSS(unsigned, g_rngIndex1, 0x68baa4)
+KING_BSS(unsigned, g_rngIndex2, 0x68baa8)
 
 static unsigned AiRandom(unsigned limit)
 {
@@ -1077,14 +1077,14 @@ extern "C" void __fastcall Vec16_Reserve(BYTE** v, void*, unsigned n) { Vec_Rese
 // Static initializers of random generators.
 typedef char AsmLabel[1];
 
-ASM_VAR(AsmLabel, g_roagraRng68d4f8, $L_68d4f8)
-ASM_VAR(DWORD, g_roagraRng68d5d0, $L_68d5d0)
-ASM_VAR(DWORD, g_roagraRng68d5d4, $L_68d5d4)
-ASM_VAR(DWORD, g_roagraRng68d5d8, $L_68d5d8)
-ASM_VAR(AsmLabel, g_roagraRng68d5e0, $L_68d5e0)
-ASM_VAR(DWORD, g_roagraRng68d6b8, $L_68d6b8)
-ASM_VAR(DWORD, g_roagraRng68d6bc, $L_68d6bc)
-ASM_VAR(DWORD, g_roagraRng68d6c0, $L_68d6c0)
+KING_BSS(AsmLabel, g_roagraRng68d4f8, 0x68d4f8)
+KING_BSS(DWORD, g_roagraRng68d5d0, 0x68d5d0)
+KING_BSS(DWORD, g_roagraRng68d5d4, 0x68d5d4)
+KING_BSS(DWORD, g_roagraRng68d5d8, 0x68d5d8)
+KING_BSS(AsmLabel, g_roagraRng68d5e0, 0x68d5e0)
+KING_BSS(DWORD, g_roagraRng68d6b8, 0x68d6b8)
+KING_BSS(DWORD, g_roagraRng68d6bc, 0x68d6bc)
+KING_BSS(DWORD, g_roagraRng68d6c0, 0x68d6c0)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Roagra_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
@@ -1295,27 +1295,27 @@ BYTE* __fastcall PlayerRec_Copy(BYTE* self, void*, const BYTE* src)
 ASM_VAR(AsmLabel, s_ag66fd68, $L_66fd68)
 ASM_VAR(AsmLabel, g_ag66fd64, $L_66fd64)
 ASM_VAR(AsmLabel, g_ag66c730, $L_66c730)
-ASM_VAR(AsmLabel, g_ag68d6c8, $L_68d6c8)
-ASM_VAR(AsmLabel, g_ag68d0f0, $L_68d0f0)
-ASM_VAR(AsmLabel, g_ag68d0f8, $L_68d0f8)
-ASM_VAR(AsmLabel, g_ag68d100, $L_68d100)
+KING_BSS(AsmLabel, g_ag68d6c8, 0x68d6c8)
+KING_BSS(AsmLabel, g_ag68d0f0, 0x68d0f0)
+KING_BSS(AsmLabel, g_ag68d0f8, 0x68d0f8)
+KING_BSS(AsmLabel, g_ag68d100, 0x68d100)
 ASM_VAR(AsmLabel, g_ag66c6d8, $L_66c6d8)
-ASM_VAR(AsmLabel, g_ag68d190, $L_68d190)
-ASM_VAR(AsmLabel, g_ag68d198, $L_68d198)
-ASM_VAR(AsmLabel, g_ag68d170, $L_68d170)
-ASM_VAR(AsmLabel, g_ag68b9c8, $L_68b9c8)
-ASM_VAR(AsmLabel, g_ag68a830, $L_68a830)
-ASM_VAR(AsmLabel, g_ag68d158, $L_68d158)
+KING_BSS(AsmLabel, g_ag68d190, 0x68d190)
+KING_BSS(AsmLabel, g_ag68d198, 0x68d198)
+KING_BSS(AsmLabel, g_ag68d170, 0x68d170)
+KING_BSS(AsmLabel, g_ag68b9c8, 0x68b9c8)
+KING_BSS(AsmLabel, g_ag68a830, 0x68a830)
+KING_BSS(AsmLabel, g_ag68d158, 0x68d158)
 ASM_VAR(AsmLabel, g_ag66c6a0, $L_66c6a0)
-ASM_VAR(AsmLabel, g_ag68d164, $L_68d164)
-ASM_VAR(AsmLabel, g_ag68d168, $L_68d168)
+KING_BSS(AsmLabel, g_ag68d164, 0x68d164)
+KING_BSS(AsmLabel, g_ag68d168, 0x68d168)
 ASM_VAR(AsmLabel, g_ag66c6e0, $L_66c6e0)
-ASM_VAR(AsmLabel, g_ag68cc88, $L_68cc88)
+KING_BSS(AsmLabel, g_ag68cc88, 0x68cc88)
 ASM_VAR(AsmLabel, g_ag66c6f8, $L_66c6f8)
 ASM_VAR(AsmLabel, g_ag66c710, $L_66c710)
-ASM_VAR(AsmLabel, g_ag68d15c, $L_68d15c)
-ASM_VAR(AsmLabel, g_ag68d160, $L_68d160)
-ASM_VAR(AsmLabel, g_ag68d108, $L_68d108)
+KING_BSS(AsmLabel, g_ag68d15c, 0x68d15c)
+KING_BSS(AsmLabel, g_ag68d160, 0x68d160)
+KING_BSS(AsmLabel, g_ag68d108, 0x68d108)
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
@@ -1440,11 +1440,11 @@ void __cdecl Road40_StableSortAdaptive(BYTE* first, BYTE* last, BYTE* buf, int n
 
 // === loading the AI's global state (FUN_480b00)
 
-ASM_VAR(int, g_lg68d6d0, $L_68d6d0)
+KING_BSS(int, g_lg68d6d0, 0x68d6d0)
 ASM_VAR(AsmLabel, s_lg66fd70, $L_66fd70)
 ASM_VAR(AsmLabel, s_lg66fcb4, $L_66fcb4)
 ASM_VAR(AsmLabel, s_lg66fd94, $L_66fd94)
-ASM_VAR(AsmLabel, s_lg68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, s_lg68d1c0, 0x68d1c0)
 extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
 extern "C" void FUN_448f00(); KING_ALIAS("_FUN_448f00", "@Vec4_PushBackG@12")
 extern "C" void FUN_44ac10(); KING_ALIAS("_FUN_44ac10", "@Vec4_Erase@16")
@@ -1853,7 +1853,7 @@ extern "C" void FUN_4471f0(); KING_ALIAS("_FUN_4471f0", "@CharVec_Erase@16")
 extern "C" void FUN_47ab20(); KING_ALIAS("_FUN_47ab20", "@CharVec_PushBack@12")
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")
 extern "C" void FUN_461ae0(); KING_ALIAS("_FUN_461ae0", "@Rec16_DeletingDestructor@12")
-ASM_VAR(BYTE*, g_nr68b990, $L_68b990)
+KING_BSS(BYTE*, g_nr68b990, 0x68b990)
 
 extern "C" {
 

@@ -18,17 +18,17 @@ extern "C" void FUN_5d79d0(); KING_ALIAS("_FUN_5d79d0", "_Dd_CopySprite")
 extern "C" void FUN_5d8260(); KING_ALIAS("_FUN_5d8260", "_Dd_Release")
 extern "C" void FUN_5d75a0(); KING_ALIAS("_FUN_5d75a0", "_Dd_CreateDevices")
 
-ASM_VAR(int, g_bitDepth, $L_720890)
-ASM_VAR(int, g_bitDepth2, $L_720894)
-ASM_VAR(int, g_width, $L_72089c)
-ASM_VAR(int, g_height, $L_7208a0)
-ASM_VAR(int, g_is565, $L_7208ac)
-ASM_VAR(int, g_is565b, $L_7208b0)
-ASM_VAR(int, g_ddMode, $L_7208ec)
-ASM_VAR(int, g_ddWindowed, $L_7208f0)
-ASM_VAR(BYTE*, g_ddFront, $L_7208f8)
-ASM_VAR(BYTE*, g_directDraw, $L_7208fc)
-ASM_VAR(int, g_flipPending, $L_720928)
+KING_BSS(int, g_bitDepth, 0x720890)
+KING_BSS(int, g_bitDepth2, 0x720894)
+KING_BSS(int, g_width, 0x72089c)
+KING_BSS(int, g_height, 0x7208a0)
+KING_BSS(int, g_is565, 0x7208ac)
+KING_BSS(int, g_is565b, 0x7208b0)
+KING_BSS(int, g_ddMode, 0x7208ec)
+KING_BSS(int, g_ddWindowed, 0x7208f0)
+KING_BSS(BYTE*, g_ddFront, 0x7208f8)
+KING_BSS(BYTE*, g_directDraw, 0x7208fc)
+KING_BSS(int, g_flipPending, 0x720928)
 ASM_VAR(AsmLabel, s_checkPf, $L_67fe70)
 
 template <class... A>
@@ -37,15 +37,14 @@ static __forceinline int Com(BYTE* com, unsigned off, A... args)
     return (*(int(__stdcall**)(BYTE*, A...))(*(BYTE**)com + off))(com, args...);
 }
 
-ASM_VAR(BYTE*, g_d3d, $L_72090c)
-ASM_VAR(BYTE*, g_dd, $L_720910)
-ASM_VAR(BYTE*, g_device, $L_720908)
-ASM_VAR(BYTE*, g_ddPalette, $L_7208f4)
-ASM_VAR(BYTE*, g_720900, $L_720900)
-ASM_VAR(BYTE*, g_720904, $L_720904)
-ASM_VAR(int, g_7208b4, $L_7208b4)
-ASM_VAR(int, g_waitVsync, $L_7208a8)
-ASM_VAR(HWND, g_hWnd, $L_720920)
+KING_BSS(BYTE*, g_d3d, 0x72090c)
+KING_BSS(BYTE*, g_dd, 0x720910)
+KING_BSS(BYTE*, g_device, 0x720908)
+KING_BSS(BYTE*, g_ddPalette, 0x7208f4)
+KING_BSS(BYTE*, g_720900, 0x720900)
+KING_BSS(BYTE*, g_720904, 0x720904)
+KING_BSS(int, g_7208b4, 0x7208b4)
+KING_BSS(int, g_waitVsync, 0x7208a8)
 
 extern "C" {
 
@@ -236,9 +235,9 @@ void __cdecl Dd_Release()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5d8460(); KING_ALIAS("_FUN_5d8460", "_Dd_ChooseTextureFormat")
-ASM_VAR(int, g_7208b8, $L_7208b8)
-ASM_VAR(int, g_72092c, $L_72092c)
-ASM_VAR(BYTE*, g_7208e0, $L_7208e0)
+KING_BSS(int, g_7208b8, 0x7208b8)
+KING_BSS(int, g_72092c, 0x72092c)
+KING_BSS(BYTE*, g_7208e0, 0x7208e0)
 ASM_VAR(AsmLabel, s_67fdc0, $L_67fdc0)
 ASM_VAR(AsmLabel, s_67fdb8, $L_67fdb8)
 extern "C" int __stdcall Dd_EnumDevice(GUID* guid, char*, char*, BYTE* c);
@@ -340,11 +339,11 @@ extern "C" int __fastcall Win_Activate(BYTE* self, void*)
 
 // ---------------------------------------------------------------------------
 extern "C" void $L_5d8360(); KING_ALIAS("_$L_5d8360", "_Dd_TextureFormat@8")     // texture format enumeration callback
-ASM_VAR(int, g_dd7208ac, $L_7208ac)
-ASM_VAR(int, g_dd7208b0, $L_7208b0)
-ASM_VAR(int, g_dd720894, $L_720894)
-ASM_VAR(int, g_dd720898, $L_720898)
-ASM_VAR(BYTE*, g_ddDevice, $L_720908)
+KING_BSS(int, g_dd7208ac, 0x7208ac)
+KING_BSS(int, g_dd7208b0, 0x7208b0)
+KING_BSS(int, g_dd720894, 0x720894)
+KING_BSS(int, g_dd720898, 0x720898)
+KING_BSS(BYTE*, g_ddDevice, 0x720908)
 
 // [FUN_5d8460] picks the texture format for a kind (b, -1: 7208ac) from the device's formats; without a device kind 2 means 4 bytes
 extern "C" void __cdecl Dd_ChooseTextureFormat(int kind, int b)
@@ -369,12 +368,12 @@ extern "C" void __cdecl Dd_ChooseTextureFormat(int kind, int b)
 }
 
 // ---------------------------------------------------------------------------
-ASM_VAR(BYTE*, g_ddPrimary2, $L_7208fc)
-ASM_VAR(BYTE*, g_ddLocked2, $L_7208a8)
-ASM_VAR(int, g_ddWidth2, $L_72089c)
-ASM_VAR(int, g_ddHeight2, $L_7208a0)
-ASM_VAR(int, g_ddWindowed2, $L_7208f0)
-ASM_VAR(int, g_dd7208b8b, $L_7208b8)
+KING_BSS(BYTE*, g_ddPrimary2, 0x7208fc)
+KING_BSS(BYTE*, g_ddLocked2, 0x7208a8)
+KING_BSS(int, g_ddWidth2, 0x72089c)
+KING_BSS(int, g_ddHeight2, 0x7208a0)
+KING_BSS(int, g_ddWindowed2, 0x7208f0)
+KING_BSS(int, g_dd7208b8b, 0x7208b8)
 ASM_VAR(AsmLabel, s_dd67fdf0, $L_67fdf0)
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 
@@ -467,10 +466,10 @@ extern "C" int __stdcall Dd_MatchRecord(const BYTE* a, BYTE* b)
     return 0;
 }
 
-ASM_VAR(AsmLabel, g_q105_720870, $L_720870)
-ASM_VAR(AsmLabel, g_q105_720128, $L_720128)
-ASM_VAR(AsmLabel, g_q105_720148, $L_720148)
-ASM_VAR(AsmLabel, g_q105_720728, $L_720728)
+KING_BSS(AsmLabel, g_q105_720870, 0x720870)
+KING_BSS(AsmLabel, g_q105_720128, 0x720128)
+KING_BSS(AsmLabel, g_q105_720148, 0x720148)
+KING_BSS(AsmLabel, g_q105_720728, 0x720728)
 // [$L_5d8360] texture format callback: keeps the 555, 4444 and 565 RGB formats (720870, 720128, 720148; ctx +36
 // bits 2, 4 and 1) and the 16-bit bump format (720728, bit 7); always goes on
 extern "C" int __stdcall Dd_TextureFormat(const BYTE* pf, BYTE* ctx)
@@ -682,7 +681,7 @@ ASM_VAR(AsmLabel, s_dderr6827b4, $L_6827b4)
 ASM_VAR(AsmLabel, s_dderr6827d0, $L_6827d0)
 ASM_VAR(AsmLabel, s_dderr6827e8, $L_6827e8)
 ASM_VAR(AsmLabel, s_dderr682800, $L_682800)
-ASM_VAR(AsmLabel, g_ddErrText, $L_720618)
+KING_BSS(AsmLabel, g_ddErrText, 0x720618)
 ASM_VAR(AsmLabel, s_ddErrSpace, $L_67b8b0)
 ASM_VAR(AsmLabel, s_ddErrUnknown, $L_67fe7c)
 
@@ -910,7 +909,7 @@ ASM_VAR(char, s_dc6828a8, $L_6828a8)
 ASM_VAR(char, s_dc6828c0, $L_6828c0)
 ASM_VAR(char, s_dc682864, $L_682864)
 ASM_VAR(char, s_dc682880, $L_682880)
-ASM_VAR(int, g_dc7208d8, $L_7208d8)
+KING_BSS(int, g_dc7208d8, 0x7208d8)
 ASM_VAR(AsmLabel, g_dc655480, $L_655480)
 
 // the error message m into c+124; hr returned
@@ -1032,7 +1031,7 @@ extern "C" int __stdcall D3d_ChooseDevice(const char*, const char*, const BYTE* 
 extern "C" void* g_impDirectDrawCreateEx; KING_ALIAS("_g_impDirectDrawCreateEx", "__imp__DirectDrawCreateEx@16")
 ASM_VAR(AsmLabel, g_ed6554a0, $L_6554a0)      // IID_IDirectDraw7
 ASM_VAR(AsmLabel, g_ed655490, $L_655490)      // IID_IDirect3D7
-ASM_VAR(char, g_ed720770, $L_720770)
+KING_BSS(char, g_ed720770, 0x720770)
 ASM_VAR(char, s_ed682924, $L_682924)
 ASM_VAR(char, s_ed682938, $L_682938)
 ASM_VAR(char, s_ed682954, $L_682954)
@@ -1192,7 +1191,7 @@ BYTE* __cdecl Dd_SurfaceFromPixels(unsigned w, unsigned h, const BYTE* src)
 
 // === copying a sprite to the back surface (FUN_5d79d0)
 
-ASM_VAR(int, g_bs7208b8, $L_7208b8)
+KING_BSS(int, g_bs7208b8, 0x7208b8)
 
 extern "C" {
 

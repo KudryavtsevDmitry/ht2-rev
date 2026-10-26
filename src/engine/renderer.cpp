@@ -27,7 +27,7 @@ extern "C" void FUN_5d3b40(); KING_ALIAS("_FUN_5d3b40", "_Gdi_DrawFrame")
 extern "C" void FUN_5d4490(); KING_ALIAS("_FUN_5d4490", "_Dd_Present")
 extern "C" void FUN_5b6bf0(); KING_ALIAS("_FUN_5b6bf0", "@Surface_Prepare@4")
 ASM_VAR(int, g_transformSerial, $L_67ef88)
-ASM_VAR(int, g_720904, $L_720904)
+KING_BSS(int, g_720904, 0x720904)
 extern "C" void FUN_5b3a40(); KING_ALIAS("_FUN_5b3a40", "@Render_TexPolygon@28")
 extern "C" void FUN_5b42c0(); KING_ALIAS("_FUN_5b42c0", "@Render_Polygon@20")
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")
@@ -53,26 +53,26 @@ extern "C" void FUN_5d3d30(); KING_ALIAS("_FUN_5d3d30", "_Video_SetPaletteRgb") 
 extern "C" void FUN_5baa70(); KING_ALIAS("_FUN_5baa70", "_TexPool_Return")
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")    // checksum (data, size)
 
-ASM_VAR(BYTE*, g_device, $L_720908)            // IDirect3DDevice
-ASM_VAR(int, g_702640, $L_702640)
-ASM_VAR(int, g_702644, $L_702644)
-ASM_VAR(int, g_702648, $L_702648)
-ASM_VAR(int, g_702650, $L_702650)
-ASM_VAR(int, g_702654, $L_702654)
-ASM_VAR(int, g_702658, $L_702658)
-ASM_VAR(int, g_72006c, $L_72006c)
-ASM_VAR(int, g_720070, $L_720070)
-ASM_VAR(int, g_720074, $L_720074)
-ASM_VAR(int, g_720078, $L_720078)
-ASM_VAR(int, g_72007c, $L_72007c)
-ASM_VAR(int, g_702e6c, $L_702e6c)
-ASM_VAR(int, g_702e74, $L_702e74)
-ASM_VAR(int, g_702e78, $L_702e78)
-ASM_VAR(int, g_702e7c, $L_702e7c)
-ASM_VAR(int, g_702e88, $L_702e88)               // fog: near (z >> 8)
-ASM_VAR(DWORD, g_702e8c, $L_702e8c)
-ASM_VAR(int, g_pixelFormat, $L_702e94)          // 2: 565, 3: 555, 6: 32-bit
-ASM_VAR(int, g_7208d4, $L_7208d4)
+KING_BSS(BYTE*, g_device, 0x720908)            // IDirect3DDevice
+KING_BSS(int, g_702640, 0x702640)
+KING_BSS(int, g_702644, 0x702644)
+KING_BSS(int, g_702648, 0x702648)
+KING_BSS(int, g_702650, 0x702650)
+KING_BSS(int, g_702654, 0x702654)
+KING_BSS(int, g_702658, 0x702658)
+KING_BSS(int, g_72006c, 0x72006c)
+KING_BSS(int, g_720070, 0x720070)
+KING_BSS(int, g_720074, 0x720074)
+KING_BSS(int, g_720078, 0x720078)
+KING_BSS(int, g_72007c, 0x72007c)
+KING_BSS(int, g_702e6c, 0x702e6c)
+KING_BSS(int, g_702e74, 0x702e74)
+KING_BSS(int, g_702e78, 0x702e78)
+KING_BSS(int, g_702e7c, 0x702e7c)
+KING_BSS(int, g_702e88, 0x702e88)               // fog: near (z >> 8)
+KING_BSS(DWORD, g_702e8c, 0x702e8c)
+KING_BSS(int, g_pixelFormat, 0x702e94)          // 2: 565, 3: 555, 6: 32-bit
+KING_BSS(int, g_7208d4, 0x7208d4)
 ASM_VAR(int, g_fogNear, $L_67f0e8)
 ASM_VAR(int, g_fogFar, $L_67f0ec)
 ASM_VAR(AsmLabel, g_vtbl65176c, $L_65176c)
@@ -1208,7 +1208,7 @@ extern "C" void __fastcall Draw_ListItem(BYTE* self, void*, DWORD a, DWORD b, DW
 
 
 // ---------------------------------------------------------------------------
-ASM_VAR(BYTE*, g_rnD3d, $L_72090c)
+KING_BSS(BYTE*, g_rnD3d, 0x72090c)
 ASM_VAR(AsmLabel, s_rn67f3ac, $L_67f3ac)
 ASM_VAR(AsmLabel, s_rn67f390, $L_67f390)
 ASM_VAR(AsmLabel, s_rn67f37c, $L_67f37c)
@@ -1730,7 +1730,7 @@ extern "C" BYTE* __fastcall Ren5ba470_DeletingDestructor(BYTE* s, void*, int fla
 
 ASM_VAR(float, g_ren651768, $L_651768)
 ASM_VAR(float, g_ren67f0e4, $L_67f0e4)
-ASM_VAR(int, g_ren702e88, $L_702e88)
+KING_BSS(int, g_ren702e88, 0x702e88)
 ASM_VAR(AsmLabel, g_ren651798, $L_651798)
 
 // [$L_5ba0f0] static initializer
@@ -1782,7 +1782,7 @@ extern "C" BYTE* __fastcall Dtor5bcf40_DeletingDestructor(BYTE* s, void*, int fl
 // ---------------------------------------------------------------------------
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
-ASM_VAR(int, g_q51_702ea0, $L_702ea0)
+KING_BSS(int, g_q51_702ea0, 0x702ea0)
 // [$L_5baa30] releases the held COM objects (+124, count +184), each lowering the 702ea0 count
 extern "C" void __fastcall Holder5baa30_ReleaseAll(BYTE* s, void*)
 {
@@ -1882,9 +1882,9 @@ extern "C" void __cdecl Pixels4444_Fade(WORD* p, unsigned n, double k)
 // The texture surface pool.
 
 extern "C" void FUN_5bac70(); KING_ALIAS("_FUN_5bac70", "@Records188x6_Destroy@8")
-ASM_VAR(int, g_q147_702e98, $L_702e98)
-ASM_VAR(int, g_q147_702ea0, $L_702ea0)
-ASM_VAR(BYTE*, g_q147_702ea8, $L_702ea8)
+KING_BSS(int, g_q147_702e98, 0x702e98)
+KING_BSS(int, g_q147_702ea0, 0x702ea0)
+KING_BSS(BYTE*, g_q147_702ea8, 0x702ea8)
 ASM_VAR(AsmLabel, s_q147_67f114, $L_67f114)
 typedef long(__stdcall* Ren147_GetDesc)(void*, BYTE*);
 // IUnknown::Release of a DirectDraw surface
@@ -1951,7 +1951,7 @@ extern "C" void __cdecl TexPool_Return(void* surf)
 
 extern "C" void FUN_4cef50(); KING_ALIAS("_FUN_4cef50", "_Effect_Zero")
 extern "C" void FUN_5d3ab0(); KING_ALIAS("_FUN_5d3ab0", "_Mode_TextureLevel")
-ASM_VAR(int, g_q148_702e94, $L_702e94)
+KING_BSS(int, g_q148_702e94, 0x702e94)
 // [FUN_5b6530] constructor: surface s as the rectangle r (clipped to it, written back) of surface p with flags
 // (p's +12 less some bits, plus flags and 32): its size, p's format and pitch, its pixels and their address; an
 // empty one when nothing is left; a 3D surface of p only notes the texture level
@@ -2091,11 +2091,11 @@ extern "C" void __fastcall Surface_Create(BYTE* s, void*, int w, int h, int bpp,
 
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")
 extern "C" void FUN_5b6710(); KING_ALIAS("_FUN_5b6710", "@Window_GetRect@12")
-ASM_VAR(int, g_q150_72090c, $L_72090c)
-ASM_VAR(void*, g_q150_7208f8, $L_7208f8)
-ASM_VAR(void*, g_q150_7208fc, $L_7208fc)
-ASM_VAR(void*, g_q150_720900, $L_720900)
-ASM_VAR(void*, g_q150_720908, $L_720908)
+KING_BSS(int, g_q150_72090c, 0x72090c)
+KING_BSS(void*, g_q150_7208f8, 0x7208f8)
+KING_BSS(void*, g_q150_7208fc, 0x7208fc)
+KING_BSS(void*, g_q150_720900, 0x720900)
+KING_BSS(void*, g_q150_720908, 0x720908)
 typedef long(__stdcall* Ren150_Com0)(void*);
 // restores DirectDraw surface d when it was lost, logging a failure with line
 static void Ren150_Restore(void* d, int line)
@@ -2315,7 +2315,7 @@ extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color,
 ASM_PROC(FUN_5feff3)
 ASM_PROC(FUN_5fea03)
 ASM_PROC(FUN_5fe860)
-ASM_VAR(unsigned, g_q153_702e8c, $L_702e8c)
+KING_BSS(unsigned, g_q153_702e8c, 0x702e8c)
 // [FUN_5b8720] draws run-length image img (w +4, h +6, data +16: a byte with bit 7 skips that many pixels, else
 // copies that many) at x, y on dst; blend mode 2 (+80) with an alpha other than 1 goes through the palette's
 // tables; 8-bit surfaces outside the 702e8c bit 14 mode use the fast 5feff3 copy
@@ -2371,7 +2371,7 @@ extern "C" void __cdecl Surface_DrawRle(BYTE* dst, int x, int y, BYTE* img)
 // ---------------------------------------------------------------------------
 // Direct3D device states.
 
-ASM_VAR(void*, g_q154_702e80, $L_702e80)
+KING_BSS(void*, g_q154_702e80, 0x702e80)
 static void Ren154_RS(void* d, int st, int v) { ((long(__stdcall*)(void*, int, int))(*(void***)d)[20])(d, st, v); }
 static void Ren154_TSS(void* d, int stage, int type, int v)
 {
@@ -2647,14 +2647,14 @@ extern "C" int __fastcall Light_ReachesSphere(int* l, void*, const float* sp)
 
 // === texture stages of a material (FUN_5b0810)
 
-ASM_VAR(int, g_ts7208bc, $L_7208bc)
-ASM_VAR(int, g_ts7208c0, $L_7208c0)
-ASM_VAR(int, g_ts7208c4, $L_7208c4)
-ASM_VAR(int, g_ts7208c8, $L_7208c8)
-ASM_VAR(int, g_ts7208cc, $L_7208cc)
-ASM_VAR(int, g_tsMulti7208d4, $L_7208d4)        // multitexturing
-ASM_VAR(int, g_ts702e84, $L_702e84)
-ASM_VAR(DWORD, g_tsCaps702e8c, $L_702e8c)
+KING_BSS(int, g_ts7208bc, 0x7208bc)
+KING_BSS(int, g_ts7208c0, 0x7208c0)
+KING_BSS(int, g_ts7208c4, 0x7208c4)
+KING_BSS(int, g_ts7208c8, 0x7208c8)
+KING_BSS(int, g_ts7208cc, 0x7208cc)
+KING_BSS(int, g_tsMulti7208d4, 0x7208d4)        // multitexturing
+KING_BSS(int, g_ts702e84, 0x702e84)
+KING_BSS(DWORD, g_tsCaps702e8c, 0x702e8c)
 ASM_VAR(float, g_ts64c458, $L_64c458)
 ASM_VAR(double, g_ts64fa38, $L_64fa38)
 ASM_VAR(double, g_ts651750, $L_651750)
@@ -2854,12 +2854,12 @@ int __fastcall Material_SetStages(BYTE* self, void*, BYTE* m, BYTE* prev, int st
 
 // === uploading an image to its texture surfaces (FUN_5bb660)
 
-ASM_VAR(BYTE*, g_tuDraw72090c, $L_72090c)       // IDirectDraw
-ASM_VAR(int, g_tuMips7208c0, $L_7208c0)
-ASM_VAR(AsmLabel, g_tuFmt720148, $L_720148)
-ASM_VAR(AsmLabel, g_tuFmt720870, $L_720870)
-ASM_VAR(AsmLabel, g_tuFmt720128, $L_720128)
-ASM_VAR(AsmLabel, g_tuFmt720728, $L_720728)
+KING_BSS(BYTE*, g_tuDraw72090c, 0x72090c)       // IDirectDraw
+KING_BSS(int, g_tuMips7208c0, 0x7208c0)
+KING_BSS(AsmLabel, g_tuFmt720148, 0x720148)
+KING_BSS(AsmLabel, g_tuFmt720870, 0x720870)
+KING_BSS(AsmLabel, g_tuFmt720128, 0x720128)
+KING_BSS(AsmLabel, g_tuFmt720728, 0x720728)
 ASM_VAR(AsmLabel, s_tu67f2d8, $L_67f2d8)
 ASM_VAR(AsmLabel, s_tu67f220, $L_67f220)
 ASM_VAR(AsmLabel, s_tu67f1e0, $L_67f1e0)
@@ -3189,7 +3189,7 @@ void __cdecl Image_DrawPart(BYTE* dst, BYTE* img, int* r, int x, int y)
 
 // === tiling an image over a rectangle (FUN_5b9020)
 
-ASM_VAR(int, g_tlHw720904, $L_720904)
+KING_BSS(int, g_tlHw720904, 0x720904)
 extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
 
 extern "C" {
@@ -3324,10 +3324,10 @@ void __cdecl Image_Tile(BYTE* dst, int* r, BYTE* img)
 
 // === setting the camera matrices (FUN_5ae0e0)
 
-ASM_VAR(BYTE, g_cm702e08, $L_702e08)
-ASM_VAR(AsmLabel, g_cm7029c8, $L_7029c8)
-ASM_VAR(AsmLabel, g_cm702998, $L_702998)
-ASM_VAR(AsmLabel, g_cm7025f0, $L_7025f0)
+KING_BSS(BYTE, g_cm702e08, 0x702e08)
+KING_BSS(AsmLabel, g_cm7029c8, 0x7029c8)
+KING_BSS(AsmLabel, g_cm702998, 0x702998)
+KING_BSS(AsmLabel, g_cm7025f0, 0x7025f0)
 ASM_VAR(AsmLabel, g_cm5ae540, $L_5ae540)
 ASM_VAR(AsmLabel, g_cm5ae530, $L_5ae530)
 ASM_VAR(double, g_cm64b5a0, $L_64b5a0)
@@ -3416,13 +3416,13 @@ void __fastcall Render_SetCamera(BYTE* s, void*, const BYTE* m, const BYTE* proj
 
 // === creating a texture's surface (FUN_5bae30)
 
-ASM_VAR(int, g_tc7208c0, $L_7208c0)
-ASM_VAR(int, g_tc7208dc, $L_7208dc)
-ASM_VAR(const char*, g_tc702e9c, $L_702e9c)
-ASM_VAR(AsmLabel, g_tc720148, $L_720148)
-ASM_VAR(AsmLabel, g_tc720128, $L_720128)
-ASM_VAR(AsmLabel, g_tc720870, $L_720870)
-ASM_VAR(AsmLabel, g_tc720728, $L_720728)
+KING_BSS(int, g_tc7208c0, 0x7208c0)
+KING_BSS(int, g_tc7208dc, 0x7208dc)
+KING_BSS(const char*, g_tc702e9c, 0x702e9c)
+KING_BSS(AsmLabel, g_tc720148, 0x720148)
+KING_BSS(AsmLabel, g_tc720128, 0x720128)
+KING_BSS(AsmLabel, g_tc720870, 0x720870)
+KING_BSS(AsmLabel, g_tc720728, 0x720728)
 ASM_VAR(AsmLabel, s_tc67f260, $L_67f260)
 ASM_VAR(AsmLabel, s_tc67f220, $L_67f220)
 ASM_VAR(AsmLabel, s_tc67f1e0, $L_67f1e0)
@@ -3847,12 +3847,12 @@ void __cdecl Gfx_MarkPixel(BYTE* s, int x, int y, BYTE* img)
 
 // === probing the device's multitexturing (FUN_5b04c0)
 
-ASM_VAR(int, g_mt7208bc, $L_7208bc)
-ASM_VAR(int, g_mt7208c4, $L_7208c4)
-ASM_VAR(int, g_mt7208c8, $L_7208c8)
-ASM_VAR(int, g_mt7208cc, $L_7208cc)
-ASM_VAR(int, g_mt7208d0, $L_7208d0)
-ASM_VAR(int, g_mt7208d4, $L_7208d4)
+KING_BSS(int, g_mt7208bc, 0x7208bc)
+KING_BSS(int, g_mt7208c4, 0x7208c4)
+KING_BSS(int, g_mt7208c8, 0x7208c8)
+KING_BSS(int, g_mt7208cc, 0x7208cc)
+KING_BSS(int, g_mt7208d0, 0x7208d0)
+KING_BSS(int, g_mt7208d4, 0x7208d4)
 extern "C" void FUN_4cca90(); KING_ALIAS("_FUN_4cca90", "_Fx_IsRadeon")
 extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
 
@@ -3942,9 +3942,9 @@ void __cdecl Device_ProbeMultitexture(BYTE* a, BYTE* b)
 
 // === pushing a model matrix (FUN_5ae580)
 
-ASM_VAR(BYTE, g_pm702a79, $L_702a79)
-ASM_VAR(AsmLabel, g_pm702a48, $L_702a48)
-ASM_VAR(AsmLabel, g_pm702a10, $L_702a10)
+KING_BSS(BYTE, g_pm702a79, 0x702a79)
+KING_BSS(AsmLabel, g_pm702a48, 0x702a48)
+KING_BSS(AsmLabel, g_pm702a10, 0x702a10)
 ASM_VAR(AsmLabel, s_pm67ef94, $L_67ef94)
 
 extern "C" {
@@ -4556,7 +4556,7 @@ void __fastcall Dark_BuildTables(BYTE* s, void*, int k)
 
 extern "C" void Tp_VecCtorEh(); KING_ALIAS("_Tp_VecCtorEh", "??_L@YGXPAXIHP6EX0@Z1@Z")
 extern "C" BYTE* __fastcall Ren5baa20_Init(BYTE* s);
-ASM_VAR(BYTE*, g_tp72090c, $L_72090c)
+KING_BSS(BYTE*, g_tp72090c, 0x72090c)
 
 extern "C" {
 
@@ -4606,7 +4606,6 @@ ASM_VAR(double, g_mt64da58, $L_64da58)
 ASM_VAR(double, g_mt651758, $L_651758)
 ASM_VAR(int, g_mt67ef8c, $L_67ef8c)
 ASM_VAR(int, g_mt67ef90, $L_67ef90)
-ASM_VAR(int, g_mt7208bc, $L_7208bc)
 extern "C" void Mt_RootSurface(); KING_ALIAS("_Mt_RootSurface", "@Window_RootSurface@8")
 
 extern "C" {
@@ -4858,7 +4857,7 @@ void __cdecl Window_DrawLine(BYTE* w, int x0, int y0, int x1, int y1, DWORD c, i
 struct Pd_V3 { float x, y, z; };
 extern "C" void Pd_Normalized(); KING_ALIAS("_Pd_Normalized", "_Vec3_Normalized")
 extern "C" void Pd_Length(); KING_ALIAS("_Pd_Length", "_Vec3_Length")
-ASM_VAR(Pd_V3, g_pd702650, $L_702650)
+KING_BSS(Pd_V3, g_pd702650, 0x702650)
 
 static Pd_V3 Pd_Diff(const BYTE* a, const BYTE* b)
 {
@@ -4921,9 +4920,9 @@ Pd_V3* __fastcall Path_DirectionAt(BYTE* s, void*, Pd_V3* out, const BYTE* m, co
 extern "C" void Pd_SetThis(); KING_ALIAS("_Pd_SetThis", "@Vec3_SetThis@20")
 extern "C" void Pd_Sub(); KING_ALIAS("_Pd_Sub", "_Vec3_Sub")
 extern "C" void Pd_Cross(); KING_ALIAS("_Pd_Cross", "_Vec3_Cross")
-ASM_VAR(float, g_pd702630, $L_702630)
-ASM_VAR(float, g_pd702634, $L_702634)
-ASM_VAR(float, g_pd702638, $L_702638)
+KING_BSS(float, g_pd702630, 0x702630)
+KING_BSS(float, g_pd702634, 0x702634)
+KING_BSS(float, g_pd702638, 0x702638)
 
 // the length of (x, y) made by Vec3_SetThis
 static double Pd_FlatLength(float x, float y, float z)
@@ -5049,7 +5048,7 @@ extern "C" void Rp_PolyDraw(); KING_ALIAS("_Rp_PolyDraw", "_Poly_Draw")
 ASM_VAR(float, g_rp651764, $L_651764)
 ASM_VAR(float, g_rp651760, $L_651760)
 ASM_VAR(float, g_rp64c250, $L_64c250)
-ASM_VAR(AsmLabel, g_rp702e0c, $L_702e0c)
+KING_BSS(AsmLabel, g_rp702e0c, 0x702e0c)
 
 extern "C" {
 
@@ -5165,10 +5164,10 @@ extern "C" void Pp_PlaneTransform(); KING_ALIAS("_Pp_PlaneTransform", "@Plane_Tr
 extern "C" void Pp_Nop1(); KING_ALIAS("_Pp_Nop1", "@Fw_Nop1@12")
 extern "C" void Pp_Normalized(); KING_ALIAS("_Pp_Normalized", "_Vec3_Normalized")
 extern "C" int __cdecl atexit(void (__cdecl*)(void));
-ASM_VAR(BYTE, g_pp702d98, $L_702d98)
-ASM_VAR(float, g_pp7029f8, $L_7029f8)    // a plane: normal, distance at +12
-ASM_VAR(int, g_pp721770, $L_721770)
-ASM_VAR(BYTE*, g_pp720908, $L_720908)
+KING_BSS(BYTE, g_pp702d98, 0x702d98)
+KING_BSS(float, g_pp7029f8, 0x7029f8)    // a plane: normal, distance at +12
+KING_BSS(int, g_pp721770, 0x721770)
+KING_BSS(BYTE*, g_pp720908, 0x720908)
 
 ASM_VAR(double, g_pp64b658, $L_64b658)
 
@@ -5316,8 +5315,8 @@ void __fastcall Poly_Prepare(BYTE* r, void*, BYTE* p)
 extern "C" void Fr_DivAssign(); KING_ALIAS("_Fr_DivAssign", "@Vec3_DivAssign@16")
 extern "C" void Fr_RectSet(); KING_ALIAS("_Fr_RectSet", "@Rect_Set@24")
 extern "C" void Fr_ZeroThis(); KING_ALIAS("_Fr_ZeroThis", "@Vec3_ZeroThis@8")
-ASM_VAR(BYTE, g_fr702a90, $L_702a90)                // the static guard
-ASM_VAR(double, g_fr702990, $L_702990)              // sqrt(64b660) * 64b6e0
+KING_BSS(BYTE, g_fr702a90, 0x702a90)                // the static guard
+KING_BSS(double, g_fr702990, 0x702990)              // sqrt(64b660) * 64b6e0
 ASM_VAR(double, g_fr64b660, $L_64b660)
 ASM_VAR(double, g_fr64b6e0, $L_64b6e0)
 ASM_VAR(double, g_fr64b678, $L_64b678)
@@ -5514,9 +5513,9 @@ extern "C" void Sp_Dispatch(); KING_ALIAS("_Sp_Dispatch", "@Draw_Dispatch@28")
 extern "C" void Sp_TransformPoint(); KING_ALIAS("_Sp_TransformPoint", "@Vec3_TransformPoint@12")
 extern "C" void Sp_AddAssign(); KING_ALIAS("_Sp_AddAssign", "@Vec3_AddAssign@16")
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-ASM_VAR(BYTE, g_sp702a08, $L_702a08)
-ASM_VAR(AsmLabel, g_spVerts, $L_702a98)            // 32-byte vertices
-ASM_VAR(int, g_sp723a88, $L_723a88)
+KING_BSS(BYTE, g_sp702a08, 0x702a08)
+KING_BSS(AsmLabel, g_spVerts, 0x702a98)            // 32-byte vertices
+KING_BSS(int, g_sp723a88, 0x723a88)
 ASM_VAR(float, g_sp64c250, $L_64c250)
 
 static Vec3 Sp_Set(double x, double y, double z)
@@ -5705,8 +5704,8 @@ void __fastcall Sprite_DrawStrip(BYTE* s, void*, BYTE* o, float px, float py, fl
 
 extern "C" void Rm_Nop1(); KING_ALIAS("_Rm_Nop1", "@Fw_Nop1@12")
 extern "C" void Rm_Dispatch(); KING_ALIAS("_Rm_Dispatch", "@Draw_Dispatch@28")
-ASM_VAR(BYTE, g_rm702dd0, $L_702dd0)
-ASM_VAR(AsmLabel, g_rm702a80, $L_702a80)
+KING_BSS(BYTE, g_rm702dd0, 0x702dd0)
+KING_BSS(AsmLabel, g_rm702a80, 0x702a80)
 ASM_VAR(float, g_rm64c458, $L_64c458)
 ASM_VAR(double, g_rm64eba0, $L_64eba0)
 ASM_VAR(double, g_rm64b678, $L_64b678)
@@ -6031,7 +6030,7 @@ int __fastcall Render_PortalView(BYTE* r, void*, const float* q, int mirror)
 
 extern "C" void Tx_Fade(); KING_ALIAS("_Tx_Fade", "_Pixels4444_Fade")
 extern "C" void Tx_Read(); KING_ALIAS("_Tx_Read", "@Mmio_Read@20")
-ASM_VAR(int, g_tx7208c4, $L_7208c4)
+KING_BSS(int, g_tx7208c4, 0x7208c4)
 ASM_VAR(float, g_tx65177c, $L_65177c)
 ASM_VAR(float, g_tx651778, $L_651778)
 ASM_VAR(float, g_tx651774, $L_651774)
@@ -6278,10 +6277,10 @@ int __fastcall Render_TexPolygon(BYTE* r, void*, BYTE* t, DWORD flags, int b, fl
 extern "C" void Lu_Fatal(); KING_ALIAS("_Lu_Fatal", "_Sys_Fatal")
 extern "C" void Lu_Point(); KING_ALIAS("_Lu_Point", "@Vec3_TransformPoint@12")
 extern "C" void Lu_Frame(); KING_ALIAS("_Lu_Frame", "@Render_CurrentFrame@8")
-ASM_VAR(BYTE, g_lu702a78, $L_702a78)
-ASM_VAR(BYTE, g_lu702dd8, $L_702dd8)
-ASM_VAR(BYTE, g_lu7025f0, $L_7025f0)
-ASM_VAR(Vec3, g_luUp, $L_702630)
+KING_BSS(BYTE, g_lu702a78, 0x702a78)
+KING_BSS(BYTE, g_lu702dd8, 0x702dd8)
+KING_BSS(BYTE, g_lu7025f0, 0x7025f0)
+KING_BSS(Vec3, g_luUp, 0x702630)
 ASM_VAR(AsmLabel, g_lu67efa8, $L_67efa8)
 ASM_VAR(double, g_lu64b658, $L_64b658)
 ASM_VAR(float, g_lu64c250, $L_64c250)

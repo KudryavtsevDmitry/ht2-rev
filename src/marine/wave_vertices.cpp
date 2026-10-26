@@ -3,8 +3,8 @@
 #include "x87.h"
 #include "vecmath.h"
 #define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))
-ASM_VAR(Vec3, g_mv_normal, $L_725e78)
-ASM_VAR(Vec3, g_mv_flatNormal, $L_725ee0)
+KING_BSS(Vec3, g_mv_normal, 0x725e78)
+KING_BSS(Vec3, g_mv_flatNormal, 0x725ee0)
 ASM_VAR(float, g_mv_pending, $L_6530c0)
 ASM_VAR(float, g_mv_textureWidth, $L_6530b8)
 ASM_VAR(float, g_mv_textureHeight, $L_6530bc)

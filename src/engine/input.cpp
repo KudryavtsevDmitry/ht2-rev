@@ -10,9 +10,9 @@
 enum { INPUT_QUEUE_SIZE = 100 };
 
 typedef InputEvent InputQueue[INPUT_QUEUE_SIZE];
-ASM_VAR(InputQueue, g_inputQueue, $L_702660)
-ASM_VAR(int, g_inputRead, $L_702984)           // next event to take
-ASM_VAR(int, g_inputWrite, $L_702988)          // next free slot
+KING_BSS(InputQueue, g_inputQueue, 0x702660)
+KING_BSS(int, g_inputRead, 0x702984)           // next event to take
+KING_BSS(int, g_inputWrite, 0x702988)          // next free slot
 
 // The functions declared extern "C" in king.h replace these labels of
 // king.masm themselves.

@@ -58,8 +58,8 @@ ASM_VAR(AsmLabel, g_strEnvironment, $L_67060c)
 ASM_VAR(AsmLabel, g_int6703f0, $L_6703f0)       // static big integers
 ASM_VAR(AsmLabel, g_int6703f8, $L_6703f8)
 ASM_VAR(AsmLabel, g_int670400, $L_670400)
-ASM_VAR(DWORD, g_padding, $L_691ccc)
-ASM_VAR(void*, g_691cd0, $L_691cd0)
+KING_BSS(DWORD, g_padding, 0x691ccc)
+KING_BSS(void*, g_691cd0, 0x691cd0)
 ASM_VAR(AsmLabel, g_vtbl64bed0, $L_64bed0)
 ASM_VAR(AsmLabel, g_vtbl64beb8, $L_64beb8)
 ASM_VAR(AsmLabel, g_vtbl64bef4, $L_64bef4)
@@ -1204,7 +1204,7 @@ extern "C" void __fastcall Ring491090_Destruct(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Small methods and static helpers: guarded static construction, releases, frees.
 
-ASM_VAR(BYTE*, g_q49_691cd0, $L_691cd0)
+KING_BSS(BYTE*, g_q49_691cd0, 0x691cd0)
 // [$L_490d90] frees the 691cd0 block when its +2 word is set
 extern "C" void __cdecl Block691cd0_Free(void)
 {
@@ -3048,8 +3048,8 @@ extern "C" void Rt32_CharCopy(); KING_ALIAS("_Rt32_CharCopy", "@VecChar_Copy@12"
 extern "C" void Rt32_Reserve4(); KING_ALIAS("_Rt32_Reserve4", "@Vec4_Reserve@16")
 extern "C" void Rt32_CopyDwords(); KING_ALIAS("_Rt32_CopyDwords", "_UninitCopyDwords")
 extern "C" void Rt32_DwCopy(); KING_ALIAS("_Rt32_DwCopy", "@VecDw_CopyConstruct@12")
-ASM_VAR(int, rt32_lock68d204, $L_68d204)
-ASM_VAR(BYTE*, rt32_free48_68d1d8, $L_68d1d8)
+KING_BSS(int, rt32_lock68d204, 0x68d204)
+KING_BSS(BYTE*, rt32_free48_68d1d8, 0x68d1d8)
 
 extern "C" {
 

@@ -35,7 +35,7 @@ CHECK_OFFSET(CarType, torqueRpm, 172);
 static_assert(sizeof(CarType) == 2416, "CarType size");
 
 typedef CarType CarTypes[];
-ASM_VAR(CarTypes, g_carTypes, $L_6978c8)
+KING_BSS(CarTypes, g_carTypes, 0x6978c8)
 
 // caran.cpp: engine, gearbox and driving resistance
 extern "C" {

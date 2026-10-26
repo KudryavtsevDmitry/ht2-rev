@@ -30,7 +30,7 @@ ASM_VAR(AsmLabel, g_vtbl65274c, $L_65274c)
 ASM_VAR(AsmLabel, g_vtbl652538, $L_652538)
 ASM_VAR(AsmLabel, g_vtbl652760, $L_652760)
 ASM_VAR(AsmLabel, g_vtbl6527e4, $L_6527e4)
-ASM_VAR(AsmLabel, g_objectNames, $L_71e820)   // name hash of the scene objects
+KING_BSS(AsmLabel, g_objectNames, 0x71e820)   // name hash of the scene objects
 
 extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
@@ -40,11 +40,11 @@ extern "C" void FUN_5eb4b0(); KING_ALIAS("_FUN_5eb4b0", "@CamNode_Apply@12")
 extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
 extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")    // name hash: add (name, value pointer)
 extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
-ASM_VAR(int, g_720904, $L_720904)
-ASM_VAR(BYTE*, g_device, $L_720908)
-ASM_VAR(AsmLabel, g_listLine, $L_7228ec)
-ASM_VAR(char*, g_listCursor, $L_7218d0)
-ASM_VAR(char*, g_listToken, $L_7231a0)
+KING_BSS(int, g_720904, 0x720904)
+KING_BSS(BYTE*, g_device, 0x720908)
+KING_BSS(AsmLabel, g_listLine, 0x7228ec)
+KING_BSS(char*, g_listCursor, 0x7218d0)
+KING_BSS(char*, g_listToken, 0x7231a0)
 ASM_VAR(AsmLabel, s_end, $L_683b50)
 ASM_VAR(AsmLabel, s_txr, $L_683b4c)
 ASM_VAR(AsmLabel, s_tga, $L_683b48)
@@ -838,7 +838,7 @@ extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2,
 // ---------------------------------------------------------------------------
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
-ASM_VAR(AsmLabel, g_q46_723978, $L_723978)
+KING_BSS(AsmLabel, g_q46_723978, 0x723978)
 extern "C" void g_q46_5ef410(); KING_ALIAS("_g_q46_5ef410", "@ListHead_Construct@8")
 // [FUN_5ef400] constructs the static 723978
 extern "C" int __cdecl Static723978_Construct(void)
@@ -1184,8 +1184,8 @@ extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 typedef void (*Cr_Progress)();
 extern "C" void FUN_5ef830(); KING_ALIAS("_FUN_5ef830", "_Scene_ReadNode")    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
 extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // name hash: adds (name, object)
-ASM_VAR(int, g_cr72006c, $L_72006c)
-ASM_VAR(unsigned, g_cr723988, $L_723988)
+KING_BSS(int, g_cr72006c, 0x72006c)
+KING_BSS(unsigned, g_cr723988, 0x723988)
 ASM_VAR(AsmLabel, g_cr64d7bc, $L_64d7bc)
 
 extern "C" {
@@ -1341,8 +1341,8 @@ extern "C" void Cn_Transform2(); KING_ALIAS("_Cn_Transform2", "@Matrix_Transform
 extern "C" void Cn_Scale(); KING_ALIAS("_Cn_Scale", "_Matrix_Scale")
 extern "C" void Cn_SetCamera(); KING_ALIAS("_Cn_SetCamera", "@Render_SetCamera@16")
 extern "C" void Cn_GetRect(); KING_ALIAS("_Cn_GetRect", "@Window_GetRect@12")
-ASM_VAR(AsmLabel, g_cn7025f0, $L_7025f0)
-ASM_VAR(DWORD, g_cn702e8c, $L_702e8c)
+KING_BSS(AsmLabel, g_cn7025f0, 0x7025f0)
+KING_BSS(DWORD, g_cn702e8c, 0x702e8c)
 ASM_VAR(double, g_cn64b6e0, $L_64b6e0)
 ASM_VAR(double, g_cn64b670, $L_64b670)
 ASM_VAR(double, g_cn64b660, $L_64b660)
@@ -1499,16 +1499,16 @@ extern "C" void Ol_AddC(); KING_ALIAS("_Ol_AddC", "@Cluster_AddC@12")
 extern "C" void Ol_Texture(); KING_ALIAS("_Ol_Texture", "@Texture_Construct@16")
 extern "C" void Ol_Alloc(); KING_ALIAS("_Ol_Alloc", "@Overlays_Alloc@12")
 extern "C" void Ol_AddName(); KING_ALIAS("_Ol_AddName", "@NameHash_Add@16")
-ASM_VAR(char, g_olLine, $L_722970)
-ASM_VAR(BYTE*, g_olImages, $L_7229c0)
-ASM_VAR(BYTE*, g_olImagesEnd, $L_72318c)
-ASM_VAR(BYTE*, g_olMasks, $L_7231a4)
-ASM_VAR(BYTE*, g_olMasksEnd, $L_723974)
-ASM_VAR(BYTE*, g_olSounds, $L_7218d4)
-ASM_VAR(BYTE*, g_olSoundsEnd, $L_7220a4)
-ASM_VAR(BYTE*, g_olClusters, $L_72211c)
-ASM_VAR(BYTE*, g_olClustersEnd, $L_7228ec)
-ASM_VAR(AsmLabel, g_olNames, $L_71e820)
+KING_BSS(char, g_olLine, 0x722970)
+KING_BSS(BYTE*, g_olImages, 0x7229c0)
+KING_BSS(BYTE*, g_olImagesEnd, 0x72318c)
+KING_BSS(BYTE*, g_olMasks, 0x7231a4)
+KING_BSS(BYTE*, g_olMasksEnd, 0x723974)
+KING_BSS(BYTE*, g_olSounds, 0x7218d4)
+KING_BSS(BYTE*, g_olSoundsEnd, 0x7220a4)
+KING_BSS(BYTE*, g_olClusters, 0x72211c)
+KING_BSS(BYTE*, g_olClustersEnd, 0x7228ec)
+KING_BSS(AsmLabel, g_olNames, 0x71e820)
 ASM_VAR(AsmLabel, g_ol652818, $L_652818)
 
 // sprintf into the line buffer, then the fatal error
@@ -1903,9 +1903,9 @@ BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int 
 
 // === a mesh's draw flags (FUN_5e5cd0) and its vertex buffer (the second entry $L_5e5eb0 inside FUN_5e5cd0)
 
-ASM_VAR(BYTE, g_mp7217b8, $L_7217b8)
-ASM_VAR(DWORD, g_mp702e8c, $L_702e8c)
-ASM_VAR(int, g_mp720904, $L_720904)
+KING_BSS(BYTE, g_mp7217b8, 0x7217b8)
+KING_BSS(DWORD, g_mp702e8c, 0x702e8c)
+KING_BSS(int, g_mp720904, 0x720904)
 ASM_VAR(double, g_mp64eba8, $L_64eba8)
 ASM_VAR(float, g_mp64c458, $L_64c458)
 ASM_VAR(float, g_mp64c250, $L_64c250)

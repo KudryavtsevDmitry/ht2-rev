@@ -39,29 +39,29 @@ extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
 extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
 extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
-ASM_VAR(int, g_6cec68, $L_6cec68)
-ASM_VAR(int, g_6968ac, $L_6968ac)
-ASM_VAR(BYTE*, g_options, $L_6cec78)            // +386, +388, +390: volumes in percent
+KING_BSS(int, g_6cec68, 0x6cec68)
+KING_BSS(int, g_6968ac, 0x6968ac)
+KING_BSS(BYTE*, g_options, 0x6cec78)            // +386, +388, +390: volumes in percent
 typedef BYTE* Ptrs[1];
 typedef int Ints[1];
-ASM_VAR(Ptrs, g_6ced98, $L_6ced98)              // 11 per row
-ASM_VAR(Ints, g_6cedac, $L_6cedac)
-ASM_VAR(int, g_class1, $L_6ce350)               // the first type of each class
-ASM_VAR(int, g_class2, $L_6ce354)
-ASM_VAR(int, g_class3, $L_6ce358)
-ASM_VAR(int, g_class4, $L_6ce35c)
-ASM_VAR(int, g_class5, $L_6ce360)
-ASM_VAR(int, g_class6, $L_6ce364)
-ASM_VAR(int, g_classEnd, $L_6ce368)
-ASM_VAR(BYTE*, g_vehicleList2, $L_6ef1f8)
-ASM_VAR(AsmLabel, g_6d219c, $L_6d219c)          // 1488-byte records by vehicle type
-ASM_VAR(int, g_7025b0, $L_7025b0)
-ASM_VAR(double, g_6fb3e8, $L_6fb3e8)
-ASM_VAR(int, g_6fb3d8, $L_6fb3d8)
-ASM_VAR(int, g_6fb3d0, $L_6fb3d0)
-ASM_VAR(int, g_7025c8, $L_7025c8)
+KING_BSS(Ptrs, g_6ced98, 0x6ced98)              // 11 per row
+KING_BSS(Ints, g_6cedac, 0x6cedac)
+KING_BSS(int, g_class1, 0x6ce350)               // the first type of each class
+KING_BSS(int, g_class2, 0x6ce354)
+KING_BSS(int, g_class3, 0x6ce358)
+KING_BSS(int, g_class4, 0x6ce35c)
+KING_BSS(int, g_class5, 0x6ce360)
+KING_BSS(int, g_class6, 0x6ce364)
+KING_BSS(int, g_classEnd, 0x6ce368)
+KING_BSS(BYTE*, g_vehicleList2, 0x6ef1f8)
+KING_BSS(AsmLabel, g_6d219c, 0x6d219c)          // 1488-byte records by vehicle type
+KING_BSS(int, g_7025b0, 0x7025b0)
+KING_BSS(double, g_6fb3e8, 0x6fb3e8)
+KING_BSS(int, g_6fb3d8, 0x6fb3d8)
+KING_BSS(int, g_6fb3d0, 0x6fb3d0)
+KING_BSS(int, g_7025c8, 0x7025c8)
 ASM_VAR(DWORD, g_67e8c8, $L_67e8c8)
-ASM_VAR(int, g_7025cc, $L_7025cc)
+KING_BSS(int, g_7025cc, 0x7025cc)
 ASM_VAR(AsmLabel, g_strCabCl, $L_672e40)        // "%s_cab_cl"
 ASM_VAR(AsmLabel, g_vtbl64d578, $L_64d578)
 ASM_VAR(AsmLabel, g_vtbl64d6c8, $L_64d6c8)
@@ -198,16 +198,15 @@ extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
 extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
-ASM_VAR(DWORD, g_702650, $L_702650)
-ASM_VAR(DWORD, g_702654, $L_702654)
-ASM_VAR(DWORD, g_702658, $L_702658)
-ASM_VAR(AsmLabel, g_6d219c, $L_6d219c)          // 1488-byte records
-ASM_VAR(BYTE*, g_6ef1f8, $L_6ef1f8)
-ASM_VAR(int, g_carModelCount, $L_6ce34c)
-ASM_VAR(AsmLabel, g_carModelNames, $L_6c6b68)   // 876 bytes per car
+KING_BSS(DWORD, g_702650, 0x702650)
+KING_BSS(DWORD, g_702654, 0x702654)
+KING_BSS(DWORD, g_702658, 0x702658)
+KING_BSS(BYTE*, g_6ef1f8, 0x6ef1f8)
+KING_BSS(int, g_carModelCount, 0x6ce34c)
+KING_BSS(AsmLabel, g_carModelNames, 0x6c6b68)   // 876 bytes per car
 typedef int CarParts[1];
-ASM_VAR(CarParts, g_carPartModels, $L_6ced98)   // 11 ints per car: 5 models, 5 counts, a key
-ASM_VAR(CarParts, g_carPartUses, $L_6cedac)
+KING_BSS(CarParts, g_carPartModels, 0x6ced98)   // 11 ints per car: 5 models, 5 counts, a key
+KING_BSS(CarParts, g_carPartUses, 0x6cedac)
 
 // the vehicle's output state from its current transform; EAX is left
 // holding the dword at +444, which SceneObj_57e030 passes on
@@ -231,9 +230,9 @@ extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*)
 // moved by ten times the vector at 702630; fn is called when it plays
 
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // an empty function: the default callback
-ASM_VAR(float, g_eng702630, $L_702630)
-ASM_VAR(float, g_eng702634, $L_702634)
-ASM_VAR(float, g_eng702638, $L_702638)
+KING_BSS(float, g_eng702630, 0x702630)
+KING_BSS(float, g_eng702634, 0x702634)
+KING_BSS(float, g_eng702638, 0x702638)
 ASM_VAR(float, g_ten64c450, $L_64c450)          // 10.0
 ASM_VAR(AsmLabel, g_strOvation, $L_678540)
 
@@ -251,7 +250,7 @@ extern "C" BYTE* __fastcall SceneObj_SaveState(BYTE* self, void*)
 extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
-ASM_VAR(BYTE*, g_effectManager, $L_6f6910)
+KING_BSS(BYTE*, g_effectManager, 0x6f6910)
 
 // A position below the sentinel threshold resets both scripted positions.
 ASM_VAR(float, g_positionResetThreshold, $L_650624)
@@ -285,7 +284,7 @@ extern "C" int __fastcall SceneObj_SetPlace(BYTE* self, void*, DWORD arg, DWORD 
 }
 
 ASM_VAR(short, g_sceneCommandCode, $L_67d10a)
-ASM_VAR(BYTE*, g_sceneCommandList, $L_6f653c)
+KING_BSS(BYTE*, g_sceneCommandList, 0x6f653c)
 
 // List links point four bytes into an object's secondary base. Command
 // dispatch uses the primary base, 376 bytes before that secondary base.
@@ -358,7 +357,7 @@ extern "C" int __fastcall Item_ResetFlags(BYTE* self, void*, int, int)
 
 
 // ---------------------------------------------------------------------------
-ASM_VAR(Vec3, g_mi702650, $L_702650)
+KING_BSS(Vec3, g_mi702650, 0x702650)
 
 // [FUN_581ba0] asks method +84 for a value of a (into b), applies it (+92), then resets: method +140 (+800, +500) when +372, else +88 (b); clears +476 and +488
 extern "C" int __fastcall Item_Apply84(BYTE* self, void*, int a, int b)
@@ -453,7 +452,7 @@ extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 ASM_VAR(short, g_movite67d10a, $L_67d10a)
-ASM_VAR(BYTE*, g_movite6ef1fc, $L_6ef1fc)
+KING_BSS(BYTE*, g_movite6ef1fc, 0x6ef1fc)
 
 // sends a network message with the record d of n bytes (packet built on the stack, then sent by 6ef1fc)
 static void Movite_Send(const void* d, int n)
@@ -545,7 +544,7 @@ extern "C" int __fastcall SceneObj_OnMessage(BYTE* s, void*, int* m)
 // A received car update.
 
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
-ASM_VAR(BYTE*, g_q106_6f653c, $L_6f653c)
+KING_BSS(BYTE*, g_q106_6f653c, 0x6f653c)
 // [FUN_585fd0] applies update record r (car id +0, a 208-byte node +4, +212, a matrix +216, two vectors +264 and
 // +276) to the car of the 6f653c list with that id (+812 of its list entry) through vtbl+168 of s
 extern "C" void __fastcall Cars_ApplyUpdate(BYTE* s, void*, const BYTE* r)
@@ -579,8 +578,8 @@ extern "C" void __fastcall Cars_ApplyUpdate(BYTE* s, void*, const BYTE* r)
 
 extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-ASM_VAR(AsmLabel, g_q108_7025f0, $L_7025f0)
-ASM_VAR(AsmLabel, g_q108_702650, $L_702650)
+KING_BSS(AsmLabel, g_q108_7025f0, 0x7025f0)
+KING_BSS(AsmLabel, g_q108_702650, 0x702650)
 // [FUN_587c80] constructor: 64 slots, each with two default positions (+0, +768), cleared values (+1536, +1792,
 // +2048, +2304, +2560, +2820, +3076) and an identity matrix (+3332); the slot counter (+2816) ends at 0
 extern "C" BYTE* __fastcall Track587c80_Construct(BYTE* s)
@@ -733,7 +732,7 @@ extern "C" void __fastcall MovingItem_Place(BYTE* s, void*, int a)
 extern "C" void FUN_4e3132(); KING_ALIAS("_FUN_4e3132", "_Vec3_DivComponents")
 ASM_VAR(AsmLabel, s_q187_67d594, $L_67d594)
 ASM_VAR(AsmLabel, s_q187_66c4e4, $L_66c4e4)
-ASM_VAR(AsmLabel, s_q187_68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, s_q187_68d1c0, 0x68d1c0)
 // [FUN_5816d0] sets the spin of moving item s to v (+440; its local form over the inertia +404 into +428, checked
 // against the world under name), and keeps both (+3312, +3324)
 extern "C" void __fastcall MovingItem_SetSpin(BYTE* s, void*, const float* v, const char* name)
@@ -938,9 +937,9 @@ void __fastcall Item_SendContact(BYTE* s, void*, BYTE* b, const BYTE* c, float k
 
 extern "C" void Mi_Length(); KING_ALIAS("_Mi_Length", "_Vec3_Length")
 ASM_VAR(int, g_mi67d110, $L_67d110)
-ASM_VAR(int, g_mi6f6540, $L_6f6540)
-ASM_VAR(double, g_mi6f65c0, $L_6f65c0)
-ASM_VAR(double, g_mi6f65b8, $L_6f65b8)
+KING_BSS(int, g_mi6f6540, 0x6f6540)
+KING_BSS(double, g_mi6f65c0, 0x6f65c0)
+KING_BSS(double, g_mi6f65b8, 0x6f65b8)
 ASM_VAR(double, g_mi64b6e0, $L_64b6e0)
 ASM_VAR(double, g_mi64d0f0, $L_64d0f0)
 
@@ -1009,8 +1008,8 @@ int __fastcall Item_StartFlight(BYTE* s, void*, int flags, int* done)
 extern "C" void FUN_4ea27e(); KING_ALIAS("_FUN_4ea27e", "_VehLog_Value")
 extern "C" void Ra_MatMul(); KING_ALIAS("_Ra_MatMul", "_Matrix_Multiply")
 extern "C" void Ra_sprintf(); KING_ALIAS("_Ra_sprintf", "_sprintf")
-ASM_VAR(int, g_ra696c6c, $L_696c6c)
-ASM_VAR(BYTE*, g_ra6ef1fc, $L_6ef1fc)
+KING_BSS(int, g_ra696c6c, 0x696c6c)
+KING_BSS(BYTE*, g_ra6ef1fc, 0x6ef1fc)
 ASM_VAR(double, g_ra64b930, $L_64b930)
 ASM_VAR(AsmLabel, s_raEvents1, $L_67d888)
 ASM_VAR(AsmLabel, s_raEvents2, $L_67d860)
@@ -1125,7 +1124,7 @@ void __fastcall Item_FlightSpeeds(BYTE* s)
 // === the ground normal under an item (FUN_582960)
 
 extern "C" void FUN_4e7261(); KING_ALIAS("_FUN_4e7261", "_Query_4e7261")
-ASM_VAR(Vec3, g_gn702630, $L_702630)
+KING_BSS(Vec3, g_gn702630, 0x702630)
 ASM_VAR(double, g_gn64b668, $L_64b668)
 ASM_VAR(float, g_gn64c2f8, $L_64c2f8)
 
@@ -1186,7 +1185,7 @@ extern "C" void Rh_AddAssign(); KING_ALIAS("_Rh_AddAssign", "@Vec3_AddAssign@16"
 ASM_VAR(double, g_rh64b840, $L_64b840)
 ASM_VAR(double, g_rh64b6e0, $L_64b6e0)
 ASM_VAR(double, g_rh64d338, $L_64d338)
-ASM_VAR(Vec3, g_rh702630, $L_702630)
+KING_BSS(Vec3, g_rh702630, 0x702630)
 ASM_VAR(AsmLabel, s_rhHit1, $L_67d80c)
 
 extern "C" {
@@ -1369,7 +1368,7 @@ int __cdecl Points_BelowPlane(BYTE* it, const float* m, const float* p, const fl
 // === an item's nearest neighbours (a method at $L_587ac0)
 
 extern "C" void Ni_Matrix1(); KING_ALIAS("_Ni_Matrix1", "@SceneObj_Matrix1@12")
-ASM_VAR(BYTE*, g_ni6f653c, $L_6f653c)
+KING_BSS(BYTE*, g_ni6f653c, 0x6f653c)
 
 extern "C" {
 
@@ -1420,7 +1419,7 @@ void __fastcall Item_FindNeighbours(BYTE* s)
 // === an item coming to rest (FUN_580dd0)
 
 extern "C" void Ir_Log(); KING_ALIAS("_Ir_Log", "_VehLog_Value")
-ASM_VAR(int, g_ir696c6c, $L_696c6c)
+KING_BSS(int, g_ir696c6c, 0x696c6c)
 ASM_VAR(char, s_ir67d4b0, $L_67d4b0)
 ASM_VAR(char, s_ir67d138, $L_67d138)
 ASM_VAR(char, s_ir67d11c, $L_67d11c)
@@ -1815,8 +1814,8 @@ extern "C" void Mk_VehObject(); KING_ALIAS("_Mk_VehObject", "_Vehicle_Object")
 extern "C" void Mk_Fatal(); KING_ALIAS("_Mk_Fatal", "_World_Fatal")
 extern "C" void Mk_580a00(); KING_ALIAS("_Mk_580a00", "_MovingItem_PointBounce")
 extern "C" void __fastcall Movite_SendNamed(BYTE* s, void*, const char* name, const DWORD* mat);
-ASM_VAR(Vec3, g_mkUp, $L_702630)
-ASM_VAR(Vec3, g_mkEye, $L_702650)
+KING_BSS(Vec3, g_mkUp, 0x702630)
+KING_BSS(Vec3, g_mkEye, 0x702650)
 ASM_VAR(float, g_mk64f3e0, $L_64f3e0)
 ASM_VAR(float, g_mk64c258, $L_64c258)
 ASM_VAR(float, g_mk64c408, $L_64c408)
@@ -2288,7 +2287,7 @@ extern "C" void Mf_MulAssign(); KING_ALIAS("_Mf_MulAssign", "@Vec3_MulAssign@16"
 extern "C" void Mf_MakeOut(); KING_ALIAS("_Mf_MakeOut", "@Vehicle_MakeOut@8")
 extern "C" void Mf_Post(); KING_ALIAS("_Mf_Post", "@Queue_PostEvent@12")
 extern "C" void Mf_FrameTime(); KING_ALIAS("_Mf_FrameTime", "_Game_FrameTime")
-ASM_VAR(BYTE*, g_mf6cec6c, $L_6cec6c)
+KING_BSS(BYTE*, g_mf6cec6c, 0x6cec6c)
 ASM_VAR(float, g_mf67d114, $L_67d114)
 ASM_VAR(float, g_mf64da74, $L_64da74)
 ASM_VAR(float, g_mf64c250, $L_64c250)
@@ -2570,9 +2569,9 @@ ASM_VAR(double, g_mx64b670, $L_64b670)
 ASM_VAR(double, g_mx64d318, $L_64d318)
 ASM_VAR(double, g_mx64b5b8, $L_64b5b8)
 ASM_VAR(float, g_mx64c304, $L_64c304)
-ASM_VAR(int, g_mx702650, $L_702650)
-ASM_VAR(int, g_mx702654, $L_702654)
-ASM_VAR(int, g_mx702658, $L_702658)
+KING_BSS(int, g_mx702650, 0x702650)
+KING_BSS(int, g_mx702654, 0x702654)
+KING_BSS(int, g_mx702658, 0x702658)
 
 #define V(n) (*(float*)(fr + (n)))
 #define I(n) (*(int*)(fr + (n)))

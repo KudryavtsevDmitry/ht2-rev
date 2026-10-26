@@ -9,19 +9,19 @@
 
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
-ASM_VAR(int, g_bitDepth, $L_720890)
-ASM_VAR(int, g_720898, $L_720898)
-ASM_VAR(int, g_width, $L_72089c)
-ASM_VAR(int, g_height, $L_7208a0)
-ASM_VAR(int, g_7208a4, $L_7208a4)
-ASM_VAR(int, g_waitVsync, $L_7208a8)
-ASM_VAR(int, g_ddMode, $L_7208ec)
-ASM_VAR(BYTE*, g_ddPalette, $L_7208f4)
-ASM_VAR(BYTE*, g_directDraw, $L_7208fc)
-ASM_VAR(BYTE*, g_logPalette, $L_720918)
-ASM_VAR(HDC, g_paletteDc, $L_72091c)
-ASM_VAR(HPALETTE, g_palette, $L_720924)
-ASM_VAR(HPALETTE, g_oldPalette, $L_720718)
+KING_BSS(int, g_bitDepth, 0x720890)
+KING_BSS(int, g_720898, 0x720898)
+KING_BSS(int, g_width, 0x72089c)
+KING_BSS(int, g_height, 0x7208a0)
+KING_BSS(int, g_7208a4, 0x7208a4)
+KING_BSS(int, g_waitVsync, 0x7208a8)
+KING_BSS(int, g_ddMode, 0x7208ec)
+KING_BSS(BYTE*, g_ddPalette, 0x7208f4)
+KING_BSS(BYTE*, g_directDraw, 0x7208fc)
+KING_BSS(BYTE*, g_logPalette, 0x720918)
+KING_BSS(HDC, g_paletteDc, 0x72091c)
+KING_BSS(HPALETTE, g_palette, 0x720924)
+KING_BSS(HPALETTE, g_oldPalette, 0x720718)
 ASM_VAR(int, g_67fcf0, $L_67fcf0)
 ASM_VAR(int, g_67fcf4, $L_67fcf4)
 
@@ -129,9 +129,9 @@ int __cdecl Video_SetMode(int w, int h, int bits, int unused, int a, int b)
 // ---------------------------------------------------------------------------
 typedef char VmLabel[1];
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
-ASM_VAR(int, g_vmWindowed, $L_7208f0)
-ASM_VAR(BYTE*, g_vmFront, $L_7208f8)
-ASM_VAR(int, g_vm7208b8, $L_7208b8)
+KING_BSS(int, g_vmWindowed, 0x7208f0)
+KING_BSS(BYTE*, g_vmFront, 0x7208f8)
+KING_BSS(int, g_vm7208b8, 0x7208b8)
 ASM_VAR(VmLabel, s_vm67fdd8, $L_67fdd8)
 ASM_VAR(VmLabel, s_vm67fdc0, $L_67fdc0)
 ASM_VAR(VmLabel, s_vm67fdb8, $L_67fdb8)
@@ -188,9 +188,9 @@ extern "C" BYTE* __cdecl Dd_LockPrimary()
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5d4450(); KING_ALIAS("_FUN_5d4450", "_Dd_WaitFlip")    // waits for the flip
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
-ASM_VAR(int, g_vm7208b4, $L_7208b4)
-ASM_VAR(int, g_vmFlipPending, $L_720928)
-ASM_VAR(HWND, g_vmHwnd, $L_720920)
+KING_BSS(int, g_vm7208b4, 0x7208b4)
+KING_BSS(int, g_vmFlipPending, 0x720928)
+KING_BSS(HWND, g_vmHwnd, 0x720920)
 ASM_VAR(VmLabel, s_vm67fe60, $L_67fe60)
 ASM_VAR(VmLabel, s_vm67fe4c, $L_67fe4c)
 ASM_VAR(VmLabel, s_vm67fe3c, $L_67fe3c)
@@ -275,8 +275,8 @@ extern "C" void __cdecl Dd_Present()
 }
 
 // ---------------------------------------------------------------------------
-ASM_VAR(BYTE, g_vm720120, $L_720120)
-ASM_VAR(BYTE*, g_vm72071c, $L_72071c)
+KING_BSS(BYTE, g_vm720120, 0x720120)
+KING_BSS(BYTE*, g_vm72071c, 0x72071c)
 
 // [FUN_5d3b40] draws a frame buffer to the window through GDI (a 256-entry palette-index header), stretched by 67fcf0/67fcf4 unless both are 1
 extern "C" int __cdecl Gdi_DrawFrame(void* bits)
@@ -310,16 +310,16 @@ extern "C" int __cdecl Gdi_DrawFrame(void* bits)
 // ---------------------------------------------------------------------------
 // Choosing the Direct3D device.
 
-ASM_VAR(int, g_q155_72092c, $L_72092c)
-ASM_VAR(int, g_q155_7208e8, $L_7208e8)
-ASM_VAR(int, g_q155_7208dc, $L_7208dc)
-ASM_VAR(int, g_q155_7208bc, $L_7208bc)
-ASM_VAR(int, g_q155_7208d0, $L_7208d0)
-ASM_VAR(int, g_q155_7208d4, $L_7208d4)
-ASM_VAR(int, g_q155_7208c0, $L_7208c0)
-ASM_VAR(int, g_q155_7208c4, $L_7208c4)
-ASM_VAR(int, g_q155_7208c8, $L_7208c8)
-ASM_VAR(int, g_q155_7208cc, $L_7208cc)
+KING_BSS(int, g_q155_72092c, 0x72092c)
+KING_BSS(int, g_q155_7208e8, 0x7208e8)
+KING_BSS(int, g_q155_7208dc, 0x7208dc)
+KING_BSS(int, g_q155_7208bc, 0x7208bc)
+KING_BSS(int, g_q155_7208d0, 0x7208d0)
+KING_BSS(int, g_q155_7208d4, 0x7208d4)
+KING_BSS(int, g_q155_7208c0, 0x7208c0)
+KING_BSS(int, g_q155_7208c4, 0x7208c4)
+KING_BSS(int, g_q155_7208c8, 0x7208c8)
+KING_BSS(int, g_q155_7208cc, 0x7208cc)
 // [$L_5d4900] device enumeration callback: takes the 72092c-th hardware device that renders in ctx's bit depth
 // (+16): its z-buffer depth (+28: the wanted 7208e8 one or the deepest), its GUID (+104, +100 pointing at it),
 // the texture filter level (7208dc) and the multitexture and other capabilities (7208bc..7208cc); 1 goes on

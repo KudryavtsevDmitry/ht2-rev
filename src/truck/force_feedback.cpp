@@ -36,25 +36,25 @@ extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_57c5f0(); KING_ALIAS("_FUN_57c5f0", "_Point_InTriangleXY")
 
 typedef void (__cdecl* LogFn)(const char* text);
-ASM_VAR(int, g_6f4ba4, $L_6f4ba4)
-ASM_VAR(int, g_6f4ba8, $L_6f4ba8)
-ASM_VAR(LogFn, g_joyLog, $L_6f4bac)
-ASM_VAR(void*, g_joyDevice, $L_6f4b88)          // IDirectInputDevice2
-ASM_VAR(int, g_joyForceFeedback, $L_6f4b80)
-ASM_VAR(void*, g_joyInput, $L_6f4b84)           // IDirectInput
-ASM_VAR(int, g_6f4b90, $L_6f4b90)
-ASM_VAR(int, g_6f4b94, $L_6f4b94)
-ASM_VAR(int, g_6f4b98, $L_6f4b98)
-ASM_VAR(int, g_6f4b9c, $L_6f4b9c)
-ASM_VAR(int, g_6f4ba0, $L_6f4ba0)
-ASM_VAR(int, g_6f4bb0, $L_6f4bb0)
+KING_BSS(int, g_6f4ba4, 0x6f4ba4)
+KING_BSS(int, g_6f4ba8, 0x6f4ba8)
+KING_BSS(LogFn, g_joyLog, 0x6f4bac)
+KING_BSS(void*, g_joyDevice, 0x6f4b88)          // IDirectInputDevice2
+KING_BSS(int, g_joyForceFeedback, 0x6f4b80)
+KING_BSS(void*, g_joyInput, 0x6f4b84)           // IDirectInput
+KING_BSS(int, g_6f4b90, 0x6f4b90)
+KING_BSS(int, g_6f4b94, 0x6f4b94)
+KING_BSS(int, g_6f4b98, 0x6f4b98)
+KING_BSS(int, g_6f4b9c, 0x6f4b9c)
+KING_BSS(int, g_6f4ba0, 0x6f4ba0)
+KING_BSS(int, g_6f4bb0, 0x6f4bb0)
 ASM_VAR(int, g_67c4bc, $L_67c4bc)
-ASM_VAR(AsmLabel, g_joyEffects, $L_6f3510)      // the list of effects
+KING_BSS(AsmLabel, g_joyEffects, 0x6f3510)      // the list of effects
 ASM_VAR(AsmLabel, g_strFfbCommand, $L_67cbac)   // "JOYSTICK joySendFFBCommand ..."
-ASM_VAR(int, g_poolLast8, $L_6f4bc8)            // copied into new pooled objects
-ASM_VAR(int, g_poolLast12, $L_6f4bcc)
-ASM_VAR(int, g_poolLast16, $L_6f4bd0)
-ASM_VAR(int, g_poolLast20, $L_6f4bd4)
+KING_BSS(int, g_poolLast8, 0x6f4bc8)            // copied into new pooled objects
+KING_BSS(int, g_poolLast12, 0x6f4bcc)
+KING_BSS(int, g_poolLast16, 0x6f4bd0)
+KING_BSS(int, g_poolLast20, 0x6f4bd4)
 ASM_VAR(AsmLabel, g_vtbl650334, $L_650334)
 ASM_VAR(AsmLabel, g_vtbl65033c, $L_65033c)
 ASM_VAR(AsmLabel, g_strDate, $L_6724f8)         // "Jan 16 2003"
@@ -65,7 +65,7 @@ ASM_VAR(AsmLabel, g_strAssert, $L_6726a4)       // "Assertion violated: %s, File
 ASM_VAR(AsmLabel, g_strFileLine, $L_6724b0)     // " File = %s, Line = #%ld, Date = %s "
 ASM_VAR(AsmLabel, g_strShadowOverflow, $L_67d034)   // "Shadow stack overflow"
 typedef short Shorts[1];
-ASM_VAR(Shorts, g_triangles, $L_6f4be0)
+KING_BSS(Shorts, g_triangles, 0x6f4be0)
 ASM_VAR(double, g_epsilon, $L_64c3f8)           // FLT_EPSILON
 ASM_VAR(float, g_noHeight, $L_65047c)           // -9999.9
 
@@ -491,14 +491,14 @@ extern "C" double __cdecl Records_Height(float x, float y, BYTE* recs, unsigned 
 // zero vectors, the two identity matrices; returns what SceneObj_57e030 does
 
 extern "C" int __fastcall SceneObj_57e030(BYTE* self, void*, int* out);   // engine.cpp
-ASM_VAR(float, g_mmt702630, $L_702630)
-ASM_VAR(float, g_mmt702634, $L_702634)
-ASM_VAR(float, g_mmt702638, $L_702638)
-ASM_VAR(DWORD, g_mmt702650, $L_702650)
-ASM_VAR(DWORD, g_mmt702654, $L_702654)
-ASM_VAR(DWORD, g_mmt702658, $L_702658)
+KING_BSS(float, g_mmt702630, 0x702630)
+KING_BSS(float, g_mmt702634, 0x702634)
+KING_BSS(float, g_mmt702638, 0x702638)
+KING_BSS(DWORD, g_mmt702650, 0x702650)
+KING_BSS(DWORD, g_mmt702654, 0x702654)
+KING_BSS(DWORD, g_mmt702658, 0x702658)
 ASM_VAR(float, g_gravity64d998, $L_64d998)      // -9.8
-ASM_VAR(AsmLabel, g_mmtIdentity, $L_7025f0)
+KING_BSS(AsmLabel, g_mmtIdentity, 0x7025f0)
 
 extern "C" int __fastcall SceneObj_InitState(BYTE* self, void*, DWORD a, DWORD b, DWORD c, DWORD d)
 {
@@ -708,12 +708,12 @@ extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")    // opens
 ASM_PROC(FUN_6303a0)    // DirectInputCreateA
 ASM_FUNC(Joy_EnumCallback, $L_576f90)
 typedef char JoyLabel[1];
-ASM_VAR(JoyLabel, g_joyEnabled6f34e8, $L_6f34e8)        // 10 ints
-ASM_VAR(JoyLabel, g_joyRecords, $L_6f3528)              // 10 records of 568 bytes
-ASM_VAR(JoyLabel, g_joy6f4b58, $L_6f4b58)               // 10 ints
-ASM_VAR(int, g_joy6f4b80, $L_6f4b80)
-ASM_VAR(int, g_joy6f4b8c, $L_6f4b8c)
-ASM_VAR(int, g_joyCount, $L_6f4b90)
+KING_BSS(JoyLabel, g_joyEnabled6f34e8, 0x6f34e8)        // 10 ints
+KING_BSS(JoyLabel, g_joyRecords, 0x6f3528)              // 10 records of 568 bytes
+KING_BSS(JoyLabel, g_joy6f4b58, 0x6f4b58)               // 10 ints
+KING_BSS(int, g_joy6f4b80, 0x6f4b80)
+KING_BSS(int, g_joy6f4b8c, 0x6f4b8c)
+KING_BSS(int, g_joyCount, 0x6f4b90)
 ASM_VAR(char, g_fmtJoyVersion, $L_67cec4)
 ASM_VAR(char, g_strJoy67cf0c, $L_67cf0c)
 ASM_VAR(char, g_fmtJoyError, $L_67cefc)                 // "error=%s, %0X"
@@ -789,7 +789,7 @@ extern "C" int __cdecl Joy_Init(HWND wnd, int range)
 }
 
 extern "C" void FUN_579aa0(); KING_ALIAS("_FUN_579aa0", "@Decal_BuildOnObjects@32")    // a shadow's set-up
-ASM_VAR(BYTE*, g_game57c490, $L_6d2078)
+KING_BSS(BYTE*, g_game57c490, 0x6d2078)
 
 // [FUN_57c490] a new shadow at a point, its detail (32, 16 or 4 steps) by the distance to the camera (at least minLevel)
 extern "C" void __fastcall Shadow_Add(BYTE* s, void*, int a0, int a1, const float* at, unsigned minLevel, int a4, int a5)
@@ -826,9 +826,9 @@ extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")
 extern "C" void FUN_579890(); KING_ALIAS("_FUN_579890", "@ShadowStack_Push@8")
 extern "C" void FUN_57b2d0(); KING_ALIAS("_FUN_57b2d0", "@Decal_Build@32")
 extern "C" void FUN_5798d0(); KING_ALIAS("_FUN_5798d0", "@ShadowStack_Pop@8")
-ASM_VAR(int, g_6f4bb4, $L_6f4bb4)
-ASM_VAR(int, g_6f4bb8, $L_6f4bb8)
-ASM_VAR(int, g_6f4bbc, $L_6f4bbc)
+KING_BSS(int, g_6f4bb4, 0x6f4bb4)
+KING_BSS(int, g_6f4bb8, 0x6f4bb8)
+KING_BSS(int, g_6f4bbc, 0x6f4bbc)
 
 // [FUN_578d50] FUN_5787a0 with the three globals at 6f4bb4
 extern "C" int __cdecl FF_578d50(int a)
@@ -864,13 +864,13 @@ extern "C" void __fastcall Pool6928_Free(BYTE** self, void*)
 extern "C" void FUN_4bd570(); KING_ALIAS("_FUN_4bd570", "@EffectBuf_Destroy@8")
 extern "C" void FUN_579650(); KING_ALIAS("_FUN_579650", "@FrameTask_Destroy@8")
 extern "C" void FUN_57c360(); KING_ALIAS("_FUN_57c360", "@PoolNode_Destroy@8")
-ASM_VAR(DWORD, g_forfee6f63b8, $L_6f63b8)
-ASM_VAR(DWORD, g_forfee6f63bc, $L_6f63bc)
-ASM_VAR(DWORD, g_forfee6f63c0, $L_6f63c0)
-ASM_VAR(DWORD, g_forfee6f63c4, $L_6f63c4)
-ASM_VAR(DWORD, g_forfee6f63d8, $L_6f63d8)
-ASM_VAR(DWORD, g_forfee6f63dc, $L_6f63dc)
-ASM_VAR(DWORD, g_forfee6f63e0, $L_6f63e0)
+KING_BSS(DWORD, g_forfee6f63b8, 0x6f63b8)
+KING_BSS(DWORD, g_forfee6f63bc, 0x6f63bc)
+KING_BSS(DWORD, g_forfee6f63c0, 0x6f63c0)
+KING_BSS(DWORD, g_forfee6f63c4, 0x6f63c4)
+KING_BSS(DWORD, g_forfee6f63d8, 0x6f63d8)
+KING_BSS(DWORD, g_forfee6f63dc, 0x6f63dc)
+KING_BSS(DWORD, g_forfee6f63e0, 0x6f63e0)
 
 static BYTE* Forfee_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -892,7 +892,7 @@ extern "C" void __cdecl ForfeeInit_579900() { g_forfee6f63b8 = 0x0; g_forfee6f63
 
 extern "C" void FUN_5793f0(); KING_ALIAS("_FUN_5793f0", "_Pooled_Release")
 ASM_VAR(AsmLabel, g_forfee650334, $L_650334)
-ASM_VAR(AsmLabel, g_forfee6f6140, $L_6f6140)
+KING_BSS(AsmLabel, g_forfee6f6140, 0x6f6140)
 
 // [$L_579340] the base destructor (vtable 650334) inlined; freed with FUN_5793f0
 extern "C" BYTE* __fastcall Forfee579340_DeletingDestructor(BYTE* s, void*, int flags)
@@ -1031,8 +1031,8 @@ extern "C" long __cdecl Joy_SetDeadZone(unsigned axis, int v, FILE* log)
 
 extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-ASM_VAR(AsmLabel, g_q103_7025f0, $L_7025f0)
-ASM_VAR(AsmLabel, g_q103_6f54bc, $L_6f54bc)
+KING_BSS(AsmLabel, g_q103_7025f0, 0x7025f0)
+KING_BSS(AsmLabel, g_q103_6f54bc, 0x6f54bc)
 // [$L_579970] static init: the 40 52-byte records of 6f54bc get zeroed vectors and the identity matrix
 extern "C" void __cdecl Ff_InitRecords(void)
 {
@@ -1684,8 +1684,8 @@ extern "C" void Dg_DivideBy(); KING_ALIAS("_Dg_DivideBy", "@Vec3_DivideBy@12")
 extern "C" void Dg_Set2Vec(); KING_ALIAS("_Dg_Set2Vec", "@Fx_Set2Vec@24")
 extern "C" void Dg_RecordsHeight(); KING_ALIAS("_Dg_RecordsHeight", "_Records_Height")
 extern "C" void Dg_TerrainHeight(); KING_ALIAS("_Dg_TerrainHeight", "@Terrain_HeightAt@16")
-ASM_VAR(BYTE*, g_dg6cec98, $L_6cec98)
-ASM_VAR(BYTE*, g_dg6f33b4, $L_6f33b4)
+KING_BSS(BYTE*, g_dg6cec98, 0x6cec98)
+KING_BSS(BYTE*, g_dg6f33b4, 0x6f33b4)
 ASM_VAR(float, g_dg6503e0, $L_6503e0)
 ASM_VAR(double, g_dg6503d8, $L_6503d8)
 ASM_VAR(float, g_dg64c250, $L_64c250)
@@ -1875,12 +1875,12 @@ ASM_VAR(float, g_dm64c334, $L_64c334)
 ASM_VAR(float, g_dm6503d4, $L_6503d4)
 ASM_VAR(float, g_dm64d6a8, $L_64d6a8)
 ASM_VAR(float, g_dm6503d0, $L_6503d0)              // "no height"
-ASM_VAR(int, g_dm6f63c8, $L_6f63c8)
-ASM_VAR(AsmLabel, g_dmTris, $L_6f5d78)              // triangle x coordinates (3 per triangle, 40 at most)
-ASM_VAR(AsmLabel, g_dmTris2, $L_6f5f58)             // their y coordinates
-ASM_VAR(AsmLabel, g_dmPlanes, $L_6f5cd8)            // their planes
-ASM_VAR(AsmLabel, g_dmMats, $L_6f5414)              // their objects' inverse frames
-ASM_VAR(AsmLabel, g_dmObjs, $L_6f54b8)              // 40 52-byte records: object, inverse frame
+KING_BSS(int, g_dm6f63c8, 0x6f63c8)
+KING_BSS(AsmLabel, g_dmTris, 0x6f5d78)              // triangle x coordinates (3 per triangle, 40 at most)
+KING_BSS(AsmLabel, g_dmTris2, 0x6f5f58)             // their y coordinates
+KING_BSS(AsmLabel, g_dmPlanes, 0x6f5cd8)            // their planes
+KING_BSS(AsmLabel, g_dmMats, 0x6f5414)              // their objects' inverse frames
+KING_BSS(AsmLabel, g_dmObjs, 0x6f54b8)              // 40 52-byte records: object, inverse frame
 
 // |a.z - b.z| over the length of a - b, summed as the code does
 static double Dm_Lean(const float* a, const float* b)

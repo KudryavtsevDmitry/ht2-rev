@@ -21,13 +21,13 @@ extern "C" void FUN_5bc430(); KING_ALIAS("_FUN_5bc430", "@Path_SideDistance@20")
 extern "C" void FUN_5bdc80(); KING_ALIAS("_FUN_5bdc80", "@Control_FitSize@8")    // relayout
 extern "C" void FUN_5bd5e0(); KING_ALIAS("_FUN_5bd5e0", "@Control_Construct@16")    // base control constructor (a, flags)
 
-ASM_VAR(int, g_702f24, $L_702f24)
-ASM_VAR(int, g_702f28, $L_702f28)
-ASM_VAR(int, g_702f40, $L_702f40)
-ASM_VAR(int, g_702f44, $L_702f44)
+KING_BSS(int, g_702f24, 0x702f24)
+KING_BSS(int, g_702f28, 0x702f28)
+KING_BSS(int, g_702f40, 0x702f40)
+KING_BSS(int, g_702f44, 0x702f44)
 typedef void(__cdecl* SelectHook)(BYTE* self, BYTE* child);
-ASM_VAR(SelectHook, g_selectHook, $L_702f48)
-ASM_VAR(int, g_720904, $L_720904)
+KING_BSS(SelectHook, g_selectHook, 0x702f48)
+KING_BSS(int, g_720904, 0x720904)
 ASM_VAR(AsmLabel, g_vtbl651838, $L_651838)
 ASM_VAR(AsmLabel, g_vtbl65186c, $L_65186c)
 
@@ -453,10 +453,10 @@ void __fastcall Split_Resize(BYTE* self, void*, int d)
 }
 
 // ---------------------------------------------------------------------------
-ASM_VAR(int, g_702f34, $L_702f34)
-ASM_VAR(int, g_702f38, $L_702f38)
-ASM_VAR(int, g_702f2c, $L_702f2c)
-ASM_VAR(int, g_702f30, $L_702f30)
+KING_BSS(int, g_702f34, 0x702f34)
+KING_BSS(int, g_702f38, 0x702f38)
+KING_BSS(int, g_702f2c, 0x702f2c)
+KING_BSS(int, g_702f30, 0x702f30)
 
 // [FUN_5bd560] sets 702f24 and the offsets 702f2c/30 from the sizes
 extern "C" void __cdecl Ctl_SetOrigin(int a, int b, int c)
@@ -511,10 +511,10 @@ extern "C" void FUN_5be5a0(); KING_ALIAS("_FUN_5be5a0", "@Ctl_Dispatch@16")
 extern "C" void FUN_5bdba0(); KING_ALIAS("_FUN_5bdba0", "@Ctl_Select@12")
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
 ASM_VAR(int, g_ct67f3d8, $L_67f3d8)
-ASM_VAR(int, g_ct702f24, $L_702f24)
-ASM_VAR(BYTE*, g_ct702f3c, $L_702f3c)
+KING_BSS(int, g_ct702f24, 0x702f24)
+KING_BSS(BYTE*, g_ct702f3c, 0x702f3c)
 typedef void (__cdecl* CtHook)(BYTE*, BYTE*);
-ASM_VAR(CtHook, g_ct702f4c, $L_702f4c)
+KING_BSS(CtHook, g_ct702f4c, 0x702f4c)
 
 // the first child (from +288) that holds the input (+36)
 static BYTE* Ct_Captured(BYTE* self)
@@ -652,7 +652,7 @@ extern "C" int __fastcall Con_5be5f0(BYTE* s, void*, int x, int y)
 // Radio buttons, sliders and control layout.
 
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")
-ASM_VAR(BYTE*, g_con702f24, $L_702f24)
+KING_BSS(BYTE*, g_con702f24, 0x702f24)
 
 // [$L_5bfb30] vtbl+24 (a, b); for the focused control (702f24) bit 1 of +284 follows the result
 extern "C" int __fastcall Con_5bfb30(BYTE* s, void*, int a, int b)
@@ -1028,9 +1028,9 @@ extern "C" void FUN_5be700(); KING_ALIAS("_FUN_5be700", "@ScrollBar_Construct@24
 extern "C" void FUN_5bdbf0(); KING_ALIAS("_FUN_5bdbf0", "@Ctl_AddChild@16")
 #include <string.h>
 ASM_VAR(AsmLabel, g_con6518b0, $L_6518b0)
-ASM_VAR(AsmLabel, g_con68d1c0, $L_68d1c0)
-ASM_VAR(BYTE*, g_con702f40, $L_702f40)
-ASM_VAR(int, g_con702f44, $L_702f44)
+KING_BSS(AsmLabel, g_con68d1c0, 0x68d1c0)
+KING_BSS(BYTE*, g_con702f40, 0x702f40)
+KING_BSS(int, g_con702f44, 0x702f44)
 
 // [FUN_5bd5e0] constructor (name, id): a control (vtable 64dc84) sized for its name in the default font (702f40)
 extern "C" BYTE* __fastcall Control_Construct(BYTE* s, void*, const char* name, int id)
@@ -1274,8 +1274,8 @@ void __fastcall ScrollBar_Layout(BYTE* s, void*, short range, short* at, int a3,
 
 // === drawing a scroll bar ($L_5bf340)
 
-ASM_VAR(int, g_sd702f34, $L_702f34)
-ASM_VAR(int, g_sd702f2c, $L_702f2c)
+KING_BSS(int, g_sd702f34, 0x702f34)
+KING_BSS(int, g_sd702f2c, 0x702f2c)
 extern "C" void FUN_5b7ce0(); KING_ALIAS("_FUN_5b7ce0", "_Surface_HLine")
 extern "C" void FUN_5bd590(); KING_ALIAS("_FUN_5bd590", "_Gui_Reset702f24")
 extern "C" void FUN_5be1d0(); KING_ALIAS("_FUN_5be1d0", "@Ctl_DrawAll@24")

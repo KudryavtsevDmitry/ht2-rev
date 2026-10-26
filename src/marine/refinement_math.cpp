@@ -6,7 +6,7 @@
 ASM_VAR(float, g_mm_zero, $L_64c264)
 ASM_VAR(float, g_mm_one, $L_64c250)
 ASM_VAR(float, g_mm_third, $L_64c904)
-ASM_VAR(float, g_mm_threshold, $L_725e60)
+KING_BSS(float, g_mm_threshold, 0x725e60)
 ASM_VAR(double, g_mm_unit, $L_64b670)
 ASM_VAR(float, g_mm_backWeight, $L_64c948)
 ASM_VAR(float, g_mm_normalZ, $L_64c2f8)
@@ -21,9 +21,9 @@ ASM_VAR(float, g_mm_rippleTimeB, $L_653124)
 ASM_VAR(float, g_mm_rippleSpaceB, $L_653120)
 ASM_VAR(float, g_mm_rippleScale, $L_64c748)
 ASM_VAR(float, g_mm_radius, $L_6531d8)
-ASM_VAR(float, g_mm_diameter, $L_725fc8)
+KING_BSS(float, g_mm_diameter, 0x725fc8)
 ASM_VAR(float, g_mm_randomRadius, $L_653220)
-ASM_VAR(float, g_mm_randomDiameter, $L_7287f8)
+KING_BSS(float, g_mm_randomDiameter, 0x7287f8)
 extern "C" double __cdecl MarineAngle_Sine(float);
 extern "C" double __cdecl MarineAngle_Cosine(float);
 extern "C" double __fastcall MarineGrid_MapY(BYTE*,void*,const DWORD*);

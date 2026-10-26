@@ -18,12 +18,12 @@ extern "C" void FUN_616ca0(); KING_ALIAS("_FUN_616ca0", "_Noise_Seed")    // see
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // the scene object with this name (0, name)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // error report
 
-ASM_VAR(Ints, g_perm, $L_72b068)                 // noise permutation
-ASM_VAR(Dwords, g_noiseGrad, $L_729850)          // 12-byte gradients
-ASM_VAR(Dwords, g_noiseA, $L_729044)
-ASM_VAR(Dwords, g_noiseB, $L_72883c)
-ASM_VAR(Ints, g_noiseC, $L_72b870)
-ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
+KING_BSS(Ints, g_perm, 0x72b068)                 // noise permutation
+KING_BSS(Dwords, g_noiseGrad, 0x729850)          // 12-byte gradients
+KING_BSS(Dwords, g_noiseA, 0x729044)
+KING_BSS(Dwords, g_noiseB, 0x72883c)
+KING_BSS(Ints, g_noiseC, 0x72b870)
+KING_BSS(BYTE*, g_6cec6c, 0x6cec6c)
 ASM_VAR(AsmLabel, s_roomAa, $L_685e00)            // "room_aa_000"
 ASM_VAR(AsmLabel, s_roomTr, $L_685df4)            // "room_tr_000"
 ASM_VAR(AsmLabel, s_buildDate, $L_6724f8)
@@ -262,7 +262,6 @@ extern "C" void FUN_619c20(); KING_ALIAS("_FUN_619c20", "@Terrain_PlacePlants@12
 extern "C" void FUN_619850(); KING_ALIAS("_FUN_619850", "@TerrainPart_Draw@12")
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")    // reports an error code with file, line and date
 extern "C" void FUN_617100(); KING_ALIAS("_FUN_617100", "@Decals_Reset16@8")
-ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
 extern "C" __declspec(dllimport) DWORD __stdcall timeGetTime(void);
 
 extern "C" {
@@ -311,8 +310,8 @@ extern "C" void FUN_5d9290(); KING_ALIAS("_FUN_5d9290", "@Scenes_Find@12")
 extern "C" void FUN_4b8720(); KING_ALIAS("_FUN_4b8720", "_Fx_FindByName")
 extern "C" void FUN_5b1020(); KING_ALIAS("_FUN_5b1020", "@Material_Select@24")
 extern "C" void FUN_5ef6d0(); KING_ALIAS("_FUN_5ef6d0", "@Node_Construct@16")    // named object: constructor (name, kind)
-ASM_VAR(BYTE*, g_696224, $L_696224)
-ASM_VAR(BYTE*, g_d3dDevice720908, $L_720908)
+KING_BSS(BYTE*, g_696224, 0x696224)
+KING_BSS(BYTE*, g_d3dDevice720908, 0x720908)
 
 // IDirect3DDevice methods: SetRenderState (+80), DrawPrimitive (+100)
 static void Dev_SetRenderState(BYTE* dev, int state, int value)
@@ -576,27 +575,27 @@ extern "C" BYTE* __fastcall Ter614470_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Ter619ac0_DeletingDestructor(BYTE* s, void*, int flags) { return Ter_DeleteAfter(s, flags, FUN_619ae0); }
 
 // static initializers of constants
-ASM_VAR(DWORD, g_ter728810, $L_728810)
-ASM_VAR(DWORD, g_ter728814, $L_728814)
-ASM_VAR(DWORD, g_ter728818, $L_728818)
-ASM_VAR(DWORD, g_ter728820, $L_728820)
-ASM_VAR(DWORD, g_ter728824, $L_728824)
-ASM_VAR(DWORD, g_ter728828, $L_728828)
-ASM_VAR(DWORD, g_ter72c078, $L_72c078)
-ASM_VAR(DWORD, g_ter72c07c, $L_72c07c)
-ASM_VAR(DWORD, g_ter72c080, $L_72c080)
-ASM_VAR(DWORD, g_ter72c088, $L_72c088)
-ASM_VAR(DWORD, g_ter72c08c, $L_72c08c)
-ASM_VAR(DWORD, g_ter72c090, $L_72c090)
-ASM_VAR(DWORD, g_ter72c098, $L_72c098)
-ASM_VAR(DWORD, g_ter72c09c, $L_72c09c)
-ASM_VAR(DWORD, g_ter72c0a0, $L_72c0a0)
-ASM_VAR(DWORD, g_ter72c0b0, $L_72c0b0)
-ASM_VAR(DWORD, g_ter72c0b4, $L_72c0b4)
-ASM_VAR(DWORD, g_ter72c0b8, $L_72c0b8)
-ASM_VAR(DWORD, g_ter72c0d0, $L_72c0d0)
-ASM_VAR(DWORD, g_ter72c0d4, $L_72c0d4)
-ASM_VAR(DWORD, g_ter72c0d8, $L_72c0d8)
+KING_BSS(DWORD, g_ter728810, 0x728810)
+KING_BSS(DWORD, g_ter728814, 0x728814)
+KING_BSS(DWORD, g_ter728818, 0x728818)
+KING_BSS(DWORD, g_ter728820, 0x728820)
+KING_BSS(DWORD, g_ter728824, 0x728824)
+KING_BSS(DWORD, g_ter728828, 0x728828)
+KING_BSS(DWORD, g_ter72c078, 0x72c078)
+KING_BSS(DWORD, g_ter72c07c, 0x72c07c)
+KING_BSS(DWORD, g_ter72c080, 0x72c080)
+KING_BSS(DWORD, g_ter72c088, 0x72c088)
+KING_BSS(DWORD, g_ter72c08c, 0x72c08c)
+KING_BSS(DWORD, g_ter72c090, 0x72c090)
+KING_BSS(DWORD, g_ter72c098, 0x72c098)
+KING_BSS(DWORD, g_ter72c09c, 0x72c09c)
+KING_BSS(DWORD, g_ter72c0a0, 0x72c0a0)
+KING_BSS(DWORD, g_ter72c0b0, 0x72c0b0)
+KING_BSS(DWORD, g_ter72c0b4, 0x72c0b4)
+KING_BSS(DWORD, g_ter72c0b8, 0x72c0b8)
+KING_BSS(DWORD, g_ter72c0d0, 0x72c0d0)
+KING_BSS(DWORD, g_ter72c0d4, 0x72c0d4)
+KING_BSS(DWORD, g_ter72c0d8, 0x72c0d8)
 ASM_VAR(float, g_ter64c250, $L_64c250)
 ASM_VAR(float, g_ter64c258, $L_64c258)
 ASM_VAR(float, g_ter64c450, $L_64c450)
@@ -613,15 +612,15 @@ ASM_VAR(float, g_ter653374, $L_653374)
 ASM_VAR(float, g_ter653378, $L_653378)
 ASM_VAR(float, g_ter65337c, $L_65337c)
 ASM_VAR(float, g_ter653380, $L_653380)
-ASM_VAR(float, g_ter728808, $L_728808)
-ASM_VAR(float, g_ter72882c, $L_72882c)
-ASM_VAR(float, g_ter728830, $L_728830)
-ASM_VAR(float, g_ter728838, $L_728838)
-ASM_VAR(float, g_ter72c0a4, $L_72c0a4)
-ASM_VAR(float, g_ter72c0a8, $L_72c0a8)
-ASM_VAR(float, g_ter72c0ac, $L_72c0ac)
-ASM_VAR(float, g_ter72c0c8, $L_72c0c8)
-ASM_VAR(float, g_ter72c0cc, $L_72c0cc)
+KING_BSS(float, g_ter728808, 0x728808)
+KING_BSS(float, g_ter72882c, 0x72882c)
+KING_BSS(float, g_ter728830, 0x728830)
+KING_BSS(float, g_ter728838, 0x728838)
+KING_BSS(float, g_ter72c0a4, 0x72c0a4)
+KING_BSS(float, g_ter72c0a8, 0x72c0a8)
+KING_BSS(float, g_ter72c0ac, 0x72c0ac)
+KING_BSS(float, g_ter72c0c8, 0x72c0c8)
+KING_BSS(float, g_ter72c0cc, 0x72c0cc)
 // [$L_616c80]
 extern "C" void __cdecl TerInit_616c80() {  }
 // [$L_614180]
@@ -657,8 +656,8 @@ extern "C" void __cdecl TerInit_614290() { g_ter72c078 = 0x0; g_ter72c07c = 0x0;
 // [$L_61a840]
 extern "C" void __cdecl TerInit_61a840() { g_ter72c0cc = (float)((double)g_ter653380 - g_ter64d4e8 - g_ter64c258); }
 #include "x87.h"
-ASM_VAR(float, g_ter72880c, $L_72880c)
-ASM_VAR(float, g_ter728834, $L_728834)
+KING_BSS(float, g_ter72880c, 0x72880c)
+KING_BSS(float, g_ter728834, 0x728834)
 ASM_VAR(double, g_ter6532e0, $L_6532e0)
 
 // [$L_6142c0]
@@ -834,8 +833,8 @@ ASM_VAR(float, g_ns64c334, $L_64c334)
 ASM_VAR(float, g_ns64c264, $L_64c264)
 ASM_VAR(float, g_ns64c258, $L_64c258)
 ASM_VAR(float, g_ns64c250, $L_64c250)
-ASM_VAR(DWORD, g_ns729448, $L_729448)
-ASM_VAR(DWORD, g_ns728c40, $L_728c40)
+KING_BSS(DWORD, g_ns729448, 0x729448)
+KING_BSS(DWORD, g_ns728c40, 0x728c40)
 
 // a random number in [0, 1)
 static double Ns_Rand() { return rand() * (double)g_ns64c254; }
@@ -944,12 +943,12 @@ extern "C" void Tg_LengthSq(); KING_ALIAS("_Tg_LengthSq", "_Vec3_LengthSq")
 extern "C" void Tg_DivBy(); KING_ALIAS("_Tg_DivBy", "_Vec3_DivBy")
 extern "C" void Tg_Scaled(); KING_ALIAS("_Tg_Scaled", "_Vec3_Scaled")
 extern "C" void Tg_Sub(); KING_ALIAS("_Tg_Sub", "_Vec3_Sub")
-ASM_VAR(float, g_tg728810, $L_728810)
-ASM_VAR(float, g_tg728814, $L_728814)
-ASM_VAR(float, g_tg728818, $L_728818)
-ASM_VAR(float, g_tg728820, $L_728820)
-ASM_VAR(float, g_tg728824, $L_728824)
-ASM_VAR(float, g_tg728828, $L_728828)
+KING_BSS(float, g_tg728810, 0x728810)
+KING_BSS(float, g_tg728814, 0x728814)
+KING_BSS(float, g_tg728818, 0x728818)
+KING_BSS(float, g_tg728820, 0x728820)
+KING_BSS(float, g_tg728824, 0x728824)
+KING_BSS(float, g_tg728828, 0x728828)
 ASM_VAR(float, g_tg64c258, $L_64c258)
 ASM_VAR(float, g_tg64c250, $L_64c250)
 ASM_VAR(float, g_tg64c264, $L_64c264)
@@ -1223,8 +1222,8 @@ ASM_VAR(float, g_tg64c260, $L_64c260)
 ASM_VAR(float, g_tg64c310, $L_64c310)
 ASM_VAR(float, g_tg64c350, $L_64c350)
 ASM_VAR(float, g_tg64c324, $L_64c324)
-ASM_VAR(float, g_tg728838, $L_728838)               // the sea level
-ASM_VAR(float, g_tg728808, $L_728808)               // the tree line
+KING_BSS(float, g_tg728838, 0x728838)               // the sea level
+KING_BSS(float, g_tg728808, 0x728808)               // the tree line
 ASM_VAR(AsmLabel, g_tgSizes, $L_685d70)             // the plant sizes 685d70 .. 685d84
 ASM_VAR(double, g_tg64b938, $L_64b938)
 extern "C" void Tg_AddAssign(); KING_ALIAS("_Tg_AddAssign", "@Vec3_AddAssign@16")

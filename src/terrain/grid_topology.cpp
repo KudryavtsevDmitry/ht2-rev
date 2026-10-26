@@ -206,7 +206,7 @@ extern "C" double __fastcall Circle_Outside(const float* c,void*,float x,float y
 }
 
 ASM_VAR(int,g_grdRefine,$L_685a98)
-ASM_VAR(TopologyLabel,g_tgrid72c108,$L_72c108)
+KING_BSS(TopologyLabel, g_tgrid72c108, 0x72c108)
 extern "C" int __fastcall MarineQueue_Empty(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopDeferredNode(BYTE*,void*);
@@ -275,9 +275,9 @@ extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD now)
 extern "C" void __fastcall MarineTask_ClearRegistration(BYTE* self, void*);
 extern "C" void __fastcall MarineTask_SetFirstBounds(BYTE* self, void*, float a, float b);
 extern "C" void __fastcall MarineTask_SetSecondBounds(BYTE* self, void*, float a, float b);
-ASM_VAR(int, g_doneCount725d28, $L_725d28)
+KING_BSS(int, g_doneCount725d28, 0x725d28)
 typedef BYTE* DoneList[500];
-ASM_VAR(DoneList, g_done725558, $L_725558)
+KING_BSS(DoneList, g_done725558, 0x725558)
 
 // [FUN_60c2b0] the grid's frame: transitions, refinement, finished transitions freed, the points' bounds, the triangles drawn
 extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*)
@@ -472,8 +472,8 @@ extern "C" void Fs_SetPairs(); KING_ALIAS("_Fs_SetPairs", "@TGridEdge_SetPairs@1
 extern "C" void Fs_Priority(); KING_ALIAS("_Fs_Priority", "@GridCamera_PairPriority@16")
 extern "C" void Fs_Insert(); KING_ALIAS("_Fs_Insert", "@MarineQueue_InsertWorkItem@12")
 extern "C" void Fs_Set(); KING_ALIAS("_Fs_Set", "@Vec3_SetThis@20")
-ASM_VAR(int, g_fsCount, $L_7242a0)
-ASM_VAR(BYTE*, g_fsStack, $L_7242a4)
+KING_BSS(int, g_fsCount, 0x7242a0)
+KING_BSS(BYTE*, g_fsStack, 0x7242a4)
 ASM_VAR(float, g_fs64c258, $L_64c258)
 ASM_VAR(float, g_fs64c904, $L_64c904)
 

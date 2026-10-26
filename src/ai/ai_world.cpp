@@ -38,27 +38,27 @@ extern "C" void __fastcall CharVec_Assign(char** self, void*, const char* s);   
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert(pos, first, last)
 
 typedef void** PtrVec;
-ASM_VAR(PtrVec, g_towns, $L_68cec0)
-ASM_VAR(PtrVec, g_townsEnd, $L_68cec4)
-ASM_VAR(PtrVec, g_vehicles, $L_68cfd8)
-ASM_VAR(PtrVec, g_vehiclesEnd, $L_68cfdc)
-ASM_VAR(PtrVec, g_68cc98, $L_68cc98)
-ASM_VAR(PtrVec, g_68cc9c, $L_68cc9c)
-ASM_VAR(int, g_carsTotal, $L_68d140)
-ASM_VAR(int, g_68cef8, $L_68cef8)
-ASM_VAR(int, g_68d150, $L_68d150)
-ASM_VAR(int, g_68cee8, $L_68cee8)
+KING_BSS(PtrVec, g_towns, 0x68cec0)
+KING_BSS(PtrVec, g_townsEnd, 0x68cec4)
+KING_BSS(PtrVec, g_vehicles, 0x68cfd8)
+KING_BSS(PtrVec, g_vehiclesEnd, 0x68cfdc)
+KING_BSS(PtrVec, g_68cc98, 0x68cc98)
+KING_BSS(PtrVec, g_68cc9c, 0x68cc9c)
+KING_BSS(int, g_carsTotal, 0x68d140)
+KING_BSS(int, g_68cef8, 0x68cef8)
+KING_BSS(int, g_68d150, 0x68d150)
+KING_BSS(int, g_68cee8, 0x68cee8)
 typedef int Ints3[3];
-ASM_VAR(Ints3, g_68ced0, $L_68ced0)
-ASM_VAR(int, g_uniqueCounter, $L_68d158)
+KING_BSS(Ints3, g_68ced0, 0x68ced0)
+KING_BSS(int, g_uniqueCounter, 0x68d158)
 typedef char AiText[1];
-ASM_VAR(AiText, g_uniqueName, $L_68bad4)
-ASM_VAR(AiText, g_uniqueName2, $L_68d020)
-ASM_VAR(AiText, g_rng68b9c8, $L_68b9c8)
-ASM_VAR(BYTE*, g_68ccb8, $L_68ccb8)
-ASM_VAR(void*, g_players, $L_68b990)
+KING_BSS(AiText, g_uniqueName, 0x68bad4)
+KING_BSS(AiText, g_uniqueName2, 0x68d020)
+KING_BSS(AiText, g_rng68b9c8, 0x68b9c8)
+KING_BSS(BYTE*, g_68ccb8, 0x68ccb8)
+KING_BSS(void*, g_players, 0x68b990)
 struct VecOfPtr { void** begin; void** end; void** cap; };
-ASM_VAR(VecOfPtr*, g_68cbf8, $L_68cbf8)
+KING_BSS(VecOfPtr*, g_68cbf8, 0x68cbf8)
 
 static int Index(void** it, void** first) { return it - first; }
 
@@ -625,12 +625,12 @@ extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")    // poo
 extern "C" void FUN_4b0b60(); KING_ALIAS("_FUN_4b0b60", "@SchNumber_FromInt@16")    // number constructor
 extern "C" void FUN_407f00(); KING_ALIAS("_FUN_407f00", "_Str_Member20")
 extern "C" void FUN_4b65e0(); KING_ALIAS("_FUN_4b65e0", "_SchValue_IsSymbol")
-ASM_VAR(BYTE**, g_registry52, $L_68d0d8)
-ASM_VAR(BYTE**, g_registry52End, $L_68d0dc)
-ASM_VAR(BYTE**, g_registry52Cap, $L_68d0e0)
-ASM_VAR(BYTE**, g_registry24, $L_68d0c8)
-ASM_VAR(BYTE**, g_registry24End, $L_68d0cc)
-ASM_VAR(BYTE**, g_registry24Cap, $L_68d0d0)
+KING_BSS(BYTE**, g_registry52, 0x68d0d8)
+KING_BSS(BYTE**, g_registry52End, 0x68d0dc)
+KING_BSS(BYTE**, g_registry52Cap, 0x68d0e0)
+KING_BSS(BYTE**, g_registry24, 0x68d0c8)
+KING_BSS(BYTE**, g_registry24End, 0x68d0cc)
+KING_BSS(BYTE**, g_registry24Cap, 0x68d0d0)
 ASM_VAR(AsmLabel, s_pair, $L_66cb08)
 ASM_VAR(AsmLabel, s_number, $L_66ca60)
 ASM_VAR(AsmLabel, s_string, $L_66ca58)
@@ -646,13 +646,13 @@ ASM_PROC(FUN_401000)    // the AI clock, returns double
 extern "C" void FUN_4172e0(); KING_ALIAS("_FUN_4172e0", "_Player_UpdateFlagsGet")
 extern "C" void FUN_417530(); KING_ALIAS("_FUN_417530", "_Player_Leave")
 extern "C" void FUN_483cb0(); KING_ALIAS("_FUN_483cb0", "_displayScreenMessage")    // shows a screen message
-ASM_VAR(BYTE*, g_aiMessages, $L_68a850)
-ASM_VAR(BYTE*, g_aiMessagesEnd, $L_68a854)
+KING_BSS(BYTE*, g_aiMessages, 0x68a850)
+KING_BSS(BYTE*, g_aiMessagesEnd, 0x68a854)
 ASM_VAR(AsmLabel, s_noMessage, $L_66cdd8)
-ASM_VAR(AsmLabel, g_trace, $L_71e808)
-ASM_VAR(BYTE*, g_traceData, $L_71e814)
-ASM_VAR(int, g_traceSize, $L_71e810)
-ASM_VAR(int, g_tracePos, $L_71e818)
+KING_BSS(AsmLabel, g_trace, 0x71e808)
+KING_BSS(BYTE*, g_traceData, 0x71e814)
+KING_BSS(int, g_traceSize, 0x71e810)
+KING_BSS(int, g_tracePos, 0x71e818)
 ASM_VAR(AsmLabel, g_tagArt, $L_66c830)
 ASM_VAR(AsmLabel, g_tagMpl, $L_66c7ec)
 ASM_VAR(AsmLabel, s_finishRacingPlayer, $L_66cc8c)
@@ -666,18 +666,18 @@ extern "C" void FUN_436ef0(); KING_ALIAS("_FUN_436ef0", "_Ai_GetPositionIdVRoom"
 extern "C" void FUN_404c70(); KING_ALIAS("_FUN_404c70", "_Town_ById")    // the index of a VrIndex (out, id)
 extern "C" void FUN_440970(); KING_ALIAS("_FUN_440970", "_Ai_GetOrderList")
 extern "C" void FUN_441120(); KING_ALIAS("_FUN_441120", "_Ai_GetOrderInfoIdx")
-ASM_VAR(BYTE*, g_playersHead, $L_68b990)
+KING_BSS(BYTE*, g_playersHead, 0x68b990)
 ASM_VAR(AsmLabel, s_clearPlayerFromMafia, $L_66da10)
 ASM_VAR(AsmLabel, s_clearPlayerFromTail, $L_66da38)
 ASM_VAR(AsmLabel, s_getPositionId, $L_66e57c)
 ASM_VAR(AsmLabel, s_setPlayerPositionV, $L_66eb28)
 ASM_VAR(AsmLabel, s_getTownInfo, $L_66eec8)
 ASM_VAR(AsmLabel, s_getOrderInfo, $L_66ef68)
-ASM_VAR(AsmLabel, g_numberText, $L_77e660)
+KING_BSS(AsmLabel, g_numberText, 0x77e660)
 ASM_VAR(AsmLabel, s_idFormat, $L_66d4e4)
 ASM_VAR(AsmLabel, s_invalidId, $L_66cbf4)
 ASM_VAR(AsmLabel, s_playerIdType, $L_66d4d8)
-ASM_VAR(BYTE**, g_townsBegin, $L_68cec0)
+KING_BSS(BYTE**, g_townsBegin, 0x68cec0)
 
 extern "C" void FUN_4778a0(); KING_ALIAS("_FUN_4778a0", "_Player_ClearOrderLists")
 extern "C" void FUN_442c60(); KING_ALIAS("_FUN_442c60", "_Ai_AccountForChangeInLoadState")
@@ -772,12 +772,12 @@ extern "C" void __cdecl AI_Grow421d90(int* entry, int a, int b);   // = Ai_Creat
 KING_ALIAS("_AI_Grow421d90", "_Ai_CreateDealerForSale")
 extern "C" double __cdecl AI_Now();
 KING_ALIAS("_AI_Now", "FUN_401000")
-ASM_VAR(PtrVec, g_68a980, $L_68a980)
-ASM_VAR(PtrVec, g_68a984, $L_68a984)
-ASM_VAR(BYTE*, g_68cca8, $L_68cca8)
+KING_BSS(PtrVec, g_68a980, 0x68a980)
+KING_BSS(PtrVec, g_68a984, 0x68a984)
+KING_BSS(BYTE*, g_68cca8, 0x68cca8)
 typedef BYTE CarTypeBytes[1];
 // g_carTypes (car.h) + 76, 2416 bytes per type: +100 here is the type's +176
-ASM_VAR(CarTypeBytes, g_carTypes76, $L_697914)
+KING_BSS(CarTypeBytes, g_carTypes76, 0x697914)
 ASM_VAR(AiText, g_strPresentPick, $L_66d7f8)
 ASM_VAR(AiText, g_vtbl64b71c, $L_64b71c)
 ASM_VAR(AiText, g_vtbl64b718, $L_64b718)
@@ -1056,24 +1056,24 @@ KING_ALIAS("_AI_Task42b060", "_Rec_SetActive")
 extern "C" void __cdecl Screen_569310(int id, unsigned on);        // copter.cpp
 extern "C" void __cdecl Screen_569410(int id, int on);             // copter.cpp
 
-ASM_VAR(int, g_68d188, $L_68d188)
-ASM_VAR(BYTE, g_68d168, $L_68d168)
+KING_BSS(int, g_68d188, 0x68d188)
+KING_BSS(BYTE, g_68d168, 0x68d168)
 ASM_VAR(int, g_66c6e0, $L_66c6e0)
 ASM_VAR(int, g_66c6e4, $L_66c6e4)
-ASM_VAR(PtrVec, g_68cf60, $L_68cf60)
-ASM_VAR(PtrVec, g_68cf64, $L_68cf64)
+KING_BSS(PtrVec, g_68cf60, 0x68cf60)
+KING_BSS(PtrVec, g_68cf64, 0x68cf64)
 ASM_VAR(unsigned, g_66c6d0, $L_66c6d0)
-ASM_VAR(unsigned, g_68d164, $L_68d164)
-ASM_VAR(unsigned, g_68d160, $L_68d160)
-ASM_VAR(unsigned, g_68d15c, $L_68d15c)
-ASM_VAR(DVec3, g_68bab0, $L_68bab0)
-ASM_VAR(BYTE*, g_68cf28, $L_68cf28)
-ASM_VAR(double, g_68d190, $L_68d190)
-ASM_VAR(int, g_68d18c, $L_68d18c)
-ASM_VAR(PtrVec, g_68cc18, $L_68cc18)
-ASM_VAR(PtrVec, g_68cc1c, $L_68cc1c)
-ASM_VAR(PtrVec, g_68a970, $L_68a970)
-ASM_VAR(PtrVec, g_68a974, $L_68a974)
+KING_BSS(unsigned, g_68d164, 0x68d164)
+KING_BSS(unsigned, g_68d160, 0x68d160)
+KING_BSS(unsigned, g_68d15c, 0x68d15c)
+KING_BSS(DVec3, g_68bab0, 0x68bab0)
+KING_BSS(BYTE*, g_68cf28, 0x68cf28)
+KING_BSS(double, g_68d190, 0x68d190)
+KING_BSS(int, g_68d18c, 0x68d18c)
+KING_BSS(PtrVec, g_68cc18, 0x68cc18)
+KING_BSS(PtrVec, g_68cc1c, 0x68cc1c)
+KING_BSS(PtrVec, g_68a970, 0x68a970)
+KING_BSS(PtrVec, g_68a974, 0x68a974)
 ASM_VAR(AiText, g_str66da80, $L_66da80)
 ASM_VAR(AiText, g_strStartKey, $L_66da84)
 ASM_VAR(AiText, g_strSeeIfBankrupted, $L_66da00)
@@ -1513,11 +1513,11 @@ extern "C" void FUN_44eef0(); KING_ALIAS("_FUN_44eef0", "@Vec4b_Insert44eef0@16"
 extern "C" void FUN_450330(); KING_ALIAS("_FUN_450330", "@Rec24Vec_InsertAux@16")    // vector<24 bytes>::insert_aux
 extern "C" void FUN_4505a0(); KING_ALIAS("_FUN_4505a0", "@Rec24bVec_InsertAux@16")
 
-ASM_VAR(PtrVec, g_68cbe8, $L_68cbe8)
-ASM_VAR(PtrVec, g_68cbec, $L_68cbec)
-ASM_VAR(void*, g_68cf6c, $L_68cf6c)
+KING_BSS(PtrVec, g_68cbe8, 0x68cbe8)
+KING_BSS(PtrVec, g_68cbec, 0x68cbec)
+KING_BSS(void*, g_68cf6c, 0x68cf6c)
 typedef CharVec* NameList[1];
-ASM_VAR(NameList*, g_68d0d8, $L_68d0d8)
+KING_BSS(NameList*, g_68d0d8, 0x68d0d8)
 ASM_VAR(AiText, g_vtbl64b920, $L_64b920)
 ASM_VAR(AiText, g_vtbl64b948, $L_64b948)
 ASM_VAR(AiText, g_strForfeit, $L_66f320)
@@ -1999,14 +1999,14 @@ void __fastcall Str_AssignPair(StrRef* s, void*, const StrRef* src)             
 // medium-sized functions of the unit
 
 ASM_VAR(unsigned, g_spinCount, $L_66c83c)       // spins before sleeping: 30, or 1000 after a quick success
-ASM_VAR(unsigned, g_spinLast, $L_68d208)
+KING_BSS(unsigned, g_spinLast, 0x68d208)
 ASM_VAR(char, g_strAiMainFile, $L_66c7b0)       // "C:\Nek\Vrappl\Gi\Htai\Ai_main.cpp"
 ASM_VAR(char, g_strAiMainId, $L_66c558)         // "$Id: Ai_main.cpp ..."
 ASM_VAR(char, g_strErr05491, $L_66c840)         // "Internal error 05491"
-ASM_VAR(BYTE**, g_vec68d0d8, $L_68d0d8)
-ASM_VAR(BYTE**, g_vec68d0dc, $L_68d0dc)
-ASM_VAR(BYTE**, g_vec68d0c8, $L_68d0c8)
-ASM_VAR(BYTE**, g_vec68d0cc, $L_68d0cc)
+KING_BSS(BYTE**, g_vec68d0d8, 0x68d0d8)
+KING_BSS(BYTE**, g_vec68d0dc, 0x68d0dc)
+KING_BSS(BYTE**, g_vec68d0c8, 0x68d0c8)
+KING_BSS(BYTE**, g_vec68d0cc, 0x68d0cc)
 
 // the spin lock of the allocators: spins, then sleeps longer and longer
 extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*)
@@ -2266,8 +2266,8 @@ ASM_VAR(char, g_strAiPlayH, $L_66d3fc)          // "C:\Nek\Vrappl\Gi\Htai\ai_pla
 ASM_VAR(char, g_strErr9012, $L_66d41c)          // "Internal error 9012"
 ASM_VAR(char, g_strTrailerStorm, $L_66d72c)     // "STrailerStorm"
 ASM_VAR(char, g_strTownAA, $L_66d768)           // "TOWN_AA"
-ASM_VAR(int, g_68d14c, $L_68d14c)
-ASM_VAR(int, g_68d154, $L_68d154)
+KING_BSS(int, g_68d14c, 0x68d14c)
+KING_BSS(int, g_68d154, 0x68d154)
 ASM_VAR(double, g_64b710, $L_64b710)            // 12
 ASM_VAR(double, g_64b708, $L_64b708)            // 32
 
@@ -2450,8 +2450,8 @@ extern "C" void FUN_458cf0(); KING_ALIAS("_FUN_458cf0", "_Bytes_AllocCopy@12")  
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 extern "C" void FUN_602ca0(); KING_ALIAS("_FUN_602ca0", "@MsgBuf_FreeStorage@8")
 ASM_VAR(double, g_66c6f0, $L_66c6f0)
-ASM_VAR(double, g_68d180, $L_68d180)
-ASM_VAR(AiText, g_positionText76, $L_77e6e0)
+KING_BSS(double, g_68d180, 0x68d180)
+KING_BSS(AiText, g_positionText76, 0x77e6e0)
 
 // the AI generator's next value (the table at $L_68b9c8, indices after it)
 static unsigned AiRandom()
@@ -4712,7 +4712,7 @@ BYTE* __cdecl Range_CallD(BYTE* out, DWORD f, DWORD l, int v)
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")    // a value's destructor
 extern "C" void FUN_408080(); KING_ALIAS("_FUN_408080", "_Ai_ReadSetting")    // reads the player types of a "Pair" value
 extern "C" void FUN_4581a0(); KING_ALIAS("_FUN_4581a0", "_Ai_OperatorNew")    // out of memory: retries the allocation
-ASM_VAR(int, g_68a860, $L_68a860)
+KING_BSS(int, g_68a860, 0x68a860)
 extern "C" BYTE* __fastcall Vec4b_Copy(BYTE* self, void*, const BYTE** s);
 extern "C" BYTE* __cdecl UninitFill16(BYTE* d, unsigned n, const void* v);
 
@@ -4841,18 +4841,18 @@ int __stdcall Rec415740_Check(BYTE* p)
 
 extern "C" void FUN_44b090(); KING_ALIAS("_FUN_44b090", "@Vec1_Free@8")    // an order info's destructor part
 extern "C" void FUN_409fc0(); KING_ALIAS("_FUN_409fc0", "_Ai_RetraceCompetitorRegular")    // retraceCompetitorRegular(PlayerId player)
-ASM_VAR(AsmLabel, g_text77e5e0, $L_77e5e0)
+KING_BSS(AsmLabel, g_text77e5e0, 0x77e5e0)
 
-ASM_VAR(BYTE**, g_68cf00, $L_68cf00)
-ASM_VAR(int, g_68a968, $L_68a968)
-ASM_VAR(int, g_68d01c, $L_68d01c)
-ASM_VAR(int, g_68cfe4, $L_68cfe4)
-ASM_VAR(int, g_68d0e4, $L_68d0e4)
-ASM_VAR(int, g_68cf34, $L_68cf34)
-ASM_VAR(unsigned, g_rngI, $L_68a94c)
-ASM_VAR(unsigned, g_rngJ, $L_68a950)
+KING_BSS(BYTE**, g_68cf00, 0x68cf00)
+KING_BSS(int, g_68a968, 0x68a968)
+KING_BSS(int, g_68d01c, 0x68d01c)
+KING_BSS(int, g_68cfe4, 0x68cfe4)
+KING_BSS(int, g_68d0e4, 0x68d0e4)
+KING_BSS(int, g_68cf34, 0x68cf34)
+KING_BSS(unsigned, g_rngI, 0x68a94c)
+KING_BSS(unsigned, g_rngJ, 0x68a950)
 typedef DWORD RngTable[55];
-ASM_VAR(RngTable, g_rng68a870, $L_68a870)
+KING_BSS(RngTable, g_rng68a870, 0x68a870)
 extern "C" BYTE* __fastcall Fx_InitState(BYTE* s, void*);
 extern "C" DWORD* __cdecl UninitCopyDwords(const DWORD* first, const DWORD* last, DWORD* dest);
 extern "C" bool __fastcall Waypoints_RemoveNode(void* self, void*, int node);
@@ -4978,7 +4978,7 @@ int* __cdecl Rec_FirstId(int* out, int idx)
 
 extern "C" void FUN_43bf10(); KING_ALIAS("_FUN_43bf10", "_Ai_AdvancePlayerPosition")    // a player's next position along its route
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<int>::operator=
-ASM_VAR(AsmLabel, g_68b99c, $L_68b99c)
+KING_BSS(AsmLabel, g_68b99c, 0x68b99c)
 extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
 extern "C" void __cdecl Player_EndDealOf(BYTE* p);
 extern "C" void __fastcall Player_SetPosition(void* self, void*, const PositionId* p);
@@ -5160,8 +5160,8 @@ BYTE* __fastcall Order144_CopyConstruct(BYTE* self, void*, const BYTE* s)
 
 extern "C" void FUN_440590(); KING_ALIAS("_FUN_440590", "_Ai_GetTownNameCoordinates")    // default name coordinates of a town (out, town)
 extern "C" void FUN_441ae0(); KING_ALIAS("_FUN_441ae0", "_Ai_GetParkingPointInfo")    // parking info (market, slot, info)
-ASM_VAR(BYTE*, g_68ccbc, $L_68ccbc)
-ASM_VAR(AsmLabel, g_text77e460, $L_77e460)
+KING_BSS(BYTE*, g_68ccbc, 0x68ccbc)
+KING_BSS(AsmLabel, g_text77e460, 0x77e460)
 
 static const char s_getMerchandiseProperties[] = "getMerchandiseProperties(MerchandiseId id, MerchandiseProperties & mp)";
 static const char s_getCoordinates[] = "getCoordinates(AI_Town * town)";
@@ -5386,8 +5386,8 @@ int __cdecl Ai_GetParkingPointInfo(int parking, int point, BYTE* pi)
 
 extern "C" void FUN_41ce50(); KING_ALIAS("_FUN_41ce50", "@Rec41ce50_DestroyVector@8")    // 144-byte record destructor
 extern "C" void FUN_474160(); KING_ALIAS("_FUN_474160", "@Player_SetPlace@12")    // player: set image (index)
-ASM_VAR(BYTE*, g_images68a958, $L_68a958)
-ASM_VAR(BYTE*, g_images68a95c, $L_68a95c)
+KING_BSS(BYTE*, g_images68a958, 0x68a958)
+KING_BSS(BYTE*, g_images68a95c, 0x68a95c)
 
 static const char s_setPlayerImage[] = "setPlayerImage(PlayerId player, int imageIndex)";
 
@@ -5546,8 +5546,8 @@ extern "C" void FUN_436900(); KING_ALIAS("_FUN_436900", "_Ai_GetPositionIdAll") 
 extern "C" void FUN_436bd0(); KING_ALIAS("_FUN_436bd0", "_Ai_GetPositionIdRoom")    // getPositionId(RoomId, vrVector)
 ASM_VAR(char, s_getPositionIdV, $L_66e538)       // "getPositionId(vrVector _v)"
 ASM_VAR(char, s_getPositionIdRV, $L_66e554)      // "getPositionId(RoomId room, vrVector _v)"
-ASM_VAR(BYTE*, g_roomsBegin68d0d8, $L_68d0d8)
-ASM_VAR(BYTE*, g_roomsEnd68d0dc, $L_68d0dc)
+KING_BSS(BYTE*, g_roomsBegin68d0d8, 0x68d0d8)
+KING_BSS(BYTE*, g_roomsEnd68d0dc, 0x68d0dc)
 
 // [FUN_437220] getPositionId(vrVector _v): traced, the float vector widened
 extern "C" int* __cdecl Ai_GetPositionIdV(int* out, float x, float y, float z)
@@ -5578,8 +5578,8 @@ ASM_VAR(char, s__getTangent, $L_66e640)          // "_getTangent(PositionId pos)
 ASM_VAR(char, s_getTangent, $L_66e65c)           // "getTangent(PositionId pos)"
 ASM_VAR(char, s_getCoordinatesPos, $L_66e678)       // "getCoordinates(PositionId pos)"
 ASM_VAR(char, s_findOnTrajectory, $L_66ea1c)     // "findPositionOnATrajectory(PlayerId player, vrVector const & v)"
-ASM_VAR(BYTE**, g_limits68a970, $L_68a970)
-ASM_VAR(BYTE**, g_limits68a974, $L_68a974)
+KING_BSS(BYTE**, g_limits68a970, 0x68a970)
+KING_BSS(BYTE**, g_limits68a974, 0x68a974)
 ASM_VAR(const double, k_noSpeedLimit, $L_64b880)
 extern "C" void FUN_43d1f0(); KING_ALIAS("_FUN_43d1f0", "_Ai_FindPlayerPosition")
 
@@ -5718,8 +5718,8 @@ extern "C" double __cdecl Ai_GetPlayerCapital(BYTE* p)
     return r;
 }
 
-ASM_VAR(BYTE*, g_anchors68cf58, $L_68cf58)
-ASM_VAR(BYTE**, g_roadNodesCap68cf08, $L_68cf08)
+KING_BSS(BYTE*, g_anchors68cf58, 0x68cf58)
+KING_BSS(BYTE**, g_roadNodesCap68cf08, 0x68cf08)
 ASM_VAR(char, s_anode, $L_66c920)                    // "anode"
 extern "C" void FUN_4709b0(); KING_ALIAS("_FUN_4709b0", "@RoadNode_Construct@12")    // a road node's constructor (name)
 extern "C" void FUN_405c00(); KING_ALIAS("_FUN_405c00", "_Ai_BuildEdgesFrom")
@@ -5818,9 +5818,9 @@ extern "C" void __cdecl Costs_Balance(BYTE* p, double* a, double* b, double* out
 
 extern "C" void FUN_446c80(); KING_ALIAS("_FUN_446c80", "_Player_SetFlag20000")
 extern "C" void __cdecl Ai_KillDelayedPlayers();
-ASM_VAR(double, g_camX68bab0, $L_68bab0)
-ASM_VAR(double, g_camY68bab8, $L_68bab8)
-ASM_VAR(double, g_camZ68bac0, $L_68bac0)
+KING_BSS(double, g_camX68bab0, 0x68bab0)
+KING_BSS(double, g_camY68bab8, 0x68bab8)
+KING_BSS(double, g_camZ68bac0, 0x68bac0)
 
 // [FUN_421c00] waiting players (state 9) far from the camera (over 2000) and idle for 900..1020 s are removed
 extern "C" void __cdecl Players_DropIdleFar()
@@ -5889,42 +5889,42 @@ extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_4ad440(); KING_ALIAS("_FUN_4ad440", "@Sch_Construct@16")
 ASM_PROC($L_401b90)
 extern "C" void $L_447d50(); KING_ALIAS("_$L_447d50", "@HashTable_Construct@8")
-ASM_VAR(char, g_init68a830, $L_68a830)
-ASM_VAR(char, g_init68a840, $L_68a840)
-ASM_VAR(char, g_init68a850, $L_68a850)
-ASM_VAR(char, g_init68a860, $L_68a860)
-ASM_VAR(char, g_init68a958, $L_68a958)
-ASM_VAR(char, g_init68a970, $L_68a970)
-ASM_VAR(char, g_init68a980, $L_68a980)
-ASM_VAR(char, g_init68b990, $L_68b990)
-ASM_VAR(char, g_init68b998, $L_68b998)
-ASM_VAR(char, g_init68b9b8, $L_68b9b8)
-ASM_VAR(char, g_init68bac8, $L_68bac8)
-ASM_VAR(char, g_init68bb58, $L_68bb58)
-ASM_VAR(char, g_init68cbe8, $L_68cbe8)
-ASM_VAR(char, g_init68cc08, $L_68cc08)
-ASM_VAR(char, g_init68cc18, $L_68cc18)
-ASM_VAR(char, g_init68cc88, $L_68cc88)
-ASM_VAR(char, g_init68cc98, $L_68cc98)
-ASM_VAR(char, g_init68cca8, $L_68cca8)
-ASM_VAR(char, g_init68ccb8, $L_68ccb8)
-ASM_VAR(char, g_init68ceb0, $L_68ceb0)
-ASM_VAR(char, g_init68cec0, $L_68cec0)
-ASM_VAR(char, g_init68cf00, $L_68cf00)
-ASM_VAR(char, g_init68cf10, $L_68cf10)
-ASM_VAR(char, g_init68cf28, $L_68cf28)
-ASM_VAR(char, g_init68cf38, $L_68cf38)
-ASM_VAR(char, g_init68cf48, $L_68cf48)
-ASM_VAR(char, g_init68cf58, $L_68cf58)
-ASM_VAR(char, g_init68cf60, $L_68cf60)
-ASM_VAR(char, g_init68cf6c, $L_68cf6c)
-ASM_VAR(char, g_init68cfd8, $L_68cfd8)
-ASM_VAR(char, g_init68cff0, $L_68cff0)
-ASM_VAR(char, g_init68d008, $L_68d008)
-ASM_VAR(char, g_init68d0a8, $L_68d0a8)
-ASM_VAR(char, g_init68d0b8, $L_68d0b8)
-ASM_VAR(char, g_init68d0c8, $L_68d0c8)
-ASM_VAR(char, g_init68d0d8, $L_68d0d8)
+KING_BSS(char, g_init68a830, 0x68a830)
+KING_BSS(char, g_init68a840, 0x68a840)
+KING_BSS(char, g_init68a850, 0x68a850)
+KING_BSS(char, g_init68a860, 0x68a860)
+KING_BSS(char, g_init68a958, 0x68a958)
+KING_BSS(char, g_init68a970, 0x68a970)
+KING_BSS(char, g_init68a980, 0x68a980)
+KING_BSS(char, g_init68b990, 0x68b990)
+KING_BSS(char, g_init68b998, 0x68b998)
+KING_BSS(char, g_init68b9b8, 0x68b9b8)
+KING_BSS(char, g_init68bac8, 0x68bac8)
+KING_BSS(char, g_init68bb58, 0x68bb58)
+KING_BSS(char, g_init68cbe8, 0x68cbe8)
+KING_BSS(char, g_init68cc08, 0x68cc08)
+KING_BSS(char, g_init68cc18, 0x68cc18)
+KING_BSS(char, g_init68cc88, 0x68cc88)
+KING_BSS(char, g_init68cc98, 0x68cc98)
+KING_BSS(char, g_init68cca8, 0x68cca8)
+KING_BSS(char, g_init68ccb8, 0x68ccb8)
+KING_BSS(char, g_init68ceb0, 0x68ceb0)
+KING_BSS(char, g_init68cec0, 0x68cec0)
+KING_BSS(char, g_init68cf00, 0x68cf00)
+KING_BSS(char, g_init68cf10, 0x68cf10)
+KING_BSS(char, g_init68cf28, 0x68cf28)
+KING_BSS(char, g_init68cf38, 0x68cf38)
+KING_BSS(char, g_init68cf48, 0x68cf48)
+KING_BSS(char, g_init68cf58, 0x68cf58)
+KING_BSS(char, g_init68cf60, 0x68cf60)
+KING_BSS(char, g_init68cf6c, 0x68cf6c)
+KING_BSS(char, g_init68cfd8, 0x68cfd8)
+KING_BSS(char, g_init68cff0, 0x68cff0)
+KING_BSS(char, g_init68d008, 0x68d008)
+KING_BSS(char, g_init68d0a8, 0x68d0a8)
+KING_BSS(char, g_init68d0b8, 0x68d0b8)
+KING_BSS(char, g_init68d0c8, 0x68d0c8)
+KING_BSS(char, g_init68d0d8, 0x68d0d8)
 
 // a container constructed with a (stateless) allocator argument
 static void Init_WithAllocator(void (*ctor)(), void* obj)
@@ -6152,7 +6152,7 @@ extern "C" void __cdecl AI_Init68a830()
     char alloc;
     CallThis(FUN_448cd0, &g_init68a830, 12, &zero, &alloc);
 }
-ASM_VAR(int, g_stlLock68d204, $L_68d204)
+KING_BSS(int, g_stlLock68d204, 0x68d204)
 
 // [FUN_44ba80] releases the STL lock
 extern "C" void __cdecl Stl_Unlock()
@@ -6257,9 +6257,9 @@ ASM_VAR(AsmLabel, s_fmt66d9c8, $L_66d9c8)
 ASM_VAR(AsmLabel, s_fmt66d9c4, $L_66d9c4)
 ASM_VAR(AsmLabel, s_fmt66daa8, $L_66daa8)
 ASM_VAR(AsmLabel, s_prefix66c7ec, $L_66c7ec)
-ASM_VAR(char, g_text68cdac, $L_68cdac)
-ASM_VAR(double, g_time68d1b8, $L_68d1b8)
-ASM_VAR(void**, g_list68b99c, $L_68b99c)
+KING_BSS(char, g_text68cdac, 0x68cdac)
+KING_BSS(double, g_time68d1b8, 0x68d1b8)
+KING_BSS(void**, g_list68b99c, 0x68b99c)
 extern "C" void FUN_477210(); KING_ALIAS("_FUN_477210", "_Player_UpdateFlags")    // updates a player's flags
 extern "C" void FUN_56ae60(); KING_ALIAS("_FUN_56ae60", "_Messages_Add")    // adds a message to the message list
 extern "C" void FUN_403940(); KING_ALIAS("_FUN_403940", "_Ai_Reset")
@@ -6436,8 +6436,8 @@ extern "C" void __cdecl Player_Set976(BYTE* id, char c, int a, int b)
 }
 
 extern "C" void FUN_426f20(); KING_ALIAS("_FUN_426f20", "_Player_CheckBankrupt")    // checks whether a player went bankrupt
-ASM_VAR(BYTE*, g_places68a958b, $L_68a958)
-ASM_VAR(BYTE*, g_players68b990b, $L_68b990)
+KING_BSS(BYTE*, g_places68a958b, 0x68a958)
+KING_BSS(BYTE*, g_players68b990b, 0x68b990)
 
 // [FUN_40c1a0] destructor of a value with a buffer {+88 begin, +96 capacity}: frees the buffer, releases the handle
 extern "C" void __fastcall ValueBuf_Destroy(void** self, int)
@@ -6502,17 +6502,17 @@ extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")    // con
 extern "C" void FUN_4538a0(); KING_ALIAS("_FUN_4538a0", "@Vec4b_InsertM@16")    // vector of dwords: insert (pos, &x)
 extern "C" void FUN_4566e0(); KING_ALIAS("_FUN_4566e0", "_Recs104_PickRandom")    // picks a random record of 104 bytes
 extern "C" void FUN_456880(); KING_ALIAS("_FUN_456880", "_Pick_RandomMasked")    // picks a random record of 104 bytes by mask
-ASM_VAR(BYTE**, g_vec68cf60, $L_68cf60)
-ASM_VAR(BYTE**, g_vec68cf64, $L_68cf64)
-ASM_VAR(BYTE**, g_vec68cf68, $L_68cf68)
-ASM_VAR(BYTE**, g_vec68a980, $L_68a980)
-ASM_VAR(BYTE**, g_vec68a984, $L_68a984)
-ASM_VAR(BYTE**, g_vec68a988, $L_68a988)
-ASM_VAR(BYTE*, g_recs68ccb8, $L_68ccb8)
-ASM_VAR(BYTE*, g_recs68ccbc, $L_68ccbc)
-ASM_VAR(char, g_rand68b9c8, $L_68b9c8)
+KING_BSS(BYTE**, g_vec68cf60, 0x68cf60)
+KING_BSS(BYTE**, g_vec68cf64, 0x68cf64)
+KING_BSS(BYTE**, g_vec68cf68, 0x68cf68)
+KING_BSS(BYTE**, g_vec68a980, 0x68a980)
+KING_BSS(BYTE**, g_vec68a984, 0x68a984)
+KING_BSS(BYTE**, g_vec68a988, 0x68a988)
+KING_BSS(BYTE*, g_recs68ccb8, 0x68ccb8)
+KING_BSS(BYTE*, g_recs68ccbc, 0x68ccbc)
+KING_BSS(char, g_rand68b9c8, 0x68b9c8)
 ASM_VAR(AsmLabel, s_fmt66d58c, $L_66d58c)
-ASM_VAR(char, g_empty68d1c0, $L_68d1c0)
+KING_BSS(char, g_empty68d1c0, 0x68d1c0)
 
 // adds a player to the vector at vec (begin, end, capacity) unless it is in it
 static void PlayerVec_AddUnique(BYTE*** vec, BYTE* id)
@@ -6637,12 +6637,12 @@ extern "C" void FUN_455950(); KING_ALIAS("_FUN_455950", "@Rec_Get1@8")
 extern "C" void FUN_455940(); KING_ALIAS("_FUN_455940", "@Rec_Get0@8")
 extern "C" void FUN_40a1d0(); KING_ALIAS("_FUN_40a1d0", "_Player_CheckRouteStart")    // checks a player's route start
 extern "C" void FUN_425610(); KING_ALIAS("_FUN_425610", "_AI_RandomTraffic")    // random traffic
-ASM_VAR(int, g_count68d164, $L_68d164)
+KING_BSS(int, g_count68d164, 0x68d164)
 typedef void (__cdecl* PresentCb)(int, int);
-ASM_VAR(PresentCb, g_presentCb68d11c, $L_68d11c)
-ASM_VAR(int*, g_edges68cf38, $L_68cf38)
-ASM_VAR(BYTE**, g_recs68cc18b, $L_68cc18)
-ASM_VAR(BYTE**, g_recs68cc1cb, $L_68cc1c)
+KING_BSS(PresentCb, g_presentCb68d11c, 0x68d11c)
+KING_BSS(int*, g_edges68cf38, 0x68cf38)
+KING_BSS(BYTE**, g_recs68cc18b, 0x68cc18)
+KING_BSS(BYTE**, g_recs68cc1cb, 0x68cc1c)
 
 // [FUN_420000] FUN_4015a0 of a record with 1 and with 9
 extern "C" void __cdecl Rec_4015a0Both(int id)
@@ -7174,9 +7174,9 @@ extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size)
     g_stlLock = 0;
 }
 
-ASM_VAR(BYTE*, g_stlStart68d214, $L_68d214)
-ASM_VAR(BYTE*, g_stlEnd68d218, $L_68d218)
-ASM_VAR(unsigned, g_stlHeap68d210, $L_68d210)
+KING_BSS(BYTE*, g_stlStart68d214, 0x68d214)
+KING_BSS(BYTE*, g_stlEnd68d218, 0x68d218)
+KING_BSS(unsigned, g_stlHeap68d210, 0x68d210)
 
 // [FUN_44bcf0] malloc; on failure the out-of-memory loop (handler, retry, throw)
 extern "C" void* __cdecl Stl_OomMalloc(unsigned bytes)
@@ -7640,15 +7640,15 @@ extern "C" void FUN_41b320(); KING_ALIAS("_FUN_41b320", "_Goods_SetDistance")   
 extern "C" void FUN_44ab90(); KING_ALIAS("_FUN_44ab90", "@Vec16_Free@8")
 extern "C" BYTE* __fastcall Order_Construct(BYTE* self, void*);                 // cargo_orders.cpp
 extern "C" void __cdecl Order_SetPrice(BYTE* pl, int* o, char direct, char urgent);
-ASM_VAR(PtrVec, g_spots68d0b8, $L_68d0b8)
-ASM_VAR(PtrVec, g_spots68d0bc, $L_68d0bc)
-ASM_VAR(int, g_hiddenMax68a98c, $L_68a98c)
-ASM_VAR(int, g_baseMax68cf54, $L_68cf54)
-ASM_VAR(int, g_roadMax68d0a0, $L_68d0a0)
-ASM_VAR(int, g_cargoMax68a964, $L_68a964)
-ASM_VAR(int, g_parkingMax68bb54, $L_68bb54)
+KING_BSS(PtrVec, g_spots68d0b8, 0x68d0b8)
+KING_BSS(PtrVec, g_spots68d0bc, 0x68d0bc)
+KING_BSS(int, g_hiddenMax68a98c, 0x68a98c)
+KING_BSS(int, g_baseMax68cf54, 0x68cf54)
+KING_BSS(int, g_roadMax68d0a0, 0x68d0a0)
+KING_BSS(int, g_cargoMax68a964, 0x68a964)
+KING_BSS(int, g_parkingMax68bb54, 0x68bb54)
 typedef void (__cdecl* PresentHook)(int id, int added);
-ASM_VAR(PresentHook, g_presentHook68d11c, $L_68d11c)
+KING_BSS(PresentHook, g_presentHook68d11c, 0x68d11c)
 
 // a spot's weight for a kind: 0.75 ^ its use count when the spot is of the kind
 static double Spot_Weight(BYTE* spot, int* kind)
@@ -7975,7 +7975,7 @@ extern "C" void __cdecl Destroy16s(BYTE* first, BYTE* last);
 extern "C" BYTE* __fastcall Rec41ce50_DeletingDestructor(BYTE* s, void*, int flags);
 extern "C" BYTE* __fastcall Order144_CopyConstruct(BYTE* self, void*, const BYTE* s);
 extern "C" void* __fastcall Player_ActiveCargo(void* s, void*);
-ASM_VAR(double, g_lastHumanLoad68d100, $L_68d100)
+KING_BSS(double, g_lastHumanLoad68d100, 0x68d100)
 struct Blob144 { BYTE b[144]; };
 
 static const char s_loadOrder[] =
@@ -8244,8 +8244,8 @@ extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 extern "C" void FUN_4b0e90(); KING_ALIAS("_FUN_4b0e90", "@SchNumber_Value@8")
 extern "C" BYTE* __fastcall MultValue_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
 extern "C" void __cdecl ConstructStrRef(DWORD* d, const DWORD* s);                        // ai_containers.cpp
-ASM_VAR(AsmLabel, g_reader68bb58, $L_68bb58)
-ASM_VAR(BYTE*, g_lists68b9b8, $L_68b9b8)
+KING_BSS(AsmLabel, g_reader68bb58, 0x68bb58)
+KING_BSS(BYTE*, g_lists68b9b8, 0x68b9b8)
 
 // the list after the head: *l = its +32 member
 static void List_Advance(StrRef* l)
@@ -8667,11 +8667,11 @@ extern "C" int __cdecl Way_Point(int i, DWORD* pos, int* id);
 extern "C" int* __cdecl Player_CarId(int* out);
 extern "C" void __cdecl Construct32Skip1(DWORD* d, const DWORD* s);
 extern "C" void FUN_44b0b0(); KING_ALIAS("_FUN_44b0b0", "@Vec32_Free@8")
-ASM_VAR(int, g_loadTick68d13c, $L_68d13c)
-ASM_VAR(int, g_loadCount68d1b4, $L_68d1b4)
-ASM_VAR(double, g_loadRadius68d128, $L_68d128)
-ASM_VAR(BYTE, g_loadDone68d130, $L_68d130)
-ASM_VAR(BYTE, g_loadNear68d138, $L_68d138)
+KING_BSS(int, g_loadTick68d13c, 0x68d13c)
+KING_BSS(int, g_loadCount68d1b4, 0x68d1b4)
+KING_BSS(double, g_loadRadius68d128, 0x68d128)
+KING_BSS(BYTE, g_loadDone68d130, 0x68d130)
+KING_BSS(BYTE, g_loadNear68d138, 0x68d138)
 ASM_VAR(int, g_wayPoints67b2b8, $L_67b2b8)
 
 static const char s_xLoadEntities[] = "xLoadEntities()";
@@ -8933,15 +8933,15 @@ done:
 // the world settings
 
 extern "C" void FUN_407570(); KING_ALIAS("_FUN_407570", "_Ai_ReadPlayerType")    // reads a player type (arg, pair handle by value)
-ASM_VAR(double, g_startX68b9a0, $L_68b9a0)
-ASM_VAR(double, g_startY68b9a8, $L_68b9a8)
-ASM_VAR(double, g_startZ68b9b0, $L_68b9b0)
-ASM_VAR(DVec3, g_start68bab0, $L_68bab0)
+KING_BSS(double, g_startX68b9a0, 0x68b9a0)
+KING_BSS(double, g_startY68b9a8, 0x68b9a8)
+KING_BSS(double, g_startZ68b9b0, 0x68b9b0)
+KING_BSS(DVec3, g_start68bab0, 0x68bab0)
 typedef int IntTable4[4];
-ASM_VAR(IntTable4, g_forSale68ced0, $L_68ced0)
-ASM_VAR(int, g_forSaleUsed68cee8, $L_68cee8)
-ASM_VAR(int, g_forSaleStolen68cef8, $L_68cef8)
-ASM_VAR(int, g_forHire68d150, $L_68d150)
+KING_BSS(IntTable4, g_forSale68ced0, 0x68ced0)
+KING_BSS(int, g_forSaleUsed68cee8, 0x68cee8)
+KING_BSS(int, g_forSaleStolen68cef8, 0x68cef8)
+KING_BSS(int, g_forHire68d150, 0x68d150)
 
 // the number value of the head of the list after n steps of pair (n >= 1, the first one checked)
 static double Setting_Number(StrRef* pair, int n)
@@ -9401,7 +9401,7 @@ extern "C" void FUN_438d70(); KING_ALIAS("_FUN_438d70", "_Road_GetRoadParameters
 extern "C" void FUN_4397e0(); KING_ALIAS("_FUN_4397e0", "_Ai_OrientationFrom")    // a look-at matrix (out, const DVec3* pos, const DVec3* dir)
 extern "C" void FUN_41bbe0(); KING_ALIAS("_FUN_41bbe0", "_Ai_CargoCosts")    // a player's costs for a cargo (player, double*, double*, double*, rec104, int)
 extern "C" double __cdecl Order_Margin(int* o, double done, char bonus, double* price, double* value);
-ASM_VAR(AsmLabel, g_text77e5e0b, $L_77e5e0)
+KING_BSS(AsmLabel, g_text77e5e0b, 0x77e5e0)
 
 static const char s_getPresentData[] = "getPresentData(PlayerId player, PresentId present, GetPresentData & pd )";
 
@@ -9568,9 +9568,9 @@ extern "C" void FUN_44e130(); KING_ALIAS("_FUN_44e130", "@Vec4b_Insert44e130@16"
 extern "C" void FUN_44e6b0(); KING_ALIAS("_FUN_44e6b0", "@Vec4b_Insert44e6b0@16")
 extern "C" void FUN_44ec30(); KING_ALIAS("_FUN_44ec30", "@Vec4b_Insert44ec30@16")
 extern "C" void FUN_4140d0(); KING_ALIAS("_FUN_4140d0", "@Rec_Init4140d0@8")
-ASM_VAR(PtrVec, g_68cbe8v, $L_68cbe8)
-ASM_VAR(PtrVec, g_68cc18v, $L_68cc18)
-ASM_VAR(PtrVec, g_68a970v, $L_68a970)
+KING_BSS(PtrVec, g_68cbe8v, 0x68cbe8)
+KING_BSS(PtrVec, g_68cc18v, 0x68cc18)
+KING_BSS(PtrVec, g_68a970v, 0x68a970)
 
 // appends a pointer to a vector (insert_aux when full)
 static void PtrVec_Push(void** v, void* x, void (*insert)())
@@ -9738,10 +9738,10 @@ extern "C" void FUN_405b00(); KING_ALIAS("_FUN_405b00", "_Road_LinkObject")
 extern "C" void FUN_405f90(); KING_ALIAS("_FUN_405f90", "_Anchors_AttachNodes")
 extern "C" void FUN_406160(); KING_ALIAS("_FUN_406160", "_Road_FinishNetwork")    // finishes the road network
 extern "C" void FUN_407380(); KING_ALIAS("_FUN_407380", "@Rec_Init407380@8")
-ASM_VAR(BYTE*, g_wayDir68bac8, $L_68bac8)
-ASM_VAR(BYTE*, g_wayDirEnd68bacc, $L_68bacc)
+KING_BSS(BYTE*, g_wayDir68bac8, 0x68bac8)
+KING_BSS(BYTE*, g_wayDirEnd68bacc, 0x68bacc)
 ASM_VAR(DWORD, g_wayCrc66c730, $L_66c730)
-ASM_VAR(int, g_wayCount68d1a4, $L_68d1a4)
+KING_BSS(int, g_wayCount68d1a4, 0x68d1a4)
 ASM_VAR(AsmLabel, vt_roadObject64b62c, $L_64b62c)
 ASM_VAR(AsmLabel, vt_bline64b600, $L_64b600)
 ASM_VAR(AsmLabel, vt_polyline64b5c0, $L_64b5c0)
@@ -9983,15 +9983,15 @@ extern "C" void __cdecl Ai_LoadRoads()
 
 extern "C" void FUN_4148a0(); KING_ALIAS("_FUN_4148a0", "_Ai_PickImage")    // a new player's place (player)
 extern "C" BYTE* __cdecl Players_Append(int kind);                                  // ai_drivers.cpp
-ASM_VAR(PtrVec, g_typeNames68cf48, $L_68cf48)
+KING_BSS(PtrVec, g_typeNames68cf48, 0x68cf48)
 typedef unsigned* UintVec;
-ASM_VAR(UintVec, g_typeCounters68a830, $L_68a830)
-ASM_VAR(double, g_newPlayer68cfe8, $L_68cfe8)
-ASM_VAR(int, g_humanVehicleKey68d144, $L_68d144)
-ASM_VAR(int, g_humanOwner68d148, $L_68d148)
-ASM_VAR(BYTE, g_jeep68d178, $L_68d178)
-ASM_VAR(BYTE, g_allowKind7_68d1a0, $L_68d1a0)
-ASM_VAR(char*, g_humanName68d0a8, $L_68d0a8)
+KING_BSS(UintVec, g_typeCounters68a830, 0x68a830)
+KING_BSS(double, g_newPlayer68cfe8, 0x68cfe8)
+KING_BSS(int, g_humanVehicleKey68d144, 0x68d144)
+KING_BSS(int, g_humanOwner68d148, 0x68d148)
+KING_BSS(BYTE, g_jeep68d178, 0x68d178)
+KING_BSS(BYTE, g_allowKind7_68d1a0, 0x68d1a0)
+KING_BSS(char*, g_humanName68d0a8, 0x68d0a8)
 typedef char TruckName[128];
 ASM_VAR(TruckName, g_truckName66c60c, $L_66c60c)
 
@@ -10269,9 +10269,9 @@ extern "C" void FUN_410e10(); KING_ALIAS("_FUN_410e10", "@Rec_Init410e10@8")
 extern "C" void FUN_448a70(); KING_ALIAS("_FUN_448a70", "@Vec36_PushBack@12")
 extern "C" void FUN_410df0(); KING_ALIAS("_FUN_410df0", "@CharVec_Str@8")
 extern "C" void FUN_448c00(); KING_ALIAS("_FUN_448c00", "@Vec4_PushBackD@12")
-ASM_VAR(AsmLabel, g_people68ceb0, $L_68ceb0)
-ASM_VAR(BYTE*, g_resources68cc08, $L_68cc08)
-ASM_VAR(BYTE*, g_resourcesEnd68cc0c, $L_68cc0c)
+KING_BSS(AsmLabel, g_people68ceb0, 0x68ceb0)
+KING_BSS(BYTE*, g_resources68cc08, 0x68cc08)
+KING_BSS(BYTE*, g_resourcesEnd68cc0c, 0x68cc0c)
 
 // [FUN_411c00] reads people: (id module (kind name name' value)...) appended to the people list
 extern "C" void __cdecl Ai_ReadPeople(void* reader, StrRef h)
@@ -10533,7 +10533,7 @@ extern "C" void FUN_44a4c0(); KING_ALIAS("_FUN_44a4c0", "@Vec24_Reserve@16")
 extern "C" void FUN_4661d0(); KING_ALIAS("_FUN_4661d0", "_UninitFill24")
 extern "C" void FUN_44a500(); KING_ALIAS("_FUN_44a500", "@Vec24_Free@8")
 extern "C" void FUN_40a500(); KING_ALIAS("_FUN_40a500", "@Position_Valid@8")
-ASM_VAR(AsmLabel, g_positionText77e6e0, $L_77e6e0)
+KING_BSS(AsmLabel, g_positionText77e6e0, 0x77e6e0)
 
 static const char s_getNoncontradictoryPositionLong[] = "getNoncontradictoryPositionLong(PlayerId player)";
 
@@ -10694,8 +10694,8 @@ extern "C" void __cdecl Player_SetDeadline(BYTE* p, double t);
 extern "C" int __cdecl Player_Call477bd0(BYTE* p, int a, int b);
 extern "C" int __cdecl Player_Call477c30(BYTE* p);
 extern "C" int __cdecl Ai_RandomOrder(int player, int town);
-ASM_VAR(int, g_maxRaceArrivals68d150b, $L_68d150)
-ASM_VAR(int, g_raceArrivals68d154, $L_68d154)
+KING_BSS(int, g_maxRaceArrivals68d150b, 0x68d150)
+KING_BSS(int, g_raceArrivals68d154, 0x68d154)
 
 static const char s_actOnArrival[] = "actOnArrival(PlayerId player)";
 
@@ -11328,59 +11328,59 @@ extern "C" void FUN_426280(); KING_ALIAS("_FUN_426280", "@Int_Set@12")
 extern "C" BYTE** __fastcall Values_Assign(BYTE** d, void*, BYTE* const* s);       // evaluator.cpp
 typedef DWORD Dwords55[55];
 typedef void* Ptrs3[3];
-ASM_VAR(Dwords55, r_rng68b9c8, $L_68b9c8)
-ASM_VAR(DWORD, r_rngI68baa4, $L_68baa4)
-ASM_VAR(DWORD, r_rngJ68baa8, $L_68baa8)
-ASM_VAR(BYTE, r_68d0ec, $L_68d0ec)
-ASM_VAR(double, r_68cfe8, $L_68cfe8)
+KING_BSS(Dwords55, r_rng68b9c8, 0x68b9c8)
+KING_BSS(DWORD, r_rngI68baa4, 0x68baa4)
+KING_BSS(DWORD, r_rngJ68baa8, 0x68baa8)
+KING_BSS(BYTE, r_68d0ec, 0x68d0ec)
+KING_BSS(double, r_68cfe8, 0x68cfe8)
 ASM_VAR(double, r_66c6f0, $L_66c6f0)
-ASM_VAR(BYTE, r_68d178, $L_68d178)
-ASM_VAR(Ptrs3, r_68cf28, $L_68cf28)
-ASM_VAR(Ptrs3, r_68a840, $L_68a840)
-ASM_VAR(Ptrs3, r_68a980, $L_68a980)
-ASM_VAR(Ptrs3, r_68cf60, $L_68cf60)
-ASM_VAR(Ptrs3, r_68cec0, $L_68cec0)
-ASM_VAR(Ptrs3, r_68cc98, $L_68cc98)
-ASM_VAR(Ptrs3, r_68cbe8, $L_68cbe8)
-ASM_VAR(Ptrs3, r_68cc18, $L_68cc18)
-ASM_VAR(Ptrs3, r_68ceb0, $L_68ceb0)
-ASM_VAR(Ptrs3, r_68a970, $L_68a970)
-ASM_VAR(Ptrs3, r_68cca8, $L_68cca8)
-ASM_VAR(Ptrs3, r_68a830, $L_68a830)
-ASM_VAR(Ptrs3, r_68cc88, $L_68cc88)
-ASM_VAR(Ptrs3, r_68a958, $L_68a958)
-ASM_VAR(int, r_68d188, $L_68d188)
-ASM_VAR(int, r_68d158, $L_68d158)
+KING_BSS(BYTE, r_68d178, 0x68d178)
+KING_BSS(Ptrs3, r_68cf28, 0x68cf28)
+KING_BSS(Ptrs3, r_68a840, 0x68a840)
+KING_BSS(Ptrs3, r_68a980, 0x68a980)
+KING_BSS(Ptrs3, r_68cf60, 0x68cf60)
+KING_BSS(Ptrs3, r_68cec0, 0x68cec0)
+KING_BSS(Ptrs3, r_68cc98, 0x68cc98)
+KING_BSS(Ptrs3, r_68cbe8, 0x68cbe8)
+KING_BSS(Ptrs3, r_68cc18, 0x68cc18)
+KING_BSS(Ptrs3, r_68ceb0, 0x68ceb0)
+KING_BSS(Ptrs3, r_68a970, 0x68a970)
+KING_BSS(Ptrs3, r_68cca8, 0x68cca8)
+KING_BSS(Ptrs3, r_68a830, 0x68a830)
+KING_BSS(Ptrs3, r_68cc88, 0x68cc88)
+KING_BSS(Ptrs3, r_68a958, 0x68a958)
+KING_BSS(int, r_68d188, 0x68d188)
+KING_BSS(int, r_68d158, 0x68d158)
 ASM_VAR(BYTE, r_66c68c, $L_66c68c)
 typedef DWORD Dwords12[12];
-ASM_VAR(Dwords12, r_68ced0, $L_68ced0)      // 68ced0..68ceff: three 16-byte records
-ASM_VAR(int, r_68d14c, $L_68d14c)
-ASM_VAR(int, r_68d160, $L_68d160)
-ASM_VAR(int, r_68d164, $L_68d164)
+KING_BSS(Dwords12, r_68ced0, 0x68ced0)      // 68ced0..68ceff: three 16-byte records
+KING_BSS(int, r_68d14c, 0x68d14c)
+KING_BSS(int, r_68d160, 0x68d160)
+KING_BSS(int, r_68d164, 0x68d164)
 ASM_VAR(DWORD, r_66c6d8, $L_66c6d8)
 ASM_VAR(DWORD, r_66c6dc, $L_66c6dc)
-ASM_VAR(int, r_68cf54, $L_68cf54)
-ASM_VAR(int, r_68a964, $L_68a964)
-ASM_VAR(int, r_68d0a0, $L_68d0a0)
-ASM_VAR(int, r_68bb54, $L_68bb54)
-ASM_VAR(int, r_68a968, $L_68a968)
-ASM_VAR(int, r_68a98c, $L_68a98c)
-ASM_VAR(int, r_68d01c, $L_68d01c)
-ASM_VAR(int, r_68cfe4, $L_68cfe4)
-ASM_VAR(int, r_68d0e4, $L_68d0e4)
-ASM_VAR(int, r_68cf34, $L_68cf34)
+KING_BSS(int, r_68cf54, 0x68cf54)
+KING_BSS(int, r_68a964, 0x68a964)
+KING_BSS(int, r_68d0a0, 0x68d0a0)
+KING_BSS(int, r_68bb54, 0x68bb54)
+KING_BSS(int, r_68a968, 0x68a968)
+KING_BSS(int, r_68a98c, 0x68a98c)
+KING_BSS(int, r_68d01c, 0x68d01c)
+KING_BSS(int, r_68cfe4, 0x68cfe4)
+KING_BSS(int, r_68d0e4, 0x68d0e4)
+KING_BSS(int, r_68cf34, 0x68cf34)
 ASM_VAR(BYTE, r_66f62a, $L_66f62a)
-ASM_VAR(BYTE, r_68d31c, $L_68d31c)
-ASM_VAR(int, r_68d18c, $L_68d18c)
-ASM_VAR(double, r_68d190, $L_68d190)
+KING_BSS(BYTE, r_68d31c, 0x68d31c)
+KING_BSS(int, r_68d18c, 0x68d18c)
+KING_BSS(double, r_68d190, 0x68d190)
 ASM_VAR(int, r_66c700, $L_66c700)
 ASM_VAR(int, r_66c6e0, $L_66c6e0)
 ASM_VAR(double, r_66c6f8, $L_66c6f8)
-ASM_VAR(double, r_68d128, $L_68d128)
-ASM_VAR(BYTE, r_68d130, $L_68d130)
+KING_BSS(double, r_68d128, 0x68d128)
+KING_BSS(BYTE, r_68d130, 0x68d130)
 ASM_VAR(BYTE, r_66c60a, $L_66c60a)
-ASM_VAR(int, r_68d134, $L_68d134)
-ASM_VAR(BYTE, r_68d138, $L_68d138)
+KING_BSS(int, r_68d134, 0x68d134)
+KING_BSS(BYTE, r_68d138, 0x68d138)
 ASM_VAR(double, r_66c710, $L_66c710)
 
 // deletes every object of a pointer vector (destructor + operator delete)
@@ -12115,10 +12115,10 @@ extern "C" int __cdecl Ai_FindClosestHops(const DVec3* v, double* md, HopVec* ho
 // ---------------------------------------------------------------------------
 // loading evehicles.sch and etrashboxes.sch: records of the tech file
 
-ASM_VAR(int, g_carTypeCount6ce32c, $L_6ce32c)
-ASM_VAR(AsmLabel, g_carTypes6978c8, $L_6978c8)     // 2416 bytes per type, the name at +2246
-ASM_VAR(int, g_carModelCount6ce34c, $L_6ce34c)
-ASM_VAR(AsmLabel, g_carModels6c6b68, $L_6c6b68)    // 876 bytes per model, the name at +0
+KING_BSS(int, g_carTypeCount6ce32c, 0x6ce32c)
+KING_BSS(AsmLabel, g_carTypes6978c8, 0x6978c8)     // 2416 bytes per type, the name at +2246
+KING_BSS(int, g_carModelCount6ce34c, 0x6ce34c)
+KING_BSS(AsmLabel, g_carModels6c6b68, 0x6c6b68)    // 876 bytes per model, the name at +0
 
 struct TechList {
     void**      vec;                // the records
@@ -12498,9 +12498,9 @@ extern "C" void __cdecl Player_UpdateFlags(BYTE* p);            // ai_drivers.cp
 extern "C" void __fastcall Rec4725b0_Init(BYTE* self, void*);   // ai_drivers.cpp
 ASM_VAR(AsmLabel, s_cleanBeforeLaw, $L_66dfc8)
 typedef char FineText[256];
-ASM_VAR(FineText, g_fineText68a990, $L_68a990)
+KING_BSS(FineText, g_fineText68a990, 0x68a990)
 typedef char FineLine[256];
-ASM_VAR(FineLine, g_fineLine77e4e0, $L_77e4e0)
+KING_BSS(FineLine, g_fineLine77e4e0, 0x77e4e0)
 
 // one line of the fines message: the text of the id with the amount
 static void Fine_AppendLine(const char* id, double amount)
@@ -12686,7 +12686,7 @@ extern "C" void __cdecl Road_PositionCostBest(int side, PositionId from, Positio
 extern "C" void* __fastcall TownId_Town(const int* s, void*);
 ASM_VAR(AsmLabel, s_addCompetitor, $L_66d9a8)
 ASM_VAR(double, g_competitorRange66c6b0, $L_66c6b0)
-ASM_VAR(BYTE, g_addingCompetitor68d114, $L_68d114)
+KING_BSS(BYTE, g_addingCompetitor68d114, 0x68d114)
 
 static unsigned Competitors_Count() { return (g_68a984 - g_68a980) + g_68d164; }
 
@@ -12897,7 +12897,7 @@ extern "C" void __cdecl Ai_ProvideNoncontradictoryPositions()
 
 extern "C" BYTE* __fastcall Vec12_Erase(BYTE* self, void*, BYTE* first, BYTE* last);   // ai_traffic.cpp
 typedef double RaceTimes[1];
-ASM_VAR(RaceTimes, g_raceTimes68cf70, $L_68cf70)
+KING_BSS(RaceTimes, g_raceTimes68cf70, 0x68cf70)
 
 // the route length from the player's position to its own node
 static double Race_CostToNode(BYTE* p)
@@ -13258,7 +13258,7 @@ ASM_VAR(double, g_bribeFine66c770, $L_66c770)
 ASM_VAR(double, g_bribeFine66c778, $L_66c778)
 ASM_VAR(double, g_bribeFine66c780, $L_66c780)
 ASM_VAR(double, g_bribeChance66c788, $L_66c788)
-ASM_VAR(BYTE*, g_places68a958c, $L_68a958)
+KING_BSS(BYTE*, g_places68a958c, 0x68a958)
 
 static int OfferBribe_Leave(int r)
 {
@@ -13374,8 +13374,8 @@ extern "C" int __cdecl AI_TruckInRange();    // route_search.cpp
 extern "C" int __cdecl AI_TruckGripLow();    // route_search.cpp
 extern "C" void __cdecl updateSwitch(const char* moduleName, const char* switchName, int v);   // ai_task.cpp
 ASM_VAR(AsmLabel, s_onModuleLoadX, $L_66dc24)
-ASM_VAR(BYTE**, g_switches68ceb0, $L_68ceb0)
-ASM_VAR(BYTE**, g_switches68ceb4, $L_68ceb4)
+KING_BSS(BYTE**, g_switches68ceb0, 0x68ceb0)
+KING_BSS(BYTE**, g_switches68ceb4, 0x68ceb4)
 
 // whether a switch record belongs to the module (its id names the module)
 static bool Switch_InModule(BYTE* e, const char* name)
@@ -13756,10 +13756,10 @@ extern "C" void FUN_476f70(); KING_ALIAS("_FUN_476f70", "_Player_GiveBackCargo")
 extern "C" double __cdecl Driver_Load(BYTE* p);                   // ai_drivers.cpp
 extern "C" void __cdecl Messages_Add(const char* text);           // helicopter.cpp
 ASM_VAR(AsmLabel, s_calculatePlayerSpeedsAndFares, $L_66d95c)
-ASM_VAR(double, g_lastSpeedTime68d0f0, $L_68d0f0)
+KING_BSS(double, g_lastSpeedTime68d0f0, 0x68d0f0)
 ASM_VAR(double, g_humanSpeed66c6a0, $L_66c6a0)
 typedef BYTE CarModels[1];
-ASM_VAR(CarModels, g_carModels6978f8, $L_6978f8)   // 2416 bytes each
+KING_BSS(CarModels, g_carModels6978f8, 0x6978f8)   // 2416 bytes each
 
 // the owner of a player ran out of money: its handling, and a message for the human
 static void Fares_OutOfMoney(BYTE* owner, void* node)
@@ -13927,20 +13927,20 @@ extern "C" BYTE* __cdecl Rec104_Copy(const BYTE* f, const BYTE* l, BYTE* d);    
 extern "C" void __fastcall Road47fa80_Destroy(BYTE* self, void*);                    // road_graph.cpp
 extern "C" BYTE* __fastcall Mult46c8e0_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
 extern "C" BYTE* __fastcall Mult46c920_DeletingDestructor(BYTE* self, void*, int flags);   // ai_traffic.cpp
-ASM_VAR(BYTE, g_worldLoaded68d0ec, $L_68d0ec)
+KING_BSS(BYTE, g_worldLoaded68d0ec, 0x68d0ec)
 typedef BYTE* PtrTriple[3];
-ASM_VAR(PtrTriple, w_kinds68cf48, $L_68cf48)      // vector<char const *>, the player kind names
-ASM_VAR(PtrTriple, w_driverName68d0a8, $L_68d0a8) // vector<char>
-ASM_VAR(PtrTriple, w_vehicles68cfd8, $L_68cfd8)
-ASM_VAR(PtrTriple, w_nodes68cf00, $L_68cf00)
-ASM_VAR(PtrTriple, w_rooms68d0d8, $L_68d0d8)
-ASM_VAR(PtrTriple, w_registry68d0c8, $L_68d0c8)
-ASM_VAR(PtrTriple, w_edges68cf38, $L_68cf38)
-ASM_VAR(PtrTriple, w_templates68ccb8, $L_68ccb8)   // 104-byte records
-ASM_VAR(PtrTriple, w_mults68cc08, $L_68cc08)       // 24-byte records
-ASM_VAR(BYTE, w_hash68d008, $L_68d008)
-ASM_VAR(BYTE, w_hash68cff0, $L_68cff0)
-ASM_VAR(BYTE, w_hash68cf10, $L_68cf10)
+KING_BSS(PtrTriple, w_kinds68cf48, 0x68cf48)      // vector<char const *>, the player kind names
+KING_BSS(PtrTriple, w_driverName68d0a8, 0x68d0a8) // vector<char>
+KING_BSS(PtrTriple, w_vehicles68cfd8, 0x68cfd8)
+KING_BSS(PtrTriple, w_nodes68cf00, 0x68cf00)
+KING_BSS(PtrTriple, w_rooms68d0d8, 0x68d0d8)
+KING_BSS(PtrTriple, w_registry68d0c8, 0x68d0c8)
+KING_BSS(PtrTriple, w_edges68cf38, 0x68cf38)
+KING_BSS(PtrTriple, w_templates68ccb8, 0x68ccb8)   // 104-byte records
+KING_BSS(PtrTriple, w_mults68cc08, 0x68cc08)       // 24-byte records
+KING_BSS(BYTE, w_hash68d008, 0x68d008)
+KING_BSS(BYTE, w_hash68cff0, 0x68cff0)
+KING_BSS(BYTE, w_hash68cf10, 0x68cf10)
 ASM_VAR(AsmLabel, s_kindLive, $L_66c8a8)
 ASM_VAR(AsmLabel, s_kindAi, $L_66c8a4)
 ASM_VAR(AsmLabel, s_kindPolice, $L_66c89c)
@@ -15190,7 +15190,7 @@ extern "C" void __cdecl Ai_CalculateWeightsPerSubstate()
 extern "C" void FUN_45e0a0(); KING_ALIAS("_FUN_45e0a0", "_Player_RandomWaiting")    // a random free player (out, first, last, -, rng)
 extern "C" void FUN_43e610(); KING_ALIAS("_FUN_43e610", "_Ai_SetPlayerPositionTo")    // (player, RoadNode position +48, 0)
 extern "C" void FUN_46dc50(); KING_ALIAS("_FUN_46dc50", "_Net_SendPlayer")    // multiplayer: announce a new player (player)
-ASM_VAR(BYTE, g_68d31c, $L_68d31c)
+KING_BSS(BYTE, g_68d31c, 0x68d31c)
 extern "C" void __cdecl Ai_GoHireIt(BYTE* p);
 
 // [FUN_423ad0] while there are fewer players for hire than wanted (at most 100 tries), a random free player is
@@ -15389,10 +15389,10 @@ extern "C" void __cdecl Ai_TruckerNextOrder(BYTE* p)
 // the AI event hook
 
 ASM_VAR(AsmLabel, s_aiEvent66c7f8, $L_66c7f8)
-ASM_VAR(BYTE, g_68d114, $L_68d114)
-ASM_VAR(BYTE, g_68d115, $L_68d115)
+KING_BSS(BYTE, g_68d114, 0x68d114)
+KING_BSS(BYTE, g_68d115, 0x68d115)
 typedef int (__cdecl* AiEventHook)(BYTE* p, int kind, int x);
-ASM_VAR(AiEventHook, g_aiEventHook68d118, $L_68d118)
+KING_BSS(AiEventHook, g_aiEventHook68d118, 0x68d118)
 
 // [FUN_4015a0] reports an event of a player to the hook (once per player for kind 1; others only after that
 // and while not suppressed); none while disabled or for a removed player (except kind 7)
@@ -15803,8 +15803,8 @@ extern "C" void** __cdecl Ai_LastOfSorted(void** out)
 // ---------------------------------------------------------------------------
 // building the road edges from the node graph
 
-ASM_VAR(int, g_68d0e8, $L_68d0e8)
-ASM_VAR(RoadEdge**, g_roadEdgesCap, $L_68cf40)
+KING_BSS(int, g_68d0e8, 0x68d0e8)
+KING_BSS(RoadEdge**, g_roadEdgesCap, 0x68cf40)
 
 static void Ptrs_PushBack(BYTE* vec, void* x, bool k)
 {
@@ -16487,7 +16487,7 @@ extern "C" void __fastcall OrderVec_InsertAux(BYTE** v, void*, BYTE* pos, const 
 // ---------------------------------------------------------------------------
 // Batch: the human's timers, a player's cargo cost limits, competitors' arrivals
 
-ASM_VAR(double, g_68d170, $L_68d170)
+KING_BSS(double, g_68d170, 0x68d170)
 ASM_VAR(double, g_zero64b678, $L_64b678)
 ASM_VAR(double, g_64b6f8, $L_64b6f8)
 ASM_VAR(double, g_64b5b8, $L_64b5b8)
@@ -16662,7 +16662,6 @@ ASM_VAR(AsmLabel, s_retraceCompetitorRegular, $L_66cb88)
 ASM_VAR(AsmLabel, s_reportCompetitionState, $L_66db0c)
 ASM_VAR(double, g_64b6a8, $L_64b6a8)
 ASM_VAR(double, g_66f8a0, $L_66f8a0)
-ASM_VAR(BYTE, w_hash68cf10, $L_68cf10)
 extern "C" void FUN_478260(); KING_ALIAS("_FUN_478260", "_Player_GoTo")    // (player, 32-byte position, int)
 extern "C" void FUN_478630(); KING_ALIAS("_FUN_478630", "_Player_RemoveWaypoint")    // (player, int)
 extern "C" void FUN_428230(); KING_ALIAS("_FUN_428230", "_Ai_RecalculateCompetitionPlace")
@@ -17129,7 +17128,7 @@ ASM_VAR(double, g_64b878, $L_64b878)
 ASM_VAR(double, g_64b670, $L_64b670)
 ASM_VAR(double, g_64b6b0, $L_64b6b0)
 typedef DVec3 Offsets4[4];
-ASM_VAR(Offsets4, g_offsets68cc28, $L_68cc28)
+KING_BSS(Offsets4, g_offsets68cc28, 0x68cc28)
 extern "C" void FUN_429820(); KING_ALIAS("_FUN_429820", "@PlayerId_Over020@8")    // (no args) returns bool
 extern "C" void FUN_487e50(); KING_ALIAS("_FUN_487e50", "_DMatrix_Multiply")    // matrix product (out, a, b)
 extern "C" void FUN_436bd0(); KING_ALIAS("_FUN_436bd0", "_Ai_GetPositionIdRoom")    // getPositionId in a room (out, room, v)
@@ -17334,10 +17333,10 @@ ASM_VAR(AsmLabel, s_err9967, $L_66dd8c)
 ASM_VAR(AsmLabel, s_err9969, $L_66dd78)
 ASM_VAR(AsmLabel, s_err9971, $L_66dd64)
 ASM_VAR(AsmLabel, s_err9972, $L_66dd50)
-ASM_VAR(double, t_68a820, $L_68a820)
-ASM_VAR(BYTE, t_68b998, $L_68b998)
-ASM_VAR(double, t_68d0f8, $L_68d0f8)
-ASM_VAR(double, t_68d198, $L_68d198)
+KING_BSS(double, t_68a820, 0x68a820)
+KING_BSS(BYTE, t_68b998, 0x68b998)
+KING_BSS(double, t_68d0f8, 0x68d0f8)
+KING_BSS(double, t_68d198, 0x68d198)
 extern "C" void FUN_483a20(); KING_ALIAS("_FUN_483a20", "_AI_Time")    // returns double
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_424550(); KING_ALIAS("_FUN_424550", "_Ai_LoadEntities")
@@ -18046,7 +18045,7 @@ ASM_VAR(AsmLabel, s_aiCheatCode, $L_66f328)
 ASM_VAR(AsmLabel, s_fineForSpeeding, $L_66dfe8)
 ASM_VAR(double, g_64b950, $L_64b950)
 ASM_VAR(double, g_64b5a0, $L_64b5a0)
-ASM_VAR(BYTE*, g_task68d120, $L_68d120)
+KING_BSS(BYTE*, g_task68d120, 0x68d120)
 extern "C" void FUN_42b360(); KING_ALIAS("_FUN_42b360", "_AI_RunActive")
 extern "C" void FUN_41ef90(); KING_ALIAS("_FUN_41ef90", "_Player_CheckTownAA")
 
@@ -19743,7 +19742,7 @@ ASM_VAR(AsmLabel, s_noMerchClass66c8f0, $L_66c8f0)
 ASM_VAR(AsmLabel, s_noVehicleId66cdec, $L_66cdec)
 ASM_VAR(AsmLabel, s_identifier66ce4c, $L_66ce4c)
 ASM_VAR(AsmLabel, s_pair66cb08, $L_66cb08)
-ASM_VAR(BYTE*, g_lists68b9bc, $L_68b9bc)
+KING_BSS(BYTE*, g_lists68b9bc, 0x68b9bc)
 extern "C" void FUN_407f60(); KING_ALIAS("_FUN_407f60", "_Str_Member20Checked")    // a pair's head (out, pair)
 extern "C" void FUN_407ff0(); KING_ALIAS("_FUN_407ff0", "_Str_Member32Checked")    // a pair's tail (out, pair)
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")    // an empty handle (thiscall)
@@ -19865,7 +19864,7 @@ extern "C" void __cdecl Vehicles_ResolveModels()
 ASM_VAR(AsmLabel, s_gameCnf66cb30, $L_66cb30)
 ASM_VAR(AsmLabel, s_port66cb28, $L_66cb28)
 ASM_VAR(AsmLabel, s_cannotOpen66cb1c, $L_66cb1c)
-ASM_VAR(int, g_68d110, $L_68d110)
+KING_BSS(int, g_68d110, 0x68d110)
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")    // vector<char>::insert (thiscall: pos, first, last)
 
 // [FUN_409310] reads game.cnf in the AI's directory: its player types (FUN_409100), then 68d110 into the
@@ -20228,7 +20227,7 @@ extern "C" double __fastcall Spot_Weight3(void*, void*, const BYTE* spot) { retu
 
 typedef void (__cdecl* AiNewHandlerFn)();
 ASM_VAR(AsmLabel, g_vtblBadAlloc64b960, $L_64b960)
-ASM_VAR(AiNewHandlerFn, g_newHandler68d20c, $L_68d20c)
+KING_BSS(AiNewHandlerFn, g_newHandler68d20c, 0x68d20c)
 ASM_VAR(AsmLabel, g_throwBadAlloc659d60, $L_659d60)
 ASM_VAR(AsmLabel, s_badAlloc66f484, $L_66f484)
 ASM_VAR(AsmLabel, s_updateAmbushes66dcb4, $L_66dcb4)
@@ -20725,7 +20724,7 @@ extern "C" void FUN_41d340(); KING_ALIAS("_FUN_41d340", "_Ai_PlacePresents")
 extern "C" void FUN_453b60(); KING_ALIAS("_FUN_453b60", "@List12_Clear@8")
 ASM_VAR(double, g_66c6e8, $L_66c6e8)
 ASM_VAR(AiText, g_vtbl64b908, $L_64b908)
-ASM_VAR(double, t_68d108, $L_68d108)
+KING_BSS(double, t_68d108, 0x68d108)
 ASM_VAR(double, g_64b918, $L_64b918)
 ASM_VAR(double, g_64b7a8, $L_64b7a8)
 ASM_VAR(double, g_64b910, $L_64b910)
@@ -21140,7 +21139,7 @@ extern "C" void __cdecl Task_Waiting()
 // Batch: AI task callbacks (traffic jams, lanes, collisions) and two small helpers
 
 ASM_VAR(AsmLabel, s_changeLanes66d840, $L_66d840)
-ASM_VAR(int, g_68d1ac, $L_68d1ac)
+KING_BSS(int, g_68d1ac, 0x68d1ac)
 extern "C" void FUN_4207f0(); KING_ALIAS("_FUN_4207f0", "_Player_AtTarget")    // (player + 8) returns bool
 
 // [FUN_420b60] a player's point (+616 when driven by the physics, flag 1, else +304)
@@ -21235,7 +21234,7 @@ extern "C" void __cdecl Task_RandomHits()
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_4010c0(); KING_ALIAS("_FUN_4010c0", "_Ai_FormatReport")    // formats an AI message (same args) into a new buffer
-ASM_VAR(int, g_aiLevel68a828, $L_68a828)
+KING_BSS(int, g_aiLevel68a828, 0x68a828)
 ASM_VAR(AsmLabel, s_file66c4e8, $L_66c4e8)
 ASM_VAR(AsmLabel, s_mode66c4f4, $L_66c4f4)
 extern "C" int __cdecl fputs(const char* s, FILE* f);
@@ -21442,7 +21441,7 @@ extern "C" BYTE* __fastcall Ai458920_DeletingDestructor(BYTE* s, void*, int flag
 // [$L_462a80]
 extern "C" BYTE* __fastcall Ai462a80_DeletingDestructor(BYTE* s, void*, int flags) { return Ai_DeleteAfter(s, flags, FUN_462b30); }
 
-ASM_VAR(AsmLabel, g_aiwor68ced0, $L_68ced0)
+KING_BSS(AsmLabel, g_aiwor68ced0, 0x68ced0)
 
 // [$L_402610] static initializer: three 16-byte records at 68ced0 (-1, 0, 0, 0)
 extern "C" void __cdecl AiworInit_402610()
@@ -21457,10 +21456,10 @@ extern "C" void __cdecl AiworInit_402610()
 // ---------------------------------------------------------------------------
 // Static initializers of random generators.
 
-ASM_VAR(AsmLabel, g_aiworRng68a870, $L_68a870)
-ASM_VAR(DWORD, g_aiworRng68a948, $L_68a948)
-ASM_VAR(DWORD, g_aiworRng68a94c, $L_68a94c)
-ASM_VAR(DWORD, g_aiworRng68a950, $L_68a950)
+KING_BSS(AsmLabel, g_aiworRng68a870, 0x68a870)
+KING_BSS(DWORD, g_aiworRng68a948, 0x68a948)
+KING_BSS(DWORD, g_aiworRng68a94c, 0x68a94c)
+KING_BSS(DWORD, g_aiworRng68a950, 0x68a950)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Aiwor_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
@@ -21493,14 +21492,14 @@ extern "C" void __cdecl AiworInit_4014f0() { Aiwor_RngInit((DWORD*)g_aiworRng68a
 typedef void (*AiFn)();
 extern "C" void FUN_48e450(); KING_ALIAS("_FUN_48e450", "@Poly1392_AbsDiff01@8")
 extern "C" void FUN_48dd50(); KING_ALIAS("_FUN_48dd50", "@Polyline_Near@20")
-ASM_VAR(DWORD, g_aiwor68baa4, $L_68baa4)
-ASM_VAR(DWORD, g_aiwor68baa8, $L_68baa8)
-ASM_VAR(AsmLabel, g_aiwor68b9c8, $L_68b9c8)
-ASM_VAR(DWORD, g_aiwor68d108, $L_68d108)
-ASM_VAR(DWORD, g_aiwor68d10c, $L_68d10c)
+KING_BSS(DWORD, g_aiwor68baa4, 0x68baa4)
+KING_BSS(DWORD, g_aiwor68baa8, 0x68baa8)
+KING_BSS(AsmLabel, g_aiwor68b9c8, 0x68b9c8)
+KING_BSS(DWORD, g_aiwor68d108, 0x68d108)
+KING_BSS(DWORD, g_aiwor68d10c, 0x68d10c)
 ASM_VAR(double, g_aiwor64b670, $L_64b670)
 ASM_VAR(double, g_aiwor64b678, $L_64b678)
-ASM_VAR(AsmLabel, g_aiwor68cc28, $L_68cc28)
+KING_BSS(AsmLabel, g_aiwor68cc28, 0x68cc28)
 
 // [$L_455440] (out, t, i): the point at t between points i and i+1 of the path (+88)
 extern "C" double* __fastcall Path_Lerp(BYTE* s, void*, double* out, double t, int i)
@@ -21567,11 +21566,11 @@ extern "C" void __cdecl AiworInit_428120()
 
 extern "C" void FUN_469a20(); KING_ALIAS("_FUN_469a20", "_Rec1592_Swap")
 extern "C" void FUN_48e190(); KING_ALIAS("_FUN_48e190", "@Curve_Reverse@4")
-ASM_VAR(AsmLabel, g_aiworRng68ccc8, $L_68ccc8)
-ASM_VAR(DWORD, g_aiworRng68cda0, $L_68cda0)
-ASM_VAR(DWORD, g_aiworRng68cda4, $L_68cda4)
-ASM_VAR(DWORD, g_aiworRng68cda8, $L_68cda8)
-ASM_VAR(DWORD, g_aiworRng68baa0, $L_68baa0)
+KING_BSS(AsmLabel, g_aiworRng68ccc8, 0x68ccc8)
+KING_BSS(DWORD, g_aiworRng68cda0, 0x68cda0)
+KING_BSS(DWORD, g_aiworRng68cda4, 0x68cda4)
+KING_BSS(DWORD, g_aiworRng68cda8, 0x68cda8)
+KING_BSS(DWORD, g_aiworRng68baa0, 0x68baa0)
 
 // [$L_401210] static initializers of random generators
 extern "C" void __cdecl AiworInit_401210() { Aiwor_RngInit((DWORD*)g_aiworRng68ccc8, &g_aiworRng68cda0, &g_aiworRng68cda4, &g_aiworRng68cda8); }
@@ -21708,12 +21707,12 @@ extern "C" int __cdecl MsgBuf_FreeThunk(BYTE* p)
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
 extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
-ASM_VAR(BYTE, g_q49_68a84c, $L_68a84c)
-ASM_VAR(BYTE, g_q49_68a84d, $L_68a84d)
-ASM_VAR(AsmLabel, g_q49_68cff0, $L_68cff0)
-ASM_VAR(AsmLabel, g_q49_68d008, $L_68d008)
-ASM_VAR(AsmLabel, g_q49_68cf10, $L_68cf10)
-ASM_VAR(AsmLabel, g_q49_68ceb0, $L_68ceb0)
+KING_BSS(BYTE, g_q49_68a84c, 0x68a84c)
+KING_BSS(BYTE, g_q49_68a84d, 0x68a84d)
+KING_BSS(AsmLabel, g_q49_68cff0, 0x68cff0)
+KING_BSS(AsmLabel, g_q49_68d008, 0x68d008)
+KING_BSS(AsmLabel, g_q49_68cf10, 0x68cf10)
+KING_BSS(AsmLabel, g_q49_68ceb0, 0x68ceb0)
 extern "C" void __fastcall RopeHash_Destroy(BYTE* s);
 // constructs the static at o once, by the guard bit
 static void AiStatic_ConstructOnce(BYTE& guard, BYTE bit, void* o)
@@ -21929,26 +21928,26 @@ extern "C" void __cdecl AI_SwitchToRandom()
 // Static initializers: construct a global, register its teardown at exit.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-ASM_VAR(char, g_q197_68a850, $L_68a850)
-ASM_VAR(char, g_q197_68a860, $L_68a860)
-ASM_VAR(char, g_q197_68a958, $L_68a958)
-ASM_VAR(char, g_q197_68a970, $L_68a970)
-ASM_VAR(char, g_q197_68a980, $L_68a980)
-ASM_VAR(char, g_q197_68b990, $L_68b990)
-ASM_VAR(char, g_q197_68b9b8, $L_68b9b8)
-ASM_VAR(char, g_q197_68bac8, $L_68bac8)
-ASM_VAR(char, g_q197_68bb58, $L_68bb58)
-ASM_VAR(char, g_q197_68cbf8, $L_68cbf8)
-ASM_VAR(char, g_q197_68cec0, $L_68cec0)
-ASM_VAR(char, g_q197_68cf38, $L_68cf38)
-ASM_VAR(char, g_q197_68cf58, $L_68cf58)
-ASM_VAR(char, g_q197_68cf60, $L_68cf60)
-ASM_VAR(char, g_q197_68cf6c, $L_68cf6c)
-ASM_VAR(char, g_q197_68cfd8, $L_68cfd8)
-ASM_VAR(char, g_q197_68d0a8, $L_68d0a8)
-ASM_VAR(char, g_q197_68d0b8, $L_68d0b8)
-ASM_VAR(char, g_q197_68d0c8, $L_68d0c8)
-ASM_VAR(char, g_q197_68d0d8, $L_68d0d8)
+KING_BSS(char, g_q197_68a850, 0x68a850)
+KING_BSS(char, g_q197_68a860, 0x68a860)
+KING_BSS(char, g_q197_68a958, 0x68a958)
+KING_BSS(char, g_q197_68a970, 0x68a970)
+KING_BSS(char, g_q197_68a980, 0x68a980)
+KING_BSS(char, g_q197_68b990, 0x68b990)
+KING_BSS(char, g_q197_68b9b8, 0x68b9b8)
+KING_BSS(char, g_q197_68bac8, 0x68bac8)
+KING_BSS(char, g_q197_68bb58, 0x68bb58)
+KING_BSS(char, g_q197_68cbf8, 0x68cbf8)
+KING_BSS(char, g_q197_68cec0, 0x68cec0)
+KING_BSS(char, g_q197_68cf38, 0x68cf38)
+KING_BSS(char, g_q197_68cf58, 0x68cf58)
+KING_BSS(char, g_q197_68cf60, 0x68cf60)
+KING_BSS(char, g_q197_68cf6c, 0x68cf6c)
+KING_BSS(char, g_q197_68cfd8, 0x68cfd8)
+KING_BSS(char, g_q197_68d0a8, 0x68d0a8)
+KING_BSS(char, g_q197_68d0b8, 0x68d0b8)
+KING_BSS(char, g_q197_68d0c8, 0x68d0c8)
+KING_BSS(char, g_q197_68d0d8, 0x68d0d8)
 extern "C" void q197_FUN_4012e0(); KING_ALIAS("_q197_FUN_4012e0", "_AI_Init68bb58")
 extern "C" void q197_FUN_401360(); KING_ALIAS("_q197_FUN_401360", "_AI_Init68cf28")
 extern "C" void q197_FUN_4013b0(); KING_ALIAS("_q197_FUN_4013b0", "_AI_Init68a840")
@@ -22292,8 +22291,8 @@ extern "C" int __cdecl Static68a860_Init(void)
 // ---------------------------------------------------------------------------
 // Thunks.
 
-ASM_VAR(char, g_q198_68cbe8, $L_68cbe8)
-ASM_VAR(char, g_q198_68cf00, $L_68cf00)
+KING_BSS(char, g_q198_68cbe8, 0x68cbe8)
+KING_BSS(char, g_q198_68cf00, 0x68cf00)
 extern "C" int __fastcall q198_Points_Length(BYTE* s); KING_ALIAS("@q198_Points_Length@4", "@Points_Length@4")
 extern "C" int __fastcall q198_Vec4_FreeStorage(BYTE* s, void* d); KING_ALIAS("@q198_Vec4_FreeStorage@8", "@Vec4_FreeStorage@8")
 // [$L_401ed0] Vec4_FreeStorage on the static object 68cf00
@@ -22398,8 +22397,8 @@ extern "C" void __fastcall Rec4073b0_FreeVectors(BYTE* s)
 // ---------------------------------------------------------------------------
 // Thunks.
 
-ASM_VAR(char, g_q240_68a830, $L_68a830)
-ASM_VAR(char, g_q240_68cf28, $L_68cf28)
+KING_BSS(char, g_q240_68a830, 0x68a830)
+KING_BSS(char, g_q240_68cf28, 0x68cf28)
 extern "C" int __fastcall q240_Vec4_FreeStorageB(BYTE* s, void* d); KING_ALIAS("@q240_Vec4_FreeStorageB@8", "@Vec4_FreeStorageB@8")
 // [$L_401390] Vec4_FreeStorageB on the static object 68cf28
 extern "C" void __cdecl Static68cf28_Destroy(void) { q240_Vec4_FreeStorageB((BYTE*)&g_q240_68cf28, 0); }
@@ -22427,8 +22426,8 @@ ASM_VAR(AsmLabel, s_cprNode66d904, $L_66d904)       // the human's start node
 ASM_VAR(AsmLabel, s_cprPosFmt66cc0c, $L_66cc0c)
 ASM_VAR(AsmLabel, s_cpr66cc00, $L_66cc00)
 ASM_VAR(AsmLabel, s_cpr66d8e4, $L_66d8e4)
-ASM_VAR(double, g_cprStartY68b9a8, $L_68b9a8)
-ASM_VAR(double, g_cprStartZ68b9b0, $L_68b9b0)
+KING_BSS(double, g_cprStartY68b9a8, 0x68b9a8)
+KING_BSS(double, g_cprStartZ68b9b0, 0x68b9b0)
 extern "C" void FUN_46dc50(); KING_ALIAS("_FUN_46dc50", "_Net_SendPlayer")    // (player)
 extern "C" void FUN_488100(); KING_ALIAS("_FUN_488100", "@Filter1_Set@16")    // Filter1_Set (this, double)
 
@@ -22623,11 +22622,11 @@ int __cdecl Ai_CreatePlayersRegular()
 
 // === creating the players for a network game ($L_422400)
 
-ASM_VAR(BYTE*, g_cpn68cfd8, $L_68cfd8)
-ASM_VAR(BYTE*, g_cpn68cfdc, $L_68cfdc)
-ASM_VAR(BYTE*, g_cpnFree68a860, $L_68a860)     // a byte per vehicle: 1 while free (begin, end, capacity end)
-ASM_VAR(BYTE*, g_cpnFree68a864, $L_68a864)
-ASM_VAR(BYTE*, g_cpnFree68a868, $L_68a868)
+KING_BSS(BYTE*, g_cpn68cfd8, 0x68cfd8)
+KING_BSS(BYTE*, g_cpn68cfdc, 0x68cfdc)
+KING_BSS(BYTE*, g_cpnFree68a860, 0x68a860)     // a byte per vehicle: 1 while free (begin, end, capacity end)
+KING_BSS(BYTE*, g_cpnFree68a864, 0x68a864)
+KING_BSS(BYTE*, g_cpnFree68a868, 0x68a868)
 ASM_VAR(AsmLabel, s_cpnStart66d8f8, $L_66d8f8)    // the start node name format (prefix, number)
 ASM_VAR(AsmLabel, s_cpnGoal66d198, $L_66d198)
 ASM_VAR(AsmLabel, s_cpnNode66d168, $L_66d168)
@@ -22796,9 +22795,9 @@ int __cdecl Ai_CreatePlayersNetwork()
 
 // === the AI's hiring task ($L_429930)
 
-ASM_VAR(BYTE*, g_hr68b990, $L_68b990)
+KING_BSS(BYTE*, g_hr68b990, 0x68b990)
 ASM_VAR(int, g_hr66c700, $L_66c700)
-ASM_VAR(AsmLabel, g_hr68b9c8, $L_68b9c8)
+KING_BSS(AsmLabel, g_hr68b9c8, 0x68b9c8)
 ASM_VAR(AsmLabel, s_hr66dbc8, $L_66dbc8)
 ASM_VAR(AsmLabel, s_hr66dbb8, $L_66dbb8)
 extern "C" void FUN_419000(); KING_ALIAS("_FUN_419000", "_Player_FreeTrader")
@@ -24311,14 +24310,14 @@ void __cdecl Ai_UpdateChasedCars()
 
 ASM_VAR(double, g_sg66c6d8, $L_66c6d8)
 ASM_VAR(double, g_sg66c6f8, $L_66c6f8)
-ASM_VAR(double, g_sg68d170, $L_68d170)
+KING_BSS(double, g_sg68d170, 0x68d170)
 ASM_VAR(double, g_sg64b690, $L_64b690)
 ASM_VAR(double, g_sg64b760, $L_64b760)
 ASM_VAR(double, g_sg64b5b8, $L_64b5b8)
 ASM_VAR(double, g_sg64b808, $L_64b808)
 ASM_VAR(double, g_sg64b800, $L_64b800)
 ASM_VAR(double, g_sg64b7f8, $L_64b7f8)
-ASM_VAR(BYTE**, g_sgNodes, $L_68cf00)
+KING_BSS(BYTE**, g_sgNodes, 0x68cf00)
 extern "C" void Sg_Find2(); KING_ALIAS("_Sg_Find2", "_Players_Find457360")
 extern "C" void Sg_Cost(); KING_ALIAS("_Sg_Cost", "_Road_PositionCostBest")
 

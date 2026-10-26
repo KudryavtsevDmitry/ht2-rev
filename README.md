@@ -43,6 +43,20 @@ Start-Process C:\test\king.exe -WorkingDirectory 'C:\Program Files (x86)\King'
 
 To reach the world click **ИГРА**, then **НОВАЯ ИГРА** (real mouse input only), or run `py tools\smoke_world.py` at the main menu.
 
+## Next: C++ owns the program
+
+The goal is a `king.exe` built from `src/` without `king.masm`. Assembly may stay where rewriting it is not worth the risk (exact x87 physics, the hand-written MMX/pushad code at `5fe8xx`–`5ff05a`, the span edge walker `FUN_5d1030`), but only as small snippets: `src/asm/*.asm` files with one procedure each, or inline `__asm` blocks inside C++ functions. Snippets name C++ functions and variables through `EXTERN`. They don't depend on addresses or neighbouring labels from the original binary. Run the drive test after every step.
+
+1. **Globals become C++ variables.** *(`_BSS` done: C++ owns it as `KingBss`, see `src/engine/data.cpp` and `KING_BSS` in `king.h`; typed variables come later.)* About 12,000 `ASM_VAR` uses in `src/` bind C++ names to `king.masm` data labels. For each data block, define the variable in C++ (a struct when code reaches neighbouring labels by offset, so the layout stays the same), put `EXTERN` for it in `king.masm`, and point the old label at it with `TEXTEQU`, the same way procedures are replaced. Start with `_BSS` (zero-initialised, the easiest), then `_DATA`.
+2. **Constants and strings.** Move `_RDATA` the same way: strings, float/double constants (keep the bit patterns, for example as `uint32_t`/`uint64_t` arrays), lookup tables.
+3. **Vtables and jump tables.** Vtables become C++ arrays of the C++ functions (or real classes later on). Jump tables disappear when their procedure becomes C++. The ones left belong to asm snippets and move into those files.
+4. **Static initializers.** `WinMain` (`crt.cpp`) still runs the old initializer table `$L_66c000`..`$L_66c488`. Replace it with a C++ list of the same init functions in the same order, then with C++ global objects where the order doesn't matter.
+5. **The remaining procedures.** Convert what is cheap (about 315 game procedures, `py tools\conversion_inventory.py`). Move the rest out of `king.masm` into `src/asm/`, rewriting their label references as `EXTERN`s of C++ names. This also covers the procedures split across several `PROC`s (move all pieces together) and the VC6 math helpers (`__CIpow`, `_ftol`, `_alldiv`, `_chkstk`) if they aren't rewritten in `x87.h`.
+6. **Rest of MFC and the old runtime.** `AfxThrowMemoryException`, `AfxThrowResourceException` and `_AfxThreadEntry` become C++. Exceptions are always fatal, so the throw helpers can just report and exit. Drop `ASM_CRT` and the old runtime.
+7. **Dead code.** Delete everything under `IFDEF ASM_UNUSED`: exception tables, unwind funclets, the old runtime and iostreams, unreachable procedures. Also delete `UnusedTrap`.
+8. **Imports.** These already go through the normal import libraries (`__imp_` names). Only the references left in snippets need their `EXTERN __imp_...` lines.
+9. **Remove `king.masm`.** Once it holds only `TEXTEQU`s and `EXTERN`s, delete it. Replace the `ASM_PROC`/`ASM_VAR`/`KING_ALIAS` glue in `king.h` with plain declarations, and remove the `ASM_*` switches from the `Makefile`. Tag the last mixed build first (`nmake ASM=1` still reproduces the original there).
+
 ## Replacing an assembly procedure
 
 1. Write it in C++ and export it with the asm calling convention (`__fastcall` with an unused EDX argument for thiscall).

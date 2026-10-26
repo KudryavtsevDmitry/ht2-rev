@@ -22,7 +22,7 @@ extern "C" DWORD __fastcall MarineQueue_SetEdgePriority(BYTE*, void*, BYTE*, DWO
 extern "C" DWORD __fastcall MarineQueue_Empty(BYTE*,void*);
 extern "C" void FUN_606760(); KING_ALIAS("_FUN_606760", "_GridMesh_RemoveEdge")
 ASM_VAR(DWORD, g_marineRefinementEnabled, $L_685abc)
-ASM_VAR(DWORD, g_marineRefinementLimit, $L_725e28)
+KING_BSS(DWORD, g_marineRefinementLimit, 0x725e28)
 ASM_VAR(AsmLabel, g_marineDate, $L_6724f8)
 ASM_VAR(AsmLabel, g_marineErrorFormat, $L_6724b0)
 ASM_VAR(AsmLabel, g_marineFile, $L_685ac8)
@@ -633,8 +633,8 @@ extern "C" void __fastcall MarineTask_ReleaseMesh(BYTE* self, void*)
 }
 
 // Marine mesh cleanup.
-ASM_VAR(BYTE*, g_marineUnusedVertices, $L_725d50)
-ASM_VAR(DWORD, g_marineUnusedVertexCount, $L_725d54)
+KING_BSS(BYTE*, g_marineUnusedVertices, 0x725d50)
+KING_BSS(DWORD, g_marineUnusedVertexCount, 0x725d54)
 extern "C" DWORD __fastcall MarineMesh_PruneVertices(BYTE* self, void*)
 {
     DWORD* used = (DWORD*)malloc((unsigned)F(WORD, self, 36) * 4);
@@ -904,8 +904,8 @@ extern "C" DWORD* __cdecl MarineGeometry_Interpolate(DWORD* out, const DWORD* so
 }
 
 // Marine motion response and frame processing.
-ASM_VAR(BYTE*, g_marineApplicationState, $L_6cec6c)
-ASM_VAR(BYTE*, g_marineRecordedState, $L_725e08)
+KING_BSS(BYTE*, g_marineApplicationState, 0x6cec6c)
+KING_BSS(BYTE*, g_marineRecordedState, 0x725e08)
 ASM_VAR(float, g_mf_652f58, $L_652f58)
 ASM_VAR(float, g_mf_652f5c, $L_652f5c)
 ASM_VAR(float, g_mf_652f60, $L_652f60)
@@ -913,7 +913,7 @@ ASM_VAR(float, g_mf_652f7c, $L_652f7c)
 ASM_VAR(float, g_mf_652f80, $L_652f80)
 ASM_VAR(float, g_mf_653004, $L_653004)
 ASM_VAR(float, g_mf_653000, $L_653000)
-ASM_VAR(float, g_mf_725db4, $L_725db4)
+KING_BSS(float, g_mf_725db4, 0x725db4)
 ASM_VAR(float, g_mf_64c338, $L_64c338)
 ASM_VAR(float, g_mf_64c350, $L_64c350)
 ASM_VAR(float, g_mf_64d7b8, $L_64d7b8)
@@ -977,11 +977,11 @@ extern "C" void FUN_5dbcc0(); KING_ALIAS("_FUN_5dbcc0", "@Camera_Get@12")
 extern "C" void FUN_5d32f0(); KING_ALIAS("_FUN_5d32f0", "@Queue_PostEvent@12")
 extern "C" void FUN_5b4fc0(); KING_ALIAS("_FUN_5b4fc0", "@View_SphereClip@12")
 extern "C" void __fastcall MarineTask_DrawPending(BYTE*,void*,const float*,const float*,BYTE*);
-ASM_VAR(float, g_mt_axisX, $L_702620)
-ASM_VAR(float, g_mt_axisY, $L_702624)
-ASM_VAR(float, g_mt_axisZ, $L_702628)
-ASM_VAR(BYTE*, g_mt_motionState, $L_7025b8)
-ASM_VAR(DWORD, g_mt_frameValue, $L_720908)
+KING_BSS(float, g_mt_axisX, 0x702620)
+KING_BSS(float, g_mt_axisY, 0x702624)
+KING_BSS(float, g_mt_axisZ, 0x702628)
+KING_BSS(BYTE*, g_mt_motionState, 0x7025b8)
+KING_BSS(DWORD, g_mt_frameValue, 0x720908)
 __declspec(noinline) static float MarineTask_QuietCoordinate(const float* source)
 {
     volatile double value=*source;
@@ -1176,7 +1176,7 @@ extern "C" void __fastcall MarineTask_DrawPending(BYTE* self,void*,const float* 
 
 // Marine particle initialization, lifetime and motion.
 extern "C" int __cdecl rand();
-ASM_VAR(float, g_mp_scale, $L_725f78)
+KING_BSS(float, g_mp_scale, 0x725f78)
 ASM_VAR(float, g_mp_randomUnit, $L_64c254)
 ASM_VAR(float, g_mp_angularFactor, $L_64c304)
 ASM_VAR(float, g_mp_seconds, $L_64c948)
@@ -1218,8 +1218,8 @@ extern "C" void __fastcall MarineParticle_Update(BYTE* self,void*,DWORD now)
 // Marine mesh coordinate mapping and triangle classification.
 ASM_VAR(float, g_mg_xLimit, $L_65313c)
 ASM_VAR(float, g_mg_yLimit, $L_653138)
-ASM_VAR(DWORD, g_mg_width, $L_725e50)
-ASM_VAR(DWORD, g_mg_height, $L_725e54)
+KING_BSS(DWORD, g_mg_width, 0x725e50)
+KING_BSS(DWORD, g_mg_height, 0x725e54)
 X87 double MarineGrid_Index(DWORD value)
 {
     volatile __int64 index=value;
@@ -1264,7 +1264,7 @@ extern "C" DWORD __cdecl MarineGrid_Height() { return g_mg_height; }
 // Marine particle pool allocation, emission and randomized geometry.
 extern "C" void* __cdecl malloc(size_t);
 extern "C" void __cdecl srand(unsigned);
-ASM_VAR(DWORD, g_mpool_enabled, $L_725e30)
+KING_BSS(DWORD, g_mpool_enabled, 0x725e30)
 ASM_VAR(float, g_mpool_angle, $L_64c334)
 ASM_VAR(float, g_mpool_colorScale, $L_64c48c)
 ASM_VAR(float, g_mpool_half, $L_64c258)
@@ -1378,7 +1378,7 @@ extern "C" DWORD* __cdecl MarineMatrix_Multiply(DWORD* out,const float* right,co
 
 // Marine particle rendering, retirement and per-frame updates.
 struct MarineParticleMatrix { DWORD v[16]; };
-ASM_VAR(MarineParticleMatrix, g_mpool_restoreMatrix, $L_725f38)
+KING_BSS(MarineParticleMatrix, g_mpool_restoreMatrix, 0x725f38)
 extern "C" void __fastcall MarineParticlePool_Render(BYTE* self,void*,BYTE* device,BYTE* event,DWORD material)
 {
     if(!g_mpool_enabled) return;
@@ -1598,13 +1598,13 @@ extern "C" void __fastcall MarineScratch_ReleasePoints(BYTE* self,void*)
 
 // Marine mesh motion-response construction and degree-table trigonometry.
 struct MarineAngleTable { float v[360]; };
-ASM_VAR(float, g_mc_724960, $L_724960)
+KING_BSS(float, g_mc_724960, 0x724960)
 ASM_VAR(float, g_mc_64c264, $L_64c264)
 ASM_VAR(float, g_mc_6530d0, $L_6530d0)
 ASM_VAR(float, g_mc_6530ac, $L_6530ac)
 ASM_VAR(float, g_mc_653004, $L_653004)
 ASM_VAR(float, g_mc_653000, $L_653000)
-ASM_VAR(float, g_mc_725ecc, $L_725ecc)
+KING_BSS(float, g_mc_725ecc, 0x725ecc)
 ASM_VAR(float, g_mc_64c338, $L_64c338)
 ASM_VAR(float, g_mc_64c350, $L_64c350)
 ASM_VAR(float, g_mc_64d7b8, $L_64d7b8)
@@ -1613,11 +1613,11 @@ ASM_VAR(float, g_mc_6530b4, $L_6530b4)
 ASM_VAR(float, g_mc_650330, $L_650330)
 ASM_VAR(float, g_mc_64c320, $L_64c320)
 ASM_VAR(float, g_mc_650804, $L_650804)
-ASM_VAR(float, g_mc_725ed0, $L_725ed0)
-ASM_VAR(float, g_mc_725ed4, $L_725ed4)
-ASM_VAR(float, g_mc_725ed8, $L_725ed8)
-ASM_VAR(MarineAngleTable, g_mc_sine, $L_7243bc)
-ASM_VAR(MarineAngleTable, g_mc_cosine, $L_724964)
+KING_BSS(float, g_mc_725ed0, 0x725ed0)
+KING_BSS(float, g_mc_725ed4, 0x725ed4)
+KING_BSS(float, g_mc_725ed8, 0x725ed8)
+KING_BSS(MarineAngleTable, g_mc_sine, 0x7243bc)
+KING_BSS(MarineAngleTable, g_mc_cosine, 0x724964)
 extern "C" double __cdecl MarineAngle_Sine(float angle)
 {
     bool negative=!(angle>=g_mc_64c264);
