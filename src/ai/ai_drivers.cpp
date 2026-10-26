@@ -37,8 +37,8 @@ struct Cargo {
 };
 
 typedef double* TypeValues[1];
-ASM_VAR(CargoPrice*, g_cargoPrices, $L_68cc08)
-ASM_VAR(TypeValues*, g_cargoTypes, $L_68cfd8)   // per type, the base value at +48
+KING_BSS(CargoPrice*, g_cargoPrices, 0x68cc08)
+KING_BSS(TypeValues*, g_cargoTypes, 0x68cfd8)   // per type, the base value at +48
 
 extern "C" double __cdecl Cargo_ItemsValue(const Cargo* c)
 {
@@ -86,7 +86,7 @@ extern "C" void FUN_477c60(); KING_ALIAS("_FUN_477c60", "_Driver_SetDeadline")
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
 extern "C" void FUN_4776b0(); KING_ALIAS("_FUN_4776b0", "_Player_Reset477600")
 extern "C" void FUN_417660(); KING_ALIAS("_FUN_417660", "_Player_IsHuman")
-ASM_VAR(BYTE*, g_68d4f4, $L_68d4f4)
+KING_BSS(BYTE*, g_68d4f4, 0x68d4f4)
 extern "C" void FUN_490c90(); KING_ALIAS("_FUN_490c90", "_Save_BeginBlock")
 extern "C" void FUN_490c40(); KING_ALIAS("_FUN_490c40", "_Save_ParseHeader")
 extern "C" void FUN_490ce0(); KING_ALIAS("_FUN_490ce0", "_Save_EndBlock")
@@ -96,12 +96,12 @@ extern "C" void FUN_477880(); KING_ALIAS("_FUN_477880", "_Player_Driver")
 extern "C" void FUN_471ec0(); KING_ALIAS("_FUN_471ec0", "_Drivers_ListCarrying")
 extern "C" void FUN_472110(); KING_ALIAS("_FUN_472110", "_KeyedList_Refill")
 extern "C" void FUN_478980(); KING_ALIAS("_FUN_478980", "@List1000_Erase@16")
-ASM_VAR(BYTE**, g_68cf38, $L_68cf38)
+KING_BSS(BYTE**, g_68cf38, 0x68cf38)
 ASM_VAR(DWORD, g_tagCGLT, $L_66f9d0)
 ASM_VAR(DWORD, g_tagGILT, $L_66fa14)
 typedef char AsmLabel[1];
 #define F(type, p, off) (*(type*)((BYTE*)(p) + (off)))
-ASM_VAR(AsmLabel, g_68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, g_68d1c0, 0x68d1c0)
 
 extern "C" double __cdecl Player_Profit(BYTE* player)
 {
@@ -130,7 +130,7 @@ struct PlayerListNode {
     PlayerListNode* next;
     PlayerListNode* prev;
 };
-ASM_VAR(PlayerListNode*, g_players, $L_68b990)  // the list's head node
+KING_BSS(PlayerListNode*, g_players, 0x68b990)  // the list's head node
 
 struct PlaceCount {                 // 56 bytes
     BYTE m_0[28];
@@ -138,8 +138,8 @@ struct PlaceCount {                 // 56 bytes
     int  others;                    // +32
     BYTE m_36[20];
 };
-ASM_VAR(PlaceCount*, g_places, $L_68a958)
-ASM_VAR(PlaceCount*, g_placesEnd, $L_68a95c)
+KING_BSS(PlaceCount*, g_places, 0x68a958)
+KING_BSS(PlaceCount*, g_placesEnd, 0x68a95c)
 
 struct Player {
     CharVec name;
@@ -199,7 +199,7 @@ KING_ALIAS("_AI_SortTimes", "_Doubles_StableSortBuf")
 extern "C" const char* __cdecl AI_Text(const char* key);
 KING_ALIAS("_AI_Text", "_Message_Text")
 extern "C" void __cdecl Messages_Add(const char* text);          // copter.cpp
-ASM_VAR(int, g_dealersBusy, $L_68d154)
+KING_BSS(int, g_dealersBusy, 0x68d154)
 
 static const char s_playHeader[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\ai_play.h";
 
@@ -426,8 +426,8 @@ KING_ALIAS("_Vehicle_Release", "FUN_4d8ae0")
 extern "C" void __cdecl Order_Destroy(void* order);
 KING_ALIAS("_Order_Destroy", "@Shell_Nop@8")
 typedef char AiText[1];
-ASM_VAR(AiText, g_positionText, $L_77e6e0)
-ASM_VAR(AiText, g_playerText, $L_77e660)
+KING_BSS(AiText, g_positionText, 0x77e6e0)
+KING_BSS(AiText, g_playerText, 0x77e660)
 
 static void InvalidPosition(int line, const PositionId* p)
 {
@@ -569,11 +569,11 @@ extern "C" void FUN_471b10(); KING_ALIAS("_FUN_471b10", "@Rec471b10_Save@12")   
 extern "C" void FUN_470e10(); KING_ALIAS("_FUN_470e10", "@Order_Save@12")    // writes an order (stream)
 extern "C" void __cdecl PlayerRef_Resolve(int* e);
 typedef DWORD Dwords[1];
-ASM_VAR(Dwords, g_playRng, $L_68b9c8)          // the AI's subtractive generator
-ASM_VAR(unsigned, g_playRngI, $L_68baa4)
-ASM_VAR(unsigned, g_playRngJ, $L_68baa8)
-ASM_VAR(DWORD*, g_logoUsed, $L_68cc88)          // per logo: bit 0 taken
-ASM_VAR(int, g_logoRequests, $L_68d18c)
+KING_BSS(Dwords, g_playRng, 0x68b9c8)          // the AI's subtractive generator
+KING_BSS(unsigned, g_playRngI, 0x68baa4)
+KING_BSS(unsigned, g_playRngJ, 0x68baa8)
+KING_BSS(DWORD*, g_logoUsed, 0x68cc88)          // per logo: bit 0 taken
+KING_BSS(int, g_logoRequests, 0x68d18c)
 
 static void Put(BYTE* stream, const void* p, int n)
 {
@@ -1382,7 +1382,7 @@ extern "C" bool __cdecl Player_RemoveWaypoint(BYTE* p, int id)
 extern "C" void FUN_477b00(); KING_ALIAS("_FUN_477b00", "_Players_SetCurrent")
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_4731e0(); KING_ALIAS("_FUN_4731e0", "@Player_Destroy@4")
-ASM_VAR(BYTE*, g_q52_68b990, $L_68b990)
+KING_BSS(BYTE*, g_q52_68b990, 0x68b990)
 // [FUN_4734f0] clears the 68b990 list: the current player from its head, then each node (+8 destroyed, 1000 bytes
 // back to the pool)
 extern "C" void __cdecl Players_Clear(void)
@@ -1398,8 +1398,8 @@ extern "C" void __cdecl Players_Clear(void)
     F(BYTE*, g_q52_68b990, 4) = g_q52_68b990;
 }
 
-ASM_VAR(int, g_q112_68b990, $L_68b990)
-ASM_VAR(int, g_q112_68d4f4, $L_68d4f4)
+KING_BSS(int, g_q112_68b990, 0x68b990)
+KING_BSS(int, g_q112_68d4f4, 0x68d4f4)
 // [$L_477ae0] static init: 68d4f4 starts as the empty list end (68b990)
 extern "C" void __cdecl AiDri_Init68d4f4(void) { g_q112_68d4f4 = g_q112_68b990; }
 
@@ -1414,7 +1414,7 @@ extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
 ASM_VAR(AsmLabel, s_q204_66f9d8, $L_66f9d8)
 ASM_VAR(AsmLabel, s_q204_66f920, $L_66f920)
 ASM_VAR(AsmLabel, s_q204_66e430, $L_66e430)
-ASM_VAR(AsmLabel, s_q204_68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, s_q204_68d1c0, 0x68d1c0)
 static BYTE* Aidri204_Find(int key)
 {
     void* end;
@@ -1482,7 +1482,7 @@ ASM_VAR(AsmLabel, s_ps66fa88, $L_66fa88)
 ASM_VAR(AsmLabel, s_ps66fa80, $L_66fa80)
 ASM_VAR(AsmLabel, s_ps66fa70, $L_66fa70)
 ASM_VAR(AsmLabel, s_ps66fa68, $L_66fa68)
-ASM_VAR(int, g_ps68b990, $L_68b990)
+KING_BSS(int, g_ps68b990, 0x68b990)
 
 static void Ps_Bytes(BYTE* s, const void* p, int n)
 {
@@ -2038,7 +2038,7 @@ int __cdecl Player_SwapVehicles(BYTE* a, BYTE* b, int flags)
 
 // === the player constructor (FUN_4729e0)
 
-ASM_VAR(int, g_pcNone68b990, $L_68b990)
+KING_BSS(int, g_pcNone68b990, 0x68b990)
 ASM_VAR(AsmLabel, s_pc66fa34, $L_66fa34)       // the default name (8 bytes)
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
@@ -2249,7 +2249,7 @@ void __fastcall Player_SaveRecord(BYTE* p, void*, BYTE** v)
 
 // === hiring a driver (FUN_476bc0)
 
-ASM_VAR(int, g_hd68b990, $L_68b990)
+KING_BSS(int, g_hd68b990, 0x68b990)
 ASM_VAR(double, g_hd64b780, $L_64b780)
 ASM_VAR(AsmLabel, s_hd66fae0, $L_66fae0)
 ASM_VAR(AsmLabel, s_hd66facc, $L_66facc)
@@ -2439,9 +2439,9 @@ int __cdecl Player_GiveBackCargo(BYTE* a, BYTE* b, int flags)
 
 extern "C" void Kl_Copy(); KING_ALIAS("_Kl_Copy", "_Rec16_Copy")
 extern "C" void Kl_VecCharCopy(); KING_ALIAS("_Kl_VecCharCopy", "@VecChar_Copy@12")
-ASM_VAR(int, g_kl68d164, $L_68d164)
-ASM_VAR(int*, g_kl68a980, $L_68a980)
-ASM_VAR(int*, g_kl68a984, $L_68a984)
+KING_BSS(int, g_kl68d164, 0x68d164)
+KING_BSS(int*, g_kl68a980, 0x68a980)
+KING_BSS(int*, g_kl68a984, 0x68a984)
 
 extern "C" {
 

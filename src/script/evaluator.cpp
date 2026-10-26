@@ -59,13 +59,13 @@ ASM_VAR(AsmLabel, s_tApply, $L_671154)
 ASM_VAR(AsmLabel, s_tString, $L_66ca58)
 ASM_VAR(AsmLabel, g_vtblUnspecified, $L_64c034)
 
-ASM_VAR(int, g_69224c, $L_69224c)
+KING_BSS(int, g_69224c, 0x69224c)
 ASM_VAR(AsmLabel, g_strImmediate, $L_671104)    // "<IMMEDIATE>"
 typedef void* Blocks[1];
-ASM_VAR(int, g_free44Count, $L_693650)          // freed 44-byte blocks
-ASM_VAR(Blocks, g_free44, $L_692650)
-ASM_VAR(int, g_free32Count, $L_694658)          // freed 32-byte blocks
-ASM_VAR(Blocks, g_free32, $L_693658)
+KING_BSS(int, g_free44Count, 0x693650)          // freed 44-byte blocks
+KING_BSS(Blocks, g_free44, 0x692650)
+KING_BSS(int, g_free32Count, 0x694658)          // freed 32-byte blocks
+KING_BSS(Blocks, g_free32, 0x693658)
 ASM_VAR(AsmLabel, g_vtbl64bf68, $L_64bf68)
 ASM_VAR(AsmLabel, g_vtbl64bf70, $L_64bf70)
 ASM_VAR(AsmLabel, g_vtbl64bf80, $L_64bf80)
@@ -636,9 +636,9 @@ extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const Sch
 KING_ALIAS("@SchValue_Assign@12", "@Str_Assign@12")
 extern "C" BYTE* __cdecl UninitCopyStrRefs(const BYTE* first, const BYTE* last, BYTE* dest);  // aistl.cpp
 typedef int Ints[1];
-ASM_VAR(Ints, g_errorOff, $L_691dbc)            // per error code: don't report
-ASM_VAR(int, g_lastErrorCode, $L_692244)
-ASM_VAR(int, g_lastErrorLevel, $L_692248)
+KING_BSS(Ints, g_errorOff, 0x691dbc)            // per error code: don't report
+KING_BSS(int, g_lastErrorCode, 0x692244)
+KING_BSS(int, g_lastErrorLevel, 0x692248)
 ASM_VAR(FILE*, g_errorFile, $L_670b04)
 typedef void (__cdecl* ErrorHandler)(int code, int level, const char* text);
 
@@ -1851,10 +1851,10 @@ extern "C" void __fastcall SchNode4aa150_Destroy(void** self, int)
     CallThis(FUN_4b13b0, self);
 }
 
-ASM_VAR(void*, g_pool692650, $L_692650)
-ASM_VAR(int, g_poolCount693650, $L_693650)
-ASM_VAR(void*, g_pool693658, $L_693658)
-ASM_VAR(int, g_poolCount694658, $L_694658)
+KING_BSS(void*, g_pool692650, 0x692650)
+KING_BSS(int, g_poolCount693650, 0x693650)
+KING_BSS(void*, g_pool693658, 0x693658)
+KING_BSS(int, g_poolCount694658, 0x694658)
 
 // [FUN_4aa720] the first dword the second argument points to
 extern "C" int __cdecl Sch_Deref2nd(void*, int* p)
@@ -1941,7 +1941,7 @@ typedef const char* SchStrTable[1];
 ASM_VAR(SchStrTable, g_msgs670e08, $L_670e08)
 ASM_VAR(AsmLabel, s_670dc8, $L_670dc8)
 ASM_VAR(AsmLabel, s_fmt6710ec, $L_6710ec)
-ASM_VAR(AsmLabel, g_text692250, $L_692250)
+KING_BSS(AsmLabel, g_text692250, 0x692250)
 
 // [FUN_4a59f0] message i of the table: its number (checked against i) and the text after it
 extern "C" char* __cdecl Sch_MessageText(int i)
@@ -1956,7 +1956,7 @@ extern "C" char* __cdecl Sch_MessageText(int i)
 
 ASM_VAR(SchStrTable, g_msgs670a7c, $L_670a7c)
 ASM_VAR(AsmLabel, s_fmt670db8, $L_670db8)
-ASM_VAR(AsmLabel, g_text691e44, $L_691e44)
+KING_BSS(AsmLabel, g_text691e44, 0x691e44)
 
 // [FUN_4a5380] error message code with its severity letter (I W E F ?): the format and the text after the number
 extern "C" char* __cdecl Sch_ErrorText(int code, int severity)
@@ -1972,11 +1972,11 @@ extern "C" char* __cdecl Sch_ErrorText(int code, int severity)
 
 extern "C" size_t __cdecl strlen(const char* s);
 typedef int SchIntTable[1];
-ASM_VAR(SchIntTable, g_muted691dbc, $L_691dbc)
-ASM_VAR(int, g_lastError692244, $L_692244)
-ASM_VAR(int, g_lastSeverity692248, $L_692248)
+KING_BSS(SchIntTable, g_muted691dbc, 0x691dbc)
+KING_BSS(int, g_lastError692244, 0x692244)
+KING_BSS(int, g_lastSeverity692248, 0x692248)
 typedef void (__cdecl* SchErrorHook)(int code, int severity, const char* text);
-ASM_VAR(SchErrorHook, g_errorHook69224c, $L_69224c)
+KING_BSS(SchErrorHook, g_errorHook69224c, 0x69224c)
 
 // [FUN_4a52e0] reports an error (code, severity) unless muted: to the error file and the hook; exits on severity 1
 extern "C" int __cdecl Sch_ErrorCode(int code, int severity)
@@ -2124,10 +2124,10 @@ extern "C" int __fastcall Eva_4a74f0(BYTE*, void*, BYTE* p)
 // ---------------------------------------------------------------------------
 // Static initializers of random generators.
 
-ASM_VAR(AsmLabel, g_evaRng694660, $L_694660)
-ASM_VAR(DWORD, g_evaRng694738, $L_694738)
-ASM_VAR(DWORD, g_evaRng69473c, $L_69473c)
-ASM_VAR(DWORD, g_evaRng694740, $L_694740)
+KING_BSS(AsmLabel, g_evaRng694660, 0x694660)
+KING_BSS(DWORD, g_evaRng694738, 0x694738)
+KING_BSS(DWORD, g_evaRng69473c, 0x69473c)
+KING_BSS(DWORD, g_evaRng694740, 0x694740)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Eva_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)

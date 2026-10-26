@@ -653,7 +653,7 @@ extern "C" void __fastcall Body_SetOrientation(BYTE* self, void*, int a, const M
 
 extern "C" void FUN_4ef480(); KING_ALIAS("_FUN_4ef480", "@Wheels_LoadShares@8")
 typedef BYTE Bytes697f9c[1];
-ASM_VAR(Bytes697f9c, g_697f9c, $L_697f9c)     // 2416-byte records by vehicle type
+KING_BSS(Bytes697f9c, g_697f9c, 0x697f9c)     // 2416-byte records by vehicle type
 ASM_VAR(double, g_64c958, $L_64c958)            // 0.9
 ASM_VAR(float, g_674414, $L_674414)             // 0.75
 ASM_VAR(float, g_9_8, $L_64d990)                // 9.8
@@ -764,7 +764,7 @@ extern "C" void __fastcall Body_ResetMotion(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 typedef char AsmLabel[1];
 extern "C" void FUN_4ee980(); KING_ALIAS("_FUN_4ee980", "@Body_UpdateHitch@12")
-ASM_VAR(AsmLabel, g_carTypeNames, $L_69809c)
+KING_BSS(AsmLabel, g_carTypeNames, 0x69809c)
 ASM_VAR(AsmLabel, s_67456c, $L_67456c)
 extern "C" void __cdecl World_Fatal(const char* msg);
 
@@ -789,11 +789,11 @@ extern "C" void __fastcall Car_CountType(BYTE* self, void*)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_4ebbe0(); KING_ALIAS("_FUN_4ebbe0", "@Car_RandomStep@12")
 ASM_PROC(FUN_4eb2f0)
-ASM_VAR(AsmLabel, g_697608, $L_697608)
-ASM_VAR(AsmLabel, g_6975b8, $L_6975b8)
-ASM_VAR(int, g_697658, $L_697658)
-ASM_VAR(int, g_69765c, $L_69765c)
-ASM_VAR(int, g_697660, $L_697660)
+KING_BSS(AsmLabel, g_697608, 0x697608)
+KING_BSS(AsmLabel, g_6975b8, 0x6975b8)
+KING_BSS(int, g_697658, 0x697658)
+KING_BSS(int, g_69765c, 0x69765c)
+KING_BSS(int, g_697660, 0x697660)
 
 // [FUN_4eb350..$L_4eb399] at or past +20: once, asks the car (+36) for 4ebbe0(+28); fails mark +32
 extern "C" void __fastcall Trigger_Check(BYTE* self, void*, float x)
@@ -939,8 +939,8 @@ extern "C" void __fastcall Body4fc930_SetMode(BYTE* s, void*, unsigned mode, int
 // A placed object.
 
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
-ASM_VAR(AsmLabel, g_q98_702650, $L_702650)
-ASM_VAR(AsmLabel, g_q98_702630, $L_702630)
+KING_BSS(AsmLabel, g_q98_702650, 0x702650)
+KING_BSS(AsmLabel, g_q98_702630, 0x702630)
 // [$L_4ee4d0] constructor: the node part (+32) initialised, the position and size from the 702650 and 702630
 // defaults, the rest cleared
 extern "C" BYTE* __fastcall Placed4ee4d0_Construct(BYTE* s)
@@ -1038,9 +1038,9 @@ extern "C" void __fastcall Body_SetVec88(BYTE* s, void*, const float* v)
 
 // === a physics state's initial values (FUN_4f6cf0)
 
-ASM_VAR(AsmLabel, g_ps7025f0, $L_7025f0)        // a 4x3 identity matrix
-ASM_VAR(AsmLabel, g_ps702650, $L_702650)        // a vector
-ASM_VAR(AsmLabel, g_ps702630, $L_702630)        // a vector
+KING_BSS(AsmLabel, g_ps7025f0, 0x7025f0)        // a 4x3 identity matrix
+KING_BSS(AsmLabel, g_ps702650, 0x702650)        // a vector
+KING_BSS(AsmLabel, g_ps702630, 0x702630)        // a vector
 
 static void Ps_Vec(BYTE* p, const void* v)
 {
@@ -1100,7 +1100,7 @@ BYTE* __fastcall PhysState_Init(BYTE* self, void*)
 
 // === the engine constructor (FUN_4eb770)
 
-ASM_VAR(WORD, g_ec696bda, $L_696bda)
+KING_BSS(WORD, g_ec696bda, 0x696bda)
 ASM_VAR(float, g_ec64d970, $L_64d970)
 extern "C" void FUN_4eba10(); KING_ALIAS("_FUN_4eba10", "@Engine_Reset@8")
 
@@ -1282,7 +1282,7 @@ void __fastcall Body_Integrate(BYTE* s, void*, const float* f, const float* t)
 
 // === a body's saved state (FUN_4f09f0)
 
-ASM_VAR(AsmLabel, g_bs697f9c, $L_697f9c)       // 2416 bytes per car model
+KING_BSS(AsmLabel, g_bs697f9c, 0x697f9c)       // 2416 bytes per car model
 
 extern "C" {
 
@@ -1469,9 +1469,9 @@ void __fastcall Body_SpinAxis(BYTE* s)
 // === a body's frame terms (FUN_4f0800)
 
 extern "C" void Bf_NormalizeThis(); KING_ALIAS("_Bf_NormalizeThis", "@Vec3_NormalizeThis@8")
-ASM_VAR(float, g_bf702620, $L_702620)
-ASM_VAR(float, g_bf702624, $L_702624)
-ASM_VAR(float, g_bf702628, $L_702628)
+KING_BSS(float, g_bf702620, 0x702620)
+KING_BSS(float, g_bf702624, 0x702624)
+KING_BSS(float, g_bf702628, 0x702628)
 
 extern "C" {
 
@@ -1558,7 +1558,7 @@ extern "C" void Ba_Cross(); KING_ALIAS("_Ba_Cross", "_Vec3_Cross")
 extern "C" void Ba_DivScalar(); KING_ALIAS("_Ba_DivScalar", "_Vec3_DivScalar")
 extern "C" void Ba_Dot(); KING_ALIAS("_Ba_Dot", "_Vec3_Dot")
 extern "C" void Ba_Scaled(); KING_ALIAS("_Ba_Scaled", "_Vec3_Scaled")
-ASM_VAR(AsmLabel, g_ba7025f0, $L_7025f0)
+KING_BSS(AsmLabel, g_ba7025f0, 0x7025f0)
 ASM_VAR(double, g_ba64b5a0, $L_64b5a0)
 
 extern "C" {
@@ -1948,9 +1948,9 @@ extern "C" void Wc_Dot(); KING_ALIAS("_Wc_Dot", "_Vec3_Dot")
 extern "C" void Wc_Sub(); KING_ALIAS("_Wc_Sub", "_Vec3_Sub")
 extern "C" void Wc_Add(); KING_ALIAS("_Wc_Add", "_Vec3_Add")
 extern "C" void Wc_Scaled(); KING_ALIAS("_Wc_Scaled", "_Vec3_Scaled")
-ASM_VAR(float, g_wc702630, $L_702630)
-ASM_VAR(float, g_wc702634, $L_702634)
-ASM_VAR(float, g_wc702638, $L_702638)
+KING_BSS(float, g_wc702630, 0x702630)
+KING_BSS(float, g_wc702634, 0x702634)
+KING_BSS(float, g_wc702638, 0x702638)
 ASM_VAR(float, g_wc64d7b8, $L_64d7b8)
 ASM_VAR(float, g_wc64c258, $L_64c258)
 ASM_VAR(double, g_wc64b658, $L_64b658)
@@ -3042,8 +3042,8 @@ void __fastcall Wheels_LoadShares(BYTE* s, void*)
 
 // === setting a body's mass, frame and wheels (FUN_4ee540)
 
-ASM_VAR(Vec3, g_bm6974a8, $L_6974a8)               // the unit inertia
-ASM_VAR(AsmLabel, g_bm697a10, $L_697914)           // car type records (hubs at +252 + 12 i)
+KING_BSS(Vec3, g_bm6974a8, 0x6974a8)               // the unit inertia
+KING_BSS(AsmLabel, g_bm697a10, 0x697914)           // car type records (hubs at +252 + 12 i)
 ASM_VAR(float, g_bm64c300, $L_64c300)
 
 extern "C" {
@@ -3126,8 +3126,8 @@ extern "C" void Bp_NodeInit(); KING_ALIAS("_Bp_NodeInit", "@Node_Init@8")
 extern "C" void Bp_ToAngles(); KING_ALIAS("_Bp_ToAngles", "_Matrix_ToAngles")
 extern "C" void Bp_FromPose(); KING_ALIAS("_Bp_FromPose", "_Matrix_FromPose")
 extern "C" void Bp_4fca10(); KING_ALIAS("_Bp_4fca10", "@Body_NextFrame@12")
-ASM_VAR(Vec3, g_bpUp, $L_702630)
-ASM_VAR(Vec3, g_bpEye, $L_702650)
+KING_BSS(Vec3, g_bpUp, 0x702630)
+KING_BSS(Vec3, g_bpEye, 0x702650)
 ASM_VAR(float, g_bp674414, $L_674414)
 
 struct BpMat { Vec3 r0, r1, r2, t; };
@@ -3253,20 +3253,20 @@ extern "C" void Pb_Parts(); KING_ALIAS("_Pb_Parts", "_Query_Parts2")
 extern "C" void Pb_Zero(); KING_ALIAS("_Pb_Zero", "@Vec3_ZeroThis@8")
 extern "C" void Pb_Node(); KING_ALIAS("_Pb_Node", "@Node_Init@8")
 extern "C" void Pb_Elem(); KING_ALIAS("_Pb_Elem", "@Placed4ee4d0_Construct@4")
-ASM_VAR(BYTE, g_pbTypes, $L_697868)
-ASM_VAR(BYTE, g_pbTypes2144, $L_69809c)
-ASM_VAR(BYTE, g_pbFrames, $L_6d2258)
-ASM_VAR(int, g_pb6ce33c, $L_6ce33c)
-ASM_VAR(int, g_pb6ce340, $L_6ce340)
-ASM_VAR(float, g_pb6969f4, $L_6969f4)
-ASM_VAR(float, g_pb6969f8, $L_6969f8)
-ASM_VAR(float, g_pb6969fc, $L_6969fc)
-ASM_VAR(char, g_pbNames, $L_698166)
+KING_BSS(BYTE, g_pbTypes, 0x697868)
+KING_BSS(BYTE, g_pbTypes2144, 0x69809c)
+KING_BSS(BYTE, g_pbFrames, 0x6d2258)
+KING_BSS(int, g_pb6ce33c, 0x6ce33c)
+KING_BSS(int, g_pb6ce340, 0x6ce340)
+KING_BSS(float, g_pb6969f4, 0x6969f4)
+KING_BSS(float, g_pb6969f8, 0x6969f8)
+KING_BSS(float, g_pb6969fc, 0x6969fc)
+KING_BSS(char, g_pbNames, 0x698166)
 ASM_VAR(char, g_pbNoOwner, $L_674510)
 ASM_VAR(char, g_pbWheels, $L_6744e8)
 ASM_VAR(char, g_pbBadWheels, $L_6744c8)
 ASM_VAR(char, g_pbNoGround, $L_6744ac)
-ASM_VAR(Vec3, g_pb6974a8, $L_6974a8)
+KING_BSS(Vec3, g_pb6974a8, 0x6974a8)
 ASM_VAR(AsmLabel, g_pbVtbl, $L_64d994)
 extern "C" void g_pbHist1(); KING_ALIAS("_g_pbHist1", "_Window_Parabola")
 extern "C" void g_pbHist2(); KING_ALIAS("_g_pbHist2", "_Window_Cosine")
@@ -4393,7 +4393,7 @@ extern "C" void Ps_Damage(); KING_ALIAS("_Ps_Damage", "@Car_CheckDamage@8")
 extern "C" void Ps_Ground(); KING_ALIAS("_Ps_Ground", "@Car_PlaceOnGround@12")
 extern "C" void Pls_Query(); KING_ALIAS("_Pls_Query", "_Query_4e5b22")
 extern "C" void Ps_Nop(); KING_ALIAS("_Ps_Nop", "_Fw_Nop")
-ASM_VAR(int, g_ps697670, $L_697670)
+KING_BSS(int, g_ps697670, 0x697670)
 ASM_VAR(char, g_psCheck1, $L_6747f0)
 ASM_VAR(char, g_psCheck2, $L_6747e0)
 ASM_VAR(char, g_psCheck3, $L_6747d0)
@@ -5030,9 +5030,9 @@ extern "C" int __cdecl Ct4_Report(char* out, int n, const char* name, const Matr
 extern "C" void __cdecl Ct4_Fatal(const char* msg); KING_ALIAS("_Ct4_Fatal", "_World_Fatal")
 extern "C" void Ct4_MulA(); KING_ALIAS("_Ct4_MulA", "@Vec3_MulAssign@16")
 extern "C" void Ct4_SubA(); KING_ALIAS("_Ct4_SubA", "@Vec3_SubAssign@16")
-ASM_VAR(int, g_ct4zero702650, $L_702650)
-ASM_VAR(int, g_ct4zero702654, $L_702654)
-ASM_VAR(int, g_ct4zero702658, $L_702658)
+KING_BSS(int, g_ct4zero702650, 0x702650)
+KING_BSS(int, g_ct4zero702654, 0x702654)
+KING_BSS(int, g_ct4zero702658, 0x702658)
 ASM_VAR(float, g_ct4_64c264, $L_64c264)
 ASM_VAR(double, g_ct4_64b958, $L_64b958)
 ASM_VAR(double, g_ct4_64b5b8, $L_64b5b8)
@@ -5312,9 +5312,9 @@ extern "C" BYTE* __cdecl Ct5_Combine(BYTE* out, BYTE* a, BYTE* b); KING_ALIAS("_
 extern "C" Ct5Row* __cdecl Ct5_MulRow(Ct5Row* out, const BYTE* m, const Ct5Row* v); KING_ALIAS("_Ct5_MulRow", "_DMat_MulRow")
 extern "C" int __cdecl Ct5_OutOfBox(const void* v, float lim); KING_ALIAS("_Ct5_OutOfBox", "_Vec3_OutOfBox")
 extern "C" void Ct5_SetThis(); KING_ALIAS("_Ct5_SetThis", "@Vec3_SetThis@20")
-ASM_VAR(BYTE, g_ct5Identity7025f0, $L_7025f0)
-ASM_VAR(BYTE, g_ct5Axis702640, $L_702640)
-ASM_VAR(BYTE, g_ct5Axis702620, $L_702620)
+KING_BSS(BYTE, g_ct5Identity7025f0, 0x7025f0)
+KING_BSS(BYTE, g_ct5Axis702640, 0x702640)
+KING_BSS(BYTE, g_ct5Axis702620, 0x702620)
 ASM_VAR(double, g_ct5_64b660, $L_64b660)
 ASM_VAR(double, g_ct5_64b678, $L_64b678)
 ASM_VAR(float, g_ct5_64c250, $L_64c250)
@@ -5530,7 +5530,7 @@ ASM_VAR(double, g_ct6_64d950, $L_64d950)
 ASM_VAR(double, g_ct6_64c958, $L_64c958)
 ASM_VAR(double, g_ct6_64b748, $L_64b748)
 ASM_VAR(double, g_ct6_64d948, $L_64d948)
-ASM_VAR(BYTE, g_ct6_6974a8, $L_6974a8)
+KING_BSS(BYTE, g_ct6_6974a8, 0x6974a8)
 
 #define L(n) (*(float*)(fp - (n)))
 #define LI(n) (*(int*)(fp - (n)))
@@ -5668,15 +5668,15 @@ extern "C" void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int k
 extern "C" void __fastcall Vec3_NormalizeThis(Vec3* self, void*);
 extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
 extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
-ASM_VAR(int, g_sv702650, $L_702650)
-ASM_VAR(int, g_sv702654, $L_702654)
-ASM_VAR(int, g_sv702658, $L_702658)
-ASM_VAR(float, g_sv702620, $L_702620)
-ASM_VAR(float, g_sv702624, $L_702624)
-ASM_VAR(float, g_sv702628, $L_702628)
-ASM_VAR(float, g_sv702630, $L_702630)
-ASM_VAR(float, g_sv702634, $L_702634)
-ASM_VAR(float, g_sv702638, $L_702638)
+KING_BSS(int, g_sv702650, 0x702650)
+KING_BSS(int, g_sv702654, 0x702654)
+KING_BSS(int, g_sv702658, 0x702658)
+KING_BSS(float, g_sv702620, 0x702620)
+KING_BSS(float, g_sv702624, 0x702624)
+KING_BSS(float, g_sv702628, 0x702628)
+KING_BSS(float, g_sv702630, 0x702630)
+KING_BSS(float, g_sv702634, 0x702634)
+KING_BSS(float, g_sv702638, 0x702638)
 ASM_VAR(float, g_sv64c258, $L_64c258)
 ASM_VAR(float, g_sv64c450, $L_64c450)
 ASM_VAR(float, g_sv64c264, $L_64c264)

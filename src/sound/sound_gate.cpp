@@ -34,7 +34,7 @@ extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
-ASM_VAR(DWORD*, g_providerIds, $L_723de8)
+KING_BSS(DWORD*, g_providerIds, 0x723de8)
 ASM_VAR(AsmLabel, g_683ca0, $L_683ca0)
 ASM_VAR(AsmLabel, g_enumProvider, $L_601630)
 ASM_VAR(AsmLabel, g_vtbl652de0, $L_652de0)
@@ -49,22 +49,22 @@ ASM_VAR(AsmLabel, s_ipx, $L_68427c)
 ASM_VAR(AsmLabel, s_tcp, $L_684274)
 ASM_VAR(AsmLabel, s_serial, $L_684268)
 ASM_VAR(AsmLabel, s_modem, $L_684260)
-ASM_VAR(BYTE*, g_providersBegin, $L_723d60)     // vector of 32-byte records
-ASM_VAR(BYTE*, g_providersEnd, $L_723d64)
-ASM_VAR(DWORD, g_providerNext, $L_723dec)
-ASM_VAR(BYTE*, g_directPlay, $L_723ddc)          // IDirectPlay4
-ASM_VAR(DWORD, g_dpPlayer, $L_723de0)
-ASM_VAR(BYTE, g_comInitialized, $L_723df0)
+KING_BSS(BYTE*, g_providersBegin, 0x723d60)     // vector of 32-byte records
+KING_BSS(BYTE*, g_providersEnd, 0x723d64)
+KING_BSS(DWORD, g_providerNext, 0x723dec)
+KING_BSS(BYTE*, g_directPlay, 0x723ddc)          // IDirectPlay4
+KING_BSS(DWORD, g_dpPlayer, 0x723de0)
+KING_BSS(BYTE, g_comInitialized, 0x723df0)
 ASM_VAR(AsmLabel, g_clsidDirectPlay, $L_655350)
 ASM_VAR(AsmLabel, g_iidDirectPlay4, $L_655360)
-ASM_VAR(AsmLabel, g_68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, g_68d1c0, 0x68d1c0)
 ASM_VAR(AsmLabel, s_noDirectPlay, $L_684280)
 ASM_VAR(AsmLabel, s_d1gateId, $L_683c78)
 ASM_VAR(AsmLabel, s_d1gateFile, $L_68422c)
-ASM_VAR(AsmLabel, g_dpMessages, $L_723d90)
-ASM_VAR(AsmLabel, g_playerName, $L_723df8)
-ASM_VAR(AsmLabel, g_playerName2, $L_723f88)
-ASM_VAR(DWORD, g_723d88, $L_723d88)
+KING_BSS(AsmLabel, g_dpMessages, 0x723d90)
+KING_BSS(AsmLabel, g_playerName, 0x723df8)
+KING_BSS(AsmLabel, g_playerName2, 0x723f88)
+KING_BSS(DWORD, g_723d88, 0x723d88)
 ASM_VAR(AsmLabel, g_vtbl652dc8, $L_652dc8)
 ASM_VAR(AsmLabel, g_iidMediaEvent, $L_6554b0)
 ASM_VAR(AsmLabel, g_iidBasicAudio, $L_6554e0)
@@ -707,9 +707,9 @@ extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")    
 extern "C" void FUN_600e60(); KING_ALIAS("_FUN_600e60", "_Net_FillSendBuffer")    // appends bytes to a vector<char> (vector, data, size)
 extern "C" void Gate_SendBufferDtor(); KING_ALIAS("_Gate_SendBufferDtor", "_Static723d98_Destroy")
 extern "C" int __cdecl atexit(void (__cdecl* fn)());
-ASM_VAR(BYTE, g_sendBufInit, $L_723d8c)
+KING_BSS(BYTE, g_sendBufInit, 0x723d8c)
 typedef BYTE* SendBuf[3];
-ASM_VAR(SendBuf, g_sendBuf, $L_723d98)
+KING_BSS(SendBuf, g_sendBuf, 0x723d98)
 ASM_VAR(int, g_sendRetries, $L_683cb8)
 
 static int Dp_SendEx(DWORD to, BYTE* data, int size)
@@ -756,8 +756,8 @@ extern "C" void FUN_602b60(); KING_ALIAS("_FUN_602b60", "@Blob_Set@16")
 extern "C" void FUN_603b30(); KING_ALIAS("_FUN_603b30", "@Music_Close@8")
 ASM_PROC($L_602410)
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
-ASM_VAR(char, g_723d90, $L_723d90)
-ASM_VAR(char, g_723d60, $L_723d60)
+KING_BSS(char, g_723d90, 0x723d90)
+KING_BSS(char, g_723d60, 0x723d60)
 
 // [FUN_600b50] forwards to FUN_600660
 extern "C" int __cdecl Gate_600b50(int a)
@@ -900,9 +900,9 @@ extern "C" void __fastcall MsgBuf_Destroy(BYTE* self, int)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_600b50(); KING_ALIAS("_FUN_600b50", "_Gate_600b50")    // an error text
 extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")
-ASM_VAR(BYTE, g_sg723df0, $L_723df0)
+KING_BSS(BYTE, g_sg723df0, 0x723df0)
 ASM_VAR(AsmLabel, g_sg683ca0, $L_683ca0)
-ASM_VAR(AsmLabel, s_sg68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, s_sg68d1c0, 0x68d1c0)
 ASM_VAR(AsmLabel, s_sg684320, $L_684320)
 ASM_VAR(AsmLabel, s_sg683c78, $L_683c78)
 ASM_VAR(AsmLabel, s_sg68422c, $L_68422c)
@@ -933,7 +933,7 @@ extern "C" int __cdecl Gate_Start(const char* name)
 // ---------------------------------------------------------------------------
 // Small virtual methods and static initializers.
 
-ASM_VAR(DWORD, g_sougat723d88, $L_723d88)
+KING_BSS(DWORD, g_sougat723d88, 0x723d88)
 
 // [$L_601040]
 extern "C" void __cdecl SougatInit_601040() { g_sougat723d88 = 0x0; }
@@ -972,8 +972,8 @@ extern "C" int __fastcall Stream_Seek(BYTE* s, void*, int off, int whence)
 // ---------------------------------------------------------------------------
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
-ASM_VAR(BYTE*, g_q51_723ddc, $L_723ddc)
-ASM_VAR(int, g_q51_723df4, $L_723df4)
+KING_BSS(BYTE*, g_q51_723ddc, 0x723ddc)
+KING_BSS(int, g_q51_723df4, 0x723df4)
 typedef long(__stdcall* ComFn96)(void*, int, int);
 // [$L_601800] unless c has bit 0: asks the 723ddc object (slot 96) for (a, 1); 1 on failure, else sets 723df4
 extern "C" int __stdcall Gate_Enum601800(int a, int, int c, int)
@@ -1036,8 +1036,8 @@ extern "C" int __cdecl Gate_723d90Init(void)
 }
 
 typedef void* SgFreeLists[17];
-ASM_VAR(SgFreeLists, g_q196_68d1c0, $L_68d1c0)
-ASM_VAR(volatile LONG, g_q196_68d204, $L_68d204)
+KING_BSS(SgFreeLists, g_q196_68d1c0, 0x68d1c0)
+KING_BSS(volatile LONG, g_q196_68d204, 0x68d204)
 extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);
 extern "C" void __cdecl free(void*);
 // [$L_602550] destroys the vector of 32-byte provider records (each one's buffers freed) and returns its storage
@@ -1065,7 +1065,7 @@ extern "C" void __fastcall Providers_Destroy(BYTE** v, void*)
 // ---------------------------------------------------------------------------
 // Thunks.
 
-ASM_VAR(char, g_q238_723d98, $L_723d98)
+KING_BSS(char, g_q238_723d98, 0x723d98)
 extern "C" int __fastcall q238_VecB_FreeStorage(BYTE* s, void* d); KING_ALIAS("@q238_VecB_FreeStorage@8", "@VecB_FreeStorage@8")
 // [$L_6021a0] VecB_FreeStorage on the static object 723d98
 extern "C" void __cdecl Static723d98_Destroy(void) { q238_VecB_FreeStorage((BYTE*)&g_q238_723d98, 0); }
@@ -1117,8 +1117,8 @@ void __cdecl Net_OnBlock(BYTE** v, const BYTE* b, int n)
 // === receiving the next network message (FUN_601060)
 
 extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
-ASM_VAR(BYTE, g_rm723d48, $L_723d48)
-ASM_VAR(AsmLabel, g_rm723d70, $L_723d70)    // the receive buffer (a byte vector)
+KING_BSS(BYTE, g_rm723d48, 0x723d48)
+KING_BSS(AsmLabel, g_rm723d70, 0x723d70)    // the receive buffer (a byte vector)
 ASM_VAR(AsmLabel, g_rm601250, $L_601250)    // its destructor
 ASM_VAR(AsmLabel, s_rm684250, $L_684250)
 extern "C" int __cdecl atexit(void (__cdecl*)(void));
@@ -1193,8 +1193,8 @@ ASM_VAR(AsmLabel, g_dpaidB, $L_6552c0)
 ASM_VAR(AsmLabel, g_dpaidC, $L_6552b0)
 ASM_VAR(AsmLabel, g_dpaidPort, $L_6552a0)
 ASM_VAR(AsmLabel, s_lobbyDefault, $L_6842c8)
-ASM_VAR(AsmLabel, g_lobby723ec0, $L_723ec0)
-ASM_VAR(AsmLabel, g_lobbyPort, $L_724050)
+KING_BSS(AsmLabel, g_lobby723ec0, 0x723ec0)
+KING_BSS(AsmLabel, g_lobbyPort, 0x724050)
 
 struct Gate_Elem {
     BYTE  guid[16];
@@ -1274,7 +1274,7 @@ HRESULT __cdecl Gate_BuildAddress(BYTE* l, const BYTE* sp, void** out, DWORD* si
 
 // === connecting to a session (FUN_601c70)
 
-ASM_VAR(BYTE, g_dpHosting, $L_723dd8)
+KING_BSS(BYTE, g_dpHosting, 0x723dd8)
 ASM_VAR(AsmLabel, g_clsidLobby, $L_6552f0)
 ASM_VAR(AsmLabel, g_iidLobby, $L_655300)
 ASM_VAR(AsmLabel, s_dpNoPlayer, $L_6842d0)
@@ -1483,7 +1483,7 @@ ASM_VAR(char, g_dpe683cf8, $L_683cf8)
 ASM_VAR(char, g_dpe683cbc, $L_683cbc)
 ASM_VAR(char, g_dpe683cd0, $L_683cd0)
 ASM_VAR(char, g_dpeFmt683cec, $L_683cec)
-ASM_VAR(char, g_dpeBuf723d7c, $L_723d7c)
+KING_BSS(char, g_dpeBuf723d7c, 0x723d7c)
 
 extern "C" {
 
@@ -1612,7 +1612,7 @@ extern "C" void Ng32_Clone(); KING_ALIAS("_Ng32_Clone", "_Bytes_Clone@12")
 extern "C" void Ng32_PoolFree(); KING_ALIAS("_Ng32_PoolFree", "_Ai_PoolFree")
 extern "C" void Ng32_Insert(); KING_ALIAS("_Ng32_Insert", "@CharVec_InsertRange@20")
 ASM_PROC(FUN_62ab60)    // packs script value v with handler h
-ASM_VAR(BYTE, ng32_pack723de4, $L_723de4)
+KING_BSS(BYTE, ng32_pack723de4, 0x723de4)
 ASM_VAR(char, ng32_tag683cb0, $L_683cb0)
 ASM_VAR(char, ng32_tagEnd683cb4, $L_683cb4)
 

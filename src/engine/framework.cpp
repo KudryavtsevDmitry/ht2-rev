@@ -33,10 +33,10 @@ extern "C" void FUN_5d3b30(); KING_ALIAS("_FUN_5d3b30", "_Video_Height")
 extern "C" void FUN_5d3b20(); KING_ALIAS("_FUN_5d3b20", "_Video_Width")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
 extern "C" void FUN_5e9d40(); KING_ALIAS("_FUN_5e9d40", "_Bmp_Write")
-ASM_VAR(int, g_721754, $L_721754)
+KING_BSS(int, g_721754, 0x721754)
 ASM_VAR(void*, g_67fb7c, $L_67fb7c)
 ASM_VAR(AsmLabel, g_start603800, _Effect_Zero)
-ASM_VAR(BYTE*, g_7208fc, $L_7208fc)
+KING_BSS(BYTE*, g_7208fc, 0x7208fc)
 ASM_VAR(AsmLabel, s_683538, $L_683538)
 extern "C" int __cdecl Node_LinkByNames(BYTE* n, BYTE** ctx);
 extern "C" int __cdecl Node_ClearLinkByName(BYTE* n, BYTE** ctx);
@@ -64,22 +64,21 @@ ASM_VAR(AsmLabel, s_foreground, $L_682c48)       // "Foreground_object"
 ASM_VAR(AsmLabel, s_background, $L_682c34)       // "Background_object"
 ASM_VAR(AsmLabel, s_skyDomeSpace, $L_682c24)
 ASM_VAR(AsmLabel, s_skyDomeKey, $L_682c18)
-ASM_VAR(int, g_7212a0, $L_7212a0)
-ASM_VAR(int, g_721298, $L_721298)
-ASM_VAR(int, g_72129c, $L_72129c)
-ASM_VAR(int, g_7216bc, $L_7216bc)
-ASM_VAR(int, g_7212b0, $L_7212b0)
-ASM_VAR(void*, g_mainThread, $L_72177c)
-ASM_VAR(BYTE*, g_app, $L_721750)
-ASM_VAR(int, g_721774, $L_721774)
-ASM_VAR(AsmLabel, g_dataPath, $L_7209d4)         // 251 bytes
-ASM_VAR(char*, g_dataDir, $L_720bb0)
+KING_BSS(int, g_7212a0, 0x7212a0)
+KING_BSS(int, g_721298, 0x721298)
+KING_BSS(int, g_72129c, 0x72129c)
+KING_BSS(int, g_7216bc, 0x7216bc)
+KING_BSS(int, g_7212b0, 0x7212b0)
+KING_BSS(void*, g_mainThread, 0x72177c)
+KING_BSS(BYTE*, g_app, 0x721750)
+KING_BSS(int, g_721774, 0x721774)
+KING_BSS(AsmLabel, g_dataPath, 0x7209d4)         // 251 bytes
+KING_BSS(char*, g_dataDir, 0x720bb0)
 ASM_VAR(AsmLabel, s_dot, $L_682a2c)
-ASM_VAR(int, g_702e9c, $L_702e9c)
-ASM_VAR(int, g_720930, $L_720930)
-ASM_VAR(int, g_resPending, $L_7217a4)
-ASM_VAR(AsmLabel, g_fileDir, $L_7217bc)
-ASM_VAR(AsmLabel, g_filePath, $L_72183c)
+KING_BSS(int, g_720930, 0x720930)
+KING_BSS(int, g_resPending, 0x7217a4)
+KING_BSS(AsmLabel, g_fileDir, 0x7217bc)
+KING_BSS(AsmLabel, g_filePath, 0x72183c)
 ASM_VAR(AsmLabel, s_errUnknown, $L_6835ac)
 ASM_VAR(AsmLabel, s_errFormat, $L_683570)
 ASM_VAR(AsmLabel, s_errMemory, $L_68355c)
@@ -987,7 +986,7 @@ extern "C" void FUN_5dae90(); KING_ALIAS("_FUN_5dae90", "@Module_Load@20")    //
 extern "C" void FUN_5e4f60(); KING_ALIAS("_FUN_5e4f60", "@Resources_AddTable@12")    // resources: load table (this, name)
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")
-ASM_VAR(AsmLabel, g_objectNames, $L_71e820)
+KING_BSS(AsmLabel, g_objectNames, 0x71e820)
 ASM_VAR(AsmLabel, s_6832d4, $L_6832d4)
 ASM_VAR(AsmLabel, s_683338, $L_683338)
 ASM_VAR(AsmLabel, s_6833a8, $L_6833a8)
@@ -997,9 +996,6 @@ ASM_VAR(AsmLabel, s_6832fc, $L_6832fc)
 ASM_VAR(AsmLabel, s_6833cc, $L_6833cc)
 ASM_VAR(AsmLabel, s_68337c, $L_68337c)
 ASM_VAR(AsmLabel, s_68335c, $L_68335c)
-ASM_VAR(int, g_702e9c, $L_702e9c)
-ASM_VAR(int, g_720930, $L_720930)
-ASM_VAR(int, g_resPending, $L_7217a4)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
 // [FUN_5e4860..$L_5e488a] puts a resource into the first free one of the 1000 slots at +12; returns the table's +4012 (-1 and fatal when full)
@@ -1278,7 +1274,7 @@ ASM_VAR(AsmLabel, s_682cd4, $L_682cd4)
 ASM_VAR(AsmLabel, s_682cb8, $L_682cb8)
 ASM_VAR(AsmLabel, s_682ca4, $L_682ca4)
 ASM_VAR(AsmLabel, s_682c64, $L_682c64)
-ASM_VAR(int, g_7218bc, $L_7218bc)
+KING_BSS(int, g_7218bc, 0x7218bc)
 
 // for each object of a room: a type 14 object with flag 2 whose names (+132 in the old room's list, +164 in its children) match is enumerated into the context's room
 static int __cdecl Fw_LinkOldObject(BYTE* obj, BYTE* ctx)
@@ -1380,10 +1376,10 @@ extern "C" int __cdecl Image_LoadAny(BYTE* img, int a2, char* path)
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5ef390(); KING_ALIAS("_FUN_5ef390", "@Room_FindObject@12")
 extern "C" int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx);     // room object callback: queue the objects to delete
-ASM_VAR(BOOL, g_fwTaskDump, $L_721768)
-ASM_VAR(BYTE*, g_fwTraceData, $L_71e814)
-ASM_VAR(int, g_fwTracePos, $L_71e818)
-ASM_VAR(int, g_fwTraceSize, $L_71e810)
+KING_BSS(BOOL, g_fwTaskDump, 0x721768)
+KING_BSS(BYTE*, g_fwTraceData, 0x71e814)
+KING_BSS(int, g_fwTracePos, 0x71e818)
+KING_BSS(int, g_fwTraceSize, 0x71e810)
 ASM_VAR(AsmLabel, s_682bc8, $L_682bc8)
 ASM_VAR(AsmLabel, s_682bb8, $L_682bb8)
 ASM_VAR(AsmLabel, s_682ba4, $L_682ba4)
@@ -1465,8 +1461,8 @@ extern "C" BYTE* __fastcall Fw_LoadRoom(BYTE* self, void*, const char* name, con
 extern "C" void FUN_5e7770(); KING_ALIAS("_FUN_5e7770", "_Image_FromFile")    // image: load (name, 0, 0)
 extern "C" void FUN_5d8350(); KING_ALIAS("_FUN_5d8350", "_Dd_BitDepth")
 extern "C" void FUN_5d4c10(); KING_ALIAS("_FUN_5d4c10", "_Dd_ErrorText")    // DirectDraw error text (hr, where)
-ASM_VAR(BYTE*, g_fwDevice, $L_720908)
-ASM_VAR(BYTE*, g_fwD3d, $L_72090c)
+KING_BSS(BYTE*, g_fwDevice, 0x720908)
+KING_BSS(BYTE*, g_fwD3d, 0x72090c)
 ASM_VAR(AsmLabel, s_6834e8, $L_6834e8)
 ASM_VAR(AsmLabel, s_6834d4, $L_6834d4)
 ASM_VAR(AsmLabel, s_6834b4, $L_6834b4)
@@ -1585,7 +1581,7 @@ extern "C" BYTE* __cdecl Font_LoadImage(const char* name)
 
 // ---------------------------------------------------------------------------
 typedef void (__cdecl* FwHook2)(int, int);
-ASM_VAR(FwHook2, g_fw702f4c, $L_702f4c)
+KING_BSS(FwHook2, g_fw702f4c, 0x702f4c)
 extern "C" void FUN_5e6de0(); KING_ALIAS("_FUN_5e6de0", "_Files_Open")    // opens a data file (name, mode)
 extern "C" void FUN_5e6e90(); KING_ALIAS("_FUN_5e6e90", "_Palette_Load")
 extern "C" void FUN_5e7930(); KING_ALIAS("_FUN_5e7930", "_Tga_ReadHeader")
@@ -1594,7 +1590,7 @@ extern "C" void FUN_5e99c0(); KING_ALIAS("_FUN_5e99c0", "_Image_Read")
 extern "C" void FUN_5e9360(); KING_ALIAS("_FUN_5e9360", "_Texture_ReadFile")
 extern "C" void FUN_5e9910(); KING_ALIAS("_FUN_5e9910", "_Sound_ReadFile")
 extern "C" void FUN_5e99a0(); KING_ALIAS("_FUN_5e99a0", "_Image_SetData")
-ASM_VAR(AsmLabel, g_fwPath72183c, $L_72183c)
+KING_BSS(AsmLabel, g_fwPath72183c, 0x72183c)
 extern "C" int __cdecl _stat(const char* path, void* buf);
 
 // [FUN_5d8a50] clears the two low flags of +16 and calls the hook 702f4c (0, 0)
@@ -1830,9 +1826,9 @@ extern "C" void FUN_5bbdd0(); KING_ALIAS("_FUN_5bbdd0", "@Bitmap_Destroy@8")
 extern "C" void FUN_5e5420(); KING_ALIAS("_FUN_5e5420", "@Resources_Bind@16")
 extern "C" void FUN_5e49d0(); KING_ALIAS("_FUN_5e49d0", "@Resource_Load@12")
 extern "C" void FUN_5e4740(); KING_ALIAS("_FUN_5e4740", "@Resource_Free@8")
-ASM_VAR(BYTE*, g_fw721750, $L_721750)
-ASM_VAR(int, g_fw71e844, $L_71e844)
-ASM_VAR(int, g_fw7217a4, $L_7217a4)
+KING_BSS(BYTE*, g_fw721750, 0x721750)
+KING_BSS(int, g_fw71e844, 0x71e844)
+KING_BSS(int, g_fw7217a4, 0x7217a4)
 extern "C" long __cdecl ftell(FILE* f);
 
 // [FUN_5e5840] frees the six buffers of a record
@@ -2103,10 +2099,10 @@ extern "C" void FUN_5d3ca0(); KING_ALIAS("_FUN_5d3ca0", "_Video_CreatePalette")
 ASM_VAR(AsmLabel, s_fw651ee8, $L_651ee8)
 ASM_VAR(AsmLabel, s_fw652130, $L_652130)
 ASM_VAR(AsmLabel, s_fw671204, $L_671204)
-ASM_VAR(AsmLabel, g_fw720938, $L_720938)
+KING_BSS(AsmLabel, g_fw720938, 0x720938)
 ASM_VAR(int, g_fw683b54, $L_683b54)
-ASM_VAR(HDC, g_fw72091c, $L_72091c)
-ASM_VAR(HWND, g_fw720920, $L_720920)
+KING_BSS(HDC, g_fw72091c, 0x72091c)
+KING_BSS(HWND, g_fw720920, 0x720920)
 
 // [$L_5d9ed0] the clock at +20984
 extern "C" void __fastcall Fw_ClockStart(BYTE* s) { CallThis(FUN_5de5b0, F(BYTE*, s, 20984)); }
@@ -2270,7 +2266,7 @@ extern "C" void FUN_5b39a0(); KING_ALIAS("_FUN_5b39a0", "@Rn_Chain5af000@20")
 extern "C" void FUN_5e4250(); KING_ALIAS("_FUN_5e4250", "@Windows_SetActive@12")
 extern "C" void FUN_5d3f70(); KING_ALIAS("_FUN_5d3f70", "_Video_Get67fcf0")
 extern "C" void FUN_5d3f80(); KING_ALIAS("_FUN_5d3f80", "_Video_Get67fcf4")
-ASM_VAR(AsmLabel, g_fra7025f0, $L_7025f0)
+KING_BSS(AsmLabel, g_fra7025f0, 0x7025f0)
 
 typedef void (*AsmFn)();
 extern "C" void FUN_5bae30(); KING_ALIAS("_FUN_5bae30", "@Texture_Create@12")
@@ -2549,7 +2545,7 @@ extern "C" void FUN_5bc2f0(); KING_ALIAS("_FUN_5bc2f0", "@Poly_Destroy@8")
 extern "C" void FUN_5b9520(); KING_ALIAS("_FUN_5b9520", "@TexSets_Free@4")
 extern "C" void FUN_5d3560(); KING_ALIAS("_FUN_5d3560", "@Owner_Clear@8")
 extern "C" void FUN_5e4eb0(); KING_ALIAS("_FUN_5e4eb0", "@Resources_FreeTables@8")
-ASM_VAR(AsmLabel, g_fra68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, g_fra68d1c0, 0x68d1c0)
 ASM_VAR(AsmLabel, g_fra652310, $L_652310)
 
 // [FUN_5d8900] constructor (a1, rect a2..a5, a6, a7, a8): a window with its control group (+64, vtable 6521b0)
@@ -2669,7 +2665,7 @@ extern "C" void FUN_5b6a90(); KING_ALIAS("_FUN_5b6a90", "@Window_FreeBuffers@8")
 extern "C" void FUN_5b6a50(); KING_ALIAS("_FUN_5b6a50", "@Window_ConstructChild@24")
 extern "C" void FUN_5b6e00(); KING_ALIAS("_FUN_5b6e00", "@Surface_Clear@16")
 extern "C" void FUN_5b6530(); KING_ALIAS("_FUN_5b6530", "@SubSurface_Construct@20")
-ASM_VAR(BYTE*, g_q20_721750, $L_721750)
+KING_BSS(BYTE*, g_q20_721750, 0x721750)
 
 // [FUN_5da180] (x, y, w, h): the window's surface (+12) is made again; the main window gets a new one of that
 // size, a child one the part of its parent's (anchored by flags +16 bits 16/32, 64/128)
@@ -2737,8 +2733,8 @@ extern "C" void __fastcall Fw_RemakeSurface(BYTE* s, void*, int a, int b, int c,
 extern "C" void FUN_5ba710(); KING_ALIAS("_FUN_5ba710", "@Texture_Construct@12")
 extern "C" void FUN_5e7930(); KING_ALIAS("_FUN_5e7930", "_Tga_ReadHeader")
 extern "C" void FUN_5e8160(); KING_ALIAS("_FUN_5e8160", "_Tga_Read")
-ASM_VAR(int, g_q26_720904, $L_720904)
-ASM_VAR(int, g_q26_7218bc, $L_7218bc)
+KING_BSS(int, g_q26_720904, 0x720904)
+KING_BSS(int, g_q26_7218bc, 0x7218bc)
 
 // [FUN_5e7770] (file, name, flags): an image (84 bytes) read from the open file; a streamed one (flag 0x400 with
 // streaming on) keeps the file and position; otherwise its pixels are read now. 0 and 7218bc = 2 on failure
@@ -2814,9 +2810,9 @@ extern "C" void __cdecl Loader_OnMessage(int* m, BYTE* l)
 
 extern "C" void Mfc_AfxGetThread(); KING_ALIAS("_Mfc_AfxGetThread", "_Afx_GetThread@0")
 extern "C" void Mfc_WndDefault(); KING_ALIAS("_Mfc_WndDefault", "@Wnd_Default@4")
-ASM_VAR(void*, g_q51_72177c, $L_72177c)
-ASM_VAR(int, g_q51_721778, $L_721778)
-ASM_VAR(BYTE*, g_q51_721750, $L_721750)
+KING_BSS(void*, g_q51_72177c, 0x72177c)
+KING_BSS(int, g_q51_721778, 0x721778)
+KING_BSS(BYTE*, g_q51_721750, 0x721750)
 // [$L_5dd510] the current thread, fetched once into 72177c
 extern "C" void* __stdcall App_Thread(int)
 {
@@ -2862,7 +2858,7 @@ extern "C" void FUN_5fa910(); KING_ALIAS("_FUN_5fa910", "@Mesh_BuildVertices@12"
 extern "C" void FUN_5f0b10(); KING_ALIAS("_FUN_5f0b10", "@Mesh_PrepareDraw@12")
 extern "C" void Mfc_AfxEndThread(); KING_ALIAS("_Mfc_AfxEndThread", "_Afx_EndThread@8")
 extern "C" int __cdecl Room_LinkDoor(BYTE* n, BYTE* rec);
-ASM_VAR(HDC, g_q53_72091c, $L_72091c)
+KING_BSS(HDC, g_q53_72091c, 0x72091c)
 // [$L_5d9300] switching the current room (+468) to r: walks r with the 5d9370 visitor and a zeroed 432-byte
 // record holding the old and the new room
 extern "C" void __fastcall Wnd5d9300_EnterRoom(BYTE* s, void*, BYTE* r)
@@ -2993,8 +2989,8 @@ extern "C" int __cdecl Node_Dispatch(BYTE* m, int a)
 ASM_VAR(AsmLabel, s_q72_671204, $L_671204)
 ASM_VAR(AsmLabel, s_q72_6766ac, $L_6766ac)
 ASM_VAR(AsmLabel, s_q72_6766a4, $L_6766a4)
-ASM_VAR(char, g_q72_720ad4, $L_720ad4)
-ASM_VAR(char, g_q72_720d8c, $L_720d8c)
+KING_BSS(char, g_q72_720ad4, 0x720ad4)
+KING_BSS(char, g_q72_720d8c, 0x720d8c)
 extern "C" void FUN_5e5cb0(); KING_ALIAS("_FUN_5e5cb0", "@Obj5e5cb0_Init@8")
 
 // [FUN_5dc230] the folder of s (+648, nothing when it is ".") followed by name, in a static buffer
@@ -3293,11 +3289,11 @@ extern "C" void FUN_5d2fa0(); KING_ALIAS("_FUN_5d2fa0", "_Time_NowMs")
 extern "C" void FUN_5d2fc0(); KING_ALIAS("_FUN_5d2fc0", "_Time_Delta")
 extern "C" void FUN_5adc70(); KING_ALIAS("_FUN_5adc70", "@Render_Set8460@12")
 extern "C" void FUN_5eb280(); KING_ALIAS("_FUN_5eb280", "@Camera_Render@24")
-ASM_VAR(AsmLabel, g_q77_7025f0, $L_7025f0)
-ASM_VAR(AsmLabel, g_q77_71e850, $L_71e850)
-ASM_VAR(AsmLabel, g_q77_71f808, $L_71f808)
-ASM_VAR(unsigned, g_q77_702e8c, $L_702e8c)
-ASM_VAR(BYTE*, g_q77_721750, $L_721750)
+KING_BSS(AsmLabel, g_q77_7025f0, 0x7025f0)
+KING_BSS(AsmLabel, g_q77_71e850, 0x71e850)
+KING_BSS(AsmLabel, g_q77_71f808, 0x71f808)
+KING_BSS(unsigned, g_q77_702e8c, 0x702e8c)
+KING_BSS(BYTE*, g_q77_721750, 0x721750)
 
 // [FUN_5dbd30] the camera matrix of view s: the inverse of the one built from its position and angles
 // (+2904..+2948, the angle +2928 turned by +2952)
@@ -3554,7 +3550,7 @@ extern "C" void FUN_5e4d30(); KING_ALIAS("_FUN_5e4d30", "@Resources_FreeAll@8")
 extern "C" void FUN_5d3460(); KING_ALIAS("_FUN_5d3460", "@Owner_Clear@8")
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
 ASM_VAR(double, g_q105_64b658, $L_64b658)
-ASM_VAR(BYTE*, g_q105_721750, $L_721750)
+KING_BSS(BYTE*, g_q105_721750, 0x721750)
 // [FUN_5e03c0] resets world s: frees its resources, clears the view and time state (fog 0.1, the start time
 // scaled by 64b658), the camera's +140 and the owned windows, runs the sound frame with sound on and calls the
 // reset methods (vtbl+124, +120)
@@ -3594,9 +3590,9 @@ extern "C" void FUN_5ae9b0(); KING_ALIAS("_FUN_5ae9b0", "@Render_BeginFrame@12")
 extern "C" void FUN_5aea50(); KING_ALIAS("_FUN_5aea50", "@Render_EndFrame@8")
 extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 extern "C" void FUN_5d96c0(); KING_ALIAS("_FUN_5d96c0", "@Fw_LoadRoom@16")
-ASM_VAR(double, g_q130_71f7f8, $L_71f7f8)
-ASM_VAR(double, g_q130_71f808, $L_71f808)
-ASM_VAR(double, g_q130_720020, $L_720020)
+KING_BSS(double, g_q130_71f7f8, 0x71f7f8)
+KING_BSS(double, g_q130_71f808, 0x71f808)
+KING_BSS(double, g_q130_720020, 0x720020)
 struct Fw130_M { DWORD v[12]; };
 // [FUN_5da080] renders a frame of view s with a room (+488): the timers cleared, the frame number (camera +148)
 // passed to the renderer (+464), the three draw passes (vtbl+104, +100, +108); the times of the passes kept in
@@ -3679,7 +3675,7 @@ extern "C" void __fastcall View_SetCamera(BYTE* s, void*, int r, BYTE* n)
 }
 
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
-ASM_VAR(float, g_q132_721210, $L_721210)
+KING_BSS(float, g_q132_721210, 0x721210)
 // [FUN_5dffc0] draws object +524 of view s alone (its sky draw first) with the camera (+468) of the room
 // (+488); the time it took goes to 721210
 extern "C" void __fastcall View_DrawObject(BYTE* s)
@@ -3849,8 +3845,8 @@ ASM_VAR(double, g_q219_64b658, $L_64b658)
 ASM_VAR(double, g_q219_64d0f0, $L_64d0f0)
 ASM_VAR(double, g_q219_64b678, $L_64b678)
 ASM_VAR(double, g_q219_64b6a0, $L_64b6a0)
-ASM_VAR(int, g_q219_702e90, $L_702e90)
-ASM_VAR(int, g_q219_702e8c, $L_702e8c)
+KING_BSS(int, g_q219_702e90, 0x702e90)
+KING_BSS(int, g_q219_702e8c, 0x702e8c)
 // [FUN_5de600] starts a frame of view s: the frame step +2960 (the fixed step +3032 when set, else the time since
 // the last frame +592 less the pause +600 and the app's lag (+360), at most 0.05 unless the step is negative) is
 // added to the clock +2968 and kept only within 0..64b6a0; then the renderer (+464) and the palette (+3096) are set
@@ -3924,7 +3920,7 @@ extern "C" void FUN_5aea50(); KING_ALIAS("_FUN_5aea50", "@Render_EndFrame@8")
 extern "C" void FUN_5fd160(); KING_ALIAS("_FUN_5fd160", "_Sound_Frame")
 extern "C" void FUN_5de5b0(); KING_ALIAS("_FUN_5de5b0", "@Clock_Start@8")
 extern "C" void FUN_5de5d0(); KING_ALIAS("_FUN_5de5d0", "@Clock_Stop@8")
-ASM_VAR(int, g_q221_721764, $L_721764)
+KING_BSS(int, g_q221_721764, 0x721764)
 ASM_VAR(AsmLabel, s_q221_67fb80, $L_67fb80)
 ASM_VAR(AsmLabel, s_q221_682f34, $L_682f34)
 ASM_VAR(AsmLabel, s_q221_682f30, $L_682f30)
@@ -3972,8 +3968,8 @@ extern "C" void FUN_603b70(); KING_ALIAS("_FUN_603b70", "_Ini_ReadInt")
 extern "C" void FUN_603cb0(); KING_ALIAS("_FUN_603cb0", "_Ini_GetDouble")
 extern "C" double __cdecl atof(const char* s);
 extern "C" long __cdecl atol(const char* s);
-ASM_VAR(BYTE, g_mapFile71e808, $L_71e808)
-ASM_VAR(int, g_showFaceMode721770, $L_721770)
+KING_BSS(BYTE, g_mapFile71e808, 0x71e808)
+KING_BSS(int, g_showFaceMode721770, 0x721770)
 ASM_VAR(double, g_tangLimit682a08, $L_682a08)
 ASM_VAR(double, g_stereo64dae0, $L_64dae0)
 ASM_VAR(double, g_fog64b788, $L_64b788)
@@ -4488,7 +4484,7 @@ int __cdecl Tga_ReadHeader(BYTE* t, FILE* f, int base)
 
 // === the frame statistics overlay ($L_5d8d10)
 
-ASM_VAR(BYTE*, g_stCfg721750, $L_721750)
+KING_BSS(BYTE*, g_stCfg721750, 0x721750)
 ASM_VAR(AsmLabel, s_st682b30, $L_682b30)
 ASM_VAR(AsmLabel, s_st682b28, $L_682b28)
 ASM_VAR(AsmLabel, s_st682b20, $L_682b20)
@@ -4569,7 +4565,7 @@ int __fastcall Stats_Draw(BYTE* self, void*, BYTE* view, int y)
 // === the view's room render (FUN_5dfa90)
 
 extern "C" void FUN_5d4450(); KING_ALIAS("_FUN_5d4450", "_Dd_WaitFlip")
-ASM_VAR(float, g_vr721744, $L_721744)
+KING_BSS(float, g_vr721744, 0x721744)
 ASM_VAR(AsmLabel, g_vr652538, $L_652538)
 
 extern "C" {
@@ -4755,7 +4751,7 @@ ASM_VAR(AsmLabel, s_rp682f00, $L_682f00)
 ASM_VAR(AsmLabel, s_rp682ef0, $L_682ef0)
 ASM_VAR(AsmLabel, s_rp682ee0, $L_682ee0)
 ASM_VAR(AsmLabel, g_rp652518, $L_652518)
-ASM_VAR(DWORD, g_rp702e8c, $L_702e8c)
+KING_BSS(DWORD, g_rp702e8c, 0x702e8c)
 extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")
 extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@16")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
@@ -4800,9 +4796,9 @@ void __fastcall World_SetupPasses(BYTE* w)
 
 // === walking the scene with a probe point (FUN_5dbf00)
 
-ASM_VAR(AsmLabel, g_pw721298, $L_721298)
-ASM_VAR(void*, g_pw7212b0, $L_7212b0)
-ASM_VAR(void*, g_pw7216bc, $L_7216bc)
+KING_BSS(AsmLabel, g_pw721298, 0x721298)
+KING_BSS(void*, g_pw7212b0, 0x7212b0)
+KING_BSS(void*, g_pw7216bc, 0x7216bc)
 extern "C" void FUN_5ab950(); KING_ALIAS("_FUN_5ab950", "@Vec3_TransformPoint@12")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
 extern "C" void FUN_5f88d0(); KING_ALIAS("_FUN_5f88d0", "@Volume_Contains@12")
@@ -4887,7 +4883,7 @@ extern "C" void FUN_5ab4d0(); KING_ALIAS("_FUN_5ab4d0", "_Vec3_Length")
 extern "C" void FUN_5ab710(); KING_ALIAS("_FUN_5ab710", "@Vec3_AddAssign@16")
 extern "C" void FUN_5ac6d0(); KING_ALIAS("_FUN_5ac6d0", "@Plane_FromPoints@44")
 extern "C" void FUN_5cda50(); KING_ALIAS("_FUN_5cda50", "@Shade_Assign@12")
-ASM_VAR(AsmLabel, g_pg702650, $L_702650)
+KING_BSS(AsmLabel, g_pg702650, 0x702650)
 struct Pg_V3 { float x, y, z; };
 
 extern "C" {
@@ -4935,8 +4931,8 @@ int __fastcall Polygon_Read(BYTE* s, void*, void* f)
 extern "C" void FUN_5ab500(); KING_ALIAS("_FUN_5ab500", "_Vec3_ToAngles")
 extern "C" void Fw_RotZ(); KING_ALIAS("_Fw_RotZ", "_Matrix_RotationZ")
 extern "C" void Fw_SetThis(); KING_ALIAS("_Fw_SetThis", "@Vec3_SetThis@20")
-ASM_VAR(Pg_V3, g_fwAhead, $L_702620)
-ASM_VAR(Pg_V3, g_fwUp, $L_702630)
+KING_BSS(Pg_V3, g_fwAhead, 0x702620)
+KING_BSS(Pg_V3, g_fwUp, 0x702630)
 ASM_VAR(double, g_fw64da00, $L_64da00)
 ASM_VAR(double, g_fw64b6e0, $L_64b6e0)
 ASM_VAR(double, g_fw64d900, $L_64d900)
@@ -5011,8 +5007,8 @@ extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "_Afx_GetModuleS
 extern "C" void Mf_FrameExtra(); KING_ALIAS("_Mf_FrameExtra", "_Wnd_FrameExtra")
 ASM_VAR(AsmLabel, g_mfVtbl6523e4, $L_6523e4)
 ASM_VAR(const char*, g_mfEmptyString, $L_685fc0)
-ASM_VAR(AsmLabel, g_mfRectDefault, $L_72db68)
-ASM_VAR(AsmLabel, g_mfWndTop, $L_72da58)
+KING_BSS(AsmLabel, g_mfRectDefault, 0x72db68)
+KING_BSS(AsmLabel, g_mfWndTop, 0x72da58)
 
 extern "C" {
 
@@ -5063,10 +5059,10 @@ extern "C" void __cdecl Device_WaitIdle();
 extern "C" void __fastcall Surface_ClearRows(BYTE* self, void*);
 extern "C" void __cdecl Device_ProbeMultitexture(BYTE* a, BYTE* b);
 extern "C" void __cdecl Sound_Frame();
-ASM_VAR(double, g_wf71f808, $L_71f808)
-ASM_VAR(double, g_wf71f7f8, $L_71f7f8)
-ASM_VAR(double, g_wf720020, $L_720020)
-ASM_VAR(double, g_wf71f810, $L_71f810)
+KING_BSS(double, g_wf71f808, 0x71f808)
+KING_BSS(double, g_wf71f7f8, 0x71f7f8)
+KING_BSS(double, g_wf720020, 0x720020)
+KING_BSS(double, g_wf71f810, 0x71f810)
 ASM_VAR(double, g_wf64b658, $L_64b658)
 
 extern "C" {
@@ -5366,14 +5362,14 @@ int __cdecl Tga_Read(BYTE* img, FILE* f, long off)
 // === reading a face (FUN_5e58b0)
 
 extern "C" int __cdecl atexit(void (__cdecl* f)());
-ASM_VAR(BYTE, g_fc7217b4, $L_7217b4)
-ASM_VAR(float, g_fc7217a8, $L_7217a8)
-ASM_VAR(float, g_fc7217ac, $L_7217ac)
-ASM_VAR(float, g_fc7217b0, $L_7217b0)
-ASM_VAR(int, g_fc72006c, $L_72006c)
+KING_BSS(BYTE, g_fc7217b4, 0x7217b4)
+KING_BSS(float, g_fc7217a8, 0x7217a8)
+KING_BSS(float, g_fc7217ac, 0x7217ac)
+KING_BSS(float, g_fc7217b0, 0x7217b0)
+KING_BSS(int, g_fc72006c, 0x72006c)
 ASM_VAR(double, g_fc64b670, $L_64b670)
 ASM_VAR(double, g_fc64b6e0, $L_64b6e0)
-ASM_VAR(DWORD, g_fc702e8c, $L_702e8c)
+KING_BSS(DWORD, g_fc702e8c, 0x702e8c)
 extern "C" void Fc_RotX(); KING_ALIAS("_Fc_RotX", "_Matrix_RotationX")
 
 static void __cdecl Fc_Nop() {}
@@ -5512,9 +5508,9 @@ int __fastcall FlatFace_Read(BYTE* s, void*, FILE* f)
 
 // === a camera following a frame with lag (FUN_5df3d0)
 
-ASM_VAR(double, g_cf720c80, $L_720c80)
-ASM_VAR(double, g_cf7212a8, $L_7212a8)
-ASM_VAR(double, g_cf720b58, $L_720b58)
+KING_BSS(double, g_cf720c80, 0x720c80)
+KING_BSS(double, g_cf7212a8, 0x7212a8)
+KING_BSS(double, g_cf720b58, 0x720b58)
 ASM_VAR(double, g_cf64d900, $L_64d900)
 ASM_VAR(double, g_cf64d908, $L_64d908)
 ASM_VAR(double, g_cf64d910, $L_64d910)
@@ -5620,25 +5616,25 @@ void __fastcall EventRing_Push(BYTE* s, void*, int v)
 
 extern "C" int __cdecl _mkdir(const char*);
 extern "C" void __cdecl Sys_Log(const char* text, int value);
-ASM_VAR(BYTE*, g_di721750, $L_721750)
-ASM_VAR(int, g_di721758, $L_721758)                     // the screenshot number
-ASM_VAR(int, g_di72175c, $L_72175c)                     // the camera dump number
-ASM_VAR(int, g_di721760, $L_721760)
-ASM_VAR(int, g_di721764, $L_721764)
-ASM_VAR(float, g_di721744, $L_721744)
-ASM_VAR(float, g_di721210, $L_721210)
-ASM_VAR(float, g_di72174c, $L_72174c)
-ASM_VAR(float, g_di721748, $L_721748)
-ASM_VAR(int, g_di72006c, $L_72006c)
-ASM_VAR(int, g_di720070, $L_720070)
-ASM_VAR(int, g_di720074, $L_720074)
-ASM_VAR(int, g_di720078, $L_720078)
-ASM_VAR(int, g_di72007c, $L_72007c)
-ASM_VAR(int, g_di702e90, $L_702e90)
-ASM_VAR(int, g_di702e9c, $L_702e9c)
-ASM_VAR(int, g_di720720, $L_720720)
-ASM_VAR(char, g_diText, $L_7212bc)                      // the stats text
-ASM_VAR(char, g_diLine, $L_720e10)
+KING_BSS(BYTE*, g_di721750, 0x721750)
+KING_BSS(int, g_di721758, 0x721758)                     // the screenshot number
+KING_BSS(int, g_di72175c, 0x72175c)                     // the camera dump number
+KING_BSS(int, g_di721760, 0x721760)
+KING_BSS(int, g_di721764, 0x721764)
+KING_BSS(float, g_di721744, 0x721744)
+KING_BSS(float, g_di721210, 0x721210)
+KING_BSS(float, g_di72174c, 0x72174c)
+KING_BSS(float, g_di721748, 0x721748)
+KING_BSS(int, g_di72006c, 0x72006c)
+KING_BSS(int, g_di720070, 0x720070)
+KING_BSS(int, g_di720074, 0x720074)
+KING_BSS(int, g_di720078, 0x720078)
+KING_BSS(int, g_di72007c, 0x72007c)
+KING_BSS(int, g_di702e90, 0x702e90)
+KING_BSS(int, g_di702e9c, 0x702e9c)
+KING_BSS(int, g_di720720, 0x720720)
+KING_BSS(char, g_diText, 0x7212bc)                      // the stats text
+KING_BSS(char, g_diLine, 0x720e10)
 ASM_VAR(double, g_di64b5a0, $L_64b5a0)
 ASM_VAR(double, g_di64d0f0, $L_64d0f0)
 ASM_VAR(double, g_di64dd78, $L_64dd78)
@@ -5898,7 +5894,7 @@ extern "C" void Cc_FromPose(); KING_ALIAS("_Cc_FromPose", "_Matrix_FromPose")
 extern "C" void Cc_Point(); KING_ALIAS("_Cc_Point", "@Vec3_TransformPoint@12")
 extern "C" void Cc_Dir(); KING_ALIAS("_Cc_Dir", "@Vec3_TransformDir@12")
 extern "C" void Cc_Transform2(); KING_ALIAS("_Cc_Transform2", "@Matrix_Transform2@12")
-ASM_VAR(Matrix, g_cc7025f0, $L_7025f0)
+KING_BSS(Matrix, g_cc7025f0, 0x7025f0)
 ASM_VAR(double, g_cc64d338, $L_64d338)
 ASM_VAR(float, g_cc64c304, $L_64c304)
 
@@ -6201,9 +6197,9 @@ extern "C" void Ob_Apply(); KING_ALIAS("_Ob_Apply", "@Node_ApplyMatrix@16")
 extern "C" void Ob_AddNode(); KING_ALIAS("_Ob_AddNode", "@Room_AddNode@12")
 extern "C" void Ob_HashAdd(); KING_ALIAS("_Ob_HashAdd", "@NameHash_Add@16")
 extern "C" void Ob_Push(); KING_ALIAS("_Ob_Push", "@Group_Push@12")
-ASM_VAR(BYTE*, g_ob721750, $L_721750)
-ASM_VAR(BYTE, g_ob71e820, $L_71e820)
-ASM_VAR(AsmLabel, g_ob7025f0, $L_7025f0)
+KING_BSS(BYTE*, g_ob721750, 0x721750)
+KING_BSS(BYTE, g_ob71e820, 0x71e820)
+KING_BSS(AsmLabel, g_ob7025f0, 0x7025f0)
 ASM_VAR(AsmLabel, g_ob64d7d0, $L_64d7d0)
 ASM_VAR(AsmLabel, g_ob64d7bc, $L_64d7bc)
 ASM_VAR(char, g_obName, $L_682c5c)
@@ -6439,7 +6435,7 @@ extern "C" void* __cdecl Rm_PalLoad(const char* name); KING_ALIAS("_Rm_PalLoad",
 extern "C" void __cdecl Rm_Fatal(const char* fmt, ...); KING_ALIAS("_Rm_Fatal", "_Sys_Fatal")
 
 ASM_VAR(char, g_rmDot671204, $L_671204)        // ".\\"
-ASM_VAR(char, g_rm68d1c0, $L_68d1c0)
+KING_BSS(char, g_rm68d1c0, 0x68d1c0)
 ASM_VAR(char, g_rmCannotOpen, $L_683774)       // "Cannot open *.rmp"
 ASM_VAR(char, g_rmColors, $L_68376c)           // "COLORS"
 ASM_VAR(char, g_rmEffects, $L_672998)          // "EFFECTS"
@@ -6457,9 +6453,9 @@ ASM_VAR(char, g_rmNumMaterials, $L_6836d4)     // "num materials"
 ASM_VAR(char, g_rmIncorrectMat, $L_68370c)     // "Incorrect material"
 ASM_VAR(char, g_rmMatRoad, $L_683700)          // "mat_road"
 ASM_VAR(char, g_rmIllegal, $L_6836c0)          // "illegal keyword %s"
-ASM_VAR(char, g_rmLine, $L_7220a4)             // the line buffer
-ASM_VAR(char, g_rmMatText, $L_722950)
-ASM_VAR(BYTE, g_rmNames, $L_71e820)            // the name hash
+KING_BSS(char, g_rmLine, 0x7220a4)             // the line buffer
+KING_BSS(char, g_rmMatText, 0x722950)
+KING_BSS(BYTE, g_rmNames, 0x71e820)            // the name hash
 
 typedef void(__cdecl* Rm_Callback)();
 extern "C" int __cdecl atoi(const char* s);
@@ -7087,15 +7083,15 @@ ASM_VAR(char, g_qdMenuFon, $L_676220)       // "menu.fon"
 ASM_VAR(char, g_qdNoFont, $L_682eb8)        // "menu.sft(fon) is absent."
 ASM_VAR(char, g_qdQuit, $L_682eb0)          // "QUIT"
 ASM_VAR(char, g_qdRestart, $L_682ea8)       // "RESTART"
-ASM_VAR(char, g_qd68d1c0, $L_68d1c0)
+KING_BSS(char, g_qd68d1c0, 0x68d1c0)
 ASM_VAR(char, g_qd67663c, $L_67663c)
 ASM_VAR(BYTE, g_qdPanelVt, $L_6524d8)
 ASM_VAR(BYTE, g_qdMenuVt, $L_64dc50)
-ASM_VAR(int, g_qd720938, $L_720938)
-ASM_VAR(int, g_qd72093c, $L_72093c)
-ASM_VAR(int, g_qd720940, $L_720940)
-ASM_VAR(int, g_qd720944, $L_720944)
-ASM_VAR(BYTE*, g_qd721750, $L_721750)
+KING_BSS(int, g_qd720938, 0x720938)
+KING_BSS(int, g_qd72093c, 0x72093c)
+KING_BSS(int, g_qd720940, 0x720940)
+KING_BSS(int, g_qd720944, 0x720944)
+KING_BSS(BYTE*, g_qd721750, 0x721750)
 
 // a control style (36 bytes) as its constructor leaves it
 static void Qd_Style(DWORD* st)
@@ -7211,20 +7207,20 @@ extern "C" void __fastcall Ow_LayoutRow(BYTE* self, void*, int gap); KING_ALIAS(
 extern "C" void __fastcall Ow_RectOffset(void* r, void*, int dx, int dy); KING_ALIAS("@Ow_RectOffset@16", "@Rect_Offset@16")
 extern "C" void __fastcall Ow_RectMoveTo(void* r, void*, int x, int y); KING_ALIAS("@Ow_RectMoveTo@16", "@Rect_MoveTo@16")
 extern "C" BYTE* __fastcall Ow_WindowsAdd(BYTE* self, void*, BYTE* w); KING_ALIAS("@Ow_WindowsAdd@12", "@Windows_Add@12")
-ASM_VAR(void*, g_ow69684c, $L_69684c)
-ASM_VAR(int, g_ow6ced24, $L_6ced24)
+KING_BSS(void*, g_ow69684c, 0x69684c)
+KING_BSS(int, g_ow6ced24, 0x6ced24)
 ASM_VAR(BYTE, g_owVt64ddc0, $L_64ddc0)
 ASM_VAR(BYTE, g_owVt64dd80, $L_64dd80)
 ASM_VAR(char, g_owMenuFon, $L_676220)
 ASM_VAR(char, g_owNoFont, $L_676820)
-ASM_VAR(BYTE, g_ow6ce3b8, $L_6ce3b8)
-ASM_VAR(BYTE, g_ow6ce408, $L_6ce408)
-ASM_VAR(BYTE, g_ow6ce988, $L_6ce988)
-ASM_VAR(BYTE, g_ow6ceb38, $L_6ceb38)
-ASM_VAR(BYTE, g_ow6ce3e0, $L_6ce3e0)
+KING_BSS(BYTE, g_ow6ce3b8, 0x6ce3b8)
+KING_BSS(BYTE, g_ow6ce408, 0x6ce408)
+KING_BSS(BYTE, g_ow6ce988, 0x6ce988)
+KING_BSS(BYTE, g_ow6ceb38, 0x6ceb38)
+KING_BSS(BYTE, g_ow6ce3e0, 0x6ce3e0)
 ASM_VAR(char, g_owBack15, $L_676808)       // "m_15\\BackEscMain.txr"
 ASM_VAR(char, g_owBack16, $L_6767f0)       // "m_16\\BackEscMain.txr"
-ASM_VAR(BYTE*, g_ow6ce3fc, $L_6ce3fc)
+KING_BSS(BYTE*, g_ow6ce3fc, 0x6ce3fc)
 ASM_VAR(char, g_ow67663c, $L_67663c)
 ASM_VAR(char, g_owExitsys, $L_6767e8)
 ASM_VAR(char, g_owMain, $L_6767e0)
@@ -7234,11 +7230,11 @@ ASM_VAR(char, g_ow911, $L_6767cc)
 ASM_VAR(char, g_owRestart, $L_6767c4)
 ASM_VAR(char, g_owLoadg, $L_6767bc)
 ASM_VAR(char, g_owSavg, $L_6767b4)
-ASM_VAR(BYTE*, g_ow6cec6c, $L_6cec6c)
-ASM_VAR(int, g_ow6ced0c, $L_6ced0c)
-ASM_VAR(int, g_ow6ced10, $L_6ced10)
-ASM_VAR(BYTE*, g_ow6ced6c, $L_6ced6c)
-ASM_VAR(BYTE, g_owWindows696750, $L_696750)
+KING_BSS(BYTE*, g_ow6cec6c, 0x6cec6c)
+KING_BSS(int, g_ow6ced0c, 0x6ced0c)
+KING_BSS(int, g_ow6ced10, 0x6ced10)
+KING_BSS(BYTE*, g_ow6ced6c, 0x6ced6c)
+KING_BSS(BYTE, g_owWindows696750, 0x696750)
 
 extern "C" {
 
@@ -7341,12 +7337,12 @@ extern "C" void __cdecl Rl_Log(const void* text, int value); KING_ALIAS("_Rl_Log
 extern "C" void Rl_NodeDispatch(); KING_ALIAS("_Rl_NodeDispatch", "_Node_Dispatch")
 typedef long(__stdcall* Rl_SetColorKey)(void* surf, DWORD flags, void* key);
 
-ASM_VAR(char, g_rlName720b60, $L_720b60)
-ASM_VAR(char, g_rlName720b61, $L_720b61)
-ASM_VAR(char*, g_rl7209cc, $L_7209cc)
-ASM_VAR(char*, g_rl7209d0, $L_7209d0)
-ASM_VAR(char, g_rlBase720bb4, $L_720bb4)
-ASM_VAR(char, g_rlPath721218, $L_721218)
+KING_BSS(char, g_rlName720b60, 0x720b60)
+KING_BSS(char, g_rlName720b61, 0x720b61)
+KING_BSS(char*, g_rl7209cc, 0x7209cc)
+KING_BSS(char*, g_rl7209d0, 0x7209d0)
+KING_BSS(char, g_rlBase720bb4, 0x720bb4)
+KING_BSS(char, g_rlPath721218, 0x721218)
 ASM_VAR(char, g_rlDot671204, $L_671204)        // ".\\"
 ASM_VAR(char, g_rlBadName, $L_682d80)          // "Incorrect b3d file name"
 ASM_VAR(char, g_rlTooLong, $L_682d68)          // "The path is too long."
@@ -7357,10 +7353,10 @@ ASM_VAR(char, g_rlBadB3d, $L_682d48)           // "*.b3d is bad"
 ASM_VAR(char, g_rlNoPalMasks, $L_682d20)       // "Module has masks and has not palette"
 ASM_VAR(char, g_rlNoPalBase, $L_682d00)        // "Base module have not palette"
 ASM_VAR(char, g_rlCheckFormat, $L_682ce0)      // "check format(resolution) of "
-ASM_VAR(BYTE*, g_rl71e82c, $L_71e82c)
-ASM_VAR(BYTE*, g_rl721750, $L_721750)
-ASM_VAR(int, g_rl720904, $L_720904)
-ASM_VAR(int, g_rl7208c4, $L_7208c4)
+KING_BSS(BYTE*, g_rl71e82c, 0x71e82c)
+KING_BSS(BYTE*, g_rl721750, 0x721750)
+KING_BSS(int, g_rl720904, 0x720904)
+KING_BSS(int, g_rl7208c4, 0x7208c4)
 
 static void Rl_SetDir(const char* dir)
 {
@@ -7595,8 +7591,8 @@ extern "C" BYTE* __fastcall Dm_RootSurface(BYTE* self, void*); KING_ALIAS("@Dm_R
 extern "C" void __fastcall Dm_PaletteApply(BYTE* self, void*); KING_ALIAS("@Dm_PaletteApply@8", "@Palette_Apply@8")
 extern "C" int __cdecl Dm_TextureLevel(void); KING_ALIAS("_Dm_TextureLevel", "_Mode_TextureLevel")
 extern "C" void __cdecl Dm_Set71e7d4(int v); KING_ALIAS("_Dm_Set71e7d4", "_Set71e7d4")
-ASM_VAR(int, g_dm721754, $L_721754)
-ASM_VAR(BYTE*, g_dm721750, $L_721750)
+KING_BSS(int, g_dm721754, 0x721754)
+KING_BSS(BYTE*, g_dm721750, 0x721750)
 ASM_VAR(double, g_dm652728, $L_652728)
 ASM_VAR(char, g_dmEnv, $L_6730a0)           // "ENV"
 ASM_VAR(char, g_dmXStretch, $L_68327c)      // "xstretch"
@@ -7729,9 +7725,9 @@ ASM_VAR(BYTE, g_iaSplashVt652570, $L_652570)
 ASM_VAR(BYTE, g_iaBitmapVt652564, $L_652564)
 ASM_VAR(char, g_iaTitleBmp, $L_68314c)       // "TITLEBMP"
 ASM_VAR(char, g_iaTitleBmpE, $L_683140)      // "TITLEBMPE"
-ASM_VAR(BYTE*, g_iaApp721750, $L_721750)
-ASM_VAR(char*, g_iaArgv720c04, $L_720c04)    // the exe path, then the command line's tokens (720c08..720c68)
-ASM_VAR(int, g_ia721778, $L_721778)
+KING_BSS(BYTE*, g_iaApp721750, 0x721750)
+KING_BSS(char*, g_iaArgv720c04, 0x720c04)    // the exe path, then the command line's tokens (720c08..720c68)
+KING_BSS(int, g_ia721778, 0x721778)
 ASM_VAR(char, g_iaMenuFon, $L_676220)
 
 extern "C" {
@@ -7839,8 +7835,8 @@ BOOL __fastcall App_InitInstance(BYTE* s, void*)
 
 // === a base module's image and overlays loaded (FUN_5db710 with its pieces up to $L_5db9b8)
 
-ASM_VAR(char, g_rlPath720d08, $L_720d08)
-ASM_VAR(char*, g_rl7212b4, $L_7212b4)
+KING_BSS(char, g_rlPath720d08, 0x720d08)
+KING_BSS(char*, g_rl7212b4, 0x7212b4)
 
 extern "C" {
 
@@ -7930,14 +7926,14 @@ BYTE* __fastcall Module_LoadImage(BYTE* s, void*, const char* dir, const char* n
 // === the app's orbit camera ($L_5e10b0 with its pieces up to $L_5e169e)
 
 extern "C" void __fastcall Cm_SetMousePos(BYTE* self, void*, int x, int y); KING_ALIAS("@Cm_SetMousePos@16", "@CGameApp_SetMousePos@16")
-ASM_VAR(BYTE*, g_cmApp721750, $L_721750)
-ASM_VAR(DWORD, g_cmPrev721780, $L_721780)
-ASM_VAR(float, g_cm720e0c, $L_720e0c)
-ASM_VAR(float, g_cm720d88, $L_720d88)
-ASM_VAR(float, g_cm721214, $L_721214)
-ASM_VAR(float, g_cm7212b8, $L_7212b8)
-ASM_VAR(float, g_cm721784, $L_721784)
-ASM_VAR(float, g_cm721788, $L_721788)
+KING_BSS(BYTE*, g_cmApp721750, 0x721750)
+KING_BSS(DWORD, g_cmPrev721780, 0x721780)
+KING_BSS(float, g_cm720e0c, 0x720e0c)
+KING_BSS(float, g_cm720d88, 0x720d88)
+KING_BSS(float, g_cm721214, 0x721214)
+KING_BSS(float, g_cm7212b8, 0x7212b8)
+KING_BSS(float, g_cm721784, 0x721784)
+KING_BSS(float, g_cm721788, 0x721788)
 ASM_VAR(float, g_cm682a28, $L_682a28)
 ASM_VAR(double, g_cm682a08, $L_682a08)
 ASM_VAR(double, g_cm682a10, $L_682a10)

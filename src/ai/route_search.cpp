@@ -76,7 +76,7 @@ DBox* DBox::Extend(const DVec3* p)
 // CRC32 (polynomial 0x04C11DB7, most significant bit first)
 
 typedef unsigned CrcTable[256];
-ASM_VAR(CrcTable, g_crcTable, $L_6918c0)
+KING_BSS(CrcTable, g_crcTable, 0x6918c0)
 
 extern "C" void __cdecl Crc_InitTable()
 {
@@ -455,8 +455,8 @@ extern "C" void __cdecl Road_PositionCostBest(int side, PositionId from, Positio
 // ---------------------------------------------------------------------------
 // The AI's view of the game
 
-ASM_VAR(void*, g_aiTruck, $L_6f33ac)
-ASM_VAR(int, g_6ced70, $L_6ced70)
+KING_BSS(void*, g_aiTruck, 0x6f33ac)
+KING_BSS(int, g_6ced70, 0x6ced70)
 extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
 
 extern "C" int __cdecl AI_TruckGripLow()
@@ -522,7 +522,7 @@ BYTE** __fastcall Hops_Copy(BYTE** self, void*, BYTE* const* src)
 }
 
 extern "C" void FUN_487d20(); KING_ALIAS("_FUN_487d20", "@Slots8_Construct@12")
-ASM_VAR(char, g_691cc0, $L_691cc0)
+KING_BSS(char, g_691cc0, 0x691cc0)
 
 // [FUN_488320] FUN_487d20(20) on the global at 691cc0
 extern "C" int __cdecl Trce_488320()
@@ -595,7 +595,7 @@ extern "C" void __fastcall Vec12Array_FreeAll(BYTE* s, void*)
 // Static initializers: construct a global, register its teardown at exit.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-ASM_VAR(char, g_q197_691cc0, $L_691cc0)
+KING_BSS(char, g_q197_691cc0, 0x691cc0)
 extern "C" void q197_FUN_488320(); KING_ALIAS("_q197_FUN_488320", "_Trce_488320")
 extern "C" void q197_L_487db0(); KING_ALIAS("_q197_L_487db0", "@Thunk487db0@8")
 // [$L_488340] destroys the static object 691cc0 at exit ($L_487db0)

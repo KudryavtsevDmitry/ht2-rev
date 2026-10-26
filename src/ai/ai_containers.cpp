@@ -2650,7 +2650,7 @@ void __fastcall Vec1592_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
 // === a random neighbour node (FUN_45b8b0)
 
 extern "C" void FUN_464230(); KING_ALIAS("_FUN_464230", "@Vec4b_InsertH@16")
-ASM_VAR(BYTE**, g_rn68cf00, $L_68cf00)
+KING_BSS(BYTE**, g_rn68cf00, 0x68cf00)
 extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
 
 extern "C" {

@@ -23,24 +23,24 @@ extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")    
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")    // query: constructor
 extern "C" void FUN_4e5698(); KING_ALIAS("_FUN_4e5698", "_Obj_TransformVecs")    // query: finish a hit
 
-ASM_VAR(BYTE*, g_6974c4, $L_6974c4)             // +2960 the frame time, +2968 the time (doubles)
+KING_BSS(BYTE*, g_6974c4, 0x6974c4)             // +2960 the frame time, +2968 the time (doubles)
 ASM_VAR(float, g_radToDeg, $L_6735d0)
 typedef float Floats[1];
-ASM_VAR(Floats, g_table696ec0, $L_696ec0)       // 360 entries, one per degree
-ASM_VAR(int, g_697520, $L_697520)
-ASM_VAR(int, g_697524, $L_697524)
-ASM_VAR(BYTE, g_697528, $L_697528)
-ASM_VAR(int, g_6974f0, $L_6974f0)
-ASM_VAR(int, g_6974f4, $L_6974f4)
-ASM_VAR(BYTE, g_6974f8, $L_6974f8)
-ASM_VAR(int, g_697550, $L_697550)
-ASM_VAR(int, g_697554, $L_697554)
-ASM_VAR(BYTE, g_697558, $L_697558)
-ASM_VAR(int, g_warnLogOn, $L_6974d0)
-ASM_VAR(FILE*, g_warnLog, $L_6975a8)
-ASM_VAR(int, g_vehLogsOn, $L_6974cc)
+KING_BSS(Floats, g_table696ec0, 0x696ec0)       // 360 entries, one per degree
+KING_BSS(int, g_697520, 0x697520)
+KING_BSS(int, g_697524, 0x697524)
+KING_BSS(BYTE, g_697528, 0x697528)
+KING_BSS(int, g_6974f0, 0x6974f0)
+KING_BSS(int, g_6974f4, 0x6974f4)
+KING_BSS(BYTE, g_6974f8, 0x6974f8)
+KING_BSS(int, g_697550, 0x697550)
+KING_BSS(int, g_697554, 0x697554)
+KING_BSS(BYTE, g_697558, 0x697558)
+KING_BSS(int, g_warnLogOn, 0x6974d0)
+KING_BSS(FILE*, g_warnLog, 0x6975a8)
+KING_BSS(int, g_vehLogsOn, 0x6974cc)
 typedef FILE* Files[10];
-ASM_VAR(Files, g_vehLogs, $L_697580)
+KING_BSS(Files, g_vehLogs, 0x697580)
 ASM_VAR(AsmLabel, g_strWarnLog, $L_674114)      // "warn.log"
 ASM_VAR(AsmLabel, g_strWarnLogMode, $L_674110)
 ASM_VAR(AsmLabel, g_strVehLog, $L_674120)       // "vehprn%02d.log"
@@ -685,13 +685,13 @@ extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 extern "C" void FUN_4e4468(); KING_ALIAS("_FUN_4e4468", "_Clock_Text")    // writes the world state text
 extern "C" void FUN_4e2556(); KING_ALIAS("_FUN_4e2556", "_Dump_Text")    // writes a text to the log
 extern "C" void FUN_53f0c0(); KING_ALIAS("_FUN_53f0c0", "_Cars_DumpHistory")
-ASM_VAR(AsmLabel, g_state696e5c, $L_696e5c)
-ASM_VAR(char*, g_fatalText696d20, $L_696d20)
-ASM_VAR(AsmLabel, g_fatalBuf696d24, $L_696d24)
-ASM_VAR(AsmLabel, g_fatalBufEnd696e23, $L_696e23)
+KING_BSS(AsmLabel, g_state696e5c, 0x696e5c)
+KING_BSS(char*, g_fatalText696d20, 0x696d20)
+KING_BSS(AsmLabel, g_fatalBuf696d24, 0x696d24)
+KING_BSS(AsmLabel, g_fatalBufEnd696e23, 0x696e23)
 ASM_VAR(char*, g_cmdLine672d10, $L_672d10)
-ASM_VAR(AsmLabel, g_level697460, $L_697460)
-ASM_VAR(AsmLabel, g_levelEnd69746f, $L_69746f)
+KING_BSS(AsmLabel, g_level697460, 0x697460)
+KING_BSS(AsmLabel, g_levelEnd69746f, 0x69746f)
 ASM_VAR(AsmLabel, s_673680, $L_673680)
 ASM_VAR(AsmLabel, s_6736a8, $L_6736a8)
 ASM_VAR(AsmLabel, s_673a30, $L_673a30)
@@ -965,9 +965,9 @@ extern "C" float* __cdecl Vec3_PlaneHitT(float* out, float* a, float* b, float* 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_4e9ce4(); KING_ALIAS("_FUN_4e9ce4", "_WarnLog_Open")    // log: lock
 extern "C" void FUN_4e9d90(); KING_ALIAS("_FUN_4e9d90", "_WarnLog_Close")    // log: unlock
-ASM_VAR(int, g_wd6974d4, $L_6974d4)
-ASM_VAR(int, g_wd6974d0, $L_6974d0)
-ASM_VAR(FILE*, g_wd6975a8, $L_6975a8)
+KING_BSS(int, g_wd6974d4, 0x6974d4)
+KING_BSS(int, g_wd6974d0, 0x6974d0)
+KING_BSS(FILE*, g_wd6975a8, 0x6975a8)
 ASM_VAR(AsmLabel, s_wd6741e0, $L_6741e0)
 ASM_VAR(AsmLabel, s_wd6741e4, $L_6741e4)
 extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
@@ -1014,9 +1014,9 @@ extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
 extern "C" void FUN_5abee0(); KING_ALIAS("_FUN_5abee0", "_Matrix_RotationX")
 extern "C" void FUN_5abfd0(); KING_ALIAS("_FUN_5abfd0", "_Matrix_RotationY")
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
-ASM_VAR(BYTE*, g_wd697520, $L_697520)
-ASM_VAR(BYTE*, g_wd697524, $L_697524)
-ASM_VAR(AsmLabel, g_wd697528, $L_697528)
+KING_BSS(BYTE*, g_wd697520, 0x697520)
+KING_BSS(BYTE*, g_wd697524, 0x697524)
+KING_BSS(AsmLabel, g_wd697528, 0x697528)
 ASM_VAR(AsmLabel, s_wd673d20, $L_673d20)
 
 // [FUN_4e5d60] the sub-object 673d20 of an object, cached by object and name
@@ -1107,8 +1107,8 @@ extern "C" void __cdecl World_4e4ae5() { CallC(FUN_4e4aef); }
 
 extern "C" void FUN_4bdef0(); KING_ALIAS("_FUN_4bdef0", "@Vec3_SetThis@20")
 extern "C" void FUN_5ab400(); KING_ALIAS("_FUN_5ab400", "_Vec3_Normalized")
-ASM_VAR(AsmLabel, g_q48_696e28, $L_696e28)
-ASM_VAR(AsmLabel, g_q48_696e38, $L_696e38)
+KING_BSS(AsmLabel, g_q48_696e28, 0x696e28)
+KING_BSS(AsmLabel, g_q48_696e38, 0x696e38)
 // [FUN_4e4aef] the static directions 696e28 = normalized (-1, 0.5, 0) and 696e38 = normalized (1, 0.5, 0)
 extern "C" void __cdecl World_InitSideDirections(void)
 {
@@ -1126,8 +1126,8 @@ extern "C" unsigned long __cdecl strtoul(const char* s, char** end, int base);
 extern "C" int __cdecl abs(int n);
 ASM_VAR(DWORD, g_mapBase6735d4, $L_6735d4)          // the code base, FUN_401000 until the map gives it
 ASM_VAR(const char*, g_mapNames6735d8, $L_6735d8)   // the three symbol names
-ASM_VAR(DWORD, g_mapStart6974d8, $L_6974d8)         // their addresses, [3]
-ASM_VAR(DWORD, g_mapEnd6974e4, $L_6974e4)           // the addresses of the symbols after them, [3]
+KING_BSS(DWORD, g_mapStart6974d8, 0x6974d8)         // their addresses, [3]
+KING_BSS(DWORD, g_mapEnd6974e4, 0x6974e4)           // the addresses of the symbols after them, [3]
 ASM_VAR(char, s_exe6737e4, $L_6737e4)               // "htruck.exe"
 ASM_VAR(char, s_exe6737f0, $L_6737f0)               // "htruck2.exe"
 ASM_VAR(char, s_map6737fc, $L_6737fc)               // "htruck.map"
@@ -1243,7 +1243,7 @@ void __cdecl World_ReadMapSymbols()
 // === four unused hit queries (4e6e6a)
 // The world's query runner here (World_4e634f) always answers 0, so they only fill their query.
 
-ASM_VAR(AsmLabel, g_wq7025f0, $L_7025f0)
+KING_BSS(AsmLabel, g_wq7025f0, 0x7025f0)
 
 // query q of kind 0 from p along d: the identity frame, owner a, skip b
 static void Wq_Fill(BYTE* q, const Vec3Bits* p, const Vec3Bits* d, int a, int skip)
@@ -1752,8 +1752,8 @@ ASM_VAR(char, s_wl6742c4, $L_6742c4)
 ASM_VAR(char, s_wl6742dc, $L_6742dc)
 ASM_VAR(char, s_wl6742ec, $L_6742ec)
 ASM_VAR(char, s_wl674308, $L_674308)
-ASM_VAR(WORD, g_wl696e48, $L_696e48)    // a sockaddr_in: family, port +2, address +4
-ASM_VAR(int, g_wl696e58, $L_696e58)     // the socket
+KING_BSS(WORD, g_wl696e48, 0x696e48)    // a sockaddr_in: family, port +2, address +4
+KING_BSS(int, g_wl696e58, 0x696e58)     // the socket
 ASM_VAR(double, g_wl64b658, $L_64b658)
 ASM_VAR(float, g_wl64c938, $L_64c938)
 ASM_VAR(float, g_wl64c264, $L_64c264)
@@ -2032,9 +2032,9 @@ extern "C" void __fastcall Car_History(BYTE* self, void*, int back, int* a, int*
                                        int* c, char* name, void* v2, void* v3, int* d);
 extern "C" void __cdecl SceneObjs_Dump();
 extern "C" void __cdecl VehLog_Value2(int v);
-ASM_VAR(BYTE*, g_hd696ca0, $L_696ca0)
-ASM_VAR(BYTE*, g_hd6d2078, $L_6d2078)
-ASM_VAR(BYTE*, g_hd6ef1f8, $L_6ef1f8)                   // the car list
+KING_BSS(BYTE*, g_hd696ca0, 0x696ca0)
+KING_BSS(BYTE*, g_hd6d2078, 0x6d2078)
+KING_BSS(BYTE*, g_hd6ef1f8, 0x6ef1f8)                   // the car list
 ASM_VAR(char, g_hd6795e0, $L_6795e0)
 ASM_VAR(char, g_hd6794a4, $L_6794a4)
 ASM_VAR(char, g_hd67948c, $L_67948c)
@@ -2129,7 +2129,7 @@ void __cdecl Cars_DumpHistory()
 
 // === a value recorded in a timed history (FUN_4eacce with its tail $L_4eaf8f)
 
-ASM_VAR(BYTE*, g_hr6974c4, $L_6974c4)
+KING_BSS(BYTE*, g_hr6974c4, 0x6974c4)
 ASM_VAR(char, g_hrFmt, $L_674330)
 ASM_VAR(char, g_hrEven, $L_67437c)
 ASM_VAR(char, g_hrOdd, $L_674390)

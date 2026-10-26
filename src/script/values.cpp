@@ -52,9 +52,9 @@ ASM_VAR(AsmLabel, g_vtbl64c108, $L_64c108)
 ASM_VAR(AsmLabel, g_vtbl64c118, $L_64c118)
 ASM_VAR(AsmLabel, g_vtbl64bee4, $L_64bee4)
 ASM_VAR(AsmLabel, g_vtbl64c128, $L_64c128)
-ASM_VAR(int, g_smallAllocLock, $L_68d204)       // a lock object; 0 releases it
+KING_BSS(int, g_smallAllocLock, 0x68d204)       // a lock object; 0 releases it
 typedef void* FreeLists[1];
-ASM_VAR(FreeLists, g_smallFreeLists, $L_68d1c0) // freed blocks by (size + 7) / 8
+KING_BSS(FreeLists, g_smallFreeLists, 0x68d1c0) // freed blocks by (size + 7) / 8
 
 static void AiFree(void* p, int size) { CallC(FUN_44b4a0, p, size); }
 
@@ -1073,10 +1073,10 @@ extern "C" BYTE* __fastcall Pair_DeletingDestructor(BYTE* s, void*, int flags)
 // ---------------------------------------------------------------------------
 // Static initializers of random generators.
 
-ASM_VAR(AsmLabel, g_valRng694748, $L_694748)
-ASM_VAR(DWORD, g_valRng694820, $L_694820)
-ASM_VAR(DWORD, g_valRng694824, $L_694824)
-ASM_VAR(DWORD, g_valRng694828, $L_694828)
+KING_BSS(AsmLabel, g_valRng694748, 0x694748)
+KING_BSS(DWORD, g_valRng694820, 0x694820)
+KING_BSS(DWORD, g_valRng694824, 0x694824)
+KING_BSS(DWORD, g_valRng694828, 0x694828)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Val_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)

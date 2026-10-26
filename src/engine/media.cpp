@@ -29,10 +29,10 @@ extern "C" void FUN_5ce930(); KING_ALIAS("_FUN_5ce930", "@Med5ce930_Destroy@4")
 ASM_VAR(AsmLabel, g_vtbl6518e4, $L_6518e4)
 ASM_VAR(AsmLabel, g_vtbl64d81c, $L_64d81c)
 ASM_VAR(AsmLabel, g_vtbl651dec, $L_651dec)
-ASM_VAR(BYTE*, g_70ebe4, $L_70ebe4)
-ASM_VAR(int, g_707f94, $L_707f94)
-ASM_VAR(int, g_707f98, $L_707f98)
-ASM_VAR(WORD, g_quadIndex, $L_707f9c)
+KING_BSS(BYTE*, g_70ebe4, 0x70ebe4)
+KING_BSS(int, g_707f94, 0x707f94)
+KING_BSS(int, g_707f98, 0x707f98)
+KING_BSS(WORD, g_quadIndex, 0x707f9c)
 extern "C" void FUN_5c2800(); KING_ALIAS("_FUN_5c2800", "_Msavi_CreateStreamingBuffer")    // msavi: create the sound buffer
 extern "C" void FUN_5c36e0(); KING_ALIAS("_FUN_5c36e0", "@Entry_Apply@16")
 extern "C" void FUN_6021f0(); KING_ALIAS("_FUN_6021f0", "_Gate_Start")
@@ -45,19 +45,19 @@ extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 
 // msavi
 typedef void(__cdecl* WaveRead)(DWORD size, BYTE* buf, DWORD* got, int ctx);
-ASM_VAR(DWORD, g_msaviBufSize, $L_702f64)
-ASM_VAR(DWORD, g_msaviLastPos, $L_702f68)
-ASM_VAR(DWORD, g_msaviPlayed, $L_702f6c)
-ASM_VAR(DWORD, g_msaviWritePos, $L_702f70)
-ASM_VAR(Dwords, g_msavi702f78, $L_702f78)
-ASM_VAR(int, g_702f94, $L_702f94)
-ASM_VAR(BYTE*, g_msavi702f98, $L_702f98)
-ASM_VAR(int, g_msavi702f9c, $L_702f9c)
-ASM_VAR(BYTE*, g_msaviBuffer, $L_702fa0)     // IDirectSoundBuffer
-ASM_VAR(BYTE*, g_msavi702fa4, $L_702fa4)
-ASM_VAR(BYTE*, g_msaviFormat, $L_702fa8)     // WAVEFORMATEX
-ASM_VAR(int, g_msaviReadCtx, $L_702fac)
-ASM_VAR(WaveRead, g_msaviRead, $L_702fb0)
+KING_BSS(DWORD, g_msaviBufSize, 0x702f64)
+KING_BSS(DWORD, g_msaviLastPos, 0x702f68)
+KING_BSS(DWORD, g_msaviPlayed, 0x702f6c)
+KING_BSS(DWORD, g_msaviWritePos, 0x702f70)
+KING_BSS(Dwords, g_msavi702f78, 0x702f78)
+KING_BSS(int, g_702f94, 0x702f94)
+KING_BSS(BYTE*, g_msavi702f98, 0x702f98)
+KING_BSS(int, g_msavi702f9c, 0x702f9c)
+KING_BSS(BYTE*, g_msaviBuffer, 0x702fa0)     // IDirectSoundBuffer
+KING_BSS(BYTE*, g_msavi702fa4, 0x702fa4)
+KING_BSS(BYTE*, g_msaviFormat, 0x702fa8)     // WAVEFORMATEX
+KING_BSS(int, g_msaviReadCtx, 0x702fac)
+KING_BSS(WaveRead, g_msaviRead, 0x702fb0)
 ASM_VAR(AsmLabel, s_msaviNoFormat, $L_67f5c4)
 ASM_VAR(AsmLabel, s_msaviNoRead, $L_67f5a0)
 ASM_VAR(AsmLabel, s_msaviNoBuffer, $L_67f578)
@@ -71,13 +71,13 @@ ASM_VAR(AsmLabel, g_vtbl651b00, $L_651b00)
 ASM_VAR(AsmLabel, g_vtbl651d14, $L_651d14)
 ASM_VAR(AsmLabel, g_vtbl651d64, $L_651d64)
 ASM_VAR(AsmLabel, g_vtbl651db0, $L_651db0)
-ASM_VAR(BYTE*, g_707f6c, $L_707f6c)
-ASM_VAR(int, g_70ebe8, $L_70ebe8)
-ASM_VAR(int, g_70ebec, $L_70ebec)
-ASM_VAR(int, g_70ebf0, $L_70ebf0)
-ASM_VAR(int, g_70ebf4, $L_70ebf4)
-ASM_VAR(int, g_70ebf8, $L_70ebf8)
-ASM_VAR(Dwords, g_7025f0, $L_7025f0)
+KING_BSS(BYTE*, g_707f6c, 0x707f6c)
+KING_BSS(int, g_70ebe8, 0x70ebe8)
+KING_BSS(int, g_70ebec, 0x70ebec)
+KING_BSS(int, g_70ebf0, 0x70ebf0)
+KING_BSS(int, g_70ebf4, 0x70ebf4)
+KING_BSS(int, g_70ebf8, 0x70ebf8)
+KING_BSS(Dwords, g_7025f0, 0x7025f0)
 ASM_VAR(Dwords, g_67fa60, $L_67fa60)
 ASM_VAR(AsmLabel, s_treeShadow, $L_67f9ac)
 
@@ -108,18 +108,18 @@ extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // ne
 extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 ASM_VAR(int, g_67faa0, $L_67faa0)
-ASM_VAR(int, g_71e800, $L_71e800)
-ASM_VAR(int, g_71e7d4, $L_71e7d4)
-ASM_VAR(int, g_71e7e4, $L_71e7e4)
-ASM_VAR(int, g_71e844, $L_71e844)
-ASM_VAR(AsmLabel, g_pool71e830, $L_71e830)
-ASM_VAR(AsmLabel, g_pool7200c0, $L_7200c0)
+KING_BSS(int, g_71e800, 0x71e800)
+KING_BSS(int, g_71e7d4, 0x71e7d4)
+KING_BSS(int, g_71e7e4, 0x71e7e4)
+KING_BSS(int, g_71e844, 0x71e844)
+KING_BSS(AsmLabel, g_pool71e830, 0x71e830)
+KING_BSS(AsmLabel, g_pool7200c0, 0x7200c0)
 typedef int Ints[1];
-ASM_VAR(Ints, g_71e858, $L_71e858)
-ASM_VAR(AsmLabel, g_720080, $L_720080)
+KING_BSS(Ints, g_71e858, 0x71e858)
+KING_BSS(AsmLabel, g_720080, 0x720080)
 ASM_VAR(AsmLabel, g_vtbl651eb4, $L_651eb4)
-ASM_VAR(BYTE*, g_723d44, $L_723d44)
-ASM_VAR(CRITICAL_SECTION, g_cs723b40, $L_723b40)
+KING_BSS(BYTE*, g_723d44, 0x723d44)
+KING_BSS(CRITICAL_SECTION, g_cs723b40, 0x723b40)
 ASM_VAR(AsmLabel, g_683c58, $L_683c58)
 
 extern "C" long __cdecl ftell(FILE* f);
@@ -140,7 +140,7 @@ extern "C" void FUN_602df0(); KING_ALIAS("_FUN_602df0", "@DpMessage_Reset@8")
 extern "C" void FUN_5c49b0(); KING_ALIAS("_FUN_5c49b0", "@Rec_Step@12")    // next record time (forward)
 extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")    // reads an int from a file
 extern "C" void FUN_5c4d30(); KING_ALIAS("_FUN_5c4d30", "@Node_ReadHistory@16")
-ASM_VAR(DWORD, g_msaviBlock, $L_702f74)
+KING_BSS(DWORD, g_msaviBlock, 0x702f74)
 ASM_VAR(AsmLabel, s_aviReadError, $L_67f418)
 ASM_VAR(AsmLabel, s_msaviProgressFailed, $L_67f79c)
 ASM_VAR(AsmLabel, s_msaviNotifyLockFailed, $L_67f770)
@@ -1415,8 +1415,8 @@ ASM_VAR(AsmLabel, s_67f8e0, $L_67f8e0)
 ASM_VAR(AsmLabel, s_67ef70, $L_67ef70)
 ASM_VAR(AsmLabel, s_67ef78, $L_67ef78)
 ASM_VAR(AsmLabel, s_67f958, $L_67f958)
-ASM_VAR(AsmLabel, g_name70dd90, $L_70dd90)
-ASM_VAR(AsmLabel, g_name70de78, $L_70de78)
+KING_BSS(AsmLabel, g_name70dd90, 0x70dd90)
+KING_BSS(AsmLabel, g_name70de78, 0x70de78)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
 // [FUN_5c5bc0..$L_5c5be8] takes a free 10-byte slot of the 1000 at +8368 (used flags at +8372); fatal when none is left
@@ -1533,7 +1533,7 @@ extern "C" void FUN_5c30d0(); KING_ALIAS("_FUN_5c30d0", "@Table_Add5@24")
 extern "C" void $L_5c6120(); KING_ALIAS("_$L_5c6120", "_View_ShowNamed")
 extern "C" void FUN_5c2ce0(); KING_ALIAS("_FUN_5c2ce0", "_Msavi_Restore")
 extern "C" void FUN_5c2a50(); KING_ALIAS("_FUN_5c2a50", "_Msavi_FillBuffer")
-ASM_VAR(BYTE*, g_md702fa0, $L_702fa0)
+KING_BSS(BYTE*, g_md702fa0, 0x702fa0)
 ASM_VAR(AsmLabel, s_md67f728, $L_67f728)
 ASM_VAR(AsmLabel, s_md67f70c, $L_67f70c)
 ASM_VAR(AsmLabel, s_md67f6e8, $L_67f6e8)
@@ -1590,8 +1590,8 @@ extern "C" void FUN_5c2450(); KING_ALIAS("_FUN_5c2450", "@Avi_Start@8")
 ASM_PROC(FUN_6303b8)
 ASM_PROC(FUN_6303b2)
 extern "C" void FUN_5c2f00(); KING_ALIAS("_FUN_5c2f00", "_Set702f94")
-ASM_VAR(BYTE*, g_md707f6c, $L_707f6c)
-ASM_VAR(int, g_md7208b8, $L_7208b8)
+KING_BSS(BYTE*, g_md707f6c, 0x707f6c)
+KING_BSS(int, g_md7208b8, 0x7208b8)
 extern "C" size_t __cdecl fwrite(const void* buf, size_t size, size_t n, FILE* f);
 
 // [FUN_5c3630] records a block (rec +4 .. +8): to 6021b0 when the player is set, and to the record file (+7928, when +7936) as -1, length, bytes, length
@@ -1968,7 +1968,7 @@ ASM_VAR(AsmLabel, g_med651e80, $L_651e80)
 ASM_VAR(AsmLabel, g_med651e34, $L_651e34)
 ASM_VAR(AsmLabel, g_med651db0, $L_651db0)
 ASM_VAR(AsmLabel, g_med651a20, $L_651a20)
-ASM_VAR(BYTE*, g_med707f6c, $L_707f6c)
+KING_BSS(BYTE*, g_med707f6c, 0x707f6c)
 
 // [FUN_5cf370] (vtables 651e80, 651e34 at +32)
 extern "C" void __fastcall Med5cf370_Destroy(BYTE* s)
@@ -2021,7 +2021,7 @@ ASM_VAR(AsmLabel, s_med67f890, $L_67f890)
 ASM_VAR(AsmLabel, s_med67f87c, $L_67f87c)
 ASM_VAR(AsmLabel, s_med6729a8, $L_6729a8)
 ASM_VAR(AsmLabel, s_med672994, $L_672994)
-ASM_VAR(BYTE*, g_med707f70, $L_707f70)
+KING_BSS(BYTE*, g_med707f70, 0x707f70)
 ASM_VAR(BYTE*, g_med67fb7c, $L_67fb7c)
 extern "C" void __cdecl Media_ExitHook(void);
 
@@ -2130,12 +2130,12 @@ extern "C" void FUN_5d31e0(); KING_ALIAS("_FUN_5d31e0", "@Object_ConstructKind@1
 extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 extern "C" void FUN_5d3570(); KING_ALIAS("_FUN_5d3570", "@Owner_Attach@12")
 ASM_VAR(AsmLabel, s_q20_67fa68, $L_67fa68)
-ASM_VAR(AsmLabel, g_q20_68d1c0, $L_68d1c0)
+KING_BSS(AsmLabel, g_q20_68d1c0, 0x68d1c0)
 ASM_VAR(AsmLabel, g_q20_64c26c, $L_64c26c)
 ASM_VAR(AsmLabel, g_q20_651e80, $L_651e80)
 ASM_VAR(AsmLabel, g_q20_651e34, $L_651e34)
-ASM_VAR(AsmLabel, g_q20_7025f0, $L_7025f0)
-ASM_VAR(int, g_q20_720908, $L_720908)
+KING_BSS(AsmLabel, g_q20_7025f0, 0x7025f0)
+KING_BSS(int, g_q20_720908, 0x720908)
 
 // [FUN_5cf180] constructor (world, name, owner): a media object (vtables 651e80, 651e34 at +32) registered with
 // its owner (or the world's +524), its entry (+156) the world room list item called name
@@ -2280,7 +2280,7 @@ extern "C" BYTE* __fastcall Dtor5cf2f0_DeletingDestructor(BYTE* s, void*, int fl
 // ---------------------------------------------------------------------------
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
-ASM_VAR(AsmLabel, g_q46_71e808, $L_71e808)
+KING_BSS(AsmLabel, g_q46_71e808, 0x71e808)
 extern "C" AsmLabel g_q46_5d2080; KING_ALIAS("_g_q46_5d2080", "@MappedFile_Init@4")
 // [FUN_5d2050] constructs the static 71e808
 extern "C" int __cdecl Static71e808_Construct(void)
@@ -2330,7 +2330,7 @@ extern "C" void __fastcall ComPtr_Release(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Small methods: table constructors and clears, list teardown, cursor handling, flag maps.
 
-ASM_VAR(int, g_q52_71e844, $L_71e844)
+KING_BSS(int, g_q52_71e844, 0x71e844)
 // [$L_5d2310] constructor: an empty table of 500 pointers (+8, capacity +4), marks 71e844
 extern "C" BYTE* __fastcall PtrTable500_Construct(BYTE* s, void*)
 {
@@ -2365,12 +2365,12 @@ extern "C" void __cdecl View_ShowNamed(BYTE* o, const char* name)
 
 extern "C" void FUN_5c24a0(); KING_ALIAS("_FUN_5c24a0", "_Msavi_OpenSound")
 extern "C" void Mfc_AfxBeginThread(); KING_ALIAS("_Mfc_AfxBeginThread", "_Afx_BeginThread@24")
-ASM_VAR(int, g_q54_702f60, $L_702f60)
-ASM_VAR(HANDLE, g_q54_702f58, $L_702f58)
-ASM_VAR(HANDLE, g_q54_702f5c, $L_702f5c)
-ASM_VAR(int, g_q54_702f98, $L_702f98)
-ASM_VAR(int, g_q54_702f9c, $L_702f9c)
-ASM_VAR(int, g_q54_702f94, $L_702f94)
+KING_BSS(int, g_q54_702f60, 0x702f60)
+KING_BSS(HANDLE, g_q54_702f58, 0x702f58)
+KING_BSS(HANDLE, g_q54_702f5c, 0x702f5c)
+KING_BSS(int, g_q54_702f98, 0x702f98)
+KING_BSS(int, g_q54_702f9c, 0x702f9c)
+KING_BSS(int, g_q54_702f94, 0x702f94)
 extern "C" unsigned __cdecl Media_ThreadProc(void*);
 ASM_VAR(AsmLabel, s_q54_67f854, $L_67f854)
 // [FUN_5c2e60] starts the media thread for the window w: COM, two events; without a device d it opens one
@@ -2400,12 +2400,12 @@ extern "C" void __cdecl Media_StartThread(int w, int d)
 
 ASM_PROC(FUN_5fedbc)
 ASM_PROC(FUN_5fef04)
-ASM_VAR(int, g_q56_71e7dc, $L_71e7dc)
-ASM_VAR(int, g_q56_71e7d8, $L_71e7d8)
-ASM_VAR(int, g_q56_71e7bc, $L_71e7bc)
-ASM_VAR(int, g_q56_71e7c4, $L_71e7c4)
-ASM_VAR(int, g_q56_70f3d8, $L_70f3d8)
-ASM_VAR(int, g_q56_70f3f0, $L_70f3f0)
+KING_BSS(int, g_q56_71e7dc, 0x71e7dc)
+KING_BSS(int, g_q56_71e7d8, 0x71e7d8)
+KING_BSS(int, g_q56_71e7bc, 0x71e7bc)
+KING_BSS(int, g_q56_71e7c4, 0x71e7c4)
+KING_BSS(int, g_q56_70f3d8, 0x70f3d8)
+KING_BSS(int, g_q56_70f3f0, 0x70f3f0)
 // [FUN_5cf630] fills the spans of the rows 71e7dc..71e7d8 from the edge tables (70f3f0 left, 31200 bytes on the
 // right, 24 bytes a row: x in 12.20 fixed point, z at +20) with the color c; mode | 2 set first
 extern "C" void __cdecl Span_FillRows(int mode, int c)
@@ -2623,7 +2623,7 @@ extern "C" void __fastcall Mesh5ceb40_Setup(BYTE* s, void*, int n, int a2, int a
 }
 
 extern "C" void FUN_5c3a80(); KING_ALIAS("_FUN_5c3a80", "@Music_Stop@8")
-ASM_VAR(BYTE*, g_q128_707f6c, $L_707f6c)
+KING_BSS(BYTE*, g_q128_707f6c, 0x707f6c)
 // [$L_5c37e0] exit hook: stops the music, then runs the previous hook (707f70)
 extern "C" void __cdecl Media_ExitHook(void)
 {
@@ -2632,7 +2632,7 @@ extern "C" void __cdecl Media_ExitHook(void)
 }
 
 extern "C" void FUN_5c1b20(); KING_ALIAS("_FUN_5c1b20", "@Avi_ReadAudio@16")
-ASM_VAR(int, g_q156_702f54, $L_702f54)
+KING_BSS(int, g_q156_702f54, 0x702f54)
 // [$L_5c1360] audio stream callback: reads up to n bytes from stream s into buf, stores the count in *got and
 // adds it to 702f54
 extern "C" int __cdecl Avi_AudioRead(int n, void* buf, int* got, BYTE* s)
@@ -2663,12 +2663,12 @@ extern "C" void __fastcall Mesh_ScaleColors(BYTE* s, void*, int n, const DWORD* 
 extern "C" int __cdecl rand(void);
 ASM_VAR(double, g_q166_64b958, $L_64b958)
 ASM_VAR(double, g_q166_64b670, $L_64b670)
-ASM_VAR(AsmLabel, g_q166_70ef1c, $L_70ef1c)
-ASM_VAR(AsmLabel, g_q166_70f0ac, $L_70f0ac)
-ASM_VAR(AsmLabel, g_q166_70f23c, $L_70f23c)
-ASM_VAR(AsmLabel, g_q166_70ebfc, $L_70ebfc)
-ASM_VAR(AsmLabel, g_q166_70ed88, $L_70ed88)
-ASM_VAR(int, g_q166_70f3d0, $L_70f3d0)
+KING_BSS(AsmLabel, g_q166_70ef1c, 0x70ef1c)
+KING_BSS(AsmLabel, g_q166_70f0ac, 0x70f0ac)
+KING_BSS(AsmLabel, g_q166_70f23c, 0x70f23c)
+KING_BSS(AsmLabel, g_q166_70ebfc, 0x70ebfc)
+KING_BSS(AsmLabel, g_q166_70ed88, 0x70ed88)
+KING_BSS(int, g_q166_70f3d0, 0x70f3d0)
 // [FUN_5cf070] fills the 100 random particle directions (70ef1c, 70f0ac, 70f23c: -1..1), colours (70ebfc) and
 // sizes (70ed8c) once (70f3d0)
 extern "C" void __cdecl Particles_InitRandom(void)
@@ -2708,10 +2708,10 @@ extern "C" void __fastcall Particles_Move(BYTE* s, void*, double dt)
 // ---------------------------------------------------------------------------
 // Sound effects of objects.
 
-ASM_VAR(void*, g_q168_70ebe8, $L_70ebe8)
-ASM_VAR(int, g_q168_70ebf4, $L_70ebf4)
-ASM_VAR(BYTE*, g_q168_707f94, $L_707f94)
-ASM_VAR(BYTE*, g_q168_707f98, $L_707f98)
+KING_BSS(void*, g_q168_70ebe8, 0x70ebe8)
+KING_BSS(int, g_q168_70ebf4, 0x70ebf4)
+KING_BSS(BYTE*, g_q168_707f94, 0x707f94)
+KING_BSS(BYTE*, g_q168_707f98, 0x707f98)
 ASM_VAR(float, g_q168_64c258, $L_64c258)
 ASM_VAR(float, g_q168_64c330, $L_64c330)
 ASM_VAR(float, g_q168_651cec, $L_651cec)
@@ -2758,7 +2758,7 @@ ASM_VAR(float, g_q188_651c90, $L_651c90)
 ASM_VAR(float, g_q188_651c8c, $L_651c8c)
 ASM_VAR(float, g_q188_64c350, $L_64c350)
 ASM_VAR(float, g_q188_64c258, $L_64c258)
-ASM_VAR(BYTE*, g_q188_7025b8, $L_7025b8)
+KING_BSS(BYTE*, g_q188_7025b8, 0x7025b8)
 ASM_VAR(float, g_q188_651c88, $L_651c88)
 ASM_VAR(float, g_q188_651c84, $L_651c84)
 // [FUN_5c8010] integrates the swing x, v, w of a hanging object over dt in steps of at most 64c348 (w limited by
@@ -2878,9 +2878,9 @@ extern "C" int __cdecl Static5d2060_AtExit(void) { return atexit((void(__cdecl*)
 
 extern "C" void FUN_5abc40(); KING_ALIAS("_FUN_5abc40", "_Matrix_Translation")
 extern "C" void FUN_5cc680(); KING_ALIAS("_FUN_5cc680", "@Media_Call5cc680@20")
-ASM_VAR(float, g_q243_702630, $L_702630)
-ASM_VAR(float, g_q243_702634, $L_702634)
-ASM_VAR(float, g_q243_702638, $L_702638)
+KING_BSS(float, g_q243_702630, 0x702630)
+KING_BSS(float, g_q243_702634, 0x702634)
+KING_BSS(float, g_q243_702638, 0x702638)
 ASM_VAR(float, g_q243_64c748, $L_64c748)
 ASM_VAR(float, g_q243_64c330, $L_64c330)
 struct Med243_V3 { float x, y, z; };
@@ -2901,10 +2901,10 @@ extern "C" BYTE* __fastcall Particles_StartAt(BYTE* s, void*, BYTE* p, float x, 
 
 extern "C" void FUN_5ce6e0(); KING_ALIAS("_FUN_5ce6e0", "@PointCloud_Construct@56")
 ASM_VAR(double, g_q244_651e10, $L_651e10)
-ASM_VAR(AsmLabel, g_q244_70ebfc, $L_70ebfc)
-ASM_VAR(AsmLabel, g_q244_70ef1c, $L_70ef1c)
-ASM_VAR(AsmLabel, g_q244_70f0ac, $L_70f0ac)
-ASM_VAR(AsmLabel, g_q244_70f23c, $L_70f23c)
+KING_BSS(AsmLabel, g_q244_70ebfc, 0x70ebfc)
+KING_BSS(AsmLabel, g_q244_70ef1c, 0x70ef1c)
+KING_BSS(AsmLabel, g_q244_70f0ac, 0x70f0ac)
+KING_BSS(AsmLabel, g_q244_70f23c, 0x70f23c)
 ASM_VAR(char, g_q244_651dec, $L_651dec)
 // [FUN_5ce9c0] constructs a particle stream s of n (at most 100) particles from (x, y, z) moved a random 0..9
 // steps of 651e10 along d, with the shared tables 70ebfc.. and spread 0.1; its direction kept at +160 (vtable 651dec)
@@ -3028,9 +3028,9 @@ ASM_VAR(AsmLabel, g_avClsid651938, $L_651938)
 ASM_VAR(AsmLabel, g_avIid67f408, $L_67f408)
 ASM_VAR(AsmLabel, s_av67f3f8, $L_67f3f8)
 ASM_VAR(AsmLabel, s_av67f3e4, $L_67f3e4)
-ASM_VAR(int, g_av7208b8, $L_7208b8)
-ASM_VAR(BYTE*, g_av720920, $L_720920)
-ASM_VAR(int, g_av702f54, $L_702f54)
+KING_BSS(int, g_av7208b8, 0x7208b8)
+KING_BSS(BYTE*, g_av720920, 0x720920)
+KING_BSS(int, g_av702f54, 0x702f54)
 
 extern "C" void FUN_5c12a0(); KING_ALIAS("_FUN_5c12a0", "@Media_Close@8")
 extern "C" void FUN_5c1990(); KING_ALIAS("_FUN_5c1990", "_AnsiToBstr")    // a BSTR of an ANSI string (text, length)
@@ -3205,7 +3205,7 @@ extern "C" void FUN_6034e0(); KING_ALIAS("_FUN_6034e0", "@Stream_ReadBlob@20")
 extern "C" void FUN_601060(); KING_ALIAS("_FUN_601060", "_Net_Receive")    // the next received message (stream); 0 when there is one
 extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // a message's next record type (out); 0 when there is one
 extern "C" void FUN_603300(); KING_ALIAS("_FUN_603300", "@Msg_SkipRecord@8")    // skips to the next record; 0 when there is one
-ASM_VAR(double, g_nm707f88, $L_707f88)
+KING_BSS(double, g_nm707f88, 0x707f88)
 ASM_VAR(double, g_nm64b5f0, $L_64b5f0)
 ASM_VAR(double, g_nm64b730, $L_64b730)
 ASM_VAR(AsmLabel, g_nm67f880, $L_67f880)
@@ -3539,7 +3539,7 @@ void __fastcall NetObject_Create(BYTE* s, void*, BYTE* m, BYTE* o, BYTE* c, DWOR
 // === opening DirectSound for the movie player (FUN_5c24a0)
 
 extern "C" void* g_impDirectSoundCreate; KING_ALIAS("_g_impDirectSoundCreate", "__imp__DirectSoundCreate@12")
-ASM_VAR(DWORD, g_ds702f74, $L_702f74)
+KING_BSS(DWORD, g_ds702f74, 0x702f74)
 ASM_VAR(AsmLabel, s_ds67f534, $L_67f534)
 ASM_VAR(AsmLabel, s_ds67f500, $L_67f500)
 ASM_VAR(AsmLabel, s_ds67f4d8, $L_67f4d8)
@@ -3631,8 +3631,8 @@ int __cdecl Msavi_OpenSound(HWND w)
 
 extern "C" void FUN_5c6ac0(); KING_ALIAS("_FUN_5c6ac0", "_Ribbon_DrawSegment")    // draws a ray (a, p, q, d, ...)
 extern "C" void Mk_Normalized(); KING_ALIAS("_Mk_Normalized", "_Vec3_Normalized")
-ASM_VAR(Med243_V3, g_mkAhead, $L_702620)
-ASM_VAR(Med243_V3, g_mkSide, $L_702640)
+KING_BSS(Med243_V3, g_mkAhead, 0x702620)
+KING_BSS(Med243_V3, g_mkSide, 0x702640)
 
 extern "C" {
 
@@ -3665,8 +3665,8 @@ void __cdecl Marker_DrawRays(int a, Med243_V3 p, Med243_V3 q, int c, int d, int 
 // === attaching a shadow to a node (FUN_5cdcd0)
 
 extern "C" void Sh2_sprintf(); KING_ALIAS("_Sh2_sprintf", "_sprintf")
-ASM_VAR(AsmLabel, g_shBuf1, $L_70d8b8)
-ASM_VAR(AsmLabel, g_shBuf2, $L_70de98)
+KING_BSS(AsmLabel, g_shBuf1, 0x70d8b8)
+KING_BSS(AsmLabel, g_shBuf2, 0x70de98)
 ASM_VAR(AsmLabel, s_shUnknown, $L_67fa54)
 ASM_VAR(AsmLabel, s_shNoMat, $L_67fa18)
 ASM_VAR(AsmLabel, s_shNoNode, $L_67f9b8)
@@ -3851,8 +3851,8 @@ void __fastcall Chat_Receive(BYTE* s, void*, int a, int, int)
 
 // === the streaming sound buffer (FUN_5c2800)
 
-ASM_VAR(HANDLE, g_msaviEvent, $L_702f58)
-ASM_VAR(HANDLE, g_msaviStopEvent, $L_702f5c)
+KING_BSS(HANDLE, g_msaviEvent, 0x702f58)
+KING_BSS(HANDLE, g_msaviStopEvent, 0x702f5c)
 ASM_VAR(AsmLabel, g_iidNotify, $L_655290)
 ASM_VAR(AsmLabel, s_msaviSbNoFormat, $L_67f6b4)
 ASM_VAR(AsmLabel, s_msaviCreate, $L_67f5f0)
@@ -3923,10 +3923,10 @@ int __cdecl Msavi_CreateStreamingBuffer()
 
 // === textured span fill (FUN_5cf480)
 
-ASM_VAR(BYTE*, g_q57_71e7ec, $L_71e7ec)
-ASM_VAR(int, g_q57_71e7f8, $L_71e7f8)
-ASM_VAR(int, g_q57_71e7e8, $L_71e7e8)
-ASM_VAR(int, g_q57_71e7b0, $L_71e7b0)
+KING_BSS(BYTE*, g_q57_71e7ec, 0x71e7ec)
+KING_BSS(int, g_q57_71e7f8, 0x71e7f8)
+KING_BSS(int, g_q57_71e7e8, 0x71e7e8)
+KING_BSS(int, g_q57_71e7b0, 0x71e7b0)
 extern "C" void Sp_FogColor(); KING_ALIAS("_Sp_FogColor", "@Palette_FogColor@12")
 
 // [FUN_5cf480] fills the spans of the rows 71e7dc..71e7d8 like Span_FillRows, with u (+8 of the edges) stepped
@@ -3978,9 +3978,9 @@ extern "C" void __cdecl Span_FillRowsU(int mode, int c)
 
 ASM_PROC(FUN_5feb87)
 ASM_PROC(FUN_5fee7c)
-ASM_VAR(int, g_q58_702e90, $L_702e90)
-ASM_VAR(int, g_q58_72007c, $L_72007c)
-ASM_VAR(DWORD, g_q58_702e8c, $L_702e8c)
+KING_BSS(int, g_q58_702e90, 0x702e90)
+KING_BSS(int, g_q58_72007c, 0x72007c)
+KING_BSS(DWORD, g_q58_702e8c, 0x702e8c)
 
 // [FUN_5cf920] like Span_FillRowsAffine with each row's own gradients, the rows written as columns (from the
 // right: (x + 1) * pitch - bpp - y); mode | 2
@@ -4069,9 +4069,9 @@ extern "C" void __cdecl Span_DrawPerspective(int x, int xr, int k, int u1, int v
 // === handing an object to the 70ebf0 hook (FUN_5c8930)
 
 extern "C" void FUN_5ed660(); KING_ALIAS("_FUN_5ed660", "@Room_AddNode@12")
-ASM_VAR(int, g_q59_702650, $L_702650)
-ASM_VAR(int, g_q59_702654, $L_702654)
-ASM_VAR(int, g_q59_702658, $L_702658)
+KING_BSS(int, g_q59_702650, 0x702650)
+KING_BSS(int, g_q59_702654, 0x702654)
+KING_BSS(int, g_q59_702658, 0x702658)
 extern "C" void Ho_NodeRoot(); KING_ALIAS("_Ho_NodeRoot", "@Node_Root@8")
 
 // [FUN_5c8930] when object o's attachment (+60) is a kind 12 record and the hook 70ebf0 is set: unlinks o (vtbl+36)
@@ -4127,8 +4127,8 @@ extern "C" int __cdecl Object_HandToHook(BYTE* o, int a)
 extern "C" void Ln_NodeConstruct(); KING_ALIAS("_Ln_NodeConstruct", "@Node_Construct@16")
 ASM_VAR(AsmLabel, g_ln651ca0, $L_651ca0)
 ASM_VAR(char, s_ln67f980, $L_67f980)
-ASM_VAR(float, g_ln702634, $L_702634)
-ASM_VAR(float, g_ln702638, $L_702638)
+KING_BSS(float, g_ln702634, 0x702634)
+KING_BSS(float, g_ln702638, 0x702638)
 
 // p + 702630 * k
 static void Ln_Point(float* out, const float* p, float k)
@@ -4224,12 +4224,12 @@ BYTE* __fastcall PointCloud_Construct(BYTE* s, void*, int a, int b, float ox, fl
 
 extern "C" void FUN_5c7800(); KING_ALIAS("_FUN_5c7800", "_Beam_Draw")
 extern "C" void Ax_Normalized(); KING_ALIAS("_Ax_Normalized", "_Vec3_Normalized")
-ASM_VAR(float, g_ax702620, $L_702620)
-ASM_VAR(float, g_ax702624, $L_702624)
-ASM_VAR(float, g_ax702628, $L_702628)
-ASM_VAR(float, g_ax702640, $L_702640)
-ASM_VAR(float, g_ax702644, $L_702644)
-ASM_VAR(float, g_ax702648, $L_702648)
+KING_BSS(float, g_ax702620, 0x702620)
+KING_BSS(float, g_ax702624, 0x702624)
+KING_BSS(float, g_ax702628, 0x702628)
+KING_BSS(float, g_ax702640, 0x702640)
+KING_BSS(float, g_ax702644, 0x702644)
+KING_BSS(float, g_ax702648, 0x702648)
 ASM_VAR(float, g_ax64c258, $L_64c258)
 
 // the half unit vector along (ux, uy, uz)
@@ -4347,7 +4347,7 @@ extern "C" void Nw_Write7(); KING_ALIAS("_Nw_Write7", "@Msg_Write7@20")
 extern "C" void Nw_Write42(); KING_ALIAS("_Nw_Write42", "@Msg_Write42@20")
 extern "C" void Nw_Write45(); KING_ALIAS("_Nw_Write45", "@Msg_Write45@16")
 extern "C" void Nw_Write120(); KING_ALIAS("_Nw_Write120", "@Msg_Write120@20")
-ASM_VAR(AsmLabel, g_nw7025f0, $L_7025f0)
+KING_BSS(AsmLabel, g_nw7025f0, 0x7025f0)
 struct Nw_V3 { DWORD d[3]; };
 
 extern "C" {
@@ -4399,7 +4399,7 @@ void __fastcall NetValue_Write(BYTE* s, void*, BYTE* m)
 
 // === a beam drawn as two fans (FUN_5c7800)
 
-ASM_VAR(BYTE*, g_bm720908, $L_720908)
+KING_BSS(BYTE*, g_bm720908, 0x720908)
 ASM_VAR(float, g_bm67f93c, $L_67f93c)
 ASM_VAR(DWORD, g_bm67f940, $L_67f940)
 ASM_VAR(DWORD, g_bm67f944, $L_67f944)
@@ -4548,9 +4548,9 @@ extern "C" void Pl_Count(); KING_ALIAS("_Pl_Count", "@Media_Get4@8")
 extern "C" void Pl_RenderMaterial(); KING_ALIAS("_Pl_RenderMaterial", "@Render_Material@8")
 extern "C" void Pl_Material(); KING_ALIAS("_Pl_Material", "@Material_Select@24")
 extern "C" void Pl_floor(); KING_ALIAS("_Pl_floor", "_floor")
-ASM_VAR(BYTE*, g_pl70ebe4, $L_70ebe4)
-ASM_VAR(BYTE, g_pl708450, $L_708450)    // the vertex buffer
-ASM_VAR(WORD, g_pl707f9c, $L_707f9c)    // the quad indices
+KING_BSS(BYTE*, g_pl70ebe4, 0x70ebe4)
+KING_BSS(BYTE, g_pl708450, 0x708450)    // the vertex buffer
+KING_BSS(WORD, g_pl707f9c, 0x707f9c)    // the quad indices
 ASM_VAR(float, g_pl64c268, $L_64c268)
 ASM_VAR(float, g_pl64c334, $L_64c334)
 ASM_VAR(float, g_pl64c328, $L_64c328)
@@ -4619,7 +4619,7 @@ void __cdecl Plume_Draw(BYTE* r, int mat, const float* pos, int a4, float h, int
 
 // === a ribbon segment (FUN_5c6ac0)
 
-ASM_VAR(BYTE*, g_rbDevice, $L_720908)
+KING_BSS(BYTE*, g_rbDevice, 0x720908)
 ASM_VAR(float, g_rb651708, $L_651708)
 ASM_VAR(float, g_rb64c964, $L_64c964)
 ASM_VAR(float, g_rb64c264, $L_64c264)
@@ -4702,7 +4702,7 @@ ASM_VAR(float, g_sb64c304, $L_64c304)
 ASM_VAR(float, g_sb64c330, $L_64c330)
 ASM_VAR(float, g_sb64c25c, $L_64c25c)
 ASM_VAR(float, g_sb64c458, $L_64c458)
-ASM_VAR(BYTE*, g_sb7025b8, $L_7025b8)
+KING_BSS(BYTE*, g_sb7025b8, 0x7025b8)
 
 extern "C" int __fastcall Obj_DrawTested(BYTE* self, void*, int a, BYTE* b);
 struct Sb_V { float x, y, z; };
@@ -4781,10 +4781,10 @@ int __fastcall Obj_BillboardDraw(BYTE* s, void*, int a, BYTE* v)
 // === a bent strip along points (FUN_5c6830)
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-ASM_VAR(BYTE, g_bs707f90, $L_707f90)
+KING_BSS(BYTE, g_bs707f90, 0x707f90)
 
-ASM_VAR(AsmLabel, g_bsVerts, $L_70cf70)            // 24-byte vertices, three per point
-ASM_VAR(AsmLabel, g_bsIdx, $L_70ddb0)              // 16-bit indices
+KING_BSS(AsmLabel, g_bsVerts, 0x70cf70)            // 24-byte vertices, three per point
+KING_BSS(AsmLabel, g_bsIdx, 0x70ddb0)              // 16-bit indices
 ASM_VAR(float, g_bs64c264, $L_64c264)
 ASM_VAR(float, g_bs64c250, $L_64c250)
 ASM_VAR(float, g_bs651c80, $L_651c80)
@@ -5129,7 +5129,7 @@ extern "C" void Mf_Receive(); KING_ALIAS("_Mf_Receive", "_Net_Receive")
 extern "C" void Mf_Seek(); KING_ALIAS("_Mf_Seek", "@Rec_SeekTime@16")
 extern "C" void Mf_Header(); KING_ALIAS("_Mf_Header", "@Rec_ReadHeader@16")
 extern "C" void Mf_Next(); KING_ALIAS("_Mf_Next", "@Msg_SkipRecord@8")
-ASM_VAR(BYTE*, g_mf707f6c, $L_707f6c)
+KING_BSS(BYTE*, g_mf707f6c, 0x707f6c)
 ASM_VAR(double, g_mf64b730, $L_64b730)
 ASM_VAR(double, g_mf64b678, $L_64b678)
 ASM_VAR(double, g_mf64b748, $L_64b748)
@@ -5239,11 +5239,10 @@ void __fastcall Media_Frame(BYTE* m, void*)
 // === a strip of quads along a curling chain (FUN_5c7410)
 
 extern "C" void Rb_AtExit(); KING_ALIAS("_Rb_AtExit", "@Med5c77f0_Nop@4")
-ASM_VAR(BYTE, g_rbOnce, $L_70dcc4)
-ASM_VAR(WORD, g_rbIdx, $L_70dcc8)
-ASM_VAR(float, g_rbVtx, $L_70e298)
+KING_BSS(BYTE, g_rbOnce, 0x70dcc4)
+KING_BSS(WORD, g_rbIdx, 0x70dcc8)
+KING_BSS(float, g_rbVtx, 0x70e298)
 ASM_VAR(DWORD, g_rbColor, $L_67f940)
-ASM_VAR(BYTE*, g_rbDevice, $L_720908)
 ASM_VAR(float, g_rb64c264, $L_64c264)
 ASM_VAR(float, g_rb651c80, $L_651c80)
 ASM_VAR(float, g_rb651c7c, $L_651c7c)
@@ -5398,7 +5397,7 @@ char* __cdecl Node_NetName(BYTE* o, char* dst)
 // === the scene's light colours for a frame (FUN_5ca660 with its tail $L_5ca70c)
 
 extern "C" void Lc_Channel(); KING_ALIAS("_Lc_Channel", "_Light_Channel")    // a light channel's flicker at time t (0 without the effects table)
-ASM_VAR(BYTE*, g_lc7025b8, $L_7025b8)
+KING_BSS(BYTE*, g_lc7025b8, 0x7025b8)
 ASM_VAR(float, g_lc64c308, $L_64c308)
 ASM_VAR(float, g_lc64c250, $L_64c250)
 ASM_VAR(float, g_lc64c264, $L_64c264)
@@ -5410,10 +5409,10 @@ ASM_VAR(DWORD, g_lc67f948, $L_67f948)
 ASM_VAR(float, g_lc67f94c, $L_67f94c)
 ASM_VAR(float, g_lc67f950, $L_67f950)
 ASM_VAR(float, g_lc67f954, $L_67f954)
-ASM_VAR(DWORD, g_lc70cf68, $L_70cf68)
-ASM_VAR(float, g_lc70dcb8, $L_70dcb8)
-ASM_VAR(float, g_lc70dcbc, $L_70dcbc)
-ASM_VAR(float, g_lc70dcc0, $L_70dcc0)
+KING_BSS(DWORD, g_lc70cf68, 0x70cf68)
+KING_BSS(float, g_lc70dcb8, 0x70dcb8)
+KING_BSS(float, g_lc70dcbc, 0x70dcbc)
+KING_BSS(float, g_lc70dcc0, 0x70dcc0)
 
 // a colour 0xFFrrggbb from three channels scaled by k
 static DWORD Lc_Pack(float r, float g, double b, float k)
@@ -5486,8 +5485,8 @@ extern "C" void Mr_ReadBlob(); KING_ALIAS("_Mr_ReadBlob", "@Stream_ReadBlob@20")
 extern "C" void Mr_ResGet(); KING_ALIAS("_Mr_ResGet", "@Resources_Get@12")
 extern "C" void Mr_ResLoad(); KING_ALIAS("_Mr_ResLoad", "@Resource_Load@12")
 extern "C" void FUN_6031e0(); KING_ALIAS("_FUN_6031e0", "@Msg_NextType@12")    // the message's next record type (out); 0 when there is one
-ASM_VAR(AsmLabel, g_mr7025f0, $L_7025f0)
-ASM_VAR(BYTE, g_mrBlob702fb8, $L_702fb8)
+KING_BSS(AsmLabel, g_mr7025f0, 0x7025f0)
+KING_BSS(BYTE, g_mrBlob702fb8, 0x702fb8)
 ASM_VAR(float, g_mr64c250, $L_64c250)
 ASM_VAR(double, g_mr64d900, $L_64d900)
 ASM_VAR(double, g_mr64d908, $L_64d908)
@@ -5645,9 +5644,9 @@ ASM_VAR(float, tg_651cf4, $L_651cf4)
 ASM_VAR(float, tg_651cf0, $L_651cf0)
 ASM_VAR(double, tg_64b840, $L_64b840)
 ASM_VAR(float, tg_67f93c, $L_67f93c)
-ASM_VAR(BYTE*, tg_device720908, $L_720908)
-ASM_VAR(float, tg_ahead702620, $L_702620)   // the view's ahead vector (3 floats)
-ASM_VAR(float, tg_up702630, $L_702630)      // the up vector (3 floats)
+KING_BSS(BYTE*, tg_device720908, 0x720908)
+KING_BSS(float, tg_ahead702620, 0x702620)   // the view's ahead vector (3 floats)
+KING_BSS(float, tg_up702630, 0x702630)      // the up vector (3 floats)
 
 #define TS(o) (*(float*)(fr + (o)))
 #define TI(o) (*(int*)(fr + (o)))

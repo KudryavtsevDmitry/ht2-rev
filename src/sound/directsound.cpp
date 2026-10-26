@@ -20,19 +20,19 @@ extern "C" void FUN_604b40(); KING_ALIAS("_FUN_604b40", "_Ds_Open")
 extern "C" void FUN_604410(); KING_ALIAS("_FUN_604410", "@Wave_Open@16")    // play a table entry (a, b)
 extern "C" void FUN_6041b0(); KING_ALIAS("_FUN_6041b0", "_Play_Stop")    // stop sound id
 
-ASM_VAR(int, g_72411c, $L_72411c)
-ASM_VAR(int, g_724120, $L_724120)
-ASM_VAR(BYTE*, g_playHead, $L_724124)       // playing sounds, highest priority first
-ASM_VAR(BYTE*, g_playTail, $L_724128)
-ASM_VAR(CRITICAL_SECTION, g_playLock, $L_724148)
-ASM_VAR(BYTE*, g_soundTable, $L_724164)     // 24-byte entries
-ASM_VAR(DWORD, g_soundCount, $L_724168)     // low word
-ASM_VAR(int, g_mixerUsers, $L_724188)
-ASM_VAR(BYTE*, g_dsBuffer, $L_724190)       // COM objects
-ASM_VAR(BYTE*, g_dsPrimary, $L_724194)
-ASM_VAR(HMODULE, g_dsLibrary, $L_72419c)
-ASM_VAR(int, g_7241a0, $L_7241a0)
-ASM_VAR(HWND, g_mixerWindow, $L_7241a4)
+KING_BSS(int, g_72411c, 0x72411c)
+KING_BSS(int, g_724120, 0x724120)
+KING_BSS(BYTE*, g_playHead, 0x724124)       // playing sounds, highest priority first
+KING_BSS(BYTE*, g_playTail, 0x724128)
+KING_BSS(CRITICAL_SECTION, g_playLock, 0x724148)
+KING_BSS(BYTE*, g_soundTable, 0x724164)     // 24-byte entries
+KING_BSS(DWORD, g_soundCount, 0x724168)     // low word
+KING_BSS(int, g_mixerUsers, 0x724188)
+KING_BSS(BYTE*, g_dsBuffer, 0x724190)       // COM objects
+KING_BSS(BYTE*, g_dsPrimary, 0x724194)
+KING_BSS(HMODULE, g_dsLibrary, 0x72419c)
+KING_BSS(int, g_7241a0, 0x7241a0)
+KING_BSS(HWND, g_mixerWindow, 0x7241a4)
 ASM_VAR(int, g_mixerState, $L_6843ec)
 ASM_VAR(float, g_mixerVolume, $L_6843fc)
 ASM_VAR(int, g_mixerOpenFlag, $L_684400)
@@ -52,7 +52,7 @@ static X87 double x87_log10(double x)
 }
 
 extern "C" void FUN_6055e0(); KING_ALIAS("_FUN_6055e0", "_Play_UpdateAll")
-ASM_VAR(BYTE*, g_streams, $L_72412c)
+KING_BSS(BYTE*, g_streams, 0x72412c)
 
 template <class... A>
 static __forceinline int Com(BYTE* com, unsigned off, A... args)
@@ -537,7 +537,7 @@ BYTE* __fastcall StreamPlay_Construct(BYTE* self, void*, int idx, int a, int b, 
 }
 
 typedef void (__cdecl* PlayDoneFn)(int);
-ASM_VAR(PlayDoneFn, g_playDoneCb724178, $L_724178)
+KING_BSS(PlayDoneFn, g_playDoneCb724178, 0x724178)
 ASM_PROC(FUN_605310)
 
 // [FUN_6055e0] updates all sounds, deleting finished ones, then gives free buffers to waiting sounds
@@ -566,8 +566,8 @@ extern "C" void __cdecl Play_UpdateAll()
 extern "C" void FUN_604300(); KING_ALIAS("_FUN_604300", "_Play_StopEntry")
 extern "C" void __cdecl Streams_StopId(int id);
 extern "C" void FUN_604590(); KING_ALIAS("_FUN_604590", "@Wave_Free@8")
-ASM_VAR(DWORD, g_ds724168, $L_724168)
-ASM_VAR(BYTE*, g_ds724164, $L_724164)
+KING_BSS(DWORD, g_ds724168, 0x724168)
+KING_BSS(BYTE*, g_ds724164, 0x724164)
 ASM_VAR(AsmLabel, g_vt652df8, $L_652df8)
 
 // [FUN_604ed0] stops and frees sound i (24-byte records at 724164) when it is in use
@@ -588,8 +588,8 @@ extern "C" void __fastcall Play_DestructBase(BYTE* self, void*) { F(void*, self,
 extern "C" void FUN_6042e0(); KING_ALIAS("_FUN_6042e0", "_Play_Find")
 extern "C" void FUN_604a60(); KING_ALIAS("_FUN_604a60", "_Mixer_Lock")
 extern "C" void FUN_604a70(); KING_ALIAS("_FUN_604a70", "_Mixer_Unlock")
-ASM_VAR(BYTE*, g_ds724128, $L_724128)
-ASM_VAR(BYTE*, g_ds724124, $L_724124)
+KING_BSS(BYTE*, g_ds724128, 0x724128)
+KING_BSS(BYTE*, g_ds724124, 0x724124)
 
 // [FUN_6041b0] stops a playing sound by id, unlinks it (+16 prev, +20 next; list 724124..724128) and deletes it
 extern "C" void __cdecl Play_Stop(int id)
@@ -617,7 +617,7 @@ extern "C" void __cdecl Play_Stop(int id)
 extern "C" void FUN_604230(); KING_ALIAS("_FUN_604230", "@Play_Delete@8")
 extern "C" void FUN_605200(); KING_ALIAS("_FUN_605200", "@StreamPlay_Construct@32")
 extern "C" void FUN_6051b0(); KING_ALIAS("_FUN_6051b0", "_Streams_Collect")
-ASM_VAR(AsmLabel, g_ds724130, $L_724130)    // the wave format
+KING_BSS(AsmLabel, g_ds724130, 0x724130)    // the wave format
 
 template <class R = long, class... A>
 static R Ds_ComCall(void* p, int off, A... a)
@@ -677,7 +677,7 @@ fail:
 extern "C" void FUN_604120(); KING_ALIAS("_FUN_604120", "@Play_DestructBase@8")
 extern "C" void FUN_6052b0(); KING_ALIAS("_FUN_6052b0", "@Play6052b0_Destruct@8")
 ASM_VAR(float, g_dir652e40, $L_652e40)
-ASM_VAR(float, g_dir7241ac, $L_7241ac)
+KING_BSS(float, g_dir7241ac, 0x7241ac)
 
 static BYTE* Dir_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -838,7 +838,7 @@ extern "C" void __cpuid(int info[4], int leaf);
 extern "C" unsigned int __readeflags(void);
 extern "C" void __writeeflags(unsigned int v);
 #pragma intrinsic(__rdtsc, __cpuid, __readeflags, __writeeflags)
-ASM_VAR(BYTE*, g_q47_72412c, $L_72412c)
+KING_BSS(BYTE*, g_q47_72412c, 0x72412c)
 // [$L_6043d0] under the mixer lock, stops (slot 12) and deletes each sound of the 72412c list
 extern "C" void __cdecl Play_DeleteAll(void)
 {
@@ -881,7 +881,7 @@ extern "C" void FUN_604e10(); KING_ALIAS("_FUN_604e10", "_Channels_Release")
 extern "C" void FUN_603ff0(); KING_ALIAS("_FUN_603ff0", "_Mixer_Clear724120")
 extern "C" void FUN_605090(); KING_ALIAS("_FUN_605090", "_Mixer_Stop")
 extern "C" void FUN_6050b0(); KING_ALIAS("_FUN_6050b0", "_Mixer_SetVolume")
-ASM_VAR(int, g_q48_72418c, $L_72418c)
+KING_BSS(int, g_q48_72418c, 0x72418c)
 ASM_VAR(int, g_q48_6843fc, $L_6843fc)
 // [FUN_605050] shuts the mixer down: 604e10, clears it, sets the 72418c volume keeping 6843fc, stops it
 extern "C" void __cdecl Mixer_Shutdown(void)
@@ -930,7 +930,7 @@ extern "C" int __cdecl Cpu_HasTsc(void)
 
 extern "C" void FUN_604e80(); KING_ALIAS("_FUN_604e80", "_Mixer_SetState1")
 extern "C" void Dir_VecDtor(); KING_ALIAS("_Dir_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
-ASM_VAR(BYTE*, g_q52_724164, $L_724164)
+KING_BSS(BYTE*, g_q52_724164, 0x724164)
 ASM_VAR(AsmLabel, g_q52_604e00, $L_604e00)
 // [FUN_604e10] releases the channels: state 1, stops and deletes the sounds, destroys the 24-byte channel array
 // 724164 (count before it) and clears it
@@ -978,7 +978,7 @@ extern "C" const char* __cdecl Sound_ErrorText(int kind)
 // The channel array.
 
 extern "C" void Dir_VecCtor(); KING_ALIAS("_Dir_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
-ASM_VAR(WORD, g_q54_724168, $L_724168)
+KING_BSS(WORD, g_q54_724168, 0x724168)
 ASM_VAR(AsmLabel, g_q54_604de0, $L_604de0)
 // [FUN_604d70] creates the n 24-byte channels (724164, count 724168) unless they exist: 1 when created
 extern "C" int __cdecl Channels_Create(int n)
@@ -997,7 +997,7 @@ extern "C" int __cdecl Channels_Create(int n)
     return a != 0;
 }
 
-ASM_VAR(float, g_q193_72418c, $L_72418c)
+KING_BSS(float, g_q193_72418c, 0x72418c)
 // [FUN_604a80] opens the mixer for the mixer window (on failure: 3 when 724120 can be set to n, else the
 // start's error), keeps the volume (72418c), applies 6843fc and sets the play-done callback; 0 when open
 extern "C" int __cdecl Mixer_Init(int n, PlayDoneFn done)
@@ -1082,9 +1082,9 @@ extern "C" void __cdecl Streams_StopId(int id)
 
 extern "C" void Do_Release(); KING_ALIAS("_Do_Release", "_Mixer_ReleaseBuffers")
 extern "C" void Do_Primary(); KING_ALIAS("_Do_Primary", "_Ds_CreatePrimary")
-ASM_VAR(BYTE*, g_do724190, $L_724190)
-ASM_VAR(int, g_do7241a4, $L_7241a4)
-ASM_VAR(int, g_do72416c, $L_72416c)
+KING_BSS(BYTE*, g_do724190, 0x724190)
+KING_BSS(int, g_do7241a4, 0x7241a4)
+KING_BSS(int, g_do72416c, 0x72416c)
 ASM_VAR(DWORD, g_do6843f0, $L_6843f0)
 ASM_VAR(DWORD, g_do6843f4, $L_6843f4)
 

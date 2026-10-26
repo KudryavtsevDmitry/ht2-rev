@@ -30,19 +30,19 @@ extern "C" void FUN_5f19b0(); KING_ALIAS("_FUN_5f19b0", "@NodeN_Construct@20")
 
 // msavi
 typedef void(__cdecl* WaveRead)(DWORD size, BYTE* buf, DWORD* got, int ctx);
-ASM_VAR(DWORD, g_msaviBufSize, $L_702f64)
-ASM_VAR(DWORD, g_msaviLastPos, $L_702f68)
-ASM_VAR(DWORD, g_msaviPlayed, $L_702f6c)
-ASM_VAR(DWORD, g_msaviWritePos, $L_702f70)
-ASM_VAR(Dwords, g_msavi702f78, $L_702f78)
-ASM_VAR(int, g_702f94, $L_702f94)
-ASM_VAR(BYTE*, g_msavi702f98, $L_702f98)
-ASM_VAR(int, g_msavi702f9c, $L_702f9c)
-ASM_VAR(BYTE*, g_msaviBuffer, $L_702fa0)     // IDirectSoundBuffer
-ASM_VAR(BYTE*, g_msavi702fa4, $L_702fa4)
-ASM_VAR(BYTE*, g_msaviFormat, $L_702fa8)     // WAVEFORMATEX
-ASM_VAR(int, g_msaviReadCtx, $L_702fac)
-ASM_VAR(WaveRead, g_msaviRead, $L_702fb0)
+KING_BSS(DWORD, g_msaviBufSize, 0x702f64)
+KING_BSS(DWORD, g_msaviLastPos, 0x702f68)
+KING_BSS(DWORD, g_msaviPlayed, 0x702f6c)
+KING_BSS(DWORD, g_msaviWritePos, 0x702f70)
+KING_BSS(Dwords, g_msavi702f78, 0x702f78)
+KING_BSS(int, g_702f94, 0x702f94)
+KING_BSS(BYTE*, g_msavi702f98, 0x702f98)
+KING_BSS(int, g_msavi702f9c, 0x702f9c)
+KING_BSS(BYTE*, g_msaviBuffer, 0x702fa0)     // IDirectSoundBuffer
+KING_BSS(BYTE*, g_msavi702fa4, 0x702fa4)
+KING_BSS(BYTE*, g_msaviFormat, 0x702fa8)     // WAVEFORMATEX
+KING_BSS(int, g_msaviReadCtx, 0x702fac)
+KING_BSS(WaveRead, g_msaviRead, 0x702fb0)
 ASM_VAR(AsmLabel, s_msaviNoFormat, $L_67f5c4)
 ASM_VAR(AsmLabel, s_msaviNoRead, $L_67f5a0)
 ASM_VAR(AsmLabel, s_msaviNoBuffer, $L_67f578)
@@ -56,13 +56,13 @@ ASM_VAR(AsmLabel, g_vtbl651b00, $L_651b00)
 ASM_VAR(AsmLabel, g_vtbl651d14, $L_651d14)
 ASM_VAR(AsmLabel, g_vtbl651d64, $L_651d64)
 ASM_VAR(AsmLabel, g_vtbl651db0, $L_651db0)
-ASM_VAR(BYTE*, g_707f6c, $L_707f6c)
-ASM_VAR(int, g_70ebe8, $L_70ebe8)
-ASM_VAR(int, g_70ebec, $L_70ebec)
-ASM_VAR(int, g_70ebf0, $L_70ebf0)
-ASM_VAR(int, g_70ebf4, $L_70ebf4)
-ASM_VAR(int, g_70ebf8, $L_70ebf8)
-ASM_VAR(Dwords, g_7025f0, $L_7025f0)
+KING_BSS(BYTE*, g_707f6c, 0x707f6c)
+KING_BSS(int, g_70ebe8, 0x70ebe8)
+KING_BSS(int, g_70ebec, 0x70ebec)
+KING_BSS(int, g_70ebf0, 0x70ebf0)
+KING_BSS(int, g_70ebf4, 0x70ebf4)
+KING_BSS(int, g_70ebf8, 0x70ebf8)
+KING_BSS(Dwords, g_7025f0, 0x7025f0)
 ASM_VAR(Dwords, g_67fa60, $L_67fa60)
 ASM_VAR(AsmLabel, s_treeShadow, $L_67f9ac)
 
@@ -93,18 +93,18 @@ extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // ne
 extern "C" void FUN_5d38c0(); KING_ALIAS("_FUN_5d38c0", "@Queue_RunEvent@12")
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8")
 ASM_VAR(int, g_67faa0, $L_67faa0)
-ASM_VAR(int, g_71e800, $L_71e800)
-ASM_VAR(int, g_71e7d4, $L_71e7d4)
-ASM_VAR(int, g_71e7e4, $L_71e7e4)
-ASM_VAR(int, g_71e844, $L_71e844)
-ASM_VAR(AsmLabel, g_pool71e830, $L_71e830)
-ASM_VAR(AsmLabel, g_pool7200c0, $L_7200c0)
+KING_BSS(int, g_71e800, 0x71e800)
+KING_BSS(int, g_71e7d4, 0x71e7d4)
+KING_BSS(int, g_71e7e4, 0x71e7e4)
+KING_BSS(int, g_71e844, 0x71e844)
+KING_BSS(AsmLabel, g_pool71e830, 0x71e830)
+KING_BSS(AsmLabel, g_pool7200c0, 0x7200c0)
 typedef int Ints[1];
-ASM_VAR(Ints, g_71e858, $L_71e858)
-ASM_VAR(AsmLabel, g_720080, $L_720080)
+KING_BSS(Ints, g_71e858, 0x71e858)
+KING_BSS(AsmLabel, g_720080, 0x720080)
 ASM_VAR(AsmLabel, g_vtbl651eb4, $L_651eb4)
-ASM_VAR(BYTE*, g_723d44, $L_723d44)
-ASM_VAR(CRITICAL_SECTION, g_cs723b40, $L_723b40)
+KING_BSS(BYTE*, g_723d44, 0x723d44)
+KING_BSS(CRITICAL_SECTION, g_cs723b40, 0x723b40)
 ASM_VAR(AsmLabel, g_683c58, $L_683c58)
 
 extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
@@ -578,12 +578,12 @@ extern "C" void FUN_5d3060(); KING_ALIAS("_FUN_5d3060", "_Pool7200c0_Alloc")    
 extern "C" void FUN_5d3080(); KING_ALIAS("_FUN_5d3080", "@Node_Next@8")    // next sibling
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // log (text, value)
 ASM_VAR(AsmLabel, s_67fbc4, $L_67fbc4)
-ASM_VAR(AsmLabel, g_text71fc20, $L_71fc20)
+KING_BSS(AsmLabel, g_text71fc20, 0x71fc20)
 ASM_VAR(AsmLabel, s_67fbe0, $L_67fbe0)
-ASM_VAR(AsmLabel, g_text720028, $L_720028)
-ASM_VAR(AsmLabel, g_text720080, $L_720080)
+KING_BSS(AsmLabel, g_text720028, 0x720028)
+KING_BSS(AsmLabel, g_text720080, 0x720080)
 ASM_VAR(AsmLabel, s_67fbd0, $L_67fbd0)
-ASM_VAR(AsmLabel, g_text71f820, $L_71f820)
+KING_BSS(AsmLabel, g_text71f820, 0x71f820)
 ASM_VAR(AsmLabel, s_67fc94, $L_67fc94)
 ASM_VAR(AsmLabel, s_67fc78, $L_67fc78)
 ASM_VAR(AsmLabel, s_67fc54, $L_67fc54)
@@ -592,8 +592,7 @@ ASM_VAR(AsmLabel, s_67fb24, $L_67fb24)
 ASM_VAR(AsmLabel, s_67fbfc, $L_67fbfc)
 ASM_VAR(AsmLabel, s_67fcb4, $L_67fcb4)
 ASM_VAR(AsmLabel, s_67fc3c, $L_67fc3c)
-ASM_VAR(AsmLabel, g_pool7200c0, $L_7200c0)
-ASM_VAR(int, g_720118, $L_720118)
+KING_BSS(int, g_720118, 0x720118)
 extern "C" __declspec(noreturn) void __cdecl _exit(int code);
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
@@ -755,7 +754,6 @@ extern "C" void __fastcall Owner_Clear(BYTE* self, void*)
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_5d3fd0(); KING_ALIAS("_FUN_5d3fd0", "_Dd_Release")
-ASM_VAR(AsmLabel, g_pool71e830, $L_71e830)
 
 // [FUN_5d2a10] frees an element of the pool at 71e830
 extern "C" void __cdecl Pool71e830_Free(BYTE* p)
@@ -774,10 +772,10 @@ extern "C" void __cdecl Core_5d2eb0()
 extern "C" void FUN_5d35b0(); KING_ALIAS("_FUN_5d35b0", "@Owner_Detach@12")    // queue: drop a task (this, task)
 ASM_VAR(AsmLabel, s_67fcdc, $L_67fcdc)
 ASM_VAR(AsmLabel, s_67fcd0, $L_67fcd0)
-ASM_VAR(AsmLabel, g_text7200d4, $L_7200d4)
-ASM_VAR(BYTE*, g_coreTraceData, $L_71e814)
-ASM_VAR(int, g_coreTracePos, $L_71e818)
-ASM_VAR(int, g_coreTraceSize, $L_71e810)
+KING_BSS(AsmLabel, g_text7200d4, 0x7200d4)
+KING_BSS(BYTE*, g_coreTraceData, 0x71e814)
+KING_BSS(int, g_coreTracePos, 0x71e818)
+KING_BSS(int, g_coreTraceSize, 0x71e810)
 extern "C" void __cdecl Pool_Fail(int code);
 
 // appends a text to the trace buffer while it has room
@@ -845,7 +843,7 @@ extern "C" void FUN_5d21b0(); KING_ALIAS("_FUN_5d21b0", "@Node_Unlink@8")
 ASM_VAR(AsmLabel, g_logName67fb5c, $L_67fb5c)
 ASM_VAR(AsmLabel, s_67fb80, $L_67fb80)
 ASM_VAR(AsmLabel, s_67fb84, $L_67fb84)
-ASM_VAR(FILE*, g_logFile720068, $L_720068)
+KING_BSS(FILE*, g_logFile720068, 0x720068)
 extern "C" int __cdecl fprintf(FILE* f, const char* format, ...);
 
 // [FUN_5d2ba0] appends (text, value) to the log file when it has a name
@@ -992,9 +990,9 @@ extern "C" BYTE* __fastcall Object_ConstructKind(BYTE* s, void*, int kind, const
 // ---------------------------------------------------------------------------
 // Static object setup: a pointer table, slots of the static pools.
 
-ASM_VAR(AsmLabel, g_q46_71e820, $L_71e820)
+KING_BSS(AsmLabel, g_q46_71e820, 0x71e820)
 extern "C" BYTE* __fastcall PtrTable500_Construct(BYTE* s, void*);    // media.cpp
-ASM_VAR(AsmLabel, g_q46_7200c0, $L_7200c0)
+KING_BSS(AsmLabel, g_q46_7200c0, 0x7200c0)
 extern "C" BYTE* __fastcall Pool_AllocSlot(BYTE* s, void*);
 // [FUN_5d2b50] constructs the static pointer table 71e820
 extern "C" int __cdecl Static71e820_Construct(void)
@@ -1010,7 +1008,7 @@ extern "C" int __cdecl Pool7200c0_Alloc(void)
 // ---------------------------------------------------------------------------
 // Small static setup and teardown procs, destructors and thunks.
 
-ASM_VAR(AsmLabel, g_q47_71e830, $L_71e830)
+KING_BSS(AsmLabel, g_q47_71e830, 0x71e830)
 // [FUN_5d2a00] a free slot of the static pool 71e830
 extern "C" int __cdecl Pool71e830_Alloc(void)
 {
@@ -1020,9 +1018,9 @@ extern "C" int __cdecl Pool71e830_Alloc(void)
 // ---------------------------------------------------------------------------
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
-ASM_VAR(void*, g_q51_71e858, $L_71e858)
-ASM_VAR(int, g_q51_720890, $L_720890)
-ASM_VAR(int, g_q51_7208ac, $L_7208ac)
+KING_BSS(void*, g_q51_71e858, 0x71e858)
+KING_BSS(int, g_q51_720890, 0x720890)
+KING_BSS(int, g_q51_7208ac, 0x7208ac)
 // [$L_5d2e20] frees the 1000 entries of the 71e858 table
 extern "C" void __cdecl Table71e858_FreeAll(void)
 {
@@ -1066,10 +1064,10 @@ extern "C" BYTE* __fastcall Pool_AllocSlot(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Polygon edges of the software span filler.
 
-ASM_VAR(int, g_q134_723a88, $L_723a88)
-ASM_VAR(int, g_q134_71e7dc, $L_71e7dc)
-ASM_VAR(int, g_q134_71e7d8, $L_71e7d8)
-ASM_VAR(AsmLabel, g_q134_70f3f0, $L_70f3f0)
+KING_BSS(int, g_q134_723a88, 0x723a88)
+KING_BSS(int, g_q134_71e7dc, 0x71e7dc)
+KING_BSS(int, g_q134_71e7d8, 0x71e7d8)
+KING_BSS(AsmLabel, g_q134_70f3f0, 0x70f3f0)
 // [FUN_5d02b0] walks the edge from a to b (fixed point x +12, y +16 with the row in the top bits) into the span
 // table 70f3f0 (24-byte rows, the left or right side by 723a88 and the edge direction), widening the row range
 // 71e7dc..71e7d8
@@ -1386,8 +1384,8 @@ extern "C" void __cdecl Span_EdgeUV(const BYTE* a, const BYTE* b)
     }
 }
 
-ASM_VAR(void*, g_q156_71e838, $L_71e838)
-ASM_VAR(void*, g_q156_71e83c, $L_71e83c)
+KING_BSS(void*, g_q156_71e838, 0x71e838)
+KING_BSS(void*, g_q156_71e83c, 0x71e83c)
 // [$L_5d29e0] static exit: frees the 71e838 and 71e83c blocks
 extern "C" void __cdecl Core_Free71e838(void)
 {
@@ -1441,11 +1439,11 @@ extern "C" int __cdecl Static5d3000_Init(void)
 }
 
 extern "C" void FUN_5d2370(); KING_ALIAS("_FUN_5d2370", "@NameHash_Clear@8")
-ASM_VAR(char, g_q200_71e820, $L_71e820)
-ASM_VAR(void*, g_q200_71e828, $L_71e828)
-ASM_VAR(int, g_q200_71e844, $L_71e844)
-ASM_VAR(void*, g_q200_7200c8, $L_7200c8)
-ASM_VAR(void*, g_q200_7200cc, $L_7200cc)
+KING_BSS(char, g_q200_71e820, 0x71e820)
+KING_BSS(void*, g_q200_71e828, 0x71e828)
+KING_BSS(int, g_q200_71e844, 0x71e844)
+KING_BSS(void*, g_q200_7200c8, 0x7200c8)
+KING_BSS(void*, g_q200_7200cc, 0x7200cc)
 // [$L_5d2b70] clears the name hash 71e820 and frees its table
 extern "C" void __cdecl Static71e820_Destroy(void)
 {
@@ -1463,13 +1461,13 @@ extern "C" void __cdecl Pool7200c0_Release(void)
 ASM_PROC(FUN_5fedbc)
 ASM_PROC(FUN_5fef04)
 extern "C" void FUN_5b94b0(); KING_ALIAS("_FUN_5b94b0", "@Rows_Get@12")
-ASM_VAR(BYTE*, g_q222_71e7ec, $L_71e7ec)
-ASM_VAR(int, g_q222_71e7f0, $L_71e7f0)
-ASM_VAR(int, g_q222_71e7f8, $L_71e7f8)
-ASM_VAR(int, g_q222_71e7bc, $L_71e7bc)
-ASM_VAR(BYTE*, g_q222_71e7e8, $L_71e7e8)
-ASM_VAR(int, g_q222_70f3d8, $L_70f3d8)
-ASM_VAR(BYTE*, g_q222_71e7c4, $L_71e7c4)
+KING_BSS(BYTE*, g_q222_71e7ec, 0x71e7ec)
+KING_BSS(int, g_q222_71e7f0, 0x71e7f0)
+KING_BSS(int, g_q222_71e7f8, 0x71e7f8)
+KING_BSS(int, g_q222_71e7bc, 0x71e7bc)
+KING_BSS(BYTE*, g_q222_71e7e8, 0x71e7e8)
+KING_BSS(int, g_q222_70f3d8, 0x70f3d8)
+KING_BSS(BYTE*, g_q222_71e7c4, 0x71e7c4)
 // [FUN_5d15f0] fills the rows 71e7dc..71e7d8 of the walked polygon (left edges in 70f3f0, right ones 31200 bytes
 // on: x in 12.20 fixed point, z at +8) with colour c and its depth (z buffer 71e7e8, pitch 71e7f8 words; frame
 // 71e7c4, pitch 71e7bc, 70f3d8 bytes a pixel) by 5fef04; with flag 1 the row table is chosen by k first
@@ -1573,24 +1571,24 @@ extern "C" void FUN_5d18d0(); KING_ALIAS("_FUN_5d18d0", "_Span_FillRowsUVZ")    
 extern "C" void FUN_5d1a80(); KING_ALIAS("_FUN_5d1a80", "_Spans_Fill")    // textured rows with z (texture, mode)
 extern "C" void FUN_5d1c50(); KING_ALIAS("_FUN_5d1c50", "_Span_FillRowsAffine")    // textured rows, perspective (texture, mode)
 extern "C" void FUN_5d1e50(); KING_ALIAS("_FUN_5d1e50", "_Span_FillRowsAffineFast")    // textured rows, perspective, transparent (texture, mode)
-ASM_VAR(int, g_spanFogColor71e7b0, $L_71e7b0)
-ASM_VAR(int, g_spanWidth71e7b4, $L_71e7b4)
-ASM_VAR(int, g_spanHeight71e7b8, $L_71e7b8)
-ASM_VAR(int, g_spanBpp70f3d8, $L_70f3d8)
-ASM_VAR(int, g_span71e7bc, $L_71e7bc)
-ASM_VAR(int, g_span71e7f8, $L_71e7f8)
-ASM_VAR(int, g_spanBits71e7c4, $L_71e7c4)
-ASM_VAR(WORD, g_spanPitch71e7f4, $L_71e7f4)
-ASM_VAR(int, g_span71e7e8, $L_71e7e8)
-ASM_VAR(BYTE*, g_spanSurface71e7ec, $L_71e7ec)
-ASM_VAR(int, g_texWidth70f3e4, $L_70f3e4)
-ASM_VAR(int, g_texPixels71e7c8, $L_71e7c8)
-ASM_VAR(WORD, g_tex71e7fc, $L_71e7fc)
-ASM_VAR(BYTE, g_texShift70f3dc, $L_70f3dc)
+KING_BSS(int, g_spanFogColor71e7b0, 0x71e7b0)
+KING_BSS(int, g_spanWidth71e7b4, 0x71e7b4)
+KING_BSS(int, g_spanHeight71e7b8, 0x71e7b8)
+KING_BSS(int, g_spanBpp70f3d8, 0x70f3d8)
+KING_BSS(int, g_span71e7bc, 0x71e7bc)
+KING_BSS(int, g_span71e7f8, 0x71e7f8)
+KING_BSS(int, g_spanBits71e7c4, 0x71e7c4)
+KING_BSS(WORD, g_spanPitch71e7f4, 0x71e7f4)
+KING_BSS(int, g_span71e7e8, 0x71e7e8)
+KING_BSS(BYTE*, g_spanSurface71e7ec, 0x71e7ec)
+KING_BSS(int, g_texWidth70f3e4, 0x70f3e4)
+KING_BSS(int, g_texPixels71e7c8, 0x71e7c8)
+KING_BSS(WORD, g_tex71e7fc, 0x71e7fc)
+KING_BSS(BYTE, g_texShift70f3dc, 0x70f3dc)
 ASM_VAR(int, g_texStep67fa7c, $L_67fa7c)
-ASM_VAR(int, g_span70f3e0, $L_70f3e0)
-ASM_VAR(int, g_span71e7d0, $L_71e7d0)
-ASM_VAR(DWORD, g_poly702e8c, $L_702e8c)
+KING_BSS(int, g_span70f3e0, 0x70f3e0)
+KING_BSS(int, g_span71e7d0, 0x71e7d0)
+KING_BSS(DWORD, g_poly702e8c, 0x702e8c)
 
 // the edges of the polygon of n vertices (44 bytes each), closing from the last to the first
 static void Poly_Edges(void (*edge)(), BYTE* v, int n)
@@ -1992,7 +1990,7 @@ void __cdecl Messages_Load()
 
 extern "C" void FUN_5cf6f0(); KING_ALIAS("_FUN_5cf6f0", "_Span_DrawPerspective")
 ASM_PROC(FUN_5feb87)
-ASM_VAR(int, g_q223_702e90, $L_702e90)
+KING_BSS(int, g_q223_702e90, 0x702e90)
 extern "C" void Sp_ShadeRow(); KING_ALIAS("_Sp_ShadeRow", "@Palette_ShadeRow@12")
 
 // [FUN_5d1740] fills the spans of the rows 71e7dc..71e7d8 with u and v (+8.. +16 of the edges) by FUN_5cf6f0,
@@ -2070,7 +2068,7 @@ extern "C" void __cdecl Span_FillRowsUVZ(int unused, int mode, int a3)
 // === affine textured span fill (FUN_5d1c50)
 
 ASM_PROC(FUN_5fee7c)
-ASM_VAR(int, g_q223_72007c, $L_72007c)
+KING_BSS(int, g_q223_72007c, 0x72007c)
 
 // fills the spans of the rows 71e7dc..71e7d8 with u and v (+12, +16 of the edges) stepped by the
 // constant gradients of the middle row, counting pixels (702e90) and spans (72007c); mode bit 2 sets the fog
@@ -2122,19 +2120,19 @@ extern "C" void __cdecl Span_FillRowsAffineFast(int unused, int mode) { Span_Aff
 ASM_FUNC(Sf_Setup, FUN_5feb87)
 ASM_FUNC(Sf_Span, FUN_5fee7c)
 extern "C" void Sf_FogColor(); KING_ALIAS("_Sf_FogColor", "@Palette_FogColor@12")
-ASM_VAR(int, g_sf71e7dc, $L_71e7dc)    // the first row
-ASM_VAR(int, g_sf71e7d8, $L_71e7d8)    // the last row
-ASM_VAR(int, g_sf71e7bc, $L_71e7bc)    // the colour buffer's pitch
-ASM_VAR(int, g_sf71e7f8, $L_71e7f8)    // the depth buffer's pitch (in words)
-ASM_VAR(int, g_sf70f3d8, $L_70f3d8)    // bytes per pixel
-ASM_VAR(int, g_sf702e90, $L_702e90)    // pixels filled
-ASM_VAR(int, g_sf72007c, $L_72007c)    // spans filled
-ASM_VAR(int, g_sf71e7c4, $L_71e7c4)    // the colour buffer
-ASM_VAR(int, g_sf71e7e8, $L_71e7e8)    // the depth buffer
-ASM_VAR(BYTE*, g_sf71e7ec, $L_71e7ec)  // the palette
-ASM_VAR(int, g_sf71e7b0, $L_71e7b0)    // the fog colour
-ASM_VAR(unsigned, g_sf702e8c, $L_702e8c)
-ASM_VAR(BYTE, g_sf70f400, $L_70f400)   // the left edges, 24 bytes a row (x at -16, shade -8, u -4, v 0)
+KING_BSS(int, g_sf71e7dc, 0x71e7dc)    // the first row
+KING_BSS(int, g_sf71e7d8, 0x71e7d8)    // the last row
+KING_BSS(int, g_sf71e7bc, 0x71e7bc)    // the colour buffer's pitch
+KING_BSS(int, g_sf71e7f8, 0x71e7f8)    // the depth buffer's pitch (in words)
+KING_BSS(int, g_sf70f3d8, 0x70f3d8)    // bytes per pixel
+KING_BSS(int, g_sf702e90, 0x702e90)    // pixels filled
+KING_BSS(int, g_sf72007c, 0x72007c)    // spans filled
+KING_BSS(int, g_sf71e7c4, 0x71e7c4)    // the colour buffer
+KING_BSS(int, g_sf71e7e8, 0x71e7e8)    // the depth buffer
+KING_BSS(BYTE*, g_sf71e7ec, 0x71e7ec)  // the palette
+KING_BSS(int, g_sf71e7b0, 0x71e7b0)    // the fog colour
+KING_BSS(unsigned, g_sf702e8c, 0x702e8c)
+KING_BSS(BYTE, g_sf70f400, 0x70f400)   // the left edges, 24 bytes a row (x at -16, shade -8, u -4, v 0)
 
 extern "C" {
 

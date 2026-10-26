@@ -36,9 +36,9 @@ ASM_VAR(AsmLabel, g_vtbl652f00, $L_652f00)
 ASM_VAR(AsmLabel, s_buildDate, $L_6724f8)
 ASM_VAR(AsmLabel, s_btrFile, $L_684a64)
 ASM_VAR(AsmLabel, s_fileLine, $L_6724b0)
-ASM_VAR(Floats, g_sinDeg, $L_724964)      // 360 entries
-ASM_VAR(Floats, g_cosDeg, $L_7243bc)      // 360 entries
-ASM_VAR(int, g_725d28, $L_725d28)
+KING_BSS(Floats, g_sinDeg, 0x724964)      // 360 entries
+KING_BSS(Floats, g_cosDeg, 0x7243bc)      // 360 entries
+KING_BSS(int, g_725d28, 0x725d28)
 
 extern "C" {
 
@@ -694,8 +694,8 @@ extern "C" void FUN_60cd90(); KING_ALIAS("_FUN_60cd90", "@MarineVertex_Delete@12
 extern "C" void* __cdecl memcpy(void* d, const void* s, size_t n);
 extern "C" void* __cdecl malloc(size_t n);
 typedef BYTE* FreeRing;
-ASM_VAR(FreeRing, g_unusedPoints, $L_725d40)
-ASM_VAR(int, g_unusedCount, $L_725d44)
+KING_BSS(FreeRing, g_unusedPoints, 0x725d40)
+KING_BSS(int, g_unusedCount, 0x725d44)
 
 // removes point k (the table at +12 has 16-byte records, +16 40-byte point
 // data; +40 the count, already decremented): unlinks its edge ring, then
@@ -873,10 +873,10 @@ extern "C" BYTE* __fastcall Gsp608a80_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Gsp60be20_DeletingDestructor(BYTE* s, void*, int flags) { return Gsp_DeleteAfter(s, flags, FUN_60bbb0); }
 
 // static initializers of constants
-ASM_VAR(DWORD, g_gsp7241b8, $L_7241b8)
-ASM_VAR(DWORD, g_gsp725d30, $L_725d30)
-ASM_VAR(DWORD, g_gsp725d34, $L_725d34)
-ASM_VAR(DWORD, g_gsp725d38, $L_725d38)
+KING_BSS(DWORD, g_gsp7241b8, 0x7241b8)
+KING_BSS(DWORD, g_gsp725d30, 0x725d30)
+KING_BSS(DWORD, g_gsp725d34, 0x725d34)
+KING_BSS(DWORD, g_gsp725d38, 0x725d38)
 ASM_VAR(float, g_gsp64c258, $L_64c258)
 ASM_VAR(float, g_gsp64c41c, $L_64c41c)
 ASM_VAR(float, g_gsp64d4e8, $L_64d4e8)
@@ -892,19 +892,19 @@ ASM_VAR(float, g_gsp652f20, $L_652f20)
 ASM_VAR(float, g_gsp652f2c, $L_652f2c)
 ASM_VAR(float, g_gsp652f30, $L_652f30)
 ASM_VAR(float, g_gsp653224, $L_653224)
-ASM_VAR(float, g_gsp724288, $L_724288)
-ASM_VAR(float, g_gsp724290, $L_724290)
-ASM_VAR(float, g_gsp724388, $L_724388)
-ASM_VAR(float, g_gsp724394, $L_724394)
-ASM_VAR(float, g_gsp72439c, $L_72439c)
-ASM_VAR(float, g_gsp7243a4, $L_7243a4)
-ASM_VAR(float, g_gsp7243ac, $L_7243ac)
-ASM_VAR(float, g_gsp7243b4, $L_7243b4)
-ASM_VAR(float, g_gsp72495c, $L_72495c)
-ASM_VAR(float, g_gsp724960, $L_724960)
-ASM_VAR(float, g_gsp72554c, $L_72554c)
-ASM_VAR(float, g_gsp725550, $L_725550)
-ASM_VAR(float, g_gsp728800, $L_728800)
+KING_BSS(float, g_gsp724288, 0x724288)
+KING_BSS(float, g_gsp724290, 0x724290)
+KING_BSS(float, g_gsp724388, 0x724388)
+KING_BSS(float, g_gsp724394, 0x724394)
+KING_BSS(float, g_gsp72439c, 0x72439c)
+KING_BSS(float, g_gsp7243a4, 0x7243a4)
+KING_BSS(float, g_gsp7243ac, 0x7243ac)
+KING_BSS(float, g_gsp7243b4, 0x7243b4)
+KING_BSS(float, g_gsp72495c, 0x72495c)
+KING_BSS(float, g_gsp724960, 0x724960)
+KING_BSS(float, g_gsp72554c, 0x72554c)
+KING_BSS(float, g_gsp725550, 0x725550)
+KING_BSS(float, g_gsp728800, 0x728800)
 // [$L_613840]
 extern "C" void __cdecl GspInit_613840() {  }
 // [$L_6058e0]
@@ -966,7 +966,7 @@ ASM_VAR(float, g_q47_64c264, $L_64c264)
 ASM_VAR(float, g_q47_652f24, $L_652f24)
 ASM_VAR(float, g_q47_64c904, $L_64c904)
 ASM_VAR(float, g_q47_64c250, $L_64c250)
-ASM_VAR(float, g_q47_724f04, $L_724f04)
+KING_BSS(float, g_q47_724f04, 0x724f04)
 // [$L_60baf0] the 300-entry table 724f04: 64c250 - x * 64c904 with x stepping by 652f24 from 64c264
 extern "C" void __cdecl Tables_InitLinear(void)
 {
@@ -1363,8 +1363,8 @@ int __cdecl Grd_DxErrorName(DWORD hr, char* buf, unsigned size)
 
 // === splitting grid triangles (FUN_605900)
 
-ASM_VAR(int, g_gsDepth7241b8, $L_7241b8)       // the count of the triangle stack
-ASM_VAR(AsmLabel, g_gsStack7241bc, $L_7241bc)   // the stack, from index 1
+KING_BSS(int, g_gsDepth7241b8, 0x7241b8)       // the count of the triangle stack
+KING_BSS(AsmLabel, g_gsStack7241bc, 0x7241bc)   // the stack, from index 1
 ASM_VAR(float, g_gsHalf64c258, $L_64c258)
 extern "C" void FUN_60f4f0(); KING_ALIAS("_FUN_60f4f0", "@MarineQueue_SetNodePriority@16")
 extern "C" void FUN_606440(); KING_ALIAS("_FUN_606440", "@GridMesh_RemoveEdge@12")

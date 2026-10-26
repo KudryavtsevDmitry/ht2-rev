@@ -164,7 +164,7 @@ extern "C" double __fastcall TGridCamera_NodePriority(BYTE* s, void*, BYTE* node
 struct Vec3G { float x, y, z; };
 extern "C" void FUN_608ea0(); KING_ALIAS("_FUN_608ea0", "@Tile_Normal@20")
 extern "C" void FUN_608e70(); KING_ALIAS("_FUN_608e70", "@Tile_Height@16")
-ASM_VAR(Vec3G, g_tileNormal724378, $L_724378)
+KING_BSS(Vec3G, g_tileNormal724378, 0x724378)
 
 // the height table of the tile a grid point lies in (as in TGrid_Height)
 static BYTE* TGrid_TableAt(BYTE* self, DWORD x, DWORD y)
@@ -211,7 +211,7 @@ extern "C" float* __fastcall TGrid_MakeNode(BYTE* self, void*, float* p, const D
 }
 
 extern "C" void __fastcall GridBase_SetCameraAndOrigin(BYTE* self, void*, const DWORD* position, const float* direction, const DWORD* origin);
-ASM_VAR(char, g_tgrid72c108b, $L_72c108)
+KING_BSS(char, g_tgrid72c108b, 0x72c108)
 
 // the four view edge normals at +offset for a view half-angle
 static void TGrid_ViewEdges(BYTE* s, int offset, float angle, float nx, float ny)
@@ -284,9 +284,9 @@ static BYTE* Tgr_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 extern "C" BYTE* __fastcall Tgr61b900_DeletingDestructor(BYTE* s, void*, int flags) { return Tgr_DeleteAfter(s, flags, FUN_61b920); }
 
 // static initializers of constants
-ASM_VAR(DWORD, g_tgr72c0f0, $L_72c0f0)
-ASM_VAR(DWORD, g_tgr72c0f4, $L_72c0f4)
-ASM_VAR(DWORD, g_tgr72c0f8, $L_72c0f8)
+KING_BSS(DWORD, g_tgr72c0f0, 0x72c0f0)
+KING_BSS(DWORD, g_tgr72c0f4, 0x72c0f4)
+KING_BSS(DWORD, g_tgr72c0f8, 0x72c0f8)
 ASM_VAR(float, g_tgr64c258, $L_64c258)
 ASM_VAR(float, g_tgr64d4e8, $L_64d4e8)
 ASM_VAR(float, g_tgr6533c4, $L_6533c4)
@@ -296,13 +296,13 @@ ASM_VAR(float, g_tgr6533d8, $L_6533d8)
 ASM_VAR(float, g_tgr6533e8, $L_6533e8)
 ASM_VAR(float, g_tgr6533ec, $L_6533ec)
 ASM_VAR(float, g_tgr6533f0, $L_6533f0)
-ASM_VAR(float, g_tgr72c0e0, $L_72c0e0)
-ASM_VAR(float, g_tgr72c0e8, $L_72c0e8)
-ASM_VAR(float, g_tgr72c0ec, $L_72c0ec)
-ASM_VAR(float, g_tgr72c130, $L_72c130)
-ASM_VAR(float, g_tgr72c138, $L_72c138)
-ASM_VAR(float, g_tgr72c140, $L_72c140)
-ASM_VAR(float, g_tgr72c148, $L_72c148)
+KING_BSS(float, g_tgr72c0e0, 0x72c0e0)
+KING_BSS(float, g_tgr72c0e8, 0x72c0e8)
+KING_BSS(float, g_tgr72c0ec, 0x72c0ec)
+KING_BSS(float, g_tgr72c130, 0x72c130)
+KING_BSS(float, g_tgr72c138, 0x72c138)
+KING_BSS(float, g_tgr72c140, 0x72c140)
+KING_BSS(float, g_tgr72c148, 0x72c148)
 // [$L_61bff0]
 extern "C" void __cdecl TgrInit_61bff0() { g_tgr72c0e0 = (float)((double)g_tgr6533c4 + (double)g_tgr6533c4); }
 // [$L_61c010]
@@ -320,7 +320,7 @@ extern "C" void __cdecl TgrInit_61c230() { g_tgr72c148 = (float)((double)g_tgr65
 // [$L_61c030]
 extern "C" void __cdecl TgrInit_61c030() { g_tgr72c0ec = (float)((double)g_tgr6533cc - g_tgr64d4e8 - g_tgr64c258); }
 typedef char AsmLabel[1];
-ASM_VAR(AsmLabel, g_tgr72c108, $L_72c108)
+KING_BSS(AsmLabel, g_tgr72c108, 0x72c108)
 ASM_VAR(AsmLabel, g_tgr6533a8, $L_6533a8)
 
 // [$L_61bfd0]
@@ -346,7 +346,7 @@ extern "C" BYTE* __fastcall Tgr61b8e0_DeletingDestructor(BYTE* s, void*, int fla
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
-ASM_VAR(float, g_tgr72c0cc, $L_72c0cc)
+KING_BSS(float, g_tgr72c0cc, 0x72c0cc)
 
 // [$L_61bbd0] a triangle (a, b, c vertices of +92, 40 bytes each) to the list below the water level
 // 72c0cc (+108, count +100) or to the other list (+20106, count +104)
@@ -439,7 +439,7 @@ extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
 // ---------------------------------------------------------------------------
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
-ASM_VAR(AsmLabel, g_q46_72c108, $L_72c108)
+KING_BSS(AsmLabel, g_q46_72c108, 0x72c108)
 extern "C" void* __fastcall Object_Get24(BYTE* self);    // [$L_61c180], in mfc.cpp
 extern "C" int __fastcall Grid_Get32(BYTE* s);
 extern "C" BYTE* __fastcall Grid61c0f0_Construct(BYTE* s);
@@ -509,14 +509,14 @@ extern "C" void __fastcall TGridBase_SetVtbl(BYTE* s) { F(void*, s, 0) = g_tgr65
 
 ASM_PROC(FUN_62b8e0)                                // fill_inbuf(eof_ok)
 ASM_PROC(FUN_62b9e0)                                // flush_window()
-ASM_VAR(unsigned, g_gzInptr, $L_736684)
-ASM_VAR(unsigned, g_gzInsize, $L_736680)
-ASM_VAR(BYTE, g_gzInbuf, $L_72e634)
-ASM_VAR(BYTE, g_gzSlide, $L_75ae90)                 // the 32 KB window
-ASM_VAR(unsigned, g_gzOutcnt, $L_736688)            // also the window position wp
-ASM_VAR(DWORD, g_gzBb, $L_77e3f4)                   // the bit buffer
-ASM_VAR(unsigned, g_gzBk, $L_77e3f8)                // and its bit count
-ASM_VAR(unsigned, g_gzHufts, $L_77e3fc)
+KING_BSS(unsigned, g_gzInptr, 0x736684)
+KING_BSS(unsigned, g_gzInsize, 0x736680)
+KING_BSS(BYTE, g_gzInbuf, 0x72e634)
+KING_BSS(BYTE, g_gzSlide, 0x75ae90)                 // the 32 KB window
+KING_BSS(unsigned, g_gzOutcnt, 0x736688)            // also the window position wp
+KING_BSS(DWORD, g_gzBb, 0x77e3f4)                   // the bit buffer
+KING_BSS(unsigned, g_gzBk, 0x77e3f8)                // and its bit count
+KING_BSS(unsigned, g_gzHufts, 0x77e3fc)
 ASM_VAR(WORD, g_gzMaskBits, $L_68a6f4)
 ASM_VAR(unsigned, g_gzBorder, $L_68a5b0)            // the bit length code order
 ASM_VAR(WORD, g_gzCplens, $L_68a5fc)
@@ -1042,57 +1042,57 @@ struct GzDesc
     int max_code;
 };
 
-ASM_VAR(GzCt, g_gzDynL, $L_77d08c)                  // [286 + 286 + 1]
-ASM_VAR(GzCt, g_gzDynD, $L_77e2f0)                  // [2 * 30 + 1]
-ASM_VAR(GzCt, g_gzStaticL, $L_77cae8)               // [288]
-ASM_VAR(GzCt, g_gzStaticD, $L_77cf6c)               // [30]
-ASM_VAR(GzCt, g_gzBlTree, $L_77cfec)                // [2 * 19 + 1]
-ASM_VAR(WORD, g_gzBlCount, $L_77b504)               // [16]
-ASM_VAR(int, g_gzHeap, $L_77d9f8)                   // [573]
-ASM_VAR(int, g_gzHeapLen, $L_77b4fc)
-ASM_VAR(int, g_gzHeapMax, $L_77b500)
-ASM_VAR(BYTE, g_gzDepth, $L_77c8a8)
-ASM_VAR(BYTE, g_gzLengthCode, $L_77b528)            // [256]
-ASM_VAR(BYTE, g_gzDistCode, $L_77c6a0)              // [512]
-ASM_VAR(int, g_gzBaseLength, $L_77c628)             // [29]
-ASM_VAR(int, g_gzBaseDist, $L_77d980)               // [30]
-ASM_VAR(WORD, g_gzDBuf, $L_76afd0)
-ASM_VAR(BYTE, g_gzFlagBuf, $L_77b628)
-ASM_VAR(unsigned, g_gzLastLit, $L_77cfe4)
-ASM_VAR(unsigned, g_gzLastDist, $L_77cf68)
-ASM_VAR(unsigned, g_gzLastFlags, $L_77d088)
-ASM_VAR(BYTE, g_gzFlags, $L_77b525)
-ASM_VAR(BYTE, g_gzFlagBit, $L_77b524)
-ASM_VAR(DWORD, g_gzOptLen, $L_77c8a4)
-ASM_VAR(DWORD, g_gzStaticLen, $L_77c8a0)
-ASM_VAR(DWORD, g_gzCompressedLen, $L_77c69c)
-ASM_VAR(DWORD, g_gzInputLen, $L_77b4f8)
-ASM_VAR(WORD*, g_gzFileType, $L_77e2ec)
-ASM_VAR(int*, g_gzFileMethod, $L_77cfe8)
+KING_BSS(GzCt, g_gzDynL, 0x77d08c)                  // [286 + 286 + 1]
+KING_BSS(GzCt, g_gzDynD, 0x77e2f0)                  // [2 * 30 + 1]
+KING_BSS(GzCt, g_gzStaticL, 0x77cae8)               // [288]
+KING_BSS(GzCt, g_gzStaticD, 0x77cf6c)               // [30]
+KING_BSS(GzCt, g_gzBlTree, 0x77cfec)                // [2 * 19 + 1]
+KING_BSS(WORD, g_gzBlCount, 0x77b504)               // [16]
+KING_BSS(int, g_gzHeap, 0x77d9f8)                   // [573]
+KING_BSS(int, g_gzHeapLen, 0x77b4fc)
+KING_BSS(int, g_gzHeapMax, 0x77b500)
+KING_BSS(BYTE, g_gzDepth, 0x77c8a8)
+KING_BSS(BYTE, g_gzLengthCode, 0x77b528)            // [256]
+KING_BSS(BYTE, g_gzDistCode, 0x77c6a0)              // [512]
+KING_BSS(int, g_gzBaseLength, 0x77c628)             // [29]
+KING_BSS(int, g_gzBaseDist, 0x77d980)               // [30]
+KING_BSS(WORD, g_gzDBuf, 0x76afd0)
+KING_BSS(BYTE, g_gzFlagBuf, 0x77b628)
+KING_BSS(unsigned, g_gzLastLit, 0x77cfe4)
+KING_BSS(unsigned, g_gzLastDist, 0x77cf68)
+KING_BSS(unsigned, g_gzLastFlags, 0x77d088)
+KING_BSS(BYTE, g_gzFlags, 0x77b525)
+KING_BSS(BYTE, g_gzFlagBit, 0x77b524)
+KING_BSS(DWORD, g_gzOptLen, 0x77c8a4)
+KING_BSS(DWORD, g_gzStaticLen, 0x77c8a0)
+KING_BSS(DWORD, g_gzCompressedLen, 0x77c69c)
+KING_BSS(DWORD, g_gzInputLen, 0x77b4f8)
+KING_BSS(WORD*, g_gzFileType, 0x77e2ec)
+KING_BSS(int*, g_gzFileMethod, 0x77cfe8)
 ASM_VAR(int, g_gzLevel, $L_6897d8)
-ASM_VAR(unsigned, g_gzStrstart, $L_77b4cc)
-ASM_VAR(long, g_gzBlockStart, $L_77b4f0)
+KING_BSS(unsigned, g_gzStrstart, 0x77b4cc)
+KING_BSS(long, g_gzBlockStart, 0x77b4f0)
 ASM_VAR(int, g_gzExtraLbits, $L_68a408)             // [29]
 ASM_VAR(int, g_gzExtraDbits, $L_68a47c)             // [30]
 ASM_VAR(BYTE, g_gzBlOrder, $L_68a59c)               // [19]
 ASM_VAR(GzDesc, g_gzLDesc, $L_68a540)
 ASM_VAR(GzDesc, g_gzDDesc, $L_68a560)
 ASM_VAR(GzDesc, g_gzBlDesc, $L_68a580)
-ASM_VAR(WORD, g_gzBiBuf, $L_77e3e4)
-ASM_VAR(int, g_gzBiValid, $L_77e3e8)
-ASM_VAR(BYTE, g_gzOutbuf, $L_73668c)                // [16384]
-ASM_VAR(int, g_gzZfile, $L_77e3ec)
-ASM_VAR(void*, g_gzReadBuf, $L_77e3f0)
-ASM_VAR(unsigned, g_gzMaxChain, $L_77b4e0)
-ASM_VAR(unsigned, g_gzPrevLength, $L_77b4c8)
-ASM_VAR(unsigned, g_gzGoodMatch, $L_77b4e8)
-ASM_VAR(unsigned, g_gzMatchStart, $L_77b4ec)
-ASM_VAR(int, g_gzNiceMatch, $L_77b4dc)
-ASM_VAR(WORD, g_gzPrev, $L_73ae90)                  // [32768]
-ASM_VAR(WORD, g_gzHead, $L_74ae90)                  // [32768]
+KING_BSS(WORD, g_gzBiBuf, 0x77e3e4)
+KING_BSS(int, g_gzBiValid, 0x77e3e8)
+KING_BSS(BYTE, g_gzOutbuf, 0x73668c)                // [16384]
+KING_BSS(int, g_gzZfile, 0x77e3ec)
+KING_BSS(void*, g_gzReadBuf, 0x77e3f0)
+KING_BSS(unsigned, g_gzMaxChain, 0x77b4e0)
+KING_BSS(unsigned, g_gzPrevLength, 0x77b4c8)
+KING_BSS(unsigned, g_gzGoodMatch, 0x77b4e8)
+KING_BSS(unsigned, g_gzMatchStart, 0x77b4ec)
+KING_BSS(int, g_gzNiceMatch, 0x77b4dc)
+KING_BSS(WORD, g_gzPrev, 0x73ae90)                  // [32768]
+KING_BSS(WORD, g_gzHead, 0x74ae90)                  // [32768]
 ASM_VAR(DWORD, g_gzWindowSize, $L_68a3a0)
-ASM_VAR(unsigned, g_gzLookahead, $L_77b4f4)
-ASM_VAR(int, g_gzEofile, $L_77b4d8)
+KING_BSS(unsigned, g_gzLookahead, 0x77b4f4)
+KING_BSS(int, g_gzEofile, 0x77b4d8)
 
 #define GZ_OUTBUFSIZ 16384
 #define GZ_HEAP_SIZE 573

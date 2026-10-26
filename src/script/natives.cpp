@@ -23,13 +23,13 @@ extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 
-ASM_VAR(int, g_69224c, $L_69224c)
+KING_BSS(int, g_69224c, 0x69224c)
 ASM_VAR(AsmLabel, g_strImmediate, $L_671104)    // "<IMMEDIATE>"
 typedef void* Blocks[1];
-ASM_VAR(int, g_free44Count, $L_693650)          // freed 44-byte blocks
-ASM_VAR(Blocks, g_free44, $L_692650)
-ASM_VAR(int, g_free32Count, $L_694658)          // freed 32-byte blocks
-ASM_VAR(Blocks, g_free32, $L_693658)
+KING_BSS(int, g_free44Count, 0x693650)          // freed 44-byte blocks
+KING_BSS(Blocks, g_free44, 0x692650)
+KING_BSS(int, g_free32Count, 0x694658)          // freed 32-byte blocks
+KING_BSS(Blocks, g_free32, 0x693658)
 ASM_VAR(AsmLabel, g_vtbl64bf68, $L_64bf68)
 ASM_VAR(AsmLabel, g_vtbl64bf70, $L_64bf70)
 ASM_VAR(AsmLabel, g_vtbl64bf80, $L_64bf80)
@@ -125,9 +125,9 @@ extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const Sch
 KING_ALIAS("@SchValue_Assign@12", "@Str_Assign@12")
 extern "C" BYTE* __cdecl UninitCopyStrRefs(const BYTE* first, const BYTE* last, BYTE* dest);  // aistl.cpp
 typedef int Ints[1];
-ASM_VAR(Ints, g_errorOff, $L_691dbc)            // per error code: don't report
-ASM_VAR(int, g_lastErrorCode, $L_692244)
-ASM_VAR(int, g_lastErrorLevel, $L_692248)
+KING_BSS(Ints, g_errorOff, 0x691dbc)            // per error code: don't report
+KING_BSS(int, g_lastErrorCode, 0x692244)
+KING_BSS(int, g_lastErrorLevel, 0x692248)
 ASM_VAR(FILE*, g_errorFile, $L_670b04)
 typedef void (__cdecl* ErrorHandler)(int code, int level, const char* text);
 

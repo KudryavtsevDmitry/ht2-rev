@@ -39,29 +39,29 @@ extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
 extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
 extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
-ASM_VAR(int, g_6cec68, $L_6cec68)
-ASM_VAR(int, g_6968ac, $L_6968ac)
-ASM_VAR(BYTE*, g_options, $L_6cec78)            // +386, +388, +390: volumes in percent
+KING_BSS(int, g_6cec68, 0x6cec68)
+KING_BSS(int, g_6968ac, 0x6968ac)
+KING_BSS(BYTE*, g_options, 0x6cec78)            // +386, +388, +390: volumes in percent
 typedef BYTE* Ptrs[1];
 typedef int Ints[1];
-ASM_VAR(Ptrs, g_6ced98, $L_6ced98)              // 11 per row
-ASM_VAR(Ints, g_6cedac, $L_6cedac)
-ASM_VAR(int, g_class1, $L_6ce350)               // the first type of each class
-ASM_VAR(int, g_class2, $L_6ce354)
-ASM_VAR(int, g_class3, $L_6ce358)
-ASM_VAR(int, g_class4, $L_6ce35c)
-ASM_VAR(int, g_class5, $L_6ce360)
-ASM_VAR(int, g_class6, $L_6ce364)
-ASM_VAR(int, g_classEnd, $L_6ce368)
-ASM_VAR(BYTE*, g_vehicleList2, $L_6ef1f8)
-ASM_VAR(AsmLabel, g_6d219c, $L_6d219c)          // 1488-byte records by vehicle type
-ASM_VAR(int, g_7025b0, $L_7025b0)
-ASM_VAR(double, g_6fb3e8, $L_6fb3e8)
-ASM_VAR(int, g_6fb3d8, $L_6fb3d8)
-ASM_VAR(int, g_6fb3d0, $L_6fb3d0)
-ASM_VAR(int, g_7025c8, $L_7025c8)
+KING_BSS(Ptrs, g_6ced98, 0x6ced98)              // 11 per row
+KING_BSS(Ints, g_6cedac, 0x6cedac)
+KING_BSS(int, g_class1, 0x6ce350)               // the first type of each class
+KING_BSS(int, g_class2, 0x6ce354)
+KING_BSS(int, g_class3, 0x6ce358)
+KING_BSS(int, g_class4, 0x6ce35c)
+KING_BSS(int, g_class5, 0x6ce360)
+KING_BSS(int, g_class6, 0x6ce364)
+KING_BSS(int, g_classEnd, 0x6ce368)
+KING_BSS(BYTE*, g_vehicleList2, 0x6ef1f8)
+KING_BSS(AsmLabel, g_6d219c, 0x6d219c)          // 1488-byte records by vehicle type
+KING_BSS(int, g_7025b0, 0x7025b0)
+KING_BSS(double, g_6fb3e8, 0x6fb3e8)
+KING_BSS(int, g_6fb3d8, 0x6fb3d8)
+KING_BSS(int, g_6fb3d0, 0x6fb3d0)
+KING_BSS(int, g_7025c8, 0x7025c8)
 ASM_VAR(DWORD, g_67e8c8, $L_67e8c8)
-ASM_VAR(int, g_7025cc, $L_7025cc)
+KING_BSS(int, g_7025cc, 0x7025cc)
 ASM_VAR(AsmLabel, g_strCabCl, $L_672e40)        // "%s_cab_cl"
 ASM_VAR(AsmLabel, g_vtbl64d578, $L_64d578)
 ASM_VAR(AsmLabel, g_vtbl64d6c8, $L_64d6c8)
@@ -181,32 +181,31 @@ extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
 extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
-ASM_VAR(DWORD, g_702650, $L_702650)
-ASM_VAR(DWORD, g_702654, $L_702654)
-ASM_VAR(DWORD, g_702658, $L_702658)
-ASM_VAR(AsmLabel, g_6d219c, $L_6d219c)          // 1488-byte records
-ASM_VAR(BYTE*, g_6ef1f8, $L_6ef1f8)
-ASM_VAR(int, g_carModelCount, $L_6ce34c)
-ASM_VAR(AsmLabel, g_carModelNames, $L_6c6b68)   // 876 bytes per car
+KING_BSS(DWORD, g_702650, 0x702650)
+KING_BSS(DWORD, g_702654, 0x702654)
+KING_BSS(DWORD, g_702658, 0x702658)
+KING_BSS(BYTE*, g_6ef1f8, 0x6ef1f8)
+KING_BSS(int, g_carModelCount, 0x6ce34c)
+KING_BSS(AsmLabel, g_carModelNames, 0x6c6b68)   // 876 bytes per car
 typedef int CarParts[1];
-ASM_VAR(CarParts, g_carPartModels, $L_6ced98)   // 11 ints per car: 5 models, 5 counts, a key
-ASM_VAR(CarParts, g_carPartUses, $L_6cedac)
+KING_BSS(CarParts, g_carPartModels, 0x6ced98)   // 11 ints per car: 5 models, 5 counts, a key
+KING_BSS(CarParts, g_carPartUses, 0x6cedac)
 
 // ---------------------------------------------------------------------------
 // the crowd (the ovation sound) of a scene object: its matrix is the object's
 // moved by ten times the vector at 702630; fn is called when it plays
 
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // an empty function: the default callback
-ASM_VAR(float, g_eng702630, $L_702630)
-ASM_VAR(float, g_eng702634, $L_702634)
-ASM_VAR(float, g_eng702638, $L_702638)
+KING_BSS(float, g_eng702630, 0x702630)
+KING_BSS(float, g_eng702634, 0x702634)
+KING_BSS(float, g_eng702638, 0x702638)
 ASM_VAR(float, g_ten64c450, $L_64c450)          // 10.0
 ASM_VAR(AsmLabel, g_strOvation, $L_678540)
 
 extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
-ASM_VAR(BYTE*, g_effectManager, $L_6f6910)
+KING_BSS(BYTE*, g_effectManager, 0x6f6910)
 
 // A position below the sentinel threshold resets both scripted positions.
 ASM_VAR(float, g_positionResetThreshold, $L_650624)
@@ -216,7 +215,7 @@ ASM_VAR(AsmLabel, g_setPlace, $L_67d4b4)
 extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
 ASM_VAR(short, g_sceneCommandCode, $L_67d10a)
-ASM_VAR(BYTE*, g_sceneCommandList, $L_6f653c)
+KING_BSS(BYTE*, g_sceneCommandList, 0x6f653c)
 
 // List links point four bytes into an object's secondary base. Command
 // dispatch uses the primary base, 376 bytes before that secondary base.
@@ -266,10 +265,10 @@ DWORD* __fastcall CharHandle_From(DWORD* self, void*, const DWORD* v) { return T
 // ---------------------------------------------------------------------------
 // Static initializers of random generators.
 
-ASM_VAR(AsmLabel, g_natvalRng691cd8, $L_691cd8)
-ASM_VAR(DWORD, g_natvalRng691db0, $L_691db0)
-ASM_VAR(DWORD, g_natvalRng691db4, $L_691db4)
-ASM_VAR(DWORD, g_natvalRng691db8, $L_691db8)
+KING_BSS(AsmLabel, g_natvalRng691cd8, 0x691cd8)
+KING_BSS(DWORD, g_natvalRng691db0, 0x691db0)
+KING_BSS(DWORD, g_natvalRng691db4, 0x691db4)
+KING_BSS(DWORD, g_natvalRng691db8, 0x691db8)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Natval_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)

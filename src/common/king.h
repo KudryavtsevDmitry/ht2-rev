@@ -36,6 +36,14 @@
 #define ASM_PROC(label) extern "C" void label(); KING_ALIAS("_" #label, #label)
 #define ASM_FUNC(name, label) extern "C" void name(); KING_ALIAS("_" #name, #label)
 #define ASM_VAR(type, name, label) extern "C" type name; KING_ALIAS("_" #name, #label)
+// The original _BSS (0x68a820..0x77fb04) is owned by C++: KingBss in data.cpp,
+// king.masm points its labels into it. KING_BSS(type, name, address) is a
+// variable at that original address.
+#define KING_BSS_BASE 0x68a820
+#define KING_BSS_SIZE 0xf52e4
+extern "C" unsigned char KingBss[KING_BSS_SIZE];
+#define KING_BSS(type, name, address) \
+    static type& name = *(type*)(KingBss + ((address) - KING_BSS_BASE));
 // CRT_PROC(label, modern): a procedure of the old C runtime in king.masm;
 // without ASM_CRT the modern runtime's function of that name (decorated)
 #ifdef ASM_CRT
@@ -501,29 +509,29 @@ struct StateDump {
     int    pos;
 };
 
-ASM_VAR(CGameApp*, g_pApp, $L_721750)
-ASM_VAR(HWND, g_hWnd, $L_720920)
-ASM_VAR(BOOL, g_bNoFrame, $L_721774)           // last OnIdle call ran no frame
-ASM_VAR(DWORD, g_renderFlags, $L_702e8c)
-ASM_VAR(BOOL, g_bTaskDump, $L_721768)
-ASM_VAR(StateDump, g_stateDump, $L_71e808)
-ASM_VAR(int, g_testInfoCount, $L_720720)       // printed as "test info: %d"
-ASM_VAR(float, g_clearTime, $L_721748)         // frame start until the screen is cleared
-ASM_VAR(float, g_presentTime, $L_72174c)
+KING_BSS(CGameApp*, g_pApp, 0x721750)
+KING_BSS(HWND, g_hWnd, 0x720920)
+KING_BSS(BOOL, g_bNoFrame, 0x721774)           // last OnIdle call ran no frame
+KING_BSS(DWORD, g_renderFlags, 0x702e8c)
+KING_BSS(BOOL, g_bTaskDump, 0x721768)
+KING_BSS(StateDump, g_stateDump, 0x71e808)
+KING_BSS(int, g_testInfoCount, 0x720720)       // printed as "test info: %d"
+KING_BSS(float, g_clearTime, 0x721748)         // frame start until the screen is cleared
+KING_BSS(float, g_presentTime, 0x72174c)
 
 // Hooks called by the fatal error function [FUN_5d2e70] before the program
 // ends. Each module that installs one keeps the previous one and chains to it.
 typedef void (__cdecl* FatalHook)();
 ASM_VAR(FatalHook, g_pfnOnFatal, $L_67fb7c)
-ASM_VAR(FatalHook, g_pfnPrevOnFatal, $L_7217a0) // CGameApp's predecessor
+KING_BSS(FatalHook, g_pfnPrevOnFatal, 0x7217a0) // CGameApp's predecessor
 ASM_FUNC(CGameApp_OnFatal, $L_5e3120)          // stops the sound, then the predecessor
 ASM_FUNC(CGameApp_OnNoMemory, $L_5e30f0)       // new handler: fatal "Out of memory <size>"
 
-ASM_VAR(int, g_deviceIndex, $L_7208e4)         // [ENV] numdev - 1
-ASM_VAR(int, g_zres, $L_7208e8)                // [ENV] zres
-ASM_VAR(BOOL, g_bSound, $L_72176c)             // [ENV] sound
+KING_BSS(int, g_deviceIndex, 0x7208e4)         // [ENV] numdev - 1
+KING_BSS(int, g_zres, 0x7208e8)                // [ENV] zres
+KING_BSS(BOOL, g_bSound, 0x72176c)             // [ENV] sound
 typedef char PathBuffer[128];
-ASM_VAR(PathBuffer, g_pathBuf, $L_720c88)      // CGameApp::MakePath's result
+KING_BSS(PathBuffer, g_pathBuf, 0x720c88)      // CGameApp::MakePath's result
 ASM_VAR(void* const, g_vtblCGameApp, $L_652664)
 
 extern "C" void FUN_5e4300(); KING_ALIAS("_FUN_5e4300", "_DataPath_Set")    // PathDir
@@ -535,12 +543,12 @@ extern "C" char* __cdecl NextToken(char** p);         // engine.cpp
 inline char* PathDir(const char* path) { return CallC<char*>(FUN_5e4300, path); }
 
 // statistics overlay (CGameApp::PostExecute)
-ASM_VAR(double, g_lastStatsTime, $L_721798)
-ASM_VAR(double, g_frameTime, $L_721790)        // ms between the last two overlays
-ASM_VAR(int, g_702e9c, $L_702e9c)              // shown below the frame time
+KING_BSS(double, g_lastStatsTime, 0x721798)
+KING_BSS(double, g_frameTime, 0x721790)        // ms between the last two overlays
+KING_BSS(int, g_702e9c, 0x702e9c)              // shown below the frame time
 // a TGA screenshot of every frame into .\F7DIR while set
-ASM_VAR(BOOL, g_bRecordFrames, $L_721760)
-ASM_VAR(int, g_recordFrame, $L_721758)
+KING_BSS(BOOL, g_bRecordFrames, 0x721760)
+KING_BSS(int, g_recordFrame, 0x721758)
 
 // ---------------------------------------------------------------------------
 // King
@@ -573,10 +581,10 @@ struct KingObj6d2078 {
     KingObj616* m_616;
 };
 
-ASM_VAR(CMainView*, g_pMainView, $L_696ca0)
-ASM_VAR(CWnd6cec6c*, g_pWnd6cec6c, $L_6cec6c)
-ASM_VAR(KingObj6d2078*, g_p6d2078, $L_6d2078)
-ASM_VAR(BOOL, g_bPlayTrirrMovie, $L_6f3428)
+KING_BSS(CMainView*, g_pMainView, 0x696ca0)
+KING_BSS(CWnd6cec6c*, g_pWnd6cec6c, 0x6cec6c)
+KING_BSS(KingObj6d2078*, g_p6d2078, 0x6d2078)
+KING_BSS(BOOL, g_bPlayTrirrMovie, 0x6f3428)
 ASM_VAR(void* const, g_vtblCKingApp, $L_64d830)
 
 // Plays name from the [INSTALL] movie directory of truck.ini if the file exists.
@@ -630,7 +638,7 @@ struct ControlState {
 };
 enum { CONTROL_JOY_BUTTON = 259, CONTROL_COUNT = 295 };
 typedef ControlState Controls[CONTROL_COUNT];
-ASM_VAR(Controls, g_controls, $L_6d1948)
+KING_BSS(Controls, g_controls, 0x6d1948)
 // Clears 'on' of the controls that aren't latched.
 inline void Controls_Update() { CallThis(FUN_530050, g_controls); }
 
@@ -640,7 +648,7 @@ struct JoyAxis {
     BOOL  invert;
 };
 typedef JoyAxis JoyAxes[8];
-ASM_VAR(JoyAxes, g_joyAxes, $L_6d1bb0)         // X, Y, Z, rotations, two sliders
+KING_BSS(JoyAxes, g_joyAxes, 0x6d1bb0)         // X, Y, Z, rotations, two sliders
 
 struct JoyInfo {
     int  m_0, m_4;
@@ -659,12 +667,12 @@ static_assert(sizeof(JoyState) == 80, "JoyState size");
 
 typedef BOOL JoyFlags[36];
 typedef float JoyTimes[36];
-ASM_VAR(BOOL, g_bJoystick, $L_696ca4)
-ASM_VAR(JoyInfo*, g_pJoyInfo, $L_6f4b8c)
-ASM_VAR(BOOL, g_bJoyPov, $L_6d2064)            // the POV hat works as buttons
-ASM_VAR(double, g_joyAxisScale, $L_6f3520)
-ASM_VAR(JoyFlags, g_joyDown, $L_696b08)        // buttons, then POV directions
-ASM_VAR(JoyTimes, g_joyTime, $L_696910)        // when they were last down (Timer_Now / 100)
+KING_BSS(BOOL, g_bJoystick, 0x696ca4)
+KING_BSS(JoyInfo*, g_pJoyInfo, 0x6f4b8c)
+KING_BSS(BOOL, g_bJoyPov, 0x6d2064)            // the POV hat works as buttons
+KING_BSS(double, g_joyAxisScale, 0x6f3520)
+KING_BSS(JoyFlags, g_joyDown, 0x696b08)        // buttons, then POV directions
+KING_BSS(JoyTimes, g_joyTime, 0x696910)        // when they were last down (Timer_Now / 100)
 
 // Polls the joystick; nonzero if it can't be read.
 inline int Joy_Read(JoyState* state, int a2) { return CallC<int>(FUN_578fe0, state, a2); }
@@ -672,8 +680,8 @@ extern "C" int __cdecl Joy_Shutdown();            // mmt.cpp
 extern "C" double __cdecl Game_Time();            // world.cpp: the game time
 extern "C" double __cdecl Game_FrameTime();       // world.cpp: the last frame's time, at most 0.25 s
 
-ASM_VAR(float, g_6974bc, $L_6974bc)
-ASM_VAR(short, g_6974c2, $L_6974c2)
-ASM_VAR(int, g_screenshot, $L_6f34dc)          // number of the next F6 screenshot
+KING_BSS(float, g_6974bc, 0x6974bc)
+KING_BSS(short, g_6974c2, 0x6974c2)
+KING_BSS(int, g_screenshot, 0x6f34dc)          // number of the next F6 screenshot
 typedef int Int6[6];
-ASM_VAR(Int6, g_696cf0, $L_696cf0)
+KING_BSS(Int6, g_696cf0, 0x696cf0)
