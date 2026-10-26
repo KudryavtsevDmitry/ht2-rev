@@ -2,8 +2,6 @@
 INCLUDE king.inc
 
 EXTERN @Eh_EmptyDtor@4:NEAR
-EXTERN @Gate_602bd0@8:PROC
-EXTERN @MsgBuf_Destroy@8:PROC
 EXTERN @Wnd_Destruct@4:PROC
 EXTERN _KingRdata:BYTE
 EXTERN ___CxxFrameHandler:PROC
@@ -13,41 +11,6 @@ PUBLIC $L_64a2fc
 PUBLIC $L_64a304
 
 _TEXT SEGMENT
-$L_646800 PROC
-
-            lea ECX,DWORD PTR [EBP-624]
-            jmp @Gate_602bd0@8
-$L_646800 ENDP
-$L_64680b PROC
-
-            lea ECX,DWORD PTR [EBP-624]
-            jmp @Gate_602bd0@8
-$L_64680b ENDP
-$L_646816 PROC
-
-            lea ECX,DWORD PTR [EBP-584]
-            jmp @MsgBuf_Destroy@8
-$L_646816 ENDP
-$L_646821 PROC
-
-            lea ECX,DWORD PTR [EBP-556]
-            jmp @MsgBuf_Destroy@8
-$L_646821 ENDP
-$L_64682c PROC
-
-            mov EAX,OFFSET (_KingRdata+104032)
-            jmp ___CxxFrameHandler
-$L_64682c ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_64a298::
 
             mov ECX,DWORD PTR [EBP-16]

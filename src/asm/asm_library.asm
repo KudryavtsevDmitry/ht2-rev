@@ -3,7 +3,6 @@ INCLUDE king.inc
 
 EXTERN _KingRdata:BYTE
 EXTERN __imp__ClosePrinter@4:PROC
-EXTERN __imp__DirectDrawEnumerateA@8:PROC
 EXTERN __imp__DirectInputCreateA@16:PROC
 EXTERN __imp__DocumentPropertiesA@24:PROC
 EXTERN __imp__ICClose@4:PROC
@@ -729,11 +728,6 @@ FUN_6303a0 PROC
 
             jmp DWORD PTR  __imp__DirectInputCreateA@16
 FUN_6303a0 ENDP
-ALIGN 2
-FUN_6303ac PROC
-
-            jmp DWORD PTR __imp__DirectDrawEnumerateA@8
-FUN_6303ac ENDP
 ALIGN 2
 FUN_6303b2 PROC
 
