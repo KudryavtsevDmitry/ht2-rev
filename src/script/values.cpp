@@ -1122,7 +1122,7 @@ extern "C" int* __cdecl Reader_NextItem(int* out, int a, BYTE* r)
 }
 
 extern "C" void FUN_4abe80(); KING_ALIAS("_FUN_4abe80", "@SchItem_Value@12")
-ASM_PROC(FUN_4ac0b0)
+ASM_FUNC(FUN_4ac0b0, @Deque_InsertRange@32)
 struct Val207_It { char* cur; char* first; char* last; char** node; };
 extern "C" char* __cdecl fgets(char*, int, void*);
 // [$L_4b5e60] the next character of file reader s (-1 at the end): when its buffer (the deque at +24, current +32,
@@ -2718,4 +2718,35 @@ void __fastcall FilePort_ReadHeader(BYTE* self)
     memcpy(self + 68, fr + 4, 228);
 }
 
+}
+
+// A script value slot (object, +4, flags): drops the object's reference
+// unless flag 0x10000 (not owned), deleting it (virtual +12) at 0; then
+// clears the slot
+static void SchVal_Drop(BYTE* v)
+{
+    BYTE* o = F(BYTE*, v, 0);
+    if (o && !(F(DWORD, v, 8) & 65536)) {
+        F(int, o, 4)--;
+        o = F(BYTE*, v, 0);
+        if (!F(int, o, 4) && o)
+            CallVirt(o, 12, 1);
+    }
+    F(int, v, 4) = 0;
+    F(int, v, 0) = 0;
+    F(int, v, 8) = 0;
+}
+
+// [$L_4b12b0] clears an item's two values (+20, +32) (virtual)
+extern "C" void __fastcall SchItem_ClearValues(BYTE* self)
+{
+    SchVal_Drop(self + 20);
+    SchVal_Drop(self + 32);
+}
+
+// [$L_4b6930] clears every value of the vector at +20 (virtual)
+extern "C" void __fastcall SchItem_ClearVector(BYTE* self)
+{
+    for (unsigned i = 0; i < (unsigned)((F(BYTE*, self, 24) - F(BYTE*, self, 20)) / 12); i++)
+        SchVal_Drop(F(BYTE*, self, 20) + i * 12);
 }
