@@ -29,7 +29,7 @@ CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"src\common" /I"s
 # the assembly not yet rewritten: one file per original unit (ASMOBJS)
 !INCLUDE src\asm\objects.mak
 
-LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib
+LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib ADVAPI32.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib
 # the modern static C runtime; legacy_stdio_definitions has
 # the printf family as functions for the assembly
 CRTLIBS = libcmt.lib libvcruntime.lib libucrt.lib legacy_stdio_definitions.lib
