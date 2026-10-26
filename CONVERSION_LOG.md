@@ -497,3 +497,13 @@ Checked against the previous king.exe: all non-pointer bytes equal, every pointe
 offset. Drive test passes on the default build (Z 20.93) and on ASM_CRT=1 (Z 20.93); the ASM_DATA object
 is the same as before. The generator's first run lost MASM's doubled quotes ('There''s') and zero-padded up to
 the next label: it now prints any gap before a label.
+
+C++ owns the program, step 5 (assembly out of king.masm): the default build no longer assembles king.masm.
+tools/split_asm.py takes what is active without any switch (714 procedures, ~45,000 lines of _TEXT, plus the
+data and labels between them), resolves every TEXTEQU (C++ exports, UnusedTrap, `(_KingData+n)` offsets) and
+writes 47 files src/asm/asm_<unit>.asm with their own EXTERN and PUBLIC lines and a common king.inc (.686p,
+.MODEL FLAT, the INCLUDELIBs). A file is cut only after ret/jmp/int 3/data, so no procedure runs on into another
+file. The Makefile links the src\asm objects unless ASM_DATA (any switch), which links king.obj as before.
+Checked against the previous king.exe with dumpbin: every procedure has the same instructions and lengths
+(addresses aside); the only differences are alignment padding after procedures and jump tables (addresses).
+Data images still match byte for byte. Drive test passes (Z 20.93, room_ap_018).

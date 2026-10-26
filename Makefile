@@ -451,6 +451,16 @@ CFLAGS = $(CFLAGS) /DASM_CRT
 CFLAGS = $(CFLAGS) /DASM_DATA
 !ENDIF
 
+# The assembly: the default build assembles src\asm (generated from king.masm
+# by tools\split_asm.py: only what the default build still runs); the ASM_*
+# switches assemble the whole of king.masm
+!INCLUDE src\asm\objects.mak
+!IFDEF ASM_DATA
+CODEOBJS = $(OBJ)
+!ELSE
+CODEOBJS = $(ASMOBJS)
+!ENDIF
+
 LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib
 # the modern static C runtime (without ASM_CRT); legacy_stdio_definitions has
 # the printf family as functions for the assembly
@@ -461,6 +471,11 @@ build: $(OUT)
 
 $(OBJ): $(SRC)
 	$(ML) /nologo $(MLFLAGS) /c /Fo$(OBJ) $(SRC)
+
+{src\asm}.asm.obj:
+	$(ML) /nologo /c /Isrc\asm /Fo$@ $<
+
+$(ASMOBJS): src\asm\king.inc
 
 {src\ai}.cpp.obj:
 	$(CC) $(CFLAGS) /Fo$@ $<
@@ -494,13 +509,13 @@ $(RES): extractResources.py
 	$(PYTHON) extractResources.py "$(GAME_EXE)" $(RES)
 
 # /NXCOMPAT:NO /TSAWARE:NO keep the original's DLL characteristics (no DEP)
-$(OUT): $(OBJ) $(CPPOBJS) $(RES)
+$(OUT): $(CODEOBJS) $(CPPOBJS) $(RES)
 !IFDEF ASM_CRT
-	$(LINK) /nologo $(OBJ) $(CPPOBJS) $(RES) /SUBSYSTEM:WINDOWS,5.01 /MACHINE:X86 $(LIBPATH_FLAGS) $(LIBS) /FIXED /ENTRY:_EntryPoint /RELEASE /INCREMENTAL:NO /DEBUG:NONE /NXCOMPAT:NO /TSAWARE:NO /OUT:$(OUT) /MAP:king.map
+	$(LINK) /nologo $(CODEOBJS) $(CPPOBJS) $(RES) /SUBSYSTEM:WINDOWS,5.01 /MACHINE:X86 $(LIBPATH_FLAGS) $(LIBS) /FIXED /ENTRY:_EntryPoint /RELEASE /INCREMENTAL:NO /DEBUG:NONE /NXCOMPAT:NO /TSAWARE:NO /OUT:$(OUT) /MAP:king.map
 !ELSE
-	$(LINK) /nologo $(OBJ) $(CPPOBJS) $(RES) /SUBSYSTEM:WINDOWS,5.01 /MACHINE:X86 $(LIBPATH_FLAGS) $(LIBS) $(CRTLIBS) /FIXED /ENTRY:WinMainCRTStartup /RELEASE /INCREMENTAL:NO /DEBUG:NONE /NXCOMPAT:NO /TSAWARE:NO /OUT:$(OUT) /MAP:king.map
+	$(LINK) /nologo $(CODEOBJS) $(CPPOBJS) $(RES) /SUBSYSTEM:WINDOWS,5.01 /MACHINE:X86 $(LIBPATH_FLAGS) $(LIBS) $(CRTLIBS) /FIXED /ENTRY:WinMainCRTStartup /RELEASE /INCREMENTAL:NO /DEBUG:NONE /NXCOMPAT:NO /TSAWARE:NO /OUT:$(OUT) /MAP:king.map
 !ENDIF
 
 # king.res stays: rebuilding it needs the game's king.exe
 clean:
-	-del /q $(OBJ) $(ALLCPPOBJS) crt.obj $(OUT) 2>nul
+	-del /q $(OBJ) $(ASMOBJS) $(ALLCPPOBJS) crt.obj $(OUT) 2>nul
