@@ -919,12 +919,12 @@ ASM_VAR(AsmLabel, g_wndBottom, $L_72da18)       // wndTopMost and wndNoTopMost,
 ASM_VAR(AsmLabel, g_wndTopMost, $L_72d9d8)      // never destroyed
 ASM_VAR(AsmLabel, g_wndNoTopMost, $L_72d998)
 ASM_VAR(AsmLabel, g_tempWndClass, $L_653708)    // CTempWnd's CRuntimeClass
-ASM_PROC($L_6373bb)                             // new handler that throws
+extern "C" void $L_6373bb(); KING_ALIAS("_$L_6373bb", "_Afx_CriticalNewHandler")                             // new handler that throws
 ASM_PROC(FUN_633a2e)                            // _AfxPreInitDialog
 ASM_PROC(FUN_633a51)                            // _AfxPostInitDialog
 ASM_PROC(FUN_61c701)                            // CWnd::GetParentOwner part
 ASM_PROC(FUN_61c4c1)                            // AfxGetMainWnd
-ASM_PROC(FUN_636ade)                            // CMenu::FromHandle
+extern "C" void FUN_636ade(); KING_ALIAS("_FUN_636ade", "_Menu_FromHandle@4")                            // CMenu::FromHandle
 ASM_PROC(FUN_639948)                            // AfxOleCanExitApp
 ASM_PROC($L_633fa2)                             // _AfxActivationWndProc (CTL3D)
 
@@ -2095,8 +2095,8 @@ extern "C" BOOL __fastcall WinApp_OnIdle(BYTE* self, void*, LONG count) {
 
 ASM_VAR(char*, g_afxPchNil, $L_685fc0)          // the empty string's characters
 ASM_PROC(FUN_61ca8f)                           // CFixedAlloc::Alloc
-ASM_PROC(FUN_636471)                           // CString::GetBuffer
-ASM_PROC(FUN_6364c0)                           // CString::ReleaseBuffer
+extern "C" void FUN_636471(); KING_ALIAS("_FUN_636471", "@String_GetBuffer@12")                           // CString::GetBuffer
+extern "C" void FUN_6364c0(); KING_ALIAS("_FUN_6364c0", "@String_ReleaseBuffer@12")                           // CString::ReleaseBuffer
 
 // [FUN_63620e] CString::AllocBuffer: CStringData { nRefs, nDataLength,
 // nAllocLength } followed by the characters
@@ -2574,4 +2574,811 @@ extern "C" void __fastcall WinApp_SetDialogBkColor(BYTE* self, void*, COLORREF b
     F(HBRUSH, ws, 4) = CreateSolidBrush(bk);
     F(COLORREF, ws, 8) = text;
     if (!F(HBRUSH, ws, 4)) CallC(FUN_6371c5);
+}
+
+// ---------------------------------------------------------------------------
+// CCmdUI, more CWnd wrappers and the static wndTop/wndBottom/wndTopMost/
+// wndNoTopMost objects
+
+extern "C" int __cdecl atexit(void (__cdecl* fn)());
+ASM_VAR(AsmLabel, g_cmdUIVtbl, $L_6536f8)
+ASM_VAR(HBITMAP, g_hbmMenuDot, $L_72e0c8)       // afxData.hbmMenuDot
+ASM_VAR(AsmLabel, g_dotPattern, $L_653624)      // 5 rows of the radio dot
+ASM_VAR(BYTE, g_wndStaticsDone, $L_72da54)      // destroyed-flags of the four
+ASM_VAR(UINT, g_msgDragList, $L_72da94)
+ASM_VAR(AsmLabel, g_dragListMsgName, $L_653ae4)  // "commctrl_DragListMsg"
+ASM_VAR(AsmLabel, g_cmdTargetMap6536b8, $L_6536b8)
+
+// [$L_633421] CCmdTarget map getter ($L_6536b8)
+extern "C" void* __fastcall CmdTarget_GetMap6536b8(BYTE* self) { return g_cmdTargetMap6536b8; }
+
+// [$L_633459] returns TRUE
+extern "C" BOOL __fastcall CmdTarget_True(BYTE* self) { return TRUE; }
+
+ASM_VAR(AsmLabel, g_cmdTargetMessageMap, $L_6536d0)
+ASM_VAR(AsmLabel, g_cmdTargetInterfaceMap, $L_6536e0)
+
+// [$L_63345d] CCmdTarget::GetMessageMap
+extern "C" void* __fastcall CmdTarget_GetMessageMap(BYTE* self) { return g_cmdTargetMessageMap; }
+
+// [$L_633463] returns FALSE (one argument)
+extern "C" BOOL __fastcall CmdTarget_False1(BYTE* self, void*, int) { return FALSE; }
+
+// [$L_633468] CCmdTarget::GetInterfaceMap
+extern "C" void* __fastcall CmdTarget_GetInterfaceMap(BYTE* self) { return g_cmdTargetInterfaceMap; }
+
+// [FUN_63a37f] CTypeLibCache::Unlock: releases the type info (+28) and the
+// type library (+8) with the last lock (+32)
+extern "C" void __fastcall TypeLibCache_Unlock(BYTE* self) {
+    if (InterlockedDecrement(&F(LONG, self, 32))) return;
+    if (F(void*, self, 28)) {
+        ((ULONG (__stdcall*)(void*))(*F(void***, self, 28))[2])(F(void*, self, 28));     // Release
+        F(void*, self, 28) = 0;
+    }
+    if (F(void*, self, 8)) {
+        ((ULONG (__stdcall*)(void*))(*F(void***, self, 8))[2])(F(void*, self, 8));
+        F(void*, self, 8) = 0;
+    }
+}
+
+// [$L_633427] CCmdTarget::OnFinalRelease
+extern "C" void __fastcall CmdTarget_OnFinalRelease(BYTE* self) {
+    Afx_LockGlobals(13);
+    BYTE* cache = CallVirt<BYTE*>(self, 32);                       // GetTypeLibCache
+    if (cache) TypeLibCache_Unlock(cache);
+    Afx_UnlockGlobals(13);
+    if (self) CallVirt(self, 4, 1);
+}
+
+// CCmdUI: +4 m_nID, +8 m_nIndex, +12 m_pMenu, +16 m_pSubMenu, +20 m_pOther,
+// +24 m_bEnableChanged, +28 m_bContinueRouting, +32 m_nIndexMax,
+// +36 m_pParentMenu
+
+// [FUN_63346e] CCmdUI::CCmdUI
+extern "C" BYTE* __fastcall CmdUI_Construct(BYTE* self) {
+    F(void*, self, 0) = g_cmdUIVtbl;
+    F(int, self, 32) = 0;
+    F(int, self, 8) = 0;
+    F(int, self, 4) = 0;
+    F(int, self, 36) = 0;
+    F(int, self, 16) = 0;
+    F(int, self, 12) = 0;
+    F(int, self, 20) = 0;
+    F(int, self, 28) = 0;
+    F(int, self, 24) = 0;
+    return self;
+}
+
+extern "C" BYTE* __fastcall Wnd_SetFocus(BYTE* self);
+extern "C" void __fastcall Wnd_EnableWindow(BYTE* self, void*, BOOL enable);
+extern "C" void __stdcall Afx_SetWindowText(HWND h, const char* text);
+extern "C" void __cdecl Afx_LoadDotBitmap();
+
+// [$L_633494] CCmdUI::Enable
+extern "C" void __fastcall CmdUI_Enable(BYTE* self, void*, BOOL on) {
+    BYTE* menu = F(BYTE*, self, 12);
+    if (menu) {
+        if (F(void*, self, 16)) return;
+        EnableMenuItem(F(HMENU, menu, 4), F(UINT, self, 8), MF_BYPOSITION | (on ? MF_ENABLED : MF_DISABLED | MF_GRAYED));
+    } else {
+        if (!on) {
+            BYTE* other = F(BYTE*, self, 20);
+            if (GetFocus() == HWND_OF(other)) {
+                BYTE* parent = Wnd_FromHandle(GetParent(HWND_OF(other)));
+                BYTE* o = F(BYTE*, self, 20);
+                Wnd_SetFocus(Wnd_FromHandle(GetNextDlgTabItem(HWND_OF(parent), o ? HWND_OF(o) : 0, FALSE)));
+            }
+        }
+        Wnd_EnableWindow(F(BYTE*, self, 20), 0, on);
+    }
+    F(BOOL, self, 24) = TRUE;
+}
+
+// [$L_633524] CCmdUI::SetCheck
+extern "C" void __fastcall CmdUI_SetCheck(BYTE* self, void*, int check) {
+    BYTE* menu = F(BYTE*, self, 12);
+    if (menu) {
+        if (!F(void*, self, 16))
+            CheckMenuItem(F(HMENU, menu, 4), F(UINT, self, 8), MF_BYPOSITION | (check ? MF_CHECKED : MF_UNCHECKED));
+        return;
+    }
+    HWND h = HWND_OF(F(BYTE*, self, 20));
+    if (SendMessageA(h, WM_GETDLGCODE, 0, 0) & DLGC_BUTTON)
+        SendMessageA(HWND_OF(F(BYTE*, self, 20)), BM_SETCHECK, check, 0);
+}
+
+// [$L_633586] CCmdUI::SetRadio
+extern "C" void __fastcall CmdUI_SetRadio(BYTE* self, void*, BOOL on) {
+    CallVirt(self, 4, on != 0);                                    // SetCheck
+    if (!F(BYTE*, self, 12) || F(void*, self, 16)) return;
+    if (!g_hbmMenuDot) {
+        Afx_LoadDotBitmap();
+        if (!g_hbmMenuDot) return;
+    }
+    SetMenuItemBitmaps(F(HMENU, F(BYTE*, self, 12), 4), F(UINT, self, 8), MF_BYPOSITION, 0, g_hbmMenuDot);
+}
+
+// [$L_6335dc] CCmdUI::SetText
+extern "C" void __fastcall CmdUI_SetText(BYTE* self, void*, const char* text) {
+    BYTE* menu = F(BYTE*, self, 12);
+    if (!menu) {
+        Afx_SetWindowText(HWND_OF(F(BYTE*, self, 20)), text);
+        return;
+    }
+    if (F(void*, self, 16)) return;
+    UINT state = GetMenuState(F(HMENU, menu, 4), F(UINT, self, 8), MF_BYPOSITION);
+    ModifyMenuA(F(HMENU, F(BYTE*, self, 12), 4), F(UINT, self, 8), (state & 0xFFFFF6FB) | MF_BYPOSITION,
+                F(UINT, self, 4), text);
+}
+
+// [FUN_633633] CCmdUI::DoUpdate(pTarget, bDisableIfNoHandler)
+extern "C" BOOL __fastcall CmdUI_DoUpdate(BYTE* self, void*, BYTE* target, BOOL disableIfNoHandler) {
+    UINT id = F(UINT, self, 4);
+    if (!id || (WORD)id == 0xFFFF) return TRUE;
+    F(BOOL, self, 24) = FALSE;
+    BOOL r = CallVirt<BOOL>(target, 12, id, -1, self, (void*)0);  // OnCmdMsg(CN_UPDATE_COMMAND_UI)
+    if (disableIfNoHandler && !F(BOOL, self, 24)) {
+        void* info[2];
+        info[0] = 0;
+        BOOL handler = CallVirt<BOOL>(target, 12, F(UINT, self, 4), 0, self, (void*)info);
+        CallVirt(self, 0, handler);                                // Enable
+    }
+    return r;
+}
+
+// [$L_633694] forwards to the control container (+52), vtbl+84
+extern "C" int __fastcall Wnd_ContainerCall84(BYTE* self, void*, int a, int b, int c) {
+    return CallVirt<int>(F(void*, self, 52), 84, a, b, c);
+}
+
+// [FUN_6336c5] CWnd::GetExStyle
+extern "C" DWORD __fastcall Wnd_GetExStyle(BYTE* self) {
+    if (F(void*, self, 56)) return CallVirt<DWORD>(F(void*, self, 56), 116);
+    return GetWindowLongA(HWND_OF(self), GWL_EXSTYLE);
+}
+
+// [FUN_6339c5] _AfxModifyStyle(hWnd, nStyleOffset, dwRemove, dwAdd, nFlags)
+extern "C" BOOL __stdcall Afx_ModifyStyle(HWND h, int offset, DWORD remove, DWORD add, UINT flags) {
+    DWORD style = GetWindowLongA(h, offset);
+    DWORD changed = (style & ~remove) | add;
+    if (style == changed) return FALSE;
+    SetWindowLongA(h, offset, changed);
+    if (flags) SetWindowPos(h, 0, 0, 0, 0, 0, flags | SWP_NOSIZE | SWP_NOMOVE | SWP_NOZORDER | SWP_NOACTIVATE);
+    return TRUE;
+}
+
+// [FUN_633a14] CWnd::ModifyStyleEx(hWnd, dwRemove, dwAdd, nFlags)
+extern "C" BOOL __stdcall Wnd_ModifyStyleExStatic(HWND h, DWORD remove, DWORD add, UINT flags) {
+    return Afx_ModifyStyle(h, GWL_EXSTYLE, remove, add, flags);
+}
+
+// [FUN_6336df] CWnd::ModifyStyleEx
+extern "C" BOOL __fastcall Wnd_ModifyStyleEx(BYTE* self, void*, DWORD remove, DWORD add, UINT flags) {
+    if (F(void*, self, 56)) return CallVirt<BOOL>(F(void*, self, 56), 124, remove, add, flags);
+    return Wnd_ModifyStyleExStatic(HWND_OF(self), remove, add, flags);
+}
+
+// [FUN_633710] CWnd::SetWindowText
+extern "C" void __fastcall Wnd_SetWindowText(BYTE* self, void*, const char* text) {
+    if (F(void*, self, 56)) CallVirt(F(void*, self, 56), 128, text);
+    else SetWindowTextA(HWND_OF(self), text);
+}
+
+// [FUN_6337c8] CWnd::EnableWindow
+extern "C" void __fastcall Wnd_EnableWindow(BYTE* self, void*, BOOL enable) {
+    if (F(void*, self, 56)) CallVirt(F(void*, self, 56), 168, enable);
+    else EnableWindow(HWND_OF(self), enable);
+}
+
+// [FUN_6337ef] CWnd::SetFocus
+extern "C" BYTE* __fastcall Wnd_SetFocus(BYTE* self) {
+    if (F(void*, self, 56)) return CallVirt<BYTE*>(F(void*, self, 56), 172);
+    return Wnd_FromHandle(SetFocus(HWND_OF(self)));
+}
+
+// [$L_63397d] CWnd's deleting destructor
+extern "C" BYTE* __fastcall Wnd_DeletingDestruct(BYTE* self, void*, int flags) {
+    Wnd_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [$L_63384d] static initializer: registers the drag list message
+extern "C" void __cdecl Afx_InitDragListMsg() {
+    g_msgDragList = RegisterWindowMessageA(g_dragListMsgName);
+}
+
+// [$L_633886] destroys wndTop at exit
+extern "C" void __cdecl WndTop_Term() {
+    if (g_wndStaticsDone & 1) return;
+    g_wndStaticsDone |= 1;
+    Wnd_Destruct((BYTE*)g_wndTop);
+}
+
+// [$L_6338c4] destroys wndBottom at exit
+extern "C" void __cdecl WndBottom_Term() {
+    if (g_wndStaticsDone & 2) return;
+    g_wndStaticsDone |= 2;
+    Wnd_Destruct((BYTE*)g_wndBottom);
+}
+
+// [$L_633902] destroys wndTopMost at exit
+extern "C" void __cdecl WndTopMost_Term() {
+    if (g_wndStaticsDone & 4) return;
+    g_wndStaticsDone |= 4;
+    Wnd_Destruct((BYTE*)g_wndTopMost);
+}
+
+// [$L_633940] destroys wndNoTopMost at exit
+extern "C" void __cdecl WndNoTopMost_Term() {
+    if (g_wndStaticsDone & 8) return;
+    g_wndStaticsDone |= 8;
+    Wnd_Destruct((BYTE*)g_wndNoTopMost);
+}
+
+// [FUN_63386d] constructs wndTop (HWND_TOP)
+extern "C" void __cdecl WndTop_Construct() { Wnd_ConstructHwnd((BYTE*)g_wndTop, 0, HWND_TOP); }
+
+// [FUN_6338ab] constructs wndBottom (HWND_BOTTOM)
+extern "C" void __cdecl WndBottom_Construct() { Wnd_ConstructHwnd((BYTE*)g_wndBottom, 0, HWND_BOTTOM); }
+
+// [FUN_6338e9] constructs wndTopMost (HWND_TOPMOST)
+extern "C" void __cdecl WndTopMost_Construct() { Wnd_ConstructHwnd((BYTE*)g_wndTopMost, 0, HWND_TOPMOST); }
+
+// [FUN_633927] constructs wndNoTopMost (HWND_NOTOPMOST)
+extern "C" void __cdecl WndNoTopMost_Construct() { Wnd_ConstructHwnd((BYTE*)g_wndNoTopMost, 0, HWND_NOTOPMOST); }
+
+// [$L_63387a] registers wndTop's destruction
+extern "C" void __cdecl WndTop_AtExit() { atexit(WndTop_Term); }
+
+// [$L_6338b8] registers wndBottom's destruction
+extern "C" void __cdecl WndBottom_AtExit() { atexit(WndBottom_Term); }
+
+// [$L_6338f6] registers wndTopMost's destruction
+extern "C" void __cdecl WndTopMost_AtExit() { atexit(WndTopMost_Term); }
+
+// [$L_633934] registers wndNoTopMost's destruction
+extern "C" void __cdecl WndNoTopMost_AtExit() { atexit(WndNoTopMost_Term); }
+
+// [$L_633863] static initializer of wndTop
+extern "C" void __cdecl WndTop_Init() { WndTop_Construct(); WndTop_AtExit(); }
+
+// [$L_6338a1] static initializer of wndBottom
+extern "C" void __cdecl WndBottom_Init() { WndBottom_Construct(); WndBottom_AtExit(); }
+
+// [$L_6338df] static initializer of wndTopMost
+extern "C" void __cdecl WndTopMost_Init() { WndTopMost_Construct(); WndTopMost_AtExit(); }
+
+// [$L_63391d] static initializer of wndNoTopMost
+extern "C" void __cdecl WndNoTopMost_Init() { WndNoTopMost_Construct(); WndNoTopMost_AtExit(); }
+
+// ---------------------------------------------------------------------------
+// CString helpers, CException, CRuntimeClass, AUX_DATA
+
+ASM_PROC(FUN_620585)                            // _tcschr
+ASM_VAR(char, g_afxChNil, $L_72db58)
+
+// [FUN_636309] CString::Release(CStringData*)
+extern "C" void __stdcall String_ReleaseData(BYTE* data) {
+    if (data != g_afxDataNil && InterlockedDecrement((LONG*)data) <= 0) String_FreeData(data);
+}
+
+// [FUN_63632c] CString::Empty
+extern "C" void __fastcall String_Empty(char** self) {
+    if (!F(int, *self, -8)) return;
+    if (F(int, *self, -12) >= 0) String_Release(self);
+    else String_Assign(self, 0, &g_afxChNil);
+}
+
+// [FUN_63634a] CString::CopyBeforeWrite
+extern "C" void __fastcall String_CopyBeforeWrite(char** self) {
+    char* old = *self;
+    if (F(int, old, -12) <= 1) return;
+    String_Release(self);
+    String_AllocBuffer(self, 0, F(int, old, -8));
+    memcpy(*self, old, F(int, old, -8) + 1);
+}
+
+// [FUN_636471] CString::GetBuffer
+extern "C" char* __fastcall String_GetBuffer(char** self, void*, int minLen) {
+    char* old = *self;
+    if (F(int, old, -12) > 1 || minLen > F(int, old, -4)) {
+        int len = F(int, old, -8);
+        if (minLen < len) minLen = len;
+        String_AllocBuffer(self, 0, minLen);
+        memcpy(*self, old, len + 1);
+        F(int, *self, -8) = len;
+        String_ReleaseData((BYTE*)old - 12);
+    }
+    return *self;
+}
+
+// [FUN_6364c0] CString::ReleaseBuffer
+extern "C" void __fastcall String_ReleaseBuffer(char** self, void*, int len) {
+    String_CopyBeforeWrite(self);
+    if (len == -1) len = lstrlenA(*self);
+    F(int, *self, -8) = len;
+    (*self)[len] = 0;
+}
+
+// [FUN_6364e8] CString::GetBufferSetLength
+extern "C" char* __fastcall String_GetBufferSetLength(char** self, void*, int len) {
+    String_GetBuffer(self, 0, len);
+    F(int, *self, -8) = len;
+    (*self)[len] = 0;
+    return *self;
+}
+
+// [FUN_636508] _mbstowcsz
+extern "C" int __cdecl Afx_mbstowcsz(wchar_t* w, const char* s, int count) {
+    if (!count && w) return 0;
+    int r = MultiByteToWideChar(CP_ACP, 0, s, -1, w, count);
+    if (r > 0) w[r - 1] = 0;
+    return r;
+}
+
+// [FUN_6365e8] AfxExtractSubString(rString, lpszFullString, iSubString, chSep)
+extern "C" BOOL __stdcall Afx_ExtractSubString(char** out, const char* full, int index, char sep) {
+    if (!full) return FALSE;
+    while (index--) {
+        full = CallC<const char*>(FUN_620585, full, (int)sep);
+        if (!full) {
+            String_Empty(out);
+            return FALSE;
+        }
+        full++;
+    }
+    const char* end = CallC<const char*>(FUN_620585, full, (int)sep);
+    int len = end ? (int)(end - full) : lstrlenA(full);
+    memcpy(String_GetBufferSetLength(out, 0, len), full, len);
+    return TRUE;
+}
+
+// [FUN_636660] CException::CException(bAutoDelete) body
+extern "C" BYTE* __fastcall Exception_SetAutoDelete(BYTE* self, void*, BOOL autoDelete) {
+    F(BOOL, self, 4) = autoDelete;
+    return self;
+}
+
+// [FUN_63666c] CException::Delete
+extern "C" void __fastcall Exception_Delete(BYTE* self) {
+    if (F(int, self, 4) > 0 && self) CallVirt(self, 4, 1);
+}
+
+extern "C" int __stdcall Afx_MessageBoxText(const char* text, UINT type, UINT help);
+extern "C" int __stdcall Afx_MessageBoxId(UINT id, UINT type, UINT help);
+
+// [$L_63667e] CException::ReportError(nType, nError)
+extern "C" int __fastcall Exception_ReportError(BYTE* self, void*, UINT type, UINT error) {
+    char buf[512];
+    UINT help;
+    if (CallVirt<BOOL>(self, 12, buf, 512, &help))              // GetErrorMessage
+        return Afx_MessageBoxText(buf, type, help);
+    if (!error) error = 61472;                                     // AFX_IDP_NO_ERROR_AVAILABLE
+    return Afx_MessageBoxId(error, type, help);
+}
+
+// [FUN_63672b] CRuntimeClass::IsDerivedFrom
+extern "C" BOOL __fastcall RuntimeClass_IsDerivedFrom(BYTE* self, void*, BYTE* base) {
+    for (; self; self = F(BYTE*, self, 16))
+        if (self == base) return TRUE;
+    return FALSE;
+}
+
+// [FUN_6366d3] CObject::IsKindOf
+extern "C" BOOL __fastcall Object_IsKindOf(BYTE* self, void*, BYTE* cls) {
+    return RuntimeClass_IsDerivedFrom(CallVirt<BYTE*>(self, 0), 0, cls);
+}
+
+ASM_VAR(BOOL, g_afxWin4, $L_72e0d4)             // afxData.bWin4
+ASM_VAR(int, g_cxVScroll, $L_72e078)              // afxData scroll bar sizes
+ASM_VAR(int, g_cyHScroll, $L_72e07c)
+ASM_VAR(BOOL, g_scrollPlusOne, $L_72e0e0)
+
+// [FUN_63b0d9] the Windows 4 scroll bar sizes (one more pixel each)
+extern "C" void __cdecl Afx_UpdateBorders4() {
+    if (!g_afxWin4) return;
+    g_cxVScroll = GetSystemMetrics(SM_CXVSCROLL) + 1;
+    g_scrollPlusOne = TRUE;
+    g_cyHScroll = GetSystemMetrics(SM_CYHSCROLL) + 1;
+}
+
+// [FUN_63b109] the scroll bar sizes
+extern "C" void __cdecl Afx_UpdateBorders() {
+    g_cxVScroll = GetSystemMetrics(SM_CXVSCROLL);
+    g_scrollPlusOne = FALSE;
+    g_cyHScroll = GetSystemMetrics(SM_CYHSCROLL);
+}
+
+// [FUN_636744] AUX_DATA::UpdateSysColors
+extern "C" void __fastcall AuxData_UpdateSysColors(BYTE* self) {
+    F(COLORREF, self, 40) = GetSysColor(COLOR_BTNFACE);
+    F(COLORREF, self, 44) = GetSysColor(COLOR_BTNSHADOW);
+    F(COLORREF, self, 48) = GetSysColor(COLOR_BTNHIGHLIGHT);
+    F(COLORREF, self, 52) = GetSysColor(COLOR_BTNTEXT);
+    F(COLORREF, self, 56) = GetSysColor(COLOR_WINDOWFRAME);
+    F(HBRUSH, self, 36) = GetSysColorBrush(COLOR_BTNFACE);
+    F(HBRUSH, self, 32) = GetSysColorBrush(COLOR_WINDOWFRAME);
+}
+
+// [FUN_636788] AUX_DATA::UpdateSysMetrics
+extern "C" void __fastcall AuxData_UpdateSysMetrics(BYTE* self) {
+    F(int, self, 8) = GetSystemMetrics(SM_CXICON);
+    F(int, self, 12) = GetSystemMetrics(SM_CYICON);
+    if (F(BOOL, self, 104)) Afx_UpdateBorders4();
+    else Afx_UpdateBorders();
+    HDC dc = GetDC(0);
+    F(int, self, 24) = GetDeviceCaps(dc, LOGPIXELSX);
+    F(int, self, 28) = GetDeviceCaps(dc, LOGPIXELSY);
+    ReleaseDC(0, dc);
+}
+
+// [FUN_639e40] _AfxLoadDotBitmap: the radio item dot, sized to the menu
+// check marks
+extern "C" void __cdecl Afx_LoadDotBitmap() {
+    DWORD dims = GetMenuCheckMarkDimensions();
+    int cx = (short)LOWORD(dims), cy = (short)HIWORD(dims);
+    if (cx > 32) cx = 32;
+    int words = (cx + 15) >> 4;
+    int shift = (cx - 4) / 2 + words * 16 - cx;
+    if (shift > 12) shift = 12;
+    if (cy > 32) cy = 32;
+    BYTE bits[128];
+    memset(bits, 0xFF, 128);
+    const BYTE* dot = (const BYTE*)g_dotPattern;
+    BYTE* p = bits + ((cy - 6) >> 1) * words * 2;
+    for (int i = 0; i < 5; i++, p += words * 2) {
+        WORD w = (WORD)~(WORD)(dot[i] << shift);
+        p[1] = (BYTE)w;
+        p[0] = (BYTE)(w >> 8);
+    }
+    g_hbmMenuDot = CreateBitmap(cx, cy, 1, 1, bits);
+    if (!g_hbmMenuDot) g_hbmMenuDot = LoadBitmapA(0, MAKEINTRESOURCEA(32739));   // OBM_CHECK
+}
+
+// ---------------------------------------------------------------------------
+// CMenu handle map
+
+ASM_VAR(AsmLabel, g_tempMenuClass, $L_654628)
+
+// [FUN_636a6c] afxMapHMENU
+extern "C" BYTE* __stdcall Afx_MapHMENU(BOOL create) {
+    return NewHandleMap(F(BYTE*, Afx_GetModuleThreadState(), 24), create, g_tempMenuClass, 4, 1);
+}
+
+// [FUN_636ade] CMenu::FromHandle
+extern "C" BYTE* __stdcall Menu_FromHandle(HMENU h) { return HandleMap_FromHandle(Afx_MapHMENU(TRUE), 0, h); }
+
+// [FUN_636af3] CMenu::FromHandlePermanent
+extern "C" BYTE* __stdcall Menu_FromHandlePermanent(HMENU h) {
+    BYTE* map = Afx_MapHMENU(FALSE);
+    return map ? (BYTE*)PtrMap_GetValueAt((PtrMap*)(map + 4), 0, h) : 0;
+}
+
+// [FUN_636b11] CMenu::Detach
+extern "C" HMENU __fastcall Menu_Detach(BYTE* self) {
+    HMENU h = F(HMENU, self, 4);
+    if (h) {
+        BYTE* map = Afx_MapHMENU(FALSE);
+        if (map) PtrMap_RemoveKey((PtrMap*)(map + 4), 0, F(HMENU, self, 4));
+    }
+    F(HMENU, self, 4) = 0;
+    return h;
+}
+
+// [FUN_636b3b] CMenu::DestroyMenu
+extern "C" BOOL __fastcall Menu_DestroyMenu(BYTE* self) {
+    if (!F(HMENU, self, 4)) return FALSE;
+    return DestroyMenu(Menu_Detach(self));
+}
+
+// [$L_636bc7] sends WM_CLOSE to the window of the object at +28
+extern "C" LRESULT __fastcall Owner_SendClose(BYTE* self) {
+    return SendMessageA(HWND_OF(F(BYTE*, self, 28)), WM_CLOSE, 0, 0);
+}
+
+// ---------------------------------------------------------------------------
+// CDC (+4 m_hDC, +8 m_hAttribDC)
+
+
+
+// [$L_636bee] CDC's deleting destructor
+extern "C" BYTE* __fastcall Dc_DeletingDestruct(BYTE* self, void*, int flags) {
+    Cdc_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [$L_636d2f] CDC::SetAttribDC
+extern "C" void __fastcall Dc_SetAttribDC(BYTE* self, void*, HDC h) { F(HDC, self, 8) = h; }
+
+// [$L_636d39] CDC::SetOutputDC
+extern "C" void __fastcall Dc_SetOutputDC(BYTE* self, void*, HDC h) { F(HDC, self, 4) = h; }
+
+// [$L_636d43] CDC::ReleaseAttribDC
+extern "C" void __fastcall Dc_ReleaseAttribDC(BYTE* self) { F(HDC, self, 8) = 0; }
+
+// [$L_636d48] CDC::ReleaseOutputDC
+extern "C" void __fastcall Dc_ReleaseOutputDC(BYTE* self) { F(HDC, self, 4) = 0; }
+
+// [$L_636d4d] CDC::SaveDC
+extern "C" int __fastcall Dc_SaveDC(BYTE* self) {
+    int r = 0;
+    if (F(HDC, self, 8)) r = SaveDC(F(HDC, self, 8));
+    if (F(HDC, self, 4) != F(HDC, self, 8) && SaveDC(F(HDC, self, 4))) r = -1;
+    return r;
+}
+
+// [$L_636d7e] CDC::RestoreDC
+extern "C" BOOL __fastcall Dc_RestoreDC(BYTE* self, void*, int saved) {
+    BOOL r = TRUE;
+    if (F(HDC, self, 4) != F(HDC, self, 8)) r = RestoreDC(F(HDC, self, 4), saved);
+    if (F(HDC, self, 8)) r = r && RestoreDC(F(HDC, self, 8), saved);
+    return r;
+}
+
+// [$L_636dd3] CDC::SelectStockObject
+extern "C" BYTE* __fastcall Dc_SelectStockObject(BYTE* self, void*, int index) {
+    HGDIOBJ obj = GetStockObject(index);
+    HGDIOBJ old = 0;
+    if (F(HDC, self, 4) != F(HDC, self, 8)) old = SelectObject(F(HDC, self, 4), obj);
+    if (F(HDC, self, 8)) old = SelectObject(F(HDC, self, 8), obj);
+    return GdiObject_FromHandle(old);
+}
+
+// [$L_636e0f] CDC::SelectObject(CGdiObject*)
+extern "C" BYTE* __fastcall Dc_SelectObject(BYTE* self, void*, BYTE* obj) {
+    HGDIOBJ old = 0;
+    if (F(HDC, self, 4) != F(HDC, self, 8)) old = SelectObject(F(HDC, self, 4), obj ? F(HGDIOBJ, obj, 4) : 0);
+    if (F(HDC, self, 8)) old = SelectObject(F(HDC, self, 8), obj ? F(HGDIOBJ, obj, 4) : 0);
+    return GdiObject_FromHandle(old);
+}
+
+// [$L_636e55] CDC::SetBkColor
+extern "C" COLORREF __fastcall Dc_SetBkColor(BYTE* self, void*, COLORREF c) {
+    COLORREF r = CLR_INVALID;
+    if (F(HDC, self, 4) != F(HDC, self, 8)) r = SetBkColor(F(HDC, self, 4), c);
+    if (F(HDC, self, 8)) r = SetBkColor(F(HDC, self, 8), c);
+    return r;
+}
+
+// [$L_636e84] CDC::SetTextColor
+extern "C" COLORREF __fastcall Dc_SetTextColor(BYTE* self, void*, COLORREF c) {
+    COLORREF r = CLR_INVALID;
+    if (F(HDC, self, 4) != F(HDC, self, 8)) r = SetTextColor(F(HDC, self, 4), c);
+    if (F(HDC, self, 8)) r = SetTextColor(F(HDC, self, 8), c);
+    return r;
+}
+
+// the viewport/window origin and extent setters: on the output DC when it
+// differs, then on the attribute DC; the result comes from the last call
+typedef BOOL (WINAPI* DcPointFn)(HDC, int, int, POINT*);
+typedef BOOL (WINAPI* DcScaleFn)(HDC, int, int, int, int, SIZE*);
+
+static POINT* DcPoint(BYTE* self, POINT* out, DcPointFn fn, int x, int y) {
+    POINT pt = { 0, 0 };
+    if (F(HDC, self, 4) != F(HDC, self, 8)) fn(F(HDC, self, 4), x, y, &pt);
+    if (F(HDC, self, 8)) fn(F(HDC, self, 8), x, y, &pt);
+    *out = pt;
+    return out;
+}
+
+static SIZE* DcScale(BYTE* self, SIZE* out, DcScaleFn fn, int a, int b, int c, int d) {
+    SIZE sz = { 0, 0 };
+    if (F(HDC, self, 4) != F(HDC, self, 8)) fn(F(HDC, self, 4), a, b, c, d, &sz);
+    if (F(HDC, self, 8)) fn(F(HDC, self, 8), a, b, c, d, &sz);
+    *out = sz;
+    return out;
+}
+
+// [$L_636ee1] CDC::SetViewportOrg
+extern "C" POINT* __fastcall Dc_SetViewportOrg(BYTE* self, void*, POINT* out, int x, int y) {
+    return DcPoint(self, out, SetViewportOrgEx, x, y);
+}
+
+// [$L_636f2d] CDC::OffsetViewportOrg
+extern "C" POINT* __fastcall Dc_OffsetViewportOrg(BYTE* self, void*, POINT* out, int x, int y) {
+    return DcPoint(self, out, OffsetViewportOrgEx, x, y);
+}
+
+// [$L_636f79] CDC::SetViewportExt
+extern "C" SIZE* __fastcall Dc_SetViewportExt(BYTE* self, void*, SIZE* out, int x, int y) {
+    return (SIZE*)DcPoint(self, (POINT*)out, (DcPointFn)SetViewportExtEx, x, y);
+}
+
+// [$L_636fc5] CDC::ScaleViewportExt
+extern "C" SIZE* __fastcall Dc_ScaleViewportExt(BYTE* self, void*, SIZE* out, int xn, int xd, int yn, int yd) {
+    return DcScale(self, out, ScaleViewportExtEx, xn, xd, yn, yd);
+}
+
+// [$L_63701d] CDC::SetWindowExt
+extern "C" SIZE* __fastcall Dc_SetWindowExt(BYTE* self, void*, SIZE* out, int x, int y) {
+    return (SIZE*)DcPoint(self, (POINT*)out, (DcPointFn)SetWindowExtEx, x, y);
+}
+
+// [$L_637069] CDC::ScaleWindowExt
+extern "C" SIZE* __fastcall Dc_ScaleWindowExt(BYTE* self, void*, SIZE* out, int xn, int xd, int yn, int yd) {
+    return DcScale(self, out, ScaleWindowExtEx, xn, xd, yn, yd);
+}
+
+// [$L_6370c1] CDC::GetClipBox
+extern "C" int __fastcall Dc_GetClipBox(BYTE* self, void*, RECT* r) { return GetClipBox(F(HDC, self, 4), r); }
+
+// ---------------------------------------------------------------------------
+// window helpers, message boxes, the wait cursor, CWinApp document hooks
+
+// [FUN_637228] _AfxChildWindowFromPoint: the visible child control under pt
+extern "C" HWND __stdcall Afx_ChildWindowFromPoint(HWND h, POINT pt) {
+    ClientToScreen(h, &pt);
+    for (HWND child = GetWindow(h, GW_CHILD); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        if ((WORD)GetDlgCtrlID(child) == 0xFFFF) continue;
+        if (!(GetWindowLongA(child, GWL_STYLE) & WS_VISIBLE)) continue;
+        RECT r;
+        GetWindowRect(child, &r);
+        if (PtInRect(&r, pt)) return child;
+    }
+    return 0;
+}
+
+// [FUN_63729d] AfxSetWindowText: only when the text changes (no flicker)
+extern "C" void __stdcall Afx_SetWindowText(HWND h, const char* text) {
+    int len = lstrlenA(text);
+    char old[256];
+    if ((unsigned)len <= 256 && GetWindowTextA(h, old, 256) == len && !lstrcmpA(old, text)) return;
+    SetWindowTextA(h, text);
+}
+
+ASM_PROC(FUN_6206b1)                            // _expand
+
+// [$L_6373bb] AfxCriticalNewHandler: gives back the safety pool and retries
+extern "C" int __cdecl Afx_CriticalNewHandler(size_t size) {
+    BYTE* ts = Afx_GetThreadState();
+    if (ts && F(void*, ts, 12)) {
+        size_t have = CallC<size_t>(FUN_620815, F(void*, ts, 12));
+        if (have <= size + 4) {
+            free(F(void*, ts, 12));
+            F(void*, ts, 12) = 0;
+        } else {
+            CallC(FUN_6206b1, F(void*, ts, 12), have - size - 4);
+        }
+        return 1;
+    }
+    ThrowMemory();
+    return 0;
+}
+
+ASM_VAR(HCURSOR, g_hcurWait, $L_72e0b4)
+
+// [$L_63743f] CWinApp::DoWaitCursor (+160 count, +164 cursor to restore)
+extern "C" void __fastcall WinApp_DoWaitCursor(BYTE* self, void*, int code) {
+    Afx_LockGlobals(2);
+    F(int, self, 160) += code;
+    if (F(int, self, 160) > 0) {
+        HCURSOR old = SetCursor(g_hcurWait);
+        if (code > 0 && F(int, self, 160) == 1) F(HCURSOR, self, 164) = old;
+    } else {
+        F(int, self, 160) = 0;
+        SetCursor(F(HCURSOR, self, 164));
+    }
+    Afx_UnlockGlobals(2);
+}
+
+// CWinApp +128 m_pDocManager, +168 m_pRecentFileList
+
+// [$L_6374b1] CWinApp::AddToRecentFileList
+extern "C" void __fastcall WinApp_AddToRecentFileList(BYTE* self, void*, const char* path) {
+    BYTE* list = F(BYTE*, self, 168);
+    if (list) CallVirt(list, 4, path);                             // Add
+}
+
+// [$L_6374c7] CWinApp::AddDocTemplate
+extern "C" void __fastcall WinApp_AddDocTemplate(BYTE* self, void*, BYTE* tmpl) {
+    CallVirt(F(BYTE*, self, 128), 28, tmpl);
+}
+
+// [$L_6374ef] CWinApp::OnUpdateRecentFileMenu
+extern "C" void __fastcall WinApp_OnUpdateRecentFileMenu(BYTE* self, void*, BYTE* cmdUI) {
+    BYTE* list = F(BYTE*, self, 168);
+    if (!list) CallVirt(cmdUI, 0, FALSE);                          // Enable
+    else CallVirt(list, 8, cmdUI);                                 // UpdateMenu
+}
+
+// [$L_637511] CWinApp::OpenDocumentFile
+extern "C" BYTE* __fastcall WinApp_OpenDocumentFile(BYTE* self, void*, const char* name) {
+    BYTE* dm = F(BYTE*, self, 128);
+    return dm ? CallVirt<BYTE*>(dm, 48, name) : 0;
+}
+
+// [$L_63752b] CWinApp::OnOpenRecentFile(nID): opens the file of the MRU entry,
+// drops the entry when that fails
+extern "C" BOOL __fastcall WinApp_OnOpenRecentFile(BYTE* self, void*, UINT id) {
+    int index = id - 57616;                                        // ID_FILE_MRU_FILE1
+    BYTE* list = F(BYTE*, self, 168);
+    if (!CallVirt<BYTE*>(self, 124, F(char**, list, 8)[index]))    // OpenDocumentFile
+        CallVirt(F(BYTE*, self, 168), 0, index);                   // Remove
+    return TRUE;
+}
+
+// [FUN_63755e] lets the main frame's notify hook (+104) enable or disable
+// modeless windows
+extern "C" void __fastcall WinApp_EnableModeless(BYTE* self, void*, BOOL enable) {
+    BYTE* main = CallC<BYTE*>(FUN_61c4c1);
+    if (!main || !CallVirt<BOOL>(main, 176)) return;               // IsFrameWnd
+    if (F(BYTE*, main, 104)) CallVirt(F(BYTE*, main, 104), 100, enable);
+}
+
+// [FUN_6377a0] the thread state's window at +196
+extern "C" BYTE* __cdecl Afx_ThreadStateWnd196() { return F(BYTE*, Afx_GetThreadState(), 196); }
+
+// [FUN_637704] CWnd::GetSafeOwner_(hParent, pWndTop): the owner for a
+// modal window; disables the top level window when asked
+extern "C" HWND __stdcall Wnd_GetSafeOwner(HWND parent, HWND* top) {
+    HWND h = parent;
+    if (!h) {
+        BYTE* w = Afx_ThreadStateWnd196();
+        if (!w) w = CallC<BYTE*>(FUN_61c4c1);
+        h = w ? HWND_OF(w) : 0;
+    }
+    while (h && (GetWindowLongA(h, GWL_STYLE) & WS_CHILD)) h = GetParent(h);
+    HWND topWnd = h;
+    for (HWND p = h; p; p = GetParent(p)) topWnd = p;
+    if (!parent && h) h = GetLastActivePopup(h);
+    if (top) {
+        if (topWnd && IsWindowEnabled(topWnd) && topWnd != h) {
+            *top = topWnd;
+            EnableWindow(topWnd, FALSE);
+        } else {
+            *top = 0;
+        }
+    }
+    return h;
+}
+
+// [FUN_63758c] CWinApp::DoMessageBox(lpszPrompt, nType, nIDPrompt); also
+// called with no application (this 0)
+extern "C" int __fastcall WinApp_DoMessageBox(BYTE* self, void*, const char* prompt, UINT type, UINT idPrompt) {
+    WinApp_EnableModeless(self, 0, FALSE);
+    HWND top;
+    HWND owner = Wnd_GetSafeOwner(0, &top);
+    DWORD* context = 0;
+    if (owner) context = (DWORD*)SendMessageA(top, 886, 0, 0);    // WM_HELPPROMPTADDR
+    if (!context && self) context = &F(DWORD, self, 156);
+    DWORD oldContext = 0;
+    if (context) {
+        oldContext = *context;
+        if (idPrompt) *context = idPrompt + 0x30000;               // HID_BASE_PROMPT
+    }
+    if (!(type & MB_ICONMASK)) {
+        UINT t = type & MB_TYPEMASK;
+        if (t <= MB_OKCANCEL || (t > MB_ABORTRETRYIGNORE && t <= MB_YESNO)) type |= MB_ICONEXCLAMATION;
+    }
+    char file[260];
+    const char* title;
+    if (self) title = F(const char*, self, 120);
+    else {
+        GetModuleFileNameA(0, file, 260);
+        title = file;
+    }
+    int r = MessageBoxA(owner, prompt, title, type);
+    if (context) *context = oldContext;
+    if (top) EnableWindow(top, TRUE);
+    WinApp_EnableModeless(self, 0, TRUE);
+    return r;
+}
+
+// [FUN_637673] AfxMessageBox(lpszText, nType, nIDHelp)
+extern "C" int __stdcall Afx_MessageBoxText(const char* text, UINT type, UINT help) {
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app) return CallVirt<int>(app, 140, text, type, help);
+    return WinApp_DoMessageBox(0, 0, text, type, help);
+}
+
+// [FUN_6376ab] AfxMessageBox(nIDPrompt, nType, nIDHelp)
+extern "C" int __stdcall Afx_MessageBoxId(UINT id, UINT type, UINT help) {
+    char* s = g_afxPchNil;
+    String_LoadString(&s, 0, id);
+    if (help == (UINT)-1) help = id;
+    int r = Afx_MessageBoxText(s, type, help);
+    String_Destruct(&s);
+    return r;
 }
