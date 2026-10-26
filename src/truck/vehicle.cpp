@@ -14164,7 +14164,7 @@ BYTE* __fastcall Flasher_Construct(BYTE* s, void*, const float* pos, float k)
 
 // === a tractor's frame with its trailer hitched (FUN_55d5d0 with its tails $L_55ddd4 .. $L_55ddfe)
 
-ASM_PROC(FUN_558f20)
+ASM_FUNC(FUN_558f20, _Hitch_Solve558f20)
 extern "C" void Th_BodyStep(); KING_ALIAS("_Th_BodyStep", "@CarBody_Step@4")
 extern "C" void Th_CopyTowed(); KING_ALIAS("_Th_CopyTowed", "@Car_CopyToTowed@8")
 extern "C" void Th_Mode(); KING_ALIAS("_Th_Mode", "@Body_SetMode@12")
