@@ -11,34 +11,6 @@ PUBLIC $L_5be445, $L_5be453, $L_5be45c, $L_5be46c, $L_5be478, $L_5be47c, $L_5be4
 PUBLIC $L_5be488
 
 _TEXT SEGMENT
-$L_5bd55f PROC
-
-            int 3
-$L_5bd55f ENDP
-ALIGN 16
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\controls.cpp, nmake ASM_CONTROLS=1 assembles the original
-ALIGN 16
 $L_5be2b0 PROC
 
             push EBX

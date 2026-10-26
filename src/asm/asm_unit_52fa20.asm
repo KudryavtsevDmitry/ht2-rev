@@ -9,7 +9,6 @@ EXTERN @Media_RecordBlock@12:PROC
 EXTERN @MsgBuf_Destroy@8:PROC
 EXTERN @Msg_Write120@20:PROC
 EXTERN @Ramp_Value@8:PROC
-EXTERN UnusedTrap:NEAR
 EXTERN _Ai_HitPlayer:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
@@ -18,24 +17,6 @@ EXTERN _Vec3_Length:PROC
 PUBLIC $L_530065, $L_546278, $L_554c13
 
 _TEXT SEGMENT
-$L_52fcc0 PROC
-
-            push ESI
-            lea ESI,DWORD PTR [ECX+12]
-            mov ECX,ESI
-            call UnusedTrap
-
-            mov ECX,ESI
-            call UnusedTrap
-
-            pop ESI
-            ret 
-$L_52fcc0 ENDP
-ALIGN 16
-; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
 $L_530065 LABEL NEAR
 ALIGN 16
 ; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original

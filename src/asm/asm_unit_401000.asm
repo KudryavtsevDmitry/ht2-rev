@@ -5,8 +5,6 @@ EXTERN _KingBss:BYTE
 
 
 _TEXT SEGMENT
-
-ALIGN 16
 FUN_401000 PROC
 
             fld QWORD PTR [(_KingBss+0)]

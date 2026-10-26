@@ -18,7 +18,6 @@ EXTERN @Shell_ShowWithMusic@12:PROC
 EXTERN @Stream_Construct@8:PROC
 EXTERN @Stream_ReadBlob@20:PROC
 EXTERN @Window_Show@12:PROC
-EXTERN UnusedTrap:NEAR
 EXTERN _Bitmap_Draw:PROC
 EXTERN _CarList_Draw:PROC
 EXTERN _DMat_Inverse:PROC
@@ -38,7 +37,7 @@ EXTERN _Text_Draw:PROC
 EXTERN _Tsc_Now:PROC
 EXTERN _rand:PROC
 
-PUBLIC $L_507ce0, $L_50bb10, $L_50bb50, $L_50bb59, $L_50bb5e, $L_51f7c5, $L_51f7fc, $L_51f81c
+PUBLIC $L_50bb10, $L_50bb50, $L_50bb59, $L_50bb5e, $L_51f7c5, $L_51f7fc, $L_51f81c
 PUBLIC $L_51f89a, $L_51f8ee, $L_51f917, $L_51f91f, $L_51f92b, $L_51f931, $L_51f9c8, $L_51f9d9
 PUBLIC $L_51fa17, $L_51fa28, $L_51fa53, $L_51fa7e, $L_51fadf, $L_51fae6, $L_51faf3, $L_51fb13
 PUBLIC $L_51fb38, $L_51fb41, $L_51fb50, $L_51fb60, $L_51fb6b, $L_51fb95, $L_51fba6, $L_51fbe8
@@ -46,78 +45,6 @@ PUBLIC $L_51fc13, $L_51fc3e, $L_51fca0, $L_51fca7, $L_51fcb4, $L_51fccb, $L_51fc
 PUBLIC $L_51fcfe, $L_51fd12, $L_5231af, $L_523201
 
 _TEXT SEGMENT
-$L_507ccf PROC
-
-            pop EDI
-            pop ESI
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-            nop
-$L_507ce0::
-
-            push ESI
-            lea ESI,DWORD PTR [ECX+12]
-            mov ECX,ESI
-            call UnusedTrap
-
-            mov ECX,ESI
-            call UnusedTrap
-
-            pop ESI
-            ret 
-$L_507ccf ENDP
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
 $L_50bb00 PROC
 
             jmp $L_50bb10

@@ -14,7 +14,6 @@ EXTERN _Town_Id:PROC
 PUBLIC $L_477bac
 
 _TEXT SEGMENT
-ALIGN 16
 FUN_471780 PROC
 
             sub ESP,8

@@ -23,35 +23,6 @@ PUBLIC $L_5d809f, $L_5d80b1, $L_5d80c3, $L_5d80d1, $L_5d80dd, $L_5d80ef, $L_5d81
 PUBLIC $L_5d812b, $L_5d813d, $L_5d814f, $L_5d8161, $L_5d816f, $L_5d8179
 
 _TEXT SEGMENT
-$L_5cf47f PROC
-
-            int 3
-$L_5cf47f ENDP
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
 $L_5d2010 PROC
 
             jmp $L_5d2020

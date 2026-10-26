@@ -765,32 +765,6 @@ ALIGN 16
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 ALIGN 16
-$L_41ecdb PROC
-
-            fld QWORD PTR [(_KingRdata+1656)]
-            ret 4
-$L_41ecdb ENDP
-ALIGN 16
-$L_41ed0b PROC
-
-            fld QWORD PTR [(_KingRdata+1656)]
-            ret 4
-$L_41ed0b ENDP
-ALIGN 16
-$L_41ed3b PROC
-
-            fld QWORD PTR [(_KingRdata+1656)]
-            ret 4
-$L_41ed3b ENDP
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 $L_41f930 PROC
 
             jmp DWORD PTR [ECX+40]

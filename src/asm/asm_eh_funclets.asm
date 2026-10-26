@@ -31,18 +31,18 @@ EXTERN _NoTrack_Delete@4:PROC
 EXTERN _Stl_Unlock:PROC
 EXTERN ___CxxFrameHandler:PROC
 
-PUBLIC $L_63b648, $L_63b64f, $L_63f8a0, $L_63f8b0, $L_63f8c0, $L_63f8d0, $L_63f8d8, $L_63fde0
-PUBLIC $L_63fdf0, $L_63fe00, $L_63fe40, $L_63fe78, $L_63fe7f, $L_63fe87, $L_63fec0, $L_63fed0
+PUBLIC $L_63b648, $L_63b64f, $L_63f8a0, $L_63f8b0, $L_63f8d0, $L_63f8d8, $L_63fde0
+PUBLIC $L_63fe00, $L_63fe40, $L_63fe78, $L_63fe7f, $L_63fe87, $L_63fed0
 PUBLIC $L_63fee1, $L_63fef0, $L_63ff01, $L_63ff10, $L_63ff21, $L_63ff30, $L_63ff60, $L_63ff71
-PUBLIC $L_63ff80, $L_640020, $L_640031, $L_640040, $L_640051, $L_640060, $L_640950, $L_640960
-PUBLIC $L_640971, $L_640980, $L_643ed0, $L_643ed8, $L_643ef0, $L_643f00, $L_643f10, $L_643f20
-PUBLIC $L_643f30, $L_643f40, $L_643f50, $L_643f60, $L_644420, $L_644ae0, $L_644ae8, $L_645e30
-PUBLIC $L_645e38, $L_649af0, $L_649afb, $L_649d20, $L_649df0, $L_649df8, $L_649e10, $L_649e20
-PUBLIC $L_649e30, $L_649e38, $L_649e50, $L_649e60, $L_649e6b, $L_64a298, $L_64a2a0, $L_64a2ac
-PUBLIC $L_64a2b4, $L_64a2c0, $L_64a2c8, $L_64a2d4, $L_64a2dd, $L_64a2e8, $L_64a2f0, $L_64a2fc
-PUBLIC $L_64a304, $L_64a310, $L_64a319, $L_64a324, $L_64a330, $L_64a338, $L_64a344, $L_64a34c
-PUBLIC $L_64a358, $L_64a360, $L_64a36c, $L_64a375, $L_64a380, $L_64a388, $L_64a394, $L_64a3a0
-PUBLIC $L_64a3aa, $L_64a3b4, $L_64a3c0, $L_64a3c8, $L_64a3d4, $L_64a3e0, $L_64a3e8, $L_64a3f4
+PUBLIC $L_63ff80, $L_640020, $L_640031, $L_640040, $L_640060, $L_640960
+PUBLIC $L_640971, $L_640980, $L_643ed0, $L_643ef0, $L_643f00, $L_643f10, $L_643f20
+PUBLIC $L_643f30, $L_643f60, $L_644420, $L_644ae0, $L_644ae8, $L_645e30
+PUBLIC $L_645e38, $L_649af0, $L_649afb, $L_649d20, $L_649df0, $L_649e10
+PUBLIC $L_649e30, $L_649e50, $L_649e60, $L_64a298, $L_64a2a0, $L_64a2ac
+PUBLIC $L_64a2c0, $L_64a2d4, $L_64a2e8, $L_64a2fc
+PUBLIC $L_64a304, $L_64a310, $L_64a330, $L_64a344
+PUBLIC $L_64a358, $L_64a36c, $L_64a380, $L_64a3a0
+PUBLIC $L_64a3c0, $L_64a3e0, $L_64a3f4
 
 _TEXT SEGMENT
 $L_63b630 PROC
@@ -140,18 +140,6 @@ $L_63f8b0::
           BYTE 0ccH
 
             int 3
-$L_63f8c0::
-
-            mov EAX,OFFSET (_KingRdata+68216)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_63f8d0::
 
             lea ECX,DWORD PTR [EBP+12]
@@ -190,18 +178,6 @@ $L_63fdd0 PROC
 $L_63fde0::
 
             mov EAX,OFFSET (_KingRdata+70688)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_63fdf0::
-
-            mov EAX,OFFSET (_KingRdata+70776)
             jmp ___CxxFrameHandler
 
             int 3
@@ -298,18 +274,6 @@ $L_63fe8f PROC
             jmp ___CxxFrameHandler
 $L_63fe8f ENDP
 $L_63feba PROC
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_63fec0::
-
-            mov EAX,OFFSET (_KingRdata+71448)
-            jmp ___CxxFrameHandler
 
             int 3
           BYTE 0ccH
@@ -468,17 +432,6 @@ $L_640040::
 
             add ESP,8
             ret 
-$L_640051::
-
-            mov EAX,OFFSET (_KingRdata+72464)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_640060::
 
             mov EAX,DWORD PTR [EBP-20]
@@ -493,18 +446,6 @@ $L_64001e ENDP
 $L_640940 PROC
 
             mov EAX,OFFSET (_KingRdata+75984)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_640950::
-
-            mov EAX,OFFSET (_KingRdata+76072)
             jmp ___CxxFrameHandler
 
             int 3
@@ -651,24 +592,6 @@ $L_643ed0::
 
             lea ECX,DWORD PTR [EBP-32]
             jmp _Stl_Unlock
-$L_643ed8::
-
-            mov EAX,OFFSET (_KingRdata+92008)
-            jmp ___CxxFrameHandler
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_643ef0::
 
             mov EAX,OFFSET (_KingRdata+92104)
@@ -720,30 +643,6 @@ $L_643f20::
 $L_643f30::
 
             mov EAX,OFFSET (_KingRdata+92568)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_643f40::
-
-            mov EAX,OFFSET (_KingRdata+92664)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_643f50::
-
-            mov EAX,OFFSET (_KingRdata+92752)
             jmp ___CxxFrameHandler
 
             int 3
@@ -1060,51 +959,13 @@ $L_649de1 PROC
             mov EAX,OFFSET (_KingRdata+119752)
             jmp ___CxxFrameHandler
 $L_649de1 ENDP
-$L_649deb PROC
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_649df0::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @MsgBuf_FreeStorage@8
-$L_649df8::
-
-            mov EAX,OFFSET (_KingRdata+119848)
-            jmp ___CxxFrameHandler
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_649e10::
 
             mov EAX,OFFSET (_KingRdata+119944)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_649e20::
-
-            mov EAX,OFFSET (_KingRdata+120032)
             jmp ___CxxFrameHandler
 
             int 3
@@ -1118,24 +979,6 @@ $L_649e30::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @Play_DestructBase@8
-$L_649e38::
-
-            mov EAX,OFFSET (_KingRdata+120120)
-            jmp ___CxxFrameHandler
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_649e50::
 
             mov EAX,OFFSET (_KingRdata+120160)
@@ -1156,22 +999,6 @@ $L_649e60::
 
             pop ECX
             ret 
-$L_649e6b::
-
-            mov EAX,OFFSET (_KingRdata+120248)
-            jmp ___CxxFrameHandler
-$L_649deb ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_64a296 PROC
 
             int 3
@@ -1193,50 +1020,20 @@ $L_64a2ac::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @WinThread_Destruct@4
-$L_64a2b4::
-
-            mov EAX,OFFSET (_KingRdata+121496)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a2c0::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @WinThread_Destruct@4
-$L_64a2c8::
-
-            mov EAX,OFFSET (_KingRdata+121536)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a2d4::
 
             push DWORD PTR [EBP-16]
             call _NoTrack_Delete@4
 
             ret 
-$L_64a2dd::
-
-            mov EAX,OFFSET (_KingRdata+121576)
-            jmp ___CxxFrameHandler
-
-            int 3
 $L_64a2e8::
 
             lea ECX,DWORD PTR [EBP-16]
             jmp @String_Destruct@4
-$L_64a2f0::
-
-            mov EAX,OFFSET (_KingRdata+121616)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a2fc::
 
             lea ECX,DWORD PTR [EBP-80]
@@ -1255,88 +1052,28 @@ $L_64a310::
             call _Fw_Delete@4
 
             ret 
-$L_64a319::
-
-            mov EAX,OFFSET (_KingRdata+121752)
-            jmp ___CxxFrameHandler
-
-            int 3
-$L_64a324::
-
-            mov EAX,OFFSET (_KingRdata+121792)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a330::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @CmdTarget_Destruct@4
-$L_64a338::
-
-            mov EAX,OFFSET (_KingRdata+121880)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a344::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @CmdTarget_Destruct@4
-$L_64a34c::
-
-            mov EAX,OFFSET (_KingRdata+121920)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a358::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @CmdTarget_Destruct@4
-$L_64a360::
-
-            mov EAX,OFFSET (_KingRdata+121960)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a36c::
 
             push DWORD PTR [EBP-16]
             call _NoTrack_Delete@4
 
             ret 
-$L_64a375::
-
-            mov EAX,OFFSET (_KingRdata+122000)
-            jmp ___CxxFrameHandler
-
-            int 3
 $L_64a380::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @Shell_Nop@8
-$L_64a388::
-
-            mov EAX,OFFSET (_KingRdata+122040)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
-$L_64a394::
-
-            mov EAX,OFFSET (_KingRdata+122080)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a3a0::
 
             push DWORD PTR [EBP+8]
@@ -1344,50 +1081,14 @@ $L_64a3a0::
 
             pop ECX
             ret 
-$L_64a3aa::
-
-            mov EAX,OFFSET (_KingRdata+122168)
-            jmp ___CxxFrameHandler
-$L_64a3b4::
-
-            mov EAX,OFFSET (_KingRdata+122208)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a3c0::
 
             mov ECX,DWORD PTR [EBP-16]
             jmp @CmdTarget_Destruct@4
-$L_64a3c8::
-
-            mov EAX,OFFSET (_KingRdata+122296)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
-$L_64a3d4::
-
-            mov EAX,OFFSET (_KingRdata+122336)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a3e0::
 
             lea ECX,DWORD PTR [EBP-8]
             jmp $L_61c730
-$L_64a3e8::
-
-            mov EAX,OFFSET (_KingRdata+122424)
-            jmp ___CxxFrameHandler
-
-            int 3
-
-            int 3
 $L_64a3f4::
 
             lea ECX,DWORD PTR [EBP-36]

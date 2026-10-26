@@ -17,19 +17,6 @@ $L_61c730 PROC
             mov ECX,DWORD PTR [EAX+4]
             jmp @CmdTarget_EndWaitCursor@4
 $L_61c730 ENDP
-$L_61c73d PROC
-
-            mov EAX,DWORD PTR [ECX+4]
-            mov ECX,DWORD PTR [ECX]
-            mov DWORD PTR [EAX+196],ECX
-            ret 
-$L_61c73d ENDP
-ALIGN 2
-ALIGN 4
-ALIGN 8
-ALIGN 2
-ALIGN 2
-ALIGN 2
 $L_61cb08 PROC
 
             mov EAX,DWORD PTR [EBP-20]

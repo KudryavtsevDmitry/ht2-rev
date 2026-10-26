@@ -85,40 +85,6 @@ ALIGN 16
           BYTE 0ccH
 ALIGN 16
 ; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-$L_4eb18e PROC
-
-            int 3
-
-            int 3
-$L_4eb18e ENDP
-ALIGN 16
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-ALIGN 16
-; vehicle physics: src\truck\vehicle_physics.cpp, nmake ASM_VEHICLE_PHYSICS=1 assembles the original
-$L_4eb20e PROC
-
-            int 3
-
-            int 3
-$L_4eb20e ENDP
-ALIGN 16
-$L_4eb22f PROC
-
-            int 3
-$L_4eb22f ENDP
-ALIGN 16
-ALIGN 16
 FUN_4eb260 PROC
 
             push -1

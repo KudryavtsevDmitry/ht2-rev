@@ -48,7 +48,6 @@ PUBLIC $L_55afaf, $L_55b094, $L_55b17c, $L_55b180, $L_55b1db, $L_55b1e9, $L_55b4
 PUBLIC $L_55b561, $L_55b56e, $L_55eff0
 
 _TEXT SEGMENT
-ALIGN 16
 FUN_5586f0 PROC
 
             mov EAX,DWORD PTR [ESP+16]

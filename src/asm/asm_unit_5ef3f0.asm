@@ -65,17 +65,6 @@ ALIGN 16
 ALIGN 16
 ALIGN 16
 ALIGN 16
-$L_5f2dc0 PROC
-
-            ret 
-$L_5f2dc0 ENDP
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; the element destructor that shares the original's code stays in assembly
 $L_5f4b20 PROC
             mov EAX,DWORD PTR [ECX+4]
             push EAX

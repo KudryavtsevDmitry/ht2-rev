@@ -12,11 +12,10 @@ EXTERN _Scene_FindObject:PROC
 EXTERN _Sys_Fatal:PROC
 EXTERN _sprintf:PROC
 
-PUBLIC $L_5a6942, $L_5a6986, $L_5a69c5, $L_5a69df, $L_5a6a13, $L_5a6a55, $L_5ab0b0, $L_5ab0d0
+PUBLIC $L_5a6942, $L_5a6986, $L_5a69c5, $L_5a69df, $L_5a6a13, $L_5a6a55, $L_5ab0d0
 PUBLIC $L_5ab0e0
 
 _TEXT SEGMENT
-ALIGN 16
 FUN_5a6890 PROC
 
             push -1
@@ -262,28 +261,6 @@ ALIGN 16
 ; engine: src\truck\weather.cpp, nmake ASM_WEATHER=1 assembles the original
 ALIGN 16
 ALIGN 16
-$L_5ab0a0 PROC
-
-            ret 
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-$L_5ab0b0::
-
-            ret 
-$L_5ab0a0 ENDP
 $L_5ab0cf PROC
 
             int 3

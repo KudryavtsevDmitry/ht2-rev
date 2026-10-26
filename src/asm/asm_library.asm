@@ -29,7 +29,6 @@ EXTERN __imp__socket@12:PROC
 PUBLIC $L_6300e0
 
 _TEXT SEGMENT
-ALIGN 16
 FUN_6300b0 PROC
 
             jmp DWORD PTR __imp__closesocket@4

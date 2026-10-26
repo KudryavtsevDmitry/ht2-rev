@@ -10,7 +10,6 @@ EXTERN _KingRdata:BYTE
 PUBLIC $L_4ff712, $L_4ff724, $L_4ff744, $L_4ff75e, $L_4ff764
 
 _TEXT SEGMENT
-ALIGN 16
 FUN_4ff660 PROC
 
             sub ESP,12
