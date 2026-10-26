@@ -757,6 +757,8 @@ extern "C" void __fastcall MovingItem_SetSpin(BYTE* s, void*, const float* v, co
 extern "C" int __fastcall q198_Dtor57cfa0_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor57cfa0_DeletingDestructor@12", "@Dtor57cfa0_DeletingDestructor@12")
 // [$L_5893b0] forwards to Dtor57cfa0_DeletingDestructor for the object 256 bytes before
 extern "C" int __fastcall Thunk5893b0(BYTE* s, void* d, int a0) { return q198_Dtor57cfa0_DeletingDestructor(s - 256, d, a0); }
+// [$L_5893c0] the same for the object 376 bytes before
+extern "C" int __fastcall Thunk5893c0(BYTE* s, void* d, int a0) { return q198_Dtor57cfa0_DeletingDestructor(s - 376, d, a0); }
 
 // === the first contact of an item with its neighbours (FUN_584570)
 

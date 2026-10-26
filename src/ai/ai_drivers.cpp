@@ -190,7 +190,7 @@ PlaceCount* Player::GetPlace()
 #define FIELD(type, p, off) (*(type*)((BYTE*)(p) + (off)))
 
 extern "C" double __cdecl AI_Now();
-KING_ALIAS("_AI_Now", "FUN_401000")
+KING_ALIAS("_AI_Now", "_Ai_Clock")
 extern "C" void __cdecl AI_SortTimes(double* first, double* last, int, int, int);
 KING_ALIAS("_AI_SortTimes", "_Doubles_StableSortBuf")
 extern "C" const char* __cdecl AI_Text(const char* key);
@@ -2042,7 +2042,7 @@ extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
 extern "C" void FUN_488170(); KING_ALIAS("_FUN_488170", "@Filter2_Construct@8")
 extern "C" void FUN_4880b0(); KING_ALIAS("_FUN_4880b0", "@Filter1_Construct@8")
-ASM_PROC(FUN_401000)    // the time
+ASM_FUNC(FUN_401000, _Ai_Clock)    // the time
 extern "C" void FUN_4881f0(); KING_ALIAS("_FUN_4881f0", "@Filter2_SetResponse@16")
 extern "C" void FUN_4881e0(); KING_ALIAS("_FUN_4881e0", "@Filter2_Set@16")
 extern "C" void FUN_4880d0(); KING_ALIAS("_FUN_4880d0", "@Filter1_Reset@8")

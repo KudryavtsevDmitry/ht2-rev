@@ -1286,6 +1286,14 @@ extern "C" int __fastcall q198_Chain_DeleteAll(BYTE* s, void* d); KING_ALIAS("@q
 extern "C" int __fastcall q198_Dtor58b700_DeletingDestructor(BYTE* s, void* d, int a0); KING_ALIAS("@q198_Dtor58b700_DeletingDestructor@12", "@Dtor58b700_DeletingDestructor@12")
 // [$L_592b40] forwards to Dtor58b700_DeletingDestructor for the object 256 bytes before
 extern "C" int __fastcall Thunk592b40(BYTE* s, void* d, int a0) { return q198_Dtor58b700_DeletingDestructor(s - 256, d, a0); }
+// [$L_592b50] the same for the object 376 bytes before
+extern "C" int __fastcall Thunk592b50(BYTE* s, void* d, int a0) { return q198_Dtor58b700_DeletingDestructor(s - 376, d, a0); }
+// [$L_592b60] static initializer: an angle from three constants
+KING_VAR(float, g_mb_650898, 650898)
+KING_VAR(float, g_mb_650894, 650894)
+KING_VAR(float, g_mb_650890, 650890)
+KING_VAR(float, g_mb_6f6624, 6f6624)
+extern "C" void __cdecl MovingBodies_InitAngle() { g_mb_6f6624 = (float)x87_atan2(g_mb_650890 / (g_mb_650898 + g_mb_650894), 1.0); }
 // [$L_592ed0] sets the vtable 6508a0, then Chain_DeleteAll
 extern "C" int __fastcall Thunk592ed0(BYTE* s, void* d)
 {

@@ -3325,8 +3325,11 @@ KING_VAR(BYTE, g_cm702e08, 702e08)
 KING_VAR(AsmLabel, g_cm7029c8, 7029c8)
 KING_VAR(AsmLabel, g_cm702998, 702998)
 KING_VAR(AsmLabel, g_cm7025f0, 7025f0)
-ASM_VAR(AsmLabel, g_cm5ae540, $L_5ae540)
-ASM_VAR(AsmLabel, g_cm5ae530, $L_5ae530)
+// [$L_5ae530] [$L_5ae540] empty atexit handlers
+extern "C" void __cdecl Render_AtexitNop530() {}
+extern "C" void __cdecl Render_AtexitNop540() {}
+ASM_VAR(AsmLabel, g_cm5ae540, _Render_AtexitNop540)
+ASM_VAR(AsmLabel, g_cm5ae530, _Render_AtexitNop530)
 KING_VAR(double, g_cm64b5a0, 64b5a0)
 KING_VAR(double, g_cm64b678, 64b678)
 extern "C" void FUN_5adea0(); KING_ALIAS("_FUN_5adea0", "@Render_SetDeviceView@4")

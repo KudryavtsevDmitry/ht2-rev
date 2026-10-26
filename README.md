@@ -21,7 +21,7 @@ The game is not included: building needs your own original `king.exe` (for resou
 | `units.csv` | the object files the program was linked from |
 | `symbols.csv` | library function names |
 | `extractResources.py` | copies the resources of the original `king.exe` into `king.res` |
-| `tools/` | `smoke_world.py` (world-loading smoke test), `conversion_inventory.py` (game procedures left in `src/asm`) |
+| `tools/` | `smoke_world.py` (world-loading smoke test), `conversion_inventory.py` (game procedures left in `src/asm`), `asm_replace.py` and `asm_dead.py` (take converted and unreachable code out of `src/asm`) |
 
 ## Building
 
@@ -56,8 +56,8 @@ Run the drive test after every step.
 ## Replacing an assembly procedure
 
 1. Write it in C++ and export it with the asm calling convention (`__fastcall` with an unused EDX argument for thiscall).
-2. Delete the `PROC` from `src/asm/asm_<unit>.asm`. Where other assembly still uses its label (and its inner labels used from outside), replace the label by the C++ name and add `EXTERN @Name@12:NEAR` to that file; drop the label from the `PUBLIC` lines.
-3. If the data refers to the procedure, `data_image.cpp` names it in a `KING_ALIAS("_KDn", "$L_xxxxxx")` line: point that at the C++ name.
+2. Run `py tools\asm_replace.py LABEL=CNAME ...` with the C++ linker name (`_Name`, `_Name@8` stdcall, `@Name@8` fastcall). It deletes the label's code from `src/asm`, points the other assembly (`EXTERN`), the data image's code pointers and the `ASM_PROC`/`ASM_FUNC`/`ASM_VAR` uses in C++ at the new name, and removes files left without code.
+3. Run `py tools\asm_dead.py --apply`. It removes what only the deleted code reached, including catch and unwind handlers whose exception tables nothing installs any more.
 4. Assembly still called from C++ is reached with `ASM_PROC` and `CallC`, `CallStd`, `CallThis`, `CallVirt` (`king.h`); data with `KING_VAR(type, name, address)`.
 
 C++ is built with `/Zl /GS- /GR- /EHs-c-` and `/arch:IA32`; the `Makefile` names all libraries (`LIBS`, and the modern static runtime in `CRTLIBS`). The old VC6 runtime's entry points (heap, stdio, exit, errno, threads, exception handling) point at the modern runtime or at the shims in `src/engine/crt.cpp`. Converted code must not look inside a `FILE` (use `FILE_EOF`, `CRT_STREAM` from `king.h`).

@@ -290,3 +290,8 @@ extern "C" void __cdecl MarineInit_ParticleAxis()
     g_mi_725f2c=0u;
     g_mi_725f30=1065353216u;
 }
+
+// [$L_60f050] static initializer: a float constant doubled
+KING_VAR(float, g_mi_725e10, 725e10)
+KING_VAR(float, g_mi_653090, 653090)
+extern "C" void __cdecl Marine_InitDoubled() { g_mi_725e10 = g_mi_653090 + g_mi_653090; }

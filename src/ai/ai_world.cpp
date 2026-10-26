@@ -639,7 +639,7 @@ extern "C" void FUN_410e40(); KING_ALIAS("_FUN_410e40", "@Rec410e40_FreeVectors@
 ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
-ASM_PROC(FUN_401000)    // the AI clock, returns double
+ASM_FUNC(FUN_401000, _Ai_Clock)    // the AI clock, returns double
 extern "C" void FUN_4172e0(); KING_ALIAS("_FUN_4172e0", "_Player_UpdateFlagsGet")
 extern "C" void FUN_417530(); KING_ALIAS("_FUN_417530", "_Player_Leave")
 extern "C" void FUN_483cb0(); KING_ALIAS("_FUN_483cb0", "_displayScreenMessage")    // shows a screen message
@@ -768,7 +768,7 @@ extern "C" DWORD* __cdecl Copy32(const DWORD* first, const DWORD* last, DWORD* t
 extern "C" void __cdecl AI_Grow421d90(int* entry, int a, int b);   // = Ai_CreateDealerForSale (double as two ints)
 KING_ALIAS("_AI_Grow421d90", "_Ai_CreateDealerForSale")
 extern "C" double __cdecl AI_Now();
-KING_ALIAS("_AI_Now", "FUN_401000")
+KING_ALIAS("_AI_Now", "_Ai_Clock")
 KING_VAR(PtrVec, g_68a980, 68a980)
 KING_VAR(PtrVec, g_68a984, 68a984)
 KING_VAR(BYTE*, g_68cca8, 68cca8)
@@ -24907,3 +24907,6 @@ void __cdecl Recs504_PartialSort(BYTE** first, BYTE** middle, BYTE** last, int c
 }
 
 }
+
+// [FUN_401000] the AI clock (seconds, double)
+extern "C" double __cdecl Ai_Clock() { return t_68a820; }
