@@ -9,7 +9,6 @@ EXTERN @Dtor573a30_DeletingDestructor@12:PROC
 EXTERN @Dtor573bf0_DeletingDestructor@12:PROC
 EXTERN @Dtor573cf0_DeletingDestructor@12:PROC
 EXTERN @Vec3_AddAssign@16:PROC
-EXTERN @World_Frame@4:PROC
 EXTERN _Angle_F2Pi:PROC
 EXTERN _Copter_PlaneCircle:PROC
 EXTERN _Game_FrameTime:PROC
@@ -3114,10 +3113,6 @@ ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-$L_56f6c0 PROC
-
-            jmp @World_Frame@4
-$L_56f6c0 ENDP
 ALIGN 16
 ALIGN 16
 ALIGN 16

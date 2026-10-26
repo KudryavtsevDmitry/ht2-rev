@@ -11,11 +11,6 @@ PUBLIC $L_55fa80, $L_55fa90, $L_55faa0, $L_55fab0, $L_55fac0, $L_55fad0, $L_55fa
 PUBLIC $L_5600c3, $L_5600e8, $L_5607ca, $L_5607f1, $L_560819, $L_56087d
 
 _TEXT SEGMENT
-$L_55fa70 PROC
-
-            sub ECX,16
-            jmp @Dtor55ebd0_DeletingDestructor@12
-$L_55fa70 ENDP
 $L_55fa7f PROC
 
             int 3

@@ -2,7 +2,6 @@
 INCLUDE king.inc
 
 EXTERN $L_5fef53:NEAR
-EXTERN @MappedFile_Close@4:PROC
 EXTERN FUN_6303ac:NEAR
 EXTERN _Dd_EnumDevice@16:PROC
 EXTERN _Dd_ErrorText:PROC
@@ -10,8 +9,6 @@ EXTERN _Dd_FreeLocalVideoMemory:PROC
 EXTERN _Dd_MatchMode@8:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
-EXTERN _Static5d2060_AtExit:PROC
-EXTERN _Static71e808_Construct:PROC
 EXTERN _Sys_Log:PROC
 
 PUBLIC $L_5d2020, $L_5d7b90, $L_5d7bc2, $L_5d7bd1, $L_5d7bdd, $L_5d7bf2, $L_5d7bfe, $L_5d7c0c
@@ -43,18 +40,7 @@ $L_5d2020::
 $L_5d2010 ENDP
 ALIGN 16
 ; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-$L_5d2040 PROC
-
-            call _Static71e808_Construct
-
-            jmp _Static5d2060_AtExit
-$L_5d2040 ENDP
 ALIGN 16
-$L_5d2070 PROC
-
-            mov ECX,OFFSET (_KingBss+606184)
-            jmp @MappedFile_Close@4
-$L_5d2070 ENDP
 ALIGN 16
 ; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
 ALIGN 16

@@ -2,9 +2,6 @@
 INCLUDE king.inc
 
 EXTERN $L_64682c:NEAR
-EXTERN @DMat_Copy@12:PROC
-EXTERN @DMat_Determinant@8:PROC
-EXTERN @DMat_Zero@8:PROC
 EXTERN @DpMessage_Construct@8:PROC
 EXTERN @DpMessage_Set@16:PROC
 EXTERN @Font_TextWidth@12:PROC
@@ -20,284 +17,24 @@ EXTERN @Stream_ReadBlob@20:PROC
 EXTERN @Window_Show@12:PROC
 EXTERN _Bitmap_Draw:PROC
 EXTERN _CarList_Draw:PROC
-EXTERN _DMat_Inverse:PROC
-EXTERN _Ini_WriteInt:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
 EXTERN _KingRdata:BYTE
 EXTERN _Net_Receive:PROC
-EXTERN _Rec128_Combine:PROC
 EXTERN _Scores_Draw:PROC
-EXTERN _Shell_EnterWorld:PROC
-EXTERN _Shell_LeaveGameScreens:PROC
 EXTERN _Shell_LeaveRace:PROC
-EXTERN _Shell_StartGame:PROC
 EXTERN _Table71e858_Get:PROC
 EXTERN _Text_Draw:PROC
 EXTERN _Tsc_Now:PROC
-EXTERN _rand:PROC
 
-PUBLIC $L_50bb10, $L_50bb50, $L_50bb59, $L_50bb5e, $L_51f7c5, $L_51f7fc, $L_51f81c
+PUBLIC $L_51f7c5, $L_51f7fc, $L_51f81c
 PUBLIC $L_51f89a, $L_51f8ee, $L_51f917, $L_51f91f, $L_51f92b, $L_51f931, $L_51f9c8, $L_51f9d9
 PUBLIC $L_51fa17, $L_51fa28, $L_51fa53, $L_51fa7e, $L_51fadf, $L_51fae6, $L_51faf3, $L_51fb13
 PUBLIC $L_51fb38, $L_51fb41, $L_51fb50, $L_51fb60, $L_51fb6b, $L_51fb95, $L_51fba6, $L_51fbe8
 PUBLIC $L_51fc13, $L_51fc3e, $L_51fca0, $L_51fca7, $L_51fcb4, $L_51fccb, $L_51fcee, $L_51fcf9
-PUBLIC $L_51fcfe, $L_51fd12, $L_5231af, $L_523201
+PUBLIC $L_51fcfe, $L_51fd12
 
 _TEXT SEGMENT
-$L_50bb00 PROC
-
-            jmp $L_50bb10
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-$L_50bb10::
-
-            push EBP
-            mov EBP,ESP
-            and ESP,4294967288
-            sub ESP,648
-            push EBX
-            push EBP
-            push ESI
-            push EDI
-            lea ECX,DWORD PTR [ESP+24]
-            mov DWORD PTR [(_KingBss+277356)],0
-            call @DMat_Zero@8
-
-            lea ECX,DWORD PTR [ESP+152]
-            call @DMat_Zero@8
-
-            lea ECX,DWORD PTR [ESP+280]
-            call @DMat_Zero@8
-
-            mov EBP,1000
-$L_50bb50::
-
-            lea ESI,DWORD PTR [ESP+24]
-            mov EBX,4
-$L_50bb59::
-
-            mov EDI,4
-$L_50bb5e::
-
-            call _rand
-
-            mov DWORD PTR [ESP+20],EAX
-            add ESI,8
-            fild DWORD PTR [ESP+20]
-            dec EDI
-            fsub QWORD PTR [(_KingRdata+11120)]
-            fmul QWORD PTR [(_KingRdata+11112)]
-            fstp QWORD PTR [ESI-8]
-            jne $L_50bb5e
-
-            dec EBX
-            jne $L_50bb59
-
-            lea EAX,DWORD PTR [ESP+24]
-            lea ECX,DWORD PTR [ESP+408]
-            push EAX
-            push ECX
-            call _DMat_Inverse
-
-            add ESP,8
-            lea ECX,DWORD PTR [ESP+152]
-            push EAX
-            call @DMat_Copy@12
-
-            lea EDX,DWORD PTR [ESP+24]
-            lea EAX,DWORD PTR [ESP+152]
-            push EDX
-            lea ECX,DWORD PTR [ESP+540]
-            push EAX
-            push ECX
-            call _Rec128_Combine
-
-            add ESP,12
-            lea ECX,DWORD PTR [ESP+280]
-            push EAX
-            call @DMat_Copy@12
-
-            lea ECX,DWORD PTR [ESP+280]
-            call @DMat_Determinant@8
-
-            dec EBP
-            fstp ST(0)
-            jne $L_50bb50
-
-            pop EDI
-            pop ESI
-            pop EBP
-            pop EBX
-            mov ESP,EBP
-            pop EBP
-            ret 
-$L_50bb00 ENDP
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
 $L_51f760 PROC
 
             mov EAX,DWORD PTR FS:[0]
@@ -896,76 +633,6 @@ ALIGN 16
 ALIGN 16
 ALIGN 16
 ALIGN 16
-$L_523170 PROC
-
-            mov EAX,DWORD PTR [ESP+4]
-            push ESI
-            cmp EAX,160
-            mov ESI,ECX
-            jne $L_5231af
-
-            mov EAX,DWORD PTR [(_KingBss+49224)]
-            push EAX
-            push 0
-            push OFFSET (_KingData+42904)
-            push OFFSET (_KingData+27032)
-            call _Ini_WriteInt
-
-            mov EDX,DWORD PTR [ESI-64]
-            lea ECX,DWORD PTR [ESI-64]
-            add ESP,16
-            call DWORD PTR [EDX+32]
-
-            push 0
-            call _Shell_EnterWorld
-
-            add ESP,4
-            pop ESI
-            ret 4
-$L_5231af::
-
-            cmp EAX,161
-            jne $L_523201
-
-            mov EAX,DWORD PTR [ESI-64]
-            lea ECX,DWORD PTR [ESI-64]
-            call DWORD PTR [EAX+32]
-
-            mov EAX,DWORD PTR [(_KingBss+279632)]
-            mov ECX,DWORD PTR [EAX+408]
-            and CL,63
-            or ECX,48
-            mov DWORD PTR [EAX+408],ECX
-            mov EDX,DWORD PTR [(_KingBss+279628)]
-            mov ESI,DWORD PTR [EDX+1300]
-            call _Shell_LeaveGameScreens
-$L_523170 ENDP
-$L_5231e7 PROC
-
-            mov EAX,DWORD PTR [(_KingBss+279628)]
-            push 0
-            push OFFSET (_KingBss+427256)
-            mov DWORD PTR [EAX+1300],ESI
-            call _Shell_StartGame
-
-            add ESP,8
-$L_523201::
-
-            pop ESI
-            ret 4
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-
-            nop
-            nop
-            nop
-            nop
-$L_5231e7 ENDP
 ALIGN 16
 ; game, menus and screens: src\truck\game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
 ALIGN 16

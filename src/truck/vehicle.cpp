@@ -16027,3 +16027,37 @@ extern "C" void __cdecl Vh_Init52f530()
 extern "C" void Vh_Scy52fce0Construct(); KING_ALIAS("_Vh_Scy52fce0Construct", "@Scy52fce0_Construct@8")
 KING_VAR(BYTE, vh_6d1948, 6d1948)
 extern "C" void __cdecl Vh_Init52f680() { CallThis(Vh_Scy52fce0Construct, &vh_6d1948); }
+
+// [$L_55fa70] the trailer's deleting destructor reached through the base 16 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk55fa70(BYTE* s, void* d, int f) { return Dtor55ebd0_DeletingDestructor(s - 16, d, f); }
+
+// [FUN_5586f0] constructs a trailer: the vehicle (w, c, p, a), no tractor
+// (+21880), cleared hitch state (+21896..+21952), its vtables, +20936 = 1
+KING_VAR(AsmLabel, vh_vtbl64f96c, 64f96c)
+KING_VAR(AsmLabel, vh_vtbl64f880, 64f880)
+KING_VAR(AsmLabel, vh_vtbl64f834, 64f834)
+KING_VAR(AsmLabel, vh_vtbl64f830, 64f830)
+extern "C" BYTE* __fastcall Trailer_Construct(BYTE* self, void*, int w, BYTE* c, int p, int a)
+{
+    Vehicle_Construct(self, 0, w, c, p, a);
+    for (int off = 21896; off <= 21952; off += 4)
+        F(int, self, off) = 0;
+    F(int, self, 21880) = 0;
+    F(void*, self, 0) = vh_vtbl64f96c;
+    F(void*, self, 16) = vh_vtbl64f880;
+    F(void*, self, 272) = vh_vtbl64f834;
+    F(void*, self, 392) = vh_vtbl64f830;
+    F(int, self, 20936) = 1;
+    return self;
+}
+
+// [$L_55ef90] the trailer hit something (virtual, the impulse): reports the
+// impact (|impulse| / mass +412) to the AI player of its tractor
+extern "C" void __fastcall Trailer_OnHit(BYTE* self, void*, int, const float* impulse)
+{
+    BYTE* tractor = F(BYTE*, self, 21880);
+    if (!tractor || F(int, tractor, 20636) == g_veh68b990)
+        return;
+    double k = Vec3_Length((const Vec3*)impulse) / F(float, self, 412);
+    Ai_HitPlayer(F(int, F(BYTE*, self, 21880), 20636), k, 1);
+}

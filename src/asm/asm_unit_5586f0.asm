@@ -18,14 +18,11 @@ EXTERN @Car_PlaceWithTrailer@16:PROC
 EXTERN @Engine_AddContact@20:PROC
 EXTERN @Engine_AddPush@16:PROC
 EXTERN @Hitch_Align@16:PROC
-EXTERN @Int_Copy@12:PROC
 EXTERN @Trailer_SaddleLoad@12:PROC
 EXTERN @Vec3_AddAssign@16:PROC
 EXTERN @Vec3_MulAssign@16:PROC
 EXTERN @Vec3_SetThis@20:PROC
 EXTERN @Vec3_ZeroThis@8:PROC
-EXTERN @Vehicle_Construct@24:PROC
-EXTERN _Ai_HitPlayer:PROC
 EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
 EXTERN _KingRdata:BYTE
@@ -45,64 +42,9 @@ PUBLIC $L_55a029, $L_55a07d, $L_55a081, $L_55a129, $L_55a2c0, $L_55a30b, $L_55a3
 PUBLIC $L_55a5ee, $L_55a5f0, $L_55a8af, $L_55a8b2, $L_55a8ef, $L_55a937, $L_55a93d, $L_55a966
 PUBLIC $L_55ac40, $L_55ae6b, $L_55aef4, $L_55af0d, $L_55af31, $L_55af4c, $L_55af76, $L_55afa1
 PUBLIC $L_55afaf, $L_55b094, $L_55b17c, $L_55b180, $L_55b1db, $L_55b1e9, $L_55b4f2, $L_55b4fe
-PUBLIC $L_55b561, $L_55b56e, $L_55eff0
+PUBLIC $L_55b561, $L_55b56e
 
 _TEXT SEGMENT
-FUN_5586f0 PROC
-
-            mov EAX,DWORD PTR [ESP+16]
-            push ESI
-            mov ESI,ECX
-            push EAX
-            push ECX
-            lea EDX,DWORD PTR [ESP+24]
-            mov ECX,ESP
-            mov DWORD PTR [ESP+28],ESP
-            push EDX
-            call @Int_Copy@12
-
-            mov EAX,DWORD PTR [ESP+20]
-            mov ECX,DWORD PTR [ESP+16]
-            push EAX
-            push ECX
-            mov ECX,ESI
-            call @Vehicle_Construct@24
-
-            xor EAX,EAX
-            mov DWORD PTR [ESI+21896],EAX
-            mov DWORD PTR [ESI+21900],EAX
-            mov DWORD PTR [ESI+21904],EAX
-            mov DWORD PTR [ESI+21908],EAX
-            mov DWORD PTR [ESI+21912],EAX
-            mov DWORD PTR [ESI+21916],EAX
-            mov DWORD PTR [ESI+21920],EAX
-            mov DWORD PTR [ESI+21924],EAX
-            mov DWORD PTR [ESI+21928],EAX
-            mov DWORD PTR [ESI+21932],EAX
-            mov DWORD PTR [ESI+21936],EAX
-            mov DWORD PTR [ESI+21940],EAX
-            mov DWORD PTR [ESI+21944],EAX
-            mov DWORD PTR [ESI+21948],EAX
-            mov DWORD PTR [ESI+21952],EAX
-            mov DWORD PTR [ESI+21880],EAX
-            mov DWORD PTR [ESI],OFFSET (_KingRdata+18796)
-            mov DWORD PTR [ESI+16],OFFSET (_KingRdata+18560)
-            mov DWORD PTR [ESI+272],OFFSET (_KingRdata+18484)
-            mov DWORD PTR [ESI+392],OFFSET (_KingRdata+18480)
-            mov DWORD PTR [ESI+20936],1
-            mov EAX,ESI
-            pop ESI
-            ret 16
-FUN_5586f0 ENDP
-ALIGN 16
-ALIGN 16
-; vehicle: src\truck\vehicle.cpp, nmake ASM_VEHICLE=1 assembles the original
-ALIGN 16
-; engine: src\truck\vehicle_engine.cpp, nmake ASM_VEHICLE_ENGINE=1 assembles the original
-ALIGN 16
-; engine: src\truck\vehicle_engine.cpp, nmake ASM_VEHICLE_ENGINE=1 assembles the original
-ALIGN 16
-ALIGN 16
 FUN_558f20 PROC
 
             sub ESP,2308
@@ -2631,48 +2573,6 @@ ALIGN 16
 ; engine: src\truck\vehicle_engine.cpp, nmake ASM_VEHICLE_ENGINE=1 assembles the original
 ALIGN 16
 ; engine: src\truck\vehicle_engine.cpp, nmake ASM_VEHICLE_ENGINE=1 assembles the original
-$L_55ef90 PROC
-
-            sub ESP,8
-            push ESI
-            mov ESI,ECX
-            mov EAX,DWORD PTR [ESI+21880]
-            test EAX,EAX
-            je $L_55eff0
-
-            mov EAX,DWORD PTR [EAX+20636]
-            mov ECX,DWORD PTR [(_KingBss+4464)]
-            cmp EAX,ECX
-            je $L_55eff0
-
-            mov ECX,DWORD PTR [ESP+20]
-            push ECX
-            call _Vec3_Length
-
-            fdiv DWORD PTR [ESI+412]
-            add ESP,4
-            push 1
-            fstp QWORD PTR [ESP+8]
-            mov EDX,DWORD PTR [ESP+12]
-            mov EAX,DWORD PTR [ESP+8]
-            push EDX
-            mov EDX,DWORD PTR [ESI+21880]
-            push EAX
-            push ECX
-            add EDX,20636
-            mov ECX,ESP
-            push EDX
-            call @Int_Copy@12
-
-            call _Ai_HitPlayer
-
-            add ESP,16
-$L_55eff0::
-
-            pop ESI
-            add ESP,8
-            ret 8
-$L_55ef90 ENDP
 ALIGN 16
 ALIGN 16
 ; engine: src\truck\vehicle_engine.cpp, nmake ASM_VEHICLE_ENGINE=1 assembles the original
