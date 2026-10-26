@@ -2882,7 +2882,7 @@ extern "C" void FUN_4d08d0(); KING_ALIAS("_FUN_4d08d0", "_Fx_MakePlayerVehicle")
 extern "C" void FUN_4ebd00(); KING_ALIAS("_FUN_4ebd00", "@PhysBody_Construct@64")    // constructs a vehicle (scene object, matrix, type)
 extern "C" void FUN_5291a0(); KING_ALIAS("_FUN_5291a0", "@Map_BuildRoads@8")
 extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
-ASM_PROC(FUN_5a44c0)    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
+extern "C" void FUN_5a44c0(); KING_ALIAS("_FUN_5a44c0", "@WeatherItem_Construct@84")    // constructs a scene item (world, object, object, n, scale, 0, matrix, 1)
 extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // registers a named callback (name, function)
 
 ASM_VAR(BYTE*, g_ws_wnd, $L_6cec6c)

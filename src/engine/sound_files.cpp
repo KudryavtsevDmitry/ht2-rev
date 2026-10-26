@@ -296,3 +296,38 @@ extern "C" void __cdecl SoufilInit_6005a0() { Soufil_Copy4((DWORD*)g_soufil723d5
 extern "C" void __cdecl SoufilInit_6005e0() { Soufil_Copy4((DWORD*)g_soufil723da8 + 4, (DWORD*)g_soufil655310 + 4); }
 // [$L_600620]
 extern "C" void __cdecl SoufilInit_600620() { Soufil_Copy4((DWORD*)g_soufil723da8 + 8, (DWORD*)g_soufil655310); }
+
+// ---------------------------------------------------------------------------
+// Batch 33: uninitialized copy of sound records
+
+extern "C" void Sf33_Allocate(); KING_ALIAS("_Sf33_Allocate", "_Stl_Allocate")
+
+extern "C" {
+
+// [FUN_600420..$L_600527] uninitialized copy of 56-byte records (a byte vector, values +16..+36 and
+// +40..+52); returns the end of the copies
+BYTE* __cdecl SoundRecs_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    for (; first != last; first += 56, dest += 56) {
+        if (!dest)
+            continue;
+        BYTE** b = (BYTE**)dest;
+        int n = (int)(F(BYTE*, first, 4) - F(BYTE*, first, 0));
+        b[0] = 0;
+        b[1] = 0;
+        b[2] = 0;
+        BYTE* p = n ? CallC<BYTE*>(Sf33_Allocate, n) : 0;
+        b[0] = p;
+        b[1] = p;
+        b[2] = p + n;
+        const BYTE* s0 = F(BYTE*, first, 0);
+        const BYTE* s1 = F(BYTE*, first, 4);
+        memmove(p, s0, s1 - s0);
+        b[1] = p + (s1 - s0);
+        memcpy(dest + 16, first + 16, 24);
+        memcpy(dest + 40, first + 40, 16);
+    }
+    return dest;
+}
+
+}

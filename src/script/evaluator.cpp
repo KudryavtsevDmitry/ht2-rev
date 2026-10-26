@@ -24,7 +24,7 @@ extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
-ASM_PROC(FUN_4abd20)
+extern "C" void FUN_4abd20(); KING_ALIAS("_FUN_4abd20", "_Items44_UninitCopy")
 ASM_PROC(FUN_4a4950)
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
 ASM_VAR(AsmLabel, s_errNotSymbolList, $L_67115c)
@@ -4093,7 +4093,7 @@ extern "C" void Ia_ValCopy(); KING_ALIAS("_Ia_ValCopy", "@Values4aadc0_Copy@12")
 extern "C" void Ia_ValAssign(); KING_ALIAS("_Ia_ValAssign", "@Values_Assign@12")
 extern "C" void Ia_Copy(); KING_ALIAS("_Ia_Copy", "@Sch4aac80_Copy@12")
 extern "C" void Ia_Destroy(); KING_ALIAS("_Ia_Destroy", "@SchListNode_Destroy@8")
-ASM_PROC(FUN_4abba0)
+extern "C" void FUN_4abba0(); KING_ALIAS("_FUN_4abba0", "_Items44_UninitCopyB")
 ASM_VAR(AsmLabel, g_ia64bf68, $L_64bf68)
 
 extern "C" {
@@ -4140,3 +4140,60 @@ void __fastcall Elems44_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 33: uninitialized copies of script items
+
+extern "C" void Si33_Reserve12(); KING_ALIAS("_Si33_Reserve12", "@Vec12_Reserve@16")
+extern "C" void Si33_CopyStrRefs(); KING_ALIAS("_Si33_CopyStrRefs", "_UninitCopyStrRefs")
+extern "C" void Si33_StrCopy(); KING_ALIAS("_Si33_StrCopy", "@Str_CopyConstruct@12")
+ASM_VAR(BYTE, si33_vtbl64bf68, $L_64bf68)
+
+static BYTE* Si33_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest)
+{
+    BYTE* dest0 = dest;
+    for (; first != last; first += 44, dest += 44) {
+        if (!dest)
+            continue;
+        if (F(DWORD, first, 12) & 0x10000) {
+            F(DWORD, dest, 12) = F(DWORD, first, 12);
+            F(DWORD, dest, 4) = F(DWORD, first, 4);
+            F(DWORD, dest, 8) = F(DWORD, first, 8);
+        } else {
+            F(DWORD, dest, 8) = 0;
+            if (BYTE* o = F(BYTE*, first, 4)) {
+                F(BYTE*, dest, 4) = o;
+                F(DWORD, dest, 12) = F(DWORD, first, 12);
+                F(int, o, 4)++;
+            } else {
+                F(DWORD, dest, 4) = 0;
+                F(DWORD, dest, 12) = 0;
+            }
+        }
+        BYTE alloc;
+        CallThis(Si33_Reserve12, dest + 16, (int)(F(BYTE*, first, 20) - F(BYTE*, first, 16)) / 12, &alloc);
+        F(BYTE*, dest, 20) = CallC<BYTE*>(Si33_CopyStrRefs, F(BYTE*, first, 16), F(BYTE*, first, 20),
+                                          F(BYTE*, dest, 16), dest0);
+        F(DWORD, dest, 28) = F(DWORD, first, 28);
+        CallThis(Si33_StrCopy, dest + 32, first + 32);
+        F(void*, dest, 0) = &si33_vtbl64bf68;
+    }
+    return dest;
+}
+
+extern "C" {
+
+// [FUN_4abd20..$L_4abe43] uninitialized copy of 44-byte script items (head +4, string refs +16, value +28,
+// string +32); returns the end of the copies
+BYTE* __cdecl Items44_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    return Si33_UninitCopy(first, last, dest);
+}
+
+// [FUN_4abba0..$L_4abcc3] the same copy (a second instance)
+BYTE* __cdecl Items44_UninitCopyB(const BYTE* first, const BYTE* last, BYTE* dest, void*)
+{
+    return Si33_UninitCopy(first, last, dest);
+}
+
+}

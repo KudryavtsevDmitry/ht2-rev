@@ -2286,6 +2286,9 @@ PUBLIC $L_68d1d8
 PUBLIC $L_6784d4, $L_6784e8, $L_6784fc, $L_678510, $L_678520, $L_678530
 PUBLIC $L_67d5b0, $L_67d5c4
 PUBLIC $L_683b58, $L_683b68
+PUBLIC $L_66c934, $L_67035c
+PUBLIC $L_64b59c
+PUBLIC $L_67e918
 
 ;===================================
 _TEXT SEGMENT
@@ -121495,6 +121498,8 @@ ELSE
 EXTERN @RopePtr_Release@4:PROC
 $L_447c50 TEXTEQU <@RopePtr_Release@4>
 ENDIF
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 $L_447d50 PROC
 
             push -1
@@ -121651,6 +121656,10 @@ $L_447e8a::
             nop
             nop
 $L_447d50 ENDP
+ELSE
+EXTERN @HashTable_Construct@8:PROC
+$L_447d50 TEXTEQU <@HashTable_Construct@8>
+ENDIF
 ALIGN 16
 ; AI main: src\ai\ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
 IFDEF ASM_AI_WORLD
@@ -161219,6 +161228,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_45bab0 PROC
 
             sub ESP,24
@@ -161353,6 +161364,10 @@ $L_45bbb4::
             add ESP,24
             ret 
 FUN_45bab0 ENDP
+ELSE
+EXTERN _Holders_IntrosortByDistance:PROC
+FUN_45bab0 TEXTEQU <_Holders_IntrosortByDistance>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -181977,6 +181992,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_465fd0 PROC
 
             push ECX
@@ -182095,6 +182112,10 @@ $L_4660a4::
             pop ECX
             ret 
 FUN_465fd0 ENDP
+ELSE
+EXTERN _Recs504_PartialSort:PROC
+FUN_465fd0 TEXTEQU <_Recs504_PartialSort>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -182794,6 +182815,8 @@ EXTERN _CopyN:PROC
 FUN_466560 TEXTEQU <_CopyN>
 ENDIF
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_466590 PROC
 
             push EBP
@@ -182987,6 +183010,11 @@ $L_466727 PROC
             pop EBP
             ret 
 $L_466727 ENDP
+ELSE
+EXTERN _Recs104_UninitCopy:PROC
+FUN_466590 TEXTEQU <_Recs104_UninitCopy>
+$L_4666b6 LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -184002,6 +184030,8 @@ $L_466e3d PROC
             ret 
 $L_466e3d ENDP
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_466e50 PROC
 
             push EBP
@@ -184188,6 +184218,11 @@ $L_466fc0 PROC
             pop EBP
             ret 
 $L_466fc0 ENDP
+ELSE
+EXTERN _Recs24_UninitCopy:PROC
+FUN_466e50 TEXTEQU <_Recs24_UninitCopy>
+$L_466f4f LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -184445,6 +184480,8 @@ EXTERN @Vec16_Reserve@16:PROC
 FUN_467180 TEXTEQU <@Vec16_Reserve@16>
 ENDIF
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_4671c0 PROC
 
             push EBP
@@ -184598,6 +184635,11 @@ $L_4672fe PROC
             pop EBP
             ret 
 $L_4672fe ENDP
+ELSE
+EXTERN _Recs36_UninitCopy:PROC
+FUN_4671c0 TEXTEQU <_Recs36_UninitCopy>
+$L_4672ae LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -184779,6 +184821,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_containers.cpp, nmake ASM_AI_CONTAINERS=1 assembles the original
+IFDEF ASM_AI_CONTAINERS
 FUN_467440 PROC
 
             push EBP
@@ -184916,6 +184960,11 @@ $L_467561 PROC
             pop EBP
             ret 
 $L_467561 ENDP
+ELSE
+EXTERN _Recs56_UninitCopy:PROC
+FUN_467440 TEXTEQU <_Recs56_UninitCopy>
+$L_46752b LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -190096,6 +190145,8 @@ FUN_469c20 ENDP
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/ai_world.cpp, nmake ASM_AI_WORLD=1 assembles the original
+IFDEF ASM_AI_WORLD
 FUN_469c70 PROC
 
             push EBP
@@ -190201,6 +190252,10 @@ $L_469d4f::
             pop EBP
             ret 
 FUN_469c70 ENDP
+ELSE
+EXTERN _Ai_InsertByDistance:PROC
+FUN_469c70 TEXTEQU <_Ai_InsertByDistance>
+ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
@@ -248789,6 +248844,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_488620 PROC
 
             push -1
@@ -248857,6 +248914,10 @@ FUN_488620 PROC
             add ESP,56
             ret 
 FUN_488620 ENDP
+ELSE
+EXTERN @WayParser_Construct@8:PROC
+FUN_488620 TEXTEQU <@WayParser_Construct@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -259117,6 +259178,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/runtime.cpp, nmake ASM_RUNTIME=1 assembles the original
+IFDEF ASM_RUNTIME
 FUN_48dd50 PROC
 
             push -1
@@ -259201,6 +259264,10 @@ $L_48de19::
             add ESP,240
             ret 12
 FUN_48dd50 ENDP
+ELSE
+EXTERN @Polyline_Near@20:PROC
+FUN_48dd50 TEXTEQU <@Polyline_Near@20>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314585,6 +314652,8 @@ EXTERN _Elems44_CopyB:PROC
 FUN_4ab930 TEXTEQU <_Elems44_CopyB>
 ENDIF
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4abba0 PROC
 
             push EBP
@@ -314728,6 +314797,11 @@ $L_4abcc3 PROC
             pop EBP
             ret 
 $L_4abcc3 ENDP
+ELSE
+EXTERN _Items44_UninitCopyB:PROC
+FUN_4abba0 TEXTEQU <_Items44_UninitCopyB>
+$L_4abca0 LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -314783,6 +314857,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/evaluator.cpp, nmake ASM_EVALUATOR=1 assembles the original
+IFDEF ASM_EVALUATOR
 FUN_4abd20 PROC
 
             push EBP
@@ -314926,6 +315002,11 @@ $L_4abe43 PROC
             pop EBP
             ret 
 $L_4abe43 ENDP
+ELSE
+EXTERN _Items44_UninitCopy:PROC
+FUN_4abd20 TEXTEQU <_Items44_UninitCopy>
+$L_4abe20 LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -379152,6 +379233,8 @@ $L_4d0ed0 TEXTEQU <@Dtor4d0ed0_DeletingDestructor@12>
 ENDIF
           BYTE 090H
           BYTE 090H
+; src/effects.cpp, nmake ASM_EFFECTS=1 assembles the original
+IFDEF ASM_EFFECTS
 $L_4d0ef0 PROC
 
             mov EAX,DWORD PTR [$L_6cec6c]
@@ -379234,6 +379317,10 @@ $L_4d0faa::
             add ESP,192
             ret 8
 $L_4d0ef0 ENDP
+ELSE
+EXTERN @VehicleObj_Attach@16:PROC
+$L_4d0ef0 TEXTEQU <@VehicleObj_Attach@16>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -509859,6 +509946,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/game_shell.cpp, nmake ASM_GAME_SHELL=1 assembles the original
+IFDEF ASM_GAME_SHELL
 $L_526bc0 PROC
 
             sub ESP,200
@@ -509940,6 +510029,10 @@ $L_526c73::
             add ESP,200
             ret 
 $L_526bc0 ENDP
+ELSE
+EXTERN @PlayersScreen_Open@8:PROC
+$L_526bc0 TEXTEQU <@PlayersScreen_Open@8>
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
@@ -697900,6 +697993,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 FUN_5a44c0 PROC
 
             push -1
@@ -698130,6 +698225,10 @@ $L_5a468a::
             add ESP,32
             ret 76
 $L_5a45b8 ENDP
+ELSE
+EXTERN @WeatherItem_Construct@84:PROC
+FUN_5a44c0 TEXTEQU <@WeatherItem_Construct@84>
+ENDIF
           BYTE 090H
           BYTE 090H
 ; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
@@ -700703,6 +700802,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H
+; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
+IFDEF ASM_WEATHER
 $L_5a5f50 PROC
 
             sub ESP,8
@@ -700929,6 +701030,10 @@ $L_5a6118::
 
             nop
 $L_5a6050 ENDP
+ELSE
+EXTERN @Flake_Step@8:PROC
+$L_5a5f50 TEXTEQU <@Flake_Step@8>
+ENDIF
 ; src/weather.cpp, nmake ASM_WEATHER=1 assembles the original
 IFDEF ASM_WEATHER
 $L_5a6140 PROC
@@ -866487,6 +866592,8 @@ ENDIF
           BYTE 090H
           BYTE 090H
 ALIGN 16
+; src/sound_files.cpp, nmake ASM_SOUND_FILES=1 assembles the original
+IFDEF ASM_SOUND_FILES
 FUN_600420 PROC
 
             push EBP
@@ -866619,6 +866726,11 @@ $L_600527 PROC
             pop EBP
             ret 
 $L_600527 ENDP
+ELSE
+EXTERN _SoundRecs_UninitCopy:PROC
+FUN_600420 TEXTEQU <_SoundRecs_UninitCopy>
+$L_6004f7 LABEL NEAR
+ENDIF
           BYTE 090H
           BYTE 090H
           BYTE 090H

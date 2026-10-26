@@ -11698,3 +11698,52 @@ void __fastcall ReplayWnd_Key(BYTE* s, void*, int k)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 33: the players screen
+
+extern "C" void Ps33_ScreenGrab(); KING_ALIAS("_Ps33_ScreenGrab", "@Screen_Grab@8")
+extern "C" void Ps33_WordsReset(); KING_ALIAS("_Ps33_WordsReset", "@Words295_Reset@8")
+extern "C" void Ps33_ScreenSize(); KING_ALIAS("_Ps33_ScreenSize", "_Carat_UpdateScreenSize")
+extern "C" void Ps33_ForceFeedback(); KING_ALIAS("_Ps33_ForceFeedback", "_Joy_ForceFeedback")
+extern "C" void Ps33_Activate(); KING_ALIAS("_Ps33_Activate", "@Win_Activate@8")
+extern "C" void Ps33_ListClear(); KING_ALIAS("_Ps33_ListClear", "@List_Clear@8")
+extern "C" void Ps33_CarId(); KING_ALIAS("_Ps33_CarId", "_Player_CarId")
+extern "C" void Ps33_FirstEntry(); KING_ALIAS("_Ps33_FirstEntry", "_Player_FirstEntry")
+extern "C" void Ps33_NextEntry(); KING_ALIAS("_Ps33_NextEntry", "_Player_NextEntry")
+extern "C" void Ps33_PlayerData(); KING_ALIAS("_Ps33_PlayerData", "_Ai_GetPlayerData")
+extern "C" void Ps33_AddNamed(); KING_ALIAS("_Ps33_AddNamed", "@List_AddNamed@12")
+extern "C" void Ps33_Select(); KING_ALIAS("_Ps33_Select", "@List_Select@12")
+ASM_VAR(BYTE, ps33_screen6ce4f4, $L_6ce4f4)
+ASM_VAR(BYTE, ps33_words6d1948, $L_6d1948)
+ASM_VAR(BYTE*, ps33_players68b990, $L_68b990)
+
+extern "C" {
+
+// [$L_526bc0] the players screen opens (vtable): grabs the screen, resets the words, sizes the screen, stops
+// force feedback, activates the window and fills its list (+1032) with the names (+48 of their data) of the
+// players along the current car's entries, then selects +1036
+void __fastcall PlayersScreen_Open(BYTE* self, void*)
+{
+    BYTE d[192];
+    CallThis(Ps33_ScreenGrab, &ps33_screen6ce4f4);
+    CallThis(Ps33_WordsReset, &ps33_words6d1948);
+    CallC(Ps33_ScreenSize);
+    CallC(Ps33_ForceFeedback, 0);
+    CallThis(Ps33_Activate, self);
+    CallThis(Ps33_ListClear, F(BYTE*, self, 1032));
+    int car;
+    CallC(Ps33_CarId, &car);
+    BYTE* it;
+    CallC(Ps33_FirstEntry, &it, car);
+    while (it != ps33_players68b990) {
+        CallC(Ps33_PlayerData, it, d);
+        CallThis(Ps33_AddNamed, F(BYTE*, self, 1032), F(int, d, 48));
+        CallC(Ps33_CarId, &car);
+        BYTE* nx;
+        it = *CallC<BYTE**>(Ps33_NextEntry, &nx, car);
+    }
+    CallThis(Ps33_Select, F(BYTE*, self, 1032), F(int, self, 1036));
+}
+
+}

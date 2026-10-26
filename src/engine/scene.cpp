@@ -2671,7 +2671,7 @@ void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
 // === vector<56 bytes>::insert_aux (FUN_5ffdf0)
 
 extern "C" void FUN_6000c0(); KING_ALIAS("_FUN_6000c0", "@Rec56_CopyConstruct@12")    // copy constructor of a 56-byte record (this, src)
-ASM_PROC(FUN_600420)    // uninitialized copy of 56-byte records (first, last, dest, x)
+extern "C" void FUN_600420(); KING_ALIAS("_FUN_600420", "_SoundRecs_UninitCopy")    // uninitialized copy of 56-byte records (first, last, dest, x)
 extern "C" void FUN_6002f0(); KING_ALIAS("_FUN_6002f0", "_Music_CopyBackward")
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
 extern "C" void FUN_44dd90(); KING_ALIAS("_FUN_44dd90", "@VecChar_Copy@12")

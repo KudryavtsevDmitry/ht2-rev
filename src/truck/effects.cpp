@@ -12920,3 +12920,30 @@ int __cdecl Media_AiEvent(BYTE* it, int kind, BYTE* data)
 }
 
 }
+
+// ---------------------------------------------------------------------------
+// Batch 33: a vehicle object's resource
+
+extern "C" void Vr33_Attach(); KING_ALIAS("_Vr33_Attach", "@Obj_AttachResource@16")
+extern "C" void Vr33_PlayerData(); KING_ALIAS("_Vr33_PlayerData", "_Ai_GetPlayerData")
+ASM_VAR(BYTE*, vr33_world6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, vr33_net6cec98, $L_6cec98)
+
+extern "C" {
+
+// [$L_4d0ef0] a vehicle object attaches resource r (vtable, r, x): in a network race (kind 2) or a network
+// game, or for the player's own car (data +8 = 1), the plain attach; otherwise r is told the object (+256 of
+// the outer object at -16, or nothing) through its vtable +28
+int __fastcall VehicleObj_Attach(BYTE* self, void*, BYTE* r, int x)
+{
+    if (F(int, vr33_world6cec6c, 1316) && F(int, vr33_net6cec98, 384) == 2)
+        return CallThis<int>(Vr33_Attach, self, r, x);
+    BYTE d[192];
+    CallC(Vr33_PlayerData, F(BYTE*, self, 20620), d);
+    if (F(int, vr33_world6cec6c, 1300) > 1 || F(int, d, 8) == 1)
+        return CallThis<int>(Vr33_Attach, self, r, x);
+    BYTE* outer = self - 16;
+    return CallVirt<int>(r, 28, outer ? self + 256 : (BYTE*)0);
+}
+
+}

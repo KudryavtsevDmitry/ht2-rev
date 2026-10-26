@@ -345,3 +345,12 @@ A first List_NewNode passed an extra argument to the two-register @Stl_Lock@8 an
 with cdb). The load test drifts now and then even on the batch 31 build; it was exact on repeated runs. Left:
 FUN_576d70 (nested hand-edited PROCs), $L_5d7b90/$L_5dd8c0 (start at bare labels), FUN_6047d0/FUN_605310 (real
 try/catch), FUN_462850 (rope, throws).
+
+Batch 33 done: about 6 KB of STL/record helpers and small methods: uninitialized copies of 24/36/44/56/104-byte
+records (Recs*_UninitCopy, Items44_UninitCopy, SoundRecs_UninitCopy; their catch-and-rethrow funclets keep a
+`LABEL NEAR` in the ELSE block for the FuncInfo tables), Ai_InsertByDistance, Holders_IntrosortByDistance,
+Recs504_PartialSort, HashTable_Construct, Polyline_Near, WayParser_Construct, PlayersScreen_Open,
+VehicleObj_Attach, Flake_Step (its code between two PROCs wraps with them) and WeatherItem_Construct (19 args, a
+matrix by value). Drive and load tests pass (load exact twice). Left on purpose: FUN_563600 copter step (10.6 KB,
+FPU values carried across branches, likely not reached by the tests), the adjustor thunks at $L_55fa7f (they
+forward unknown stack arguments), FUN_4ac3d0 deque insert, rope helpers that throw.
