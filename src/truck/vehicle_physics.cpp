@@ -1,10 +1,7 @@
-// vehicle_physics.cpp - small functions of the unit at 0x4eb0c7 of king.masm (the
+// vehicle_physics.cpp - small functions of the unit at 0x4eb0c7 of king.exe (the
 // vehicle's controls and physics): ramps of a control between limits, the
 // wheel and contact points of the body, the engine's state, steering
 // geometry, and copies of the body's vectors.
-//
-// Building with  nmake ASM_VEHICLE_PHYSICS=1  makes king.masm assemble the original
-// procedures again.
 
 #include "vecmath.h"
 

@@ -1,9 +1,6 @@
-// core.cpp - the unit at 0x5cf180 of king.masm: intrusive list links, name
+// core.cpp - the unit at 0x5cf180 of king.exe: intrusive list links, name
 // hash tables, block pools, timed event queues, a memory-mapped file,
 // millisecond timers and blit wrappers.
-//
-// Building with  nmake ASM_CORE=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include "x87.h"

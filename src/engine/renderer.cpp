@@ -1,11 +1,8 @@
-// renderer.cpp - small functions of the unit at 0x5ab230 of king.masm (with
+// renderer.cpp - small functions of the unit at 0x5ab230 of king.exe (with
 // input.cpp and vecmath.cpp): the renderer's light stack and render states,
 // object visibility checks, window rectangles and their hierarchy, pixel
 // formats (565/555/32-bit), palettes and fog tables, textures with their
 // mip levels and surfaces, and bitmaps.
-//
-// Building with  nmake ASM_RENDERER=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include "x87.h"

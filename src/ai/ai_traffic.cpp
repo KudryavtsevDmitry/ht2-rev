@@ -4,9 +4,6 @@
 // swaps, vector<12 bytes>::erase), the deleting destructors of its value
 // holders, and a few accessors. The heap functions that copy comparators by
 // value stay in king.masm.
-//
-// Building with  nmake ASM_AI_TRAFFIC=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include "x87.h"

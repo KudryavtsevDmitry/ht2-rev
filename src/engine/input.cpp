@@ -1,9 +1,6 @@
 // input.cpp - the input event queue, rewritten from king.masm: the message
 // handlers of the game's Win32 window put mouse and keyboard messages into
 // it, and CGameApp::ProcessInput takes them out once per frame.
-//
-// Building with  nmake ASM_INPUT=1  makes king.masm assemble the original
-// procedures of these functions again.
 
 #include "king.h"
 
@@ -60,7 +57,7 @@ static void PutMouse(UINT msg, POINT point)
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm, which uses them in place of the labels in [ ].
+// Entry points for the assembly, which uses them in place of the labels in [ ].
 // The message handlers belong to the game's Win32 window (vtable [$L_6523e4],
 // message map [$L_651ee8]); they don't use the window object.
 

@@ -1,13 +1,10 @@
-// controls.cpp - the engine's window controls (unit at 0x5bc2f0 of king.masm):
+// controls.cpp - the engine's window controls (unit at 0x5bc2f0 of king.exe):
 // child lists, selection, simple layouts and the control constructors.
 //
 // A control: vtbl, +16/+20 size, +28 id, +32 flags, +36, +40 hidden,
 // +44..+56 rectangle, +60 spacing, +284 flags (bit 0 selected),
 // +288 first child, +292 selected child, +296. Children are linked through
 // +4 (previous) and +8 (next); [FUN_5d3080] returns the next one.
-//
-// Building with  nmake ASM_CONTROLS=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include <math.h>

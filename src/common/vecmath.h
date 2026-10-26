@@ -1,5 +1,5 @@
 // vecmath.h - the engine's vector, matrix and plane math (unit at 0x5ab230
-// of king.masm), used by the vehicles, the physics and the effects.
+// of king.exe), used by the vehicles, the physics and the effects.
 //
 // Matrices are 3x4: three rows of rotation and a row of translation.
 // Vectors are rows: v' = v * M, so x' = x m[0] + y m[3] + z m[6] + m[9].

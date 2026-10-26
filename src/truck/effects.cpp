@@ -2,9 +2,6 @@
 // small functions of the effects unit: vector helpers, the constructors and
 // destructors of effect and renderer objects, vertex buffers, the pool of
 // lights, fade states, the reflection stack, and lookups of vehicles.
-//
-// Building with  nmake ASM_EFFECTS=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS     // strncpy as in the game
 #include <string.h>

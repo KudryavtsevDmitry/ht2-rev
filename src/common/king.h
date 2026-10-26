@@ -3,10 +3,10 @@
 //
 // How the two halves reach each other:
 //
-//  * C++ -> asm. A procedure or variable of king.masm is bound to a C++ name
+//  * C++ -> asm. A procedure or variable of king.exe is bound to a C++ name
 //    with /alternatename (x86 C names carry a leading underscore, the masm
 //    labels don't). PROC labels are public already; data labels and labels
-//    inside a PROC must be in the PUBLIC list at the top of king.masm.
+//    inside a PROC must be in the PUBLIC list at the top of king.exe.
 //      ASM_PROC(label)            procedure, called through CallC/CallStd/
 //                                 CallThis (C++ can't declare free thiscall
 //                                 functions, so all of them go this way)
@@ -37,31 +37,21 @@
 #define ASM_FUNC(name, label) extern "C" void name(); KING_ALIAS("_" #name, #label)
 #define ASM_VAR(type, name, label) extern "C" type name; KING_ALIAS("_" #name, #label)
 // The program's data is owned by C++: the original _RDATA, _DATA and _BSS are
-// KingRdata, KingData (data_image.cpp, generated) and KingBss (data.cpp), and
-// king.masm points their labels into them. KING_VAR(type, name, address) is
-// the variable at an original address (hex digits without 0x). With ASM_DATA
-// (set by any ASM_* switch) king.masm keeps its own data and KING_VAR binds the
-// label by name like ASM_VAR.
+// KingRdata, KingData (data_image.cpp) and KingBss (data.cpp); src\asm reaches
+// them as _KingData+offset etc. KING_VAR(type, name, address) is the variable
+// at an original address (hex digits without 0x).
 #define KING_RDATA_BASE 0x64b000
 #define KING_DATA_BASE 0x66c000
 #define KING_BSS_BASE 0x68a820
 #define KING_BSS_SIZE 0xf52e4
-#ifdef ASM_DATA
-#define KING_VAR(type, name, address)     extern "C" type name; KING_ALIAS("_" #name, "$L_" #address)
-#else
 extern "C" unsigned char KingRdata[];
 extern "C" unsigned char KingData[];
 extern "C" unsigned char KingBss[KING_BSS_SIZE];
 #define KING_ADDR(a) ((a) >= KING_BSS_BASE ? KingBss + ((a) - KING_BSS_BASE)     : (a) >= KING_DATA_BASE ? KingData + ((a) - KING_DATA_BASE) : KingRdata + ((a) - KING_RDATA_BASE))
 #define KING_VAR(type, name, address) static type& name = *(type*)KING_ADDR(0x##address);
-#endif
-// CRT_PROC(label, modern): a procedure of the old C runtime in king.masm;
-// without ASM_CRT the modern runtime's function of that name (decorated)
-#ifdef ASM_CRT
-#define CRT_PROC(label, modern) ASM_PROC(label)
-#else
+// CRT_PROC(label, modern): a procedure of the old C runtime, now the modern
+// runtime's function of that name (decorated)
 #define CRT_PROC(label, modern) extern "C" void label(); KING_ALIAS("_" #label, modern)
-#endif
 
 #define CHECK_OFFSET(type, field, offset) \
     static_assert(offsetof(type, field) == offset, #type "::" #field " is not at +" #offset)
@@ -113,28 +103,17 @@ char* __cdecl strcpy(char* dest, const char* src);
 int __cdecl strcmp(const char* a, const char* b);
 }
 
-// The standard streams 0 stdin, 1 stdout, 2 stderr. With the game's own C
-// runtime (nmake ASM_CRT=1) they are its _iob entries, 32 bytes each from
-// $L_686340; otherwise those of the modern runtime (see src\engine\crt.cpp).
-#ifdef ASM_CRT
-KING_VAR(BYTE, g_oldIob, 686340)
-#define CRT_STREAM(i) ((FILE*)(&g_oldIob + 32 * (i)))
-#else
+// The standard streams 0 stdin, 1 stdout, 2 stderr of the modern runtime.
 extern "C" FILE* __cdecl __acrt_iob_func(unsigned i);
 #define CRT_STREAM(i) __acrt_iob_func(i)
-#endif
 
 // feof: the converted code tested the old runtime's FILE::_flag (+12) for
 // _IOEOF (16) as VC6's feof macro did; the modern FILE is opaque.
-#ifdef ASM_CRT
-#define FILE_EOF(f) (*((BYTE*)(f) + 12) & 16)
-#else
 extern "C" int __cdecl feof(FILE* f);
 #define FILE_EOF(f) (feof((FILE*)(f)))
-#endif
 
 // ---------------------------------------------------------------------------
-// Procedures of king.masm
+// Procedures of king.exe
 
 extern "C" void FUN_6037e0(); KING_ALIAS("_FUN_6037e0", "_Tsc_Now")    // Timer_Now
 extern "C" void FUN_5b6180(); KING_ALIAS("_FUN_5b6180", "_Device_BeginScene")    // Gfx_BeginScene
@@ -358,13 +337,8 @@ void AFXAPI AfxPostQuitMessage(int nExitCode);  // ?AfxPostQuitMessage@@YGXH@Z
 // C runtime: operator new failure handling (C++ names in the old runtime,
 // C names in the modern one)
 typedef int (__cdecl* NewHandler)(size_t size);
-#ifdef ASM_CRT
-NewHandler __cdecl _set_new_handler(NewHandler handler); // ?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z
-int __cdecl _set_new_mode(int mode);                     // ?_set_new_mode@@YAHH@Z
-#else
 extern "C" NewHandler __cdecl _set_new_handler(NewHandler handler);
 extern "C" int __cdecl _set_new_mode(int mode);
-#endif
 
 struct CWinApp {                // MFC 4.2, statically linked
     void**  vtbl;
@@ -509,7 +483,7 @@ struct CKingApp : CGameApp {
 };
 
 // ---------------------------------------------------------------------------
-// Variables of king.masm
+// Variables of king.exe
 
 // state.dump, a crash trace written when [ENV] taskdump is set in truck.ini
 struct StateDump {

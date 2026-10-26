@@ -1,9 +1,6 @@
 // native_values.cpp - sch_embd.cpp of the game, rewritten from king.masm:
 // script values made by the game's code: +0 the object (reference count at
 // +4), +8 flags (0x10000: immediate).
-//
-// Building with  nmake ASM_NATIVE_VALUES=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

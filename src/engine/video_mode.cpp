@@ -1,9 +1,6 @@
-// video_mode.cpp - the unit at 0x5d3ab0 of king.masm: the current video mode
+// video_mode.cpp - the unit at 0x5d3ab0 of king.exe: the current video mode
 // (resolution, color depth, windowed flags), the 8-bit palette of the
 // window, and palette updates of the DirectDraw primary surface.
-//
-// Building with  nmake ASM_VIDEO_MODE=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 

@@ -1,9 +1,6 @@
 // terrain_grid.cpp - small functions of tgreed.cpp of the terrain library:
 // the terrain mesh's coordinate nodes, height samples of the 3x3 tiles,
 // and accessors.
-//
-// Building with  nmake ASM_TERRAIN_GRID=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 

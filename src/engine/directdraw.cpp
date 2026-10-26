@@ -1,9 +1,6 @@
-// directdraw.cpp - small functions of the unit at 0x5d3fd0 of king.masm:
+// directdraw.cpp - small functions of the unit at 0x5d3fd0 of king.exe:
 // the DirectDraw device: vertical blank, flip waits, the 565 pixel format
 // check, video memory, the adapter name, and the requested display mode.
-//
-// Building with  nmake ASM_DIRECTDRAW=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 

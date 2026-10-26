@@ -1,9 +1,6 @@
 // road_graph.cpp - ai_road.cpp of the AI, rewritten from king.masm: the ids of
 // the road graph (NodeId, RoadId, PositionId) with their checks, and lookups
 // of the roads between nodes.
-//
-// Building with  nmake ASM_ROAD_GRAPH=1  makes king.masm assemble the original
-// procedures again.
 
 #include "road.h"
 

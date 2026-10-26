@@ -2,9 +2,6 @@
 // functions of the AI's script evaluator: reference-counted values and the
 // scopes holding them, the constructors of the expression nodes, the map and
 // list helpers, pools of freed blocks.
-//
-// Building with  nmake ASM_EVALUATOR=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 

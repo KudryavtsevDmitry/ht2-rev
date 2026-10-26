@@ -2,9 +2,6 @@
 // functions of the copter and of the code around it: a stack of 16-bit
 // values, the copter's initialization and its targets, the on-screen notice,
 // objects of the game screen by id, enumerations, and a menu line.
-//
-// Building with  nmake ASM_HELICOPTER=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>

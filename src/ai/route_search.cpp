@@ -4,9 +4,6 @@
 // transforms, bounding boxes), the CRC32 the AI uses to check files, and the
 // smoothing filters of its controls. The route search itself and the unit's
 // static initializers are still assembly.
-//
-// Building with  nmake ASM_ROUTE_SEARCH=1  makes king.masm assemble the original
-// procedures again.
 
 #include <fcntl.h>
 #include <string.h>
@@ -481,7 +478,7 @@ extern "C" int __cdecl AI_Level3()
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm.
+// Entry points for the assembly.
 
 extern "C" {
 // an empty STL vector; the argument is its allocator  [FUN_487730]

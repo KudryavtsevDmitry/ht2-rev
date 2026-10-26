@@ -1,9 +1,6 @@
-// moving_items.cpp - the unit at 0x57d580 of king.masm: scene objects that
+// moving_items.cpp - the unit at 0x57d580 of king.exe: scene objects that
 // move and take hits (_MovingItem, _MovingBox); +1440 selects the second
 // set of transforms; the force feedback switch.
-//
-// Building with  nmake ASM_MOVING_ITEMS=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

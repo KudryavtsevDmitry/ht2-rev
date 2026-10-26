@@ -1,9 +1,6 @@
 // ai_containers.cpp - the STL template instances the AI's code generated (the unit
-// at 0x458bc0 of king.masm, after Ai_main.cpp): insertion sorts, medians and
+// at 0x458bc0 of king.exe, after Ai_main.cpp): insertion sorts, medians and
 // partitions for its sorts, list and vector members, finds, copies.
-//
-// Building with  nmake ASM_AI_CONTAINERS=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>

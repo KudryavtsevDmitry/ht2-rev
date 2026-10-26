@@ -1,9 +1,6 @@
 // ai_drivers.cpp - ai_play.cpp of the AI, rewritten from king.masm: the AI's
 // players (the vehicles it drives): their ids, cargo values, and the
 // counters of players per place.
-//
-// Building with  nmake ASM_AI_DRIVERS=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS     // strcpy as in the game
 #include <string.h>
@@ -547,7 +544,7 @@ extern "C" void __cdecl Player_GoTo(BYTE* p, PositionId target, int id)
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm.
+// Entry points for the assembly.
 
 extern "C" {
 void __fastcall Player_SetVrId(Player* self, void*, int id) { self->SetVrId(id); }          // [FUN_473540]

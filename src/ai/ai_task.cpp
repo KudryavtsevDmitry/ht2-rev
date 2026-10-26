@@ -2,9 +2,6 @@
 // reaches the game: its cycle task, the switches of the game screen, screen
 // messages and banners. The unit's static initializers (an STL random
 // generator, the message buffer) are compiler-generated and stay assembly.
-//
-// Building with  nmake ASM_AI_TASK=1  makes king.masm assemble the original
-// procedures again.
 
 #include "ai.h"
 
@@ -107,7 +104,7 @@ void eventBanner(int xEventId, char* message)
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm. The cdecl functions declared in ai.h replace
+// Entry points for the assembly. The cdecl functions declared in ai.h replace
 // their labels themselves: AI_StartXCycleTask [FUN_483990], AI_Time
 // [FUN_483a20], AI_483a50 [FUN_483a50], updateSwitch [FUN_483a70],
 // AI_UpdateSwitch [FUN_483c10], displayScreenMessage [FUN_483cb0],

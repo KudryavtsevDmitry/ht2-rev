@@ -3,9 +3,6 @@
 // vehicle types, the constructors of an effect class (FUN_59ab10) and of its
 // subclasses, a plane through a point, and lookups in a table of 124-byte
 // entries.
-//
-// Building with  nmake ASM_WORLD_OBJECTS=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

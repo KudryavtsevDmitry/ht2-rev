@@ -1,8 +1,5 @@
 // game_app.cpp - CGameApp, the engine's application class, rewritten from
 // king.masm. The methods of the main loop are in mainloop.cpp.
-//
-// Building with  nmake ASM_GAME_APP=1  makes king.masm assemble the original
-// procedures of these functions again.
 
 #include "king.h"
 
@@ -326,7 +323,7 @@ void CGameApp::SetMousePos(int x, int y)
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm, which uses them in place of the labels in [ ]
+// Entry points for the assembly, which uses them in place of the labels in [ ]
 
 extern "C" {
 

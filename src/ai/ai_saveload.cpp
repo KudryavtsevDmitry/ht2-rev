@@ -1,8 +1,5 @@
 // ai_saveload.cpp - ai_svld.cpp of the AI, rewritten from king.masm: helpers
 // of its save files.
-//
-// Building with  nmake ASM_AI_SAVELOAD=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include <objbase.h>

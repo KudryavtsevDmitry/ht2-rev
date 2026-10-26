@@ -1,11 +1,8 @@
-// vehicle.cpp - small functions of the unit at 0x52fa20 of king.masm (the
+// vehicle.cpp - small functions of the unit at 0x52fa20 of king.exe (the
 // code before copter.cpp): the control bindings, sounds at the volume of the
 // options, the list of vehicles and the classes of vehicle types, getters,
 // setters and saved states of the vehicle, a flashing light, and some
 // constructors.
-//
-// Building with  nmake ASM_VEHICLE=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>

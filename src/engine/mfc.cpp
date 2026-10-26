@@ -6,9 +6,6 @@
 // Contents: MFC's thread local and process local storage
 // (CThreadSlotData, CThreadLocalObject, CProcessLocalObject) and the global
 // locks (AfxLockGlobals).
-//
-// Building with  nmake ASM_MFC=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 

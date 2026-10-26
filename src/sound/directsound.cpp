@@ -1,11 +1,8 @@
-// directsound.cpp - the unit at 0x603fd0 of king.masm (from the Gi\Srmidp
+// directsound.cpp - the unit at 0x603fd0 of king.exe (from the Gi\Srmidp
 // sound library): the DirectSound mixer: a priority-ordered list of playing
 // sounds under a critical section, the sound table (24-byte entries at
 // [$L_724164]), RIFF chunk lookup in wave files, and volume conversion
 // between 0..1 and DirectSound's hundredths of decibels.
-//
-// Building with  nmake ASM_DIRECTSOUND=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 #include "x87.h"

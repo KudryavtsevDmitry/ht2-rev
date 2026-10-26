@@ -4,9 +4,6 @@
 // rounds to float, after the rules in x87.h: the results are the same.
 // The unit's static initializers (g_identity, g_zeroVec, the axes) are
 // compiler-generated and stay assembly.
-//
-// Building with  nmake ASM_VECMATH=1  makes king.masm assemble the original
-// procedures again.
 
 #include "vecmath.h"
 
@@ -585,7 +582,7 @@ Matrix* Matrix_ScaleRows(Matrix* out, const Matrix* m, float s)
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm. The cdecl functions declared in vecmath.h
+// Entry points for the assembly. The cdecl functions declared in vecmath.h
 // replace their labels themselves; these replace thiscall methods. The
 // operators returned a copy of the result: *this op= x; return *this.
 

@@ -2,9 +2,6 @@
 // rewritten from king.masm: torque curve, wheel force, resistance, and from
 // them the top speed in each gear, the best gear and the cruising gear.
 // Everything is x87 math on g_carTypes, written after the rules in x87.h.
-//
-// Building with  nmake ASM_DRIVETRAIN=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 

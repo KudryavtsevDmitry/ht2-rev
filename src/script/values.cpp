@@ -3,9 +3,6 @@
 // part at +24 for complex values) and their arithmetic and comparisons,
 // value lists, the deque<pointer> of the reader (128 pointers per block),
 // character classes of the tokenizer, and constructors and destructors.
-//
-// Building with  nmake ASM_VALUES=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include "x87.h"

@@ -2,9 +2,6 @@
 // also grid_base.cpp and grid_topology.cpp): ring lists, the binary tree
 // nodes of btr.h, the 3x3 tile height tables (257x257 samples of 16 bytes),
 // degree tables of sine and cosine, and object constructors.
-//
-// Building with  nmake ASM_GRID_SUPPORT=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 #include "x87.h"
