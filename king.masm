@@ -2291,6 +2291,10 @@ PUBLIC $L_64b59c
 PUBLIC $L_67e918
 PUBLIC $L_6545a8, $L_72db7c, $L_72de40, $L_72de44, $L_72de48, $L_72de7c
 PUBLIC $L_72dec0, $L_72ded8, $L_72e070, $L_72e074
+PUBLIC $L_6534a8, $L_653570, $L_654284, $L_65428c, $L_654294, $L_65429c
+PUBLIC $L_6546d4, $L_6546dc, $L_72c160, $L_72c164, $L_72db78, $L_72dd08
+PUBLIC $L_72dd0c
+PUBLIC $L_639df5
 
 ;===================================
 _TEXT SEGMENT
@@ -752425,7 +752429,7 @@ $L_5c2edb::
             push 1
             push 0
             push OFFSET $L_5c2d70
-            call ?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z
+            call FUN_6329a7
 
             mov DWORD PTR [$L_702f94],0
             ret 
@@ -800580,7 +800584,7 @@ $L_5dd182::
             mov ECX,ESI
             call ?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+12]
             push 130
@@ -800974,7 +800978,7 @@ ALIGN 16
 IFDEF ASM_FRAMEWORK
 FUN_5dd4d0 PROC
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             cmp EAX,DWORD PTR [$L_72177c]
             je $L_5dd500
@@ -801022,7 +801026,7 @@ $L_5dd510 PROC
             test EAX,EAX
             jne $L_5dd523
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             mov DWORD PTR [$L_72177c],EAX
 $L_5dd523::
@@ -809905,14 +809909,14 @@ $L_5e2a6b::
             cmp DWORD PTR [ECX+320],1
             jne $L_5e2a97
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+12]
             push OFFSET $L_68314c
             jmp $L_5e2aa4
 $L_5e2a97::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+12]
             push OFFSET $L_683140
@@ -810150,10 +810154,10 @@ $L_5e2c94::
             push 0
             push 12632256
             mov ECX,EBP
-            call ?SetDialogBkColor@CWinApp@@IAEXKK@Z
+            call FUN_63a7bb
 
             mov ECX,EBP
-            call ?Enable3dControls@CWinApp@@IAEHXZ
+            call FUN_63a662
 
             mov ECX,EBP
             call FUN_5e3bc0
@@ -810617,7 +810621,7 @@ FUN_5e3010 PROC
             mov ECX,ESI
             mov DWORD PTR [$L_721750],0
             mov DWORD PTR [ESP+16],4294967295
-            call ??1CWinApp@@UAE@XZ
+            call FUN_639ade
 
             mov ECX,DWORD PTR [ESP+8]
             pop ESI
@@ -810765,7 +810769,7 @@ FUN_5e3150 PROC
             mov EBP,ECX
             push EBX
             mov DWORD PTR [ESP+44],EBP
-            call ??0CWinApp@@QAE@PBD@Z
+            call FUN_639994
 
             mov DWORD PTR [EBP],OFFSET $L_652664
             mov DWORD PTR [EBP+272],EBX
@@ -812890,7 +812894,7 @@ $L_5e439c::
             push EDI
             push 0
             mov DWORD PTR [ESI+32],0
-            call ?AfxEndThread@@YGXIH@Z
+            call FUN_632a28
 $L_5e43c1::
 
             mov EAX,DWORD PTR [ESI+20]
@@ -812941,7 +812945,7 @@ FUN_5e43e0 PROC
             push EDI
             push ESI
             push OFFSET $L_5e4390
-            call ?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z
+            call FUN_6329a7
 
             push OFFSET $L_683288
             push EDI
@@ -920658,7 +920662,7 @@ $L_61c4c0 PROC
 $L_61c4c0 ENDP
 FUN_61c4c1 PROC
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             test EAX,EAX
             je $L_61c4d2
@@ -920995,7 +920999,7 @@ $L_61c724 PROC
 $L_61c724 ENDP
 $L_61c730 PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ECX,DWORD PTR [EAX+4]
             jmp FUN_6333fa
@@ -965600,14 +965604,14 @@ _WinMain@16 PROC ;FUN_6317d0
             push DWORD PTR [ESP+16]
             push DWORD PTR [ESP+16]
             push DWORD PTR [ESP+16]
-            call ?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z
+            call FUN_636b51
 
             ret 16
 _WinMain@16 ENDP ;FUN_6317d0
 ALIGN 8
 FUN_6317e8 PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ECX,DWORD PTR [ESP+4]
             test ECX,ECX
@@ -967656,13 +967660,13 @@ IFDEF ASM_MAIN_LOOP
             cmp DWORD PTR [ESI+28],0
             jne $L_632696
 
-            call ?AfxOleGetUserCtrl@@YGHXZ
+            call FUN_639967
 
             test EAX,EAX
             je $L_632696
 
             push 0
-            call ?AfxPostQuitMessage@@YGXH@Z
+            call FUN_63b4d3
 $L_632696::
 
             mov ECX,ESI
@@ -967944,7 +967948,7 @@ $L_632864 PROC
             mov ECX,DWORD PTR [EDI]
             mov ECX,DWORD PTR [ECX+4]
             mov DWORD PTR [EAX+4],ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push OFFSET $L_639ca6
             lea ECX,DWORD PTR [EAX+4208]
@@ -967953,7 +967957,7 @@ $L_632864 PROC
             mov DWORD PTR [EAX+4],ESI
             call FUN_632a6d
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             cmp EAX,EBX
@@ -967989,7 +967993,7 @@ $L_6328eb PROC
 
             push 0
             push -1
-            call ?AfxEndThread@@YGXIH@Z
+            call FUN_632a28
 
             mov EAX,OFFSET $L_632915
             ret 
@@ -968046,7 +968050,7 @@ $L_632961::
 
             push 1
             push ESI
-            call ?AfxEndThread@@YGXIH@Z
+            call FUN_632a28
 
             or DWORD PTR [EBP-4],4294967295
             lea ECX,DWORD PTR [EBP-80]
@@ -968062,7 +968066,9 @@ $L_632961::
             ret 4
 $L_632915 ENDP
 ALIGN 2
-?AfxGetThread@@YGPAVCWinThread@@XZ PROC ;FUN_632992 CWinThread *AFXAPI AfxGetThread()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_632992 PROC ;?AfxGetThread@@YGPAVCWinThread@@XZ CWinThread *AFXAPI AfxGetThread()
 
             call FUN_63a368
 
@@ -968070,14 +968076,20 @@ ALIGN 2
             test EAX,EAX
             jne $L_6329a6
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
 $L_6329a6::
 
             ret 
-?AfxGetThread@@YGPAVCWinThread@@XZ ENDP
-?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z PROC ;FUN_6329a7 CWinThread *AFXAPI AfxBeginThread(AFX_THREADPROC pfnThreadProc, LPVOID pParam, int nPriority, UINT nStackSize, DWORD dwCreateFlags, LPSECURITY_ATTRIBUTES lpSecurityAttrs)
+FUN_632992 ENDP
+ELSE
+EXTERN _Afx_GetThread@0:PROC
+FUN_632992 TEXTEQU <_Afx_GetThread@0>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_6329a7 PROC ;?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z CWinThread *AFXAPI AfxBeginThread(AFX_THREADPROC pfnThreadProc, LPVOID pParam, int nPriority, UINT nStackSize, DWORD dwCreateFlags, LPSECURITY_ATTRIBUTES lpSecurityAttrs)
 
             mov EAX,OFFSET $L_64a319
             call FUN_62001c
@@ -968141,9 +968153,15 @@ $L_632a19::
             mov DWORD PTR FS:[0],ECX
             leave 
             ret 24
-?AfxBeginThread@@YGPAVCWinThread@@P6AIPAX@Z0HIKPAU_SECURITY_ATTRIBUTES@@@Z ENDP
+FUN_6329a7 ENDP
+ELSE
+EXTERN _Afx_BeginThread@24:PROC
+FUN_6329a7 TEXTEQU <_Afx_BeginThread@24>
+ENDIF
 ALIGN 8
-?AfxEndThread@@YGXIH@Z PROC ;FUN_632a28 void AFXAPI AfxEndThread(UINT nExitCode, BOOL bDelete)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_632a28 PROC ;?AfxEndThread@@YGXIH@Z void AFXAPI AfxEndThread(UINT nExitCode, BOOL bDelete)
 
             push ESI
             push EDI
@@ -968184,10 +968202,16 @@ $L_632a57::
             pop EDI
             pop ESI
             ret 8
-?AfxEndThread@@YGXIH@Z ENDP
+FUN_632a28 ENDP
+ELSE
+EXTERN _Afx_EndThread@8:PROC
+FUN_632a28 TEXTEQU <_Afx_EndThread@8>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632a6d PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             jne $L_632acb
@@ -968213,7 +968237,7 @@ FUN_632a6d PROC
             cmp DWORD PTR [ESI+20],0
             je $L_632abb
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [EAX+8]
             call DWORD PTR [ESI+20]
@@ -968228,7 +968252,13 @@ $L_632acb::
 
             ret 
 FUN_632a6d ENDP
+ELSE
+EXTERN _Afx_InitThread:PROC
+FUN_632a6d TEXTEQU <_Afx_InitThread>
+ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632acc PROC
 
             mov EAX,OFFSET $L_64a324
@@ -968293,6 +968323,11 @@ $L_632b3d::
             leave 
             ret 4
 FUN_632acc ENDP
+ELSE
+EXTERN _Afx_TermThread@4:PROC
+FUN_632acc TEXTEQU <_Afx_TermThread@4>
+$L_632b3d LABEL NEAR
+ENDIF
 $L_632b4e PROC
 
             mov ECX,DWORD PTR [EBP-20]
@@ -968302,6 +968337,8 @@ $L_632b4e PROC
             ret 
 $L_632b4e ENDP
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632b5c PROC
 
             push EBP
@@ -968423,6 +968460,10 @@ $L_632c37::
             leave 
             ret 12
 FUN_632b5c ENDP
+ELSE
+EXTERN @WinThread_CreateThread@20:PROC
+FUN_632b5c TEXTEQU <@WinThread_CreateThread@20>
+ENDIF
 $L_632c3e PROC
 
             cmp DWORD PTR [ECX+36],0
@@ -968631,7 +968672,7 @@ FUN_632d2c PROC
             call FUN_6353af
 $L_632d76::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             add EAX,4208
             push OFFSET $L_639ca6
@@ -968700,7 +968741,7 @@ $L_632dfb::
             jmp $L_632d8f
 $L_632e00::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             add EAX,4208
             push OFFSET $L_639ca6
@@ -968901,7 +968942,7 @@ FUN_632f0f ENDP
 $L_632f34 PROC
 
             push ESI
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             mov ESI,DWORD PTR [ESP+8]
@@ -968914,7 +968955,7 @@ $L_632f34 PROC
             jne $L_632f67
 $L_632f50::
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             test EAX,EAX
             je $L_632f67
@@ -969213,6 +969254,8 @@ $L_633179::
             ret 
 $L_63313c ENDP
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63317c PROC
 
             mov EAX,ECX
@@ -969227,7 +969270,13 @@ FUN_63317c PROC
             mov DWORD PTR [EAX+24],EDX
             ret 
 FUN_63317c ENDP
+ELSE
+EXTERN @CmdTarget_Construct@4:PROC
+FUN_63317c TEXTEQU <@CmdTarget_Construct@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_633196 PROC
 
             mov EAX,OFFSET $L_64a388
@@ -969249,6 +969298,10 @@ $L_6331b5::
             leave 
             ret 
 FUN_633196 ENDP
+ELSE
+EXTERN @CmdTarget_Destruct@4:PROC
+FUN_633196 TEXTEQU <@CmdTarget_Destruct@4>
+ENDIF
 FUN_6331c1 PROC
 
             push EBP
@@ -969433,7 +969486,7 @@ FUN_6332c8 PROC
             mov EDI,ECX
             jne $L_6332f9
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [EBP+20]
             mov EAX,DWORD PTR [EAX+4152]
@@ -969593,7 +969646,7 @@ $L_6333dd PROC
 $L_6333dd ENDP
 FUN_6333e5 PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             push 1
@@ -969606,7 +969659,7 @@ FUN_6333e5 ENDP
 ALIGN 2
 FUN_6333fa PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             push -1
@@ -970769,7 +970822,7 @@ $L_633c20::
 FUN_633ba1 ENDP
 $L_633c4b PROC
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             mov ECX,DWORD PTR [EBP-20]
             mov EDX,DWORD PTR [EAX]
@@ -971185,7 +971238,7 @@ $L_633f66 PROC
             mov DWORD PTR [EBP-68],EAX
             mov EAX,DWORD PTR [EBP+20]
             mov DWORD PTR [EBP-64],EAX
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             mov EDX,DWORD PTR [EAX]
             lea ECX,DWORD PTR [EBP-76]
@@ -971288,7 +971341,7 @@ $L_634053::
             mov ESI,DWORD PTR [EAX+20]
             push EDI
             mov EDI,DWORD PTR [ECX]
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             movzx EAX,BYTE PTR [EAX+20]
             mov EBX,DWORD PTR [EBP+12]
@@ -971548,7 +971601,7 @@ FUN_634260 PROC
             call FUN_63ad2d
 
             mov ESI,EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             je $L_63428f
@@ -971605,7 +971658,7 @@ FUN_6342a2 PROC
             mov EAX,DWORD PTR [EBP+44]
             mov ESI,ECX
             mov DWORD PTR [EBP-40],EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+8]
             lea ECX,DWORD PTR [EBP-48]
@@ -971818,7 +971871,7 @@ $L_63446e PROC
             push ESI
             push EDI
             mov ESI,ECX
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             mov EDI,EAX
             xor EBX,EBX
@@ -971828,12 +971881,12 @@ $L_63446e PROC
             cmp DWORD PTR [EDI+28],ESI
             jne $L_6344b1
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],BL
             jne $L_6344ae
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp EDI,DWORD PTR [EAX+4]
             jne $L_6344a8
@@ -971845,7 +971898,7 @@ $L_63446e PROC
 $L_6344a8::
 
             push EBX
-            call ?AfxPostQuitMessage@@YGXH@Z
+            call FUN_63b4d3
 $L_6344ae::
 
             mov DWORD PTR [EDI+28],EBX
@@ -972068,7 +972121,7 @@ FUN_63462a PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4148]
             test EAX,EAX
@@ -972461,7 +972514,7 @@ FUN_63489e PROC
             jmp $L_63491e
 $L_6348d8::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             xor EBX,EBX
             cmp BYTE PTR [EAX+20],BL
@@ -972471,7 +972524,7 @@ $L_6348d8::
             call FUN_63b01e
 
             mov DWORD PTR [EBP-4],EBX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [ESI+36]
             mov ESI,DWORD PTR __imp__lstrcatA@8
@@ -972525,7 +972578,7 @@ FUN_63493f PROC
 
             mov ESI,EAX
             add ESI,88
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EBX,DWORD PTR [EBP+12]
             mov EDI,DWORD PTR [EAX+8]
@@ -972640,11 +972693,11 @@ $L_634a39 PROC
             push EBX
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             mov DWORD PTR [EBP-16],EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ECX,DWORD PTR [EAX+4]
             call FUN_6333e5
@@ -972727,7 +972780,7 @@ $L_634ad0::
 $L_634afa::
 
             or DWORD PTR [EBP-4],4294967295
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ECX,DWORD PTR [EAX+4]
             call FUN_6333fa
@@ -974658,7 +974711,7 @@ $L_6358d0 PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -974671,17 +974724,17 @@ $L_6358d0 PROC
             call FUN_636744
 $L_6358ee::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             jne $L_635924
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             test EAX,EAX
             je $L_635924
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             cmp DWORD PTR [EAX+28],ESI
             jne $L_635924
@@ -974723,7 +974776,7 @@ $L_63594d PROC
             push ESI
             push EDI
             mov EDI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             jne $L_635989
@@ -974733,12 +974786,12 @@ $L_63594d PROC
             call FUN_63adef
 
             mov ESI,EAX
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             test EAX,EAX
             je $L_635989
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             cmp DWORD PTR [EAX+28],EDI
             jne $L_635989
@@ -974764,7 +974817,7 @@ $L_6359a0 PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -975346,7 +975399,7 @@ FUN_635da9 PROC
             mov ESI,DWORD PTR [ESP+8]
             push EDI
             mov DWORD PTR [ESI+36],EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             movzx ECX,WORD PTR [ESP+20]
             mov EAX,DWORD PTR [EAX+12]
@@ -975442,7 +975495,7 @@ FUN_635e61 PROC
             push EBP
             mov EBP,ESP
             sub ESP,52
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov DWORD PTR [EBP-4],EAX
             mov EAX,DWORD PTR [EAX+24]
@@ -975469,7 +975522,7 @@ $L_635e81::
             mov EAX,DWORD PTR __imp__DefWindowProcA@16
             add ESP,12
             mov DWORD PTR [EBP-48],EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+8]
             push 8
@@ -976464,7 +976517,7 @@ $L_6365bb::
 FUN_6365c1 PROC
 
             push ESI
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [ESP+16]
             mov ESI,DWORD PTR [ESP+16]
@@ -976797,6 +976850,8 @@ $L_6367b3::
             ret 
 FUN_636788 ENDP
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6367e0 PROC
 
             call FUN_63a368
@@ -976804,6 +976859,12 @@ FUN_6367e0 PROC
             inc DWORD PTR [EAX+16]
             ret 
 FUN_6367e0 ENDP
+ELSE
+EXTERN _Afx_LockTempMaps:PROC
+FUN_6367e0 TEXTEQU <_Afx_LockTempMaps>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6367e9 PROC
 
             push EBP
@@ -976830,7 +976891,7 @@ FUN_6367e9 PROC
             cmp DWORD PTR [EBP+8],-1
             je $L_63682e
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             cmp EAX,ESI
             je $L_63682e
@@ -976860,7 +976921,7 @@ $L_63682e::
             call FUN_636a07
 $L_636856::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EDI,DWORD PTR [EAX+4]
             push OFFSET $L_639dac
@@ -976929,6 +976990,10 @@ $L_6368d4::
             pop EBP
             ret 4
 FUN_6367e9 ENDP
+ELSE
+EXTERN _Afx_UnlockTempMaps@4:PROC
+FUN_6367e9 TEXTEQU <_Afx_UnlockTempMaps@4>
+ENDIF
 FUN_6368e3 PROC
 
             mov EAX,OFFSET $L_64a626
@@ -977258,16 +977323,18 @@ $L_636b44::
 
             ret 
 FUN_636b3b ENDP
-?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z PROC ;FUN_636b51 int AFXAPI AfxWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_636b51 PROC ;?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z int AFXAPI AfxWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPTSTR lpCmdLine, int nCmdShow)
 
             push EBX
             push ESI
             push EDI
             or EBX,4294967295
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             mov ESI,EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [ESP+28]
             mov EDI,DWORD PTR [EAX+4]
@@ -977327,7 +977394,11 @@ $L_636bba::
             pop ESI
             pop EBX
             ret 16
-?AfxWinMain@@YGHPAUHINSTANCE__@@0PADH@Z ENDP
+FUN_636b51 ENDP
+ELSE
+EXTERN _Afx_WinMain@16:PROC
+FUN_636b51 TEXTEQU <_Afx_WinMain@16>
+ENDIF
 $L_636bc7 PROC
 
             mov EAX,DWORD PTR [ECX+28]
@@ -978491,6 +978562,8 @@ $L_63737f::
             pop EBX
             ret 4
 FUN_63730e ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_637385 PROC
 
             push EDI
@@ -978527,6 +978600,10 @@ $L_6373b7::
             pop EDI
             ret 4
 FUN_637385 ENDP
+ELSE
+EXTERN _Afx_GlobalFree@4:PROC
+FUN_637385 TEXTEQU <_Afx_GlobalFree@4>
+ENDIF
 $L_6373bb PROC
 
             push ESI
@@ -978923,7 +979000,7 @@ FUN_637673 PROC
 
             push EBP
             mov EBP,ESP
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -979356,7 +979433,7 @@ FUN_6379f2 PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             add EAX,4208
             push OFFSET $L_639ca6
@@ -979375,7 +979452,7 @@ FUN_637a16 PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             add EAX,4208
             push OFFSET $L_639ca6
@@ -979394,7 +979471,7 @@ FUN_637a3a PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [ESP+8]
             mov EAX,DWORD PTR [EAX+12]
@@ -979672,7 +979749,7 @@ $L_637c08::
             je $L_637c2a
 $L_637c0c::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -980330,7 +980407,7 @@ $L_638061 ENDP
             mov ESI,ECX
             je $L_6380da
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [EBP+28]
             mov EAX,DWORD PTR [EAX+12]
@@ -980553,7 +980630,7 @@ FUN_638235 PROC
             push ESI
             push EDI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             movzx ECX,WORD PTR [EBP+12]
             mov EAX,DWORD PTR [EAX+12]
@@ -980583,7 +980660,7 @@ FUN_638235 PROC
             cmp DWORD PTR [EBP-48],0
             je $L_6382b0
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+8]
             lea ECX,DWORD PTR [EBP-40]
@@ -980775,7 +980852,7 @@ $L_6383d6::
             je $L_6384aa
 $L_6383f9::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EDI,DWORD PTR [EAX+4]
             test EDI,EDI
@@ -980813,7 +980890,7 @@ $L_638420::
             jmp $L_6384aa
 $L_638441::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             jne $L_63845b
@@ -980822,7 +980899,7 @@ $L_638441::
             jne $L_63845b
 
             push 0
-            call ?AfxPostQuitMessage@@YGXH@Z
+            call FUN_63b4d3
 
             jmp $L_6384aa
 $L_63845b::
@@ -980904,7 +980981,7 @@ $L_6384af PROC
             call DWORD PTR __imp__SetMenu@8
 $L_6384d8::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -980979,7 +981056,7 @@ $L_638557::
             test EAX,EAX
             jne $L_638552
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -981089,7 +981166,7 @@ $L_638633::
             call DWORD PTR [EDX+88]
 $L_638639::
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             cmp DWORD PTR [EAX+28],ESI
             jne $L_638671
@@ -981387,7 +981464,7 @@ $L_63882a PROC
             call ESI
 
             mov DWORD PTR [EBP-4],EAX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp DWORD PTR [EBP-4],EBX
             mov EDI,DWORD PTR [EAX+4]
@@ -981425,7 +981502,7 @@ $L_63889c PROC
 
             push ESI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -981455,7 +981532,7 @@ $L_6388c1 PROC
             mov EDI,ECX
             je $L_6388f4
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ESI,DWORD PTR [EAX+4]
             test ESI,ESI
@@ -981487,7 +981564,7 @@ $L_6388f9 PROC
             sub ESP,264
             push ESI
             mov DWORD PTR [EBP-4],ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ESI,DWORD PTR [EAX+4]
             test ESI,ESI
@@ -981606,7 +981683,7 @@ $L_6389bc PROC
             pop EBX
             je $L_638a51
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             lea ECX,DWORD PTR [EBP-528]
@@ -983622,7 +983699,7 @@ FUN_63991e ENDP
 ALIGN 8
 FUN_639948 PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             xor ECX,ECX
             cmp DWORD PTR [EAX+44],ECX
@@ -983633,19 +983710,25 @@ FUN_639948 ENDP
 ALIGN 8
 FUN_639958 PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ECX,DWORD PTR [ESP+4]
             mov DWORD PTR [EAX+48],ECX
             ret 4
 FUN_639958 ENDP
-?AfxOleGetUserCtrl@@YGHXZ PROC ;FUN_639967 BOOL AFXAPI AfxOleGetUserCtrl()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_639967 PROC ;?AfxOleGetUserCtrl@@YGHXZ BOOL AFXAPI AfxOleGetUserCtrl()
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+48]
             ret 
-?AfxOleGetUserCtrl@@YGHXZ ENDP
+FUN_639967 ENDP
+ELSE
+EXTERN _Afx_OleGetUserCtrl@0:PROC
+FUN_639967 TEXTEQU <_Afx_OleGetUserCtrl@0>
+ENDIF
 ALIGN 16
 FUN_639970 PROC
 
@@ -983671,7 +983754,9 @@ $L_63998e::
             ret 4
 $L_639979 ENDP
 ALIGN 4
-??0CWinApp@@QAE@PBD@Z PROC ;FUN_639994 CWinApp::CWinApp(LPCTSTR lpszAppName)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_639994 PROC ;??0CWinApp@@QAE@PBD@Z CWinApp::CWinApp(LPCTSTR lpszAppName)
 
             mov EAX,OFFSET $L_64a2b4
             call FUN_62001c
@@ -983701,7 +983786,7 @@ $L_6399ca::
             mov DWORD PTR [ESI+120],EDI
 $L_6399cd::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EBX,EAX
             push OFFSET $L_639ca6
@@ -983743,12 +983828,16 @@ $L_6399cd::
             mov DWORD PTR FS:[0],ECX
             leave 
             ret 4
-??0CWinApp@@QAE@PBD@Z ENDP
+FUN_639994 ENDP
+ELSE
+EXTERN @WinApp_Construct@12:PROC
+FUN_639994 TEXTEQU <@WinApp_Construct@12>
+ENDIF
 $L_639a7e PROC
 
             push ESI
             mov ESI,ECX
-            call ??1CWinApp@@UAE@XZ
+            call FUN_639ade
 
             test BYTE PTR [ESP+8],1
             je $L_639a94
@@ -983804,7 +983893,9 @@ $L_639ada PROC
             ret 
 $L_639ada ENDP
 ALIGN 2
-??1CWinApp@@UAE@XZ PROC ;FUN_639ade virtual CWinApp::~CWinApp()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_639ade PROC ;??1CWinApp@@UAE@XZ virtual CWinApp::~CWinApp()
 
             mov EAX,OFFSET $L_64a2c8
             call FUN_62001c
@@ -983835,7 +983926,7 @@ $L_639b0c::
             call DWORD PTR [EAX+20]
 $L_639b1d::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],BL
             jne $L_639b55
@@ -983906,7 +983997,7 @@ $L_639b9a::
             call DWORD PTR [EAX+4]
 $L_639bac::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ECX,DWORD PTR [EAX+16]
             cmp ECX,DWORD PTR [ESI+120]
@@ -983948,7 +984039,11 @@ $L_639bc4::
             mov DWORD PTR FS:[0],ECX
             leave 
             ret 
-??1CWinApp@@UAE@XZ ENDP
+FUN_639ade ENDP
+ELSE
+EXTERN @WinApp_Destruct@4:PROC
+FUN_639ade TEXTEQU <@WinApp_Destruct@4>
+ENDIF
 ALIGN 4
 FUN_639c14 PROC
 
@@ -983988,7 +984083,7 @@ $L_639c44 PROC
             je $L_639c69
 $L_639c57::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             jne $L_639c69
@@ -984041,6 +984136,8 @@ $L_639ca1 PROC
 
             jmp $L_63ae4a
 $L_639ca1 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_639ca6 PROC
 
             mov EAX,OFFSET $L_64a2dd
@@ -984065,6 +984162,12 @@ $L_639ccb::
             leave 
             ret 
 $L_639ca6 ENDP
+ELSE
+EXTERN _ModuleThreadState_New:PROC
+$L_639ca6 TEXTEQU <_ModuleThreadState_New>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_639cd7 PROC
 
             mov EAX,OFFSET $L_64a338
@@ -984092,6 +984195,10 @@ FUN_639cd7 PROC
             leave 
             ret 8
 FUN_639cd7 ENDP
+ELSE
+EXTERN @WinThread_ConstructProc@16:PROC
+FUN_639cd7 TEXTEQU <@WinThread_ConstructProc@16>
+ENDIF
 $L_639d1b PROC
 
             push ESI
@@ -984111,6 +984218,8 @@ $L_639d31::
             pop ESI
             ret 4
 $L_639d1b ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_639d37 PROC
 
             mov EAX,OFFSET $L_64a34c
@@ -984137,7 +984246,13 @@ FUN_639d37 PROC
             leave 
             ret 
 FUN_639d37 ENDP
+ELSE
+EXTERN @WinThread_Construct@4:PROC
+FUN_639d37 TEXTEQU <@WinThread_Construct@4>
+ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_639d74 PROC
 
             push ESI
@@ -984161,11 +984276,17 @@ FUN_639d74 PROC
             pop ESI
             ret 
 FUN_639d74 ENDP
+ELSE
+EXTERN @WinThread_CommonConstruct@4:PROC
+FUN_639d74 TEXTEQU <@WinThread_CommonConstruct@4>
+ENDIF
 $L_639da6 PROC
 
             mov EAX,OFFSET $L_653548
             ret 
 $L_639da6 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_639dac PROC
 
             mov EAX,OFFSET $L_64a375
@@ -984190,6 +984311,10 @@ $L_639dd4::
             leave 
             ret 
 $L_639dac ENDP
+ELSE
+EXTERN _ThreadState_New:PROC
+$L_639dac TEXTEQU <_ThreadState_New>
+ENDIF
 $L_639de0 PROC
 
             push 48
@@ -984534,6 +984659,8 @@ $L_63a069 PROC
             mov EAX,OFFSET $L_653cd8
             ret 
 $L_63a069 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a06f PROC
 
             mov EAX,ECX
@@ -984542,6 +984669,10 @@ FUN_63a06f PROC
             mov DWORD PTR [EAX],OFFSET $L_654284
             ret 
 FUN_63a06f ENDP
+ELSE
+EXTERN @ThreadState_Construct@4:PROC
+FUN_63a06f TEXTEQU <@ThreadState_Construct@4>
+ENDIF
 $L_63a086 PROC
 
             push ESI
@@ -984660,6 +984791,8 @@ $L_63a13c PROC
             jmp $L_63a795
 $L_63a13c ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a146 PROC
 
             mov EAX,ECX
@@ -984686,6 +984819,10 @@ FUN_63a146 PROC
             mov DWORD PTR [EAX+4160],24
             ret 4
 FUN_63a146 ENDP
+ELSE
+EXTERN @ModuleState_Construct@12:PROC
+FUN_63a146 TEXTEQU <@ModuleState_Construct@12>
+ENDIF
 $L_63a1a9 PROC
 
             push ESI
@@ -984755,6 +984892,8 @@ $L_63a21c::
             leave 
             ret 
 FUN_63a1c4 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63a239 PROC
 
             mov EAX,ECX
@@ -984765,6 +984904,10 @@ FUN_63a239 PROC
             mov DWORD PTR [EAX+40],OFFSET FUN_632629
             ret 
 FUN_63a239 ENDP
+ELSE
+EXTERN @ModuleThreadState_Construct@4:PROC
+FUN_63a239 TEXTEQU <@ModuleThreadState_Construct@4>
+ENDIF
 $L_63a258 PROC
 
             push ESI
@@ -984917,7 +985060,9 @@ $L_63a338 PROC
             jmp $L_639ca1
 $L_63a338 ENDP
 ALIGN 2
-?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ PROC ;FUN_63a342 AFX_MODULE_STATE *AFXAPI AfxGetModuleState()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_63a342 PROC ;?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ AFX_MODULE_STATE *AFXAPI AfxGetModuleState()
 
             push OFFSET $L_639dac
             mov ECX,OFFSET $L_72db7c
@@ -984933,13 +985078,17 @@ ALIGN 2
 $L_63a367::
 
             ret 
-?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ ENDP
+FUN_63a342 ENDP
+ELSE
+EXTERN _Afx_GetModuleState@0:PROC
+FUN_63a342 TEXTEQU <_Afx_GetModuleState@0>
+ENDIF
 ALIGN 8
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_63a368 PROC
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             add EAX,4208
             push OFFSET $L_639ca6
@@ -984988,6 +985137,8 @@ $L_63a3b2::
             pop ESI
             ret 
 FUN_63a37f ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63a3b4 PROC
 
             push ESI
@@ -985012,6 +985163,10 @@ $L_63a3d8::
             pop ESI
             ret 
 $L_63a3b4 ENDP
+ELSE
+EXTERN _BaseModuleState_New:PROC
+$L_63a3b4 TEXTEQU <_BaseModuleState_New>
+ENDIF
 $L_63a3dc PROC
 
             push ESI
@@ -985387,7 +985542,7 @@ $L_63a656::
             ret 
 FUN_63a62c ENDP
 ALIGN 2
-?Enable3dControls@CWinApp@@IAEHXZ PROC ;FUN_63a662 protected: BOOL CWinApp::Enable3dControls()
+FUN_63a662 PROC ;?Enable3dControls@CWinApp@@IAEHXZ protected: BOOL CWinApp::Enable3dControls()
 
             push EBX
             xor EBX,EBX
@@ -985480,7 +985635,7 @@ $L_63a702::
             cmp DWORD PTR [ESI+16],EBX
             je $L_63a72a
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [EAX+8]
             call DWORD PTR [ESI+12]
@@ -985518,7 +985673,7 @@ $L_63a75d::
             jmp $L_63a771
 $L_63a766::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [EAX+8]
             call DWORD PTR [ESI+20]
@@ -985527,7 +985682,7 @@ $L_63a771::
             pop ESI
             pop EBX
             ret 
-?Enable3dControls@CWinApp@@IAEHXZ ENDP
+FUN_63a662 ENDP
 $L_63a774 PROC
 
             call FUN_63a77e
@@ -985580,11 +985735,11 @@ $L_63a7b1 PROC
             mov ECX,OFFSET $L_72dd0c
             jmp $L_639ca1
 $L_63a7b1 ENDP
-?SetDialogBkColor@CWinApp@@IAEXKK@Z PROC ;FUN_63a7bb protected: void CWinApp::SetDialogBkColor(COLORREF clrCtlBk, COLORREF clrCtlText)
+FUN_63a7bb PROC ;?SetDialogBkColor@CWinApp@@IAEXKK@Z protected: void CWinApp::SetDialogBkColor(COLORREF clrCtlBk, COLORREF clrCtlText)
 
             push ESI
             push EDI
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             jne $L_63a7f7
@@ -985634,7 +985789,7 @@ $L_63a7f7::
 $L_63a82f::
 
             ret 8
-?SetDialogBkColor@CWinApp@@IAEXKK@Z ENDP
+FUN_63a7bb ENDP
 $L_63a832 PROC
 
             mov EAX,OFFSET $L_654520
@@ -987267,6 +987422,8 @@ $L_63b2ca PROC
             ret 
 $L_63b2ca ENDP
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b2d0 PROC
 
             push ESI
@@ -987278,12 +987435,12 @@ FUN_63b2d0 PROC
             push EAX
             call ESI
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov ESI,DWORD PTR [ESP+8]
             mov DWORD PTR [EAX+8],ESI
             mov DWORD PTR [EAX+12],ESI
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             test EAX,EAX
@@ -987300,7 +987457,7 @@ FUN_63b2d0 PROC
             call FUN_63b333
 $L_63b31c::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],0
             pop ESI
@@ -987313,6 +987470,12 @@ $L_63b32d::
             pop EAX
             ret 16
 FUN_63b2d0 ENDP
+ELSE
+EXTERN _Afx_WinInit@16:PROC
+FUN_63b2d0 TEXTEQU <_Afx_WinInit@16>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b333 PROC
 
             push EBP
@@ -987322,7 +987485,7 @@ FUN_63b333 PROC
             push ESI
             push EDI
             mov ESI,ECX
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EDI,EAX
             mov EAX,DWORD PTR [ESI+104]
@@ -987432,7 +987595,13 @@ $L_63b44b::
             leave 
             ret 
 FUN_63b333 ENDP
+ELSE
+EXTERN @WinApp_SetCurrentHandles@4:PROC
+FUN_63b333 TEXTEQU <@WinApp_SetCurrentHandles@4>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b450 PROC
 
             push ESI
@@ -987492,6 +987661,10 @@ $L_63b4a1::
             pop ESI
             ret 12
 FUN_63b450 ENDP
+ELSE
+EXTERN _Afx_GetFileName@12:PROC
+FUN_63b450 TEXTEQU <_Afx_GetFileName@12>
+ENDIF
 ALIGN 2
 FUN_63b4a6 PROC
 
@@ -987511,9 +987684,11 @@ FUN_63b4a6 PROC
             leave 
             ret 
 FUN_63b4a6 ENDP
-?AfxPostQuitMessage@@YGXH@Z PROC ;FUN_63b4d3 void AFXAPI AfxPostQuitMessage(int nExitCode)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_63b4d3 PROC ;?AfxPostQuitMessage@@YGXH@Z void AFXAPI AfxPostQuitMessage(int nExitCode)
 
-            call ?AfxGetThread@@YGPAVCWinThread@@XZ
+            call FUN_632992
 
             test EAX,EAX
             je $L_63b4e9
@@ -987531,8 +987706,14 @@ $L_63b4e9::
             call DWORD PTR __imp__PostQuitMessage@4
 
             ret 4
-?AfxPostQuitMessage@@YGXH@Z ENDP
+FUN_63b4d3 ENDP
+ELSE
+EXTERN _Afx_PostQuitMessage@4:PROC
+FUN_63b4d3 TEXTEQU <_Afx_PostQuitMessage@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b4f6 PROC
 
             mov EAX,OFFSET $L_64a360
@@ -987570,6 +987751,10 @@ $L_63b52d::
             leave 
             ret 
 FUN_63b4f6 ENDP
+ELSE
+EXTERN @WinThread_Destruct@4:PROC
+FUN_63b4f6 TEXTEQU <@WinThread_Destruct@4>
+ENDIF
 $L_63b545 PROC
 
             add ECX,80
@@ -987578,13 +987763,15 @@ $L_63b545 PROC
 
             ret 
 $L_63b545 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63b54f PROC
 
             push EBX
             push EBP
             push ESI
             push EDI
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push 1
             mov EBP,EAX
@@ -987606,7 +987793,7 @@ $L_63b568::
             mov EDI,EAX
             pop ECX
             mov BYTE PTR [EDI],BL
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             push DWORD PTR [EAX+8]
             push ESI
@@ -987620,7 +987807,7 @@ $L_63b58e::
             mov BYTE PTR [EBP],BL
             call FUN_63b08e
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             mov EAX,DWORD PTR [EAX+4]
             cmp EAX,EBX
@@ -987652,7 +987839,7 @@ $L_63b5b0::
             mov DWORD PTR [EDI],EBX
 $L_63b5d5::
 
-            call ?AfxGetModuleState@@YGPAVAFX_MODULE_STATE@@XZ
+            call FUN_63a342
 
             cmp BYTE PTR [EAX+20],BL
             jne $L_63b5ff
@@ -987684,6 +987871,10 @@ $L_63b5ff::
             pop EBX
             ret 
 FUN_63b54f ENDP
+ELSE
+EXTERN _Afx_WinTerm:PROC
+FUN_63b54f TEXTEQU <_Afx_WinTerm>
+ENDIF
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
@@ -1026064,7 +1026255,7 @@ $L_6493d8 ENDP
 $L_6493f0 PROC
 
             mov ECX,DWORD PTR [EBP-16]
-            jmp ??1CWinApp@@UAE@XZ
+            jmp FUN_639ade
 $L_6493f0 ENDP
 $L_6493f8 PROC
 
@@ -1026088,7 +1026279,7 @@ $L_6493f8 ENDP
 $L_649410 PROC
 
             mov ECX,DWORD PTR [EBP-144]
-            jmp ??1CWinApp@@UAE@XZ
+            jmp FUN_639ade
 $L_649410 ENDP
 $L_64941b PROC
 

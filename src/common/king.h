@@ -340,8 +340,8 @@ static_assert(sizeof(CWinApp) == 192, "CWinApp size");
 // This struct has no vtable or constructors of its own, so it calls MFC's
 // as plain members, under names the linker maps to MFC's (OnIdle is
 // virtual in MFC: ?OnIdle@CWinApp@@UAEHJ@Z).
-KING_ALIAS("?Construct@CWinApp@@QAEXPBD@Z", "??0CWinApp@@QAE@PBD@Z")
-KING_ALIAS("?Destruct@CWinApp@@QAEXXZ", "??1CWinApp@@UAE@XZ")
+KING_ALIAS("?Construct@CWinApp@@QAEXPBD@Z", "@WinApp_Construct@12")
+KING_ALIAS("?Destruct@CWinApp@@QAEXXZ", "@WinApp_Destruct@4")
 KING_ALIAS("?OnIdle@CWinApp@@QAEHJ@Z", "?OnIdle@CWinApp@@UAEHJ@Z")
 
 enum {
