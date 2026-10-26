@@ -66,7 +66,7 @@ extern "C" double __cdecl Player_CargoValue(BYTE* player)
 
 extern "C" void FUN_4cd730(); KING_ALIAS("_FUN_4cd730", "_Vehicle_Value4cd730")    // the value of a vrId's vehicle
 extern "C" void FUN_4754d0(); KING_ALIAS("_FUN_4754d0", "@Player_SaveRecord@12")
-ASM_PROC(FUN_477b60)
+ASM_FUNC(FUN_477b60, _Player_FromId477b60)
 KING_VAR(DWORD, g_tagPLYX, 66fa60)
 KING_VAR(double, g_zero64b678, 64b678)
 KING_VAR(double, g_one64b670, 64b670)
