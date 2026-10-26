@@ -2,7 +2,7 @@
 
 Reverse engineering of `king.exe` from **Hard Truck 2: King of the Road** (*Дальнобойщики 2*), version `v 8.0 30.01.03`.
 
-`king.exe` is built from C++ (`src/`) and the assembly not yet rewritten (`src/asm/`, 714 procedures in one file per original unit). C++ owns all the program's data. About 97% of the game code (by size) is C++. The statically linked MFC 4.2 is replaced by own code with the same layouts (`src/engine/mfc.cpp`; only two throw helpers and `_AfxThreadEntry` are still assembly), and the game runs on the modern static C runtime instead of its 1999 one. See `CONVERSION_LOG.md`.
+`king.exe` is built from C++ (`src/`) and a little assembly (`src/asm/`). C++ owns all the program's data. The game code is C++ except the software renderer's hand-written span loops (`src/asm/asm_unit_5fdc70.asm`); a few procedures whose exact machine code matters are kept as inline `__asm` in C++ (`src/truck/x87_code.cpp`). The rest of `src/asm` is library code: the old C runtime's helpers, gzip and exception funclets. The statically linked MFC 4.2 is replaced by own code with the same layouts (`src/engine/mfc.cpp`; only two throw helpers and `_AfxThreadEntry` are still assembly), and the game runs on the modern static C runtime instead of its 1999 one. See `CONVERSION_LOG.md`.
 
 The program started as a full disassembly, `king.masm`, which assembled back into a byte-identical `king.exe` and had a switch per source file to put the original assembly back. It is deleted; the tag `last-masm` is the last commit that has it (`nmake ASM=1` there builds the original program).
 
@@ -14,6 +14,7 @@ The game is not included: building needs your own original `king.exe` (for resou
 |---|---|
 | `src/` | the C++ rewrite; folders follow the original libraries (`engine`, `ai`, `script`, `sound`, `truck`, `terrain`, `marine`), file names follow the original units in `units.csv` |
 | `src/asm/` | the assembly not yet rewritten: `asm_<unit>.asm` per original unit, `king.inc` (common header), `objects.mak` (the list of objects) |
+| `src/truck/x87_code.cpp` | procedures kept as the original machine code in naked functions (the helicopter step, the trailer hitch solver, a player lookup that reads leftover stack, the rope compare) |
 | `src/engine/data_image.cpp`, `data.cpp` | the program's data: `_RDATA` and `_DATA` as byte images with real pointers, `_BSS` |
 | `src/engine/crt.cpp` | `WinMain` and the shims between the old runtime's callers and the modern one |
 | `src/common/king.h` | glue between C++ and the assembly |
@@ -49,8 +50,8 @@ Run the drive test after every step.
 
 1. **Static initializers.** `WinMain` (`crt.cpp`) still runs the old initializer table `$L_66c000`..`$L_66c488`. Replace it with a C++ list of the same init functions in the same order, then with C++ global objects where the order doesn't matter.
 2. **Rest of MFC.** `AfxThrowMemoryException`, `AfxThrowResourceException` and `_AfxThreadEntry` become C++. Exceptions are always fatal, so the throw helpers can just report and exit.
-3. **The remaining procedures.** Convert `src/asm` unit by unit (`py tools\conversion_inventory.py`), small units and those C++ calls most first. This also covers the procedures split across several `PROC`s (convert all pieces together), the exception funclets (they go with their owners), gzip (zlib or a translation) and the old runtime's helpers (`__CIpow`, `_ftol`, `_alldiv`, `_chkstk`, string functions: the modern CRT or `x87.h`).
-4. **The last assembly.** What is not worth rewriting (exact x87 physics chains, the MMX/pushad code at `5fe8xx`–`5ff05a`, the span edge walker `FUN_5d1030`) becomes inline `__asm` inside C++ functions. Then `src/asm`, `king.inc`, `objects.mak` and the `ml` rule go, and the build is `cl` and `link` only.
+3. **The remaining procedures.** *(Game code done except the span loops below.)* Left: gzip (zlib or a translation), the old runtime's helpers (`__CIpow`, `_ftol`, `_alldiv`, `_chkstk`, string functions: the modern CRT or `x87.h`) and the last exception funclets.
+4. **The last assembly.** What is not worth rewriting becomes inline `__asm` inside C++ functions: `py tools\asm_inline.py FILE ENTRY CNAME OUT.cpp` turns a single-entry procedure into a naked function (done for the copter step, the hitch solver, `FUN_477b60`, `FUN_45a7d0`). The span loops (`asm_unit_5fdc70`) need more: their four entry points store each other's label addresses, which inline `__asm` can't share between functions. Then `src/asm`, `king.inc`, `objects.mak` and the `ml` rule go, and the build is `cl` and `link` only.
 5. **Typed data.** Replace the raw images piece by piece with real C++ definitions: globals as typed variables (a struct when code reaches neighbouring labels by offset), strings, float/double constants with the same bit patterns, lookup tables, vtables as arrays of C++ functions. Then `KING_VAR` and the fixed addresses go.
 
 ## Replacing an assembly procedure
