@@ -440,13 +440,13 @@ extern "C" int __fastcall Tgr_Setup(BYTE* s, void*, int a, int b)
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
 ASM_VAR(AsmLabel, g_q46_72c108, $L_72c108)
-ASM_VAR(AsmLabel, g_q46_61c180, $L_61c180)
+extern "C" void* __fastcall Object_Get24(BYTE* self);    // [$L_61c180], in mfc.cpp
 extern "C" int __fastcall Grid_Get32(BYTE* s);
 extern "C" BYTE* __fastcall Grid61c0f0_Construct(BYTE* s);
 // [FUN_6072b0] the deepest level allowed (+24 of the static grid 72c108)
 extern "C" int __cdecl Grid_DeepestLevel(void)
 {
-    return CallThis<int>((void (*)())(void*)g_q46_61c180, (void*)g_q46_72c108);
+    return (int)(INT_PTR)Object_Get24((BYTE*)g_q46_72c108);
 }
 // [FUN_6072c0] the +32 value of the static grid 72c108
 extern "C" int __cdecl Grid_Level32(void)

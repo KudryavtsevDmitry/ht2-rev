@@ -692,7 +692,7 @@ ASM_VAR(int, g_ctl3dThreadState, $L_72dd08)     // CThreadLocal<_AFX_CTL3D_THREA
 ASM_VAR(void*, g_ctl3dState, $L_72dd0c)         // CProcessLocal<_AFX_CTL3D_STATE>
 ASM_PROC($L_639de0)                             // new _AFX_CTL3D_STATE
 ASM_PROC($L_639df5)                             // new _AFX_CTL3D_THREAD
-ASM_PROC($L_632f34)                             // _AfxMsgFilterHook
+extern "C" void $L_632f34(); KING_ALIAS("_$L_632f34", "_Afx_MsgFilterHook@12")                             // _AfxMsgFilterHook
 
 // [FUN_632b5c] CWinThread::CreateThread: starts the thread suspended and
 // waits until _AfxThreadEntry has set it up
@@ -920,12 +920,12 @@ ASM_VAR(AsmLabel, g_wndTopMost, $L_72d9d8)      // never destroyed
 ASM_VAR(AsmLabel, g_wndNoTopMost, $L_72d998)
 ASM_VAR(AsmLabel, g_tempWndClass, $L_653708)    // CTempWnd's CRuntimeClass
 extern "C" void $L_6373bb(); KING_ALIAS("_$L_6373bb", "_Afx_CriticalNewHandler")                             // new handler that throws
-ASM_PROC(FUN_633a2e)                            // _AfxPreInitDialog
-ASM_PROC(FUN_633a51)                            // _AfxPostInitDialog
-ASM_PROC(FUN_61c701)                            // CWnd::GetParentOwner part
-ASM_PROC(FUN_61c4c1)                            // AfxGetMainWnd
+extern "C" void FUN_633a2e(); KING_ALIAS("_FUN_633a2e", "_Afx_PreInitDialog@12")                            // _AfxPreInitDialog
+extern "C" void FUN_633a51(); KING_ALIAS("_FUN_633a51", "_Afx_PostInitDialog@12")                            // _AfxPostInitDialog
+extern "C" void FUN_61c701(); KING_ALIAS("_FUN_61c701", "@Wnd_GetOwner@4")                            // CWnd::GetParentOwner part
+extern "C" void FUN_61c4c1(); KING_ALIAS("_FUN_61c4c1", "_Afx_GetMainWnd")                            // AfxGetMainWnd
 extern "C" void FUN_636ade(); KING_ALIAS("_FUN_636ade", "_Menu_FromHandle@4")                            // CMenu::FromHandle
-ASM_PROC(FUN_639948)                            // AfxOleCanExitApp
+extern "C" void FUN_639948(); KING_ALIAS("_FUN_639948", "_Afx_OleCanExitApp")                            // AfxOleCanExitApp
 ASM_PROC($L_633fa2)                             // _AfxActivationWndProc (CTL3D)
 
 #define HWND_OF(w) F(HWND, w, 28)
@@ -1837,7 +1837,7 @@ ASM_VAR(AsmLabel, g_alloc128, $L_72db08)       // 128, 256 and 512 characters
 ASM_VAR(AsmLabel, g_alloc256, $L_72dae0)
 ASM_VAR(AsmLabel, g_alloc512, $L_72dab8)
 ASM_VAR(AsmLabel, g_dcVtbl, $L_6543a8)
-ASM_PROC(FUN_61cb1e)                           // CFixedAlloc::Free
+extern "C" void FUN_61cb1e(); KING_ALIAS("_FUN_61cb1e", "@FixedAlloc_Free@12")                           // CFixedAlloc::Free
 
 // [FUN_636290] CString::FreeData (CStringData: nRefs, nDataLength, nAllocLength)
 extern "C" void __fastcall String_FreeData(BYTE* data) {
@@ -1903,10 +1903,10 @@ extern "C" void __stdcall Afx_DeleteObject(HGDIOBJ* p) {
 ASM_VAR(AsmLabel, g_frameWndVtbl, $L_654184)
 ASM_VAR(char, g_settingsSection, $L_653490)
 ASM_VAR(char, g_previewPagesEntry, $L_653480)
-ASM_PROC(FUN_6371de)                           // _AfxIsComboBoxControl
+extern "C" void FUN_6371de(); KING_ALIAS("_FUN_6371de", "_Afx_IsComboBoxControl@8")                           // _AfxIsComboBoxControl
 extern "C" void FUN_639958(); KING_ALIAS("_FUN_639958", "_Afx_OleSetUserCtrl@4")                           // AfxOleSetUserCtrl
 extern "C" void FUN_638fc2(); KING_ALIAS("_FUN_638fc2", "@FrameWnd_SetMessageTextId@12")                           // CFrameWnd::OnUpdateFrameTitle part
-ASM_PROC(FUN_6377ac)                           // CWinApp::WriteProfileInt
+extern "C" void FUN_6377ac(); KING_ALIAS("_FUN_6377ac", "@WinApp_WriteProfileInt@20")                           // CWinApp::WriteProfileInt
 ASM_PROC(FUN_63b4a6)                           // a CNoTrackObject's destructor
 
 // [FUN_63730e] AfxCancelModes: closes an open combo box drop-down
@@ -2094,7 +2094,7 @@ extern "C" BOOL __fastcall WinApp_OnIdle(BYTE* self, void*, LONG count) {
 // CString buffers and LoadString
 
 ASM_VAR(char*, g_afxPchNil, $L_685fc0)          // the empty string's characters
-ASM_PROC(FUN_61ca8f)                           // CFixedAlloc::Alloc
+extern "C" void FUN_61ca8f(); KING_ALIAS("_FUN_61ca8f", "@FixedAlloc_Alloc@4")                           // CFixedAlloc::Alloc
 extern "C" void FUN_636471(); KING_ALIAS("_FUN_636471", "@String_GetBuffer@12")                           // CString::GetBuffer
 extern "C" void FUN_6364c0(); KING_ALIAS("_FUN_6364c0", "@String_ReleaseBuffer@12")                           // CString::ReleaseBuffer
 
@@ -2233,7 +2233,7 @@ ASM_VAR(char, g_classOleControl, $L_653a50)    // "AfxOleControl42s"
 ASM_VAR(char, g_classControlBar, $L_653a18)    // "AfxControlBar42s"
 ASM_VAR(char, g_classMDIFrame, $L_653a2c)      // "AfxMDIFrame42s"
 ASM_VAR(char, g_classFrameOrView, $L_653a3c)   // "AfxFrameOrView42s"
-ASM_PROC(FUN_635dea)                           // _AfxInitCommonControls
+extern "C" void FUN_635dea(); KING_ALIAS("_FUN_635dea", "_Afx_InitCommonControls@8")                           // _AfxInitCommonControls
 
 // [FUN_63489e] AfxRegisterClass
 extern "C" BOOL __stdcall Afx_RegisterClass(WNDCLASSA* wc) {
@@ -2448,7 +2448,7 @@ extern "C" void __stdcall Afx_CancelToolTips(BOOL keys) {
 // ---------------------------------------------------------------------------
 // CFrameWnd creation
 
-ASM_PROC(FUN_632202)                           // CPtrList::CPtrList
+extern "C" void FUN_632202(); KING_ALIAS("_FUN_632202", "@PtrList_Construct@12")                           // CPtrList::CPtrList
 
 // [FUN_6379f2] CFrameWnd::AddFrameWnd
 extern "C" void __fastcall FrameWnd_AddFrameWnd(BYTE* self) {
@@ -4945,16 +4945,16 @@ extern "C" BOOL __fastcall Object_True(BYTE* self) { return TRUE; }
 // process and thread locals; CreateObject and deleting destructors of the
 // temporary map classes; runtime class getters
 
-ASM_PROC(FUN_61ca2b)                            // CFixedAlloc::CFixedAlloc(nAllocSize, nBlockSize)
-ASM_PROC($L_61ca53)                             // CFixedAlloc::~CFixedAlloc
-ASM_PROC(FUN_61c749)                            // CResourceException::CResourceException
-ASM_PROC(FUN_61c78f)                            // ~CResourceException
-ASM_PROC(FUN_61c796)                            // CUserException::CUserException
-ASM_PROC(FUN_61c7dc)                            // ~CUserException
-ASM_PROC(FUN_61c8e8)                            // CMemoryException::CMemoryException
-ASM_PROC(FUN_61c92e)                            // ~CMemoryException
-ASM_PROC(FUN_61c935)                            // CNotSupportedException::CNotSupportedException
-ASM_PROC(FUN_61c97b)                            // ~CNotSupportedException
+extern "C" void FUN_61ca2b(); KING_ALIAS("_FUN_61ca2b", "@FixedAlloc_Construct@16")                            // CFixedAlloc::CFixedAlloc(nAllocSize, nBlockSize)
+extern "C" void $L_61ca53(); KING_ALIAS("_$L_61ca53", "@FixedAlloc_Destruct@4")                             // CFixedAlloc::~CFixedAlloc
+extern "C" void FUN_61c749(); KING_ALIAS("_FUN_61c749", "@ResourceException_Construct@16")                            // CResourceException::CResourceException
+extern "C" void FUN_61c78f(); KING_ALIAS("_FUN_61c78f", "@ResourceException_Destruct@4")                            // ~CResourceException
+extern "C" void FUN_61c796(); KING_ALIAS("_FUN_61c796", "@UserException_Construct@16")                            // CUserException::CUserException
+extern "C" void FUN_61c7dc(); KING_ALIAS("_FUN_61c7dc", "@UserException_Destruct@4")                            // ~CUserException
+extern "C" void FUN_61c8e8(); KING_ALIAS("_FUN_61c8e8", "@MemoryException_Construct@16")                            // CMemoryException::CMemoryException
+extern "C" void FUN_61c92e(); KING_ALIAS("_FUN_61c92e", "@MemoryException_Destruct@4")                            // ~CMemoryException
+extern "C" void FUN_61c935(); KING_ALIAS("_FUN_61c935", "@NotSupportedException_Construct@16")                            // CNotSupportedException::CNotSupportedException
+extern "C" void FUN_61c97b(); KING_ALIAS("_FUN_61c97b", "@NotSupportedException_Destruct@4")                            // ~CNotSupportedException
 ASM_VAR(AsmLabel, g_allocTempWnd, $L_72d970)
 ASM_VAR(AsmLabel, g_allocTempDc, $L_72dce0)
 ASM_VAR(AsmLabel, g_allocTempGdi, $L_72dcb8)
@@ -5570,3 +5570,552 @@ extern "C" BOOL __cdecl Afx_IsDBCS() {
 
 // [$L_63b1ef] static initializer of _afxDBCS
 extern "C" void __cdecl Afx_InitDBCS() { g_afxDBCS = Afx_IsDBCS(); }
+
+// ---------------------------------------------------------------------------
+// MFC's out-of-line inline functions (0x61c000): AfxGetMainWnd, the
+// multiple monitor stubs, CDC text output, the exception constructors,
+// CHandleMap's destructor, CFixedAlloc
+
+ASM_VAR(BOOL, g_multiMonInitDone, $L_72dab0)
+ASM_VAR(FARPROC, g_pfnGetSystemMetrics, $L_72da98)
+ASM_VAR(FARPROC, g_pfnMonitorFromWindow, $L_72da9c)
+ASM_VAR(FARPROC, g_pfnMonitorFromRect, $L_72daa0)
+ASM_VAR(FARPROC, g_pfnMonitorFromPoint, $L_72daa4)
+ASM_VAR(FARPROC, g_pfnGetMonitorInfo, $L_72daa8)
+ASM_VAR(FARPROC, g_pfnEnumDisplayMonitors, $L_72daac)
+ASM_VAR(char, g_user32Name, $L_653ad4)          // "USER32"
+ASM_VAR(char, g_nameGetSystemMetrics, $L_653ac0)
+ASM_VAR(char, g_nameMonitorFromWindow, $L_653aac)
+ASM_VAR(char, g_nameMonitorFromRect, $L_653a9c)
+ASM_VAR(char, g_nameMonitorFromPoint, $L_653a88)
+ASM_VAR(char, g_nameEnumDisplayMonitors, $L_653a74)
+ASM_VAR(char, g_nameGetMonitorInfo, $L_653a64)
+ASM_VAR(char, g_displayName, $L_653adc)         // "DISPLAY"
+ASM_VAR(AsmLabel, g_resourceExceptionVtbl, $L_6544b8)
+ASM_VAR(AsmLabel, g_userExceptionVtbl, $L_6544d0)
+ASM_VAR(AsmLabel, g_memoryExceptionVtbl, $L_654578)
+ASM_VAR(AsmLabel, g_notSupportedExceptionVtbl, $L_654590)
+ASM_VAR(AsmLabel, g_handleMapVtbl, $L_6545ec)
+
+#define PRIMARY_MONITOR ((HMONITOR)0x12340042)
+
+// [$L_61c180] returns +24
+extern "C" void* __fastcall Object_Get24(BYTE* self) { return F(void*, self, 24); }
+
+// [FUN_61c4c1] AfxGetMainWnd
+extern "C" BYTE* __cdecl Afx_GetMainWnd() {
+    BYTE* t = Afx_GetThread();
+    return t ? CallVirt<BYTE*>(t, 116) : 0;                        // GetMainWnd
+}
+
+// [FUN_61c4d5] InitMultipleMonitorStubs: the monitor functions of USER32
+// when there are any
+extern "C" BOOL __cdecl Afx_InitMultipleMonitorStubs() {
+    if (g_multiMonInitDone) return g_pfnGetMonitorInfo != 0;
+    HMODULE user = GetModuleHandleA(&g_user32Name);
+    if (user && (g_pfnGetSystemMetrics = GetProcAddress(user, &g_nameGetSystemMetrics)) != 0
+        && (g_pfnMonitorFromWindow = GetProcAddress(user, &g_nameMonitorFromWindow)) != 0
+        && (g_pfnMonitorFromRect = GetProcAddress(user, &g_nameMonitorFromRect)) != 0
+        && (g_pfnMonitorFromPoint = GetProcAddress(user, &g_nameMonitorFromPoint)) != 0
+        && (g_pfnEnumDisplayMonitors = GetProcAddress(user, &g_nameEnumDisplayMonitors)) != 0
+        && (g_pfnGetMonitorInfo = GetProcAddress(user, &g_nameGetMonitorInfo)) != 0) {
+        g_multiMonInitDone = TRUE;
+        return TRUE;
+    }
+    g_pfnGetSystemMetrics = g_pfnMonitorFromWindow = g_pfnMonitorFromRect = g_pfnMonitorFromPoint = 0;
+    g_pfnGetMonitorInfo = g_pfnEnumDisplayMonitors = 0;
+    g_multiMonInitDone = TRUE;
+    return FALSE;
+}
+
+// [FUN_61c5ad] xMonitorFromRect
+extern "C" HMONITOR __stdcall Afx_MonitorFromRect(const RECT* r, DWORD flags) {
+    if (Afx_InitMultipleMonitorStubs())
+        return ((HMONITOR (WINAPI*)(const RECT*, DWORD))g_pfnMonitorFromRect)(r, flags);
+    if (flags & 3) return PRIMARY_MONITOR;                         // MONITOR_DEFAULTTOPRIMARY/NEAREST
+    if (r->right > 0 && r->bottom > 0 && r->left < GetSystemMetrics(SM_CXSCREEN)
+        && r->top < GetSystemMetrics(SM_CYSCREEN))
+        return PRIMARY_MONITOR;
+    return 0;
+}
+
+// [FUN_61c603] xMonitorFromWindow
+extern "C" HMONITOR __stdcall Afx_MonitorFromWindow(HWND h, DWORD flags) {
+    if (Afx_InitMultipleMonitorStubs())
+        return ((HMONITOR (WINAPI*)(HWND, DWORD))g_pfnMonitorFromWindow)(h, flags);
+    if (flags & 3) return PRIMARY_MONITOR;
+    WINDOWPLACEMENT wp;
+    wp.length = sizeof wp;
+    RECT* r = &wp.rcNormalPosition;
+    BOOL ok = IsIconic(h) ? GetWindowPlacement(h, &wp) : GetWindowRect(h, r);
+    return ok ? Afx_MonitorFromRect(r, flags) : 0;
+}
+
+// [FUN_61c66e] xGetMonitorInfo
+extern "C" BOOL __stdcall Afx_GetMonitorInfo(HMONITOR m, MONITORINFO* info) {
+    if (Afx_InitMultipleMonitorStubs())
+        return ((BOOL (WINAPI*)(HMONITOR, MONITORINFO*))g_pfnGetMonitorInfo)(m, info);
+    RECT work;
+    if (m != PRIMARY_MONITOR || !info || info->cbSize < 40 || !SystemParametersInfoA(SPI_GETWORKAREA, 0, &work, 0))
+        return FALSE;
+    info->rcMonitor.left = 0;
+    info->rcMonitor.top = 0;
+    info->rcMonitor.right = GetSystemMetrics(SM_CXSCREEN);
+    info->rcMonitor.bottom = GetSystemMetrics(SM_CYSCREEN);
+    info->rcWork = work;
+    info->dwFlags = MONITORINFOF_PRIMARY;
+    if (info->cbSize >= 72) lstrcpyA((char*)info + 40, &g_displayName);   // MONITORINFOEX::szDevice
+    return TRUE;
+}
+
+// [FUN_61c701] CWnd::GetOwner
+extern "C" BYTE* __fastcall Wnd_GetOwner(BYTE* self) {
+    HWND h = F(HWND, self, 32);                                    // m_hWndOwner
+    if (!h) h = GetParent(HWND_OF(self));
+    return Wnd_FromHandle(h);
+}
+
+// [$L_61c718] disables the window
+extern "C" void __fastcall Wnd_Disable(BYTE* self) { EnableWindow(HWND_OF(self), FALSE); }
+
+// [$L_61c724] enables the window
+extern "C" void __fastcall Wnd_Enable(BYTE* self) { EnableWindow(HWND_OF(self), TRUE); }
+
+// CSimpleException(bAutoDelete, nResourceID): +12 m_bInitialized,
+// +16 m_szMessage, +148 the resource id
+static BYTE* SimpleException_Construct(BYTE* self, BOOL autoDelete, UINT id, void* vtbl) {
+    Exception_SetAutoDelete(self, 0, autoDelete);
+    F(int, self, 12) = 0;
+    F(int, self, 16) = 0;
+    F(UINT, self, 148) = id;
+    F(void*, self, 0) = vtbl;
+    return self;
+}
+
+// [FUN_61c749] CResourceException::CResourceException
+extern "C" BYTE* __fastcall ResourceException_Construct(BYTE* self, void*, BOOL autoDelete, UINT id) {
+    return SimpleException_Construct(self, autoDelete, id, g_resourceExceptionVtbl);
+}
+
+// [FUN_61c78f] CResourceException::~CResourceException
+extern "C" void __fastcall ResourceException_Destruct(BYTE* self) { F(void*, self, 0) = g_resourceExceptionVtbl; }
+
+// [$L_61c773] its deleting destructor
+extern "C" BYTE* __fastcall ResourceException_DeletingDestruct(BYTE* self, void*, int flags) {
+    ResourceException_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_61c796] CUserException::CUserException
+extern "C" BYTE* __fastcall UserException_Construct(BYTE* self, void*, BOOL autoDelete, UINT id) {
+    return SimpleException_Construct(self, autoDelete, id, g_userExceptionVtbl);
+}
+
+// [FUN_61c7dc] CUserException::~CUserException
+extern "C" void __fastcall UserException_Destruct(BYTE* self) { F(void*, self, 0) = g_userExceptionVtbl; }
+
+// [$L_61c7c0] its deleting destructor
+extern "C" BYTE* __fastcall UserException_DeletingDestruct(BYTE* self, void*, int flags) {
+    UserException_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_61c8e8] CMemoryException::CMemoryException
+extern "C" BYTE* __fastcall MemoryException_Construct(BYTE* self, void*, BOOL autoDelete, UINT id) {
+    return SimpleException_Construct(self, autoDelete, id, g_memoryExceptionVtbl);
+}
+
+// [FUN_61c92e] CMemoryException::~CMemoryException
+extern "C" void __fastcall MemoryException_Destruct(BYTE* self) { F(void*, self, 0) = g_memoryExceptionVtbl; }
+
+// [$L_61c912] its deleting destructor
+extern "C" BYTE* __fastcall MemoryException_DeletingDestruct(BYTE* self, void*, int flags) {
+    MemoryException_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_61c935] CNotSupportedException::CNotSupportedException
+extern "C" BYTE* __fastcall NotSupportedException_Construct(BYTE* self, void*, BOOL autoDelete, UINT id) {
+    return SimpleException_Construct(self, autoDelete, id, g_notSupportedExceptionVtbl);
+}
+
+// [FUN_61c97b] CNotSupportedException::~CNotSupportedException
+extern "C" void __fastcall NotSupportedException_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_notSupportedExceptionVtbl;
+}
+
+// [$L_61c95f] its deleting destructor
+extern "C" BYTE* __fastcall NotSupportedException_DeletingDestruct(BYTE* self, void*, int flags) {
+    NotSupportedException_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// CDC text output on m_hDC (+4)
+
+// [$L_61c7e3] CDC::PtVisible
+extern "C" BOOL __fastcall Dc_PtVisible(BYTE* self, void*, int x, int y) { return PtVisible(F(HDC, self, 4), x, y); }
+
+// [$L_61c7f7] CDC::RectVisible
+extern "C" BOOL __fastcall Dc_RectVisible(BYTE* self, void*, const RECT* r) { return RectVisible(F(HDC, self, 4), r); }
+
+// [$L_61c807] CDC::TextOut
+extern "C" BOOL __fastcall Dc_TextOut(BYTE* self, void*, int x, int y, const char* s, int n) {
+    return TextOutA(F(HDC, self, 4), x, y, s, n);
+}
+
+// [$L_61c823] CDC::ExtTextOut
+extern "C" BOOL __fastcall Dc_ExtTextOut(BYTE* self, void*, int x, int y, UINT options, const RECT* r,
+                                         const char* s, UINT n, const int* dx) {
+    return ExtTextOutA(F(HDC, self, 4), x, y, options, r, s, n, dx);
+}
+
+// [$L_61c848] CDC::TabbedTextOut
+extern "C" SIZE* __fastcall Dc_TabbedTextOut(BYTE* self, void*, SIZE* out, int x, int y, const char* s, int n,
+                                             int tabs, const int* stops, int origin) {
+    LONG r = TabbedTextOutA(F(HDC, self, 4), x, y, s, n, tabs, stops, origin);
+    out->cx = (short)LOWORD(r);
+    out->cy = (short)HIWORD(r);
+    return out;
+}
+
+// [$L_61c880] CDC::DrawText
+extern "C" int __fastcall Dc_DrawText(BYTE* self, void*, const char* s, int n, RECT* r, UINT format) {
+    return DrawTextA(F(HDC, self, 4), s, n, r, format);
+}
+
+// [$L_61c89c] CDC::GrayString
+extern "C" BOOL __fastcall Dc_GrayString(BYTE* self, void*, BYTE* brush, GRAYSTRINGPROC proc, LPARAM data,
+                                         int n, int x, int y, int cx, int cy) {
+    return GrayStringA(F(HDC, self, 4), brush ? F(HBRUSH, brush, 4) : 0, proc, data, n, x, y, cx, cy);
+}
+
+// [$L_61c8cc] CDC::Escape
+extern "C" int __fastcall Dc_Escape(BYTE* self, void*, int escape, int n, const char* in, void* out) {
+    return Escape(F(HDC, self, 4), escape, n, in, out);
+}
+
+extern "C" void __fastcall HandleMap_DeleteTemp(BYTE* self);
+
+// [FUN_61c99e] CHandleMap::~CHandleMap
+extern "C" void __fastcall HandleMap_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_handleMapVtbl;
+    HandleMap_DeleteTemp(self);
+    PtrMap_Destruct((PtrMap*)(self + 32));                         // m_temporaryMap
+    PtrMap_Destruct((PtrMap*)(self + 4));                          // m_permanentMap
+}
+
+// [$L_61c982] its deleting destructor
+extern "C" BYTE* __fastcall HandleMap_DeletingDestruct(BYTE* self, void*, int flags) {
+    HandleMap_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_61ca02] CMenu::~CMenu (second copy)
+extern "C" void __fastcall Menu_Destruct2(BYTE* self) {
+    F(void*, self, 0) = g_menuVtbl;
+    Menu_DestroyMenu(self);
+}
+
+// [$L_61c9e6] CMenu's deleting destructor
+extern "C" BYTE* __fastcall Menu_DeletingDestruct(BYTE* self, void*, int flags) {
+    Menu_Destruct2(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// CFixedAlloc: +0 m_nAllocSize, +4 m_nBlockSize, +8 m_pBlocks,
+// +12 m_pNodeFree, +16 m_protect
+
+// [FUN_61ca2b] CFixedAlloc::CFixedAlloc
+extern "C" BYTE* __fastcall FixedAlloc_Construct(BYTE* self, void*, UINT allocSize, UINT blockSize) {
+    F(void*, self, 12) = 0;
+    F(void*, self, 8) = 0;
+    F(UINT, self, 0) = allocSize;
+    F(UINT, self, 4) = blockSize;
+    InitializeCriticalSection(&F(CRITICAL_SECTION, self, 16));
+    return self;
+}
+
+extern "C" void __fastcall Plex_FreeDataChain(Plex* self);
+
+// [FUN_61ca67] CFixedAlloc::FreeAll
+extern "C" void __fastcall FixedAlloc_FreeAll(BYTE* self) {
+    EnterCriticalSection(&F(CRITICAL_SECTION, self, 16));
+    Plex_FreeDataChain(F(Plex*, self, 8));
+    F(void*, self, 8) = 0;
+    F(void*, self, 12) = 0;
+    LeaveCriticalSection(&F(CRITICAL_SECTION, self, 16));
+}
+
+// [$L_61ca53] CFixedAlloc::~CFixedAlloc
+extern "C" void __fastcall FixedAlloc_Destruct(BYTE* self) {
+    FixedAlloc_FreeAll(self);
+    DeleteCriticalSection(&F(CRITICAL_SECTION, self, 16));
+}
+
+// [FUN_61ca8f] CFixedAlloc::Alloc: a new CPlex block feeds the free list
+extern "C" void* __fastcall FixedAlloc_Alloc(BYTE* self) {
+    EnterCriticalSection(&F(CRITICAL_SECTION, self, 16));
+    if (!F(void*, self, 12)) {
+        UINT size = F(UINT, self, 0);
+        BYTE* block = (BYTE*)Plex_Create(&F(Plex*, self, 8), F(UINT, self, 4), size);
+        int n = F(int, self, 4) - 1;
+        BYTE* node = block + 4 + n * size;
+        for (; n >= 0; n--, node -= size) {
+            *(void**)node = F(void*, self, 12);
+            F(void*, self, 12) = node;
+        }
+    }
+    void** node = F(void**, self, 12);
+    F(void*, self, 12) = *node;
+    LeaveCriticalSection(&F(CRITICAL_SECTION, self, 16));
+    return node;
+}
+
+// [FUN_61cb1e] CFixedAlloc::Free
+extern "C" void __fastcall FixedAlloc_Free(BYTE* self, void*, void* p) {
+    if (!p) return;
+    EnterCriticalSection(&F(CRITICAL_SECTION, self, 16));
+    *(void**)p = F(void*, self, 12);
+    F(void*, self, 12) = p;
+    LeaveCriticalSection(&F(CRITICAL_SECTION, self, 16));
+}
+
+// ---------------------------------------------------------------------------
+// CPtrList nodes, the message filter hook, dialog helpers, CenterWindow,
+// common controls, the registry profile
+
+ASM_VAR(AsmLabel, g_ptrListVtbl, $L_6546c8)
+ASM_VAR(char, g_comboBoxClass, $L_6545ac)        // "combobox"
+ASM_VAR(char, g_comctlName, $L_653c08)           // "COMCTL32.DLL"
+ASM_VAR(char, g_initCommonControlsExName, $L_653bf0)
+ASM_VAR(char, g_fmtInt, $L_66c8cc)               // "%d"
+ASM_VAR(char, g_softwareKey, $L_6545b8)          // "software"
+ASM_VAR(AsmLabel, g_vtbl6534a0, $L_6534a0)
+extern "C" __declspec(dllimport) void __stdcall InitCommonControls();
+
+// [FUN_632202] CPtrList::CPtrList(nBlockSize)
+extern "C" BYTE* __fastcall PtrList_Construct(BYTE* self, void*, int blockSize) {
+    F(void*, self, 12) = 0;                                        // m_nCount
+    F(void*, self, 16) = 0;                                        // m_pNodeFree
+    F(void*, self, 8) = 0;                                         // m_pNodeTail
+    F(void*, self, 4) = 0;                                         // m_pNodeHead
+    F(void*, self, 20) = 0;                                        // m_pBlocks
+    F(void*, self, 0) = g_ptrListVtbl;
+    F(int, self, 24) = blockSize;
+    return self;
+}
+
+// [FUN_63228a] CPtrList::NewNode(pPrev, pNext): nodes come from CPlex
+// blocks of m_nBlockSize
+extern "C" void** __fastcall PtrList_NewNode(BYTE* self, void*, void** prev, void** next) {
+    if (!F(void*, self, 16)) {
+        int n = F(int, self, 24);
+        BYTE* block = (BYTE*)Plex_Create(&F(Plex*, self, 20), n, 12);
+        void** node = (void**)(block + 4 + (n - 1) * 12);
+        for (int i = n - 1; i >= 0; i--, node -= 3) {
+            node[0] = F(void*, self, 16);
+            F(void**, self, 16) = node;
+        }
+    }
+    void** node = F(void**, self, 16);
+    F(void*, self, 16) = node[0];
+    node[1] = prev;
+    node[0] = next;
+    F(int, self, 12)++;
+    node[2] = 0;
+    return node;
+}
+
+// [FUN_6322fb] CPtrList::AddTail
+extern "C" void** __fastcall PtrList_AddTail(BYTE* self, void*, void* data) {
+    void** node = PtrList_NewNode(self, 0, F(void**, self, 8), 0);
+    node[2] = data;
+    if (F(void**, self, 8)) F(void**, self, 8)[0] = node;
+    else F(void**, self, 4) = node;
+    F(void**, self, 8) = node;
+    return node;
+}
+
+// [$L_632f34] _AfxMsgFilterHook: dialog, menu and DDE message filters to
+// the thread's ProcessMessageFilter
+extern "C" LRESULT __stdcall Afx_MsgFilterHook(int code, WPARAM w, LPARAM l) {
+    if (!F(BYTE, Afx_GetModuleState(), 20) && (code >= 0 || code == 0x8001)) {   // MSGF_DDEMGR
+        BYTE* thread = Afx_GetThread();
+        if (thread) return CallVirt<BOOL>(thread, 112, code, (MSG*)l);   // ProcessMessageFilter
+    }
+    return CallNextHookEx(F(HHOOK, Afx_GetThreadState(), 48), code, w, l);
+}
+
+// [FUN_633a2e] _AfxPreInitDialog: the window's rectangle and style before
+// WM_INITDIALOG
+extern "C" void __stdcall Afx_PreInitDialog(BYTE* wnd, RECT* oldRect, DWORD* oldStyle) {
+    GetWindowRect(HWND_OF(wnd), oldRect);
+    *oldStyle = Wnd_GetStyle(wnd);
+}
+
+extern "C" void __fastcall Wnd_CenterWindow(BYTE* self, void*, BYTE* alternateOwner);
+
+// [FUN_633a51] _AfxPostInitDialog: centres a dialog that WM_INITDIALOG
+// neither showed nor moved
+extern "C" void __stdcall Afx_PostInitDialog(BYTE* wnd, const RECT* oldRect, DWORD oldStyle) {
+    if (oldStyle & WS_VISIBLE) return;
+    if (Wnd_GetStyle(wnd) & (WS_VISIBLE | WS_CHILD)) return;
+    RECT r;
+    GetWindowRect(HWND_OF(wnd), &r);
+    if (oldRect->left != r.left || oldRect->top != r.top) return;
+    BYTE* owner = Wnd_FromHandle(GetWindow(HWND_OF(wnd), GW_OWNER));
+    if (owner && Wnd_IsWindowEnabled(owner)) return;
+    if (!CallVirt<BOOL>(wnd, 172)) return;                         // CheckAutoCenter
+    Wnd_CenterWindow(wnd, 0, 0);
+}
+
+// [FUN_6371de] _AfxIsComboBoxControl(hWnd, nStyle)
+extern "C" BOOL __stdcall Afx_IsComboBoxControl(HWND h, UINT style) {
+    if (!h || (UINT)(GetWindowLongA(h, GWL_STYLE) & 15) != style) return FALSE;
+    char cls[12];
+    GetClassNameA(h, cls, 10);
+    return !lstrcmpiA(cls, &g_comboBoxClass);
+}
+
+// [FUN_635b54] AfxGrayCtlColor: the dialog brush's colour behind the text
+// of gray controls
+extern "C" BOOL __stdcall Afx_GrayCtlColor(HDC dc, HWND h, UINT type, HBRUSH gray, COLORREF text) {
+    if (!dc || !gray) return FALSE;
+    if (type == CTLCOLOR_EDIT || type == CTLCOLOR_MSGBOX || type == CTLCOLOR_SCROLLBAR) return FALSE;
+    if (type == CTLCOLOR_LISTBOX && !Afx_IsComboBoxControl(h, CBS_DROPDOWN)) return FALSE;
+    LOGBRUSH lb;
+    GetObjectA(gray, sizeof lb, &lb);
+    SetBkColor(dc, lb.lbColor);
+    if (text == (COLORREF)-1) text = GetSysColor(COLOR_WINDOWTEXT);
+    SetTextColor(dc, text);
+    return TRUE;
+}
+
+// [FUN_635bc9] CWnd::CenterWindow: over the owner (or the work area),
+// kept inside the work area or the parent's client area
+extern "C" void __fastcall Wnd_CenterWindow(BYTE* self, void*, BYTE* alternateOwner) {
+    DWORD style = Wnd_GetStyle(self);
+    HWND center;
+    if (alternateOwner) {
+        center = HWND_OF(alternateOwner);
+    } else {
+        center = (style & WS_CHILD) ? GetParent(HWND_OF(self)) : GetWindow(HWND_OF(self), GW_OWNER);
+        if (center) {
+            HWND t = (HWND)SendMessageA(center, 875, 0, 0);       // WM_QUERYCENTERWND
+            if (t) center = t;
+        }
+    }
+    RECT dlg, area, rc;
+    GetWindowRect(HWND_OF(self), &dlg);
+    if (!(style & WS_CHILD)) {
+        if (center) {
+            DWORD cs = GetWindowLongA(center, GWL_STYLE);
+            if (!(cs & WS_VISIBLE) || (cs & WS_MINIMIZE)) center = 0;
+        }
+        MONITORINFO mi;
+        mi.cbSize = 40;
+        if (!center) {
+            BYTE* main = Afx_GetMainWnd();
+            Afx_GetMonitorInfo(Afx_MonitorFromWindow(main ? HWND_OF(main) : 0, MONITOR_DEFAULTTOPRIMARY), &mi);
+            CopyRect(&rc, &mi.rcWork);
+            CopyRect(&area, &mi.rcWork);
+        } else {
+            GetWindowRect(center, &rc);
+            Afx_GetMonitorInfo(Afx_MonitorFromWindow(center, MONITOR_DEFAULTTONEAREST), &mi);
+            CopyRect(&area, &mi.rcWork);
+        }
+    } else {
+        HWND parent = GetParent(HWND_OF(self));
+        GetClientRect(parent, &area);
+        GetClientRect(center, &rc);
+        MapWindowPoints(center, parent, (POINT*)&rc, 2);
+    }
+    int w = dlg.right - dlg.left, h = dlg.bottom - dlg.top;
+    int x = (rc.left + rc.right) / 2 - w / 2;
+    int y = (rc.top + rc.bottom) / 2 - h / 2;
+    if (x < area.left) x = area.left;
+    else if (x + w > area.right) x = area.right - w;
+    if (y < area.top) y = area.top;
+    else if (y + h > area.bottom) y = area.bottom - h;
+    Wnd_SetWindowPos(self, 0, 0, x, y, -1, -1, SWP_NOSIZE | SWP_NOZORDER | SWP_NOACTIVATE);
+}
+
+// [FUN_635dea] _AfxInitCommonControls: InitCommonControlsEx when
+// COMCTL32 has it, else InitCommonControls for the old control classes
+extern "C" LONG __stdcall Afx_InitCommonControls(void* init, LONG toRegister) {
+    HMODULE before = GetModuleHandleA(&g_comctlName);
+    HMODULE lib = LoadLibraryA(&g_comctlName);
+    if (!lib) return 0;
+    LONG r = 0;
+    typedef BOOL (WINAPI* InitExFn)(void*);
+    InitExFn initEx = (InitExFn)GetProcAddress(lib, &g_initCommonControlsExName);
+    if (!initEx) {
+        if ((toRegister & 0x3FC0) == toRegister) {                 // only the Windows 95 classes
+            InitCommonControls();
+            r = 0x3FC0;
+        }
+    } else if (initEx(init)) {
+        r = toRegister;
+        if (!before) {
+            InitCommonControls();
+            r |= 0x3FC0;
+        }
+    }
+    FreeLibrary(lib);
+    return r;
+}
+
+// [FUN_63aeb1] CWinApp::GetAppRegistryKey: HKCU\software\<registry key
+// (+124)>\<profile name (+144)>
+extern "C" HKEY __fastcall WinApp_GetAppRegistryKey(BYTE* self) {
+    HKEY app = 0, soft = 0, company = 0;
+    DWORD disp;
+    if (RegOpenKeyExA(HKEY_CURRENT_USER, &g_softwareKey, 0, KEY_WRITE | KEY_READ, &soft) == ERROR_SUCCESS
+        && RegCreateKeyExA(soft, F(const char*, self, 124), 0, 0, 0, KEY_WRITE | KEY_READ, 0, &company, &disp)
+               == ERROR_SUCCESS)
+        RegCreateKeyExA(company, F(const char*, self, 144), 0, 0, 0, KEY_WRITE | KEY_READ, 0, &app, &disp);
+    if (soft) RegCloseKey(soft);
+    if (company) RegCloseKey(company);
+    return app;
+}
+
+// [FUN_63af45] CWinApp::GetSectionKey
+extern "C" HKEY __fastcall WinApp_GetSectionKey(BYTE* self, void*, const char* section) {
+    HKEY app = WinApp_GetAppRegistryKey(self);
+    if (!app) return 0;
+    HKEY key = 0;
+    DWORD disp;
+    RegCreateKeyExA(app, section, 0, 0, 0, KEY_WRITE | KEY_READ, 0, &key, &disp);
+    RegCloseKey(app);
+    return key;
+}
+
+// [FUN_6377ac] CWinApp::WriteProfileInt: the registry, or the INI file
+// (+144)
+extern "C" BOOL __fastcall WinApp_WriteProfileInt(BYTE* self, void*, const char* section, const char* entry, int value) {
+    if (F(const char*, self, 124)) {
+        HKEY key = WinApp_GetSectionKey(self, 0, section);
+        if (!key) return FALSE;
+        LONG r = RegSetValueExA(key, entry, 0, REG_DWORD, (const BYTE*)&value, 4);
+        RegCloseKey(key);
+        return r == ERROR_SUCCESS;
+    }
+    char text[16];
+    wsprintfA(text, &g_fmtInt, value);
+    return WritePrivateProfileStringA(section, entry, text, F(const char*, self, 144));
+}
+
+// [FUN_639948] AfxOleCanExitApp: no OLE objects left
+extern "C" BOOL __cdecl Afx_OleCanExitApp() { return F(int, Afx_GetModuleState(), 44) == 0; }
+
+// [FUN_639970] sets the vtable $L_6534a0
+extern "C" BYTE* __fastcall Object_SetVtbl6534a0(BYTE* self) {
+    F(void*, self, 0) = g_vtbl6534a0;
+    return self;
+}

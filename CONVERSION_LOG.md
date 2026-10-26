@@ -440,3 +440,12 @@ destructor, _afxDBCS), the CreateObject functions and deleting destructors of CW
 CGdiObject, CMenu and their temporary classes, the destructors of the thread, module, module thread and
 CTL3D states, CProcessLocalObject's destructor and the runtime class getters. Most are generated
 (scratchpad gen10.py). Drive test passes, exit code 0.
+
+MFC part 9 (53 procs): MFC's out-of-line inline functions at 0x61c000 (AfxGetMainWnd, CWnd::GetOwner, the
+multiple monitor stubs xMonitorFromRect/xMonitorFromWindow/xGetMonitorInfo, the CDC text output wrappers,
+the resource/user/memory/not-supported exception constructors and destructors, CHandleMap's destructor,
+CFixedAlloc), CPtrList's constructor/NewNode/AddTail, _AfxMsgFilterHook, _AfxPre/PostInitDialog,
+CWnd::CenterWindow, AfxGrayCtlColor with _AfxIsComboBoxControl, _AfxInitCommonControls, CWinApp's
+GetAppRegistryKey/GetSectionKey/WriteProfileInt and AfxOleCanExitApp. $L_61c180 is called by
+terrain_grid.cpp, which now calls its C++ version directly. The block at 0x6317e8-0x6321e0 (_stat,
+remove, the runtime error banner) is CRT and stays for the CRT switch. Drive test passes.
