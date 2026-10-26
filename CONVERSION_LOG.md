@@ -396,3 +396,14 @@ AllocBuffer/Release/AllocBeforeWrite/AssignCopy/operator=/LoadString with AfxLoa
 SetMapMode/SelectGdiObject, CGdiObject::Attach/FromHandle, CWinApp::Enable3dControls and SetDialogBkColor.
 The executed-MFC list now also covers startup (cdb started with the game: scratchpad smokedbg.ps1).
 Drive test passes.
+
+MFC part 6 (96 procs): CCmdTarget map getters and OnFinalRelease, CTypeLibCache::Unlock, CCmdUI (constructor,
+Enable, SetCheck, SetRadio, SetText, DoUpdate), CWnd::GetExStyle/_AfxModifyStyle/ModifyStyleEx/SetWindowText/
+EnableWindow/SetFocus and the deleting destructor, the static wndTop/wndBottom/wndTopMost/wndNoTopMost objects
+with their initializers and exit destructors, the drag list message, CString's Release/Empty/CopyBeforeWrite/
+GetBuffer/ReleaseBuffer/GetBufferSetLength, _mbstowcsz, AfxExtractSubString, CException basics,
+CRuntimeClass::IsDerivedFrom, CObject::IsKindOf, AUX_DATA system colours and metrics, _AfxLoadDotBitmap,
+CMenu handle map, FromHandle, Detach and DestroyMenu, CDC's attrib/output DCs, Save/RestoreDC, object selection,
+colours, viewport/window origin and extents and GetClipBox, _AfxChildWindowFromPoint, AfxSetWindowText,
+AfxCriticalNewHandler, CWinApp's DoWaitCursor, MRU/document template stubs, OnOpenRecentFile and DoMessageBox,
+GetSafeOwner_ and both AfxMessageBox overloads.
