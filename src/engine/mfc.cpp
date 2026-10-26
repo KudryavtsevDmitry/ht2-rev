@@ -365,6 +365,33 @@ extern "C" void __stdcall Afx_UnlockGlobals(int lock) {
 }
 
 // ---------------------------------------------------------------------------
+// Declarations of the collections and handle maps further down
+
+struct Plex { Plex* next; };
+struct Assoc { Assoc* next; void* key; void* value; };
+struct PtrMap {               // CMapPtrToPtr
+    void* vtbl;
+    Assoc** table;
+    UINT tableSize;
+    int count;
+    Assoc* freeList;
+    Plex* blocks;
+    int blockSize;
+};
+CHECK_OFFSET(PtrMap, blockSize, 24);
+
+extern "C" void* __fastcall PtrMap_GetValueAt(PtrMap* self, void*, void* key);
+extern "C" void** __fastcall PtrMap_At(PtrMap* self, void*, void* key);
+extern "C" BOOL __fastcall PtrMap_RemoveKey(PtrMap* self, void*, void* key);
+extern "C" void* __stdcall Afx_SetNewHandler(void* handler);
+extern "C" BYTE* __fastcall HandleMap_Construct(BYTE* self, void*, BYTE* cls, int offset, int handles);
+extern "C" BYTE* __fastcall HandleMap_FromHandle(BYTE* self, void*, HANDLE h);
+extern "C" void __fastcall HandleMap_DeleteTemp(BYTE* self);
+extern "C" BYTE* __stdcall Dc_FromHandle(HDC h);
+extern "C" BYTE* __fastcall Cdc_Construct(BYTE* self);
+extern "C" void __fastcall Cdc_Destruct(BYTE* self);
+
+// ---------------------------------------------------------------------------
 // The thread and module states
 //
 // _AFX_THREAD_STATE (280 bytes, per thread): +4 m_pModuleState,
@@ -495,7 +522,6 @@ extern "C" void __stdcall Afx_GlobalFree(HGLOBAL h) {
 // ---------------------------------------------------------------------------
 // Temporary handle maps
 
-ASM_PROC(FUN_636a07)                            // CHandleMap::DeleteTemp
 ASM_PROC(FUN_620815)                            // _msize
 
 // [FUN_6367e0] AfxLockTempMaps
@@ -511,11 +537,11 @@ extern "C" BOOL __stdcall Afx_UnlockTempMaps(BOOL deleteTemps) {
                 BYTE* t = Afx_GetThread();
                 if (t && F(OleTermFn, t, 84)) F(OleTermFn, t, 84)(FALSE, FALSE);
             }
-            CallThis(FUN_636a07, F(void*, mts, 32));
-            CallThis(FUN_636a07, F(void*, mts, 28));
-            CallThis(FUN_636a07, F(void*, mts, 24));
-            CallThis(FUN_636a07, F(void*, mts, 20));
-            CallThis(FUN_636a07, F(void*, mts, 36));
+            HandleMap_DeleteTemp(F(BYTE*, mts, 32));
+            HandleMap_DeleteTemp(F(BYTE*, mts, 28));
+            HandleMap_DeleteTemp(F(BYTE*, mts, 24));
+            HandleMap_DeleteTemp(F(BYTE*, mts, 20));
+            HandleMap_DeleteTemp(F(BYTE*, mts, 36));
         }
         BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
         BYTE* ts = Afx_GetThreadState();
@@ -890,24 +916,15 @@ ASM_VAR(AsmLabel, g_wndTopMost, $L_72d9d8)      // never destroyed
 ASM_VAR(AsmLabel, g_wndNoTopMost, $L_72d998)
 ASM_VAR(AsmLabel, g_tempWndClass, $L_653708)    // CTempWnd's CRuntimeClass
 ASM_PROC($L_6373bb)                             // new handler that throws
-ASM_PROC(FUN_632631)                            // AfxSetNewHandler
-ASM_PROC(FUN_6368e3)                            // CHandleMap::CHandleMap
-ASM_PROC(FUN_636948)                            // CHandleMap::FromHandle
-ASM_PROC(FUN_6324f2)                            // CMapPtrToPtr lookup: value or 0
-ASM_PROC(FUN_632525)                            // CMapPtrToPtr::operator[]
-ASM_PROC(FUN_632575)                            // CMapPtrToPtr::RemoveKey
 ASM_PROC(FUN_6337ad)                            // CWnd::IsWindowEnabled
 ASM_PROC(FUN_633a2e)                            // _AfxPreInitDialog
 ASM_PROC(FUN_633a51)                            // _AfxPostInitDialog
 ASM_PROC(FUN_633aca)                            // _AfxHandleActivate
 ASM_PROC(FUN_61c701)                            // CWnd::GetParentOwner part
 ASM_PROC(FUN_61c4c1)                            // AfxGetMainWnd
-ASM_PROC(FUN_636c7c)                            // CDC::FromHandle
 ASM_PROC(FUN_636ade)                            // CMenu::FromHandle
 ASM_PROC(FUN_639948)                            // AfxOleCanExitApp
 ASM_PROC($L_633fa2)                             // _AfxActivationWndProc (CTL3D)
-ASM_FUNC(Cdc_Construct, ??0CDC@@QAE@XZ)
-ASM_FUNC(Cdc_Destruct, ??1CDC@@UAE@XZ)
 
 #define HWND_OF(w) F(HWND, w, 28)
 
@@ -915,10 +932,10 @@ ASM_FUNC(Cdc_Destruct, ??1CDC@@UAE@XZ)
 extern "C" BYTE* __stdcall Afx_MapHWND(BOOL create) {
     BYTE* mts = Afx_GetModuleThreadState();
     if (!F(BYTE*, mts, 20) && create) {
-        void* old = CallStd<void*>(FUN_632631, (void*)$L_6373bb);
+        void* old = Afx_SetNewHandler((void*)$L_6373bb);
         BYTE* p = (BYTE*)operator new(72);
-        F(BYTE*, mts, 20) = p ? CallThis<BYTE*>(FUN_6368e3, p, (void*)g_tempWndClass, 28, 1) : 0;
-        CallStd(FUN_632631, old);
+        F(BYTE*, mts, 20) = p ? HandleMap_Construct(p, 0, (BYTE*)g_tempWndClass, 28, 1) : 0;
+        Afx_SetNewHandler(old);
     }
     return F(BYTE*, mts, 20);
 }
@@ -926,14 +943,14 @@ extern "C" BYTE* __stdcall Afx_MapHWND(BOOL create) {
 // [FUN_633810] lets the parent's control container attach a control site
 extern "C" void __fastcall Wnd_AttachControlSite(BYTE* self, void*, BYTE* map) {
     if (!self || F(void*, self, 56)) return;
-    BYTE* parent = CallThis<BYTE*>(FUN_6324f2, map + 4, GetParent(HWND_OF(self)));
+    BYTE* parent = (BYTE*)PtrMap_GetValueAt((PtrMap*)(map + 4), 0, GetParent(HWND_OF(self)));
     if (parent && F(void*, parent, 52)) CallVirt(F(void*, parent, 52), 140, self);
 }
 
 // [FUN_633d62] CWnd::FromHandle: permanent or temporary CWnd
 extern "C" BYTE* __stdcall Wnd_FromHandle(HWND h) {
     BYTE* map = Afx_MapHWND(TRUE);
-    BYTE* w = CallThis<BYTE*>(FUN_636948, map, h);
+    BYTE* w = HandleMap_FromHandle(map, 0, h);
     Wnd_AttachControlSite(w, 0, map);
     return w;
 }
@@ -941,7 +958,7 @@ extern "C" BYTE* __stdcall Wnd_FromHandle(HWND h) {
 // [FUN_633d89] CWnd::FromHandlePermanent
 extern "C" BYTE* __stdcall Wnd_FromHandlePermanent(HWND h) {
     BYTE* map = Afx_MapHWND(FALSE);
-    return map ? CallThis<BYTE*>(FUN_6324f2, map + 4, h) : 0;
+    return map ? (BYTE*)PtrMap_GetValueAt((PtrMap*)(map + 4), 0, h) : 0;
 }
 
 // [FUN_633da7] CWnd::Attach
@@ -949,7 +966,7 @@ extern "C" BOOL __fastcall Wnd_Attach(BYTE* self, void*, HWND h) {
     if (!h) return FALSE;
     BYTE* map = Afx_MapHWND(TRUE);
     HWND_OF(self) = h;
-    *CallThis<BYTE**>(FUN_632525, map + 4, h) = self;
+    *(BYTE**)PtrMap_At((PtrMap*)(map + 4), 0, h) = self;
     Wnd_AttachControlSite(self, 0, map);
     return TRUE;
 }
@@ -959,7 +976,7 @@ extern "C" HWND __fastcall Wnd_Detach(BYTE* self) {
     HWND h = HWND_OF(self);
     if (h) {
         BYTE* map = Afx_MapHWND(FALSE);
-        if (map) CallThis(FUN_632575, map + 4, h);
+        if (map) PtrMap_RemoveKey((PtrMap*)(map + 4), 0, h);
         HWND_OF(self) = 0;
     }
     F(void*, self, 56) = 0;
@@ -978,7 +995,7 @@ extern "C" BYTE* __fastcall Wnd_Construct(BYTE* self) {
 extern "C" BOOL __fastcall Wnd_DestroyWindow(BYTE* self) {
     if (!HWND_OF(self)) return FALSE;
     BYTE* map = Afx_MapHWND(FALSE);
-    BYTE* permanent = CallThis<BYTE*>(FUN_6324f2, map + 4, HWND_OF(self));
+    BYTE* permanent = (BYTE*)PtrMap_GetValueAt((PtrMap*)(map + 4), 0, HWND_OF(self));
     BOOL r = F(void*, self, 56) ? CallVirt<BOOL>(F(void*, self, 56), 80) : DestroyWindow(HWND_OF(self));
     if (!permanent) Wnd_Detach(self);
     return r;
@@ -1191,21 +1208,21 @@ dispatch:
         if (e->id == WM_SETTINGCHANGE) sig = (BYTE)GetVersion() < 4 ? 31 : 47;
         WORD wl = LOWORD(w), wh = HIWORD(w), ll = LOWORD(l), lh = HIWORD(l);
         switch (sig) {
-        case 1: r = CallThis<LRESULT>(pfn, self, CallStd<void*>(FUN_636c7c, w)); break;
+        case 1: r = CallThis<LRESULT>(pfn, self, Dc_FromHandle((HDC)w)); break;
         case 2: r = CallThis<LRESULT>(pfn, self, w); break;
         case 3: case 8:
             r = CallThis<LRESULT>(pfn, self, Wnd_FromHandle((HWND)w), (int)(short)ll, (UINT)lh); break;
         case 4: {                                   // WM_CTLCOLOR: AFX_CTLCOLOR* in lParam
             DWORD* cc = (DWORD*)l;
             BYTE dc[16], tmp[60];
-            CallThis(Cdc_Construct, dc);
+            Cdc_Construct(dc);
             F(DWORD, dc, 4) = cc[1];
             Wnd_Construct(tmp);
             HWND_OF(tmp) = (HWND)cc[0];
             BYTE* wnd = Wnd_FromHandlePermanent((HWND)cc[0]);
             if (!wnd) {
                 if (F(BYTE*, self, 52)) {
-                    void* site = CallThis<void*>(FUN_6324f2, F(BYTE*, self, 52) + 32, (HWND)cc[0]);
+                    void* site = PtrMap_GetValueAt((PtrMap*)(F(BYTE*, self, 52) + 32), 0, (HWND)cc[0]);
                     if (site) F(void*, tmp, 56) = site;
                 }
                 wnd = tmp;
@@ -1214,17 +1231,17 @@ dispatch:
             F(DWORD, dc, 4) = 0;
             HWND_OF(tmp) = 0;
             Wnd_Destruct(tmp);
-            CallThis(Cdc_Destruct, dc);
+            Cdc_Destruct(dc);
             break;
         }
         case 5: {
             DWORD* cc = (DWORD*)l;
             BYTE dc[16];
-            CallThis(Cdc_Construct, dc);
+            Cdc_Construct(dc);
             F(DWORD, dc, 4) = cc[1];
             r = CallThis<LRESULT>(pfn, self, dc, (UINT)cc[2]);
             F(DWORD, dc, 4) = 0;
-            CallThis(Cdc_Destruct, dc);
+            Cdc_Destruct(dc);
             break;
         }
         case 6: r = CallThis<LRESULT>(pfn, self, (UINT)wl, Wnd_FromHandle((HWND)l), (UINT)wh); break;
@@ -1243,7 +1260,7 @@ dispatch:
             CallThis(pfn, self, (BOOL)(HWND_OF(self) == (HWND)l), act, deact);
             break;
         }
-        case 20: CallThis(pfn, self, CallStd<void*>(FUN_636c7c, w)); break;
+        case 20: CallThis(pfn, self, Dc_FromHandle((HDC)w)); break;
         case 21: CallThis(pfn, self, CallStd<void*>(FUN_636ade, w)); break;
         case 22: CallThis(pfn, self, CallStd<void*>(FUN_636ade, w), (UINT)ll, (UINT)lh); break;
         case 23: CallThis(pfn, self, Wnd_FromHandle((HWND)w)); break;
@@ -1533,4 +1550,542 @@ extern "C" BOOL __fastcall WinThread_OnIdle(BYTE* self, void*, LONG count) {
         }
     }
     return count < 0;
+}
+
+// ---------------------------------------------------------------------------
+// Collections: CPlex, CPtrList, CMapPtrToPtr
+//
+// CMapPtrToPtr (28 bytes): +4 m_pHashTable, +8 m_nHashTableSize, +12 m_nCount,
+//   +16 m_pFreeList, +20 m_pBlocks, +24 m_nBlockSize; associations
+//   { pNext, key, value }, hashed by key >> 4.
+
+
+ASM_VAR(AsmLabel, g_ptrListVtbl, $L_6546c8)
+ASM_VAR(AsmLabel, g_ptrMapVtbl, $L_65461c)
+ASM_VAR(void*, g_afxNewHandler, $L_685e30)
+ASM_VAR(AsmLabel, g_winAppClass, $L_653418)
+
+// [FUN_632348] CPlex::Create: a block of n elements, linked in front of head
+extern "C" Plex* __stdcall Plex_Create(Plex** head, UINT n, UINT size) {
+    Plex* p = (Plex*)operator new(n * size + sizeof(Plex));
+    p->next = *head;
+    *head = p;
+    return p;
+}
+
+// [FUN_632368] CPlex::FreeDataChain
+extern "C" void __fastcall Plex_FreeDataChain(Plex* self) {
+    while (self) {
+        Plex* next = self->next;
+        operator delete(self);
+        self = next;
+    }
+}
+
+// [FUN_632241] CPtrList::RemoveAll
+extern "C" void __fastcall PtrList_RemoveAll(BYTE* self) {
+    F(int, self, 12) = 0;
+    F(void*, self, 16) = 0;
+    F(void*, self, 8) = 0;
+    F(void*, self, 4) = 0;
+    Plex_FreeDataChain(F(Plex*, self, 20));
+    F(Plex*, self, 20) = 0;
+}
+
+// [FUN_632261] CPtrList::~CPtrList
+extern "C" void __fastcall PtrList_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_ptrListVtbl;
+    PtrList_RemoveAll(self);
+}
+
+// [FUN_63237e] CMapPtrToPtr::CMapPtrToPtr
+extern "C" PtrMap* __fastcall PtrMap_Construct(PtrMap* self, void*, int blockSize) {
+    self->table = 0;
+    self->count = 0;
+    self->freeList = 0;
+    self->blocks = 0;
+    self->vtbl = g_ptrMapVtbl;
+    self->tableSize = 17;
+    self->blockSize = blockSize;
+    return self;
+}
+
+// [FUN_6323c1] CMapPtrToPtr::InitHashTable
+extern "C" void __fastcall PtrMap_InitHashTable(PtrMap* self, void*, UINT size, BOOL alloc) {
+    if (self->table) {
+        operator delete(self->table);
+        self->table = 0;
+    }
+    if (alloc) {
+        self->table = (Assoc**)operator new(size * sizeof(Assoc*));
+        memset(self->table, 0, size * sizeof(Assoc*));
+    }
+    self->tableSize = size;
+}
+
+// [FUN_632406] CMapPtrToPtr::RemoveAll
+extern "C" void __fastcall PtrMap_RemoveAll(PtrMap* self) {
+    if (self->table) {
+        operator delete(self->table);
+        self->table = 0;
+    }
+    self->count = 0;
+    self->freeList = 0;
+    Plex_FreeDataChain(self->blocks);
+    self->blocks = 0;
+}
+
+// [FUN_632431] CMapPtrToPtr::~CMapPtrToPtr
+extern "C" void __fastcall PtrMap_Destruct(PtrMap* self) {
+    self->vtbl = g_ptrMapVtbl;
+    PtrMap_RemoveAll(self);
+}
+
+// [FUN_63245a] CMapPtrToPtr::NewAssoc
+extern "C" Assoc* __fastcall PtrMap_NewAssoc(PtrMap* self) {
+    if (!self->freeList) {
+        Plex* block = Plex_Create(&self->blocks, self->blockSize, sizeof(Assoc));
+        Assoc* a = (Assoc*)(block + 1) + self->blockSize - 1;
+        for (int i = self->blockSize; i > 0; i--, a--) {
+            a->next = self->freeList;
+            self->freeList = a;
+        }
+    }
+    Assoc* a = self->freeList;
+    self->freeList = a->next;
+    self->count++;
+    a->key = 0;
+    a->value = 0;
+    return a;
+}
+
+// [FUN_6324a7] CMapPtrToPtr::FreeAssoc
+extern "C" void __fastcall PtrMap_FreeAssoc(PtrMap* self, void*, Assoc* a) {
+    a->next = self->freeList;
+    self->freeList = a;
+    if (--self->count == 0) PtrMap_RemoveAll(self);
+}
+
+// [FUN_6324c0] CMapPtrToPtr::GetAssocAt
+extern "C" Assoc* __fastcall PtrMap_GetAssocAt(PtrMap* self, void*, void* key, UINT* hash) {
+    *hash = ((UINT)key >> 4) % self->tableSize;
+    if (!self->table) return 0;
+    for (Assoc* a = self->table[*hash]; a; a = a->next)
+        if (a->key == key) return a;
+    return 0;
+}
+
+// [FUN_6324f2] the value of key, or 0
+extern "C" void* __fastcall PtrMap_GetValueAt(PtrMap* self, void*, void* key) {
+    if (!self->table) return 0;
+    for (Assoc* a = self->table[((UINT)key >> 4) % self->tableSize]; a; a = a->next)
+        if (a->key == key) return a->value;
+    return 0;
+}
+
+// [FUN_632525] CMapPtrToPtr::operator[]
+extern "C" void** __fastcall PtrMap_At(PtrMap* self, void*, void* key) {
+    UINT hash;
+    Assoc* a = PtrMap_GetAssocAt(self, 0, key, &hash);
+    if (!a) {
+        if (!self->table) PtrMap_InitHashTable(self, 0, self->tableSize, TRUE);
+        a = PtrMap_NewAssoc(self);
+        a->key = key;
+        a->next = self->table[hash];
+        self->table[hash] = a;
+    }
+    return &a->value;
+}
+
+// [FUN_632575] CMapPtrToPtr::RemoveKey
+extern "C" BOOL __fastcall PtrMap_RemoveKey(PtrMap* self, void*, void* key) {
+    if (!self->table) return FALSE;
+    Assoc** prev = &self->table[((UINT)key >> 4) % self->tableSize];
+    for (Assoc* a = *prev; a; prev = &a->next, a = a->next) {
+        if (a->key == key) {
+            *prev = a->next;
+            PtrMap_FreeAssoc(self, 0, a);
+            return TRUE;
+        }
+    }
+    return FALSE;
+}
+
+// [FUN_6325b7] CMapPtrToPtr::GetNextAssoc (pos -1: before the start)
+extern "C" void __fastcall PtrMap_GetNextAssoc(PtrMap* self, void*, Assoc** pos, void** key, void** value) {
+    Assoc* a = *pos;
+    if (a == (Assoc*)-1) {
+        for (UINT i = 0; i < self->tableSize; i++)
+            if ((a = self->table[i]) != 0) break;
+    }
+    Assoc* next = a->next;
+    if (!next) {
+        for (UINT i = ((UINT)a->key >> 4) % self->tableSize + 1; i < self->tableSize; i++)
+            if ((next = self->table[i]) != 0) break;
+    }
+    *pos = next;
+    *key = a->key;
+    *value = a->value;
+}
+
+// [FUN_632631] AfxSetNewHandler
+extern "C" void* __stdcall Afx_SetNewHandler(void* handler) {
+    void* old = g_afxNewHandler;
+    g_afxNewHandler = handler;
+    return old;
+}
+
+// [$L_632677] CWinApp::GetRuntimeClass
+extern "C" void* __fastcall WinApp_GetRuntimeClass(BYTE*) { return g_winAppClass; }
+
+// ---------------------------------------------------------------------------
+// CHandleMap: the permanent and temporary C++ objects of HWNDs, HDCs, ...
+//
+// CHandleMap (72 bytes): +4 m_permanentMap, +32 m_temporaryMap,
+//   +60 m_pClass, +64 m_nOffset (of the handles in the object), +68 m_nHandles.
+
+ASM_VAR(AsmLabel, g_handleMapVtbl, $L_6545ec)
+ASM_VAR(AsmLabel, g_tempDcClass, $L_6542c8)
+ASM_VAR(AsmLabel, g_tempGdiClass, $L_6542a0)
+
+// [FUN_6366e5] CRuntimeClass::CreateObject
+extern "C" void* __fastcall RuntimeClass_CreateObject(BYTE* self) {
+    typedef void* (__stdcall* Create)();
+    return F(Create, self, 12) ? F(Create, self, 12)() : 0;
+}
+
+// [FUN_6368e3] CHandleMap::CHandleMap
+extern "C" BYTE* __fastcall HandleMap_Construct(BYTE* self, void*, BYTE* cls, int offset, int handles) {
+    PtrMap_Construct((PtrMap*)(self + 4), 0, 10);
+    PtrMap_Construct((PtrMap*)(self + 32), 0, 4);
+    F(void*, self, 0) = g_handleMapVtbl;
+    PtrMap_InitHashTable((PtrMap*)(self + 32), 0, 7, FALSE);
+    F(BYTE*, self, 60) = cls;
+    F(int, self, 64) = offset;
+    F(int, self, 68) = handles;
+    return self;
+}
+
+// [FUN_636948] CHandleMap::FromHandle: the permanent object, else a
+// temporary one made for the handle
+extern "C" BYTE* __fastcall HandleMap_FromHandle(BYTE* self, void*, HANDLE h) {
+    if (!h) return 0;
+    BYTE* obj = (BYTE*)PtrMap_GetValueAt((PtrMap*)(self + 4), 0, h);
+    if (obj) return obj;
+    obj = (BYTE*)PtrMap_GetValueAt((PtrMap*)(self + 32), 0, h);
+    if (!obj) {
+        void* old = Afx_SetNewHandler((void*)$L_6373bb);
+        obj = (BYTE*)RuntimeClass_CreateObject(F(BYTE*, self, 60));
+        if (!obj) ThrowMemory();
+        *PtrMap_At((PtrMap*)(self + 32), 0, h) = obj;
+        Afx_SetNewHandler(old);
+    }
+    HANDLE* handles = (HANDLE*)(obj + F(int, self, 64));
+    handles[0] = h;
+    if (F(int, self, 68) == 2) handles[1] = h;
+    return obj;
+}
+
+// [FUN_636a07] CHandleMap::DeleteTemp
+extern "C" void __fastcall HandleMap_DeleteTemp(BYTE* self) {
+    if (!self) return;
+    PtrMap* temp = (PtrMap*)(self + 32);
+    Assoc* pos = temp->count ? (Assoc*)-1 : 0;
+    while (pos) {
+        void* h;
+        BYTE* obj;
+        PtrMap_GetNextAssoc(temp, 0, &pos, &h, (void**)&obj);
+        HANDLE* handles = (HANDLE*)(obj + F(int, self, 64));
+        handles[0] = 0;
+        if (F(int, self, 68) == 2) handles[1] = 0;
+        if (obj) CallVirt(obj, 4, 1);
+    }
+    PtrMap_RemoveAll(temp);
+}
+
+static BYTE* NewHandleMap(BYTE*& slot, BOOL create, void* cls, int offset, int handles) {
+    if (!slot && create) {
+        void* old = Afx_SetNewHandler((void*)$L_6373bb);
+        BYTE* p = (BYTE*)operator new(72);
+        slot = p ? HandleMap_Construct(p, 0, (BYTE*)cls, offset, handles) : 0;
+        Afx_SetNewHandler(old);
+    }
+    return slot;
+}
+
+// [FUN_636c0a] afxMapHDC
+extern "C" BYTE* __stdcall Afx_MapHDC(BOOL create) {
+    return NewHandleMap(F(BYTE*, Afx_GetModuleThreadState(), 28), create, g_tempDcClass, 4, 2);
+}
+
+// [FUN_6370d1] afxMapHGDIOBJ
+extern "C" BYTE* __stdcall Afx_MapHGDIOBJ(BOOL create) {
+    return NewHandleMap(F(BYTE*, Afx_GetModuleThreadState(), 32), create, g_tempGdiClass, 4, 1);
+}
+
+// [FUN_636c7c] CDC::FromHandle
+extern "C" BYTE* __stdcall Dc_FromHandle(HDC h) { return HandleMap_FromHandle(Afx_MapHDC(TRUE), 0, h); }
+
+// ---------------------------------------------------------------------------
+// CString, CDC, CGdiObject
+
+ASM_VAR(BYTE*, g_afxDataNil, $L_685fc4)
+ASM_VAR(AsmLabel, g_alloc64, $L_72db30)        // CFixedAlloc for strings up to 64,
+ASM_VAR(AsmLabel, g_alloc128, $L_72db08)       // 128, 256 and 512 characters
+ASM_VAR(AsmLabel, g_alloc256, $L_72dae0)
+ASM_VAR(AsmLabel, g_alloc512, $L_72dab8)
+ASM_VAR(AsmLabel, g_dcVtbl, $L_6543a8)
+ASM_PROC(FUN_61cb1e)                           // CFixedAlloc::Free
+ASM_PROC(FUN_636cc8)                           // CDC::Detach
+
+// [FUN_636290] CString::FreeData (CStringData: nRefs, nDataLength, nAllocLength)
+extern "C" void __fastcall String_FreeData(BYTE* data) {
+    switch (F(int, data, 8)) {
+    case 64:  CallThis(FUN_61cb1e, g_alloc64, data); break;
+    case 128: CallThis(FUN_61cb1e, g_alloc128, data); break;
+    case 256: CallThis(FUN_61cb1e, g_alloc256, data); break;
+    case 512: CallThis(FUN_61cb1e, g_alloc512, data); break;
+    default:  operator delete(data); break;
+    }
+}
+
+// [FUN_6363a1] CString::~CString
+extern "C" void __fastcall String_Destruct(char** self) {
+    BYTE* data = (BYTE*)*self - 12;
+    if (data != g_afxDataNil && InterlockedDecrement((LONG*)data) <= 0)
+        String_FreeData((BYTE*)*self - 12);
+}
+
+// [FUN_636bda] CDC::CDC
+extern "C" BYTE* __fastcall Cdc_Construct(BYTE* self) {
+    F(void*, self, 0) = g_dcVtbl;
+    F(HDC, self, 4) = 0;            // m_hDC
+    F(HDC, self, 8) = 0;            // m_hAttribDC
+    F(BOOL, self, 12) = 0;          // m_bPrinting
+    return self;
+}
+
+// [FUN_636cf9] CDC::~CDC
+extern "C" void __fastcall Cdc_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_dcVtbl;
+    if (F(HDC, self, 4)) DeleteDC(CallThis<HDC>(FUN_636cc8, self));
+}
+
+// [FUN_637185] CGdiObject::Detach
+extern "C" HGDIOBJ __fastcall GdiObject_Detach(BYTE* self) {
+    HGDIOBJ h = F(HGDIOBJ, self, 4);
+    if (h) {
+        BYTE* map = Afx_MapHGDIOBJ(FALSE);
+        if (map) PtrMap_RemoveKey((PtrMap*)(map + 4), 0, F(HGDIOBJ, self, 4));
+    }
+    F(HGDIOBJ, self, 4) = 0;
+    return h;
+}
+
+// [FUN_6371af] CGdiObject::DeleteObject
+extern "C" BOOL __fastcall GdiObject_DeleteObject(BYTE* self) {
+    if (!F(HGDIOBJ, self, 4)) return FALSE;
+    return DeleteObject(GdiObject_Detach(self));
+}
+
+// [FUN_6372f5] AfxDeleteObject
+extern "C" void __stdcall Afx_DeleteObject(HGDIOBJ* p) {
+    if (*p) {
+        DeleteObject(*p);
+        *p = 0;
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CFrameWnd and CWinApp leftovers
+
+ASM_VAR(AsmLabel, g_frameWndVtbl, $L_654184)
+ASM_VAR(char, g_settingsSection, $L_653490)
+ASM_VAR(char, g_previewPagesEntry, $L_653480)
+ASM_PROC(FUN_6371de)                           // _AfxIsComboBoxControl
+ASM_PROC(FUN_63524a)                           // CWnd::GetParentFrame
+ASM_PROC(FUN_639958)                           // AfxOleSetUserCtrl
+ASM_PROC(FUN_638fc2)                           // CFrameWnd::OnUpdateFrameTitle part
+ASM_PROC(FUN_6377ac)                           // CWinApp::WriteProfileInt
+ASM_PROC(FUN_63b4a6)                           // a CNoTrackObject's destructor
+
+// [FUN_63730e] AfxCancelModes: closes an open combo box drop-down
+extern "C" void __stdcall Afx_CancelModes(HWND receiver) {
+    HWND focus = GetFocus();
+    if (!focus || focus == receiver) return;
+    if (!CallStd<BOOL>(FUN_6371de, focus, 3)) {          // CBS_DROPDOWNLIST
+        focus = GetParent(focus);
+        if (focus == receiver || !CallStd<BOOL>(FUN_6371de, focus, 2)) return;   // CBS_DROPDOWN
+    }
+    if (receiver && (GetWindowLongA(receiver, GWL_STYLE) & WS_CHILD)) {
+        receiver = GetParent(receiver);
+        if (receiver == GetDesktopWindow()) return;
+    }
+    SendMessageA(focus, CB_SHOWDROPDOWN, FALSE, 0);
+}
+
+// [FUN_637a16] CFrameWnd::RemoveFrameWnd: from the thread's frame list
+extern "C" void __fastcall FrameWnd_RemoveFrameWnd(BYTE* self) {
+    BYTE* mts = (BYTE*)ThreadLocal_GetData(&F(int, Afx_GetModuleState(), 4208), 0, (void* (__stdcall*)())ModuleThreadState_New);
+    SimpleList_Remove((SlotList*)(mts + 8), 0, self);
+}
+
+// [FUN_637972] CFrameWnd::~CFrameWnd
+extern "C" void __fastcall FrameWnd_Destruct(BYTE* self) {
+    F(void*, self, 0) = g_frameWndVtbl;
+    FrameWnd_RemoveFrameWnd(self);
+    BYTE* ts = Afx_GetThreadState();
+    if (F(BYTE*, ts, 196) == self) F(BYTE*, Afx_GetThreadState(), 196) = 0;
+    if (F(void*, self, 164)) operator delete(F(void*, self, 164));
+    String_Destruct(&F(char*, self, 172));             // m_strTitle
+    PtrList_Destruct(self + 108);
+    Wnd_Destruct(self);
+}
+
+// [$L_637a60] CFrameWnd::GetHelpId-like: the active view's value, else +72
+extern "C" DWORD __fastcall FrameWnd_GetActiveId(BYTE* self) {
+    DWORD id = F(DWORD, self, 72);
+    BYTE* view = CallVirt<BYTE*>(self, 188);
+    if (view) {
+        DWORD v = CallVirt<DWORD>(view, 168);
+        if (v) id = v;
+    }
+    return id;
+}
+
+// [$L_637a84] CFrameWnd::PreTranslateMessage
+extern "C" BOOL __fastcall FrameWnd_PreTranslateMessage(BYTE* self, void*, MSG* m) {
+    if (m->message == WM_LBUTTONDOWN || m->message == WM_NCLBUTTONDOWN) Afx_CancelModes(m->hwnd);
+    if (Wnd_ModuleHook(self, 0, m)) return TRUE;
+    if (F(void*, self, 104) && CallVirt<BOOL>(F(void*, self, 104), 84, m)) return TRUE;
+    if (m->message >= WM_KEYFIRST && m->message <= WM_KEYLAST) {
+        HACCEL accel = CallVirt<HACCEL>(self, 232);        // GetDefaultAccelerator
+        if (accel && TranslateAcceleratorA(HWND_OF(self), accel, m)) return TRUE;
+    }
+    return FALSE;
+}
+
+// [$L_637afb] CFrameWnd::PostNcDestroy: delete this
+extern "C" void __fastcall FrameWnd_PostNcDestroy(BYTE* self) {
+    if (self) CallVirt(self, 4, 1);
+}
+
+// [FUN_63740d] CWinApp::HideApplication
+extern "C" void __fastcall WinApp_HideApplication(BYTE* self) {
+    BYTE* main = F(BYTE*, self, 28);
+    Wnd_ShowWindow(main, 0, SW_HIDE);
+    ShowOwnedPopups(HWND_OF(F(BYTE*, self, 28)), FALSE);
+    Wnd_SetWindowPos(F(BYTE*, self, 28), 0, (BYTE*)g_wndBottom, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE | SWP_NOACTIVATE);
+}
+
+// [$L_63749e] CWinApp::SaveAllModified
+extern "C" BOOL __fastcall WinApp_SaveAllModified(BYTE* self) {
+    BYTE* docs = F(BYTE*, self, 128);
+    return docs ? CallVirt<BOOL>(docs, 32) : TRUE;
+}
+
+// [FUN_6374d9] CWinApp::CloseAllDocuments
+extern "C" void __fastcall WinApp_CloseAllDocuments(BYTE* self, void*, BOOL endSession) {
+    BYTE* docs = F(BYTE*, self, 128);
+    if (docs) CallVirt(docs, 36, endSession);
+}
+
+// [$L_6383b8] CFrameWnd::OnClose
+extern "C" void __fastcall FrameWnd_OnClose(BYTE* self) {
+    typedef BOOL (CALLBACK* CloseProc)(BYTE*);
+    if (F(CloseProc, self, 156) && !F(CloseProc, self, 156)(self)) return;
+    BYTE* doc = CallVirt<BYTE*>(self, 188);                 // GetActiveDocument
+    if (doc && !CallVirt<BOOL>(doc, 140, self)) return;    // CanCloseFrame
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    if (app && F(BYTE*, app, 28) == self) {
+        if (!doc && !CallVirt<BOOL>(app, 136)) return;     // SaveAllModified
+        WinApp_HideApplication(app);
+        WinApp_CloseAllDocuments(app, 0, FALSE);
+        if (!CallC<BOOL>(FUN_639948)) {
+            CallStd(FUN_639958, FALSE);
+            return;
+        }
+        if (!F(BYTE, Afx_GetModuleState(), 20) && !F(BYTE*, app, 28)) {
+            Afx_PostQuitMessage(0);
+            return;
+        }
+    }
+    if (doc && F(BOOL, doc, 72)) {                          // m_bAutoDelete
+        void* pos = CallVirt<void*>(doc, 96);               // GetFirstViewPosition
+        BOOL other = FALSE;
+        while (pos) {
+            BYTE* view = CallVirt<BYTE*>(doc, 100, &pos);   // GetNextView
+            if (CallThis<BYTE*>(FUN_63524a, view) != self) {
+                other = TRUE;
+                break;
+            }
+        }
+        if (!other) {
+            CallVirt(doc, 124);                             // OnCloseDocument
+            return;
+        }
+        CallVirt(doc, 148, self);                           // PreCloseFrame
+    }
+    CallVirt(self, 88);                                     // DestroyWindow
+}
+
+// [FUN_638a72] the frame's +152
+extern "C" BYTE* __fastcall FrameWnd_Get152(BYTE* self) { return F(BYTE*, self, 152); }
+
+// [$L_638a94] its +60
+extern "C" DWORD __fastcall FrameWnd_Get152Field60(BYTE* self) {
+    BYTE* p = FrameWnd_Get152(self);
+    return p ? F(DWORD, p, 60) : 0;
+}
+
+// [$L_6395dd] CFrameWnd's delayed updates (m_nIdleFlags at +184)
+extern "C" void __fastcall FrameWnd_OnIdleUpdate(BYTE* self) {
+    if (F(BYTE, self, 184) & 1) CallVirt(self, 228, F(DWORD, self, 168));
+    if (F(BYTE, self, 184) & 2) CallVirt(self, 224, 1);
+    DWORD flags = F(DWORD, self, 184);
+    if (flags & 8) {
+        CallVirt(self, 200, flags & 4);
+        UpdateWindow(HWND_OF(self));
+    }
+    if (F(DWORD, self, 144) != F(DWORD, self, 148)) CallThis(FUN_638fc2, self, F(DWORD, self, 144));
+    F(DWORD, self, 184) = 0;
+}
+
+// [FUN_639c14] CWinApp::SaveStdProfileSettings
+extern "C" void __fastcall WinApp_SaveStdProfileSettings(BYTE* self) {
+    if (F(void*, self, 168)) CallVirt(F(void*, self, 168), 16);   // m_pRecentFileList->WriteList
+    if (F(int, self, 180)) CallThis(FUN_6377ac, self, &g_settingsSection, &g_previewPagesEntry, F(int, self, 180));
+}
+
+// [$L_639c44] CWinApp::ExitInstance
+extern "C" int __fastcall WinApp_ExitInstance(BYTE* self) {
+    BYTE* cmd = F(BYTE*, self, 172);
+    if (!(cmd && F(int, cmd, 16) == 5) && !F(BYTE, Afx_GetModuleState(), 20))
+        WinApp_SaveStdProfileSettings(self);
+    typedef void (__cdecl* TermFn)();
+    if (F(TermFn, self, 188)) F(TermFn, self, 188)();
+    return F(int, self, 56);                                // m_msgCur.wParam
+}
+
+// [$L_639979] a CNoTrackObject's deleting destructor
+extern "C" BYTE* __fastcall NoTrack_DeletingDestruct(BYTE* self, void*, UINT flags) {
+    CallThis(FUN_63b4a6, self);
+    if (flags & 1) NoTrack_Delete(self);
+    return self;
+}
+
+// [FUN_63274d] CWinApp::OnIdle: the thread's idle work, then the document
+// templates' OnIdle
+extern "C" BOOL __fastcall WinApp_OnIdle(BYTE* self, void*, LONG count) {
+    if (count <= 0) {
+        WinThread_OnIdle(self, 0, count);
+        BYTE* docs = F(BYTE*, self, 128);
+        if (docs) {
+            void* pos = CallVirt<void*>(docs, 16);          // GetFirstDocTemplatePosition
+            while (pos) CallVirt(CallVirt<BYTE*>(F(BYTE*, self, 128), 20, &pos), 136);
+        }
+    } else if (count == 1) {
+        WinThread_OnIdle(self, 0, count);
+    }
+    return count < 1;
 }

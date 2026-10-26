@@ -2297,6 +2297,9 @@ PUBLIC $L_72dd0c
 PUBLIC $L_639df5
 PUBLIC $L_653708, $L_6539f8, $L_653b00, $L_653bb8, $L_72c170, $L_72d998
 PUBLIC $L_72d9d8, $L_72da18, $L_72e0d4, $L_72e0e4
+PUBLIC $L_653418, $L_653480, $L_653490, $L_654184, $L_6542a0, $L_6542c8
+PUBLIC $L_6543a8, $L_6545ec, $L_65461c, $L_6546c8, $L_685e30, $L_685fc4
+PUBLIC $L_72dab8, $L_72dae0, $L_72db08, $L_72db30
 
 ;===================================
 _TEXT SEGMENT
@@ -749339,7 +749342,7 @@ $L_5c1455::
 
             lea ECX,DWORD PTR [ESP+20]
             mov BYTE PTR [ESP+184],BL
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov EAX,DWORD PTR [ESP+16]
             mov DWORD PTR [ESP+184],4294967295
@@ -749378,7 +749381,7 @@ $L_5c148c::
 
             lea ECX,DWORD PTR [ESP+20]
             mov BYTE PTR [ESP+184],BL
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov EAX,DWORD PTR [ESP+16]
             mov DWORD PTR [ESP+184],4294967295
@@ -749548,7 +749551,7 @@ $L_5c1658::
 
             lea ECX,DWORD PTR [ESP+20]
             mov BYTE PTR [ESP+184],BL
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov EAX,DWORD PTR [ESP+16]
             mov DWORD PTR [ESP+184],4294967295
@@ -749690,7 +749693,7 @@ $L_5c17a5::
 
             lea ECX,DWORD PTR [ESP+20]
             mov BYTE PTR [ESP+184],BL
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov EAX,DWORD PTR [ESP+16]
             mov DWORD PTR [ESP+184],4294967295
@@ -749847,7 +749850,7 @@ $L_5c1920::
 
             lea ECX,DWORD PTR [ESP+20]
             mov BYTE PTR [ESP+184],BL
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov EAX,DWORD PTR [ESP+16]
             mov DWORD PTR [ESP+184],4294967295
@@ -800657,7 +800660,7 @@ $L_5dd24f::
             or ECX,EBX
             mov DWORD PTR [EAX+292],ECX
             lea ECX,DWORD PTR [ESP+16]
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov ECX,DWORD PTR [ESP+24]
             pop EBP
@@ -800705,7 +800708,7 @@ ALIGN 16
 FUN_5dd2d0 PROC
 
             mov DWORD PTR [ECX],OFFSET $L_6523e4
-            jmp ??1CFrameWnd@@UAE@XZ
+            jmp FUN_637972
 FUN_5dd2d0 ENDP
           BYTE 090H
           BYTE 090H
@@ -800955,7 +800958,7 @@ $L_5dd4a7::
             mov DWORD PTR [ESI+328],1
             push ECX
             mov ECX,ESI
-            call ?OnIdle@CWinApp@@UAEHJ@Z
+            call FUN_63274d
 
             mov EAX,1
             pop ESI
@@ -809609,7 +809612,7 @@ $L_5e27c0 PROC
             push ESI
             mov ESI,ECX
             lea ECX,DWORD PTR [ESP+20]
-            call ??0CDC@@QAE@XZ
+            call FUN_636bda
 
             mov EAX,DWORD PTR [ESI+188]
             mov DWORD PTR [ESP+60],0
@@ -809619,7 +809622,7 @@ $L_5e27c0 PROC
 
             lea ECX,DWORD PTR [ESP+20]
             mov DWORD PTR [ESP+60],4294967295
-            call ??1CDC@@UAE@XZ
+            call FUN_636cf9
 
             xor EAX,EAX
             pop ESI
@@ -809722,7 +809725,7 @@ $L_5e284c::
 
             lea ECX,DWORD PTR [ESP+24]
             mov DWORD PTR [ESP+64],4294967295
-            call ??1CDC@@UAE@XZ
+            call FUN_636cf9
 
             mov ECX,DWORD PTR [ESP+56]
             pop EDI
@@ -810375,7 +810378,7 @@ FUN_5e2e80 PROC
             mov DWORD PTR [ESP],ECX
             mov DWORD PTR [ECX],OFFSET $L_654420
             mov DWORD PTR [ESP+12],0
-            call ?DeleteObject@CGdiObject@@QAEHXZ
+            call FUN_6371af
 
             mov ECX,DWORD PTR [ESP+4]
             mov DWORD PTR FS:[0],ECX
@@ -810431,7 +810434,7 @@ FUN_5e2ee0 PROC
             mov DWORD PTR [ESP],ECX
             mov DWORD PTR [ECX],OFFSET $L_654420
             mov DWORD PTR [ESP+12],0
-            call ?DeleteObject@CGdiObject@@QAEHXZ
+            call FUN_6371af
 
             mov ECX,DWORD PTR [ESP+4]
             mov DWORD PTR FS:[0],ECX
@@ -810500,7 +810503,7 @@ $L_5e2f7c::
 
             mov ECX,ESI
             mov DWORD PTR [ESP+16],4294967295
-            call ??1CFrameWnd@@UAE@XZ
+            call FUN_637972
 
             mov ECX,DWORD PTR [ESP+8]
             pop ESI
@@ -967005,6 +967008,8 @@ $L_63223b::
             pop ESI
             ret 4
 $L_632225 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632241 PROC
 
             push ESI
@@ -967023,6 +967028,12 @@ FUN_632241 PROC
             pop ESI
             ret 
 FUN_632241 ENDP
+ELSE
+EXTERN @PtrList_RemoveAll@4:PROC
+FUN_632241 TEXTEQU <@PtrList_RemoveAll@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632261 PROC
 
             mov EAX,OFFSET $L_64a6c0
@@ -967039,6 +967050,10 @@ FUN_632261 PROC
             leave 
             ret 
 FUN_632261 ENDP
+ELSE
+EXTERN @PtrList_Destruct@4:PROC
+FUN_632261 TEXTEQU <@PtrList_Destruct@4>
+ENDIF
 ALIGN 2
 FUN_63228a PROC
 
@@ -967150,6 +967165,8 @@ $L_63233e::
             ret 
 FUN_632324 ENDP
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632348 PROC
 
             mov EAX,DWORD PTR [ESP+8]
@@ -967165,7 +967182,13 @@ FUN_632348 PROC
             mov DWORD PTR [ECX],EAX
             ret 12
 FUN_632348 ENDP
+ELSE
+EXTERN _Plex_Create@12:PROC
+FUN_632348 TEXTEQU <_Plex_Create@12>
+ENDIF
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632368 PROC
 
             test ECX,ECX
@@ -967188,7 +967211,13 @@ $L_63237d::
 
             ret 
 FUN_632368 ENDP
+ELSE
+EXTERN @Plex_FreeDataChain@4:PROC
+FUN_632368 TEXTEQU <@Plex_FreeDataChain@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63237e PROC
 
             mov EAX,ECX
@@ -967203,6 +967232,10 @@ FUN_63237e PROC
             mov DWORD PTR [EAX+24],ECX
             ret 4
 FUN_63237e ENDP
+ELSE
+EXTERN @PtrMap_Construct@12:PROC
+FUN_63237e TEXTEQU <@PtrMap_Construct@12>
+ENDIF
 $L_6323a5 PROC
 
             push ESI
@@ -967222,6 +967255,8 @@ $L_6323bb::
             pop ESI
             ret 4
 $L_6323a5 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6323c1 PROC
 
             push EBX
@@ -967263,7 +967298,13 @@ $L_6323fe::
             pop EBX
             ret 8
 FUN_6323c1 ENDP
+ELSE
+EXTERN @PtrMap_InitHashTable@16:PROC
+FUN_6323c1 TEXTEQU <@PtrMap_InitHashTable@16>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632406 PROC
 
             push ESI
@@ -967288,6 +967329,12 @@ $L_63241b::
             pop ESI
             ret 
 FUN_632406 ENDP
+ELSE
+EXTERN @PtrMap_RemoveAll@4:PROC
+FUN_632406 TEXTEQU <@PtrMap_RemoveAll@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632431 PROC
 
             mov EAX,OFFSET $L_64a664
@@ -967304,7 +967351,13 @@ FUN_632431 PROC
             leave 
             ret 
 FUN_632431 ENDP
+ELSE
+EXTERN @PtrMap_Destruct@4:PROC
+FUN_632431 TEXTEQU <@PtrMap_Destruct@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63245a PROC
 
             push ESI
@@ -967346,6 +967399,12 @@ $L_632492::
             pop ESI
             ret 
 FUN_63245a ENDP
+ELSE
+EXTERN @PtrMap_NewAssoc@4:PROC
+FUN_63245a TEXTEQU <@PtrMap_NewAssoc@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6324a7 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -967360,7 +967419,13 @@ $L_6324bd::
 
             ret 4
 FUN_6324a7 ENDP
+ELSE
+EXTERN @PtrMap_FreeAssoc@12:PROC
+FUN_6324a7 TEXTEQU <@PtrMap_FreeAssoc@12>
+ENDIF
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6324c0 PROC
 
             push ESI
@@ -967394,7 +967459,13 @@ $L_6324ee::
             pop ESI
             ret 8
 FUN_6324c0 ENDP
+ELSE
+EXTERN @PtrMap_GetAssocAt@16:PROC
+FUN_6324c0 TEXTEQU <@PtrMap_GetAssocAt@16>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6324f2 PROC
 
             push ESI
@@ -967432,6 +967503,12 @@ $L_632520::
             pop ESI
             ret 4
 FUN_6324f2 ENDP
+ELSE
+EXTERN @PtrMap_GetValueAt@12:PROC
+FUN_6324f2 TEXTEQU <@PtrMap_GetValueAt@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632525 PROC
 
             push EBP
@@ -967476,6 +967553,12 @@ $L_63256c::
             pop EBP
             ret 4
 FUN_632525 ENDP
+ELSE
+EXTERN @PtrMap_At@12:PROC
+FUN_632525 TEXTEQU <@PtrMap_At@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632575 PROC
 
             push ESI
@@ -967521,6 +967604,12 @@ $L_6325b2::
             pop ESI
             ret 4
 FUN_632575 ENDP
+ELSE
+EXTERN @PtrMap_RemoveKey@12:PROC
+FUN_632575 TEXTEQU <@PtrMap_RemoveKey@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6325b7 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -967591,6 +967680,10 @@ $L_63260c::
             pop ESI
             ret 12
 FUN_6325b7 ENDP
+ELSE
+EXTERN @PtrMap_GetNextAssoc@20:PROC
+FUN_6325b7 TEXTEQU <@PtrMap_GetNextAssoc@20>
+ENDIF
 FUN_632629 PROC
 
             call FUN_6321e9
@@ -967600,6 +967693,8 @@ $L_63262e PROC
             xor EAX,EAX
             ret 
 $L_63262e ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_632631 PROC
 
             mov ECX,DWORD PTR [ESP+4]
@@ -967607,6 +967702,10 @@ FUN_632631 PROC
             mov DWORD PTR [$L_685e30],ECX
             ret 4
 FUN_632631 ENDP
+ELSE
+EXTERN _Afx_SetNewHandler@4:PROC
+FUN_632631 TEXTEQU <_Afx_SetNewHandler@4>
+ENDIF
 ??2@YAPAXI@Z PROC ;FUN_632643 void *operator new(unsigned int size)
 
             push ESI
@@ -967648,11 +967747,17 @@ ALIGN 4
             pop ECX
             ret 
 ??3@YAXPAX@Z ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_632677 PROC
 
             mov EAX,OFFSET $L_653418
             ret 
 $L_632677 ENDP
+ELSE
+EXTERN @WinApp_GetRuntimeClass@4:PROC
+$L_632677 TEXTEQU <@WinApp_GetRuntimeClass@4>
+ENDIF
 ; main loop: src\engine\main_loop.cpp, nmake ASM_MAIN_LOOP=1 assembles the original
 IFDEF ASM_MAIN_LOOP
 ?Run@CWinApp@@UAEHXZ PROC ;$L_63267d virtual int CWinApp::Run()
@@ -967780,7 +967885,9 @@ $L_632749::
             pop ESI
             ret 8
 $L_6326d6 ENDP
-?OnIdle@CWinApp@@UAEHJ@Z PROC ;FUN_63274d virtual BOOL CWinApp::OnIdle(LONG lCount)
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_63274d PROC ;?OnIdle@CWinApp@@UAEHJ@Z virtual BOOL CWinApp::OnIdle(LONG lCount)
 
             push EBP
             mov EBP,ESP
@@ -967838,7 +967945,11 @@ $L_6327a9::
             setl AL
             pop EBP
             ret 4
-?OnIdle@CWinApp@@UAEHJ@Z ENDP
+FUN_63274d ENDP
+ELSE
+EXTERN @WinApp_OnIdle@12:PROC
+FUN_63274d TEXTEQU <@WinApp_OnIdle@12>
+ENDIF
 FUN_6327b7 PROC
 
             push EBP
@@ -973334,7 +973445,7 @@ $L_634dad::
 $L_634dbb::
 
             lea ECX,DWORD PTR [EBP-36]
-            call ??0CDC@@QAE@XZ
+            call FUN_636bda
 
             mov EAX,DWORD PTR [ESI+4]
             and DWORD PTR [EBP-4],0
@@ -973389,7 +973500,7 @@ $L_634e07::
 $L_634e31::
 
             lea ECX,DWORD PTR [EBP-36]
-            call ??0CDC@@QAE@XZ
+            call FUN_636bda
 
             mov EAX,DWORD PTR [ESI+4]
             push DWORD PTR [ESI+8]
@@ -973406,7 +973517,7 @@ $L_634e31::
             lea ECX,DWORD PTR [EBP-36]
 $L_634e5f::
 
-            call ??1CDC@@UAE@XZ
+            call FUN_636cf9
 
             jmp $L_63503f
 $L_634e69::
@@ -976257,6 +976368,8 @@ $L_63628b::
             ret 4
 FUN_63620e ENDP
 ALIGN 16
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636290 PROC
 
             mov EAX,DWORD PTR [ECX+8]
@@ -976301,6 +976414,10 @@ $L_6362d1::
             pop ECX
             ret 
 FUN_636290 ENDP
+ELSE
+EXTERN @String_FreeData@4:PROC
+FUN_636290 TEXTEQU <@String_FreeData@4>
+ENDIF
 ALIGN 8
 FUN_6362d8 PROC
 
@@ -976426,7 +976543,9 @@ $L_63639c::
             pop ESI
             ret 4
 FUN_636378 ENDP
-??1CString@@QAE@XZ PROC ;FUN_6363a1 CString::~CString()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_6363a1 PROC ;??1CString@@QAE@XZ CString::~CString()
 
             push ESI
             mov ESI,ECX
@@ -976449,7 +976568,11 @@ $L_6363c9::
 
             pop ESI
             ret 
-??1CString@@QAE@XZ ENDP
+FUN_6363a1 ENDP
+ELSE
+EXTERN @String_Destruct@4:PROC
+FUN_6363a1 TEXTEQU <@String_Destruct@4>
+ENDIF
 ??0CString@@QAE@PBD@Z PROC ;FUN_6363cb CString::CString(LPCTSTR lpsz)
 
             mov EAX,DWORD PTR [$L_685fc0]
@@ -976922,6 +977045,8 @@ FUN_6366d3 PROC
 
             ret 4
 FUN_6366d3 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6366e5 PROC
 
             mov EAX,OFFSET $L_64a604
@@ -976954,6 +977079,11 @@ $L_63670e::
             leave 
             ret 
 FUN_6366e5 ENDP
+ELSE
+EXTERN @RuntimeClass_CreateObject@4:PROC
+FUN_6366e5 TEXTEQU <@RuntimeClass_CreateObject@4>
+$L_63670b LABEL NEAR
+ENDIF
 $L_63671d PROC
 
             mov ECX,DWORD PTR [EBP-24]
@@ -977220,6 +977350,8 @@ ELSE
 EXTERN _Afx_UnlockTempMaps@4:PROC
 FUN_6367e9 TEXTEQU <_Afx_UnlockTempMaps@4>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6368e3 PROC
 
             mov EAX,OFFSET $L_64a626
@@ -977261,7 +977393,13 @@ FUN_6368e3 PROC
             leave 
             ret 12
 FUN_6368e3 ENDP
+ELSE
+EXTERN @HandleMap_Construct@20:PROC
+FUN_6368e3 TEXTEQU <@HandleMap_Construct@20>
+ENDIF
 ALIGN 8
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636948 PROC
 
             mov EAX,OFFSET $L_64a630
@@ -977350,6 +977488,10 @@ $L_6369ef::
             mov EAX,EBX
             jmp $L_636965
 FUN_636948 ENDP
+ELSE
+EXTERN @HandleMap_FromHandle@12:PROC
+FUN_636948 TEXTEQU <@HandleMap_FromHandle@12>
+ENDIF
 $L_6369f6 PROC
 
             push DWORD PTR [EBP+8]
@@ -977359,6 +977501,8 @@ $L_6369f6 PROC
             push 0
             call __CxxThrowException@8
 $L_6369f6 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636a07 PROC
 
             push EBP
@@ -977421,6 +977565,10 @@ $L_636a69::
             leave 
             ret 
 FUN_636a07 ENDP
+ELSE
+EXTERN @HandleMap_DeleteTemp@4:PROC
+FUN_636a07 TEXTEQU <@HandleMap_DeleteTemp@4>
+ENDIF
 ALIGN 4
 FUN_636a6c PROC
 
@@ -977637,7 +977785,9 @@ $L_636bc7 PROC
             ret 
 $L_636bc7 ENDP
 ALIGN 2
-??0CDC@@QAE@XZ PROC ;FUN_636bda CDC::CDC()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_636bda PROC ;??0CDC@@QAE@XZ CDC::CDC()
 
             mov EAX,ECX
             xor ECX,ECX
@@ -977646,12 +977796,16 @@ ALIGN 2
             mov DWORD PTR [EAX+8],ECX
             mov DWORD PTR [EAX+12],ECX
             ret 
-??0CDC@@QAE@XZ ENDP
+FUN_636bda ENDP
+ELSE
+EXTERN @Cdc_Construct@4:PROC
+FUN_636bda TEXTEQU <@Cdc_Construct@4>
+ENDIF
 $L_636bee PROC
 
             push ESI
             mov ESI,ECX
-            call ??1CDC@@UAE@XZ
+            call FUN_636cf9
 
             test BYTE PTR [ESP+8],1
             je $L_636c04
@@ -977667,6 +977821,8 @@ $L_636c04::
             ret 4
 $L_636bee ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636c0a PROC
 
             mov EAX,OFFSET $L_64a58a
@@ -977723,7 +977879,13 @@ $L_636c6a::
             leave 
             ret 4
 FUN_636c0a ENDP
+ELSE
+EXTERN _Afx_MapHDC@4:PROC
+FUN_636c0a TEXTEQU <_Afx_MapHDC@4>
+ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_636c7c PROC
 
             push 1
@@ -977735,6 +977897,10 @@ FUN_636c7c PROC
 
             ret 4
 FUN_636c7c ENDP
+ELSE
+EXTERN _Dc_FromHandle@4:PROC
+FUN_636c7c TEXTEQU <_Dc_FromHandle@4>
+ENDIF
 ?Attach@CDC@@QAEHPAUHDC__@@@Z PROC ;FUN_636c91 BOOL CDC::Attach(HDC hDC)
 
             push ESI
@@ -977801,7 +977967,9 @@ $L_636ce9::
             pop ESI
             ret 
 FUN_636cc8 ENDP
-??1CDC@@UAE@XZ PROC ;FUN_636cf9 virtual CDC::~CDC()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_636cf9 PROC ;??1CDC@@UAE@XZ virtual CDC::~CDC()
 
             mov EAX,OFFSET $L_64a59c
             call FUN_62001c
@@ -977823,7 +977991,11 @@ $L_636d23::
             mov DWORD PTR FS:[0],ECX
             leave 
             ret 
-??1CDC@@UAE@XZ ENDP
+FUN_636cf9 ENDP
+ELSE
+EXTERN @Cdc_Destruct@4:PROC
+FUN_636cf9 TEXTEQU <@Cdc_Destruct@4>
+ENDIF
 $L_636d2f PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -978396,6 +978568,8 @@ $L_6370c1 PROC
 
             ret 4
 $L_6370c1 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6370d1 PROC
 
             mov EAX,OFFSET $L_64a5b2
@@ -978452,6 +978626,10 @@ $L_637131::
             leave 
             ret 4
 FUN_6370d1 ENDP
+ELSE
+EXTERN _Afx_MapHGDIOBJ@4:PROC
+FUN_6370d1 TEXTEQU <_Afx_MapHGDIOBJ@4>
+ENDIF
 FUN_637143 PROC
 
             push 1
@@ -978494,6 +978672,8 @@ $L_637180::
             pop ESI
             ret 4
 ?Attach@CGdiObject@@QAEHPAX@Z ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_637185 PROC
 
             push ESI
@@ -978520,7 +978700,13 @@ $L_6371a6::
             pop ESI
             ret 
 FUN_637185 ENDP
-?DeleteObject@CGdiObject@@QAEHXZ PROC ;FUN_6371af BOOL CGdiObject::DeleteObject()
+ELSE
+EXTERN @GdiObject_Detach@4:PROC
+FUN_637185 TEXTEQU <@GdiObject_Detach@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_6371af PROC ;?DeleteObject@CGdiObject@@QAEHXZ BOOL CGdiObject::DeleteObject()
 
             cmp DWORD PTR [ECX+4],0
             jne $L_6371b8
@@ -978535,7 +978721,11 @@ $L_6371b8::
             call DWORD PTR __imp__DeleteObject@4
 
             ret 
-?DeleteObject@CGdiObject@@QAEHXZ ENDP
+FUN_6371af ENDP
+ELSE
+EXTERN @GdiObject_DeleteObject@4:PROC
+FUN_6371af TEXTEQU <@GdiObject_DeleteObject@4>
+ENDIF
 FUN_6371c5 PROC
 
             push EBP
@@ -978698,6 +978888,8 @@ $L_6372f0::
             leave 
             ret 8
 FUN_63729d ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6372f5 PROC
 
             push ESI
@@ -978715,7 +978907,13 @@ $L_63730a::
             pop ESI
             ret 4
 FUN_6372f5 ENDP
+ELSE
+EXTERN _Afx_DeleteObject@4:PROC
+FUN_6372f5 TEXTEQU <_Afx_DeleteObject@4>
+ENDIF
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63730e PROC
 
             push EBX
@@ -978788,6 +978986,10 @@ $L_63737f::
             pop EBX
             ret 4
 FUN_63730e ENDP
+ELSE
+EXTERN _Afx_CancelModes@4:PROC
+FUN_63730e TEXTEQU <_Afx_CancelModes@4>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_637385 PROC
@@ -978884,6 +979086,8 @@ $L_637409 PROC
             pop ESI
             ret 
 $L_637409 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63740d PROC
 
             push ESI
@@ -978912,6 +979116,10 @@ FUN_63740d PROC
             pop ESI
             ret 
 FUN_63740d ENDP
+ELSE
+EXTERN @WinApp_HideApplication@4:PROC
+FUN_63740d TEXTEQU <@WinApp_HideApplication@4>
+ENDIF
 $L_63743f PROC
 
             push ESI
@@ -978951,6 +979159,8 @@ $L_637492::
             pop ESI
             ret 4
 $L_63743f ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63749e PROC
 
             mov ECX,DWORD PTR [ECX+128]
@@ -978965,6 +979175,10 @@ $L_6374ad::
             pop EAX
             ret 
 $L_63749e ENDP
+ELSE
+EXTERN @WinApp_SaveAllModified@4:PROC
+$L_63749e TEXTEQU <@WinApp_SaveAllModified@4>
+ENDIF
 $L_6374b1 PROC
 
             mov ECX,DWORD PTR [ECX+168]
@@ -978987,6 +979201,8 @@ $L_6374c7 PROC
 
             ret 4
 $L_6374c7 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6374d9 PROC
 
             mov ECX,DWORD PTR [ECX+128]
@@ -979000,6 +979216,10 @@ $L_6374ec::
 
             ret 4
 FUN_6374d9 ENDP
+ELSE
+EXTERN @WinApp_CloseAllDocuments@12:PROC
+FUN_6374d9 TEXTEQU <@WinApp_CloseAllDocuments@12>
+ENDIF
 $L_6374ef PROC
 
             mov ECX,DWORD PTR [ECX+168]
@@ -979281,7 +979501,7 @@ $L_6376d8::
             or DWORD PTR [EBP-4],4294967295
             lea ECX,DWORD PTR [EBP-16]
             mov ESI,EAX
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov ECX,DWORD PTR [EBP-12]
             mov EAX,ESI
@@ -979587,7 +979807,7 @@ $L_637956 PROC
 
             push ESI
             mov ESI,ECX
-            call ??1CFrameWnd@@UAE@XZ
+            call FUN_637972
 
             test BYTE PTR [ESP+8],1
             je $L_63796c
@@ -979603,7 +979823,9 @@ $L_63796c::
             ret 4
 $L_637956 ENDP
 ALIGN 2
-??1CFrameWnd@@UAE@XZ PROC ;FUN_637972 virtual CFrameWnd::~CFrameWnd()
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
+FUN_637972 PROC ;??1CFrameWnd@@UAE@XZ virtual CFrameWnd::~CFrameWnd()
 
             mov EAX,OFFSET $L_64a4b5
             call FUN_62001c
@@ -979638,7 +979860,7 @@ $L_6379bf::
 
             lea ECX,DWORD PTR [ESI+172]
             mov BYTE PTR [EBP-4],1
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             and BYTE PTR [EBP-4],0
             lea ECX,DWORD PTR [ESI+108]
@@ -979653,7 +979875,11 @@ $L_6379bf::
             mov DWORD PTR FS:[0],ECX
             leave 
             ret 
-??1CFrameWnd@@UAE@XZ ENDP
+FUN_637972 ENDP
+ELSE
+EXTERN @FrameWnd_Destruct@4:PROC
+FUN_637972 TEXTEQU <@FrameWnd_Destruct@4>
+ENDIF
 ALIGN 2
 FUN_6379f2 PROC
 
@@ -979674,6 +979900,8 @@ FUN_6379f2 PROC
             ret 
 FUN_6379f2 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_637a16 PROC
 
             push ESI
@@ -979692,6 +979920,10 @@ FUN_637a16 PROC
             pop ESI
             ret 
 FUN_637a16 ENDP
+ELSE
+EXTERN @FrameWnd_RemoveFrameWnd@4:PROC
+FUN_637a16 TEXTEQU <@FrameWnd_RemoveFrameWnd@4>
+ENDIF
 ALIGN 2
 FUN_637a3a PROC
 
@@ -979712,6 +979944,8 @@ FUN_637a3a PROC
             pop ESI
             ret 4
 FUN_637a3a ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_637a60 PROC
 
             mov EAX,DWORD PTR [ECX]
@@ -979736,6 +979970,12 @@ $L_637a80::
             pop ESI
             ret 
 $L_637a60 ENDP
+ELSE
+EXTERN @FrameWnd_GetActiveId@4:PROC
+$L_637a60 TEXTEQU <@FrameWnd_GetActiveId@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_637a84 PROC
 
             push ESI
@@ -979808,6 +980048,12 @@ $L_637af6::
             pop ESI
             ret 4
 $L_637a84 ENDP
+ELSE
+EXTERN @FrameWnd_PreTranslateMessage@12:PROC
+$L_637a84 TEXTEQU <@FrameWnd_PreTranslateMessage@12>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_637afb PROC
 
             test ECX,ECX
@@ -979820,6 +980066,10 @@ $L_637b06::
 
             ret 
 $L_637afb ENDP
+ELSE
+EXTERN @FrameWnd_PostNcDestroy@4:PROC
+$L_637afb TEXTEQU <@FrameWnd_PostNcDestroy@4>
+ENDIF
 $L_637b07 PROC
 
             push ESI
@@ -980998,7 +981248,7 @@ $L_638363::
 
             or DWORD PTR [EBP-4],4294967295
             lea ECX,DWORD PTR [EBP+8]
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov ECX,DWORD PTR [EBP-12]
             pop EDI
@@ -981041,6 +981291,8 @@ $L_6383aa::
             pop ESI
             ret 4
 $L_638382 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_6383b8 PROC
 
             push EBP
@@ -981185,6 +981437,10 @@ $L_6384aa::
             leave 
             ret 
 $L_6383b8 ENDP
+ELSE
+EXTERN @FrameWnd_OnClose@4:PROC
+$L_6383b8 TEXTEQU <@FrameWnd_OnClose@4>
+ENDIF
 $L_6384af PROC
 
             push ESI
@@ -981935,11 +982191,17 @@ $L_638a57 PROC
             ret 8
 $L_638a57 ENDP
 ALIGN 2
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_638a72 PROC
 
             mov EAX,DWORD PTR [ECX+152]
             ret 
 FUN_638a72 ENDP
+ELSE
+EXTERN @FrameWnd_Get152@4:PROC
+FUN_638a72 TEXTEQU <@FrameWnd_Get152@4>
+ENDIF
 $L_638a79 PROC
 
             mov EAX,DWORD PTR [ECX+152]
@@ -981957,6 +982219,8 @@ $L_638a91::
 
             ret 4
 $L_638a79 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_638a94 PROC
 
             call FUN_638a72
@@ -981971,6 +982235,10 @@ $L_638aa1::
             xor EAX,EAX
             ret 
 $L_638a94 ENDP
+ELSE
+EXTERN @FrameWnd_Get152Field60@4:PROC
+$L_638a94 TEXTEQU <@FrameWnd_Get152Field60@4>
+ENDIF
 ALIGN 4
 FUN_638aa4 PROC
 
@@ -982581,7 +982849,7 @@ $L_638f4a::
 
             or DWORD PTR [EBP-4],4294967295
             lea ECX,DWORD PTR [EBP-16]
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             jmp $L_638f5b
 $L_638f58::
@@ -982920,7 +983188,7 @@ $L_6391be::
 
             or DWORD PTR [EBP-4],4294967295
             lea ECX,DWORD PTR [EBP-16]
-            call ??1CString@@QAE@XZ
+            call FUN_6363a1
 
             mov ECX,DWORD PTR [EBP-12]
             pop EDI
@@ -983419,6 +983687,8 @@ $L_6395c9 PROC
             mov DWORD PTR [ECX+168],EAX
             ret 4
 $L_6395c9 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_6395dd PROC
 
             push ESI
@@ -983467,6 +983737,10 @@ $L_639643::
             pop ESI
             ret 
 $L_6395dd ENDP
+ELSE
+EXTERN @FrameWnd_OnIdleUpdate@4:PROC
+$L_6395dd TEXTEQU <@FrameWnd_OnIdleUpdate@4>
+ENDIF
 $L_63964c PROC
 
             mov EAX,ECX
@@ -983962,6 +984236,8 @@ FUN_639970 PROC
             mov DWORD PTR [EAX],OFFSET $L_6534a0
             ret 
 FUN_639970 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_639979 PROC
 
             push ESI
@@ -983979,6 +984255,10 @@ $L_63998e::
             pop ESI
             ret 4
 $L_639979 ENDP
+ELSE
+EXTERN @NoTrack_DeletingDestruct@12:PROC
+$L_639979 TEXTEQU <@NoTrack_DeletingDestruct@12>
+ENDIF
 ALIGN 4
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -984271,6 +984551,8 @@ EXTERN @WinApp_Destruct@4:PROC
 FUN_639ade TEXTEQU <@WinApp_Destruct@4>
 ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_639c14 PROC
 
             push ESI
@@ -984297,6 +984579,12 @@ $L_639c42::
             pop ESI
             ret 
 FUN_639c14 ENDP
+ELSE
+EXTERN @WinApp_SaveStdProfileSettings@4:PROC
+FUN_639c14 TEXTEQU <@WinApp_SaveStdProfileSettings@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_639c44 PROC
 
             push ESI
@@ -984329,6 +984617,10 @@ $L_639c75::
             pop ESI
             ret 
 $L_639c44 ENDP
+ELSE
+EXTERN @WinApp_ExitInstance@4:PROC
+$L_639c44 TEXTEQU <@WinApp_ExitInstance@4>
+ENDIF
 $L_639c7a PROC
 
             mov EAX,OFFSET $L_6533f8
@@ -985492,7 +985784,7 @@ $L_63a46c PROC
             je $L_63a480
 
             mov ECX,EAX
-            call ??0CDC@@QAE@XZ
+            call FUN_636bda
 
             ret 
 $L_63a480::
@@ -985543,7 +985835,7 @@ $L_63a4af PROC
             je $L_63a4d1
 
             mov ECX,ESI
-            call ??0CDC@@QAE@XZ
+            call FUN_636bda
 
             mov DWORD PTR [ESI],OFFSET $L_654430
             mov EAX,ESI
@@ -985575,7 +985867,7 @@ $L_63a4ef::
 $L_63a4d5 ENDP
 FUN_63a4f5 PROC
 
-            jmp ??1CDC@@UAE@XZ
+            jmp FUN_636cf9
 FUN_63a4f5 ENDP
 $L_63a4fa PROC
 
@@ -985626,7 +985918,7 @@ FUN_63a53c PROC
             mov DWORD PTR [EBP-16],ECX
             mov DWORD PTR [ECX],OFFSET $L_654420
             and DWORD PTR [EBP-4],0
-            call ?DeleteObject@CGdiObject@@QAEHXZ
+            call FUN_6371af
 
             mov ECX,DWORD PTR [EBP-12]
             mov DWORD PTR FS:[0],ECX
@@ -1024499,7 +1024791,7 @@ $L_6488bd ENDP
 $L_6488cb PROC
 
             lea ECX,DWORD PTR [EBP-168]
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_6488cb ENDP
 $L_6488d6 PROC
 
@@ -1026052,12 +1026344,12 @@ $L_64918a PROC
 $L_649190::
 
             mov ECX,DWORD PTR [EBP-16]
-            jmp ??1CFrameWnd@@UAE@XZ
+            jmp FUN_637972
 $L_64918a ENDP
 $L_649198 PROC
 
             lea ECX,DWORD PTR [EBP-20]
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_649198 ENDP
 $L_6491a0 PROC
 
@@ -1026357,7 +1026649,7 @@ $L_64932a ENDP
 $L_649340 PROC
 
             lea ECX,DWORD PTR [EBP-44]
-            jmp ??1CDC@@UAE@XZ
+            jmp FUN_636cf9
 $L_649340 ENDP
 $L_649348 PROC
 
@@ -1026389,7 +1026681,7 @@ $L_649360 ENDP
 $L_64936d PROC
 
             mov ECX,DWORD PTR [EBP-196]
-            jmp ??1CFrameWnd@@UAE@XZ
+            jmp FUN_637972
 $L_64936d ENDP
 $L_649378 PROC
 
@@ -1026457,7 +1026749,7 @@ $L_6493b8 ENDP
 $L_6493d0 PROC
 
             mov ECX,DWORD PTR [EBP-16]
-            jmp ??1CFrameWnd@@UAE@XZ
+            jmp FUN_637972
 $L_6493d0 ENDP
 $L_6493d8 PROC
 
@@ -1029300,7 +1029592,7 @@ $L_64a2dd::
 $L_64a2e8::
 
             lea ECX,DWORD PTR [EBP-16]
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_64a2f0::
 
             mov EAX,OFFSET $L_668b10
@@ -1029463,7 +1029755,7 @@ $L_64a3e8::
 $L_64a3f4::
 
             lea ECX,DWORD PTR [EBP-36]
-            jmp ??1CDC@@UAE@XZ
+            jmp FUN_636cf9
 $L_64a296 ENDP
 $L_64a3fc PROC
 
@@ -1029473,7 +1029765,7 @@ $L_64a3fc ENDP
 $L_64a404 PROC
 
             lea ECX,DWORD PTR [EBP-36]
-            jmp ??1CDC@@UAE@XZ
+            jmp FUN_636cf9
 $L_64a404 ENDP
 $L_64a40c PROC
 
@@ -1029551,7 +1029843,7 @@ $L_64a47b PROC
 
             mov ECX,DWORD PTR [EBP-16]
             add ECX,172
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_64a47b ENDP
 $L_64a489 PROC
 
@@ -1029576,7 +1029868,7 @@ $L_64a4a7 PROC
 
             mov ECX,DWORD PTR [EBP-16]
             add ECX,172
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_64a4a7 ENDP
 $L_64a4b5 PROC
 
@@ -1029589,7 +1029881,7 @@ $L_64a4bf PROC
 $L_64a4c0::
 
             lea ECX,DWORD PTR [EBP+8]
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_64a4c8::
 
             mov EAX,OFFSET $L_668fa8
@@ -1029613,7 +1029905,7 @@ $L_64a4dc::
 $L_64a4e8::
 
             lea ECX,DWORD PTR [EBP-16]
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_64a4f0::
 
             mov EAX,OFFSET $L_668ff8
@@ -1029637,7 +1029929,7 @@ $L_64a504::
 $L_64a510::
 
             lea ECX,DWORD PTR [EBP-16]
-            jmp ??1CString@@QAE@XZ
+            jmp FUN_6363a1
 $L_64a518::
 
             mov EAX,OFFSET $L_669048
@@ -1046499,7 +1046791,7 @@ $L_6534a8           DWORD $L_639c7a
           DWORD ?Run@CWinApp@@UAEHXZ
           DWORD $L_632eb2
           DWORD $L_63313c
-          DWORD ?OnIdle@CWinApp@@UAEHJ@Z
+          DWORD FUN_63274d
           DWORD $L_632ccf
           DWORD $L_639c44
           DWORD $L_6326d6

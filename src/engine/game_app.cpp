@@ -344,7 +344,7 @@ void __fastcall CGameApp_Destruct(CGameApp* self, void*)                    // [
 // Destroy the game views while their task-node pool is still alive; its
 // static destructor otherwise runs before the application destructor.
 // Continue through the existing MFC ExitInstance for profile saving/result.
-ASM_FUNC(GameApp_MfcExitInstance, $L_639c44)
+extern "C" void GameApp_MfcExitInstance(); KING_ALIAS("_GameApp_MfcExitInstance", "@WinApp_ExitInstance@4")
 int __fastcall CGameApp_ExitInstance(CGameApp* self, void*)
 {
     self->m_bRunFrames = FALSE;
