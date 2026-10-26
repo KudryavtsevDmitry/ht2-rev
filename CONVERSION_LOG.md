@@ -469,3 +469,11 @@ The old x87 math, _ftol, _alldiv, _chkstk and string helpers stay in asm (exact 
 word reader no longer uses the old istrstream (vehicle_setup/game_shell); FILE_EOF and CRT_STREAM in king.h
 replace the inlined VC6 feof (FILE+12 & 16, which hung the start on the modern FILE) and the old _iob addresses;
 CRT_PROC binds the C++ references to the remapped labels. Drive test passes on both runtimes; exit code 0.
+
+Dead code: 4,874 procedures the default build no longer reaches (old C runtime and iostreams, unwind funclets and
+EH thunks of converted procedures, ~280 game procedures whose callers are all C++) are under IFDEF ASM_UNUSED in
+136 blocks. The Makefile defines ASM_UNUSED whenever any ASM_* switch is set, so ASM=1 and the per-file switches
+assemble as before (ASM=1 output unchanged). In the default build their 7,201 labels are TEXTEQU'd to UnusedTrap
+(int 3), so a missed reference stops at a breakpoint. Reachability (scratchpad dead.py): from everything the C++
+names, through code, data objects (vtables, EH tables, jump tables) and fall-through between procedures. 162 dead
+procedures inside existing IF blocks were left. king.exe: 2,774,528 -> 2,672,128 bytes. Drive test passes.
