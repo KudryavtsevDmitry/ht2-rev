@@ -3105,9 +3105,9 @@ BYTE* __fastcall List_NewNode(void* list, void*, BYTE* src)
 }
 
 // [FUN_491750] a new 16-byte list node (free list at 68d1c8, refilled 20 at a
-// time) holding the dword *src
+// time; Stl_Alloc16) holding the dword *src
 KING_VAR(BYTE*, rt_free16_68d1c8, 68d1c8)
-extern "C" BYTE* __fastcall List16_NewNode(void* list, void*, const DWORD* src)
+extern "C" BYTE* __cdecl Stl_Alloc16()
 {
     CallThis(Rt32_Lock, &rt32_lock68d204);
     BYTE* node = rt_free16_68d1c8;
@@ -3125,6 +3125,11 @@ extern "C" BYTE* __fastcall List16_NewNode(void* list, void*, const DWORD* src)
         rt_free16_68d1c8 = *(BYTE**)node;
     }
     rt32_lock68d204 = 0;
+    return node;
+}
+extern "C" BYTE* __fastcall List16_NewNode(void* list, void*, const DWORD* src)
+{
+    BYTE* node = Stl_Alloc16();
     if (node + 8)
         F(DWORD, node, 8) = *src;
     return node;

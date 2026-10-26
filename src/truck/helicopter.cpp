@@ -7674,7 +7674,7 @@ float __fastcall Copter_SideDrift(BYTE* s, void*, const float* p)
 
 // === where a circle about a center touches a line in a plane (FUN_562eb0 with its tails $L_563376, $L_56337b)
 
-ASM_PROC(FUN_4e7889)
+ASM_FUNC(FUN_4e7889, _Quadratic_Roots)
 extern "C" void Ct_Set(); KING_ALIAS("_Ct_Set", "@Vec3_SetThis@20")
 extern "C" void Ct_MulAssign(); KING_ALIAS("_Ct_MulAssign", "@Vec3_MulAssign@16")
 KING_VAR(double, g_ct64b670, 64b670)

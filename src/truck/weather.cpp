@@ -28,7 +28,7 @@ extern "C" void FUN_5fd5c0(); KING_ALIAS("_FUN_5fd5c0", "@Sound_SetPitch@12")
 extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")    // sound: play (volume, pitch, a)
 extern "C" void FUN_4e5140(); KING_ALIAS("_FUN_4e5140", "_Sound_PlayRange3")
 extern "C" void FUN_4e51b1(); KING_ALIAS("_FUN_4e51b1", "_Sound_PlayRange")
-ASM_PROC(FUN_4e4d82)
+ASM_FUNC(FUN_4e4d82, _Sound_PlayPannedCos)
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f25a0(); KING_ALIAS("_FUN_5f25a0", "@Node_GetLocal@12")
 extern "C" int __fastcall Vehicle_MakeOut(BYTE* self, void*);
@@ -1273,7 +1273,7 @@ KING_VAR(double, g_wo651650, 651650)
 KING_VAR(double, g_wo651648, 651648)
 KING_VAR(BYTE*, g_wo7025b8, 7025b8)
 KING_VAR(AsmLabel, g_wo6fb3d0, 6fb3d0)
-ASM_PROC(FUN_5a6890)
+ASM_FUNC(FUN_5a6890, @WeatherKind31_Construct@44)
 
 static BYTE* Wo_Find(const char* prefix, const char* suffix)
 {
@@ -3116,3 +3116,61 @@ BYTE* __fastcall WeatherItem_Construct(BYTE* self, void*, BYTE* world, BYTE* a, 
 }
 
 }
+
+// [FUN_5a6890] constructs a 128-byte weather object of kind 31: its owner
+// (+32), two doubles (+40, +48), and the scene objects named after name with
+// the formats at 67ea34 (+108), 67ea2c (+112), 67ea24 (+64) and either one
+// per index 1..count (67ea1c, from +68) or, with flag 4, a single one
+// (67ea14, +68); then attaches itself to the owner
+KING_VAR(AsmLabel, wo_67ea3c, 67ea3c)
+KING_VAR(AsmLabel, wo_67ea34, 67ea34)
+KING_VAR(AsmLabel, wo_67ea2c, 67ea2c)
+KING_VAR(AsmLabel, wo_67ea24, 67ea24)
+KING_VAR(AsmLabel, wo_67ea1c, 67ea1c)
+KING_VAR(AsmLabel, wo_67ea14, 67ea14)
+KING_VAR(AsmLabel, wo_vtbl651568, 651568)
+static BYTE* Wo_Find(char* buf)
+{
+    BYTE* o = (BYTE*)CallC<BYTE*>(FUN_5ef2b0, 0, buf);
+    if (!o)
+        Sys_Fatal(buf, 0);
+    return o;
+}
+extern "C" BYTE* __fastcall WeatherKind31_Construct(BYTE* self, void* edx, BYTE* owner, DWORD d1lo, DWORD d1hi,
+                                                 DWORD d2lo, DWORD d2hi, const char* name, int count, int c, int flags)
+{
+    char buf[64];
+    CallThis(FUN_5d31e0, self, 31, (void*)wo_67ea3c);
+    F(BYTE*, self, 32) = owner;
+    F(DWORD, self, 40) = d1lo;
+    F(DWORD, self, 44) = d1hi;
+    F(DWORD, self, 48) = d2lo;
+    F(DWORD, self, 52) = d2hi;
+    F(int, self, 120) = flags;
+    F(void*, self, 0) = wo_vtbl651568;
+    F(int, self, 116) = c;
+    F(int, self, 104) = count;
+    sprintf(buf, wo_67ea34, name);
+    F(BYTE*, self, 108) = Wo_Find(buf);
+    F(BYTE, F(BYTE*, self, 108), 40) |= 1;
+    sprintf(buf, wo_67ea2c, name);
+    F(BYTE*, self, 112) = Wo_Find(buf);
+    F(BYTE, F(BYTE*, self, 112), 40) |= 1;
+    sprintf(buf, wo_67ea24, name);
+    F(BYTE*, self, 64) = Wo_Find(buf);
+    if (!(F(BYTE, self, 120) & 4)) {
+        for (int i = 1; i < count + 1; i++) {
+            sprintf(buf, wo_67ea1c, name, i);
+            F(BYTE*, self, 68 + (i - 1) * 4) = Wo_Find(buf);
+        }
+    } else {
+        sprintf(buf, wo_67ea14, name);
+        F(BYTE*, self, 68) = Wo_Find(buf);
+    }
+    CallThis(FUN_5d3570, F(BYTE*, self, 32) + 2992, self);
+    return self;
+}
+
+// [$L_5ab0d0] [$L_5ab0e0] the deleting destructors reached through a base 256 / 32 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5ab0d0(BYTE* s, void* d, int f) { return Dtor5a46e0_DeletingDestructor(s - 256, d, f); }
+extern "C" BYTE* __fastcall Wo_Thunk5ab0e0(BYTE* s, void* d, int f) { return Dtor5a4c80_DeletingDestructor(s - 32, d, f); }

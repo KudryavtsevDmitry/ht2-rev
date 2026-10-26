@@ -11,7 +11,7 @@
 
 typedef char AsmLabel[1];
 
-ASM_PROC(FUN_6047d0)
+ASM_FUNC(FUN_6047d0, _Mixer_Probe)
 KING_VAR(AsmLabel, g_vtbl652e20, 652e20)
 extern "C" void FUN_604b40(); KING_ALIAS("_FUN_604b40", "_Ds_Open")
 extern "C" void FUN_604410(); KING_ALIAS("_FUN_604410", "@Wave_Open@16")    // play a table entry (a, b)
@@ -928,7 +928,7 @@ extern "C" int __cdecl Cpu_HasTsc(void)
 extern "C" void FUN_604e80(); KING_ALIAS("_FUN_604e80", "_Mixer_SetState1")
 extern "C" void Dir_VecDtor(); KING_ALIAS("_Dir_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
 KING_VAR(BYTE*, g_q52_724164, 724164)
-ASM_VAR(AsmLabel, g_q52_604e00, $L_604e00)
+ASM_VAR(AsmLabel, g_q52_604e00, @Wave_Free@8)
 // [FUN_604e10] releases the channels: state 1, stops and deletes the sounds, destroys the 24-byte channel array
 // 724164 (count before it) and clears it
 extern "C" void __cdecl Channels_Release(void)
@@ -976,7 +976,7 @@ extern "C" const char* __cdecl Sound_ErrorText(int kind)
 
 extern "C" void Dir_VecCtor(); KING_ALIAS("_Dir_VecCtor", "??_L@YGXPAXIHP6EX0@Z1@Z")
 KING_VAR(WORD, g_q54_724168, 724168)
-ASM_VAR(AsmLabel, g_q54_604de0, $L_604de0)
+ASM_VAR(AsmLabel, g_q54_604de0, @Wave_Clear@4)
 // [FUN_604d70] creates the n 24-byte channels (724164, count 724168) unless they exist: 1 when created
 extern "C" int __cdecl Channels_Create(int n)
 {
@@ -1158,4 +1158,80 @@ extern "C" int __fastcall Snd_CreateBuffer(BYTE* self, void*)
     }
     CallVirt(self, 24);
     return 0;
+}
+
+// [FUN_6047d0] [$L_6049d1] probes DirectSound: loads dsound.dll and
+// DirectSoundCreate, creates the object, reads its caps and picks the primary
+// format (16-bit stereo, 8-bit stereo or 8-bit mono at 22050 Hz), then
+// releases the objects again. Returns 0. On a failure the original threw and
+// its catch unloaded the mixer and returned an unset local; -1 here.
+KING_VAR(HMODULE, ds_72419c, 72419c)
+KING_VAR(FARPROC, ds_7241a0, 7241a0)
+KING_VAR(void*, ds_724190b, 724190)
+KING_VAR(void*, ds_724194, 724194)
+KING_VAR(int, ds_72416c, 72416c)                // format kind 1..3
+KING_VAR(WORD, ds_724130, 724130)               // WAVEFORMATEX
+KING_VAR(WORD, ds_724132, 724132)
+KING_VAR(DWORD, ds_724134, 724134)
+KING_VAR(DWORD, ds_724138, 724138)
+KING_VAR(WORD, ds_72413c, 72413c)
+KING_VAR(WORD, ds_72413e, 72413e)
+KING_VAR(WORD, ds_724140, 724140)
+KING_VAR(AsmLabel, ds_s6849f0, 6849f0)          // "dsound.dll"
+KING_VAR(AsmLabel, ds_s6849dc, 6849dc)          // "DirectSoundCreate"
+typedef long (__stdcall* Ds_Create)(void*, void**, void*);
+typedef long (__stdcall* Ds_GetCaps)(void*, DWORD*);
+typedef unsigned long (__stdcall* Ds_Release)(void*);
+extern "C" int __cdecl Mixer_Probe(HWND)
+{
+    if (!ds_72419c && !(ds_72419c = LoadLibraryA(ds_s6849f0)))
+        goto fail;
+    if (!ds_7241a0 && !(ds_7241a0 = GetProcAddress(ds_72419c, ds_s6849dc)))
+        goto fail;
+    if (!ds_724190b && ((Ds_Create)ds_7241a0)(0, &ds_724190b, 0) != 0) {
+        ds_724190b = 0;
+        goto fail;
+    }
+    {
+        DWORD caps[24];
+        caps[0] = 96;
+        if (((Ds_GetCaps)(*(void***)ds_724190b)[4])(ds_724190b, caps) != 0)
+            goto fail;
+        BYTE flags = (BYTE)caps[1];
+        WORD bits, channels;
+        if (flags & 8) {
+            ds_72416c = 1; bits = 16; channels = 2;
+        } else if (flags & 2) {
+            ds_72416c = 2; bits = 8; channels = 2;
+        } else if (flags & 1) {
+            ds_72416c = 3; bits = 8; channels = 1;
+        } else {
+            goto fail;
+        }
+        ds_72413e = bits;
+        ds_72413c = (WORD)((bits >> 3) * channels);
+        ds_724132 = channels;
+        ds_724130 = 1;
+        ds_724134 = 22050;
+        ds_724140 = 0;
+        ds_724138 = ds_72413c * 22050;
+        if (ds_724194)
+            ((Ds_Release)(*(void***)ds_724194)[2])(ds_724194);
+        if (ds_724190b)
+            ((Ds_Release)(*(void***)ds_724190b)[2])(ds_724190b);
+        ds_724190b = 0;
+        ds_724194 = 0;
+        return 0;
+    }
+fail:
+    Mixer_Unload();
+    return -1;
+}
+
+// [$L_604de0] clears a 24-byte wave record
+extern "C" BYTE* __fastcall Wave_Clear(BYTE* s)
+{
+    for (int i = 0; i < 6; i++)
+        F(int, s, i * 4) = 0;
+    return s;
 }
