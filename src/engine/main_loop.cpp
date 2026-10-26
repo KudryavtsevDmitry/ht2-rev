@@ -12,8 +12,7 @@
 //            `- RunFrame vtbl+164 [$L_5e2040]  CGameApp::RunFrame: executes the
 //                                          windows, input, cursor, present
 //
-// The functions keep the behaviour of the assembly they replace. Building
-// with  nmake ASM_MAIN_LOOP=1  links the original assembly instead.
+// The functions keep the behaviour of the assembly they replace.
 
 #include "king.h"
 #include <intrin.h>
@@ -299,7 +298,7 @@ void CKingApp::Frame()
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm, which uses them in place of the labels in [ ]
+// Entry points for the assembly, which uses them in place of the labels in [ ]
 
 extern "C" {
 

@@ -1,11 +1,8 @@
-// runtime.cpp - the unit at 0x4883f0 of king.masm (after ai_trce.cpp): small
+// runtime.cpp - the unit at 0x4883f0 of king.exe (after ai_trce.cpp): small
 // helpers of the AI: polynomials and vector polynomials (Horner evaluation,
 // derivative, integral), a bounded value, the AI's save file (reading and
 // writing padded blocks), magnitudes of its big integers, and some record
 // constructors and STL members.
-//
-// Building with  nmake ASM_RUNTIME=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>

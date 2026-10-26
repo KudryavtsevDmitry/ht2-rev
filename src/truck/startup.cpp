@@ -1,9 +1,6 @@
-// startup.cpp - the unit at 0x4dd9f0 of king.masm (with CKingApp, see
+// startup.cpp - the unit at 0x4dd9f0 of king.exe (with CKingApp, see
 // king_app.cpp): startup paths, truck.ini, cab names, sounds at the volumes
 // of the options.
-//
-// Building with  nmake ASM_STARTUP=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

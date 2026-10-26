@@ -1,9 +1,6 @@
 // natives.cpp - sch_embd.cpp of the game, rewritten from king.masm: the
 // script's built-in functions, its messages and errors, value copies and
 // the copies of the deque<char> holding script text.
-//
-// Building with  nmake ASM_NATIVES=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 

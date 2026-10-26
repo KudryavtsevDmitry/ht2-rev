@@ -1,10 +1,7 @@
-// clusters.cpp - small functions of the unit at 0x5ea5d0 of king.masm: the
+// clusters.cpp - small functions of the unit at 0x5ea5d0 of king.exe: the
 // rooms of the scene (*.rmp clusters): their node lists (+64 objects,
 // +68 frames), the counted object arrays of a cluster, palette switching,
 // and the lookup of scene objects by name.
-//
-// Building with  nmake ASM_CLUSTERS=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 

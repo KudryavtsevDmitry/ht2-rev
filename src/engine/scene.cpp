@@ -1,11 +1,8 @@
-// scene.cpp - the unit at 0x5ef3f0 of king.masm: scene nodes (a 3x4 local
+// scene.cpp - the unit at 0x5ef3f0 of king.exe: scene nodes (a 3x4 local
 // matrix at +64, the parent at +44, the transform mode at +56), lists of
 // nodes by slot, named object tables, the near-equality test of the
 // positions, and the sound channels (32 slots of playing sounds with their
 // buffers, volume through the DirectSound mixer of directsound.cpp).
-//
-// Building with  nmake ASM_SCENE=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include "x87.h"

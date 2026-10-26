@@ -1,9 +1,6 @@
 // moving_bodies.cpp - movingb.cpp of the game, rewritten from king.masm: small
 // functions of its moving bodies: progress counters, planes, the point and
 // record lists of a body, flags, the ListItem lists, and a free list.
-//
-// Building with  nmake ASM_MOVING_BODIES=1  makes king.masm assemble the original
-// procedures again.
 
 #include "vecmath.h"
 

@@ -1,9 +1,6 @@
-// media.cpp - the unit at 0x5bfe60 of king.masm: list counters, the AVI
+// media.cpp - the unit at 0x5bfe60 of king.exe: list counters, the AVI
 // sound stream (msavi), keyed object tables, the music player, record
 // files, tree branches and tree shadows.
-//
-// Building with  nmake ASM_MEDIA=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 #include "x87.h"

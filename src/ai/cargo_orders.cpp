@@ -2,9 +2,6 @@
 // STL instances of the orders (12-byte entries: copies, fills, binary
 // searches by the key at +8, reversal), the order record's constructor and
 // its values.
-//
-// Building with  nmake ASM_CARGO_ORDERS=1  makes king.masm assemble the original
-// procedures again.
 
 #include <stdlib.h>
 #include "king.h"

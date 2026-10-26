@@ -1,9 +1,6 @@
 // timer.cpp - rdtsc.cpp of the Gi\Srmidp library, rewritten from king.masm:
 // the floating point .ini helpers and the worker thread object. The
 // processor clock calibration itself stays assembly.
-//
-// Building with  nmake ASM_TIMER=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 

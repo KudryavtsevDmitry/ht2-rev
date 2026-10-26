@@ -1,9 +1,6 @@
-// object_ids.cpp - small functions of the unit at 0x57c970 of king.masm:
+// object_ids.cpp - small functions of the unit at 0x57c970 of king.exe:
 // ids of the game's objects (300 slots from 100 on), the moving object list,
 // per-race state reset, and two object constructors.
-//
-// Building with  nmake ASM_OBJECT_IDS=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 #include "vecmath.h"

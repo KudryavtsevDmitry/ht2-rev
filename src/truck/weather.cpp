@@ -1,9 +1,6 @@
-// weather.cpp - the unit at 0x5a3e00 of king.masm: weather (weather.ini,
+// weather.cpp - the unit at 0x5a3e00 of king.exe: weather (weather.ini,
 // puddles, ambient light) and scene nodes with a frame (+48) or a
 // position (+52).
-//
-// Building with  nmake ASM_WEATHER=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

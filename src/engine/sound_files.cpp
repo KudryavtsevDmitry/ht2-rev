@@ -1,7 +1,4 @@
-// sound_files.cpp - the unit at 0x5fdc70 of king.masm: sound buffer slots.
-//
-// Building with  nmake ASM_SOUND_FILES=1  makes king.masm assemble the original
-// procedures again.
+// sound_files.cpp - the unit at 0x5fdc70 of king.exe: sound buffer slots.
 
 #include "king.h"
 #include "x87.h"

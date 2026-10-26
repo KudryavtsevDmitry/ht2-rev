@@ -2,9 +2,6 @@
 // king.masm: detail levels from the view distance, the height tables of the
 // 3x3 tiles (257x257 samples of 16 bytes), the visible-area test, the
 // gradient noise lookup, the decal vertex list and the room's objects.
-//
-// Building with  nmake ASM_TERRAIN=1  makes king.masm assemble the original
-// procedures again.
 
 #include "king.h"
 

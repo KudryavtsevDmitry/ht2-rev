@@ -2,9 +2,6 @@
 // functions: the reference-counted string handle, positions and their
 // checks, the nearest node or town to a point, lookups of towns and
 // vehicles, the AI's random generator, and the constructors of its records.
-//
-// Building with  nmake ASM_AI_WORLD=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS
 #include <string.h>

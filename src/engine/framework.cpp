@@ -1,11 +1,8 @@
-// framework.cpp - small functions of the unit at 0x5d8540 of king.masm (the
+// framework.cpp - small functions of the unit at 0x5d8540 of king.exe (the
 // unit of CGameApp, see game_app.cpp and main_loop.cpp): windows and their
 // views, the scene time, node helpers by type, the window list, the data
 // path, worker threads, the resource tables (1000 slots, hashed by name),
 // file streams, the font metrics and text drawing.
-//
-// Building with  nmake ASM_FRAMEWORK=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 #include <mmsystem.h>

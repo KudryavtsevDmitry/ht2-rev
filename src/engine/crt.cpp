@@ -1,11 +1,9 @@
 // crt.cpp - king.exe on the modern C runtime (static UCRT/vcruntime).
 //
-// The original links the 1999 C runtime statically; king.masm still contains
-// it. Built without ASM_CRT, king.masm leaves out the old runtime's entry
-// points that keep state (heap, stdio, exit, errno, threads, exception
-// handling) and points their labels at the modern runtime or at the shims
-// below. Its pure helpers (x87 math, _ftol, string functions) stay in asm.
-// nmake ASM_CRT=1 builds the old runtime again (this file is left out).
+// The original links the 1999 C runtime statically. Its entry points that
+// keep state (heap, stdio, exit, errno, threads, exception handling) are gone:
+// their labels point at the modern runtime or at the shims below. Its pure
+// helpers (x87 math, _ftol, string functions) are still in src\asm.
 //
 // Start: the modern WinMainCRTStartup calls WinMain below, which does what
 // the old _cinit did for the program (its C++ initializer table) and then

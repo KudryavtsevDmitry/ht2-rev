@@ -1,8 +1,5 @@
-// scenery.cpp - the unit at 0x52abf0 of king.masm: trees, trash boxes,
+// scenery.cpp - the unit at 0x52abf0 of king.exe: trees, trash boxes,
 // collision keys and the vehicle type classes.
-//
-// Building with  nmake ASM_SCENERY=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

@@ -1,9 +1,6 @@
 // vehicle_setup.cpp - car2e.cpp of the game, rewritten from king.masm: small methods
 // of the vehicle: drive wheel speeds, the forwarding to the gearbox functions
 // of caran.cpp, and the 27 adjustable settings of a vehicle.
-//
-// Building with  nmake ASM_VEHICLE_SETUP=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS     // strcpy as in the game
 #include <string.h>

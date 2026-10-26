@@ -1,8 +1,5 @@
-// vehicle_engine.cpp - the unit at 0x5586f0 of king.masm: the vehicle's
+// vehicle_engine.cpp - the unit at 0x5586f0 of king.exe: the vehicle's
 // engine (+21600 of the vehicle).
-//
-// Building with  nmake ASM_VEHICLE_ENGINE=1  makes king.masm assemble the original
-// procedures again.
 
 #include "car.h"
 #include "vecmath.h"

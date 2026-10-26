@@ -2,9 +2,6 @@
 // functions of the game's main unit: 4x4 double matrices, rectangles, string
 // helpers, the screen size, name tables, and the methods of menus and
 // screens that only set fields and redraw.
-//
-// Building with  nmake ASM_GAME_SHELL=1  makes king.masm assemble the original
-// procedures again.
 
 #define _CRT_SECURE_NO_WARNINGS     // strcpy as in the game
 #include <intrin.h>

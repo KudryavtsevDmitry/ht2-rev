@@ -2,9 +2,6 @@
 // of its multimedia helpers: the joystick's force feedback (DirectInput
 // effects through COM), object pools and pooled lists, a shadow-stack of
 // 6928-byte frames, a triangle index table, and plane heights.
-//
-// Building with  nmake ASM_FORCE_FEEDBACK=1  makes king.masm assemble the original
-// procedures again.
 
 #include "vecmath.h"
 

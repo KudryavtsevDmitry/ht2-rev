@@ -4,9 +4,6 @@
 // messages ('*' float, '-' int, 'x' blob fields), the DirectShow music
 // player (state machine over IMediaControl/IMediaEvent/IBasicAudio), and
 // the .ini helpers of the engine.
-//
-// Building with  nmake ASM_SOUND_GATE=1  makes king.masm assemble the
-// original procedures again.
 
 #include "king.h"
 #include "x87.h"

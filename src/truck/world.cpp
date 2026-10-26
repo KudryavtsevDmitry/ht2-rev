@@ -1,10 +1,7 @@
-// world.cpp - small functions of the unit at 0x4e24c0 of king.masm: the game
+// world.cpp - small functions of the unit at 0x4e24c0 of king.exe: the game
 // time and frame time, a degree table, matrix decomposition wrappers, the
 // queries against world objects (a 208-byte query with the start point at
 // +76 and the direction at +88), and the warn.log / vehprnNN.log files.
-//
-// Building with  nmake ASM_WORLD=1  makes king.masm assemble the original
-// procedures again.
 
 #include "vecmath.h"
 #include "x87.h"

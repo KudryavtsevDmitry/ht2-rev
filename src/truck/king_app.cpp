@@ -1,8 +1,5 @@
 // king_app.cpp - CKingApp, the game's application class, rewritten from
 // king.masm. CKingApp::Frame is in mainloop.cpp.
-//
-// Building with  nmake ASM_KING_APP=1  makes king.masm assemble the original
-// procedures of these functions again.
 
 #include "king.h"
 
@@ -119,7 +116,7 @@ void CKingApp::DispatchInput(InputEvent* ev)
 }
 
 // ---------------------------------------------------------------------------
-// Entry points for king.masm, which uses them in place of the labels in [ ]
+// Entry points for the assembly, which uses them in place of the labels in [ ]
 
 extern "C" {
 
