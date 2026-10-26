@@ -509,8 +509,8 @@ KING_VAR(float, g_presentTime, 72174c)
 typedef void (__cdecl* FatalHook)();
 KING_VAR(FatalHook, g_pfnOnFatal, 67fb7c)
 KING_VAR(FatalHook, g_pfnPrevOnFatal, 7217a0) // CGameApp's predecessor
-ASM_FUNC(CGameApp_OnFatal, $L_5e3120)          // stops the sound, then the predecessor
-ASM_FUNC(CGameApp_OnNoMemory, $L_5e30f0)       // new handler: fatal "Out of memory <size>"
+ASM_FUNC(CGameApp_OnFatal, _CGameApp_Fatal)          // stops the sound, then the predecessor
+ASM_FUNC(CGameApp_OnNoMemory, _CGameApp_NoMemory)       // new handler: fatal "Out of memory <size>"
 
 KING_VAR(int, g_deviceIndex, 7208e4)         // [ENV] numdev - 1
 KING_VAR(int, g_zres, 7208e8)                // [ENV] zres

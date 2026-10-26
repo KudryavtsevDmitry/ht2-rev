@@ -2079,7 +2079,7 @@ extern "C" void FUN_5d8850(); KING_ALIAS("_FUN_5d8850", "@Window_Destroy@4")
 extern "C" void FUN_5d8b30(); KING_ALIAS("_FUN_5d8b30", "@Fw5d8b30_Destroy@4")
 extern "C" void FUN_5da790(); KING_ALIAS("_FUN_5da790", "@RoomWindow_Destroy@4")
 extern "C" void FUN_5ddb40(); KING_ALIAS("_FUN_5ddb40", "@MainView_Destroy@4")
-ASM_PROC(FUN_5dd2d0)
+ASM_FUNC(FUN_5dd2d0, @Fw_FrameDestruct@4)
 extern "C" void FUN_5b6700(); KING_ALIAS("_FUN_5b6700", "@Window_RootSurface@8")
 extern "C" int __cdecl fprintf(FILE*, const char*, ...);
 extern "C" void FUN_5ba3d0(); KING_ALIAS("_FUN_5ba3d0", "@Palette_Apply@8")
@@ -8163,4 +8163,173 @@ extern "C" int __fastcall FaceSet_Read(BYTE* self, void*, FILE* file, int, int)
     for (int i = 0; i < F(int, self, 48); i++)
         FlatFace_Read(F(BYTE*, self, 52) + i * 40, 0, file);
     return 1;
+}
+
+// [$L_5d9ab0] a room's module event (virtual: name, event, room). 0: queue
+// the room's objects for deletion; 1: delete the pending objects of the room's
+// ring (100 slots from +24, head +424, tail +428) and load its module (paths
+// from virtual +88), fatal when that fails; 2: resolve pending names, add and
+// unload the module's resource table around virtual +92, then virtual +80.
+// Returns the room's module (+12), 0 for event 0 and unknown events.
+KING_VAR(BYTE, fw_71e820, 71e820)           // the name hash
+KING_VAR(AsmLabel, fw_s682c00, 682c00)
+extern "C" const char* __fastcall NameHash_ResolvePending(BYTE* self, void*);
+extern "C" void __fastcall Room_Each(BYTE* self, void*, void* a, void* b);
+extern "C" BYTE* __fastcall Room_ModuleEvent(BYTE* self, void*, const char* name, int ev, BYTE* room)
+{
+    if (ev == 0) {
+        F(BYTE*, room, 20) = self;
+        Room_Each(F(BYTE*, F(BYTE*, F(BYTE*, self, 488), 76), 36), 0, (void*)Room_QueueDelete, room);
+        return 0;
+    }
+    if (ev == 1) {
+        while (F(int, room, 428) != F(int, room, 424)) {
+            int t = F(int, room, 428);
+            BYTE* o = F(BYTE*, room, 24 + t * 4);
+            if (o)
+                CallVirt(o, 0, 1);
+            F(BYTE*, room, 24 + F(int, room, 428) * 4) = 0;
+            F(int, room, 428) = (F(int, room, 428) + 1) % 100;
+        }
+        char dir[80], file[84], ext[76];
+        CallVirt(self, 88, name, ext, dir, file);
+        F(BYTE*, room, 12) = Module_Load(self, 0, ext, dir, file);
+        if (!F(BYTE*, room, 12))
+            Sys_Fatal(fw_s682c00, name);
+        return F(BYTE*, room, 12);
+    }
+    if (ev == 2) {
+        const char* err = NameHash_ResolvePending(&fw_71e820, 0);
+        if (err)
+            Sys_Fatal(err, 0);
+        BYTE* res = CallVirt<BYTE*>(self, 112);
+        if (res) {
+            Resources_AddTable(res, 0, name);
+            CallVirt(self, 92, F(BYTE*, room, 12));
+            Resources_Unload(res, 0, name);
+        }
+        CallVirt(self, 80, F(BYTE*, room, 12));
+        return F(BYTE*, room, 12);
+    }
+    return 0;
+}
+
+// [$L_5d9e40] pushes an event to the ring at +20976
+extern "C" void __fastcall Fw_PushEvent(BYTE* self, void*, int v) { EventRing_Push(F(BYTE*, self, 20976), 0, v); }
+// [$L_5d9e50] is Fw_Nop1
+
+// [$L_5dc430] loads a module image from the application path, then resolves
+// the pending names (fatal on an unresolved one)
+extern "C" const char* __fastcall Fw_LoadImage(BYTE* self, void*, const char* name, const char* sub)
+{
+    Module_LoadImage(self, 0, App_Path(self, 0, name), sub);
+    const char* err = NameHash_ResolvePending(&fw_71e820, 0);
+    if (err)
+        Sys_Fatal(err, 0);
+    return err;
+}
+
+// [FUN_5dd2d0] the frame window's destructor body (vtable 6523e4)
+KING_VAR(AsmLabel, fw_vtbl6523e4, 6523e4)
+extern "C" void __fastcall Fw_FrameDestruct(BYTE* self)
+{
+    F(void*, self, 0) = fw_vtbl6523e4;
+    CallThis(Fw_FrameWndDtor, self);
+}
+
+// [$L_5dd380] WM_SYSCOMMAND goes to the frame window's handler
+extern "C" void Fw_OnSysCmd(); KING_ALIAS("_Fw_OnSysCmd", "@FrameWnd_OnSysCommand@16")
+extern "C" void __fastcall Fw_OnSysCommand(BYTE* self, void*, UINT id, LPARAM l) { CallThis(Fw_OnSysCmd, self, id, l); }
+
+// [$L_5e30f0] [$L_5e3116] the new handler: fatal "out of memory" with the size
+KING_VAR(AsmLabel, fw_s683168, 683168)
+KING_VAR(AsmLabel, fw_s683158, 683158)
+extern "C" int __cdecl CGameApp_NoMemory(size_t size)
+{
+    char buf[64];
+    sprintf(buf, fw_s683168, size);
+    Sys_Fatal(fw_s683158, buf);
+    return 0;
+}
+
+// [$L_5e3120] the fatal-error hook: silences and closes the sound when the
+// application has it (+344), then calls the previous hook
+KING_VAR(BYTE*, fw_721750, 721750)          // the application
+KING_VAR(void*, fw_7217a0, 7217a0)          // the previous hook
+extern "C" float __cdecl Sound_SetVolume(float v);
+extern "C" void __cdecl Sound_Stop();
+extern "C" int __cdecl Sound_Close();
+extern "C" void __cdecl CGameApp_Fatal()
+{
+    if (F(int, fw_721750, 344)) {
+        Sound_SetVolume(0);
+        Sound_Stop();
+        Sound_Close();
+    }
+    ((void (__cdecl*)())fw_7217a0)();
+}
+
+// [$L_5ddad0] sets the display mode (w, h, colour bits, flags; -1 keeps the
+// current +264 / +268) and remembers it
+extern "C" void Fw_SetMode5d7c20(); KING_ALIAS("_Fw_SetMode5d7c20", "$L_5d7c20")
+extern "C" BOOL __fastcall MainWnd_SetMode(BYTE* self, void*, int w, int h, int bits, int flags)
+{
+    if (bits == -1)
+        bits = F(int, self, 264);
+    if (flags == -1)
+        flags = F(int, self, 268);
+    if (!CallC<int>(Fw_SetMode5d7c20, w, h, bits, flags & 20224, 0, 0, 0))
+        return FALSE;
+    F(int, self, 268) = flags;
+    F(int, self, 264) = bits;
+    return TRUE;
+}
+
+// [$L_5dd8c0..$L_5ddb1e] the main window's video mode (w, h, colour bits,
+// flags; -1 keeps the current): switches the window style between popup (flag
+// 1024, full screen) and overlapped, sets the mode, tells the application,
+// and in a window centres it on the screen with its frame; finally the
+// texture flag at 71e7d4
+extern "C" void __fastcall CGameApp_SetVideoMode(BYTE* self, void*, int width, int height, int cres, DWORD flags);
+extern "C" int __cdecl Mode_TextureLevel(void);
+extern "C" void __cdecl Set71e7d4(int v);
+KING_VAR(BYTE, fw_72da58, 72da58)               // the window to insert after
+extern "C" BOOL __fastcall Wnd_SetWindowPos(BYTE* self, void*, BYTE* after, int x, int y, int cx, int cy, UINT flags);
+extern "C" BOOL __fastcall MainWnd_SetVideoMode(BYTE* self, void*, int w, int h, int bits, int flags)
+{
+    int cur = F(int, self, 268) & 1024;
+    BOOL toWindow = cur && !(flags & 1024);
+    if (!cur && (flags & 1024))
+        SetWindowLongA(F(HWND, self, 388), GWL_STYLE, 0x90000000);
+    if (bits == -1)
+        bits = F(int, self, 264);
+    if (flags == -1)
+        flags = F(int, self, 268);
+    if (!MainWnd_SetMode(self, 0, w, h, bits, flags))
+        return FALSE;
+    if ((F(BYTE, fw_721750, 292) & 2) && !(flags & 1024)) {
+        w -= Wnd_FrameExtra(2) + Wnd_FrameExtra(1);
+        h -= Wnd_FrameExtra(4) + Wnd_FrameExtra(3);
+    }
+    CGameApp_SetVideoMode(self, 0, w, h, bits, flags);
+    if (!(F(DWORD, self, 268) & 1024)) {
+        int sx = CallC<int>(FUN_5d3f70) * w;
+        int sy = CallC<int>(FUN_5d3f80) * h;
+        int fw = Wnd_FrameExtra(2);
+        int W = fw + (Wnd_FrameExtra(1) + sx);
+        int fh = Wnd_FrameExtra(4);
+        int H = (Wnd_FrameExtra(3) + sy) + fh;
+        int x = (GetSystemMetrics(SM_CXSCREEN) - W) / 2;
+        int y = (GetSystemMetrics(SM_CYSCREEN) - H) / 2;
+        DWORD af = F(DWORD, fw_721750, 292);
+        F(DWORD, fw_721750, 292) = af & ~1u;
+        Wnd_SetWindowPos(F(BYTE*, self, 384), 0, &fw_72da58, x, y, W, H, 64);
+        if (toWindow) {
+            SetWindowLongA(F(HWND, self, 388), GWL_STYLE, 0x00CF0000);
+            Wnd_SetWindowPos(F(BYTE*, self, 384), 0, &fw_72da58, x, y, W, H, 96);
+        }
+        F(DWORD, fw_721750, 292) |= af & 1;
+    }
+    Set71e7d4(Mode_TextureLevel() == 2);
+    return TRUE;
 }
