@@ -432,3 +432,11 @@ menu prompts and message bar (OnMenuSelect, GetMessageString, On(Set|Pop)Message
 tool tip texts, key indicators, control bar menu items, frame titles, RecalcLayout, NegotiateBorderSpace,
 OnSize, OnEraseBkgnd, the mouse wheel message, ActivateFrame/BringToTop; CControlBar GetDockingFrame and
 IsFloating. Drive test passes.
+
+MFC part 8 (130 procs): MFC's static objects and their atexit destructors (the CFixedAlloc pools of
+CString and of the temporary CWnd/CDC/CGdiObject/CMenu objects, the static resource/user/memory/
+not-supported exceptions, the process and thread locals, afxData with AUX_DATA's constructor and
+destructor, _afxDBCS), the CreateObject functions and deleting destructors of CWnd, CFrameWnd, CDC,
+CGdiObject, CMenu and their temporary classes, the destructors of the thread, module, module thread and
+CTL3D states, CProcessLocalObject's destructor and the runtime class getters. Most are generated
+(scratchpad gen10.py). Drive test passes, exit code 0.
