@@ -2189,3 +2189,36 @@ void __fastcall History_Record(BYTE* h, void*, DWORD v, const char* name)
 }
 
 } // extern "C"
+
+// === an angle brought into one turn (FUN_4e41d9 with its tail $L_4e428e, "f2pi")
+
+extern "C" void __cdecl Fp_Fatal(const char* text); KING_ALIAS("_Fp_Fatal", "_World_Fatal")
+ASM_VAR(char, g_fpTooLarge, $L_6739c0)
+ASM_VAR(float, g_fp64c264, $L_64c264)
+ASM_VAR(double, g_fp64d910, $L_64d910)
+ASM_VAR(double, g_fp64d908, $L_64d908)
+ASM_VAR(double, g_fp64d900, $L_64d900)
+
+extern "C" {
+
+// [FUN_4e41d9..$L_4e428e] angle x (named for the error) wrapped by whole turns into the range; beyond +-1000 (or
+// not a number) it is fatal first
+float __cdecl Angle_F2Pi(float x, const char* name)
+{
+    float lim = 1000.0f, nlim = -lim, nx = -x;
+    if (!(x <= lim && x >= nlim && nx <= lim && nx >= nlim))
+    {
+        char buf[1012];
+        sprintf(buf, &g_fpTooLarge, (double)x, name);
+        Fp_Fatal(buf);
+    }
+    if (x < g_fp64c264)
+        while (x < g_fp64d910)
+            x = (float)(x + g_fp64d908);
+    else
+        while (x > g_fp64d900)
+            x = (float)(x - g_fp64d908);
+    return x;
+}
+
+} // extern "C"

@@ -42,7 +42,7 @@ ASM_VAR(AsmLabel, s_67b948, $L_67b948)
 ASM_VAR(BYTE*, g_6cec6c, $L_6cec6c)
 ASM_VAR(BYTE*, g_696ca0, $L_696ca0)
 ASM_VAR(AsmLabel, g_copterState, $L_6f2d98)
-ASM_PROC(FUN_5662f0)    // copter: a new state
+extern "C" void FUN_5662f0(); KING_ALIAS("_FUN_5662f0", "@Copter_SetState@12")    // copter: a new state
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")    // objects of a screen: by id
 extern "C" void FUN_569000(); KING_ALIAS("_FUN_569000", "_Copter_Send963")
 extern "C" void FUN_569250(); KING_ALIAS("_FUN_569250", "_Copter_Send961")
@@ -1426,7 +1426,7 @@ extern "C" void __cdecl CarList_Draw(void* surface, int x, int y, int lines)
 
 extern "C" void FUN_565fe0(); KING_ALIAS("_FUN_565fe0", "@Copter_565fe0@8")
 extern "C" void FUN_565ff0(); KING_ALIAS("_FUN_565ff0", "@Copter_565ff0@12")
-ASM_PROC(FUN_5662f0)
+extern "C" void FUN_5662f0(); KING_ALIAS("_FUN_5662f0", "@Copter_SetState@12")
 
 // [FUN_566380] handles a command: checks it (b == 0: default check), then runs it when allowed or when it is 11
 extern "C" void __fastcall Copter_Command(void* self, int, int cmd, int b)
@@ -6011,7 +6011,7 @@ extern "C" void Cp_Find(); KING_ALIAS("_Cp_Find", "_Scene_FindObject")
 extern "C" void Cp_SetMatrix(); KING_ALIAS("_Cp_SetMatrix", "@Copter_SetMatrix@16")
 extern "C" void Cp_Set100(); KING_ALIAS("_Cp_Set100", "@Copter_SetVec100@12")
 extern "C" void Cp_Set112(); KING_ALIAS("_Cp_Set112", "@Copter_SetVec112@12")
-ASM_FUNC(Cp_5662f0, FUN_5662f0)
+extern "C" void Cp_5662f0(); KING_ALIAS("_Cp_5662f0", "@Copter_SetState@12")
 ASM_VAR(Vec3, g_cpUp, $L_702630)
 ASM_VAR(Vec3, g_cpEye, $L_702650)
 ASM_VAR(char, g_cp66d638, $L_66d638)
@@ -7889,6 +7889,30 @@ void __cdecl Hud_Frame()
     BYTE* font = CallVirt<int>(g_hfApp696ca0, 28) == 1 ? g_hfFont696860 : g_hfFont6ced30;
     Hf_TextDraw(F(BYTE*, parent, 12), x + cx, F(WORD, g_hfLeft6f2ed0, 6) + y - 5, font, text, 0, 0);
     g_hfShown6f3490 = 1;
+}
+
+} // extern "C"
+
+// === the copter's state changed (FUN_5662f0)
+
+extern "C" {
+
+// [FUN_5662f0] copter s goes from state +3236 to n: leaving 3..6, 10 or 11 clears +3464; +3240 cleared unless it
+// stays among the landing states 6 / 10; entering one of those stamps the time (+3280) and clears +3244
+void __fastcall Copter_SetState(BYTE* s, void*, int n)
+{
+    int old = F(int, s, 3236);
+    if ((old >= 3 && old <= 6) || old == 10 || old == 11)
+        F(int, s, 3464) = 0;
+    bool wasLand = old == 10 || old == 6, isLand = n == 10 || n == 6;
+    if (!wasLand || isLand)
+        F(int, s, 3240) = 0;
+    F(int, s, 3236) = n;
+    if (isLand)
+    {
+        F(float, s, 3280) = (float)Game_Time();
+        F(int, s, 3244) = 0;
+    }
 }
 
 } // extern "C"

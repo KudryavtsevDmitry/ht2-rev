@@ -7926,3 +7926,219 @@ BYTE* __fastcall Module_LoadImage(BYTE* s, void*, const char* dir, const char* n
 }
 
 } // extern "C"
+
+// === the app's orbit camera ($L_5e10b0 with its pieces up to $L_5e169e)
+
+extern "C" void __fastcall Cm_SetMousePos(BYTE* self, void*, int x, int y); KING_ALIAS("@Cm_SetMousePos@16", "@CGameApp_SetMousePos@16")
+ASM_VAR(BYTE*, g_cmApp721750, $L_721750)
+ASM_VAR(DWORD, g_cmPrev721780, $L_721780)
+ASM_VAR(float, g_cm720e0c, $L_720e0c)
+ASM_VAR(float, g_cm720d88, $L_720d88)
+ASM_VAR(float, g_cm721214, $L_721214)
+ASM_VAR(float, g_cm7212b8, $L_7212b8)
+ASM_VAR(float, g_cm721784, $L_721784)
+ASM_VAR(float, g_cm721788, $L_721788)
+ASM_VAR(float, g_cm682a28, $L_682a28)
+ASM_VAR(double, g_cm682a08, $L_682a08)
+ASM_VAR(double, g_cm682a10, $L_682a10)
+ASM_VAR(double, g_cm64b840, $L_64b840)
+ASM_VAR(double, g_cm64b6f0, $L_64b6f0)
+ASM_VAR(double, g_cm64b6e0, $L_64b6e0)
+ASM_VAR(double, g_cm64d338, $L_64d338)
+ASM_VAR(double, g_cm64b660, $L_64b660)
+ASM_VAR(double, g_cm64c958, $L_64c958)
+ASM_VAR(double, g_cm651388, $L_651388)
+ASM_VAR(double, g_cm64b678, $L_64b678)
+ASM_VAR(double, g_cm64b670, $L_64b670)
+ASM_VAR(double, g_cm652558, $L_652558)
+ASM_VAR(double, g_cm64d0f0, $L_64d0f0)
+ASM_VAR(double, g_cm64b7a8, $L_64b7a8)
+ASM_VAR(float, g_cm64c264, $L_64c264)
+ASM_VAR(float, g_cm64c938, $L_64c938)
+ASM_VAR(float, g_cm64c250, $L_64c250)
+ASM_VAR(float, g_cm64cab0, $L_64cab0)
+ASM_VAR(float, g_cm652560, $L_652560)
+ASM_VAR(float, g_cm64c320, $L_64c320)
+ASM_VAR(float, g_cm64c908, $L_64c908)
+ASM_VAR(float, g_cm64f3b8, $L_64f3b8)
+ASM_VAR(float, g_cm64c2f8, $L_64c2f8)
+ASM_VAR(float, g_cm64c268, $L_64c268)
+
+#define SD(n) F(double, s, n)
+
+// the zoom radius for window height H: r / ((zoom * k + H / 2) / H + c)
+static double Cm_Zoom(BYTE* s)
+{
+    double h = F(int, g_cmApp721750, 260);
+    return (SD(2880) * g_cm64b6f0 + h * g_cm64b6e0) / h + g_cm64d338;
+}
+
+static double Cm_Radius(BYTE* s)
+{
+    double a = SD(2904), b = SD(2912), c = SD(2920);
+    return x87_sqrt((a * a + b * b) + c * c);
+}
+
+extern "C" {
+
+// [$L_5e10b0..$L_5e169e] (app vtable) the orbit camera of app s: mode +2984 (1 the mouse orbit about the target,
+// 2 the chase speed curve, 0 the free flight), state +2988 (1 dragging, 2 zooming, 4 reset, 8 reverse), angles
+// +2928 / +2936, distance +2888, offset +2904..+2920 (doubles), the mouse moves +2872 / +2880 scaled by +2960
+void __fastcall App_UpdateCamera(BYTE* s, void*)
+{
+    DWORD st = F(DWORD, s, 2988);
+    if ((st & 4) || ((st & 1) && (st & 2)))
+    {
+        // $L_5e169e: reset
+        memset(s + 2872, 0, 24);
+        g_cm721214 = 0.0f;
+        g_cm7212b8 = 0.0f;
+        Cm_SetMousePos(s, 0, F(int, g_cmApp721750, 256) / 2, F(int, g_cmApp721750, 260) / 2);
+        F(DWORD, s, 2988) &= ~4u;
+        return;
+    }
+    DWORD drag = st & 1;
+    int mode = F(int, s, 2984);
+    if (mode == 1)
+    {
+        DWORD prev = g_cmPrev721780;
+        DWORD was = prev & 1;
+        if (!was && drag)
+        {
+            g_cm720e0c = (float)SD(2928);
+            g_cm720d88 = (float)SD(2936);
+            g_cm721214 = (float)(SD(2872) + SD(2872));
+            g_cm7212b8 = (float)(SD(2880) * g_cm64b840);
+        }
+        if (!(prev & 2) && (F(BYTE, s, 2988) & 2))
+            g_cm682a28 = (float)(Cm_Radius(s) / Cm_Zoom(s));
+        if (was && !(F(BYTE, s, 2988) & 1))
+        {
+            g_cm721214 = (float)(SD(2872) + SD(2872) - g_cm721784);
+            g_cm7212b8 = (float)(SD(2880) * g_cm64b840 - g_cm721788);
+        }
+        if (F(BYTE, s, 2988) & 1)
+        {
+            double x2 = SD(2872) + SD(2872);
+            SD(2928) = (x2 - g_cm721214) + g_cm720e0c;
+            SD(2936) = (SD(2880) * g_cm64b840 - g_cm7212b8) + g_cm720d88;
+            g_cm721784 = (float)x2;
+            g_cm721788 = (float)(SD(2880) * g_cm64b840);
+        }
+        else
+        {
+            SD(2928) = g_cm721214 * SD(2960) + SD(2928);
+            SD(2936) = g_cm7212b8 * SD(2960) + SD(2936);
+            if (!(SD(2936) <= g_cm682a08))
+                SD(2936) = g_cm682a08;
+            if (SD(2936) < g_cm682a10)
+                SD(2936) = g_cm682a10;
+        }
+        double r = Cm_Radius(s);
+        DWORD now = F(DWORD, s, 2988);
+        if (now & 2)
+            r = Cm_Zoom(s) * g_cm682a28;
+        double a = SD(2928);
+        SD(2904) = x87_cos(SD(2936)) * x87_sin(a) * r;
+        SD(2912) = -(x87_cos(SD(2936)) * x87_cos(a) * r);
+        SD(2920) = x87_sin(SD(2936)) * r;
+        g_cmPrev721780 = now;
+        return;
+    }
+
+    // $L_5e137e: the distance, eased while dragging or zooming
+    double z = SD(2888);
+    float k16 = (float)z;
+    double v = z;
+    if (drag)
+    {
+        if (!(z <= g_cm64c958))
+        {
+            v = x87_pow(g_cm64b660, SD(2960)) * k16;
+            k16 = (float)v;
+        }
+        else if (!(z <= g_cm64c264))
+        {
+            v = 1.0;
+            k16 = 1.0f;
+        }
+        else
+        {
+            v = k16 / x87_pow(g_cm64b660, SD(2960) + SD(2960));
+            k16 = (float)v;
+            if (!(v <= g_cm64c938))
+            {
+                v = g_cm64c250;
+                k16 = (float)v;
+            }
+        }
+    }
+    bool clamp = true;
+    if (st & 2)
+    {
+        if (v < g_cm651388)
+            v = x87_pow(g_cm64b660, SD(2960)) * k16;
+        else if (v < g_cm64c264)
+        {
+            v = g_cm64c938;
+            clamp = false;
+        }
+        else
+        {
+            v = k16 / x87_pow(g_cm64b660, SD(2960) + SD(2960));
+            if (v < g_cm64c250)
+            {
+                v = g_cm64c938;
+                clamp = false;
+            }
+        }
+    }
+    if (clamp)
+    {
+        if (!(v <= g_cm64cab0))
+            v = g_cm64cab0;
+        else if (v < g_cm652560)
+            v = g_cm652560;
+    }
+    SD(2888) = v;
+    if (st & 8)
+        v = -v;
+    if (mode == 2)
+    {
+        double k = 1.0;
+        double m = g_cm64b678;
+        bool high = false;
+        if (!(v < g_cm64c264) && v < g_cm64c320)
+            k = v * g_cm64c908;
+        else if (!(v <= g_cm64c320))
+        {
+            k = (g_cm64cab0 - (v - g_cm64c320)) * g_cm64f3b8;
+            high = true;
+        }
+        if (high)
+            m = v < g_cm64c2f8 ? v * g_cm64c268 : g_cm64b670;
+        else if (!(v < g_cm64c2f8))
+            m = g_cm64b670;
+        double q = x87_sqrt(k) * SD(2872) * SD(2960) + SD(2928);
+        SD(2928) = q;
+        SD(2936) = SD(2880) * SD(2960) * m * g_cm64d338 + SD(2936);
+        SD(2944) = m * SD(2872) * g_cm652558 * g_cm64d0f0 + SD(2944) * g_cm64b7a8;
+        SD(2912) = x87_cos(q) * x87_cos(SD(2936)) * v * SD(2960) + SD(2912);
+        SD(2904) = -(x87_sin(q) * x87_cos(SD(2936)) * v) * SD(2960) + SD(2904);
+        SD(2920) = x87_sin(-SD(2936)) * v * SD(2960) + SD(2920);
+    }
+    else if (mode == 0)
+    {
+        double a = SD(2872) * SD(2960) + SD(2928);
+        SD(2928) = a;
+        double sa = x87_sin(a);
+        double ca = x87_cos(a);
+        SD(2912) = (v * ca + sa * SD(2896)) * SD(2960) + SD(2912);
+        SD(2904) = (ca * SD(2896) - v * sa) * SD(2960) + SD(2904);
+        SD(2920) = SD(2880) * SD(2960) + SD(2920);
+    }
+}
+
+} // extern "C"
+
+#undef SD

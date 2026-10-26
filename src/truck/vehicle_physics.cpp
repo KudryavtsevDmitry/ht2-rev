@@ -14,7 +14,7 @@ extern "C" void FUN_4eb350(); KING_ALIAS("_FUN_4eb350", "@Trigger_Check@12")
 extern "C" void __fastcall Body_SetLoad(BYTE* self, void*, float load);
 extern "C" void __fastcall Body_UpdateHitch(BYTE* self, void*, int keep);
 extern "C" void FUN_4f2670(); KING_ALIAS("_FUN_4f2670", "@Wheels_StepFrames@36")
-ASM_PROC(FUN_4f8260)
+extern "C" void FUN_4f8260(); KING_ALIAS("_FUN_4f8260", "@Body_SubStep@12")
 
 struct Vec3Bits { DWORD x, y, z; };
 
@@ -3979,7 +3979,7 @@ int __fastcall Body_StateStep(BYTE* s)
 
 // === a body's frame and speeds rebuilt at the end of its steps (FUN_4fb470 with its tail $L_4fbb7e)
 
-ASM_PROC(FUN_4e41d9)
+extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")
 extern "C" void Fe_Set(); KING_ALIAS("_Fe_Set", "@Vec3_SetThis@20")
 ASM_VAR(float, g_fe64c258, $L_64c258)
 ASM_VAR(float, g_fe64c304, $L_64c304)
@@ -4386,8 +4386,8 @@ void __fastcall Body_NextFrame(BYTE* s, void*, float* out)
 
 // === a body's plain frame without sub-steps (FUN_4fdc80 with its tail $L_4fe18e)
 
-ASM_PROC(FUN_500850)
-ASM_PROC(FUN_4f35f0)
+extern "C" void FUN_500850(); KING_ALIAS("_FUN_500850", "@Car_PedalStep@4")
+extern "C" void FUN_4f35f0(); KING_ALIAS("_FUN_4f35f0", "@Wheels_FrameSpin@4")
 extern "C" void Ps_Check(); KING_ALIAS("_Ps_Check", "_World_CheckPoint")
 extern "C" void Ps_Damage(); KING_ALIAS("_Ps_Damage", "@Car_CheckDamage@8")
 extern "C" void Ps_Ground(); KING_ALIAS("_Ps_Ground", "@Car_PlaceOnGround@12")
@@ -5021,3 +5021,1672 @@ int __fastcall Body_StartSteps(BYTE* s)
 }
 
 } // extern "C"
+
+// === a body's contact with a moving point (FUN_4e7b4d with its pieces up to $L_4e8644)
+
+extern "C" Vec3* __cdecl Ct4_DivScalar(Vec3* out, const Vec3* v, float k); KING_ALIAS("_Ct4_DivScalar", "_Vec3_DivScalar")
+extern "C" void __cdecl Ct4_Soften(Vec3* v); KING_ALIAS("_Ct4_Soften", "_Vec3_Soften")
+extern "C" int __cdecl Ct4_Report(char* out, int n, const char* name, const Matrix* m, const Vec3* a, const Vec3* b); KING_ALIAS("_Ct4_Report", "_Frame_Report")
+extern "C" void __cdecl Ct4_Fatal(const char* msg); KING_ALIAS("_Ct4_Fatal", "_World_Fatal")
+extern "C" void Ct4_MulA(); KING_ALIAS("_Ct4_MulA", "@Vec3_MulAssign@16")
+extern "C" void Ct4_SubA(); KING_ALIAS("_Ct4_SubA", "@Vec3_SubAssign@16")
+ASM_VAR(int, g_ct4zero702650, $L_702650)
+ASM_VAR(int, g_ct4zero702654, $L_702654)
+ASM_VAR(int, g_ct4zero702658, $L_702658)
+ASM_VAR(float, g_ct4_64c264, $L_64c264)
+ASM_VAR(double, g_ct4_64b958, $L_64b958)
+ASM_VAR(double, g_ct4_64b5b8, $L_64b5b8)
+ASM_VAR(double, g_ct4_64b6e0, $L_64b6e0)
+ASM_VAR(double, g_ct4_64d918, $L_64d918)
+ASM_VAR(double, g_ct4_64b5a0, $L_64b5a0)
+ASM_VAR(char, g_ct4_673ddc, $L_673ddc)
+ASM_VAR(char, g_ct4_673dfc, $L_673dfc)
+ASM_VAR(char, g_ct4_673e28, $L_673e28)
+ASM_VAR(char, g_ct4_673e60, $L_673e60)
+ASM_VAR(char, g_ct4_673e9c, $L_673e9c)
+ASM_VAR(char, g_ct4_673ed8, $L_673ed8)
+ASM_VAR(char, g_ct4_673f14, $L_673f14)
+ASM_VAR(char, g_ct4_673f34, $L_673f34)
+ASM_VAR(char, g_ct4_673f58, $L_673f58)
+ASM_VAR(char, g_ct4_673f88, $L_673f88)
+ASM_VAR(char, g_ct4_673fac, $L_673fac)
+
+#define L(n) (*(float*)(fp - (n)))
+#define LI(n) (*(int*)(fp - (n)))
+#define LD(n) (*(double*)(fp - (n)))
+#define P(n) ((Vec3*)(fp - (n)))
+#define FI(p, o) (*(int*)((BYTE*)(p) + (o)))
+#define FF(p, o) (*(float*)((BYTE*)(p) + (o)))
+
+extern "C" {
+
+// [FUN_4e7b4d..$L_4e8644] a body (pose ma: rotation and position +36, mb its world rotation, inertia ic) touching
+// point pa with normal nb, the point moving with pc (position) and vc (speed): the impulse from the masses' ratio
+// k24, restitution k28 and friction k32 (a quadratic for the speed after), the new position and speed into
+// outP / outV; fatal reports when the ratio is out of range. The asm's EBP frame is kept as fr (L / LI / LD)
+void __cdecl Body_MovingPointImpulse(const Vec3* pa, const Vec3* nb, const Matrix* ma, const Matrix* mb, float k24,
+                               float k28, float k32, const Vec3* pc, const Vec3* vc, const Vec3* ic, Vec3* outP,
+                               Vec3* outV)
+{
+    BYTE fr[4724];
+    BYTE* fp = fr + 4724;
+    Vec3_RotateBy(P(68), vc, ma);
+    Vec3_Sub(P(288), pa, (const Vec3*)((const BYTE*)ma + 36));
+    double d = Vec3_Dot(P(288), P(288));
+    L(304) = (float)d;
+    L(300) = (float)x87_sqrt(d);
+    Ct4_DivScalar(P(212), P(288), L(300));
+    Vec3_RotateBy(P(392), P(212), mb);
+    Vec3_RotateBy(P(348), nb, mb);
+    Vec3_Cross(P(276), nb, P(212));
+    Vec3_RotateBy(P(28), pc, mb);
+    LI(200) = g_ct4zero702650;
+    LI(196) = g_ct4zero702654;
+    LI(192) = g_ct4zero702658;
+    Vec3_Cross(P(4448), P(348), P(28));
+    Vec3_Cross(P(260), P(4448), P(348));
+    Vec3_Cross(P(4460), nb, P(212));
+    Vec3_Normalized(P(156), P(4460));
+    Vec3_Cross(P(4472), P(348), P(392));
+    Vec3_Normalized(P(336), P(4472));
+    Vec3_RotateBy(P(380), P(156), mb);
+    Vec3_MulComponents(P(16), vc, ic);
+    double r19 = Vec3_Dot(P(16), P(380));
+    L(4704) = (float)r19;
+    Vec3_Scaled(P(124), P(380), (float)r19);
+    Vec3_Sub(P(324), P(16), P(124));
+    LI(92) = LI(324);
+    LI(88) = LI(320);
+    LI(84) = LI(316);
+    LI(188) = g_ct4zero702650;
+    LI(184) = g_ct4zero702654;
+    LI(180) = g_ct4zero702658;
+    FI(outP, 0) = FI(pc, 0);
+    FI(outP, 4) = FI(pc, 4);
+    FI(outP, 8) = FI(pc, 8);
+    FI(outV, 0) = FI(vc, 0);
+    FI(outV, 4) = FI(vc, 4);
+    FI(outV, 8) = FI(vc, 8);
+    Vec3_Cross(P(4484), vc, P(392));
+    Vec3_Scaled(P(404), P(4484), L(300));
+    Vec3_RotateBy(P(4496), P(404), ma);
+    LI(404) = LI(4496);
+    LI(400) = LI(4492);
+    LI(396) = LI(4488);
+    Vec3_Add(P(4508), pc, P(404));
+    LI(404) = LI(4508);
+    LI(400) = LI(4504);
+    LI(396) = LI(4500);
+    L(408) = (float)Vec3_Dot(P(404), nb);
+    if (L(408) > g_ct4_64c264)
+        return;
+    L(236) = (float)Vec3_Length(P(276));
+    if (L(300) * g_ct4_64b958 > L(236))
+    {
+        // a hit at the rim: slide along the surface
+        L(468) = (float)Vec3_Dot(pc, nb);
+        L(424) = (float)(-k28 * L(468));
+        Vec3_Cross(P(4520), nb, pc);
+        Vec3_Cross(P(420), P(4520), nb);
+        Vec3_Scaled(P(464), nb, L(424));
+        Vec3_Add(P(4532), P(464), P(420));
+        FI(outP, 0) = LI(4532);
+        FI(outP, 4) = LI(4528);
+        FI(outP, 8) = LI(4524);
+        double r33 = Vec3_Dot(vc, P(392));
+        L(4708) = (float)r33;
+        Vec3_Scaled(P(440), P(392), (float)r33);
+        Vec3_Sub(P(452), vc, P(440));
+        L(428) = (float)((L(424) - L(468)) * k24);
+        if (L(428) > g_ct4_64c264)
+        {
+            L(484) = (float)Vec3_Length(P(92));
+            L(488) = (float)(L(428) * k32);
+            if (L(488) > L(484))
+                LI(484) = 0;
+            else
+                L(484) = (float)((L(484) - L(488)) / L(484));
+            CallThis(Ct4_MulA, P(92), P(4544), L(484));
+            LI(188) = LI(124);
+            LI(184) = LI(120);
+            LI(180) = LI(116);
+            Vec3_Add(P(480), P(188), P(92));
+            Vec3_DivComponents(P(4556), P(480), ic);
+            FI(outV, 0) = LI(4556);
+            FI(outV, 4) = LI(4552);
+            FI(outV, 8) = LI(4548);
+        }
+        else
+            L(428) = (float)(L(428) - g_ct4_64b5b8);
+        return;
+    }
+    L(368) = (float)Vec3_Dot(P(28), P(348));
+    L(112) = (float)Vec3_Dot(P(124), P(380));
+    Vec3_Cross(P(4568), P(392), P(348));
+    L(308) = (float)Vec3_Length(P(4568));
+    L(56) = (float)((k24 * L(300)) * L(308));
+    L(108) = (float)(k24 * g_ct4_64b6e0);
+    L(80) = (float)((L(368) * L(56)) + L(112));
+    Vec3_DivComponents(P(4580), P(380), ic);
+    L(136) = (float)(Vec3_Dot(P(380), P(4580)) * g_ct4_64b6e0);
+    if (!(L(136) > g_ct4_64c264))
+    {
+        Ct4_Report((char*)P(788), 300, &g_ct4_673ddc, ma, pc, vc);
+        FI(outP, 0) = FI(pc, 0);
+        FI(outP, 4) = FI(pc, 4);
+        FI(outP, 8) = FI(pc, 8);
+        FI(outV, 0) = FI(vc, 0);
+        FI(outV, 4) = FI(vc, 4);
+        FI(outV, 8) = FI(vc, 8);
+        return;
+    }
+    L(312) = (float)((L(368) * L(368)) * L(108));
+    L(76) = (float)((L(112) * L(112)) * L(136));
+    L(232) = (float)(L(312) + L(76));
+    L(296) = k28;
+    L(104) = (float)((L(56) * L(80)) * L(136));
+    L(132) = (float)(((L(136) * L(56)) * L(56)) + L(108));
+    L(168) = (float)(((L(108) * L(136)) * L(80)) * L(80));
+    if (L(132) * L(232) != g_ct4_64c264)
+        L(296) = (float)(L(168) / (L(132) * L(232)));
+    if (L(296) > g_ct4_64d918 || L(296) < g_ct4_64c264)
+    {
+        char* s1 = (char*)P(2988);
+        char* s2 = (char*)P(3988);
+        char* s3 = (char*)P(3188);
+        char* s4 = (char*)P(3488);
+        char* s5 = (char*)P(3788);
+        char* s6 = (char*)P(4188);
+        char* s7 = (char*)P(4388);
+        sprintf(s1, &g_ct4_673dfc, (double)L(296), (double)L(168), (double)L(132), (double)L(232));
+        sprintf(s2, &g_ct4_673e28, (double)L(56), (double)L(80), (double)L(108), (double)L(136), (double)L(368),
+                (double)L(112), (double)L(312), (double)L(76));
+        sprintf(s3, &g_ct4_673e60, (double)k24, (double)k28, (double)k32, (double)FF(ic, 0), (double)FF(ic, 4),
+                (double)FF(ic, 8));
+        sprintf(s4, &g_ct4_673e9c, (double)FF(ma, 0), (double)FF(ma, 4), (double)FF(ma, 8), (double)FF(ma, 12),
+                (double)FF(ma, 16), (double)FF(ma, 20), (double)FF(ma, 24), (double)FF(ma, 28), (double)FF(ma, 32),
+                (double)FF(ma, 36), (double)FF(ma, 40), (double)FF(ma, 44));
+        sprintf(s5, &g_ct4_673ed8, (double)FF(mb, 0), (double)FF(mb, 4), (double)FF(mb, 8), (double)FF(mb, 12),
+                (double)FF(mb, 16), (double)FF(mb, 20), (double)FF(mb, 24), (double)FF(mb, 28), (double)FF(mb, 32),
+                (double)FF(mb, 36), (double)FF(mb, 40), (double)FF(mb, 44));
+        sprintf(s6, &g_ct4_673f14, (double)FF(pc, 0), (double)FF(pc, 4), (double)FF(pc, 8), (double)FF(vc, 0),
+                (double)FF(vc, 4), (double)FF(vc, 8));
+        sprintf(s7, &g_ct4_673f34, (double)FF(pa, 0), (double)FF(pa, 4), (double)FF(pa, 8), (double)FF(nb, 0),
+                (double)FF(nb, 4), (double)FF(nb, 8));
+        sprintf((char*)P(2788), &g_ct4_673f58, s1, s2, s3, s4, s5, s6, s7);
+        Ct4_Fatal((char*)P(2788));
+        L(296) = 1.0f;
+        Ct4_Fatal(&g_ct4_673f88);
+    }
+    LI(292) = 0;
+    if (L(292) < g_ct4_64c264)
+        return;
+    L(144) = (float)x87_sqrt(L(292));
+    L(72) = (float)((L(104) + L(144)) / L(132));
+    L(100) = (float)((L(104) - L(144)) / L(132));
+    L(228) = (float)(L(80) - L(72) * L(56));
+    L(248) = (float)(L(80) - L(100) * L(56));
+    LD(4716) = L(368);
+    Vec3_DivComponents(P(4592), P(380), ic);
+    Vec3_Scaled(P(4604), P(4592), L(112));
+    Vec3_Cross(P(4616), P(4604), P(392));
+    Vec3_Scaled(P(4628), P(4616), L(300));
+    L(140) = (float)(Vec3_Dot(P(4628), P(348)) + LD(4716));
+    L(164) = (float)(((L(228) * L(136)) + (L(228) * L(136))) * L(300) + L(72));
+    L(176) = (float)(L(100) - ((L(248) * L(136)) + (L(248) * L(136))) * L(300));
+    L(244) = (float)(((L(72) * L(72)) * L(108)) + ((L(228) * L(228)) * L(136)));
+    L(264) = (float)(((L(100) * L(100)) * L(108)) + ((L(248) * L(248)) * L(136)));
+    LI(4) = LI(72);
+    L(172) = (float)(L(80) - L(4) * L(56));
+    L(160) = (float)((L(4) - L(368)) * k24);
+    if (L(160) > g_ct4_64c264)
+    {
+        L(4392) = (float)Vec3_Length(P(92));
+        L(4396) = (float)(L(160) * k32);
+        if (!(L(4396) < L(4392)))
+            LI(4392) = 0;
+        else if (L(4392) != g_ct4_64c264)
+            L(4392) = (float)((L(4392) - L(4396)) / L(4392));
+        CallThis(Ct4_MulA, P(92), P(4640), L(4392));
+    }
+    Vec3_Scaled(P(4652), P(348), L(4));
+    LI(200) = LI(4652);
+    LI(196) = LI(4648);
+    LI(192) = LI(4644);
+    Vec3_Scaled(P(4664), P(380), L(172));
+    LI(188) = LI(4664);
+    LI(184) = LI(4660);
+    LI(180) = LI(4656);
+    Vec3_Add(P(52), P(200), P(260));
+    Vec3_Add(P(40), P(188), P(92));
+    Vec3_RotateBy(P(364), P(52), ma);
+    Vec3_DivComponents(P(224), P(40), ic);
+    L(352) = (float)(Vec3_Dot(P(200), P(200)) * L(108));
+    L(96) = (float)(Vec3_Dot(P(188), P(188)) * L(136));
+    L(240) = (float)(L(352) + L(96));
+    L(128) = 1.0f;
+    if (L(232) > g_ct4_64c264)
+    {
+        L(128) = (float)(L(240) / L(232));
+        if (L(128) > g_ct4_64d918)
+            Ct4_Fatal(&g_ct4_673fac);
+    }
+    Vec3_Cross(P(4676), P(224), P(392));
+    Vec3_Scaled(P(4408), P(4676), L(300));
+    Vec3_RotateBy(P(4432), P(4408), ma);
+    Vec3_Add(P(4420), P(364), P(4432));
+    L(4436) = (float)Vec3_Dot(P(4420), nb);
+    if (L(4436) < g_ct4_64c264)
+    {
+        float k = (float)(L(4436) - g_ct4_64b5a0);
+        L(4720) = k;
+        Vec3_Scaled(P(4688), nb, k);
+        CallThis(Ct4_SubA, P(364), P(4700), P(4688));
+        L(4436) = (float)(L(4436) * g_ct4_64d918);
+    }
+    Ct4_Soften(P(224));
+    FI(outP, 0) = LI(364);
+    FI(outP, 4) = LI(360);
+    FI(outP, 8) = LI(356);
+    FI(outV, 0) = LI(224);
+    FI(outV, 4) = LI(220);
+    FI(outV, 8) = LI(216);
+}
+
+} // extern "C"
+
+#undef L
+#undef LI
+#undef LD
+#undef P
+#undef FI
+#undef FF
+
+// === a body's contact with a fixed point, solved as a 4x4 system (FUN_4e8ae1 with its tail $L_4e964c)
+
+struct Ct5Row { double v[4]; };
+extern "C" Ct5Row* __fastcall Ct5_RowSet(Ct5Row* s, void*, Ct5Row v); KING_ALIAS("@Ct5_RowSet@40", "@DRow_Set@40")
+extern "C" BYTE* __fastcall Ct5_FromRows(BYTE* s, void*, const Ct5Row* a, const Ct5Row* b, const Ct5Row* c, const Ct5Row* d); KING_ALIAS("@Ct5_FromRows@24", "@DMat_FromRows@24")
+extern "C" BYTE* __cdecl Ct5_DInverse(BYTE* out, const BYTE* m); KING_ALIAS("_Ct5_DInverse", "_DMat_Inverse")
+extern "C" BYTE* __cdecl Ct5_Combine(BYTE* out, BYTE* a, BYTE* b); KING_ALIAS("_Ct5_Combine", "_Rec128_Combine")
+extern "C" Ct5Row* __cdecl Ct5_MulRow(Ct5Row* out, const BYTE* m, const Ct5Row* v); KING_ALIAS("_Ct5_MulRow", "_DMat_MulRow")
+extern "C" int __cdecl Ct5_OutOfBox(const void* v, float lim); KING_ALIAS("_Ct5_OutOfBox", "_Vec3_OutOfBox")
+extern "C" void Ct5_SetThis(); KING_ALIAS("_Ct5_SetThis", "@Vec3_SetThis@20")
+ASM_VAR(BYTE, g_ct5Identity7025f0, $L_7025f0)
+ASM_VAR(BYTE, g_ct5Axis702640, $L_702640)
+ASM_VAR(BYTE, g_ct5Axis702620, $L_702620)
+ASM_VAR(double, g_ct5_64b660, $L_64b660)
+ASM_VAR(double, g_ct5_64b678, $L_64b678)
+ASM_VAR(float, g_ct5_64c250, $L_64c250)
+ASM_VAR(char, g_ct5_673fcc, $L_673fcc)
+ASM_VAR(char, g_ct5_674004, $L_674004)
+ASM_VAR(char, g_ct5_67402c, $L_67402c)
+ASM_VAR(char, g_ct5_674068, $L_674068)
+ASM_VAR(char, g_ct5_6740a4, $L_6740a4)
+ASM_VAR(char, g_ct5_6740c4, $L_6740c4)
+ASM_VAR(char, g_ct5_6740e8, $L_6740e8)
+
+#define L(n) (*(float*)(fp - (n)))
+#define LI(n) (*(int*)(fp - (n)))
+#define LD(n) (*(double*)(fp - (n)))
+#define P(n) ((Vec3*)(fp - (n)))
+#define M(n) ((Matrix*)(fp - (n)))
+#define FI(p, o) (*(int*)((BYTE*)(p) + (o)))
+#define FF(p, o) (*(float*)((BYTE*)(p) + (o)))
+
+static Ct5Row Ct5_Row(double a, double b, double c, double d)
+{
+    Ct5Row r;
+    r.v[0] = a;
+    r.v[1] = b;
+    r.v[2] = c;
+    r.v[3] = d;
+    return r;
+}
+
+extern "C" {
+
+// [FUN_4e8ae1..$L_4e964c] a body (pose ma, world rotation mb, speed vel, spin spin, inverse inertia ic) touching
+// point pt with normal nrm: the contact frame (normal, tangent, binormal), the impulse from a 4x4 system of the
+// masses' ratio k36, restitution k40 and friction k44, the new speed and spin into outV / outW; fatal when either
+// leaves its range. The asm's EBP frame is kept as fr (L / LI / LD)
+void __cdecl Body_FixedPointImpulse(const Matrix* ma, const Matrix* mb, const Vec3* vel, const Vec3* spin,
+                                    const Vec3* ic, const Vec3* pt, const Vec3* nrm, float k36, float k40,
+                                    float k44, Vec3* outV, Vec3* outW)
+{
+    BYTE fr[4952];
+    BYTE* fp = fr + 4952;
+    Vec3_Sub(P(536), pt, (const Vec3*)((const BYTE*)ma + 36));
+    Vec3_Normalized(P(268), P(536));
+    Vec3_Cross(P(4632), nrm, P(268));
+    Vec3_Normalized(P(680), P(4632));
+    Vec3_Cross(P(76), P(268), P(680));
+    Vec3_RotateBy(P(4644), spin, ma);
+    Vec3_Cross(P(4656), P(4644), P(536));
+    Vec3_Add(P(1216), vel, P(4656));
+    L(804) = (float)Vec3_Length(P(536));
+    if (L(804) == g_ct4_64c264)
+    {
+        FI(outV, 0) = FI(vel, 0);
+        FI(outV, 4) = FI(vel, 4);
+        FI(outV, 8) = FI(vel, 8);
+        FI(outW, 0) = FI(spin, 0);
+        FI(outW, 4) = FI(spin, 4);
+        FI(outW, 8) = FI(spin, 8);
+    }
+    if (Vec3_Dot(P(680), P(680)) == g_ct5_64b678)
+    {
+        Vec3_Cross(P(4668), P(268), (const Vec3*)&g_ct5Axis702640);
+        Vec3_Cross(P(4680), P(4668), P(268));
+        Vec3_Normalized(P(4692), P(4680));
+        LI(680) = LI(4692);
+        LI(676) = LI(4688);
+        LI(672) = LI(4684);
+        if (Vec3_Dot(P(680), P(680)) == g_ct5_64b678)
+        {
+            Vec3_Cross(P(4704), P(268), (const Vec3*)&g_ct5Axis702620);
+            Vec3_Cross(P(4716), P(4704), P(268));
+            Vec3_Normalized(P(4728), P(4716));
+            LI(680) = LI(4728);
+            LI(676) = LI(4724);
+            LI(672) = LI(4720);
+        }
+        Vec3_Cross(P(4740), P(268), P(680));
+        LI(76) = LI(4740);
+        LI(72) = LI(4736);
+        LI(68) = LI(4732);
+    }
+    L(916) = (float)Vec3_Dot(vel, P(268));
+    L(1204) = (float)(-k40 * L(916));
+    if (L(916) < g_ct4_64c264)
+        LI(1204) = LI(916);
+    memcpy(fp - 424, ma, 48);
+    memcpy(fp - 524, mb, 48);
+    memcpy(fp - 1200, &g_ct5Identity7025f0, 48);
+    LI(388) = g_ct4zero702650;
+    LI(384) = g_ct4zero702654;
+    LI(380) = g_ct4zero702658;
+    LI(488) = g_ct4zero702650;
+    LI(484) = g_ct4zero702654;
+    LI(480) = g_ct4zero702658;
+    LI(1200) = LI(680);
+    LI(1196) = LI(676);
+    LI(1192) = LI(672);
+    LI(1188) = LI(76);
+    LI(1184) = LI(72);
+    LI(1180) = LI(68);
+    LI(1176) = LI(268);
+    LI(1172) = LI(264);
+    LI(1168) = LI(260);
+    Matrix_Inverse(M(472), M(1200));
+    Matrix_Multiply(M(1152), M(424), M(472));
+    Matrix_Inverse(M(376), M(1152));
+    Matrix_ScaleColumns(M(4788), (const Matrix*)&g_ct5Identity7025f0, ic);
+    Matrix_Multiply(M(4836), M(524), M(4788));
+    Matrix_Multiply(M(1104), M(4836), M(424));
+    Matrix_ScaleColumns(M(4884), (const Matrix*)&g_ct5Identity7025f0, ic);
+    Matrix_Multiply(M(4932), M(376), M(4884));
+    Matrix_Multiply(M(64), M(4932), M(1152));
+    Matrix_Inverse(M(328), M(64));
+    Vec3_MulComponents(P(16), ic, spin);
+    Vec3_RotateBy(P(864), P(16), M(1152));
+    Vec3_RotateBy(P(724), vel, M(472));
+    CallThis(Ct5_SetThis, P(800), 0.0f, 0.0f, L(1204));
+    L(256) = (float)(L(856) - (k44 * k36) * (L(716) - L(792)));
+    if (L(256) * L(856) <= g_ct4_64c264)
+        LI(256) = 0;
+    CallThis(Ct5_SetThis, P(912), 0.0f, 0.0f, L(256));
+    double r0 = L(804) * k36;
+    Ct5_RowSet((Ct5Row*)(fp - 712), 0, Ct5_Row(1.0, 0.0, 0.0, r0));
+    double r1 = -L(804) * k36;
+    Ct5_RowSet((Ct5Row*)(fp - 788), 0, Ct5_Row(0.0, 1.0, r1, 0.0));
+    double r2a = L(804) * L(312);
+    double r2b = L(804) * L(324);
+    Ct5_RowSet((Ct5Row*)(fp - 852), 0, Ct5_Row(r2b, r2a, 1.0, 0.0));
+    double r3a = -L(804) * L(316);
+    double r3b = -L(804) * L(328);
+    Ct5_RowSet((Ct5Row*)(fp - 900), 0, Ct5_Row(r3b, r3a, 0.0, 1.0));
+    double e = (L(804) * L(304)) * L(256);
+    double f = (-L(804) * L(300)) * L(256);
+    double g = L(860) - (L(804) * k36) * L(724);
+    double h = (L(804) * k36) * L(720) + L(864);
+    Ct5_RowSet((Ct5Row*)(fp - 252), 0, Ct5_Row(h, g, f, e));
+    Ct5_FromRows(fp - 220, 0, (Ct5Row*)(fp - 712), (Ct5Row*)(fp - 788), (Ct5Row*)(fp - 852), (Ct5Row*)(fp - 900));
+    Ct5_DInverse(fp - 1056, fp - 220);
+    Ct5_Combine(fp - 668, fp - 220, fp - 1056);
+    Ct5_MulRow((Ct5Row*)(fp - 756), fp - 1056, (Ct5Row*)(fp - 252));
+    L(912) = (float)LD(756);
+    L(908) = (float)LD(748);
+    L(800) = (float)LD(740);
+    L(796) = (float)LD(732);
+    Vec3_RotateBy(P(92), P(912), M(376));
+    Vec3_DivComponents(P(820), P(92), ic);
+    Vec3_RotateBy(P(280), P(800), M(1200));
+    Vec3_RotateBy(P(928), spin, ma);
+    LD(4940) = k36;
+    L(4) = (float)((Vec3_Dot(vel, vel) * LD(4940)) / g_ct5_64b660);
+    LD(4948) = k36;
+    L(80) = (float)((Vec3_Dot(P(280), P(280)) * LD(4948)) / g_ct5_64b660);
+    L(476) = (float)(Vec3_Dot(P(16), spin) / g_ct5_64b660);
+    L(540) = (float)(Vec3_Dot(P(92), P(820)) / g_ct5_64b660);
+    L(808) = (float)(L(4) + L(476));
+    L(868) = (float)(L(80) + L(540));
+    if (L(808) != g_ct4_64c264)
+    {
+        L(1220) = (float)(L(868) / L(808));
+        if (L(1220) > g_ct5_64c250)
+            L(1220) = (float)(L(1220) + L(1220));
+    }
+    if (Ct5_OutOfBox(outV, 400.0f) || Ct5_OutOfBox(P(820), 200.0f))
+    {
+        char* s1 = (char*)(fp - 3420);
+        char* s2 = (char*)(fp - 3620);
+        char* s3 = (char*)(fp - 3920);
+        char* s4 = (char*)(fp - 4220);
+        char* s5 = (char*)(fp - 4420);
+        char* s6 = (char*)(fp - 4620);
+        sprintf(s1, &g_ct5_673fcc, (double)FF(outV, 0), (double)FF(outV, 4), (double)FF(outV, 8), (double)L(820),
+                (double)L(816), (double)L(812));
+        sprintf(s2, &g_ct5_674004, (double)k36, (double)k40, (double)k44, (double)FF(ic, 0), (double)FF(ic, 4),
+                (double)FF(ic, 8));
+        sprintf(s3, &g_ct5_67402c, (double)FF(ma, 0), (double)FF(ma, 4), (double)FF(ma, 8), (double)FF(ma, 12),
+                (double)FF(ma, 16), (double)FF(ma, 20), (double)FF(ma, 24), (double)FF(ma, 28), (double)FF(ma, 32),
+                (double)FF(ma, 36), (double)FF(ma, 40), (double)FF(ma, 44));
+        sprintf(s4, &g_ct5_674068, (double)FF(mb, 0), (double)FF(mb, 4), (double)FF(mb, 8), (double)FF(mb, 12),
+                (double)FF(mb, 16), (double)FF(mb, 20), (double)FF(mb, 24), (double)FF(mb, 28), (double)FF(mb, 32),
+                (double)FF(mb, 36), (double)FF(mb, 40), (double)FF(mb, 44));
+        sprintf(s5, &g_ct5_6740a4, (double)FF(vel, 0), (double)FF(vel, 4), (double)FF(vel, 8), (double)FF(spin, 0),
+                (double)FF(spin, 4), (double)FF(spin, 8));
+        sprintf(s6, &g_ct5_6740c4, (double)FF(pt, 0), (double)FF(pt, 4), (double)FF(pt, 8), (double)FF(nrm, 0),
+                (double)FF(nrm, 4), (double)FF(nrm, 8));
+        sprintf((char*)(fp - 3220), &g_ct5_6740e8, s1, s2, s3, s4, s5, s6);
+        Ct4_Fatal((char*)(fp - 3220));
+    }
+    Ct4_Soften(P(820));
+    FI(outW, 0) = LI(820);
+    FI(outW, 4) = LI(816);
+    FI(outW, 8) = LI(812);
+    FI(outV, 0) = LI(280);
+    FI(outV, 4) = LI(276);
+    FI(outV, 8) = LI(272);
+}
+
+} // extern "C"
+
+#undef L
+#undef LI
+#undef LD
+#undef P
+#undef M
+#undef FI
+#undef FF
+
+// === a body's contact impulse, simple form ($L_4e969e with its tail $L_4e96e8; nothing calls it in this build)
+
+extern "C" Vec3* __cdecl Ct6_Negated(Vec3* out, const Vec3* v); KING_ALIAS("_Ct6_Negated", "_Vec3_Negated")
+extern "C" void Ct6_DivA(); KING_ALIAS("_Ct6_DivA", "@Vec3_DivAssign@16")
+extern "C" void __fastcall Ct6_Zero(Vec3* v, void*); KING_ALIAS("@Ct6_Zero@8", "@Vec3_ZeroThis@8")
+ASM_VAR(double, g_ct6_64d950, $L_64d950)
+ASM_VAR(double, g_ct6_64c958, $L_64c958)
+ASM_VAR(double, g_ct6_64b748, $L_64b748)
+ASM_VAR(double, g_ct6_64d948, $L_64d948)
+ASM_VAR(BYTE, g_ct6_6974a8, $L_6974a8)
+
+#define L(n) (*(float*)(fp - (n)))
+#define LI(n) (*(int*)(fp - (n)))
+#define LD(n) (*(double*)(fp - (n)))
+#define P(n) ((Vec3*)(fp - (n)))
+#define FI(p, o) (*(int*)((BYTE*)(p) + (o)))
+#define FF(p, o) (*(float*)((BYTE*)(p) + (o)))
+
+static float Ct6_Bits(DWORD b) { return *(float*)&b; }
+
+extern "C" {
+
+// [$L_4e969e..$L_4e96e8] body (pose ma, rotation mb, speed vel, spin spin, inertia ic) touching point pt with
+// normal nrm: the contact direction (bent towards the normal when nearly flat), the speed's normal part reversed
+// by k36 and its sliding part by k40, the spin from the lever arm, both scaled down when the energy would grow;
+// into outW / outV. The asm's EBP frame is kept as fr
+void __cdecl Body_ContactImpulseB(const Matrix* ma, const Matrix* mb, const Vec3* vel, const Vec3* spin,
+                                  const Vec3* ic, const Vec3* pt, const Vec3* nrm, float k36, float k40,
+                                  Vec3* outW, Vec3* outV)
+{
+    BYTE fr[576];
+    BYTE* fp = fr + 576;
+    Vec3_Sub(P(188), (const Vec3*)((const BYTE*)ma + 36), pt);
+    double d = Vec3_Dot(P(188), P(188));
+    L(220) = (float)d;
+    L(204) = (float)x87_sqrt(d);
+    L(104) = 1.0f;
+    Ct4_DivScalar(P(132), P(188), L(204));
+    Vec3_RotateBy(P(72), spin, ma);
+    Ct6_Zero(P(24), 0);
+    Ct6_Zero(P(60), 0);
+    Ct6_Zero(P(96), 0);
+    LI(100) = 0;
+    LI(108) = 0;
+    if (!(FF(nrm, 8) <= g_ct6_64d950) && !(Vec3_Dot(P(132), nrm) <= g_ct6_64c958))
+    {
+        Vec3_Cross(P(284), nrm, P(132));
+        Vec3_Cross(P(296), P(284), nrm);
+        LI(24) = LI(296);
+        LI(20) = LI(292);
+        LI(16) = LI(288);
+        double r12 = Vec3_Dot(P(132), nrm);
+        L(516) = (float)r12;
+        Vec3_Scaled(P(308), nrm, (float)r12);
+        LI(60) = LI(308);
+        LI(56) = LI(304);
+        LI(52) = LI(300);
+        L(100) = (float)Vec3_Length(P(24));
+        if (!(L(100) <= g_ct6_64b748))
+        {
+            L(108) = (float)Vec3_Length(P(60));
+            float ka = (float)(g_ct6_64d948 / L(108));
+            L(520) = ka;
+            Vec3_Scaled(P(320), P(60), ka);
+            float kb = (float)(g_ct6_64c958 / L(100));
+            L(524) = kb;
+            Vec3_Scaled(P(332), P(24), kb);
+            Vec3_Add(P(344), P(332), P(320));
+            LI(96) = LI(344);
+            LI(92) = LI(340);
+            LI(88) = LI(336);
+            LI(132) = LI(96);
+            LI(128) = LI(92);
+            LI(124) = LI(88);
+        }
+    }
+    double r19 = Vec3_Dot(vel, P(132));
+    L(528) = (float)r19;
+    Vec3_Scaled(P(176), P(132), (float)r19);
+    Vec3_Cross(P(356), P(132), vel);
+    Vec3_Cross(P(216), P(356), P(132));
+    double r23 = Vec3_Dot(P(72), P(132));
+    L(532) = (float)r23;
+    Vec3_Scaled(P(200), P(132), (float)r23);
+    Vec3_Cross(P(368), P(132), P(72));
+    Vec3_Cross(P(232), P(368), P(132));
+    Ct6_Negated(P(380), P(176));
+    Vec3_Scaled(P(244), P(380), k40);
+    Vec3_Cross(P(392), P(188), P(216));
+    Vec3_Scaled(P(404), P(392), k36);
+    Vec3_RotateBy(P(416), P(232), mb);
+    Vec3_MulComponents(P(428), ic, P(416));
+    Vec3_RotateBy(P(440), P(428), ma);
+    Vec3_Add(P(160), P(440), P(404));
+    Vec3_Scaled(P(452), (const Vec3*)&g_ct6_6974a8, k36);
+    Vec3_Scaled(P(464), P(452), L(220));
+    Vec3_Add(P(120), ic, P(464));
+    Vec3_DivComponents(P(48), P(160), P(120));
+    LI(104) = 1058642330;
+    if (Vec3_Dot(P(48), P(232)) < g_ct5_64b678)
+        LI(104) = 1050253722;
+    Vec3_Scaled(P(36), P(48), L(104));
+    Vec3_Cross(P(12), P(36), P(188));
+    Vec3_Scaled(P(268), P(200), Ct6_Bits(1064849900));
+    Vec3_Add(P(84), P(36), P(268));
+    Vec3_RotateBy(P(148), P(84), mb);
+    Vec3_Add(P(256), P(12), P(244));
+    LD(540) = k36;
+    LD(548) = (Vec3_Dot(vel, vel) * LD(540)) * g_ct4_64b6e0;
+    Vec3_MulComponents(P(476), ic, spin);
+    L(136) = (float)(Vec3_Dot(P(476), spin) * g_ct4_64b6e0 + LD(548));
+    LD(556) = k36;
+    LD(564) = (Vec3_Dot(P(256), P(256)) * LD(556)) * g_ct4_64b6e0;
+    Vec3_MulComponents(P(488), ic, P(148));
+    L(164) = (float)(Vec3_Dot(P(488), P(148)) * g_ct4_64b6e0 + LD(564));
+    if (L(136) * g_ct4_64d918 < L(164) && !(L(136) <= g_ct4_64c264))
+    {
+        L(272) = L(164) / L(136);
+        float k = (float)(L(272) + g_ct4_64b5b8);
+        L(568) = k;
+        CallThis(Ct6_DivA, P(256), P(500), k);
+        L(572) = k;
+        CallThis(Ct6_DivA, P(148), P(512), k);
+    }
+    FI(outV, 0) = LI(148);
+    FI(outV, 4) = LI(144);
+    FI(outV, 8) = LI(140);
+    FI(outW, 0) = LI(256);
+    FI(outW, 4) = LI(252);
+    FI(outW, 8) = LI(248);
+}
+
+} // extern "C"
+
+#undef L
+#undef LI
+#undef LD
+#undef P
+#undef FI
+#undef FF
+
+// === a body's sub-step with its wheels on springs (FUN_4f8260 with its tail $L_4f9489)
+
+extern "C" void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind);
+extern "C" void __fastcall Vec3_NormalizeThis(Vec3* self, void*);
+extern "C" Vec3* __fastcall Vec3_ZeroThis(Vec3* self, void*);
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
+ASM_VAR(int, g_sv702650, $L_702650)
+ASM_VAR(int, g_sv702654, $L_702654)
+ASM_VAR(int, g_sv702658, $L_702658)
+ASM_VAR(float, g_sv702620, $L_702620)
+ASM_VAR(float, g_sv702624, $L_702624)
+ASM_VAR(float, g_sv702628, $L_702628)
+ASM_VAR(float, g_sv702630, $L_702630)
+ASM_VAR(float, g_sv702634, $L_702634)
+ASM_VAR(float, g_sv702638, $L_702638)
+ASM_VAR(float, g_sv64c258, $L_64c258)
+ASM_VAR(float, g_sv64c450, $L_64c450)
+ASM_VAR(float, g_sv64c264, $L_64c264)
+ASM_VAR(float, g_sv64c938, $L_64c938)
+ASM_VAR(float, g_sv674454, $L_674454)
+ASM_VAR(float, g_sv674450, $L_674450)
+ASM_VAR(double, g_sv64b678, $L_64b678)
+ASM_VAR(double, g_sv64b6a0, $L_64b6a0)
+ASM_VAR(double, g_sv64b670, $L_64b670)
+ASM_VAR(double, g_sv64b5b8, $L_64b5b8)
+ASM_VAR(double, g_sv64b6e0, $L_64b6e0)
+ASM_VAR(double, g_sv64b6b8, $L_64b6b8)
+ASM_VAR(double, g_sv64d950, $L_64d950)
+ASM_VAR(double, g_sv64d0f0, $L_64d0f0)
+ASM_VAR(double, g_sv64b6d8, $L_64b6d8)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+#define SF(n) F(float, s, n)
+
+extern "C" {
+
+// [FUN_4f8260..$L_4f9489] one sub-step of body s (modes 2 and 3 of +9784): from the second on, the wheel frames,
+// tyre and drive forces, the wheels' force and torque limited and the contact sums (+3180, +3264); then the frame
+// turned by the spin and moved by the speed (+9012), its inverse (+8964); each wheel's contact with the ground:
+// travel (+9244), spring and damper forces (+8740, pushed out by an impulse when pressed in), slip flags (+6596);
+// the wheel and body contact forces summed into the force (+9072) and torque (+9144) and integrated unless
+// frozen (+10104); 1 while sub-steps (+9524 counted up to +9520) remain
+int __fastcall Body_SubStep(BYTE* s, void*, int mode)
+{
+    BYTE fr[1760];
+    if (F(int, s, 9524) > 1)
+    {
+        I(128) = g_sv702650;
+        I(132) = g_sv702654;
+        I(136) = g_sv702658;
+        I(48) = g_sv702650;
+        I(52) = g_sv702654;
+        I(56) = g_sv702658;
+        V(88) = (float)(((SF(9012) * SF(212) - SF(9016) * SF(208)) * SF(212)) - ((SF(208) * SF(9020) - SF(9012) * SF(216)) * SF(216)));
+        I(60) = I(88);
+        V(92) = (float)(((SF(9016) * SF(216) - SF(9020) * SF(212)) * SF(216)) - ((SF(9012) * SF(212) - SF(9016) * SF(208)) * SF(208)));
+        I(64) = I(92);
+        V(96) = (float)(((SF(208) * SF(9020) - SF(9012) * SF(216)) * SF(208)) - ((SF(9016) * SF(216) - SF(9020) * SF(212)) * SF(212)));
+        I(68) = I(96);
+        {
+            const BYTE* m = s + 8868;
+            double ux = (g_sv702628 * F(float, m, 24) + g_sv702624 * F(float, m, 12)) + g_sv702620 * F(float, m, 0);
+            double uy = (g_sv702628 * F(float, m, 28) + g_sv702624 * F(float, m, 16)) + g_sv702620 * F(float, m, 4);
+            double uz = (g_sv702628 * F(float, m, 32) + g_sv702624 * F(float, m, 20)) + g_sv702620 * F(float, m, 8);
+            V(88) = (float)(uy * SF(216) - uz * SF(212));
+            V(92) = (float)(uz * SF(208) - ux * SF(216));
+            double cz = ux * SF(212) - uy * SF(208);
+            V(140) = (float)(cz * SF(212) - V(92) * SF(216));
+            I(20) = I(140);
+            V(144) = (float)(V(88) * SF(216) - cz * SF(208));
+            I(24) = I(144);
+            V(148) = (float)(V(92) * SF(208) - V(88) * SF(212));
+            I(28) = I(148);
+        }
+        Vec3_NormalizeThis((Vec3*)(fr + 20), 0);
+        Wheels_StepFrames(s, 0, (const float*)(s + 8196), (const float*)(s + 8868), (const float*)(s + 8964), (const Vec3*)(fr + 60), (const Vec3*)(s + 9024),
+                      (float)((V(28) * V(68) + V(24) * V(64)) + V(20) * V(60)), (const Vec3*)(fr + 20));
+        Body_SlopeLean(s);
+        const float* grip;
+        if (F(int, s, 10092) == 0 && F(int, s, 16204) != 1)
+            grip = (const float*)(s + 8740);
+        else
+        {
+            for (int k = 0; k < F(int, s, 3540); k++)
+                V(516 + 4 * k) = (float)x87_fabs(F(float, s, 8740 + 4 * k));
+            grip = &V(516);
+        }
+        Tyre_Forces(s, 0, grip);
+        Wheels_DriveForces(s);
+        for (int i = 0; i < F(int, s, 3540); i++)
+        {
+            BYTE* w = s + 3848 + 12 * i;
+            F(int, w, 0) = g_sv702650;
+            F(int, w, 4) = g_sv702654;
+            F(int, w, 8) = g_sv702658;
+            F(int, s, 3816 + 4 * i) = 0;
+            if (F(WORD, s, 272 + 248 * i) != 0 && F(WORD, s, 6564 + 2 * i) == 0)
+                Wheel_RollDrag(s, 0, s + 13584 + 208 * i, i, 0);
+        }
+        Wheels_ForceTorque(s, 0, (Vec3*)(fr + 128), (Vec3*)(fr + 48));
+        Body_LimitChange(s, 0, (Vec3*)(fr + 128), (Vec3*)(fr + 48), (Vec3*)(fr + 60), (const Vec3*)(s + 9024), SF(9508));
+        F(int, s, 3228) = g_sv702650;
+        F(int, s, 3232) = g_sv702654;
+        F(int, s, 3236) = g_sv702658;
+        F(int, s, 3300) = g_sv702650;
+        F(int, s, 3304) = g_sv702654;
+        F(int, s, 3308) = g_sv702658;
+        memset(fr + 896, 0, 96);
+        I(72) = 0;
+        for (int i = 0; i < F(int, s, 3540); i++)
+        {
+            BYTE* q = fr + 900 + 12 * i;
+            const BYTE* r = s + 264 + 248 * i;
+            const BYTE* a = s + 8344 + 12 * i;
+            V(88) = (float)(((F(float, r, 4) * F(float, a, -4) - F(float, a, 4) * F(float, r, -4)) * F(float, r, 4))
+                            - ((F(float, r, -4) * F(float, a, 0) - F(float, a, -4) * F(float, r, 0)) * F(float, r, 0)));
+            F(int, q, -4) = I(88);
+            V(92) = (float)(((F(float, r, -4) * F(float, a, 0) - F(float, a, -4) * F(float, r, 0)) * F(float, r, -4))
+                            - ((F(float, a, 4) * F(float, r, 0) - F(float, r, 4) * F(float, a, 0)) * F(float, r, 4)));
+            F(int, q, 0) = I(92);
+            V(96) = (float)(((F(float, a, 4) * F(float, r, 0) - F(float, r, 4) * F(float, a, 0)) * F(float, r, 0))
+                            - ((F(float, r, 4) * F(float, a, -4) - F(float, a, 4) * F(float, r, -4)) * F(float, r, -4)));
+            F(int, q, 4) = I(96);
+            Vec3_AddAssign((Vec3*)(s + 3228), 0, (Vec3*)(fr + 168), (const Vec3*)(q - 4));
+            V(140) = (float)((((F(float, q, 4) * SF(2336) + F(float, q, -4) * SF(2312)) + F(float, q, 0) * SF(2324)) * F(float, a, -2128))
+                             - (((F(float, q, -4) * SF(2308) + F(float, q, 4) * SF(2332)) + SF(2320) * F(float, q, 0)) * F(float, a, -2124)));
+            I(32) = I(140);
+            V(144) = (float)((((F(float, q, 4) * SF(2328) + SF(2304) * F(float, q, -4)) + SF(2316) * F(float, q, 0)) * F(float, a, -2124))
+                             - (((F(float, q, 4) * SF(2336) + F(float, q, -4) * SF(2312)) + F(float, q, 0) * SF(2324)) * F(float, a, -2132)));
+            I(36) = I(144);
+            V(148) = (float)((((F(float, q, -4) * SF(2308) + F(float, q, 4) * SF(2332)) + SF(2320) * F(float, q, 0)) * F(float, a, -2132))
+                             - (((F(float, q, 4) * SF(2328) + SF(2304) * F(float, q, -4)) + SF(2316) * F(float, q, 0)) * F(float, a, -2128)));
+            I(40) = I(148);
+            Vec3_AddAssign((Vec3*)(s + 3300), 0, (Vec3*)(fr + 76), (const Vec3*)(fr + 32));
+            I(72) = i + 1;
+        }
+        V(36) = V(132) + SF(3232);
+        V(40) = V(136) + SF(3236);
+        V(116) = V(36) + SF(3220);
+        V(120) = V(40) + SF(3224);
+        V(88) = (float)(((V(128) + SF(3228)) + SF(3216)) + SF(3192));
+        V(92) = V(116) + SF(3196);
+        F(int, s, 3180) = I(88);
+        V(96) = V(120) + SF(3200);
+        F(int, s, 3184) = I(92);
+        F(int, s, 3188) = I(96);
+        V(36) = V(52) + SF(3304);
+        V(40) = V(56) + SF(3308);
+        V(116) = V(36) + SF(3292);
+        V(120) = V(40) + SF(3296);
+        V(88) = (float)(((V(48) + SF(3300)) + SF(3288)) + SF(3276));
+        V(92) = V(116) + SF(3280);
+        F(int, s, 3264) = I(88);
+        V(96) = V(120) + SF(3284);
+        F(int, s, 3268) = I(92);
+        F(int, s, 3272) = I(96);
+        memcpy(s + 9108, s + 3180, 12);
+        memcpy(s + 9168, s + 3264, 12);
+    }
+
+    // $L_4f8961: the frame's pose
+    I(156) = 0;
+    I(160) = 0;
+    I(164) = 0;
+    memset(fr + 324, 0, 96);
+    memset(fr + 800, 0, 96);
+    memset(fr + 992, 0, 96);
+    memset(fr + 1232, 0, 96);
+    memset(fr + 692, 0, 96);
+    memset(fr + 1520, 0, 96);
+    memset(fr + 1520, 0, 96);
+    SF(9504) = (float)((double)SF(9512) + SF(9504));
+    {
+        double vx = SF(9060) * g_sv64c258;
+        V(36) = (float)(SF(9064) * g_sv64c258);
+        V(40) = (float)(SF(9068) * g_sv64c258);
+        V(20) = (float)(SF(9048) - vx);
+        V(24) = SF(9052) - V(36);
+        V(28) = SF(9056) - V(40);
+        double dt = SF(9512);
+        V(60) = (float)(V(20) * dt);
+        I(32) = I(60);
+        V(64) = (float)(dt * V(24));
+        I(36) = I(64);
+        V(68) = (float)(dt * V(28));
+        I(40) = I(68);
+        float ang = (float)Vec3_Length((const Vec3*)(fr + 32));
+        Matrix* r = Matrix_LookAt((Matrix*)(fr + 692), g_zeroVec, *(const Vec3*)(fr + 20), ang);
+        memcpy(s + 9700, r, 48);
+        double px = SF(9012) + SF(2580);
+        V(36) = SF(9016) + SF(2584);
+        V(40) = SF(9020) + SF(2588);
+        I(44) = F(int, s, 9512);
+        V(20) = (float)(px * V(44));
+        V(24) = V(44) * V(36);
+        V(28) = V(44) * V(40);
+        Matrix* t = Matrix_Translation((Matrix*)(fr + 1184), *(const Vec3*)(fr + 20));
+        memcpy(s + 8916, s + 8868, 48);
+        Matrix* a = Matrix_Multiply((Matrix*)(fr + 692), (const Matrix*)(s + 9700), (const Matrix*)(s + 8916));
+        memcpy(s + 8868, Matrix_Multiply((Matrix*)(fr + 516), a, t), 48);
+        memcpy(s + 8964, Matrix_Inverse((Matrix*)(fr + 692), (const Matrix*)(s + 8868)), 48);
+    }
+    {
+        const BYTE* M = s + 8964;
+        double x = (F(float, M, 12) * SF(212) + F(float, M, 24) * SF(216)) + SF(208) * F(float, M, 0);
+        double y = (F(float, M, 4) * SF(208) + F(float, M, 16) * SF(212)) + F(float, M, 28) * SF(216);
+        double z = (F(float, M, 8) * SF(208) + F(float, M, 20) * SF(212)) + F(float, M, 32) * SF(216);
+        SF(9624) = (float)x;
+        SF(9628) = (float)y;
+        SF(9632) = (float)z;
+        x = (F(float, M, 24) * SF(9032) + F(float, M, 12) * SF(9028)) + SF(9024) * F(float, M, 0);
+        y = (F(float, M, 28) * SF(9032) + F(float, M, 16) * SF(9028)) + F(float, M, 4) * SF(9024);
+        z = (F(float, M, 32) * SF(9032) + F(float, M, 20) * SF(9028)) + F(float, M, 8) * SF(9024);
+        SF(9036) = (float)x;
+        SF(9040) = (float)y;
+        SF(9044) = (float)z;
+        memcpy(s + 9048, Vec3_DivComponents((Vec3*)(fr + 168), (const Vec3*)(s + 9036), (const Vec3*)(s + 8008)), 12);
+        V(48) = (float)((g_sv702638 * SF(8892) + g_sv702634 * SF(8880)) + g_sv702630 * SF(8868));
+        V(52) = (float)((g_sv702638 * SF(8896) + g_sv702634 * SF(8884)) + g_sv702630 * SF(8872));
+        V(56) = (float)((g_sv702638 * SF(8900) + g_sv702634 * SF(8888)) + g_sv702630 * SF(8876));
+    }
+
+    // $L_4f8df7: each wheel's contact
+    const BYTE* m = s + 8868;
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        const int e = 12 * i;
+        F(int, s, 9276 + 4 * i) = F(int, s, 9244 + 4 * i);
+        F(int, s, 8740 + 4 * i) = 0;
+        I(292 + 4 * i) = 0;
+        double f = -SF(7028 + 4 * i);
+        memcpy(fr + 692 + e, &g_zeroVec, 12);
+        memcpy(fr + 1520 + e, &g_zeroVec, 12);
+        I(452 + 4 * i) = 0;
+        I(484 + 4 * i) = 0;
+        const BYTE* p = s + 7356 + e;
+        V(100) = (float)(f * g_sv702630);
+        V(104) = (float)(f * g_sv702634);
+        double z = f * g_sv702638 + F(float, p, 8);
+        V(60) = V(100) + F(float, p, 0);
+        V(64) = V(104) + F(float, p, 4);
+        V(20) = (float)(((z * F(float, m, 24) + V(64) * F(float, m, 12)) + V(60) * F(float, m, 0)) + F(float, m, 36));
+        V(24) = (float)(((V(60) * F(float, m, 4) + z * F(float, m, 28)) + V(64) * F(float, m, 16)) + F(float, m, 40));
+        V(28) = (float)(((V(60) * F(float, m, 8) + z * F(float, m, 32)) + V(64) * F(float, m, 20)) + F(float, m, 44));
+        const BYTE* r = s + 248 * i;
+        BYTE* c = s + 9528 + e;
+        if (F(WORD, r, 272) && F(WORD, r, 4144)
+            && Wheel_SegmentContact(s, 0, (Wc_V*)c, (Wc_V*)(fr + 324 + e), (const float*)(s + 8868),
+                                    (const Wc_V*)(s + 9308 + e), (const Wc_V*)(s + 9404 + e), i))
+        {
+            V(280) = V(20) - F(float, c, 0);
+            I(156) = I(280);
+            V(284) = V(24) - F(float, c, 4);
+            I(160) = I(284);
+            V(288) = V(28) - F(float, c, 8);
+            I(164) = I(288);
+            V(16) = (float)Vec3_Length((const Vec3*)(fr + 156));
+            if ((V(164) * V(56) + V(160) * V(52)) + V(48) * V(156) < g_sv64b678)
+                V(16) = -V(16);
+        }
+        else
+        {
+            // $L_4f9028: no contact, the wheel hangs at its full travel
+            double t = SF(8092 + 4 * i) * g_sv64c450;
+            V(16) = (float)t;
+            double a = t * g_sv702630, b = V(16) * g_sv702634, cz = V(16) * g_sv702638;
+            V(76) = (float)(((cz * F(float, m, 24) + b * F(float, m, 12)) + a * F(float, m, 0)) + F(float, m, 36));
+            V(80) = (float)(((cz * F(float, m, 28) + b * F(float, m, 16)) + a * F(float, m, 4)) + F(float, m, 40));
+            double w = ((cz * F(float, m, 32) + b * F(float, m, 20)) + a * F(float, m, 8)) + F(float, m, 44);
+            V(268) = V(20) - V(76);
+            F(int, c, 0) = I(268);
+            V(272) = V(24) - V(80);
+            F(int, c, 4) = I(272);
+            V(276) = (float)(V(28) - w);
+            F(int, c, 8) = I(276);
+            memcpy(fr + 156, &g_zeroVec, 12);
+        }
+
+        // $L_4f9119
+        const BYTE* n = fr + 324 + e;
+        V(232) = (float)((SF(8976) * F(float, n, 4) + SF(8988) * F(float, n, 8)) + SF(8964) * F(float, n, 0));
+        I(800 + e) = I(232);
+        V(236) = (float)((SF(8980) * F(float, n, 4) + SF(8968) * F(float, n, 0)) + SF(8992) * F(float, n, 8));
+        I(804 + e) = I(236);
+        V(240) = (float)((SF(8984) * F(float, n, 4) + SF(8972) * F(float, n, 0)) + SF(8996) * F(float, n, 8));
+        I(808 + e) = I(240);
+        V(152) = (float)((F(float, n, 8) * V(56) + F(float, n, 4) * V(52)) + F(float, n, 0) * V(48));
+        I(564 + 4 * i) = I(152);
+        double ac = x87_acos(V(152));
+        V(692 + 4 * i) = (float)ac;
+        V(660 + 4 * i) = (float)x87_sin(ac);
+
+        float lim8092 = SF(8092 + 4 * i);
+        bool hang;
+        if (V(16) > lim8092)
+            hang = true;
+        else if (!F(WORD, r, 272) || !F(WORD, r, 4144))
+            hang = true;
+        else
+        {
+            hang = false;
+            bool spring;
+            if (V(16) < g_sv64c264 && F(int, s, 10092) == 0)
+                spring = true;
+            else if (F(int, s, 10092) == 0)
+                spring = false;
+            else
+                spring = !(-lim8092 <= V(16));
+            if (spring)
+            {
+                // $L_4f9295: the wheel pressed in, pushed back out by an impulse
+                if (i == 0)
+                    F(int, s, 15368) = (int)(V(16) * g_sv64b6a0 + F(int, s, 15368));
+                else if (i == 1)
+                    F(int, s, 15368) = (int)(F(int, s, 15368) - V(16) * g_sv64b6a0);
+                double g = -V(16);
+                F(int, s, 9244 + 4 * i) = 0;
+                V(244) = (float)(g * F(float, n, 0));
+                V(248) = (float)(g * F(float, n, 4));
+                V(252) = (float)(g * F(float, n, 8));
+                memcpy(fr + 156, fr + 244, 12);
+                V(692 + 4 * i) = (float)g;
+                V(628 + 4 * i) = (float)-(g / SF(9508));
+                double x = SF(8060 + 4 * i);
+                double k = (x87_fabs(x) / SF(8060 + 4 * i) + g_sv64b670) * SF(8124 + 4 * i) * x;
+                V(420 + 4 * i) = (float)k;
+                SF(8740 + 4 * i) = (float)k;
+                Vec3 d;
+                d.x = (float)(g * g_sv702630);
+                d.y = (float)(g * g_sv702634);
+                d.z = (float)(g * g_sv702638);
+                Matrix* T = Matrix_Translation((Matrix*)(fr + 1664), d);
+                memcpy(s + 8868, Matrix_Multiply((Matrix*)(fr + 1712), T, (const Matrix*)(s + 8868)), 48);
+                memcpy(s + 8964, Matrix_Inverse((Matrix*)(fr + 1616), (const Matrix*)(s + 8868)), 48);
+                F(int, s, 15372) = F(int, s, 9524);
+                memcpy(fr + 196, s + 9012, 12);
+                I(152) = (int)(fr + 324 + e);
+                Body_MovingPointImpulse((const Vec3*)c, (const Vec3*)n, (const Matrix*)(s + 8868),
+                                        (const Matrix*)(s + 8964), SF(9792), 0.5f, 0.0f, (const Vec3*)(s + 9012),
+                                        (const Vec3*)(s + 9048), (const Vec3*)(s + 8008), (Vec3*)(s + 9012),
+                                        (Vec3*)(s + 9048));
+                // $L_4f9489
+                memcpy(s + 9036, Vec3_MulComponents((Vec3*)(fr + 180), (const Vec3*)(s + 9048), (const Vec3*)(s + 8008)), 12);
+                {
+                    const BYTE* q = s + 9036;
+                    V(208) = (float)((F(float, m, 12) * F(float, q, 4) + F(float, m, 24) * F(float, q, 8)) + F(float, m, 0) * F(float, q, 0));
+                    V(212) = (float)((F(float, m, 16) * F(float, q, 4) + F(float, m, 4) * F(float, q, 0)) + F(float, m, 28) * F(float, q, 8));
+                    V(216) = (float)((F(float, m, 20) * F(float, q, 4) + F(float, m, 8) * F(float, q, 0)) + F(float, m, 32) * F(float, q, 8));
+                    memcpy(s + 9024, fr + 208, 12);
+                }
+                double da = SF(9012) - V(196), db = SF(9016) - V(200), dc = SF(9020) - V(204);
+                double dd = (dc * F(float, n, 8) + db * F(float, n, 4)) + da * F(float, n, 0);
+                F(int, s, 15336 + 4 * i) = (int)(dd * SF(9792) + F(int, s, 15336 + 4 * i));
+                F(WORD, s, 6564 + 2 * i) = 0;
+            }
+            else
+            {
+                // $L_4f95bf: the spring and damper at this travel
+                F(WORD, s, 6564 + 2 * i) = 0;
+                SF(9244 + 4 * i) = V(16);
+                double a = SF(8060 + 4 * i) - V(16);
+                double b = (V(16) - lim8092) / (lim8092 * g_sv64b5b8);
+                double h = g_sv64b670 - x87_exp(-(b * b));
+                double q = (x87_fabs(a) / SF(8060 + 4 * i) + g_sv64b670) * SF(8124 + 4 * i);
+                double v = h * (a * q);
+                V(420 + 4 * i) = (float)v;
+                SF(8740 + 4 * i) = (float)v;
+                double dd = (double)SF(9244 + 4 * i) - SF(9276 + 4 * i);
+                V(692 + 4 * i) = (float)dd;
+                V(44) = (float)(dd / SF(9512));
+                V(628 + 4 * i) = V(44);
+                V(16) = (float)(V(44) / g_sv674454);
+                if (!(dd <= g_sv64c264))
+                {
+                    double pp;
+                    if (!(V(16) <= g_sv64b6e0))
+                        pp = -(V(16) * SF(7484 + 4 * i) * V(16));
+                    else
+                        pp = SF(7484 + 4 * i) * V(16) * g_sv64b6b8;
+                    V(292 + 4 * i) = (float)pp;
+                    if (!(-v <= V(292 + 4 * i)))
+                        V(292 + 4 * i) = (float)-v;
+                }
+                else
+                {
+                    // $L_4f96e8
+                    double pp = -(V(44) / g_sv674450 * SF(7484 + 4 * i));
+                    V(152) = (float)pp;
+                    V(292 + 4 * i) = (float)pp;
+                    double lim = V(420 + 4 * i) * g_sv64d950;
+                    if (!(V(152) <= lim))
+                        V(292 + 4 * i) = (float)lim;
+                }
+            }
+        }
+        if (hang)
+        {
+            // $L_4f973e: the wheel off the ground or beyond its travel
+            F(WORD, s, 6564 + 2 * i) = 1;
+            double two = lim8092 + lim8092;
+            if ((F(int, s, 10092) != 0 || F(int, s, 16204) == 1) && V(16) < two
+                && F(WORD, r, 272) && F(WORD, r, 4144))
+            {
+                SF(9244 + 4 * i) = V(16);
+                double b = (V(16) - lim8092) / (lim8092 * g_sv64b5b8);
+                double h = g_sv64b670 - x87_exp(-(b * b));
+                double t;
+                if (F(int, s, 10092) != 0)
+                {
+                    double w = -V(16);
+                    t = x87_fabs(w) * (w + w) / lim8092 * SF(8124 + 4 * i);
+                }
+                else
+                    t = ((lim8092 - V(16)) - lim8092 * g_sv64d0f0) * SF(8124 + 4 * i) * 2.0;
+                V(420 + 4 * i) = (float)t;
+                double v2 = h * V(420 + 4 * i);
+                V(420 + 4 * i) = (float)v2;
+                SF(8740 + 4 * i) = (float)v2;
+                double u = (F(float, p, 4) * SF(9048) - SF(9052) * F(float, p, 0)) + SF(9020);
+                V(176) = (float)u;
+                V(628 + 4 * i) = (float)u;
+                V(16) = (float)(u / g_sv674454);
+                if (!(u <= g_sv64c264))
+                {
+                    double pp;
+                    if (!(V(16) <= g_sv64b6e0))
+                        pp = -(V(16) * SF(7484 + 4 * i) * V(16));
+                    else
+                        pp = SF(7484 + 4 * i) * V(16) * g_sv64b6b8;
+                    V(292 + 4 * i) = (float)pp;
+                    double nv = -x87_fabs(v2);
+                    if (V(292 + 4 * i) < nv)
+                        V(292 + 4 * i) = (float)nv;
+                }
+                else
+                {
+                    double pp = -(V(176) / g_sv674450 * SF(7484 + 4 * i));
+                    V(192) = (float)pp;
+                    V(292 + 4 * i) = (float)pp;
+                    double lim = x87_fabs(V(420 + 4 * i)) * g_sv64d950;
+                    if (!(V(192) <= lim))
+                        V(292 + 4 * i) = (float)lim;
+                }
+                F(WORD, s, 6564 + 2 * i) = 0;
+            }
+            // $L_4f9955
+            I(692 + 4 * i) = (int)0xC1A00000;
+            F(int, s, 9244 + 4 * i) = F(int, s, 8092 + 4 * i);
+        }
+
+        // $L_4f9976: the forces along the normal and sideways
+        double x = (double)SF(8740 + 4 * i) + V(292 + 4 * i);
+        V(596 + 4 * i) = (float)x;
+        if (F(int, s, 10092) == 0 && F(int, s, 16204) == 0 && x < g_sv64c264)
+            I(596 + 4 * i) = 0;
+        double g = (double)SF(8740 + 4 * i) * V(564 + 4 * i);
+        I(516 + 4 * i) = 0;
+        V(452 + 4 * i) = (float)g;
+        double h = (double)V(564 + 4 * i) * V(292 + 4 * i);
+        V(484 + 4 * i) = (float)h;
+        if (!(x87_fabs(V(660 + 4 * i)) <= g_sv64b6d8))
+        {
+            if ((h + g) * SF(9840 + 4 * i) < (double)V(660 + 4 * i) * V(596 + 4 * i))
+                F(BYTE, s, 6596 + i) = 1;
+        }
+
+        // $L_4f9a2c
+        double A = V(56) * F(float, n, 4) - V(52) * F(float, n, 8);
+        double B = V(48) * F(float, n, 8) - V(56) * F(float, n, 0);
+        double C = V(52) * F(float, n, 0) - V(48) * F(float, n, 4);
+        BYTE* tt = fr + 992 + e;
+        V(112) = (float)(B * F(float, n, 8) - C * F(float, n, 4));
+        F(int, tt, 0) = I(112);
+        V(116) = (float)(C * F(float, n, 0) - A * F(float, n, 8));
+        F(int, tt, 4) = I(116);
+        V(120) = (float)(A * F(float, n, 4) - B * F(float, n, 0));
+        F(int, tt, 8) = I(120);
+        V(32) = (float)((SF(8976) * F(float, tt, 4) + SF(8988) * F(float, tt, 8)) + F(float, tt, 0) * SF(8964));
+        V(36) = (float)((SF(8968) * F(float, tt, 0) + SF(8980) * F(float, tt, 4)) + SF(8992) * F(float, tt, 8));
+        V(40) = (float)((SF(8972) * F(float, tt, 0) + SF(8984) * F(float, tt, 4)) + SF(8996) * F(float, tt, 8));
+        memcpy(fr + 1232 + e, fr + 32, 12);
+    }
+
+    // $L_4f9b67: the wheels' forces summed
+    memcpy(s + 9096, &g_zeroVec, 12);
+    memcpy(s + 9120, &g_zeroVec, 12);
+    memcpy(s + 9132, &g_zeroVec, 12);
+    F(BYTE, s, 6586) = 0;
+    F(BYTE, s, 6580) = 1;
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        const int e = 12 * i;
+        WORD up = F(WORD, s, 6564 + 2 * i);
+        F(BYTE, s, 6586) = (F(BYTE, s, 6586) || up) ? 1 : 0;
+        F(BYTE, s, 6580) = (F(BYTE, s, 6580) && up) ? 1 : 0;
+        double g = (double)V(484 + 4 * i) + V(452 + 4 * i);
+        V(76) = (float)(g * V(324 + e));
+        V(80) = (float)(g * V(328 + e));
+        V(84) = (float)(g * V(332 + e));
+        Vec3_AddAssign((Vec3*)(s + 9120), 0, (Vec3*)(fr + 180), (const Vec3*)(fr + 76));
+        double k = V(516 + 4 * i);
+        V(100) = (float)(k * V(992 + e));
+        V(104) = (float)(k * V(996 + e));
+        V(108) = (float)(k * V(1000 + e));
+        Vec3_AddAssign((Vec3*)(s + 9132), 0, (Vec3*)(fr + 168), (const Vec3*)(fr + 100));
+    }
+
+    // $L_4f9d1f
+    {
+        const BYTE* v = s + 9096;
+        V(32) = (float)((SF(8880) * F(float, v, 4) + SF(8892) * F(float, v, 8)) + SF(8868) * F(float, v, 0));
+        V(36) = (float)((SF(8872) * F(float, v, 0) + SF(8884) * F(float, v, 4)) + SF(8896) * F(float, v, 8));
+        V(40) = (float)((SF(8876) * F(float, v, 0) + SF(8888) * F(float, v, 4)) + SF(8900) * F(float, v, 8));
+        memcpy(s + 9072, fr + 32, 12);
+        BYTE* u = s + 9108;
+        double x = (SF(9724) * F(float, u, 8) + SF(9712) * F(float, u, 4)) + SF(9700) * F(float, u, 0);
+        double y = (SF(9728) * F(float, u, 8) + SF(9704) * F(float, u, 0)) + SF(9716) * F(float, u, 4);
+        double z = (SF(9732) * F(float, u, 8) + SF(9708) * F(float, u, 0)) + SF(9720) * F(float, u, 4);
+        V(32) = (float)x;
+        V(36) = (float)y;
+        V(40) = (float)z;
+        memcpy(u, fr + 32, 12);
+        Vec3_SetThis((Vec3*)(fr + 76), 0, (float)((SF(9132) + SF(9120)) + SF(9684)),
+                     (float)((SF(9124) + SF(9136)) + SF(9688)), (float)((SF(9128) + SF(9140)) + SF(9692)));
+        Vec3_SetThis((Vec3*)(fr + 100), 0, V(76) + F(float, u, 0), V(80) + F(float, u, 4), V(84) + F(float, u, 8));
+        Vec3_SetThis((Vec3*)(fr + 32), 0, V(100) + SF(9748), V(104) + SF(9752), V(108) + SF(9756));
+        memcpy(s + 9072, fr + 32, 12);
+    }
+    I(72) = 0;
+    memcpy(fr + 140, &g_zeroVec, 12);
+    memcpy(fr + 220, &g_zeroVec, 12);
+    memcpy(fr + 88, &g_zeroVec, 12);
+    memcpy(fr + 128, &g_zeroVec, 12);
+    for (int j = 0; j < F(int, s, 10176); j++)
+    {
+        // the body's own contacts: forces at points q (+10184), w their moments
+        const BYTE* q = s + 10184 + 12 * j;
+        const BYTE* d = s + 10244 + 12 * j;
+        const BYTE* w = s + 10304 + 12 * j;
+        Vec3_AddAssign((Vec3*)(fr + 140), 0, (Vec3*)(fr + 180), (const Vec3*)d);
+        Vec3_AddAssign((Vec3*)(fr + 220), 0, (Vec3*)(fr + 168), (const Vec3*)w);
+        Vec3_SetThis((Vec3*)(fr + 20), 0,
+                     (float)((SF(8988) * F(float, d, 8) + SF(8976) * F(float, d, 4)) + SF(8964) * F(float, d, 0)),
+                     (float)((SF(8992) * F(float, d, 8) + SF(8980) * F(float, d, 4)) + SF(8968) * F(float, d, 0)),
+                     (float)((SF(8996) * F(float, d, 8) + SF(8984) * F(float, d, 4)) + SF(8972) * F(float, d, 0)));
+        Vec3_SetThis((Vec3*)(fr + 76), 0, (float)(V(28) * F(float, q, 4) - V(24) * F(float, q, 8)),
+                     (float)(V(20) * F(float, q, 8) - V(28) * F(float, q, 0)),
+                     (float)(V(24) * F(float, q, 0) - V(20) * F(float, q, 4)));
+        memcpy(fr + 100, fr + 76, 12);
+        Vec3_AddAssign((Vec3*)(fr + 88), 0, (Vec3*)(fr + 196), (const Vec3*)(fr + 100));
+        Vec3_SetThis((Vec3*)(fr + 60), 0,
+                     (float)((F(float, w, 8) * SF(8996) + SF(8972) * F(float, w, 0)) + F(float, w, 4) * SF(8984)),
+                     (float)((SF(8968) * F(float, w, 0) + F(float, w, 8) * SF(8992)) + F(float, w, 4) * SF(8980)),
+                     (float)((F(float, w, 0) * SF(8964) + F(float, w, 8) * SF(8988)) + F(float, w, 4) * SF(8976)));
+        Vec3_SetThis((Vec3*)(fr + 32), 0, (float)(V(68) * F(float, q, 4) - V(64) * F(float, q, 8)),
+                     (float)(V(60) * F(float, q, 8) - V(68) * F(float, q, 0)),
+                     (float)(V(64) * F(float, q, 0) - V(60) * F(float, q, 4)));
+        memcpy(fr + 112, fr + 32, 12);
+        Vec3_AddAssign((Vec3*)(fr + 128), 0, (Vec3*)(fr + 208), (const Vec3*)(fr + 112));
+        I(72) = j + 1;
+    }
+    for (int j = 0; j < F(int, s, 10180); j++)
+    {
+        Vec3_AddAssign((Vec3*)(fr + 88), 0, (Vec3*)(fr + 180), (const Vec3*)(s + 10364 + 12 * j));
+        Vec3_AddAssign((Vec3*)(fr + 128), 0, (Vec3*)(fr + 168), (const Vec3*)(s + 10424 + 12 * j));
+    }
+    if (F(int, s, 10176) || F(int, s, 10180))
+    {
+        // $L_4fa1c9: the contacts' push kept from pulling the body back in
+        memcpy(fr + 20, fr + 128, 12);
+        Vec3_Normalized((Vec3*)(fr + 60), (const Vec3*)(fr + 20));
+        double d = (SF(9044) * V(68) + SF(9040) * V(64)) + V(60) * SF(9036);
+        Vec3_SetThis((Vec3*)(fr + 48), 0, (float)(V(60) * d), (float)(V(64) * d), (float)(V(68) * d));
+        const float* res;
+        if (!((V(60) * V(48) + V(64) * V(52)) + V(68) * V(56) <= g_sv64b678))
+            res = (const float*)&g_zeroVec;
+        else
+        {
+            double dt = SF(9508);
+            Vec3_SetThis((Vec3*)(fr + 76), 0, (float)(V(20) * dt), (float)(dt * V(24)), (float)(dt * V(28)));
+            Vec3_SetThis((Vec3*)(fr + 100), 0, V(76) + V(48), V(80) + V(52), V(84) + V(56));
+            if ((V(108) * V(56) + V(100) * V(48)) + V(104) * V(52) < g_sv64b678)
+            {
+                double k = g_sv64c938 / SF(9508);
+                Vec3_SetThis((Vec3*)(fr + 76), 0, (float)(k * V(48)), (float)(k * V(52)), (float)(k * V(56)));
+                res = &V(76);
+            }
+            else
+                res = &V(20);
+        }
+        float r0 = res[0], r1 = res[1], r2 = res[2];
+        V(128) = r0;
+        V(132) = r1;
+        V(136) = r2;
+    }
+
+    // $L_4fa36a
+    Vec3_SetThis((Vec3*)(fr + 76), 0, V(220) + V(140), V(224) + V(144), V(228) + V(148));
+    memcpy(fr + 100, fr + 76, 12);
+    Vec3_AddAssign((Vec3*)(s + 9072), 0, (Vec3*)(fr + 180), (const Vec3*)(fr + 100));
+    memcpy(s + 9084, s + 9072, 12);
+    memcpy(s + 9180, &g_zeroVec, 12);
+    memcpy(s + 9192, &g_zeroVec, 12);
+    memcpy(s + 9204, &g_zeroVec, 12);
+    memcpy(s + 9216, &g_zeroVec, 12);
+    memcpy(s + 9228, &g_zeroVec, 12);
+    Vec3_SetThis((Vec3*)(fr + 60), 0, (float)(g_sv702638 * SF(212) - g_sv702634 * SF(216)),
+                 (float)(g_sv702630 * SF(216) - g_sv702638 * SF(208)),
+                 (float)(g_sv702634 * SF(208) - g_sv702630 * SF(212)));
+    Vec3_SetThis((Vec3*)(fr + 20), 0, (float)(V(64) * SF(216) - V(68) * SF(212)),
+                 (float)(V(68) * SF(208) - V(60) * SF(216)), (float)(V(60) * SF(212) - V(64) * SF(208)));
+    Vec3_SetThis((Vec3*)(fr + 788), 0, (float)((V(24) * SF(8976) + V(28) * SF(8988)) + V(20) * SF(8964)),
+                 (float)((V(20) * SF(8968) + V(24) * SF(8980)) + V(28) * SF(8992)),
+                 (float)((V(20) * SF(8972) + V(24) * SF(8984)) + V(28) * SF(8996)));
+    for (int k = 0; k < 8; k++)
+    {
+        Vec3_ZeroThis((Vec3*)(fr + 1088 + 12 * k), 0);
+        Vec3_ZeroThis((Vec3*)(fr + 1328 + 12 * k), 0);
+        Vec3_ZeroThis((Vec3*)(fr + 1424 + 12 * k), 0);
+        Vec3_ZeroThis((Vec3*)(fr + 896 + 12 * k), 0);
+    }
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        // $L_4fa64e: each wheel's push and torque about the centre
+        const int e = 12 * i;
+        const BYTE* c = s + 9528 + e;
+        Vec3_SetThis((Vec3*)(fr + 76), 0,
+                     (float)(((F(float, c, 0) * SF(8964) + F(float, c, 8) * SF(8988)) + F(float, c, 4) * SF(8976)) + SF(9000)),
+                     (float)(((F(float, c, 4) * SF(8980) + F(float, c, 0) * SF(8968)) + F(float, c, 8) * SF(8992)) + SF(9004)),
+                     (float)(((F(float, c, 8) * SF(8996) + F(float, c, 4) * SF(8984)) + F(float, c, 0) * SF(8972)) + SF(9008)));
+        memcpy(fr + 1088 + e, fr + 76, 12);
+        double g = V(452 + 4 * i);
+        Vec3_SetThis((Vec3*)(fr + 100), 0, (float)(g * V(800 + e)), (float)(g * V(804 + e)), (float)(g * V(808 + e)));
+        memcpy(fr + 32, fr + 100, 12);
+        memcpy(fr + 1328 + e, Vec3_Cross((Vec3*)(fr + 180), (const Vec3*)(fr + 1088 + e), (const Vec3*)(fr + 32)), 12);
+        Vec3* sc = Vec3_Scaled((Vec3*)(fr + 168), (const Vec3*)&g_sv702630, V(484 + 4 * i));
+        memcpy(fr + 1424 + e, Vec3_Cross((Vec3*)(fr + 112), (const Vec3*)(s + 7356 + e), sc), 12);
+        sc = Vec3_Scaled((Vec3*)(fr + 196), (const Vec3*)(fr + 1232 + e), V(516 + 4 * i));
+        memcpy(fr + 896 + e, Vec3_Cross((Vec3*)(fr + 208), (const Vec3*)(fr + 1088 + e), sc), 12);
+        Vec3_AddAssign((Vec3*)(s + 9204), 0, (Vec3*)(fr + 256), (const Vec3*)(fr + 1328 + e));
+        Vec3_AddAssign((Vec3*)(s + 9216), 0, (Vec3*)(fr + 244), (const Vec3*)(fr + 1424 + e));
+        Vec3_AddAssign((Vec3*)(s + 9228), 0, (Vec3*)(fr + 232), (const Vec3*)(fr + 896 + e));
+    }
+
+    // $L_4fa86c: the turning, kept from pulling back against the contacts
+    Vec3* a = Vec3_Add((Vec3*)(fr + 180), (const Vec3*)(s + 9760), (const Vec3*)(s + 9216));
+    a = Vec3_Add((Vec3*)(fr + 168), a, (const Vec3*)(fr + 128));
+    memcpy(s + 9156, a, 12);
+    memcpy(fr + 48, a, 12);
+    Vec3_Normalized((Vec3*)(fr + 76), (const Vec3*)(fr + 48));
+    a = Vec3_Add((Vec3*)(fr + 180), (const Vec3*)(s + 9204), (const Vec3*)(s + 9228));
+    a = Vec3_Add((Vec3*)(fr + 168), a, (const Vec3*)(fr + 88));
+    a = Vec3_Scaled((Vec3*)(fr + 100), a, SF(9508));
+    a = Vec3_Add((Vec3*)(fr + 112), (const Vec3*)(s + 9036), a);
+    float dw = (float)Vec3_Dot(a, (const Vec3*)(fr + 76));
+    Vec3_Scaled((Vec3*)(fr + 32), (const Vec3*)(fr + 76), dw);
+    int r0, r1, r2;
+    if (!(Vec3_Dot((const Vec3*)(fr + 48), (const Vec3*)(fr + 32)) <= g_sv64b678))
+    {
+        r0 = F(int, &g_zeroVec, 0);
+        r1 = F(int, &g_zeroVec, 4);
+        r2 = F(int, &g_zeroVec, 8);
+    }
+    else
+    {
+        Vec3* t = Vec3_Scaled((Vec3*)(fr + 180), (const Vec3*)(fr + 48), SF(9508));
+        Vec3_Add((Vec3*)(fr + 168), (const Vec3*)(fr + 32), t);
+        if (Vec3_Dot((const Vec3*)(fr + 168), (const Vec3*)(fr + 32)) < g_sv64b678)
+        {
+            t = Vec3_Scaled((Vec3*)(fr + 180), (const Vec3*)(fr + 32), (float)(g_sv64c938 / SF(9508)));
+            I(48) = F(int, t, 0);
+            I(52) = F(int, t, 4);
+            r0 = I(48);
+            r1 = I(52);
+            r2 = F(int, t, 8);
+        }
+        else
+        {
+            r0 = I(48);
+            r1 = I(52);
+            r2 = I(56);
+        }
+    }
+    F(int, s, 9156) = r0;
+    F(int, s, 9160) = r1;
+    F(int, s, 9164) = r2;
+    Vec3_AddAssign((Vec3*)(s + 9156), 0, (Vec3*)(fr + 180), (const Vec3*)(s + 9168));
+    a = Vec3_Add((Vec3*)(fr + 180), (const Vec3*)(s + 9204), (const Vec3*)(s + 9228));
+    a = Vec3_Add((Vec3*)(fr + 168), a, (const Vec3*)(fr + 88));
+    memcpy(s + 9144, Vec3_Add((Vec3*)(fr + 76), a, (const Vec3*)(s + 9156)), 12);
+    if (!F(int, s, 10104))
+    {
+        Ct4_DivScalar((Vec3*)(fr + 76), (const Vec3*)(s + 9072), SF(9792));
+        Vec3_DivComponents((Vec3*)(fr + 168), (const Vec3*)(s + 9144), (const Vec3*)(s + 8008));
+        Body_Integrate(s, 0, (const float*)(fr + 76), (const float*)(fr + 168));
+    }
+    F(int, s, 9524)++;
+    return F(int, s, 9524) <= F(int, s, 9520);
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+#undef SF
+
+// === the car's pedals eased by the keys (FUN_500850 with its tail $L_500939)
+
+extern "C" void __fastcall Car_DriveStep(BYTE* s);
+ASM_VAR(float, g_pd67484c, $L_67484c)
+ASM_VAR(float, g_pd64c250, $L_64c250)
+ASM_VAR(float, g_pd64c938, $L_64c938)
+ASM_VAR(float, g_pd64c264, $L_64c264)
+ASM_VAR(float, g_pd64da50, $L_64da50)
+ASM_VAR(double, g_pd64d338, $L_64d338)
+ASM_VAR(double, g_pd64d950, $L_64d950)
+ASM_VAR(double, g_pd64da58, $L_64da58)
+ASM_VAR(double, g_pd64b5a0, $L_64b5a0)
+ASM_VAR(double, g_pd64b780, $L_64b780)
+ASM_VAR(double, g_pd64b840, $L_64b840)
+ASM_VAR(double, g_pd64b6e0, $L_64b6e0)
+ASM_VAR(double, g_pd64b6f0, $L_64b6f0)
+ASM_VAR(double, g_pd64b5b8, $L_64b5b8)
+ASM_VAR(double, g_pd64b668, $L_64b668)
+ASM_VAR(double, g_pd64b670, $L_64b670)
+ASM_VAR(double, g_pd64b738, $L_64b738)
+
+#define PF(n) F(float, s, n)
+
+// the push of a held pedal key since time t0 (s+10032 / +10040), less at speed
+static double Pd_Push(BYTE* s, double t0, float dt)
+{
+    double t = Game_Time() - t0 + g_pd64b840;
+    double q = g_pd64b670 / (x87_fabs(PF(3528)) * g_pd64b738 + g_pd64b670);
+    return t * q * PF(10020) * dt * g_pd64da50 * g_pd67484c;
+}
+
+extern "C" {
+
+// [FUN_500850..$L_500939] car s's pedal (+10720, -1 brake .. 1 throttle) from the keys (+9986 up, +9987 down,
+// +9985 the handbrake-like hold, +9990 the cruise flag with the target +10012): eased back by k (from the grip
+// +10024) and pushed by Pd_Push up to the limit c (lower at speed, or by the slide angle with +10048); the key
+// times (+10032, +10040), the reverse word (+10008, +10006, +15440 by +10010), then Car_DriveStep
+void __fastcall Car_PedalStep(BYTE* s)
+{
+    float dt = (float)Game_FrameTime();
+    BYTE up = F(BYTE, s, 9986), down = F(BYTE, s, 9987);
+    bool cruise = !up && !down && F(WORD, s, 9990);
+    int dir = (int)up - (int)down;
+    if ((int)F(BYTE, s, 9985) != F(int, s, 6944) && (F(WORD, s, 10048) || F(int, s, 10060)))
+    {
+        F(double, s, 10040) = Game_Time() - dt;
+        F(double, s, 10032) = Game_Time() - dt;
+    }
+    float k;
+    if (PF(10024) < g_pd64d338)
+        k = 1.0f;
+    else if (!(PF(10024) <= g_pd64d950))
+        k = 0.1f;
+    else
+        k = (float)x87_pow((g_pd64c250 - PF(10024)) * g_pd64da58 + g_pd64b5a0, dt * g_pd64b780);
+
+    // $L_50093d
+    if (cruise)
+    {
+        PF(10012) = (float)((PF(10020) + PF(10020) + g_pd64b840) * PF(10012));
+        for (int r = 0; r < 2; r++)
+        {
+            if (!(PF(10012) <= g_pd64c250))
+                PF(10012) = 1.0f;
+            if (PF(10012) < g_pd64c938)
+                PF(10012) = -1.0f;
+        }
+        if (F(int, s, 10728))
+        {
+            PF(10720) = (float)((PF(10012) - PF(10720)) * (g_pd64c250 - k) + PF(10720));
+            if (!(dt * g_pd64b6e0 <= x87_fabs(PF(10720) - PF(10012))))
+                F(int, s, 10728) = 0;
+        }
+        else
+            F(int, s, 10720) = F(int, s, 10012);
+    }
+    else
+    {
+        // $L_500a2e: the limit c
+        double a = x87_fabs(PF(3528));
+        float c = (float)(g_pd64b6f0 / (a + g_pd64b6f0));
+        F(int, s, 10728) = 1;
+        if (F(WORD, s, 10048) && !F(BYTE, s, 9985))
+        {
+            double v;
+            if (a < g_pd64b5b8)
+                v = g_pd64c250;
+            else
+            {
+                double x = PF(3520);
+                double y = PF(9904) * PF(9788) * PF(8032);
+                v = x87_atan2(y / (x * x), 1.0) * g_pd64b668;
+            }
+            c = (float)v;
+            if (!(v <= g_pd64b670))
+                c = 1.0f;
+        }
+        if (F(BYTE, s, 9985))
+        {
+            c = 1.0f;
+            g_pd67484c = 2.0f;
+        }
+        else
+            *(DWORD*)&g_pd67484c = 1059648963;
+
+        // $L_500ae5
+        if (!(up == 1 && down == 1))
+        {
+            if (!up && !down)
+                PF(10720) = k * PF(10720);
+            else if (up)
+            {
+                // $L_500b24: throttle
+                double r = Pd_Push(s, F(double, s, 10032), dt);
+                if (PF(10720) < g_pd64c264)
+                {
+                    double w = k * PF(10720);
+                    PF(10720) = (float)(x87_fabs(w) * dt + w);
+                    if (!(PF(10720) <= g_pd64c264))
+                        F(int, s, 10720) = 0;
+                    PF(10720) = (float)(r + PF(10720));
+                    if (!(PF(10720) <= c))
+                        PF(10720) = c;
+                }
+                else if (!F(BYTE, s, 9985) && dt + c < PF(10720))
+                {
+                    if (!(PF(10720) <= g_pd64c250))
+                        PF(10720) = 1.0f;
+                    PF(10720) = PF(10720) - dt;
+                    float v = PF(10720);
+                    if (!(v <= c - dt) && v < c)
+                        PF(10720) = c;
+                }
+                else
+                {
+                    PF(10720) = (float)(r + PF(10720));
+                    if (!(PF(10720) <= c))
+                        PF(10720) = c;
+                }
+            }
+            else
+            {
+                // $L_500c80: brake
+                double r = Pd_Push(s, F(double, s, 10040), dt);
+                float nc = -c;
+                if (!(PF(10720) <= g_pd64c264))
+                {
+                    double w = k * PF(10720);
+                    PF(10720) = (float)(w - x87_fabs(w) * dt);
+                    if (PF(10720) < g_pd64c264)
+                        F(int, s, 10720) = 0;
+                    PF(10720) = (float)(PF(10720) - r);
+                    if (PF(10720) < nc)
+                        PF(10720) = nc;
+                }
+                else if (!F(BYTE, s, 9985) && !(nc - dt <= PF(10720)))
+                {
+                    if (PF(10720) < g_pd64c938)
+                        PF(10720) = -1.0f;
+                    PF(10720) = dt + PF(10720);
+                    float v = PF(10720);
+                    if (v < dt - c && !(v <= nc))
+                        PF(10720) = nc;
+                }
+                else
+                {
+                    PF(10720) = (float)(PF(10720) - r);
+                    if (PF(10720) < nc)
+                        PF(10720) = nc;
+                }
+            }
+        }
+    }
+
+    // $L_500df0: the key times and the pedal kept per direction
+    if (dir <= 0)
+    {
+        F(double, s, 10032) = Game_Time();
+        F(int, s, 6936) = F(int, s, 10720);
+    }
+    if (dir >= 0)
+    {
+        F(double, s, 10040) = Game_Time();
+        F(int, s, 6940) = F(int, s, 10720);
+    }
+    F(int, s, 6944) = F(BYTE, s, 9985);
+    WORD g = F(WORD, s, 10008);
+    if (F(WORD, s, 10010))
+    {
+        if (g == 0)
+            F(WORD, s, 10008) = 3;
+        else if (g == 2)
+            F(WORD, s, 10008) = 1;
+    }
+    else
+    {
+        if (g == 1)
+            F(WORD, s, 10008) = 0;
+        else if (g == 3)
+            F(WORD, s, 10008) = 2;
+    }
+    if (F(short, s, 10008) >= 2)
+    {
+        F(WORD, s, 10006) = 1;
+        F(int, s, 15440) = 1;
+    }
+    else
+        F(int, s, 15440) = 0;
+    Car_DriveStep(s);
+    F(WORD, s, 10054) = 0;
+    F(int, s, 15448) = 0;
+    memcpy(s + 15452, &g_zeroVec, 12);
+    F(int, s, 15492) = 0;
+}
+
+} // extern "C"
+
+#undef PF
+
+// === the wheels' spin before the sub-steps (FUN_4f35f0 with its tail $L_4f3620)
+
+extern "C" void Wv_Check(); KING_ALIAS("_Wv_Check", "_Angle_F2Pi")    // a value through the debug hook (value, name)
+ASM_VAR(char, g_wvRun1, $L_67478c)
+ASM_VAR(char, g_wvRun2, $L_67477c)
+ASM_VAR(char, g_wvRun3, $L_674734)
+ASM_VAR(char, g_wvRun4, $L_674724)
+ASM_VAR(char, g_wvRun5, $L_674714)
+ASM_VAR(char, g_wvRun6, $L_674704)
+ASM_VAR(char, g_wvRun7, $L_6746f4)
+ASM_VAR(double, g_wv64c958, $L_64c958)
+ASM_VAR(double, g_wv64b780, $L_64b780)
+ASM_VAR(double, g_wv64d9c8, $L_64d9c8)
+ASM_VAR(double, g_wv64b6d0, $L_64b6d0)
+ASM_VAR(float, g_wv64c2fc, $L_64c2fc)
+ASM_VAR(float, g_wv64c450, $L_64c450)
+ASM_VAR(float, g_wv64c264, $L_64c264)
+ASM_VAR(float, g_wv64d9c0, $L_64d9c0)
+
+#define WF(n) F(float, s, n)
+
+static float Wv_Hook(float v, const char* name)
+{
+    return (float)CallC<double>(Wv_Check, v, name);
+}
+
+extern "C" {
+
+// [FUN_4f35f0..$L_4f3620] car s's wheel spins (+3772) for this frame: a free wheel's spin from its speed along the
+// ground (+2724 · +6308 over the radius +7028); a driven one eased by e (or set from the engine +7300 through the
+// gear ratio +7236 when the clutch +7092 holds); the drive forces, the spin of locked wheels (+6612), the wheel
+// angles (+3740); the engine's ramps (+16216, +16268) eased by the load or let go
+void __fastcall Wheels_FrameSpin(BYTE* s)
+{
+    float dt = (float)Game_FrameTime();
+    float e = (float)x87_pow(g_wv64c958, dt * g_wv64b780);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        const int q = 12 * i;
+        float* w = (float*)(s + 3772 + 4 * i);
+        double v = -((((double)WF(2728 + q) * WF(6312 + q) + (double)WF(6316 + q) * WF(2732 + q))
+                      + (double)WF(6308 + q) * WF(2724 + q)) / WF(7028 + 4 * i) * dt);
+        if (F(WORD, s, 6564 + 2 * i))
+        {
+            if (F(int, s, 7092 + 4 * i) && F(int, s, 7196) != 1)
+            {
+                *w = (float)((double)dt * WF(7300) / WF(7236 + 4 * F(int, s, 7196)));
+                *w = Wv_Hook(*w, &g_wvRun1);
+            }
+            else
+            {
+                *w = e * *w;
+                *w = Wv_Hook(*w, &g_wvRun2);
+            }
+        }
+        else
+        {
+            *w = (float)v;
+            char buf[256];
+            double lb = Vec3_Length((const Vec3*)(s + 6308 + q));
+            double la = Vec3_Length((const Vec3*)(s + 2724 + q));
+            sprintf(buf, &g_wvRun3, F(int, s, 2252), i, (double)WF(3528), lb, la, (double)WF(7028 + 4 * i));
+            if (!(x87_fabs(*w) <= g_wv64d9c8))
+                *(DWORD*)w = 1103695835;
+            else
+                *w = Wv_Hook(*w, buf);
+        }
+    }
+    float drive = (float)Wheels_DriveForces(s);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        float* w = (float*)(s + 3772 + 4 * i);
+        if (F(int, s, 6612 + 4 * i))
+        {
+            int sign = F(int, s, 7196) ? 1 : -1;
+            double x = (double)WF(7300) * g_wv64c2fc / WF(7304) / WF(7028 + 4 * i) * dt;
+            *w = (float)((-x87_fabs(*w) - x) * sign);
+            *w = Wv_Hook(*w, &g_wvRun4);
+        }
+        *w = Wv_Hook(*w, &g_wvRun5);
+        float* a = (float*)(s + 3740 + 4 * i);
+        double r = CallC<double>(Wv_Check, *a, &g_wvRun6);
+        *a = (float)r;
+        *a = Wv_Hook((float)(r + *w), &g_wvRun7);
+    }
+    if (F(int, s, 6844))
+    {
+        double a = x87_fabs(WF(3528));
+        double v = drive / (WF(9792) * g_wv64c450) * a / (a + g_wv64b6d0) * dt;
+        float k = (float)v;
+        Ramp_Down(s + 16216, 0, k);
+        Ramp_Down(s + 16268, 0, k);
+        if (!(Ramp_Value(s + 16268, 0) > g_wv64c264))
+            Ramp_SetPosition(s + 16216, 0, 0.0f);
+    }
+    else
+        Ramp_Down(s + 16268, 0, (float)(dt * g_wv64d9c0));
+}
+
+} // extern "C"
+
+#undef WF

@@ -751,7 +751,7 @@ int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size)
 
 }
 
-ASM_PROC(FUN_600660)
+extern "C" void FUN_600660(); KING_ALIAS("_FUN_600660", "_DxError_Name")
 extern "C" void FUN_602b60(); KING_ALIAS("_FUN_602b60", "@Blob_Set@16")
 extern "C" void FUN_603b30(); KING_ALIAS("_FUN_603b30", "@Music_Close@8")
 ASM_PROC($L_602410)
@@ -1411,6 +1411,195 @@ void __fastcall DpRecords_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
     s[0] = buf;
     s[1] = q;
     s[2] = buf + cap * 32;
+}
+
+} // extern "C"
+
+// === DirectPlay / DirectSound error names (FUN_600660)
+
+ASM_VAR(char, g_dpe683ce4, $L_683ce4)
+ASM_VAR(char, g_dpe684208, $L_684208)
+ASM_VAR(char, g_dpe684218, $L_684218)
+ASM_VAR(char, g_dpe6841f4, $L_6841f4)
+ASM_VAR(char, g_dpe6841e4, $L_6841e4)
+ASM_VAR(char, g_dpe6841d0, $L_6841d0)
+ASM_VAR(char, g_dpe68418c, $L_68418c)
+ASM_VAR(char, g_dpe6841a0, $L_6841a0)
+ASM_VAR(char, g_dpe6841bc, $L_6841bc)
+ASM_VAR(char, g_dpe684178, $L_684178)
+ASM_VAR(char, g_dpe684160, $L_684160)
+ASM_VAR(char, g_dpe68414c, $L_68414c)
+ASM_VAR(char, g_dpe684134, $L_684134)
+ASM_VAR(char, g_dpe68411c, $L_68411c)
+ASM_VAR(char, g_dpe684104, $L_684104)
+ASM_VAR(char, g_dpe6840e8, $L_6840e8)
+ASM_VAR(char, g_dpe6840d8, $L_6840d8)
+ASM_VAR(char, g_dpe6840c4, $L_6840c4)
+ASM_VAR(char, g_dpe6840b0, $L_6840b0)
+ASM_VAR(char, g_dpe68409c, $L_68409c)
+ASM_VAR(char, g_dpe684088, $L_684088)
+ASM_VAR(char, g_dpe684078, $L_684078)
+ASM_VAR(char, g_dpe684064, $L_684064)
+ASM_VAR(char, g_dpe684050, $L_684050)
+ASM_VAR(char, g_dpe684038, $L_684038)
+ASM_VAR(char, g_dpe684028, $L_684028)
+ASM_VAR(char, g_dpe684014, $L_684014)
+ASM_VAR(char, g_dpe684000, $L_684000)
+ASM_VAR(char, g_dpe683ff0, $L_683ff0)
+ASM_VAR(char, g_dpe683fdc, $L_683fdc)
+ASM_VAR(char, g_dpe683fd0, $L_683fd0)
+ASM_VAR(char, g_dpe683fbc, $L_683fbc)
+ASM_VAR(char, g_dpe683fa0, $L_683fa0)
+ASM_VAR(char, g_dpe683f8c, $L_683f8c)
+ASM_VAR(char, g_dpe683f78, $L_683f78)
+ASM_VAR(char, g_dpe683f64, $L_683f64)
+ASM_VAR(char, g_dpe683f50, $L_683f50)
+ASM_VAR(char, g_dpe683f38, $L_683f38)
+ASM_VAR(char, g_dpe683f24, $L_683f24)
+ASM_VAR(char, g_dpe683f0c, $L_683f0c)
+ASM_VAR(char, g_dpe683ef4, $L_683ef4)
+ASM_VAR(char, g_dpe683ee0, $L_683ee0)
+ASM_VAR(char, g_dpe683ec8, $L_683ec8)
+ASM_VAR(char, g_dpe683e94, $L_683e94)
+ASM_VAR(char, g_dpe683ea8, $L_683ea8)
+ASM_VAR(char, g_dpe683eb8, $L_683eb8)
+ASM_VAR(char, g_dpe683e7c, $L_683e7c)
+ASM_VAR(char, g_dpe683e38, $L_683e38)
+ASM_VAR(char, g_dpe683e50, $L_683e50)
+ASM_VAR(char, g_dpe683e64, $L_683e64)
+ASM_VAR(char, g_dpe683e20, $L_683e20)
+ASM_VAR(char, g_dpe683dd4, $L_683dd4)
+ASM_VAR(char, g_dpe683df0, $L_683df0)
+ASM_VAR(char, g_dpe683e04, $L_683e04)
+ASM_VAR(char, g_dpe683dbc, $L_683dbc)
+ASM_VAR(char, g_dpe683d78, $L_683d78)
+ASM_VAR(char, g_dpe683d8c, $L_683d8c)
+ASM_VAR(char, g_dpe683da8, $L_683da8)
+ASM_VAR(char, g_dpe683d60, $L_683d60)
+ASM_VAR(char, g_dpe683d0c, $L_683d0c)
+ASM_VAR(char, g_dpe683d20, $L_683d20)
+ASM_VAR(char, g_dpe683d40, $L_683d40)
+ASM_VAR(char, g_dpe683cf8, $L_683cf8)
+ASM_VAR(char, g_dpe683cbc, $L_683cbc)
+ASM_VAR(char, g_dpe683cd0, $L_683cd0)
+ASM_VAR(char, g_dpeFmt683cec, $L_683cec)
+ASM_VAR(char, g_dpeBuf723d7c, $L_723d7c)
+
+extern "C" {
+
+// [FUN_600660] the name of DirectX result code c (DPERR_..., DSERR_..., S_OK), else "[0x%08X]" in a static buffer
+const char* __cdecl DxError_Name(DWORD c)
+{
+    switch (c)
+    {
+    case 0x00000000: return &g_dpe683ce4;
+    case 0x8000000a: return &g_dpe684208;
+    case 0x80004001: return &g_dpe684218;
+    case 0x80004002: return &g_dpe6841f4;
+    case 0x80004005: return &g_dpe6841e4;
+    case 0x8007000e: return &g_dpe6841d0;
+    case 0x80070057: return &g_dpe68418c;
+    case 0x88770005: return &g_dpe6841a0;
+    case 0x8877000a: return &g_dpe6841bc;
+    case 0x88770014: return &g_dpe684178;
+    case 0x8877001e: return &g_dpe684160;
+    case 0x88770028: return &g_dpe68414c;
+    case 0x88770032: return &g_dpe684134;
+    case 0x8877003c: return &g_dpe68411c;
+    case 0x88770046: return &g_dpe684104;
+    case 0x88770050: return &g_dpe6840e8;
+    case 0x8877005a: return &g_dpe6840d8;
+    case 0x88770078: return &g_dpe6840c4;
+    case 0x88770082: return &g_dpe6840b0;
+    case 0x88770096: return &g_dpe68409c;
+    case 0x8877009b: return &g_dpe684088;
+    case 0x887700a0: return &g_dpe684078;
+    case 0x887700aa: return &g_dpe684064;
+    case 0x887700be: return &g_dpe684050;
+    case 0x887700c8: return &g_dpe684038;
+    case 0x887700d2: return &g_dpe684028;
+    case 0x887700dc: return &g_dpe684014;
+    case 0x887700e6: return &g_dpe684000;
+    case 0x887700f0: return &g_dpe683ff0;
+    case 0x887700fa: return &g_dpe683fdc;
+    case 0x8877010e: return &g_dpe683fd0;
+    case 0x88770118: return &g_dpe683fbc;
+    case 0x88770122: return &g_dpe683fa0;
+    case 0x8877012c: return &g_dpe683f8c;
+    case 0x88770136: return &g_dpe683f78;
+    case 0x88770140: return &g_dpe683f64;
+    case 0x8877014a: return &g_dpe683f50;
+    case 0x88770154: return &g_dpe683f38;
+    case 0x8877015e: return &g_dpe683f24;
+    case 0x88770168: return &g_dpe683f0c;
+    case 0x88770172: return &g_dpe683ef4;
+    case 0x8877017c: return &g_dpe683ee0;
+    case 0x88770186: return &g_dpe683ec8;
+    case 0x88770190: return &g_dpe683e94;
+    case 0x8877019a: return &g_dpe683ea8;
+    case 0x887701a4: return &g_dpe683eb8;
+    case 0x887703e8: return &g_dpe683e7c;
+    case 0x887703f2: return &g_dpe683e38;
+    case 0x887703fc: return &g_dpe683e50;
+    case 0x88770406: return &g_dpe683e64;
+    case 0x88770410: return &g_dpe683e20;
+    case 0x8877041a: return &g_dpe683dd4;
+    case 0x8877042e: return &g_dpe683df0;
+    case 0x88770438: return &g_dpe683e04;
+    case 0x88770442: return &g_dpe683dbc;
+    case 0x8877044c: return &g_dpe683d78;
+    case 0x887707d0: return &g_dpe683d8c;
+    case 0x887707da: return &g_dpe683da8;
+    case 0x887707e4: return &g_dpe683d60;
+    case 0x887707ee: return &g_dpe683d0c;
+    case 0x887707f8: return &g_dpe683d20;
+    case 0x88770802: return &g_dpe683d40;
+    case 0x8877080c: return &g_dpe683cf8;
+    case 0x88770816: return &g_dpe683cbc;
+    case 0x88770820: return &g_dpe683cd0;
+    }
+    wsprintfA(&g_dpeBuf723d7c, &g_dpeFmt683cec, c);
+    return &g_dpeBuf723d7c;
+}
+
+} // extern "C"
+
+// === a message's record cursor (FUN_6031e0, FUN_603300)
+
+extern "C" {
+
+// [FUN_6031e0] message s (data +4..+8, cursor +24): the type of the record at the cursor into *type; 0 for a
+// known one (7, 42, 45, 120), 3 unknown, 1 at the end, 4 past it, 5 shorter than its header (vtable +4)
+int __fastcall Msg_NextType(BYTE* s, void*, int* type)
+{
+    int head = CallVirt<int>(s, 4);
+    int len = F(int, s, 8) - F(int, s, 4);
+    if (len < head)
+        return 5;
+    int at = F(int, s, 24);
+    if (at == len)
+        return 1;
+    if (!(at < len))
+        return 4;
+    int t = F(BYTE*, s, 4)[at];
+    *type = t;
+    return (t == 7 || t == 42 || t == 45 || t == 120) ? 0 : 3;
+}
+
+// [FUN_603300] message s's cursor moved past its record (7: 30 bytes, 42 / 45: 9, 120: 9 and its length) and
+// the next record's type checked as Msg_NextType
+int __fastcall Msg_SkipRecord(BYTE* s, void*)
+{
+    int at = F(int, s, 24);
+    const BYTE* p = F(BYTE*, s, 4) + at;
+    int t = *p;
+    if (t == 7)
+        F(int, s, 24) = at + 30;
+    else if (t == 42 || t == 45)
+        F(int, s, 24) = at + 9;
+    else if (t == 120)
+        F(int, s, 24) = *(const int*)(p + 5) + at + 9;
+    return Msg_NextType(s, 0, &t);
 }
 
 } // extern "C"

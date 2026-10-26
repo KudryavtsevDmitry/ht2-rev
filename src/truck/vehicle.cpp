@@ -1193,7 +1193,7 @@ extern "C" int __cdecl Wheels_Mean(BYTE* wheels, int n, Vec3* pos, Vec3* nrm)
 extern "C" void FUN_4e28b0(); KING_ALIAS("_FUN_4e28b0", "_Vec3_OutOfBox")
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")
 extern "C" void FUN_4fc930(); KING_ALIAS("_FUN_4fc930", "@Body4fc930_SetMode@28")
-ASM_PROC(FUN_541ad0)
+extern "C" void FUN_541ad0(); KING_ALIAS("_FUN_541ad0", "@NetVehIn_Get@4")
 extern "C" void FUN_551970(); KING_ALIAS("_FUN_551970", "@Car_Effects@8")
 extern "C" void FUN_586df0(); KING_ALIAS("_FUN_586df0", "@MovingItem_Frame@4")
 ASM_PROC(FUN_546240)
@@ -2959,7 +2959,7 @@ extern "C" int __fastcall Car_Query(BYTE* s, void*, BYTE* out)
     return r;
 }
 
-ASM_PROC(FUN_4de990)
+extern "C" void FUN_4de990(); KING_ALIAS("_FUN_4de990", "_Cab_EyeFrame")
 extern "C" void FUN_5de950(); KING_ALIAS("_FUN_5de950", "_Matrix_ToAngles")
 extern "C" void FUN_5da950(); KING_ALIAS("_FUN_5da950", "_Matrix_FromPose")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
@@ -3580,7 +3580,7 @@ ASM_VAR(char, s_pk679e34, $L_679e34)
 ASM_VAR(char, s_pk679dfc, $L_679dfc)
 ASM_VAR(char, s_pk679dc0, $L_679dc0)
 extern "C" void FUN_4e260c(); KING_ALIAS("_FUN_4e260c", "_World_Fatal")
-ASM_PROC(FUN_4e41d9)
+extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")
 
 // the float with bits u
 static float Pk_F(DWORD u)
@@ -7483,7 +7483,7 @@ extern "C" void FUN_548130(); KING_ALIAS("_FUN_548130", "_Wheels_Mean")
 extern "C" void FUN_4bcd00(); KING_ALIAS("_FUN_4bcd00", "@Trail_Follow@24")
 extern "C" void FUN_56f240(); KING_ALIAS("_FUN_56f240", "_Mine_Explode")
 extern "C" void FUN_5ab620(); KING_ALIAS("_FUN_5ab620", "@Vec3_MulAssign@16")
-ASM_PROC(FUN_4e41d9)
+extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")
 ASM_VAR(BYTE*, g_ct6961f8, $L_6961f8)               // the trails
 ASM_VAR(int, g_ct6cec68, $L_6cec68)
 ASM_VAR(char, s_ct67a114, $L_67a114)
@@ -9372,7 +9372,7 @@ KING_ALIAS("_Dd_Text", "_Text_Draw")
 extern "C" void __cdecl Dd_Frame(int surf, int* rect, int mode, Dd_Style st);
 KING_ALIAS("_Dd_Frame", "_Ctl_DrawFrame")
 extern "C" void FUN_53e7a0(); KING_ALIAS("_FUN_53e7a0", "_Cars_DumpToLog")
-ASM_PROC(FUN_53d8c0)
+extern "C" void FUN_53d8c0(); KING_ALIAS("_FUN_53d8c0", "@Dash_TextPlace@20")
 ASM_VAR(int, g_dd696c64, $L_696c64)
 ASM_VAR(BYTE*, g_dd6d2078, $L_6d2078)
 ASM_VAR(BYTE*, g_dd696ca0, $L_696ca0)
@@ -11277,9 +11277,9 @@ extern "C" void Pv_Sounds(); KING_ALIAS("_Pv_Sounds", "@Vehicle_Sounds@16")
 extern "C" void Pv_Log(); KING_ALIAS("_Pv_Log", "_VehLog_Value")
 extern "C" void Pv_Flush(); KING_ALIAS("_Pv_Flush", "_WarnLog_Flush")
 extern "C" void Pv_533590(); KING_ALIAS("_Pv_533590", "@Car_PlaceOnRoad@12")
-ASM_FUNC(Pv_535a70, FUN_535a70)
+extern "C" void Pv_535a70(); KING_ALIAS("_Pv_535a70", "@Cab_Sway@4")
 extern "C" void Pv_SetText(); KING_ALIAS("_Pv_SetText", "@History_Record@16")                        // a dashboard text line (value, name)
-ASM_FUNC(Pv_4de990, FUN_4de990)
+extern "C" void Pv_4de990(); KING_ALIAS("_Pv_4de990", "_Cab_EyeFrame")
 extern "C" void __cdecl Game_TruckMessage(int* m);
 ASM_VAR(BYTE, g_pvControls, $L_6d1db8)
 ASM_VAR(BYTE*, g_pv6cec6c, $L_6cec6c)
@@ -12019,7 +12019,7 @@ extern "C" void Pc_Working(); KING_ALIAS("_Pc_Working", "@Car_WorkingOrder@4")
 extern "C" void Pc_GameTime(); KING_ALIAS("_Pc_GameTime", "_Game_Time")
 extern "C" void __cdecl Cars_DumpHistory();
 extern "C" void Pc_533590(); KING_ALIAS("_Pc_533590", "@Car_PlaceOnRoad@12")
-ASM_FUNC(Pc_5662f0, FUN_5662f0)
+extern "C" void Pc_5662f0(); KING_ALIAS("_Pc_5662f0", "@Copter_SetState@12")
 extern "C" void Pc_SetText(); KING_ALIAS("_Pc_SetText", "@History_Record@16")
 extern "C" void g_pcFlashFn(); KING_ALIAS("_g_pcFlashFn", "_Car_FlasherKick")
 ASM_VAR(BYTE, g_pcControls, $L_6d1db8)
@@ -14822,7 +14822,7 @@ extern "C" int __cdecl Rq_IdSame(BYTE* x); KING_ALIAS("_Rq_IdSame", "_Id_Same")
 extern "C" BYTE* __cdecl Rq_MovingOf(BYTE* o); KING_ALIAS("_Rq_MovingOf", "_Moving_Of")
 extern "C" int __cdecl Rq_Blocked(int skip, BYTE* obj, const void* p, const void* d, BYTE* q); KING_ALIAS("_Rq_Blocked", "_Query_4e5415")
 extern "C" int __cdecl Rq_Collide(BYTE* shape, const BYTE* m, const BYTE* inv, BYTE* object, void* out); KING_ALIAS("_Rq_Collide", "_SceneObj_CollideShape")
-ASM_FUNC(Rq_5330a0, FUN_5330a0)
+extern "C" void Rq_5330a0(); KING_ALIAS("_Rq_5330a0", "_Car_DropToGround")
 
 ASM_VAR(float, g_rq702620, $L_702620)
 ASM_VAR(float, g_rq702624, $L_702624)
@@ -15424,3 +15424,433 @@ int __fastcall Car_PlaceOnRoad(BYTE* s, void*, int special)
 #undef V
 #undef I
 #undef P
+
+// === the car dropped onto the ground under its position (FUN_5330a0 with its tail $L_533153)
+
+extern "C" void __cdecl Rd_Decompose(const BYTE* m, float* out); KING_ALIAS("_Rd_Decompose", "_Matrix_Decompose6FArray")
+extern "C" int __cdecl Rd_Ray(BYTE* a, const void* p, const void* d, void* point, void* normal); KING_ALIAS("_Rd_Ray", "_Query_4e6749")
+extern "C" BYTE* __cdecl Rd_FromPose(BYTE* out, double x, double y, double z, double a, double b, double c); KING_ALIAS("_Rd_FromPose", "_Matrix_FromPose")
+ASM_VAR(double, g_rd64b780, $L_64b780)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+
+extern "C" {
+
+// [FUN_5330a0..$L_533153] car o (+16 its scene object) dropped onto what lies under it: rays down from 1, 2, 3 and
+// 4 steps above its position (the steps growing by 64b780), the first hit lifted by 64c350; the car posed there
+// with its heading and the view v set on it. Returns 0 when no ray hit
+int __cdecl Car_DropToGround(BYTE* o, BYTE* v)
+{
+    BYTE fr[288];
+    BYTE* m = CallThis<BYTE*>(Rq_Matrix1, o + 16, fr + 248);
+    Rd_Decompose(m, &V(176));
+    CallThis(Rq_Matrix1, o + 16, fr + 128);
+    I(20) = I(168);
+    I(16) = I(164);
+    I(24) = I(172);
+    I(56) = 0;
+    I(60) = 0;
+    I(64) = 0;
+    I(116) = 0;
+    I(120) = 0;
+    I(124) = 0;
+    BYTE* obj = CallThis<BYTE*>(Rq_Get800, o + 16);
+    int i = 0;
+    for (I(40) = 0; ; )
+    {
+        double t = x87_pow(g_rd64b780, (double)I(40)) + g_rq64b670;
+        V(104) = (float)(g_rq702630 * t);
+        V(108) = (float)(g_rq702634 * t);
+        double tz = g_rq702638 * t;
+        V(68) = V(16) - V(104);
+        I(92) = I(68);
+        V(72) = V(20) - V(108);
+        I(96) = I(72);
+        V(76) = (float)(V(24) - tz);
+        I(100) = I(76);
+        V(80) = (float)(g_rq702630 * t);
+        V(84) = (float)(g_rq702634 * t);
+        tz = g_rq702638 * t;
+        V(28) = V(80) + V(16);
+        I(44) = I(28);
+        V(32) = V(84) + V(20);
+        I(48) = I(32);
+        V(36) = (float)(tz + V(24));
+        I(52) = I(36);
+        if (Rd_Ray(obj, fr + 44, fr + 92, fr + 56, fr + 116) & 1)
+        {
+            double lx = g_rq702630 * g_rq64c350;
+            V(48) = (float)(g_rq702634 * g_rq64c350);
+            V(52) = (float)(g_rq702638 * g_rq64c350);
+            V(28) = (float)(lx + V(56));
+            I(16) = I(28);
+            V(32) = V(48) + V(60);
+            I(20) = I(32);
+            V(36) = V(52) + V(64);
+            I(24) = I(36);
+            break;
+        }
+        i++;
+        I(40) = i;
+        if (i >= 4)
+            break;
+    }
+    if (i == 4)
+        return 0;
+    BYTE* pose = Rd_FromPose(fr + 200, V(16), V(20), V(24), V(188), 0.0, 0.0);
+    (void)pose;
+    BYTE* hit = Rq_Hit(obj, fr + 164, fr + 16);
+    CallVirt(o, 76, hit, fr + 200, 0);
+    CallThis(Rq_SetCam, v, hit, fr + 200);
+    return 1;
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+
+// === the cab view's sway from the car's motion (FUN_535a70 with its tails $L_535adc, $L_535b11)
+
+extern "C" Vec3* __fastcall Vec3_MulAssign(Vec3* self, void*, Vec3* ret, float s);
+extern "C" Vec3* __fastcall Vec3_AddAssign(Vec3* self, void*, Vec3* ret, const Vec3* v);
+ASM_VAR(BYTE*, g_cs696cb0, $L_696cb0)
+ASM_VAR(float, g_cs64f3b8, $L_64f3b8)
+ASM_VAR(float, g_cs64c264, $L_64c264)
+ASM_VAR(float, g_cs64f3a4, $L_64f3a4)
+ASM_VAR(float, g_cs64f3a0, $L_64f3a0)
+ASM_VAR(float, g_cs64c250, $L_64c250)
+ASM_VAR(float, g_cs64c338, $L_64c338)
+ASM_VAR(float, g_cs64da78, $L_64da78)
+ASM_VAR(float, g_cs64d2f8, $L_64d2f8)
+ASM_VAR(float, g_cs64c904, $L_64c904)
+ASM_VAR(float, g_cs64c408, $L_64c408)
+ASM_VAR(float, g_cs64d694, $L_64d694)
+ASM_VAR(float, g_cs702630, $L_702630)
+ASM_VAR(float, g_cs702634, $L_702634)
+ASM_VAR(float, g_cs702638, $L_702638)
+ASM_VAR(double, g_cs64b780, $L_64b780)
+ASM_VAR(double, g_cs64b898, $L_64b898)
+ASM_VAR(double, g_cs64b6d0, $L_64b6d0)
+ASM_VAR(double, g_cs64b670, $L_64b670)
+ASM_VAR(double, g_cs64b5b8, $L_64b5b8)
+ASM_VAR(double, g_cs64c958, $L_64c958)
+ASM_VAR(double, g_cs64d0f0, $L_64d0f0)
+ASM_VAR(double, g_cs64f3b0, $L_64f3b0)
+ASM_VAR(double, g_cs64f3a8, $L_64f3a8)
+ASM_VAR(double, g_cs64b7a8, $L_64b7a8)
+ASM_VAR(double, g_cs64dd78, $L_64dd78)
+ASM_VAR(double, g_cs64b840, $L_64b840)
+ASM_VAR(double, g_cs64f398, $L_64f398)
+ASM_VAR(double, g_cs64f390, $L_64f390)
+ASM_VAR(double, g_cs64f388, $L_64f388)
+
+static float Cs_Bits(DWORD b) { return *(float*)&b; }
+
+extern "C" {
+
+// [FUN_535a70..$L_535b11] cab view s of car +616 (its body +21600): the sideways (+13232) and forward (+13228)
+// pulls, eased into the camera's lean (696cb0 +5084 / +5088); the wheels' loads (+15248) turning their arms
+// (+13252) into a tilt, the bounce height (+1616) and offset (+1620) eased by the speed (+13100); the cab frame
+// (+1520) the tilt's two turns and the offset, identity without a car
+void __fastcall Cab_Sway(BYTE* s)
+{
+    BYTE* car = F(BYTE*, s, 616);
+    BYTE* v = car ? F(BYTE*, car, 21600) : 0;
+    if (!v)
+    {
+        memcpy(s + 1520, &g_identity, 48);
+        return;
+    }
+    float side = (float)(F(float, v, 13232) * g_cs64f3b8);
+    float fwd = (float)(F(float, v, 13228) * g_cs64f3b8);
+    double ex = Game_FrameTime() * g_cs64b780;
+    float k = (float)x87_pow(g_cs64b898, ex);
+    double a = x87_fabs(F(float, v, 13100));
+    float kb = (float)x87_pow((g_cs64b670 - a / (a + g_cs64b6d0)) * g_cs64b5b8 + g_cs64c958, ex);
+    double y;
+    if (F(int, v, 10092) || F(int, v, 16204) == 1)
+    {
+        side = (float)(side * g_cs64d0f0);
+        y = fwd * g_cs64d0f0;
+    }
+    else
+        y = fwd;
+    if (!(x87_fabs(side) <= g_cs64f3b0))
+        side = side > g_cs64c264 ? Cs_Bits(1026734274) : Cs_Bits(3174217922u);
+    if (!(x87_fabs(y) <= g_cs64f3a8))
+        y = y > g_cs64c264 ? g_cs64f3a4 : g_cs64f3a0;
+    BYTE* cam = g_cs696cb0;
+    double m = g_cs64c250 - k;
+    F(float, cam, 5084) = (float)(k * F(float, cam, 5084) + m * side);
+    F(float, cam, 5088) = (float)(k * F(float, cam, 5088) + m * y);
+
+    // $L_535c2f: the wheels' arms turned by their loads
+    float load = 0.0f;
+    Vec3 tilt = g_zeroVec;
+    for (int j = 0; j < 4; j++)
+    {
+        const float* p = (const float*)(v + 13252 + 12 * j);
+        float w = F(float, v, 15248 + 4 * j);
+        load = load + w;
+        Vec3 c;
+        c.x = (float)(g_cs702634 * p[2] - g_cs702638 * p[1]);
+        c.y = (float)(g_cs702638 * p[0] - g_cs702630 * p[2]);
+        c.z = (float)(g_cs702630 * p[1] - g_cs702634 * p[0]);
+        float r = (float)(g_cs64b7a8 / x87_sqrt((double)p[0] * p[0] + (double)p[1] * p[1]));
+        double as = x87_asin(r * w);
+        Vec3 t;
+        Vec3_MulAssign(&c, 0, &t, (float)((as + as) * r));
+        Vec3_AddAssign(&tilt, 0, &t, &c);
+    }
+    double h = load * g_cs64d0f0;
+    if (!(h <= g_cs64d0f0))
+        h = g_cs64c338;
+    if (h < g_cs64dd78)
+        h = g_cs64da78;
+    double c1 = g_cs64c250 - kb;
+    float kc = (float)c1;
+    F(float, s, 1616) = (float)(c1 * h + kb * F(float, s, 1616));
+    if (F(float, v, 13104) < g_cs64d2f8)
+    {
+        Vec3 t;
+        Vec3_MulAssign(&tilt, 0, &t, (float)x87_fabs(F(float, v, 13104) * g_cs64c904));
+    }
+    if (!(tilt.x <= g_cs64b840))
+        tilt.x = Cs_Bits(1045220557);
+    if (tilt.x < g_cs64f398)
+        tilt.x = Cs_Bits(3192704205u);
+    if (!(tilt.y <= g_cs64f390))
+        tilt.y = Cs_Bits(1035087118);
+    if (tilt.y < g_cs64f388)
+        tilt.y = Cs_Bits(3182570766u);
+
+    // $L_535df0: the offset eased, then the frame
+    float q0 = kc * tilt.x, q1 = kc * tilt.y;
+    double q2 = (double)kc * tilt.z;
+    double r0 = (double)kb * F(float, s, 1620);
+    float r1 = kb * F(float, s, 1624), r2 = kb * F(float, s, 1628);
+    F(float, s, 1620) = (float)(r0 + q0);
+    F(float, s, 1624) = q1 + r1;
+    F(float, s, 1628) = (float)(q2 + r2);
+    float X = (float)(-(double)F(float, cam, 5084) - F(float, s, 1620));
+    double Yd = (double)F(float, cam, 5088) - F(float, s, 1624);
+    float Y = (float)Yd;
+    Vec3 d;
+    d.x = (float)(Yd * g_cs64c408);
+    d.y = (float)(X * g_cs64d694);
+    d.z = (float)(F(float, s, 1616) - ((double)Y * Y + (double)X * X) * g_cs64c408);
+    Matrix T, R1, R2, M, out;
+    Matrix* t = Matrix_Translation(&T, d);
+    Matrix* r1m = Matrix_RotationY(&R1, (float)(Y * g_cs64b5b8));
+    Matrix* r2m = Matrix_RotationX(&R2, X);
+    Matrix* mm = Matrix_Multiply(&M, r2m, r1m);
+    memcpy(s + 1520, Matrix_Multiply(&out, mm, t), 48);
+}
+
+} // extern "C"
+
+// === the cab camera's frame in the car (FUN_4de990)
+
+ASM_VAR(BYTE*, g_cv6d2078, $L_6d2078)
+ASM_VAR(int, g_cv6cec68, $L_6cec68)
+ASM_VAR(float, g_cv696d10, $L_696d10)
+ASM_VAR(float, g_cv64d680, $L_64d680)
+ASM_VAR(float, g_cv702630, $L_702630)
+ASM_VAR(float, g_cv702634, $L_702634)
+ASM_VAR(float, g_cv702638, $L_702638)
+ASM_VAR(double, g_cv64d688, $L_64d688)
+ASM_VAR(double, g_cv64b678, $L_64b678)
+
+static float Cv_Bits(DWORD b) { return *(float*)&b; }
+
+extern "C" {
+
+// [FUN_4de990] the cab camera's frame for the game's car (6d2078 +616) into out: in the free view (6cec68) the
+// look angle (696d10) about z, the tilt (car +200 scaled by its cosine, unless keep) about x, raised by the eye
+// height (Car_556650), then the cab frame (+1520); else the eye raised, turned by the look direction (+1396: -2..2
+// a quarter or a twelfth turn either way), pitched by the height and put in the head frame (+472), then +1520
+Matrix* __cdecl Cab_EyeFrame(Matrix* out, int keep)
+{
+    Matrix M = g_identity;
+    BYTE* g = g_cv6d2078;
+    if (g && F(BYTE*, g, 616))
+    {
+        float h = Car_556650(F(BYTE*, g, 616), 0);
+        Matrix B;
+        if (g_cv6cec68)
+        {
+            float ang = -g_cv696d10;
+            Matrix tilt = g_identity;
+            if (!keep)
+            {
+                double z = Obj_Float200(g_cv6d2078, 0);
+                double c = !(x87_fabs(ang) <= g_cv64d688) ? g_cv64b678 : x87_cos(ang);
+                Matrix r;
+                tilt = *Matrix_RotationX(&r, (float)(z * c));
+            }
+            double h2 = Car_556650(F(BYTE*, g_cv6d2078, 616), 0);
+            Vec3 d;
+            d.x = (float)(h2 * g_cv702630);
+            d.y = (float)(h2 * g_cv702634);
+            d.z = (float)(h2 * g_cv702638);
+            Matrix T, RZ, A, Bm;
+            Matrix* t = Matrix_Translation(&T, d);
+            Matrix* a = Matrix_Multiply(&A, &tilt, Matrix_RotationZ(&RZ, ang));
+            B = *Matrix_Multiply(&Bm, a, t);
+        }
+        else
+        {
+            // $L_4deae6
+            float pitch = (float)(h * g_cv64d680);
+            Vec3 d;
+            d.x = (float)(g_cv702630 * h);
+            d.y = (float)(g_cv702634 * h);
+            d.z = (float)(g_cv702638 * h);
+            Matrix T, R, A, X, H, C;
+            M = *Matrix_Translation(&T, d);
+            int look = F(int, g_cv6d2078, 1396);
+            DWORD turn = 0;
+            if (look == -1)
+                turn = 3208357990u;
+            else if (look == -2)
+                turn = 3217625051u;
+            else if (look == 1)
+                turn = 1057360530u;
+            else if (look == 2)
+                turn = 1070141403u;
+            if (turn)
+                M = *Matrix_Multiply(&A, Matrix_RotationZ(&R, Cv_Bits(turn)), &M);
+            // $L_4dec0b
+            Matrix* h1 = Matrix_Multiply(&H, (const Matrix*)(g_cv6d2078 + 472), Matrix_RotationX(&X, pitch));
+            B = *Matrix_Multiply(&C, h1, &M);
+        }
+        // $L_4dec46
+        M = B;
+        Matrix E;
+        M = *Matrix_Multiply(&E, (const Matrix*)(g_cv6d2078 + 1520), &M);
+    }
+    *out = M;
+    return out;
+}
+
+} // extern "C"
+
+// === a vehicle's settings unpacked from their packed bytes (FUN_541ad0, _NetVehIn::get)
+
+extern "C" void __cdecl Nv_Fatal(const char* text); KING_ALIAS("_Nv_Fatal", "_World_Fatal")
+ASM_VAR(char, g_nvBadVersion, $L_679d48)
+ASM_VAR(char, g_nvBadVersion2, $L_679cbc)
+ASM_VAR(char, g_nvBadSize, $L_679c68)
+ASM_VAR(double, g_nv64f4e0, $L_64f4e0)
+ASM_VAR(double, g_nv64f4d8, $L_64f4d8)
+ASM_VAR(double, g_nv64f4d0, $L_64f4d0)
+ASM_VAR(double, g_nv64f4c8, $L_64f4c8)
+ASM_VAR(double, g_nv64f4c0, $L_64f4c0)
+ASM_VAR(double, g_nv64eba8, $L_64eba8)
+ASM_VAR(double, g_nv64b670, $L_64b670)
+
+extern "C" {
+
+// [FUN_541ad0] settings record s (+4 / +8 the expected sizes, +16 the channel count, packed bytes from +20: the
+// version words +20 / +22, flags +24, +28, +29, then per channel an id and a 10+3 bit word, 4 wheel flags, 4 heights
+// below +196, 4 signed x/y pairs with their remaining z, two nibbles, the engine and gear bytes): unpacked into
+// +80.. +328; a size that doesn't match the version or the record is fatal
+void __fastcall NetVehIn_Get(BYTE* s)
+{
+    const BYTE* b = s + 20;
+    int v1 = F(WORD, s, 20), v2 = F(WORD, s, 22);
+    DWORD fl = F(DWORD, s, 24);
+    F(DWORD, s, 80) = fl;
+    F(BYTE, s, 84) = (BYTE)(((fl & 512) ? 4 : 0) + ((fl & 256) ? 2 : 0) + ((fl >> 7) & 1));
+    F(float, s, 88) = (float)(int)((F(BYTE, s, 28) >> 3) << 2);
+    int kind = F(BYTE, s, 28) & 7;
+    if (kind <= 4)
+        F(int, s, 92) = kind;
+    F(BYTE, s, 96) = F(BYTE, s, 29);
+    int e = 10;
+    for (int c = 0; c < F(int, s, 16); c++)
+    {
+        F(BYTE, s, 97 + c) = b[e];
+        e++;
+        int w = b[e] | (b[e + 1] << 8);
+        e += 2;
+        F(float, s, 108 + 4 * c) = (float)((w & 1023) * g_nv64f4e0);
+        F(float, s, 140 + 4 * c) = (float)(((w >> 10) & 7) * g_nv64f4d8);
+    }
+    for (int c = 0; c < 4; c++)
+        F(BYTE, s, 190 + c) = (b[e] & (1 << c)) != 0;
+    e++;
+    for (int j = 0; j < 4; j++)
+    {
+        F(float, s, 208 + 12 * j) = (float)(F(float, s, 196) - b[e] * g_nv64f4d0);
+        e++;
+    }
+    for (int j = 0; j < 4; j++)
+    {
+        float* p = (float*)(s + 248 + 12 * j);
+        p[0] = (float)((signed char)b[e] * g_nv64f4c8);
+        p[1] = (float)((signed char)b[e + 1] * g_nv64f4c8);
+        e += 2;
+        p[2] = (float)(g_nv64b670 - x87_sqrt((double)p[1] * p[1] + (double)p[0] * p[0]));
+    }
+    F(BYTE, s, 188) = b[e] >> 4;
+    F(BYTE, s, 189) = b[e] & 15;
+    e++;
+    char buf[256];
+    if (!(F(BYTE, s, 80) & 1))
+    {
+        if (e == v1 && e == F(int, s, 4))
+            return;
+        sprintf(buf, &g_nvBadVersion, e, v1, F(int, s, 4), F(int, s, 0), v2);
+        Nv_Fatal(buf);
+    }
+    F(float, s, 176) = (float)(b[e] * g_nv64f4c0);
+    F(float, s, 172) = (float)(int)(*(const WORD*)(b + e + 1) * 100);
+    F(float, s, 180) = (float)(b[e + 3] * g_nv64f4c0);
+    F(float, s, 184) = (float)(b[e + 4] * g_nv64eba8);
+    F(float, s, 296) = (float)(b[e + 5] * g_nv64eba8);
+    BYTE f = b[e + 6];
+    F(int, s, 300) = f & 1;
+    F(int, s, 304) = (f >> 1) & 1;
+    F(int, s, 308) = (f >> 2) & 7;
+    F(int, s, 312) = (f >> 5) & 1;
+    F(int, s, 316) = f >> 6;
+    F(int, s, 320) = b[e + 7] & 1;
+    F(float, s, 324) = (float)(b[e + 8] * g_nv64eba8);
+    F(float, s, 328) = (float)(b[e + 9] * g_nv64eba8);
+    e += 10;
+    if (F(int, s, 8) > v1)
+    {
+        sprintf(buf, &g_nvBadVersion2, e, v1, F(int, s, 8), F(int, s, 0), v2);
+        Nv_Fatal(buf);
+    }
+    if (e <= 58 && e == F(int, s, 8))
+        return;
+    sprintf(buf, &g_nvBadSize, e, 58, F(int, s, 8), v1);
+    Nv_Fatal(buf);
+}
+
+} // extern "C"
+
+// === where the dashboard's text goes (FUN_53d8c0)
+
+ASM_VAR(double, g_dp64f310, $L_64f310)
+ASM_VAR(double, g_dp64d0c0, $L_64d0c0)
+
+extern "C" {
+
+// [FUN_53d8c0] dashboard s's text place for view v (-2..2) into (*x, *y): the mirror views (0) at +1376 / +1380,
+// the others at +1368 / +1372, y shifted by the window height over 480 (s+36 +260)
+void __fastcall Dash_TextPlace(BYTE* s, void*, int v, int* x, int* y)
+{
+    if (v < -2 || v > 2)
+        return;
+    int ox = v == 0 ? 1376 : 1368;
+    int h = F(int, F(BYTE*, s, 36), 260) - 480;
+    *x = F(int, s, ox) - 80;
+    *y = (int)(h * g_dp64f310 + F(int, s, ox + 4) - g_dp64d0c0);
+}
+
+} // extern "C"

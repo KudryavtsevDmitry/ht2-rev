@@ -2652,7 +2652,7 @@ int __cdecl Water_Draw(void*, BYTE* r)
 
 // === a dial's hands turned and its face copied from the screen (FUN_5a6420)
 
-ASM_PROC(FUN_5a58e0)
+extern "C" void FUN_5a58e0(); KING_ALIAS("_FUN_5a58e0", "@Windscreen_Frame@8")
 extern "C" void Dl_RotY(); KING_ALIAS("_Dl_RotY", "_Matrix_RotationY")
 extern "C" void Dl_Apply(); KING_ALIAS("_Dl_Apply", "_Frame_Apply")
 extern "C" void Dl_Switch(); KING_ALIAS("_Dl_Switch", "_Switch_Select")
@@ -2770,3 +2770,209 @@ void __fastcall Dial_Update(BYTE* s)
 }
 
 } // extern "C"
+
+// === the windscreen weather: drops, splashes, the drying glass and the wiper (FUN_5a58e0 with its tail $L_5a5ad9)
+
+extern "C" int __fastcall Wd_Post1(BYTE* self, void*, int arg); KING_ALIAS("@Wd_Post1@12", "@Queue_PostEvent1@12")
+extern "C" int __fastcall Wd_Post2(BYTE* self, void*, int arg); KING_ALIAS("@Wd_Post2@12", "@Queue_PostEvent2@12")
+extern "C" void __cdecl Wd_Mark(const BYTE* s, int x, int y, const BYTE* flags); KING_ALIAS("_Wd_Mark", "_Surface_Mark")
+extern "C" void __cdecl Wd_MarkPixel(const BYTE* s, int x, int y, const BYTE* flags); KING_ALIAS("_Wd_MarkPixel", "_Gfx_MarkPixel")
+extern "C" void __cdecl Wd_Line(BYTE* w, int x0, int y0, int x1, int y1, DWORD c, int rgb); KING_ALIAS("_Wd_Line", "_Window_DrawLine")
+extern "C" BYTE* __fastcall Wd_ObjectKind(BYTE* s, void*, int kind, const char* name); KING_ALIAS("@Wd_ObjectKind@16", "@Object_ConstructKind@16")
+extern "C" void __fastcall Wd_OwnerAttach(BYTE* self, void*, BYTE* node); KING_ALIAS("@Wd_OwnerAttach@12", "@Owner_Attach@12")
+extern "C" int __cdecl rand();
+ASM_VAR(double, g_wd651540, $L_651540)
+ASM_VAR(double, g_wd64da00, $L_64da00)
+ASM_VAR(float, g_wd7025ac, $L_7025ac)
+ASM_VAR(int, g_wd7025b0, $L_7025b0)
+ASM_VAR(double, g_wd64b6f0, $L_64b6f0)
+ASM_VAR(double, g_wd64b678, $L_64b678)
+ASM_VAR(double, g_wd64b670, $L_64b670)
+ASM_VAR(double, g_wd64b660, $L_64b660)
+ASM_VAR(double, g_wd64d338, $L_64d338)
+ASM_VAR(double, g_wd64d0b8, $L_64d0b8)
+ASM_VAR(double, g_wd650ad8, $L_650ad8)
+ASM_VAR(double, g_wd651518, $L_651518)
+ASM_VAR(char, g_wd672638, $L_672638)
+ASM_VAR(BYTE, g_wdSplashVt651520, $L_651520)
+
+#define SD(n) F(double, s, n)
+
+// one wiper position at angle a: the blade between radii +104 and +108 about (+96, +100)
+static void Wd_Wiper(BYTE* s, double a)
+{
+    double cx = F(int, s, 100);
+    double ang1 = a - g_wd650ad8;
+    double r1 = F(int, s, 108);
+    double x0 = F(int, s, 96);
+    double ang2 = a - g_wd651518;
+    double r2 = F(int, s, 104);
+    int y1 = (int)(cx - x87_cos(ang1) * r1);
+    int x1 = (int)(x87_sin(ang1) * r1 + x0);
+    int y2 = (int)(cx - x87_cos(ang2) * r2);
+    int x2 = (int)(x87_sin(ang2) * r2 + x0);
+    Wd_Line(F(BYTE*, s, 152), x2, y2, x1, y1, 0, 1);
+}
+
+extern "C" {
+
+// [FUN_5a58e0..$L_5a5ad9] windscreen s (+32 the app, +152 the glass image, +164 flags: 1 hidden, 2 raining,
+// 4 wiping, 8 wet, 32 drying): the wiper angle (+112) swung between +176 and its end, new drops (+48 their count
+// growing with the rain +40 and speed +184) marked on the glass, splashes (+56) spawned as objects, the drying
+// glass faded one level every fifth frame, and the wiper drawn along the swept angle
+void __fastcall Windscreen_Frame(BYTE* s, void*)
+{
+    double old = SD(112);
+    DWORD fl = F(DWORD, s, 164);
+    if (fl & 4)
+    {
+        if (F(int, s, 120))
+        {
+            SD(112) = SD(112) - F(double, F(BYTE*, s, 32), 2960) * g_wd651540;
+            if (SD(112) < SD(176))
+            {
+                SD(112) = SD(176);
+                F(int, s, 120) = 0;
+            }
+        }
+        else
+        {
+            SD(112) = F(double, F(BYTE*, s, 32), 2960) * g_wd651540 + SD(112);
+            if (!(SD(112) <= g_wd64da00))
+            {
+                DWORD b[2] = { 1293080650u, 1073291771u };
+                SD(112) = *(double*)b;
+                F(int, s, 168) = 1;
+                F(int, s, 120) = 1;
+            }
+        }
+    }
+    else
+        F(int, s, 168) = 1;
+    if ((fl & 1) && !F(int, s, 156))
+    {
+        Wd_Post1(s, 0, 1);
+        return;
+    }
+    if (!F(int, s, 68) || !F(int, s, 64) || !F(int, s, 152) || !F(int, s, 148))
+        return;
+    g_wd7025ac = (float)SD(184);
+    DWORD st = F(DWORD, s, 164);
+    if ((st & 2) && (st & 8))
+    {
+        double x = F(double, F(BYTE*, s, 32), 2960) * SD(40);
+        if (SD(184) <= g_wd64b6f0)
+            x = x * (g_wd64b670 - SD(184) * g_wd64d338);
+        else
+            x = g_wd64b678;
+        SD(48) = x + SD(48);
+    }
+    if (!(SD(48) <= g_wd64b670))
+    {
+        int n = (int)SD(48);
+        SD(48) = SD(48) - n;
+        for (int k = n; k > 0; k--)
+        {
+            int x = rand() % (int)F(WORD, F(BYTE*, s, 152), 0);
+            int y = rand() % (int)F(WORD, F(BYTE*, s, 152), 2);
+            if (g_wd7025b0)
+                Wd_MarkPixel(F(BYTE*, s, 152), x, y, F(BYTE*, s, 64));
+            else
+                Wd_Mark(F(BYTE*, s, 152), x, y, F(BYTE*, s, 64));
+        }
+    }
+    st = F(DWORD, s, 164);
+    if ((st & 2) && (st & 8))
+    {
+        double x = F(double, F(BYTE*, s, 32), 2960) * SD(40);
+        if (SD(184) <= g_wd64b6f0)
+            x = x * (SD(184) * g_wd64d338 + g_wd64b670);
+        else
+            x = g_wd64b660;
+        SD(56) = x + SD(56);
+    }
+    if (!(SD(56) <= g_wd64b670))
+    {
+        int n = (int)SD(56);
+        SD(56) = SD(56) - n;
+        for (int k = n; k > 0; k--)
+        {
+            int x = rand() % (int)F(WORD, F(BYTE*, s, 152), 0);
+            int y = rand() % (int)F(WORD, F(BYTE*, s, 152), 2);
+            BYTE* p = (BYTE*)operator new(56);
+            if (p)
+            {
+                BYTE* glass = F(BYTE*, s, 152);
+                BYTE* app = F(BYTE*, s, 32);
+                BYTE* drop = F(BYTE*, s, 68);
+                Wd_ObjectKind(p, 0, 11, &g_wd672638);
+                F(BYTE*, p, 40) = glass;
+                F(int, p, 52) = y;
+                F(void*, p, 0) = &g_wdSplashVt651520;
+                F(BYTE*, p, 32) = app;
+                F(BYTE*, p, 36) = s + 156;
+                F(int, p, 48) = x;
+                Wd_OwnerAttach(app + 2992, 0, p);
+                F(BYTE*, p, 44) = drop;
+                Wd_Post2(p, 0, 1);
+            }
+            F(int, s, 156)++;
+        }
+    }
+    st = F(DWORD, s, 164);
+    if (st & 32)
+    {
+        if (F(int, s, 160) > 0)
+        {
+            F(DWORD, s, 164) = st & ~64u;
+            BYTE* img = F(BYTE*, s, 152);
+            if (F(WORD, img, 4) == 2)
+            {
+                WORD* pix = F(WORD*, img, F(int, img, 16) * 4 + 24);
+                for (int y = 0; y < F(WORD, F(BYTE*, s, 152), 2); y++)
+                {
+                    for (int x = 0; x < F(WORD, F(BYTE*, s, 152), 0); x++)
+                    {
+                        WORD* p = pix + F(WORD, F(BYTE*, s, 152), 0) * y + x;
+                        WORD v = *p;
+                        DWORD c = (WORD)(v >> 12);
+                        if ((WORD)c > 0 && F(int, F(BYTE*, s, 32), 2992) % 5 == 0)
+                            c += 65535;
+                        *p = (WORD)((v & 0xFFF) | (c << 12));
+                    }
+                }
+            }
+            F(int, s, 160)--;
+        }
+        else
+            F(DWORD, s, 164) = (st & ~0x28u) | 64;
+    }
+    if (!(F(BYTE, s, 164) & 4))
+        return;
+    double target = SD(112);
+    double a = old;
+    if (old < target)
+    {
+        do
+        {
+            a = a + g_wd64d0b8;
+            if (F(int, s, 124))
+                Wd_Wiper(s, a);
+        }
+        while (a < target);
+    }
+    else if (!(old <= target))
+    {
+        do
+        {
+            a = a - g_wd64d0b8;
+            if (F(int, s, 124))
+                Wd_Wiper(s, a);
+        }
+        while (!(a <= target));
+    }
+}
+
+} // extern "C"
+
+#undef SD

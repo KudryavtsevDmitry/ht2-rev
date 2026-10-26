@@ -679,7 +679,7 @@ extern "C" void __fastcall MovingItem_Fly(BYTE* s)
     CallC(FUN_4e2821, p, (const char*)s_q173_67d494, 150.0f);
 }
 
-ASM_PROC(FUN_4e8ae1)
+extern "C" void FUN_4e8ae1(); KING_ALIAS("_FUN_4e8ae1", "_Body_FixedPointImpulse")
 extern "C" void FUN_5ac2e0(); KING_ALIAS("_FUN_5ac2e0", "_Matrix_Inverse")
 ASM_VAR(AsmLabel, s_q174_67d434, $L_67d434)
 ASM_VAR(AsmLabel, s_q174_67d420, $L_67d420)
@@ -1813,7 +1813,7 @@ extern "C" void Mk_Select(); KING_ALIAS("_Mk_Select", "_Switch_Select")
 extern "C" void Mk_Find(); KING_ALIAS("_Mk_Find", "_Scene_FindObject")
 extern "C" void Mk_VehObject(); KING_ALIAS("_Mk_VehObject", "_Vehicle_Object")
 extern "C" void Mk_Fatal(); KING_ALIAS("_Mk_Fatal", "_World_Fatal")
-ASM_FUNC(Mk_580a00, FUN_580a00)
+extern "C" void Mk_580a00(); KING_ALIAS("_Mk_580a00", "_MovingItem_PointBounce")
 extern "C" void __fastcall Movite_SendNamed(BYTE* s, void*, const char* name, const DWORD* mat);
 ASM_VAR(Vec3, g_mkUp, $L_702630)
 ASM_VAR(Vec3, g_mkEye, $L_702650)
@@ -2529,3 +2529,525 @@ outputs:
 }
 
 } // extern "C"
+
+// === a moving item's physics step ($L_582c30 with its pieces up to $L_583c18)
+
+extern "C" void __cdecl Mx_Check(const void* v, const char* name, float lim); KING_ALIAS("_Mx_Check", "_World_CheckPoint")
+extern "C" double __cdecl Mx_Time(); KING_ALIAS("_Mx_Time", "_Game_Time")
+extern "C" void __cdecl Mx_Relative(const BYTE* a, const BYTE* b, const BYTE* m, float* offset, float* angles); KING_ALIAS("_Mx_Relative", "_SceneObj_Relative")
+extern "C" int __cdecl Mx_5820c0(const BYTE* o, const BYTE* m, float* a, void* b); KING_ALIAS("_Mx_5820c0", "_SceneObj_5820c0")
+extern "C" void __cdecl Mx_HoldOnRail(BYTE* o, const void* r, void* out); KING_ALIAS("_Mx_HoldOnRail", "_Obj_HoldOnRail")
+extern "C" void __cdecl Mx_Surface(BYTE* b, BYTE* c, const void* m); KING_ALIAS("_Mx_Surface", "_Body_SurfaceResponse")
+extern "C" void __cdecl Mx_Contact(BYTE* s, const void* a2, const void* a3); KING_ALIAS("_Mx_Contact", "_MovingItem_Contact")
+extern "C" int __fastcall Mx_KnockOver(BYTE* s, void*); KING_ALIAS("@Mx_KnockOver@8", "@Item_KnockOver@8")
+extern "C" BYTE* __cdecl Mx_MovingOf(BYTE* o); KING_ALIAS("_Mx_MovingOf", "_Moving_Of")
+extern "C" BYTE* __cdecl Mx_Hit(BYTE* obj, const void* p, const void* d); KING_ALIAS("_Mx_Hit", "_Query_HitObject")
+extern "C" int __cdecl Mx_Out(const void* v, float lim); KING_ALIAS("_Mx_Out", "_Vec3_OutOfBox")
+extern "C" void __cdecl Mx_Fatal(const char* msg); KING_ALIAS("_Mx_Fatal", "_World_Fatal")
+extern "C" void Mx_AddA(); KING_ALIAS("_Mx_AddA", "@Vec3_AddAssign@16")
+extern "C" void Mx_MulA(); KING_ALIAS("_Mx_MulA", "@Vec3_MulAssign@16")
+extern "C" void Mx_580a00(); KING_ALIAS("_Mx_580a00", "_MovingItem_PointBounce")
+extern "C" void Mx_581990(); KING_ALIAS("_Mx_581990", "_MovingItem_BodyContact")
+ASM_VAR(char, g_mx67d788, $L_67d788)
+ASM_VAR(char, g_mx67d76c, $L_67d76c)
+ASM_VAR(char, g_mx67d74c, $L_67d74c)
+ASM_VAR(char, g_mx67d6f4, $L_67d6f4)
+ASM_VAR(char, g_mx67d6d8, $L_67d6d8)
+ASM_VAR(char, g_mx67d6c0, $L_67d6c0)
+ASM_VAR(char, g_mx67d68c, $L_67d68c)
+ASM_VAR(char, g_mx67d670, $L_67d670)
+ASM_VAR(char, g_mx67d650, $L_67d650)
+ASM_VAR(char, g_mx67d640, $L_67d640)
+ASM_VAR(char, g_mx67d630, $L_67d630)
+ASM_VAR(double, g_mx64b7a8, $L_64b7a8)
+ASM_VAR(float, g_mx64c250, $L_64c250)
+ASM_VAR(float, g_mx64c264, $L_64c264)
+ASM_VAR(double, g_mx64b5a0, $L_64b5a0)
+ASM_VAR(double, g_mx64b658, $L_64b658)
+ASM_VAR(double, g_mx64ed98, $L_64ed98)
+ASM_VAR(double, g_mx64b6e0, $L_64b6e0)
+ASM_VAR(double, g_mx64b670, $L_64b670)
+ASM_VAR(double, g_mx64d318, $L_64d318)
+ASM_VAR(double, g_mx64b5b8, $L_64b5b8)
+ASM_VAR(float, g_mx64c304, $L_64c304)
+ASM_VAR(int, g_mx702650, $L_702650)
+ASM_VAR(int, g_mx702654, $L_702654)
+ASM_VAR(int, g_mx702658, $L_702658)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+#define D(n) (*(double*)(fr + (n)))
+#define SV(n) F(float, s, n)
+
+static Vec3 Mx_Vec(float x, float y, float z)
+{
+    Vec3 v;
+    v.x = x;
+    v.y = y;
+    v.z = z;
+    return v;
+}
+
+static Vec3 Mx_Zero()
+{
+    Vec3 v;
+    *(int*)&v.x = g_mx702650;
+    *(int*)&v.y = g_mx702654;
+    *(int*)&v.z = g_mx702658;
+    return v;
+}
+
+extern "C" {
+
+// [$L_582c30..$L_583c18] (moving item vtable) step of item s with flags fl and time step k: the history slot of this
+// step (+1432), its pose moved by its speed and spin (with a rail +1676: rotated about +3160) or relative to its
+// carrier (+1696), its ground contact (5820c0) pushing it out of the ground along the slope, speeds damped by
+// 1 - k; then held on a rail (fl 4), the surface response, a knock over, a contact with a moving body, or the step
+// back along the history while the body is in front. The asm's frame is kept as fr (V / I / D slots)
+void __fastcall MovingItem_Step(BYTE* s, void*, int fl, float k)
+{
+    BYTE fr[2152];
+    {
+        int idx = F(int, s, 1432);
+        memcpy(s + (idx + 170) * 12, s + 428, 12);
+        memcpy(s + idx * 208 + 2104, s + 1464, 208);
+    }
+    Mx_Check(s + 1516, &g_mx67d788, 10000.0f);
+    Mx_Check(s + 1528, &g_mx67d76c, 2.0f);
+    if (F(int, s, 1672))
+        CallVirt(s, 160, s + 1464);
+    if (!F(int, s, 1028))
+    {
+        if (!(SV(984) <= g_mx64b7a8) && !(F(BYTE, s, 892) & 4))
+            F(int, s, 1676) = 1;
+        BYTE* c = F(BYTE*, s, 1012);
+        if (!F(int, s, 1028) && c && F(int, c, 0) == 1 && !(F(BYTE, s, 892) & 4))
+        {
+            memcpy(s + 1176, s + 976, 12);
+            memcpy(s + 1164, s + 964, 12);
+        }
+    }
+    double damp = g_mx64c250 - k;
+    F(float, s, 1456) = k;
+    V(100) = (float)damp;
+    SV(1452) = (float)(damp * SV(1452));
+    memcpy(s + 1120, s + 976, 12);
+    memcpy(s + 912, s + 1464, 208);
+    F(DWORD, s, 892) |= 1;
+    double t = Mx_Time();
+    F(DWORD, s, 3464) |= 1;
+    SV(904) = (float)t;
+    F(int, s, 1692) = 0;
+    memcpy(fr + 120, s + 3148, 12);
+    memcpy(fr + 108, s + 3160, 12);
+    I(144) = F(int, s, 1444);
+    const BYTE* res;
+    if (F(int, s, 1676))
+    {
+        SV(1444) = (float)Vec3_Length((const Vec3*)(s + 3160));
+        V(52) = k * SV(3148);
+        V(56) = k * SV(3152);
+        V(60) = k * SV(3156);
+        Matrix* T = Matrix_Translation((Matrix*)(fr + 328), Mx_Vec(V(52), V(56), V(60)));
+        float ang = k * SV(1444);
+        Matrix* R = Matrix_LookAt((Matrix*)(fr + 280), Mx_Zero(), *(const Vec3*)(s + 3160), ang);
+        Matrix* A = Matrix_Multiply((Matrix*)(fr + 232), R, (const Matrix*)(s + 1888));
+        res = (const BYTE*)Matrix_Multiply((Matrix*)(fr + 184), A, T);
+    }
+    else
+    {
+        Mx_Relative(s + 1696, s + 548, s + 644, &V(120), &V(108));
+        V(64) = (float)Vec3_Length((const Vec3*)&V(108));
+        V(52) = V(120) * k;
+        V(56) = V(124) * k;
+        V(60) = V(128) * k;
+        Matrix* T = Matrix_Translation((Matrix*)(fr + 184), Mx_Vec(V(52), V(56), V(60)));
+        float ang = V(64) * k;
+        Matrix* R = Matrix_LookAt((Matrix*)(fr + 232), Mx_Zero(), *(const Vec3*)&V(108), ang);
+        Matrix* A = Matrix_Multiply((Matrix*)(fr + 280), R, (const Matrix*)(s + 548));
+        res = (const BYTE*)Matrix_Multiply((Matrix*)(fr + 328), A, T);
+    }
+    memcpy(s + 1792, res, 48);
+    I(104) = (int)Mx_MovingOf(F(BYTE*, s, 1028));
+    I(64) = Mx_5820c0(s, s + 1792, &V(96), fr + 376);
+    Mx_Check(s + 1828, &g_mx67d74c, 10000.0f);
+    if (I(64))
+    {
+        V(36) = (float)(g_mx64b5a0 - V(96));
+        if (F(int, s, 1676))
+            V(36) = (float)(g_mx64b658 - V(96));
+        I(64) = I(36);
+        memcpy(fr + 24, s + 976, 12);
+        CallVirt(s, 220, fr + 40);
+        double d = (V(24) * V(40) + V(28) * V(44)) + V(32) * V(48);
+        double c1 = V(32) * V(44) - V(28) * V(48);
+        double c2 = V(24) * V(48) - V(32) * V(40);
+        double c3 = V(28) * V(40) - V(24) * V(44);
+        V(80) = (float)(c2 * V(48) - c3 * V(44));
+        I(52) = I(80);
+        V(84) = (float)(c3 * V(40) - c1 * V(48));
+        I(56) = I(84);
+        V(88) = (float)(c1 * V(44) - c2 * V(40));
+        I(60) = I(88);
+        D(80) = d;
+        if (d < g_mx64ed98)
+            I(36) = 0;
+        else if (d < g_mx64c264)
+        {
+            double r = g_mx64c250 / Vec3_Length((const Vec3*)&V(52));
+            V(12) = (float)(V(52) * r);
+            I(24) = I(12);
+            V(16) = (float)(V(56) * r);
+            I(28) = I(16);
+            V(20) = (float)(V(60) * r);
+            I(32) = I(20);
+            double q = r * V(36);
+            V(64) = (float)q;
+            V(36) = (float)q;
+            if (q > g_mx64b6e0)
+                V(36) = 0.5f;
+        }
+        V(12) = V(24) * V(36);
+        I(68) = I(12);
+        V(16) = V(28) * V(36);
+        I(72) = I(16);
+        V(20) = V(32) * V(36);
+        I(76) = I(20);
+        CallThis(Mx_AddA, s + 1828, fr + 132, fr + 68);
+        if (Mx_Out(s + 1828, 10000.0f))
+        {
+            char* a = (char*)fr + 656;
+            char* b = (char*)fr + 908;
+            char* c = (char*)fr + 456;
+            char* dd = (char*)fr + 1160;
+            sprintf(a, &g_mx67d6f4, 0.001, 0.01, (double)V(96), (double)V(36), D(80), (double)V(64), (double)V(24),
+                    (double)V(28), (double)V(32), (double)V(40), (double)V(44), (double)V(48));
+            double r = g_mx64c250 / Vec3_Length((const Vec3*)&V(52));
+            sprintf(b, &g_mx67d6d8, (double)V(52), (double)V(56), (double)V(60), r);
+            sprintf(c, &g_mx67d6c0, F(const char*, F(BYTE*, s, 320), 12), (double)SV(396), (double)SV(584),
+                    (double)SV(588), (double)SV(592));
+            sprintf(dd, &g_mx67d68c, (double)SV(1828), (double)SV(1832), (double)SV(1836), a, b, c);
+            Mx_Fatal(dd);
+        }
+    }
+
+    // $L_5833f4: the new pose stored, its inverse, the object under it
+    memcpy(s + 3148, fr + 120, 12);
+    memcpy(s + 3160, fr + 108, 12);
+    F(int, s, 1444) = I(144);
+    memcpy(s + 1840, Matrix_Inverse((Matrix*)(fr + 184), (const Matrix*)(s + 1792)), 48);
+    F(BYTE*, s, 2032) = Mx_Hit(F(BYTE*, s, 2036), s + 1924, s + 1828);
+    if (!F(BYTE*, s, 2032))
+    {
+        F(BYTE*, s, 2032) = F(BYTE*, s, 2036);
+        CallVirt(s, 28, 1);
+    }
+    {
+        double r = V(100);
+        V(68) = (float)(r * SV(476));
+        V(72) = (float)(r * SV(480));
+        double z = r * SV(484);
+        V(12) = (float)(SV(416) - V(68));
+        I(160) = I(12);
+        V(16) = (float)(SV(420) - V(72));
+        I(164) = I(16);
+        V(20) = (float)(SV(424) - z);
+        I(168) = I(20);
+        r = V(100);
+        V(68) = (float)(r * SV(488));
+        V(72) = (float)(r * SV(492));
+        z = r * SV(496);
+        V(12) = (float)(SV(428) - V(68));
+        I(148) = I(12);
+        V(16) = (float)(SV(432) - V(72));
+        I(152) = I(16);
+        V(20) = (float)(SV(436) - z);
+        I(156) = I(20);
+    }
+    CallThis(Mx_MulA, s + 476, fr + 132, k);
+    CallThis(Mx_MulA, s + 488, fr + 132, k);
+    CallVirt(s, 144, fr + 160, &g_mx67d670);
+    CallVirt(s, 148, fr + 148, &g_mx67d650);
+    if (F(int, s, 1432) > F(int, s, 1680))
+        return;
+    int has = F(int, s, 1672);
+    if (has > 0)
+    {
+        memcpy(s + 3172, s + 1792, 48);
+        memcpy(s + 3220, s + 1840, 48);
+    }
+    else
+    {
+        memcpy(s + 3172, s + 548, 48);
+        memcpy(s + 3220, s + 644, 48);
+    }
+    memcpy(s + 2020, s + 416, 12);
+    if (fl & 4)
+    {
+        Mx_HoldOnRail(s, s + 912, s + 500);
+        return;
+    }
+    if (F(int, s, 392) == 1 && F(int, s, 1028) == 0)
+    {
+        Mx_Surface(s, s + 912, s + 500);
+        return;
+    }
+
+    // $L_58369d
+    if (I(104))
+    {
+        if (F(int, s, 1688))
+            CallC(Mx_581990, s, s + 912, has, F(int, s, 1456));
+        F(DWORD, s, 3464) |= 8;
+        return;
+    }
+    if (F(BYTE, s, 892) & 4)
+    {
+        F(DWORD, s, 3464) |= 4;
+        if (!Mx_KnockOver(s, 0))
+            CallC(Mx_580a00, s, s + 964, s + 976);
+        F(int, s, 1692) = 1;
+        F(DWORD, s, 892) &= ~4u;
+        return;
+    }
+
+    // $L_583700: a contact with the body under it
+    F(DWORD, s, 3464) |= 16;
+    V(12) = SV(964) - SV(3208);
+    I(40) = I(12);
+    V(16) = SV(968) - SV(3212);
+    I(44) = I(16);
+    V(20) = SV(972) - SV(3216);
+    I(48) = I(20);
+    Vec3_Normalized((Vec3*)(fr + 172), (const Vec3*)&V(40));
+    {
+        double a = (SV(3184) * SV(432) + SV(3196) * SV(436)) + SV(428) * SV(3172);
+        double b = (SV(3188) * SV(432) + SV(3200) * SV(436)) + SV(3176) * SV(428);
+        double c = (SV(3192) * SV(432) + SV(3204) * SV(436)) + SV(3180) * SV(428);
+        V(68) = (float)(V(48) * b - V(44) * c);
+        V(72) = (float)(c * V(40) - V(48) * a);
+        double z = a * V(44) - b * V(40);
+        V(12) = V(68) + SV(416);
+        V(16) = V(72) + SV(420);
+        double zz = z + SV(424);
+        V(104) = (float)(((V(12) * V(40)) + zz * V(48)) + V(16) * V(44));
+    }
+    if (!(fl & 8) && !(F(DWORD, s, 1672) & 0x4000000) && !(Mx_Time() - SV(3144) < g_mx64b670)
+        && !(SV(984) < g_mx64d318) && !F(int, s, 1420) && V(104) <= g_mx64c264)
+    {
+        Mx_Contact(s, s + 964, s + 976);
+        return;
+    }
+    CallC(Mx_580a00, s, s + 964, s + 976);
+
+    // $L_5838cb: back along the history to the last step in front of a body
+    int i = F(int, s, 1432);
+    if (i > 0)
+    {
+        i--;
+        BYTE* e = s + i * 208 + 2220;
+        for (;;)
+        {
+            if (!Mx_MovingOf(F(BYTE*, e, 0)))
+                break;
+            i--;
+            e -= 208;
+            if (i < 0)
+                break;
+        }
+        if (i < 0)
+            i = F(int, s, 1432);
+    }
+    int n = F(int, s, 1432);
+    if (i == n)
+        return;
+    BYTE* pa = s + i * 208 + 2156;
+    BYTE* pb = s + n * 208 + 2156;
+    V(12) = F(float, pb, 0) - F(float, pa, 0);
+    V(16) = F(float, pb, 4) - F(float, pa, 4);
+    I(68) = I(12);
+    I(72) = I(16);
+    V(20) = F(float, pb, 8) - F(float, pa, 8);
+    I(76) = I(20);
+    Vec3_Normalized((Vec3*)&V(52), (const Vec3*)&V(68));
+    n = F(int, s, 1432);
+    BYTE* vv = s + n * 208 + 2168;
+    const BYTE* pp = s + (n * 3 + 510) * 4;
+    V(24) = (float)(V(56) * F(float, vv, 8) - V(60) * F(float, vv, 4));
+    V(28) = (float)(V(60) * F(float, vv, 0) - V(52) * F(float, vv, 8));
+    V(32) = (float)(V(52) * F(float, vv, 4) - V(56) * F(float, vv, 0));
+    double e1 = (SV(436) * V(32) + SV(432) * V(28)) + SV(428) * V(24);
+    double e2 = (F(float, pp, 8) * V(32) + F(float, pp, 4) * V(28)) + V(24) * F(float, pp, 0);
+    if (!(e2 * e1 < g_mx64c264))
+        return;
+    if (!(x87_fabs(e1) < g_mx64b5b8))
+        return;
+    {
+        double q1 = V(28) * SV(436) - V(32) * SV(432);
+        double q2 = V(32) * SV(428) - V(24) * SV(436);
+        double q3 = V(24) * SV(432) - V(28) * SV(428);
+        V(12) = (float)(V(32) * q2 - V(28) * q3);
+        I(132) = I(12);
+        V(16) = (float)(q3 * V(24) - V(32) * q1);
+        I(136) = I(16);
+        V(20) = (float)(V(28) * q1 - q2 * V(24));
+        I(140) = I(20);
+    }
+    {
+        double a0 = F(float, vv, 0) * g_mx64c304;
+        V(84) = F(float, vv, 4) * g_mx64c304;
+        V(88) = F(float, vv, 8) * g_mx64c304;
+        double r1 = SV(424) * F(float, vv, 4) - F(float, vv, 8) * SV(420);
+        double r2 = F(float, vv, 8) * SV(416) - F(float, vv, 0) * SV(424);
+        double r3 = F(float, vv, 0) * SV(420) - SV(416) * F(float, vv, 4);
+        V(12) = (float)(r2 * F(float, vv, 8) - r3 * F(float, vv, 4));
+        V(16) = (float)(r3 * F(float, vv, 0) - r1 * F(float, vv, 8));
+        V(20) = (float)(r1 * F(float, vv, 4) - r2 * F(float, vv, 0));
+        V(24) = (float)(V(12) + a0);
+        V(28) = V(84) + V(16);
+        I(12) = I(24);
+        V(32) = V(88) + V(20);
+        I(16) = I(28);
+        I(20) = I(32);
+    }
+    CallVirt(s, 148, fr + 132, &g_mx67d640);
+    CallVirt(s, 144, fr + 12, &g_mx67d630);
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+#undef D
+#undef SV
+
+// === a moving item bouncing off a point (FUN_580a00 with its tail $L_580b25)
+
+extern "C" void __cdecl Mi2_PointImpulse(const void* pa, const void* nb, const void* ma, const void* mb, float k24,
+                                         float k28, float k32, const void* pc, const void* vc, const void* ic,
+                                         void* outP, void* outV); KING_ALIAS("_Mi2_PointImpulse", "_Body_MovingPointImpulse")
+ASM_VAR(char, g_mi2_67d470, $L_67d470)
+ASM_VAR(char, g_mi2_67d458, $L_67d458)
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+
+extern "C" {
+
+// [FUN_580a00..$L_580b25] item s touching point pa with normal nb: the impulse of Body_MovingPointImpulse on its
+// pose (+3172), position (+416), speed (+428) and inertia (+3288); the new speed split into its normal part and its
+// sliding part, which loses twice the normal bounce; speed and spin set by vtable +144 / +148
+void __cdecl MovingItem_PointBounce(BYTE* s, const float* pa, const float* nb)
+{
+    BYTE fr[240];
+    memcpy(fr + 140, s + 3172, 48);
+    Matrix_Inverse((Matrix*)(fr + 188), (const Matrix*)(fr + 140));
+    I(12) = F(int, s, 3268);
+    memcpy(fr + 44, s + 416, 12);
+    I(16) = 0;
+    memcpy(fr + 128, s + 428, 12);
+    I(20) = 0;
+    memcpy(fr + 116, s + 3288, 12);
+    I(24) = 0;
+    I(56) = 0;
+    I(60) = 0;
+    I(64) = 0;
+    Mi2_PointImpulse(pa, nb, fr + 140, fr + 188, V(12), F(float, s, 1428), 1.0f, fr + 44, fr + 128, fr + 116,
+                     fr + 16, fr + 56);
+    double d0 = V(16) - V(44);
+    double d1 = V(20) - V(48);
+    double d2 = V(24) - V(52);
+    double e = x87_fabs((d2 * nb[2] + nb[0] * d0) + d1 * nb[1]) * V(12);
+    V(12) = (float)((e + e) / V(12));
+    V(40) = (float)((nb[2] * V(24) + nb[0] * V(16)) + nb[1] * V(20));
+    double c1 = V(24) * nb[1] - V(20) * nb[2];
+    double c2 = V(16) * nb[2] - V(24) * nb[0];
+    double c3 = V(20) * nb[0] - V(16) * nb[1];
+    V(28) = (float)(c2 * nb[2] - c3 * nb[1]);
+    I(68) = I(28);
+    V(32) = (float)(c3 * nb[0] - c1 * nb[2]);
+    I(72) = I(32);
+    V(36) = (float)(c1 * nb[1] - c2 * nb[0]);
+    I(76) = I(36);
+    V(12) = (float)(Vec3_Length((const Vec3*)(fr + 68)) - V(12));
+    if (V(12) < g_mx64c264)
+        I(12) = 0;
+    Vec3_Normalized((Vec3*)(fr + 80), (const Vec3*)(fr + 68));
+    double x = V(80) * V(12);
+    V(96) = V(84) * V(12);
+    V(100) = V(88) * V(12);
+    double nx = V(40) * nb[0];
+    V(108) = V(40) * nb[1];
+    V(112) = V(40) * nb[2];
+    V(28) = (float)(nx + x);
+    I(16) = I(28);
+    V(32) = V(96) + V(108);
+    I(20) = I(32);
+    V(36) = V(100) + V(112);
+    I(24) = I(36);
+    CallVirt(s, 144, fr + 16, &g_mi2_67d470);
+    CallVirt(s, 148, fr + 56, &g_mi2_67d458);
+}
+
+} // extern "C"
+
+#undef V
+#undef I
+
+// === a moving item touching another body (FUN_581990 with its tail $L_581b84)
+
+extern "C" void __cdecl Mi3_Decompose(const BYTE* m, float* a, float* b, float* c, float* d, float* e, float* f); KING_ALIAS("_Mi3_Decompose", "_Matrix_Decompose6F")
+extern "C" void __cdecl Mi3_Impulse(BYTE* b, BYTE* c, BYTE* o); KING_ALIAS("_Mi3_Impulse", "_Bodies_Impulse")
+extern "C" void __fastcall Mi3_ActivateAll(BYTE* s, void*); KING_ALIAS("@Mi3_ActivateAll@8", "@Points_ActivateAll@8")
+extern "C" double __cdecl Mi3_FrameTime(); KING_ALIAS("_Mi3_FrameTime", "_Game_FrameTime")
+extern "C" BYTE* __fastcall Mi3_Matrix1(BYTE* self, void*, void* out); KING_ALIAS("@Mi3_Matrix1@12", "@SceneObj_Matrix1@12")
+
+#define V(n) (*(float*)(fr + (n)))
+#define I(n) (*(int*)(fr + (n)))
+
+extern "C" {
+
+// [FUN_581990..$L_581b84] item s touching contact c (+4 its relative move, +52 point, +64 normal, +116 the other
+// object): against a plain object a point bounce; against a body (+392 1 or 2) first, with flag 0x8000000, the
+// body moved by the contact's motion scaled by k, then the impulse between both, its points woken (kind 2), the
+// item's vtable +200 with the frame time and its contact time (+3144)
+void __cdecl MovingItem_BodyContact(BYTE* s, BYTE* c, DWORD fl, float k)
+{
+    BYTE fr[276];
+    BYTE* b = Mx_MovingOf(F(BYTE*, c, 116));
+    if (!b || (F(int, b, 392) != 2 && F(int, b, 392) != 1))
+    {
+        MovingItem_PointBounce(s, (const float*)(c + 52), (const float*)(c + 64));
+        return;
+    }
+    if (fl & 0x8000000)
+    {
+        I(28) = 0;
+        I(32) = 0;
+        I(36) = 0;
+        I(16) = 0;
+        I(20) = 0;
+        I(24) = 0;
+        Mi3_Decompose(c + 4, &V(28), &V(32), &V(36), &V(24), &V(16), &V(20));
+        V(16) = -V(16);
+        CallThis(Mx_MulA, fr + 16, fr + 40, k);
+        CallThis(Mx_MulA, fr + 28, fr + 40, k);
+        Matrix* t = Matrix_Translation((Matrix*)(fr + 52), Mx_Vec(V(28), V(32), V(36)));
+        BYTE* m1 = Mi3_Matrix1(b, 0, fr + 192);
+        float len = (float)Vec3_Length((const Vec3*)(fr + 16));
+        Matrix* r = Matrix_LookAt((Matrix*)(fr + 100), Mx_Zero(), Mx_Vec(V(16), V(20), V(24)), len);
+        Matrix* a = Matrix_Multiply((Matrix*)(fr + 148), r, (const Matrix*)m1);
+        memcpy(b + 3172, Matrix_Multiply((Matrix*)(fr + 244), a, t), 48);
+    }
+    Mi3_Impulse(s, c, b);
+    if (F(int, b, 392) == 2)
+        Mi3_ActivateAll(b, 0);
+    float dt = (float)Mi3_FrameTime();
+    CallVirt(s, 200, b, c, dt);
+    F(float, s, 3144) = (float)Mx_Time();
+}
+
+} // extern "C"
+
+#undef V
+#undef I

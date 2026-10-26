@@ -4727,7 +4727,7 @@ void __fastcall Material_Select(BYTE* self, void*, BYTE* m, int lit, int c, int 
 
 // === drawing a line (FUN_5b73a0)
 
-ASM_PROC(FUN_5b7af0)
+extern "C" void FUN_5b7af0(); KING_ALIAS("_FUN_5b7af0", "_Line_ClipEdge")
 ASM_VAR(float, g_ln64c250, $L_64c250)
 ASM_VAR(double, g_ln64eba8, $L_64eba8)
 ASM_VAR(double, g_ln64eba0, $L_64eba0)
@@ -6465,6 +6465,63 @@ void __fastcall Render_LayerUVs(BYTE* r, void*, BYTE* m, BYTE* l)
             return;
         l = F(BYTE*, r, 8260) + F(int, l, 44) * 124;
     }
+}
+
+} // extern "C"
+
+// === a line's ends clipped against one edge of a window (FUN_5b7af0)
+
+// the end of (x0, y0)-(x1, y1) beyond the edge moved onto it along the line: (a, b) the coordinate tested and
+// (c, d) the other one, keep 1 keeping a >= e (else a <= e); 0 when some part is left, 1 when all of it is beyond
+static int Ce_Clip(int e, int* a0, int* c0, int* a1, int* c1, bool keepAbove)
+{
+    int p = *a0, q = *a1;
+    bool in0 = keepAbove ? p >= e : p <= e;
+    bool in1 = keepAbove ? q >= e : q <= e;
+    if (in0 && in1)
+        return 0;
+    if (!in0 && !in1)
+        return 1;
+    int oa, oc;    // the end beyond the edge
+    if (keepAbove ? p < q : p > q)
+    {
+        oa = p;
+        oc = *c0;
+        *a0 = q;
+        *c0 = *c1;
+    }
+    else
+    {
+        oa = q;
+        oc = *c1;
+    }
+    *a1 = e;
+    int ia = *a0;
+    if (oa == ia)
+        *c1 = *c0;
+    else
+        *c1 = (oc - *c0) * (e - ia) / (oa - ia) + *c0;
+    return 0;
+}
+
+extern "C" {
+
+// [FUN_5b7af0] line (x0, y0)-(x1, y1) clipped by edge kind k at e: 0 x >= e, 1 y >= e, 2 x <= e, 3 y <= e;
+// 1 when the line is wholly outside (or k is unknown), else 0 with the outside end moved onto the edge
+int __cdecl Line_ClipEdge(int k, int e, int* x0, int* y0, int* x1, int* y1)
+{
+    switch (k)
+    {
+    case 0:
+        return Ce_Clip(e, x0, y0, x1, y1, true);
+    case 1:
+        return Ce_Clip(e, y0, x0, y1, x1, true);
+    case 2:
+        return Ce_Clip(e, x0, y0, x1, y1, false);
+    case 3:
+        return Ce_Clip(e, y0, x0, y1, x1, false);
+    }
+    return 1;
 }
 
 } // extern "C"

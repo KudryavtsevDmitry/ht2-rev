@@ -11593,3 +11593,108 @@ void __fastcall SaveScreen_Command(BYTE* s, void*, int cmd)
 }
 
 } // extern "C"
+
+// === the replay viewer's keys ($L_5101c0, a window vtable entry)
+
+extern "C" void Rk_SetVolume(); KING_ALIAS("_Rk_SetVolume", "_Sound_SetVolume")
+extern "C" void Rk_Delete(); KING_ALIAS("_Rk_Delete", "_Obj723d44_Delete")
+extern "C" void Rk_Leave(); KING_ALIAS("_Rk_Leave", "_Shell_LeaveGameScreens")
+extern "C" void Rk_DestroyWindow(); KING_ALIAS("_Rk_DestroyWindow", "@CGameApp_DestroyWindowNow@12")
+extern "C" void Rk_Wasm(); KING_ALIAS("_Rk_Wasm", "@Wasm_598ce0@12")
+extern "C" void Rk_fclose(); KING_ALIAS("_Rk_fclose", "_fclose")
+ASM_VAR(BYTE*, g_rk696ca0, $L_696ca0)
+ASM_VAR(BYTE*, g_rk6cec80, $L_6cec80)
+ASM_VAR(BYTE*, g_rk6cec84, $L_6cec84)
+ASM_VAR(BYTE*, g_rk6cec6c, $L_6cec6c)
+ASM_VAR(char, g_rk696750, $L_696750)
+ASM_VAR(char, g_rk6f68b0, $L_6f68b0)
+ASM_VAR(double, g_rk64d960, $L_64d960)
+ASM_VAR(double, g_rk64ca48, $L_64ca48)
+ASM_VAR(double, g_rk64dd78, $L_64dd78)
+ASM_VAR(double, g_rk64d0f0, $L_64d0f0)
+ASM_VAR(double, g_rk64b840, $L_64b840)
+ASM_VAR(double, g_rk64b5b8, $L_64b5b8)
+ASM_VAR(double, g_rk64b670, $L_64b670)
+ASM_VAR(double, g_rk64b660, $L_64b660)
+
+extern "C" {
+
+// [$L_5101c0] replay window s (its frame at s-64) gets key k: Esc (or 216) closes the replay (silence, the
+// player's stop, its file closed, the windows and the game screens left); 208 / 209 speed it up / down in steps
+// (the player 696ca0 +7960, a double), 210 play, 211 reverse, 212 pause, 213 / 214 step a frame either way
+// (+7952), 215 the player's flag +3024
+void __fastcall ReplayWnd_Key(BYTE* s, void*, int k)
+{
+    BYTE* p = g_rk696ca0;
+    double& v = F(double, p, 7960);
+    switch (k)
+    {
+    case 27:
+    case 216:
+        CallC<double>(Rk_SetVolume, 0.0f);
+        CallVirt(g_rk696ca0, 144);
+        if (F(void*, g_rk696ca0, 7928))
+            CallC(Rk_fclose, F(void*, g_rk696ca0, 7928));
+        F(int, g_rk696ca0, 7932) = 0;
+        CallVirt(s - 64, 32);
+        CallVirt(g_rk696ca0, 32);
+        CallVirt(g_rk6cec80, 36);
+        CallThis(Rk_DestroyWindow, &g_rk696750, g_rk6cec84);
+        g_rk6cec84 = 0;
+        CallC(Rk_Leave);
+        CallThis(Rk_Wasm, &g_rk6f68b0, 2);
+        if (F(int, g_rk6cec6c, 1344))
+            CallC(Rk_Delete);
+        break;
+    case 215:
+        F(int, p, 3024) = 1;
+        break;
+    case 209:
+        if (v < g_rk64d960)
+            break;
+        if (!(v > g_rk64ca48))
+            v = v - g_rk64d0f0;
+        else if (!(v > g_rk64dd78))
+            v = v - g_rk64b840;
+        else if (!(v > g_rk64d0f0))
+            v = v - g_rk64b5b8;
+        else if (!(v > g_rk64b670))
+            v = v - g_rk64b840;
+        else
+            v = v - g_rk64d0f0;
+        break;
+    case 208:
+        if (v > g_rk64b660)
+            break;
+        if (!(v < g_rk64b670))
+            v = v + g_rk64d0f0;
+        else if (!(v < g_rk64d0f0))
+            v = v + g_rk64b840;
+        else if (!(v < g_rk64dd78))
+            v = v + g_rk64b5b8;
+        else if (!(v < g_rk64ca48))
+            v = v + g_rk64b840;
+        else
+            v = v + g_rk64d0f0;
+        break;
+    case 210:
+        v = 1.0;
+        break;
+    case 211:
+        v = -1.0;
+        break;
+    case 212:
+        v = 0.0;
+        break;
+    case 213:
+        v = 0.0;
+        F(int, p, 7952) = 1;
+        break;
+    case 214:
+        v = 0.0;
+        F(int, p, 7952) = -1;
+        break;
+    }
+}
+
+} // extern "C"
