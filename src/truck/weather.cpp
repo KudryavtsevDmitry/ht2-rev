@@ -2976,3 +2976,32 @@ void __fastcall Windscreen_Frame(BYTE* s, void*)
 } // extern "C"
 
 #undef SD
+
+// ---------------------------------------------------------------------------
+// Batch 32: the explosion effect
+
+extern "C" void Ex32_SkyEffect(); KING_ALIAS("_Ex32_SkyEffect", "@SkyEffect_Construct@68")
+extern "C" void Ex32_ObjFind(); KING_ALIAS("_Ex32_ObjFind", "_Objects_Find")
+ASM_VAR(BYTE, ex32_vtbl651448, $L_651448)
+ASM_VAR(BYTE, ex32_vtbl6513fc, $L_6513fc)
+
+extern "C" {
+
+// [FUN_5a4f00] explosion effect constructor (world o, -, at x y z, size, -, the sound's name, n puffs, spread d):
+// a sky effect of n x n particles (4 kinds unless o's kind (vtable +28) is 1) and the named sound at +176
+BYTE* __fastcall Explosion_Construct(BYTE* self, void*, BYTE* o, int a1, float x, float y, float z, double size,
+                                     int a7, const char* name, int n, double d)
+{
+    double nn = (double)n;
+    float sz = (float)size;
+    int kind = ((int(__thiscall*)(BYTE*))(*(void***)o)[7])(o);
+    CallThis(Ex32_SkyEffect, self, o, a1, x, y, z, sz, sz, a7, n * n, n, n, (float)d, (float)(nn * nn * d), 100,
+             kind == 1 ? 1 : 4);
+    F(void*, self, 0) = &ex32_vtbl651448;
+    F(void*, self, 32) = &ex32_vtbl6513fc;
+    F(BYTE*, self, 176) = CallC<BYTE*>(Ex32_ObjFind, name);
+    F(double, self, 184) = 1.0;
+    return self;
+}
+
+}

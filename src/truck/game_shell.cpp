@@ -6165,7 +6165,7 @@ ASM_VAR(int, g_q92_7208c0, $L_7208c0)
 ASM_VAR(int, g_q92_67b738, $L_67b738)
 ASM_VAR(AsmLabel, g_q92_71e820, $L_71e820)
 ASM_VAR(AsmLabel, g_q92_696750, $L_696750)
-ASM_VAR(AsmLabel, g_q92_4d76b0, $L_4d76b0)
+extern "C" int __cdecl Media_AiEvent(BYTE* it, int kind, BYTE* data);  // effects.cpp
 extern "C" int __cdecl Present_OnEvent(BYTE* it, int kind);  // effects.cpp
 ASM_VAR(AsmLabel, s_q92_676770, $L_676770)
 ASM_VAR(AsmLabel, s_q92_672688, $L_672688)
@@ -6204,7 +6204,7 @@ extern "C" void __cdecl Shell_LoadWorld(void)
         else if (F(int, g_q92_6cec98, 384) == 1)
             map = (const char*)s_q92_6768d0;
         if (map)
-            CallC(FUN_435730, App_Path(g_q92_696ca0, 0, map), (BYTE*)g_q92_4d76b0, (BYTE*)(void*)Present_OnEvent);
+            CallC(FUN_435730, App_Path(g_q92_696ca0, 0, map), (BYTE*)(void*)Media_AiEvent, (BYTE*)(void*)Present_OnEvent);
     } else {
         BYTE* q = (BYTE*)operator new(424);
         q = q ? CallThis<BYTE*>(FUN_50f990, q) : 0;
@@ -7032,7 +7032,7 @@ ASM_VAR(AsmLabel, g_ndNet696750, $L_696750)
 ASM_VAR(AsmLabel, g_nd723d50, $L_723d50)
 ASM_VAR(double, g_nd64b5f0, $L_64b5f0)
 extern "C" void FUN_5c3c50(); KING_ALIAS("_FUN_5c3c50", "@Music_WaitNetwork@16")    // net: send a message (name, msg)
-ASM_PROC(FUN_5c55b0)    // net: the host's reply (reply, -)
+extern "C" void FUN_5c55b0(); KING_ALIAS("_FUN_5c55b0", "@Net_HostReply@16")    // net: the host's reply (reply, -)
 extern "C" void FUN_5c3ac0(); KING_ALIAS("_FUN_5c3ac0", "@Net_CheckSession@8")    // net: whether the session is open
 extern "C" void FUN_5c5740(); KING_ALIAS("_FUN_5c5740", "@Chat_Receive@20")    // net: host (name, 0, 0)
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // text in a width (surface, x, y, width, font, text, align, -)

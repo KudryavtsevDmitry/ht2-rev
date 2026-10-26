@@ -334,3 +334,14 @@ Fixes: since batch 22, FUN_589640 (Item_SweepPoints) had been pointed at FUN_585
 so item point sweeps ran the wrong function and the drive test truck went through trees and fell through the
 ground (Z about -600; the original ends at Z 20.9). With that fixed, MovingItem_PointBounce's frame needed 12
 more bytes (asm ESP offsets taken after three pushes). Drive test now checks the end height.
+
+Batch 32 done: about 24 KB. Largest: $L_5c8ae0 TreeGen_Draw (7040, the $$TreeGenerator1 handler: swaying trunk
+on two springs, crown by shape, ribbons/beams and plumes; the asm frame kept as a byte array), FUN_5ca8e0
+TreeGen_DrawStill (4272, with the inner $L_5cb970 Light_Channel), $L_4d76b0..$L_4d7d2c Media_AiEvent (3184, the
+world side of AI player events: car objects, routes, notices, engine idle), $L_420ed0 Ai_CheckPlayersNear (1984),
+then MeshObject_Draw, Sound_PanShares, MovingItem_Settle, FTree_Run / TrashBox_Run / Scenery_Run, Net_FillSendBuffer,
+Net_HostReply, FilePort_ReadHeader, Explosion_Construct, Polyline_Construct, List_NewNode and Copter_PlaneCircle.
+A first List_NewNode passed an extra argument to the two-register @Stl_Lock@8 and crashed the world load (found
+with cdb). The load test drifts now and then even on the batch 31 build; it was exact on repeated runs. Left:
+FUN_576d70 (nested hand-edited PROCs), $L_5d7b90/$L_5dd8c0 (start at bare labels), FUN_6047d0/FUN_605310 (real
+try/catch), FUN_462850 (rope, throws).

@@ -5397,7 +5397,7 @@ char* __cdecl Node_NetName(BYTE* o, char* dst)
 
 // === the scene's light colours for a frame (FUN_5ca660 with its tail $L_5ca70c)
 
-ASM_FUNC(Lc_Channel, $L_5cb970)    // a light channel's flicker at time t (0 without the effects table)
+extern "C" void Lc_Channel(); KING_ALIAS("_Lc_Channel", "_Light_Channel")    // a light channel's flicker at time t (0 without the effects table)
 ASM_VAR(BYTE*, g_lc7025b8, $L_7025b8)
 ASM_VAR(float, g_lc64c308, $L_64c308)
 ASM_VAR(float, g_lc64c250, $L_64c250)
@@ -5596,3 +5596,980 @@ int __fastcall Media_ReadValue(BYTE* s, void*, BYTE* m, int ease, float t)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: the tree generator
+
+extern "C" void Tg_FindFmt2(); KING_ALIAS("_Tg_FindFmt2", "_Media_FindFmt2")
+extern "C" void Tg_FindFmt1(); KING_ALIAS("_Tg_FindFmt1", "_Media_FindFmt1")
+extern "C" void Tg_PlayAt(); KING_ALIAS("_Tg_PlayAt", "_Sound_PlayAt")
+extern "C" void Tg_LineNode(); KING_ALIAS("_Tg_LineNode", "_LineNode_Create")
+extern "C" void Tg_SkyColours(); KING_ALIAS("_Tg_SkyColours", "_Sky_LightColours")
+extern "C" void Tg_Camera(); KING_ALIAS("_Tg_Camera", "@Render_Material@8")
+extern "C" void Tg_Length(); KING_ALIAS("_Tg_Length", "_Vec3_Length")
+extern "C" void Tg_SwingStep(); KING_ALIAS("_Tg_SwingStep", "_Swing_Step")
+extern "C" void Tg_SwingQuarters(); KING_ALIAS("_Tg_SwingQuarters", "_Swing_Quarters")
+extern "C" void Tg_MatSelect(); KING_ALIAS("_Tg_MatSelect", "@Material_Select@24")
+extern "C" void Tg_Inverse(); KING_ALIAS("_Tg_Inverse", "_Matrix_Inverse")
+extern "C" void Tg_Ribbon(); KING_ALIAS("_Tg_Ribbon", "_Ribbon_DrawSegment")
+extern "C" void Tg_Strip(); KING_ALIAS("_Tg_Strip", "_Strip_Draw")
+extern "C" void Tg_Arch(); KING_ALIAS("_Tg_Arch", "_Strip_DrawArch")
+extern "C" void Tg_Beam(); KING_ALIAS("_Tg_Beam", "_Beam_Draw")
+extern "C" void Tg_Plume(); KING_ALIAS("_Tg_Plume", "_Plume_Draw")
+extern "C" void Tg_Set(); KING_ALIAS("_Tg_Set", "@Vec3_SetThis@20")
+extern "C" void Tg_RotateBy(); KING_ALIAS("_Tg_RotateBy", "_Vec3_RotateBy")
+extern "C" void Tg_DivScalar(); KING_ALIAS("_Tg_DivScalar", "_Vec3_DivScalar")
+extern "C" void Tg_Add(); KING_ALIAS("_Tg_Add", "_Vec3_Add")
+extern "C" void Tg_Sub(); KING_ALIAS("_Tg_Sub", "_Vec3_Sub")
+extern "C" void Tg_Negated(); KING_ALIAS("_Tg_Negated", "_Vec3_Negated")
+extern "C" int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o);
+
+ASM_VAR(float, tg_64c904, $L_64c904)
+ASM_VAR(float, tg_64c328, $L_64c328)
+ASM_VAR(float, tg_64c268, $L_64c268)
+ASM_VAR(float, tg_64c250, $L_64c250)
+ASM_VAR(float, tg_64c264, $L_64c264)
+ASM_VAR(float, tg_64c254, $L_64c254)
+ASM_VAR(float, tg_64c258, $L_64c258)
+ASM_VAR(float, tg_64d2f8, $L_64d2f8)
+ASM_VAR(float, tg_651d0c, $L_651d0c)
+ASM_VAR(float, tg_651d08, $L_651d08)
+ASM_VAR(float, tg_651d04, $L_651d04)
+ASM_VAR(float, tg_651d00, $L_651d00)
+ASM_VAR(float, tg_651cfc, $L_651cfc)
+ASM_VAR(float, tg_64da38, $L_64da38)
+ASM_VAR(float, tg_651cf8, $L_651cf8)
+ASM_VAR(float, tg_64c350, $L_64c350)
+ASM_VAR(float, tg_64c330, $L_64c330)
+ASM_VAR(float, tg_651cf4, $L_651cf4)
+ASM_VAR(float, tg_651cf0, $L_651cf0)
+ASM_VAR(double, tg_64b840, $L_64b840)
+ASM_VAR(float, tg_67f93c, $L_67f93c)
+ASM_VAR(BYTE*, tg_device720908, $L_720908)
+ASM_VAR(float, tg_ahead702620, $L_702620)   // the view's ahead vector (3 floats)
+ASM_VAR(float, tg_up702630, $L_702630)      // the up vector (3 floats)
+
+#define TS(o) (*(float*)(fr + (o)))
+#define TI(o) (*(int*)(fr + (o)))
+#define TB(o) (fr + (o))
+
+static const int Tg_F02 = 0x3e4ccccd, Tg_F03 = 0x3e99999a, Tg_F04 = 0x3ecccccd, Tg_F05 = 0x3f000000,
+                 Tg_F1 = 0x3f800000, Tg_F15 = 0x3fc00000, Tg_F2 = 0x40000000, Tg_Fm1 = (int)0xbf800000,
+                 Tg_F4 = 0x40800000;
+
+static float Tg_Bits(int b) { return *(float*)&b; }
+
+// the negated ahead vector turned by the inverse view rotation (the asm's three sums per row)
+static void Tg_Normal(BYTE* fr, BYTE* ctx, int mat, float* n)
+{
+    TS(16) = (float)-(double)(&tg_ahead702620)[0];
+    TS(20) = (float)-(double)(&tg_ahead702620)[1];
+    TS(24) = (float)-(double)(&tg_ahead702620)[2];
+    const float* M = CallC<float*>(Tg_Inverse, TB(mat), ctx + 4208);
+    n[0] = (float)(((double)TS(24) * M[6] + (double)TS(20) * M[3]) + (double)TS(16) * M[0]);
+    n[1] = (float)(((double)TS(24) * M[7] + (double)TS(20) * M[4]) + (double)TS(16) * M[1]);
+    n[2] = (float)(((double)TS(24) * M[8] + (double)TS(20) * M[5]) + (double)TS(16) * M[2]);
+}
+
+static void Tg_Set3(BYTE* fr, int at, double x, double y, double z)
+{
+    CallThis(Tg_Set, TB(at), (float)x, (float)y, (float)z);
+}
+
+// the ribbon from a (88) to b (76) with normal n and the three trailing floats (bits)
+static void Tg_DrawRibbon(BYTE* fr, int flip, const float* n, int v, int w, int t)
+{
+    CallC(Tg_Ribbon, flip, TI(88), TI(92), TI(96), TI(76), TI(80), TI(84), *(const int*)&n[0], *(const int*)&n[1],
+          *(const int*)&n[2], v, w, t);
+}
+
+static void Tg_DrawPlume(BYTE* fr, BYTE* ctx, BYTE* D, unsigned fl, int a7, int mid)
+{
+    CallC(Tg_Plume, ctx, F(int, D, 36), TB(280), TB(204), TI(116), (int)((fl >> 8) & 15), a7, mid, 0);
+}
+
+// 0.5 for the odd levels, else 0
+static int Tg_Half(BYTE* fr) { return (TI(200) % 2) ? Tg_F05 : 0; }
+
+extern "C" {
+
+// [$L_5c8ae0] the $$TreeGenerator1 object handler (ctx, renderer, object o): the record at o+60 of kind 10 is
+// made a kind 12 record (its 8 values, the trunk and leaf formats of its level, its line node and sound), kind 2
+// with +4 set is drawn by FUN_5ca8e0; then the trunk's four points from the base o+20 along the up vector with
+// the two swaying springs, the crown's four points by the shape (flags >> 8), the trunk strip when fade enough,
+// the crown ribbon or beam and its plume; 0 for other kinds, else 1
+int __cdecl TreeGen_Draw(void* arg0, BYTE* ctx, BYTE* o)
+{
+    BYTE fr[824];
+    BYTE* rec = o + 60;
+    if (!rec)
+        return 0;
+    unsigned fl = F(DWORD, rec, 0);
+    int kind = F(int, rec, 8);
+    BYTE* data = F(BYTE*, rec, 12);
+    int lv = (fl >> 4) & 15;
+    TI(248) = 0;
+    TI(200) = lv;
+    for (int k = 220; k <= 244; k += 4)
+        TI(k) = 0;
+    TI(256) = 0;
+    TI(252) = 0;
+    TI(260) = 0;
+    TI(264) = 0;
+    BYTE* D;
+    if (kind == 2) {
+        if (F(int, rec, 4) == 1)
+            return TreeGen_DrawStill(arg0, ctx, o);
+        F(int, rec, 4) = 0;
+        TI(252) = F(int, data, 0);
+        TI(256) = F(int, data, 4);
+        D = TB(220);
+        if (!TI(252))
+            TI(252) = (lv % 2) ? CallC<int>(Tg_FindFmt2, o, lv - 1, lv) : CallC<int>(Tg_FindFmt2, o, lv, lv + 1);
+        if (!TI(256) && (F(BYTE, rec, 0) & 1))
+            TI(256) = CallC<int>(Tg_FindFmt1, o, lv);
+    } else if (kind == 10) {
+        BYTE* p = (BYTE*)operator new(48);
+        if (p)
+            memset(p, 0, 48);
+        TI(128) = (int)p;
+        memcpy(TB(220), data + 8, 32);
+        TI(252) = (lv % 2) ? CallC<int>(Tg_FindFmt2, o, lv - 1, lv) : CallC<int>(Tg_FindFmt2, o, lv, lv + 1);
+        TI(256) = (F(BYTE, rec, 0) & 1) ? CallC<int>(Tg_FindFmt1, o, lv) : 0;
+        TI(264) = CallC<int>(Tg_PlayAt, o, (F(DWORD, rec, 0) >> 8) & 15);
+        if (F(BYTE, rec, 0) & 2) {
+            BYTE* q = (BYTE*)TI(128);
+            if (!F(BYTE*, q, 44)) {
+                memcpy(TB(376), o + 20, 16);
+                TI(260) = CallC<int>(Tg_LineNode, o, TB(376));
+            } else {
+                TI(260) = CallC<int>(Tg_LineNode, o, F(BYTE*, q, 44) + 212);
+            }
+        } else {
+            TI(260) = 0;
+        }
+        operator delete(F(void*, rec, 12));
+        F(int, rec, 8) = 12;
+        BYTE* n = (BYTE*)operator new(48);
+        F(int, rec, 4) = 0;
+        F(BYTE*, rec, 12) = n;
+        memcpy(n, TB(220), F(int, rec, 8) * 4);
+        D = F(BYTE*, rec, 12);
+    } else if (kind == 12) {
+        D = data;
+    } else {
+        return 0;
+    }
+
+    // the base and its light
+    memcpy(TB(132), o + 20, 16);
+    CallC(Tg_SkyColours, TB(132));
+    memcpy(TB(132), o + 20, 16);
+    int flip = (int)((double)TS(136) * TS(132)) & 1;
+    double A = (double)TS(144) * tg_64c904;
+    TS(104) = (float)A;
+    TS(128) = (float)(A * tg_64c328);
+    const float* cam = CallThis<float*>(Tg_Camera, ctx);
+    TS(16) = (float)((double)cam[0] - TS(132));
+    TS(20) = (float)((double)cam[1] - TS(136));
+    TS(24) = (float)((double)cam[2] - TS(140));
+    TI(44) = TI(16);
+    TI(48) = TI(20);
+    TI(52) = TI(24);
+    double fade = tg_64c250 - CallC<double>(Tg_Length, TB(44)) * tg_64c268;
+    TS(196) = (float)fade;
+    if (fade < tg_64c264)
+        TI(196) = 0;
+
+    // the two springs
+    TI(56) = 0;
+    TI(60) = 0;
+    if (F(int, rec, 8) == 2) {
+        TI(216) = 0;
+        TI(212) = 0;
+        TI(208) = 0;
+        TI(204) = 0;
+    } else {
+        TI(28) = rand();
+        TS(28) = (float)((double)TI(28) * tg_64c254);
+        float dt = (float)F(double, ctx, 8480);
+        float old = F(float, D, 12);
+        F(float, D, 12) = (float)CallC<double>(Tg_SwingStep, D + 8, D + 4, D, TS(104), TS(28), old, dt);
+        TI(28) = rand();
+        old = F(float, D, 28);
+        TS(28) = (float)((double)TI(28) * tg_64c254);
+        dt = (float)F(double, ctx, 8480);
+        F(float, D, 28) = (float)CallC<double>(Tg_SwingStep, D + 24, D + 20, D + 16, TS(104), TS(28), old, dt);
+        TS(56) = (float)((double)F(float, D, 0) * tg_64c904);
+        TS(60) = (float)((double)F(float, D, 16) * tg_64c904);
+        CallC(Tg_SwingQuarters, TS(104), F(float, D, 4), F(float, D, 20), TB(204), TB(208), TB(212), TB(216));
+    }
+    if (BYTE* f2 = F(BYTE*, D, 32)) {
+        TI(28) = F(WORD, F(BYTE*, f2, 76), 20);
+        tg_67f93c = (float)TI(28);
+    }
+    BYTE* dev = tg_device720908;
+    ((long(__stdcall*)(BYTE*, int, int))(*(void***)dev)[20])(dev, 136, F(int, ctx, 8272) ? 1 : 0);
+
+    // the trunk: P0 148, P1 160, P2 172, P3 184
+    memset(TB(148), 0, 48);
+    const float* up = &tg_up702630;
+    double a0 = (double)TS(104) * up[0];
+    TI(148) = TI(132);
+    double a1 = (double)TS(104) * up[1];
+    TI(156) = TI(140);
+    TI(152) = TI(136);
+    TS(112) = (float)a1;
+    TS(48) = (float)a1;
+    double a2 = (double)TS(104) * up[2];
+    TS(100) = (float)a2;
+    TS(52) = (float)a2;
+    double x = a0 + TS(132);
+    TS(68) = (float)((double)TS(48) + TS(136));
+    TS(72) = (float)((double)TS(140) + TS(52));
+    TS(16) = (float)(x + TS(56));
+    TS(20) = (float)((double)TS(68) + TS(60));
+    TI(160) = TI(16);
+    TS(24) = TS(72);
+    double w0 = (double)TS(56) + TS(56);
+    double w1 = (double)TS(60) + TS(60);
+    TI(164) = TI(20);
+    TI(68) = TI(112);
+    TI(168) = TI(24);
+    TS(272) = (float)w1;
+    x = a0 + TS(16);
+    TI(72) = TI(100);
+    TS(48) = (float)((double)TS(20) + TS(68));
+    TS(52) = (float)((double)TS(24) + TS(72));
+    TS(16) = (float)(x + w0);
+    TI(172) = TI(16);
+    TS(20) = (float)((double)TS(272) + TS(48));
+    TS(24) = TS(52);
+    TI(176) = TI(20);
+    TI(180) = TI(24);
+    double s0 = (double)TS(56) * tg_64d2f8;
+    TI(68) = TI(112);
+    TI(72) = TI(100);
+    TS(44) = (float)s0;
+    TS(48) = (float)((double)TS(60) * tg_64d2f8);
+    x = a0 + TS(16);
+    TS(36) = (float)((double)TS(20) + TS(68));
+    TS(40) = (float)((double)TS(24) + TS(72));
+    TS(16) = (float)(x + TS(44));
+    TS(20) = (float)((double)TS(48) + TS(36));
+    TI(184) = TI(16);
+    TS(24) = TS(40);
+    TI(188) = TI(20);
+    TI(192) = TI(24);
+
+    // the crown: Q0 280, Q1 292, Q2 304, Q3 316, by the shape
+    memset(TB(280), 0, 48);
+    unsigned shape = (F(DWORD, rec, 0) >> 8) & 15;
+    double e;
+    switch (shape) {
+    case 0:
+    case 4:
+        e = shape == 0 ? (double)TS(144) : (double)TS(144) * tg_64da38;
+        TI(108) = 0;
+        TI(120) = 0;
+        TI(124) = 0;
+        TI(100) = TI(56);
+        TI(112) = TI(60);
+        break;
+    case 1:
+        e = (double)TS(144) * tg_651d0c;
+        TI(120) = TI(56);
+        TI(124) = TI(60);
+        TS(108) = (float)((double)TS(144) * tg_64c258);
+        TS(100) = (float)((double)TS(56) * tg_651d0c);
+        TS(112) = (float)((double)TS(60) * tg_651d0c);
+        break;
+    case 2:
+    case 3:
+        if (shape == 2) {
+            e = (double)TS(144) * tg_651d08;
+            TS(108) = (float)((double)TS(144) * tg_651d04);
+        } else {
+            e = (double)TS(144) * tg_651d00;
+            TS(108) = (float)((double)TS(144) * tg_651cfc);
+        }
+        TS(120) = (float)((double)TS(56) * tg_64c258);
+        TS(124) = (float)((double)TS(60) * tg_64c258);
+        TS(100) = (float)((double)TS(56) * tg_651d00);
+        TS(112) = (float)((double)TS(60) * tg_651d00);
+        break;
+    case 5:
+        e = (double)TS(144) * tg_651cf8;
+        TS(28) = (float)e;
+        TS(120) = (float)((double)TS(56) * tg_64c350);
+        TI(108) = TI(28);
+        TS(124) = (float)((double)TS(60) * tg_64c350);
+        TS(100) = (float)((double)TS(56) * tg_64c258);
+        TS(112) = (float)((double)TS(60) * tg_64c258);
+        break;
+    case 6: {
+        e = (double)TS(144) * tg_64c330;
+        TS(108) = (float)((double)TS(144) * tg_651cf4);
+        double u = (double)TS(56) * tg_64c330;
+        TS(120) = (float)u;
+        double v = (double)TS(60) * tg_64c330;
+        TS(28) = (float)v;
+        TS(124) = (float)v;
+        TS(100) = (float)u;
+        TI(112) = TI(28);
+        break;
+    }
+    default:
+        e = TS(116);
+        break;
+    }
+    TS(116) = (float)(e * tg_64c904);
+    double b0 = (double)TS(108) * up[0];
+    TS(36) = (float)((double)TS(108) * up[1]);
+    TS(40) = (float)((double)TS(108) * up[2]);
+    x = b0 + TS(132);
+    TS(68) = (float)((double)TS(36) + TS(136));
+    TS(72) = (float)((double)TS(140) + TS(40));
+    TS(16) = (float)(x + TS(120));
+    TS(20) = (float)((double)TS(124) + TS(68));
+    TI(280) = TI(16);
+    TS(24) = TS(72);
+    TS(64) = (float)((double)TS(100) + TS(120));
+    TI(284) = TI(20);
+    TI(288) = TI(24);
+    TS(68) = (float)((double)TS(112) + TS(124));
+    double e0 = (double)TS(116) * up[0];
+    double e1 = (double)TS(116) * up[1];
+    TS(108) = (float)e1;
+    TS(36) = (float)e1;
+    double e2 = (double)TS(116) * up[2];
+    TS(28) = (float)e2;
+    TS(40) = (float)e2;
+    x = e0 + TS(16);
+    TS(48) = (float)((double)TS(20) + TS(36));
+    TS(52) = (float)((double)TS(24) + TS(40));
+    TS(16) = (float)(x + TS(64));
+    TS(20) = (float)((double)TS(68) + TS(48));
+    TI(292) = TI(16);
+    TS(24) = TS(52);
+    TI(296) = TI(20);
+    double hx = ((double)TS(100) + TS(100)) + TS(120);
+    TI(300) = TI(24);
+    TI(36) = TI(108);
+    TI(40) = TI(28);
+    TI(88) = 0;
+    TI(92) = 0;
+    TI(96) = 0;
+    TS(272) = (float)(((double)TS(112) + TS(112)) + TS(124));
+    x = e0 + TS(16);
+    TS(68) = (float)((double)TS(20) + TS(36));
+    TS(72) = (float)((double)TS(24) + TS(40));
+    TS(16) = (float)(x + hx);
+    TI(304) = TI(16);
+    TS(20) = (float)((double)TS(272) + TS(68));
+    TS(24) = TS(72);
+    double hx2 = (double)TS(100) * tg_64d2f8 + TS(120);
+    TI(308) = TI(20);
+    TI(36) = TI(108);
+    TI(312) = TI(24);
+    TI(40) = TI(28);
+    TS(64) = (float)hx2;
+    TS(68) = (float)((double)TS(112) * tg_64d2f8 + TS(124));
+    x = e0 + TS(16);
+    TS(48) = (float)((double)TS(20) + TS(36));
+    TS(52) = (float)((double)TS(24) + TS(40));
+    TS(16) = (float)(x + TS(64));
+    TS(20) = (float)((double)TS(68) + TS(48));
+    TI(316) = TI(16);
+    TS(24) = TS(52);
+    TI(320) = TI(20);
+    TI(324) = TI(24);
+    TI(76) = 0;
+    TI(80) = 0;
+    TI(84) = 0;
+    if (BYTE* f2 = F(BYTE*, D, 32))
+        CallThis(Tg_MatSelect, ctx, f2, 0, 0, 0);
+
+    const double k = tg_64c258;
+    float n[3];
+    switch ((F(DWORD, rec, 0) >> 8) & 15) {
+    case 0:
+    case 1:
+    case 2: {
+        int s = ((F(DWORD, rec, 0) >> 8) & 15);
+        if (s == 0) {
+            TI(76) = TI(184);
+            TI(80) = TI(188);
+            TI(84) = TI(192);
+            TI(88) = TI(148);
+            TI(92) = TI(152);
+            TI(96) = TI(156);
+        } else {
+            if (TS(196) > tg_64b840)
+                CallC(Tg_Strip, TB(148), 1, TS(128), TS(104), TS(56), TS(60), Tg_Bits(Tg_Half(fr)));
+            double dx = (double)TS(184) - TS(172);
+            TS(36) = (float)((double)TS(188) - TS(176));
+            TS(40) = (float)((double)TS(192) - TS(180));
+            dx = dx * k;
+            TS(68) = (float)((double)TS(36) * k);
+            TS(72) = (float)((double)TS(40) * k);
+            TS(44) = (float)((double)TS(184) + dx);
+            TI(76) = TI(44);
+            TS(48) = (float)((double)TS(188) + TS(68));
+            TI(80) = TI(48);
+            TS(52) = (float)((double)TS(192) + TS(72));
+            TI(84) = TI(52);
+            if (s == 1) {
+                TI(88) = TI(160);
+                TI(92) = TI(164);
+                TI(96) = TI(168);
+            } else {
+                double ex = (double)TS(160) - TS(148);
+                double ey = (double)TS(164) - TS(152);
+                TS(36) = (float)ey;
+                TS(40) = (float)((double)TS(168) - TS(156));
+                double exk = ex * k;
+                double eyk = (double)TS(36) * k;
+                double ezk = (double)TS(40) * k;
+                Tg_Set3(fr, 32, exk + TS(148), (double)TS(152) + eyk, (double)TS(156) + ezk);
+                TI(88) = TI(32);
+                TI(92) = TI(36);
+                TI(96) = TI(40);
+            }
+        }
+        int t = Tg_Half(fr);
+        TI(28) = t;
+        int w, f;
+        if (s == 2) {
+            Tg_Normal(fr, ctx, 632, n);
+            w = Tg_F15;
+            f = Tg_F03;
+        } else {
+            Tg_Normal(fr, ctx, s == 0 ? 488 : 728, n);
+            w = Tg_F2;
+            f = Tg_F02;
+        }
+        Tg_DrawRibbon(fr, flip, n, t, w, f);
+        if (F(BYTE, rec, 0) & 1)
+            Tg_DrawPlume(fr, ctx, D, F(DWORD, rec, 0), Tg_F2, f);
+        return 1;
+    }
+    case 3:
+    case 4: {
+        int s = ((F(DWORD, rec, 0) >> 8) & 15);
+        if (s == 3) {
+            if (TS(196) > tg_64b840)
+                CallC(Tg_Arch, TB(148), 1, TS(128), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
+            Tg_Set3(fr, 32, (double)TS(184) - TS(172), (double)TS(188) - TS(176), (double)TS(192) - TS(180));
+            Tg_Set3(fr, 64, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+            Tg_Set3(fr, 44, (double)TS(64) + TS(184), (double)TS(68) + TS(188), (double)TS(72) + TS(192));
+            TI(80) = TI(48);
+            TI(76) = TI(44);
+            TI(84) = TI(52);
+            Tg_Set3(fr, 32, (double)TS(160) - TS(148), (double)TS(164) - TS(152), (double)TS(168) - TS(156));
+            Tg_Set3(fr, 64, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+            Tg_Set3(fr, 44, (double)TS(148) + TS(64), (double)TS(152) + TS(68), (double)TS(156) + TS(72));
+            TI(92) = TI(48);
+            Tg_Set3(fr, 32, -(double)(&tg_ahead702620)[0], -(double)(&tg_ahead702620)[1],
+                    -(double)(&tg_ahead702620)[2]);
+            TI(88) = TI(44);
+            TI(96) = TI(52);
+            TI(16) = TI(32);
+            TI(20) = TI(36);
+            TI(24) = TI(40);
+            const float* M = CallC<float*>(Tg_Inverse, TB(536), ctx + 4208);
+            double nz = ((double)TS(24) * M[8] + (double)TS(20) * M[5]) + (double)TS(16) * M[2];
+            double ny = ((double)TS(24) * M[7] + (double)TS(20) * M[4]) + (double)TS(16) * M[1];
+            double nx = ((double)TS(24) * M[6] + (double)TS(20) * M[3]) + (double)TS(16) * M[0];
+            Tg_Set3(fr, 340, nx, ny, nz);
+            memcpy(n, TB(340), 12);
+        } else {
+            TI(84) = TI(192);
+            TI(76) = TI(184);
+            TI(80) = TI(188);
+            TI(96) = TI(156);
+            Tg_Set3(fr, 32, -(double)(&tg_ahead702620)[0], -(double)(&tg_ahead702620)[1],
+                    -(double)(&tg_ahead702620)[2]);
+            TI(88) = TI(148);
+            TI(92) = TI(152);
+            TI(328) = TI(32);
+            TI(332) = TI(36);
+            TI(336) = TI(40);
+            const float* M = CallC<float*>(Tg_Inverse, TB(680), ctx + 4208);
+            const float* R = CallC<float*>(Tg_RotateBy, TB(404), TB(328), M);
+            memcpy(n, R, 12);
+        }
+        Tg_DrawRibbon(fr, flip, n, Tg_Fm1, Tg_F1, Tg_F03);
+        if (F(BYTE, rec, 0) & 1)
+            Tg_DrawPlume(fr, ctx, D, F(DWORD, rec, 0), Tg_F1, Tg_F03);
+        return 1;
+    }
+    case 5: {
+        CallC(Tg_Arch, TB(148), 2, (float)((double)TS(128) * tg_651cf0), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
+        Tg_Set3(fr, 32, (double)TS(184) - TS(172), (double)TS(188) - TS(176), (double)TS(192) - TS(180));
+        Tg_Set3(fr, 64, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+        Tg_Set3(fr, 44, (double)TS(184) + TS(64), (double)TS(188) + TS(68), (double)TS(192) + TS(72));
+        TI(76) = TI(44);
+        TI(80) = TI(48);
+        TI(84) = TI(52);
+        Tg_Set3(fr, 32, (double)TS(172) - TS(160), (double)TS(176) - TS(164), (double)TS(180) - TS(168));
+        Tg_Set3(fr, 64, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+        Tg_Set3(fr, 44, (double)TS(160) + TS(64), (double)TS(164) + TS(68), (double)TS(168) + TS(72));
+        TI(88) = TI(44);
+        Tg_Set3(fr, 32, -(double)(&tg_ahead702620)[0], -(double)(&tg_ahead702620)[1],
+                -(double)(&tg_ahead702620)[2]);
+        TI(92) = TI(48);
+        TI(96) = TI(52);
+        TI(352) = TI(32);
+        TI(356) = TI(36);
+        TI(360) = TI(40);
+        const float* M = CallC<float*>(Tg_Inverse, TB(584), ctx + 4208);
+        const float* R = CallC<float*>(Tg_RotateBy, TB(452), TB(352), M);
+        CallC(Tg_Beam, flip, TB(88), TB(76), R, Tg_Bits(Tg_F1), Tg_Bits(Tg_F05));
+        if (F(BYTE, rec, 0) & 1)
+            Tg_DrawPlume(fr, ctx, D, F(DWORD, rec, 0), Tg_F1, Tg_F05);
+        return 1;
+    }
+    case 6: {
+        CallC(Tg_Arch, TB(148), 1, (float)((double)TS(128) * tg_64d2f8), TS(104), TS(56), TS(60), Tg_Bits(Tg_F05));
+        Tg_Set3(fr, 32, (double)TS(184) - TS(172), (double)TS(188) - TS(176), (double)TS(192) - TS(180));
+        TI(268) = TI(32);
+        TI(272) = TI(36);
+        TI(276) = TI(40);
+        BYTE* h = CallC<BYTE*>(Tg_DivScalar, TB(392), TB(268), Tg_Bits(Tg_F2));
+        const int* r = CallC<int*>(Tg_Add, TB(428), TB(184), h);
+        TI(76) = r[0];
+        TI(80) = r[1];
+        TI(84) = r[2];
+        BYTE* d = CallC<BYTE*>(Tg_Sub, TB(464), TB(184), TB(148));
+        BYTE* q = CallC<BYTE*>(Tg_DivScalar, TB(440), d, Tg_Bits(Tg_F4));
+        r = CallC<int*>(Tg_Add, TB(416), TB(148), q);
+        TI(88) = r[0];
+        TI(92) = r[1];
+        TI(96) = r[2];
+        const float* M = CallC<float*>(Tg_Inverse, TB(776), ctx + 4208);
+        BYTE* ng = CallC<BYTE*>(Tg_Negated, TB(476), &tg_ahead702620);
+        const float* R = CallC<float*>(Tg_RotateBy, TB(132), ng, M);
+        CallC(Tg_Beam, flip, TB(88), TB(76), R, Tg_Bits(Tg_F1), Tg_Bits(Tg_F04));
+        if (F(BYTE, rec, 0) & 1)
+            Tg_DrawPlume(fr, ctx, D, F(DWORD, rec, 0), Tg_F1, Tg_F04);
+        return 1;
+    }
+    }
+    return 1;
+}
+
+}
+
+#undef TS
+#undef TI
+#undef TB
+
+// ---------------------------------------------------------------------------
+// Batch 32: the tree generator's still trees
+
+extern "C" void Tg_Markers(); KING_ALIAS("_Tg_Markers", "_Marker_DrawRays")
+extern "C" void Tg_Axes(); KING_ALIAS("_Tg_Axes", "_Axes_Draw")
+
+#define TS(o) (*(float*)(fr + (o)))
+#define TI(o) (*(int*)(fr + (o)))
+#define TB(o) (fr + (o))
+
+static void Tg2_Set3(BYTE* fr, int at, double x, double y, double z)
+{
+    CallThis(Tg_Set, TB(at), (float)x, (float)y, (float)z);
+}
+
+// the marker rays from a to b (3 floats each at the frame offsets) with the three trailing floats (bits)
+static void Tg2_Markers(BYTE* fr, int flip, int a, int b, int c, int d, int e)
+{
+    CallC(Tg_Markers, flip, TI(a), TI(a + 4), TI(a + 8), TI(b), TI(b + 4), TI(b + 8), c, d, e);
+}
+
+static void Tg2_Plume(BYTE* fr, BYTE* ctx, BYTE* data, BYTE* rec, int a7, int mid)
+{
+    CallC(Tg_Plume, ctx, F(int, data, 4), TB(184), TB(164), TI(60), (int)((F(DWORD, rec, 0) >> 8) & 15), a7, mid, 1);
+}
+
+extern "C" {
+
+// $L_5cb970 (inside FUN_5ca8e0): the shadow at p from the shadow table (70ebf8), else 64c264
+float __cdecl Light_Channel(const float* p)
+{
+    if (g_70ebf8)
+        return Shadows_At((BYTE*)g_70ebf8, 0, p);
+    return tg_64c264;
+}
+
+// [FUN_5ca8e0] draws a still tree of the generator (kind 2 record with +4 set; ctx, object o): its light at
+// the base turned by the view, culling off, the trunk's four points along the up vector, the crown's four
+// points by the shape (flags >> 8), the trunk strip, the crown's marker rays or axes and its plume; 0 when the
+// record isn't one
+int __cdecl TreeGen_DrawStill(void* arg0, BYTE* ctx, BYTE* o)
+{
+    BYTE fr[328];
+    if (!o)
+        return 0;
+    BYTE* rec = o + 60;
+    if (!rec || F(int, rec, 8) != 2 || F(int, rec, 4) != 1)
+        return 0;
+    BYTE* data = F(BYTE*, rec, 12);
+    TI(96) = (int)data;
+    unsigned lv = (F(DWORD, rec, 0) >> 4) & 15;
+    memcpy(TB(76), o + 20, 16);
+    const float* M = (const float*)(ctx + F(int, ctx, 8236) * 48 + 5216);
+    double y = (((double)TS(76) * M[1] + (double)TS(84) * M[7]) + (double)TS(80) * M[4]) + M[10];
+    TS(16) = (float)((((double)TS(76) * M[2] + (double)TS(84) * M[8]) + (double)TS(80) * M[5]) + M[11]);
+    double x = (((double)TS(84) * M[6] + (double)TS(80) * M[3]) + (double)TS(76) * M[0]) + M[9];
+    TI(28) = TI(16);
+    TS(20) = (float)x;
+    TS(24) = (float)y;
+    CallC(Tg_SkyColours, TB(20));
+    memcpy(TB(76), o + 20, 16);
+    int flip = (int)((double)TS(80) * TS(76)) & 1;
+    double A = (double)TS(88) * tg_64c904;
+    BYTE* dev = tg_device720908;
+    TS(92) = (float)A;
+    TS(160) = (float)(A * tg_64c328);
+    ((long(__stdcall*)(BYTE*, int, void*))(*(void***)dev)[21])(dev, 22, TB(180));
+    dev = tg_device720908;
+    ((long(__stdcall*)(BYTE*, int, int))(*(void***)dev)[20])(dev, 22, 1);
+    if (BYTE* f2 = F(BYTE*, data, 0)) {
+        TI(16) = F(WORD, F(BYTE*, f2, 76), 20);
+        tg_67f93c = (float)TI(16);
+    }
+    dev = tg_device720908;
+    ((long(__stdcall*)(BYTE*, int, int))(*(void***)dev)[20])(dev, 136, F(int, ctx, 8272) ? 1 : 0);
+
+    // the trunk: P0 100, P1 112, P2 124, P3 136
+    memset(TB(100), 0, 48);
+    const float* up = &tg_up702630;
+    double a0 = (double)up[0] * TS(92);
+    TI(100) = TI(76);
+    TI(104) = TI(80);
+    double a1 = (double)up[1] * TS(92);
+    TI(108) = TI(84);
+    TS(44) = (float)a1;
+    TS(24) = (float)a1;
+    double a2 = (double)up[2] * TS(92);
+    TS(60) = (float)a2;
+    TS(28) = (float)a2;
+    TS(48) = (float)(a0 + TS(76));
+    TS(52) = (float)((double)TS(24) + TS(80));
+    TI(112) = TI(48);
+    TS(56) = (float)((double)TS(28) + TS(84));
+    TI(36) = TI(44);
+    TI(116) = TI(52);
+    TI(40) = TI(60);
+    TS(20) = (float)(a0 + TS(48));
+    TI(120) = TI(56);
+    TS(24) = (float)((double)TS(52) + TS(36));
+    TI(124) = TI(20);
+    TI(36) = TI(44);
+    TS(28) = (float)((double)TS(56) + TS(40));
+    TI(128) = TI(24);
+    TI(40) = TI(60);
+    TS(48) = (float)(a0 + TS(20));
+    TI(132) = TI(28);
+    TI(136) = TI(48);
+    TS(52) = (float)((double)TS(24) + TS(36));
+    TI(140) = TI(52);
+    TS(56) = (float)((double)TS(28) + TS(40));
+    TI(144) = TI(56);
+
+    // the crown: Q0 184, Q1 196, Q2 208, Q3 220
+    memset(TB(184), 0, 48);
+    unsigned shape = (F(DWORD, rec, 0) >> 8) & 15;
+    double e;
+    switch (shape) {
+    case 0:
+        e = TS(88);
+        TI(44) = 0;
+        break;
+    case 1:
+        e = (double)TS(88) * tg_651d0c;
+        TS(44) = (float)((double)TS(88) * tg_64c258);
+        break;
+    case 2:
+        e = (double)TS(88) * tg_651d08;
+        TS(44) = (float)((double)TS(88) * tg_651d04);
+        break;
+    case 3:
+        e = (double)TS(88) * tg_651d00;
+        TS(44) = (float)((double)TS(88) * tg_651cfc);
+        break;
+    case 4:
+        e = (double)TS(88) * tg_64da38;
+        TI(44) = 0;
+        break;
+    case 5:
+        e = (double)TS(88) * tg_651cf8;
+        TS(16) = (float)e;
+        TI(44) = TI(16);
+        break;
+    case 6:
+        e = (double)TS(88) * tg_64c330;
+        TS(44) = (float)((double)TS(88) * tg_651cf4);
+        break;
+    default:
+        e = TS(60);
+        break;
+    }
+    TS(60) = (float)(e * tg_64c904);
+    double b0 = (double)TS(44) * up[0];
+    TS(36) = (float)((double)TS(44) * up[1]);
+    TS(40) = (float)((double)TS(44) * up[2]);
+    TS(20) = (float)(b0 + TS(76));
+    TS(24) = (float)((double)TS(36) + TS(80));
+    TI(184) = TI(20);
+    TS(28) = (float)((double)TS(40) + TS(84));
+    TI(188) = TI(24);
+    double e0 = (double)TS(60) * up[0];
+    TI(192) = TI(28);
+    double e1 = (double)TS(60) * up[1];
+    TS(44) = (float)e1;
+    TS(36) = (float)e1;
+    double e2 = (double)TS(60) * up[2];
+    TS(16) = (float)e2;
+    TS(40) = (float)e2;
+    TS(48) = (float)(e0 + TS(20));
+    TS(52) = (float)((double)TS(24) + TS(36));
+    TI(196) = TI(48);
+    TI(36) = TI(44);
+    TS(56) = (float)((double)TS(28) + TS(40));
+    TI(200) = TI(52);
+    TI(40) = TI(16);
+    TS(20) = (float)(e0 + TS(48));
+    TI(204) = TI(56);
+    TS(24) = (float)((double)TS(52) + TS(36));
+    TI(208) = TI(20);
+    TS(28) = (float)((double)TS(56) + TS(40));
+    TI(212) = TI(24);
+    TI(216) = TI(28);
+    double qx = e0 + TS(20);
+    TI(36) = TI(44);
+    TI(40) = TI(16);
+    TI(148) = 0;
+    TS(48) = (float)qx;
+    TS(52) = (float)((double)TS(24) + TS(36));
+    TI(152) = 0;
+    TI(220) = TI(48);
+    TS(56) = (float)((double)TS(28) + TS(40));
+    TI(156) = 0;
+    TI(224) = TI(52);
+    TI(64) = 0;
+    TI(68) = 0;
+    TI(228) = TI(56);
+    TI(72) = 0;
+    if (BYTE* f2 = F(BYTE*, data, 0))
+        CallThis(Tg_MatSelect, ctx, f2, 0, 0, 0);
+    TI(176) = 0;
+    TI(172) = 0;
+    TI(168) = 0;
+    TI(164) = 0;
+
+    const double k = tg_64c258;
+    int half = (lv % 2) ? Tg_F05 : 0;
+    switch (shape) {
+    case 0:
+        TI(72) = TI(144);
+        TI(148) = TI(100);
+        TI(152) = TI(104);
+        TI(64) = TI(136);
+        TI(68) = TI(140);
+        TI(156) = TI(108);
+        TI(16) = half;
+        CallC(Tg_Markers, flip, TI(100), TI(104), TI(108), TI(136), TI(140), TI(144), half, Tg_F2, Tg_F02);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F2, Tg_F02);
+        break;
+    case 1: {
+        TI(44) = lv % 2;
+        TI(16) = half;
+        CallC(Tg_Strip, TB(100), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(half));
+        double dx = (double)TS(136) - TS(124);
+        double dy = (double)TS(140) - TS(128);
+        TI(148) = TI(112);
+        TS(36) = (float)dy;
+        TS(40) = (float)((double)TS(144) - TS(132));
+        TI(152) = TI(116);
+        TI(156) = TI(120);
+        dx = dx * k;
+        TS(52) = (float)((double)TS(36) * k);
+        TS(56) = (float)((double)TS(40) * k);
+        TS(20) = (float)((double)TS(136) + dx);
+        TI(64) = TI(20);
+        TS(24) = (float)((double)TS(52) + TS(140));
+        TI(68) = TI(24);
+        TS(28) = (float)((double)TS(56) + TS(144));
+        TI(72) = TI(28);
+        TI(16) = half;
+        Tg2_Markers(fr, flip, 112, 20, half, Tg_F2, Tg_F02);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F2, Tg_F02);
+        break;
+    }
+    case 2: {
+        TI(16) = half;
+        CallC(Tg_Strip, TB(100), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(half));
+        double dx = (double)TS(136) - TS(124);
+        double dy = (double)TS(140) - TS(128);
+        TS(36) = (float)dy;
+        TS(40) = (float)((double)TS(144) - TS(132));
+        dx = dx * k;
+        double dyk = (double)TS(36) * k;
+        double dzk = (double)TS(40) * k;
+        Tg2_Set3(fr, 32, (double)TS(136) + dx, dyk + TS(140), dzk + TS(144));
+        TI(68) = TI(36);
+        TI(64) = TI(32);
+        TI(72) = TI(40);
+        Tg2_Set3(fr, 32, (double)TS(112) - TS(100), (double)TS(116) - TS(104), (double)TS(120) - TS(108));
+        Tg2_Set3(fr, 48, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+        Tg2_Set3(fr, 20, (double)TS(100) + TS(48), (double)TS(104) + TS(52), (double)TS(108) + TS(56));
+        TI(148) = TI(20);
+        TI(152) = TI(24);
+        TI(156) = TI(28);
+        TI(16) = half;
+        Tg2_Markers(fr, flip, 20, 64, half, Tg_F15, Tg_F03);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F2, Tg_F03);
+        break;
+    }
+    case 3:
+        CallC(Tg_Arch, TB(100), 1, TS(160), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
+        Tg2_Set3(fr, 32, (double)TS(136) - TS(124), (double)TS(140) - TS(128), (double)TS(144) - TS(132));
+        Tg2_Set3(fr, 20, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+        Tg2_Set3(fr, 48, (double)TS(136) + TS(20), (double)TS(24) + TS(140), (double)TS(28) + TS(144));
+        TI(68) = TI(52);
+        TI(64) = TI(48);
+        TI(72) = TI(56);
+        Tg2_Set3(fr, 32, (double)TS(112) - TS(100), (double)TS(116) - TS(104), (double)TS(120) - TS(108));
+        Tg2_Set3(fr, 48, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+        Tg2_Set3(fr, 20, (double)TS(100) + TS(48), (double)TS(104) + TS(52), (double)TS(108) + TS(56));
+        TI(156) = TI(28);
+        TI(148) = TI(20);
+        TI(152) = TI(24);
+        Tg2_Markers(fr, flip, 20, 64, Tg_Fm1, Tg_F1, Tg_F03);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F03);
+        break;
+    case 4:
+        TI(152) = TI(104);
+        TI(156) = TI(108);
+        TI(72) = TI(144);
+        TI(64) = TI(136);
+        TI(68) = TI(140);
+        TI(148) = TI(100);
+        Tg2_Markers(fr, flip, 100, 136, Tg_Fm1, Tg_F1, Tg_F03);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F03);
+        break;
+    case 5: {
+        CallC(Tg_Arch, TB(100), 2, (float)((double)TS(160) * tg_651cf0), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
+        Tg2_Set3(fr, 32, (double)TS(136) - TS(124), (double)TS(140) - TS(128), (double)TS(144) - TS(132));
+        Tg2_Set3(fr, 20, (double)TS(32) * k, (double)TS(36) * k, (double)TS(40) * k);
+        Tg2_Set3(fr, 48, (double)TS(136) + TS(20), (double)TS(24) + TS(140), (double)TS(28) + TS(144));
+        TI(72) = TI(56);
+        TI(64) = TI(48);
+        TI(68) = TI(52);
+        Tg2_Set3(fr, 32, (double)TS(124) - TS(112), (double)TS(128) - TS(116), (double)TS(132) - TS(120));
+        TI(232) = TI(32);
+        TI(236) = TI(36);
+        TI(240) = TI(40);
+        BYTE* h = CallC<BYTE*>(Tg_DivScalar, TB(244), TB(232), Tg_Bits(Tg_F2));
+        const int* r = CallC<int*>(Tg_Add, TB(256), TB(112), h);
+        TI(148) = r[0];
+        TI(152) = r[1];
+        TI(156) = r[2];
+        CallC(Tg_Axes, flip, TB(148), TB(64), Tg_F1, Tg_F05);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F05);
+        break;
+    }
+    case 6: {
+        CallC(Tg_Strip, TB(100), 1, (float)((double)TS(160) * tg_64d2f8), TS(92), 0.0f, 0.0f, Tg_Bits(Tg_F05));
+        BYTE* d = CallC<BYTE*>(Tg_Sub, TB(268), TB(136), TB(124));
+        BYTE* h = CallC<BYTE*>(Tg_DivScalar, TB(292), d, Tg_Bits(Tg_F2));
+        const int* r = CallC<int*>(Tg_Add, TB(316), TB(136), h);
+        TI(64) = r[0];
+        TI(68) = r[1];
+        TI(72) = r[2];
+        d = CallC<BYTE*>(Tg_Sub, TB(304), TB(136), TB(100));
+        BYTE* q = CallC<BYTE*>(Tg_DivScalar, TB(280), d, Tg_Bits(Tg_F4));
+        r = CallC<int*>(Tg_Add, TB(76), TB(100), q);
+        TI(148) = r[0];
+        TI(152) = r[1];
+        TI(156) = r[2];
+        CallC(Tg_Axes, flip, TB(148), TB(64), Tg_F1, Tg_F04);
+        if (F(BYTE, rec, 0) & 1)
+            Tg2_Plume(fr, ctx, data, rec, Tg_F1, Tg_F04);
+        break;
+    }
+    }
+    dev = tg_device720908;
+    ((long(__stdcall*)(BYTE*, int, int))(*(void***)dev)[20])(dev, 22, TI(180));
+    return 1;
+}
+
+}
+
+#undef TS
+#undef TI
+#undef TB
+
+// ---------------------------------------------------------------------------
+// Batch 32: the host's reply
+
+extern "C" void Hr32_MsgConstruct(); KING_ALIAS("_Hr32_MsgConstruct", "@DpMessage_Construct@8")
+extern "C" void Hr32_StreamConstruct(); KING_ALIAS("_Hr32_StreamConstruct", "@Stream_Construct@8")
+extern "C" void Hr32_Now(); KING_ALIAS("_Hr32_Now", "_Tsc_Now")
+extern "C" void Hr32_Receive(); KING_ALIAS("_Hr32_Receive", "_Net_Receive")
+extern "C" void Hr32_StreamDone(); KING_ALIAS("_Hr32_StreamDone", "@Gate_602bd0@8")
+extern "C" void Hr32_MsgDestroy(); KING_ALIAS("_Hr32_MsgDestroy", "@MsgBuf_Destroy@8")
+extern "C" void Hr32_MsgSet(); KING_ALIAS("_Hr32_MsgSet", "@DpMessage_Set@16")
+extern "C" void Hr32_MsgStart(); KING_ALIAS("_Hr32_MsgStart", "@Gate_Set24@8")
+extern "C" void Hr32_NextType(); KING_ALIAS("_Hr32_NextType", "@Msg_NextType@12")
+extern "C" void Hr32_ReadBlob(); KING_ALIAS("_Hr32_ReadBlob", "@Stream_ReadBlob@20")
+extern "C" void Hr32_Skip(); KING_ALIAS("_Hr32_Skip", "@Msg_SkipRecord@8")
+
+extern "C" {
+
+// [FUN_5c55b0] waits on the host's reply (self = the net session, blob out, its size): 2 for a message of
+// kind 2 from the session's player (+412), 1 when a kind 4 message holds a record 120 whose blob reads as code
+// 950, else 0
+int __fastcall Net_HostReply(BYTE* self, void*, void* out, void* size)
+{
+    BYTE fr[60];    // the asm frame from ESP+12: the stream at +8, the message at +32
+    BYTE* s = fr + 8;
+    BYTE* m = fr + 32;
+    CallThis(Hr32_MsgConstruct, m);
+    CallThis(Hr32_StreamConstruct, s);
+    F(int, s, 12) = 0;
+    F(double, s, 16) = CallC<double>(Hr32_Now);
+    int r = 0;
+    if (!CallC<int>(Hr32_Receive, s) && F(int, s, 12) == F(int, self, 412)) {
+        if (F(int, s, 0) == 2) {
+            r = 2;
+        } else if (F(int, s, 0) == 4) {
+            CallThis(Hr32_MsgSet, m, F(int, s, 4), F(int, s, 8));
+            if (!CallThis<int>(Hr32_MsgStart, m)) {
+                for (;;) {
+                    if (CallThis<int>(Hr32_NextType, m, (int*)fr))
+                        break;
+                    if (F(int, fr, 0) == 120 && !CallThis<int>(Hr32_ReadBlob, m, (int*)(fr + 4), out, size) &&
+                        F(int, fr, 4) == 950) {
+                        r = 1;
+                        break;
+                    }
+                    if (CallThis<int>(Hr32_Skip, m))
+                        break;
+                }
+            }
+        }
+    }
+    CallThis(Hr32_StreamDone, s);
+    CallThis(Hr32_MsgDestroy, m);
+    return r;
+}
+
+}

@@ -3051,3 +3051,57 @@ void __cdecl MovingItem_BodyContact(BYTE* s, BYTE* c, DWORD fl, float k)
 
 #undef V
 #undef I
+
+// ---------------------------------------------------------------------------
+// Batch 32: a moving item's settle step
+
+extern "C" void Ms32_MovingOf(); KING_ALIAS("_Ms32_MovingOf", "_Moving_Of")
+extern "C" void Ms32_MulAssign(); KING_ALIAS("_Ms32_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Ms32_FrameTime(); KING_ALIAS("_Ms32_FrameTime", "_Game_FrameTime")
+ASM_VAR(double, ms32_still64d668, $L_64d668)
+ASM_VAR(double, ms32_settle650628, $L_650628)
+ASM_VAR(float, ms32_one64c250, $L_64c250)
+ASM_VAR(double, ms32_spin64b738, $L_64b738)
+ASM_VAR(char, ms32_s67d5c4, $L_67d5c4)
+ASM_VAR(char, ms32_s67d5b0, $L_67d5b0)
+
+extern "C" {
+
+// [$L_581cb0..$L_581de7] a moving item's settle step (vtable): without flag 8 (+1196) it stays posed (vtable
+// +140 with +800, +500); moving and nearly still (speed^2 and spin^2 at most 64d668) it takes the rest pose
+// (+804, +548), flag 2 marking it settled (+1192) unless another body holds it; else after the settle time
+// (+984) its slow velocity and spin decay by 0.97 per half second; +896 set while moving
+void __fastcall MovingItem_Settle(BYTE* s, void*, int)
+{
+    const float* v = (const float*)(s + 416);
+    const float* w = (const float*)(s + 428);
+    float v2 = (float)(((double)v[2] * v[2] + (double)v[1] * v[1]) + (double)v[0] * v[0]);
+    float w2 = (float)(((double)w[2] * w[2] + (double)w[1] * w[1]) + (double)w[0] * w[0]);
+    if (!(F(BYTE, s, 1196) & 8)) {
+        CallVirt(s, 140, F(int, s, 800), s + 500);
+    } else if (F(int, s, 892) && !(v2 > ms32_still64d668) && !(w2 > ms32_still64d668)) {
+        CallVirt(s, 140, F(int, s, 804), s + 548);
+        if (F(BYTE, s, 1196) & 2) {
+            if (!F(int, s, 892) || !CallC<int>(Ms32_MovingOf, F(int, s, 1028)))
+                F(int, s, 1192) = 1;
+        }
+    } else {
+        if (F(int, s, 892) && F(float, s, 984) > ms32_settle650628) {
+            float p = (float)x87_pow(0.97, CallC<double>(Ms32_FrameTime) * 2.0);
+            float tmp[3];
+            if (v2 < ms32_one64c250) {
+                CallThis(Ms32_MulAssign, s + 416, tmp, p);
+                CallVirt(s, 144, s + 416, &ms32_s67d5c4);
+            }
+            if (w2 < ms32_spin64b738) {
+                CallThis(Ms32_MulAssign, s + 428, tmp, p);
+                CallVirt(s, 148, s + 428, &ms32_s67d5b0);
+            }
+        }
+        CallVirt(s, 140, F(int, s, 800), s + 500);
+    }
+    F(int, s, 896) = F(int, s, 896) || F(int, s, 892) ? 1 : 0;
+    F(DWORD, s, 900) = F(DWORD, s, 892);
+}
+
+}

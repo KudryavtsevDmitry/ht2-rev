@@ -845,7 +845,7 @@ DWORD* __cdecl Sch4b8070(DWORD* out, int a, Value3v h1, Value3v h2)
 
 extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
 extern "C" void FUN_4abf10(); KING_ALIAS("_FUN_4abf10", "@CharDeque_Construct@12")    // deque<char> constructor (n)
-ASM_PROC(FUN_4b54b0)    // file port: reads the file
+extern "C" void FUN_4b54b0(); KING_ALIAS("_FUN_4b54b0", "@FilePort_ReadHeader@4")    // file port: reads the file
 extern "C" struct _iobuf* __cdecl fopen(const char* name, const char* mode);
 
 extern "C" {
@@ -2677,3 +2677,51 @@ double __cdecl Rational_ToDouble(WORD** num, WORD** den)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: the file port's header
+
+extern "C" void Fp32_End(); KING_ALIAS("_Fp32_End", "@SchItem_Value@12")
+extern "C" void Fp32_PoolFree(); KING_ALIAS("_Fp32_PoolFree", "_Ai_PoolFree")
+extern "C" void Fp32_Seed(); KING_ALIAS("_Fp32_Seed", "@Rng_Seed@12")
+ASM_VAR(char, fp32_tag671510, $L_671510)
+ASM_VAR(int, fp32_seed67150c, $L_67150c)
+
+// drops the last character of the deque whose end iterator is at d (cur, first, last, node)
+static void Fp32_PopBack(BYTE* d)
+{
+    if (F(char*, d, 0) == F(char*, d, 4)) {
+        CallC(Fp32_PoolFree, F(char*, d, 4), 512);
+        F(char**, d, 12) -= 1;
+        F(char*, d, 4) = *F(char**, d, 12);
+        F(char*, d, 8) = F(char*, d, 4) + 512;
+        F(char*, d, 0) = F(char*, d, 8);
+    }
+    F(char*, d, 0) -= 1;
+}
+
+extern "C" {
+
+// [FUN_4b54b0] appends the file's first 4 bytes to the buffer (deque at +24); when they are the cipher tag
+// (671510) they are dropped again, +64 set and the reader's generator (+68) seeded; nothing read sets bit 2 of +16
+void __fastcall FilePort_ReadHeader(BYTE* self)
+{
+    BYTE fr[232];   // the tag at +0, the generator at +4
+    int n = (int)fread(fr, 1, 4, F(void*, self, 12));
+    if (!n) {
+        F(int, self, 16) |= 2;
+        return;
+    }
+    Val207_It end;
+    CallThis(Fp32_End, self + 24, &end);
+    CallThis(FUN_4ac0b0, self + 24, end, (char*)fr, (char*)fr + n);
+    if (n != 4 || memcmp(fr, &fp32_tag671510, 4))
+        return;
+    F(BYTE, self, 64) = 1;
+    for (int i = 0; i < 4; i++)
+        Fp32_PopBack(self + 48);
+    CallThis(Fp32_Seed, fr + 4, fp32_seed67150c);
+    memcpy(self + 68, fr + 4, 228);
+}
+
+}

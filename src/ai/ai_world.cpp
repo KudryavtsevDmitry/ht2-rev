@@ -9732,7 +9732,7 @@ extern "C" void FUN_46c960(); KING_ALIAS("_FUN_46c960", "@Mult46c960_DeletingDes
 extern "C" void FUN_44a530(); KING_ALIAS("_FUN_44a530", "@Vec8_Free@8")
 extern "C" void FUN_447270(); KING_ALIAS("_FUN_447270", "@Vec24_FreeStorage@8")
 extern "C" void FUN_48a6e0(); KING_ALIAS("_FUN_48a6e0", "_Copy24s")
-ASM_PROC(FUN_48c620)    // a polyline from points (thiscall points)
+extern "C" void FUN_48c620(); KING_ALIAS("_FUN_48c620", "@Polyline_Construct@12")    // a polyline from points (thiscall points)
 extern "C" void FUN_458e00(); KING_ALIAS("_FUN_458e00", "_Vec8b_AllocCopy@12")
 extern "C" void FUN_405b00(); KING_ALIAS("_FUN_405b00", "_Road_LinkObject")
 extern "C" void FUN_405f90(); KING_ALIAS("_FUN_405f90", "_Anchors_AttachNodes")
@@ -20528,12 +20528,152 @@ extern "C" int __cdecl Ai_PrepareVehicleOrder(int player, int dealer, const char
 }
 
 // ---------------------------------------------------------------------------
+// Batch 32: the AI's periodic player check
+
+ASM_VAR(double, q32_near64b6a0, $L_64b6a0)
+ASM_VAR(double, q32_farVeh66c740, $L_66c740)
+ASM_VAR(double, q32_idle64b750, $L_64b750)
+ASM_VAR(double, q32_far66c748, $L_66c748)
+ASM_VAR(double, q32_angle64b748, $L_64b748)
+ASM_VAR(double, q32_radius66c738, $L_66c738)
+ASM_VAR(double, q32_size64b740, $L_64b740)
+ASM_VAR(double, q32_kind2_64b6e0, $L_64b6e0)
+ASM_VAR(double, q32_kind3_64b738, $L_64b738)
+ASM_VAR(double, q32_chance64b730, $L_64b730)
+
+extern "C" {
+
+// [$L_420ed0] the task run every period: marks the parked players too far
+// from the current one (or idle too long) with 0x20000 and removes them, then
+// now and then adds a new player at a free spot about a radius away
+void __cdecl Ai_CheckPlayersNear()
+{
+    if (!g_loadDone68d130)
+        return;
+    BYTE* cur;
+    CallC(FUN_477b60, &cur);
+    BYTE* head = (BYTE*)g_players;
+    if (cur == head)
+        return;
+    BYTE* me = cur + 8;
+    BYTE st[24];
+    DVec3 at = *(const DVec3*)Player_CopyState(st, cur);
+    for (BYTE* it = *(BYTE**)head; it != (BYTE*)g_players; it = *(BYTE**)it) {
+        BYTE* d = AI_ListData(it);
+        if (!d || F(int, AI_ListData(it), 84) != 8)
+            continue;
+        int veh = F(int, AI_ListData(it), 76);
+        bool mark = false;
+        if (!(veh != -1 && Vehicle_Exists(veh))) {
+            const DVec3* s = (const DVec3*)Player_CopyState(st, it);
+            double x = s->x - at.x, y = s->y - at.y, z = s->z - at.z;
+            if (x87_sqrt(x * x + y * y + z * z) < q32_near64b6a0)
+                mark = true;
+        }
+        if (!mark) {
+            veh = F(int, AI_ListData(it), 76);
+            bool check = true;
+            if (veh != -1 && Vehicle_Exists(veh)) {
+                const DVec3* s = (const DVec3*)Player_CopyState(st, it);
+                double x = s->x - at.x, y = s->y - at.y, z = s->z - at.z;
+                if (!(x87_sqrt(y * y + z * z + x * x) > q32_farVeh66c740))
+                    check = false;
+            }
+            if (check) {
+                double now = AI_Now();
+                if (now - F(double, AI_ListData(it), 944) > q32_idle64b750) {
+                    mark = true;
+                } else {
+                    const DVec3* s = (const DVec3*)Player_CopyState(st, it);
+                    double x = s->x - at.x, y = s->y - at.y, z = s->z - at.z;
+                    mark = x87_sqrt(y * y + z * z + x * x) > q32_far66c748;
+                }
+            }
+        }
+        if (mark)
+            F(DWORD, AI_ListData(it), 88) |= 0x20000;
+    }
+    if (g_loadNear68d138) {
+        for (BYTE* it = *(BYTE**)g_players; it != (BYTE*)g_players; it = *(BYTE**)it) {
+            if (!AI_ListData(it) || F(int, AI_ListData(it), 84) != 8)
+                continue;
+            int veh = F(int, AI_ListData(it), 76);
+            if (veh != -1 && Vehicle_Exists(veh))
+                continue;
+            F(DWORD, AI_ListData(it), 88) |= 0x20000;
+        }
+    }
+    for (;;) {
+        BYTE* it = *(BYTE**)g_players;
+        while (it != (BYTE*)g_players && !(AI_ListData(it) && (F(DWORD, AI_ListData(it), 88) & 0x20000)))
+            it = *(BYTE**)it;
+        if (it == (BYTE*)g_players)
+            break;
+        Ai_RemovePlayer(it);
+    }
+    if (g_loadNear68d138)
+        return;
+    if (F(int, g_68cca8, 32) >= F(int, g_68cf28, 32))
+        return;
+    if (F(int, me, 92) == 5)
+        return;
+    if (!Vehicle_TimeOver(-1) && !(AiRandom() & 1))
+        return;
+    RoomInfo info;
+    info.m_36 = -1;
+    info.m_40 = -1;
+    info.flags = 0;
+    info.m_8 = 0;
+    info.m_12 = 0;
+    info.module = g_undefinedModule;
+    info.room = g_undefinedRoom;
+    info.m_24 = 0;
+    info.m_28 = 0;
+    Road_RoomInfo(*(const PositionId*)(me + 32), &info);
+    int room = info.m_36;
+    PositionId pos;
+    bool found = false;
+    for (int k = 0; k < 8 && !found; k++) {
+        unsigned r = AiRandom();
+        double a = (double)(__int64)(r % 628318) * q32_angle64b748;
+        double c = x87_cos(a);
+        double s = x87_sin(a);
+        double R = q32_radius66c738;
+        DVec3 v;
+        v.x = R * c + R * c + at.x;
+        v.y = s * R + s * R + at.y;
+        v.z = 0.0 + at.z;
+        PositionId tmp;
+        pos = *Ai_GetPositionIdEx(&tmp, room, &v);
+        Road_RoomInfo(pos, &info);
+        if (info.flags & 0x50)
+            continue;
+        DVec3 p;
+        Road_PointOf(&p, pos);
+        double x = p.x - at.x, y = p.y - at.y, z = p.z - at.z;
+        if (!(x87_sqrt(x * x + y * y + z * z) < R))
+            found = true;
+    }
+    if (!found)
+        return;
+    double q = x87_sqrt(F(double, &info, 8) * q32_size64b740);
+    if (info.m_32 == 2)
+        q = q * q32_kind2_64b6e0;
+    else if (info.m_32 == 3)
+        q = q * q32_kind3_64b738;
+    unsigned r = AiRandom() % 1000;
+    if (q * q32_chance64b730 > (double)(__int64)r)
+        Ai_NewPlayerAt(pos);
+}
+
+}
+
+// ---------------------------------------------------------------------------
 // Batch: the AI start of a game
 
 extern "C" void $L_41b720(); KING_ALIAS("_$L_41b720", "_Task_FormOrders")
 extern "C" void $L_41fcf0(); KING_ALIAS("_$L_41fcf0", "_Task_Standings")
 extern "C" void $L_41ed50(); KING_ALIAS("_$L_41ed50", "_Task_PlacePresents")
-ASM_PROC($L_420ed0)
 extern "C" void $L_422370(); KING_ALIAS("_$L_422370", "_Task_Waiting")
 extern "C" void $L_42b3a0(); KING_ALIAS("_$L_42b3a0", "_AI_SwitchToRandom")
 extern "C" void $L_4279d0(); KING_ALIAS("_$L_4279d0", "_Ai_FillStartGrid")
@@ -20719,7 +20859,7 @@ extern "C" void __cdecl Ai_StartGame(const char* saved, DWORD flags, const BYTE*
             F(double, t, 16) = CallC<double>(FUN_401000);
             F(double, t, 24) = period;
             F(const void*, t, 32) = s_task66e310;
-            F(void*, t, 40) = (void*)$L_420ed0;
+            F(void*, t, 40) = (void*)Ai_CheckPlayersNear;
             F(void*, t, 0) = &g_vtbl64b920;
         }
         Task_Add(t);

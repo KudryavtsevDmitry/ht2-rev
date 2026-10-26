@@ -12583,3 +12583,340 @@ int __fastcall Cop_Step(BYTE* s)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: the world side of the AI's player events
+
+extern "C" void Ev32_NodeByName(); KING_ALIAS("_Ev32_NodeByName", "_Node_ByName")
+extern "C" void Ev32_PlayerData(); KING_ALIAS("_Ev32_PlayerData", "_Ai_GetPlayerData")
+extern "C" void Ev32_Flags(); KING_ALIAS("_Ev32_Flags", "_Player_Flags")
+extern "C" void Ev32_SetVehicle(); KING_ALIAS("_Ev32_SetVehicle", "_Player_SetVehicleId")
+extern "C" void Ev32_FreeId(); KING_ALIAS("_Ev32_FreeId", "_Objects_FreeId")
+extern "C" void Ev32_MatrixAt(); KING_ALIAS("_Ev32_MatrixAt", "_Fx_VehicleMatrixAt")
+extern "C" void Ev32_Matrix(); KING_ALIAS("_Ev32_Matrix", "_Fx_VehicleMatrix")
+extern "C" void Ev32_ResCreate(); KING_ALIAS("_Ev32_ResCreate", "@Resources_Create@16")
+extern "C" void Ev32_ResGet(); KING_ALIAS("_Ev32_ResGet", "@Resources_Get@12")
+extern "C" void Ev32_ResSetData(); KING_ALIAS("_Ev32_ResSetData", "@Resources_SetData@24")
+extern "C" void Ev32_ResAdd(); KING_ALIAS("_Ev32_ResAdd", "@Resources_AddRecord@20")
+extern "C" void Ev32_ResDelete(); KING_ALIAS("_Ev32_ResDelete", "@Resources_Delete@12")
+extern "C" void Ev32_ResLoad(); KING_ALIAS("_Ev32_ResLoad", "@Resource_Load@12")
+extern "C" void Ev32_SetImage(); KING_ALIAS("_Ev32_SetImage", "_Ai_SetPlayerImage")
+extern "C" void Ev32_ObjectInit(); KING_ALIAS("_Ev32_ObjectInit", "@Fx_ObjectInit@44")
+extern "C" void Ev32_PlaceField(); KING_ALIAS("_Ev32_PlaceField", "_Player_PlaceField20")
+extern "C" void Ev32_SurfCopy(); KING_ALIAS("_Ev32_SurfCopy", "_Surface_Copy16")
+extern "C" void Ev32_Fatal(); KING_ALIAS("_Ev32_Fatal", "_Sys_Fatal")
+extern "C" void Ev32_SetObject(); KING_ALIAS("_Ev32_SetObject", "_Fx_SetObject")
+extern "C" void Ev32_SetObjectM(); KING_ALIAS("_Ev32_SetObjectM", "_Fx_SetObjectMatrix")
+extern "C" void Ev32_PosId(); KING_ALIAS("_Ev32_PosId", "_Ai_GetPositionId")
+extern "C" void Ev32_Orient(); KING_ALIAS("_Ev32_Orient", "_Ai_GetOrientationF")
+extern "C" void Ev32_RoadParams(); KING_ALIAS("_Ev32_RoadParams", "_Road_GetRoadParameters")
+extern "C" void Ev32_Route3(); KING_ALIAS("_Ev32_Route3", "FUN_487290")
+extern "C" void Ev32_Route2(); KING_ALIAS("_Ev32_Route2", "_Route_Call487230")
+extern "C" void Ev32_CarId(); KING_ALIAS("_Ev32_CarId", "_Player_CarId")
+extern "C" void Ev32_Movie(); KING_ALIAS("_Ev32_Movie", "_Movie_Play")
+extern "C" void Ev32_Notice(); KING_ALIAS("_Ev32_Notice", "_Notice_Show")
+extern "C" void Ev32_SetMode(); KING_ALIAS("_Ev32_SetMode", "@Shell_SetMode@12")
+extern "C" void Ev32_ObjFind(); KING_ALIAS("_Ev32_ObjFind", "_Objects_Find")
+extern "C" void Ev32_SoundRestart(); KING_ALIAS("_Ev32_SoundRestart", "@Sound_Restart@16")
+
+ASM_VAR(BYTE, ev_guard696270, $L_696270)
+ASM_VAR(int, ev_node696274, $L_696274)
+ASM_VAR(int, ev_node6962c8, $L_6962c8)
+ASM_VAR(int, ev_node696320, $L_696320)
+ASM_VAR(int, ev_route696330, $L_696330)
+ASM_VAR(int, ev_route69632c, $L_69632c)
+ASM_VAR(int, ev_follow696328, $L_696328)
+ASM_VAR(BYTE*, ev_followed6962cc, $L_6962cc)
+ASM_VAR(int, ev_next6f340c, $L_6f340c)
+ASM_VAR(int, ev_last67b734, $L_67b734)
+ASM_VAR(BYTE*, ev_world6cec6c, $L_6cec6c)
+ASM_VAR(BYTE*, ev_6cecd8, $L_6cecd8)
+ASM_VAR(BYTE*, ev_6cecbc, $L_6cecbc)
+ASM_VAR(BYTE*, ev_shell6ceca8, $L_6ceca8)
+ASM_VAR(int, ev_6f3480, $L_6f3480)
+ASM_VAR(int, ev_6f3484, $L_6f3484)
+ASM_VAR(BYTE, ev_trailers6d24bc, $L_6d24bc)
+ASM_VAR(BYTE, ev_identity7025f0, $L_7025f0)
+ASM_VAR(double, ev_hundred64b6a0, $L_64b6a0)
+ASM_VAR(double, ev_64b6e0, $L_64b6e0)
+ASM_VAR(double, ev_one64b670, $L_64b670)
+ASM_VAR(char, ev_s66d168, $L_66d168)
+ASM_VAR(char, ev_s66d148, $L_66d148)
+ASM_VAR(char, ev_s66d158, $L_66d158)
+ASM_VAR(char, ev_s672b80, $L_672b80)
+ASM_VAR(char, ev_s672b70, $L_672b70)
+ASM_VAR(char, ev_s672b48, $L_672b48)
+ASM_VAR(char, ev_s672b2c, $L_672b2c)
+ASM_VAR(char, ev_s672b14, $L_672b14)
+ASM_VAR(char, ev_s672b08, $L_672b08)
+ASM_VAR(char, ev_s672afc, $L_672afc)
+ASM_VAR(char, ev_s672af0, $L_672af0)
+ASM_VAR(char, ev_s672ae0, $L_672ae0)
+ASM_VAR(char, ev_undefinedModule, $L_66d638)
+ASM_VAR(char, ev_undefinedRoom, $L_66d628)
+
+struct Ev32_Pos { BYTE b[32]; };   // a road position, passed by value
+
+extern "C" {
+
+static void __cdecl Ev32_NoDtor() {}   // the asm's three empty static destructors
+
+// a road room record as Road_GetRoadParameters fills it
+static void Ev32_RoomInit(BYTE* r)
+{
+    F(int, r, 36) = -1;
+    F(int, r, 40) = -1;
+    F(int, r, 0) = 0;
+    F(int, r, 8) = 0;
+    F(int, r, 12) = 0;
+    F(const char*, r, 16) = &ev_undefinedModule;
+    F(const char*, r, 20) = &ev_undefinedRoom;
+    F(int, r, 24) = 0;
+    F(int, r, 28) = 0;
+}
+
+// [$L_4d76b0..$L_4d7d2c] the world's handler of an AI player event (player it, kind, data): 1 makes the
+// player's car object (a new world resource of id 100000+, its matrix on the road, the image of the start
+// car or the followed player's room), or takes the existing one, and its trailer type; 5 puts a loaded car
+// back on the road; 4 sets its matrix; 9/10 run the route of the two (three) named nodes and rotate them;
+// 11 the delivery notices; 12 the end of the game; 13 restarts a sound; 7 drops the resource; 15/14/17 the
+// engine's idle state; -1 when not handled
+int __cdecl Media_AiEvent(BYTE* it, int kind, BYTE* data)
+{
+    if (!(ev_guard696270 & 1)) {
+        ev_guard696270 |= 1;
+        ev_node696274 = -1;
+        atexit(Ev32_NoDtor);
+    }
+    if (!(ev_guard696270 & 2)) {
+        ev_node6962c8 = -1;
+        ev_guard696270 |= 2;
+        atexit(Ev32_NoDtor);
+    }
+    if (!(ev_guard696270 & 4)) {
+        ev_node696320 = -1;
+        ev_guard696270 |= 4;
+        atexit(Ev32_NoDtor);
+    }
+    int t;
+    if (ev_route696330 && ev_node696274 == -1) {
+        ev_node696274 = *CallC<int*>(Ev32_NodeByName, &t, (const char*)&ev_s66d168);
+        ev_node6962c8 = *CallC<int*>(Ev32_NodeByName, &t, (const char*)&ev_s66d148);
+        ev_node696320 = *CallC<int*>(Ev32_NodeByName, &t, (const char*)&ev_s66d158);
+    }
+    if (ev_route69632c && ev_node696274 == -1) {
+        ev_node696274 = *CallC<int*>(Ev32_NodeByName, &t, (const char*)&ev_s672b80);
+        ev_node6962c8 = *CallC<int*>(Ev32_NodeByName, &t, (const char*)&ev_s672b70);
+    }
+    BYTE* world = F(BYTE*, ev_world6cec6c, 1356);
+    BYTE* res = world + 704;
+    BYTE d[528];
+    CallC(Ev32_PlayerData, it, d);
+    int type = F(int, d, 8);
+    BYTE room[48];
+    BYTE mat[48];
+    if (kind == 1) {
+        if (CallC<int>(Ev32_Flags, it) & 0x100) {
+            CallC(Ev32_SetVehicle, it, -1);
+            return 0;
+        }
+        int vid = F(int, it, 84);
+        Ev32_RoomInit(room);
+        memset(mat, 0, 48);
+        memcpy(mat, &ev_identity7025f0, 48);
+        int sub = F(int, d, 16), grp = F(int, d, 12);
+        int id;
+        BYTE* r;
+        if (vid < 0) {
+            id = ev_next6f340c + 100000;
+            ev_next6f340c = (ev_next6f340c + 1) % 500;
+            CallC(Ev32_FreeId, &id);
+            BYTE m[48];
+            memcpy(mat, CallC<void*>(Ev32_MatrixAt, m, it, room), 48);
+            CallThis(Ev32_ResCreate, res, id, F(const char*, room, 16));
+            r = CallThis<BYTE*>(Ev32_ResGet, res, id);
+            if (type == 1) {
+                F(int, it, 156) = F(int, ev_6cecd8, 616);
+                CallC(Ev32_SetImage, it, F(int, ev_6cecd8, 624) + 1);
+            } else if (ev_follow696328 && type == 2) {
+                ev_followed6962cc = it;
+                memcpy(world + 652, mat, 48);
+                strcpy(F(char*, world, 488) + 44, F(const char*, room, 20));
+                strcpy(F(char*, world, 488) + 12, F(const char*, room, 16));
+            }
+            BYTE obj[300];
+            CallThis(Ev32_ObjectInit, obj, grp + sub * 1000, id % 1000, F(const char*, room, 20), (const void*)mat,
+                     it, 0, 0, 0, 0);
+            CallThis(Ev32_ResSetData, res, id, F(int, room, 16), 300, (const void*)obj);
+            CallC(Ev32_SetVehicle, it, id);
+            if (type != 1) {
+                F(BYTE, r, 8) |= 1;
+            } else {
+                strcpy(F(char*, world, 488) + 44, F(const char*, room, 20));
+                strcpy(F(char*, world, 488) + 12, F(const char*, room, 16));
+                goto shown;
+            }
+        } else {
+            id = vid;
+            r = CallThis<BYTE*>(Ev32_ResGet, res, vid);
+            if (!r)
+                CallC(Ev32_Fatal, (const char*)&ev_s672b48, 0);
+            memcpy(mat, F(BYTE*, r, 24) + 248, 48);
+            F(BYTE*, F(BYTE*, r, 24), 296) = it;
+            if (type != 1) {
+                F(BYTE, r, 8) |= 1;
+            } else {
+                strcpy(F(char*, world, 488) + 44, (const char*)(F(BYTE*, r, 24) + 16));
+                strcpy(F(char*, world, 488) + 12, F(const char*, F(BYTE*, r, 12), 4016));
+            shown:
+                memcpy(world + 652, mat, 48);
+                ev_last67b734 = id;
+                int k = CallC<int>(Ev32_PlaceField, it);
+                BYTE* sh = ev_6cecbc;
+                CallC(Ev32_SurfCopy, F(BYTE*, F(BYTE*, sh, 672), 72), F(BYTE*, F(BYTE*, sh, k * 4 + 368), 72), 6);
+            }
+        }
+        BYTE* tr = ((BYTE**)(&ev_trailers6d24bc + 12))[sub + grp * 372];
+        if (tr) {
+            F(int, r, 16) = F(int, tr, 16);
+            return 0;
+        }
+        CallC(Ev32_Fatal, (const char*)&ev_s672b2c, 0);
+        return 0;
+    }
+    if (kind == 5) {
+        BYTE* r = CallThis<BYTE*>(Ev32_ResGet, res, F(int, d, 36));
+        if (!r || type == 1)
+            return 0;
+        Ev32_RoomInit(room);
+        BYTE m[48];
+        CallC(Ev32_MatrixAt, m, it, room);
+        CallC(Ev32_SetObject, r, F(const char*, room, 20), (const void*)m, (const void*)0);
+        if (CallThis<int>(Ev32_ResAdd, res, F(int, room, 16), r, 1) == -1)
+            CallC(Ev32_Fatal, (const char*)&ev_s672b14, F(const char*, room, 16));
+        if (!ev_follow696328 || it != ev_followed6962cc)
+            return 0;
+        BYTE pos[32];
+        BYTE o[48];
+        CallC(Ev32_PosId, pos, it);
+        memcpy(world + 652, CallC<void*>(Ev32_Orient, o, *(Ev32_Pos*)pos), 48);
+        strcpy(F(char*, world, 488) + 44, F(const char*, room, 20));
+        strcpy(F(char*, world, 488) + 12, F(const char*, room, 16));
+        return 0;
+    }
+    if (kind == 4) {
+        BYTE* r = CallThis<BYTE*>(Ev32_ResGet, res, F(int, d, 36));
+        if (!r || F(int, r, 28))
+            return 0;
+        BYTE m[48];
+        CallC(Ev32_Matrix, m, it);
+        CallC(Ev32_SetObjectM, r, (const void*)m, (const void*)0);
+        return 0;
+    }
+    if (kind == 9 || kind == 10) {
+        if (ev_route696330) {
+            if (kind == 9)
+                CallC(Ev32_Route3, it, ev_node696274, ev_node696320);
+            else
+                CallC(Ev32_Route2, it, ev_node696274);
+            int a = ev_node696274, b = ev_node696320, c = ev_node6962c8;
+            ev_node6962c8 = a;
+            ev_node696274 = b;
+            ev_node696320 = c;
+            return 0;
+        }
+        if (!ev_route69632c || type == 1)
+            return -1;
+        if (kind == 9)
+            CallC(Ev32_Route3, it, ev_node696274, ev_node6962c8);
+        else
+            CallC(Ev32_Route2, it, ev_node696274);
+        int a = ev_node696274;
+        ev_node696274 = ev_node6962c8;
+        ev_node6962c8 = a;
+        return 0;
+    }
+    if (kind == 11) {
+        if (!data)
+            return -1;
+        int car;
+        if (it != (BYTE*)*CallC<int*>(Ev32_CarId, &car))
+            return -1;
+        if (F(BYTE, data, 0) & 1) {
+            if (F(int, ev_world6cec6c, 1316))
+                return 0;
+            CallC(Ev32_Movie, (const char*)&ev_s672b08, 5);
+            int n = (int)F(double, data, 16);
+            CallC(Ev32_Notice, 5, (const char*)0, F(int, data, 4), F(int, data, 8) + n * 100);
+            return 0;
+        }
+        if (F(int, ev_world6cec6c, 1316))
+            return 0;
+        int c2;
+        int* cp = CallC<int*>(Ev32_CarId, &c2);
+        if (CallC<int>(Ev32_Flags, (BYTE*)*cp) & 0x4000)
+            return 0;
+        ev_6f3480 = (int)F(double, data, 48);
+        ev_6f3484 = (int)F(double, data, 56);
+        int v = (int)(ev_hundred64b6a0 - F(double, data, 40) * ev_hundred64b6a0);
+        CallC(Ev32_Notice, 5, (const char*)0, 0, v);
+        return 0;
+    }
+    if (kind == 12) {
+        int car;
+        if (it == (BYTE*)*CallC<int*>(Ev32_CarId, &car) && (CallC<int>(Ev32_Flags, it) & 0x10000)) {
+            CallC(Ev32_Movie, (const char*)&ev_s672afc, 4);
+            return -1;
+        }
+        if (it == (BYTE*)*CallC<int*>(Ev32_CarId, &car)) {
+            CallC(Ev32_Movie, (const char*)&ev_s672af0, 3);
+            return -1;
+        }
+        CallThis(Ev32_SetMode, ev_shell6ceca8, 1);
+        return -1;
+    }
+    if (kind == 13) {
+        CallThis(Ev32_SoundRestart, CallC<BYTE*>(Ev32_ObjFind, (const char*)&ev_s672ae0), 1.0f, 1.0f);
+        return -1;
+    }
+    if (kind == 7) {
+        int rid = F(int, d, 36);
+        BYTE* r = CallThis<BYTE*>(Ev32_ResGet, res, rid);
+        if (!r)
+            return -1;
+        if (F(int, r, 28))
+            CallThis(Ev32_ResLoad, r, res);
+        CallThis(Ev32_ResAdd, res, 0, r, 0);
+        CallThis(Ev32_ResDelete, res, rid);
+        return -1;
+    }
+    if (kind == 15 || kind == 14 || kind == 17) {
+        BYTE* r = CallThis<BYTE*>(Ev32_ResGet, res, F(int, d, 36));
+        if (!r || !F(BYTE*, r, 28))
+            return 0;
+        BYTE* e = F(BYTE*, F(BYTE*, r, 28), 21600);
+        if (kind == 15) {
+            F(int, e, 16508) = 0;
+            F(int, e, 16476) = 0;
+            F(DWORD, e, 16496) |= 16;
+        } else if (kind == 14) {
+            Ev32_RoomInit(room);
+            BYTE pos[32];
+            CallC(Ev32_PosId, pos, it);
+            CallC(Ev32_RoadParams, *(Ev32_Pos*)pos, room);
+            int v = (int)(F(double, room, 8) * ev_64b6e0 / F(double, e, 16552) - ev_one64b670);
+            F(int, e, 16508) = v;
+            F(int, e, 16476) = v * 2;
+            F(DWORD, e, 16496) |= 16;
+        } else {
+            int v = rand() % 4;
+            F(int, e, 16508) = v;
+            F(int, e, 16476) = v * 2;
+            F(DWORD, e, 16496) &= ~16u;
+        }
+        return 0;
+    }
+    return -1;
+}
+
+}

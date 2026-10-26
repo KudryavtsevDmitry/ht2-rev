@@ -852,7 +852,7 @@ extern "C" BYTE* __cdecl Model_FindPart2(BYTE* obj)
 
 
 // ---------------------------------------------------------------------------
-ASM_PROC(FUN_4e4f78)    // (a, b, c, &lo, &hi)
+extern "C" void FUN_4e4f78(); KING_ALIAS("_FUN_4e4f78", "_Sound_PanShares")    // (a, b, c, &lo, &hi)
 extern "C" void FUN_4e28b0(); KING_ALIAS("_FUN_4e28b0", "_Vec3_OutOfBox")
 extern "C" void FUN_5fdaf0(); KING_ALIAS("_FUN_5fdaf0", "@Sound_Restart@16")
 extern "C" void FUN_5fd430(); KING_ALIAS("_FUN_5fd430", "@Sound_Play@20")
@@ -2222,3 +2222,51 @@ float __cdecl Angle_F2Pi(float x, const char* name)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: a sound's pan shares
+
+extern "C" void Ws32_Dot(); KING_ALIAS("_Ws32_Dot", "_Vec3_Dot")
+ASM_VAR(float, ws32_one64c250, $L_64c250)
+ASM_VAR(double, ws32_one64b670, $L_64b670)
+ASM_VAR(double, ws32_zero64b678, $L_64b678)
+ASM_VAR(double, ws32_half64b6e0, $L_64b6e0)
+
+extern "C" {
+
+// [FUN_4e4f78..$L_4e4fec] the left and right shares of a sound at offset c (range a, volume b): the volume falls
+// with the distance (a^2 / |c|^2, at most 1, square-rooted), the pan by c's x against its y
+void __cdecl Sound_PanShares(float a, float b, const float* c, float* lo, float* hi)
+{
+    float k100 = 100.0f;
+    float d2 = (float)CallC<double>(Ws32_Dot, c, c);
+    float r = (float)((double)a * a / d2);
+    if (r > ws32_one64c250)
+        r = 1.0f;
+    float rr = (float)((double)k100 * k100 * r);   // unused, as in the asm
+    if (rr < ws32_one64c250)
+        rr = 1.0f;
+    (void)rr;
+    double s = x87_sqrt((double)r);
+    float sf = (float)s;
+    double f = s > ws32_one64b670 ? 1.0 : (double)sf;
+    float vol = (float)(b * f);
+    if (vol > ws32_one64c250)
+        vol = 1.0f;
+    float pan = 0.5f;
+    float one = 1.0f;
+    double ax = x87_fabs((double)c[0]);
+    double ay1 = (double)one;
+    if (x87_fabs((double)c[1]) * ay1 < ax) {
+        double side = c[0] > ws32_zero64b678 ? 0.0 : 1.0;
+        pan = (float)side;
+    } else {
+        double px = (double)c[0] * ws32_half64b6e0;
+        pan = (float)(ws32_half64b6e0 - px / (x87_fabs((double)c[1]) * one));
+    }
+    float div = pan > ws32_half64b6e0 ? pan : (float)(ws32_one64c250 - pan);
+    *lo = (float)((double)vol * pan / div);
+    *hi = (float)(((double)ws32_one64c250 - pan) * vol / div);
+}
+
+}

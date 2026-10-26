@@ -5810,3 +5810,78 @@ int __fastcall Slot_SegmentCast(BYTE* s, void*, int flags, BYTE* q)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: a mesh object's draw
+
+extern "C" void Sd32_TestInfo(); KING_ALIAS("_Sd32_TestInfo", "@Scene_TestInfo@16")
+extern "C" void Sd32_SphereClip(); KING_ALIAS("_Sd32_SphereClip", "@View_SphereClip@12")
+extern "C" void Sd32_ClipSphere(); KING_ALIAS("_Sd32_ClipSphere", "@Render_ClipSphere@12")
+extern "C" void Sd32_Object(); KING_ALIAS("_Sd32_Object", "@Render_Object@12")
+extern "C" void Sd32_Fatal(); KING_ALIAS("_Sd32_Fatal", "_Sys_Fatal")
+ASM_VAR(int, sd32_on683b54, $L_683b54)
+ASM_VAR(int, sd32_hw720904, $L_720904)
+ASM_VAR(int, sd32_mode723a50, $L_723a50)
+ASM_VAR(BYTE*, sd32_dev723a90, $L_723a90)
+ASM_VAR(char, sd32_s683b68, $L_683b68)
+ASM_VAR(char, sd32_s683b58, $L_683b58)
+ASM_VAR(BYTE, sd32_up702630, $L_702630)
+
+extern "C" {
+
+// [$L_5f1720..$L_5f18aa] a mesh object's draw (vtable; flags, renderer r): skipped (0) when meshes are off
+// (683b54), the scene test fails or the sphere is clipped; in hardware mode 1 (+8620) a strip, fan (+96 = 1,
+// 2) or list mesh (3: by the device's stencil) is counted and drawn by Mesh_Draw with the up vector; else its
+// +52 parts of 88 bytes (+56) go to Render_Object, last first with flag 1
+int __fastcall MeshObject_Draw(BYTE* self, void*, DWORD flags, BYTE* r)
+{
+    if (!sd32_on683b54)
+        return 0;
+    if (!CallThis<int>(Sd32_TestInfo, self, flags, r))
+        return 0;
+    if (!CallThis<int>(Sd32_SphereClip, r, self + 20))
+        return 0;
+    int saved = F(int, r, 8620);
+    if (sd32_hw720904) {
+        if (CallVirt<int>(r, 16))
+            F(int, r, 8620) = 2;
+        BYTE* mats = F(BYTE*, r, 8260);
+        int lit = F(int, mats + F(WORD, self, 98) * 124, 32) & 1;
+        ScVec3 up;
+        memcpy(&up, &sd32_up702630, 12);
+        if (F(int, r, 8620) == 1) {
+            int kind = F(WORD, self, 96);
+            int k = lit;
+            if (kind == 3) {
+                if (sd32_mode723a50 != 1 && sd32_mode723a50 != 3 && sd32_mode723a50 != 2)
+                    CallC(Sd32_Fatal, (const char*)&sd32_s683b68, 0);
+                if (!sd32_dev723a90)
+                    CallC(Sd32_Fatal, (const char*)&sd32_s683b58, 0);
+                k += F(int, sd32_dev723a90, 28) ? 4 : 6;
+            } else if (kind == 1) {
+                k += 2;
+            } else if (kind != 2) {
+                goto parts;
+            }
+            F(int, r, 8316 + k * 4) += F(WORD, self, 52);
+            F(int, r, 8348)++;
+            Mesh_Draw(r, self + 60, mats + F(WORD, self, 98) * 124, &up, 4);
+            return 1;
+        }
+    }
+parts:
+    F(int, r, 8280) += F(WORD, self, 52);
+    F(int, r, 8252) = F(int, self, 48);
+    F(int, r, 8448) = CallThis<int>(Sd32_ClipSphere, r, self + 20);
+    if (flags & 1) {
+        for (int i = F(WORD, self, 52) - 1; i >= 0; i--)
+            CallThis(Sd32_Object, r, F(BYTE*, self, 56) + i * 88);
+    } else {
+        for (int i = 0; i < F(WORD, self, 52); i++)
+            CallThis(Sd32_Object, r, F(BYTE*, self, 56) + i * 88);
+    }
+    F(int, r, 8620) = saved;
+    return 1;
+}
+
+}

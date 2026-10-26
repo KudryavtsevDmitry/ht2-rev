@@ -759,7 +759,7 @@ extern "C" void __cdecl ScyInit_52f6e0() { CallC(FUN_5ac0c0, (BYTE*)g_scy6d1830,
 // More virtual methods and static initializers.
 
 extern "C" void FUN_52fd90(); KING_ALIAS("_FUN_52fd90", "@Obj52fd90_Reset@8")
-ASM_PROC(FUN_52e060)
+extern "C" void FUN_52e060(); KING_ALIAS("_FUN_52e060", "@Scenery_Run@4")
 ASM_VAR(AsmLabel, g_scy6cf4d8, $L_6cf4d8)
 ASM_VAR(AsmLabel, g_scy6d1db8, $L_6d1db8)
 ASM_VAR(AsmLabel, g_scy6cf3b0, $L_6cf3b0)
@@ -1598,3 +1598,101 @@ void* __fastcall ParkedCar_DrawShadow(BYTE* s, void*, int a, int b)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: the run steps of falling trees, trash boxes and items
+
+#include "x87.h"
+extern "C" void Sr32_CheckFrame(); KING_ALIAS("_Sr32_CheckFrame", "@MovingItem_CheckFrame@20")
+extern "C" void Sr32_ItemFrame(); KING_ALIAS("_Sr32_ItemFrame", "@MovingItem_Frame@4")
+extern "C" void Sr32_UpdateLying(); KING_ALIAS("_Sr32_UpdateLying", "@Body_UpdateLying@4")
+extern "C" void Sr32_GroundStep(); KING_ALIAS("_Sr32_GroundStep", "@Body_GroundStep@12")
+extern "C" void Sr32_MulComponents(); KING_ALIAS("_Sr32_MulComponents", "_Vec3_MulComponents")
+extern "C" void Sr32_FrameTime(); KING_ALIAS("_Sr32_FrameTime", "_Game_FrameTime")
+extern "C" void Sr32_Rest(); KING_ALIAS("_Sr32_Rest", "@Item_Rest@4")
+ASM_VAR(double, sr32_damp64b780, $L_64b780)
+ASM_VAR(char, sr32_ftree1, $L_678530)
+ASM_VAR(char, sr32_ftree2, $L_678520)
+ASM_VAR(char, sr32_ftree3, $L_678510)
+ASM_VAR(char, sr32_trash1, $L_6784fc)
+ASM_VAR(char, sr32_trash2, $L_6784e8)
+ASM_VAR(char, sr32_trash3, $L_6784d4)
+
+// the shared run step: when moving (+892) the velocity (+428) decays by 0.95 per 1/64b780 s and the turn (+440)
+// is the spin (+428 x +404 componentwise) through the body matrix (+500); then the state flags and vtable +80
+// with the frame time, +896 set while moving; names are the profile marks (0 for the plain step)
+static void Sr32_Run(BYTE* s, const char* const* names)
+{
+    BYTE* m = s + 500;
+    if (names)
+        CallThis(Sr32_CheckFrame, s, m, names[0], 0);
+    if (F(int, s, 372)) {
+        CallThis(Sr32_ItemFrame, s);
+        return;
+    }
+    CallVirt(s, 52);
+    if (names) {
+        CallThis(Sr32_UpdateLying, s);
+        CallThis(Sr32_GroundStep, s, 0);
+    } else {
+        CallVirt(s, 56);
+    }
+    if (F(int, s, 892)) {
+        double k = x87_pow(0.95, CallC<double>(Sr32_FrameTime) * sr32_damp64b780);
+        float* v = (float*)(s + 428);
+        float vx = (float)(k * v[0]);
+        float vy = (float)(k * v[1]);
+        float vz = (float)(k * v[2]);
+        v[0] = vx;
+        v[1] = vy;
+        v[2] = vz;
+        float tmp[3];
+        const float* r = CallC<float*>(Sr32_MulComponents, tmp, v, s + 404);
+        const float* M = (const float*)m;
+        float* w = (float*)(s + 440);
+        float wx = (float)(((double)M[3] * r[1] + (double)M[6] * r[2]) + (double)r[0] * M[0]);
+        float wy = (float)(((double)M[4] * r[1] + (double)M[7] * r[2]) + (double)M[1] * r[0]);
+        float wz = (float)(((double)M[5] * r[1] + (double)M[8] * r[2]) + (double)M[2] * r[0]);
+        w[0] = wx;
+        w[1] = wy;
+        w[2] = wz;
+    }
+    if (names)
+        F(int, s, 3588) = 0;
+    F(DWORD, s, 896) = F(DWORD, s, 892);
+    F(BYTE, s, 892) &= 0xfa;
+    float ft = (float)CallC<double>(Sr32_FrameTime);
+    CallVirt(s, 80, ft, 0);
+    int moving = F(int, s, 896) || F(int, s, 892) ? 1 : 0;
+    F(DWORD, s, 900) = F(DWORD, s, 892);
+    F(int, s, 896) = moving;
+    if (names)
+        CallThis(Sr32_CheckFrame, s, m, names[1], 0);
+    CallThis(Sr32_Rest, s);
+    if (names)
+        CallThis(Sr32_CheckFrame, s, m, names[2], 0);
+}
+
+extern "C" {
+
+// [$L_52d720..$L_52d79c] _FTree::run, a falling tree's step
+void __fastcall FTree_Run(BYTE* s)
+{
+    const char* names[3] = {&sr32_ftree1, &sr32_ftree2, &sr32_ftree3};
+    Sr32_Run(s, names);
+}
+
+// [$L_52b980..$L_52b9fc] _TrashBox::run, a trash box's step
+void __fastcall TrashBox_Run(BYTE* s)
+{
+    const char* names[3] = {&sr32_trash1, &sr32_trash2, &sr32_trash3};
+    Sr32_Run(s, names);
+}
+
+// [FUN_52e060..$L_52e0bc] the plain run step of a scenery item (vtable +56 instead of the lying and ground steps)
+void __fastcall Scenery_Run(BYTE* s)
+{
+    Sr32_Run(s, 0);
+}
+
+}

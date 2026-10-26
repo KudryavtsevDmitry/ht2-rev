@@ -1062,7 +1062,7 @@ extern "C" void FUN_4297b0(); KING_ALIAS("_FUN_4297b0", "_AI_True")
 extern "C" void FUN_569380(); KING_ALIAS("_FUN_569380", "_Copter_Send956")
 extern "C" void FUN_5a40b0(); KING_ALIAS("_FUN_5a40b0", "@Node_Position@12")
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
-ASM_PROC(FUN_5a4f00)    // explosion effect: constructor
+extern "C" void FUN_5a4f00(); KING_ALIAS("_FUN_5a4f00", "@Explosion_Construct@56")    // explosion effect: constructor
 ASM_VAR(int, g_6f33f0, $L_6f33f0)
 
 extern "C" {
@@ -4298,7 +4298,7 @@ extern "C" void FUN_576660(); KING_ALIAS("_FUN_576660", "_Set6f3338")
 extern "C" void FUN_5e5370(); KING_ALIAS("_FUN_5e5370", "@Resources_Get@12")
 extern "C" void FUN_5a40b0(); KING_ALIAS("_FUN_5a40b0", "@Node_Position@12")
 extern "C" void FUN_5ef640(); KING_ALIAS("_FUN_5ef640", "@Node_Root@8")
-ASM_PROC(FUN_5a4f00)
+extern "C" void FUN_5a4f00(); KING_ALIAS("_FUN_5a4f00", "@Explosion_Construct@56")
 extern "C" void FUN_5a3fd0(); KING_ALIAS("_FUN_5a3fd0", "@Node_Matrix@12")
 extern "C" void FUN_4ba0c0(); KING_ALIAS("_FUN_4ba0c0", "_Effect_New4dd2a0")
 extern "C" void FUN_56f910(); KING_ALIAS("_FUN_56f910", "_Game_GoToRoom")
@@ -7916,3 +7916,45 @@ void __fastcall Copter_SetState(BYTE* s, void*, int n)
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// Batch 32: the copter's plane circle
+
+ASM_VAR(double, q32_tiny64b930, $L_64b930)
+ASM_VAR(double, q32_zero64b678, $L_64b678)
+ASM_VAR(double, q32_one64b670, $L_64b670)
+ASM_VAR(double, q32_m1_64ca48, $L_64ca48)
+ASM_VAR(char, s_q32_67b49c, $L_67b49c)
+
+extern "C" {
+
+// [FUN_563490..$L_5634c5] the circle of radius r about c whose plane holds
+// the axis v (it must have no x/y part): its point d along axis x the
+// direction (sign of r) from c, then Copter_CircleTouch from there; 0 when
+// r is about 0
+int __cdecl Copter_PlaneCircle(const float* a, const float* n, const float* c, const float* axis, float d,
+                               const float* v, float r, float* at, float* angle, float* dir)
+{
+    if (x87_fabs(v[0]) > q32_tiny64b930 || x87_fabs(v[1]) > q32_tiny64b930)
+        World_Fatal(&s_q32_67b49c);
+    if (x87_fabs(r) < q32_tiny64b930)
+        return 0;
+    double t = x87_fabs(d / r);
+    double k = r > q32_zero64b678 ? q32_one64b670 : q32_m1_64ca48;
+    float u[3];
+    u[0] = (float)(k * v[0]);
+    u[1] = (float)(k * v[1]);
+    u[2] = (float)(k * v[2]);
+    double cx = (double)u[1] * axis[2] - (double)u[2] * axis[1];
+    float cy = (float)((double)u[2] * axis[0] - (double)u[0] * axis[2]);
+    float cz = (float)((double)u[0] * axis[1] - (double)u[1] * axis[0]);
+    float ty = (float)(cy * t);
+    float tz = (float)(cz * t);
+    float p[3];
+    p[0] = (float)(cx * t + c[0]);
+    p[1] = (float)(ty + (double)c[1]);
+    p[2] = (float)(tz + (double)c[2]);
+    return Copter_CircleTouch(a, n, p, u, c, at, angle, dir);
+}
+
+}
