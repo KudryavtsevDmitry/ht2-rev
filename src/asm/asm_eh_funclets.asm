@@ -16,7 +16,7 @@ EXTERN _KingRdata:BYTE
 EXTERN _Stl_Unlock:PROC
 EXTERN ___CxxFrameHandler:PROC
 
-PUBLIC $L_63b648, $L_63b64f, $L_63f8a0, $L_63f8b0
+PUBLIC $L_63b648, $L_63b64f
 PUBLIC $L_63fe00, $L_63fe78, $L_63fe7f, $L_63fe87
 PUBLIC $L_643ef0, $L_643f00, $L_643f10, $L_643f20
 PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8
@@ -86,30 +86,6 @@ $L_63b678 ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
-$L_63f8a0::
-
-            mov EAX,OFFSET (_KingRdata+67992)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_63f8b0::
-
-            mov EAX,OFFSET (_KingRdata+68128)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
 $L_63fdd0 PROC
 
             mov EAX,OFFSET (_KingRdata+70600)
