@@ -1230,3 +1230,155 @@ void __cdecl Dd_CopySprite(int sx, int sy, int dx, int dy, int w, int h, BYTE* s
 }
 
 } // extern "C"
+
+// [$L_5d7c20] tests a video mode (w, h, bytes per pixel, flags, out result,
+// out video memory, out free video memory) with a request c laid out like
+// the one Dd_EnumDevice fills (968 bytes here: the HAL and HEL caps at +208
+// and +588). With 0x1000 it enumerates the DirectDraw devices and checks for
+// 2 MB of video memory; with 0x400/0x200 it lists the display modes of the
+// current (or a new) DirectDraw. Everything created is released again and the
+// old cooperative level and display mode restored. The result codes: 1 failed,
+// 2 no hardware 3D, 3 no matching device or mode, 5 not enough memory.
+KING_VAR(int, tm_7208ac, 7208ac)
+KING_VAR(int, tm_7208e4, 7208e4)
+KING_VAR(int, tm_72092c, 72092c)
+KING_VAR(BYTE*, tm_720910, 720910)
+KING_VAR(int, tm_7208ec, 7208ec)
+KING_VAR(HWND, tm_720920, 720920)
+KING_VAR(BYTE*, tm_72090c, 72090c)
+KING_VAR(int, tm_720890, 720890)
+KING_VAR(int, tm_72089c, 72089c)
+KING_VAR(int, tm_7208a0, 7208a0)
+KING_VAR(char, tm_s6829ec, 6829ec)
+KING_VAR(char, tm_s6829d4, 6829d4)
+KING_VAR(char, tm_s6829cc, 6829cc)
+KING_VAR(char, tm_s6829c0, 6829c0)
+static void Tm_ReleaseAll(BYTE* c)
+{
+    static const int offs[] = {52, 120, 64, 60, 56, 48, 44};
+    for (int i = 0; i < 7; i++)
+        Ed_Release(c, offs[i]);
+    if (BYTE* dd = F(BYTE*, c, 40))
+        Com(dd, 8);
+}
+extern "C" BOOL __cdecl Dd_TestMode(int w, int h, int bytes, DWORD flags, int* result, DWORD* mem, DWORD* freeMem)
+{
+    BYTE c[968];
+    if (result)
+        *result = 0;
+    if (flags == 0 && (bytes == 1 || bytes == 2 || bytes == 4))
+        return TRUE;
+    if (flags & 0x100)
+        return FALSE;
+    static const int zero[] = {28, 24, 40, 44, 48, 52, 64, 60, 56, 120, 100, 32, 80, 36};
+    for (int i = 0; i < 14; i++)
+        F(int, c, zero[i]) = 0;
+    F(int, c, 0) = w;
+    F(int, c, 4) = h;
+    F(int, c, 8) = bytes;
+    F(DWORD, c, 12) = flags;
+    F(DWORD, c, 204) = 0x80070057;
+    if (flags & 0x1000) {
+        BOOL ok = TRUE;
+        tm_72092c = tm_7208e4;
+        if (tm_720910 && tm_7208ec == 2)
+            Com(tm_720910, 80, tm_720920, 8);
+        CallStd((void (*)())g_impDirectDrawEnumerateA, (void*)Dd_EnumDevice, c);
+        if (F(int, c, 204)) {
+            CallC(FUN_5d2ba0, CallC<const char*>(FUN_5d4c10, F(int, c, 204), (char*)c + 124), 0);
+            if (result)
+                *result = 3;
+            ok = FALSE;
+        } else {
+            F(int, c, 208) = 380;
+            F(int, c, 588) = 380;
+            Com(F(BYTE*, c, 40), 44, c + 208, c + 588);
+            int vm = F(int, c, 32);
+            if (vm < 0x200000) {
+                ok = FALSE;
+                if (result)
+                    *result = 5;
+            } else if (mem) {
+                *mem = vm;
+                *freeMem = Dd_FreeLocalVideoMemory(F(BYTE*, c, 44));
+            }
+        }
+        if (!F(BYTE*, c, 40)) {
+            CallC(FUN_5d2ba0, &tm_s6829ec, 0);
+            return FALSE;
+        }
+        if (!F(BYTE*, c, 44)) {
+            CallC(FUN_5d2ba0, &tm_s6829d4, 0);
+            return FALSE;
+        }
+        Com(F(BYTE*, c, 40), 80, tm_720920, 8);
+        Tm_ReleaseAll(c);
+        if (tm_7208ec == 2 && tm_720910) {
+            Com(tm_720910, 80, tm_720920, 91);
+            Com(tm_72090c, 84, tm_72089c, tm_7208a0, tm_720890 << 3, 0, 0);
+        }
+        return ok;
+    }
+    if (!(flags & 0x600))
+        return FALSE;
+    BYTE* dd = tm_72090c;
+    if (!dd) {
+        tm_72092c = tm_7208e4;
+        CallStd((void (*)())g_impDirectDrawEnumerateA, (void*)Dd_EnumDevice, c);
+        if (!F(BYTE*, c, 40)) {
+            CallC(FUN_5d2ba0, &tm_s6829ec, 0);
+            return FALSE;
+        }
+        Com(F(BYTE*, c, 40), 80, tm_720920, 8);
+        dd = F(BYTE*, c, 44);
+        if (F(int, c, 204))
+            goto fail;
+    } else {
+        Com(dd, 4);
+        F(BYTE*, c, 44) = dd;
+    }
+    if (!dd)
+        goto fail;
+    F(int, c, 208) = 380;
+    F(int, c, 588) = 380;
+    Com(dd, 44, c + 208, c + 588);
+    if (!(c[212] & 64) && !(c[592] & 64)) {
+        Com(dd, 8);
+        CallC(FUN_5d2ba0, &tm_s6829cc, 0);
+        if (result)
+            *result = 2;
+        return FALSE;
+    }
+    if (Com(dd, 32, 0, 0, c, (void*)Dd_MatchMode))
+        CallC(FUN_5d2ba0, &tm_s6829c0, 0);
+    {
+        int found = F(int, c, 24);
+        if (result && !found)
+            *result = 3;
+        Tm_ReleaseAll(c);
+        return found;
+    }
+fail:
+    Tm_ReleaseAll(c);
+    if (result)
+        *result = 1;
+    return FALSE;
+}
+
+// [$L_5d7b90] the video mode dialog's test: Dd_TestMode, then the mode kind
+// for the colour depth (1: 1; 2: 2 or 3 by 7208ac; 3 and 4: 6; else 0)
+extern "C" BOOL __cdecl Dd_TestModeKind(int w, int h, int bytes, DWORD flags, int* kind, int* result, DWORD* mem,
+                                        DWORD* freeMem)
+{
+    BOOL r = Dd_TestMode(w, h, bytes, flags, result, mem, freeMem);
+    if (!r)
+        return r;
+    switch (bytes) {
+    case 1: *kind = 1; break;
+    case 2: *kind = tm_7208ac ? 2 : 3; break;
+    case 3:
+    case 4: *kind = 6; break;
+    default: *kind = 0; break;
+    }
+    return r;
+}
