@@ -4,69 +4,19 @@ INCLUDE king.inc
 EXTERN @Eh_EmptyDtor@4:NEAR
 EXTERN @Gate_602bd0@8:PROC
 EXTERN @MsgBuf_Destroy@8:PROC
-EXTERN @SchHandle_Release@8:PROC
 EXTERN @Wnd_Destruct@4:PROC
 EXTERN _KingRdata:BYTE
 EXTERN ___CxxFrameHandler:PROC
 
-PUBLIC $L_643f10, $L_643f20
-PUBLIC $L_643f30
+PUBLIC $L_643f10
 PUBLIC $L_64a298, $L_64a2a0
 PUBLIC $L_64a2fc
 PUBLIC $L_64a304
 
 _TEXT SEGMENT
-$L_643b10 PROC
-
-            lea ECX,DWORD PTR [EBP-24]
-            jmp @SchHandle_Release@8
-$L_643b10 ENDP
-$L_643b18 PROC
-
-            mov EAX,OFFSET (_KingRdata+90592)
-            jmp ___CxxFrameHandler
-$L_643b18 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_643f10::
 
             mov EAX,OFFSET (_KingRdata+92336)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_643f20::
-
-            mov EAX,OFFSET (_KingRdata+92472)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_643f30::
-
-            mov EAX,OFFSET (_KingRdata+92568)
             jmp ___CxxFrameHandler
 
             int 3
