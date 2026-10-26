@@ -3769,7 +3769,7 @@ extern "C" void FUN_50efb0(); KING_ALIAS("_FUN_50efb0", "_Shell_MakeMaskSlider")
 extern "C" void FUN_50e830(); KING_ALIAS("_FUN_50e830", "_Shell_MakeTexButton")
 extern "C" void FUN_5159d0(); KING_ALIAS("_FUN_5159d0", "_Video_PickModes")
 extern "C" void FUN_50e500(); KING_ALIAS("_FUN_50e500", "_Shell_MakeMaskButton")
-extern "C" void Wnd_SetPos_(); KING_ALIAS("_Wnd_SetPos_", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
+extern "C" void Wnd_SetPos_(); KING_ALIAS("_Wnd_SetPos_", "@Wnd_SetWindowPos@32")
 extern "C" void __cdecl _exit(int);
 ASM_VAR(BYTE*, g_q37_6968d0, $L_6968d0)
 ASM_VAR(AsmLabel, g_q37_72da58, $L_72da58)

@@ -2813,7 +2813,7 @@ extern "C" void __cdecl Loader_OnMessage(int* m, BYTE* l)
 // Small methods: vector storage frees, COM releases, static tables, CPU and sound checks.
 
 extern "C" void Mfc_AfxGetThread(); KING_ALIAS("_Mfc_AfxGetThread", "_Afx_GetThread@0")
-extern "C" void Mfc_WndDefault(); KING_ALIAS("_Mfc_WndDefault", "?Default@CWnd@@IAEJXZ")
+extern "C" void Mfc_WndDefault(); KING_ALIAS("_Mfc_WndDefault", "@Wnd_Default@4")
 ASM_VAR(void*, g_q51_72177c, $L_72177c)
 ASM_VAR(int, g_q51_721778, $L_721778)
 ASM_VAR(BYTE*, g_q51_721750, $L_721750)
@@ -5004,7 +5004,7 @@ void __cdecl Matrix_ToAngles(Pg_V3 r0, Pg_V3 r1, Pg_V3 r2, Pg_V3 t, double* x, d
 
 extern "C" void Mf_FrameCtor(); KING_ALIAS("_Mf_FrameCtor", "??0CFrameWnd@@QAE@XZ")
 extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z")
-extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "?SetWindowPos@CWnd@@QAEHPBV1@HHHHI@Z")
+extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "@Wnd_SetWindowPos@32")
 extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "?LoadStringA@CString@@QAEHI@Z")
 extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "??1CString@@QAE@XZ")
 extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "_Afx_GetModuleState@0")
