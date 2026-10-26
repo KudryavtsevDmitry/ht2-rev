@@ -3,11 +3,6 @@ INCLUDE king.inc
 
 EXTERN _Cv_InitNames:NEAR
 EXTERN @Copter_SideDrift@12:PROC
-EXTERN @Dtor56f0f0_DeletingDestructor@12:PROC
-EXTERN @Dtor5736e0_DeletingDestructor@12:PROC
-EXTERN @Dtor573a30_DeletingDestructor@12:PROC
-EXTERN @Dtor573bf0_DeletingDestructor@12:PROC
-EXTERN @Dtor573cf0_DeletingDestructor@12:PROC
 EXTERN @Vec3_AddAssign@16:PROC
 EXTERN _Angle_F2Pi:PROC
 EXTERN _Copter_PlaneCircle:PROC
@@ -41,8 +36,7 @@ PUBLIC $L_565ab4, $L_565ac9, $L_565af8, $L_565b8f, $L_565bab, $L_565c11, $L_565c
 PUBLIC $L_565c46, $L_565cd4, $L_565cfd, $L_565d10, $L_565d36, $L_565d5f, $L_565d70, $L_565d76
 PUBLIC $L_565d8f, $L_565d9e, $L_565dc4, $L_565dd7, $L_565de1, $L_565de5, $L_565de7, $L_565e68
 PUBLIC $L_565e81, $L_565e8b, $L_565ed9, $L_565ef9, $L_565efb, $L_565f0f, $L_565f62, $L_565f7b
-PUBLIC $L_565fc8, $L_576c30, $L_576c40, $L_576c50, $L_576c60, $L_576c70, $L_576c80, $L_576c90
-PUBLIC $L_576ca0, $L_576cb0, $L_576cbc
+PUBLIC $L_565fc8
 
 _TEXT SEGMENT
 $L_560ef0 PROC
@@ -3144,138 +3138,5 @@ ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original
-$L_576c2f PROC
-
-            int 3
-$L_576c30::
-
-            sub ECX,256
-            jmp @Dtor573a30_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576c40::
-
-            sub ECX,256
-            jmp @Dtor573bf0_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576c50::
-
-            sub ECX,256
-            jmp @Dtor5736e0_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576c60::
-
-            sub ECX,32
-            jmp @Dtor56f0f0_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576c70::
-
-            sub ECX,16
-            jmp @Dtor573cf0_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576c80::
-
-            sub ECX,272
-            jmp @Dtor573cf0_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576c90::
-
-            sub ECX,392
-            jmp @Dtor573cf0_DeletingDestructor@12
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_576ca0::
-
-            jmp $L_576cb0
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-$L_576cb0::
-
-            mov EAX,OFFSET (_KingBss+429320)+4
-            mov EDX,10
-            xor ECX,ECX
-$L_576cbc::
-
-            mov DWORD PTR [EAX-4],ECX
-            mov BYTE PTR [EAX+1],CL
-            mov BYTE PTR [EAX],CL
-            mov BYTE PTR [EAX+2],CL
-            mov DWORD PTR [EAX+4],ECX
-            mov DWORD PTR [EAX+8],ECX
-            mov DWORD PTR [EAX+12],ECX
-            mov DWORD PTR [EAX+16],ECX
-            mov DWORD PTR [EAX+20],ECX
-            mov DWORD PTR [EAX+24],ECX
-            mov DWORD PTR [EAX+32],ECX
-            mov DWORD PTR [EAX+28],ECX
-            mov WORD PTR [EAX+40],CX
-            mov WORD PTR [EAX+42],CX
-            mov WORD PTR [EAX+38],CX
-            mov WORD PTR [EAX+36],CX
-            add EAX,568
-            dec EDX
-            jne $L_576cbc
-
-            ret 
-$L_576c2f ENDP
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
-ALIGN 16
-; mmt: src\truck\force_feedback.cpp, nmake ASM_FORCE_FEEDBACK=1 assembles the original
 _TEXT ENDS
 END

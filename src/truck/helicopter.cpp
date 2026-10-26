@@ -7952,3 +7952,44 @@ int __cdecl Copter_PlaneCircle(const float* a, const float* n, const float* c, c
 }
 
 }
+
+extern "C" BYTE* __fastcall Hc_D576c30(BYTE*, void*, int); KING_ALIAS("@Hc_D576c30@12", "@Dtor573a30_DeletingDestructor@12")
+// [$L_576c30] the deleting destructor reached through the base 256 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c30(BYTE* s, void* d, int f) { return Hc_D576c30(s - 256, d, f); }
+extern "C" BYTE* __fastcall Hc_D576c40(BYTE*, void*, int); KING_ALIAS("@Hc_D576c40@12", "@Dtor573bf0_DeletingDestructor@12")
+// [$L_576c40] the deleting destructor reached through the base 256 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c40(BYTE* s, void* d, int f) { return Hc_D576c40(s - 256, d, f); }
+extern "C" BYTE* __fastcall Hc_D576c50(BYTE*, void*, int); KING_ALIAS("@Hc_D576c50@12", "@Dtor5736e0_DeletingDestructor@12")
+// [$L_576c50] the deleting destructor reached through the base 256 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c50(BYTE* s, void* d, int f) { return Hc_D576c50(s - 256, d, f); }
+extern "C" BYTE* __fastcall Hc_D576c60(BYTE*, void*, int); KING_ALIAS("@Hc_D576c60@12", "@Dtor56f0f0_DeletingDestructor@12")
+// [$L_576c60] the deleting destructor reached through the base 32 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c60(BYTE* s, void* d, int f) { return Hc_D576c60(s - 32, d, f); }
+extern "C" BYTE* __fastcall Hc_D576c70(BYTE*, void*, int); KING_ALIAS("@Hc_D576c70@12", "@Dtor573cf0_DeletingDestructor@12")
+// [$L_576c70] the deleting destructor reached through the base 16 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c70(BYTE* s, void* d, int f) { return Hc_D576c70(s - 16, d, f); }
+extern "C" BYTE* __fastcall Hc_D576c80(BYTE*, void*, int); KING_ALIAS("@Hc_D576c80@12", "@Dtor573cf0_DeletingDestructor@12")
+// [$L_576c80] the deleting destructor reached through the base 272 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c80(BYTE* s, void* d, int f) { return Hc_D576c80(s - 272, d, f); }
+extern "C" BYTE* __fastcall Hc_D576c90(BYTE*, void*, int); KING_ALIAS("@Hc_D576c90@12", "@Dtor573cf0_DeletingDestructor@12")
+// [$L_576c90] the deleting destructor reached through the base 392 bytes in
+extern "C" BYTE* __fastcall Hc_Thunk576c90(BYTE* s, void* d, int f) { return Hc_D576c90(s - 392, d, f); }
+
+// [$L_576ca0] static initializer: clears the 10 records (568 bytes) at 6f3528
+KING_VAR(BYTE, hc_6f3528, 6f3528)
+extern "C" void __cdecl Hc_Init576ca0()
+{
+    BYTE* r = &hc_6f3528;
+    for (int i = 0; i < 10; i++, r += 568) {
+        F(int, r, 0) = 0;
+        r[5] = 0;
+        r[4] = 0;
+        r[6] = 0;
+        for (int off = 8; off <= 36; off += 4)
+            F(int, r, off) = 0;
+        F(short, r, 44) = 0;
+        F(short, r, 46) = 0;
+        F(short, r, 42) = 0;
+        F(short, r, 40) = 0;
+    }
+}
