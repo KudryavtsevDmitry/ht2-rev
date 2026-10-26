@@ -1,7 +1,6 @@
 ; asm_unit_5cf180.asm - the procedures of this original unit not yet rewritten in C++
 INCLUDE king.inc
 
-EXTERN $L_5fef53:NEAR
 EXTERN FUN_6303ac:NEAR
 EXTERN _Dd_EnumDevice@16:PROC
 EXTERN _Dd_ErrorText:PROC
@@ -11,7 +10,7 @@ EXTERN _KingBss:BYTE
 EXTERN _KingData:BYTE
 EXTERN _Sys_Log:PROC
 
-PUBLIC $L_5d2020, $L_5d7b90, $L_5d7bc2, $L_5d7bd1, $L_5d7bdd, $L_5d7bf2, $L_5d7bfe, $L_5d7c0c
+PUBLIC $L_5d7b90, $L_5d7bc2, $L_5d7bd1, $L_5d7bdd, $L_5d7bf2, $L_5d7bfe, $L_5d7c0c
 PUBLIC $L_5d7c20, $L_5d7c38, $L_5d7c59, $L_5d7c68, $L_5d7c78, $L_5d7d0e, $L_5d7d4d, $L_5d7d51
 PUBLIC $L_5d7d98, $L_5d7dbb, $L_5d7ddd, $L_5d7dfd, $L_5d7e1e, $L_5d7e36, $L_5d7e48, $L_5d7e5a
 PUBLIC $L_5d7e6c, $L_5d7e7e, $L_5d7e90, $L_5d7ea2, $L_5d7f01, $L_5d7f0d, $L_5d7f61, $L_5d7f83
@@ -20,140 +19,6 @@ PUBLIC $L_5d809f, $L_5d80b1, $L_5d80c3, $L_5d80d1, $L_5d80dd, $L_5d80ef, $L_5d81
 PUBLIC $L_5d812b, $L_5d813d, $L_5d814f, $L_5d8161, $L_5d816f, $L_5d8179
 
 _TEXT SEGMENT
-$L_5d2010 PROC
-
-            jmp $L_5d2020
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-          BYTE 090H
-$L_5d2020::
-
-            jmp $L_5fef53
-$L_5d2010 ENDP
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-; src\engine\core.cpp, nmake ASM_CORE=1 assembles the original
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
-ALIGN 16
 $L_5d7b90::
             mov EAX,DWORD PTR [ESP+32]
             mov ECX,DWORD PTR [ESP+28]

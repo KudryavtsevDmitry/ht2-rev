@@ -2309,7 +2309,7 @@ extern "C" void __cdecl Surface_VLine(BYTE* s, int x, int y1, int y2, int color,
 // ---------------------------------------------------------------------------
 // Drawing run-length images.
 
-ASM_PROC(FUN_5feff3)
+ASM_FUNC(FUN_5feff3, _Span_BlitRle8)
 ASM_FUNC(FUN_5fea03, _Span_Table16)
 ASM_FUNC(FUN_5fe860, _Span_Table8)
 KING_VAR(unsigned, g_q153_702e8c, 702e8c)
@@ -6666,4 +6666,76 @@ extern "C" void __cdecl Span_Blend32(DWORD a, BYTE* d, DWORD colour, int n)
             int s = (short)(WORD)w >> 8;
             d[k] = (BYTE)(s > 127 ? 127 : s < -128 ? -128 : s);
         }
+}
+
+// [FUN_5fefce] copies n bytes (dwords first)
+extern "C" void __cdecl Span_CopyBytes(void* d, const void* s, unsigned n)
+{
+    memcpy(d, s, n);
+}
+
+// [FUN_5feff3] draws a run-length coded 8-bit image: per row, runs with bit 7
+// set skip (n & 127) pixels, others copy that many bytes; rows are pitch apart
+extern "C" void __cdecl Span_BlitRle8(const BYTE* src, BYTE* row, int, int width, int rows, int pitch)
+{
+    for (int y = 0; y < rows; y++, row += pitch) {
+        BYTE* d = row;
+        for (int x = 0; x < width;) {
+            int n = *src & 127;
+            if (*src++ & 128) {
+                x += n;
+                d += n;
+            } else {
+                memcpy(d, src, n);
+                x += n;
+                d += n;
+                src += n;
+            }
+        }
+    }
+}
+
+// [$L_5fef53] static initializer: the CPU family (71e7e4, plus 256 with MMX)
+// and the MMX flag at 683c48, from cpuid 1
+#include <intrin.h>
+KING_VAR(int, g_rd71e7e4, 71e7e4)
+KING_VAR(WORD, g_rd683c48, 683c48)
+extern "C" void __cdecl Span_DetectCpu()
+{
+    int r[4];
+    __cpuid(r, 1);
+    int family = (r[0] & 3840) >> 8;
+    if (r[3] & 8388608) {
+        g_rd71e7e4 = family | 256;
+        g_rd683c48 = 1;
+    } else {
+        g_rd71e7e4 = family;
+        g_rd683c48 = 0;
+    }
+}
+
+// [$L_5ff060] static initializer: seeds the second subtractive random
+// generator (Knuth's ran3: 55 values at 723c40, indices 0 and 31)
+KING_VAR(DWORD, g_rd723c40, 723c40)
+KING_VAR(int, g_rd723d1c, 723d1c)
+KING_VAR(int, g_rd723d20, 723d20)
+extern "C" void __cdecl Span_InitRandom()
+{
+    DWORD* ma = &g_rd723c40;
+    for (int i = 0; i < 55; i++)
+        ma[i] = 0;
+    DWORD mj = 161803398, mk = 1;
+    ma[54] = mj;
+    for (unsigned s = 0; s < 1134; s += 21) {
+        unsigned i = s % 55;
+        mj -= mk;
+        ma[i] = mk;
+        mk = mj;
+        mj = ma[i];
+    }
+    for (int k = 0; k < 4; k++)
+        for (unsigned i = 0; i < 55; i++)
+            ma[i] -= ma[(i + 31) % 55];
+    g_rd723d1c = 0;
+    g_rd723d20 = 31;
 }
