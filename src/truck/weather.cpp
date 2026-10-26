@@ -3174,3 +3174,18 @@ extern "C" BYTE* __fastcall WeatherKind31_Construct(BYTE* self, void* edx, BYTE*
 // [$L_5ab0d0] [$L_5ab0e0] the deleting destructors reached through a base 256 / 32 bytes in
 extern "C" BYTE* __fastcall Wo_Thunk5ab0d0(BYTE* s, void* d, int f) { return Dtor5a46e0_DeletingDestructor(s - 256, d, f); }
 extern "C" BYTE* __fastcall Wo_Thunk5ab0e0(BYTE* s, void* d, int f) { return Dtor5a4c80_DeletingDestructor(s - 32, d, f); }
+
+// [FUN_5c6170] a scene object: the weather item base (world, a, b, n, scale,
+// z, matrix, kind), vtables 651c34 and 651be8 (+256), registered in the world
+KING_VAR(AsmLabel, wi_vtbl651c34, 651c34)
+KING_VAR(AsmLabel, wi_vtbl651be8, 651be8)
+extern "C" void __fastcall Item_Register(BYTE* self, void*, BYTE* owner, int n);
+extern "C" BYTE* __fastcall SceneObj_Construct(BYTE* self, void*, BYTE* world, BYTE* a, BYTE* b, int n, int scale,
+                                               int z, Wi33_M48 m, int reg, int kind)
+{
+    WeatherItem_Construct(self, 0, world, a, b, n, scale, z, m, kind);
+    F(void*, self, 0) = wi_vtbl651c34;
+    F(void*, self, 256) = wi_vtbl651be8;
+    Item_Register(self, 0, world, reg);
+    return self;
+}
