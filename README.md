@@ -31,7 +31,7 @@ nmake ASM_MAIN_LOOP=1                  # original assembly for one source file
 nmake clean
 ```
 
-Every `src` file has a switch `ASM_<FILE NAME>`, and `ASM_CRT=1` switches back to the game's own C runtime; run `nmake clean` before changing switches. `ASM=1` is byte-identical to the original apart from timestamps.
+Every `src` file has a switch `ASM_<FILE NAME>`, and `ASM_CRT=1` switches back to the game's own C runtime; procedures the default build never reaches are under `IFDEF ASM_UNUSED` (any switch assembles them again, the default build points their labels at an `int 3` trap); run `nmake clean` before changing switches. `ASM=1` is byte-identical to the original apart from timestamps.
 
 ## Running
 
