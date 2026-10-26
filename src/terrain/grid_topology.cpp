@@ -2,11 +2,11 @@
 #include "king.h"
 #define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))
 typedef char TopologyLabel[1];
-ASM_VAR(TopologyLabel,g_topTriangleVtable,$L_652e4c)
-ASM_VAR(TopologyLabel,g_topDataVtable,$L_652e48)
-ASM_VAR(TopologyLabel,g_topDate,$L_6724f8)
-ASM_VAR(TopologyLabel,g_topFile,$L_684a20)
-ASM_VAR(TopologyLabel,g_topError,$L_6724b0)
+KING_VAR(TopologyLabel, g_topTriangleVtable, 652e4c)
+KING_VAR(TopologyLabel, g_topDataVtable, 652e48)
+KING_VAR(TopologyLabel, g_topDate, 6724f8)
+KING_VAR(TopologyLabel, g_topFile, 684a20)
+KING_VAR(TopologyLabel, g_topError, 6724b0)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" DWORD __fastcall MarineQueue_InsertNode(BYTE*,void*,BYTE*);
 extern "C" BYTE* __fastcall MarineQueue_RemoveNode(BYTE*,void*,BYTE*);
@@ -205,8 +205,8 @@ extern "C" double __fastcall Circle_Outside(const float* c,void*,float x,float y
     return r;
 }
 
-ASM_VAR(int,g_grdRefine,$L_685a98)
-KING_BSS(TopologyLabel, g_tgrid72c108, 0x72c108)
+KING_VAR(int, g_grdRefine, 685a98)
+KING_VAR(TopologyLabel, g_tgrid72c108, 72c108)
 extern "C" int __fastcall MarineQueue_Empty(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopWorkItem(BYTE*,void*);
 extern "C" BYTE* __fastcall MarineQueue_TopDeferredNode(BYTE*,void*);
@@ -275,9 +275,9 @@ extern "C" int __fastcall MarineTransition_Advance(BYTE* self, void*, DWORD now)
 extern "C" void __fastcall MarineTask_ClearRegistration(BYTE* self, void*);
 extern "C" void __fastcall MarineTask_SetFirstBounds(BYTE* self, void*, float a, float b);
 extern "C" void __fastcall MarineTask_SetSecondBounds(BYTE* self, void*, float a, float b);
-KING_BSS(int, g_doneCount725d28, 0x725d28)
+KING_VAR(int, g_doneCount725d28, 725d28)
 typedef BYTE* DoneList[500];
-KING_BSS(DoneList, g_done725558, 0x725558)
+KING_VAR(DoneList, g_done725558, 725558)
 
 // [FUN_60c2b0] the grid's frame: transitions, refinement, finished transitions freed, the points' bounds, the triangles drawn
 extern "C" int __fastcall GridMesh_Frame(BYTE* s,void*)
@@ -409,7 +409,7 @@ extern "C" void __fastcall GridMesh_Reprioritise(BYTE* s,void*)
 
 extern "C" void* __cdecl malloc(size_t n);
 extern "C" void __fastcall GridTask_Free(BYTE* self, void*);
-ASM_VAR(TopologyLabel,g_grdFile,$L_685a9c)
+KING_VAR(TopologyLabel, g_grdFile, 685a9c)
 
 // [FUN_60c520] allocates n 16-byte and 40-byte records and m pointers; on failure frees them and reports
 extern "C" int __fastcall GridTask_Alloc(BYTE* self,void*,int n,int m)
@@ -472,10 +472,10 @@ extern "C" void Fs_SetPairs(); KING_ALIAS("_Fs_SetPairs", "@TGridEdge_SetPairs@1
 extern "C" void Fs_Priority(); KING_ALIAS("_Fs_Priority", "@GridCamera_PairPriority@16")
 extern "C" void Fs_Insert(); KING_ALIAS("_Fs_Insert", "@MarineQueue_InsertWorkItem@12")
 extern "C" void Fs_Set(); KING_ALIAS("_Fs_Set", "@Vec3_SetThis@20")
-KING_BSS(int, g_fsCount, 0x7242a0)
-KING_BSS(BYTE*, g_fsStack, 0x7242a4)
-ASM_VAR(float, g_fs64c258, $L_64c258)
-ASM_VAR(float, g_fs64c904, $L_64c904)
+KING_VAR(int, g_fsCount, 7242a0)
+KING_VAR(BYTE*, g_fsStack, 7242a4)
+KING_VAR(float, g_fs64c258, 64c258)
+KING_VAR(float, g_fs64c904, 64c904)
 
 static void Fs_Push(BYTE* x)
 {

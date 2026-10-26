@@ -26,11 +26,11 @@ extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4") 
 extern "C" void FUN_5b64e0(); KING_ALIAS("_FUN_5b64e0", "@Window_SetSurface@12")    // selects a palette
 extern "C" int __cdecl Scene_FindCallback(BYTE* n, int* q);
 
-ASM_VAR(AsmLabel, g_vtbl65274c, $L_65274c)
-ASM_VAR(AsmLabel, g_vtbl652538, $L_652538)
-ASM_VAR(AsmLabel, g_vtbl652760, $L_652760)
-ASM_VAR(AsmLabel, g_vtbl6527e4, $L_6527e4)
-KING_BSS(AsmLabel, g_objectNames, 0x71e820)   // name hash of the scene objects
+KING_VAR(AsmLabel, g_vtbl65274c, 65274c)
+KING_VAR(AsmLabel, g_vtbl652538, 652538)
+KING_VAR(AsmLabel, g_vtbl652760, 652760)
+KING_VAR(AsmLabel, g_vtbl6527e4, 6527e4)
+KING_VAR(AsmLabel, g_objectNames, 71e820)   // name hash of the scene objects
 
 extern "C" size_t __cdecl fread(void* buf, size_t size, size_t n, FILE* f);
 extern "C" char* __cdecl fgets(char* s, int n, FILE* f);
@@ -40,17 +40,17 @@ extern "C" void FUN_5eb4b0(); KING_ALIAS("_FUN_5eb4b0", "@CamNode_Apply@12")
 extern "C" void FUN_5b0120(); KING_ALIAS("_FUN_5b0120", "_Device_SetStates")
 extern "C" void FUN_5d2650(); KING_ALIAS("_FUN_5d2650", "@NameHash_AddList@16")    // name hash: add (name, value pointer)
 extern "C" void FUN_5ab1b0(); KING_ALIAS("_FUN_5ab1b0", "_NextToken")    // next token of a string cursor
-KING_BSS(int, g_720904, 0x720904)
-KING_BSS(BYTE*, g_device, 0x720908)
-KING_BSS(AsmLabel, g_listLine, 0x7228ec)
-KING_BSS(char*, g_listCursor, 0x7218d0)
-KING_BSS(char*, g_listToken, 0x7231a0)
-ASM_VAR(AsmLabel, s_end, $L_683b50)
-ASM_VAR(AsmLabel, s_txr, $L_683b4c)
-ASM_VAR(AsmLabel, s_tga, $L_683b48)
-ASM_VAR(AsmLabel, s_msk, $L_678acc)
-ASM_VAR(AsmLabel, s_wav, $L_683b44)
-ASM_VAR(AsmLabel, s_plm, $L_683b40)
+KING_VAR(int, g_720904, 720904)
+KING_VAR(BYTE*, g_device, 720908)
+KING_VAR(AsmLabel, g_listLine, 7228ec)
+KING_VAR(char*, g_listCursor, 7218d0)
+KING_VAR(char*, g_listToken, 7231a0)
+KING_VAR(AsmLabel, s_end, 683b50)
+KING_VAR(AsmLabel, s_txr, 683b4c)
+KING_VAR(AsmLabel, s_tga, 683b48)
+KING_VAR(AsmLabel, s_msk, 678acc)
+KING_VAR(AsmLabel, s_wav, 683b44)
+KING_VAR(AsmLabel, s_plm, 683b40)
 
 template <class... A>
 static __forceinline int Com(BYTE* com, unsigned off, A... args)
@@ -415,9 +415,9 @@ int __cdecl FileList_ReadLine(FILE* f, char** name)
 }
 
 // ---------------------------------------------------------------------------
-ASM_VAR(AsmLabel, s_683604, $L_683604)
-ASM_VAR(AsmLabel, s_68381c, $L_68381c)
-ASM_VAR(AsmLabel, s_683834, $L_683834)
+KING_VAR(AsmLabel, s_683604, 683604)
+KING_VAR(AsmLabel, s_68381c, 68381c)
+KING_VAR(AsmLabel, s_683834, 683834)
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
 
 // [FUN_5eacc0..$L_5eacd9] appends a value to the array at +100 (count +32, capacity +96); returns its index
@@ -725,9 +725,9 @@ extern "C" int __fastcall Clu_5edce0(BYTE* s)
 // Constructors and destructors (exception frames dropped).
 
 extern "C" void FUN_5eddf0(); KING_ALIAS("_FUN_5eddf0", "@Clu5eddf0_Destroy@4")
-ASM_VAR(AsmLabel, g_clu65277c, $L_65277c)
-ASM_VAR(AsmLabel, g_clu6527b0, $L_6527b0)
-ASM_VAR(AsmLabel, g_clu64d81c, $L_64d81c)
+KING_VAR(AsmLabel, g_clu65277c, 65277c)
+KING_VAR(AsmLabel, g_clu6527b0, 6527b0)
+KING_VAR(AsmLabel, g_clu64d81c, 64d81c)
 
 // [FUN_5eddf0] a cluster list (vtable 6527b0) deletes its items (+32, count +28) and frees its arrays
 extern "C" void __fastcall Clu5eddf0_Destroy(BYTE* s)
@@ -780,7 +780,7 @@ extern "C" BYTE* __fastcall Clu5edeb0_Construct(BYTE* s, void*, int n, int b)
 // Constructors, destructors and messages (exception frames dropped).
 
 #include <string.h>
-ASM_VAR(AsmLabel, g_clu65274c, $L_65274c)
+KING_VAR(AsmLabel, g_clu65274c, 65274c)
 // [FUN_5ea880] constructor (name): a cluster (vtable 65274c) with its name copied
 extern "C" BYTE* __fastcall Cluster5ea880_Construct(BYTE* s, void*, const char* name)
 {
@@ -838,7 +838,7 @@ extern "C" BYTE* __fastcall ClusterSet_Construct(BYTE* s, void*, int n1, int n2,
 // ---------------------------------------------------------------------------
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
-KING_BSS(AsmLabel, g_q46_723978, 0x723978)
+KING_VAR(AsmLabel, g_q46_723978, 723978)
 extern "C" void g_q46_5ef410(); KING_ALIAS("_g_q46_5ef410", "@ListHead_Construct@8")
 // [FUN_5ef400] constructs the static 723978
 extern "C" int __cdecl Static723978_Construct(void)
@@ -885,32 +885,32 @@ extern "C" int __cdecl atoi(const char* s);
 extern "C" double __cdecl atof(const char* s);
 extern "C" int __cdecl strncmp(const char* a, const char* b, size_t n);
 extern "C" int __cdecl strcmp(const char* a, const char* b);
-ASM_VAR(double, g_mt64dae0, $L_64dae0)
-ASM_VAR(AsmLabel, s_mt6836bc, $L_6836bc)
-ASM_VAR(AsmLabel, s_mt6836b8, $L_6836b8)
-ASM_VAR(AsmLabel, s_mt6836b4, $L_6836b4)
-ASM_VAR(AsmLabel, s_mt6836b0, $L_6836b0)
-ASM_VAR(AsmLabel, s_mt678acc, $L_678acc)
-ASM_VAR(AsmLabel, s_mt6836a8, $L_6836a8)
-ASM_VAR(AsmLabel, s_mt68369c, $L_68369c)
-ASM_VAR(AsmLabel, s_mt683694, $L_683694)
-ASM_VAR(AsmLabel, s_mt683688, $L_683688)
-ASM_VAR(AsmLabel, s_mt683680, $L_683680)
-ASM_VAR(AsmLabel, s_mt683674, $L_683674)
-ASM_VAR(AsmLabel, s_mtPower676e94, $L_676e94)    // "power"
-ASM_VAR(AsmLabel, s_mt68366c, $L_68366c)
-ASM_VAR(AsmLabel, s_mt677738, $L_677738)
-ASM_VAR(AsmLabel, s_mt683664, $L_683664)
-ASM_VAR(AsmLabel, s_mt683660, $L_683660)
-ASM_VAR(AsmLabel, s_mt68365c, $L_68365c)
-ASM_VAR(AsmLabel, s_mt683654, $L_683654)
-ASM_VAR(AsmLabel, s_mt683648, $L_683648)
-ASM_VAR(AsmLabel, s_mt683644, $L_683644)
-ASM_VAR(AsmLabel, s_mt683640, $L_683640)
-ASM_VAR(AsmLabel, s_mt68363c, $L_68363c)
-ASM_VAR(AsmLabel, s_mt683634, $L_683634)
-ASM_VAR(AsmLabel, s_mt68362c, $L_68362c)
-ASM_VAR(AsmLabel, s_mt683624, $L_683624)
+KING_VAR(double, g_mt64dae0, 64dae0)
+KING_VAR(AsmLabel, s_mt6836bc, 6836bc)
+KING_VAR(AsmLabel, s_mt6836b8, 6836b8)
+KING_VAR(AsmLabel, s_mt6836b4, 6836b4)
+KING_VAR(AsmLabel, s_mt6836b0, 6836b0)
+KING_VAR(AsmLabel, s_mt678acc, 678acc)
+KING_VAR(AsmLabel, s_mt6836a8, 6836a8)
+KING_VAR(AsmLabel, s_mt68369c, 68369c)
+KING_VAR(AsmLabel, s_mt683694, 683694)
+KING_VAR(AsmLabel, s_mt683688, 683688)
+KING_VAR(AsmLabel, s_mt683680, 683680)
+KING_VAR(AsmLabel, s_mt683674, 683674)
+KING_VAR(AsmLabel, s_mtPower676e94, 676e94)    // "power"
+KING_VAR(AsmLabel, s_mt68366c, 68366c)
+KING_VAR(AsmLabel, s_mt677738, 677738)
+KING_VAR(AsmLabel, s_mt683664, 683664)
+KING_VAR(AsmLabel, s_mt683660, 683660)
+KING_VAR(AsmLabel, s_mt68365c, 68365c)
+KING_VAR(AsmLabel, s_mt683654, 683654)
+KING_VAR(AsmLabel, s_mt683648, 683648)
+KING_VAR(AsmLabel, s_mt683644, 683644)
+KING_VAR(AsmLabel, s_mt683640, 683640)
+KING_VAR(AsmLabel, s_mt68363c, 68363c)
+KING_VAR(AsmLabel, s_mt683634, 683634)
+KING_VAR(AsmLabel, s_mt68362c, 68362c)
+KING_VAR(AsmLabel, s_mt683624, 683624)
 
 // keywords that only set flags in +32
 static const struct { const char* name; DWORD flag; } k_mtFlags[] = {
@@ -1080,7 +1080,7 @@ extern "C" void FUN_5bbdd0(); KING_ALIAS("_FUN_5bbdd0", "@Bitmap_Destroy@8")
 extern "C" void FUN_5e6b90(); KING_ALIAS("_FUN_5e6b90", "@Mmio_Close@8")
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 extern "C" void Clu_VecDtor(); KING_ALIAS("_Clu_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
-ASM_VAR(AsmLabel, g_clu64d578, $L_64d578)
+KING_VAR(AsmLabel, g_clu64d578, 64d578)
 
 // deletes the nodes of list l (unlinking each from +8) and then the list
 static void Clf_DeleteList(BYTE* l)
@@ -1184,9 +1184,9 @@ extern "C" void FUN_5ab140(); KING_ALIAS("_FUN_5ab140", "_File_ReadInt")
 typedef void (*Cr_Progress)();
 extern "C" void FUN_5ef830(); KING_ALIAS("_FUN_5ef830", "_Scene_ReadNode")    // reads a node record (file, cluster, &kind, 0, 0, &name); the object or 0
 extern "C" void FUN_5d2540(); KING_ALIAS("_FUN_5d2540", "@NameHash_Add@16")    // name hash: adds (name, object)
-KING_BSS(int, g_cr72006c, 0x72006c)
-KING_BSS(unsigned, g_cr723988, 0x723988)
-ASM_VAR(AsmLabel, g_cr64d7bc, $L_64d7bc)
+KING_VAR(int, g_cr72006c, 72006c)
+KING_VAR(unsigned, g_cr723988, 723988)
+KING_VAR(AsmLabel, g_cr64d7bc, 64d7bc)
 
 extern "C" {
 
@@ -1341,11 +1341,11 @@ extern "C" void Cn_Transform2(); KING_ALIAS("_Cn_Transform2", "@Matrix_Transform
 extern "C" void Cn_Scale(); KING_ALIAS("_Cn_Scale", "_Matrix_Scale")
 extern "C" void Cn_SetCamera(); KING_ALIAS("_Cn_SetCamera", "@Render_SetCamera@16")
 extern "C" void Cn_GetRect(); KING_ALIAS("_Cn_GetRect", "@Window_GetRect@12")
-KING_BSS(AsmLabel, g_cn7025f0, 0x7025f0)
-KING_BSS(DWORD, g_cn702e8c, 0x702e8c)
-ASM_VAR(double, g_cn64b6e0, $L_64b6e0)
-ASM_VAR(double, g_cn64b670, $L_64b670)
-ASM_VAR(double, g_cn64b660, $L_64b660)
+KING_VAR(AsmLabel, g_cn7025f0, 7025f0)
+KING_VAR(DWORD, g_cn702e8c, 702e8c)
+KING_VAR(double, g_cn64b6e0, 64b6e0)
+KING_VAR(double, g_cn64b670, 64b670)
+KING_VAR(double, g_cn64b660, 64b660)
 struct Cn_V3 { float x, y, z; };
 
 extern "C" {
@@ -1400,11 +1400,11 @@ void __fastcall CamNode_Apply(BYTE* c, void*, BYTE* r)
 
 #include "x87.h"
 
-ASM_VAR(float, g_bp64c258, $L_64c258)
-ASM_VAR(float, g_bp64c264, $L_64c264)
-ASM_VAR(double, g_bp64d908, $L_64d908)
-ASM_VAR(double, g_bp64b658, $L_64b658)
-ASM_VAR(double, g_bp64b7c0, $L_64b7c0)
+KING_VAR(float, g_bp64c258, 64c258)
+KING_VAR(float, g_bp64c264, 64c264)
+KING_VAR(double, g_bp64d908, 64d908)
+KING_VAR(double, g_bp64b658, 64b658)
+KING_VAR(double, g_bp64b7c0, 64b7c0)
 
 extern "C" {
 
@@ -1499,17 +1499,17 @@ extern "C" void Ol_AddC(); KING_ALIAS("_Ol_AddC", "@Cluster_AddC@12")
 extern "C" void Ol_Texture(); KING_ALIAS("_Ol_Texture", "@Texture_Construct@16")
 extern "C" void Ol_Alloc(); KING_ALIAS("_Ol_Alloc", "@Overlays_Alloc@12")
 extern "C" void Ol_AddName(); KING_ALIAS("_Ol_AddName", "@NameHash_Add@16")
-KING_BSS(char, g_olLine, 0x722970)
-KING_BSS(BYTE*, g_olImages, 0x7229c0)
-KING_BSS(BYTE*, g_olImagesEnd, 0x72318c)
-KING_BSS(BYTE*, g_olMasks, 0x7231a4)
-KING_BSS(BYTE*, g_olMasksEnd, 0x723974)
-KING_BSS(BYTE*, g_olSounds, 0x7218d4)
-KING_BSS(BYTE*, g_olSoundsEnd, 0x7220a4)
-KING_BSS(BYTE*, g_olClusters, 0x72211c)
-KING_BSS(BYTE*, g_olClustersEnd, 0x7228ec)
-KING_BSS(AsmLabel, g_olNames, 0x71e820)
-ASM_VAR(AsmLabel, g_ol652818, $L_652818)
+KING_VAR(char, g_olLine, 722970)
+KING_VAR(BYTE*, g_olImages, 7229c0)
+KING_VAR(BYTE*, g_olImagesEnd, 72318c)
+KING_VAR(BYTE*, g_olMasks, 7231a4)
+KING_VAR(BYTE*, g_olMasksEnd, 723974)
+KING_VAR(BYTE*, g_olSounds, 7218d4)
+KING_VAR(BYTE*, g_olSoundsEnd, 7220a4)
+KING_VAR(BYTE*, g_olClusters, 72211c)
+KING_VAR(BYTE*, g_olClustersEnd, 7228ec)
+KING_VAR(AsmLabel, g_olNames, 71e820)
+KING_VAR(AsmLabel, g_ol652818, 652818)
 
 // sprintf into the line buffer, then the fatal error
 static void Ol_Error(const char* fmt, const void* a = 0, const void* b = 0)
@@ -1765,7 +1765,7 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
 
 // === a list head (a method at $L_5ef410)
 
-ASM_VAR(AsmLabel, g_lh65282c, $L_65282c)
+KING_VAR(AsmLabel, g_lh65282c, 65282c)
 
 extern "C" {
 
@@ -1789,8 +1789,8 @@ extern "C" void Nh_New(); KING_ALIAS("_Nh_New", "@Cor5d28a0_Construct@12")
 extern "C" void Nh_Fatal(); KING_ALIAS("_Nh_Fatal", "_Sys_Fatal")
 extern "C" void Nh_Hash(); KING_ALIAS("_Nh_Hash", "@Hash_Name@12")
 extern "C" void Nh_Link(); KING_ALIAS("_Nh_Link", "@Node_Link@12")
-ASM_VAR(char, g_nhSkip, $L_67fb1c)
-ASM_VAR(char, g_nhNoHeap, $L_67fae0)
+KING_VAR(char, g_nhSkip, 67fb1c)
+KING_VAR(char, g_nhNoHeap, 67fae0)
 
 // a name entry (24 bytes from the name heap) of name with value v in hash h, 0 when name is blank
 static BYTE* Nh_Entry(BYTE* h, const char* name, void* v)
@@ -1844,7 +1844,7 @@ void __fastcall NameHash_AddList(BYTE* h, void*, const char* name, void* v)
 
 extern "C" void Ce_SysFatal(); KING_ALIAS("_Ce_SysFatal", "_Sys_Fatal")
 extern "C" void Ce_Sounds(); KING_ALIAS("_Ce_Sounds", "_Sound_AllocBuffers")
-ASM_VAR(AsmLabel, g_ce65274c, $L_65274c)
+KING_VAR(AsmLabel, g_ce65274c, 65274c)
 
 extern "C" {
 
@@ -1903,13 +1903,13 @@ BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int 
 
 // === a mesh's draw flags (FUN_5e5cd0) and its vertex buffer (the second entry $L_5e5eb0 inside FUN_5e5cd0)
 
-KING_BSS(BYTE, g_mp7217b8, 0x7217b8)
-KING_BSS(DWORD, g_mp702e8c, 0x702e8c)
-KING_BSS(int, g_mp720904, 0x720904)
-ASM_VAR(double, g_mp64eba8, $L_64eba8)
-ASM_VAR(float, g_mp64c458, $L_64c458)
-ASM_VAR(float, g_mp64c250, $L_64c250)
-ASM_VAR(double, g_mp64b670, $L_64b670)
+KING_VAR(BYTE, g_mp7217b8, 7217b8)
+KING_VAR(DWORD, g_mp702e8c, 702e8c)
+KING_VAR(int, g_mp720904, 720904)
+KING_VAR(double, g_mp64eba8, 64eba8)
+KING_VAR(float, g_mp64c458, 64c458)
+KING_VAR(float, g_mp64c250, 64c250)
+KING_VAR(double, g_mp64b670, 64b670)
 
 // a color of r, g, b scaled by k and alpha f, as ARGB bytes
 static DWORD Mp_Color(const float* c, float k, double f)

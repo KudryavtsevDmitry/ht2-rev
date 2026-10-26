@@ -32,17 +32,17 @@ extern "C" void FUN_48af50(); KING_ALIAS("_FUN_48af50", "_Int_CompareMagnitude")
 extern "C" void FUN_48b8a0(); KING_ALIAS("_FUN_48b8a0", "_BigInt_Quotient")
 extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
 extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")
-ASM_VAR(AsmLabel, s_divByZero, $L_67055c)
+KING_VAR(AsmLabel, s_divByZero, 67055c)
 extern "C" void FUN_470950(); KING_ALIAS("_FUN_470950", "@CharVec_Assign@12")
 extern "C" void FUN_48ae10(); KING_ALIAS("_FUN_48ae10", "_BigInt_FromUnsigned")
 extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
 ASM_PROC(FUN_491420)
 extern "C" void FUN_48c260(); KING_ALIAS("_FUN_48c260", "_BigInt_Gcd")
-ASM_VAR(AsmLabel, s_bigint, $L_670408)
-ASM_VAR(AsmLabel, s_bigintTooLarge, $L_670410)
-ASM_VAR(AsmLabel, s_bigintNull, $L_670430)
-ASM_VAR(AsmLabel, g_vtbl64bf38, $L_64bf38)
-ASM_VAR(AsmLabel, g_vtbl64bf24, $L_64bf24)
+KING_VAR(AsmLabel, s_bigint, 670408)
+KING_VAR(AsmLabel, s_bigintTooLarge, 670410)
+KING_VAR(AsmLabel, s_bigintNull, 670430)
+KING_VAR(AsmLabel, g_vtbl64bf38, 64bf38)
+KING_VAR(AsmLabel, g_vtbl64bf24, 64bf24)
 extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20")    // vector<char>::insert(pos, first, last) (another instance)
 extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_4897b0(); KING_ALIAS("_FUN_4897b0", "@List_NewNode@12")    // list: a new node
@@ -52,18 +52,18 @@ extern "C" void FUN_489900(); KING_ALIAS("_FUN_489900", "@Vec24_InsertAux@16")  
 extern "C" void FUN_48f730(); KING_ALIAS("_FUN_48f730", "@Vec580_InsertAux@16")    // vector<580 bytes>::insert_aux
 
 typedef void (__cdecl* ErrorHandler)(const char* what, int x);
-ASM_VAR(ErrorHandler, g_onError, $L_670324)
-ASM_VAR(AsmLabel, g_strRational, $L_670550)
-ASM_VAR(AsmLabel, g_strEnvironment, $L_67060c)
-ASM_VAR(AsmLabel, g_int6703f0, $L_6703f0)       // static big integers
-ASM_VAR(AsmLabel, g_int6703f8, $L_6703f8)
-ASM_VAR(AsmLabel, g_int670400, $L_670400)
-KING_BSS(DWORD, g_padding, 0x691ccc)
-KING_BSS(void*, g_691cd0, 0x691cd0)
-ASM_VAR(AsmLabel, g_vtbl64bed0, $L_64bed0)
-ASM_VAR(AsmLabel, g_vtbl64beb8, $L_64beb8)
-ASM_VAR(AsmLabel, g_vtbl64bef4, $L_64bef4)
-ASM_VAR(AsmLabel, g_vtbl64bf0c, $L_64bf0c)
+KING_VAR(ErrorHandler, g_onError, 670324)
+KING_VAR(AsmLabel, g_strRational, 670550)
+KING_VAR(AsmLabel, g_strEnvironment, 67060c)
+KING_VAR(AsmLabel, g_int6703f0, 6703f0)       // static big integers
+KING_VAR(AsmLabel, g_int6703f8, 6703f8)
+KING_VAR(AsmLabel, g_int670400, 670400)
+KING_VAR(DWORD, g_padding, 691ccc)
+KING_VAR(void*, g_691cd0, 691cd0)
+KING_VAR(AsmLabel, g_vtbl64bed0, 64bed0)
+KING_VAR(AsmLabel, g_vtbl64beb8, 64beb8)
+KING_VAR(AsmLabel, g_vtbl64bef4, 64bef4)
+KING_VAR(AsmLabel, g_vtbl64bf0c, 64bf0c)
 
 struct Vec {
     BYTE* begin;
@@ -583,7 +583,7 @@ void __fastcall Str_AssignEnvironment(StrRef* s, void*, const StrRef* src)      
 // owned), +4 a flag, the characters from +6
 
 typedef void (__cdecl* RangeError)(const char* type, const char* text);
-ASM_VAR(RangeError, g_rangeError, $L_670324)
+KING_VAR(RangeError, g_rangeError, 670324)
 
 static WORD* WStr_New(unsigned len)
 {
@@ -1054,8 +1054,8 @@ void __fastcall Rec491100_Destroy(BYTE* self, void*)
 }
 
 // ---------------------------------------------------------------------------
-ASM_VAR(AsmLabel, g_vt64bed0, $L_64bed0)
-ASM_VAR(AsmLabel, g_vt64bee4, $L_64bee4)
+KING_VAR(AsmLabel, g_vt64bed0, 64bed0)
+KING_VAR(AsmLabel, g_vt64bee4, 64bee4)
 
 // [FUN_48a9d0] frees the buffer *this when its word at +2 (capacity) is set
 extern "C" void __fastcall WBuf_Free(BYTE** self, void*)
@@ -1087,7 +1087,7 @@ extern "C" void __fastcall RingMember2_Destruct(BYTE* self, void*) { Rt_RingUnli
 
 // ---------------------------------------------------------------------------
 extern "C" void FUN_4890b0(); KING_ALIAS("_FUN_4890b0", "@Rt_ReadRoads@12")
-ASM_VAR(AsmLabel, s_rt6703e8, $L_6703e8)
+KING_VAR(AsmLabel, s_rt6703e8, 6703e8)
 
 // [FUN_4895b0] reads a file through 4890b0; -1 when it can't be opened
 extern "C" int __fastcall Rt_ReadFile(BYTE* self, void*, const char* name)
@@ -1110,10 +1110,10 @@ extern "C" void FUN_491090(); KING_ALIAS("_FUN_491090", "@Ring491090_Destruct@8"
 extern "C" void FUN_491100(); KING_ALIAS("_FUN_491100", "@Rec491100_Destroy@8")
 extern "C" void FUN_4914c0(); KING_ALIAS("_FUN_4914c0", "@Run4914c0_Destroy@4")
 extern "C" void FUN_491590(); KING_ALIAS("_FUN_491590", "@Task491590_Destruct@8")
-ASM_VAR(AsmLabel, g_run64bee4, $L_64bee4)
-ASM_VAR(AsmLabel, g_run6705ec, $L_6705ec)
-ASM_VAR(AsmLabel, g_run6705f4, $L_6705f4)
-ASM_VAR(AsmLabel, g_run6705fc, $L_6705fc)
+KING_VAR(AsmLabel, g_run64bee4, 64bee4)
+KING_VAR(AsmLabel, g_run6705ec, 6705ec)
+KING_VAR(AsmLabel, g_run6705f4, 6705f4)
+KING_VAR(AsmLabel, g_run6705fc, 6705fc)
 
 static BYTE* Run_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -1164,8 +1164,7 @@ extern "C" void __fastcall Run_491690(BYTE* s)
 }
 
 extern "C" void FUN_491520(); KING_ALIAS("_FUN_491520", "_Tasks_Queue")
-ASM_VAR(AsmLabel, g_run64bf38, $L_64bf38)
-ASM_VAR(AsmLabel, g_run64bee4, $L_64bee4)
+KING_VAR(AsmLabel, g_run64bf38, 64bf38)
 
 // [FUN_4914c0] (vtable 64bf38) FUN_491520 (+12, +16)
 extern "C" void __fastcall Run4914c0_Destroy(BYTE* s)
@@ -1193,7 +1192,7 @@ extern "C" void __fastcall StrPair_Destroy(BYTE* s)
 // Destructor thunks: the vtable, then the base destructor; static object cleanups.
 
 extern "C" void FUN_491010(); KING_ALIAS("_FUN_491010", "@RingMember2_Destruct@8")
-ASM_VAR(AsmLabel, g_q46_64bef4, $L_64bef4)
+KING_VAR(AsmLabel, g_q46_64bef4, 64bef4)
 // [FUN_491090] destructor: the 64bef4 vtable, then the ring member
 extern "C" void __fastcall Ring491090_Destruct(BYTE* s, void*)
 {
@@ -1204,7 +1203,7 @@ extern "C" void __fastcall Ring491090_Destruct(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Small methods and static helpers: guarded static construction, releases, frees.
 
-KING_BSS(BYTE*, g_q49_691cd0, 0x691cd0)
+KING_VAR(BYTE*, g_q49_691cd0, 691cd0)
 // [$L_490d90] frees the 691cd0 block when its +2 word is set
 extern "C" void __cdecl Block691cd0_Free(void)
 {
@@ -1233,7 +1232,7 @@ extern "C" void __fastcall Vec44_FreeStorage(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 // Stepping along a polyline and polynomial products.
 
-ASM_VAR(double, g_q113_64b678, $L_64b678)
+KING_VAR(double, g_q113_64b678, 64b678)
 // [FUN_48d530] steps index *i of the 24-byte points of s (+32..+36) forward when t is above 64b678, else back;
 // the fraction *f becomes 0 (1 at the second last point); 1 when it cannot move
 extern "C" int __fastcall Path_StepIndex(BYTE* s, void*, double* f, double t, unsigned* i)
@@ -1319,10 +1318,10 @@ extern "C" BYTE* __fastcall VPoly_Scale(BYTE* s, void*, BYTE* out, const double*
     return out;
 }
 
-ASM_VAR(double, g_q115_64b678, $L_64b678)
-ASM_VAR(double, g_q115_64bea8, $L_64bea8)
-ASM_VAR(double, g_q115_64b670, $L_64b670)
-ASM_VAR(double, g_q115_6865d8, $L_6865d8)
+KING_VAR(double, g_q115_64b678, 64b678)
+KING_VAR(double, g_q115_64bea8, 64bea8)
+KING_VAR(double, g_q115_64b670, 64b670)
+KING_VAR(double, g_q115_6865d8, 6865d8)
 // [FUN_48a750] the value of big integer n (word count +0, sign +4: 0 negative, words from +6, last the highest);
 // at the 64bea8 limit the 6865d8 one
 extern "C" double __cdecl Int_ToDouble(const void* n)
@@ -1424,7 +1423,7 @@ extern "C" BYTE* __fastcall VPoly_Multiply(BYTE* s, void*, BYTE* out, BYTE* b)
 
 extern "C" void FUN_487ee0(); KING_ALIAS("_FUN_487ee0", "@DBox_Init@16")
 extern "C" void FUN_487f60(); KING_ALIAS("_FUN_487f60", "@DBox_Extend@12")
-ASM_VAR(double, g_q117_64b6e0, $L_64b6e0)
+KING_VAR(double, g_q117_64b6e0, 64b6e0)
 // [FUN_490a20] the sphere (centre, radius) around the points of vector v (24-byte doubles): the centre of their
 // box and the largest distance from it
 extern "C" double* __cdecl Points_BoundingSphere(double* out, const double* const* v)
@@ -1533,7 +1532,7 @@ extern "C" int __cdecl Static490d50_Init(void)
 }
 
 extern "C" void FUN_490c00(); KING_ALIAS("_FUN_490c00", "_Save_SkipBlock")
-ASM_VAR(char, g_q199_64bee4, $L_64bee4)
+KING_VAR(char, g_q199_64bee4, 64bee4)
 // [$L_489760] skips the rest of the load block (the stream at *s[0], start, size)
 extern "C" int __fastcall LoadBlock_Skip(BYTE* s)
 {
@@ -1560,16 +1559,16 @@ extern "C" void __fastcall List48_Destroy(BYTE** s)
 
 // === reading a road object block of the save file (FUN_488a90)
 
-ASM_VAR(DWORD, g_sv6703b4, $L_6703b4)
-ASM_VAR(DWORD, g_sv6703ac, $L_6703ac)
-ASM_VAR(DWORD, g_sv6703a4, $L_6703a4)
-ASM_VAR(DWORD, g_sv67039c, $L_67039c)
-ASM_VAR(DWORD, g_sv670394, $L_670394)
-ASM_VAR(DWORD, g_sv67038c, $L_67038c)
-ASM_VAR(DWORD, g_sv670384, $L_670384)
-ASM_VAR(DWORD, g_sv67037c, $L_67037c)
-ASM_VAR(DWORD, g_sv67036c, $L_67036c)
-ASM_VAR(DWORD, g_sv670374, $L_670374)
+KING_VAR(DWORD, g_sv6703b4, 6703b4)
+KING_VAR(DWORD, g_sv6703ac, 6703ac)
+KING_VAR(DWORD, g_sv6703a4, 6703a4)
+KING_VAR(DWORD, g_sv67039c, 67039c)
+KING_VAR(DWORD, g_sv670394, 670394)
+KING_VAR(DWORD, g_sv67038c, 67038c)
+KING_VAR(DWORD, g_sv670384, 670384)
+KING_VAR(DWORD, g_sv67037c, 67037c)
+KING_VAR(DWORD, g_sv67036c, 67036c)
+KING_VAR(DWORD, g_sv670374, 670374)
 extern "C" void FUN_48a2c0(); KING_ALIAS("_FUN_48a2c0", "@Vec4_InsertAux48a2c0@16")    // vector<void*>::insert_aux
 extern "C" void FUN_48a000(); KING_ALIAS("_FUN_48a000", "@Vec4_InsertAux48a000@16")    // vector<void*>::insert_aux
 extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c220@20")
@@ -1702,11 +1701,11 @@ int __fastcall SaveBlock_Read(BYTE* self, void*, FILE* f)
 
 // === reading the road file (FUN_4890b0)
 
-ASM_VAR(DWORD, g_rf6703dc, $L_6703dc)
-ASM_VAR(DWORD, g_rf6703d4, $L_6703d4)
-ASM_VAR(DWORD, g_rf6703cc, $L_6703cc)
-ASM_VAR(DWORD, g_rf6703c4, $L_6703c4)
-ASM_VAR(DWORD, g_rf6703bc, $L_6703bc)
+KING_VAR(DWORD, g_rf6703dc, 6703dc)
+KING_VAR(DWORD, g_rf6703d4, 6703d4)
+KING_VAR(DWORD, g_rf6703cc, 6703cc)
+KING_VAR(DWORD, g_rf6703c4, 6703c4)
+KING_VAR(DWORD, g_rf6703bc, 6703bc)
 extern "C" void FUN_4afc20(); KING_ALIAS("_FUN_4afc20", "@SchList_End@12")
 
 // a named road (6703c4: its name block 6703bc, then its object blocks) appended to the list at self+24
@@ -2266,7 +2265,7 @@ void __fastcall Vec24_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
 
 // === big integer division (FUN_48bd80)
 
-ASM_VAR(AsmLabel, s_bigintDivZero, $L_670454)
+KING_VAR(AsmLabel, s_bigintDivZero, 670454)
 
 extern "C" {
 
@@ -2332,7 +2331,7 @@ void __cdecl BigInt_DivMod(WORD** a, WORD** b, WORD** q, WORD** r)
 // === the interpolating polynomial at the Chebyshev nodes (FUN_48fe80)
 
 extern "C" void FUN_4901b0(); KING_ALIAS("_FUN_4901b0", "@Poly_Add@16")    // polynomial sum (out, b)
-ASM_VAR(double, g_ch64b828, $L_64b828)      // pi
+KING_VAR(double, g_ch64b828, 64b828)      // pi
 
 extern "C" {
 
@@ -2778,7 +2777,7 @@ BYTE* __fastcall VPoly_Evaluate(const BYTE* p, void*, BYTE* out, BYTE* x)
 
 // === the nearest point of a road stretch (FUN_48c710)
 
-ASM_VAR(double, g_rn64b670, $L_64b670)
+KING_VAR(double, g_rn64b670, 64b670)
 
 static DVec3 Rn_Lerp(const DVec3& a, const DVec3& b, double t)
 {
@@ -2948,9 +2947,9 @@ void __cdecl VPoly_SquaredDerivative(BYTE* s, BYTE* p)
 extern "C" void Vc_CopyDw(); KING_ALIAS("_Vc_CopyDw", "_UninitCopyDwords")
 extern "C" void Tk_Queue(); KING_ALIAS("_Tk_Queue", "_Tasks_Queue")
 extern "C" void __cdecl Ai_PoolFree(void* p, unsigned size);
-ASM_VAR(AsmLabel, g_tk64bf24, $L_64bf24)
-ASM_VAR(AsmLabel, g_tk64bf38, $L_64bf38)
-ASM_VAR(AsmLabel, g_tk64bee4, $L_64bee4)
+KING_VAR(AsmLabel, g_tk64bf24, 64bf24)
+KING_VAR(AsmLabel, g_tk64bf38, 64bf38)
+KING_VAR(AsmLabel, g_tk64bee4, 64bee4)
 
 extern "C" {
 
@@ -2996,7 +2995,7 @@ extern "C" void Cc_Sphere(); KING_ALIAS("_Cc_Sphere", "_Points_BoundingSphere")
 extern "C" void Cc_Assign(); KING_ALIAS("_Cc_Assign", "@DVec3_Assign@12")
 extern "C" void Cc_Free(); KING_ALIAS("_Cc_Free", "@Vec24_FreeStorage@8")
 extern "C" void Cc_VecNew(); KING_ALIAS("_Cc_VecNew", "@Vec_Construct@12")
-ASM_VAR(double, g_cc64b5a0, $L_64b5a0)
+KING_VAR(double, g_cc64b5a0, 64b5a0)
 
 extern "C" {
 
@@ -3048,8 +3047,8 @@ extern "C" void Rt32_CharCopy(); KING_ALIAS("_Rt32_CharCopy", "@VecChar_Copy@12"
 extern "C" void Rt32_Reserve4(); KING_ALIAS("_Rt32_Reserve4", "@Vec4_Reserve@16")
 extern "C" void Rt32_CopyDwords(); KING_ALIAS("_Rt32_CopyDwords", "_UninitCopyDwords")
 extern "C" void Rt32_DwCopy(); KING_ALIAS("_Rt32_DwCopy", "@VecDw_CopyConstruct@12")
-KING_BSS(int, rt32_lock68d204, 0x68d204)
-KING_BSS(BYTE*, rt32_free48_68d1d8, 0x68d1d8)
+KING_VAR(int, rt32_lock68d204, 68d204)
+KING_VAR(BYTE*, rt32_free48_68d1d8, 68d1d8)
 
 extern "C" {
 
@@ -3116,8 +3115,8 @@ extern "C" void Rt33_End(); KING_ALIAS("_Rt33_End", "@SchList_End@12")
 extern "C" void Rt33_Insert(); KING_ALIAS("_Rt33_Insert", "@List489_Insert@20")
 extern "C" void Rt33_SetDestroy(); KING_ALIAS("_Rt33_SetDestroy", "@RoadSet_Destroy@4")
 extern "C" void Rt33_SetText(); KING_ALIAS("_Rt33_SetText", "@Rec_SetText12@12")
-ASM_VAR(char, rt33_s66c934, $L_66c934)
-ASM_VAR(char, rt33_s67035c, $L_67035c)
+KING_VAR(char, rt33_s66c934, 66c934)
+KING_VAR(char, rt33_s67035c, 67035c)
 
 extern "C" {
 

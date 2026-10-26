@@ -2341,7 +2341,7 @@ extern "C" void __cdecl Stream_SetWindow(BYTE* s)
 typedef char AsmLabel[1];
 
 extern "C" void FUN_459e90(); KING_ALIAS("_FUN_459e90", "@RopeSubstr_Destroy@8")
-ASM_VAR(AsmLabel, g_aicon64b5a8, $L_64b5a8)
+KING_VAR(AsmLabel, g_aicon64b5a8, 64b5a8)
 
 static BYTE* Aicon_DeleteAfter(BYTE* self, int flags, void (*dtor)())
 {
@@ -2553,7 +2553,7 @@ extern "C" void __cdecl Names_InsertionSortRest(BYTE* first, BYTE* last, int, in
 
 // === adding a leaf to the rope balancing forest (FUN_469520)
 
-ASM_VAR(AsmLabel, g_rf64b984, $L_64b984)
+KING_VAR(AsmLabel, g_rf64b984, 64b984)
 extern "C" void FUN_44f1b0(); KING_ALIAS("_FUN_44f1b0", "@Rope_FreeTree@8")
 ASM_PROC(FUN_462f30)
 
@@ -2650,7 +2650,7 @@ void __fastcall Vec1592_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
 // === a random neighbour node (FUN_45b8b0)
 
 extern "C" void FUN_464230(); KING_ALIAS("_FUN_464230", "@Vec4b_InsertH@16")
-KING_BSS(BYTE**, g_rn68cf00, 0x68cf00)
+KING_VAR(BYTE**, g_rn68cf00, 68cf00)
 extern "C" void FUN_4611c0(); KING_ALIAS("_FUN_4611c0", "_Construct4")
 
 extern "C" {

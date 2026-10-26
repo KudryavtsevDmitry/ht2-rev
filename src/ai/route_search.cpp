@@ -76,7 +76,7 @@ DBox* DBox::Extend(const DVec3* p)
 // CRC32 (polynomial 0x04C11DB7, most significant bit first)
 
 typedef unsigned CrcTable[256];
-KING_BSS(CrcTable, g_crcTable, 0x6918c0)
+KING_VAR(CrcTable, g_crcTable, 6918c0)
 
 extern "C" void __cdecl Crc_InitTable()
 {
@@ -455,8 +455,8 @@ extern "C" void __cdecl Road_PositionCostBest(int side, PositionId from, Positio
 // ---------------------------------------------------------------------------
 // The AI's view of the game
 
-KING_BSS(void*, g_aiTruck, 0x6f33ac)
-KING_BSS(int, g_6ced70, 0x6ced70)
+KING_VAR(void*, g_aiTruck, 6f33ac)
+KING_VAR(int, g_6ced70, 6ced70)
 extern "C" double __fastcall Wave_Value(void* self, void*, double phase);   // engine.cpp
 
 extern "C" int __cdecl AI_TruckGripLow()
@@ -522,7 +522,7 @@ BYTE** __fastcall Hops_Copy(BYTE** self, void*, BYTE* const* src)
 }
 
 extern "C" void FUN_487d20(); KING_ALIAS("_FUN_487d20", "@Slots8_Construct@12")
-KING_BSS(char, g_691cc0, 0x691cc0)
+KING_VAR(char, g_691cc0, 691cc0)
 
 // [FUN_488320] FUN_487d20(20) on the global at 691cc0
 extern "C" int __cdecl Trce_488320()
@@ -565,8 +565,8 @@ extern "C" void __fastcall Vec12Array_Fill(BYTE* self, int, unsigned count, BYTE
 extern "C" int __cdecl fputs(const char* s, FILE* f);
 extern "C" __declspec(noreturn) void __cdecl abort();
 typedef char AsmLabel5[1];
-ASM_VAR(AsmLabel5, s_670328, $L_670328)
-ASM_VAR(AsmLabel5, s_66c4e4, $L_66c4e4)
+KING_VAR(AsmLabel5, s_670328, 670328)
+KING_VAR(AsmLabel5, s_66c4e4, 66c4e4)
 
 // [FUN_4882c0] writes "a<670328>b<66c4e4>" to stderr and aborts
 extern "C" void __cdecl Ai_Abort(const char* a, const char* b)
@@ -595,7 +595,7 @@ extern "C" void __fastcall Vec12Array_FreeAll(BYTE* s, void*)
 // Static initializers: construct a global, register its teardown at exit.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-KING_BSS(char, g_q197_691cc0, 0x691cc0)
+KING_VAR(char, g_q197_691cc0, 691cc0)
 extern "C" void q197_FUN_488320(); KING_ALIAS("_q197_FUN_488320", "_Trce_488320")
 extern "C" void q197_L_487db0(); KING_ALIAS("_q197_L_487db0", "@Thunk487db0@8")
 // [$L_488340] destroys the static object 691cc0 at exit ($L_487db0)
@@ -805,7 +805,7 @@ extern "C" void FUN_47abf0(); KING_ALIAS("_FUN_47abf0", "@Vec12_PushBack@12")   
 extern "C" void FUN_448060(); KING_ALIAS("_FUN_448060", "@Vec12_Clear@8")    // clear of a vector of 12-byte records
 extern "C" void FUN_4867e0(); KING_ALIAS("_FUN_4867e0", "@Waypoint_Make@16")    // a hop (node, edge) with no kind
 extern "C" void FUN_4878b0(); KING_ALIAS("_FUN_4878b0", "@Vec12_InsertRange@20")    // insert of a range of 12-byte records (pos, first, last)
-ASM_VAR(double, g_trce64b5b8, $L_64b5b8)       // 0.1: a position this close to a node is at the node
+KING_VAR(double, g_trce64b5b8, 64b5b8)       // 0.1: a position this close to a node is at the node
 
 static PositionId Pos_AtNode(int node)
 {

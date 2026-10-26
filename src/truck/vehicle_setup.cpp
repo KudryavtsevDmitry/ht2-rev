@@ -14,13 +14,13 @@
 
 extern "C" void FUN_506750(); KING_ALIAS("_FUN_506750", "@Car_AxleFlat@12")    // vehicle: part by index
 
-KING_BSS(int, g_697678, 0x697678)
-KING_BSS(int, g_69767c, 0x69767c)
-KING_BSS(int, g_697680, 0x697680)
-KING_BSS(int, g_697684, 0x697684)
-KING_BSS(int, g_carTypeCount, 0x6ce32c)
+KING_VAR(int, g_697678, 697678)
+KING_VAR(int, g_69767c, 69767c)
+KING_VAR(int, g_697680, 697680)
+KING_VAR(int, g_697684, 697684)
+KING_VAR(int, g_carTypeCount, 6ce32c)
 typedef char CarTypeNames[1];
-KING_BSS(CarTypeNames, g_carTypeNames, 0x69809c)
+KING_VAR(CarTypeNames, g_carTypeNames, 69809c)
 
 struct Car {
     // wheel i drives: dword +7092 + 4i set and word +6564 + 2i zero
@@ -208,7 +208,7 @@ int __fastcall Car_FindParts(Car* s, void*) { return s->FindParts(); }          
 
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")
 typedef DWORD Dwords12[12];
-KING_BSS(Dwords12, g_rayDefaults, 0x7025f0)
+KING_VAR(Dwords12, g_rayDefaults, 7025f0)
 
 extern "C" {
 
@@ -318,7 +318,7 @@ extern "C" double __fastcall Car_MinWearFactor(BYTE* car, void*)
 
 extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // filter: feed (value, name)
 extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
-ASM_VAR(char, g_strFilterEngineTach, $L_674850)
+KING_VAR(char, g_strFilterEngineTach, 674850)
 
 // [FUN_4ff210] the tachometer target from the driven wheels' slip, filtered into +7300
 extern "C" void __fastcall Car_UpdateTach(BYTE* s, void*, const float* rpm)
@@ -412,7 +412,7 @@ extern "C" int __fastcall Wheel_StepLevel(BYTE* s, void*, int i, float* amount, 
 
 extern "C" void FUN_4e41d9(); KING_ALIAS("_FUN_4e41d9", "_Angle_F2Pi")    // a random value (angle, name)
 extern "C" double __cdecl Table360_At(float angle);   // world.cpp
-ASM_VAR(char, g_strCheckDamage, $L_67498c)    // "_Car_V::check_damage"
+KING_VAR(char, g_strCheckDamage, 67498c)    // "_Car_V::check_damage"
 
 // [FUN_501930] the damaged wheels' wobble (+7028), the drive shares (+7320) and the gear range of the drive mode
 extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*)
@@ -466,7 +466,7 @@ extern "C" void __fastcall Car_CheckDamage(BYTE* s, void*)
 // ---------------------------------------------------------------------------
 typedef char AsmLabel[1];
 extern "C" void FUN_501710(); KING_ALIAS("_FUN_501710", "_Car_ClearSettings")
-ASM_VAR(AsmLabel, s_674950, $L_674950)
+KING_VAR(AsmLabel, s_674950, 674950)
 extern "C" void __cdecl World_Fatal(const char* msg);
 
 // [FUN_501730..$L_501790] clears the 27 first settings, then one zero and seven ones; returns 35
@@ -492,8 +492,8 @@ extern "C" void FUN_501480(); KING_ALIAS("_FUN_501480", "@Car_GetSettings@12")
 extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
 extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // filter: feed (value, name)
 extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
-ASM_VAR(AsmLabel, s_674914, $L_674914)
-ASM_VAR(AsmLabel, s_674870, $L_674870)
+KING_VAR(AsmLabel, s_674914, 674914)
+KING_VAR(AsmLabel, s_674870, 674870)
 
 // [FUN_4ff460..$L_4ff492] the engine torque at rpm from the torque-rpm (+7304) and the two ramps
 extern "C" double __fastcall Car_TorqueAt(BYTE* self, void*, float rpm)
@@ -570,7 +570,7 @@ extern "C" int __cdecl Stream_ReadWord(BYTE* cursor, char* buf)
 // ---------------------------------------------------------------------------
 // Small methods and static helpers: guarded static construction, releases, frees.
 
-KING_BSS(void*, g_q49_697684, 0x697684)
+KING_VAR(void*, g_q49_697684, 697684)
 // [$L_503e10] frees the 697684 block
 extern "C" void __cdecl Block697684_Free(void)
 {
@@ -584,9 +584,9 @@ extern "C" void __cdecl Block697684_Free(void)
 extern "C" int __cdecl printf(const char* f, ...);
 extern "C" int __cdecl fprintf(FILE* f, const char* t, ...);
 extern "C" void __cdecl exit(int code);
-KING_BSS(void*, g_q53_6ce36c, 0x6ce36c)
-ASM_VAR(AsmLabel, s_q53_674b20, $L_674b20)
-ASM_VAR(AsmLabel, s_q53_66c4f4, $L_66c4f4)
+KING_VAR(void*, g_q53_6ce36c, 6ce36c)
+KING_VAR(AsmLabel, s_q53_674b20, 674b20)
+KING_VAR(AsmLabel, s_q53_66c4f4, 66c4f4)
 // [FUN_507c80] a fatal setup error: to the 6ce36c handler when set, else printed, appended to the 674b20 log and
 // the game exits
 extern "C" int __cdecl Setup_Fatal(const char* msg)
@@ -626,8 +626,8 @@ extern "C" BYTE* __fastcall Tuning_SetDefaults(BYTE* s)
 
 extern "C" void __stdcall Array_ForEach(BYTE* p, int size, int count, void (*fn)());    // ai_world.cpp
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-KING_BSS(AsmLabel, g_q98_7025f0, 0x7025f0)
-KING_BSS(AsmLabel, g_q98_6c6b68, 0x6c6b68)
+KING_VAR(AsmLabel, g_q98_7025f0, 7025f0)
+KING_VAR(AsmLabel, g_q98_6c6b68, 6c6b68)
 // [$L_507230] static init: the 35 876-byte records at 6c6b68 + 72 get zeroed vectors, two identity matrices
 // and cleared fields
 extern "C" void __cdecl VehSet_InitRecords(void)
@@ -668,8 +668,8 @@ extern "C" BYTE* __fastcall Tuning501fb0_SetDefaults(BYTE* s)
     return s;
 }
 
-KING_BSS(AsmLabel, g_q156_6976f8, 0x6976f8)
-KING_BSS(AsmLabel, g_q156_697688, 0x697688)
+KING_VAR(AsmLabel, g_q156_6976f8, 6976f8)
+KING_VAR(AsmLabel, g_q156_697688, 697688)
 // [$L_5021a0] static init: the 6976f8 tuning defaults
 extern "C" BYTE* __cdecl VehSet_Init6976f8(void) { return Tuning501fb0_SetDefaults((BYTE*)g_q156_6976f8); }
 // [$L_502250] static init: the 697688 tuning defaults
@@ -692,7 +692,7 @@ extern "C" int __cdecl Static503dc0_Init(void)
 
 // === the axle line of the touching wheels (FUN_503ac0)
 
-KING_BSS(Vec3, g_vs702650, 0x702650)
+KING_VAR(Vec3, g_vs702650, 702650)
 extern "C" Vec3* __fastcall Vec3_DivAssign(Vec3* self, void*, Vec3* ret, float s);
 extern "C" Vec3* __cdecl Line_Project(Vec3* out, const Vec3* p2, const Vec3* n, const Vec3* p4, const Vec3* p5);
 
@@ -762,7 +762,7 @@ int __fastcall Car_WheelContact(BYTE* c, void*, BYTE* out)
 
 extern "C" void FUN_4011e0(); KING_ALIAS("_FUN_4011e0", "_Array_ForEach@16")
 extern "C" void FUN_4bd4d0(); KING_ALIAS("_FUN_4bd4d0", "@Vec3_ZeroThis@8")
-KING_BSS(AsmLabel, g_cm697868, 0x697868)    // 80 models of 2416 bytes
+KING_VAR(AsmLabel, g_cm697868, 697868)    // 80 models of 2416 bytes
 
 // count empty vectors of size bytes at p
 static void Cm_Vectors(BYTE* p, int size, int count) { CallStd(FUN_4011e0, p, size, count, (void*)FUN_4bd4d0); }
@@ -812,8 +812,8 @@ void __cdecl CarModels_Construct()
 
 // === whether an axle stands flat (FUN_506750)
 
-ASM_VAR(double, g_ax64dac0, $L_64dac0)
-ASM_VAR(float, g_ax6749f0, $L_6749f0)
+KING_VAR(double, g_ax64dac0, 64dac0)
+KING_VAR(float, g_ax6749f0, 6749f0)
 
 extern "C" {
 
@@ -851,10 +851,10 @@ int __fastcall Car_AxleFlat(BYTE* s, void*, unsigned k)
 
 // === moving a control along its range (FUN_501b90)
 
-ASM_VAR(float, g_cm64c264, $L_64c264)
-ASM_VAR(float, g_cm64c250, $L_64c250)
-ASM_VAR(float, g_cm64c938, $L_64c938)
-ASM_VAR(double, g_cm64b670, $L_64b670)
+KING_VAR(float, g_cm64c264, 64c264)
+KING_VAR(float, g_cm64c250, 64c250)
+KING_VAR(float, g_cm64c938, 64c938)
+KING_VAR(double, g_cm64b670, 64b670)
 
 extern "C" {
 
@@ -936,17 +936,17 @@ int __fastcall Control_Move(BYTE* s, void*, int k, float* amount, float speed)
 // === a body in water (FUN_504930)
 
 extern "C" Vec3* __fastcall Vec3_SetThis(Vec3* self, void*, float x, float y, float z);
-ASM_VAR(float, g_bw674414, $L_674414)
-KING_BSS(float, g_bw702630, 0x702630)
-KING_BSS(float, g_bw702634, 0x702634)
-KING_BSS(float, g_bw702638, 0x702638)
-ASM_VAR(float, g_bw64c258, $L_64c258)
-ASM_VAR(float, g_bw64c264, $L_64c264)
-ASM_VAR(float, g_bw64c250, $L_64c250)
-ASM_VAR(float, g_bw64d990, $L_64d990)
-ASM_VAR(double, g_bw64b898, $L_64b898)
-ASM_VAR(double, g_bw64b670, $L_64b670)
-ASM_VAR(double, g_bw64b788, $L_64b788)
+KING_VAR(float, g_bw674414, 674414)
+KING_VAR(float, g_bw702630, 702630)
+KING_VAR(float, g_bw702634, 702634)
+KING_VAR(float, g_bw702638, 702638)
+KING_VAR(float, g_bw64c258, 64c258)
+KING_VAR(float, g_bw64c264, 64c264)
+KING_VAR(float, g_bw64c250, 64c250)
+KING_VAR(float, g_bw64d990, 64d990)
+KING_VAR(double, g_bw64b898, 64b898)
+KING_VAR(double, g_bw64b670, 64b670)
+KING_VAR(double, g_bw64b788, 64b788)
 
 extern "C" {
 
@@ -1013,21 +1013,21 @@ void __fastcall Body_InWater(BYTE* s)
 extern "C" int __cdecl rand(void);
 extern "C" void Ch_Normalized(); KING_ALIAS("_Ch_Normalized", "_Vec3_Normalized")
 extern "C" void Ch_RampDown(); KING_ALIAS("_Ch_RampDown", "@Ramp_Down@12")
-ASM_VAR(float, g_ch64c40c, $L_64c40c)
-ASM_VAR(float, g_ch64c250, $L_64c250)
-ASM_VAR(float, g_ch64c264, $L_64c264)
-ASM_VAR(float, g_ch64c408, $L_64c408)
-ASM_VAR(float, g_ch64c320, $L_64c320)
-ASM_VAR(float, g_ch64da74, $L_64da74)
-ASM_VAR(float, g_ch64da70, $L_64da70)
-KING_BSS(float, g_ch702630, 0x702630)
-KING_BSS(float, g_ch702634, 0x702634)
-KING_BSS(float, g_ch702638, 0x702638)
-ASM_VAR(double, g_ch64b6d0, $L_64b6d0)
-ASM_VAR(double, g_ch64b6e0, $L_64b6e0)
-ASM_VAR(double, g_ch64da68, $L_64da68)
-ASM_VAR(double, g_ch64da60, $L_64da60)
-ASM_VAR(double, g_ch64d310, $L_64d310)
+KING_VAR(float, g_ch64c40c, 64c40c)
+KING_VAR(float, g_ch64c250, 64c250)
+KING_VAR(float, g_ch64c264, 64c264)
+KING_VAR(float, g_ch64c408, 64c408)
+KING_VAR(float, g_ch64c320, 64c320)
+KING_VAR(float, g_ch64da74, 64da74)
+KING_VAR(float, g_ch64da70, 64da70)
+KING_VAR(float, g_ch702630, 702630)
+KING_VAR(float, g_ch702634, 702634)
+KING_VAR(float, g_ch702638, 702638)
+KING_VAR(double, g_ch64b6d0, 64b6d0)
+KING_VAR(double, g_ch64b6e0, 64b6e0)
+KING_VAR(double, g_ch64da68, 64da68)
+KING_VAR(double, g_ch64da60, 64da60)
+KING_VAR(double, g_ch64d310, 64d310)
 
 extern "C" {
 
@@ -1118,17 +1118,17 @@ extern "C" void Gc_NormalizeThis(); KING_ALIAS("_Gc_NormalizeThis", "@Vec3_Norma
 extern "C" void Gc_AddAssign(); KING_ALIAS("_Gc_AddAssign", "@Vec3_AddAssign@16")
 extern "C" void Gc_Contact(); KING_ALIAS("_Gc_Contact", "@Wheel_FindGround@24")
 extern "C" void Gc_State(); KING_ALIAS("_Gc_State", "@Body_GroundNormal@12")
-KING_BSS(int, g_gc696be8, 0x696be8)
-ASM_VAR(AsmLabel, g_gc674a20, $L_674a20)
-KING_BSS(BYTE, g_gc698166, 0x698166)
-KING_BSS(BYTE, g_gc702650, 0x702650)
-KING_BSS(float, g_gc702630, 0x702630)
-KING_BSS(float, g_gc702634, 0x702634)
-KING_BSS(float, g_gc702638, 0x702638)
-ASM_VAR(float, g_gc64d7b8, $L_64d7b8)
-ASM_VAR(float, g_gc64c264, $L_64c264)
-ASM_VAR(double, g_gc64b658, $L_64b658)
-ASM_VAR(double, g_gc64dab8, $L_64dab8)
+KING_VAR(int, g_gc696be8, 696be8)
+KING_VAR(AsmLabel, g_gc674a20, 674a20)
+KING_VAR(BYTE, g_gc698166, 698166)
+KING_VAR(BYTE, g_gc702650, 702650)
+KING_VAR(float, g_gc702630, 702630)
+KING_VAR(float, g_gc702634, 702634)
+KING_VAR(float, g_gc702638, 702638)
+KING_VAR(float, g_gc64d7b8, 64d7b8)
+KING_VAR(float, g_gc64c264, 64c264)
+KING_VAR(double, g_gc64b658, 64b658)
+KING_VAR(double, g_gc64dab8, 64dab8)
 
 extern "C" {
 
@@ -1250,45 +1250,45 @@ extern "C" void Ws_AddContact(); KING_ALIAS("_Ws_AddContact", "@Engine_AddContac
 extern "C" void Ws_CameraGet(); KING_ALIAS("_Ws_CameraGet", "@Camera_Get@12")
 extern "C" void Ws_Length(); KING_ALIAS("_Ws_Length", "_Vec3_Length")
 extern "C" void Ws_MulAssign(); KING_ALIAS("_Ws_MulAssign", "@Vec3_MulAssign@16")
-KING_BSS(int, g_ws69784c, 0x69784c)
-KING_BSS(BYTE*, g_ws6ef1fc, 0x6ef1fc)
-KING_BSS(float, g_ws6976c0, 0x6976c0)
-KING_BSS(float, g_ws697688, 0x697688)
-KING_BSS(float, g_ws6976f8, 0x6976f8)
-KING_BSS(float, g_ws696bdc, 0x696bdc)
-KING_BSS(BYTE, g_ws702650, 0x702650)
-ASM_VAR(float, g_ws64c450, $L_64c450)
-ASM_VAR(float, g_ws64c254, $L_64c254)
-ASM_VAR(float, g_ws64c250, $L_64c250)
-ASM_VAR(float, g_ws64c40c, $L_64c40c)
-ASM_VAR(float, g_ws64c304, $L_64c304)
-ASM_VAR(float, g_ws64d690, $L_64d690)
-ASM_VAR(float, g_ws64c260, $L_64c260)
-ASM_VAR(float, g_ws64c968, $L_64c968)
-ASM_VAR(float, g_ws64c338, $L_64c338)
-ASM_VAR(float, g_ws64c320, $L_64c320)
-ASM_VAR(float, g_ws64daac, $L_64daac)
-ASM_VAR(float, g_ws64daa8, $L_64daa8)
-ASM_VAR(float, g_ws64da94, $L_64da94)
-ASM_VAR(float, g_ws64da90, $L_64da90)
-ASM_VAR(float, g_ws64da7c, $L_64da7c)
-ASM_VAR(float, g_ws64da78, $L_64da78)
-ASM_VAR(double, g_ws64b5b8, $L_64b5b8)
-ASM_VAR(double, g_ws64b918, $L_64b918)
-ASM_VAR(double, g_ws64d318, $L_64d318)
-ASM_VAR(double, g_ws64daa0, $L_64daa0)
-ASM_VAR(double, g_ws64da98, $L_64da98)
-ASM_VAR(double, g_ws64d338, $L_64d338)
-ASM_VAR(double, g_ws64d668, $L_64d668)
-ASM_VAR(double, g_ws64b840, $L_64b840)
-ASM_VAR(double, g_ws64c958, $L_64c958)
-ASM_VAR(double, g_ws64b5a0, $L_64b5a0)
-ASM_VAR(double, g_ws64da88, $L_64da88)
-ASM_VAR(double, g_ws64b6e0, $L_64b6e0)
-ASM_VAR(double, g_ws64da80, $L_64da80)
-ASM_VAR(double, g_ws64b668, $L_64b668)
-ASM_VAR(double, g_ws64d0f0, $L_64d0f0)
-ASM_VAR(double, g_ws64d378, $L_64d378)
+KING_VAR(int, g_ws69784c, 69784c)
+KING_VAR(BYTE*, g_ws6ef1fc, 6ef1fc)
+KING_VAR(float, g_ws6976c0, 6976c0)
+KING_VAR(float, g_ws697688, 697688)
+KING_VAR(float, g_ws6976f8, 6976f8)
+KING_VAR(float, g_ws696bdc, 696bdc)
+KING_VAR(BYTE, g_ws702650, 702650)
+KING_VAR(float, g_ws64c450, 64c450)
+KING_VAR(float, g_ws64c254, 64c254)
+KING_VAR(float, g_ws64c250, 64c250)
+KING_VAR(float, g_ws64c40c, 64c40c)
+KING_VAR(float, g_ws64c304, 64c304)
+KING_VAR(float, g_ws64d690, 64d690)
+KING_VAR(float, g_ws64c260, 64c260)
+KING_VAR(float, g_ws64c968, 64c968)
+KING_VAR(float, g_ws64c338, 64c338)
+KING_VAR(float, g_ws64c320, 64c320)
+KING_VAR(float, g_ws64daac, 64daac)
+KING_VAR(float, g_ws64daa8, 64daa8)
+KING_VAR(float, g_ws64da94, 64da94)
+KING_VAR(float, g_ws64da90, 64da90)
+KING_VAR(float, g_ws64da7c, 64da7c)
+KING_VAR(float, g_ws64da78, 64da78)
+KING_VAR(double, g_ws64b5b8, 64b5b8)
+KING_VAR(double, g_ws64b918, 64b918)
+KING_VAR(double, g_ws64d318, 64d318)
+KING_VAR(double, g_ws64daa0, 64daa0)
+KING_VAR(double, g_ws64da98, 64da98)
+KING_VAR(double, g_ws64d338, 64d338)
+KING_VAR(double, g_ws64d668, 64d668)
+KING_VAR(double, g_ws64b840, 64b840)
+KING_VAR(double, g_ws64c958, 64c958)
+KING_VAR(double, g_ws64b5a0, 64b5a0)
+KING_VAR(double, g_ws64da88, 64da88)
+KING_VAR(double, g_ws64b6e0, 64b6e0)
+KING_VAR(double, g_ws64da80, 64da80)
+KING_VAR(double, g_ws64b668, 64b668)
+KING_VAR(double, g_ws64d0f0, 64d0f0)
+KING_VAR(double, g_ws64d378, 64d378)
 
 #define WS(off) F(float, s, (off) + w * 4)
 
@@ -1550,9 +1550,9 @@ int __fastcall Wheel_Surface(BYTE* s, void*, BYTE* c, int w)
 // === a segment against a four-cornered patch (FUN_502270)
 
 extern "C" void Ph_PlaneHitT(); KING_ALIAS("_Ph_PlaneHitT", "_Vec3_PlaneHitT")
-ASM_VAR(double, g_ph64b678, $L_64b678)
-ASM_VAR(float, g_ph64c250, $L_64c250)
-ASM_VAR(double, g_ph64b670, $L_64b670)
+KING_VAR(double, g_ph64b678, 64b678)
+KING_VAR(float, g_ph64c250, 64c250)
+KING_VAR(double, g_ph64b670, 64b670)
 
 extern "C" {
 
@@ -1730,7 +1730,7 @@ void __fastcall Body_GroundNormal(BYTE* s, void*, int need)
 // === sliding a body's move along what it hits (FUN_506ae0)
 
 extern "C" void Sl_SetThis(); KING_ALIAS("_Sl_SetThis", "@Vec3_SetThis@20")
-ASM_VAR(float, g_sl64c334, $L_64c334)
+KING_VAR(float, g_sl64c334, 64c334)
 
 static Vec3 Sl_Set(double x, double y, double z)
 {
@@ -1808,12 +1808,12 @@ int __fastcall Body_SlideMove(BYTE* s, void*)
 
 extern "C" void Gp_PlaneHit(); KING_ALIAS("_Gp_PlaneHit", "_Vec3_PlaneHit")
 extern "C" void Gp_MulAssign(); KING_ALIAS("_Gp_MulAssign", "@Vec3_MulAssign@16")
-ASM_VAR(float, g_gp64d980, $L_64d980)
-ASM_VAR(double, g_gp64b678, $L_64b678)
-ASM_VAR(double, g_gp64d6b8, $L_64d6b8)
-ASM_VAR(double, g_gp64b670, $L_64b670)
-KING_BSS(int, g_gp6ce33c, 0x6ce33c)
-KING_BSS(int, g_gp6ce340, 0x6ce340)
+KING_VAR(float, g_gp64d980, 64d980)
+KING_VAR(double, g_gp64b678, 64b678)
+KING_VAR(double, g_gp64d6b8, 64d6b8)
+KING_VAR(double, g_gp64b670, 64b670)
+KING_VAR(int, g_gp6ce33c, 6ce33c)
+KING_VAR(int, g_gp6ce340, 6ce340)
 
 // wheel i's hub +100 taken from its contact record (+248 + 248 i) and turned into the body (+6212 by the inverse I),
 // its spring length (+3608 and +3544) from the hub height +7364
@@ -2073,17 +2073,17 @@ extern "C" void Wg_Surface(); KING_ALIAS("_Wg_Surface", "@Wheel_Surface@16")
 extern "C" void Wg_SubAssign(); KING_ALIAS("_Wg_SubAssign", "@Vec3_SubAssign@16")
 extern "C" void FUN_503500(); KING_ALIAS("_FUN_503500", "@Wheel_RollDrag@20")
 extern "C" void Wg_NodeInit(); KING_ALIAS("_Wg_NodeInit", "@Node_Init@8")
-KING_BSS(int, g_wg697660, 0x697660)                 // the contact count
-KING_BSS(double, g_wg697658, 0x697658)              // and its time
-KING_BSS(AsmLabel, g_wg697678, 0x697678)
-KING_BSS(AsmLabel, g_wg697914, 0x697914)
-ASM_VAR(char, g_wg674a14, $L_674a14)
-ASM_VAR(char, g_wg674a08, $L_674a08)
-ASM_VAR(char, g_wg674a00, $L_674a00)
-ASM_VAR(char, g_wg6749f4, $L_6749f4)
-ASM_VAR(float, g_wg64c258, $L_64c258)
-ASM_VAR(double, g_wg64b670, $L_64b670)
-ASM_VAR(double, g_wg64b678, $L_64b678)
+KING_VAR(int, g_wg697660, 697660)                 // the contact count
+KING_VAR(double, g_wg697658, 697658)              // and its time
+KING_VAR(AsmLabel, g_wg697678, 697678)
+KING_VAR(AsmLabel, g_wg697914, 697914)
+KING_VAR(char, g_wg674a14, 674a14)
+KING_VAR(char, g_wg674a08, 674a08)
+KING_VAR(char, g_wg674a00, 674a00)
+KING_VAR(char, g_wg6749f4, 6749f4)
+KING_VAR(float, g_wg64c258, 64c258)
+KING_VAR(double, g_wg64b670, 64b670)
+KING_VAR(double, g_wg64b678, 64b678)
 
 // k times the car's side axis (+16 rows) for the wheel offsets
 static Vec3 Wg_Side(BYTE* s, double k)
@@ -2299,16 +2299,16 @@ int __fastcall Wheel_FindGround(BYTE* s, void*, int keep, const Vec3* p, BYTE* o
 // === a wheel's rolling drag by its ground (FUN_503500)
 
 extern "C" void Wr_Rolling(); KING_ALIAS("_Wr_Rolling", "_Car_RollingFactor")
-ASM_VAR(float, g_wr64c450, $L_64c450)
-ASM_VAR(float, g_wr64c32c, $L_64c32c)
-ASM_VAR(float, g_wr64c320, $L_64c320)
-ASM_VAR(float, g_wr64c908, $L_64c908)
-ASM_VAR(float, g_wr64dab0, $L_64dab0)
-ASM_VAR(double, g_wr64b5a0, $L_64b5a0)
-ASM_VAR(double, g_wr64b6e0, $L_64b6e0)
-ASM_VAR(double, g_wr64b890, $L_64b890)
-ASM_VAR(float, g_wr674444, $L_674444)
-ASM_VAR(float, g_wr64c258, $L_64c258)
+KING_VAR(float, g_wr64c450, 64c450)
+KING_VAR(float, g_wr64c32c, 64c32c)
+KING_VAR(float, g_wr64c320, 64c320)
+KING_VAR(float, g_wr64c908, 64c908)
+KING_VAR(float, g_wr64dab0, 64dab0)
+KING_VAR(double, g_wr64b5a0, 64b5a0)
+KING_VAR(double, g_wr64b6e0, 64b6e0)
+KING_VAR(double, g_wr64b890, 64b890)
+KING_VAR(float, g_wr674444, 674444)
+KING_VAR(float, g_wr64c258, 64c258)
 
 // the drag d taken over a frame: below the limit k as is, above it scaled down by (k / x)^2
 static double Wr_Limit(BYTE* s, float d, float k, bool bias)
@@ -2470,32 +2470,32 @@ extern "C" void Gb_Record(); KING_ALIAS("_Gb_Record", "@History_Record@16")
 extern "C" void Gb_Filter(); KING_ALIAS("_Gb_Filter", "@Filter_Value@4")
 extern "C" void Gb_Ramp(); KING_ALIAS("_Gb_Ramp", "@Ramp_Value@8")
 extern "C" void Gb_RampDown(); KING_ALIAS("_Gb_RampDown", "@Ramp_Down@12")
-ASM_VAR(float, g_gb674410, $L_674410)
-ASM_VAR(float, g_gb67440c, $L_67440c)
-KING_BSS(int, g_gb696c4c, 0x696c4c)
-ASM_VAR(double, g_gb64b658, $L_64b658)
-ASM_VAR(double, g_gb64b5b8, $L_64b5b8)
-ASM_VAR(double, g_gb64b670, $L_64b670)
-ASM_VAR(double, g_gb64b6e0, $L_64b6e0)
-ASM_VAR(double, g_gb64c958, $L_64c958)
-ASM_VAR(double, g_gb64b840, $L_64b840)
-ASM_VAR(double, g_gb64b6f8, $L_64b6f8)
-ASM_VAR(double, g_gb64d318, $L_64d318)
-ASM_VAR(double, g_gb64d338, $L_64d338)
-ASM_VAR(double, g_gb64da48, $L_64da48)
-ASM_VAR(double, g_gb64da40, $L_64da40)
-ASM_VAR(double, g_gb64b660, $L_64b660)
-ASM_VAR(double, g_gb64b7b8, $L_64b7b8)
-ASM_VAR(double, g_gb64d378, $L_64d378)
-ASM_VAR(float, g_gb64c250, $L_64c250)
-ASM_VAR(float, g_gb64c264, $L_64c264)
-ASM_VAR(float, g_gb64c40c, $L_64c40c)
-ASM_VAR(float, g_gb64c450, $L_64c450)
-ASM_VAR(float, g_gb64c408, $L_64c408)
-ASM_VAR(char, g_gbShift, $L_6748f4)
-ASM_VAR(char, g_gbShifting, $L_6748d4)
-ASM_VAR(char, g_gbIdle, $L_6748b4)
-ASM_VAR(char, g_gbForce, $L_674894)
+KING_VAR(float, g_gb674410, 674410)
+KING_VAR(float, g_gb67440c, 67440c)
+KING_VAR(int, g_gb696c4c, 696c4c)
+KING_VAR(double, g_gb64b658, 64b658)
+KING_VAR(double, g_gb64b5b8, 64b5b8)
+KING_VAR(double, g_gb64b670, 64b670)
+KING_VAR(double, g_gb64b6e0, 64b6e0)
+KING_VAR(double, g_gb64c958, 64c958)
+KING_VAR(double, g_gb64b840, 64b840)
+KING_VAR(double, g_gb64b6f8, 64b6f8)
+KING_VAR(double, g_gb64d318, 64d318)
+KING_VAR(double, g_gb64d338, 64d338)
+KING_VAR(double, g_gb64da48, 64da48)
+KING_VAR(double, g_gb64da40, 64da40)
+KING_VAR(double, g_gb64b660, 64b660)
+KING_VAR(double, g_gb64b7b8, 64b7b8)
+KING_VAR(double, g_gb64d378, 64d378)
+KING_VAR(float, g_gb64c250, 64c250)
+KING_VAR(float, g_gb64c264, 64c264)
+KING_VAR(float, g_gb64c40c, 64c40c)
+KING_VAR(float, g_gb64c450, 64c450)
+KING_VAR(float, g_gb64c408, 64c408)
+KING_VAR(char, g_gbShift, 6748f4)
+KING_VAR(char, g_gbShifting, 6748d4)
+KING_VAR(char, g_gbIdle, 6748b4)
+KING_VAR(char, g_gbForce, 674894)
 
 static void Gb_RecordF(BYTE* h, float v, const char* name)
 {

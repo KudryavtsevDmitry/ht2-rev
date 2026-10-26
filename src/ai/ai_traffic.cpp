@@ -33,10 +33,10 @@ extern "C" void FUN_40cb60(); KING_ALIAS("_FUN_40cb60", "@Rec40cb60_Destroy@8")
 extern "C" void FUN_4a36c0(); KING_ALIAS("_FUN_4a36c0", "@SchHandle_Release@8")
 extern "C" void FUN_50d190(); KING_ALIAS("_FUN_50d190", "@Shell_Nop@8")
 
-KING_BSS(BYTE, g_multOn, 0x68d31c)
-KING_BSS(int, g_68d320, 0x68d320)
-KING_BSS(BYTE*, g_68d308, 0x68d308)             // vector<12 bytes>: begin, end
-KING_BSS(BYTE*, g_68d30c, 0x68d30c)
+KING_VAR(BYTE, g_multOn, 68d31c)
+KING_VAR(int, g_68d320, 68d320)
+KING_VAR(BYTE*, g_68d308, 68d308)             // vector<12 bytes>: begin, end
+KING_VAR(BYTE*, g_68d30c, 68d30c)
 
 extern "C" DWORD* __cdecl Copy32(const DWORD* first, const DWORD* last, DWORD* to)
 {
@@ -655,9 +655,9 @@ extern "C" void FUN_483a50(); KING_ALIAS("_FUN_483a50", "_AI_483a50")    // the 
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")    // player of a list node
 extern "C" void FUN_4758d0(); KING_ALIAS("_FUN_4758d0", "@Player_SaveX@12")    // player: serialize into a byte vector
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")    // message: add field (id, data, size)
-KING_BSS(BYTE, g_68d31c, 0x68d31c)
-ASM_VAR(BYTE, g_66f62b, $L_66f62b)
-KING_BSS(BYTE*, g_playersHead68b990, 0x68b990)
+KING_VAR(BYTE, g_68d31c, 68d31c)
+KING_VAR(BYTE, g_66f62b, 66f62b)
+KING_VAR(BYTE*, g_playersHead68b990, 68b990)
 
 extern "C" {
 
@@ -731,7 +731,7 @@ extern "C" void __cdecl Heap504_Adjust(BYTE** a, int hole, int len, int val, int
 }
 
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
-KING_BSS(char, g_ctor68d308, 0x68d308)
+KING_VAR(char, g_ctor68d308, 68d308)
 
 // [FUN_46d510] constructs the global container at 68d308
 extern "C" void __cdecl Traffic_Init68d308()
@@ -744,14 +744,14 @@ extern "C" void __cdecl Traffic_Init68d308()
 // Static initializers of random generators.
 typedef char AsmLabel[1];
 
-KING_BSS(AsmLabel, g_aitraRng68d220, 0x68d220)
-KING_BSS(DWORD, g_aitraRng68d2f8, 0x68d2f8)
-KING_BSS(DWORD, g_aitraRng68d2fc, 0x68d2fc)
-KING_BSS(DWORD, g_aitraRng68d300, 0x68d300)
-KING_BSS(AsmLabel, g_aitraRng68d7d8, 0x68d7d8)
-KING_BSS(DWORD, g_aitraRng68d8b0, 0x68d8b0)
-KING_BSS(DWORD, g_aitraRng68d8b4, 0x68d8b4)
-KING_BSS(DWORD, g_aitraRng68d8b8, 0x68d8b8)
+KING_VAR(AsmLabel, g_aitraRng68d220, 68d220)
+KING_VAR(DWORD, g_aitraRng68d2f8, 68d2f8)
+KING_VAR(DWORD, g_aitraRng68d2fc, 68d2fc)
+KING_VAR(DWORD, g_aitraRng68d300, 68d300)
+KING_VAR(AsmLabel, g_aitraRng68d7d8, 68d7d8)
+KING_VAR(DWORD, g_aitraRng68d8b0, 68d8b0)
+KING_VAR(DWORD, g_aitraRng68d8b4, 68d8b4)
+KING_VAR(DWORD, g_aitraRng68d8b8, 68d8b8)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Aitra_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
@@ -811,7 +811,7 @@ extern "C" void __fastcall Blocks487d70_Clear(BYTE* s, void*)
 // Static initializers: construct a global, register its teardown at exit.
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-KING_BSS(char, g_q197_68d308, 0x68d308)
+KING_VAR(char, g_q197_68d308, 68d308)
 extern "C" void q197_FUN_447ef0(); KING_ALIAS("_q197_FUN_447ef0", "@Vec12_FreeStorage@8")
 extern "C" void q197_FUN_46d510(); KING_ALIAS("_q197_FUN_46d510", "_Traffic_Init68d308")
 // [$L_46d540] destroys the static object 68d308 at exit (FUN_447ef0)
@@ -855,25 +855,25 @@ extern "C" int __fastcall Thunk487db0(BYTE* s, void* d) { return q238_Blocks487d
 
 // === the AI's player messages (FUN_46d7f0)
 
-KING_BSS(BYTE*, g_pm68b990, 0x68b990)
-KING_BSS(BYTE, g_pm68d0ec, 0x68d0ec)
-ASM_VAR(BYTE, g_pm66f62a, $L_66f62a)
-ASM_VAR(int, g_pm66f62c, $L_66f62c)
-KING_BSS(BYTE*, g_pm68d308, 0x68d308)
-KING_BSS(BYTE*, g_pm68d30c, 0x68d30c)
-KING_BSS(BYTE*, g_pm68d314, 0x68d314)
-KING_BSS(BYTE*, g_pm68d318, 0x68d318)
-KING_BSS(int, g_pm68d188, 0x68d188)
-KING_BSS(AsmLabel, s_pm68d1c0, 0x68d1c0)
-ASM_VAR(AsmLabel, s_pm66f72c, $L_66f72c)
-ASM_VAR(AsmLabel, s_pm66f578, $L_66f578)
-ASM_VAR(AsmLabel, s_pm66f750, $L_66f750)
-ASM_VAR(AsmLabel, s_pm66f704, $L_66f704)
-ASM_VAR(AsmLabel, s_pm66f6d4, $L_66f6d4)
-ASM_VAR(AsmLabel, s_pm66f674, $L_66f674)
-ASM_VAR(AsmLabel, s_pm66f65c, $L_66f65c)
-ASM_VAR(AsmLabel, s_pm66f638, $L_66f638)
-ASM_VAR(AsmLabel, s_pm66f630, $L_66f630)
+KING_VAR(BYTE*, g_pm68b990, 68b990)
+KING_VAR(BYTE, g_pm68d0ec, 68d0ec)
+KING_VAR(BYTE, g_pm66f62a, 66f62a)
+KING_VAR(int, g_pm66f62c, 66f62c)
+KING_VAR(BYTE*, g_pm68d308, 68d308)
+KING_VAR(BYTE*, g_pm68d30c, 68d30c)
+KING_VAR(BYTE*, g_pm68d314, 68d314)
+KING_VAR(BYTE*, g_pm68d318, 68d318)
+KING_VAR(int, g_pm68d188, 68d188)
+KING_VAR(AsmLabel, s_pm68d1c0, 68d1c0)
+KING_VAR(AsmLabel, s_pm66f72c, 66f72c)
+KING_VAR(AsmLabel, s_pm66f578, 66f578)
+KING_VAR(AsmLabel, s_pm66f750, 66f750)
+KING_VAR(AsmLabel, s_pm66f704, 66f704)
+KING_VAR(AsmLabel, s_pm66f6d4, 66f6d4)
+KING_VAR(AsmLabel, s_pm66f674, 66f674)
+KING_VAR(AsmLabel, s_pm66f65c, 66f65c)
+KING_VAR(AsmLabel, s_pm66f638, 66f638)
+KING_VAR(AsmLabel, s_pm66f630, 66f630)
 extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")
 extern "C" void FUN_40a9f0(); KING_ALIAS("_FUN_40a9f0", "_AI_ListData")
 extern "C" void FUN_40ad00(); KING_ALIAS("_FUN_40ad00", "_Ai_FinishRacingPlayer")
@@ -1122,10 +1122,10 @@ void __cdecl Rope_SetCacheForIncr(BYTE* x)
 extern "C" double __cdecl Road_EdgeCost(int side, BYTE* edge, int dir);            // ai_world.cpp
 extern "C" DWORD* __cdecl Rec12_Construct(DWORD* p, const DWORD* src);            // route_search.cpp
 extern "C" void __fastcall Vec12_Insert47b790(BYTE** v, void*, BYTE* pos, const BYTE* x);   // road_graph.cpp
-KING_BSS(BYTE**, g_rw68cf00, 0x68cf00)        // the road nodes
-ASM_VAR(AsmLabel, s_rw6701e0, $L_6701e0)
-ASM_VAR(AsmLabel, s_rw6700c8, $L_6700c8)
-ASM_VAR(AsmLabel, s_rw670230, $L_670230)
+KING_VAR(BYTE**, g_rw68cf00, 68cf00)        // the road nodes
+KING_VAR(AsmLabel, s_rw6701e0, 6701e0)
+KING_VAR(AsmLabel, s_rw6700c8, 6700c8)
+KING_VAR(AsmLabel, s_rw670230, 670230)
 
 // appends waypoint record r (12 bytes) to vector v
 static void Rw_Push(BYTE** v, const DWORD* r)
@@ -1193,8 +1193,8 @@ extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20
 extern "C" void FUN_602be0(); KING_ALIAS("_FUN_602be0", "@DpMessage_Construct@8")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
 extern "C" void FUN_6021b0(); KING_ALIAS("_FUN_6021b0", "_Dp_Send")
-KING_BSS(BYTE*, g_sp68d318, 0x68d318)
-ASM_VAR(DWORD, g_sp66f62c, $L_66f62c)
+KING_VAR(BYTE*, g_sp68d318, 68d318)
+KING_VAR(DWORD, g_sp66f62c, 66f62c)
 
 extern "C" {
 
@@ -1243,7 +1243,7 @@ extern "C" void FUN_6024f0(); KING_ALIAS("_FUN_6024f0", "_Dp_TakeMessage")
 extern "C" void FUN_602540(); KING_ALIAS("_FUN_602540", "_Dp_Get723d88")
 extern "C" void FUN_487cc0(); KING_ALIAS("_FUN_487cc0", "_Rec12_Construct")
 extern "C" void __cdecl Rec12_StableSort(BYTE* first, BYTE* last, int, int, int comp);   // cargo_orders.cpp
-KING_BSS(BYTE*, g_nm68d310, 0x68d310)
+KING_VAR(BYTE*, g_nm68d310, 68d310)
 
 // appends the machine record for id to the list at 68d308
 static void Nm_Add(DWORD id)
@@ -1310,18 +1310,18 @@ void __cdecl Net_ListMachines()
 struct Rp_Pos { int road, node; double t; int segment, object, m_24, m_28; };
 extern "C" void Rp_Valid(); KING_ALIAS("_Rp_Valid", "@Position_Valid@8")
 extern "C" void Rp_Error(); KING_ALIAS("_Rp_Error", "_Ai_Report")
-KING_BSS(BYTE**, g_rp68cf38, 0x68cf38)
-KING_BSS(BYTE**, g_rp68cf3c, 0x68cf3c)
-KING_BSS(char, g_rp68d1c0, 0x68d1c0)
+KING_VAR(BYTE**, g_rp68cf38, 68cf38)
+KING_VAR(BYTE**, g_rp68cf3c, 68cf3c)
+KING_VAR(char, g_rp68d1c0, 68d1c0)
 extern "C" void Rp_FindRoute(); KING_ALIAS("_Rp_FindRoute", "_Road_FindPositionRoute")
 extern "C" void Rp_SetHops(); KING_ALIAS("_Rp_SetHops", "@Player_SetHops@12")
 extern "C" void Rp_PointOf(); KING_ALIAS("_Rp_PointOf", "_Road_PointOf")
 extern "C" void Rp_SetPosition(); KING_ALIAS("_Rp_SetPosition", "_Ai_SetPlayerPosition")
-KING_BSS(char, g_rp77e6e0, 0x77e6e0)
-ASM_VAR(char, s_rp66cc0c, $L_66cc0c)    // "(%d %g %d %d %x)"
-ASM_VAR(char, s_rp66cc00, $L_66cc00)
-ASM_VAR(char, s_rp66cbf4, $L_66cbf4)
-ASM_VAR(char, s_rp66cbe0, $L_66cbe0)
+KING_VAR(char, g_rp77e6e0, 77e6e0)
+KING_VAR(char, s_rp66cc0c, 66cc0c)    // "(%d %g %d %d %x)"
+KING_VAR(char, s_rp66cc00, 66cc00)
+KING_VAR(char, s_rp66cbf4, 66cbf4)
+KING_VAR(char, s_rp66cbe0, 66cbe0)
 
 extern "C" {
 

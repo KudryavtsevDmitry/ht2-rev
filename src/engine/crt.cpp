@@ -19,8 +19,8 @@ typedef char AsmLabel[1];
 
 // The old runtime's C++ initializers: function pointers from $L_66c000 up
 // to $L_66c488 (game statics, MFC statics), zeros skipped
-ASM_VAR(AsmLabel, g_xcBegin, $L_66c000)
-ASM_VAR(AsmLabel, g_xcEnd, $L_66c488)
+KING_VAR(AsmLabel, g_xcBegin, 66c000)
+KING_VAR(AsmLabel, g_xcEnd, 66c488)
 
 extern "C" int __stdcall Afx_WinMain(HINSTANCE h, HINSTANCE prev, char* cmdLine, int show);
 
@@ -37,7 +37,7 @@ extern "C" int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmdLine, int
 // stdin/stdout/stderr (_iob entries, 32 bytes each from $L_686340); those
 // become the modern streams.
 
-ASM_VAR(BYTE, g_oldIob, $L_686340)
+KING_VAR(BYTE, g_oldIob, 686340)
 
 static FILE* Stream(FILE* f) {
     UINT_PTR i = (BYTE*)f - &g_oldIob;

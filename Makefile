@@ -151,13 +151,9 @@ ASM_VEHICLE_SETUP = 1
 ASM_WEATHER = 1
 ASM_WORLD = 1
 ASM_WORLD_OBJECTS = 1
-ASM_DATA = 1
 !ENDIF
 
 MLFLAGS =
-!IFDEF ASM_DATA
-MLFLAGS = $(MLFLAGS) /DASM_DATA
-!ENDIF
 !IFDEF ASM_CRT
 MLFLAGS = $(MLFLAGS) /DASM_CRT
 !ENDIF
@@ -428,7 +424,13 @@ MLFLAGS = $(MLFLAGS) /DASM_VRAPPL
 !IF "$(MLFLAGS)" != ""
 MLFLAGS = $(MLFLAGS) /DASM_UNUSED
 !ENDIF
-ALLCPPOBJS = data.obj ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj clusters.obj controls.obj core.obj directdraw.obj framework.obj game_app.obj input.obj main_loop.obj mfc.obj media.obj renderer.obj scene.obj sound_files.obj vecmath.obj video_mode.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj directsound.obj sound_gate.obj timer.obj grid_base.obj grid_support.obj grid_topology.obj terrain.obj terrain_grid.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj object_ids.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
+# the program's data: C++ owns it (data.cpp, data_image.cpp) in the default
+# build; with any ASM_* switch king.masm keeps its own (ASM_DATA)
+!IF "$(MLFLAGS)" != ""
+MLFLAGS = $(MLFLAGS) /DASM_DATA
+ASM_DATA = 1
+!ENDIF
+ALLCPPOBJS = data.obj data_image.obj ai_containers.obj ai_drivers.obj ai_saveload.obj ai_task.obj ai_traffic.obj ai_world.obj cargo_orders.obj road_graph.obj route_search.obj clusters.obj controls.obj core.obj directdraw.obj framework.obj game_app.obj input.obj main_loop.obj mfc.obj media.obj renderer.obj scene.obj sound_files.obj vecmath.obj video_mode.obj marine_core.obj marine_grid.obj marine_startup.obj mesh_construct.obj refinement_math.obj wave_vertices.obj evaluator.obj native_values.obj natives.obj runtime.obj values.obj directsound.obj sound_gate.obj timer.obj grid_base.obj grid_support.obj grid_topology.obj terrain.obj terrain_grid.obj drivetrain.obj effects.obj force_feedback.obj game_shell.obj helicopter.obj king_app.obj moving_bodies.obj moving_items.obj object_ids.obj scenery.obj startup.obj vehicle.obj vehicle_engine.obj vehicle_physics.obj vehicle_setup.obj weather.obj world.obj world_objects.obj
 !IFDEF ASM
 CPPOBJS =
 !ELSEIFDEF ASM_CRT
@@ -444,6 +446,9 @@ CPPOBJS = $(ALLCPPOBJS) crt.obj
 CFLAGS = /nologo /c /O2 /W3 /GS- /Zl /GR- /EHs-c- /arch:IA32 /I"src\common" /I"src\ai" /I"src\truck" /I"$(VCDIR)\include" /I"$(SDKINC)\um" /I"$(SDKINC)\shared" /I"$(SDKINC)\ucrt"
 !IFDEF ASM_CRT
 CFLAGS = $(CFLAGS) /DASM_CRT
+!ENDIF
+!IFDEF ASM_DATA
+CFLAGS = $(CFLAGS) /DASM_DATA
 !ENDIF
 
 LIBS = WSOCK32.lib winmm.lib DINPUT.lib DDRAW.lib MSVFW32.lib DSOUND.lib KERNEL32.lib USER32.lib GDI32.lib WINSPOOL.lib SHELL32.lib COMCTL32.lib ole32.lib OLEAUT32.lib

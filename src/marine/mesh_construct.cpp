@@ -6,16 +6,16 @@
 #include <mmsystem.h>
 #define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))
 typedef char ConstructLabel[1];
-ASM_VAR(ConstructLabel,g_constructBaseVtable,$L_652e60)
-ASM_VAR(ConstructLabel,g_constructGridVtable,$L_6530d8)
-ASM_VAR(ConstructLabel,g_constructTriangleVtable,$L_652e4c)
-ASM_VAR(ConstructLabel,g_constructTriangleDataVtable,$L_652e48)
-ASM_VAR(ConstructLabel,g_constructDate,$L_6724f8)
-ASM_VAR(ConstructLabel,g_constructFile,$L_685c30)
-ASM_VAR(ConstructLabel,g_constructError,$L_6724b0)
-ASM_VAR(DWORD,g_constructNormalZ,$L_652e5c)
-ASM_VAR(float,g_constructResolution,$L_653118)
-ASM_VAR(float,g_constructHalf,$L_64c258)
+KING_VAR(ConstructLabel, g_constructBaseVtable, 652e60)
+KING_VAR(ConstructLabel, g_constructGridVtable, 6530d8)
+KING_VAR(ConstructLabel, g_constructTriangleVtable, 652e4c)
+KING_VAR(ConstructLabel, g_constructTriangleDataVtable, 652e48)
+KING_VAR(ConstructLabel, g_constructDate, 6724f8)
+KING_VAR(ConstructLabel, g_constructFile, 685c30)
+KING_VAR(ConstructLabel, g_constructError, 6724b0)
+KING_VAR(DWORD, g_constructNormalZ, 652e5c)
+KING_VAR(float, g_constructResolution, 653118)
+KING_VAR(float, g_constructHalf, 64c258)
 extern "C" void FUN_60aad0(); KING_ALIAS("_FUN_60aad0", "_Grd_ReportError")
 extern "C" int __fastcall MarineGreed_Allocate(BYTE*,void*,unsigned,unsigned);
 extern "C" void __fastcall MarineGreed_Init(BYTE*,void*);

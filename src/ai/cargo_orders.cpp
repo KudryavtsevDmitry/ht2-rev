@@ -19,9 +19,9 @@ extern "C" void FUN_470900(); KING_ALIAS("_FUN_470900", "@CharVec_Construct@12")
 extern "C" void FUN_44ac60(); KING_ALIAS("_FUN_44ac60", "_Vec4b_AllocCopy@12")    // vector<pointer>: a new buffer (n, first, last)
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 
-KING_BSS(BYTE*, g_68ccb8, 0x68ccb8)             // 104-byte records
-ASM_VAR(double, g_bonusFactor, $L_66f878)       // 1.5
-KING_BSS(double, g_68d6c8, 0x68d6c8)
+KING_VAR(BYTE*, g_68ccb8, 68ccb8)             // 104-byte records
+KING_VAR(double, g_bonusFactor, 66f878)       // 1.5
+KING_VAR(double, g_68d6c8, 68d6c8)
 
 struct E12 { DWORD a, b, key; };
 
@@ -165,13 +165,13 @@ extern "C" int* __cdecl Town_Id(int* out, BYTE* town);                          
 extern "C" void __cdecl Road_PositionCostBest(int side, OrdrPos from, OrdrPos to, double* cost);   // aitrce.cpp
 extern "C" double __cdecl Order_Value(const int* o);
 typedef void* PtrList[1];
-KING_BSS(PtrList, g_ordrTowns, 0x68cec0)
-KING_BSS(PtrList, g_ordrVehicles, 0x68cfd8)
-KING_BSS(void*, g_ordrPlayers, 0x68b990)
-KING_BSS(char, g_ordrEmpty, 0x68d1c0)
-ASM_VAR(double, g_priceDirect, $L_66f880)       // 1.2
-ASM_VAR(double, g_priceUrgent, $L_66f888)       // 1.5
-ASM_VAR(double, g_priceSpecial, $L_66f890)      // 4.0
+KING_VAR(PtrList, g_ordrTowns, 68cec0)
+KING_VAR(PtrList, g_ordrVehicles, 68cfd8)
+KING_VAR(void*, g_ordrPlayers, 68b990)
+KING_VAR(char, g_ordrEmpty, 68d1c0)
+KING_VAR(double, g_priceDirect, 66f880)       // 1.2
+KING_VAR(double, g_priceUrgent, 66f888)       // 1.5
+KING_VAR(double, g_priceSpecial, 66f890)      // 4.0
 
 static const char s_ordrId[] = "$Id: ai_ordr.cpp 2001/9/10 18:14:44";
 static const char s_ordrFile[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\Ai_ordr.cpp";
@@ -399,10 +399,10 @@ extern "C" double __cdecl Order_PayTotal(const int* o, double late, int bonus)
 // Static initializers of random generators.
 typedef char AsmLabel[1];
 
-KING_BSS(AsmLabel, g_carordRng68d410, 0x68d410)
-KING_BSS(DWORD, g_carordRng68d4e8, 0x68d4e8)
-KING_BSS(DWORD, g_carordRng68d4ec, 0x68d4ec)
-KING_BSS(DWORD, g_carordRng68d4f0, 0x68d4f0)
+KING_VAR(AsmLabel, g_carordRng68d410, 68d410)
+KING_VAR(DWORD, g_carordRng68d4e8, 68d4e8)
+KING_VAR(DWORD, g_carordRng68d4ec, 68d4ec)
+KING_VAR(DWORD, g_carordRng68d4f0, 68d4f0)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Carord_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
@@ -432,10 +432,10 @@ extern "C" void __cdecl CarordInit_471800() { Carord_RngInit((DWORD*)g_carordRng
 // ---------------------------------------------------------------------------
 // More virtual methods and static initializers.
 
-KING_BSS(AsmLabel, g_carordRng68d328, 0x68d328)
-KING_BSS(DWORD, g_carordRng68d400, 0x68d400)
-KING_BSS(DWORD, g_carordRng68d404, 0x68d404)
-KING_BSS(DWORD, g_carordRng68d408, 0x68d408)
+KING_VAR(AsmLabel, g_carordRng68d328, 68d328)
+KING_VAR(DWORD, g_carordRng68d400, 68d400)
+KING_VAR(DWORD, g_carordRng68d404, 68d404)
+KING_VAR(DWORD, g_carordRng68d408, 68d408)
 
 // [$L_470cd0]
 extern "C" void __cdecl CarordInit_470cd0() { Carord_RngInit((DWORD*)g_carordRng68d328, &g_carordRng68d400, &g_carordRng68d404, &g_carordRng68d408); }

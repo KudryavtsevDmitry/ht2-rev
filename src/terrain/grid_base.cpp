@@ -3,18 +3,18 @@
 #include "x87.h"
 #define F(type,p,off) (*(type*)((BYTE*)(p)+(off)))
 typedef char GridBaseLabel[1];
-ASM_VAR(GridBaseLabel,g_gb_vtable,$L_652ea0)
-ASM_VAR(float,g_gb_scaleInput,$L_652ee0)
-KING_BSS(float, g_gb_scale, 0x724298)
-ASM_VAR(float,g_gb_secondaryInput,$L_652ee4)
-KING_BSS(float, g_gb_secondary, 0x724370)
-ASM_VAR(float,g_gb_blendInput,$L_652ee8)
-KING_BSS(float, g_gb_blend, 0x724374)
-ASM_VAR(float,g_gb_blendOffset,$L_64d4e8)
-ASM_VAR(float,g_gb_half,$L_64c258)
+KING_VAR(GridBaseLabel, g_gb_vtable, 652ea0)
+KING_VAR(float, g_gb_scaleInput, 652ee0)
+KING_VAR(float, g_gb_scale, 724298)
+KING_VAR(float, g_gb_secondaryInput, 652ee4)
+KING_VAR(float, g_gb_secondary, 724370)
+KING_VAR(float, g_gb_blendInput, 652ee8)
+KING_VAR(float, g_gb_blend, 724374)
+KING_VAR(float, g_gb_blendOffset, 64d4e8)
+KING_VAR(float, g_gb_half, 64c258)
 struct GridBaseTriple { DWORD v[3]; };
-KING_BSS(GridBaseTriple, g_gb_origin, 0x724378)
-KING_BSS(DWORD, g_gb_pending, 0x7242a0)
+KING_VAR(GridBaseTriple, g_gb_origin, 724378)
+KING_VAR(DWORD, g_gb_pending, 7242a0)
 
 extern "C" void __fastcall GridBase_SetCamera(BYTE* self,void*,const DWORD* position,const DWORD* direction)
 {

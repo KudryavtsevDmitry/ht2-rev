@@ -18,10 +18,10 @@ extern "C" void __cdecl Notice_Show(int level, const char* text, int a, int b); 
 extern "C" void __cdecl Notice_Banner(int eventId, double value, const char* text);       // copter.cpp
 
 typedef CharVec* ModuleNames[];
-KING_BSS(ModuleNames*, g_aiModuleNames, 0x68d0c8)
-KING_BSS(CharVec, g_screenMessage, 0x68d7c0)   // text of the last displayScreenMessage
-KING_BSS(double, g_bannerValue, 0x68d7d0)      // shown with the next eventBanner
-ASM_VAR(void* const, g_vtblXCycleTask, $L_64bdf8)
+KING_VAR(ModuleNames*, g_aiModuleNames, 68d0c8)
+KING_VAR(CharVec, g_screenMessage, 68d7c0)   // text of the last displayScreenMessage
+KING_VAR(double, g_bannerValue, 68d7d0)      // shown with the next eventBanner
+KING_VAR(void* const, g_vtblXCycleTask, 64bdf8)
 
 // The task that runs the AI's cycle, vtable [$L_64bdf8].
 struct XCycleTask : Task {
@@ -121,9 +121,9 @@ extern "C" void __fastcall XCycleTask_Run(XCycleTask* self, void*)  // [$L_48397
 // Game-owned static state of AI_TASK.CPP. Unsigned subtraction preserves
 // the original generator's modulo-2^32 recurrence without signed overflow.
 typedef DWORD AiShuffleState[55];
-KING_BSS(AiShuffleState, g_aiShuffleState, 0x68d6d8)
-KING_BSS(DWORD, g_aiShuffleIndex, 0x68d7b4)
-KING_BSS(DWORD, g_aiShuffleOtherIndex, 0x68d7b8)
+KING_VAR(AiShuffleState, g_aiShuffleState, 68d6d8)
+KING_VAR(DWORD, g_aiShuffleIndex, 68d7b4)
+KING_VAR(DWORD, g_aiShuffleOtherIndex, 68d7b8)
 extern "C" void FUN_404420(); KING_ALIAS("_FUN_404420", "@VecB_FreeStorage@8") // shared vector<char> destructor
 extern "C" int __cdecl atexit(void (__cdecl* callback)());
 

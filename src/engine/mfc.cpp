@@ -54,10 +54,10 @@ struct ThreadSlotData {
 CHECK_OFFSET(ThreadSlotData, list, 20);
 CHECK_OFFSET(ThreadSlotData, sect, 28);
 
-KING_BSS(ThreadSlotData*, g_afxThreadData, 0x72de44)
-KING_BSS(ThreadSlotData, g_afxThreadDataStore, 0x72de48)
-KING_BSS(int, g_afxTlsRef, 0x72de40)
-ASM_VAR(AsmLabel, g_threadDataVtbl, $L_6545a8)
+KING_VAR(ThreadSlotData*, g_afxThreadData, 72de44)
+KING_VAR(ThreadSlotData, g_afxThreadDataStore, 72de48)
+KING_VAR(int, g_afxTlsRef, 72de40)
+KING_VAR(AsmLabel, g_threadDataVtbl, 6545a8)
 
 // virtual destructor (slot 0) with "delete this"
 static void DeleteNoTrack(void* p) {
@@ -309,11 +309,11 @@ extern "C" void __cdecl Afx_TlsRelease() {
 // ---------------------------------------------------------------------------
 // AfxLockGlobals: 17 lazily made critical sections
 
-KING_BSS(int, g_afxCriticalInit, 0x72e074)
-KING_BSS(int, g_afxSingleThreaded, 0x72e070)
-KING_BSS(int, g_afxLockInit, 0x72de7c)                  // int[17]
-KING_BSS(CRITICAL_SECTION, g_afxLockInitLock, 0x72dec0)
-KING_BSS(CRITICAL_SECTION, g_afxResourceLock, 0x72ded8) // CRITICAL_SECTION[17]
+KING_VAR(int, g_afxCriticalInit, 72e074)
+KING_VAR(int, g_afxSingleThreaded, 72e070)
+KING_VAR(int, g_afxLockInit, 72de7c)                  // int[17]
+KING_VAR(CRITICAL_SECTION, g_afxLockInitLock, 72dec0)
+KING_VAR(CRITICAL_SECTION, g_afxResourceLock, 72ded8) // CRITICAL_SECTION[17]
 
 // [FUN_63af8b] AfxCriticalInit
 extern "C" BOOL __cdecl Afx_CriticalInit() {
@@ -410,12 +410,12 @@ extern "C" BYTE* __fastcall Wnd_GetParentFrame(BYTE* self);
 // AFX_MODULE_THREAD_STATE (60 bytes): +4 m_pCurrentWinThread, +8 m_frameList,
 //   +16 m_nTempMapLock, +20..+36 the handle maps.
 
-KING_BSS(int, g_afxThreadState, 0x72db7c)       // CThreadLocal<_AFX_THREAD_STATE>
-KING_BSS(void*, g_afxBaseModuleState, 0x72db78) // CProcessLocal<_AFX_BASE_MODULE_STATE>
-ASM_VAR(AsmLabel, g_threadStateVtbl, $L_654284)
-ASM_VAR(AsmLabel, g_moduleThreadStateVtbl, $L_654294)
-ASM_VAR(AsmLabel, g_moduleStateVtbl, $L_65428c)
-ASM_VAR(AsmLabel, g_baseModuleStateVtbl, $L_65429c)
+KING_VAR(int, g_afxThreadState, 72db7c)       // CThreadLocal<_AFX_THREAD_STATE>
+KING_VAR(void*, g_afxBaseModuleState, 72db78) // CProcessLocal<_AFX_BASE_MODULE_STATE>
+KING_VAR(AsmLabel, g_threadStateVtbl, 654284)
+KING_VAR(AsmLabel, g_moduleThreadStateVtbl, 654294)
+KING_VAR(AsmLabel, g_moduleStateVtbl, 65428c)
+KING_VAR(AsmLabel, g_baseModuleStateVtbl, 65429c)
 extern "C" void FUN_632629(); KING_ALIAS("_FUN_632629", "_Afx_ThrowMemoryException")                            // AFX_MODULE_THREAD_STATE's handler
 
 // [FUN_63a06f] _AFX_THREAD_STATE::_AFX_THREAD_STATE
@@ -570,10 +570,10 @@ extern "C" BOOL __stdcall Afx_UnlockTempMaps(BOOL deleteTemps) {
 // ---------------------------------------------------------------------------
 // CCmdTarget, CWinThread, CWinApp
 
-ASM_VAR(AsmLabel, g_winThreadVtbl, $L_653570)
-ASM_VAR(AsmLabel, g_winAppVtbl, $L_6534a8)
-KING_BSS(void*, g_afx72c160, 0x72c160)
-KING_BSS(void*, g_afx72c164, 0x72c164)
+KING_VAR(AsmLabel, g_winThreadVtbl, 653570)
+KING_VAR(AsmLabel, g_winAppVtbl, 6534a8)
+KING_VAR(void*, g_afx72c160, 72c160)
+KING_VAR(void*, g_afx72c164, 72c164)
 CRT_PROC(FUN_62003b, "__strdup")                // _strdup
 
 static char* StrDup(const char* s) { return CallC<char*>(FUN_62003b, s); }
@@ -688,8 +688,8 @@ extern "C" void __fastcall WinApp_Destruct(BYTE* self) {
 ASM_PROC($L_632864)                             // _AfxThreadEntry
 CRT_PROC(FUN_620066, "__beginthreadex")         // _beginthreadex
 CRT_PROC(FUN_62016d, "__endthreadex")           // _endthreadex
-KING_BSS(int, g_ctl3dThreadState, 0x72dd08)     // CThreadLocal<_AFX_CTL3D_THREAD>
-KING_BSS(void*, g_ctl3dState, 0x72dd0c)         // CProcessLocal<_AFX_CTL3D_STATE>
+KING_VAR(int, g_ctl3dThreadState, 72dd08)     // CThreadLocal<_AFX_CTL3D_THREAD>
+KING_VAR(void*, g_ctl3dState, 72dd0c)         // CProcessLocal<_AFX_CTL3D_STATE>
 extern "C" void $L_639de0(); KING_ALIAS("_$L_639de0", "_Ctl3dState_New")                             // new _AFX_CTL3D_STATE
 extern "C" BYTE* __cdecl Ctl3dThread_New();       // [$L_639df5] new _AFX_CTL3D_THREAD
 extern "C" void $L_632f34(); KING_ALIAS("_$L_632f34", "_Afx_MsgFilterHook@12")                             // _AfxMsgFilterHook
@@ -796,8 +796,8 @@ extern "C" void __cdecl Afx_InitThread() {
 CRT_PROC(FUN_620d0e, "__mbsrchr")               // _tcsrchr
 CRT_PROC(FUN_620585, "__mbschr")                // _tcschr
 CRT_PROC(FUN_620903, "__mbsinc")                // _tcsinc
-ASM_VAR(char, g_extHlp, $L_6546dc)
-ASM_VAR(char, g_extIni, $L_6546d4)
+KING_VAR(char, g_extHlp, 6546dc)
+KING_VAR(char, g_extIni, 6546d4)
 
 // [FUN_63b450] AfxGetFileName: the file name part of a path
 extern "C" UINT __stdcall Afx_GetFileName(const char* path, char* title, UINT max) {
@@ -908,17 +908,17 @@ struct MsgMapEntry { UINT message, code, id, lastId; UINT_PTR sig; void (*pfn)()
 struct MsgMap { const MsgMap* base; const MsgMapEntry* entries; };
 struct MsgCache { UINT message; const MsgMapEntry* entry; const MsgMap* map; };
 
-KING_BSS(MsgCache, g_msgCache, 0x72c170)        // MsgCache[512]
-ASM_VAR(AsmLabel, g_wndVtbl, $L_653b00)
-ASM_VAR(char, g_oldWndProcProp, $L_6539f8)      // "AfxOldWndProc423"
-ASM_VAR(char, g_imeClass, $L_653bb8)            // "ime"
-KING_BSS(int, g_afxDBCS, 0x72e0e4)
-KING_BSS(int, g_afxCtl3dOff, 0x72e0d4)
-KING_BSS(AsmLabel, g_wndTop, 0x72da58)          // the static wndTop, wndBottom,
-KING_BSS(AsmLabel, g_wndBottom, 0x72da18)       // wndTopMost and wndNoTopMost,
-KING_BSS(AsmLabel, g_wndTopMost, 0x72d9d8)      // never destroyed
-KING_BSS(AsmLabel, g_wndNoTopMost, 0x72d998)
-ASM_VAR(AsmLabel, g_tempWndClass, $L_653708)    // CTempWnd's CRuntimeClass
+KING_VAR(MsgCache, g_msgCache, 72c170)        // MsgCache[512]
+KING_VAR(AsmLabel, g_wndVtbl, 653b00)
+KING_VAR(char, g_oldWndProcProp, 6539f8)      // "AfxOldWndProc423"
+KING_VAR(char, g_imeClass, 653bb8)            // "ime"
+KING_VAR(int, g_afxDBCS, 72e0e4)
+KING_VAR(int, g_afxCtl3dOff, 72e0d4)
+KING_VAR(AsmLabel, g_wndTop, 72da58)          // the static wndTop, wndBottom,
+KING_VAR(AsmLabel, g_wndBottom, 72da18)       // wndTopMost and wndNoTopMost,
+KING_VAR(AsmLabel, g_wndTopMost, 72d9d8)      // never destroyed
+KING_VAR(AsmLabel, g_wndNoTopMost, 72d998)
+KING_VAR(AsmLabel, g_tempWndClass, 653708)    // CTempWnd's CRuntimeClass
 extern "C" void $L_6373bb(); KING_ALIAS("_$L_6373bb", "_Afx_CriticalNewHandler")                             // new handler that throws
 extern "C" void FUN_633a2e(); KING_ALIAS("_FUN_633a2e", "_Afx_PreInitDialog@12")                            // _AfxPreInitDialog
 extern "C" void FUN_633a51(); KING_ALIAS("_FUN_633a51", "_Afx_PostInitDialog@12")                            // _AfxPostInitDialog
@@ -1562,10 +1562,10 @@ extern "C" BOOL __fastcall WinThread_OnIdle(BYTE* self, void*, LONG count) {
 //   { pNext, key, value }, hashed by key >> 4.
 
 
-ASM_VAR(AsmLabel, g_ptrListVtbl, $L_6546c8)
-ASM_VAR(AsmLabel, g_ptrMapVtbl, $L_65461c)
-ASM_VAR(void*, g_afxNewHandler, $L_685e30)
-ASM_VAR(AsmLabel, g_winAppClass, $L_653418)
+KING_VAR(AsmLabel, g_ptrListVtbl, 6546c8)
+KING_VAR(AsmLabel, g_ptrMapVtbl, 65461c)
+KING_VAR(void*, g_afxNewHandler, 685e30)
+KING_VAR(AsmLabel, g_winAppClass, 653418)
 
 // [FUN_632348] CPlex::Create: a block of n elements, linked in front of head
 extern "C" Plex* __stdcall Plex_Create(Plex** head, UINT n, UINT size) {
@@ -1746,9 +1746,9 @@ extern "C" void* __fastcall WinApp_GetRuntimeClass(BYTE*) { return g_winAppClass
 // CHandleMap (72 bytes): +4 m_permanentMap, +32 m_temporaryMap,
 //   +60 m_pClass, +64 m_nOffset (of the handles in the object), +68 m_nHandles.
 
-ASM_VAR(AsmLabel, g_handleMapVtbl, $L_6545ec)
-ASM_VAR(AsmLabel, g_tempDcClass, $L_6542c8)
-ASM_VAR(AsmLabel, g_tempGdiClass, $L_6542a0)
+KING_VAR(AsmLabel, g_handleMapVtbl, 6545ec)
+KING_VAR(AsmLabel, g_tempDcClass, 6542c8)
+KING_VAR(AsmLabel, g_tempGdiClass, 6542a0)
 
 // [FUN_6366e5] CRuntimeClass::CreateObject
 extern "C" void* __fastcall RuntimeClass_CreateObject(BYTE* self) {
@@ -1831,12 +1831,12 @@ extern "C" BYTE* __stdcall Dc_FromHandle(HDC h) { return HandleMap_FromHandle(Af
 // ---------------------------------------------------------------------------
 // CString, CDC, CGdiObject
 
-ASM_VAR(BYTE*, g_afxDataNil, $L_685fc4)
-KING_BSS(AsmLabel, g_alloc64, 0x72db30)        // CFixedAlloc for strings up to 64,
-KING_BSS(AsmLabel, g_alloc128, 0x72db08)       // 128, 256 and 512 characters
-KING_BSS(AsmLabel, g_alloc256, 0x72dae0)
-KING_BSS(AsmLabel, g_alloc512, 0x72dab8)
-ASM_VAR(AsmLabel, g_dcVtbl, $L_6543a8)
+KING_VAR(BYTE*, g_afxDataNil, 685fc4)
+KING_VAR(AsmLabel, g_alloc64, 72db30)        // CFixedAlloc for strings up to 64,
+KING_VAR(AsmLabel, g_alloc128, 72db08)       // 128, 256 and 512 characters
+KING_VAR(AsmLabel, g_alloc256, 72dae0)
+KING_VAR(AsmLabel, g_alloc512, 72dab8)
+KING_VAR(AsmLabel, g_dcVtbl, 6543a8)
 extern "C" void FUN_61cb1e(); KING_ALIAS("_FUN_61cb1e", "@FixedAlloc_Free@12")                           // CFixedAlloc::Free
 
 // [FUN_636290] CString::FreeData (CStringData: nRefs, nDataLength, nAllocLength)
@@ -1900,9 +1900,9 @@ extern "C" void __stdcall Afx_DeleteObject(HGDIOBJ* p) {
 // ---------------------------------------------------------------------------
 // CFrameWnd and CWinApp leftovers
 
-ASM_VAR(AsmLabel, g_frameWndVtbl, $L_654184)
-ASM_VAR(char, g_settingsSection, $L_653490)
-ASM_VAR(char, g_previewPagesEntry, $L_653480)
+KING_VAR(AsmLabel, g_frameWndVtbl, 654184)
+KING_VAR(char, g_settingsSection, 653490)
+KING_VAR(char, g_previewPagesEntry, 653480)
 extern "C" void FUN_6371de(); KING_ALIAS("_FUN_6371de", "_Afx_IsComboBoxControl@8")                           // _AfxIsComboBoxControl
 extern "C" void FUN_639958(); KING_ALIAS("_FUN_639958", "_Afx_OleSetUserCtrl@4")                           // AfxOleSetUserCtrl
 extern "C" void FUN_638fc2(); KING_ALIAS("_FUN_638fc2", "@FrameWnd_SetMessageTextId@12")                           // CFrameWnd::OnUpdateFrameTitle part
@@ -2093,7 +2093,7 @@ extern "C" BOOL __fastcall WinApp_OnIdle(BYTE* self, void*, LONG count) {
 // ---------------------------------------------------------------------------
 // CString buffers and LoadString
 
-ASM_VAR(char*, g_afxPchNil, $L_685fc0)          // the empty string's characters
+KING_VAR(char*, g_afxPchNil, 685fc0)          // the empty string's characters
 extern "C" void FUN_61ca8f(); KING_ALIAS("_FUN_61ca8f", "@FixedAlloc_Alloc@4")                           // CFixedAlloc::Alloc
 extern "C" void FUN_636471(); KING_ALIAS("_FUN_636471", "@String_GetBuffer@12")                           // CString::GetBuffer
 extern "C" void FUN_6364c0(); KING_ALIAS("_FUN_6364c0", "@String_ReleaseBuffer@12")                           // CString::ReleaseBuffer
@@ -2227,12 +2227,12 @@ extern "C" BYTE* __stdcall Cdc_SelectGdiObject(HDC dc, HGDIOBJ h) {
 // ---------------------------------------------------------------------------
 // Window classes and window creation
 
-KING_BSS(HCURSOR, g_afxArrowCursor, 0x72e0b8)
-ASM_VAR(char, g_classWnd, $L_653a0c)           // "AfxWnd42s"
-ASM_VAR(char, g_classOleControl, $L_653a50)    // "AfxOleControl42s"
-ASM_VAR(char, g_classControlBar, $L_653a18)    // "AfxControlBar42s"
-ASM_VAR(char, g_classMDIFrame, $L_653a2c)      // "AfxMDIFrame42s"
-ASM_VAR(char, g_classFrameOrView, $L_653a3c)   // "AfxFrameOrView42s"
+KING_VAR(HCURSOR, g_afxArrowCursor, 72e0b8)
+KING_VAR(char, g_classWnd, 653a0c)           // "AfxWnd42s"
+KING_VAR(char, g_classOleControl, 653a50)    // "AfxOleControl42s"
+KING_VAR(char, g_classControlBar, 653a18)    // "AfxControlBar42s"
+KING_VAR(char, g_classMDIFrame, 653a2c)      // "AfxMDIFrame42s"
+KING_VAR(char, g_classFrameOrView, 653a3c)   // "AfxFrameOrView42s"
 extern "C" void FUN_635dea(); KING_ALIAS("_FUN_635dea", "_Afx_InitCommonControls@8")                           // _AfxInitCommonControls
 
 // [FUN_63489e] AfxRegisterClass
@@ -2526,8 +2526,8 @@ extern "C" void __fastcall Wnd_NotifyFloatingWindows(BYTE* self, void*, DWORD fl
 // ---------------------------------------------------------------------------
 // CTL3D and the dialog colours
 
-ASM_VAR(char, g_ctl3dDll, $L_6544e4)           // "CTL3D32.DLL"
-KING_BSS(void*, g_winState, 0x72c15c)          // CProcessLocal<_AFX_WIN_STATE>
+KING_VAR(char, g_ctl3dDll, 6544e4)           // "CTL3D32.DLL"
+KING_VAR(void*, g_winState, 72c15c)          // CProcessLocal<_AFX_WIN_STATE>
 extern "C" void $L_63a003(); KING_ALIAS("_$L_63a003", "_WinState_New")                            // new _AFX_WIN_STATE
 ASM_PROC(FUN_6371c5)                           // AfxThrowResourceException
 
@@ -2581,13 +2581,13 @@ extern "C" void __fastcall WinApp_SetDialogBkColor(BYTE* self, void*, COLORREF b
 // wndNoTopMost objects
 
 extern "C" int __cdecl atexit(void (__cdecl* fn)());
-ASM_VAR(AsmLabel, g_cmdUIVtbl, $L_6536f8)
-KING_BSS(HBITMAP, g_hbmMenuDot, 0x72e0c8)       // afxData.hbmMenuDot
-ASM_VAR(AsmLabel, g_dotPattern, $L_653624)      // 5 rows of the radio dot
-KING_BSS(BYTE, g_wndStaticsDone, 0x72da54)      // destroyed-flags of the four
-KING_BSS(UINT, g_msgDragList, 0x72da94)
-ASM_VAR(AsmLabel, g_dragListMsgName, $L_653ae4)  // "commctrl_DragListMsg"
-ASM_VAR(AsmLabel, g_cmdTargetMap6536b8, $L_6536b8)
+KING_VAR(AsmLabel, g_cmdUIVtbl, 6536f8)
+KING_VAR(HBITMAP, g_hbmMenuDot, 72e0c8)       // afxData.hbmMenuDot
+KING_VAR(AsmLabel, g_dotPattern, 653624)      // 5 rows of the radio dot
+KING_VAR(BYTE, g_wndStaticsDone, 72da54)      // destroyed-flags of the four
+KING_VAR(UINT, g_msgDragList, 72da94)
+KING_VAR(AsmLabel, g_dragListMsgName, 653ae4)  // "commctrl_DragListMsg"
+KING_VAR(AsmLabel, g_cmdTargetMap6536b8, 6536b8)
 
 // [$L_633421] CCmdTarget map getter ($L_6536b8)
 extern "C" void* __fastcall CmdTarget_GetMap6536b8(BYTE* self) { return g_cmdTargetMap6536b8; }
@@ -2595,8 +2595,8 @@ extern "C" void* __fastcall CmdTarget_GetMap6536b8(BYTE* self) { return g_cmdTar
 // [$L_633459] returns TRUE
 extern "C" BOOL __fastcall CmdTarget_True(BYTE* self) { return TRUE; }
 
-ASM_VAR(AsmLabel, g_cmdTargetMessageMap, $L_6536d0)
-ASM_VAR(AsmLabel, g_cmdTargetInterfaceMap, $L_6536e0)
+KING_VAR(AsmLabel, g_cmdTargetMessageMap, 6536d0)
+KING_VAR(AsmLabel, g_cmdTargetInterfaceMap, 6536e0)
 
 // [$L_63345d] CCmdTarget::GetMessageMap
 extern "C" void* __fastcall CmdTarget_GetMessageMap(BYTE* self) { return g_cmdTargetMessageMap; }
@@ -2856,7 +2856,7 @@ extern "C" void __cdecl WndNoTopMost_Init() { WndNoTopMost_Construct(); WndNoTop
 // CString helpers, CException, CRuntimeClass, AUX_DATA
 
 CRT_PROC(FUN_620585, "__mbschr")                // _tcschr
-KING_BSS(char, g_afxChNil, 0x72db58)
+KING_VAR(char, g_afxChNil, 72db58)
 
 // [FUN_636309] CString::Release(CStringData*)
 extern "C" void __stdcall String_ReleaseData(BYTE* data) {
@@ -2970,10 +2970,10 @@ extern "C" BOOL __fastcall Object_IsKindOf(BYTE* self, void*, BYTE* cls) {
     return RuntimeClass_IsDerivedFrom(CallVirt<BYTE*>(self, 0), 0, cls);
 }
 
-KING_BSS(BOOL, g_afxWin4, 0x72e0d4)             // afxData.bWin4
-KING_BSS(int, g_cxVScroll, 0x72e078)              // afxData scroll bar sizes
-KING_BSS(int, g_cyHScroll, 0x72e07c)
-KING_BSS(BOOL, g_scrollPlusOne, 0x72e0e0)
+KING_VAR(BOOL, g_afxWin4, 72e0d4)             // afxData.bWin4
+KING_VAR(int, g_cxVScroll, 72e078)              // afxData scroll bar sizes
+KING_VAR(int, g_cyHScroll, 72e07c)
+KING_VAR(BOOL, g_scrollPlusOne, 72e0e0)
 
 // [FUN_63b0d9] the Windows 4 scroll bar sizes (one more pixel each)
 extern "C" void __cdecl Afx_UpdateBorders4() {
@@ -3039,7 +3039,7 @@ extern "C" void __cdecl Afx_LoadDotBitmap() {
 // ---------------------------------------------------------------------------
 // CMenu handle map
 
-ASM_VAR(AsmLabel, g_tempMenuClass, $L_654628)
+KING_VAR(AsmLabel, g_tempMenuClass, 654628)
 
 // [FUN_636a6c] afxMapHMENU
 extern "C" BYTE* __stdcall Afx_MapHMENU(BOOL create) {
@@ -3247,7 +3247,7 @@ extern "C" int __cdecl Afx_CriticalNewHandler(size_t size) {
     return 0;
 }
 
-KING_BSS(HCURSOR, g_hcurWait, 0x72e0b4)
+KING_VAR(HCURSOR, g_hcurWait, 72e0b4)
 
 // [$L_63743f] CWinApp::DoWaitCursor (+160 count, +164 cursor to restore)
 extern "C" void __fastcall WinApp_DoWaitCursor(BYTE* self, void*, int code) {
@@ -3389,15 +3389,15 @@ extern "C" int __stdcall Afx_MessageBoxId(UINT id, UINT type, UINT help) {
 // +104 m_pNotifyHook, +140 m_nIDHelp, +144 m_nIDTracking, +160 m_cModalStack,
 // +164 m_phWndDisable; CWnd +36 m_nFlags.
 
-KING_BSS(RECT, g_rectDefault, 0x72db68)         // CFrameWnd::rectDefault
-KING_BSS(UINT, g_msgMouseWheel, 0x72db60)
-ASM_VAR(AsmLabel, g_mouseWheelMsgName, $L_654170)   // "MSWHEEL_ROLLMSG"
-ASM_VAR(AsmLabel, g_frameMap653d00, $L_653d00)
-ASM_VAR(AsmLabel, g_testCmdUIVtbl, $L_653be0)
-KING_BSS(HCURSOR, g_hcurHelp, 0x72e0bc)
-ASM_VAR(AsmLabel, g_wndFrameOrViewClass, $L_653a3c)
-ASM_VAR(AsmLabel, g_classNameShortFmt, $L_653bd0)  // "Afx:%x:%x"
-ASM_VAR(AsmLabel, g_classNameFmt, $L_653bbc)       // "Afx:%x:%x:%x:%x:%x"
+KING_VAR(RECT, g_rectDefault, 72db68)         // CFrameWnd::rectDefault
+KING_VAR(UINT, g_msgMouseWheel, 72db60)
+KING_VAR(AsmLabel, g_mouseWheelMsgName, 654170)   // "MSWHEEL_ROLLMSG"
+KING_VAR(AsmLabel, g_frameMap653d00, 653d00)
+KING_VAR(AsmLabel, g_testCmdUIVtbl, 653be0)
+KING_VAR(HCURSOR, g_hcurHelp, 72e0bc)
+KING_VAR(AsmLabel, g_wndFrameOrViewClass, 653a3c)
+KING_VAR(AsmLabel, g_classNameShortFmt, 653bd0)  // "Afx:%x:%x"
+KING_VAR(AsmLabel, g_classNameFmt, 653bbc)       // "Afx:%x:%x:%x:%x:%x"
 extern "C" void FUN_63569a(); KING_ALIAS("_FUN_63569a", "_Wnd_ReflectLastMsg@8")                            // CWnd::ReflectLastMsg
 
 // [$L_637821] static initializer of CFrameWnd::rectDefault
@@ -3717,8 +3717,8 @@ extern "C" void FUN_6327b7(); KING_ALIAS("_FUN_6327b7", "@WinApp_DevModeChange@1
 extern "C" void FUN_63566d(); KING_ALIAS("_FUN_63566d", "@Wnd_SendChildNotifyLastMsg@12")                            // CWnd::SendChildNotifyLastMsg
 ASM_PROC(FUN_6317b8)                            // UnpackDDElParam
 ASM_PROC(FUN_6317b2)                            // ReuseDDElParam
-KING_BSS(AsmLabel, g_afxData, 0x72e078)
-KING_BSS(int, g_gotScrollLines, 0x72c16c)
+KING_VAR(AsmLabel, g_afxData, 72e078)
+KING_VAR(int, g_gotScrollLines, 72c16c)
 
 extern "C" BYTE* __fastcall FrameWnd_Get152(BYTE* self);
 #define GetActiveView FrameWnd_Get152
@@ -4059,9 +4059,9 @@ extern "C" void __fastcall FrameWnd_OnInitMenuPopup(BYTE* self, void*, BYTE* men
 // collections leftovers, CWinThread::Run and the message filter, the command
 // dispatch (CCmdTarget::OnCmdMsg, _AfxDispatchCmdMsg)
 
-ASM_VAR(AsmLabel, g_memoryExceptionClass, $L_654520)   // RUNTIME_CLASS(CMemoryException)
-ASM_VAR(AsmLabel, g_userExceptionClass, $L_654350)     // RUNTIME_CLASS(CUserException)
-KING_BSS(UINT, g_afxWinVer, 0x72e0cc)                  // afxData.nWinVer
+KING_VAR(AsmLabel, g_memoryExceptionClass, 654520)   // RUNTIME_CLASS(CMemoryException)
+KING_VAR(AsmLabel, g_userExceptionClass, 654350)     // RUNTIME_CLASS(CUserException)
+KING_VAR(UINT, g_afxWinVer, 72e0cc)                  // afxData.nWinVer
 ASM_PROC(FUN_6201a0)                                   // memcmp
 
 // [$L_632225] CPtrList's deleting destructor
@@ -4606,10 +4606,10 @@ extern "C" void __fastcall Object_Set44Post(BYTE* self, void*, DWORD v) {
 // m_bInRecalcLayout, +184 m_nIdleFlags.
 
 extern "C" void FUN_638aa4(); KING_ALIAS("_FUN_638aa4", "@FrameWnd_ShowControlBar@20")                            // CFrameWnd::ShowControlBar
-ASM_VAR(char, g_fmtWindowNumber, $L_65427c)     // ":%d"
-ASM_VAR(char, g_titleSeparator, $L_654278)      // " - "
-KING_BSS(BYTE*, g_staticDocManager, 0x72c160)   // CDocManager::pStaticDocManager
-ASM_VAR(BOOL, g_docManagerStaticInit, $L_685e34)
+KING_VAR(char, g_fmtWindowNumber, 65427c)     // ":%d"
+KING_VAR(char, g_titleSeparator, 654278)      // " - "
+KING_VAR(BYTE*, g_staticDocManager, 72c160)   // CDocManager::pStaticDocManager
+KING_VAR(BOOL, g_docManagerStaticInit, 685e34)
 
 // [FUN_638fc2] CFrameWnd::SetMessageText(nID)
 extern "C" void __fastcall FrameWnd_SetMessageTextId(BYTE* self, void*, UINT id) {
@@ -4955,39 +4955,39 @@ extern "C" void FUN_61c8e8(); KING_ALIAS("_FUN_61c8e8", "@MemoryException_Constr
 extern "C" void FUN_61c92e(); KING_ALIAS("_FUN_61c92e", "@MemoryException_Destruct@4")                            // ~CMemoryException
 extern "C" void FUN_61c935(); KING_ALIAS("_FUN_61c935", "@NotSupportedException_Construct@16")                            // CNotSupportedException::CNotSupportedException
 extern "C" void FUN_61c97b(); KING_ALIAS("_FUN_61c97b", "@NotSupportedException_Destruct@4")                            // ~CNotSupportedException
-KING_BSS(AsmLabel, g_allocTempWnd, 0x72d970)
-KING_BSS(AsmLabel, g_allocTempDc, 0x72dce0)
-KING_BSS(AsmLabel, g_allocTempGdi, 0x72dcb8)
-KING_BSS(AsmLabel, g_allocTempMenu, 0x72e0f0)
-KING_BSS(BYTE, g_allocTempWndDone, 0x72c168)
-KING_BSS(BYTE, g_allocTempDcGdiDone, 0x72db80)
-KING_BSS(BYTE, g_allocTempMenuDone, 0x72e0e8)
-KING_BSS(AsmLabel, g_resourceException, 0x72dc20)
-KING_BSS(AsmLabel, g_userException, 0x72db88)
-KING_BSS(AsmLabel, g_memoryException, 0x72dda8)
-KING_BSS(AsmLabel, g_notSupportedException, 0x72dd10)
-KING_BSS(AsmLabel, g_processLocal72c15c, 0x72c15c)
-KING_BSS(AsmLabel, g_processLocal72db78, 0x72db78)
-KING_BSS(AsmLabel, g_threadLocal72db7c, 0x72db7c)
-KING_BSS(AsmLabel, g_threadLocal72dd08, 0x72dd08)
-ASM_VAR(AsmLabel, g_class6533f8, $L_6533f8)
-ASM_VAR(AsmLabel, g_class653548, $L_653548)
-ASM_VAR(AsmLabel, g_class653730, $L_653730)
-ASM_VAR(AsmLabel, g_class653708, $L_653708)
-ASM_VAR(AsmLabel, g_class653cd8, $L_653cd8)
-ASM_VAR(AsmLabel, g_class654378, $L_654378)
-ASM_VAR(AsmLabel, g_class654350, $L_654350)
-ASM_VAR(AsmLabel, g_class654330, $L_654330)
-ASM_VAR(AsmLabel, g_class654308, $L_654308)
-ASM_VAR(AsmLabel, g_class6542e8, $L_6542e8)
-ASM_VAR(AsmLabel, g_class6542c8, $L_6542c8)
-ASM_VAR(AsmLabel, g_class6542a0, $L_6542a0)
-ASM_VAR(AsmLabel, g_class654520, $L_654520)
-ASM_VAR(AsmLabel, g_class6544f0, $L_6544f0)
-ASM_VAR(AsmLabel, g_class6545f0, $L_6545f0)
-ASM_VAR(AsmLabel, g_class654650, $L_654650)
-ASM_VAR(AsmLabel, g_class654628, $L_654628)
-ASM_VAR(AsmLabel, g_class6546a0, $L_6546a0)
+KING_VAR(AsmLabel, g_allocTempWnd, 72d970)
+KING_VAR(AsmLabel, g_allocTempDc, 72dce0)
+KING_VAR(AsmLabel, g_allocTempGdi, 72dcb8)
+KING_VAR(AsmLabel, g_allocTempMenu, 72e0f0)
+KING_VAR(BYTE, g_allocTempWndDone, 72c168)
+KING_VAR(BYTE, g_allocTempDcGdiDone, 72db80)
+KING_VAR(BYTE, g_allocTempMenuDone, 72e0e8)
+KING_VAR(AsmLabel, g_resourceException, 72dc20)
+KING_VAR(AsmLabel, g_userException, 72db88)
+KING_VAR(AsmLabel, g_memoryException, 72dda8)
+KING_VAR(AsmLabel, g_notSupportedException, 72dd10)
+KING_VAR(AsmLabel, g_processLocal72c15c, 72c15c)
+KING_VAR(AsmLabel, g_processLocal72db78, 72db78)
+KING_VAR(AsmLabel, g_threadLocal72db7c, 72db7c)
+KING_VAR(AsmLabel, g_threadLocal72dd08, 72dd08)
+KING_VAR(AsmLabel, g_class6533f8, 6533f8)
+KING_VAR(AsmLabel, g_class653548, 653548)
+KING_VAR(AsmLabel, g_class653730, 653730)
+KING_VAR(AsmLabel, g_class653708, 653708)
+KING_VAR(AsmLabel, g_class653cd8, 653cd8)
+KING_VAR(AsmLabel, g_class654378, 654378)
+KING_VAR(AsmLabel, g_class654350, 654350)
+KING_VAR(AsmLabel, g_class654330, 654330)
+KING_VAR(AsmLabel, g_class654308, 654308)
+KING_VAR(AsmLabel, g_class6542e8, 6542e8)
+KING_VAR(AsmLabel, g_class6542c8, 6542c8)
+KING_VAR(AsmLabel, g_class6542a0, 6542a0)
+KING_VAR(AsmLabel, g_class654520, 654520)
+KING_VAR(AsmLabel, g_class6544f0, 6544f0)
+KING_VAR(AsmLabel, g_class6545f0, 6545f0)
+KING_VAR(AsmLabel, g_class654650, 654650)
+KING_VAR(AsmLabel, g_class654628, 654628)
+KING_VAR(AsmLabel, g_class6546a0, 6546a0)
 
 // [$L_636118] returns 0
 extern "C" int __cdecl Afx_Zero() { return 0; }
@@ -5277,17 +5277,14 @@ extern "C" void* __fastcall Class654628_Get(BYTE* self) { return g_class654628; 
 // [$L_63b2ca] GetRuntimeClass ($L_6546a0)
 extern "C" void* __fastcall Class6546a0_Get(BYTE* self) { return g_class6546a0; }
 
-ASM_VAR(AsmLabel, g_tempWndVtbl, $L_653c1c)
-ASM_VAR(AsmLabel, g_gdiObjectVtbl, $L_654420)
-ASM_VAR(AsmLabel, g_tempDcVtbl, $L_654430)
-ASM_VAR(AsmLabel, g_tempGdiVtbl, $L_6544a8)
-ASM_VAR(AsmLabel, g_menuVtbl, $L_654674)
-ASM_VAR(AsmLabel, g_tempMenuVtbl, $L_65468c)
-ASM_VAR(AsmLabel, g_ctl3dStateVtbl, $L_6535f0)
-ASM_VAR(AsmLabel, g_ctl3dThreadVtbl, $L_6535f8)
-ASM_VAR(AsmLabel, g_threadStateVtbl, $L_654284)
-ASM_VAR(AsmLabel, g_moduleStateVtbl, $L_65428c)
-ASM_VAR(AsmLabel, g_moduleThreadStateVtbl, $L_654294)
+KING_VAR(AsmLabel, g_tempWndVtbl, 653c1c)
+KING_VAR(AsmLabel, g_gdiObjectVtbl, 654420)
+KING_VAR(AsmLabel, g_tempDcVtbl, 654430)
+KING_VAR(AsmLabel, g_tempGdiVtbl, 6544a8)
+KING_VAR(AsmLabel, g_menuVtbl, 654674)
+KING_VAR(AsmLabel, g_tempMenuVtbl, 65468c)
+KING_VAR(AsmLabel, g_ctl3dStateVtbl, 6535f0)
+KING_VAR(AsmLabel, g_ctl3dThreadVtbl, 6535f8)
 
 // [$L_639d1b] CWinThread's deleting destructor
 extern "C" BYTE* __fastcall WinThread_DeletingDestruct(BYTE* self, void*, int flags) {
@@ -5576,26 +5573,25 @@ extern "C" void __cdecl Afx_InitDBCS() { g_afxDBCS = Afx_IsDBCS(); }
 // multiple monitor stubs, CDC text output, the exception constructors,
 // CHandleMap's destructor, CFixedAlloc
 
-KING_BSS(BOOL, g_multiMonInitDone, 0x72dab0)
-KING_BSS(FARPROC, g_pfnGetSystemMetrics, 0x72da98)
-KING_BSS(FARPROC, g_pfnMonitorFromWindow, 0x72da9c)
-KING_BSS(FARPROC, g_pfnMonitorFromRect, 0x72daa0)
-KING_BSS(FARPROC, g_pfnMonitorFromPoint, 0x72daa4)
-KING_BSS(FARPROC, g_pfnGetMonitorInfo, 0x72daa8)
-KING_BSS(FARPROC, g_pfnEnumDisplayMonitors, 0x72daac)
-ASM_VAR(char, g_user32Name, $L_653ad4)          // "USER32"
-ASM_VAR(char, g_nameGetSystemMetrics, $L_653ac0)
-ASM_VAR(char, g_nameMonitorFromWindow, $L_653aac)
-ASM_VAR(char, g_nameMonitorFromRect, $L_653a9c)
-ASM_VAR(char, g_nameMonitorFromPoint, $L_653a88)
-ASM_VAR(char, g_nameEnumDisplayMonitors, $L_653a74)
-ASM_VAR(char, g_nameGetMonitorInfo, $L_653a64)
-ASM_VAR(char, g_displayName, $L_653adc)         // "DISPLAY"
-ASM_VAR(AsmLabel, g_resourceExceptionVtbl, $L_6544b8)
-ASM_VAR(AsmLabel, g_userExceptionVtbl, $L_6544d0)
-ASM_VAR(AsmLabel, g_memoryExceptionVtbl, $L_654578)
-ASM_VAR(AsmLabel, g_notSupportedExceptionVtbl, $L_654590)
-ASM_VAR(AsmLabel, g_handleMapVtbl, $L_6545ec)
+KING_VAR(BOOL, g_multiMonInitDone, 72dab0)
+KING_VAR(FARPROC, g_pfnGetSystemMetrics, 72da98)
+KING_VAR(FARPROC, g_pfnMonitorFromWindow, 72da9c)
+KING_VAR(FARPROC, g_pfnMonitorFromRect, 72daa0)
+KING_VAR(FARPROC, g_pfnMonitorFromPoint, 72daa4)
+KING_VAR(FARPROC, g_pfnGetMonitorInfo, 72daa8)
+KING_VAR(FARPROC, g_pfnEnumDisplayMonitors, 72daac)
+KING_VAR(char, g_user32Name, 653ad4)          // "USER32"
+KING_VAR(char, g_nameGetSystemMetrics, 653ac0)
+KING_VAR(char, g_nameMonitorFromWindow, 653aac)
+KING_VAR(char, g_nameMonitorFromRect, 653a9c)
+KING_VAR(char, g_nameMonitorFromPoint, 653a88)
+KING_VAR(char, g_nameEnumDisplayMonitors, 653a74)
+KING_VAR(char, g_nameGetMonitorInfo, 653a64)
+KING_VAR(char, g_displayName, 653adc)         // "DISPLAY"
+KING_VAR(AsmLabel, g_resourceExceptionVtbl, 6544b8)
+KING_VAR(AsmLabel, g_userExceptionVtbl, 6544d0)
+KING_VAR(AsmLabel, g_memoryExceptionVtbl, 654578)
+KING_VAR(AsmLabel, g_notSupportedExceptionVtbl, 654590)
 
 #define PRIMARY_MONITOR ((HMONITOR)0x12340042)
 
@@ -5890,13 +5886,12 @@ extern "C" void __fastcall FixedAlloc_Free(BYTE* self, void*, void* p) {
 // CPtrList nodes, the message filter hook, dialog helpers, CenterWindow,
 // common controls, the registry profile
 
-ASM_VAR(AsmLabel, g_ptrListVtbl, $L_6546c8)
-ASM_VAR(char, g_comboBoxClass, $L_6545ac)        // "combobox"
-ASM_VAR(char, g_comctlName, $L_653c08)           // "COMCTL32.DLL"
-ASM_VAR(char, g_initCommonControlsExName, $L_653bf0)
-ASM_VAR(char, g_fmtInt, $L_66c8cc)               // "%d"
-ASM_VAR(char, g_softwareKey, $L_6545b8)          // "software"
-ASM_VAR(AsmLabel, g_vtbl6534a0, $L_6534a0)
+KING_VAR(char, g_comboBoxClass, 6545ac)        // "combobox"
+KING_VAR(char, g_comctlName, 653c08)           // "COMCTL32.DLL"
+KING_VAR(char, g_initCommonControlsExName, 653bf0)
+KING_VAR(char, g_fmtInt, 66c8cc)               // "%d"
+KING_VAR(char, g_softwareKey, 6545b8)          // "software"
+KING_VAR(AsmLabel, g_vtbl6534a0, 6534a0)
 extern "C" __declspec(dllimport) void __stdcall InitCommonControls();
 
 // [FUN_632202] CPtrList::CPtrList(nBlockSize)
@@ -6127,7 +6122,7 @@ extern "C" BYTE* __fastcall Object_SetVtbl6534a0(BYTE* self) {
 ASM_PROC(FUN_6317ca)                            // OpenPrinterA
 ASM_PROC(FUN_6317c4)                            // DocumentPropertiesA
 ASM_PROC(FUN_6317be)                            // ClosePrinter
-KING_BSS(AsmLabel, g_processLocalWinState, 0x72c15c)   // CProcessLocal<_AFX_WIN_STATE>
+KING_VAR(AsmLabel, g_processLocalWinState, 72c15c)   // CProcessLocal<_AFX_WIN_STATE>
 
 // [FUN_63217d] CSimpleException::InitString: loads the message of the
 // resource id (+148) into +20
@@ -6222,10 +6217,10 @@ extern "C" BYTE* __cdecl Ctl3dThread_New() {
 // CWnd::OnFinalRelease, control bars and the print preview mode of
 // CFrameWnd
 
-ASM_VAR(AsmLabel, g_class653630, $L_653630)
-ASM_VAR(AsmLabel, g_class653650, $L_653650)
-ASM_VAR(AsmLabel, g_class653680, $L_653680)
-ASM_VAR(AsmLabel, g_class653750, $L_653750)
+KING_VAR(AsmLabel, g_class653630, 653630)
+KING_VAR(AsmLabel, g_class653650, 653650)
+KING_VAR(AsmLabel, g_class653680, 653680)
+KING_VAR(AsmLabel, g_class653750, 653750)
 
 // [$L_63340f] GetRuntimeClass ($L_653630)
 extern "C" void* __fastcall Class653630_Get(BYTE* self) { return g_class653630; }
