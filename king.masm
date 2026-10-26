@@ -2294,7 +2294,9 @@ PUBLIC $L_72dec0, $L_72ded8, $L_72e070, $L_72e074
 PUBLIC $L_6534a8, $L_653570, $L_654284, $L_65428c, $L_654294, $L_65429c
 PUBLIC $L_6546d4, $L_6546dc, $L_72c160, $L_72c164, $L_72db78, $L_72dd08
 PUBLIC $L_72dd0c
+IFDEF ASM_MFC
 PUBLIC $L_639df5
+ENDIF
 PUBLIC $L_653708, $L_6539f8, $L_653b00, $L_653bb8, $L_72c170, $L_72d998
 PUBLIC $L_72d9d8, $L_72da18, $L_72e0d4, $L_72e0e4
 PUBLIC $L_653418, $L_653480, $L_653490, $L_654184, $L_6542a0, $L_6542c8
@@ -2320,6 +2322,7 @@ PUBLIC $L_653ad4, $L_653adc, $L_6544b8, $L_6544d0, $L_654578, $L_654590
 PUBLIC $L_72da98, $L_72da9c, $L_72daa0, $L_72daa4, $L_72daa8, $L_72daac
 PUBLIC $L_72dab0
 PUBLIC $L_6534a0, $L_653bf0, $L_653c08, $L_6545ac, $L_6545b8
+PUBLIC $L_653630, $L_653650, $L_653680, $L_653750
 
 ;===================================
 _TEXT SEGMENT
@@ -967155,6 +967158,8 @@ $L_632179::
             pop EBP
             ret 
 FUN_632146 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_63217d PROC
 
             push ESI
@@ -967173,6 +967178,12 @@ FUN_63217d PROC
             pop ESI
             ret 
 FUN_63217d ENDP
+ELSE
+EXTERN @SimpleException_InitString@4:PROC
+FUN_63217d TEXTEQU <@SimpleException_InitString@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_6321a6 PROC
 
             mov EAX,DWORD PTR [ESP+12]
@@ -967211,6 +967222,10 @@ $L_6321e2::
             pop ESI
             ret 12
 $L_6321a6 ENDP
+ELSE
+EXTERN @SimpleException_GetErrorMessage@20:PROC
+$L_6321a6 TEXTEQU <@SimpleException_GetErrorMessage@20>
+ENDIF
 FUN_6321e9 PROC
 
             push EBP
@@ -968258,6 +968273,8 @@ ELSE
 EXTERN @WinApp_OnIdle@12:PROC
 FUN_63274d TEXTEQU <@WinApp_OnIdle@12>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_6327b7 PROC
 
             push EBP
@@ -968345,6 +968362,10 @@ $L_63285d::
             leave 
             ret 4
 FUN_6327b7 ENDP
+ELSE
+EXTERN @WinApp_DevModeChange@12:PROC
+FUN_6327b7 TEXTEQU <@WinApp_DevModeChange@12>
+ENDIF
 $L_632864 PROC
 
             mov EAX,OFFSET $L_64a304
@@ -970204,21 +970225,39 @@ ELSE
 EXTERN @CmdTarget_EndWaitCursor@4:PROC
 FUN_6333fa TEXTEQU <@CmdTarget_EndWaitCursor@4>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63340f PROC
 
             mov EAX,OFFSET $L_653630
             ret 
 $L_63340f ENDP
+ELSE
+EXTERN @Class653630_Get@4:PROC
+$L_63340f TEXTEQU <@Class653630_Get@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_633415 PROC
 
             mov EAX,OFFSET $L_653650
             ret 
 $L_633415 ENDP
+ELSE
+EXTERN @Class653650_Get@4:PROC
+$L_633415 TEXTEQU <@Class653650_Get@4>
+ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63341b PROC
 
             mov EAX,OFFSET $L_653680
             ret 
 $L_63341b ENDP
+ELSE
+EXTERN @Class653680_Get@4:PROC
+$L_63341b TEXTEQU <@Class653680_Get@4>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_633421 PROC
@@ -972151,6 +972190,8 @@ $L_633f66 PROC
             mov EAX,OFFSET $L_633ed4
             ret 
 $L_633f66 ENDP
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_633fa2 PROC
 
             push EBP
@@ -972210,6 +972251,10 @@ $L_634018::
             pop EBP
             ret 16
 $L_633fa2 ENDP
+ELSE
+EXTERN _Afx_GrayBackgroundWndProc@16:PROC
+$L_633fa2 TEXTEQU <_Afx_GrayBackgroundWndProc@16>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_63401e PROC
@@ -972968,6 +973013,8 @@ ELSE
 EXTERN @Wnd_Nothing@4:PROC
 $L_634580 TEXTEQU <@Wnd_Nothing@4>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_634581 PROC
 
             cmp DWORD PTR [ECX+28],0
@@ -972979,6 +973026,10 @@ $L_63458c::
 
             jmp DWORD PTR [EAX+164]
 $L_634581 ENDP
+ELSE
+EXTERN @Wnd_OnFinalRelease@4:PROC
+$L_634581 TEXTEQU <@Wnd_OnFinalRelease@4>
+ENDIF
 ALIGN 2
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -973845,11 +973896,17 @@ ELSE
 EXTERN @Wnd_WinHelp@16:PROC
 $L_634a39 TEXTEQU <@Wnd_WinHelp@16>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_634b1b PROC
 
             mov EAX,OFFSET $L_653750
             ret 
 $L_634b1b ENDP
+ELSE
+EXTERN @Class653750_Get@4:PROC
+$L_634b1b TEXTEQU <@Class653750_Get@4>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 FUN_634b21 PROC
@@ -982808,6 +982865,8 @@ ELSE
 EXTERN @FrameWnd_GetIconWndClass@16:PROC
 FUN_638235 TEXTEQU <@FrameWnd_GetIconWndClass@16>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_6382b8 PROC
 
             mov EAX,OFFSET $L_64a4c8
@@ -982899,6 +982958,10 @@ $L_638363::
             leave 
             ret 16
 $L_6382b8 ENDP
+ELSE
+EXTERN @FrameWnd_LoadFrame@24:PROC
+$L_6382b8 TEXTEQU <@FrameWnd_LoadFrame@24>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_638382 PROC
@@ -983976,6 +984039,8 @@ EXTERN @FrameWnd_Get152Field60@4:PROC
 $L_638a94 TEXTEQU <@FrameWnd_Get152Field60@4>
 ENDIF
 ALIGN 4
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_638aa4 PROC
 
             push EBP
@@ -984114,6 +984179,10 @@ $L_638b98::
             pop EBP
             ret 12
 FUN_638aa4 ENDP
+ELSE
+EXTERN @FrameWnd_ShowControlBar@20:PROC
+FUN_638aa4 TEXTEQU <@FrameWnd_ShowControlBar@20>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_638b9f PROC
@@ -984712,6 +984781,8 @@ ELSE
 EXTERN @FrameWnd_SetMessageTextId@12:PROC
 FUN_638fc2 TEXTEQU <@FrameWnd_SetMessageTextId@12>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 FUN_638fd9 PROC
 
             mov EAX,OFFSET $L_64a504
@@ -984790,6 +984861,10 @@ $L_63904b::
             leave 
             ret 
 FUN_638fd9 ENDP
+ELSE
+EXTERN @FrameWnd_DestroyDockBars@4:PROC
+FUN_638fd9 TEXTEQU <@FrameWnd_DestroyDockBars@4>
+ENDIF
 ALIGN 4
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
@@ -985277,6 +985352,8 @@ ELSE
 EXTERN @FrameWnd_UpdateFrameTitleForDocument@12:PROC
 FUN_6392b1 TEXTEQU <@FrameWnd_UpdateFrameTitleForDocument@12>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_6393ae PROC
 
             sub ESP,12
@@ -985524,6 +985601,10 @@ $L_6395bf::
             add ESP,12
             ret 8
 $L_6393ae ENDP
+ELSE
+EXTERN @FrameWnd_OnSetPreviewMode@16:PROC
+$L_6393ae TEXTEQU <@FrameWnd_OnSetPreviewMode@16>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_6395c9 PROC
@@ -986827,6 +986908,8 @@ ELSE
 EXTERN _ThreadState_New:PROC
 $L_639dac TEXTEQU <_ThreadState_New>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_639de0 PROC
 
             push 48
@@ -986856,6 +986939,12 @@ $L_639e07::
             xor EAX,EAX
             ret 
 $L_639de0 ENDP
+ELSE
+EXTERN _Ctl3dState_New:PROC
+$L_639de0 TEXTEQU <_Ctl3dState_New>
+EXTERN _Ctl3dThread_New:PROC
+$L_639df5 TEXTEQU <_Ctl3dThread_New>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_639e0a PROC
@@ -987195,6 +987284,8 @@ ELSE
 EXTERN _AllocTempWnd_Term:PROC
 $L_639fe8 TEXTEQU <_AllocTempWnd_Term>
 ENDIF
+; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
+IFDEF ASM_MFC
 $L_63a003 PROC
 
             mov EAX,OFFSET $L_64a45d
@@ -987219,6 +987310,10 @@ $L_63a028::
             leave 
             ret 
 $L_63a003 ENDP
+ELSE
+EXTERN _WinState_New:PROC
+$L_63a003 TEXTEQU <_WinState_New>
+ENDIF
 ; src/mfc.cpp, nmake ASM_MFC=1 assembles the original
 IFDEF ASM_MFC
 $L_63a034 PROC
