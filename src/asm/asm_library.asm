@@ -1,10 +1,7 @@
 ; asm_library.asm - the procedures of this original unit not yet rewritten in C++
 INCLUDE king.inc
 
-EXTERN $L_430000:NEAR
-EXTERN $L_440000:NEAR
 EXTERN _KingRdata:BYTE
-EXTERN _Rec_4015a0Both:PROC
 EXTERN __imp__ClosePrinter@4:PROC
 EXTERN __imp__DirectDrawEnumerateA@8:PROC
 EXTERN __imp__DirectInputCreateA@16:PROC
@@ -514,7 +511,7 @@ $L_6300e0           DWORD (_KingRdata+42080)
           BYTE 000H
           BYTE 000H
           BYTE 000H
-          DWORD _Rec_4015a0Both
+          DWORD 000420000H    ; a number (the original read it as an address)
           BYTE 000H
           BYTE 000H
           BYTE 00cH
@@ -527,7 +524,7 @@ $L_6300e0           DWORD (_KingRdata+42080)
           BYTE 000H
           BYTE 000H
           BYTE 000H
-          DWORD $L_430000
+          DWORD 000430000H
           BYTE 000H
           BYTE 000H
           BYTE 00cH
@@ -540,7 +537,7 @@ $L_6300e0           DWORD (_KingRdata+42080)
           BYTE 000H
           BYTE 000H
           BYTE 000H
-          DWORD $L_440000
+          DWORD 000440000H
           BYTE 000H
           BYTE 000H
           BYTE 00cH

@@ -3,15 +3,12 @@ INCLUDE king.inc
 
 EXTERN @Eh_EmptyDtor@4:NEAR
 EXTERN @Gate_602bd0@8:PROC
-EXTERN @List16_Destroy@4:PROC
 EXTERN @MsgBuf_Destroy@8:PROC
 EXTERN @SchHandle_Release@8:PROC
 EXTERN @Wnd_Destruct@4:PROC
 EXTERN _KingRdata:BYTE
-EXTERN _Stl_Unlock:PROC
 EXTERN ___CxxFrameHandler:PROC
 
-PUBLIC $L_63b648, $L_63b64f
 PUBLIC $L_643ef0, $L_643f00, $L_643f10, $L_643f20
 PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8
 PUBLIC $L_64a298, $L_64a2a0
@@ -19,67 +16,6 @@ PUBLIC $L_64a2fc
 PUBLIC $L_64a304
 
 _TEXT SEGMENT
-$L_63b630 PROC
-
-            cmp DWORD PTR [EBP-16],0
-            je $L_63b648
-
-            mov EAX,DWORD PTR [EBP-16]
-            add EAX,4
-            mov DWORD PTR [EBP-120],EAX
-            jmp $L_63b64f
-$L_63b648::
-
-            mov DWORD PTR [EBP-120],0
-$L_63b64f::
-
-            mov ECX,DWORD PTR [EBP-120]
-            jmp @List16_Destroy@4
-$L_63b630 ENDP
-$L_63b657 PROC
-
-            mov EAX,OFFSET (_KingRdata+45712)
-            jmp ___CxxFrameHandler
-$L_63b657 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-$L_63b670 PROC
-
-            lea ECX,DWORD PTR [EBP-12]
-            jmp _Stl_Unlock
-$L_63b670 ENDP
-$L_63b678 PROC
-
-            mov EAX,OFFSET (_KingRdata+45752)
-            jmp ___CxxFrameHandler
-$L_63b678 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
 $L_6436b0 PROC
 
             mov ECX,DWORD PTR [EBP+8]
