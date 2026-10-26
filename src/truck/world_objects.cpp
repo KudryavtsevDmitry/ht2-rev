@@ -5226,3 +5226,43 @@ void __fastcall Effect_DriftStep(BYTE* s, void*)
 }
 
 } // extern "C"
+
+typedef BYTE* (__fastcall* Wo_DtorFn)(BYTE*, void*, int);
+extern "C" BYTE* __fastcall Wo_D5a3d50(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3d50@12", "@WObj5a1820_VecDeletingDestructor@12")
+// [$L_5a3d50] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3d50(BYTE* s, void* d, int f) { return Wo_D5a3d50(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3d60(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3d60@12", "@WObj5a2060_VecDeletingDestructor@12")
+// [$L_5a3d60] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3d60(BYTE* s, void* d, int f) { return Wo_D5a3d60(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3d70(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3d70@12", "@WObj5a3550_VecDeletingDestructor@12")
+// [$L_5a3d70] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3d70(BYTE* s, void* d, int f) { return Wo_D5a3d70(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3d80(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3d80@12", "@WObj5a2a50_VecDeletingDestructor@12")
+// [$L_5a3d80] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3d80(BYTE* s, void* d, int f) { return Wo_D5a3d80(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3d90(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3d90@12", "@Wasm59a980_DeletingDestructor@12")
+// [$L_5a3d90] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3d90(BYTE* s, void* d, int f) { return Wo_D5a3d90(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3da0(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3da0@12", "@WObj5a30e0_VecDeletingDestructor@12")
+// [$L_5a3da0] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3da0(BYTE* s, void* d, int f) { return Wo_D5a3da0(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3db0(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3db0@12", "@WorldObj59ab90_DeletingDestructor@12")
+// [$L_5a3db0] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3db0(BYTE* s, void* d, int f) { return Wo_D5a3db0(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3dc0(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3dc0@12", "@WObj5a3790_VecDeletingDestructor@12")
+// [$L_5a3dc0] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3dc0(BYTE* s, void* d, int f) { return Wo_D5a3dc0(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3dd0(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3dd0@12", "@WObj5a2cd0_VecDeletingDestructor@12")
+// [$L_5a3dd0] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3dd0(BYTE* s, void* d, int f) { return Wo_D5a3dd0(s - 20, d, f); }
+extern "C" BYTE* __fastcall Wo_D5a3de0(BYTE*, void*, int); KING_ALIAS("@Wo_D5a3de0@12", "@WObj5a1c40_VecDeletingDestructor@12")
+// [$L_5a3de0] the destructor reached through the base 20 bytes in
+extern "C" BYTE* __fastcall Wo_Thunk5a3de0(BYTE* s, void* d, int f) { return Wo_D5a3de0(s - 20, d, f); }
+
+// [$L_5a3df0] frees the buffer at +20 (the destructor of an embedded vector)
+extern "C" void __fastcall Wo_Free20(BYTE* s) { if (F(void*, s, 20)) operator delete(F(void*, s, 20)); }
+
+// [$L_594dc0] static initializer: destroy the object at 6f68b0 at exit
+extern "C" void __cdecl WorldObj_Destroy6f68b0();
+extern "C" int __cdecl Static594de0_AtExit();
+extern "C" int __cdecl Wo_Init594dc0() { WorldObj_Destroy6f68b0(); return Static594de0_AtExit(); }

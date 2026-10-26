@@ -27,7 +27,7 @@ PUBLIC $L_640020, $L_640031
 PUBLIC $L_643ef0, $L_643f00, $L_643f10, $L_643f20
 PUBLIC $L_643f30, $L_644420, $L_644ae0, $L_644ae8
 PUBLIC $L_649d20, $L_649e10
-PUBLIC $L_649e50, $L_64a298, $L_64a2a0
+PUBLIC $L_64a298, $L_64a2a0
 PUBLIC $L_64a2fc
 PUBLIC $L_64a304
 
@@ -715,18 +715,6 @@ $L_649de1 ENDP
 $L_649e10::
 
             mov EAX,OFFSET (_KingRdata+119944)
-            jmp ___CxxFrameHandler
-
-            int 3
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-
-            int 3
-$L_649e50::
-
-            mov EAX,OFFSET (_KingRdata+120160)
             jmp ___CxxFrameHandler
 
             int 3
