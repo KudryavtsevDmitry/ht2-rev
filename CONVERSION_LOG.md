@@ -387,3 +387,12 @@ CDC's constructor and destructor, CGdiObject::Detach/DeleteObject, AfxDeleteObje
 CFrameWnd destructor, RemoveFrameWnd, PreTranslateMessage, OnClose, PostNcDestroy and idle updates, and
 CWinApp's OnIdle, ExitInstance, SaveStdProfileSettings, HideApplication, SaveAllModified, CloseAllDocuments.
 The C++ of parts 2 and 3 now calls these directly. Drive test passes.
+
+MFC part 5 (34 procs): window class registration (AfxRegisterClass, _AfxRegisterWithIcon,
+AfxEndDeferRegisterClass), AfxHookWindowCreate/AfxUnhookWindowCreate, CWnd::CreateEx, CWnd(HWND), GetStyle,
+IsWindowEnabled, GetParentFrame, GetTopLevelFrame, NotifyFloatingWindows, _AfxHandleActivate,
+_AfxIsDescendant, the tool tip cancel, CFrameWnd's constructor, AddFrameWnd, Create and OnCreate, CString's
+AllocBuffer/Release/AllocBeforeWrite/AssignCopy/operator=/LoadString with AfxLoadString, CDC::Attach/Detach/
+SetMapMode/SelectGdiObject, CGdiObject::Attach/FromHandle, CWinApp::Enable3dControls and SetDialogBkColor.
+The executed-MFC list now also covers startup (cdb started with the game: scratchpad smokedbg.ps1).
+Drive test passes.

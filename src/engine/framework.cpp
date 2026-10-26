@@ -5002,10 +5002,10 @@ void __cdecl Matrix_ToAngles(Pg_V3 r0, Pg_V3 r1, Pg_V3 r2, Pg_V3 t, double* x, d
 
 // === the main frame window (FUN_5dd0d0)
 
-extern "C" void Mf_FrameCtor(); KING_ALIAS("_Mf_FrameCtor", "??0CFrameWnd@@QAE@XZ")
-extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "?Create@CFrameWnd@@UAEHPBD0KABUtagRECT@@PAVCWnd@@0KPAUCCreateContext@@@Z")
+extern "C" void Mf_FrameCtor(); KING_ALIAS("_Mf_FrameCtor", "@FrameWnd_Construct@4")
+extern "C" void Mf_FrameCreate(); KING_ALIAS("_Mf_FrameCreate", "@FrameWnd_Create@40")
 extern "C" void Mf_SetWindowPos(); KING_ALIAS("_Mf_SetWindowPos", "@Wnd_SetWindowPos@32")
-extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "?LoadStringA@CString@@QAEHI@Z")
+extern "C" void Mf_LoadString(); KING_ALIAS("_Mf_LoadString", "@String_LoadString@12")
 extern "C" void Mf_StringDtor(); KING_ALIAS("_Mf_StringDtor", "@String_Destruct@4")
 extern "C" void Mf_ModuleState(); KING_ALIAS("_Mf_ModuleState", "_Afx_GetModuleState@0")
 extern "C" void Mf_FrameExtra(); KING_ALIAS("_Mf_FrameExtra", "_Wnd_FrameExtra")
@@ -6370,9 +6370,9 @@ void __fastcall Fw_ResetRenderer(BYTE* s, void*, int a, int b, int c, int d)
 
 extern "C" void Cd_New(); KING_ALIAS("_Cd_New", "@Cdc_Construct@4")
 extern "C" void Cd_Free(); KING_ALIAS("_Cd_Free", "@Cdc_Destruct@4")
-extern "C" void Cd_Attach(); KING_ALIAS("_Cd_Attach", "?Attach@CDC@@QAEHPAUHDC__@@@Z")
-extern "C" void Cd_Select(); KING_ALIAS("_Cd_Select", "?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z")
-extern "C" void Cd_MapMode(); KING_ALIAS("_Cd_MapMode", "?SetMapMode@CDC@@UAEHH@Z")
+extern "C" void Cd_Attach(); KING_ALIAS("_Cd_Attach", "@Cdc_Attach@12")
+extern "C" void Cd_Select(); KING_ALIAS("_Cd_Select", "_Cdc_SelectGdiObject@8")
+extern "C" void Cd_MapMode(); KING_ALIAS("_Cd_MapMode", "@Cdc_SetMapMode@12")
 
 extern "C" {
 
@@ -7713,9 +7713,9 @@ void __fastcall App_SetupVideo(BYTE* s, void*)
 
 // === the app's start (InitInstance, FUN_5e29b0 with its tail $L_5e2cb0)
 
-extern "C" void Ia_GdiAttach(); KING_ALIAS("_Ia_GdiAttach", "?Attach@CGdiObject@@QAEHPAX@Z")
-extern "C" void Ia_DialogBkColor(); KING_ALIAS("_Ia_DialogBkColor", "FUN_63a7bb")
-extern "C" void Ia_Enable3d(); KING_ALIAS("_Ia_Enable3d", "FUN_63a662")
+extern "C" void Ia_GdiAttach(); KING_ALIAS("_Ia_GdiAttach", "@GdiObject_Attach@12")
+extern "C" void Ia_DialogBkColor(); KING_ALIAS("_Ia_DialogBkColor", "@WinApp_SetDialogBkColor@16")
+extern "C" void Ia_Enable3d(); KING_ALIAS("_Ia_Enable3d", "@WinApp_Enable3dControls@4")
 extern "C" BYTE* __fastcall Ia_BitmapCtor(BYTE* self, void*); KING_ALIAS("@Ia_BitmapCtor@8", "@Obj654420_Construct@8")
 extern "C" void __cdecl Ia_MemoryTouch(int n); KING_ALIAS("_Ia_MemoryTouch", "_Memory_Touch")
 extern "C" const char* __cdecl Ia_DataPath(const char* path); KING_ALIAS("_Ia_DataPath", "_DataPath_Set")
