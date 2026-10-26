@@ -36,6 +36,13 @@
 #define ASM_PROC(label) extern "C" void label(); KING_ALIAS("_" #label, #label)
 #define ASM_FUNC(name, label) extern "C" void name(); KING_ALIAS("_" #name, #label)
 #define ASM_VAR(type, name, label) extern "C" type name; KING_ALIAS("_" #name, #label)
+// CRT_PROC(label, modern): a procedure of the old C runtime in king.masm;
+// without ASM_CRT the modern runtime's function of that name (decorated)
+#ifdef ASM_CRT
+#define CRT_PROC(label, modern) ASM_PROC(label)
+#else
+#define CRT_PROC(label, modern) extern "C" void label(); KING_ALIAS("_" #label, modern)
+#endif
 
 #define CHECK_OFFSET(type, field, offset) \
     static_assert(offsetof(type, field) == offset, #type "::" #field " is not at +" #offset)
@@ -86,6 +93,26 @@ size_t __cdecl strlen(const char* s);
 char* __cdecl strcpy(char* dest, const char* src);
 int __cdecl strcmp(const char* a, const char* b);
 }
+
+// The standard streams 0 stdin, 1 stdout, 2 stderr. With the game's own C
+// runtime (nmake ASM_CRT=1) they are its _iob entries, 32 bytes each from
+// $L_686340; otherwise those of the modern runtime (see src\engine\crt.cpp).
+#ifdef ASM_CRT
+ASM_VAR(BYTE, g_oldIob, $L_686340)
+#define CRT_STREAM(i) ((FILE*)(&g_oldIob + 32 * (i)))
+#else
+extern "C" FILE* __cdecl __acrt_iob_func(unsigned i);
+#define CRT_STREAM(i) __acrt_iob_func(i)
+#endif
+
+// feof: the converted code tested the old runtime's FILE::_flag (+12) for
+// _IOEOF (16) as VC6's feof macro did; the modern FILE is opaque.
+#ifdef ASM_CRT
+#define FILE_EOF(f) (*((BYTE*)(f) + 12) & 16)
+#else
+extern "C" int __cdecl feof(FILE* f);
+#define FILE_EOF(f) (feof((FILE*)(f)))
+#endif
 
 // ---------------------------------------------------------------------------
 // Procedures of king.masm
@@ -309,10 +336,16 @@ CHECK_OFFSET(CMainView, m_bExit, 3036);
 BOOL AFXAPI AfxOleGetUserCtrl();                // ?AfxOleGetUserCtrl@@YGHXZ
 void AFXAPI AfxPostQuitMessage(int nExitCode);  // ?AfxPostQuitMessage@@YGXH@Z
 
-// C runtime: operator new failure handling.
+// C runtime: operator new failure handling (C++ names in the old runtime,
+// C names in the modern one)
 typedef int (__cdecl* NewHandler)(size_t size);
+#ifdef ASM_CRT
 NewHandler __cdecl _set_new_handler(NewHandler handler); // ?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z
 int __cdecl _set_new_mode(int mode);                     // ?_set_new_mode@@YAHH@Z
+#else
+extern "C" NewHandler __cdecl _set_new_handler(NewHandler handler);
+extern "C" int __cdecl _set_new_mode(int mode);
+#endif
 
 struct CWinApp {                // MFC 4.2, statically linked
     void**  vtbl;

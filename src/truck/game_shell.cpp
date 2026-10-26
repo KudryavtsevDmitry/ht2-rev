@@ -694,7 +694,7 @@ extern "C" int __cdecl VehTech_Load()
         bool ok = n == 876;
         for (int i = 0; ok && i < 8; i++)
             ok = fread(&g_6ce34c[i], 1, 4, f) == 4;
-        if (ok && fread(g_6c6b68, 876, 35, f) == 35 && !(F(BYTE, f, 12) & 16))
+        if (ok && fread(g_6c6b68, 876, 35, f) == 35 && !FILE_EOF(f))
             g_6ce370 = 1;
     }
     fclose(f);
@@ -11373,9 +11373,6 @@ void __cdecl Save_WriteGame(BYTE* st, int shot)
 
 // === n integers read from one ini key (FUN_507df0)
 
-extern "C" void Ir_New(); KING_ALIAS("_Ir_New", "??0istrstream@@QAE@PAD@Z")
-extern "C" void Ir_Free(); KING_ALIAS("_Ir_Free", "??1istrstream@@UAE@XZ")
-extern "C" void Ir_FreeIos(); KING_ALIAS("_Ir_FreeIos", "??1ios@@UAE@XZ")
 extern "C" int __cdecl Stream_ReadWord(BYTE* is, char* buf);
 extern "C" long __cdecl strtol(const char* s, char** end, int base);
 ASM_VAR(char, g_irNone, $L_6729a8)
@@ -11390,15 +11387,14 @@ int __cdecl Ini_ReadInts(const char* sec, const char* key, const int* defs, int*
     char line[100];
     GetPrivateProfileStringA(sec, key, &g_irNone, line, 100, ini);
     int has = strcmp(line, &g_irNone) != 0;
-    __declspec(align(8)) BYTE is[96];
-    CallThis(Ir_New, is, line, 1);
+    const char* is = line;                        // the original read the words with an istrstream
     for (int k = 0; k < n; k++)
     {
         out[k] = defs[k];
         if (!has)
             continue;
         char word[96];
-        if (!Stream_ReadWord(is, word) || word[0] == '#')
+        if (!Stream_ReadWord((BYTE*)&is, word) || word[0] == '#')
             continue;
         char* end = 0;
         out[k] = strtol(word, &end, 0);
@@ -11409,8 +11405,6 @@ int __cdecl Ini_ReadInts(const char* sec, const char* key, const int* defs, int*
             Setup_Fatal(msg);
         }
     }
-    CallThis(Ir_Free, is + 12);
-    CallThis(Ir_FreeIos, is + 12);
     return has;
 }
 
@@ -11429,15 +11423,14 @@ int __cdecl Ini_ReadFloats(const char* sec, const char* key, const float* defs, 
     char line[100];
     GetPrivateProfileStringA(sec, key, &g_irNone, line, 100, ini);
     int has = strcmp(line, &g_irNone) && line[0];
-    __declspec(align(8)) BYTE is[96];
-    CallThis(Ir_New, is, line, 1);
+    const char* is = line;                        // the original read the words with an istrstream
     for (int k = 0; k < n; k++)
     {
         out[k] = defs[k];
         if (!has)
             continue;
         char word[96];
-        if (!Stream_ReadWord(is, word) || word[0] == '#')
+        if (!Stream_ReadWord((BYTE*)&is, word) || word[0] == '#')
             continue;
         char* end = 0;
         out[k] = (float)strtod(word, &end);
@@ -11448,8 +11441,6 @@ int __cdecl Ini_ReadFloats(const char* sec, const char* key, const float* defs, 
             Setup_Fatal(msg);
         }
     }
-    CallThis(Ir_Free, is + 12);
-    CallThis(Ir_FreeIos, is + 12);
     return has;
 }
 

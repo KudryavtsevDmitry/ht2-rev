@@ -565,14 +565,13 @@ extern "C" void __fastcall Vec12Array_Fill(BYTE* self, int, unsigned count, BYTE
 extern "C" int __cdecl fputs(const char* s, FILE* f);
 extern "C" __declspec(noreturn) void __cdecl abort();
 typedef char AsmLabel5[1];
-ASM_VAR(AsmLabel5, g_stderr686380, $L_686380)
 ASM_VAR(AsmLabel5, s_670328, $L_670328)
 ASM_VAR(AsmLabel5, s_66c4e4, $L_66c4e4)
 
 // [FUN_4882c0] writes "a<670328>b<66c4e4>" to stderr and aborts
 extern "C" void __cdecl Ai_Abort(const char* a, const char* b)
 {
-    FILE* f = (FILE*)g_stderr686380;
+    FILE* f = CRT_STREAM(2);
     fputs(a, f);
     fputs(s_670328, f);
     fputs(b, f);

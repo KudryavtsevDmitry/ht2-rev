@@ -1942,14 +1942,13 @@ ASM_VAR(SchStrTable, g_msgs670e08, $L_670e08)
 ASM_VAR(AsmLabel, s_670dc8, $L_670dc8)
 ASM_VAR(AsmLabel, s_fmt6710ec, $L_6710ec)
 ASM_VAR(AsmLabel, g_text692250, $L_692250)
-ASM_VAR(AsmLabel, g_stderr686380e, $L_686380)
 
 // [FUN_4a59f0] message i of the table: its number (checked against i) and the text after it
 extern "C" char* __cdecl Sch_MessageText(int i)
 {
     char* end;
     if (strtol(g_msgs670e08[i], &end, 0) != i)
-        fprintf((FILE*)g_stderr686380e, s_670dc8);
+        fprintf(CRT_STREAM(2), s_670dc8);
     sprintf(g_text692250, s_fmt6710ec, i);
     strncat(g_text692250, end, 1024);
     return g_text692250;
@@ -1964,7 +1963,7 @@ extern "C" char* __cdecl Sch_ErrorText(int code, int severity)
 {
     char* end;
     if (strtol(g_msgs670a7c[code], &end, 0) != code)
-        fprintf((FILE*)g_stderr686380e, s_670dc8);
+        fprintf(CRT_STREAM(2), s_670dc8);
     char c = severity >= 768 ? 'I' : severity >= 512 ? 'W' : severity >= 256 ? 'E' : severity >= 1 ? 'F' : '?';
     sprintf(g_text691e44, s_fmt670db8, (int)c, code);
     strncat(g_text691e44, end, 1024);
@@ -2246,9 +2245,6 @@ ASM_VAR(AsmLabel, s_sv6712b4, $L_6712b4)
 ASM_VAR(AsmLabel, s_sv6712ac, $L_6712ac)
 ASM_VAR(AsmLabel, s_sv671204, $L_671204)
 ASM_VAR(AsmLabel, s_sv6711f4, $L_6711f4)
-ASM_VAR(AsmLabel, s_sv686340, $L_686340)
-ASM_VAR(AsmLabel, s_sv686360, $L_686360)
-ASM_VAR(AsmLabel, s_sv686380, $L_686380)
 ASM_VAR(AsmLabel, s_sv6711e8, $L_6711e8)
 ASM_VAR(AsmLabel, s_svPort, $L_66cb28)          // "Port"
 extern "C" void Nat_MacroExpand();
@@ -2695,15 +2691,15 @@ BYTE* __fastcall Sch_Construct(BYTE* self, void*, const char* startup, const cha
     Sv_Assign((SchValue*)(self + 60), CallC<SchValue*>(FUN_4b08a0, &t, 0, self, F(DWORD, self, 48)));
     SchValue_Release(&t);
 
-    const char* port = s_sv686340;
+    const char* port = (const char*)CRT_STREAM(0);
     int mode = 1;
     Sv_AssignPort((SchValue*)(self + 72), CallC<SchValue*>(FUN_4b0990, &t, 0, &port, &mode));
     SchValue_Release(&t);
-    port = s_sv686360;
+    port = (const char*)CRT_STREAM(1);
     mode = 2;
     Sv_AssignPort((SchValue*)(self + 84), CallC<SchValue*>(FUN_4b0990, &t, 0, &port, &mode));
     SchValue_Release(&t);
-    port = s_sv686380;
+    port = (const char*)CRT_STREAM(2);
     mode = 2;
     Sv_AssignPort((SchValue*)(self + 96), CallC<SchValue*>(FUN_4b0990, &t, 0, &port, &mode));
     SchValue_Release(&t);

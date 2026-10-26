@@ -527,7 +527,7 @@ extern "C" void __stdcall Afx_GlobalFree(HGLOBAL h) {
 // ---------------------------------------------------------------------------
 // Temporary handle maps
 
-ASM_PROC(FUN_620815)                            // _msize
+CRT_PROC(FUN_620815, "__msize")                 // _msize
 
 // [FUN_6367e0] AfxLockTempMaps
 extern "C" void __cdecl Afx_LockTempMaps() { ++F(int, Afx_GetModuleThreadState(), 16); }
@@ -574,7 +574,7 @@ ASM_VAR(AsmLabel, g_winThreadVtbl, $L_653570)
 ASM_VAR(AsmLabel, g_winAppVtbl, $L_6534a8)
 ASM_VAR(void*, g_afx72c160, $L_72c160)
 ASM_VAR(void*, g_afx72c164, $L_72c164)
-ASM_PROC(FUN_62003b)                            // _strdup
+CRT_PROC(FUN_62003b, "__strdup")                // _strdup
 
 static char* StrDup(const char* s) { return CallC<char*>(FUN_62003b, s); }
 
@@ -686,8 +686,8 @@ extern "C" void __fastcall WinApp_Destruct(BYTE* self) {
 // Threads
 
 ASM_PROC($L_632864)                             // _AfxThreadEntry
-ASM_PROC(FUN_620066)                            // _beginthreadex
-ASM_PROC(FUN_62016d)                            // _endthreadex
+CRT_PROC(FUN_620066, "__beginthreadex")         // _beginthreadex
+CRT_PROC(FUN_62016d, "__endthreadex")           // _endthreadex
 ASM_VAR(int, g_ctl3dThreadState, $L_72dd08)     // CThreadLocal<_AFX_CTL3D_THREAD>
 ASM_VAR(void*, g_ctl3dState, $L_72dd0c)         // CProcessLocal<_AFX_CTL3D_STATE>
 extern "C" void $L_639de0(); KING_ALIAS("_$L_639de0", "_Ctl3dState_New")                             // new _AFX_CTL3D_STATE
@@ -793,9 +793,9 @@ extern "C" void __cdecl Afx_InitThread() {
 // ---------------------------------------------------------------------------
 // WinMain
 
-ASM_PROC(FUN_620d0e)                            // _tcsrchr
-ASM_PROC(FUN_620585)                            // _tcschr
-ASM_PROC(FUN_620903)                            // _tcsinc
+CRT_PROC(FUN_620d0e, "__mbsrchr")               // _tcsrchr
+CRT_PROC(FUN_620585, "__mbschr")                // _tcschr
+CRT_PROC(FUN_620903, "__mbsinc")                // _tcsinc
 ASM_VAR(char, g_extHlp, $L_6546dc)
 ASM_VAR(char, g_extIni, $L_6546d4)
 
@@ -2855,7 +2855,7 @@ extern "C" void __cdecl WndNoTopMost_Init() { WndNoTopMost_Construct(); WndNoTop
 // ---------------------------------------------------------------------------
 // CString helpers, CException, CRuntimeClass, AUX_DATA
 
-ASM_PROC(FUN_620585)                            // _tcschr
+CRT_PROC(FUN_620585, "__mbschr")                // _tcschr
 ASM_VAR(char, g_afxChNil, $L_72db58)
 
 // [FUN_636309] CString::Release(CStringData*)
@@ -3228,7 +3228,7 @@ extern "C" void __stdcall Afx_SetWindowText(HWND h, const char* text) {
     SetWindowTextA(h, text);
 }
 
-ASM_PROC(FUN_6206b1)                            // _expand
+CRT_PROC(FUN_6206b1, "__expand")                // _expand
 
 // [$L_6373bb] AfxCriticalNewHandler: gives back the safety pool and retries
 extern "C" int __cdecl Afx_CriticalNewHandler(size_t size) {

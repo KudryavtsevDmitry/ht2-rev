@@ -60,4 +60,4 @@ To reach the world click **ИГРА**, then **НОВАЯ ИГРА** (real mouse 
    Labels inside the procedure that are used from outside need their own `TEXTEQU`.
 3. Assembly still called from C++ is reached with `ASM_PROC` / `ASM_VAR` and `CallC`, `CallStd`, `CallThis`, `CallVirt` (`king.h`). Data labels need a `PUBLIC` line in `king.masm`.
 
-C++ is built without its own runtime (`/Zl /GS- /GR- /EHs-c-`, `/arch:IA32`) and links to the game's VC6 CRT.
+C++ is built with `/Zl /GS- /GR- /EHs-c-`, `/arch:IA32` and names its libraries itself. king.exe runs on the modern static C runtime (libcmt/libucrt/libvcruntime): `king.masm` points the old VC6 runtime's entry points (heap, stdio, exit, errno, threads, exception handling) at it or at the shims in `src/engine/crt.cpp`, which also holds `WinMain` (the old runtime's C++ initializer table, then `AfxWinMain`). The old runtime's x87 math, `_ftol` and string helpers stay in assembly. `nmake ASM_CRT=1` builds on the game's own runtime again. Converted code must not look inside a `FILE` (use `FILE_EOF`, `CRT_STREAM` from `king.h`).

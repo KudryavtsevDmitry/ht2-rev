@@ -175,7 +175,7 @@ void __fastcall Camera_Apply(BYTE* self, void*, BYTE* r)
 void __cdecl File_ReadString(char* out, FILE* f)
 {
     int c = fgetc(f);
-    while ((char)c && !(F(BYTE, f, 12) & 16)) {
+    while ((char)c && !FILE_EOF(f)) {
         *out++ = (char)c;
         c = fgetc(f);
     }
@@ -377,7 +377,7 @@ int __fastcall Cluster_ReadNames(BYTE* self, void*, FILE* f)
 int __cdecl FileList_ReadLine(FILE* f, char** name)
 {
     fgets(g_listLine, 70, f);
-    if (F(BYTE, f, 12) & 16)
+    if FILE_EOF(f)
         return 4;
     g_listCursor = g_listLine;
     char* tok = CallC<char*>(FUN_5ab1b0, &g_listCursor);
@@ -1563,7 +1563,7 @@ BYTE* __fastcall Overlays_Load(BYTE* s, void*, const char* path, BYTE* o, int si
     FILE* f = fopen(path, "r");
     if (!f)
         return s;
-    for (fgets(&g_olLine, 70, f); !(F(BYTE, f, 12) & 16); fgets(&g_olLine, 70, f))
+    for (fgets(&g_olLine, 70, f); !FILE_EOF(f); fgets(&g_olLine, 70, f))
     {
         char* p = &g_olLine;
         char* tok = CallC<char*>(Ol_Token, &p);

@@ -921811,6 +921811,8 @@ FUN_61cb62 PROC
             ret 
 FUN_61cb62 ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fclose PROC ;FUN_61cb9a int fclose(FILE *stream)
 
             push ESI
@@ -921842,6 +921844,10 @@ $L_61cbc6::
             pop ESI
             ret 
 _fclose ENDP
+ELSE
+EXTERN _OldCrt_fclose:PROC
+_fclose TEXTEQU <_OldCrt_fclose>
+ENDIF
 FUN_61cbcb PROC
 
             push ESI
@@ -921886,6 +921892,8 @@ $L_61cc0e::
             pop ESI
             ret 
 FUN_61cbcb ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fputs PROC ;FUN_61cc17 int fputs(const char *string, FILE *stream)
 
             push EBP
@@ -921930,6 +921938,10 @@ _fputs PROC ;FUN_61cc17 int fputs(const char *string, FILE *stream)
             pop EBP
             ret 
 _fputs ENDP
+ELSE
+EXTERN _OldCrt_fputs:PROC
+_fputs TEXTEQU <_OldCrt_fputs>
+ENDIF
 FUN_61cc65 PROC
 
             push ESI
@@ -921961,6 +921973,8 @@ $L_61cc73::
             ret 
 FUN_61cc65 ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fopen PROC ;FUN_61cc96 FILE *fopen(const char *filename, const char *mode)
 
             push 64
@@ -921971,6 +921985,11 @@ _fopen PROC ;FUN_61cc96 FILE *fopen(const char *filename, const char *mode)
             add ESP,12
             ret 
 _fopen ENDP
+ELSE
+EXTERN _fopen:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _sprintf PROC ;FUN_61cca9 int sprintf(char *buffer, const char *format, ...)
 
             push EBP
@@ -922013,6 +922032,9 @@ $L_61ccf6::
             leave 
             ret 
 _sprintf ENDP
+ELSE
+EXTERN _sprintf:PROC
+ENDIF
 FUN_61ccfb PROC
 
             push ESI
@@ -922066,6 +922088,8 @@ $L_61cd70::
             pop ESI
             ret 
 FUN_61ccfb ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _atexit PROC ;FUN_61cd79 int atexit(void (*func)(void))
 
             push DWORD PTR [ESP+4]
@@ -922078,6 +922102,9 @@ _atexit PROC ;FUN_61cd79 int atexit(void (*func)(void))
             dec EAX
             ret 
 _atexit ENDP
+ELSE
+EXTERN _atexit:PROC
+ENDIF
 $L_61cd8b PROC
 
             push 128
@@ -922177,6 +922204,8 @@ $L_61ce24::
             leave 
             ret 8
 FUN_61cdfc ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 $L_61ce4b PROC
 
             push EBP
@@ -922208,6 +922237,10 @@ $L_61ce4b PROC
             pop EBP
             ret 
 $L_61ce4b ENDP
+ELSE
+EXTERN ___CxxFrameHandler:PROC
+$L_61ce4b TEXTEQU <___CxxFrameHandler>
+ENDIF
 FUN_61ce81 PROC
 
             push EBP
@@ -922590,6 +922623,8 @@ $L_61d180::
             ret 4
 FUN_61d176 ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __CxxThrowException@8 PROC ;FUN_61d18e void __stdcall _CxxThrowException(void *object, _ThrowInfo *info)
 
             push EBP
@@ -922620,7 +922655,12 @@ __CxxThrowException@8 PROC ;FUN_61d18e void __stdcall _CxxThrowException(void *o
             leave 
             ret 8
 __CxxThrowException@8 ENDP
+ELSE
+EXTERN __CxxThrowException@8:PROC
+ENDIF
 ALIGN 8
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _free PROC ;FUN_61d1c8 void free(void *block)
 
             push EBP
@@ -922670,6 +922710,9 @@ $L_61d223::
             cmp DWORD PTR [EBP-28],0
             jmp $L_61d283
 _free ENDP
+ELSE
+EXTERN _free:PROC
+ENDIF
 ALIGN 2
 FUN_61d232 PROC
 
@@ -923558,6 +923601,8 @@ __ftol PROC ;FUN_61d830 __int64 _ftol(void): ST(0) truncated to EDX:EAX
             leave 
             ret 
 __ftol ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _malloc PROC ;FUN_61d857 void *malloc(size_t size)
 
             push DWORD PTR [$L_72e258]
@@ -923568,6 +923613,9 @@ _malloc PROC ;FUN_61d857 void *malloc(size_t size)
             pop ECX
             ret 
 _malloc ENDP
+ELSE
+EXTERN _malloc:PROC
+ENDIF
 FUN_61d869 PROC
 
             cmp DWORD PTR [ESP+4],-32
@@ -924401,6 +924449,8 @@ $L_61de6f PROC
             int 3
 $L_61de6f ENDP
 ALIGN 16
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __stricmp PROC ;FUN_61de70 int _stricmp(const char *string1, const char *string2)
 
             push EBP
@@ -924522,6 +924572,9 @@ $L_61df3b::
             leave 
             ret 
 __stricmp ENDP
+ELSE
+EXTERN __stricmp:PROC
+ENDIF
 $L_61df40 PROC
 
             mov EAX,DWORD PTR [$L_77fb00]
@@ -924897,6 +924950,8 @@ $L_61e1b6::
             ret 4
 $L_61e1a0 ENDP
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fprintf PROC ;FUN_61e1bc int fprintf(FILE *stream, const char *format, ...)
 
             push EBX
@@ -924931,6 +924986,12 @@ _fprintf PROC ;FUN_61e1bc int fprintf(FILE *stream, const char *format, ...)
             pop EBX
             ret 
 _fprintf ENDP
+ELSE
+EXTERN _OldCrt_fprintf:PROC
+_fprintf TEXTEQU <_OldCrt_fprintf>
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _abort PROC ;$L_61e1f8 void abort(void)
 
             push 10
@@ -924944,6 +925005,11 @@ _abort PROC ;$L_61e1f8 void abort(void)
             push 3
             call __exit
 _abort ENDP
+ELSE
+EXTERN _abort:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fread PROC ;FUN_61e20f size_t fread(void *buffer, size_t size, size_t count, FILE *stream)
 
             push EBP
@@ -924968,6 +925034,10 @@ _fread PROC ;FUN_61e20f size_t fread(void *buffer, size_t size, size_t count, FI
             pop EBP
             ret 
 _fread ENDP
+ELSE
+EXTERN _OldCrt_fread:PROC
+_fread TEXTEQU <_OldCrt_fread>
+ENDIF
 ALIGN 2
 FUN_61e23e PROC
 
@@ -925105,6 +925175,8 @@ $L_61e31a::
             jmp $L_61e30b
 FUN_61e23e ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fwrite PROC ;FUN_61e326 size_t fwrite(const void *buffer, size_t size, size_t count, FILE *stream)
 
             push EBP
@@ -925129,6 +925201,10 @@ _fwrite PROC ;FUN_61e326 size_t fwrite(const void *buffer, size_t size, size_t c
             pop EBP
             ret 
 _fwrite ENDP
+ELSE
+EXTERN _OldCrt_fwrite:PROC
+_fwrite TEXTEQU <_OldCrt_fwrite>
+ENDIF
 FUN_61e355 PROC
 
             push EBP
@@ -925284,6 +925360,8 @@ $L_61e456::
             div DWORD PTR [EBP+12]
             jmp $L_61e446
 FUN_61e355 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _ftell PROC ;FUN_61e45f long ftell(FILE *stream)
 
             push ESI
@@ -925305,6 +925383,10 @@ _ftell PROC ;FUN_61e45f long ftell(FILE *stream)
             pop ESI
             ret 
 _ftell ENDP
+ELSE
+EXTERN _OldCrt_ftell:PROC
+_ftell TEXTEQU <_OldCrt_ftell>
+ENDIF
 FUN_61e481 PROC
 
             push EBP
@@ -925502,6 +925584,8 @@ $L_61e5e2 PROC
             int 3
 $L_61e5e2 ENDP
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _isdigit PROC ;FUN_61e5e4 int isdigit(int c)
 
             cmp DWORD PTR [$L_688f44],1
@@ -925522,7 +925606,12 @@ $L_61e5fb::
             and EAX,4
             ret 
 _isdigit ENDP
+ELSE
+EXTERN _isdigit:PROC
+ENDIF
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _isspace PROC ;FUN_61e60c int isspace(int c)
 
             cmp DWORD PTR [$L_688f44],1
@@ -925543,7 +925632,12 @@ $L_61e623::
             and EAX,8
             ret 
 _isspace ENDP
+ELSE
+EXTERN _isspace:PROC
+ENDIF
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _isalnum PROC ;FUN_61e634 int isalnum(int c)
 
             cmp DWORD PTR [$L_688f44],1
@@ -925564,7 +925658,12 @@ $L_61e64e::
             and EAX,263
             ret 
 _isalnum ENDP
+ELSE
+EXTERN _isalnum:PROC
+ENDIF
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _printf PROC ;FUN_61e662 int printf(const char *format, ...)
 
             push EBX
@@ -925601,6 +925700,11 @@ _printf PROC ;FUN_61e662 int printf(const char *format, ...)
             pop EBX
             ret 
 _printf ENDP
+ELSE
+EXTERN _printf:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fseek PROC ;FUN_61e6a3 int fseek(FILE *stream, long offset, int origin)
 
             push EBP
@@ -925624,6 +925728,10 @@ _fseek PROC ;FUN_61e6a3 int fseek(FILE *stream, long offset, int origin)
             pop EBP
             ret 
 _fseek ENDP
+ELSE
+EXTERN _OldCrt_fseek:PROC
+_fseek TEXTEQU <_OldCrt_fseek>
+ENDIF
 FUN_61e6cf PROC
 
             push ESI
@@ -925707,6 +925815,8 @@ $L_61e759::
             ret 
 FUN_61e6cf ENDP
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _tolower PROC ;FUN_61e75c int tolower(int c)
 
             push EBX
@@ -925774,6 +925884,9 @@ $L_61e7c9::
             pop EBX
             ret 
 _tolower ENDP
+ELSE
+EXTERN _tolower:PROC
+ENDIF
 FUN_61e7cb PROC
 
             push EBP
@@ -925904,6 +926017,8 @@ $L_61e8a1::
             add ESP,16
             ret 
 FUN_61e896 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _exit PROC ;FUN_61e8c3 void exit(int status)
 
             push 0
@@ -925914,7 +926029,12 @@ _exit PROC ;FUN_61e8c3 void exit(int status)
             add ESP,12
             ret 
 _exit ENDP
+ELSE
+EXTERN _exit:PROC
+ENDIF
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __exit PROC ;FUN_61e8d4 void _exit(int status)
 
             push 0
@@ -925925,6 +926045,9 @@ __exit PROC ;FUN_61e8d4 void _exit(int status)
             add ESP,12
             ret 
 __exit ENDP
+ELSE
+EXTERN __exit:PROC
+ENDIF
 FUN_61e8e5 PROC
 
             push EDI
@@ -926048,6 +926171,8 @@ $L_61e9b4::
             ret 
 FUN_61e99c ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _strtol PROC ;FUN_61e9b6 long strtol(const char *string, char **end, int base)
 
             push 0
@@ -926059,6 +926184,9 @@ _strtol PROC ;FUN_61e9b6 long strtol(const char *string, char **end, int base)
             add ESP,16
             ret 
 _strtol ENDP
+ELSE
+EXTERN _strtol:PROC
+ENDIF
 FUN_61e9cd PROC
 
             push EBP
@@ -926361,6 +926489,8 @@ $L_61ebcd::
             ret 
 FUN_61e9cd ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _strtoul PROC ;FUN_61ebd2 unsigned long strtoul(const char *string, char **end, int base)
 
             push 1
@@ -926372,6 +926502,11 @@ _strtoul PROC ;FUN_61ebd2 unsigned long strtoul(const char *string, char **end, 
             add ESP,16
             ret 
 _strtoul ENDP
+ELSE
+EXTERN _strtoul:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _toupper PROC ;FUN_61ebe9 int toupper(int c)
 
             push EBX
@@ -926439,6 +926574,9 @@ $L_61ec56::
             pop EBX
             ret 
 _toupper ENDP
+ELSE
+EXTERN _toupper:PROC
+ENDIF
 ALIGN 8
 FUN_61ec58 PROC
 
@@ -926543,6 +926681,8 @@ $L_61ed21::
             ret 
 FUN_61ec58 ENDP
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fputc PROC ;FUN_61ed24 int fputc(int c, FILE *stream)
 
             push ESI
@@ -926581,6 +926721,12 @@ $L_61ed53::
             pop ESI
             ret 
 _fputc ENDP
+ELSE
+EXTERN _OldCrt_fputc:PROC
+_fputc TEXTEQU <_OldCrt_fputc>
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _putc PROC ;FUN_61ed5f int putc(int c, FILE *stream)
 
             push DWORD PTR [ESP+8]
@@ -926591,6 +926737,12 @@ _putc PROC ;FUN_61ed5f int putc(int c, FILE *stream)
             pop ECX
             ret 
 _putc ENDP
+ELSE
+EXTERN _OldCrt_fputc:PROC
+_putc TEXTEQU <_OldCrt_fputc>
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fgets PROC ;FUN_61ed6f char *fgets(char *string, int n, FILE *stream)
 
             push EBP
@@ -926667,6 +926819,12 @@ $L_61edcd::
             pop EBP
             ret 
 _fgets ENDP
+ELSE
+EXTERN _OldCrt_fgets:PROC
+_fgets TEXTEQU <_OldCrt_fgets>
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _srand PROC ;FUN_61edd1 void srand(unsigned seed)
 
             call FUN_622ba3
@@ -926675,7 +926833,12 @@ _srand PROC ;FUN_61edd1 void srand(unsigned seed)
             mov DWORD PTR [EAX+20],ECX
             ret 
 _srand ENDP
+ELSE
+EXTERN _srand:PROC
+ENDIF
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _rand PROC ;FUN_61edde int rand(void)
 
             call FUN_622ba3
@@ -926689,6 +926852,9 @@ _rand PROC ;FUN_61edde int rand(void)
             and EAX,32767
             ret 
 _rand ENDP
+ELSE
+EXTERN _rand:PROC
+ENDIF
 ALIGN 16
 __CIasin PROC ;FUN_61ee00 double _CIasin(void): asin(ST(0))
 
@@ -927618,6 +927784,8 @@ $L_61f44f::
             ret 
 _abs ENDP
 ALIGN 16
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fflush PROC ;FUN_61f450 int fflush(FILE *stream)
 
             push ESI
@@ -927650,6 +927818,10 @@ $L_61f462::
             pop ESI
             ret 
 _fflush ENDP
+ELSE
+EXTERN _OldCrt_fflush:PROC
+_fflush TEXTEQU <_OldCrt_fflush>
+ENDIF
 FUN_61f47f PROC
 
             push ESI
@@ -928326,6 +928498,8 @@ $L_61f8ed::
             ret 
 FUN_61f85d ENDP
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _strtod PROC ;FUN_61f90c double strtod(const char *string, char **end)
 
             push EBP
@@ -928430,6 +928604,9 @@ $L_61f9b2::
             leave 
             ret 
 _strtod ENDP
+ELSE
+EXTERN _strtod:PROC
+ENDIF
 ALIGN 2
 _difftime PROC ;FUN_61f9b6 double difftime(time_t time1, time_t time0)
 
@@ -928562,6 +928739,8 @@ $L_61fa7f PROC
             int 3
 $L_61fa7f ENDP
 ALIGN 16
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __strnicmp PROC ;FUN_61fa80 int _strnicmp(const char *string1, const char *string2, size_t count)
 
             push EBP
@@ -928716,6 +928895,11 @@ $L_61fb7a::
             leave 
             ret 
 __strnicmp ENDP
+ELSE
+EXTERN __strnicmp:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _strerror PROC ;FUN_61fb81 char *strerror(int errnum)
 
             push ESI
@@ -928761,6 +928945,9 @@ $L_61fbbe::
             pop ESI
             ret 
 _strerror ENDP
+ELSE
+EXTERN _strerror:PROC
+ENDIF
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
@@ -928812,6 +928999,8 @@ $L_61fc08::
             ret 
 $L_61fbf4 ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _atol PROC ;FUN_61fc12 long atol(const char *string)
 
             push EBX
@@ -928904,6 +929093,11 @@ $L_61fc98::
             pop EBX
             ret 
 _atol ENDP
+ELSE
+EXTERN _atol:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _atoi PROC ;FUN_61fc9d int atoi(const char *string)
 
             push DWORD PTR [ESP+4]
@@ -928912,7 +929106,12 @@ _atoi PROC ;FUN_61fc9d int atoi(const char *string)
             pop ECX
             ret 
 _atoi ENDP
+ELSE
+EXTERN _atoi:PROC
+ENDIF
 ALIGN 8
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _atof PROC ;FUN_61fca8 double atof(const char *string)
 
             push EBP
@@ -928966,6 +929165,11 @@ $L_61fce0::
             leave 
             ret 
 _atof ENDP
+ELSE
+EXTERN _atof:PROC
+ENDIF
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 ?_set_new_mode@@YAHH@Z PROC ;FUN_61fcff int _set_new_mode(int mode)
 
             mov ECX,DWORD PTR [ESP+4]
@@ -928982,7 +929186,13 @@ $L_61fd10::
             mov DWORD PTR [$L_72e258],ECX
             ret 
 ?_set_new_mode@@YAHH@Z ENDP
+ELSE
+EXTERN __set_new_mode:PROC
+?_set_new_mode@@YAHH@Z TEXTEQU <__set_new_mode>
+ENDIF
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 ?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z PROC ;FUN_61fd1c _PNH _set_new_handler(_PNH handler)
 
             push ESI
@@ -929001,6 +929211,10 @@ ALIGN 4
             pop ESI
             ret 
 ?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z ENDP
+ELSE
+EXTERN __set_new_handler:PROC
+?_set_new_handler@@YAP6AHI@ZP6AHI@Z@Z TEXTEQU <__set_new_handler>
+ENDIF
 ALIGN 16
 FUN_61fd40 PROC
 
@@ -929023,6 +929237,8 @@ $L_61fd58::
             xor EAX,EAX
             ret 
 FUN_61fd40 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _fgetc PROC ;FUN_61fd5b int fgetc(FILE *stream)
 
             push ESI
@@ -929058,7 +929274,13 @@ $L_61fd80::
             pop ESI
             ret 
 _fgetc ENDP
+ELSE
+EXTERN _OldCrt_fgetc:PROC
+_fgetc TEXTEQU <_OldCrt_fgetc>
+ENDIF
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _getc PROC ;FUN_61fd8c int getc(FILE *stream)
 
             push DWORD PTR [ESP+4]
@@ -929067,6 +929289,10 @@ _getc PROC ;FUN_61fd8c int getc(FILE *stream)
             pop ECX
             ret 
 _getc ENDP
+ELSE
+EXTERN _OldCrt_fgetc:PROC
+_getc TEXTEQU <_OldCrt_fgetc>
+ENDIF
 _ceil PROC ;FUN_61fd97 double ceil(double x)
 
             push EBP
@@ -929191,6 +929417,8 @@ $L_61fe62::
             ret 
 _ceil ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _rewind PROC ;FUN_61fe66 void rewind(FILE *stream)
 
             push ESI
@@ -929244,6 +929472,10 @@ $L_61feb4::
             pop ESI
             ret 
 _rewind ENDP
+ELSE
+EXTERN _OldCrt_rewind:PROC
+_rewind TEXTEQU <_OldCrt_rewind>
+ENDIF
 ALIGN 2
 __EntryPoint PROC
 
@@ -929419,6 +929651,8 @@ FUN_62001c PROC
             push EAX
             ret 
 FUN_62001c ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_62003b PROC
 
             push ESI
@@ -929452,7 +929686,13 @@ $L_620062::
             pop ESI
             ret 
 FUN_62003b ENDP
+ELSE
+EXTERN __strdup:PROC
+FUN_62003b TEXTEQU <__strdup>
+ENDIF
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620066 PROC
 
             push EBP
@@ -929516,6 +929756,10 @@ $L_6200cd::
             pop EBP
             ret 
 FUN_620066 ENDP
+ELSE
+EXTERN __beginthreadex:PROC
+FUN_620066 TEXTEQU <__beginthreadex>
+ENDIF
 $L_6200d1 PROC
 
             push EBP
@@ -929593,6 +929837,8 @@ $L_620162 PROC
             push DWORD PTR [EBP-28]
             call __exit
 $L_620162 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_62016d PROC
 
             mov EAX,DWORD PTR [$L_686308]
@@ -929625,6 +929871,10 @@ $L_62018c::
             pop ESI
             ret 
 FUN_62016d ENDP
+ELSE
+EXTERN __endthreadex:PROC
+FUN_62016d TEXTEQU <__endthreadex>
+ENDIF
 $L_62019f PROC
 
             int 3
@@ -930122,6 +930372,8 @@ $L_62056c::
             leave
             ret
 _memcpy ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620585 PROC
 
             push EBP
@@ -930213,6 +930465,10 @@ $L_620618::
             pop EBP
             ret 
 FUN_620585 ENDP
+ELSE
+EXTERN __mbschr:PROC
+FUN_620585 TEXTEQU <__mbschr>
+ENDIF
 ALIGN 4
 FUN_62061c PROC
 
@@ -930311,6 +930567,8 @@ $L_62069e::
             pop EBX
             ret 
 FUN_62061c ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_6206b1 PROC
 
             push EBP
@@ -930375,6 +930633,10 @@ $L_620728::
 
             jmp $L_6207e1
 FUN_6206b1 ENDP
+ELSE
+EXTERN __expand:PROC
+FUN_6206b1 TEXTEQU <__expand>
+ENDIF
 $L_620740 PROC
 
             mov ESI,DWORD PTR [EBP+12]
@@ -930502,6 +930764,8 @@ $L_620806::
             leave 
             ret 
 $L_6207e1 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620815 PROC
 
             push EBP
@@ -930549,6 +930813,10 @@ $L_62086d::
             cmp DWORD PTR [EBP-28],0
             jmp $L_6208d1
 FUN_620815 ENDP
+ELSE
+EXTERN __msize:PROC
+FUN_620815 TEXTEQU <__msize>
+ENDIF
 $L_62087c PROC
 
             mov ESI,DWORD PTR [EBP-32]
@@ -930631,6 +930899,8 @@ FUN_6208fa PROC
             pop ECX
             ret 
 FUN_6208fa ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620903 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -930646,7 +930916,13 @@ $L_620919::
 
             ret 
 FUN_620903 ENDP
+ELSE
+EXTERN __mbsinc:PROC
+FUN_620903 TEXTEQU <__mbsinc>
+ENDIF
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_62091a PROC
 
             push EBP
@@ -930858,6 +931134,10 @@ $L_620ab8::
             leave 
             ret 
 FUN_62091a ENDP
+ELSE
+EXTERN __setmbcp:PROC
+FUN_62091a TEXTEQU <__setmbcp>
+ENDIF
 FUN_620ac7 PROC
 
             mov EAX,DWORD PTR [ESP+4]
@@ -931136,6 +931416,8 @@ $L_620d0d::
             ret 
 FUN_620cf2 ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620d0e PROC
 
             push EBP
@@ -931211,6 +931493,10 @@ $L_620d7d::
             pop EBP
             ret 
 FUN_620d0e ENDP
+ELSE
+EXTERN __mbsrchr:PROC
+FUN_620d0e TEXTEQU <__mbsrchr>
+ENDIF
 ALIGN 16
 FUN_620d80 PROC
 
@@ -931271,6 +931557,8 @@ $L_620de6::
             pop ESI
             ret 
 FUN_620d80 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620df3 PROC
 
             call FUN_622ba3
@@ -931278,7 +931566,13 @@ FUN_620df3 PROC
             add EAX,8
             ret 
 FUN_620df3 ENDP
+ELSE
+EXTERN __errno:PROC
+FUN_620df3 TEXTEQU <__errno>
+ENDIF
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 FUN_620dfc PROC
 
             call FUN_622ba3
@@ -931286,6 +931580,10 @@ FUN_620dfc PROC
             add EAX,12
             ret 
 FUN_620dfc ENDP
+ELSE
+EXTERN ___doserrno:PROC
+FUN_620dfc TEXTEQU <___doserrno>
+ENDIF
 FUN_620e05 PROC
 
             push 196608
@@ -931986,6 +932284,8 @@ $L_6212a2::
             ret 
 FUN_62127f ENDP
 ALIGN 4
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __close PROC ;FUN_6212a4 int _close(int fd)
 
             push ESI
@@ -932030,6 +932330,9 @@ $L_6212e9::
             pop ESI
             ret 
 __close ENDP
+ELSE
+EXTERN __close:PROC
+ENDIF
 FUN_621301 PROC
 
             push ESI
@@ -940324,6 +940627,8 @@ $L_62522d::
             ret 
 FUN_625156 ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __read PROC ;FUN_625232 int _read(int fd, void *buffer, unsigned count)
 
             push ESI
@@ -940370,6 +940675,9 @@ $L_62527f::
             pop ESI
             ret 
 __read ENDP
+ELSE
+EXTERN __read:PROC
+ENDIF
 FUN_625297 PROC
 
             push EBP
@@ -948397,6 +948705,8 @@ $L_628e4f::
             and EAX,64
             ret 
 FUN_628e40 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __open PROC ;FUN_628e69 int _open(const char *filename, int oflag, ...)
 
             push DWORD PTR [ESP+12]
@@ -948408,6 +948718,9 @@ __open PROC ;FUN_628e69 int _open(const char *filename, int oflag, ...)
             add ESP,16
             ret 
 __open ENDP
+ELSE
+EXTERN __open:PROC
+ENDIF
 ALIGN 16
 FUN_628e80 PROC
 
@@ -965854,6 +966167,8 @@ FUN_6317ca PROC
             jmp DWORD PTR __imp__OpenPrinterA@12
 FUN_6317ca ENDP
 ALIGN 16
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 _WinMain@16 PROC ;FUN_6317d0
 
             push DWORD PTR [ESP+16]
@@ -965864,6 +966179,9 @@ _WinMain@16 PROC ;FUN_6317d0
 
             ret 16
 _WinMain@16 ENDP ;FUN_6317d0
+ELSE
+EXTERN _WinMain@16:PROC
+ENDIF
 ALIGN 8
 FUN_6317e8 PROC
 
@@ -966149,6 +966467,8 @@ $L_6319af::
             ret 
 FUN_63190e ENDP
 ALIGN 2
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __stat PROC ;FUN_6319c6 int _stat(const char *path, struct _stat *buffer)
 
             push EBP
@@ -966458,6 +966778,9 @@ $L_631c7c::
             leave 
             ret 
 __stat ENDP
+ELSE
+EXTERN __stat:PROC
+ENDIF
 FUN_631c81 PROC
 
             push ESI
@@ -966543,6 +966866,8 @@ $L_631ced::
             pop ESI
             ret 
 FUN_631c81 ENDP
+; src/engine/crt.cpp, nmake ASM_CRT=1 assembles the original
+IFDEF ASM_CRT
 __mkdir PROC ;FUN_631cf1 int _mkdir(const char *dirname)
 
             push 0
@@ -966574,6 +966899,9 @@ $L_631d1a::
             xor EAX,EAX
             ret 
 __mkdir ENDP
+ELSE
+EXTERN __mkdir:PROC
+ENDIF
 FUN_631d1d PROC
 
             push DWORD PTR [ESP+4]
@@ -1143083,6 +1143411,7 @@ $L_6f6904           DB 4 DUP(?)
 $L_6f6908           DB 4 DUP(?)
 $L_6f690c           DB 4 DUP(?)
 PUBLIC $L_6f6910
+PUBLIC $L_66c000, $L_66c488
 $L_6f6910           DB 4 DUP(?)
 $L_6f6914           DB 4 DUP(?)
 $L_6f6918           DB 20 DUP(?)

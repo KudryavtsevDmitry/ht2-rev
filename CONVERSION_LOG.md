@@ -457,3 +457,15 @@ class getters. $L_639df5 (new _AFX_CTL3D_THREAD) is a second function inside the
 TEXTEQU was added by hand and its PUBLIC moved under IFDEF ASM_MFC. What is left of MFC in asm: the throw
 helpers (AfxThrowMemoryException, AfxThrowResourceException), _AfxThreadEntry (try/catch), and catch
 funclets/EH tables of procs that are C++ now. Drive test passes; the all-asm configuration still assembles.
+
+Modern C runtime: king.exe now links the static libcmt/libucrt/libvcruntime (plus legacy_stdio_definitions) and
+starts at WinMainCRTStartup. New switch ASM_CRT (set by ASM=1) brings back the game's VC6 runtime and old entry
+point. Without it, king.masm points 62 old-runtime entry points at the modern runtime (heap, exit/atexit, errno,
+strto*/ato*, ctype, low-level I/O, _strdup/_msize/_expand, _beginthreadex, the MBCS string functions,
+_set_new_handler/_set_new_mode, _CxxThrowException, __CxxFrameHandler, sprintf/printf/fopen) or at shims in the
+new src/engine/crt.cpp for stdio taking a FILE* (the remaining assembly still passes the old _iob
+stdin/stdout/stderr). crt.cpp's WinMain runs the old C++ initializer table ($L_66c000..$L_66c488) and AfxWinMain.
+The old x87 math, _ftol, _alldiv, _chkstk and string helpers stay in asm (exact results). C++ changes: the INI
+word reader no longer uses the old istrstream (vehicle_setup/game_shell); FILE_EOF and CRT_STREAM in king.h
+replace the inlined VC6 feof (FILE+12 & 16, which hung the start on the modern FILE) and the old _iob addresses;
+CRT_PROC binds the C++ references to the remapped labels. Drive test passes on both runtimes; exit code 0.
