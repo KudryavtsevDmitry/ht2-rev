@@ -42,11 +42,11 @@ struct Plane {
     void Read(FILE* file);
 };
 
-KING_BSS(Matrix, g_identity, 0x7025f0)
-KING_BSS(Vec3, g_zeroVec, 0x702650)
-KING_BSS(Vec3, g_axisX, 0x702640)              // (1, 0, 0)
-KING_BSS(Vec3, g_axisY, 0x702620)              // (0, 1, 0)
-KING_BSS(Vec3, g_axisZ, 0x702630)              // (0, 0, 1)
+KING_VAR(Matrix, g_identity, 7025f0)
+KING_VAR(Vec3, g_zeroVec, 702650)
+KING_VAR(Vec3, g_axisX, 702640)              // (1, 0, 0)
+KING_VAR(Vec3, g_axisY, 702620)              // (0, 1, 0)
+KING_VAR(Vec3, g_axisZ, 702630)              // (0, 0, 1)
 
 extern "C" {
 double __cdecl Vec3_Length(const Vec3* v);

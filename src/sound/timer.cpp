@@ -15,9 +15,9 @@ extern "C" double __cdecl atof(const char* s);
 
 extern "C" void Thread_Main(); KING_ALIAS("_Thread_Main", "_Cached_Get@4")
 
-ASM_VAR(AsmLabel, s_N, $L_6761e8)                // "N", the missing value
-ASM_VAR(AsmLabel, s_g, $L_671350)                // "%g"
-ASM_VAR(AsmLabel, g_vtbl652de8, $L_652de8)
+KING_VAR(AsmLabel, s_N, 6761e8)                // "N", the missing value
+KING_VAR(AsmLabel, s_g, 671350)                // "%g"
+KING_VAR(AsmLabel, g_vtbl652de8, 652de8)
 
 static int Ini_Get(const char* section, const char* key, const char* file, char* buf)
 {
@@ -97,9 +97,9 @@ void __fastcall Thread_Destroy(BYTE* self, void*)
 
 #include <mmsystem.h>
 
-ASM_VAR(int, g_tscUncalibrated, $L_6843e0)       // 1 until FUN_603f30 ran
-ASM_VAR(double, g_tscScale, $L_6843d8)           // milliseconds per tick
-ASM_VAR(const double, k_2pow32, $L_652df0)
+KING_VAR(int, g_tscUncalibrated, 6843e0)       // 1 until FUN_603f30 ran
+KING_VAR(double, g_tscScale, 6843d8)           // milliseconds per tick
+KING_VAR(const double, k_2pow32, 652df0)
 extern "C" void FUN_60573b(); KING_ALIAS("_FUN_60573b", "_Cpu_ReadTsc")    // rdtsc into a 64-bit value
 extern "C" int __cdecl Tsc_Calibrate(int);
 

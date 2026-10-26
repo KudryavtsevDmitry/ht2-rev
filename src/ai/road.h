@@ -87,16 +87,16 @@ struct PositionId {
     int    m_28;                    // -1
 };
 
-KING_BSS(RoadNode**, g_roadNodes, 0x68cf00)
-KING_BSS(RoadNode**, g_roadNodesEnd, 0x68cf04)
-KING_BSS(RoadEdge**, g_roadEdges, 0x68cf38)
-KING_BSS(RoadEdge**, g_roadEdgesEnd, 0x68cf3c)
+KING_VAR(RoadNode**, g_roadNodes, 68cf00)
+KING_VAR(RoadNode**, g_roadNodesEnd, 68cf04)
+KING_VAR(RoadEdge**, g_roadEdges, 68cf38)
+KING_VAR(RoadEdge**, g_roadEdgesEnd, 68cf3c)
 typedef double NodeCosts[1];
-KING_BSS(NodeCosts, g_nodeCosts, 0x68d8c0)    // a double per node
-KING_BSS(char, g_aiEmpty, 0x68d1c0)
+KING_VAR(NodeCosts, g_nodeCosts, 68d8c0)    // a double per node
+KING_VAR(char, g_aiEmpty, 68d1c0)
 typedef void* FreeLists[17];
-KING_BSS(FreeLists, g_stlFreeLists, 0x68d1c0)  // the STL node allocator, by 8 bytes
-KING_BSS(volatile LONG, g_stlLock, 0x68d204)
+KING_VAR(FreeLists, g_stlFreeLists, 68d1c0)  // the STL node allocator, by 8 bytes
+KING_VAR(volatile LONG, g_stlLock, 68d204)
 extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);   // aimain.cpp: the allocator lock
 
 extern "C" PositionId* __cdecl Road_EdgeStart(PositionId* out, RoadEdge* e);

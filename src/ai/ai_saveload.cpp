@@ -39,31 +39,31 @@ extern "C" void FUN_4810e0(); KING_ALIAS("_FUN_4810e0", "_Save_Town")
 extern "C" void FUN_481790(); KING_ALIAS("_FUN_481790", "_Save_Present")
 extern "C" void FUN_482320(); KING_ALIAS("_FUN_482320", "_Save_Ambush")
 typedef char AsmLabel[1];
-ASM_VAR(AsmLabel, g_tagAMBU, $L_66fe74)
-ASM_VAR(AsmLabel, g_tagTOWN, $L_66fdf4)
-ASM_VAR(AsmLabel, g_tagTNDE, $L_66fdec)
-ASM_VAR(AsmLabel, s_svldId, $L_66fcb4)
-ASM_VAR(AsmLabel, s_svldFile, $L_66fd70)
-ASM_VAR(AsmLabel, g_tagPLYR, $L_66fddc)
-ASM_VAR(AsmLabel, g_tagPLRS, $L_66fde4)
-ASM_VAR(AsmLabel, g_tagTWNS, $L_66fe28)
-ASM_VAR(AsmLabel, g_tagPRSS, $L_66fe48)
-ASM_VAR(AsmLabel, g_tagROAD, $L_66fe50)
-ASM_VAR(AsmLabel, g_tagRDDD, $L_66fe6c)
-ASM_VAR(AsmLabel, g_tagAMBS, $L_66fe90)
-ASM_VAR(AsmLabel, g_tagOBST, $L_66fe98)
-ASM_VAR(AsmLabel, g_tagOBSS, $L_66feb8)
-KING_BSS(BYTE*, g_68cf6c, 0x68cf6c)
-KING_BSS(BYTE**, g_68cf38, 0x68cf38)
-KING_BSS(BYTE**, g_68cf3c, 0x68cf3c)
-KING_BSS(BYTE**, g_68a970, 0x68a970)
-KING_BSS(BYTE**, g_68a974, 0x68a974)
-KING_BSS(BYTE**, g_68cc18, 0x68cc18)
-KING_BSS(BYTE**, g_68cc1c, 0x68cc1c)
+KING_VAR(AsmLabel, g_tagAMBU, 66fe74)
+KING_VAR(AsmLabel, g_tagTOWN, 66fdf4)
+KING_VAR(AsmLabel, g_tagTNDE, 66fdec)
+KING_VAR(AsmLabel, s_svldId, 66fcb4)
+KING_VAR(AsmLabel, s_svldFile, 66fd70)
+KING_VAR(AsmLabel, g_tagPLYR, 66fddc)
+KING_VAR(AsmLabel, g_tagPLRS, 66fde4)
+KING_VAR(AsmLabel, g_tagTWNS, 66fe28)
+KING_VAR(AsmLabel, g_tagPRSS, 66fe48)
+KING_VAR(AsmLabel, g_tagROAD, 66fe50)
+KING_VAR(AsmLabel, g_tagRDDD, 66fe6c)
+KING_VAR(AsmLabel, g_tagAMBS, 66fe90)
+KING_VAR(AsmLabel, g_tagOBST, 66fe98)
+KING_VAR(AsmLabel, g_tagOBSS, 66feb8)
+KING_VAR(BYTE*, g_68cf6c, 68cf6c)
+KING_VAR(BYTE**, g_68cf38, 68cf38)
+KING_VAR(BYTE**, g_68cf3c, 68cf3c)
+KING_VAR(BYTE**, g_68a970, 68a970)
+KING_VAR(BYTE**, g_68a974, 68a974)
+KING_VAR(BYTE**, g_68cc18, 68cc18)
+KING_VAR(BYTE**, g_68cc1c, 68cc1c)
 
-KING_BSS(BYTE*, g_68ccb8, 0x68ccb8)             // 104-byte records
-ASM_VAR(double, g_bonusFactor, $L_66f878)       // 1.5
-KING_BSS(double, g_68d6c8, 0x68d6c8)
+KING_VAR(BYTE*, g_68ccb8, 68ccb8)             // 104-byte records
+KING_VAR(double, g_bonusFactor, 66f878)       // 1.5
+KING_VAR(double, g_68d6c8, 68d6c8)
 
 struct E12 { DWORD a, b, key; };
 
@@ -145,13 +145,13 @@ extern "C" int* __cdecl Town_Id(int* out, BYTE* town);                          
 extern "C" void __cdecl Road_PositionCostBest(int side, OrdrPos from, OrdrPos to, double* cost);   // aitrce.cpp
 extern "C" double __cdecl Order_Value(const int* o);
 typedef void* PtrList[1];
-KING_BSS(PtrList, g_ordrTowns, 0x68cec0)
-KING_BSS(PtrList, g_ordrVehicles, 0x68cfd8)
-KING_BSS(void*, g_ordrPlayers, 0x68b990)
-KING_BSS(char, g_ordrEmpty, 0x68d1c0)
-ASM_VAR(double, g_priceDirect, $L_66f880)       // 1.2
-ASM_VAR(double, g_priceUrgent, $L_66f888)       // 1.5
-ASM_VAR(double, g_priceSpecial, $L_66f890)      // 4.0
+KING_VAR(PtrList, g_ordrTowns, 68cec0)
+KING_VAR(PtrList, g_ordrVehicles, 68cfd8)
+KING_VAR(void*, g_ordrPlayers, 68b990)
+KING_VAR(char, g_ordrEmpty, 68d1c0)
+KING_VAR(double, g_priceDirect, 66f880)       // 1.2
+KING_VAR(double, g_priceUrgent, 66f888)       // 1.5
+KING_VAR(double, g_priceSpecial, 66f890)      // 4.0
 
 static const char s_ordrId[] = "$Id: ai_ordr.cpp 2001/9/10 18:14:44";
 static const char s_ordrFile[] = "C:\\Nek\\Vrappl\\Gi\\Htai\\Ai_ordr.cpp";
@@ -545,10 +545,10 @@ BYTE* __stdcall Bytes_Clone(unsigned n, const BYTE* first, const BYTE* last)
 
 }
 
-ASM_VAR(AsmLabel, s_aiStream66ff3c, $L_66ff3c)
-ASM_VAR(AsmLabel, s_errOpen66ff58, $L_66ff58)
-ASM_VAR(AsmLabel, s_errRead66ff40, $L_66ff40)
-KING_BSS(char, g_empty68d1c0s, 0x68d1c0)
+KING_VAR(AsmLabel, s_aiStream66ff3c, 66ff3c)
+KING_VAR(AsmLabel, s_errOpen66ff58, 66ff58)
+KING_VAR(AsmLabel, s_errRead66ff40, 66ff40)
+KING_VAR(char, g_empty68d1c0s, 68d1c0)
 extern "C" void FUN_482a70(); KING_ALIAS("_FUN_482a70", "_Ai_LoadState")    // reads the AI state from a buffer
 extern "C" void FUN_477780(); KING_ALIAS("_FUN_477780", "_Players_Each4776b0")
 extern "C" void FUN_478910(); KING_ALIAS("_FUN_478910", "_Routes_Each477600")
@@ -587,25 +587,25 @@ extern "C" void FUN_4175c0(); KING_ALIAS("_FUN_4175c0", "_Player_MarkListed")
 extern "C" void FUN_417770(); KING_ALIAS("_FUN_417770", "_Player_Retire")
 extern "C" void FUN_419490(); KING_ALIAS("_FUN_419490", "@Market_Get@8")
 extern "C" void FUN_448a60(); KING_ALIAS("_FUN_448a60", "@Vec36_At@12")
-KING_BSS(BYTE**, g_towns68cc98, 0x68cc98)
-KING_BSS(BYTE**, g_towns68cc9c, 0x68cc9c)
-KING_BSS(BYTE**, g_68cf00, 0x68cf00)
-KING_BSS(BYTE, g_count68ced0, 0x68ced0)         // three 16-byte records, a count at +4
-KING_BSS(BYTE, g_count68cee0, 0x68cee0)
-KING_BSS(BYTE, g_count68cef0, 0x68cef0)
-KING_BSS(int, g_68d14c, 0x68d14c)
-KING_BSS(int, g_68d18c, 0x68d18c)
-KING_BSS(int, g_68a968, 0x68a968)
-KING_BSS(int, g_68d01c, 0x68d01c)
-KING_BSS(int, g_68cfe4, 0x68cfe4)
-KING_BSS(int, g_68d0e4, 0x68d0e4)
-KING_BSS(int, g_68cf34, 0x68cf34)
-KING_BSS(char, g_msg77e460, 0x77e460)
-ASM_VAR(AsmLabel, s_fmt66e4d0, $L_66e4d0)
-ASM_VAR(AsmLabel, s_err66cbf4, $L_66cbf4)
-ASM_VAR(AsmLabel, s_err66fedc, $L_66fedc)
-ASM_VAR(AsmLabel, s_err66fec8, $L_66fec8)
-ASM_VAR(AsmLabel, s_err66fee8, $L_66fee8)
+KING_VAR(BYTE**, g_towns68cc98, 68cc98)
+KING_VAR(BYTE**, g_towns68cc9c, 68cc9c)
+KING_VAR(BYTE**, g_68cf00, 68cf00)
+KING_VAR(BYTE, g_count68ced0, 68ced0)         // three 16-byte records, a count at +4
+KING_VAR(BYTE, g_count68cee0, 68cee0)
+KING_VAR(BYTE, g_count68cef0, 68cef0)
+KING_VAR(int, g_68d14c, 68d14c)
+KING_VAR(int, g_68d18c, 68d18c)
+KING_VAR(int, g_68a968, 68a968)
+KING_VAR(int, g_68d01c, 68d01c)
+KING_VAR(int, g_68cfe4, 68cfe4)
+KING_VAR(int, g_68d0e4, 68d0e4)
+KING_VAR(int, g_68cf34, 68cf34)
+KING_VAR(char, g_msg77e460, 77e460)
+KING_VAR(AsmLabel, s_fmt66e4d0, 66e4d0)
+KING_VAR(AsmLabel, s_err66cbf4, 66cbf4)
+KING_VAR(AsmLabel, s_err66fedc, 66fedc)
+KING_VAR(AsmLabel, s_err66fec8, 66fec8)
+KING_VAR(AsmLabel, s_err66fee8, 66fee8)
 
 static int Relink_Id(BYTE* it)
 {
@@ -697,10 +697,10 @@ void __cdecl Load_RelinkPlayers()
 
 // === loading a present (FUN_481b20)
 
-ASM_VAR(AsmLabel, g_tagPRES, $L_66fe40)
-ASM_VAR(AsmLabel, g_tag66fe38, $L_66fe38)
-ASM_VAR(AsmLabel, g_tag66fe30, $L_66fe30)
-KING_BSS(void*, g_pr68d11c, 0x68d11c)
+KING_VAR(AsmLabel, g_tagPRES, 66fe40)
+KING_VAR(AsmLabel, g_tag66fe38, 66fe38)
+KING_VAR(AsmLabel, g_tag66fe30, 66fe30)
+KING_VAR(void*, g_pr68d11c, 68d11c)
 extern "C" void FUN_4133a0(); KING_ALIAS("_FUN_4133a0", "@Position_InitNone@8")
 extern "C" void FUN_41bd30(); KING_ALIAS("_FUN_41bd30", "_Presents_Append")
 extern "C" void FUN_41d300(); KING_ALIAS("_FUN_41d300", "@Int_Copy@12")
@@ -900,9 +900,9 @@ void __cdecl Save_Present(BYTE** v, BYTE* p)
 
 extern "C" void FUN_447230(); KING_ALIAS("_FUN_447230", "@CharVec_Clear@8")
 extern "C" void FUN_5d2ba0(); KING_ALIAS("_FUN_5d2ba0", "_Sys_Log")    // console: print (text, x)
-ASM_VAR(AsmLabel, s_svld66fe14, $L_66fe14)
-ASM_VAR(AsmLabel, s_svld66fdfc, $L_66fdfc)
-ASM_VAR(AsmLabel, s_svld66d5ac, $L_66d5ac)
+KING_VAR(AsmLabel, s_svld66fe14, 66fe14)
+KING_VAR(AsmLabel, s_svld66fdfc, 66fdfc)
+KING_VAR(AsmLabel, s_svld66d5ac, 66d5ac)
 
 extern "C" {
 
@@ -970,8 +970,8 @@ void __cdecl Load_Town(BYTE** cur)
 
 // === loading the AI state (FUN_482a70)
 
-ASM_VAR(AsmLabel, g_tagAll66fec0, $L_66fec0)
-ASM_VAR(AsmLabel, g_tagGlob66fd68, $L_66fd68)
+KING_VAR(AsmLabel, g_tagAll66fec0, 66fec0)
+KING_VAR(AsmLabel, g_tagGlob66fd68, 66fd68)
 extern "C" void FUN_480b00(); KING_ALIAS("_FUN_480b00", "_Ai_LoadGlobals")
 
 // a loader of one record of a list chunk
@@ -1012,8 +1012,8 @@ void __cdecl Ai_LoadState(BYTE* p)
 // === saving the AI state (FUN_4833a0)
 
 extern "C" void FUN_480680(); KING_ALIAS("_FUN_480680", "_Ai_SaveGlobals")
-ASM_VAR(AsmLabel, s_sv66ff24, $L_66ff24)
-ASM_VAR(AsmLabel, s_sv66ff14, $L_66ff14)
+KING_VAR(AsmLabel, s_sv66ff24, 66ff24)
+KING_VAR(AsmLabel, s_sv66ff14, 66ff14)
 
 extern "C" {
 

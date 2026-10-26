@@ -26,10 +26,10 @@ extern "C" void FUN_52e550(); KING_ALIAS("_FUN_52e550", "@Crowd_Init@12")
 extern "C" void FUN_603110(); KING_ALIAS("_FUN_603110", "@Msg_Write120@20")
 extern "C" void FUN_5c3630(); KING_ALIAS("_FUN_5c3630", "@Media_RecordBlock@12")
 extern "C" void FUN_602e80(); KING_ALIAS("_FUN_602e80", "@MsgBuf_Destroy@8")
-ASM_VAR(AsmLabel, g_vtbl64f198, $L_64f198)
-ASM_VAR(AsmLabel, g_vtbl64f14c, $L_64f14c)
-ASM_VAR(AsmLabel, g_vtbl64f148, $L_64f148)
-KING_BSS(BYTE*, g_6ef1fc, 0x6ef1fc)
+KING_VAR(AsmLabel, g_vtbl64f198, 64f198)
+KING_VAR(AsmLabel, g_vtbl64f14c, 64f14c)
+KING_VAR(AsmLabel, g_vtbl64f148, 64f148)
+KING_VAR(BYTE*, g_6ef1fc, 6ef1fc)
 extern "C" void FUN_58b5b0(); KING_ALIAS("_FUN_58b5b0", "@Body58b5b0_Construct@52")
 extern "C" void FUN_58b720(); KING_ALIAS("_FUN_58b720", "@Body58b720_Construct@52")
 extern "C" void FUN_52ae30(); KING_ALIAS("_FUN_52ae30", "@Slot_Construct@16")
@@ -38,19 +38,19 @@ extern "C" void FUN_5465c0(); KING_ALIAS("_FUN_5465c0", "_Vehicle_MakeDamageKeys
 extern "C" void FUN_5aba40(); KING_ALIAS("_FUN_5aba40", "_Matrix_Multiply")
 extern "C" void FUN_57cb70(); KING_ALIAS("_FUN_57cb70", "@MovingObj_ConstructListed@44")
 extern "C" void FUN_52dc50(); KING_ALIAS("_FUN_52dc50", "@Car_SetModel@16")
-ASM_VAR(AsmLabel, g_vtbl64ec88, $L_64ec88)
-ASM_VAR(AsmLabel, g_vtbl64ec3c, $L_64ec3c)
-ASM_VAR(AsmLabel, g_vtbl64ec38, $L_64ec38)
-ASM_VAR(AsmLabel, g_vtbl64edf0, $L_64edf0)
-ASM_VAR(AsmLabel, g_vtbl64eda4, $L_64eda4)
-ASM_VAR(AsmLabel, g_vtbl64eda0, $L_64eda0)
-ASM_VAR(AsmLabel, g_vtbl64ef2c, $L_64ef2c)
-ASM_VAR(AsmLabel, g_vtbl64eee0, $L_64eee0)
-ASM_VAR(AsmLabel, g_vtbl64eedc, $L_64eedc)
-ASM_VAR(AsmLabel, g_vtbl64f068, $L_64f068)
-ASM_VAR(AsmLabel, g_vtbl64f01c, $L_64f01c)
-ASM_VAR(AsmLabel, g_vtbl64f018, $L_64f018)
-KING_BSS(AsmLabel, g_7025f0, 0x7025f0)
+KING_VAR(AsmLabel, g_vtbl64ec88, 64ec88)
+KING_VAR(AsmLabel, g_vtbl64ec3c, 64ec3c)
+KING_VAR(AsmLabel, g_vtbl64ec38, 64ec38)
+KING_VAR(AsmLabel, g_vtbl64edf0, 64edf0)
+KING_VAR(AsmLabel, g_vtbl64eda4, 64eda4)
+KING_VAR(AsmLabel, g_vtbl64eda0, 64eda0)
+KING_VAR(AsmLabel, g_vtbl64ef2c, 64ef2c)
+KING_VAR(AsmLabel, g_vtbl64eee0, 64eee0)
+KING_VAR(AsmLabel, g_vtbl64eedc, 64eedc)
+KING_VAR(AsmLabel, g_vtbl64f068, 64f068)
+KING_VAR(AsmLabel, g_vtbl64f01c, 64f01c)
+KING_VAR(AsmLabel, g_vtbl64f018, 64f018)
+KING_VAR(AsmLabel, g_7025f0, 7025f0)
 extern "C" void FUN_5c53e0(); KING_ALIAS("_FUN_5c53e0", "@Media5c53e0_Destroy@8")
 extern "C" void FUN_5c5310(); KING_ALIAS("_FUN_5c5310", "@Timeline_Construct@12")
 extern "C" void FUN_5dbbb0(); KING_ALIAS("_FUN_5dbbb0", "@Fw_ResetRenderer@24")
@@ -68,33 +68,33 @@ extern "C" void FUN_581ea0(); KING_ALIAS("_FUN_581ea0", "_Points_BelowPlane")
 extern "C" void FUN_5f25c0(); KING_ALIAS("_FUN_5f25c0", "@Node_GetWorld@12")
 extern "C" void FUN_5f2190(); KING_ALIAS("_FUN_5f2190", "@Node_ApplyMatrix@16")
 
-KING_BSS(int, g_6cec68, 0x6cec68)
-KING_BSS(int, g_6968ac, 0x6968ac)
-KING_BSS(BYTE*, g_options, 0x6cec78)            // +386, +388, +390: volumes in percent
+KING_VAR(int, g_6cec68, 6cec68)
+KING_VAR(int, g_6968ac, 6968ac)
+KING_VAR(BYTE*, g_options, 6cec78)            // +386, +388, +390: volumes in percent
 typedef BYTE* Ptrs[1];
 typedef int Ints[1];
-KING_BSS(Ptrs, g_6ced98, 0x6ced98)              // 11 per row
-KING_BSS(Ints, g_6cedac, 0x6cedac)
-KING_BSS(int, g_class1, 0x6ce350)               // the first type of each class
-KING_BSS(int, g_class2, 0x6ce354)
-KING_BSS(int, g_class3, 0x6ce358)
-KING_BSS(int, g_class4, 0x6ce35c)
-KING_BSS(int, g_class5, 0x6ce360)
-KING_BSS(int, g_class6, 0x6ce364)
-KING_BSS(int, g_classEnd, 0x6ce368)
-KING_BSS(BYTE*, g_vehicleList2, 0x6ef1f8)
-KING_BSS(AsmLabel, g_6d219c, 0x6d219c)          // 1488-byte records by vehicle type
-KING_BSS(int, g_7025b0, 0x7025b0)
-KING_BSS(double, g_6fb3e8, 0x6fb3e8)
-KING_BSS(int, g_6fb3d8, 0x6fb3d8)
-KING_BSS(int, g_6fb3d0, 0x6fb3d0)
-KING_BSS(int, g_7025c8, 0x7025c8)
-ASM_VAR(DWORD, g_67e8c8, $L_67e8c8)
-KING_BSS(int, g_7025cc, 0x7025cc)
-ASM_VAR(AsmLabel, g_strCabCl, $L_672e40)        // "%s_cab_cl"
-ASM_VAR(AsmLabel, g_vtbl64d578, $L_64d578)
-ASM_VAR(AsmLabel, g_vtbl64d6c8, $L_64d6c8)
-ASM_VAR(AsmLabel, g_vtbl64d830, $L_64d830)
+KING_VAR(Ptrs, g_6ced98, 6ced98)              // 11 per row
+KING_VAR(Ints, g_6cedac, 6cedac)
+KING_VAR(int, g_class1, 6ce350)               // the first type of each class
+KING_VAR(int, g_class2, 6ce354)
+KING_VAR(int, g_class3, 6ce358)
+KING_VAR(int, g_class4, 6ce35c)
+KING_VAR(int, g_class5, 6ce360)
+KING_VAR(int, g_class6, 6ce364)
+KING_VAR(int, g_classEnd, 6ce368)
+KING_VAR(BYTE*, g_vehicleList2, 6ef1f8)
+KING_VAR(AsmLabel, g_6d219c, 6d219c)          // 1488-byte records by vehicle type
+KING_VAR(int, g_7025b0, 7025b0)
+KING_VAR(double, g_6fb3e8, 6fb3e8)
+KING_VAR(int, g_6fb3d8, 6fb3d8)
+KING_VAR(int, g_6fb3d0, 6fb3d0)
+KING_VAR(int, g_7025c8, 7025c8)
+KING_VAR(DWORD, g_67e8c8, 67e8c8)
+KING_VAR(int, g_7025cc, 7025cc)
+KING_VAR(AsmLabel, g_strCabCl, 672e40)        // "%s_cab_cl"
+KING_VAR(AsmLabel, g_vtbl64d578, 64d578)
+KING_VAR(AsmLabel, g_vtbl64d6c8, 64d6c8)
+KING_VAR(AsmLabel, g_vtbl64d830, 64d830)
 
 struct Vec3Bits { DWORD x, y, z; };
 struct Rect16 { DWORD m[4]; };
@@ -294,15 +294,15 @@ extern "C" void FUN_5ef3d0(); KING_ALIAS("_FUN_5ef3d0", "_Objects_Find")    // a
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")    // a key of a model (parent, name)
 extern "C" void FUN_52b030(); KING_ALIAS("_FUN_52b030", "@Car_SendState@12")
 extern "C" void FUN_57de90(); KING_ALIAS("_FUN_57de90", "@SceneObj_Matrix1@12")
-KING_BSS(DWORD, g_702650, 0x702650)
-KING_BSS(DWORD, g_702654, 0x702654)
-KING_BSS(DWORD, g_702658, 0x702658)
-KING_BSS(BYTE*, g_6ef1f8, 0x6ef1f8)
-KING_BSS(int, g_carModelCount, 0x6ce34c)
-KING_BSS(AsmLabel, g_carModelNames, 0x6c6b68)   // 876 bytes per car
+KING_VAR(DWORD, g_702650, 702650)
+KING_VAR(DWORD, g_702654, 702654)
+KING_VAR(DWORD, g_702658, 702658)
+KING_VAR(BYTE*, g_6ef1f8, 6ef1f8)
+KING_VAR(int, g_carModelCount, 6ce34c)
+KING_VAR(AsmLabel, g_carModelNames, 6c6b68)   // 876 bytes per car
 typedef int CarParts[1];
-KING_BSS(CarParts, g_carPartModels, 0x6ced98)   // 11 ints per car: 5 models, 5 counts, a key
-KING_BSS(CarParts, g_carPartUses, 0x6cedac)
+KING_VAR(CarParts, g_carPartModels, 6ced98)   // 11 ints per car: 5 models, 5 counts, a key
+KING_VAR(CarParts, g_carPartUses, 6cedac)
 
 // the cars' collision models and their hit keys
 extern "C" void __cdecl Cars_LoadCollision()
@@ -356,11 +356,11 @@ extern "C" void __fastcall CarPart_Select(int* self, void*, int k)
 // moved by ten times the vector at 702630; fn is called when it plays
 
 extern "C" void FUN_5e48f0(); KING_ALIAS("_FUN_5e48f0", "_Fw_Nop")    // an empty function: the default callback
-KING_BSS(float, g_eng702630, 0x702630)
-KING_BSS(float, g_eng702634, 0x702634)
-KING_BSS(float, g_eng702638, 0x702638)
-ASM_VAR(float, g_ten64c450, $L_64c450)          // 10.0
-ASM_VAR(AsmLabel, g_strOvation, $L_678540)      // "ovation1Sound"
+KING_VAR(float, g_eng702630, 702630)
+KING_VAR(float, g_eng702634, 702634)
+KING_VAR(float, g_eng702638, 702638)
+KING_VAR(float, g_ten64c450, 64c450)          // 10.0
+KING_VAR(AsmLabel, g_strOvation, 678540)      // "ovation1Sound"
 
 extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
 {
@@ -384,17 +384,17 @@ extern "C" void __fastcall Crowd_Init(BYTE* self, void*, void* fn)
 extern "C" void FUN_591c30(); KING_ALIAS("_FUN_591c30", "_Bodies_Overlap")
 extern "C" void FUN_5928d0(); KING_ALIAS("_FUN_5928d0", "_Bodies_Pair")
 
-KING_BSS(BYTE*, g_effectManager, 0x6f6910)
+KING_VAR(BYTE*, g_effectManager, 6f6910)
 
 // A position below the sentinel threshold resets both scripted positions.
-ASM_VAR(float, g_positionResetThreshold, $L_650624)
-ASM_VAR(AsmLabel, g_setPosition1, $L_67d4cc)
-ASM_VAR(AsmLabel, g_setPosition2, $L_67d4c0)
-ASM_VAR(AsmLabel, g_setPlace, $L_67d4b4)
+KING_VAR(float, g_positionResetThreshold, 650624)
+KING_VAR(AsmLabel, g_setPosition1, 67d4cc)
+KING_VAR(AsmLabel, g_setPosition2, 67d4c0)
+KING_VAR(AsmLabel, g_setPlace, 67d4b4)
 extern "C" void FUN_58e7f0(); KING_ALIAS("_FUN_58e7f0", "@MovingItem_CheckFrame@20")
 
-ASM_VAR(short, g_sceneCommandCode, $L_67d10a)
-KING_BSS(BYTE*, g_sceneCommandList, 0x6f653c)
+KING_VAR(short, g_sceneCommandCode, 67d10a)
+KING_VAR(BYTE*, g_sceneCommandList, 6f653c)
 
 // List links point four bytes into an object's secondary base. Command
 // dispatch uses the primary base, 376 bytes before that secondary base.
@@ -680,9 +680,9 @@ extern "C" int __fastcall Scenery_Call57d580(void* self, void*, int a, int b)
 
 
 // ---------------------------------------------------------------------------
-KING_BSS(AsmLabel, g_sn6cedac, 0x6cedac)          // use counts, 11 per car row
-KING_BSS(AsmLabel, g_sn6ced98, 0x6ced98)
-ASM_VAR(AsmLabel, s_sn678480, $L_678480)
+KING_VAR(AsmLabel, g_sn6cedac, 6cedac)          // use counts, 11 per car row
+KING_VAR(AsmLabel, g_sn6ced98, 6ced98)
+KING_VAR(AsmLabel, s_sn678480, 678480)
 
 // [FUN_52afa0] releases a use of the part model (row +4, column +0); the last use calls its method +36
 extern "C" void __fastcall Part_Release(BYTE* self, void*)
@@ -714,8 +714,8 @@ extern "C" void FUN_585fd0(); KING_ALIAS("_FUN_585fd0", "@Cars_ApplyUpdate@12")
 extern "C" void FUN_4e480c(); KING_ALIAS("_FUN_4e480c", "_Switch_SelectChecked")
 extern "C" void FUN_5f9b00(); KING_ALIAS("_FUN_5f9b00", "@SceneNode5f9b00_Hit@16")
 extern "C" void FUN_5ac0c0(); KING_ALIAS("_FUN_5ac0c0", "_Matrix_RotationZ")
-KING_BSS(AsmLabel, g_scy6cedc0, 0x6cedc0)
-KING_BSS(AsmLabel, g_scy6d1830, 0x6d1830)
+KING_VAR(AsmLabel, g_scy6cedc0, 6cedc0)
+KING_VAR(AsmLabel, g_scy6d1830, 6d1830)
 
 // [$L_52b6c0]
 extern "C" void __fastcall Scy_Set1204(BYTE* s, void*, int v) { F(int, s, 1204) = v; }
@@ -759,12 +759,12 @@ extern "C" void __cdecl ScyInit_52f6e0() { CallC(FUN_5ac0c0, (BYTE*)g_scy6d1830,
 
 extern "C" void FUN_52fd90(); KING_ALIAS("_FUN_52fd90", "@Obj52fd90_Reset@8")
 extern "C" void FUN_52e060(); KING_ALIAS("_FUN_52e060", "@Scenery_Run@4")
-KING_BSS(AsmLabel, g_scy6cf4d8, 0x6cf4d8)
-KING_BSS(AsmLabel, g_scy6d1db8, 0x6d1db8)
-KING_BSS(AsmLabel, g_scy6cf3b0, 0x6cf3b0)
-KING_BSS(AsmLabel, g_scy702650, 0x702650)
-KING_BSS(BYTE*, g_scy6ef1fc, 0x6ef1fc)
-ASM_VAR(double, g_scy64b660, $L_64b660)
+KING_VAR(AsmLabel, g_scy6cf4d8, 6cf4d8)
+KING_VAR(AsmLabel, g_scy6d1db8, 6d1db8)
+KING_VAR(AsmLabel, g_scy6cf3b0, 6cf3b0)
+KING_VAR(AsmLabel, g_scy702650, 702650)
+KING_VAR(BYTE*, g_scy6ef1fc, 6ef1fc)
+KING_VAR(double, g_scy64b660, 64b660)
 
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
 
@@ -856,9 +856,9 @@ extern "C" void FUN_5e52b0(); KING_ALIAS("_FUN_5e52b0", "@Resources_SetData@24")
 extern "C" void FUN_57def0(); KING_ALIAS("_FUN_57def0", "@SceneObj_Get800@8")
 extern "C" void FUN_58b870(); KING_ALIAS("_FUN_58b870", "@Body58b870_Destroy@8")
 #include <string.h>
-ASM_VAR(AsmLabel, g_q25_64ec88, $L_64ec88)
-ASM_VAR(AsmLabel, g_q25_64ec3c, $L_64ec3c)
-ASM_VAR(AsmLabel, g_q25_64ec38, $L_64ec38)
+KING_VAR(AsmLabel, g_q25_64ec88, 64ec88)
+KING_VAR(AsmLabel, g_q25_64ec3c, 64ec3c)
+KING_VAR(AsmLabel, g_q25_64ec38, 64ec38)
 
 // [FUN_52bb40] destructor: a scenery object (vtables 64ec88, 64ec3c at +256, 64ec38 at +376); if the world keeps
 // its record (key cell +9544 / slot +9548) the 156-byte state is saved there; its part is released
@@ -935,9 +935,9 @@ extern "C" BYTE* __fastcall Dtor52e2e0_DeletingDestructor(BYTE* s, void*, int fl
 // Small static setup and teardown procs, destructors and thunks.
 
 extern "C" void FUN_52dec0(); KING_ALIAS("_FUN_52dec0", "@ParkedCar_Destroy@4")
-ASM_VAR(AsmLabel, g_q47_64f198, $L_64f198)
-ASM_VAR(AsmLabel, g_q47_64f14c, $L_64f14c)
-ASM_VAR(AsmLabel, g_q47_64f148, $L_64f148)
+KING_VAR(AsmLabel, g_q47_64f198, 64f198)
+KING_VAR(AsmLabel, g_q47_64f14c, 64f14c)
+KING_VAR(AsmLabel, g_q47_64f148, 64f148)
 // [FUN_52e520] destructor: the vtables 64f198, 64f14c at +256, 64f148 at +376, then the base
 extern "C" void __fastcall Scy52e520_Destruct(BYTE* s, void*)
 {
@@ -976,8 +976,8 @@ extern "C" BYTE* __fastcall Scy52fce0_Construct(BYTE* s, void*)
 // Messages to cars.
 
 extern "C" void FUN_52ea90(); KING_ALIAS("_FUN_52ea90", "_CarType_Number")
-KING_BSS(void*, g_q102_6cf3a4, 0x6cf3a4)
-KING_BSS(BYTE*, g_q102_6f653c, 0x6f653c)
+KING_VAR(void*, g_q102_6cf3a4, 6cf3a4)
+KING_VAR(BYTE*, g_q102_6f653c, 6f653c)
 // [$L_52ee70] delivers message m (id +4, sender +28) unless the 6cf3a4 hook takes it: a message of the 2xxxxx
 // range goes to the first active car of the 6f653c list (as a driven car: +3568 = 1, or one with +392 = 1) whose
 // object or car id (type number + 200, times 1000, plus its number) matches; that car's vtbl+0 gets 1
@@ -1013,7 +1013,7 @@ extern "C" int __cdecl Cars_Deliver(BYTE* m, int b)
 }
 
 extern "C" void Scy128_4e0200(); KING_ALIAS("_Scy128_4e0200", "@Sta4e0200_Construct@8")
-KING_BSS(AsmLabel, g_q128_6d1cd0, 0x6d1cd0)
+KING_VAR(AsmLabel, g_q128_6d1cd0, 6d1cd0)
 // [$L_52f5e0] static init: constructs the 6d1cd0 object
 extern "C" BYTE* __cdecl Scy_Init6d1cd0(void) { return CallThis<BYTE*>(Scy128_4e0200, (BYTE*)g_q128_6d1cd0); }
 
@@ -1037,7 +1037,7 @@ extern "C" int __fastcall Thunk52f4b0(BYTE* s, void* d, int a0) { return q198_Dt
 extern "C" void FUN_52f9d0(); KING_ALIAS("_FUN_52f9d0", "_Sound_Loop386")
 extern "C" void FUN_5ef2b0(); KING_ALIAS("_FUN_5ef2b0", "_Scene_FindObject")
 extern "C" void FUN_5e1a10(); KING_ALIAS("_FUN_5e1a10", "_Switch_Select")
-KING_BSS(AsmLabel, g_q215_702620, 0x702620)
+KING_VAR(AsmLabel, g_q215_702620, 702620)
 // [FUN_52e740] starts scene s's event for object o (its handler +3648 with t, unless o is busy at +388): the loop
 // sound +3636, the switch object named name selected (+3640), and the clock 6ef1fc's time kept (+3644)
 extern "C" void __fastcall Scenery_StartEvent(BYTE* s, void*, BYTE* o, float t, const char* name)
@@ -1063,11 +1063,11 @@ extern "C" int __fastcall Thunk52e730(BYTE* s) { return q238_Thunk52e210(s); }
 
 // === the default control preset (FUN_52fdb0)
 
-KING_BSS(int, g_dp696890, 0x696890)
-KING_BSS(AsmLabel, g_dp6d1948, 0x6d1948)    // the key states, 2 bytes each
-ASM_VAR(AsmLabel, s_dp678814, $L_678814)    // "CLAVIER..."
-ASM_VAR(AsmLabel, s_dp678800, $L_678800)
-ASM_VAR(AsmLabel, s_dp6787f0, $L_6787f0)
+KING_VAR(int, g_dp696890, 696890)
+KING_VAR(AsmLabel, g_dp6d1948, 6d1948)    // the key states, 2 bytes each
+KING_VAR(AsmLabel, s_dp678814, 678814)    // "CLAVIER..."
+KING_VAR(AsmLabel, s_dp678800, 678800)
+KING_VAR(AsmLabel, s_dp6787f0, 6787f0)
 
 extern "C" {
 
@@ -1229,17 +1229,17 @@ extern "C" void Dn_Length(); KING_ALIAS("_Dn_Length", "_Vec3_Length")
 extern "C" void Dn_Normalized(); KING_ALIAS("_Dn_Normalized", "_Vec3_Normalized")
 extern "C" void Dn_MulAssign(); KING_ALIAS("_Dn_MulAssign", "@Vec3_MulAssign@16")
 extern "C" void Dn_Advance(); KING_ALIAS("_Dn_Advance", "@Progresses_Advance@24")
-ASM_VAR(float, g_dn64c40c, $L_64c40c)
-ASM_VAR(float, g_dn64c450, $L_64c450)
-ASM_VAR(float, g_dn64ed88, $L_64ed88)
-ASM_VAR(double, g_dn64ed80, $L_64ed80)
-ASM_VAR(double, g_dn64b670, $L_64b670)
-ASM_VAR(float, g_dn64d4e8, $L_64d4e8)
-ASM_VAR(float, g_dn64c320, $L_64c320)
-ASM_VAR(float, g_dn64c250, $L_64c250)
-ASM_VAR(float, g_dn64c264, $L_64c264)
-ASM_VAR(double, g_dn64ed78, $L_64ed78)
-ASM_VAR(double, g_dn64b5b8, $L_64b5b8)
+KING_VAR(float, g_dn64c40c, 64c40c)
+KING_VAR(float, g_dn64c450, 64c450)
+KING_VAR(float, g_dn64ed88, 64ed88)
+KING_VAR(double, g_dn64ed80, 64ed80)
+KING_VAR(double, g_dn64b670, 64b670)
+KING_VAR(float, g_dn64d4e8, 64d4e8)
+KING_VAR(float, g_dn64c320, 64c320)
+KING_VAR(float, g_dn64c250, 64c250)
+KING_VAR(float, g_dn64c264, 64c264)
+KING_VAR(double, g_dn64ed78, 64ed78)
+KING_VAR(double, g_dn64b5b8, 64b5b8)
 
 extern "C" {
 
@@ -1399,14 +1399,14 @@ extern "C" void Ps_NodeInit(); KING_ALIAS("_Ps_NodeInit", "@Node_Init@8")
 extern "C" void Ps_HitObject(); KING_ALIAS("_Ps_HitObject", "_Query_HitObject")
 extern "C" void Ps_Query(); KING_ALIAS("_Ps_Query", "_Query_4e6578")
 extern "C" void Ps_Shadow(); KING_ALIAS("_Ps_Shadow", "_Fx_Shadow")
-KING_BSS(float, g_ps6969f4, 0x6969f4)               // the camera
-KING_BSS(float, g_ps6969f8, 0x6969f8)
-KING_BSS(float, g_ps6969fc, 0x6969fc)
-ASM_VAR(float, g_ps64d7b8, $L_64d7b8)
-ASM_VAR(double, g_ps64b7a8, $L_64b7a8)
-ASM_VAR(double, g_ps64ed98, $L_64ed98)
-ASM_VAR(double, g_ps64b6e0, $L_64b6e0)
-ASM_VAR(double, g_ps64ed90, $L_64ed90)
+KING_VAR(float, g_ps6969f4, 6969f4)               // the camera
+KING_VAR(float, g_ps6969f8, 6969f8)
+KING_VAR(float, g_ps6969fc, 6969fc)
+KING_VAR(float, g_ps64d7b8, 64d7b8)
+KING_VAR(double, g_ps64b7a8, 64b7a8)
+KING_VAR(double, g_ps64ed98, 64ed98)
+KING_VAR(double, g_ps64b6e0, 64b6e0)
+KING_VAR(double, g_ps64ed90, 64ed90)
 
 static Vec3 Ps_Set(double x, double y, double z)
 {
@@ -1609,13 +1609,13 @@ extern "C" void Sr32_GroundStep(); KING_ALIAS("_Sr32_GroundStep", "@Body_GroundS
 extern "C" void Sr32_MulComponents(); KING_ALIAS("_Sr32_MulComponents", "_Vec3_MulComponents")
 extern "C" void Sr32_FrameTime(); KING_ALIAS("_Sr32_FrameTime", "_Game_FrameTime")
 extern "C" void Sr32_Rest(); KING_ALIAS("_Sr32_Rest", "@Item_Rest@4")
-ASM_VAR(double, sr32_damp64b780, $L_64b780)
-ASM_VAR(char, sr32_ftree1, $L_678530)
-ASM_VAR(char, sr32_ftree2, $L_678520)
-ASM_VAR(char, sr32_ftree3, $L_678510)
-ASM_VAR(char, sr32_trash1, $L_6784fc)
-ASM_VAR(char, sr32_trash2, $L_6784e8)
-ASM_VAR(char, sr32_trash3, $L_6784d4)
+KING_VAR(double, sr32_damp64b780, 64b780)
+KING_VAR(char, sr32_ftree1, 678530)
+KING_VAR(char, sr32_ftree2, 678520)
+KING_VAR(char, sr32_ftree3, 678510)
+KING_VAR(char, sr32_trash1, 6784fc)
+KING_VAR(char, sr32_trash2, 6784e8)
+KING_VAR(char, sr32_trash3, 6784d4)
 
 // the shared run step: when moving (+892) the velocity (+428) decays by 0.95 per 1/64b780 s and the turn (+440)
 // is the spin (+428 x +404 componentwise) through the body matrix (+500); then the state flags and vtable +80

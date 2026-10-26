@@ -27,7 +27,7 @@ extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
 extern "C" void FUN_4abd20(); KING_ALIAS("_FUN_4abd20", "_Items44_UninitCopy")
 ASM_PROC(FUN_4a4950)
 extern "C" void FUN_454580(); KING_ALIAS("_FUN_454580", "@Str_CopyConstruct@12")
-ASM_VAR(AsmLabel, s_errNotSymbolList, $L_67115c)
+KING_VAR(AsmLabel, s_errNotSymbolList, 67115c)
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
 extern "C" void FUN_4b6500(); KING_ALIAS("_FUN_4b6500", "@SchSymbol_Construct@12")
 extern "C" void FUN_4a8580(); KING_ALIAS("_FUN_4a8580", "@SchNode4a8580_Construct@8")
@@ -43,40 +43,40 @@ extern "C" void FUN_4a9770(); KING_ALIAS("_FUN_4a9770", "@SchNode4a9770_Construc
 extern "C" void FUN_4a9a70(); KING_ALIAS("_FUN_4a9a70", "@SchNode4a9a70_Construct@8")
 extern "C" void FUN_4a9e80(); KING_ALIAS("_FUN_4a9e80", "@SchNode4a9e80_Construct@8")
 extern "C" void FUN_4b62c0(); KING_ALIAS("_FUN_4b62c0", "@SchString_Construct@12")
-ASM_VAR(AsmLabel, s_tIdentifier, $L_66ce4c)
-ASM_VAR(AsmLabel, s_tUnspecified, $L_671168)
-ASM_VAR(AsmLabel, s_tBegin, $L_671124)
-ASM_VAR(AsmLabel, s_tClosure, $L_6705f4)
-ASM_VAR(AsmLabel, s_tContinuation, $L_6705fc)
-ASM_VAR(AsmLabel, s_tLambda, $L_67111c)
-ASM_VAR(AsmLabel, s_tDefine, $L_67113c)
-ASM_VAR(AsmLabel, s_tIf, $L_67112c)
-ASM_VAR(AsmLabel, s_tQuote, $L_671130)
-ASM_VAR(AsmLabel, s_tSet, $L_671138)
-ASM_VAR(AsmLabel, s_tEval, $L_671144)
-ASM_VAR(AsmLabel, s_tCallCC, $L_67114c)
-ASM_VAR(AsmLabel, s_tApply, $L_671154)
-ASM_VAR(AsmLabel, s_tString, $L_66ca58)
-ASM_VAR(AsmLabel, g_vtblUnspecified, $L_64c034)
+KING_VAR(AsmLabel, s_tIdentifier, 66ce4c)
+KING_VAR(AsmLabel, s_tUnspecified, 671168)
+KING_VAR(AsmLabel, s_tBegin, 671124)
+KING_VAR(AsmLabel, s_tClosure, 6705f4)
+KING_VAR(AsmLabel, s_tContinuation, 6705fc)
+KING_VAR(AsmLabel, s_tLambda, 67111c)
+KING_VAR(AsmLabel, s_tDefine, 67113c)
+KING_VAR(AsmLabel, s_tIf, 67112c)
+KING_VAR(AsmLabel, s_tQuote, 671130)
+KING_VAR(AsmLabel, s_tSet, 671138)
+KING_VAR(AsmLabel, s_tEval, 671144)
+KING_VAR(AsmLabel, s_tCallCC, 67114c)
+KING_VAR(AsmLabel, s_tApply, 671154)
+KING_VAR(AsmLabel, s_tString, 66ca58)
+KING_VAR(AsmLabel, g_vtblUnspecified, 64c034)
 
-KING_BSS(int, g_69224c, 0x69224c)
-ASM_VAR(AsmLabel, g_strImmediate, $L_671104)    // "<IMMEDIATE>"
+KING_VAR(int, g_69224c, 69224c)
+KING_VAR(AsmLabel, g_strImmediate, 671104)    // "<IMMEDIATE>"
 typedef void* Blocks[1];
-KING_BSS(int, g_free44Count, 0x693650)          // freed 44-byte blocks
-KING_BSS(Blocks, g_free44, 0x692650)
-KING_BSS(int, g_free32Count, 0x694658)          // freed 32-byte blocks
-KING_BSS(Blocks, g_free32, 0x693658)
-ASM_VAR(AsmLabel, g_vtbl64bf68, $L_64bf68)
-ASM_VAR(AsmLabel, g_vtbl64bf70, $L_64bf70)
-ASM_VAR(AsmLabel, g_vtbl64bf80, $L_64bf80)
-ASM_VAR(AsmLabel, g_vtbl64bf94, $L_64bf94)
-ASM_VAR(AsmLabel, g_vtbl64bfa8, $L_64bfa8)
-ASM_VAR(AsmLabel, g_vtbl64bfbc, $L_64bfbc)
-ASM_VAR(AsmLabel, g_vtbl64bfd0, $L_64bfd0)
-ASM_VAR(AsmLabel, g_vtbl64bfe4, $L_64bfe4)
-ASM_VAR(AsmLabel, g_vtbl64bff8, $L_64bff8)
-ASM_VAR(AsmLabel, g_vtbl64c00c, $L_64c00c)
-ASM_VAR(AsmLabel, g_vtbl64c020, $L_64c020)
+KING_VAR(int, g_free44Count, 693650)          // freed 44-byte blocks
+KING_VAR(Blocks, g_free44, 692650)
+KING_VAR(int, g_free32Count, 694658)          // freed 32-byte blocks
+KING_VAR(Blocks, g_free32, 693658)
+KING_VAR(AsmLabel, g_vtbl64bf68, 64bf68)
+KING_VAR(AsmLabel, g_vtbl64bf70, 64bf70)
+KING_VAR(AsmLabel, g_vtbl64bf80, 64bf80)
+KING_VAR(AsmLabel, g_vtbl64bf94, 64bf94)
+KING_VAR(AsmLabel, g_vtbl64bfa8, 64bfa8)
+KING_VAR(AsmLabel, g_vtbl64bfbc, 64bfbc)
+KING_VAR(AsmLabel, g_vtbl64bfd0, 64bfd0)
+KING_VAR(AsmLabel, g_vtbl64bfe4, 64bfe4)
+KING_VAR(AsmLabel, g_vtbl64bff8, 64bff8)
+KING_VAR(AsmLabel, g_vtbl64c00c, 64c00c)
+KING_VAR(AsmLabel, g_vtbl64c020, 64c020)
 
 static void AiFree(void* p, int size) { CallC(FUN_44b4a0, p, size); }
 static void SchError(int code) { CallC(FUN_4a52e0, code, 1); }
@@ -636,10 +636,10 @@ extern "C" SchValue* __fastcall SchValue_Assign(SchValue* self, void*, const Sch
 KING_ALIAS("@SchValue_Assign@12", "@Str_Assign@12")
 extern "C" BYTE* __cdecl UninitCopyStrRefs(const BYTE* first, const BYTE* last, BYTE* dest);  // aistl.cpp
 typedef int Ints[1];
-KING_BSS(Ints, g_errorOff, 0x691dbc)            // per error code: don't report
-KING_BSS(int, g_lastErrorCode, 0x692244)
-KING_BSS(int, g_lastErrorLevel, 0x692248)
-ASM_VAR(FILE*, g_errorFile, $L_670b04)
+KING_VAR(Ints, g_errorOff, 691dbc)            // per error code: don't report
+KING_VAR(int, g_lastErrorCode, 692244)
+KING_VAR(int, g_lastErrorLevel, 692248)
+KING_VAR(FILE*, g_errorFile, 670b04)
 typedef void (__cdecl* ErrorHandler)(int code, int level, const char* text);
 
 // reports a script error to the log file and the handler; level 1 (and
@@ -1008,8 +1008,8 @@ KING_ALIAS("_Deque_AllocPages@8", "FUN_4a29e0")
 // the three words of a Scheme value; the second argument is a compiler slot.
 extern "C" void FUN_4a2ef0(); KING_ALIAS("_FUN_4a2ef0", "@SchScope_Copy@16")
 extern "C" BYTE* __fastcall SchItem4b5f30_Construct(BYTE*, void*, int, int);
-ASM_VAR(AsmLabel, g_inputEnvironmentName, $L_67060c)
-ASM_VAR(AsmLabel, g_inputPortName, $L_66cb28)
+KING_VAR(AsmLabel, g_inputEnvironmentName, 67060c)
+KING_VAR(AsmLabel, g_inputPortName, 66cb28)
 
 static SchValue* SchInput_WrapNew(SchValue* out, BYTE* object, int type, const char* expected)
 {
@@ -1423,7 +1423,7 @@ extern "C" void FUN_4a55c0(); KING_ALIAS("_FUN_4a55c0", "_Sch_DumpFrame")
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // writes a string to a port (by value)
 extern "C" void FUN_4affd0(); KING_ALIAS("_FUN_4affd0", "_Sch_MakeClosureB")
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
-ASM_VAR(char, g_6710dc, $L_6710dc)
+KING_VAR(char, g_6710dc, 6710dc)
 
 struct Value3 { BYTE* obj; int len; DWORD flags; };
 
@@ -1665,9 +1665,9 @@ BYTE* __fastcall SchMap_InsertUnique(BYTE** self, void*, BYTE* out, const SchVal
 
 extern "C" void FUN_4a4ac0(); KING_ALIAS("_FUN_4a4ac0", "@SchMap_Erase@12")    // map: erase a subtree
 extern "C" void FUN_4a52b0(); KING_ALIAS("_FUN_4a52b0", "@SchHolder_DeletingDestructor@12")    // map value: destructor (flag)
-ASM_VAR(char, gv64bf4c, $L_64bf4c)
-ASM_VAR(char, gv64bed0, $L_64bed0)
-ASM_VAR(char, gv64bee4, $L_64bee4)
+KING_VAR(char, gv64bf4c, 64bf4c)
+KING_VAR(char, gv64bed0, 64bed0)
+KING_VAR(char, gv64bee4, 64bee4)
 
 // empties a map (header +0, count +4) without freeing its header
 static void Map_Clear(BYTE** m)
@@ -1778,15 +1778,15 @@ SchValue* __cdecl SchList_Nth(SchValue* out, int n, BYTE* h0, int h1, DWORD h2)
 }
 
 extern "C" void FUN_4b13b0(); KING_ALIAS("_FUN_4b13b0", "@SchNode_Destroy@8")    // the script node base destructor
-ASM_VAR(char, vt_64bf80, $L_64bf80)
-ASM_VAR(char, vt_64bf94, $L_64bf94)
-ASM_VAR(char, vt_64bfa8, $L_64bfa8)
-ASM_VAR(char, vt_64bfbc, $L_64bfbc)
-ASM_VAR(char, vt_64bfd0, $L_64bfd0)
-ASM_VAR(char, vt_64bfe4, $L_64bfe4)
-ASM_VAR(char, vt_64bff8, $L_64bff8)
-ASM_VAR(char, vt_64c00c, $L_64c00c)
-ASM_VAR(char, vt_64c020, $L_64c020)
+KING_VAR(char, vt_64bf80, 64bf80)
+KING_VAR(char, vt_64bf94, 64bf94)
+KING_VAR(char, vt_64bfa8, 64bfa8)
+KING_VAR(char, vt_64bfbc, 64bfbc)
+KING_VAR(char, vt_64bfd0, 64bfd0)
+KING_VAR(char, vt_64bfe4, 64bfe4)
+KING_VAR(char, vt_64bff8, 64bff8)
+KING_VAR(char, vt_64c00c, 64c00c)
+KING_VAR(char, vt_64c020, 64c020)
 
 // [FUN_4a8570] destructor of a script node class (vtable 64bf80)
 extern "C" void __fastcall SchNode4a8570_Destroy(void** self, int)
@@ -1851,10 +1851,10 @@ extern "C" void __fastcall SchNode4aa150_Destroy(void** self, int)
     CallThis(FUN_4b13b0, self);
 }
 
-KING_BSS(void*, g_pool692650, 0x692650)
-KING_BSS(int, g_poolCount693650, 0x693650)
-KING_BSS(void*, g_pool693658, 0x693658)
-KING_BSS(int, g_poolCount694658, 0x694658)
+KING_VAR(void*, g_pool692650, 692650)
+KING_VAR(int, g_poolCount693650, 693650)
+KING_VAR(void*, g_pool693658, 693658)
+KING_VAR(int, g_poolCount694658, 694658)
 
 // [FUN_4aa720] the first dword the second argument points to
 extern "C" int __cdecl Sch_Deref2nd(void*, int* p)
@@ -1898,7 +1898,7 @@ extern "C" void __cdecl SchPool2_Free(void* p)
     g_poolCount694658++;
 }
 
-ASM_VAR(char, vt_64bf68, $L_64bf68)
+KING_VAR(char, vt_64bf68, 64bf68)
 
 // [FUN_4a36f0] destructor of a handle pair: the handle at +12, then the one at +0
 extern "C" void __fastcall HandlePair_Destroy(BYTE* self, int)
@@ -1938,10 +1938,10 @@ extern "C" long __cdecl strtol(const char* s, char** end, int base);
 extern "C" char* __cdecl strncat(char* d, const char* s, size_t n);
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 typedef const char* SchStrTable[1];
-ASM_VAR(SchStrTable, g_msgs670e08, $L_670e08)
-ASM_VAR(AsmLabel, s_670dc8, $L_670dc8)
-ASM_VAR(AsmLabel, s_fmt6710ec, $L_6710ec)
-KING_BSS(AsmLabel, g_text692250, 0x692250)
+KING_VAR(SchStrTable, g_msgs670e08, 670e08)
+KING_VAR(AsmLabel, s_670dc8, 670dc8)
+KING_VAR(AsmLabel, s_fmt6710ec, 6710ec)
+KING_VAR(AsmLabel, g_text692250, 692250)
 
 // [FUN_4a59f0] message i of the table: its number (checked against i) and the text after it
 extern "C" char* __cdecl Sch_MessageText(int i)
@@ -1954,9 +1954,9 @@ extern "C" char* __cdecl Sch_MessageText(int i)
     return g_text692250;
 }
 
-ASM_VAR(SchStrTable, g_msgs670a7c, $L_670a7c)
-ASM_VAR(AsmLabel, s_fmt670db8, $L_670db8)
-KING_BSS(AsmLabel, g_text691e44, 0x691e44)
+KING_VAR(SchStrTable, g_msgs670a7c, 670a7c)
+KING_VAR(AsmLabel, s_fmt670db8, 670db8)
+KING_VAR(AsmLabel, g_text691e44, 691e44)
 
 // [FUN_4a5380] error message code with its severity letter (I W E F ?): the format and the text after the number
 extern "C" char* __cdecl Sch_ErrorText(int code, int severity)
@@ -1972,11 +1972,11 @@ extern "C" char* __cdecl Sch_ErrorText(int code, int severity)
 
 extern "C" size_t __cdecl strlen(const char* s);
 typedef int SchIntTable[1];
-KING_BSS(SchIntTable, g_muted691dbc, 0x691dbc)
-KING_BSS(int, g_lastError692244, 0x692244)
-KING_BSS(int, g_lastSeverity692248, 0x692248)
+KING_VAR(SchIntTable, g_muted691dbc, 691dbc)
+KING_VAR(int, g_lastError692244, 692244)
+KING_VAR(int, g_lastSeverity692248, 692248)
 typedef void (__cdecl* SchErrorHook)(int code, int severity, const char* text);
-KING_BSS(SchErrorHook, g_errorHook69224c, 0x69224c)
+KING_VAR(SchErrorHook, g_errorHook69224c, 69224c)
 
 // [FUN_4a52e0] reports an error (code, severity) unless muted: to the error file and the hook; exits on severity 1
 extern "C" int __cdecl Sch_ErrorCode(int code, int severity)
@@ -2026,9 +2026,9 @@ extern "C" void __cdecl Sch_TypeError(int code, int severity, const char* name)
 // Virtual methods of the value classes: type ids and names, deleting
 // destructors.
 
-ASM_VAR(AsmLabel, s_tSpecialForm, $L_671110)
-ASM_VAR(AsmLabel, s_port, $L_66cb28)
-ASM_VAR(AsmLabel, s_tNumber, $L_66ca60)
+KING_VAR(AsmLabel, s_tSpecialForm, 671110)
+KING_VAR(AsmLabel, s_port, 66cb28)
+KING_VAR(AsmLabel, s_tNumber, 66ca60)
 
 
 // [$L_4a7550]
@@ -2107,7 +2107,7 @@ extern "C" BYTE* __fastcall Number_DeletingDestructor(BYTE* s, void*, int flags)
 }
 
 extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
-ASM_VAR(AsmLabel, s_eva671104, $L_671104)
+KING_VAR(AsmLabel, s_eva671104, 671104)
 
 // [$L_4a74f0] message 29 about the scope's frame (+112, 28 bytes back): its name or 671104
 extern "C" int __fastcall Eva_4a74f0(BYTE*, void*, BYTE* p)
@@ -2124,10 +2124,10 @@ extern "C" int __fastcall Eva_4a74f0(BYTE*, void*, BYTE* p)
 // ---------------------------------------------------------------------------
 // Static initializers of random generators.
 
-KING_BSS(AsmLabel, g_evaRng694660, 0x694660)
-KING_BSS(DWORD, g_evaRng694738, 0x694738)
-KING_BSS(DWORD, g_evaRng69473c, 0x69473c)
-KING_BSS(DWORD, g_evaRng694740, 0x694740)
+KING_VAR(AsmLabel, g_evaRng694660, 694660)
+KING_VAR(DWORD, g_evaRng694738, 694738)
+KING_VAR(DWORD, g_evaRng69473c, 69473c)
+KING_VAR(DWORD, g_evaRng694740, 694740)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Eva_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
@@ -2233,226 +2233,226 @@ extern "C" void FUN_455f00(); KING_ALIAS("_FUN_455f00", "_Port_MakeB")
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
 extern "C" void FUN_4b4c20(); KING_ALIAS("_FUN_4b4c20", "_Port_ReadDatum")    // read (out, p, port by value)
 extern "C" void FUN_4a6af0(); KING_ALIAS("_FUN_4a6af0", "_Sch_EvalTop")    // eval (out, p, value by value)
-ASM_VAR(AsmLabel, g_sv64bed0, $L_64bed0)
-ASM_VAR(AsmLabel, s_sv6712f8, $L_6712f8)
-ASM_VAR(AsmLabel, s_sv6712f0, $L_6712f0)
-ASM_VAR(AsmLabel, s_sv6712e8, $L_6712e8)
-ASM_VAR(AsmLabel, s_sv6712e4, $L_6712e4)
-ASM_VAR(AsmLabel, s_sv64bf60, $L_64bf60)
-ASM_VAR(AsmLabel, s_sv6712dc, $L_6712dc)
-ASM_VAR(AsmLabel, s_sv6712d4, $L_6712d4)
-ASM_VAR(AsmLabel, s_sv6712b4, $L_6712b4)
-ASM_VAR(AsmLabel, s_sv6712ac, $L_6712ac)
-ASM_VAR(AsmLabel, s_sv671204, $L_671204)
-ASM_VAR(AsmLabel, s_sv6711f4, $L_6711f4)
-ASM_VAR(AsmLabel, s_sv6711e8, $L_6711e8)
-ASM_VAR(AsmLabel, s_svPort, $L_66cb28)          // "Port"
+KING_VAR(AsmLabel, g_sv64bed0, 64bed0)
+KING_VAR(AsmLabel, s_sv6712f8, 6712f8)
+KING_VAR(AsmLabel, s_sv6712f0, 6712f0)
+KING_VAR(AsmLabel, s_sv6712e8, 6712e8)
+KING_VAR(AsmLabel, s_sv6712e4, 6712e4)
+KING_VAR(AsmLabel, s_sv64bf60, 64bf60)
+KING_VAR(AsmLabel, s_sv6712dc, 6712dc)
+KING_VAR(AsmLabel, s_sv6712d4, 6712d4)
+KING_VAR(AsmLabel, s_sv6712b4, 6712b4)
+KING_VAR(AsmLabel, s_sv6712ac, 6712ac)
+KING_VAR(AsmLabel, s_sv671204, 671204)
+KING_VAR(AsmLabel, s_sv6711f4, 6711f4)
+KING_VAR(AsmLabel, s_sv6711e8, 6711e8)
+KING_VAR(AsmLabel, s_svPort, 66cb28)          // "Port"
 extern "C" void Nat_MacroExpand();
-ASM_VAR(AsmLabel, s_rn6709d4, $L_6709d4)
+KING_VAR(AsmLabel, s_rn6709d4, 6709d4)
 extern "C" SchValue* __cdecl Nat_Eqv(SchValue*, BYTE*, BYTE**);  // natives.cpp
-ASM_VAR(AsmLabel, s_rn670640, $L_670640)
-ASM_VAR(AsmLabel, s_rn670658, $L_670658)
+KING_VAR(AsmLabel, s_rn670640, 670640)
+KING_VAR(AsmLabel, s_rn670658, 670658)
 extern "C" void Nat_EqualQ();
-ASM_VAR(AsmLabel, s_rn67065c, $L_67065c)
+KING_VAR(AsmLabel, s_rn67065c, 67065c)
 extern "C" void Nat_NumberP();
-ASM_VAR(AsmLabel, s_rn670664, $L_670664)
+KING_VAR(AsmLabel, s_rn670664, 670664)
 extern "C" void Nat_ComplexP();
-ASM_VAR(AsmLabel, s_rn67066c, $L_67066c)
+KING_VAR(AsmLabel, s_rn67066c, 67066c)
 extern "C" void Nat_RealP();
-ASM_VAR(AsmLabel, s_rn670678, $L_670678)
+KING_VAR(AsmLabel, s_rn670678, 670678)
 extern "C" void Nat_RationalP();
-ASM_VAR(AsmLabel, s_rn670680, $L_670680)
+KING_VAR(AsmLabel, s_rn670680, 670680)
 extern "C" void Nat_IntegerP();
-ASM_VAR(AsmLabel, s_rn67068c, $L_67068c)
+KING_VAR(AsmLabel, s_rn67068c, 67068c)
 extern "C" void Nat_ExactP();
-ASM_VAR(AsmLabel, s_rn670698, $L_670698)
+KING_VAR(AsmLabel, s_rn670698, 670698)
 extern "C" void Nat_InexactP();
-ASM_VAR(AsmLabel, s_rn6706a0, $L_6706a0)
+KING_VAR(AsmLabel, s_rn6706a0, 6706a0)
 extern "C" void Nat_NumEq();
-ASM_VAR(AsmLabel, s_rn6712a8, $L_6712a8)
+KING_VAR(AsmLabel, s_rn6712a8, 6712a8)
 extern "C" void Nat_NumLt();
-ASM_VAR(AsmLabel, s_rn6712a4, $L_6712a4)
+KING_VAR(AsmLabel, s_rn6712a4, 6712a4)
 extern "C" void Nat_NumGt();
-ASM_VAR(AsmLabel, s_rn6712a0, $L_6712a0)
+KING_VAR(AsmLabel, s_rn6712a0, 6712a0)
 extern "C" void Nat_NumLe();
-ASM_VAR(AsmLabel, s_rn67129c, $L_67129c)
+KING_VAR(AsmLabel, s_rn67129c, 67129c)
 extern "C" void Nat_NumGe();
-ASM_VAR(AsmLabel, s_rn671298, $L_671298)
+KING_VAR(AsmLabel, s_rn671298, 671298)
 extern "C" void Nat_Plus();
-ASM_VAR(AsmLabel, s_rn6706ac, $L_6706ac)
+KING_VAR(AsmLabel, s_rn6706ac, 6706ac)
 extern "C" SchValue* __cdecl Nat_Minus(SchValue*, BYTE*, BYTE**);  // natives.cpp
-ASM_VAR(AsmLabel, s_rn6706b0, $L_6706b0)
+KING_VAR(AsmLabel, s_rn6706b0, 6706b0)
 extern "C" void Nat_Times();
-ASM_VAR(AsmLabel, s_rn6706b4, $L_6706b4)
+KING_VAR(AsmLabel, s_rn6706b4, 6706b4)
 extern "C" void Nat_Divide();
-ASM_VAR(AsmLabel, s_rn670570, $L_670570)
+KING_VAR(AsmLabel, s_rn670570, 670570)
 extern "C" void Nat_Quotient();
-ASM_VAR(AsmLabel, s_rn6706b8, $L_6706b8)
+KING_VAR(AsmLabel, s_rn6706b8, 6706b8)
 extern "C" void Nat_Remainder();
-ASM_VAR(AsmLabel, s_rn6706c0, $L_6706c0)
+KING_VAR(AsmLabel, s_rn6706c0, 6706c0)
 extern "C" void Nat_Modulo();
-ASM_VAR(AsmLabel, s_rn6706cc, $L_6706cc)
+KING_VAR(AsmLabel, s_rn6706cc, 6706cc)
 extern "C" void Nat_Numerator();
-ASM_VAR(AsmLabel, s_rn6706d4, $L_6706d4)
+KING_VAR(AsmLabel, s_rn6706d4, 6706d4)
 extern "C" void Nat_Denominator();
-ASM_VAR(AsmLabel, s_rn6706e0, $L_6706e0)
+KING_VAR(AsmLabel, s_rn6706e0, 6706e0)
 extern "C" void Nat_Floor();
-ASM_VAR(AsmLabel, s_rn6706ec, $L_6706ec)
+KING_VAR(AsmLabel, s_rn6706ec, 6706ec)
 extern "C" void Nat_Ceiling();
-ASM_VAR(AsmLabel, s_rn6706f4, $L_6706f4)
+KING_VAR(AsmLabel, s_rn6706f4, 6706f4)
 extern "C" void Nat_Truncate();
-ASM_VAR(AsmLabel, s_rn6706fc, $L_6706fc)
+KING_VAR(AsmLabel, s_rn6706fc, 6706fc)
 extern "C" void Nat_Round();
-ASM_VAR(AsmLabel, s_rn670708, $L_670708)
+KING_VAR(AsmLabel, s_rn670708, 670708)
 extern "C" void Nat_Exp();
-ASM_VAR(AsmLabel, s_rn670710, $L_670710)
+KING_VAR(AsmLabel, s_rn670710, 670710)
 extern "C" void Nat_Log();
-ASM_VAR(AsmLabel, s_rn670714, $L_670714)
+KING_VAR(AsmLabel, s_rn670714, 670714)
 extern "C" void Nat_Sin();
-ASM_VAR(AsmLabel, s_rn670718, $L_670718)
+KING_VAR(AsmLabel, s_rn670718, 670718)
 extern "C" void Nat_Cos();
-ASM_VAR(AsmLabel, s_rn67071c, $L_67071c)
+KING_VAR(AsmLabel, s_rn67071c, 67071c)
 extern "C" void Nat_Tan();
-ASM_VAR(AsmLabel, s_rn670720, $L_670720)
+KING_VAR(AsmLabel, s_rn670720, 670720)
 extern "C" void Nat_Asin();
-ASM_VAR(AsmLabel, s_rn670724, $L_670724)
+KING_VAR(AsmLabel, s_rn670724, 670724)
 extern "C" void Nat_Acos();
-ASM_VAR(AsmLabel, s_rn67072c, $L_67072c)
+KING_VAR(AsmLabel, s_rn67072c, 67072c)
 extern "C" void Nat_Atan();
-ASM_VAR(AsmLabel, s_rn670734, $L_670734)
+KING_VAR(AsmLabel, s_rn670734, 670734)
 extern "C" void Nat_Atan2();
-ASM_VAR(AsmLabel, s_rn67073c, $L_67073c)
+KING_VAR(AsmLabel, s_rn67073c, 67073c)
 extern "C" void Nat_Sqrt();
-ASM_VAR(AsmLabel, s_rn670744, $L_670744)
+KING_VAR(AsmLabel, s_rn670744, 670744)
 extern "C" void Nat_Expt();
-ASM_VAR(AsmLabel, s_rn67074c, $L_67074c)
+KING_VAR(AsmLabel, s_rn67074c, 67074c)
 extern "C" void Nat_MakeRect();
-ASM_VAR(AsmLabel, s_rn670754, $L_670754)
+KING_VAR(AsmLabel, s_rn670754, 670754)
 extern "C" void Nat_MakePolar();
-ASM_VAR(AsmLabel, s_rn670768, $L_670768)
+KING_VAR(AsmLabel, s_rn670768, 670768)
 extern "C" void Nat_RealPart();
-ASM_VAR(AsmLabel, s_rn670774, $L_670774)
+KING_VAR(AsmLabel, s_rn670774, 670774)
 extern "C" void Nat_ImagPart();
-ASM_VAR(AsmLabel, s_rn670780, $L_670780)
+KING_VAR(AsmLabel, s_rn670780, 670780)
 extern "C" void Nat_Magnitude();
-ASM_VAR(AsmLabel, s_rn67078c, $L_67078c)
+KING_VAR(AsmLabel, s_rn67078c, 67078c)
 extern "C" void Nat_Angle();
-ASM_VAR(AsmLabel, s_rn670798, $L_670798)
+KING_VAR(AsmLabel, s_rn670798, 670798)
 extern "C" void Nat_ToInexact();
-ASM_VAR(AsmLabel, s_rn6707a0, $L_6707a0)
+KING_VAR(AsmLabel, s_rn6707a0, 6707a0)
 extern "C" void Nat_ToExact();
-ASM_VAR(AsmLabel, s_rn6707b0, $L_6707b0)
+KING_VAR(AsmLabel, s_rn6707b0, 6707b0)
 extern "C" void Nat_NumberToString();
-ASM_VAR(AsmLabel, s_rn6707c0, $L_6707c0)
+KING_VAR(AsmLabel, s_rn6707c0, 6707c0)
 extern "C" void Nat_StringToNumber();
-ASM_VAR(AsmLabel, s_rn6707d0, $L_6707d0)
+KING_VAR(AsmLabel, s_rn6707d0, 6707d0)
 extern "C" void Nat_PairP();
-ASM_VAR(AsmLabel, s_rn6707e0, $L_6707e0)
+KING_VAR(AsmLabel, s_rn6707e0, 6707e0)
 extern "C" void Nat_Cons();
-ASM_VAR(AsmLabel, s_rn6707e8, $L_6707e8)
+KING_VAR(AsmLabel, s_rn6707e8, 6707e8)
 extern "C" void Nat_Car();
-ASM_VAR(AsmLabel, s_rn66de28, $L_66de28)
+KING_VAR(AsmLabel, s_rn66de28, 66de28)
 extern "C" void Nat_Cdr();
-ASM_VAR(AsmLabel, s_rn6707f0, $L_6707f0)
+KING_VAR(AsmLabel, s_rn6707f0, 6707f0)
 extern "C" void Nat_SetCar();
-ASM_VAR(AsmLabel, s_rn6707f4, $L_6707f4)
+KING_VAR(AsmLabel, s_rn6707f4, 6707f4)
 extern "C" void Nat_SetCdr();
-ASM_VAR(AsmLabel, s_rn670800, $L_670800)
+KING_VAR(AsmLabel, s_rn670800, 670800)
 extern "C" void Nat_SymbolP();
-ASM_VAR(AsmLabel, s_rn67080c, $L_67080c)
+KING_VAR(AsmLabel, s_rn67080c, 67080c)
 extern "C" void Nat_SymbolToString();
-ASM_VAR(AsmLabel, s_rn670814, $L_670814)
+KING_VAR(AsmLabel, s_rn670814, 670814)
 extern "C" void Nat_StringToSymbol();
-ASM_VAR(AsmLabel, s_rn670824, $L_670824)
+KING_VAR(AsmLabel, s_rn670824, 670824)
 extern "C" void Nat_CharP();
-ASM_VAR(AsmLabel, s_rn670834, $L_670834)
+KING_VAR(AsmLabel, s_rn670834, 670834)
 extern "C" void Nat_CharEq();
-ASM_VAR(AsmLabel, s_rn67083c, $L_67083c)
+KING_VAR(AsmLabel, s_rn67083c, 67083c)
 extern "C" void Nat_CharLt();
-ASM_VAR(AsmLabel, s_rn670844, $L_670844)
+KING_VAR(AsmLabel, s_rn670844, 670844)
 extern "C" void Nat_CharGt();
-ASM_VAR(AsmLabel, s_rn67084c, $L_67084c)
+KING_VAR(AsmLabel, s_rn67084c, 67084c)
 extern "C" void Nat_CharLe();
-ASM_VAR(AsmLabel, s_rn670854, $L_670854)
+KING_VAR(AsmLabel, s_rn670854, 670854)
 extern "C" void Nat_CharGe();
-ASM_VAR(AsmLabel, s_rn67085c, $L_67085c)
+KING_VAR(AsmLabel, s_rn67085c, 67085c)
 extern "C" void Nat_CharToInteger();
-ASM_VAR(AsmLabel, s_rn670864, $L_670864)
+KING_VAR(AsmLabel, s_rn670864, 670864)
 extern "C" void Nat_IntegerToChar();
-ASM_VAR(AsmLabel, s_rn670874, $L_670874)
+KING_VAR(AsmLabel, s_rn670874, 670874)
 extern "C" SchValue* __cdecl Nat_MakeString(SchValue*, BYTE*, BYTE**);  // natives.cpp
-ASM_VAR(AsmLabel, s_rn670884, $L_670884)
+KING_VAR(AsmLabel, s_rn670884, 670884)
 extern "C" SchValue* __cdecl Nat_IsString(SchValue* out, BYTE* p, BYTE** args);
-ASM_VAR(AsmLabel, s_rn670890, $L_670890)
+KING_VAR(AsmLabel, s_rn670890, 670890)
 extern "C" void Nat_StringLength();
-ASM_VAR(AsmLabel, s_rn670898, $L_670898)
+KING_VAR(AsmLabel, s_rn670898, 670898)
 extern "C" void Nat_StringRef();
-ASM_VAR(AsmLabel, s_rn6708a8, $L_6708a8)
+KING_VAR(AsmLabel, s_rn6708a8, 6708a8)
 extern "C" void Nat_StringSet();
-ASM_VAR(AsmLabel, s_rn6708b4, $L_6708b4)
+KING_VAR(AsmLabel, s_rn6708b4, 6708b4)
 extern "C" void Nat_VectorP();
-ASM_VAR(AsmLabel, s_rn6708c0, $L_6708c0)
+KING_VAR(AsmLabel, s_rn6708c0, 6708c0)
 extern "C" void Nat_MakeVector();
-ASM_VAR(AsmLabel, s_rn6708c8, $L_6708c8)
+KING_VAR(AsmLabel, s_rn6708c8, 6708c8)
 extern "C" void Nat_ListToVector();
-ASM_VAR(AsmLabel, s_rn6708d4, $L_6708d4)
+KING_VAR(AsmLabel, s_rn6708d4, 6708d4)
 extern "C" void Nat_VectorLength();
-ASM_VAR(AsmLabel, s_rn6708ec, $L_6708ec)
+KING_VAR(AsmLabel, s_rn6708ec, 6708ec)
 extern "C" void Nat_VectorRef();
-ASM_VAR(AsmLabel, s_rn6708fc, $L_6708fc)
+KING_VAR(AsmLabel, s_rn6708fc, 6708fc)
 extern "C" void Nat_VectorSet();
-ASM_VAR(AsmLabel, s_rn67128c, $L_67128c)
+KING_VAR(AsmLabel, s_rn67128c, 67128c)
 extern "C" void Nat_ProcedureP();
-ASM_VAR(AsmLabel, s_rn670914, $L_670914)
+KING_VAR(AsmLabel, s_rn670914, 670914)
 extern "C" void Nat_Field48();
-ASM_VAR(AsmLabel, s_rn671270, $L_671270)
+KING_VAR(AsmLabel, s_rn671270, 671270)
 extern "C" void Nat_MakeEnv();
-ASM_VAR(AsmLabel, s_rn67125c, $L_67125c)
+KING_VAR(AsmLabel, s_rn67125c, 67125c)
 extern "C" void Nat_Field60();
-ASM_VAR(AsmLabel, s_rn671244, $L_671244)
+KING_VAR(AsmLabel, s_rn671244, 671244)
 extern "C" void Nat_InputPortP();
-ASM_VAR(AsmLabel, s_rn670920, $L_670920)
+KING_VAR(AsmLabel, s_rn670920, 670920)
 extern "C" void Nat_OutputPortP();
-ASM_VAR(AsmLabel, s_rn67092c, $L_67092c)
+KING_VAR(AsmLabel, s_rn67092c, 67092c)
 extern "C" void Nat_Field72();
-ASM_VAR(AsmLabel, s_rn671230, $L_671230)
+KING_VAR(AsmLabel, s_rn671230, 671230)
 extern "C" void Nat_Field84();
-ASM_VAR(AsmLabel, s_rn67121c, $L_67121c)
+KING_VAR(AsmLabel, s_rn67121c, 67121c)
 extern "C" void Nat_OpenInputFile();
-ASM_VAR(AsmLabel, s_rn67093c, $L_67093c)
+KING_VAR(AsmLabel, s_rn67093c, 67093c)
 extern "C" void Nat_OpenOutputFile();
-ASM_VAR(AsmLabel, s_rn67094c, $L_67094c)
+KING_VAR(AsmLabel, s_rn67094c, 67094c)
 extern "C" void Nat_CloseInputPort();
-ASM_VAR(AsmLabel, s_rn670960, $L_670960)
+KING_VAR(AsmLabel, s_rn670960, 670960)
 extern "C" void Nat_CloseOutputPort();
-ASM_VAR(AsmLabel, s_rn670974, $L_670974)
+KING_VAR(AsmLabel, s_rn670974, 670974)
 extern "C" void Nat_ReadChar();
-ASM_VAR(AsmLabel, s_rn670988, $L_670988)
+KING_VAR(AsmLabel, s_rn670988, 670988)
 extern "C" void Nat_PeekChar();
-ASM_VAR(AsmLabel, s_rn670994, $L_670994)
+KING_VAR(AsmLabel, s_rn670994, 670994)
 extern "C" void Nat_EofObjectP();
-ASM_VAR(AsmLabel, s_rn6709a0, $L_6709a0)
+KING_VAR(AsmLabel, s_rn6709a0, 6709a0)
 extern "C" void Nat_CharReadyP();
-ASM_VAR(AsmLabel, s_rn6709ac, $L_6709ac)
+KING_VAR(AsmLabel, s_rn6709ac, 6709ac)
 extern "C" void Nat_WriteChar();
-ASM_VAR(AsmLabel, s_rn6709b8, $L_6709b8)
+KING_VAR(AsmLabel, s_rn6709b8, 6709b8)
 extern "C" void Nat_Read();
-ASM_VAR(AsmLabel, s_rn6709c4, $L_6709c4)
+KING_VAR(AsmLabel, s_rn6709c4, 6709c4)
 extern "C" void Nat_Write();
-ASM_VAR(AsmLabel, s_rn6709cc, $L_6709cc)
+KING_VAR(AsmLabel, s_rn6709cc, 6709cc)
 extern "C" void Nat_SetValues();
-ASM_VAR(AsmLabel, s_rn671210, $L_671210)
+KING_VAR(AsmLabel, s_rn671210, 671210)
 extern "C" void Nat_StringAppend();
-ASM_VAR(AsmLabel, s_rn6709ec, $L_6709ec)
+KING_VAR(AsmLabel, s_rn6709ec, 6709ec)
 extern "C" void Nat_Reverse();
-ASM_VAR(AsmLabel, s_rn6709fc, $L_6709fc)
-ASM_VAR(AsmLabel, s_rn670a04, $L_670a04)
-ASM_VAR(AsmLabel, s_rn670a08, $L_670a08)
-ASM_VAR(AsmLabel, s_rn671208, $L_671208)
-ASM_VAR(AsmLabel, s_rn670a10, $L_670a10)
-ASM_VAR(AsmLabel, s_rn670a18, $L_670a18)
-ASM_VAR(AsmLabel, s_rn670a20, $L_670a20)
-ASM_VAR(AsmLabel, s_rn670a28, $L_670a28)
+KING_VAR(AsmLabel, s_rn6709fc, 6709fc)
+KING_VAR(AsmLabel, s_rn670a04, 670a04)
+KING_VAR(AsmLabel, s_rn670a08, 670a08)
+KING_VAR(AsmLabel, s_rn671208, 671208)
+KING_VAR(AsmLabel, s_rn670a10, 670a10)
+KING_VAR(AsmLabel, s_rn670a18, 670a18)
+KING_VAR(AsmLabel, s_rn670a20, 670a20)
+KING_VAR(AsmLabel, s_rn670a28, 670a28)
 extern "C" void Nat_Not();
 extern "C" void Nat_NullP();
 extern "C" void Nat_List();
@@ -3054,7 +3054,7 @@ extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
 extern "C" void FUN_4a63a0(); KING_ALIAS("_FUN_4a63a0", "_SchValue_Immediate")
 extern "C" void FUN_4aa320(); KING_ALIAS("_FUN_4aa320", "@SchValue_CopyImmediate@12")
 extern "C" void FUN_4aa3a0(); KING_ALIAS("_FUN_4aa3a0", "@SchIdentifier_From@12")
-ASM_VAR(char, s_unbound6710f8, $L_6710f8)
+KING_VAR(char, s_unbound6710f8, 6710f8)
 
 // pushes a frame evaluating expr in the environment of the frame below
 static void Eva_PushFrame(BYTE* p, SchValue* expr)
@@ -3131,8 +3131,8 @@ void __cdecl Sch_EvalNext(BYTE* p, int next)
 
 // === evaluating a value at the top level (FUN_4a6af0)
 
-ASM_VAR(AsmLabel, s_ev64bf60, $L_64bf60)
-ASM_VAR(AsmLabel, s_ev6709d4, $L_6709d4)
+KING_VAR(AsmLabel, s_ev64bf60, 64bf60)
+KING_VAR(AsmLabel, s_ev6709d4, 6709d4)
 extern "C" void FUN_4a7060(); KING_ALIAS("_FUN_4a7060", "@SchNode4a7060_Construct@8")
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")
 extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")
@@ -3232,7 +3232,7 @@ SchValue* __cdecl Sch_EvalTop(SchValue* out, BYTE* p, SchValue12 arg)
 
 // === the interpreter's run loop (FUN_4a63d0)
 
-ASM_VAR(AsmLabel, s_rl66ce4c, $L_66ce4c)
+KING_VAR(AsmLabel, s_rl66ce4c, 66ce4c)
 extern "C" void FUN_4a5910(); KING_ALIAS("_FUN_4a5910", "_Sch_Message0")
 extern "C" void FUN_4a5a60(); KING_ALIAS("_FUN_4a5a60", "_Sch_Message1")
 extern "C" void FUN_4a5c40(); KING_ALIAS("_FUN_4a5c40", "_Sch4a5c40_Append")
@@ -3874,10 +3874,10 @@ void __fastcall Continuation_Resume(BYTE* c, void*, BYTE* p)
 
 extern "C" void FUN_4b8070(); KING_ALIAS("_FUN_4b8070", "_Sch4b8070")     // writes a value (out, ctx, value, port)
 extern "C" void FUN_4a16c0(); KING_ALIAS("_FUN_4a16c0", "@Vec12_At@12")
-ASM_VAR(char, s_fd67109c, $L_67109c)
-ASM_VAR(char, s_fd671090, $L_671090)
-ASM_VAR(char, s_fd671084, $L_671084)
-ASM_VAR(char, s_fd67107c, $L_67107c)
+KING_VAR(char, s_fd67109c, 67109c)
+KING_VAR(char, s_fd671090, 671090)
+KING_VAR(char, s_fd671084, 671084)
+KING_VAR(char, s_fd67107c, 67107c)
 
 // a counted copy of value v as three dwords
 static void Fd_Copy(DWORD* d, const BYTE* v) { CallThis(FUN_454580, d, v); }
@@ -4090,7 +4090,7 @@ extern "C" void Ia_ValAssign(); KING_ALIAS("_Ia_ValAssign", "@Values_Assign@12")
 extern "C" void Ia_Copy(); KING_ALIAS("_Ia_Copy", "@Sch4aac80_Copy@12")
 extern "C" void Ia_Destroy(); KING_ALIAS("_Ia_Destroy", "@SchListNode_Destroy@8")
 extern "C" void FUN_4abba0(); KING_ALIAS("_FUN_4abba0", "_Items44_UninitCopyB")
-ASM_VAR(AsmLabel, g_ia64bf68, $L_64bf68)
+KING_VAR(AsmLabel, g_ia64bf68, 64bf68)
 
 extern "C" {
 
@@ -4143,7 +4143,7 @@ void __fastcall Elems44_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
 extern "C" void Si33_Reserve12(); KING_ALIAS("_Si33_Reserve12", "@Vec12_Reserve@16")
 extern "C" void Si33_CopyStrRefs(); KING_ALIAS("_Si33_CopyStrRefs", "_UninitCopyStrRefs")
 extern "C" void Si33_StrCopy(); KING_ALIAS("_Si33_StrCopy", "@Str_CopyConstruct@12")
-ASM_VAR(BYTE, si33_vtbl64bf68, $L_64bf68)
+KING_VAR(BYTE, si33_vtbl64bf68, 64bf68)
 
 static BYTE* Si33_UninitCopy(const BYTE* first, const BYTE* last, BYTE* dest)
 {

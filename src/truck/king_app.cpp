@@ -163,15 +163,15 @@ void __fastcall CKingApp_DispatchInput(CKingApp* self, void*, InputEvent* ev) //
 extern "C" void __cdecl Ai_CheatCode(int code);
 extern "C" int __cdecl strncmp(const char*, const char*, size_t);
 extern "C" size_t __cdecl strlen(const char*);
-KING_BSS(int, g_ck6f34e0, 0x6f34e0)
-KING_BSS(char, g_ckTyped6f2c54, 0x6f2c54)
-ASM_VAR(const char*, g_ckCodes67b760, $L_67b760)
-KING_BSS(int, g_ck6d2090, 0x6d2090)
-KING_BSS(int, g_ck6d2088, 0x6d2088)
-KING_BSS(int, g_ck6d208c, 0x6d208c)
-KING_BSS(int, g_ck6d2094, 0x6d2094)
-KING_BSS(int, g_ck6ced94, 0x6ced94)
-KING_BSS(int, g_ck6f33f0, 0x6f33f0)
+KING_VAR(int, g_ck6f34e0, 6f34e0)
+KING_VAR(char, g_ckTyped6f2c54, 6f2c54)
+KING_VAR(const char*, g_ckCodes67b760, 67b760)
+KING_VAR(int, g_ck6d2090, 6d2090)
+KING_VAR(int, g_ck6d2088, 6d2088)
+KING_VAR(int, g_ck6d208c, 6d208c)
+KING_VAR(int, g_ck6d2094, 6d2094)
+KING_VAR(int, g_ck6ced94, 6ced94)
+KING_VAR(int, g_ck6f33f0, 6f33f0)
 
 extern "C" {
 

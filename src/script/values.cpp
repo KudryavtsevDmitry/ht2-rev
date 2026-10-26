@@ -26,35 +26,32 @@ extern "C" void FUN_4ad2f0(); KING_ALIAS("_FUN_4ad2f0", "_Pool32_New")
 extern "C" void FUN_4b0be0(); KING_ALIAS("_FUN_4b0be0", "@Number_ConstructComplex@20")
 extern "C" void FUN_4b1390(); KING_ALIAS("_FUN_4b1390", "@SchItem4b1390_Construct@8")
 extern "C" void FUN_4abf10(); KING_ALIAS("_FUN_4abf10", "@CharDeque_Construct@12")
-ASM_VAR(AsmLabel, s_tNumber, $L_66ca60)
-ASM_VAR(AsmLabel, g_vtbl64c0b0, $L_64c0b0)
+KING_VAR(AsmLabel, s_tNumber, 66ca60)
+KING_VAR(AsmLabel, g_vtbl64c0b0, 64c0b0)
 extern "C" void FUN_4a54e0(); KING_ALIAS("_FUN_4a54e0", "_Sch_Error")
 extern "C" void FUN_4b63a0(); KING_ALIAS("_FUN_4b63a0", "@SchBuf4b63a0_Construct@8")
 extern "C" void FUN_4b6500(); KING_ALIAS("_FUN_4b6500", "@SchSymbol_Construct@12")
 extern "C" void FUN_48c540(); KING_ALIAS("_FUN_48c540", "_BigInt_Negate")
 extern "C" void FUN_48acd0(); KING_ALIAS("_FUN_48acd0", "_WStr_Assign")
-ASM_VAR(AsmLabel, s_tIdentifier, $L_66ce4c)
-ASM_VAR(AsmLabel, g_vtblString, $L_64c108)
-ASM_VAR(AsmLabel, g_vtblSymbol, $L_64c118)
-ASM_VAR(AsmLabel, s_6703f0, $L_6703f0)
-ASM_VAR(AsmLabel, g_vtbl64c054, $L_64c054)
-ASM_VAR(AsmLabel, g_vtbl64bed0, $L_64bed0)
-ASM_VAR(AsmLabel, g_vtbl64bee4, $L_64bee4)
+KING_VAR(AsmLabel, s_tIdentifier, 66ce4c)
+KING_VAR(AsmLabel, g_vtblString, 64c108)
+KING_VAR(AsmLabel, g_vtblSymbol, 64c118)
+KING_VAR(AsmLabel, s_6703f0, 6703f0)
+KING_VAR(AsmLabel, g_vtbl64c054, 64c054)
+KING_VAR(AsmLabel, g_vtbl64bed0, 64bed0)
+KING_VAR(AsmLabel, g_vtbl64bee4, 64bee4)
 extern "C" DWORD* __cdecl SchHandle_Take(DWORD* out, BYTE* o, int type, const char* name);  // evaluator.cpp
 extern "C" void __fastcall Stl_Lock(volatile LONG* l, void*);   // aimain.cpp
 
-ASM_VAR(AsmLabel, g_vtbl64c044, $L_64c044)
-ASM_VAR(AsmLabel, g_vtbl64bed0, $L_64bed0)
-ASM_VAR(AsmLabel, g_vtbl64c054, $L_64c054)
-ASM_VAR(AsmLabel, g_vtbl64c068, $L_64c068)
-ASM_VAR(AsmLabel, g_vtbl64c0dc, $L_64c0dc)
-ASM_VAR(AsmLabel, g_vtbl64c108, $L_64c108)
-ASM_VAR(AsmLabel, g_vtbl64c118, $L_64c118)
-ASM_VAR(AsmLabel, g_vtbl64bee4, $L_64bee4)
-ASM_VAR(AsmLabel, g_vtbl64c128, $L_64c128)
-KING_BSS(int, g_smallAllocLock, 0x68d204)       // a lock object; 0 releases it
+KING_VAR(AsmLabel, g_vtbl64c044, 64c044)
+KING_VAR(AsmLabel, g_vtbl64c068, 64c068)
+KING_VAR(AsmLabel, g_vtbl64c0dc, 64c0dc)
+KING_VAR(AsmLabel, g_vtbl64c108, 64c108)
+KING_VAR(AsmLabel, g_vtbl64c118, 64c118)
+KING_VAR(AsmLabel, g_vtbl64c128, 64c128)
+KING_VAR(int, g_smallAllocLock, 68d204)       // a lock object; 0 releases it
 typedef void* FreeLists[1];
-KING_BSS(FreeLists, g_smallFreeLists, 0x68d1c0) // freed blocks by (size + 7) / 8
+KING_VAR(FreeLists, g_smallFreeLists, 68d1c0) // freed blocks by (size + 7) / 8
 
 static void AiFree(void* p, int size) { CallC(FUN_44b4a0, p, size); }
 
@@ -446,7 +443,7 @@ extern "C" void FUN_44c220(); KING_ALIAS("_FUN_44c220", "@CharVec_InsertRange44c
 extern "C" void FUN_44bef0(); KING_ALIAS("_FUN_44bef0", "@VecChar_Insert44bef0@16")    // vector<char>::insert(pos, &c)
 extern "C" void FUN_4a20a0(); KING_ALIAS("_FUN_4a20a0", "@DequeDw_PushBackAux@12")    // deque<int>::push_back when the block is full
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
-ASM_VAR(AsmLabel, g_fmtLineCol, $L_671458)      // the "line col" prefix of an error line
+KING_VAR(AsmLabel, g_fmtLineCol, 671458)      // the "line col" prefix of an error line
 
 // a node linked between p's +16 and +4, holding two values
 extern "C" BYTE* __fastcall Node4b1120_Construct(BYTE* self, void*, BYTE* p, const BYTE* a, const BYTE* b)
@@ -529,7 +526,7 @@ extern "C" unsigned __fastcall Reader_Fill(BYTE* self, void*, unsigned n)
 // call takes the value by copy
 extern "C" void FUN_4b13c0(); KING_ALIAS("_FUN_4b13c0", "_Port_WriteChar")    // writes a character (c, value by copy)
 extern "C" void FUN_4b1450(); KING_ALIAS("_FUN_4b1450", "_Port_WriteString")    // writes a string (text, value by copy)
-ASM_VAR(AsmLabel, g_strSpace, $L_6715b8)
+KING_VAR(AsmLabel, g_strSpace, 6715b8)
 struct ValueArg { BYTE* obj; int m_4; DWORD flags; };
 
 static ValueArg ValueCopy(const BYTE* v)
@@ -893,7 +890,7 @@ BYTE* __fastcall FilePort_Construct(BYTE* self, void*, const char* name, unsigne
 
 }
 
-ASM_VAR(char, g_fmtG4b0c70, $L_671350)      // "%g"
+KING_VAR(char, g_fmtG4b0c70, 671350)      // "%g"
 #include <string.h>
 extern "C" void __cdecl Byte_Construct(BYTE* p, const BYTE* v);
 extern "C" int __cdecl toupper(int c);
@@ -959,8 +956,8 @@ extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, B
     return s;
 }
 
-ASM_VAR(char, vt_64bee4, $L_64bee4)
-ASM_VAR(char, g_6703f8, $L_6703f8)
+KING_VAR(char, vt_64bee4, 64bee4)
+KING_VAR(char, g_6703f8, 6703f8)
 extern "C" void FUN_48ade0(); KING_ALIAS("_FUN_48ade0", "_BigInt_FromInt")
 
 // [FUN_4b13b0] the script node base destructor
@@ -1029,10 +1026,10 @@ extern "C" BYTE* __fastcall Val4b61a0_DeletingDestructor(BYTE* s, void*, int fla
 extern "C" BYTE* __fastcall Val4b63e0_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b6580); }
 // [$L_4b66d0]
 extern "C" BYTE* __fastcall Val4b66d0_DeletingDestructor(BYTE* s, void*, int flags) { return Val_DeleteAfter(s, flags, FUN_4b6840); }
-ASM_VAR(AsmLabel, s_val66cb08, $L_66cb08)
-ASM_VAR(AsmLabel, s_val66ca58, $L_66ca58)
-ASM_VAR(AsmLabel, s_val66ce4c, $L_66ce4c)
-ASM_VAR(AsmLabel, s_val6708e4, $L_6708e4)
+KING_VAR(AsmLabel, s_val66cb08, 66cb08)
+KING_VAR(AsmLabel, s_val66ca58, 66ca58)
+KING_VAR(AsmLabel, s_val66ce4c, 66ce4c)
+KING_VAR(AsmLabel, s_val6708e4, 6708e4)
 extern "C" void Val_putc(); KING_ALIAS("_Val_putc", "_putc")
 
 // [$L_4b10e0] type ids and names
@@ -1073,10 +1070,10 @@ extern "C" BYTE* __fastcall Pair_DeletingDestructor(BYTE* s, void*, int flags)
 // ---------------------------------------------------------------------------
 // Static initializers of random generators.
 
-KING_BSS(AsmLabel, g_valRng694748, 0x694748)
-KING_BSS(DWORD, g_valRng694820, 0x694820)
-KING_BSS(DWORD, g_valRng694824, 0x694824)
-KING_BSS(DWORD, g_valRng694828, 0x694828)
+KING_VAR(AsmLabel, g_valRng694748, 694748)
+KING_VAR(DWORD, g_valRng694820, 694820)
+KING_VAR(DWORD, g_valRng694824, 694824)
+KING_VAR(DWORD, g_valRng694828, 694828)
 
 // the subtractive random generator's start (Knuth): 55 words at a, then the seed and the two indices
 static void Val_RngInit(DWORD* a, DWORD* seed, DWORD* i1, DWORD* i2)
@@ -1253,12 +1250,12 @@ extern "C" void FUN_4b38d0(); KING_ALIAS("_FUN_4b38d0", "_Reader_Vector")    // 
 extern "C" void FUN_4b3b10(); KING_ALIAS("_FUN_4b3b10", "_Reader_Char")    // a character
 extern "C" int __cdecl isdigit(int c);
 extern "C" int __cdecl isalnum(int c);
-ASM_VAR(AsmLabel, s_rdBadChar, $L_6714b0)
-ASM_VAR(AsmLabel, s_rdUnterminated, $L_671490)
-ASM_VAR(AsmLabel, s_rdQuote, $L_64bf60)
-ASM_VAR(AsmLabel, s_rdQuasiquote, $L_6714a4)
-ASM_VAR(AsmLabel, s_rdUnquoteSplicing, $L_64c09c)
-ASM_VAR(AsmLabel, s_rdUnquote, $L_64c094)
+KING_VAR(AsmLabel, s_rdBadChar, 6714b0)
+KING_VAR(AsmLabel, s_rdUnterminated, 671490)
+KING_VAR(AsmLabel, s_rdQuote, 64bf60)
+KING_VAR(AsmLabel, s_rdQuasiquote, 6714a4)
+KING_VAR(AsmLabel, s_rdUnquoteSplicing, 64c09c)
+KING_VAR(AsmLabel, s_rdUnquote, 64c094)
 
 // the character n after the current one of reader r
 static int Rd_Peek(BYTE* r, int n)
@@ -1491,30 +1488,30 @@ extern "C" void FUN_4bd510(); KING_ALIAS("_FUN_4bd510", "@Fx_Self@8")
 extern "C" void FUN_4b6b90(); KING_ALIAS("_FUN_4b6b90", "_Sch_WriteListTail")    // writes the rest of a list (out, the tail, port, context)
 extern "C" void FUN_4b6e20(); KING_ALIAS("_FUN_4b6e20", "_Sch_WriteNumber")    // writes a number (handle by value, port)
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
-ASM_VAR(AsmLabel, s_prEmpty, $L_66d4e4)          // "()"
-ASM_VAR(AsmLabel, s_prDot, $L_6715bc)            // " . "
-ASM_VAR(AsmLabel, s_prTrue, $L_671664)
-ASM_VAR(AsmLabel, s_prFalse, $L_671660)
-ASM_VAR(AsmLabel, s_prNewline, $L_671654)
-ASM_VAR(AsmLabel, s_prSpace, $L_67164c)
-ASM_VAR(AsmLabel, s_prClosure, $L_671608)
-ASM_VAR(AsmLabel, s_prClosureEnd, $L_671604)
-ASM_VAR(AsmLabel, s_prContinuation, $L_6715f4)
-ASM_VAR(AsmLabel, s_prSpecialForm, $L_6715e4)
-ASM_VAR(AsmLabel, s_prGt, $L_6712a0)
-ASM_VAR(AsmLabel, s_prIdentFmt, $L_6715d0)
-ASM_VAR(AsmLabel, s_prIdent, $L_6715dc)
-ASM_VAR(AsmLabel, s_prUnsupported, $L_6715c0)
-ASM_VAR(AsmLabel, s_prPort, $L_671644)
-ASM_VAR(AsmLabel, s_prEnvironment, $L_671634)
-ASM_VAR(AsmLabel, s_prUserDefined, $L_671624)
-ASM_VAR(AsmLabel, s_prUnspecified, $L_671614)
-ASM_VAR(AsmLabel, s_prImmediate, $L_671104)
-ASM_VAR(AsmLabel, s_prPair, $L_66cb08)
-ASM_VAR(AsmLabel, s_prString, $L_66ca58)
-ASM_VAR(AsmLabel, s_prIdentifier, $L_66ce4c)
-ASM_VAR(AsmLabel, s_prVector, $L_6708e4)
-ASM_VAR(AsmLabel, s_prClosureType, $L_6705f4)
+KING_VAR(AsmLabel, s_prEmpty, 66d4e4)          // "()"
+KING_VAR(AsmLabel, s_prDot, 6715bc)            // " . "
+KING_VAR(AsmLabel, s_prTrue, 671664)
+KING_VAR(AsmLabel, s_prFalse, 671660)
+KING_VAR(AsmLabel, s_prNewline, 671654)
+KING_VAR(AsmLabel, s_prSpace, 67164c)
+KING_VAR(AsmLabel, s_prClosure, 671608)
+KING_VAR(AsmLabel, s_prClosureEnd, 671604)
+KING_VAR(AsmLabel, s_prContinuation, 6715f4)
+KING_VAR(AsmLabel, s_prSpecialForm, 6715e4)
+KING_VAR(AsmLabel, s_prGt, 6712a0)
+KING_VAR(AsmLabel, s_prIdentFmt, 6715d0)
+KING_VAR(AsmLabel, s_prIdent, 6715dc)
+KING_VAR(AsmLabel, s_prUnsupported, 6715c0)
+KING_VAR(AsmLabel, s_prPort, 671644)
+KING_VAR(AsmLabel, s_prEnvironment, 671634)
+KING_VAR(AsmLabel, s_prUserDefined, 671624)
+KING_VAR(AsmLabel, s_prUnspecified, 671614)
+KING_VAR(AsmLabel, s_prImmediate, 671104)
+KING_VAR(AsmLabel, s_prPair, 66cb08)
+KING_VAR(AsmLabel, s_prString, 66ca58)
+KING_VAR(AsmLabel, s_prIdentifier, 66ce4c)
+KING_VAR(AsmLabel, s_prVector, 6708e4)
+KING_VAR(AsmLabel, s_prClosureType, 6705f4)
 
 struct PrValue { DWORD d[3]; };
 
@@ -1772,7 +1769,7 @@ BYTE* __cdecl Sch_Write(BYTE* out, const BYTE* v, const BYTE* port, BYTE* ctx)
 extern "C" void FUN_4b1d40(); KING_ALIAS("_FUN_4b1d40", "_Num_ReadReal")    // a real number from the deque (out, radix, deque)
 extern "C" void FUN_48a9d0(); KING_ALIAS("_FUN_48a9d0", "@WBuf_Free@8")
 extern "C" void FUN_490ea0(); KING_ALIAS("_FUN_490ea0", "@StrPair_Destroy@4")
-ASM_VAR(char, s_badComplex671420, $L_671420)
+KING_VAR(char, s_badComplex671420, 671420)
 
 static int Num_Peek(BYTE* d, int n)
 {
@@ -1883,7 +1880,7 @@ DWORD* __cdecl Sch_ParseNumber(DWORD* out, int, BYTE* d)
 
 // === parsing a number's digits (FUN_4b1720)
 
-ASM_VAR(AsmLabel, s_pd671400, $L_671400)
+KING_VAR(AsmLabel, s_pd671400, 671400)
 extern "C" void FUN_48afa0(); KING_ALIAS("_FUN_48afa0", "_Int_AddSigned")
 extern "C" void FUN_48b350(); KING_ALIAS("_FUN_48b350", "_Int_Mul")
 extern "C" void FUN_4b1500(); KING_ALIAS("_FUN_4b1500", "_Num_ReadExponent")
@@ -1984,8 +1981,8 @@ int __cdecl Num_ParseDigits(BYTE** num, BYTE** den, int radix, BYTE* d)
 
 // === reading the rest of a list (FUN_4b2e90)
 
-ASM_VAR(AsmLabel, s_rl671470, $L_671470)
-ASM_VAR(AsmLabel, s_rl671464, $L_671464)
+KING_VAR(AsmLabel, s_rl671470, 671470)
+KING_VAR(AsmLabel, s_rl671464, 671464)
 extern "C" void FUN_4b2980(); KING_ALIAS("_FUN_4b2980", "_Sch_IsSpaceOrEof")
 extern "C" void FUN_4aa430(); KING_ALIAS("_FUN_4aa430", "@SchValue_Object@8")
 
@@ -2088,8 +2085,8 @@ BYTE* __cdecl Reader_String(BYTE* out, int a, BYTE* r)
 
 // === reading a character literal (FUN_4b3b10)
 
-ASM_VAR(char, s_rc671480, $L_671480)
-ASM_VAR(char, s_rc671488, $L_671488)
+KING_VAR(char, s_rc671480, 671480)
+KING_VAR(char, s_rc671488, 671488)
 extern "C" void FUN_49c210(); KING_ALIAS("_FUN_49c210", "_SchValue_Make10008")
 extern "C" void FUN_49c560(); KING_ALIAS("_FUN_49c560", "@SchValue_Assign@12")
 
@@ -2336,7 +2333,7 @@ BYTE* __cdecl Reader_Symbol(BYTE* out, int a, BYTE* r)
 
 // === reading an exponent (FUN_4b1500)
 
-ASM_VAR(AsmLabel, s_ex6713f0, $L_6713f0)
+KING_VAR(AsmLabel, s_ex6713f0, 6713f0)
 
 static int Ex_Peek(BYTE* d)
 {
@@ -2556,7 +2553,7 @@ extern "C" void Rd_Copy16(); KING_ALIAS("_Rd_Copy16", "@Sch_Copy16@12")
 extern "C" void Rd_Advance(); KING_ALIAS("_Rd_Advance", "@SchDequeIt_Advance@12")
 extern "C" void Rd_AddSigned(); KING_ALIAS("_Rd_AddSigned", "_Int_AddSigned")
 extern "C" void Rd_Mul(); KING_ALIAS("_Rd_Mul", "_Int_Mul")
-ASM_VAR(char, s_rd671400, $L_671400)
+KING_VAR(char, s_rd671400, 671400)
 
 // a big integer freed unless it is a small one (+2 == 0)
 static void Rd_Free(WORD* n)
@@ -2616,9 +2613,9 @@ DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q)
 
 extern "C" void __cdecl BigInt_DivMod(WORD** a, WORD** b, WORD** q, WORD** r);
 extern "C" double __fastcall IntRef_ToDouble(void* const* s, void*);
-ASM_VAR(BYTE, g_rq6703f0, $L_6703f0)
-ASM_VAR(double, g_rq64bc30, $L_64bc30)
-ASM_VAR(double, g_rq64beb0, $L_64beb0)
+KING_VAR(BYTE, g_rq6703f0, 6703f0)
+KING_VAR(double, g_rq64bc30, 64bc30)
+KING_VAR(double, g_rq64beb0, 64beb0)
 
 static void Rq_Free(WORD* p)
 {
@@ -2684,8 +2681,8 @@ double __cdecl Rational_ToDouble(WORD** num, WORD** den)
 extern "C" void Fp32_End(); KING_ALIAS("_Fp32_End", "@SchItem_Value@12")
 extern "C" void Fp32_PoolFree(); KING_ALIAS("_Fp32_PoolFree", "_Ai_PoolFree")
 extern "C" void Fp32_Seed(); KING_ALIAS("_Fp32_Seed", "@Rng_Seed@12")
-ASM_VAR(char, fp32_tag671510, $L_671510)
-ASM_VAR(int, fp32_seed67150c, $L_67150c)
+KING_VAR(char, fp32_tag671510, 671510)
+KING_VAR(int, fp32_seed67150c, 67150c)
 
 // drops the last character of the deque whose end iterator is at d (cur, first, last, node)
 static void Fp32_PopBack(BYTE* d)
