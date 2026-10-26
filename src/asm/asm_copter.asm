@@ -1,7 +1,7 @@
 ; asm_copter.asm - the procedures of this original unit not yet rewritten in C++
 INCLUDE king.inc
 
-EXTERN $L_55fad0:NEAR
+EXTERN _Cv_InitNames:NEAR
 EXTERN @Copter_SideDrift@12:PROC
 EXTERN @Dtor56f0f0_DeletingDestructor@12:PROC
 EXTERN @Dtor5736e0_DeletingDestructor@12:PROC
@@ -61,7 +61,7 @@ $L_560ef0 PROC
           BYTE 090H
 $L_560f00::
 
-            jmp $L_55fad0
+            jmp _Cv_InitNames
 $L_560ef0 ENDP
 ALIGN 16
 ; copter: src\truck\helicopter.cpp, nmake ASM_HELICOPTER=1 assembles the original

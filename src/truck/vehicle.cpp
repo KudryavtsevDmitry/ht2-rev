@@ -16061,3 +16061,198 @@ extern "C" void __fastcall Trailer_OnHit(BYTE* self, void*, int, const float* im
     double k = Vec3_Length((const Vec3*)impulse) / F(float, self, 412);
     Ai_HitPlayer(F(int, F(BYTE*, self, 21880), 20636), k, 1);
 }
+
+extern "C" BYTE* __fastcall Vh_D55fa80(BYTE*, void*, int); KING_ALIAS("@Vh_D55fa80@12", "@Dtor55ebd0_DeletingDestructor@12")
+// [$L_55fa80] the trailer's deleting destructor reached through the base 272 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk55fa80(BYTE* s, void* d, int f) { return Vh_D55fa80(s - 272, d, f); }
+extern "C" BYTE* __fastcall Vh_D55fa90(BYTE*, void*, int); KING_ALIAS("@Vh_D55fa90@12", "@Dtor55ebd0_DeletingDestructor@12")
+// [$L_55fa90] the trailer's deleting destructor reached through the base 392 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk55fa90(BYTE* s, void* d, int f) { return Vh_D55fa90(s - 392, d, f); }
+extern "C" BYTE* __fastcall Vh_D55faa0(BYTE*, void*, int); KING_ALIAS("@Vh_D55faa0@12", "@Dtor5587b0_DeletingDestructor@12")
+// [$L_55faa0] the trailer's deleting destructor reached through the base 16 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk55faa0(BYTE* s, void* d, int f) { return Vh_D55faa0(s - 16, d, f); }
+extern "C" BYTE* __fastcall Vh_D55fab0(BYTE*, void*, int); KING_ALIAS("@Vh_D55fab0@12", "@Dtor5587b0_DeletingDestructor@12")
+// [$L_55fab0] the trailer's deleting destructor reached through the base 272 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk55fab0(BYTE* s, void* d, int f) { return Vh_D55fab0(s - 272, d, f); }
+extern "C" BYTE* __fastcall Vh_D55fac0(BYTE*, void*, int); KING_ALIAS("@Vh_D55fac0@12", "@Dtor5587b0_DeletingDestructor@12")
+// [$L_55fac0] the trailer's deleting destructor reached through the base 392 bytes in
+extern "C" BYTE* __fastcall Vh_Thunk55fac0(BYTE* s, void* d, int f) { return Vh_D55fac0(s - 392, d, f); }
+
+// [$L_55fad0] static initializer: the default names of the vehicle and
+// parts tables in _BSS (numbered with the formats in _DATA), then the fixed
+// names copied over them (offsets into _BSS and _DATA)
+static const DWORD cv_names1[][2] = {    // _BSS offset, _DATA offset
+    {413792, 61852},
+    {413832, 61836},
+    {413872, 61820},
+    {413912, 61804},
+    {414072, 61788},
+    {414112, 61772},
+    {414232, 61756},
+    {414272, 61740},
+    {414392, 61724},
+    {414432, 61708},
+    {414472, 61692},
+    {414512, 61676},
+    {414552, 61660},
+    {414592, 61644},
+    {414592, 61628},
+    {414592, 61612},
+    {414672, 61596},
+    {414712, 61580},
+    {414752, 61564},
+    {414752, 61548},
+    {414832, 61532},
+    {414872, 61516},
+    {414912, 61500},
+    {414952, 61484},
+    {414992, 61468},
+    {415032, 61452},
+    {415072, 61436},
+    {415112, 61420},
+    {415152, 61404},
+    {415192, 61388},
+    {415232, 61372},
+    {415272, 61356},
+    {415312, 61340},
+    {415352, 61324},
+    {415392, 61308},
+    {415432, 61292},
+    {415472, 61276},
+    {415512, 61260},
+    {415552, 61244},
+    {415592, 61228},
+    {415632, 61212}
+};
+static const DWORD cv_names5[][2] = {    // _BSS offset, _DATA offset
+    {417392, 61180},
+    {417432, 61164},
+    {417472, 61148},
+    {417592, 61132},
+    {417632, 61116},
+    {417672, 61100},
+    {417712, 61084},
+    {417752, 61068},
+    {417792, 61052},
+    {417832, 61036},
+    {417872, 61020},
+    {417912, 61004},
+    {417952, 60988},
+    {417992, 60972},
+    {418032, 60956},
+    {418072, 60940},
+    {418112, 60924},
+    {418152, 60908},
+    {418192, 60892},
+    {418232, 60876},
+    {418272, 60860},
+    {418312, 60844},
+    {418352, 60828},
+    {418392, 60812},
+    {418432, 60796},
+    {418472, 60780},
+    {418512, 60764},
+    {418552, 60748},
+    {418592, 60732},
+    {418632, 60716},
+    {418672, 60700},
+    {418712, 60684},
+    {418752, 60668},
+    {418792, 60652},
+    {418832, 60636},
+    {418872, 60620},
+    {418912, 60604},
+    {418952, 60588},
+    {418992, 60572},
+    {419032, 60556},
+    {419072, 60540},
+    {419112, 60524},
+    {419152, 60508},
+    {419512, 60492},
+    {419552, 60476},
+    {423992, 60464},
+    {424032, 60452},
+    {424072, 60440}
+};
+static const DWORD cv_names11[][2] = {    // _BSS offset, _DATA offset
+    {412340, 60196},
+    {412370, 60168},
+    {412400, 60140},
+    {412430, 60112},
+    {412460, 60084},
+    {412490, 60056},
+    {412520, 60028},
+    {412550, 60000},
+    {412580, 59972},
+    {412610, 59944},
+    {412640, 59916},
+    {412670, 59888},
+    {412700, 59860},
+    {412730, 59832},
+    {412760, 59804},
+    {412790, 59776},
+    {412820, 59748},
+    {412850, 59720},
+    {412880, 59692},
+    {412910, 59664},
+    {412940, 59636},
+    {412970, 59608},
+    {413000, 59580},
+    {413030, 59552},
+    {413060, 59524},
+    {413090, 59496},
+    {413120, 59468},
+    {413150, 59440},
+    {413180, 59412},
+    {413210, 59384},
+    {413240, 59356},
+    {413270, 59328},
+    {413300, 59300},
+    {413330, 59272},
+    {413360, 59244},
+    {413390, 59216},
+    {413420, 59188},
+    {413450, 59160},
+    {413480, 59132},
+    {413510, 59104},
+    {413540, 59076},
+    {413570, 59048},
+    {413600, 59020},
+    {413630, 58992},
+    {413660, 58964}
+};
+static void Cv_CopyNames(const DWORD (*t)[2], int n)
+{
+    for (int i = 0; i < n; i++)
+        strcpy((char*)KingBss + t[i][0], (const char*)KingData + t[i][1]);
+}
+#define CV_B(o) ((char*)KingBss + (o))
+#define CV_D(o) ((const char*)KingData + (o))
+extern "C" void __cdecl Cv_InitNames()
+{
+    int i;
+    char* p;
+    for (i = 0, p = CV_B(413752); p < CV_B(427032); p += 40, i++)
+        sprintf(p, CV_D(61868), i);
+    Cv_CopyNames(cv_names1, 41);
+    for (i = 48, p = CV_B(415672); p <= CV_B(416032); p += 40, i++)
+        sprintf(p, CV_D(61196), i);
+    for (i = 65, p = CV_B(416352); p <= CV_B(417352); p += 40, i++)
+        sprintf(p, CV_D(61196), i);
+    Cv_CopyNames(cv_names5, 48);
+    for (i = 0, p = CV_B(424112); p < CV_B(425392); p += 40, i++)
+        sprintf(p, CV_D(60408), i + 1, i);
+    for (i = 0, p = CV_B(425392); p < CV_B(425552); p += 40, i++)
+        sprintf(p, CV_D(60372), i + 1, i);
+    for (i = 0, p = CV_B(425792); p < CV_B(427072); p += 160, i++) {
+        sprintf(p - 40, CV_D(60340), i + 1, i);
+        sprintf(p, CV_D(60308), i + 1, i);
+        sprintf(p + 40, CV_D(60276), i + 1, i);
+        sprintf(p + 80, CV_D(60244), i + 1, i);
+    }
+    for (i = 0, p = CV_B(412340); p < CV_B(413750); p += 30, i++)
+        sprintf(p, CV_D(60224), i);
+    Cv_CopyNames(cv_names11, 45);
+}
+#undef CV_B
+#undef CV_D
