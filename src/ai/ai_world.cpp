@@ -636,7 +636,7 @@ KING_VAR(AsmLabel, s_port, 66cb28)
 extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // the AI's allocator: free (p, size)
 extern "C" void FUN_447970(); KING_ALIAS("_FUN_447970", "@Vec4_FreeStorage@8")
 extern "C" void FUN_410e40(); KING_ALIAS("_FUN_410e40", "@Rec410e40_FreeVectors@8")
-ASM_PROC(FUN_466200)    // uninitialized copy of 24-byte records
+ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // uninitialized copy of 24-byte records
 extern "C" void FUN_4090a0(); KING_ALIAS("_FUN_4090a0", "_Str_Member32")
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 ASM_FUNC(FUN_401000, _Ai_Clock)    // the AI clock, returns double
@@ -690,7 +690,7 @@ extern "C" void FUN_45c610(); KING_ALIAS("_FUN_45c610", "@Vec4b_InsertB@16")
 extern "C" void FUN_45d370(); KING_ALIAS("_FUN_45d370", "@Vec4b_InsertD@16")
 
 extern "C" void FUN_458910(); KING_ALIAS("_FUN_458910", "@AI_Nop458910@8")    // destructor of a 1592-byte record
-ASM_PROC(FUN_466300)    // uninitialized copy of 16-byte records
+ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // uninitialized copy of 16-byte records
 KING_VAR(AsmLabel, g_vtbl64b600, 64b600)
 KING_VAR(AsmLabel, g_vtbl64b62c, 64b62c)
 
@@ -706,7 +706,7 @@ extern "C" void FUN_462d10(); KING_ALIAS("_FUN_462d10", "_Str_ClearFirst@4")
 extern "C" void FUN_40a580(); KING_ALIAS("_FUN_40a580", "@Pair_Set@16")
 extern "C" void FUN_4d8a40(); KING_ALIAS("_FUN_4d8a40", "_Vehicle_Exists")
 
-ASM_PROC(FUN_45b190)
+ASM_FUNC(FUN_45b190, _Find_ByHandle104)
 extern "C" void FUN_45adc0(); KING_ALIAS("_FUN_45adc0", "_List_FindKey8")
 extern "C" void FUN_45b220(); KING_ALIAS("_FUN_45b220", "_List_FindNear")
 extern "C" void FUN_45ddb0(); KING_ALIAS("_FUN_45ddb0", "_List_FindKey24")
@@ -2799,7 +2799,7 @@ extern "C" void* __fastcall StlLock_Guard(void* self, void*)
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")    // vector<double>::operator=
 extern "C" void FUN_461dc0(); KING_ALIAS("_FUN_461dc0", "_Vec16b_AllocCopy@12")    // vector of 16-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_469430(); KING_ALIAS("_FUN_469430", "_Rec16_Copy")    // copy 16-byte records (first, last, dest, -, 0)
-ASM_PROC(FUN_466300)    // copy-construct 16-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // copy-construct 16-byte records (first, last, dest, -)
 extern "C" void FUN_460d10(); KING_ALIAS("_FUN_460d10", "_MsgBuf_FreeThunk")    // destroy a 16-byte record
 extern "C" BYTE* __fastcall Rec16_DeletingDestructor(BYTE* s, void*, int flags);   // aistl.cpp
 KING_VAR(BYTE, g_vt64b5c0, 64b5c0)
@@ -2965,7 +2965,7 @@ extern "C" void FUN_4592b0(); KING_ALIAS("_FUN_4592b0", "@Hash_NewNode@12")    /
 extern "C" void FUN_461b60(); KING_ALIAS("_FUN_461b60", "_Vec24b_AllocCopy@12")    // vector of 24-byte records: allocate and copy (n, first, last)
 extern "C" void FUN_46c490(); KING_ALIAS("_FUN_46c490", "_Rec_DestroyThunk46c490")    // destroy a 24-byte record
 extern "C" void FUN_466c50(); KING_ALIAS("_FUN_466c50", "_Rec24b_Copy")    // copy 24-byte records (first, last, dest, -, 0)
-ASM_PROC(FUN_466200)    // copy-construct 24-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-construct 24-byte records (first, last, dest, -)
 extern "C" double __cdecl Order_Value(const int* o);        // aiordr.cpp
 extern "C" double __cdecl Order_FullValue(const int* o);
 
@@ -4360,6 +4360,18 @@ BYTE** __cdecl Find_ByHandleA(BYTE** first, BYTE** last, DWORD h0, DWORD h1, DWO
     return it;
 }
 
+// [FUN_45b190] the same over 104-byte records
+extern "C" BYTE* __cdecl Find_ByHandle104(BYTE* first, BYTE* last, DWORD h0, DWORD h1, DWORD h2)
+{
+    DWORD h[3] = {h0, h1, h2};
+    BYTE* it = first;
+    for (; it != last; it += 104)
+        if (CallC<bool>(FUN_4b6610, it, h))
+            break;
+    SchValue_Release(h);
+    return it;
+}
+
 // [FUN_45c0c0] the same over 24-byte records
 BYTE* __cdecl Find_ByHandleB(BYTE* first, BYTE* last, DWORD h0, DWORD h1, DWORD h2)
 {
@@ -5127,7 +5139,7 @@ BYTE* __cdecl Recs104_PickRandom(BYTE* first, BYTE* last, DWORD value, DWORD mas
 
 }
 
-ASM_PROC(FUN_466300)    // uninitialized copy of 16-byte records
+ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // uninitialized copy of 16-byte records
 
 extern "C" {
 
@@ -6707,8 +6719,8 @@ extern "C" int __cdecl Rec_ActivateOnly(BYTE* r)
 }
 
 KING_VAR(char, s_type66ce4c, 66ce4c)
-ASM_PROC(FUN_466300)    // copy-constructs 16-byte records (first, last, dest, -)
-ASM_PROC(FUN_466200)    // copy-constructs 24-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466300, _Rec16_UninitCopy)    // copy-constructs 16-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466200, _Rec24_UninitCopy)    // copy-constructs 24-byte records (first, last, dest, -)
 extern "C" void FUN_40cc50(); KING_ALIAS("_FUN_40cc50", "@Rec40cc50_Destroy@8")    // destroys a 24-byte element
 
 // [FUN_44ca00] a handle copied from a value of type 9, an error for another type
@@ -7583,7 +7595,7 @@ extern "C" int* __cdecl Items_Find41b2a0(int* out, BYTE* p, int a, int b)
     return out;
 }
 
-ASM_PROC(FUN_466440)    // uninitialized_fill_n of 12-byte vectors (first, n, value, -)
+ASM_FUNC(FUN_466440, _IntVec_UninitFillN)    // uninitialized_fill_n of 12-byte vectors (first, n, value, -)
 
 // [FUN_4024b0] the static vector at 68cbf8: 12 empty vectors
 extern "C" void __cdecl AI_Init68cbf8()
@@ -16108,7 +16120,7 @@ extern "C" void FUN_463da0(); KING_ALIAS("_FUN_463da0", "_Rec192_CopyBack")    /
 extern "C" void FUN_453620(); KING_ALIAS("_FUN_453620", "@Rec192_Assign@12")    // order info assignment (thiscall src)
 extern "C" void FUN_467580(); KING_ALIAS("_FUN_467580", "_OrderInfos_UninitCopy")    // uninitialized copy of order infos (first, last, dest, -)
 extern "C" void FUN_463b80(); KING_ALIAS("_FUN_463b80", "_CharVecs_CopyBack")    // copy_backward of vector<char> (first, last, result, -, 0)
-ASM_PROC(FUN_467320)    // uninitialized copy of vector<char> (first, last, dest, -)
+ASM_FUNC(FUN_467320, _CharVec_UninitCopy)    // uninitialized copy of vector<char> (first, last, dest, -)
 extern "C" void FUN_458500(); KING_ALIAS("_FUN_458500", "@Rec458500_Copy@12")    // 36-byte record copy constructor (thiscall src)
 extern "C" void FUN_459610(); KING_ALIAS("_FUN_459610", "@Vec4b_CopyB@12")    // vector<4 bytes> copy constructor (thiscall src)
 extern "C" void FUN_463940(); KING_ALIAS("_FUN_463940", "_Rec36_CopyBack")    // copy_backward of 36-byte records (first, last, result, -, 0)
@@ -16317,7 +16329,7 @@ extern "C" void FUN_466590(); KING_ALIAS("_FUN_466590", "_Recs104_UninitCopy")  
 extern "C" void FUN_460960(); KING_ALIAS("_FUN_460960", "_Rec40c220_Construct")    // construct a 104-byte record in place (dest, src)
 extern "C" void FUN_4581f0(); KING_ALIAS("_FUN_4581f0", "@Rec4581f0_Copy@12")    // 24-byte record copy constructor (thiscall src)
 extern "C" void FUN_463390(); KING_ALIAS("_FUN_463390", "_Rec24b_CopyBack")    // copy_backward of 24-byte records (first, last, result, -, 0)
-ASM_PROC(FUN_466d50)    // uninitialized copy of 24-byte records (first, last, dest, -)
+ASM_FUNC(FUN_466d50, _Rec24_UninitCopy)    // uninitialized copy of 24-byte records (first, last, dest, -)
 
 // the words of a 104-byte record that are copied as words
 static void Rec104_CopyWords(BYTE* d, const BYTE* s)
@@ -23208,7 +23220,7 @@ BYTE** __cdecl Player_RandomPartner(BYTE** out, BYTE* first, BYTE* last, BYTE* m
 
 // === stable_sort by nearness (FUN_45cf80)
 
-ASM_PROC(FUN_462340)    // a temporary buffer of pointers for [first, last)
+ASM_FUNC(FUN_462340, @TempBuf4_Construct@16)    // a temporary buffer of pointers for [first, last)
 extern "C" void __cdecl Near_StableSort(BYTE** f, BYTE** l, int ctx);   // ai_containers.cpp
 extern "C" void __cdecl free(void* p);
 
@@ -24874,7 +24886,7 @@ BYTE* __fastcall HashTable_Construct(BYTE* self, void*)
 }
 
 extern "C" void Ps33_Adjust(); KING_ALIAS("_Ps33_Adjust", "_Heap504_Adjust")
-ASM_PROC(FUN_46ad50)    // pop heap step (first, last, result, value, cmp, -)
+ASM_FUNC(FUN_46ad50, _PopHeapAux4)    // pop heap step (first, last, result, value, cmp, -)
 
 extern "C" {
 
@@ -24910,3 +24922,30 @@ void __cdecl Recs504_PartialSort(BYTE** first, BYTE** middle, BYTE** last, int c
 
 // [FUN_401000] the AI clock (seconds, double)
 extern "C" double __cdecl Ai_Clock() { return t_68a820; }
+
+// [FUN_462340] a temporary buffer of pointers for [first, last) (thiscall):
+// +0 the count, +4 the capacity (halved until malloc succeeds), +8 the
+// buffer, filled with copies of *first
+extern "C" BYTE* __cdecl UninitFill4s(BYTE* d, int n, const DWORD* v);
+extern "C" int* __fastcall TempBuf4_Construct(int* self, void*, DWORD* first, DWORD* last)
+{
+    int n = (int)(last - first);
+    self[1] = n;
+    self[0] = n;
+    self[2] = 0;
+    if (self[1] > 536870911)
+        self[1] = 536870911;
+    while (self[1] > 0 && !(self[2] = (int)malloc(self[1] * 4)))
+        self[1] /= 2;
+    if (self[1] > 0)
+        CallC(FUN_46b110, self[2], self[1], first, last);
+    return self;
+}
+
+// [FUN_462d20] the STL's length error: the original threw an exception with
+// the text at 66f544; exceptions are fatal in this program
+KING_VAR(AsmLabel, aw_s66f544, 66f544)
+extern "C" void __fastcall Stl_LengthError(void*)
+{
+    Sys_Fatal(aw_s66f544, 0);
+}

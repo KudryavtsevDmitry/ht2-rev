@@ -18,7 +18,7 @@ extern "C" void FUN_458a40(); KING_ALIAS("_FUN_458a40", "@Rec_Copy8Skip1@12")
 extern "C" void FUN_46bf20(); KING_ALIAS("_FUN_46bf20", "_Heap32_Adjust")
 extern "C" void FUN_46d0b0(); KING_ALIAS("_FUN_46d0b0", "_Far_AdjustHeap2")
 extern "C" void FUN_46c190(); KING_ALIAS("_FUN_46c190", "_Heap504_Adjust")
-ASM_PROC(FUN_46ad50)
+ASM_FUNC(FUN_46ad50, _PopHeapAux4)
 extern "C" void FUN_46cc00(); KING_ALIAS("_FUN_46cc00", "_Mult46cc00")
 extern "C" void FUN_4870e0(); KING_ALIAS("_FUN_4870e0", "_Player_ReplanToNode")
 extern "C" void FUN_529880(); KING_ALIAS("_FUN_529880", "_Carat_MarkKey")
@@ -1364,4 +1364,12 @@ extern "C" void __cdecl Player_ReplanToNode(BYTE* p, int n, int a3)
     BYTE pt[24];
     BYTE* q = CallC<BYTE*>(Rp_PointOf, pt, *(Rp_Pos*)(p + 40));
     CallC(Rp_SetPosition, p, q);
+}
+
+// [FUN_46ad50] pop_heap of 4-byte elements: the top goes to *result, value
+// is sifted in from the root (pred passed on)
+extern "C" void __cdecl PopHeapAux4(DWORD* first, DWORD* last, DWORD* result, DWORD value, DWORD pred, int)
+{
+    *result = *first;
+    CallC(FUN_46c190, first, 0, (int)(last - first), value, pred);
 }

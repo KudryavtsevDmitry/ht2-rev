@@ -1183,7 +1183,7 @@ extern "C" void FUN_4abce0(); KING_ALIAS("_FUN_4abce0", "@Vec12_Reserve@16")
 extern "C" void FUN_47e3e0(); KING_ALIAS("_FUN_47e3e0", "_Stl_UninitCopy12")
 extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")
 extern "C" void FUN_47e1f0(); KING_ALIAS("_FUN_47e1f0", "_Stl_UninitCopy8")
-ASM_PROC(FUN_466300)
+ASM_FUNC(FUN_466300, _Rec16_UninitCopy)
 
 // d = a copy of the vector s of records of size n, made by copy (first, last, to, -)
 static void Pc_Vec(BYTE** d, BYTE* const* s, int n, void (*copy)())
