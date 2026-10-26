@@ -5182,3 +5182,50 @@ void __fastcall Cone_SetPlanes(BYTE* o, void*, int a, const Vec3* pos, float dx,
 }
 
 } // extern "C"
+
+// === an effect's position stepped by its speed and the wind ($L_5a0510, a vtable entry)
+
+extern "C" void Ew_Animate(); KING_ALIAS("_Ew_Animate", "@Effect_AnimateQuad@8")
+ASM_VAR(BYTE*, g_ew7025b8, $L_7025b8)
+ASM_VAR(Vec3, g_ewWind, $L_702620)
+ASM_VAR(float, g_ew64c348, $L_64c348)
+
+extern "C" {
+
+// [$L_5a0510] effect s moved over the frame time (its world +88, +2960) by its speed (+156) plus the wind
+// (7025b8's strength +532 along 702620, scaled by 64c348); its place (+76) copied to +40, then animated
+void __fastcall Effect_DriftStep(BYTE* s, void*)
+{
+    double dt = F(double, F(BYTE*, s, 88), 2960);
+    float ex, ey, ez;
+    if (BYTE* w = g_ew7025b8)
+    {
+        double k = F(float, w, 532);
+        float ax = (float)(g_ewWind.x * k), ay = (float)(g_ewWind.y * k);
+        double az = g_ewWind.z * k;
+        float bx = (float)((double)ax * g_ew64c348), by = (float)((double)ay * g_ew64c348);
+        double bz = az * g_ew64c348;
+        float cx = (float)((double)bx + F(float, s, 156)), cy = (float)((double)by + F(float, s, 160));
+        double cz = bz + F(float, s, 164);
+        float dx = (float)(cx * dt), dy = (float)(cy * dt);
+        double dz = cz * dt;
+        ex = (float)((double)dx + F(float, s, 76));
+        ey = (float)((double)dy + F(float, s, 80));
+        ez = (float)(dz + F(float, s, 84));
+    }
+    else
+    {
+        double dx = dt * F(float, s, 156);
+        float dy = (float)(dt * F(float, s, 160)), dz = (float)(dt * F(float, s, 164));
+        ex = (float)(dx + F(float, s, 76));
+        ey = (float)((double)dy + F(float, s, 80));
+        ez = (float)((double)dz + F(float, s, 84));
+    }
+    F(float, s, 76) = ex;
+    F(float, s, 80) = ey;
+    F(float, s, 84) = ez;
+    memcpy(s + 40, s + 76, 12);
+    CallThis(Ew_Animate, s);
+}
+
+} // extern "C"

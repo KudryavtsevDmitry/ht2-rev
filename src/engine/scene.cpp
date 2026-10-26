@@ -2670,7 +2670,7 @@ void __fastcall Shape_ReadData(BYTE* s, void*, BYTE* f)
 
 // === vector<56 bytes>::insert_aux (FUN_5ffdf0)
 
-ASM_PROC(FUN_6000c0)    // copy constructor of a 56-byte record (this, src)
+extern "C" void FUN_6000c0(); KING_ALIAS("_FUN_6000c0", "@Rec56_CopyConstruct@12")    // copy constructor of a 56-byte record (this, src)
 ASM_PROC(FUN_600420)    // uninitialized copy of 56-byte records (first, last, dest, x)
 extern "C" void FUN_6002f0(); KING_ALIAS("_FUN_6002f0", "_Music_CopyBackward")
 extern "C" void FUN_44c160(); KING_ALIAS("_FUN_44c160", "@PodVec_Assign@12")
@@ -5516,6 +5516,80 @@ int __fastcall Scene_ReadChildren(BYTE* s, void*, int file, int r, int n, int b,
     if (i != F(int, s, 52))
         return 0;
     return r == 0;
+}
+
+} // extern "C"
+
+// === a 56-byte record copied (FUN_6000c0)
+
+extern "C" void* __cdecl Stl_Allocate(unsigned bytes);
+extern "C" void* __cdecl memmove(void* d, const void* s, size_t n);
+
+extern "C" {
+
+// [FUN_6000c0] record s made a copy of src: its byte vector (+0, storage from the STL allocator) and its fields
+// +16 .. +52 (+12 left alone)
+BYTE* __fastcall Rec56_CopyConstruct(BYTE* s, void*, const BYTE* src)
+{
+    const BYTE* b = F(const BYTE*, src, 0);
+    unsigned n = (unsigned)(F(const BYTE*, src, 4) - b);
+    F(BYTE*, s, 0) = 0;
+    F(BYTE*, s, 4) = 0;
+    F(BYTE*, s, 8) = 0;
+    BYTE* p = n ? (BYTE*)Stl_Allocate(n) : 0;
+    F(BYTE*, s, 0) = p;
+    F(BYTE*, s, 4) = p;
+    F(BYTE*, s, 8) = p + n;
+    const BYTE* e = F(const BYTE*, src, 4);
+    memmove(p, F(const BYTE*, src, 0), e - F(const BYTE*, src, 0));
+    F(BYTE*, s, 4) = p + (e - F(const BYTE*, src, 0));
+    memcpy(s + 16, src + 16, 24);
+    memcpy(s + 40, src + 40, 16);
+    return s;
+}
+
+} // extern "C"
+
+// === a sprite node drawn at the level of detail for its projected size ($L_5fac60, a vtable entry)
+
+extern "C" void Sp_Test(); KING_ALIAS("_Sp_Test", "@Scene_TestInfo@16")
+extern "C" void Sp_Level(); KING_ALIAS("_Sp_Level", "@Render_Level@8")
+extern "C" void Sp_Draw(); KING_ALIAS("_Sp_Draw", "@Render_Sprite@32")
+ASM_VAR(double, g_sp64b670, $L_64b670)
+ASM_VAR(double, g_sp64b5a0, $L_64b5a0)
+struct SpV3 { DWORD d[3]; };
+
+extern "C" {
+
+// [$L_5fac60] sprite node s (its place +56, its radius +68, +72 sizes at +76 with images +80, +48 / +52 / +84 the
+// draw values) seen in view v: its depth (the view's frame +2240 by +8224) plus its projected radius past 1; near
+// (64b5a0) the last image, else the last one whose size is under the projected size; 1 when drawn
+int __fastcall Sprite_Draw(BYTE* s, void*, int a, BYTE* v)
+{
+    if (!CallThis<int>(Sp_Test, s, a, v))
+        return 0;
+    const float* M = (const float*)(v + 2240 + F(int, v, 8224) * 48);
+    float depth = (float)((double)M[7] * F(float, s, 64) + (double)F(float, s, 60) * M[4] + (double)M[1] * F(float, s, 56)
+                          + M[10]);
+    double r = (double)F(float, v, 4256 + F(int, v, 8228) * 48) * F(float, s, 68);
+    if (!((double)depth + r > g_sp64b670))
+        return 0;
+    int n = F(int, s, 72);
+    int i = n - 1;
+    if ((double)depth > g_sp64b5a0)
+    {
+        int half = CallThis<int>(Sp_Level, v) / 2;
+        float size = (float)((double)half * ((r + r) / depth));
+        for (; i >= 0; i--)
+            if (F(float*, s, 76)[i] < size)
+                break;
+        if (i < 0)
+            return 0;
+    }
+    if (i < 0 || i >= n)
+        return 0;
+    CallThis(Sp_Draw, v, F(int, s, 48), F(int, s, 52), F(SpV3, s, 84), F(int*, s, 80)[i]);
+    return 1;
 }
 
 } // extern "C"

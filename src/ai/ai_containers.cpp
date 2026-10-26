@@ -2340,7 +2340,7 @@ extern "C" void __cdecl Stream_SetWindow(BYTE* s)
 // Small virtual methods and static initializers.
 typedef char AsmLabel[1];
 
-ASM_PROC(FUN_459e90)
+extern "C" void FUN_459e90(); KING_ALIAS("_FUN_459e90", "@RopeSubstr_Destroy@8")
 ASM_VAR(AsmLabel, g_aicon64b5a8, $L_64b5a8)
 
 static BYTE* Aicon_DeleteAfter(BYTE* self, int flags, void (*dtor)())

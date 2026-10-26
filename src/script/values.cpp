@@ -944,7 +944,7 @@ extern "C" void __fastcall Number_Write(BYTE* s, void*, BYTE** v)
     Chars_PushBack(v, 0);
 }
 
-ASM_PROC(FUN_48a7c0)    // a big integer's value as a double (digits, end)
+extern "C" void FUN_48a7c0(); KING_ALIAS("_FUN_48a7c0", "_Rational_ToDouble")    // a big integer's value as a double (digits, end)
 
 // [FUN_4b0be0] constructs a complex number from two big integers (exact when asked)
 extern "C" BYTE* __fastcall Number_ConstructComplex(BYTE* s, void*, int exact, BYTE* re, BYTE* im)
@@ -2608,6 +2608,72 @@ DWORD* __cdecl Deque_ReadDigits(DWORD* out, int r, BYTE* q)
     *out = CallC<DWORD>(FUN_48acd0, 0, acc);
     Rd_Free(acc);
     return out;
+}
+
+} // extern "C"
+
+// === a rational's value as a double (FUN_48a7c0)
+
+extern "C" void __cdecl BigInt_DivMod(WORD** a, WORD** b, WORD** q, WORD** r);
+extern "C" double __fastcall IntRef_ToDouble(void* const* s, void*);
+ASM_VAR(BYTE, g_rq6703f0, $L_6703f0)
+ASM_VAR(double, g_rq64bc30, $L_64bc30)
+ASM_VAR(double, g_rq64beb0, $L_64beb0)
+
+static void Rq_Free(WORD* p)
+{
+    if (p && p[1])
+        operator delete(p);
+}
+
+extern "C" {
+
+// [FUN_48a7c0] num / den (big integers: word count, owned flag, sign 1 or -1, the words from the top) as a double:
+// the quotient, plus, when it is exact as a double, the remainder over den by long division bit by bit until den's
+// double stops growing
+double __cdecl Rational_ToDouble(WORD** num, WORD** den)
+{
+    WORD* q = (WORD*)&g_rq6703f0;
+    WORD* r = (WORD*)&g_rq6703f0;
+    BigInt_DivMod(num, den, &q, &r);
+    double v = IntRef_ToDouble((void* const*)&q, 0);
+    double res = v;
+    WORD rl;
+    if (v < g_rq64bc30 && v > g_rq64beb0 && (rl = r[0]) != 0)
+    {
+        int sgn = r[2] == 1 ? 1 : -1;
+        double n = 0, d = 0;
+        const WORD* dw = *den;
+        for (int i = dw[0] - 1; i >= 0; i--)
+        {
+            bool stop = false;
+            for (unsigned m = 0x8000; m; m >>= 1)
+            {
+                if (d + 1.0 == d)
+                {
+                    stop = true;
+                    break;
+                }
+                d += d;
+                if (dw[3 + i] & m)
+                    d += 1.0;
+                if (i < rl)
+                {
+                    n += n;
+                    if (r[3 + i] & m)
+                        n += 1.0;
+                }
+            }
+            if (stop)
+                break;
+        }
+        if (sgn < 0)
+            n = -n;
+        res = n / d + v;
+    }
+    Rq_Free(r);
+    Rq_Free(q);
+    return res;
 }
 
 } // extern "C"

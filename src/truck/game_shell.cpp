@@ -19,7 +19,7 @@ extern "C" int __cdecl isalnum(int c);
 extern "C" int __cdecl sprintf(char* buf, const char* format, ...);
 
 extern "C" int __cdecl Carat_Read7ad0(int a, int b, int* values, int c, int d, int n);
-KING_ALIAS("_Carat_Read7ad0", "FUN_507ad0")
+KING_ALIAS("_Carat_Read7ad0", "_Ini_ReadFloats")
 extern "C" int __cdecl Carat_Read7df0(int a, int b, int* values, int c, int d, int n);
 KING_ALIAS("_Carat_Read7df0", "_Ini_ReadInts")
 extern "C" BYTE* __cdecl Carat_Window(int a, int b);
@@ -7033,7 +7033,7 @@ ASM_VAR(AsmLabel, g_nd723d50, $L_723d50)
 ASM_VAR(double, g_nd64b5f0, $L_64b5f0)
 extern "C" void FUN_5c3c50(); KING_ALIAS("_FUN_5c3c50", "@Music_WaitNetwork@16")    // net: send a message (name, msg)
 ASM_PROC(FUN_5c55b0)    // net: the host's reply (reply, -)
-ASM_PROC(FUN_5c3ac0)    // net: whether the session is open
+extern "C" void FUN_5c3ac0(); KING_ALIAS("_FUN_5c3ac0", "@Net_CheckSession@8")    // net: whether the session is open
 extern "C" void FUN_5c5740(); KING_ALIAS("_FUN_5c5740", "@Chat_Receive@20")    // net: host (name, 0, 0)
 extern "C" void FUN_5ea1b0(); KING_ALIAS("_FUN_5ea1b0", "_Font_DrawText")    // text in a width (surface, x, y, width, font, text, align, -)
 
@@ -11311,12 +11311,19 @@ ASM_VAR(BYTE*, g_sv6cec6c, $L_6cec6c)
 ASM_VAR(BYTE*, g_sv696ca0, $L_696ca0)
 ASM_VAR(double, g_sv64e4c8, $L_64e4c8)
 
-// storage st's new stream named name (vtable +12, create | write), fatal err when it fails
+// a COM method (stdcall, this pushed) at vtbl+off
+template <class R = long, class... A>
+static R Sv_Com(void* p, int off, A... a)
+{
+    return ((R(__stdcall*)(void*, A...))(*(void***)p)[off / 4])(p, a...);
+}
+
+// storage st's new stream named name (IStorage::CreateStream, create | write), fatal err when it fails
 static BYTE* Sv_Stream(BYTE* st, const char* name, const char* err)
 {
     BYTE* s = 0;
     void* w = CallC<void*>(Sv_Wide, name);
-    CallVirt(st, 12, w, 4113, 0, 0, &s);
+    Sv_Com(st, 12, w, 4113, 0, 0, &s);
     if (!s)
         CallC(Sv_Fatal, err, 0);
     return s;
@@ -11325,7 +11332,7 @@ static BYTE* Sv_Stream(BYTE* st, const char* name, const char* err)
 static void Sv_Write(BYTE* s, const void* p, int n)
 {
     int done;
-    CallVirt(s, 16, p, n, &done);
+    Sv_Com(s, 16, p, n, &done);
 }
 
 extern "C" {
@@ -11340,7 +11347,7 @@ void __cdecl Save_WriteGame(BYTE* st, int shot)
     t[1] = F(double, g_sv6f33ac, 104) * g_sv64e4c8;
     t[2] = F(float, g_sv6f33ac, 544);
     Sv_Write(s, t, 24);
-    CallVirt(s, 8);
+    Sv_Com(s, 8);
     s = Sv_Stream(st, &g_svState, &g_svStateErr);
     int v[6] = {6};
     Sv_Write(s, v, 4);
@@ -11353,13 +11360,13 @@ void __cdecl Save_WriteGame(BYTE* st, int shot)
     v[4] = g_sv6f33bc;
     v[5] = F(int, g_sv6cec6c, 1304);
     Sv_Write(s, v, 24);
-    CallVirt(s, 8);
+    Sv_Com(s, 8);
     s = Sv_Stream(st, &g_svRes, &g_svResErr);
     CallThis(Sv_ResSave, g_sv696ca0 + 704, s);
-    CallVirt(s, 8);
+    Sv_Com(s, 8);
     s = Sv_Stream(st, &g_svThumb, &g_svThumbErr);
     CallC(Sv_Thumb, s, 72, 54, shot);
-    CallVirt(s, 8);
+    Sv_Com(s, 8);
 }
 
 } // extern "C"
@@ -11405,6 +11412,105 @@ int __cdecl Ini_ReadInts(const char* sec, const char* key, const int* defs, int*
     CallThis(Ir_Free, is + 12);
     CallThis(Ir_FreeIos, is + 12);
     return has;
+}
+
+} // extern "C"
+
+// === n floats read from one ini key (FUN_507ad0)
+
+extern "C" double __cdecl strtod(const char* s, char** end);
+ASM_VAR(char, g_irBadFloat, $L_674afc)
+
+extern "C" {
+
+// [FUN_507ad0] as Ini_ReadInts with floats; the key counts only when it is not empty
+int __cdecl Ini_ReadFloats(const char* sec, const char* key, const float* defs, float* out, const char* ini, int n)
+{
+    char line[100];
+    GetPrivateProfileStringA(sec, key, &g_irNone, line, 100, ini);
+    int has = strcmp(line, &g_irNone) && line[0];
+    __declspec(align(8)) BYTE is[96];
+    CallThis(Ir_New, is, line, 1);
+    for (int k = 0; k < n; k++)
+    {
+        out[k] = defs[k];
+        if (!has)
+            continue;
+        char word[96];
+        if (!Stream_ReadWord(is, word) || word[0] == '#')
+            continue;
+        char* end = 0;
+        out[k] = (float)strtod(word, &end);
+        if (*end)
+        {
+            char msg[108];
+            sprintf(msg, &g_irBadFloat, ini, sec, key, word);
+            Setup_Fatal(msg);
+        }
+    }
+    CallThis(Ir_Free, is + 12);
+    CallThis(Ir_FreeIos, is + 12);
+    return has;
+}
+
+} // extern "C"
+
+// === whether the net session is open (FUN_5c3ac0)
+
+extern "C" void Ns_Stream(); KING_ALIAS("_Ns_Stream", "@Stream_Construct@8")
+extern "C" void Ns_Free(); KING_ALIAS("_Ns_Free", "@Gate_602bd0@8")
+extern "C" void Ns_Now(); KING_ALIAS("_Ns_Now", "_Tsc_Now")
+extern "C" void Ns_Rebuild(); KING_ALIAS("_Ns_Rebuild", "_Providers_Rebuild")
+extern "C" void Ns_Call(); KING_ALIAS("_Ns_Call", "_Providers_Call601c70")
+ASM_VAR(double, g_ns707f80, $L_707f80)
+ASM_VAR(double, g_ns707f78, $L_707f78)
+ASM_VAR(double, g_ns64b848, $L_64b848)
+ASM_VAR(BYTE, g_ns67f880, $L_67f880)
+
+extern "C" {
+
+// [FUN_5c3ac0] net s (+416 started, +420 the state, +428 connected, +424 the provider): 0 when not started or
+// already in a state, or when the provider fails (3); else at most every 64b848 seconds the providers are rebuilt
+// and asked, a 0 answer connecting; the state becomes 2 once connected; 1
+int __fastcall Net_CheckSession(BYTE* s, void*)
+{
+    __declspec(align(8)) BYTE tmp[32];
+    CallThis(Ns_Stream, tmp);
+    CallC<double>(Ns_Now);
+    int r = 0;
+    if (F(int, s, 416) && !F(int, s, 420))
+    {
+        CallC<double>(Ns_Now);
+        r = 1;
+        if (!F(int, s, 428))
+        {
+            double t = CallC<double>(Ns_Now);
+            double dl = g_ns707f80 + g_ns64b848;
+            if (CallC<double>(Ns_Now) > dl)
+            {
+                g_ns707f80 = t;
+                CallC(Ns_Rebuild);
+                int a = CallC<int>(Ns_Call, F(int, s, 424), 1, 8, &g_ns67f880);
+                if (a == 3)
+                    r = 0;
+                else if (!a)
+                {
+                    F(int, s, 428) = 1;
+                    g_ns707f78 = t;
+                }
+                else
+                    r = 2;
+            }
+            if (r == 1 && F(int, s, 428))
+                F(int, s, 420) = 2;
+            if (r == 2)
+                r = 1;
+        }
+        else
+            F(int, s, 420) = 2;
+    }
+    CallThis(Ns_Free, tmp);
+    return r;
 }
 
 } // extern "C"

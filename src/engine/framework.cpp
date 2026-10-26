@@ -2095,7 +2095,7 @@ extern "C" void FUN_5e2e80(); KING_ALIAS("_FUN_5e2e80", "@GdiObject5e2e80_Destro
 extern "C" void FUN_5e2ee0(); KING_ALIAS("_FUN_5e2ee0", "@GdiObject5e2ee0_Destroy@4")
 extern "C" void FUN_5e2f40(); KING_ALIAS("_FUN_5e2f40", "@Fw5e2f40_Destroy@4")
 extern "C" void FUN_5e4810(); KING_ALIAS("_FUN_5e4810", "@NamedTable_Destroy@8")
-ASM_PROC(FUN_5daa30)
+extern "C" void FUN_5daa30(); KING_ALIAS("_FUN_5daa30", "@Fw_MakeCluster@36")
 extern "C" void FUN_5eb310(); KING_ALIAS("_FUN_5eb310", "@Camera_Draw@28")
 extern "C" void FUN_5dbe60(); KING_ALIAS("_FUN_5dbe60", "@Messages_Take@8")
 extern "C" void FUN_5e05c0(); KING_ALIAS("_FUN_5e05c0", "@Dbg_OnInput@12")
@@ -6180,6 +6180,227 @@ int __cdecl Room_QueueDelete(BYTE* node, BYTE* ctx)
     if (F(int, ctx, 424) == F(int, ctx, 428))
         CallC(Rq_Fatal, "DL Module to delete too many", 0);
     return -1;
+}
+
+} // extern "C"
+
+// === the framework's observer cluster made (FUN_5daa30 with its tail $L_5dab43)
+
+extern "C" void Ob_Sound(); KING_ALIAS("_Ob_Sound", "_Sound_Start")
+extern "C" void Ob_Palette(); KING_ALIAS("_Ob_Palette", "@Palette_Construct@8")
+extern "C" void Ob_Gray(); KING_ALIAS("_Ob_Gray", "@Palette_Gray@8")
+extern "C" void Ob_Defaults(); KING_ALIAS("_Ob_Defaults", "@Palette_Defaults@8")
+extern "C" void Ob_Fog(); KING_ALIAS("_Ob_Fog", "@Fog_BuildTables@16")
+extern "C" void Ob_Dark(); KING_ALIAS("_Ob_Dark", "@Dark_BuildTables@12")
+extern "C" void Ob_Fade(); KING_ALIAS("_Ob_Fade", "@Fade_BuildTables@16")
+extern "C" void Ob_Cluster(); KING_ALIAS("_Ob_Cluster", "@Cluster_ConstructEmpty@36")
+extern "C" void Ob_Resolve(); KING_ALIAS("_Ob_Resolve", "@NameHash_ResolvePending@8")
+extern "C" void Ob_Fatal(); KING_ALIAS("_Ob_Fatal", "_Sys_Fatal")
+extern "C" void Ob_NodeN(); KING_ALIAS("_Ob_NodeN", "@NodeN_Construct@20")
+extern "C" void Ob_Apply(); KING_ALIAS("_Ob_Apply", "@Node_ApplyMatrix@16")
+extern "C" void Ob_AddNode(); KING_ALIAS("_Ob_AddNode", "@Room_AddNode@12")
+extern "C" void Ob_HashAdd(); KING_ALIAS("_Ob_HashAdd", "@NameHash_Add@16")
+extern "C" void Ob_Push(); KING_ALIAS("_Ob_Push", "@Group_Push@12")
+ASM_VAR(BYTE*, g_ob721750, $L_721750)
+ASM_VAR(BYTE, g_ob71e820, $L_71e820)
+ASM_VAR(AsmLabel, g_ob7025f0, $L_7025f0)
+ASM_VAR(AsmLabel, g_ob64d7d0, $L_64d7d0)
+ASM_VAR(AsmLabel, g_ob64d7bc, $L_64d7bc)
+ASM_VAR(char, g_obName, $L_682c5c)
+
+extern "C" {
+
+// [FUN_5daa30..$L_5dab43] framework s's cluster (+468; a gray palette of its own when pal < 1), its "r_obs" node
+// 10 below the origin with its view record (+120), named in the object names
+BYTE* __fastcall Fw_MakeCluster(BYTE* s, void*, int pal, int items, int images, int masks, int sounds, int bufs,
+                                int nodes)
+{
+    if (F(int, g_ob721750, 344))
+        CallC(Ob_Sound);
+    BYTE* own = 0;
+    if (pal < 1)
+    {
+        BYTE* p = (BYTE*)operator new(816);
+        if (p)
+            p = CallThis<BYTE*>(Ob_Palette, p);
+        own = p;
+        CallThis(Ob_Gray, p);
+        CallThis(Ob_Defaults, p);
+        CallThis(Ob_Fog, p, 4, 8);
+        CallThis(Ob_Dark, p, 32);
+        CallThis(Ob_Fade, p, 32, 4);
+        pal = 1;
+    }
+    BYTE* c = (BYTE*)operator new(180);
+    if (c)
+        c = CallThis<BYTE*>(Ob_Cluster, c, pal, items, images, masks, sounds, bufs, nodes);
+    F(BYTE*, s, 468) = c;
+    if (const char* err = CallThis<const char*>(Ob_Resolve, &g_ob71e820))
+        CallC(Ob_Fatal, err, 0);
+    BYTE* n = (BYTE*)operator new(112);
+    if (n)
+    {
+        CallThis(Ob_NodeN, n, &g_obName, 6, 1);
+        memset(n + 64, 0, 48);
+        memcpy(n + 64, &g_ob7025f0, 48);
+        F(void*, n, 0) = &g_ob64d7d0;
+        F(int, n, 56) = 0;
+        F(int, n, 60) = 0;
+    }
+    Vec3 at = {0, -10.0f, 0};
+    Matrix t;
+    CallThis(Ob_Apply, n, Matrix_Translation(&t, at), 1);
+    CallThis(Ob_AddNode, F(BYTE*, s, 468), n);
+    BYTE* o = (BYTE*)operator new(104);
+    if (o)
+    {
+        F(int, o, 4) = 0;
+        F(int, o, 8) = 0;
+        F(void*, o, 0) = &g_ob64d7bc;
+        F(int, o, 76) = 0;
+        F(BYTE*, o, 80) = n;
+        F(float, o, 88) = 1.0f;
+        F(float, o, 84) = 1.0f;
+        F(int, o, 96) = 0;
+        F(int, o, 92) = 0;
+        F(BYTE, o, 44) = 0;
+        F(BYTE, o, 12) = 0;
+        F(int, o, 100) = 0;
+    }
+    F(BYTE*, F(BYTE*, s, 468), 120) = o;
+    CallThis(Ob_HashAdd, &g_ob71e820, &g_obName, n);
+    if (own)
+        CallThis(Ob_Push, F(BYTE*, s, 468), own);
+    return F(BYTE*, s, 468);
+}
+
+} // extern "C"
+
+// === a window resized with its child keeping its margins in proportion ($L_5da410, a vtable entry)
+
+extern "C" void Wr_Next(); KING_ALIAS("_Wr_Next", "@Node_Next@8")
+extern "C" void Wr_Remake(); KING_ALIAS("_Wr_Remake", "@Fw_RemakeSurface@24")
+ASM_VAR(double, g_wr64b670, $L_64b670)
+
+// child c's margin (+44 / +48 by off) against window s's free space (size by vtable slot, less the end +52 / +56),
+// as a ratio; 1000 when there is none
+static double Wr_Ratio(BYTE* s, int slot, BYTE* c, int off)
+{
+    if (CallVirt<int>(s, slot) == F(int, c, off + 8))
+        return 1000.0;
+    double m = F(int, c, off);
+    return x87_fabs(m / (double)(CallVirt<int>(s, slot) - F(int, c, off + 8)));
+}
+
+extern "C" {
+
+// [$L_5da410] window s (its node +56, shown +60) remade at w x h: its child (+288, the last one) keeps its left /
+// top margins (+44 / +48, the right / bottom ends +52 / +56) in the same ratio to the free space; the node's ends
+// follow the new size
+void __fastcall Wnd_Resize(BYTE* s, void*, int w, int h, int a3, int)
+{
+    double kx = 2.0, ky = 2.0;
+    BYTE* n = F(BYTE*, s, 56);
+    BYTE* c;
+    if (n && F(int, s, 60) && (c = F(BYTE*, n, 288)) != 0 && !CallThis<int>(Wr_Next, c))
+    {
+        kx = Wr_Ratio(s, 20, c, 44);
+        ky = Wr_Ratio(s, 24, c, 48);
+    }
+    CallThis(Wr_Remake, s, w, h, a3, 0);
+    n = F(BYTE*, s, 56);
+    if (!n || !F(int, s, 60))
+        return;
+    F(int, n, 52) = F(int, n, 44) + w;
+    n = F(BYTE*, s, 56);
+    F(int, n, 56) = F(int, n, 48) + h;
+    n = F(BYTE*, s, 56);
+    if ((F(BYTE, n, 32) & 4) || !(c = F(BYTE*, n, 288)) || CallThis<int>(Wr_Next, c))
+        return;
+    int vx = CallVirt<int>(s, 20) + (F(int, c, 44) - F(int, c, 52));
+    int x = (int)((double)vx * (kx / (kx + g_wr64b670)));
+    int vy = CallVirt<int>(s, 24) + (F(int, c, 48) - F(int, c, 56));
+    int y = (int)((double)vy * (ky / (ky + g_wr64b670)));
+    F(int, c, 52) += x - F(int, c, 44);
+    F(int, c, 44) = x;
+    F(int, c, 56) += y - F(int, c, 48);
+    F(int, c, 48) = y;
+}
+
+} // extern "C"
+
+// === the framework's renderer made again for a new surface (FUN_5dbbb0)
+
+extern "C" void Rr_Surface(); KING_ALIAS("_Rr_Surface", "@Fw_NewSurface@24")
+extern "C" void Rr_Nop(); KING_ALIAS("_Rr_Nop", "_Fw_Nop")
+extern "C" void Rr_VecDtor(); KING_ALIAS("_Rr_VecDtor", "??_M@YGXPAXIHP6EX0@Z@Z")
+extern "C" void Rr_New(); KING_ALIAS("_Rr_New", "@Renderer_Construct@12")
+ASM_VAR(AsmLabel, g_rr652280, $L_652280)
+
+extern "C" {
+
+// [FUN_5dbbb0] framework s's surface made (a, b, c, d), its renderer (+464) replaced by a new one keeping the old
+// one's +8452
+void __fastcall Fw_ResetRenderer(BYTE* s, void*, int a, int b, int c, int d)
+{
+    CallThis(Rr_Surface, s, a, b, c, d);
+    BYTE* r = F(BYTE*, s, 464);
+    int keep = F(int, r, 8452);
+    if (r)
+    {
+        CallC(Rr_Nop, r + 7824);
+        CallStd(Rr_VecDtor, r + 6224, 80, 20, (void*)Rr_Nop);
+        operator delete(r);
+    }
+    BYTE* n = (BYTE*)operator new(20992);
+    if (n)
+    {
+        CallThis(Rr_New, n, F(int, s, 12));
+        F(BYTE*, n, 20976) = s;
+        F(void*, n, 0) = &g_rr652280;
+        F(BYTE*, n, 20984) = s;
+    }
+    F(BYTE*, s, 464) = n;
+    F(int, n, 8452) = keep;
+}
+
+} // extern "C"
+
+// === a window's bitmap blitted onto a DC ($L_5e27c0, a vtable entry)
+
+extern "C" void Cd_New(); KING_ALIAS("_Cd_New", "??0CDC@@QAE@XZ")
+extern "C" void Cd_Free(); KING_ALIAS("_Cd_Free", "??1CDC@@UAE@XZ")
+extern "C" void Cd_Attach(); KING_ALIAS("_Cd_Attach", "?Attach@CDC@@QAEHPAUHDC__@@@Z")
+extern "C" void Cd_Select(); KING_ALIAS("_Cd_Select", "?SelectGdiObject@CDC@@KGPAVCGdiObject@@PAUHDC__@@PAX@Z")
+extern "C" void Cd_MapMode(); KING_ALIAS("_Cd_MapMode", "?SetMapMode@CDC@@UAEHH@Z")
+
+extern "C" {
+
+// [$L_5e27c0] window s's bitmap (+188, its handle +4) copied to CDC to at to's logical origin, the window's
+// client size (+28 the window) mapped to to's mapping mode; 0 without a bitmap
+int __fastcall Wnd_BlitTo(BYTE* s, void*, BYTE* to)
+{
+    __declspec(align(8)) BYTE dc[16];
+    CallThis(Cd_New, dc);
+    if (!F(void*, F(BYTE*, s, 188), 4))
+    {
+        CallThis(Cd_Free, dc);
+        return 0;
+    }
+    HDC mem = CreateCompatibleDC(to ? F(HDC, to, 4) : 0);
+    CallThis(Cd_Attach, dc, mem);
+    void* bmp = F(BYTE*, s, 188) ? F(void*, F(BYTE*, s, 188), 4) : 0;
+    CallStd(Cd_Select, F(HDC, dc, 4), bmp);
+    CallThis(Cd_MapMode, dc, GetMapMode(F(HDC, to, 8)));
+    RECT rc;
+    GetClientRect(F(HWND, s, 28), &rc);
+    SIZE sz = {rc.right - rc.left, rc.bottom - rc.top};
+    DPtoLP(F(HDC, dc, 8), (POINT*)&sz, 1);
+    POINT pt = {0, 0};
+    DPtoLP(F(HDC, dc, 8), &pt, 1);
+    BitBlt(F(HDC, to, 4), pt.x, pt.y, sz.cx, sz.cy, F(HDC, dc, 4), pt.x, pt.y, SRCCOPY);
+    CallThis(Cd_Free, dc);
+    return 1;
 }
 
 } // extern "C"

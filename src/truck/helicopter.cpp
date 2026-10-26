@@ -2190,7 +2190,7 @@ extern "C" BYTE* __fastcall Dtor573bf0_DeletingDestructor(BYTE* s, void*, int fl
 // ---------------------------------------------------------------------------
 // Scalar deleting destructors: the destructor, then the memory when flag 1 is set.
 
-ASM_PROC(FUN_573d10)
+extern "C" void FUN_573d10(); KING_ALIAS("_FUN_573d10", "@Vehicle573d10_Destroy@8")
 // [$L_573cf0]
 extern "C" BYTE* __fastcall Dtor573cf0_DeletingDestructor(BYTE* s, void*, int flags)
 {
@@ -2878,7 +2878,7 @@ extern "C" void FUN_6142f0(); KING_ALIAS("_FUN_6142f0", "@TerrainView_Construct@
 extern "C" void FUN_6148a0(); KING_ALIAS("_FUN_6148a0", "@Terrain_FreeObjects@8")
 extern "C" int __cdecl fseek(FILE* f, long off, int origin);
 extern "C" void __cdecl Sys_Fatal(const char* fmt, const char* arg);
-ASM_PROC(FUN_4d08d0)    // the player's vehicle for an effect (world, effect, player id)
+extern "C" void FUN_4d08d0(); KING_ALIAS("_FUN_4d08d0", "_Fx_MakePlayerVehicle")    // the player's vehicle for an effect (world, effect, player id)
 ASM_PROC(FUN_4ebd00)    // constructs a vehicle (scene object, matrix, type)
 extern "C" void FUN_5291a0(); KING_ALIAS("_FUN_5291a0", "@Map_BuildRoads@8")
 extern "C" void FUN_544920(); KING_ALIAS("_FUN_544920", "@NetVehicle_Construct@40")    // constructs a network vehicle
@@ -4826,7 +4826,7 @@ ASM_VAR(BYTE*, g_ml6f3420, $L_6f3420)
 ASM_VAR(char*, g_ml6f3424, $L_6f3424)
 ASM_VAR(int, g_ml7025bc, $L_7025bc)
 ASM_VAR(int, g_ml7208cc, $L_7208cc)
-ASM_VAR(AsmLabel, g_ml56e060, $L_56e060)    // the per-object callback
+extern "C" int __cdecl AnmObj_OnLoad(BYTE* node, void* ctx);    // the per-object callback
 ASM_VAR(AsmLabel, s_ml676838, $L_676838)
 ASM_VAR(AsmLabel, s_ml676834, $L_676834)
 ASM_VAR(AsmLabel, s_ml67bb58, $L_67bb58)    // "skyMirrorKey"
@@ -4843,7 +4843,7 @@ void __fastcall Copter_OnModuleLoad(BYTE* s, void*, BYTE* r)
 {
     g_ml6f3420 = s;
     g_ml6f3424 = F(char*, r, 60);
-    CallThis(FUN_5ead00, r, (void*)g_ml56e060, 0);
+    CallThis(FUN_5ead00, r, (void*)AnmObj_OnLoad, 0);
     BYTE* o = CallThis<BYTE*>(FUN_5ef390, r, (const char*)s_ml67bb58);
     g_ml7025bc = 0;
     if (o && F(int, o, 16) == 18 && g_6f33ac) {
@@ -7343,6 +7343,275 @@ void __fastcall Copter_Init0(BYTE* s, void*, BYTE* a, const Matrix* m)
     }
     BYTE* e = g_hiRoads[pos.d[0]];
     CallThis(Hi_Stack, s + 144, (int)F(short, F(BYTE*, e, 112), 16), (int)F(short, F(BYTE*, e, 116), 16));
+}
+
+} // extern "C"
+
+// === a module's animated objects ("anmobj" and 7 digits) registered as world resources ($L_56e060 with its
+//     tails up to $L_56e54f, a node walk's callback)
+
+extern "C" void Ao_Fatal(); KING_ALIAS("_Ao_Fatal", "_Sys_Fatal")
+extern "C" void Ao_Create(); KING_ALIAS("_Ao_Create", "@Resources_Create@16")
+extern "C" void Ao_Get(); KING_ALIAS("_Ao_Get", "@Resources_Get@12")
+extern "C" void Ao_SetData(); KING_ALIAS("_Ao_SetData", "@Resources_SetData@24")
+extern "C" void Ao_Charge(); KING_ALIAS("_Ao_Charge", "@ResTable_Charge@12")
+extern "C" void Ao_Root(); KING_ALIAS("_Ao_Root", "@Node_Root@8")
+extern "C" void Ao_World(); KING_ALIAS("_Ao_World", "@Node_GetWorld@12")
+extern "C" void Ao_CarType(); KING_ALIAS("_Ao_CarType", "_CarType_FromNumber")
+extern "C" long __cdecl atol(const char* s);
+ASM_VAR(BYTE*, g_ao6cec6c, $L_6cec6c)
+ASM_VAR(int, g_ao6968f0, $L_6968f0)
+ASM_VAR(int, g_ao696908, $L_696908)
+ASM_VAR(int, g_ao696900, $L_696900)
+ASM_VAR(BYTE, g_ao6ced98, $L_6ced98)
+ASM_VAR(BYTE*, g_ao696ca0, $L_696ca0)
+ASM_VAR(AsmLabel, g_ao7025f0, $L_7025f0)
+ASM_VAR(Vec3, g_aoZero, $L_702650)
+ASM_VAR(char, g_aoBadSub, $L_67bb68)
+
+extern "C" {
+
+// [$L_56e060..$L_56e54f] node (kind 17, named "anmobj" + 7 digits: kind (id / 100000), subtype ((id / 1000) %
+// 100), number) of the module being loaded: kind 2 (a parked car, skipped in mode 2 and for other net players'
+// shares) gets a 156-byte record (its frame, module and room names), kind 0 one of 76 or 72 bytes by its subtype
+// (1 .. 4); the node marked done (+40 bit 0); -1 to go on
+int __cdecl AnmObj_OnLoad(BYTE* node, void*)
+{
+    const char* name = F(const char*, node, 12);
+    if (!name || strncmp(name, "anmobj", 6))
+        return -1;
+    for (int k = 6; k < 13; k++)
+        if (name[k] < '0' || name[k] > '9')
+            CallC(Ao_Fatal, "incorrect anmobject name", 0);
+    int id = atol(name + 6);
+    int sub = id / 1000 % 100;
+    int kind = id / 100000;
+    if (kind != 0 && kind != 2)
+        return -1;
+    if (F(int, node, 16) != 17)
+        CallC(Ao_Fatal, "incorrect anmobject type", 0);
+    BYTE* res = g_ml6f3420 + 704;
+    if (kind == 2)
+    {
+        if (F(int, g_ao6cec6c, 1300) == 2 || (g_ao6968f0 && id % 1000 % g_ao696908 != g_ao696900))
+        {
+            F(BYTE, node, 40) |= 1;
+            return -1;
+        }
+        int r = CallThis<int>(Ao_Create, res, id, g_ml6f3424);
+        BYTE* rec = CallThis<BYTE*>(Ao_Get, g_ml6f3420 + 704, id);
+        int t = CallC<int>(Ao_CarType, sub);
+        if (BYTE* e = ((BYTE**)&g_ao6ced98)[t * 11])
+            F(int, rec, 16) = F(int, e, 16);
+        if (r)
+        {
+            if (r == -2)
+                F(BYTE, node, 40) |= 1;
+            return -1;
+        }
+        float M[12];
+        memcpy(M, g_ao7025f0, 48);
+        CallThis(Ao_World, F(BYTE*, node, 68), M);
+        const char* room = F(const char*, F(BYTE*, node, 64), 12);
+        const char* mod = F(const char*, CallThis<BYTE*>(Ao_Root, node), 12);
+        BYTE data[156];
+        memset(data, 0, sizeof data);
+        F(int, data, 0) = sub;
+        F(int, data, 4) = id % 1000;
+        F(Vec3, data, 20) = g_aoZero;
+        F(Vec3, data, 32) = g_aoZero;
+        memcpy(data + 44, M, 48);
+        strncpy((char*)data + 92, mod, 31);
+        strncpy((char*)data + 124, room, 31);
+        F(BYTE, node, 40) |= 1;
+        CallThis(Ao_SetData, g_ao696ca0 + 704, id, F(int, F(BYTE*, node, 36), 60), 156, data);
+        CallThis(Ao_Charge, rec, g_ao696ca0 + 704);
+        return -1;
+    }
+    int r = CallThis<int>(Ao_Create, res, id, g_ml6f3424);
+    if (r)
+    {
+        if (r == -2)
+            F(BYTE, node, 40) |= 1;
+        return -1;
+    }
+    BYTE* rec = CallThis<BYTE*>(Ao_Get, g_ml6f3420 + 704, id);
+    if (sub < 1 || sub > 4)
+    {
+        char buf[100];
+        sprintf(buf, &g_aoBadSub, sub, name, 1);
+        CallC(Ao_Fatal, buf, 0);
+    }
+    BYTE data[76];
+    memset(data, 0, sizeof data);
+    const char* mod = F(const char*, CallThis<BYTE*>(Ao_Root, node), 12);
+    int net = F(int, g_ao6cec6c, 1300) <= 1;
+    strncpy((char*)data + 12, mod, 31);
+    F(int, data, 0) = id;
+    int size = 76;
+    if (sub == 3)
+    {
+        strncpy((char*)data + 40, name, 31);
+        F(int, data, 4) = net;
+        size = 72;
+    }
+    else
+    {
+        F(int, data, 4) = 0;
+        strncpy((char*)data + 44, name, 31);
+        F(int, data, 8) = net;
+    }
+    CallThis(Ao_SetData, g_ml6f3420 + 704, id, F(int, F(BYTE*, node, 36), 60), size, data);
+    F(BYTE, node, 40) |= 1;
+    CallThis(Ao_Charge, rec, g_ao696ca0 + 704);
+    return -1;
+}
+
+} // extern "C"
+
+// === the vehicle made for an effect's description (FUN_4d08d0 with its tail $L_4d0ab3)
+
+extern "C" void Pv_Data(); KING_ALIAS("_Pv_Data", "_Ai_GetPlayerData")
+extern "C" void Pv_MsgNew(); KING_ALIAS("_Pv_MsgNew", "@DpMessage_Construct@8")
+extern "C" void Pv_MsgWrite(); KING_ALIAS("_Pv_MsgWrite", "@Msg_Write120@20")
+extern "C" void Pv_Record(); KING_ALIAS("_Pv_Record", "@Media_RecordBlock@12")
+extern "C" void Pv_MsgFree(); KING_ALIAS("_Pv_MsgFree", "@MsgBuf_Destroy@8")
+extern "C" void Pv_Effect(); KING_ALIAS("_Pv_Effect", "@Effect4d25f0_Construct@20")
+extern "C" void Pv_Cop(); KING_ALIAS("_Pv_Cop", "@CopCar_Construct@20")
+extern "C" void Pv_Car(); KING_ALIAS("_Pv_Car", "@Effect4d0e30_Construct@20")
+extern "C" void Pv_Fatal(); KING_ALIAS("_Pv_Fatal", "_Sys_Fatal")
+extern "C" void Pv_Settings(); KING_ALIAS("_Pv_Settings", "_Car_ApplyPlayerSettings")
+ASM_VAR(BYTE*, g_pv68b990, $L_68b990)
+ASM_VAR(int, g_pv6f3310, $L_6f3310)
+ASM_VAR(int, g_pv6f3314, $L_6f3314)
+ASM_VAR(BYTE*, g_pv6cec6c, $L_6cec6c)
+ASM_VAR(int, g_pv6ce330, $L_6ce330)
+ASM_VAR(int, g_pv6ce334, $L_6ce334)
+ASM_VAR(int, g_pv6ce338, $L_6ce338)
+ASM_VAR(int, g_pv6ce33c, $L_6ce33c)
+ASM_VAR(char, g_pvNoCar, $L_6729c8)
+
+extern "C" {
+
+// [FUN_4d08d0..$L_4d0ab3] the vehicle of description fx (its type +2252) in world w for player entry pl: for the
+// local player its gearbox (+10008) and, in a recorded game, a 959 message; an effect vehicle, a cop car or a car
+// by the type's range, its settings applied, shown and marked (+312 bit 3)
+BYTE* __cdecl Fx_MakePlayerVehicle(BYTE* w, BYTE* fx, BYTE* pl)
+{
+    int local = 0;
+    if (pl != g_pv68b990)
+    {
+        BYTE pd[192];
+        CallC(Pv_Data, pl, pd);
+        if (F(int, pd, 8) == 1)
+        {
+            local = 1;
+            F(short, fx, 10008) = g_pv6f3310 ? 2 : 0;
+            if (F(int, g_pv6cec6c, 1300) == 1)
+            {
+                __declspec(align(8)) BYTE msg[32];
+                CallThis(Pv_MsgNew, msg);
+                int v = F(int, pl, 84);
+                CallThis(Pv_MsgWrite, msg, 959, &v, 4);
+                CallThis(Pv_Record, w, msg);
+                CallThis(Pv_MsgFree, msg);
+            }
+        }
+    }
+    int type = F(int, fx, 2252);
+    BYTE* v;
+    if (type >= g_pv6ce338 && type < g_pv6ce33c)
+    {
+        BYTE* m = (BYTE*)operator new(21960);
+        v = m ? CallThis<BYTE*>(Pv_Effect, m, w, fx, pl) : 0;
+    }
+    else if (type >= g_pv6ce330 && type < g_pv6ce334)
+    {
+        BYTE* m = (BYTE*)operator new(21952);
+        v = m ? CallThis<BYTE*>(Pv_Cop, m, w, fx, pl) : 0;
+    }
+    else
+    {
+        BYTE* m = (BYTE*)operator new(21880);
+        v = m ? CallThis<BYTE*>(Pv_Car, m, w, fx, pl) : 0;
+    }
+    if (!v)
+        CallC(Pv_Fatal, &g_pvNoCar, 0);
+    if (local)
+        F(int, v, 20920) = g_pv6f3314;
+    CallC(Pv_Settings, v);
+    CallVirt(v + 16, 24, 1);
+    F(BYTE, v, 312) |= 8;
+    return v;
+}
+
+} // extern "C"
+
+// === four byte vectors of a record freed ($L_4d0760, reached by jumps from the unwind code)
+
+static void Vf_Free(BYTE* v)
+{
+    BYTE* b = F(BYTE*, v, 0);
+    if (unsigned n = (unsigned)(F(BYTE*, v, 8) - b))
+        Ai_PoolFree(b, n);
+}
+
+extern "C" {
+
+// [$L_4d0760] s's vectors at +168, +156, +144 and +132 (begin, end, capacity) given back to the STL pool
+void __fastcall Rec4d0760_FreeVectors(BYTE* s, void*)
+{
+    BYTE* v = s + 80;
+    Vf_Free(v + 88);
+    Vf_Free(v + 76);
+    Vf_Free(v + 64);
+    Vf_Free(v + 52);
+}
+
+} // extern "C"
+
+// === a vehicle's destructor saving a fresh record of it (FUN_573d10)
+
+extern "C" void Vd_Value(); KING_ALIAS("_Vd_Value", "@Car_555500@8")
+extern "C" void Vd_M1(); KING_ALIAS("_Vd_M1", "@SceneObj_Matrix1@12")
+extern "C" void Vd_Get800(); KING_ALIAS("_Vd_Get800", "@SceneObj_Get800@8")
+extern "C" void Vd_Name(); KING_ALIAS("_Vd_Name", "@Fx_Get12@8")
+extern "C" void Vd_9544(); KING_ALIAS("_Vd_9544", "@Fx_Get9544@8")
+extern "C" void Vd_20396(); KING_ALIAS("_Vd_20396", "@Fx_Get20396@8")
+extern "C" void Vd_Type(); KING_ALIAS("_Vd_Type", "@Fx_Get10420@8")
+extern "C" void Vd_Init(); KING_ALIAS("_Vd_Init", "@Fx_ObjectInit@44")
+extern "C" void Vd_SetData(); KING_ALIAS("_Vd_SetData", "@Resources_SetData@24")
+extern "C" void Vd_Destruct(); KING_ALIAS("_Vd_Destruct", "@Vehicle_Destruct@4")
+ASM_VAR(AsmLabel, g_vd650250, $L_650250)
+ASM_VAR(AsmLabel, g_vd650118, $L_650118)
+ASM_VAR(AsmLabel, g_vd650114, $L_650114)
+ASM_VAR(AsmLabel, g_vd650164, $L_650164)
+
+extern "C" {
+
+// [FUN_573d10] vehicle s destroyed: its 300-byte object record (an empty state, its frame in its own object) saved
+// under its id (+360), then the vehicle part destructed
+void __fastcall Vehicle573d10_Destroy(BYTE* s, void*)
+{
+    BYTE* it = s + 16;
+    F(void*, s, 0) = &g_vd650250;
+    F(void*, s, 272) = &g_vd650118;
+    F(void*, s, 392) = &g_vd650114;
+    F(void*, it, 0) = &g_vd650164;
+    __declspec(align(8)) BYTE state[196];
+    memset(state, 0, sizeof state);
+    float f = (float)CallThis<double>(Vd_Value, s);
+    int pl = F(int, s, 20636);
+    Matrix W;
+    const Matrix* w = CallThis<const Matrix*>(Vd_M1, it, &W);
+    const char* name = CallThis<const char*>(Vd_Name, CallThis<BYTE*>(Vd_Get800, it));
+    int b = CallThis<int>(Vd_9544, s);
+    int r = CallThis<int>(Vd_20396, s);
+    int k = CallThis<int>(Vd_Type, s) + r * 1000;
+    __declspec(align(8)) BYTE data[300];
+    CallThis(Vd_Init, data, k, b, name, w, pl, state, *(int*)&f, 0, 0);
+    CallThis(Vd_SetData, F(BYTE*, s, 52) + 704, F(int, s, 360), F(int, F(BYTE*, s, 308), 60), 300, data);
+    CallThis(Vd_Destruct, s);
 }
 
 } // extern "C"
