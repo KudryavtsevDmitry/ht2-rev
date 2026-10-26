@@ -22,7 +22,7 @@ extern "C" void FUN_6016f0(); KING_ALIAS("_FUN_6016f0", "_Providers_Rebuild")   
 extern "C" void FUN_600b50(); KING_ALIAS("_FUN_600b50", "_Gate_600b50")    // DirectPlay error text (hr)
 extern "C" void FUN_401010(); KING_ALIAS("_FUN_401010", "_Ai_Report")    // fatal error report
 extern "C" void FUN_601ff0(); KING_ALIAS("_FUN_601ff0", "_Gate_Send")
-ASM_PROC(FUN_602320)
+ASM_FUNC(FUN_602320, _Gate_Players)
 extern "C" void FUN_603f30(); KING_ALIAS("_FUN_603f30", "_Tsc_Calibrate")
 typedef void (*VFn)();
 extern "C" void FUN_601470(); KING_ALIAS("_FUN_601470", "@Gate_FreeBuffers@8")
@@ -33,7 +33,7 @@ extern "C" void FUN_46e460(); KING_ALIAS("_FUN_46e460", "@CharVec_InsertRange@20
 extern "C" void FUN_46ecd0(); KING_ALIAS("_FUN_46ecd0", "_CopyBytes")
 KING_VAR(DWORD*, g_providerIds, 723de8)
 KING_VAR(AsmLabel, g_683ca0, 683ca0)
-ASM_VAR(AsmLabel, g_enumProvider, $L_601630)
+ASM_VAR(AsmLabel, g_enumProvider, _Sg_EnumProvider@24)
 KING_VAR(AsmLabel, g_vtbl652de0, 652de0)
 KING_VAR(AsmLabel, g_clsidFilterGraph, 6554c0)
 KING_VAR(AsmLabel, g_iidGraphBuilder, 6554d0)
@@ -751,7 +751,7 @@ int __cdecl Gate_Send(DWORD to, const BYTE* buf, int size)
 extern "C" void FUN_600660(); KING_ALIAS("_FUN_600660", "_DxError_Name")
 extern "C" void FUN_602b60(); KING_ALIAS("_FUN_602b60", "@Blob_Set@16")
 extern "C" void FUN_603b30(); KING_ALIAS("_FUN_603b30", "@Music_Close@8")
-ASM_PROC($L_602410)
+ASM_FUNC($L_602410, @Sg_ListConstruct@4)
 extern "C" void FUN_487730(); KING_ALIAS("_FUN_487730", "@Vec_Construct@12")
 KING_VAR(char, g_723d90, 723d90)
 KING_VAR(char, g_723d60, 723d60)
@@ -1116,7 +1116,7 @@ void __cdecl Net_OnBlock(BYTE** v, const BYTE* b, int n)
 extern "C" void FUN_600b60(); KING_ALIAS("_FUN_600b60", "_Tsc_Now")
 KING_VAR(BYTE, g_rm723d48, 723d48)
 KING_VAR(AsmLabel, g_rm723d70, 723d70)    // the receive buffer (a byte vector)
-ASM_VAR(AsmLabel, g_rm601250, $L_601250)    // its destructor
+ASM_VAR(AsmLabel, g_rm601250, _Sg_Exit601250)    // its destructor
 KING_VAR(AsmLabel, s_rm684250, 684250)
 extern "C" int __cdecl atexit(void (__cdecl*)(void));
 
@@ -1369,7 +1369,7 @@ int __cdecl Dp_Connect(DWORD sp0, DWORD sp1, DWORD sp2, DWORD sp3, int host, int
 
 // === inserting a DirectPlay record (FUN_6027b0)
 
-ASM_PROC(FUN_602ad0)    // uninitialized copy of records (first, last, dest, -)
+ASM_FUNC(FUN_602ad0, _DpRecords_UninitCopy)    // uninitialized copy of records (first, last, dest, -)
 
 extern "C" {
 
@@ -1655,4 +1655,115 @@ void __cdecl Net_FillSendBuffer(BYTE** v, const BYTE* data, int size)
     CallThis(Ng32_Insert, v, v[1], data, data + size);
 }
 
+}
+
+// [$L_601250] at exit: frees the record vector at 723d70
+extern "C" void Sg_VecFree(); KING_ALIAS("_Sg_VecFree", "@VecB_FreeStorage@8")
+KING_VAR(BYTE, sg_723d70, 723d70)
+extern "C" void __cdecl Sg_Exit601250() { CallThis(Sg_VecFree, &sg_723d70); }
+
+// [$L_601260] clears +16 and +24
+extern "C" BYTE* __fastcall Sg_Clear601260(BYTE* s)
+{
+    F(int, s, 16) = 0;
+    F(int, s, 24) = 0;
+    return s;
+}
+
+// [$L_601630] the service provider enumeration callback: every provider
+// except the one with the GUID at 655320 is appended to the records at 723d60
+// (guid, connection data, its size, name, flags). Returns TRUE.
+KING_VAR(DWORD, sg_655320, 655320)
+KING_VAR(BYTE*, sg_723d64, 723d64)          // end
+KING_VAR(BYTE*, sg_723d68, 723d68)          // capacity end
+KING_VAR(BYTE, sg_723d60, 723d60)
+void __fastcall DpRecords_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x);
+extern "C" BOOL __stdcall Sg_EnumProvider(const DWORD* guid, const void* conn, DWORD size, const BYTE* name,
+                                          int flags, void*)
+{
+    if (memcmp(guid, &sg_655320, 16) != 0) {
+        BYTE rec[32];
+        DpRecord_Construct(rec, 0, guid, conn, size, F(const char*, name, 8), flags);
+        BYTE* end = sg_723d64;
+        if (end != sg_723d68) {
+            if (end)
+                DpRecord_Copy(end, 0, rec);
+            sg_723d64 = end + 32;
+        } else {
+            DpRecords_InsertAux((BYTE**)&sg_723d60, 0, end, rec);
+        }
+        CallThis(FUN_601470, rec);
+    }
+    return TRUE;
+}
+
+// [$L_6022c0] the player enumeration callback: appends the player id to the
+// list given as context. Returns TRUE.
+extern "C" BYTE** __fastcall SchList_End(BYTE** self, void*, BYTE** out);
+extern "C" BOOL __stdcall Sg_EnumPlayer(DWORD id, DWORD, const void*, DWORD, BYTE** list)
+{
+    BYTE* end;
+    BYTE* n;
+    SchList_End(list, 0, &end);
+    DpList_Insert(&n, end, &id);
+    return TRUE;
+}
+
+// [FUN_602320] the session's players: refills list from IDirectPlay4::
+// EnumPlayers and takes the first into out; -1 (reported) without a
+// session or when the enumeration fails
+extern "C" BYTE** __fastcall SchList_Begin(BYTE** self, void*, BYTE** out);
+extern "C" BYTE** __fastcall SchList_EraseRange(BYTE* self, void*, BYTE** out, BYTE* first, BYTE* last);
+KING_VAR(BYTE, sg_68d1c0, 68d1c0)
+KING_VAR(AsmLabel, sg_s684354, 684354)
+KING_VAR(AsmLabel, sg_s684340, 684340)
+KING_VAR(AsmLabel, sg_s683c78, 683c78)
+KING_VAR(AsmLabel, sg_s68422c, 68422c)
+typedef long (__stdcall* Sg_EnumPlayersFn)(void*, const void*, void*, void*, DWORD);
+extern "C" int __cdecl Gate_Players(DWORD* out, BYTE** list)
+{
+    int line;
+    const char* msg;
+    long hr;
+    if (!g_directPlay) {
+        hr = 0;
+        line = 1209;
+        msg = sg_s684354;
+    } else {
+        BYTE* end = *list;
+        BYTE* b;
+        BYTE* junk;
+        SchList_Begin(list, 0, &b);
+        SchList_EraseRange((BYTE*)list, 0, &junk, b, end);
+        hr = ((Sg_EnumPlayersFn)(*(void***)g_directPlay)[12])(g_directPlay, g_683ca0, (void*)Sg_EnumPlayer, list, 16);
+        if (hr >= 0) {
+            list[1] = *(BYTE**)*list;
+            return MsgList_Take(out, (BYTE*)list);
+        }
+        line = 1216;
+        msg = sg_s684340;
+    }
+    int text = Gate_600b50(hr);
+    CallC(FUN_401010, 8, 100, (const char*)sg_s68422c, (const char*)sg_s683c78, line, msg, text, &sg_68d1c0);
+    return -1;
+}
+
+// [$L_602410] constructs an empty list (a 16-byte head node pointing at itself)
+extern "C" BYTE* __cdecl Stl_Alloc16();
+extern "C" BYTE** __fastcall Sg_ListConstruct(BYTE** self)
+{
+    BYTE* n = Stl_Alloc16();
+    *self = n;
+    F(BYTE*, n, 0) = n;
+    F(BYTE*, *self, 4) = *self;
+    return self;
+}
+
+// [FUN_602ad0] uninitialized copy of 32-byte records from [first, last) to dest
+extern "C" BYTE* __cdecl DpRecords_UninitCopy(BYTE* first, BYTE* last, BYTE* dest, BYTE*)
+{
+    for (; first != last; first += 32, dest += 32)
+        if (dest)
+            DpRecord_Copy(dest, 0, first);
+    return dest;
 }

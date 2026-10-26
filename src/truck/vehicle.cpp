@@ -2492,7 +2492,7 @@ extern "C" void __cdecl World_ResetAll(void)
 // Small setup procs: static vectors, a light array, the race start, a stream read.
 
 extern "C" void FUN_57ca00(); KING_ALIAS("_FUN_57ca00", "_Race_SetMode")
-ASM_PROC(FUN_4e24e8)
+ASM_FUNC(FUN_4e24e8, _World_InitTables)
 extern "C" void FUN_4de290(); KING_ALIAS("_FUN_4de290", "@Cab_Setup@12")
 extern "C" void FUN_53fdb0(); KING_ALIAS("_FUN_53fdb0", "_CarTypes_FindParts")
 KING_VAR(int, g_q48_6ef1fc, 6ef1fc)

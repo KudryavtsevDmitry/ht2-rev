@@ -75,7 +75,7 @@ PUBLIC $L_61dda1, $L_61ddb8, $L_61ddd5, $L_61ddf6, $L_61ddfa, $L_61de01, $L_61de
 PUBLIC $L_61e0c7, $L_61e0fc, $L_61e147, $L_61e14d, $L_61e169, $L_61e176
 PUBLIC $L_61e196, $L_61e1b6
 PUBLIC $L_61f0f4, $L_61f102, $L_61f11f, $L_61f134, $L_61f142, $L_61f15c
-PUBLIC $L_61f164, $L_61f1a2, $L_61f1aa, $L_61f1c7, $L_61f1cf, $L_61f1dd, $L_61f1e4, $L_61f1ff
+PUBLIC $L_61f164
 PUBLIC $L_61f22c, $L_61f240, $L_61f273, $L_61f27d, $L_61f287, $L_61f291, $L_61f2bd, $L_61f2cc
 PUBLIC $L_61f2ff, $L_61f304, $L_61f309, $L_61f30e, $L_61f311, $L_61f31d, $L_61f331, $L_61f336
 PUBLIC $L_61f36a, $L_61f372, $L_61f37f, $L_61f388, $L_61f3f5, $L_61f406, $L_61f416, $L_61f424
@@ -102,8 +102,8 @@ PUBLIC $L_623fa5, $L_623fd7, $L_623fd9, $L_624012, $L_62401b, $L_624023, $L_6240
 PUBLIC $L_62403f, $L_624048, $L_624056, $L_624062, $L_624069, $L_62406e, $L_624076, $L_624079
 PUBLIC $L_624091, $L_62409a, $L_6240ab, $L_6240b4, $L_6240bb, $L_6240cb, $L_6240d2, $L_6240e3
 PUBLIC $L_6240ec, $L_6240f1, $L_6240fb, $L_6240fd, $L_624203, $L_62421b, $L_624221, $L_62422a
-PUBLIC $L_624254, $L_624287, $L_6242db, $L_6242e6, $L_6242ed, $L_6242f4, $L_624309, $L_6245be
-PUBLIC $L_6245c2, $L_624638, $L_62463a, $L_624646, $L_62467f, $L_62469d, $L_6246a4, $L_6246dc
+PUBLIC $L_624254, $L_624287, $L_6242db, $L_6242e6, $L_6242ed, $L_6242f4, $L_624309
+PUBLIC $L_624646, $L_62467f, $L_62469d, $L_6246a4, $L_6246dc
 PUBLIC $L_6246e3, $L_6246e8, $L_624700, $L_624709, $L_624730, $L_624761, $L_6247a9, $L_6247c7
 PUBLIC $L_624809, $L_624819, $L_624840, $L_624843, $L_62486d, $L_624892, $L_62489e, $L_6248a5
 PUBLIC $L_6248a8, $L_6248d3, $L_624919, $L_62494c, $L_62495f, $L_624987, $L_6249a3, $L_6249ab
@@ -128,8 +128,8 @@ PUBLIC $L_625e6c, $L_625e6e, $L_625ea5, $L_625ea8, $L_625eac, $L_625eb0, $L_625e
 PUBLIC $L_625ee1, $L_625efc, $L_625f49, $L_625f5b, $L_625f6e, $L_625f83, $L_625f85, $L_625f88
 PUBLIC $L_625fac, $L_625fc4, $L_625fdc, $L_625fde, $L_625ff1, $L_625ff7, $L_626005, $L_62601b
 PUBLIC $L_626042, $L_6260a4, $L_6260b9, $L_6260c8, $L_6260d6, $L_6260e1, $L_6263fb, $L_626405
-PUBLIC $L_62640b, $L_626455, $L_626456, $L_626468, $L_62657d, $L_62659f
-PUBLIC $L_6265a7, $L_6265bf, $L_6265ed, $L_626619, $L_62664b, $L_6266e4, $L_6266e7, $L_627000
+PUBLIC $L_62640b, $L_626455, $L_626456, $L_626468
+PUBLIC $L_627000
 PUBLIC $L_62705e, $L_62706e, $L_6270c8, $L_6270d5, $L_627110, $L_62711a, $L_62714d, $L_627178
 PUBLIC $L_62719e, $L_6271f9, $L_627219, $L_627227, $L_627df1, $L_627df3, $L_628da8, $L_628e05
 PUBLIC $L_628e0d, $L_629391, $L_629451, $L_629459, $L_62945d, $L_629461, $L_629465
@@ -1719,80 +1719,6 @@ $L_61f164::
             leave 
             ret 
 _floor ENDP
-_sin PROC ;FUN_61f184 double sin(double x)
-
-            lea EDX,DWORD PTR [ESP+4]
-            call FUN_6247b5
-_sin ENDP
-FUN_61f18d PROC
-
-            push EDX
-            wait 
-            fnstcw WORD PTR [ESP]
-            je $L_61f1e4
-
-            cmp WORD PTR [ESP],639
-            je $L_61f1a2
-
-            fldcw WORD PTR [(_KingRdata+39512)]
-$L_61f1a2::
-
-            fsin 
-            wait 
-            fnstsw AX
-            sahf 
-            jp $L_61f1c7
-$L_61f1aa::
-
-            cmp DWORD PTR [(_KingBss+669944)],0
-            jne $L_62480e
-
-            mov EDX,30
-            lea ECX,DWORD PTR [(_KingData+108032)]
-            jmp $L_62481b
-$L_61f1c7::
-
-            fld TBYTE PTR [(_KingRdata+39514)]
-            fxch ST(1)
-$L_61f1cf::
-
-            fprem1 
-            wait 
-            fnstsw AX
-            sahf 
-            jp $L_61f1cf
-
-            fstp ST(1)
-            fsin 
-            jmp $L_61f1aa
-$L_61f1dd::
-
-            call FUN_62479c
-
-            jmp $L_61f1ff
-$L_61f1e4::
-
-            test EAX,1048575
-            jne $L_61f1dd
-
-            cmp DWORD PTR [ESP+8],0
-            jne $L_61f1dd
-
-            fstp ST(0)
-            fld TBYTE PTR [(_KingData+117568)]
-            mov EAX,1
-$L_61f1ff::
-
-            cmp DWORD PTR [(_KingBss+669944)],0
-            jne $L_62480e
-
-            mov EDX,30
-            lea ECX,DWORD PTR [(_KingData+108032)]
-            call FUN_624727
-
-            pop EDX
-            ret 
-FUN_61f18d ENDP
 _strlen PROC ;FUN_61f220 size_t strlen(const char *string)
 
             mov ECX,DWORD PTR [ESP+4]
@@ -2168,11 +2094,6 @@ $L_61f613::
             mov EAX,DWORD PTR [ESP+4]
             ret 
 _memset ENDP
-_atan2 PROC ;FUN_61f620 double atan2(double y, double x)
-
-            mov EDX,OFFSET (_KingData+118896)
-            jmp $L_6264fb
-_atan2 ENDP
 _sqrt PROC ;FUN_61f6e4 double sqrt(double x)
 
             lea EDX,DWORD PTR [ESP+4]
@@ -4215,68 +4136,6 @@ $L_624309::
             pop EBP
             ret 
 $L_62424a ENDP
-FUN_6245a7 PROC
-
-            cmp BYTE PTR [EDX+14],5
-            jne $L_6245be
-
-            mov BX,WORD PTR [EBP-164]
-            or BH,2
-            and BH,254
-            mov BL,63
-            jmp $L_6245c2
-$L_6245be::
-
-            mov BX,4927
-$L_6245c2::
-
-            mov WORD PTR [EBP-162],BX
-            fldcw WORD PTR [EBP-162]
-            mov EBX,OFFSET (_KingData+117596)
-            fxam 
-            mov DWORD PTR [EBP-148],EDX
-            wait 
-            fnstsw WORD PTR [EBP-160]
-            mov BYTE PTR [EBP-144],0
-            fxch ST(1)
-            mov CL,BYTE PTR [EBP-159]
-            fxam 
-            wait 
-            fnstsw WORD PTR [EBP-160]
-            fxch ST(1)
-            mov CH,BYTE PTR [EBP-159]
-            shl CH,1
-            sar CH,1
-            rol CH,1
-            mov AL,CH
-            and AL,15
-            xlatb 
-            mov AH,AL
-            shl CL,1
-            sar CL,1
-            rol CL,1
-            mov AL,CL
-            and AL,15
-            xlatb 
-            shl AH,1
-            shl AH,1
-            or AL,AH
-            movsx EAX,AL
-            and ECX,1028
-            mov EBX,EDX
-            add EBX,EAX
-            add EBX,16
-            jmp DWORD PTR [EBX]
-
-            call FUN_6246f9
-$L_624638::
-
-            fxch ST(1)
-$L_62463a::
-
-            fstp ST(0)
-            ret 
-FUN_6245a7 ENDP
 $L_624644 PROC
 
             fstp ST(0)
@@ -6816,195 +6675,6 @@ $L_626462 ENDP
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
-$L_6264fb PROC
-
-            push EBP
-            mov EBP,ESP
-            add ESP,4294966576
-            push EBX
-            push DWORD PTR [EBP+12]
-            push DWORD PTR [EBP+8]
-            call FUN_6266ae
-
-            add ESP,8
-            push DWORD PTR [EBP+20]
-            push DWORD PTR [EBP+16]
-            call FUN_6266ae
-
-            add ESP,8
-            wait 
-            fnstcw WORD PTR [EBP-164]
-            or BYTE PTR [EBP-712],2
-            mov BYTE PTR [EBP-143],1
-            call FUN_6245a7
-
-            call FUN_626543
-
-            pop EBX
-            leave 
-            ret 
-$L_6264fb ENDP
-FUN_626543 PROC
-
-            and BYTE PTR [EBP-712],254
-FUN_626543 ENDP
-ALIGN 2
-FUN_62654a PROC
-
-            cmp DWORD PTR [(_KingBss+669944)],0
-            jne $L_62659f
-
-            fst QWORD PTR [EBP-720]
-            mov AL,BYTE PTR [EBP-144]
-            or AL,AL
-            je $L_62657d
-
-            cmp AL,255
-            je $L_6265a7
-
-            cmp AL,254
-            je $L_6265a7
-
-            or AL,AL
-            je $L_62659f
-
-            movsx EAX,AL
-            mov DWORD PTR [EBP-142],EAX
-            jmp $L_626619
-$L_62657d::
-
-            mov AX,WORD PTR [EBP-164]
-            and AX,32
-            jne $L_62659f
-
-            wait 
-            fnstsw AX
-            and AX,32
-            je $L_62659f
-
-            mov DWORD PTR [EBP-142],8
-            jmp $L_626619
-$L_62659f::
-
-            fldcw WORD PTR [EBP-164]
-            wait 
-            ret 
-$L_6265a7::
-
-            mov AX,WORD PTR [EBP-714]
-            and AX,32752
-            or AX,AX
-            je $L_6265bf
-
-            cmp AX,32752
-            je $L_6265ed
-
-            jmp $L_62657d
-$L_6265bf::
-
-            mov DWORD PTR [EBP-142],4
-            fld QWORD PTR [(_KingRdata+40520)]
-            fxch ST(1)
-            fscale 
-            fstp ST(1)
-            fld ST(0)
-            fabs 
-            fcomp QWORD PTR [(_KingRdata+40504)]
-            wait 
-            fnstsw AX
-            sahf 
-            jae $L_626619
-
-            fmul QWORD PTR [(_KingRdata+40536)]
-            jmp $L_626619
-$L_6265ed::
-
-            mov DWORD PTR [EBP-142],3
-            fld QWORD PTR [(_KingRdata+40512)]
-            fxch ST(1)
-            fscale 
-            fstp ST(1)
-            fld ST(0)
-            fabs 
-            fcomp QWORD PTR [(_KingRdata+40496)]
-            wait 
-            fnstsw AX
-            sahf 
-            jbe $L_626619
-
-            fmul QWORD PTR [(_KingRdata+40528)]
-$L_626619::
-
-            push ESI
-            push EDI
-            mov EBX,DWORD PTR [EBP-148]
-            inc EBX
-            mov DWORD PTR [EBP-138],EBX
-            test BYTE PTR [EBP-712],1
-            jne $L_62664b
-
-            cld 
-            lea ESI,DWORD PTR [EBP+8]
-            lea EDI,DWORD PTR [EBP-134]
-            movsd 
-            movsd 
-            cmp BYTE PTR [EBX+12],1
-            je $L_62664b
-
-            lea ESI,DWORD PTR [EBP+16]
-            lea EDI,DWORD PTR [EBP-126]
-            movsd 
-            movsd 
-$L_62664b::
-
-            fstp QWORD PTR [EBP-118]
-            lea EAX,DWORD PTR [EBP-142]
-            lea EBX,DWORD PTR [EBP-164]
-            push EBX
-            push EAX
-            mov EBX,DWORD PTR [EBP-148]
-            mov AL,BYTE PTR [EBX+14]
-            movsx EAX,AL
-            push EAX
-            call FUN_629420
-
-            add ESP,12
-            pop EDI
-            pop ESI
-            fld QWORD PTR [EBP-118]
-            jmp $L_62659f
-FUN_62654a ENDP
-FUN_6266ae PROC
-
-            push EBP
-            mov EBP,ESP
-            add ESP,-12
-            push EBX
-            mov AX,WORD PTR [EBP+14]
-            mov BX,AX
-            and AX,32752
-            cmp AX,32752
-            jne $L_6266e4
-
-            or BX,32767
-            mov WORD PTR [EBP-2],BX
-            mov EAX,DWORD PTR [EBP+12]
-            mov EBX,DWORD PTR [EBP+8]
-            shld EAX,EBX,11
-            mov DWORD PTR [EBP-6],EAX
-            mov DWORD PTR [EBP-10],EBX
-            fld TBYTE PTR [EBP-10]
-            jmp $L_6266e7
-$L_6266e4::
-
-            fld QWORD PTR [EBP+8]
-$L_6266e7::
-
-            pop EBX
-            leave 
-            ret 
-FUN_6266ae ENDP
-ALIGN 2
 FUN_626f76 PROC
 
             push EAX

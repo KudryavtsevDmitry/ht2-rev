@@ -2267,3 +2267,98 @@ void __cdecl Sound_PanShares(float a, float b, const float* c, float* lo, float*
 }
 
 }
+
+// [FUN_4e24e8] the world's startup values, the sine table (360 floats at
+// 696ec0) and the common controls
+KING_VAR(int, wd_6974c4, 6974c4)
+KING_VAR(int, wd_6974c8, 6974c8)
+KING_VAR(int, wd_6974b4, 6974b4)
+KING_VAR(float, wd_696ec0, 696ec0)
+KING_VAR(double, wd_64d900, 64d900)
+KING_VAR(double, wd_64d8f8, 64d8f8)
+#include <math.h>
+#include <commctrl.h>
+#pragma function(sin, cos, atan2, fabs)
+extern "C" void __cdecl World_InitTables(int a, int b, int c)
+{
+    wd_6974c4 = a;
+    wd_6974c8 = b;
+    wd_6974b4 = c;
+    for (int i = 0; i < 360; i++) {
+        double x = i * wd_64d900;
+        (&wd_696ec0)[i] = (float)sin((x + x) / wd_64d8f8);
+    }
+    InitCommonControls();
+}
+
+// [FUN_4e4d82] plays a sound panned by a horizontal direction (x, y): the
+// two channel volumes are vol * cos^2 of the angles 120 degrees either side;
+// a negative loop restarts the sound instead
+KING_VAR(double, wd_64b678, 64b678)
+KING_VAR(double, wd_64b6b0, 64b6b0)
+KING_VAR(double, wd_64b660, 64b660)
+KING_VAR(float, wd_64c264, 64c264)
+KING_VAR(float, wd_64c250, 64c250)
+KING_VAR(AsmLabel, wd_s673c5c, 673c5c)
+KING_VAR(AsmLabel, wd_s673c84, 673c84)
+KING_VAR(AsmLabel, wd_s673c94, 673c94)
+extern "C" void __cdecl World_Fatal(const char* msg);
+extern "C" void __fastcall Sound_Restart(BYTE* s, void*, float vol, float pitch);
+extern "C" void __fastcall Sound_Play(BYTE* s, void*, float vol, float pitch, int a3);
+extern "C" void __cdecl Sound_PlayPannedCos(BYTE* sound, float vol, const float* dir, int loop)
+{
+    if (!sound)
+        return;
+    double len = fabs(dir[0]) + fabs(dir[1]);
+    if (len < wd_64b678 || !(len <= wd_64b6b0)) {
+        char buf[256];
+        sprintf(buf, wd_s673c5c, len, (double)dir[0], (double)dir[1]);
+        World_Fatal(buf);
+    }
+    double k;
+    *(DWORD*)&k = 942503068;
+    ((DWORD*)&k)[1] = 1073791314;          // 2*pi/3
+    double a = -atan2(dir[0], dir[1]);
+    double l = Angle_F2Pi((float)(a - k), wd_s673c84);
+    double r = Angle_F2Pi((float)(a + k), wd_s673c94);
+    double cl = cos(l / wd_64b660);
+    double cr = cos(r / wd_64b660);
+    float left = (float)(vol * cl * cl);
+    float right = (float)(vol * cr * cr);
+    if (left < wd_64c264)
+        left = 0;
+    if (right < wd_64c264)
+        right = 0;
+    if (left > wd_64c250)
+        left = 1.0f;
+    if (right > wd_64c250)
+        right = 1.0f;
+    if (loop < 0)
+        Sound_Restart(sound, 0, left, right);
+    else
+        Sound_Play(sound, 0, left, right, loop);
+}
+
+// [FUN_4e7889] [$L_4e7910] the real roots of a*x*x + b*x + c: returns their
+// count, both written (equal for one root, 0 for none)
+KING_VAR(float, wd_64c408, 64c408)      // 4
+KING_VAR(float, wd_64c40c, 64c40c)      // 2
+#pragma function(sqrt)
+extern "C" int __cdecl Quadratic_Roots(float a, float b, float c, float* r1, float* r2)
+{
+    float d = b * b - wd_64c408 * a * c;
+    if (d < wd_64c264) {
+        *r2 = 0;
+        *r1 = 0;
+        return 0;
+    }
+    if (d == wd_64c264) {
+        *r1 = -b / (wd_64c40c * a);
+        *r2 = *r1;
+        return 1;
+    }
+    float s = (float)sqrt(d);
+    *r1 = (-b + s) / (wd_64c40c * a);
+    *r2 = (-b - s) / (wd_64c40c * a);
+    return 2;
+}
