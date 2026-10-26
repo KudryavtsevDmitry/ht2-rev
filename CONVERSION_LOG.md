@@ -407,3 +407,17 @@ CMenu handle map, FromHandle, Detach and DestroyMenu, CDC's attrib/output DCs, S
 colours, viewport/window origin and extents and GetClipBox, _AfxChildWindowFromPoint, AfxSetWindowText,
 AfxCriticalNewHandler, CWinApp's DoWaitCursor, MRU/document template stubs, OnOpenRecentFile and DoMessageBox,
 GetSafeOwner_ and both AfxMessageBox overloads.
+
+MFC part 6 (152 procs): CCmdUI (constructor, Enable, SetCheck, SetRadio with the dot bitmap, SetText,
+DoUpdate) and CTestCmdUI, CCmdTarget's small virtuals and OnFinalRelease with CTypeLibCache::Unlock, CWnd
+GetExStyle/ModifyStyleEx/_AfxModifyStyle/SetWindowText/EnableWindow/SetFocus/OnCommand and the WM_ handlers
+for system colours, display, setting and device mode changes, help info, scroll, enter-idle and control
+colours; the static wndTop/wndBottom/wndTopMost/wndNoTopMost objects and other static initializers
+(drag list and mouse wheel messages, CFrameWnd::rectDefault); CString Release/Empty/CopyBeforeWrite/
+GetBuffer/ReleaseBuffer/GetBufferSetLength, _mbstowcsz, AfxExtractSubString; CException Delete/ReportError,
+CObject::IsKindOf, CRuntimeClass::IsDerivedFrom; AUX_DATA colours and metrics; the CMenu handle map; the
+CDC attribute/output DC wrappers; AfxSetWindowText, _AfxChildWindowFromPoint, AfxCriticalNewHandler,
+AfxRegisterWndClass, GetSafeOwner_, AfxMessageBox (both) and CWinApp::DoMessageBox, DoWaitCursor and the
+recent file/document manager forwards; CFrameWnd's modal state, help mode, OnCommand/OnCmdMsg, activation,
+OnSysCommand, OnInitMenuPopup, DDE initiate/execute/terminate, drop files, session end, PreCreateWindow,
+CreateView, OnCreateClient and GetIconWndClass. Drive test passes.
