@@ -1958,7 +1958,7 @@ extern "C" void FUN_55eaa0(); KING_ALIAS("_FUN_55eaa0", "@Truck55eaa0_Construct@
 extern "C" void FUN_543e00(); KING_ALIAS("_FUN_543e00", "@Vehicle_Construct@24")
 extern "C" void FUN_4cf260(); KING_ALIAS("_FUN_4cf260", "_Fx_AttachVehicle")
 extern "C" void FUN_556110(); KING_ALIAS("_FUN_556110", "@Car_ApplyTypeVec@8")
-ASM_PROC(FUN_5586f0)
+ASM_FUNC(FUN_5586f0, @Trailer_Construct@24)
 extern "C" void FUN_5fd870(); KING_ALIAS("_FUN_5fd870", "@Sound_UpdateAt@36")    // sound: play (position by value, ...)
 extern "C" void FUN_4dd9c0(); KING_ALIAS("_FUN_4dd9c0", "@CopySound_Construct@12")
 KING_VAR(char, g_vtbl64cbfc, 64cbfc)

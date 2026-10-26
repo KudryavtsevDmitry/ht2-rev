@@ -2869,7 +2869,7 @@ extern "C" int __fastcall q240_Med5ce5b0_Destroy(BYTE* s); KING_ALIAS("@q240_Med
 extern "C" int __fastcall Thunk5cf170(BYTE* s) { return q240_Med5ce5b0_Destroy(s); }
 
 extern "C" int __cdecl atexit(void(__cdecl* fn)(void));
-extern "C" void q241_L_5d2070(); KING_ALIAS("_q241_L_5d2070", "$L_5d2070")
+extern "C" void q241_L_5d2070(); KING_ALIAS("_q241_L_5d2070", "_Md_Exit5d2070")
 // [$L_5d2060] registers 5d2070 at exit
 extern "C" int __cdecl Static5d2060_AtExit(void) { return atexit((void(__cdecl*)(void))q241_L_5d2070); }
 
@@ -6568,3 +6568,10 @@ int __fastcall Net_HostReply(BYTE* self, void*, void* out, void* size)
 }
 
 }
+
+// [$L_5d2040] static initializer: the object at 71e808 and its exit handler
+extern "C" int __cdecl Md_Init5d2040() { Static71e808_Construct(); return Static5d2060_AtExit(); }
+
+// [$L_5d2070] at exit: closes the mapped file at 71e808
+KING_VAR(BYTE, md_71e808, 71e808)
+extern "C" void __cdecl Md_Exit5d2070() { MappedFile_Close(&md_71e808); }

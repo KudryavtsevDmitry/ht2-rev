@@ -11730,3 +11730,54 @@ void __fastcall PlayersScreen_Open(BYTE* self, void*)
 }
 
 }
+
+// [$L_50bb00] static initializer: clears 6ce38c and runs 1000 rounds of a
+// random 4x4 matrix inverse check (inverse, product, determinant; results
+// unused). It draws 16000 numbers from rand, so it stays.
+KING_VAR(int, gs_6ce38c, 6ce38c)
+KING_VAR(double, gs_64db70, 64db70)
+KING_VAR(double, gs_64db68, 64db68)
+extern "C" int __cdecl rand(void);
+extern "C" void __cdecl Gs_MatrixSelfTest()
+{
+    DMat4 m, inv, prod, t1;
+    BYTE t2[128];
+    gs_6ce38c = 0;
+    DMat_Zero(&m, 0);
+    DMat_Zero(&inv, 0);
+    DMat_Zero(&prod, 0);
+    for (int round = 1000; round; round--) {
+        double* e = (double*)&m;
+        for (int i = 0; i < 16; i++)
+            e[i] = (rand() - gs_64db70) * gs_64db68;
+        DMat_Copy(&inv, 0, DMat_Inverse(&t1, &m));
+        DMat_Copy(&prod, 0, (const DMat4*)Rec128_Combine(t2, (BYTE*)&inv, (int)&m));
+        DMat_Determinant((const double*)&prod, 0);
+    }
+}
+
+// [$L_523170] [$L_5231e7] a shell screen's command (thiscall at +64 of the
+// screen): 160 saves the setting at 696868 and enters the world; 161 leaves
+// the game screens and starts the game named at 6f2d18 again
+KING_VAR(const char*, gs_696868, 696868)
+KING_VAR(BYTE*, gs_6cec70, 6cec70)
+KING_VAR(BYTE*, gs_6cec6c, 6cec6c)
+KING_VAR(char, gs_6f2d18, 6f2d18)
+KING_VAR(AsmLabel, gs_s676798, 676798)
+KING_VAR(AsmLabel, gs_s672998, 672998)
+extern "C" void __fastcall Gs_ScreenCommand(BYTE* self, void*, int cmd)
+{
+    BYTE* screen = self - 64;
+    if (cmd == 160) {
+        CallC(FUN_603c70, (const char*)gs_s672998, (const char*)gs_s676798, 0, gs_696868);
+        CallVirt(screen, 32);
+        Shell_EnterWorld(0);
+    } else if (cmd == 161) {
+        CallVirt(screen, 32);
+        F(DWORD, gs_6cec70, 408) = (F(DWORD, gs_6cec70, 408) & ~0xC0u & ~0x30u) | 48;
+        int keep = F(int, gs_6cec6c, 1300);
+        Shell_LeaveGameScreens();
+        F(int, gs_6cec6c, 1300) = keep;
+        Shell_StartGame(&gs_6f2d18, 0);
+    }
+}
