@@ -7643,7 +7643,7 @@ extern "C" BYTE** __cdecl Players_SelectBmw(BYTE** out, BYTE** first, BYTE** las
 // placing the presents
 
 extern "C" void FUN_45dbb0(); KING_ALIAS("_FUN_45dbb0", "_Objects_RandomFar")    // the first road node matching a 40-byte spot predicate (first, last, pred, rng)
-ASM_PROC(FUN_471780)    // an order's route for a position (order, PositionId32)
+ASM_FUNC(FUN_471780, _Order_RouteCost)    // an order's route for a position (order, PositionId32)
 extern "C" void FUN_450960(); KING_ALIAS("_FUN_450960", "@OrderVec_InsertAux@16")    // vector<order>::insert_aux (thiscall pos, order)
 extern "C" void FUN_41b320(); KING_ALIAS("_FUN_41b320", "_Goods_SetDistance")    // a cargo present's place (cargo, PositionId32)
 extern "C" void FUN_44ab90(); KING_ALIAS("_FUN_44ab90", "@Vec16_Free@8")
@@ -25142,3 +25142,19 @@ extern "C" void __fastcall Ai_ListDestroy(BYTE* self)
 
 // [$L_401990] at exit: destroys the list at 68b998
 extern "C" void __cdecl Ai_Exit401990() { Ai_ListDestroy((BYTE*)&g_init68b998); }
+
+// [FUN_471780] an order's route cost from the position pos to its town
+// (+12, the town's node): the best road cost times 66f8a0, at +88
+KING_VAR(BYTE**, g_aw68cec0, 68cec0)            // the towns
+KING_VAR(double, g_aw66f8a0, 66f8a0)
+extern "C" void __cdecl Road_PositionCostBest(int side, PositionId from, PositionId to, double* cost);
+extern "C" void __cdecl Order_RouteCost(BYTE* order, PositionId pos)
+{
+    double cost = 0;
+    int town;
+    Town_Id(&town, g_aw68cec0[F(int, order, 12)]);
+    PositionId node;
+    Position_InitNode(&node, 0, town);
+    Road_PositionCostBest(0, pos, node, &cost);
+    F(double, order, 88) = g_aw66f8a0 * cost;
+}

@@ -1373,3 +1373,13 @@ extern "C" void __cdecl PopHeapAux4(DWORD* first, DWORD* last, DWORD* result, DW
     *result = *first;
     CallC(FUN_46c190, first, 0, (int)(last - first), value, pred);
 }
+
+// [FUN_487290] places player a at node (an empty position on no road) and
+// runs its route call with b
+extern "C" void __fastcall Player_SetPosition(void* self, void*, const void* p);
+extern "C" int __cdecl Player_PlaceAtNode(BYTE* player, int node, int b)
+{
+    DWORD p[8] = {0xFFFFFFFF, (DWORD)node, 0, 0, 0, 0, 0, 0xFFFFFFFF};
+    Player_SetPosition(player + 8, 0, p);
+    return Route_Call4870e0((int)player, b);
+}

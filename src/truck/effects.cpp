@@ -12636,7 +12636,7 @@ extern "C" void Ev32_SetObjectM(); KING_ALIAS("_Ev32_SetObjectM", "_Fx_SetObject
 extern "C" void Ev32_PosId(); KING_ALIAS("_Ev32_PosId", "_Ai_GetPositionId")
 extern "C" void Ev32_Orient(); KING_ALIAS("_Ev32_Orient", "_Ai_GetOrientationF")
 extern "C" void Ev32_RoadParams(); KING_ALIAS("_Ev32_RoadParams", "_Road_GetRoadParameters")
-extern "C" void Ev32_Route3(); KING_ALIAS("_Ev32_Route3", "FUN_487290")
+extern "C" void Ev32_Route3(); KING_ALIAS("_Ev32_Route3", "_Player_PlaceAtNode")
 extern "C" void Ev32_Route2(); KING_ALIAS("_Ev32_Route2", "_Route_Call487230")
 extern "C" void Ev32_CarId(); KING_ALIAS("_Ev32_CarId", "_Player_CarId")
 extern "C" void Ev32_Movie(); KING_ALIAS("_Ev32_Movie", "_Movie_Play")
