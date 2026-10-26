@@ -244,7 +244,7 @@ extern "C" void FUN_57cb50(); KING_ALIAS("_FUN_57cb50", "@Object57cb50_Construct
 extern "C" void FUN_57cfc0(); KING_ALIAS("_FUN_57cfc0", "@Placement_Init@8")
 extern "C" void FUN_57d860(); KING_ALIAS("_FUN_57d860", "@MovingItem_Init0@24")
 extern "C" void FUN_5c3070(); KING_ALIAS("_FUN_5c3070", "@Table_Add6@20")
-ASM_PROC(FUN_5c6170)
+ASM_FUNC(FUN_5c6170, @SceneObj_Construct@88)
 extern "C" void FUN_5c5f60(); KING_ALIAS("_FUN_5c5f60", "@NetMoving_Construct@88")
 extern "C" void FUN_5c32f0(); KING_ALIAS("_FUN_5c32f0", "@List_Add6@20")
 extern "C" void FUN_5ef5c0(); KING_ALIAS("_FUN_5ef5c0", "@Node_Init@8")

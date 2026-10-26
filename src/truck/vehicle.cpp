@@ -1193,7 +1193,7 @@ extern "C" void FUN_4fc930(); KING_ALIAS("_FUN_4fc930", "@Body4fc930_SetMode@28"
 extern "C" void FUN_541ad0(); KING_ALIAS("_FUN_541ad0", "@NetVehIn_Get@4")
 extern "C" void FUN_551970(); KING_ALIAS("_FUN_551970", "@Car_Effects@8")
 extern "C" void FUN_586df0(); KING_ALIAS("_FUN_586df0", "@MovingItem_Frame@4")
-ASM_PROC(FUN_546240)
+ASM_FUNC(FUN_546240, @Vehicle_RecordState@8)
 extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void __fastcall Body_ClearMode(BYTE* self, void*);              // carphys.cpp
 extern "C" void __fastcall Progress_SetStep(BYTE* self, void*, int step);  // movingb.cpp
@@ -15851,3 +15851,42 @@ void __fastcall Dash_TextPlace(BYTE* s, void*, int v, int* x, int* y)
 }
 
 } // extern "C"
+
+// [FUN_546240] records the vehicle's state block for the replay/network
+// stream: a packed 29-byte record (+1204, 11, the low bytes of the 17 dwords
+// at +21052, the speed from Car_555500, also kept at +10416) written as
+// message 120 with the id at 67d10a
+extern "C" void Vh_MsgDestroy(); KING_ALIAS("_Vh_MsgDestroy", "@MsgBuf_Destroy@8")
+KING_VAR(short, vh_67d10a, 67d10a)
+KING_VAR(BYTE*, vh_6ef1fc, 6ef1fc)
+#pragma pack(push, 1)
+struct Vh_StateRec { int a; int kind; BYTE b[17]; float speed; };
+#pragma pack(pop)
+extern "C" void __fastcall Vehicle_RecordState(BYTE* self, void*)
+{
+    Vh_StateRec rec;
+    rec.kind = 11;
+    rec.a = F(int, self, 1204);
+    for (int i = 0; i < 17; i++)
+        rec.b[i] = F(BYTE, self, 21052 + i * 4);
+    float v = (float)Car_555500(self, 0);
+    F(float, self, 10416) = v;
+    rec.speed = v;
+    BYTE msg[428];
+    CallThis(FUN_602be0, msg);
+    CallThis(FUN_603110, msg, (int)vh_67d10a, &rec, 29);
+    CallThis(FUN_5c3630, vh_6ef1fc, msg);
+    CallThis(Vh_MsgDestroy, msg);
+}
+
+// [$L_554bb0] the vehicle hit something (virtual, the impulse): reports the
+// impact (|impulse| / mass +412 times the ramp at +21204) to the AI player
+// bound at +20636
+extern "C" double __fastcall Ramp_Value(BYTE* self, void*);
+extern "C" void __cdecl Ai_HitPlayer(int player, double impact, int);
+extern "C" void __fastcall Vehicle_OnHit(BYTE* self, void*, int, const float* impulse)
+{
+    float k = (float)(Vec3_Length((const Vec3*)impulse) / F(float, self, 412));
+    if (F(int, self, 20636) != g_veh68b990)
+        Ai_HitPlayer(F(int, self, 20636), Ramp_Value(self + 21204, 0) * k, 0);
+}

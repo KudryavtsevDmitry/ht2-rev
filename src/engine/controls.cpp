@@ -1624,3 +1624,132 @@ void __fastcall Control_FitSize(BYTE* s, void*)
 }
 
 } // extern "C"
+
+// [$L_5bfe60] a control window's event handler (thiscall, the event: type,
+// x, y, key). Characters (258) and key downs (256) go to virtual +40 (key,
+// is a char; Esc as a key down gives 32795, Esc as a char is ignored); mouse
+// moves (512) and buttons (513, 514, 516, 517) are made relative to the
+// window (+44, +48), remembered, and sent to the capturing control (702f24,
+// relative to its origin 702f2c/702f30) or to virtual +36 (move) / +32
+// (button, type first). A handled move with no hit calls the hook at
+// 702f4c (0, 0) and clears 702f3c; a button result with bit 15 and 1..2 in
+// the rest clears the panel at 702f28.
+KING_VAR(int, ct_67f3dc, 67f3dc)
+KING_VAR(int, ct_67f3e0, 67f3e0)
+KING_VAR(BYTE*, ct_702f24, 702f24)
+KING_VAR(BYTE*, ct_702f28, 702f28)
+KING_VAR(int, ct_702f2c, 702f2c)
+KING_VAR(int, ct_702f30, 702f30)
+KING_VAR(int, ct_702f34, 702f34)
+KING_VAR(int, ct_702f38, 702f38)
+KING_VAR(int, ct_702f3c, 702f3c)
+KING_VAR(void*, ct_702f4c, 702f4c)
+extern "C" int __fastcall Control_OnEvent(BYTE* self, void*, const short* ev)
+{
+    int type = ev[0];
+    if (type == 258) {
+        int key = ev[3];
+        if (key == 27)
+            return 0;
+        if (key < 32)
+            return key;
+        return CallVirt<int>(self, 40, key, 1);
+    }
+    if (type == 256) {
+        int r = CallVirt<int>(self, 40, (int)ev[3], 0);
+        return r == 27 ? 32795 : r;
+    }
+    if (type == 512 || type == 513 || type == 514 || type == 516 || type == 517) {
+        int x = ev[1] - F(int, self, 44);
+        ct_67f3dc = x;
+        ct_702f34 = x;
+        int y = ev[2] - F(int, self, 48);
+        ct_67f3e0 = y;
+        ct_702f38 = y;
+        BYTE* cap = ct_702f24;
+        if (type == 512) {
+            int r = cap ? CallVirt<int>(cap, 36, x - ct_702f2c, y - ct_702f30) : CallVirt<int>(self, 36, x, y);
+            if (r == 0 && ct_702f4c) {
+                ((void (__cdecl*)(int, int))ct_702f4c)(0, 0);
+                ct_702f3c = 0;
+            }
+            return 0;
+        }
+        if (!cap)
+            return CallVirt<int>(self, 32, type, x, y);
+        int r = CallVirt<int>(cap, 32, (int)ev[0], x - ct_702f2c, y - ct_702f30);
+        if ((r & 32768) && ct_702f28) {
+            int v = r & ~32768;
+            if (v > 0 && v <= 2)
+                Panel_Clear(ct_702f28, 0);
+        }
+        return r;
+    }
+    return 0;
+}
+
+// [$L_5be2b0] a panel's key handler (key, is a character): the focused
+// child (+292) gets the key first (virtual +40); a result with bit 15 is
+// final. Otherwise, for key downs, Tab moves the focus to the next child that
+// can take it (not flag 0x10000 at +32, not disabled at +40; the first child
+// at +288 after the last), Left/Up to the previous one and Right/Down to the
+// next one; at most 1000 steps. Tab only selects when the focused or the new
+// child accepts it (virtual +44) and passes the key on; the arrows return 32768.
+static BYTE* Pk_Next(BYTE* self, BYTE* n)
+{
+    n = CallThis<BYTE*>(FUN_5d3080, n);
+    return n ? n : F(BYTE*, self, 288);
+}
+static bool Pk_Skip(BYTE* n) { return (F(DWORD, n, 32) & 65536) || F(int, n, 40); }
+extern "C" int __fastcall Panel_OnKey(BYTE* self, void*, int key, int isChar)
+{
+    BYTE* focus = F(BYTE*, self, 292);
+    if (!focus || F(int, self, 40))
+        return key;
+    int r = CallVirt<int>(focus, 40, key, isChar);
+    if (r & 32768)
+        return r;
+    if (isChar || key < 9 || key > 40)
+        return key;
+    if (key == 9) {
+        BYTE* n = Pk_Next(self, focus);
+        int i = 0;
+        for (; i < 1000 && Pk_Skip(n); i++)
+            n = Pk_Next(self, n);
+        if (i == 1000)
+            return 32768;
+        if (CallVirt<int>(F(BYTE*, self, 292), 44) || CallVirt<int>(n, 44))
+            Ctl_Select(self, 0, n);
+        return key;
+    }
+    if (key == 39 || key == 40) {
+        BYTE* n = Pk_Next(self, focus);
+        int i = 0;
+        for (; i < 1000 && Pk_Skip(n); i++)
+            n = Pk_Next(self, n);
+        if (i != 1000)
+            Ctl_Select(self, 0, n);
+        return 32768;
+    }
+    if (key == 37 || key == 38) {
+        BYTE* n = F(BYTE*, focus, 4);
+        if (!n) {
+            n = focus;
+            while (F(BYTE*, n, 8))
+                n = CallThis<BYTE*>(FUN_5d3080, n);
+        }
+        int i = 0;
+        for (; i < 1000 && Pk_Skip(n); i++) {
+            n = F(BYTE*, n, 4);
+            if (!n) {
+                n = F(BYTE*, self, 292);
+                while (F(BYTE*, n, 8))
+                    n = CallThis<BYTE*>(FUN_5d3080, n);
+            }
+        }
+        if (i != 1000)
+            Ctl_Select(self, 0, n);
+        return 32768;
+    }
+    return key;
+}

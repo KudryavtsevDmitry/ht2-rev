@@ -12,7 +12,6 @@ EXTERN @RopeFn_ResetVtbl@8:PROC
 EXTERN @SchHandle_Release@8:PROC
 EXTERN @Shell_Nop@8:PROC
 EXTERN @VecBytes_FreeStorage@4:PROC
-EXTERN @Wea5a47f0_Destroy@4:PROC
 EXTERN @Wnd_Destruct@4:PROC
 EXTERN _KingRdata:BYTE
 EXTERN _Stl_Unlock:PROC
@@ -548,51 +547,6 @@ $L_64682c PROC
             mov EAX,OFFSET (_KingRdata+104032)
             jmp ___CxxFrameHandler
 $L_64682c ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-$L_647260 PROC
-
-            lea ECX,DWORD PTR [EBP-440]
-            jmp @MsgBuf_Destroy@8
-$L_647260 ENDP
-$L_64726b PROC
-
-            mov EAX,OFFSET (_KingRdata+106792)
-            jmp ___CxxFrameHandler
-$L_64726b ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-$L_648ba0 PROC
-
-            mov ECX,DWORD PTR [EBP-16]
-            jmp @Wea5a47f0_Destroy@4
-$L_648ba0 ENDP
-$L_648ba8 PROC
-
-            mov EAX,OFFSET (_KingRdata+114256)
-            jmp ___CxxFrameHandler
-$L_648ba8 ENDP
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
-          BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
           BYTE 0ccH
