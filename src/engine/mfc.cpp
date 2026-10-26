@@ -416,7 +416,7 @@ ASM_VAR(AsmLabel, g_threadStateVtbl, $L_654284)
 ASM_VAR(AsmLabel, g_moduleThreadStateVtbl, $L_654294)
 ASM_VAR(AsmLabel, g_moduleStateVtbl, $L_65428c)
 ASM_VAR(AsmLabel, g_baseModuleStateVtbl, $L_65429c)
-ASM_PROC(FUN_632629)                            // AFX_MODULE_THREAD_STATE's handler
+extern "C" void FUN_632629(); KING_ALIAS("_FUN_632629", "_Afx_ThrowMemoryException")                            // AFX_MODULE_THREAD_STATE's handler
 
 // [FUN_63a06f] _AFX_THREAD_STATE::_AFX_THREAD_STATE
 extern "C" BYTE* __fastcall ThreadState_Construct(BYTE* self) {
@@ -1905,7 +1905,7 @@ ASM_VAR(char, g_settingsSection, $L_653490)
 ASM_VAR(char, g_previewPagesEntry, $L_653480)
 ASM_PROC(FUN_6371de)                           // _AfxIsComboBoxControl
 extern "C" void FUN_639958(); KING_ALIAS("_FUN_639958", "_Afx_OleSetUserCtrl@4")                           // AfxOleSetUserCtrl
-ASM_PROC(FUN_638fc2)                           // CFrameWnd::OnUpdateFrameTitle part
+extern "C" void FUN_638fc2(); KING_ALIAS("_FUN_638fc2", "@FrameWnd_SetMessageTextId@12")                           // CFrameWnd::OnUpdateFrameTitle part
 ASM_PROC(FUN_6377ac)                           // CWinApp::WriteProfileInt
 ASM_PROC(FUN_63b4a6)                           // a CNoTrackObject's destructor
 
@@ -3398,7 +3398,7 @@ ASM_VAR(HCURSOR, g_hcurHelp, $L_72e0bc)
 ASM_VAR(AsmLabel, g_wndFrameOrViewClass, $L_653a3c)
 ASM_VAR(AsmLabel, g_classNameShortFmt, $L_653bd0)  // "Afx:%x:%x"
 ASM_VAR(AsmLabel, g_classNameFmt, $L_653bbc)       // "Afx:%x:%x:%x:%x:%x"
-ASM_PROC(FUN_63569a)                            // CWnd::ReflectLastMsg
+extern "C" void FUN_63569a(); KING_ALIAS("_FUN_63569a", "_Wnd_ReflectLastMsg@8")                            // CWnd::ReflectLastMsg
 
 // [$L_637821] static initializer of CFrameWnd::rectDefault
 extern "C" void __cdecl FrameWnd_InitRectDefault() {
@@ -3711,10 +3711,10 @@ extern "C" const char* __fastcall FrameWnd_GetIconWndClass(BYTE* self, void*, DW
 
 #include <shellapi.h>
 typedef void (WINAPI* VoidFn)();
-ASM_PROC(FUN_6332c8)                            // CCmdTarget::OnCmdMsg
+extern "C" void FUN_6332c8(); KING_ALIAS("_FUN_6332c8", "@CmdTarget_OnCmdMsg@24")                            // CCmdTarget::OnCmdMsg
 ASM_PROC(FUN_638fd9)                            // CFrameWnd::DestroyDockBars
 ASM_PROC(FUN_6327b7)                            // CWinApp::DevModeChange
-ASM_PROC(FUN_63566d)                            // CWnd::SendChildNotifyLastMsg
+extern "C" void FUN_63566d(); KING_ALIAS("_FUN_63566d", "@Wnd_SendChildNotifyLastMsg@12")                            // CWnd::SendChildNotifyLastMsg
 ASM_PROC(FUN_6317b8)                            // UnpackDDElParam
 ASM_PROC(FUN_6317b2)                            // ReuseDDElParam
 ASM_VAR(AsmLabel, g_afxData, $L_72e078)
@@ -4054,3 +4054,888 @@ extern "C" void __fastcall FrameWnd_OnInitMenuPopup(BYTE* self, void*, BYTE* men
         F(UINT, state, 32) = count;
     }
 }
+
+// ---------------------------------------------------------------------------
+// collections leftovers, CWinThread::Run and the message filter, the command
+// dispatch (CCmdTarget::OnCmdMsg, _AfxDispatchCmdMsg)
+
+ASM_VAR(AsmLabel, g_memoryExceptionClass, $L_654520)   // RUNTIME_CLASS(CMemoryException)
+ASM_VAR(AsmLabel, g_userExceptionClass, $L_654350)     // RUNTIME_CLASS(CUserException)
+ASM_VAR(UINT, g_afxWinVer, $L_72e0cc)                  // afxData.nWinVer
+ASM_PROC(FUN_6201a0)                                   // memcmp
+
+// [$L_632225] CPtrList's deleting destructor
+extern "C" BYTE* __fastcall PtrList_DeletingDestruct(BYTE* self, void*, int flags) {
+    PtrList_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_6322e2] CPtrList::FreeNode (+12 count, +16 free list)
+extern "C" void __fastcall PtrList_FreeNode(BYTE* self, void*, void** node) {
+    node[0] = F(void*, self, 16);
+    F(void**, self, 16) = node;
+    if (--F(int, self, 12) == 0) PtrList_RemoveAll(self);
+}
+
+// [FUN_632324] CPtrList::RemoveHead (+4 head, +8 tail; node: next, prev, data)
+extern "C" void* __fastcall PtrList_RemoveHead(BYTE* self) {
+    void** node = F(void**, self, 4);
+    void* data = node[2];
+    void** next = (void**)node[0];
+    F(void**, self, 4) = next;
+    if (next) next[1] = 0;
+    else F(void*, self, 8) = 0;
+    PtrList_FreeNode(self, 0, node);
+    return data;
+}
+
+// [$L_6323a5] CMapPtrToPtr's deleting destructor
+extern "C" BYTE* __fastcall PtrMap_DeletingDestruct(BYTE* self, void*, int flags) {
+    PtrMap_Destruct((PtrMap*)self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [FUN_632629] AfxThrowMemoryException
+extern "C" void __cdecl Afx_ThrowMemoryException() { ThrowMemory(); }
+
+// [$L_63269f] CWinApp::WinHelp: leaves the application's help mode (+132)
+// and asks the main window
+extern "C" void __fastcall WinApp_WinHelp(BYTE* self, void*, DWORD data, UINT cmd) {
+    BYTE* main = CallC<BYTE*>(FUN_61c4c1);
+    F(BOOL, self, 132) = FALSE;
+    PostMessageA(HWND_OF(main), 874, 0, 0);                        // WM_KICKIDLE
+    CallVirt(main, 108, data, cmd);                                // CWnd::WinHelp
+}
+
+// [FUN_632f0f] CWinThread::ProcessWndProcException
+extern "C" LRESULT __fastcall WinThread_ProcessWndProcException(BYTE* self, void*, BYTE* e, const MSG* m) {
+    if (m->message == WM_CREATE) return -1;
+    if (m->message == WM_PAINT) ValidateRect(m->hwnd, 0);
+    return 0;
+}
+
+// [$L_6326d6] CWinApp::ProcessWndProcException: reports the exception
+extern "C" LRESULT __fastcall WinApp_ProcessWndProcException(BYTE* self, void*, BYTE* e, const MSG* m) {
+    if (m->message == WM_CREATE || m->message == WM_PAINT)
+        return WinThread_ProcessWndProcException(self, 0, e, m);
+    LRESULT r = 0;
+    UINT idp = 61704;                                              // AFX_IDP_INTERNAL_FAILURE
+    if (m->message == WM_COMMAND) {
+        if (!m->lParam) idp++;                                     // AFX_IDP_COMMAND_FAILURE
+        r = 1;
+    }
+    if (Object_IsKindOf(e, 0, (BYTE*)g_memoryExceptionClass))
+        CallVirt(e, 16, MB_ICONEXCLAMATION | MB_SYSTEMMODAL, idp);   // ReportError
+    else if (!Object_IsKindOf(e, 0, (BYTE*)g_userExceptionClass))
+        CallVirt(e, 16, MB_ICONSTOP, idp);
+    return r;
+}
+
+// [FUN_632c50] CWinThread::Run: the message loop with idle processing
+extern "C" int __fastcall WinThread_Run(BYTE* self) {
+    BOOL idle = TRUE;
+    LONG idleCount = 0;
+    MSG* cur = &F(MSG, self, 48);                                  // m_msgCur
+    for (;;) {
+        while (idle && !PeekMessageA(cur, 0, 0, 0, PM_NOREMOVE))
+            if (!CallVirt<BOOL>(self, 96, idleCount++)) idle = FALSE;  // OnIdle
+        do {
+            if (!CallVirt<BOOL>(self, 92)) return CallVirt<int>(self, 104);   // PumpMessage, ExitInstance
+            if (CallVirt<BOOL>(self, 100, cur)) {                  // IsIdleMessage
+                idle = TRUE;
+                idleCount = 0;
+            }
+        } while (PeekMessageA(cur, 0, 0, 0, PM_NOREMOVE));
+    }
+}
+
+// [$L_632d28] returns +56
+extern "C" void* __fastcall Object_Get56(BYTE* self) { return F(void*, self, 56); }
+
+// [FUN_632f8c] _AfxIsHelpKey: F1 without modifiers or repeat
+extern "C" BOOL __stdcall Afx_IsHelpKey(const MSG* m) {
+    return m->message == WM_KEYDOWN && m->wParam == VK_F1 && !(HIWORD(m->lParam) & KF_REPEAT)
+        && GetKeyState(VK_SHIFT) >= 0 && GetKeyState(VK_CONTROL) >= 0 && GetKeyState(VK_MENU) >= 0;
+}
+
+// [$L_632fd7] CWinThread::ProcessMessageFilter: help keys in menus and
+// dialogs, PreTranslateMessage for the active window's dialogs
+extern "C" BOOL __fastcall WinThread_ProcessMessageFilter(BYTE* self, void*, int code, MSG* m) {
+    if (!m) return FALSE;
+    if (code == MSGF_MENU) {
+        BYTE* wnd = Wnd_FromHandle(m->hwnd);
+        BYTE* frame;
+        if (wnd && (frame = Wnd_GetTopLevelFrame(wnd)) != 0 && FrameWnd_IsTracking(frame) && F(BOOL, frame, 80)) {
+            BYTE* main = CallC<BYTE*>(FUN_61c4c1);
+            if (F(BYTE*, self, 28)
+                && ((m->message == WM_KEYDOWN && m->wParam == VK_RETURN) || m->message == WM_LBUTTONUP)) {
+                SendMessageA(HWND_OF(main), WM_COMMAND, 57670, 0); // ID_HELP
+                return TRUE;
+            }
+        }
+    } else if (code != MSGF_DIALOGBOX) {
+        return FALSE;
+    }
+    BYTE* main = CallC<BYTE*>(FUN_61c4c1);
+    if (g_afxWinVer < 0x333 && main && Afx_IsHelpKey(m)) {
+        SendMessageA(HWND_OF(main), WM_COMMAND, 57670, 0);
+        return TRUE;
+    }
+    if (code != MSGF_DIALOGBOX || !F(BYTE*, self, 32) || m->message < WM_KEYFIRST || m->message > 264)   // WM_KEYLAST of the time
+        return FALSE;
+    BYTE* ts = Afx_GetThreadState();
+    if (F(BOOL, ts, 188)) return FALSE;                            // m_bInMsgFilter
+    F(BOOL, ts, 188) = TRUE;
+    MSG copy = *m;
+    if (Wnd_IsWindowEnabled(F(BYTE*, self, 32)) && CallVirt<BOOL>(self, 88, &copy)) {   // PreTranslateMessage
+        F(BOOL, ts, 188) = FALSE;
+        return TRUE;
+    }
+    F(BOOL, ts, 188) = FALSE;
+    return FALSE;
+}
+
+// [FUN_6331c1] _AfxDispatchCmdMsg: calls a command handler of the given
+// signature (AFX_PMSG pfn is a thiscall member of the target)
+extern "C" BOOL __stdcall Afx_DispatchCmdMsg(BYTE* target, UINT id, int code, void (*pfn)(), void* extra,
+                                             UINT sig, void** handlerInfo) {
+    if (handlerInfo) {
+        handlerInfo[0] = target;
+        handlerInfo[1] = (void*)pfn;
+        return TRUE;
+    }
+    void** x = (void**)extra;
+    BYTE* ui = (BYTE*)extra;
+    switch (sig) {
+    case 2:  return CallThis<BOOL>(pfn, target, id);                  // AfxSig_bw
+    case 12: CallThis(pfn, target); return TRUE;                      // AfxSig_vv
+    case 13: CallThis(pfn, target, id); return TRUE;                  // AfxSig_vw
+    case 35: return CallThis<BOOL>(pfn, target);                      // AfxSig_bv
+    case 38: CallThis(pfn, target, x[1], x[0]); return TRUE;          // AfxSig_vNMHDRpl
+    case 39: return CallThis<BOOL>(pfn, target, x[1], x[0]);          // AfxSig_bNMHDRpl
+    case 40: CallThis(pfn, target, id, x[1], x[0]); return TRUE;      // AfxSig_vwNMHDRpl
+    case 41: return CallThis<BOOL>(pfn, target, id, x[1], x[0]);      // AfxSig_bwNMHDRpl
+    case 44: {                                                        // AfxSig_cmdui
+        CallThis(pfn, target, ui);
+        BOOL r = !F(BOOL, ui, 28);                                    // m_bContinueRouting
+        F(BOOL, ui, 28) = FALSE;
+        return r;
+    }
+    case 45: {                                                        // AfxSig_cmduiw
+        CallThis(pfn, target, ui, id);
+        BOOL r = !F(BOOL, ui, 28);
+        F(BOOL, ui, 28) = FALSE;
+        return r;
+    }
+    case 46: CallThis(pfn, target, extra); return TRUE;               // AfxSig_vpv
+    case 47: return CallThis<BOOL>(pfn, target, extra);               // AfxSig_bpv
+    }
+    return FALSE;
+}
+
+// [FUN_6332c8] CCmdTarget::OnCmdMsg: control events, OLE commands, then the
+// message maps
+extern "C" BOOL __fastcall CmdTarget_OnCmdMsg(BYTE* self, void*, UINT id, int code, void* extra, void* info) {
+    if (code == -2)                                                // CN_EVENT
+        return CallVirt<BOOL>(F(BYTE*, Afx_GetModuleState(), 4152), 4, self, id, extra, info);   // afxOccManager->OnEvent
+    if (code == -3) {                                              // CN_OLECOMMAND
+        BYTE* ui = (BYTE*)extra;
+        const GUID* group = F(const GUID*, ui, 48);
+        BOOL found = FALSE;
+        for (void** map = CallVirt<void**>(self, 44); map && !found; map = (void**)map[0]) {   // GetCommandMap
+            for (BYTE* e = (BYTE*)map[1]; F(UINT, e, 4) && F(UINT, e, 8) && !found; e += 12) {
+                if (id != F(UINT, e, 4)) continue;
+                const GUID* g = F(const GUID*, e, 0);
+                if (!group ? !g : g && !CallC<int>(FUN_6201a0, group, g, 16)) {
+                    found = TRUE;
+                    F(UINT, ui, 4) = F(UINT, e, 8);
+                }
+            }
+        }
+        return found;
+    }
+    UINT msg;
+    if (code == -1) msg = WM_COMMAND;                              // CN_UPDATE_COMMAND_UI
+    else {
+        msg = HIWORD(code);
+        code = LOWORD(code);
+        if (!msg) msg = WM_COMMAND;
+    }
+    for (const MsgMap* map = CallVirt<const MsgMap*>(self, 40); map; map = map->base) {   // GetMessageMap
+        const MsgMapEntry* e = Afx_FindMessageEntry(map->entries, msg, code, id);
+        if (e) return Afx_DispatchCmdMsg(self, id, code, e->pfn, extra, (UINT)e->sig, (void**)info);
+    }
+    return FALSE;
+}
+
+// [$L_6333d7] returns TRUE (one argument)
+extern "C" BOOL __fastcall CmdTarget_True1(BYTE* self, void*, int) { return TRUE; }
+
+// [$L_6333dd] returns 0x80029C4A (two arguments)
+extern "C" HRESULT __fastcall CmdTarget_E80029C4A(BYTE* self, void*, int, int) { return (HRESULT)0x80029C4A; }
+
+// [FUN_6333e5] CCmdTarget::BeginWaitCursor
+extern "C" void __fastcall CmdTarget_BeginWaitCursor(BYTE* self) {
+    CallVirt(F(BYTE*, Afx_GetModuleState(), 4), 144, 1);           // DoWaitCursor
+}
+
+// [FUN_6333fa] CCmdTarget::EndWaitCursor
+extern "C" void __fastcall CmdTarget_EndWaitCursor(BYTE* self) {
+    CallVirt(F(BYTE*, Afx_GetModuleState(), 4), 144, -1);
+}
+
+// ---------------------------------------------------------------------------
+// CWnd: child notifications and their reflection, owner-drawn items,
+// RepositionBars, GetDescendantWindow, WinHelp
+
+// [FUN_63566d] CWnd::SendChildNotifyLastMsg: the last sent message to
+// OnChildNotify
+extern "C" BOOL __fastcall Wnd_SendChildNotifyLastMsg(BYTE* self, void*, LRESULT* result) {
+    BYTE* ts = Afx_GetThreadState();
+    return CallVirt<BOOL>(self, 168, F(UINT, ts, 56), F(WPARAM, ts, 60), F(LPARAM, ts, 64), result);
+}
+
+// [FUN_63569a] CWnd::ReflectLastMsg: the last sent message to the child's
+// CWnd (or its OLE control site)
+extern "C" BOOL __stdcall Wnd_ReflectLastMsg(HWND child, LRESULT* result) {
+    BYTE* map = Afx_MapHWND(FALSE);
+    if (!map) return FALSE;
+    BYTE* w = (BYTE*)PtrMap_GetValueAt((PtrMap*)(map + 4), 0, child);
+    if (w) return Wnd_SendChildNotifyLastMsg(w, 0, result);
+    BYTE* parent = (BYTE*)PtrMap_GetValueAt((PtrMap*)(map + 4), 0, GetParent(child));
+    if (!parent || !F(BYTE*, parent, 52)) return FALSE;
+    void* site = PtrMap_GetValueAt((PtrMap*)(F(BYTE*, parent, 52) + 32), 0, child);   // m_siteMap
+    if (!site) return FALSE;
+    BYTE temp[64];
+    Wnd_ConstructHwnd(temp, 0, child);
+    F(void*, temp, 56) = site;                                     // m_pCtrlSite
+    BOOL r = Wnd_SendChildNotifyLastMsg(temp, 0, result);
+    HWND_OF(temp) = 0;
+    Wnd_Destruct(temp);
+    return r;
+}
+
+// [FUN_635799] CWnd::ReflectChildNotify: as WM_REFLECT_BASE+msg through
+// the message map
+extern "C" BOOL __fastcall Wnd_ReflectChildNotify(BYTE* self, void*, UINT msg, WPARAM w, LPARAM l, LRESULT* result) {
+    switch (msg) {
+    case WM_HSCROLL: case WM_VSCROLL: case WM_PARENTNOTIFY:
+    case 43: case 44: case 45: case 46: case 47:                   // WM_DRAWITEM..WM_VKEYTOITEM
+    case WM_COMPAREITEM:
+        return Wnd_OnWndMsg(self, 0, 0xBC00 + msg, w, l, result);
+    case WM_COMMAND:
+        if (CmdTarget_OnCmdMsg(self, 0, 0, MAKELONG(HIWORD(w), 0xBC00 + WM_COMMAND), 0, 0)) {
+            if (result) *result = 1;
+            return TRUE;
+        }
+        return FALSE;
+    case WM_NOTIFY: {
+        void* notify[2] = { result, (void*)l };                    // AFX_NOTIFY
+        return CmdTarget_OnCmdMsg(self, 0, 0, MAKELONG((WORD)((NMHDR*)l)->code, 0xBC00 + WM_NOTIFY), notify, 0);
+    }
+    }
+    if (msg >= WM_CTLCOLORMSGBOX && msg <= WM_CTLCOLORSTATIC) {
+        struct { HWND wnd; HDC dc; UINT type; } ctl = { 0, (HDC)w, msg - WM_CTLCOLORMSGBOX };   // AFX_CTLCOLOR
+        BOOL r = Wnd_OnWndMsg(self, 0, 0xBC00 + 25, 0, (LPARAM)&ctl, result);                    // WM_CTLCOLOR
+        return *result ? r : FALSE;
+    }
+    return FALSE;
+}
+
+// [$L_63573e] CWnd::OnChildNotify
+extern "C" BOOL __fastcall Wnd_OnChildNotify(BYTE* self, void*, UINT msg, WPARAM w, LPARAM l, LRESULT* result) {
+    if (!F(void*, self, 56)) return Wnd_ReflectChildNotify(self, 0, msg, w, l, result);
+    LRESULT r = SendMessageA(HWND_OF(self), 0x2000 + msg, w, l);  // OCM__BASE
+    if (msg >= WM_CTLCOLORMSGBOX && msg <= WM_CTLCOLORSTATIC && !r) return FALSE;
+    if (result) *result = r;
+    return TRUE;
+}
+
+// [$L_635881] CWnd::OnParentNotify: creation and destruction to the child
+extern "C" void __fastcall Wnd_OnParentNotify(BYTE* self, void*, UINT msg, LPARAM l) {
+    if ((LOWORD(msg) == WM_CREATE || LOWORD(msg) == WM_DESTROY) && Wnd_ReflectLastMsg((HWND)l, 0)) return;
+    Wnd_Default(self);
+}
+
+// [$L_6351d0] CWnd::OnNotify
+extern "C" BOOL __fastcall Wnd_OnNotify(BYTE* self, void*, WPARAM, LPARAM l, LRESULT* result) {
+    NMHDR* hdr = (NMHDR*)l;
+    HWND ctrl = hdr->hwndFrom;
+    UINT id = LOWORD(GetDlgCtrlID(ctrl));
+    UINT code = hdr->code;
+    if (F(HWND, Afx_GetThreadState(), 184) == HWND_OF(self)) return TRUE;   // m_hLockoutNotifyWindow
+    if (Wnd_ReflectLastMsg(ctrl, result)) return TRUE;
+    void* notify[2] = { result, hdr };
+    return CallVirt<BOOL>(self, 12, id, (int)MAKELONG((WORD)code, WM_NOTIFY), (void*)notify, (void*)0);
+}
+
+// [$L_634368] CWnd::PreCreateWindow
+extern "C" BOOL __fastcall Wnd_PreCreateWindow(BYTE* self, void*, CREATESTRUCTA* cs) {
+    if (!cs->lpszClass) {
+        Afx_EndDeferRegisterClass(1);                              // AFX_WND_REG
+        cs->lpszClass = &g_classWnd;
+    }
+    return TRUE;
+}
+
+// [$L_634388] CWnd::Create: a child window
+extern "C" BOOL __fastcall Wnd_Create(BYTE* self, void*, const char* cls, const char* name, DWORD style,
+                                      const RECT* r, BYTE* parent, UINT id, void* context) {
+    return Wnd_CreateEx(self, 0, 0, cls, name, style | WS_CHILD, r->left, r->top, r->right - r->left,
+                        r->bottom - r->top, parent ? HWND_OF(parent) : 0, (HMENU)(UINT_PTR)id, context);
+}
+
+// [$L_634580] does nothing
+extern "C" void __fastcall Wnd_Nothing(BYTE* self) {}
+
+// [$L_634626] CWnd::GetSuperWndProcAddr
+extern "C" WNDPROC* __fastcall Wnd_GetSuperWndProcAddr(BYTE* self) { return &F(WNDPROC, self, 40); }
+
+// [$L_6346a0] CWnd::OnToolHitTest: the child control under the point
+extern "C" int __fastcall Wnd_OnToolHitTest(BYTE* self, void*, POINT pt, BYTE* ti) {
+    HWND child = Afx_ChildWindowFromPoint(HWND_OF(self), pt);
+    if (!child) return -1;
+    int hit = LOWORD(GetDlgCtrlID(child));
+    if (ti && F(UINT, ti, 0) >= 40) {                              // TOOLINFO of MFC 4.2
+        F(UINT, ti, 4) |= 1;                                       // TTF_IDISHWND
+        F(char*, ti, 36) = (char*)-1;                              // LPSTR_TEXTCALLBACK
+        F(HWND, ti, 8) = HWND_OF(self);
+        F(HWND, ti, 12) = child;
+        if (!(SendMessageA(child, WM_GETDLGCODE, 0, 0) & DLGC_BUTTON)) F(UINT, ti, 4) |= 0x80000002;
+    }
+    return hit;
+}
+
+// [$L_634711] CWnd::OnDrawItem
+extern "C" void __fastcall Wnd_OnDrawItem(BYTE* self, void*, int, DRAWITEMSTRUCT* dis) {
+    if (dis->CtlType == ODT_MENU) {
+        BYTE* menu = Menu_FromHandlePermanent((HMENU)dis->hwndItem);
+        if (menu) {
+            CallVirt(menu, 12, dis);                               // DrawItem
+            return;
+        }
+    } else if (Wnd_ReflectLastMsg(dis->hwndItem, 0)) {
+        return;
+    }
+    Wnd_Default(self);
+}
+
+// [$L_63474e] CWnd::OnCompareItem
+extern "C" int __fastcall Wnd_OnCompareItem(BYTE* self, void*, int, COMPAREITEMSTRUCT* cis) {
+    LRESULT r = (LRESULT)cis;
+    if (Wnd_ReflectLastMsg(cis->hwndItem, &r)) return (int)r;
+    return (int)Wnd_Default(self);
+}
+
+// [$L_634778] CWnd::OnDeleteItem
+extern "C" void __fastcall Wnd_OnDeleteItem(BYTE* self, void*, int, DELETEITEMSTRUCT* dis) {
+    if (!Wnd_ReflectLastMsg(dis->hwndItem, 0)) Wnd_Default(self);
+}
+
+// [$L_634798] CWnd::OnCharToItem/OnVKeyToItem: the list box first
+extern "C" int __fastcall Wnd_OnListBoxKey(BYTE* self, void*, UINT, BYTE* list, UINT) {
+    LRESULT r = (LRESULT)list;
+    if (list && Wnd_SendChildNotifyLastMsg(list, 0, &r)) return (int)r;
+    return (int)Wnd_Default(self);
+}
+
+// [FUN_6347c3] _AfxFindPopupMenuFromID: the popup holding the command
+extern "C" BYTE* __stdcall Afx_FindPopupMenuFromID(BYTE* menu, UINT id) {
+    int n = GetMenuItemCount(F(HMENU, menu, 4));
+    for (int i = 0; i < n; i++) {
+        BYTE* sub = Menu_FromHandle(GetSubMenu(F(HMENU, menu, 4), i));
+        if (sub) {
+            BYTE* found = Afx_FindPopupMenuFromID(sub, id);
+            if (found) return found;
+        } else if (GetMenuItemID(F(HMENU, menu, 4), i) == id) {
+            return Menu_FromHandlePermanent(F(HMENU, menu, 4));
+        }
+    }
+    return 0;
+}
+
+extern "C" BYTE* __stdcall Wnd_GetDescendantWindow(HWND h, int id, BOOL onlyPerm);
+
+// [$L_634826] CWnd::OnMeasureItem
+extern "C" void __fastcall Wnd_OnMeasureItem(BYTE* self, void*, int, MEASUREITEMSTRUCT* mis) {
+    if (mis->CtlType == ODT_MENU) {
+        BYTE* ts = Afx_GetThreadState();
+        HMENU h = F(HWND, ts, 80) == HWND_OF(self) ? F(HMENU, ts, 84) : GetMenu(HWND_OF(self));   // m_hTrackingWindow/Menu
+        BYTE* menu = Afx_FindPopupMenuFromID(Menu_FromHandle(h), mis->itemID);
+        if (menu) CallVirt(menu, 16, mis);                         // MeasureItem
+    } else {
+        BYTE* child = Wnd_GetDescendantWindow(HWND_OF(self), mis->CtlID, TRUE);
+        if (child && Wnd_SendChildNotifyLastMsg(child, 0, 0)) return;
+    }
+    Wnd_Default(self);
+}
+
+// [$L_6349f3] CWnd::OnNTCtlColor: WM_CTLCOLORxxx as WM_CTLCOLOR
+extern "C" LRESULT __fastcall Wnd_OnNTCtlColor(BYTE* self, void*, WPARAM w, LPARAM l) {
+    struct { HWND wnd; HDC dc; UINT type; } ctl;
+    ctl.dc = (HDC)w;
+    ctl.wnd = (HWND)l;
+    ctl.type = F(UINT, Afx_GetThreadState(), 56) - WM_CTLCOLORMSGBOX;
+    return CallVirt<LRESULT>(self, 152, (UINT)25, (WPARAM)0, (LPARAM)&ctl);   // WindowProc(WM_CTLCOLOR)
+}
+
+// [$L_634a39] CWnd::WinHelp: cancels modes everywhere, then starts WinHelp
+// on the top level window
+extern "C" void __fastcall Wnd_WinHelp(BYTE* self, void*, DWORD data, UINT cmd) {
+    BYTE* app = F(BYTE*, Afx_GetModuleState(), 4);
+    CmdTarget_BeginWaitCursor(F(BYTE*, Afx_GetModuleState(), 4));
+    if (CallVirt<BOOL>(self, 176)) CallVirt(self, 240);           // IsFrameWnd, ExitHelpMode
+    SendMessageA(HWND_OF(self), WM_CANCELMODE, 0, 0);
+    Wnd_SendMessageToDescendants(HWND_OF(self), WM_CANCELMODE, 0, 0, TRUE, TRUE);
+    BYTE* top = Wnd_GetTopLevelParent(self);
+    SendMessageA(HWND_OF(top), WM_CANCELMODE, 0, 0);
+    Wnd_SendMessageToDescendants(HWND_OF(top), WM_CANCELMODE, 0, 0, TRUE, TRUE);
+    HWND capture = GetCapture();
+    if (capture) SendMessageA(capture, WM_CANCELMODE, 0, 0);
+    if (!WinHelpA(HWND_OF(top), F(const char*, app, 140), cmd, data))
+        Afx_MessageBoxId(61703, 0, (UINT)-1);                      // AFX_IDP_FAILED_TO_LAUNCH_HELP
+    CmdTarget_EndWaitCursor(F(BYTE*, Afx_GetModuleState(), 4));
+}
+
+// [FUN_635336] CWnd::GetDescendantWindow
+extern "C" BYTE* __stdcall Wnd_GetDescendantWindow(HWND h, int id, BOOL onlyPerm) {
+    HWND child = GetDlgItem(h, id);
+    if (child) {
+        if (GetTopWindow(child)) {
+            BYTE* w = Wnd_GetDescendantWindow(child, id, onlyPerm);
+            if (w) return w;
+        }
+        if (!onlyPerm) return Wnd_FromHandle(child);
+        BYTE* w = Wnd_FromHandlePermanent(child);
+        if (w) return w;
+    }
+    for (child = GetTopWindow(h); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        BYTE* w = Wnd_GetDescendantWindow(child, id, onlyPerm);
+        if (w) return w;
+    }
+    return 0;
+}
+
+// AFX_SIZEPARENTPARAMS
+struct SizeParentParams { HDWP dwp; RECT rect; SIZE total; BOOL stretch; };
+
+// [FUN_635566] AfxRepositionWindow: moves the window when its rectangle
+// changes, deferred when there is a DeferWindowPos handle
+extern "C" void __stdcall Afx_RepositionWindow(SizeParentParams* layout, HWND h, const RECT* r) {
+    HWND parent = GetParent(h);
+    if (layout && !layout->dwp) return;
+    RECT old;
+    GetWindowRect(h, &old);
+    ScreenToClient(parent, (POINT*)&old.left);
+    ScreenToClient(parent, (POINT*)&old.right);
+    if (EqualRect(&old, r)) return;
+    if (layout)
+        layout->dwp = DeferWindowPos(layout->dwp, h, 0, r->left, r->top, r->right - r->left, r->bottom - r->top,
+                                     SWP_NOACTIVATE | SWP_NOZORDER);
+    else
+        SetWindowPos(h, 0, r->left, r->top, r->right - r->left, r->bottom - r->top, SWP_NOACTIVATE | SWP_NOZORDER);
+}
+
+// [FUN_63542c] CWnd::RepositionBars: lays out the control bars, gives the
+// rest to the window nIDLeftOver
+extern "C" void __fastcall Wnd_RepositionBars(BYTE* self, void*, UINT first, UINT last, UINT leftOver, UINT flags,
+                                              RECT* param, const RECT* client, BOOL stretch) {
+    SizeParentParams layout;
+    HWND leftWnd = 0;
+    layout.stretch = stretch;
+    layout.total.cx = layout.total.cy = 0;
+    if (client) layout.rect = *client;
+    else GetClientRect(HWND_OF(self), &layout.rect);
+    layout.dwp = flags != 1 ? BeginDeferWindowPos(8) : 0;          // reposQuery
+    for (HWND child = GetTopWindow(HWND_OF(self)); child; child = GetWindow(child, GW_HWNDNEXT)) {
+        UINT id = LOWORD(GetDlgCtrlID(child));
+        BYTE* w = Wnd_FromHandlePermanent(child);
+        if (id == leftOver) leftWnd = child;
+        else if (id >= first && id <= last && w) SendMessageA(child, 865, 0, (LPARAM)&layout);   // WM_SIZEPARENT
+    }
+    if (flags == 1) {
+        if (stretch) CopyRect(param, &layout.rect);
+        else {
+            param->left = param->top = 0;
+            param->right = layout.total.cx;
+            param->bottom = layout.total.cy;
+        }
+        return;
+    }
+    if (leftOver && leftWnd) {
+        BYTE* w = Wnd_FromHandle(leftWnd);
+        if (flags == 2) {                                          // reposExtra
+            layout.rect.left += param->left;
+            layout.rect.top += param->top;
+            layout.rect.right -= param->right;
+            layout.rect.bottom -= param->bottom;
+        }
+        CallVirt(w, 96, &layout.rect, 0);                          // CalcWindowRect
+        Afx_RepositionWindow(&layout, leftWnd, &layout.rect);
+    }
+    if (layout.dwp) EndDeferWindowPos(layout.dwp);
+}
+
+// [$L_635600] CWnd::CalcWindowRect
+extern "C" void __fastcall Wnd_CalcWindowRect(BYTE* self, void*, RECT* r, UINT adjust) {
+    DWORD ex = Wnd_GetExStyle(self);
+    if (!adjust) ex &= ~WS_EX_CLIENTEDGE;
+    AdjustWindowRectEx(r, Wnd_GetStyle(self), FALSE, ex);
+}
+
+// [$L_635d7e] returns flag 16 of +36
+extern "C" DWORD __fastcall Object_Flag36_16(BYTE* self) { return F(DWORD, self, 36) & 16; }
+
+// [$L_635d85] stores +44; when flag 16 of +36 is set, clears it and posts
+// an empty message to +28
+extern "C" void __fastcall Object_Set44Post(BYTE* self, void*, DWORD v) {
+    F(DWORD, self, 44) = v;
+    if (F(DWORD, self, 36) & 16) {
+        F(DWORD, self, 36) &= ~16;
+        PostMessageA(F(HWND, self, 28), 0, 0, 0);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// CFrameWnd: menu prompts and the message bar, tool tips, indicators, the
+// title, layout and activation; CControlBar helpers. CFrameWnd +64 m_nWindow,
+// +88 m_rectBorder, +108 m_listControlBars (+112 its head), +148
+// m_nIDLastMessage, +156 m_lpfnCloseProc, +172 m_strTitle, +176
+// m_bInRecalcLayout, +184 m_nIdleFlags.
+
+ASM_PROC(FUN_638aa4)                            // CFrameWnd::ShowControlBar
+ASM_VAR(char, g_fmtWindowNumber, $L_65427c)     // ":%d"
+ASM_VAR(char, g_titleSeparator, $L_654278)      // " - "
+ASM_VAR(BYTE*, g_staticDocManager, $L_72c160)   // CDocManager::pStaticDocManager
+ASM_VAR(BOOL, g_docManagerStaticInit, $L_685e34)
+
+// [FUN_638fc2] CFrameWnd::SetMessageText(nID)
+extern "C" void __fastcall FrameWnd_SetMessageTextId(BYTE* self, void*, UINT id) {
+    SendMessageA(HWND_OF(self), 866, id, 0);                       // WM_SETMESSAGESTRING
+}
+
+// [$L_638d3e] CFrameWnd::OnMenuSelect: the prompt of the selected item
+extern "C" void __fastcall FrameWnd_OnMenuSelect(BYTE* self, void*, UINT item, UINT flags, HMENU sysMenu) {
+    BYTE* frame = Wnd_GetTopLevelFrame(self);
+    BYTE* hook = F(BYTE*, self, 104);
+    if (hook && CallVirt<BOOL>(hook, 124, item, flags, sysMenu)) return;
+    if (flags == 0xFFFF) {                                         // menu closed
+        F(DWORD, self, 36) &= ~64;                                 // WF_NOPOPMSG
+        F(UINT, self, 144) = F(BOOL, frame, 80) ? 57346 : 57345;   // AFX_IDS_HELPMODEMESSAGE / IDLEMESSAGE
+        SendMessageA(HWND_OF(self), 866, F(UINT, self, 144), 0);
+        BYTE* bar = CallVirt<BYTE*>(self, 212);                    // GetMessageBar
+        if (bar) UpdateWindow(HWND_OF(bar));
+    } else {
+        if (!item || (flags & (MF_SEPARATOR | MF_POPUP))) F(UINT, self, 144) = 0;
+        else if (item >= 0xF000 && item < 0xF1F0) F(UINT, self, 144) = ((item - 0xF000) >> 4) + 0xEF00;   // ID_COMMAND_FROM_SC
+        else if (item >= 0xFF00) F(UINT, self, 144) = 0xEF1F;      // AFX_IDS_MDICHILD
+        else F(UINT, self, 144) = item;
+        F(DWORD, frame, 36) |= 64;
+    }
+    if (F(UINT, self, 144) != F(UINT, self, 148) && Wnd_FromHandle(GetParent(HWND_OF(self))))
+        PostMessageA(HWND_OF(self), 874, 0, 0);                    // WM_KICKIDLE
+}
+
+// [$L_638e4f] CFrameWnd::GetMessageString: the prompt part of the string
+// resource
+extern "C" void __fastcall FrameWnd_GetMessageString(BYTE* self, void*, UINT id, char** message) {
+    char* buf = String_GetBuffer(message, 0, 255);
+    if (Afx_LoadString(id, buf, 256)) {
+        char* nl = CallC<char*>(FUN_620585, buf, 10);
+        if (nl) *nl = 0;
+    }
+    String_ReleaseBuffer(message, 0, -1);
+}
+
+// [$L_638e93] CFrameWnd::OnPopMessageString
+extern "C" LRESULT __fastcall FrameWnd_OnPopMessageString(BYTE* self, void*, WPARAM w, LPARAM l) {
+    if (F(DWORD, self, 36) & 64) return 0;
+    return SendMessageA(HWND_OF(self), 866, w, l);
+}
+
+// [$L_638eb6] CFrameWnd::OnSetMessageString: shows a prompt (lParam) or the
+// prompt of a string id (wParam) in the message bar
+extern "C" LRESULT __fastcall FrameWnd_OnSetMessageString(BYTE* self, void*, WPARAM w, LPARAM l) {
+    UINT last = F(UINT, self, 148);
+    F(DWORD, self, 36) &= ~64;
+    UINT id = (UINT)w;
+    BYTE* bar = CallVirt<BYTE*>(self, 212);                        // GetMessageBar
+    if (bar) {
+        char* s = g_afxPchNil;
+        const char* text = 0;
+        if (l) {
+            text = (const char*)l;
+        } else if (id) {
+            if (id == 0xEF06 && F(void*, self, 156)) id = 0xF005;  // AFX_IDS_SCCLOSE in preview
+            CallVirt(self, 196, id, &s);                           // GetMessageString
+            text = s;
+        }
+        Wnd_SetWindowText(bar, 0, text);
+        BYTE* frame = Wnd_GetParentFrame(bar);
+        if (frame) {
+            F(UINT, frame, 148) = id;
+            F(UINT, frame, 144) = id;
+        }
+        String_Destruct(&s);
+    }
+    F(UINT, self, 148) = id;
+    F(UINT, self, 144) = id;
+    return last;
+}
+
+// [$L_638f7b] returns +76 (two arguments)
+extern "C" void* __fastcall FrameWnd_Get76(BYTE* self, void*, int, int) { return self + 76; }
+
+// [$L_638f81] CFrameWnd::GetMessageBar: the status bar
+extern "C" BYTE* __fastcall FrameWnd_GetMessageBar(BYTE* self) {
+    return Wnd_GetDescendantWindow(HWND_OF(self), 59393, TRUE);    // AFX_IDW_STATUS_BAR
+}
+
+// [$L_638f91] CFrameWnd::OnEnterIdle: shows the pending menu prompt
+extern "C" void __fastcall FrameWnd_OnEnterIdle(BYTE* self, void*, UINT why, BYTE* who) {
+    Wnd_OnEnterIdle(self, 0, why, who);
+    if (why == MSGF_MENU && F(UINT, self, 144) != F(UINT, self, 148))
+        FrameWnd_SetMessageTextId(self, 0, F(UINT, self, 144));
+}
+
+// [FUN_639064] CFrameWnd::GetControlBar(nID)
+extern "C" BYTE* __fastcall FrameWnd_GetControlBar(BYTE* self, void*, UINT id) {
+    if (!id) return 0;
+    for (void** node = F(void**, self, 112); node; ) {
+        BYTE* bar = (BYTE*)node[2];
+        node = (void**)node[0];
+        if (LOWORD(GetDlgCtrlID(HWND_OF(bar))) == id) return bar;
+    }
+    return 0;
+}
+
+// [$L_639098] CFrameWnd::OnUpdateControlBarMenu
+extern "C" void __fastcall FrameWnd_OnUpdateControlBarMenu(BYTE* self, void*, BYTE* cmdUI) {
+    BYTE* bar = FrameWnd_GetControlBar(self, 0, F(UINT, cmdUI, 4));
+    if (bar) CallVirt(cmdUI, 4, (int)((Wnd_GetStyle(bar) >> 28) & 1));   // SetCheck(WS_VISIBLE)
+    else F(BOOL, cmdUI, 28) = TRUE;                                // ContinueRouting
+}
+
+// [$L_6390cd] CFrameWnd::OnBarCheck: toggles the control bar
+extern "C" BOOL __fastcall FrameWnd_OnBarCheck(BYTE* self, void*, UINT id) {
+    BYTE* bar = FrameWnd_GetControlBar(self, 0, id);
+    if (!bar) return FALSE;
+    CallThis(FUN_638aa4, self, bar, (BOOL)((~Wnd_GetStyle(bar) >> 28) & 1), FALSE);
+    return TRUE;
+}
+
+// [$L_639106] CFrameWnd::OnToolTipText: the tip part of the string
+// resource
+extern "C" BOOL __fastcall FrameWnd_OnToolTipText(BYTE* self, void*, UINT, NMHDR* hdr, LRESULT* result) {
+    char* tip = g_afxPchNil;
+    UINT id = (UINT)hdr->idFrom;
+    BYTE* t = (BYTE*)hdr;
+    if ((hdr->code == (UINT)-520 && (F(UINT, t, 100) & 1))        // TTN_NEEDTEXTA, TTF_IDISHWND
+        || (hdr->code == (UINT)-530 && (F(UINT, t, 180) & 1)))    // TTN_NEEDTEXTW
+        id = LOWORD(GetDlgCtrlID((HWND)(UINT_PTR)id));
+    BOOL r = FALSE;
+    if (id) {
+        char full[256];
+        if (!Afx_LoadString(id, full, 256)) goto done;
+        Afx_ExtractSubString(&tip, full, 1, '\n');
+    }
+    if (hdr->code == (UINT)-520) lstrcpynA((char*)t + 16, tip, 80);
+    else Afx_mbstowcsz((wchar_t*)(t + 16), tip, 80);
+    *result = 0;
+    SetWindowPos(hdr->hwndFrom, HWND_TOP, 0, 0, 0, 0, SWP_NOACTIVATE | SWP_NOSIZE | SWP_NOMOVE | SWP_NOOWNERZORDER);
+    r = TRUE;
+done:
+    String_Destruct(&tip);
+    return r;
+}
+
+// [$L_6391dd] CFrameWnd::OnUpdateKeyIndicator: caps, num, scroll lock, kana
+extern "C" void __fastcall FrameWnd_OnUpdateKeyIndicator(BYTE* self, void*, BYTE* cmdUI) {
+    UINT flag = 1;
+    int vk;
+    switch (F(UINT, cmdUI, 4)) {
+    case 59137: vk = VK_CAPITAL; break;                            // ID_INDICATOR_CAPS
+    case 59138: vk = VK_NUMLOCK; break;
+    case 59139: vk = VK_SCROLL; break;
+    case 59142:                                                    // ID_INDICATOR_KANA
+        vk = VK_KANA;
+        if (!g_afxWin4) flag = 0x8000;
+        break;
+    default:
+        F(BOOL, cmdUI, 28) = TRUE;                                 // ContinueRouting
+        return;
+    }
+    CallVirt(cmdUI, 0, (BOOL)((int)GetKeyState(vk) & flag));      // Enable
+}
+
+// [$L_63923e] CFrameWnd::OnUpdateContextHelp
+extern "C" void __fastcall FrameWnd_OnUpdateContextHelp(BYTE* self, void*, BYTE* cmdUI) {
+    if (CallC<BYTE*>(FUN_61c4c1) == self) CallVirt(cmdUI, 4, (int)(F(BOOL, self, 80) != 0));   // SetCheck
+    else F(BOOL, cmdUI, 28) = TRUE;
+}
+
+// [FUN_6392b1] CFrameWnd::UpdateFrameTitleForDocument
+extern "C" void __fastcall FrameWnd_UpdateFrameTitleForDocument(BYTE* self, void*, const char* doc) {
+    char text[516];
+    const char* title = F(const char*, self, 172);
+    if (Wnd_GetStyle(self) & 0x4000) {                             // FWS_PREFIXTITLE
+        text[0] = 0;
+        if (doc) {
+            lstrcpyA(text, doc);
+            if (F(int, self, 64) > 0) wsprintfA(text + lstrlenA(text), &g_fmtWindowNumber, F(int, self, 64));
+            lstrcatA(text, &g_titleSeparator);
+        }
+        lstrcatA(text, F(const char*, self, 172));
+    } else {
+        lstrcpyA(text, title);
+        if (doc) {
+            lstrcatA(text, &g_titleSeparator);
+            lstrcatA(text, doc);
+            if (F(int, self, 64) > 0) wsprintfA(text + lstrlenA(text), &g_fmtWindowNumber, F(int, self, 64));
+        }
+    }
+    Afx_SetWindowText(HWND_OF(self), text);
+}
+
+// [$L_63926d] CFrameWnd::OnUpdateFrameTitle
+extern "C" void __fastcall FrameWnd_OnUpdateFrameTitle(BYTE* self, void*, BOOL addToTitle) {
+    if (!(Wnd_GetStyle(self) & 0x8000)) return;                    // FWS_ADDTOTITLE
+    BYTE* hook = F(BYTE*, self, 104);
+    if (hook && CallVirt<BOOL>(hook, 104)) return;                 // OnUpdateFrameTitle
+    BYTE* doc = CallVirt<BYTE*>(self, 188);                        // GetActiveDocument
+    FrameWnd_UpdateFrameTitleForDocument(self, 0, addToTitle && doc ? F(const char*, doc, 28) : 0);
+}
+
+// [$L_6395c9] sets idle flag 1 (+184) and +168
+extern "C" void __fastcall FrameWnd_Set168Idle1(BYTE* self, void*, void* v) {
+    F(DWORD, self, 184) |= 1;
+    F(void*, self, 168) = v;
+}
+
+// [$L_63964c] returns this
+extern "C" BYTE* __fastcall Object_Self(BYTE* self) { return self; }
+
+// [$L_63964f] CFrameWnd::RecalcLayout
+extern "C" void __fastcall FrameWnd_RecalcLayout(BYTE* self, void*, BOOL notify) {
+    if (F(BOOL, self, 176)) return;
+    F(BOOL, self, 176) = TRUE;
+    if (F(DWORD, self, 184) & 4) notify = TRUE;                    // idleNotify
+    F(DWORD, self, 184) &= ~12;
+    if (notify && F(BYTE*, self, 104)) CallVirt(F(BYTE*, self, 104), 80);   // OnRecalcLayout
+    if (Wnd_GetStyle(self) & 0x2000) {                             // FWS_SNAPTOBARS
+        RECT r = { 0, 0, 32767, 32767 };
+        Wnd_RepositionBars(self, 0, 0, 0xFFFF, 59648, 1, &r, &r, FALSE);
+        Wnd_RepositionBars(self, 0, 0, 0xFFFF, 59648, 2, &F(RECT, self, 88), &r, TRUE);
+        CallVirt(self, 96, &r, 0);                                 // CalcWindowRect
+        Wnd_SetWindowPos(self, 0, 0, 0, 0, r.right - r.left, r.bottom - r.top,
+                         SWP_NOACTIVATE | SWP_NOMOVE | SWP_NOZORDER);
+    } else {
+        Wnd_RepositionBars(self, 0, 0, 0xFFFF, 59648, 2, &F(RECT, self, 88), 0, TRUE);
+    }
+    F(BOOL, self, 176) = FALSE;
+}
+
+// [$L_63973c] CFrameWnd::NegotiateBorderSpace
+extern "C" BOOL __fastcall FrameWnd_NegotiateBorderSpace(BYTE* self, void*, UINT cmd, RECT* border) {
+    RECT* mine = &F(RECT, self, 88);
+    switch (cmd) {
+    case 1:                                                        // borderGet
+        Wnd_RepositionBars(self, 0, 0, 0xFFFF, 59648, 1, border, 0, TRUE);
+        break;
+    case 3:                                                        // borderSet
+        if (!border) {
+            if (!mine->left && !mine->right && !mine->top && !mine->bottom) return FALSE;
+            SetRectEmpty(mine);
+        } else {
+            if (EqualRect(mine, border)) return FALSE;
+            CopyRect(mine, border);
+        }
+        break;
+    }
+    return TRUE;
+}
+
+// [$L_6397b6] CFrameWnd::OnSize
+extern "C" void __fastcall FrameWnd_OnSize(BYTE* self, void*, UINT type, int cx, int cy) {
+    Wnd_Default(self);
+    if (type != SIZE_MINIMIZED) CallVirt(self, 200, TRUE);        // RecalcLayout
+}
+
+// [$L_6397d5] CFrameWnd::OnEraseBkgnd: nothing to erase under the view
+extern "C" BOOL __fastcall FrameWnd_OnEraseBkgnd(BYTE* self, void*, BYTE* dc) {
+    if (F(BYTE*, self, 152)) return TRUE;
+    return (BOOL)Wnd_Default(self);
+}
+
+// [$L_6397eb] CFrameWnd::OnRegisteredMouseWheel: MSWHEEL_ROLLMSG as
+// WM_MOUSEWHEEL to the focus window and its parents
+extern "C" LRESULT __fastcall FrameWnd_OnRegisteredMouseWheel(BYTE* self, void*, WPARAM w, LPARAM l) {
+    WORD keys = (GetKeyState(VK_CONTROL) < 0 ? MK_CONTROL : 0) | (GetKeyState(VK_SHIFT) < 0 ? MK_SHIFT : 0);
+    HWND focus = GetFocus();
+    HWND desktop = GetDesktopWindow();
+    if (!focus) return SendMessageA(HWND_OF(self), 522, (w << 16) | keys, l);
+    LRESULT r;
+    do {
+        r = SendMessageA(focus, 522, (w << 16) | keys, l);
+        focus = GetParent(focus);
+    } while (!r && focus && focus != desktop);
+    return r;
+}
+
+// [FUN_6398de] CFrameWnd::BringToTop
+extern "C" void __fastcall FrameWnd_BringToTop(BYTE* self, void*, int show) {
+    if (show == SW_HIDE || show == SW_MINIMIZE || show == SW_SHOWMINNOACTIVE || show == SW_SHOWNA
+        || show == SW_SHOWNOACTIVATE)
+        return;
+    BringWindowToTop(GetLastActivePopup(HWND_OF(self)));
+}
+
+// [$L_63988e] CFrameWnd::ActivateFrame
+extern "C" void __fastcall FrameWnd_ActivateFrame(BYTE* self, void*, int show) {
+    if (show == -1) {
+        if (!IsWindowVisible(HWND_OF(self))) show = SW_SHOWNORMAL;
+        else if (IsIconic(HWND_OF(self))) show = SW_RESTORE;
+    }
+    FrameWnd_BringToTop(self, 0, show);
+    if (show != -1) {
+        Wnd_ShowWindow(self, 0, show);
+        FrameWnd_BringToTop(self, 0, show);
+    }
+}
+
+// [FUN_63990d] CControlBar::GetDockingFrame
+extern "C" BYTE* __fastcall ControlBar_GetDockingFrame(BYTE* self) {
+    BYTE* frame = Wnd_GetParentFrame(self);
+    return frame ? frame : F(BYTE*, self, 108);                    // m_pDockSite
+}
+
+// [FUN_63991e] CControlBar::IsFloating
+extern "C" BOOL __fastcall ControlBar_IsFloating(BYTE* self) {
+    if (CallVirt<BOOL>(self, 208)) return F(BOOL, self, 120);      // IsDockBar: m_bFloating
+    BYTE* dock = F(BYTE*, self, 112);
+    return dock && F(BOOL, dock, 120);
+}
+
+// [$L_639a7e] CWinApp's deleting destructor
+extern "C" BYTE* __fastcall WinApp_DeletingDestruct(BYTE* self, void*, int flags) {
+    WinApp_Destruct(self);
+    if (flags & 1) operator delete(self);
+    return self;
+}
+
+// [$L_639a9a] CWinApp::InitApplication: takes over the static document
+// manager
+extern "C" BOOL __fastcall WinApp_InitApplication(BYTE* self) {
+    if (g_staticDocManager) {
+        if (!F(BYTE*, self, 128)) F(BYTE*, self, 128) = g_staticDocManager;
+        g_staticDocManager = 0;
+    }
+    if (F(BYTE*, self, 128)) CallVirt(F(BYTE*, self, 128), 12, (void*)0);   // AddDocTemplate(NULL)
+    else g_docManagerStaticInit = FALSE;
+    return TRUE;
+}
+
+// [$L_639ada] returns TRUE
+extern "C" BOOL __fastcall Object_True(BYTE* self) { return TRUE; }
