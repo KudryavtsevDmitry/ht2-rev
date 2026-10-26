@@ -700,10 +700,10 @@ extern "C" void __fastcall FfEffect_Restart(DWORD* fx, void*, float a, float b)
 }
 
 extern "C" char* __cdecl strerror(int e);
-ASM_PROC(FUN_576d70)    // the DirectInput version text
+ASM_FUNC(FUN_576d70, _Joy_DateText)    // the DirectInput version text
 extern "C" void FUN_5787a0(); KING_ALIAS("_FUN_5787a0", "_Joy_Open")    // opens joystick n
 ASM_PROC(FUN_6303a0)    // DirectInputCreateA
-ASM_FUNC(Joy_EnumCallback, $L_576f90)
+ASM_FUNC(Joy_EnumCallback, _Joy_EnumDevice@8)
 typedef char JoyLabel[1];
 KING_VAR(JoyLabel, g_joyEnabled6f34e8, 6f34e8)        // 10 ints
 KING_VAR(JoyLabel, g_joyRecords, 6f3528)              // 10 records of 568 bytes
@@ -2240,3 +2240,132 @@ int __fastcall Decal_BuildOnObjects(BYTE* s, void*, BYTE* arr, unsigned n, const
 }
 
 } // extern "C"
+
+// ---------------------------------------------------------------------------
+// The joystick enumeration (FUN_576d70 and the code after it, written by hand
+// into king.masm by an earlier session)
+
+#define JD(o) ((const char*)KingData + (o))
+#define JB(o) ((BYTE*)KingBss + (o))
+extern "C" int __cdecl OldCrt_fprintf(FILE* f, const char* format, ...);
+extern "C" int __cdecl OldCrt_fclose(FILE* f);
+extern "C" int __stdcall Joy_EnumObject(const BYTE* inst, FILE* log);
+
+// [FUN_576d70] the local date and time as text (format 67c4c0: day, month
+// name, year, hour, minute, second; the month names are 4 bytes each, January
+// at 67c508 going down)
+extern "C" void __cdecl Joy_DateText(char* out)
+{
+    SYSTEMTIME st;
+    char month[12];
+    GetLocalTime(&st);
+    if (st.wMonth >= 1 && st.wMonth <= 12)
+        strcpy(month, JD(66824 - 4 * (st.wMonth - 1)));
+    sprintf(out, JD(66752), st.wDay, month, st.wYear, st.wHour, st.wMinute, st.wSecond);
+}
+
+// [FUN_576EC0] static initializer: the object at 6f3510 (vtable 650328,
+// +4 and +8 cleared), destroyed at exit through Thunk592ed0
+KING_VAR(AsmLabel, g_joyVtbl650328, 650328)
+extern "C" int __fastcall Thunk592ed0(BYTE* s, void* d);
+static void __cdecl Joy_Exit576ef0() { Thunk592ed0(JB(429296), 0); }
+extern "C" int __cdecl Joy_Init576ec0()
+{
+    BYTE* o = JB(429296);
+    F(int, o, 8) = 0;
+    F(int, o, 4) = 0;
+    F(void*, o, 0) = g_joyVtbl650328;
+    return atexit(Joy_Exit576ef0);
+}
+
+// [$L_576f30] the effect enumeration callback: logs the effect (name, type,
+// size, dynamic and static parameters) and writes it to the log file too
+extern "C" BOOL __stdcall Joy_EnumEffect(const BYTE* info, FILE* log)
+{
+    char buf[200];
+    sprintf(buf, JD(66828), (const char*)(info + 32), F(DWORD, info, 20), F(DWORD, info, 0), F(DWORD, info, 28), F(DWORD, info, 24));
+    Joy_Log(buf);
+    if (log)
+        OldCrt_fprintf(log, buf);
+    return TRUE;
+}
+
+// [$L_576f90] the device enumeration callback: creates the device, keeps its
+// IDirectInputDevice2 (6f4b58, count 6f4b90), records its type, names, axes,
+// buttons, POVs and force feedback (568-byte records at 6f3528, flags at
+// 6f34e8), enumerates its objects and effects; with a log file, writes all of
+// it there (and closes the file on a failure, returning the error)
+typedef long (__stdcall* Joy_Fn1)(void*, void*);
+typedef long (__stdcall* Joy_Fn2)(void*, const void*, void*);
+typedef long (__stdcall* Joy_Fn3)(void*, const void*, void*, void*);
+extern "C" long __stdcall Joy_EnumDevice(const BYTE* inst, FILE* log)
+{
+    void* di = F(void*, JB(435044), 0);
+    void* dev = 0;
+    if (((Joy_Fn3)(*(void***)di)[3])(di, inst + 4, &dev, 0) < 0)
+        return 1;
+    int n = F(int, JB(435056), 0);
+    ((Joy_Fn2)(*(void***)dev)[0])(dev, (const BYTE*)KingRdata + 42096, JB(435000) + n * 4);
+    void* d2 = F(void*, JB(435000), F(int, JB(435056), 0) * 4);
+    BYTE di2[580];
+    F(DWORD, di2, 0) = 580;
+    if (log)
+        OldCrt_fprintf(log, JD(67260));
+    long hr = ((Joy_Fn1)(*(void***)d2)[15])(d2, di2);
+    if (hr == (long)0x80070057 || hr == (long)0x80070015 || hr < 0)
+        goto fail;
+    if (log) {
+        OldCrt_fprintf(log, JD(45672));
+        OldCrt_fprintf(log, JD(67212), F(DWORD, di2, 36), (const char*)(di2 + 40), (const char*)(di2 + 300));
+    }
+    {
+        BYTE* rec = JB(429320) + F(int, JB(435056), 0) * 568;
+        strcpy((char*)rec + 48, (const char*)(di2 + 300));
+        strcpy((char*)rec + 308, (const char*)(di2 + 40));
+        DWORD type = F(DWORD, di2, 36);
+        F(DWORD, rec, 0) = type;
+        rec[4] = (BYTE)type;
+        rec[5] = (BYTE)(type >> 8);
+        rec[6] = (type & 65536) == 65536;
+    }
+    if (log)
+        OldCrt_fprintf(log, JD(67184));
+    ((Joy_Fn3)(*(void***)d2)[4])(d2, (void*)Joy_EnumObject, log, 0);
+    Joy_Log(JD(67148));
+    if (((Joy_Fn3)(*(void***)d2)[19])(d2, (void*)Joy_EnumEffect, log, 0) < 0)
+        Joy_Log(JD(67084));
+    {
+        DWORD caps[11] = {0};
+        caps[0] = 44;
+        if (log)
+            OldCrt_fprintf(log, JD(67064));
+        hr = ((Joy_Fn1)(*(void***)d2)[3])(d2, caps);
+        if (hr < 0) {
+            if (log) {
+                OldCrt_fprintf(log, JD(67048), hr, strerror(hr));
+                OldCrt_fclose(log);
+            }
+            return hr;
+        }
+        if (log) {
+            OldCrt_fprintf(log, JD(45672));
+            OldCrt_fprintf(log, JD(66920), caps[2], caps[3], caps[4], caps[5], caps[1], caps[10], caps[8], caps[9], caps[7], caps[6]);
+        }
+        n = F(int, JB(435056), 0);
+        BYTE* rec = JB(429320) + n * 568;
+        F(WORD, rec, 40) = (WORD)caps[3];
+        F(WORD, rec, 42) = (WORD)caps[4];
+        F(WORD, rec, 44) = (WORD)caps[5];
+        F(int, JB(429256), n * 4) = (caps[1] & 256) ? 1 : 0;
+        F(int, JB(435056), 0) = n + 1;
+        return 1;
+    }
+fail:
+    if (log) {
+        OldCrt_fprintf(log, JD(66908), hr);
+        OldCrt_fclose(log);
+    }
+    return hr;
+}
+#undef JD
+#undef JB

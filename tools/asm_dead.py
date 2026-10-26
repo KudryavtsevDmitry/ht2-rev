@@ -71,7 +71,7 @@ for p, L in files.items():
             refs.update(tok.findall(c))
             refs.update('R:' + x for x in re.findall(r'_KingRdata\+(\d+)', c))
             st = c.strip()
-            if st and not re.match(r'^(ALIGN|EVEN|ENDP|nop|\S+\s+ENDP)\b', st) and not re.match(r'^\S+\s+ENDP\b', L[i].strip()):
+            if st and not re.match(r'^(ALIGN|EVEN|ENDP|nop|\S+\s+ENDP)\b', st, re.I) and not re.match(r'^\S+\s+ENDP\b', L[i].strip()):
                 last = st
         falls = last is None or not (ENDS.match(last) or re.match(r'^(BYTE|WORD|DWORD|DD|DB|DW)\b', last, re.I))
         idx = len(blocks)
