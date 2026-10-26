@@ -2126,3 +2126,66 @@ void __cdecl Cars_DumpHistory()
 }
 
 } // extern "C"
+
+// === a value recorded in a timed history (FUN_4eacce with its tail $L_4eaf8f)
+
+ASM_VAR(BYTE*, g_hr6974c4, $L_6974c4)
+ASM_VAR(char, g_hrFmt, $L_674330)
+ASM_VAR(char, g_hrEven, $L_67437c)
+ASM_VAR(char, g_hrOdd, $L_674390)
+ASM_VAR(char, g_hrLast, $L_6743a4)
+
+extern "C" {
+
+// [FUN_4eacce..$L_4eaf8f] history h (span +0, times +8, values +12, count +28): v stored at the slot of now
+// (the world's time 6974c4 +2968), else the first slot older than the span, else the oldest; fatal with the
+// whole history (named name) when no slot is older
+void __fastcall History_Record(BYTE* h, void*, DWORD v, const char* name)
+{
+    float now = (float)F(double, g_hr6974c4, 2968);
+    float old = (float)((double)now - F(float, h, 0));
+    float best = now;
+    int bi = -1;
+    float* times = F(float*, h, 8);
+    DWORD* vals = F(DWORD*, h, 12);
+    int n = F(int, h, 28);
+    for (int i = 0; i < n; i++)
+    {
+        if (now == times[i])
+        {
+            vals[i] = v;
+            return;
+        }
+        if (old > times[i])
+        {
+            times[i] = now;
+            vals[i] = v;
+            return;
+        }
+        if (best > times[i])
+        {
+            best = times[i];
+            bi = i;
+        }
+    }
+    if (bi != -1)
+    {
+        times[bi] = now;
+        vals[bi] = v;
+        return;
+    }
+    char* buf = (char*)operator new(1200);
+    sprintf(buf, &g_hrFmt, (double)*(float*)&v, name, n, (double)F(float, h, 0), F(double, g_hr6974c4, 2960),
+            (double)now, Game_Time());
+    float* fv = (float*)vals;
+    for (int i = 0; i < n / 2; i++)
+    {
+        sprintf(buf + strlen(buf), &g_hrEven, 2 * i, (double)times[2 * i], (double)fv[2 * i]);
+        sprintf(buf + strlen(buf), &g_hrOdd, 2 * i + 1, (double)times[2 * i + 1], (double)fv[2 * i + 1]);
+    }
+    if (n & 1)
+        sprintf(buf + strlen(buf), &g_hrLast, n - 1, (double)times[n - 1], (double)fv[n - 1]);
+    World_Fatal(buf);
+}
+
+} // extern "C"

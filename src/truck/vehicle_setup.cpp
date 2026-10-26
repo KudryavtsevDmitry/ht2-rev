@@ -316,7 +316,7 @@ extern "C" double __fastcall Car_MinWearFactor(BYTE* car, void*)
     return m;
 }
 
-ASM_PROC(FUN_4eacce)    // filter: feed (value, name)
+extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // filter: feed (value, name)
 extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
 ASM_VAR(char, g_strFilterEngineTach, $L_674850)
 
@@ -490,7 +490,7 @@ extern "C" void FUN_507440(); KING_ALIAS("_FUN_507440", "_Car_ThrottleTorque")
 extern "C" void FUN_4ff3e0(); KING_ALIAS("_FUN_4ff3e0", "@Car_EngineBrakeTorque@12")
 extern "C" void FUN_501480(); KING_ALIAS("_FUN_501480", "@Car_GetSettings@12")
 extern "C" void FUN_4e27a5(); KING_ALIAS("_FUN_4e27a5", "_Game_Time")
-ASM_PROC(FUN_4eacce)    // filter: feed (value, name)
+extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // filter: feed (value, name)
 extern "C" void FUN_4eaf98(); KING_ALIAS("_FUN_4eaf98", "@Filter_Value@4")    // filter: output
 ASM_VAR(AsmLabel, s_674914, $L_674914)
 ASM_VAR(AsmLabel, s_674870, $L_674870)
@@ -2443,6 +2443,478 @@ void __fastcall Wheel_RollDrag(BYTE* s, void*, BYTE* nd, int i, int kind)
         tmp = d;
         CallThis(Wg_SubAssign, &acc, &d, &tmp);
     }
+}
+
+} // extern "C"
+
+#include "x87.h"
+
+// === a car's clutch, gear choice and drive force for the frame (FUN_4ff800, running on through $L_5006aa)
+
+ASM_PROC(FUN_4ff660)
+extern "C" void Gb_Speed(); KING_ALIAS("_Gb_Speed", "@Car_WheelSpeed@12")
+extern "C" void Gb_Tach(); KING_ALIAS("_Gb_Tach", "@Car_UpdateTach@12")
+extern "C" void Gb_TorqueAt(); KING_ALIAS("_Gb_TorqueAt", "@Car_TorqueAt@12")
+extern "C" void Gb_TorqueNow(); KING_ALIAS("_Gb_TorqueNow", "@Car_TorqueNow@8")
+extern "C" void Gb_Throttle(); KING_ALIAS("_Gb_Throttle", "@Car_TorqueThrottle@16")
+extern "C" void Gb_Ratio(); KING_ALIAS("_Gb_Ratio", "@Car_TorqueRatio@12")
+extern "C" void Gb_ForceB(); KING_ALIAS("_Gb_ForceB", "@Car_WheelForceNowB@12")
+extern "C" void Gb_Force(); KING_ALIAS("_Gb_Force", "@Car_WheelForceNow@12")
+extern "C" void Gb_ForceIn(); KING_ALIAS("_Gb_ForceIn", "@Car_WheelForceIn@16")
+extern "C" void Gb_Record(); KING_ALIAS("_Gb_Record", "@History_Record@16")
+extern "C" void Gb_Filter(); KING_ALIAS("_Gb_Filter", "@Filter_Value@4")
+extern "C" void Gb_Ramp(); KING_ALIAS("_Gb_Ramp", "@Ramp_Value@8")
+extern "C" void Gb_RampDown(); KING_ALIAS("_Gb_RampDown", "@Ramp_Down@12")
+ASM_VAR(float, g_gb674410, $L_674410)
+ASM_VAR(float, g_gb67440c, $L_67440c)
+ASM_VAR(int, g_gb696c4c, $L_696c4c)
+ASM_VAR(double, g_gb64b658, $L_64b658)
+ASM_VAR(double, g_gb64b5b8, $L_64b5b8)
+ASM_VAR(double, g_gb64b670, $L_64b670)
+ASM_VAR(double, g_gb64b6e0, $L_64b6e0)
+ASM_VAR(double, g_gb64c958, $L_64c958)
+ASM_VAR(double, g_gb64b840, $L_64b840)
+ASM_VAR(double, g_gb64b6f8, $L_64b6f8)
+ASM_VAR(double, g_gb64d318, $L_64d318)
+ASM_VAR(double, g_gb64d338, $L_64d338)
+ASM_VAR(double, g_gb64da48, $L_64da48)
+ASM_VAR(double, g_gb64da40, $L_64da40)
+ASM_VAR(double, g_gb64b660, $L_64b660)
+ASM_VAR(double, g_gb64b7b8, $L_64b7b8)
+ASM_VAR(double, g_gb64d378, $L_64d378)
+ASM_VAR(float, g_gb64c250, $L_64c250)
+ASM_VAR(float, g_gb64c264, $L_64c264)
+ASM_VAR(float, g_gb64c40c, $L_64c40c)
+ASM_VAR(float, g_gb64c450, $L_64c450)
+ASM_VAR(float, g_gb64c408, $L_64c408)
+ASM_VAR(char, g_gbShift, $L_6748f4)
+ASM_VAR(char, g_gbShifting, $L_6748d4)
+ASM_VAR(char, g_gbIdle, $L_6748b4)
+ASM_VAR(char, g_gbForce, $L_674894)
+
+static void Gb_RecordF(BYTE* h, float v, const char* name)
+{
+    CallThis(Gb_Record, h, *(DWORD*)&v, name);
+}
+
+// the drive force through gear g at the wheels' speed in that gear
+static double Gb_GearForce(BYTE* s, int g)
+{
+    float ws = (float)CallThis<double>(Gb_Speed, s, g);
+    float tq = (float)CallThis<double>(Gb_TorqueAt, s, ws);
+    return CallThis<double>(Gb_ForceIn, s, tq, g);
+}
+
+// the gear (from first, stepping by d to last inclusive, gear 1 skipped when skip1) whose force is over lim and the
+// largest: its request (gear + 20) in +10054
+static void Gb_Best(BYTE* s, int from, int d, double lim, bool skip1, bool down)
+{
+    float best = 0;
+    for (int g = from; down ? g > (skip1 ? 0 : 1) : g <= F(int, s, 7192); g += d)
+    {
+        if (skip1 && g == 1)
+            continue;
+        double f = Gb_GearForce(s, g);
+        if (f > lim && best < f)
+        {
+            best = (float)f;
+            F(short, s, 10054) = (short)(g + 20);
+        }
+    }
+}
+
+// the wheel point k (+6212) lowered by its spring (+7028) and taken into the frame (+16) at +15388
+static void Gb_Wheel(BYTE* s, int k)
+{
+    double t = F(float, s, 7028 + 4 * k);
+    float ax = (float)(t * g_axisZ.x), ay = (float)(t * g_axisZ.y);
+    const float* q = &F(float, s, 6212 + 12 * k);
+    float px = (float)((double)ax + q[0]), py = (float)((double)ay + q[1]);
+    double pz = t * g_axisZ.z + q[2];
+    const float* M = &F(float, s, 16);
+    float* o = &F(float, s, 15388 + 12 * k);
+    o[0] = (float)(pz * M[6] + (double)py * M[3] + (double)px * M[0] + M[9]);
+    o[1] = (float)(pz * M[7] + (double)py * M[4] + (double)px * M[1] + M[10]);
+    o[2] = (float)(pz * M[8] + (double)py * M[5] + (double)px * M[2] + M[11]);
+}
+
+extern "C" {
+
+// [FUN_4ff800..$L_5006aa] car s for this frame: the clutch (+10716, by the pedal +10006 / +10000) and throttle
+// (+10712, by +9996 or the manual gear +10004), the automatic gear choice (+10054 requests, +7200 the target,
+// +7204 a shift in progress timed by +7216 / +7220 / +7224) by the drive forces of the neighbouring gears, the
+// engine's force (+7300 filtered in the history +6992) and the wheels' drive force (+7316, history +6960), and the
+// clutch state +6948 (2 engaged, 3 slipping, 1 starting)
+void __fastcall Car_DriveStep(BYTE* s)
+{
+    const DWORD k005 = 0x3D4CCCCD;
+    F(int, s, 10716) = 0;
+    if (F(float, s, 15316) < g_gb674410)
+    {
+        F(DWORD, s, 10712) = k005;
+        F(int, s, 7196) = 1;
+    }
+    double gt = Game_Time();
+    float now = (float)gt;
+    float el = (float)(gt - F(float, s, 6108));
+    bool manual;
+    if (!F(short, s, 10006) && !F(short, s, 10004) && F(short, s, 9988))
+    {
+        manual = false;
+        if (F(short, s, 10008) >= 2)
+            F(float, s, 10716) = 1.0f;
+        else if (!(F(float, s, 10000) < g_gb64c264) && !(F(float, s, 10000) > g_gb64b670))
+            F(int, s, 10716) = F(int, s, 10000);
+    }
+    else
+    {
+        F(int, s, 10716) = 0;
+        manual = true;
+        short p = F(short, s, 10006);
+        if (p == 1)
+            F(float, s, 10716) = (float)(((double)el + g_gb64b658) / ((double)el + g_gb64c250));
+        else if (p == 2)
+            F(float, s, 10716) = (float)(((double)el + g_gb64b658) / ((double)el + g_gb64b5b8));
+    }
+    if (!(F(float, s, 10716) > g_gb64b658))
+        F(float, s, 6108) = now;
+    else if (F(float, s, 3528) > g_gb64b6e0 && F(float, s, 10716) > g_gb64b6e0 && !F(short, s, 6564) &&
+             !F(short, s, 6566))
+    {
+        F(int, s, 15384) = CallThis<double>(Gb_Ramp, s + 16268) > g_gb64c264 ? 1 : 2;
+        Gb_Wheel(s, 0);
+        Gb_Wheel(s, 1);
+    }
+
+    if (!F(int, s, 10100))
+    {
+        F(int, s, 6948) = 0;
+        goto shared;
+    }
+    if (F(int, s, 6948) != 2)
+    {
+        F(int, s, 7316) = 0;
+        F(int, s, 7300) = 0;
+        CallThis(Gb_Record, s + 6992, 0, &g_gbIdle);
+        F(float, s, 7300) = (float)CallThis<double>(Gb_Filter, s + 6992);
+        F(int, s, 13516) = 0;
+        F(int, s, 7196) = 1;
+        goto shared;
+    }
+    {
+        float run = (float)((double)now - F(float, s, 6104));
+        float ws = (float)CallThis<double>(Gb_Speed, s, F(int, s, 7196));
+        F(int, s, 7208) = 0;
+        CallThis(Gb_Tach, s, &ws);
+        float cap = (float)CallThis<double>(FUN_4ff660, s);
+        float& thr = F(float, s, 10712);
+        if (!manual)
+        {
+            float x = F(float, s, 9996);
+            if (!(x < g_gb64c264) && !(x > g_gb64b670))
+                thr = x;
+            else if (x > g_gb64b670)
+                thr = 1.0f;
+            else if (x < g_gb64c264)
+                thr = 0;
+            if (thr < g_gb64b5b8)
+                F(float, s, 6104) = now;
+            if ((F(int, s, 10068) || (g_gb696c4c && F(short, s, 10048))) && !F(BYTE, s, 9985))
+            {
+                double lim = cap * g_gb64c958;
+                if (thr > lim)
+                    thr = (float)lim;
+            }
+        }
+        else
+        {
+            thr = (float)(F(short, s, 10004) > 0);
+            if (F(int, s, 7208))
+                thr = 1.0f;
+            short g = F(short, s, 10004);
+            if (g > 1)
+            {
+                if (!F(int, s, 7208))
+                    thr = (float)((double)run / ((double)run + g_gb64b840) * thr);
+            }
+            else if (g == 1)
+            {
+                float v = (float)((double)run * g_gb64b6f8 / ((double)run + g_gb64d318) * thr);
+                thr = v;
+                double lim = cap * g_gb64c958;
+                if (v > lim)
+                    thr = (float)lim;
+            }
+            else
+                F(float, s, 6104) = now;
+        }
+
+        int st = F(int, s, 7196);
+        if (st != 0 && st != 2)
+        {
+            if (thr < g_gb64d338)
+                F(DWORD, s, 10712) = k005;
+        }
+        else
+        {
+            double a = x87_fabs(F(float, s, 3524));
+            double d = a < g_gb64da48 ? (g_gb64da48 - a) * g_gb64da40 : 0;
+            double r = CallThis<double>(Gb_Ratio, s, F(float, s, 7300));
+            double v = r + d * g_gb64b840;
+            if (F(int, s, 7196) == 2 && !(v <= thr) && x87_fabs(F(float, s, 3524)) < g_gb64b660)
+                thr = (float)v;
+            if (!F(int, s, 7196))
+            {
+                double v2 = v * g_gb64b840;
+                if (thr < v2 && x87_fabs(F(float, s, 3524)) < g_gb64b660)
+                    thr = (float)v2;
+            }
+        }
+
+        bool push = manual ? F(short, s, 10004) > 0 : F(float, s, 9996) > g_gb64b5b8;
+        short& req = F(short, s, 10054);
+        if (F(int, s, 7188) && F(int, s, 7196) > 0 && !(F(int, s, 7204) && !req))
+        {
+            int cur = F(int, s, 7196);
+            int sh = F(int, s, 7204);
+            if (req == -1)
+                req = 20;
+            if (!push && req != 20 && cur != 2)
+                req = 0;
+            short q = req;
+            bool clear = false;
+            if (q == 1 || q == 100)
+            {
+                if (cur > 1 || (q == 100 && cur == 1 && sh && F(int, s, 7200) > cur))
+                    clear = true;
+            }
+            if (!clear && q == 20)
+            {
+                if (cur != 1)
+                    goto pick;
+                if (sh && !F(int, s, 7200))
+                    clear = true;
+            }
+            if (clear)
+                req = 0;
+            if (cur == 1)
+            {
+                if (!sh && F(BYTE, s, 9984) == 2 && push && req != 20 && req != 21)
+                    req = 1;
+                goto chosen;
+            }
+        pick:
+            if (!req)
+            {
+                float tq = (float)CallThis<double>(Gb_TorqueAt, s, ws);
+                float f = (float)CallThis<double>(Gb_Force, s, tq);
+                if (F(float, s, 7304) * g_gb64b840 > x87_fabs(ws) &&
+                    (thr < g_gb64b5b8 || F(float, s, 10716) > g_gb64b5b8) && !(manual && F(short, s, 10004)))
+                    req = 21;
+                else
+                {
+                    double lim = f * g_gb64b7b8;
+                    int c = F(int, s, 7196);
+                    if (c > 2)
+                        Gb_Best(s, c - 1, -1, lim, false, true);
+                    c = F(int, s, 7196);
+                    if (c < F(int, s, 7192))
+                        Gb_Best(s, c + 1, 1, lim, false, false);
+                }
+            }
+        }
+    chosen:
+        if (!F(int, s, 7188))
+        {
+            short q = req;
+            if ((q == 1 && F(int, s, 7196) < F(int, s, 7192)) || (q == -1 && F(int, s, 7196) > 0))
+            {
+                float tq = (float)CallThis<double>(Gb_TorqueNow, s);
+                float f = (float)CallThis<double>(Gb_Force, s, tq);
+                double lim = f * g_gb64d378;
+                if (req > 0)
+                    Gb_Best(s, F(int, s, 7196) + 1, 1, lim, true, false);
+                else
+                    Gb_Best(s, F(int, s, 7196) - 1, -1, lim, true, true);
+            }
+        }
+
+        short dx = req;
+        if (dx)
+        {
+            bool set = false;
+            int& tg = F(int, s, 7200);
+            int cur = F(int, s, 7196);
+            bool to2 = false;
+            if (dx == 21)
+            {
+                if (tg != 1 && cur != 1)
+                {
+                    tg = 1;
+                    set = true;
+                }
+            }
+            else if (dx == 22)
+            {
+                if (cur != 2)
+                    to2 = true;
+            }
+            else if (dx > 22 && dx < F(int, s, 7192) + 22)
+            {
+                int g = dx - 20;
+                if (cur != g && tg != g)
+                {
+                    tg = g;
+                    set = true;
+                }
+            }
+            else if (dx == 100)
+            {
+                if (cur < 2)
+                    to2 = true;
+            }
+            else if (dx == 20)
+            {
+                if (cur && tg)
+                {
+                    tg = 0;
+                    set = true;
+                }
+            }
+            else
+            {
+                if (!F(int, s, 7204))
+                {
+                    set = true;
+                    tg = cur;
+                }
+                tg += dx;
+            }
+            if (to2 && tg != 2)
+            {
+                tg = 2;
+                set = true;
+            }
+            if (tg > -1 && tg < F(int, s, 7192) + 1)
+            {
+                if (set)
+                {
+                    F(int, s, 7204) = dx;
+                    F(float, s, 7212) = now;
+                    F(int, s, 7312) = F(int, s, 7300);
+                }
+            }
+            else
+                tg = F(int, s, 7196);
+        }
+
+        F(int, s, 15412) = 0;
+        if (F(int, s, 7204))
+        {
+            int tg = F(int, s, 7200);
+            float lim = tg == 1 ? F(float, s, 7224) : F(int, s, 7188) ? F(float, s, 7220) : F(float, s, 7216);
+            double e = (double)now - F(float, s, 7212);
+            if (!(e <= lim))
+            {
+                F(int, s, 7196) = tg;
+                if (tg > F(int, s, 7192))
+                    F(int, s, 7196) = F(int, s, 7192);
+                if (F(int, s, 7196) < 0)
+                    F(int, s, 7196) = 0;
+                double v = (double)F(float, s, 7304) * thr;
+                v += v;
+                F(int, s, 7204) = 0;
+                F(int, s, 7212) = 0;
+                F(float, s, 7228) = now;
+                F(float, s, 7300) = (float)v;
+                Gb_RecordF(s + 6992, (float)v, &g_gbShift);
+                F(float, s, 7300) = (float)CallThis<double>(Gb_Filter, s + 6992);
+                F(int, s, 7200) = -1;
+            }
+            else
+            {
+                double fr = e / lim;
+                double v = (g_gb64c250 - fr) * F(float, s, 7312) + fr * F(float, s, 7304);
+                F(float, s, 7300) = (float)v;
+                Gb_RecordF(s + 6992, (float)v, &g_gbShifting);
+                int sh = F(int, s, 7204);
+                F(int, s, 7196) = 1;
+                F(float, s, 7300) = (float)CallThis<double>(Gb_Filter, s + 6992);
+                F(int, s, 15412) = sh;
+            }
+        }
+
+        float t = (float)CallThis<double>(Gb_Throttle, s, F(float, s, 7300), thr);
+        F(float, s, 7316) = (float)CallThis<double>(Gb_ForceB, s, t);
+        if (!((double)now - F(float, s, 7228) < F(float, s, 7232)))
+        {
+            if (!F(int, s, 7188) && F(int, s, 7196) != 1 && !(F(float, s, 7304) * g_gb64b5b8 <= F(float, s, 7300)))
+                F(int, s, 10108) = -1;
+            F(int, s, 7228) = 0;
+        }
+        F(int, s, 13516) = 0;
+        if ((double)now - F(float, s, 6104) < g_gb64c40c && F(float, s, 3528) < g_gb64c450 && thr > g_gb64b6e0)
+            F(int, s, 13516) = 1;
+        float ft = (float)Game_FrameTime();
+        if (F(int, s, 10080))
+        {
+            double rv = CallThis<double>(Gb_Ramp, s + 16320);
+            CallThis(Gb_RampDown, s + 16112,
+                     (float)(rv * (x87_fabs(F(float, s, 7300)) * thr / F(float, s, 7304)) * ft));
+        }
+        if (CallThis<double>(Gb_Ramp, s + 16112) > g_gb64c264)
+        {
+            F(int, s, 15484) = 0;
+            F(int, s, 6948) = 2;
+        }
+        else
+        {
+            F(int, s, 7316) = 0;
+            F(int, s, 13516) = 0;
+            F(int, s, 15484) = 1;
+            F(int, s, 6948) = 3;
+        }
+        F(float, s, 15476) = (float)CallThis<double>(Gb_Ramp, s + 16112);
+    }
+
+shared:
+    F(int, s, 15332) = F(int, s, 7200);
+    F(int, s, 15376) = F(int, s, 7212);
+    F(int, s, 15380) = F(int, s, 7228);
+    CallThis(Gb_Record, s + 6960, F(DWORD, s, 7316), &g_gbForce);
+    F(float, s, 7316) = (float)CallThis<double>(Gb_Filter, s + 6960);
+    if (F(int, s, 6948) == 2 && F(int, s, 10108) == -1 &&
+        (double)g_gb674410 * g_gb64c408 < (double)now - F(float, s, 6952))
+        F(int, s, 6948) = 3;
+    int cl = F(int, s, 6948);
+    if (cl == 3)
+    {
+        float d = (float)((double)now - F(float, s, 6956));
+        if (g_gb67440c - Game_FrameTime() < d)
+            F(int, s, 6948) = 0;
+        F(int, s, 10108) = 0;
+        return;
+    }
+    F(float, s, 6956) = now;
+    int rq = F(int, s, 10108);
+    if (rq == 1)
+        F(int, s, 6948) = 1;
+    else if (!cl)
+        F(float, s, 6952) = now;
+    if (F(int, s, 6948) == 1)
+    {
+        double e = (double)now - F(float, s, 6952);
+        if (!(g_gb674410 < e && F(short, s, 10048) == 1 && !rq) && F(short, s, 10048))
+        {
+            F(int, s, 10108) = 0;
+            return;
+        }
+        if (!(CallThis<double>(Gb_Ramp, s + 16112) > g_gb64c264))
+            F(int, s, 6948) = 0;
+        else
+            F(int, s, 6948) = 2;
+    }
+    F(int, s, 10108) = 0;
 }
 
 } // extern "C"

@@ -839,7 +839,7 @@ extern "C" void __cdecl Tables_Clear697608()
 extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")    // checks a vector (v, name, limit)
 extern "C" void FUN_4f0530(); KING_ALIAS("_FUN_4f0530", "@Body_SpinAxis@4")
 extern "C" void FUN_4f0720(); KING_ALIAS("_FUN_4f0720", "@Body_SaveState@8")
-ASM_PROC(FUN_4fef20)
+extern "C" void FUN_4fef20(); KING_ALIAS("_FUN_4fef20", "@Body_StateStep@4")
 ASM_VAR(AsmLabel, s_vp6746e4, $L_6746e4)
 
 // [FUN_4f1dd0] sets the position (+64) after checking it, then updates the body
@@ -3125,7 +3125,7 @@ extern "C" void Bp_HitObject(); KING_ALIAS("_Bp_HitObject", "_Query_HitObject")
 extern "C" void Bp_NodeInit(); KING_ALIAS("_Bp_NodeInit", "@Node_Init@8")
 extern "C" void Bp_ToAngles(); KING_ALIAS("_Bp_ToAngles", "_Matrix_ToAngles")
 extern "C" void Bp_FromPose(); KING_ALIAS("_Bp_FromPose", "_Matrix_FromPose")
-ASM_FUNC(Bp_4fca10, FUN_4fca10)
+extern "C" void Bp_4fca10(); KING_ALIAS("_Bp_4fca10", "@Body_NextFrame@12")
 ASM_VAR(Vec3, g_bpUp, $L_702630)
 ASM_VAR(Vec3, g_bpEye, $L_702650)
 ASM_VAR(float, g_bp674414, $L_674414)
@@ -3219,6 +3219,1805 @@ void __fastcall Body_PlaceAtFrame(BYTE* b, void*, int o, const Matrix* m, int)
     Matrix Y;
     memcpy(b + 16, CallC<const Matrix*>(Bp_FromPose, &Y, a[0], a[1], a[2], a[3], a[4], a[5]), 48);
     CallThis(Bp_Step, b, a);
+}
+
+} // extern "C"
+
+#include "x87.h"
+// === a vehicle's physical body made from its type's table (FUN_4ebd00, running on through $L_4ed6c8)
+
+extern "C" void Pb_List(); KING_ALIAS("_Pb_List", "@List4eb3b0_Construct@8")
+extern "C" void Pb_Engine(); KING_ALIAS("_Pb_Engine", "@Engine_Construct@4")
+extern "C" void Pb_History(); KING_ALIAS("_Pb_History", "@History_Construct@24")
+extern "C" void Pb_State(); KING_ALIAS("_Pb_State", "@PhysState_Init@8")
+extern "C" void Pb_ForEach(); KING_ALIAS("_Pb_ForEach", "_Array_ForEach@16")
+extern "C" void Pb_Ramp(); KING_ALIAS("_Pb_Ramp", "@Ramp_Construct@8")
+extern "C" void Pb_Range(); KING_ALIAS("_Pb_Range", "@Ramp_SetRange@24")
+extern "C" void Pb_RampValue(); KING_ALIAS("_Pb_RampValue", "@Ramp_Value@8")
+extern "C" void Pb_NewPart(); KING_ALIAS("_Pb_NewPart", "@Phys4eb3c0_NewPart@16")
+extern "C" void Pb_Mass(); KING_ALIAS("_Pb_Mass", "@Body_SetMass@20")
+extern "C" void Pb_Shares(); KING_ALIAS("_Pb_Shares", "@Wheels_LoadShares@8")
+extern "C" void Pb_SetPos(); KING_ALIAS("_Pb_SetPos", "@Body_SetPosition@12")
+extern "C" void Pb_Set88(); KING_ALIAS("_Pb_Set88", "@Body_SetVec88@12")
+extern "C" void Pb_EngReset(); KING_ALIAS("_Pb_EngReset", "@Engine_Reset@8")
+extern "C" void Pb_Restart(); KING_ALIAS("_Pb_Restart", "@Body_AxisRestart@4")
+extern "C" void Pb_PutDown(); KING_ALIAS("_Pb_PutDown", "@Body_PutDown@20")
+extern "C" void Pb_Prepare(); KING_ALIAS("_Pb_Prepare", "@Body_PrepareSteps@12")
+extern "C" void Pb_Step(); KING_ALIAS("_Pb_Step", "@Body_Step@12")
+extern "C" void Pb_AddAssign(); KING_ALIAS("_Pb_AddAssign", "@Vec3_AddAssign@16")
+extern "C" void Pb_MulAssign(); KING_ALIAS("_Pb_MulAssign", "@Vec3_MulAssign@16")
+extern "C" void Pb_Normalize(); KING_ALIAS("_Pb_Normalize", "@Vec3_NormalizeThis@8")
+extern "C" void Pb_Decompose(); KING_ALIAS("_Pb_Decompose", "_Matrix_Decompose6")
+extern "C" void Pb_Compose(); KING_ALIAS("_Pb_Compose", "_World_4e3021")
+extern "C" void Pb_Parts(); KING_ALIAS("_Pb_Parts", "_Query_Parts2")
+extern "C" void Pb_Zero(); KING_ALIAS("_Pb_Zero", "@Vec3_ZeroThis@8")
+extern "C" void Pb_Node(); KING_ALIAS("_Pb_Node", "@Node_Init@8")
+extern "C" void Pb_Elem(); KING_ALIAS("_Pb_Elem", "@Placed4ee4d0_Construct@4")
+ASM_VAR(BYTE, g_pbTypes, $L_697868)
+ASM_VAR(BYTE, g_pbTypes2144, $L_69809c)
+ASM_VAR(BYTE, g_pbFrames, $L_6d2258)
+ASM_VAR(int, g_pb6ce33c, $L_6ce33c)
+ASM_VAR(int, g_pb6ce340, $L_6ce340)
+ASM_VAR(float, g_pb6969f4, $L_6969f4)
+ASM_VAR(float, g_pb6969f8, $L_6969f8)
+ASM_VAR(float, g_pb6969fc, $L_6969fc)
+ASM_VAR(char, g_pbNames, $L_698166)
+ASM_VAR(char, g_pbNoOwner, $L_674510)
+ASM_VAR(char, g_pbWheels, $L_6744e8)
+ASM_VAR(char, g_pbBadWheels, $L_6744c8)
+ASM_VAR(char, g_pbNoGround, $L_6744ac)
+ASM_VAR(Vec3, g_pb6974a8, $L_6974a8)
+ASM_VAR(AsmLabel, g_pbVtbl, $L_64d994)
+extern "C" void g_pbHist1(); KING_ALIAS("_g_pbHist1", "_Window_Parabola")
+extern "C" void g_pbHist2(); KING_ALIAS("_g_pbHist2", "_Window_Cosine")
+ASM_VAR(float, g_pb64c408, $L_64c408)
+ASM_VAR(double, g_pb64b7d8, $L_64b7d8)
+ASM_VAR(float, g_pb674414, $L_674414)
+ASM_VAR(float, g_pb64c264, $L_64c264)
+ASM_VAR(double, g_pb64b840, $L_64b840)
+ASM_VAR(float, g_pb64d990, $L_64d990)
+ASM_VAR(double, g_pb64b838, $L_64b838)
+ASM_VAR(double, g_pb64d988, $L_64d988)
+ASM_VAR(double, g_pb64b738, $L_64b738)
+ASM_VAR(float, g_pb64d980, $L_64d980)
+ASM_VAR(double, g_pb64b6e0, $L_64b6e0)
+ASM_VAR(double, g_pb64b7b8, $L_64b7b8)
+ASM_VAR(float, g_pb64c970, $L_64c970)
+ASM_VAR(float, g_pb64c904, $L_64c904)
+ASM_VAR(float, g_pb64c258, $L_64c258)
+ASM_VAR(float, g_pb64d2f8, $L_64d2f8)
+ASM_VAR(double, g_pb64b668, $L_64b668)
+ASM_VAR(double, g_pb64d978, $L_64d978)
+
+// a 248-byte contact record: zero point, normal up (+12), flags (+24, +26), its node (+32)
+static void Pb_Contact(BYTE* e)
+{
+    CallThis(Pb_Zero, e);
+    CallThis(Pb_Zero, e + 12);
+    CallThis(Pb_Node, e + 32);
+    memcpy(e, &g_zeroVec, 12);
+    memcpy(e + 12, &g_axisZ, 12);
+    F(WORD, e, 24) = 0;
+    F(WORD, e, 26) = 0;
+    F(int, e, 132) = 0;
+    F(int, e, 240) = 0;
+}
+
+static void Pb_Zeros(BYTE* s, int from, int to)
+{
+    memset(s + from, 0, to - from);
+}
+
+static void Pb_SetRange(BYTE* r, int i, float a, float b, float c)
+{
+    CallThis(Pb_Range, r, i, a, b, c);
+}
+
+static float Pb_Len(const float* a, const float* b)
+{
+    float d[3] = {(float)((double)a[0] - b[0]), (float)((double)a[1] - b[1]), (float)((double)a[2] - b[2])};
+    return (float)Vec3_Length((const Vec3*)d);
+}
+
+static float Pb_Abs(float f)
+{
+    return (float)x87_fabs((double)f);
+}
+
+extern "C" {
+
+// [FUN_4ebd00..$L_4ed6c8] body s of owner o at frame m, of vehicle type `type` (the 2416-byte record at 697868,
+// its frame at 6d2258 +344): every part cleared, its wheels (up to 8, the count +3540; 6 checked for a sane
+// layout), springs, ramps, mass, extent and inertia set from the record, put down on the ground below m (o's
+// parts, fatal without one), then its first step; fatal without an owner or with too many wheels
+BYTE* __fastcall PhysBody_Construct(BYTE* s, void*, BYTE* o, Matrix m, int type)
+{
+    memcpy(s + 16, &g_identity, 48);
+    Pb_Zeros(s, 64, 100);
+    Pb_Zeros(s, 100, 196);
+    Pb_Zeros(s, 196, 244);
+    for (int i = 0; i < 8; i++)
+        Pb_Contact(s + 248 + 248 * i);
+    for (int k = 0; k < 6; k++)
+        memcpy(s + 2256 + 48 * k, &g_identity, 48);
+    Pb_Zeros(s, 2544, 2628);
+    Pb_Zeros(s, 2628, 3312);
+    Pb_Zeros(s, 3392, 3452);
+    Pb_Zeros(s, 3456, 3516);
+    Pb_Zeros(s, 3848, 3944);
+    Pb_Zeros(s, 4104, 4116);
+    for (int i = 0; i < 8; i++)
+    {
+        BYTE* e = s + 4120 + 248 * i;
+        Pb_Zeros(e, 0, 12);
+        CallThis(Pb_Zero, e + 12);
+        CallThis(Pb_Node, e + 32);
+        memcpy(e, &g_zeroVec, 12);
+        memcpy(e + 12, &g_axisZ, 12);
+        F(WORD, e, 24) = 0;
+        F(WORD, e, 26) = 0;
+        F(int, e, 132) = 0;
+        F(int, e, 240) = 0;
+    }
+    Pb_Zeros(s, 6116, 6500);
+    Pb_Zeros(s, 6652, 6664);
+    Pb_Zeros(s, 6848, 6884);
+    memcpy(s + 6888, &g_identity, 48);
+    CallThis(Pb_History, s + 6960, g_pbHist1, 0x3F000000u, 0, 0);
+    CallThis(Pb_History, s + 6992, g_pbHist2, 0x3F333333u, 0, 0);
+    Pb_Zeros(s, 7356, 7452);
+    Pb_Zeros(s, 7848, 7944);
+    Pb_Zeros(s, 8008, 8032);
+    CallThis(Pb_List, s + 8188);
+    memcpy(s + 8196, &g_identity, 48);
+    Pb_Zeros(s, 8244, 8736);
+    CallThis(Pb_State, s + 8740);
+    Pb_Zeros(s, 9908, 9920);
+    CallThis(Pb_Engine, s + 9984);
+    CallStd(Pb_ForEach, s + 10736, 12, 4, Pb_Zero);
+    memcpy(s + 10736, &g_identity, 48);
+    CallStd(Pb_ForEach, s + 10784, 12, 4, Pb_Zero);
+    memcpy(s + 10784, &g_identity, 48);
+    Pb_Zeros(s, 10832, 10856);
+    CallThis(Pb_Zero, s + 10856);
+    CallThis(Pb_Zero, s + 10868);
+    CallStd(Pb_ForEach, s + 10880, 12, 8, Pb_Zero);
+    CallStd(Pb_ForEach, s + 10976, 12, 8, Pb_Zero);
+    CallThis(Pb_Zero, s + 11072);
+    CallStd(Pb_ForEach, s + 11088, 248, 8, Pb_Elem);
+    CallThis(Pb_Zero, s + 13072);
+    CallThis(Pb_Zero, s + 13228);
+    CallThis(Pb_Zero, s + 13240);
+    CallStd(Pb_ForEach, s + 13252, 12, 8, Pb_Zero);
+    CallThis(Pb_Zero, s + 13496);
+    CallStd(Pb_ForEach, s + 13584, 208, 8, Pb_Node);
+    CallThis(Pb_Zero, s + 15388);
+    CallThis(Pb_Zero, s + 15400);
+    CallThis(Pb_Zero, s + 15452);
+    CallThis(Pb_Zero, s + 15464);
+    for (int k = 0; k < 7; k++)
+        CallThis(Pb_Ramp, s + 16060 + 52 * k);
+    F(void*, s, 0) = &g_pbVtbl;
+    if (!o)
+    {
+        char buf[1024];
+        sprintf(buf, &g_pbNoOwner, &g_pbNames + type * 2416, (double)m.m[9], (double)m.m[10], (double)m.m[11],
+                (double)g_pb6969f4, (double)g_pb6969f8, (double)g_pb6969fc);
+        World_Fatal(buf);
+    }
+
+    F(float, s, 8) = (float)Game_Time();
+    F(int, s, 12) = 0;
+    BYTE L[2416];
+    memcpy(L, &g_pbTypes + type * 2416, 2416);
+    F(int, s, 2252) = type;
+    F(int, s, 9792) = F(int, L, 96);
+    memcpy(s + 8008, L + 412, 12);
+    Vec3 q;
+    memcpy(s + 8020, Vec3_DivComponents(&q, &g_pb6974a8, (const Vec3*)(s + 8008)), 12);
+    memcpy(s + 16, &g_identity, 48);
+    memcpy(s + 2304, &g_identity, 48);
+    Matrix Mt;
+    Matrix_Inverse(&Mt, (const Matrix*)(&g_pbFrames + 344 + F(int, s, 2252) * 1488));
+    F(int, s, 3540) = F(int, &g_pbTypes2144, F(int, s, 2252) * 2416 + 44);
+    if (F(int, s, 2252) >= g_pb6ce33c && F(int, s, 2252) < g_pb6ce340)
+    {
+        int n = ++F(int, s, 3540);
+        if (n >= 8)
+        {
+            char buf[612];
+            wsprintfA(buf, &g_pbWheels, n, 8);
+            World_Fatal(buf);
+        }
+    }
+    F(int, s, 13120) = F(int, s, 3540);
+    const float* mt = Mt.m;
+    for (int i = 0; i < 8; i++)
+    {
+        const float* p = (const float*)(L + 748) + i;
+        const float* v = (const float*)(L + 424 + 12 * i);
+        float* w = (float*)(s + 7356 + 12 * i);
+        F(float, s, 8060 + 4 * i) = (float)((double)p[0] * g_pb64c408 * g_pb64b7d8);
+        F(float, s, 8092 + 4 * i) = p[0];
+        F(float, s, 8124 + 4 * i) = p[8];
+        w[0] = (float)((double)mt[6] * v[2] + (double)mt[3] * v[1] + (double)mt[0] * v[0] + mt[9]);
+        w[1] = (float)((double)mt[7] * v[2] + (double)mt[4] * v[1] + (double)mt[1] * v[0] + mt[10]);
+        w[2] = (float)((double)mt[8] * v[2] + (double)mt[5] * v[1] + (double)mt[2] * v[0] + mt[11]);
+        double t = (double)g_pb674414 * p[0] + F(float, L, 100);
+        float ax = (float)(t * g_axisZ.x), ay = (float)(t * g_axisZ.y);
+        float* u = (float*)(s + 6212 + 12 * i);
+        u[0] = (float)((double)w[0] - ax);
+        u[1] = (float)((double)w[1] - ay);
+        u[2] = (float)((double)w[2] - t * g_axisZ.z);
+        F(int, s, 7484 + 4 * i) = ((const int*)p)[16];
+    }
+    if (F(int, s, 3540) == 6)
+    {
+        const float* w = (const float*)(s + 7356);
+        float k = g_pb64c264;
+        if (w[1] < k || w[4] < k || w[7] > k || w[10] > k || w[13] > k || w[16] > k || w[0] > k || w[3] < k ||
+            w[6] > k || w[9] < k || w[12] > k || w[15] < k ||
+            x87_fabs((double)w[1]) * g_pb64b840 < x87_fabs((double)w[4] - w[1]) ||
+            x87_fabs((double)w[7]) * g_pb64b840 < x87_fabs((double)w[10] - w[7]) ||
+            x87_fabs((double)w[13]) * g_pb64b840 < x87_fabs((double)w[16] - w[13]))
+            World_Fatal(&g_pbBadWheels);
+    }
+
+    double nx = -(double)g_axisZ.x;
+    float ny = -g_axisZ.y, nz = -g_axisZ.z;
+    float* d3392 = (float*)(s + 3392);
+    d3392[0] = (float)(nx * g_pb64d990);
+    d3392[1] = (float)((double)ny * g_pb64d990);
+    d3392[2] = (float)((double)nz * g_pb64d990);
+    {
+        double f = F(float, s, 9792);
+        F(float, s, 3156) = (float)(f * d3392[0]);
+        F(float, s, 3160) = (float)(f * d3392[1]);
+        F(float, s, 3164) = (float)(f * d3392[2]);
+    }
+    float l192 = F(float, L, 192);
+    F(float, s, 9788) = F(float, s, 3452) = Pb_Abs(F(float, s, 3400));
+    F(int, s, 16108) = 3;
+    Pb_SetRange(s + 16060, 0, (float)(l192 * g_pb64b838), l192, 1.0f);
+    Pb_SetRange(s + 16060, 1, (float)(l192 * g_pb64b738), (float)(l192 * g_pb64d988), 1.0f);
+    float l108 = F(float, L, 108), l112 = F(float, L, 112);
+    F(int, s, 16160) = 2;
+    Pb_SetRange(s + 16112, 0, 0, l108, l112);
+    Pb_SetRange(s + 16112, 1, 0, (float)((double)l108 + l108), (float)((double)l112 + l112));
+    F(float, s, 15480) = (float)CallThis<double>(Pb_RampValue, s + 16112);
+    F(int, s, 15484) = 0;
+    F(BYTE*, s, 8192) = s;
+    for (int k = 0; k < 4; k++)
+        CallThis(Pb_NewPart, s + 8188, 300.0f, k);
+    CallThis(Pb_Mass, s, F(float, L, 96), &g_pbFrames + 344 + F(int, s, 2252) * 1488, L + 412);
+    memcpy(s + 9796, L + 172, 12);
+    memcpy(s + 9908, &g_axisZ, 12);
+
+    float minx = 100.0f, maxx = -100.0f, miny = 100.0f;
+    double maxy = g_pb64d980;
+    for (int i = 0; i < 8; i++)
+    {
+        const float* w = (const float*)(s + 7356 + 12 * i);
+        if (w[0] < minx)
+            minx = w[0];
+        if (!(w[0] <= maxx))
+            maxx = w[0];
+        if (w[1] < miny)
+            miny = w[1];
+        if (maxy < w[1])
+            maxy = w[1];
+    }
+    {
+        double wd = (double)maxx - minx;
+        float wf = (float)wd;
+        double qd = wd * wd * g_pb64b6e0 * g_pb64b7b8;
+        float qf = (float)qd;
+        F(float, s, 9800) = (float)(qd * F(float, s, 9800));
+        double h = maxy - miny;
+        F(float, s, 9804) = (float)(h * qf / wf * F(float, s, 9804));
+        double c = h * g_pb64c970 + (double)wf * g_pb64c904;
+        F(float, s, 9908) = (float)(c * g_axisZ.x);
+        F(float, s, 9912) = (float)(c * g_axisZ.y);
+        F(float, s, 9916) = (float)(c * g_axisZ.z);
+    }
+    F(int, s, 6668) = 0x3FCCCCCD;
+    F(int, s, 7024) = F(int, L, 100);
+    for (int i = 0; i < 8; i++)
+    {
+        F(int, s, 7028 + 4 * i) = F(int, s, 7024);
+        F(int, s, 7060 + 4 * i) = F(int, L, 104);
+        float len = (float)Vec3_Length((const Vec3*)(s + 7356 + 12 * i));
+        F(float, s, 7452 + 4 * i) = len;
+        if (!(len <= F(float, s, 6668)))
+            F(float, s, 6668) = len;
+    }
+    {
+        const float* w0 = (const float*)(s + 7356);
+        const float* w1 = w0 + 3;
+        const float* w2 = w0 + 6;
+        const float* w3 = w0 + 9;
+        if (F(int, s, 3540) >= 4)
+        {
+            F(float, s, 8036) = Pb_Len(w2, w0);
+            F(float, s, 8040) = Pb_Len(w0, w1);
+            F(float, s, 8044) = Pb_Len(w1, w3);
+            F(float, s, 8048) = Pb_Len(w3, w2);
+            float b = Pb_Len(w1, w3);
+            F(float, s, 8032) = (float)(((double)Pb_Len(w0, w2) + b) * g_pb64c258);
+            F(float, s, 8052) = Pb_Abs(w0[1]);
+            F(float, s, 8056) = Pb_Abs(w2[1]);
+            if (F(int, s, 3540) == 6)
+            {
+                const float* w4 = w0 + 12;
+                const float* w5 = w0 + 15;
+                float b6 = Pb_Len(w1, w5);
+                F(float, s, 8032) = (float)(((double)Pb_Len(w0, w4) + b6) * g_pb64c258);
+                F(float, s, 8056) = Pb_Abs(w4[1]);
+            }
+        }
+        else
+        {
+            float d = Pb_Len(w0, w1);
+            for (int k = 0; k < 5; k++)
+                F(float, s, 8032 + 4 * k) = d;
+        }
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        F(int, s, 7092 + 4 * i) = F(int, L, 300 + 4 * i);
+        F(int, s, 7156 + 4 * i) = F(int, L, 364 + 4 * i);
+        F(int, s, 7124 + 4 * i) = F(int, L, 332 + 4 * i);
+    }
+    F(int, s, 7196) = 1;
+    F(int, s, 7200) = -1;
+    F(int, s, 7188) = 1;
+    F(int, s, 7192) = F(int, L, 144);
+    F(int, s, 15324) = F(int, L, 144);
+    F(int, s, 7296) = F(int, L, 204);
+    for (short i = 0; i <= F(int, s, 7192); i++)
+        F(float, s, 7236 + 4 * i) = (float)((double)F(float, L, 208 + 4 * i) * F(float, s, 7296));
+    F(int, s, 7300) = 0;
+    F(int, s, 7304) = F(int, L, 268);
+    F(int, s, 7308) = F(int, L, 196);
+    Pb_SetRange(s + 16372, 0, 0, 0, 0);
+    Pb_SetRange(s + 16372, 1, (float)(F(float, s, 7308) * g_pb64b738),
+                (float)((double)F(float, s, 7308) + F(float, s, 7308)), 0);
+    Pb_SetRange(s + 16320, 0, 1.0f, 1.0f, 1.0f);
+    Pb_SetRange(s + 16320, 1, 0.8f, 0.8f, 1.0f);
+    F(int, s, 7316) = 0;
+    F(float, s, 7352) = 1.0f;
+    F(int, s, 7224) = 0x3DCCCCCD;
+    F(float, s, 7216) = 0.5f;
+    F(int, s, 7220) = 0x3BA3D70A;
+    F(float, s, 7228) = (float)Game_Time();
+    F(float, s, 7232) = 0.5f;
+    F(int, s, 7212) = 0;
+    F(int, s, 7204) = 0;
+    Pb_SetRange(s + 16216, 0, 0.1f, 1.0f, 60.0f);
+    Pb_SetRange(s + 16216, 1, 0.5f, 1.0f, 120.0f);
+    Pb_SetRange(s + 16268, 0, 0, 1.0f, 10.0f);
+    Pb_SetRange(s + 16268, 1, 0, 1.0f, 20.0f);
+    Pb_SetRange(s + 16164, 0, 0.6f, 1.0f, 30000.0f);
+    Pb_SetRange(s + 16164, 1, 0.8f, 1.0f, 60000.0f);
+    Pb_SetRange(s + 16164, 2, 0.8f, 1.0f, 60000.0f);
+    F(int, s, 15444) = 0;
+    F(BYTE*, s, 6884) = o;
+    F(BYTE*, s, 244) = o;
+    F(BYTE*, s, 6672) = o;
+    memcpy(s + 16, &m, 48);
+
+    // the ground below: a ray from twice up to K down from the place, against o's parts
+    __declspec(align(8)) BYTE node[208];
+    CallThis(Pb_Node, node);
+    memcpy(node + 4, &g_identity, 48);
+    {
+        double ux = (double)g_axisZ.x + g_axisZ.x;
+        float uy = (float)((double)g_axisZ.y + g_axisZ.y), uz = (float)((double)g_axisZ.z + g_axisZ.z);
+        F(float, node, 76) = (float)(ux + F(float, s, 52));
+        F(float, node, 80) = (float)((double)uy + F(float, s, 56));
+        F(float, node, 84) = (float)((double)uz + F(float, s, 60));
+        double dx = (double)g_axisZ.x * g_pb64d2f8;
+        float dy = (float)((double)g_axisZ.y * g_pb64d2f8), dz = (float)((double)g_axisZ.z * g_pb64d2f8);
+        F(float, node, 88) = (float)(F(float, s, 52) - dx);
+        F(float, node, 92) = (float)((double)F(float, s, 56) - dy);
+        F(float, node, 96) = (float)((double)F(float, s, 60) - dz);
+    }
+    F(int, node, 116) = 0;
+    F(int, node, 120) = 0;
+    F(int, node, 0) = 0;
+    F(int, node, 104) = 0;
+    int r;
+    if (F(WORD, s, 9992))
+        r = CallC<int>(Pb_Parts, o, 4, node);
+    else
+    {
+        r = CallVirt<int>(o, 52, 4, node);
+        if ((r & 2) && !F(int, node, 104))
+        {
+            F(int, s, 15444) = 1;
+            World_Fatal(&g_pbNoGround);
+        }
+    }
+    if (r & 1)
+    {
+        double t = ((double)F(float, s, 7024) - F(float, s, 7364)) + (double)g_pb674414 * F(float, s, 8092);
+        float ax = (float)(F(float, node, 64) * t), ay = (float)(F(float, node, 68) * t);
+        double az = F(float, node, 72) * t;
+        F(float, s, 52) = (float)((double)F(float, node, 52) + ax);
+        F(float, s, 56) = (float)((double)ay + F(float, node, 56));
+        F(float, s, 60) = (float)(az + F(float, node, 60));
+    }
+
+    memcpy(s + 6888, s + 16, 48);
+    memcpy(s + 2256, s + 16, 48);
+    Matrix Mi;
+    Matrix* inv = Matrix_Inverse(&Mi, (const Matrix*)(s + 16));
+    memcpy(s + 2304, inv, 48);
+    memcpy(s + 2352, inv, 48);
+    memcpy(s + 196, &g_zeroVec, 12);
+    const float* M = (const float*)(s + 16);
+    for (int i = 0; i < 8; i++)
+    {
+        BYTE* e = s + 248 + 248 * i;
+        float up[3] = {0, 0, 1.0f};
+        memcpy(e + 12, up, 12);
+        float tmp[3];
+        CallThis(Pb_AddAssign, s + 196, tmp, e + 12);
+        float* c = &F(float, s, 3544 + 4 * i);
+        c[0] = (float)((double)g_pb674414 * F(float, s, 8092 + 4 * i));
+        c[8] = c[0];
+        c[16] = c[0];
+        const float* w = (const float*)(s + 7356 + 12 * i);
+        double t = (double)c[0] + F(float, s, 7024);
+        float ax = (float)(t * g_axisZ.x), ay = (float)(t * g_axisZ.y);
+        double az = t * g_axisZ.z;
+        double x = (double)M[3] * w[1] + (double)M[6] * w[2] + (double)w[0] * M[0] + M[9];
+        float y = (float)((double)M[4] * w[1] + (double)M[1] * w[0] + (double)M[7] * w[2] + M[10]);
+        float z = (float)((double)M[5] * w[1] + (double)M[2] * w[0] + (double)M[8] * w[2] + M[11]);
+        F(float, e, 0) = (float)(x - ax);
+        F(float, e, 4) = (float)((double)y - ay);
+        F(float, e, 8) = (float)((double)z - az);
+        F(WORD, e, 24) = 1;
+        F(WORD, e, 26) = 0;
+        memcpy(s + 4120 + 248 * i, e, 248);
+        double u = (double)F(float, s, 7028 + 4 * i) + c[0];
+        float cx = (float)(u * g_axisZ.x), cy = (float)(u * g_axisZ.y);
+        float r0 = (float)((double)w[0] - cx), r1 = (float)((double)w[1] - cy);
+        double r2 = (double)w[2] - u * g_axisZ.z;
+        float* g = (float*)(s + 100 + 12 * i);
+        g[0] = (float)(r2 * M[6] + (double)r1 * M[3] + (double)r0 * M[0] + M[9]);
+        g[1] = (float)((double)r0 * M[1] + r2 * M[7] + (double)r1 * M[4] + M[10]);
+        g[2] = (float)((double)r0 * M[2] + r2 * M[8] + (double)r1 * M[5] + M[11]);
+        memcpy(s + 6116 + 12 * i, g, 12);
+        F(WORD, s, 6564 + 2 * i) = 0;
+        F(int, s, 3708 + 4 * i) = 0;
+        F(int, s, 3676 + 4 * i) = 0;
+        F(int, s, 3644 + 4 * i) = 0;
+        F(int, s, 15248 + 4 * i) = 0;
+        F(int, s, 4040 + 4 * i) = 0;
+        F(int, s, 3976 + 4 * i) = 0;
+        F(int, s, 13684 + 208 * i) = 0;
+    }
+    {
+        float* a = F(float, s, 3616) < F(float, s, 3620) ? &F(float, s, 3620) : &F(float, s, 3616);
+        float* b = F(float, s, 3608) < F(float, s, 3612) ? &F(float, s, 3612) : &F(float, s, 3608);
+        F(float, s, 3640) = *b < *a ? *a : *b;
+    }
+    CallThis(Pb_Normalize, s + 196);
+    memcpy(s + 208, s + 196, 12);
+    memcpy(s + 7516, s + 7024, 492);
+    CallThis(Pb_Shares, s);
+    for (short i = 0; i < F(int, s, 3540); i++)
+    {
+        double v = -((double)F(float, s, 3400) * F(float, s, 9808 + 4 * i) * F(float, s, 9792));
+        F(float, s, 3360 + 4 * i) = (float)v;
+        float w = (float)(v * g_pb64b668);
+        F(float, s, 7320 + 4 * i) = w;
+        F(float, s, 7812 + 4 * i) = w;
+    }
+    for (short i = 0; i < F(int, s, 3540); i++)
+    {
+        double a = F(float, s, 8092 + 4 * i) - x87_fabs((double)F(float, s, 3360 + 4 * i) / F(float, s, 8124 + 4 * i));
+        F(float, s, 3544 + 4 * i) = (float)a;
+        if (a < g_pb64c264)
+            F(int, s, 3544 + 4 * i) = 0;
+        else if (!(a <= F(float, s, 8092 + 4 * i)))
+            F(int, s, 3544 + 4 * i) = F(int, s, 8092 + 4 * i);
+    }
+    static const int zeroVecs[] = {64, 220, 88, 232, 76, 3120, 3108, 3192, 3468};
+    for (int k = 0; k < 9; k++)
+        Pb_Zeros(s, zeroVecs[k], zeroVecs[k] + 12);
+    F(int, s, 3516) = 0x5014F9F9;
+    Pb_Zeros(s, 3404, 3416);
+    F(int, s, 3536) = 0;
+    F(int, s, 3532) = 0;
+    F(int, s, 3520) = 0;
+    F(int, s, 3524) = 0;
+    {
+        const float* y = &g_axisY.x;
+        F(float, s, 2604) = (float)((double)y[2] * M[6] + (double)y[1] * M[3] + (double)y[0] * M[0]);
+        F(float, s, 2608) = (float)((double)y[2] * M[7] + (double)y[1] * M[4] + (double)y[0] * M[1]);
+        F(float, s, 2612) = (float)((double)y[2] * M[8] + (double)y[1] * M[5] + (double)y[0] * M[2]);
+    }
+    CallThis(Pb_SetPos, s, &g_zeroVec);
+    CallThis(Pb_Set88, s, &g_zeroVec);
+    F(int, s, 3808) = 0;
+    F(int, s, 3812) = 0;
+    CallThis(Pb_EngReset, s + 9984);
+    F(int, s, 6940) = 0;
+    F(int, s, 6936) = 0;
+    F(int, s, 6944) = 0;
+    F(float, s, 6104) = (float)Game_Time();
+    F(float, s, 6108) = (float)Game_Time();
+    F(float, s, 6112) = (float)Game_Time();
+    F(int, s, 10720) = 0;
+    F(int, s, 10716) = 0;
+    F(int, s, 10712) = 0x3D4CCCCD;
+    F(int, s, 10728) = 0;
+    F(int, s, 13492) = F(int, s, 7024);
+    F(int, s, 13124) = 0;
+    F(int, s, 13516) = 0;
+    F(int, s, 15384) = 0;
+    F(int, s, 13112) = 0;
+    F(int, s, 13116) = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        F(int, s, 13520 + 4 * i) = 0;
+        F(int, s, 13552 + 4 * i) = F(int, &g_pbTypes, F(int, s, 2252) * 2416 + (i / 2 ? 188 : 184));
+    }
+    F(int, s, 15332) = 1;
+    F(int, s, 15376) = 0;
+    F(int, s, 15380) = 0;
+    Pb_Zeros(s, 15412, 15428);
+    F(int, s, 15320) = 1;
+    F(int, s, 15316) = 0;
+    F(int, s, 15312) = 0;
+    F(int, s, 15440) = 0;
+    F(int, s, 15488) = 0;
+    F(int, s, 6948) = 0;
+    Pb_Zeros(s, 15504, 15516);
+    F(float, s, 6952) = 0.5f;
+    F(int, s, 6956) = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        F(float, s, 9840 + 4 * i) = 0.5f;
+        F(float, s, 15280 + 4 * i) = 0.5f;
+    }
+    F(float, s, 9904) = 0.5f;
+    F(int, s, 6676) = 0;
+    F(int, s, 6680) = 0;
+    Pb_Zeros(s, 6688, 6700);
+    F(int, s, 6744) = 0;
+    F(int, s, 6740) = 0;
+    F(int, s, 6736) = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        int rr = rand();
+        float f = (float)(rr * g_pb64d978);
+        F(float, s, 3740 + 4 * i) = f;
+        F(int, s, 3772 + 4 * i) = 0;
+        F(float, s, 13164 + 4 * i) = f;
+        F(int, s, 6704 + 4 * i) = 0;
+        F(int, s, 13196 + 4 * i) = 0;
+        F(float, s, 6780 + 4 * i) = 1.0f;
+        F(int, s, 6748 + 4 * i) = 0;
+    }
+    const float* n = (const float*)(s + 208);
+    for (int i = 0; i < 8; i++)
+    {
+        memcpy(s + 6308 + 12 * i, s + 2544, 12);
+        F(float, s, 6500 + 4 * i) = F(float, s, 3528);
+        F(float, s, 6532 + 4 * i) = F(float, s, 3528);
+        memcpy(s + 6404 + 12 * i, s + 2616, 12);
+        memcpy(s + 2628 + 12 * i, s + 2616, 12);
+        memcpy(s + 2724 + 12 * i, s + 2616, 12);
+        const float* v = (const float*)(s + 2628 + 12 * i);
+        float c[3] = {(float)((double)n[1] * v[2] - (double)n[2] * v[1]),
+                      (float)((double)v[0] * n[2] - (double)v[2] * n[0]),
+                      (float)((double)n[0] * v[1] - (double)n[1] * v[0])};
+        memcpy(s + 2820 + 12 * i, c, 12);
+        memcpy(s + 2916 + 12 * i, c, 12);
+        F(int, s, 6748 + 4 * i) = 0;
+        F(float, s, 6780 + 4 * i) = 1.0f;
+        F(int, s, 6704 + 4 * i) = 0;
+        F(float, s, 3328 + 4 * i) = (float)((double)F(float, s, 9840 + 4 * i) * F(float, s, 3360 + 4 * i));
+    }
+    float dec[12];
+    float mc[12];
+    CallC(Pb_Decompose, s + 16, dec);
+    memcpy(s + 16, CallC<void*>(Pb_Compose, mc, dec), 48);
+    memcpy(s + 8196, &g_identity, 48);
+    for (int i = 0; i < 27; i++)
+    {
+        BYTE* q2 = s + 15520 + 20 * i;
+        F(int, q2, 0) = 0;
+        F(int, q2, 12) = 0;
+        F(int, q2, 16) = 0x3C8EFA89;
+        F(int, q2, 8) = 0;
+        F(int, q2, 4) = 1;
+    }
+    for (int i = 0; i < 8; i++)
+    {
+        F(int, s, 15744 + 20 * i) = 2;
+        F(int, s, 15748 + 20 * i) = -2;
+        F(int, s, 15584 + 20 * i) = 3;
+        F(int, s, 15596 + 20 * i) = 0x3D4CCCCD;
+    }
+    F(int, s, 15556) = 1010174817;
+    F(int, s, 15544) = 2;
+    F(int, s, 15536) = 0x3C8EFA89;
+    F(int, s, 15524) = 3;
+    F(int, s, 15564) = 3;
+    F(int, s, 15568) = -3;
+    for (int i = 0; i < 8; i++)
+        F(int, s, 15904 + 20 * i) = 1;
+    CallThis(Pb_Restart, s);
+    CallThis(Pb_SetPos, s, &g_zeroVec);
+    CallThis(Pb_Set88, s, &g_zeroVec);
+    CallThis(Pb_PutDown, s, 2, F(BYTE*, s, 6884), s + 6888);
+    if (F(WORD, s, 272))
+    {
+        double a = (double)F(float, s, 52) - F(float, s, 248);
+        double b = (double)F(float, s, 56) - F(float, s, 252);
+        double c = (double)F(float, s, 60) - F(float, s, 256);
+        F(float, s, 8736) = (float)(a * F(float, s, 260) + (c * F(float, s, 268) + b * F(float, s, 264)));
+    }
+    memcpy(s + 8724, &g_zeroVec, 12);
+    float tmp[3];
+    for (short i = 0; i < F(int, s, 3540); i++)
+        CallThis(Pb_AddAssign, s + 8724, tmp, s + (i + 1) * 248);
+    CallThis(Pb_MulAssign, s + 8724, tmp, 0.25f);
+    F(int, s, 3312) = 0;
+    F(int, s, 3316) = 0;
+    F(float, s, 3320) = 1000.0f;
+    F(float, s, 3324) = 100.0f;
+    memcpy(s + 3216, &g_zeroVec, 12);
+    memcpy(s + 3288, &g_zeroVec, 12);
+    memcpy(s + 3228, &g_zeroVec, 12);
+    memcpy(s + 3300, &g_zeroVec, 12);
+    F(int, s, 9784) = 1;
+    F(int, s, 9780) = -1;
+    F(int, s, 9776) = 0;
+    CallThis(Pb_Prepare, s, 1);
+    CallThis(Pb_Step, s, dec);
+    F(int, s, 15448) = 0;
+    memcpy(s + 15452, &g_zeroVec, 12);
+    F(int, s, 15492) = 0;
+    F(int, s, 15496) = 0;
+    for (int i = 0; i < 8; i++)
+    {
+        F(int, s, 9920 + 4 * i) = 0;
+        F(int, s, 9952 + 4 * i) = 0;
+    }
+    F(int, s, 15500) = 0;
+    return s;
+}
+
+} // extern "C"
+
+// === one step of a body's physics state machine (FUN_4fef20 with its tail $L_4ff139)
+
+extern "C" void FUN_4f5820(); KING_ALIAS("_FUN_4f5820", "@Body_StartSteps@4")
+extern "C" void FUN_4fb470(); KING_ALIAS("_FUN_4fb470", "@Body_EndSteps@12")
+extern "C" void FUN_4fdc80(); KING_ALIAS("_FUN_4fdc80", "@Body_PlainStep@4")
+extern "C" void Sm_Check(); KING_ALIAS("_Sm_Check", "@Body_4fc8b0@8")
+extern "C" void Sm_Frame(); KING_ALIAS("_Sm_Frame", "@Body_PhysicsFrame@4")
+ASM_VAR(int, g_sm674460, $L_674460)
+ASM_VAR(float, g_sm64c450, $L_64c450)
+
+extern "C" {
+
+// [FUN_4fef20..$L_4ff139] body s: a pending skip (+10112) taken; without stepping (674460) or with one step its
+// plain step (4fdc80); else its state +9776: 0 starts (4f5820 decides +9772, -1 stays), > 0 steps on (4fc8b0)
+// or, when not stepping, sets its frame (4fca10) and wheel loads, < 0 ends (4fb470); the new state or 0
+int __fastcall Body_StateStep(BYTE* s)
+{
+    if (F(int, s, 10112))
+    {
+        F(int, s, 10112) = 0;
+        return 0;
+    }
+    if (!g_sm674460 || F(int, s, 9784) <= 1)
+    {
+        CallThis(FUN_4fdc80, s);
+        F(int, s, 9776) = 0;
+        return 0;
+    }
+    int st = F(int, s, 9776);
+    if (!st)
+    {
+        int r = CallThis<int>(FUN_4f5820, s);
+        F(int, s, 9772) = r;
+        if (r == -1)
+            return 0;
+        if (r)
+            CallThis(Pb_Prepare, s, 1);
+        return ++F(int, s, 9776);
+    }
+    if (st < 0)
+    {
+        CallThis(FUN_4fb470, s, 1);
+        CallThis(Sm_Frame, s);
+        F(int, s, 9776) = 0;
+        return 0;
+    }
+    if (F(int, s, 9772))
+    {
+        if (CallThis<int>(Sm_Check, s))
+            return ++F(int, s, 9776);
+        F(int, s, 9776) = -1;
+        return -1;
+    }
+    memcpy(s + 13240, &g_zeroVec, 12);
+    float L[12];
+    CallThis(Bp_4fca10, s, L);
+    memcpy(s + 16, L, 48);
+    Matrix t;
+    const float* inv = (const float*)memcpy(s + 2304, Matrix_Inverse(&t, (const Matrix*)(s + 16)), 48);
+    double ax = F(float, s, 76), ay = F(float, s, 80), az = F(float, s, 84);
+    float v[3] = {(float)((double)inv[3] * ay + (double)inv[6] * az + (double)inv[0] * ax),
+                  (float)((double)inv[4] * ay + (double)inv[7] * az + (double)inv[1] * ax),
+                  (float)((double)inv[5] * ay + (double)inv[8] * az + (double)inv[2] * ax)};
+    Vec3 q;
+    memcpy(s + 88, Vec3_DivComponents(&q, (const Vec3*)v, (const Vec3*)(s + 8008)), 12);
+    CallThis(Pb_Shares, s);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        if (F(WORD, s, 6564 + 2 * i))
+            F(int, s, 3360 + 4 * i) = 0;
+        else
+            F(float, s, 3360 + 4 * i) =
+                (float)((double)F(float, s, 9808 + 4 * i) * F(float, s, 9792) * g_sm64c450);
+    }
+    F(int, s, 9776) = 0;
+    CallThis(Sm_Frame, s);
+    F(int, s, 9776) = 0;
+    return 0;
+}
+
+} // extern "C"
+
+// === a body's frame and speeds rebuilt at the end of its steps (FUN_4fb470 with its tail $L_4fbb7e)
+
+ASM_PROC(FUN_4e41d9)
+extern "C" void Fe_Set(); KING_ALIAS("_Fe_Set", "@Vec3_SetThis@20")
+ASM_VAR(float, g_fe64c258, $L_64c258)
+ASM_VAR(float, g_fe64c304, $L_64c304)
+ASM_VAR(float, g_fe64c264, $L_64c264)
+ASM_VAR(float, g_fe64c250, $L_64c250)
+ASM_VAR(double, g_fe64b5b8, $L_64b5b8)
+ASM_VAR(double, g_fe64d318, $L_64d318)
+ASM_VAR(double, g_fe64b6e0, $L_64b6e0)
+ASM_VAR(double, g_fe64b780, $L_64b780)
+ASM_VAR(char, g_feName, $L_6747a8)
+
+// a x b through the asm's SetThis
+static void Fe_Cross(float* out, const float* a, const float* b)
+{
+    CallThis(Fe_Set, out, (float)((double)a[1] * b[2] - (double)a[2] * b[1]),
+             (float)((double)a[2] * b[0] - (double)a[0] * b[2]), (float)((double)a[0] * b[1] - (double)a[1] * b[0]));
+}
+
+extern "C" {
+
+// [FUN_4fb470..$L_4fbb7e] body s after its steps (while its step count +15372 is below +9520 its frame +8868
+// rebuilt from the steps' mean motion +9048 / +9012 first): unless `keep`, with two or more wheels free its spin
+// turned towards upright about the ground normal (+208) and its roll and pitch eased (+9500) towards level; then
+// its world frame (+16), inverse (+2304), speeds (+64, +76, +88), acceleration (+13240) and wheel points set
+void __fastcall Body_EndSteps(BYTE* s, void*, int keep)
+{
+    if (F(int, s, 15372) < F(int, s, 9520))
+    {
+        double hx = (double)F(float, s, 9060) * g_fe64c258;
+        float hy = (float)((double)F(float, s, 9064) * g_fe64c258), hz = (float)((double)F(float, s, 9068) * g_fe64c258);
+        float e[3] = {(float)(F(float, s, 9048) - hx), (float)((double)F(float, s, 9052) - hy),
+                      (float)((double)F(float, s, 9056) - hz)};
+        float k = F(float, s, 9512);
+        float v[3] = {(float)((double)e[0] * k), (float)((double)e[1] * k), (float)((double)e[2] * k)};
+        float roll = (float)Vec3_Length((const Vec3*)v);
+        Matrix A, T, AB, R;
+        memcpy(s + 9700, Matrix_LookAt(&A, g_zeroVec, *(const Vec3*)e, roll), 48);
+        double t0 = (double)F(float, s, 9012) + F(float, s, 2580);
+        float t1 = (float)((double)F(float, s, 9016) + F(float, s, 2584));
+        float t2 = (float)((double)F(float, s, 9020) + F(float, s, 2588));
+        Vec3 tv = {(float)(t0 * k), (float)((double)t1 * k), (float)((double)t2 * k)};
+        Matrix_Translation(&T, tv);
+        Matrix_Multiply(&AB, (const Matrix*)(s + 9700), (const Matrix*)(s + 8916));
+        memcpy(s + 8868, Matrix_Multiply(&R, &AB, &T), 48);
+        const float* inv = (const float*)memcpy(s + 8964, Matrix_Inverse(&R, (const Matrix*)(s + 8868)), 48);
+        const float* n = &F(float, s, 208);
+        float* a = &F(float, s, 9624);
+        a[0] = (float)((double)inv[3] * n[1] + (double)inv[6] * n[2] + (double)n[0] * inv[0]);
+        a[1] = (float)((double)inv[4] * n[1] + (double)inv[1] * n[0] + (double)inv[7] * n[2]);
+        a[2] = (float)((double)inv[5] * n[1] + (double)inv[2] * n[0] + (double)inv[8] * n[2]);
+        const float* w = &F(float, s, 9024);
+        float* b = &F(float, s, 9036);
+        b[0] = (float)((double)inv[3] * w[1] + (double)inv[6] * w[2] + (double)w[0] * inv[0]);
+        b[1] = (float)((double)inv[4] * w[1] + (double)inv[1] * w[0] + (double)inv[7] * w[2]);
+        b[2] = (float)((double)inv[5] * w[1] + (double)inv[2] * w[0] + (double)inv[8] * w[2]);
+        Vec3 q;
+        memcpy(s + 9048, Vec3_DivComponents(&q, (const Vec3*)b, (const Vec3*)(s + 8008)), 12);
+    }
+    if (!keep && F(int, s, 3540) > 0)
+    {
+        int nfree = 0;
+        for (int i = 0; i < F(int, s, 3540); i++)
+            nfree += !F(WORD, s, 6564 + 2 * i);
+        if (nfree > 1)
+        {
+            const float* n = &F(float, s, 208);
+            float* w = &F(float, s, 9012);
+            double dot = (double)w[2] * n[2] + (double)w[1] * n[1] + (double)n[0] * w[0];
+            if (x87_fabs(dot) > g_fe64b5b8)
+            {
+                float sg = dot > g_fe64c264 ? 1.0f : -1.0f;
+                double c0 = (double)w[2] * n[1] - (double)n[2] * w[1];
+                double c1 = (double)n[2] * w[0] - (double)w[2] * n[0];
+                double c2 = (double)w[1] * n[0] - (double)w[0] * n[1];
+                float d0 = (float)(c1 * n[2] - c2 * n[1]);
+                float d1 = (float)(c2 * n[0] - c0 * n[2]);
+                double d2 = c0 * n[1] - c1 * n[0];
+                double m0 = (double)n[0] * g_fe64c304;
+                float m1 = (float)((double)n[1] * g_fe64c304), m2 = (float)((double)n[2] * g_fe64c304);
+                float m1s = (float)((double)m1 * sg), m2s = (float)((double)m2 * sg);
+                w[0] = (float)(m0 * sg + d0);
+                w[1] = (float)((double)d1 + m1s);
+                w[2] = (float)(d2 + m2s);
+            }
+            const float* M = &F(float, s, 8868);
+            const float* y = &g_axisY.x;
+            float u[3], a1[3], b[3];
+            CallThis(Fe_Set, u, (float)((double)y[2] * M[6] + (double)y[1] * M[3] + (double)y[0] * M[0]),
+                     (float)((double)y[2] * M[7] + (double)y[1] * M[4] + (double)y[0] * M[1]),
+                     (float)((double)y[2] * M[8] + (double)y[1] * M[5] + (double)y[0] * M[2]));
+            Fe_Cross(a1, n, u);
+            Fe_Cross(b, a1, n);
+            Vec3 zz;
+            Vec3_RotateBy(&zz, &g_axisZ, (const Matrix*)M);
+            if (zz.z > g_fe64d318)
+            {
+                double ang6[6];
+                CallC(Bp_ToAngles, *(BpMat*)M, &ang6[0], &ang6[1], &ang6[2], &ang6[3], &ang6[4], &ang6[5]);
+                ang6[3] = CallC<double>(FUN_4e41d9, (float)ang6[3], &g_feName);
+                float yaw = (float)x87_atan2(-(double)b[0], (double)b[1]);
+                int sgn = -1;
+                if (!((double)b[2] * g_axisZ.z + (double)b[1] * g_axisZ.y + (double)b[0] * g_axisZ.x > g_fe64c264))
+                    sgn = 1;
+                float p = (float)x87_pow(g_fe64b6e0, F(float, s, 9500) * g_fe64b780);
+                double qq = (double)g_fe64c250 - p;
+                float qf = (float)qq;
+                ang6[3] = qq * yaw + p * ang6[3];
+                ang6[4] = x87_acos(F(float, s, 216)) * sgn * qf + p * ang6[4];
+                ang6[5] = p * ang6[5];
+                float mc[12];
+                memcpy(s + 8868, CallC<void*>(Pb_Compose, mc, ang6), 48);
+            }
+        }
+    }
+    memcpy(s + 64, s + 9012, 12);
+    Matrix W, Wi;
+    memcpy(s + 16, Matrix_Multiply(&W, (const Matrix*)(s + 8868), (const Matrix*)(s + 8772)), 48);
+    memcpy(s + 2304, Matrix_Inverse(&Wi, (const Matrix*)(s + 16)), 48);
+    float dv[3];
+    CallThis(Fe_Set, dv, (float)((double)F(float, s, 88) - F(float, s, 9048)),
+             (float)((double)F(float, s, 92) - F(float, s, 9052)), (float)((double)F(float, s, 96) - F(float, s, 9056)));
+    float acc[3];
+    memcpy(s + 13240, Vec3_DivScalar(acc, dv, (float)Game_FrameTime()), 12);
+    memcpy(s + 88, s + 9048, 12);
+    memcpy(s + 76, s + 9024, 12);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        F(int, s, 3544 + 4 * i) = F(int, s, 9244 + 4 * i);
+        Vec3 p;
+        memcpy(s + 100 + 12 * i, Vec3_MulMatrix(&p, (const Vec3*)(s + 9528 + 12 * i), (const Matrix*)(s + 8772)), 12);
+        if (F(WORD, s, 6564 + 2 * i))
+            F(int, s, 3360 + 4 * i) = 0;
+        else
+            F(float, s, 3360 + 4 * i) = (float)x87_fabs(F(float, s, 8740 + 4 * i));
+        F(float, s, 9808 + 4 * i) =
+            (float)(x87_fabs(F(float, s, 8740 + 4 * i)) / ((double)F(float, s, 9788) * F(float, s, 9792)));
+    }
+}
+
+} // extern "C"
+
+// === a body's new frame from its supports or its free motion (FUN_4fca10 with its tail $L_4fdb50)
+
+extern "C" void Bf_Set(); KING_ALIAS("_Bf_Set", "@Vec3_SetThis@20")
+extern "C" void Bf_SubAssign(); KING_ALIAS("_Bf_SubAssign", "@Vec3_SubAssign@16")
+extern "C" void Bf_Pose(); KING_ALIAS("_Bf_Pose", "_Matrix_FromPose")
+extern "C" void Bf_Reject(); KING_ALIAS("_Bf_Reject", "_Vec3_RejectFrom")
+ASM_VAR(float, g_bf674458, $L_674458)
+ASM_VAR(float, g_bf67445c, $L_67445c)
+ASM_VAR(float, g_bf64c250, $L_64c250)
+ASM_VAR(float, g_bf64c258, $L_64c258)
+ASM_VAR(float, g_bf64c264, $L_64c264)
+ASM_VAR(float, g_bf64c450, $L_64c450)
+ASM_VAR(float, g_bf64da28, $L_64da28)
+ASM_VAR(float, g_bf64d2f8, $L_64d2f8)
+ASM_VAR(double, g_bf64b738, $L_64b738)
+ASM_VAR(double, g_bf64d318, $L_64d318)
+ASM_VAR(double, g_bf64d900, $L_64d900)
+ASM_VAR(double, g_bf64da20, $L_64da20)
+ASM_VAR(double, g_bf64da18, $L_64da18)
+ASM_VAR(double, g_bf64b5a0, $L_64b5a0)
+ASM_VAR(double, g_bf64b840, $L_64b840)
+
+static void Bf_SetV(float* o, double x, double y, double z)
+{
+    CallThis(Bf_Set, o, (float)x, (float)y, (float)z);
+}
+
+// a + b of two float triples as SetThis stores it
+static void Bf_AddV(float* o, const float* a, const float* b)
+{
+    Bf_SetV(o, (double)a[0] + b[0], (double)a[1] + b[1], (double)a[2] + b[2]);
+}
+
+// the x axis of frame M
+static void Bf_XAxis(float* o, const float* M)
+{
+    const float* a = &g_axisX.x;
+    Bf_SetV(o, (double)a[2] * M[6] + (double)a[1] * M[3] + (double)a[0] * M[0],
+            (double)a[2] * M[7] + (double)a[1] * M[4] + (double)a[0] * M[1],
+            (double)a[2] * M[8] + (double)a[1] * M[5] + (double)a[0] * M[2]);
+}
+
+// the smaller and the larger of two support loads
+static void Bf_Pair(BYTE* s, int a, int b, float* lo, float* hi)
+{
+    float x = F(float, s, a), y = F(float, s, b);
+    *lo = y < x ? y : x;
+    *hi = x < y ? y : x;
+}
+
+// the midpoint of the contact points at +p and +q (x unrounded before the half, b keeps all three unrounded)
+static void Bf_Mid(BYTE* s, int p, int q, float* m)
+{
+    double x = (double)F(float, s, p) + F(float, s, q);
+    float y = (float)((double)F(float, s, p + 4) + F(float, s, q + 4));
+    float z = (float)((double)F(float, s, p + 8) + F(float, s, q + 8));
+    m[0] = (float)(x * g_bf64c258);
+    m[1] = (float)((double)y * g_bf64c258);
+    m[2] = (float)((double)z * g_bf64c258);
+}
+
+// the centroid of three contact points (+a + +b, then + +c, times 1/3)
+static void Bf_Centroid(BYTE* s, int a, int b, int c, float* m)
+{
+    float A[3], B[3];
+    Bf_SetV(A, (double)F(float, s, a) + F(float, s, b), (double)F(float, s, a + 4) + F(float, s, b + 4),
+            (double)F(float, s, a + 8) + F(float, s, b + 8));
+    Bf_AddV(B, A, &F(float, s, c));
+    Bf_SetV(m, (double)B[0] * g_bf64da28, (double)B[1] * g_bf64da28, (double)B[2] * g_bf64da28);
+}
+
+extern "C" {
+
+// [FUN_4fca10..$L_4fdb50] body s's next frame into out: unchanged when held (+6580); standing on its wheels
+// (+6586 with load +3640 >= 1) turned about the wheels' mean point by the support case (pairs +6581 .. +6584,
+// single wheels +6564 ..) and lifted by the axle, then moved by its speed; otherwise free, its yaw from +2604 /
+// +2608 and its roll and pitch eased towards the motion (+3180 .. +3400), its center kept on the ground plane
+void __fastcall Body_NextFrame(BYTE* s, void*, float* out)
+{
+    float res[12];
+    memcpy(res, s + 16, 48);
+    const float* M = &F(float, s, 16);
+    float n[3], c[3];
+    memcpy(n, s + 208, 12);
+    memcpy(c, s + 8724, 12);
+    float dt = (float)Game_FrameTime();
+    if (F(BYTE, s, 6580))
+    {
+        memcpy(out, res, 48);
+        return;
+    }
+    float tmp[3];
+    if (F(BYTE, s, 6586) && !(F(float, s, 3640) < g_bf64c250))
+    {
+        float m[3], v[3];
+        memcpy(m, n, 12);
+        memcpy(v, &g_zeroVec, 12);
+        memcpy(c, &g_zeroVec, 12);
+        float k1 = 0, k2 = 0, sum = 0;
+        for (int i = 0; i < F(int, s, 3540); i++)
+        {
+            double t = F(float, s, 7028 + 4 * i);
+            float ax = (float)(t * g_axisZ.x), ay = (float)(t * g_axisZ.y);
+            const float* w = &F(float, s, 7356 + 12 * i);
+            float p[3] = {(float)((double)w[0] - ax), (float)((double)w[1] - ay), (float)(w[2] - t * g_axisZ.z)};
+            CallThis(Pb_AddAssign, c, tmp, p);
+            sum = (float)((double)sum + F(float, s, 8060 + 4 * i));
+        }
+        sum = (float)(sum * g_bf64b738);
+        CallThis(Pb_MulAssign, c, tmp, 0.25f);
+        const float* g = &F(float, s, 2616);
+        if (F(BYTE, s, 6581))
+        {
+            Bf_Pair(s, 3608, 3612, &k1, &k2);
+            Bf_Mid(s, 756, 1004, m);
+            memcpy(v, g, 12);
+        }
+        else if (F(BYTE, s, 6582))
+        {
+            Bf_Pair(s, 3608, 3616, &k1, &k2);
+            Bf_Mid(s, 508, 1004, m);
+            v[0] = (float)((double)m[1] * g[2] - (double)m[2] * g[1]);
+            v[1] = (float)((double)m[2] * g[0] - (double)m[0] * g[2]);
+            v[2] = (float)((double)m[0] * g[1] - (double)m[1] * g[0]);
+        }
+        else if (F(BYTE, s, 6584))
+        {
+            Bf_Pair(s, 3612, 3620, &k1, &k2);
+            Bf_Mid(s, 260, 756, m);
+            v[0] = (float)((double)m[2] * g[1] - (double)m[1] * g[2]);
+            v[1] = (float)((double)m[0] * g[2] - (double)m[2] * g[0]);
+            v[2] = (float)((double)m[1] * g[0] - (double)m[0] * g[1]);
+        }
+        else if (F(BYTE, s, 6583))
+        {
+            Bf_Pair(s, 3616, 3620, &k1, &k2);
+            v[0] = -g[0];
+            v[1] = -g[1];
+            v[2] = -g[2];
+            double x = (double)F(float, s, 260) + F(float, s, 508);
+            double y = (double)F(float, s, 264) + F(float, s, 512);
+            double z = (double)F(float, s, 268) + F(float, s, 516);
+            Bf_SetV(m, x * g_bf64c258, y * g_bf64c258, z * g_bf64c258);
+        }
+        else if (F(WORD, s, 6564))
+        {
+            k1 = k2 = F(float, s, 3608);
+            Bf_Centroid(s, 508, 756, 1004, m);
+            float X[3];
+            Bf_XAxis(X, M);
+            Bf_SetV(v, (double)g[0] - X[0], (double)g[1] - X[1], (double)g[2] - X[2]);
+        }
+        else if (F(WORD, s, 6566))
+        {
+            k1 = k2 = F(float, s, 3612);
+            float X[3];
+            Bf_XAxis(X, M);
+            Bf_AddV(v, X, g);
+            Bf_Centroid(s, 260, 756, 1004, m);
+        }
+        else if (F(WORD, s, 6568) || F(WORD, s, 6570))
+        {
+            bool h = !F(WORD, s, 6568);
+            k1 = k2 = F(float, s, h ? 3620 : 3616);
+            float X[3], N[3];
+            Bf_XAxis(X, M);
+            Bf_SetV(N, -(double)g[0], -(double)g[1], -(double)g[2]);
+            Bf_SetV(v, (double)N[0] - X[0], (double)N[1] - X[1], (double)N[2] - X[2]);
+            float A[3], B[3];
+            if (!h)
+            {
+                Bf_SetV(A, (double)F(float, s, 508) + F(float, s, 260), (double)F(float, s, 512) + F(float, s, 264),
+                        (double)F(float, s, 516) + F(float, s, 268));
+                Bf_AddV(B, A, &F(float, s, 1004));
+            }
+            else
+            {
+                Bf_SetV(A, (double)F(float, s, 756) + F(float, s, 508), (double)F(float, s, 512) + F(float, s, 760),
+                        (double)F(float, s, 516) + F(float, s, 764));
+                Bf_AddV(B, A, &F(float, s, 260));
+            }
+            Bf_SetV(m, (double)B[0] * g_bf64da28, (double)B[1] * g_bf64da28, (double)B[2] * g_bf64da28);
+        }
+        k1 = (float)((double)k1 - sum);
+        if (k1 < g_bf64c264)
+            k1 = 0;
+        else if (k1 > g_bf64c250)
+            k1 = 1.0f;
+        if (k2 < g_bf64c264)
+            k2 = 0;
+        else if (k2 > g_bf64c250)
+            k2 = 1.0f;
+        Vec3 C, R, t1;
+        Vec3_Cross(&C, (const Vec3*)m, (const Vec3*)v);
+        Vec3_RotateBy(&R, &C, (const Matrix*)(s + 2304));
+        CallThis(Pb_MulAssign, v, &t1, (float)((double)k1 * dt * g_bf64c450));
+        float k3 = (float)(dt * g_bf64d318);
+        CallThis(Bf_SubAssign, v, tmp, Vec3_Scaled(&t1, (const Vec3*)m, k3));
+        if (!(v[2] <= g_bf64c264))
+            v[2] = 0;
+        if (F(float, s, 3520) < g_bf64c450)
+            memcpy(s + 64, Vec3_Add(&t1, (const Vec3*)(s + 2568), (const Vec3*)v), 12);
+        CallThis(Bf_SubAssign, v, tmp, Vec3_Scaled(&t1, (const Vec3*)m, k3));
+        float lift = F(float, s, 3640) < g_bf64d2f8 ? (float)((double)g_bf674458 * g_bf64d2f8) : g_bf674458;
+        Matrix T, L, LM, W;
+        Matrix_Translation(&T, *Vec3_Scaled(&t1, (const Vec3*)v, dt));
+        float roll = (float)((double)lift * k2 * dt * g_bf64d900);
+        Matrix_LookAt(&L, *(const Vec3*)c, R, roll);
+        Matrix_Multiply(&LM, &L, (const Matrix*)M);
+        memcpy(res, Matrix_Multiply(&W, &LM, &T), 48);
+    }
+    else
+    {
+        Vec3 a, u, q1, q, f, nq;
+        Vec3_Add(&a, (const Vec3*)(s + 3180), (const Vec3*)(s + 3192));
+        Vec3_DivScalar(&u.x, &a.x, F(float, s, 9792));
+        Vec3_Scaled(&a, (const Vec3*)n, F(float, s, 3400));
+        Vec3_Sub(&q1, (const Vec3*)(s + 3392), &a);
+        Vec3_Sub(&q, &q1, &u);
+        Vec3_Cross(&nq, (const Vec3*)n, &q);
+        Vec3_Cross(&f, &nq, (const Vec3*)n);
+        const float* g = &F(float, s, 2616);
+        float w[3];
+        memcpy(w, g, 12);
+        double lf = Vec3_Length(&f);
+        float lff = (float)lf;
+        double kd = lf * g_bf64da20;
+        float k = (float)kd;
+        if (kd > g_bf64da18)
+            *(int*)&k = 1026698510;
+        if (lf > g_bf64b5a0)
+        {
+            Vec3 d;
+            memcpy(w, Vec3_DivScalar(&d.x, &f.x, lff), 12);
+        }
+        float tilt = (float)(Vec3_Dot((const Vec3*)g, (const Vec3*)w) * k * g_bf64b840);
+        Vec3 X, P, Q;
+        Vec3_RotateBy(&X, &g_axisX, (const Matrix*)M);
+        Vec3_Cross(&P, (const Vec3*)n, &X);
+        Vec3_Cross(&Q, &P, (const Vec3*)n);
+        float roll = (float)(Vec3_Dot(&Q, (const Vec3*)w) * k);
+        float pitch0 = (float)-x87_asin(g[2]);
+        Vec3 cz;
+        float roll0 = (float)-x87_asin(Vec3_Cross(&cz, (const Vec3*)g, (const Vec3*)n)->z);
+        float yaw = (float)-x87_atan2(F(float, s, 2604), F(float, s, 2608));
+        double an[6];
+        CallC(Bp_ToAngles, *(const BpMat*)M, &an[0], &an[1], &an[2], &an[3], &an[4], &an[5]);
+        double p = x87_pow(g_bf67445c, (double)dt * g_bf64c450);
+        double qq = g_bf64c250 - p;
+        an[4] = ((double)pitch0 + tilt) * qq + p * an[4];
+        an[5] = ((double)roll0 + roll) * qq + p * an[5];
+        Vec3 r, sn;
+        memcpy(c, CallC<float*>(Bf_Reject, &r, s + 8724, n, s + 52), 12);
+        CallThis(Pb_AddAssign, c, tmp, Vec3_Scaled(&sn, (const Vec3*)n, F(float, s, 8736)));
+        float W[12];
+        memcpy(res, CallC<float*>(Bf_Pose, W, (double)c[0], (double)c[1], (double)c[2], (double)yaw, an[4], an[5]),
+               48);
+    }
+    memcpy(out, res, 48);
+}
+
+} // extern "C"
+
+// === a body's plain frame without sub-steps (FUN_4fdc80 with its tail $L_4fe18e)
+
+ASM_PROC(FUN_500850)
+ASM_PROC(FUN_4f35f0)
+extern "C" void Ps_Check(); KING_ALIAS("_Ps_Check", "_World_CheckPoint")
+extern "C" void Ps_Damage(); KING_ALIAS("_Ps_Damage", "@Car_CheckDamage@8")
+extern "C" void Ps_Ground(); KING_ALIAS("_Ps_Ground", "@Car_PlaceOnGround@12")
+extern "C" void Pls_Query(); KING_ALIAS("_Pls_Query", "_Query_4e5b22")
+extern "C" void Ps_Nop(); KING_ALIAS("_Ps_Nop", "_Fw_Nop")
+ASM_VAR(int, g_ps697670, $L_697670)
+ASM_VAR(char, g_psCheck1, $L_6747f0)
+ASM_VAR(char, g_psCheck2, $L_6747e0)
+ASM_VAR(char, g_psCheck3, $L_6747d0)
+ASM_VAR(char, g_psCheck4, $L_6747c0)
+ASM_VAR(float, g_ps64c264, $L_64c264)
+ASM_VAR(float, g_ps64c258, $L_64c258)
+ASM_VAR(float, g_ps64c408, $L_64c408)
+ASM_VAR(double, g_ps64b678, $L_64b678)
+ASM_VAR(double, g_ps64b898, $L_64b898)
+ASM_VAR(double, g_ps64b5b8, $L_64b5b8)
+
+// p through the rotation and place of frame m (+0 .. +44): the asm's per-row order for the wheel points
+static void Ps_Inv(const float* m, const float* p, float* o)
+{
+    o[0] = (float)((double)m[6] * p[2] + (double)p[0] * m[0] + (double)p[1] * m[3] + m[9]);
+    o[1] = (float)((double)p[0] * m[1] + (double)m[7] * p[2] + (double)p[1] * m[4] + m[10]);
+    o[2] = (float)((double)p[1] * m[5] + (double)p[0] * m[2] + (double)p[2] * m[8] + m[11]);
+}
+
+// v minus its part along n, as (n x v) x n with the asm's rounding (n x v unrounded)
+static void Ps_Tangent(const float* v, const float* n, float* o)
+{
+    double c0 = (double)v[2] * n[1] - (double)n[2] * v[1];
+    double c1 = (double)n[2] * v[0] - (double)n[0] * v[2];
+    double c2 = (double)n[0] * v[1] - (double)v[0] * n[1];
+    o[0] = (float)(c1 * n[2] - c2 * n[1]);
+    o[1] = (float)(c2 * n[0] - c0 * n[2]);
+    double z = c0 * n[1] - c1 * n[0];
+    o[2] = (float)z;
+}
+
+extern "C" {
+
+// [FUN_4fdc80..$L_4fe18e] body s for one frame without sub-steps: checks and damage, wheel points in its own
+// frame, the steering turn and its sideways push, the forces of its contacts (+10176 points) and wheels summed
+// (+3180) into its speed (+64), sliding along the ground or snapping to the steering direction, its new frame
+// from the turn and the speed then from its supports (Body_NextFrame), its angles stepped; when tipped its loads
+// reset, else its contacts cleared
+void __fastcall Body_PlainStep(BYTE* s)
+{
+    float* vel = &F(float, s, 64);
+    CallC(Ps_Check, vel, &g_psCheck1, 150.0f);
+    float dt = (float)Game_FrameTime();
+    F(float, s, 15316) = (float)(Game_Time() - F(float, s, 6112));
+    CallThis(Ps_Damage, s);
+    CallThis(FUN_500850, s);
+    F(int, s, 15492) = 0;
+    F(int, s, 15448) = 0;
+    memcpy(s + 15452, &g_zeroVec, 12);
+    F(int, s, 15496) = 0;
+    {
+        double f = F(float, s, 9792);
+        F(float, s, 3156) = (float)(f * F(float, s, 3392));
+        F(float, s, 3160) = (float)(f * F(float, s, 3396));
+        F(float, s, 3164) = (float)(f * F(float, s, 3400));
+    }
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        F(int, s, 3644 + 4 * i) = 0;
+        F(int, s, 15248 + 4 * i) = 0;
+        F(int, s, 3708 + 4 * i) = 0;
+        F(int, s, 3676 + 4 * i) = 0;
+    }
+    if (F(WORD, s, 10056))
+    {
+        F(int, s, 13124) = 0;
+        F(WORD, s, 10056) = 0;
+        F(int, s, 10012) = 0;
+        F(int, s, 10720) = 0;
+        F(int, s, 10016) = 0;
+        F(int, s, 10716) = 0;
+        F(int, s, 10712) = 0x3D4CCCCD;
+        F(int, s, 10728) = 0;
+        CallThis(Pb_EngReset, s + 9984);
+    }
+    Body_SaveAll(s, 0);
+    Body_UpdateContacts(s, 0);
+    const float* inv = &F(float, s, 2304);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        F(int, s, 3328 + 4 * i) = 0;
+        memcpy(s + 8436 + 12 * i, &g_zeroVec, 12);
+        Ps_Inv(inv, &F(float, s, 100 + 12 * i), &F(float, s, 6212 + 12 * i));
+        F(BYTE, s, 6595 + i) = 0;
+    }
+    const float* n = &F(float, s, 208);
+    {
+        float* o = &F(float, s, 4104);
+        o[0] = (float)((double)inv[3] * n[1] + (double)inv[6] * n[2] + (double)n[0] * inv[0]);
+        o[1] = (float)((double)inv[4] * n[1] + (double)inv[1] * n[0] + (double)inv[7] * n[2]);
+        o[2] = (float)((double)inv[5] * n[1] + (double)inv[2] * n[0] + (double)inv[8] * n[2]);
+    }
+    float steer = (float)Body_SteerAngle(s, 0);
+    F(float, s, 6688) = steer;
+    Matrix Rz;
+    Matrix_RotationZ(&Rz, steer);
+    Body_4f2630(s, 0, (int)&Rz);
+    Body_UpdateGrip(s, 0);
+    double sn = x87_sin(F(float, s, 6688));
+    float sinf_ = (float)sn;
+    double v = F(BYTE, s, 6581) ? (double)g_ps64c264 : x87_fabs(sn) / F(float, s, 8032);
+    double sp = x87_fabs(F(float, s, 3528));
+    double vs = v * sp;
+    float vsf = (float)vs;
+    float vs2 = (float)(vs * sp);
+    float sgn = 1.0f;
+    {
+        int a = sinf_ > g_ps64c264;
+        const float* g = &F(float, s, 2556);
+        double d = (double)g[2] * F(float, s, 2612) + (double)g[1] * F(float, s, 2608) +
+                   (double)F(float, s, 2604) * g[0];
+        int b = d > g_ps64b678;
+        if (a != b)
+            sgn = -1.0f;
+        double w = v * ((double)sgn * F(float, s, 3524));
+        F(float, s, 3108) = (float)(w * n[0]);
+        F(float, s, 3112) = (float)(w * n[1]);
+        F(float, s, 3116) = (float)(w * n[2]);
+        double c0 = (double)n[1] * g[2] - (double)g[1] * n[2];
+        float c1 = (float)((double)g[0] * n[2] - (double)n[0] * g[2]);
+        float c2 = (float)((double)g[1] * n[0] - (double)g[0] * n[1]);
+        float k = (float)((double)sgn * F(float, s, 9792) * vs2);
+        float e[3] = {(float)(c0 * k), (float)((double)c1 * k), (float)((double)c2 * k)};
+        const float* R = Rz.m;
+        float* o = &F(float, s, 3192);
+        o[0] = (float)((double)R[0] * e[0] + (double)R[6] * e[2] + (double)R[3] * e[1]);
+        o[1] = (float)((double)R[1] * e[0] + (double)R[7] * e[2] + (double)R[4] * e[1]);
+        o[2] = (float)((double)R[2] * e[0] + (double)R[8] * e[2] + (double)R[5] * e[1]);
+    }
+    CallThis(FUN_4f35f0, s);
+
+    float A[3];
+    memcpy(A, &g_zeroVec, 12);
+    float tmp[3];
+    for (int i = 0; i < F(int, s, 10176); i++)
+        CallThis(Pb_AddAssign, A, tmp, s + 10244 + 12 * i);
+    memcpy(s + 3180, &g_zeroVec, 12);
+    memcpy(s + 3264, &g_zeroVec, 12);
+    int touch = 0;
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        bool free = !F(WORD, s, 6564 + 2 * i);
+        if (touch || !free)
+            touch = 1;
+        float fa[3], fb[3];
+        memcpy(fa, &g_zeroVec, 12);
+        memcpy(fb, &g_zeroVec, 12);
+        if (free)
+        {
+            memcpy(fa, s + 8628 + 12 * i, 12);
+            memcpy(fb, s + 3848 + 12 * i, 12);
+        }
+        float t[3] = {(float)((double)fb[0] + fa[0]), (float)((double)fb[1] + fa[1]), (float)((double)fb[2] + fa[2])};
+        CallThis(Pb_AddAssign, s + 3180, tmp, t);
+        if (free)
+        {
+            const float* a = &F(float, s, 8340 + 12 * i);
+            const float* r = &F(float, s, 260 + 248 * i);
+            double c0 = (double)a[2] * r[1] - (double)a[1] * r[2];
+            double c1 = (double)a[0] * r[2] - (double)a[2] * r[0];
+            double c2 = (double)a[1] * r[0] - (double)r[1] * a[0];
+            float* d = &F(float, s, 8244 + 12 * i);
+            d[0] = (float)(c1 * r[2] - c2 * r[1]);
+            d[1] = (float)(c2 * r[0] - c0 * r[2]);
+            d[2] = (float)(c0 * r[1] - c1 * r[0]);
+            CallThis(Pb_AddAssign, s + 3180, tmp, d);
+        }
+    }
+    {
+        const float* e = &F(float, s, 3192);
+        double m = F(float, s, 9792);
+        double x = (double)e[0] + F(float, s, 3180);
+        float y = (float)((double)F(float, s, 3184) + e[1]);
+        float z = (float)((double)F(float, s, 3188) + e[2]);
+        double ax = x / m;
+        float ay = (float)(y / m), az = (float)(z / m);
+        const float* w = &F(float, s, 3392);
+        F(float, s, 3416) = (float)(w[0] - ax);
+        F(float, s, 3420) = (float)((double)w[1] - ay);
+        F(float, s, 3424) = (float)((double)w[2] - az);
+    }
+    float u[3];
+    memcpy(u, s + 3392, 12);
+    if (!touch)
+    {
+        const float* w = &F(float, s, 3392);
+        double vn = (double)w[2] * n[2] + (double)w[1] * n[1] + (double)w[0] * n[0];
+        float nx = (float)(vn * n[0]), ny = (float)(vn * n[1]);
+        double nz = vn * n[2];
+        double c0 = (double)w[2] * n[1] - (double)n[2] * w[1];
+        double c1 = (double)n[2] * w[0] - (double)n[0] * w[2];
+        double c2 = (double)n[0] * w[1] - (double)w[0] * n[1];
+        float d0 = (float)(c1 * n[2] - c2 * n[1]);
+        float d1 = (float)(c2 * n[0] - c0 * n[2]);
+        double d2 = c0 * n[1] - c1 * n[0];
+        float h0 = (float)((double)d0 * g_ps64c258), h1 = (float)((double)d1 * g_ps64c258);
+        double h2 = d2 * g_ps64c258;
+        u[0] = (float)((double)h0 + nx);
+        u[1] = (float)((double)ny + h1);
+        u[2] = (float)(nz + h2);
+    }
+    {
+        double m2 = (double)F(float, s, 10124) + F(float, s, 9792);
+        double m = F(float, s, 9792);
+        float a0 = (float)(A[0] / m), a1 = (float)(A[1] / m), a2 = (float)(A[2] / m);
+        float f0 = (float)(F(float, s, 3180) / m2), f1 = (float)(F(float, s, 3184) / m2);
+        double f2 = F(float, s, 3188) / m2;
+        float b0 = (float)((double)u[0] + f0), b1 = (float)((double)f1 + u[1]);
+        double b2 = f2 + u[2];
+        float c0 = (float)((double)b0 + a0), c1 = (float)((double)a1 + b1);
+        double c2 = b2 + a2;
+        float dv[3] = {(float)((double)c0 * dt), (float)((double)c1 * dt), (float)(c2 * dt)};
+        CallThis(Pb_AddAssign, vel, tmp, dv);
+    }
+    CallC(Ps_Check, vel, &g_psCheck2, 150.0f);
+    if (!(touch && F(BYTE, s, 6581) && F(BYTE, s, 6583)))
+    {
+        float t[3];
+        Ps_Tangent(vel, n, t);
+        memcpy(vel, t, 12);
+        double len = Vec3_Length((const Vec3*)vel);
+        F(float, s, 3520) = (float)len;
+        double mx;
+        if (!F(BYTE, s, 6582) && !F(BYTE, s, 6584))
+            mx = (double)F(float, s, 8060) * g_ps64c258;
+        else
+        {
+            mx = g_ps64c264;
+            for (int i = 0; i < F(int, s, 3540); i++)
+                if (mx < F(float, s, 3608 + 4 * i))
+                    mx = F(float, s, 3608 + 4 * i);
+        }
+        if (!(F(float, s, 216) < g_ps64b898) && !(mx > (double)F(float, s, 8060) * g_ps64c408))
+        {
+            const float* g = &F(float, s, 2616);
+            double sg = 1.0;
+            if (!((double)vel[2] * g[2] + (double)vel[1] * g[1] + (double)g[0] * vel[0] > g_ps64b678))
+                sg = -1.0;
+            float q[3], r[3];
+            CallThis(Bf_Set, q, (float)(len * g[0]), (float)(len * g[1]), (float)(len * g[2]));
+            CallThis(Bf_Set, r, (float)(q[0] * sg), (float)(q[1] * sg), (float)(q[2] * sg));
+            memcpy(vel, r, 12);
+        }
+        else
+            F(float, s, 3520) = (float)Vec3_Length((const Vec3*)vel);
+        CallC(Ps_Check, vel, &g_psCheck3, 150.0f);
+        if (F(int, s, 6844) &&
+            (F(float, s, 3524) < g_ps64b5b8 || (double)vel[2] * F(float, s, 2576) + (double)vel[1] * F(float, s, 2572) +
+                                                       (double)vel[0] * F(float, s, 2568) < g_ps64b678))
+        {
+            CallThis(Pb_Restart, s);
+            memcpy(s + 3180, &g_zeroVec, 12);
+            memcpy(s + 2580, &g_zeroVec, 12);
+        }
+    }
+
+    Matrix Rm, a, b, c, T;
+    CallStd(Pb_ForEach, &Rm, 12, 4, Pb_Zero);
+    memcpy(&Rm, &g_identity, 48);
+    const Matrix* R;
+    if (F(BYTE, s, 6581))
+    {
+        Matrix_RotationY(&a, (float)((double)dt * F(float, s, 92)));
+        Matrix_RotationX(&b, (float)((double)dt * F(float, s, 88)));
+        Matrix_RotationZ(&c, (float)((double)dt * F(float, s, 96)));
+        Matrix ab;
+        Matrix_Multiply(&ab, &c, &b);
+        R = Matrix_Multiply(&T, &ab, &a);
+    }
+    else
+    {
+        const float* w = &F(float, s, 3108);
+        float q[3];
+        CallThis(Bf_Set, q, (float)((double)inv[6] * w[2] + (double)inv[3] * w[1] + (double)w[0] * inv[0]),
+                 (float)((double)inv[1] * w[0] + (double)inv[7] * w[2] + (double)inv[4] * w[1]),
+                 (float)((double)inv[2] * w[0] + (double)inv[8] * w[2] + (double)inv[5] * w[1]));
+        memcpy(s + 88, q, 12);
+        Vec3 mc, rr;
+        Vec3_MulComponents(&mc, (const Vec3*)(s + 88), (const Vec3*)(s + 8008));
+        memcpy(s + 76, Vec3_RotateBy(&rr, &mc, (const Matrix*)(s + 16)), 12);
+        R = Matrix_RotationZ(&T, (float)((double)sgn * vsf * dt));
+    }
+    memcpy(&Rm, R, 48);
+    if (g_ps697670)
+    {
+        Matrix x, y;
+        int kb = 1043511490;
+        Matrix_RotationX(&x, *(float*)&kb);
+        memcpy(&Rm, Matrix_Multiply(&y, &Rm, &x), 48);
+    }
+    {
+        float d[3];
+        CallThis(Bf_Set, d, (float)((double)dt * vel[0]), (float)((double)dt * vel[1]), (float)((double)dt * vel[2]));
+        Matrix_Translation(&T, *(const Vec3*)d);
+        Matrix rm, w;
+        Matrix_Multiply(&rm, &Rm, (const Matrix*)(s + 16));
+        memcpy(s + 16, Matrix_Multiply(&w, &rm, &T), 48);
+    }
+    {
+        Vec3 y, p, q, nn;
+        memcpy(s + 2604, Vec3_RotateBy(&y, &g_axisY, (const Matrix*)(s + 16)), 12);
+        Vec3_Cross(&p, (const Vec3*)n, (const Vec3*)(s + 2604));
+        Vec3_Cross(&q, &p, (const Vec3*)n);
+        memcpy(s + 2616, Vec3_Normalized(&nn, &q), 12);
+    }
+    CallThis(Ps_Ground, s, s + 16);
+    float nf[12];
+    Body_NextFrame(s, 0, nf);
+    memcpy(s + 16, nf, 48);
+    {
+        Matrix iv;
+        Matrix_Inverse(&iv, (const Matrix*)(s + 16));
+        memcpy(s + 2304, &iv, 48);
+        Vec3 r, d;
+        Vec3_RotateBy(&r, (const Vec3*)(s + 76), &iv);
+        memcpy(s + 88, Vec3_DivComponents(&d, &r, (const Vec3*)(s + 8008)), 12);
+    }
+    memset(s + 15336, 0, 32);
+    F(int, s, 15368) = 0;
+    F(int, s, 15372) = 0;
+    double an[6];
+    CallC(Bp_ToAngles, *(const BpMat*)(s + 16), &an[0], &an[1], &an[2], &an[3], &an[4], &an[5]);
+    __declspec(align(8)) BYTE node[208];
+    CallThis(Pb_Node, node);
+    if (CallC<int>(Pls_Query, F(BYTE*, s, 6672), s + 2292, s + 52, node))
+        F(int, s, 244) = F(int, node, 104);
+    Body_UpdateContacts(s, 0);
+    CallThis(Pb_Step, s, an);
+    if (Body_IsTipped(s, 0))
+    {
+        for (int i = 0; i < F(int, s, 3540); i++)
+            F(int, s, 3544 + 4 * i) = F(int, s, 8092 + 4 * i);
+        F(int, s, 13124) = 1;
+        return;
+    }
+    CallThis(Ps_Nop, s);
+    for (int i = 0; i < F(int, s, 10176); i++)
+        memcpy(s + 10244 + 12 * i, &g_zeroVec, 12);
+    F(int, s, 10176) = 0;
+    CallC(Ps_Check, vel, &g_psCheck4, 150.0f);
+}
+
+} // extern "C"
+
+// === the first of a body's sub-steps (FUN_4f5820 with its tail $L_4f5c77)
+
+extern "C" void Ss_Items(); KING_ALIAS("_Ss_Items", "@Items_StepAll@8")
+extern "C" void Ss_Setting(); KING_ALIAS("_Ss_Setting", "@Car_SetSetting@16")
+extern "C" void Ss_Steering(); KING_ALIAS("_Ss_Steering", "@Steering_Update@8")
+extern "C" void Ss_Lean(); KING_ALIAS("_Ss_Lean", "@Body_SlopeLean@4")
+extern "C" void Ss_Tyres(); KING_ALIAS("_Ss_Tyres", "@Tyre_Forces@12")
+extern "C" void Ss_Mean30(); KING_ALIAS("_Ss_Mean30", "@Body_Mean1a30@8")
+extern "C" void Ss_Mean38(); KING_ALIAS("_Ss_Mean38", "@Body_Mean1a38@8")
+extern "C" void Ss_Forces(); KING_ALIAS("_Ss_Forces", "@Wheels_ForceTorque@16")
+extern "C" void Ss_Limit(); KING_ALIAS("_Ss_Limit", "@Body_LimitChange@28")
+extern "C" void Ss_ResetMotion(); KING_ALIAS("_Ss_ResetMotion", "@Body_ResetMotion@8")
+extern "C" void Ss_StepVectors(); KING_ALIAS("_Ss_StepVectors", "@Body_StepVectors@8")
+extern "C" void Ss_Slide(); KING_ALIAS("_Ss_Slide", "@Body_SlideMove@8")
+extern "C" void Ss_Ground(); KING_ALIAS("_Ss_Ground", "@Wheels_FindGround@4")
+extern "C" void Ss_floor(); KING_ALIAS("_Ss_floor", "_floor")
+ASM_VAR(float, g_ss674444, $L_674444)
+ASM_VAR(double, g_ss64da00, $L_64da00)
+ASM_VAR(double, g_ss64b5a0, $L_64b5a0)
+ASM_VAR(double, g_ss64d9f8, $L_64d9f8)
+ASM_VAR(double, g_ss64b670, $L_64b670)
+ASM_VAR(double, g_ss64b6e0, $L_64b6e0)
+ASM_VAR(float, g_ss64c258, $L_64c258)
+
+extern "C" {
+
+// [FUN_4f5820..$L_4f5c77] body s before its sub-steps: timers, settings fading (+9920), damage; -1 when settled
+// (+13124); wheel points and the ground normal in its own frame, the steering frame (+8196), tyre forces, the
+// wheels' force and torque limited per sub-step, sums of contact forces (+3180) and torques (+3264), the speed
+// and spin stepped, its frame turned about the ground contact point and moved; -1 when tipped, else 1
+int __fastcall Body_StartSteps(BYTE* s)
+{
+    float dt = (float)Game_FrameTime();
+    double gt = Game_Time();
+    float now = (float)gt;
+    F(float, s, 12) = (float)(gt - F(float, s, 8));
+    F(int, s, 15496) = 0;
+    if (F(int, s, 10116))
+        CallThis(Ss_Items, s + 8188);
+    F(float, s, 15316) = (float)(Game_Time() - F(float, s, 6112));
+    F(int, s, 15492) = 0;
+    F(int, s, 15448) = 0;
+    memcpy(s + 15452, &g_zeroVec, 12);
+    for (int i = 0; i < 8; i++)
+    {
+        if (!F(int, s, 9920 + 4 * i))
+            continue;
+        float t = F(float, s, 9952 + 4 * i);
+        if (!((double)g_ss674444 + t <= now))
+            CallThis(Ss_Setting, s, 3 + i, (float)(((double)now - t) / g_ss674444));
+        else
+        {
+            F(int, s, 9920 + 4 * i) = 0;
+            CallThis(Ss_Setting, s, 3 + i, 1.0f);
+        }
+    }
+    CallThis(Ps_Damage, s);
+    CallThis(FUN_500850, s);
+    if (F(int, s, 13124) && !F(WORD, s, 10056))
+        return -1;
+    {
+        double f = F(float, s, 9792);
+        F(float, s, 3156) = (float)(f * F(float, s, 3392));
+        F(float, s, 3160) = (float)(f * F(float, s, 3396));
+        F(float, s, 3164) = (float)(f * F(float, s, 3400));
+    }
+    if (F(WORD, s, 10056))
+    {
+        F(int, s, 13124) = 0;
+        F(WORD, s, 10056) = 0;
+        F(int, s, 10012) = 0;
+        F(int, s, 10720) = 0;
+        F(int, s, 10016) = 0;
+        F(int, s, 10716) = 0;
+        F(int, s, 10712) = 0x3D4CCCCD;
+        F(int, s, 10728) = 0;
+        CallThis(Pb_EngReset, s + 9984);
+    }
+    Body_SaveAll(s, 0);
+    Body_UpdateContacts(s, 0);
+    const float* m = &F(float, s, 2304);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        F(int, s, 3328 + 4 * i) = 0;
+        memcpy(s + 8436 + 12 * i, &g_zeroVec, 12);
+        const float* p = &F(float, s, 100 + 12 * i);
+        float* o = &F(float, s, 6212 + 12 * i);
+        o[0] = (float)((double)m[6] * p[2] + (double)m[0] * p[0] + (double)m[3] * p[1] + m[9]);
+        o[1] = (float)((double)p[2] * m[7] + (double)m[1] * p[0] + (double)m[4] * p[1] + m[10]);
+        o[2] = (float)((double)p[1] * m[5] + (double)p[2] * m[8] + (double)m[2] * p[0] + m[11]);
+        F(BYTE, s, 6595 + i) = 0;
+    }
+    const float* n = &F(float, s, 208);
+    {
+        float* o = &F(float, s, 4104);
+        o[0] = (float)((double)m[3] * n[1] + (double)m[6] * n[2] + (double)m[0] * n[0]);
+        o[1] = (float)((double)m[4] * n[1] + (double)m[7] * n[2] + (double)m[1] * n[0]);
+        o[2] = (float)((double)m[5] * n[1] + (double)m[8] * n[2] + (double)m[2] * n[0]);
+    }
+    F(float, s, 6688) = (float)Body_SteerAngle(s, 0);
+    CallThis(Ss_Steering, s);
+    {
+        Matrix L;
+        memcpy(s + 8196, Matrix_LookAt(&L, g_zeroVec, *(const Vec3*)n, F(float, s, 6688)), 48);
+    }
+    Body_4f2630(s, 0, (int)(s + 8196));
+    Body_UpdateGrip(s, 0);
+    CallThis(Ss_Lean, s);
+    F(int, s, 6676) = 0x47C35000;
+    if (x87_fabs(F(float, s, 6688) - g_ss64da00) > g_ss64b5a0)
+        F(float, s, 6676) = (float)(x87_sin(F(float, s, 6688)) / x87_cos(F(float, s, 6688)));
+    CallThis(Ss_Tyres, s, s + 3360);
+    F(float, s, 6696) = (float)CallThis<double>(Ss_Mean30, s);
+    F(float, s, 6700) = (float)CallThis<double>(Ss_Mean38, s);
+    CallThis(FUN_4f35f0, s);
+
+    float Fv[3], T[3], tmp[3];
+    memcpy(Fv, &g_zeroVec, 12);
+    memcpy(T, &g_zeroVec, 12);
+    CallThis(Ss_Forces, s, Fv, T);
+    {
+        double h = (double)dt / (CallC<double>(Ss_floor, F(float, s, 9500) * g_ss64d9f8) + g_ss64b670);
+        CallThis(Ss_Limit, s, Fv, T, s + 2544, s + 76, (float)h);
+    }
+    if (!F(BYTE, s, 6580))
+    {
+        float sum3[3];
+        memcpy(sum3, &g_zeroVec, 12);
+        float load = 0;
+        for (int i = 0; i < F(int, s, 3540); i++)
+        {
+            load = (float)((double)load + F(float, s, 6500 + 4 * i));
+            CallThis(Pb_AddAssign, sum3, tmp, s + 6308 + 12 * i);
+        }
+        float len = (float)Vec3_Length((const Vec3*)sum3);
+        if (F(int, s, 6844) && F(float, s, 3524) < g_ss64b6e0)
+        {
+            memcpy(Fv, &g_zeroVec, 12);
+            CallThis(Ss_ResetMotion, s);
+        }
+        if ((double)len + len < load && x87_fabs(F(float, s, 96)) < g_ss64b6e0)
+        {
+            memcpy(T, &g_zeroVec, 12);
+            CallThis(Ss_StepVectors, s);
+        }
+    }
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        float* a = &F(float, s, 8244 + 12 * i);
+        memcpy(a, s + 8340 + 12 * i, 12);
+        const float* r = &F(float, s, 260 + 248 * i);
+        double c0 = (double)r[1] * a[2] - (double)r[2] * a[1];
+        double c1 = (double)a[0] * r[2] - (double)r[0] * a[2];
+        double c2 = (double)a[1] * r[0] - (double)a[0] * r[1];
+        a[0] = (float)(c1 * r[2] - c2 * r[1]);
+        a[1] = (float)(c2 * r[0] - c0 * r[2]);
+        a[2] = (float)(c0 * r[1] - c1 * r[0]);
+    }
+    memcpy(s + 3228, &g_zeroVec, 12);
+    memcpy(s + 3300, &g_zeroVec, 12);
+    for (int i = 0; i < F(int, s, 3540); i++)
+    {
+        const float* v = &F(float, s, 8244 + 12 * i);
+        CallThis(Pb_AddAssign, s + 3228, tmp, v);
+        double x = (double)m[6] * v[2] + (double)m[0] * v[0] + (double)m[3] * v[1];
+        double y = (double)m[1] * v[0] + (double)m[7] * v[2] + (double)m[4] * v[1];
+        double z = (double)m[2] * v[0] + (double)v[2] * m[8] + (double)v[1] * m[5];
+        const float* w = &F(float, s, 6212 + 12 * i);
+        float t[3] = {(float)(z * w[1] - y * w[2]), (float)(x * w[2] - z * w[0]), (float)(y * w[0] - x * w[1])};
+        CallThis(Pb_AddAssign, s + 3300, tmp, t);
+    }
+    {
+        double ax = (double)Fv[0] + F(float, s, 3228);
+        float ay = (float)((double)Fv[1] + F(float, s, 3232)), az = (float)((double)Fv[2] + F(float, s, 3236));
+        double bx = ax + F(float, s, 3216);
+        float by = (float)((double)ay + F(float, s, 3220)), bz = (float)((double)az + F(float, s, 3224));
+        F(float, s, 3180) = (float)(bx + F(float, s, 3192));
+        F(float, s, 3184) = (float)((double)by + F(float, s, 3196));
+        F(float, s, 3188) = (float)((double)bz + F(float, s, 3200));
+        double cx = (double)T[0] + F(float, s, 3300);
+        float cy = (float)((double)T[1] + F(float, s, 3304)), cz = (float)((double)T[2] + F(float, s, 3308));
+        double dx = cx + F(float, s, 3288);
+        float dy = (float)((double)cy + F(float, s, 3292)), dz = (float)((double)cz + F(float, s, 3296));
+        F(float, s, 3264) = (float)(dx + F(float, s, 3276));
+        F(float, s, 3268) = (float)((double)dy + F(float, s, 3280));
+        F(float, s, 3272) = (float)((double)dz + F(float, s, 3284));
+    }
+    {
+        double ms = F(float, s, 9792);
+        float a0 = (float)(F(float, s, 3180) / ms), a1 = (float)(F(float, s, 3184) / ms);
+        double a2 = F(float, s, 3188) / ms;
+        float* d = &F(float, s, 3416);
+        d[0] = (float)((double)F(float, s, 3392) - a0);
+        d[1] = (float)((double)F(float, s, 3396) - a1);
+        d[2] = (float)(F(float, s, 3400) - a2);
+        F(float, s, 3452) = (float)Vec3_Length((const Vec3*)d);
+        double x = -(double)d[0], y = -(double)d[1], z = -(double)d[2];
+        double nd = n[0] * x + (z * n[2] + n[1] * y);
+        F(float, s, 9788) = (float)nd;
+        F(float, s, 3440) = (float)(nd * n[0]);
+        F(float, s, 3444) = (float)(nd * n[1]);
+        F(float, s, 3448) = (float)(nd * n[2]);
+    }
+    memcpy(s + 6652, &g_zeroVec, 12);
+    if (F(BYTE, s, 6595) && !F(BYTE, s, 6594))
+    {
+        double x = (double)F(float, s, 7368) + F(float, s, 7356);
+        float y = (float)((double)F(float, s, 7360) + F(float, s, 7372));
+        float z = (float)((double)F(float, s, 7364) + F(float, s, 7376));
+        F(float, s, 6652) = (float)(x * g_ss64c258);
+        F(float, s, 6656) = (float)((double)y * g_ss64c258);
+        F(float, s, 6660) = (float)((double)z * g_ss64c258);
+    }
+    F(int, s, 6660) = 0;
+    F(float, s, 3144) = (float)((double)F(float, s, 3156) + F(float, s, 3180));
+    F(float, s, 3148) = (float)((double)F(float, s, 3184) + F(float, s, 3160));
+    F(float, s, 3152) = (float)((double)F(float, s, 3188) + F(float, s, 3164));
+    memcpy(s + 2580, &g_zeroVec, 12);
+    {
+        double ms = F(float, s, 9792);
+        float a0 = (float)(F(float, s, 3180) / ms), a1 = (float)(F(float, s, 3184) / ms);
+        double a2 = F(float, s, 3188) / ms;
+        float dv[3] = {(float)((double)a0 * dt), (float)((double)a1 * dt), (float)(a2 * dt)};
+        CallThis(Pb_AddAssign, s + 64, tmp, dv);
+    }
+    memcpy(s + 3240, s + 3264, 12);
+    memcpy(s + 3120, &g_zeroVec, 12);
+    float t[3] = {(float)((double)dt * F(float, s, 3240)), (float)((double)dt * F(float, s, 3244)),
+                  (float)((double)dt * F(float, s, 3248))};
+    {
+        const float* w = &F(float, s, 76);
+        float r[3], q[3], o[3];
+        CallThis(Bf_Set, r, (float)((double)m[6] * w[2] + (double)m[3] * w[1] + (double)w[0] * m[0]),
+                 (float)((double)m[7] * w[2] + (double)m[4] * w[1] + (double)m[1] * w[0]),
+                 (float)((double)m[8] * w[2] + (double)m[5] * w[1] + (double)m[2] * w[0]));
+        CallThis(Bf_Set, q, (float)((double)r[0] + t[0]), (float)((double)t[1] + r[1]), (float)((double)t[2] + r[2]));
+        const float* M = &F(float, s, 16);
+        CallThis(Bf_Set, o, (float)((double)q[1] * M[3] + (double)q[2] * M[6] + (double)q[0] * M[0]),
+                 (float)((double)q[1] * M[4] + (double)q[2] * M[7] + (double)q[0] * M[1]),
+                 (float)((double)q[1] * M[5] + (double)q[2] * M[8] + (double)q[0] * M[2]));
+        memcpy(s + 76, o, 12);
+        Vec3 d;
+        memcpy(s + 88, Vec3_DivComponents(&d, (const Vec3*)q, (const Vec3*)(s + 8008)), 12);
+    }
+    if (Body_IsTipped(s, 0))
+    {
+        F(int, s, 13124) = 1;
+        CallThis(Ss_Slide, s);
+        return -1;
+    }
+    {
+        float nb[3];
+        CallThis(Bf_Set, nb, (float)((double)m[6] * n[2] + (double)m[3] * n[1] + (double)n[0] * m[0]),
+                 (float)((double)m[1] * n[0] + (double)m[7] * n[2] + (double)m[4] * n[1]),
+                 (float)((double)m[2] * n[0] + (double)m[8] * n[2] + (double)m[5] * n[1]));
+        Vec3 c1, c2, a, b;
+        Vec3_Cross(&c1, (const Vec3*)nb, (const Vec3*)(s + 88));
+        Vec3_Cross(&c2, &c1, (const Vec3*)nb);
+        float d = (float)Vec3_Dot((const Vec3*)(s + 88), (const Vec3*)nb);
+        Vec3 dir = *Vec3_Scaled(&a, (const Vec3*)nb, d);
+        float roll = (float)Vec3_Length(Vec3_Scaled(&b, &dir, dt));
+        Matrix L1, L2, M1, Tm, W, Wi;
+        memcpy(s + 2448, Matrix_LookAt(&L1, *(const Vec3*)(s + 6652), dir, roll), 48);
+        float roll2 = (float)Vec3_Length(Vec3_Scaled(&b, &c2, dt));
+        memcpy(s + 2400, Matrix_LookAt(&L2, g_zeroVec, c2, roll2), 48);
+        memcpy(s + 16, Matrix_Multiply(&M1, (const Matrix*)(s + 2448), (const Matrix*)(s + 16)), 48);
+        Vec3 vs, mv;
+        Vec3_Add(&vs, (const Vec3*)(s + 64), (const Vec3*)(s + 2580));
+        Matrix_Translation(&Tm, *Vec3_Scaled(&mv, &vs, dt));
+        memcpy(s + 16, Matrix_Multiply(&W, (const Matrix*)(s + 16), &Tm), 48);
+        memcpy(s + 2304, Matrix_Inverse(&Wi, (const Matrix*)(s + 16)), 48);
+        Vec3 r, q;
+        Vec3_RotateBy(&r, (const Vec3*)(s + 76), (const Matrix*)(s + 2304));
+        memcpy(s + 88, Vec3_MulComponents(&q, &r, (const Vec3*)(s + 8020)), 12);
+    }
+    CallThis(Ss_Ground, s);
+    memset(s + 15336, 0, 32);
+    F(int, s, 15368) = 0;
+    F(int, s, 15372) = 0;
+    return 1;
 }
 
 } // extern "C"

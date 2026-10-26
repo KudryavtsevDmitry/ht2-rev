@@ -1842,7 +1842,7 @@ void __fastcall NameHash_AddList(BYTE* h, void*, const char* name, void* v)
 
 // === an empty cluster made with room for its parts (FUN_5ea690 with its tail $L_5ea6ea)
 
-extern "C" void Ce_Fatal(); KING_ALIAS("_Ce_Fatal", "_Sys_Fatal")
+extern "C" void Ce_SysFatal(); KING_ALIAS("_Ce_SysFatal", "_Sys_Fatal")
 extern "C" void Ce_Sounds(); KING_ALIAS("_Ce_Sounds", "_Sound_AllocBuffers")
 ASM_VAR(AsmLabel, g_ce65274c, $L_65274c)
 
@@ -1862,7 +1862,7 @@ BYTE* __fastcall Cluster_ConstructEmpty(BYTE* c, void*, int pal, int items, int 
     F(int, c, 36) = 0;
     F(int, c, 52) = 0;
     if (!pal)
-        CallC(Ce_Fatal, "Palettes may be 1 or more!", 0);
+        CallC(Ce_SysFatal, "Palettes may be 1 or more!", 0);
     F(int, c, 104) = sounds;
     F(int, c, 88) = masks;
     F(int, c, 112) = nodes;

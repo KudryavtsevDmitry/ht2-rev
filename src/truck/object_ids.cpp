@@ -890,3 +890,86 @@ BYTE* __fastcall NetMoving_Construct(BYTE* s, void*, int a, int b, int c, int d,
 }
 
 } // extern "C"
+
+// === a body's speed and spin after touching a surface (FUN_57e540 with its tails $L_57e7bf .. $L_57e9ca)
+
+extern "C" void Sf_Set(); KING_ALIAS("_Sf_Set", "@Vec3_SetThis@20")
+extern "C" void Sf_FrameTime(); KING_ALIAS("_Sf_FrameTime", "_Game_FrameTime")
+extern "C" void Sf_Check(); KING_ALIAS("_Sf_Check", "_World_CheckPoint")
+ASM_VAR(double, g_sf64d9e0, $L_64d9e0)
+ASM_VAR(double, g_sf64b898, $L_64b898)
+ASM_VAR(double, g_sf64b7a8, $L_64b7a8)
+ASM_VAR(float, g_sf64c450, $L_64c450)
+ASM_VAR(float, g_sf64c264, $L_64c264)
+ASM_VAR(char, g_sfCheck, $L_67d1f0)
+ASM_VAR(char, g_sfSpeed, $L_67d1e0)
+ASM_VAR(char, g_sfSpin, $L_67d1d0)
+
+// a x b as the asm's three SetThis calls compute it
+static void Sf_Cross(float* out, const float* a, const float* b)
+{
+    CallThis(Sf_Set, out, (float)((double)a[1] * b[2] - (double)a[2] * b[1]),
+             (float)((double)a[2] * b[0] - (double)a[0] * b[2]), (float)((double)a[0] * b[1] - (double)a[1] * b[0]));
+}
+
+extern "C" {
+
+// [FUN_57e540..$L_57e9ca] body b touching contact c (its normal +64) in frame m: its speed (+416) split into the
+// normal part, bounced by +1424, and the sliding part, slowed by friction; its spin (+428) damped by a power of
+// the frame time, while sliding with the roll about the contact's axis (in m) set from the slide and +3280;
+// both checked and given to b (vtable +144, +148)
+void __cdecl Body_SurfaceResponse(BYTE* b, BYTE* c, const Matrix* m)
+{
+    float n[3], V[3], W[3];
+    memcpy(n, c + 64, 12);
+    memcpy(V, b + 416, 12);
+    memcpy(W, b + 428, 12);
+    float A[3], B[3], T[3];
+    Sf_Cross(A, n, V);
+    Sf_Cross(B, A, n);
+    Vec3_Normalized((Vec3*)T, (const Vec3*)B);
+    float dt = (float)CallC<double>(Sf_FrameTime);
+    float vn = (float)((double)n[2] * V[2] + (double)V[1] * n[1] + (double)n[0] * V[0]);
+    Sf_Cross(A, n, V);
+    Sf_Cross(B, A, n);
+    double bl = Vec3_Length((const Vec3*)B);
+    double qn = -((double)vn * F(float, b, 1424));
+    float q = (float)qn;
+    float mu = (float)(bl - x87_fabs(qn - vn) * g_sf64d9e0);
+    float Wn[3];
+    if (!(mu > g_sf64c264))
+    {
+        mu = 0;
+        double p = x87_pow(g_sf64b898, (double)dt * g_sf64c450);
+        CallThis(Sf_Set, Wn, (float)(W[0] * p), (float)(W[1] * p), (float)(W[2] * p));
+    }
+    else
+    {
+        Matrix inv;
+        Matrix_Inverse(&inv, m);
+        const float* i = inv.m;
+        float C[3], D[3], E[3];
+        Sf_Cross(C, n, T);
+        CallThis(Sf_Set, D, (float)((double)C[2] * i[6] + (double)C[1] * i[3] + (double)C[0] * i[0]),
+                 (float)((double)C[2] * i[7] + (double)C[1] * i[4] + (double)C[0] * i[1]),
+                 (float)((double)C[2] * i[8] + (double)C[1] * i[5] + (double)C[0] * i[2]));
+        double dw = (double)D[2] * W[2] + (double)D[1] * W[1] + (double)D[0] * W[0];
+        CallThis(Sf_Set, E, (float)(D[0] * dw), (float)(D[1] * dw), (float)(D[2] * dw));
+        Vec3 Wp, a, d;
+        Vec3_Sub(&Wp, (const Vec3*)W, (const Vec3*)E);
+        float g = (float)((double)mu / F(float, b, 3280));
+        float p2 = (float)x87_pow(g_sf64b7a8, (double)dt * g_sf64c450);
+        Vec3_Scaled(&a, &Wp, p2);
+        Vec3_Scaled(&d, (const Vec3*)D, g);
+        Vec3_Add((Vec3*)Wn, &d, &a);
+    }
+    Vec3 nq, tm, nv;
+    Vec3_Scaled(&nq, (const Vec3*)n, q);
+    Vec3_Scaled(&tm, (const Vec3*)T, mu);
+    Vec3_Add(&nv, &tm, &nq);
+    CallC(Sf_Check, &nv, &g_sfCheck, 150.0f);
+    CallVirt(b, 144, &nv, &g_sfSpeed);
+    CallVirt(b, 148, Wn, &g_sfSpin);
+}
+
+} // extern "C"

@@ -20,7 +20,7 @@ extern "C" void FUN_44b4a0(); KING_ALIAS("_FUN_44b4a0", "_Ai_PoolFree")    // th
 extern "C" void FUN_44b740(); KING_ALIAS("_FUN_44b740", "_Stl_Allocate")    // the AI's allocator: allocate (size)
 extern "C" void FUN_4a52e0(); KING_ALIAS("_FUN_4a52e0", "_Sch_ErrorCode")    // script error (code, fatal)
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")    // constructs a 44-byte element at p from x
-ASM_PROC(FUN_4aa460)    // vector<44 bytes>::insert_aux
+extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")    // vector<44 bytes>::insert_aux
 ASM_PROC(FUN_4ace70)    // copy (first, last, deque iterator, tag)
 extern "C" void FUN_4afe80(); KING_ALIAS("_FUN_4afe80", "_ValueList_MakeNode@4")    // list: a new node holding x
 extern "C" void FUN_467780(); KING_ALIAS("_FUN_467780", "_UninitCopyStrRefs")
@@ -3139,7 +3139,7 @@ ASM_VAR(AsmLabel, s_ev64bf60, $L_64bf60)
 ASM_VAR(AsmLabel, s_ev6709d4, $L_6709d4)
 extern "C" void FUN_4a7060(); KING_ALIAS("_FUN_4a7060", "@SchNode4a7060_Construct@8")
 extern "C" void FUN_4ab570(); KING_ALIAS("_FUN_4ab570", "_Sch4ab570_Construct")
-ASM_PROC(FUN_4aa460)
+extern "C" void FUN_4aa460(); KING_ALIAS("_FUN_4aa460", "@Elems44_InsertAux@16")
 extern "C" void FUN_4a7230(); KING_ALIAS("_FUN_4a7230", "@SchListNode_Destroy@8")
 extern "C" void FUN_40c100(); KING_ALIAS("_FUN_40c100", "@Str_Assign@12")
 extern "C" void FUN_4a28c0(); KING_ALIAS("_FUN_4a28c0", "_SchValue_MakePairB")
@@ -4084,3 +4084,59 @@ void __fastcall Frame_StepSequence(BYTE* f, void*, BYTE* p)
 }
 
 }  // extern "C"
+
+// === a 44-byte element inserted into its vector (FUN_4aa460)
+
+extern "C" void Ia_StrCopy(); KING_ALIAS("_Ia_StrCopy", "@Str_CopyConstruct@12")
+extern "C" void Ia_StrAssign(); KING_ALIAS("_Ia_StrAssign", "@Str_Assign@12")
+extern "C" void Ia_ValCopy(); KING_ALIAS("_Ia_ValCopy", "@Values4aadc0_Copy@12")
+extern "C" void Ia_ValAssign(); KING_ALIAS("_Ia_ValAssign", "@Values_Assign@12")
+extern "C" void Ia_Copy(); KING_ALIAS("_Ia_Copy", "@Sch4aac80_Copy@12")
+extern "C" void Ia_Destroy(); KING_ALIAS("_Ia_Destroy", "@SchListNode_Destroy@8")
+ASM_PROC(FUN_4abba0)
+ASM_VAR(AsmLabel, g_ia64bf68, $L_64bf68)
+
+extern "C" {
+
+// [FUN_4aa460] vector v (begin, end, capacity) of 44-byte elements: x inserted at pos, the tail moved up by one
+// in place, or everything copied into storage of twice the size (1 when empty) and the old freed
+void __fastcall Elems44_InsertAux(BYTE** v, void*, BYTE* pos, const BYTE* x)
+{
+    if (v[1] != v[2])
+    {
+        if (v[1])
+            CallThis(Ia_Copy, v[1], v[1] - 44);
+        v[1] += 44;
+        BYTE t[44];
+        CallThis(Ia_StrCopy, t + 4, x + 4);
+        CallThis(Ia_ValCopy, t + 16, x + 16);
+        F(DWORD, t, 28) = F(DWORD, x, 28);
+        CallThis(Ia_StrCopy, t + 32, x + 32);
+        F(void*, t, 0) = &g_ia64bf68;
+        BYTE* e = v[1];
+        Elems44_CopyBack(pos, e - 88, e - 44);
+        CallThis(Ia_StrAssign, pos + 4, t + 4);
+        CallThis(Ia_ValAssign, pos + 16, t + 16);
+        F(DWORD, pos, 28) = F(DWORD, t, 28);
+        CallThis(Ia_StrAssign, pos + 32, t + 32);
+        CallThis(Ia_Destroy, t);
+        return;
+    }
+    int n = (v[1] - v[0]) / 44;
+    int len = n ? 2 * n : 1;
+    BYTE* buf = len ? CallC<BYTE*>(FUN_44b740, len * 44) : 0;
+    BYTE* nf = CallC<BYTE*>(FUN_4abba0, v[0], pos, buf, pos);
+    if (nf)
+        CallThis(Ia_Copy, nf, x);
+    BYTE* ne = CallC<BYTE*>(FUN_4abba0, pos, v[1], nf + 44, nf);
+    for (BYTE* p = v[0]; p != v[1]; p += 44)
+        CallVirt(p, 4, 0);
+    int cap = (v[2] - v[0]) / 44;
+    if (cap)
+        AiFree(v[0], cap * 44);
+    v[0] = buf;
+    v[1] = ne;
+    v[2] = buf + len * 44;
+}
+
+} // extern "C"

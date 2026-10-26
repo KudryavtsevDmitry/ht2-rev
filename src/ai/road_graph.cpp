@@ -822,7 +822,7 @@ void __cdecl Rec47c360_Construct(BYTE** d, BYTE* const* s)
 
 extern "C" void FUN_47d330(); KING_ALIAS("_FUN_47d330", "_Stl_UninitCopy40")
 extern "C" void FUN_47e220(); KING_ALIAS("_FUN_47e220", "_Stl_UninitCopy16")
-ASM_PROC(FUN_47e260)
+extern "C" void FUN_47e260(); KING_ALIAS("_FUN_47e260", "_Orders144_UninitCopyB")
 extern "C" void FUN_47e1f0(); KING_ALIAS("_FUN_47e1f0", "_Stl_UninitCopy8")
 
 // n records of size bytes from the allocator, filled by copy (first, last,
@@ -1948,6 +1948,35 @@ void __fastcall KeyedVecs_InsertAux(BYTE** s, void*, BYTE* pos, const BYTE* x)
     s[0] = buf;
     s[1] = q;
     s[2] = buf + cap * 16;
+}
+
+} // extern "C"
+
+// === uninitialized copy of 144-byte orders, the road graph's instance (FUN_47e260 with its tails .. $L_47e3c3)
+
+extern "C" void Rg_Reserve16(); KING_ALIAS("_Rg_Reserve16", "@Vec16_Reserve@16")
+
+extern "C" {
+
+// [FUN_47e260..$L_47e3c3] the same copy as Orders144_UninitCopy (FUN_467000): orders [first, last) copy-
+// constructed at dest with their vector of 16-byte records (+120) rebuilt; the end of the copies
+BYTE* __cdecl Orders144_UninitCopyB(const BYTE* first, const BYTE* last, BYTE* dest, int)
+{
+    for (; first != last; first += 144, dest += 144)
+    {
+        if (!dest)
+            continue;
+        memcpy(dest, first, 20);
+        memcpy(dest + 24, first + 24, 32);
+        memcpy(dest + 56, first + 56, 52);
+        memcpy(dest + 112, first + 112, 8);
+        unsigned n = (unsigned)((F(BYTE*, first, 124) - F(BYTE*, first, 120)) >> 4);
+        CallThis(Rg_Reserve16, dest + 120, n, 0);
+        F(BYTE*, dest, 124) = CallC<BYTE*>(FUN_466300, F(BYTE*, first, 120), F(BYTE*, first, 124), F(BYTE*, dest, 120), dest);
+        F(int, dest, 132) = F(int, first, 132);
+        F(int, dest, 136) = F(int, first, 136);
+    }
+    return dest;
 }
 
 } // extern "C"

@@ -1195,7 +1195,7 @@ extern "C" void FUN_4e2821(); KING_ALIAS("_FUN_4e2821", "_World_CheckPoint")
 extern "C" void FUN_4fc930(); KING_ALIAS("_FUN_4fc930", "@Body4fc930_SetMode@28")
 ASM_PROC(FUN_541ad0)
 extern "C" void FUN_551970(); KING_ALIAS("_FUN_551970", "@Car_Effects@8")
-ASM_PROC(FUN_586df0)
+extern "C" void FUN_586df0(); KING_ALIAS("_FUN_586df0", "@MovingItem_Frame@4")
 ASM_PROC(FUN_546240)
 extern "C" void FUN_501b90(); KING_ALIAS("_FUN_501b90", "@Control_Move@20")
 extern "C" void __fastcall Body_ClearMode(BYTE* self, void*);              // carphys.cpp
@@ -4178,7 +4178,7 @@ void __fastcall StartLights_Update(BYTE* s)
 
 extern "C" void FUN_4de230(); KING_ALIAS("_FUN_4de230", "@Cab_SetState@12")
 extern "C" void FUN_5da080(); KING_ALIAS("_FUN_5da080", "@View_RenderFrame@4")
-ASM_PROC(FUN_4eacce)    // a dashboard text line: set (0, text)
+extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")    // a dashboard text line: set (0, text)
 ASM_VAR(BYTE*, g_cv69684c, $L_69684c)
 ASM_VAR(BYTE*, g_cv6f33ac, $L_6f33ac)
 ASM_VAR(int, g_cv696cb4, $L_696cb4)
@@ -5490,7 +5490,7 @@ void __fastcall Car_HitEvents(BYTE* s)
 
 // === the camera's eased view angle (FUN_4de550)
 
-ASM_FUNC(Fv_AddSample, FUN_4eacce)
+extern "C" void Fv_AddSample(); KING_ALIAS("_Fv_AddSample", "@History_Record@16")
 extern "C" void Fv_FilterValue(); KING_ALIAS("_Fv_FilterValue", "@Filter_Value@4")
 ASM_VAR(float, g_fv696d10, $L_696d10)
 ASM_VAR(int, g_fv696d14, $L_696d14)
@@ -7210,7 +7210,7 @@ extern "C" void FUN_4e5964(); KING_ALIAS("_FUN_4e5964", "_Query_4e5964")
 extern "C" void FUN_445f60(); KING_ALIAS("_FUN_445f60", "_Ai_GetRightDirection")
 extern "C" void FUN_439320(); KING_ALIAS("_FUN_439320", "_Ai_GetTangent")
 extern "C" void FUN_533510(); KING_ALIAS("_FUN_533510", "_Road_IsPlace")
-ASM_PROC(FUN_590520)
+extern "C" void FUN_590520(); KING_ALIAS("_FUN_590520", "@Body_UpdateLying@4")
 ASM_VAR(BYTE, g_cs6796b0, $L_6796b0)                // switches: 1 run, 2 no place flag, 4 reset gear 3
 ASM_VAR(float, g_cs64d7b8, $L_64d7b8)
 ASM_VAR(float, g_cs64c450, $L_64c450)
@@ -9552,7 +9552,7 @@ extern "C" int __cdecl Joy_SendCommand(int command);
 extern "C" Matrix* __fastcall SceneObj_Matrix548(BYTE* self, void*, Matrix* out);
 extern "C" Matrix* __fastcall SceneObj_Matrix644(BYTE* self, void*, Matrix* out);
 extern "C" Matrix* __fastcall SceneObj_Matrix1(BYTE* self, void*, Matrix* out);
-ASM_PROC(FUN_4eacce)
+extern "C" void FUN_4eacce(); KING_ALIAS("_FUN_4eacce", "@History_Record@16")
 ASM_VAR(BYTE*, g_vn696ca0, $L_696ca0)
 ASM_VAR(int, g_vn696c74, $L_696c74)                 // the force feedback log
 ASM_VAR(int, g_vn696ca4, $L_696ca4)
@@ -11278,7 +11278,7 @@ extern "C" void Pv_Log(); KING_ALIAS("_Pv_Log", "_VehLog_Value")
 extern "C" void Pv_Flush(); KING_ALIAS("_Pv_Flush", "_WarnLog_Flush")
 ASM_FUNC(Pv_533590, FUN_533590)
 ASM_FUNC(Pv_535a70, FUN_535a70)
-ASM_FUNC(Pv_SetText, FUN_4eacce)                        // a dashboard text line (value, name)
+extern "C" void Pv_SetText(); KING_ALIAS("_Pv_SetText", "@History_Record@16")                        // a dashboard text line (value, name)
 ASM_FUNC(Pv_4de990, FUN_4de990)
 extern "C" void __cdecl Game_TruckMessage(int* m);
 ASM_VAR(BYTE, g_pvControls, $L_6d1db8)
@@ -12020,7 +12020,7 @@ extern "C" void Pc_GameTime(); KING_ALIAS("_Pc_GameTime", "_Game_Time")
 extern "C" void __cdecl Cars_DumpHistory();
 ASM_FUNC(Pc_533590, FUN_533590)
 ASM_FUNC(Pc_5662f0, FUN_5662f0)
-ASM_FUNC(Pc_SetText, FUN_4eacce)
+extern "C" void Pc_SetText(); KING_ALIAS("_Pc_SetText", "@History_Record@16")
 extern "C" void g_pcFlashFn(); KING_ALIAS("_g_pcFlashFn", "_Car_FlasherKick")
 ASM_VAR(BYTE, g_pcControls, $L_6d1db8)
 ASM_VAR(int, g_pc6cec68, $L_6cec68)
@@ -14158,6 +14158,176 @@ BYTE* __fastcall Flasher_Construct(BYTE* s, void*, const float* pos, float k)
     CallThis(Fl_SetPos, s, pos);
     CallThis(Fl_Step, s, *(int*)&k);
     return s;
+}
+
+} // extern "C"
+
+// === a tractor's frame with its trailer hitched (FUN_55d5d0 with its tails $L_55ddd4 .. $L_55ddfe)
+
+ASM_PROC(FUN_558f20)
+extern "C" void Th_BodyStep(); KING_ALIAS("_Th_BodyStep", "@CarBody_Step@4")
+extern "C" void Th_CopyTowed(); KING_ALIAS("_Th_CopyTowed", "@Car_CopyToTowed@8")
+extern "C" void Th_Mode(); KING_ALIAS("_Th_Mode", "@Body_SetMode@12")
+extern "C" void Th_Hitch(); KING_ALIAS("_Th_Hitch", "@Body_UpdateHitch@12")
+extern "C" void Th_Matrix(); KING_ALIAS("_Th_Matrix", "@SceneObj_Matrix1@12")
+extern "C" void Th_Collide(); KING_ALIAS("_Th_Collide", "_SceneObj_Collide")
+extern "C" void Th_Set(); KING_ALIAS("_Th_Set", "@Vec3_SetThis@20")
+extern "C" void Th_Found(); KING_ALIAS("_Th_Found", "@Car_ApplyFound@8")
+extern "C" void Th_55ed50(); KING_ALIAS("_Th_55ed50", "@Car_55ed50@8")
+extern "C" void Th_558930(); KING_ALIAS("_Th_558930", "@Car_558930@8")
+extern "C" void Th_Step(); KING_ALIAS("_Th_Step", "@Car_Step@12")
+extern "C" void Th_Move(); KING_ALIAS("_Th_Move", "@Tractor_Move@16")
+extern "C" void Th_Shadows(); KING_ALIAS("_Th_Shadows", "@Car_LampShadows@8")
+ASM_VAR(BYTE, g_th697f9c, $L_697f9c)
+ASM_VAR(double, g_th64b5a0, $L_64b5a0)
+ASM_VAR(float, g_th64d2f8, $L_64d2f8)
+ASM_VAR(char, g_thBad, $L_67a5e4)
+
+// the hitch of tractor s (its frame +692, its type +10404) and of trailer t (frame +708, type +10420) in the
+// trailer's frame: h the tractor's in its own frame (unrounded), g the trailer's (b picks the asm's two orders)
+static void Th_Points(BYTE* s, BYTE* t, double* h, float* g, bool b)
+{
+    const float* M = &F(float, s, 692);
+    const float* T = (const float*)(&g_th697f9c + F(int, s, 10404) * 2416 + 156);
+    h[0] = (double)M[6] * T[2] + (double)M[3] * T[1] + (double)M[0] * T[0] + M[9];
+    h[1] = (double)M[7] * T[2] + (double)M[4] * T[1] + (double)M[1] * T[0] + M[10];
+    h[2] = (double)M[8] * T[2] + (double)M[5] * T[1] + (double)M[2] * T[0] + M[11];
+    double a = T[12];
+    const float* T2 = (const float*)(&g_th697f9c + F(int, t, 10420) * 2416 + 168);
+    float px = (float)((double)(float)(a * g_axisY.x) + T2[0]);
+    float py = (float)((double)(float)(a * g_axisY.y) + T2[1]);
+    double pz = a * g_axisY.z + T2[2];
+    const float* N = &F(float, t, 708);
+    if (!b)
+    {
+        g[0] = (float)((double)N[0] * px + pz * N[6] + (double)py * N[3] + N[9]);
+        g[1] = (float)((double)N[1] * px + pz * N[7] + (double)py * N[4] + N[10]);
+        g[2] = (float)((double)N[2] * px + pz * N[8] + (double)py * N[5] + N[11]);
+    }
+    else
+    {
+        g[0] = (float)(pz * N[6] + (double)py * N[3] + (double)N[0] * px + N[9]);
+        g[1] = (float)(pz * N[7] + (double)py * N[4] + (double)N[1] * px + N[10]);
+        g[2] = (float)(pz * N[8] + (double)py * N[5] + (double)N[2] * px + N[11]);
+    }
+}
+
+extern "C" {
+
+// [FUN_55d5d0..$L_55ddfe] tractor (body s - 16) and its trailer t (+21864): alone just its body step; hitching
+// (+21868, a free mode-1 body) until the hitches meet; both bodies in the tractor's mode, stepped (mode 1 by
+// Tractor_PlaceTrailer, 3 by 558f20) and on success their speeds saved and the hitch made (+21876); while hitched
+// the hitches kept together (detached when they part or the bodies collide), both cars stepped and moved together
+void __fastcall Tractor_Frame(BYTE* s)
+{
+    BYTE* body = s - 16;
+    BYTE* t = F(BYTE*, s, 21864);
+    if (!t)
+    {
+        CallThis(Th_BodyStep, s);
+        F(DWORD, s, 10148) &= 0xFFFDFFFF;
+        return;
+    }
+    F(DWORD, s, 10148) |= 0x20000;
+    CallThis(Th_CopyTowed, body);
+    int ok = 1;
+    if (F(int, s, 21868) && !F(int, s, 1204) && F(int, F(BYTE*, s, 21584), 9784) == 1)
+    {
+        double h[3];
+        float g[3];
+        Th_Points(s, t, h, g, false);
+        const float* B = &F(float, s, 500);
+        float P[3];
+        P[0] = (float)(h[2] * B[6] + h[1] * B[3] + h[0] * B[0] + B[9]);
+        P[1] = (float)(h[0] * B[1] + h[2] * B[7] + h[1] * B[4] + B[10]);
+        P[2] = (float)(h[0] * B[2] + h[2] * B[8] + h[1] * B[5] + B[11]);
+        float Mt0[12];
+        const float* Mt = CallThis<float*>(Th_Matrix, t + 16, Mt0);
+        double qx = (double)g[2] * Mt[6] + (double)g[1] * Mt[3] + (double)g[0] * Mt[0] + Mt[9];
+        float qy = (float)((double)g[0] * Mt[1] + (double)g[2] * Mt[7] + (double)g[1] * Mt[4] + Mt[10]);
+        float qz = (float)((double)g[0] * Mt[2] + (double)g[2] * Mt[8] + (double)g[1] * Mt[5] + Mt[11]);
+        double dx = P[0] - qx;
+        float dy = (float)((double)P[1] - qy);
+        double dz = (double)P[2] - qz;
+        if ((double)dy * dy + dz * dz + dx * dx < g_th64b5a0)
+        {
+            F(int, s, 21868) = 0;
+            CallThis(Th_Mode, F(BYTE*, s, 21584), 1);
+        }
+        else
+            CallThis(Th_Mode, F(BYTE*, s, 21584), 3);
+    }
+    CallThis(Th_Mode, F(BYTE*, t, 21600), F(int, F(BYTE*, s, 21584), 9784));
+    int mode = F(int, F(BYTE*, s, 21584), 9784);
+    if (mode == 1)
+        ok = Tractor_PlaceTrailer(body, 0);
+    else if (mode == 3)
+        ok = CallThis<int>(FUN_558f20, body);
+    if (!F(int, s, 21876) && ok)
+        F(int, s, 21876) = 1;
+    if (F(int, s, 21876) == 1)
+    {
+        F(int, s, 21876) = 2;
+        memcpy(s + 21916, s + 416, 12);
+        memcpy(s + 21928, s + 428, 12);
+        memcpy(t + 21924, t + 432, 12);
+        memcpy(t + 21936, t + 444, 12);
+        CallThis(Th_Hitch, F(BYTE*, t, 21600), 1);
+    }
+    F(int, F(BYTE*, t, 21600), 13512) = F(int, F(BYTE*, s, 21584), 13512);
+    int r1 = 0, r2 = ok;
+    if (F(int, s, 21876) > 0)
+    {
+        r2 = 0;
+        bool apart = !CallC<int>(Th_Collide, s, t ? t + 16 : 0, &r2);
+        double h[3];
+        float g[3];
+        Th_Points(s, t, h, g, true);
+        const float* B = &F(float, s, 500);
+        float P[3];
+        CallThis(Th_Set, P, (float)(h[2] * B[6] + h[1] * B[3] + h[0] * B[0] + B[9]),
+                 (float)(h[2] * B[7] + h[1] * B[4] + h[0] * B[1] + B[10]),
+                 (float)(h[2] * B[8] + h[1] * B[5] + h[0] * B[2] + B[11]));
+        float Mt0[12];
+        Vec3 q;
+        Vec3_MulMatrix(&q, (const Vec3*)g, CallThis<Matrix*>(Th_Matrix, t + 16, Mt0));
+        float d[3];
+        CallThis(Th_Set, d, (float)((double)P[0] - q.x), (float)((double)P[1] - q.y), (float)((double)P[2] - q.z));
+        double len = Vec3_Length((const Vec3*)d);
+        if (apart && len > g_th64d2f8)
+        {
+            CallThis(Th_Found, body);
+            CallVirt(s, 144, s + 21916, 0);
+            CallVirt(s, 148, s + 21928, 0);
+            CallVirt(t + 16, 144, t + 21924, 0);
+            CallVirt(t + 16, 148, t + 21936, 0);
+            CallThis(Th_Found, F(BYTE*, s, 21864));
+            CallThis(Th_55ed50, F(BYTE*, s, 21864));
+            CallVirt(F(BYTE*, s, 21864), 100);
+            CallThis(Th_558930, body);
+            goto lamps;
+        }
+    }
+    {
+        int a = CallThis<int>(Th_Step, body, &r1);
+        int b = CallThis<int>(Th_Step, F(BYTE*, s, 21864), &r2);
+        if (a != b)
+            World_Fatal(&g_thBad);
+        if (a)
+        {
+            CallThis(Th_Move, body, r1, r2);
+            CallThis(FUN_54ff80, body);
+            CallThis(FUN_54ff80, F(BYTE*, s, 21864));
+        }
+    }
+lamps:
+    if (F(int, s, 10564))
+    {
+        CallThis(Th_Shadows, body);
+        F(int, s, 10564) = 0;
+        if (F(BYTE*, s, 21864))
+            CallThis(Th_Shadows, F(BYTE*, s, 21864));
+    }
 }
 
 } // extern "C"

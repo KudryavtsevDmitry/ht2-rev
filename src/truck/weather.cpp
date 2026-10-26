@@ -2649,3 +2649,124 @@ int __cdecl Water_Draw(void*, BYTE* r)
 }
 
 } // extern "C"
+
+// === a dial's hands turned and its face copied from the screen (FUN_5a6420)
+
+ASM_PROC(FUN_5a58e0)
+extern "C" void Dl_RotY(); KING_ALIAS("_Dl_RotY", "_Matrix_RotationY")
+extern "C" void Dl_Apply(); KING_ALIAS("_Dl_Apply", "_Frame_Apply")
+extern "C" void Dl_Switch(); KING_ALIAS("_Dl_Switch", "_Switch_Select")
+extern "C" void Dl_Level(); KING_ALIAS("_Dl_Level", "_Mode_TextureLevel")
+extern "C" void Dl_Upload(); KING_ALIAS("_Dl_Upload", "@Texture_Upload@24")
+extern "C" void Dl_Post(); KING_ALIAS("_Dl_Post", "@Queue_PostEvent@12")
+ASM_VAR(BYTE*, g_dl7208fc, $L_7208fc)
+ASM_VAR(double, g_dl64da00, $L_64da00)
+ASM_VAR(int, g_dlRows, $L_67e448)
+
+// a method of the DirectDraw surface d (vtable slot at byte offset off)
+template <class... A>
+static int Dl_Com(void* d, unsigned off, A... args)
+{
+    void* fn = *(void**)(*(char**)d + off);
+    return ((int(__stdcall*)(void*, A...))fn)(d, args...);
+}
+
+// a 16-bit screen pixel as the dial's 4444 texel (alpha kept from d): 555 when level 2, else 565
+static WORD Dl_Texel(WORD p, WORD d, bool l2)
+{
+    WORD c;
+    if (l2)
+        c = (WORD)((WORD)((((p >> 1) & 0x7800) | (p & 0x780)) >> 2 | (p & 30)) >> 1);
+    else
+        c = (WORD)((WORD)((((p >> 1) & 0x3C00) | (p & 0x3C0)) >> 1 | (p & 30)) >> 1);
+    return (WORD)(c | (d & 0xF000));
+}
+
+extern "C" {
+
+// [FUN_5a6420] dial s: its glass shown (+192, flag 16 with 2 hides it), its value from +152, its three hands
+// (+128, +136, +144) turned by +112; with flag 8 its face (+196) on, and the screen under the window (s +32)
+// copied into its texture (+200, n x n, every other row and column checkerboarded by the frame) and both
+// textures uploaded; then its event 1
+void __fastcall Dial_Update(BYTE* s)
+{
+    DWORD fl = F(DWORD, s, 164);
+    if ((fl & 16) && F(BYTE*, s, 192) && (fl & 2))
+        F(BYTE, F(BYTE*, s, 192), 40) &= ~1;
+    else if (F(BYTE*, s, 192))
+        F(BYTE, F(BYTE*, s, 192), 40) |= 1;
+    if (F(WORD*, s, 152))
+        F(double, s, 72) = *F(WORD*, s, 152);
+    CallThis(FUN_5a58e0, s);
+    float M[12];
+    static const int hands[3] = {128, 136, 144};
+    for (int k = 0; k < 3; k++)
+        CallC(Dl_Apply, F(void*, s, hands[k]), 0, CallC<void*>(Dl_RotY, M, (float)(F(double, s, 112) - g_dl64da00)));
+    if (!(F(BYTE, s, 164) & 8))
+    {
+        CallC(Dl_Switch, F(void*, s, 196), 0);
+        CallThis(Dl_Post, s, 1);
+        return;
+    }
+    CallC(Dl_Switch, F(void*, s, 196), 1);
+    if (!F(BYTE*, s, 148))
+    {
+        CallThis(Dl_Post, s, 1);
+        return;
+    }
+    if (g_7025b0 && F(BYTE*, s, 200))
+    {
+        DWORD desc[31] = {0};
+        desc[0] = 124;
+        desc[1] = 8387054;
+        if (!Dl_Com(g_dl7208fc, 100, 0, desc, 17, 0))
+        {
+            int pitch = (int)desc[4];
+            BYTE* surf = (BYTE*)desc[9];
+            int a = CallVirt<int>(F(BYTE*, s, 32), 20) - 41;
+            int b = CallVirt<int>(F(BYTE*, s, 32), 24) - 100;
+            BYTE* tex = F(BYTE*, s, 200);
+            int n = F(WORD, tex, 20);
+            if (surf)
+            {
+                double nd = n;
+                float step = (float)(a / nd);
+                WORD* dst = F(WORD*, tex, 8);
+                float y = 50.0f;
+                int frame = F(int, F(BYTE*, s, 32), 2992);
+                const int* rowT = &g_dlRows;
+                for (int j = 0; j < n; j++)
+                {
+                    BYTE* row = surf + (int)y * pitch;
+                    if (!((j + frame) % 2))
+                    {
+                        bool l2 = CallC<int>(Dl_Level) == 2;
+                        double x = 20.0f;
+                        const int* colT = &g_dlRows;
+                        WORD* d = dst;
+                        for (int i = 0; i < n; i++)
+                        {
+                            if (!(((frame + i) / 2) % 2))
+                            {
+                                int o = colT[i] + rowT[j];
+                                WORD p = ((WORD*)row)[(int)x + o * 2];
+                                *d = Dl_Texel(p, *d, l2);
+                            }
+                            d++;
+                            x += step;
+                        }
+                    }
+                    y = (float)((double)b / nd + y);
+                    dst += n;
+                }
+            }
+            Dl_Com(g_dl7208fc, 128, 0);
+        }
+    }
+    CallThis(Dl_Upload, F(void*, s, 148), 0, 0, 1.0);
+    if (F(BYTE*, s, 200))
+        CallThis(Dl_Upload, F(void*, s, 200), 0, 0, 1.0);
+    CallThis(Dl_Post, s, 1);
+}
+
+} // extern "C"
